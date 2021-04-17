@@ -1,0 +1,15 @@
+uses
+	CtrlLib;
+
+file
+	CodeGen.h,
+	CodeGen.cpp,
+	Editor.h,
+	Editor.cpp,
+	Parser.cpp,
+	base.cg highlight cpp,
+	interfaces.tg highlight cpp;
+
+mainconfig
+	"" = "GUI";
+
