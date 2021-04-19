@@ -1,7 +1,7 @@
 # liboulu
 Liboulu is an unfinished collection of libraries that enable modern games and programs. 
 
-![Banner](https://github.com/OuluBSD/liboulu/raw/master/doc/banner_210419.jpg)
+![Banner](https://raw.githubusercontent.com/OuluBSD/liboulu/main/doc/banner_210419.jpg)
 
 The intention is to follow U++ conventions, but still make a standalone solution that works even without U++ and only with standard C libraries.
 This solution is certainly too radical compared to current industrial solutions, but we aim to prove the usefulness of this solution in the long run in the future. 
