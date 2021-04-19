@@ -1,0 +1,53 @@
+description "Digital audio workstation\377B128,128,0";
+
+flags(FREEBSD) BUILTIN_PORTMIDI;
+
+uses
+	Oulu;
+
+uses(BUILTIN_PORTMIDI) plugin/portmidi;
+
+uses(BUILTIN_PORTAUDIO) plugin/portaudio;
+
+library(!WIN32) fluidsynth;
+
+library(WIN32) libfluidsynth.dll.a;
+
+library(!BUILTIN_PORTMIDI) portmidi;
+
+library(!BUILTIN_PORTAUDIO) portaudio;
+
+file
+	Copying,
+	AudioCore.h,
+	Internal.h,
+	Audio readonly separator,
+	Record.h,
+	Record.cpp,
+	"Midi File" readonly separator,
+	Binasc.h,
+	Binasc.cpp,
+	Event.h,
+	Event.cpp,
+	EventList.h,
+	EventList.cpp,
+	MidiFile.h,
+	MidiFile.cpp,
+	Message.h,
+	Message.cpp,
+	"Midi Synth" readonly separator,
+	Fluidsynth.h,
+	Fluidsynth.cpp,
+	Portaudio readonly separator,
+	Sound.h,
+	Sound.cpp,
+	SoundStream.cpp,
+	SoundSystem.cpp,
+	System readonly separator,
+	System.h,
+	System.cpp,
+	Generators.h,
+	Generators.cpp,
+	Portaudio.h,
+	Portaudio.cpp;
+

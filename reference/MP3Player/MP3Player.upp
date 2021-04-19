@@ -1,0 +1,12 @@
+uses
+	Complete,
+	FusionCore;
+
+file
+	MP3Player.h,
+	MP3Player.cpp;
+
+mainconfig
+	"" = "ALTCORE",
+	"" = "ALTCORE VERBOSE_SHADERCORE";
+

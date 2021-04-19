@@ -1,0 +1,33 @@
+description "SlaveGui backend\3770,128,128";
+
+uses
+	Painter,
+	CtrlLib,
+	GLDraw,
+	PdfDraw;
+
+library(POSIX) "SDL2 SDL2main GL";
+
+library(NEVER) "SDL2.lib SDL2main.lib OpenGL32.lib";
+
+library(WIN32) "SDL2 SDL2main OpenGL32";
+
+file
+	VirtualGui3D.h,
+	Local.h,
+	Keys.h,
+	After.h,
+	Image.cpp,
+	FB.iml,
+	Ctrl.h,
+	DrawDragRect.cpp,
+	Ctrl.cpp,
+	Wnd.cpp,
+	Event.cpp,
+	Top.h,
+	TopFrame.cpp,
+	Top.cpp,
+	Clip.cpp,
+	DnD.cpp,
+	ChSysInit.cpp;
+

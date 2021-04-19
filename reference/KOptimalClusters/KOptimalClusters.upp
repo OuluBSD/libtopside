@@ -1,0 +1,12 @@
+description "K-means clustering\377";
+
+uses
+	Statistics;
+
+file
+	main.cpp;
+
+mainconfig
+	"" = "",
+	"" = "ALTCORE";
+

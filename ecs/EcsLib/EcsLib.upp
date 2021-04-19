@@ -1,0 +1,56 @@
+description "Components\377B0,87,128";
+
+uses
+	EcsCore;
+
+uses(ALTCORE) EscAlt;
+
+uses(SDL2) OOSDL2;
+
+uses(GUI) OuluCtrl;
+
+file
+	Copying,
+	TODO.txt,
+	EcsLib.h,
+	EcsLib.cpp,
+	Defs.h,
+	Camera.h,
+	Camera.cpp,
+	Model.h,
+	Model.cpp,
+	Viewport.h,
+	Viewport.cpp,
+	CommonComponents.h,
+	CommonComponents.cpp,
+	EasingSystem.h,
+	EasingSystem.cpp,
+	MotionController.h,
+	MotionController.cpp,
+	Shader.h,
+	WorldLogic.h,
+	BoundingBox.cpp,
+	EventSystem.h,
+	EventSystem.cpp,
+	RenderingSystem.h,
+	RenderingSystem.cpp,
+	WindowSystem.h,
+	WindowSystem.cpp,
+	HolographicScene.h,
+	HolographicScene.cpp,
+	AudioSystem.h,
+	AudioSystem.cpp,
+	RegistrySystem.h,
+	RegistrySystem.cpp,
+	MoCtrl.h,
+	MoCtrl.cpp,
+	Prefabs.h,
+	Trash readonly separator,
+	SDL2.h,
+	BasicShaders.h,
+	BasicShaders.cpp,
+	OctreeShaders.h,
+	OctreeShaders.cpp,
+	PathTracerShaders.h,
+	PathTracerShaders.cpp;
+

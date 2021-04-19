@@ -1,0 +1,265 @@
+
+TN(SurvivalIndividual) {
+	
+	// satisfaction to life. rewards
+	TN(EconomicIndividual) {
+		TN(IndividualEconomicConfidence) {}
+		TN(IndividualEconomicFairness) {}
+	}
+	
+	TN(SexualIndividual) {
+		asdfadsf
+	}
+	
+	TN(CulturalIndividual) {
+		TN(IndividualCulturalConfidence) {}
+		TN(IndividualCulturalFairness) {}
+		TN(IndividualSelfReflection) {}
+		TN(IndividualOpenness) {} // "wise man plays with thoughts which he don't necessarily accept"
+	}
+	
+	TN(BehavioralIndividual) {
+		TN(IndividualBehavioralConfidence) {}
+		TN(IndividualBehavioralFairness) {}
+		TN(InvidualEmpathy) {}
+		TN(InvidualAgression) {
+			TRTOTHIS(IndividualBehavioralFairness, Happy)
+			TRTHIS(Anger, IndividualOpenness)
+			TRTHIS(Disgust, IndividualOpenness)
+			
+			TN(IndividualDefamingIndividual) {}
+			TN(IndividualExposingIndividual) {
+				TRTOTHIS(IndividualBehavioralFairness, Surprise)
+			}
+		}
+	}
+	
+	TN(LearningIndividual) {
+		TN(IndividualLearningConfidence) {}
+		TN(IndividualLearningFairness) {}
+	}
+	
+	TN(CommunalIndividual) {
+		TN(IndividualCommunalConfidence) {
+			TN(IndividualCommunalProtection) {
+				TRTHIS(Fear, IndividualExposingIndividual)
+			}
+		}
+		TN(IndividualCommunalFairness) {}
+	}
+	
+	// The sense of balance in the ecosystem where the individual is in.
+	TN(EcosystemIndividual) {
+		TN(IndividualEcosystemConfidence) {}
+		TN(IndividualEcosystemFairness) {}
+	}
+	
+	// Can be family, city, or even country... depends on context...
+	TN(SurvivalTribe) {
+		TRTOTHIS(IndividualBehavioralFairness, Angry)
+		
+		TN(EconomicTribe) {
+			TN(TribeEconomicConfidence) {
+				TRTHIS(Happy, IndividualEconomicConfidence)
+				TRTHIS(Sad, IndividualEconomicFairness)
+			}
+			TN(TribeEconomicFairness) {
+				TRTHIS(Happy, IndividualEconomicFairness)
+				TRTHIS(Sad, IndividualEconomicConfidence)
+				TN(LackOfDiplomacy) {}
+			}
+		}
+		TN(CulturalTribe) {
+			TN(TribeCulturalConfidence) {
+				TRTHIS(Happy, IndividualCulturalConfidence)
+				TRTHIS(Sad, IndividualCulturalFairness)
+			}
+			TN(TribeCulturalFairness) {
+				TRTHIS(Happy, IndividualCulturalFairness)
+				TRTHIS(Sad, IndividualCulturalConfidence)
+			}
+			TN(TribeSelfReflection) {} // changed with speakers or media
+			TN(TribeOpenness) {}
+		}
+		TN(BehavioralTribe) {
+			TN(TribeBehavioralConfidence) {
+				TRTHIS(Happy, IndividualBehavioralConfidence)
+				TRTHIS(Sad, IndividualBehavioralFairness)
+				TN(TribeInfectiousDiseaseEpidemic) {}
+			}
+			TN(TribeBehavioralFairness) {
+				TRTHIS(Happy, IndividualBehavioralFairness)
+				TRTHIS(Sad, IndividualBehavioralConfidence)
+				TN(StereotypicalImaginaryLaws) {}
+			}
+			TN(TribeEmpathy) {}
+			TN(TribeAggression) {}
+		}
+		
+		
+		TN(Communitarianism) /* "Collectivism" */ {
+			TRTHIS(Sad, TribeEconomicConfidence)
+			TRTHIS(Sad, TribeCulturalConfidence)
+			TRTHIS(Happy, TribeEconomicFairness)
+			TRTHIS(Happy, TribeCulturalFairness)
+		}
+		TN(Individualism) {
+			TRTHIS(Happy, TribeEconomicConfidence)
+			TRTHIS(Happy, TribeCulturalConfidence)
+			TRTHIS(Sad, TribeEconomicFairness)
+			TRTHIS(Sad, TribeCulturalFairness)
+		}
+		TN(Leftism) {
+			TRTHIS(Happy, TribeCulturalConfidence)
+			TRTHIS(Happy, TribeEconomicFairness)
+			TRTHIS(Sad, TribeEconomicConfidence)
+			TRTHIS(Sad, TribeCulturalFairness)
+		}
+		TN(Rightism) {
+			TRTHIS(Sad, TribeCulturalConfidence)
+			TRTHIS(Sad, TribeEconomicFairness)
+			TRTHIS(Happy, TribeEconomicConfidence)
+			TRTHIS(Happy, TribeCulturalFairness)
+		}
+		
+		TN(Liberalism) {
+			TRTHIS(Happy, TribeBehavioralConfidence)
+			TRTHIS(Sad, TribeBehavioralFairness)
+		}
+		TN(Conservatism) {
+			TRTHIS(Sad, TribeBehavioralConfidence)
+			TRTHIS(Happy, TribeBehavioralFairness)
+		}
+		
+		
+		
+		TN(SystemicOptimization) {
+			/*	SystemicOptimization is a complex political concept:
+				It uses mixed economic and cultural focuses for minimizing costs.
+			*/
+			
+			// It contains extremes, and "is surprised" when one extreme takes power.
+			TRTHIS(Surprise, Communitarianism)
+			TRTHIS(Surprise, Individualism)
+			TRTHIS(Surprise, Leftism)
+			TRTHIS(Surprise, Rightism)
+			
+			TRTHIS(Happy, EconomicIndividual)
+			
+			TRTHIS(Happy, TribeSatisfaction)
+			TRTHIS(Happy, TribeSelfReflection)
+			
+			TR(SystemicOptimization, Happy, IndividualSelfReflection)
+			TR(SystemicOptimization, Happy, IndividualEmpathy)
+			TR(SystemicOptimization, Happy, IndividualOpenness)
+			TR(SystemicOptimization, Happy, IndividualTruthfulCharacteristics)
+			TR(SystemicOptimization, Happy, TribeEmpathy)
+			TR(SystemicOptimization, Happy, TribeOpenness)
+			TR(SystemicOptimization, Happy, TribeTruthfulCharacteristics)
+			TR(SystemicOptimization, Happy, TribeEconomicFairness)
+			TR(SystemicOptimization, Sad, StereotypicalImaginaryLaws) // https://github.com/lukasz-madon/awesome-concepts
+			TR(SystemicOptimization, Surprise, TribeInfectiousDiseaseEpidemic)
+			TR(SystemicOptimization, Disgust, Aggression)
+			TR(SystemicOptimization, Sad, Individualism)
+			TR(SystemicOptimization, Sad, Confrontation)
+		}
+		
+		TN(SurvivalEcosystem) {
+			TRTOTHIS(IndividualBehavioralFairness, Angry)
+			
+			TN(EcosystemEconomic) {
+				TN(EcosystemEconomicConfidence) {} // is decreasing employment rate and supports UBI
+				TN(EcosystemEconomicFairness) {} // is increasing employment rate
+			}
+			
+			
+			TN(Parliament) {
+				
+			}
+			TN(Government) {
+				TN(FinanceMinistry) {
+					// Parliament hates Ministry of Finance (wants separation)
+					TR(Parliament, Anger, FinanceMinistry)
+					
+				}
+			}
+			TN(Religion) {
+				TRTHIS_HS_INV(IndividualEconomic) {}
+				TRTHIS_HS_INV(IndividualCultural) {}
+				TRTHIS_HS(IndividualBehavioral) {}
+				TRTHIS_HS_INV(IndividualLearning) {}
+				TRTHIS_HS_INV(IndividualCommunal) {}
+				TRTHIS_HS(IndividualEcosystem) {}
+			}
+			TN(NationalMedia) {
+				TRTHIS_HS_INV(IndividualEconomic) {}
+				TRTHIS_HS_INV(IndividualCultural) {}
+				TRTHIS_HS_INV(IndividualBehavioral) {}
+				TRTHIS_HS_INV(IndividualLearning) {}
+				TRTHIS_HS_INV(IndividualCommunal) {}
+				TRTHIS_HS_INV(IndividualEcosystem) {}
+			}
+			
+			TN(ConglomerateMedia) {
+				TRTHIS_HS(IndividualEconomic) {}
+				TRTHIS_HS_INV(IndividualCultural) {}
+				TRTHIS_HS_INV(IndividualBehavioral) {}
+				TRTHIS_HS_INV(IndividualLearning) {}
+				TRTHIS_HS_INV(IndividualCommunal) {}
+				TRTHIS_HS_INV(IndividualEcosystem) {}
+				TRTHIS_HS_INV(EcosystemEconomic) {}
+			}
+			
+			
+			//TN(SurvivalEcosystemOpenness) {}
+			//TN(SurvivalEcosystemTruthfulCharacteristics) {}
+			
+			TN(Deceiving) {
+				TR(SystemicOptimization, Anger, Deceiving)
+			}
+			
+			TN(War) {
+				TR(SystemicOptimization, Fear, War)
+			}
+			
+			/*
+				Illusions at this level:
+					- Leftism, Rightism, Communitarism, Invidualism
+			*/
+			TN(ConsumerProduct) {
+				TN(PremiumProducts) {
+					TRTOTHIS_HS(IndividualEconomic)
+				}
+				TN(FairTrade) {
+					TR(SystemicOptimization, Happy, FairTrade)
+				}
+				
+				TN(Economic) {
+					TN(RetailConglomerate) {
+						TRTHIS(Disgust, SystemicOptimization)
+						TRTHIS(Happy, Confidence)
+						
+					}
+					TN(ConsumerCoopEnterprise) {
+						TRTHIS(Happy, SystemicOptimization)
+						TRTHIS(Sad, Confidence)
+						
+					}
+				}
+			}
+			TN(ConsumerMembership) {
+				TN(ExclusiveOpportunities) {
+					TRTOTHIS_HS(IndividualEconomic)
+				}
+			}
+			TN(PreEntrepreneurship) {
+				TRTOTHIS_HS(EcosystemEconomic) // you want society to give time for you to finish your ideas
+			}
+			TN(Entrepreneurship) {
+				TRTOTHIS_HS(IndividualEconomic)
+				TRTOTHIS_HS_INV(EcosystemEconomic) // you want employees to make profit for you
+				TN(Employers) {}
+			}
+		}
+	}
+}

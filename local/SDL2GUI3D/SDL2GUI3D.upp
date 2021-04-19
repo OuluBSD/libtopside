@@ -1,0 +1,13 @@
+description "\3770,128,128";
+
+uses
+	VirtualGui3D;
+
+file
+	SDL2GUI3D.h,
+	Window.cpp,
+	Draw.cpp,
+	Keys.cpp,
+	Event.cpp,
+	Cursor.cpp;
+

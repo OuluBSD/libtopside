@@ -1,0 +1,11 @@
+description "\377B128,128,0";
+
+uses
+	OuluCtrl,
+	Language;
+
+file
+	LanguageCtrl.h,
+	LanguageEditor.h,
+	LanguageEditor.cpp;
+

@@ -1,0 +1,31 @@
+description "\377B0,0,128";
+
+noblitz;
+
+uses
+	plugin/avcpp,
+	Oulu;
+
+uses(POSIX) plugin/libv4l2;
+
+uses(!ALTCORE) plugin/jpg;
+
+library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
+
+file
+	Multimedia.h,
+	"File support" readonly separator,
+	ffmpeg.cpp,
+	Audio.h,
+	Video.h,
+	Media.h,
+	Capture.h,
+	Capture.cpp,
+	FileIn.h,
+	FileIn.cpp,
+	DeviceManager.h,
+	DeviceManager.cpp,
+	ECS readonly separator,
+	System.h,
+	System.cpp;
+

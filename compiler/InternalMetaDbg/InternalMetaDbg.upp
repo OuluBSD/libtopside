@@ -1,0 +1,13 @@
+uses
+	Core;
+
+file
+	SimpleMETA2.h,
+	SimpleMETA2.cpp,
+	meta.h,
+	meta.cpp,
+	input.txt;
+
+mainconfig
+	"" = "";
+

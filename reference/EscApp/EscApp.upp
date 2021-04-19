@@ -1,0 +1,14 @@
+description "Using Esc scripting language in an application\377";
+
+uses(ALTCORE) EscAlt;
+
+uses(!ALTCORE) Esc;
+
+file
+	EscApp.cpp,
+	script.esc;
+
+mainconfig
+	"" = "ALTCORE",
+	"" = "";
+

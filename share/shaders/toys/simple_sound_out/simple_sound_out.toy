@@ -1,0 +1,26 @@
+{
+	name: "simple sound out",
+	owner: "sppp",
+	likes: 1,
+	date: 20210310,
+	
+	stages: [
+		{
+			type: image,
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+		{
+			type: sound,
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}
+

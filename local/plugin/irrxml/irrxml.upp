@@ -1,0 +1,12 @@
+description "\3770,128,128";
+
+file
+	CXMLReaderImpl.h,
+	fast_atof.h,
+	heapsort.h,
+	irrArray.h,
+	irrString.h,
+	irrTypes.h,
+	irrXML.cpp,
+	irrXML.h;
+

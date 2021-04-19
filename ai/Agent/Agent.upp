@@ -1,0 +1,17 @@
+description "\377B141,0,200";
+
+uses
+	Oulu;
+
+file
+	main.cpp,
+	Agent.h,
+	Node.h,
+	SearchAlgos.h,
+	ActionPlanner.h,
+	ActionPlanner.cpp,
+	QueryTable.h;
+
+mainconfig
+	"" = "";
+

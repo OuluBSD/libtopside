@@ -1,0 +1,38 @@
+uses
+	OuluCtrl;
+
+file
+	main.cpp,
+	Meta.h,
+	Object.h,
+	Object.cpp,
+	Parser.h,
+	Parser.cpp,
+	Compiler.h,
+	Compiler.cpp,
+	CompilationUnit.h,
+	CompilationUnit.cpp,
+	Linker.h,
+	Linker.cpp,
+	VM.h,
+	VM.cpp,
+	"Machine Designs" readonly separator,
+	machines.h,
+	mark1.h,
+	Precompiled readonly separator,
+	meta2.vm1,
+	aexp.vm1,
+	aexp_dbg.log,
+	simple1.txt,
+	High-Level readonly separator,
+	meta2_vm1.meta2,
+	aexp_vm2.meta2,
+	simple1.aexp,
+	Trash readonly separator,
+	Common.h,
+	Common.cpp;
+
+mainconfig
+	"" = "",
+	"" = "ALTCORE";
+

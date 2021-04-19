@@ -1,0 +1,13 @@
+description "Parses conllu and regular English text using Turku-NPP.\377";
+
+uses
+	Language;
+
+file
+	EnglishParser.cpp,
+	Example.conllu,
+	Apple.txt;
+
+mainconfig
+	"" = "";
+

@@ -1,0 +1,26 @@
+{
+	name: "simple texture",
+	owner: "sppp",
+	likes: 1,
+	date: 20210301,
+	
+	stages: [
+		{
+			type: image,
+			inputs: [
+				{
+					type: texture,
+					filename: "bg5.png",
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

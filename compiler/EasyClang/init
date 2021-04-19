@@ -1,0 +1,5 @@
+#ifndef _EasyClang_icpp_init_stub
+#define _EasyClang_icpp_init_stub
+#include "Core/init"
+#include "AI/init"
+#endif

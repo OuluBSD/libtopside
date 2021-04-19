@@ -1,0 +1,16 @@
+description "\377B0,0,255";
+
+uses
+	DrawAlt;
+
+file
+	Copying,
+	CtrlCore.h,
+	Util.h,
+	Util.cpp,
+	MKeys.h,
+	Ctrl.h,
+	Ctrl.cpp,
+	TopWindow.h,
+	TopWindow.cpp;
+

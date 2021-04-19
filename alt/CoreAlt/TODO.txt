@@ -1,0 +1,3 @@
+
+ - Use in Vector: std::is_trivially_destructible<T>::value, Construct, DeepCopyConstructFill
+ - change all stupid move ctors with Swap() to std::move

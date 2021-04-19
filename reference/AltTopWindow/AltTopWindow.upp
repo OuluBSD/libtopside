@@ -1,0 +1,13 @@
+uses
+	EcsLib;
+
+file
+	main.cpp,
+	AltTopWindow.h,
+	AltTopWindow.cpp;
+
+mainconfig
+	"" = "GUI ALTCORE VIRTUALGUI3DALT SDL2GUI3DALT",
+	"" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"" = "GUI";
+

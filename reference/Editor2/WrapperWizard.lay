@@ -1,0 +1,24 @@
+LAYOUT(WrapFrame1, 480, 340)
+	ITEM(LabelBox, dv___0, SetLabel(t_("Select wrapper file")).HSizePosZ(4, 4).VSizePosZ(4, 32))
+	ITEM(ArrayCtrl, recent, HCenterPosZ(228, -114).VCenterPosZ(224, -10))
+	ITEM(Label, dv___2, SetLabel(t_("Other file:")).HCenterPosZ(84, 50).VCenterPosZ(20, -136))
+	ITEM(Button, browse, SetLabel(t_("Select fle")).HCenterPosZ(220, 118).VCenterPosZ(24, -110))
+	ITEM(Label, dv___4, SetLabel(t_("File path:")).HCenterPosZ(72, -192).VCenterPosZ(24, 118))
+	ITEM(EditString, path, HCenterPosZ(388, 38).VCenterPosZ(24, 118))
+	ITEM(Button, next, SetLabel(t_("Next")).RightPosZ(4, 100).BottomPosZ(4, 24))
+	ITEM(Label, dv___7, SetLabel(t_("Recent files:")).HCenterPosZ(148, -154).VCenterPosZ(19, -132))
+END_LAYOUT
+
+LAYOUT(WrapFrame3, 480, 340)
+	ITEM(Button, prev, SetLabel(t_("Previous")).RightPosZ(108, 100).BottomPosZ(4, 24))
+	ITEM(Button, next, SetLabel(t_("Next")).RightPosZ(4, 100).BottomPosZ(4, 24))
+	ITEM(LabelBox, dv___2, SetLabel(t_("Set output:")).HSizePosZ(4, 4).VSizePosZ(4, 32))
+	ITEM(Label, dv___3, SetLabel(t_("Title:")).HCenterPosZ(80, -192).VCenterPosZ(24, 118))
+	ITEM(Label, dv___4, SetLabel(t_("Recent files:")).HCenterPosZ(80, -192).VCenterPosZ(24, -134))
+	ITEM(Label, dv___5, SetLabel(t_("Output directory:")).HCenterPosZ(80, -192).VCenterPosZ(24, 90))
+	ITEM(EditString, title, HCenterPosZ(152, -76).VCenterPosZ(24, 118))
+	ITEM(EditString, path, HCenterPosZ(300, -2).VCenterPosZ(24, 90))
+	ITEM(Button, browse, SetLabel(t_("Browse")).HCenterPosZ(76, 190).VCenterPosZ(24, 90))
+	ITEM(ArrayCtrl, recent, HCenterPosZ(300, -2).VCenterPosZ(216, -38))
+END_LAYOUT
+

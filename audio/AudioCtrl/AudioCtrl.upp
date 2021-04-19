@@ -1,0 +1,19 @@
+description "\377B128,128,0";
+
+uses
+	AudioCore,
+	OuluCtrl;
+
+file
+	AudioCtrl.h,
+	AudioView.h,
+	AudioView.cpp,
+	Slider.h,
+	Slider.cpp,
+	MidiFileCtrl.h,
+	MidiFileCtrl.cpp,
+	AudioSourceCtrl.h,
+	AudioSourceCtrl.cpp,
+	MediaSourceCtrl.h,
+	MediaSourceCtrl.cpp;
+

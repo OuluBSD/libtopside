@@ -1,0 +1,10 @@
+uses
+	ToyHub;
+
+file
+	ToyServer.cpp;
+
+mainconfig
+	"" = "",
+	"" = "MYSQL";
+

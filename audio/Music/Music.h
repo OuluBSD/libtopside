@@ -1,0 +1,182 @@
+#ifndef _Music_Music_h_
+#define _Music_Music_h_
+
+#include <Oulu/Oulu.h>
+#include <EcsLib/EcsLib.h>
+
+
+NAMESPACE_OULU_BEGIN
+
+
+
+class MusicDrummerComponent :
+	public Component<MusicDrummerComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicDrummerComponent);
+	
+	MusicDrummerComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+class MusicBassistComponent :
+	public Component<MusicBassistComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicBassistComponent);
+	
+	MusicBassistComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+class MusicGuitaristComponent :
+	public Component<MusicGuitaristComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicGuitaristComponent);
+	
+	MusicGuitaristComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+class MusicVocalistComponent :
+	public Component<MusicVocalistComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicVocalistComponent);
+	
+	MusicVocalistComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+class MusicConductorComponent :
+	public Component<MusicConductorComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicConductorComponent);
+	
+	MusicConductorComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+class MusicComposerComponent :
+	public Component<MusicComposerComponent>
+{
+	String last_error;
+	
+public:
+	COPY_PANIC(MusicComposerComponent);
+	
+	MusicComposerComponent();
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void EvaluateRequest(String req_str);
+	
+	String GetLastError() const {return last_error;}
+	
+	
+	Callback WhenError;
+	
+};
+
+
+
+
+
+
+
+PREFAB_BEGIN(CompleteMusicDrummer)
+		MusicDrummerComponent,
+		Connector
+PREFAB_END;
+
+PREFAB_BEGIN(CompleteMusicBassist)
+		MusicBassistComponent,
+		Connector
+PREFAB_END;
+
+PREFAB_BEGIN(CompleteMusicGuitarist)
+		MusicGuitaristComponent,
+		Connector
+PREFAB_END;
+
+PREFAB_BEGIN(CompleteMusicVocalist)
+		MusicVocalistComponent,
+		Connector
+PREFAB_END;
+
+PREFAB_BEGIN(CompleteMusicConductor)
+		MusicConductorComponent,
+		Connector
+PREFAB_END;
+
+PREFAB_BEGIN(CompleteMusicComposer)
+		MusicComposerComponent,
+		Connector
+PREFAB_END;
+
+
+NAMESPACE_OULU_END
+
+#endif

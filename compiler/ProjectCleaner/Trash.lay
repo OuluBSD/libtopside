@@ -1,0 +1,8 @@
+LAYOUT(MainLayout, 556, 384)
+	ITEM(ColumnList, projects, LeftPosZ(4, 188).TopPosZ(4, 136))
+	ITEM(ColumnList, files, LeftPosZ(4, 188).VSizePosZ(144, 4))
+	ITEM(ArrayCtrl, vars, HSizePosZ(196, 4).VSizePosZ(4, 160))
+	ITEM(DocEdit, log, HSizePosZ(196, 4).BottomPosZ(20, 136))
+	ITEM(ProgressIndicator, prog, HSizePosZ(196, 4).BottomPosZ(4, 12))
+END_LAYOUT
+

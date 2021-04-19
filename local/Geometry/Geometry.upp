@@ -1,0 +1,38 @@
+description "Classes for 2D/3D/etc operations.\377B128,0,54";
+
+uses
+	Oulu;
+
+uses(BUILTIN_ASSIMP) plugin/assimp;
+
+library(!BUILTIN_ASSIMP & POSIX) assimp;
+
+library(!BUILTIN_ASSIMP & WIN32 & (CLANG | GCC)) libassimp.dll.a;
+
+file
+	TODO.txt,
+	Geometry.h,
+	Common.h,
+	Matrix.h,
+	Matrix.cpp,
+	Util.h,
+	Util.cpp,
+	GeomCommon.h,
+	Geom2D.h,
+	Geom2D.cpp,
+	Transform.h,
+	Quadtree.h,
+	Quadtree.cpp,
+	Octree.h,
+	Octree.cpp,
+	GeomTypes.h,
+	GeomTypes.cpp,
+	BBox.cpp,
+	Model.h,
+	Model.cpp,
+	Mesh.cpp,
+	ModelBuilder.h,
+	ModelBuilder.cpp,
+	Draw.h,
+	Draw.cpp;
+

@@ -1,0 +1,28 @@
+description "\3770,128,128";
+
+file
+	utf8.h,
+	utf8\checked.h,
+	utf8\core.h,
+	utf8\unchecked.h,
+	poly2tri.h,
+	common\shapes.cc,
+	common\shapes.h,
+	common\utils.h,
+	sweep\advancing_front.cc,
+	sweep\advancing_front.h,
+	sweep\cdt.cc,
+	sweep\cdt.h,
+	sweep\sweep.cc,
+	sweep\sweep.h,
+	sweep\sweep_context.cc,
+	sweep\sweep_context.h,
+	json.hpp,
+	mikktspace.cpp,
+	mikktspace.h,
+	stb_truetype.h,
+	stb_image.h,
+	stb_image_write.h,
+	tiny_gltf.h,
+	impl.cpp;
+

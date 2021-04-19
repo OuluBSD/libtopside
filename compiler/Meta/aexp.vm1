@@ -1,0 +1,144 @@
+	ADR AEXP
+AEXP:
+	CLL AS
+	BF A1
+A2:
+	CLL AS
+	BT A2
+	SET
+	BE
+A1:
+A3:
+	R
+AS:
+	ID
+	BF A4
+	CL 'address '
+	CI
+	OUT
+	TST ':='
+	BE
+	CLL EX1
+	BE
+	CL 'store'
+	OUT
+	TST ';'
+	BE
+A4:
+A5:
+	R
+EX1:
+	CLL EX2
+	BF A6
+A7:
+	TST '+'
+	BF A8
+	CLL EX2
+	BE
+	CL 'add'
+	OUT
+A8:
+	BT A9
+	TST '-'
+	BF A10
+	CLL EX2
+	BE
+	CL 'sub'
+	OUT
+A10:
+A9:
+	BT A7
+	SET
+	BE
+A6:
+A11:
+	R
+EX2:
+	CLL EX3
+	BF A12
+A13:
+	TST '*'
+	BF A14
+	CLL EX3
+	BE
+	CL 'mpy'
+	OUT
+A14:
+	BT A15
+	TST '/'
+	BF A16
+	CLL EX3
+	BE
+	CL 'div'
+	OUT
+A16:
+A15:
+	BT A13
+	SET
+	BE
+A12:
+A17:
+	R
+EX3:
+	CLL EX4
+	BF A18
+A19:
+	TST '^'
+	BF A20
+	CLL EX3
+	BE
+	CL 'exp'
+	OUT
+A20:
+A21:
+	BT A19
+	SET
+	BE
+A18:
+A22:
+	R
+EX4:
+	TST '+'
+	BF A23
+	CLL EX5
+	BE
+A23:
+	BT A24
+	TST '-'
+	BF A25
+	CLL EX5
+	BE
+	CL 'minus'
+	OUT
+A25:
+	BT A24
+	CLL EX5
+	BF A26
+A26:
+A24:
+	R
+EX5:
+	ID
+	BF A27
+	CL 'load '
+	CI
+	OUT
+A27:
+	BT A28
+	NUM
+	BF A29
+	CL 'literal '
+	CI
+	OUT
+A29:
+	BT A28
+	TST '('
+	BF A30
+	CLL EX1
+	BE
+	TST ')'
+	BE
+A30:
+A28:
+	R
+	END

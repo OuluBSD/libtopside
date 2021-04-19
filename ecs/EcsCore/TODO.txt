@@ -1,0 +1,4 @@
+
+- optimize bottlenecks for large entity count
+	- loops all entities & interfaces
+		- ConnectorSystem::Update 

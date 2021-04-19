@@ -1,0 +1,45 @@
+description "\377B255,0,255";
+
+noblitz;
+
+uses
+	Oulu,
+	ComputerVision,
+	EcsCore,
+	Structural;
+
+uses(GUI) OuluCtrl;
+
+file
+	TODO.txt,
+	FusionCore.h,
+	FusionSystem.h,
+	System.cpp,
+	Context.cpp,
+	Component.cpp,
+	OpenGL.cpp,
+	DataSink.cpp,
+	MediaSink.cpp,
+	CtrlSink.cpp,
+	DisplaySource.cpp,
+	DisplayBuffer.cpp,
+	AudioSource.cpp,
+	AudioBuffer.cpp,
+	Parser readonly separator,
+	main.cpp,
+	PrintGLSL.cpp,
+	AST.h,
+	AST.cpp,
+	Lexemes.h,
+	Lexer.h,
+	Lexer.cpp,
+	Parser.h,
+	Parser.cpp,
+	Util.h,
+	Util.cpp;
+
+mainconfig
+	"" = "",
+	"" = "USEMALLOC",
+	"" = "ALTCORE";
+

@@ -1,0 +1,12 @@
+uses
+	Complete;
+
+file
+	OrchestraConductor.h,
+	OrchestraConductor.cpp,
+	UI.html highlight html;
+
+mainconfig
+	"" = "ALTCORE",
+	"" = "ALTCORE VERBOSE_SHADERCORE";
+

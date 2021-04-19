@@ -1,0 +1,43 @@
+description "Parses conllu and regular Finnish text using Turku-NPP.\377B128,128,0";
+
+uses
+	plugin/pcre,
+	Oulu;
+
+file
+	Language.h,
+	Language.cpp,
+	AceParser.h,
+	AceParser.cpp,
+	StanfordParser.h,
+	StanfordParser.cpp,
+	Conll readonly separator,
+	ConllParser.h,
+	ConllParser.cpp,
+	ConllMacros.h,
+	ConllEnglish.cpp,
+	ConllFinnish.cpp,
+	Languages readonly separator,
+	Lang.h,
+	HieroLang.h,
+	HieroLang.cpp,
+	Dictionary.h,
+	Dictionary.cpp,
+	Parsing readonly separator,
+	Lexer.h,
+	Lexer.cpp,
+	Parser.h,
+	Parser.cpp,
+	Jsesh.h,
+	Jsesh.cpp,
+	"CYK Parser" readonly separator,
+	StatParser.h,
+	StatParser.cpp,
+	Learn.cpp,
+	PCFG.cpp,
+	WordClasses.cpp,
+	Tokenizer.cpp,
+	TreebankExtract.cpp,
+	TreebankNormalize.cpp,
+	TreebankParse.cpp;
+

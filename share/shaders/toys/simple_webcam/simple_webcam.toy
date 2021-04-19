@@ -1,0 +1,26 @@
+{
+	name: "simple webcam",
+	owner: "sppp",
+	likes: 1,
+	date: 20210301,
+	
+	stages: [
+		{
+			type: image,
+			inputs: [
+				{
+                    id: 1,
+					type: webcam,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

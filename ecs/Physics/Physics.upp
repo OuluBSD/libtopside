@@ -1,0 +1,18 @@
+description "\377B141,85,150";
+
+uses
+	EcsLib;
+
+library(DEBUG & WIN32) ode_singled;
+
+library(!DEBUG & WIN32) ode_single;
+
+library(!WIN32) ode;
+
+file
+	Physics.h,
+	PhysicsSystem.h,
+	PhysicsSystem.cpp,
+	PhysicsPrefab.h,
+	PhysicsPrefab.cpp;
+

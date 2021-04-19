@@ -1,0 +1,11 @@
+description "Compression and hashing algorithm support in CoreAlt\377";
+
+uses
+	Oulu;
+
+file
+	main.cpp;
+
+mainconfig
+	"" = "ALTCORE";
+

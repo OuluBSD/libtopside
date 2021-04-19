@@ -1,0 +1,20 @@
+description "\377B0,131,159";
+
+uses
+	EcsLib,
+	Music,
+	AudioCore,
+	FusionCore;
+
+uses(GUI) AudioCtrl;
+
+uses(GUI) EcsCtrl;
+
+uses(GUI) LayoutCtrl;
+
+uses(NEVER) Physics;
+
+file
+	Complete.h,
+	Prefabs.h;
+

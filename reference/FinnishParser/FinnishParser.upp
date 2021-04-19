@@ -1,0 +1,13 @@
+description "Parses conllu and regular Finnish text using Turku-NPP.\377";
+
+uses
+	Language;
+
+file
+	FinnishParser.cpp,
+	Example.conllu,
+	Omena.txt;
+
+mainconfig
+	"" = "";
+

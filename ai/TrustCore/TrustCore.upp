@@ -1,0 +1,16 @@
+description "\377B255,42,150";
+
+uses
+	Oulu,
+	Statistics;
+
+file
+	TrustCore.h,
+	Net.h,
+	Net.cpp,
+	Util.h,
+	Util.cpp,
+	AppleSeed.cpp,
+	Graph.h,
+	Graph.cpp;
+

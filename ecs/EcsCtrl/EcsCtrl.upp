@@ -1,0 +1,22 @@
+description "\377B28,127,150";
+
+uses
+	EcsLib,
+	GraphLib;
+
+file
+	EcsCtrl.h,
+	EcsCtrl.cpp,
+	Parts.h,
+	Parts.cpp,
+	ComponentCtrl.h,
+	ComponentCtrl.cpp,
+	EntityCtrl.h,
+	EntityCtrl.cpp,
+	InterfaceCtrl.h,
+	InterfaceCtrl.cpp,
+	InterfaceSystemCtrl.h,
+	InterfaceSystemCtrl.cpp,
+	InterfaceConnectionCtrl.h,
+	InterfaceConnectionCtrl.cpp;
+

@@ -1,0 +1,22 @@
+description "\3770,128,128";
+
+library
+	"SDL2 SDL2_ttf SDL2_image";
+
+file
+	OOSDL2.h,
+	OOSDL2.cpp,
+	Context.cpp,
+	Timer.cpp,
+	AudioIn.cpp,
+	AudioOut.cpp,
+	Screen.cpp,
+	Events.cpp,
+	Joystick.cpp,
+	GameController.cpp,
+	Sensor.cpp,
+	Image.cpp,
+	Font.cpp,
+	System.h,
+	System.cpp;
+

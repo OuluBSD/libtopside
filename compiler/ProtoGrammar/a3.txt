@@ -1,0 +1,30 @@
+
+// TODO mangle
+
+// SomeNs::SomeCls::SomeCls()
+101:Function( {
+	
+}
+	
+
+// int SomeNs::SomeFn(int some_cls_int)
+102:Function {
+	103:AllocFields() {
+		106:FieldPtr(3)
+	}
+	
+	104:Stmt {
+		Call(106, 101)
+	}
+	
+	107:Stmt {
+		108:ParamFields {
+			109:Field(18) // int
+		}
+		AssignImmI32(123, 109)
+		Call(106, 101, 108)
+	}
+	
+	
+	105:FreeFields(103)
+}

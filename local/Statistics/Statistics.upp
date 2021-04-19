@@ -1,0 +1,14 @@
+description "\37784,0,0";
+
+uses
+	Oulu;
+
+file
+	Statistics.h,
+	Dataset.h,
+	Dataset.cpp,
+	Random.h,
+	Random.cpp,
+	CKMeans.h,
+	CKMeans.cpp;
+

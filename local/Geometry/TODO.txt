@@ -1,0 +1,17 @@
+ - Register shader components to pipeline
+	- some CpuNative virtual function
+ - Transfer model & mesh to pipeline memory
+	- and back to model
+ - Initial GpuPipeline
+	- Enable non-conforming renderer (completely custom pipeline)
+
+ - reuse vtx data always in MinimalVertexLoaderShader
+
+ - use only 1-byte indices
+	- split 3d models to meshlets
+
+
+ - flags for shaders:
+	- overwrites vertices
+	- can use old cached stage
+	- etc

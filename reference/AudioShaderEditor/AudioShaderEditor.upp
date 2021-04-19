@@ -1,0 +1,17 @@
+uses
+	Complete;
+
+file
+	main.cpp,
+	AudioShaderEditor.h,
+	AudioShaderEditor.cpp,
+	AudioShaderEditor.lay,
+	Editor.h,
+	Editor.cpp,
+	test.mid;
+
+mainconfig
+	"" = "GUI",
+	"" = "GUI NOGTK",
+	"" = "GUI BUILTIN_PORTAUDIO";
+

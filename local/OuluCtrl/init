@@ -1,0 +1,5 @@
+#ifndef _CtrlUtils_icpp_init_stub
+#define _CtrlUtils_icpp_init_stub
+#include "CtrlLib/init"
+#include "RasterPlayer/init"
+#endif

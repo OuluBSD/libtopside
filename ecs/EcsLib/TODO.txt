@@ -1,0 +1,2 @@
+
+ - move normal calculation after culling from MinimalVertexLoaderShader

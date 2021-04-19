@@ -1,0 +1,40 @@
+description "\377B0,152,255";
+
+uses
+	Oulu,
+	Geometry,
+	Multimedia;
+
+file
+	Copying,
+	ComputerVision.h,
+	Struct.h,
+	ImageProcessing.h,
+	ImageProcessing.cpp,
+	BrightnessBinaryFeature.h,
+	CachePool.h,
+	FAST.h,
+	FAST.cpp,
+	HAAR.h,
+	HAAR.cpp,
+	LinearAlgebra.h,
+	LinearAlgebra.cpp,
+	Math.h,
+	Math.cpp,
+	Matrix.h,
+	Matrix.cpp,
+	MotionEstimator.h,
+	MotionEstimator.cpp,
+	OpticalFlowLK.h,
+	OpticalFlowLK.cpp,
+	ORB.h,
+	ORB.cpp,
+	Transform.h,
+	Transform.cpp,
+	YAPE.h,
+	YAPE.cpp,
+	YAPE06.h,
+	YAPE06.cpp,
+	Cascades readonly separator,
+	_ readonly separator;
+

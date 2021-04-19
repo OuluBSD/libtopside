@@ -1,0 +1,34 @@
+description "\377B64,161,0";
+
+uses
+	Oulu,
+	Geometry;
+
+file
+	GL.h,
+	Enums.h,
+	GlobalApi.h,
+	OpenGL.h,
+	Camera.h,
+	Shader.h,
+	Shader.cpp,
+	Framebuffer.h,
+	Framebuffer.cpp,
+	Renderer.h,
+	Renderer.cpp,
+	"CPU only" readonly separator,
+	CpuRenderer.h,
+	CpuRenderer.cpp,
+	CpuFramebuffer.cpp,
+	CpuShader.h,
+	CpuShader.cpp,
+	"OpenGL Accelerated" readonly separator,
+	OpenGLRenderer.h,
+	OpenGLRenderer.cpp,
+	OpenGLFramebuffer.cpp,
+	OpenGLShader.h,
+	OpenGLShader.cpp,
+	Trash readonly separator,
+	Pipeline.h,
+	Pipeline.cpp;
+

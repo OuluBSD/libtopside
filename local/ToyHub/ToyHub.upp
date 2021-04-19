@@ -1,0 +1,27 @@
+description "\377B255,127,0";
+
+uses
+	Skylark;
+
+uses(!ALTCORE) Oulu;
+
+uses(MYSQL) MySql;
+
+uses(!MYSQL) plugin/sqlite3;
+
+file
+	ToyHub.h,
+	ToyHub.cpp,
+	Defs.h,
+	Model.sch,
+	Server.h,
+	Request.h,
+	Request.cpp,
+	Session.h,
+	Session.cpp,
+	Storage.h,
+	Storage.cpp,
+	Database.h,
+	Database.cpp,
+	DefaultHub.cpp;
+

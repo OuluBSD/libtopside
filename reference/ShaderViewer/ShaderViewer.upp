@@ -1,0 +1,11 @@
+uses
+	Complete,
+	FusionCore;
+
+file
+	ShaderViewer.h,
+	ShaderViewer.cpp;
+
+mainconfig
+	"AltCore 3D backend" = "GUI ALTCORE VIRTUALGUI3DALT SDL2GUI3DALT OPENGL";
+

@@ -1,0 +1,148 @@
+
+
+TL(Technology) {
+	TL(AstronomicalCalendarBasic) {
+		TL(AnnualMoonObserving) {
+			TL(WinterSolstice) {
+				
+			}
+		}
+	}
+}
+TL(Social) {
+	TL(SurvivalIndividual) {
+		
+		TL(CleanRoomStateMindset) {
+			// doesn't listen misleading ideas from others... learns by oneselfself with trial and error
+			
+		}
+	}
+	TL(Tribe) {
+		TL(TribeCelebration) {
+			TL(WinterHardshipImaginaryEmpathySpiritMaterialization) {
+				TL(ImaginaryDeadAncestorMaterialization) {
+					
+				}
+				TL(ImaginaryDeadAnimalMaterialization) {
+					REQ(ImaginaryDeadAncestorMaterialization) // humans think themselves first
+					TL(WinterElves) {
+						
+					}
+				}
+			}
+		}
+		TL(TribeSecurity) {
+			REQ(TribeMen)
+			REQ(TribeLearners)
+		}
+		TL(SurvivalFamily) {
+			TL(CoreFamily) {
+				
+			}
+		}
+	}
+	TL(SurvivalEcosystem) {
+		TL(DeceptiveCulture) {
+			TL(FakePositivity) {
+				
+			}
+			TL(UnprobableTragedies) {
+				TL(FakeUnprobableTragedies) {
+					TL(InducedPlannedUnprobableTragedies) {
+						TL(Kidnappings) {
+							
+						}
+					}
+				}
+			}
+			TL(StrictTopDownRules) {
+				TL(ImaginaryAllSeeingEye) {
+					TL(HumanInterfaceChameleon) {
+						
+					}
+				}
+			}
+			TL(AnonymizedPhysicalSecurityService) {
+				REQ(TribeSecurity)
+			}
+			TL(CulturalGenocide) {
+				TL(Christmas) {
+					REQ(WinterSolstice)
+					REQ(CravingPromotion)
+					REQ(WinterElves)
+					TL(SantaClaus) {
+						REQ(HumanInterfaceChameleon)
+					}
+				}
+				TL(TopDownTribeHierarchy) {
+					
+				}
+				TL(BottomUpSilencing) {
+					TL(PassiveBottomUpSilencing) {
+						REQ(LoggingTopDownObserver) {
+							
+						}
+					}
+					TL(TribeDemonization) {
+						
+					}
+					TL(HandmadeProductValueDeflation) {
+						REQ(TribeDemonization)
+						REQ(InvidualHandmadeDemonization)
+					}
+				}
+			}
+		}
+		TL(CravingPromotion) {
+			TL(DelusionalHappinessCravingPromotion) {
+				
+			}
+		}
+		TL(DestructiveConsumerism) {
+			REQ(CravingPromotion) {
+				
+			}
+			TL(InaccurateProductDescription) {
+				
+			}
+			TL(DelusionalSelfConfidence) {
+				
+			}
+			TL(NegativeUserReview) {
+				REQ(InaccurateProductDescription)
+				REQ(DelusionalSelfConfidence)
+				
+			}
+			TL(SexConsumerism) {
+				TL(MaleFriendlySexConsumerism) {
+					REQ(GenericValueConcentrateCraving)
+					REQ(GenericValueConcentrate)
+					REQ(TribeMen) // usually hookers are not protected by police, but their handlers
+				}
+				TL(FemaleFriendlySexConsumerism) {
+					REQ(AnonymizedPhysicalSecurityService)
+					TL(DatingColumns) {
+						REQ(PaperPublication)
+						REQ(SexuallyStimulatingContextDescription)
+					}
+					TL(OnDemandInvidualisticSexualStimulationService) {
+						TL(SexualStimulationDateSmartphoneApp) {
+							REQ(MaleVasopressinInducingFemaleAppearance)
+							REQ(SexuallyStimulatingFemaleAppearance)
+							REQ(SexuallyStimulatingMaleAppearance)
+						}
+					}
+				}
+			}
+		}
+		TL(CoreFamilyBreakupPressure) {
+			REQ(DelusionalHappinessCravingPromotion)
+			REQ(DestructiveConsumerism)
+			
+		}
+		TL(SurvivalFamilyBreakupPressure) {
+			REQ(CoreFamilyBreakupPressure)
+			
+		}
+	}
+}

@@ -1,0 +1,15 @@
+description "TrustLib usage\377";
+
+uses
+	TrustLib;
+
+file
+	main.cpp,
+	TrustNet.cpp,
+	GraphTest.cpp,
+	AppleSeedTest.cpp;
+
+mainconfig
+	"" = "",
+	"" = "ALTCORE";
+

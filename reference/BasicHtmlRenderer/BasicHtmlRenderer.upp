@@ -1,0 +1,16 @@
+description "Renders subset of HTML files.\377";
+
+uses
+	LayoutCtrl;
+
+file
+	BasicHtmlRenderer.cpp,
+	1.html,
+	2.html,
+	3.html,
+	4.html,
+	w3schools.jpg;
+
+mainconfig
+	"" = "GUI";
+

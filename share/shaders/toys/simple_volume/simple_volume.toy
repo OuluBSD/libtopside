@@ -1,0 +1,33 @@
+{
+	name: "simple volumetric",
+	owner: "sppp",
+	likes: 1,
+	date: 20210301,
+	
+	stages: [
+		{
+			type: image,
+			inputs: [
+				{
+					type: texture,
+					filename: "3083c722c0c738cad0f468383167a0d246f91af2bfa373e9c5c094fb8c8413e0.png",
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+				},
+				{
+					type: volume,
+					filename: "aea6b99da1d53055107966b59ac5444fc8bc7b3ce2d0bbb6a4a3cbae1d97f3aa.bin",
+					filter: mipmap,
+					wrap: repeat,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+	]
+}

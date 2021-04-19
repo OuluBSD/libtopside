@@ -1,0 +1,18 @@
+uses
+	Oulu;
+
+library
+	"clang LLVM clang-cpp LTO Remarks";
+
+file
+	main.cpp,
+	ProjectCleaner.h,
+	ProjectCleaner.cpp,
+	Traverse.cpp,
+	Trash.lay,
+	Trash.cpp;
+
+mainconfig
+	"" = "",
+	"" = "USEMALLOC";
+

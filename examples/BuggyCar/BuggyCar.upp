@@ -1,0 +1,13 @@
+uses
+	Physics,
+	Complete;
+
+file
+	BuggyCar.h,
+	BuggyCar.cpp;
+
+mainconfig
+	"AltCore 3D backend" = "GUI ALTCORE VIRTUALGUI3DALT SDL2GUI3DALT",
+	"U++ 3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI";
+

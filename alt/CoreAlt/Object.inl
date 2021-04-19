@@ -1,0 +1,332 @@
+
+NAMESPACE_UPP_BEGIN
+
+
+
+ObjectMap& Object::CreateMap() {
+	Create<ObjectMap>();
+	return GetMap();
+}
+
+ObjectArray& Object::CreateArray() {
+	Create<ObjectArray>();
+	return GetArray();
+}
+
+bool Object::IsArray() const {
+	return Is<ObjectArray>();
+}
+
+bool Object::IsMap() const {
+	return Is<ObjectMap>();
+}
+
+bool Object::IsArrayMapComb() const {
+	return Is<ObjectArrayMapComb>();
+}
+
+const ObjectArray* Object::TryGetArray() const {
+	if (IsArray())
+		return &Get<ObjectArray>();
+	else if (IsArrayMapComb())
+		return &Get<ObjectArrayMapComb>().arr;
+	else
+		return NULL;
+}
+
+const ObjectMap* Object::TryGetMap() const {
+	if (IsMap())
+		return &Get<ObjectMap>();
+	else if (IsArrayMapComb())
+		return &Get<ObjectArrayMapComb>().map;
+	else
+		return NULL;
+}
+
+ObjectArray* Object::TryGetArray() {
+	if (IsArray())
+		return &Get<ObjectArray>();
+	else if (IsArrayMapComb())
+		return &Get<ObjectArrayMapComb>().arr;
+	else
+		return NULL;
+}
+
+ObjectMap* Object::TryGetMap() {
+	if (IsMap())
+		return &Get<ObjectMap>();
+	else if (IsArrayMapComb())
+		return &Get<ObjectArrayMapComb>().map;
+	else
+		return NULL;
+}
+
+const ObjectMap& Object::GetMap() const {
+	if (!Is<ObjectMap>())
+		throw Exc("Not a ObjectMap");
+	return Get<ObjectMap>();
+}
+
+const ObjectArray& Object::GetArray() const {
+	if (!Is<ObjectArray>())
+		throw Exc("Not a ObjectArray");
+	return Get<ObjectArray>();
+}
+
+ObjectMap& Object::GetMap() {
+	if (!Is<ObjectMap>())
+		throw Exc("Not a ObjectMap");
+	return Get<ObjectMap>();
+}
+
+ObjectArray& Object::GetArray() {
+	if (!Is<ObjectArray>())
+		throw Exc("Not a ObjectArray");
+	return Get<ObjectArray>();
+}
+
+Object* Object::GetMapSub(String key, Object* def) {
+	if (IsMap() || IsArrayMapComb()) {
+		ObjectMap& map = IsMap() ? Get<ObjectMap>() : Get<ObjectArrayMapComb>().map;
+		int i = map.Find(key);
+		if (i >= 0)
+			return &map.GetObject(i);
+		else
+			return NULL;
+	}
+	else return NULL;
+}
+
+Object* Object::AddMapSub(String key, Object* def) {
+	if (IsMap() || IsArrayMapComb()) {
+		ObjectMap& map = IsMap() ? Get<ObjectMap>() : Get<ObjectArrayMapComb>().map;
+		int i = map.Find(key);
+		if (i >= 0)
+			return NULL;
+		else if (def)
+			return &map.Add(key, *def);
+		else
+			return &map.Add(key);
+	}
+	else return NULL;
+}
+
+Object* Object::GetAddMapSub(String key, Object* def) {
+	if (IsMap() || IsArrayMapComb()) {
+		ObjectMap& map = IsMap() ? Get<ObjectMap>() : Get<ObjectArrayMapComb>().map;
+		int i = map.Find(key);
+		if (i >= 0)
+			return &map.GetObject(i);
+		else if (def)
+			return &map.Add(key, *def);
+		else
+			return &map.Add(key);
+	}
+	else return NULL;
+}
+
+void Object::DeepCopyArrayMap(Object v) {
+	if (v.IsArray())
+		CreateArray().DeepCopyArrayMap(v.GetArray());
+	else if (v.IsMap())
+		CreateMap().DeepCopyArrayMap(v.GetMap());
+	else *this = v;
+}
+
+
+
+
+void ObjectArray::DeepCopyArrayMap(ObjectArray& arr) {
+	Clear();
+	SetCount(arr.GetCount());
+	for(int i = 0; i < GetCount(); i++) {
+		Object& from = arr.Get(i);
+		Object& dst = Get(i);
+		dst.DeepCopyArrayMap(from);
+	}
+}
+
+hash_t ObjectArray::GetHashValue() const {
+	CombineHash h;
+	for(const auto& v : values)
+		h.Put(v.GetHashValue());
+	return h;
+}
+
+
+
+
+
+void ObjectMap::DeepCopyArrayMap(ObjectMap& map) {
+	Clear();
+	for(int i = 0; i < map.GetCount(); i++) {
+		String key = map.GetKey(i);
+		Object& from = map.GetObject(i);
+		Object& dst = Add(key);
+		dst.DeepCopyArrayMap(from);
+	}
+}
+
+hash_t ObjectMap::GetHashValue() const {
+	CombineHash h;
+	for(const auto& v : keys)
+		h.Put(v.GetHashValue());
+	for(const auto& v : values)
+		h.Put(v.GetHashValue());
+	return h;
+}
+
+
+
+
+void ObjectArrayMapComb::DeepCopyArrayMap(ObjectArrayMapComb& am) {
+	Clear();
+	arr.SetCount(am.arr.GetCount());
+	for(int i = 0; i < arr.GetCount(); i++) {
+		Object& from = am.arr.Get(i);
+		Object& dst = arr.Get(i);
+		dst.DeepCopyArrayMap(from);
+	}
+	for(int i = 0; i < am.map.GetCount(); i++) {
+		String key = am.map.GetKey(i);
+		Object& from = am.map.GetObject(i);
+		Object& dst = map.Add(key);
+		dst.DeepCopyArrayMap(from);
+	}
+}
+
+hash_t ObjectArrayMapComb::GetHashValue() const {
+	CombineHash h;
+	h.Put(arr.GetHashValue());
+	h.Put(map.GetHashValue());
+	return h;
+}
+
+
+
+
+String GetObjectTreeString(const Object& v, String key, int indent) {
+	thread_local static Index<void*> visited;
+	if (!indent)
+		visited.Clear();
+	
+	String s;
+	for(int i = 0; i < indent; i++)
+		s.Cat('\t');
+	s << key;
+	
+	void* obj = v.GetObject();
+	if (obj) {
+		if (visited.Find(obj) >= 0)
+			return s + ": <recursive>\n";
+		visited.Add(obj);
+	}
+	
+	if (v.IsMap()) {
+		s.Cat('\n');
+		const ObjectMap& map = v.Get<ObjectMap>();
+		for(int i = 0; i < map.GetCount(); i++) {
+			String key = map.GetKey(i);
+			const Object& v0 = map[i];
+			s << GetObjectTreeString(v0, key, indent+1);
+		}
+	}
+	else if (v.IsArray()) {
+		s.Cat('\n');
+		const ObjectArray& arr = v.Get<ObjectArray>();
+		for(int i = 0; i < arr.GetCount(); i++) {
+			String key = IntStr(i);
+			const Object& v0 = arr[i];
+			s << GetObjectTreeString(v0, key, indent+1);
+		}
+	}
+	else if (v.IsArrayMapComb()) {
+		s.Cat('\n');
+		const ObjectArrayMapComb& comb = v.Get<ObjectArrayMapComb>();
+		for(int i = 0; i < comb.map.GetCount(); i++) {
+			String key = comb.map.GetKey(i);
+			const Object& v0 = comb.map[i];
+			s << GetObjectTreeString(v0, key, indent+1);
+		}
+		for(int i = 0; i < comb.arr.GetCount(); i++) {
+			String key = IntStr(i);
+			const Object& v0 = comb.arr[i];
+			s << GetObjectTreeString(v0, key, indent+1);
+		}
+	}
+	else {
+		s << ": " << v.ToString() << "\n";
+	}
+	
+	if (obj)
+		RemoveLast(visited);
+	
+	return s;
+}
+
+
+
+
+
+String Format(String pattern, Object v0, Object v1, Object v2, Object v3, Object v4, Object v5, Object v6, Object v7) {
+	static const int MAX_ARGS = 8;
+	Object* v[MAX_ARGS] = {&v0, &v1, &v2, &v3, &v4, &v5, &v6, &v7};
+	
+	if (pattern.IsEmpty()) return "";
+	
+	int arg = 0;
+	String out;
+	const char* it  = pattern.Begin();
+	const char* end = pattern.End();
+	while (it != end) {
+		int chr = *it++;
+		
+		if (chr == '\\' && *it == '%') {
+			chr = *it++;
+			out.Cat(chr);
+		}
+		else if (chr == '\%') {
+			enum {
+				MAIN_SWITCH
+			};
+			enum {
+				TYPE_INVALID,
+				TYPE_VALUE,
+			};
+			int state = MAIN_SWITCH;
+			int type = TYPE_INVALID;
+			while (it != end) {
+				chr = *it++;
+				if (state == MAIN_SWITCH) {
+					if (chr == 'v') {
+						type = TYPE_VALUE;
+						break;
+					}
+					else break;
+				}
+				else break;
+			}
+			if (type == TYPE_INVALID)
+				out << "<invalid>";
+			else if (type == TYPE_VALUE) {
+				if (arg < MAX_ARGS)
+					out << v[arg++]->ToString();
+				else
+					out << "<arg overflow " << arg++ << ">";
+			}
+		}
+		else {
+			out.Cat(chr);
+		}
+	}
+	return out;
+}
+
+
+
+String StdFormat(const Object& q) {
+	TODO
+}
+
+
+NAMESPACE_UPP_END

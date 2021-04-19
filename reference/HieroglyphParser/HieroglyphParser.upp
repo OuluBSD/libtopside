@@ -1,0 +1,12 @@
+description "Parses JSesh gly files and tries to translate hieroglyphs to english based on the dictionary.\377";
+
+uses
+	Language;
+
+file
+	HieroglyphParser.cpp,
+	"Louvre E 116a.gly";
+
+mainconfig
+	"" = "";
+

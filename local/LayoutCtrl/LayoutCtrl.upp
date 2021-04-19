@@ -1,0 +1,40 @@
+description "\377B0,0,255";
+
+uses
+	CtrlLib,
+	OuluCtrl;
+
+file
+	LayoutCtrl.h,
+	Client.cpp,
+	Defs.h,
+	Editor.h,
+	Editor.cpp,
+	Html readonly separator,
+	master.css,
+	Resources.h,
+	Resources.cpp,
+	Resources.brc,
+	Html.h,
+	Html.cpp,
+	Document.h,
+	Document.cpp,
+	Element.h,
+	Element.cpp,
+	Box.h,
+	Box.cpp,
+	Media.h,
+	Media.cpp,
+	Css.h,
+	Css.cpp,
+	CssUtils.h,
+	CssUtils.cpp,
+	Table.h,
+	Table.cpp,
+	Object.h,
+	Object.cpp,
+	TemplateUtils.h,
+	Utils.h,
+	Utils.cpp,
+	Types.h;
+

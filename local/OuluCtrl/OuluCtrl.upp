@@ -1,0 +1,53 @@
+description "Essential classes for GUI classes in Oulu namespace.\377B0,0,255";
+
+noblitz;
+
+uses
+	Oulu;
+
+uses(!ALTCORE) CtrlLib;
+
+uses(!ALTCORE VIRTUALGUI3D GUI3D) VirtualGui3D;
+
+uses(!ALTCORE SDL2 GUI3D) SDL2GUI3D;
+
+uses(ALTCORE) CtrlLibAlt;
+
+uses(ALTCORE VIRTUALGUI3D GUI3D) VirtualGui3DAlt;
+
+uses(ALTCORE SDL2 GUI3D) SDL2GUI3DAlt;
+
+library(POSIX) "GL GLEW glut";
+
+library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";
+
+library(NEVER) libglew32mx.a;
+
+library(WIN32) "opengl32 glew32 freetype";
+
+file
+	OuluCtrl.h,
+	CtrlUtils.cpp,
+	Defs.h,
+	Compat.h,
+	PathCtrl.h,
+	PathCtrl.cpp,
+	Container.h,
+	TabMgrCtrl.h,
+	TabMgrCtrl.cpp,
+	Images readonly separator,
+	Image.h,
+	Image.cpp,
+	Images.iml,
+	DbgImages.iml,
+	Styles readonly separator,
+	BlueBar.h,
+	BlueSkin.cpp,
+	BlueSkin.iml,
+	GrayBar.h,
+	GraySkin.cpp,
+	GraySkin.iml,
+	"Ctrl Containers" readonly separator,
+	ToolMenu.h,
+	ToolMenu.cpp;
+
