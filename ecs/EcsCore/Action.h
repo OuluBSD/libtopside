@@ -12,6 +12,7 @@ class ActionAgent :
 	Vector<String> labels;
 	ActionPlanner ap;
 	ActionPlannerWrapper wrap;
+	WorldState current, goal;
 	
 public:
 	using Component::Component;
@@ -24,10 +25,13 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	
-	void operator=(const ActionAgent& c) {}
+	WorldState& GetStateCurrent() {return current;}
+	WorldState& GetStateGoal() {return goal;}
 	
-	void SetSize(int act_count, int atom_count) {ap.SetSize(act_count, atom_count);}
+	void Init(int act_count, int atom_count) {ap.SetSize(act_count, atom_count); wrap.Init();}
 	void SetAction(int act_i, String label) {wrap.SetAction(act_i, label);}
+	
+	void operator=(const ActionAgent& c) {}
 	
 };
 

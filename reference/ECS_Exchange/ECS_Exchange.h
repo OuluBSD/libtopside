@@ -77,7 +77,11 @@ public:
 	};
 	
 	enum {
-		
+		ATOM_TALKING,
+		ATOM_GOING_TO_BAR,
+		ATOM_GOING_TO_TOILET,
+		ATOM_GOING_TO_DANCEFLOOR,
+		ATOM_GOING_OUT,
 		ATOM_COUNT
 	};
 	

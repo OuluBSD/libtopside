@@ -146,7 +146,7 @@ void DemoHuman::Init(Type type) {
 	ActionAgent* a = GetEntity().Find<ActionAgent>();
 	ASSERT(a);
 	#define SetAction(x) {a->SetAction(x, ToLower(String(#x).Mid(4)));}
-	a->SetSize(ACT_COUNT, ATOM_COUNT);
+	a->Init(ACT_COUNT, ATOM_COUNT);
 	if (type == DemoHuman::CLIENT_MALE || type == DemoHuman::CLIENT_FEMALE) {
 		SetAction(ACT_GO_BAR);
 		SetAction(ACT_GET_BARTENDER_ATTENTION);
