@@ -1,0 +1,12 @@
+description "Shows route planner, action planner, decision table, etc.\377";
+
+uses
+	Agent;
+
+file
+	main.cpp;
+
+mainconfig
+	"" = "",
+	"" = "ALTCORE";
+
