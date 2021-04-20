@@ -4,14 +4,10 @@ uses
 	Oulu;
 
 file
-	main.cpp,
 	Agent.h,
 	Node.h,
 	SearchAlgos.h,
 	ActionPlanner.h,
 	ActionPlanner.cpp,
 	QueryTable.h;
-
-mainconfig
-	"" = "";
 

@@ -35,6 +35,7 @@ void EntityPool::Initialize(Entity& e, String prefab) {
 	e.SetPrefab(prefab);
 	e.SetCreated(ticks);
 	e.SetChanged(ticks);
+	
 }
 
 SharedEntity EntityPool::Clone(const Entity& e) {
@@ -44,22 +45,48 @@ SharedEntity EntityPool::Clone(const Entity& e) {
 	return c;
 }
 
-void EntityPool::Clear() {
-	/*for (auto it = objects.End() - 1; it != objects.Begin() - 1; --it) {
-		(**it).UninitializeComponents();
-		(**it).ClearComponents();
-	}*/
+void EntityPool::UnlinkDeep() {
+	for (EntityPool& p : pools)
+		p.UnlinkDeep();
+	
 	for (auto it = objects.End() - 1; it != objects.Begin() - 1; --it) {
 		Connector* conn = (**it).Find<Connector>();
 		if (conn)
 			conn->UnlinkAll();
 	}
+}
+	
+void EntityPool::UninitializeComponentsDeep() {
+	for (EntityPool& p : pools)
+		p.UninitializeComponentsDeep();
+	
 	for (auto it = objects.End() - 1; it != objects.Begin() - 1; --it) {
 		(**it).UninitializeComponents();
 	}
+}
+
+void EntityPool::ClearComponentsDeep() {
+	for (EntityPool& p : pools)
+		p.ClearComponentsDeep();
+	
 	for (auto it = objects.End() - 1; it != objects.Begin() - 1; --it) {
 		(**it).ClearComponents();
 	}
+}
+
+void EntityPool::ClearDeep() {
+	for (EntityPool& p : pools)
+		p.ClearDeep();
+	pools.Clear();
+	
+	objects.Clear();
+}
+
+void EntityPool::Clear() {
+	UnlinkDeep();
+	UninitializeComponentsDeep();
+	ClearComponentsDeep();
+	ClearDeep();
 }
 
 void EntityPool::PruneFromContainer() {
@@ -85,6 +112,7 @@ SharedEntity EntityPool::CreateFromComponentMap(ComponentMap components) {
 	sent.WrapObject(ent);
 	ent->InitWeak(sent);
 	ent->RefreshConnectorPtr();
+	ent->UpdateInterfaces();
 	return AddEntity(sent);
 }
 
@@ -109,25 +137,53 @@ SharedEntity EntityPool::AddEntity(SharedEntity obj) {
 
 
 
-EntityVisitor::EntityVisitor(EntityPool& pool) : base(pool) {
+EntityVisitor::EntityVisitor(EntityPool& pool, int mode) : base(pool), mode(mode) {
 	Reset();
 }
 
-EntityVisitor::EntityVisitor(Machine& m) : base(m.Get<EntityStore>()->GetRoot()) {
+EntityVisitor::EntityVisitor(Machine& m, int mode) : base(m.Get<EntityStore>()->GetRoot()), mode(mode) {
+	Reset();
+}
+
+EntityVisitor::EntityVisitor(Entity& e, int mode) : base(e.GetPool()), mode(mode) {
 	Reset();
 }
 
 void EntityVisitor::Reset() {
 	stack.SetCount(0);
 	cur = 0;
-	if (base.GetCount()) {
-		Item& i = stack.Add();
-		i.pool_pos = 0;
-		i.pool = &base;
-		i.ent_pos = 0;
-		i.ent = &*base.Get(0);
-		cur = i.ent;
+	if (mode == POOL_CURRENT_AND_CHILDREN || mode == POOL_CURRENT_ONLY) {
+		if (base.GetCount()) {
+			Item& i = stack.Add();
+			i.pool_pos = 0;
+			i.pool = &base;
+			i.ent_pos = 0;
+			i.ent = &*base.Get(0);
+			cur = i.ent;
+		}
 	}
+	else if (mode == POOL_CHILDREN_ONLY) {
+		if (base.GetPoolCount()) {
+			EntityPool& first = base.GetPool(0);
+			if (first.GetCount()) {
+				{
+					Item& i = stack.Add();
+					i.pool_pos = 0;
+					i.pool = &base;
+					i.ent_pos = base.GetCount();
+					i.ent = 0;
+				} {
+					Item& i = stack.Add();
+					i.pool_pos = 0;
+					i.pool = &first;
+					i.ent_pos = 0;
+					i.ent = &*first.Get(0);
+					cur = i.ent;
+				}
+			}
+		}
+	}
+	else Panic("Invalid EntityVisitor mode");
 }
 
 void EntityVisitor::Skip(EntityPool::Bit entpool_bit) {
@@ -157,7 +213,7 @@ bool EntityVisitor::FindNextDepthFirst() {
 			if (top.ent_pos < 0) {
 				if (top.pool->GetCount()) {
 					top.ent_pos = 0;
-					top.ent = &*top.pool->Get(0);
+					top.ent = &*top.pool->Get(top.ent_pos);
 					return true;
 				}
 				else {
@@ -165,10 +221,11 @@ bool EntityVisitor::FindNextDepthFirst() {
 				}
 			}
 			else if (++top.ent_pos < top.pool->GetCount()) {
-				top.ent = &*top.pool->Get(0);
+				top.ent = &*top.pool->Get(top.ent_pos);
 				return true;
 			}
 			else {
+				top.ent = 0;
 				return NewPoolNextDepthFirst();
 			}
 		}
@@ -179,10 +236,17 @@ bool EntityVisitor::FindNextDepthFirst() {
 }
 
 bool EntityVisitor::NewPoolNextDepthFirst() {
-	if (PoolFindNextDepthFirst())
-		return FindNextDepthFirst();
-	else
+	if (mode == POOL_CURRENT_AND_CHILDREN) {
+		if (PoolFindNextDepthFirst())
+			return FindNextDepthFirst();
+		else
+			return false;
+	}
+	else {
+		cur = 0;
+		stack.SetCount(0);
 		return false;
+	}
 }
 
 bool EntityVisitor::PoolFindNextDepthFirst() {
@@ -247,6 +311,10 @@ EntityParentVisitor::EntityParentVisitor(EntityPool& pool) : base(pool) {
 	Reset();
 }
 
+EntityParentVisitor::EntityParentVisitor(Entity& e) : base(e.GetPool()) {
+	Reset();
+}
+
 void EntityParentVisitor::Reset() {
 	cur = 0;
 	ent_pos = -1;
@@ -300,6 +368,12 @@ bool EntityParentVisitor::FindNextChildFirst() {
 	}
 	return false;
 }
+
+
+
+
+
+
 
 
 

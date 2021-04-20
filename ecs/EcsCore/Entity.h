@@ -11,6 +11,7 @@ class Entity;
 class EntityPool;
 class Connector;
 using SharedEntity = Shared<Entity>;
+using SE = Shared<Entity>;
 
 
 
@@ -93,7 +94,7 @@ public:
 	void InitializeComponent(ComponentBase& comp);
 	void UninitializeComponents();
 	void ClearComponents();
-	void ConnectAll();
+	void ConnectAll(ConnectorArea a);
 	
 	EntityId Id() const {
 		return m_id;
@@ -125,6 +126,13 @@ public:
 	const ComponentMap& GetComponents() const {return m_components;}
 	Connector* GetConnector() const {return conn;}
 	void RefreshConnectorPtr();
+	void SetUpdateInterfaces();
+	
+protected:
+	friend class EntityPool;
+	friend class ConnectorSystem;
+	
+	void UpdateInterfaces();
 	
 private:
 	ComponentMap m_components;
@@ -132,7 +140,6 @@ private:
 	EntityPool& pool;
 	Connector* conn = 0;
 	
-	void SetUpdateInterfaces();
 	
 	template<typename T>
 	void Remove0() {

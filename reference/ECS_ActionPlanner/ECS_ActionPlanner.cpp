@@ -43,19 +43,31 @@ CONSOLE_APP_MAIN {
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& es = *mach.Add<EntityStore>();
 	EntityPool& root = es.GetRoot();
+	EntityPool& actors = root.AddPool("actors");
+	EntityPool& routes = root.AddPool("routes");
+	EntityPool& route_cls = root.AddPool("route_classes");
 	
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
     mach.Add<OverlapSystem>();
     mach.Add<ActionSystem>();
+    mach.Add<RouteSystem>();
     
     reg.SetAppName("ECS ActionPlanner");
     
-    SharedEntity cat = root.Create<Cat>();
-    SharedEntity mouse = root.Create<Mouse>();
+    SE cat = actors.CreateConnectedInternal<Cat>();
+    SE mouse = actors.CreateConnectedInternal<Mouse>();
     
-    cat		->Get<DemoEntity>()->InitCat();
-    mouse	->Get<DemoEntity>()->InitMouse();
+    SE high_place		= route_cls.Create<RouteRidgeHigh>();
+    SE ground			= route_cls.Create<RouteGroundSoft>();
+    
+    SE tree_branch	= routes.Create<RouteNode>();
+    SE tree_ground	= routes.Create<RouteNode>();
+    SE mouse_ground	= routes.Create<RouteNode>();
+    
+    tree_branch->FindOverlapSource()->LinkManually(*high_place->FindOverlapSink());
+    tree_ground->FindOverlapSource()->LinkManually(*ground->FindOverlapSink());
+    mouse_ground->FindOverlapSource()->LinkManually(*ground->FindOverlapSink());
     
     if (!mach.Start()) {
         LOG("error: machine wouldn't start");
@@ -81,31 +93,22 @@ CONSOLE_APP_MAIN {
 
 
 
-void DemoEntity::InitCat() {
-	type = CAT;
-	ActionAgent& act = *GetEntity().Get<ActionAgent>();
-	
-	
-	act.Init(ACT_COUNT, ATOM_COUNT);
-	#define ACT(x) act.SetAction(x, ToLower(#x));
-	ACT_LIST
-	#undef ACT
-	
-	
-	WorldState& cur = act.GetStateCurrent();
-	#define ATOM(x,y) cur.Set(x, y);
-	ATOM_LIST
-	#undef ATOM
-	
-	
-	WorldState& goal = act.GetStateGoal();
-	goal.Set(MOUSE_ALIVE, false );
-	goal.Set(ALIVE, true ); // add this to avoid hurting by fall actions in plan.
-	
-	
-}
 
-void DemoEntity::InitMouse() {
-	type = MOUSE;
+void DemoCat::OnLink(InterfaceBase* iface) {
+	ActionSource* asrc = dynamic_cast<ActionSource*>(iface);
 	
+	if (asrc) {
+		ag = asrc->AddActionGroup(ACT_COUNT, ATOM_COUNT);
+		
+		#define ACT(x) asrc->SetActionName(ag, x, ToLower(#x));
+		ACT_LIST
+		#undef ACT
+		
+		#define ATOM(x,y) asrc->SetCurrentAtom(ag, x, y);
+		ATOM_LIST
+		#undef ATOM
+		
+		asrc->SetGoalAtom(ag, MOUSE_ALIVE, false );
+		asrc->SetGoalAtom(ag, ALIVE, true ); // add this to avoid hurting by fall actions in plan.
+	}
 }

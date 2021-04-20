@@ -54,6 +54,7 @@ public:
 	virtual void* Get() {return 0;}
 	virtual String ToString() const {return "VOID";}
 	virtual int64 ToInt() const {return 0;}
+	virtual double ToDouble() const {return 0;}
 	virtual hash_t GetHashValue() const {return 0;}
 	dword GetType() const {return type;}
 };
@@ -71,6 +72,7 @@ public:
 	void* Get() override {return ptr;}
 	String ToString() const override {if (ptr) return ::Upp::ToString(*ptr); return "NULL";}
 	int64 ToInt() const override {if (ptr) return ::Upp::ToInt(*ptr); return 0;}
+	double ToDouble() const override {if (ptr) return ::Upp::ToDouble(*ptr); return 0;}
 	hash_t GetHashValue() const override {if (ptr) return Upp::GetHashValue(*ptr); return 0;}
 };
 
@@ -138,6 +140,7 @@ public:
 	String ToString() const {if (obj) return obj->ToString(); return "NULL";}
 	WString ToWString() const {WString* w=Try<WString>(); if (w) return *w; return ::UPP::ToWString(ToString());}
 	int64 ToInt() const {if (obj) return obj->ToInt(); return 0;}
+	double ToDouble() const {if (obj) return obj->ToDouble(); return 0;}
 };
 
 inline bool IsObjectMap(const Object& v) {return v.IsMap();}
@@ -191,6 +194,7 @@ public:
 	
 	String ToString() const {String s; s << "ObjectArray(" << values.GetCount() << ")"; return s;}
 	int64 ToInt() const {return values.GetCount();}
+	double ToDouble() const {return values.GetCount();}
 	
 	A::Iterator begin() {return values.begin();}
 	A::Iterator end() {return values.end();}
@@ -234,6 +238,7 @@ public:
 	
 	String ToString() const {String s; s << "ObjectMap(" << keys.GetCount() << ")"; return s;}
 	int64 ToInt() const {return keys.GetCount();}
+	double ToDouble() const {return keys.GetCount();}
 };
 
 struct ObjectArrayMapComb {
@@ -250,6 +255,7 @@ struct ObjectArrayMapComb {
 	int GetTotal() const {return arr.GetCount() + map.GetCount();}
 	String ToString() const {String s; s << "ObjectArrayMapComb(" << arr.GetCount() << ", " << map.GetCount() << ")"; return s;}
 	int64 ToInt() const {return GetTotal();}
+	double ToDouble() const {return GetTotal();}
 	hash_t GetHashValue() const;
 };
 

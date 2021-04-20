@@ -34,51 +34,73 @@ void ConnectorSystem::Update(float dt) {
 			conn->SetUpdateInterfaces(false);
 			conn->ClearInterfaces();
 			Entity& e = conn->GetEntity();
-			#define IFACE(x) \
-				for(x##Source*  in:  e.FindInterfaces<x##Source>())  conn->AddSourceInterface(in); \
-				for(x##Sink*   out:  e.FindInterfaces<x##Sink>())    conn->AddSinkInterface(out);
-			IFACE_LIST
-			#undef IFACE
+			e.UpdateInterfaces();
 		}
 		
-		if (conn->IsConnectAny()) {
-			uint64 iface_bits = conn->GetConnectBits();
-			conn->ClearConnectBits();
-			Shared<EntityStore> es = machine.Get<EntityStore>();
+		for(int i = 0; i < CONNAREA_COUNT; i++) {
+			ConnectorArea a = (ConnectorArea)i;
 			
-			#define IFACE___(x, Source, src, Sink, sink, src_, sink_, visitor)\
-			if (iface_bits & (1ULL << (uint64)IFACE_##x##Source)) {\
-				Vector<x##Source*> src_ifaces = conn->GetEntity().FindInterfaces<x##Source>();\
-				for(auto src: src_ifaces) {\
-					if (src && src->IsLinkable()) {\
-						ComponentBase* src_cbase = src->AsComponentBase(); \
-						ASSERT(src_cbase); \
-						if (src_cbase) for(visitor ev(src_cbase->GetEntity().GetPool()); ev; ev++) {\
-							Vector<x##Sink*> sink_ifaces = ev->FindInterfaces<x##Sink>();\
-							for(auto* sink : sink_ifaces) {\
-								if (sink && sink->IsLinkable()) {\
-									ComponentBase* sink_cbase = sink->AsComponentBase(); \
-									if (src_cbase != sink_cbase && \
-										src_->Link0(*sink_) && !src->IsLinkable())\
-										break;\
+			if (conn->IsConnectAny(a)) {
+				uint64 iface_bits = conn->GetConnectBits(a);
+				conn->ClearConnectBits(a);
+				Shared<EntityStore> es = machine.Get<EntityStore>();
+				
+				#define IFACE___(x, Source, src, Sink, sink, src_, sink_, visitor)\
+				if (iface_bits & (1ULL << (uint64)IFACE_##x##Source)) {\
+					Vector<x##Source*> src_ifaces = conn->GetEntity().FindInterfaces<x##Source>();\
+					for(auto src: src_ifaces) {\
+						if (src && src->IsLinkable()) {\
+							ComponentBase* src_cbase = src->AsComponentBase(); \
+							ASSERT(src_cbase); \
+							if (src_cbase) for(visitor ev(src_cbase->GetEntity()); ev; ev++) {\
+								Vector<x##Sink*> sink_ifaces = ev->FindInterfaces<x##Sink>();\
+								for(auto* sink : sink_ifaces) {\
+									if (sink && sink->IsLinkable()) {\
+										ComponentBase* sink_cbase = sink->AsComponentBase(); \
+										if (src_cbase != sink_cbase && \
+											src_->Link0(*sink_) && !src->IsLinkable())\
+											break;\
+									}\
 								}\
+								if (!src->IsLinkable())\
+									break;\
 							}\
-							if (!src->IsLinkable())\
-								break;\
 						}\
 					}\
-				}\
+				}
+				#define IFACE(x) IFACE_SRC(x) IFACE_SINK(x)
+				
+				if (a == CONNAREA_INTERNAL) {
+					#define IFACE_SRC(x)  IFACE___(x, Source, src, Sink, sink, src, sink, EntityDummyVisitor)
+					#define IFACE_SINK(x) IFACE___(x, Sink, sink, Source, src, src, sink, EntityDummyVisitor)
+					IFACE_LIST
+					#undef IFACE_SRC
+					#undef IFACE_SINK
+				}
+				else if (a == CONNAREA_POOL_CURRENT) {
+					#define IFACE_SRC(x)  IFACE___(x, Source, src, Sink, sink, src, sink, EntityCurrentVisitor)
+					#define IFACE_SINK(x) IFACE___(x, Sink, sink, Source, src, src, sink, EntityCurrentVisitor)
+					IFACE_LIST
+					#undef IFACE_SRC
+					#undef IFACE_SINK
+				}
+				else if (a == CONNAREA_POOL_CHILDREN_ONLY) {
+					#define IFACE_SRC(x)  IFACE___(x, Source, src, Sink, sink, src, sink, EntityChildrenVisitor)
+					#define IFACE_SINK(x) IFACE___(x, Sink, sink, Source, src, src, sink, EntityParentVisitor)
+					IFACE_LIST
+					#undef IFACE_SRC
+					#undef IFACE_SINK
+				}
+				else if (a == CONNAREA_POOL_PARENTS_ONLY) {
+					#define IFACE_SRC(x)  IFACE___(x, Source, src, Sink, sink, src, sink, EntityParentVisitor)
+					#define IFACE_SINK(x) IFACE___(x, Sink, sink, Source, src, src, sink, EntityChildrenVisitor)
+					IFACE_LIST
+					#undef IFACE_SRC
+					#undef IFACE_SINK
+				}
+				#undef IFACE
+				#undef IFACE___
 			}
-			#define IFACE_SRC(x)  IFACE___(x, Source, src, Sink, sink, src, sink, EntityVisitor)
-			#define IFACE_SINK(x) IFACE___(x, Sink, sink, Source, src, src, sink, EntityParentVisitor)
-			#define IFACE(x) IFACE_SRC(x) IFACE_SINK(x)
-			IFACE_LIST
-			#undef IFACE
-			#undef IFACE_
-			#undef IFACE_SRC
-			#undef IFACE_SINK
-			#undef IFACE___
-			
 		}
 		
 		if (conn->IsSignalAny()) {
@@ -107,8 +129,20 @@ void ConnectorSystem::Update(float dt) {
 	}
 }
 
+
+
+
+
+
+
+
+
+
+
 Connector::Connector() {
-	
+	for(int i = 0; i < CONNAREA_COUNT; i++)
+		connect_bits[i] = 0;
+	signal_bits = 0;
 }
 
 void Connector::Initialize() {
@@ -125,15 +159,15 @@ void Connector::Uninitialize() {
 
 
 
-void Connector::ConnectAll() {
-	#define IFACE(x) Connect##x##Source (); Connect##x##Sink ();
+void Connector::ConnectAll(ConnectorArea a) {
+	#define IFACE(x) Connect##x##Source (a); Connect##x##Sink (a);
 	IFACE_LIST
 	#undef IFACE
 }
 
 #define IFACE(x)\
-void Connector::Connect##x##Source () {connect_bits |= 1ULL << (uint64)IFACE_##x##Source;} \
-void Connector::Connect##x##Sink () {connect_bits |= 1ULL << (uint64)IFACE_##x##Sink;}
+void Connector::Connect##x##Source (ConnectorArea a) {connect_bits[a] |= 1ULL << (uint64)IFACE_##x##Source;} \
+void Connector::Connect##x##Sink (ConnectorArea a) {connect_bits[a] |= 1ULL << (uint64)IFACE_##x##Sink;}
 IFACE_LIST
 #undef IFACE
 

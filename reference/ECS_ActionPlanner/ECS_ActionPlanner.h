@@ -6,35 +6,40 @@ using namespace Upp;
 using namespace Oulu;
 
 
-struct DemoEntity :
-	public Component<DemoEntity>/*,
-	public ActionSource*/
+struct DemoCat :
+	public Component<DemoCat>,
+	public ActionSink
 {
-	enum {
-		CAT,
-		MOUSE
-	};
+	ActionGroup ag;
 	
-	int type;
-public:
-	COPY_PANIC(DemoEntity)
-	/*IFACE_GENERIC
-	IFACE_CB(ActionSource);*/
+	
+	COPY_PANIC(DemoCat)
+	IFACE_GENERIC
+	IFACE_CB(ActionSink);
 	
 	void InitCat();
 	void InitMouse();
 	
+	void OnLink(InterfaceBase* iface) override;
+	
+};
+
+struct DemoMouse :
+	public Component<DemoCat>
+{
 	
 };
 
 PREFAB_BEGIN(Cat)
-	DemoEntity,
-	ActionAgent
+	DemoCat,
+	ActionAgent,
+	Connector
 PREFAB_END
 
 PREFAB_BEGIN(Mouse)
-	DemoEntity,
-	ActionAgent
+	DemoMouse,
+	ActionAgent,
+	Connector
 PREFAB_END
 
 

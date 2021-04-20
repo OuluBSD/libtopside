@@ -33,6 +33,7 @@ class Connector : public Component<Connector> {
 public:
 	using Component::Component;
 	
+	
 	Connector();
 	
 	void Initialize() override;
@@ -41,8 +42,8 @@ public:
 	void operator=(const Connector& c) {}
 	
 	
-	void ConnectAll();
-	#define IFACE(x) void Connect##x##Sink (); void Connect##x##Source ();
+	void ConnectAll(ConnectorArea a);
+	#define IFACE(x) void Connect##x##Sink (ConnectorArea a); void Connect##x##Source (ConnectorArea a);
 	IFACE_LIST
 	#undef IFACE
 	
@@ -60,8 +61,9 @@ public:
 	
 protected:
 	friend class ConnectorSystem;
+	friend class Entity;
 	
-	uint64 connect_bits = 0;
+	uint64 connect_bits[CONNAREA_COUNT];
 	uint64 signal_bits = 0;
 	Vector<InterfaceBase*> src_ifaces, sink_ifaces;
 	bool update_ifaces = true;
@@ -70,9 +72,9 @@ protected:
 	void AddSourceInterface(InterfaceBase* base) {src_ifaces.Add(base);}
 	void AddSinkInterface(InterfaceBase* base) {sink_ifaces.Add(base);}
 	
-	bool IsConnectAny() const {return connect_bits != 0;}
-	uint64 GetConnectBits() const {return connect_bits;}
-	void ClearConnectBits() {connect_bits = 0;}
+	bool IsConnectAny(ConnectorArea t) const {return connect_bits[t] != 0;}
+	uint64 GetConnectBits(ConnectorArea t) const {return connect_bits[t];}
+	void ClearConnectBits(ConnectorArea t) {connect_bits[t] = 0;}
 	
 	bool IsSignalAny() const {return signal_bits != 0;}
 	uint64 GetSignalBits() const {return signal_bits;}

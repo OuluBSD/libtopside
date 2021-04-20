@@ -683,6 +683,17 @@ template<> inline int64 ToInt(const double& o) {return (int64)o;}
 template<> inline int64 ToInt(const String& o) {return StrInt(o);}
 template<> inline int64 ToInt(const WString& o) {return WString::StrInt(o);}
 
+template <class T> inline double ToDouble(const T& o) {return o.ToInt();}
+template<> inline double ToDouble(const bool& o) {return (double)o;}
+template<> inline double ToDouble(const int& o) {return (double)o;}
+template<> inline double ToDouble(const int64& o) {return (double)o;}
+template<> inline double ToDouble(const byte& o) {return (double)o;}
+template<> inline double ToDouble(const char& o) {return (double)o;}
+template<> inline double ToDouble(const float& o) {return (double)o;}
+template<> inline double ToDouble(const double& o) {return (double)o;}
+template<> inline double ToDouble(const String& o) {return StrDbl(o);}
+template<> inline double ToDouble(const WString& o) {return WString::StrDbl(o);}
+
 inline int HexDigit(int c) {return "0123456789ABCDEF"[c & 15];}
 inline int HexDigitLower(int c) {return "0123456789abcdef"[c & 15];}
 inline String HexStr(int64 p) {

@@ -46,6 +46,8 @@ public:
 };
 
 
+class ActionPlannerWrapper;
+
 class ActionPlanner {
 	
 protected:
@@ -54,6 +56,7 @@ protected:
 	
 	int atom_count = 0;
 	Vector<Action> acts;
+	ActionPlannerWrapper* wrapper = 0;
 	
 	Array<WorldState> search_cache;
 	
@@ -66,7 +69,8 @@ public:
 	int GetActionCount() const {return acts.GetCount();}
 	int GetAtomCount() const {return atom_count;}
 	
-	void SetSize(int action_count, int atom_count) {this->atom_count = atom_count; acts.SetCount(action_count);}
+	void AddSize(int action_count, int atom_count);
+	void SetSize(int action_count, int atom_count);
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
@@ -81,10 +85,13 @@ class ActionPlannerWrapper {
 	ActionPlanner& ap;
 	Vector<String> atoms, acts;
 	
+protected:
+	friend class ActionPlanner;
+	
+	void OnResize();
+	
 public:
 	ActionPlannerWrapper(ActionPlanner& planner);
-	
-	void Init();
 	
 	int GetAtomIndex(String atom_name);
 	int GetActionIndex(String action_name);

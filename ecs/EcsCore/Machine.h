@@ -100,6 +100,7 @@ public:
     void Stop();
     void Suspend();
     void Resume();
+    void DieFast() {Start(); Update(0); Stop();}
     
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}

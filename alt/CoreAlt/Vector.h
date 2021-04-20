@@ -735,6 +735,7 @@ public:
 	void Remove(int i) { hashes.Remove(i); values.Remove(i); }
 	void RemoveLast() {ASSERT(GetCount()); if (GetCount()) Remove(GetCount()-1);}
 	void RemoveKey(const K& key) {int i = Find(key); if (i >= 0) Remove(i);}
+	void Remove(const Vector<int>& list) {hashes.Remove(list); values.Remove(list);}
 	
 	void operator <<=(const Index& a) {
 		hashes <<= a.hashes;

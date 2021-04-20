@@ -27,7 +27,7 @@ template <class T> void SimpleEntityApp() {
 		
 		SharedEntity app = ents->GetRoot().CreateEmpty();
 		app->Add<T>();
-		app->Add<Connector>()->ConnectAll();
+		app->Add<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
 		
 	    TimeStop t;
 	    while (mach.IsRunning()) {
@@ -101,7 +101,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		#endif
 		
 		SharedEntity cam = root.Create<CameraPrefab>();
-		cam->Find<Connector>()->ConnectAll();
+		cam->Find<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
 		
 	    TimeStop t;
 	    while (mach.IsRunning()) {

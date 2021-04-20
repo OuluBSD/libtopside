@@ -104,6 +104,16 @@ template<> inline int64 ToInt(const String& o) {return StrInt(o);}
 template<> inline int64 ToInt(const WString& o) {return StrInt(o.ToString());}
 template<> inline int64 ToInt(const Value& o) {return (int64)o;}
 
+template <class T> inline double ToDouble(const T& o) {return o.ToInt();}
+template<> inline double ToDouble(const bool& o) {return (double)o;}
+template<> inline double ToDouble(const int& o) {return (double)o;}
+template<> inline double ToDouble(const int64& o) {return (double)o;}
+template<> inline double ToDouble(const byte& o) {return (double)o;}
+template<> inline double ToDouble(const char& o) {return (double)o;}
+template<> inline double ToDouble(const float& o) {return (double)o;}
+template<> inline double ToDouble(const double& o) {return (double)o;}
+template<> inline double ToDouble(const String& o) {return StrDbl(o);}
+template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));}
 
 
 

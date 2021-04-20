@@ -6,6 +6,7 @@ NAMESPACE_OULU_BEGIN
 
 
 
+
 class InterfaceBase {
 	
 protected:
@@ -32,6 +33,7 @@ public:
 	bool IsLinkable() const {return is_multi_connection || conns.IsEmpty();}
 	
 	virtual void OnLink(InterfaceBase* iface) {}
+	virtual void OnUnlink(InterfaceBase* iface) {}
 	virtual ComponentBase* AsComponentBase() = 0;
 	virtual TypeId GetInterfaceType() = 0;
 	
@@ -73,7 +75,7 @@ protected:
 		if (Find(&output) >= 0)
 			return false;
 		if (Link(output)) {
-			if (1) {
+			if (0) {
 				LOG(GetTypeId<I>().CleanDemangledName() <<
 					"<" << GetComponentBaseTypeString(AsComponentBase()) << "> linked to " <<
 					GetTypeId<O>().CleanDemangledName() <<
@@ -92,8 +94,12 @@ protected:
 		O* o = dynamic_cast<O*>(iface);
 		ASSERT_(o, "Unlink before destructor");
 		if (o) {
+			OnUnlink(iface);
+			iface->OnUnlink(this);
 			if (Unlink(*o)) {
-				LOG(GetTypeId<I>().CleanDemangledName() << " unlinked from " << GetTypeId<O>().CleanDemangledName());
+				if (0) {
+					LOG(GetTypeId<I>().CleanDemangledName() << " unlinked from " << GetTypeId<O>().CleanDemangledName());
+				}
 			}
 			else {
 				LOG("error: couldn't unlink " << GetTypeId<I>().CleanDemangledName() << " from " << GetTypeId<O>().DemangledName());
@@ -492,6 +498,10 @@ struct OverlapSource : IO_IN(Overlap) {
 
 //									---- Action ----
 
+typedef int ActionGroup;
+typedef int ActionId;
+typedef int AtomId;
+
 struct ActionSink : IO_OUT(Action) {
 	IFACE_BASE(ActionSink)
 	
@@ -508,6 +518,39 @@ struct ActionSource : IO_IN(Action) {
 	ActionSource() {
 		SetMultiConnection();
 	}
+	
+	virtual ActionGroup AddActionGroup(int act_count, int atom_count) = 0;
+	virtual void SetActionName(ActionGroup ag, ActionId act_i, String name) = 0;
+	virtual void SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
+	virtual void SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
+	virtual void RefreshActionPlan() = 0;
+	
+};
+
+
+
+//									---- Route ----
+
+
+struct RouteSink : IO_OUT(Route) {
+	IFACE_BASE(RouteSink)
+	
+	RouteSink() {
+		SetMultiConnection();
+	}
+	
+	
+};
+
+struct RouteSource : IO_IN(Route) {
+	IFACE_BASE(RouteSource)
+	
+	RouteSource() {
+		SetMultiConnection();
+	}
+	
+	
+	virtual void SetIdleCost(double d) = 0;
 	
 };
 
@@ -530,7 +573,8 @@ struct ActionSource : IO_IN(Action) {
 	IFACE(Fusion) \
 	IFACE(Semantic) \
 	IFACE(Overlap) \
-	IFACE(Action)
+	IFACE(Action) \
+	IFACE(Route)
 	
 	
 typedef enum {

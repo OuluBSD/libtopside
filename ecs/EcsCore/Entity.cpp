@@ -45,10 +45,10 @@ void Entity::UninitializeComponents() {
 	}
 }
 
-void Entity::ConnectAll() {
+void Entity::ConnectAll(ConnectorArea a) {
 	Connector* conn = Find<Connector>();
 	if (conn)
-		conn->ConnectAll();
+		conn->ConnectAll(a);
 }
 
 void Entity::ClearComponents() {
@@ -84,6 +84,16 @@ void Entity::SetEnabled(bool enable) {
 void Entity::SetUpdateInterfaces() {
 	if (conn)
 		conn->SetUpdateInterfaces();
+}
+
+void Entity::UpdateInterfaces() {
+	if (conn) {
+		#define IFACE(x) \
+		for(x##Source*  in:  FindInterfaces<x##Source>())  conn->AddSourceInterface(in); \
+		for(x##Sink*   out:  FindInterfaces<x##Sink>())    conn->AddSinkInterface(out);
+		IFACE_LIST
+		#undef IFACE
+	}
 }
 
 void Entity::RefreshConnectorPtr() {

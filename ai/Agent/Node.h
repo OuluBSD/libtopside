@@ -177,7 +177,7 @@ public:
 		String s;
 		for(int i = 0; i < indent; i++)
 			s += "-";
-		s += ": " + ::Upp::AsString(*(T*)this) + "\n";
+		s += ": " + ::Upp::ToString(*(T*)this) + "\n";
 		for(int i = 0; i < sub.GetCount(); i++) {
 			s += sub[i].AsString(indent+1);
 		}
@@ -237,7 +237,7 @@ public:
 			if (LASTCUR->GetCount()) {
 				pos.Add(0);
 				cur.Add(&LASTCUR->At(0));
-			} 
+			}
 			else if (pos.GetCount() == 1) {
 				pos[0] = 1; // at end
 			}
@@ -276,7 +276,7 @@ public:
 						}
 					}
 				}
-			} 
+			}
 			else operator++(1);
 		}
 		void DecToParent() {
@@ -317,7 +317,7 @@ public:
 
 
 
-typedef Node<Value> NodeValue;
+typedef Node<Object> NodeValue;
 
 template <class T>
 T GenerateTree(int total, int branching_low, int branching_high, Callback1<T*> set_value) {

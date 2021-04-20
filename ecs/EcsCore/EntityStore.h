@@ -34,6 +34,10 @@ public:
 	bool IsFrozenOverlap() const {return freeze_bits.Is(BIT_CONNECTOR3D);}
 	
 	void				Clear();
+	void				UnlinkDeep();
+	void				UninitializeComponentsDeep();
+	void				ClearComponentsDeep();
+	void				ClearDeep();
 	void				PruneFromContainer();
 	
 	EntityPool*			GetParent() const {return parent;}
@@ -61,15 +65,25 @@ public:
 	}
 	
 	template<typename PrefabT>
-	SharedEntity CreateConnected() {
+	SharedEntity CreateConnectedArea(ConnectorArea a) {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
 		SharedEntity e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
 		if (e)
 			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
+		Connector* c = e->Find<Connector>();
+		ASSERT_(c, "CreateConnected expected entity prefab, which includes Connector component");
+		if (c)
+			c->ConnectAll(a);
+		
 		return e;
 	}
+	
+	template<typename PrefabT> SharedEntity CreateConnectedCurrent()		{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CURRENT);}
+	template<typename PrefabT> SharedEntity CreateConnectedInternal()		{return CreateConnectedArea<PrefabT>(CONNAREA_INTERNAL);}
+	template<typename PrefabT> SharedEntity CreateConnectedChildrenOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CHILDREN_ONLY);}
+	template<typename PrefabT> SharedEntity CreateConnectedParentsOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_PARENTS_ONLY);}
 	
 	template<typename... ComponentTs>
 	Vector < RTuple < Entity*, ComponentTs*... >> GetComponentsWithEntity() {
@@ -168,6 +182,7 @@ class EntityVisitor {
 	BitField<dword> freeze_checks;
 	Vector<Item> stack;
 	Entity* cur = 0;
+	int mode;
 	
 protected:
 	bool FindNextDepthFirst();
@@ -176,8 +191,15 @@ protected:
 	void PoolPushSub(int pos);
 	bool PoolFindNextDepthFirst();
 public:
-	EntityVisitor(EntityPool& pool);
-	EntityVisitor(Machine& m);
+	enum {
+		POOL_CURRENT_AND_CHILDREN,
+		POOL_CURRENT_ONLY,
+		POOL_CHILDREN_ONLY
+	};
+	
+	EntityVisitor(EntityPool& pool, int mode=POOL_CURRENT_AND_CHILDREN);
+	EntityVisitor(Machine& m, int mode=POOL_CURRENT_AND_CHILDREN);
+	EntityVisitor(Entity& e, int mode=POOL_CURRENT_AND_CHILDREN);
 	
 	void Reset();
 	void Skip(EntityPool::Bit entpool_bit);
@@ -191,6 +213,19 @@ public:
 };
 
 
+class EntityDummyVisitor {
+	Entity& e;
+	bool once = true;
+public:
+	EntityDummyVisitor(Entity& e) : e(e) {}
+	void Reset() {once = true;}
+	Entity* GetCurrent() const {return &e;}
+	Entity* operator->() {return once ? &e : 0;}
+	Entity* operator*() {return once ? &e : 0;}
+	operator bool() const {return once;}
+	void operator++(int) {once = false;}
+};
+
 class EntityParentVisitor {
 	EntityPool& base;
 	BitField<dword> freeze_checks;
@@ -201,6 +236,7 @@ class EntityParentVisitor {
 	bool FindNextChildFirst();
 	
 public:
+	EntityParentVisitor(Entity& e);
 	EntityParentVisitor(EntityPool& pool);
 	
 	void Reset();
@@ -211,6 +247,24 @@ public:
 	Entity* operator*();
 	operator bool() const;
 	void operator++(int);
+	
+};
+
+class EntityChildrenVisitor : public EntityVisitor {
+	
+public:
+	EntityChildrenVisitor(EntityPool& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(Machine& m)		: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(Entity& e)		: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
+	
+};
+
+class EntityCurrentVisitor : public EntityVisitor {
+	
+public:
+	EntityCurrentVisitor(EntityPool& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(Machine& m)		: EntityVisitor(m, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(Entity& e)			: EntityVisitor(e, POOL_CURRENT_ONLY) {}
 	
 };
 

@@ -34,8 +34,8 @@ WorldState& WorldState::operator = (const WorldState& src) {
 int64 WorldState::GetHashValue() {
 	CombineHash c;
 	for(int i = 0; i < values.GetCount(); i++) {
-		c.Do(using_act[i]);
-		c.Do(values[i]);
+		c.Put(using_act[i]);
+		c.Put(values[i]);
 	}
 	return c;
 }
@@ -60,6 +60,21 @@ void ActionPlanner::Clear() {
 	search_cache.Clear();
 }
 
+void ActionPlanner::AddSize(int action_count, int atom_count) {
+	ASSERT(action_count >= 0 && atom_count >= 0);
+	this->atom_count += atom_count;
+	int new_action_count = acts.GetCount() + action_count;
+	acts.SetCount(new_action_count);
+	if (wrapper)
+		wrapper->OnResize();
+}
+
+void ActionPlanner::SetSize(int action_count, int atom_count) {
+	this->atom_count = atom_count;
+	acts.SetCount(action_count);
+	if (wrapper)
+		wrapper->OnResize();
+}
 
 void ActionPlanner::DoAction( int action_id, const WorldState& src, WorldState& dest) {
 	const WorldState& post = acts[action_id].postcond;
@@ -136,16 +151,13 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 
 
 ActionPlannerWrapper::ActionPlannerWrapper(ActionPlanner& planner) : ap(planner) {
-	
+	ap.wrapper = this;
+	OnResize();
 }
 
-void ActionPlannerWrapper::Init() {
-	ASSERT(ap.GetActionCount());
-	ASSERT(ap.GetAtomCount());
+void ActionPlannerWrapper::OnResize() {
 	acts.SetCount(ap.GetActionCount());
 	atoms.SetCount(ap.GetAtomCount());
-	
-	
 }
 
 String ActionPlannerWrapper::GetWorldstateDescription( const WorldState& ws )

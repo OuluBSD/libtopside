@@ -5,7 +5,14 @@
 NAMESPACE_OULU_BEGIN
 
 template <class T>	inline double GetSearcherUtility(Node<T>& n) {return n.T::GetUtility();}
-template <>			inline double GetSearcherUtility<Value>(NodeValue& n) {return n.GetData()[1];}
+template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
+	Object& o = n.GetData();
+	ObjectArray& arr = o.GetArray();
+	ASSERT(arr.GetCount());
+	Object& ov = arr[1];
+	double value = ov.ToDouble();
+	return value;
+}
 template <class T>	inline double GetSearcherEstimate(Node<T>& n) {return n.T::GetEstimate();}
 template <class T>	inline double GetSearcherDistance(Node<T>& n, Node<T>& dest) {return n.T::GetDistance(dest);}
 template <class T>	inline bool TerminalTest(Node<T>& n) {return n.GetTotalCount() == 0;}
@@ -58,7 +65,7 @@ public:
 	
 	double MinValue(NodeT& n, int* decision_pos=0) {
 		if (TerminalTest(n))
-			return this->Utility(n);
+			return Searcher<T>::Utility(n);
 		double v = DBL_MAX;
 		int pos = -1;
 		for(int i = 0; i < n.GetTotalCount(); i++) {
