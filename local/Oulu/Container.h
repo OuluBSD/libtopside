@@ -216,6 +216,8 @@ public:
 		
 	}
 	
+	void Reserve(int i) {pool.Reserve(i);}
+	
 	T* New() {
 		if (pool.IsEmpty())
 			return new T();
@@ -234,14 +236,16 @@ template <class T>
 class Recycler {
 	typedef RecyclerPool<T> Pool;
 	
-	Pool& pool;
+	Pool* pool = 0;
 	One<T> o;
 	
 public:
-	Recycler(Pool& pool) : pool(pool), o(pool.New()) {o->SetCount(0);}
-	~Recycler() {if (!o.IsEmpty()) pool.Return(o.Detach());}
+	Recycler() {}
+	Recycler(Pool& pool) : pool(&pool), o(pool.New()) {o->SetCount(0);}
+	~Recycler() {Clear();}
 	
-	
+	void Clear() {if (o && pool) pool->Return(o.Detach());}
+	void Create(Pool& pool) {Clear(); this->pool = &pool; o = pool.New();}
 	T& Get() {ASSERT(!o.IsEmpty()); return *o;}
 	
 	T& operator*() {return Get();}
@@ -249,6 +253,187 @@ public:
 	
 };
 
+
+template <class K=int, class V=double, class Sorter=StdLess<V> >
+struct TopValueSorterLinkedList {
+	struct Item : Moveable<Item> {
+		K key;
+		V value;
+		Item *prev, *next;
+		void Set(const K& k, const V& v, Item* p, Item* n) {key = k; value = v; prev = p; next = n;}
+	};
+	RecyclerPool<Item> pool;
+	Item *first = 0, *last = 0;
+	int size = 0;
+	int max_count = -1;
+	Sorter sorter;
+	
+	TopValueSorterLinkedList() {}
+	~TopValueSorterLinkedList() {Clear();}
+	
+	void Clear() {
+		Item* iter = first;
+		while (iter) {
+			Item* it = iter;
+			iter = iter->next;
+			pool.Return(it);
+		}
+		first = 0;
+		last = 0;
+		size = 0;
+	}
+	void Reserve(int i) {pool.Reserve(i);}
+	void SetMaxCount(int i) {max_count = i;}
+	void RemoveItem(Item* iter) {
+		if (iter->prev && iter->next) {
+			iter->prev->next = iter->next;
+			iter->next->prev = iter->prev;
+		}
+		else if (iter->prev) {
+			ASSERT(last == iter);
+			iter->prev->next = 0;
+			last = iter->prev;
+		}
+		else if (iter->next) {
+			ASSERT(first == iter);
+			iter->next->prev = 0;
+			first = iter->next;
+		}
+		else {
+			ASSERT(size == 1);
+			first = 0;
+			last = 0;
+		}
+		size--;
+		pool.Return(iter);
+	}
+	void RemoveKey(const K& key) {
+		Item* iter = first;
+		while (iter) {
+			if (iter->key == &key) {
+				RemoveItem(iter);
+				break;
+			}
+			iter = iter->next;
+		}
+	}
+	Item* Find(const K& key) {
+		for(Item* iter = first; iter; iter = iter->next)
+			if (iter->key == key)
+				return iter;
+		return 0;
+	}
+	bool UpdateValue(Item* iter, const V& value) {
+		bool fail = false;
+		if (iter->prev && !sorter(iter->prev->value, value))
+			fail = true;
+		if (iter->next && !sorter(value, iter->next->value))
+			fail = true;
+		if (!fail) {
+			iter->value = value; // just update value
+			return true;
+		}
+		return false;
+	}
+	void SetAdd(const K& key, const V& value) {
+		Item* iter = first;
+		while (iter) {
+			if (iter->key == key) {
+				if (UpdateValue(iter, value))
+					return;
+				RemoveItem(iter);
+				break;
+			}
+			iter = iter->next;
+		}
+		Add(key, value);
+	}
+	void Add(const K& key, const V& value) {
+		if (!first) {
+			ASSERT(!size);
+			size++;
+			first = pool.New();
+			ASSERT(first);
+			first->Set(key, value, 0, 0);
+			last = first;
+		}
+		// default: value <= last->value
+		else if (sorter(value, last->value) || !sorter(last->value, value)) {
+			if (max_count < 0 || (max_count >= 0 && size < max_count)) {
+				size++;
+				Item* it = pool.New();
+				ASSERT(it);
+				it->Set(key, value, last, 0);
+				last->next = it;
+				last = it;
+			}
+		}
+		else {
+			int i = 0;
+			Item* iter = first;
+			while (iter) {
+				// default iter->value < value
+				if (sorter(iter->value, value)) {
+					Item* new_link = pool.New();
+					ASSERT(new_link);
+					if (iter->prev) {
+						new_link->Set(key, value, iter->prev, iter);
+						new_link->prev->next = new_link;
+						iter->prev = new_link;
+					}
+					else {
+						ASSERT(iter == first);
+						new_link->Set(key, value, 0, iter);
+						iter->prev = new_link;
+						first = new_link;
+					}
+					size++;
+					if (size > max_count) {
+						int rem_count = size - max_count;
+						Item* rev_iter = last;
+						for(int i = 0; i < rem_count; i++) {
+							Item* it = rev_iter;
+							rev_iter = it->prev;
+							pool.Return(it);
+						}
+						last = rev_iter;
+						size = max_count;
+					}
+					break;
+				}
+				iter = iter->next;
+			}
+		}
+	}
+	int GetCount() const {return size;}
+	bool IsEmpty() const {return size == 0;}
+	Item PickFirst() {
+		ASSERT(first);
+		Item i;
+		if (!first) {
+			i.prev = 0;
+			i.next = 0;
+		}
+		else {
+			i = *first;
+			if (size == 1) {
+				pool.Return(first);
+				first = 0;
+				last = 0;
+				size = 0;
+			}
+			else {
+				Item* it = first;
+				first = first->next;
+				first->prev = 0;
+				ASSERT(first);
+				pool.Return(it);
+				size--;
+			}
+		}
+		return i;
+	}
+};
 
 
 

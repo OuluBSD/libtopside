@@ -7,6 +7,14 @@ NAMESPACE_OULU_BEGIN
 	TODO
 }*/
 
+void CopyTransformPos(SharedEntity from, SharedEntity to) {
+	if (!from.IsEmpty() && !to.IsEmpty()) {
+		Transform* f = from->Find<Transform>();
+		Transform* t = to->Find<Transform>();
+		if (f && t)
+			*t = *f;
+	}
+}
 
 
 

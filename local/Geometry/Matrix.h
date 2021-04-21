@@ -41,6 +41,11 @@ struct Vec : Moveable<Vec<T, I> > {
 	void Clear() {memset(this, 0, sizeof(Vec));}
 	void ClearFrom(int i) {for(; i < I; i++) data[i] = 0.0;}
 	
+	hash_t GetHashValue() const {
+		CombineHash c;
+		for(int i = 0; i < I; i++) c.Put(Upp::GetHashValue(data[i]));
+		return c;
+	}
 	T& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
 	const T& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
 	
@@ -129,7 +134,7 @@ struct Vec : Moveable<Vec<T, I> > {
 		String s = "[";
 		for(int i = 0; i < I; i++) {
 			if (i) s << ", ";
-			s << ToString(data[i]);
+			s << ::Upp::ToString(data[i]);
 		}
 		s << "]";
 		return s;
@@ -160,6 +165,8 @@ struct quat {
 	quat& SetIdentity() {data.SetIdentity(); return *this;}
 	const float& operator[](int i) const {return data[i];}
 	float& operator[](int i) {return data[i];}
+	
+	String ToString() const {return data.ToString();}
 };
 
 template <class Unit, class M> inline void DeterminantNonSingle(Unit& det, const M& m) {

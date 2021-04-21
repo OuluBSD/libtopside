@@ -6,7 +6,7 @@ NAMESPACE_OULU_BEGIN
 
 
 template <int I, class K=int, class V=double>
-struct TopValueSorter {
+struct FixedTopValueSorter {
 	static const int size = I;
 	
 	K key[size];
@@ -14,7 +14,7 @@ struct TopValueSorter {
 	int count = 0;
 	
 	
-	TopValueSorter() {Reset();}
+	FixedTopValueSorter() {Reset();}
 	void Reset() {
 		count = 0;
 		for(int i = 0; i < size; i++) {
@@ -42,6 +42,43 @@ struct TopValueSorter {
 		for(int i = 0; i < size; i++)
 			s % value[i] % key[i];
 	}
+};
+
+template <class K=int, class V=double>
+struct TopValueSorter {
+	struct Item : Moveable<Item> {
+		K key;
+		V value;
+		void Serialize(Stream& s) {s % key % value;}
+	};
+	Vector<Item> items;
+	int max_count = -1;
+	
+	TopValueSorter() {Reset();}
+	void Reset() {items.SetCount(0);}
+	void Reserve(int i) {items.Reserve(i);}
+	void SetMaxCount(int i) {max_count = i;}
+	void Add(const K& key, const V& value) {
+		int size = items.GetCount();
+		Item it {key, value};
+		if (!size || value <= items[size-1].value) {
+			if (max_count < 0 || (max_count >= 0 && size < max_count))
+				items.Add(it);
+		}
+		else {
+			int i = 0;
+			for (Item& iter : items) {
+				if (value > iter.value) {
+					items.Insert(i, it);
+					if (size+1 > max_count)
+						items.SetCount(max_count);
+					break;
+				}
+				i++;
+			}
+		}
+	}
+	void Serialize(Stream& s) {s % items;}
 };
 
 

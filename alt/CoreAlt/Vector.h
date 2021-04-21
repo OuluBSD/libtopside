@@ -569,7 +569,8 @@ public:
 	int GetCount() const { return l.GetCount(); }
 	bool IsEmpty() const { return GetCount() == 0; }
 	K* Detach(int i) {K* o = l[i]; l.Remove(i); return o;}
-
+	K* PopDetach() {return l.Pop();}
+	
 	K& Get(int i) {
 		ASSERT(i >= 0 && i < l.GetCount());
 		return **(l.GetData() + i);

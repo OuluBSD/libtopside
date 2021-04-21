@@ -98,6 +98,8 @@ public:
 		return *this;
 	}
 	const RefBase* GetBase() const {return r;}
+	String ToString() const {return r ? o->ToString() : "";}
+	
 };
 
 void TestShared();

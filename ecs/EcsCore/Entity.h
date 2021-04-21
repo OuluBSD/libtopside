@@ -12,27 +12,41 @@ class EntityPool;
 class Connector;
 using SharedEntity = Shared<Entity>;
 using SE = Shared<Entity>;
-
+using EntityId = int64;
 
 
 class Entity : public Destroyable, public Enableable, public EnableSharedFromThis<Entity> {
-	int64 id = -1;
-	String prefab;
+	EntityId id = -1;
 	int64 created = 0;
 	int64 changed = 0;
+
+	String prefab;
+	String name;
 	
-public:
-	using EntityId = uint64_t;
+protected:
+	friend class EntityPool;
 	
-	String GetPrefab() const {return prefab;}
-	int64 GetId() const {return id;}
-	int64 GetCreatedTick() const {return created;}
-	int64 GetChangedTick() const {return changed;}
-	
-	void SetId(int64 i) {id = i;}
+	void SetId(EntityId i) {id = i;}
 	void SetPrefab(String s) {prefab = s;}
 	void SetCreated(int64 i) {created = i;}
 	void SetChanged(int64 i) {changed = i;}
+	
+	void CopyHeader(const Entity& e) {
+		prefab = e.prefab;
+		name = e.name;
+	}
+public:
+	
+	
+	String GetPrefab() const {return prefab;}
+	String GetName() const {return name;}
+	EntityId GetId() const {return id;}
+	int64 GetCreatedTick() const {return created;}
+	int64 GetChangedTick() const {return changed;}
+	
+	String ToString() const {return IntStr64(id) + " " + prefab + (name.GetCount() ? ": " + name : "");}
+	
+	void SetName(String s) {name = s;}
 	
 	void OnChange();
 	

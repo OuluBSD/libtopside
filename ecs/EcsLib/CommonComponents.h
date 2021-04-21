@@ -20,8 +20,15 @@ public:
 		return scale(size) * ToMat4(orientation) * translate(position);
 	}
 	
+	String ToString() const {
+		String s;
+		s << "pos" << position.ToString() << ", size" << size.ToString() << ", orient" << orientation.ToString();
+		return s;
+	}
 	//void MoveTo(const OverlapSink& conn);
 };
+
+void CopyTransformPos(SharedEntity from, SharedEntity to);
 
 class Transform2D : public Component<Transform2D> {
 public:

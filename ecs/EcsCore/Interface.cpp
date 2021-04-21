@@ -39,6 +39,14 @@ String InterfaceBase::GetComponentBaseTypeString(ComponentBase* base) {
 }
 
 
+#ifdef flagDEBUG
+void InterfaceDebugPrint(TypeId type, String s) {
+	if (type != typeid(RouteSource)) {
+		LOG(s);
+	}
+}
+#endif
+
 
 void AudioSource::DefaultEmitAudioSource(float dt, int sink_limit) {
 	const auto& sinks = AudioSource::GetSinks();

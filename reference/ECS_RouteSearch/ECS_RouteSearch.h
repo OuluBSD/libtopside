@@ -13,11 +13,20 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes);
 
 
 
-/*struct DemoMouse :
-	public Component<DemoCat>
+struct GameEntity :
+	public Component<GameEntity>
 {
 	
-};*/
+};
+
+struct RouteFollower :
+	public Component<RouteFollower>
+{
+	
+	
+	void MakeRouteTo(SE end) {TODO}
+	
+};
 
 struct SimpleRouteNode :
 	public Component<SimpleRouteNode>,
@@ -26,16 +35,52 @@ struct SimpleRouteNode :
 {
 	double idle_cost = 0;
 	
-	COPY_PANIC(SimpleRouteNode);
+	void operator=(const SimpleRouteNode& n) {
+		idle_cost = n.idle_cost;
+	}
+	
 	IFACE_GENERIC;
 	IFACE_CB(RouteSink);
 	IFACE_CB(RouteSource);
 	
 	void SetIdleCost(double d) override {idle_cost = d;}
+	double GetStepValue(RouteSink& sink) override;
+	double GetHeuristicValue(RouteSink& sink) override;
+	
+};
+
+struct SimpleWaypointNode :
+	public Component<SimpleWaypointNode>,
+	public RouteSink,
+	public RouteSource
+{
+	double idle_cost = 0;
+	
+	
+	void operator=(const SimpleWaypointNode& n) {
+		idle_cost = n.idle_cost;
+	}
+	
+	IFACE_GENERIC;
+	IFACE_CB(RouteSink);
+	IFACE_CB(RouteSource);
+	
+	void SetIdleCost(double d) override {idle_cost = d;}
+	double GetStepValue(RouteSink& sink) override;
+	double GetHeuristicValue(RouteSink& sink) override;
 	
 	
 };
 
+
+void FindRoute(SE begin, SE end, EntityPool& route);
+void MergeRoute(EntityPool& route, EntityPool& waypoints);
+
+PREFAB_BEGIN(DemoActor)
+	GameEntity,
+	RouteFollower,
+	Connector
+PREFAB_END
 
 PREFAB_BEGIN(RouteRoad)
 	Connector
@@ -58,6 +103,13 @@ PREFAB_BEGIN(RouteNode)
 	SimpleRouteNode,
 	Connector
 PREFAB_END
+
+PREFAB_BEGIN(WaypointNode)
+	Transform,
+	SimpleWaypointNode,
+	Connector
+PREFAB_END
+
 
 
 #endif

@@ -24,7 +24,7 @@ EntityPool::EntityPool(Machine& m) : machine(m) {
 	
 }
 
-Entity::EntityId EntityPool::GetNextId() {
+EntityId EntityPool::GetNextId() {
 	static Atomic64 next_id;
 	return ++next_id;
 }
@@ -40,8 +40,10 @@ void EntityPool::Initialize(Entity& e, String prefab) {
 
 SharedEntity EntityPool::Clone(const Entity& e) {
 	SharedEntity c = CreateFromComponentMap(GetMachine().Get<ComponentStore>()->Clone(e.GetComponents()));
-	if (c)
+	if (c) {
 		Initialize(*c);
+		c->CopyHeader(e);
+	}
 	return c;
 }
 
@@ -82,6 +84,10 @@ void EntityPool::ClearDeep() {
 	objects.Clear();
 }
 
+void EntityPool::ReverseEntities() {
+	::Upp::Reverse(objects);
+}
+
 void EntityPool::Clear() {
 	UnlinkDeep();
 	UninitializeComponentsDeep();
@@ -100,10 +106,9 @@ SharedEntity EntityPool::CreateEmpty() {
 	Shared<Entity> sent;
 	sent.WrapObject(ent);
 	ent->InitWeak(sent);
-	SharedEntity e = AddEntity(sent);
-	if (e)
-		Initialize(*e);
-	return e;
+	AddEntity(sent);
+	Initialize(*sent);
+	return sent;
 }
 
 SharedEntity EntityPool::CreateFromComponentMap(ComponentMap components) {
@@ -113,12 +118,12 @@ SharedEntity EntityPool::CreateFromComponentMap(ComponentMap components) {
 	ent->InitWeak(sent);
 	ent->RefreshConnectorPtr();
 	ent->UpdateInterfaces();
-	return AddEntity(sent);
+	AddEntity(sent);
+	return sent;
 }
 
-SharedEntity EntityPool::AddEntity(SharedEntity obj) {
+void EntityPool::AddEntity(SharedEntity obj) {
 	objects.Add(obj);
-	return obj;
 }
 
 

@@ -13,7 +13,7 @@ protected:
 	Vector<InterfaceBase*> conns;
 	bool is_multi_connection = false;
 	
-	virtual void Unlink0(InterfaceBase* iface) {}
+	virtual bool Unlink0(InterfaceBase* iface) {return true;}
 	
 	static String GetComponentBaseTypeString(ComponentBase* base);
 	
@@ -46,6 +46,10 @@ struct InterfaceSink : public InterfaceBase {
 	
 };
 
+#ifdef flagDEBUG
+void InterfaceDebugPrint(TypeId type, String s);
+#endif
+
 template <class I, class O>
 struct InterfaceSource : public InterfaceBase {
 	
@@ -66,6 +70,12 @@ protected:
 	
 	Vector<O*> sinks;
 	
+	#ifdef flagDEBUG
+	static const bool print_debug = true;
+	#else
+	static const bool print_debug = false;
+	#endif
+	
 	virtual bool Link(O& sink) {return LinkInterface(sink);}
 	virtual bool Unlink(O& sink) {return UnlinkInterface(sink);}
 	virtual void Signal() {}
@@ -75,11 +85,14 @@ protected:
 		if (Find(&output) >= 0)
 			return false;
 		if (Link(output)) {
-			if (0) {
-				LOG(GetTypeId<I>().CleanDemangledName() <<
+			if (print_debug) {
+				String s;
+				TypeId t = GetTypeId<I>();
+				s << t.CleanDemangledName() <<
 					"<" << GetComponentBaseTypeString(AsComponentBase()) << "> linked to " <<
 					GetTypeId<O>().CleanDemangledName() <<
-					"<" << GetComponentBaseTypeString(output.AsComponentBase()) << ">");
+					"<" << GetComponentBaseTypeString(output.AsComponentBase()) << ">";
+				InterfaceDebugPrint(t, s);
 			}
 			AddConnection(&output);
 			output.AddConnection(this);
@@ -90,21 +103,26 @@ protected:
 		return false;
 	}
 	
-	virtual void Unlink0(InterfaceBase* iface) {
+	virtual bool Unlink0(InterfaceBase* iface) {
 		O* o = dynamic_cast<O*>(iface);
 		ASSERT_(o, "Unlink before destructor");
 		if (o) {
 			OnUnlink(iface);
 			iface->OnUnlink(this);
 			if (Unlink(*o)) {
-				if (0) {
-					LOG(GetTypeId<I>().CleanDemangledName() << " unlinked from " << GetTypeId<O>().CleanDemangledName());
+				if (print_debug) {
+					TypeId t = GetTypeId<I>();
+					String s;
+					s << t.CleanDemangledName() << " unlinked from " << GetTypeId<O>().CleanDemangledName();
+					InterfaceDebugPrint(t, s);
 				}
+				return true;
 			}
 			else {
 				LOG("error: couldn't unlink " << GetTypeId<I>().CleanDemangledName() << " from " << GetTypeId<O>().DemangledName());
 			}
 		}
+		return false;
 	}
 };
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
@@ -551,7 +569,8 @@ struct RouteSource : IO_IN(Route) {
 	
 	
 	virtual void SetIdleCost(double d) = 0;
-	
+	virtual double GetStepValue(RouteSink& sink) = 0;
+	virtual double GetHeuristicValue(RouteSink& sink) = 0;
 };
 
 

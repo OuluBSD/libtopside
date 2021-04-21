@@ -25,7 +25,7 @@ public:
 	} Bit;
 	
 	
-	static Entity::EntityId GetNextId();
+	static EntityId GetNextId();
 	
 	void SetName(String s) {name = s;}
 	void FreezeConnector() {freeze_bits.Set(BIT_CONNECTOR, true);}
@@ -33,6 +33,7 @@ public:
 	bool IsFrozenConnector() const {return freeze_bits.Is(BIT_CONNECTOR);}
 	bool IsFrozenOverlap() const {return freeze_bits.Is(BIT_CONNECTOR3D);}
 	
+	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
 	void				UninitializeComponentsDeep();
@@ -135,6 +136,13 @@ public:
 		return 0;
 	}
 	
+	SharedEntity FindEntityByName(String name) {
+		for (auto& object : objects)
+			if (object->GetName() == name)
+				return object;
+		return SharedEntity();
+	}
+	
 	void ReleaseEntity(Entity& ent) {
 		for (int i = 0; i < objects.GetCount(); i++) {
 			if (objects[i].Get() == &ent)
@@ -165,7 +173,7 @@ private:
 	Vector<SharedEntity>	objects;
 	Array<EntityPool>		pools;
 	
-	SharedEntity AddEntity(SharedEntity obj);
+	void AddEntity(SharedEntity obj);
 	
 };
 
