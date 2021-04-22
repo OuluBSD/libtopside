@@ -6,10 +6,13 @@ NAMESPACE_OULU_BEGIN
 
 
 class ActionSystem : public System<ActionSystem> {
-
+	Vector<ActionSource*> srcs;
+	
 public:
 	using System::System;
 	
+	void Add(ActionSource* src);
+	void Remove(ActionSource* src);
 	
 protected:
 	

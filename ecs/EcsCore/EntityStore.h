@@ -49,6 +49,7 @@ public:
 	int					GetCount() const {return objects.GetCount();}
 	SharedEntity&		Get(int i) {return objects[i];}
 	const SharedEntity&	Get(int i) const {return objects[i];}
+	String				GetName() const {return name;}
 	
 	void				Initialize(Entity& e, String prefab="Custom");
 	SharedEntity		CreateEmpty();
@@ -168,6 +169,12 @@ public:
 		return p;
 	}
 	
+	EntityPool& GetAddPool(String name) {
+		for (EntityPool& pool : pools)
+			if (pool.GetName() == name)
+				return pool;
+		return AddPool(name);
+	}
 private:
 	
 	Vector<SharedEntity>	objects;

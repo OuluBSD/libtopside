@@ -16,7 +16,7 @@ void ActionAgent::Uninitialize() {
 	
 }
 
-ActionGroup ActionAgent::AddActionGroup(int act_count, int atom_count) {
+ActionGroup ActionAgent::AddActionGroup(ActionSink& sink, int act_count, int atom_count) {
 	ASSERT(act_count >= 0 && atom_count >= 0);
 	ActionGroup ag		= ag_data.GetCount();
 	ActionGroupData& d	= ag_data.Add();

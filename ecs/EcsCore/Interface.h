@@ -538,6 +538,7 @@ struct OverlapSource : IO_IN(Overlap) {
 typedef int ActionGroup;
 typedef int ActionId;
 typedef int AtomId;
+struct ActionSource;
 
 struct ActionSink : IO_OUT(Action) {
 	IFACE_BASE(ActionSink)
@@ -545,6 +546,12 @@ struct ActionSink : IO_OUT(Action) {
 	ActionSink() {
 		SetMultiConnection();
 	}
+	
+	virtual void* OnLinkActionSource(ActionSource& src) = 0;
+	virtual bool Act(ActionGroup ag, ActionId act) = 0;
+	virtual bool UpdateAct() = 0;
+	
+	void* OnLink(InterfaceBase* iface) override;
 	
 	
 };
@@ -556,11 +563,13 @@ struct ActionSource : IO_IN(Action) {
 		SetMultiConnection();
 	}
 	
-	virtual ActionGroup AddActionGroup(int act_count, int atom_count) = 0;
+	virtual void EmitActionSource(float dt) = 0;
+	virtual ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) = 0;
 	virtual void SetActionName(ActionGroup ag, ActionId act_i, String name) = 0;
 	virtual void SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
 	virtual void SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
 	virtual void RefreshActionPlan() = 0;
+	virtual void OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) = 0;
 	
 };
 

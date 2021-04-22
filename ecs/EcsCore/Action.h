@@ -42,7 +42,7 @@ public:
 	void operator=(const ActionAgent& c) {}
 	
 	
-	ActionGroup AddActionGroup(int act_count, int atom_count) override;
+	ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) override;
 	void SetActionName(ActionGroup ag, ActionId act_i, String name) override;
 	void SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) override;
 	void SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) override;

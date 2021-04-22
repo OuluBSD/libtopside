@@ -71,7 +71,6 @@ void AudioSource::DefaultEmitAudioSource(float dt, int sink_limit) {
 
 
 
-
 void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, float dt, Sound& snd) {
 	dword cur_sink_frame = snd.GetWriteFrame();
 	
@@ -108,6 +107,18 @@ void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, flo
 	}
 }
 
+
+
+
+
+
+
+
+void* ActionSink::OnLink(InterfaceBase* iface) {
+	ActionSource* src = dynamic_cast<ActionSource*>(iface);
+	ASSERT(src);
+	return src ? OnLinkActionSource(*src) : 0;
+}
 
 NAMESPACE_OULU_END
 
