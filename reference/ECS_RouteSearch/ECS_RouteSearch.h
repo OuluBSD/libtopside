@@ -33,6 +33,11 @@ struct SimpleRouteNode :
 	public RouteSink,
 	public RouteSource
 {
+	struct SinkData {
+		double value_mul = 0.0;
+	};
+	
+	Array<SinkData> data;
 	double idle_cost = 0;
 	
 	void operator=(const SimpleRouteNode& n) {
@@ -44,33 +49,12 @@ struct SimpleRouteNode :
 	IFACE_CB(RouteSource);
 	
 	void SetIdleCost(double d) override {idle_cost = d;}
-	double GetStepValue(RouteSink& sink) override;
+	double GetStepValue(const RouteSource::Connection& sink_conn) override;
 	double GetHeuristicValue(RouteSink& sink) override;
+	void* OnLink(InterfaceBase* iface) override;
 	
 };
 
-struct SimpleWaypointNode :
-	public Component<SimpleWaypointNode>,
-	public RouteSink,
-	public RouteSource
-{
-	double idle_cost = 0;
-	
-	
-	void operator=(const SimpleWaypointNode& n) {
-		idle_cost = n.idle_cost;
-	}
-	
-	IFACE_GENERIC;
-	IFACE_CB(RouteSink);
-	IFACE_CB(RouteSource);
-	
-	void SetIdleCost(double d) override {idle_cost = d;}
-	double GetStepValue(RouteSink& sink) override;
-	double GetHeuristicValue(RouteSink& sink) override;
-	
-	
-};
 
 
 void FindRoute(SE begin, SE end, EntityPool& route);
@@ -104,11 +88,6 @@ PREFAB_BEGIN(RouteNode)
 	Connector
 PREFAB_END
 
-PREFAB_BEGIN(WaypointNode)
-	Transform,
-	SimpleWaypointNode,
-	Connector
-PREFAB_END
 
 
 

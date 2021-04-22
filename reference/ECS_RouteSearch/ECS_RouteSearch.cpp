@@ -46,9 +46,14 @@ CONSOLE_APP_MAIN {
     classes.Add(' ', ground_cls);
     classes.Add('-', water_cls);
     
-    const char* map =
+    const char* map1 =
+		"|A|x| \n"
+		"|.|x| \n"
+		"|-| |B";
+	
+    const char* map2 =
 		"|A| | | | | | | | | | | | | | | \n"
-		"| |.| | |.|.|.|.|.|.|.|.| | | | \n"
+		"|.|.| | |.|.|.|.|.|.|.|.| | | | \n"
 		"| |.| | |.| |x|x|x| | |.| | | | \n"
 		"| |.|.|.|.|x|x| |x|x| |.|.| | | \n"
 		"| | | | |x|x| | | |x|x| |.| | | \n"
@@ -64,6 +69,7 @@ CONSOLE_APP_MAIN {
 		"|-|-|-|-|.|.|.|.| | |x| | | | |.\n"
 		"|-|-|-|-|-|x| | | | | | | | | |B";
 	
+    const char* map = map2;
     
     try {
 	    TraverseMap(externals, map, classes);
@@ -128,7 +134,7 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 	width /= 2;
 	
 	struct Tile : Moveable<Tile> {
-		double act_cost[9];
+		double act_value_mul[9];
 		bool invalid[9];
 		int value, cls;
 		int x, y;
@@ -136,25 +142,25 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 		SE e;
 		
 		Tile() {
-			memset(&act_cost, 0, sizeof(act_cost));
+			memset(&act_value_mul, 0, sizeof(act_value_mul));
 			memset(&invalid, 0, sizeof(invalid));
 		}
-		void SetCost(int x, int y, double d) {x += 1; y += 1; act_cost[y * 3 + x] = d;}
+		void SetValueMul(int x, int y, double d) {x += 1; y += 1; act_value_mul[y * 3 + x] = d;}
 		void Check(Tile* t, int x, int y) {
 			if (!t) {
 				x += 1; y += 1; invalid[y * 3 + x] = true;
 				return;
 			}
 			if (value == '.' && t->value == '.' && (x == 0 || y == 0))
-				SetCost(x, y, 0.1);
+				SetValueMul(x, y, 0.2);
 			else if (value == 'x' || t->value == 'x')
-				SetCost(x, y, 1000000000.0);
+				SetValueMul(x, y, 1000000000.0);
 			else if (value == '-' && t->value == '-')
-				SetCost(x, y, 1.0);
+				SetValueMul(x, y, 2.0);
 			else if (value == '-' || t->value == '-')
-				SetCost(x, y, 0.7);
+				SetValueMul(x, y, 1.4);
 			else
-				SetCost(x, y, 0.5);
+				SetValueMul(x, y, 1.0);
 		}
 	};
 	Vector<Tile> tiles;
@@ -224,7 +230,7 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 		ct.Check(bl, -1, +1);
 		ct.Check(l,  -1,  0);
 		if (ct.value == '-')
-			ct.SetCost(0, 0, 1);
+			ct.SetValueMul(0, 0, 1);
 	}
 	
 	for (Tile& t : tiles) {
@@ -235,7 +241,7 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 			tf.position = pos;
 		}
 		if (t.is_begin) {
-			SE begin = externals.Create<WaypointNode>();
+			SE begin = externals.Create<RouteNode>();
 			begin->SetName("begin");
 			Transform& tf = *begin->Get<Transform>();
 			tf.position = pos;
@@ -245,7 +251,7 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 			rsrc.LinkManually(rsink);
 		}
 		if (t.is_end) {
-			SE end = externals.Create<WaypointNode>();
+			SE end = externals.Create<RouteNode>();
 			end->SetName("end");
 			Transform& tf = *end->Get<Transform>();
 			tf.position = pos;
@@ -260,7 +266,10 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 		RouteSource& src = *t.e->FindRouteSource();
 		for(int i = 0; i < 9; i++) {
 			if (i == 4) {
-				src.SetIdleCost(t.act_cost[4]);
+				src.SetIdleCost(t.act_value_mul[4]);
+			}
+			else if (i == 0 || i == 2 || i == 2*3+0 || i == 2*3+2) {
+				// pass
 			}
 			else if (t.invalid[i])
 				continue;
@@ -272,7 +281,13 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 				
 				Tile& dst = tiles[x + y * width];
 				RouteSink& sink = *dst.e->FindRouteSink();
-				src.LinkManually(sink);
+				
+				// Use SinkData what is provided in SimpleRouteNode::OnLink
+				void* src_user_arg;
+				src.LinkManually(sink, &src_user_arg);
+				ASSERT(src_user_arg);
+				SimpleRouteNode::SinkData& sink_data = *(SimpleRouteNode::SinkData*)src_user_arg;
+				sink_data.value_mul = t.act_value_mul[i];
 			}
 		}
 	}
@@ -324,7 +339,9 @@ void FindRoute(SE begin, SE end, EntityPool& route) {
 	
 	SearchData* end_data = 0;
 	
-	while (!frontier.IsEmpty()) {
+	int max_iters = 100000;
+	int iter = 0;
+	while (!frontier.IsEmpty() && iter++ < max_iters) {
 		Frontier::Item current = frontier.PickFirst();
 		UsedLink& ul = visited.Add();
 		ul.a = current.key;
@@ -346,11 +363,12 @@ void FindRoute(SE begin, SE end, EntityPool& route) {
 			continue;
 		
 		// Loop neighbours (end of steps, RouteSink interfaces)
-		const Vector<RouteSink*>& sinks = src->GetSinks();
-		for (RouteSink* sink : sinks) {
+		int dbg_i = 0;
+		for (const auto& c : src->GetSinks()) {
+			RouteSink& sink = *c.sink;
 			
 			// Get the neighbour entity from the interface object
-			Entity& dst = sink->AsComponentBase()->GetEntity();
+			Entity& dst = sink.AsComponentBase()->GetEntity();
 			
 			// Calculate heuristic value to the end
 			// The RouteSource interface of the neighbour entity calculates heuristics.
@@ -360,10 +378,15 @@ void FindRoute(SE begin, SE end, EntityPool& route) {
 			double heuristic_value = dst_src->GetHeuristicValue(*end_sink);
 			
 			// Normal A* stuff
-			double step_value = src->GetStepValue(*sink);
+			double step_value = src->GetStepValue(c);
 			double current_value = current_data.current_value + step_value;
 			double new_value = current_value + heuristic_value;
 			
+			// Debug printing
+			if (0) {
+				Transform& dst_t = *dst.Find<Transform>();
+				LOG(dbg_i << ": " << dst_t.ToString() << ": " << new_value);
+			}
 			
 			// This is rather complicated method to avoid useless searching.
 			
@@ -422,6 +445,8 @@ void FindRoute(SE begin, SE end, EntityPool& route) {
 				sink_data->came_from = current.value.arg;
 				sink_data->current_value = current_value;
 			}
+			
+			dbg_i++;
 		}
 	}
 	
@@ -495,22 +520,27 @@ double SimpleTransformValue(Entity& a, Entity& b) {
 	return -dist;
 }
 
-double SimpleRouteNode::GetStepValue(RouteSink& sink) {
-	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
+double SimpleRouteNode::GetStepValue(const RouteSource::Connection& c) {
+	SinkData& sink_data = *(SinkData*)c.src_arg;
+	double value = SimpleTransformValue(GetEntity(), c.sink->AsComponentBase()->GetEntity());
+	//ASSERT(sink_data.value_mul > 0.0);
+	double result = value * sink_data.value_mul;
+	return result;
 }
 
 double SimpleRouteNode::GetHeuristicValue(RouteSink& sink) {
 	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
 }
 
-
-
-
-double SimpleWaypointNode::GetStepValue(RouteSink& sink) {
-	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
+void* SimpleRouteNode::OnLink(InterfaceBase* iface) {
+	// this fails if component has both sink and source: RouteSink* sink = dynamic_cast<RouteSink*>(iface);
+	
+	if (iface->GetInterfaceType() == typeid(RouteSink))
+		return &data.Add();
+	
+	return 0;
 }
 
-double SimpleWaypointNode::GetHeuristicValue(RouteSink& sink) {
-	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
-}
+
+
 
