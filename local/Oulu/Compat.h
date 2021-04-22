@@ -114,6 +114,7 @@ template<> inline double ToDouble(const float& o) {return (double)o;}
 template<> inline double ToDouble(const double& o) {return (double)o;}
 template<> inline double ToDouble(const String& o) {return StrDbl(o);}
 template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));}
+template<> inline double ToDouble(const Value& o) {return o;}
 
 
 
@@ -191,6 +192,9 @@ class SystemDraw {
 public:
 	Size GetPageSize() const {return Size(0,0);}
 };
+
+template<> inline hash_t GetHashValue(const float& a)         { return memhash(&a, sizeof(a)); }
+
 END_UPP_NAMESPACE
 #endif
 
