@@ -23,9 +23,6 @@ CONSOLE_APP_MAIN {
 	EntityPool& root = es.GetRoot();
 	EntityPool& actors = root.AddPool("actors");
 	EntityPool& externals = root.AddPool("externals");
-	EntityPool& external_cls = root.AddPool("external_classes");
-	EntityPool& waypoints = root.AddPool("waypoints");
-	EntityPool& found_route = root.AddPool("found_route");
 	
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
@@ -34,17 +31,7 @@ CONSOLE_APP_MAIN {
     //mach.Add<RouteSystem>();
     
     
-    SE actor			= actors.Create<DemoActor>();
-    SE road_cls			= external_cls.Create<RouteRoad>();
-    SE ground_cls		= external_cls.Create<RouteGround>();
-    SE wall_cls			= external_cls.Create<RouteWall>();
-    SE water_cls		= external_cls.Create<RouteWater>();
-    
-    ArrayMap<int, SE> classes;
-    classes.Add('.', road_cls);
-    classes.Add('x', wall_cls);
-    classes.Add(' ', ground_cls);
-    classes.Add('-', water_cls);
+    SE actor			= actors.CreateConnectedInternal<DemoActor>();
     
     const char* map1 =
 		"|A|x| \n"
@@ -72,34 +59,10 @@ CONSOLE_APP_MAIN {
     const char* map = map2;
     
     try {
-	    TraverseMap(externals, map, classes);
+	    TraverseMap(externals, map);
+	    DumpTransforms("All map points", externals);
 	    
-	    DumpTransforms("All waypoints", externals);
-	    {
-		    SE begin	= externals.FindEntityByName("begin");
-		    SE end		= externals.FindEntityByName("end");
-		    if (begin.IsEmpty() || end.IsEmpty())
-		        throw Exc("Map did not have start and end points. Add 'A' and 'B' tiles.");
-		    
-		    FindRoute(begin, end, waypoints);
-		    DumpTransforms("Found route", waypoints);
-		    //DUMPC(route);
-		    
-		    MergeRoute(waypoints, found_route);
-		    //LOG("Merged pool:"); DUMPC(found_route.GetEntities());
-		    DumpTransforms("All valid routes", found_route);
-	    }
-	    
-	    {
-		    SE begin	= found_route.FindEntityByName("begin");
-		    SE end		= found_route.FindEntityByName("end");
-		    if (begin.IsEmpty() || end.IsEmpty())
-		        throw Exc("internal error");
-		    
-		    CopyTransformPos(begin, actor);
-		    RouteFollower* rflw = actor->Find<RouteFollower>();
-		    rflw->MakeRouteTo(end);
-	    }
+	    mach.Start();
 	    
 	    TimeStop t;
 	    while (mach.IsRunning()) {
@@ -118,7 +81,7 @@ CONSOLE_APP_MAIN {
 }
 
 
-void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) {
+void TraverseMap(EntityPool& externals, String map) {
 	Vector<String> lines = Split(map, "\n");
 	if (lines.IsEmpty())
 		throw Exc("No lines");
@@ -133,36 +96,6 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 			throw Exc("Unexpected length in line");
 	width /= 2;
 	
-	struct Tile : Moveable<Tile> {
-		double act_value_mul[9];
-		bool invalid[9];
-		int value, cls;
-		int x, y;
-		bool is_begin = false, is_end = false;
-		SE e;
-		
-		Tile() {
-			memset(&act_value_mul, 0, sizeof(act_value_mul));
-			memset(&invalid, 0, sizeof(invalid));
-		}
-		void SetValueMul(int x, int y, double d) {x += 1; y += 1; act_value_mul[y * 3 + x] = d;}
-		void Check(Tile* t, int x, int y) {
-			if (!t) {
-				x += 1; y += 1; invalid[y * 3 + x] = true;
-				return;
-			}
-			if (value == '.' && t->value == '.' && (x == 0 || y == 0))
-				SetValueMul(x, y, 0.2);
-			else if (value == 'x' || t->value == 'x')
-				SetValueMul(x, y, 1000000000.0);
-			else if (value == '-' && t->value == '-')
-				SetValueMul(x, y, 2.0);
-			else if (value == '-' || t->value == '-')
-				SetValueMul(x, y, 1.4);
-			else
-				SetValueMul(x, y, 1.0);
-		}
-	};
 	Vector<Tile> tiles;
 	tiles.SetCount(width * height);
 	{
@@ -203,10 +136,6 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 			}
 			else
 				t.value = value;
-			t.cls = classes.Find(t.value);
-			if (t.cls < 0)
-				throw Exc("Map value is not defined in classes: " + IntStr(value));
-			
 		}
 	}
 	
@@ -298,7 +227,7 @@ void TraverseMap(EntityPool& externals, String map, ArrayMap<int, SE>& classes) 
 
 // A* search
 
-void FindRoute(SE begin, SE end, EntityPool& route) {
+void FindRouteInPool(SE begin, SE end, EntityPool& route) {
 	route.Clear();
 	if (begin.IsEmpty() || end.IsEmpty())
 		throw Exc("empty begin or end shared-entity");
@@ -477,7 +406,7 @@ void MergeRoute(EntityPool& route, EntityPool& waypoints) {
 			this->sink = sink;
 		}
 	};
-	VectorMap<vec3, Item> ents;
+	ArrayMap<vec3, Item> ents;
 	
 	for (SharedEntity& e : waypoints.GetEntities())
 		ents.Add(e->Get<Transform>()->position).Set(&*e, e->FindRouteSource(), e->FindRouteSink());
@@ -543,4 +472,209 @@ void* SimpleRouteNode::OnLink(InterfaceBase* iface) {
 
 
 
+const char* Observer::act_names[] = {
+	"turn_left",
+	"turn_left_fast",
+	"turn_right",
+	"turn_right_fast",
+	"turn_up",
+	"turn_down",
+	"go_forward",
+	"go_forward_fast",
+	"go_backward",
+	"go_backward_fast",
+	"follow_route",
+	0
+};
 
+bool Observer::MakeRouteTo() {
+	EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+    SE begin	= waypoints.FindEntityByName("begin");
+    SE end		= waypoints.FindEntityByName("end");
+    if (begin.IsEmpty() || end.IsEmpty()) {
+        last_error = "route has no begin and end nodes";
+        return false;
+    }
+	
+	route.Clear();
+	
+	SE current = begin;
+	while (1) {
+		route.Add(current);
+		
+		if (current == end)
+			break;
+		
+		RouteSource* from_src = current->FindRouteSource();
+		if (!from_src) {
+			last_error = "entity has no RouteSource";
+			return false;
+		}
+		
+		const auto& sinks = from_src->GetSinks();
+		if (sinks.IsEmpty()) {
+			last_error = "RouteSource has no sinks";
+			return false;
+		}
+		
+		const auto& conn = sinks[0];
+		Entity& next = conn.sink->AsComponentBase()->GetEntity();
+		
+		current = next.GetSharedFromThis();
+	}
+	
+	route_i = 0;
+    
+	return true;
+}
+
+void Observer::TeleportToRouteBegin() {
+	if (route.GetCount())
+		CopyTransformPos(route[0], GetEntity().GetSharedFromThis());
+}
+
+void* Observer::OnLinkActionSource(ActionSource& src) {
+	ag = src.AddActionGroup(*this, ACT_COUNT, ATOM_COUNT);
+	for(int i = 0; i < ACT_COUNT; i++)
+		src.SetActionName(ag, i, act_names[i]);
+	return 0;
+}
+
+bool Observer::Act(ActionGroup ag, ActionId act) {
+	ASSERT(ag == this->ag);
+	if (act == FOLLOW_ROUTE) {
+		follow_route = true;
+		return true; // Keep updating act
+	}
+	else {
+		TODO
+	}
+	return false;
+}
+
+bool Observer::UpdateAct() {
+	if (follow_route) {
+		EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+		ASSERT(waypoints.GetCount());
+		if (route_i < waypoints.GetCount()) {
+			TODO;
+			return true;
+		}
+		return false;
+	}
+	return false;
+}
+
+
+
+
+
+
+
+
+void DummyActor::Initialize() {
+	Shared<ActionSystem> as = GetMachine().Get<ActionSystem>();
+	if (as)
+		as->Add(this);
+	
+	auto& g = groups.Add();
+	g.actions.Add(NameCallback("find_route", THISBACK(FindRoute)));
+}
+
+void DummyActor::Uninitialize() {
+	Shared<ActionSystem> as = GetMachine().Get<ActionSystem>();
+	if (as)
+		as->Remove(this);
+}
+
+void DummyActor::EmitActionSource(float dt) {
+	if (cur_action.IsEmpty()) {
+		if (!has_route) {
+			Act("find_route");
+		}
+		else {
+			Act("follow_route");
+			ASSERT(cur_action.GetCount());
+		}
+	}
+	if (updated_sink && !updated_sink->UpdateAct())
+		updated_sink = 0;
+}
+
+void DummyActor::OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) {
+	cur_action.Clear();
+}
+
+ActionGroup DummyActor::AddActionGroup(ActionSink& sink, int act_count, int atom_count) {
+	int i = groups.GetCount();
+	auto& g = groups.Add();
+	g.sink = &sink;
+	g.actions.SetCount(act_count);
+	return i;
+}
+
+void DummyActor::SetActionName(ActionGroup ag, ActionId act_i, String name) {
+	groups[ag].actions[act_i] = NameCallback(name, THISBACK1(DoSinkAction, ActGroupId(ag, act_i)));
+}
+
+void DummyActor::SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) {
+	Panic("not implemented");
+}
+
+void DummyActor::SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) {
+	Panic("not implemented");
+}
+
+void DummyActor::RefreshActionPlan() {
+	Panic("not implemented");
+}
+
+void DummyActor::Act(String cmd) {
+	for(auto& ag : groups) {
+		for(auto& act : ag.actions) {
+			if (act.a == cmd) {
+				LOG("DummyActor: starting action '" << cmd << "'");
+				cur_action = act.a;
+				act.b();
+				return;
+			}
+		}
+	}
+}
+
+void DummyActor::FindRoute() {
+	EntityPool& root = GetMachine().Get<EntityStore>()->GetRoot();
+	EntityPool& externals = root.GetAddPool("externals");
+	EntityPool& found_route = root.GetAddPool("found_route");
+	EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+	
+    SE begin	= externals.FindEntityByName("begin");
+    SE end		= externals.FindEntityByName("end");
+    if (begin.IsEmpty() || end.IsEmpty())
+        throw Exc("Map did not have start and end points. Add 'A' and 'B' tiles.");
+    
+    FindRouteInPool(begin, end, found_route);
+    DumpTransforms("Found route", found_route);
+    
+    MergeRoute(found_route, waypoints);
+    DumpTransforms("All valid routes", waypoints);
+    
+    
+    Observer* rflw = GetEntity().Find<Observer>();
+    if (!rflw->MakeRouteTo())
+        throw Exc(rflw->GetLastError());
+    
+    rflw->TeleportToRouteBegin();
+    
+    cur_action.Clear();
+    has_route = true;
+}
+
+void DummyActor::DoSinkAction(ActGroupId a) {
+	Group& g = groups[a.a];
+	ASSERT(g.sink);
+	if (g.sink) {
+		if (g.sink->Act(a.a, a.b))
+			updated_sink = g.sink;
+	}
+}
