@@ -32,7 +32,7 @@ public:
 	bool IsMultiConnection() const {return is_multi_connection;}
 	bool IsLinkable() const {return is_multi_connection || conns.IsEmpty();}
 	
-	virtual void OnLink(InterfaceBase* iface) {}
+	virtual void* OnLink(InterfaceBase* iface) {return NULL;}
 	virtual void OnUnlink(InterfaceBase* iface) {}
 	virtual ComponentBase* AsComponentBase() = 0;
 	virtual TypeId GetInterfaceType() = 0;
@@ -52,23 +52,28 @@ void InterfaceDebugPrint(TypeId type, String s);
 
 template <class I, class O>
 struct InterfaceSource : public InterfaceBase {
+	struct Connection : Moveable<Connection> {
+		O* sink;
+		void* src_arg = 0;
+		void* sink_arg = 0;
+		Connection(O* o) {sink = o;}
+		bool operator==(const Connection& c) const {return sink == c.sink;}
+	};
 	
-	bool LinkInterface(O& sink) {
-		int found = -1;
-		VectorFindAdd(sinks, &sink, &found);
-		return found < 0;
-	}
-	bool UnlinkInterface(O& sink) {return VectorRemoveKey(sinks, &sink) > 0;}
-	
-	bool LinkManually(O& sink) {return Link0(sink);}
+	bool LinkManually(O& sink, void** ret_src_arg=0, void** ret_sink_arg=0) {return Link0(sink, ret_src_arg, ret_sink_arg);}
 	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
 	
-	const Vector<O*>& GetSinks() const {return sinks;}
+	const Vector<Connection>& GetSinks() const {return sinks;}
+	void SetUserArg(int conn_i, void* arg) {sinks[conn_i].arg = arg;}
+	
+	virtual bool Link(O& sink) {return true;}
+	virtual bool Unlink(O& sink) {return true;}
+	virtual void Signal() {}
 	
 protected:
 	friend class ConnectorSystem;
 	
-	Vector<O*> sinks;
+	Vector<Connection> sinks;
 	
 	#ifdef flagDEBUG
 	static const bool print_debug = true;
@@ -76,28 +81,42 @@ protected:
 	static const bool print_debug = false;
 	#endif
 	
-	virtual bool Link(O& sink) {return LinkInterface(sink);}
-	virtual bool Unlink(O& sink) {return UnlinkInterface(sink);}
-	virtual void Signal() {}
+	bool LinkInterface(O& sink, void**& src_arg, void**& sink_arg) {
+		int found = -1;
+		Connection& conn = VectorFindAdd(sinks, Connection(&sink), &found);
+		src_arg = &conn.src_arg;
+		sink_arg = &conn.sink_arg;
+		return found < 0;
+	}
+	bool UnlinkInterface(O& sink) {
+		return VectorRemoveKey(sinks, Connection(&sink)) > 0;
+	}
 	
-	bool Link0(O& output) {
+	
+	bool Link0(O& sink, void** ret_src_arg=0, void** ret_sink_arg=0) {
 		ASSERT(conns.IsEmpty() || IsMultiConnection());
-		if (Find(&output) >= 0)
+		if (Find(&sink) >= 0)
 			return false;
-		if (Link(output)) {
+		void** src_arg;
+		void** sink_arg;
+		if (Link(sink) && LinkInterface(sink, src_arg, sink_arg)) {
 			if (print_debug) {
 				String s;
 				TypeId t = GetTypeId<I>();
 				s << t.CleanDemangledName() <<
 					"<" << GetComponentBaseTypeString(AsComponentBase()) << "> linked to " <<
 					GetTypeId<O>().CleanDemangledName() <<
-					"<" << GetComponentBaseTypeString(output.AsComponentBase()) << ">";
+					"<" << GetComponentBaseTypeString(sink.AsComponentBase()) << ">";
 				InterfaceDebugPrint(t, s);
 			}
-			AddConnection(&output);
-			output.AddConnection(this);
-			OnLink(&output);
-			output.OnLink(this);
+			AddConnection(&sink);
+			sink.AddConnection(this);
+			*src_arg = OnLink(&sink);
+			*sink_arg = sink.OnLink(this);
+			if (ret_src_arg)
+				*ret_src_arg = *src_arg;
+			if (ret_sink_arg)
+				*ret_sink_arg = *sink_arg;
 			return true;
 		}
 		return false;
@@ -109,7 +128,7 @@ protected:
 		if (o) {
 			OnUnlink(iface);
 			iface->OnUnlink(this);
-			if (Unlink(*o)) {
+			if (Unlink(*o) && UnlinkInterface(*o)) {
 				if (print_debug) {
 					TypeId t = GetTypeId<I>();
 					String s;
@@ -159,7 +178,7 @@ struct DisplaySource : IO_IN(Display) {
 	virtual void EmitDisplaySource(float dt) = 0;
 	virtual bool Render(const DisplaySinkConfig& config, SystemDraw& draw) = 0;
 	
-	virtual void SetTitle(String s) {for (DisplaySink* sink : GetSinks()) sink->SetTitle(s);}
+	virtual void SetTitle(String s) {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
 	
 };
 
@@ -569,7 +588,7 @@ struct RouteSource : IO_IN(Route) {
 	
 	
 	virtual void SetIdleCost(double d) = 0;
-	virtual double GetStepValue(RouteSink& sink) = 0;
+	virtual double GetStepValue(const Connection& conn) = 0;
 	virtual double GetHeuristicValue(RouteSink& sink) = 0;
 };
 

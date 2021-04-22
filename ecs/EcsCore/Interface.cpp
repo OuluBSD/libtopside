@@ -55,15 +55,15 @@ void AudioSource::DefaultEmitAudioSource(float dt, int sink_limit) {
 		ASSERT_(sinks.GetCount() <= sink_limit,
 			"Only the support for single audio sink is implemented currently");
 		int i = 0;
-		for(AudioSink* sink : sinks) {
+		for(const auto& c : sinks) {
 			if (i++ >= sink_limit)
 				break;
-			sink->RecvAudioSink(*this, dt);
+			c.sink->RecvAudioSink(*this, dt);
 		}
 	}
 	else {
-		for(AudioSink* sink : sinks)
-			sink->RecvAudioSink(*this, dt);
+		for(const auto& c : sinks)
+			c.sink->RecvAudioSink(*this, dt);
 	}
 }
 
