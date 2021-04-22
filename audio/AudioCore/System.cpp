@@ -189,12 +189,13 @@ void MidiFileComponent::EmitMidi(float dt) {
 	
 }
 
-void MidiFileComponent::OnLink(InterfaceBase* iface) {
+void* MidiFileComponent::OnLink(InterfaceBase* iface) {
 	ComponentBase* comp = iface->AsComponentBase();
 	ASSERT(comp);
 	MidiSink* sink = comp->AsMidiSink();
 	ASSERT(sink);
 	sink->Configure(file);
+	return NULL;
 }
 
 void MidiFileComponent::CollectTrackEvents(int i) {
@@ -221,9 +222,9 @@ void MidiFileComponent::EmitTrack(int i) {
 	
 	//for(const Midi::Event* ev : tmp.midi) {LOG("track " << i << ": " << ev->ToString());}
 	
-	for (MidiSink* sink : MidiSource::GetSinks())
-		if (sink->AcceptsTrack(i))
-			sink->RecvMidi(tmp);
+	for (const auto& c : MidiSource::GetSinks())
+		if (c.sink->AcceptsTrack(i))
+			c.sink->RecvMidi(tmp);
 	
 }
 

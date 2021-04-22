@@ -254,7 +254,7 @@ public:
 };
 
 
-template <class K=int, class V=double, class Sorter=StdLess<V> >
+template <class K=int, class V=double, class Sorter=StdGreater<V> >
 struct TopValueSorterLinkedList {
 	struct Item : Moveable<Item> {
 		K key;
@@ -358,7 +358,7 @@ struct TopValueSorterLinkedList {
 			last = first;
 		}
 		// default: value <= last->value
-		else if (sorter(value, last->value) || !sorter(last->value, value)) {
+		else if (sorter(last->value, value) || !sorter(value, last->value)) {
 			if (max_count < 0 || (max_count >= 0 && size < max_count)) {
 				size++;
 				Item* it = pool.New();
@@ -372,8 +372,8 @@ struct TopValueSorterLinkedList {
 			int i = 0;
 			Item* iter = first;
 			while (iter) {
-				// default iter->value < value
-				if (sorter(iter->value, value)) {
+				// default value > iter->value
+				if (sorter(value, iter->value)) {
 					Item* new_link = pool.New();
 					ASSERT(new_link);
 					if (iter->prev) {

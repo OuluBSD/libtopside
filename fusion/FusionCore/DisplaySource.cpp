@@ -56,8 +56,8 @@ bool FusionDisplaySource::LoadResources() {
 }
 
 void FusionDisplaySource::EmitDisplaySource(float dt) {
-	for(DisplaySink* sink : DisplaySource::GetSinks())
-		sink->RecvDisplaySink(*this, dt);
+	for(const auto& c : DisplaySource::GetSinks())
+		c.sink->RecvDisplaySink(*this, dt);
 }
 
 bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& draw) {
@@ -75,7 +75,7 @@ bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& dr
 }
 
 bool FusionDisplaySource::Link(DisplaySink& sink) {
-	return DisplaySource::LinkInterface(sink);
+	return true;
 }
 
 void FusionDisplaySource::SetVideoSize(Size sz) {

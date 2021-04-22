@@ -146,7 +146,7 @@ public:
 	void Uninitialize() override;
 	void EmitMidi(float dt) override;
 	bool IsSupported(DevType type) override {return true;}
-	void OnLink(InterfaceBase* iface) override;
+	void* OnLink(InterfaceBase* iface) override;
 	bool OpenFilePath(String path);
 	void Clear();
 	void CollectTrackEvents(int i);

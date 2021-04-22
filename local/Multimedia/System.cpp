@@ -113,8 +113,8 @@ void MultiMediaComponent::EmitMedia() {
 	if (vi.TestClearNewFrame()) {
 		media_buf.vid = &vi.cap->GetVideo();
 		media_buf.snd = &vi.cap->GetSound();
-		for(MediaSink* sink : MediaSource::GetSinks())
-			sink->RecvMedia(media_buf);
+		for(const auto& c : MediaSource::GetSinks())
+			c.sink->RecvMedia(media_buf);
 	}
 	
 	if (vi.flag.IsRunning()) {
