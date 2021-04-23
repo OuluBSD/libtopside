@@ -6,8 +6,8 @@ NAMESPACE_OULU_BEGIN
 
 class EntityListCtrl : public ParentCtrl {
 	ArrayCtrl list;
-	Shared<EntityStore> es;
-	SharedEntity selected;
+	Ref<EntityStore> es;
+	EntityRef selected;
 	uint64 last_hash = 0;
 
 	void OnCursor();
@@ -20,7 +20,7 @@ public:
 	void Updated() override;
 	void Data();
 	
-	SharedEntity GetSelected() {return selected;}
+	EntityRef GetSelected() {return selected;}
 	
 	Callback WhenEntityChanged;
 	
@@ -30,7 +30,7 @@ public:
 class EntityContentCtrl : public ParentCtrl {
 	TreeCtrl tree;
 	Image ent_icon, comp_icon, iface_icon;
-	SharedEntity ent;
+	EntityRef ent;
 	int64 ent_changed_time = -1;
 	VectorMap<int, int> node_comps;
 	
@@ -43,7 +43,7 @@ public:
 	
 	void Updated() override;
 	
-	void SetEntity(SharedEntity e) {ent = e;}
+	void SetEntity(EntityRef e) {ent = e;}
 	void GetCursor(ComponentBase*& c);
 	
 	Callback WhenContentCursor;
@@ -54,7 +54,7 @@ public:
 class InterfaceListCtrl : public ParentCtrl {
 	Vector<InterfaceBase*> ifaces;
 	ArrayCtrl list;
-	SharedEntity ent;
+	EntityRef ent;
 	int64 ent_changed_time = -1;
 	int write_cursor;
 	
@@ -79,7 +79,7 @@ public:
 	
 	void Updated() override;
 	
-	void SetEntity(SharedEntity e) {ent = e;}
+	void SetEntity(EntityRef e) {ent = e;}
 	void GetCursor(ComponentBase*& c, InterfaceBase*& i);
 	
 	Callback WhenInterfaceCursor;

@@ -14,7 +14,7 @@ void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
 void PrimitiveShape::Signal() {
 	for(InterfaceBase* conn: GetConnections()) {
 		ModelSource* in = (ModelSource*)conn;
-		/*Shared<PipelineData> pdata = in->GetData();
+		/*Ref<PipelineData> pdata = in->GetData();
 		if (pdata) {
 			pdata->PutModel(model, true);
 		}*/
@@ -57,7 +57,7 @@ void ModelComponent::Signal() {
 		for(InterfaceBase* conn: GetConnections()) {
 			ModelSource* in = (ModelSource*)conn;
 			TODO
-			/*Shared<PipelineData> pdata = in->GetData();
+			/*Ref<PipelineData> pdata = in->GetData();
 			if (pdata) {
 				pdata->PutModel(loader.model, can_pick);
 			}*/

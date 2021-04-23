@@ -39,7 +39,7 @@ RENDER_APP_MAIN {
 	    reg.SetAppName("Tutorial0");
 	    
 	    if (mach.Start()) {
-			SharedEntity app = ents.Create<StandaloneWindow>();
+			EntityRef app = ents.Create<StandaloneWindow>();
 			app->Add<Tutorial0>();
 			app->Find<Connector>()->ConnectAll();
 			

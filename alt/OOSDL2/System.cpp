@@ -145,7 +145,7 @@ void SDL2ScreenComponent::SetTitle(String s) {
 void SDL2EventsComponent::Initialize() {
 	OBJ_CREATE
 	
-	Shared<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
+	Ref<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
 	if (!ev_sys)
 		return;
 	
@@ -155,7 +155,7 @@ void SDL2EventsComponent::Initialize() {
 void SDL2EventsComponent::Uninitialize() {
 	obj.Clear();
 	
-	Shared<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
+	Ref<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
 	if (ev_sys)
 		ev_sys->RemoveControllable(*this);
 }
@@ -339,7 +339,7 @@ void SDL2ContextComponent::Initialize() {
 	DLOG("SDL2ContextComponent::Initialize");
 	Entity& e = GetEntity();
 	
-	Shared<SDL2System> sdl2_sys = e.GetMachine().Get<SDL2System>();
+	Ref<SDL2System> sdl2_sys = e.GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
 		sdl2_sys	-> AddContext(*this);
 	
@@ -378,7 +378,7 @@ void SDL2ContextComponent::Initialize() {
 }
 
 void SDL2ContextComponent::Uninitialize() {
-	Shared<SDL2System> sdl2_sys = GetEntity().GetMachine().Get<SDL2System>();
+	Ref<SDL2System> sdl2_sys = GetEntity().GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
 		sdl2_sys	-> RemoveContext(*this);
 	

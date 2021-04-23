@@ -32,6 +32,7 @@ NAMESPACE_OULU_END
 #include "Index.h"
 #include <CoreAlt/Container.h>
 #include "Container.h"
+#include "Locked.h"
 #include "RTuple.h"
 #include <CoreAlt/Shared.h>
 #include "Util.h"

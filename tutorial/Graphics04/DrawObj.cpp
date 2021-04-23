@@ -98,10 +98,10 @@ void Tutorial4::DrawObj(float f2, SystemDraw& fb, bool use_texture) {
 		vec4{0,		0,	 -1/c,		1}
 	};
 	
-	Shared<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+	Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
 	float angle = (use_texture ? -1 : +1) * (float)iter / (float)iters_in_phase * (2.0 * M_PI);
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
-	for(SharedEntity& e : store->GetEntities()) {
+	for(EntityRef& e : store->GetEntities()) {
 		if (loader.model) {
 			for(const Mesh& mesh : loader.model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();

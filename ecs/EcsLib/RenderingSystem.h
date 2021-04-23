@@ -8,7 +8,7 @@ class RenderingSystem : public System<RenderingSystem> {
 	bool invalid;
 	Size vscreen_sz;
 	
-	Shared<EntityStore> ents;
+	Ref<EntityStore> ents;
 	Vector<DisplaySource*> screens;
 	
 	
@@ -36,13 +36,13 @@ protected:
 };
 
 template <class T> void AddDisplaySource(T& o) {
-	Shared<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
+	Ref<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
 	if (sys)
 		sys	-> AddDisplaySource(o);
 }
 
 template <class T> void RemoveRenderable(T& o) {
-	Shared<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
+	Ref<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
 	if (sys)
 		sys	-> RemoveRenderable(o);
 }
@@ -57,7 +57,7 @@ class DefaultRenderApp :
 	public CameraSource
 {
 	One<Shader> simple_shader;
-	Shared<EntityStore> ents;
+	Ref<EntityStore> ents;
 	
 	VectorRendModel rends;
 	

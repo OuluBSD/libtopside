@@ -8,7 +8,7 @@ class Connector;
 
 class ConnectorSystem : public System<ConnectorSystem> {
 	Index<void*> conns;
-	Weak<EntityStore> es;
+	Ref<EntityStore> es;
 	
 public:
 	using System::System;

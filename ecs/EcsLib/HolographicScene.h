@@ -1,6 +1,8 @@
 #ifndef _EcsLib_HolographicScene_h_
 #define _EcsLib_HolographicScene_h_
 
+#if 0
+
 NAMESPACE_OULU_BEGIN
 
 
@@ -20,8 +22,8 @@ public:
 	
 	void UpdateCurrentPrediction();
 	
-	void AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
-	void RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener);
+	void AddPredictionUpdateListener(Ref<IPredictionUpdateListener> listener);
+	void RemovePredictionUpdateListener(Ref<IPredictionUpdateListener> listener);
 	
 protected:
 	bool Initialize() override;
@@ -46,4 +48,5 @@ private:
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

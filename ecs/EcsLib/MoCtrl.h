@@ -2,6 +2,8 @@
 #define _EcsCore_MoCtrl_h_
 
 
+#if 0
+
 NAMESPACE_OULU_BEGIN
 
 
@@ -42,4 +44,5 @@ private:
 NAMESPACE_OULU_END
 
 
+#endif
 #endif

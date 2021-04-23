@@ -52,9 +52,9 @@ void EntityListCtrl::OnCursor() {
 	int cursor = list.GetCursor();
 	int ent_i = list.Get(cursor, 0);
 	
-	SharedEntity new_sel;
+	EntityRef new_sel;
 	
-	Vector<SharedEntity>& v = es->GetEntities();
+	Vector<EntityRef>& v = es->GetEntities();
 	if (ent_i >= 0 && ent_i < v.GetCount())
 		new_sel = v[ent_i];
 	
@@ -67,11 +67,11 @@ void EntityListCtrl::OnCursor() {
 void EntityListCtrl::Data() {
 	if (!es)
 		return;
-	Vector<SharedEntity>& v = es->GetEntities();
+	Vector<EntityRef>& v = es->GetEntities();
 	
 	int cursor = -1;
 	int i = 0;
-	for (SharedEntity& e : v) {
+	for (EntityRef& e : v) {
 		if (selected == e)
 			cursor = i;
 		list.Set(i, 0, i);

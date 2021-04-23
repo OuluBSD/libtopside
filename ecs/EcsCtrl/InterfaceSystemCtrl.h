@@ -27,7 +27,7 @@ class InterfaceSystemCtrl : public ParentCtrl {
 	ParentCtrl ent_cont;
 	
 	VectorMap<int, int> node_ifaces;
-	SharedEntity sel_ent;
+	EntityRef sel_ent;
 	InterfaceBase* sel_iface = 0;
 	InterfaceCtrl* active_ctrl = 0;
 	

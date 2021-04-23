@@ -151,7 +151,7 @@ void FusionComponent::Close() {
 void FusionComponent::Initialize() {
 	DLOG("FusionComponent(" << GetTypeString() << ")::Initialize");
 	
-	Shared<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> AddComponent(*this);
 }
@@ -164,7 +164,7 @@ void FusionComponent::Uninitialize() {
 		ctx = 0;
 	}
 	
-	Shared<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> RemoveComponent(*this);
 	

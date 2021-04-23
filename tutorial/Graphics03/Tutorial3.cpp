@@ -133,10 +133,10 @@ struct Tutorial3 : public Component<Tutorial3>, public DisplaySink {
 		}
 		memcpy(zbuffer, zbuffer_empty, width * height * 4);
 		
-		Shared<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+		Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
 		float angle = (use_texture ? -1 : +1) * (float)iter / (float)iters_in_phase * (2.0 * M_PI);
 		vec3 light_dir {sin(angle), 0.0, cos(angle)};
-		for(SharedEntity& e : store->GetEntities()) {
+		for(EntityRef& e : store->GetEntities()) {
 			if (loader.model) {
 				for(const Mesh& mesh : loader.model->GetMeshes()) {
 					int tri_count = mesh.GetTriangleCount();

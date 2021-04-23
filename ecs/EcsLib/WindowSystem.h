@@ -7,7 +7,7 @@ NAMESPACE_OULU_BEGIN
 
 
 class WindowSystem : public System<WindowSystem>, public Windows {
-	Shared<EntityStore> ents;
+	Ref<EntityStore> ents;
 	//Shader simple_shader;
 	
 public:

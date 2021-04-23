@@ -4,15 +4,19 @@
 
 NAMESPACE_OULU_BEGIN
 
+class EntityPool;
 
 
-class EntityPool {
+typedef RefLinkedList<Entity> EntityVec;
+typedef RefLinkedList<EntityPool> EntityPoolVec;
+
+class EntityPool : public LockedScopeEnabler<EntityPool> {
 	Machine& machine;
 	EntityPool* parent = 0;
 	BitField<dword> freeze_bits;
 	String name;
 	
-	SharedEntity CreateFromComponentMap(ComponentMap components);
+	EntityRef CreateFromComponentMap(ComponentMap components);
 	
 public:
 	typedef EntityPool CLASSNAME;
@@ -43,23 +47,25 @@ public:
 	
 	EntityPool*			GetParent() const {return parent;}
 	Machine&			GetMachine() {return machine;}
-	int					GetPoolCount() const {return pools.GetCount();}
-	EntityPool&			GetPool(int i) {return pools[i];}
-	const EntityPool&	GetPool(int i) const {return pools[i];}
-	int					GetCount() const {return objects.GetCount();}
-	SharedEntity&		Get(int i) {return objects[i];}
-	const SharedEntity&	Get(int i) const {return objects[i];}
+	bool				HasEntities() const;
+	bool				HasEntityPools() const;
+	//int					GetPoolCount() const {return pools.GetCount();}
+	//EntityPoolRef			GetPool(int i) {return pools[i];}
+	//const EntityPoolRef	GetPool(int i) const {return pools[i];}
+	//int					GetCount() const {return objects.GetCount();}
+	//EntityRef		Get(int i) {return objects[i];}
+	//const EntityRef	Get(int i) const {return objects[i];}
 	String				GetName() const {return name;}
 	
 	void				Initialize(Entity& e, String prefab="Custom");
-	SharedEntity		CreateEmpty();
-	SharedEntity		Clone(const Entity& e);
+	EntityRef		CreateEmpty();
+	EntityRef		Clone(const Entity& e);
 	
 	template<typename PrefabT>
-	SharedEntity Create() {
+	EntityRef Create() {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		SharedEntity e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
+		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
 		if (e)
 			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -67,10 +73,10 @@ public:
 	}
 	
 	template<typename PrefabT>
-	SharedEntity CreateConnectedArea(ConnectorArea a) {
+	EntityRef CreateConnectedArea(ConnectorArea a) {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		SharedEntity e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
+		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
 		if (e)
 			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -82,10 +88,10 @@ public:
 		return e;
 	}
 	
-	template<typename PrefabT> SharedEntity CreateConnectedCurrent()		{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CURRENT);}
-	template<typename PrefabT> SharedEntity CreateConnectedInternal()		{return CreateConnectedArea<PrefabT>(CONNAREA_INTERNAL);}
-	template<typename PrefabT> SharedEntity CreateConnectedChildrenOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CHILDREN_ONLY);}
-	template<typename PrefabT> SharedEntity CreateConnectedParentsOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_PARENTS_ONLY);}
+	template<typename PrefabT> EntityRef CreateConnectedCurrent()		{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CURRENT);}
+	template<typename PrefabT> EntityRef CreateConnectedInternal()		{return CreateConnectedArea<PrefabT>(CONNAREA_INTERNAL);}
+	template<typename PrefabT> EntityRef CreateConnectedChildrenOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CHILDREN_ONLY);}
+	template<typename PrefabT> EntityRef CreateConnectedParentsOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_PARENTS_ONLY);}
 	
 	template<typename... ComponentTs>
 	Vector < RTuple < Entity*, ComponentTs*... >> GetComponentsWithEntity() {
@@ -137,19 +143,19 @@ public:
 		return 0;
 	}
 	
-	SharedEntity FindEntityByName(String name) {
+	EntityRef FindEntityByName(String name) {
 		for (auto& object : objects)
 			if (object->GetName() == name)
 				return object;
-		return SharedEntity();
+		return EntityRef();
 	}
 	
-	void ReleaseEntity(Entity& ent) {
+	/*void ReleaseEntity(Entity& ent) {
 		for (int i = 0; i < objects.GetCount(); i++) {
 			if (objects[i].Get() == &ent)
 				objects.Remove(i--);
 		}
-	}
+	}*/
 	
 	template<typename Tuple>
 	bool AllValidComponents(const Tuple& components) {
@@ -160,27 +166,35 @@ public:
 		return all_valid_components;
 	}
 	
-	Vector<SharedEntity>& GetEntities() {return objects;}
+	RefLinkedList<Entity>& GetEntities() {return objects;}
+	RefLinkedList<EntityPool>& GetPools() {return pools;}
 	
-	EntityPool& AddPool(String name="") {
-		EntityPool& p = pools.Add(new EntityPool(machine));
-		p.parent = this;
-		p.SetName(name);
+	EntityPoolRef AddPool(String name="") {
+		EntityPoolRef p = pools.Add(new EntityPool(machine));
+		p->parent = this;
+		p->SetName(name);
 		return p;
 	}
 	
-	EntityPool& GetAddPool(String name) {
-		for (EntityPool& pool : pools)
-			if (pool.GetName() == name)
+	EntityPoolRef GetAddPool(String name) {
+		for (EntityPoolRef& pool : pools)
+			if (pool->GetName() == name)
 				return pool;
 		return AddPool(name);
 	}
+	
+	RefLinkedList<Entity>::Iterator			begin();
+	RefLinkedList<Entity>::Iterator			end();
+	
+	RefLinkedList<Entity>::Iterator			Begin();
+	RefLinkedList<EntityPool>::Iterator		BeginPool();
+	
 private:
 	
-	Vector<SharedEntity>	objects;
-	Array<EntityPool>		pools;
+	RefLinkedList<Entity>			objects;
+	RefLinkedList<EntityPool>		pools;
 	
-	void AddEntity(SharedEntity obj);
+	void AddEntity(EntityRef obj);
 	
 };
 
@@ -188,22 +202,22 @@ private:
 class EntityVisitor {
 	struct Item : Moveable<Item> {
 		int pool_pos;
-		EntityPool* pool;
-		int ent_pos;
-		Entity* ent;
+		EntityPoolVec::Iterator pool;
+		EntityVec::Iterator ent;
+		bool finished = false;
 	};
 	
-	EntityPool& base;
+	EntityPoolVec& base;
 	BitField<dword> freeze_checks;
 	Vector<Item> stack;
-	Entity* cur = 0;
+	EntityRef cur;
 	int mode;
 	
 protected:
 	bool FindNextDepthFirst();
 	bool NewPoolNextDepthFirst();
 	void PoolIncPopWhileTop();
-	void PoolPushSub(int pos);
+	void PoolPushSub();
 	bool PoolFindNextDepthFirst();
 public:
 	enum {
@@ -212,16 +226,16 @@ public:
 		POOL_CHILDREN_ONLY
 	};
 	
-	EntityVisitor(EntityPool& pool, int mode=POOL_CURRENT_AND_CHILDREN);
+	EntityVisitor(EntityPoolVec& pool, int mode=POOL_CURRENT_AND_CHILDREN);
 	EntityVisitor(Machine& m, int mode=POOL_CURRENT_AND_CHILDREN);
 	EntityVisitor(Entity& e, int mode=POOL_CURRENT_AND_CHILDREN);
 	
 	void Reset();
 	void Skip(EntityPool::Bit entpool_bit);
-	Entity* GetCurrent() const {return cur;}
+	EntityRef GetCurrent() const {return cur;}
 	
 	Entity* operator->();
-	Entity* operator*();
+	EntityRef operator*();
 	operator bool() const;
 	void operator++(int);
 	
@@ -245,8 +259,7 @@ class EntityParentVisitor {
 	EntityPool& base;
 	BitField<dword> freeze_checks;
 	EntityPool* cur_pool;
-	int ent_pos = -1;
-	Entity* cur = 0;
+	EntityVec::Iterator cur;
 	
 	bool FindNextChildFirst();
 	
@@ -256,10 +269,10 @@ public:
 	
 	void Reset();
 	void Skip(EntityPool::Bit entpool_bit);
-	Entity* GetCurrent() const {return cur;}
+	EntityRef GetCurrent() const {return *cur;}
 	
 	Entity* operator->();
-	Entity* operator*();
+	EntityRef operator*();
 	operator bool() const;
 	void operator++(int);
 	
@@ -268,18 +281,18 @@ public:
 class EntityChildrenVisitor : public EntityVisitor {
 	
 public:
-	EntityChildrenVisitor(EntityPool& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
-	EntityChildrenVisitor(Machine& m)		: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
-	EntityChildrenVisitor(Entity& e)		: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(EntityPoolVec& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(Machine& m)			: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(Entity& e)			: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
 	
 };
 
 class EntityCurrentVisitor : public EntityVisitor {
 	
 public:
-	EntityCurrentVisitor(EntityPool& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
-	EntityCurrentVisitor(Machine& m)		: EntityVisitor(m, POOL_CURRENT_ONLY) {}
-	EntityCurrentVisitor(Entity& e)			: EntityVisitor(e, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(EntityPoolVec& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(Machine& m)			: EntityVisitor(m, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(Entity& e)				: EntityVisitor(e, POOL_CURRENT_ONLY) {}
 	
 };
 
@@ -320,14 +333,17 @@ public:
 
 
 class EntityStore : public System<EntityStore> {
-	EntityPool			root;
+	EntityPoolVec		root;
 	
 public:
 	using System::System;
 	
-	EntityStore(Machine& m) : root(m), System<EntityStore>(m) {}
+	EntityStore(Machine& m) : System<EntityStore>(m) {
+		root.Add(new EntityPool(machine));
+	}
 	
-	EntityPool& GetRoot()	{return root;}
+	EntityPoolRef GetRoot()	{return *root.begin();}
+	EntityPoolVec& GetRootVec()	{return root;}
 	
 protected:
 	void Update(float) override;
@@ -336,6 +352,8 @@ protected:
 	
 	
 };
+
+typedef Ref<EntityStore> EntityStoreRef;
 
 
 NAMESPACE_OULU_END

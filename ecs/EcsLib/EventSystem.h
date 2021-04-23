@@ -5,7 +5,7 @@
 NAMESPACE_OULU_BEGIN
 
 class EventSystem : public System<EventSystem> {
-	Shared<EntityStore> ents;
+	Ref<EntityStore> ents;
 	
 	Vector<ControllerSource*> outputs;
 	Vector<MidiSource*> midis;
@@ -35,25 +35,25 @@ protected:
 };
 
 template <class T> void AddControllable(T& o) {
-	Shared<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
+	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
 	if (sys)
 		sys	-> AddControllable(o);
 }
 
 template <class T> void RemoveControllable(T& o) {
-	Shared<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
+	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
 	if (sys)
 		sys	-> RemoveControllable(o);
 }
 
 template <class T> void AddMidi(T& o) {
-	Shared<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
+	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
 	if (sys)
 		sys	-> AddMidi(o);
 }
 
 template <class T> void RemoveMidi(T& o) {
-	Shared<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
+	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
 	if (sys)
 		sys	-> RemoveMidi(o);
 }

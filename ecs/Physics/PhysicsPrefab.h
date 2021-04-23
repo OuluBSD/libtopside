@@ -37,7 +37,7 @@ struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroun
 		
 		components.Get<Renderable>()->cb << components.Get<StaticGroundPlane>()->GetPaintCallback();
 		
-		Shared<PhysicsSystem> w = store.GetMachine().Get<PhysicsSystem>();
+		Ref<PhysicsSystem> w = store.GetMachine().Get<PhysicsSystem>();
 		PhysicsSystem& ow = dynamic_cast<PhysicsSystem&>(*w);
 		StaticGroundPlane* plane = components.Get<StaticGroundPlane>();
 		ASSERT(plane);

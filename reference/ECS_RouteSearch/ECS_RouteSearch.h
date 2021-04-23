@@ -14,7 +14,7 @@ struct Tile : Moveable<Tile> {
 	int value, cls;
 	int x, y;
 	bool is_begin = false, is_end = false;
-	SE e;
+	VAR e;
 	
 	Tile() {
 		memset(&act_value_mul, 0, sizeof(act_value_mul));
@@ -50,6 +50,15 @@ class DummyActor :
 	public Component<DummyActor>,
 	public ActionSource
 {
+	typedef enum {
+		INVALID
+	} ExType;
+	class Ex : public ActionExchange {
+		
+	};
+	ExType type = INVALID;
+	Ex ex;
+	
 	typedef Tuple<String, Callback> NameCallback;
 	typedef Tuple<ActionGroup, ActionId> ActGroupId;
 	struct Group : Moveable<Group> {
@@ -75,12 +84,15 @@ public:
 	void Uninitialize() override;
 	
 	void EmitActionSource(float dt) override;
-	ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) override;
+	bool RequestExchange(ActionSink& sink) override;
+	bool OnActionSource(ActionExchange& e) override;
+	
+	/*ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) override;
 	void OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) override;
 	void SetActionName(ActionGroup ag, ActionId act_i, String name) override;
 	void SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) override;
 	void SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) override;
-	void RefreshActionPlan() override;
+	void RefreshActionPlan() override;*/
 	
 };
 
@@ -89,7 +101,17 @@ class Observer :
 	public Component<Observer>,
 	public ActionSink
 {
-	Vector<SharedEntity> route;
+	typedef enum {
+		INVALID,
+		SET_ACTIONS
+	} ExType;
+	class Ex : public ActionExchange {
+		
+	};
+	ExType type = INVALID;
+	Ex ex;
+	
+	Vector<EntityRef> route;
 	String last_error;
 	ActionGroup ag;
 	int route_i = 0;
@@ -97,6 +119,7 @@ class Observer :
 	
 public:
 	static const char* act_names[];
+	
 	
 	enum {
 		TURN_LEFT,
@@ -124,9 +147,11 @@ public:
 	void TeleportToRouteBegin();
 	String GetLastError() const {return last_error;}
 	
-	void* OnLinkActionSource(ActionSource& src) override;
-	bool Act(ActionGroup ag, ActionId act) override;
-	bool UpdateAct() override;
+	State* OnLinkActionSource(ActionSource& src) override;
+	bool RequestExchange(ActionSource& ssrc) override;
+	bool OnActionSink(ActionExchange& e) override;
+	/*bool Act(ActionGroup ag, ActionId act) override;
+	bool UpdateAct() override;*/
 	
 };
 
@@ -135,7 +160,7 @@ struct SimpleRouteNode :
 	public RouteSink,
 	public RouteSource
 {
-	struct SinkData {
+	struct SinkData : public State {
 		double value_mul = 0.0;
 	};
 	
@@ -153,13 +178,13 @@ struct SimpleRouteNode :
 	void SetIdleCost(double d) override {idle_cost = d;}
 	double GetStepValue(const RouteSource::Connection& sink_conn) override;
 	double GetHeuristicValue(RouteSink& sink) override;
-	void* OnLink(InterfaceBase* iface) override;
+	State* OnLink(InterfaceBase* iface) override;
 	
 };
 
 
 
-void FindRoute(SE begin, SE end, EntityPool& route);
+void FindRoute(VAR begin, VAR end, EntityPool& route);
 void MergeRoute(EntityPool& route, EntityPool& waypoints);
 
 PREFAB_BEGIN(DemoActor)

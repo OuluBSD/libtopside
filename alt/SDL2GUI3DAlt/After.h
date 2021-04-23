@@ -5,8 +5,8 @@ NAMESPACE_UPP
 using namespace Oulu;
 
 /*struct SDL2GUI3DAlt_MachineData {
-	Shared<EntityStore> ents;
-	Shared<Entity> cam;
+	Ref<EntityStore> ents;
+	Ref<Entity> cam;
 	
 	
 };*/

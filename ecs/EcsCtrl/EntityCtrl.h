@@ -26,7 +26,7 @@ class EntityCtrl : public ParentCtrl {
 	EntityDataCtrl ent_data;
 	ParentCtrl ent_cont;
 	
-	SharedEntity sel_ent;
+	EntityRef sel_ent;
 	ComponentCtrl* active_ctrl = 0;
 	
 	

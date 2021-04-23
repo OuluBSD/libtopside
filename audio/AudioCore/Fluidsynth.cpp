@@ -328,7 +328,7 @@ void FluidsynthComponent::RecvMidi(const MidiFrame& e) {
 void FluidsynthComponent::Configure(const Midi::File& file) {
 	if (mode == MODE_TRACK_NUM) {
 		if (track_i >= 0 && track_i < file.GetTrackCount()) {
-			Shared<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
+			Ref<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
 			fs_sys->Assign(file, track_i, this);
 		}
 	}

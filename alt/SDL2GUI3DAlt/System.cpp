@@ -73,7 +73,7 @@ bool Open_SDL2GUI3DAlt_ECS(bool gui) {
     if (!mach.Start())
 		return false;
     
-    SharedEntity app = ents.Create<StandaloneWindow>();
+    EntityRef app = ents.Create<StandaloneWindow>();
     app->Find<Connector>()->ConnectAll();
     
 	return true;

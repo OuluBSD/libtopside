@@ -32,7 +32,7 @@ public:
 	bool IsMultiConnection() const {return is_multi_connection;}
 	bool IsLinkable() const {return is_multi_connection || conns.IsEmpty();}
 	
-	virtual void* OnLink(InterfaceBase* iface) {return NULL;}
+	virtual State* OnLink(InterfaceBase* iface) {return NULL;}
 	virtual void OnUnlink(InterfaceBase* iface) {}
 	virtual ComponentBase* AsComponentBase() = 0;
 	virtual TypeId GetInterfaceType() = 0;
@@ -54,17 +54,16 @@ template <class I, class O>
 struct InterfaceSource : public InterfaceBase {
 	struct Connection : Moveable<Connection> {
 		O* sink;
-		void* src_arg = 0;
-		void* sink_arg = 0;
+		State* src_state = 0;
+		State* sink_state = 0;
 		Connection(O* o) {sink = o;}
 		bool operator==(const Connection& c) const {return sink == c.sink;}
 	};
 	
-	bool LinkManually(O& sink, void** ret_src_arg=0, void** ret_sink_arg=0) {return Link0(sink, ret_src_arg, ret_sink_arg);}
+	bool LinkManually(O& sink, State** ret_src_state=0, State** ret_sink_state=0) {return Link0(sink, ret_src_state, ret_sink_state);}
 	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
 	
 	const Vector<Connection>& GetSinks() const {return sinks;}
-	void SetUserArg(int conn_i, void* arg) {sinks[conn_i].arg = arg;}
 	
 	virtual bool Link(O& sink) {return true;}
 	virtual bool Unlink(O& sink) {return true;}
@@ -81,11 +80,11 @@ protected:
 	static const bool print_debug = false;
 	#endif
 	
-	bool LinkInterface(O& sink, void**& src_arg, void**& sink_arg) {
+	bool LinkInterface(O& sink, State**& src_state, State**& sink_state) {
 		int found = -1;
 		Connection& conn = VectorFindAdd(sinks, Connection(&sink), &found);
-		src_arg = &conn.src_arg;
-		sink_arg = &conn.sink_arg;
+		src_state = &conn.src_state;
+		sink_state = &conn.sink_state;
 		return found < 0;
 	}
 	bool UnlinkInterface(O& sink) {
@@ -93,13 +92,13 @@ protected:
 	}
 	
 	
-	bool Link0(O& sink, void** ret_src_arg=0, void** ret_sink_arg=0) {
+	bool Link0(O& sink, State** ret_src_state=0, State** ret_sink_state=0) {
 		ASSERT(conns.IsEmpty() || IsMultiConnection());
 		if (Find(&sink) >= 0)
 			return false;
-		void** src_arg;
-		void** sink_arg;
-		if (Link(sink) && LinkInterface(sink, src_arg, sink_arg)) {
+		State** src_state;
+		State** sink_state;
+		if (Link(sink) && LinkInterface(sink, src_state, sink_state)) {
 			if (print_debug) {
 				String s;
 				TypeId t = GetTypeId<I>();
@@ -111,12 +110,12 @@ protected:
 			}
 			AddConnection(&sink);
 			sink.AddConnection(this);
-			*src_arg = OnLink(&sink);
-			*sink_arg = sink.OnLink(this);
-			if (ret_src_arg)
-				*ret_src_arg = *src_arg;
-			if (ret_sink_arg)
-				*ret_sink_arg = *sink_arg;
+			*src_state = OnLink(&sink);
+			*sink_state = sink.OnLink(this);
+			if (ret_src_state)
+				*ret_src_state = *src_state;
+			if (ret_sink_state)
+				*ret_sink_state = *sink_state;
 			return true;
 		}
 		return false;
@@ -538,39 +537,61 @@ struct OverlapSource : IO_IN(Overlap) {
 typedef int ActionGroup;
 typedef int ActionId;
 typedef int AtomId;
+struct ActionSink;
 struct ActionSource;
 
-struct ActionSink : IO_OUT(Action) {
-	IFACE_BASE(ActionSink)
-	
-	ActionSink() {
-		SetMultiConnection();
-	}
-	
-	virtual void* OnLinkActionSource(ActionSource& src) = 0;
+#define SOURCE_EXCHANGE(x) \
+	virtual bool RequestExchange(x##Sink& sink) = 0; \
+	virtual bool On##x##Source(x##Exchange& e) = 0;
+
+#define SINK_EXCHANGE(x) \
+	virtual bool RequestExchange(x##Source& src) = 0; \
+	virtual bool On##x##Sink(x##Exchange& e) = 0;
+
+struct ActionExchange : public Exchange {
+	/*
+	// Sink
 	virtual bool Act(ActionGroup ag, ActionId act) = 0;
 	virtual bool UpdateAct() = 0;
 	
-	void* OnLink(InterfaceBase* iface) override;
-	
-	
-};
-
-struct ActionSource : IO_IN(Action) {
-	IFACE_BASE(ActionSource)
-	
-	ActionSource() {
-		SetMultiConnection();
-	}
-	
-	virtual void EmitActionSource(float dt) = 0;
+	// Source
 	virtual ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) = 0;
 	virtual void SetActionName(ActionGroup ag, ActionId act_i, String name) = 0;
 	virtual void SetCurrentAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
 	virtual void SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) = 0;
 	virtual void RefreshActionPlan() = 0;
 	virtual void OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) = 0;
+	*/
+};
+
+struct ActionSink : IO_OUT(Action) {
+	IFACE_BASE(ActionSink)
+	SINK_EXCHANGE(Action);
 	
+	ActionSink() {
+		SetMultiConnection();
+	}
+	
+	State* OnLink(InterfaceBase* iface) override;
+	virtual State* OnLinkActionSource(ActionSource& src) = 0;
+	
+	
+	
+	
+};
+
+struct ActionSource : IO_IN(Action) {
+	IFACE_BASE(ActionSource)
+	SOURCE_EXCHANGE(Action);
+	
+	ActionSource() {
+		SetMultiConnection();
+	}
+	
+	virtual void EmitActionSource(float dt) = 0;
+	
+	/*
+	*/
 };
 
 

@@ -1,6 +1,7 @@
 #ifndef _EcsCore_Listener_h_
 #define _EcsCore_Listener_h_
 
+#if 0
 
 NAMESPACE_OULU_BEGIN
 
@@ -8,25 +9,25 @@ NAMESPACE_OULU_BEGIN
 template<typename T>
 class ListenerCollection {
 public:
-	void Add(Shared<T> listener) {
+	void Add(Ref<T> listener) {
 		Mutex::Lock lock(mtx);
 		m_listeners.Add(listener);
 	}
 	
-	void Remove(Shared<T> listener) {
+	void Remove(Ref<T> listener) {
 		Mutex::Lock lock(mtx);
 		EraseIf(&m_listeners, [&listener](const Weak<T>& weak) {
-			Shared<T> ptr = weak.Enter();
+			Ref<T> ptr = weak.Enter();
 			return ptr == listener;
 		});
 	}
 	
-	Vector<Shared<T>> PurgeAndGetListeners() {
-		Vector<Shared<T>> result;
+	Vector<Ref<T>> PurgeAndGetListeners() {
+		Vector<Ref<T>> result;
 		{
 			Mutex::Lock lock(mtx);
 			EraseIf(&m_listeners, [&result](const Weak<T>& weak) {
-				Shared<T> ptr = weak.Enter();
+				Ref<T> ptr = weak.Enter();
 				if (ptr) {
 					result.Add(pick(ptr));
 					return false;
@@ -53,3 +54,5 @@ private:
 NAMESPACE_OULU_END
 
 #endif
+#endif
+

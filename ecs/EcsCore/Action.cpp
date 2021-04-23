@@ -3,6 +3,8 @@
 
 NAMESPACE_OULU_BEGIN
 
+#if 0
+
 
 ActionAgent::ActionAgent() : wrap(ap) {
 	root_node.SetActionPlanner(ap);
@@ -55,6 +57,6 @@ void ActionAgent::RefreshActionPlan() {
 	plan = as.Search(root_node);
 }
 
-
+#endif
 
 NAMESPACE_OULU_END

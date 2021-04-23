@@ -89,7 +89,7 @@ struct PaintStroke : EntityPrefab<Transform, Model, PaintStrokeComponent>
     {
         auto components = EntityPrefab::Make(store);
 
-        components.Get<Model>()->model = MakeShared<Model>();
+        components.Get<Model>()->model = MakeRef<Model>();
 
         return components;
     }

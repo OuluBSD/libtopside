@@ -1,16 +1,17 @@
 #include "ECS_RouteSearch.h"
 
-void DumpTransforms(String s, EntityPool& pool) {
+void DumpTransforms(String s, EntityPoolRef pool) {
 	LOG(s);
-	for(int i = 0; i < pool.GetCount(); i++) {
-		SharedEntity& e = pool.Get(i);
+	int i = 0;
+	for (EntityRef& e : *pool) {
 		Transform* t = e->Find<Transform>();
 		if (t) {
-			LOG("\t" << i << ": " << e.ToString() << ": " << t->ToString());
+			LOG("\t" << i << ": " << e->ToString() << ": " << t->ToString());
 		}
 		else {
-			LOG("\t" << i << ": " << e.ToString() << ": NO TRANSFORM");
+			LOG("\t" << i << ": " << e->ToString() << ": NO TRANSFORM");
 		}
+		++i;
 	}
 }
 
@@ -18,11 +19,11 @@ CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
 	Machine& mach = GetMachine();
-	RegistrySystem& reg = *mach.Add<RegistrySystem>();
-	EntityStore& es = *mach.Add<EntityStore>();
-	EntityPool& root = es.GetRoot();
-	EntityPool& actors = root.AddPool("actors");
-	EntityPool& externals = root.AddPool("externals");
+	RegistrySystemRef reg = mach.Add<RegistrySystem>();
+	EntityStoreRef es = mach.Add<EntityStore>();
+	EntityPoolRef root = es->GetRoot();
+	EntityPoolRef actors = root->AddPool("actors");
+	EntityPoolRef externals = root->AddPool("externals");
 	
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
@@ -31,7 +32,7 @@ CONSOLE_APP_MAIN {
     //mach.Add<RouteSystem>();
     
     
-    SE actor			= actors.CreateConnectedInternal<DemoActor>();
+    VAR actor			= actors->CreateConnectedInternal<DemoActor>();
     
     const char* map1 =
 		"|A|x| \n"
@@ -59,7 +60,7 @@ CONSOLE_APP_MAIN {
     const char* map = map2;
     
     try {
-	    TraverseMap(externals, map);
+	    TraverseMap(*externals, map);
 	    DumpTransforms("All map points", externals);
 	    
 	    mach.Start();
@@ -170,7 +171,7 @@ void TraverseMap(EntityPool& externals, String map) {
 			tf.position = pos;
 		}
 		if (t.is_begin) {
-			SE begin = externals.Create<RouteNode>();
+			VAR begin = externals.Create<RouteNode>();
 			begin->SetName("begin");
 			Transform& tf = *begin->Get<Transform>();
 			tf.position = pos;
@@ -180,7 +181,7 @@ void TraverseMap(EntityPool& externals, String map) {
 			rsrc.LinkManually(rsink);
 		}
 		if (t.is_end) {
-			SE end = externals.Create<RouteNode>();
+			VAR end = externals.Create<RouteNode>();
 			end->SetName("end");
 			Transform& tf = *end->Get<Transform>();
 			tf.position = pos;
@@ -212,10 +213,10 @@ void TraverseMap(EntityPool& externals, String map) {
 				RouteSink& sink = *dst.e->FindRouteSink();
 				
 				// Use SinkData what is provided in SimpleRouteNode::OnLink
-				void* src_user_arg;
+				State* src_user_arg;
 				src.LinkManually(sink, &src_user_arg);
 				ASSERT(src_user_arg);
-				SimpleRouteNode::SinkData& sink_data = *(SimpleRouteNode::SinkData*)src_user_arg;
+				SimpleRouteNode::SinkData& sink_data = *dynamic_cast<SimpleRouteNode::SinkData*>(src_user_arg);
 				sink_data.value_mul = t.act_value_mul[i];
 			}
 		}
@@ -227,7 +228,7 @@ void TraverseMap(EntityPool& externals, String map) {
 
 // A* search
 
-void FindRouteInPool(SE begin, SE end, EntityPool& route) {
+void FindRouteInPool(VAR begin, VAR end, EntityPool& route) {
 	route.Clear();
 	if (begin.IsEmpty() || end.IsEmpty())
 		throw Exc("empty begin or end shared-entity");
@@ -408,17 +409,17 @@ void MergeRoute(EntityPool& route, EntityPool& waypoints) {
 	};
 	ArrayMap<vec3, Item> ents;
 	
-	for (SharedEntity& e : waypoints.GetEntities())
+	for (EntityRef& e : waypoints.GetEntities())
 		ents.Add(e->Get<Transform>()->position).Set(&*e, e->FindRouteSource(), e->FindRouteSink());
 	
 	int dbg_i = 0;
 	Item* prev = 0;
-	for (SharedEntity& e : route.GetEntities()) {
+	for (EntityRef& e : route.GetEntities()) {
 		vec3 position = e->Get<Transform>()->position;
 		int i = ents.Find(position);
 		Item* it;
 		if (i < 0) {
-			SharedEntity new_e = waypoints.Clone(*e);
+			EntityRef new_e = waypoints.Clone(*e);
 			it = &ents.Add(position);
 			it->e		= &*new_e;
 			it->src		= new_e->FindRouteSource();
@@ -450,7 +451,7 @@ double SimpleTransformValue(Entity& a, Entity& b) {
 }
 
 double SimpleRouteNode::GetStepValue(const RouteSource::Connection& c) {
-	SinkData& sink_data = *(SinkData*)c.src_arg;
+	SinkData& sink_data = *dynamic_cast<SinkData*>(c.src_state);
 	double value = SimpleTransformValue(GetEntity(), c.sink->AsComponentBase()->GetEntity());
 	//ASSERT(sink_data.value_mul > 0.0);
 	double result = value * sink_data.value_mul;
@@ -461,7 +462,7 @@ double SimpleRouteNode::GetHeuristicValue(RouteSink& sink) {
 	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
 }
 
-void* SimpleRouteNode::OnLink(InterfaceBase* iface) {
+State* SimpleRouteNode::OnLink(InterfaceBase* iface) {
 	// this fails if component has both sink and source: RouteSink* sink = dynamic_cast<RouteSink*>(iface);
 	
 	if (iface->GetInterfaceType() == typeid(RouteSink))
@@ -488,9 +489,9 @@ const char* Observer::act_names[] = {
 };
 
 bool Observer::MakeRouteTo() {
-	EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
-    SE begin	= waypoints.FindEntityByName("begin");
-    SE end		= waypoints.FindEntityByName("end");
+	EntityPoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+    VAR begin	= waypoints->FindEntityByName("begin");
+    VAR end		= waypoints->FindEntityByName("end");
     if (begin.IsEmpty() || end.IsEmpty()) {
         last_error = "route has no begin and end nodes";
         return false;
@@ -498,7 +499,7 @@ bool Observer::MakeRouteTo() {
 	
 	route.Clear();
 	
-	SE current = begin;
+	VAR current = begin;
 	while (1) {
 		route.Add(current);
 		
@@ -520,7 +521,7 @@ bool Observer::MakeRouteTo() {
 		const auto& conn = sinks[0];
 		Entity& next = conn.sink->AsComponentBase()->GetEntity();
 		
-		current = next.GetSharedFromThis();
+		current = next;
 	}
 	
 	route_i = 0;
@@ -530,17 +531,31 @@ bool Observer::MakeRouteTo() {
 
 void Observer::TeleportToRouteBegin() {
 	if (route.GetCount())
-		CopyTransformPos(route[0], GetEntity().GetSharedFromThis());
+		CopyTransformPos(route[0], GetEntity());
 }
 
-void* Observer::OnLinkActionSource(ActionSource& src) {
-	ag = src.AddActionGroup(*this, ACT_COUNT, ATOM_COUNT);
-	for(int i = 0; i < ACT_COUNT; i++)
-		src.SetActionName(ag, i, act_names[i]);
+State* Observer::OnLinkActionSource(ActionSource& src) {
+	type = SET_ACTIONS;
+	src.RequestExchange(*this);
 	return 0;
 }
 
-bool Observer::Act(ActionGroup ag, ActionId act) {
+bool Observer::RequestExchange(ActionSource& src) {
+	return src.OnActionSource(ex);
+}
+
+bool Observer::OnActionSink(ActionExchange& e) {
+	if (type == SET_ACTIONS) {
+		TODO
+		/*ag = e.AddActionGroup(*this, ACT_COUNT, ATOM_COUNT);
+		for(int i = 0; i < ACT_COUNT; i++)
+			e.SetActionName(ag, i, act_names[i]);*/
+		return true;
+	}
+	return false;
+}
+
+/*bool Observer::Act(ActionGroup ag, ActionId act) {
 	ASSERT(ag == this->ag);
 	if (act == FOLLOW_ROUTE) {
 		follow_route = true;
@@ -563,7 +578,7 @@ bool Observer::UpdateAct() {
 		return false;
 	}
 	return false;
-}
+}*/
 
 
 
@@ -573,7 +588,7 @@ bool Observer::UpdateAct() {
 
 
 void DummyActor::Initialize() {
-	Shared<ActionSystem> as = GetMachine().Get<ActionSystem>();
+	Ref<ActionSystem> as = GetMachine().Get<ActionSystem>();
 	if (as)
 		as->Add(this);
 	
@@ -582,7 +597,7 @@ void DummyActor::Initialize() {
 }
 
 void DummyActor::Uninitialize() {
-	Shared<ActionSystem> as = GetMachine().Get<ActionSystem>();
+	Ref<ActionSystem> as = GetMachine().Get<ActionSystem>();
 	if (as)
 		as->Remove(this);
 }
@@ -597,10 +612,34 @@ void DummyActor::EmitActionSource(float dt) {
 			ASSERT(cur_action.GetCount());
 		}
 	}
-	if (updated_sink && !updated_sink->UpdateAct())
-		updated_sink = 0;
+	TODO
+	//if (updated_sink && !updated_sink->UpdateAct())
+	//	updated_sink = 0;
+	
 }
 
+bool DummyActor::RequestExchange(ActionSink& sink) {
+	return sink.OnActionSink(ex);
+}
+
+bool DummyActor::OnActionSource(ActionExchange& e) {
+	TODO
+}
+
+void DummyActor::Act(String cmd) {
+	for(auto& ag : groups) {
+		for(auto& act : ag.actions) {
+			if (act.a == cmd) {
+				LOG("DummyActor: starting action '" << cmd << "'");
+				cur_action = act.a;
+				act.b();
+				return;
+			}
+		}
+	}
+}
+
+/*
 void DummyActor::OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) {
 	cur_action.Clear();
 }
@@ -628,35 +667,24 @@ void DummyActor::SetGoalAtom(ActionGroup ag, AtomId atom_i, bool value) {
 void DummyActor::RefreshActionPlan() {
 	Panic("not implemented");
 }
+*/
 
-void DummyActor::Act(String cmd) {
-	for(auto& ag : groups) {
-		for(auto& act : ag.actions) {
-			if (act.a == cmd) {
-				LOG("DummyActor: starting action '" << cmd << "'");
-				cur_action = act.a;
-				act.b();
-				return;
-			}
-		}
-	}
-}
 
 void DummyActor::FindRoute() {
-	EntityPool& root = GetMachine().Get<EntityStore>()->GetRoot();
-	EntityPool& externals = root.GetAddPool("externals");
-	EntityPool& found_route = root.GetAddPool("found_route");
-	EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+	EntityPoolRef root = GetMachine().Get<EntityStore>()->GetRoot();
+	EntityPoolRef externals = root->GetAddPool("externals");
+	EntityPoolRef found_route = root->GetAddPool("found_route");
+	EntityPoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
 	
-    SE begin	= externals.FindEntityByName("begin");
-    SE end		= externals.FindEntityByName("end");
+    VAR begin	= externals->FindEntityByName("begin");
+    VAR end		= externals->FindEntityByName("end");
     if (begin.IsEmpty() || end.IsEmpty())
         throw Exc("Map did not have start and end points. Add 'A' and 'B' tiles.");
     
-    FindRouteInPool(begin, end, found_route);
+    FindRouteInPool(begin, end, *found_route);
     DumpTransforms("Found route", found_route);
     
-    MergeRoute(found_route, waypoints);
+    MergeRoute(*found_route, *waypoints);
     DumpTransforms("All valid routes", waypoints);
     
     
@@ -674,7 +702,8 @@ void DummyActor::DoSinkAction(ActGroupId a) {
 	Group& g = groups[a.a];
 	ASSERT(g.sink);
 	if (g.sink) {
-		if (g.sink->Act(a.a, a.b))
-			updated_sink = g.sink;
+		TODO
+		//if (g.sink->Act(a.a, a.b))
+		//	updated_sink = g.sink;
 	}
 }

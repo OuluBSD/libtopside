@@ -47,8 +47,8 @@ void LoadAndCacheModel(
 NAMESPACE_OULU_BEGIN
 
 void MotionControllerSystem::Start() {
-	machine.Get<HolographicScene>()->AddPredictionUpdateListener(GetSharedFromThis().As<IPredictionUpdateListener>());
-	machine.Get<ControllerSystem>()->AddListener(GetSharedFromThis().As<ControllerListenerInterface>());
+	machine.Get<HolographicScene>()->AddPredictionUpdateListener(GetRefFromThis().As<IPredictionUpdateListener>());
+	machine.Get<ControllerSystem>()->AddListener(GetRefFromThis().As<ControllerListenerInterface>());
 }
 
 void MotionControllerSystem::OnPredictionUpdated(
@@ -78,8 +78,8 @@ void MotionControllerSystem::OnPredictionUpdated(
 }
 
 void MotionControllerSystem::Stop() {
-	machine.Get<HolographicScene>()->RemovePredictionUpdateListener(GetSharedFromThis().As<IPredictionUpdateListener>());
-	machine.Get<ControllerSystem>()->RemoveListener(GetSharedFromThis().As<ControllerListenerInterface>());
+	machine.Get<HolographicScene>()->RemovePredictionUpdateListener(GetRefFromThis().As<IPredictionUpdateListener>());
+	machine.Get<ControllerSystem>()->RemoveListener(GetRefFromThis().As<ControllerListenerInterface>());
 }
 
 void MotionControllerSystem::RefreshComponentsForSource(const ControllerSourceDevice& source) const {

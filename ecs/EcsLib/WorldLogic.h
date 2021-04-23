@@ -17,7 +17,7 @@ protected:
 		visitor.Skip(EntityPool::BIT_TRANSFORM);
         for (;visitor; visitor++)
         {
-            Entity* entity = *visitor;
+            EntityRef entity = *visitor;
             Transform* transform = visitor.Get<Transform>();
 
             // Destroy any objects that fall too far away (Baseballs and Bullets)

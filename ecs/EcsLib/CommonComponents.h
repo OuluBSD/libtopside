@@ -28,7 +28,7 @@ public:
 	//void MoveTo(const OverlapSink& conn);
 };
 
-void CopyTransformPos(SharedEntity from, SharedEntity to);
+void CopyTransformPos(EntityRef from, EntityRef to);
 
 class Transform2D : public Component<Transform2D> {
 public:
@@ -61,7 +61,7 @@ public:
 	RGBA color;
 	mat4 offset;
 	float alpha_multiplier;
-	//Shared<ModelComponent> model;
+	//Ref<ModelComponent> model;
 	
 #ifdef flagGUI
 	Callback1<Shader&> cb;

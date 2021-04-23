@@ -80,7 +80,7 @@ void Ctrl::PaintScene(SystemDraw& draw) {
 
 void Ctrl::Invalidate() {
 	using namespace Oulu;
-	static Shared<WindowSystem> win;
+	static Ref<WindowSystem> win;
 	if (!win) {
 		win = GetMachine().Get<WindowSystem>();
 		if (win)

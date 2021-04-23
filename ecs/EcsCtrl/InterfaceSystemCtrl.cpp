@@ -30,7 +30,7 @@ InterfaceSystemCtrl::InterfaceSystemCtrl() {
 }
 
 void InterfaceSystemCtrl::OnEntityCursorChanged() {
-	SharedEntity ent = ent_list.GetSelected();
+	EntityRef ent = ent_list.GetSelected();
 	if (ent != sel_ent) {
 		sel_ent = ent;
 		iface_list.SetEntity(sel_ent);

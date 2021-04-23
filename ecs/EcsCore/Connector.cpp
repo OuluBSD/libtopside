@@ -43,7 +43,7 @@ void ConnectorSystem::Update(float dt) {
 			if (conn->IsConnectAny(a)) {
 				uint64 iface_bits = conn->GetConnectBits(a);
 				conn->ClearConnectBits(a);
-				Shared<EntityStore> es = machine.Get<EntityStore>();
+				Ref<EntityStore> es = machine.Get<EntityStore>();
 				
 				#define IFACE___(x, Source, src, Sink, sink, src_, sink_, visitor)\
 				if (iface_bits & (1ULL << (uint64)IFACE_##x##Source)) {\
@@ -146,13 +146,13 @@ Connector::Connector() {
 }
 
 void Connector::Initialize() {
-	Shared<ConnectorSystem> sys = GetEntity().GetMachine().TryGet<ConnectorSystem>();
+	Ref<ConnectorSystem> sys = GetEntity().GetMachine().TryGet<ConnectorSystem>();
 	if (sys)
 		sys->Add(this);
 }
 
 void Connector::Uninitialize() {
-	Shared<ConnectorSystem> sys = GetEntity().GetMachine().TryGet<ConnectorSystem>();
+	Ref<ConnectorSystem> sys = GetEntity().GetMachine().TryGet<ConnectorSystem>();
 	if (sys)
 		sys->Remove(this);
 }

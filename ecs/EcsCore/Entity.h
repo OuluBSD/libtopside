@@ -10,12 +10,15 @@ class EntityStore;
 class Entity;
 class EntityPool;
 class Connector;
-using SharedEntity = Shared<Entity>;
-using SE = Shared<Entity>;
+
 using EntityId = int64;
+using VAR = Ref<Entity>;
+using EntityRef = Ref<Entity>;
+
+typedef Ref<EntityPool> EntityPoolRef;
 
 
-class Entity : public Destroyable, public Enableable, public EnableSharedFromThis<Entity> {
+class Entity : public Destroyable, public Enableable, public LockedScopeEnabler<Entity> {
 	EntityId id = -1;
 	int64 created = 0;
 	int64 changed = 0;
@@ -51,29 +54,29 @@ public:
 	void OnChange();
 	
 	template<typename T>
-	Shared<T> GetShared() {
-		return m_components.GetShared<T>();
+	Ref<T> GetRef() {
+		return comps.GetRef<T>();
 	}
 	
 	template<typename T>
 	T* Get() {
-		return m_components.Get<T>();
+		return comps.Get<T>();
 	}
 	
 	template<typename T>
-	Shared<T> FindShared() {
-		return m_components.FindShared<T>();
+	Ref<T> FindRef() {
+		return comps.FindRef<T>();
 	}
 	
 	template<typename T>
 	T* Find() {
-		return m_components.Find<T>();
+		return comps.Find<T>();
 	}
 	
 	template<typename T>
 	T* FindInterface() {
 		T* o = NULL;
-		for(Shared<ComponentBase>& comp : m_components.GetValues())
+		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				break;
 		return o;
@@ -83,7 +86,7 @@ public:
 	Vector<T*> FindInterfaces() {
 		Vector<T*> v;
 		T* o;
-		for(Shared<ComponentBase>& comp : m_components.GetValues())
+		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				v.Add(o);
 		return v;
@@ -96,14 +99,14 @@ public:
 	
 	template<typename... ComponentTs>
 	RTuple<ComponentTs*...> TryGetComponents() {
-		return MakeRTuple(m_components.TryGet<ComponentTs>()...);
+		return MakeRTuple(comps.TryGet<ComponentTs>()...);
 	}
 	
 	Entity(Pick<ComponentMap> components, EntityId id, EntityPool& pool);
 	Entity(EntityId id, EntityPool& pool);
 	virtual ~Entity();
 	
-	SharedEntity Clone() const;
+	EntityRef Clone() const;
 	void InitializeComponents();
 	void InitializeComponent(ComponentBase& comp);
 	void UninitializeComponents();
@@ -124,7 +127,7 @@ public:
 	
 	#define IFACE_(x, post)\
 		x##post* Find##x##post() {\
-			for(Shared<ComponentBase>& base : m_components.GetValues()) {\
+			for(Ref<ComponentBase>& base : comps.GetValues()) {\
 				x##post* o = base->As##x##post();\
 				if (o) return o;\
 			}\
@@ -136,8 +139,8 @@ public:
 	#undef IFACE_
 	
 	
-	ComponentMap& GetComponents() {return m_components;}
-	const ComponentMap& GetComponents() const {return m_components;}
+	ComponentMap& GetComponents() {return comps;}
+	const ComponentMap& GetComponents() const {return comps;}
 	Connector* GetConnector() const {return conn;}
 	void RefreshConnectorPtr();
 	void SetUpdateInterfaces();
@@ -149,7 +152,7 @@ protected:
 	void UpdateInterfaces();
 	
 private:
-	ComponentMap m_components;
+	ComponentMap comps;
 	EntityId m_id;
 	EntityPool& pool;
 	Connector* conn = 0;
@@ -157,17 +160,17 @@ private:
 	
 	template<typename T>
 	void Remove0() {
-		m_components.Remove<T>();
+		comps.Remove<T>();
 		SetUpdateInterfaces();
 	}
 	
 	template<typename T>
-	T* Add0() {
-		T* comp = m_components.Add<T>(GetMachine().Get<ComponentStore>()->CreateComponent<T>());
+	T* Add0();/* {
+		T* comp = comps.Add<T>(GetMachine().Get<ComponentStore>()->CreateComponent<T>());
 		InitializeComponent(*comp);
 		SetUpdateInterfaces();
 		return comp;
-	}
+	}*/
 	
 };
 

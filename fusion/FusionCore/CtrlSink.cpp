@@ -61,7 +61,7 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	const char* fn_name = "LoadAsInput";
 	Entity& e = GetEntity();
 	Machine& m = e.GetMachine();
-	Shared<EventSystem> ev_sys = m.TryGet<EventSystem>();
+	Ref<EventSystem> ev_sys = m.TryGet<EventSystem>();
 	if (ev_sys.IsEmpty())
 		return false;
 	

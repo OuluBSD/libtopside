@@ -12,12 +12,12 @@ void OrchestraConductor::OnError() {
 
 void OrchestraConductor::Initialize() {
 	Machine& m = GetEntity().GetMachine();
-	Shared<EntityStore> es = m.Get<EntityStore>();
+	Ref<EntityStore> es = m.Get<EntityStore>();
 	auto fusion = es->Create<CompleteFusion>();
 	bool use_midi_file = file_path.GetCount();
 	
 	if (use_fluidsynth) {
-		Shared<FluidsynthSystem> fs_sys = m.Get<FluidsynthSystem>();
+		Ref<FluidsynthSystem> fs_sys = m.Get<FluidsynthSystem>();
 		
 		if (use_midi_file) {
 			auto file		= es->Create<MidiFileController>();

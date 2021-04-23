@@ -117,9 +117,9 @@ void Tutorial5::DrawObj(SystemDraw& fb, bool use_texture) {
 	if (phase == 0) view = perspective * lookat;
 	if (phase == 1) view = port * perspective * lookat;
 	
-	Shared<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+	Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
-	for(SharedEntity& e : store->GetEntities()) {
+	for(EntityRef& e : store->GetEntities()) {
 		if (loader.model) {
 			for(const Mesh& mesh : loader.model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();

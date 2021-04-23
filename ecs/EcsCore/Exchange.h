@@ -11,17 +11,17 @@ class Entity;
 class Camerable;
 class Renderable;
 class Transform;
-using SharedComponent = Shared<ComponentBase>;
+using ComponentRef = Ref<ComponentBase>;
 
 
 
-class ExchangeValue {
+class Exchange {
 	
 protected:
 	
 	
 public:
-	virtual ~ExchangeValue() {}
+	virtual ~Exchange() {}
 	
 	
 	
@@ -29,7 +29,7 @@ public:
 
 
 
-class SemanticExchange : public ExchangeValue {
+class SemanticExchange : public Exchange {
 	
 	
 };

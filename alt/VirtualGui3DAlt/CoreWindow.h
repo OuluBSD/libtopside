@@ -194,8 +194,8 @@ struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
     {
         auto components = EntityPrefab::Make(store);
 		
-		//components.Get<CoreWindow>()->renderable = components.GetShared<Renderable>();
-		components.Get<CoreWindow>()->transform = components.GetShared<Transform>();
+		//components.Get<CoreWindow>()->renderable = components.GetRef<Renderable>();
+		components.Get<CoreWindow>()->transform = components.GetRef<Transform>();
 		
 		components.Get<Transform>()->position = vec3(0, 0, -1);
 		components.Get<Transform>()->size = vec3(320, 240, 0);
@@ -218,8 +218,8 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
     {
         auto components = EntityPrefab::Make(store);
 		
-		//components.Get<CoreWindow>()->renderable2d = components.GetShared<Renderable2D>();
-		components.Get<CoreWindow>()->transform2d = components.GetShared<Transform2D>();
+		//components.Get<CoreWindow>()->renderable2d = components.GetRef<Renderable2D>();
+		components.Get<CoreWindow>()->transform2d = components.GetRef<Transform2D>();
 		
 		components.Get<Transform2D>()->position = vec2(0, 0);
 		components.Get<Transform2D>()->size = vec2(320, 240);

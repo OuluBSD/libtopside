@@ -61,7 +61,7 @@ struct Component : ComponentBase {
 };
 
 
-typedef UnorderedTypeMap<SharedComponent> ComponentMapBase;
+typedef RefTypeMap<ComponentBase> ComponentMapBase;
 
 class ComponentMap : public ComponentMapBase {
 public:
@@ -71,7 +71,7 @@ public:
 	ComponentMap(Pick<ComponentMap> pick) {Upp::Swap((ComponentMapBase&)*this, (ComponentMapBase&)pick.Get());}
 	
 	
-	using UnorderedTypeMap<SharedComponent>::UnorderedTypeMap;
+	//using RefTypeMap<Component>::RefTypeMap;
 	
 	#define IS_EMPTY_SHAREDPTR(x) (x == 0 || x->IsEmpty())
 	
@@ -96,7 +96,7 @@ public:
 	}
 	
 	template<typename ComponentT>
-	Shared<ComponentT> GetShared() {
+	Ref<ComponentT> GetRef() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
@@ -105,12 +105,12 @@ public:
 	}
 	
 	template<typename ComponentT>
-	Shared<ComponentT> FindShared() {
+	Ref<ComponentT> FindRef() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
 		if (IS_EMPTY_SHAREDPTR(it))
-			return Shared<ComponentT>();
+			return Ref<ComponentT>();
 		else
 			return it->As<ComponentT>();
 	}
@@ -128,16 +128,16 @@ public:
 	}
 	
 	template<typename ComponentT>
-	ComponentT* Add(SharedComponent component) {
+	ComponentT* Add(ComponentRef component) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		const TypeId componentType = typeid(ComponentT);
 		
-		ASSERT_(component->GetType() == componentType, "SharedComponent type does not match T");
+		ASSERT_(component->GetType() == componentType, "ComponentRef type does not match T");
 		
 		auto it = ComponentMapBase::FindPtr(componentType);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Can't have duplicate componnets");
-		SharedComponent& cmp = ComponentMapBase::Add(componentType);
+		ComponentRef& cmp = ComponentMapBase::Add(componentType);
 		cmp = pick(component);
 		
 		return static_cast<ComponentT*>(cmp.Get());
@@ -147,13 +147,11 @@ public:
 	void Remove() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		int pos = ComponentMapBase::Find(typeid(ComponentT));
-		ASSERT_(pos >= 0, "Tried to remove non-existent component");
-		auto& val = ComponentMapBase::operator[](pos);
-		val->Uninitialize();
-		val->Destroy();
-		ASSERT(pos >= 0 && pos < ComponentMapBase::GetCount());
-		ComponentMapBase::Remove(pos);
+		auto iter = ComponentMapBase::FindIter(typeid(ComponentT));
+		ASSERT_(iter, "Tried to remove non-existent component");
+		iter.value().Uninitialize();
+		iter.value().Destroy();
+		ComponentMapBase::Remove(iter);
 	}
 	
 	#undef IS_EMPTY_SHAREDPTR

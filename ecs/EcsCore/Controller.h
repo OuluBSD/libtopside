@@ -1,6 +1,7 @@
 #ifndef _EcsCore_Controller_h_
 #define _EcsCore_Controller_h_
 
+#if 0
 
 NAMESPACE_OULU_BEGIN
 
@@ -160,11 +161,11 @@ public:
 	typedef ControllerSystem CLASSNAME;
     using System::System;
 
-    void AddListener(Shared<ControllerListenerInterface> listener) {
+    void AddListener(Ref<ControllerListenerInterface> listener) {
         m_ctrl_Listeners.Add(pick(listener));
     }
 
-    void RemoveListener(Shared<ControllerListenerInterface> listener) {
+    void RemoveListener(Ref<ControllerListenerInterface> listener) {
         m_ctrl_Listeners.Remove(pick(listener));
     }
 	
@@ -174,7 +175,7 @@ public:
 	void ProcessEvent(const vr::VREvent_t& event);
 	void ProcessController(vr::TrackedDeviceIndex_t device, vr::VRControllerState_t* state, mat4& M);
 	
-	Shared<OpenVR> vr;
+	Ref<OpenVR> vr;
 
 	#endif
 	
@@ -211,4 +212,5 @@ private:
 NAMESPACE_OULU_END
 
 
+#endif
 #endif

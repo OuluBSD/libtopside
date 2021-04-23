@@ -1,6 +1,8 @@
 #include "EcsLib.h"
 
 
+#if 0
+
 NAMESPACE_OULU_BEGIN
 
 
@@ -60,11 +62,11 @@ void HolographicScene::OnPredictionChanged(IPredictionUpdateListener::Prediction
 	}
 }
 
-void HolographicScene::AddPredictionUpdateListener(Shared<IPredictionUpdateListener> listener) {
+void HolographicScene::AddPredictionUpdateListener(Ref<IPredictionUpdateListener> listener) {
 	prediction_update_listeners.Add(std::move(listener));
 }
 
-void HolographicScene::RemovePredictionUpdateListener(Shared<IPredictionUpdateListener> listener) {
+void HolographicScene::RemovePredictionUpdateListener(Ref<IPredictionUpdateListener> listener) {
 	prediction_update_listeners.Remove(std::move(listener));
 }
 
@@ -94,3 +96,5 @@ HolographicSpace HolographicScene::GetHolographicSpace() const {
 
 
 NAMESPACE_OULU_END
+
+#endif

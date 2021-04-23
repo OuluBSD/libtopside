@@ -21,11 +21,11 @@ template <class T> void SimpleEntityApp() {
 	Machine& mach = GetMachine();
 	
 	try {
-		Shared<EntityStore> ents = mach.TryGet<EntityStore>();
+		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
 			throw Exc("EntityStore wasn't added to the ECS machine");
 		
-		SharedEntity app = ents->GetRoot().CreateEmpty();
+		EntityRef app = ents->GetRoot()->CreateEmpty();
 		app->Add<T>();
 		app->Add<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
 		
@@ -83,7 +83,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	}
 	
 	try {
-		Shared<EntityStore> ents = mach.TryGet<EntityStore>();
+		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
 			throw Exc("EntityStore wasn't added to the ECS machine");
 		
@@ -91,16 +91,16 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		
 		#ifdef flagSDL2
 			#ifdef flagGUI
-				SharedEntity app = root.Create<StandaloneWindow>();
+				EntityRef app = root.Create<StandaloneWindow>();
 			#else
-				SharedEntity app = root.Create<StandaloneConsole>
+				EntityRef app = root.Create<StandaloneConsole>
 				();
 			#endif
 			app->Add<T>();
 			app->Find<Connector>()->ConnectAll();
 		#endif
 		
-		SharedEntity cam = root.Create<CameraPrefab>();
+		EntityRef cam = root->Create<CameraPrefab>();
 		cam->Find<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
 		
 	    TimeStop t;

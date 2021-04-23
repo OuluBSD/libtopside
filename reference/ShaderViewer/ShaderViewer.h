@@ -11,7 +11,7 @@ NAMESPACE_OULU_BEGIN
 class ShaderViewer :
 	public Component<ShaderViewer>
 {
-	SharedEntity fusion;
+	EntityRef fusion;
 	FusionContextComponent* ctx = 0;
 	
 public:

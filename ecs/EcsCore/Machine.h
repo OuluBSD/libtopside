@@ -29,7 +29,7 @@ protected:
 
 
 template<typename T>
-class System : public SystemBase, public EnableSharedFromThis<T> {
+class System : public SystemBase, public LockedScopeEnabler<T> {
 public:
     using SystemBase::SystemBase;
 	
@@ -48,7 +48,7 @@ public:
 	
 	
     template<typename SystemT>
-    Shared<SystemT> Get()
+    Ref<SystemT> Get()
     {
         auto system = TryGet<SystemT>();
         ASSERT(system);
@@ -56,29 +56,29 @@ public:
     }
 
     template<typename SystemT>
-    Shared<SystemT> TryGet()
+    Ref<SystemT> TryGet();/*
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
         
         auto it = FindSystem(typeid(SystemT));
-        return it == m_systems.end()
-            ? Shared<SystemT>()
+        return it == systems.end()
+            ? Ref<SystemT>()
             : it->As<SystemT>();
-    }
+    }*/
 
     template<typename SystemT, typename... Args>
-    Shared<SystemT> Add(Args&&... args)
+    Ref<SystemT> Add(Args&&... args);/*
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 		
 		SystemT* syst = new SystemT(*this, args...);
-		Shared<SystemBase> s;
+		Ref<SystemBase> s;
 		s.WrapObject(syst);
 		syst->InitWeak(s.As<SystemT>());
 		Add(typeid(SystemT), s);
-        //Add(typeid(SystemT), MakeShared<SystemT>(*this, std::forward<Args>(args)...));
+        //Add(typeid(SystemT), MakeRef<SystemT>(*this, std::forward<Args>(args)...));
         return s.As<SystemT>();
-    }
+    }*/
 
     template<typename SystemT>
     void Remove()
@@ -109,8 +109,8 @@ public:
 	static Callback WhenStarting;
 	
 private:
-    typedef Vector<Shared<SystemBase>> SystemCollection;
-    SystemCollection m_systems;
+    typedef RefLinkedList<SystemBase> SystemCollection;
+    SystemCollection systems;
 
     bool is_started = false;
     bool is_initialized = false;
@@ -118,7 +118,7 @@ private:
     bool is_running = false;
     
     SystemCollection::Iterator FindSystem(TypeId const& typeId);
-    void Add(TypeId const& typeId, Shared<SystemBase> system);
+    //void Add(TypeId const& typeId, Ref<SystemBase> system);
     void Remove(TypeId const& typeId);
 };
 

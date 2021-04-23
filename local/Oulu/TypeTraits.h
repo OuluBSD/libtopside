@@ -55,13 +55,8 @@ public:
 template<class T> inline TypeId GetTypeId() {return typeid(T);}
 
 template<typename T>
-using UnorderedTypeMap = ArrayMap<TypeId, T>;
+using RefTypeMap = RefLinkedMap<TypeId, T>;
 
-template<typename T>
-using UnorderedTypeVectorMap = VectorMap<TypeId, T>;
-
-template<typename T>
-using TypeMap = ArrayMap<TypeId, T>;
 
 
 
@@ -97,20 +92,23 @@ class Destroyable
 public:
     virtual ~Destroyable() = default;
 
-    virtual void Destroy() { m_destroyed = true; }
-    virtual bool IsDestroyed() const { return m_destroyed; }
+    virtual void Destroy() { destroyed = true; }
+    virtual bool IsDestroyed() const { return destroyed; }
 
     template<typename Container>
-    static void PruneFromContainer(Container* container)
+    static void PruneFromContainer(Container& container)
     {
-        EraseIf(container, [](const auto& obj)
-        {
-            return obj->IsDestroyed();
-        });
+        auto it = container.begin();
+        while(it) {
+            if (it().IsDestroyed())
+                it = container.Remove(it);
+            else
+                ++it;
+        }
     }
 
 protected:
-    bool m_destroyed{ false };
+    bool destroyed = false;
 };
 
 
@@ -136,15 +134,15 @@ public:
 
     void RegisterProducer(const TypeId& typeId, Producer producer)
     {
-        auto it = m_producers.find(typeId);
+        auto it = producers.find(typeId);
 
-        AssertFalse(it != m_producers.end(), "multiple registrations for the same type is not allowed");
+        AssertFalse(it != producers.end(), "multiple registrations for the same type is not allowed");
 
-        m_producers.insert(it, { typeId, pick<Producer>(producer) });
+        producers.insert(it, { typeId, pick<Producer>(producer) });
     }
 
 protected:
-    UnorderedTypeMap<ProducerT> m_producers;
+    RefTypeMap<ProducerT> producers;
 };
 
 

@@ -36,7 +36,7 @@ void RenderingSystem::Uninitialize() {
 
 void RenderingSystem::AddDisplaySource(DisplaySource& src) {
 	VectorFindAdd(screens, &src);
-	Shared<RegistrySystem> reg = GetMachine().TryGet<RegistrySystem>();
+	Ref<RegistrySystem> reg = GetMachine().TryGet<RegistrySystem>();
 	if (reg)
 		src.SetTitle(reg->GetAppName());
 }

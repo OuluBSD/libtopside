@@ -160,9 +160,9 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		Size sz = fb.GetPageSize();
 		int height = std::min(sz.cy, sz.cx);
 		int width = height;
-		Shared<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+		Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
 		vec3 light_dir {0.0, 0.0, -1.0};
-		for(SharedEntity& e : store->GetEntities()) {
+		for(EntityRef& e : store->GetEntities()) {
 			if (loader.model) for(const Mesh& mesh : loader.model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();
 				

@@ -5,7 +5,7 @@ NAMESPACE_OULU_BEGIN
 
 
 Entity::Entity(Pick<ComponentMap> components, EntityId id, EntityPool& pool) :
-		m_components(components),
+		comps(components),
 		m_id(id),
 		pool(pool) {
 	InitializeComponents();
@@ -24,7 +24,7 @@ void Entity::OnChange() {
 }
 
 void Entity::InitializeComponents() {
-	for(auto& comp : m_components.GetValues())
+	for(auto& comp : comps.GetValues())
 		InitializeComponent(*comp);
 }
 
@@ -34,14 +34,11 @@ void Entity::InitializeComponent(ComponentBase& comp) {
 }
 
 void Entity::UninitializeComponents() {
-	Array<SharedComponent>& comps = m_components.GetValues();
-	Array<SharedComponent>::Iterator end = comps.End();
-	Array<SharedComponent>::Iterator begin = comps.Begin();
-	Array<SharedComponent>::Iterator it = end - 1;
-	int i = comps.GetCount() - 1;
-	for (auto it = end - 1; it != begin - 1; --it) {
-		(**it).Uninitialize();
-		i--;
+	auto& comps = this->comps.GetValues();
+	int dbg_i = 0;
+	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().Uninitialize();
+		dbg_i++;
 	}
 }
 
@@ -56,11 +53,11 @@ void Entity::ClearComponents() {
 		conn->UnlinkAll();
 		conn = 0;
 	}
-	m_components.Clear();
+	comps.Clear();
 }
 
-SharedEntity Entity::Clone() const {
-	SharedEntity ent = pool.Clone(*this);
+EntityRef Entity::Clone() const {
+	EntityRef ent = pool.Clone(*this);
 	ent->InitializeComponents();
 	return ent;
 }
@@ -68,7 +65,7 @@ SharedEntity Entity::Clone() const {
 void Entity::Destroy() {
 	Destroyable::Destroy();
 	
-	for (auto& component : m_components.GetValues()) {
+	for (auto& component : comps.GetValues()) {
 		component->Destroy();
 	}
 }
@@ -76,7 +73,7 @@ void Entity::Destroy() {
 void Entity::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	
-	for (auto& component : m_components.GetValues()) {
+	for (auto& component : comps.GetValues()) {
 		component->SetEnabled(enable);
 	}
 }
@@ -108,4 +105,5 @@ const Machine& Entity::GetMachine() const {
 	return pool.GetMachine();
 }
 
+	
 NAMESPACE_OULU_END

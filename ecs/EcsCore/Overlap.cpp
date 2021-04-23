@@ -69,7 +69,7 @@ void OverlapDetector::Uninitialize() {
 
 
 
-void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPool& parent, const Vector<String>& lines, const ArrayMap<int, SharedEntity>& map_char_ents) {
+void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPoolRef parent, const Vector<String>& lines, const ArrayMap<int, EntityRef>& map_char_ents) {
 	int width = r.Width();
 	int height = r.Height();
 	int w_2 = width / 2;
@@ -84,13 +84,13 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPool& parent, const Vec
 		int i = map_char_ents.Find(cls);
 		if (i < 0)
 			throw Exc("could not find class id");
-		const SharedEntity& ent = map_char_ents[i];
+		EntityRef ent = map_char_ents[i];
 		OverlapSink* sink = ent->FindOverlapSink();
 		if (!sink)
 			throw Exc("class entity does not have OverlapSink interface");
 		
-		ASSERT(parent.GetCount() == 0);
-		SharedEntity item = parent.Create<DefaultOctreeNode>();
+		ASSERT(parent.IsEmpty());
+		EntityRef item = parent->Create<DefaultOctreeNode>();
 		OverlapDetector& detector = *item->Get<OverlapDetector>();
 		OverlapSource* src = detector.AsOverlapSource();
 		ASSERT(src);
@@ -109,7 +109,7 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPool& parent, const Vec
 			w = 1;
 		}
 		
-		ASSERT(parent.GetPoolCount() == 0);
+		ASSERT(parent.IsEmpty());
 		for (int y = 0; y < h; y++) {
 			String lstr = y == 0 ? "top" : "bottom";
 			for (int x = 0; x < w; x++) {
@@ -120,14 +120,14 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPool& parent, const Vec
 					r.top + y * h_2,
 					w_2,
 					h_2);
-				EntityPool& child = parent.AddPool(name);
+				EntityPoolRef child = parent->AddPool(name);
 				CreateFlatOctreeEntityFromStringLevel(r2, child, lines, map_char_ents);
 			}
 		}
 	}
 }
 
-void CreateOctreeEntityFromString(EntityPool& octree_root, String map_str, const ArrayMap<int, SharedEntity>& map_char_ents) {
+void CreateOctreeEntityFromString(EntityPoolRef octree_root, String map_str, const ArrayMap<int, EntityRef>& map_char_ents) {
 	try {
 		Vector<String> lines = Split(map_str, "\n");
 		if (lines.IsEmpty())

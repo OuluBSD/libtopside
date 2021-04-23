@@ -53,7 +53,7 @@ void ShaderViewerStartup() {
 		return;
 	}
 	
-	//SharedEntity snd_in = GetMachine().Get<EntityStore>()->Create<StandaloneLineIn>();
+	//EntityRef snd_in = GetMachine().Get<EntityStore>()->Create<StandaloneLineIn>();
 	//snd_in->Find<Connector>()->ConnectAll();
 	
 }

@@ -11,14 +11,14 @@ FusionContextComponent::FusionContextComponent() {
 
 void FusionContextComponent::Initialize() {
 	DLOG("FusionContextComponent::Initialize");
-	Shared<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> AddContext(*this);
 	
 }
 
 void FusionContextComponent::Uninitialize() {
-	Shared<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> RemoveContext(*this);
 }
@@ -77,7 +77,7 @@ void FusionContextComponent::Update(float dt) {
 void FusionContextComponent::FindComponents() {
 	comps.Clear();
 	Entity& e = GetEntity();
-	for (SharedComponent& comp : e.GetComponents().GetValues()) {
+	for (ComponentRef& comp : e.GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
 			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);
@@ -94,7 +94,7 @@ void FusionContextComponent::DumpEntityComponents() {
 	LOG("Entity: FusionComponents:");
 	Entity& e = GetEntity();
 	int i = 0;
-	for (SharedComponent& comp : e.GetComponents().GetValues()) {
+	for (ComponentRef& comp : e.GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
 			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);

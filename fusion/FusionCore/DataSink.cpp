@@ -240,7 +240,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	}
 	
 #ifdef flagSDL2
-	Shared<SDL2System> sdl2_sys = m.Get<SDL2System>();
+	Ref<SDL2System> sdl2_sys = m.Get<SDL2System>();
 	if (sdl2_sys) {
 		if (type == FusionComponentInput::TEXTURE ||
 			type == FusionComponentInput::CUBEMAP) {

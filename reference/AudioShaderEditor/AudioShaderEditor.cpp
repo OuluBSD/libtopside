@@ -26,15 +26,15 @@ AudioShaderEditor::AudioShaderEditor() {
 bool AudioShaderEditor::InitializeDefault(String audio_path) {
 	if (1) {
 		Machine& m = GetMachine();
-		Shared<EntityStore> es = m.Get<EntityStore>();
+		Ref<EntityStore> es = m.Get<EntityStore>();
 		
-		SharedEntity reader = es->CreateEmpty();
+		EntityRef reader = es->CreateEmpty();
 		reader->SetPrefab("Manual debug sound input");
 		reader->Add<Connector>(); // for automatic unlinking
 		SoundGeneratorComponent* sg = reader->Add<SoundGeneratorComponent>();
 		sg->SetPreset(0);
 		
-		SharedEntity output = es->CreateEmpty();
+		EntityRef output = es->CreateEmpty();
 		output->SetPrefab("Manual Sound output");
 		output->Add<Connector>(); // for automatic unlinking
 		PortaudioSinkComponent* audio_out = output->Add<PortaudioSinkComponent>();
@@ -47,9 +47,9 @@ bool AudioShaderEditor::InitializeDefault(String audio_path) {
 			return false;
 		}
 		Machine& m = GetMachine();
-		Shared<EntityStore> es = m.Get<EntityStore>();
+		Ref<EntityStore> es = m.Get<EntityStore>();
 		
-		SharedEntity reader = es->CreateEmpty();
+		EntityRef reader = es->CreateEmpty();
 		reader->SetPrefab("Manual MP3 input");
 		reader->Add<Connector>(); // for automatic unlinking
 		MultiMediaComponent* mm = reader->Add<MultiMediaComponent>();
@@ -58,7 +58,7 @@ bool AudioShaderEditor::InitializeDefault(String audio_path) {
 			return false;
 		}
 		
-		SharedEntity output = es->CreateEmpty();
+		EntityRef output = es->CreateEmpty();
 		output->SetPrefab("Manual Sound output");
 		output->Add<Connector>(); // for automatic unlinking
 		PortaudioSinkComponent* audio_out = output->Add<PortaudioSinkComponent>();
@@ -67,8 +67,8 @@ bool AudioShaderEditor::InitializeDefault(String audio_path) {
 	}
 	else {
 		Machine& m = GetMachine();
-		Shared<EntityStore> es = m.Get<EntityStore>();
-		Shared<FluidsynthSystem> fs_sys = m.Get<FluidsynthSystem>();
+		Ref<EntityStore> es = m.Get<EntityStore>();
+		Ref<FluidsynthSystem> fs_sys = m.Get<FluidsynthSystem>();
 			
 		String file_path = GetDataFile("test.mid");
 		

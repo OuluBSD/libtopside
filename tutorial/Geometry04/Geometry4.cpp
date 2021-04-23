@@ -135,9 +135,9 @@ void Geometry4::Initialize() {
 	quad = e.Add<QuadtreeComponent>();
 	ASSERT(quad);
 	
-	Shared<EntityStore> es = m.Get<EntityStore>();
+	Ref<EntityStore> es = m.Get<EntityStore>();
 	for(int i = 0; i < 5; i++) {
-		SharedEntity c = es->CreateEmpty();
+		EntityRef c = es->CreateEmpty();
 		c->Add<Connector>();
 		Transform& t = *c->Add<Transform>();
 		RigidBody& b = *c->Add<RigidBody>();
@@ -165,7 +165,7 @@ void Geometry4::Initialize() {
 	
 	{
 		// Add frustum
-		SharedEntity f = es->CreateEmpty();
+		EntityRef f = es->CreateEmpty();
 		Frustum2& fru = *f->Add<Frustum2>();
 		Tutorial4Dummy& d = *f->Add<Tutorial4Dummy>();
 		

@@ -11,7 +11,7 @@ NAMESPACE_OULU_BEGIN
 class MP3Player :
 	public Component<MP3Player>
 {
-	SharedEntity mixer, fusion, channel0, track0, output;
+	EntityRef mixer, fusion, channel0, track0, output;
 	MixerContextComponent* ctx = 0;
 	
 public:

@@ -28,6 +28,8 @@ public:
 	
 };
 
+typedef Ref<RegistrySystem> RegistrySystemRef;
+
 
 NAMESPACE_OULU_END
 

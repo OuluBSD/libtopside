@@ -16,7 +16,7 @@ bool WindowSystem::Initialize() {
 	Ctrl::SetContentRect(RectC(0, 0, sz.cx, sz.cy));
 	//simple_shader.Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
 	
-	Shared<RenderingSystem> rend = GetMachine().TryGet<RenderingSystem>();
+	Ref<RenderingSystem> rend = GetMachine().TryGet<RenderingSystem>();
 	if (!rend) {
 		LOG("WindowSystem::Initialize: error: couldn't find RenderingSystem");
 		return false;
@@ -52,7 +52,7 @@ void WindowSystem::Uninitialize() {
 void WindowSystem::CloseWindow(CoreWindow& cw) {
 	Entity* ent = ents->FindEntity<CoreWindow>(&cw);
 	if (ent) {
-		ents->ReleaseEntity(*ent);
+		ent->Destroy();
 	}
 }
 

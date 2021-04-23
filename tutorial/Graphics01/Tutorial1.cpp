@@ -54,8 +54,8 @@ struct Tutorial1 : public Component<Tutorial1>, public DisplaySink {
 		
 		int height = std::min(sz.cy, sz.cx);
 		int width = height;
-		Shared<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
-		for(SharedEntity& e : store->GetEntities()) {
+		Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+		for(EntityRef& e : store->GetEntities()) {
 			if (loader.model) for(const Mesh& mesh : loader.model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();
 				

@@ -5,7 +5,12 @@
 NAMESPACE_OULU_BEGIN
 
 
-
+class State {
+	
+public:
+	virtual ~State() {}
+	
+};
 
 
 NAMESPACE_OULU_END

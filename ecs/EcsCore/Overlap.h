@@ -74,7 +74,7 @@ public:
 
 
 
-void CreateOctreeEntityFromString(EntityPool& octree_root, String map_str, const ArrayMap<int, SharedEntity>& map_char_ents);
+void CreateOctreeEntityFromString(EntityPoolRef octree_root, String map_str, const ArrayMap<int, EntityRef>& map_char_ents);
 
 
 

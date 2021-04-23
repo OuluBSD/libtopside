@@ -4,6 +4,7 @@
 
 NAMESPACE_OULU_BEGIN
 
+#if 0
 
 class ActionAgent :
 	public Component<ActionAgent>,
@@ -50,6 +51,7 @@ public:
 	
 };
 
+#endif
 
 NAMESPACE_OULU_END
 

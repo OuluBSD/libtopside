@@ -45,9 +45,9 @@ void Graphics6aStartup() {
 	/*Machine& mach = GetMachine();
 	
 	EntityStore& ents = *mach.Get<EntityStore>();
-	SharedEntity obj = ents.Create<StaticModel>();
+	EntityRef obj = ents.Create<StaticModel>();
 	obj->Find<Connector>()->ConnectAll();
-	Shared<ModelComponent> mdl = obj->GetShared<ModelComponent>();
+	Ref<ModelComponent> mdl = obj->GetRef<ModelComponent>();
 	
 	String data_dir = ShareDirFile("models");
 	String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");

@@ -114,7 +114,7 @@ void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, flo
 
 
 
-void* ActionSink::OnLink(InterfaceBase* iface) {
+State* ActionSink::OnLink(InterfaceBase* iface) {
 	ActionSource* src = dynamic_cast<ActionSource*>(iface);
 	ASSERT(src);
 	return src ? OnLinkActionSource(*src) : 0;

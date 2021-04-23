@@ -1,5 +1,6 @@
 #include "EcsCore.h"
 
+#if 0
 
 NAMESPACE_OULU_BEGIN
 
@@ -249,3 +250,5 @@ void ControllerSystem::ProcessController(vr::TrackedDeviceIndex_t device, vr::VR
 #endif
 
 NAMESPACE_OULU_END
+
+#endif

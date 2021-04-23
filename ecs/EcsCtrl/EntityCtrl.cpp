@@ -30,7 +30,7 @@ EntityCtrl::EntityCtrl() {
 }
 
 void EntityCtrl::OnEntityCursorChanged() {
-	SharedEntity ent = ent_list.GetSelected();
+	EntityRef ent = ent_list.GetSelected();
 	if (ent != sel_ent) {
 		sel_ent = ent;
 		ent_content.SetEntity(sel_ent);

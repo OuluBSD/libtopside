@@ -55,15 +55,15 @@ CONSOLE_APP_MAIN {
     
     reg.SetAppName("ECS ActionPlanner");
     
-    SE cat = actors.CreateConnectedInternal<Cat>();
-    SE mouse = actors.CreateConnectedInternal<Mouse>();
+    VAR cat = actors.CreateConnectedInternal<Cat>();
+    VAR mouse = actors.CreateConnectedInternal<Mouse>();
     
-    SE high_place		= route_cls.Create<RouteRidgeHigh>();
-    SE ground			= route_cls.Create<RouteGroundSoft>();
+    VAR high_place		= route_cls.Create<RouteRidgeHigh>();
+    VAR ground			= route_cls.Create<RouteGroundSoft>();
     
-    SE tree_branch	= routes.Create<RouteNode>();
-    SE tree_ground	= routes.Create<RouteNode>();
-    SE mouse_ground	= routes.Create<RouteNode>();
+    VAR tree_branch	= routes.Create<RouteNode>();
+    VAR tree_ground	= routes.Create<RouteNode>();
+    VAR mouse_ground	= routes.Create<RouteNode>();
     
     tree_branch->FindOverlapSource()->LinkManually(*high_place->FindOverlapSink());
     tree_ground->FindOverlapSource()->LinkManually(*ground->FindOverlapSink());

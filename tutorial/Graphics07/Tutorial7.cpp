@@ -5,7 +5,7 @@
 
 
 GUI_APP_MAIN {
-	Shared<Machine> mach;
+	Ref<Machine> mach;
 	
 	
 	try {
@@ -23,11 +23,11 @@ GUI_APP_MAIN {
 	    
 	    if (mach->Start()) {
 	        
-			SharedEntity pipe = ents.Create<OctreeEditPipeline>();
+			EntityRef pipe = ents.Create<OctreeEditPipeline>();
 		    pipe->Find<Connector>()->ConnectAll();
 			
 		    #ifdef flagSDL2
-			SharedEntity app = ents.Create<StandaloneSDL2>();
+			EntityRef app = ents.Create<StandaloneSDL2>();
 			#else
 			#error Use at least one system
 			#endif
@@ -37,7 +37,7 @@ GUI_APP_MAIN {
 			
 			float l = oct.GetHumanLength();
 			float ll = 1.0f / 8.0f;
-			SharedEntity ground = ents.Create<OctreeGround>();
+			EntityRef ground = ents.Create<OctreeGround>();
 			
 			vec3 a{-l,        0,        l};
 			vec3 b{ 0, 2.0f * l, 0.5f * l};

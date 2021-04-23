@@ -6,7 +6,7 @@ NAMESPACE_OULU_BEGIN
 
 
 class AudioSystem : public System<AudioSystem> {
-	Shared<EntityStore> ents;
+	Ref<EntityStore> ents;
 	Vector<AudioSource*> audios;
 	
 protected:
@@ -25,13 +25,13 @@ public:
 };
 
 template <class T> void AddAudioSource(T& o) {
-	Shared<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
+	Ref<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
 	if (sys)
 		sys	-> AddAudioSource(o);
 }
 
 template <class T> void RemoveAudioSource(T& o) {
-	Shared<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
+	Ref<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
 	if (sys)
 		sys	-> RemoveAudioSource(o);
 }

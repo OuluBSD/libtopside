@@ -102,13 +102,13 @@ MidiFileComponent::MidiFileComponent() {
 }
 
 void MidiFileComponent::Initialize() {
-	Shared<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
+	Ref<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
 	if (es)
 		es->AddMidi(*this);
 }
 
 void MidiFileComponent::Uninitialize() {
-	Shared<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
+	Ref<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
 	if (es)
 		es->RemoveMidi(*this);
 }
@@ -189,7 +189,7 @@ void MidiFileComponent::EmitMidi(float dt) {
 	
 }
 
-void* MidiFileComponent::OnLink(InterfaceBase* iface) {
+State* MidiFileComponent::OnLink(InterfaceBase* iface) {
 	ComponentBase* comp = iface->AsComponentBase();
 	ASSERT(comp);
 	MidiSink* sink = comp->AsMidiSink();

@@ -20,7 +20,7 @@ class InterfaceConnectionCtrl : public ParentCtrl {
 	ParentCtrl graph_cont;
 	One<GraphLib::SpringGraph> graph;
 	Splitter hsplit;
-	SharedEntity sel_ent;
+	EntityRef sel_ent;
 	Color fill_ent, fill_comp, fill_iface;
 	
 	void OnEntityCursorChanged();
