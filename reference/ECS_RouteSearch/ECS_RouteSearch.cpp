@@ -3,7 +3,7 @@
 void DumpTransforms(String s, EntityPoolRef pool) {
 	LOG(s);
 	int i = 0;
-	for (EntityRef& e : *pool) {
+	for (EntityRef& e : pool->GetEntities()) {
 		Transform* t = e->Find<Transform>();
 		if (t) {
 			LOG("\t" << i << ": " << e->ToString() << ": " << t->ToString());
@@ -60,7 +60,7 @@ CONSOLE_APP_MAIN {
     const char* map = map2;
     
     try {
-	    TraverseMap(*externals, map);
+	    TraverseMap(externals, map);
 	    DumpTransforms("All map points", externals);
 	    
 	    mach.Start();
@@ -82,7 +82,7 @@ CONSOLE_APP_MAIN {
 }
 
 
-void TraverseMap(EntityPool& externals, String map) {
+void TraverseMap(EntityPoolRef externals, String map) {
 	Vector<String> lines = Split(map, "\n");
 	if (lines.IsEmpty())
 		throw Exc("No lines");
@@ -166,12 +166,12 @@ void TraverseMap(EntityPool& externals, String map) {
 	for (Tile& t : tiles) {
 		vec3 pos(t.x, 0, -t.y);
 		{
-			t.e = externals.Create<RouteNode>();
+			t.e = externals->Create<RouteNode>();
 			Transform& tf = *t.e->Get<Transform>();
 			tf.position = pos;
 		}
 		if (t.is_begin) {
-			VAR begin = externals.Create<RouteNode>();
+			VAR begin = externals->Create<RouteNode>();
 			begin->SetName("begin");
 			Transform& tf = *begin->Get<Transform>();
 			tf.position = pos;
@@ -181,7 +181,7 @@ void TraverseMap(EntityPool& externals, String map) {
 			rsrc.LinkManually(rsink);
 		}
 		if (t.is_end) {
-			VAR end = externals.Create<RouteNode>();
+			VAR end = externals->Create<RouteNode>();
 			end->SetName("end");
 			Transform& tf = *end->Get<Transform>();
 			tf.position = pos;
@@ -228,8 +228,8 @@ void TraverseMap(EntityPool& externals, String map) {
 
 // A* search
 
-void FindRouteInPool(VAR begin, VAR end, EntityPool& route) {
-	route.Clear();
+void FindRouteInPool(VAR begin, VAR end, EntityPoolRef route) {
+	route->Clear();
 	if (begin.IsEmpty() || end.IsEmpty())
 		throw Exc("empty begin or end shared-entity");
 	
@@ -385,10 +385,10 @@ void FindRouteInPool(VAR begin, VAR end, EntityPool& route) {
 		SearchData* iter = end_data;
 		while (iter) {
 			//route.Add(iter->e->GetSharedFromThis());
-			route.Clone(*iter->e);
+			route->Clone(*iter->e);
 			iter = iter->came_from;
 		}
-		route.ReverseEntities();
+		route->ReverseEntities();
 	}
 }
 
@@ -396,7 +396,7 @@ void ConnectRoute(RouteSource& src, RouteSink& sink) {
 	src.LinkManually(sink);
 }
 
-void MergeRoute(EntityPool& route, EntityPool& waypoints) {
+void MergeRoute(EntityPoolRef route, EntityPoolRef waypoints) {
 	struct Item : Moveable<Item> {
 		Entity* e = 0;
 		RouteSource* src = 0;
@@ -409,17 +409,17 @@ void MergeRoute(EntityPool& route, EntityPool& waypoints) {
 	};
 	ArrayMap<vec3, Item> ents;
 	
-	for (EntityRef& e : waypoints.GetEntities())
+	for (EntityRef& e : waypoints->GetEntities())
 		ents.Add(e->Get<Transform>()->position).Set(&*e, e->FindRouteSource(), e->FindRouteSink());
 	
 	int dbg_i = 0;
 	Item* prev = 0;
-	for (EntityRef& e : route.GetEntities()) {
+	for (EntityRef& e : route->GetEntities()) {
 		vec3 position = e->Get<Transform>()->position;
 		int i = ents.Find(position);
 		Item* it;
 		if (i < 0) {
-			EntityRef new_e = waypoints.Clone(*e);
+			EntityRef new_e = waypoints->Clone(*e);
 			it = &ents.Add(position);
 			it->e		= &*new_e;
 			it->src		= new_e->FindRouteSource();
@@ -681,10 +681,10 @@ void DummyActor::FindRoute() {
     if (begin.IsEmpty() || end.IsEmpty())
         throw Exc("Map did not have start and end points. Add 'A' and 'B' tiles.");
     
-    FindRouteInPool(begin, end, *found_route);
+    FindRouteInPool(begin, end, found_route);
     DumpTransforms("Found route", found_route);
     
-    MergeRoute(*found_route, *waypoints);
+    MergeRoute(found_route, waypoints);
     DumpTransforms("All valid routes", waypoints);
     
     

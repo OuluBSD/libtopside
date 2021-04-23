@@ -41,7 +41,7 @@ struct Tile : Moveable<Tile> {
 
 
 
-void TraverseMap(EntityPool& externals, String map);
+void TraverseMap(EntityPoolRef externals, String map);
 
 
 
