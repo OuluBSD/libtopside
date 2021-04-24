@@ -1,0 +1,12 @@
+description "Homebrew cryptographic example\377";
+
+uses
+	Oulu;
+
+file
+	Crypto.cpp;
+
+mainconfig
+	"" = "ALTCORE",
+	"" = "";
+
