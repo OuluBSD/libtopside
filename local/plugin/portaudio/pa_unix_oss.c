@@ -47,6 +47,7 @@
  @ingroup hostapi_src
 */
 
+#ifdef flagPOSIX
 
 #include <stdio.h>
 #include <string.h>
@@ -2054,3 +2055,5 @@ error:
 }
 
 #endif
+#endif
+

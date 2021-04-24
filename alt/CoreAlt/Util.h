@@ -35,8 +35,10 @@ String GetFileExt(String path);
 void RealizeDirectory(String dir);
 void DeleteFile(String path);
 
-inline bool IsFin(float f) {return ::isfinite(f);}
-
+inline bool IsFin(float f)	{return ::isfinite(f);}
+inline bool IsNaN(double d)	{return std::isnan(d);}
+inline bool IsInf(double d)	{return std::isinf(d);}
+inline bool IsFin(double d)	{return !IsNaN(d) && !IsInf(d);}
 
 /*struct StringParser {
 	String s;

@@ -1,5 +1,6 @@
 #include "Multimedia.h"
 
+#if HAVE_MEDIAFILE
 
 NAMESPACE_OULU_BEGIN
 
@@ -755,3 +756,4 @@ Video& MediaFileInput::GetVideo() {
 
 NAMESPACE_OULU_END
 
+#endif

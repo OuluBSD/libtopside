@@ -2,20 +2,24 @@
 
 
 #ifdef flagPOSIX
-#include <fcntl.h>
-#include <linux/videodev2.h>
-#include <libv4l2.h>
-#include <sys/ioctl.h>
-#else
-// https://github.com/microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/directshow/capture/playcap/playcap.cpp
-// https://github.com/microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/directshow/capture/playcap/playcap.h
-#ifndef _WIN32_WINNT
-	#define _WIN32_WINNT 0x0500
+	#include <fcntl.h>
+	#include <linux/videodev2.h>
+	#include <libv4l2.h>
+	#include <sys/ioctl.h>
 #endif
-#include <windows.h>
-#include <dshow.h>
-#include <stdio.h>
-#include <strsafe.h>
+
+
+#if 0
+//#ifdef flagWIN32
+	// https://github.com/microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/directshow/capture/playcap/playcap.cpp
+	// https://github.com/microsoft/Windows-classic-samples/blob/master/Samples/Win7Samples/multimedia/directshow/capture/playcap/playcap.h
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0500
+	#endif
+	#include <windows.h>
+	#include <dshow.h>
+	#include <stdio.h>
+	#include <strsafe.h>
 #endif
 
 NAMESPACE_OULU_BEGIN
@@ -24,9 +28,13 @@ MediaStream* MediaDevice::FindOpenDevice() {
 	for (MediaCaptureDevice& m : caps)
 		if (m.IsDeviceOpen())
 			return &m;
+		
+	#if HAVE_MEDIAFILE
 	for (MediaFileInput& m : inputs)
 		if (m.IsDeviceOpen())
 			return &m;
+	#endif
+	
 	return 0;
 }
 

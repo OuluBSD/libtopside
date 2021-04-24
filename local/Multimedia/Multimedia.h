@@ -2,10 +2,8 @@
 #define _Multimedia_Multimedia_h_
 
 // http://dranger.com/ffmpeg/tutorial01.html
-
-#define FFMPEG 1
-
-#ifdef flagLINUX
+#ifdef flagPOSIX
+	#define HAVE_FFMPEG 1
 	#define flagV4L2 1
 	#define flagV4L2_OPENCV 1
 	
@@ -15,13 +13,18 @@
 #endif
 
 
-#if FFMPEG
+#if HAVE_FFMPEG
+#define HAVE_MEDIAFILE 1
 extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
 	#include <libswscale/swscale.h>
 	#include <libavutil/imgutils.h>
 }
+#endif
+
+#if flagV4L2_OPENCV
+	#define HAVE_CAPTUREDEV 1
 #endif
 
 #if flagV4L2

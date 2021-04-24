@@ -165,7 +165,7 @@ public:
 protected:
 	friend class FusionComponent;
 	friend class FusionContextComponent;
-	friend class FusionComponentInputVector;
+	friend struct FusionComponentInputVector;
 	
 	const VolatileStream* stream = 0;
 	String filepath;

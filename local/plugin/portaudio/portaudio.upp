@@ -1,5 +1,7 @@
 description "\3770,128,128";
 
+noblitz;
+
 flags(WIN32) ALL_WIN_SOURCES;
 
 library(WIN32) "User32 Advapi32";

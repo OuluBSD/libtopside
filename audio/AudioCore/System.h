@@ -162,6 +162,7 @@ public:
 
 
 
+#if HAVE_FLUIDSYNTH
 
 class FluidsynthComponent :
 	public Component<FluidsynthComponent>,
@@ -198,6 +199,8 @@ public:
 	
 };
 
+
+
 class FluidsynthSystem : public System<FluidsynthSystem> {
 	Vector<FluidsynthComponent*> comps;
 	Vector<FluidsynthComponent*> track_comps;
@@ -228,6 +231,15 @@ protected:
 };
 
 
+PREFAB_BEGIN(CompleteFluidsynth)
+		MixerChannelContextComponent,
+		FluidsynthComponent,
+		MixerChannelOutputComponent,
+		Connector
+PREFAB_END;
+
+#endif
+
 
 PREFAB_BEGIN(CompleteMixer)
 		MixerContextComponent,
@@ -250,13 +262,6 @@ PREFAB_END;
 
 PREFAB_BEGIN(MidiFileController)
 		MidiFileComponent,
-		Connector
-PREFAB_END;
-
-PREFAB_BEGIN(CompleteFluidsynth)
-		MixerChannelContextComponent,
-		FluidsynthComponent,
-		MixerChannelOutputComponent,
 		Connector
 PREFAB_END;
 

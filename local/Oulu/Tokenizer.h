@@ -226,7 +226,7 @@ struct Token : Moveable<Token> {
 			case TK_LOGOR: return "||";
 			case TK_MULASS: return "*=";
 			case TK_DIVASS: return "/=";
-			case TK_MODASS: return "\%=";
+			case TK_MODASS: return "%=";
 			case TK_ADDASS: return "+=";
 			case TK_SUBASS: return "-=";
 			case TK_ANDASS: return "&=";

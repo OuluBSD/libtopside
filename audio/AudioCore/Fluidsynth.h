@@ -1,6 +1,8 @@
 #ifndef _AudioCore_Fluidsynth_h_
 #define _AudioCore_Fluidsynth_h_
 
+#if HAVE_FLUIDSYNTH
+
 #include <fluidsynth.h>
 
 
@@ -31,4 +33,5 @@ public:
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

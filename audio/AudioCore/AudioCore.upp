@@ -5,17 +5,17 @@ flags(FREEBSD) BUILTIN_PORTMIDI;
 uses
 	Oulu;
 
-uses(BUILTIN_PORTMIDI) plugin/portmidi;
+uses(BUILTIN_PORTMIDI | (WIN32&MSC)) plugin/portmidi;
 
-uses(BUILTIN_PORTAUDIO) plugin/portaudio;
+uses(BUILTIN_PORTAUDIO | (WIN32&MSC)) plugin/portaudio;
 
 library(!WIN32) fluidsynth;
 
-library(WIN32) libfluidsynth.dll.a;
+library(WIN32 & !MSC) libfluidsynth.dll.a;
 
-library(!BUILTIN_PORTMIDI) portmidi;
+library(!(BUILTIN_PORTMIDI | (WIN32&MSC))) portmidi;
 
-library(!BUILTIN_PORTAUDIO) portaudio;
+library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 
 file
 	Copying,

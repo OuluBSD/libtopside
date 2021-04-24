@@ -42,6 +42,8 @@ bool MultiMediaComponent::LoadFileAny(String path) {
 	}
 	
 	MediaDevice& virt = devmgr.GetAddVirtual(path);
+	
+	#if HAVE_MEDIAFILE
 	MediaFileInput& fin = virt.AddFileInput();
 	
 	if (fin.Open(path)) {
@@ -64,6 +66,9 @@ bool MultiMediaComponent::LoadFileAny(String path) {
 			last_error = "couldn't open file " + path;
 		}
 	}
+	#else
+	last_error = "media file support is not included in the program compilation";
+	#endif
 	
 	return false;
 }

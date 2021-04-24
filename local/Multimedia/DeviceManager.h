@@ -10,7 +10,13 @@ protected:
 	
 	String path, desc;
 	Array<MediaCaptureDevice> caps;
+	
+	#if HAVE_MEDIAFILE
 	Array<MediaFileInput> inputs;
+public:
+	MediaFileInput& AddFileInput() {return inputs.Add();}
+private:
+	#endif
 	
 public:
 	MediaDevice() {}
@@ -19,7 +25,6 @@ public:
 	int GetCaptureCount() const {return caps.GetCount();}
 	MediaCaptureDevice& GetCapture(int i) {return caps[i];}
 	MediaStream* FindOpenDevice();
-	MediaFileInput& AddFileInput() {return inputs.Add();}
 	
 	String GetPath() const {return path;}
 	String GetDescription() const {return desc;}

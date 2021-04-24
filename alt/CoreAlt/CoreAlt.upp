@@ -2,6 +2,9 @@ description "U++ compatible Non-GUI code. Streams, NTL containers, concrete type
 
 options(BUILDER_OPTION) NOWARNINGS;
 
+uses
+	plugin/bz2lib;
+
 library(WIN32) "shlwapi comdlg32";
 
 library(WIN32) Ws2_32;

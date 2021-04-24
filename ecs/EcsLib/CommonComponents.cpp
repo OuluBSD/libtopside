@@ -55,7 +55,7 @@ bool StaticVolumeComponent::LoadFileAny(String path) {
 		int len = 0;
 		for(int i = 1; i <= 4; i++) {
 			int per_ch = s.GetCount() / i;
-			int root = pow(per_ch, 1.0/3.0);
+			int root = (int)pow(per_ch, 1.0/3.0);
 			int test_sz = root * root * root * i;
 			if (test_sz == s.GetCount()) {
 				channels = i;

@@ -1003,7 +1003,7 @@ int Binasc::ReadEvent(Stream& out, Stream& infile, int& trackbytes,
 					for (int i = 0; i < length; i++) {
 						infile.Get((char*)&ch, 1);
 						trackbytes++;
-						output << (char)ch;
+						output.Put((char)ch);
 					}
 					
 					output << "\"";
@@ -1363,7 +1363,7 @@ int Binasc::OutputStyle(Stream& out, Stream& input) {
 		input.Get((char*)&ch, 1);
 		
 		if (ch < 0x10) {
-			tempout << '0';
+			tempout.Put('0');
 		}
 		
 		tempout << Format("%X", (int)ch);

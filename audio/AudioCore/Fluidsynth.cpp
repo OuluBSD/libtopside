@@ -1,3 +1,5 @@
+#if HAVE_FLUIDSYNTH
+
 #include "AudioCore.h"
 #include "System.h"
 
@@ -340,3 +342,5 @@ void FluidsynthComponent::OpenTrackListener(int track_i) {
 }
 
 NAMESPACE_OULU_END
+
+#endif

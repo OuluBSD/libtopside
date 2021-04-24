@@ -72,7 +72,7 @@ public:
 
 inline dword Random() {return (dword)RNG::Local().Random(UINT32_MAX);}
 inline void Random64(uint64* t, int n) {return RNG::Local().GetN(t, n);}
-inline dword Random(dword n) {return RNG::Local().Random(n);}
+inline dword Random(dword n) {return (dword)RNG::Local().Random(n);}
 inline uint64 Random64() {return RNG::Local().Get();}
 inline uint64 Random64(uint64 n) {return RNG::Local().Random(n);}
 inline double Randomf() {return RNG::Local().Randomf();}

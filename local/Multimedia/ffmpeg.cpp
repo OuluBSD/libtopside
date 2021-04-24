@@ -1,4 +1,4 @@
-#if FFMPEG
+#if HAVE_FFMPEG
 #include "Multimedia.h"
 
 NAMESPACE_UPP

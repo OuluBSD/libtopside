@@ -3,7 +3,7 @@ description "Classes for 2D/3D/etc operations.\377B128,0,54";
 uses
 	Oulu;
 
-uses(BUILTIN_ASSIMP) plugin/assimp;
+uses(BUILTIN_ASSIMP|(WIN32&MSC)) plugin/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX) assimp;
 

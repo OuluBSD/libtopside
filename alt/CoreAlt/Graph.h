@@ -148,7 +148,7 @@ inline Color Blend(Color a_, Color b_, float blend) {
 	out.r = (byte)((a.r * (1.0 - blend)) + (b.r * blend));
 	out.g = (byte)((a.g * (1.0 - blend)) + (b.g * blend));
 	out.b = (byte)((a.b * (1.0 - blend)) + (b.b * blend));
-	out.a = 0.0;
+	out.a = 0;
 	return out;
 }
 

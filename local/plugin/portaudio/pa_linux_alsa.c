@@ -47,6 +47,7 @@
  @ingroup hostapi_src
 */
 
+#ifdef flagLINUX
 
 #define ALSA_PCM_NEW_HW_PARAMS_API
 #define ALSA_PCM_NEW_SW_PARAMS_API
@@ -4644,4 +4645,5 @@ PaError PaAlsa_SetRetriesBusy( int retries )
     return paNoError;
 }
 
+#endif
 #endif

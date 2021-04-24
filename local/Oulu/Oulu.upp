@@ -13,8 +13,6 @@ uses(ALTCORE) CoreAlt;
 
 uses(ALTCORE) DrawAlt;
 
-library(WIN32) bz2;
-
 file
 	Oulu.h,
 	Before.h,

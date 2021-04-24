@@ -170,7 +170,7 @@ private:
     char *NewString(const char *what) {
         if (!what)
             return 0;
-        int length = strlen(what) + 1;
+        int length = (int)strlen(what) + 1;
         char *copy = (char*)malloc(length);
         memcpy(copy, what, length);
         strings.Add(copy);

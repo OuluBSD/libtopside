@@ -41,7 +41,7 @@ public:
 	void PutEol();
 	void PutLine(String s) {Put(s); PutEol();}
 	void SeekCur(int64 pos) {Seek(GetCursor() + pos);}
-	int GetLength() const {return GetSize();}
+	int64 GetLength() const {return GetSize();}
 	
 	String GetLine(int max = UINT16_MAX) {
 		String out;
@@ -60,8 +60,9 @@ public:
 	Stream& operator%(T& o) {o.Serialize(*this); return *this;}
 	
 	Stream& operator << (char c) {Put(&c, 1); return *this;}
+	Stream& operator << (unsigned char i) {Put(&i, 1); return *this;}
 	Stream& operator << (double d) {return *this << DblStr(d);}
-	Stream& operator << (const char* c) {int len = strnlen(c, 10000000); if (len > 0) Put(c, len); return *this;}
+	Stream& operator << (const char* c) {int len = (int)strnlen(c, 10000000); if (len > 0) Put(c, len); return *this;}
 	Stream& operator << (unsigned long l) {return *this << IntStr64(l);}
 	Stream& operator << (unsigned int l) {return *this << IntStr64(l);}
 	virtual Stream& operator << (int i) {return *this << IntStr(i);}

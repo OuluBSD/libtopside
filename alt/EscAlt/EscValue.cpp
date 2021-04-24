@@ -213,7 +213,7 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 			if(hex && FitsInInt64(number) && (int64)number == number)
 				s << " " << HexStr((int64)number);
 			if(hex && number >= 0 && number < 65536 && (int)number == number)
-				s << ' ' << AsCString(::UPP::ToString(WString((wchar_t)number, 1)));
+				s << " " << AsCString(::UPP::ToString(WString((wchar_t)number, 1)));
 			return s;
 		}
 	case ESC_INT64:
@@ -223,7 +223,7 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 			if(hex)
 				s << " " << HexStr(i64);
 			if(hex && i64 >= 0 && i64 < 65536)
-				s << ' ' << AsCString(::UPP::ToString(WString((int)i64, 1)));
+				s << " " << AsCString(::UPP::ToString(WString((int)i64, 1)));
 			return s;
 		}
 	case ESC_ARRAY:
@@ -257,12 +257,13 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 							r << ",\n";
 						r << array->array[i].ToString(maxlen, indent_step, hex, indent + indent_step);
 					}
-					r << '\n' << ind << "]";
+					r.Put('\n');
+					r << "\n" << ind << "]";
 				}
 				s = r.GetResult();
 			}
 			else {
-				r << ind << '\"' << s << '\"';
+				r << ind << "\"" << s << "\"";
 				s = r.GetResult();
 			}
 			if(a.GetCount() > 100)
@@ -304,7 +305,7 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 				  << ":\n" << map->map[i].ToString(maxlen, indent_step, hex, indent + indent_step);
 				q = true;
 			}
-			r << '\n' << ind << "}";
+			r << "\n" << ind << "}";
 		}
 		s = r.GetResult();
 		if(map->map.GetCount() > 100)

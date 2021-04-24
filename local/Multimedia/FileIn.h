@@ -1,6 +1,8 @@
 #ifndef _Multimedia_FileIn_h_
 #define _Multimedia_FileIn_h_
 
+#if HAVE_MEDIAFILE
+
 NAMESPACE_OULU_BEGIN
 
 int GetOglDataType(int sample_size, int is_var_float);
@@ -134,30 +136,6 @@ class MediaFileInput : public MediaInputStream {
 	void AttachVideo(VideoFormat fmt) {for(int i = 0; i < 2; i++) vframe[i].Attach(fmt, *v.codec_ctx);}
 	void AttachAudio(SoundFormat fmt) {for(int i = 0; i < 2; i++) aframe[i].Attach(fmt, *a.codec_ctx);}
 	
-	// Video
-	/*AVCodecContext* vcodec_ctx = NULL;
-	AVCodecParserContext *vparser = NULL;
-	AVFrame *vframe = NULL;
-	AVCodec* vcodec = NULL;
-	AVPacket vpkt;
-	AVPacket orig_vpkt;
-	MediaVideoFrame vmframe[2];
-	int read_vframe_i = 0;
-	int vstream_i = -1;
-	bool is_orig_vpkt_ref = false;
-	
-	// Audio
-	AVCodecContext* acodec_ctx = NULL;
-	AVCodecParserContext *aparser = NULL;
-	AVFrame *aframe = NULL;
-	AVCodec* acodec = NULL;
-	AVPacket apkt;
-	AVPacket orig_apkt;
-	MediaAudioFrame amframe[2];
-	int read_aframe_i = 0;
-	int astream_i = -1;
-	bool is_orig_apkt_ref = false;*/
-	
 	
 	SoundFormat snd_fmt;
 	String errstr;
@@ -205,4 +183,5 @@ public:
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

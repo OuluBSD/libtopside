@@ -726,7 +726,7 @@ public:
 		hash_t* it = begin;
 		while (it != end) {
 			if (*it == hash)
-				return it - begin;
+				return (int)(it - begin);
 			it++;
 		}
 		return -1;

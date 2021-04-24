@@ -9,13 +9,13 @@ NAMESPACE_UPP_BEGIN
 class Stream;
 class Object;
 
-inline bool IsOctDigit(char c) { return c >= '0' && c <= '7'; }
-inline bool IsHexDigit(char c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
-inline bool IsBinDigit(char c) { return c == '0' || c == '1'; }
-inline bool IsDigit(char c) { return c >= '0' && c <= '9'; }
-inline bool IsSpace(char c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r'; }
-inline bool IsAlpha(char c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
-inline int GetHexDigit(char c) {
+inline bool IsOctDigit(int c) { return c >= '0' && c <= '7'; }
+inline bool IsHexDigit(int c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
+inline bool IsBinDigit(int c) { return c == '0' || c == '1'; }
+inline bool IsDigit(int c) { return c >= '0' && c <= '9'; }
+inline bool IsSpace(int c) { return c == ' ' || c == '\t' || c == '\n' || c == '\r'; }
+inline bool IsAlpha(int c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'); }
+inline int GetHexDigit(int c) {
 	if (c >= '0' && c <= '9')
 		return c - '0';
 	if (c >= 'a' && c <= 'f')
@@ -24,7 +24,7 @@ inline int GetHexDigit(char c) {
 		return 10 + c - 'A';
 	return 0;
 }
-inline int GetBinDigit(char c) {
+inline int GetBinDigit(int c) {
 	if (c == '0' || c == '1')
 		return c - '0';
 	return 0;
@@ -527,11 +527,11 @@ public:
 	bool operator==(const StringT& s) const { if (s.GetCount() != GetCount()) return false; return Compare(s.Begin(), Begin()) == 0; }
 	bool operator!=(const StringT& s) const { return !(*this == s); }
 	bool operator==(const char* s) const {
-		int len = strnlen(s, 1 << 20);
+		int len = (int)strnlen(s, 1 << 20);
 		if (len != GetCount()) return false; return Compare(s, Begin(), len) == 0;
 	}
 	bool operator!=(const char* s) const {
-		int len = strnlen(s, 1 << 20);
+		int len = (int)strnlen(s, 1 << 20);
 		if (len != GetCount()) return true; return Compare(s, Begin(), len) != 0;
 	}
 	
@@ -628,7 +628,7 @@ inline String ToUpperFirst(const String& s) {
 
 inline double StrDbl(String s) { return String::StrDbl(s); }
 inline int ScanInt(String s) { return String::StrInt(s); }
-inline int ScanInt64(String s) { return String::StrInt64(s); }
+inline int64 ScanInt64(String s) { return String::StrInt64(s); }
 inline int StrInt(String s) { return String::StrInt(s); }
 inline int OctInt(String s) { return String::OctInt(s); }
 inline int HexInt(String s) { return String::HexInt(s); }
