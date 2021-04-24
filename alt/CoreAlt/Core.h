@@ -1,6 +1,9 @@
 #ifndef CORE_H
 #define DLOG(x) LOG(x)
 
+#ifndef flagALTCORE
+	#error Set ALTCORE flag
+#endif
 
 #define NAMESPACE_UPP namespace  Upp {
 #define END_UPP_NAMESPACE }

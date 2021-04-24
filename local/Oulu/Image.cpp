@@ -56,12 +56,12 @@ void FloatImage::Set(int w, int h, int stride, int src_pitch, const byte* src_da
 	const byte* end = src_data + sz.cy * pitch;
 	
 	if (src_pitch == pitch) {
-		int exp_size = end - it;
+		int exp_size = (int)(end - it);
 		ASSERT(exp_size == size);
 		while (it != end) {
-			float v = *it++ / 255.0;
+			double v = *it++ / 255.0;
 			ASSERT(IsFin(v));
-			*f++ = v;
+			*f++ = (float)v;
 		}
 	}
 	else {
@@ -69,7 +69,7 @@ void FloatImage::Set(int w, int h, int stride, int src_pitch, const byte* src_da
 			const byte* it0 = it + y * src_pitch;
 			const byte* end0 = it0 + pitch;
 			while (it0 != end0)
-				*f++ = *it0++ / 255.0;
+				*f++ = (float)(*it0++ / 255.0);
 		}
 	}
 }

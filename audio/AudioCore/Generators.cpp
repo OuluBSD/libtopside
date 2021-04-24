@@ -55,7 +55,7 @@ void SoundGeneratorComponent::Play(const AudioSinkConfig& config, Sound& snd) {
 void SoundGeneratorComponent::GenerateStereoSine(const SoundFormat& fmt) {
 	double pan_loop_seconds = 2.0;
 	int tone_mul = 4;
-	int pan_frames = fmt.freq * pan_loop_seconds / fmt.sample_rate;
+	int pan_frames = (int)(fmt.freq * pan_loop_seconds / fmt.sample_rate);
 	int pan_samples = pan_frames * fmt.sample_rate;
 	int pan_i = 0;
 	frame_part_size = fmt.sample_rate * fmt.channels;
@@ -76,7 +76,7 @@ void SoundGeneratorComponent::GenerateStereoSine(const SoundFormat& fmt) {
 				double value = pan * tonesin;
 				//value = tonesin;
 				
-				*f = value;
+				*f = (float)value;
 				f++;
 			}
 			pan_i++;

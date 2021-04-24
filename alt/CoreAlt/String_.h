@@ -149,7 +149,7 @@ public:
 	StringT() {Zero();}
 	StringT(const T* c) {Zero(); *this = c;}
 	StringT(const T* c, int len) {Zero(); Set(c, len);}
-	StringT(const T* b, const T* e) {Zero(); int len = e-b; if (len > 0) Set(b, len);}
+	StringT(const T* b, const T* e) {Zero(); int len = (int)(e-b); if (len > 0) Set(b, len);}
 	StringT(T c, int len) {Zero(); Cat(c, len);}
 	StringT(const StringT& s) {Zero(); *this = s;}
 	StringT(StringT&& s) {Zero(); Swap(*this, s);}
@@ -683,7 +683,7 @@ template<> inline int64 ToInt(const double& o) {return (int64)o;}
 template<> inline int64 ToInt(const String& o) {return StrInt(o);}
 template<> inline int64 ToInt(const WString& o) {return WString::StrInt(o);}
 
-template <class T> inline double ToDouble(const T& o) {return o.ToInt();}
+template <class T> inline double ToDouble(const T& o) {return o.ToDouble();}
 template<> inline double ToDouble(const bool& o) {return (double)o;}
 template<> inline double ToDouble(const int& o) {return (double)o;}
 template<> inline double ToDouble(const int64& o) {return (double)o;}

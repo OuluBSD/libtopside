@@ -287,7 +287,7 @@ bool FusionComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 			in.type = FusionComponentInput::EMPTY;
 			continue;
 		}
-		in.id		= in_map.TryGet("id", -1).ToInt(); // TODO fix all of these, not safe now
+		in.id		= (int)in_map.TryGet("id", -1).ToInt(); // TODO fix all of these, not safe now
 		in.type		= FusionComponentInput::GetTypeFromString(in_map.TryGet("type", "").ToString());
 		in.filepath	= in_map.TryGet("filename", "").ToString();
 		in.filter	= FusionComponentInput::GetFilterFromString(in_map.TryGet("filter", "linear").ToString());
@@ -332,7 +332,7 @@ bool FusionComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 		ObjectMap& out_map = out_el.GetMap();
 		
 		if (!i) {
-			id = out_map.TryGet("id", -1).ToInt();
+			id = (int)out_map.TryGet("id", -1).ToInt();
 		}
 		else {
 			OnError(fn_name, "only 1 output is supported currently");

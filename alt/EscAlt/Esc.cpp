@@ -323,7 +323,7 @@ void Esc::Term(SRVal& r)
 		return;
 	}
 	if(IsChar('\'')) {
-		WString s = FromUtf8(ReadString('\''));
+		WString s = FromUtf8(ReadString('\'', true));
 		if(s.GetLength() != 1)
 			ThrowError("invalid character literal");
 		r = (int64)s[0];

@@ -3,125 +3,152 @@
 
 NAMESPACE_UPP
 
-
-String BZ2Compress(String s, int level, bool allow_empty) {
-	const int chunk_size = 1 << 16;
-	bz_stream STREAM;
-	Vector<char> dst;
-	level = max(1, min(9, level));
+namespace bz2 {
+	static void* bzalloc_new(void *opaque, int items, int size)
+	{
+		return new byte[items * size];
+	}
 	
-	int src_len = s.GetCount();
-	int dst_len = 0;
-	const char* src_buf = s.Begin();
-
-    // Check parameters
-    if (!src_len) {
-        if (!allow_empty)
-            return String();
-        src_buf = NULL;
-    }
-    
-    STREAM.bzalloc = NULL;
-    STREAM.bzfree  = NULL;
-    STREAM.opaque  = NULL;
-    int errcode = BZ2_bzCompressInit(&STREAM, level, 0, 0);
-   
-    if (errcode == BZ_OK) {
-        dst.SetCount(chunk_size);
-    
-        STREAM.next_in   = (char*)s.Begin();
-        STREAM.avail_in  = 0;
-        STREAM.next_out  = dst.GetData();
-        STREAM.avail_out = chunk_size;
-
-        size_t left = src_len;
-        do {
-            if (STREAM.avail_in == 0) {
-                STREAM.avail_in = left > chunk_size ? chunk_size : (unsigned int)left;
-                left -= STREAM.avail_in;
-            }
-            if (STREAM.avail_out == 0) {
-                int count = dst.GetCount();
-                dst.SetCount(count + chunk_size);
-                STREAM.next_out  = dst.GetData() + count;
-                STREAM.avail_out = chunk_size;
-            }
-            errcode = BZ2_bzCompress(&STREAM, left ? BZ_RUN : BZ_FINISH);
-            if (left == 0 && STREAM.avail_out > 0)
-                break;
-        }
-        while (errcode == BZ_RUN_OK);
-
-        BZ2_bzCompressEnd(&STREAM);
-        
-        int dst_len = STREAM.next_out - (char*)dst.GetData();
-        ASSERT(dst_len >= 0);
-        dst.SetCount(dst_len);
-        
-        if (errcode == BZ_RUN_OK || errcode == BZ_STREAM_END) {
-            String s;
-            s.SetData(dst.Begin(), dst.GetCount());
-            return s;
-        }
-    }
-	
-	return String();
+	static void bzfree_new(void *opaque, void *addr)
+	{
+		delete[] (byte *)addr;
+	}
 }
 
-String BZ2Decompress(String s, bool allow_fail) {
-	const int chunk_size = 1 << 16;
-	bz_stream STREAM;
-	Vector<char> dst;
-	int src_len = s.GetCount();
-    if (!src_len)
-        return String();
-    
-    STREAM.bzalloc = NULL;
-    STREAM.bzfree  = NULL;
-    STREAM.opaque  = NULL;
-    int errcode = BZ2_bzDecompressInit(&STREAM, 0, 0);
-   
-    if (errcode == BZ_OK) {
-        dst.SetCount(chunk_size);
-        
-        STREAM.next_in   = (char*)s.Begin();
-        STREAM.avail_in  = 0;
-        STREAM.next_out  = dst.GetData();
-        STREAM.avail_out = chunk_size;
-
-        size_t left = src_len;
-        do {
-            if (STREAM.avail_in == 0) {
-                STREAM.avail_in = left > chunk_size ? chunk_size : (unsigned int)left;
-                left -= STREAM.avail_in;
-            }
-            if (STREAM.avail_out == 0) {
-                int count = dst.GetCount();
-                dst.SetCount(count + chunk_size);
-                STREAM.next_out  = dst.GetData() + count;
-                STREAM.avail_out = chunk_size;
-            }
-            errcode = BZ2_bzDecompress(&STREAM);
-            if (left == 0 && STREAM.avail_out > 0)
-                break;
-        }
-        while (errcode == BZ_OK);
-		
-        BZ2_bzDecompressEnd(&STREAM);
-        
-        int dst_len = STREAM.next_out - (char*)dst.GetData();
-        ASSERT(dst_len >= 0);
-        dst.SetCount(dst_len);
-        
-        if (errcode == BZ_OK || errcode == BZ_STREAM_END || allow_fail) {
-            String s;
-            s.SetData(dst.Begin(), dst.GetCount());
-            return s;
-        }
-    }
-	
-	return String();
+void BZ2Decompress(Stream& out, Stream& in)
+{
+	enum { BUF_SIZE = 65536 };
+	Buffer<char> input(BUF_SIZE), output(BUF_SIZE);
+	int avail = in.Get(input, BUF_SIZE);
+	if(avail == 0)
+		return;
+	bz_stream z;
+	Zero(z);
+	z.bzalloc = bz2::bzalloc_new;
+	z.bzfree = bz2::bzfree_new;
+	z.opaque = 0;
+	if(BZ2_bzDecompressInit(&z, 0, 0) != BZ_OK)
+	{
+		out.SetError();
+		return;
+	}
+	z.next_in = input;
+	z.avail_in = avail;
+	z.next_out = output;
+	z.avail_out = BUF_SIZE;
+	int code;
+	bool running = true;
+	int64 total = in.GetLeft();
+	int done = 0;
+	do
+	{
+		if(z.avail_in == 0 && running)
+		{
+			if((z.avail_in = in.Get(z.next_in = input, BUF_SIZE)) == 0)
+				running = false;
+			done += z.avail_in;
+		}
+		code = BZ2_bzDecompress(&z);
+		if(z.avail_out == 0)
+		{
+			out.Put(z.next_out = output, z.avail_out = BUF_SIZE);
+			if(out.IsError())
+			{
+				BZ2_bzDecompressEnd(&z);
+				return;
+			}
+		}
+	}
+	while(code == BZ_OK);
+	if(z.avail_out < BUF_SIZE)
+		out.Put(output, BUF_SIZE - z.avail_out);
+	BZ2_bzDecompressEnd(&z);
 }
+
+void BZ2Compress(Stream& out, Stream& in)
+{
+	enum { BUF_SIZE = 65536 };
+	Buffer<char> input(BUF_SIZE), output(BUF_SIZE);
+	bz_stream z;
+	z.bzalloc = bz2::bzalloc_new;
+	z.bzfree = bz2::bzfree_new;
+	z.opaque = 0;
+	if(BZ2_bzCompressInit(&z, 9, 0, 30) != BZ_OK)
+	{
+		out.SetError();
+		return;
+	}
+	z.avail_in = 0;
+	z.avail_out = BUF_SIZE;
+	z.next_out = output;
+	int code;
+	int flush = BZ_RUN;
+	int64 total = in.GetLeft();
+	int done = 0;
+	do
+	{
+		if(z.avail_in == 0 && flush == BZ_RUN)
+		{
+			z.next_in = input;
+			if((z.avail_in = in.Get(z.next_in = input, BUF_SIZE)) == 0)
+				flush = BZ_FINISH;
+			done += z.avail_in;
+		}
+		code = BZ2_bzCompress(&z, flush);
+		if(z.avail_out == 0)
+		{
+			out.Put(z.next_out = output, z.avail_out = BUF_SIZE);
+			if(out.IsError())
+			{
+				BZ2_bzCompressEnd(&z);
+				return;
+			}
+		}
+	}
+	while(code == BZ_RUN_OK || code == BZ_FINISH_OK);
+	if(z.avail_out < BUF_SIZE)
+		out.Put(output, BUF_SIZE - z.avail_out);
+	BZ2_bzCompressEnd(&z);
+	if(code != BZ_STREAM_END)
+		out.SetError();
+}
+
+String BZ2Compress(Stream& in)
+{
+	StringStream out;
+	BZ2Compress(out, in);
+	return out;
+}
+
+String BZ2Decompress(Stream& in)
+{
+	StringStream out;
+	BZ2Decompress(out, in);
+	return out;
+}
+
+String BZ2Compress(const void *data, int64 len)
+{
+	MemReadStream in(data, len);
+	return BZ2Compress(in);
+}
+
+String BZ2Decompress(const void *data, int64 len)
+{
+	MemReadStream in(data, len);
+	return BZ2Decompress(in);
+}
+
+String BZ2Compress(const String& data)
+{
+	return BZ2Compress(~data, data.GetLength());
+}
+
+String BZ2Decompress(const String& data)
+{
+	return BZ2Decompress(~data, data.GetLength());
+}
+
 
 END_UPP_NAMESPACE
 

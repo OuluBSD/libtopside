@@ -9,8 +9,14 @@
 
 namespace Upp {
 
-String BZ2Compress(String s, int level, bool allow_empty);
-String BZ2Decompress(String s, bool allow_fail);
+void BZ2Decompress(Stream& out, Stream& in);
+void BZ2Compress(Stream& out, Stream& in);
+String BZ2Compress(Stream& in);
+String BZ2Decompress(Stream& in);
+String BZ2Compress(const void *data, int64 len);
+String BZ2Decompress(const void *data, int64 len);
+String BZ2Compress(const String& data);
+String BZ2Decompress(const String& data);
 
 }
 

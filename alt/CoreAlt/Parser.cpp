@@ -53,7 +53,7 @@ void StringParser::Parse() {
 			}
 		}
 	}
-	if (is_valid) {
+	if (is_valid || !checkend) {
 		str = FromCString(str.Begin(), str.End());
 	}
 }
@@ -313,10 +313,8 @@ String CParser::ReadId() {
 	return String();
 }
 
-String CParser::ReadString(bool char_delim) {
-	StringParser ip(input, pos.cursor);
-	if (char_delim)
-		ip.SetCharDelim();
+String CParser::ReadString(char delim, bool checkend) {
+	StringParser ip(input, pos.cursor, delim, checkend);
 	if (ip.is_valid) {
 		pos.cursor = ip.pos;
 		DoSpaces();
@@ -543,7 +541,7 @@ void CParser::SkipTerm() {
 		ReadString();
 	else
 	if(IsChar('\''))
-		ReadString(true);
+		ReadString('\'');
 	else
 	if (!IsEof())
 		PassChar(PeekChar());

@@ -699,9 +699,16 @@ inline void MemoryFree(void* ptr) {free(ptr);}
 
 
 
+void BZ2Decompress(Stream& out, Stream& in);
+void BZ2Compress(Stream& out, Stream& in);
+String BZ2Compress(Stream& in);
+String BZ2Decompress(Stream& in);
+String BZ2Compress(const void *data, int64 len);
+String BZ2Decompress(const void *data, int64 len);
+String BZ2Compress(const String& data);
+String BZ2Decompress(const String& data);
+
 String MD5String(String s);
-String BZ2Compress(String s, int level=9, bool allow_empty=false);
-String BZ2Decompress(String s, bool allow_fail=false);
 String HexEncode(String s);
 
 
@@ -731,6 +738,12 @@ String GetHomeDirFile(const char *fp);
 void AppInit__(int argc, const char** argv);
 void AppExit__();
 
+
+template <class T>
+void Zero(T& obj)
+{
+	::memset(&obj, 0, sizeof(obj));
+}
 
 
 

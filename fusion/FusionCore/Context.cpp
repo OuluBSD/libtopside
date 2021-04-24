@@ -325,7 +325,7 @@ void FusionContextComponent::MakeUniqueIds(Object& v) {
 					ObjectMap& in_map = in_el.GetMap();
 					int j = in_map.Find("id");
 					if (j >= 0)
-						in_map.SetAt(j, MakeUniqueId(ids, in_map.GetObject(j).ToInt()));
+						in_map.SetAt(j, MakeUniqueId(ids, (int)in_map.GetObject(j).ToInt()));
 				}
 			}
 			
@@ -339,7 +339,7 @@ void FusionContextComponent::MakeUniqueIds(Object& v) {
 					ObjectMap& out_map = out_el.GetMap();
 					int j = out_map.Find("id");
 					if (j >= 0) {
-						int id = MakeUniqueId(ids, out_map.GetObject(j).ToInt());
+						int id = MakeUniqueId(ids, (int)out_map.GetObject(j).ToInt());
 						if (!i)
 							stage_id = id;
 						out_map.SetAt(j, id);
@@ -436,7 +436,7 @@ bool FusionContextComponent::Load(Object json) {
 				ObjectMap& out_map = out_el.GetMap();
 				int j = out_map.Find("id");
 				if (j >= 0) {
-					int id = out_map.GetObject(j).ToInt();
+					int id = (int)out_map.GetObject(j).ToInt();
 					frag_code = map.GetAdd(IntStr(id)).ToString();
 				}
 			}

@@ -701,7 +701,7 @@ int File::WriteHex(Stream& out, int width) {
 	StringStream tempstream;
 	File::Write(tempstream);
 	int value = 0;
-	int len = tempstream.GetSize();
+	int len = (int)tempstream.GetSize();
 	int wordcount = 1;
 	int linewidth = width >= 0 ? width : 25;
 	
@@ -2133,7 +2133,7 @@ int File::GetAbsoluteTickTime(double starttime) {
 		
 		if (timemapvalid == 0) {
 			if (timemapvalid == 0) {
-				return -1.0;    // something went wrong
+				return -1;    // something went wrong
 			}
 		}
 	}
@@ -2210,7 +2210,7 @@ int File::GetTotalTimeInTicks() {
 		DeltaTicks();
 	}
 	
-	int output = 0.0;
+	int output = 0;
 	
 	for (int i = 0; i < (int)events.GetCount(); i++) {
 		if (events[i].Last().tick > output) {
@@ -2304,7 +2304,7 @@ int File::LinearTickInterpolationAtSecond(double seconds) {
 		BuildTimeMap();
 		
 		if (timemapvalid == 0) {
-			return -1.0;    // something went wrong
+			return -1;    // something went wrong
 		}
 	}
 	
@@ -2369,7 +2369,7 @@ int File::LinearTickInterpolationAtSecond(double seconds) {
 	double y2 = timemap[startindex+1].tick;
 	double xi = seconds;
 	
-	return (xi -x1) * ((y2 - y1) / (x2 - x1)) + y1;
+	return (int)((xi -x1) * ((y2 - y1) / (x2 - x1)) + y1);
 }
 
 

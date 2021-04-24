@@ -88,8 +88,6 @@ public:
 };
 
 
-void EncryptionTest();
-
 }
 NAMESPACE_OULU_END
 

@@ -77,7 +77,7 @@ Lexer::Lexer(const char *string)
     , error(0)
 {
     if (data)
-        length = strlen(data);
+        length = (int)strlen(data);
 }
 
 int Lexer::At(int offset) const {
@@ -436,7 +436,7 @@ void Lexer::Read(Token &out) {
         }
         // Skip whitespace for operator
         if (out.type == TYPE_operator)
-            location.AdvanceColumn(strlen(operators[out.as_operator].string));
+            location.AdvanceColumn((int)strlen(operators[out.as_operator].string));
     }
 }
 

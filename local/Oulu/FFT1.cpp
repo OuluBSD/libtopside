@@ -146,7 +146,7 @@ void FFT1::Process(const Vector<Complex>& input, Vector<Complex>& output, int di
 {
 	ASSERT(input.GetCount() == length);
 	output.SetCount(length);
-	int m = log2(length);
+	int m = (int)log2(length);
 	FFT1D(dir, m, input, output);
 }
 
@@ -156,7 +156,7 @@ void FFT1::FFT1D(int dir, int m, const Vector<Complex>& input, Vector<Complex>& 
 	Complex* out = output.Begin();
 	
 	int nn, i1, k, i2, l, l1, l2;
-	double c1, c2, tx, ty, t1, t2, u1, u2, z;
+	double c1, c2, t1, t2, u1, u2, z;
 	
 	// Calculate the number of points
 	nn = 1;

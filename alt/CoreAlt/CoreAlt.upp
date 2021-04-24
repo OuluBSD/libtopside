@@ -13,6 +13,10 @@ library(POSIX) "pthread crypto bz2";
 
 library(WIN32&(CLANG|GCC)) "crypto bz2 z iconv";
 
+library(WIN32 & MSC & !DEBUG) "libcryptoMT libsslMT Advapi32 User32";
+
+library(WIN32 & MSC & DEBUG) "libcryptoMTd libsslMTd Advapi32 User32";
+
 file
 	Copying,
 	srcdoc.tpp,

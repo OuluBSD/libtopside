@@ -22,10 +22,10 @@ struct StringParser {
 	int pos;
 	String str;
 	int delim = '\"';
+	bool checkend = true;
 	
-	StringParser(const String& input, int pos) : input(input), pos(pos) {Parse();}
-	
-	void SetCharDelim() {delim = '\'';}
+	StringParser(const String& input, int pos, int delim='\"', bool checkend=true) :
+		input(input), pos(pos), delim(delim), checkend(checkend) {Parse();}
 	
 	void Parse();
 	
@@ -98,7 +98,7 @@ public:
 	void SetPos(const Pos& p) {pos = p;}
 	
 	String ReadId();
-	String ReadString(bool char_delim=false);
+	String ReadString(char delim='\"', bool checkend=true);
 	int ReadInt();
 	double ReadNumber();
 	double ReadDouble();

@@ -201,8 +201,8 @@ template <class T> void SoundBufferUnitTestT() {
 	to.SetCount(fmt.sample_rate * fmt.channels);
 	
 	for(int i = 0; i < fmt.sample_rate; i++) {
-		from[i*2 + 0] = +1 + i + 0.5;
-		from[i*2 + 1] = -1 - i + 0.5;
+		from[i*2 + 0] = (T)(+1 + i + 0.5);
+		from[i*2 + 1] = (T)(-1 - i + 0.5);
 	}
 	
 	VolatileSoundBuffer b;

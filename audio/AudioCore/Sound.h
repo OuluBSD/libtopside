@@ -132,7 +132,7 @@ protected:
 	void SetFormat(int out_ch, SampleFormat format);
 	
 public:
-	ASound& SetFrequency(double freq)          {fmt.freq = freq; return *this;}
+	ASound& SetFrequency(int freq)          {fmt.freq = freq; return *this;}
 	ASound& SetSampleRate(dword sr)            {fmt.sample_rate = sr; return *this;}
 	ASound& SetFlags(StreamFlags f)            {flags = f; return *this;}
 	double GetFrequency() const;

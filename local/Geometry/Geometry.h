@@ -19,6 +19,8 @@
 #include <Oulu/Oulu.h>
 
 #undef rad2
+#undef far
+#undef near
 
 #include "Common.h"
 #include "Matrix.h"

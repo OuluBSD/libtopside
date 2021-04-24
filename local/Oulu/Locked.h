@@ -6,26 +6,44 @@ NAMESPACE_OULU_BEGIN
 
 
 
+
 template <class T>
 class Ref : Moveable<Ref<T>> {
+	T* o = 0;
 	
 public:
 	Ref() {}
-	Ref(const Ref& r);
+	Ref(const Ref& r) {*this = r;}
+	Ref(T* o) : o(o) {o->IncRef();}
+	~Ref() {Clear();}
 	
-	T* operator->();
-	const T* operator->() const;
-	T& operator*();
-	T* Get();
-	void Clear();
+	Ref& operator=(const Ref& r) {return Set(r);}
+	T* operator->() {return o;}
+	const T* operator->() const {return o;}
+	T& operator*() {ASSERT(o); return *o;}
+	operator bool() const {return o != NULL;}
 	
-	template <class V>	V* As();
-	template <class V>	void WrapObject(V* o);
+	bool IsEmpty() const {return o == NULL;}
+	T* Get() {return o;}
+	void Clear() {if (o) o->DecRef(); o = 0;}
+	template <class V>	V* As() {
+		static_assert(std::is_convertible<T,V>() || std::is_convertible<V,T>(), "V must be convertible with T");
+		return dynamic_cast<V*>(o);
+	}
+	template <class V> void WrapObject(V* v) {
+		static_assert(std::is_convertible<T,V>() || std::is_convertible<V,T>(), "V must be convertible with T");
+		o = dynamic_cast<T*>(v);
+		o->IncRef();
+		ASSERT(o);
+	}
 	
-	bool IsEmpty() const;
-	operator bool() const;
 	
-	
+	Ref& Set(const Ref& r) {
+		Clear();
+		o = r.o;
+		o->IncRef();
+		return *this;
+	}
 	
 };
 
@@ -33,14 +51,24 @@ public:
 template <class T>
 class LockedScopeEnabler {
 	
+protected:
+	friend class Ref<T>;
+	
+	std::atomic<int> refs;
+	
+	void IncRef() {++refs;}
+	void DecRef() {--refs;}
+	
 public:
-	LockedScopeEnabler() {}
-	virtual ~LockedScopeEnabler() {}
+	LockedScopeEnabler() {
+		refs = 0;
+	}
+	virtual ~LockedScopeEnabler() {
+		ASSERT(refs == 0);
+	}
 	
-	Ref<T> AsRef();
-	
-	
-	operator Ref<T>();
+	Ref<T> AsRef() {return this;}
+	operator Ref<T>() {return this;}
 	
 };
 

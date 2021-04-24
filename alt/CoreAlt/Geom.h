@@ -35,32 +35,32 @@ struct Point_ : Moveable<Point_<T>> {
 
 	template <class V>
 	Point_& operator=(const V& b) {
-		x = b.x;
-		y = b.y;
+		x = (T)b.x;
+		y = (T)b.y;
 		return *this;
 	}
 
 	Point_& operator+=(const Point_& b) {
-		x += b.x;
-		y += b.y;
+		x = (T)(x + b.x);
+		y = (T)(y + b.y);
 		return *this;
 	}
 
 	Point_& operator-=(const Point_& b) {
-		x -= b.x;
-		y -= b.y;
+		x = (T)(x - b.x);
+		y = (T)(y - b.y);
 		return *this;
 	}
 
 	Point_& operator*=(const double k) {
-		x *= k;
-		y *= k;
+		x = (T)(x * k);
+		y = (T)(y * k);
 		return *this;
 	}
 
 	Point_& operator/=(const double k) {
-		x /= k;
-		y /= k;
+		x = (T)(x / k);
+		y = (T)(y / k);
 		return *this;
 	}
 
@@ -81,8 +81,8 @@ struct Point_ : Moveable<Point_<T>> {
 
 
 typedef Point_<int> Point;
-typedef Point_<float> Pointf;
-typedef Point_<double> Pointd;
+typedef Point_<float> PointF32;
+typedef Point_<double> Pointf;
 
 
 
@@ -135,8 +135,8 @@ bool operator==(const Size_<T>& a, const Size_<T>& b) {
 }
 
 typedef Size_<int> Size;
-typedef Size_<float> Sizef;
-typedef Size_<double> Sized;
+typedef Size_<float> SizeF32;
+typedef Size_<double> Sizef;
 
 
 
@@ -228,8 +228,8 @@ struct Triangle_ : Moveable<Triangle_<T>> {
 };
 
 typedef Triangle_<int> Triangle;
-typedef Triangle_<float> Trianglef;
-typedef Triangle_<double> Triangled;
+typedef Triangle_<float> TriangleF32;
+typedef Triangle_<double> Trianglef;
 
 
 

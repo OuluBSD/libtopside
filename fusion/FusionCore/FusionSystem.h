@@ -47,15 +47,15 @@ struct FusionStream : public VolatileStream {
 	TimeStop vframe_time;
 	double vtotal_seconds = 0;
 	int vframes = 0;
-	int fps_limit = 60;
+	double fps_limit = 60;
 	
 	// Audio
 	
 	Sound* sys_snd = 0;
 	//TimeStop aframe_time;
-	//float audio_sync_ival = 1.0f;
+	//double audio_sync_ival = 1.0f;
 	double atotal_seconds = 0;
-	float audio_last_sync_sec = 0;
+	double audio_last_sync_sec = 0;
 	/*int audio_sample_freq = 44100;
 	int audio_sample_rate = 512;
 	int audio_sample_size = 4;

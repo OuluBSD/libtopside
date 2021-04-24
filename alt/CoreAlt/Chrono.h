@@ -19,6 +19,7 @@ struct Date {
 	
 	String ToString() const;
 	int64 ToInt() const {return Get();}
+	double ToDouble() const {return (double)Get();}
 	hash_t GetHashValue() const {return 32 * (32 * ( 16 * (day + 32 * (month + 8 * year))));}
 	
 	static bool IsLeapYear(int year);
@@ -49,6 +50,7 @@ struct Time : public Date {
 	String ToString() const;
 	String ToDiffString() const;
 	int64 ToInt() const {return Get();}
+	double ToDouble() const {return (double)Get();}
 	static Time GetSys();
 };
 

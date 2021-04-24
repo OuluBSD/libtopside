@@ -20,7 +20,7 @@ bool IsEpsilonEqual(float a, float b, float epsilon) {
 }
 
 bool IsEpsilonEqual(double a, double b, double epsilon) {
-	float diff = fabs(a - b);
+	double diff = fabs(a - b);
 	return diff < epsilon;
 }
 
@@ -30,7 +30,7 @@ bool IsEpsilonNotEqual(float a, float b, float epsilon) {
 }
 
 bool IsEpsilonNotEqual(double a, double b, double epsilon) {
-	float diff = fabs(a - b);
+	double diff = fabs(a - b);
 	return diff >= epsilon;
 }
 

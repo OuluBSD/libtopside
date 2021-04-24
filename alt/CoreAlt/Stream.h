@@ -16,7 +16,8 @@ inline int fopen_s(FILE **f, const char *name, const char *mode) {
 NAMESPACE_UPP_BEGIN
 
 class Stream {
-
+	bool err = false;
+	
 public:
 
 	virtual String Get(int size) { return ""; }
@@ -35,6 +36,9 @@ public:
 	virtual int64 GetSize() const {return 0;}
 	virtual int Peek() {if (IsEof()) return 0; byte b; Get(&b, 1); SeekCur(-1); return b;}
 	
+	void SetError(bool b=true) {err = b;}
+	bool IsError() const {return err;}
+	
 	virtual void Flush() {};
 	
 	int Get();
@@ -42,6 +46,7 @@ public:
 	void PutLine(String s) {Put(s); PutEol();}
 	void SeekCur(int64 pos) {Seek(GetCursor() + pos);}
 	int64 GetLength() const {return GetSize();}
+	int64 GetLeft() {return GetSize() - GetCursor();}
 	
 	String GetLine(int max = UINT16_MAX) {
 		String out;
@@ -415,12 +420,12 @@ public:
 };
 
 class MemReadStream : public Stream {
-	const char* buf;
+	const byte* buf;
 	int64 size = 0;
 	int64 cursor = 0;
 	
 public:
-	MemReadStream(const char* buf, int64 size) : buf(buf), size(size) {}
+	MemReadStream(const void* buf, int64 size) : buf((const byte*)buf), size(size) {}
 
 	bool IsLoading() override { return true; }
 	bool IsStoring() override { return false; }
@@ -430,7 +435,7 @@ public:
 		int64 sz = min((int64)size, this->size - cursor);
 		if (sz <= 0) return 0;
 		ASSERT(sz < INT_MAX);
-		char* b = (char*)mem;
+		byte* b = (byte*)mem;
 		MemoryCopy(b, buf + cursor, (int)sz);
 		cursor += sz;
 		return (int)sz;

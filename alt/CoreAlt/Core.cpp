@@ -172,7 +172,10 @@ FileOut cout(stdout), cerr(stderr);
 
 void Panic(String s) {
 	LOG(" *** Panic: " + s + " ***");
-	
+	Panic();
+}
+
+void Panic() {
 #ifdef PLATFORM_POSIX
 	signal(SIGILL, SIG_DFL);
 	signal(SIGSEGV, SIG_DFL);

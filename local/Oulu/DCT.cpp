@@ -144,8 +144,8 @@ void ConvertFromParamsHLine(int param_count, const char* params, int width, Vect
 	double* w = wave.Begin();
 	int x = 0;
 	for(Pointf& pt : pts) {
-		pt.x = x++;
-		pt.y = *w++;
+		pt.x = (double)x++;
+		pt.y = (double)*w++;
 	}
 }
 
@@ -177,8 +177,8 @@ void ConvertToParamsLine(int point_count, const Point* pt, int size, char* param
 			else if (angle_diff > +M_PI) angle_diff -= 2.0 * M_PI;
 			
 			Pointf pt;
-			pt.x = FastCos(angle_diff) * len;
-			pt.y = -FastSin(angle_diff) * len;
+			pt.x = (double)FastCos(angle_diff) * len;
+			pt.y = (double)-FastSin(angle_diff) * len;
 			if (pt.x >= 0 && pt.x <= len)
 				pts.Add(pt);
 		}
@@ -200,11 +200,11 @@ void ConvertFromParamsLineAppend(int param_count, const char* params, Point begi
 	pts.SetCount(pts.GetCount() + steps);
 	
 	Pointf step;
-	step.x = diff.x / steps;
-	step.y = diff.y / steps;
+	step.x = (double)(diff.x / steps);
+	step.y = (double)(diff.y / steps);
 	Pointf it;
-	it.x = begin.x;
-	it.y = begin.y;
+	it.x = (double)begin.x;
+	it.y = (double)begin.y;
 	double shift_angle = FastAtan2((float)diff.y, (float)diff.x) - M_PI / 2.0;
 	Pointf shift(FastCos(shift_angle), FastSin(shift_angle));
 	
