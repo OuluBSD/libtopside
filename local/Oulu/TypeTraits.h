@@ -54,8 +54,8 @@ public:
 
 template<class T> inline TypeId GetTypeId() {return typeid(T);}
 
-template<typename T>
-using RefTypeMap = RefLinkedMap<TypeId, T>;
+template<typename T> using RefTypeMap			= RefLinkedMap<TypeId, T>;
+template<typename T> using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T>;
 
 
 

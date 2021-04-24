@@ -18,7 +18,7 @@ void RenderingSystem::Start() {
 	ents = GetMachine().Get<EntityStore>();
 }
 
-void RenderingSystem::Update(float dt) {
+void RenderingSystem::Update(double dt) {
 	for(DisplaySource* scr : screens) {
 		scr->EmitDisplaySource(dt);
 	}

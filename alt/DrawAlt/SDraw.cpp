@@ -72,7 +72,7 @@ void SDraw::DrawImage(int x, int y, Image img, Byte alpha) {
 	cmd.i[1] = y;
 	cmd.img = img;
 	cmd.img.MakeSysAccel();
-	cmd.clr.a = alpha / 255.0;
+	cmd.clr.a = (byte)(alpha / 255.0);
 }
 
 void SDraw::DrawRect(Rect r, RGBA clr) {
@@ -94,9 +94,9 @@ void SDraw::DrawText(int x, int y, String txt, Font fnt, RGBA clr) {
 		return;
 	
 	SysColor c;
-	c.r = clr.r * 255.0;
-	c.g = clr.g * 255.0;
-	c.b = clr.b * 255.0;
+	c.r = (byte)(clr.r * 255.0);
+	c.g = (byte)(clr.g * 255.0);
+	c.b = (byte)(clr.b * 255.0);
 	c.a = 255;
 	RawSysImage* surf = fnt.GetSysFont()->RenderTextBlended(txt.Begin(), c);
 	if (!surf) {
@@ -141,7 +141,7 @@ void SDraw::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c) {
 			
 			double dx = b->x - a->x;
 			double dy = b->y - a->y;
-			double theta = atanf(dy / dx) * 360 / (2*M_PI);
+			double theta = atan(dy / dx) * 360 / (2*M_PI);
 			if (dx < 0)
 				theta *= -1;
 			angles[i] = theta;

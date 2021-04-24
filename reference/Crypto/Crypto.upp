@@ -1,5 +1,7 @@
 description "Homebrew cryptographic example\377";
 
+noblitz;
+
 uses
 	Oulu;
 
@@ -7,6 +9,6 @@ file
 	Crypto.cpp;
 
 mainconfig
-	"" = "ALTCORE",
-	"" = "";
+	"" = "",
+	"" = "ALTCORE";
 

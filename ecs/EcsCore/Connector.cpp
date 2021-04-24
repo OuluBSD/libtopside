@@ -23,7 +23,7 @@ void ConnectorSystem::Uninitialize() {
 	}
 }
 
-void ConnectorSystem::Update(float dt) {
+void ConnectorSystem::Update(double dt) {
 	if (es.IsEmpty())
 		es = machine.Get<EntityStore>();
 	

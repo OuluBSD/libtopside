@@ -159,11 +159,15 @@ NAMESPACE_UPP_BEGIN
 	#define __BREAK__        (*(volatile int *)0 = 0) // kill(getpid(), SIGTRAP)
 #endif
 
-class Stream;  Stream& VppLog(); void Panic();
 #undef ASSERT
 #undef ASSERT_
-#define ASSERT(x) {if (!(x)) {LOG("Assertion failed: " << #x); __BREAK__; Panic();}}
+#ifdef flagDEBUG
+#define ASSERT(x) {if (!(x)) {LogCString("Assertion failed: " #x); __BREAK__; Panic();}}
 #define ASSERT_(x, msg) {if (!(x)) {LOG(Upp::String("Assertion failed: ") + msg); __BREAK__; Panic();}}
+#else
+#define ASSERT(x)
+#define ASSERT_(x, msg)
+#endif
 #define PANIC(msg) ASSERT_(false, msg)
 
 #define PKG(x) <x/x.h>

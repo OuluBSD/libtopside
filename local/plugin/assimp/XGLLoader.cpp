@@ -66,7 +66,7 @@ using namespace irr::io;
 #   ifdef ASSIMP_BUILD_NO_OWN_ZLIB
 #       include <zlib.h>
 #   else
-#       include <plugin/zlib/zlib.h>
+#       include "z.h"
 #   endif
 #endif
 

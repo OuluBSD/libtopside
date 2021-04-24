@@ -690,9 +690,6 @@ template <class T> struct StdGreater {bool operator()(const T& a, const T& b) co
 
 
 
-inline void* MemoryAlloc(size_t size) {return malloc(size);}
-inline void MemoryFree(void* ptr) {free(ptr);}
-
 
 
 

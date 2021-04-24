@@ -18,7 +18,7 @@ protected:
 	
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     
@@ -52,7 +52,7 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-	void			RecvAudioSink(AudioSource& src, float dt) override;
+	void			RecvAudioSink(AudioSource& src, double dt) override;
 	void			RecvMedia(Media& media) override;
 	
 	SystemSound&	BeginPlay() override;

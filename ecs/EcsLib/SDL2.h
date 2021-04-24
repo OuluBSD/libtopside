@@ -27,7 +27,7 @@ public:
 	
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     
@@ -39,7 +39,7 @@ protected:
 	
 	
 	//bool Poll(Event& e);
-	void Render(float dt);
+	void Render(double dt);
 	
 	void KeyboardPad(int key, bool down);
 	

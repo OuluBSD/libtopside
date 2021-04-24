@@ -115,7 +115,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitAudioSource(float dt) override;
+	void EmitAudioSource(double dt) override;
 	void Play(const AudioSinkConfig& config, Sound& snd) override;
 	
 	String GetLastError() const {return last_error;}
@@ -144,7 +144,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitMidi(float dt) override;
+	void EmitMidi(double dt) override;
 	bool IsSupported(DevType type) override {return true;}
 	State* OnLink(InterfaceBase* iface) override;
 	bool OpenFilePath(String path);
@@ -218,7 +218,7 @@ protected:
 	
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     

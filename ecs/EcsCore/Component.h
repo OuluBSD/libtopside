@@ -61,7 +61,7 @@ struct Component : ComponentBase {
 };
 
 
-typedef RefTypeMap<ComponentBase> ComponentMapBase;
+typedef RefTypeMapIndirect<ComponentBase> ComponentMapBase;
 
 class ComponentMap : public ComponentMapBase {
 public:

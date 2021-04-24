@@ -1,7 +1,5 @@
+  
 /* ioapi.h -- IO base function header for compress/uncompress .zip
-   part of the MiniZip project - ( http://www.winimage.com/zLibDll/minizip.html )
-
-         Copyright (C) 1998-2010 Gilles Vollant (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
 
          Modifications for Zip64 support
          Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
@@ -43,7 +41,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "zlib.h"
+
+#ifndef _ZLIB_H
+	#ifdef flagALTCORE
+		#include <plugin/zlib/zlib.h>
+		#include <plugin/bz2lib/bz2lib.h>
+	#else
+		#include <plugin/z/lib/zlib.h>
+		#include <plugin/bz2/lib/bzlib.h>
+	#endif
+#endif
 
 #if defined(USE_FILE32API)
 #define fopen64 fopen

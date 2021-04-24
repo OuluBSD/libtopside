@@ -20,7 +20,7 @@ protected:
 
     virtual bool Initialize() {return true;}
     virtual void Start() {}
-    virtual void Update(float /*dt*/) {}
+    virtual void Update(double /*dt*/) {}
     virtual void Stop() {}
     virtual void Uninitialize() {}
 
@@ -96,7 +96,7 @@ public:
     bool HasStarted() const;
 
     bool Start();
-    void Update(float dt);
+    void Update(double dt);
     void Stop();
     void Suspend();
     void Resume();
@@ -109,7 +109,7 @@ public:
 	static Callback WhenStarting;
 	
 private:
-    typedef RefLinkedList<SystemBase> SystemCollection;
+    typedef RefLinkedListIndirect<SystemBase> SystemCollection;
     SystemCollection systems;
 
     bool is_started = false;

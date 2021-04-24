@@ -275,13 +275,13 @@ protected:
 
 	
 	
-	virtual void		Update(float dt) {}
+	virtual void		Update(double dt) {}
 	
 protected:
 	
 	friend class FusionSystem;
 	
-	void				Update0(float dt);
+	void				Update0(double dt);
 	
 	
 protected:
@@ -543,7 +543,7 @@ class FusionDisplaySource :
 	void			UpdateTexBuffers() override;
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
-	void			EmitDisplaySource(float dt) override;
+	void			EmitDisplaySource(double dt) override;
 	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	bool			Link(DisplaySink& sink) override;
 	ComponentBase&	GetECS() override {return *this;}
@@ -583,7 +583,7 @@ class FusionDisplayBuffer :
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
-	//void			EmitDisplaySource(float dt) override;
+	//void			EmitDisplaySource(double dt) override;
 	//bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	//bool			Link(DisplaySink& sink) override;
 	//FusionVideoInput* FindVideoInput(String path);
@@ -626,7 +626,7 @@ class FusionAudioSource :
 	void			PostProcess() override;
 	void			UpdateTexBuffers() override;
 	bool			LoadResources() override;
-	void			EmitAudioSource(float dt) override;
+	void			EmitAudioSource(double dt) override;
 	void			Play(const AudioSinkConfig& config, Sound& snd) override;
 	void			UseRenderedFramebuffer() override;
 	ComponentBase&	GetECS() override {return *this;}
@@ -781,7 +781,7 @@ public:
 	void		Initialize() override;
 	void		Uninitialize() override;
 	
-    void		Update(float dt);
+    void		Update(double dt);
 	String		GetLastError() const {return last_error;}
 	void		PostLoadFileAny(String path);
 	void		DumpEntityComponents();
@@ -823,7 +823,7 @@ protected:
 	
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     

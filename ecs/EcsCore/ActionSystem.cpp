@@ -12,7 +12,7 @@ void ActionSystem::Start() {
 	
 }
 
-void ActionSystem::Update(float dt) {
+void ActionSystem::Update(double dt) {
 	
 	for (ActionSource* src : srcs)
 		src->EmitActionSource(dt);

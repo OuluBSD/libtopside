@@ -170,6 +170,10 @@ void rewinddir(DIR *dir)
 FileIn cin(stdin);
 FileOut cout(stdout), cerr(stderr);
 
+void LogCString(const char* c) {
+	LOG(c);
+}
+
 void Panic(String s) {
 	LOG(" *** Panic: " + s + " ***");
 	Panic();

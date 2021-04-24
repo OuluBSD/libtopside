@@ -64,7 +64,7 @@ using namespace Assimp::Formatter;
 #   ifdef ASSIMP_BUILD_NO_OWN_ZLIB
 #       include <zlib.h>
 #   else
-#       include <plugin/zlib/zlib.h>
+#       include "z.h"
 #   endif
 
 // Magic identifier for MSZIP compressed data

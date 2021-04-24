@@ -887,6 +887,7 @@ public:
 	V* FindPtr(const K& key) {int pos = Find(key); if (pos < 0) return 0; return &values.Get(pos);}
 	const V* FindPtr(const K& key) const {int pos = Find(key); if (pos < 0) return 0; return &values.Get(pos);}
 	V& Get(const K& key) { return values[Find(key)]; }
+	const V& Get(const K& key) const { return values[Find(key)]; }
 	V  Get(const K& key, V value) const {int i = Find(key); if (i < 0) return value; return values[i]; }
 	int GetCount() const { return keys.GetCount(); }
 	bool IsEmpty() const { return GetCount() == 0; }

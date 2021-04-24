@@ -4,6 +4,12 @@
 NAMESPACE_UPP_BEGIN
 
 
+
+class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
+inline void* MemoryAlloc(size_t size) {return malloc(size);}
+inline void MemoryFree(void* ptr) {free(ptr);}
+
+
 //$-constexpr int findarg(const T& x, const T1& p0, ...);
 
 template <class T, class K>

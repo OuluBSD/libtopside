@@ -12,10 +12,15 @@ uses
 	plugin/Various,
 	plugin/irrxml,
 	plugin/rapidjson,
-	plugin/zlib;
+	plugin/unzip;
+
+uses(ALTCORE) plugin/zlib;
+
+uses(!ALTCORE) plugin/z;
 
 file
 	config.h,
+	z.h,
 	3DSConverter.cpp,
 	3DSExporter.cpp,
 	3DSExporter.h,

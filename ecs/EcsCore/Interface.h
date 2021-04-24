@@ -165,7 +165,7 @@ struct DisplaySinkConfig {
 struct DisplaySink : IO_OUT(Display) {
 	IFACE_BASE(DisplaySink)
 	
-	virtual void RecvDisplaySink(DisplaySource& src, float dt) = 0;
+	virtual void RecvDisplaySink(DisplaySource& src, double dt) = 0;
 	virtual void SetTitle(String s) = 0;
 	virtual uint32 GetTickCount() = 0;
 	
@@ -174,7 +174,7 @@ struct DisplaySink : IO_OUT(Display) {
 struct DisplaySource : IO_IN(Display) {
 	IFACE_BASE(DisplaySource)
 	
-	virtual void EmitDisplaySource(float dt) = 0;
+	virtual void EmitDisplaySource(double dt) = 0;
 	virtual bool Render(const DisplaySinkConfig& config, SystemDraw& draw) = 0;
 	
 	virtual void SetTitle(String s) {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
@@ -204,7 +204,7 @@ struct AudioSource;
 struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
-	virtual void			RecvAudioSink(AudioSource& src, float dt) = 0;
+	virtual void			RecvAudioSink(AudioSource& src, double dt) = 0;
 	
 	virtual SoundProxy&		BeginPlay() = 0;
 	virtual void			CommitPlay() = 0;
@@ -216,16 +216,16 @@ struct AudioSink : IO_OUT(Audio) {
 	virtual int				GetAudioChannels() = 0;
 	virtual int				GetAudioFrequency() = 0;*/
 	
-	void DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, float dt, Sound& snd);
+	void DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
 	
 };
 struct AudioSource : IO_IN(Audio) {
 	IFACE_BASE(AudioSource)
 	
-	virtual void EmitAudioSource(float dt) = 0;
+	virtual void EmitAudioSource(double dt) = 0;
 	virtual void Play(const AudioSinkConfig& config, Sound& snd) = 0;
 	
-	void DefaultEmitAudioSource(float dt, int sink_limit=-1);
+	void DefaultEmitAudioSource(double dt, int sink_limit=-1);
 	
 };
 extern AudioSink* VirtualSoundPtr;
@@ -288,7 +288,7 @@ struct ControllerSource : IO_IN(Controller) {
 		CTRL_SENSOR,
 	} CtrlType;
 	
-	virtual void EmitController(float dt) = 0;
+	virtual void EmitController(double dt) = 0;
 	virtual bool IsSupported(CtrlType type) = 0;
 	
 	bool IsSupportedKeyboard() {return IsSupported(CTRL_KEYBOARD);}
@@ -344,7 +344,7 @@ struct MidiSource : IO_IN(Midi) {
 		MIDIDEV_GUITAR,
 	} DevType;
 	
-	virtual void EmitMidi(float dt) = 0;
+	virtual void EmitMidi(double dt) = 0;
 	virtual bool IsSupported(DevType type) = 0;
 	
 	bool IsSupportedPiano() {return IsSupported(MIDIDEV_PIANO);}
@@ -588,7 +588,7 @@ struct ActionSource : IO_IN(Action) {
 		SetMultiConnection();
 	}
 	
-	virtual void EmitActionSource(float dt) = 0;
+	virtual void EmitActionSource(double dt) = 0;
 	
 	/*
 	*/

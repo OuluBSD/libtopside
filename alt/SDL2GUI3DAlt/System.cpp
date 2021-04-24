@@ -16,7 +16,7 @@ void SDL2GUI3DAltSystem::Start() {
 	
 }
 
-void SDL2GUI3DAltSystem::Update(float dt) {
+void SDL2GUI3DAltSystem::Update(double dt) {
 	
 }
 

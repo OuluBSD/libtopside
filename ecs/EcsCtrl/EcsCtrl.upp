@@ -1,8 +1,9 @@
 description "\377B28,127,150";
 
 uses
-	EcsLib,
-	GraphLib;
+	EcsLib;
+
+uses(!ALTCORE) GraphLib;
 
 file
 	EcsCtrl.h,

@@ -55,7 +55,7 @@ bool FusionAudioSource::LoadResources() {
 	return true;
 }
 
-void FusionAudioSource::EmitAudioSource(float dt) {
+void FusionAudioSource::EmitAudioSource(double dt) {
 	DefaultEmitAudioSource(dt, 1);
 }
 

@@ -5,7 +5,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-void OctreeSystem::Update(float dt) {
+void OctreeSystem::Update(double dt) {
 	
 	
 	

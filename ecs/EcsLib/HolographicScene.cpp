@@ -27,7 +27,7 @@ void HolographicScene::Start() {
 	//not here AddPredictionUpdateListener(engine.Get<MotionControllerSystem>()->As<IPredictionUpdateListener>());
 }
 
-void HolographicScene::Update(float) {
+void HolographicScene::Update(double) {
 	//m_currentFrame = holospace.CreateNextFrame();
 	
 	OnPredictionChanged(IPredictionUpdateListener::PredictionUpdateReason::HolographicSpaceCreateNextFrame);

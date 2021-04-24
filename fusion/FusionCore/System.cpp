@@ -16,7 +16,7 @@ void FusionSystem::Start() {
 	
 }
 
-void FusionSystem::Update(float dt) {
+void FusionSystem::Update(double dt) {
 	DLOG("FusionSystem::Update: begin");
 	
 	for (FusionComponent* comp : comps)

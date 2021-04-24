@@ -25,7 +25,7 @@ class QuadtreeSystem : public System<QuadtreeSystem> {
 public:
 	using System::System;
 	
-	void Update(float dt) override;
+	void Update(double dt) override;
 	
 	
 	float GetHumanLength() {return 1.0 + 3.0 / 4.0;} // 1.75m goes to grid nicely

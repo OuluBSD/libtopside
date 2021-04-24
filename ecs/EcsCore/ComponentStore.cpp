@@ -19,7 +19,7 @@ NAMESPACE_OULU_BEGIN
 	return map;
 }*/
 
-/*void ComponentStore::Update(float) {
+/*void ComponentStore::Update(double) {
 	for (Ref<RefLinkedList<ComponentBase>& components : comps.GetValues()) {
 		Destroyable::PruneFromContainer(*components);
 	}

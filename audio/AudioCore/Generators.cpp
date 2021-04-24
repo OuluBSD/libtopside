@@ -32,7 +32,7 @@ void SoundGeneratorComponent::Configure(const Midi::File& file) {
 	}*/
 }
 
-void SoundGeneratorComponent::EmitAudioSource(float dt) {
+void SoundGeneratorComponent::EmitAudioSource(double dt) {
 	DefaultEmitAudioSource(dt);
 }
 

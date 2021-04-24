@@ -29,7 +29,7 @@ bool Machine::Start() {
 	return true;
 }
 
-void Machine::Update(float dt) {
+void Machine::Update(double dt) {
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
 	
 	if (dt <= 0.0)

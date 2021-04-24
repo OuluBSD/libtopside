@@ -14,7 +14,7 @@ void AudioSystem::Start() {
 	ents = GetMachine().Get<EntityStore>();
 }
 
-void AudioSystem::Update(float dt) {
+void AudioSystem::Update(double dt) {
 	for(AudioSource* aud : audios) {
 		aud->EmitAudioSource(dt);
 	}

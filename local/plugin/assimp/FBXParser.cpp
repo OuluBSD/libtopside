@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef ASSIMP_BUILD_NO_OWN_ZLIB
 #   include <zlib.h>
 #else
-#   include <plugin/zlib/zlib.h>
+#   include "z.h"
 #endif
 
 #include "FBXTokenizer.h"

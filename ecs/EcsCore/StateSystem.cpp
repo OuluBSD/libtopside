@@ -12,7 +12,7 @@ void StateSystem::Start() {
 	
 }
 
-void StateSystem::Update(float dt) {
+void StateSystem::Update(double dt) {
 	
 }
 

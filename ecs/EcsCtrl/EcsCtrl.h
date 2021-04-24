@@ -2,7 +2,10 @@
 #define _EcsCtrl_EcsCtrl_h_
 
 #include <EcsLib/EcsLib.h>
-#include <GraphLib/GraphLib.h>
+
+#ifndef flagALTCORE
+	#include <GraphLib/GraphLib.h>
+#endif
 
 #include "Parts.h"
 #include "ComponentCtrl.h"

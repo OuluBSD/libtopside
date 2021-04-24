@@ -23,7 +23,7 @@ public:
     using System::System;
 
 protected:
-    void Update(float) override;
+    void Update(double) override;
 };
 
 

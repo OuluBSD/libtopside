@@ -237,7 +237,7 @@ void FluidsynthSystem::Start() {
 	
 }
 
-void FluidsynthSystem::Update(float dt) {
+void FluidsynthSystem::Update(double dt) {
 	
 	#if 0
 	// lookup number of audio and effect (stereo-)channels of the synth

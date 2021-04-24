@@ -23,7 +23,7 @@ void FusionContextComponent::Uninitialize() {
 		fusion_sys	-> RemoveContext(*this);
 }
 
-void FusionContextComponent::Update(float dt) {
+void FusionContextComponent::Update(double dt) {
 	DLOG("FusionContextComponent::Update: begin");
 	
 	//lock.Enter();

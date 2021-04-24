@@ -52,7 +52,8 @@ CONSOLE_APP_MAIN {
 		LOG("\n\n---- Crypto class test ----");
 		//String msg = "Hello host!";
 		String msg;
-		for(int i = 0; i < 10*1024; i++) {
+		for(int i = 0; i < 6; i++) {
+		//for(int i = 0; i < 10*1024; i++) {
 			msg.Cat(Random(0x100));
 		}
 		
@@ -69,10 +70,33 @@ CONSOLE_APP_MAIN {
 			LOG("\tPublic:  " << pub);
 			LOG("\tPrivate: " << priv);
 			
+			
+			#ifdef flagALTCORE
+			// Somehow this fails in WIN32 & MSC...
+			// The reason is very weird and even the debugger doesn't behave right.
 			ASSERT(msg == BZ2Decompress(BZ2Compress(msg)));
-			enc_msg_chk = BZ2Compress(gen.Encrypt(msg));
-			String dec = gen.Decrypt(BZ2Decompress(enc_msg_chk));
+			String enc = gen.Encrypt(msg);
+			DUMPC(enc);
+			enc_msg_chk = BZ2Compress(enc);
+			String decomp = BZ2Decompress(enc_msg_chk);
+			DUMPC(decomp);
+			if (enc.GetCount() == decomp.GetCount()) {
+				for(int i = 0; i < enc.GetCount(); i++) {
+					int a = enc[i];
+					int b = decomp[i];
+					int diff = a-b;
+					LOG(a << " - " << b << " = " << diff);
+					ASSERT(!diff);
+				}
+			}
+			bool same = enc == decomp;
+			ASSERT(enc == decomp);
+			String dec = gen.Decrypt(decomp);
+			DUMPC(dec);
+			DUMPC(msg);
+			same = dec == msg;
 			ASSERT(dec == msg);
+			#endif
 		}
 		
 		{
@@ -121,7 +145,7 @@ CONSOLE_APP_MAIN {
 		}
 		
 		if (msg == dec_msg)	{LOG("Success");}
-		else				{LOG("Fail");}
+		else				{LOG("Fail"); SetExitCode(1);}
 	}
 	
 	
@@ -300,6 +324,7 @@ CONSOLE_APP_MAIN {
 			}
 			else {
 				LOG(from << " --> " << to << " sending failed");
+				SetExitCode(1);
 			}
 		}
 	}

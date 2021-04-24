@@ -210,7 +210,7 @@ public:
 		return true;
 	}
     virtual void Start() {}
-    virtual void Update(float dt) {
+    virtual void Update(double dt) {
 		Collide();
 		StepWorld(dt);
 		RemoveContactJoints();

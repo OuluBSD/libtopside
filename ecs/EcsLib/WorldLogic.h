@@ -11,7 +11,7 @@ public:
     using System::System;
 
 protected:
-    void Update(float /*dt*/) override
+    void Update(double /*dt*/) override
     {
         EntityComponentVisitor<Transform> visitor(machine);
 		visitor.Skip(EntityPool::BIT_TRANSFORM);

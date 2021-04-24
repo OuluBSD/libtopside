@@ -35,7 +35,7 @@ public:
 	void Uninitialize() override;
 	void RecvMidi(const MidiFrame& e) override;
 	void Configure(const Midi::File& file) override;
-	void EmitAudioSource(float dt) override;
+	void EmitAudioSource(double dt) override;
 	void Play(const AudioSinkConfig& config, Sound& snd) override;
 	
 	void SetPreset(int i) {preset_i = i;}

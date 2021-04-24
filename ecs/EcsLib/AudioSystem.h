@@ -12,7 +12,7 @@ class AudioSystem : public System<AudioSystem> {
 protected:
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     

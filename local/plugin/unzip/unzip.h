@@ -48,7 +48,13 @@ extern "C" {
 #endif
 
 #ifndef _ZLIB_H
-#include "zlib.h"
+	#ifdef flagALTCORE
+		#include <plugin/zlib/zlib.h>
+		#include <plugin/bz2lib/bz2lib.h>
+	#else
+		#include <plugin/z/lib/zlib.h>
+		#include <plugin/bz2/lib/bzlib.h>
+	#endif
 #endif
 
 #ifndef  _ZLIBIOAPI_H

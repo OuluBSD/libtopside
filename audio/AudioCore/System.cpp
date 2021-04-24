@@ -86,7 +86,7 @@ void MixerAudioSourceComponent::Uninitialize() {
 	
 }
 
-void MixerAudioSourceComponent::EmitAudioSource(float dt) {
+void MixerAudioSourceComponent::EmitAudioSource(double dt) {
 	
 }
 
@@ -169,7 +169,7 @@ void MidiFileComponent::DumpMidiFile() {
 	}
 }
 
-void MidiFileComponent::EmitMidi(float dt) {
+void MidiFileComponent::EmitMidi(double dt) {
 	
 	// The first update is often laggy, so wait until the second one
 	if (song_dt < 0) {

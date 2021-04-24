@@ -48,7 +48,7 @@ void InterfaceDebugPrint(TypeId type, String s) {
 #endif
 
 
-void AudioSource::DefaultEmitAudioSource(float dt, int sink_limit) {
+void AudioSource::DefaultEmitAudioSource(double dt, int sink_limit) {
 	const auto& sinks = AudioSource::GetSinks();
 	if (sink_limit >= 0) {
 		//for(int i = 0; i < sinks.GetCount(); i++) {LOG(i << ": " << sinks[i]->AsComponentBase()->GetType().DemangledName());}
@@ -71,7 +71,7 @@ void AudioSource::DefaultEmitAudioSource(float dt, int sink_limit) {
 
 
 
-void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, float dt, Sound& snd) {
+void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd) {
 	dword cur_sink_frame = snd.GetWriteFrame();
 	
 	cfg.sync_age += dt;

@@ -21,7 +21,7 @@ void PortaudioSystem::Start() {
 	
 }
 
-void PortaudioSystem::Update(float dt) {
+void PortaudioSystem::Update(double dt) {
 	
 	
 }
@@ -72,7 +72,7 @@ void PortaudioSinkComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void PortaudioSinkComponent::RecvAudioSink(AudioSource& src, float dt) {
+void PortaudioSinkComponent::RecvAudioSink(AudioSource& src, double dt) {
 	DefaultRecvAudioSink(aconfig, src, dt, *obj);
 }
 

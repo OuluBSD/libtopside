@@ -32,7 +32,7 @@ void WindowSystem::Start() {
 	
 }
 
-void WindowSystem::Update(float dt) {
+void WindowSystem::Update(double dt) {
 	bool closed = ProcessCloseQueue();
 	
 	TODO

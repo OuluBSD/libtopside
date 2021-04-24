@@ -20,7 +20,7 @@ void EventSystem::Start() {
 	ents = machine.Get<EntityStore>();
 }
 
-void EventSystem::Update(float dt) {
+void EventSystem::Update(double dt) {
 	for (ControllerSource* out : outputs)
 		out->EmitController(dt);
 	for (MidiSource* out : midis)

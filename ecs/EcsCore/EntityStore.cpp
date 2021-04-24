@@ -12,7 +12,7 @@ void EntityStore::Uninitialize() {
 	GetRoot()->Clear();
 }
 
-void EntityStore::Update(float) {
+void EntityStore::Update(double) {
 	GetRoot()->PruneFromContainer();
 }
 
@@ -20,7 +20,7 @@ void EntityStore::Update(float) {
 
 
 
-EntityPool::EntityPool(Machine& m) : machine(m) {
+EntityPool::EntityPool() {
 	
 }
 

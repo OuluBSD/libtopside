@@ -110,7 +110,7 @@ bool FusionComponentInput::IsTypeComponentSource(Type type) {
 
 
 
-void FusionComponent::Update0(float dt) {
+void FusionComponent::Update0(double dt) {
 	if (!ctx && IsOpen())
 		Close();
 	else

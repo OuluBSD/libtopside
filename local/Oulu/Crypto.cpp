@@ -157,7 +157,7 @@ String Basic::Encrypt(String msg) const {
 	while (it != end) {
 		union {
 			uint16 u16;
-			uint8 b[2];
+			char b[2];
 		};
 		b[0] = (byte)*it++;
 		b[1] = 0;
@@ -187,7 +187,7 @@ String Basic::Decrypt(String msg) const {
 	while (it != end) {
 		union {
 			uint16 u16;
-			uint8 b[2];
+			char b[2];
 		};
 		b[0] = *it++;
 		b[1] = *it++;

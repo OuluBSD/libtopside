@@ -12,7 +12,7 @@ void OverlapSystem::Start() {
 	
 }
 
-void OverlapSystem::Update(float dt) {
+void OverlapSystem::Update(double dt) {
 	
 }
 

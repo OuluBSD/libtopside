@@ -3,7 +3,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-void EasingSystem::Update(float dt)
+void EasingSystem::Update(double dt)
 {
 	EntityComponentVisitor<Transform, Easing> visitor(machine);
 	visitor.Skip(EntityPool::BIT_TRANSFORM);

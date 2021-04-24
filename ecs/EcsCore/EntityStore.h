@@ -11,7 +11,7 @@ typedef RefLinkedList<Entity> EntityVec;
 typedef RefLinkedList<EntityPool> EntityPoolVec;
 
 class EntityPool : public LockedScopeEnabler<EntityPool> {
-	Machine& machine;
+	Machine* machine = 0;
 	EntityPool* parent = 0;
 	BitField<dword> freeze_bits;
 	String name;
@@ -20,7 +20,7 @@ class EntityPool : public LockedScopeEnabler<EntityPool> {
 	
 public:
 	typedef EntityPool CLASSNAME;
-	EntityPool(Machine& m);
+	EntityPool();
 	
 	typedef enum {
 		BIT_CONNECTOR,
@@ -31,11 +31,12 @@ public:
 	
 	static EntityId GetNextId();
 	
-	void SetName(String s) {name = s;}
-	void FreezeConnector() {freeze_bits.Set(BIT_CONNECTOR, true);}
-	void FreezeOverlap() {freeze_bits.Set(BIT_CONNECTOR3D, true);}
-	bool IsFrozenConnector() const {return freeze_bits.Is(BIT_CONNECTOR);}
-	bool IsFrozenOverlap() const {return freeze_bits.Is(BIT_CONNECTOR3D);}
+	void SetMachine(Machine& m)		{machine = &m;}
+	void SetName(String s)			{name = s;}
+	void FreezeConnector()			{freeze_bits.Set(BIT_CONNECTOR, true);}
+	void FreezeOverlap()			{freeze_bits.Set(BIT_CONNECTOR3D, true);}
+	bool IsFrozenConnector() const	{return freeze_bits.Is(BIT_CONNECTOR);}
+	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_CONNECTOR3D);}
 	
 	void				ReverseEntities();
 	void				Clear();
@@ -46,7 +47,7 @@ public:
 	void				PruneFromContainer();
 	
 	EntityPool*			GetParent() const {return parent;}
-	Machine&			GetMachine() {return machine;}
+	Machine&			GetMachine() {return *machine;}
 	bool				HasEntities() const;
 	bool				HasEntityPools() const;
 	//int					GetPoolCount() const {return pools.GetCount();}
@@ -65,7 +66,7 @@ public:
 	EntityRef Create() {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
+		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine->Get<ComponentStore>()));
 		if (e)
 			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -76,7 +77,7 @@ public:
 	EntityRef CreateConnectedArea(ConnectorArea a) {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine.Get<ComponentStore>()));
+		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine->Get<ComponentStore>()));
 		if (e)
 			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -170,7 +171,8 @@ public:
 	RefLinkedList<EntityPool>& GetPools() {return pools;}
 	
 	EntityPoolRef AddPool(String name="") {
-		EntityPoolRef p = pools.Add(new EntityPool(machine));
+		EntityPoolRef p = pools.Add();
+		p->SetMachine(*machine);
 		p->parent = this;
 		p->SetName(name);
 		return p;
@@ -339,14 +341,14 @@ public:
 	using System::System;
 	
 	EntityStore(Machine& m) : System<EntityStore>(m) {
-		root.Add(new EntityPool(machine));
+		root.Add()->SetMachine(machine);
 	}
 	
 	EntityPoolRef GetRoot()	{return *root.begin();}
 	EntityPoolVec& GetRootVec()	{return root;}
 	
 protected:
-	void Update(float) override;
+	void Update(double) override;
 	bool Initialize() override;
 	void Uninitialize() override;
 	

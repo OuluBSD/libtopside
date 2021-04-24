@@ -12,7 +12,7 @@ void ExchangeSystem::Start() {
 	
 }
 
-void ExchangeSystem::Update(float dt) {
+void ExchangeSystem::Update(double dt) {
 	
 }
 

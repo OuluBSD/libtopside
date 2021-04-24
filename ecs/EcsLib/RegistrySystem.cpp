@@ -12,7 +12,7 @@ void RegistrySystem::Start() {
 	
 }
 
-void RegistrySystem::Update(float dt) {
+void RegistrySystem::Update(double dt) {
 	
 }
 

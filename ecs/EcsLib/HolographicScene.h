@@ -28,7 +28,7 @@ public:
 protected:
 	bool Initialize() override;
 	void Start() override;
-	void Update(float) override;
+	void Update(double) override;
 	void Uninitialize() override;
 	
 	void OnCurrentStageChanged();

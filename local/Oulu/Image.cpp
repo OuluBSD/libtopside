@@ -134,7 +134,7 @@ void ByteImage::Randomize() {
 	byte* it = data;
 	byte* end = data + size;
 	while (it != end)
-		*it++ = Random(256);
+		*it++ = (byte)Random(256);
 }
 
 NAMESPACE_OULU_END

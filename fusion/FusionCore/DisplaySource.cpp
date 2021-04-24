@@ -55,7 +55,7 @@ bool FusionDisplaySource::LoadResources() {
 	return true;
 }
 
-void FusionDisplaySource::EmitDisplaySource(float dt) {
+void FusionDisplaySource::EmitDisplaySource(double dt) {
 	for(const auto& c : DisplaySource::GetSinks())
 		c.sink->RecvDisplaySink(*this, dt);
 }

@@ -1,5 +1,7 @@
 #include "ECS_RouteSearch.h"
 
+NAMESPACE_OULU_BEGIN
+
 void DumpTransforms(String s, EntityPoolRef pool) {
 	LOG(s);
 	int i = 0;
@@ -15,7 +17,7 @@ void DumpTransforms(String s, EntityPoolRef pool) {
 	}
 }
 
-CONSOLE_APP_MAIN {
+void RunTest() {
 	SetCoutLog();
 	
 	Machine& mach = GetMachine();
@@ -602,7 +604,7 @@ void DummyActor::Uninitialize() {
 		as->Remove(this);
 }
 
-void DummyActor::EmitActionSource(float dt) {
+void DummyActor::EmitActionSource(double dt) {
 	if (cur_action.IsEmpty()) {
 		if (!has_route) {
 			Act("find_route");
@@ -706,4 +708,10 @@ void DummyActor::DoSinkAction(ActGroupId a) {
 		//if (g.sink->Act(a.a, a.b))
 		//	updated_sink = g.sink;
 	}
+}
+
+NAMESPACE_OULU_END
+
+CONSOLE_APP_MAIN {
+	Oulu::RunTest();
 }

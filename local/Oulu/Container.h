@@ -209,23 +209,35 @@ struct CachingVector : Moveable<CachingVector<T>> {
 
 template <class T>
 class RecyclerPool {
-	Array<T> pool;
+	Vector<T*> pool;
 	
 public:
-	RecyclerPool() {
-		
-	}
+	RecyclerPool() {}
+	~RecyclerPool() {Clear();}
 	
+	void Clear() {
+		auto t = pool.Begin();
+		auto end = pool.End();
+		while(t != end) {
+			delete &*t;
+			t++;
+		}
+		pool.Clear();
+	}
 	void Reserve(int i) {pool.Reserve(i);}
 	
 	T* New() {
 		if (pool.IsEmpty())
 			return new T();
-		else
-			return pool.PopDetach();
+		else {
+			T* o = pool.Pop();
+			new (o)T();
+			return o;
+		}
 	}
 	
 	void Return(T* o) {
+		o->~T();
 		pool.Add(o);
 	}
 

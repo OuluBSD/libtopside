@@ -28,8 +28,8 @@ public:
 	
 	/*void EmitCtrlEvent(const CtrlEvent& e) override;
 	
-	void RecvDisplaySink(DisplaySource& src, float dt) override;
-	void RecvAudioSink(AudioSource& src, float dt) override;
+	void RecvDisplaySink(DisplaySource& src, double dt) override;
+	void RecvAudioSink(AudioSource& src, double dt) override;
 	
 	void SetTitle(String title) override;*/
 	

@@ -41,7 +41,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_Q3BSP_ZIPARCHIVE_H_INC
 #define AI_Q3BSP_ZIPARCHIVE_H_INC
 
-#include <plugin/zlib/unzip.h>
+#include <plugin/unzip/unzip.h>
 #include <plugin/assimp/IOStream.hpp>
 #include <plugin/assimp/IOSystem.hpp>
 #include <vector>

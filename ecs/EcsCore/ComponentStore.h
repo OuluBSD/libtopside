@@ -36,7 +36,7 @@ public:
 	
 	
 protected:
-	void Update(float) override;
+	void Update(double) override;
 	void Uninitialize() override;
 	
 private:

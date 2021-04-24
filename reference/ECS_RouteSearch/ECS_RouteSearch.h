@@ -3,9 +3,9 @@
 
 
 #include <Complete/Complete.h>
-using namespace Upp;
-using namespace Oulu;
 
+
+NAMESPACE_OULU_BEGIN
 
 
 struct Tile : Moveable<Tile> {
@@ -83,7 +83,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	
-	void EmitActionSource(float dt) override;
+	void EmitActionSource(double dt) override;
 	bool RequestExchange(ActionSink& sink) override;
 	bool OnActionSource(ActionExchange& e) override;
 	
@@ -200,6 +200,8 @@ PREFAB_BEGIN(RouteNode)
 PREFAB_END
 
 
+
+NAMESPACE_OULU_END
 
 
 #endif

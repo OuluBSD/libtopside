@@ -21,7 +21,7 @@ void Frustum2::Initialize() {
 
 
 
-void QuadtreeSystem::Update(float dt) {
+void QuadtreeSystem::Update(double dt) {
 	
 	
 	

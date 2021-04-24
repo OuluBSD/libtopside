@@ -40,7 +40,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitAudioSource(float dt) override;
+	void EmitAudioSource(double dt) override;
 	void Play(const AudioSinkConfig& config, Sound& snd) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
@@ -66,7 +66,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void RecvAudioSink(AudioSource& src, float dt) override;
+	void RecvAudioSink(AudioSource& src, double dt) override;
 	
 	SystemSound&	BeginPlay() override {return obj ? obj->GetSystemSound() : empty_snd;}
 	void			CommitPlay() override {}
@@ -104,7 +104,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void RecvDisplaySink(DisplaySource& src, float dt) override;
+	void RecvDisplaySink(DisplaySource& src, double dt) override;
 	void SetTitle(String s) override;
 	uint32 GetTickCount() override {return ev ? ev->GetTickCount() : 0;}
 	
@@ -300,7 +300,7 @@ protected:
 	
     bool Initialize() override;
     void Start() override;
-    void Update(float dt) override;
+    void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
     
