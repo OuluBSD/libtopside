@@ -5,6 +5,12 @@ NAMESPACE_OULU_BEGIN
 
 AudioSink* VirtualSoundPtr;
 
+void InterfaceBase::DbgChk(InterfaceBase* b) {
+	for(auto c: b->conns) {
+		ComponentBase* cb = c->AsComponentBase();
+		ASSERT(cb->GetEntityPtr());
+	}
+}
 
 void InterfaceBase::RemoveConnection(InterfaceBase* b) {
 	int i=0;
@@ -22,11 +28,11 @@ void InterfaceBase::RemoveConnection(InterfaceBase* b) {
 
 #define IFACE(x) \
 void ComponentBase::Signal##x##Source() {\
-	Connector* conn = GetEntity().GetConnector(); \
+	Ref<Connector> conn = GetEntity().GetConnector(); \
 	if (conn) conn->Signal##x##Source(); \
 } \
 void ComponentBase::Signal##x##Sink() {\
-	Connector* conn = GetEntity().GetConnector(); \
+	Ref<Connector> conn = GetEntity().GetConnector(); \
 	if (conn) conn->Signal##x##Sink(); \
 }
 IFACE_LIST

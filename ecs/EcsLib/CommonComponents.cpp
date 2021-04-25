@@ -9,8 +9,8 @@ NAMESPACE_OULU_BEGIN
 
 void CopyTransformPos(EntityRef from, EntityRef to) {
 	if (!from.IsEmpty() && !to.IsEmpty()) {
-		Transform* f = from->Find<Transform>();
-		Transform* t = to->Find<Transform>();
+		Ref<Transform> f = from->Find<Transform>();
+		Ref<Transform> t = to->Find<Transform>();
 		if (f && t)
 			*t = *f;
 	}

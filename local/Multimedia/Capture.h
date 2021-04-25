@@ -47,13 +47,13 @@ protected:
 	
 	class OpenCV;
 	
-	#if flagV4L2_SLOW
+	#ifdef flagV4L2_SLOW
 	JPGRaster jpg_raster;
 	#endif
 	
 	One<OpenCV> ocv;
 
-	#if flagV4L2
+	#ifdef flagV4L2
 	static const int buf_size = 5000000;
 	V4l2Capture* vid_cap = 0;
 	#endif

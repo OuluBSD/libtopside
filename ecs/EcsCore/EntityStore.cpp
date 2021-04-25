@@ -31,20 +31,19 @@ EntityId EntityPool::GetNextId() {
 
 void EntityPool::Initialize(Entity& e, String prefab) {
 	uint64 ticks = GetMachine().GetTicks();
-	e.SetId(GetNextId());
 	e.SetPrefab(prefab);
 	e.SetCreated(ticks);
 	e.SetChanged(ticks);
 	
 }
 
-EntityRef EntityPool::Clone(const Entity& e) {
-	EntityRef c = CreateFromComponentMap(GetMachine().Get<ComponentStore>()->Clone(e.GetComponents()));
-	if (c) {
-		Initialize(*c);
-		c->CopyHeader(e);
-	}
-	return c;
+EntityRef EntityPool::Clone(const Entity& c) {
+	EntityRef e = objects.Add();
+	e->Init(this, GetNextId());
+	Initialize(*e);
+	e->CopyHeader(c);
+	GetMachine().Get<ComponentStore>()->Clone(*e, c);
+	return e;
 }
 
 void EntityPool::UnlinkDeep() {
@@ -52,7 +51,7 @@ void EntityPool::UnlinkDeep() {
 		p->UnlinkDeep();
 	
 	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
-		Connector* conn = it().Find<Connector>();
+		Ref<Connector> conn = it().Find<Connector>();
 		if (conn)
 			conn->UnlinkAll();
 	}
@@ -124,6 +123,8 @@ void EntityPool::PruneFromContainer() {
 
 /*void EntityPool::AddEntity(EntityRef obj) {
 	objects.Add(obj);
+	e->Init(this, GetNextId());
+		asdasd
 }*/
 
 
@@ -167,7 +168,7 @@ void EntityVisitor::Reset() {
 			if (p.HasEntities()) {
 				Item& i = stack.Add();
 				i.pool = pool;
-				i.ent = p.Begin();
+				i.ent = p.begin();
 				cur = *i.ent;
 			}
 		}
@@ -182,7 +183,7 @@ void EntityVisitor::Reset() {
 					} {
 						Item& i = stack.Add();
 						i.pool = first;
-						i.ent = first().Begin();
+						i.ent = first().begin();
 						cur = *i.ent;
 					}
 				}
@@ -218,7 +219,7 @@ bool EntityVisitor::FindNextDepthFirst() {
 			Item& top = stack.Top();
 			if (!top.ent && !top.finished) {
 				if (top.pool().HasEntities()) {
-					top.ent = top.pool().Begin();
+					top.ent = top.pool().begin();
 					return true;
 				}
 				else {
@@ -316,7 +317,7 @@ void EntityParentVisitor::Reset() {
 	cur.Clear();
 	cur_pool = &base;
 	if (base.HasEntities()) {
-		cur = base.Begin();
+		cur = base.begin();
 	}
 }
 
@@ -354,7 +355,7 @@ bool EntityParentVisitor::FindNextChildFirst() {
 					break;
 				}
 				if (cur_pool->HasEntities()) {
-					cur = cur_pool->Begin();
+					cur = cur_pool->begin();
 					return true;
 				}
 			}

@@ -85,14 +85,14 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPoolRef parent, const V
 		if (i < 0)
 			throw Exc("could not find class id");
 		EntityRef ent = map_char_ents[i];
-		OverlapSink* sink = ent->FindOverlapSink();
+		Ref<OverlapSink> sink = ent->FindOverlapSink();
 		if (!sink)
 			throw Exc("class entity does not have OverlapSink interface");
 		
 		ASSERT(parent.IsEmpty());
 		EntityRef item = parent->Create<DefaultOctreeNode>();
 		OverlapDetector& detector = *item->Get<OverlapDetector>();
-		OverlapSource* src = detector.AsOverlapSource();
+		Ref<OverlapSource> src = detector.AsOverlapSource();
 		ASSERT(src);
 		src->LinkManually(*sink);
 	}

@@ -71,13 +71,13 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	stream.sz = data_res;
 	stream.depth = 0;
 	
-	Connector* conn = GetEntity().GetConnector();
+	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
 		return false;
 	}
 	
-	if (in.GetType() == FusionComponentInput::KEYBOARD) {
+	if (in.GetFusionType() == FusionComponentInput::KEYBOARD) {
 		bool found_any = false;
 		for (ControllerSource* src : ev_sys->GetSources()) {
 			if (src->IsSupportedKeyboard()) {

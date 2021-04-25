@@ -56,7 +56,7 @@ bool MultiMediaComponent::LoadFileAny(String path) {
 
 			vi.Start();
 			
-			Connector* conn = GetEntity().GetConnector();
+			Ref<Connector> conn = GetEntity().GetConnector();
 			if (conn)
 				conn->SignalMediaSource();
 			
@@ -93,7 +93,7 @@ bool MultiMediaComponent::LoadInput(int id) {
 				vi.cap = &cap;
 				vi.Start();
 			
-				Connector* conn = GetEntity().GetConnector();
+				Ref<Connector> conn = GetEntity().GetConnector();
 				if (conn)
 					conn->SignalMediaSource();
 				
@@ -125,7 +125,7 @@ void MultiMediaComponent::EmitMedia() {
 	if (vi.flag.IsRunning()) {
 		// Set again signal flag
 		
-		Connector* conn = GetEntity().GetConnector();
+		Ref<Connector> conn = GetEntity().GetConnector();
 		if (conn)
 			conn->SignalMediaSource();
 	}

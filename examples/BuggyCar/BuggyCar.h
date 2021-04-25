@@ -139,11 +139,11 @@ struct BuggyCar : public OdeSpace, public Component<BuggyCar> {
 
 struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		
-		components.Get<Transform>()->position[1] = 3.0;
+		components.Get<Transform>().position[1] = 3.0;
 		
 		components.Get<Renderable>()->cb << components.Get<BuggyCar>()->GetPaintCallback();
 		

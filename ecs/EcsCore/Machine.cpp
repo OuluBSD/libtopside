@@ -13,7 +13,7 @@ bool Machine::Start() {
 	
 	WhenStarting();
 	
-	for (auto& system : systems) {
+	for (auto system : systems) {
 		if (!system->Initialize())
 			return false;
 	}
@@ -82,26 +82,19 @@ bool Machine::HasStarted() const {
 	return is_started;
 }
 
-Machine::SystemCollection::Iterator Machine::FindSystem(const TypeId& typeId) {
-	return FindIf(systems.begin(), systems.end(),
-		[typeId](const Ref<SystemBase>& system) {
-		return typeId == system->GetType();
-	});
-}
-
-/*void Machine::Add(const TypeId& typeId, Ref<SystemBase> system) {
+void Machine::Add(const TypeId& type_id, SystemBase* system) {
 	ASSERT_(!is_started, "Invalid to add systems after the machine has started");
 	
-	auto it = FindSystem(typeId);
-	ASSERT(it == systems.end());
+	auto it = FindSystem(type_id);
+	ASSERT(!it);
 	
-	systems.Add(pick(system));
-}*/
+	systems.Add(type_id, system);
+}
 
-void Machine::Remove(const TypeId& typeId) {
+void Machine::Remove(const TypeId& type_id) {
 	ASSERT_(!is_started, "Invalid to remove systems after the machine has started");
 	
-	Machine::SystemCollection::Iterator it = FindSystem(typeId);
+	Machine::SystemCollection::Iterator it = FindSystem(type_id);
 	ASSERT(it);
 	
 	systems.Remove(it);

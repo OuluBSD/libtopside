@@ -29,7 +29,8 @@ class Entity : public Destroyable, public Enableable, public LockedScopeEnabler<
 protected:
 	friend class EntityPool;
 	
-	void SetId(EntityId i) {id = i;}
+	void Init(EntityPool* p, EntityId i) {pool = p; id = i;}
+	//void SetId(EntityId i) {id = i;}
 	void SetPrefab(String s) {prefab = s;}
 	void SetCreated(int64 i) {created = i;}
 	void SetChanged(int64 i) {changed = i;}
@@ -40,6 +41,8 @@ protected:
 	}
 public:
 	
+	Entity();
+	virtual ~Entity();
 	
 	String GetPrefab() const {return prefab;}
 	String GetName() const {return name;}
@@ -54,28 +57,18 @@ public:
 	void OnChange();
 	
 	template<typename T>
-	Ref<T> GetRef() {
-		return comps.GetRef<T>();
-	}
-	
-	template<typename T>
-	T* Get() {
+	Ref<T> Get() {
 		return comps.Get<T>();
 	}
 	
 	template<typename T>
-	Ref<T> FindRef() {
-		return comps.FindRef<T>();
-	}
-	
-	template<typename T>
-	T* Find() {
+	Ref<T> Find() {
 		return comps.Find<T>();
 	}
 	
 	template<typename T>
-	T* FindInterface() {
-		T* o = NULL;
+	Ref<T> FindInterface() {
+		Ref<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				break;
@@ -83,28 +76,38 @@ public:
 	}
 	
 	template<typename T>
-	Vector<T*> FindInterfaces() {
-		Vector<T*> v;
-		T* o;
+	Vector<Ref<T>> FindInterfaces() {
+		Vector<Ref<T>> v;
+		Ref<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				v.Add(o);
 		return v;
 	}
 	
-	template<typename T> void Remove() {OnChange(); Remove0<T>();}
-	template<typename T> T* Add() {OnChange(); return Add0<T>();}
-	template<typename T> T* GetAdd() {T* o = Find<T>(); if (o) return o; OnChange(); return Add0<T>();}
+	template<typename T> void Remove() {
+		OnChange();
+		Remove0<T>();
+	}
+	template<typename T> Ref<T> Add() {
+		OnChange();
+		return Add0<T>();
+	}
+	template<typename T> Ref<T> GetAdd() {
+		T* o = Find<T>();
+		if (o)
+			return o;
+		OnChange();
+		return Add0<T>();
+	}
+	
 	
 	
 	template<typename... ComponentTs>
-	RTuple<ComponentTs*...> TryGetComponents() {
+	RTuple<Ref<ComponentTs>...> TryGetComponents() {
 		return MakeRTuple(comps.TryGet<ComponentTs>()...);
 	}
 	
-	Entity(Pick<ComponentMap> components, EntityId id, EntityPool& pool);
-	Entity(EntityId id, EntityPool& pool);
-	virtual ~Entity();
 	
 	EntityRef Clone() const;
 	void InitializeComponents();
@@ -122,13 +125,13 @@ public:
 	
 	Machine&			GetMachine();
 	const Machine&		GetMachine() const;
-	EntityPool&			GetPool() {return pool;}
-	const EntityPool&	GetPool() const {return pool;}
+	EntityPool&			GetPool() {return *pool;}
+	const EntityPool&	GetPool() const {return *pool;}
 	
 	#define IFACE_(x, post)\
-		x##post* Find##x##post() {\
+		Ref<x##post> Find##x##post() {\
 			for(Ref<ComponentBase>& base : comps.GetValues()) {\
-				x##post* o = base->As##x##post();\
+				Ref<x##post> o = base->As##x##post();\
 				if (o) return o;\
 			}\
 			return NULL;\
@@ -141,9 +144,18 @@ public:
 	
 	ComponentMap& GetComponents() {return comps;}
 	const ComponentMap& GetComponents() const {return comps;}
-	Connector* GetConnector() const {return conn;}
+	Ref<Connector> GetConnector() const {return conn;}
 	void RefreshConnectorPtr();
 	void SetUpdateInterfaces();
+	
+	template<typename... ComponentTs>
+	RTuple<Ref<ComponentTs>...> CreateComponents() {
+		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
+		
+		return RTuple<Ref<ComponentTs>...> { { Add0<ComponentTs>() }... };
+	}
+	
+	void CloneComponents(const Entity& e);
 	
 protected:
 	friend class EntityPool;
@@ -154,28 +166,40 @@ protected:
 private:
 	ComponentMap comps;
 	EntityId m_id;
-	EntityPool& pool;
-	Connector* conn = 0;
+	EntityPool* pool = 0;
+	Ref<Connector> conn;
 	
 	
 	template<typename T>
 	void Remove0() {
-		comps.Remove<T>();
+		comps.Remove<T>(GetMachine().Get<ComponentStore>());
 		SetUpdateInterfaces();
 	}
 	
 	template<typename T>
-	T* Add0();/* {
-		T* comp = comps.Add<T>(GetMachine().Get<ComponentStore>()->CreateComponent<T>());
+	Ref<T> Add0() {
+		T* comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>();
+		ASSERT(comp);
+		comps.Add(comp);
 		InitializeComponent(*comp);
 		SetUpdateInterfaces();
+		ASSERT(comp->GetEntityPtr());
 		return comp;
-	}*/
+	}
 	
 };
 
-template<> inline void Entity::Remove<Connector>() {ASSERT(conn); conn = 0; Remove0<Connector>();}
-template<> inline Connector* Entity::Add<Connector>() {ASSERT(!conn); conn = Add0<Connector>(); return conn;}
+template<> inline void Entity::Remove<Connector>() {
+	ASSERT(conn);
+	conn = 0;
+	Remove0<Connector>();
+}
+
+template<> inline Ref<Connector> Entity::Add<Connector>() {
+	ASSERT(!conn);
+	conn = Add0<Connector>();
+	return conn;
+}
 
 
 
@@ -183,10 +207,10 @@ template<typename... ComponentTs>
 struct EntityPrefab {
 	static_assert(AllComponents<ComponentTs...>::value, "All components should derive from Component");
 	
-	using Components = RTuple<ComponentTs...>;
+	using Components = RTuple<Ref<ComponentTs>...>;
 	
-	static ComponentMap Make(ComponentStore& store) {
-		return store.CreateComponentMap<ComponentTs...>();
+	static Components Make(Entity& e) {
+		return e.CreateComponents<ComponentTs...>();
 	}
 };
 

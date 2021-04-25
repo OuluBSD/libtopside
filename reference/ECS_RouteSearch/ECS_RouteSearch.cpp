@@ -6,7 +6,7 @@ void DumpTransforms(String s, EntityPoolRef pool) {
 	LOG(s);
 	int i = 0;
 	for (EntityRef& e : pool->GetEntities()) {
-		Transform* t = e->Find<Transform>();
+		Ref<Transform> t = e->Find<Transform>();
 		if (t) {
 			LOG("\t" << i << ": " << e->ToString() << ": " << t->ToString());
 		}
@@ -178,9 +178,22 @@ void TraverseMap(EntityPoolRef externals, String map) {
 			Transform& tf = *begin->Get<Transform>();
 			tf.position = pos;
 			tf.position[1] = 1; // but above normal waypoints
-			RouteSink& rsink = *t.e->FindRouteSink();
-			RouteSource& rsrc = *begin->FindRouteSource();
-			rsrc.LinkManually(rsink);
+			if (0) {
+				t.e->GetComponents().Dump();
+				begin->GetComponents().Dump();
+				Ref<RouteSource> r;
+				int i = 0;
+				for(Ref<ComponentBase>& base : begin->GetComponents().GetValues()) {\
+					LOG(i++ << ": " << base->GetType().CleanDemangledName());
+					r = base->AsRouteSource();
+					if (r) {
+						LOG("");
+					}
+				}
+			}
+			Ref<RouteSink> rsink = t.e->FindRouteSink();
+			Ref<RouteSource> rsrc = begin->FindRouteSource();
+			rsrc->LinkManually(*rsink);
 		}
 		if (t.is_end) {
 			VAR end = externals->Create<RouteNode>();
@@ -188,9 +201,9 @@ void TraverseMap(EntityPoolRef externals, String map) {
 			Transform& tf = *end->Get<Transform>();
 			tf.position = pos;
 			tf.position[1] = 1; // but above normal waypoints
-			RouteSource& rsrc = *t.e->FindRouteSource();
-			RouteSink& rsink = *end->FindRouteSink();
-			rsrc.LinkManually(rsink);
+			Ref<RouteSource> rsrc = t.e->FindRouteSource();
+			Ref<RouteSink> rsink = end->FindRouteSink();
+			rsrc->LinkManually(*rsink);
 		}
 	}
 	
@@ -235,7 +248,7 @@ void FindRouteInPool(VAR begin, VAR end, EntityPoolRef route) {
 	if (begin.IsEmpty() || end.IsEmpty())
 		throw Exc("empty begin or end shared-entity");
 	
-	RouteSink* end_sink = end->FindRouteSink();
+	Ref<RouteSink> end_sink = end->FindRouteSink();
 	if (!end_sink)
 		throw Exc("No RouteSink in end node");
 	
@@ -290,7 +303,7 @@ void FindRouteInPool(VAR begin, VAR end, EntityPoolRef route) {
 		const SearchData& current_data = *current.value.arg;
 		
 		// Find the beginning of the step (RouteSource)
-		RouteSource* src = e.FindRouteSource();
+		Ref<RouteSource> src = e.FindRouteSource();
 		if (!src)
 			continue;
 		
@@ -304,7 +317,7 @@ void FindRouteInPool(VAR begin, VAR end, EntityPoolRef route) {
 			
 			// Calculate heuristic value to the end
 			// The RouteSource interface of the neighbour entity calculates heuristics.
-			RouteSource* dst_src = dst.FindRouteSource();
+			Ref<RouteSource> dst_src = dst.FindRouteSource();
 			if (!dst_src)
 				continue; // dead-end
 			double heuristic_value = dst_src->GetHeuristicValue(*end_sink);
@@ -400,10 +413,10 @@ void ConnectRoute(RouteSource& src, RouteSink& sink) {
 
 void MergeRoute(EntityPoolRef route, EntityPoolRef waypoints) {
 	struct Item : Moveable<Item> {
-		Entity* e = 0;
-		RouteSource* src = 0;
-		RouteSink* sink = 0;
-		void Set(Entity* e, RouteSource* src, RouteSink* sink) {
+		EntityRef e;
+		Ref<RouteSource> src;
+		Ref<RouteSink> sink;
+		void Set(EntityRef e, Ref<RouteSource> src, Ref<RouteSink> sink) {
 			this->e = e;
 			this->src = src;
 			this->sink = sink;
@@ -443,8 +456,8 @@ void MergeRoute(EntityPoolRef route, EntityPoolRef waypoints) {
 
 
 double SimpleTransformValue(Entity& a, Entity& b) {
-	Transform* src = a.Find<Transform>();
-	Transform* dst = b.Find<Transform>();
+	Ref<Transform> src = a.Find<Transform>();
+	Ref<Transform> dst = b.Find<Transform>();
 	ASSERT(src && dst);
 	double dist = (dst->position - src->position).GetLength();
 	
@@ -508,7 +521,7 @@ bool Observer::MakeRouteTo() {
 		if (current == end)
 			break;
 		
-		RouteSource* from_src = current->FindRouteSource();
+		Ref<RouteSource> from_src = current->FindRouteSource();
 		if (!from_src) {
 			last_error = "entity has no RouteSource";
 			return false;
@@ -521,7 +534,8 @@ bool Observer::MakeRouteTo() {
 		}
 		
 		const auto& conn = sinks[0];
-		Entity& next = conn.sink->AsComponentBase()->GetEntity();
+		ComponentBase* b = conn.sink->AsComponentBase();
+		Entity& next = b->GetEntity();
 		
 		current = next;
 	}
@@ -690,7 +704,7 @@ void DummyActor::FindRoute() {
     DumpTransforms("All valid routes", waypoints);
     
     
-    Observer* rflw = GetEntity().Find<Observer>();
+    Ref<Observer> rflw = GetEntity().Find<Observer>();
     if (!rflw->MakeRouteTo())
         throw Exc(rflw->GetLastError());
     

@@ -60,7 +60,7 @@ MediaDevice& MediaDeviceManager::GetAddVirtual(String path) {
 void MediaDeviceManager::Refresh() {
 	devs.Clear();
 	
-#if flagV4L2
+#ifdef flagV4L2
 	for (int i = 0; i < 10; i++) {
 		String path = "/dev/video" + IntStr(i);
 		int fd = v4l2_open(path, O_RDWR);

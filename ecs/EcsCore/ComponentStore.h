@@ -4,45 +4,47 @@
 NAMESPACE_OULU_BEGIN
 	
 
-class ComponentStore : public System<ComponentStore>, public Factory<ComponentRef, std::function<ComponentRef()>> {
-
+class ComponentStore :
+	public System<ComponentStore>,
+	public Factory<ComponentBase*, std::function<ComponentBase*()>, std::function<void(ComponentBase*)> >
+{
+	
 public:
 	using System::System;
 	
-	template<typename... ComponentTs>
-	ComponentMap CreateComponentMap();/* {
-		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
-		
-		return ComponentMap { { typeid(ComponentTs), CreateComponent<ComponentTs>() }... };
-	}*/
+	template <class T>
+	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
+	
+	
+	void ReturnComponent(ComponentBase* c);
 	
 	template<typename ComponentT>
-	ComponentRef CreateComponent();/* {
+	ComponentT* CreateComponent() {
 		static_assert(IsComponent<ComponentT>::value, "T should be a component");
 		
 		const TypeId key(typeid(ComponentT));
-		
-		auto it = producers.FindIter(key);
-		
+		auto it = producers.Find(key);
 		if (!it) {
-			std::function<ComponentRef()> fn([] { return MakeSharedBase<ComponentBase, ComponentT>(); });
-			producers.Add(key) = fn;
+			std::function<ComponentBase*()> p([] { return GetPool<ComponentT>().New();});
+			std::function<void(ComponentBase*)> r([] (ComponentBase* b){ return GetPool<ComponentT>().Return(static_cast<ComponentT*>(b));});
+			producers.Add(key) = p;
+			refurbishers.Add(key) = r;
 		}
 		
-		return CreateComponent(typeid(ComponentT));
-	}*/
+		return static_cast<ComponentT*>(CreateComponent(typeid(ComponentT)));
+	}
 	
-	ComponentMap Clone(const ComponentMap& comp_map);
+	void Clone(Entity& dst, const Entity& src);
 	
 	
 protected:
-	void Update(double) override;
-	void Uninitialize() override;
+	//void Update(double) override;
+	//void Uninitialize() override;
 	
 private:
-	//RefTypeMap<RefLinkedList<ComponentBase>> comps;
 	
-	ComponentRef CreateComponent(const TypeId& typeId);
+	ComponentBase* CreateComponent(const TypeId& type_id);
+	
 };
 
 

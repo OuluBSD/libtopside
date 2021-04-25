@@ -8,16 +8,39 @@ NAMESPACE_OULU_BEGIN
 
 
 template <class T>
+void MemSwap(T& a, T& b) {
+	uint8 tmp[sizeof(T)];
+	MemoryCopy(tmp, &a, sizeof(T));
+	MemoryCopy(&a, &b, sizeof(T));
+	MemoryCopy(&b, tmp, sizeof(T));
+}
+
+
+template <class T>
 class Ref : Moveable<Ref<T>> {
 	T* o = 0;
 	
 public:
 	Ref() {}
 	Ref(const Ref& r) {*this = r;}
-	Ref(T* o) : o(o) {o->IncRef();}
+	Ref(T* o) : o(o) {if (o) o->IncRef();}
 	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0;}}
 	~Ref() {Clear();}
 	
+	typedef T Type;
+	
+	template <class V>
+	Ref(const Ref<V>& r) {
+		static_assert(std::is_base_of<V,T>() || std::is_base_of<T,V>(), "T must inherit V or vice versa");
+		if (!r.IsEmpty()) {
+			o = dynamic_cast<T*>(r.Get());
+			ASSERT(o);
+			o->IncRef();
+		}
+	}
+	
+	
+	bool operator==(const Ref& r) {return r.o == o;}
 	Ref& operator=(const Ref& r) {return Set(r);}
 	Ref& operator=(T* o) {Clear(); if (o) {this->o = o; o->IncRef();} return *this;}
 	T* operator->() {return o;}
@@ -26,15 +49,22 @@ public:
 	operator bool() const {return o != NULL;}
 	
 	bool IsEmpty() const {return o == NULL;}
-	T* Get() {return o;}
+	T* Get() const {return o;}
 	void Clear() {if (o) o->DecRef(); o = 0;}
 	template <class V>	V* As() {
-		static_assert(std::is_convertible<T,V>() || std::is_convertible<V,T>(), "V must be convertible with T");
+		static_assert(std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		return dynamic_cast<V*>(o);
 	}
+	template <class V>	Ref<V> AsRef() {
+		static_assert(std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
+		V* v = dynamic_cast<V*>(o);
+		return Ref<V>(v);
+	}
 	template <class V> void WrapObject(V* v) {
-		static_assert(std::is_convertible<T,V>() || std::is_convertible<V,T>(), "V must be convertible with T");
-		o = dynamic_cast<T*>(v);
+		static_assert(std::is_base_of<T,V>(), "V must inherit T");
+		ASSERT(!o);
+		Clear();
+		o = static_cast<T*>(v);
 		o->IncRef();
 		ASSERT(o);
 	}
@@ -43,33 +73,56 @@ public:
 	Ref& Set(const Ref& r) {
 		Clear();
 		o = r.o;
-		o->IncRef();
+		if (o)
+			o->IncRef();
 		return *this;
 	}
 	
 };
 
 
-template <class T>
-class LockedScopeEnabler {
+class LockedScopeRefCounter {
 	
 private:
-	
 	std::atomic<int> refs;
 	
-	
 public:
-	LockedScopeEnabler() {
+	LockedScopeRefCounter() {
 		refs = 0;
 	}
-	virtual ~LockedScopeEnabler() {
+	virtual ~LockedScopeRefCounter() {
 		ASSERT(refs == 0);
 	}
 	
 	void IncRef() {++refs;}
-	void DecRef() {--refs;}
-	Ref<T> AsRef() {return Ref<T>(static_cast<T*>(this));}
-	operator Ref<T>() {return Ref<T>(static_cast<T*>(this));}
+	void DecRef() {ASSERT(refs > 0); --refs;}
+	
+	
+};
+
+
+template <class T>
+class LockedScopeEnabler : virtual public LockedScopeRefCounter {
+	
+	
+public:
+	LockedScopeEnabler() {}
+	
+	Ref<T> AsRef() {
+		static_assert(std::is_base_of<LockedScopeEnabler<T>,T>(), "T must inherit LockedScopeEnabler<T>");
+		return Ref<T>(static_cast<T*>(this));
+	}
+	
+	operator Ref<T>() {
+		static_assert(std::is_base_of<LockedScopeEnabler<T>,T>(), "T must inherit LockedScopeEnabler<T>");
+		return Ref<T>(static_cast<T*>(this));
+	}
+	
+	template <class V>	Ref<V> AsRef() {
+		static_assert(std::is_base_of<T,V>(), "V must inherit T");
+		V* v = dynamic_cast<V*>(static_cast<T*>(this));
+		return Ref<V>(v);
+	}
 	
 };
 
@@ -79,8 +132,8 @@ template <class T>
 class LinkedList {
 	
 	struct Item {
-		Item* prev;
-		Item* next;
+		Item* prev = 0;
+		Item* next = 0;
 		T value;
 		
 	};
@@ -100,11 +153,11 @@ public:
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
-		Iterator(Iterator&& it) {Swap(*this, it);}
+		Iterator(Iterator&& it) {MemSwap(*this, it);}
 		Iterator(const Iterator& i) : it(i.it) {}
 		void	Clear() {it = 0;}
 		Item*	GetItem() const {return it;}
-		bool	IsEmpty() const {return it;}
+		bool	IsEmpty() const {return it == 0;}
 		T*   operator->() {ASSERT(it); return &it->value;}
 		T&   operator*() const {ASSERT(it); return it->value;}
 		void operator=(const Iterator& i) {Clear(); it = i.it;}
@@ -174,10 +227,10 @@ public:
 		if (IsEmpty())
 			return;
 		Item* iter = first;
-		Swap(first, last);
+		MemSwap(first, last);
 		while (iter) {
 			Item* next = iter->next;
-			Swap(iter->prev, iter->next);
+			MemSwap(iter->prev, iter->next);
 			iter = next;
 		}
 		ASSERT(first->prev == 0 && last->next == 0);
@@ -211,10 +264,10 @@ template <class T>
 class RefLinkedList {
 	
 	struct Item {
-		Item* prev;
-		Item* next;
+		Item* prev = 0;
+		Item* next = 0;
 		T value;
-		
+		Item() {}
 	};
 	
 	typedef RecyclerPool<Item> Rec;
@@ -231,20 +284,21 @@ public:
 		Item* it = 0;
 		mutable R ref;
 		void ChkRef() const {if (ref.IsEmpty() && it) ref = &it->value;}
+		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
-		Iterator(Iterator&& it) {Swap(*this, it);}
+		Iterator(Iterator&& it) {MemSwap(*this, it);}
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
 		Item* GetItem() const {return it;}
-		R*   operator->() {ChkRef(); return &ref;}
+		T*   operator->() {ChkRef(); return ref;}
 		R&   operator*() const {ChkRef(); return ref;}
 		void operator=(const Iterator& i) {Clear(); it = i.it;}
 		bool operator==(const Iterator& i) const {return i.it == it;}
 		bool operator!=(const Iterator& i) const {return i.it != it;}
-		void operator++() {if (it) it = it->next;}
-		void operator--() {if (it) it = it->prev;}
+		void operator++() {ClearRef(); if (it) {it = it->next;}}
+		void operator--() {ClearRef(); if (it) {it = it->prev;}}
 		T&   operator()() const {ASSERT(it); return it->value;}
 		operator R*() const {ChkRef(); return &ref;}
 		operator bool() const {return it;}
@@ -307,10 +361,10 @@ public:
 		if (IsEmpty())
 			return;
 		Item* iter = first;
-		Swap(first, last);
+		MemSwap(first, last);
 		while (iter) {
 			Item* next = iter->next;
-			Swap(iter->prev, iter->next);
+			MemSwap(iter->prev, iter->next);
 			iter = next;
 		}
 		ASSERT(first->prev == 0 && last->next == 0);
@@ -340,6 +394,65 @@ public:
 
 
 template <class K, class V>
+class LinkedMap {
+	LinkedList<K> keys;
+	LinkedList<V> values;
+	
+public:
+	typedef typename LinkedList<K>::Iterator KeyIter;
+	typedef typename LinkedList<V>::Iterator ValueIter;
+	struct Iterator {
+		KeyIter key;
+		ValueIter value;
+		Iterator() {}
+		Iterator(KeyIter&& k, ValueIter&& v) : key(std::move(k)), value(std::move(v)) {}
+		Iterator(const KeyIter& k, const ValueIter& v) : key(k), value(v) {}
+		void operator=(const Iterator& i) {key = i.key; value = i.value;}
+		void operator++() {++key; ++value;}
+		void operator--() {--key; --value;}
+		bool operator==(const Iterator& i) const {return key == i.key;}
+		bool operator!=(const Iterator& i) const {return key != i.key;}
+		V*   operator->() {return &value();}
+		V&   operator*() {return *value;}
+		operator bool() const {return key;}
+		V& Get() {V* v = value->Get(); ASSERT(v); return v;}
+	};
+	
+	LinkedMap() {}
+	~LinkedMap() {Clear();}
+	void Clear() {keys.Clear(); values.Clear();}
+	
+	V& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	int GetCount() const {return keys.GetCount();}
+	bool IsEmpty() const {return keys.IsEmpty();}
+	Iterator Remove(const Iterator& iter) {
+		Iterator it;
+		it.key		= keys.Remove(iter.key);
+		it.value	= values.Remove(iter.value);
+		return it;
+	}
+	
+	Iterator Find(const K& key) {
+		KeyIter k = keys.begin();
+		ValueIter v = values.begin();
+		for (;k; ++k, ++v)
+			if (*k == key)
+				return Iterator(k, v);
+		return Iterator();
+	}
+	
+	RefLinkedList<V>& GetValues() {return values;}
+	
+
+	Iterator begin()	{return Iterator(keys.begin(), values.begin());}
+	Iterator end()		{return Iterator();}
+	Iterator rbegin()	{return Iterator(keys.rbegin(), values.rbegin());}
+	Iterator rend()		{return Iterator();}
+	
+};
+
+
+template <class K, class V>
 class RefLinkedMap {
 	LinkedList<K> keys;
 	RefLinkedList<V> values;
@@ -355,6 +468,12 @@ public:
 		Iterator(KeyIter&& k, ValueIter&& v) : key(std::move(k)), value(std::move(v)) {}
 		Iterator(const KeyIter& k, const ValueIter& v) : key(k), value(v) {}
 		void operator=(const Iterator& i) {key = i.key; value = i.value;}
+		void operator++() {++key; ++value;}
+		void operator--() {--key; --value;}
+		bool operator==(const Iterator& i) const {return key == i.key;}
+		bool operator!=(const Iterator& i) const {return key != i.key;}
+		V*   operator->() {return &value();}
+		R&   operator*() {return *value;}
 		operator bool() const {return key;}
 		V& Get() {V* v = value->Get(); ASSERT(v); return v;}
 	};
@@ -363,7 +482,7 @@ public:
 	~RefLinkedMap() {Clear();}
 	void Clear() {keys.Clear(); values.Clear();}
 	
-	R& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	R Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
 	Iterator Remove(const Iterator& iter) {
@@ -376,7 +495,7 @@ public:
 	Iterator Find(const K& key) {
 		KeyIter k = keys.begin();
 		ValueIter v = values.begin();
-		for (;k; ++k)
+		for (;k; ++k, ++v)
 			if (*k == key)
 				return Iterator(k, v);
 		return Iterator();
@@ -386,6 +505,12 @@ public:
 	
 	RefLinkedList<V>& GetValues() {return values;}
 	
+
+	Iterator begin()	{return Iterator(keys.begin(), values.begin());}
+	Iterator end()		{return Iterator();}
+	Iterator rbegin()	{return Iterator(keys.rbegin(), values.rbegin());}
+	Iterator rend()		{return Iterator();}
+	
 };
 
 
@@ -393,8 +518,8 @@ template <class T>
 class RefLinkedListIndirect {
 	
 	struct Item {
-		Item* prev;
-		Item* next;
+		Item* prev = 0;
+		Item* next = 0;
 		One<T> value;
 		
 	};
@@ -413,28 +538,29 @@ public:
 		Item* it = 0;
 		mutable R ref;
 		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = &*it->value;}
+		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
-		Iterator(Iterator&& it) {Swap(*this, it);}
+		Iterator(Iterator&& it) {MemSwap(*this, it);}
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
 		Item* GetItem() const {return it;}
-		R*   operator->() {ChkRef(); return &ref;}
+		T*   operator->() {ChkRef(); return ref;}
 		R&   operator*() const {ChkRef(); return ref;}
 		void operator=(const Iterator& i) {Clear(); it = i.it;}
 		bool operator==(const Iterator& i) const {return i.it == it;}
 		bool operator!=(const Iterator& i) const {return i.it != it;}
-		void operator++() {if (it) it = it->next;}
-		void operator--() {if (it) it = it->prev;}
-		T&   operator()() const {ASSERT(it); return it->value;}
+		void operator++() {ClearRef(); if (it) {it = it->next;}}
+		void operator--() {ClearRef(); if (it) {it = it->prev;}}
+		T&   operator()() const {ASSERT(it && !it->value.IsEmpty()); return *it->value;}
 		operator R*() const {ChkRef(); return &ref;}
 		operator bool() const {return it;}
 	};
 	
 	RefLinkedListIndirect() {}
 	~RefLinkedListIndirect() {Clear();}
-	R Add() {
+	R Add(T* o=NULL) {
 		Item* it = GetRecyclerPool().New();
 		if (!first) {
 			last = first = it;
@@ -447,7 +573,9 @@ public:
 			last = it;
 		}
 		++count;
-		return it->value.AsRef();
+		if (o)
+			it->value.Attach(o);
+		return it->value->AsRef();
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
@@ -478,16 +606,16 @@ public:
 		}
 		--count;
 		GetRecyclerPool().Return(item);
-		TODO
+		return item;
 	}
 	void Reverse() {
 		if (IsEmpty())
 			return;
 		Item* iter = first;
-		Swap(first, last);
+		MemSwap(first, last);
 		while (iter) {
 			Item* next = iter->next;
-			Swap(iter->prev, iter->next);
+			MemSwap(iter->prev, iter->next);
 			iter = next;
 		}
 		ASSERT(first->prev == 0 && last->next == 0);
@@ -532,8 +660,13 @@ public:
 		Iterator(KeyIter&& k, ValueIter&& v) : key(std::move(k)), value(std::move(v)) {}
 		Iterator(const KeyIter& k, const ValueIter& v) : key(k), value(v) {}
 		void operator=(const Iterator& i) {key = i.key; value = i.value;}
+		void operator++() {++key; ++value;}
+		void operator--() {--key; --value;}
+		bool operator==(const Iterator& i) const {return key == i.key;}
+		bool operator!=(const Iterator& i) const {return key != i.key;}
+		V*   operator->() {return &value();}
+		R&   operator*() {return *value;}
 		operator bool() const {return key;}
-		ValueRef* operator->() {return value;}
 		bool IsEmpty() const {return key.IsEmpty();}
 		V& Get() {return value();}
 	};
@@ -542,7 +675,8 @@ public:
 	~RefLinkedMapIndirect() {Clear();}
 	void Clear() {keys.Clear(); values.Clear();}
 	
-	R& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	R Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	R Add(const K& k, V* o) {keys.AddItem()->value = k; return values.Add(o);}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
 	Iterator Remove(const Iterator& iter) {
@@ -555,7 +689,7 @@ public:
 	Iterator Find(const K& key) {
 		KeyIter k = keys.begin();
 		ValueIter v = values.begin();
-		for (;k; ++k)
+		for (;k; ++k, ++v)
 			if (*k == key)
 				return Iterator(k, v);
 		return Iterator();
@@ -564,6 +698,11 @@ public:
 	//const R* FindPtr(const K& k) const;
 	
 	RefLinkedListIndirect<V>& GetValues() {return values;}
+	
+	Iterator begin()	{return Iterator(keys.begin(), values.begin());}
+	Iterator end()		{return Iterator();}
+	Iterator rbegin()	{return Iterator(keys.rbegin(), values.rbegin());}
+	Iterator rend()		{return Iterator();}
 	
 };
 

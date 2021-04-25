@@ -73,7 +73,7 @@ void ModelComponent::Signal() {
 
 
 void ModelDispatch(ComponentBase& b) {
-	Connector* conn = b.GetEntity().Find<Connector>();
+	Ref<Connector> conn = b.GetEntity().Find<Connector>();
 	if (conn) {
 		conn->SignalModelSink();
 	}

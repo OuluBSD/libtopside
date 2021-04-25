@@ -210,37 +210,51 @@ struct CachingVector : Moveable<CachingVector<T>> {
 template <class T>
 class RecyclerPool {
 	Vector<T*> pool;
+	Mutex lock;
 	
 public:
 	RecyclerPool() {}
 	~RecyclerPool() {Clear();}
 	
 	void Clear() {
+		lock.Enter();
 		auto t = pool.Begin();
 		auto end = pool.End();
 		while(t != end) {
-			delete &*t;
+			T* o = *t;
+			delete o;
 			t++;
 		}
 		pool.Clear();
+		lock.Leave();
 	}
-	void Reserve(int i) {pool.Reserve(i);}
+	void Reserve(int i) {
+		lock.Enter();
+		pool.Reserve(i);
+		lock.Leave();
+	}
 	
 	T* New() {
-		if (pool.IsEmpty())
-			return new T();
-		else {
-			T* o = pool.Pop();
-			new (o)T();
-			return o;
+		T* o;
+		if (pool.IsEmpty()) {
+			o = new T();
 		}
+		else {
+			lock.Enter();
+			o = pool.Pop();
+			lock.Leave();
+			new (o) T();
+		}
+		return o;
 	}
 	
 	void Return(T* o) {
 		o->~T();
+		lock.Enter();
 		pool.Add(o);
+		lock.Leave();
 	}
-
+	
 };
 
 

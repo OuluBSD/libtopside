@@ -54,7 +54,7 @@ void FusionContextComponent::Update(double dt) {
 		DumpEntityComponents();
 		
 		is_open = true;
-		for(FusionComponent* comp : comps) {
+		for(Ref<FusionComponent>& comp : comps) {
 			if (!comp->IsOpen() && !comp->Open()) {
 				DLOG("FusionContextComponent::Update: error: a component did not open properly");
 				is_open = false;
@@ -120,7 +120,7 @@ void FusionContextComponent::Reset() {
 }
 
 void FusionContextComponent::Clear() {
-	for(FusionComponent* comp : comps) {
+	for(Ref<FusionComponent>& comp : comps) {
 		comp->Clear();
 		if (comp->IsTypeTemporary())
 			comp->GetECS().Destroy();
@@ -157,7 +157,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 	
 	RefreshStreamValues(m);
 	
-	for(FusionComponent* comp : comps) {
+	for(Ref<FusionComponent>& comp : comps) {
 		if (IsModeStage(*comp, m))
 			comp->PreProcess();
 	}
@@ -171,7 +171,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 		}
 	}
 	
-	for(FusionComponent* comp : comps) {
+	for(Ref<FusionComponent>& comp : comps) {
 		if (IsModeStage(*comp, m))
 			comp->PostProcess();
 	}
@@ -179,7 +179,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 }
 
 bool FusionContextComponent::IsModeStage(const FusionComponent& comp, Mode m) const {
-	auto type = comp.GetType();
+	auto type = comp.GetFusionType();
 	if (type == FusionComponent::FUSION_AUDIO_SINK ||
 		type == FusionComponent::FUSION_AUDIO_BUFFER ||
 		type == FusionComponent::FUSION_AUDIO_SOURCE)
@@ -227,11 +227,11 @@ void FusionContextComponent::RefreshStreamValues(Mode m) {
 	}
 }
 
-FusionComponent& FusionContextComponent::GetComponentById(int id) const {
+Ref<FusionComponent> FusionContextComponent::GetComponentById(int id) const {
 	ASSERT(id >= 0);
-	for (FusionComponent* s : comps)
+	for (const Ref<FusionComponent>& s : comps)
 		if (s->id == id)
-			return *s;
+			return s;
 	throw Exc("FusionComponent not found");
 }
 
@@ -461,7 +461,7 @@ bool FusionContextComponent::Load(Object json) {
 				
 				// Create new comp
 				Entity& e = GetEntity();
-				FusionComponent* comp = 0;
+				Ref<FusionComponent> comp = 0;
 				switch (type) {
 					case FusionComponent::FUSION_DATA_SINK:		comp = AddEntityComponent<FusionDataSink>(); break;
 					//case FusionComponent::FUSION_CTRL_SOURCE:	comp = AddEntityComponent<FusionControllerSource>(); break;
@@ -497,8 +497,8 @@ bool FusionContextComponent::Load(Object json) {
 			else {
 				// Find existing component
 				bool found = false;
-				for (FusionComponent* comp : comps) {
-					if (comp->GetType() == type) {
+				for (Ref<FusionComponent>& comp : comps) {
+					if (comp->GetFusionType() == type) {
 						if (!comp->Load(st_map, i, frag_code)) {
 							OnError(fn_name, "Loading stage " + IntStr(i) + " failed");
 							return false;
@@ -517,7 +517,7 @@ bool FusionContextComponent::Load(Object json) {
 	
 	// Find unique inputs
 	FusionComponentInputVector v;
-	for (FusionComponent* comp : comps)
+	for (Ref<FusionComponent>& comp : comps)
 		for(FusionComponentInput& in : comp->in)
 			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
 				v.Add(in);
@@ -529,7 +529,7 @@ bool FusionContextComponent::Load(Object json) {
 		
 		// Connect created components for inputs
 		DumpEntityComponents();
-		for (FusionComponent* comp : comps) {
+		for (Ref<FusionComponent>& comp : comps) {
 			for(FusionComponentInput& in : comp->in) {
 				if (in.IsTypeComponentSource()) {
 					int i = v.Find(in);
@@ -557,7 +557,7 @@ void FusionContextComponent::RefreshStageQueue() {
 	try {
 		// Solve dependencies
 		Graph g;
-		for(FusionComponent* s : comps)
+		for(Ref<FusionComponent>& s : comps)
 			if (s->id >= 0)
 				g.AddKey(s->id);
 		for(int i = 0; i < comps.GetCount(); i++) {
@@ -581,7 +581,7 @@ void FusionContextComponent::RefreshStageQueue() {
 		
 		struct TopologicalStages {
 			Graph& g;
-			bool operator()(const FusionComponent* a, const FusionComponent* b) const {
+			bool operator()(const Ref<FusionComponent>& a, const Ref<FusionComponent>& b) const {
 				int a_pos = g.FindSorted(a->id);
 				int b_pos = g.FindSorted(b->id);
 				return a_pos < b_pos;
@@ -619,14 +619,14 @@ void FusionContextComponent::RefreshPipeline() {
 		return;
 	}
 	
-	for(FusionComponent* comp : comps)
+	for(Ref<FusionComponent>& comp : comps)
 		comp->Reset();
 	
 	DLOG("FusionContextComponent::RefreshPipeline end");
 }
 
 void FusionContextComponent::UpdateTexBuffers() {
-	for(FusionComponent* comp : comps)
+	for(Ref<FusionComponent>& comp : comps)
 		if (comp->type != FusionComponent::FUSION_AUDIO_SINK &&
 			comp->type != FusionComponent::FUSION_AUDIO_BUFFER &&
 			comp->type != FusionComponent::FUSION_AUDIO_SOURCE)
@@ -634,7 +634,7 @@ void FusionContextComponent::UpdateTexBuffers() {
 }
 
 void FusionContextComponent::UpdateSoundBuffers() {
-	for(FusionComponent* comp : comps)
+	for(Ref<FusionComponent>& comp : comps)
 		if (comp->type == FusionComponent::FUSION_AUDIO_SINK ||
 			comp->type == FusionComponent::FUSION_AUDIO_BUFFER ||
 			comp->type == FusionComponent::FUSION_AUDIO_SOURCE)
@@ -643,7 +643,7 @@ void FusionContextComponent::UpdateSoundBuffers() {
 
 bool FusionContextComponent::CheckInputTextures() {
 #ifdef flagOPENGL
-	for(FusionComponent* comp : comps)
+	for(Ref<FusionComponent>& comp : comps)
 		if (!comp->Ogl_CheckInputTextures())
 			return false;
 #endif
@@ -651,7 +651,7 @@ bool FusionContextComponent::CheckInputTextures() {
 }
 
 void FusionContextComponent::Close() {
-	for(FusionComponent* comp : comps)
+	for(Ref<FusionComponent>& comp : comps)
 		comp->Close();
 	Clear();
 }
@@ -706,9 +706,9 @@ bool FusionContextComponent::ConnectComponents() {
 		DLOG("\t" << i << ": " << comps[i]->ToString());
 	}
 	
-	for (FusionComponent* comp_sink : comps) {
+	for (Ref<FusionComponent>& comp_sink : comps) {
 		ComponentBase& sink_base = comp_sink->GetECS();
-		FusionSink* sink = sink_base.AsFusionSink();
+		Ref<FusionSink> sink = sink_base.AsFusionSink();
 		if (!sink)
 			continue;
 		ASSERT(sink->GetConnections().IsEmpty());
@@ -718,9 +718,9 @@ bool FusionContextComponent::ConnectComponents() {
 				continue;
 			
 			bool found = false;
-			for (FusionComponent* comp_src : comps) {
+			for (Ref<FusionComponent>& comp_src : comps) {
 				ComponentBase& src_base = comp_src->GetECS();
-				FusionSource* src = src_base.AsFusionSource();
+				Ref<FusionSource> src = src_base.AsFusionSource();
 				
 				if (!src)
 					continue;

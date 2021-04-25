@@ -68,9 +68,9 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	cfg.SetHeader(in);
 	stream.Clear();
 	
-	auto type = in.GetType();
+	auto type = in.GetFusionType();
 	
-	Connector* conn = GetEntity().GetConnector();
+	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
 		return false;
@@ -84,7 +84,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	if (type == FusionComponentInput::VIDEO ||
 		type == FusionComponentInput::WEBCAM ||
 		type == FusionComponentInput::MUSIC) {
-		MultiMediaComponent* comp = e.Add<MultiMediaComponent>();
+		Ref<MultiMediaComponent> comp = e.Add<MultiMediaComponent>();
 		if (comp->LinkManually(*this)) {
 			conn->SetUpdateInterfaces(true);
 			if (path.IsEmpty() && type == FusionComponentInput::WEBCAM)

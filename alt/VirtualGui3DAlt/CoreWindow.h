@@ -190,15 +190,15 @@ public:
 #ifdef flagOPENVR
 template <class T>
 struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		
 		//components.Get<CoreWindow>()->renderable = components.GetRef<Renderable>();
 		components.Get<CoreWindow>()->transform = components.GetRef<Transform>();
 		
-		components.Get<Transform>()->position = vec3(0, 0, -1);
-		components.Get<Transform>()->size = vec3(320, 240, 0);
+		components.Get<Transform>().position = vec3(0, 0, -1);
+		components.Get<Transform>().size = vec3(320, 240, 0);
 		
         //components.Get<Renderable>()->ResetModel(KnownModelNames::UnitQuad);
         //components.Get<Renderable>()->color = Rgba(1.0, 1.0, 1.0, 1.0);
@@ -214,9 +214,9 @@ struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
 
 template <class T>
 struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		
 		//components.Get<CoreWindow>()->renderable2d = components.GetRef<Renderable2D>();
 		components.Get<CoreWindow>()->transform2d = components.GetRef<Transform2D>();

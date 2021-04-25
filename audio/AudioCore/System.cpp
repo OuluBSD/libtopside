@@ -192,7 +192,7 @@ void MidiFileComponent::EmitMidi(double dt) {
 State* MidiFileComponent::OnLink(InterfaceBase* iface) {
 	ComponentBase* comp = iface->AsComponentBase();
 	ASSERT(comp);
-	MidiSink* sink = comp->AsMidiSink();
+	Ref<MidiSink> sink = comp->AsMidiSink();
 	ASSERT(sink);
 	sink->Configure(file);
 	return NULL;

@@ -140,7 +140,7 @@ public:
 		VIDEO,
 	} Type;
 	
-	Type				GetType() const {return type;}
+	Type				GetFusionType() const {return type;}
 	String				GetTypeString() const {return GetStringFromType(type);}
 	String				GetFilterString() const {return GetStringFromFilter(filter);}
 	String				GetWrapString() const {return GetStringFromWrap(wrap);}
@@ -185,7 +185,7 @@ struct FusionComponentInputVector {
 	void Add(const FusionComponentInput& a);
 };
 
-class FusionComponent {
+class FusionComponent : public LockedScopeEnabler<FusionComponent> {
 	
 protected:
 	// Stage
@@ -371,7 +371,7 @@ public:
 	FusionStream*	Stream();
     String			GetTypeString() const {return GetStringFromType(type);}
 	String			ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
-	Type			GetType() const {return type;}
+	Type			GetFusionType() const {return type;}
 	
 	virtual ComponentBase&	GetECS() = 0;
 	
@@ -709,7 +709,7 @@ protected:
 		MODE_AUDIO,
 	} Mode;
 	
-	Vector<FusionComponent*> comps;
+	Vector<Ref<FusionComponent>> comps;
 	Vector<String> common_source;
 	Vector<uint32> gl_stages;
 	String last_error;
@@ -720,29 +720,29 @@ protected:
 	bool is_open = false;
 	
 	
-	void				Clear();
-	void				RefreshStageQueue();
-	void				RefreshPipeline();
-	void				RemoveComponent(FusionComponent* s) {VectorRemoveKey(comps, s);}
-	void				ProcessStageQueue(Mode m);
-	bool				IsModeStage(const FusionComponent& comp, Mode m) const;
-	void				RefreshStreamValues(Mode m);
-	FusionComponent&	GetComponentById(int id) const;
-	void				FindComponents();
-	bool				LoadFileAny(String path, Object& dst);
-	bool				LoadFileToy(String path, Object& dst);
-	void				Reset();
-	void				OnError(FusionComponent::Type type, String fn, String msg);
-	void				OnError(String fn, String msg);
-	void				MakeUniqueIds(Object& v);
-	int					MakeUniqueId(VectorMap<int,int>& ids, int orig_id);
-	bool				Load(Object v);
-	void				UpdateTexBuffers();
-	void				UpdateSoundBuffers();
-	bool				CheckInputTextures();
-	void				Close();
-	bool				CreateComponents(FusionComponentInputVector& v);
-	bool				ConnectComponents();
+	void					Clear();
+	void					RefreshStageQueue();
+	void					RefreshPipeline();
+	void					RemoveComponent(Ref<FusionComponent> s) {VectorRemoveKey(comps, s);}
+	void					ProcessStageQueue(Mode m);
+	bool					IsModeStage(const FusionComponent& comp, Mode m) const;
+	void					RefreshStreamValues(Mode m);
+	Ref<FusionComponent>	GetComponentById(int id) const;
+	void					FindComponents();
+	bool					LoadFileAny(String path, Object& dst);
+	bool					LoadFileToy(String path, Object& dst);
+	void					Reset();
+	void					OnError(FusionComponent::Type type, String fn, String msg);
+	void					OnError(String fn, String msg);
+	void					MakeUniqueIds(Object& v);
+	int						MakeUniqueId(VectorMap<int,int>& ids, int orig_id);
+	bool					Load(Object v);
+	void					UpdateTexBuffers();
+	void					UpdateSoundBuffers();
+	bool					CheckInputTextures();
+	void					Close();
+	bool					CreateComponents(FusionComponentInputVector& v);
+	bool					ConnectComponents();
 	
 #ifdef flagOPENGL
 	void				Ogl_ProcessStage(FusionComponent& s, GLuint gl_stage);
@@ -750,13 +750,13 @@ protected:
 	void				Ogl_CreatePipeline();
 #endif
 	
-	template <class T> FusionComponent* AddEntityComponent() {
-		T* o = GetEntity().Add<T>();
+	template <class T> Ref<FusionComponent> AddEntityComponent() {
+		Ref<T> o = GetEntity().Add<T>();
 		o->ctx = this;
 		return o;
 	}
 	template <class T> bool AddEntityFusionComponent(FusionComponentInput& in) {
-		T* o = GetEntity().Add<T>();
+		Ref<T> o = GetEntity().Add<T>();
 		if (!o)
 			return false;
 		o->ctx = this;
@@ -801,9 +801,9 @@ struct CompleteFusion :
 		FusionContextComponent,
 		Connector
 > {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };

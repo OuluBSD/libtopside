@@ -16,13 +16,13 @@ constexpr auto Gun = "Gun";
 
 struct FloorPrefab : EntityPrefab<Transform, ModelComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
-        components.Get<Transform>()->size = { 10.0f, 0.00001f, 10.0f };
-        //components.Get<Model>()->ResetModel(KnownModelNames::UnitCube);
-        //components.Get<Model>()->color = Rgba(0.15f, 0.15f, 0.15f, 1.0f);
+        components.Get<Transform>().size = { 10.0f, 0.00001f, 10.0f };
+        //components.Get<Model>().ResetModel(KnownModelNames::UnitCube);
+        //components.Get<Model>().color = Rgba(0.15f, 0.15f, 0.15f, 1.0f);
         TODO
 
         return components;
@@ -33,9 +33,9 @@ struct FloorPrefab : EntityPrefab<Transform, ModelComponent>
 /*
 struct Baseball : EntityPrefab<Transform, Model, RigidBody>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         components.Get<RigidBody>()->acceleration = PhysicsSystem::EarthGravity;
         components.Get<Model>()->ResetModel(KnownModelNames::Baseball);
@@ -46,14 +46,14 @@ struct Baseball : EntityPrefab<Transform, Model, RigidBody>
 
 struct Bullet : EntityPrefab<Transform, Model, RigidBody>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         components.Get<RigidBody>()->acceleration = PhysicsSystem::EarthGravity;
         components.Get<Model>()->ResetModel(KnownModelNames::UnitSphere);
         components.Get<Model>()->color = Rgba(0, 0, 1, 0);
-        components.Get<Transform>()->size = vec3(0.025f);
+        components.Get<Transform>().size = vec3(0.025f);
 
         return components;
     }
@@ -61,9 +61,9 @@ struct Bullet : EntityPrefab<Transform, Model, RigidBody>
 
 struct PaintBrush : EntityPrefab<Transform, Model, MotionControllerComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         components.Get<Model>()->ResetModel(KnownModelNames::PaintBrush);
 
@@ -73,9 +73,9 @@ struct PaintBrush : EntityPrefab<Transform, Model, MotionControllerComponent>
 
 struct Gun : EntityPrefab<Transform, Model, MotionControllerComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         components.Get<Model>()->ResetModel(KnownModelNames::Gun);
 
@@ -85,9 +85,9 @@ struct Gun : EntityPrefab<Transform, Model, MotionControllerComponent>
 
 struct PaintStroke : EntityPrefab<Transform, Model, PaintStrokeComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         components.Get<Model>()->model = MakeRef<Model>();
 
@@ -97,9 +97,9 @@ struct PaintStroke : EntityPrefab<Transform, Model, PaintStrokeComponent>
 
 struct StaticSphere : EntityPrefab<Transform, ModelComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         //components.Get<Model>()->ResetModel(KnownModelNames::UnitSphere);
         //components.Get<Model>()->color = Rgba(0.5, 0.5, 0.5, 1.0);
@@ -111,9 +111,9 @@ struct StaticSphere : EntityPrefab<Transform, ModelComponent>
 
 struct StaticCube : EntityPrefab<Transform, ModelComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 
         //components.Get<Model>()->ResetModel(KnownModelNames::UnitCube);
         //components.Get<Model>()->color = Rgba(0.5, 0.5, 0.5, 1.0);
@@ -125,12 +125,12 @@ struct StaticCube : EntityPrefab<Transform, ModelComponent>
 
 struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable, Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		
-		components.Get<Transform>()->position[2] = 10.0;
-		components.Get<Transform>()->position[1] = 3.0;
+		components.Get<Transform>().position[2] = 10.0;
+		components.Get<Transform>().position[1] = 3.0;
 		
         return components;
     }
@@ -138,9 +138,9 @@ struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable, Connector>
 
 struct StaticModel : EntityPrefab<Transform, ModelComponent, Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };

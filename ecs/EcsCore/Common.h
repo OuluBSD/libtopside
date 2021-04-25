@@ -57,9 +57,9 @@ struct x : \
 
 #define PREFAB_END \
 > { \
-    static ComponentMap Make(ComponentStore& store) \
+    static Components Make(Entity& e) \
     { \
-        auto components = EntityPrefab::Make(store); \
+        auto components = EntityPrefab::Make(e); \
 		return components; \
     } \
 };

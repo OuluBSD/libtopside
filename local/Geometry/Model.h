@@ -84,7 +84,7 @@ protected:
 };
 
 
-struct Model {
+struct Model : LockedScopeEnabler<Model> {
     Vector<Mesh> meshes;
 	Vector<Texture> textures;
     
@@ -121,7 +121,7 @@ struct ModelLoader {
     void Set(const Model& m) {model = new Model(m);}
     void operator=(const Model& m) {Set(m);}
 	
-	Model* GetModel() {return model ? &*model : 0;}
+	Ref<Model> GetModel() {return model ? &*model : 0;}
 	
 protected:
 	friend class ModelBuilder;

@@ -29,11 +29,11 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 
 struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroundPlane>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		
-		components.Get<Transform>()->position[1] = -5.0;
+		components.Get<Transform>().position[1] = -5.0;
 		
 		components.Get<Renderable>()->cb << components.Get<StaticGroundPlane>()->GetPaintCallback();
 		

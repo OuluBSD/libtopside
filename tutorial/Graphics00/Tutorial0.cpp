@@ -17,9 +17,9 @@ struct Tutorial0 : Component<Tutorial0>, public DisplaySink {
 
 struct StandaloneTutorial0 : EntityPrefab<Tutorial0>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };

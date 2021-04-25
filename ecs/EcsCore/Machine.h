@@ -56,29 +56,29 @@ public:
     }
 
     template<typename SystemT>
-    Ref<SystemT> TryGet();/*
+    Ref<SystemT> TryGet()
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
         
-        auto it = FindSystem(typeid(SystemT));
-        return it == systems.end()
-            ? Ref<SystemT>()
-            : it->As<SystemT>();
-    }*/
+        SystemCollection::Iterator it = FindSystem(typeid(SystemT));
+        return it ? it->AsRef<SystemT>() : Ref<SystemT>();
+    }
 
     template<typename SystemT, typename... Args>
-    Ref<SystemT> Add(Args&&... args);/*
+    Ref<SystemT> Add(Args&&... args)
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 		
 		SystemT* syst = new SystemT(*this, args...);
+		/*
 		Ref<SystemBase> s;
-		s.WrapObject(syst);
-		syst->InitWeak(s.As<SystemT>());
+		s.WrapObject(syst);syst->InitWeak(s.As<SystemT>());
 		Add(typeid(SystemT), s);
         //Add(typeid(SystemT), MakeRef<SystemT>(*this, std::forward<Args>(args)...));
-        return s.As<SystemT>();
-    }*/
+        return s.As<SystemT>();*/
+        Add(typeid(SystemT), syst);
+        return syst->template AsRef<SystemT>();
+    }
 
     template<typename SystemT>
     void Remove()
@@ -86,7 +86,6 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 
         ASSERT(is_initialized && is_started);
-
         Remove(typeid(SystemT));
     }
 
@@ -109,7 +108,7 @@ public:
 	static Callback WhenStarting;
 	
 private:
-    typedef RefLinkedListIndirect<SystemBase> SystemCollection;
+    typedef RefTypeMapIndirect<SystemBase> SystemCollection;
     SystemCollection systems;
 
     bool is_started = false;
@@ -117,8 +116,8 @@ private:
     bool is_suspended = false;
     bool is_running = false;
     
-    SystemCollection::Iterator FindSystem(TypeId const& typeId);
-    //void Add(TypeId const& typeId, Ref<SystemBase> system);
+    SystemCollection::Iterator FindSystem(TypeId const& type_id) {return systems.Find(type_id);}
+    void Add(TypeId const& type_id, SystemBase* system);
     void Remove(TypeId const& typeId);
 };
 

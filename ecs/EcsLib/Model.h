@@ -39,7 +39,7 @@ struct ModelComponent : public Component<ModelComponent>, public ModelSink {
     //void Paint(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
     void Dispatch() {ModelDispatch(*this);}
-	Model* GetModel() {return loader.GetModel();}
+	Ref<Model> GetModel() {return loader.GetModel();}
     
 	void GetModels(VectorRendModel& models) override;
 	

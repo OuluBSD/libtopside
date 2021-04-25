@@ -8,9 +8,9 @@ NAMESPACE_OULU_BEGIN
 /*struct StandaloneWindow : EntityPrefab
 	<DirectWindow, Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };*/

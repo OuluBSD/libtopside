@@ -132,9 +132,9 @@ struct BasicPipeline : EntityPrefab<
 	PipelineDataComponent,
 	Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };
@@ -149,9 +149,9 @@ struct OctreeEditPipeline : EntityPrefab<
 	PipelineDataComponent,
 	Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };
@@ -161,9 +161,9 @@ struct OctreeEditPipeline : EntityPrefab<
 
 struct OctreeGround : EntityPrefab<OctreeComponent>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };

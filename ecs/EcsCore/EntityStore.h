@@ -16,7 +16,6 @@ class EntityPool : public LockedScopeEnabler<EntityPool> {
 	BitField<dword> freeze_bits;
 	String name;
 	
-	EntityRef CreateFromComponentMap(ComponentMap components);
 	
 public:
 	typedef EntityPool CLASSNAME;
@@ -48,27 +47,28 @@ public:
 	
 	EntityPool*			GetParent() const {return parent;}
 	Machine&			GetMachine() {return *machine;}
-	bool				HasEntities() const;
-	bool				HasEntityPools() const;
+	String				GetName() const {return name;}
+	bool				HasEntities() const {return !objects.IsEmpty();}
+	bool				HasEntityPools() const {return !pools.IsEmpty();}
 	//int					GetPoolCount() const {return pools.GetCount();}
 	//EntityPoolRef			GetPool(int i) {return pools[i];}
 	//const EntityPoolRef	GetPool(int i) const {return pools[i];}
 	//int					GetCount() const {return objects.GetCount();}
-	//EntityRef		Get(int i) {return objects[i];}
-	//const EntityRef	Get(int i) const {return objects[i];}
-	String				GetName() const {return name;}
+	//EntityRef				Get(int i) {return objects[i];}
+	//const EntityRef		Get(int i) const {return objects[i];}
 	
 	void				Initialize(Entity& e, String prefab="Custom");
-	EntityRef		CreateEmpty();
-	EntityRef		Clone(const Entity& e);
+	EntityRef			CreateEmpty();
+	EntityRef			Clone(const Entity& e);
 	
 	template<typename PrefabT>
 	EntityRef Create() {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine->Get<ComponentStore>()));
-		if (e)
-			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
+		EntityRef e = objects.Add();
+		e->Init(this, GetNextId());
+		PrefabT::Make(*e);
+		Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
 		return e;
 	}
@@ -77,11 +77,12 @@ public:
 	EntityRef CreateConnectedArea(ConnectorArea a) {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		EntityRef e = CreateFromComponentMap(PrefabT::Make(*machine->Get<ComponentStore>()));
-		if (e)
-			Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
+		EntityRef e = objects.Add();
+		e->Init(this, GetNextId());
+		PrefabT::Make(*e);
+		Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
-		Connector* c = e->Find<Connector>();
+		Ref<Connector> c = e->Find<Connector>();
 		ASSERT_(c, "CreateConnected expected entity prefab, which includes Connector component");
 		if (c)
 			c->ConnectAll(a);
@@ -185,11 +186,9 @@ public:
 		return AddPool(name);
 	}
 	
-	RefLinkedList<Entity>::Iterator			begin();
-	RefLinkedList<Entity>::Iterator			end();
-	
-	RefLinkedList<Entity>::Iterator			Begin();
-	RefLinkedList<EntityPool>::Iterator		BeginPool();
+	RefLinkedList<Entity>::Iterator			begin()			{return objects.begin();}
+	RefLinkedList<Entity>::Iterator			end()			{return objects.end();}
+	RefLinkedList<EntityPool>::Iterator		BeginPool()		{return pools.begin();}
 	
 private:
 	
@@ -301,13 +300,13 @@ public:
 
 template<typename... ComponentTs>
 class EntityComponentVisitor : public EntityVisitor {
-	RTuple<ComponentTs*...> cur_comps;
+	RTuple<Ref<ComponentTs>...> cur_comps;
 	
 	bool FindComps() {
 		Entity& e = *GetCurrent();
 		cur_comps = e.TryGetComponents<ComponentTs...>();
 		bool has_value = true;
-		cur_comps.ForEach([&has_value](void* ptr){if (!ptr) has_value = false;});
+		cur_comps.ForEach([&has_value](auto& ref){if (!ref) has_value = false;});
 		return has_value;
 	}
 	bool FindNextDepthFirstWithComps() {

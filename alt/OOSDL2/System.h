@@ -333,9 +333,9 @@ struct SDL2StandaloneWindow : EntityPrefab<
 	DirectWindow,
 	Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };
@@ -357,9 +357,9 @@ struct SDL2StandaloneConsole : EntityPrefab<
 	// Never: DirectWindow,
 	Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };
@@ -371,9 +371,9 @@ struct StandaloneLineIn : EntityPrefab<
 	SDL2ContextComponent,
 	Connector>
 {
-    static ComponentMap Make(ComponentStore& store)
+    static Components Make(Entity& e)
     {
-        auto components = EntityPrefab::Make(store);
+        auto components = EntityPrefab::Make(e);
 		return components;
     }
 };

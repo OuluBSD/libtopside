@@ -11,19 +11,20 @@ void ConnectorSystem::Uninitialize() {
 	for(void* ptr : conns) {
 		Connector* conn = (Connector*)ptr;
 		
-		for(InterfaceBase* iface : conn->GetSourceInterfaces())
+		for(Ref<InterfaceBase> iface : conn->GetSourceInterfaces())
 			iface->UnlinkAll();
 	}
 	
 	for(void* ptr : conns) {
 		Connector* conn = (Connector*)ptr;
 		
-		for(InterfaceBase* iface : conn->GetSinkInterfaces())
+		for(Ref<InterfaceBase> iface : conn->GetSinkInterfaces())
 			iface->UnlinkAll();
 	}
 }
 
 void ConnectorSystem::Update(double dt) {
+	
 	if (es.IsEmpty())
 		es = machine.Get<EntityStore>();
 	
@@ -47,16 +48,16 @@ void ConnectorSystem::Update(double dt) {
 				
 				#define IFACE___(x, Source, src, Sink, sink, src_, sink_, visitor)\
 				if (iface_bits & (1ULL << (uint64)IFACE_##x##Source)) {\
-					Vector<x##Source*> src_ifaces = conn->GetEntity().FindInterfaces<x##Source>();\
+					Vector<Ref<x##Source>> src_ifaces = conn->GetEntity().FindInterfaces<x##Source>();\
 					for(auto src: src_ifaces) {\
 						if (src && src->IsLinkable()) {\
-							ComponentBase* src_cbase = src->AsComponentBase(); \
+							Ref<ComponentBase> src_cbase = src->AsComponentBase(); \
 							ASSERT(src_cbase); \
 							if (src_cbase) for(visitor ev(src_cbase->GetEntity()); ev; ev++) {\
-								Vector<x##Sink*> sink_ifaces = ev->FindInterfaces<x##Sink>();\
-								for(auto* sink : sink_ifaces) {\
+								Vector<Ref<x##Sink>> sink_ifaces = ev->FindInterfaces<x##Sink>();\
+								for(auto sink : sink_ifaces) {\
 									if (sink && sink->IsLinkable()) {\
-										ComponentBase* sink_cbase = sink->AsComponentBase(); \
+										Ref<ComponentBase> sink_cbase = sink->AsComponentBase(); \
 										if (src_cbase != sink_cbase && \
 											src_->Link0(*sink_) && !src->IsLinkable())\
 											break;\
@@ -109,12 +110,12 @@ void ConnectorSystem::Update(double dt) {
 			
 			#define IFACE_SRC(x)\
 			if (iface_bits & (1ULL << (uint64)IFACE_##x##Source)) {\
-				x##Source* in = conn->GetEntity().FindInterface<x##Source>();\
+				Ref<x##Source> in = conn->GetEntity().FindInterface<x##Source>();\
 				if (in) in->Signal();\
 			}
 			#define IFACE_SINK(x)\
 			if (iface_bits & (1ULL << (uint64)IFACE_##x##Sink)) {\
-				x##Sink* out = conn->GetEntity().FindInterface<x##Sink>();\
+				Ref<x##Sink> out = conn->GetEntity().FindInterface<x##Sink>();\
 				if (out) out->Signal();\
 			}
 			
@@ -187,10 +188,10 @@ IFACE_LIST
 #undef IFACE
 
 void Connector::UnlinkAll() {
-	for(InterfaceBase* iface : src_ifaces)
+	for(Ref<InterfaceBase>& iface : src_ifaces)
 		iface->UnlinkAll();
 	
-	for(InterfaceBase* iface : sink_ifaces)
+	for(Ref<InterfaceBase>& iface : sink_ifaces)
 		iface->UnlinkAll();
 }
 

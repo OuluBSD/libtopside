@@ -1,12 +1,31 @@
-#include "Multimedia.h"
+// problematic hal/interface.h usage fix
+// clang and gcc behaves in a different way
+#if defined flagGCC && defined flagFREEBSD
+	#include "Internal.h"
+	
+	#undef CPU_SSE2
+	#ifdef flagV4L2_OPENCV
+		#include <opencv2/core.hpp>
+		#include <opencv2/imgproc.hpp>
+		#include <opencv2/highgui.hpp>
+		#include <opencv2/videoio.hpp>
+	#endif
+	
+	#include "Multimedia.h"
+#else
+	#include "Multimedia.h"
+	
+	#undef CPU_SSE2
+	#ifdef flagV4L2_OPENCV
+		#include <opencv2/core.hpp>
+		#include <opencv2/imgproc.hpp>
+		#include <opencv2/highgui.hpp>
+		#include <opencv2/videoio.hpp>
+	#endif
+#endif
 
 
-#undef CPU_SSE2
-#if flagV4L2_OPENCV
-	#include <opencv2/core.hpp>
-	#include <opencv2/imgproc.hpp>
-	#include <opencv2/highgui.hpp>
-	#include <opencv2/videoio.hpp>
+#ifdef flagV4L2_OPENCV
 
 NAMESPACE_OULU_BEGIN
 
@@ -121,7 +140,7 @@ bool MediaCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 	if (ocv && ocv->OpenDevice0(sz, fps, vid_fmt))
 		return true;
 	
-#if flagV4L2
+#ifdef flagV4L2
 	V4L2DeviceParameters param(path, pix_fmt, sz.cx, sz.cy, fps, 0);
 	vid_cap = V4l2Capture::create(param, V4l2Access::IOTYPE_MMAP);
 	if (vid_cap) {
@@ -148,7 +167,7 @@ bool MediaCaptureDevice::Read() {
 	if (ocv && ocv->Read())
 		return true;
 	
-#if flagV4L2
+#ifdef flagV4L2
 	if (vid_cap) {
 		timeval timeout;
 		bool is_readable = (vid_cap->isReadable(&timeout) == 1);
@@ -159,7 +178,7 @@ bool MediaCaptureDevice::Read() {
 			size_t nb = vid_cap->read(buffer.Begin(), buf_size);
 			if (nb > 0 && nb < buf_size) {
 				if (open_pix_fmt == V4L2_PIX_FMT_MJPEG) {
-					#if flagV4L2_SLOW
+					#ifdef flagV4L2_SLOW
 					MemStream mem(buffer, nb);
 					sw_frame = jpg_raster.Load(mem);
 					Size sz = sw_frame.GetSize();
@@ -176,7 +195,7 @@ bool MediaCaptureDevice::Read() {
 }
 
 void MediaCaptureDevice::Close() {
-#if flagV4L2
+#ifdef flagV4L2
 	if (vid_cap) {
 		vid_cap->stop();
 		delete vid_cap;

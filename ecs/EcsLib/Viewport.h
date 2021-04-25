@@ -7,6 +7,10 @@ NAMESPACE_OULU_BEGIN
 struct Viewport : public Component<Viewport> {
 	vec3 target = zero<vec3>();
 	
+	void operator=(const Viewport& vp) {
+		target = vp.target;
+	}
+	
 };
 
 

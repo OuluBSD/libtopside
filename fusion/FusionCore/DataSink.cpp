@@ -94,7 +94,7 @@ void FusionDataSink::Ogl_RecvStatic(const StaticSinkData& d) {
 	stream.depth = d.d;
 	
 	if (d.d == 1) {
-		bool is_cubemap = cfg.GetType() == FusionComponentInput::CUBEMAP;
+		bool is_cubemap = cfg.GetFusionType() == FusionComponentInput::CUBEMAP;
 		
 		GLenum type		= is_cubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 		GLenum tex_type	= is_cubemap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X + d.obj_i : GL_TEXTURE_2D;
@@ -225,10 +225,10 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	cfg.SetHeader(in);
 	stream.Clear();
 	
-	auto type = in.GetType();
+	auto type = in.GetFusionType();
 	
 	//ctx->DumpEntityComponents();
-	Connector* conn = GetEntity().GetConnector();
+	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
 		return false;

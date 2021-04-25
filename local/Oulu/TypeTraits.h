@@ -21,11 +21,15 @@ inline String Demangle(const char* name) {
 
 class TypeId : std::reference_wrapper<const std::type_info>, Moveable<TypeId>
 {
-    TypeId() = delete;
+    //TypeId() = delete;
 
 public:
+	typedef std::reference_wrapper<const std::type_info> Wrap;
     using reference_wrapper::reference_wrapper;
-
+	
+	TypeId() : Wrap(typeid(void)) {}
+	TypeId(const TypeId& id) : Wrap(id) {}
+	
     hash_t GetHashValue() const { return (uint32)get().hash_code(); }
     char const* name() const { return get().name(); }
     String DemangledName() const {return Demangle(name());}
@@ -36,24 +40,27 @@ public:
 		return s;
 	}
 	
-    bool operator==(TypeId const& other) const
-    {
+	void operator=(const TypeId& id) {
+		Wrap::operator=(id);
+	}
+	
+    bool operator==(TypeId const& other) const {
         return get() == other.get();
     }
 
-    bool operator!=(TypeId const& other) const
-    {
+    bool operator!=(TypeId const& other) const {
         return !(*this == other);
     }
 
-    bool operator<(TypeId const& other) const
-    {
+    bool operator<(TypeId const& other) const {
         return get().before(other);
     }
+    
 };
 
 template<class T> inline TypeId GetTypeId() {return typeid(T);}
 
+template<typename T> using TypeMap				= LinkedMap<TypeId, T>;
 template<typename T> using RefTypeMap			= RefLinkedMap<TypeId, T>;
 template<typename T> using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T>;
 
@@ -125,24 +132,29 @@ protected:
 };
 
 
-template<typename T, typename ProducerT>
+template<typename T, typename ProducerT, typename RefurbisherT>
 class Factory
 {
 public:
     using Type = T;
     using Producer = ProducerT;
+    using Refurbisher = RefurbisherT;
 
-    void RegisterProducer(const TypeId& typeId, Producer producer)
+    void RegisterProducer(const TypeId& typeId, Producer producer, Refurbisher refurbisher)
     {
-        auto it = producers.find(typeId);
-
-        AssertFalse(it != producers.end(), "multiple registrations for the same type is not allowed");
-
-        producers.insert(it, { typeId, pick<Producer>(producer) });
+        auto p = producers.find(typeId);
+        AssertFalse(p != producers.end(), "multiple registrations for the same type is not allowed");
+        producers.insert(p, { typeId, pick<Producer>(producer) });
+        
+        auto r = refurbishers.find(typeId);
+        AssertFalse(r != refurbishers.end(), "multiple registrations for the same type is not allowed");
+        refurbishers.insert(r, { typeId, pick<Refurbisher>(refurbisher) });
     }
 
 protected:
-    RefTypeMap<ProducerT> producers;
+    TypeMap<ProducerT> producers;
+    TypeMap<RefurbisherT> refurbishers;
+    
 };
 
 

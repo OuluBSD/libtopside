@@ -2,7 +2,7 @@
 
 NAMESPACE_OULU_BEGIN
 
-Transform* Camerable::GetTransform() {
+Ref<Transform> Camerable::GetTransform() {
 	Entity& ent = GetEntity();
 	return ent.Find<Transform>();
 }

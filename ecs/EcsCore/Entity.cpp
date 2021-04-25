@@ -3,15 +3,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-
-Entity::Entity(Pick<ComponentMap> components, EntityId id, EntityPool& pool) :
-		comps(components),
-		m_id(id),
-		pool(pool) {
-	InitializeComponents();
-}
-
-Entity::Entity(EntityId id, EntityPool& pool) : m_id(id), pool(pool) {
+Entity::Entity() {
 	
 }
 
@@ -43,7 +35,7 @@ void Entity::UninitializeComponents() {
 }
 
 void Entity::ConnectAll(ConnectorArea a) {
-	Connector* conn = Find<Connector>();
+	Ref<Connector> conn = Find<Connector>();
 	if (conn)
 		conn->ConnectAll(a);
 }
@@ -57,7 +49,7 @@ void Entity::ClearComponents() {
 }
 
 EntityRef Entity::Clone() const {
-	EntityRef ent = pool.Clone(*this);
+	EntityRef ent = pool->Clone(*this);
 	ent->InitializeComponents();
 	return ent;
 }
@@ -86,8 +78,8 @@ void Entity::SetUpdateInterfaces() {
 void Entity::UpdateInterfaces() {
 	if (conn) {
 		#define IFACE(x) \
-		for(x##Source*  in:  FindInterfaces<x##Source>())  conn->AddSourceInterface(in); \
-		for(x##Sink*   out:  FindInterfaces<x##Sink>())    conn->AddSinkInterface(out);
+		for(Ref<x##Source>  in:  FindInterfaces<x##Source>())  conn->AddSourceInterface(in); \
+		for(Ref<x##Sink>   out:  FindInterfaces<x##Sink>())    conn->AddSinkInterface(out);
 		IFACE_LIST
 		#undef IFACE
 	}
@@ -98,11 +90,11 @@ void Entity::RefreshConnectorPtr() {
 }
 
 Machine& Entity::GetMachine() {
-	return pool.GetMachine();
+	return pool->GetMachine();
 }
 
 const Machine& Entity::GetMachine() const {
-	return pool.GetMachine();
+	return pool->GetMachine();
 }
 
 	

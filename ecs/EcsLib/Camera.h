@@ -13,8 +13,8 @@ public:
 	
 	void operator=(const Camerable& c) {target = c.target;}
 	
-	Camerable* GetCamerable() override {return this;}
-	Transform* GetTransform() override;
+	Ref<Camerable> GetCamerable() override {return this;}
+	Ref<Transform> GetTransform() override;
 	
 };
 

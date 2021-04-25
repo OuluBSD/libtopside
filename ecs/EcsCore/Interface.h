@@ -7,7 +7,8 @@ NAMESPACE_OULU_BEGIN
 
 
 
-class InterfaceBase {
+class InterfaceBase : public LockedScopeEnabler<InterfaceBase> {
+	void DbgChk(InterfaceBase* b);
 	
 protected:
 	Vector<InterfaceBase*> conns;
@@ -22,7 +23,7 @@ public:
 	
 	void UnlinkAll() {for(auto c: conns) c->RemoveConnection(this); conns.Clear();}
 	void RemoveConnection(InterfaceBase* b);
-	void AddConnection(InterfaceBase* b) {ASSERT(Find(b) < 0); conns.Add(b);}
+	void AddConnection(InterfaceBase* b) {ASSERT(Find(b) < 0); DbgChk(b); conns.Add(b);}
 	int Find(InterfaceBase* b) {int i=0; for(auto c: conns) {if(c==b) return i; i++;} return -1;}
 	
 	const Vector<InterfaceBase*>& GetConnections() const {return conns;}
@@ -245,8 +246,8 @@ struct CameraSource;
 struct CameraSink : IO_OUT(Camera) {
 	IFACE_BASE(CameraSink)
 	
-	virtual Camerable* GetCamerable() = 0;
-	virtual Transform* GetTransform() = 0;
+	virtual Ref<Camerable> GetCamerable() = 0;
+	virtual Ref<Transform> GetTransform() = 0;
 	
 };
 
@@ -388,7 +389,7 @@ struct MediaSource : IO_IN(Media) {
 // The model connector transfers 3D data with textures and other additional data. It takes into
 // account dynamically changing detail. This can also be used for 3D streams.
 
-typedef RTuple<Model*, Transform*, Renderable*> RendModel;
+typedef RTuple<Ref<Model>, Ref<Transform>, Ref<Renderable>> RendModel;
 typedef Vector<RendModel> VectorRendModel;
 
 struct ModelSink : IO_OUT(Model) {
@@ -627,7 +628,7 @@ struct RouteSource : IO_IN(Route) {
 #define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
 
 #define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
-#define IFACE_CB(x) x* As##x() override {return this;}
+#define IFACE_CB(x)		Ref<x> As##x() override {return ((x*)this)->AsRef();}
 
 #define IFACE_LIST \
 	IFACE(Display)\

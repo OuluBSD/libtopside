@@ -52,8 +52,8 @@ public:
 	IFACE_LIST
 	#undef IFACE
 	
-	const Vector<InterfaceBase*>& GetSourceInterfaces() const {return src_ifaces;}
-	const Vector<InterfaceBase*>& GetSinkInterfaces() const {return sink_ifaces;}
+	const Vector<Ref<InterfaceBase>>& GetSourceInterfaces() const {return src_ifaces;}
+	const Vector<Ref<InterfaceBase>>& GetSinkInterfaces() const {return sink_ifaces;}
 	bool HasInterfaces() const {return src_ifaces.GetCount() || sink_ifaces.GetCount();}
 	void SetUpdateInterfaces(bool b=true) {update_ifaces = b;}
 	bool IsUpdateInterfaces() const {return update_ifaces;}
@@ -65,12 +65,12 @@ protected:
 	
 	uint64 connect_bits[CONNAREA_COUNT];
 	uint64 signal_bits = 0;
-	Vector<InterfaceBase*> src_ifaces, sink_ifaces;
+	Vector<Ref<InterfaceBase>> src_ifaces, sink_ifaces;
 	bool update_ifaces = true;
 	
 	void ClearInterfaces() {src_ifaces.Clear(); sink_ifaces.Clear();}
-	void AddSourceInterface(InterfaceBase* base) {src_ifaces.Add(base);}
-	void AddSinkInterface(InterfaceBase* base) {sink_ifaces.Add(base);}
+	void AddSourceInterface(Ref<InterfaceBase> base) {src_ifaces.Add(base);}
+	void AddSinkInterface(Ref<InterfaceBase> base) {sink_ifaces.Add(base);}
 	
 	bool IsConnectAny(ConnectorArea t) const {return connect_bits[t] != 0;}
 	uint64 GetConnectBits(ConnectorArea t) const {return connect_bits[t];}

@@ -543,6 +543,8 @@ struct AppFlags {
 inline AppFlags& GetAppFlags() {return Single<AppFlags>();}
 inline bool IsOpenGL() {return GetAppFlags().IsOpenGL();}
 
+
+
 NAMESPACE_OULU_END
 
 #endif

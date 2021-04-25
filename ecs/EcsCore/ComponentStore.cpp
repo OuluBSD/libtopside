@@ -3,43 +3,45 @@
 
 NAMESPACE_OULU_BEGIN
 
-
-/*ComponentMap ComponentStore::Clone(const ComponentMap& comp_map) {
-	ComponentMap map;
+void ComponentStore::Clone(Entity& dst, const Entity& src) {
+	const ComponentMap& src_comps = src.GetComponents();
+	ComponentMap& dst_comps = dst.GetComponents();
 	
-	auto comp_type_it = comp_map.KeyBegin();
-	for (auto& component : comp_map.GetValues()) {
-		auto& componentType = *comp_type_it;
-		auto new_component = CreateComponent(componentType);
-		component->CopyTo(new_component.Get());
-		map.GetAdd(componentType) = pick(new_component);
-		comp_type_it++;
+	ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
+	for (; iter; ++iter) {
+		const TypeId& comp_type = iter.key();
+		ComponentBase* new_component = CreateComponent(comp_type);
+		dst.InitializeComponent(*new_component);
+		iter.value().CopyTo(new_component);
+		dst_comps.ComponentMapBase::Add(comp_type, new_component);
 	}
-	
-	return map;
-}*/
+	dst.SetUpdateInterfaces();
+}
 
 /*void ComponentStore::Update(double) {
+
 	for (Ref<RefLinkedList<ComponentBase>>& components : comps.GetValues()) {
 		Destroyable::PruneFromContainer(*components);
 	}
 }*/
-
-/*ComponentRef ComponentStore::CreateComponent(const TypeId& typeId); {
-	int pos = producers.Find(typeId);
+ComponentBase* ComponentStore::CreateComponent(const TypeId& typeId) {
+	auto iter = producers.Find(typeId);
+	ASSERT_(iter, "Invalid to create non-existant component");
 	
-	ASSERT_(pos != -1, "Invalid to create non-existant component");
-	
-	auto it = producers.GetValues().Begin();
-	it += pos;
-	auto obj = (*it)();
-	comps.GetAdd(typeId).Add(obj);
+	ComponentBase* obj = iter.value()();
 	return obj;
+}
+
+/*void ComponentStore::Uninitialize() {
+	comps.Clear();
 }*/
 
-void ComponentStore::Uninitialize() {
-	//comps.Clear();
+void ComponentStore::ReturnComponent(ComponentBase* c) {
+	ASSERT(c);
+	TypeId type = c->GetType();
+	
 }
+
 
 NAMESPACE_OULU_END
 
