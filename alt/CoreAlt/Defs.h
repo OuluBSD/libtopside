@@ -162,8 +162,8 @@ NAMESPACE_UPP_BEGIN
 #undef ASSERT
 #undef ASSERT_
 #ifdef flagDEBUG
-#define ASSERT(x) {if (!(x)) {LogCString("Assertion failed: " #x); __BREAK__; Panic();}}
-#define ASSERT_(x, msg) {if (!(x)) {LOG(Upp::String("Assertion failed: ") + msg); __BREAK__; Panic();}}
+#define ASSERT(x) {if (!(x)) {Upp::LogCString("Assertion failed: " #x); __BREAK__; Upp::Panic();}}
+#define ASSERT_(x, msg) {if (!(x)) {LOG(Upp::String("Assertion failed: ") + msg); __BREAK__; Upp::Panic();}}
 #else
 #define ASSERT(x)
 #define ASSERT_(x, msg)

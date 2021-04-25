@@ -87,13 +87,13 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		if (ents.IsEmpty())
 			throw Exc("EntityStore wasn't added to the ECS machine");
 		
-		auto& root = ents->GetRoot();
+		EntityPoolRef root = ents->GetRoot();
 		
 		#ifdef flagSDL2
 			#ifdef flagGUI
-				EntityRef app = root.Create<StandaloneWindow>();
+				EntityRef app = root->Create<StandaloneWindow>();
 			#else
-				EntityRef app = root.Create<StandaloneConsole>
+				EntityRef app = root->Create<StandaloneConsole>
 				();
 			#endif
 			app->Add<T>();

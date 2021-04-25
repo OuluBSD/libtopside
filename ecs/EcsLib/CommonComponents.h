@@ -16,6 +16,11 @@ public:
 		decompose(matrix, size, orientation, position, skew, persp);
 	}*/
 	
+	void operator=(const Transform& t) {
+		position		= t.position;
+		size			= t.size;
+		orientation		= t.orientation;
+	}
 	mat4 GetMatrix() const {
 		return scale(size) * ToMat4(orientation) * translate(position);
 	}

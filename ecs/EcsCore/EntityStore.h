@@ -323,7 +323,7 @@ class EntityComponentVisitor : public EntityVisitor {
 			FindNextDepthFirstWithComps();
 	}
 public:
-	EntityComponentVisitor(EntityPool& pool) : EntityVisitor(pool) {Init();}
+	EntityComponentVisitor(EntityPoolVec& pool) : EntityVisitor(pool) {Init();}
 	EntityComponentVisitor(Machine& m) : EntityVisitor(m) {Init();}
 	
 	

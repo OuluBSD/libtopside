@@ -7,7 +7,7 @@ NAMESPACE_OULU_BEGIN
 class Machine;
 
 
-class SystemBase {
+class SystemBase : public LockedScopeEnabler<SystemBase> {
 public:
     SystemBase(Machine& machine);
     virtual ~SystemBase() = default;
@@ -29,7 +29,7 @@ protected:
 
 
 template<typename T>
-class System : public SystemBase, public LockedScopeEnabler<T> {
+class System : public SystemBase {
 public:
     using SystemBase::SystemBase;
 	

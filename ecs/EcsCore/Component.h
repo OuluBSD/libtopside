@@ -8,7 +8,7 @@ NAMESPACE_OULU_BEGIN
 
 template <class T> inline T* ComponenBase_Static_As(ComponentBase*) {return 0;}
 
-struct ComponentBase : Destroyable, Enableable {
+struct ComponentBase : Destroyable, Enableable, LockedScopeEnabler<ComponentBase> {
 	Entity* ent = NULL;
 	virtual ~ComponentBase() = default;
 
@@ -73,13 +73,13 @@ public:
 	
 	//using RefTypeMap<Component>::RefTypeMap;
 	
-	#define IS_EMPTY_SHAREDPTR(x) (x == 0 || x->IsEmpty())
+	#define IS_EMPTY_SHAREDPTR(x) (x.IsEmpty())
 	
 	template<typename ComponentT>
 	ComponentT* Get() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		return static_cast<ComponentT*>(it->Get());
 	}
@@ -88,7 +88,7 @@ public:
 	ComponentT* Find() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		if (IS_EMPTY_SHAREDPTR(it))
 			return NULL;
 		else
@@ -99,7 +99,7 @@ public:
 	Ref<ComponentT> GetRef() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		return it->As<ComponentT>();
 	}
@@ -108,7 +108,7 @@ public:
 	Ref<ComponentT> FindRef() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		if (IS_EMPTY_SHAREDPTR(it))
 			return Ref<ComponentT>();
 		else
@@ -119,7 +119,7 @@ public:
 	ComponentT* TryGet() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto it = ComponentMapBase::FindPtr(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		if (!IS_EMPTY_SHAREDPTR(it)) {
 			return static_cast<ComponentT*>(it->Get());
 		}
@@ -127,7 +127,7 @@ public:
 		return nullptr;
 	}
 	
-	template<typename ComponentT>
+	/*template<typename ComponentT>
 	ComponentT* Add(ComponentRef component) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
@@ -135,19 +135,19 @@ public:
 		
 		ASSERT_(component->GetType() == componentType, "ComponentRef type does not match T");
 		
-		auto it = ComponentMapBase::FindPtr(componentType);
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(componentType);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Can't have duplicate componnets");
 		ComponentRef& cmp = ComponentMapBase::Add(componentType);
 		cmp = pick(component);
 		
 		return static_cast<ComponentT*>(cmp.Get());
-	}
+	}*/
 	
 	template<typename ComponentT>
 	void Remove() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		auto iter = ComponentMapBase::FindIter(typeid(ComponentT));
+		ComponentMapBase::Iterator iter = ComponentMapBase::Find(typeid(ComponentT));
 		ASSERT_(iter, "Tried to remove non-existent component");
 		iter.value().Uninitialize();
 		iter.value().Destroy();
