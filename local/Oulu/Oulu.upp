@@ -24,7 +24,7 @@ file
 	Index.cpp,
 	Container.h,
 	Container.cpp,
-	Locked.h,
+	LinkedList.h,
 	RTuple.h,
 	Util.h,
 	Util.cpp,
