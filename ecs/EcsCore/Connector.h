@@ -1,16 +1,18 @@
 #ifndef _EcsCore_Connector_h_
 #define _EcsCore_Connector_h_
 
+#if 0
+
 NAMESPACE_OULU_BEGIN
 
 class Connector;
 
 
-class ConnectorSystem : public System<ConnectorSystem> {
 	Index<void*> conns;
 	Ref<EntityStore> es;
 	
 public:
+class ConnectorSystem : public System<ConnectorSystem> {
 	using System::System;
 	
 	void Update(double dt) override;
@@ -85,4 +87,5 @@ protected:
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

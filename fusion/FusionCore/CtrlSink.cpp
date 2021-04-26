@@ -71,6 +71,8 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	stream.sz = data_res;
 	stream.depth = 0;
 	
+	TODO
+	#if 0
 	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
@@ -100,6 +102,7 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	else {
 		err = "unsupported type";
 	}
+	#endif
 	
 	if (err.IsEmpty()) err = "unknown error";
 	OnError(fn_name, err);

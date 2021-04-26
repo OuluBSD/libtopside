@@ -9,7 +9,6 @@ class Machine;
 class EntityStore;
 class Entity;
 class EntityPool;
-class Connector;
 
 using EntityId = int64;
 using VAR = Ref<Entity>;
@@ -114,7 +113,6 @@ public:
 	void InitializeComponent(ComponentBase& comp);
 	void UninitializeComponents();
 	void ClearComponents();
-	void ConnectAll(ConnectorArea a);
 	
 	EntityId Id() const {
 		return m_id;
@@ -130,11 +128,12 @@ public:
 	
 	#define IFACE_(x, post)\
 		Ref<x##post> Find##x##post() {\
-			for(Ref<ComponentBase>& base : comps.GetValues()) {\
-				Ref<x##post> o = base->As##x##post();\
-				if (o) return o;\
-			}\
-			return NULL;\
+			TypeRefMap<InterfaceBase>::Iterator iter = ifaces.begin(); \
+			TypeId key(typeid(x##post)); \
+			for(; iter; ++iter)\
+				if (iter.key() == key) \
+					return iter.value().AsRef<x##post>(); \
+			return Ref<x##post>();\
 		}
 	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
 	IFACE_LIST
@@ -144,9 +143,6 @@ public:
 	
 	ComponentMap& GetComponents() {return comps;}
 	const ComponentMap& GetComponents() const {return comps;}
-	Ref<Connector> GetConnector() const {return conn;}
-	void RefreshConnectorPtr();
-	void SetUpdateInterfaces();
 	
 	template<typename... ComponentTs>
 	RTuple<Ref<ComponentTs>...> CreateComponents() {
@@ -157,23 +153,17 @@ public:
 	
 	void CloneComponents(const Entity& e);
 	
-protected:
-	friend class EntityPool;
-	friend class ConnectorSystem;
-	
-	void UpdateInterfaces();
 	
 private:
+	TypeRefMap<InterfaceBase> ifaces;
 	ComponentMap comps;
 	EntityId m_id;
 	EntityPool* pool = 0;
-	Ref<Connector> conn;
 	
 	
 	template<typename T>
 	void Remove0() {
 		comps.Remove<T>(GetMachine().Get<ComponentStore>());
-		SetUpdateInterfaces();
 	}
 	
 	template<typename T>
@@ -182,24 +172,12 @@ private:
 		ASSERT(comp);
 		comps.Add(comp);
 		InitializeComponent(*comp);
-		SetUpdateInterfaces();
 		ASSERT(comp->GetEntityPtr());
 		return comp;
 	}
 	
 };
 
-template<> inline void Entity::Remove<Connector>() {
-	ASSERT(conn);
-	conn = 0;
-	Remove0<Connector>();
-}
-
-template<> inline Ref<Connector> Entity::Add<Connector>() {
-	ASSERT(!conn);
-	conn = Add0<Connector>();
-	return conn;
-}
 
 
 

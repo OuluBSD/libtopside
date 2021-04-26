@@ -147,33 +147,27 @@ public:
 
 
 PREFAB_BEGIN(CompleteMusicDrummer)
-		MusicDrummerComponent,
-		Connector
+		MusicDrummerComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMusicBassist)
-		MusicBassistComponent,
-		Connector
+		MusicBassistComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMusicGuitarist)
-		MusicGuitaristComponent,
-		Connector
+		MusicGuitaristComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMusicVocalist)
-		MusicVocalistComponent,
-		Connector
+		MusicVocalistComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMusicConductor)
-		MusicConductorComponent,
-		Connector
+		MusicConductorComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMusicComposer)
-		MusicComposerComponent,
-		Connector
+		MusicComposerComponent
 PREFAB_END;
 
 

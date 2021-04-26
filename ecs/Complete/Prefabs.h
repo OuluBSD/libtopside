@@ -18,8 +18,10 @@ NAMESPACE_OULU_BEGIN
 
 
 template <class T> void SimpleEntityApp() {
-	Machine& mach = GetMachine();
+	Machine mach;
 	
+	TODO
+	#if 0
 	try {
 		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
@@ -40,10 +42,14 @@ template <class T> void SimpleEntityApp() {
 	catch (Exc e) {
 		LOG("error: " << e);
 	}
+	#endif
 }
 
 template <class T> void SimpleEngineMain(String title, bool start_machine=false) {
-	Machine& mach = GetMachine();
+	Machine mach;
+	
+	TODO
+	#if 0
 	
 	if (start_machine) {
 		ASSERT(!mach.IsRunning());
@@ -117,6 +123,8 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	if (start_machine) {
 		mach.Stop();
 	}
+	
+	#endif
 }
 
 #define CONSOLE_APP_(x) CONSOLE_APP_MAIN {Oulu::SimpleEntityApp<x>();}

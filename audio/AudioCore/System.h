@@ -234,35 +234,30 @@ protected:
 PREFAB_BEGIN(CompleteFluidsynth)
 		MixerChannelContextComponent,
 		FluidsynthComponent,
-		MixerChannelOutputComponent,
-		Connector
+		MixerChannelOutputComponent
 PREFAB_END;
 
 #endif
 
 
 PREFAB_BEGIN(CompleteMixer)
-		MixerContextComponent,
-		Connector
+		MixerContextComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMixerChannel)
 		MixerChannelContextComponent,
 		MixerChannelInputComponent,
-		MixerChannelOutputComponent,
-		Connector
+		MixerChannelOutputComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMixerOutput)
 		MixerChannelContextComponent,
 		MixerChannelInputComponent,
-		MixerAudioSourceComponent,
-		Connector
+		MixerAudioSourceComponent
 PREFAB_END;
 
 PREFAB_BEGIN(MidiFileController)
-		MidiFileComponent,
-		Connector
+		MidiFileComponent
 PREFAB_END;
 
 NAMESPACE_OULU_END

@@ -26,17 +26,7 @@ void InterfaceBase::RemoveConnection(InterfaceBase* b) {
 }
 
 
-#define IFACE(x) \
-void ComponentBase::Signal##x##Source() {\
-	Ref<Connector> conn = GetEntity().GetConnector(); \
-	if (conn) conn->Signal##x##Source(); \
-} \
-void ComponentBase::Signal##x##Sink() {\
-	Ref<Connector> conn = GetEntity().GetConnector(); \
-	if (conn) conn->Signal##x##Sink(); \
-}
-IFACE_LIST
-#undef IFACE
+
 
 
 

@@ -70,6 +70,8 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	
 	auto type = in.GetFusionType();
 	
+	TODO
+	#if 0
 	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
@@ -118,7 +120,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	else {
 		err = "unsupported type";
 	}
-	
+	#endif
 	
 	if (err.IsEmpty()) err = "unknown error";
 	OnError(fn_name, err);

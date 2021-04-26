@@ -6,12 +6,11 @@ NAMESPACE_UPP
 
 bool Open_NonGUI_ECS() {
 	using namespace Oulu;
-	Machine& mach = Oulu::GetMachine();
+	Machine mach;
 	
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& ents = *mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
-    mach.Add<ConnectorSystem>();
     
     #ifdef flagSDL2
     mach.Add<SDL2System>();
@@ -31,7 +30,7 @@ bool Open_NonGUI_ECS() {
 
 void Close_NonGUI_ECS() {
 	using namespace Oulu;
-	Machine& mach = Oulu::GetMachine();
+	Machine mach;
 	
 	mach.Stop();
 }

@@ -45,17 +45,6 @@ EntityRef EntityPool::Clone(const Entity& c) {
 	GetMachine().Get<ComponentStore>()->Clone(*e, c);
 	return e;
 }
-
-void EntityPool::UnlinkDeep() {
-	for (EntityPoolRef& p : pools)
-		p->UnlinkDeep();
-	
-	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
-		Ref<Connector> conn = it().Find<Connector>();
-		if (conn)
-			conn->UnlinkAll();
-	}
-}
 	
 void EntityPool::UninitializeComponentsDeep() {
 	for (EntityPoolRef& p : pools)
@@ -88,7 +77,7 @@ void EntityPool::ReverseEntities() {
 }
 
 void EntityPool::Clear() {
-	UnlinkDeep();
+	//UnlinkDeep();
 	UninitializeComponentsDeep();
 	ClearComponentsDeep();
 	ClearDeep();

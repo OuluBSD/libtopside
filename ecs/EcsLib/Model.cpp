@@ -11,16 +11,6 @@ void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
 	model->MakeModel(shape);
 }
 
-void PrimitiveShape::Signal() {
-	for(InterfaceBase* conn: GetConnections()) {
-		ModelSource* in = (ModelSource*)conn;
-		/*Ref<PipelineData> pdata = in->GetData();
-		if (pdata) {
-			pdata->PutModel(model, true);
-		}*/
-		TODO
-	}
-}
 
 
 
@@ -72,15 +62,7 @@ void ModelComponent::Signal() {
 
 
 
-void ModelDispatch(ComponentBase& b) {
-	Ref<Connector> conn = b.GetEntity().Find<Connector>();
-	if (conn) {
-		conn->SignalModelSink();
-	}
-	else {
-		LOG("error: ModelComponent::Dispatch: Connector not found");
-	}
-}
+
 
 NAMESPACE_OULU_END
 

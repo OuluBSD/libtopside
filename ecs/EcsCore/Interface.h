@@ -43,7 +43,6 @@ public:
 template <class I>
 struct InterfaceSink : public InterfaceBase {
 	
-	virtual void Signal() {}
 	
 };
 
@@ -68,10 +67,8 @@ struct InterfaceSource : public InterfaceBase {
 	
 	virtual bool Link(O& sink) {return true;}
 	virtual bool Unlink(O& sink) {return true;}
-	virtual void Signal() {}
 	
 protected:
-	friend class ConnectorSystem;
 	
 	Vector<Connection> sinks;
 	
@@ -376,7 +373,6 @@ struct MediaSource : IO_IN(Media) {
 	virtual Size GetResolution() const {return Size(0,0);}
 	virtual void EmitMedia() = 0;
 	
-	void Signal() override {EmitMedia();}
 	
 };
 
@@ -449,7 +445,6 @@ struct StaticSource : IO_IN(Static) {
 
 //									---- Fusion ----
 
-// Connector for connecting fusion components.
 
 class FusionComponentInput;
 
@@ -481,7 +476,6 @@ struct FusionSource : IO_IN(Fusion) {
 
 //									---- Semantic ----
 
-// Connector for transferring high-level data objects.
 
 struct SemanticSink : IO_OUT(Semantic) {
 	IFACE_BASE(SemanticSink)

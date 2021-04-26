@@ -34,17 +34,12 @@ void Entity::UninitializeComponents() {
 	}
 }
 
-void Entity::ConnectAll(ConnectorArea a) {
-	Ref<Connector> conn = Find<Connector>();
-	if (conn)
-		conn->ConnectAll(a);
-}
-
 void Entity::ClearComponents() {
-	if (conn) {
+	TODO // exchange point?
+	/*if (conn) {
 		conn->UnlinkAll();
 		conn = 0;
-	}
+	}*/
 	comps.Clear();
 }
 
@@ -68,25 +63,6 @@ void Entity::SetEnabled(bool enable) {
 	for (auto& component : comps.GetValues()) {
 		component->SetEnabled(enable);
 	}
-}
-
-void Entity::SetUpdateInterfaces() {
-	if (conn)
-		conn->SetUpdateInterfaces();
-}
-
-void Entity::UpdateInterfaces() {
-	if (conn) {
-		#define IFACE(x) \
-		for(Ref<x##Source>  in:  FindInterfaces<x##Source>())  conn->AddSourceInterface(in); \
-		for(Ref<x##Sink>   out:  FindInterfaces<x##Sink>())    conn->AddSinkInterface(out);
-		IFACE_LIST
-		#undef IFACE
-	}
-}
-
-void Entity::RefreshConnectorPtr() {
-	conn = Find<Connector>();
 }
 
 Machine& Entity::GetMachine() {

@@ -123,7 +123,7 @@ struct StaticCube : EntityPrefab<Transform, ModelComponent>
     }
 };
 
-struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable, Connector>
+struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable>
 {
     static Components Make(Entity& e)
     {
@@ -136,7 +136,7 @@ struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable, Connector>
     }
 };
 
-struct StaticModel : EntityPrefab<Transform, ModelComponent, Connector>
+struct StaticModel : EntityPrefab<Transform, ModelComponent>
 {
     static Components Make(Entity& e)
     {

@@ -31,7 +31,6 @@
 #include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"
-#include "Connector.h"
 #include "EntityStore.h"
 #include "Overlap.h"
 #include "StateSystem.h"

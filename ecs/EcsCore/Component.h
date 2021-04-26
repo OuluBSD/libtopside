@@ -33,12 +33,6 @@ public:
 	#undef IFACE
 	
 	
-	#define IFACE(x) \
-	void Signal##x##Source(); \
-	void Signal##x##Sink();
-	IFACE_LIST
-	#undef IFACE
-	
 };
 
 #define IFACE(x) \

@@ -43,6 +43,8 @@ bool MultiMediaComponent::LoadFileAny(String path) {
 	
 	MediaDevice& virt = devmgr.GetAddVirtual(path);
 	
+	TODO
+	#if 0
 	#if HAVE_MEDIAFILE
 	MediaFileInput& fin = virt.AddFileInput();
 	
@@ -69,6 +71,7 @@ bool MultiMediaComponent::LoadFileAny(String path) {
 	#else
 	last_error = "media file support is not included in the program compilation";
 	#endif
+	#endif
 	
 	return false;
 }
@@ -79,6 +82,8 @@ bool MultiMediaComponent::LoadInput(int id) {
 		return false;
 	}
 	
+	TODO
+	#if 0
 	MediaDevice& dev = devmgr.GetNative(id);
 	for(int l = 0; l < dev.GetCaptureCount() && !vi.cap; l++) {
 		MediaCaptureDevice& cap = dev.GetCapture(l);
@@ -110,11 +115,14 @@ bool MultiMediaComponent::LoadInput(int id) {
 				"fps from webcam "+ cap.GetPath();
 		}
 	}
+	#endif
+	
 	return false;
 }
 
 void MultiMediaComponent::EmitMedia() {
-	
+	TODO
+	#if 0
 	if (vi.TestClearNewFrame()) {
 		media_buf.vid = &vi.cap->GetVideo();
 		media_buf.snd = &vi.cap->GetSound();
@@ -129,6 +137,7 @@ void MultiMediaComponent::EmitMedia() {
 		if (conn)
 			conn->SignalMediaSource();
 	}
+	#endif
 }
 
 

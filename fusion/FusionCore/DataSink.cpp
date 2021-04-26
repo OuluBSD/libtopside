@@ -227,6 +227,8 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	
 	auto type = in.GetFusionType();
 	
+	TODO
+	#if 0
 	//ctx->DumpEntityComponents();
 	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
@@ -281,6 +283,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 		}
 	}
 #endif
+	#endif
 	
 	if (err.IsEmpty()) err = "unknown error";
 	OnError(fn_name, err);

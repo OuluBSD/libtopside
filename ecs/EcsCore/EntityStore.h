@@ -22,8 +22,7 @@ public:
 	EntityPool();
 	
 	typedef enum {
-		BIT_CONNECTOR,
-		BIT_CONNECTOR3D,
+		BIT_OVERLAP,
 		BIT_TRANSFORM,
 	} Bit;
 	
@@ -32,14 +31,13 @@ public:
 	
 	void SetMachine(Machine& m)		{machine = &m;}
 	void SetName(String s)			{name = s;}
-	void FreezeConnector()			{freeze_bits.Set(BIT_CONNECTOR, true);}
-	void FreezeOverlap()			{freeze_bits.Set(BIT_CONNECTOR3D, true);}
-	bool IsFrozenConnector() const	{return freeze_bits.Is(BIT_CONNECTOR);}
-	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_CONNECTOR3D);}
+	void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
+	void FreezeOverlap()			{freeze_bits.Set(BIT_OVERLAP, true);}
+	bool IsFrozenTransform() const	{return freeze_bits.Is(BIT_TRANSFORM);}
+	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_OVERLAP);}
 	
 	void				ReverseEntities();
 	void				Clear();
-	void				UnlinkDeep();
 	void				UninitializeComponentsDeep();
 	void				ClearComponentsDeep();
 	void				ClearDeep();
@@ -50,12 +48,6 @@ public:
 	String				GetName() const {return name;}
 	bool				HasEntities() const {return !objects.IsEmpty();}
 	bool				HasEntityPools() const {return !pools.IsEmpty();}
-	//int					GetPoolCount() const {return pools.GetCount();}
-	//EntityPoolRef			GetPool(int i) {return pools[i];}
-	//const EntityPoolRef	GetPool(int i) const {return pools[i];}
-	//int					GetCount() const {return objects.GetCount();}
-	//EntityRef				Get(int i) {return objects[i];}
-	//const EntityRef		Get(int i) const {return objects[i];}
 	
 	void				Initialize(Entity& e, String prefab="Custom");
 	EntityRef			CreateEmpty();
@@ -72,28 +64,6 @@ public:
 		
 		return e;
 	}
-	
-	template<typename PrefabT>
-	EntityRef CreateConnectedArea(ConnectorArea a) {
-		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
-		
-		EntityRef e = objects.Add();
-		e->Init(this, GetNextId());
-		PrefabT::Make(*e);
-		Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
-		
-		Ref<Connector> c = e->Find<Connector>();
-		ASSERT_(c, "CreateConnected expected entity prefab, which includes Connector component");
-		if (c)
-			c->ConnectAll(a);
-		
-		return e;
-	}
-	
-	template<typename PrefabT> EntityRef CreateConnectedCurrent()		{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CURRENT);}
-	template<typename PrefabT> EntityRef CreateConnectedInternal()		{return CreateConnectedArea<PrefabT>(CONNAREA_INTERNAL);}
-	template<typename PrefabT> EntityRef CreateConnectedChildrenOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_CHILDREN_ONLY);}
-	template<typename PrefabT> EntityRef CreateConnectedParentsOnly()	{return CreateConnectedArea<PrefabT>(CONNAREA_POOL_PARENTS_ONLY);}
 	
 	template<typename... ComponentTs>
 	Vector < RTuple < Entity*, ComponentTs*... >> GetComponentsWithEntity() {

@@ -236,6 +236,7 @@ public:
 		ASSERT(first->prev == 0 && last->next == 0);
 	}
 	void Clear() {
+		if (!first) return;
 		auto& rec = GetRecyclerPool();
 		Item* iter = last;
 		while (iter) {
@@ -246,6 +247,8 @@ public:
 			rec.Return(iter);
 			iter = prev;
 		}
+		first = 0;
+		last = 0;
 		ASSERT(count == 0);
 	}
 	
@@ -370,6 +373,7 @@ public:
 		ASSERT(first->prev == 0 && last->next == 0);
 	}
 	void Clear() {
+		if (!first) return;
 		auto& rec = GetRecyclerPool();
 		Item* iter = last;
 		while (iter) {
@@ -380,6 +384,8 @@ public:
 			rec.Return(iter);
 			iter = prev;
 		}
+		first = 0;
+		last = 0;
 		ASSERT(count == 0);
 	}
 	
@@ -605,6 +611,7 @@ public:
 			}
 		}
 		--count;
+		item->value.Clear();
 		GetRecyclerPool().Return(item);
 		return item;
 	}
@@ -621,6 +628,7 @@ public:
 		ASSERT(first->prev == 0 && last->next == 0);
 	}
 	void Clear() {
+		if (!first) return;
 		auto& rec = GetRecyclerPool();
 		Item* iter = last;
 		while (iter) {
@@ -628,9 +636,12 @@ public:
 			--count;
 			if (prev)
 				prev->next = 0;
+			iter->value.Clear();
 			rec.Return(iter);
 			iter = prev;
 		}
+		first = 0;
+		last = 0;
 		ASSERT(count == 0);
 	}
 	

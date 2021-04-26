@@ -76,6 +76,7 @@ Machine::Machine() = default;
 
 Machine::~Machine() {
 	ASSERT_(!is_initialized && !is_started, "Machine should be in a clean state upon destruction");
+	systems.Clear();
 }
 
 bool Machine::HasStarted() const {

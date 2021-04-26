@@ -222,7 +222,7 @@ public:
 		auto end = pool.End();
 		while(t != end) {
 			T* o = *t;
-			delete o;
+			MemoryFree(o);
 			t++;
 		}
 		pool.Clear();
@@ -237,14 +237,14 @@ public:
 	T* New() {
 		T* o;
 		if (pool.IsEmpty()) {
-			o = new T();
+			o = (T*)MemoryAlloc(sizeof(T));
 		}
 		else {
 			lock.Enter();
 			o = pool.Pop();
 			lock.Leave();
-			new (o) T();
 		}
+		new (o) T();
 		return o;
 	}
 	

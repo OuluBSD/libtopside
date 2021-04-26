@@ -1,5 +1,7 @@
 #include "EcsCore.h"
 
+#if 0
+
 NAMESPACE_OULU_BEGIN
 
 
@@ -196,3 +198,5 @@ void Connector::UnlinkAll() {
 }
 
 NAMESPACE_OULU_END
+
+#endif

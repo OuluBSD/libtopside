@@ -121,7 +121,7 @@ private:
     void Remove(TypeId const& typeId);
 };
 
-inline Machine& GetMachine() {return Single<Machine>();}
+
 
 NAMESPACE_OULU_END
 

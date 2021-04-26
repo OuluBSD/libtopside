@@ -31,7 +31,6 @@ void RunTest() {
     mach.Add<ConnectorSystem>();
     mach.Add<OverlapSystem>();
     mach.Add<ActionSystem>();
-    //mach.Add<RouteSystem>();
     
     
     VAR actor			= actors->CreateConnectedInternal<DemoActor>();

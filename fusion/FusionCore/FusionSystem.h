@@ -798,8 +798,7 @@ struct CompleteFusion :
 	EntityPrefab<
 		FusionDisplaySource,
 		FusionAudioSource,
-		FusionContextComponent,
-		Connector
+		FusionContextComponent
 > {
     static Components Make(Entity& e)
     {

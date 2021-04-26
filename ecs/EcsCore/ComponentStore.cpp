@@ -15,7 +15,6 @@ void ComponentStore::Clone(Entity& dst, const Entity& src) {
 		iter.value().CopyTo(new_component);
 		dst_comps.ComponentMapBase::Add(comp_type, new_component);
 	}
-	dst.SetUpdateInterfaces();
 }
 
 /*void ComponentStore::Update(double) {
