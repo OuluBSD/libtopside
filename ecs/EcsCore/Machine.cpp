@@ -45,7 +45,7 @@ void Machine::Update(double dt) {
 		system->Update(dt);
 	}
 	
-	ticks += 1;
+	++ticks;
 }
 
 void Machine::Stop() {

@@ -2,50 +2,77 @@
 #define _EcsCore_ComponentStore_h_
 
 NAMESPACE_OULU_BEGIN
-	
 
-class ComponentStore :
-	public System<ComponentStore>,
-	public Factory<ComponentBase*, std::function<ComponentBase*()>, std::function<void(ComponentBase*)> >
+
+template <class Main, class Base>
+class ComponentStoreT :
+	public System<ComponentStoreT<Main,Base>>,
+	public Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >
 {
 	
 public:
-	using System::System;
+	using System<ComponentStoreT<Main,Base>>::System;
+	using Factory = Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
+	template<typename T> using IsComponent = std::is_base_of<Base, T>;
 	
 	template <class T>
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	void ReturnComponent(ComponentBase* c);
-	
-	template<typename ComponentT>
-	ComponentT* CreateComponent() {
-		static_assert(IsComponent<ComponentT>::value, "T should be a component");
+	template<typename T>
+	T* CreateComponent() {
+		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		const TypeId key(typeid(ComponentT));
-		auto it = producers.Find(key);
+		const TypeId key(typeid(T));
+		auto it = Factory::producers.Find(key);
 		if (!it) {
-			std::function<ComponentBase*()> p([] { return GetPool<ComponentT>().New();});
-			std::function<void(ComponentBase*)> r([] (ComponentBase* b){ return GetPool<ComponentT>().Return(static_cast<ComponentT*>(b));});
-			producers.Add(key) = p;
-			refurbishers.Add(key) = r;
+			std::function<Base*()> p([] { return GetPool<T>().New();});
+			std::function<void(Base*)> r([] (Base* b){ return GetPool<T>().Return(static_cast<T*>(b));});
+			Factory::producers.Add(key) = p;
+			Factory::refurbishers.Add(key) = r;
 		}
 		
-		return static_cast<ComponentT*>(CreateComponent(typeid(ComponentT)));
+		return static_cast<T*>(CreateComponent(typeid(T)));
 	}
 	
-	void Clone(Entity& dst, const Entity& src);
+	void Clone(Main& dst, const Main& src) {
+		const ComponentMap& src_comps = src.GetComponents();
+		ComponentMap& dst_comps = dst.GetComponents();
+		
+		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
+		for (; iter; ++iter) {
+			const TypeId& comp_type = iter.key();
+			Base* new_component = CreateComponent(comp_type);
+			dst.InitializeComponent(*new_component);
+			iter.value().CopyTo(new_component);
+			dst_comps.ComponentMapBase::Add(comp_type, new_component);
+		}
+	}
 	
-	
-protected:
-	//void Update(double) override;
-	//void Uninitialize() override;
+	void ReturnComponent(Base* c) {
+		ASSERT(c);
+		TypeId type = c->GetType();
+		
+		auto iter = Factory::refurbishers.Find(type);
+		if (iter)
+			iter.Get()(c);
+	}
+
 	
 private:
 	
-	ComponentBase* CreateComponent(const TypeId& type_id);
+	Base* CreateComponent(const TypeId& typeId) {
+		auto iter = Factory::producers.Find(typeId);
+		ASSERT_(iter, "Invalid to create non-existant component");
+		
+		Base* obj = iter.value()();
+		return obj;
+	}
 	
 };
+
+using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
+using PoolComponentStore = ComponentStoreT<EntityPool, PoolComponentBase>;
 
 
 NAMESPACE_OULU_END

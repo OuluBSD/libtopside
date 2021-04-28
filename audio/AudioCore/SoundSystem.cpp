@@ -53,9 +53,15 @@ SoundSystem::SoundSystem(){
 }
 
 SoundSystem::~SoundSystem(){
-	err=Pa_Terminate();
-	CHECK_ERR;
-	exists=false;
+	Close();
+}
+
+void SoundSystem::Close() {
+	if (exists) {
+		err=Pa_Terminate();
+		CHECK_ERR;
+		exists=false;
+	}
 }
 
 int SoundSystem::GetCount()const{

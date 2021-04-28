@@ -11,9 +11,10 @@ NAMESPACE_OULU_BEGIN
 class MP3Player :
 	public Component<MP3Player>
 {
-	EntityRef mixer, fusion, channel0, track0, output;
+	//EntityRef mixer, fusion, channel0, track0, output;
 	MixerContextComponent* ctx = 0;
-	
+	Ref<MultiMediaComponent> file_in;
+	Ref<PortaudioSinkComponent> audio;
 public:
 	typedef MP3Player CLASSNAME;
 	MP3Player() {}
@@ -24,6 +25,13 @@ public:
 	COPY_PANIC(MP3Player);
 	
 };
+
+
+PREFAB_BEGIN(MP3PlayerPrefab)
+	PortaudioSinkComponent,
+	MultiMediaComponent,
+	MP3Player
+PREFAB_END
 
 
 NAMESPACE_OULU_END

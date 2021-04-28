@@ -6,26 +6,27 @@ String file_path;
 
 
 void MP3Player::OnError() {
-	GetMachine().SetNotRunning();
+	GetEntity().GetMachine().SetNotRunning();
 }
 
 void MP3Player::Initialize() {
-	fusion = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteFusion>();
-	fusion->Find<Connector>()->ConnectAll();
+	//auto& mach = GetEntity().GetMachine();
+	//Ref<EntityStore> es = mach.Get<EntityStore>();
+	//EntityPool& pool = GetEntity().GetPool();
 	
-	audio = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteMixer>();
+	/*fusion = pool.Create<CompleteFusion>();
+	audio = pool.Create<CompleteMixer>();
+	track0 = pool.Create<CompleteMixerTrackBegin>();
+	channel0 = pool.Create<CompleteMixerChannel>();
+	output = pool.Create<CompleteMixerOutput>();*/
+	
+	/*fusion->Find<Connector>()->ConnectAll();
 	audio->Find<Connector>()->ConnectAll();
-	
-	track0 = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteMixerTrackBegin>();
 	track0->Find<Connector>()->ConnectAll();
-	
-	channel0 = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteMixerChannel>();
 	channel0->Find<Connector>()->ConnectAll();
+	output->Find<Connector>()->ConnectAll();*/
 	
-	output = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteMixerOutput>();
-	output->Find<Connector>()->ConnectAll();
-	
-	ctx = e->Find<MixerContextComponent>();
+	/*ctx = e->Find<MixerContextComponent>();
 	if (ctx) {
 		ctx->WhenError << THISBACK(OnError);
 		if (file_path.GetCount()) {
@@ -36,12 +37,23 @@ void MP3Player::Initialize() {
 			GetMachine().SetNotRunning();
 			return;
 		}
-	}
+	}*/
+	
+	Entity& e = GetEntity();
+	file_in = e.Find<MultiMediaComponent>();
+	audio   = e.Find<PortaudioSinkComponent>();
+	if (!file_in || !audio)
+		Panic("Invalid MP3 player");
+	
+	EntityPool& p = e.GetPool();
+	p.Add<ConnectAllInterfaces<MediaSource>>();
+	
 }
 
 void MP3Player::Uninitialize() {
-	e->Destroy();
-	e.Clear();
+	file_in.Clear();
+	audio.Clear();
+	GetEntity().Destroy();
 }
 
 void MP3PlayerStartup() {
@@ -66,9 +78,52 @@ void MP3PlayerStartup() {
 }
 
 
+
+
+void Main() {
+	SetCoutLog();
+	
+	Machine mach;
+	RegistrySystemRef reg = mach.Add<RegistrySystem>();
+	EntityStoreRef es = mach.Add<EntityStore>();
+	EntityPoolRef root = es->GetRoot();
+    mach.Add<ComponentStore>();
+    mach.Add<PoolComponentStore>();
+    mach.Add<PortaudioSystem>();
+    mach.Add<ActionSystem>();
+    
+    
+    try {
+        VAR player = root->Create<MP3PlayerPrefab>();
+        
+	    mach.Start();
+	    
+	    int dbg_i = 0;
+	    TimeStop t;
+	    while (mach.IsRunning()) {
+	        double dt = ResetSeconds(t);
+	        mach.Update(dt);
+	        Sleep(1);
+	        
+	        
+	        
+	        if (++dbg_i > 100)
+	            break;
+	    }
+    }
+    catch (Exc e) {
+        LOG("error: " << e);
+        Exit(1);
+    }
+    
+    mach.Stop();
+}
+
+
 NAMESPACE_OULU_END
 
-CONSOLE_ECS_APP_(Oulu::MP3Player)
-APP_STARTUP_(Oulu::MP3PlayerStartup);
-APP_DEFAULT_GFX_(GFX_OPENGL);
+
+CONSOLE_APP_MAIN {
+	Oulu::Main();
+}
 

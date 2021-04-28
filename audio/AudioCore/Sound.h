@@ -260,7 +260,9 @@ class SoundSystem {
 public:
 	SoundSystem();
 	~SoundSystem();
-
+	
+	void Close();
+	
 	const Vector<SoundDevice> GetDevices()const;
 	const Vector<SoundAPI>    GetAPIs()const;
 

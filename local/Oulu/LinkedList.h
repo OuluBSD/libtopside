@@ -166,6 +166,7 @@ public:
 		void operator++() {if (it) it = it->next;}
 		void operator--() {if (it) it = it->prev;}
 		T&   operator()() const {ASSERT(it); return it->value;}
+		T&   Get() const {ASSERT(it); return it->value;}
 		operator T*() const {return &it->value;}
 		operator bool() const {return it;}
 	};
@@ -189,8 +190,10 @@ public:
 		return it;
 	}
 	T& Add() {return AddItem()->value;}
+	T& Add(const T& o) {T& r = AddItem()->value; r = o; return r;}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
+	operator bool() const {return count > 0;}
 	Iterator Remove(const Iterator& iter) {
 		Item* item = iter.GetItem();
 		Item* in_place = 0;
@@ -303,6 +306,7 @@ public:
 		void operator++() {ClearRef(); if (it) {it = it->next;}}
 		void operator--() {ClearRef(); if (it) {it = it->prev;}}
 		T&   operator()() const {ASSERT(it); return it->value;}
+		T&   Get() const {ASSERT(it); return it->value;}
 		operator R*() const {ChkRef(); return &ref;}
 		operator bool() const {return it;}
 	};
@@ -421,7 +425,7 @@ public:
 		V*   operator->() {return &value();}
 		V&   operator*() {return *value;}
 		operator bool() const {return key;}
-		V& Get() {V* v = value->Get(); ASSERT(v); return v;}
+		V& Get() {return value.Get();}
 	};
 	
 	LinkedMap() {}
@@ -481,7 +485,7 @@ public:
 		V*   operator->() {return &value();}
 		R&   operator*() {return *value;}
 		operator bool() const {return key;}
-		V& Get() {V* v = value->Get(); ASSERT(v); return v;}
+		V& Get() {return value.Get();}
 	};
 	
 	RefLinkedMap() {}

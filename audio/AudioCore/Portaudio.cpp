@@ -32,7 +32,7 @@ void PortaudioSystem::Stop() {
 }
 
 void PortaudioSystem::Uninitialize() {
-	
+	SoundSys().Close();
 }
 
 

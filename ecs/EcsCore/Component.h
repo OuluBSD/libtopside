@@ -4,7 +4,6 @@
 NAMESPACE_OULU_BEGIN
 
 
-class ComponentStore;
 
 template <class T> inline Ref<T> ComponenBase_Static_As(ComponentBase*) {return 0;}
 
@@ -67,9 +66,6 @@ class ComponentMap : public ComponentMapBase {
 public:
 	
 	ComponentMap() {}
-	//ComponentMap(ComponentMap&& pick) {Upp::Swap(*(Base*)this, *(Base*)&pick);}
-	//ComponentMap(Pick<ComponentMap> pick) {Upp::Swap((ComponentMapBase&)*this, (ComponentMapBase&)pick.Get());}
-	//using RefTypeMap<Component>::RefTypeMap;
 	
 	#define IS_EMPTY_SHAREDPTR(x) (x.IsEmpty())
 	
@@ -81,6 +77,9 @@ public:
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
+		if (it.IsEmpty())
+			throw Exc("Could not find component " + TypeId(typeid(ComponentT)).CleanDemangledName());
+		
 		return it->AsRef<ComponentT>();
 	}
 	
@@ -93,38 +92,6 @@ public:
 			return NULL;
 		else
 			return it->AsRef<ComponentT>();
-	}
-	
-	template<typename ComponentT>
-	Ref<ComponentT> GetRef() {
-		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
-		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
-		ASSERT(!IS_EMPTY_SHAREDPTR(it));
-		return it->AsRef<ComponentT>();
-	}
-	
-	template<typename ComponentT>
-	Ref<ComponentT> FindRef() {
-		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
-		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
-		if (IS_EMPTY_SHAREDPTR(it))
-			return Ref<ComponentT>();
-		else
-			return it->AsRef<ComponentT>();
-	}
-	
-	template<typename ComponentT>
-	Ref<ComponentT> TryGet() {
-		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
-		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
-		if (!IS_EMPTY_SHAREDPTR(it)) {
-			return it->AsRef<ComponentT>();
-		}
-		
-		return nullptr;
 	}
 	
 	template<typename ComponentT>

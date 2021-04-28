@@ -4,10 +4,16 @@
 
 NAMESPACE_OULU_BEGIN
 
-class ComponentStore;
-struct ComponentBase;
-class ComponentMap;
 class Entity;
+struct ComponentBase;
+class EntityPool;
+class PoolComponentBase;
+
+template <class Main, class Base> class ComponentStoreT;
+using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
+using PoolComponentStore = ComponentStoreT<EntityPool, PoolComponentBase>;
+
+class ComponentMap;
 class Camerable;
 class Renderable;
 class Transform;
@@ -31,6 +37,21 @@ public:
 
 class SemanticExchange : public Exchange {
 	
+	
+};
+
+
+
+
+
+class MetaExchangePoint {
+	
+	
+public:
+	typedef MetaExchangePoint CLASSNAME;
+	MetaExchangePoint();
+	
+	String ToString() const;
 	
 };
 

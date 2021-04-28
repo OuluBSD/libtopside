@@ -28,19 +28,18 @@
 #include "State.h"
 #include "Interface.h"
 #include "Component.h"
+#include "PoolComponent.h"
 #include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"
+#include "EntityPool.h"
+#include "EntityVisitor.h"
 #include "EntityStore.h"
 #include "Overlap.h"
 #include "StateSystem.h"
 #include "Action.h"
 #include "ActionSystem.h"
-
-#include "Listener.h"
-#include "Controller.h"
-
-
+#include "ConnPoolComps.h"
 
 
 #endif

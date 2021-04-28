@@ -374,6 +374,8 @@ struct MediaSource : IO_IN(Media) {
 	virtual void EmitMedia() = 0;
 	
 	
+	using Sink = MediaSink;
+	
 };
 
 

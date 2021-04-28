@@ -104,7 +104,7 @@ public:
 	
 	template<typename... ComponentTs>
 	RTuple<Ref<ComponentTs>...> TryGetComponents() {
-		return MakeRTuple(comps.TryGet<ComponentTs>()...);
+		return MakeRTuple(comps.Find<ComponentTs>()...);
 	}
 	
 	
