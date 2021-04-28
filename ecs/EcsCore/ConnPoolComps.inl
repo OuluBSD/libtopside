@@ -3,10 +3,30 @@ NAMESPACE_OULU_BEGIN
 
 
 template <class T>
+void ConnectAllInterfaces<T>::Initialize() {
+	MetaExchangePoint::Init(this);
+	Machine& m = PoolComponentBase::GetPool().GetMachine();
+	sys = m.Get<EntityStore>();
+	ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
+	Refresh();
+}
+
+
+template <class T>
+void ConnectAllInterfaces<T>::Uninitialize() {
+	UnlinkAll();
+}
+
+template <class T>
+void ConnectAllInterfaces<T>::UnlinkAll() {
+	MetaExchangePoint::UnlinkAll();
+}
+
+template <class T>
 void ConnectAllInterfaces<T>::Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>& src_stack) {
-	using Sink = typename T::Sink;
+	
 	Vector<Ref<T>>* cur = 0;
-	//int parent_scope_count = src_stack.GetCount();
+	//int src_scope_count = src_stack.GetCount();
 	
 	for (EntityRef& e : *pool) {
 		
@@ -26,12 +46,16 @@ void ConnectAllInterfaces<T>::Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>
 		if (sink) {
 			LOG("sink");
 			//int i = 0;
-			for(Vector<Ref<T>>& parent_scope : src_stack) {
-				//if (i++ >= parent_scope_count)
+			for(Vector<Ref<T>>& src_scope : src_stack) {
+				//if (i++ >= src_scope_count)
 				//	break;
-				for (Ref<T>& parent : parent_scope) {
+				for (Ref<T>& src : src_scope) {
 					LOG("link");
-					parent->LinkManually(*sink);
+					if (src->LinkManually(*sink)) {
+						ExchangePointRef ep = MetaExchangePoint::Add();
+						
+						ep->Set(&*src, &*sink);
+					}
 				}
 			}
 		}
@@ -46,6 +70,7 @@ void ConnectAllInterfaces<T>::Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>
 	
 }
 
+
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
 	EntityPool& pool = PoolComponentBase::GetPool();
@@ -54,7 +79,6 @@ void ConnectAllInterfaces<T>::Update(double dt) {
 	Visit(pool, src_stack);
 	
 }
-
 
 
 NAMESPACE_OULU_END

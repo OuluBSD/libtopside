@@ -13,22 +13,22 @@ class ConnectAllInterfaces :
 	Ref<EntityStore> sys;
 	int64 refresh_ticks = -1;
 	
+	
 public:
 	COPY_PANIC(ConnectAllInterfaces);
+	
+	using Source	= T;
+	using Sink		= typename T::Sink;
+	using ISource	= InterfaceSource<Source, Sink>;
+	using ISink		= InterfaceSink<Sink>;
 	
 	void Refresh() {if (sys) refresh_ticks = sys->PostRefresh(refresh_ticks, this);}
 	TypeId GetType() const override {return typeid(ConnectAllInterfaces<T>);}
 	void CopyTo(PoolComponentBase* component) const override {}
-	void Initialize() override {
-		Machine& m = PoolComponentBase::GetPool().GetMachine();
-		sys = m.Get<EntityStore>();
-		ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
-		Refresh();
-	}
-	void Uninitialize() override {
-		
-	}
+	void Initialize() override;
+	void Uninitialize() override;
 	String ToString() const override {return MetaExchangePoint::ToString();}
+	void UnlinkAll() override;
 	
 	void Update(double dt) override;
 	

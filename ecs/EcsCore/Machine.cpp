@@ -51,6 +51,7 @@ void Machine::Update(double dt) {
 void Machine::Stop() {
 	ASSERT_(is_started, "Shouldn't call Stop if we haven't been started");
 	
+	is_running = false;
 	is_started = false;
 	
 	for (auto it = systems.rbegin(); it != systems.rend(); --it) {

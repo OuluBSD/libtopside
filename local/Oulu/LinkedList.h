@@ -31,7 +31,7 @@ public:
 	
 	template <class V>
 	Ref(const Ref<V>& r) {
-		static_assert(std::is_base_of<V,T>() || std::is_base_of<T,V>(), "T must inherit V or vice versa");
+		static_assert(std::is_same<V, T>() || std::is_base_of<V,T>() || std::is_base_of<T,V>(), "T must inherit V or vice versa");
 		if (!r.IsEmpty()) {
 			o = dynamic_cast<T*>(r.Get());
 			ASSERT(o);
@@ -52,16 +52,16 @@ public:
 	T* Get() const {return o;}
 	void Clear() {if (o) o->DecRef(); o = 0;}
 	template <class V>	V* As() {
-		static_assert(std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
+		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		return dynamic_cast<V*>(o);
 	}
 	template <class V>	Ref<V> AsRef() {
-		static_assert(std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
+		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		V* v = dynamic_cast<V*>(o);
 		return Ref<V>(v);
 	}
 	template <class V> void WrapObject(V* v) {
-		static_assert(std::is_base_of<T,V>(), "V must inherit T");
+		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>(), "V must inherit T");
 		ASSERT(!o);
 		Clear();
 		o = static_cast<T*>(v);
@@ -259,7 +259,7 @@ public:
 	
 	Iterator begin()	{return Iterator(first);}
 	Iterator end()		{return Iterator();}
-	Iterator rbegin()	{return last ? Iterator(last->prev) : Iterator();}
+	Iterator rbegin()	{return last ? Iterator(last) : Iterator();}
 	Iterator rend()		{return Iterator();}
 	
 };
@@ -397,7 +397,7 @@ public:
 	
 	Iterator begin()	{return Iterator(first);}
 	Iterator end()		{return Iterator();}
-	Iterator rbegin()	{return last ? Iterator(last->prev) : Iterator();}
+	Iterator rbegin()	{return Iterator(last);}
 	Iterator rend()		{return Iterator();}
 	
 };
@@ -653,7 +653,7 @@ public:
 	
 	Iterator begin()	{return Iterator(first);}
 	Iterator end()		{return Iterator();}
-	Iterator rbegin()	{return last ? Iterator(last->prev) : Iterator();}
+	Iterator rbegin()	{return last ? Iterator(last) : Iterator();}
 	Iterator rend()		{return Iterator();}
 	
 };
@@ -684,6 +684,7 @@ public:
 		operator bool() const {return key;}
 		bool IsEmpty() const {return key.IsEmpty();}
 		V& Get() {return value();}
+		V& operator()() {return value();}
 	};
 	
 	RefLinkedMapIndirect() {}

@@ -74,7 +74,7 @@ bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& dr
 	return true; // "nothing to do" is also success. Only busy video source fails
 }
 
-bool FusionDisplaySource::Link(DisplaySink& sink) {
+bool FusionDisplaySource::PassLink(DisplaySink& sink) {
 	return true;
 }
 

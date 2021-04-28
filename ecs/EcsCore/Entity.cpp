@@ -35,11 +35,6 @@ void Entity::UninitializeComponents() {
 }
 
 void Entity::ClearComponents() {
-	TODO // exchange point?
-	/*if (conn) {
-		conn->UnlinkAll();
-		conn = 0;
-	}*/
 	comps.Clear();
 }
 

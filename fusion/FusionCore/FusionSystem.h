@@ -545,7 +545,7 @@ class FusionDisplaySource :
 	bool			LoadResources() override;
 	void			EmitDisplaySource(double dt) override;
 	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
-	bool			Link(DisplaySink& sink) override;
+	bool			PassLink(DisplaySink& sink) override;
 	ComponentBase&	GetECS() override {return *this;}
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);

@@ -30,12 +30,26 @@ EntityRef EntityPool::Clone(const Entity& c) {
 	return e;
 }
 	
+void EntityPool::UnlinkDeep() {
+	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
+		it().UnlinkDeep();
+	}
+	
+	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().UnlinkAll();
+	}
+}
+
 void EntityPool::UninitializeComponentsDeep() {
 	for (EntityPoolRef& p : pools)
 		p->UninitializeComponentsDeep();
 	
 	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
 		it().UninitializeComponents();
+	}
+	
+	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().Uninitialize();
 	}
 }
 
@@ -46,6 +60,8 @@ void EntityPool::ClearComponentsDeep() {
 	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
 		it().ClearComponents();
 	}
+	
+	comps.Clear();
 }
 
 void EntityPool::ClearDeep() {
@@ -61,7 +77,7 @@ void EntityPool::ReverseEntities() {
 }
 
 void EntityPool::Clear() {
-	//UnlinkDeep();
+	UnlinkDeep();
 	UninitializeComponentsDeep();
 	ClearComponentsDeep();
 	ClearDeep();

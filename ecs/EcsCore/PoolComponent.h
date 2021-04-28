@@ -14,6 +14,7 @@ struct PoolComponentBase : Destroyable, Enableable, LockedScopeEnabler<PoolCompo
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(PoolComponentBase* component) const = 0;
 	virtual void Update(double dt) = 0;
+	virtual void UnlinkAll() {};
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const {return "<not implemented>";}

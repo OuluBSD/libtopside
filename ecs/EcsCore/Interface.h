@@ -21,6 +21,7 @@ protected:
 public:
 	virtual ~InterfaceBase() {UnlinkAll();}
 	
+	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
 	void UnlinkAll() {for(auto c: conns) c->RemoveConnection(this); conns.Clear();}
 	void RemoveConnection(InterfaceBase* b);
 	void AddConnection(InterfaceBase* b) {ASSERT(Find(b) < 0); DbgChk(b); conns.Add(b);}
@@ -39,6 +40,9 @@ public:
 	virtual TypeId GetInterfaceType() = 0;
 	
 };
+
+
+
 
 template <class I>
 struct InterfaceSink : public InterfaceBase {
@@ -61,12 +65,11 @@ struct InterfaceSource : public InterfaceBase {
 	};
 	
 	bool LinkManually(O& sink, State** ret_src_state=0, State** ret_sink_state=0) {return Link0(sink, ret_src_state, ret_sink_state);}
-	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
 	
 	const Vector<Connection>& GetSinks() const {return sinks;}
 	
-	virtual bool Link(O& sink) {return true;}
-	virtual bool Unlink(O& sink) {return true;}
+	virtual bool PassLink(O& sink) {return true;}
+	virtual bool PassUnlink(O& sink) {return true;}
 	
 protected:
 	
@@ -96,7 +99,7 @@ protected:
 			return false;
 		State** src_state;
 		State** sink_state;
-		if (Link(sink) && LinkInterface(sink, src_state, sink_state)) {
+		if (PassLink(sink) && LinkInterface(sink, src_state, sink_state)) {
 			if (print_debug) {
 				String s;
 				TypeId t = GetTypeId<I>();
@@ -125,7 +128,7 @@ protected:
 		if (o) {
 			OnUnlink(iface);
 			iface->OnUnlink(this);
-			if (Unlink(*o) && UnlinkInterface(*o)) {
+			if (PassUnlink(*o) && UnlinkInterface(*o)) {
 				if (print_debug) {
 					TypeId t = GetTypeId<I>();
 					String s;
