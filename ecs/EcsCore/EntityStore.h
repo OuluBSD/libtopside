@@ -6,7 +6,7 @@ NAMESPACE_OULU_BEGIN
 
 
 class EntityStore : public System<EntityStore> {
-	EntityPoolVec					root;
+	PoolVec					root;
 	LinkedList<PoolComponentBase*>	refresh_poolcomps[2];
 	Mutex							lock;
 	
@@ -21,8 +21,8 @@ public:
 		root.Add()->SetMachine(machine);
 	}
 	
-	EntityPoolRef GetRoot()	{return *root.begin();}
-	EntityPoolVec& GetRootVec()	{return root;}
+	PoolRef GetRoot()	{return *root.begin();}
+	PoolVec& GetRootVec()	{return root;}
 	
 	
 	int64 PostRefresh(int64 last_refresh, PoolComponentBase* comp);

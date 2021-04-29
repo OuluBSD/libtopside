@@ -4,7 +4,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-EntityVisitor::EntityVisitor(EntityPoolVec& pool, int mode) : base(pool), mode(mode) {
+EntityVisitor::EntityVisitor(PoolVec& pool, int mode) : base(pool), mode(mode) {
 	Reset();
 }
 
@@ -23,8 +23,8 @@ void EntityVisitor::Reset() {
 	stack.SetCount(0);
 	cur.Clear();
 	if (!base.IsEmpty()) {
-		EntityPoolVec::Iterator pool = base.begin();
-		EntityPool& p = pool();
+		PoolVec::Iterator pool = base.begin();
+		Pool& p = pool();
 		if (mode == POOL_CURRENT_AND_CHILDREN || mode == POOL_CURRENT_ONLY) {
 			if (p.HasEntities()) {
 				Item& i = stack.Add();
@@ -34,8 +34,8 @@ void EntityVisitor::Reset() {
 			}
 		}
 		else if (mode == POOL_CHILDREN_ONLY) {
-			if (p.HasEntityPools()) {
-				EntityPoolVec::Iterator first = p.BeginPool();
+			if (p.HasPools()) {
+				PoolVec::Iterator first = p.BeginPool();
 				if (first().HasEntities()) {
 					{
 						Item& i = stack.Add();
@@ -54,7 +54,7 @@ void EntityVisitor::Reset() {
 	}
 }
 
-void EntityVisitor::Skip(EntityPool::Bit entpool_bit) {
+void EntityVisitor::Skip(Pool::Bit entpool_bit) {
 	freeze_checks.SetTrue(entpool_bit);
 }
 
@@ -118,7 +118,7 @@ bool EntityVisitor::PoolFindNextDepthFirst() {
 	if (cur) {
 		if (stack.GetCount() > 1) {
 			Item& top = stack.Top();
-			if (top.pool().HasEntityPools())
+			if (top.pool().HasPools())
 				PoolPushSub();
 			else {
 				PoolIncPopWhileTop();
@@ -166,7 +166,7 @@ void EntityVisitor::PoolPushSub() {
 
 
 
-EntityParentVisitor::EntityParentVisitor(EntityPool& pool) : base(pool) {
+EntityParentVisitor::EntityParentVisitor(Pool& pool) : base(pool) {
 	Reset();
 }
 
@@ -182,7 +182,7 @@ void EntityParentVisitor::Reset() {
 	}
 }
 
-void EntityParentVisitor::Skip(EntityPool::Bit entpool_bit) {
+void EntityParentVisitor::Skip(Pool::Bit entpool_bit) {
 	freeze_checks.SetTrue(entpool_bit);
 }
 

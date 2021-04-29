@@ -6,7 +6,7 @@ NAMESPACE_OULU_BEGIN
 void EasingSystem::Update(double dt)
 {
 	EntityComponentVisitor<Transform, Easing> visitor(machine);
-	visitor.Skip(EntityPool::BIT_TRANSFORM);
+	visitor.Skip(Pool::BIT_TRANSFORM);
 	for (; visitor; visitor++) {
         auto transform = visitor.Get<Transform>();
         auto easing = visitor.Get<Easing>();

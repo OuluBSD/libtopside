@@ -6,13 +6,13 @@ NAMESPACE_OULU_BEGIN
 
 class Entity;
 struct ComponentBase;
-class EntityPool;
+class Pool;
 class PoolComponentBase;
 class InterfaceBase;
 
 template <class Main, class Base> class ComponentStoreT;
 using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
-using PoolComponentStore = ComponentStoreT<EntityPool, PoolComponentBase>;
+using PoolComponentStore = ComponentStoreT<Pool, PoolComponentBase>;
 
 class ComponentMap;
 class Camerable;

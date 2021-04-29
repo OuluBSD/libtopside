@@ -10,9 +10,9 @@ void Main() {
 	Machine mach;
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef es = mach.Add<EntityStore>();
-	EntityPoolRef root = es->GetRoot();
-	//EntityPoolRef actors = root->AddPool("actors");
-	//EntityPoolRef externals = root->AddPool("externals");
+	PoolRef root = es->GetRoot();
+	//PoolRef actors = root->AddPool("actors");
+	//PoolRef externals = root->AddPool("externals");
 	
     mach.Add<ComponentStore>();
     mach.Add<OverlapSystem>();

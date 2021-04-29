@@ -72,7 +72,7 @@ private:
 };
 
 using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
-using PoolComponentStore = ComponentStoreT<EntityPool, PoolComponentBase>;
+using PoolComponentStore = ComponentStoreT<Pool, PoolComponentBase>;
 
 
 NAMESPACE_OULU_END

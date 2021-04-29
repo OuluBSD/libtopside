@@ -18,10 +18,10 @@ CONSOLE_APP_MAIN {
 	Machine& mach = GetMachine();
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& es = *mach.Add<EntityStore>();
-	EntityPool& root = es.GetRoot();
-	EntityPool& people = root.AddPool("people");
-	EntityPool& rooms = root.AddPool("rooms");
-	EntityPool& octree = root.AddPool("octree");
+	Pool& root = es.GetRoot();
+	Pool& people = root.AddPool("people");
+	Pool& rooms = root.AddPool("rooms");
+	Pool& octree = root.AddPool("octree");
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
     mach.Add<OverlapSystem>();

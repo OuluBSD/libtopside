@@ -8,13 +8,13 @@ NAMESPACE_OULU_BEGIN
 class Machine;
 class EntityStore;
 class Entity;
-class EntityPool;
+class Pool;
 
 using EntityId = int64;
 using VAR = Ref<Entity>;
 using EntityRef = Ref<Entity>;
 
-typedef Ref<EntityPool> EntityPoolRef;
+typedef Ref<Pool> PoolRef;
 
 
 class Entity : public Destroyable, public Enableable, public LockedScopeEnabler<Entity> {
@@ -26,9 +26,9 @@ class Entity : public Destroyable, public Enableable, public LockedScopeEnabler<
 	String name;
 	
 protected:
-	friend class EntityPool;
+	friend class Pool;
 	
-	void Init(EntityPool* p, EntityId i) {pool = p; id = i;}
+	void Init(Pool* p, EntityId i) {pool = p; id = i;}
 	//void SetId(EntityId i) {id = i;}
 	void SetPrefab(String s) {prefab = s;}
 	void SetCreated(int64 i) {created = i;}
@@ -123,8 +123,8 @@ public:
 	
 	Machine&			GetMachine();
 	const Machine&		GetMachine() const;
-	EntityPool&			GetPool() {return *pool;}
-	const EntityPool&	GetPool() const {return *pool;}
+	Pool&			GetPool() {return *pool;}
+	const Pool&	GetPool() const {return *pool;}
 	
 	#define IFACE_(x, post)\
 		Ref<x##post> Find##x##post() {\
@@ -158,7 +158,7 @@ private:
 	TypeRefMap<InterfaceBase> ifaces;
 	ComponentMap comps;
 	EntityId m_id;
-	EntityPool* pool = 0;
+	Pool* pool = 0;
 	
 	
 	template<typename T>

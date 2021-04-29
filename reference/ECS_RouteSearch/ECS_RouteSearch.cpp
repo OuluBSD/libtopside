@@ -2,7 +2,7 @@
 
 NAMESPACE_OULU_BEGIN
 
-void DumpTransforms(String s, EntityPoolRef pool) {
+void DumpTransforms(String s, PoolRef pool) {
 	LOG(s);
 	int i = 0;
 	for (EntityRef& e : pool->GetEntities()) {
@@ -23,9 +23,9 @@ void RunTest() {
 	Machine& mach = GetMachine();
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef es = mach.Add<EntityStore>();
-	EntityPoolRef root = es->GetRoot();
-	EntityPoolRef actors = root->AddPool("actors");
-	EntityPoolRef externals = root->AddPool("externals");
+	PoolRef root = es->GetRoot();
+	PoolRef actors = root->AddPool("actors");
+	PoolRef externals = root->AddPool("externals");
 	
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
@@ -83,7 +83,7 @@ void RunTest() {
 }
 
 
-void TraverseMap(EntityPoolRef externals, String map) {
+void TraverseMap(PoolRef externals, String map) {
 	Vector<String> lines = Split(map, "\n");
 	if (lines.IsEmpty())
 		throw Exc("No lines");
@@ -242,7 +242,7 @@ void TraverseMap(EntityPoolRef externals, String map) {
 
 // A* search
 
-void FindRouteInPool(VAR begin, VAR end, EntityPoolRef route) {
+void FindRouteInPool(VAR begin, VAR end, PoolRef route) {
 	route->Clear();
 	if (begin.IsEmpty() || end.IsEmpty())
 		throw Exc("empty begin or end shared-entity");
@@ -410,7 +410,7 @@ void ConnectRoute(RouteSource& src, RouteSink& sink) {
 	src.LinkManually(sink);
 }
 
-void MergeRoute(EntityPoolRef route, EntityPoolRef waypoints) {
+void MergeRoute(PoolRef route, PoolRef waypoints) {
 	struct Item : Moveable<Item> {
 		EntityRef e;
 		Ref<RouteSource> src;
@@ -503,7 +503,7 @@ const char* Observer::act_names[] = {
 };
 
 bool Observer::MakeRouteTo() {
-	EntityPoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+	PoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
     VAR begin	= waypoints->FindEntityByName("begin");
     VAR end		= waypoints->FindEntityByName("end");
     if (begin.IsEmpty() || end.IsEmpty()) {
@@ -584,7 +584,7 @@ bool Observer::OnActionSink(ActionExchange& e) {
 
 bool Observer::UpdateAct() {
 	if (follow_route) {
-		EntityPool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+		Pool& waypoints = GetEntity().GetPool().GetAddPool("waypoints");
 		ASSERT(waypoints.GetCount());
 		if (route_i < waypoints.GetCount()) {
 			TODO;
@@ -686,10 +686,10 @@ void DummyActor::RefreshActionPlan() {
 
 
 void DummyActor::FindRoute() {
-	EntityPoolRef root = GetMachine().Get<EntityStore>()->GetRoot();
-	EntityPoolRef externals = root->GetAddPool("externals");
-	EntityPoolRef found_route = root->GetAddPool("found_route");
-	EntityPoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
+	PoolRef root = GetMachine().Get<EntityStore>()->GetRoot();
+	PoolRef externals = root->GetAddPool("externals");
+	PoolRef found_route = root->GetAddPool("found_route");
+	PoolRef waypoints = GetEntity().GetPool().GetAddPool("waypoints");
 	
     VAR begin	= externals->FindEntityByName("begin");
     VAR end		= externals->FindEntityByName("end");

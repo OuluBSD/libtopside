@@ -12,7 +12,7 @@ void MP3Player::OnError() {
 void MP3Player::Initialize() {
 	//auto& mach = GetEntity().GetMachine();
 	//Ref<EntityStore> es = mach.Get<EntityStore>();
-	//EntityPool& pool = GetEntity().GetPool();
+	//Pool& pool = GetEntity().GetPool();
 	
 	/*fusion = pool.Create<CompleteFusion>();
 	audio = pool.Create<CompleteMixer>();
@@ -45,7 +45,7 @@ void MP3Player::Initialize() {
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
 	
-	EntityPool& p = e.GetPool();
+	Pool& p = e.GetPool();
 	p.Add<ConnectAllInterfaces<MediaSource>>();
 	
 }
@@ -86,7 +86,7 @@ void Main() {
 	Machine mach;
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef es = mach.Add<EntityStore>();
-	EntityPoolRef root = es->GetRoot();
+	PoolRef root = es->GetRoot();
     mach.Add<ComponentStore>();
     mach.Add<PoolComponentStore>();
     mach.Add<PortaudioSystem>();

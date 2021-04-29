@@ -1,25 +1,25 @@
-#ifndef _EcsCore_EntityPool_h_
-#define _EcsCore_EntityPool_h_
+#ifndef _EcsCore_Pool_h_
+#define _EcsCore_Pool_h_
 
 
 NAMESPACE_OULU_BEGIN
 
-class EntityPool;
+class Pool;
 
 
 typedef RefLinkedList<Entity> EntityVec;
-typedef RefLinkedList<EntityPool> EntityPoolVec;
+typedef RefLinkedList<Pool> PoolVec;
 
-class EntityPool : public LockedScopeEnabler<EntityPool> {
+class Pool : public LockedScopeEnabler<Pool> {
 	Machine* machine = 0;
-	EntityPool* parent = 0;
+	Pool* parent = 0;
 	BitField<dword> freeze_bits;
 	String name;
 	
 	
 public:
-	typedef EntityPool CLASSNAME;
-	EntityPool();
+	typedef Pool CLASSNAME;
+	Pool();
 	
 	typedef enum {
 		BIT_OVERLAP,
@@ -44,11 +44,11 @@ public:
 	void				ClearDeep();
 	void				PruneFromContainer();
 	
-	EntityPool*			GetParent() const {return parent;}
+	Pool*			GetParent() const {return parent;}
 	Machine&			GetMachine() {return *machine;}
 	String				GetName() const {return name;}
 	bool				HasEntities() const {return !objects.IsEmpty();}
-	bool				HasEntityPools() const {return !pools.IsEmpty();}
+	bool				HasPools() const {return !pools.IsEmpty();}
 	
 	void				Initialize(Entity& e, String prefab="Custom");
 	EntityRef			CreateEmpty();
@@ -140,18 +140,18 @@ public:
 	}
 	
 	RefLinkedList<Entity>& GetEntities() {return objects;}
-	RefLinkedList<EntityPool>& GetPools() {return pools;}
+	RefLinkedList<Pool>& GetPools() {return pools;}
 	
-	EntityPoolRef AddPool(String name="") {
-		EntityPoolRef p = pools.Add();
+	PoolRef AddPool(String name="") {
+		PoolRef p = pools.Add();
 		p->SetMachine(*machine);
 		p->parent = this;
 		p->SetName(name);
 		return p;
 	}
 	
-	EntityPoolRef GetAddPool(String name) {
-		for (EntityPoolRef& pool : pools)
+	PoolRef GetAddPool(String name) {
+		for (PoolRef& pool : pools)
 			if (pool->GetName() == name)
 				return pool;
 		return AddPool(name);
@@ -159,7 +159,7 @@ public:
 	
 	RefLinkedList<Entity>::Iterator			begin()			{return objects.begin();}
 	RefLinkedList<Entity>::Iterator			end()			{return objects.end();}
-	RefLinkedList<EntityPool>::Iterator		BeginPool()		{return pools.begin();}
+	RefLinkedList<Pool>::Iterator		BeginPool()		{return pools.begin();}
 	
 	
 	
@@ -181,7 +181,7 @@ public:
 private:
 	PoolComponentMap				comps;
 	RefLinkedList<Entity>			objects;
-	RefLinkedList<EntityPool>		pools;
+	RefLinkedList<Pool>		pools;
 	
 	void InitializeComponent(PoolComponentBase& comp);
 	

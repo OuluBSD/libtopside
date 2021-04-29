@@ -8,7 +8,7 @@ NAMESPACE_OULU_BEGIN
 template <class T> inline Ref<T> ComponenBase_Static_As(PoolComponentBase*) {return 0;}
 
 struct PoolComponentBase : Destroyable, Enableable, LockedScopeEnabler<PoolComponentBase> {
-	EntityPool* pool = NULL;
+	Pool* pool = NULL;
 	virtual ~PoolComponentBase() = default;
 
 	virtual TypeId GetType() const = 0;
@@ -22,8 +22,8 @@ struct PoolComponentBase : Destroyable, Enableable, LockedScopeEnabler<PoolCompo
 	static bool AllowDuplicates() {return false;}
 	
 public:
-	EntityPool& GetPool() {ASSERT(pool); return *pool;}
-	EntityPool* GetPoolPtr() const {return pool;}
+	Pool& GetPool() {ASSERT(pool); return *pool;}
+	Pool* GetPoolPtr() const {return pool;}
 	
 	
 };

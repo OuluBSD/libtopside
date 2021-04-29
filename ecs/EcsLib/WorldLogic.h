@@ -14,7 +14,7 @@ protected:
     void Update(double /*dt*/) override
     {
         EntityComponentVisitor<Transform> visitor(machine);
-		visitor.Skip(EntityPool::BIT_TRANSFORM);
+		visitor.Skip(Pool::BIT_TRANSFORM);
         for (;visitor; visitor++)
         {
             EntityRef entity = *visitor;

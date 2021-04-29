@@ -69,7 +69,7 @@ void OverlapDetector::Uninitialize() {
 
 
 
-void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPoolRef parent, const Vector<String>& lines, const ArrayMap<int, EntityRef>& map_char_ents) {
+void CreateFlatOctreeEntityFromStringLevel(Rect r, PoolRef parent, const Vector<String>& lines, const ArrayMap<int, EntityRef>& map_char_ents) {
 	int width = r.Width();
 	int height = r.Height();
 	int w_2 = width / 2;
@@ -120,14 +120,14 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, EntityPoolRef parent, const V
 					r.top + y * h_2,
 					w_2,
 					h_2);
-				EntityPoolRef child = parent->AddPool(name);
+				PoolRef child = parent->AddPool(name);
 				CreateFlatOctreeEntityFromStringLevel(r2, child, lines, map_char_ents);
 			}
 		}
 	}
 }
 
-void CreateOctreeEntityFromString(EntityPoolRef octree_root, String map_str, const ArrayMap<int, EntityRef>& map_char_ents) {
+void CreateOctreeEntityFromString(PoolRef octree_root, String map_str, const ArrayMap<int, EntityRef>& map_char_ents) {
 	try {
 		Vector<String> lines = Split(map_str, "\n");
 		if (lines.IsEmpty())

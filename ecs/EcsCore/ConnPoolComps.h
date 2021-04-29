@@ -35,7 +35,7 @@ public:
 	
 private:
 	
-	void Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>& src_stack);
+	void Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_stack);
 	
 };
 

@@ -41,7 +41,7 @@ struct Tile : Moveable<Tile> {
 
 
 
-void TraverseMap(EntityPoolRef externals, String map);
+void TraverseMap(PoolRef externals, String map);
 
 
 
@@ -184,8 +184,8 @@ struct SimpleRouteNode :
 
 
 
-void FindRoute(VAR begin, VAR end, EntityPool& route);
-void MergeRoute(EntityPool& route, EntityPool& waypoints);
+void FindRoute(VAR begin, VAR end, Pool& route);
+void MergeRoute(Pool& route, Pool& waypoints);
 
 PREFAB_BEGIN(DemoActor)
 	DummyActor,

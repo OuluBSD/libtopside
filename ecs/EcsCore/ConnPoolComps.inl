@@ -23,7 +23,7 @@ void ConnectAllInterfaces<T>::UnlinkAll() {
 }
 
 template <class T>
-void ConnectAllInterfaces<T>::Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>& src_stack) {
+void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_stack) {
 	
 	Vector<Ref<T>>* cur = 0;
 	//int src_scope_count = src_stack.GetCount();
@@ -73,7 +73,7 @@ void ConnectAllInterfaces<T>::Visit(Ref<EntityPool> pool, Vector<Vector<Ref<T>>>
 
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
-	EntityPool& pool = PoolComponentBase::GetPool();
+	Pool& pool = PoolComponentBase::GetPool();
 	Vector<Vector<Ref<T>>> src_stack;
 	
 	Visit(pool, src_stack);

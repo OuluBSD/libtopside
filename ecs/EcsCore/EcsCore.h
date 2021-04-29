@@ -32,7 +32,7 @@
 #include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"
-#include "EntityPool.h"
+#include "Pool.h"
 #include "EntityVisitor.h"
 #include "EntityStore.h"
 #include "Overlap.h"

@@ -8,12 +8,12 @@ NAMESPACE_OULU_BEGIN
 class EntityVisitor {
 	struct Item : Moveable<Item> {
 		int pool_pos;
-		EntityPoolVec::Iterator pool;
+		PoolVec::Iterator pool;
 		EntityVec::Iterator ent;
 		bool finished = false;
 	};
 	
-	EntityPoolVec& base;
+	PoolVec& base;
 	BitField<dword> freeze_checks;
 	Vector<Item> stack;
 	EntityRef cur;
@@ -32,12 +32,12 @@ public:
 		POOL_CHILDREN_ONLY
 	};
 	
-	EntityVisitor(EntityPoolVec& pool, int mode=POOL_CURRENT_AND_CHILDREN);
+	EntityVisitor(PoolVec& pool, int mode=POOL_CURRENT_AND_CHILDREN);
 	EntityVisitor(Machine& m, int mode=POOL_CURRENT_AND_CHILDREN);
 	EntityVisitor(Entity& e, int mode=POOL_CURRENT_AND_CHILDREN);
 	
 	void Reset();
-	void Skip(EntityPool::Bit entpool_bit);
+	void Skip(Pool::Bit entpool_bit);
 	EntityRef GetCurrent() const {return cur;}
 	
 	Entity* operator->();
@@ -62,19 +62,19 @@ public:
 };
 
 class EntityParentVisitor {
-	EntityPool& base;
+	Pool& base;
 	BitField<dword> freeze_checks;
-	EntityPool* cur_pool;
+	Pool* cur_pool;
 	EntityVec::Iterator cur;
 	
 	bool FindNextChildFirst();
 	
 public:
 	EntityParentVisitor(Entity& e);
-	EntityParentVisitor(EntityPool& pool);
+	EntityParentVisitor(Pool& pool);
 	
 	void Reset();
-	void Skip(EntityPool::Bit entpool_bit);
+	void Skip(Pool::Bit entpool_bit);
 	EntityRef GetCurrent() const {return *cur;}
 	
 	Entity* operator->();
@@ -87,7 +87,7 @@ public:
 class EntityChildrenVisitor : public EntityVisitor {
 	
 public:
-	EntityChildrenVisitor(EntityPoolVec& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
 	EntityChildrenVisitor(Machine& m)			: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
 	EntityChildrenVisitor(Entity& e)			: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
 	
@@ -96,7 +96,7 @@ public:
 class EntityCurrentVisitor : public EntityVisitor {
 	
 public:
-	EntityCurrentVisitor(EntityPoolVec& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
 	EntityCurrentVisitor(Machine& m)			: EntityVisitor(m, POOL_CURRENT_ONLY) {}
 	EntityCurrentVisitor(Entity& e)				: EntityVisitor(e, POOL_CURRENT_ONLY) {}
 	
@@ -127,7 +127,7 @@ class EntityComponentVisitor : public EntityVisitor {
 			FindNextDepthFirstWithComps();
 	}
 public:
-	EntityComponentVisitor(EntityPoolVec& pool) : EntityVisitor(pool) {Init();}
+	EntityComponentVisitor(PoolVec& pool) : EntityVisitor(pool) {Init();}
 	EntityComponentVisitor(Machine& m) : EntityVisitor(m) {Init();}
 	
 	

@@ -4,16 +4,16 @@
 NAMESPACE_OULU_BEGIN
 
 
-EntityPool::EntityPool() {
+Pool::Pool() {
 	
 }
 
-EntityId EntityPool::GetNextId() {
+EntityId Pool::GetNextId() {
 	static Atomic64 next_id;
 	return ++next_id;
 }
 
-void EntityPool::Initialize(Entity& e, String prefab) {
+void Pool::Initialize(Entity& e, String prefab) {
 	uint64 ticks = GetMachine().GetTicks();
 	e.SetPrefab(prefab);
 	e.SetCreated(ticks);
@@ -21,7 +21,7 @@ void EntityPool::Initialize(Entity& e, String prefab) {
 	
 }
 
-EntityRef EntityPool::Clone(const Entity& c) {
+EntityRef Pool::Clone(const Entity& c) {
 	EntityRef e = objects.Add();
 	e->Init(this, GetNextId());
 	Initialize(*e);
@@ -30,7 +30,7 @@ EntityRef EntityPool::Clone(const Entity& c) {
 	return e;
 }
 	
-void EntityPool::UnlinkDeep() {
+void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
 		it().UnlinkDeep();
 	}
@@ -40,8 +40,8 @@ void EntityPool::UnlinkDeep() {
 	}
 }
 
-void EntityPool::UninitializeComponentsDeep() {
-	for (EntityPoolRef& p : pools)
+void Pool::UninitializeComponentsDeep() {
+	for (PoolRef& p : pools)
 		p->UninitializeComponentsDeep();
 	
 	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
@@ -53,8 +53,8 @@ void EntityPool::UninitializeComponentsDeep() {
 	}
 }
 
-void EntityPool::ClearComponentsDeep() {
-	for (EntityPoolRef& p : pools)
+void Pool::ClearComponentsDeep() {
+	for (PoolRef& p : pools)
 		p->ClearComponentsDeep();
 	
 	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
@@ -64,32 +64,32 @@ void EntityPool::ClearComponentsDeep() {
 	comps.Clear();
 }
 
-void EntityPool::ClearDeep() {
-	for (EntityPoolRef& p : pools)
+void Pool::ClearDeep() {
+	for (PoolRef& p : pools)
 		p->ClearDeep();
 	pools.Clear();
 	
 	objects.Clear();
 }
 
-void EntityPool::ReverseEntities() {
+void Pool::ReverseEntities() {
 	objects.Reverse();
 }
 
-void EntityPool::Clear() {
+void Pool::Clear() {
 	UnlinkDeep();
 	UninitializeComponentsDeep();
 	ClearComponentsDeep();
 	ClearDeep();
 }
 
-void EntityPool::PruneFromContainer() {
+void Pool::PruneFromContainer() {
 	for (auto& pool : pools)
 		pool->PruneFromContainer();
 	Destroyable::PruneFromContainer(objects);
 }
 
-void EntityPool::InitializeComponent(PoolComponentBase& comp) {
+void Pool::InitializeComponent(PoolComponentBase& comp) {
 	comp.pool = this;
 	comp.Initialize();
 }

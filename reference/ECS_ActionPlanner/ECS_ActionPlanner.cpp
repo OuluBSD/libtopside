@@ -42,10 +42,10 @@ CONSOLE_APP_MAIN {
 	Machine& mach = GetMachine();
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& es = *mach.Add<EntityStore>();
-	EntityPool& root = es.GetRoot();
-	EntityPool& actors = root.AddPool("actors");
-	EntityPool& routes = root.AddPool("routes");
-	EntityPool& route_cls = root.AddPool("route_classes");
+	Pool& root = es.GetRoot();
+	Pool& actors = root.AddPool("actors");
+	Pool& routes = root.AddPool("routes");
+	Pool& route_cls = root.AddPool("route_classes");
 	
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
