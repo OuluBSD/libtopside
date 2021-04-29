@@ -7,12 +7,12 @@ NAMESPACE_OULU_BEGIN
 class Entity;
 struct ComponentBase;
 class Pool;
-class PoolComponentBase;
+class ConnectorBase;
 class InterfaceBase;
 
 template <class Main, class Base> class ComponentStoreT;
 using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
-using PoolComponentStore = ComponentStoreT<Pool, PoolComponentBase>;
+using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
 
 class ComponentMap;
 class Camerable;
@@ -71,13 +71,13 @@ typedef Ref<ExchangePoint> ExchangePointRef;
 
 class MetaExchangePoint {
 	RefLinkedList<ExchangePoint> pts;
-	PoolComponentBase* comp = 0;
+	ConnectorBase* comp = 0;
 	
 public:
 	typedef MetaExchangePoint CLASSNAME;
 	MetaExchangePoint();
 	
-	void Init(PoolComponentBase* comp);
+	void Init(ConnectorBase* comp);
 	void UnlinkAll();
 	
 	ExchangePointRef Add();

@@ -31,7 +31,7 @@ MetaExchangePoint::MetaExchangePoint() {
 	
 }
 
-void MetaExchangePoint::Init(PoolComponentBase* comp) {
+void MetaExchangePoint::Init(ConnectorBase* comp) {
 	this->comp = comp;
 	
 }

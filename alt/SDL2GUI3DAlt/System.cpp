@@ -40,7 +40,8 @@ bool Open_SDL2GUI3DAlt_ECS(bool gui) {
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& ents = *mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
-    mach.Add<ConnectorSystem>();
+    //mach.Add<ConnectorSystem>();
+    TODO
     
     mach.Add<SDL2System>();
     mach.Add<SDL2GUI3DAltSystem>();
@@ -74,7 +75,8 @@ bool Open_SDL2GUI3DAlt_ECS(bool gui) {
 		return false;
     
     EntityRef app = ents.Create<StandaloneWindow>();
-    app->Find<Connector>()->ConnectAll();
+    //app->Find<Connector>()->ConnectAll();
+    TODO
     
 	return true;
 }

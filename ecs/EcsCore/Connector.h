@@ -1,91 +1,122 @@
 #ifndef _EcsCore_Connector_h_
 #define _EcsCore_Connector_h_
 
-#if 0
-
 NAMESPACE_OULU_BEGIN
 
-class Connector;
 
 
-	Index<void*> conns;
-	Ref<EntityStore> es;
+template <class T> inline Ref<T> ComponenBase_Static_As(ConnectorBase*) {return 0;}
+
+struct ConnectorBase : Destroyable, Enableable, LockedScopeEnabler<ConnectorBase> {
+	Pool* pool = NULL;
+	virtual ~ConnectorBase() = default;
+
+	virtual TypeId GetType() const = 0;
+	virtual void CopyTo(ConnectorBase* component) const = 0;
+	virtual void Update(double dt) = 0;
+	virtual void UnlinkAll() {};
+	virtual void Initialize() {};
+	virtual void Uninitialize() {};
+	virtual String ToString() const {return "<not implemented>";}
+	
+	static bool AllowDuplicates() {return false;}
 	
 public:
-class ConnectorSystem : public System<ConnectorSystem> {
-	using System::System;
+	Pool& GetPool() {ASSERT(pool); return *pool;}
+	Pool* GetPoolPtr() const {return pool;}
 	
-	void Update(double dt) override;
-	void Uninitialize() override;
-	
-	
-protected:
-	friend class Connector;
-	
-	void Add(Connector* c) {conns.FindAdd(c);}
-	void Remove(Connector* c) {conns.RemoveKey(c);}
 	
 };
 
+typedef Ref<ConnectorBase> ConnectorRef;
 
 
-class Connector : public Component<Connector> {
+template<typename T>
+struct Connector : ConnectorBase {
+
+	TypeId GetType() const override {
+		return typeid(T);
+	}
 	
+	void CopyTo(ConnectorBase* target) const override {
+		ASSERT(target->GetType() == GetType());
+	    
+		*static_cast<T*>(target) = *static_cast<const T*>(this);
+	}
+};
+
+
+typedef RefTypeMapIndirect<ConnectorBase> ConnectorMapBase;
+typedef ArrayMap<TypeId, Ref<ConnectorBase>> ConnectorRefMap;
+
+class ConnectorMap : public ConnectorMapBase {
+	
+	void ReturnConnector(ConnectorStore& s, ConnectorBase* c);
 	
 public:
-	using Component::Component;
 	
+	ConnectorMap() {}
 	
-	Connector();
+	#define IS_EMPTY_SHAREDPTR(x) (x.IsEmpty())
 	
-	void Initialize() override;
-	void Uninitialize() override;
+	void Dump();
 	
-	void operator=(const Connector& c) {}
+	template<typename ConnectorT>
+	Ref<ConnectorT> Get() {
+		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		
+		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
+		ASSERT(!IS_EMPTY_SHAREDPTR(it));
+		if (it.IsEmpty())
+			throw Exc("Could not find component " + TypeId(typeid(ConnectorT)).CleanDemangledName());
+		
+		return it->AsRef<ConnectorT>();
+	}
 	
+	template<typename ConnectorT>
+	Ref<ConnectorT> Find() {
+		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		
+		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
+		if (IS_EMPTY_SHAREDPTR(it))
+			return NULL;
+		else
+			return it->AsRef<ConnectorT>();
+	}
 	
-	void ConnectAll(ConnectorArea a);
-	#define IFACE(x) void Connect##x##Sink (ConnectorArea a); void Connect##x##Source (ConnectorArea a);
-	IFACE_LIST
-	#undef IFACE
+	template<typename ConnectorT>
+	Ref<ConnectorT> Add(ConnectorT* component) {
+		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		
+		const TypeId type = typeid(ConnectorT);
+		ASSERT_(component->GetType() == type, "ConnectorRef type does not match T");
+		
+		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(type);
+		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ConnectorT::AllowDuplicates(), "Cannot have duplicate componnets");
+		ConnectorRef cmp = ConnectorMapBase::Add(type, component);
+		
+		return Ref<ConnectorT>(component);
+	}
 	
-	void SignalAll();
-	#define IFACE(x) void Signal##x##Sink (); void Signal##x##Source ();
-	IFACE_LIST
-	#undef IFACE
+	template<typename ConnectorT>
+	void Remove(Ref<ConnectorStore> s) {
+		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		
+		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(typeid(ConnectorT));
+		ASSERT_(iter, "Tried to remove non-existent component");
+		
+		iter.value().Uninitialize();
+		iter.value().Destroy();
+		
+		ReturnConnector(*s, iter.value.GetItem()->value.Detach());
+		ConnectorMapBase::Remove(iter);
+	}
 	
-	const Vector<Ref<InterfaceBase>>& GetSourceInterfaces() const {return src_ifaces;}
-	const Vector<Ref<InterfaceBase>>& GetSinkInterfaces() const {return sink_ifaces;}
-	bool HasInterfaces() const {return src_ifaces.GetCount() || sink_ifaces.GetCount();}
-	void SetUpdateInterfaces(bool b=true) {update_ifaces = b;}
-	bool IsUpdateInterfaces() const {return update_ifaces;}
-	void UnlinkAll();
-	
-protected:
-	friend class ConnectorSystem;
-	friend class Entity;
-	
-	uint64 connect_bits[CONNAREA_COUNT];
-	uint64 signal_bits = 0;
-	Vector<Ref<InterfaceBase>> src_ifaces, sink_ifaces;
-	bool update_ifaces = true;
-	
-	void ClearInterfaces() {src_ifaces.Clear(); sink_ifaces.Clear();}
-	void AddSourceInterface(Ref<InterfaceBase> base) {src_ifaces.Add(base);}
-	void AddSinkInterface(Ref<InterfaceBase> base) {sink_ifaces.Add(base);}
-	
-	bool IsConnectAny(ConnectorArea t) const {return connect_bits[t] != 0;}
-	uint64 GetConnectBits(ConnectorArea t) const {return connect_bits[t];}
-	void ClearConnectBits(ConnectorArea t) {connect_bits[t] = 0;}
-	
-	bool IsSignalAny() const {return signal_bits != 0;}
-	uint64 GetSignalBits() const {return signal_bits;}
-	void ClearSignalBits() {signal_bits = 0;}
+	#undef IS_EMPTY_SHAREDPTR
 	
 };
 
 
 NAMESPACE_OULU_END
 
-#endif
 #endif

@@ -88,7 +88,7 @@ void Main() {
 	EntityStoreRef es = mach.Add<EntityStore>();
 	PoolRef root = es->GetRoot();
     mach.Add<ComponentStore>();
-    mach.Add<PoolComponentStore>();
+    mach.Add<ConnectorStore>();
     mach.Add<PortaudioSystem>();
     mach.Add<ActionSystem>();
     

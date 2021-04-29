@@ -5,7 +5,7 @@ NAMESPACE_OULU_BEGIN
 template <class T>
 void ConnectAllInterfaces<T>::Initialize() {
 	MetaExchangePoint::Init(this);
-	Machine& m = PoolComponentBase::GetPool().GetMachine();
+	Machine& m = ConnectorBase::GetPool().GetMachine();
 	sys = m.Get<EntityStore>();
 	ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
 	Refresh();
@@ -73,7 +73,7 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
-	Pool& pool = PoolComponentBase::GetPool();
+	Pool& pool = ConnectorBase::GetPool();
 	Vector<Vector<Ref<T>>> src_stack;
 	
 	Visit(pool, src_stack);

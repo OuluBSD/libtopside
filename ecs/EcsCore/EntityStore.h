@@ -7,7 +7,7 @@ NAMESPACE_OULU_BEGIN
 
 class EntityStore : public System<EntityStore> {
 	PoolVec					root;
-	LinkedList<PoolComponentBase*>	refresh_poolcomps[2];
+	LinkedList<ConnectorBase*>	refresh_poolcomps[2];
 	Mutex							lock;
 	
 	enum {
@@ -25,7 +25,7 @@ public:
 	PoolVec& GetRootVec()	{return root;}
 	
 	
-	int64 PostRefresh(int64 last_refresh, PoolComponentBase* comp);
+	int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
 	
 protected:
 	void Update(double) override;

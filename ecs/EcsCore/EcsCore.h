@@ -28,7 +28,7 @@
 #include "State.h"
 #include "Interface.h"
 #include "Component.h"
-#include "PoolComponent.h"
+#include "Connector.h"
 #include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"

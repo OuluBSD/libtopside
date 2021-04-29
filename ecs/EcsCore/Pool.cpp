@@ -89,7 +89,7 @@ void Pool::PruneFromContainer() {
 	Destroyable::PruneFromContainer(objects);
 }
 
-void Pool::InitializeComponent(PoolComponentBase& comp) {
+void Pool::InitializeComponent(ConnectorBase& comp) {
 	comp.pool = this;
 	comp.Initialize();
 }

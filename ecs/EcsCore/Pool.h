@@ -166,12 +166,12 @@ public:
 	
 	template<typename T>
 	void Remove() {
-		comps.Remove<T>(GetMachine().Get<PoolComponentStore>());
+		comps.Remove<T>(GetMachine().Get<ConnectorStore>());
 	}
 	
 	template<typename T>
 	Ref<T> Add() {
-		T* comp = GetMachine().Get<PoolComponentStore>()->CreateComponent<T>();
+		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
 		ASSERT(comp);
 		comps.Add(comp);
 		InitializeComponent(*comp);
@@ -179,11 +179,11 @@ public:
 	}
 	
 private:
-	PoolComponentMap				comps;
+	ConnectorMap				comps;
 	RefLinkedList<Entity>			objects;
 	RefLinkedList<Pool>		pools;
 	
-	void InitializeComponent(PoolComponentBase& comp);
+	void InitializeComponent(ConnectorBase& comp);
 	
 };
 

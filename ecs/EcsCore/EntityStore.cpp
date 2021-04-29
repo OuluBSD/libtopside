@@ -22,13 +22,13 @@ void EntityStore::Update(double dt) {
 		refresh_poolcomps[WRITE].Clear();
 		lock.Leave();
 		
-		for (PoolComponentBase* comp : refresh_poolcomps[READ])
+		for (ConnectorBase* comp : refresh_poolcomps[READ])
 			comp->Update(dt);
 	}
 	
 }
 
-int64 EntityStore::PostRefresh(int64 last_refresh, PoolComponentBase* comp) {
+int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
 	Machine& mach = GetMachine();
 	
 	// Don't add refresh if EntityStore haven't called previous refresh yet

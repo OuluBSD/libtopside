@@ -330,8 +330,7 @@ struct SDL2StandaloneWindow : EntityPrefab<
 	SDL2ImageComponent,
 	SDL2FontComponent,
 	SDL2ContextComponent,
-	DirectWindow,
-	Connector>
+	DirectWindow>
 {
     static Components Make(Entity& e)
     {
@@ -354,8 +353,7 @@ struct SDL2StandaloneConsole : EntityPrefab<
 	SDL2ImageComponent,
 	SDL2FontComponent,
 	SDL2ContextComponent,
-	// Never: DirectWindow,
-	Connector>
+	// Never: DirectWindow,>
 {
     static Components Make(Entity& e)
     {
@@ -368,8 +366,7 @@ struct SDL2StandaloneConsole : EntityPrefab<
 
 struct StandaloneLineIn : EntityPrefab<
 	SDL2AudioInputComponent,
-	SDL2ContextComponent,
-	Connector>
+	SDL2ContextComponent>
 {
     static Components Make(Entity& e)
     {

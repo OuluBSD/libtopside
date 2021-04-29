@@ -7,7 +7,7 @@ NAMESPACE_OULU_BEGIN
 
 template <class T>
 class ConnectAllInterfaces :
-	public PoolComponent<ConnectAllInterfaces<T>>,
+	public Connector<ConnectAllInterfaces<T>>,
 	public MetaExchangePoint
 {
 	Ref<EntityStore> sys;
@@ -24,7 +24,7 @@ public:
 	
 	void Refresh() {if (sys) refresh_ticks = sys->PostRefresh(refresh_ticks, this);}
 	TypeId GetType() const override {return typeid(ConnectAllInterfaces<T>);}
-	void CopyTo(PoolComponentBase* component) const override {}
+	void CopyTo(ConnectorBase* component) const override {}
 	void Initialize() override;
 	void Uninitialize() override;
 	String ToString() const override {return MetaExchangePoint::ToString();}
