@@ -176,6 +176,19 @@ void VolatileSoundBuffer::Put(void* v_, int size_, bool realtime) {
 	}
 }
 
+bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
+	// easy implementation
+	thread_local static Vector<byte> tmp;
+	if (snd.GetSoundFormat() == snd_fmt) {
+		int sz = snd_fmt.GetFrameBytes();
+		tmp.SetCount(sz);
+		snd.Get(tmp.Begin(), sz);
+		Put(tmp.Begin(), sz, realtime);
+		return true;
+	}
+	return false;
+}
+
 bool VolatileSoundBuffer::CheckSize(int size_) {
 	ASSERT(!IsEmpty());
 	if (IsEmpty())

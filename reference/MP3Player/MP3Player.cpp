@@ -48,6 +48,12 @@ void MP3Player::Initialize() {
 	Pool& p = e.GetPool();
 	p.Add<ConnectAllInterfaces<AudioSource>>();
 	
+	if (!file_in->LoadFileAny(file_path)) {
+		LOG("opening media file failed: " << file_in->GetLastError());
+		GetMachine().SetNotRunning();
+		return;
+	}
+	
 }
 
 void MP3Player::Uninitialize() {
@@ -56,14 +62,14 @@ void MP3Player::Uninitialize() {
 	GetEntity().Destroy();
 }
 
-void MP3PlayerStartup() {
+bool MP3PlayerStartup() {
 	SetCoutLog();
 	
 	CommandLineArguments cmd;
 	cmd.AddArg('f', "The path for the music file", true);
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
-		return;
+		return false;
 	}
 	
 	const auto& inputs = cmd.GetInputs();
@@ -72,9 +78,10 @@ void MP3PlayerStartup() {
 	}
 	if (file_path.IsEmpty()) {
 		cmd.PrintHelp();
-		return;
+		return false;
 	}
 	
+	return FileExists(file_path);
 }
 
 
@@ -83,6 +90,10 @@ void MP3PlayerStartup() {
 void Main() {
 	SetCoutLog();
 	
+	if (!MP3PlayerStartup())
+		Exit(1);
+	
+		
 	Machine mach;
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef es = mach.Add<EntityStore>();
@@ -98,7 +109,7 @@ void Main() {
         
 	    mach.Start();
 	    
-	    int dbg_i = 0;
+	    //int dbg_i = 0;
 	    TimeStop t;
 	    while (mach.IsRunning()) {
 	        double dt = ResetSeconds(t);
@@ -107,8 +118,7 @@ void Main() {
 	        
 	        
 	        
-	        if (++dbg_i > 100)
-	            break;
+	        //if (++dbg_i > 100) break;
 	    }
     }
     catch (Exc e) {

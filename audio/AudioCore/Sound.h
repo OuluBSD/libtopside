@@ -201,6 +201,7 @@ public:
 	int GetQueueSize() const override {return buf.GetQueueSize();}
 	SoundFormat GetSoundFormat() const override {return buf.GetSoundFormat();}
 	bool IsQueueFull() const override {return buf.IsQueueFull();}
+	bool GetFrameFrom(Sound& snd, bool realtime) override {return buf.GetFrameFrom(snd, realtime);}
 	
 };
 

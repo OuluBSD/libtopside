@@ -33,7 +33,6 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 		Ref<T> src = e->FindInterface<T>();
 		
 		if (src) {
-			LOG("src");
 			if (!cur)
 				cur = &src_stack.Add();
 			
@@ -44,13 +43,8 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 	for (EntityRef& e : *pool) {
 		Ref<Sink> sink = e->FindInterface<Sink>();
 		if (sink) {
-			LOG("sink");
-			//int i = 0;
 			for(Vector<Ref<T>>& src_scope : src_stack) {
-				//if (i++ >= src_scope_count)
-				//	break;
 				for (Ref<T>& src : src_scope) {
-					LOG("link");
 					if (src->LinkManually(*sink)) {
 						ExchangePointRef ep = MetaExchangePoint::Add();
 						
