@@ -13,7 +13,7 @@ class MP3Player :
 {
 	//EntityRef mixer, fusion, channel0, track0, output;
 	MixerContextComponent* ctx = 0;
-	Ref<MultiMediaComponent> file_in;
+	Ref<FfmpegComponent> file_in;
 	Ref<PortaudioSinkComponent> audio;
 public:
 	typedef MP3Player CLASSNAME;
@@ -29,7 +29,7 @@ public:
 
 PREFAB_BEGIN(MP3PlayerPrefab)
 	PortaudioSinkComponent,
-	MultiMediaComponent,
+	FfmpegComponent,
 	MP3Player
 PREFAB_END
 

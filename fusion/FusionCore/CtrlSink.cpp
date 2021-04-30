@@ -90,7 +90,7 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 					return true;
 				}
 				else {
-					err = "couldn't link MultiMediaComponent to FusionMediaSink";
+					err = "couldn't link FfmpegComponent to FusionMediaSink";
 				}
 			}
 		}

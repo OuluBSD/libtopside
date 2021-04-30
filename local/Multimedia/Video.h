@@ -15,14 +15,14 @@ public:
 class VideoInputFormatResolution {
 	
 protected:
-	friend class MediaDeviceManager;
-	friend class MediaFileInput;
+	friend class V4L2_DeviceManager;
+	friend class FfmpegFileInput;
 	
 	VideoFormat fmt;
 	
 public:
 	
-	VideoFormat GetFormat() const {return fmt;}
+	VideoFormat GetVideoFormat() const {return fmt;}
 	
 	int GetPitch() const {return fmt.pitch;}
 	void SetPitch(int i) {fmt.SetPitch(i);}
@@ -32,8 +32,8 @@ public:
 class VideoInputFormat {
 	
 protected:
-	friend class MediaDeviceManager;
-	friend class MediaFileInput;
+	friend class V4L2_DeviceManager;
+	friend class FfmpegFileInput;
 	
 	String desc;
 	uint32 pix_fmt = 0;
@@ -60,7 +60,7 @@ public:
 class VideoInputFrame : public VideoFrame {
 	
 protected:
-	friend class MediaDeviceManager;
+	friend class V4L2_DeviceManager;
 	
 	
 public:
@@ -71,10 +71,33 @@ public:
 class VideoOutputFrame : public VideoFrame {
 	
 protected:
-	friend class MediaDeviceManager;
+	friend class V4L2_DeviceManager;
 	
 	
 public:
+	
+};
+
+struct DataPtrVideoBuffer : public Video {
+	void* data = 0;
+	VideoFormat fmt;
+	int type = 0;
+	
+	enum {
+		UNKNOWN,
+		OPENCV
+	};
+	
+	void SetOpenCVFormat(VideoFormat fmt) {this->fmt = fmt; type = OPENCV;}
+	
+	void Get(void* v, int size) override {}
+	void Put(void* v, int size, bool realtime) override {}
+	int GetQueueSize() const override {return 1;}
+	VideoFormat GetVideoFormat() const override {return fmt;}
+	bool IsQueueFull() const override {return false;}
+#ifdef flagOPENGL
+	bool PaintOpenGLTexture(int texture) override;
+#endif
 	
 };
 

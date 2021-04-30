@@ -16,7 +16,7 @@ public:
 class AudioInputFrame : public AudioFrame {
 	
 protected:
-	friend class MediaDeviceManager;
+	friend class V4L2_DeviceManager;
 	
 	
 public:

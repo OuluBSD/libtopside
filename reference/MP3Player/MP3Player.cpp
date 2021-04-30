@@ -40,13 +40,13 @@ void MP3Player::Initialize() {
 	}*/
 	
 	Entity& e = GetEntity();
-	file_in = e.Find<MultiMediaComponent>();
+	file_in = e.Find<FfmpegComponent>();
 	audio   = e.Find<PortaudioSinkComponent>();
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
 	
 	Pool& p = e.GetPool();
-	p.Add<ConnectAllInterfaces<MediaSource>>();
+	p.Add<ConnectAllInterfaces<AudioSource>>();
 	
 }
 
@@ -89,7 +89,7 @@ void Main() {
 	PoolRef root = es->GetRoot();
     mach.Add<ComponentStore>();
     mach.Add<ConnectorStore>();
-    mach.Add<PortaudioSystem>();
+    mach.Add<AudioSystem>();
     mach.Add<ActionSystem>();
     
     

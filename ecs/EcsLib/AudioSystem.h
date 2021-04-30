@@ -7,7 +7,8 @@ NAMESPACE_OULU_BEGIN
 
 class AudioSystem : public System<AudioSystem> {
 	Ref<EntityStore> ents;
-	Vector<AudioSource*> audios;
+	Vector<AudioSource*> srcs;
+	Vector<AudioSink*> sinks;
 	
 protected:
     bool Initialize() override;
@@ -21,6 +22,10 @@ public:
 	
 	void Add(AudioSource* src);
 	void Remove(AudioSource* src);
+	void Add(AudioSink* sink);
+	void Remove(AudioSink* sink);
+	
+	static Callback WhenUninit;
 	
 };
 

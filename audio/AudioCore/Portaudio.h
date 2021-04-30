@@ -10,8 +10,7 @@ struct StreamCallbackArgs;
 
 class PortaudioSinkComponent :
 	public Component<PortaudioSinkComponent>,
-	public AudioSink,
-	public MediaSink
+	public AudioSink
 {
     AudioSinkConfig aconfig;
 	String last_error;
@@ -25,7 +24,7 @@ public:
 	typedef PortaudioSinkComponent CLASSNAME;
 	COPY_PANIC(PortaudioSinkComponent);
 	IFACE_CB(AudioSink);
-	IFACE_CB(MediaSink);
+	IFACE_CB(VideoSink);
 	IFACE_GENERIC;
 	
 	PortaudioSinkComponent();
@@ -37,31 +36,7 @@ public:
 	String GetLastError() const {return last_error;}
 	
 	void			RecvAudioSink(AudioSource& src, double dt) override;
-	void			RecvMedia(Media& media) override;
-	
-	SystemSound&	BeginPlay() override;
-	void			CommitPlay() override;
-	void			UndoPlay() override;
-	SoundFormat		GetFormat() override;
-};
-
-class PortaudioSystem : public System<PortaudioSystem> {
-	Vector<AudioSink*> sinks;
-	
-public:
-	PortaudioSystem(Machine& m);
-	
-	void Add(AudioSink* sink);
-	void Remove(AudioSink* sink);
-	
-protected:
-	
-    bool Initialize() override;
-    void Start() override;
-    void Update(double dt) override;
-    void Stop() override;
-    void Uninitialize() override;
-    
+	SoundFormat		GetSoundFormat() override;
 	
 };
 

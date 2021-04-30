@@ -37,7 +37,7 @@ void SoundGeneratorComponent::EmitAudioSource(double dt) {
 }
 
 void SoundGeneratorComponent::Play(const AudioSinkConfig& config, Sound& snd) {
-	SoundFormat fmt = snd.GetFormat();
+	SoundFormat fmt = snd.GetSoundFormat();
 	if (fmt.is_var_float && fmt.var_size == 4) {
 		if (frame.IsEmpty()) {
 			GenerateStereoSine(fmt);

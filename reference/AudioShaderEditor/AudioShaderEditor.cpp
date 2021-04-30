@@ -52,7 +52,7 @@ bool AudioShaderEditor::InitializeDefault(String audio_path) {
 		EntityRef reader = es->CreateEmpty();
 		reader->SetPrefab("Manual MP3 input");
 		reader->Add<Connector>(); // for automatic unlinking
-		MultiMediaComponent* mm = reader->Add<MultiMediaComponent>();
+		FfmpegComponent* mm = reader->Add<FfmpegComponent>();
 		if (!mm->LoadFileAny(audio_path)) {
 			LOG("could not open input: " + audio_path);
 			return false;

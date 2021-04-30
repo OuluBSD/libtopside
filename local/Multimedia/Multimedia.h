@@ -13,17 +13,12 @@
 #include "Audio.h"
 #include "Video.h"
 #include "Media.h"
-#include "Capture.h"
-#include "FileIn.h"
-#include "DeviceManager.h"
+
+#include "Capture_OpenCV.h"
+#include "FileIn_Ffmpeg.h"
+#include "DeviceManager_V4L2.h"
+#include "DeviceManager_DShow.h"
 
 
-NAMESPACE_OULU_BEGIN
-
-
-void TestFfmpeg();
-
-
-NAMESPACE_OULU_END
 
 #endif

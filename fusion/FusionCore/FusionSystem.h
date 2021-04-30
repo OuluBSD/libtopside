@@ -438,7 +438,8 @@ public:
 class FusionMediaSink :
 	public Component<FusionMediaSink>,
 	public FusionComponent,
-	public MediaSink,
+	public VideoSink,
+	public AudioSink,
 	public FusionSource
 {
 	void			Reset() override;
@@ -452,12 +453,14 @@ class FusionMediaSink :
 	const FusionComponentInput& GetHeader() const override {return cfg;}
 	
 	FusionComponentInput cfg;
-	MediaFormat fmt;
+	VideoFormat vid_fmt;
+	SoundFormat aud_fmt;
 	BasicFusionStream stream;
 	
 public:
 	COPY_PANIC(FusionMediaSink);
-	IFACE_CB(MediaSink);
+	IFACE_CB(VideoSink);
+	IFACE_CB(AudioSink);
 	IFACE_CB(FusionSource);
 	IFACE_GENERIC;
 	
@@ -466,9 +469,10 @@ public:
 	void			Initialize() override;
 	void			Uninitialize() override;
 	bool			LoadAsInput(const FusionComponentInput& in) override;
-	void			RecvMedia(Media& media) override;
+	void			RecvVideo(Video& video) override;
 	VolatileStream*	GetVolatileStream() {return &stream;}
-	
+	SoundFormat		GetSoundFormat() override {return aud_fmt;}
+	void			RecvAudioSink(AudioSource& src, double dt) override;
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
 };

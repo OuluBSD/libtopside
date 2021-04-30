@@ -27,7 +27,7 @@ public:
 	virtual Sound& GetSound() = 0;
 	virtual Video& GetVideo() = 0;
 	
-	MediaFormat GetFormat() {return MediaFormat {GetSound().GetFormat(), GetVideo().GetFormat()};}
+	MediaFormat GetFormat() {return MediaFormat {GetSound().GetSoundFormat(), GetVideo().GetVideoFormat()};}
 	
 };
 

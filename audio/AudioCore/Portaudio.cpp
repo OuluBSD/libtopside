@@ -4,43 +4,14 @@
 
 NAMESPACE_OULU_BEGIN
 
-
-
-PortaudioSystem::PortaudioSystem(Machine& m) : System<PortaudioSystem>(m) {
-	
-}
-
-bool PortaudioSystem::Initialize() {
-	// SoundSys
-	
-	return true;
-}
-
-void PortaudioSystem::Start() {
-	
-	
-}
-
-void PortaudioSystem::Update(double dt) {
-	
-}
-
-void PortaudioSystem::Stop() {
-	
-	
-}
-
-void PortaudioSystem::Uninitialize() {
+void CloseSoundSys() {
 	SoundSys().Close();
 }
 
-void PortaudioSystem::Add(AudioSink* sink) {
-	VectorAdd(sinks, sink);
+INITBLOCK {
+	AudioSystem::WhenUninit << callback(CloseSoundSys);
 }
 
-void PortaudioSystem::Remove(AudioSink* sink) {
-	VectorRemoveKey(sinks, sink);
-}
 
 
 
@@ -71,11 +42,11 @@ void PortaudioSinkComponent::Initialize() {
 	
 	obj->Start();
 	
-	AddToSystem<PortaudioSystem>(this);
+	AddToSystem<AudioSystem>(this);
 }
 
 void PortaudioSinkComponent::Uninitialize() {
-	RemoveFromSystem<PortaudioSystem>(this);
+	RemoveFromSystem<AudioSystem>(this);
 	
 	//dev.Clear();
 	//sys.Clear();
@@ -87,8 +58,8 @@ void PortaudioSinkComponent::RecvAudioSink(AudioSource& src, double dt) {
 	DefaultRecvAudioSink(aconfig, src, dt, *obj);
 }
 
+#if 0
 void PortaudioSinkComponent::RecvMedia(Media& media) {
-	#if 0
 	if (obj /*&& obj->WriteAvailable()*/) {
 		Sound& snd = media.GetSound();
 		int frames = snd.GetQueueSize();
@@ -105,23 +76,11 @@ void PortaudioSinkComponent::RecvMedia(Media& media) {
 		}
 		else Panic("Invalid sample type");
 	}
-	#endif
 	TODO
 }
+#endif
 
-SystemSound& PortaudioSinkComponent::BeginPlay() {
-	TODO
-}
-
-void PortaudioSinkComponent::CommitPlay() {
-	TODO
-}
-
-void PortaudioSinkComponent::UndoPlay() {
-	TODO
-}
-
-SoundFormat PortaudioSinkComponent::GetFormat() {
+SoundFormat PortaudioSinkComponent::GetSoundFormat() {
 	TODO
 }
 

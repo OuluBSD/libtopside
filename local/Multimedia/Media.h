@@ -39,7 +39,7 @@ public:
 class MediaInputStream : public MediaStream {
 	
 protected:
-	friend class MediaDeviceManager;
+	friend class V4L2_DeviceManager;
 	
 	
 public:
@@ -49,12 +49,46 @@ public:
 class MediaOutputStream : public MediaStream {
 	
 protected:
-	friend class MediaDeviceManager;
+	friend class V4L2_DeviceManager;
 	
 	
 public:
 	
 };
+
+
+
+
+
+
+struct MediaInputThread : Moveable<MediaInputThread> {
+	String path;
+	RunningFlagSingle flag;
+	TimeStop step_time;
+	String last_error;
+	MediaStream* cap = 0;
+	bool new_frame = false;
+	
+	
+	typedef MediaInputThread CLASSNAME;
+	MediaInputThread() {}
+	~MediaInputThread() {Stop(); Clear();}
+	
+	void Clear();
+	void Start();
+	void Stop();
+	void Process();
+#ifdef flagOPENGL
+	void PaintOpenGL(GLuint active_tex);
+#endif
+	bool TestClearNewFrame() {bool b = new_frame; new_frame = false; return b;}
+	
+	String GetLastError() const {return last_error;}
+	
+	Callback WhenError;
+	
+};
+
 
 
 NAMESPACE_OULU_END

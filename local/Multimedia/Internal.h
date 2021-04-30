@@ -8,18 +8,17 @@
 	#if defined flagFREEBSD && defined flagGCC
 		// skip v4l2 because of weird VideoDevice::open
 	#else
-		#define flagV4L2 1
-		#define flagV4L2_OPENCV 1
+		#define HAVE_V4L2 1
+		#define HAVE_OPENCV 1
 		
 		#ifndef flagALTCORE
-			//#define V4L2_SLOW 1
+			#define V4L2_SLOW 0
 		#endif
 	#endif
 #endif
 
 
 #if HAVE_FFMPEG
-#define HAVE_MEDIAFILE 1
 extern "C" {
 	#include <libavcodec/avcodec.h>
 	#include <libavformat/avformat.h>
@@ -28,11 +27,7 @@ extern "C" {
 }
 #endif
 
-#ifdef flagV4L2_OPENCV
-	#define HAVE_CAPTUREDEV 1
-#endif
-
-#ifdef flagV4L2
+#if HAVE_V4L2
 	#ifdef flagWIN32
 		#error V4L2 is not supported in windows
 	#else

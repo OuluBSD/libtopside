@@ -34,6 +34,8 @@ void FusionMediaSink::UpdateTexBuffers() {
 	if (stream) {
 		ClearTex();
 		Size res;
+		TODO
+		#if 0
 		if (fmt.vid.res.IsEmpty())
 			res = Size(fmt.snd.sample_rate, fmt.snd.channels);
 		else
@@ -47,6 +49,7 @@ void FusionMediaSink::UpdateTexBuffers() {
 				FusionComponentInput::WRAP_CLAMP);
 #endif
 		}
+		#endif
 	}
 }
 
@@ -86,13 +89,13 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	if (type == FusionComponentInput::VIDEO ||
 		type == FusionComponentInput::WEBCAM ||
 		type == FusionComponentInput::MUSIC) {
-		Ref<MultiMediaComponent> comp = e.Add<MultiMediaComponent>();
+		Ref<FfmpegComponent> comp = e.Add<FfmpegComponent>();
 		if (comp->LinkManually(*this)) {
 			conn->SetUpdateInterfaces(true);
 			if (path.IsEmpty() && type == FusionComponentInput::WEBCAM)
 				path = "<input0>";
 			if (comp->LoadFileAny(path)) {
-				MultiMediaInput& in = comp->GetInput();
+				MediaInputThread& in = comp->GetInput();
 				fmt = comp->GetMedia().GetFormat();
 				ASSERT(fmt.IsValid());
 				if (fmt.vid.IsValid()) {
@@ -110,7 +113,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 			err = comp->GetLastError();
 		}
 		else {
-			err = "couldn't link MultiMediaComponent to FusionMediaSink";
+			err = "couldn't link FfmpegComponent to FusionMediaSink";
 		}
 		comp->Destroy();
 	}
@@ -127,39 +130,41 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	return false;
 }
 
-void FusionMediaSink::RecvMedia(Media& media) {
-	MediaFormat fmt = media.GetFormat();
+void FusionMediaSink::RecvVideo(Video& video) {
+	VideoFormat fmt = video.GetVideoFormat();
 	
-	if (fmt != this->fmt) {
-		this->fmt = fmt;
+	if (fmt != this->vid_fmt) {
+		this->vid_fmt = fmt;
 		UpdateTexBuffers();
 	}
 	
 #ifdef flagOPENGL
 	GLuint tex = Ogl_GetTex();
 	if (tex > 0) {
-		if (fmt.vid.IsValid()) {
-			if (fmt.snd.IsValid()) {
-				TODO
-			}
-			else {
-				if (!media.GetVideo().PaintOpenGLTexture(tex)) {
-					OnError("RecvMedia", "painting opengl tex failed");
-					ClearTex();
-				}
-			}
-		}
-		else if (fmt.snd.IsValid()) {
-			if (!media.GetSound().PaintOpenGLTexture(tex)) {
+		if (fmt.IsValid()) {
+			if (!PaintOpenGLTexture(tex)) {
 				OnError("RecvMedia", "painting opengl tex failed");
 				ClearTex();
 			}
 		}
+		/*else if (fmt.snd.IsValid()) {
+			if (!media.GetSound().PaintOpenGLTexture(tex)) {
+				OnError("RecvMedia", "painting opengl tex failed");
+				ClearTex();
+			}
+		}*/
 	}
 #else
 	TODO
 #endif
 }
+
+void FusionMediaSink::RecvAudioSink(AudioSource& src, double dt) {
+	
+	TODO
+	
+}
+
 
 
 NAMESPACE_OULU_END

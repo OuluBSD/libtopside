@@ -70,7 +70,7 @@ void FusionAudioSource::Play(const AudioSinkConfig& config, Sound& snd) {
 	stream->asink_frame = config.sink_frame;
 	stream->aframes_after_sync = config.frames_after_sync;
 	
-	SoundFormat cur_fmt = snd.GetFormat();
+	SoundFormat cur_fmt = snd.GetSoundFormat();
 	if (cur_fmt != stream->snd_fmt) {
 		stream->snd_fmt = cur_fmt;
 		ctx->UpdateSoundBuffers();

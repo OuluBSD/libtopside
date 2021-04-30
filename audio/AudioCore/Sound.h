@@ -116,7 +116,7 @@ public:
 	void Get(void* v, int size) override;
 	void Put(void* v, int size, bool realtime) override;
 	int GetQueueSize() const override {return 1;}
-	SoundFormat GetFormat() const override {return fmt;}
+	SoundFormat GetSoundFormat() const override {return fmt;}
 	bool IsQueueFull() const override {return false;}
 	
 #ifdef flagOPENGL
@@ -199,7 +199,7 @@ public:
 	void Get(void* v, int size) override {buf.Get(v, size);}
 	void Put(void* v, int size, bool realtime) override {buf.Put(v, size, realtime);}
 	int GetQueueSize() const override {return buf.GetQueueSize();}
-	SoundFormat GetFormat() const override {return buf.GetFormat();}
+	SoundFormat GetSoundFormat() const override {return buf.GetSoundFormat();}
 	bool IsQueueFull() const override {return buf.IsQueueFull();}
 	
 };

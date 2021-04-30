@@ -36,7 +36,7 @@ public:
 	virtual void Get(void* v, int size) = 0;
 	virtual void Put(void* v, int size, bool realtime) = 0;
 	virtual int GetQueueSize() const = 0;
-	virtual VideoFormat GetFormat() const = 0;
+	virtual VideoFormat GetVideoFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	
 #ifdef flagOPENGL
@@ -58,7 +58,7 @@ public:
 	void Get(void* v, int size) override {if (vid) vid->Get(v, size);}
 	void Put(void* v, int size, bool realtime) override {if (vid) vid->Put(v, size, realtime);}
 	int GetQueueSize() const override {if (vid) return vid->GetQueueSize(); return 0;}
-	VideoFormat GetFormat() const override {if (vid) return vid->GetFormat(); return VideoFormat();}
+	VideoFormat GetVideoFormat() const override {if (vid) return vid->GetVideoFormat(); return VideoFormat();}
 	bool IsQueueFull() const override {if (vid) return vid->IsQueueFull(); return 0;}
 };
 
@@ -96,7 +96,7 @@ public:
 	void Get(void* v, int size) override;
 	void Put(void* v, int size, bool realtime) override;
 	int GetQueueSize() const override {return queue_size;}
-	VideoFormat GetFormat() const override {return vid_fmt;}
+	VideoFormat GetVideoFormat() const override {return vid_fmt;}
 	bool IsQueueFull() const override {return queue_size >= frames;}
 #ifdef flagOPENGL
 	bool PaintOpenGLTexture(int texture) override;

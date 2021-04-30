@@ -35,7 +35,7 @@ public:
 	virtual void Get(void* v, int size) = 0;
 	virtual void Put(void* v, int size, bool realtime) = 0;
 	virtual int GetQueueSize() const = 0;
-	virtual SoundFormat GetFormat() const = 0;
+	virtual SoundFormat GetSoundFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	virtual dword GetWriteFrame() const = 0;
 #ifdef flagOPENGL
@@ -57,7 +57,7 @@ public:
 	void Get(void* v, int size) override {if (snd) snd->Get(v, size);}
 	void Put(void* v, int size, bool realtime) override {if (snd) snd->Put(v, size, realtime);}
 	int GetQueueSize() const override {if (snd) return snd->GetQueueSize(); return 0;}
-	SoundFormat GetFormat() const override {if (snd) return snd->GetFormat(); return SoundFormat();}
+	SoundFormat GetSoundFormat() const override {if (snd) return snd->GetSoundFormat(); return SoundFormat();}
 	bool IsQueueFull() const override {if (snd) return snd->IsQueueFull(); return 0;}
 	dword GetWriteFrame() const override {if (snd) return snd->GetWriteFrame(); return 0;}
 	
@@ -98,7 +98,7 @@ public:
 	void Get(void* v, int size) override;
 	void Put(void* v, int size, bool realtime) override;
 	int GetQueueSize() const override {return queue_size * snd_fmt.sample_rate;}
-	SoundFormat GetFormat() const override {return snd_fmt;}
+	SoundFormat GetSoundFormat() const override {return snd_fmt;}
 	bool IsQueueFull() const override {return queue_size >= frames;}
 	dword GetWriteFrame() const override {return write_frame;}
 	

@@ -206,11 +206,7 @@ struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
 	virtual void			RecvAudioSink(AudioSource& src, double dt) = 0;
-	
-	virtual SoundProxy&		BeginPlay() = 0;
-	virtual void			CommitPlay() = 0;
-	virtual void			UndoPlay() = 0;
-	virtual SoundFormat		GetFormat() = 0;
+	virtual SoundFormat		GetSoundFormat() = 0;
 	
 	
 	void DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
@@ -218,6 +214,8 @@ struct AudioSink : IO_OUT(Audio) {
 };
 struct AudioSource : IO_IN(Audio) {
 	IFACE_BASE(AudioSource)
+	
+	using Sink = AudioSink;
 	
 	virtual void EmitAudioSource(double dt) = 0;
 	virtual void Play(const AudioSinkConfig& config, Sound& snd) = 0;
@@ -351,29 +349,25 @@ struct MidiSource : IO_IN(Midi) {
 
 
 
-//									---- Media ----
+//									---- Video ----
 
-// The media connector can be used to transfer audio or AV data. Moving only video is also
-// correct, but taking audio data into account in classes is forced to make classes more
-// general.
-
-struct MediaSink : IO_OUT(Media) {
-	IFACE_BASE(MediaSink)
+struct VideoSink : IO_OUT(Video) {
+	IFACE_BASE(VideoSink)
 	
 	
-	virtual void RecvMedia(Media& media) = 0;
+	virtual void RecvVideo(Video& video) = 0;
 	
 };
 
-struct MediaSource : IO_IN(Media) {
-	IFACE_BASE(MediaSource)
+struct VideoSource : IO_IN(Video) {
+	IFACE_BASE(VideoSource)
 	
 	virtual bool LoadFileAny(String path) {return false;}
 	virtual Size GetResolution() const {return Size(0,0);}
-	virtual void EmitMedia() = 0;
+	virtual void EmitVideoSource(double dt) = 0;
 	
 	
-	using Sink = MediaSink;
+	using Sink = VideoSink;
 	
 };
 
@@ -631,7 +625,7 @@ struct RouteSource : IO_IN(Route) {
 	IFACE(Controller)\
 	IFACE(Midi)\
 	IFACE(Camera)\
-	IFACE(Media)\
+	IFACE(Video)\
 	IFACE(Model)\
 	IFACE(Static) \
 	IFACE(Fusion) \
