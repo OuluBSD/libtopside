@@ -102,15 +102,11 @@ MidiFileComponent::MidiFileComponent() {
 }
 
 void MidiFileComponent::Initialize() {
-	Ref<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
-	if (es)
-		es->AddMidi(*this);
+	AddToSystem<EventSystem>(this);
 }
 
 void MidiFileComponent::Uninitialize() {
-	Ref<EventSystem> es = GetEntity().GetMachine().TryGet<EventSystem>();
-	if (es)
-		es->RemoveMidi(*this);
+	RemoveFromSystem<EventSystem>(this);
 }
 
 void MidiFileComponent::Clear() {

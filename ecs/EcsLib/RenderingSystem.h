@@ -15,8 +15,8 @@ class RenderingSystem : public System<RenderingSystem> {
 public:
 	RenderingSystem(Machine& m);
 	
-	void AddDisplaySource(DisplaySource& src);
-	void RemoveRenderable(DisplaySource& src);
+	void Add(DisplaySource* src);
+	void Remove(DisplaySource* src);
 	
 	void RunTest();
 	
@@ -35,17 +35,6 @@ protected:
     
 };
 
-template <class T> void AddDisplaySource(T& o) {
-	Ref<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
-	if (sys)
-		sys	-> AddDisplaySource(o);
-}
-
-template <class T> void RemoveRenderable(T& o) {
-	Ref<RenderingSystem> sys = o.GetEntity().GetMachine().template Get<RenderingSystem>();
-	if (sys)
-		sys	-> RemoveRenderable(o);
-}
 
 
 

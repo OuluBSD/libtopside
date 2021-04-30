@@ -19,6 +19,8 @@ struct ComponentBase : Destroyable, Enableable, LockedScopeEnabler<ComponentBase
 	
 	static bool AllowDuplicates() {return false;}
 	
+	Machine& GetMachine();
+	
 public:
 	Entity& GetEntity() {ASSERT(ent); return *ent;}
 	Entity* GetEntityPtr() const {return ent;}
@@ -32,6 +34,19 @@ public:
 	#undef IFACE
 	
 	
+	template <class S, class C>
+	void AddToSystem(C* comp) {
+		Ref<S> sys = GetMachine().Get<S>();
+		if (sys)
+			sys->Add(comp);
+	}
+	
+	template <class S, class C>
+	void RemoveFromSystem(C* comp) {
+		Ref<S> sys = GetMachine().Get<S>();
+		if (sys)
+			sys->Remove(comp);
+	}
 };
 
 #define IFACE(x) \

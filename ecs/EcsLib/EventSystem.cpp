@@ -37,20 +37,20 @@ void EventSystem::Uninitialize() {
 	
 }
 
-void EventSystem::AddControllable(ControllerSource& out) {
-	VectorFindAdd(outputs, &out);
+void EventSystem::Add(ControllerSource* out) {
+	VectorFindAdd(outputs, out);
 }
 
-void EventSystem::RemoveControllable(ControllerSource& out) {
-	VectorRemoveKey(outputs, &out);
+void EventSystem::Remove(ControllerSource* out) {
+	VectorRemoveKey(outputs, out);
 }
 
-void EventSystem::AddMidi(MidiSource& out) {
-	VectorFindAdd(midis, &out);
+void EventSystem::Add(MidiSource* out) {
+	VectorFindAdd(midis, out);
 }
 
-void EventSystem::RemoveMidi(MidiSource& out) {
-	VectorRemoveKey(midis, &out);
+void EventSystem::Remove(MidiSource* out) {
+	VectorRemoveKey(midis, out);
 }
 
 

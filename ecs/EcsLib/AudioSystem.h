@@ -19,22 +19,11 @@ protected:
 public:
     using System::System;
 	
-	void AddAudioSource(AudioSource& src);
-	void RemoveAudioSource(AudioSource& src);
+	void Add(AudioSource* src);
+	void Remove(AudioSource* src);
 	
 };
 
-template <class T> void AddAudioSource(T& o) {
-	Ref<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
-	if (sys)
-		sys	-> AddAudioSource(o);
-}
-
-template <class T> void RemoveAudioSource(T& o) {
-	Ref<AudioSystem> sys = o.GetEntity().GetMachine().template Get<AudioSystem>();
-	if (sys)
-		sys	-> RemoveAudioSource(o);
-}
 
 
 NAMESPACE_OULU_END

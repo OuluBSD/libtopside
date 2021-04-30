@@ -8,22 +8,6 @@ class BufferedPaSound;
 struct StreamCallbackArgs;
 
 
-class PortaudioSystem : public System<PortaudioSystem> {
-	
-public:
-	PortaudioSystem(Machine& m);
-	
-	
-protected:
-	
-    bool Initialize() override;
-    void Start() override;
-    void Update(double dt) override;
-    void Stop() override;
-    void Uninitialize() override;
-    
-};
-
 class PortaudioSinkComponent :
 	public Component<PortaudioSinkComponent>,
 	public AudioSink,
@@ -59,6 +43,26 @@ public:
 	void			CommitPlay() override;
 	void			UndoPlay() override;
 	SoundFormat		GetFormat() override;
+};
+
+class PortaudioSystem : public System<PortaudioSystem> {
+	Vector<AudioSink*> sinks;
+	
+public:
+	PortaudioSystem(Machine& m);
+	
+	void Add(AudioSink* sink);
+	void Remove(AudioSink* sink);
+	
+protected:
+	
+    bool Initialize() override;
+    void Start() override;
+    void Update(double dt) override;
+    void Stop() override;
+    void Uninitialize() override;
+    
+	
 };
 
 

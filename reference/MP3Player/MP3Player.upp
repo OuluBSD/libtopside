@@ -9,5 +9,6 @@ file
 mainconfig
 	"" = "",
 	"" = "ALTCORE",
-	"" = "ALTCORE VERBOSE_SHADERCORE";
+	"" = "ALTCORE VERBOSE_SHADERCORE",
+	"" = "BUILTIN_PORTAUDIO";
 

@@ -40,15 +40,11 @@ Overlap::Overlap() {
 }
 
 void Overlap::Initialize() {
-	auto sys = GetEntity().GetMachine().Get<OverlapSystem>();
-	if (sys)
-		sys->Add(this);
+	AddToSystem<OverlapSystem>(this);
 }
 
 void Overlap::Uninitialize() {
-	auto sys = GetEntity().GetMachine().Get<OverlapSystem>();
-	if (sys)
-		sys->Remove(this);
+	RemoveFromSystem<OverlapSystem>(this);
 }
 
 

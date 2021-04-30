@@ -211,11 +211,7 @@ struct AudioSink : IO_OUT(Audio) {
 	virtual void			CommitPlay() = 0;
 	virtual void			UndoPlay() = 0;
 	virtual SoundFormat		GetFormat() = 0;
-	/*virtual bool			IsAudioSampleFloating() = 0;
-	virtual int				GetAudioSampleSize() = 0;
-	virtual int				GetAudioSampleRate() = 0;
-	virtual int				GetAudioChannels() = 0;
-	virtual int				GetAudioFrequency() = 0;*/
+	
 	
 	void DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
 	

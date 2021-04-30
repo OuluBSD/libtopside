@@ -3,6 +3,14 @@
 NAMESPACE_OULU_BEGIN
 
 
+
+Machine& ComponentBase::GetMachine() {
+	return ent->GetMachine();
+}
+
+
+
+
 void ComponentMap::Dump() {
 	auto iter = ComponentMapBase::begin();
 	for(int i = 0; iter; ++iter, ++i) {

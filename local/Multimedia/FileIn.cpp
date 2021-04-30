@@ -613,17 +613,6 @@ bool MediaFileInput::Read() {
 	return false;
 }
 
-/*bool MediaFileInput::Read() {
-	bool succ = is_open;
-	if (v.IsOpen() && !v.Read())
-		succ = false;
-	if (a.IsOpen() && !a.Read())
-		succ = false;
-	if (!succ && pkt.pos < 0)
-		is_dev_open = false;
-	return succ;
-}*/
-
 bool MediaFileInput::ReadFrame() {
 	if (a.ReadFrame(pkt)) {
 		aframe[a.GetWriteFrame()].Process(a.frame_pos_time, a.frame);
@@ -662,7 +651,7 @@ int MediaFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
     int decoded = pkt.size;
     *got_frame = 0;
         
-    // Decode video frame
+    // Decode frame
     ret = avcodec_send_packet(codec_ctx, &pkt);
     if (ret == AVERROR_EOF) {
         is_open = false;
@@ -674,7 +663,7 @@ int MediaFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
         return -1;
     }
     
-    // Receive video frame
+    // Receive frame
     ret = avcodec_receive_frame(codec_ctx, frame);
     if (ret == AVERROR_EOF) {
         is_open = false;
@@ -682,7 +671,7 @@ int MediaFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
         return -1;
     }
     else if (ret != 0) {
-        errstr = "Error decoding video frame";
+        errstr = "Error decoding frame";
         return -1;
     }
     else {
@@ -692,54 +681,7 @@ int MediaFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
 		if (codec_ctx->time_base.num == 0)
 			frame_time = 1.0 / 1000.0;
 		frame_pos_time = frame->pts * frame_time;
-		
-		
-        #if 0
-		MediaVideoFrame& vframe = this->vframe[read_vframe_i];
-		read_vframe_i = (read_vframe_i + 1) % 2;
-		
-        vframe.Process(t, frame, true);
-        
-        VideoInputFormat& fmt = fmts[0];
-        VideoInputFormatResolution& fres = fmt.GetResolution(0);
-        if (fres.GetPitch() != vframe.GetLinesize())
-            fres.SetPitch(vframe.GetLinesize());
-       	#endif
     }
-    
-    #if 0
-    else if (pkt.stream_index == audio_stream_idx) {
-        // decode audio frame
-        ret = avcodec_decode_audio4(audio_dec_ctx, frame, got_frame, &pkt);
-        if (ret < 0) {
-            fprintf(stderr, "Error decoding audio frame\n");
-            return ret;
-        }
-        
-        // Some audio decoders decode only part of the packet, and have to be
-        // called again with the remainder of the packet data.
-        // Sample: fate-suite/lossless-audio/luckynight-partial.shn
-        // Also, some decoders might over-read the packet.
-        decoded = FFMIN(ret, pkt.size);
-        if (*got_frame) {
-            size_t unpadded_linesize = frame->nb_samples * av_get_bytes_per_sample(frame->format);
-            printf("audio_frame%s n:%d nb_samples:%d pts:%s\n",
-                   cached ? "(cached)" : "",
-                   audio_frame_count++, frame->nb_samples,
-                   av_ts2timestr(frame->pts, &audio_dec_ctx->time_base));
-            
-            // Write the raw audio data samples of the first plane. This works
-            // fine for packed formats (e.g. AV_SAMPLE_FMT_S16). However,
-            // most audio decoders output planar audio, which uses a separate
-            // plane of audio samples for each channel (e.g. AV_SAMPLE_FMT_S16P).
-            // In other words, this code will write only the first audio channel
-            // in these cases.
-            // You should use libswresample or libavfilter to convert the frame
-            // to packed data.
-            fwrite(frame->extended_data[0], 1, unpadded_linesize, audio_dst_file);
-        }
-    }
-    #endif
     
     return decoded;
 }

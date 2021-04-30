@@ -13,10 +13,10 @@ class EventSystem : public System<EventSystem> {
 public:
 	EventSystem(Machine& m);
 	
-	void AddControllable(ControllerSource& out);
-	void RemoveControllable(ControllerSource& out);
-	void AddMidi(MidiSource& out);
-	void RemoveMidi(MidiSource& out);
+	void Add(ControllerSource* out);
+	void Remove(ControllerSource* out);
+	void Add(MidiSource* out);
+	void Remove(MidiSource* out);
 	
     const Vector<ControllerSource*>& GetSources() const {return outputs;}
     const Vector<MidiSource*>& GetMidiSources() const {return midis;}
@@ -34,29 +34,6 @@ protected:
     
 };
 
-template <class T> void AddControllable(T& o) {
-	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
-	if (sys)
-		sys	-> AddControllable(o);
-}
-
-template <class T> void RemoveControllable(T& o) {
-	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
-	if (sys)
-		sys	-> RemoveControllable(o);
-}
-
-template <class T> void AddMidi(T& o) {
-	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
-	if (sys)
-		sys	-> AddMidi(o);
-}
-
-template <class T> void RemoveMidi(T& o) {
-	Ref<EventSystem> sys = o.GetEntity().GetMachine().template Get<EventSystem>();
-	if (sys)
-		sys	-> RemoveMidi(o);
-}
 
 NAMESPACE_OULU_END
 

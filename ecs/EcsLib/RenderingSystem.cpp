@@ -34,15 +34,15 @@ void RenderingSystem::Uninitialize() {
 	
 }
 
-void RenderingSystem::AddDisplaySource(DisplaySource& src) {
-	VectorFindAdd(screens, &src);
+void RenderingSystem::Add(DisplaySource* src) {
+	VectorFindAdd(screens, src);
 	Ref<RegistrySystem> reg = GetMachine().TryGet<RegistrySystem>();
 	if (reg)
-		src.SetTitle(reg->GetAppName());
+		src->SetTitle(reg->GetAppName());
 }
 
-void RenderingSystem::RemoveRenderable(DisplaySource& src) {
-	VectorRemoveKey(screens, &src);
+void RenderingSystem::Remove(DisplaySource* src) {
+	VectorRemoveKey(screens, src);
 }
 
 

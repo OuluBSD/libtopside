@@ -6,16 +6,11 @@ NAMESPACE_OULU_BEGIN
 void FusionDisplaySource::Initialize() {
 	FusionComponent::Initialize();
 	
-	Ref<RenderingSystem> rend_sys = GetEntity().GetMachine().Get<RenderingSystem>();
-	if (rend_sys)
-		rend_sys	-> AddDisplaySource(*this);
+	AddToSystem<RenderingSystem>(this);
 }
 
 void FusionDisplaySource::Uninitialize() {
-	
-    Ref<RenderingSystem> rend_sys = GetEntity().GetMachine().Get<RenderingSystem>();
-	if (rend_sys)
-		rend_sys->RemoveRenderable(*this);
+	RemoveFromSystem<RenderingSystem>(this);
 	
 	FusionComponent::Uninitialize();
 }

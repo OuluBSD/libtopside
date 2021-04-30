@@ -12,10 +12,13 @@ MultiMediaComponent::MultiMediaComponent() {
 
 void MultiMediaComponent::Initialize() {
 	devmgr.Refresh();
+	
+	AddToSystem<AudioSystem>(this);
 }
 
 void MultiMediaComponent::Uninitialize() {
 	
+	RemoveFromSystem<AudioSystem>(this);
 }
 
 bool MultiMediaComponent::LoadFileAny(String path) {
@@ -153,7 +156,11 @@ void MultiMediaComponent::EmitMedia() {
 void MultiMediaInput::Start() {
 	Stop();
 	flag.Start();
-	Thread::Start(THISBACK(Process));
+	if (RequiresThread())
+		Thread::Start(THISBACK(Process));
+	else {
+		TODO
+	}
 }
 
 void MultiMediaInput::Stop() {

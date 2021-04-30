@@ -2,3 +2,4 @@
 - optimize bottlenecks for large entity count
 	- loops all entities & interfaces
 		- ConnectorSystem::Update 
+- audio sync smooth fade (to avoid loud snap)

@@ -30,12 +30,12 @@ void AudioSystem::Uninitialize() {
 	
 }
 
-void AudioSystem::AddAudioSource(AudioSource& src) {
-	VectorFindAdd(audios, &src);
+void AudioSystem::Add(AudioSource* src) {
+	VectorFindAdd(audios, src);
 }
 
-void AudioSystem::RemoveAudioSource(AudioSource& src) {
-	VectorRemoveKey(audios, &src);
+void AudioSystem::Remove(AudioSource* src) {
+	VectorRemoveKey(audios, src);
 }
 
 

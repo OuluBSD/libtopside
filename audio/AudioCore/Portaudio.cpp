@@ -23,7 +23,6 @@ void PortaudioSystem::Start() {
 
 void PortaudioSystem::Update(double dt) {
 	
-	
 }
 
 void PortaudioSystem::Stop() {
@@ -33,6 +32,14 @@ void PortaudioSystem::Stop() {
 
 void PortaudioSystem::Uninitialize() {
 	SoundSys().Close();
+}
+
+void PortaudioSystem::Add(AudioSink* sink) {
+	VectorAdd(sinks, sink);
+}
+
+void PortaudioSystem::Remove(AudioSink* sink) {
+	VectorRemoveKey(sinks, sink);
 }
 
 
@@ -63,9 +70,13 @@ void PortaudioSinkComponent::Initialize() {
 	obj->OpenDefault();
 	
 	obj->Start();
+	
+	AddToSystem<PortaudioSystem>(this);
 }
 
 void PortaudioSinkComponent::Uninitialize() {
+	RemoveFromSystem<PortaudioSystem>(this);
+	
 	//dev.Clear();
 	//sys.Clear();
 	obj->Stop();
