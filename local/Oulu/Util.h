@@ -480,7 +480,7 @@ struct RunningFlag {
 
 struct CmdArg {
 	char key;
-	String desc;
+	String desc, value_desc;
 	bool has_value;
 };
 
@@ -499,7 +499,7 @@ class CommandLineArguments {
 	
 public:
 	CommandLineArguments() {}
-	void AddArg(char key, const char* desc, bool has_value);
+	void AddArg(char key, const char* desc, bool has_value, String value_desc="value");
 	bool Parse();
 	void PrintHelp();
 	int GetInputCount() const {return inputs.GetCount();}

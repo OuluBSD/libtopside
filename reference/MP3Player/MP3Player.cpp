@@ -3,6 +3,31 @@
 NAMESPACE_OULU_BEGIN
 
 String file_path;
+bool run_sound_gen;
+
+
+void DummyGenerator::OnError() {
+	GetEntity().GetMachine().SetNotRunning();
+}
+
+void DummyGenerator::Initialize() {
+	Entity& e = GetEntity();
+	gen     = e.Find<SoundGeneratorComponent>();
+	audio   = e.Find<PortaudioSinkComponent>();
+	
+	Pool& p = e.GetPool();
+	p.Add<ConnectAllInterfaces<AudioSource>>();
+}
+
+void DummyGenerator::Uninitialize() {
+	gen.Clear();
+	audio.Clear();
+	GetEntity().Destroy();
+}
+
+
+
+
 
 
 void MP3Player::OnError() {
@@ -66,7 +91,8 @@ bool MP3PlayerStartup() {
 	SetCoutLog();
 	
 	CommandLineArguments cmd;
-	cmd.AddArg('f', "The path for the music file", true);
+	cmd.AddArg('g', "Test sound generator", false);
+	cmd.AddArg('f', "The path for the music file", true, "path");
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
 		return false;
@@ -75,13 +101,14 @@ bool MP3PlayerStartup() {
 	const auto& inputs = cmd.GetInputs();
 	for(const auto& in : inputs) {
 		if (in.key == 'f') file_path = in.value;
+		if (in.key == 'g') run_sound_gen = true;
 	}
-	if (file_path.IsEmpty()) {
+	if (file_path.IsEmpty() && !run_sound_gen) {
 		cmd.PrintHelp();
 		return false;
 	}
 	
-	return FileExists(file_path);
+	return run_sound_gen || FileExists(file_path);
 }
 
 
@@ -105,12 +132,16 @@ void Main() {
     
     
     try {
-        VAR player = root->Create<MP3PlayerPrefab>();
+        if (run_sound_gen) {
+			VAR gen = root->Create<DummyGeneratorPrefab>();
+        }
+        else {
+            VAR player = root->Create<MP3PlayerPrefab>();
+        }
         
 	    mach.Start();
 	    
-	    //int dbg_i = 0;
-	    TimeStop t;
+	    TimeStop t, total;
 	    while (mach.IsRunning()) {
 	        double dt = ResetSeconds(t);
 	        mach.Update(dt);
@@ -118,7 +149,8 @@ void Main() {
 	        
 	        
 	        
-	        //if (++dbg_i > 100) break;
+	        if (total.Seconds() > 3)
+	            mach.SetNotRunning();
 	    }
     }
     catch (Exc e) {

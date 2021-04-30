@@ -176,6 +176,19 @@ void BufferedPaSound::SinkCallback(StreamCallbackArgs& args) {
 		if (buf.GetQueueSize()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			buf.Get(args.output, size);
+			
+			if (0) {
+				SoundFormat fmt = buf.GetSoundFormat();
+				if (fmt.var_size == 4 && fmt.is_var_float) {
+					float* it = (float*)args.output;
+					int samples = fmt.sample_rate * fmt.channels;
+					float* end = it + samples;
+					double sum = 0;
+					while (it != end)
+						sum += *it++;
+					LOG(sum);
+				}
+			}
 		}
 		else {
 			memset(args.output, 0, size);

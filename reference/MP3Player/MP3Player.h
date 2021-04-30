@@ -8,11 +8,33 @@ using namespace Oulu;
 NAMESPACE_OULU_BEGIN
 
 
+class DummyGenerator :
+	public Component<DummyGenerator>
+{
+	Ref<SoundGeneratorComponent> gen;
+	Ref<PortaudioSinkComponent> audio;
+public:
+	typedef DummyGenerator CLASSNAME;
+	DummyGenerator() {}
+	void OnError();
+	void Initialize() override;
+	void Uninitialize() override;
+	
+	COPY_PANIC(DummyGenerator);
+	
+};
+
+PREFAB_BEGIN(DummyGeneratorPrefab)
+	PortaudioSinkComponent,
+	SoundGeneratorComponent,
+	DummyGenerator
+PREFAB_END
+
+
+
 class MP3Player :
 	public Component<MP3Player>
 {
-	//EntityRef mixer, fusion, channel0, track0, output;
-	MixerContextComponent* ctx = 0;
 	Ref<FfmpegComponent> file_in;
 	Ref<PortaudioSinkComponent> audio;
 public:

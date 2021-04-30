@@ -230,11 +230,12 @@ void RunningFlag::Wait() {while ((int)workers_running != 0) Sleep(100);}
 
 
 
-void CommandLineArguments::AddArg(char key, const char* desc, bool has_value) {
+void CommandLineArguments::AddArg(char key, const char* desc, bool has_value, String value_desc) {
 	CmdArg& a = args.Add();
 	a.key = key;
 	a.desc = desc;
 	a.has_value = has_value;
+	a.value_desc = value_desc;
 }
 
 bool CommandLineArguments::Parse() {
@@ -299,7 +300,7 @@ void CommandLineArguments::PrintHelp() {
 		CmdArg& a = args[i];
 		cout << "\t-" << a.key;
 		if (a.has_value)
-			cout << " value";
+			cout << " " << (a.value_desc.IsEmpty() ? "value" : a.value_desc);
 		cout << ": " << a.desc << EOL;
 	}
 }
