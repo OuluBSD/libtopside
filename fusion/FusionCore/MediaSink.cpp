@@ -130,7 +130,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	return false;
 }
 
-void FusionMediaSink::RecvVideo(Video& video) {
+void FusionMediaSink::RecvVideo(Video& video, double dt) {
 	VideoFormat fmt = video.GetVideoFormat();
 	
 	if (fmt != this->vid_fmt) {
@@ -159,7 +159,7 @@ void FusionMediaSink::RecvVideo(Video& video) {
 #endif
 }
 
-void FusionMediaSink::RecvAudioSink(AudioSource& src, double dt) {
+void FusionMediaSink::RecvAudio(AudioSource& src, double dt) {
 	
 	TODO
 	

@@ -66,7 +66,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void RecvAudioSink(AudioSource& src, double dt) override;
+	void RecvAudio(AudioSource& src, double dt) override;
 	
 	SystemSound&	BeginPlay() override {return obj ? obj->GetSystemSound() : empty_snd;}
 	void			CommitPlay() override {}
@@ -104,7 +104,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void RecvDisplaySink(DisplaySource& src, double dt) override;
+	void RecvDisplay(DisplaySource& src, double dt) override;
 	void SetTitle(String s) override;
 	uint32 GetTickCount() override {return ev ? ev->GetTickCount() : 0;}
 	

@@ -90,8 +90,8 @@ void SDL2AudioOutputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2AudioOutputComponent::RecvAudioSink(AudioSource& src, double dt) {
-	DefaultRecvAudioSink(src, dt, obj->GetSystemSound());
+void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {
+	DefaultRecvAudio(src, dt, obj->GetSystemSound());
 }
 
 
@@ -112,7 +112,7 @@ void SDL2ScreenComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2ScreenComponent::RecvDisplaySink(DisplaySource& src, double dt) {
+void SDL2ScreenComponent::RecvDisplay(DisplaySource& src, double dt) {
 	frame_age += dt;
 	config.dt += dt;
 	

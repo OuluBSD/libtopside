@@ -54,12 +54,12 @@ void AudioSource::DefaultEmitAudioSource(double dt, int sink_limit) {
 		for(const auto& c : sinks) {
 			if (i++ >= sink_limit)
 				break;
-			c.sink->RecvAudioSink(*this, dt);
+			c.sink->RecvAudio(*this, dt);
 		}
 	}
 	else {
 		for(const auto& c : sinks)
-			c.sink->RecvAudioSink(*this, dt);
+			c.sink->RecvAudio(*this, dt);
 	}
 }
 
@@ -67,7 +67,7 @@ void AudioSource::DefaultEmitAudioSource(double dt, int sink_limit) {
 
 
 
-void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd) {
+void AudioSink::DefaultRecvAudio(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd) {
 	dword cur_sink_frame = snd.GetWriteFrame();
 	
 	cfg.sync_age += dt;
@@ -76,7 +76,7 @@ void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, dou
 	cfg.sink_frame = cur_sink_frame;
 	
 	if (cfg.sync_age >= cfg.sync_dt) {
-		//DLOG("AudioSink::DefaultRecvAudioSink: sync & play more audio");
+		//DLOG("AudioSink::DefaultRecvAudio: sync & play more audio");
 		if (cfg.sync_age > 2 * cfg.sync_dt)
 			cfg.sync_age = cfg.sync_dt;
 		else
@@ -92,14 +92,14 @@ void AudioSink::DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, dou
 		//obj->CommitPlay();
 	}
 	else if (!snd.IsQueueFull()) {
-		//DLOG("AudioSink::DefaultRecvAudioSink: play more audio");
+		//DLOG("AudioSink::DefaultRecvAudio: play more audio");
 		cfg.sync = false;
 		cfg.frames_after_sync = cur_sink_frame > cfg.last_sync_sink_frame ? cur_sink_frame - cfg.last_sync_sink_frame : 0;
 		//DUMP(cfg.frames_after_sync);
 		src.Play(cfg, snd);
 	}
 	else {
-		//DLOG("AudioSink::DefaultRecvAudioSink: full audio queue");
+		//DLOG("AudioSink::DefaultRecvAudio: full audio queue");
 	}
 }
 

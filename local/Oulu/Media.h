@@ -74,14 +74,14 @@ public:
 	
 };
 
-class MediaPtrBuffer : public Media {
+class AVMediaProxy : public Media {
 public:
 	Sound* snd = 0;
 	Video* vid = 0;
 	
 public:
 	
-	MediaPtrBuffer() = default;
+	AVMediaProxy() = default;
 	
 	Sound& GetSound() override {return *snd;}
 	Video& GetVideo() override {return *vid;}

@@ -55,6 +55,7 @@ public:
 	
 	void Set(Video* vid) {this->vid = vid;}
 	
+	operator bool() const {return vid != 0;}
 	void Get(void* v, int size) override {if (vid) vid->Get(v, size);}
 	void Put(void* v, int size, bool realtime) override {if (vid) vid->Put(v, size, realtime);}
 	int GetQueueSize() const override {if (vid) return vid->GetQueueSize(); return 0;}

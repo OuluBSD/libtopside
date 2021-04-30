@@ -20,7 +20,7 @@ void RenderingSystem::Start() {
 
 void RenderingSystem::Update(double dt) {
 	for(DisplaySource* scr : screens) {
-		scr->EmitDisplaySource(dt);
+		scr->EmitDisplay(dt);
 	}
 }
 

@@ -50,9 +50,9 @@ bool FusionDisplaySource::LoadResources() {
 	return true;
 }
 
-void FusionDisplaySource::EmitDisplaySource(double dt) {
+void FusionDisplaySource::EmitDisplay(double dt) {
 	for(const auto& c : DisplaySource::GetSinks())
-		c.sink->RecvDisplaySink(*this, dt);
+		c.sink->RecvDisplay(*this, dt);
 }
 
 bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& draw) {

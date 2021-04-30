@@ -54,6 +54,7 @@ public:
 	
 	void Set(Sound* snd) {this->snd = snd;}
 	
+	operator bool() const {return snd != 0;}
 	void Get(void* v, int size) override {if (snd) snd->Get(v, size);}
 	void Put(void* v, int size, bool realtime) override {if (snd) snd->Put(v, size, realtime);}
 	int GetQueueSize() const override {if (snd) return snd->GetQueueSize(); return 0;}

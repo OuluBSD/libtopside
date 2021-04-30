@@ -54,8 +54,8 @@ void PortaudioSinkComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void PortaudioSinkComponent::RecvAudioSink(AudioSource& src, double dt) {
-	DefaultRecvAudioSink(aconfig, src, dt, *obj);
+void PortaudioSinkComponent::RecvAudio(AudioSource& src, double dt) {
+	DefaultRecvAudio(aconfig, src, dt, *obj);
 }
 
 #if 0

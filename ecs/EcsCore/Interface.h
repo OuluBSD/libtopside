@@ -166,7 +166,7 @@ struct DisplaySinkConfig {
 struct DisplaySink : IO_OUT(Display) {
 	IFACE_BASE(DisplaySink)
 	
-	virtual void RecvDisplaySink(DisplaySource& src, double dt) = 0;
+	virtual void RecvDisplay(DisplaySource& src, double dt) = 0;
 	virtual void SetTitle(String s) = 0;
 	virtual uint32 GetTickCount() = 0;
 	
@@ -175,7 +175,7 @@ struct DisplaySink : IO_OUT(Display) {
 struct DisplaySource : IO_IN(Display) {
 	IFACE_BASE(DisplaySource)
 	
-	virtual void EmitDisplaySource(double dt) = 0;
+	virtual void EmitDisplay(double dt) = 0;
 	virtual bool Render(const DisplaySinkConfig& config, SystemDraw& draw) = 0;
 	
 	virtual void SetTitle(String s) {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
@@ -205,11 +205,11 @@ struct AudioSource;
 struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
-	virtual void			RecvAudioSink(AudioSource& src, double dt) = 0;
+	virtual void			RecvAudio(AudioSource& src, double dt) = 0;
 	virtual SoundFormat		GetSoundFormat() = 0;
 	
 	
-	void DefaultRecvAudioSink(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
+	void DefaultRecvAudio(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
 	
 };
 struct AudioSource : IO_IN(Audio) {
@@ -355,7 +355,7 @@ struct VideoSink : IO_OUT(Video) {
 	IFACE_BASE(VideoSink)
 	
 	
-	virtual void RecvVideo(Video& video) = 0;
+	virtual void RecvVideo(Video& video, double dt) = 0;
 	
 };
 

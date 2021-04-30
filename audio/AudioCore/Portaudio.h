@@ -35,7 +35,7 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-	void			RecvAudioSink(AudioSource& src, double dt) override;
+	void			RecvAudio(AudioSource& src, double dt) override;
 	SoundFormat		GetSoundFormat() override;
 	
 };

@@ -469,10 +469,10 @@ public:
 	void			Initialize() override;
 	void			Uninitialize() override;
 	bool			LoadAsInput(const FusionComponentInput& in) override;
-	void			RecvVideo(Video& video) override;
+	void			RecvVideo(Video& video, double dt) override;
 	VolatileStream*	GetVolatileStream() {return &stream;}
 	SoundFormat		GetSoundFormat() override {return aud_fmt;}
-	void			RecvAudioSink(AudioSource& src, double dt) override;
+	void			RecvAudio(AudioSource& src, double dt) override;
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
 };
@@ -547,7 +547,7 @@ class FusionDisplaySource :
 	void			UpdateTexBuffers() override;
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
-	void			EmitDisplaySource(double dt) override;
+	void			EmitDisplay(double dt) override;
 	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	bool			PassLink(DisplaySink& sink) override;
 	ComponentBase&	GetECS() override {return *this;}
@@ -587,7 +587,7 @@ class FusionDisplayBuffer :
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
-	//void			EmitDisplaySource(double dt) override;
+	//void			EmitDisplay(double dt) override;
 	//bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	//bool			Link(DisplaySink& sink) override;
 	//FusionVideoInput* FindVideoInput(String path);
