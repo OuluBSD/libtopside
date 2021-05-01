@@ -149,8 +149,8 @@ void Main() {
 	        
 	        
 	        
-	        if (total.Seconds() > 3)
-	            mach.SetNotRunning();
+	        //if (total.Seconds() > 3)
+	        //    mach.SetNotRunning();
 	    }
     }
     catch (Exc e) {

@@ -8,7 +8,6 @@
 
 #include <Oulu/Oulu.h>
 
-
 #include "Internal.h"
 #include "Audio.h"
 #include "Video.h"

@@ -101,7 +101,8 @@ public:
 	int				GetFrequency() {return audio_fmt.freq;}
 	int				GetSampleSize();
 	dword			GetFrameCount() const {return frames;}
-	bool			IsSampleFloating();
+	bool			IsSampleFloating() const;
+	bool			IsSampleSigned() const;
 	Sound&			GetSound() {return snd_buf;}
 	SystemSound&	GetSystemSound() {return sys_snd;}
 	

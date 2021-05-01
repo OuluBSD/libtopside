@@ -27,8 +27,16 @@ int AudioOutput::GetSampleSize() {
 	return sample_size;
 }
 
-bool AudioOutput::IsSampleFloating() {
+bool AudioOutput::IsSampleFloating() const {
 	return audio_fmt.format == AUDIO_F32;
+}
+
+bool AudioOutput::IsSampleSigned() const {
+	return	audio_fmt.format == AUDIO_F32 ||
+			audio_fmt.format == AUDIO_S8 ||
+			audio_fmt.format == AUDIO_S16 ||
+			audio_fmt.format == AUDIO_S32 ||
+			;
 }
 
 void AudioOutput::Put(Uint8* stream, int len) {
@@ -82,9 +90,16 @@ bool AudioOutput::Open0() {
 	    SoundFormat snd_fmt;
 	    snd_fmt.var_size = GetSampleSize();
 	    snd_fmt.is_var_float = IsSampleFloating();
+	    snd_fmt.is_var_signed = IsSampleSigned();
 	    snd_fmt.freq = audio_fmt.freq;
 	    snd_fmt.sample_rate = audio_fmt.samples;
 	    snd_fmt.channels = audio_fmt.channels;
+	    
+	    #if CPU_LITTLE_ENDIAN
+	    snd_fmt.is_var_bigendian = false;
+	    #else
+	    snd_fmt.is_var_bigendian = true;
+	    #endif
 	    
 		snd_buf.SetSize(snd_fmt, audio_frames);
 		snd_buf.Zero();

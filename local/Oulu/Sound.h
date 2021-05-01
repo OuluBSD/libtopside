@@ -36,6 +36,16 @@ struct SoundFormat {
 	int GetFrameBytes() const {return var_size * sample_rate * channels;}
 	int GetFrameBytes(int dst_sample_rate) const {return var_size * dst_sample_rate * channels;}
 	
+	template <class T> bool IsSampleType() const {
+		#if CPU_LITTLE_ENDIAN
+		if (is_var_bigendian) return false;
+		#else
+		if (!is_var_bigendian) return false;
+		#endif
+		if (is_var_float != (std::is_same<T,float>() || std::is_same<T,double>())) return false;
+		if (is_var_signed != (std::is_same<T,float>() || std::is_same<T,double>() || std::is_same<T,int>() || std::is_same<T,short>() || std::is_same<T,char>())) return false;
+		return var_size == sizeof(T);
+	}
 };
 
 class Sound {
@@ -78,7 +88,7 @@ public:
 	
 };
 
-template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN> DST ConvertSoundSample(SRC v) {
+template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN=1, bool DST_NATIVE_ENDIAN=1> DST ConvertSoundSample(SRC v) {
 	static_assert(!SRC_NATIVE_ENDIAN || !DST_NATIVE_ENDIAN, "Only native endian sample should use default implementation");
 	if (!SRC_NATIVE_ENDIAN)
 		EndianSwap(v);
@@ -192,9 +202,9 @@ struct SoundConverter {
 	template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN>
 	static void TypeConvert(const SoundFormat& src_fmt, const byte* src, const SoundFormat& dst_fmt, byte* dst) {
 		const SRC* src_it = (const SRC*)src;
-		const SRC* src_end = src_it + src_fmt.sample_rate + src_fmt.channels;
+		const SRC* src_end = src_it + src_fmt.sample_rate * src_fmt.channels;
 		DST* dst_it = (DST*)dst;
-		DST* dst_end = dst_it + src_fmt.sample_rate + dst_fmt.channels;
+		DST* dst_end = dst_it + src_fmt.sample_rate * dst_fmt.channels;
 		for(int i = 0; i < src_fmt.sample_rate; i++) {
 			for(int j = 0; j < dst_fmt.channels; j++)
 				*dst_it++ =
@@ -202,6 +212,7 @@ struct SoundConverter {
 						src_it[j % src_fmt.channels]);
 			src_it += src_fmt.channels;
 		}
+		ASSERT(src_it == src_end);
 		ASSERT(dst_it == dst_end);
 	}
 	

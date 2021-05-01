@@ -55,20 +55,32 @@ void ASound::OpenDefaultStream(PaStreamCallback* cb, void* data,
 void ASound::SetFormat(int out_ch, SampleFormat format) {
 	fmt.channels = out_ch;
 	fmt.is_var_float = format == SND_FLOAT32;
+	#if CPU_LITTLE_ENDIAN
+	fmt.is_var_bigendian = false;
+	#else
+	fmt.is_var_bigendian = true;
+	#endif
 	switch (format) {
 		case SND_FLOAT32:
 		case SND_INT32:
 			fmt.var_size = 4;
+			fmt.is_var_signed = true;
 			break;
 		case SND_INT24:
 			fmt.var_size = 3;
+			fmt.is_var_signed = true;
 			break;
 		case SND_INT16:
 			fmt.var_size = 2;
+			fmt.is_var_signed = true;
 			break;
 		case SND_INT8:
+			fmt.var_size = 1;
+			fmt.is_var_signed = true;
+			break;
 		case SND_UINT8:
 			fmt.var_size = 1;
+			fmt.is_var_signed = false;
 			break;
 		default:
 			fmt.var_size = 0;

@@ -218,7 +218,9 @@ bool VolatileSoundBuffer::CheckSize(int size_) {
 template <class T> void SoundBufferUnitTestT() {
 	SoundFormat fmt;
 	fmt.var_size = sizeof(T);
-	fmt.is_var_float = ((T)1.5) == 1.5;
+	fmt.is_var_float = std::is_same<T,float>() || std::is_same<T,double>();
+	fmt.is_var_bigendian = 0;
+	fmt.is_var_signed = (float)-1 == (float)((T)-1);
 	fmt.channels = 2;
 	fmt.sample_rate = 32;
 	fmt.freq = 1024;
