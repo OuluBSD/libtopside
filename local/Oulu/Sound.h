@@ -89,8 +89,8 @@ template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_EN
 }
 
 #define SAMPLE_PASSTHROUGH(TYPE) \
-	template <> TYPE ConvertSoundSample<TYPE, TYPE, 1,1>(TYPE u) {return u;} \
-	template <> TYPE ConvertSoundSample<TYPE, TYPE, 0,0>(TYPE u) {return u;}
+	template <> inline TYPE ConvertSoundSample<TYPE, TYPE, 1,1>(TYPE u) {return u;} \
+	template <> inline TYPE ConvertSoundSample<TYPE, TYPE, 0,0>(TYPE u) {return u;}
 SAMPLE_PASSTHROUGH(unsigned char)
 SAMPLE_PASSTHROUGH(unsigned short)
 SAMPLE_PASSTHROUGH(unsigned int)
@@ -101,68 +101,68 @@ SAMPLE_PASSTHROUGH(float)
 SAMPLE_PASSTHROUGH(double)
 #undef SAMPLE_PASSTHROUGH
 
-template <> unsigned char ConvertSoundSample<unsigned int, unsigned char, 1,1>(unsigned int u)		{return (unsigned char)	((dword)u >> 24);}
-template <> unsigned short ConvertSoundSample<unsigned int, unsigned short, 1,1>(unsigned int u)	{return (unsigned short)((dword)u >> 16);}
-template <> unsigned char ConvertSoundSample<unsigned short, unsigned char, 1,1>(unsigned short u)	{return (unsigned char)	((dword)u >> 8);}
-template <> unsigned int ConvertSoundSample<unsigned char, unsigned int, 1,1>(unsigned char u)		{return (unsigned int)	((dword)u << 24);}
-template <> unsigned int ConvertSoundSample<unsigned short, unsigned int, 1,1>(unsigned short u)	{return (unsigned int)	((dword)u << 16);}
-template <> unsigned short ConvertSoundSample<unsigned char, unsigned short, 1,1>(unsigned char u)	{return (unsigned short)((dword)u << 8);}
+template <> inline unsigned char ConvertSoundSample<unsigned int, unsigned char, 1,1>(unsigned int u)		{return (unsigned char)	((dword)u >> 24);}
+template <> inline unsigned short ConvertSoundSample<unsigned int, unsigned short, 1,1>(unsigned int u)		{return (unsigned short)((dword)u >> 16);}
+template <> inline unsigned char ConvertSoundSample<unsigned short, unsigned char, 1,1>(unsigned short u)	{return (unsigned char)	((dword)u >> 8);}
+template <> inline unsigned int ConvertSoundSample<unsigned char, unsigned int, 1,1>(unsigned char u)		{return (unsigned int)	((dword)u << 24);}
+template <> inline unsigned int ConvertSoundSample<unsigned short, unsigned int, 1,1>(unsigned short u)		{return (unsigned int)	((dword)u << 16);}
+template <> inline unsigned short ConvertSoundSample<unsigned char, unsigned short, 1,1>(unsigned char u)	{return (unsigned short)((dword)u << 8);}
 
-template <> char ConvertSoundSample<int, char, 1,1>(int i)							{return (char)	(i >= 0 ? (int)i >> 24	: -((int)-i >> 24));}
-template <> short ConvertSoundSample<int, short, 1,1>(int i)						{return (short)	(i >= 0 ? (int)i >> 16	: -((int)-i >> 16));}
-template <> char ConvertSoundSample<short, char, 1,1>(short i)						{return (char)	(i >= 0 ? (int)i >> 8	: -((int)-i >> 8));}
-template <> int ConvertSoundSample<char, int, 1,1>(char i)							{return (int)	(i >= 0 ? (int)i << 24	: -((int)-i << 24));}
-template <> int ConvertSoundSample<short, int, 1,1>(short i)						{return (int)	(i >= 0 ? (int)i << 16	: -((int)-i << 16));}
-template <> short ConvertSoundSample<char, short, 1,1>(char i)						{return (short)	(i >= 0 ? (int)i << 8	: -((int)-i << 8));}
+template <> inline char ConvertSoundSample<int, char, 1,1>(int i)						{return (char)	(i >= 0 ? (int)i >> 24	: -((int)-i >> 24));}
+template <> inline short ConvertSoundSample<int, short, 1,1>(int i)						{return (short)	(i >= 0 ? (int)i >> 16	: -((int)-i >> 16));}
+template <> inline char ConvertSoundSample<short, char, 1,1>(short i)					{return (char)	(i >= 0 ? (int)i >> 8	: -((int)-i >> 8));}
+template <> inline int ConvertSoundSample<char, int, 1,1>(char i)						{return (int)	(i >= 0 ? (int)i << 24	: -((int)-i << 24));}
+template <> inline int ConvertSoundSample<short, int, 1,1>(short i)						{return (int)	(i >= 0 ? (int)i << 16	: -((int)-i << 16));}
+template <> inline short ConvertSoundSample<char, short, 1,1>(char i)					{return (short)	(i >= 0 ? (int)i << 8	: -((int)-i << 8));}
 
-template <> char ConvertSoundSample<unsigned int, char, 1,1>(unsigned int u)		{return (char)	((int)((dword)u >> 24)	+ (int)std::numeric_limits<char>::min());}
-template <> short ConvertSoundSample<unsigned int, short, 1,1>(unsigned int u)		{return (short)	((int)((dword)u >> 16)	+ (int)std::numeric_limits<short>::min());}
-template <> char ConvertSoundSample<unsigned short, char, 1,1>(unsigned short u)	{return (char)	((int)((dword)u >> 8)	+ (int)std::numeric_limits<char>::min());}
-template <> int ConvertSoundSample<unsigned char, int, 1,1>(unsigned char u)		{return (int)	(((int)u + (int)std::numeric_limits<char>::min()) << 24);}
-template <> int ConvertSoundSample<unsigned short, int, 1,1>(unsigned short u)		{return (int)	(((int)u + (int)std::numeric_limits<short>::min()) << 16);}
-template <> short ConvertSoundSample<unsigned char, short, 1,1>(unsigned char u)	{return (short)	(((int)u + (int)std::numeric_limits<char>::min()) << 8);}
+template <> inline char ConvertSoundSample<unsigned int, char, 1,1>(unsigned int u)		{return (char)	((int)((dword)u >> 24)	+ (int)std::numeric_limits<char>::min());}
+template <> inline short ConvertSoundSample<unsigned int, short, 1,1>(unsigned int u)	{return (short)	((int)((dword)u >> 16)	+ (int)std::numeric_limits<short>::min());}
+template <> inline char ConvertSoundSample<unsigned short, char, 1,1>(unsigned short u)	{return (char)	((int)((dword)u >> 8)	+ (int)std::numeric_limits<char>::min());}
+template <> inline int ConvertSoundSample<unsigned char, int, 1,1>(unsigned char u)		{return (int)	(((int)u + (int)std::numeric_limits<char>::min()) << 24);}
+template <> inline int ConvertSoundSample<unsigned short, int, 1,1>(unsigned short u)	{return (int)	(((int)u + (int)std::numeric_limits<short>::min()) << 16);}
+template <> inline short ConvertSoundSample<unsigned char, short, 1,1>(unsigned char u)	{return (short)	(((int)u + (int)std::numeric_limits<char>::min()) << 8);}
 
-template <> unsigned char ConvertSoundSample<int, unsigned char, 1,1>(int u)		{return (unsigned char)	(((int)u >> 24)	- (int)std::numeric_limits<char>::min());}
-template <> unsigned short ConvertSoundSample<int, unsigned short, 1,1>(int u)		{return (unsigned short)(((int)u >> 16)	- (int)std::numeric_limits<short>::min());}
-template <> unsigned char ConvertSoundSample<short, unsigned char, 1,1>(short u)	{return (unsigned char)	(((int)u >> 8)	- (int)std::numeric_limits<char>::min());}
-template <> unsigned int ConvertSoundSample<char, unsigned int, 1,1>(char u)		{return (unsigned int)	(((int)u - (int)std::numeric_limits<char>::min()) << 24);}
-template <> unsigned int ConvertSoundSample<short, unsigned int, 1,1>(short u)		{return (unsigned int)	(((int)u - (int)std::numeric_limits<short>::min()) << 16);}
-template <> unsigned short ConvertSoundSample<char, unsigned short, 1,1>(char u)	{return (unsigned short)(((int)u - (int)std::numeric_limits<char>::min()) << 8);}
+template <> inline unsigned char ConvertSoundSample<int, unsigned char, 1,1>(int u)		{return (unsigned char)	(((int)u >> 24)	- (int)std::numeric_limits<char>::min());}
+template <> inline unsigned short ConvertSoundSample<int, unsigned short, 1,1>(int u)	{return (unsigned short)(((int)u >> 16)	- (int)std::numeric_limits<short>::min());}
+template <> inline unsigned char ConvertSoundSample<short, unsigned char, 1,1>(short u)	{return (unsigned char)	(((int)u >> 8)	- (int)std::numeric_limits<char>::min());}
+template <> inline unsigned int ConvertSoundSample<char, unsigned int, 1,1>(char u)		{return (unsigned int)	(((int)u - (int)std::numeric_limits<char>::min()) << 24);}
+template <> inline unsigned int ConvertSoundSample<short, unsigned int, 1,1>(short u)	{return (unsigned int)	(((int)u - (int)std::numeric_limits<short>::min()) << 16);}
+template <> inline unsigned short ConvertSoundSample<char, unsigned short, 1,1>(char u)	{return (unsigned short)(((int)u - (int)std::numeric_limits<char>::min()) << 8);}
 
-template <> unsigned char ConvertSoundSample<char, unsigned char, 1,1>(char u)			{return (unsigned char)		((int)u - (int)std::numeric_limits<char>::min());}
-template <> unsigned short ConvertSoundSample<short, unsigned short, 1,1>(short u)		{return (unsigned short)	((int)u - (int)std::numeric_limits<short>::min());}
-template <> unsigned int ConvertSoundSample<int, unsigned int, 1,1>(int u)				{return (unsigned int)		((int64)u - (int64)std::numeric_limits<int>::min());}
-template <> char ConvertSoundSample<unsigned char, char, 1,1>(unsigned char u)			{return (char)	((int)u + (int)std::numeric_limits<char>::min());}
-template <> short ConvertSoundSample<unsigned short, short, 1,1>(unsigned short u)		{return (short)	((int)u + (int)std::numeric_limits<short>::min());}
-template <> int ConvertSoundSample<unsigned int, int, 1,1>(unsigned int u)				{return (int)	((int64)u + (int64)std::numeric_limits<int>::min());}
+template <> inline unsigned char ConvertSoundSample<char, unsigned char, 1,1>(char u)			{return (unsigned char)		((int)u - (int)std::numeric_limits<char>::min());}
+template <> inline unsigned short ConvertSoundSample<short, unsigned short, 1,1>(short u)		{return (unsigned short)	((int)u - (int)std::numeric_limits<short>::min());}
+template <> inline unsigned int ConvertSoundSample<int, unsigned int, 1,1>(int u)				{return (unsigned int)		((int64)u - (int64)std::numeric_limits<int>::min());}
+template <> inline char ConvertSoundSample<unsigned char, char, 1,1>(unsigned char u)			{return (char)	((int)u + (int)std::numeric_limits<char>::min());}
+template <> inline short ConvertSoundSample<unsigned short, short, 1,1>(unsigned short u)		{return (short)	((int)u + (int)std::numeric_limits<short>::min());}
+template <> inline int ConvertSoundSample<unsigned int, int, 1,1>(unsigned int u)				{return (int)	((int64)u + (int64)std::numeric_limits<int>::min());}
 
-template <> float ConvertSoundSample<double, float, 1,1>(double d) {return (float)d;}
-template <> double ConvertSoundSample<float, double, 1,1>(float f) {return (double)f;}
+template <> inline float ConvertSoundSample<double, float, 1,1>(double d) {return (float)d;}
+template <> inline double ConvertSoundSample<float, double, 1,1>(float f) {return (double)f;}
 
 #define UNSIGNED_TO_FLOAT(TYPE, FLOAT) \
-template <> FLOAT ConvertSoundSample<TYPE,FLOAT,1,1>(TYPE u) { \
+template <> inline FLOAT ConvertSoundSample<TYPE,FLOAT,1,1>(TYPE u) { \
 	static constexpr double recip = 2.0 / (double)std::numeric_limits<TYPE>::max(); \
 	return (FLOAT)(u * recip - 1.0); \
 }
 #define SIGNED_TO_FLOAT(TYPE, FLOAT) \
-template <> FLOAT ConvertSoundSample<TYPE,FLOAT,1,1>(TYPE i) { \
+template <> inline FLOAT ConvertSoundSample<TYPE,FLOAT,1,1>(TYPE i) { \
 	static constexpr double recip = 1.0 / (double)std::numeric_limits<TYPE>::max(); \
 	return (FLOAT)(i * recip); \
 }
 #define FLOAT_TO_UNSIGNED(FLOAT, TYPE) \
-template <> TYPE ConvertSoundSample<FLOAT,TYPE,1,1>(FLOAT f) { \
+template <> inline TYPE ConvertSoundSample<FLOAT,TYPE,1,1>(FLOAT f) { \
 	static constexpr double recip = (double)std::numeric_limits<TYPE>::max() / 2.0; \
 	f = std::min<FLOAT>(1, std::max<FLOAT>(-1, f));\
 	return (TYPE)((f * recip) + recip); \
 }
 #define FLOAT_TO_SIGNED(FLOAT, TYPE) \
-template <> TYPE ConvertSoundSample<FLOAT,TYPE,1,1>(FLOAT f) { \
+template <> inline TYPE ConvertSoundSample<FLOAT,TYPE,1,1>(FLOAT f) { \
 	static constexpr double recip = (double)std::numeric_limits<TYPE>::max(); \
 	f = std::min<FLOAT>(1, std::max<FLOAT>(-1, f));\
 	return (TYPE)(f * recip); \
 }
 #define INTEGER_TO_INTEGER(SRC, DST) \
-template <> DST ConvertSoundSample<SRC,DST,1,1>(SRC f) { \
+template <> inline DST ConvertSoundSample<SRC,DST,1,1>(SRC f) { \
 	unsigned int u32 = ConvertSoundSample<SRC,unsigned int, 1,1>(f); \
 	static constexpr double recip = (double)std::numeric_limits<DST>::max(); \
 	return (DST)(f * recip); \
