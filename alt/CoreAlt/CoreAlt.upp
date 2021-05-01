@@ -26,6 +26,7 @@ file
 	TODO.txt,
 	Core.h options(BUILDER_OPTION) PCH,
 	Core.cpp,
+	Config.h,
 	Defs.h,
 	Macros.h,
 	Fn.h,

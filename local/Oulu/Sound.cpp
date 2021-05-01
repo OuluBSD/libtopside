@@ -177,16 +177,31 @@ void VolatileSoundBuffer::Put(void* v_, int size_, bool realtime) {
 }
 
 bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
+	if (snd.GetQueueSize() == 0)
+		return false;
+	if (IsQueueFull())
+		return false;
+	
 	// easy implementation
-	thread_local static Vector<byte> tmp;
-	if (snd.GetSoundFormat() == snd_fmt) {
+	thread_local static Vector<byte> tmp, conv;
+	SoundFormat src_fmt = snd.GetSoundFormat();
+	if (src_fmt == snd_fmt) {
 		int sz = snd_fmt.GetFrameBytes();
 		tmp.SetCount(sz);
 		snd.Get(tmp.Begin(), sz);
 		Put(tmp.Begin(), sz, realtime);
 		return true;
 	}
-	return false;
+	else {
+		int src_sz = src_fmt.GetFrameBytes();
+		tmp.SetCount(src_sz);
+		int dst_sz = snd_fmt.GetFrameBytes(src_fmt.sample_rate);
+		conv.SetCount(dst_sz);
+		snd.Get(tmp.Begin(), src_sz);
+		SoundConverter::Convert(src_fmt, tmp.Begin(), snd_fmt, conv.Begin());
+		Put(conv.Begin(), dst_sz, realtime);
+		return true;
+	}
 }
 
 bool VolatileSoundBuffer::CheckSize(int size_) {
@@ -237,6 +252,65 @@ void SoundBufferUnitTest() {
 	SoundBufferUnitTestT<uint16>();
 	SoundBufferUnitTestT<int32>();
 	SoundBufferUnitTestT<float>();
+}
+
+
+
+
+
+bool SoundConverter::Convert(const SoundFormat& src_fmt, const byte* src, const SoundFormat& dst_fmt, byte* dst) {
+	#define LIST_A(nat_is_be) \
+		ITEM_A(nat_is_be, unsigned char, 0) \
+		ITEM_A(nat_is_be, unsigned short, 0) \
+		ITEM_A(nat_is_be, unsigned int, 0) \
+		ITEM_A(nat_is_be, char, 1) \
+		ITEM_A(nat_is_be, short, 1) \
+		ITEM_A(nat_is_be, int, 1) \
+		ITEM_A(nat_is_be, float, 0) \
+		ITEM_A(nat_is_be, double, 0) \
+		ITEM_A(nat_is_be, float, 1) \
+		ITEM_A(nat_is_be, double, 1)
+	#define ITEM_A(nat_is_be, a, a_signed) \
+		ITEM_B(nat_is_be, a, a_signed, unsigned char, 0) \
+		ITEM_B(nat_is_be, a, a_signed, unsigned short, 0) \
+		ITEM_B(nat_is_be, a, a_signed, unsigned int, 0) \
+		ITEM_B(nat_is_be, a, a_signed, char, 1) \
+		ITEM_B(nat_is_be, a, a_signed, short, 1) \
+		ITEM_B(nat_is_be, a, a_signed, int, 1) \
+		ITEM_B(nat_is_be, a, a_signed, float, 0) \
+		ITEM_B(nat_is_be, a, a_signed, double, 0) \
+		ITEM_B(nat_is_be, a, a_signed, float, 1) \
+		ITEM_B(nat_is_be, a, a_signed, double, 1)
+	#define ITEM_B(nat_is_be, a, a_signed, b, b_signed) \
+		if (src_fmt.var_size == sizeof(a) && \
+			src_fmt.is_var_float == (std::is_same<a,float>() || std::is_same<a,double>()) && \
+			src_fmt.is_var_signed == a_signed && \
+			dst_fmt.var_size == sizeof(b) && \
+			dst_fmt.is_var_float == (std::is_same<b,float>() || std::is_same<b,double>()) && \
+			dst_fmt.is_var_signed == b_signed) {\
+			if (src_fmt.is_var_bigendian == nat_is_be) { \
+				if (dst_fmt.is_var_bigendian == nat_is_be) \
+					TypeConvert<a,b,1,1>(src_fmt, src, dst_fmt, dst); \
+				else \
+					TypeConvert<a,b,1,0>(src_fmt, src, dst_fmt, dst); \
+			} \
+			else { \
+				if (dst_fmt.is_var_bigendian == nat_is_be) \
+					TypeConvert<a,b,0,1>(src_fmt, src, dst_fmt, dst); \
+				else \
+					TypeConvert<a,b,0,0>(src_fmt, src, dst_fmt, dst); \
+			} \
+			return true; \
+		}
+	#if CPU_LITTLE_ENDIAN
+	LIST_A(false)
+	#else
+	LIST_A(true)
+	#endif
+	#undef LIST_A
+	#undef ITEM_A
+	#undef ITEM_B
+	return false;
 }
 
 NAMESPACE_OULU_END
