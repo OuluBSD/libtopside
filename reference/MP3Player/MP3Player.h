@@ -13,6 +13,7 @@ class DummyGenerator :
 {
 	Ref<SoundGeneratorComponent> gen;
 	Ref<PortaudioSinkComponent> audio;
+	
 public:
 	typedef DummyGenerator CLASSNAME;
 	DummyGenerator() {}
@@ -37,6 +38,7 @@ class MP3Player :
 {
 	Ref<FfmpegComponent> file_in;
 	Ref<PortaudioSinkComponent> audio;
+	
 public:
 	typedef MP3Player CLASSNAME;
 	MP3Player() {}

@@ -16,29 +16,26 @@ void MediaInputThread::Stop() {
 
 void MediaInputThread::Process() {
 	ASSERT(cap);
-	step_time.Reset();
 	if (cap) {
 		while (cap && cap->IsDeviceOpen() && flag.IsRunning()) {
-			if (!cap->Step(ResetSeconds(step_time))) {
-				Sleep(1);
-				continue;
+			if (cap->IsAnyQueueEmpty()) {
+				if (!cap->Step(0.001)) {
+					continue;
+				}
+				
+				if (cap->ReadAudio()) {
+					// got new audio frame
+				}
+				else if (cap->ReadVideo()) {
+					// got new video frame
+				}
+				else
+					Sleep(1);
 			}
 			
-			if (cap->ReadAudio()) {
-				new_audio_frame = true;
-			}
-			else if (cap->ReadVideo()) {
-				new_video_frame = true;
-			}
-			else {
-				if (!cap->IsDeviceOpen())
-					cap->ReopenDevice();
-				else {
-					last_error = "MediaInputThread::Process", "reading video input frame failed: " + cap->GetLastError();
-					WhenError();
-					Sleep(100);
-				}
-			}
+			if (loop_file && !cap->IsDeviceOpen())
+				cap->ReopenDevice();
+			
 		}
 	}
 	flag.SetStopped();

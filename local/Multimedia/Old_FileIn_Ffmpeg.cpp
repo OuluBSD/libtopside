@@ -1,3 +1,4 @@
+#if 0
 #include "Multimedia.h"
 #if HAVE_FFMPEG
 
@@ -660,4 +661,5 @@ Video& FfmpegFileInput::GetVideo() {
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

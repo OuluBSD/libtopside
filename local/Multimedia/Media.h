@@ -23,6 +23,7 @@ public:
 	
 	virtual bool IsDeviceOpen() const = 0;
 	virtual bool Step(double seconds) = 0;
+	virtual bool IsAnyQueueEmpty() = 0;
 	virtual bool ReadVideo() = 0;
 	virtual bool ReadAudio() = 0;
 	virtual void Close() = 0;
@@ -65,11 +66,9 @@ public:
 struct MediaInputThread : Moveable<MediaInputThread> {
 	String path;
 	RunningFlagSingle flag;
-	TimeStop step_time;
 	String last_error;
 	MediaStream* cap = 0;
-	bool new_video_frame = false;
-	bool new_audio_frame = false;
+	bool loop_file = false;
 	
 	
 	typedef MediaInputThread CLASSNAME;
@@ -83,8 +82,8 @@ struct MediaInputThread : Moveable<MediaInputThread> {
 #ifdef flagOPENGL
 	void PaintOpenGL(GLuint active_tex);
 #endif
-	bool TestClearNewVideoFrame() {bool b = new_video_frame; new_video_frame = false; return b;}
-	bool TestClearNewAudioFrame() {bool b = new_audio_frame; new_audio_frame = false; return b;}
+	//bool TestClearNewVideoFrame() {bool b = new_video_frame; new_video_frame = false; return b;}
+	//bool TestClearNewAudioFrame() {bool b = new_audio_frame; new_audio_frame = false; return b;}
 	
 	String GetLastError() const {return last_error;}
 	

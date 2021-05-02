@@ -1,3 +1,4 @@
+#if 0
 #ifndef _Multimedia_FileIn_h_
 #define _Multimedia_FileIn_h_
 
@@ -188,5 +189,6 @@ public:
 
 NAMESPACE_OULU_END
 
+#endif
 #endif
 #endif
