@@ -100,7 +100,7 @@ void InterfaceConnectionCtrl::AddInterface(String from, String name, InterfaceBa
 		Entity& tgt_ent = tgt_base->GetEntity();
 		
 		String id_str = "(" + IntStr64(tgt_ent.GetId()) + ")";
-		String b_name = b->GetInterfaceType().CleanDemangledName() + id_str;
+		String b_name = b->GetProviderType().CleanDemangledName() + id_str;
 		String c_name = tgt_base->GetType().CleanDemangledName() + id_str;
 		String e_name = tgt_ent.GetPrefab() + id_str;
 		

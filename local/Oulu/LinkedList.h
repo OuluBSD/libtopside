@@ -31,7 +31,10 @@ public:
 	
 	template <class V>
 	Ref(const Ref<V>& r) {
-		static_assert(std::is_same<V, T>() || std::is_base_of<V,T>() || std::is_base_of<T,V>(), "T must inherit V or vice versa");
+		static_assert(
+			std::is_same<V, T>() ||
+			std::is_base_of<V,T>() ||
+			std::is_base_of<T,V>(), "T must inherit V or vice versa");
 		if (!r.IsEmpty()) {
 			o = dynamic_cast<T*>(r.Get());
 			ASSERT(o);
@@ -298,7 +301,7 @@ public:
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
 		Item* GetItem() const {return it;}
-		T*   operator->() {ChkRef(); return ref;}
+		T*   operator->() {ChkRef(); return ref.Get();}
 		R&   operator*() const {ChkRef(); return ref;}
 		void operator=(const Iterator& i) {Clear(); it = i.it;}
 		bool operator==(const Iterator& i) const {return i.it == it;}
@@ -332,6 +335,29 @@ public:
 	R Add() {return AddItem()->value.AsRef();}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
+	void RemoveFirst(int count) {
+		if (!count) return;
+		ASSERT(count > 0 && count <= this->count);
+		count = std::min(count, this->count);
+		if (count == this->count)
+			Clear();
+		else {
+			Item* it = first;
+			for(int i = 0; i < count; i++)
+				it = it->next;
+			Item* last_rm = it->prev;
+			it->prev = 0;
+			this->count -= count;
+			first = it;
+			it = last_rm;
+			while (it) {
+				last_rm = it->prev;
+				GetRecyclerPool().Return(it);
+				it = last_rm;
+			}
+			
+		}
+	}
 	Iterator Remove(const Iterator& iter) {
 		Item* item = iter.GetItem();
 		Item* in_place = 0;
@@ -556,7 +582,7 @@ public:
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
 		Item* GetItem() const {return it;}
-		T*   operator->() {ChkRef(); return ref;}
+		T*   operator->() {ChkRef(); return ref.Get();}
 		R&   operator*() const {ChkRef(); return ref;}
 		void operator=(const Iterator& i) {Clear(); it = i.it;}
 		bool operator==(const Iterator& i) const {return i.it == it;}

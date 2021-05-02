@@ -7,15 +7,15 @@ using namespace Upp;
 using namespace Oulu;
 
 
-struct DemoMoney : public SemanticExchange {
+struct DemoMoney : public SemanticEx {
 	
 };
 
-struct DemoMusic : public SemanticExchange {
+struct DemoMusic : public SemanticEx {
 	
 };
 
-struct DemoFeeling : public SemanticExchange {
+struct DemoFeeling : public SemanticEx {
 	
 };
 

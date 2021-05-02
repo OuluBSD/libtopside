@@ -68,7 +68,7 @@ void InterfaceSystemCtrl::ClearActiveCtrl() {
 void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBase& c, InterfaceBase& b) {
 	ClearActiveCtrl();
 	
-	TypeId type = b.GetInterfaceType();
+	TypeId type = b.GetProviderType();
 	int i = iface_ctrls.Find(type);
 	if (i < 0) {
 		active_ctrl = NewInterfaceCtrl(type);

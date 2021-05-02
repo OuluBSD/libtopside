@@ -8,8 +8,10 @@
 	#if defined flagFREEBSD && defined flagGCC
 		// skip v4l2 because of weird VideoDevice::open
 	#else
-		#define HAVE_V4L2 1
+		#define HAVE_V4L2_DEVMGR 1
 		#define HAVE_OPENCV 1
+		
+		#define HAVE_V4L2_CAP 0
 		
 		#ifndef flagALTCORE
 			#define V4L2_SLOW 0
@@ -27,7 +29,7 @@ extern "C" {
 }
 #endif
 
-#if HAVE_V4L2
+#if HAVE_V4L2_DEVMGR || HAVE_V4L2_CAP
 	#ifdef flagWIN32
 		#error V4L2 is not supported in windows
 	#else

@@ -5,7 +5,7 @@ NAMESPACE_OULU_BEGIN
 
 
 void VolatileSoundBuffer::Clear() {
-	snd_fmt.Clear();
+	aud_fmt.Clear();
 	frames = 0;
 	frame_size = 0;
 	for(int i = 0; i < 2; i++)
@@ -17,14 +17,14 @@ void VolatileSoundBuffer::Clear() {
 	write_frame = 0;
 }
 
-void VolatileSoundBuffer::SetSize(SoundFormat snd_fmt, int frames) {
-	this->snd_fmt = snd_fmt;
+void VolatileSoundBuffer::SetSize(AudioFormat aud_fmt, int frames) {
+	this->aud_fmt = aud_fmt;
 	this->frames = frames;
-	frame_size = snd_fmt.channels * snd_fmt.sample_rate * snd_fmt.var_size;
-	ASSERT(snd_fmt.var_size >= 1);
-	ASSERT(snd_fmt.freq >= 1);
-	ASSERT(snd_fmt.channels >= 1);
-	ASSERT(snd_fmt.sample_rate >= 16);
+	frame_size = aud_fmt.channels * aud_fmt.sample_rate * aud_fmt.var_size;
+	ASSERT(aud_fmt.var_size >= 1);
+	ASSERT(aud_fmt.freq >= 1);
+	ASSERT(aud_fmt.channels >= 1);
+	ASSERT(aud_fmt.sample_rate >= 16);
 	ASSERT(frames >= 2);
 	int total = frame_size * frames;
 	ASSERT(total > 0 && total < size_limit);
@@ -44,7 +44,18 @@ void VolatileSoundBuffer::Zero() {
 	write_frame = 0;
 }
 
-void VolatileSoundBuffer::Get(void* v_, int size_) {
+void VolatileSoundBuffer::Exchange(AudioEx& e) {
+	if (e.IsLoading())
+		Get(e);
+	else if (e.IsStoring())
+		Put(e);
+	else
+		Panic("Invalid AudioEx");
+}
+
+void VolatileSoundBuffer::Get(AudioEx& e) {
+	TODO
+	#if 0
 	byte* v = (byte*)v_;
 	if (!CheckSize(size_)) {
 		if (size_)
@@ -52,10 +63,10 @@ void VolatileSoundBuffer::Get(void* v_, int size_) {
 		return;
 	}
 	
-	int total_vars = size_ / snd_fmt.var_size;
-	int samples = total_vars / snd_fmt.channels;
-	int in_frames = samples / snd_fmt.sample_rate;
-	ASSERT(in_frames * snd_fmt.sample_rate * snd_fmt.channels == total_vars);
+	int total_vars = size_ / aud_fmt.var_size;
+	int samples = total_vars / aud_fmt.channels;
+	int in_frames = samples / aud_fmt.sample_rate;
+	ASSERT(in_frames * aud_fmt.sample_rate * aud_fmt.channels == total_vars);
 	
 	lock.Enter();
 	int size_frames = min(queue_size, in_frames);
@@ -100,9 +111,12 @@ void VolatileSoundBuffer::Get(void* v_, int size_) {
 		if (size_)
 			memset(v, 0, size_);
 	}
+	#endif
 }
 
-void VolatileSoundBuffer::Put(void* v_, int size_, bool realtime) {
+void VolatileSoundBuffer::Put(AudioEx& e) {
+	TODO
+	#if 0
 	byte* v = (byte*)v_;
 	if (!CheckSize(size_))
 		return;
@@ -174,9 +188,12 @@ void VolatileSoundBuffer::Put(void* v_, int size_, bool realtime) {
 		queue_size = new_queue_size;
 		lock.Leave();
 	}
+	#endif
 }
 
 bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
+	TODO
+	#if 0
 	if (snd.GetQueueSize() == 0)
 		return false;
 	if (IsQueueFull())
@@ -184,9 +201,9 @@ bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
 	
 	// easy implementation
 	thread_local static Vector<byte> tmp, conv;
-	SoundFormat src_fmt = snd.GetSoundFormat();
-	if (src_fmt == snd_fmt) {
-		int sz = snd_fmt.GetFrameBytes();
+	AudioFormat src_fmt = snd.GetAudioFormat();
+	if (src_fmt == aud_fmt) {
+		int sz = aud_fmt.GetFrameBytes();
 		tmp.SetCount(sz);
 		snd.Get(tmp.Begin(), sz);
 		Put(tmp.Begin(), sz, realtime);
@@ -195,13 +212,14 @@ bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
 	else {
 		int src_sz = src_fmt.GetFrameBytes();
 		tmp.SetCount(src_sz);
-		int dst_sz = snd_fmt.GetFrameBytes(src_fmt.sample_rate);
+		int dst_sz = aud_fmt.GetFrameBytes(src_fmt.sample_rate);
 		conv.SetCount(dst_sz);
 		snd.Get(tmp.Begin(), src_sz);
-		SoundConverter::Convert(src_fmt, tmp.Begin(), snd_fmt, conv.Begin());
+		SoundConverter::Convert(src_fmt, tmp.Begin(), aud_fmt, conv.Begin());
 		Put(conv.Begin(), dst_sz, realtime);
 		return true;
 	}
+	#endif
 }
 
 bool VolatileSoundBuffer::CheckSize(int size_) {
@@ -215,52 +233,12 @@ bool VolatileSoundBuffer::CheckSize(int size_) {
 	return true;
 }
 
-template <class T> void SoundBufferUnitTestT() {
-	SoundFormat fmt;
-	fmt.var_size = sizeof(T);
-	fmt.is_var_float = std::is_same<T,float>() || std::is_same<T,double>();
-	fmt.is_var_bigendian = 0;
-	fmt.is_var_signed = (float)-1 == (float)((T)-1);
-	fmt.channels = 2;
-	fmt.sample_rate = 32;
-	fmt.freq = 1024;
-	int frames = 2;
-	
-	Vector<T> from, to;
-	from.SetCount(fmt.sample_rate * fmt.channels);
-	to.SetCount(fmt.sample_rate * fmt.channels);
-	
-	for(int i = 0; i < fmt.sample_rate; i++) {
-		from[i*2 + 0] = (T)(+1 + i + 0.5);
-		from[i*2 + 1] = (T)(-1 - i + 0.5);
-	}
-	
-	VolatileSoundBuffer b;
-	b.SetSize(fmt, frames);
-	
-	for(int i = 0; i < frames; i++)
-		b.Put((T*)from.Begin(), from.GetCount() * fmt.var_size, false);
-	b.Get((T*)to.Begin(), to.GetCount() * fmt.var_size);
-	
-	for(int i = 0; i < from.GetCount(); i++) {
-		T f = from[i];
-		T t = to[i];
-		ASSERT(f == t);
-	}
-}
-
-void SoundBufferUnitTest() {
-	SoundBufferUnitTestT<uint8>();
-	SoundBufferUnitTestT<uint16>();
-	SoundBufferUnitTestT<int32>();
-	SoundBufferUnitTestT<float>();
-}
 
 
 
 
 
-bool SoundConverter::Convert(const SoundFormat& src_fmt, const byte* src, const SoundFormat& dst_fmt, byte* dst) {
+bool SoundConverter::Convert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
 	#define LIST_A(nat_is_be) \
 		ITEM_A(nat_is_be, unsigned char, 0) \
 		ITEM_A(nat_is_be, unsigned short, 0) \

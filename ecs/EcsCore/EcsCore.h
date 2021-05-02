@@ -7,7 +7,6 @@
 #else
 	#include <Geometry/Geometry.h>
 	#include <Oulu/Oulu.h>
-	#include <VirtualSound/VirtualSound.h>
 #endif
 
 #include <Agent/Agent.h>
@@ -23,7 +22,6 @@
 
 #include "Common.h"
 #include "Machine.h"
-#include "Exchange.h"
 #include "ExchangeSystem.h"
 #include "State.h"
 #include "Interface.h"

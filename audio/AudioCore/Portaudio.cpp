@@ -63,8 +63,8 @@ void PortaudioSinkComponent::RecvMedia(Media& media) {
 	if (obj /*&& obj->WriteAvailable()*/) {
 		Sound& snd = media.GetSound();
 		int frames = snd.GetQueueSize();
-		SoundFormat src_fmt = snd.GetFormat();
-		SoundFormat dst_fmt = obj->GetFormat();
+		AudioFormat src_fmt = snd.GetFormat();
+		AudioFormat dst_fmt = obj->GetFormat();
 		if (src_fmt == dst_fmt) {
 			int size = src_fmt.sample_rate * src_fmt.channels;
 			tmp.SetCount(size);
@@ -80,7 +80,7 @@ void PortaudioSinkComponent::RecvMedia(Media& media) {
 }
 #endif
 
-SoundFormat PortaudioSinkComponent::GetSoundFormat() {
+AudioFormat PortaudioSinkComponent::GetAudioFormat() {
 	TODO
 }
 

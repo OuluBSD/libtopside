@@ -13,7 +13,7 @@ class FfmpegComponent :
 {
 	String last_error;
 	V4L2_DeviceManager devmgr;
-	MediaInputThread vi;
+	MediaStreamThread vi;
 	VideoProxy video_buf;
 	SoundProxy sound_buf;
 	Size def_cap_sz;
@@ -39,7 +39,7 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-	MediaInputThread& GetInput() {return vi;}
+	MediaStreamThread& GetInput() {return vi;}
 	
 	
 	static bool AllowDuplicates() {return true;}

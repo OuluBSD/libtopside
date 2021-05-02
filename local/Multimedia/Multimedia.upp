@@ -31,14 +31,19 @@ file
 	V4L2 readonly separator,
 	DeviceManager_V4L2.h,
 	DeviceManager_V4L2.cpp,
+	Capture_V4L2.h,
+	Capture_V4L2.cpp,
 	FFMPEG readonly separator,
 	ECS_Ffmpeg.h,
 	ECS_Ffmpeg.cpp,
-	Old_FileIn_Ffmpeg.h,
-	Old_FileIn_Ffmpeg.cpp,
+	FileIn_Ffmpeg.h,
+	FileIn_Ffmpeg.cpp,
 	OpenCV readonly separator,
 	ECS_OpenCV.h,
 	ECS_OpenCV.cpp,
 	Capture_OpenCV.h,
-	Capture_OpenCV.cpp;
+	Capture_OpenCV.cpp,
+	Trash readonly separator,
+	Old_FileIn_Ffmpeg.h,
+	Old_FileIn_Ffmpeg.cpp;
 

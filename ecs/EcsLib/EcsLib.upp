@@ -1,8 +1,5 @@
 description "Components\377B0,87,128";
 
-uses
-	EcsCore;
-
 uses(ALTCORE) EscAlt;
 
 uses(SDL2) OOSDL2;

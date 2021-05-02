@@ -146,7 +146,7 @@ public:
 	void Uninitialize() override;
 	void EmitMidi(double dt) override;
 	bool IsSupported(DevType type) override {return true;}
-	State* OnLink(InterfaceBase* iface) override;
+	void OnLink(Sink sink, Cookie src_c, Cookie sink_c) override;
 	bool OpenFilePath(String path);
 	void Clear();
 	void CollectTrackEvents(int i);

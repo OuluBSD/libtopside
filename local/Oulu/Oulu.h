@@ -18,7 +18,6 @@
 #endif
 #undef Complex
 
-#include <VirtualSound/VirtualSound.h>
 
 
 NAMESPACE_OULU_BEGIN
@@ -28,11 +27,14 @@ NAMESPACE_OULU_END
 
 #include "Compat.h"
 #include "Types.h"
+#include "Recycler.h"
+#include "LinkedList.h"
+#include "TypeTraits.h"
+#include "Exchange.h"
 #include "Interface.h"
 #include "Index.h"
 #include <CoreAlt/Container.h>
 #include "Container.h"
-#include "LinkedList.h"
 #include "RTuple.h"
 #include <CoreAlt/Shared.h>
 #include "Util.h"
@@ -41,7 +43,6 @@ NAMESPACE_OULU_END
 #include "Math.h"
 #include "Crypto.h"
 #include "Neural.h"
-#include "TypeTraits.h"
 #include "CLI.h"
 #include "DCT.h"
 #include "GeneticOptimizer.h"
@@ -56,6 +57,7 @@ NAMESPACE_OULU_END
 #include "Image.h"
 #include "Geom.h"
 #include "Sound.h"
+#include "SystemSound.h"
 #include "Video.h"
 #include "Media.h"
 #include "Html.h"

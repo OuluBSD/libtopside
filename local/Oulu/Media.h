@@ -6,7 +6,7 @@ NAMESPACE_OULU_BEGIN
 
 
 struct MediaFormat {
-	SoundFormat snd;
+	AudioFormat snd;
 	VideoFormat vid;
 	
 	bool IsValid() const {return snd.IsValid() || vid.IsValid();}
@@ -27,7 +27,7 @@ public:
 	virtual Sound& GetSound() = 0;
 	virtual Video& GetVideo() = 0;
 	
-	MediaFormat GetFormat() {return MediaFormat {GetSound().GetSoundFormat(), GetVideo().GetVideoFormat()};}
+	MediaFormat GetFormat() {return MediaFormat {GetSound().GetAudioFormat(), GetVideo().GetVideoFormat()};}
 	
 };
 
@@ -60,14 +60,14 @@ public:
 	Sound& GetSound() override {return snd;}
 	Video& GetVideo() override {return vid;}
 	
-	void Set(VideoFormat vid_fmt, int vid_frames, SoundFormat snd_fmt, int snd_frames) {
+	void Set(VideoFormat vid_fmt, int vid_frames, AudioFormat aud_fmt, int snd_frames) {
 		if (vid_fmt.IsValid())
 			vid.SetSize(vid_fmt, vid_frames);
 		else
 			vid.Clear();
 		
-		if (snd_fmt.IsValid())
-			snd.SetSize(snd_fmt, snd_frames);
+		if (aud_fmt.IsValid())
+			snd.SetSize(aud_fmt, snd_frames);
 		else
 			snd.Clear();
 	}

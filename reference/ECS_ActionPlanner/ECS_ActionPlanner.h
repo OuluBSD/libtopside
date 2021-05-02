@@ -20,7 +20,7 @@ struct DemoCat :
 	void InitCat();
 	void InitMouse();
 	
-	void OnLink(InterfaceBase* iface) override;
+	void OnLink(Ref provider, Cookie cookie) override;
 	
 };
 

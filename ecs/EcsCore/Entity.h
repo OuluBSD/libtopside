@@ -126,16 +126,16 @@ public:
 	Pool&			GetPool() {return *pool;}
 	const Pool&	GetPool() const {return *pool;}
 	
-	#define IFACE_(x, post)\
+	#define IFACE_(x, post, map)\
 		Ref<x##post> Find##x##post() {\
-			TypeRefMap<InterfaceBase>::Iterator iter = ifaces.begin(); \
+			TypeRefMap<Exchange##post##Provider>::Iterator iter = map.begin(); \
 			TypeId key(typeid(x##post)); \
 			for(; iter; ++iter)\
 				if (iter.key() == key) \
 					return iter.value().AsRef<x##post>(); \
 			return Ref<x##post>();\
 		}
-	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
+	#define IFACE(x) IFACE_(x, Source, srcs) IFACE_(x, Sink, sinks)
 	IFACE_LIST
 	#undef IFACE
 	#undef IFACE_
@@ -155,7 +155,8 @@ public:
 	
 	
 private:
-	TypeRefMap<InterfaceBase> ifaces;
+	TypeRefMap<ExchangeSinkProvider> sinks;
+	TypeRefMap<ExchangeSourceProvider> srcs;
 	ComponentMap comps;
 	EntityId m_id;
 	Pool* pool = 0;

@@ -16,7 +16,7 @@ class PortaudioSinkComponent :
 	String last_error;
 	One<BufferedPaSound> obj;
 	Vector<float> tmp;
-	SoundFormat fmt;
+	AudioFormat fmt;
 	
 	
 	
@@ -36,7 +36,7 @@ public:
 	String GetLastError() const {return last_error;}
 	
 	void			RecvAudio(AudioSource& src, double dt) override;
-	SoundFormat		GetSoundFormat() override;
+	AudioFormat		GetAudioFormat() override;
 	
 };
 

@@ -43,29 +43,29 @@ void AudioOutput::Put(Uint8* stream, int len) {
 	if (snd_buf.IsEmpty())
 		return;
 	
-	SoundFormat snd_fmt = snd_buf.GetFormat();
+	AudioFormat aud_fmt = snd_buf.GetFormat();
 	
-	if (len % snd_fmt.var_size != 0) {
+	if (len % aud_fmt.var_size != 0) {
 		LOG("OOSDL2::AudioOutput::Put: error: invalid sample size in read length");
 		return;
 	}
 	
-	int read_total_samples = len / snd_fmt.var_size;
-	if (read_total_samples % snd_fmt.channels != 0) {
+	int read_total_samples = len / aud_fmt.var_size;
+	if (read_total_samples % aud_fmt.channels != 0) {
 		LOG("OOSDL2::AudioOutput::Put: error: invalid channel size in read length");
 		return;
 	}
-	int read_ch_samples = read_total_samples / snd_fmt.channels;
+	int read_ch_samples = read_total_samples / aud_fmt.channels;
 	
-	if (read_ch_samples % snd_fmt.sample_rate != 0) {
+	if (read_ch_samples % aud_fmt.sample_rate != 0) {
 		LOG("OOSDL2::AudioOutput::Put: error: invalid sample rate in read length");
 		return;
 	}
-	int read_frames = read_ch_samples / snd_fmt.sample_rate;
+	int read_frames = read_ch_samples / aud_fmt.sample_rate;
 	
 	int queue_samples = snd_buf.GetQueueSize(); // per 1 channel (not total samples)
-	int queue_frames = queue_samples / snd_fmt.sample_rate;
-	ASSERT(queue_samples % snd_fmt.sample_rate == 0);
+	int queue_frames = queue_samples / aud_fmt.sample_rate;
+	ASSERT(queue_samples % aud_fmt.sample_rate == 0);
 	
 	snd_buf.Get(stream, len);
 	
@@ -87,21 +87,21 @@ bool AudioOutput::Open0() {
 	    
 	    int audio_frames = 2; //max(1, 1024 / audio_fmt.samples);
 	    
-	    SoundFormat snd_fmt;
-	    snd_fmt.var_size = GetSampleSize();
-	    snd_fmt.is_var_float = IsSampleFloating();
-	    snd_fmt.is_var_signed = IsSampleSigned();
-	    snd_fmt.freq = audio_fmt.freq;
-	    snd_fmt.sample_rate = audio_fmt.samples;
-	    snd_fmt.channels = audio_fmt.channels;
+	    AudioFormat aud_fmt;
+	    aud_fmt.var_size = GetSampleSize();
+	    aud_fmt.is_var_float = IsSampleFloating();
+	    aud_fmt.is_var_signed = IsSampleSigned();
+	    aud_fmt.freq = audio_fmt.freq;
+	    aud_fmt.sample_rate = audio_fmt.samples;
+	    aud_fmt.channels = audio_fmt.channels;
 	    
 	    #if CPU_LITTLE_ENDIAN
-	    snd_fmt.is_var_bigendian = false;
+	    aud_fmt.is_var_bigendian = false;
 	    #else
-	    snd_fmt.is_var_bigendian = true;
+	    aud_fmt.is_var_bigendian = true;
 	    #endif
 	    
-		snd_buf.SetSize(snd_fmt, audio_frames);
+		snd_buf.SetSize(aud_fmt, audio_frames);
 		snd_buf.Zero();
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.

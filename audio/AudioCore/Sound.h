@@ -107,16 +107,15 @@ protected:
 	
 	dword total_frames = 0;
 	StreamFlags flags;
-	SoundFormat fmt;
+	AudioFormat fmt;
 	
 public:
 	ASound();
 	ASound(const ASound& s) : err(s.err), fmt(s.fmt), flags(s.flags) {stream = s.stream;}
 	
-	void Get(void* v, int size) override;
-	void Put(void* v, int size, bool realtime) override;
+	void Exchange(AudioEx& e) override;
 	int GetQueueSize() const override {return 1;}
-	SoundFormat GetSoundFormat() const override {return fmt;}
+	AudioFormat GetAudioFormat() const override {return fmt;}
 	bool IsQueueFull() const override {return false;}
 	
 #ifdef flagOPENGL
@@ -196,10 +195,9 @@ public:
 	
 	dword GetWriteFrame() const override {return buf.GetWriteFrame();}
 	
-	void Get(void* v, int size) override {buf.Get(v, size);}
-	void Put(void* v, int size, bool realtime) override {buf.Put(v, size, realtime);}
+	void Exchange(AudioEx& e) override {buf.Exchange(e);}
 	int GetQueueSize() const override {return buf.GetQueueSize();}
-	SoundFormat GetSoundFormat() const override {return buf.GetSoundFormat();}
+	AudioFormat GetAudioFormat() const override {return buf.GetAudioFormat();}
 	bool IsQueueFull() const override {return buf.IsQueueFull();}
 	bool GetFrameFrom(Sound& snd, bool realtime) override {return buf.GetFrameFrom(snd, realtime);}
 	

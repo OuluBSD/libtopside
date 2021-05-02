@@ -10,7 +10,7 @@ END_UPP_NAMESPACE
 
 NAMESPACE_OULU_BEGIN
 
-struct SoundFormat {
+struct AudioFormat {
 	int var_size = 0;
 	int sample_rate = 0;
 	int channels = 0;
@@ -20,10 +20,10 @@ struct SoundFormat {
 	bool is_var_bigendian = 0;
 	
 	bool IsValid() const {return var_size > 0 && sample_rate > 0 && channels > 0 && freq > 0;}
-	void Clear() {memset(this, 0, sizeof(SoundFormat));}
+	void Clear() {memset(this, 0, sizeof(AudioFormat));}
 	
-	bool operator!=(const SoundFormat& fmt) const {return !(*this == fmt);}
-	bool operator==(const SoundFormat& fmt) const {
+	bool operator!=(const AudioFormat& fmt) const {return !(*this == fmt);}
+	bool operator==(const AudioFormat& fmt) const {
 		return	var_size			== fmt.var_size &&
 				sample_rate			== fmt.sample_rate &&
 				channels			== fmt.channels &&
@@ -54,10 +54,9 @@ public:
 	Sound() = default;
 	virtual ~Sound() = default;
 	
-	virtual void Get(void* v, int size) = 0;
-	virtual void Put(void* v, int size, bool realtime) = 0;
+	virtual void Exchange(AudioEx& e) = 0;
 	virtual int GetQueueSize() const = 0;
-	virtual SoundFormat GetSoundFormat() const = 0;
+	virtual AudioFormat GetAudioFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	virtual dword GetWriteFrame() const = 0;
 	virtual bool GetFrameFrom(Sound& snd, bool realtime) = 0;
@@ -78,10 +77,9 @@ public:
 	void Set(Sound* snd) {this->snd = snd;}
 	
 	operator bool() const {return snd != 0;}
-	void Get(void* v, int size) override {if (snd) snd->Get(v, size);}
-	void Put(void* v, int size, bool realtime) override {if (snd) snd->Put(v, size, realtime);}
+	void Exchange(AudioEx& e) override {if (snd) snd->Exchange(e);}
 	int GetQueueSize() const override {if (snd) return snd->GetQueueSize(); return 0;}
-	SoundFormat GetSoundFormat() const override {if (snd) return snd->GetSoundFormat(); return SoundFormat();}
+	AudioFormat GetAudioFormat() const override {if (snd) return snd->GetAudioFormat(); return AudioFormat();}
 	bool IsQueueFull() const override {if (snd) return snd->IsQueueFull(); return 0;}
 	dword GetWriteFrame() const override {if (snd) return snd->GetWriteFrame(); return 0;}
 	bool GetFrameFrom(Sound& dst, bool realtime) override {if (snd) return snd->GetFrameFrom(dst, realtime); return false;}
@@ -200,7 +198,7 @@ FLOATS_TO_INTEGERS(double)
 struct SoundConverter {
 	
 	template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN>
-	static void TypeConvert(const SoundFormat& src_fmt, const byte* src, const SoundFormat& dst_fmt, byte* dst) {
+	static void TypeConvert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
 		const SRC* src_it = (const SRC*)src;
 		const SRC* src_end = src_it + src_fmt.sample_rate * src_fmt.channels;
 		DST* dst_it = (DST*)dst;
@@ -216,13 +214,13 @@ struct SoundConverter {
 		ASSERT(dst_it == dst_end);
 	}
 	
-	static bool Convert(const SoundFormat& src_fmt, const byte* src, const SoundFormat& dst_fmt, byte* dst);
+	static bool Convert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
 	
 };
 
 class VolatileSoundBuffer : public Sound {
 	// Settings
-	SoundFormat snd_fmt;
+	AudioFormat aud_fmt;
 	int frames = 0;
 	int frame_size = 0;
 	SpinLock lock;
@@ -237,12 +235,14 @@ class VolatileSoundBuffer : public Sound {
 	#endif
 	
 	bool CheckSize(int size);
+	void Get(AudioEx& e);
+	void Put(AudioEx& e);
 	
 public:
 	
 	VolatileSoundBuffer() = default;
 	
-	void SetSize(SoundFormat snd_fmt, int frames=2);
+	void SetSize(AudioFormat aud_fmt, int frames=2);
 	void Clear();
 	void Zero();
 	
@@ -251,10 +251,9 @@ public:
 	int GetMemSize() const {return data[0].GetCount();}
 	bool IsEmpty() const {return data[0].IsEmpty();}
 	
-	void Get(void* v, int size) override;
-	void Put(void* v, int size, bool realtime) override;
-	int GetQueueSize() const override {return queue_size * snd_fmt.sample_rate;}
-	SoundFormat GetSoundFormat() const override {return snd_fmt;}
+	void Exchange(AudioEx& e) override;
+	int GetQueueSize() const override {return queue_size * aud_fmt.sample_rate;}
+	AudioFormat GetAudioFormat() const override {return aud_fmt;}
 	bool IsQueueFull() const override {return queue_size >= frames;}
 	dword GetWriteFrame() const override {return write_frame;}
 	bool GetFrameFrom(Sound& snd, bool realtime) override;

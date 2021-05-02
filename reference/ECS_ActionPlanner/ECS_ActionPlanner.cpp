@@ -94,8 +94,9 @@ CONSOLE_APP_MAIN {
 
 
 
-void DemoCat::OnLink(InterfaceBase* iface) {
-	ActionSource* asrc = dynamic_cast<ActionSource*>(iface);
+void DemoCat::OnLink(Ref provider, Cookie cookie) {
+	TODO
+	/*ActionSource* asrc = dynamic_cast<ActionSource*>(iface);
 	
 	if (asrc) {
 		ag = asrc->AddActionGroup(ACT_COUNT, ATOM_COUNT);
@@ -110,5 +111,5 @@ void DemoCat::OnLink(InterfaceBase* iface) {
 		
 		asrc->SetGoalAtom(ag, MOUSE_ALIVE, false );
 		asrc->SetGoalAtom(ag, ALIVE, true ); // add this to avoid hurting by fall actions in plan.
-	}
+	}*/
 }

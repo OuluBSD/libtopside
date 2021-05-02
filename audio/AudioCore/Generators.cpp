@@ -37,7 +37,7 @@ void SoundGeneratorComponent::EmitAudioSource(double dt) {
 }
 
 void SoundGeneratorComponent::Play(const AudioSinkConfig& config, Sound& snd) {
-	SoundFormat fmt = snd.GetSoundFormat();
+	AudioFormat fmt = snd.GetAudioFormat();
 	if (fmt.is_var_float && fmt.var_size == 4) {
 		gen_f32.Play(config, snd);
 	}

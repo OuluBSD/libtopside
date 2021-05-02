@@ -5,6 +5,33 @@
 NAMESPACE_OULU_BEGIN
 
 
+class Entity;
+struct ComponentBase;
+class Pool;
+class ConnectorBase;
+//class InterfaceBase;
+
+template <class Main, class Base> class ComponentStoreT;
+using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
+using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
+
+class ComponentMap;
+class Camerable;
+class Renderable;
+class Transform;
+using ComponentRef = Ref<ComponentBase>;
+
+//typedef Ref<InterfaceBase> InterfaceBaseRef;
+
+
+
+
+
+
+
+
+
+
 struct PerceptionTimestamp {
 	double ts = 0;
 };

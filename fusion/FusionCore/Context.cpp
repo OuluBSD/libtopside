@@ -215,13 +215,13 @@ void FusionContextComponent::RefreshStreamValues(Mode m) {
 			stream.aframes_after_sync = 0;
 		}
 		else {
-			ASSERT(stream.snd_fmt.sample_rate != 0);
+			ASSERT(stream.aud_fmt.sample_rate != 0);
 			int samples_after_last_sync =
-				stream.aframes_after_sync * stream.snd_fmt.sample_rate;
+				stream.aframes_after_sync * stream.aud_fmt.sample_rate;
 			//DUMP(samples_after_last_sync);
 			stream.atotal_seconds =
 				stream.audio_last_sync_sec +
-				(float)samples_after_last_sync / (float)stream.snd_fmt.freq;
+				(float)samples_after_last_sync / (float)stream.aud_fmt.freq;
 			stream.is_audio_sync = false;
 		}
 	}
@@ -732,12 +732,13 @@ bool FusionContextComponent::ConnectComponents() {
 					match = src->GetHeader().IsEqualHeader(in);
 				
 				if (match) {
+					ExchangeProviderCookieRef src_cookie, sink_cookie;
 					if (&src_base == &sink_base) {
 						comp_sink->is_doublebuf = true;
 						found = true;
 						break;
 					}
-					else if (src->LinkManually(*sink)) {
+					else if (src->Link(sink, src_cookie, sink_cookie)) {
 						found = true;
 						break;
 					}

@@ -1,7 +1,7 @@
 #ifndef _Multimedia_V4L2_DeviceManager_h_
 #define _Multimedia_V4L2_DeviceManager_h_
 
-#if HAVE_V4L2
+#if HAVE_V4L2_DEVMGR
 
 NAMESPACE_OULU_BEGIN
 

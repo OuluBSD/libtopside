@@ -4,7 +4,6 @@ NAMESPACE_OULU_BEGIN
 
 template <class T>
 void ConnectAllInterfaces<T>::Initialize() {
-	MetaExchangePoint::Init(this);
 	Machine& m = ConnectorBase::GetPool().GetMachine();
 	sys = m.Get<EntityStore>();
 	ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
@@ -19,7 +18,21 @@ void ConnectAllInterfaces<T>::Uninitialize() {
 
 template <class T>
 void ConnectAllInterfaces<T>::UnlinkAll() {
-	MetaExchangePoint::UnlinkAll();
+	Machine& mach = ConnectorBase::GetPool().GetMachine();
+	
+	if (!mach.IsRunning()) {
+		for (ExchangePointRef& pt : pts) {
+			pt->Source()	->UnlinkAll();
+			pt->Sink()		->UnlinkAll();
+		}
+	}
+	else {
+		for (ExchangePointRef& pt : pts) {
+			pt->Source()	->Unlink(pt->Sink());
+		}
+	}
+	
+	pts.Clear();
 }
 
 template <class T>
@@ -45,10 +58,10 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 		if (sink) {
 			for(Vector<Ref<T>>& src_scope : src_stack) {
 				for (Ref<T>& src : src_scope) {
-					if (src->LinkManually(*sink)) {
+					ExchangeProviderCookieRef src_cookie, sink_cookie;
+					if (src->Link(sink, src_cookie, sink_cookie)) {
 						ExchangePointRef ep = MetaExchangePoint::Add();
-						
-						ep->Set(&*src, &*sink);
+						ep->Set(src, sink, src_cookie, sink_cookie);
 					}
 				}
 			}

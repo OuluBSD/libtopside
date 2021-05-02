@@ -27,7 +27,7 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	vi.Stop();
 	
 	/*
-	TODO: can't have 2 MediaInputThreads reading same cap currently
+	TODO: can't have 2 MediaStreamThreads reading same cap currently
 	for(int k = 0; k < devmgr.GetVirtualCount() && !vi.cap; k++) {
 		V4L2_Device& dev = devmgr.GetVirtual(k);
 		if (dev.GetPath() == path) {
@@ -55,9 +55,9 @@ bool FfmpegComponent::LoadFileAny(String path) {
 		ASSERT(video_buf || sound_buf);
 		
 		if (fin.OpenDevice(0, 0)) {
-			vi.cap = &fin;
+			vi.SetCap(&fin);
 
-			vi.Start();
+			vi.Start(false);
 			
 			return true;
 		}
@@ -114,25 +114,25 @@ bool FfmpegComponent::LoadInput(int id) {
 }
 
 void FfmpegComponent::EmitVideoSource(double dt) {
-	if (vi.flag.IsRunning()) {
-		if (vi.TestClearNewVideoFrame()) {
-			video_buf = &vi.cap->GetVideo();
-			for(const auto& c : VideoSource::GetSinks())
-				c.sink->RecvVideo(video_buf, dt);
+	if (vi.IsRunning()) {
+		if (vi.FillVideoBuffer()) {
+			video_buf = &vi.Cap().GetVideo();
+			for(Ref<VideoSink> c : VideoSource::GetConnections())
+				c->RecvVideo(video_buf, dt);
+			
+			vi.Cap().DropFrames(0, 1);
 		}
 	}
 }
 
 void FfmpegComponent::EmitAudioSource(double dt) {
-	if (vi.flag.IsRunning()) {
-		if (vi.TestClearNewAudioFrame()) {
-			sound_buf = &vi.cap->GetSound();
-			for(const auto& c : AudioSource::GetSinks())
-				c.sink->RecvAudio(*this, dt);
+	if (vi.IsRunning()) {
+		if (vi.FillAudioBuffer()) {
+			sound_buf = &vi.Cap().GetSound();
+			for(Ref<AudioSink> c : AudioSource::GetConnections())
+				c->RecvAudio(*this, dt);
+			vi.Cap().DropFrames(1, 0);
 		}
-		/*else {
-			LOG("waiting data");
-		}*/
 	}
 }
 

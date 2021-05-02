@@ -54,7 +54,7 @@ bool FfmpegAudioFrame::GetFrameFrom(Sound& snd, bool realtime) {
 	TODO
 }
 
-/*bool FfmpegAudioFrame::IsQueueFullAttach(SoundFormat fmt, AVCodecContext& ctx) {
+/*bool FfmpegAudioFrame::IsQueueFullAttach(AudioFormat fmt, AVCodecContext& ctx) {
 	TODO
 }*/
 
@@ -68,7 +68,7 @@ void FfmpegAudioFrame::Process(double time_pos, AVFrame* frame) {
 	}
 }
 
-bool FfmpegAudioFrame::Attach(SoundFormat fmt, AVCodecContext& ctx) {
+bool FfmpegAudioFrame::Attach(AudioFormat fmt, AVCodecContext& ctx) {
 	Clear();
 	
 	this->fmt = fmt;
@@ -338,7 +338,7 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fm
 	return true;
 }
 
-bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, SoundFormat& fmt) {
+bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fmt) {
 	Clear();
 	fmt.Clear();
 	
@@ -419,7 +419,7 @@ bool FfmpegFileInput::Open0(String path) {
 	
 	// Find the first video stream
 	VideoFormat vid_fmt;
-	bool has_audio = a.OpenAudio(file_fmt_ctx, snd_fmt);
+	bool has_audio = a.OpenAudio(file_fmt_ctx, aud_fmt);
 	bool has_video = v.OpenVideo(file_fmt_ctx, vid_fmt);
 	
 	if (has_video) {
@@ -487,7 +487,7 @@ bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
 	
 	bool audio_open = a.OpenDevice();
 	if (audio_open) {
-		AttachAudio(snd_fmt);
+		AttachAudio(aud_fmt);
 		//a.WhenRead = THISBACK(ReadAudioFrame);
 	}
 	

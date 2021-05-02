@@ -95,6 +95,11 @@ void ASound::Close(){
 	}
 }
 
+void ASound::Exchange(AudioEx& e) {
+	TODO
+}
+
+/*
 void ASound::Get(void* data, int size) {
 	int vars = size / fmt.var_size;
 	ASSERT(size % fmt.var_size == 0);
@@ -118,6 +123,7 @@ void ASound::Put(void* data, int size, bool realtime) {
 	err = Pa_WriteStream(stream,data,samples);
 	CHECK_ERR;
 }
+*/
 
 bool ASound::IsStopped() const{
 	int err = Pa_IsStreamStopped(stream);
@@ -187,10 +193,12 @@ void BufferedPaSound::SinkCallback(StreamCallbackArgs& args) {
 		int size = fmt.GetFrameBytes();
 		if (buf.GetQueueSize()) {
 			ASSERT(args.fpb == fmt.sample_rate);
-			buf.Get(args.output, size);
+			
+			TODO
+			//buf.Get(args.output, size);
 			
 			if (0) {
-				SoundFormat fmt = buf.GetSoundFormat();
+				AudioFormat fmt = buf.GetAudioFormat();
 				if (fmt.var_size == 4 && fmt.is_var_float) {
 					float* it = (float*)args.output;
 					int samples = fmt.sample_rate * fmt.channels;

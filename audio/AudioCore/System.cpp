@@ -185,13 +185,14 @@ void MidiFileComponent::EmitMidi(double dt) {
 	
 }
 
-State* MidiFileComponent::OnLink(InterfaceBase* iface) {
-	ComponentBase* comp = iface->AsComponentBase();
+void MidiFileComponent::OnLink(Sink sink, Cookie src_c, Cookie sink_c) {
+	TODO
+	/*ComponentBase* comp = iface->AsComponentBase();
 	ASSERT(comp);
 	Ref<MidiSink> sink = comp->AsMidiSink();
 	ASSERT(sink);
 	sink->Configure(file);
-	return NULL;
+	return NULL;*/
 }
 
 void MidiFileComponent::CollectTrackEvents(int i) {
@@ -218,9 +219,9 @@ void MidiFileComponent::EmitTrack(int i) {
 	
 	//for(const Midi::Event* ev : tmp.midi) {LOG("track " << i << ": " << ev->ToString());}
 	
-	for (const auto& c : MidiSource::GetSinks())
-		if (c.sink->AcceptsTrack(i))
-			c.sink->RecvMidi(tmp);
+	for (Ref<MidiSink> c : MidiSource::GetConnections())
+		if (c->AcceptsTrack(i))
+			c->RecvMidi(tmp);
 	
 }
 

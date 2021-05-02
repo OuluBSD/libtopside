@@ -464,25 +464,27 @@ double SimpleTransformValue(Entity& a, Entity& b) {
 	return -dist;
 }
 
-double SimpleRouteNode::GetStepValue(const RouteSource::Connection& c) {
-	SinkData& sink_data = *dynamic_cast<SinkData*>(c.src_state);
+double SimpleRouteNode::GetStepValue(const ExchangePoint& c) {
+	TODO
+	/*SinkData& sink_data = *dynamic_cast<SinkData*>(c.src_state);
 	double value = SimpleTransformValue(GetEntity(), c.sink->AsComponentBase()->GetEntity());
 	//ASSERT(sink_data.value_mul > 0.0);
 	double result = value * sink_data.value_mul;
-	return result;
+	return result;*/
 }
 
 double SimpleRouteNode::GetHeuristicValue(RouteSink& sink) {
 	return SimpleTransformValue(GetEntity(), sink.AsComponentBase()->GetEntity());
 }
 
-State* SimpleRouteNode::OnLink(InterfaceBase* iface) {
+void SimpleRouteNode::OnLink(Ref provider, Cookie cookie) {
 	// this fails if component has both sink and source: RouteSink* sink = dynamic_cast<RouteSink*>(iface);
 	
-	if (iface->GetInterfaceType() == typeid(RouteSink))
+	TODO
+	/*if (iface->GetProviderType() == typeid(RouteSink))
 		return &data.Add();
 	
-	return 0;
+	return 0;*/
 }
 
 
@@ -559,7 +561,7 @@ bool Observer::RequestExchange(ActionSource& src) {
 	return src.OnActionSource(ex);
 }
 
-bool Observer::OnActionSink(ActionExchange& e) {
+bool Observer::OnActionSink(ActionEx& e) {
 	if (type == SET_ACTIONS) {
 		TODO
 		/*ag = e.AddActionGroup(*this, ACT_COUNT, ATOM_COUNT);
@@ -637,7 +639,7 @@ bool DummyActor::RequestExchange(ActionSink& sink) {
 	return sink.OnActionSink(ex);
 }
 
-bool DummyActor::OnActionSource(ActionExchange& e) {
+bool DummyActor::OnActionSource(ActionEx& e) {
 	TODO
 }
 

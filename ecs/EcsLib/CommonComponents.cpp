@@ -100,8 +100,8 @@ void StaticVolumeComponent::EmitStatic() {
 	data.stride = this->stride;
 	data.pitch = data.w;
 	data.data = values.Begin();
-	for(const auto& c : StaticSource::GetSinks())
-		c.sink->RecvStatic(data);
+	for(Ref<StaticSink> c : StaticSource::GetConnections())
+		c->RecvStatic(data);
 }
 
 

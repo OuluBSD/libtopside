@@ -32,11 +32,15 @@ void VolatileVideoBuffer::Zero() {
 	queue_size = 0;
 }
 
-void VolatileVideoBuffer::Get(void* v_, int size_) {
-	TODO
-}
-
-void VolatileVideoBuffer::Put(void* v, int size_, bool realtime) {
+void VolatileVideoBuffer::Exchange(VideoEx& e) {
+	if (e.IsLoading()) {
+		
+	}
+	else if (e.IsStoring()) {
+		
+	}
+	else
+		Panic("Invalid exchange");
 	TODO
 }
 

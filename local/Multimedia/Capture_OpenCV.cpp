@@ -50,6 +50,9 @@ public:
 		}
 		return false;
 	}
+	
+	void Close() {camera.release();}
+	
 	#ifdef flagOPENGL
 	bool PaintOpenGLTexture(int texture) {
 		if (type == OPENCV && data != NULL) {
@@ -122,59 +125,19 @@ bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 	if (ocv && ocv->OpenDevice0(sz, fps, vid_fmt))
 		return true;
 	
-#if HAVE_V4L2
-	V4L2DeviceParameters param(path, pix_fmt, sz.cx, sz.cy, fps, 0);
-	vid_cap = V4l2Capture::create(param, V4l2Access::IOTYPE_MMAP);
-	if (vid_cap) {
-		open_pix_fmt = pix_fmt;
-		open_frame_sz = sz;
-		return true;
-	}
-#endif
-	
-	
 	return false;
 }
 
-bool OpenCVCaptureDevice::ReadVideo() {
+int OpenCVCaptureDevice::FillVideoBuffer() {
 	if (ocv && ocv->Read())
-		return true;
+		return 1;
 	
-#if HAVE_V4L2
-	if (vid_cap) {
-		timeval timeout;
-		bool is_readable = (vid_cap->isReadable(&timeout) == 1);
-		
-		if (is_readable) {
-			TODO
-			/*vbuffer.SetSize Count(buf_size);
-			size_t nb = vid_cap->read(buffer.Begin(), buf_size);
-			if (nb > 0 && nb < buf_size) {
-				if (open_pix_fmt == V4L2_PIX_FMT_MJPEG) {
-					#if V4L2_SLOW
-					MemStream mem(buffer, nb);
-					sw_frame = jpg_raster.Load(mem);
-					Size sz = sw_frame.GetSize();
-					COUT("Got frame size " << sz.ToString());
-					return true;
-					#endif
-				}
-			}*/
-		}
-	}
-#endif
-	
-	return false;
+	return 0;
 }
 
 void OpenCVCaptureDevice::Close() {
-#if HAVE_V4L2
-	if (vid_cap) {
-		vid_cap->stop();
-		delete vid_cap;
-		vid_cap = 0;
-	}
-#endif
+	if (ocv)
+		ocv->Close();
 }
 
 bool OpenCVCaptureDevice::IsDeviceOpen() const {
@@ -184,51 +147,6 @@ bool OpenCVCaptureDevice::IsDeviceOpen() const {
 	return false;
 }
 
-bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res) {
-	double tgt_bw = (double)cap_sz.cx * (double)cap_sz.cy * (double)fps;
-	double bw_low = bw_min * tgt_bw;
-	double bw_high = bw_max * tgt_bw;
-	if (bw_low > bw_high)
-		return false;
-	
-	struct Result : Moveable<Result> {
-		double diff;
-		int fmt, res;
-		bool operator()(const Result& a, const Result& b) const {return a.diff < b.diff;}
-	};
-	Vector<Result> results;
-	
-	for(int i = 0; i < fmts.GetCount(); i++) {
-		const VideoInputFormat& fmt = fmts[i];
-		for(int j = 0; j < fmt.GetResolutionCount(); j++) {
-			const VideoInputFormatResolution& fmt_res = fmt.GetResolution(j);
-			VideoFormat vid_fmt = fmt_res.GetVideoFormat();
-			Size fmt_sz = vid_fmt.res;
-			double fmt_fps = vid_fmt.fps;
-			double fmt_bw = (double)fmt_sz.cx * (double)fmt_sz.cy * fmt_fps;
-			if (fmt_bw >= bw_low && fmt_bw <= bw_high) {
-				Result& r = results.Add();
-				r.diff = fabs(tgt_bw - fmt_bw);
-				r.fmt = i;
-				r.res = j;
-			}
-		}
-	}
-	if (results.GetCount()) {
-		Sort(results, Result());
-		if (0) {
-			for(int i = 0; i < results.GetCount(); i++) {
-				const Result& r = results[i];
-				LOG(i << ": " << r.diff << ": " << r.fmt << ", " << r.res);
-			}
-		}
-		const Result& res = results[0];
-		ret_fmt = res.fmt;
-		ret_res = res.res;
-		return true;
-	}
-	return false;
-}
 
 
 NAMESPACE_OULU_END

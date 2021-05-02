@@ -1,15 +1,5 @@
-#ifndef _VirtualSound_VirtualSound_h_
-#define _VirtualSound_VirtualSound_h_
-
-
-#ifdef flagALTCORE
-	#include <CoreAlt/Core.h>
-#else
-	#include <Core/Core.h>
-#endif
-
-#include <Oulu/Before.h>
-#include <Oulu/Sound.h>
+#ifndef _Oulu_SystemSound_h_
+#define _Oulu_SystemSound_h_
 
 
 NAMESPACE_UPP
@@ -41,15 +31,6 @@ extern VirtualSound* VirtualSoundPtr;*/
 //#define SOUNDPLATFORM_TOPWINDOW_DECLS_INCLUDE <VirtualSoundAlt/Top.h>
 //#define SOUNDPLATFORM_INCLUDE_AFTER <VirtualSoundAlt/After.h>
 //#define SOUNDPLATFORM_INCLUDE_AFTER_ECSLIB <VirtualSoundAlt/AfterEcsLib.h>
-
-
-END_UPP_NAMESPACE
-
-
-
-
-NAMESPACE_UPP
-
 
 
 END_UPP_NAMESPACE

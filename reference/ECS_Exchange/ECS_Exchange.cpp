@@ -8,6 +8,53 @@ Exchanges: harmony (music), money, interaction-futures (feelings, etc.)
 
 */
 
+
+
+template <class T> void SoundBufferUnitTestT() {
+	AudioFormat fmt;
+	fmt.var_size = sizeof(T);
+	fmt.is_var_float = std::is_same<T,float>() || std::is_same<T,double>();
+	fmt.is_var_bigendian = 0;
+	fmt.is_var_signed = (float)-1 == (float)((T)-1);
+	fmt.channels = 2;
+	fmt.sample_rate = 32;
+	fmt.freq = 1024;
+	int frames = 2;
+	
+	Vector<T> from, to;
+	from.SetCount(fmt.sample_rate * fmt.channels);
+	to.SetCount(fmt.sample_rate * fmt.channels);
+	
+	for(int i = 0; i < fmt.sample_rate; i++) {
+		from[i*2 + 0] = (T)(+1 + i + 0.5);
+		from[i*2 + 1] = (T)(-1 - i + 0.5);
+	}
+	
+	VolatileSoundBuffer b;
+	b.SetSize(fmt, frames);
+	
+	for(int i = 0; i < frames; i++)
+		b.Put((T*)from.Begin(), from.GetCount() * fmt.var_size, false);
+	b.Get((T*)to.Begin(), to.GetCount() * fmt.var_size);
+	
+	for(int i = 0; i < from.GetCount(); i++) {
+		T f = from[i];
+		T t = to[i];
+		ASSERT(f == t);
+	}
+}
+
+void SoundBufferUnitTest() {
+	SoundBufferUnitTestT<uint8>();
+	SoundBufferUnitTestT<uint16>();
+	SoundBufferUnitTestT<int32>();
+	SoundBufferUnitTestT<float>();
+}
+
+
+
+
+
 CONSOLE_APP_MAIN {
 	SetCoutLog();
 	

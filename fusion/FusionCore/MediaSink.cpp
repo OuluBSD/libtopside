@@ -95,7 +95,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 			if (path.IsEmpty() && type == FusionComponentInput::WEBCAM)
 				path = "<input0>";
 			if (comp->LoadFileAny(path)) {
-				MediaInputThread& in = comp->GetInput();
+				MediaStreamThread& in = comp->GetInput();
 				fmt = comp->GetMedia().GetFormat();
 				ASSERT(fmt.IsValid());
 				if (fmt.vid.IsValid()) {

@@ -2,7 +2,7 @@
 
 NAMESPACE_OULU_BEGIN
 
-
+/*
 AudioSink* VirtualSoundPtr;
 
 void InterfaceBase::DbgChk(InterfaceBase* b) {
@@ -32,7 +32,11 @@ void InterfaceBase::RemoveConnection(InterfaceBase* b) {
 
 String InterfaceBase::GetComponentBaseTypeString(ComponentBase* base) {
 	return base->GetType().CleanDemangledName();
-}
+}*/
+
+
+
+
 
 
 #ifdef flagDEBUG
@@ -45,21 +49,21 @@ void InterfaceDebugPrint(TypeId type, String s) {
 
 
 void AudioSource::DefaultEmitAudioSource(double dt, int sink_limit) {
-	const auto& sinks = AudioSource::GetSinks();
+	const auto& sinks = AudioSource::GetConnections();
 	if (sink_limit >= 0) {
 		//for(int i = 0; i < sinks.GetCount(); i++) {LOG(i << ": " << sinks[i]->AsComponentBase()->GetType().DemangledName());}
 		ASSERT_(sinks.GetCount() <= sink_limit,
 			"Only the support for single audio sink is implemented currently");
 		int i = 0;
-		for(const auto& c : sinks) {
+		for(Ref<AudioSink> c : sinks) {
 			if (i++ >= sink_limit)
 				break;
-			c.sink->RecvAudio(*this, dt);
+			c->RecvAudio(*this, dt);
 		}
 	}
 	else {
-		for(const auto& c : sinks)
-			c.sink->RecvAudio(*this, dt);
+		for(Ref<AudioSink> c : sinks)
+			c->RecvAudio(*this, dt);
 	}
 }
 
@@ -110,10 +114,11 @@ void AudioSink::DefaultRecvAudio(AudioSinkConfig& cfg, AudioSource& src, double 
 
 
 
-State* ActionSink::OnLink(InterfaceBase* iface) {
-	ActionSource* src = dynamic_cast<ActionSource*>(iface);
+void ActionSink::OnLink(Source src, Cookie src_c, Cookie sink_c) {
+	TODO
+	/*ActionSource* src = dynamic_cast<ActionSource*>(iface);
 	ASSERT(src);
-	return src ? OnLinkActionSource(*src) : 0;
+	return src ? OnLinkActionSource(*src) : 0;*/
 }
 
 NAMESPACE_OULU_END

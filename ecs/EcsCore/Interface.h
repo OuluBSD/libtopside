@@ -7,8 +7,9 @@ NAMESPACE_OULU_BEGIN
 
 
 
-class InterfaceBase : public LockedScopeEnabler<InterfaceBase> {
-	void DbgChk(InterfaceBase* b);
+#if 0
+class InterfaceBase : public ExchangeProvider {
+	/*void DbgChk(InterfaceBase* b);
 	
 protected:
 	Vector<InterfaceBase*> conns;
@@ -19,7 +20,6 @@ protected:
 	static String GetComponentBaseTypeString(ComponentBase* base);
 	
 public:
-	virtual ~InterfaceBase() {UnlinkAll();}
 	
 	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
 	void UnlinkAll() {for(auto c: conns) c->RemoveConnection(this); conns.Clear();}
@@ -37,15 +37,52 @@ public:
 	virtual State* OnLink(InterfaceBase* iface) {return NULL;}
 	virtual void OnUnlink(InterfaceBase* iface) {}
 	virtual ComponentBase* AsComponentBase() = 0;
-	virtual TypeId GetInterfaceType() = 0;
+	*/
+	
+public:
+	virtual ~InterfaceBase() {UnlinkAll();}
+	
+	bool UnlinkManually(InterfaceBase& iface);
+	virtual TypeId GetProviderType() = 0;
 	
 };
 
 
 
 
+class InterfaceSourceBase : public ExchangeSourceProvider {
+	
+public:
+	virtual ~InterfaceSourceBase() {UnlinkAll();}
+	
+	bool UnlinkManually(InterfaceSinkBase& iface);
+	virtual TypeId GetProviderType() = 0;
+	
+};
+
+class InterfaceSinkBase : public ExchangeSinkProvider {
+	
+public:
+	virtual ~InterfaceSinkBase() {UnlinkAll();}
+	
+	bool UnlinkManually(InterfaceSourceBase& iface);
+	virtual TypeId GetProviderType() = 0;
+	
+};
+
+#endif
+
+
+
+
+
 template <class I>
-struct InterfaceSink : public InterfaceBase {
+class InterfaceSink : public ExchangeSinkProvider {
+	
+	
+public:
+	
+	virtual ComponentBase* AsComponentBase() = 0;
 	
 	
 };
@@ -55,8 +92,15 @@ void InterfaceDebugPrint(TypeId type, String s);
 #endif
 
 template <class I, class O>
-struct InterfaceSource : public InterfaceBase {
-	struct Connection : Moveable<Connection> {
+class InterfaceSource : public ExchangeSourceProvider {
+	
+
+public:
+	
+	virtual ComponentBase* AsComponentBase() = 0;
+	
+	
+	/*struct Connection : Moveable<Connection> {
 		O* sink;
 		State* src_state = 0;
 		State* sink_state = 0;
@@ -69,10 +113,10 @@ struct InterfaceSource : public InterfaceBase {
 	const Vector<Connection>& GetSinks() const {return sinks;}
 	
 	virtual bool PassLink(O& sink) {return true;}
-	virtual bool PassUnlink(O& sink) {return true;}
+	virtual bool PassUnlink(O& sink) {return true;}*/
 	
 protected:
-	
+	/*
 	Vector<Connection> sinks;
 	
 	#ifdef flagDEBUG
@@ -142,11 +186,13 @@ protected:
 			}
 		}
 		return false;
-	}
+	}*/
+	
+	
 };
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
-#define IFACE_BASE(x)	TypeId GetInterfaceType() override {return TypeId(typeid(x));}
+#define IFACE_BASE(x)	TypeId GetProviderType() override {return TypeId(typeid(x));}
 
 
 //									---- Display ----
@@ -178,7 +224,7 @@ struct DisplaySource : IO_IN(Display) {
 	virtual void EmitDisplay(double dt) = 0;
 	virtual bool Render(const DisplaySinkConfig& config, SystemDraw& draw) = 0;
 	
-	virtual void SetTitle(String s) {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
+	virtual void SetTitle(String s) {TODO}// {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
 	
 };
 
@@ -206,7 +252,7 @@ struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
 	virtual void			RecvAudio(AudioSource& src, double dt) = 0;
-	virtual SoundFormat		GetSoundFormat() = 0;
+	virtual AudioFormat		GetAudioFormat() = 0;
 	
 	
 	void DefaultRecvAudio(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
@@ -532,13 +578,13 @@ struct ActionSource;
 
 #define SOURCE_EXCHANGE(x) \
 	virtual bool RequestExchange(x##Sink& sink) = 0; \
-	virtual bool On##x##Source(x##Exchange& e) = 0;
+	virtual bool On##x##Source(x##Ex& e) = 0;
 
 #define SINK_EXCHANGE(x) \
 	virtual bool RequestExchange(x##Source& src) = 0; \
-	virtual bool On##x##Sink(x##Exchange& e) = 0;
+	virtual bool On##x##Sink(x##Ex& e) = 0;
 
-struct ActionExchange : public Exchange {
+struct ActionEx : public ExchangeBase {
 	/*
 	// Sink
 	virtual bool Act(ActionGroup ag, ActionId act) = 0;
@@ -562,7 +608,7 @@ struct ActionSink : IO_OUT(Action) {
 		SetMultiConnection();
 	}
 	
-	State* OnLink(InterfaceBase* iface) override;
+	void OnLink(Source src, Cookie src_c, Cookie sink_c) override;
 	virtual State* OnLinkActionSource(ActionSource& src) = 0;
 	
 	
@@ -608,7 +654,7 @@ struct RouteSource : IO_IN(Route) {
 	
 	
 	virtual void SetIdleCost(double d) = 0;
-	virtual double GetStepValue(const Connection& conn) = 0;
+	virtual double GetStepValue(const ExchangePoint& conn) = 0;
 	virtual double GetHeuristicValue(RouteSink& sink) = 0;
 };
 

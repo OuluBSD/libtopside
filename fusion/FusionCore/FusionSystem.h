@@ -60,7 +60,7 @@ struct FusionStream : public VolatileStream {
 	int audio_sample_rate = 512;
 	int audio_sample_size = 4;
 	int audio_sample_channels = 2;*/
-	SoundFormat snd_fmt;
+	AudioFormat aud_fmt;
 	int aframes_after_sync = 0;
 	int asink_frame = 0;
 	bool is_audio_sync;
@@ -97,7 +97,7 @@ struct FusionStream : public VolatileStream {
 		audio_sample_rate = 0;
 		audio_sample_size = 0;
 		audio_sample_channels = 0;*/
-		snd_fmt = SoundFormat();
+		aud_fmt = AudioFormat();
 		aframes_after_sync = 0;
 		asink_frame = 0;
 		is_audio_sync = false;
@@ -454,7 +454,7 @@ class FusionMediaSink :
 	
 	FusionComponentInput cfg;
 	VideoFormat vid_fmt;
-	SoundFormat aud_fmt;
+	AudioFormat aud_fmt;
 	BasicFusionStream stream;
 	
 public:
@@ -471,7 +471,7 @@ public:
 	bool			LoadAsInput(const FusionComponentInput& in) override;
 	void			RecvVideo(Video& video, double dt) override;
 	VolatileStream*	GetVolatileStream() {return &stream;}
-	SoundFormat		GetSoundFormat() override {return aud_fmt;}
+	AudioFormat		GetAudioFormat() override {return aud_fmt;}
 	void			RecvAudio(AudioSource& src, double dt) override;
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
@@ -549,7 +549,7 @@ class FusionDisplaySource :
 	bool			LoadResources() override;
 	void			EmitDisplay(double dt) override;
 	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
-	bool			PassLink(DisplaySink& sink) override;
+	bool			Accept(ExchangeSinkProviderRef sink, ExchangeProviderCookieRef& src_c, ExchangeProviderCookieRef& sink_c) override;
 	ComponentBase&	GetECS() override {return *this;}
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);

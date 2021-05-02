@@ -10,7 +10,7 @@ NAMESPACE_OULU_BEGIN
 int GetOglDataType(int sample_size, int is_var_float);
 
 class FfmpegAudioFrame : public AudioInputFrame {
-	SoundFormat fmt;
+	AudioFormat fmt;
 	Vector<byte> data;
 	double time_pos = 0;
 	int unread = 0;
@@ -19,12 +19,12 @@ protected:
 	friend class FfmpegFileInput;
 	friend class FfmpegFileChannel;
 	
-	bool Attach(SoundFormat fmt, AVCodecContext& ctx);
+	bool Attach(AudioFormat fmt, AVCodecContext& ctx);
 	
 	void Get(void* v, int size) override;
 	void Put(void* v, int size, bool realtime) override;
 	int GetQueueSize() const override;
-	SoundFormat GetSoundFormat() const override {return fmt;}
+	AudioFormat GetAudioFormat() const override {return fmt;}
 	bool IsQueueFull() const override;
 	dword GetWriteFrame() const override {throw Exc("FfmpegAudioFrame is not for writing");}
 	bool GetFrameFrom(Sound& snd, bool realtime) override;
@@ -111,7 +111,7 @@ public:
 	void ClearDevice();
 	
 	bool OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fmt);
-	bool OpenAudio(AVFormatContext* file_fmt_ctx, SoundFormat& fmt);
+	bool OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fmt);
 	bool OpenDevice();
 	
 	int AddStep(double seconds);
@@ -137,10 +137,10 @@ class FfmpegFileInput : public MediaInputStream {
 	bool is_orig_pkt_ref = false;
 	
 	void AttachVideo(VideoFormat fmt) {for(int i = 0; i < 2; i++) vframe[i].Attach(fmt, *v.codec_ctx);}
-	void AttachAudio(SoundFormat fmt) {for(int i = 0; i < 2; i++) aframe[i].Attach(fmt, *a.codec_ctx);}
+	void AttachAudio(AudioFormat fmt) {for(int i = 0; i < 2; i++) aframe[i].Attach(fmt, *a.codec_ctx);}
 	
 	
-	SoundFormat snd_fmt;
+	AudioFormat aud_fmt;
 	String errstr;
 	bool is_file_open = false;
 	bool is_dev_open = false;
@@ -170,10 +170,7 @@ public:
 	bool ReadVideo() override {return Read(false);}
 	bool ReadAudio() override {return Read(true);}
 	void Close() override {Clear();}
-	int GetFormatCount() const override {return fmts.GetCount();}
-	const VideoInputFormat& GetFormat(int i) const override {return fmts[i];}
 	String GetPath() const override {return path;}
-	bool FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override {TODO}
 	Sound& GetSound() override;
 	Video& GetVideo() override;
 	
@@ -182,7 +179,7 @@ public:
 	double GetSeconds() const override {return v.IsOpen() ? v.read_pos_time : a.read_pos_time;}
 	Size GetVideoSize() const override {return vframe[v.read_frame_i].GetSize();}
 	
-	SoundFormat GetSoundFormat() const {return snd_fmt;}
+	AudioFormat GetAudioFormat() const {return aud_fmt;}
 	
 };
 

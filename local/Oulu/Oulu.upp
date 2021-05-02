@@ -1,8 +1,5 @@
 description "Essential classes for Oulu namespace.\377B128,0,0";
 
-uses
-	VirtualSound;
-
 uses(!ALTCORE) plugin/bz2;
 
 uses(!ALTCORE) Core;
@@ -19,12 +16,16 @@ file
 	Compat.h,
 	Compat.cpp,
 	Types.h,
+	Recycler.h,
+	LinkedList.h,
+	TypeTraits.h,
+	Exchange.h,
+	Exchange.cpp,
 	Interface.h,
 	Index.h,
 	Index.cpp,
 	Container.h,
 	Container.cpp,
-	LinkedList.h,
 	RTuple.h,
 	Util.h,
 	Util.cpp,
@@ -39,7 +40,6 @@ file
 	Crypto.cpp,
 	Neural.h,
 	Neural.cpp,
-	TypeTraits.h,
 	CLI.h,
 	CLI.cpp,
 	DCT.h,
@@ -66,6 +66,8 @@ file
 	Geom.cpp,
 	Sound.h,
 	Sound.cpp,
+	SystemSound.h,
+	SystemSound.cpp,
 	Video.h,
 	Video.cpp,
 	Media.h,

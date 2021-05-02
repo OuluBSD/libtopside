@@ -1,6 +1,6 @@
 #include "Multimedia.h"
 
-#if HAVE_V4L2
+#if HAVE_V4L2_DEVMGR
 
 #include <fcntl.h>
 #include <linux/videodev2.h>

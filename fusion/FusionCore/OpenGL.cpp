@@ -185,7 +185,7 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 	}
 	
 	else if (var == VAR_COMPAT_SAMPLERATE) {
-		glUniform1f(uindex, stream.snd_fmt.freq);
+		glUniform1f(uindex, stream.aud_fmt.freq);
 	}
 	
 	else if (var == VAR_COMPAT_OFFSET) {

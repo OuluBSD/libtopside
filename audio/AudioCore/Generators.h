@@ -13,13 +13,16 @@ public:
 	DummySoundGenerator() {}
 	void Play(const AudioSinkConfig& config, Sound& snd) {
 		if (frame.IsEmpty())
-			GenerateStereoSine(snd.GetSoundFormat());
-		snd.Put(frame.Begin() + frame_offset, frame_part_size * sizeof(float), config.sync);
+			GenerateStereoSine(snd.GetAudioFormat());
+		
+		TODO
+		//snd.Put(frame.Begin() + frame_offset, frame_part_size * sizeof(float), config.sync);
+		
 		frame_offset = (frame_offset + frame_part_size) % frame.GetCount();
-		ASSERT(frame_offset % snd.GetSoundFormat().sample_rate == 0);
+		ASSERT(frame_offset % snd.GetAudioFormat().sample_rate == 0);
 	}
 	
-	void GenerateStereoSine(const SoundFormat& fmt) {
+	void GenerateStereoSine(const AudioFormat& fmt) {
 		ASSERT(fmt.IsSampleType<T>());
 		double pan_loop_seconds = 2.0;
 		int tone_mul = 4;
@@ -74,7 +77,7 @@ class SoundGeneratorComponent :
 		MODE_TRACK_NUM,
 	};
 	
-	void GenerateStereoSine(const SoundFormat& fmt);
+	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
 	COPY_PANIC(SoundGeneratorComponent);

@@ -53,7 +53,7 @@ class DummyActor :
 	typedef enum {
 		INVALID
 	} ExType;
-	class Ex : public ActionExchange {
+	class Ex : public ActionEx {
 		
 	};
 	ExType type = INVALID;
@@ -85,7 +85,7 @@ public:
 	
 	void EmitActionSource(double dt) override;
 	bool RequestExchange(ActionSink& sink) override;
-	bool OnActionSource(ActionExchange& e) override;
+	bool OnActionSource(ActionEx& e) override;
 	
 	/*ActionGroup AddActionGroup(ActionSink& sink, int act_count, int atom_count) override;
 	void OnActionDone(ActionGroup ag, ActionId act_i, int ret_code) override;
@@ -105,7 +105,7 @@ class Observer :
 		INVALID,
 		SET_ACTIONS
 	} ExType;
-	class Ex : public ActionExchange {
+	class Ex : public ActionEx {
 		
 	};
 	ExType type = INVALID;
@@ -149,7 +149,7 @@ public:
 	
 	State* OnLinkActionSource(ActionSource& src) override;
 	bool RequestExchange(ActionSource& ssrc) override;
-	bool OnActionSink(ActionExchange& e) override;
+	bool OnActionSink(ActionEx& e) override;
 	/*bool Act(ActionGroup ag, ActionId act) override;
 	bool UpdateAct() override;*/
 	
@@ -176,9 +176,9 @@ struct SimpleRouteNode :
 	IFACE_CB(RouteSource);
 	
 	void SetIdleCost(double d) override {idle_cost = d;}
-	double GetStepValue(const RouteSource::Connection& sink_conn) override;
+	double GetStepValue(const ExchangePoint& sink_conn) override;
 	double GetHeuristicValue(RouteSink& sink) override;
-	State* OnLink(InterfaceBase* iface) override;
+	void OnLink(Ref provider, Cookie cookie) override;
 	
 };
 

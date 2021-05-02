@@ -39,8 +39,8 @@ void FusionAudioSource::UpdateTexBuffers() {
 	if (stream) {
 		ClearTex();
 #ifdef flagOPENGL
-		int sr = max(stream->snd_fmt.sample_rate, 1);
-		int ch = max(stream->snd_fmt.channels, 1);
+		int sr = max(stream->aud_fmt.sample_rate, 1);
+		int ch = max(stream->aud_fmt.channels, 1);
 		Ogl_CreateTex(
 			Size(sr, 1), ch,
 			0, 0,
@@ -70,9 +70,9 @@ void FusionAudioSource::Play(const AudioSinkConfig& config, Sound& snd) {
 	stream->asink_frame = config.sink_frame;
 	stream->aframes_after_sync = config.frames_after_sync;
 	
-	SoundFormat cur_fmt = snd.GetSoundFormat();
-	if (cur_fmt != stream->snd_fmt) {
-		stream->snd_fmt = cur_fmt;
+	AudioFormat cur_fmt = snd.GetAudioFormat();
+	if (cur_fmt != stream->aud_fmt) {
+		stream->aud_fmt = cur_fmt;
 		ctx->UpdateSoundBuffers();
 	}
 	ctx->Play();
@@ -86,7 +86,7 @@ void FusionAudioSource::UseRenderedFramebuffer() {
 	if (!stream) return;
 	if (!stream->sys_snd) return;
 	Sound& snd = *stream->sys_snd;
-	const SoundFormat& fmt = stream->snd_fmt;
+	const AudioFormat& fmt = stream->aud_fmt;
 	
 #ifdef flagOPENGL
 	ASSERT(color_buf[buf_i] > 0);
@@ -98,7 +98,8 @@ void FusionAudioSource::UseRenderedFramebuffer() {
 		OnError(fn_name, "TODO type conversion: f32 -> ...");
 	}
 	else {
-		snd.Put((void*)sound_buf.Begin(), sound_buf.GetCount() * sizeof(float), stream->is_audio_sync);
+		TODO // Exchange
+		//snd.Put((void*)sound_buf.Begin(), sound_buf.GetCount() * sizeof(float), stream->is_audio_sync);
 	}
 	
 	stream->sys_snd = 0;
