@@ -122,7 +122,8 @@ void VolatileAudioBuffer::Get(void* v_, int size_) {
 	
 	lock.Enter();
 	copy_size = min(queue_size, copy_size);
-	int zero_size = total_vars - copy_size;
+	int zero_size = size_ - copy_size;
+	ASSERT(zero_size >= 0);
 	
 	if (copy_size) {
 		int new_queue_size = queue_size - copy_size;
@@ -141,12 +142,12 @@ void VolatileAudioBuffer::Get(void* v_, int size_) {
 			
 			byte* left_begin = data.Begin();
 			byte* right_begin = left_begin + old_read_pos;
-			ASSERT(old_read_pos + right_size <= size_);
-			ASSERT(right_size + left_size <= size_);
+			ASSERT(old_read_pos + right_size <= total_size);
+			ASSERT(right_size + left_size <= total_size);
 			memcpy(v, right_begin, right_size);
 			memcpy(v + right_size, left_begin, left_size);
 			if (zero_size) {
-				ASSERT(right_size + left_size + zero_size <= size_);
+				ASSERT(right_size + left_size + zero_size <= total_size);
 				memset(v + right_size + left_size, 0, zero_size);
 			}
 		}
@@ -154,10 +155,10 @@ void VolatileAudioBuffer::Get(void* v_, int size_) {
 		else {
 			byte* right_begin = data.Begin() + old_read_pos;
 			int right_size = copy_size;
-			ASSERT(old_read_pos + right_size <= size_);
+			ASSERT(old_read_pos + right_size <= total_size);
 			memcpy(v, right_begin, right_size);
 			if (zero_size) {
-				ASSERT(right_size + zero_size <= size_);
+				ASSERT(right_size + zero_size <= total_size);
 				memset(v + right_size, 0, zero_size);
 			}
 		}
@@ -188,6 +189,7 @@ void VolatileAudioBuffer::Put(void* v_, int size_, bool realtime) {
 		int new_write_pos = copy_size % total_size;
 		Vector<byte>& data = this->data[new_data_i];
 		
+		ASSERT(size_ <= total_size);
 		memcpy(data.Begin(), v, size_);
 		
 		lock.Enter();
@@ -222,8 +224,8 @@ void VolatileAudioBuffer::Put(void* v_, int size_, bool realtime) {
 			
 			byte* left_begin = data.Begin();
 			byte* right_begin = left_begin + write_pos;
-			ASSERT(write_pos + right_size <= size_);
-			ASSERT(write_pos + left_size <= size_);
+			ASSERT(write_pos + right_size <= total_size);
+			ASSERT(write_pos + left_size <= total_size);
 			memcpy(right_begin, v, right_size);
 			memcpy(left_begin, v + right_size, left_size);
 		}
@@ -231,7 +233,7 @@ void VolatileAudioBuffer::Put(void* v_, int size_, bool realtime) {
 		else {
 			int right_size = copy_size;
 			byte* right_begin = data.Begin() + write_pos;
-			ASSERT(write_pos + right_size <= size_);
+			ASSERT(write_pos + right_size <= total_size);
 			memcpy(right_begin, v, right_size);
 		}
 		

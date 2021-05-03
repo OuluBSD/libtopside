@@ -94,7 +94,7 @@ void MixerAudioSourceComponent::BeginAudioSource() {
 	TODO
 }
 
-void MixerAudioSourceComponent::EndAudioSource() {
+void MixerAudioSourceComponent::EndAudioSource(bool any_sink_consumed) {
 	TODO
 }
 

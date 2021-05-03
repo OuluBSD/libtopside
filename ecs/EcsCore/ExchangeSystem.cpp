@@ -4,36 +4,6 @@
 NAMESPACE_OULU_BEGIN
 
 
-void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
-	sync_age += dt;
-	
-	this->dt += dt;
-	++src_frame;
-	
-	if (sync_age >= sync_dt) {
-		if (sync_age > 2 * sync_dt)
-			sync_age = sync_dt;
-		else
-			sync_age = Modulus(sync_age, sync_dt);
-		
-		last_sync_src_frame = src_frame;
-		
-		frames_after_sync = 0;
-		sync = true;
-		
-		render = true;
-	}
-	else if (!buffer_full) {
-		sync = false;
-		frames_after_sync = src_frame > last_sync_src_frame ? src_frame - last_sync_src_frame : 0;
-		
-		render = true;
-	}
-	else {
-		render = false;
-	}
-}
-
 
 
 
@@ -98,20 +68,26 @@ void AudioExchangePoint::Deinit() {
 void AudioExchangePoint::Update(double dt) {
 	Ref<AudioSource>	src			= this->src;
 	Ref<AudioSink>		sink		= this->sink;
+	any_sink_consumed = false;
 	
 	AudioEx ex(this);
 	AudioStream& src_stream = src->GetAudioSource();
 	if (src_stream.GetAudioBufferSize()) {
+		
 		Audio& src_audio = src_stream.GetAudio();
 		Audio& sink_audio = sink->GetAudioSink();
 		
-		if (0) {
-			ex.SetLoading(src_audio, src->Cfg());
-			sink_audio.Exchange(ex);
-		}
-		else {
-			ex.SetStoring(sink_audio, src->Cfg());
-			src_audio.Exchange(ex);
+		if (!sink_audio.IsQueueFull()) {
+			any_sink_consumed = true;
+			
+			if (0) {
+				ex.SetLoading(src_audio, src->Cfg());
+				sink_audio.Exchange(ex);
+			}
+			else {
+				ex.SetStoring(sink_audio, src->Cfg());
+				src_audio.Exchange(ex);
+			}
 		}
 	}
 }
@@ -127,15 +103,27 @@ VideoExchangePoint::VideoExchangePoint() {
 void VideoExchangePoint::Update(double dt) {
 	Ref<VideoSource>	src			= this->src;
 	Ref<VideoSink>		sink		= this->sink;
+	any_sink_consumed = false;
 	
 	VideoEx ex(this);
 	VideoStream& src_stream = src->GetVideoSource();
 	if (src_stream.GetVideoBufferSize()) {
-		Video& src_audio = src_stream.GetVideo();
-		Video& sink_audio = sink->GetVideoSink();
 		
-		ex.SetLoading(src_audio);
-		sink_audio.Exchange(ex);
+		Video& src_video = src_stream.GetVideo();
+		Video& sink_video = sink->GetVideoSink();
+
+		if (!sink_video.IsQueueFull()) {
+			any_sink_consumed = true;
+			
+			if (0) {
+				ex.SetLoading(src_video, src->Cfg());
+				sink_video.Exchange(ex);
+			}
+			else {
+				ex.SetStoring(sink_video, src->Cfg());
+				src_video.Exchange(ex);
+			}
+		}
 	}
 }
 

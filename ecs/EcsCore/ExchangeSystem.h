@@ -29,6 +29,7 @@ protected:
 
 class AudioExchangePoint : public ExchangePoint {
 	ConnectorBase* conn = 0;
+	bool any_sink_consumed = false;
 	
 public:
 	typedef AudioExchangePoint CLASSNAME;
@@ -39,6 +40,8 @@ public:
 	void Deinit();
 	void Update(double dt) override;
 	
+	bool AnySinkConsumed() const {return any_sink_consumed;}
+	
 };
 
 typedef Ref<AudioExchangePoint>		AudioExchangePointRef;
@@ -47,6 +50,7 @@ typedef Ref<AudioExchangePoint>		AudioExchangePointRef;
 
 class VideoExchangePoint : public ExchangePoint {
 	ConnectorBase* conn = 0;
+	bool any_sink_consumed = false;
 	
 	
 public:
@@ -57,6 +61,8 @@ public:
 	void Init(ConnectorBase* conn);
 	void Deinit();
 	void Update(double dt) override;
+	
+	bool AnySinkConsumed() const {return any_sink_consumed;}
 	
 };
 

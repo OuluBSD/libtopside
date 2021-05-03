@@ -659,7 +659,7 @@ class FusionAudioSource :
 	// AudioSource
 	AudioStream&	GetAudioSource() override;
 	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	void			EndAudioSource(bool any_sink_consumed) override;
 	
 public:
 	COPY_PANIC(FusionAudioSource);

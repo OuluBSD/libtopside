@@ -95,7 +95,7 @@ public:
 	// Audio
 	AudioStream&	GetAudioSource() override;
 	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	void			EndAudioSource(bool any_sink_consumed) override;
 	
 	
 	void SetPreset(int i) {preset_i = i;}

@@ -8,17 +8,20 @@ NAMESPACE_OULU_BEGIN
 
 struct RealtimeSourceConfig {
 	double dt = 0;
-	double sync_dt = 0;
+	double sync_dt = 3.0;
 	double sync_age = 0;
     dword last_sync_src_frame = 0;
 	dword frames_after_sync = 0;
 	dword src_frame = 0;
 	bool sync = 0;
 	bool render = 0;
+	bool any_consumed = 0;
 	
 	void Update(double dt, bool buffer_full);
+	void SetConsumed() {any_consumed = true;}
 };
 
+#define MIN_AUDIO_BUFFER_FRAMES 5
 
 
 
@@ -93,11 +96,16 @@ class VideoEx : public ExchangeBase {
 	VideoExchangePoint* expt = 0;
 	Video* src = 0;
 	Video* sink = 0;
+	const RealtimeSourceConfig* src_conf = 0;
 public:
 	VideoEx(VideoExchangePoint* expt) : expt(expt) {}
 	
-	void SetLoading(Video& src) {storing = false; this->src = &src; this->sink = 0;}
-	void SetStoring(Video& sink) {storing = true; this->src = 0; this->sink = &sink;}
+	Video& Sink() const {return *sink;}
+	Video& Source() const {return *src;}
+	const RealtimeSourceConfig& SourceConfig() const {return *src_conf;}
+	
+	void SetLoading(Video& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
+	void SetStoring(Video& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
 	
 	VideoExchangePoint& GetExchangePoint() {return *expt;}
 	

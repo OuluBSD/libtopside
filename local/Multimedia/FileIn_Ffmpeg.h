@@ -19,7 +19,7 @@ class FfmpegAudioFrameQueue :
 	
 	LinkedList<Recycler> frames;
 	Pool pool;
-	int min_buf_size = 2;
+	int min_buf_size = MIN_AUDIO_BUFFER_FRAMES;
 	
 protected:
 	friend class FfmpegFileInput;

@@ -49,8 +49,9 @@ void FfmpegComponent::BeginVideoSource() {
 	file_in.FillVideoBuffer();
 }
 
-void FfmpegComponent::EndVideoSource() {
-	file_in.DropVideoFrames(1);
+void FfmpegComponent::EndVideoSource(bool any_sink_consumed) {
+	if (any_sink_consumed)
+		file_in.DropVideoFrames(1);
 }
 
 /*void FfmpegComponent::EmitVideoSource(double dt) {
@@ -73,8 +74,9 @@ void FfmpegComponent::BeginAudioSource() {
 	file_in.FillAudioBuffer();
 }
 
-void FfmpegComponent::EndAudioSource() {
-	file_in.DropAudioFrames(1);
+void FfmpegComponent::EndAudioSource(bool any_sink_consumed) {
+	if (any_sink_consumed)
+		file_in.DropAudioFrames(1);
 }
 
 /*void FfmpegComponent::EmitAudioSource(double dt) {

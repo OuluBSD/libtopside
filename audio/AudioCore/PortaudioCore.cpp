@@ -248,12 +248,12 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 
 void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
-	buf.SetSize(fmt);
+	buf.SetSize(fmt, MIN_AUDIO_BUFFER_FRAMES);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
-	buf.SetSize(fmt);
+	buf.SetSize(fmt, MIN_AUDIO_BUFFER_FRAMES);
 }
 
 }

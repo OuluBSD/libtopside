@@ -42,8 +42,5 @@ file
 	ECS_OpenCV.h,
 	ECS_OpenCV.cpp,
 	Capture_OpenCV.h,
-	Capture_OpenCV.cpp,
-	Trash readonly separator,
-	Old_FileIn_Ffmpeg.h,
-	Old_FileIn_Ffmpeg.cpp;
+	Capture_OpenCV.cpp;
 

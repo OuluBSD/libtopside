@@ -4,6 +4,44 @@ NAMESPACE_OULU_BEGIN
 
 
 
+void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
+	sync_age += dt;
+	
+	this->dt += dt;
+	++src_frame;
+	
+	any_consumed = false;
+	
+	if (sync_age >= sync_dt) {
+		if (sync_age > 2 * sync_dt)
+			sync_age = sync_dt;
+		else
+			sync_age = Modulus(sync_age, sync_dt);
+		
+		last_sync_src_frame = src_frame;
+		
+		frames_after_sync = 0;
+		sync = true;
+		
+		render = true;
+	}
+	else if (!buffer_full) {
+		sync = false;
+		frames_after_sync = src_frame > last_sync_src_frame ? src_frame - last_sync_src_frame : 0;
+		
+		render = true;
+	}
+	else {
+		render = false;
+	}
+}
+
+
+
+
+
+
+
 #ifdef flagDEBUG
 bool ExchangeSourceProvider::print_debug = true;
 #else

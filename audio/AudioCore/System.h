@@ -117,7 +117,7 @@ public:
 	void Uninitialize() override;
 	AudioStream&		GetAudioSource() override;
 	void				BeginAudioSource() override;
-	void				EndAudioSource() override;
+	void				EndAudioSource(bool any_sink_consumed) override;
 	
 	String GetLastError() const {return last_error;}
 	

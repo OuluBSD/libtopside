@@ -33,12 +33,12 @@ public:
 	// Audio
 	AudioStream&	GetAudioSource() override;
 	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	void			EndAudioSource(bool any_sink_consumed) override;
 	
 	// Video
 	VideoStream&	GetVideoSource() override;
 	void			BeginVideoSource() override;
-	void			EndVideoSource() override;
+	void			EndVideoSource(bool any_sink_consumed) override;
 	bool			LoadFileAny(String path) override;
 	
 	

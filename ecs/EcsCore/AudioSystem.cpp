@@ -18,8 +18,8 @@ void AudioSystem::Start() {
 void AudioSystem::Update(double dt) {
 	
 	for (AudioSourceRef src : srcs) {
-		AudioStream& aud_stream = src->GetAudioSource();
-		bool buffer_full = aud_stream.GetAudioBufferSize() >= 2;
+		AudioStream& stream = src->GetAudioSource();
+		bool buffer_full = stream.GetAudioBufferSize() >= 2;
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render)
@@ -28,13 +28,16 @@ void AudioSystem::Update(double dt) {
 	
 	for (AudioExchangePointRef expt : expts) {
 		AudioSourceRef src = expt->Source();
-		if (src->Cfg().render)
-			expt->Update(dt);
+		
+		expt->Update(dt);
+		if (expt->AnySinkConsumed())
+			src->SetConsumed();
 	}
 	
 	for (AudioSourceRef src :srcs) {
-		if (src->Cfg().render)
-			src->EndAudioSource();
+		const auto& cfg = src->Cfg();
+		if (cfg.any_consumed)
+			src->EndAudioSource(cfg.any_consumed);
 	}
 	
 }

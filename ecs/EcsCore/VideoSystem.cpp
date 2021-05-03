@@ -16,10 +16,10 @@ void VideoSystem::Start() {
 }
 
 void VideoSystem::Update(double dt) {
-	
+
 	for (VideoSourceRef src : srcs) {
-		VideoStream& aud_stream = src->GetVideoSource();
-		bool buffer_full = aud_stream.GetVideoBufferSize() >= 2;
+		VideoStream& stream = src->GetVideoSource();
+		bool buffer_full = stream.GetVideoBufferSize() >= 2;
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render)
@@ -28,13 +28,16 @@ void VideoSystem::Update(double dt) {
 	
 	for (VideoExchangePointRef expt : expts) {
 		VideoSourceRef src = expt->Source();
-		if (src->Cfg().render)
-			expt->Update(dt);
+		
+		expt->Update(dt);
+		if (expt->AnySinkConsumed())
+			src->SetConsumed();
 	}
 	
 	for (VideoSourceRef src :srcs) {
-		if (src->Cfg().render)
-			src->EndVideoSource();
+		const auto& cfg = src->Cfg();
+		if (cfg.any_consumed)
+			src->EndVideoSource(cfg.any_consumed);
 	}
 	
 }
