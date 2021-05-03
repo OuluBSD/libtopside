@@ -7,7 +7,7 @@ NAMESPACE_OULU_BEGIN
 
 
 
-class OpenCVCaptureDevice : public MediaInputStream {
+class OpenCVCaptureDevice : public MediaSourceStream {
 	
 protected:
 	friend class V4L2_DeviceManager;
@@ -16,7 +16,7 @@ protected:
 	
 	//Vector<char> buffer;
 	DataPtrVideoBuffer vbuffer;
-	VolatileSoundBuffer abuffer;
+	VolatileAudioBuffer abuffer;
 	Image sw_frame;
 	uint32 open_pix_fmt = 0;
 	Size open_frame_sz;
@@ -37,23 +37,32 @@ public:
 	OpenCVCaptureDevice();
 	~OpenCVCaptureDevice();
 	
-	bool Open0(String path) override;
-	bool OpenDevice0(int fmt, int res) override;
-	bool IsDeviceOpen() const override;
-	int FillVideoBuffer() override;
-	int FillAudioBuffer() override {return 0;}
-	void DropFrames(int audio_frames, int video_frames) override {}
-	void Close() override;
-	Sound& GetSound() override {return abuffer;}
-	Video& GetVideo() override {return vbuffer;}
+	// RealtimeStream
+	double						GetSeconds() const override {return cur_time.Seconds();}
 	
-	String GetPath() const override {return path;}
+	// AudioStream
+	Audio&						GetAudio() override {return abuffer;}
+	void						FillAudioBuffer() override {}
+	void						DropAudioFrames(int frames) override {}
+	int							GetAudioBufferSize() const override {return 0;}
 	
-	// bw_max - maximum bandwidth range maximum (multiplier for desired bandwidth as upper limit)
-	// bw_min - maximum bandwidth range minimum (multiplier for desired bandwidth as lower limit)
+	// VideoStream
+	void						FillVideoBuffer() override;
+	void						DropVideoFrames(int frames) override;
+	int							GetVideoBufferSize() const override {return 1;}
+	Video&						GetVideo() override {return vbuffer;}
+	int							GetActiveVideoFormat() const override;
+	int							GetFormatCount() const override;
+	const VideoSourceFormat&	GetFormat(int i) const override;
+	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override;
 	
-	double GetSeconds() const override {return cur_time.Seconds();}
-	Size GetVideoSize() const override {return open_frame_sz;}
+	// MediaStream
+	bool						Open0(String path) override;
+	bool						OpenDevice0(int fmt, int res) override;
+	bool						IsDeviceOpen() const override;
+	void						Close() override;
+	String						GetPath() const override {return path;}
+	
 	
 	
 };

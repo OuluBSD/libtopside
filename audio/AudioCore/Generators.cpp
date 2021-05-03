@@ -32,21 +32,30 @@ void SoundGeneratorComponent::Configure(const Midi::File& file) {
 	}*/
 }
 
-void SoundGeneratorComponent::EmitAudioSource(double dt) {
-	DefaultEmitAudioSource(dt);
-}
-
-void SoundGeneratorComponent::Play(const AudioSinkConfig& config, Sound& snd) {
-	AudioFormat fmt = snd.GetAudioFormat();
+/*void SoundGeneratorComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
+	AudioFormat fmt = aud.GetAudioFormat();
 	if (fmt.is_var_float && fmt.var_size == 4) {
-		gen_f32.Play(config, snd);
+		gen_f32.Play(config, aud);
 	}
 	else if (!fmt.is_var_float && fmt.var_size == 2) {
-		gen_u16.Play(config, snd);
+		gen_u16.Play(config, aud);
 	}
 	else {
 		Panic("Invalid format");
 	}
+}*/
+
+
+AudioStream& SoundGeneratorComponent::GetAudioSource() {
+	TODO
+}
+
+void SoundGeneratorComponent::BeginAudioSource() {
+	TODO
+}
+
+void SoundGeneratorComponent::EndAudioSource() {
+	TODO
 }
 
 

@@ -46,7 +46,7 @@ void FusionAudioSource::UpdateTexBuffers() {
 			0, 0,
 			FusionComponentInput::FILTER_LINEAR,
 			FusionComponentInput::WRAP_CLAMP);
-		sound_buf.SetCount(sr * ch, 0);
+		audio_buf.SetCount(sr * ch, 0);
 #endif
 	}
 }
@@ -55,43 +55,43 @@ bool FusionAudioSource::LoadResources() {
 	return true;
 }
 
-void FusionAudioSource::EmitAudioSource(double dt) {
+/*void FusionAudioSource::EmitAudioSource(double dt) {
 	DefaultEmitAudioSource(dt, 1);
-}
+}*/
 
-void FusionAudioSource::Play(const AudioSinkConfig& config, Sound& snd) {
+/*void FusionAudioSource::Play(const RealtimeSourceConfig& config, Audio& aud) {
 	const char* fn_name = "Play";
 	auto* stream = Stream();
 	if (!stream || !ctx || !IsOpen())
 		return;
 	
-	stream->sys_snd = &snd;
+	stream->sys_aud = &aud;
 	stream->is_audio_sync = config.sync;
 	stream->asink_frame = config.sink_frame;
 	stream->aframes_after_sync = config.frames_after_sync;
 	
-	AudioFormat cur_fmt = snd.GetAudioFormat();
+	AudioFormat cur_fmt = aud.GetAudioFormat();
 	if (cur_fmt != stream->aud_fmt) {
 		stream->aud_fmt = cur_fmt;
 		ctx->UpdateSoundBuffers();
 	}
 	ctx->Play();
 	
-}
+}*/
 
 void FusionAudioSource::UseRenderedFramebuffer() {
 	const char* fn_name = "UseRenderedFramebuffer";
 	auto* stream = Stream();
 	ASSERT(stream);
 	if (!stream) return;
-	if (!stream->sys_snd) return;
-	Sound& snd = *stream->sys_snd;
+	if (!stream->sys_aud) return;
+	Audio& aud = *stream->sys_aud;
 	const AudioFormat& fmt = stream->aud_fmt;
 	
 #ifdef flagOPENGL
 	ASSERT(color_buf[buf_i] > 0);
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	glReadPixels(0, 0, fmt.sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, sound_buf.Begin());
+	glReadPixels(0, 0, fmt.sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, audio_buf.Begin());
 #endif
 	
 	if (fmt.var_size != 4 || !fmt.is_var_float) {
@@ -99,11 +99,24 @@ void FusionAudioSource::UseRenderedFramebuffer() {
 	}
 	else {
 		TODO // Exchange
-		//snd.Put((void*)sound_buf.Begin(), sound_buf.GetCount() * sizeof(float), stream->is_audio_sync);
+		//snd.Put((void*)audio_buf.Begin(), audio_buf.GetCount() * sizeof(float), stream->is_audio_sync);
 	}
 	
-	stream->sys_snd = 0;
+	stream->sys_aud = 0;
 }
+
+AudioStream& FusionAudioSource::GetAudioSource() {
+	TODO
+}
+
+void FusionAudioSource::BeginAudioSource() {
+	TODO
+}
+
+void FusionAudioSource::EndAudioSource() {
+	TODO
+}
+
 
 
 NAMESPACE_OULU_END

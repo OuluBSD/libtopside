@@ -41,7 +41,19 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	return false;
 }
 
-void FfmpegComponent::EmitVideoSource(double dt) {
+VideoStream& FfmpegComponent::GetVideoSource() {
+	return file_in;
+}
+
+void FfmpegComponent::BeginVideoSource() {
+	file_in.FillVideoBuffer();
+}
+
+void FfmpegComponent::EndVideoSource() {
+	file_in.DropVideoFrames(1);
+}
+
+/*void FfmpegComponent::EmitVideoSource(double dt) {
 	if (file_in.IsDeviceOpen()) {
 		if (file_in.FillVideoBuffer()) {
 			video_buf = &file_in.GetVideo();
@@ -51,25 +63,37 @@ void FfmpegComponent::EmitVideoSource(double dt) {
 			file_in.DropFrames(0, 1);
 		}
 	}
+}*/
+
+AudioStream& FfmpegComponent::GetAudioSource() {
+	return file_in;
 }
 
-void FfmpegComponent::EmitAudioSource(double dt) {
+void FfmpegComponent::BeginAudioSource() {
+	file_in.FillAudioBuffer();
+}
+
+void FfmpegComponent::EndAudioSource() {
+	file_in.DropAudioFrames(1);
+}
+
+/*void FfmpegComponent::EmitAudioSource(double dt) {
 	if (file_in.IsDeviceOpen()) {
 		if (file_in.FillAudioBuffer()) {
-			sound_buf = &file_in.GetSound();
+			audio_buf = &file_in.GetAudio();
 			for(Ref<AudioSink> c : AudioSource::GetConnections())
 				c->RecvAudio(*this, dt);
 			file_in.DropFrames(1, 0);
 		}
 	}
-}
+}*/
 
-void FfmpegComponent::Play(const AudioSinkConfig& config, Sound& snd) {
+/*void FfmpegComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
 	//static DummySoundGenerator<float> gen;
 	//gen.Play(config,snd);
-	//snd.GetFrameFrom(sound_buf, config.sync);
+	//snd.GetFrameFrom(audio_buf, config.sync);
 	TODO
-}
+}*/
 
 
 

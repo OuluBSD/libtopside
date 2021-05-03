@@ -16,7 +16,7 @@ class OpenCVComponent :
 	V4L2_DeviceManager devmgr;
 	MediaStreamThread vi;
 	VideoProxy video_buf;
-	SoundProxy sound_buf;
+	AudioProxy audio_buf;
 	Size def_cap_sz;
 	int def_cap_fps;
 	
@@ -32,9 +32,6 @@ public:
 	void Uninitialize() override;
 	
 	bool LoadFileAny(String path) override;
-	void EmitVideoSource(double dt) override;
-	void EmitAudioSource(double dt) override;
-	void Play(const AudioSinkConfig& config, Sound& snd) override;
 	
 	bool LoadInput(int id);
 	
@@ -44,6 +41,17 @@ public:
 	
 	
 	static bool AllowDuplicates() {return true;}
+	
+	
+	// Audio
+	AudioStream&	GetAudioSource() override;
+	void			BeginAudioSource() override;
+	void			EndAudioSource() override;
+	
+	// Video
+	VideoStream&	GetVideoSource() override;
+	void			BeginVideoSource() override;
+	void			EndVideoSource() override;
 	
 };
 

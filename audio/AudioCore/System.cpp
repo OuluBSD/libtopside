@@ -86,13 +86,21 @@ void MixerAudioSourceComponent::Uninitialize() {
 	
 }
 
-void MixerAudioSourceComponent::EmitAudioSource(double dt) {
-	
+AudioStream& MixerAudioSourceComponent::GetAudioSource() {
+	TODO
 }
 
-void MixerAudioSourceComponent::Play(const AudioSinkConfig& config, Sound& snd) {
-	
+void MixerAudioSourceComponent::BeginAudioSource() {
+	TODO
 }
+
+void MixerAudioSourceComponent::EndAudioSource() {
+	TODO
+}
+
+/*void MixerAudioSourceComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
+	
+}*/
 
 
 

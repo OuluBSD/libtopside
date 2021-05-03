@@ -28,6 +28,15 @@ struct VideoFormat {
 	}
 };
 
+VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch);
+
+
+
+struct VideoCodecFormat {
+	
+	
+};
+
 class Video {
 	
 public:
@@ -42,6 +51,48 @@ public:
 #ifdef flagOPENGL
 	virtual bool PaintOpenGLTexture(int texture) {return false;}
 #endif
+	
+};
+
+
+class VideoSourceFormatResolution {
+	
+protected:
+	VideoFormat		fmt;
+	
+public:
+	
+	VideoFormat		GetFormat() const {return fmt;}
+	
+	void			SetFormat(VideoFormat fmt) {this->fmt = fmt;}
+	
+};
+
+
+class VideoSourceFormat {
+	
+protected:
+	String								desc;
+	VideoCodecFormat					codec;
+	Array<VideoSourceFormatResolution>	res;
+	
+	VideoSourceFormatResolution&		GetResolution(int i) {return res[i];}
+	
+	
+public:
+	
+	VideoSourceFormatResolution&		Add() {return res.Add();}
+	void								SetDescription(String s) {desc = s;}
+	
+	String								GetDescription() const {return desc;}
+	int									GetResolutionCount() const {return res.GetCount();}
+	const VideoSourceFormatResolution&	GetResolution(int i) const {return res[i];}
+	VideoCodecFormat					GetCodecFormat() const {return codec;}
+	
+	VideoSourceFormatResolution&		operator[](int i) {return res[i];}
+	const VideoSourceFormatResolution&	operator[](int i) const {return res[i];}
+	
+	// IsMJPEG(): is src v4l2 and pix_fmt V4L2_PIX_FMT_MJPEG
 	
 };
 
@@ -108,6 +159,29 @@ public:
 	#endif
 	
 };
+
+
+
+class VideoStream : public virtual RealtimeStream {
+	
+	
+public:
+	virtual ~VideoStream() {}
+	
+	virtual void						FillVideoBuffer() = 0;
+	virtual void						DropVideoFrames(int frames) = 0;
+	virtual int							GetVideoBufferSize() const = 0;
+	virtual Video&						GetVideo() = 0;
+	virtual int							GetActiveVideoFormat() const = 0;
+	virtual int							GetFormatCount() const = 0;
+	virtual const VideoSourceFormat&	GetFormat(int i) const = 0;
+	virtual bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) = 0;
+	
+	//virtual Size		GetVideoSize() const {return Size(0,0);}
+	//virtual int		GetVideoDepth() const {return 0;}
+	
+};
+
 
 NAMESPACE_OULU_END
 

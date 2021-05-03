@@ -1,15 +1,15 @@
 #include "System.h"
 #include "Internal.h"
-#include "Sound.h"
+#include "PortaudioCore.h"
 
 NAMESPACE_OULU_BEGIN
 
-void CloseSoundSys() {
-	SoundSys().Close();
+void CloseAudioSys() {
+	Portaudio::AudioSys().Close();
 }
 
 INITBLOCK {
-	AudioSystem::WhenUninit << callback(CloseSoundSys);
+	AudioSystem::WhenUninit << callback(CloseAudioSys);
 }
 
 
@@ -54,23 +54,19 @@ void PortaudioSinkComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void PortaudioSinkComponent::RecvAudio(AudioSource& src, double dt) {
-	DefaultRecvAudio(aconfig, src, dt, *obj);
-}
-
 #if 0
 void PortaudioSinkComponent::RecvMedia(Media& media) {
 	if (obj /*&& obj->WriteAvailable()*/) {
-		Sound& snd = media.GetSound();
-		int frames = snd.GetQueueSize();
-		AudioFormat src_fmt = snd.GetFormat();
+		Audio& aud = media.GetAudio();
+		int frames = aud.GetQueueSize();
+		AudioFormat src_fmt = aud.GetFormat();
 		AudioFormat dst_fmt = obj->GetFormat();
 		if (src_fmt == dst_fmt) {
 			int size = src_fmt.sample_rate * src_fmt.channels;
 			tmp.SetCount(size);
 			for(int i = 0; i < frames; i++) {
 				float* f = tmp.Begin();
-				snd.Get(f, size * src_fmt.var_size);
+				aud.Get(f, size * src_fmt.var_size);
 				obj->Put(f, src_fmt.sample_rate, true);
 			}
 		}
@@ -83,6 +79,13 @@ void PortaudioSinkComponent::RecvMedia(Media& media) {
 AudioFormat PortaudioSinkComponent::GetAudioFormat() {
 	TODO
 }
+
+Audio& PortaudioSinkComponent::GetAudioSink() {
+	if (obj)
+		return obj->GetBuffer();
+	throw Exc("PortaudioSinkComponent: obj is null");
+}
+
 
 
 

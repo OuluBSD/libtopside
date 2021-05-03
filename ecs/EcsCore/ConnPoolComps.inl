@@ -58,9 +58,10 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 		if (sink) {
 			for(Vector<Ref<T>>& src_scope : src_stack) {
 				for (Ref<T>& src : src_scope) {
-					ExchangeProviderCookieRef src_cookie, sink_cookie;
+					CookieRef src_cookie, sink_cookie;
 					if (src->Link(sink, src_cookie, sink_cookie)) {
-						ExchangePointRef ep = MetaExchangePoint::Add();
+						Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+						ep->Init(this);
 						ep->Set(src, sink, src_cookie, sink_cookie);
 					}
 				}

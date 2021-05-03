@@ -33,8 +33,6 @@ file
 	RenderingSystem.cpp,
 	WindowSystem.h,
 	WindowSystem.cpp,
-	AudioSystem.h,
-	AudioSystem.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	Prefabs.h,

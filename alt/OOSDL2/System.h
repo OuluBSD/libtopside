@@ -40,8 +40,8 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitAudioSource(double dt) override;
-	void Play(const AudioSinkConfig& config, Sound& snd) override;
+	//void EmitAudioSource(double dt) override;
+	//void Play(const RealtimeSourceConfig& config, Audio& aud) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::AudioInput* GetOOSDL2() {return &*obj;}
@@ -53,8 +53,8 @@ class SDL2AudioOutputComponent :
 	public AudioSink
 {
 	One<OOSDL2::AudioOutput> obj;
-	SystemSound empty_snd;
-    AudioSinkConfig aconfig;
+	SystemAudio empty_aud;
+    RealtimeSourceConfig aconfig;
 	
 	
 public:
@@ -68,7 +68,7 @@ public:
 	void Uninitialize() override;
 	void RecvAudio(AudioSource& src, double dt) override;
 	
-	SystemSound&	BeginPlay() override {return obj ? obj->GetSystemSound() : empty_snd;}
+	SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
 	void			CommitPlay() override {}
 	void			UndoPlay() override {ASSERT_(0, "UndoPlay is not implemented");}
 	bool			IsAudioSampleFloating() override {return obj ? obj->IsSampleFloating() : 0;}

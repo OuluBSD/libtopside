@@ -9,7 +9,7 @@
 	#include <DrawAlt/Draw.h>
 	#include <Geometry/Geometry.h>
 #endif
-#include <VirtualSound/VirtualSound.h>
+#include <VirtualAudio/VirtualAudio.h>
 
 #define NAMESPACE_SDL2_NAME		OOSDL2
 #define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_OULU_NAME { namespace NAMESPACE_SDL2_NAME {
@@ -83,8 +83,8 @@ public:
 class AudioOutput : public Component {
 	SDL_AudioSpec audio_fmt, audio_desired;
 	SDL_AudioDeviceID audio_dev = 0;
-	VolatileSoundBuffer snd_buf;
-	SystemSound sys_snd;
+	VolatileAudioBuffer snd_buf;
+	SystemAudio sys_aud;
 	dword frames = 0;
 	
 	bool Open0() override;
@@ -103,8 +103,8 @@ public:
 	dword			GetFrameCount() const {return frames;}
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
-	Sound&			GetSound() {return snd_buf;}
-	SystemSound&	GetSystemSound() {return sys_snd;}
+	Audio&			GetAudio() {return snd_buf;}
+	SystemAudio&	GetSystemAudio() {return sys_aud;}
 	
 };
 

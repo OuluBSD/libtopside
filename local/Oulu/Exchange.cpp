@@ -66,7 +66,7 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	sink->AddSource(src);
 }
 
-void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, ExchangeProviderCookieRef sink_cookie, ExchangeProviderCookieRef src_cookie) {
+void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie) {
 	Clear();
 	this->src_cookie	= src_cookie;
 	this->sink_cookie	= sink_cookie;
@@ -102,15 +102,19 @@ String MetaExchangePoint::ToString() const {
 	
 }
 
-ExchangePointRef MetaExchangePoint::Add() {
-	ExchangePointRef pt = pts.Add();
-	
-	return pt;
-}
 
 void MetaExchangePoint::UnlinkAll() {
 	pts.Clear();
 }
+
+
+
+
+
+
+
+
+
 
 
 NAMESPACE_OULU_END

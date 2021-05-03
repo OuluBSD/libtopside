@@ -4,15 +4,15 @@
 NAMESPACE_OULU_BEGIN
 
 
-int MediaInputStream::GetFormatCount() const {
+int MediaSourceStream::GetFormatCount() const {
 	return fmts.GetCount();
 }
 
-const VideoInputFormat& MediaInputStream::GetFormat(int i) const {
+const VideoSourceFormat& MediaSourceStream::GetFormat(int i) const {
 	return fmts[i];
 }
 
-bool MediaInputStream::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res) {
+bool MediaSourceStream::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res) {
 	double tgt_bw = (double)cap_sz.cx * (double)cap_sz.cy * (double)fps;
 	double bw_low = bw_min * tgt_bw;
 	double bw_high = bw_max * tgt_bw;
@@ -27,10 +27,10 @@ bool MediaInputStream::FindClosestFormat(Size cap_sz, double fps, double bw_min,
 	Vector<Result> results;
 	
 	for(int i = 0; i < fmts.GetCount(); i++) {
-		const VideoInputFormat& fmt = fmts[i];
+		const VideoSourceFormat& fmt = fmts[i];
 		for(int j = 0; j < fmt.GetResolutionCount(); j++) {
-			const VideoInputFormatResolution& fmt_res = fmt.GetResolution(j);
-			VideoFormat vid_fmt = fmt_res.GetVideoFormat();
+			const VideoSourceFormatResolution& fmt_res = fmt.GetResolution(j);
+			VideoFormat vid_fmt = fmt_res.GetFormat();
 			Size fmt_sz = vid_fmt.res;
 			double fmt_fps = vid_fmt.fps;
 			double fmt_bw = (double)fmt_sz.cx * (double)fmt_sz.cy * fmt_fps;
@@ -103,16 +103,14 @@ void MediaStreamThread::Process() {
 	#endif
 }
 
-int MediaStreamThread::FillVideoBuffer() {
+void MediaStreamThread::FillVideoBuffer() {
 	if (cap)
-		return cap->FillVideoBuffer();
-	return false;
+		cap->FillVideoBuffer();
 }
 
-int MediaStreamThread::FillAudioBuffer() {
+void MediaStreamThread::FillAudioBuffer() {
 	if (cap)
-		return cap->FillAudioBuffer();
-	return false;
+		cap->FillAudioBuffer();
 }
 
 

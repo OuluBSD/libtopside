@@ -1,5 +1,5 @@
-#ifndef _EcsLib_AudioSystem_h_
-#define _EcsLib_AudioSystem_h_
+#ifndef _EcsCore_AudioSystem_h_
+#define _EcsCore_AudioSystem_h_
 
 
 NAMESPACE_OULU_BEGIN
@@ -7,8 +7,9 @@ NAMESPACE_OULU_BEGIN
 
 class AudioSystem : public System<AudioSystem> {
 	Ref<EntityStore> ents;
-	Vector<AudioSource*> srcs;
-	Vector<AudioSink*> sinks;
+	Vector<AudioSourceRef> srcs;
+	Vector<AudioSinkRef> sinks;
+	Vector<AudioExchangePointRef> expts;
 	
 protected:
     bool Initialize() override;
@@ -20,10 +21,12 @@ protected:
 public:
     using System::System;
 	
-	void Add(AudioSource* src);
-	void Remove(AudioSource* src);
-	void Add(AudioSink* sink);
-	void Remove(AudioSink* sink);
+	void Add(AudioSourceRef src);
+	void Add(AudioSinkRef sink);
+	void Add(AudioExchangePointRef sink);
+	void Remove(AudioSourceRef src);
+	void Remove(AudioSinkRef sink);
+	void Remove(AudioExchangePointRef sink);
 	
 	static Callback WhenUninit;
 	

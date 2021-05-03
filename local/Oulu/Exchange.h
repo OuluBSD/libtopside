@@ -6,6 +6,24 @@ NAMESPACE_OULU_BEGIN
 
 
 
+struct RealtimeSourceConfig {
+	double dt = 0;
+	double sync_dt = 0;
+	double sync_age = 0;
+    dword last_sync_src_frame = 0;
+	dword frames_after_sync = 0;
+	dword src_frame = 0;
+	bool sync = 0;
+	bool render = 0;
+	
+	void Update(double dt, bool buffer_full);
+};
+
+
+
+
+
+
 class ExchangeBase : public LockedScopeEnabler<ExchangeBase> {
 	bool fail = false;
 	
@@ -37,22 +55,51 @@ class SemanticEx : public ExchangeBase {
 	
 };
 
+
+class Audio;
+class AudioExchangePoint;
+
 class AudioEx : public ExchangeBase {
 	bool storing = false;
+	AudioExchangePoint* expt = 0;
+	Audio* src = 0;
+	Audio* sink = 0;
+	const RealtimeSourceConfig* src_conf = 0;
 	
 public:
+	AudioEx(AudioExchangePoint* expt) : expt(expt) {}
+	
+	Audio& Sink() const {return *sink;}
+	Audio& Source() const {return *src;}
+	const RealtimeSourceConfig& SourceConfig() const {return *src_conf;}
+	
+	void SetLoading(Audio& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
+	void SetStoring(Audio& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
+	
+	AudioExchangePoint& GetExchangePoint() {return *expt;}
 	
 	virtual bool IsLoading() {return !storing;}
 	virtual bool IsStoring() {return storing;}
 	
-	virtual bool Load(int sample_rate, int channels, int var_size, bool var_float, byte* data) {SetFail(); return false;}
 	
 };
 
+
+class Video;
+class VideoExchangePoint;
+
 class VideoEx : public ExchangeBase {
 	bool storing = false;
-	
+	VideoExchangePoint* expt = 0;
+	Video* src = 0;
+	Video* sink = 0;
 public:
+	VideoEx(VideoExchangePoint* expt) : expt(expt) {}
+	
+	void SetLoading(Video& src) {storing = false; this->src = &src; this->sink = 0;}
+	void SetStoring(Video& sink) {storing = true; this->src = 0; this->sink = &sink;}
+	
+	VideoExchangePoint& GetExchangePoint() {return *expt;}
 	
 	virtual bool IsLoading() {return !storing;}
 	virtual bool IsStoring() {return storing;}
@@ -70,7 +117,7 @@ public:
 	
 };
 
-typedef Ref<ExchangeProviderCookie> ExchangeProviderCookieRef;
+typedef Ref<ExchangeProviderCookie> CookieRef;
 
 
 
@@ -214,22 +261,26 @@ protected:
 	
 	ExchangeSourceProviderRef	src;
 	ExchangeSinkProviderRef		sink;
-	ExchangeProviderCookieRef	src_cookie;
-	ExchangeProviderCookieRef	sink_cookie;
+	CookieRef					src_cookie;
+	CookieRef					sink_cookie;
 	
 public:
 	typedef ExchangePoint CLASSNAME;
 	ExchangePoint();
 	
+	virtual ~ExchangePoint() {}
+	
+	virtual void Update(double dt) = 0;
+	
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
-	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, ExchangeProviderCookieRef sink_cookie, ExchangeProviderCookieRef src_cookie);
+	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
 	
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}
-	ExchangeProviderCookieRef SourceCookie() {return src_cookie;}
-	ExchangeProviderCookieRef SinkCookie() {return sink_cookie;}
+	CookieRef SourceCookie() {return src_cookie;}
+	CookieRef SinkCookie() {return sink_cookie;}
 	
 };
 
@@ -239,7 +290,7 @@ public:
 class MetaExchangePoint {
 	
 protected:
-	RefLinkedList<ExchangePoint> pts;
+	RefLinkedListIndirect<ExchangePoint> pts;
 	
 public:
 	typedef MetaExchangePoint CLASSNAME;
@@ -248,7 +299,15 @@ public:
 	
 	virtual void UnlinkAll();
 	
-	ExchangePointRef Add();
+	template <class T>
+	Ref<T> Add(T* o=NULL) {
+		if (!o)
+			o = new T();
+		Ref<T> pt = pts.Add(o);
+		
+		return pt;
+	}
+
 	
 	String ToString() const;
 	

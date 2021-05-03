@@ -69,7 +69,7 @@ bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& dr
 	return true; // "nothing to do" is also success. Only busy video source fails
 }
 
-bool FusionDisplaySource::Accept(ExchangeSinkProviderRef sink, ExchangeProviderCookieRef& src_c, ExchangeProviderCookieRef& sink_c) {
+bool FusionDisplaySource::Accept(ExchangeSinkProviderRef sink, CookieRef& src_c, CookieRef& sink_c) {
 	return true;
 }
 

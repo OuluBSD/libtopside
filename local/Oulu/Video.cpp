@@ -4,6 +4,18 @@
 NAMESPACE_OULU_BEGIN
 
 
+VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch) {
+	VideoFormat f;
+	f.res = res;
+	f.fps = fps;
+	f.var_size = var_size;
+	f.channels = channels;
+	f.pitch = pitch;
+	return f;
+}
+
+
+
 void VolatileVideoBuffer::Clear() {
 	
 }

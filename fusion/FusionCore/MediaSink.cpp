@@ -130,6 +130,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	return false;
 }
 
+#if 0
 void FusionMediaSink::RecvVideo(Video& video, double dt) {
 	VideoFormat fmt = video.GetVideoFormat();
 	
@@ -148,7 +149,7 @@ void FusionMediaSink::RecvVideo(Video& video, double dt) {
 			}
 		}
 		/*else if (fmt.snd.IsValid()) {
-			if (!media.GetSound().PaintOpenGLTexture(tex)) {
+			if (!media.GetAudio().PaintOpenGLTexture(tex)) {
 				OnError("RecvMedia", "painting opengl tex failed");
 				ClearTex();
 			}
@@ -158,13 +159,20 @@ void FusionMediaSink::RecvVideo(Video& video, double dt) {
 	TODO
 #endif
 }
+#endif
 
-void FusionMediaSink::RecvAudio(AudioSource& src, double dt) {
+/*void FusionMediaSink::RecvAudio(AudioSource& src, double dt) {
 	
 	TODO
 	
+}*/
+Audio& FusionMediaSink::GetAudioSink() {
+	TODO
 }
 
+Video& FusionMediaSink::GetVideoSink() {
+	TODO
+}
 
 
 NAMESPACE_OULU_END

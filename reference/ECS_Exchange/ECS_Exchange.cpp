@@ -10,7 +10,7 @@ Exchanges: harmony (music), money, interaction-futures (feelings, etc.)
 
 
 
-template <class T> void SoundBufferUnitTestT() {
+template <class T> void AudioBufferUnitTestT() {
 	AudioFormat fmt;
 	fmt.var_size = sizeof(T);
 	fmt.is_var_float = std::is_same<T,float>() || std::is_same<T,double>();
@@ -30,7 +30,7 @@ template <class T> void SoundBufferUnitTestT() {
 		from[i*2 + 1] = (T)(-1 - i + 0.5);
 	}
 	
-	VolatileSoundBuffer b;
+	VolatileAudioBuffer b;
 	b.SetSize(fmt, frames);
 	
 	for(int i = 0; i < frames; i++)
@@ -44,11 +44,11 @@ template <class T> void SoundBufferUnitTestT() {
 	}
 }
 
-void SoundBufferUnitTest() {
-	SoundBufferUnitTestT<uint8>();
-	SoundBufferUnitTestT<uint16>();
-	SoundBufferUnitTestT<int32>();
-	SoundBufferUnitTestT<float>();
+void AudioBufferUnitTest() {
+	AudioBufferUnitTestT<uint8>();
+	AudioBufferUnitTestT<uint16>();
+	AudioBufferUnitTestT<int32>();
+	AudioBufferUnitTestT<float>();
 }
 
 

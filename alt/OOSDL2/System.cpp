@@ -70,28 +70,28 @@ void SDL2AudioInputComponent::EmitAudioSource(double dt) {
 	TODO
 }
 
-void SDL2AudioInputComponent::Play(const AudioSinkConfig& config, Sound& snd) {
+/*void SDL2AudioInputComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
 	TODO
-}
+}*/
 
 
 
 void SDL2AudioOutputComponent::Initialize() {
 	aconfig.frames_after_sync = 0;
 	SetAudioSyncInterval(15);
-	if (VirtualSoundPtr == 0)
-		VirtualSoundPtr = this;
+	if (VirtualAudioPtr == 0)
+		VirtualAudioPtr = this;
 	OBJ_CREATE
 }
 
 void SDL2AudioOutputComponent::Uninitialize() {
-	if (VirtualSoundPtr == this)
-		VirtualSoundPtr = 0;
+	if (VirtualAudioPtr == this)
+		VirtualAudioPtr = 0;
 	obj.Clear();
 }
 
 void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {
-	DefaultRecvAudio(src, dt, obj->GetSystemSound());
+	DefaultRecvAudio(src, dt, obj->GetSystemAudio());
 }
 
 

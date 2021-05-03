@@ -112,13 +112,12 @@ bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 	cur_time.Reset();
 	
 	if (fmt_i < 0 || fmt_i >= fmts.GetCount()) return false;
-	const VideoInputFormat& fmt = fmts[fmt_i];
+	const VideoSourceFormat& fmt = fmts[fmt_i];
 	
 	if (res_i < 0 || res_i >= fmt.GetResolutionCount()) return false;
-	const VideoInputFormatResolution& res = fmt.GetResolution(res_i);
+	const VideoSourceFormatResolution& res = fmt.GetResolution(res_i);
 	
-	uint32 pix_fmt = fmt.GetPixelFormat();
-	VideoFormat vid_fmt = res.GetVideoFormat();
+	VideoFormat vid_fmt = res.GetFormat();
 	Size sz = vid_fmt.res;
 	const double fps = vid_fmt.fps;
 	
@@ -126,13 +125,6 @@ bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 		return true;
 	
 	return false;
-}
-
-int OpenCVCaptureDevice::FillVideoBuffer() {
-	if (ocv && ocv->Read())
-		return 1;
-	
-	return 0;
 }
 
 void OpenCVCaptureDevice::Close() {
@@ -147,6 +139,32 @@ bool OpenCVCaptureDevice::IsDeviceOpen() const {
 	return false;
 }
 
+
+
+void OpenCVCaptureDevice::FillVideoBuffer() {
+	if (ocv)
+		ocv->Read();
+}
+
+void OpenCVCaptureDevice::DropVideoFrames(int frames) {
+	TODO
+}
+
+int OpenCVCaptureDevice::GetActiveVideoFormat() const {
+	TODO
+}
+
+int OpenCVCaptureDevice::GetFormatCount() const {
+	TODO
+}
+
+const VideoSourceFormat& OpenCVCaptureDevice::GetFormat(int i) const {
+	TODO
+}
+
+bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) {
+	TODO
+}
 
 
 NAMESPACE_OULU_END

@@ -4,7 +4,7 @@ NAMESPACE_SDL2_BEGIN
 
 
 AudioOutput::AudioOutput(Context* ctx) : Component(ctx) {
-	sys_snd.Set(&snd_buf);
+	sys_aud.Set(&snd_buf);
 	
 	SDL_zero(audio_fmt);
 	SetDesiredAudioFmt(

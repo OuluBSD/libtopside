@@ -68,8 +68,11 @@ void V4L2_DeviceManager::Refresh() {
 					cap = &dev.caps.Add();
 					cap->path = path;
 				}
-				VideoInputFormat& capfmt = cap->fmts.Add();
-				capfmt.desc = (const char*)fmtdesc.description;
+				VideoSourceFormat& capfmt = cap->fmts.Add();
+				capfmt.SetDescription((const char*)fmtdesc.description);
+				
+				TODO
+				#if 0
 				capfmt.pix_fmt = fmtdesc.pixelformat;
 				
 				struct v4l2_frmsizeenum frmsize;
@@ -88,7 +91,7 @@ void V4L2_DeviceManager::Refresh() {
 						double frame_time = (double)ival.discrete.numerator / (double)ival.discrete.denominator;
 						double fps = 1.0 / frame_time;
 						if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
-							VideoInputFormatResolution& res = capfmt.res.Add();
+							VideoSourceFormatResolution& res = capfmt.res.Add();
 							res.fmt.res.cx = frmsize.discrete.width;
 							res.fmt.res.cy = frmsize.discrete.height;
 							res.fmt.fps = fps;
@@ -98,7 +101,7 @@ void V4L2_DeviceManager::Refresh() {
 							//LOG("\t" << res.sz.ToString() << ", " << res.fps << "fps");
 						}
 						else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
-							VideoInputFormatResolution& res = capfmt.res.Add();
+							VideoSourceFormatResolution& res = capfmt.res.Add();
 							res.fmt.res.cx = frmsize.stepwise.max_width;
 							res.fmt.res.cy = frmsize.stepwise.max_height;
 							res.fmt.fps = fps;
@@ -111,6 +114,8 @@ void V4L2_DeviceManager::Refresh() {
 					}
 					frmsize.index++;
 				}
+				#endif
+				
 				fmtdesc.index++;
 			}
 			v4l2_close(fd);

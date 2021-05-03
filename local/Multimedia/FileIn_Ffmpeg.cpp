@@ -23,10 +23,17 @@ void FfmpegFileInput::ClearDevice() {
 	aframe.Clear();
 	vframe.Clear();
 	
-	ClearFrame();
+	ClearPacket();
 }
 
-void FfmpegFileInput::ClearFrame() {
+void FfmpegFileInput::InitPacket() {
+	ClearPacket();
+	av_init_packet(&pkt);
+    pkt.data = NULL;
+    pkt.size = 0;
+}
+
+void FfmpegFileInput::ClearPacket() {
 	if (pkt_ref) {
 		av_packet_unref(&pkt);
 		pkt_ref = false;
@@ -62,9 +69,9 @@ bool FfmpegFileInput::Open0(String path) {
 	}
 	if (has_video) {
 		vframe.Init(*v.codec_ctx);
-		VideoInputFormat& vf = fmts.Add();
-		VideoInputFormatResolution& res = vf.res.Add();
-		res.fmt = vframe.vid_fmt;
+		VideoSourceFormat& vf = fmts.Add();
+		VideoSourceFormatResolution& res = vf.Add();
+		res.SetFormat(vframe.vid_fmt);
 	}
 	
 	return HasMediaOpen();
@@ -82,9 +89,7 @@ bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
 	bool audio_open = has_audio ? a.OpenDevice() : false;
 	bool video_open = has_video ? v.OpenDevice() : false;
 	
-	av_init_packet(&pkt);
-    pkt.data = NULL;
-    pkt.size = 0;
+	InitPacket();
     
 	is_dev_open = audio_open || video_open;
 	is_eof = !is_dev_open;
@@ -95,7 +100,7 @@ bool FfmpegFileInput::IsDeviceOpen() const {
 	return is_dev_open;
 }
 
-int FfmpegFileInput::FillVideoBuffer() {
+void FfmpegFileInput::FillVideoBuffer() {
 	while (!vframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
@@ -105,25 +110,28 @@ int FfmpegFileInput::FillVideoBuffer() {
 		}
 		else break;
 	}
-	return vframe.GetQueueSize();
 }
 
-int FfmpegFileInput::FillAudioBuffer() {
+void FfmpegFileInput::FillAudioBuffer() {
 	while (!aframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
 				continue;
 			if (ProcessAudioFrame())
 				continue;
+			
+			ClearPacket();
 		}
 		else break;
 	}
-	return aframe.GetQueueSize();
+	
+	ClearPacket();
 }
 
 bool FfmpegFileInput::ReadFrame() {
-	ClearFrame();
+	InitPacket();
 	
+	ASSERT(!pkt.data && !pkt.size);
 	if (av_read_frame(file_fmt_ctx, &pkt) >= 0) {
 		pkt_ref = true;
 		is_eof = false;
@@ -138,7 +146,7 @@ bool FfmpegFileInput::ProcessVideoFrame() {
 	ASSERT(pkt_ref);
 	if (v.ReadFrame(pkt)) {
 		vframe.Process(v.frame_pos_time, v.frame);
-		ClearFrame();
+		ClearPacket();
 		return true;
 	}
 	
@@ -152,22 +160,25 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 		AVFrame* f = a.frame;
 		a.frame = 0;
 		aframe.Process(a.frame_pos_time, f);
-		ClearFrame();
+		ClearPacket();
 		return true;
 	}
 	
 	return false;
 }
 
-void FfmpegFileInput::DropFrames(int audio_frames, int video_frames) {
-	audio_frames = std::min(audio_frames, aframe.GetQueueSize());
-	video_frames = std::min(video_frames, vframe.GetQueueSize());
+void FfmpegFileInput::DropAudioFrames(int frames) {
+	frames = std::min(frames, aframe.GetQueueSize());
 	
-	if (audio_frames)
-		aframe.DropFrames(audio_frames);
+	if (frames)
+		aframe.DropFrames(frames);
+}
+
+void FfmpegFileInput::DropVideoFrames(int frames) {
+	frames = std::min(frames, vframe.GetQueueSize());
 	
-	if (video_frames)
-		vframe.DropFrames(video_frames);
+	if (frames)
+		vframe.DropFrames(frames);
 }
 
 void FfmpegFileInput::Close() {
@@ -178,7 +189,7 @@ String FfmpegFileInput::GetPath() const {
 	return path;
 }
 
-Sound& FfmpegFileInput::GetSound() {
+Audio& FfmpegFileInput::GetAudio() {
 	return aframe;
 }
 
@@ -198,13 +209,14 @@ double FfmpegFileInput::GetSeconds() const {
 	return 0;
 }
 
-Size FfmpegFileInput::GetVideoSize() const {
-	return vframe.GetVideoFormat().GetSize();
-}
-
 bool FfmpegFileInput::IsEof() const {
 	return is_eof;
 }
+
+int FfmpegFileInput::GetActiveVideoFormat() const {
+	return 0;
+}
+
 
 
 
@@ -363,8 +375,8 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fm
 	fmt.sample_rate = acodec->frame_size;
 	fmt.var_size = 0;
 	fmt.is_var_float = 0;
-	if (!fmt.sample_rate)
-		fmt.sample_rate = 1024;
+	//if (!fmt.sample_rate)
+	//	fmt.sample_rate = 1024;
 	switch (acodec->format) {
 		#define SET_FMT(f, var_sz, var_flt, var_sign, var_be) \
 		case f: \
@@ -476,7 +488,6 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 void FfmpegAudioFrameQueue::Init() {
 	Clear();
-	ASSERT(aud_fmt.IsValid());
 	
 }
 
@@ -485,7 +496,7 @@ void FfmpegAudioFrameQueue::Clear() {
 }
 
 void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
-	if (e.IsLoading()) {
+	if (e.IsStoring()) {
 		if (frames.IsEmpty()) {
 			e.SetFail();
 			return;
@@ -499,12 +510,20 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 			f.frame->format == AV_SAMPLE_FMT_DBL ||
 			f.frame->format == AV_SAMPLE_FMT_FLTP ||
 			f.frame->format == AV_SAMPLE_FMT_DBLP;
+		ASSERT(aud_fmt.IsValid());
 		ASSERT(f.frame->nb_samples == aud_fmt.sample_rate);
 		ASSERT(f.frame->sample_rate == aud_fmt.freq);
 		ASSERT(f.frame->channels == aud_fmt.channels);
 		ASSERT(var_size == aud_fmt.var_size);
 		
-		bool b = e.Load(f.frame->nb_samples, f.frame->channels, var_size, is_var_float, f.frame->data[0]);
+		Audio& sink = e.Sink();
+		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
+		if (vol_aud) {
+			vol_aud->PutFrame(aud_fmt, f.frame->data[0], e.SourceConfig().sync);
+		}
+		else {
+			TODO
+		}
 		
 		av_frame_free(&f.frame);
 		frames.Remove(frame_iter);
@@ -527,6 +546,10 @@ AudioFormat FfmpegAudioFrameQueue::GetAudioFormat() const {
 }
 
 void FfmpegAudioFrameQueue::Process(double time_pos, AVFrame* frame) {
+	// Sometimes you get the sample rate at this point
+	if (!aud_fmt.sample_rate)
+		aud_fmt.sample_rate = frame->nb_samples;
+	
 	ASSERT(aud_fmt.IsValid());
 	auto& f = frames.Add();
 	f.Create(pool);

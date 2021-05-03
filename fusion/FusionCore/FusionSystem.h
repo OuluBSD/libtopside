@@ -18,17 +18,29 @@ class FusionContextComponent;
 int GetOglChCode(int channels, bool is_float=false);
 ArrayMap<String,String>& CommonHashToName();
 
-struct BasicFusionStream : public VolatileStream {
-	Size sz;
+struct BasicFusionStream : public VideoStream {
 	int depth = 0;
+	VideoSourceFormat fmt;
 	
-	void Clear() {sz = Size(0,0); depth = 0;}
-	double GetSeconds() const override {return 0;}
-	Size GetVideoSize() const override {return sz;}
-	int  GetVideoDepth() const override {return depth;}
+	BasicFusionStream() {fmt.Add();}
+	
+	double						GetSeconds() const override {return 0;}
+	
+	void						FillVideoBuffer() override {}
+	void						DropVideoFrames(int frames) override {}
+	int							GetVideoBufferSize() const override {return 1;}
+	Video&						GetVideo() override {TODO}
+	int							GetActiveVideoFormat() const override {return 0;}
+	int							GetFormatCount() const override {return 1;}
+	const VideoSourceFormat&	GetFormat(int i) const override {ASSERT(!i); return fmt;}
+	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override {return 0;}
+	void						Clear() {fmt[0].SetFormat(MakeVideoFormat(Size(0,0), 0, 0, 0, 0)); depth = 0;}
+	
+	int							GetDepth() const {return depth;}
+	
 };
 
-struct FusionStream : public VolatileStream {
+struct FusionStream : public RealtimeStream {
 	
 	// Generic
 	String name, description;
@@ -48,22 +60,22 @@ struct FusionStream : public VolatileStream {
 	double vtotal_seconds = 0;
 	int vframes = 0;
 	double fps_limit = 60;
+	int depth = 0;
 	
 	// Audio
-	
-	Sound* sys_snd = 0;
-	//TimeStop aframe_time;
-	//double audio_sync_ival = 1.0f;
+	Audio* sys_aud = 0;
 	double atotal_seconds = 0;
 	double audio_last_sync_sec = 0;
-	/*int audio_sample_freq = 44100;
-	int audio_sample_rate = 512;
-	int audio_sample_size = 4;
-	int audio_sample_channels = 2;*/
 	AudioFormat aud_fmt;
 	int aframes_after_sync = 0;
 	int asink_frame = 0;
 	bool is_audio_sync;
+	/*int audio_sample_freq = 44100;
+	int audio_sample_rate = 512;
+	int audio_sample_size = 4;
+	int audio_sample_channels = 2;
+	TimeStop aframe_time;
+	double audio_sync_ival = 1.0f;*/
 	
 	
 	FusionStream() {Clear();}
@@ -86,9 +98,9 @@ struct FusionStream : public VolatileStream {
 		vframe_time.Reset();
 		vtotal_seconds = 0;
 		vframes = 0;
-		fps_limit = 60;
+		fps_limit = 60;// Real
 		
-		//sys_snd = 0;
+		//sys_aud = 0;
 		//aframe_time.Reset();
 		//audio_sync_ival = 1.0f;
 		atotal_seconds = 0;
@@ -102,8 +114,12 @@ struct FusionStream : public VolatileStream {
 		asink_frame = 0;
 		is_audio_sync = false;
 	}
+	
+	
+	// Realtime
 	double GetSeconds() const override {return vtotal_seconds;}
-	Size GetVideoSize() const override {return video_size;}
+	
+	
 };
 
 
@@ -167,7 +183,7 @@ protected:
 	friend class FusionContextComponent;
 	friend struct FusionComponentInputVector;
 	
-	const VolatileStream* stream = 0;
+	const VideoStream* stream = 0;
 	String filepath;
 	int id = -1;
 	Type type = INVALID;
@@ -427,7 +443,7 @@ public:
 	void			Uninitialize() override;
 	bool			LoadAsInput(const FusionComponentInput& in) override;
 	
-	VolatileStream*	GetVolatileStream() {return &stream;}
+	VideoStream*	GetVideoStream() {return &stream;}
 	
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
@@ -466,13 +482,20 @@ public:
 	
 	FusionMediaSink() : FusionComponent(FUSION_MEDIA_SINK) {}
 	
+	VideoStream*	GetVideoStream() {return &stream;}
+	
 	void			Initialize() override;
 	void			Uninitialize() override;
 	bool			LoadAsInput(const FusionComponentInput& in) override;
-	void			RecvVideo(Video& video, double dt) override;
-	VolatileStream*	GetVolatileStream() {return &stream;}
+	
+	// AudioSink
 	AudioFormat		GetAudioFormat() override {return aud_fmt;}
-	void			RecvAudio(AudioSource& src, double dt) override;
+	Audio&			GetAudioSink() override;
+	
+	// VideoSink
+	VideoFormat		GetVideoFormat() override {return vid_fmt;}
+	Video&			GetVideoSink() override;
+	
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
 };
@@ -516,7 +539,7 @@ public:
 	void			Uninitialize() override;
 	bool			LoadAsInput(const FusionComponentInput& in) override;
 	void			RecvController(const EventFrame& e) override;
-	VolatileStream*	GetVolatileStream() {return &stream;}
+	VideoStream*	GetVideoStream() {return &stream;}
 	
 	void			LeftDown(Point p, dword keyflags);
 	void			LeftUp(Point p, dword keyflags);
@@ -549,7 +572,7 @@ class FusionDisplaySource :
 	bool			LoadResources() override;
 	void			EmitDisplay(double dt) override;
 	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
-	bool			Accept(ExchangeSinkProviderRef sink, ExchangeProviderCookieRef& src_c, ExchangeProviderCookieRef& sink_c) override;
+	bool			Accept(ExchangeSinkProviderRef sink, CookieRef& src_c, CookieRef& sink_c) override;
 	ComponentBase&	GetECS() override {return *this;}
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);
@@ -623,17 +646,20 @@ class FusionAudioSource :
 	public AudioSource,
 	public FusionSink
 {
-	Vector<float> sound_buf;
+	Vector<float> audio_buf;
 	
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
 	void			UpdateTexBuffers() override;
 	bool			LoadResources() override;
-	void			EmitAudioSource(double dt) override;
-	void			Play(const AudioSinkConfig& config, Sound& snd) override;
 	void			UseRenderedFramebuffer() override;
 	ComponentBase&	GetECS() override {return *this;}
+	
+	// AudioSource
+	AudioStream&	GetAudioSource() override;
+	void			BeginAudioSource() override;
+	void			EndAudioSource() override;
 	
 public:
 	COPY_PANIC(FusionAudioSource);
@@ -657,7 +683,7 @@ class FusionAudioBuffer :
 	public FusionSink,
 	public FusionSource
 {
-	Vector<float> sound_buf;
+	Vector<float> audio_buf;
 	
 	void			Reset() override;
 	void			PreProcess() override;
@@ -771,7 +797,7 @@ protected:
 		o->ctx = this;
 		o->id = ++id_counter;
 		in.id = o->id;
-		in.stream = o->GetVolatileStream();
+		in.stream = o->GetVideoStream();
 		comps.Add(o);
 		return true;
 	}

@@ -38,6 +38,8 @@
 #include "Action.h"
 #include "ActionSystem.h"
 #include "ConnPoolComps.h"
+#include "AudioSystem.h"
+#include "VideoSystem.h"
 
 
 #endif

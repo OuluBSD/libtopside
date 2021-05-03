@@ -420,8 +420,8 @@ bool FfmpegFileInput::Open0(String path) {
 	bool has_video = v.OpenVideo(file_fmt_ctx, vid_fmt);
 	
 	if (has_video) {
-		VideoInputFormat& vf = fmts.Add();
-		VideoInputFormatResolution& res = vf.res.Add();
+		VideoSourceFormat& vf = fmts.Add();
+		VideoSourceFormatResolution& res = vf.res.Add();
 		res.fmt = vid_fmt;
 	}
 	
@@ -646,7 +646,7 @@ int FfmpegFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
     return decoded;
 }
 
-Sound& FfmpegFileInput::GetSound() {
+Audio& FfmpegFileInput::GetAudio() {
 	return aframe[a.read_frame_i];
 }
 

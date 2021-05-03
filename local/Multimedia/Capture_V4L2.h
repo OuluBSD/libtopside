@@ -5,7 +5,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-class CaptureDevice_V4L2 : public MediaInputStream {
+class CaptureDevice_V4L2 : public MediaSourceStream {
 	
 protected:
 	friend class V4L2_DeviceManager;

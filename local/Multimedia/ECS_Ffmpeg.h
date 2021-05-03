@@ -15,7 +15,6 @@ class FfmpegComponent :
 	FfmpegFileInput file_in;
 	MediaStreamThread vi;
 	VideoProxy video_buf;
-	SoundProxy sound_buf;
 	Size def_cap_sz;
 	int def_cap_fps;
 	
@@ -30,10 +29,18 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	
-	bool LoadFileAny(String path) override;
-	void EmitVideoSource(double dt) override;
-	void EmitAudioSource(double dt) override;
-	void Play(const AudioSinkConfig& config, Sound& snd) override;
+	
+	// Audio
+	AudioStream&	GetAudioSource() override;
+	void			BeginAudioSource() override;
+	void			EndAudioSource() override;
+	
+	// Video
+	VideoStream&	GetVideoSource() override;
+	void			BeginVideoSource() override;
+	void			EndVideoSource() override;
+	bool			LoadFileAny(String path) override;
+	
 	
 	String GetLastError() const {return last_error;}
 	

@@ -11,15 +11,15 @@ class DummySoundGenerator {
 	
 public:
 	DummySoundGenerator() {}
-	void Play(const AudioSinkConfig& config, Sound& snd) {
+	void Play(const RealtimeSourceConfig& config, Audio& aud) {
 		if (frame.IsEmpty())
-			GenerateStereoSine(snd.GetAudioFormat());
+			GenerateStereoSine(aud.GetAudioFormat());
 		
 		TODO
-		//snd.Put(frame.Begin() + frame_offset, frame_part_size * sizeof(float), config.sync);
+		//aud.Put(frame.Begin() + frame_offset, frame_part_size * sizeof(float), config.sync);
 		
 		frame_offset = (frame_offset + frame_part_size) % frame.GetCount();
-		ASSERT(frame_offset % snd.GetAudioFormat().sample_rate == 0);
+		ASSERT(frame_offset % aud.GetAudioFormat().sample_rate == 0);
 	}
 	
 	void GenerateStereoSine(const AudioFormat& fmt) {
@@ -49,7 +49,7 @@ public:
 					//pan = j == 0  ? 1.0 : 0.0;
 					double value = pan * tonesin;
 					//value = tonesin;
-					*f = ConvertSoundSample<double, T>(value);
+					*f = ConvertAudioSample<double, T>(value);
 					f++;
 				}
 				pan_i++;
@@ -91,8 +91,12 @@ public:
 	void Uninitialize() override;
 	void RecvMidi(const MidiFrame& e) override;
 	void Configure(const Midi::File& file) override;
-	void EmitAudioSource(double dt) override;
-	void Play(const AudioSinkConfig& config, Sound& snd) override;
+	
+	// Audio
+	AudioStream&	GetAudioSource() override;
+	void			BeginAudioSource() override;
+	void			EndAudioSource() override;
+	
 	
 	void SetPreset(int i) {preset_i = i;}
 	String GetLastError() const {return last_error;}

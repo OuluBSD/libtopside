@@ -22,7 +22,7 @@ protected:
 	Oulu::OOSDL2::Screen* scr = 0;
 	Oulu::OOSDL2::Events* ev = 0;
 	
-	SystemSound					empty_snd;
+	SystemAudio					empty_aud;
 	SystemDraw					empty_draw;
 	String						desired_title;
 	void*						sys;

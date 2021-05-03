@@ -115,8 +115,9 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitAudioSource(double dt) override;
-	void Play(const AudioSinkConfig& config, Sound& snd) override;
+	AudioStream&		GetAudioSource() override;
+	void				BeginAudioSource() override;
+	void				EndAudioSource() override;
 	
 	String GetLastError() const {return last_error;}
 	

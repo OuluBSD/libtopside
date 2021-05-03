@@ -732,7 +732,7 @@ bool FusionContextComponent::ConnectComponents() {
 					match = src->GetHeader().IsEqualHeader(in);
 				
 				if (match) {
-					ExchangeProviderCookieRef src_cookie, sink_cookie;
+					CookieRef src_cookie, sink_cookie;
 					if (&src_base == &sink_base) {
 						comp_sink->is_doublebuf = true;
 						found = true;

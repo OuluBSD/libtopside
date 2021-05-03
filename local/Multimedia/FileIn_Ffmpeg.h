@@ -38,7 +38,6 @@ public:
 	int			GetQueueSize() const override;
 	AudioFormat	GetAudioFormat() const override;
 	bool		IsQueueFull() const override;
-	dword		GetWriteFrame() const override {throw Exc("FfmpegAudioFrameQueue is not for writing");}
 #ifdef flagOPENGL
 	bool		PaintOpenGLTexture(int texture) override;
 #endif
@@ -142,7 +141,7 @@ public:
 
 
 
-class FfmpegFileInput : public MediaInputStream {
+class FfmpegFileInput : public MediaSourceStream {
 	bool has_audio;
 	bool has_video;
 	bool is_dev_open;
@@ -160,7 +159,8 @@ class FfmpegFileInput : public MediaInputStream {
 	bool HasMediaOpen() const {return has_video || has_audio;}
 	void Clear();
 	void ClearDevice();
-	void ClearFrame();
+	void ClearPacket();
+	void InitPacket();
 	bool IsFrameLoaded() const {return pkt_ref;}
 	bool ReadFrame();
 	bool ProcessVideoFrame();
@@ -168,21 +168,32 @@ class FfmpegFileInput : public MediaInputStream {
 	
 public:
 	
+	bool	IsEof() const;
+	
+	
+	// Realtime
+	double	GetSeconds() const override;
+	String	GetLastError() const override;
+	
+	// Audio
+	Audio&	GetAudio() override;
+	void	FillAudioBuffer() override;
+	void	DropAudioFrames(int frames) override;
+	int		GetAudioBufferSize() const override {return aframe.GetQueueSize();}
+	
+	// Video
+	void	FillVideoBuffer() override;
+	void	DropVideoFrames(int frames) override;
+	Video&	GetVideo() override;
+	int		GetActiveVideoFormat() const override;
+	int		GetVideoBufferSize() const override {return vframe.GetQueueSize();}
+	
+	// Media
 	bool	Open0(String path) override;
 	bool	OpenDevice0(int fmt, int res) override;
 	bool	IsDeviceOpen() const override;
-	int		FillVideoBuffer() override;
-	int		FillAudioBuffer() override;
-	void	DropFrames(int audio_frames, int video_frames) override;
 	void	Close() override;
 	String	GetPath() const override;
-	Sound&	GetSound() override;
-	Video&	GetVideo() override;
-	String	GetLastError() const override;
-	double	GetSeconds() const override;
-	Size	GetVideoSize() const override;
-	bool	IsEof() const;
-	
 	
 };
 

@@ -190,6 +190,7 @@ protected:
 	
 	
 };
+
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
 #define IFACE_BASE(x)	TypeId GetProviderType() override {return TypeId(typeid(x));}
@@ -237,40 +238,70 @@ struct DisplaySource : IO_IN(Display) {
 // media stream does not. Also, if the data to be transferred has clear beginnings and endings,
 // and if only one source is transferred at a time, it is better to call it media. When audio
 // data contains multiple unrelated audio sources, it is better to call it an audio stream.
-struct AudioSinkConfig {
-	double dt = 0;
-	double sync_dt = 0;
-	double sync_age = 0;
-    dword last_sync_sink_frame = 0;
-	dword frames_after_sync = 0;
-	dword sink_frame = 0;
-	bool sync = 0;
-};
+
 
 struct AudioSource;
 struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
-	virtual void			RecvAudio(AudioSource& src, double dt) = 0;
 	virtual AudioFormat		GetAudioFormat() = 0;
-	
-	
-	void DefaultRecvAudio(AudioSinkConfig& cfg, AudioSource& src, double dt, Sound& snd);
+	virtual Audio&			GetAudioSink() = 0;
 	
 };
 struct AudioSource : IO_IN(Audio) {
 	IFACE_BASE(AudioSource)
 	
 	using Sink = AudioSink;
+	using ExPt = AudioExchangePoint;
 	
-	virtual void EmitAudioSource(double dt) = 0;
-	virtual void Play(const AudioSinkConfig& config, Sound& snd) = 0;
+	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
+	const RealtimeSourceConfig&	Cfg() const {return cfg;}
 	
-	void DefaultEmitAudioSource(double dt, int sink_limit=-1);
+	virtual AudioStream&		GetAudioSource() = 0;
+	virtual void				BeginAudioSource() = 0;
+	virtual void				EndAudioSource() = 0;
+	
+private:
+	RealtimeSourceConfig			cfg;
 	
 };
-extern AudioSink* VirtualSoundPtr;
+extern AudioSink* VirtualAudioPtr;
 
+
+
+
+
+//									---- Video ----
+
+struct VideoSink : IO_OUT(Video) {
+	IFACE_BASE(VideoSink)
+	
+	
+	virtual VideoFormat		GetVideoFormat() = 0;
+	virtual Video&			GetVideoSink() = 0;
+	
+};
+
+struct VideoSource : IO_IN(Video) {
+	IFACE_BASE(VideoSource)
+	
+	using Sink = VideoSink;
+	using ExPt = VideoExchangePoint;
+
+	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
+	const RealtimeSourceConfig&	Cfg() const {return cfg;}
+	
+	virtual VideoStream&		GetVideoSource() = 0;
+	virtual void				BeginVideoSource() = 0;
+	virtual void				EndVideoSource() = 0;
+	
+	virtual bool LoadFileAny(String path) {return false;}
+	
+	
+private:
+	RealtimeSourceConfig			cfg;
+	
+};
 
 
 
@@ -391,32 +422,6 @@ struct MidiSource : IO_IN(Midi) {
 	bool IsSupportedPiano() {return IsSupported(MIDIDEV_PIANO);}
 	
 };
-
-
-
-
-//									---- Video ----
-
-struct VideoSink : IO_OUT(Video) {
-	IFACE_BASE(VideoSink)
-	
-	
-	virtual void RecvVideo(Video& video, double dt) = 0;
-	
-};
-
-struct VideoSource : IO_IN(Video) {
-	IFACE_BASE(VideoSource)
-	
-	virtual bool LoadFileAny(String path) {return false;}
-	virtual Size GetResolution() const {return Size(0,0);}
-	virtual void EmitVideoSource(double dt) = 0;
-	
-	
-	using Sink = VideoSink;
-	
-};
-
 
 
 

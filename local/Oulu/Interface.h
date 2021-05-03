@@ -77,18 +77,18 @@ public:
 
 
 
-class VolatileStream {
-	
+class RealtimeStream {
 	
 public:
-	virtual ~VolatileStream() {}
+	
+	virtual ~RealtimeStream() {}
 	
 	virtual double GetSeconds() const = 0;
 	
-	virtual Size GetVideoSize() const {return Size(0,0);}
-	virtual int  GetVideoDepth() const {return 0;}
+	virtual String GetLastError() const {return String();}
 	
 };
+
 
 NAMESPACE_OULU_END
 

@@ -4,7 +4,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-class AudioFrame : public Sound {
+class AudioFrame : public Audio {
 	
 	
 public:

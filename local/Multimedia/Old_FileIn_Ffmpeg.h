@@ -121,8 +121,8 @@ public:
 	Callback1<bool&> WhenRead;
 };
 
-class FfmpegFileInput : public MediaInputStream {
-	Array<VideoInputFormat> fmts;
+class FfmpegFileInput : public MediaSourceStream {
+	Array<VideoSourceFormat> fmts;
 	
 	AVFormatContext* file_fmt_ctx = NULL;
 	
@@ -170,7 +170,7 @@ public:
 	bool ReadAudio() override {return Read(true);}
 	void Close() override {Clear();}
 	String GetPath() const override {return path;}
-	Sound& GetSound() override;
+	Audio& GetAudio() override;
 	Video& GetVideo() override;
 	
 	String GetLastError() const override {return errstr;}

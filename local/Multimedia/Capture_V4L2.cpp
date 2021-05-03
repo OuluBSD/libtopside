@@ -11,10 +11,10 @@ bool vs::OpenDevice0(int fmt_i, int res_i) {
 	cur_time.Reset();
 	
 	if (fmt_i < 0 || fmt_i >= fmts.GetCount()) return false;
-	const VideoInputFormat& fmt = fmts[fmt_i];
+	const VideoSourceFormat& fmt = fmts[fmt_i];
 	
 	if (res_i < 0 || res_i >= fmt.GetResolutionCount()) return false;
-	const VideoInputFormatResolution& res = fmt.GetResolution(res_i);
+	const VideoSourceFormatResolution& res = fmt.GetResolution(res_i);
 	
 	uint32 pix_fmt = fmt.GetPixelFormat();
 	VideoFormat vid_fmt = res.GetVideoFormat();

@@ -3,8 +3,10 @@
 
 NAMESPACE_OULU_BEGIN
 
+namespace Portaudio {
+class BufferedAudioDeviceStream;
+}
 
-class BufferedPaSound;
 struct StreamCallbackArgs;
 
 
@@ -12,9 +14,9 @@ class PortaudioSinkComponent :
 	public Component<PortaudioSinkComponent>,
 	public AudioSink
 {
-    AudioSinkConfig aconfig;
+    RealtimeSourceConfig aconfig;
 	String last_error;
-	One<BufferedPaSound> obj;
+	One<Portaudio::BufferedAudioDeviceStream> obj;
 	Vector<float> tmp;
 	AudioFormat fmt;
 	
@@ -35,8 +37,8 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-	void			RecvAudio(AudioSource& src, double dt) override;
 	AudioFormat		GetAudioFormat() override;
+	Audio&			GetAudioSink() override;
 	
 };
 

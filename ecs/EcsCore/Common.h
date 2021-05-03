@@ -21,7 +21,17 @@ class Renderable;
 class Transform;
 using ComponentRef = Ref<ComponentBase>;
 
-//typedef Ref<InterfaceBase> InterfaceBaseRef;
+struct RealtimeSourceConfig;
+
+struct AudioSource;
+struct AudioSink;
+using AudioSourceRef	= Ref<AudioSource>;
+using AudioSinkRef		= Ref<AudioSink>;
+
+struct VideoSource;
+struct VideoSink;
+using VideoSourceRef	= Ref<VideoSource>;
+using VideoSinkRef		= Ref<VideoSink>;
 
 
 
