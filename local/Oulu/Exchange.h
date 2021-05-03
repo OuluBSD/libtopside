@@ -92,10 +92,20 @@ class ExchangeProviderT {
 protected:
 	friend class ExchangeSinkProvider;
 	friend class ExchangeSourceProvider;
-	
+	int FindLink(R r) {
+		int i = 0;
+		for(R& l : links) {
+			if (l == r)
+				return i;
+			++i;
+		}
+		return -1;
+	}
 	void AddLink(Ref<ExchangeProviderBase> link) {
+		R r = link;
+		ASSERT(FindLink(r) < 0);
 		ASSERT(links.IsEmpty() || multi_conn);
-		links << link;
+		links << r;
 	}
 	
 public:
@@ -118,6 +128,7 @@ public:
 	
 	bool UnlinkManually(ExchangeProviderBase& p);
 	virtual TypeId GetProviderType() = 0;
+	virtual String GetConfigString() {return String();}
 	
 };
 
@@ -139,6 +150,7 @@ protected:
 	friend class ExchangePoint;
 	
 	void AddSource(Ref<ExchangeSourceProvider> src) {base.AddLink(src);}
+	int FindSource(Ref<ExchangeSourceProvider> src) {return base.FindLink(src);}
 	virtual void OnLink(Source src, Cookie src_c, Cookie sink_c) {}
 	
 public:
@@ -160,6 +172,8 @@ typedef Ref<ExchangeSinkProvider> ExchangeSinkProviderRef;
 class ExchangeSourceProvider : public ExchangeProviderBase {
 	ExchangeProviderT<ExchangeSinkProvider> base;
 	
+	static bool print_debug;
+	
 public:
 	using Sink = Ref<ExchangeSinkProvider>;
 	using Source = Ref<ExchangeSourceProvider>;
@@ -169,6 +183,7 @@ protected:
 	friend class ExchangePoint;
 	
 	void AddSink(Ref<ExchangeSinkProvider> sink) {base.AddLink(sink);}
+	int FindSink(Ref<ExchangeSinkProvider> sink) {return base.FindLink(sink);}
 	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
 	virtual void OnLink(Sink sink, Cookie src_c, Cookie sink_c) {}
 	

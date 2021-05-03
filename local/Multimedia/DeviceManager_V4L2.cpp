@@ -14,10 +14,10 @@ MediaStream* V4L2_Device::FindOpenDevice() {
 	for (OpenCVCaptureDevice& m : caps)
 		if (m.IsDeviceOpen())
 			return &m;
-		
-	for (FfmpegFileInput& m : inputs)
+	
+	/*for (FfmpegFileInput& m : inputs)
 		if (m.IsDeviceOpen())
-			return &m;
+			return &m;*/
 	
 	return 0;
 }
@@ -32,14 +32,14 @@ V4L2_DeviceManager::V4L2_DeviceManager() {
 
 }
 
-V4L2_Device& V4L2_DeviceManager::GetAddVirtual(String path) {
+/*V4L2_Device& V4L2_DeviceManager::GetAddVirtual(String path) {
 	for(V4L2_Device& v : virtuals)
 		if (v.GetPath() == path)
 			return v;
 	V4L2_Device& v = virtuals.Add();
 	v.path = path;
 	return v;
-}
+}*/
 
 void V4L2_DeviceManager::Refresh() {
 	devs.Clear();

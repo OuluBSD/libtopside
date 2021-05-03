@@ -13,7 +13,6 @@ FfmpegComponent::FfmpegComponent() {
 }
 
 void FfmpegComponent::Initialize() {
-	devmgr.Refresh();
 	
 	AddToSystem<AudioSystem>(this);
 }
@@ -26,32 +25,9 @@ void FfmpegComponent::Uninitialize() {
 bool FfmpegComponent::LoadFileAny(String path) {
 	vi.Stop();
 	
-	/*
-	TODO: can't have 2 MediaStreamThreads reading same cap currently
-	for(int k = 0; k < devmgr.GetVirtualCount() && !vi.cap; k++) {
-		V4L2_Device& dev = devmgr.GetVirtual(k);
-		if (dev.GetPath() == path) {
-			MediaStream* open = dev.FindOpenDevice();
-			if (open) {
-				vi.cap = open;
-				return true;
-			}
-			return false;
-		}
-	}*/
-	
-	if (path.Left(6) == "<input" && path.Right(1) == ">") {
-		String numstr = path.Mid(6, path.GetCount() - 7);
-		int id = StrInt(numstr);
-		return LoadInput(id);
-	}
-	
-	V4L2_Device& virt = devmgr.GetAddVirtual(path);
-	FfmpegFileInput& fin = virt.AddFileInput();
-	
-	if (fin.Open(path)) {
-		if (fin.OpenDevice(0, 0)) {
-			vi.SetCap(&fin);
+	if (file_in.Open(path)) {
+		if (file_in.OpenDevice(0, 0)) {
+			vi.SetCap(&file_in);
 
 			vi.Start(false);
 			
@@ -65,69 +41,25 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	return false;
 }
 
-bool FfmpegComponent::LoadInput(int id) {
-	if (id < 0 || id >= devmgr.GetNativeCount()) {
-		last_error = "invalid input id: " + IntStr(id);
-		return false;
-	}
-	
-	TODO
-	#if 0
-	V4L2_Device& dev = devmgr.GetNative(id);
-	for(int l = 0; l < dev.GetCaptureCount() && !vi.cap; l++) {
-		OpenCVCaptureDevice& cap = dev.GetCapture(l);
-		int fmt, res;
-		if (cap.FindClosestFormat(def_cap_sz, def_cap_fps, 0.5, 1.5, fmt, res)) {
-			
-			media_buf.vid = &cap.GetVideo();
-			media_buf.snd = &cap.GetSound();
-			ASSERT(media_buf.vid && media_buf.snd);
-			
-			if (cap.OpenDevice(fmt, res)) {
-				vi.cap = &cap;
-				vi.Start();
-			
-				Ref<Connector> conn = GetEntity().GetConnector();
-				if (conn)
-					conn->SignalMediaSource();
-				
-				return true;
-			}
-			else {
-				last_error = "couldn't open webcam " + cap.GetPath();
-			}
-		}
-		else {
-			last_error =
-				"couldn't find expected format " + def_cap_sz.ToString() +
-				", " + IntStr(def_cap_fps) +
-				"fps from webcam "+ cap.GetPath();
-		}
-	}
-	#endif
-	
-	return false;
-}
-
 void FfmpegComponent::EmitVideoSource(double dt) {
-	if (vi.IsRunning()) {
-		if (vi.FillVideoBuffer()) {
-			video_buf = &vi.Cap().GetVideo();
+	if (file_in.IsDeviceOpen()) {
+		if (file_in.FillVideoBuffer()) {
+			video_buf = &file_in.GetVideo();
 			for(Ref<VideoSink> c : VideoSource::GetConnections())
 				c->RecvVideo(video_buf, dt);
 			
-			vi.Cap().DropFrames(0, 1);
+			file_in.DropFrames(0, 1);
 		}
 	}
 }
 
 void FfmpegComponent::EmitAudioSource(double dt) {
-	if (vi.IsRunning()) {
-		if (vi.FillAudioBuffer()) {
-			sound_buf = &vi.Cap().GetSound();
+	if (file_in.IsDeviceOpen()) {
+		if (file_in.FillAudioBuffer()) {
+			sound_buf = &file_in.GetSound();
 			for(Ref<AudioSink> c : AudioSource::GetConnections())
 				c->RecvAudio(*this, dt);
-			vi.Cap().DropFrames(1, 0);
+			file_in.DropFrames(1, 0);
 		}
 	}
 }

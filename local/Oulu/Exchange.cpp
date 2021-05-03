@@ -4,12 +4,28 @@ NAMESPACE_OULU_BEGIN
 
 
 
+#ifdef flagDEBUG
+bool ExchangeSourceProvider::print_debug = true;
+#else
+bool ExchangeSourceProvider::print_debug = false;
+#endif
+
 
 
 bool ExchangeSourceProvider::Link(Sink sink, Cookie& src_c, Cookie& sink_c) {
 	if (Accept(sink, src_c, sink_c)) {
 		base.AddLink(sink);
 		sink->base.AddLink(this);
+		if (print_debug) {
+			TypeId sink_type = sink->GetProviderType();
+			TypeId src_type = sink->GetProviderType();
+			String s;
+			s << src_type.CleanDemangledName() <<
+				"<" << GetConfigString() << "> linked to " <<
+				sink_type.CleanDemangledName() <<
+				"<" << sink->GetConfigString() << ">";
+			LOG(s);
+		}
 		OnLink(sink, src_c, sink_c);
 		sink->OnLink(this, src_c, sink_c);
 		return true;
@@ -56,8 +72,8 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	this->sink_cookie	= sink_cookie;
 	this->src	= src;
 	this->sink	= sink;
-	src->AddSink(sink);
-	sink->AddSource(src);
+	ASSERT(src->FindSink(sink) >= 0);
+	ASSERT(sink->FindSource(src) >= 0);
 }
 
 

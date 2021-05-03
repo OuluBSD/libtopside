@@ -18,6 +18,7 @@ void FfmpegFileInput::Clear() {
 }
 
 void FfmpegFileInput::ClearDevice() {
+	is_eof = true;
 	is_dev_open = 0;
 	aframe.Clear();
 	vframe.Clear();
@@ -86,6 +87,7 @@ bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
     pkt.size = 0;
     
 	is_dev_open = audio_open || video_open;
+	is_eof = !is_dev_open;
 	return is_dev_open;
 }
 
@@ -124,8 +126,10 @@ bool FfmpegFileInput::ReadFrame() {
 	
 	if (av_read_frame(file_fmt_ctx, &pkt) >= 0) {
 		pkt_ref = true;
+		is_eof = false;
 		return true;
 	}
+	is_eof = true;
 	
 	return false;
 }
@@ -199,7 +203,7 @@ Size FfmpegFileInput::GetVideoSize() const {
 }
 
 bool FfmpegFileInput::IsEof() const {
-	TODO
+	return is_eof;
 }
 
 

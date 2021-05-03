@@ -12,7 +12,7 @@ class FfmpegComponent :
 	public VideoSource
 {
 	String last_error;
-	V4L2_DeviceManager devmgr;
+	FfmpegFileInput file_in;
 	MediaStreamThread vi;
 	VideoProxy video_buf;
 	SoundProxy sound_buf;
@@ -34,8 +34,6 @@ public:
 	void EmitVideoSource(double dt) override;
 	void EmitAudioSource(double dt) override;
 	void Play(const AudioSinkConfig& config, Sound& snd) override;
-	
-	bool LoadInput(int id);
 	
 	String GetLastError() const {return last_error;}
 	

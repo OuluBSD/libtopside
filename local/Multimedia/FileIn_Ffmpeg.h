@@ -154,6 +154,7 @@ class FfmpegFileInput : public MediaInputStream {
 	FfmpegFileChannel a;
 	AVFormatContext* file_fmt_ctx = NULL;
 	AVPacket pkt;
+	bool is_eof = false;
 	bool pkt_ref = false;
 	
 	bool HasMediaOpen() const {return has_video || has_audio;}
