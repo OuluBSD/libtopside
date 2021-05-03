@@ -50,9 +50,6 @@ bool FfmpegAudioFrame::IsQueueFull() const {
 	return unread >= 1;
 }
 
-bool FfmpegAudioFrame::GetFrameFrom(Sound& snd, bool realtime) {
-	TODO
-}
 
 /*bool FfmpegAudioFrame::IsQueueFullAttach(AudioFormat fmt, AVCodecContext& ctx) {
 	TODO

@@ -50,10 +50,6 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	FfmpegFileInput& fin = virt.AddFileInput();
 	
 	if (fin.Open(path)) {
-		video_buf.Set(&fin.GetVideo());
-		sound_buf.Set(&fin.GetSound());
-		ASSERT(video_buf || sound_buf);
-		
 		if (fin.OpenDevice(0, 0)) {
 			vi.SetCap(&fin);
 
@@ -139,7 +135,8 @@ void FfmpegComponent::EmitAudioSource(double dt) {
 void FfmpegComponent::Play(const AudioSinkConfig& config, Sound& snd) {
 	//static DummySoundGenerator<float> gen;
 	//gen.Play(config,snd);
-	snd.GetFrameFrom(sound_buf, config.sync);
+	//snd.GetFrameFrom(sound_buf, config.sync);
+	TODO
 }
 
 

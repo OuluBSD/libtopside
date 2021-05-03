@@ -12,8 +12,6 @@ void FfmpegFileInput::Clear() {
 	has_audio = false;
 	has_video = false;
 	is_dev_open = false;
-	aud_fmt.Clear();
-	vid_fmt.Clear();
 	path.Clear();
 	errstr.Clear();
 	
@@ -21,10 +19,8 @@ void FfmpegFileInput::Clear() {
 
 void FfmpegFileInput::ClearDevice() {
 	is_dev_open = 0;
-	cur_aframe.Clear();
-	cur_vframe.Clear();
-	aframes.Clear();
-	vframes.Clear();
+	aframe.Clear();
+	vframe.Clear();
 	
 	ClearFrame();
 }
@@ -57,13 +53,17 @@ bool FfmpegFileInput::Open0(String path) {
 	av_dump_format(file_fmt_ctx, 0, path.Begin(), 0);
 	
 	// Find the first video stream
-	has_audio = a.OpenAudio(file_fmt_ctx, aud_fmt);
-	has_video = v.OpenVideo(file_fmt_ctx, vid_fmt);
+	has_audio = a.OpenAudio(file_fmt_ctx, aframe.aud_fmt);
+	has_video = v.OpenVideo(file_fmt_ctx, vframe.vid_fmt);
 	
+	if (has_audio) {
+		aframe.Init();
+	}
 	if (has_video) {
+		vframe.Init(*v.codec_ctx);
 		VideoInputFormat& vf = fmts.Add();
 		VideoInputFormatResolution& res = vf.res.Add();
-		res.fmt = vid_fmt;
+		res.fmt = vframe.vid_fmt;
 	}
 	
 	return HasMediaOpen();
@@ -94,7 +94,7 @@ bool FfmpegFileInput::IsDeviceOpen() const {
 }
 
 int FfmpegFileInput::FillVideoBuffer() {
-	while (vframes.GetCount() < min_buf_size && !IsEof()) {
+	while (!vframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
 				continue;
@@ -103,11 +103,11 @@ int FfmpegFileInput::FillVideoBuffer() {
 		}
 		else break;
 	}
-	return vframes.GetCount();
+	return vframe.GetQueueSize();
 }
 
 int FfmpegFileInput::FillAudioBuffer() {
-	while (aframes.GetCount() < min_buf_size && !IsEof()) {
+	while (!aframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
 				continue;
@@ -116,7 +116,7 @@ int FfmpegFileInput::FillAudioBuffer() {
 		}
 		else break;
 	}
-	return aframes.GetCount();
+	return aframe.GetQueueSize();
 }
 
 bool FfmpegFileInput::ReadFrame() {
@@ -133,8 +133,7 @@ bool FfmpegFileInput::ReadFrame() {
 bool FfmpegFileInput::ProcessVideoFrame() {
 	ASSERT(pkt_ref);
 	if (v.ReadFrame(pkt)) {
-		FfmpegVideoFrameRef f = vframes.Add();
-		f->Process(v.frame_pos_time, v.frame);
+		vframe.Process(v.frame_pos_time, v.frame);
 		ClearFrame();
 		return true;
 	}
@@ -145,8 +144,10 @@ bool FfmpegFileInput::ProcessVideoFrame() {
 bool FfmpegFileInput::ProcessAudioFrame() {
 	ASSERT(pkt_ref);
 	if (a.ReadFrame(pkt)) {
-		FfmpegAudioFrameRef f = aframes.Add();
-		f->Process(a.frame_pos_time, a.frame);
+		// Pick frame
+		AVFrame* f = a.frame;
+		a.frame = 0;
+		aframe.Process(a.frame_pos_time, f);
 		ClearFrame();
 		return true;
 	}
@@ -155,18 +156,14 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 }
 
 void FfmpegFileInput::DropFrames(int audio_frames, int video_frames) {
-	audio_frames = std::min(audio_frames, aframes.GetCount());
-	video_frames = std::min(video_frames, vframes.GetCount());
+	audio_frames = std::min(audio_frames, aframe.GetQueueSize());
+	video_frames = std::min(video_frames, vframe.GetQueueSize());
 	
-	if (audio_frames) {
-		cur_aframe.Clear();
-		aframes.RemoveFirst(audio_frames);
-	}
+	if (audio_frames)
+		aframe.DropFrames(audio_frames);
 	
-	if (video_frames) {
-		cur_vframe.Clear();
-		vframes.RemoveFirst(video_frames);
-	}
+	if (video_frames)
+		vframe.DropFrames(video_frames);
 }
 
 void FfmpegFileInput::Close() {
@@ -178,13 +175,11 @@ String FfmpegFileInput::GetPath() const {
 }
 
 Sound& FfmpegFileInput::GetSound() {
-	cur_aframe = *aframes.begin();
-	return *cur_aframe;
+	return aframe;
 }
 
 Video& FfmpegFileInput::GetVideo() {
-	cur_vframe = *vframes.begin();
-	return *cur_vframe;
+	return vframe;
 }
 
 String FfmpegFileInput::GetLastError() const {
@@ -200,10 +195,7 @@ double FfmpegFileInput::GetSeconds() const {
 }
 
 Size FfmpegFileInput::GetVideoSize() const {
-	RefLinkedList<FfmpegVideoFrame>& vframes = const_cast<RefLinkedList<FfmpegVideoFrame>&>(this->vframes);
-	if (vframes.GetCount())
-		return vframes.begin()->GetVideoFormat().GetSize();
-	return Size(0,0);
+	return vframe.GetVideoFormat().GetSize();
 }
 
 bool FfmpegFileInput::IsEof() const {
@@ -240,6 +232,8 @@ int FfmpegFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
     }
     
     // Receive frame
+    if (!frame)
+		frame = av_frame_alloc();
     ret = avcodec_receive_frame(codec_ctx, frame);
     if (ret == AVERROR_EOF) {
         is_open = false;
@@ -476,84 +470,247 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 
 
-void FfmpegAudioFrame::Exchange(AudioEx& e) {
-	TODO
-}
-
-int FfmpegAudioFrame::GetQueueSize() const {
-	TODO
-}
-
-AudioFormat FfmpegAudioFrame::GetAudioFormat() const {
-	TODO
-}
-
-bool FfmpegAudioFrame::IsQueueFull() const {
-	TODO
-}
-
-bool FfmpegAudioFrame::GetFrameFrom(Sound& snd, bool realtime) {
-	TODO
-}
-
-#ifdef flagOPENGL
-bool FfmpegAudioFrame::PaintOpenGLTexture(int texture) {
-	TODO
-}
-
-#endif
-
-void FfmpegAudioFrame::Process(double time_pos, AVFrame* frame) {
-	TODO
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void FfmpegVideoFrame::Exchange(VideoEx& e) {
-	TODO
-}
-
-int FfmpegVideoFrame::GetQueueSize() const {
-	TODO
-}
-
-bool FfmpegVideoFrame::IsQueueFull() const {
-	TODO
-}
-
-#ifdef flagOPENGL
-bool FfmpegVideoFrame::PaintOpenGLTexture(int texture) {
-	TODO
-}
-
-#endif
-VideoFormat FfmpegVideoFrame::GetVideoFormat() const {
-	TODO
-}
-
-void FfmpegVideoFrame::Process(double time_pos, AVFrame* frame, bool vflip) {
-	TODO
-	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
+void FfmpegAudioFrameQueue::Init() {
+	Clear();
+	ASSERT(aud_fmt.IsValid());
 	
+}
+
+void FfmpegAudioFrameQueue::Clear() {
+	frames.Clear();
+}
+
+void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
+	if (e.IsLoading()) {
+		if (frames.IsEmpty()) {
+			e.SetFail();
+			return;
+		}
+		auto frame_iter = frames.begin();
+		Frame& f = *frame_iter();
+		
+		int var_size = av_get_bytes_per_sample((AVSampleFormat)f.frame->format);
+		bool is_var_float =
+			f.frame->format == AV_SAMPLE_FMT_FLT ||
+			f.frame->format == AV_SAMPLE_FMT_DBL ||
+			f.frame->format == AV_SAMPLE_FMT_FLTP ||
+			f.frame->format == AV_SAMPLE_FMT_DBLP;
+		ASSERT(f.frame->nb_samples == aud_fmt.sample_rate);
+		ASSERT(f.frame->sample_rate == aud_fmt.freq);
+		ASSERT(f.frame->channels == aud_fmt.channels);
+		ASSERT(var_size == aud_fmt.var_size);
+		
+		bool b = e.Load(f.frame->nb_samples, f.frame->channels, var_size, is_var_float, f.frame->data[0]);
+		
+		av_frame_free(&f.frame);
+		frames.Remove(frame_iter);
+	}
+	else {
+		Panic("Invalid AudioEx in FfmpegAudioFrameQueue");
+	}
+}
+
+int FfmpegAudioFrameQueue::GetQueueSize() const {
+	return frames.GetCount();
+}
+
+bool FfmpegAudioFrameQueue::IsQueueFull() const {
+	return frames.GetCount() >= min_buf_size;
+}
+
+AudioFormat FfmpegAudioFrameQueue::GetAudioFormat() const {
+	return aud_fmt;
+}
+
+void FfmpegAudioFrameQueue::Process(double time_pos, AVFrame* frame) {
+	ASSERT(aud_fmt.IsValid());
+	auto& f = frames.Add();
+	f.Create(pool);
+	f->time_pos = time_pos;
+	f->frame = frame;
+}
+
+void FfmpegAudioFrameQueue::DropFrames(int i) {
+	frames.RemoveFirst(i);
+}
+
+#ifdef flagOPENGL
+bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
+	if (frames.IsEmpty())
+		return false;
+	auto frame_iter = frames.begin();
+	Frame& f = *frame_iter();
+	
+	int var_size = av_get_bytes_per_sample(f.frame->format);
+	ASSERT(f.frame->nb_samples == fmt.sample_rate);
+	ASSERT(f.frame->sample_rate == fmt.freq);
+	ASSERT(f.frame->channels == fmt.channels);
+	ASSERT(var_size == fmt.var_size);
+	
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
+	Size res(fmt.sample_rate, fmt.channels);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F,
+		res.cx,
+		res.cy,
+		0, GL_RED, GetOglDataType(fmt.var_size, fmt.is_var_float),
+		f.frame->data[0]);
+	
+	av_frame_free(&f.frame);
+	frames.Remove(frame_iter);
+	return true;
+}
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
+	Clear();
+	ASSERT(vid_fmt.IsValid());
+	
+	Size sz = vid_fmt.res;
+	
+	img_convert_ctx =
+		sws_getContext(
+		sz.cx, sz.cy, ctx.pix_fmt,
+		sz.cx, sz.cy, AV_PIX_FMT_RGBA,
+		SWS_FAST_BILINEAR, NULL, NULL, NULL);
+		
+}
+
+void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
+	if (!video_dst_bufsize) {
+		Size sz = vid_fmt.res;
+		
+	    video_dst_bufsize =
+			av_image_alloc(	video_dst_data, video_dst_linesize,
+							sz.cx, sz.cy, AV_PIX_FMT_RGBA, 1);
+	}
+}
+
+void FfmpegVideoFrameQueue::Clear() {
+	frames.Clear();
+	
+	if (img_convert_ctx) {
+		sws_freeContext(img_convert_ctx);
+		img_convert_ctx = 0;
+	}
+}
+
+void FfmpegVideoFrameQueue::Frame::Clear() {
+	if (video_dst_bufsize) {
+		av_free(video_dst_data[0]);
+		video_dst_data[0] = 0;
+		video_dst_bufsize = 0;
+	}
+}
+
+void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
+	if (e.IsLoading()) {
+		TODO
+	}
+	else {
+		Panic("Invalid VideoEx in FfmpegVideoFrameQueue");
+	}
+}
+
+int FfmpegVideoFrameQueue::GetQueueSize() const {
+	return frames.GetCount();
+}
+
+bool FfmpegVideoFrameQueue::IsQueueFull() const {
+	return frames.GetCount() >= min_buf_size;
+}
+
+VideoFormat FfmpegVideoFrameQueue::GetVideoFormat() const {
+	return vid_fmt;
+}
+
+void FfmpegVideoFrameQueue::DropFrames(int i) {
+	frames.RemoveFirst(i);
+}
+
+void FfmpegVideoFrameQueue::Process(double time_pos, AVFrame* frame, bool vflip) {
+	ASSERT(vid_fmt.IsValid());
+	auto& f = frames.Add();
+	f.Create(pool);
+	f->Init(vid_fmt);
+	f->time_pos = time_pos;
+	f->Process(time_pos, frame, vflip, vid_fmt, img_convert_ctx);
+}
+
+
+void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
+	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
+	if (vflip) {
+		for(int i = 0; i < 4; i++) {
+			video_dst_linesize_vflip[i] = -video_dst_linesize[i];
+			video_dst_data_vflip[i] = video_dst_data[i] + (vid_fmt.res.cy - 1) * video_dst_linesize[i];
+		}
+	    sws_scale(
+			img_convert_ctx,
+			frame->data, frame->linesize,
+			0, vid_fmt.res.cy,
+			video_dst_data_vflip, video_dst_linesize_vflip);
+	}
+	else {
+	    sws_scale(
+			img_convert_ctx,
+			frame->data, frame->linesize,
+			0, vid_fmt.res.cy,
+			video_dst_data, video_dst_linesize);
+	}
 	#else
 	#error Unimplemented
 	#endif
 }
 
+#ifdef flagOPENGL
+bool FfmpegVideoFrameQueue::PaintOpenGLTexture(int texture) {
+	if (frames.IsEmpty())
+		return false;
+	auto frame_iter = frames.begin();
+	Frame& f = *frame_iter();
+	bool b = f.PaintOpenGLTexture(texture, vid_fmt);
+	frames.Remove(frame_iter);
+	return b;
+}
+
+bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt) {
+	if (!video_dst_bufsize)
+		return false;
+	
+	glBindTexture (GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
+		vid_fmt.res.cx,
+		vid_fmt.res.cy,
+		0, GL_RGBA, GL_UNSIGNED_BYTE,
+		video_dst_data[0]);
+	
+	return true;
+}
+#endif
 
 
 NAMESPACE_OULU_END

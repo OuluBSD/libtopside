@@ -59,7 +59,6 @@ public:
 	virtual AudioFormat GetAudioFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	virtual dword GetWriteFrame() const = 0;
-	virtual bool GetFrameFrom(Sound& snd, bool realtime) = 0;
 #ifdef flagOPENGL
 	virtual bool PaintOpenGLTexture(int texture) {return false;}
 #endif
@@ -82,7 +81,6 @@ public:
 	AudioFormat GetAudioFormat() const override {if (snd) return snd->GetAudioFormat(); return AudioFormat();}
 	bool IsQueueFull() const override {if (snd) return snd->IsQueueFull(); return 0;}
 	dword GetWriteFrame() const override {if (snd) return snd->GetWriteFrame(); return 0;}
-	bool GetFrameFrom(Sound& dst, bool realtime) override {if (snd) return snd->GetFrameFrom(dst, realtime); return false;}
 	
 };
 
@@ -256,7 +254,6 @@ public:
 	AudioFormat GetAudioFormat() const override {return aud_fmt;}
 	bool IsQueueFull() const override {return queue_size >= frames;}
 	dword GetWriteFrame() const override {return write_frame;}
-	bool GetFrameFrom(Sound& snd, bool realtime) override;
 	
 	#ifdef flagDEBUG
 	void SetSizeLimit(int l) {size_limit = l;}

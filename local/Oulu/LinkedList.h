@@ -197,6 +197,28 @@ public:
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	operator bool() const {return count > 0;}
+	void RemoveFirst(int count) {
+		if (!count) return;
+		ASSERT(count > 0 && count <= this->count);
+		count = std::min(count, this->count);
+		if (count == this->count)
+			Clear();
+		else {
+			Item* it = first;
+			for(int i = 0; i < count; i++)
+				it = it->next;
+			Item* last_rm = it->prev;
+			it->prev = 0;
+			this->count -= count;
+			first = it;
+			it = last_rm;
+			while (it) {
+				last_rm = it->prev;
+				GetRecyclerPool().Return(it);
+				it = last_rm;
+			}
+		}
+	}
 	Iterator Remove(const Iterator& iter) {
 		Item* item = iter.GetItem();
 		Item* in_place = 0;
@@ -355,7 +377,6 @@ public:
 				GetRecyclerPool().Return(it);
 				it = last_rm;
 			}
-			
 		}
 	}
 	Iterator Remove(const Iterator& iter) {

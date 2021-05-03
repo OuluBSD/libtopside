@@ -7,6 +7,7 @@ NAMESPACE_OULU_BEGIN
 
 
 class ExchangeBase : public LockedScopeEnabler<ExchangeBase> {
+	bool fail = false;
 	
 protected:
 	
@@ -18,6 +19,9 @@ public:
 	virtual bool IsLoading() {return false;}
 	virtual bool IsStoring() {return false;}
 	
+	bool IsFail() const {return fail;}
+	void SetFail() {fail = true;}
+	void ClearFail() {fail = false;}
 };
 
 typedef Ref<ExchangeBase> ExchangeBaseRef;
@@ -40,6 +44,8 @@ public:
 	
 	virtual bool IsLoading() {return !storing;}
 	virtual bool IsStoring() {return storing;}
+	
+	virtual bool Load(int sample_rate, int channels, int var_size, bool var_float, byte* data) {SetFail(); return false;}
 	
 };
 

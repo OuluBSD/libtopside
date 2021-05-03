@@ -191,9 +191,10 @@ void VolatileSoundBuffer::Put(AudioEx& e) {
 	#endif
 }
 
+#if 0
 bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
 	TODO
-	#if 0
+	
 	if (snd.GetQueueSize() == 0)
 		return false;
 	if (IsQueueFull())
@@ -219,8 +220,8 @@ bool VolatileSoundBuffer::GetFrameFrom(Sound& snd, bool realtime) {
 		Put(conv.Begin(), dst_sz, realtime);
 		return true;
 	}
-	#endif
 }
+#endif
 
 bool VolatileSoundBuffer::CheckSize(int size_) {
 	ASSERT(!IsEmpty());

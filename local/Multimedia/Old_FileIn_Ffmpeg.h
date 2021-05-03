@@ -27,7 +27,6 @@ protected:
 	AudioFormat GetAudioFormat() const override {return fmt;}
 	bool IsQueueFull() const override;
 	dword GetWriteFrame() const override {throw Exc("FfmpegAudioFrame is not for writing");}
-	bool GetFrameFrom(Sound& snd, bool realtime) override;
 #ifdef flagOPENGL
 	bool PaintOpenGLTexture(int texture) override;
 #endif

@@ -199,7 +199,6 @@ public:
 	int GetQueueSize() const override {return buf.GetQueueSize();}
 	AudioFormat GetAudioFormat() const override {return buf.GetAudioFormat();}
 	bool IsQueueFull() const override {return buf.IsQueueFull();}
-	bool GetFrameFrom(Sound& snd, bool realtime) override {return buf.GetFrameFrom(snd, realtime);}
 	
 };
 

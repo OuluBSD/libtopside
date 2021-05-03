@@ -6,40 +6,87 @@
 NAMESPACE_OULU_BEGIN
 
 
-class FfmpegAudioFrame :
+class FfmpegAudioFrameQueue :
 	public AudioInputFrame,
-	public LockedScopeEnabler<FfmpegAudioFrame>
+	public LockedScopeEnabler<FfmpegAudioFrameQueue>
 {
-	AVFrame* frame = 0;
+	struct Frame : Moveable<Frame> {
+		AVFrame* frame;
+		double time_pos;
+	};
+	using Recycler = Recycler<Frame,true>;
+	using Pool = RecyclerPool<Frame,true>;
+	
+	LinkedList<Recycler> frames;
+	Pool pool;
+	int min_buf_size = 2;
+	
+protected:
+	friend class FfmpegFileInput;
+	
+	AudioFormat aud_fmt;
 	
 public:
+	~FfmpegAudioFrameQueue() {Clear();}
+	
+	void		Init();
+	void		Clear();
+	void		Process(double time_pos, AVFrame* frame);
+	void		DropFrames(int i);
 	
 	void		Exchange(AudioEx& e) override;
 	int			GetQueueSize() const override;
 	AudioFormat	GetAudioFormat() const override;
 	bool		IsQueueFull() const override;
-	dword		GetWriteFrame() const override {throw Exc("FfmpegAudioFrame is not for writing");}
-	bool		GetFrameFrom(Sound& snd, bool realtime) override;
+	dword		GetWriteFrame() const override {throw Exc("FfmpegAudioFrameQueue is not for writing");}
 #ifdef flagOPENGL
 	bool		PaintOpenGLTexture(int texture) override;
 #endif
 	
-	void		Process(double time_pos, AVFrame* frame);
-	
 };
 
-typedef Ref<FfmpegAudioFrame> FfmpegAudioFrameRef;
+typedef Ref<FfmpegAudioFrameQueue> FfmpegAudioFrameQueueRef;
 
 
 
 #define FFMPEG_VIDEOFRAME_RGBA_CONVERSION 1
-class FfmpegVideoFrame :
+class FfmpegVideoFrameQueue :
 	public VideoInputFrame,
-	public LockedScopeEnabler<FfmpegVideoFrame>
+	public LockedScopeEnabler<FfmpegVideoFrameQueue>
 {
+	struct Frame : Moveable<Frame> {
+		uint8_t *video_dst_data[4] = {0,0,0,0};
+		uint8_t *video_dst_data_vflip[4] = {0,0,0,0};
+		int      video_dst_linesize[4];
+		int      video_dst_linesize_vflip[4];
+		int      video_dst_bufsize = 0;
+		double	time_pos;
+		
+		~Frame() {Clear();}
+		void Init(const VideoFormat& vid_fmt);
+		void Clear();
+		void Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
+		bool PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
+	};
+	using Recycler = Recycler<Frame,true>;
+	using Pool = RecyclerPool<Frame,true>;
 	
+	struct SwsContext* img_convert_ctx = 0;
+	Pool pool;
+	LinkedList<Recycler> frames;
+	int min_buf_size = 2;
+	
+	
+protected:
+	friend class FfmpegFileInput;
+	
+	VideoFormat vid_fmt;
 	
 public:
+	~FfmpegVideoFrameQueue() {Clear();}
+	
+	void		Init(AVCodecContext& ctx);
+	void		Clear();
 	
 	void		Exchange(VideoEx& e) override;
 	int			GetQueueSize() const override;
@@ -50,10 +97,11 @@ public:
 	VideoFormat	GetVideoFormat() const override;
 	
 	void		Process(double time_pos, AVFrame* frame, bool vflip=true);
+	void		DropFrames(int i);
 	
 };
 
-typedef Ref<FfmpegVideoFrame> FfmpegVideoFrameRef;
+typedef Ref<FfmpegVideoFrameQueue> FfmpegVideoFrameQueueRef;
 
 
 
@@ -98,20 +146,15 @@ class FfmpegFileInput : public MediaInputStream {
 	bool has_audio;
 	bool has_video;
 	bool is_dev_open;
-	AudioFormat aud_fmt;
-	VideoFormat vid_fmt;
 	String path;
 	String errstr;
-	RefLinkedList<FfmpegVideoFrame> vframes;
-	RefLinkedList<FfmpegAudioFrame> aframes;
-	Ref<FfmpegVideoFrame> cur_vframe;
-	Ref<FfmpegAudioFrame> cur_aframe;
+	FfmpegVideoFrameQueue vframe;
+	FfmpegAudioFrameQueue aframe;
 	FfmpegFileChannel v;
 	FfmpegFileChannel a;
 	AVFormatContext* file_fmt_ctx = NULL;
 	AVPacket pkt;
 	bool pkt_ref = false;
-	int min_buf_size = 2;
 	
 	bool HasMediaOpen() const {return has_video || has_audio;}
 	void Clear();
