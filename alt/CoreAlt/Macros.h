@@ -146,9 +146,11 @@ LOG("}"); \
 
 
 #define COMBINE2(a, b) a##b
-#define COMBINE3(a, b, c) COMBINE3(a,b)##c
+#define COMBINE3(a, b, c) a##b##c
 #define COMBINE(a, b) COMBINE2(a, b)
 
+#define MK_str(x)		#x
+#define __LINESTR__		MK_str(__LINE__)
 #define MK__s__(x)       s__s##x
 #define MK__s_(x)        MK__s__(x)
 

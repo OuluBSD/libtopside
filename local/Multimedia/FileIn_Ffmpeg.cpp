@@ -28,15 +28,28 @@ void FfmpegFileInput::ClearDevice() {
 
 void FfmpegFileInput::InitPacket() {
 	ClearPacket();
-	av_init_packet(&pkt);
-    pkt.data = NULL;
-    pkt.size = 0;
+	pkt = av_packet_alloc();
+    pkt->data = NULL;
+    pkt->size = 0;
+}
+
+void FfmpegFileInput::ClearPacketData() {
+	if (pkt_ref) {
+		av_packet_unref(pkt);
+		pkt_ref = false;
+	}
+    pkt->data = NULL;
+    pkt->size = 0;
 }
 
 void FfmpegFileInput::ClearPacket() {
-	if (pkt_ref) {
-		av_packet_unref(&pkt);
-		pkt_ref = false;
+	if (pkt) {
+		ClearPacketData();
+		av_packet_free(&pkt);
+		pkt = 0;
+	}
+	else {
+		ASSERT(!pkt_ref);
 	}
 }
 
@@ -120,19 +133,19 @@ void FfmpegFileInput::FillAudioBuffer() {
 			if (ProcessAudioFrame())
 				continue;
 			
-			ClearPacket();
+			ClearPacketData();
 		}
 		else break;
 	}
 	
-	ClearPacket();
+	ClearPacketData();
 }
 
 bool FfmpegFileInput::ReadFrame() {
-	InitPacket();
+	ClearPacketData();
 	
-	ASSERT(!pkt.data && !pkt.size);
-	if (av_read_frame(file_fmt_ctx, &pkt) >= 0) {
+	ASSERT(!pkt->data && !pkt->size);
+	if (av_read_frame(file_fmt_ctx, pkt) >= 0) {
 		pkt_ref = true;
 		is_eof = false;
 		return true;
@@ -143,10 +156,10 @@ bool FfmpegFileInput::ReadFrame() {
 }
 
 bool FfmpegFileInput::ProcessVideoFrame() {
-	ASSERT(pkt_ref);
-	if (v.ReadFrame(pkt)) {
+	ASSERT(pkt && pkt_ref);
+	if (v.ReadFrame(*pkt)) {
 		vframe.Process(v.frame_pos_time, v.frame);
-		ClearPacket();
+		ClearPacketData();
 		return true;
 	}
 	
@@ -154,13 +167,13 @@ bool FfmpegFileInput::ProcessVideoFrame() {
 }
 
 bool FfmpegFileInput::ProcessAudioFrame() {
-	ASSERT(pkt_ref);
-	if (a.ReadFrame(pkt)) {
+	ASSERT(pkt && pkt_ref);
+	if (a.ReadFrame(*pkt)) {
 		// Pick frame
 		AVFrame* f = a.frame;
 		a.frame = 0;
 		aframe.Process(a.frame_pos_time, f);
-		ClearPacket();
+		ClearPacketData();
 		return true;
 	}
 	

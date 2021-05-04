@@ -5,13 +5,17 @@ noblitz;
 uses
 	Oulu;
 
-uses(!(WIN32 & MSC)) plugin/avcpp;
+uses(NEVER) plugin/avcpp;
 
 uses(POSIX) plugin/libv4l2;
 
 uses(!ALTCORE) plugin/jpg;
 
 library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
+
+library(POSIX) "swscale avcodec avformat avutil swresample avdevice avfilter";
+
+library(WIN32) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
 file
 	Multimedia.h,

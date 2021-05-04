@@ -32,6 +32,7 @@ file
 	Fn.h,
 	Fn.cpp,
 	Ops.h,
+	Cpu.cpp,
 	Hash.h,
 	Algo.h,
 	String_.h,

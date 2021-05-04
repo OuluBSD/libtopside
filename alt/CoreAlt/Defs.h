@@ -109,49 +109,21 @@ NAMESPACE_UPP_BEGIN
 
 #define UPP Upp
 
-#if defined __linux__ || defined __freebsd__ || defined flagPOSIX
+#if PLATFORM_POSIX
 	#define DIR_SEPS "/"
 	#define DIR_SEP  '/'
 	#define EOL "\n"
-	#define PLATFORM_POSIX
-	#ifdef __x86_64__
-		#define CPU_64	1
-	#endif
-	#ifdef __GNUC__
-		#define COMPILER_GNU
-	#endif
-	#ifdef __clang__
-		#define COMPILER_CLANG
-	#endif
-#elif defined _WIN32 || defined WINAPI_FAMILY
-	#undef  flagWIN32
-	#define flagWIN32
+#elif PLATFORM_WIN32
 	#define EOL "\r\n"
 	#define DIR_SEP  '\\'
 	#define DIR_SEPS "\\"
-	#ifdef _MSC_VER
-		#define COMPILER_MSC
-		#ifdef _WIN64
-			#define CPU_64	1
-		#endif
-	#endif
-	#ifdef __clang__
-		#ifdef __x86_64__
-			#define CPU_64	1
-		#endif
-	#endif
-	#ifdef __GNUC__
-		#ifdef __x86_64__
-			#define CPU_64	1
-		#endif
-	#endif
 #endif
 
 
 
-#ifdef flagWIN32
+#if PLATFORM_WIN32
 	#define __BREAK__		__debugbreak()
-#elif defined flagPOSIX
+#elif PLATFORM_POSIX
 	#define __BREAK__        raise(SIGTRAP);
 #else
 	#define __BREAK__        (*(volatile int *)0 = 0) // kill(getpid(), SIGTRAP)

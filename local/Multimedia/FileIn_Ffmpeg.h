@@ -14,7 +14,7 @@ class FfmpegAudioFrameQueue :
 		AVFrame* frame;
 		double time_pos;
 	};
-	using Recycler = Recycler<Frame,true>;
+	using Recycler = Oulu::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
 	LinkedList<Recycler> frames;
@@ -67,7 +67,7 @@ class FfmpegVideoFrameQueue :
 		void Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
 		bool PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
 	};
-	using Recycler = Recycler<Frame,true>;
+	using Recycler = Oulu::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
 	struct SwsContext* img_convert_ctx = 0;
@@ -152,13 +152,14 @@ class FfmpegFileInput : public MediaSourceStream {
 	FfmpegFileChannel v;
 	FfmpegFileChannel a;
 	AVFormatContext* file_fmt_ctx = NULL;
-	AVPacket pkt;
+	AVPacket* pkt = 0;
 	bool is_eof = false;
 	bool pkt_ref = false;
 	
 	bool HasMediaOpen() const {return has_video || has_audio;}
 	void Clear();
 	void ClearDevice();
+	void ClearPacketData();
 	void ClearPacket();
 	void InitPacket();
 	bool IsFrameLoaded() const {return pkt_ref;}

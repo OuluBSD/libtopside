@@ -185,7 +185,7 @@ _PA_DEFINE_FUNC(snd_pcm_sw_params_set_stop_threshold);
 _PA_DEFINE_FUNC(snd_pcm_sw_params_get_boundary);
 _PA_DEFINE_FUNC(snd_pcm_sw_params_set_silence_threshold);
 _PA_DEFINE_FUNC(snd_pcm_sw_params_set_silence_size);
-_PA_DEFINE_FUNC(snd_pcm_sw_params_set_xfer_align);
+//_PA_DEFINE_FUNC(snd_pcm_sw_params_set_xfer_align);
 _PA_DEFINE_FUNC(snd_pcm_sw_params_set_tstamp_mode);
 #define alsa_snd_pcm_sw_params_alloca(ptr) __alsa_snd_alloca(ptr, snd_pcm_sw_params)
 
@@ -465,7 +465,7 @@ static int PaAlsa_LoadLibrary()
     _PA_LOAD_FUNC(snd_pcm_sw_params_get_boundary);
     _PA_LOAD_FUNC(snd_pcm_sw_params_set_silence_threshold);
     _PA_LOAD_FUNC(snd_pcm_sw_params_set_silence_size);
-    _PA_LOAD_FUNC(snd_pcm_sw_params_set_xfer_align);
+    //_PA_LOAD_FUNC(snd_pcm_sw_params_set_xfer_align);
     _PA_LOAD_FUNC(snd_pcm_sw_params_set_tstamp_mode);
 
     _PA_LOAD_FUNC(snd_pcm_info);
@@ -2124,7 +2124,7 @@ static PaError PaAlsaStreamComponent_FinishConfigure( PaAlsaStreamComponent *sel
     }
 
     ENSURE_( alsa_snd_pcm_sw_params_set_avail_min( self->pcm, swParams, self->framesPerPeriod ), paUnanticipatedHostError );
-    ENSURE_( alsa_snd_pcm_sw_params_set_xfer_align( self->pcm, swParams, 1 ), paUnanticipatedHostError );
+    //ENSURE_( alsa_snd_pcm_sw_params_set_xfer_align( self->pcm, swParams, 1 ), paUnanticipatedHostError );
     ENSURE_( alsa_snd_pcm_sw_params_set_tstamp_mode( self->pcm, swParams, SND_PCM_TSTAMP_ENABLE ), paUnanticipatedHostError );
 
     /* Set the parameters! */
@@ -3201,7 +3201,7 @@ static int SetApproximateSampleRate( snd_pcm_t *pcm, snd_pcm_hw_params_t *hwPara
     ENSURE_( alsa_snd_pcm_hw_params_set_rate_near( pcm, hwParams, &setRate, NULL ), paUnanticipatedHostError );
     /* The value actually set will be put in 'setRate' (may be way off); check the deviation as a proportion
      * of the requested-rate with reference to the max-deviate-ratio (larger values allow less deviation) */
-    deviation = abs( setRate - reqRate );
+    deviation = abs( (int)setRate - (int)reqRate );
     if( deviation > 0 && deviation * RATE_MAX_DEVIATE_RATIO > reqRate )
         result = paInvalidSampleRate;
 
