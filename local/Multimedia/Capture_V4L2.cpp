@@ -5,7 +5,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-bool vs::OpenDevice0(int fmt_i, int res_i) {
+bool CaptureDevice_V4L2::OpenDevice0(int fmt_i, int res_i) {
 	Close();
 	
 	cur_time.Reset();
@@ -41,7 +41,7 @@ void CaptureDevice_V4L2::Close() {
 	}
 }
 
-int OpenCVCaptureDevice::FillVideoBuffer() {
+int CaptureDevice_V4L2::FillVideoBuffer() {
 	
 	if (vid_cap) {
 		timeval timeout;

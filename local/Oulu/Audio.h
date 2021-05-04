@@ -21,7 +21,6 @@ struct AudioFormat {
 	
 	bool IsValid() const {return var_size > 0 && sample_rate > 0 && channels > 0 && freq > 0;}
 	void Clear() {memset(this, 0, sizeof(AudioFormat));}
-	
 	bool operator!=(const AudioFormat& fmt) const {return !(*this == fmt);}
 	bool operator==(const AudioFormat& fmt) const {
 		return	var_size			== fmt.var_size &&
@@ -243,7 +242,7 @@ public:
 	void		PutFrameFrom(VolatileAudioBuffer& src, bool realtime);
 	void		PutFrame(const AudioFormat& fmt, void* data, bool realtime);
 	
-	void		Get(void* v, int size);
+	int			Get(void* v, int size);
 	void		Put(void* v, int size, bool realtime);
 	
 	byte*		GetActiveMem() {return data[data_i].Begin();}
@@ -252,9 +251,9 @@ public:
 	bool		IsEmpty() const {return data[0].IsEmpty();}
 	
 	void		Exchange(AudioEx& e) override;
-	int			GetQueueSize() const override {return (int)((double)queue_size / (double)aud_fmt.sample_rate);}
+	int			GetQueueSize() const override {return queue_size;}
 	AudioFormat	GetAudioFormat() const override {return aud_fmt;}
-	bool		IsQueueFull() const override {return queue_size >= frames;}
+	bool		IsQueueFull() const override {return queue_size == total_size;}
 	
 	#ifdef flagDEBUG
 	void		SetSizeLimit(int l) {size_limit = l;}

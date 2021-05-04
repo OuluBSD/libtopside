@@ -181,14 +181,14 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 }
 
 void FfmpegFileInput::DropAudioFrames(int frames) {
-	frames = std::min(frames, aframe.GetQueueSize());
+	frames = std::min(frames, aframe.GetQueueSize() / aframe.GetAudioFormat().GetFrameBytes());
 	
 	if (frames)
 		aframe.DropFrames(frames);
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
-	frames = std::min(frames, vframe.GetQueueSize());
+	frames = std::min(frames, vframe.GetQueueSize() / vframe.GetVideoFormat().GetFrameBytes());
 	
 	if (frames)
 		vframe.DropFrames(frames);
@@ -532,7 +532,15 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		Audio& sink = e.Sink();
 		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
 		if (vol_aud) {
-			vol_aud->PutFrame(aud_fmt, f.frame->data[0], e.SourceConfig().sync);
+			for(int i = 0; i < AV_NUM_DATA_POINTERS; i++) {
+				if (f.frame->data[i]) {
+					ASSERT(!i);
+					int size = f.frame->linesize[i];
+					ASSERT(size == aud_fmt.GetFrameBytes());
+					//vol_aud->PutFrame(aud_fmt, f.frame->data[i], !i && e.SourceConfig().sync);
+					vol_aud->PutFormat(aud_fmt, f.frame->data[i], f.frame->linesize[i], !i && e.SourceConfig().sync);
+				}
+			}
 		}
 		else {
 			TODO
@@ -547,7 +555,7 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 }
 
 int FfmpegAudioFrameQueue::GetQueueSize() const {
-	return frames.GetCount();
+	return frames.GetCount() * aud_fmt.GetFrameBytes();
 }
 
 bool FfmpegAudioFrameQueue::IsQueueFull() const {
@@ -562,6 +570,7 @@ void FfmpegAudioFrameQueue::Process(double time_pos, AVFrame* frame) {
 	// Sometimes you get the sample rate at this point
 	if (!aud_fmt.sample_rate)
 		aud_fmt.sample_rate = frame->nb_samples;
+	ASSERT(aud_fmt.sample_rate == frame->nb_samples)
 	
 	ASSERT(aud_fmt.IsValid());
 	auto& f = frames.Add();
@@ -672,7 +681,7 @@ void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
 }
 
 int FfmpegVideoFrameQueue::GetQueueSize() const {
-	return frames.GetCount();
+	return frames.GetCount() * vid_fmt.GetFrameBytes();
 }
 
 bool FfmpegVideoFrameQueue::IsQueueFull() const {

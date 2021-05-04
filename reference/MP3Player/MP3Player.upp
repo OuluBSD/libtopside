@@ -10,6 +10,7 @@ mainconfig
 	"" = "",
 	"" = "ALTCORE",
 	"" = "ALTCORE VERBOSE_SHADERCORE",
+	"" = "ALTCORE BUILTIN_PORTAUDIO",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "USEMALLOC";
 

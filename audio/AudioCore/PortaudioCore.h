@@ -129,7 +129,7 @@ public:
 	AudioBase(const AudioBase& s) : err(s.err), fmt(s.fmt), flags(s.flags) {stream = s.stream;}
 	
 	void			Exchange(AudioEx& e) override;
-	int				GetQueueSize() const override {return 1;}
+	int				GetQueueSize() const override {return 0;}
 	AudioFormat		GetAudioFormat() const override {return fmt;}
 	bool			IsQueueFull() const override {return false;}
 	

@@ -105,8 +105,15 @@ void VolatileAudioBuffer::PutFrame(const AudioFormat& src_fmt, void* data, bool 
 	}
 }
 
-void VolatileAudioBuffer::Get(void* v_, int size_) {
+int VolatileAudioBuffer::Get(void* v_, int size_) {
 	byte* v = (byte*)v_;
+	
+	#if DEBUG_AUDIO_PIPE
+	if (size_ > total_size) {
+		LOG("AUDIO DEBUG: ERROR: requesting more than total size");
+	}
+	#endif
+	
 	size_ = std::min(total_size, size_);
 	
 	/*if (!CheckSize(size_)) {
@@ -124,6 +131,15 @@ void VolatileAudioBuffer::Get(void* v_, int size_) {
 	copy_size = min(queue_size, copy_size);
 	int zero_size = size_ - copy_size;
 	ASSERT(zero_size >= 0);
+	
+	#if DEBUG_AUDIO_PIPE
+	if (zero_size) {
+		LOG("AUDIO DEBUG: ERROR: zeroing frame: asked " << size_ << ", got " << copy_size);
+	}
+	if (queue_size < size_) {
+		LOG("AUDIO DEBUG: ERROR: queue not filled");
+	}
+	#endif
 	
 	if (copy_size) {
 		int new_queue_size = queue_size - copy_size;
@@ -168,6 +184,8 @@ void VolatileAudioBuffer::Get(void* v_, int size_) {
 		if (size_)
 			memset(v, 0, size_);
 	}
+	
+	return copy_size;
 }
 
 void VolatileAudioBuffer::Put(void* v_, int size_, bool realtime) {

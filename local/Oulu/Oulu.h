@@ -19,6 +19,8 @@
 #undef Complex
 
 
+#define DEBUG_AUDIO_PIPE 1
+
 
 NAMESPACE_OULU_BEGIN
 using namespace Upp;

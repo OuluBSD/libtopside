@@ -17,6 +17,7 @@ struct VideoFormat {
 	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); pitch = GetMinPitch() + bytes;}
 	void SetPitch(int bytes) {pitch = bytes; ASSERT(bytes >= GetMinPitch());}
 	Size GetSize() const {return res;}
+	int GetFrameBytes() const {return res.cy * pitch;}
 	bool operator!=(const VideoFormat& fmt) const {return !(*this == fmt);}
 	bool operator==(const VideoFormat& fmt) const {
 		return	res == fmt.res &&
@@ -26,6 +27,7 @@ struct VideoFormat {
 				pitch == fmt.pitch
 				;
 	}
+	
 };
 
 VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch);
@@ -145,9 +147,9 @@ public:
 	bool IsEmpty() const {return data[0].IsEmpty();}
 	
 	void Exchange(VideoEx& e) override;
-	int GetQueueSize() const override {return queue_size;}
+	int GetQueueSize() const override {TODO return queue_size;}
 	VideoFormat GetVideoFormat() const override {return vid_fmt;}
-	bool IsQueueFull() const override {return queue_size >= frames;}
+	bool IsQueueFull() const override {TODO return queue_size >= frames;}
 #ifdef flagOPENGL
 	bool PaintOpenGLTexture(int texture) override;
 #endif

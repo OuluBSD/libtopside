@@ -21,7 +21,7 @@ struct RealtimeSourceConfig {
 	void SetConsumed() {any_consumed = true;}
 };
 
-#define MIN_AUDIO_BUFFER_FRAMES 5
+#define MIN_AUDIO_BUFFER_FRAMES 2
 
 
 

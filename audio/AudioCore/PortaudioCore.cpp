@@ -37,6 +37,7 @@ extern "C"{
 AudioBase::AudioBase() : err(paNoError), flags(SND_NOFLAG){
 	fmt.freq = 44100;
 	fmt.sample_rate = 1024;
+	fmt.channels = 2;
 	SetFormat(2, SND_FLOAT32);
 	AudioSys();
 }
@@ -222,10 +223,18 @@ BufferedAudioDeviceStream::BufferedAudioDeviceStream() {
 void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 	if (args.output) {
 		int size = fmt.GetFrameBytes();
-		if (buf.GetQueueSize()) {
+		if (buf.GetQueueSize() >= size) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
-			buf.Get(args.output, size);
+			int got = buf.Get(args.output, size);
+			#if DEBUG_AUDIO_PIPE
+			if (got == size) {
+				LOG("AUDIO DEBUG: wrote frame to audio-device: frame OK");
+			}
+			else {
+				LOG("AUDIO DEBUG: ERROR: writing frame to audio-device failed: asked " << size << ", got " << got);
+			}
+			#endif
 			
 			if (0) {
 				AudioFormat fmt = buf.GetAudioFormat();
@@ -241,6 +250,10 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			}
 		}
 		else {
+			#if DEBUG_AUDIO_PIPE
+			LOG("AUDIO DEBUG: ERROR: audio-device got empty data");
+			#endif
+			
 			memset(args.output, 0, size);
 		}
 	}
