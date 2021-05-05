@@ -38,8 +38,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------
 */
+#include "defs.h"
 #ifndef ASSIMP_BUILD_NO_EXPORT
-#ifndef flagASSIMP_BUILD_NO_3MF_EXPORTER
+#ifndef ASSIMP_BUILD_NO_3MF_EXPORTER
 
 #include "D3MFExporter.h"
 

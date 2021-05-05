@@ -38,7 +38,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ----------------------------------------------------------------------
 */
-#ifndef flagASSIMP_BUILD_NO_OPENGEX_IMPORTER
+#include "defs.h"
+#ifndef ASSIMP_BUILD_NO_OPENGEX_IMPORTER
 
 #include "OpenGEXImporter.h"
 #include <plugin/assimp/DefaultIOSystem.h>

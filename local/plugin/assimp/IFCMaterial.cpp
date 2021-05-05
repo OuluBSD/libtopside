@@ -42,8 +42,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file  IFCMaterial.cpp
  *  @brief Implementation of conversion routines to convert IFC materials to aiMaterial
  */
+#include "defs.h"
 
-#ifndef flagASSIMP_BUILD_NO_IFC_IMPORTER
+#ifndef ASSIMP_BUILD_NO_IFC_IMPORTER
 
 #include "IFCUtil.h"
 #include <limits>
@@ -202,4 +203,4 @@ unsigned int ProcessMaterials(uint64_t id, unsigned int prevMatId, ConversionDat
 } // ! IFC
 } // ! Assimp
 
-#endif // flagASSIMP_BUILD_NO_IFC_IMPORTER
+#endif // ASSIMP_BUILD_NO_IFC_IMPORTER

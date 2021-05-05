@@ -11,8 +11,8 @@ void EasingSystem::Update(double dt)
         auto transform = visitor.Get<Transform>();
         auto easing = visitor.Get<Easing>();
 
-        transform->position = lerp(transform->position, easing->TargetPosition, easing->PositionEasingFactor);
-        transform->orientation = slerp(transform->orientation, easing->TargetOrientation, easing->OrientationEasingFactor);
+        transform->position = lerp(transform->position, easing->target_position, easing->position_easing_factor);
+        transform->orientation = slerp(transform->orientation, easing->target_orientation, easing->orientation_easing_factor);
     }
 }
 	

@@ -41,7 +41,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_OPENGEX_IMPORTER_H
 #define AI_OPENGEX_IMPORTER_H
 
-#ifndef flagASSIMP_BUILD_NO_OPENGEX_IMPORTER
+#include "defs.h"
+#ifndef ASSIMP_BUILD_NO_OPENGEX_IMPORTER
 
 #include "BaseImporter.h"
 #include <plugin/assimp/mesh.h>

@@ -3,21 +3,25 @@
 #if defined flagGCC && defined flagFREEBSD
 	#include "Internal.h"
 	
-	#undef CPU_SSE2
-	#include <opencv2/core.hpp>
-	#include <opencv2/imgproc.hpp>
-	#include <opencv2/highgui.hpp>
-	#include <opencv2/videoio.hpp>
+	#if HAVE_OPENCV
+		#undef CPU_SSE2
+		#include <opencv2/core.hpp>
+		#include <opencv2/imgproc.hpp>
+		#include <opencv2/highgui.hpp>
+		#include <opencv2/videoio.hpp>
+	#endif
 	
 	#include "Multimedia.h"
 #else
 	#include "Multimedia.h"
 	
-	#undef CPU_SSE2
-	#include <opencv2/core.hpp>
-	#include <opencv2/imgproc.hpp>
-	#include <opencv2/highgui.hpp>
-	#include <opencv2/videoio.hpp>
+	#if HAVE_OPENCV
+		#undef CPU_SSE2
+		#include <opencv2/core.hpp>
+		#include <opencv2/imgproc.hpp>
+		#include <opencv2/highgui.hpp>
+		#include <opencv2/videoio.hpp>
+	#endif
 #endif
 
 #if HAVE_OPENCV

@@ -8,8 +8,7 @@ NAMESPACE_OULU_BEGIN
 class Entity;
 struct ComponentBase;
 class Pool;
-class ConnectorBase;
-//class InterfaceBase;
+struct ConnectorBase;
 
 template <class Main, class Base> class ComponentStoreT;
 using ComponentStore = ComponentStoreT<Entity, ComponentBase>;

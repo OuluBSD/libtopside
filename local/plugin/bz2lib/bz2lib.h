@@ -7,6 +7,7 @@
 	#include <bzlib.h>
 #endif
 
+#ifdef CORE_H
 namespace Upp {
 
 void BZ2Decompress(Stream& out, Stream& in);
@@ -19,5 +20,6 @@ String BZ2Compress(const String& data);
 String BZ2Decompress(const String& data);
 
 }
+#endif
 
 #endif//__Plugin_Z__
