@@ -27,7 +27,7 @@ You might want to test other packages in examples and reference directories. How
 Instead of these commands, you should use U++ TheIDE editor and create new assembly with the same directories that are in the following umk command. Packages with the description string should compile.
 
 ```
-pkg install upp
+pkg install upp git
 git clone https://github.com/OuluBSD/liboulu.git
 cd liboulu
 umk \
