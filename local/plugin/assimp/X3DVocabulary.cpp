@@ -43,6 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// \date   2017
 /// \author Patrick Daehne
 
+#include "defs.h"
 #ifndef ASSIMP_BUILD_NO_X3D_IMPORTER
 
 #include "FIReader.hpp"

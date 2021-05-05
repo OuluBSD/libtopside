@@ -41,7 +41,7 @@
  @brief WASAPI implementation of support for a host API.
  @note pa_wasapi currently requires minimum VC 2005, and the latest Vista SDK
 */
-#ifdef flagWIN32
+#if defined flagWIN32 && defined flagMSC
 
 #include <windows.h>
 #include <stdio.h>

@@ -31,6 +31,7 @@ public:
 		return s;
 	}
 	//void MoveTo(const OverlapSink& conn);
+	
 };
 
 void CopyTransformPos(EntityRef from, EntityRef to);
@@ -39,6 +40,12 @@ class Transform2D : public Component<Transform2D> {
 public:
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
+	
+    void operator=(const Transform2D& t) {
+        position = t.position;
+        size = t.size;
+    }
+    
 };
 
 class RigidBody : public Component<RigidBody> {
@@ -46,28 +53,42 @@ public:
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
 	vec3 angular_velocity = zero<vec3>();
-	vec3 angularAcceleration = zero<vec3>();
+	vec3 angular_acceleration = zero<vec3>();
 	
-	float dampingFactor = 0.999f;
+	float damping_factor = 0.999f;
+	
+    void operator=(const RigidBody& r) {
+        velocity = r.velocity;
+        acceleration = r.acceleration;
+        angular_velocity = r.angular_velocity;
+        angular_acceleration = r.angular_acceleration;
+        damping_factor = r.damping_factor;
+    }
+    
 };
 
 
 class Renderable : public Component<Renderable> {
 public:
-	void ResetModel(String name, mat4 offset = zero<mat4>()) {
-		model_name = name;
+	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
 		this->offset = offset;
 		alpha_multiplier = 0;
+		//model_name = name;
 		//model.Clear();
 	}
 	
-	String model_name;
 	RGBA color;
 	mat4 offset;
 	float alpha_multiplier;
+	//String model_name;
 	//Ref<ModelComponent> model;
 	
+    void operator=(const Renderable& e) {
+        color = e.color;
+        offset = e.offset;
+        alpha_multiplier = e.alpha_multiplier;
+    }
 #ifdef flagGUI
 	Callback1<Shader&> cb;
 #endif

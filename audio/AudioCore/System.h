@@ -133,7 +133,7 @@ class MidiFileComponent :
 	String last_error;
 	Midi::File file;
 	Vector<int> track_i;
-	float song_dt = 0;
+	double song_dt = 0;
 	MidiFrame tmp;
 	
 public:

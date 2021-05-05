@@ -48,6 +48,7 @@ corresponding preprocessor flag to selectively disable formats.
 */
 
 #include <vector>
+#include "defs.h"
 #include "BaseImporter.h"
 
 // ------------------------------------------------------------------------------------------------
@@ -150,7 +151,7 @@ corresponding preprocessor flag to selectively disable formats.
 #ifndef ASSIMP_BUILD_NO_OGRE_IMPORTER
 #   include "OgreImporter.h"
 #endif
-#ifndef flagASSIMP_BUILD_NO_OPENGEX_IMPORTER
+#ifndef ASSIMP_BUILD_NO_OPENGEX_IMPORTER
 #   include "OpenGEXImporter.h"
 #endif
 #ifndef ASSIMP_BUILD_NO_MS3D_IMPORTER
@@ -168,7 +169,7 @@ corresponding preprocessor flag to selectively disable formats.
 #ifndef ASSIMP_BUILD_NO_NDO_IMPORTER
 #   include "NDOLoader.h"
 #endif
-#ifndef flagASSIMP_BUILD_NO_IFC_IMPORTER
+#ifndef ASSIMP_BUILD_NO_IFC_IMPORTER
 #   include "IFCLoader.h"
 #endif
 #ifndef ASSIMP_BUILD_NO_XGL_IMPORTER
@@ -184,7 +185,7 @@ corresponding preprocessor flag to selectively disable formats.
 #   include "glTFImporter.h"
 #   include "glTF2Importer.h"
 #endif
-#ifndef flagASSIMP_BUILD_NO_C4D_IMPORTER
+#ifndef ASSIMP_BUILD_NO_C4D_IMPORTER
 #   include "C4DImporter.h"
 #endif
 #ifndef ASSIMP_BUILD_NO_3MF_IMPORTER
@@ -305,7 +306,7 @@ void GetImporterInstanceList(std::vector< BaseImporter* >& out)
 #if (!defined ASSIMP_BUILD_NO_OGRE_IMPORTER)
     out.push_back( new Ogre::OgreImporter());
 #endif
-#if (!defined flagASSIMP_BUILD_NO_OPENGEX_IMPORTER )
+#if (!defined ASSIMP_BUILD_NO_OPENGEX_IMPORTER )
     out.push_back( new OpenGEX::OpenGEXImporter() );
 #endif
 #if (!defined ASSIMP_BUILD_NO_MS3D_IMPORTER)
@@ -323,7 +324,7 @@ void GetImporterInstanceList(std::vector< BaseImporter* >& out)
 #if (!defined ASSIMP_BUILD_NO_NDO_IMPORTER)
     out.push_back( new NDOImporter() );
 #endif
-#if (!defined flagASSIMP_BUILD_NO_IFC_IMPORTER)
+#if (!defined ASSIMP_BUILD_NO_IFC_IMPORTER)
     out.push_back( new IFCImporter() );
 #endif
 #if ( !defined ASSIMP_BUILD_NO_XGL_IMPORTER )
@@ -339,7 +340,7 @@ void GetImporterInstanceList(std::vector< BaseImporter* >& out)
     out.push_back( new glTFImporter() );
     out.push_back( new glTF2Importer() );
 #endif
-#if ( !defined flagASSIMP_BUILD_NO_C4D_IMPORTER )
+#if ( !defined ASSIMP_BUILD_NO_C4D_IMPORTER )
     out.push_back( new C4DImporter() );
 #endif
 #if ( !defined ASSIMP_BUILD_NO_3MF_IMPORTER )

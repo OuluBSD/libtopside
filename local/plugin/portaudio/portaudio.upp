@@ -10,6 +10,7 @@ library(LINUX) asound;
 
 file
 	portaudio.h,
+	defs.h,
 	common readonly separator,
 	pa_allocation.c,
 	pa_allocation.h,

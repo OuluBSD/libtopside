@@ -6,10 +6,17 @@ NAMESPACE_OULU_BEGIN
 	
 struct Easing : Component<Easing>
 {
-    vec3 TargetPosition = { 0,0,0 };
-    quat TargetOrientation = identity<quat>();
-    float PositionEasingFactor = 0;
-    float OrientationEasingFactor = 0;
+    vec3 target_position = { 0,0,0 };
+    quat target_orientation = identity<quat>();
+    float position_easing_factor = 0;
+    float orientation_easing_factor = 0;
+    
+    void operator=(const Easing& e) {
+        target_position = e.target_position;
+        target_orientation = e.target_orientation;
+        position_easing_factor = e.position_easing_factor;
+        orientation_easing_factor = e.orientation_easing_factor;
+    }
 };
 
 

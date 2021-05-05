@@ -3,6 +3,32 @@
 NAMESPACE_UPP_BEGIN
 
 #if defined flagWIN32
+
+#ifdef flagCLANG
+const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
+{
+	struct sockaddr_storage ss;
+	unsigned long s = size;
+	
+	ZeroMemory(&ss, sizeof(ss));
+	ss.ss_family = af;
+	
+	switch (af) {
+	case AF_INET:
+		((struct sockaddr_in *)&ss)->sin_addr = *(struct in_addr *)src;
+		break;
+	case AF_INET6:
+		((struct sockaddr_in6 *)&ss)->sin6_addr = *(struct in6_addr *)src;
+		break;
+	default:
+		return NULL;
+	}
+	/* cannot directly use &size because of strict aliasing rules */
+	return (WSAAddressToString((struct sockaddr *)&ss, sizeof(ss), NULL, dst, &s) == 0) ?
+		   dst : NULL;
+}
+#endif
+
 WSADATA TcpSocket::wsaData;
 bool TcpSocket::is_initialized;
 TcpSocket::Uninitializer TcpSocket::uninit;

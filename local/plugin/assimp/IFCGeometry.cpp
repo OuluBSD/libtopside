@@ -43,8 +43,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 
+#include "defs.h"
 
-#ifndef flagASSIMP_BUILD_NO_IFC_IMPORTER
+#ifndef ASSIMP_BUILD_NO_IFC_IMPORTER
 #include "IFCUtil.h"
 #include "PolyTools.h"
 #include "ProcessHelper.h"

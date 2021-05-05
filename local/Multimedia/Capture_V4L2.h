@@ -1,6 +1,7 @@
 #ifndef _Multimedia_Capture_V4L2_h_
 #define _Multimedia_Capture_V4L2_h_
 
+#if HAVE_V4L2_CAP
 
 NAMESPACE_OULU_BEGIN
 
@@ -20,4 +21,5 @@ protected:
 NAMESPACE_OULU_END
 
 
+#endif
 #endif

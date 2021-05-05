@@ -51,8 +51,8 @@
 
 #if defined(__GNUC__)
 
-#include "../../hostapi/wasapi/mingw-include/ks.h"
-#include "../../hostapi/wasapi/mingw-include/ksmedia.h"
+#include "ks.h"
+#include "ksmedia.h"
 
 #else
 

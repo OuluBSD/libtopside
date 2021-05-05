@@ -181,8 +181,8 @@ Default is to use the pin category.
 /* For MinGW we reference mingw-include files supplied with WASAPI */
 #define WINBOOL BOOL
 
-#include "../wasapi/mingw-include/ks.h"
-#include "../wasapi/mingw-include/ksmedia.h"
+#include "ks.h"
+#include "ksmedia.h"
 
 #else
 

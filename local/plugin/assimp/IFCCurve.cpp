@@ -42,8 +42,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /** @file  IFCProfile.cpp
  *  @brief Read profile and curves entities from IFC files
  */
+#include "defs.h"
 
-#ifndef flagASSIMP_BUILD_NO_IFC_IMPORTER
+#ifndef ASSIMP_BUILD_NO_IFC_IMPORTER
 #include "IFCUtil.h"
 
 namespace Assimp {
@@ -614,4 +615,4 @@ void BoundedCurve::SampleDiscrete(TempMesh& out) const {
 } // IFC
 } // Assimp
 
-#endif // flagASSIMP_BUILD_NO_IFC_IMPORTER
+#endif // ASSIMP_BUILD_NO_IFC_IMPORTER
