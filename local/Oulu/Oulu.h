@@ -21,6 +21,12 @@
 
 #define DEBUG_AUDIO_PIPE 1
 
+#if DEBUG_AUDIO_PIPE
+	#define AUDIOLOG(x) LOG("AUDIO DEBUG: " << x)
+#else
+	#define AUDIOLOG(x)
+#endif
+
 
 NAMESPACE_OULU_BEGIN
 using namespace Upp;

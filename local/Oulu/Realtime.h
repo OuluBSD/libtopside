@@ -33,6 +33,17 @@ class RealtimePacketBuffer {
 public:
 	RealtimePacketBuffer() {}
 	
+	void Dump() {
+		LOG("RealtimePacketBuffer: active buf: " << data_i);
+		for(int i = 0; i < BUFFER_COUNT; i++) {
+			LinkedList<T>& l = packets[i];
+			auto iter = l.begin();
+			int j = 0;
+			for(; iter; ++iter, ++j) {
+				LOG("RealtimePacketBuffer: " << i << ": " << j << ": " << iter()->GetOffset().ToString());
+			}
+		}
+	}
 	void Clear() {
 		lock.EnterWrite();
 		for(int i = 0; i < BUFFER_COUNT; i++)
@@ -44,7 +55,9 @@ public:
 	}
 	void RemoveFirst(int count=1) {
 		lock.EnterWrite();
+		count = min(count, queue_size);
 		packets[data_i].RemoveFirst(count);
+		queue_size -= count;
 		lock.LeaveWrite();
 	}
 	

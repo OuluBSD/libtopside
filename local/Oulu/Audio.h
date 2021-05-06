@@ -341,7 +341,7 @@ public:
 	#if DEBUG_AUDIO_PIPE
 	AudioPacket	Get(off32 offset) {
 		AudioPacket p = Buffer::Get(offset);
-		if (p.IsEmpty()) {LOG("AUDIO DEBUG: error: got empty packet in VolatileAudioBuffer");}
+		if (p.IsEmpty()) {AUDIOLOG("error: got empty packet in VolatileAudioBuffer");}
 		return p;
 	}
 	void Put(const AudioPacket& p, bool realtime) {
@@ -362,62 +362,6 @@ public:
 	
 	
 };
-
-#if 0
-
-class VolatileAudioBuffer : public Audio {
-	struct Packet {
-		Vector<byte> data;
-		
-	};
-	// Settings
-	AudioFormat aud_fmt;
-	int total_size = 0;
-	SpinLock lock;
-	
-	// Runtime values
-	LinkedList<byte> data[2];
-	int data_i = 0, read_pos = 0, write_pos = 0, queue_size = 0;
-	
-	#ifdef flagDEBUG
-	int size_limit = 10*1024*1024;
-	#endif
-	
-	bool CheckSize(int size);
-	void Get(AudioEx& e);
-	
-public:
-	
-	VolatileAudioBuffer() = default;
-	
-	void		SetSize(AudioFormat aud_fmt, int frames=2);
-	void		Clear();
-	void		Zero();
-	void		PutFrameFrom(VolatileAudioBuffer& src, bool realtime);
-	void		PutFrame(const AudioFormat& fmt, void* data, bool realtime);
-	
-	int			Get(void* v, int size);
-	void		Put(void* v, int size, bool realtime);
-	
-	int			GetMemSize() const {return data[0].GetCount();}
-	bool		IsEmpty() const {return data[0].IsEmpty();}
-	
-	void		Exchange(AudioEx& e) override;
-	int			GetQueueSize() const override {return queue_size;}
-	AudioFormat	GetAudioFormat() const override {return aud_fmt;}
-	bool		IsQueueFull() const override {return queue_size == total_size;}
-	
-	#ifdef flagDEBUG
-	void		SetSizeLimit(int l) {size_limit = l;}
-	#else
-	void		SetSizeLimit(int l) {}
-	#endif
-	
-};
-
-void AudioBufferUnitTest();
-
-#endif
 
 
 

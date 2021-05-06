@@ -81,6 +81,10 @@ void AudioExchangePoint::Update(double dt) {
 		Audio& sink_audio = sink->GetAudioSink();
 		bool sink_full = sink_audio.IsQueueFull();
 		
+		if (!sink_full) {AUDIOLOG("AudioExchangePoint::Update: exchanging");}
+		else {AUDIOLOG("AudioExchangePoint::Update: sink full");}
+		
+		int iter = 0;
 		while (src_sz && !sink_full) {
 			
 			// Consumer works with single connection
@@ -92,7 +96,17 @@ void AudioExchangePoint::Update(double dt) {
 				ex.SetStoring(sink_audio, src->Cfg());
 				src_audio.Exchange(ex);
 			}
+			
+			src_sz = src_audio.GetQueueSize();
+			sink_full = sink_audio.IsQueueFull();
+			++iter;
+			if (src_sz && !sink_full) {
+				AUDIOLOG("AudioExchangePoint::Update: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
+			}
 		}
+	}
+	else {
+		AUDIOLOG("AudioExchangePoint::Update: offset " << offset.ToString() << " empty source");
 	}
 	
 	SetOffset(ex.GetOffset());

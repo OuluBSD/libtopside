@@ -230,6 +230,12 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
 			off32 begin_offset = buf.GetOffset();
+			if (0) {
+				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
+				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
+				buf.Dump();
+			}
+			
 			consumer.SetOffset(begin_offset);
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
@@ -237,12 +243,17 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			
 			off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff)
+			if (diff) {
+				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed " << diff.ToString());
 				buf.RemoveFirst(diff.value);
+			}
+			else {
+				AUDIOLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
+			}
 		}
 		else {
 			#if DEBUG_AUDIO_PIPE
-			LOG("AUDIO DEBUG: ERROR: audio-device got empty data");
+			AUDIOLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
 			#endif
 			
 			memset(args.output, 0, size);

@@ -36,6 +36,10 @@ void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
 
 
 
+void AudioEx::SetOffset(off32 packet_count) {
+	//AUDIOLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
+	this->offset = packet_count;
+}
 
 
 

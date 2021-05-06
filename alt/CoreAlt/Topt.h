@@ -47,6 +47,7 @@ struct Moveable_ {
 template <class T>
 inline void AssertMoveable(T *t = 0) { if(t) AssertMoveable0(t); }
 
+
 #define NTL_MOVEABLE(T) template<> inline void AssertMoveable<T>(T *) {}
 
 #endif

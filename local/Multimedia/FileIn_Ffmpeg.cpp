@@ -522,6 +522,8 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
 		if (vol_aud) {
 			off32 begin = e.GetOffset();
+			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
+			ASSERT(p->GetOffset() == begin);
 			
 			producer.SetOffset(begin);
 			producer.SetDestination(*vol_aud);
@@ -586,7 +588,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			double t = time_pos + (i == 0 ? 0 : (double)total_samples / (double)aud_fmt.freq);
 			auto& p = buf.Add();
 			p = CreateAudioPacket();
-			LOG("rendering packet " << IntStr64(frame_counter));
+			AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 			off32 offset{frame_counter++};
 			p->Set(aud_fmt, offset, t);
 			Vector<byte>& data = p->Data();
@@ -618,8 +620,14 @@ void FfmpegAudioFrameQueue::DropAudioBuffer() {
 		off32::GetDifference(begin, end_offset_min),
 		off32::GetDifference(begin, end_offset_max));
 	
-	if (min_end_diff)
+	if (min_end_diff) {
+		auto iter = buf.begin();
+		for(int i = 0; i < min_end_diff.value; i++) {
+			AUDIOLOG("FfmpegAudioFrameQueue::DropAudioBuffer: dropping " << iter()->GetOffset().ToString());
+			++iter;
+		}
 		buf.RemoveFirst(min_end_diff.value);
+	}
 }
 
 #ifdef flagOPENGL

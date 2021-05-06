@@ -127,7 +127,7 @@ public:
 	
 	void	SetLoading(Audio& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
 	void	SetStoring(Audio& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
-	void	SetOffset(off32 packet_count) {this->offset = packet_count;}
+	void	SetOffset(off32 packet_count);
 	
 	
 	
