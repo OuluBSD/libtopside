@@ -52,32 +52,24 @@ bool ExchangeSourceProvider::print_debug = false;
 
 
 
-bool ExchangeSourceProvider::Link(Sink sink, Cookie& src_c, Cookie& sink_c) {
-	if (Accept(sink, src_c, sink_c)) {
-		base.AddLink(sink);
-		sink->base.AddLink(this);
-		if (print_debug) {
-			TypeId sink_type = sink->GetProviderType();
-			TypeId src_type = sink->GetProviderType();
-			String s;
-			s << src_type.CleanDemangledName() <<
-				"<" << GetConfigString() << "> linked to " <<
-				sink_type.CleanDemangledName() <<
-				"<" << sink->GetConfigString() << ">";
-			LOG(s);
-		}
-		OnLink(sink, src_c, sink_c);
-		sink->OnLink(this, src_c, sink_c);
-		return true;
+void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c) {
+	ASSERT(expt);
+	base.AddLink(expt, sink);
+	sink->base.AddLink(expt, this);
+	if (print_debug) {
+		TypeId sink_type = sink->GetProviderType();
+		TypeId src_type = sink->GetProviderType();
+		String s;
+		s << src_type.CleanDemangledName() <<
+			"<" << GetConfigString() << "> linked to " <<
+			sink_type.CleanDemangledName() <<
+			"<" << sink->GetConfigString() << ">";
+		LOG(s);
 	}
-	return false;
+	OnLink(sink, src_c, sink_c);
+	sink->OnLink(this, src_c, sink_c);
 }
 
-void ExchangeSourceProvider::Unlink(Sink sink) {
-	
-	TODO
-	
-}
 
 
 
@@ -102,8 +94,9 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	Clear();
 	this->src	= src;
 	this->sink	= sink;
-	src->AddSink(sink);
-	sink->AddSource(src);
+	ExchangePointRef thisref = AsRef();
+	src->AddSink(thisref, sink);
+	sink->AddSource(thisref, src);
 }
 
 void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie) {
@@ -114,6 +107,11 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	this->sink	= sink;
 	ASSERT(src->FindSink(sink) >= 0);
 	ASSERT(sink->FindSource(src) >= 0);
+}
+
+void ExchangePoint::Destroy(bool forced) {
+	ASSERT(meta_expt);
+	meta_expt->Remove(this, forced);
 }
 
 
@@ -142,6 +140,15 @@ String MetaExchangePoint::ToString() const {
 	
 }
 
+void MetaExchangePoint::Remove(ExchangePoint* expt, bool forced) {
+	for (auto iter = pts.begin(); iter; ++iter) {
+		if (*iter == expt) {
+			pts.Remove(iter, forced);
+			return;
+		}
+	}
+	throw Exc("MetaExchangePoint::Remove: internal error");
+}
 
 void MetaExchangePoint::UnlinkAll() {
 	pts.Clear();

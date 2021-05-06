@@ -43,6 +43,7 @@ public:
 	void Update(double dt) override;
 	void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
 	void UseConsumer(bool b=true) {use_consumer = b;}
+	void Destroy() {conn = 0; ForcedReset();}
 	
 	off32 GetOffset() const {return offset;}
 	

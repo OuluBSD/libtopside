@@ -78,6 +78,9 @@ void AudioSystem::Stop() {
 }
 
 void AudioSystem::Uninitialize() {
+	srcs.Clear();
+	sinks.Clear();
+	expts.Clear();
 	
 	WhenUninit();
 }

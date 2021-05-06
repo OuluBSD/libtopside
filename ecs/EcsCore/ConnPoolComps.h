@@ -28,7 +28,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	String ToString() const override {return MetaExchangePoint::ToString();}
-	void UnlinkAll() override;
+	void UnlinkAll(bool forced) override;
 	
 	void Update(double dt) override;
 	

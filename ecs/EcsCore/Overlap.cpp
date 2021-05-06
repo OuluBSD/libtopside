@@ -91,7 +91,9 @@ void CreateFlatOctreeEntityFromStringLevel(Rect r, PoolRef parent, const Vector<
 		Ref<OverlapSource> src = detector.AsOverlapSource();
 		ASSERT(src);
 		CookieRef src_c, sink_c;
-		src->Link(sink, src_c, sink_c);
+		ExchangePointRef expt;
+		ASSERT(expt);
+		src->Link(expt, sink, src_c, sink_c);
 	}
 	else {
 		int h = 2;

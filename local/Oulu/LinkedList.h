@@ -43,7 +43,8 @@ public:
 	}
 	
 	
-	bool operator==(const Ref& r) {return r.o == o;}
+	bool operator==(const Ref& r) const {return r.o == o;}
+	bool operator==(T* o) const {return this->o == o;}
 	Ref& operator=(const Ref& r) {return Set(r);}
 	Ref& operator=(T* o) {Clear(); if (o) {this->o = o; o->IncRef();} return *this;}
 	T* operator->() {return o;}
@@ -100,6 +101,7 @@ public:
 	void IncRef() {++refs;}
 	void DecRef() {ASSERT(refs > 0); --refs;}
 	
+	void ForcedReset() {refs = 0;}
 	
 };
 
@@ -282,10 +284,10 @@ public:
 	
 	
 	
-	Iterator begin()	{return Iterator(first);}
-	Iterator end()		{return Iterator();}
-	Iterator rbegin()	{return last ? Iterator(last) : Iterator();}
-	Iterator rend()		{return Iterator();}
+	Iterator begin() const		{return Iterator(first);}
+	Iterator end() const		{return Iterator();}
+	Iterator rbegin() const		{return last ? Iterator(last) : Iterator();}
+	Iterator rend() const		{return Iterator();}
 	
 };
 
@@ -636,7 +638,7 @@ public:
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
-	Iterator Remove(const Iterator& iter) {
+	Iterator Remove(const Iterator& iter, bool forced) {
 		Item* item = iter.GetItem();
 		if (item->prev) {
 			if (item->next) {
@@ -662,6 +664,8 @@ public:
 			}
 		}
 		--count;
+		if (forced)
+			item->value->ForcedReset();
 		item->value.Clear();
 		GetRecyclerPool().Return(item);
 		return item;
@@ -742,10 +746,10 @@ public:
 	R Add(const K& k, V* o) {keys.AddItem()->value = k; return values.Add(o);}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
-	Iterator Remove(const Iterator& iter) {
+	Iterator Remove(const Iterator& iter, bool forced=false) {
 		Iterator it;
 		it.key		= keys.Remove(iter.key);
-		it.value	= values.Remove(iter.value);
+		it.value	= values.Remove(iter.value, forced);
 		return it;
 	}
 	

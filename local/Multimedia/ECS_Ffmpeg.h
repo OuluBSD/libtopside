@@ -47,6 +47,8 @@ public:
 	MediaStreamThread& GetInput() {return vi;}
 	
 	
+	Callback WhenStopped;
+	
 	static bool AllowDuplicates() {return true;}
 	
 };

@@ -43,6 +43,7 @@ public:
 	typedef MP3Player CLASSNAME;
 	MP3Player() {}
 	void OnError();
+	void OnStop();
 	void Initialize() override;
 	void Uninitialize() override;
 	

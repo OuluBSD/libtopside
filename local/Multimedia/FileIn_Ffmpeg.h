@@ -191,6 +191,10 @@ public:
 	void	Close() override;
 	String	GetPath() const override;
 	
+	
+	
+	Callback WhenStopped;
+	
 };
 
 NAMESPACE_OULU_END

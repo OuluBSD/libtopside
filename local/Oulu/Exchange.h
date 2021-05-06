@@ -5,6 +5,10 @@
 NAMESPACE_OULU_BEGIN
 
 
+class MetaExchangePoint;
+typedef Ref<MetaExchangePoint> MetaExchangePointRef;
+
+
 
 template<class T>
 struct OffsetLoop {
@@ -186,40 +190,68 @@ typedef Ref<ExchangeProviderBase> ExchangeProviderBaseRef;
 
 template <class T>
 class ExchangeProviderT {
+	
+public:
 	using R = Ref<T>;
-	Vector<R> links;
+	struct Link : Moveable<Link> {
+		ExchangePointRef expt;
+		R dst;
+		
+		template <class K> Ref<K> As() const {return dst;}
+		template <class K> operator Ref<K>() const {return dst;}
+	};
+	
+private:
+	LinkedList<Link> links;
 	bool multi_conn = false;
 	
 protected:
 	friend class ExchangeSinkProvider;
 	friend class ExchangeSourceProvider;
-	int FindLink(R r) {
+	int FindLink(R r) const {
 		int i = 0;
-		for(R& l : links) {
-			if (l == r)
+		LinkedList<Link>& links = const_cast<LinkedList<Link>&>(this->links);
+		for(auto iter = links.begin(); iter; ++iter) {
+			if (iter().dst == r)
 				return i;
 			++i;
 		}
 		return -1;
 	}
-	void AddLink(Ref<ExchangeProviderBase> link) {
-		R r = link;
+	void AddLink(ExchangePointRef expt, R r) {
 		ASSERT(FindLink(r) < 0);
 		ASSERT(links.IsEmpty() || multi_conn);
-		links << r;
+		Link& l = links.Add();
+		l.expt = expt;
+		l.dst = r;
 	}
+	
+	LinkedList<Link>& GetConnections() {return links;}
 	
 public:
 	
 	void SetMultiConnection(bool b) {
 		multi_conn = b;
 	}
-	void UnlinkAll() {
-		TODO
+	
+	const LinkedList<Link>& GetConnections() const {return links;}
+	
+	void Unlink(R o, bool forced) {
+		for(auto iter = links.begin(); iter; ++iter) {
+			Link& l = iter();
+			if (l.dst == o) {
+				l.expt->Destroy(forced);
+				links.Remove(iter);
+				break;
+			}
+		}
 	}
 	
-	const Vector<R>& GetConnections() const {return links;}
-	
+	void UnlinkAll(bool forced) {
+		for(auto iter = links.begin(); iter; ++iter)
+			iter().expt->Destroy(forced);
+		links.Clear();
+	}
 };
 
 
@@ -240,7 +272,9 @@ class ExchangeSinkProvider : public ExchangeProviderBase {
 protected:
 	friend class ExchangeSourceProvider;
 	
-	ExchangeProviderT<ExchangeSourceProvider> base;
+	using ExProv = ExchangeProviderT<ExchangeSourceProvider>;
+	
+	ExProv base;
 	
 public:
 	using Sink = Ref<ExchangeSinkProvider>;
@@ -250,7 +284,7 @@ public:
 protected:
 	friend class ExchangePoint;
 	
-	void AddSource(Ref<ExchangeSourceProvider> src) {base.AddLink(src);}
+	void AddSource(ExchangePointRef expt, Ref<ExchangeSourceProvider> src) {base.AddLink(expt, src);}
 	int FindSource(Ref<ExchangeSourceProvider> src) {return base.FindLink(src);}
 	virtual void OnLink(Source src, Cookie src_c, Cookie sink_c) {}
 	
@@ -260,10 +294,10 @@ public:
 	
 	
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(Source src);
+	void UnlinkAll(bool forced) {base.UnlinkAll(forced);}
+	void Unlink(Source src, bool forced) {base.Unlink(src, forced);}
 	
-	const Vector<Source>& GetConnections() const {return base.GetConnections();}
+	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
 };
 
@@ -271,7 +305,10 @@ typedef Ref<ExchangeSinkProvider> ExchangeSinkProviderRef;
 
 
 class ExchangeSourceProvider : public ExchangeProviderBase {
-	ExchangeProviderT<ExchangeSinkProvider> base;
+	
+	using ExProv = ExchangeProviderT<ExchangeSinkProvider>;
+	
+	ExProv base;
 	
 	static bool print_debug;
 	
@@ -283,9 +320,8 @@ public:
 protected:
 	friend class ExchangePoint;
 	
-	void AddSink(Ref<ExchangeSinkProvider> sink) {base.AddLink(sink);}
+	void AddSink(ExchangePointRef expt, Ref<ExchangeSinkProvider> sink) {base.AddLink(expt, sink);}
 	int FindSink(Ref<ExchangeSinkProvider> sink) {return base.FindLink(sink);}
-	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
 	virtual void OnLink(Sink sink, Cookie src_c, Cookie sink_c) {}
 	
 public:
@@ -293,12 +329,13 @@ public:
 	virtual ~ExchangeSourceProvider() {}
 	
 	
-	bool Link(Sink sink, Cookie& src_c, Cookie& sink_c);
+	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
+	void Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c);
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(Sink sink);
+	void UnlinkAll(bool forced) {base.UnlinkAll(forced);}
+	void Unlink(Sink sink, bool forced) {base.Unlink(sink, forced);}
 	
-	const Vector<Sink>& GetConnections() const {return base.GetConnections();}
+	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
 };
 
@@ -313,6 +350,7 @@ class ExchangePoint : public LockedScopeEnabler<ExchangePoint> {
 protected:
 	friend class MetaExchangePoint;
 	
+	MetaExchangePointRef		meta_expt;
 	ExchangeSourceProviderRef	src;
 	ExchangeSinkProviderRef		sink;
 	CookieRef					src_cookie;
@@ -329,7 +367,7 @@ public:
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
-	
+	void Destroy(bool forced);
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}
@@ -341,7 +379,7 @@ public:
 
 
 
-class MetaExchangePoint {
+class MetaExchangePoint : public LockedScopeEnabler<MetaExchangePoint> {
 	
 protected:
 	RefLinkedListIndirect<ExchangePoint> pts;
@@ -358,10 +396,11 @@ public:
 		if (!o)
 			o = new T();
 		Ref<T> pt = pts.Add(o);
-		
+		pt->meta_expt = AsRef();
 		return pt;
 	}
 
+	void Remove(ExchangePoint* expt, bool forced);
 	
 	String ToString() const;
 	

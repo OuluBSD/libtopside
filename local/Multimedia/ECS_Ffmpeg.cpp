@@ -10,6 +10,8 @@ NAMESPACE_OULU_BEGIN
 FfmpegComponent::FfmpegComponent() {
 	def_cap_sz = Size(1280,720);
 	def_cap_fps = 30;
+	
+	file_in.WhenStopped << Proxy(WhenStopped);
 }
 
 void FfmpegComponent::Initialize() {

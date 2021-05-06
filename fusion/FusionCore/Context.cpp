@@ -733,12 +733,15 @@ bool FusionContextComponent::ConnectComponents() {
 				
 				if (match) {
 					CookieRef src_cookie, sink_cookie;
+					
 					if (&src_base == &sink_base) {
 						comp_sink->is_doublebuf = true;
 						found = true;
 						break;
 					}
-					else if (src->Link(sink, src_cookie, sink_cookie)) {
+					else if (src->Accept(sink, src_cookie, sink_cookie)) {
+						ExchangePointRef expt;
+						src->Link(expt, sink, src_cookie, sink_cookie);
 						found = true;
 						break;
 					}

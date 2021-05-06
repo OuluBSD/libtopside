@@ -150,7 +150,11 @@ bool FfmpegFileInput::ReadFrame() {
 		is_eof = false;
 		return true;
 	}
-	is_eof = true;
+	
+	if (!is_eof) {
+		is_eof = true;
+		WhenStopped();
+	}
 	
 	return false;
 }
@@ -576,7 +580,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	// Sometimes you get the sample rate at this point
 	if (!aud_fmt.sample_rate)
 		aud_fmt.sample_rate = frame->nb_samples;
-	ASSERT(aud_fmt.sample_rate == frame->nb_samples);
+	//breaks in the end of file: ASSERT(aud_fmt.sample_rate == frame->nb_samples);
 	ASSERT(aud_fmt.IsValid());
 	
 	#ifdef flagDEBUG
@@ -587,7 +591,6 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		frame->format == AV_SAMPLE_FMT_FLTP ||
 		frame->format == AV_SAMPLE_FMT_DBLP;
 	ASSERT(aud_fmt.IsValid());
-	ASSERT(frame->nb_samples == aud_fmt.sample_rate);
 	ASSERT(frame->sample_rate == aud_fmt.freq);
 	ASSERT(frame->channels == aud_fmt.channels);
 	ASSERT(var_size == aud_fmt.var_size);
@@ -603,9 +606,9 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			off32 offset{frame_counter++};
 			p->Set(aud_fmt, offset, t);
 			Vector<byte>& data = p->Data();
-			int sz = frame->linesize[i];
-			data.SetCount(sz);
-			memcpy(data.begin(), frame->data[i], sz);
+			int sz = max(frame->linesize[i], aud_fmt.GetFrameBytes());
+			data.SetCount(sz, 0);
+			memcpy(data.begin(), frame->data[i], frame->linesize[i]);
 			total_samples += sz / aud_fmt.GetSampleBytes();
 		}
 	}

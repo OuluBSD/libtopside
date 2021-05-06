@@ -34,6 +34,10 @@ void MP3Player::OnError() {
 	GetEntity().GetMachine().SetNotRunning();
 }
 
+void MP3Player::OnStop() {
+	GetEntity().GetMachine().SetNotRunning();
+}
+
 void MP3Player::Initialize() {
 	//auto& mach = GetEntity().GetMachine();
 	//Ref<EntityStore> es = mach.Get<EntityStore>();
@@ -69,6 +73,8 @@ void MP3Player::Initialize() {
 	audio   = e.Find<PortaudioSinkComponent>();
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
+	
+	file_in->WhenStopped << THISBACK(OnStop);
 	
 	Pool& p = e.GetPool();
 	p.Add<ConnectAllInterfaces<AudioSource>>();

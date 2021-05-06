@@ -13,22 +13,22 @@ void ConnectAllInterfaces<T>::Initialize() {
 
 template <class T>
 void ConnectAllInterfaces<T>::Uninitialize() {
-	UnlinkAll();
+	UnlinkAll(false);
 }
 
 template <class T>
-void ConnectAllInterfaces<T>::UnlinkAll() {
+void ConnectAllInterfaces<T>::UnlinkAll(bool forced) {
 	Machine& mach = ConnectorBase::GetPool().GetMachine();
 	
 	if (!mach.IsRunning()) {
 		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->UnlinkAll();
-			pt->Sink()		->UnlinkAll();
+			pt->Source()	->UnlinkAll(forced);
+			pt->Sink()		->UnlinkAll(forced);
 		}
 	}
 	else {
 		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->Unlink(pt->Sink());
+			pt->Source()	->Unlink(pt->Sink(), forced);
 		}
 	}
 	
@@ -59,8 +59,9 @@ void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_
 			for(Vector<Ref<T>>& src_scope : src_stack) {
 				for (Ref<T>& src : src_scope) {
 					CookieRef src_cookie, sink_cookie;
-					if (src->Link(sink, src_cookie, sink_cookie)) {
+					if (src->Accept(sink, src_cookie, sink_cookie)) {
 						Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+						src->Link(ep, sink, src_cookie, sink_cookie);
 						ep->Init(this);
 						ep->Set(src, sink, src_cookie, sink_cookie);
 					}
