@@ -19,11 +19,11 @@
 #undef Complex
 
 
-#define DEBUG_AUDIO_PIPE 1
-
-#if DEBUG_AUDIO_PIPE
+#ifdef flagDEBUG_AUDIO
+	#define DEBUG_AUDIO_PIPE 1
 	#define AUDIOLOG(x) LOG("AUDIO DEBUG: " << x)
 #else
+	#define DEBUG_AUDIO_PIPE 0
 	#define AUDIOLOG(x)
 #endif
 

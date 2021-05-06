@@ -523,7 +523,11 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		if (vol_aud) {
 			off32 begin = e.GetOffset();
 			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
-			ASSERT(p->GetOffset() == begin);
+			ASSERT(!sink.IsQueueFull());
+			/*if (!(p->GetOffset() == begin)) {
+				vol_aud->Dump();
+			}
+			ASSERT(p->GetOffset() == begin);*/
 			
 			producer.SetOffset(begin);
 			producer.SetDestination(*vol_aud);
@@ -534,11 +538,18 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 			off32 end = producer.GetOffset();
 			e.SetOffset(end);
 			
+			off32 diff = off32::GetDifference(begin, end);
+			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: produced " << diff.ToString());
+			
 			begin_offset_min.TestSetMin(begin);
 			begin_offset_max.TestSetMax(begin);
 			end_offset_min.TestSetMin(end);
 			end_offset_max.TestSetMax(end);
-			exchange_count++;
+			
+			exchange_count += diff.value;
+			
+			if (!diff)
+				e.SetFail();
 		}
 		else {
 			TODO

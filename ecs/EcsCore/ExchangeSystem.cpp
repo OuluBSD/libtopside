@@ -85,9 +85,12 @@ void AudioExchangePoint::Update(double dt) {
 		else {AUDIOLOG("AudioExchangePoint::Update: sink full");}
 		
 		int iter = 0;
+		int total_exchanged = 0;
+		int max_exchange = src_sz;
 		while (src_sz && !sink_full) {
+			off32 begin = ex.GetOffset();
 			
-			// Consumer works with single connection
+			// Consumer works with single connection only
 			if (use_consumer) {
 				ex.SetLoading(src_audio, src->Cfg());
 				sink_audio.Exchange(ex);
@@ -96,6 +99,17 @@ void AudioExchangePoint::Update(double dt) {
 				ex.SetStoring(sink_audio, src->Cfg());
 				src_audio.Exchange(ex);
 			}
+			
+			if (ex.IsFail()) {
+				AUDIOLOG("error: AudioExchangePoint::Update: exchange failed");
+				break;
+			}
+			
+			off32 end = ex.GetOffset();
+			off32 exchanged = off32::GetDifference(begin, end);
+			total_exchanged += exchanged.value;
+			if (total_exchanged >= max_exchange)
+				break;
 			
 			src_sz = src_audio.GetQueueSize();
 			sink_full = sink_audio.IsQueueFull();

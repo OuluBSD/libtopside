@@ -26,7 +26,6 @@ class RealtimePacketBuffer {
 	RWMutex lock;
 	LinkedList<T> packets[BUFFER_COUNT];
 	int data_i = 0;
-	int queue_size = 0;
 	int size_limit = 0;
 	
 	
@@ -49,22 +48,21 @@ public:
 		for(int i = 0; i < BUFFER_COUNT; i++)
 			packets[i].Clear();
 		data_i = 0;
-		queue_size = 0;
 		size_limit = 0;
 		lock.LeaveWrite();
 	}
 	void RemoveFirst(int count=1) {
 		lock.EnterWrite();
-		count = min(count, queue_size);
+		count = min(count, packets[data_i].GetCount());
+		AUDIOLOG("RealtimePacketBuffer::RemoveFirst: " << IntStr(count));
 		packets[data_i].RemoveFirst(count);
-		queue_size -= count;
 		lock.LeaveWrite();
 	}
 	
 	void		SetLimit(int i) {size_limit = i;}
 	
-	int			GetQueueSize() const {return queue_size;}
-	bool		IsQueueFull() const {return queue_size >= size_limit;}
+	int			GetQueueSize() const {return packets[data_i].GetCount();}
+	bool		IsQueueFull() const {return packets[data_i].GetCount() >= size_limit;}
 	
 	off32 GetOffset() const {
 		LinkedList<T>& l = const_cast<LinkedList<T>&>(packets[data_i]);
@@ -106,14 +104,12 @@ public:
 			LinkedList<T>& l = packets[data_i];
 			ASSERT(l.IsEmpty());
 			l.Add(p);
-			queue_size = 1;
 			ASSERT(size_limit > 0);
 		}
 		else {
-			ASSERT(queue_size < size_limit);
 			LinkedList<T>& l = packets[data_i];
+			ASSERT(l.GetCount() < size_limit);
 			l.Add(p);
-			++queue_size;
 		}
 		lock.LeaveWrite();
 	}
