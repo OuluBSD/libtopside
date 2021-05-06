@@ -39,35 +39,6 @@ void MP3Player::OnStop() {
 }
 
 void MP3Player::Initialize() {
-	//auto& mach = GetEntity().GetMachine();
-	//Ref<EntityStore> es = mach.Get<EntityStore>();
-	//Pool& pool = GetEntity().GetPool();
-	
-	/*fusion = pool.Create<CompleteFusion>();
-	audio = pool.Create<CompleteMixer>();
-	track0 = pool.Create<CompleteMixerTrackBegin>();
-	channel0 = pool.Create<CompleteMixerChannel>();
-	output = pool.Create<CompleteMixerOutput>();*/
-	
-	/*fusion->Find<Connector>()->ConnectAll();
-	audio->Find<Connector>()->ConnectAll();
-	track0->Find<Connector>()->ConnectAll();
-	channel0->Find<Connector>()->ConnectAll();
-	output->Find<Connector>()->ConnectAll();*/
-	
-	/*ctx = e->Find<MixerContextComponent>();
-	if (ctx) {
-		ctx->WhenError << THISBACK(OnError);
-		if (file_path.GetCount()) {
-			ctx->PostLoadFileAny(file_path); // async cmd
-		}
-		else {
-			LOG("error: sound file path is required");
-			GetMachine().SetNotRunning();
-			return;
-		}
-	}*/
-	
 	Entity& e = GetEntity();
 	file_in = e.Find<FfmpegComponent>();
 	audio   = e.Find<PortaudioSinkComponent>();

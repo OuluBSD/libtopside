@@ -14,7 +14,7 @@ struct ConnectorBase : Destroyable, Enableable, LockedScopeEnabler<ConnectorBase
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
 	virtual void Update(double dt) = 0;
-	virtual void UnlinkAll(bool forced) {};
+	virtual void UnlinkAll() {};
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const {return "<not implemented>";}

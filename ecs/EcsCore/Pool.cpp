@@ -30,13 +30,13 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 	
-void Pool::UnlinkDeep(bool force) {
+void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
-		it().UnlinkDeep(force);
+		it().UnlinkDeep();
 	}
 	
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UnlinkAll(force);
+		it().UnlinkAll();
 	}
 }
 
@@ -77,7 +77,7 @@ void Pool::ReverseEntities() {
 }
 
 void Pool::Clear() {
-	UnlinkDeep(0);
+	UnlinkDeep();
 	UninitializeComponentsDeep();
 	ClearComponentsDeep();
 	ClearDeep();

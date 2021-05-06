@@ -638,7 +638,7 @@ public:
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
-	Iterator Remove(const Iterator& iter, bool forced) {
+	Iterator Remove(const Iterator& iter) {
 		Item* item = iter.GetItem();
 		if (item->prev) {
 			if (item->next) {
@@ -664,8 +664,6 @@ public:
 			}
 		}
 		--count;
-		if (forced)
-			item->value->ForcedReset();
 		item->value.Clear();
 		GetRecyclerPool().Return(item);
 		return item;
@@ -746,10 +744,10 @@ public:
 	R Add(const K& k, V* o) {keys.AddItem()->value = k; return values.Add(o);}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
-	Iterator Remove(const Iterator& iter, bool forced=false) {
+	Iterator Remove(const Iterator& iter) {
 		Iterator it;
 		it.key		= keys.Remove(iter.key);
-		it.value	= values.Remove(iter.value, forced);
+		it.value	= values.Remove(iter.value);
 		return it;
 	}
 	

@@ -236,20 +236,20 @@ public:
 	
 	const LinkedList<Link>& GetConnections() const {return links;}
 	
-	void Unlink(R o, bool forced) {
+	void Unlink(R o) {
 		for(auto iter = links.begin(); iter; ++iter) {
 			Link& l = iter();
 			if (l.dst == o) {
-				l.expt->Destroy(forced);
+				l.expt->Destroy();
 				links.Remove(iter);
 				break;
 			}
 		}
 	}
 	
-	void UnlinkAll(bool forced) {
+	void UnlinkAll() {
 		for(auto iter = links.begin(); iter; ++iter)
-			iter().expt->Destroy(forced);
+			iter().expt->Destroy();
 		links.Clear();
 	}
 };
@@ -294,8 +294,8 @@ public:
 	
 	
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll(bool forced) {base.UnlinkAll(forced);}
-	void Unlink(Source src, bool forced) {base.Unlink(src, forced);}
+	void UnlinkAll() {base.UnlinkAll();}
+	void Unlink(Source src) {base.Unlink(src);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
@@ -332,8 +332,8 @@ public:
 	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
 	void Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c);
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll(bool forced) {base.UnlinkAll(forced);}
-	void Unlink(Sink sink, bool forced) {base.Unlink(sink, forced);}
+	void UnlinkAll() {base.UnlinkAll();}
+	void Unlink(Sink sink) {base.Unlink(sink);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
@@ -367,7 +367,7 @@ public:
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
-	void Destroy(bool forced);
+	void Destroy();
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}
@@ -400,7 +400,7 @@ public:
 		return pt;
 	}
 
-	void Remove(ExchangePoint* expt, bool forced);
+	void Remove(ExchangePoint* expt);
 	
 	String ToString() const;
 	

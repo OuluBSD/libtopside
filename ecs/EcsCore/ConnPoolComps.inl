@@ -13,22 +13,22 @@ void ConnectAllInterfaces<T>::Initialize() {
 
 template <class T>
 void ConnectAllInterfaces<T>::Uninitialize() {
-	UnlinkAll(false);
+	UnlinkAll();
 }
 
 template <class T>
-void ConnectAllInterfaces<T>::UnlinkAll(bool forced) {
+void ConnectAllInterfaces<T>::UnlinkAll() {
 	Machine& mach = ConnectorBase::GetPool().GetMachine();
 	
 	if (!mach.IsRunning()) {
 		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->UnlinkAll(forced);
-			pt->Sink()		->UnlinkAll(forced);
+			pt->Source()	->UnlinkAll();
+			pt->Sink()		->UnlinkAll();
 		}
 	}
 	else {
 		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->Unlink(pt->Sink(), forced);
+			pt->Source()	->Unlink(pt->Sink());
 		}
 	}
 	

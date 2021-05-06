@@ -57,8 +57,8 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_
 	base.AddLink(expt, sink);
 	sink->base.AddLink(expt, this);
 	if (print_debug) {
+		TypeId src_type = GetProviderType();
 		TypeId sink_type = sink->GetProviderType();
-		TypeId src_type = sink->GetProviderType();
 		String s;
 		s << src_type.CleanDemangledName() <<
 			"<" << GetConfigString() << "> linked to " <<
@@ -109,9 +109,9 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	ASSERT(sink->FindSource(src) >= 0);
 }
 
-void ExchangePoint::Destroy(bool forced) {
+void ExchangePoint::Destroy() {
 	ASSERT(meta_expt);
-	meta_expt->Remove(this, forced);
+	meta_expt->Remove(this);
 }
 
 
@@ -140,10 +140,10 @@ String MetaExchangePoint::ToString() const {
 	
 }
 
-void MetaExchangePoint::Remove(ExchangePoint* expt, bool forced) {
+void MetaExchangePoint::Remove(ExchangePoint* expt) {
 	for (auto iter = pts.begin(); iter; ++iter) {
 		if (*iter == expt) {
-			pts.Remove(iter, forced);
+			pts.Remove(iter);
 			return;
 		}
 	}
