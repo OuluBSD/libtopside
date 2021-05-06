@@ -47,11 +47,7 @@ struct Moveable_ {
 template <class T>
 inline void AssertMoveable(T *t = 0) { if(t) AssertMoveable0(t); }
 
-#if defined(COMPILER_MSC) || defined(COMPILER_GCC) && (__GNUC__ < 4 || __GNUC_MINOR__ < 1)
-	#define NTL_MOVEABLE(T) inline void AssertMoveable0(T *) {}
-#else
-	#define NTL_MOVEABLE(T) template<> inline void AssertMoveable<T>(T *) {}
-#endif
+#define NTL_MOVEABLE(T) template<> inline void AssertMoveable<T>(T *) {}
 
 #endif
 

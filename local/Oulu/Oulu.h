@@ -58,6 +58,7 @@ NAMESPACE_OULU_END
 #include "UnitTest.h"
 #include "Image.h"
 #include "Geom.h"
+#include "Realtime.h"
 #include "Audio.h"
 #include "SystemAudio.h"
 #include "Video.h"

@@ -43,8 +43,7 @@ public:
 	// AudioStream
 	Audio&						GetAudio() override {return abuffer;}
 	void						FillAudioBuffer() override {}
-	void						DropAudioFrames(int frames) override {}
-	int							GetAudioBufferSize() const override {return 0;}
+	void						DropAudioBuffer() override {}
 	
 	// VideoStream
 	void						FillVideoBuffer() override;

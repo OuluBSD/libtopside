@@ -11,29 +11,37 @@ END_UPP_NAMESPACE
 NAMESPACE_OULU_BEGIN
 
 struct AudioFormat {
-	int var_size = 0;
-	int sample_rate = 0;
-	int channels = 0;
 	int freq = 0;
+	int sample_rate = 0;
+	int var_size = 0;
+	int channels = 0;
 	bool is_var_float = 0;
 	bool is_var_signed = 0;
 	bool is_var_bigendian = 0;
 	
 	bool IsValid() const {return var_size > 0 && sample_rate > 0 && channels > 0 && freq > 0;}
-	void Clear() {memset(this, 0, sizeof(AudioFormat));}
-	bool operator!=(const AudioFormat& fmt) const {return !(*this == fmt);}
-	bool operator==(const AudioFormat& fmt) const {
+	bool IsCopyCompatible(const AudioFormat& fmt) const {
 		return	var_size			== fmt.var_size &&
-				sample_rate			== fmt.sample_rate &&
 				channels			== fmt.channels &&
-				freq				== fmt.freq &&
 				is_var_float		== fmt.is_var_float &&
 				is_var_signed		== fmt.is_var_signed &&
 				is_var_bigendian	== fmt.is_var_bigendian;
 	}
+	bool IsPlaybackCompatible(const AudioFormat& fmt) const {
+		return	freq				== fmt.freq &&
+				IsCopyCompatible(fmt);
+	}
+	bool IsSame(const AudioFormat& fmt) const {
+		return	sample_rate			== fmt.sample_rate &&
+				IsCopyCompatible(fmt);
+	}
+	void Clear() {memset(this, 0, sizeof(AudioFormat));}
+	bool operator!=(const AudioFormat& fmt) const {return !IsSame(fmt);}
+	bool operator==(const AudioFormat& fmt) const {return IsSame(fmt);}
 	
-	int GetFrameBytes() const {return var_size * sample_rate * channels;}
-	int GetFrameBytes(int dst_sample_rate) const {return var_size * dst_sample_rate * channels;}
+	int GetSampleBytes() const {return var_size * channels;}
+	int GetFrameBytes() const {return var_size * channels * sample_rate;}
+	int GetFrameBytes(int dst_sample_rate) const {return var_size * channels * dst_sample_rate;}
 	
 	template <class T> bool IsSampleType() const {
 		#if CPU_LITTLE_ENDIAN
@@ -46,6 +54,42 @@ struct AudioFormat {
 		return var_size == sizeof(T);
 	}
 };
+
+
+
+class AudioPacketBase : Moveable<AudioPacketBase> {
+	Vector<byte>		data;
+	AudioFormat			fmt;
+	off32				offset;
+	double				time;
+	
+	
+public:
+	
+	using Pool = RecyclerPool<AudioPacketBase>;
+	
+	AudioPacketBase() {}
+	
+	Vector<byte>&			Data() {return data;}
+	void					Set(AudioFormat fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
+	void					SetFormat(AudioFormat fmt) {this->fmt = fmt;}
+	void					SetOffset(off32 offset) {this->offset = offset;}
+	void					SetTime(double seconds) {time = seconds;}
+	
+	const Vector<byte>&		GetData() const {return data;}
+	AudioFormat				GetFormat() const {return fmt;}
+	off32					GetOffset() const {return offset;}
+	double					GetTime() const {return time;}
+	bool					IsOffset(const off32& o) const {return offset.value == o.value;}
+	
+};
+
+using AudioPacket = SharedRecycler<AudioPacketBase>;
+using AudioPacketBuffer = LinkedList<AudioPacket>;
+
+AudioPacket CreateAudioPacket();
+
+
 
 class Audio {
 	
@@ -210,19 +254,129 @@ struct AudioConverter {
 	}
 	
 	static bool Convert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
+	static bool Convert(const AudioPacket& src, AudioPacket& dst);
 	
 };
 
+
+class VolatileAudioBuffer;
+
+
+class AudioPacketProducer {
+	AudioPacketBuffer*		src = 0;
+	VolatileAudioBuffer*	dst = 0;
+	off32					offset;
+	bool					dst_realtime = false;
+	
+public:
+	AudioPacketProducer() {}
+	
+	
+	void		SetOffset(off32 offset) {this->offset = offset;}
+	void		SetSource(AudioPacketBuffer& src) {this->src = &src;}
+	void		SetDestination(VolatileAudioBuffer& dst) {this->dst = &dst;}
+	void		SetDestinationRealtime(bool b) {dst_realtime = b;}
+	void		ClearDestination() {dst = 0;}
+	
+	
+	void		ProduceAll(bool blocking=false);
+	bool		ProducePacket();
+	bool		IsFinished() const;
+	bool		IsEmptySource() const {return src == 0;}
+	off32		GetOffset() const {return offset;}
+	
+	operator bool() const {return IsFinished();}
+	
+};
+
+
+class AudioPacketConsumer {
+	VolatileAudioBuffer*	src = 0;
+	off32					offset;
+	//int					leftover_size = 0;
+	//AudioPacket			leftover;
+	
+	AudioFormat				dst_fmt;
+	VolatileAudioBuffer*	dst_buf = 0;
+	void*					dst_mem = 0;
+	byte*					dst_iter = 0;
+	int						dst_remaining = 0;
+	bool					dst_realtime = 0;
+	
+	int						internal_count;
+	
+	void Consume(AudioPacket& p/*, int data_shift*/);
+	
+public:
+	AudioPacketConsumer() {}
+	
+	void		SetOffset(off32 offset) {this->offset = offset;}
+	void		SetSource(VolatileAudioBuffer& src);
+	void		SetDestination(const AudioFormat& fmt, void* dst, int src_dst_size);
+	void		SetDestination(VolatileAudioBuffer& dst);
+	void		SetDestinationRealtime(bool b) {dst_realtime = b;}
+	void		ClearDestination();
+	
+	void		ConsumeAll(bool blocking=false);
+	bool		ConsumePacket();
+	bool		IsFinished() const;
+	bool		IsEmptySource() const {return src == 0;}
+	off32		GetOffset() const {return offset;}
+	
+	operator bool() const {return IsFinished();}
+	
+};
+
+
+class VolatileAudioBuffer : public Audio, public RealtimePacketBuffer<AudioPacket> {
+	AudioFormat preferred_fmt;
+	One<AudioPacketConsumer> consumer;
+	off32 dbg_offset;
+	
+public:
+	using Buffer = RealtimePacketBuffer<AudioPacket>;
+	
+	VolatileAudioBuffer() = default;
+	
+	#if DEBUG_AUDIO_PIPE
+	AudioPacket	Get(off32 offset) {
+		AudioPacket p = Buffer::Get(offset);
+		if (p.IsEmpty()) {LOG("AUDIO DEBUG: error: got empty packet in VolatileAudioBuffer");}
+		return p;
+	}
+	void Put(const AudioPacket& p, bool realtime) {
+		off32 off = p->GetOffset();
+		ASSERT(off == dbg_offset);
+		dbg_offset.value = off.value + 1;
+		Buffer::Put(p, realtime);
+	}
+	#endif
+	
+	void		SetSize(AudioFormat fmt, int frames) {preferred_fmt = fmt; Buffer::SetLimit(frames);}
+	
+	void		Exchange(AudioEx& e)	override;
+	int			GetQueueSize() const	override {return Buffer::GetQueueSize();}
+	AudioFormat	GetAudioFormat() const	override {return preferred_fmt;}
+	bool		IsQueueFull() const		override {return Buffer::IsQueueFull();}
+	
+	
+	
+};
+
+#if 0
+
 class VolatileAudioBuffer : public Audio {
+	struct Packet {
+		Vector<byte> data;
+		
+	};
 	// Settings
 	AudioFormat aud_fmt;
-	int frames = 0;
-	int frame_size = 0;
 	int total_size = 0;
 	SpinLock lock;
 	
 	// Runtime values
-	Vector<byte> data[2];
+	LinkedList<byte> data[2];
 	int data_i = 0, read_pos = 0, write_pos = 0, queue_size = 0;
 	
 	#ifdef flagDEBUG
@@ -245,8 +399,6 @@ public:
 	int			Get(void* v, int size);
 	void		Put(void* v, int size, bool realtime);
 	
-	byte*		GetActiveMem() {return data[data_i].Begin();}
-	const byte*	GetActiveMem() const {return data[data_i].Begin();}
 	int			GetMemSize() const {return data[0].GetCount();}
 	bool		IsEmpty() const {return data[0].IsEmpty();}
 	
@@ -263,8 +415,9 @@ public:
 	
 };
 
-
 void AudioBufferUnitTest();
+
+#endif
 
 
 
@@ -278,8 +431,7 @@ public:
 	
 	virtual Audio&	GetAudio() = 0;
 	virtual void	FillAudioBuffer() = 0;
-	virtual void	DropAudioFrames(int frames) = 0;
-	virtual int		GetAudioBufferSize() const = 0;
+	virtual void	DropAudioBuffer() = 0;
 	
 };
 

@@ -6,6 +6,50 @@ NAMESPACE_OULU_BEGIN
 
 
 
+template<class T>
+struct OffsetLoop {
+	using limits = std::numeric_limits<T>;
+	
+	T value = 0;
+	
+	
+	//OffsetLoop() {}
+	//OffsetLoop(T value) : value(value) {}
+	
+	void Clear() {value = 0;}
+	bool operator==(const OffsetLoop& o) const {return o.value == value;}
+	bool operator!=(const OffsetLoop& o) const {return o.value != value;}
+	void operator+=(const OffsetLoop& o) {value += o.value;}
+	void operator-=(const OffsetLoop& o) {value -= o.value;}
+	void operator++() {++value;}
+	operator bool() const {return value;}
+	
+	void SetMax() {value = limits::max();}
+	void SetMin() {value = limits::min();}
+	void TestSetMin(OffsetLoop v) {if (v.value < value) value = v.value;}
+	void TestSetMax(OffsetLoop v) {if (v.value > value) value = v.value;}
+	
+	String ToString() const {return Upp::ToString(value);}
+	
+	
+	static OffsetLoop GetDifference(OffsetLoop min, OffsetLoop max) {
+		OffsetLoop ret;
+		if (min != max)
+			ret.value =
+				min.value < max.value ?
+					max.value - min.value :
+					ret.value = limits::max() - min.value + 1 + max.value - limits::min();
+		return ret;
+	}
+	
+	
+};
+
+using off32 = OffsetLoop<dword>;
+
+
+
+
 struct RealtimeSourceConfig {
 	double dt = 0;
 	double sync_dt = 3.0;
@@ -15,10 +59,10 @@ struct RealtimeSourceConfig {
 	dword src_frame = 0;
 	bool sync = 0;
 	bool render = 0;
-	bool any_consumed = 0;
+	off32 begin_offset, end_offset;
 	
 	void Update(double dt, bool buffer_full);
-	void SetConsumed() {any_consumed = true;}
+	void SetOffset(off32 begin, off32 end) {begin_offset = begin; end_offset = end;}
 };
 
 #define MIN_AUDIO_BUFFER_FRAMES 2
@@ -68,21 +112,23 @@ class AudioEx : public ExchangeBase {
 	Audio* src = 0;
 	Audio* sink = 0;
 	const RealtimeSourceConfig* src_conf = 0;
+	off32 offset;
 	
 public:
 	AudioEx(AudioExchangePoint* expt) : expt(expt) {}
 	
-	Audio& Sink() const {return *sink;}
-	Audio& Source() const {return *src;}
-	const RealtimeSourceConfig& SourceConfig() const {return *src_conf;}
+	Audio&						Sink() const {return *sink;}
+	Audio&						Source() const {return *src;}
+	const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
+	AudioExchangePoint&			GetExchangePoint() {return *expt;}
+	off32						GetOffset() const {return offset;}
+	virtual bool				IsLoading() {return !storing;}
+	virtual bool				IsStoring() {return storing;}
 	
-	void SetLoading(Audio& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
-	void SetStoring(Audio& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
+	void	SetLoading(Audio& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
+	void	SetStoring(Audio& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
+	void	SetOffset(off32 packet_count) {this->offset = packet_count;}
 	
-	AudioExchangePoint& GetExchangePoint() {return *expt;}
-	
-	virtual bool IsLoading() {return !storing;}
-	virtual bool IsStoring() {return storing;}
 	
 	
 };

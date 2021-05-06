@@ -46,7 +46,7 @@ public:
 	// Audio
 	AudioStream&	GetAudioSource() override;
 	void			BeginAudioSource() override;
-	void			EndAudioSource(bool any_sink_consumed) override;
+	void			EndAudioSource() override;
 	
 	// Video
 	VideoStream&	GetVideoSource() override;

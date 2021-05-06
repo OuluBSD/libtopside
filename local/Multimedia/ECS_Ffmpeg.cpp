@@ -74,9 +74,19 @@ void FfmpegComponent::BeginAudioSource() {
 	file_in.FillAudioBuffer();
 }
 
-void FfmpegComponent::EndAudioSource(bool any_sink_consumed) {
-	if (any_sink_consumed)
-		file_in.DropAudioFrames(1);
+/*void FfmpegComponent::BeginUpdate(AudioExchangePointRef expt) {
+	off32 min_exchanged = file_in.GetPreviousExchangedAudioMinCount();
+	off32 exchanged = expt->GetExchangedCount();
+	if (min_exchanged <= exchanged)
+		expt->SetOffset(exchanged - min_exchanged);
+	else
+		expt->SetOffset(0);
+	
+	TODO // absolute off32
+}*/
+
+void FfmpegComponent::EndAudioSource() {
+	file_in.DropAudioBuffer();
 }
 
 /*void FfmpegComponent::EmitAudioSource(double dt) {

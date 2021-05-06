@@ -221,33 +221,24 @@ BufferedAudioDeviceStream::BufferedAudioDeviceStream() {
 }
 
 void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
+	if (consumer.IsEmptySource())
+		consumer.SetSource(buf);
+	
 	if (args.output) {
 		int size = fmt.GetFrameBytes();
-		if (buf.GetQueueSize() >= size) {
+		if (buf.GetQueueSize() > 0) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
-			int got = buf.Get(args.output, size);
-			#if DEBUG_AUDIO_PIPE
-			if (got == size) {
-				LOG("AUDIO DEBUG: wrote frame to audio-device: frame OK");
-			}
-			else {
-				LOG("AUDIO DEBUG: ERROR: writing frame to audio-device failed: asked " << size << ", got " << got);
-			}
-			#endif
+			off32 begin_offset = buf.GetOffset();
+			consumer.SetOffset(begin_offset);
+			consumer.SetDestination(fmt, args.output, size);
+			consumer.ConsumeAll(false);
+			consumer.ClearDestination();
 			
-			if (0) {
-				AudioFormat fmt = buf.GetAudioFormat();
-				if (fmt.var_size == 4 && fmt.is_var_float) {
-					float* it = (float*)args.output;
-					int samples = fmt.sample_rate * fmt.channels;
-					float* end = it + samples;
-					double sum = 0;
-					while (it != end)
-						sum += *it++;
-					LOG(sum);
-				}
-			}
+			off32 end_offset = consumer.GetOffset();
+			off32 diff = off32::GetDifference(begin_offset, end_offset);
+			if (diff)
+				buf.RemoveFirst(diff.value);
 		}
 		else {
 			#if DEBUG_AUDIO_PIPE

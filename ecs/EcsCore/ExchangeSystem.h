@@ -29,7 +29,9 @@ protected:
 
 class AudioExchangePoint : public ExchangePoint {
 	ConnectorBase* conn = 0;
-	bool any_sink_consumed = false;
+	off32 offset;
+	bool use_consumer = false;
+	bool dbg_offset_is_set = false;
 	
 public:
 	typedef AudioExchangePoint CLASSNAME;
@@ -39,8 +41,10 @@ public:
 	void Init(ConnectorBase* conn);
 	void Deinit();
 	void Update(double dt) override;
+	void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
+	void UseConsumer(bool b=true) {use_consumer = b;}
 	
-	bool AnySinkConsumed() const {return any_sink_consumed;}
+	off32 GetOffset() const {return offset;}
 	
 };
 

@@ -141,8 +141,6 @@ public:
 	void Clear();
 	void Zero();
 	
-	byte* GetActiveMem() {return data[data_i].Begin();}
-	const byte* GetActiveMem() const {return data[data_i].Begin();}
 	int GetMemSize() const {return data[0].GetCount();}
 	bool IsEmpty() const {return data[0].IsEmpty();}
 	

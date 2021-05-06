@@ -197,7 +197,7 @@ public:
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	operator bool() const {return count > 0;}
-	void RemoveFirst(int count) {
+	void RemoveFirst(int count=1) {
 		if (!count) return;
 		ASSERT(count > 0 && count <= this->count);
 		count = std::min(count, this->count);

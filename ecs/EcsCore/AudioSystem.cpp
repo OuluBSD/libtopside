@@ -19,12 +19,13 @@ void AudioSystem::Update(double dt) {
 	
 	for (AudioSourceRef src : srcs) {
 		AudioStream& stream = src->GetAudioSource();
-		bool buffer_full = stream.GetAudioBufferSize() >= 2;
+		int buf_sz = stream.GetAudio().GetQueueSize();
+		bool buffer_full = buf_sz >= 2;
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render) {
 			#if DEBUG_AUDIO_PIPE
-			LOG("AUDIO DEBUG: begin source " << HexStr(&*src) << src->GetConfigString() << "> render");
+			LOG("AUDIO DEBUG: begin source " << HexStr((size_t)&*src) << src->GetConfigString() << ">");
 			#endif
 			
 			src->BeginAudioSource();
@@ -33,26 +34,31 @@ void AudioSystem::Update(double dt) {
 	
 	for (AudioExchangePointRef expt : expts) {
 		AudioSourceRef src = expt->Source();
+		off32 begin_offset = expt->GetOffset();
 		
+		expt->SetOffset(begin_offset);
 		expt->Update(dt);
-		if (expt->AnySinkConsumed()) {
-			#if DEBUG_AUDIO_PIPE
+		
+		off32 end_offset = expt->GetOffset();
+		src->SetOffset(begin_offset, end_offset);
+		
+		#if DEBUG_AUDIO_PIPE
+		off32 diff = off32::GetDifference(begin_offset, end_offset);
+		if (diff) {
 			auto sink = expt->Sink();
-			LOG("AUDIO DEBUG: sink consumed " << HexStr(&*sink) << sink->GetConfigString() << ">");
-			#endif
-			
-			src->SetConsumed();
+			LOG("AUDIO DEBUG: sink " << HexStr((size_t)&*sink) << sink->GetConfigString() << "> consumed " << diff.ToString());
 		}
+		#endif
 	}
 	
 	for (AudioSourceRef src :srcs) {
 		const auto& cfg = src->Cfg();
-		if (cfg.any_consumed) {
+		if (cfg.begin_offset != cfg.end_offset) {
 			#if DEBUG_AUDIO_PIPE
-			LOG("AUDIO DEBUG: end source " << HexStr(&*src) << src->GetConfigString() << "> render");
+			LOG("AUDIO DEBUG: end source " << HexStr((size_t)&*src) << src->GetConfigString() << ">");
 			#endif
 			
-			src->EndAudioSource(cfg.any_consumed);
+			src->EndAudioSource();
 		}
 	}
 	

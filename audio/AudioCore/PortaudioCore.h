@@ -199,6 +199,7 @@ private:
 
 class BufferedAudioDeviceStream : public AudioDeviceStream {
 	VolatileAudioBuffer	buf;
+	AudioPacketConsumer consumer;
 	
 	void			SinkCallback(StreamCallbackArgs& args);
 	

@@ -30,14 +30,16 @@ void VideoSystem::Update(double dt) {
 		VideoSourceRef src = expt->Source();
 		
 		expt->Update(dt);
-		if (expt->AnySinkConsumed())
-			src->SetConsumed();
+		TODO
+		//if (expt->AnySinkConsumed())
+		//	src->SetConsumed();
 	}
 	
 	for (VideoSourceRef src :srcs) {
 		const auto& cfg = src->Cfg();
-		if (cfg.any_consumed)
-			src->EndVideoSource(cfg.any_consumed);
+		TODO
+		//if (cfg.exchanged)
+		//	src->EndVideoSource(1);
 	}
 	
 }

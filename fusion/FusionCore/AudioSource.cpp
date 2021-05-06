@@ -113,7 +113,7 @@ void FusionAudioSource::BeginAudioSource() {
 	TODO
 }
 
-void FusionAudioSource::EndAudioSource(bool any_sink_consumed) {
+void FusionAudioSource::EndAudioSource() {
 	TODO
 }
 

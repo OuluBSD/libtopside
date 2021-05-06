@@ -256,11 +256,11 @@ struct AudioSource : IO_IN(Audio) {
 	
 	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 	const RealtimeSourceConfig&	Cfg() const {return cfg;}
-	void						SetConsumed() {cfg.SetConsumed();}
+	void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 	
 	virtual AudioStream&		GetAudioSource() = 0;
 	virtual void				BeginAudioSource() = 0;
-	virtual void				EndAudioSource(bool any_sink_consumed) = 0;
+	virtual void				EndAudioSource() = 0;
 	
 private:
 	RealtimeSourceConfig		cfg;
@@ -291,7 +291,6 @@ struct VideoSource : IO_IN(Video) {
 
 	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 	const RealtimeSourceConfig&	Cfg() const {return cfg;}
-	void						SetConsumed() {cfg.SetConsumed();}
 	
 	virtual VideoStream&		GetVideoSource() = 0;
 	virtual void				BeginVideoSource() = 0;

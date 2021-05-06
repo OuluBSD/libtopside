@@ -16,7 +16,7 @@ struct RefBase {
 	Vector<WeakBase*> weaks;
 	Atomic refs;
 	RefBase() {refs = 1;}
-	virtual ~RefBase() {}
+	virtual ~RefBase() {ASSERT(!obj);} // deleting obj requires known type, use RefTemplate
 	void Inc() {refs++;}
 	void Dec() {
 		refs--;
@@ -38,27 +38,31 @@ struct RefTemplate : public RefBase {
 
 
 
-template <class T>
+template <class T, class Base=RefBase>
 class Shared : Moveable<Shared<T>> {
 	
 protected:
 	friend class Weak<T>;
-	RefBase* r = NULL;
+	Base* r = NULL;
 	T* o = NULL;
 
 public:
+	using S = Shared<T,Base>;
+	template <class K> using SharedT = Shared<K,Base>;
+	
 	Shared() {}
 	Shared(Shared&& s) {r = s.r; s.r = NULL; o = s.o; s.o = NULL;}
 	Shared(const Shared& o) {*this = o;}
+	Shared(T* o, Base* r) {SetPtr(o, r);}
 	#ifdef flagALTCORE
-	Shared(const Pick<Shared<T>>& pick) {Swap(pick.Get(), *this);}
+	Shared(const Pick<Shared>& pick) {Swap(pick.Get(), *this);}
 	#endif
 	~Shared() { Clear(); }
 	
 	void Create() { Clear(); r = new RefTemplate<T>(); o = new T(); r->obj = o;}
 	template<class K> void CreateAbstract() { Clear(); r = new RefTemplate<T>(); o = new K(); r->obj = o;}
 	void Clear() { if (r) { r->Dec(); r = NULL; o = NULL;} }
-	void operator=(const Shared<T>& s) {if (r == s.r) return; SetPtr(s.o, s.r);}
+	void operator=(const Shared& s) {if (r == s.r) return; SetPtr(s.o, s.r);}
 	bool IsEmpty() const { return r == NULL; }
 	T* operator->() {if (r) return o; return NULL;}
 	T* operator->() const {if (r) return o; return NULL;}
@@ -69,21 +73,21 @@ public:
 	bool operator!=(const T* ptr) const {if (r) return o != ptr; return true;}
 	bool operator==(const Shared& s) const {if (r && s.r) return o == s.o; return false;}
 	bool operator!=(const Shared& s) const {if (r && s.r) return o != s.o; return true;}
-	template <class K> Shared<K> As() {
+	template <class K> SharedT<K> As() {
 		static_assert(std::is_base_of<T, K>() || std::is_base_of<K, T>(), "K -> T or T -> K inheritance is required");
 		
 		if (o) {
 			K* ptr = dynamic_cast<K*>(o);
 			if (ptr) {
-				Shared<K> s;
+				SharedT<K> s;
 				s.SetPtr(ptr, r);
 				return s;
 			}
 		}
-		return Shared<K>();
+		return SharedT<K>();
 	}
-	void SetPtr(T* o, RefBase* r) {
-		Shared<T> tmp; Swap(*this, tmp); // don't unref until new ref!!!111!1
+	void SetPtr(T* o, Base* r) {
+		S tmp; Swap(*this, tmp); // don't unref until new ref!!!111!1
 		this->o = o;
 		this->r = r;
 		if (r) r->Inc();
@@ -97,7 +101,7 @@ public:
 		}
 		return *this;
 	}
-	const RefBase* GetBase() const {return r;}
+	const Base* GetBase() const {return r;}
 	String ToString() const {return r ? o->ToString() : "";}
 	
 };

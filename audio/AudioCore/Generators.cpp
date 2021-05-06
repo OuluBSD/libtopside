@@ -54,7 +54,7 @@ void SoundGeneratorComponent::BeginAudioSource() {
 	TODO
 }
 
-void SoundGeneratorComponent::EndAudioSource(bool any_sink_consumed) {
+void SoundGeneratorComponent::EndAudioSource() {
 	TODO
 }
 

@@ -77,19 +77,6 @@ public:
 
 
 
-class RealtimeStream {
-	
-public:
-	
-	virtual ~RealtimeStream() {}
-	
-	virtual double GetSeconds() const = 0;
-	
-	virtual String GetLastError() const {return String();}
-	
-};
-
-
 NAMESPACE_OULU_END
 
 #endif

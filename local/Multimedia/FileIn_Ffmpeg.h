@@ -10,16 +10,12 @@ class FfmpegAudioFrameQueue :
 	public AudioInputFrame,
 	public LockedScopeEnabler<FfmpegAudioFrameQueue>
 {
-	struct Frame : Moveable<Frame> {
-		AVFrame* frame;
-		double time_pos;
-	};
-	using Recycler = Oulu::Recycler<Frame,true>;
-	using Pool = RecyclerPool<Frame,true>;
-	
-	LinkedList<Recycler> frames;
-	Pool pool;
+	AudioPacketProducer producer;
+	AudioPacketBuffer buf;
+	dword frame_counter = 0;
 	int min_buf_size = MIN_AUDIO_BUFFER_FRAMES;
+	off32 begin, begin_offset_min, begin_offset_max, end_offset_min, end_offset_max;
+	dword exchange_count = 0;
 	
 protected:
 	friend class FfmpegFileInput;
@@ -31,8 +27,8 @@ public:
 	
 	void		Init();
 	void		Clear();
-	void		Process(double time_pos, AVFrame* frame);
-	void		DropFrames(int i);
+	void		FillAudioBuffer(double time_pos, AVFrame* frame);
+	void		DropAudioBuffer();
 	
 	void		Exchange(AudioEx& e) override;
 	int			GetQueueSize() const override;
@@ -90,7 +86,7 @@ public:
 	void		Exchange(VideoEx& e) override;
 	int			GetQueueSize() const override;
 	bool		IsQueueFull() const override;
-#ifdef flagOPENGL
+#ifdef flagOPENGFfmpegFileInputL
 	bool		PaintOpenGLTexture(int texture) override;
 #endif
 	VideoFormat	GetVideoFormat() const override;
@@ -179,8 +175,7 @@ public:
 	// Audio
 	Audio&	GetAudio() override;
 	void	FillAudioBuffer() override;
-	void	DropAudioFrames(int frames) override;
-	int		GetAudioBufferSize() const override {return aframe.GetQueueSize();}
+	void	DropAudioBuffer() override;
 	
 	// Video
 	void	FillVideoBuffer() override;

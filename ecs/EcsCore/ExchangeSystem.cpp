@@ -66,21 +66,25 @@ void AudioExchangePoint::Deinit() {
 }
 
 void AudioExchangePoint::Update(double dt) {
+	ASSERT(dbg_offset_is_set);
 	Ref<AudioSource>	src			= this->src;
 	Ref<AudioSink>		sink		= this->sink;
-	any_sink_consumed = false;
 	
 	AudioEx ex(this);
+	ex.SetOffset(offset);
+	
 	AudioStream& src_stream = src->GetAudioSource();
-	if (src_stream.GetAudioBufferSize()) {
-		
-		Audio& src_audio = src_stream.GetAudio();
+	Audio& src_audio = src_stream.GetAudio();
+	int src_sz = src_audio.GetQueueSize();
+	
+	if (src_sz) {
 		Audio& sink_audio = sink->GetAudioSink();
+		bool sink_full = sink_audio.IsQueueFull();
 		
-		if (!sink_audio.IsQueueFull()) {
-			any_sink_consumed = true;
+		while (src_sz && !sink_full) {
 			
-			if (0) {
+			// Consumer works with single connection
+			if (use_consumer) {
 				ex.SetLoading(src_audio, src->Cfg());
 				sink_audio.Exchange(ex);
 			}
@@ -90,6 +94,9 @@ void AudioExchangePoint::Update(double dt) {
 			}
 		}
 	}
+	
+	SetOffset(ex.GetOffset());
+	dbg_offset_is_set = false;
 }
 
 

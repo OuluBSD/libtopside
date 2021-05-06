@@ -58,13 +58,18 @@ public:
 		lock.Leave();
 	}
 	
+	static RecyclerPool& StaticPool() {static RecyclerPool pool; return pool;}
+	
 };
 
 
 template <class T, bool keep_as_constructed>
 class Recycler {
-	typedef RecyclerPool<T, keep_as_constructed> Pool;
 	
+public:
+	using Pool = RecyclerPool<T, keep_as_constructed> ;
+	
+private:
 	Pool* pool = 0;
 	One<T> o;
 	
@@ -83,7 +88,34 @@ public:
 };
 
 
+template <class T>
+class RecylerRefBase {
+	T* obj = NULL;
+	Vector<WeakBase*> weaks;
+	Atomic refs;
+	
+public:
+	using Pool = RecyclerPool<RecylerRefBase<T>>;
+	
+	RecylerRefBase() {refs = 1;}
+	virtual ~RecylerRefBase() {ASSERT(!obj);}
+	void SetObj(T* o) {obj = o;}
+	void Clear() {T::Pool::StaticPool().Return(obj); obj = 0;}
+	void Inc() {refs++;}
+	void Dec() {
+		refs--;
+		if (refs <= 0) {
+			for(int i = 0; i < weaks.GetCount(); i++) weaks[i]->SetDeleted();
+			Clear();
+			Pool::StaticPool().Return(this);
+		}
+	}
+	void IncWeak(WeakBase* w) {weaks.Add(w);}
+	void DecWeak(WeakBase* w) {for(int i = 0; i < weaks.GetCount(); i++) if (weaks[i] == w) {weaks.Remove(i--);}}
+};
 
+
+template <class T> using SharedRecycler = Shared<T, RecylerRefBase<T>>;
 
 
 
