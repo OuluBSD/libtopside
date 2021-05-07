@@ -11,8 +11,8 @@ NAMESPACE_OULU_BEGIN
 class DummyGenerator :
 	public Component<DummyGenerator>
 {
-	Ref<SoundGeneratorComponent> gen;
-	Ref<PortaudioSinkComponent> audio;
+	RefT_Entity<SoundGeneratorComponent> gen;
+	RefT_Entity<PortaudioSinkComponent> audio;
 	
 public:
 	typedef DummyGenerator CLASSNAME;
@@ -36,8 +36,8 @@ PREFAB_END
 class MP3Player :
 	public Component<MP3Player>
 {
-	Ref<FfmpegComponent> file_in;
-	Ref<PortaudioSinkComponent> audio;
+	RefT_Entity<FfmpegComponent> file_in;
+	RefT_Entity<PortaudioSinkComponent> audio;
 	
 public:
 	typedef MP3Player CLASSNAME;

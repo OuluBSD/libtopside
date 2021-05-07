@@ -49,7 +49,7 @@ void AudioExchangePoint::Init(ConnectorBase* conn) {
 		Ref<AudioSystem> sys = mach.Get<AudioSystem>();
 		ASSERT(sys);
 		if (sys)
-			sys->Add(this);
+			sys->Add(AsRef<AudioExchangePoint>());
 	}
 }
 
@@ -60,7 +60,7 @@ void AudioExchangePoint::Deinit() {
 		Ref<AudioSystem> sys = mach.Get<AudioSystem>();
 		ASSERT(sys);
 		if (sys)
-			sys->Remove(this);
+			sys->Remove(AsRef<AudioExchangePoint>());
 		conn = 0;
 	}
 }
@@ -170,7 +170,7 @@ void VideoExchangePoint::Init(ConnectorBase* conn) {
 		Ref<VideoSystem> sys = mach.Get<VideoSystem>();
 		ASSERT(sys);
 		if (sys)
-			sys->Add(this);
+			sys->Add(AsRef<VideoExchangePoint>());
 	}
 }
 
@@ -181,7 +181,7 @@ void VideoExchangePoint::Deinit() {
 		Ref<VideoSystem> sys = mach.Get<VideoSystem>();
 		ASSERT(sys);
 		if (sys)
-			sys->Remove(this);
+			sys->Remove(AsRef<VideoExchangePoint>());
 		conn = 0;
 	}
 }

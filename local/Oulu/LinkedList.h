@@ -16,21 +16,56 @@ void MemSwap(T& a, T& b) {
 }
 
 
+
+class RefRoot {
+	
+public:
+	
+};
+
+
 template <class T>
-class Ref : Moveable<Ref<T>> {
+struct RefParent1 {
 	T* o = 0;
+	
+	RefParent1() {}
+	RefParent1(T* o) : o(o) {}
+	void Clear() {o = 0;}
+	
+};
+
+template <class A, class B>
+struct RefParent2 {
+	A* a = 0;
+	B* b = 0;
+	
+	RefParent2() {}
+	RefParent2(A* a, B* b) : a(a), b(b) {}
+	
+	void Clear() {a = 0; b = 0;}
+	
+};
+
+template <class T, class Parent = RefParent1<typename T::Parent> >
+class Ref : Moveable<Ref<T,Parent>> {
+	T* o = 0;
+	Parent p;
 	
 public:
 	Ref() {}
+	Ref(Nuller) {}
+	Ref(Parent p, T* o) : p(p), o(o) {if (o) o->IncRef();}
 	Ref(const Ref& r) {*this = r;}
-	Ref(T* o) : o(o) {if (o) o->IncRef();}
-	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0;}}
+	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();}}
 	~Ref() {Clear();}
 	
 	typedef T Type;
 	
+	T* GetRefPtr() const {return o;}
+	const Parent& GetRefParent() const {return p;}
+	
 	template <class V>
-	Ref(const Ref<V>& r) {
+	Ref(const Ref<V,Parent>& r) {
 		static_assert(
 			std::is_same<V, T>() ||
 			std::is_base_of<V,T>() ||
@@ -42,11 +77,12 @@ public:
 		}
 	}
 	
+	template <class V>
+	Ref& operator=(const Ref<V,Parent>& r) {return Set(r);}
+	Ref& operator=(const Ref& r) {return Set(r);}
 	
 	bool operator==(const Ref& r) const {return r.o == o;}
 	bool operator==(T* o) const {return this->o == o;}
-	Ref& operator=(const Ref& r) {return Set(r);}
-	Ref& operator=(T* o) {Clear(); if (o) {this->o = o; o->IncRef();} return *this;}
 	T* operator->() {return o;}
 	const T* operator->() const {return o;}
 	T& operator*() {ASSERT(o); return *o;}
@@ -54,29 +90,31 @@ public:
 	
 	bool IsEmpty() const {return o == NULL;}
 	T* Get() const {return o;}
-	void Clear() {if (o) o->DecRef(); o = 0;}
+	void Clear() {if (o) o->DecRef(); o = 0; p.Clear();}
 	template <class V>	V* As() {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		return dynamic_cast<V*>(o);
 	}
-	template <class V>	Ref<V> AsRef() {
+	template <class V>	Ref<V,Parent> AsRef() {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
 		V* v = dynamic_cast<V*>(o);
-		return Ref<V>(v);
+		return Ref<V,Parent>(p, v);
 	}
-	template <class V> void WrapObject(V* v) {
+	template <class V> void WrapObject(const Parent& p, V* v) {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>(), "V must inherit T");
 		ASSERT(!o);
 		Clear();
-		o = static_cast<T*>(v);
+		this->p = p;
+		o = dynamic_cast<T*>(v);
 		o->IncRef();
 		ASSERT(o);
 	}
 	
-	
-	Ref& Set(const Ref& r) {
+	template <class V>
+	Ref& Set(const Ref<V,Parent>& r) {
 		Clear();
-		o = r.o;
+		o = dynamic_cast<T*>(r.GetRefPtr());
+		p = r.GetRefParent();
 		if (o)
 			o->IncRef();
 		return *this;
@@ -90,44 +128,85 @@ class LockedScopeRefCounter {
 private:
 	std::atomic<int> refs;
 	
-public:
-	LockedScopeRefCounter() {
-		refs = 0;
-	}
-	virtual ~LockedScopeRefCounter() {
-		ASSERT(refs == 0);
-	}
+	#ifdef flagDEBUG_STACK
+protected:
+	bool dbg_referencing = false;
+	std::reference_wrapper<const std::type_info> dbg_type;
+	void SetDebugReferencing(bool b=true) {dbg_referencing = b;}
+	#endif
 	
-	void IncRef() {++refs;}
-	void DecRef() {ASSERT(refs > 0); --refs;}
+public:
+	LockedScopeRefCounter();
+	virtual ~LockedScopeRefCounter();
+	
+	void IncRef();
+	void DecRef();
 	
 	void ForcedReset() {refs = 0;}
 	
 };
 
 
-template <class T>
-class LockedScopeEnabler : virtual public LockedScopeRefCounter {
-	
+template <class RParent>
+class RefScopeParent {
+	RParent parent;
 	
 public:
-	LockedScopeEnabler() {}
+	virtual ~RefScopeParent() {}
 	
-	Ref<T> AsRef() {
-		static_assert(std::is_base_of<LockedScopeEnabler<T>,T>(), "T must inherit LockedScopeEnabler<T>");
+	void SetParent(RParent p) {parent = p;}
+	
+	const RParent& GetParent() const {return parent;}
+	
+	template <class V>
+	Ref<V,RParent> AsRef() {
+		return Ref<V,RParent>(parent, dynamic_cast<V*>(this));
+	}
+	
+	template <class V> operator Ref<V,RParent>() {return AsRef<V>();}
+	
+};
+
+
+template <class T, class ParentT, class RParent=RefParent1<ParentT>>
+class RefScopeEnabler :
+	virtual public LockedScopeRefCounter,
+	virtual public RefScopeParent<RParent>
+{
+	
+public:
+	using Parent	= ParentT;
+	using LScope	= RefScopeEnabler<T,ParentT,RParent>;
+	using SP		= RefScopeParent<RParent>;
+	
+	RefScopeEnabler() {
+		#ifdef flagDEBUG_STACK
+		dbg_type = typeid(T);
+		#endif
+	}
+	
+	/*Ref<T> AsRef() {
+		static_assert(std::is_base_of<RefScopeEnabler<T>,T>(), "T must inherit RefScopeEnabler<T>");
 		return Ref<T>(static_cast<T*>(this));
 	}
 	
 	operator Ref<T>() {
-		static_assert(std::is_base_of<LockedScopeEnabler<T>,T>(), "T must inherit LockedScopeEnabler<T>");
+		static_assert(std::is_base_of<RefScopeEnabler<T>,T>(), "T must inherit RefScopeEnabler<T>");
 		return Ref<T>(static_cast<T*>(this));
+	}*/
+	
+	
+	template <class V=T>
+	Ref<V,RParent> AsRefStatic() {
+		static_assert(std::is_convertible<LScope,V>(), "RefScopeEnabler<T> must be convertible to V");
+		return Ref<V,RParent>(SP::GetParent(), static_cast<V*>(this));
 	}
 	
-	template <class V>	Ref<V> AsRef() {
-		static_assert(std::is_base_of<T,V>(), "V must inherit T");
-		V* v = dynamic_cast<V*>(static_cast<T*>(this));
-		return Ref<V>(v);
+	template <class V=T>
+	Ref<V,RParent> AsRefDynamic() {
+		return Ref<V,RParent>(SP::GetParent(), dynamic_cast<V*>(this));
 	}
+	
 	
 };
 
@@ -293,7 +372,7 @@ public:
 
 
 
-template <class T>
+template <class T, class Parent = RefParent1<typename T::Parent>>
 class RefLinkedList {
 	
 	struct Item {
@@ -311,12 +390,12 @@ class RefLinkedList {
 	int count = 0;
 	
 public:
-	typedef Ref<T> R;
+	typedef Ref<T, Parent> R;
 	
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it) ref = &it->value;}
+		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.AsRefDynamic();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
@@ -356,7 +435,7 @@ public:
 		++count;
 		return it;
 	}
-	R Add() {return AddItem()->value.AsRef();}
+	R Add() {return AddItem()->value.AsRefDynamic();}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	void RemoveFirst(int count) {
@@ -500,7 +579,7 @@ public:
 		return Iterator();
 	}
 	
-	RefLinkedList<V>& GetValues() {return values;}
+	LinkedList<V>& GetValues() {return values;}
 	
 
 	Iterator begin()	{return Iterator(keys.begin(), values.begin());}
@@ -511,13 +590,13 @@ public:
 };
 
 
-template <class K, class V>
+template <class K, class V, class Parent = RefParent1<typename V::Parent>>
 class RefLinkedMap {
 	LinkedList<K> keys;
 	RefLinkedList<V> values;
 	
 public:
-	typedef Ref<V> R;
+	typedef Ref<V, Parent> R;
 	typedef typename LinkedList<K>::Iterator KeyIter;
 	typedef typename RefLinkedList<V>::Iterator ValueIter;
 	struct Iterator {
@@ -573,7 +652,7 @@ public:
 };
 
 
-template <class T>
+template <class T, class Parent = RefParent1<typename T::Parent>>
 class RefLinkedListIndirect {
 	
 	struct Item {
@@ -591,12 +670,12 @@ class RefLinkedListIndirect {
 	int count = 0;
 	
 public:
-	typedef Ref<T> R;
+	typedef Ref<T, Parent> R;
 	
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = &*it->value;}
+		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = it->value->AsRefDynamic();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
@@ -634,7 +713,7 @@ public:
 		++count;
 		if (o)
 			it->value.Attach(o);
-		return it->value->AsRef();
+		return it->value->AsRefDynamic();
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
@@ -707,13 +786,13 @@ public:
 	
 };
 
-template <class K, class V>
+template <class K, class V, class Parent = RefParent1<typename V::Parent>>
 class RefLinkedMapIndirect {
 	LinkedList<K> keys;
 	RefLinkedListIndirect<V> values;
 	
 public:
-	typedef Ref<V> R;
+	typedef Ref<V, Parent> R;
 	typedef typename LinkedList<K>::Iterator KeyIter;
 	typedef typename RefLinkedListIndirect<V>::Iterator ValueIter;
 	typedef typename RefLinkedListIndirect<V>::R ValueRef;

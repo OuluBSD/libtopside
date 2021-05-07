@@ -5,10 +5,11 @@
 
 NAMESPACE_OULU_BEGIN
 
+class FfmpegFileInput;
 
 class FfmpegAudioFrameQueue :
 	public AudioInputFrame,
-	public LockedScopeEnabler<FfmpegAudioFrameQueue>
+	public RefScopeEnabler<FfmpegAudioFrameQueue,FfmpegFileInput>
 {
 	AudioPacketProducer producer;
 	AudioPacketBuffer buf;
@@ -28,6 +29,7 @@ public:
 	void		Init();
 	void		Clear();
 	void		FillAudioBuffer(double time_pos, AVFrame* frame);
+	void		FillBuffersNull();
 	void		DropAudioBuffer();
 	
 	void		Exchange(AudioEx& e) override;
@@ -47,7 +49,7 @@ typedef Ref<FfmpegAudioFrameQueue> FfmpegAudioFrameQueueRef;
 #define FFMPEG_VIDEOFRAME_RGBA_CONVERSION 1
 class FfmpegVideoFrameQueue :
 	public VideoInputFrame,
-	public LockedScopeEnabler<FfmpegVideoFrameQueue>
+	public RefScopeEnabler<FfmpegVideoFrameQueue,FfmpegFileInput>
 {
 	struct Frame : Moveable<Frame> {
 		uint8_t *video_dst_data[4] = {0,0,0,0};
@@ -82,6 +84,7 @@ public:
 	
 	void		Init(AVCodecContext& ctx);
 	void		Clear();
+	void		FillBuffersNull();
 	
 	void		Exchange(VideoEx& e) override;
 	int			GetQueueSize() const override;
@@ -162,6 +165,7 @@ class FfmpegFileInput : public MediaSourceStream {
 	bool ReadFrame();
 	bool ProcessVideoFrame();
 	bool ProcessAudioFrame();
+	void FillBuffersNull();
 	
 public:
 	

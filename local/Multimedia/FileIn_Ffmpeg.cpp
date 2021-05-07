@@ -138,6 +138,9 @@ void FfmpegFileInput::FillAudioBuffer() {
 		else break;
 	}
 	
+	if (IsEof())
+		FillBuffersNull();
+	
 	ClearPacketData();
 }
 
@@ -152,6 +155,7 @@ bool FfmpegFileInput::ReadFrame() {
 	}
 	
 	if (!is_eof) {
+		AUDIOLOG("FfmpegFileInput::ReadFrame: end of file");
 		is_eof = true;
 		WhenStopped();
 	}
@@ -181,6 +185,13 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 	}
 	
 	return false;
+}
+
+void FfmpegFileInput::FillBuffersNull() {
+	if (has_audio)
+		aframe.FillBuffersNull();
+	if (has_video)
+		vframe.FillBuffersNull();
 }
 
 void FfmpegFileInput::DropAudioBuffer() {
@@ -576,6 +587,16 @@ AudioFormat FfmpegAudioFrameQueue::GetAudioFormat() const {
 	return aud_fmt;
 }
 
+void FfmpegAudioFrameQueue::FillBuffersNull() {
+	if (buf.GetCount() < min_buf_size) {
+		AudioPacket p = CreateAudioPacket();
+		AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: filling buffer with empty packets " << IntStr64(frame_counter));
+		off32 offset{frame_counter++};
+		p->Set(aud_fmt, offset, -1);
+		p->Data().SetCount(aud_fmt.GetFrameBytes(), 0);
+	}
+}
+
 void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	// Sometimes you get the sample rate at this point
 	if (!aud_fmt.sample_rate)
@@ -713,6 +734,10 @@ void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
 			av_image_alloc(	video_dst_data, video_dst_linesize,
 							sz.cx, sz.cy, AV_PIX_FMT_RGBA, 1);
 	}
+}
+
+void FfmpegVideoFrameQueue::FillBuffersNull() {
+	TODO
 }
 
 void FfmpegVideoFrameQueue::Clear() {

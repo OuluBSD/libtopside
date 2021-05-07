@@ -5,19 +5,12 @@
 NAMESPACE_OULU_BEGIN
 
 
-class Machine;
-class EntityStore;
-class Entity;
-class Pool;
 
-using EntityId = int64;
-using VAR = Ref<Entity>;
-using EntityRef = Ref<Entity>;
-
-typedef Ref<Pool> PoolRef;
-
-
-class Entity : public Destroyable, public Enableable, public LockedScopeEnabler<Entity> {
+class Entity :
+	public Destroyable,
+	public Enableable,
+	public RefScopeEnabler<Entity,Pool>
+{
 	EntityId id = -1;
 	int64 created = 0;
 	int64 changed = 0;
@@ -38,8 +31,8 @@ protected:
 		prefab = e.prefab;
 		name = e.name;
 	}
-public:
 	
+public:
 	Entity();
 	virtual ~Entity();
 	
@@ -56,18 +49,18 @@ public:
 	void OnChange();
 	
 	template<typename T>
-	Ref<T> Get() {
+	RefT_Entity<T> Get() {
 		return comps.Get<T>();
 	}
 	
 	template<typename T>
-	Ref<T> Find() {
+	RefT_Entity<T> Find() {
 		return comps.Find<T>();
 	}
 	
 	template<typename T>
-	Ref<T> FindInterface() {
-		Ref<T> o;
+	RefT_Entity<T> FindInterface() {
+		RefT_Entity<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				break;
@@ -75,9 +68,9 @@ public:
 	}
 	
 	template<typename T>
-	Vector<Ref<T>> FindInterfaces() {
-		Vector<Ref<T>> v;
-		Ref<T> o;
+	Vector<RefT_Entity<T>> FindInterfaces() {
+		Vector<RefT_Entity<T>> v;
+		RefT_Entity<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))
 				v.Add(o);
@@ -88,11 +81,11 @@ public:
 		OnChange();
 		Remove0<T>();
 	}
-	template<typename T> Ref<T> Add() {
+	template<typename T> RefT_Entity<T> Add() {
 		OnChange();
 		return Add0<T>();
 	}
-	template<typename T> Ref<T> GetAdd() {
+	template<typename T> RefT_Entity<T> GetAdd() {
 		T* o = Find<T>();
 		if (o)
 			return o;
@@ -103,7 +96,7 @@ public:
 	
 	
 	template<typename... ComponentTs>
-	RTuple<Ref<ComponentTs>...> TryGetComponents() {
+	RTuple<RefT_Entity<ComponentTs>...> TryGetComponents() {
 		return MakeRTuple(comps.Find<ComponentTs>()...);
 	}
 	
@@ -127,13 +120,13 @@ public:
 	const Pool&	GetPool() const {return *pool;}
 	
 	#define IFACE_(x, post, map)\
-		Ref<x##post> Find##x##post() {\
+		RefT_Entity<x##post> Find##x##post() {\
 			TypeRefMap<Exchange##post##Provider>::Iterator iter = map.begin(); \
 			TypeId key(typeid(x##post)); \
 			for(; iter; ++iter)\
 				if (iter.key() == key) \
 					return iter.value().AsRef<x##post>(); \
-			return Ref<x##post>();\
+			return RefT_Entity<x##post>();\
 		}
 	#define IFACE(x) IFACE_(x, Source, srcs) IFACE_(x, Sink, sinks)
 	IFACE_LIST
@@ -145,10 +138,10 @@ public:
 	const ComponentMap& GetComponents() const {return comps;}
 	
 	template<typename... ComponentTs>
-	RTuple<Ref<ComponentTs>...> CreateComponents() {
+	RTuple<RefT_Entity<ComponentTs>...> CreateComponents() {
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
-		return RTuple<Ref<ComponentTs>...> { { Add0<ComponentTs>() }... };
+		return RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>() }... };
 	}
 	
 	void CloneComponents(const Entity& e);
@@ -168,13 +161,14 @@ private:
 	}
 	
 	template<typename T>
-	Ref<T> Add0() {
+	RefT_Entity<T> Add0() {
 		T* comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>();
 		ASSERT(comp);
+		comp->SetParent(this);
 		comps.Add(comp);
 		InitializeComponent(*comp);
 		ASSERT(comp->GetEntityPtr());
-		return comp;
+		return RefT_Entity<T>(this, comp);
 	}
 	
 };
@@ -186,7 +180,7 @@ template<typename... ComponentTs>
 struct EntityPrefab {
 	static_assert(AllComponents<ComponentTs...>::value, "All components should derive from Component");
 	
-	using Components = RTuple<Ref<ComponentTs>...>;
+	using Components = RTuple<RefT_Entity<ComponentTs>...>;
 	
 	static Components Make(Entity& e) {
 		return e.CreateComponents<ComponentTs...>();

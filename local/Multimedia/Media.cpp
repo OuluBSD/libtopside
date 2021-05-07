@@ -117,7 +117,7 @@ void MediaStreamThread::FillAudioBuffer() {
 void MediaStreamThread::Clear() {
 	if (cap) {
 		cap->Close();
-		cap = 0;
+		cap.Clear();
 	}
 }
 

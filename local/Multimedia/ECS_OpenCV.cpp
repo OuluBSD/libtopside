@@ -28,7 +28,7 @@ bool OpenCVComponent::LoadInput(int id) {
 		int fmt, res;
 		if (cap.FindClosestFormat(def_cap_sz, def_cap_fps, 0.5, 1.5, fmt, res)) {
 			if (cap.OpenDevice(fmt, res)) {
-				vi.SetCap(cap.AsRef());
+				vi.SetCap(cap.AsRef<MediaSourceStream>());
 				vi.Start(true);
 				
 				return true;

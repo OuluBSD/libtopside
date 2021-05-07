@@ -7,9 +7,8 @@ NAMESPACE_OULU_BEGIN
 
 template <class T> inline Ref<T> ComponenBase_Static_As(ConnectorBase*) {return 0;}
 
-struct ConnectorBase : Destroyable, Enableable, LockedScopeEnabler<ConnectorBase> {
+struct ConnectorBase : Destroyable, Enableable, RefScopeEnabler<ConnectorBase,Pool> {
 	Pool* pool = NULL;
-	virtual ~ConnectorBase() = default;
 
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
@@ -22,13 +21,15 @@ struct ConnectorBase : Destroyable, Enableable, LockedScopeEnabler<ConnectorBase
 	static bool AllowDuplicates() {return false;}
 	
 public:
+	ConnectorBase();
+	virtual ~ConnectorBase();
+	
 	Pool& GetPool() {ASSERT(pool); return *pool;}
 	Pool* GetPoolPtr() const {return pool;}
 	
 	
 };
 
-typedef Ref<ConnectorBase> ConnectorRef;
 
 
 template<typename T>
@@ -46,8 +47,6 @@ struct Connector : ConnectorBase {
 };
 
 
-typedef RefTypeMapIndirect<ConnectorBase> ConnectorMapBase;
-typedef ArrayMap<TypeId, Ref<ConnectorBase>> ConnectorRefMap;
 
 class ConnectorMap : public ConnectorMapBase {
 	
@@ -62,7 +61,7 @@ public:
 	void Dump();
 	
 	template<typename ConnectorT>
-	Ref<ConnectorT> Get() {
+	RefT_Pool<ConnectorT> Get() {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
@@ -74,7 +73,7 @@ public:
 	}
 	
 	template<typename ConnectorT>
-	Ref<ConnectorT> Find() {
+	RefT_Pool<ConnectorT> Find() {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
@@ -85,7 +84,7 @@ public:
 	}
 	
 	template<typename ConnectorT>
-	Ref<ConnectorT> Add(ConnectorT* component) {
+	void Add(ConnectorT* component) {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		const TypeId type = typeid(ConnectorT);
@@ -94,12 +93,10 @@ public:
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ConnectorT::AllowDuplicates(), "Cannot have duplicate componnets");
 		ConnectorRef cmp = ConnectorMapBase::Add(type, component);
-		
-		return Ref<ConnectorT>(component);
 	}
 	
 	template<typename ConnectorT>
-	void Remove(Ref<ConnectorStore> s) {
+	void Remove(ConnectorStoreRef s) {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(typeid(ConnectorT));

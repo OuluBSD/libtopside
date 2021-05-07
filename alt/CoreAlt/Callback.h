@@ -311,12 +311,12 @@ inline Callback callback2(void (T::* fn)(A0, A1), T* obj) {
 #define THISBACK1(x, a0) callback1<CLASSNAME, decltype(a0)>(&CLASSNAME::x, this, a0)
 
 
-inline Callback Proxy(Callback cb) {
+inline Callback Proxy(const Callback& cb) {
 	return Callback(new ProxyCaller(cb));
 }
 
 template <class A0>
-inline Callback1<A0> Proxy(Callback1<A0> cb) {
+inline Callback1<A0> Proxy(const Callback1<A0>& cb) {
 	return Callback1<A0>(new ProxyCaller1<A0>(cb));
 }
 

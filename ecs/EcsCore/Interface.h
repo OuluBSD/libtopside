@@ -313,13 +313,12 @@ private:
 // With a camera connector, the component provides a location for viewing the virtual world.
 // The connector can also move the camera slightly (for VR headset tracking) and modify its
 // features.
-
 struct CameraSource;
 struct CameraSink : IO_OUT(Camera) {
 	IFACE_BASE(CameraSink)
 	
-	virtual Ref<Camerable> GetCamerable() = 0;
-	virtual Ref<Transform> GetTransform() = 0;
+	virtual CamerableRef GetCamerable() = 0;
+	virtual TransformRef GetTransform() = 0;
 	
 };
 
@@ -432,7 +431,7 @@ struct MidiSource : IO_IN(Midi) {
 // The model connector transfers 3D data with textures and other additional data. It takes into
 // account dynamically changing detail. This can also be used for 3D streams.
 
-typedef RTuple<Ref<Model>, Ref<Transform>, Ref<Renderable>> RendModel;
+typedef RTuple<Ref<Model>, TransformRef, RenderableRef> RendModel;
 typedef Vector<RendModel> VectorRendModel;
 
 struct ModelSink : IO_OUT(Model) {
@@ -615,7 +614,7 @@ struct ActionSink : IO_OUT(Action) {
 	}
 	
 	void OnLink(Source src, Cookie src_c, Cookie sink_c) override;
-	virtual State* OnLinkActionSource(ActionSource& src) = 0;
+	//virtual State* OnLinkActionSource(ActionSource& src) = 0;
 	
 	
 	
@@ -669,7 +668,7 @@ struct RouteSource : IO_IN(Route) {
 #define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
 
 #define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
-#define IFACE_CB(x)		Ref<x> As##x() override {return ((x*)this)->AsRef();}
+#define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->AsRef<x>();}
 
 #define IFACE_LIST \
 	IFACE(Display)\

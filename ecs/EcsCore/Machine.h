@@ -7,10 +7,10 @@ NAMESPACE_OULU_BEGIN
 class Machine;
 
 
-class SystemBase : public LockedScopeEnabler<SystemBase> {
+class SystemBase : public RefScopeEnabler<SystemBase,Machine> {
 public:
     SystemBase(Machine& machine);
-    virtual ~SystemBase() = default;
+    virtual ~SystemBase();
 
     virtual TypeId GetType() const = 0;
 
@@ -29,18 +29,21 @@ protected:
 
 
 template<typename T>
-class System : public SystemBase {
+class System :
+	public SystemBase
+{
 public:
     using SystemBase::SystemBase;
 	
 	System(Machine& e) : SystemBase(e) {};
-    TypeId GetType() const override {
-        return typeid(T);
-    }
+    TypeId GetType() const override {return typeid(T);}
+    
 };
 
 
-class Machine {
+class Machine :
+	public RefScopeEnabler<Machine,RefRoot>
+{
 	int64 ticks = 0;
 	
 public:
@@ -48,8 +51,7 @@ public:
 	
 	
     template<typename SystemT>
-    Ref<SystemT> Get()
-    {
+    Ref<SystemT> Get() {
         auto system = TryGet<SystemT>();
         ASSERT(system);
         return system;
@@ -70,8 +72,7 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 		
 		SystemT* syst = new SystemT(*this, args...);
-		/*
-		Ref<SystemBase> s;
+		/*Ref<SystemBase> s;
 		s.WrapObject(syst);syst->InitWeak(s.As<SystemT>());
 		Add(typeid(SystemT), s);
         //Add(typeid(SystemT), MakeRef<SystemT>(*this, std::forward<Args>(args)...));
@@ -108,7 +109,7 @@ public:
 	static Callback WhenStarting;
 	
 private:
-    typedef RefTypeMapIndirect<SystemBase> SystemCollection;
+    using SystemCollection = RefTypeMapIndirect<SystemBase> ;
     SystemCollection systems;
 
     bool is_started = false;

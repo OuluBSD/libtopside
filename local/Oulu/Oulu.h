@@ -71,6 +71,7 @@ NAMESPACE_OULU_END
 #include "Media.h"
 #include "Html.h"
 #include "Url.h"
+#include "Debugging.h"
 
 
 #endif

@@ -5,7 +5,11 @@ NAMESPACE_OULU_BEGIN
 
 
 Pool::Pool() {
-	
+	DBG_CONSTRUCT
+}
+
+Pool::~Pool() {
+	DBG_DESTRUCT
 }
 
 EntityId Pool::GetNextId() {

@@ -5,40 +5,59 @@
 NAMESPACE_OULU_BEGIN
 
 
+struct RealtimeSourceConfig;
 class Entity;
-struct ComponentBase;
+class ComponentBase;
 class Pool;
-struct ConnectorBase;
-
-template <class Main, class Base> class ComponentStoreT;
-using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
-using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
-
 class ComponentMap;
 class Camerable;
 class Renderable;
 class Transform;
-using ComponentRef = Ref<ComponentBase>;
-
-struct RealtimeSourceConfig;
-
+class Camerable;
+class Renderable;
+class Machine;
+class EntityStore;
+class RegistrySystem;
+struct ConnectorBase;
 struct AudioSource;
 struct AudioSink;
-using AudioSourceRef	= Ref<AudioSource>;
-using AudioSinkRef		= Ref<AudioSink>;
-
 struct VideoSource;
 struct VideoSink;
-using VideoSourceRef	= Ref<VideoSource>;
-using VideoSinkRef		= Ref<VideoSink>;
+template <class Main, class Base> class ComponentStoreT;
 
+using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
+using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
 
+using AudioExchangePointRef	= Ref<AudioExchangePoint,	RefParent1<MetaExchangePoint>>;
+using VideoExchangePointRef	= Ref<VideoExchangePoint,	RefParent1<MetaExchangePoint>>;
+using ComponentRef			= Ref<ComponentBase,		RefParent1<Entity>>;
+using AudioSourceRef		= Ref<AudioSource,			RefParent1<Entity>>;
+using AudioSinkRef			= Ref<AudioSink,			RefParent1<Entity>>;
+using VideoSourceRef		= Ref<VideoSource,			RefParent1<Entity>>;
+using VideoSinkRef			= Ref<VideoSink,			RefParent1<Entity>>;
+using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
+using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
+using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
+using ConnectorRef			= Ref<ConnectorBase,		RefParent1<Pool>>;
+using EntityRef				= Ref<Entity,				RefParent1<Pool>>;
+using PoolRef				= Ref<Pool,					RefParent2<EntityStore, Pool>>;
+using EntityStoreRef		= Ref<EntityStore,			RefParent1<Machine>>;
+using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
+using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
+using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 
+using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	RefParent1<Pool>>;
+using EntityVec				= RefLinkedList<		Entity,			RefParent1<Pool>>;
+using PoolVec				= RefLinkedList<		Pool,			RefParent2<EntityStore, Pool>>;
 
+using VAR					= EntityRef;
+using EntityId				= int64;
 
+template <class T>
+using RefT_Entity			= Ref<T,					RefParent1<Entity>>;
 
-
-
+template <class T>
+using RefT_Pool				= Ref<T,					RefParent1<Pool>>;
 
 
 struct PerceptionTimestamp {

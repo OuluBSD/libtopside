@@ -54,7 +54,7 @@ void FusionContextComponent::Update(double dt) {
 		DumpEntityComponents();
 		
 		is_open = true;
-		for(Ref<FusionComponent>& comp : comps) {
+		for(auto& comp : comps) {
 			if (!comp->IsOpen() && !comp->Open()) {
 				DLOG("FusionContextComponent::Update: error: a component did not open properly");
 				is_open = false;
@@ -84,7 +84,7 @@ void FusionContextComponent::FindComponents() {
 			if (fcomp) {
 				ASSERT(!fcomp->ctx);
 				fcomp->ctx = this;
-				comps.Add(fcomp);
+				comps.Add(fcomp->AsRefDynamic());
 			}
 		}
 	}
@@ -120,7 +120,7 @@ void FusionContextComponent::Reset() {
 }
 
 void FusionContextComponent::Clear() {
-	for(Ref<FusionComponent>& comp : comps) {
+	for(auto& comp : comps) {
 		comp->Clear();
 		if (comp->IsTypeTemporary())
 			comp->GetECS().Destroy();
@@ -157,7 +157,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 	
 	RefreshStreamValues(m);
 	
-	for(Ref<FusionComponent>& comp : comps) {
+	for(auto& comp : comps) {
 		if (IsModeStage(*comp, m))
 			comp->PreProcess();
 	}
@@ -171,7 +171,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 		}
 	}
 	
-	for(Ref<FusionComponent>& comp : comps) {
+	for(auto& comp : comps) {
 		if (IsModeStage(*comp, m))
 			comp->PostProcess();
 	}
@@ -227,9 +227,9 @@ void FusionContextComponent::RefreshStreamValues(Mode m) {
 	}
 }
 
-Ref<FusionComponent> FusionContextComponent::GetComponentById(int id) const {
+RefT_Entity<FusionComponent> FusionContextComponent::GetComponentById(int id) const {
 	ASSERT(id >= 0);
-	for (const Ref<FusionComponent>& s : comps)
+	for (const auto& s : comps)
 		if (s->id == id)
 			return s;
 	throw Exc("FusionComponent not found");
@@ -461,16 +461,16 @@ bool FusionContextComponent::Load(Object json) {
 				
 				// Create new comp
 				Entity& e = GetEntity();
-				Ref<FusionComponent> comp = 0;
+				RefT_Entity<FusionComponent> comp;
 				switch (type) {
-					case FusionComponent::FUSION_DATA_SINK:		comp = AddEntityComponent<FusionDataSink>(); break;
-					//case FusionComponent::FUSION_CTRL_SOURCE:	comp = AddEntityComponent<FusionControllerSource>(); break;
-					//case FusionComponent::FUSION_CTRL_BUFFER:	comp = AddEntityComponent<FusionControllerBuffer>(); break;
-					case FusionComponent::FUSION_CTRL_SINK:		comp = AddEntityComponent<FusionControllerSink>(); break;
+					case FusionComponent::FUSION_DATA_SINK:			comp = AddEntityComponent<FusionDataSink>(); break;
+					//case FusionComponent::FUSION_CTRL_SOURCE:		comp = AddEntityComponent<FusionControllerSource>(); break;
+					//case FusionComponent::FUSION_CTRL_BUFFER:		comp = AddEntityComponent<FusionControllerBuffer>(); break;
+					case FusionComponent::FUSION_CTRL_SINK:			comp = AddEntityComponent<FusionControllerSink>(); break;
 					case FusionComponent::FUSION_DISPLAY_SOURCE:	comp = AddEntityComponent<FusionDisplaySource>(); break;
 					case FusionComponent::FUSION_DISPLAY_BUFFER:	comp = AddEntityComponent<FusionDisplayBuffer>(); break;
 					//case FusionComponent::FUSION_DISPLAY_SINK:	comp = AddEntityComponent<FusionDisplaySink>(); break;
-					case FusionComponent::FUSION_AUDIO_SOURCE:	comp = AddEntityComponent<FusionAudioSource>(); break;
+					case FusionComponent::FUSION_AUDIO_SOURCE:		comp = AddEntityComponent<FusionAudioSource>(); break;
 					//case FusionComponent::FUSION_AUDIO_BUFFER:	comp = AddEntityComponent<FusionAudioBuffer>(); break;
 					//case FusionComponent::FUSION_AUDIO_SINK:		comp = AddEntityComponent<FusionAudioSink>(); break;
 					
@@ -497,7 +497,7 @@ bool FusionContextComponent::Load(Object json) {
 			else {
 				// Find existing component
 				bool found = false;
-				for (Ref<FusionComponent>& comp : comps) {
+				for (auto& comp : comps) {
 					if (comp->GetFusionType() == type) {
 						if (!comp->Load(st_map, i, frag_code)) {
 							OnError(fn_name, "Loading stage " + IntStr(i) + " failed");
@@ -517,7 +517,7 @@ bool FusionContextComponent::Load(Object json) {
 	
 	// Find unique inputs
 	FusionComponentInputVector v;
-	for (Ref<FusionComponent>& comp : comps)
+	for (auto& comp : comps)
 		for(FusionComponentInput& in : comp->in)
 			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
 				v.Add(in);
@@ -529,7 +529,7 @@ bool FusionContextComponent::Load(Object json) {
 		
 		// Connect created components for inputs
 		DumpEntityComponents();
-		for (Ref<FusionComponent>& comp : comps) {
+		for (auto& comp : comps) {
 			for(FusionComponentInput& in : comp->in) {
 				if (in.IsTypeComponentSource()) {
 					int i = v.Find(in);
@@ -557,7 +557,7 @@ void FusionContextComponent::RefreshStageQueue() {
 	try {
 		// Solve dependencies
 		Graph g;
-		for(Ref<FusionComponent>& s : comps)
+		for(auto& s : comps)
 			if (s->id >= 0)
 				g.AddKey(s->id);
 		for(int i = 0; i < comps.GetCount(); i++) {
@@ -581,7 +581,7 @@ void FusionContextComponent::RefreshStageQueue() {
 		
 		struct TopologicalStages {
 			Graph& g;
-			bool operator()(const Ref<FusionComponent>& a, const Ref<FusionComponent>& b) const {
+			bool operator()(const RefT_Entity<FusionComponent>& a, const RefT_Entity<FusionComponent>& b) const {
 				int a_pos = g.FindSorted(a->id);
 				int b_pos = g.FindSorted(b->id);
 				return a_pos < b_pos;
@@ -619,14 +619,14 @@ void FusionContextComponent::RefreshPipeline() {
 		return;
 	}
 	
-	for(Ref<FusionComponent>& comp : comps)
+	for(auto& comp : comps)
 		comp->Reset();
 	
 	DLOG("FusionContextComponent::RefreshPipeline end");
 }
 
 void FusionContextComponent::UpdateTexBuffers() {
-	for(Ref<FusionComponent>& comp : comps)
+	for(auto& comp : comps)
 		if (comp->type != FusionComponent::FUSION_AUDIO_SINK &&
 			comp->type != FusionComponent::FUSION_AUDIO_BUFFER &&
 			comp->type != FusionComponent::FUSION_AUDIO_SOURCE)
@@ -634,7 +634,7 @@ void FusionContextComponent::UpdateTexBuffers() {
 }
 
 void FusionContextComponent::UpdateSoundBuffers() {
-	for(Ref<FusionComponent>& comp : comps)
+	for(auto& comp : comps)
 		if (comp->type == FusionComponent::FUSION_AUDIO_SINK ||
 			comp->type == FusionComponent::FUSION_AUDIO_BUFFER ||
 			comp->type == FusionComponent::FUSION_AUDIO_SOURCE)
@@ -643,7 +643,7 @@ void FusionContextComponent::UpdateSoundBuffers() {
 
 bool FusionContextComponent::CheckInputTextures() {
 #ifdef flagOPENGL
-	for(Ref<FusionComponent>& comp : comps)
+	for(auto& comp : comps)
 		if (!comp->Ogl_CheckInputTextures())
 			return false;
 #endif
@@ -651,7 +651,7 @@ bool FusionContextComponent::CheckInputTextures() {
 }
 
 void FusionContextComponent::Close() {
-	for(Ref<FusionComponent>& comp : comps)
+	for(auto& comp : comps)
 		comp->Close();
 	Clear();
 }

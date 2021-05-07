@@ -370,6 +370,7 @@ class AudioStream : public virtual RealtimeStream {
 	
 	
 public:
+	using Parent = ComponentBase;
 	
 	virtual ~AudioStream() {}
 	

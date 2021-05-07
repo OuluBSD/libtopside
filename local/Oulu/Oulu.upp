@@ -18,6 +18,7 @@ file
 	Types.h,
 	Recycler.h,
 	LinkedList.h,
+	LinkedList.cpp,
 	TypeTraits.h,
 	Exchange.h,
 	Exchange.cpp,
@@ -78,5 +79,7 @@ file
 	Html.cpp,
 	Url.h,
 	Url.cpp,
+	Debugging.h,
+	Debugging.cpp,
 	_ readonly separator;
 

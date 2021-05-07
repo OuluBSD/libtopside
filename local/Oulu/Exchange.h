@@ -5,9 +5,23 @@
 NAMESPACE_OULU_BEGIN
 
 
+class Entity;
+class ExchangeBase;
+class ExchangeProviderBase;
+class ExchangeSinkProvider;
+class ExchangeSourceProvider;
+class ExchangeProviderCookie;
+class ExchangePoint;
 class MetaExchangePoint;
-typedef Ref<MetaExchangePoint> MetaExchangePointRef;
-
+class Pool;
+class ComponentBase;
+using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Entity>>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Entity>>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Entity>>;
+using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
+using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
+using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Pool>>;
 
 
 template<class T>
@@ -75,14 +89,15 @@ struct RealtimeSourceConfig {
 
 
 
-class ExchangeBase : public LockedScopeEnabler<ExchangeBase> {
+class ExchangeBase : public RefScopeEnabler<ExchangeBase,ExchangeProviderBase> {
 	bool fail = false;
 	
 protected:
 	
 	
 public:
-	virtual ~ExchangeBase() {}
+	ExchangeBase();
+	virtual ~ExchangeBase();
 	
 	
 	virtual bool IsLoading() {return false;}
@@ -93,7 +108,6 @@ public:
 	void ClearFail() {fail = false;}
 };
 
-typedef Ref<ExchangeBase> ExchangeBaseRef;
 
 
 
@@ -168,31 +182,25 @@ public:
 
 
 
-class ExchangeProviderCookie : public LockedScopeEnabler<ExchangeProviderCookie> {
+class ExchangeProviderCookie : public RefScopeEnabler<ExchangeProviderCookie,ExchangePoint> {
 	
 	
 public:
+	
 	
 };
 
-typedef Ref<ExchangeProviderCookie> CookieRef;
 
 
 
 
 
-class ExchangeProviderBase;
-class ExchangePoint;
-typedef Ref<ExchangePoint> ExchangePointRef;
-typedef Ref<ExchangeProviderBase> ExchangeProviderBaseRef;
 
 
-
-template <class T>
+template <class R>
 class ExchangeProviderT {
 	
 public:
-	using R = Ref<T>;
 	struct Link : Moveable<Link> {
 		ExchangePointRef expt;
 		R dst;
@@ -255,42 +263,41 @@ public:
 };
 
 
-class ExchangeProviderBase : public LockedScopeEnabler<ExchangeProviderBase> {
+class ExchangeProviderBase : public RefScopeEnabler<ExchangeProviderBase,Entity> {
 	
 public:
 	
-	bool UnlinkManually(ExchangeProviderBase& p);
+	//bool UnlinkManually(ExchangeProviderBase& p);
 	virtual TypeId GetProviderType() = 0;
 	virtual String GetConfigString() {return String();}
 	
 };
 
-class ExchangeSourceProvider;
 
 class ExchangeSinkProvider : public ExchangeProviderBase {
 	
 protected:
 	friend class ExchangeSourceProvider;
 	
-	using ExProv = ExchangeProviderT<ExchangeSourceProvider>;
+	using ExProv = ExchangeProviderT<ExchangeSourceProviderRef>;
 	
 	ExProv base;
 	
 public:
-	using Sink = Ref<ExchangeSinkProvider>;
-	using Source = Ref<ExchangeSourceProvider>;
-	using Cookie = Ref<ExchangeProviderCookie>;
+	using Sink = ExchangeSinkProviderRef;
+	using Source = ExchangeSourceProviderRef;
+	using Cookie = CookieRef;
 	
 protected:
 	friend class ExchangePoint;
 	
-	void AddSource(ExchangePointRef expt, Ref<ExchangeSourceProvider> src) {base.AddLink(expt, src);}
-	int FindSource(Ref<ExchangeSourceProvider> src) {return base.FindLink(src);}
+	void AddSource(ExchangePointRef expt, ExchangeSourceProviderRef src) {base.AddLink(expt, src);}
+	int FindSource(ExchangeSourceProviderRef src) {return base.FindLink(src);}
 	virtual void OnLink(Source src, Cookie src_c, Cookie sink_c) {}
 	
 public:
-	
-	virtual ~ExchangeSinkProvider() {}
+	ExchangeSinkProvider();
+	virtual ~ExchangeSinkProvider();
 	
 	
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
@@ -301,32 +308,33 @@ public:
 	
 };
 
-typedef Ref<ExchangeSinkProvider> ExchangeSinkProviderRef;
 
 
-class ExchangeSourceProvider : public ExchangeProviderBase {
+class ExchangeSourceProvider :
+	public ExchangeProviderBase
+{
 	
-	using ExProv = ExchangeProviderT<ExchangeSinkProvider>;
+	using ExProv = ExchangeProviderT<ExchangeSinkProviderRef>;
 	
 	ExProv base;
 	
 	static bool print_debug;
 	
 public:
-	using Sink = Ref<ExchangeSinkProvider>;
-	using Source = Ref<ExchangeSourceProvider>;
-	using Cookie = Ref<ExchangeProviderCookie>;
+	using Sink = ExchangeSinkProviderRef;
+	using Source = ExchangeSourceProviderRef;
+	using Cookie = CookieRef;
 	
 protected:
 	friend class ExchangePoint;
 	
-	void AddSink(ExchangePointRef expt, Ref<ExchangeSinkProvider> sink) {base.AddLink(expt, sink);}
-	int FindSink(Ref<ExchangeSinkProvider> sink) {return base.FindLink(sink);}
+	void AddSink(ExchangePointRef expt, ExchangeSinkProviderRef sink) {base.AddLink(expt, sink);}
+	int FindSink(ExchangeSinkProviderRef sink) {return base.FindLink(sink);}
 	virtual void OnLink(Sink sink, Cookie src_c, Cookie sink_c) {}
 	
 public:
-	
-	virtual ~ExchangeSourceProvider() {}
+	ExchangeSourceProvider();
+	virtual ~ExchangeSourceProvider();
 	
 	
 	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
@@ -339,13 +347,13 @@ public:
 	
 };
 
-typedef Ref<ExchangeSourceProvider> ExchangeSourceProviderRef;
+typedef ExchangeSourceProviderRef ExchangeSourceProviderRef;
 
 
 
 
 
-class ExchangePoint : public LockedScopeEnabler<ExchangePoint> {
+class ExchangePoint : public RefScopeEnabler<ExchangePoint,MetaExchangePoint> {
 	
 protected:
 	friend class MetaExchangePoint;
@@ -359,8 +367,7 @@ protected:
 public:
 	typedef ExchangePoint CLASSNAME;
 	ExchangePoint();
-	
-	virtual ~ExchangePoint() {}
+	virtual ~ExchangePoint();
 	
 	virtual void Update(double dt) = 0;
 	
@@ -379,7 +386,7 @@ public:
 
 
 
-class MetaExchangePoint : public LockedScopeEnabler<MetaExchangePoint> {
+class MetaExchangePoint : public RefScopeEnabler<MetaExchangePoint,Pool> {
 	
 protected:
 	RefLinkedListIndirect<ExchangePoint> pts;
@@ -387,7 +394,7 @@ protected:
 public:
 	typedef MetaExchangePoint CLASSNAME;
 	MetaExchangePoint();
-	virtual ~MetaExchangePoint() {}
+	virtual ~MetaExchangePoint();
 	
 	virtual void UnlinkAll();
 	
@@ -396,7 +403,7 @@ public:
 		if (!o)
 			o = new T();
 		Ref<T> pt = pts.Add(o);
-		pt->meta_expt = AsRef();
+		pt->meta_expt = AsRefDynamic();
 		return pt;
 	}
 

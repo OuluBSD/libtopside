@@ -36,7 +36,7 @@ void ConnectAllInterfaces<T>::UnlinkAll() {
 }
 
 template <class T>
-void ConnectAllInterfaces<T>::Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_stack) {
+void ConnectAllInterfaces<T>::Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_stack) {
 	
 	Vector<Ref<T>>* cur = 0;
 	//int src_scope_count = src_stack.GetCount();

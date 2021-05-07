@@ -29,11 +29,12 @@ public:
 	
 	TypeId() : Wrap(typeid(void)) {}
 	TypeId(const TypeId& id) : Wrap(id) {}
+	TypeId(const Wrap& w) : Wrap(w) {}
 	
     hash_t GetHashValue() const { return (uint32)get().hash_code(); }
     char const* name() const { return get().name(); }
     String DemangledName() const {return Demangle(name());}
-	String CleanDemangledName() {
+	String CleanDemangledName() const {
 		String s(DemangledName());
 		if (s.Find("Oulu::") == 0)
 			s = s.Mid(6);
@@ -60,10 +61,16 @@ public:
 
 template<class T> inline TypeId GetTypeId() {return typeid(T);}
 
-template<typename T> using TypeMap				= LinkedMap<TypeId, T>;
-template<typename T> using TypeRefMap			= LinkedMap<TypeId, Ref<T>>;
-template<typename T> using RefTypeMap			= RefLinkedMap<TypeId, T>;
-template<typename T> using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T>;
+template<class T> using TypeMap				= LinkedMap<TypeId, T>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefTypeMap			= RefLinkedMap<TypeId, T, Parent>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T, Parent>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using TypeRefMap			= LinkedMap<TypeId, Ref<T,Parent>>;
 
 
 

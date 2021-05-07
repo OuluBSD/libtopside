@@ -3,8 +3,13 @@
 
 NAMESPACE_OULU_BEGIN
 
+class ModelLoader;
 
-struct Mesh : public BoundingBox, Moveable<Mesh> {
+
+
+class Mesh : public BoundingBox, Moveable<Mesh> {
+	
+public:
     Vector<Vertex> vertices;
     Vector<uint32> indices;
     Vector<vec2> tex_coords;
@@ -84,7 +89,9 @@ protected:
 };
 
 
-struct Model : LockedScopeEnabler<Model> {
+class Model : public RefScopeEnabler<Model,ModelLoader> {
+	
+public:
     Vector<Mesh> meshes;
 	Vector<Texture> textures;
     
@@ -113,7 +120,9 @@ struct Model : LockedScopeEnabler<Model> {
     
 };
 
-struct ModelLoader {
+class ModelLoader {
+	
+public:
 	One<Model> model;
 	
 	void Clear() {model.Clear();}
@@ -121,7 +130,7 @@ struct ModelLoader {
     void Set(const Model& m) {model = new Model(m);}
     void operator=(const Model& m) {Set(m);}
 	
-	Ref<Model> GetModel() {return model ? &*model : 0;}
+	Ref<Model> GetModel() {return model ? model->AsRefDynamic() : Null;}
 	
 protected:
 	friend class ModelBuilder;

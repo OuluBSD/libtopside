@@ -4,10 +4,31 @@
 NAMESPACE_OULU_BEGIN
 
 
-SystemBase::SystemBase(Machine& machine) : machine(machine) {}
+SystemBase::SystemBase(Machine& machine) : machine(machine) {
+	DBG_CONSTRUCT
+}
+
+SystemBase::~SystemBase() {
+	DBG_DESTRUCT
+}
+
 
 Callback Machine::WhenStarting;
-		
+
+
+
+
+Machine::Machine() {
+	DBG_CONSTRUCT
+}
+
+Machine::~Machine() {
+	ASSERT_(!is_initialized && !is_started, "Machine should be in a clean state upon destruction");
+	systems.Clear();
+	DBG_DESTRUCT
+}
+
+
 bool Machine::Start() {
 	ASSERT_(!is_initialized && !is_started, "Shouldn't call Start if we already started");
 	
@@ -54,6 +75,8 @@ void Machine::Stop() {
 	is_running = false;
 	is_started = false;
 	
+	DBG_BEGIN_UNREF_CHECK
+	
 	for (auto it = systems.rbegin(); it != systems.rend(); --it) {
 		(*it)->Stop();
 	}
@@ -71,13 +94,6 @@ void Machine::Suspend() {
 
 void Machine::Resume() {
 	is_suspended = false;
-}
-
-Machine::Machine() = default;
-
-Machine::~Machine() {
-	ASSERT_(!is_initialized && !is_started, "Machine should be in a clean state upon destruction");
-	systems.Clear();
 }
 
 bool Machine::HasStarted() const {

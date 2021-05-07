@@ -5,12 +5,18 @@ NAMESPACE_OULU_BEGIN
 
 
 
-template <class T> inline Ref<T> ComponenBase_Static_As(ComponentBase*) {return 0;}
+template <class T> inline RefT_Entity<T> ComponenBase_Static_As(ComponentBase*) {return 0;}
 
-struct ComponentBase : Destroyable, Enableable, LockedScopeEnabler<ComponentBase> {
+class ComponentBase :
+	public Destroyable,
+	public Enableable,
+	public RefScopeEnabler<ComponentBase,Entity>
+{
+protected:
+	friend class Entity;
 	Entity* ent = NULL;
-	virtual ~ComponentBase() = default;
-
+	
+public:
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Initialize() {};
@@ -22,42 +28,47 @@ struct ComponentBase : Destroyable, Enableable, LockedScopeEnabler<ComponentBase
 	Machine& GetMachine();
 	
 public:
+	ComponentBase();
+	virtual ~ComponentBase();
+	
 	Entity& GetEntity() {ASSERT(ent); return *ent;}
 	Entity* GetEntityPtr() const {return ent;}
 	
-	template <class T> Ref<T> As() {return ComponenBase_Static_As<T>(this);}
+	template <class T> RefT_Entity<T> As() {return ComponenBase_Static_As<T>(this);}
 	
 	#define IFACE(x) \
-	virtual Ref<x##Source> As##x##Source() {return NULL;} \
-	virtual Ref<x##Sink>   As##x##Sink()   {return NULL;}
+	virtual RefT_Entity<x##Source> As##x##Source() {return Null;} \
+	virtual RefT_Entity<x##Sink>   As##x##Sink()   {return Null;}
 	IFACE_LIST
 	#undef IFACE
 	
 	
-	template <class S, class C>
-	void AddToSystem(C* comp) {
+	template <class S, class R>
+	void AddToSystem(R ref) {
 		Ref<S> sys = GetMachine().Get<S>();
 		if (sys)
-			sys->Add(comp);
+			sys->Add(ref);
 	}
 	
-	template <class S, class C>
-	void RemoveFromSystem(C* comp) {
+	template <class S, class R>
+	void RemoveFromSystem(R ref) {
 		Ref<S> sys = GetMachine().Get<S>();
 		if (sys)
-			sys->Remove(comp);
+			sys->Remove(ref);
 	}
 };
 
 #define IFACE(x) \
-template<> inline Ref<x##Source> ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Source();} \
-template<> inline Ref<x##Sink>   ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Sink();}
+template<> inline RefT_Entity<x##Source> ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Source();} \
+template<> inline RefT_Entity<x##Sink>   ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Sink();}
 IFACE_LIST
 #undef IFACE
 
 
 template<typename T>
-struct Component : ComponentBase {
+struct Component :
+	ComponentBase
+{
 
 	TypeId GetType() const override {
 		return typeid(T);
@@ -70,9 +81,11 @@ struct Component : ComponentBase {
 	}
 };
 
+using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
+using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
 
-typedef RefTypeMapIndirect<ComponentBase> ComponentMapBase;
-typedef ArrayMap<TypeId, Ref<ComponentBase>> ComponentRefMap;
+using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
+using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
 
 class ComponentMap : public ComponentMapBase {
 	
@@ -87,7 +100,7 @@ public:
 	void Dump();
 	
 	template<typename ComponentT>
-	Ref<ComponentT> Get() {
+	RefT_Entity<ComponentT> Get() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
@@ -99,18 +112,18 @@ public:
 	}
 	
 	template<typename ComponentT>
-	Ref<ComponentT> Find() {
+	RefT_Entity<ComponentT> Find() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
 		if (IS_EMPTY_SHAREDPTR(it))
-			return NULL;
+			return Null;
 		else
 			return it->AsRef<ComponentT>();
 	}
 	
 	template<typename ComponentT>
-	Ref<ComponentT> Add(ComponentT* component) {
+	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		const TypeId type = typeid(ComponentT);
@@ -119,12 +132,10 @@ public:
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
 		ComponentRef cmp = ComponentMapBase::Add(type, component);
-		
-		return Ref<ComponentT>(component);
 	}
 	
 	template<typename ComponentT>
-	void Remove(Ref<ComponentStore> s) {
+	void Remove(ComponentStoreRef s) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		ComponentMapBase::Iterator iter = ComponentMapBase::Find(typeid(ComponentT));

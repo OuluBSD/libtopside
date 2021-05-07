@@ -35,8 +35,6 @@ protected:
 	
 };
 
-typedef Ref<EntityStore> EntityStoreRef;
-
 
 NAMESPACE_OULU_END
 

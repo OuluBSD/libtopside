@@ -4,11 +4,12 @@ NAMESPACE_OULU_BEGIN
 
 
 Entity::Entity() {
-	
+	DBG_CONSTRUCT
 }
 
 Entity::~Entity() {
 	Destroy();
+	DBG_DESTRUCT
 }
 
 void Entity::OnChange() {

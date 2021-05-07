@@ -10,13 +10,13 @@ SoundGeneratorComponent::SoundGeneratorComponent() {
 }
 
 void SoundGeneratorComponent::Initialize() {
-	AddToSystem<AudioSystem>(this);
+	AddToSystem<AudioSystem>(AsRef<AudioSource>());
 	
 }
 
 void SoundGeneratorComponent::Uninitialize() {
 	
-	RemoveFromSystem<AudioSystem>(this);
+	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
 }
 
 void SoundGeneratorComponent::RecvMidi(const MidiFrame& e) {

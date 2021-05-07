@@ -86,6 +86,7 @@ void AudioSystem::Uninitialize() {
 }
 
 void AudioSystem::Add(AudioSourceRef src) {
+	ASSERT(src);
 	VectorFindAdd(srcs, src);
 }
 
@@ -94,6 +95,7 @@ void AudioSystem::Remove(AudioSourceRef src) {
 }
 
 void AudioSystem::Add(AudioSinkRef sink) {
+	ASSERT(sink);
 	VectorFindAdd(sinks, sink);
 }
 
@@ -102,6 +104,7 @@ void AudioSystem::Remove(AudioSinkRef sink) {
 }
 
 void AudioSystem::Add(AudioExchangePointRef expt) {
+	ASSERT(expt);
 	VectorFindAdd(expts, expt);
 }
 

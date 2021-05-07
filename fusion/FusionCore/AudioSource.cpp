@@ -6,11 +6,11 @@ NAMESPACE_OULU_BEGIN
 void FusionAudioSource::Initialize() {
 	FusionComponent::Initialize();
 	
-	AddToSystem<AudioSystem>(this);
+	AddToSystem<AudioSystem>(AsRef<AudioSource>());
 }
 
 void FusionAudioSource::Uninitialize() {
-	RemoveFromSystem<AudioSystem>(this);
+	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
 	
 	FusionComponent::Uninitialize();
 }

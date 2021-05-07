@@ -7,19 +7,21 @@ NAMESPACE_OULU_BEGIN
 class Pool;
 
 
-typedef RefLinkedList<Entity> EntityVec;
-typedef RefLinkedList<Pool> PoolVec;
 
-class Pool : public LockedScopeEnabler<Pool> {
-	Machine* machine = 0;
-	Pool* parent = 0;
-	BitField<dword> freeze_bits;
-	String name;
+class Pool :
+	public RefScopeEnabler<Pool,EntityStore,RefParent2<EntityStore, Pool>>
+{
+	Machine*			machine = 0;
+	Pool*				parent = 0;
+	BitField<dword>		freeze_bits;
+	String				name;
 	
 	
 public:
 	typedef Pool CLASSNAME;
+	
 	Pool();
+	~Pool();
 	
 	typedef enum {
 		BIT_OVERLAP,
@@ -73,7 +75,7 @@ public:
 		
 		Vector < RTuple < Entity*, ComponentTs*... >> components;
 		
-		for (auto& object : objects) {
+		for (EntityRef object : objects) {
 			auto requested_components = object->TryGetComponents<ComponentTs...>();
 			
 			if (AllValidComponents(requested_components)) {
@@ -93,7 +95,7 @@ public:
 		
 		Vector < RTuple < ComponentTs*... >> components;
 		
-		for (auto& object : objects) {
+		for (EntityRef object : objects) {
 			auto requested_components = object->TryGetComponents<ComponentTs...>();
 			
 			if (AllValidComponents(requested_components)) {
@@ -108,7 +110,7 @@ public:
 	Entity* FindEntity(T* component) {
 		if (!component)
 			return 0;
-		for (auto& object : objects) {
+		for (EntityRef object : objects) {
 			T* t = object->Find<T>();
 			if (t == component)
 				return object.Get();
@@ -117,7 +119,7 @@ public:
 	}
 	
 	EntityRef FindEntityByName(String name) {
-		for (auto& object : objects)
+		for (EntityRef object : objects)
 			if (object->GetName() == name)
 				return object;
 		return EntityRef();
@@ -139,8 +141,8 @@ public:
 		return all_valid_components;
 	}
 	
-	RefLinkedList<Entity>& GetEntities() {return objects;}
-	RefLinkedList<Pool>& GetPools() {return pools;}
+	EntityVec& GetEntities() {return objects;}
+	PoolVec& GetPools() {return pools;}
 	
 	PoolRef AddPool(String name="") {
 		PoolRef p = pools.Add();
@@ -157,9 +159,9 @@ public:
 		return AddPool(name);
 	}
 	
-	RefLinkedList<Entity>::Iterator			begin()			{return objects.begin();}
-	RefLinkedList<Entity>::Iterator			end()			{return objects.end();}
-	RefLinkedList<Pool>::Iterator		BeginPool()		{return pools.begin();}
+	EntityVec::Iterator			begin()			{return objects.begin();}
+	EntityVec::Iterator			end()			{return objects.end();}
+	PoolVec::Iterator			BeginPool()		{return pools.begin();}
 	
 	
 	
@@ -170,18 +172,18 @@ public:
 	}
 	
 	template<typename T>
-	Ref<T> Add() {
+	RefT_Pool<T> Add() {
 		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
 		ASSERT(comp);
 		comps.Add(comp);
 		InitializeComponent(*comp);
-		return comp;
+		return RefT_Pool<T>(this, comp);
 	}
 	
 private:
-	ConnectorMap				comps;
-	RefLinkedList<Entity>			objects;
-	RefLinkedList<Pool>		pools;
+	ConnectorMap			comps;
+	EntityVec				objects;
+	PoolVec					pools;
 	
 	void InitializeComponent(ConnectorBase& comp);
 	

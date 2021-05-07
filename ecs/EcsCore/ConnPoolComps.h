@@ -35,7 +35,7 @@ public:
 	
 private:
 	
-	void Visit(Ref<Pool> pool, Vector<Vector<Ref<T>>>& src_stack);
+	void Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_stack);
 	
 };
 

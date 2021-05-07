@@ -13,8 +13,8 @@ public:
 	
 	void operator=(const Camerable& c) {target = c.target;}
 	
-	Ref<Camerable> GetCamerable() override {return this;}
-	Ref<Transform> GetTransform() override;
+	CamerableRef GetCamerable() override {return ComponentBase::AsRef<Camerable>();}
+	TransformRef GetTransform() override;
 	
 };
 

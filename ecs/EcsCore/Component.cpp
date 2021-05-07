@@ -3,6 +3,13 @@
 NAMESPACE_OULU_BEGIN
 
 
+ComponentBase::ComponentBase() {
+	DBG_CONSTRUCT
+}
+
+ComponentBase::~ComponentBase() {
+	DBG_DESTRUCT
+}
 
 Machine& ComponentBase::GetMachine() {
 	return ent->GetMachine();

@@ -128,7 +128,7 @@ public:
 
 class MediaSourceStream :
 	public MediaStream,
-	public LockedScopeEnabler<MediaSourceStream>
+	public RefScopeEnabler<MediaSourceStream,ComponentBase>
 {
 	
 protected:
@@ -144,13 +144,12 @@ public:
 	
 };
 
-typedef Ref<MediaSourceStream> MediaSourceStreamRef;
 
 
 
 class MediaSinkStream :
 	public MediaStream,
-	public LockedScopeEnabler<MediaSinkStream>
+	public RefScopeEnabler<MediaSinkStream,ComponentBase>
 {
 	
 protected:
@@ -161,8 +160,10 @@ public:
 	
 };
 
-typedef Ref<MediaSinkStream> MediaSinkStreamRef;
 
+
+using MediaSourceStreamRef	= Ref<MediaSourceStream,RefParent1<ComponentBase>>;
+using MediaSinkStreamRef	= Ref<MediaSinkStream,RefParent1<ComponentBase>>;
 
 NAMESPACE_OULU_END
 

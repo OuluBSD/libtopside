@@ -16,12 +16,12 @@ FfmpegComponent::FfmpegComponent() {
 
 void FfmpegComponent::Initialize() {
 	
-	AddToSystem<AudioSystem>(this);
+	AddToSystem<AudioSystem>(AsRef<AudioSource>());
 }
 
 void FfmpegComponent::Uninitialize() {
 	
-	RemoveFromSystem<AudioSystem>(this);
+	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
 }
 
 bool FfmpegComponent::LoadFileAny(String path) {
@@ -29,7 +29,7 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	
 	if (file_in.Open(path)) {
 		if (file_in.OpenDevice(0, 0)) {
-			vi.SetCap(&file_in);
+			vi.SetCap(file_in.AsRef<MediaSourceStream>());
 
 			vi.Start(false);
 			

@@ -42,11 +42,11 @@ void PortaudioSinkComponent::Initialize() {
 	
 	obj->Start();
 	
-	AddToSystem<AudioSystem>(this);
+	AddToSystem<AudioSystem>(AsRef<AudioSink>());
 }
 
 void PortaudioSinkComponent::Uninitialize() {
-	RemoveFromSystem<AudioSystem>(this);
+	RemoveFromSystem<AudioSystem>(AsRef<AudioSink>());
 	
 	//dev.Clear();
 	//sys.Clear();

@@ -160,7 +160,7 @@ void FusionComponent::Uninitialize() {
 	DLOG("FusionComponent(" << GetTypeString() << ")::Uninitialize");
 	
 	if (ctx) {
-		ctx->RemoveComponent(this);
+		ctx->RemoveComponent(AsRefDynamic());
 		ctx = 0;
 	}
 	

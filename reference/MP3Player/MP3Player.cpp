@@ -45,7 +45,7 @@ void MP3Player::Initialize() {
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
 	
-	file_in->WhenStopped << THISBACK(OnStop);
+	file_in->WhenStopped = THISBACK(OnStop);
 	
 	Pool& p = e.GetPool();
 	p.Add<ConnectAllInterfaces<AudioSource>>();

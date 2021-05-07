@@ -36,6 +36,15 @@ void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
 
 
 
+ExchangeBase::ExchangeBase() {
+	//DBG_CONSTRUCT
+}
+
+ExchangeBase::~ExchangeBase() {
+	//DBG_DESTRUCT
+}
+	
+
 void AudioEx::SetOffset(off32 packet_count) {
 	//AUDIOLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
 	this->offset = packet_count;
@@ -55,7 +64,7 @@ bool ExchangeSourceProvider::print_debug = false;
 void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
 	base.AddLink(expt, sink);
-	sink->base.AddLink(expt, this);
+	sink->base.AddLink(expt, AsRefDynamic());
 	if (print_debug) {
 		TypeId src_type = GetProviderType();
 		TypeId sink_type = sink->GetProviderType();
@@ -67,7 +76,7 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_
 		LOG(s);
 	}
 	OnLink(sink, src_c, sink_c);
-	sink->OnLink(this, src_c, sink_c);
+	sink->OnLink(AsRefDynamic(), src_c, sink_c);
 }
 
 
@@ -79,8 +88,40 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_
 
 
 
+
+ExchangeSinkProvider::ExchangeSinkProvider() {
+	DBG_CONSTRUCT
+}
+
+ExchangeSinkProvider::~ExchangeSinkProvider() {
+	DBG_DESTRUCT
+}
+
+
+
+
+
+
+
+ExchangeSourceProvider::ExchangeSourceProvider() {
+	DBG_CONSTRUCT
+}
+
+ExchangeSourceProvider::~ExchangeSourceProvider() {
+	DBG_DESTRUCT
+}
+
+
+
+
+
+
 ExchangePoint::ExchangePoint() {
-	
+	DBG_CONSTRUCT
+}
+
+ExchangePoint::~ExchangePoint() {
+	DBG_DESTRUCT
 }
 
 void ExchangePoint::Clear() {
@@ -94,7 +135,7 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	Clear();
 	this->src	= src;
 	this->sink	= sink;
-	ExchangePointRef thisref = AsRef();
+	ExchangePointRef thisref = AsRef<ExchangePoint>();
 	src->AddSink(thisref, sink);
 	sink->AddSource(thisref, src);
 }
@@ -126,7 +167,11 @@ void ExchangePoint::Destroy() {
 
 
 MetaExchangePoint::MetaExchangePoint() {
-	
+	DBG_CONSTRUCT
+}
+
+MetaExchangePoint::~MetaExchangePoint() {
+	DBG_DESTRUCT
 }
 
 /*void MetaExchangePoint::Init(ConnectorBase* comp) {

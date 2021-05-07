@@ -168,6 +168,8 @@ class VideoStream : public virtual RealtimeStream {
 public:
 	virtual ~VideoStream() {}
 	
+	using Parent = ComponentBase;
+	
 	virtual void						FillVideoBuffer() = 0;
 	virtual void						DropVideoFrames(int frames) = 0;
 	virtual int							GetVideoBufferSize() const = 0;

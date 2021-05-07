@@ -201,7 +201,7 @@ struct FusionComponentInputVector {
 	void Add(const FusionComponentInput& a);
 };
 
-class FusionComponent : public LockedScopeEnabler<FusionComponent> {
+class FusionComponent : public RefScopeEnabler<FusionComponent,Entity> {
 	
 protected:
 	// Stage
@@ -739,7 +739,7 @@ protected:
 		MODE_AUDIO,
 	} Mode;
 	
-	Vector<Ref<FusionComponent>> comps;
+	Vector<RefT_Entity<FusionComponent>> comps;
 	Vector<String> common_source;
 	Vector<uint32> gl_stages;
 	String last_error;
@@ -753,11 +753,11 @@ protected:
 	void					Clear();
 	void					RefreshStageQueue();
 	void					RefreshPipeline();
-	void					RemoveComponent(Ref<FusionComponent> s) {VectorRemoveKey(comps, s);}
+	void					RemoveComponent(RefT_Entity<FusionComponent> s) {VectorRemoveKey(comps, s);}
 	void					ProcessStageQueue(Mode m);
 	bool					IsModeStage(const FusionComponent& comp, Mode m) const;
 	void					RefreshStreamValues(Mode m);
-	Ref<FusionComponent>	GetComponentById(int id) const;
+	RefT_Entity<FusionComponent>	GetComponentById(int id) const;
 	void					FindComponents();
 	bool					LoadFileAny(String path, Object& dst);
 	bool					LoadFileToy(String path, Object& dst);
@@ -780,13 +780,13 @@ protected:
 	void				Ogl_CreatePipeline();
 #endif
 	
-	template <class T> Ref<FusionComponent> AddEntityComponent() {
-		Ref<T> o = GetEntity().Add<T>();
+	template <class T> RefT_Entity<T> AddEntityComponent() {
+		RefT_Entity<T> o = GetEntity().Add<T>();
 		o->ctx = this;
 		return o;
 	}
 	template <class T> bool AddEntityFusionComponent(FusionComponentInput& in) {
-		Ref<T> o = GetEntity().Add<T>();
+		RefT_Entity<T> o = GetEntity().Add<T>();
 		if (!o)
 			return false;
 		o->ctx = this;
