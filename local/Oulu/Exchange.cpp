@@ -64,7 +64,7 @@ bool ExchangeSourceProvider::print_debug = false;
 void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
 	base.AddLink(expt, sink);
-	sink->base.AddLink(expt, AsRefDynamic());
+	sink->base.AddLink(expt, AsRefT());
 	if (print_debug) {
 		TypeId src_type = GetProviderType();
 		TypeId sink_type = sink->GetProviderType();
@@ -76,7 +76,7 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_
 		LOG(s);
 	}
 	OnLink(sink, src_c, sink_c);
-	sink->OnLink(AsRefDynamic(), src_c, sink_c);
+	sink->OnLink(AsRefT(), src_c, sink_c);
 }
 
 

@@ -846,7 +846,7 @@ class FusionSystem : public System<FusionSystem> {
 	Vector<FusionComponent*> comps;
 	
 public:
-	FusionSystem(Machine& m);
+	SYS_CTOR(FusionSystem);
 	
 protected:
 	

@@ -9,12 +9,14 @@ class Machine;
 
 class SystemBase : public RefScopeEnabler<SystemBase,Machine> {
 public:
-    SystemBase(Machine& machine);
+	using RScope = RefScopeEnabler<SystemBase,Machine>;
+	
+    SystemBase();
     virtual ~SystemBase();
 
     virtual TypeId GetType() const = 0;
 
-	Machine& GetMachine() const {return machine;}
+	Machine& GetMachine() const {return RScope::GetParent();}
 protected:
     friend Machine;
 
@@ -24,7 +26,6 @@ protected:
     virtual void Stop() {}
     virtual void Uninitialize() {}
 
-    Machine& machine;
 };
 
 
@@ -35,11 +36,12 @@ class System :
 public:
     using SystemBase::SystemBase;
 	
-	System(Machine& e) : SystemBase(e) {};
+	System() {};
     TypeId GetType() const override {return typeid(T);}
     
 };
 
+#define SYS_CTOR(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
 
 class Machine :
 	public RefScopeEnabler<Machine,RefRoot>
@@ -72,11 +74,6 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 		
 		SystemT* syst = new SystemT(*this, args...);
-		/*Ref<SystemBase> s;
-		s.WrapObject(syst);syst->InitWeak(s.As<SystemT>());
-		Add(typeid(SystemT), s);
-        //Add(typeid(SystemT), MakeRef<SystemT>(*this, std::forward<Args>(args)...));
-        return s.As<SystemT>();*/
         Add(typeid(SystemT), syst);
         return syst->template AsRef<SystemT>();
     }

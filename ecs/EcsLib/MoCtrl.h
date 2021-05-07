@@ -22,7 +22,7 @@ class MotionControllerSystem :
 			public IPredictionUpdateListener,
 			public ControllerListenerInterface {
 public:
-	using System::System;
+	SYS_CTOR()
 	
 protected:
 	void Start() override;

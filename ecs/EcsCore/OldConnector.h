@@ -13,7 +13,7 @@ class Connector;
 	
 public:
 class ConnectorSystem : public System<ConnectorSystem> {
-	using System::System;
+	SYS_CTOR()
 	
 	void Update(double dt) override;
 	void Uninitialize() override;

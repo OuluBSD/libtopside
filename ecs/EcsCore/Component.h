@@ -131,7 +131,7 @@ public:
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
-		ComponentRef cmp = ComponentMapBase::Add(type, component);
+		ComponentMapBase::Add(type, component);
 	}
 	
 	template<typename ComponentT>

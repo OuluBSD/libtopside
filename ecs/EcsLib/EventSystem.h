@@ -11,7 +11,7 @@ class EventSystem : public System<EventSystem> {
 	Vector<MidiSource*> midis;
 	
 public:
-	EventSystem(Machine& m);
+	SYS_CTOR(EventSystem);
 	
 	void Add(ControllerSource* out);
 	void Remove(ControllerSource* out);

@@ -11,7 +11,7 @@ class OverlapSystem : public System<OverlapSystem> {
 	Vector<Overlap*> conns;
 	
 public:
-	using System::System;
+	SYS_CTOR(OverlapSystem)
 	
 	void Add(Overlap* conn) {VectorFindAdd(conns, conn);}
 	void Remove(Overlap* conn) {VectorRemoveKey(conns, conn);}

@@ -10,7 +10,7 @@ class HolographicScene : public System<HolographicScene> {
 
 public:
 	typedef HolographicScene CLASSNAME;
-	using System::System;
+	SYS_CTOR()
 	
 	HolographicScene(Machine& core, HolographicSpace holographicSpace);
 	

@@ -23,7 +23,7 @@ public:
 class QuadtreeSystem : public System<QuadtreeSystem> {
 	
 public:
-	using System::System;
+	SYS_CTOR()
 	
 	void Update(double dt) override;
 	

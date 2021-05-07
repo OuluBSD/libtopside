@@ -6,8 +6,8 @@ NAMESPACE_OULU_BEGIN
 
 
 class EntityStore : public System<EntityStore> {
-	PoolVec					root;
-	LinkedList<ConnectorBase*>	refresh_poolcomps[2];
+	PoolVec							root;
+	LinkedList<ConnectorBase*>		refresh_poolcomps[2];
 	Mutex							lock;
 	
 	enum {
@@ -15,10 +15,8 @@ class EntityStore : public System<EntityStore> {
 		WRITE
 	};
 public:
-	using System::System;
-	
-	EntityStore(Machine& m) : System<EntityStore>(m) {
-		root.Add()->SetMachine(machine);
+	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
+		root.Add().SetParent(PoolParent(this,0));
 	}
 	
 	PoolRef GetRoot()	{return *root.begin();}

@@ -159,7 +159,7 @@ class ControllerSystem final : public System<ControllerSystem>
 {
 public:
 	typedef ControllerSystem CLASSNAME;
-    using System::System;
+    SYS_CTOR()
 
     void AddListener(Ref<ControllerListenerInterface> listener) {
         m_ctrl_Listeners.Add(pick(listener));

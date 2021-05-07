@@ -10,7 +10,7 @@ NAMESPACE_OULU_BEGIN
 class ExchangeSystem : public System<ExchangeSystem> {
 
 public:
-	using System::System;
+	SYS_CTOR(ExchangeSystem)
 	
 	
 protected:

@@ -4,7 +4,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-SystemBase::SystemBase(Machine& machine) : machine(machine) {
+SystemBase::SystemBase() {
 	DBG_CONSTRUCT
 }
 
@@ -106,6 +106,7 @@ void Machine::Add(const TypeId& type_id, SystemBase* system) {
 	auto it = FindSystem(type_id);
 	ASSERT(!it);
 	
+	ASSERT(system->GetParent());
 	systems.Add(type_id, system);
 }
 

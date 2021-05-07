@@ -8,12 +8,12 @@ NAMESPACE_OULU_BEGIN
 class WorldLogicSystem : public System<WorldLogicSystem>
 {
 public:
-    using System::System;
+    SYS_CTOR(WorldLogicSystem)
 
 protected:
     void Update(double /*dt*/) override
     {
-        EntityComponentVisitor<Transform> visitor(machine);
+        EntityComponentVisitor<Transform> visitor(GetMachine());
 		visitor.Skip(Pool::BIT_TRANSFORM);
         for (;visitor; visitor++)
         {

@@ -402,9 +402,10 @@ public:
 	Ref<T> Add(T* o=NULL) {
 		if (!o)
 			o = new T();
-		Ref<T> pt = pts.Add(o);
-		pt->meta_expt = AsRefDynamic();
-		return pt;
+		pts.Add(o);
+		o->SetParent(this);
+		o->meta_expt = AsRefT();
+		return o->AsRefT();
 	}
 
 	void Remove(ExchangePoint* expt);

@@ -11,6 +11,7 @@ FfmpegComponent::FfmpegComponent() {
 	def_cap_sz = Size(1280,720);
 	def_cap_fps = 30;
 	
+	file_in.SetParent(this);
 	file_in.WhenStopped << Proxy(WhenStopped);
 }
 

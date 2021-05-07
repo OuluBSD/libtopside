@@ -19,7 +19,7 @@ protected:
     void Uninitialize() override;
     
 public:
-    using System::System;
+    SYS_CTOR(VideoSystem)
 	
 	void Add(VideoSourceRef src);
 	void Add(VideoSinkRef sink);

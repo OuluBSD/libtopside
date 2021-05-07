@@ -84,7 +84,7 @@ void FusionContextComponent::FindComponents() {
 			if (fcomp) {
 				ASSERT(!fcomp->ctx);
 				fcomp->ctx = this;
-				comps.Add(fcomp->AsRefDynamic());
+				comps.Add(fcomp->AsRefT());
 			}
 		}
 	}

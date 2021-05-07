@@ -130,7 +130,7 @@ public:
     void Set(const Model& m) {model = new Model(m);}
     void operator=(const Model& m) {Set(m);}
 	
-	Ref<Model> GetModel() {return model ? model->AsRefDynamic() : Null;}
+	Ref<Model> GetModel() {return model ? model->AsRefT() : Null;}
 	
 protected:
 	friend class ModelBuilder;

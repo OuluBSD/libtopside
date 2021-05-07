@@ -30,7 +30,7 @@ class MotionControllerSystem :
     public ControllerListenerInterface
 {
 public:
-    using System::System;
+    SYS_CTOR(MotionControllerSystem)
 
 protected:
     // System

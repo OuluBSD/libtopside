@@ -4,7 +4,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-RenderingSystem::RenderingSystem(Machine& m) : System<RenderingSystem>(m) {
+RenderingSystem::RenderingSystem(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
 	invalid = 0;
 	vscreen_sz = Size(0,0);
 }

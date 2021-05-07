@@ -25,6 +25,7 @@ struct VideoSource;
 struct VideoSink;
 template <class Main, class Base> class ComponentStoreT;
 
+using PoolParent			= RefParent2<EntityStore,Pool>;
 using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
 using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
 
@@ -40,7 +41,7 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
 using ConnectorRef			= Ref<ConnectorBase,		RefParent1<Pool>>;
 using EntityRef				= Ref<Entity,				RefParent1<Pool>>;
-using PoolRef				= Ref<Pool,					RefParent2<EntityStore, Pool>>;
+using PoolRef				= Ref<Pool,					PoolParent>;
 using EntityStoreRef		= Ref<EntityStore,			RefParent1<Machine>>;
 using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
 using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
@@ -48,7 +49,7 @@ using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 
 using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	RefParent1<Pool>>;
 using EntityVec				= RefLinkedList<		Entity,			RefParent1<Pool>>;
-using PoolVec				= RefLinkedList<		Pool,			RefParent2<EntityStore, Pool>>;
+using PoolVec				= RefLinkedList<		Pool,			PoolParent>;
 
 using VAR					= EntityRef;
 using EntityId				= int64;

@@ -17,6 +17,26 @@ EntityId Pool::GetNextId() {
 	return ++next_id;
 }
 
+Pool* Pool::GetParent() const {
+	return RefScopeParent<PoolParent>::GetParent().b;
+}
+
+Machine& Pool::GetMachine() {
+	if (machine)
+		return *machine;
+	Pool* p = this;
+	while (p) {
+		const PoolParent& par = RefScopeParent<PoolParent>::GetParent();
+		if (par.a) {
+			machine = &par.a->GetMachine();
+			ASSERT(machine);
+			return *machine;
+		}
+		p = par.b;
+	}
+	throw Exc("Machine ptr not found");
+}
+
 void Pool::Initialize(Entity& e, String prefab) {
 	uint64 ticks = GetMachine().GetTicks();
 	e.SetPrefab(prefab);
@@ -26,11 +46,12 @@ void Pool::Initialize(Entity& e, String prefab) {
 }
 
 EntityRef Pool::Clone(const Entity& c) {
-	EntityRef e = objects.Add();
-	e->Init(this, GetNextId());
-	Initialize(*e);
-	e->CopyHeader(c);
-	GetMachine().Get<ComponentStore>()->Clone(*e, c);
+	Entity& e = objects.Add();
+	e.SetParent(this);
+	e.Init(this, GetNextId());
+	Initialize(e);
+	e.CopyHeader(c);
+	GetMachine().Get<ComponentStore>()->Clone(e, c);
 	return e;
 }
 	

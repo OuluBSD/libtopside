@@ -12,7 +12,6 @@ class Pool :
 	public RefScopeEnabler<Pool,EntityStore,RefParent2<EntityStore, Pool>>
 {
 	Machine*			machine = 0;
-	Pool*				parent = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
 	
@@ -31,7 +30,6 @@ public:
 	
 	static EntityId GetNextId();
 	
-	void SetMachine(Machine& m)		{machine = &m;}
 	void SetName(String s)			{name = s;}
 	void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
 	void FreezeOverlap()			{freeze_bits.Set(BIT_OVERLAP, true);}
@@ -46,8 +44,8 @@ public:
 	void				ClearDeep();
 	void				PruneFromContainer();
 	
-	Pool*			GetParent() const {return parent;}
-	Machine&			GetMachine() {return *machine;}
+	Pool*				GetParent() const;
+	Machine&			GetMachine();
 	String				GetName() const {return name;}
 	bool				HasEntities() const {return !objects.IsEmpty();}
 	bool				HasPools() const {return !pools.IsEmpty();}
@@ -60,12 +58,13 @@ public:
 	EntityRef Create() {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
 		
-		EntityRef e = objects.Add();
-		e->Init(this, GetNextId());
-		PrefabT::Make(*e);
-		Initialize(*e, TypeId(typeid(PrefabT)).CleanDemangledName());
+		Entity& e = objects.Add();
+		e.SetParent(this);
+		e.Init(this, GetNextId());
+		PrefabT::Make(e);
+		Initialize(e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
-		return e;
+		return e.AsRefT();
 	}
 	
 	template<typename... ComponentTs>
@@ -145,10 +144,9 @@ public:
 	PoolVec& GetPools() {return pools;}
 	
 	PoolRef AddPool(String name="") {
-		PoolRef p = pools.Add();
-		p->SetMachine(*machine);
-		p->parent = this;
-		p->SetName(name);
+		Pool& p = pools.Add();
+		p.SetParent(PoolParent(0, this));
+		p.SetName(name);
 		return p;
 	}
 	
@@ -175,6 +173,7 @@ public:
 	RefT_Pool<T> Add() {
 		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
 		ASSERT(comp);
+		comp->SetParent(this);
 		comps.Add(comp);
 		InitializeComponent(*comp);
 		return RefT_Pool<T>(this, comp);

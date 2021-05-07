@@ -27,7 +27,7 @@ struct Easing : Component<Easing>
 class EasingSystem : public System<EasingSystem>
 {
 public:
-    using System::System;
+    SYS_CTOR(EasingSystem)
 
 protected:
     void Update(double) override;

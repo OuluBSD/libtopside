@@ -11,7 +11,7 @@ NAMESPACE_OULU_BEGIN
 class OctreeSystem : public System<OctreeSystem> {
 	
 public:
-	using System::System;
+	SYS_CTOR()
 	
 	void Update(double dt) override;
 	

@@ -29,8 +29,13 @@ struct RefParent1 {
 	T* o = 0;
 	
 	RefParent1() {}
+	RefParent1(T& o) : o(&o) {}
 	RefParent1(T* o) : o(o) {}
 	void Clear() {o = 0;}
+	
+	operator bool() const {return o;}
+	operator T&() const {ASSERT(o); return *o;}
+	operator T*() const {ASSERT(o); return o;}
 	
 };
 
@@ -43,6 +48,8 @@ struct RefParent2 {
 	RefParent2(A* a, B* b) : a(a), b(b) {}
 	
 	void Clear() {a = 0; b = 0;}
+	
+	operator bool() const {return a || b;}
 	
 };
 
@@ -152,14 +159,20 @@ class RefScopeParent {
 	RParent parent;
 	
 public:
+	RefScopeParent() {}
+	RefScopeParent(RParent p) : parent(p) {}
 	virtual ~RefScopeParent() {}
 	
 	void SetParent(RParent p) {parent = p;}
 	
-	const RParent& GetParent() const {return parent;}
+	const RParent& GetParent() const {
+		ASSERT(parent);
+		return parent;
+	}
 	
 	template <class V>
 	Ref<V,RParent> AsRef() {
+		ASSERT(parent);
 		return Ref<V,RParent>(parent, dynamic_cast<V*>(this));
 	}
 	
@@ -185,15 +198,11 @@ public:
 		#endif
 	}
 	
-	/*Ref<T> AsRef() {
-		static_assert(std::is_base_of<RefScopeEnabler<T>,T>(), "T must inherit RefScopeEnabler<T>");
-		return Ref<T>(static_cast<T*>(this));
+	RefScopeEnabler(RParent p) : SP(p) {
+		#ifdef flagDEBUG_STACK
+		dbg_type = typeid(T);
+		#endif
 	}
-	
-	operator Ref<T>() {
-		static_assert(std::is_base_of<RefScopeEnabler<T>,T>(), "T must inherit RefScopeEnabler<T>");
-		return Ref<T>(static_cast<T*>(this));
-	}*/
 	
 	
 	template <class V=T>
@@ -203,8 +212,10 @@ public:
 	}
 	
 	template <class V=T>
-	Ref<V,RParent> AsRefDynamic() {
-		return Ref<V,RParent>(SP::GetParent(), dynamic_cast<V*>(this));
+	Ref<V,RParent> AsRefT() {
+		V* o = dynamic_cast<V*>(this);
+		ASSERT(o);
+		return Ref<V,RParent>(SP::GetParent(), o);
 	}
 	
 	
@@ -395,7 +406,7 @@ public:
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.AsRefDynamic();}
+		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.AsRefT();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
@@ -435,7 +446,7 @@ public:
 		++count;
 		return it;
 	}
-	R Add() {return AddItem()->value.AsRefDynamic();}
+	T& Add() {return AddItem()->value;}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	void RemoveFirst(int count) {
@@ -675,7 +686,7 @@ public:
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = it->value->AsRefDynamic();}
+		void ChkRef() const {if (ref.IsEmpty() && it && !it->value.IsEmpty()) ref = it->value->AsRefT();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}
@@ -698,7 +709,7 @@ public:
 	
 	RefLinkedListIndirect() {}
 	~RefLinkedListIndirect() {Clear();}
-	R Add(T* o=NULL) {
+	One<T>& Add(T* o=NULL) {
 		Item* it = GetRecyclerPool().New();
 		if (!first) {
 			last = first = it;
@@ -713,7 +724,7 @@ public:
 		++count;
 		if (o)
 			it->value.Attach(o);
-		return it->value->AsRefDynamic();
+		return it->value;
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
@@ -819,8 +830,8 @@ public:
 	~RefLinkedMapIndirect() {Clear();}
 	void Clear() {keys.Clear(); values.Clear();}
 	
-	R Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
-	R Add(const K& k, V* o) {keys.AddItem()->value = k; return values.Add(o);}
+	One<V>& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	One<V>& Add(const K& k, V* o) {keys.AddItem()->value = k; return values.Add(o);}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
 	Iterator Remove(const Iterator& iter) {

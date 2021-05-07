@@ -9,7 +9,7 @@ class ActionSystem : public System<ActionSystem> {
 	Vector<ActionSource*> srcs;
 	
 public:
-	using System::System;
+	SYS_CTOR(ActionSystem)
 	
 	void Add(ActionSource* src);
 	void Remove(ActionSource* src);

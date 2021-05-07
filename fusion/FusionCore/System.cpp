@@ -4,10 +4,6 @@ NAMESPACE_OULU_BEGIN
 
 
 
-FusionSystem::FusionSystem(Machine& m) : System<FusionSystem>(m) {
-	
-}
-
 bool FusionSystem::Initialize() {
 	return true;
 }

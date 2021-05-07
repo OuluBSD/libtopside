@@ -92,7 +92,7 @@ public:
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ConnectorT::AllowDuplicates(), "Cannot have duplicate componnets");
-		ConnectorRef cmp = ConnectorMapBase::Add(type, component);
+		ConnectorMapBase::Add(type, component);
 	}
 	
 	template<typename ConnectorT>

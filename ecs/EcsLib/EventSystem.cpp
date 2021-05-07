@@ -8,16 +8,13 @@
 NAMESPACE_OULU_BEGIN
 
 
-EventSystem::EventSystem(Machine& m) : System<EventSystem>(m) {
-	
-}
 
 bool EventSystem::Initialize() {
 	return true;
 }
 
 void EventSystem::Start() {
-	ents = machine.Get<EntityStore>();
+	ents = GetMachine().Get<EntityStore>();
 }
 
 void EventSystem::Update(double dt) {

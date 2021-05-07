@@ -15,7 +15,7 @@ protected:
     void Uninitialize() override;
     
 public:
-    using System::System;
+    SYS_CTOR(RegistrySystem)
 	
 	
 	void Set(String key, Object value) {reg.GetAdd(key) = value;}

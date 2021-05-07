@@ -11,8 +11,9 @@ class ComponentStoreT :
 {
 	
 public:
+	SYS_CTOR(ComponentStoreT);
+	
 	using Parent = Machine;
-	using System<ComponentStoreT<Main,Base>>::System;
 	using Factory = Oulu::Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsComponent = std::is_base_of<Base, T>;
 	

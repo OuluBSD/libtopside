@@ -19,7 +19,7 @@ protected:
     void Uninitialize() override;
     
 public:
-    using System::System;
+    SYS_CTOR(AudioSystem)
 	
 	void Add(AudioSourceRef src);
 	void Add(AudioSinkRef sink);
