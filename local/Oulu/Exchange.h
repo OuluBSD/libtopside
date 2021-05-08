@@ -239,7 +239,7 @@ protected:
 	
 public:
 	
-	void Visit(RuntimeVisitor& vis) {for (auto iter = links.begin(); iter; ++iter) vis % *iter;}
+	void Visit(RuntimeVisitor& vis) {for (auto iter = links.begin(); iter; ++iter) vis % iter();}
 	void SetMultiConnection(bool b) {multi_conn = b;}
 	const LinkedList<Link>& GetConnections() const {return links;}
 	

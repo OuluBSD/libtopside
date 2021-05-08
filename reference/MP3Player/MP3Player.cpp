@@ -131,6 +131,8 @@ void Main() {
 	        //if (total.Seconds() > 3)
 	        //    mach.SetNotRunning();
 	    }
+	    
+	    RuntimeDiagnostics::Static().CaptureSnapshot();
     }
     catch (Exc e) {
         LOG("error: " << e);

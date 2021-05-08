@@ -709,8 +709,12 @@ inline String HexStr(int64 p) {
 		i -= 8;
 		byte b = (p >> i) & 0xFFULL;
 		if (b || !zero) {
+			byte hi = b >> 4;
+			byte lo = b & 0xF;
+			if (hi || !zero)
+				o.Cat(HexDigit(hi));
+			o.Cat(HexDigit(lo));
 			zero = false;
-			o.Cat(HexDigit(b));
 		}
 	}
 	while (i);

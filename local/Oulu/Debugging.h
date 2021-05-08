@@ -67,43 +67,70 @@ public:
 
 
 class RuntimeDiagnosticVisitor : public RuntimeVisitor {
+	struct Var {
+		void* mem;
+		TypeId type;
+		LockedScopeRefCounter* ref;
+	};
+	struct Scope {
+		Scope* parent;
+		LinkedList<Scope> sub_scopes;
+		LinkedList<Var> refs;
+		Var var;
+		bool focused;
+		
+		void Clear();
+	};
 	
+	Scope root;
+	Scope* cur_scope = 0;
+	LockedScopeRefCounter* cursor = 0;
+	
+	
+	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	void OnExit() override;
+	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	
+	void DumpVisit(const Scope& s, int depth, bool only_focused);
+	void RecursiveFocus(Scope& s);
+	void RecursiveUnfocus(Scope& s);
 	
 public:
-	
+	bool IsEmpty() const {return root.var.mem == 0;}
 	void Clear();
+	void Dump();
+	void DumpFocused();
+	void Unfocus();
+	void Focus(LockedScopeRefCounter* c);
 	
 };
 
 class RuntimeDiagnostics {
-	void* cur = 0;
+	void* root = 0;
 	Callback visiter;
 	RuntimeDiagnosticVisitor vis;
 	
-	template <class T>
-	void BeginVisit() {
-		T* o = (T*)cur;
+	template <class T> void BeginVisit() {
 		vis.Clear();
-		vis.Visit(*o);
+		vis.Visit(*(T*)root);
 	}
 	
 public:
 	typedef RuntimeDiagnostics CLASSNAME;
+	RuntimeDiagnostics();
 	
+	void CaptureSnapshot();
 	void OnRefError(LockedScopeRefCounter* r);
-	
-	
-	
-	Callback1<String> WhenFatalError;
-	
 	static RuntimeDiagnostics& Static() {static RuntimeDiagnostics s; return s;}
-
-
+	
 	template <class T>
 	void SetRoot(T& o) {
 		visiter = THISBACK(BeginVisit<T>);
-		cur = &o;
+		root = &o;
 	}
+	
+	
+	Callback1<String> WhenFatalError;
 };
 
 

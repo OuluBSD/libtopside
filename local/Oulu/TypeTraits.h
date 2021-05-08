@@ -63,15 +63,6 @@ template<class T> inline TypeId GetTypeId() {return typeid(T);}
 
 template<class T> using TypeMap				= LinkedMap<TypeId, T>;
 
-template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefTypeMap			= RefLinkedMap<TypeId, T, Parent>;
-
-template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T, Parent>;
-
-template<class T, class Parent = RefParent1<typename T::Parent>>
-using TypeRefMap			= LinkedMap<TypeId, Ref<T,Parent>>;
-
 
 
 

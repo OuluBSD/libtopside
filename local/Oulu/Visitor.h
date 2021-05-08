@@ -5,54 +5,89 @@
 NAMESPACE_OULU_BEGIN
 
 
+class LockedScopeRefCounter {
+	
+private:
+	std::atomic<int> refs;
+	
+	#ifdef flagDEBUG_STACK
+protected:
+	bool dbg_referencing = false;
+	std::reference_wrapper<const std::type_info> dbg_type;
+	void SetDebugReferencing(bool b=true) {dbg_referencing = b;}
+	#endif
+	
+public:
+	LockedScopeRefCounter();
+	virtual ~LockedScopeRefCounter();
+	
+	int GetRefCount() const {return refs;}
+	void IncRef();
+	void DecRef();
+	
+	void ForcedReset() {refs = 0;}
+	
+};
+
+template <class T, bool is_base>
+struct LockedScopeRefCounterCaster {
+	LockedScopeRefCounter* Cast(T* o) {return dynamic_cast<LockedScopeRefCounter*>(o);}
+};
+
+template <class T>
+struct LockedScopeRefCounterCaster<T,false> {
+	LockedScopeRefCounter* Cast(T* o) {return 0;}
+};
+	
+
 class RuntimeVisitor {
+	bool break_out = false;
+	bool get_refs = false;
 	
+	virtual bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {return true;}
+	virtual void OnExit() {}
+	virtual void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) {}
 	
-	template <class T>
-	void Push(T& o) {
-		TODO
-	}
-	
-	void Pop() {
-		
-	}
-	
-	template <class T>
-	void AddRef(T& o) {
-		TODO
+	template <class T> LockedScopeRefCounter* GetRefCounter(T* o) {
+		return !get_refs ? 0 : LockedScopeRefCounterCaster<T,std::is_base_of<LockedScopeRefCounter,T>::value>().Cast(o);
 	}
 	
 public:
+	RuntimeVisitor() {}
 	
-	void StopWhenFound(bool b=true);
+	void Clear();
+	void BreakOut(bool b=true) {break_out = b;}
+	void SetActiveRefCounter(bool b=true) {get_refs = b;}
 	
 	template <class T>
 	void Visit(T& o) {
-		Push(o);
-		o.Visit(*this);
-		Pop();
+		if (break_out) return;
+		if (OnEntry(typeid(T), &o, GetRefCounter(&o))) {
+			o.Visit(*this);
+			OnExit();
+		}
 	}
 	
-	template <class T>
-	void VisitRef(T& o) {
-		AddRef(o);
+	template <class T> void VisitRef(T& o) {
+		if (break_out) return;
+		OnRef(typeid(typename T::Type), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>
 	void VisitVector(T& o) {
-		for (auto iter = o.begin(), end = o.end(); iter != end; ++iter)
+		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
 			Visit(*iter);
 	}
 	
 	template <class T>
 	void VisitVectorRefs(T& o) {
-		for (auto iter = o.begin(), end = o.end(); iter != end; ++iter)
+		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
 			Visit(iter());
 	}
 	
 	template <class T>
 	void VisitRefVector(T& o) {
-		for (auto iter = o.begin(), end = o.end(); iter != end; ++iter)
+		for (auto iter = o.begin(), end = o.end(); iter != end && !break_out; ++iter)
 			VisitRef(*iter);
 	}
 	
@@ -61,6 +96,8 @@ public:
 	template <class T> RuntimeVisitor& operator|(T& o) {VisitVector(o); return *this;}
 	template <class T> RuntimeVisitor& operator||(T& o) {VisitVectorRefs(o); return *this;}
 	template <class T> RuntimeVisitor& operator&&(T& o) {VisitRefVector(o); return *this;}
+	
+	
 };
 
 

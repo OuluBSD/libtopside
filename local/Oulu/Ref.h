@@ -53,6 +53,10 @@ class Ref : Moveable<Ref<T,Parent>> {
 	Parent p;
 	
 public:
+	using Type = T;
+	using ParentT = Parent;
+	
+	
 	Ref() {}
 	Ref(Nuller) {}
 	Ref(Parent p, T* o) : p(p), o(o) {if (o) o->IncRef();}
@@ -60,7 +64,6 @@ public:
 	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();}}
 	~Ref() {Clear();}
 	
-	typedef T Type;
 	
 	T* GetRefPtr() const {return o;}
 	const Parent& GetRefParent() const {return p;}
@@ -123,29 +126,6 @@ public:
 	
 };
 
-
-class LockedScopeRefCounter {
-	
-private:
-	std::atomic<int> refs;
-	
-	#ifdef flagDEBUG_STACK
-protected:
-	bool dbg_referencing = false;
-	std::reference_wrapper<const std::type_info> dbg_type;
-	void SetDebugReferencing(bool b=true) {dbg_referencing = b;}
-	#endif
-	
-public:
-	LockedScopeRefCounter();
-	virtual ~LockedScopeRefCounter();
-	
-	void IncRef();
-	void DecRef();
-	
-	void ForcedReset() {refs = 0;}
-	
-};
 
 
 template <class RParent>
@@ -592,6 +572,7 @@ public:
 	typedef typename LinkedList<K>::Iterator KeyIter;
 	typedef typename RefLinkedListIndirect<V>::Iterator ValueIter;
 	typedef typename RefLinkedListIndirect<V>::R ValueRef;
+	
 	struct Iterator {
 		KeyIter key;
 		ValueIter value;
@@ -645,6 +626,21 @@ public:
 	Iterator rend()		{return Iterator();}
 	
 };
+
+
+
+
+
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefTypeMap			= RefLinkedMap<TypeId, T, Parent>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T, Parent>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using TypeRefMap			= LinkedMap<TypeId, Ref<T,Parent>>;
+
 
 NAMESPACE_OULU_END
 

@@ -3,8 +3,8 @@
 NAMESPACE_OULU_BEGIN
 
 
-void RuntimeVisitor::StopWhenFound(bool b) {
-	TODO
+void RuntimeVisitor::Clear() {
+	break_out = false;
 }
 
 

@@ -707,12 +707,33 @@ typedef enum {
 
 template <class T>
 class InterfaceVisitor : public RuntimeVisitor {
+	TypeId match_type;
 	T* last = 0;
+	bool stop_when_found = false;
+	
+	
+	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override {
+		if (type == match_type) {
+			last = (T*)mem;
+			if (stop_when_found) {
+				BreakOut();
+				return false;
+			}
+			else return OnInterfaceEntry(*(T*)mem);
+		}
+		return true;
+	}
+	void OnExit() override {}
+	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override {}
 	
 public:
-	InterfaceVisitor() {}
+	InterfaceVisitor() : match_type(typeid(T)) {}
+	
 	
 	T* GetLast() const {return last;}
+	void StopWhenFound(bool b=true) {stop_when_found = b;}
+	
+	virtual bool OnInterfaceEntry(T& o) {return true;}
 	
 };
 
