@@ -110,11 +110,11 @@ MidiFileComponent::MidiFileComponent() {
 }
 
 void MidiFileComponent::Initialize() {
-	AddToSystem<EventSystem>(this);
+	AddToSystem<EventSystem>(AsRef<MidiSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	RemoveFromSystem<EventSystem>(this);
+	RemoveFromSystem<EventSystem>(AsRef<MidiSource>());
 }
 
 void MidiFileComponent::Clear() {

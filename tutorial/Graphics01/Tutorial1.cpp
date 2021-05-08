@@ -24,6 +24,7 @@ struct Tutorial1 : public Component<Tutorial1>, public DisplaySink {
 			Panic("Couldn't load model: " + obj_path);
 	}
 	void operator=(const Tutorial1&) {}
+	void Visit(RuntimeVisitor& vis) override {TODO}
 	
 	void Render(SystemDraw& fb) override {
 		Size sz = fb.GetPageSize();

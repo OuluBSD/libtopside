@@ -7,6 +7,8 @@ NAMESPACE_OULU_BEGIN
 // Simple system to destroy objects that get too far away from the user
 class WorldLogicSystem : public System<WorldLogicSystem>
 {
+	void Visit(RuntimeVisitor& vis) override {}
+	
 public:
     SYS_CTOR(WorldLogicSystem)
 

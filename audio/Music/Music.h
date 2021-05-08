@@ -15,12 +15,14 @@ class MusicDrummerComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicDrummerComponent);
 	
 	MusicDrummerComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}
@@ -37,12 +39,14 @@ class MusicBassistComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicBassistComponent);
 	
 	MusicBassistComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}
@@ -59,12 +63,14 @@ class MusicGuitaristComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicGuitaristComponent);
 	
 	MusicGuitaristComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}
@@ -78,15 +84,18 @@ public:
 class MusicVocalistComponent :
 	public Component<MusicVocalistComponent>
 {
+	
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicVocalistComponent);
 	
 	MusicVocalistComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}
@@ -103,12 +112,14 @@ class MusicConductorComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicConductorComponent);
 	
 	MusicConductorComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}
@@ -125,12 +136,14 @@ class MusicComposerComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MusicComposerComponent);
 	
 	MusicComposerComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EvaluateRequest(String req_str);
 	
 	String GetLastError() const {return last_error;}

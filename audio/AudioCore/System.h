@@ -17,12 +17,14 @@ class MixerContextComponent :
 	String post_load_file_path;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MixerContextComponent);
 	
 	MixerContextComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void PostLoadFileAny(String path) {post_load_file_path = path;}
 	
 	String GetLastError() const {return last_error;}
@@ -39,12 +41,14 @@ class MixerChannelContextComponent :
 	String last_error;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MixerChannelContextComponent);
 	
 	MixerChannelContextComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	String GetLastError() const {return last_error;}
 	
@@ -53,12 +57,13 @@ public:
 
 class MixerChannelInputComponent :
 	public Component<MixerChannelInputComponent>,
-	public FusionSink,
-	public FusionSource
+	public FusionSource,
+	public FusionSink
 {
 	String last_error;
 	
 public:
+	VIS_COMP_1_1(Fusion, Fusion)
 	COPY_PANIC(MixerChannelInputComponent);
 	IFACE_CB(FusionSink);
 	IFACE_CB(FusionSource);
@@ -68,6 +73,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	const FusionComponentInput& GetHeader() const override;
 	
 	String GetLastError() const {return last_error;}
@@ -76,12 +82,13 @@ public:
 
 class MixerChannelOutputComponent :
 	public Component<MixerChannelOutputComponent>,
-	public FusionSink,
-	public FusionSource
+	public FusionSource,
+	public FusionSink
 {
 	String last_error;
 	
 public:
+	VIS_COMP_1_1(Fusion, Fusion)
 	COPY_PANIC(MixerChannelOutputComponent);
 	IFACE_CB(FusionSink);
 	IFACE_CB(FusionSource);
@@ -91,6 +98,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	const FusionComponentInput& GetHeader() const override;
 	
 	String GetLastError() const {return last_error;}
@@ -100,12 +108,13 @@ public:
 
 class MixerAudioSourceComponent :
 	public Component<MixerAudioSourceComponent>,
-	public FusionSink,
-	public AudioSource
+	public AudioSource,
+	public FusionSink
 {
 	String last_error;
 	
 public:
+	VIS_COMP_1_1(Audio, Fusion)
 	COPY_PANIC(MixerAudioSourceComponent);
 	IFACE_CB(FusionSink);
 	IFACE_CB(AudioSource);
@@ -115,6 +124,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	AudioStream&		GetAudioSource() override;
 	void				BeginAudioSource() override;
 	void				EndAudioSource() override;
@@ -137,6 +147,7 @@ class MidiFileComponent :
 	MidiFrame tmp;
 	
 public:
+	VIS_COMP_1_0(Midi)
 	COPY_PANIC(MidiFileComponent);
 	IFACE_CB(MidiSource);
 	IFACE_GENERIC;
@@ -148,6 +159,7 @@ public:
 	void EmitMidi(double dt) override;
 	bool IsSupported(DevType type) override {return true;}
 	void OnLink(Sink sink, Cookie src_c, Cookie sink_c) override;
+	void Visit(RuntimeVisitor& vis) override {}
 	bool OpenFilePath(String path);
 	void Clear();
 	void CollectTrackEvents(int i);
@@ -167,8 +179,8 @@ public:
 
 class FluidsynthComponent :
 	public Component<FluidsynthComponent>,
-	public MidiSink,
-	public FusionSource
+	public FusionSource,
+	public MidiSink
 {
 	String last_error;
 	FusionComponentInput cfg;
@@ -181,6 +193,7 @@ class FluidsynthComponent :
 	};
 	
 public:
+	VIS_COMP_1_1(Fusion, Midi)
 	COPY_PANIC(FluidsynthComponent);
 	IFACE_CB(MidiSink);
 	IFACE_CB(FusionSource);
@@ -192,6 +205,7 @@ public:
 	void Uninitialize() override;
 	void RecvMidi(const MidiFrame& e) override;
 	void Configure(const Midi::File& file) override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void OpenTrackListener(int track_i);
 	
 	String GetLastError() const {return last_error;}
@@ -203,10 +217,16 @@ public:
 
 
 class FluidsynthSystem : public System<FluidsynthSystem> {
-	Vector<FluidsynthComponent*> comps;
-	Vector<FluidsynthComponent*> track_comps;
+	LinkedList<FluidsynthComponentRef> comps;
+	LinkedList<FluidsynthComponentRef> track_comps;
+	
 	Fluidsynth fs;
 	
+	
+	void Visit(RuntimeVisitor& vis) override {
+		vis && comps
+			&& track_comps;
+	}
 	
 public:
 	FluidsynthSystem(Machine& m);
@@ -222,6 +242,7 @@ protected:
     void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
     
 protected:
 	friend class FluidsynthComponent;

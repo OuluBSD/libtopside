@@ -12,7 +12,11 @@ NAMESPACE_OULU_BEGIN
 #endif
 
 
+class FusionComponent;
 class FusionContextComponent;
+
+using FusionComponentRef			= Ref<FusionComponent,				RefParent1<Entity>>;
+using FusionContextComponentRef		= Ref<FusionContextComponent,		RefParent1<Entity>>;
 
 
 int GetOglChCode(int channels, bool is_float=false);
@@ -409,9 +413,11 @@ private:
 class FusionDataSink :
 	public Component<FusionDataSink>,
 	public FusionComponent,
-	public StaticSink,
-	public FusionSource
+	public FusionSource,
+	public StaticSink
+	
 {
+	VIS_COMP_1_1(Fusion, Static)
 	
 	void			Reset() override;
 	void			PreProcess() override;
@@ -421,7 +427,8 @@ class FusionDataSink :
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	const FusionComponentInput& GetHeader() const override {return cfg;}
-	void RecvStatic(const StaticSinkData& data) override;
+	void			RecvStatic(const StaticSinkData& data) override;
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 #ifdef flagOPENGL
 	void Ogl_RecvStatic(const StaticSinkData& data);
@@ -454,10 +461,12 @@ public:
 class FusionMediaSink :
 	public Component<FusionMediaSink>,
 	public FusionComponent,
+	public FusionSource,
 	public VideoSink,
-	public AudioSink,
-	public FusionSource
+	public AudioSink
 {
+	VIS_COMP_1_2(Fusion, Video, Audio)
+	
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -467,6 +476,7 @@ class FusionMediaSink :
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	const FusionComponentInput& GetHeader() const override {return cfg;}
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	FusionComponentInput cfg;
 	VideoFormat vid_fmt;
@@ -505,9 +515,10 @@ public:
 class FusionControllerSink :
 	public Component<FusionControllerSink>,
 	public FusionComponent,
-	public ControllerSink,
-	public FusionSource
+	public FusionSource,
+	public ControllerSink
 {
+	VIS_COMP_1_1(Fusion, Controller)
 	//ArrayMap<int, FusionDataBuffer> data_bufs;
 	bool is_left_down = false;
 	
@@ -519,6 +530,7 @@ class FusionControllerSink :
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	const FusionComponentInput& GetHeader() const override {return cfg;}
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	FusionComponentInput cfg;
 	BasicFusionStream stream;
@@ -564,6 +576,7 @@ class FusionDisplaySource :
 	public DisplaySource,
 	public FusionSink
 {
+	VIS_COMP_1_1(Display, Fusion)
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -576,6 +589,7 @@ class FusionDisplaySource :
 	ComponentBase&	GetECS() override {return *this;}
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	
 public:
@@ -600,9 +614,10 @@ public:
 class FusionDisplayBuffer :
 	public Component<FusionDisplayBuffer>,
 	public FusionComponent,
-	public FusionSink,
-	public FusionSource
+	public FusionSource,
+	public FusionSink
 {
+	VIS_COMP_1_1(Fusion, Fusion)
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -616,6 +631,7 @@ class FusionDisplayBuffer :
 	//FusionVideoInput* FindVideoInput(String path);
 	const FusionComponentInput& GetHeader() const override {return cfg;}
 	bool			RequiresShaderCode() const override {return true;}
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	FusionComponentInput cfg;
 	
@@ -646,6 +662,7 @@ class FusionAudioSource :
 	public AudioSource,
 	public FusionSink
 {
+	VIS_COMP_1_1(Audio, Fusion)
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -655,6 +672,7 @@ class FusionAudioSource :
 	bool			LoadResources() override;
 	void			UseRenderedFramebuffer() override;
 	ComponentBase&	GetECS() override {return *this;}
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	// AudioSource
 	AudioStream&	GetAudioSource() override;
@@ -680,9 +698,10 @@ public:
 class FusionAudioBuffer :
 	public Component<FusionAudioBuffer>,
 	public FusionComponent,
-	public FusionSink,
-	public FusionSource
+	public FusionSource,
+	public FusionSink
 {
+	VIS_COMP_1_1(Fusion, Fusion)
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -694,6 +713,7 @@ class FusionAudioBuffer :
 	//void UseRenderedFramebuffer(Stage& s) override;
 	const FusionComponentInput& GetHeader() const override {return cfg;}
 	bool			RequiresShaderCode() const override {return true;}
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 	FusionComponentInput cfg;
 	
@@ -717,6 +737,7 @@ public:
 class FusionContextComponent :
 	public Component<FusionContextComponent>
 {
+	VIS_COMP_0_0
 	static int id_counter;
 	
 protected:
@@ -810,6 +831,7 @@ public:
 	
 	void		Initialize() override;
 	void		Uninitialize() override;
+	void		Visit(RuntimeVisitor& vis) override {TODO}
 	
     void		Update(double dt);
 	String		GetLastError() const {return last_error;}
@@ -842,9 +864,13 @@ struct CompleteFusion :
 
 
 class FusionSystem : public System<FusionSystem> {
-	Vector<FusionContextComponent*> ctxs;
-	Vector<FusionComponent*> comps;
+	LinkedList<FusionContextComponentRef>	ctxs;
+	LinkedList<FusionComponentRef>			comps;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis && ctxs
+			&& comps;
+	}
 public:
 	SYS_CTOR(FusionSystem);
 	
@@ -860,10 +886,10 @@ protected:
 	friend class FusionContextComponent;
 	friend class FusionComponent;
 	
-    void AddContext(FusionContextComponent& ctx);
-    void RemoveContext(FusionContextComponent& ctx);
-    void AddComponent(FusionComponent& comp);
-    void RemoveComponent(FusionComponent& comp);
+    void AddContext(FusionContextComponentRef ctx);
+    void RemoveContext(FusionContextComponentRef ctx);
+    void AddComponent(FusionComponentRef comp);
+    void RemoveComponent(FusionComponentRef comp);
     void UpdateTexBuffers();
     
 };

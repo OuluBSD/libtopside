@@ -24,6 +24,7 @@ class PortaudioSinkComponent :
 	
 public:
 	typedef PortaudioSinkComponent CLASSNAME;
+	VIS_COMP_0_1(Audio)
 	COPY_PANIC(PortaudioSinkComponent);
 	IFACE_CB(AudioSink);
 	IFACE_CB(VideoSink);
@@ -34,6 +35,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	String GetLastError() const {return last_error;}
 	

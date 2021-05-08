@@ -19,7 +19,7 @@ void RenderingSystem::Start() {
 }
 
 void RenderingSystem::Update(double dt) {
-	for(DisplaySource* scr : screens) {
+	for(DisplaySourceRef& scr : screens) {
 		scr->EmitDisplay(dt);
 	}
 }
@@ -34,15 +34,16 @@ void RenderingSystem::Uninitialize() {
 	
 }
 
-void RenderingSystem::Add(DisplaySource* src) {
-	VectorFindAdd(screens, src);
+void RenderingSystem::Add(DisplaySourceRef src) {
+	screens.FindAdd(src);
+	
 	Ref<RegistrySystem> reg = GetMachine().TryGet<RegistrySystem>();
 	if (reg)
 		src->SetTitle(reg->GetAppName());
 }
 
-void RenderingSystem::Remove(DisplaySource* src) {
-	VectorRemoveKey(screens, src);
+void RenderingSystem::Remove(DisplaySourceRef src) {
+	screens.RemoveKey(src);
 }
 
 

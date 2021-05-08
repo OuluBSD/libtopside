@@ -21,7 +21,7 @@ class Entity :
 protected:
 	friend class Pool;
 	
-	void Init(Pool* p, EntityId i) {pool = p; id = i;}
+	void Init(EntityId i) {id = i;}
 	//void SetId(EntityId i) {id = i;}
 	void SetPrefab(String s) {prefab = s;}
 	void SetCreated(int64 i) {created = i;}
@@ -116,19 +116,19 @@ public:
 	
 	Machine&			GetMachine();
 	const Machine&		GetMachine() const;
-	Pool&			GetPool() {return *pool;}
-	const Pool&	GetPool() const {return *pool;}
+	Pool&				GetPool() const;
 	
-	#define IFACE_(x, post, map)\
+	#define IFACE_(x, post)\
 		RefT_Entity<x##post> Find##x##post() {\
-			TypeRefMap<Exchange##post##Provider>::Iterator iter = map.begin(); \
-			TypeId key(typeid(x##post)); \
-			for(; iter; ++iter)\
-				if (iter.key() == key) \
-					return iter.value().AsRef<x##post>(); \
+			InterfaceVisitor<x##post> vis; \
+			vis.StopWhenFound(); \
+			Visit##post##s(vis); \
+			x##post* last = vis.GetLast(); \
+			if (last) \
+				return last->AsRefT(); \
 			return RefT_Entity<x##post>();\
 		}
-	#define IFACE(x) IFACE_(x, Source, srcs) IFACE_(x, Sink, sinks)
+	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
 	IFACE_LIST
 	#undef IFACE
 	#undef IFACE_
@@ -144,15 +144,16 @@ public:
 		return RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>() }... };
 	}
 	
-	void CloneComponents(const Entity& e);
+	//void CloneComponents(const Entity& e);
 	
+	void Visit(RuntimeVisitor& vis) {vis || comps; VisitSources(vis); VisitSinks(vis);}
+	void VisitSinks(RuntimeVisitor& vis);
+	void VisitSources(RuntimeVisitor& vis);
 	
 private:
-	TypeRefMap<ExchangeSinkProvider> sinks;
-	TypeRefMap<ExchangeSourceProvider> srcs;
 	ComponentMap comps;
+	
 	EntityId m_id;
-	Pool* pool = 0;
 	
 	
 	template<typename T>

@@ -38,6 +38,7 @@ struct Tutorial3 : public Component<Tutorial3>, public DisplaySink {
 	~Tutorial3() {if (zbuffer) {delete zbuffer; delete zbuffer_empty;} zbuffer = 0; zbuffer_empty = 0;}
 	
 	void operator=(const Tutorial3&) {}
+	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	
 	vec3 Barycentric(vec3 pts[3], vec2 P) {
 		vec3 u = cross(

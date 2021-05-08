@@ -15,10 +15,10 @@ void FusionSystem::Start() {
 void FusionSystem::Update(double dt) {
 	DLOG("FusionSystem::Update: begin");
 	
-	for (FusionComponent* comp : comps)
+	for (FusionComponentRef& comp : comps)
 		comp->Update0(dt);
 	
-	for (FusionContextComponent* ctx : ctxs)
+	for (FusionContextComponentRef& ctx : ctxs)
 		ctx->Update(dt);
 	
 	DLOG("FusionSystem::Update: end\n");
@@ -32,20 +32,20 @@ void FusionSystem::Uninitialize() {
 	
 }
 
-void FusionSystem::AddContext(FusionContextComponent& ctx) {
-	VectorFindAdd(ctxs, &ctx);
+void FusionSystem::AddContext(FusionContextComponentRef ctx) {
+	ctxs.FindAdd(ctx);
 }
 
-void FusionSystem::RemoveContext(FusionContextComponent& ctx) {
-	VectorRemoveKey(ctxs, &ctx);
+void FusionSystem::RemoveContext(FusionContextComponentRef ctx) {
+	ctxs.RemoveKey(ctx);
 }
 
-void FusionSystem::AddComponent(FusionComponent& comp) {
-	VectorFindAdd(comps, &comp);
+void FusionSystem::AddComponent(FusionComponentRef comp) {
+	comps.FindAdd(comp);
 }
 
-void FusionSystem::RemoveComponent(FusionComponent& comp) {
-	VectorRemoveKey(comps, &comp);
+void FusionSystem::RemoveComponent(FusionComponentRef comp) {
+	comps.RemoveKey(comp);
 }
 
 

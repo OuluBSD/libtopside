@@ -40,7 +40,7 @@ void Entity::ClearComponents() {
 }
 
 EntityRef Entity::Clone() const {
-	EntityRef ent = pool->Clone(*this);
+	EntityRef ent = GetPool().Clone(*this);
 	ent->InitializeComponents();
 	return ent;
 }
@@ -62,12 +62,30 @@ void Entity::SetEnabled(bool enable) {
 }
 
 Machine& Entity::GetMachine() {
-	return pool->GetMachine();
+	return GetPool().GetMachine();
 }
 
 const Machine& Entity::GetMachine() const {
-	return pool->GetMachine();
+	return GetPool().GetMachine();
 }
+
+Pool& Entity::GetPool() const {
+	Pool* p = RefScopeParent<EntityParent>::GetParent().o;
+	ASSERT(p);
+	return *p;
+}
+
+void Entity::VisitSinks(RuntimeVisitor& vis) {
+	for(ComponentBaseRef& c : comps)
+		c->VisitSinks(vis);
+}
+
+void Entity::VisitSources(RuntimeVisitor& vis){
+	for(ComponentBaseRef& c : comps)
+		c->VisitSources(vis);
+}
+
+
 
 	
 NAMESPACE_OULU_END

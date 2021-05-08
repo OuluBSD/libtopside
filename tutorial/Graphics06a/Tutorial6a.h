@@ -18,6 +18,7 @@ struct Graphics6a : public Component<Graphics6a>, public DisplaySink {
 	Graphics6a() {}
 	void Initialize() override;
 	void operator=(const Graphics6a& t) {Panic("Can't copy Graphics6a");}
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	void Render(SystemDraw& draw) override;
 	

@@ -19,6 +19,9 @@ protected:
 public:
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
+	virtual void Visit(RuntimeVisitor& vis) = 0;
+	virtual void VisitSources(RuntimeVisitor& vis) = 0;
+	virtual void VisitSinks(RuntimeVisitor& vis) = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const {return "<not implemented>";}

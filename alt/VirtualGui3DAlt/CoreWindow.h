@@ -45,7 +45,12 @@ public:
 
 
 
-class CoreWindow : public Ctrl, public Component<CoreWindow> {
+class CoreWindow :
+	public Ctrl,
+	public Component<CoreWindow>
+{
+	VIS_COMP_0_0
+	
 	struct ResizeFrame : public CtrlFrame {
 		CoreWindow* win = NULL;
 		Size sz;
@@ -181,6 +186,7 @@ public:
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;
 	void ChildGotFocus() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	virtual void ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags);
 };
 

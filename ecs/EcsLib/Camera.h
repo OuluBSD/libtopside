@@ -4,8 +4,12 @@
 NAMESPACE_OULU_BEGIN
 
 
-class Camerable : public Component<Camerable>, public CameraSink {
+class Camerable :
+	public Component<Camerable>,
+	public CameraSink
+{
 public:
+	VIS_COMP_0_1(Camera)
 	IFACE_CB(CameraSink);
 	IFACE_GENERIC;
 	
@@ -15,6 +19,7 @@ public:
 	
 	CamerableRef GetCamerable() override {return ComponentBase::AsRef<Camerable>();}
 	TransformRef GetTransform() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 

@@ -7,6 +7,8 @@ NAMESPACE_OULU_BEGIN
 class RegistrySystem : public System<RegistrySystem> {
 	ObjectMap reg;
 	
+	void Visit(RuntimeVisitor& vis) override {}
+	
 protected:
     bool Initialize() override;
     void Start() override;

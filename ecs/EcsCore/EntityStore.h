@@ -7,9 +7,13 @@ NAMESPACE_OULU_BEGIN
 
 class EntityStore : public System<EntityStore> {
 	PoolVec							root;
+	
 	LinkedList<ConnectorBase*>		refresh_poolcomps[2];
 	Mutex							lock;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis || root;
+	}
 	enum {
 		READ,
 		WRITE

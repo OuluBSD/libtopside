@@ -80,6 +80,7 @@ class SoundGeneratorComponent :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
+	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SoundGeneratorComponent);
 	IFACE_CB(MidiSink);
 	IFACE_CB(AudioSource);
@@ -91,6 +92,7 @@ public:
 	void Uninitialize() override;
 	void RecvMidi(const MidiFrame& e) override;
 	void Configure(const Midi::File& file) override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	// Audio
 	AudioStream&	GetAudioSource() override;

@@ -6,13 +6,16 @@ NAMESPACE_OULU_BEGIN
 
 
 class ActionSystem : public System<ActionSystem> {
-	Vector<ActionSource*> srcs;
+	LinkedList<ActionSourceRef> srcs;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis && srcs;
+	}
 public:
 	SYS_CTOR(ActionSystem)
 	
-	void Add(ActionSource* src);
-	void Remove(ActionSource* src);
+	void Add(ActionSourceRef src);
+	void Remove(ActionSourceRef src);
 	
 protected:
 	

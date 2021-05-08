@@ -119,6 +119,10 @@ void Machine::Remove(const TypeId& type_id) {
 	systems.Remove(it);
 }
 
+void Machine::Visit(RuntimeVisitor& vis) {
+	for (auto iter = systems.begin(); iter; ++iter)
+		vis.Visit(iter());
+}
 
 NAMESPACE_OULU_END
 

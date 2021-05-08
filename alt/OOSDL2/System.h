@@ -13,12 +13,14 @@ class SDL2TimerComponent :
 	One<OOSDL2::Timer> obj;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(SDL2TimerComponent);
 	
 	SDL2TimerComponent() = default;
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Timer* GetOOSDL2() {return &*obj;}
@@ -32,6 +34,7 @@ class SDL2AudioInputComponent :
 	One<OOSDL2::AudioInput> obj;
 	
 public:
+	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SDL2AudioInputComponent);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
@@ -40,6 +43,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitAudioSource(double dt) override;
 	//void Play(const RealtimeSourceConfig& config, Audio& aud) override;
 	
@@ -58,6 +62,7 @@ class SDL2AudioOutputComponent :
 	
 	
 public:
+	VIS_COMP_0_1(Audio)
 	COPY_PANIC(SDL2AudioOutputComponent);
 	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
@@ -67,6 +72,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void RecvAudio(AudioSource& src, double dt) override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
 	void			CommitPlay() override {}
@@ -96,6 +102,7 @@ class SDL2ScreenComponent :
 	double frame_age = 0;
 	
 public:
+	VIS_COMP_0_1(Display)
 	COPY_PANIC(SDL2ScreenComponent);
 	IFACE_CB(DisplaySink);
 	IFACE_GENERIC;
@@ -104,6 +111,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void RecvDisplay(DisplaySource& src, double dt) override;
 	void SetTitle(String s) override;
 	uint32 GetTickCount() override {return ev ? ev->GetTickCount() : 0;}
@@ -125,6 +133,7 @@ class SDL2EventsComponent :
 	EventFrame ev;
 	
 public:
+	VIS_COMP_1_0(Controller)
 	COPY_PANIC(SDL2EventsComponent);
 	IFACE_CB(ControllerSource);
 	IFACE_GENERIC;
@@ -133,6 +142,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EmitController() override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_SYSTEM || type == CTRL_KEYBOARD || type == CTRL_MOUSE;}
 	
@@ -148,6 +158,7 @@ class SDL2JoystickComponent :
 	One<OOSDL2::Joystick> obj;
 	
 public:
+	VIS_COMP_1_0(Controller)
 	COPY_PANIC(SDL2JoystickComponent);
 	IFACE_CB(ControllerSource);
 	IFACE_GENERIC;
@@ -156,6 +167,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EmitController() override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_JOYSTICK;}
 	
@@ -171,6 +183,7 @@ class SDL2GameControllerComponent :
 	One<OOSDL2::GameController> obj;
 	
 public:
+	VIS_COMP_1_0(Controller)
 	COPY_PANIC(SDL2GameControllerComponent);
 	IFACE_CB(ControllerSource);
 	IFACE_GENERIC;
@@ -179,6 +192,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EmitController() override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
 	
@@ -194,6 +208,7 @@ class SDL2SensorComponent :
 	One<OOSDL2::Sensor> obj;
 	
 public:
+	VIS_COMP_1_0(Controller)
 	COPY_PANIC(SDL2SensorComponent);
 	IFACE_CB(ControllerSource);
 	IFACE_GENERIC;
@@ -202,6 +217,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EmitController() override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
 	
@@ -219,6 +235,7 @@ class SDL2ImageComponent :
 	
 	
 public:
+	VIS_COMP_1_0(Static)
 	COPY_PANIC(SDL2ImageComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
@@ -227,6 +244,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	bool LoadFileAny(String path) override;
 	Size GetResolution() const override;
 	void EmitStatic() override;
@@ -244,6 +262,7 @@ class SDL2FontComponent :
 	Font fnt;
 	
 public:
+	VIS_COMP_1_0(Static)
 	COPY_PANIC(SDL2FontComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
@@ -252,6 +271,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void EmitStatic() override;
 	
 	static bool AllowDuplicates() {return true;}
@@ -265,12 +285,14 @@ class SDL2ContextComponent :
 	Vector<ComponentBase*> comps;
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(SDL2ContextComponent);
 	
 	SDL2ContextComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	OOSDL2::Context* GetOOSDL2() {return &*obj;}
 	
@@ -284,11 +306,16 @@ public:
 
 
 class SDL2System : public System<SDL2System> {
+	LinkedList<SDL2ContextComponentRef> comps;
+	
 	Oulu::OOSDL2::Context ctx;
-	Vector<SDL2ContextComponent*> comps;
 	OOSDL2::Image img;
 	OOSDL2::Font fnt;
 	
+	
+	void Visit(RuntimeVisitor& vis) override {
+		vis && comps;
+	}
 public:
 	SDL2System(Machine& m);
 	
@@ -303,6 +330,7 @@ protected:
     void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis || comps;}
     
 protected:
 	friend class SDL2ContextComponent;

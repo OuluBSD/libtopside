@@ -37,6 +37,8 @@ public:
 	OpenCVCaptureDevice();
 	~OpenCVCaptureDevice();
 	
+	void						Visit(RuntimeVisitor& vis) {}
+	
 	// RealtimeStream
 	double						GetSeconds() const override {return cur_time.Seconds();}
 	

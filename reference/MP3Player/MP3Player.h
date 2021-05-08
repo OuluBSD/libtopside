@@ -11,6 +11,8 @@ NAMESPACE_OULU_BEGIN
 class DummyGenerator :
 	public Component<DummyGenerator>
 {
+	VIS_COMP_0_0
+	
 	RefT_Entity<SoundGeneratorComponent> gen;
 	RefT_Entity<PortaudioSinkComponent> audio;
 	
@@ -20,6 +22,7 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis & gen & audio;}
 	
 	COPY_PANIC(DummyGenerator);
 	
@@ -36,6 +39,8 @@ PREFAB_END
 class MP3Player :
 	public Component<MP3Player>
 {
+	VIS_COMP_0_0
+	
 	RefT_Entity<FfmpegComponent> file_in;
 	RefT_Entity<PortaudioSinkComponent> audio;
 	
@@ -46,6 +51,7 @@ public:
 	void OnStop();
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis & file_in & audio;}
 	
 	COPY_PANIC(MP3Player);
 	

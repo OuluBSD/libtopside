@@ -207,6 +207,7 @@ public:
 		
 		template <class K> Ref<K> As() const {return dst;}
 		template <class K> operator Ref<K>() const {return dst;}
+		void Visit(RuntimeVisitor& vis) {vis & expt & dst;}
 	};
 	
 private:
@@ -238,10 +239,8 @@ protected:
 	
 public:
 	
-	void SetMultiConnection(bool b) {
-		multi_conn = b;
-	}
-	
+	void Visit(RuntimeVisitor& vis) {for (auto iter = links.begin(); iter; ++iter) vis % *iter;}
+	void SetMultiConnection(bool b) {multi_conn = b;}
 	const LinkedList<Link>& GetConnections() const {return links;}
 	
 	void Unlink(R o) {
@@ -303,6 +302,7 @@ public:
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
 	void UnlinkAll() {base.UnlinkAll();}
 	void Unlink(Source src) {base.Unlink(src);}
+	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
@@ -313,7 +313,6 @@ public:
 class ExchangeSourceProvider :
 	public ExchangeProviderBase
 {
-	
 	using ExProv = ExchangeProviderT<ExchangeSinkProviderRef>;
 	
 	ExProv base;
@@ -342,6 +341,7 @@ public:
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
 	void UnlinkAll() {base.UnlinkAll();}
 	void Unlink(Sink sink) {base.Unlink(sink);}
+	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
 	
@@ -375,6 +375,7 @@ public:
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
 	void Destroy();
+	void Visit(RuntimeVisitor& vis) {vis & meta_expt & src & sink & src_cookie & sink_cookie;}
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}
@@ -412,6 +413,7 @@ public:
 	
 	String ToString() const;
 	
+	void Visit(RuntimeVisitor& vis) {vis || pts;}
 	
 };
 

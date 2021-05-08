@@ -10,6 +10,7 @@ class SDL2GUI3DAltSystem : public System<SDL2GUI3DAltSystem> {
 	SDL2GUI3DAlt gui;
 	
 	
+	void Visit(RuntimeVisitor& vis) override {}
 public:
 	SDL2GUI3DAltSystem(Machine& m);
 	

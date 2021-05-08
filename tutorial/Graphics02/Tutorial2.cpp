@@ -39,6 +39,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		t[2][2] = vec2(130, 180);
 	}
 	void operator=(const Tutorial2&) {}
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	void Triangle1(GeometryDraw& fb, vec2 a, vec2 b, vec2 c, Color color) {
 		fb.DrawLine(a, b, 1, color);

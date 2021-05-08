@@ -693,6 +693,30 @@ typedef enum {
 } IfaceType;
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+template <class T>
+class InterfaceVisitor : public RuntimeVisitor {
+	T* last = 0;
+	
+public:
+	InterfaceVisitor() {}
+	
+	T* GetLast() const {return last;}
+	
+};
+
+
 NAMESPACE_OULU_END
 
 

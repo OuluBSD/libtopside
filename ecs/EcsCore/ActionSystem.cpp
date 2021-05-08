@@ -14,7 +14,7 @@ void ActionSystem::Start() {
 
 void ActionSystem::Update(double dt) {
 	
-	for (ActionSource* src : srcs)
+	for (ActionSourceRef& src : srcs)
 		src->EmitActionSource(dt);
 	
 }
@@ -27,12 +27,12 @@ void ActionSystem::Uninitialize() {
 	
 }
 
-void ActionSystem::Add(ActionSource* src) {
-	VectorFindAdd(srcs, src);
+void ActionSystem::Add(ActionSourceRef src) {
+	srcs.FindAdd(src);
 }
 
-void ActionSystem::Remove(ActionSource* src) {
-	VectorRemoveKey(srcs, src);
+void ActionSystem::Remove(ActionSourceRef src) {
+	srcs.RemoveKey(src);
 }
 
 

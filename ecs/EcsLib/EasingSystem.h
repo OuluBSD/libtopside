@@ -26,6 +26,8 @@ struct Easing : Component<Easing>
 // interpolated to new position/orientations.
 class EasingSystem : public System<EasingSystem>
 {
+	void Visit(RuntimeVisitor& vis) override {}
+	
 public:
     SYS_CTOR(EasingSystem)
 

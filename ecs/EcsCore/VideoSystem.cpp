@@ -55,27 +55,27 @@ void VideoSystem::Uninitialize() {
 }
 
 void VideoSystem::Add(VideoSourceRef src) {
-	VectorFindAdd(srcs, src);
+	srcs.FindAdd(src);
 }
 
 void VideoSystem::Remove(VideoSourceRef src) {
-	VectorRemoveKey(srcs, src);
+	srcs.RemoveKey(src);
 }
 
 void VideoSystem::Add(VideoSinkRef sink) {
-	VectorFindAdd(sinks, sink);
+	sinks.FindAdd(sink);
 }
 
 void VideoSystem::Remove(VideoSinkRef sink) {
-	VectorRemoveKey(sinks, sink);
+	sinks.RemoveKey(sink);
 }
 
 void VideoSystem::Add(VideoExchangePointRef expt) {
-	VectorFindAdd(expts, expt);
+	expts.FindAdd(expt);
 }
 
 void VideoSystem::Remove(VideoExchangePointRef expt) {
-	VectorRemoveKey(expts, expt);
+	expts.RemoveKey(expt);
 }
 
 

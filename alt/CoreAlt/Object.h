@@ -56,6 +56,7 @@ public:
 	virtual int64 ToInt() const {return 0;}
 	virtual double ToDouble() const {return 0;}
 	virtual hash_t GetHashValue() const {return 0;}
+	//virtual void Visit(RuntimeVisitor& vis) {}
 	dword GetType() const {return type;}
 };
 
@@ -74,6 +75,7 @@ public:
 	int64 ToInt() const override {if (ptr) return ::Upp::ToInt(*ptr); return 0;}
 	double ToDouble() const override {if (ptr) return ::Upp::ToDouble(*ptr); return 0;}
 	hash_t GetHashValue() const override {if (ptr) return Upp::GetHashValue(*ptr); return 0;}
+	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 
 class ObjectMap;
@@ -84,12 +86,14 @@ class Object : Moveable<Object> {
 	
 public:
 	
+	
 	Object() {}
 	Object(const Object& v) {*this = v;}
 	Object(const char* str) {String& s = Create<String>(); s = str;}
 	Object(const Nuller&) {}
 	template <class T> Object(const T& o) {obj.WrapObject(new ObjectTemplate<T>(o));}
 	
+	//void Visit(RuntimeVisitor& vis) {if (obj) obj->Visit(vis);}
 	void Clear() {obj.Clear();}
 	template <class T> T& Create() {ObjectTemplate<T>* o = new ObjectTemplate<T>(); T* t = (T*)o->Get(); obj.WrapObject(o); return *t;}
 	template <class T> T& Create(const T& arg) {ObjectTemplate<T>* o = new ObjectTemplate<T>(arg); T* t = (T*)o->Get(); obj.WrapObject(o); return *t;}
@@ -208,6 +212,9 @@ class ObjectMap {
 	Array<Object> values;
 	
 public:
+	
+	//void Visit(RuntimeVisitor& vis) override {vis | values;}
+	
 	
 	ObjectMap() {}
 	ObjectMap(const ObjectMap& m) {*this = m;}

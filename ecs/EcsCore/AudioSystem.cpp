@@ -87,29 +87,29 @@ void AudioSystem::Uninitialize() {
 
 void AudioSystem::Add(AudioSourceRef src) {
 	ASSERT(src);
-	VectorFindAdd(srcs, src);
+	srcs.FindAdd(src);
 }
 
 void AudioSystem::Remove(AudioSourceRef src) {
-	VectorRemoveKey(srcs, src);
+	srcs.RemoveKey(src);
 }
 
 void AudioSystem::Add(AudioSinkRef sink) {
 	ASSERT(sink);
-	VectorFindAdd(sinks, sink);
+	sinks.FindAdd(sink);
 }
 
 void AudioSystem::Remove(AudioSinkRef sink) {
-	VectorRemoveKey(sinks, sink);
+	sinks.RemoveKey(sink);
 }
 
 void AudioSystem::Add(AudioExchangePointRef expt) {
 	ASSERT(expt);
-	VectorFindAdd(expts, expt);
+	expts.FindAdd(expt);
 }
 
 void AudioSystem::Remove(AudioExchangePointRef expt) {
-	VectorRemoveKey(expts, expt);
+	expts.RemoveKey(expt);
 }
 
 

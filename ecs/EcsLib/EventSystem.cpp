@@ -18,9 +18,9 @@ void EventSystem::Start() {
 }
 
 void EventSystem::Update(double dt) {
-	for (ControllerSource* out : outputs)
+	for (ControllerSourceRef& out : outputs)
 		out->EmitController(dt);
-	for (MidiSource* out : midis)
+	for (MidiSourceRef& out : midis)
 		out->EmitMidi(dt);
 }
 
@@ -34,20 +34,24 @@ void EventSystem::Uninitialize() {
 	
 }
 
-void EventSystem::Add(ControllerSource* out) {
-	VectorFindAdd(outputs, out);
+void EventSystem::Add(ControllerSourceRef out) {
+	ASSERT(out);
+	outputs.FindAdd(out);
 }
 
-void EventSystem::Remove(ControllerSource* out) {
-	VectorRemoveKey(outputs, out);
+void EventSystem::Remove(ControllerSourceRef out) {
+	ASSERT(out);
+	outputs.RemoveKey(out);
 }
 
-void EventSystem::Add(MidiSource* out) {
-	VectorFindAdd(midis, out);
+void EventSystem::Add(MidiSourceRef out) {
+	ASSERT(out);
+	midis.FindAdd(out);
 }
 
-void EventSystem::Remove(MidiSource* out) {
-	VectorRemoveKey(midis, out);
+void EventSystem::Remove(MidiSourceRef out) {
+	ASSERT(out);
+	midis.RemoveKey(out);
 }
 
 

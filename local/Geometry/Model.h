@@ -120,7 +120,9 @@ public:
     
 };
 
-class ModelLoader {
+class ModelLoader :
+	public RefScopeEnabler<ModelLoader,RefRoot>
+{
 	
 public:
 	One<Model> model;

@@ -75,4 +75,34 @@ void StackDebugger::Log(String type, const Item& it) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+void RuntimeDiagnostics::OnRefError(LockedScopeRefCounter* r) {
+	ASSERT(r);
+	TODO
+}
+
+
+
+
+
+
+
+
+
+void RuntimeDiagnosticVisitor::Clear() {
+	TODO
+}
+
 NAMESPACE_OULU_END

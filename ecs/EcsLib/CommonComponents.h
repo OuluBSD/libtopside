@@ -5,6 +5,8 @@ NAMESPACE_OULU_BEGIN
 
 
 class Transform : public Component<Transform> {
+	VIS_COMP_0_0
+	
 public:
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
@@ -25,18 +27,22 @@ public:
 		return scale(size) * ToMat4(orientation) * translate(position);
 	}
 	
-	String ToString() const {
+	String ToString() const override {
 		String s;
 		s << "pos" << position.ToString() << ", size" << size.ToString() << ", orient" << orientation.ToString();
 		return s;
 	}
 	//void MoveTo(const OverlapSink& conn);
 	
+	void Visit(RuntimeVisitor& vis) override {}
+	
 };
 
 void CopyTransformPos(EntityRef from, EntityRef to);
 
 class Transform2D : public Component<Transform2D> {
+	VIS_COMP_0_0
+	
 public:
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
@@ -46,9 +52,13 @@ public:
         size = t.size;
     }
     
+	void Visit(RuntimeVisitor& vis) override {}
+	
 };
 
 class RigidBody : public Component<RigidBody> {
+	VIS_COMP_0_0
+	
 public:
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
@@ -65,10 +75,14 @@ public:
         damping_factor = r.damping_factor;
     }
     
+	void Visit(RuntimeVisitor& vis) override {}
+	
 };
 
 
 class Renderable : public Component<Renderable> {
+	VIS_COMP_0_0
+	
 public:
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
@@ -94,6 +108,8 @@ public:
 #endif
 	//Model* GetModel() {return model ? model->GetModel() : 0;}
 	
+	void Visit(RuntimeVisitor& vis) override {}
+	
 };
 
 
@@ -102,6 +118,8 @@ class StaticVolumeComponent :
 	public Component<StaticVolumeComponent>,
 	public StaticSource
 {
+	VIS_COMP_1_0(Static)
+	
 	Vector<byte> values;
 	String errstr;
 	Size sz;
@@ -121,6 +139,7 @@ public:
 	Size GetResolution() const override;
 	int GetDepth() const override;
 	void EmitStatic() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	String GetLastError() const {return errstr;}
 	

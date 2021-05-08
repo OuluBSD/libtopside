@@ -26,6 +26,7 @@ protected:
 public:
 	~FfmpegAudioFrameQueue() {Clear();}
 	
+	void		Visit(RuntimeVisitor& vis) {}
 	void		Init();
 	void		Clear();
 	void		FillAudioBuffer(double time_pos, AVFrame* frame);
@@ -82,6 +83,7 @@ protected:
 public:
 	~FfmpegVideoFrameQueue() {Clear();}
 	
+	void		Visit(RuntimeVisitor& vis) {}
 	void		Init(AVCodecContext& ctx);
 	void		Clear();
 	void		FillBuffersNull();
@@ -141,13 +143,14 @@ public:
 
 
 class FfmpegFileInput : public MediaSourceStream {
+	FfmpegAudioFrameQueue aframe;
+	FfmpegVideoFrameQueue vframe;
+	
 	bool has_audio;
 	bool has_video;
 	bool is_dev_open;
 	String path;
 	String errstr;
-	FfmpegVideoFrameQueue vframe;
-	FfmpegAudioFrameQueue aframe;
 	FfmpegFileChannel v;
 	FfmpegFileChannel a;
 	AVFormatContext* file_fmt_ctx = NULL;
@@ -170,6 +173,7 @@ class FfmpegFileInput : public MediaSourceStream {
 public:
 	
 	bool	IsEof() const;
+	void	Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
 	
 	
 	// Realtime

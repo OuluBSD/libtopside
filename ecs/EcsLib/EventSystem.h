@@ -6,20 +6,24 @@ NAMESPACE_OULU_BEGIN
 
 class EventSystem : public System<EventSystem> {
 	Ref<EntityStore> ents;
+	LinkedList<ControllerSourceRef> outputs;
+	LinkedList<MidiSourceRef> midis;
 	
-	Vector<ControllerSource*> outputs;
-	Vector<MidiSource*> midis;
-	
+	void Visit(RuntimeVisitor& vis) override {
+		vis & ents
+			&& outputs
+			&& midis;
+	}
 public:
 	SYS_CTOR(EventSystem);
 	
-	void Add(ControllerSource* out);
-	void Remove(ControllerSource* out);
-	void Add(MidiSource* out);
-	void Remove(MidiSource* out);
+	void Add(ControllerSourceRef out);
+	void Remove(ControllerSourceRef out);
+	void Add(MidiSourceRef out);
+	void Remove(MidiSourceRef out);
 	
-    const Vector<ControllerSource*>& GetSources() const {return outputs;}
-    const Vector<MidiSource*>& GetMidiSources() const {return midis;}
+    const LinkedList<ControllerSourceRef>&	GetSources() const		{return outputs;}
+    const LinkedList<MidiSourceRef>&		GetMidiSources() const	{return midis;}
 	
 protected:
 	friend class Font;

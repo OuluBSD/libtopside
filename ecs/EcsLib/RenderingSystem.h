@@ -5,18 +5,22 @@ NAMESPACE_OULU_BEGIN
 
 
 class RenderingSystem : public System<RenderingSystem> {
+	Ref<EntityStore> ents;
+	LinkedList<DisplaySourceRef> screens;
+	
 	bool invalid;
 	Size vscreen_sz;
 	
-	Ref<EntityStore> ents;
-	Vector<DisplaySource*> screens;
 	
-	
+	void Visit(RuntimeVisitor& vis) override {
+		vis & ents
+			&& screens;
+	}
 public:
 	RenderingSystem(Machine& m);
 	
-	void Add(DisplaySource* src);
-	void Remove(DisplaySource* src);
+	void Add(DisplaySourceRef src);
+	void Remove(DisplaySourceRef src);
 	
 	void RunTest();
 	
@@ -46,11 +50,12 @@ class DefaultRenderApp :
 	public CameraSource
 {
 	One<Shader> simple_shader;
-	Ref<EntityStore> ents;
+	EntityStoreRef ents;
 	
 	VectorRendModel rends;
 	
 public:
+	VIS_COMP_2_0(DisplaySource, CameraSource)
 	COPY_PANIC(DefaultRenderApp);
 	IFACE_CB(DisplaySource);
 	IFACE_CB(CameraSource);
@@ -60,6 +65,7 @@ public:
 	
 	void Initialize() override;
 	bool Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
+	void Visit(RuntimeVisitor& vis) override {TODO vis & ents;}
 	
 };
 

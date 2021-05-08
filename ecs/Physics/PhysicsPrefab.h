@@ -6,9 +6,11 @@ NAMESPACE_OULU_BEGIN
 
 
 struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane> {
+	VIS_COMP_0_0
 	typedef StaticGroundPlane CLASSNAME;
 	
 	void operator=(const StaticGroundPlane& ) {Panic("Not implemented");}
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	virtual void OnAttach() {
 		OdeObject::OnAttach();

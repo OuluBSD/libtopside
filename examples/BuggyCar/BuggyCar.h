@@ -49,6 +49,8 @@ struct BuggyChassis : public OdeObject {
 };
 
 struct BuggyCar : public OdeSpace, public Component<BuggyCar> {
+	VIS_COMP_0_0
+	
 	BuggyChassis chassis;
 	Array<BuggyWheel> wheels;
 	Array<OdeJoint> joints;
@@ -60,6 +62,7 @@ struct BuggyCar : public OdeSpace, public Component<BuggyCar> {
 	BuggyCar() {}
 	
 	void operator = (const BuggyCar& c) {Panic("Not implemented");}
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	virtual void OnAttach() {
 		OdeSpace::OnAttach();

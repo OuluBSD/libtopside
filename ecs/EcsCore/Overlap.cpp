@@ -40,11 +40,11 @@ Overlap::Overlap() {
 }
 
 void Overlap::Initialize() {
-	AddToSystem<OverlapSystem>(this);
+	AddToSystem<OverlapSystem>(OverlapSink::AsRefT());
 }
 
 void Overlap::Uninitialize() {
-	RemoveFromSystem<OverlapSystem>(this);
+	RemoveFromSystem<OverlapSystem>(OverlapSink::AsRefT());
 }
 
 

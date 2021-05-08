@@ -10,6 +10,9 @@ class WindowSystem : public System<WindowSystem>, public Windows {
 	Ref<EntityStore> ents;
 	//Shader simple_shader;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis & ents;
+	}
 public:
 	WindowSystem(Machine& m);
 	

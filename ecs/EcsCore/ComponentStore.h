@@ -10,6 +10,8 @@ class ComponentStoreT :
 	public Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >
 {
 	
+	void Visit(RuntimeVisitor& vis) override {}
+	
 public:
 	SYS_CTOR(ComponentStoreT);
 	

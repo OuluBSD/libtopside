@@ -99,6 +99,8 @@ void Main() {
 	
 		
 	Machine mach;
+	RuntimeDiagnostics::Static().SetRoot(mach);
+	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef es = mach.Add<EntityStore>();
 	PoolRef root = es->GetRoot();

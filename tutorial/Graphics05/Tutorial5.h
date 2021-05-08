@@ -25,6 +25,7 @@ struct Tutorial5 : public Component<Tutorial5>, public DisplaySink {
 	Tutorial5();
 	~Tutorial5();
 	void operator=(const Tutorial5& t) {Panic("Can't copy Tutorial5");}
+	void Visit(RuntimeVisitor& vis) override {TODO}
 	
 	void Render(SystemDraw& draw) override;
 	

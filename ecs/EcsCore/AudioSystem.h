@@ -7,10 +7,16 @@ NAMESPACE_OULU_BEGIN
 
 class AudioSystem : public System<AudioSystem> {
 	Ref<EntityStore> ents;
-	Vector<AudioSourceRef> srcs;
-	Vector<AudioSinkRef> sinks;
-	Vector<AudioExchangePointRef> expts;
+	LinkedList<AudioSourceRef> srcs;
+	LinkedList<AudioSinkRef> sinks;
+	LinkedList<AudioExchangePointRef> expts;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis & ents
+			&& srcs
+			&& sinks
+			&& expts;
+	}
 protected:
     bool Initialize() override;
     void Start() override;

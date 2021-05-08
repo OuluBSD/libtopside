@@ -11,6 +11,7 @@ class ConnectAllInterfaces :
 	public MetaExchangePoint
 {
 	Ref<EntityStore> sys;
+	
 	int64 refresh_ticks = -1;
 	
 	
@@ -29,8 +30,12 @@ public:
 	void Uninitialize() override;
 	String ToString() const override {return MetaExchangePoint::ToString();}
 	void UnlinkAll() override;
-	
 	void Update(double dt) override;
+	void Visit(RuntimeVisitor& vis) override {
+		vis & sys;
+		MetaExchangePoint::Visit(vis);
+	}
+		
 	
 	
 private:

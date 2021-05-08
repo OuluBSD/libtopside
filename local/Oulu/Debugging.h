@@ -66,53 +66,48 @@ public:
 
 
 
-
-
-
-
-
-#if 0
-
-template <class T, class Parent1, class Parent2=void>
-class DebugNode {
+class RuntimeDiagnosticVisitor : public RuntimeVisitor {
 	
 	
 public:
 	
+	void Clear();
 	
 };
 
-class StructureDebugger {
+class RuntimeDiagnostics {
+	void* cur = 0;
+	Callback visiter;
+	RuntimeDiagnosticVisitor vis;
 	
+	template <class T>
+	void BeginVisit() {
+		T* o = (T*)cur;
+		vis.Clear();
+		vis.Visit(*o);
+	}
 	
 public:
+	typedef RuntimeDiagnostics CLASSNAME;
+	
+	void OnRefError(LockedScopeRefCounter* r);
 	
 	
 	
+	Callback1<String> WhenFatalError;
 	
-	
-	
-	static StructureDebugger& Static() {static StructureDebugger s; return s;}
-	
+	static RuntimeDiagnostics& Static() {static RuntimeDiagnostics s; return s;}
+
+
+	template <class T>
+	void SetRoot(T& o) {
+		visiter = THISBACK(BeginVisit<T>);
+		cur = &o;
+	}
 };
 
-#ifdef flagDEBUG_STRUCTURE
-	#define DBG_CONSTRUCT			{SetDebugReferencing(); StructureDebugger::Static().Construct(this);}
-	#define DBG_DESTRUCT			{StructureDebugger::Static().Destruct(this);}
-	#define DBG_REF_INC				{StructureDebugger::Static().IncRef(this, dbg_type);}
-	#define DBG_REF_DEC				{StructureDebugger::Static().DecRef(this, dbg_type);}
-	#define DBG_REF_NONZERO_ERROR	{StructureDebugger::Static().NonZeroRefError();}
-	#define DBG_BEGIN_UNREF_CHECK	{StructureDebugger::Static().CheckUnrefs();}
-#else
-	#define DBG_CONSTRUCT
-	#define DBG_DESTRUCT
-	#define DBG_REF_INC
-	#define DBG_REF_DEC
-	#define DBG_REF_ZERO_ERROR
-	#define DBG_BEGIN_UNREF_CHECK
-#endif
 
-#endif
+
 
 
 NAMESPACE_OULU_END

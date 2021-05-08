@@ -11,8 +11,11 @@ class FfmpegComponent :
 	public AudioSource,
 	public VideoSource
 {
-	String last_error;
+	VIS_COMP_2_0(Audio, Video)
+	
 	FfmpegFileInput file_in;
+	
+	String last_error;
 	MediaStreamThread vi;
 	VideoProxy video_buf;
 	Size def_cap_sz;
@@ -28,7 +31,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	
+	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
 	
 	// Audio
 	AudioStream&	GetAudioSource() override;

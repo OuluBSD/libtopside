@@ -11,8 +11,11 @@ class OpenCVComponent :
 	public AudioSource,
 	public VideoSource
 {
-	String last_error;
+	VIS_COMP_2_0(Audio, Video)
+	
 	OpenCVCaptureDevice cap;
+	
+	String last_error;
 	V4L2_DeviceManager devmgr;
 	MediaStreamThread vi;
 	VideoProxy video_buf;
@@ -30,6 +33,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis % cap;}
 	
 	bool LoadFileAny(String path) override;
 	

@@ -30,6 +30,7 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	Tutorial4();
 	~Tutorial4();
 	void operator=(const Tutorial4& t) {Panic("Can't copy Tutorial4");}
+	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	
 	void Begin();
 	void DrawLine(SystemDraw& fb, const line3& l, Color clr);

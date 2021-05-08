@@ -22,6 +22,7 @@ struct Geometry2 : public Component<Geometry2>, public DisplaySink {
 	
 	void DrawLine(GeometryDraw& fb, float scale, vec4 a, vec4 b, Color clr);
 	void Render(SystemDraw& draw) override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 

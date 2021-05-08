@@ -13,6 +13,7 @@ struct ConnectorBase : Destroyable, Enableable, RefScopeEnabler<ConnectorBase,Po
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
 	virtual void Update(double dt) = 0;
+	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void UnlinkAll() {};
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};

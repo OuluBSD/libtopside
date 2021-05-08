@@ -6,11 +6,15 @@ NAMESPACE_OULU_BEGIN
 
 
 
-struct PrimitiveShape : public Component<PrimitiveShape>, public ModelSink {
-	
+struct PrimitiveShape :
+	public Component<PrimitiveShape>,
+	public ModelSink
+{
+	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
 	
+	void Visit(RuntimeVisitor& vis) override {}
     void operator=(const PrimitiveShape& src) {}
     
 	void SetShape(ShapeId type, const vec2& ax_vec);
@@ -25,12 +29,16 @@ protected:
 };
 
 
-struct ModelComponent : public Component<ModelComponent>, public ModelSink {
-	
+struct ModelComponent :
+	public Component<ModelComponent>,
+	public ModelSink
+{
+	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
 	
 	
+	void Visit(RuntimeVisitor& vis) override {}
     void operator=(const ModelComponent& src) {}
     
     bool LoadModel(String path);

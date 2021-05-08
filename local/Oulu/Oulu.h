@@ -37,6 +37,8 @@ NAMESPACE_OULU_END
 #include "Types.h"
 #include "Recycler.h"
 #include "LinkedList.h"
+#include "Visitor.h"
+#include "Ref.h"
 #include "TypeTraits.h"
 #include "Exchange.h"
 #include "Interface.h"

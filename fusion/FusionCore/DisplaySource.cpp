@@ -6,11 +6,11 @@ NAMESPACE_OULU_BEGIN
 void FusionDisplaySource::Initialize() {
 	FusionComponent::Initialize();
 	
-	AddToSystem<RenderingSystem>(this);
+	AddToSystem<RenderingSystem>(DisplaySource::AsRefT());
 }
 
 void FusionDisplaySource::Uninitialize() {
-	RemoveFromSystem<RenderingSystem>(this);
+	RemoveFromSystem<RenderingSystem>(DisplaySource::AsRefT());
 	
 	FusionComponent::Uninitialize();
 }

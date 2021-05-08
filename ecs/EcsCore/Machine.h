@@ -15,7 +15,8 @@ public:
     virtual ~SystemBase();
 
     virtual TypeId GetType() const = 0;
-
+	virtual void Visit(RuntimeVisitor& vis) = 0;
+	
 	Machine& GetMachine() const {return RScope::GetParent();}
 protected:
     friend Machine;
@@ -26,6 +27,7 @@ protected:
     virtual void Stop() {}
     virtual void Uninitialize() {}
 
+	
 };
 
 
@@ -101,7 +103,7 @@ public:
     
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}
-	
+	void Visit(RuntimeVisitor& vis);
 	
 	static Callback WhenStarting;
 	

@@ -12,14 +12,16 @@ class ShaderViewer :
 	public Component<ShaderViewer>
 {
 	EntityRef fusion;
-	FusionContextComponent* ctx = 0;
+	FusionContextComponentRef ctx;
 	
 public:
+	VIS_COMP_0_0
 	typedef ShaderViewer CLASSNAME;
 	ShaderViewer() {}
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis & fusion & ctx;}
 	void operator=(const ShaderViewer& t) {Panic("Can't copy ShaderViewer");}
 	
 };

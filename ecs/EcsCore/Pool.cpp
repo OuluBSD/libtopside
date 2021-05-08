@@ -48,7 +48,7 @@ void Pool::Initialize(Entity& e, String prefab) {
 EntityRef Pool::Clone(const Entity& c) {
 	Entity& e = objects.Add();
 	e.SetParent(this);
-	e.Init(this, GetNextId());
+	e.Init(GetNextId());
 	Initialize(e);
 	e.CopyHeader(c);
 	GetMachine().Get<ComponentStore>()->Clone(e, c);

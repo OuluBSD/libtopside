@@ -7,10 +7,16 @@ NAMESPACE_OULU_BEGIN
 
 class VideoSystem : public System<VideoSystem> {
 	Ref<EntityStore> ents;
-	Vector<VideoSourceRef> srcs;
-	Vector<VideoSinkRef> sinks;
-	Vector<VideoExchangePointRef> expts;
+	LinkedList<VideoSourceRef> srcs;
+	LinkedList<VideoSinkRef> sinks;
+	LinkedList<VideoExchangePointRef> expts;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis & ents
+			&& srcs
+			&& sinks
+			&& expts;
+	}
 protected:
     bool Initialize() override;
     void Start() override;

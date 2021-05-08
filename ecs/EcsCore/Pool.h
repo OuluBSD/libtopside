@@ -60,7 +60,7 @@ public:
 		
 		Entity& e = objects.Add();
 		e.SetParent(this);
-		e.Init(this, GetNextId());
+		e.Init(GetNextId());
 		PrefabT::Make(e);
 		Initialize(e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -179,10 +179,14 @@ public:
 		return RefT_Pool<T>(this, comp);
 	}
 	
+	void Visit(RuntimeVisitor& vis) {
+		vis || objects || pools;
+	}
 private:
-	ConnectorMap			comps;
 	EntityVec				objects;
 	PoolVec					pools;
+	
+	ConnectorMap			comps;
 	
 	void InitializeComponent(ConnectorBase& comp);
 	

@@ -5,16 +5,18 @@
 NAMESPACE_OULU_BEGIN
 
 
-class Overlap;
 
 class OverlapSystem : public System<OverlapSystem> {
-	Vector<Overlap*> conns;
+	LinkedList<OverlapRef> conns;
 	
+	void Visit(RuntimeVisitor& vis) override {
+		vis && conns;
+	}
 public:
 	SYS_CTOR(OverlapSystem)
 	
-	void Add(Overlap* conn) {VectorFindAdd(conns, conn);}
-	void Remove(Overlap* conn) {VectorRemoveKey(conns, conn);}
+	void Add(OverlapRef conn) {conns.FindAdd(conn);}
+	void Remove(OverlapRef conn) {conns.RemoveKey(conn);}
 	
 protected:
 	
@@ -31,6 +33,8 @@ class Overlap :
 	public Component<Overlap>,
 	public OverlapSink
 {
+	VIS_COMP_0_1(Overlap)
+	
 	
 	
 public:
@@ -43,6 +47,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	void operator=(const Overlap& c) {}
 	
@@ -54,6 +59,7 @@ class OverlapDetector :
 	public Component<OverlapDetector>,
 	public OverlapSource
 {
+	VIS_COMP_1_0(Overlap)
 	
 	
 public:
@@ -66,6 +72,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	
 	void operator=(const OverlapDetector& c) {}
 	
