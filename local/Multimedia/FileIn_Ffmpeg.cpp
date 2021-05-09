@@ -620,7 +620,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	// Non-planar data
 	if (frame->data[1] == 0) {
 		if (frame->data[0]) {
-			ASSERT(aud_fmt.GetFrameBytes() == frame->linesize[0]);
+			ASSERT(aud_fmt.GetFrameBytes() >= frame->linesize[0]);
 			auto& p = buf.Add();
 			p = CreateAudioPacket();
 			AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
