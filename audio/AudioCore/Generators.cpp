@@ -5,6 +5,64 @@
 NAMESPACE_OULU_BEGIN
 
 
+DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
+	fmt.channels = 2;
+	fmt.sample_rate = 777;
+	fmt.freq = 44100;
+	fmt.is_var_bigendian = false;
+	fmt.is_var_float = 0;
+	fmt.is_var_signed = 0;
+	fmt.var_size = 1;
+	gen.GenerateStereoSine(fmt);
+}
+
+void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
+	if (e.IsStoring()) {
+		Audio& sink = e.Sink();
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
+		if (vol_aud) {
+			while (!vol_aud->IsQueueFull()) {
+				AudioPacket p = CreateAudioPacket();
+				p->Set(fmt, offset, time);
+				p->Data().SetCount(fmt.GetFrameBytes(), 0);
+				gen.Play(p);
+				vol_aud->Put(p, false);
+				++offset;
+				time += fmt.GetFrameSeconds();
+			}
+		}
+		else TODO
+	}
+	else TODO
+}
+
+int DummySoundGeneratorAudio::GetQueueSize() const {
+	return 10;
+}
+
+AudioFormat DummySoundGeneratorAudio::GetAudioFormat() const {
+	return fmt;
+}
+
+bool DummySoundGeneratorAudio::IsQueueFull() const {
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 SoundGeneratorComponent::SoundGeneratorComponent() {
 	
 }
@@ -32,30 +90,16 @@ void SoundGeneratorComponent::Configure(const Midi::File& file) {
 	}*/
 }
 
-/*void SoundGeneratorComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
-	AudioFormat fmt = aud.GetAudioFormat();
-	if (fmt.is_var_float && fmt.var_size == 4) {
-		gen_f32.Play(config, aud);
-	}
-	else if (!fmt.is_var_float && fmt.var_size == 2) {
-		gen_u16.Play(config, aud);
-	}
-	else {
-		Panic("Invalid format");
-	}
-}*/
-
-
 AudioStream& SoundGeneratorComponent::GetAudioSource() {
-	TODO
+	return gen;
 }
 
 void SoundGeneratorComponent::BeginAudioSource() {
-	TODO
+	
 }
 
 void SoundGeneratorComponent::EndAudioSource() {
-	TODO
+	
 }
 
 

@@ -91,19 +91,26 @@ bool MP3PlayerStartup() {
 
 
 /*
-0:	v[0x7FFFFFFFE488]
-1:	v[0x7FFFFFFFE478]
-2:	v[0x7FFFFFFFE460]
-3:	v[0x80AE80688]
-4:	v[0x80AE57610]
-5:	v[0x80AE43230]
-6:	v[0x7FFFFFFFE2A8]
-7:	v[0x7FFFFFFFE200]
-8:	v[0x7FFFFFFFE138]
+To debug reference bugs, uncomment:
+	- SetDebugRefVisits
+	- RefDebugVisitor::Static().DumpUnvisited();
+You'll see something like this in log
+	0:	[0x7FFFFFFFE488]
+	1:	[0x7FFFFFFFE478]
+	2:	[0x7FFFFFFFE460]
+	3:	[0x80AE80688]
+	4:	[0x80AE57610]
+	5:	[0x80AE43230]
+	6:	[0x7FFFFFFFE2A8]
+	7:	[0x7FFFFFFFE200]
+	8:	[0x7FFFFFFFE138]
+Take any address and put to BreakRefAdd
 */
+
 void Main() {
 	SetCoutLog();
-	BreakRefAdd(0x80AE43230);
+	
+	//BreakRefAdd(0x80AE43230);
 	
 	if (!MP3PlayerStartup())
 		Exit(1);
@@ -139,10 +146,8 @@ void Main() {
 		        mach.Update(dt);
 		        Sleep(1);
 		        
-		        
-		        
-		        //if (total.Seconds() > 3)
-		        //    mach.SetNotRunning();
+		        if (run_sound_gen && total.Seconds() > 3)
+		            mach.SetNotRunning();
 		    }
 		    
 		    RuntimeDiagnostics::Static().CaptureSnapshot();

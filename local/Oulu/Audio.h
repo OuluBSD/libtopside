@@ -42,6 +42,7 @@ struct AudioFormat {
 	int GetSampleBytes() const {return var_size * channels;}
 	int GetFrameBytes() const {return var_size * channels * sample_rate;}
 	int GetFrameBytes(int dst_sample_rate) const {return var_size * channels * dst_sample_rate;}
+	double GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
 	
 	template <class T> bool IsSampleType() const {
 		#if CPU_LITTLE_ENDIAN
@@ -81,6 +82,7 @@ public:
 	off32					GetOffset() const {return offset;}
 	double					GetTime() const {return time;}
 	bool					IsOffset(const off32& o) const {return offset.value == o.value;}
+	int						GetSizeBytes() const {return data.GetCount();}
 	
 };
 
@@ -243,10 +245,11 @@ struct AudioConverter {
 		DST* dst_it = (DST*)dst;
 		DST* dst_end = dst_it + src_fmt.sample_rate * dst_fmt.channels;
 		for(int i = 0; i < src_fmt.sample_rate; i++) {
-			for(int j = 0; j < dst_fmt.channels; j++)
-				*dst_it++ =
-					ConvertAudioSample<SRC, DST, SRC_NATIVE_ENDIAN, DST_NATIVE_ENDIAN>(
-						src_it[j % src_fmt.channels]);
+			for(int j = 0; j < dst_fmt.channels; j++) {
+				SRC src_v = src_it[j % src_fmt.channels];
+				DST dst_v = ConvertAudioSample<SRC, DST, SRC_NATIVE_ENDIAN, DST_NATIVE_ENDIAN>(src_v);
+				*dst_it++ = dst_v;
+			}
 			src_it += src_fmt.channels;
 		}
 		ASSERT(src_it == src_end);
@@ -293,35 +296,39 @@ public:
 class AudioPacketConsumer {
 	VolatileAudioBuffer*	src = 0;
 	off32					offset;
-	//int					leftover_size = 0;
-	//AudioPacket			leftover;
+	int						leftover_size = 0;
+	AudioPacket				leftover;
 	
 	AudioFormat				dst_fmt;
 	VolatileAudioBuffer*	dst_buf = 0;
 	void*					dst_mem = 0;
 	byte*					dst_iter = 0;
+	byte*					dst_iter_end = 0;
 	int						dst_remaining = 0;
 	bool					dst_realtime = 0;
 	
 	int						internal_count;
 	
-	void Consume(AudioPacket& p/*, int data_shift*/);
+	void Consume(AudioPacket& p, int data_shift);
 	
 public:
 	AudioPacketConsumer() {}
 	
-	void		SetOffset(off32 offset) {this->offset = offset;}
+	void		SetOffset(off32 offset) {ASSERT(!HasLeftover()); this->offset = offset;}
 	void		SetSource(VolatileAudioBuffer& src);
 	void		SetDestination(const AudioFormat& fmt, void* dst, int src_dst_size);
 	void		SetDestination(VolatileAudioBuffer& dst);
 	void		SetDestinationRealtime(bool b) {dst_realtime = b;}
 	void		ClearDestination();
+	void		ClearLeftover() {leftover_size = 0; leftover.Clear();}
+	void		TestSetOffset(off32 offset);
 	
 	void		ConsumeAll(bool blocking=false);
 	bool		ConsumePacket();
 	bool		IsFinished() const;
 	bool		IsEmptySource() const {return src == 0;}
 	off32		GetOffset() const {return offset;}
+	bool		HasLeftover() const {return leftover_size != 0;}
 	
 	operator bool() const {return IsFinished();}
 	
@@ -341,7 +348,9 @@ public:
 	#if DEBUG_AUDIO_PIPE
 	AudioPacket	Get(off32 offset) {
 		AudioPacket p = Buffer::Get(offset);
-		if (p.IsEmpty()) {AUDIOLOG("error: got empty packet in VolatileAudioBuffer");}
+		if (p.IsEmpty()) {
+			AUDIOLOG("error: got empty packet in VolatileAudioBuffer");
+		}
 		return p;
 	}
 	void Put(const AudioPacket& p, bool realtime) {
@@ -357,7 +366,7 @@ public:
 	void		Exchange(AudioEx& e)	override;
 	int			GetQueueSize() const	override {return Buffer::GetQueueSize();}
 	AudioFormat	GetAudioFormat() const	override {return preferred_fmt;}
-	bool		IsQueueFull() const		override {return Buffer::IsQueueFull();}
+	bool		IsQueueFull() const		override;
 	
 	
 	

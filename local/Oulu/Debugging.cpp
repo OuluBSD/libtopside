@@ -274,15 +274,7 @@ void CallInExitBlock(Callback cb) {
 
 String RefDebugVisitor::Item::ToString() const {
 	String s;
-	s << type.CleanDemangledName() << "[" << HexStr(mem) << "]";
-	/*if (value_ptr && *value_ptr)
-		s << " &[" << HexStr(*value_ptr) << "]";*/
-	/*int pad = s.GetCount();
-	while (pad < 40) {
-		s.Cat('\t');
-		pad += (pad % 4 == 0 ? 4 : 4 - (pad % 4));
-	}
-	s << String(file) << ":" << line;*/
+	s << "[" << HexStr(mem) << "]";
 	return s;
 }
 
@@ -291,7 +283,6 @@ void RefDebugVisitor::Add(void* mem) {
 	if (break_ref_add == (size_t)mem) {__BREAK__;}
 	Item& it = items.Add();
 	it.mem = mem;
-	//it.value_ptr = value_ptr;
 }
 
 void RefDebugVisitor::Remove(void* mem) {

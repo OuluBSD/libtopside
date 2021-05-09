@@ -226,7 +226,7 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 	
 	if (args.output) {
 		int size = fmt.GetFrameBytes();
-		if (buf.GetQueueSize() > 0) {
+		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
 			off32 begin_offset = buf.GetOffset();
@@ -236,7 +236,8 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 				buf.Dump();
 			}
 			
-			consumer.SetOffset(begin_offset);
+			consumer.TestSetOffset(begin_offset);
+			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
 			consumer.ClearDestination();
@@ -244,10 +245,13 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
 			if (diff) {
-				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed " << diff.ToString());
+				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
 				buf.RemoveFirst(diff.value);
 			}
-			else {
+			else if (consumer.HasLeftover()) {
+				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
+			}
+			else if (!consumer.HasLeftover()) {
 				AUDIOLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
 			}
 		}

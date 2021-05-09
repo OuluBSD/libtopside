@@ -63,6 +63,14 @@ public:
 	
 	int			GetQueueSize() const {return packets[data_i].GetCount();}
 	bool		IsQueueFull() const {return packets[data_i].GetCount() >= size_limit;}
+	bool		IsEmpty() const {return packets[data_i].IsEmpty();}
+	
+	int GetQueueSizeBytes() const {
+		int sz = 0;
+		for (auto iter = packets[data_i].begin(); iter; ++iter)
+			sz += iter()->GetSizeBytes();
+		return sz;
+	}
 	
 	off32 GetOffset() const {
 		LinkedList<T>& l = const_cast<LinkedList<T>&>(packets[data_i]);
@@ -73,8 +81,10 @@ public:
 		lock.EnterRead();
 		ASSERT(data_i >= 0 && data_i < BUFFER_COUNT);
 		LinkedList<T>& l = packets[data_i];
-		if (l.IsEmpty())
+		if (l.IsEmpty()) {
+			lock.LeaveRead();
 			return T();
+		}
 		
 		// Find given offset frame
 		auto iter = l.begin();
@@ -87,8 +97,10 @@ public:
 			}
 			++iter;
 		}
-		if (!found)
+		if (!found) {
+			lock.LeaveRead();
 			return T();
+		}
 		
 		T p = iter();
 		lock.LeaveRead();
@@ -108,7 +120,6 @@ public:
 		}
 		else {
 			LinkedList<T>& l = packets[data_i];
-			ASSERT(l.GetCount() < size_limit);
 			l.Add(p);
 		}
 		lock.LeaveWrite();

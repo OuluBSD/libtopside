@@ -140,11 +140,9 @@ public:
 class RefDebugVisitor : public RuntimeVisitor {
 	struct Item {
 		void* mem;
-		TypeId type;
-		LockedScopeRefCounter* ref;
 		bool visited;
 		Item() {Clear();}
-		void Clear() {mem = 0; type = typeid(void); ref = 0; visited = false;}
+		void Clear() {mem = 0; visited = false;}
 		bool operator==(const Item& i) {return mem == i.mem;}
 		String ToString() const;
 	};
@@ -157,7 +155,7 @@ class RefDebugVisitor : public RuntimeVisitor {
 		cmp.mem = mem;
 		Item* i = items.Find(cmp);
 		ASSERT(i);
-		if (i) {i->type = type; i->ref = ref; i->visited = true;}
+		if (i) {i->visited = true;}
 	}
 	
 	

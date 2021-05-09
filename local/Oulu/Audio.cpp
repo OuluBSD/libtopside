@@ -96,17 +96,19 @@ AudioPacket CreateAudioPacket() {
 
 
 
-
+bool VolatileAudioBuffer::IsQueueFull() const {
+	if (Buffer::IsEmpty())
+		return false;
+	int sz = Buffer::GetQueueSizeBytes();
+	int preferred_sz = preferred_fmt.GetFrameBytes() * 2;
+	return sz >= preferred_sz;
+}
 
 void VolatileAudioBuffer::Exchange(AudioEx& e) {
 	if (e.IsLoading()) {
 		Audio& aud = e.Source();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		if (aud.GetQueueSize() == 0 || IsQueueFull()) {
-			e.SetFail();
-			return;
-		}
 		
 		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&aud);
 		if (vol_aud) {
@@ -114,7 +116,13 @@ void VolatileAudioBuffer::Exchange(AudioEx& e) {
 				consumer.Create();
 				consumer->SetDestination(*this);
 			}
-			consumer->SetOffset(e.GetOffset()); // should be 0 with consumer, though
+			
+			if (!consumer->HasLeftover() && (aud.GetQueueSize() == 0 || IsQueueFull())) {
+				e.SetFail();
+				return;
+			}
+			
+			consumer->TestSetOffset(e.GetOffset()); // should be 0 with consumer, though
 			consumer->SetSource(*vol_aud);
 			consumer->SetDestinationRealtime(conf.sync);
 			consumer->ConsumeAll();
@@ -187,6 +195,7 @@ void AudioPacketConsumer::SetDestination(const AudioFormat& fmt, void* dst, int 
 	dst_mem = dst;
 	dst_buf = 0;
 	dst_iter = (byte*)dst;
+	dst_iter_end = dst_iter + dst_size;
 	dst_remaining = dst_size;
 }
 
@@ -195,6 +204,7 @@ void AudioPacketConsumer::SetDestination(VolatileAudioBuffer& dst) {
 	dst_mem = 0;
 	dst_buf = &dst;
 	dst_iter = 0;
+	dst_iter_end = 0;
 	dst_remaining = 0;
 }
 
@@ -203,52 +213,76 @@ void AudioPacketConsumer::ClearDestination() {
 	dst_mem = 0;
 	dst_buf = 0;
 	dst_iter = 0;
+	dst_iter_end = 0;
 	dst_remaining = 0;
 }
 
-void AudioPacketConsumer::Consume(AudioPacket& src) {
+void AudioPacketConsumer::TestSetOffset(off32 offset) {
+	if (HasLeftover()) {
+		if (this->offset != offset) {
+			ClearLeftover();
+			SetOffset(offset);
+		}
+	}
+	else
+		SetOffset(offset);
+}
+
+void AudioPacketConsumer::Consume(AudioPacket& src, int src_data_shift) {
 	AudioFormat src_fmt = src->GetFormat();
 	
 	if (dst_fmt.IsCopyCompatible(src_fmt)) {
 		if (dst_iter) {
 			const Vector<byte>& src_data = src->GetData();
-			if (src_data.GetCount() <= dst_remaining) {
-				int copy_sz = src_data.GetCount();
-				memcpy(dst_iter, src_data.Begin(), copy_sz);
+			int copy_sz = src_data.GetCount() - src_data_shift;
+			ASSERT(copy_sz > 0);
+			if (copy_sz < dst_remaining) {
+				memcpy(dst_iter, src_data.Begin() + src_data_shift, copy_sz);
 				dst_iter += copy_sz;
 				dst_remaining -= copy_sz;
 				ASSERT(dst_remaining >= 0);
+				ASSERT(dst_iter != dst_iter_end);
 			}
 			else {
-				int copy_sz = dst_remaining;
-				memcpy(dst_iter, src_data.Begin(), copy_sz);
+				copy_sz = dst_remaining;
+				memcpy(dst_iter, src_data.Begin() + src_data_shift, copy_sz);
 				dst_iter += copy_sz;
 				dst_remaining = 0;
-				/*leftover_size = src_data.GetCount() - copy_sz;
-				if (leftover_size > 0)
-					leftover = src;*/
+				ASSERT(dst_iter == dst_iter_end);
+			}
+			leftover_size = src_data.GetCount() - src_data_shift - copy_sz;
+			ASSERT(!leftover);
+			ASSERT(leftover_size >= 0);
+			if (leftover_size > 0)
+				leftover = src;
+			else {
+				++offset;
+				++internal_count;
 			}
 		}
 		else {
 			dst_buf->Put(src, internal_count == 0 && dst_realtime);
+			++offset;
+			++internal_count;
 		}
 	}
 	else {
 		AudioPacket src2 = CreateAudioPacket();
 		src2->Set(dst_fmt, src->GetOffset(), src->GetTime());
 		AudioConverter::Convert(src, src2);
-		/*if (src_data_shift) {
+		if (src_data_shift) {
 			int src_sample = src_fmt.GetSampleBytes();
-			int dst_sample = dst_fmt->GetSampleBytes();
+			int dst_sample = dst_fmt.GetSampleBytes();
 			src_data_shift = src_data_shift * dst_sample / src_sample;
-		}*/
-		Consume(src2);
+		}
+		Consume(src2, src_data_shift);
 	}
 }
 
 bool AudioPacketConsumer::ConsumePacket() {
 	ASSERT(dst_buf || dst_remaining > 0);
-	/*if (leftover) {
+	if (leftover) {
+		AUDIOLOG("AudioPacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
 		ASSERT(leftover_size > 0);
 		int data_shift = leftover->GetData().GetCount() - leftover_size;
 		AudioPacket p;
@@ -256,15 +290,13 @@ bool AudioPacketConsumer::ConsumePacket() {
 		Consume(p, data_shift);
 		return true;
 	}
-	else*/
+	else
 	if (src->GetQueueSize()) {
 		AUDIOLOG("AudioPacketConsumer::ConsumePacket: get " << offset.ToString());
 		
 		AudioPacket p = src->Get(offset);
 		if (p) {
-			Consume(p);
-			++offset;
-			++internal_count;
+			Consume(p, 0);
 			return true;
 		}
 	}

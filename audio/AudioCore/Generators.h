@@ -11,15 +11,28 @@ class DummySoundGenerator {
 	
 public:
 	DummySoundGenerator() {}
-	void Play(const RealtimeSourceConfig& config, Audio& aud) {
-		if (frame.IsEmpty())
-			GenerateStereoSine(aud.GetAudioFormat());
+	void Play(const AudioPacket& p) {
+		int total_bytes = frame.GetCount() * sizeof(T);
+		int copy_size = p->GetFormat().GetFrameBytes();
+		p->Data().SetCount(copy_size, 0);
+		int frame_remaining = total_bytes - frame_offset;
+		byte* dst = p->Data().Begin();
+		byte* src = (byte*)(void*)frame.Begin() + frame_offset;
 		
-		TODO
-		//aud.Put(frame.Begin() + frame_offset, frame_part_size * sizeof(float), config.sync);
-		
-		frame_offset = (frame_offset + frame_part_size) % frame.GetCount();
-		ASSERT(frame_offset % aud.GetAudioFormat().sample_rate == 0);
+		// 2 parts
+		if (frame_remaining < copy_size) {
+			int right_side = frame_remaining;
+			int left_side = copy_size - frame_remaining;
+			memcpy(dst, src, right_side);
+			src = (byte*)(void*)frame.Begin();
+			memcpy(dst, src, left_side);
+			frame_offset = left_side;
+		}
+		// 1part
+		else {
+			memcpy(dst, src, copy_size);
+			frame_offset = (frame_offset + copy_size) % total_bytes;
+		}
 	}
 	
 	void GenerateStereoSine(const AudioFormat& fmt) {
@@ -33,9 +46,6 @@ public:
 		int size = frame_part_size * pan_frames;
 		frame.SetCount(size);
 		T* f = frame.Begin();
-		double min = std::numeric_limits<T>::min();
-		double max = std::numeric_limits<T>::max();
-		double range = max - min;
 		for (int p = 0; p < pan_frames; p++) {
 			for(int i = 0; i < fmt.sample_rate; i++) {
 				double tonerad = tone_mul * M_2PI * (double)i / (double)fmt.sample_rate;
@@ -60,14 +70,43 @@ public:
 	}
 };
 
+class DummySoundGeneratorAudio :
+	public Audio
+{
+	DummySoundGenerator<uint8> gen;
+	AudioFormat fmt;
+	off32 offset;
+	double time = 0;
+	
+public:
+	DummySoundGeneratorAudio();
+	void Exchange(AudioEx& e);
+	int GetQueueSize() const;
+	AudioFormat GetAudioFormat() const;
+	bool IsQueueFull() const;
+	double GetSeconds() const {return time;}
+};
+
+class DummySoundGeneratorStream :
+	public AudioStream
+{
+	DummySoundGeneratorAudio gen;
+	
+public:
+	DummySoundGeneratorStream() {}
+	double GetSeconds() const override {return gen.GetSeconds();}
+	Audio& GetAudio() override {return gen;}
+	void FillAudioBuffer() override {}
+	void DropAudioBuffer() override {}
+	
+};
 
 class SoundGeneratorComponent :
 	public Component<SoundGeneratorComponent>,
 	public MidiSink,
 	public AudioSource
 {
-	DummySoundGenerator<float> gen_f32;
-	DummySoundGenerator<unsigned short> gen_u16;
+	DummySoundGeneratorStream gen;
 	String last_error;
 	int mode = 0;
 	int preset_i = -1;

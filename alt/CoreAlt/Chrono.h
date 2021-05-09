@@ -71,7 +71,7 @@ class TimeStop {
 	std::chrono::high_resolution_clock::time_point start;
 	
 public:
-	TimeStop() {}
+	TimeStop() {Reset();}
 		
 	void Reset();
 	double Elapsed() const;
