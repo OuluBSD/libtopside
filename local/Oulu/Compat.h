@@ -84,6 +84,7 @@ inline WString ToWString(String s) {return s.ToWString();}
 inline WString ToWString(const wchar_t* chr) {return std::wstring(chr);}
 template <class T> inline String ToString(const T& o) {return AsString(o);}
 inline String HexStr(int64 i) {return Format("0x%X", i);}
+inline String HexStr(void* i) {return Format("0x%X", (int64)i);}
 
 typedef Image RawSysTexture;
 

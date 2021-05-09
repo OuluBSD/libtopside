@@ -47,8 +47,6 @@ file
 	ConnPoolComps.cpp,
 	ConnPoolComps.inl highlight cpp,
 	Trash readonly separator,
-	OldConnector.h,
-	OldConnector.cpp,
 	Controller.h,
 	Controller.cpp,
 	Listener.h,

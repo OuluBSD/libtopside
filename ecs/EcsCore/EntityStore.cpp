@@ -18,7 +18,7 @@ void EntityStore::Update(double dt) {
 	
 	if (refresh_poolcomps[WRITE]) {
 		lock.Enter();
-		Swap(refresh_poolcomps[READ], refresh_poolcomps[WRITE]);
+		MemSwap(refresh_poolcomps[READ], refresh_poolcomps[WRITE]);
 		refresh_poolcomps[WRITE].Clear();
 		lock.Leave();
 		

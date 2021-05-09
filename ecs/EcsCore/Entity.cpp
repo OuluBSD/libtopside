@@ -36,7 +36,10 @@ void Entity::UninitializeComponents() {
 }
 
 void Entity::ClearComponents() {
-	comps.Clear();
+	ComponentStoreRef sys = GetMachine().Get<ComponentStore>();
+	for (auto iter = comps.rbegin(); iter; --iter)
+		sys->ReturnComponent(comps.Detach(iter));
+	ASSERT(comps.IsEmpty());
 }
 
 EntityRef Entity::Clone() const {

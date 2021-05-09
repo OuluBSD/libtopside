@@ -106,13 +106,28 @@ void RuntimeDiagnostics::OnRefError(LockedScopeRefCounter* r) {
 	
 	if (vis.IsEmpty())
 		CaptureSnapshot();
+	else {
+		vis.Unfocus();
+		vis.Focus(r);
+		LOG("\nOld full dump:");
+		vis.Dump();
+		LOG("\nOld focused dump:");
+		vis.DumpFocused();
+		CaptureSnapshot();
+	}
+	LOG("\nRefreshed focused dump:");
 	vis.Unfocus();
 	vis.Focus(r);
 	LOG("\nFull dump:");
 	vis.Dump();
 	LOG("\nFocused dump:");
 	vis.DumpFocused();
-	LOG("\n");
+	
+	if (IsDebugRefVisits())
+		RefDebugVisitor::Static().DumpUnvisited();
+	else
+		{LOG("*** Reference visitor debugging was not enabled ***");}
+	
 	Panic("Reference error");
 }
 
@@ -236,6 +251,79 @@ void RuntimeDiagnosticVisitor::RecursiveUnfocus(Scope& s) {
 	for (Scope& sub : s.sub_scopes)
 		RecursiveUnfocus(sub);
 }
+
+
+
+
+
+Vector<Callback> __exit_cbs;
+
+EXITBLOCK {
+	for (Callback& cb : __exit_cbs)
+		cb();
+	RuntimeDiagnostics::Static().Clear();
+}
+
+void CallInExitBlock(Callback cb) {
+	static StaticMutex m;
+	m.Enter();
+	__exit_cbs << cb;
+	m.Leave();
+}
+
+
+String RefDebugVisitor::Item::ToString() const {
+	String s;
+	s << type.CleanDemangledName() << "[" << HexStr(mem) << "]";
+	/*if (value_ptr && *value_ptr)
+		s << " &[" << HexStr(*value_ptr) << "]";*/
+	/*int pad = s.GetCount();
+	while (pad < 40) {
+		s.Cat('\t');
+		pad += (pad % 4 == 0 ? 4 : 4 - (pad % 4));
+	}
+	s << String(file) << ":" << line;*/
+	return s;
+}
+
+void RefDebugVisitor::Add(void* mem) {
+	LOG("RefDebugVisitor::Add    " << HexStr(mem));
+	if (break_ref_add == (size_t)mem) {__BREAK__;}
+	Item& it = items.Add();
+	it.mem = mem;
+	//it.value_ptr = value_ptr;
+}
+
+void RefDebugVisitor::Remove(void* mem) {
+	LOG("RefDebugVisitor::Remove " << HexStr(mem));
+	if (break_ref_rem == (size_t)mem) {__BREAK__;}
+	Item cmp;
+	cmp.mem = mem;
+	auto i = items.FindIter(cmp);
+	if (i) {
+		items.Remove(i);
+	}
+	else {
+		LOG("\terror: trying to remove unfollowed Ref at " << HexStr(mem));
+	}
+}
+
+void RefDebugVisitor::DumpUnvisited() {
+	LOG("RefDebugVisitor::DumpUnvisited");
+	int i = 0;
+	for (auto iter = items.begin(); iter; ++iter) {
+		LOG(i++ << ":\t" << iter->ToString());
+	}
+}
+
+void DebugRefVisits_AddRef(void* mem) {
+	RefDebugVisitor::Static().Add(mem);
+}
+
+void DebugRefVisits_RemoveRef(void* mem) {
+	RefDebugVisitor::Static().Remove(mem);
+}
+
 
 
 NAMESPACE_OULU_END

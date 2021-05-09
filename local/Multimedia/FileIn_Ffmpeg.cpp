@@ -646,10 +646,10 @@ void FfmpegAudioFrameQueue::DropAudioBuffer() {
 	if (exchange_count == 0)
 		return;
 	
-	off32 min_begin_diff = std::min(
+	/*off32 min_begin_diff = std::min(
 		off32::GetDifference(begin, begin_offset_min),
 		off32::GetDifference(begin, begin_offset_max));
-	ASSERT(min_begin_diff.value == 0);
+	ASSERT(min_begin_diff.value == 0);*/
 	
 	off32 min_end_diff = std::min(
 		off32::GetDifference(begin, end_offset_min),

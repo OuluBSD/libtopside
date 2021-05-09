@@ -34,11 +34,10 @@ void FusionContextComponent::Update(double dt) {
 		Object to_load;
 		Swap(post_load, to_load);
 		
-		for(int i = 0; i < comps.GetCount(); i++) {
-			FusionComponent& comp = *comps[i];
-			if (comp.IsTypeTemporary()) {
-				comp.Close();
-				comp.GetECS().Destroy();
+		for(FusionComponentRef& comp : comps) {
+			if (comp->IsTypeTemporary()) {
+				comp->Close();
+				comp->GetECS().Destroy();
 			}
 		}
 		
@@ -54,7 +53,7 @@ void FusionContextComponent::Update(double dt) {
 		DumpEntityComponents();
 		
 		is_open = true;
-		for(auto& comp : comps) {
+		for(FusionComponentRef& comp : comps) {
 			if (!comp->IsOpen() && !comp->Open()) {
 				DLOG("FusionContextComponent::Update: error: a component did not open properly");
 				is_open = false;
@@ -162,16 +161,16 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 			comp->PreProcess();
 	}
 	
-	for(int i = 0; i < comps.GetCount(); i++) {
-		FusionComponent& comp = *comps[i];
-		if (IsModeStage(comp, m)) {
+	int i = 0;
+	for(FusionComponentRef& comp : comps) {
+		if (IsModeStage(*comp, m)) {
 #ifdef flagOPENGL
-			Ogl_ProcessStage(*comps[i], gl_stages[i]);
+			Ogl_ProcessStage(*comp, gl_stages[i]);
 #endif
 		}
 	}
 	
-	for(auto& comp : comps) {
+	for(FusionComponentRef& comp : comps) {
 		if (IsModeStage(*comp, m))
 			comp->PostProcess();
 	}
@@ -560,13 +559,12 @@ void FusionContextComponent::RefreshStageQueue() {
 		for(auto& s : comps)
 			if (s->id >= 0)
 				g.AddKey(s->id);
-		for(int i = 0; i < comps.GetCount(); i++) {
-			const FusionComponent& s = *comps[i];
-			if (s.id >= 0) {
-				for(int j = 0; j < s.in.GetCount(); j++) {
-					const FusionComponentInput& in = s.in[j];
+		for(const FusionComponentRef& s : comps) {
+			if (s->id >= 0) {
+				for(int j = 0; j < s->in.GetCount(); j++) {
+					const FusionComponentInput& in = s->in[j];
 					if (in.id >= 0)
-						g.AddEdgeKey(in.id, s.id);
+						g.AddEdgeKey(in.id, s->id);
 				}
 			}
 		}
@@ -588,7 +586,9 @@ void FusionContextComponent::RefreshStageQueue() {
 			}
 		};
 		TopologicalStages sorter {g};
-		Sort(comps, sorter);
+		TODO
+		//Sort(comps, sorter);
+		
 		#if 1
 		DLOG("\ttopologically sorted stage list:");
 		for(int i = 0; i < comps.GetCount(); i++) {

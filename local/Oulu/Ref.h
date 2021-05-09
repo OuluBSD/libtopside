@@ -47,8 +47,15 @@ struct RefParent2 {
 	
 };
 
+void DebugRefVisits_AddRef(void* mem);
+void DebugRefVisits_RemoveRef(void* mem);
+#define DBG_REF_CTOR if (IsDebugRefVisits()) {DebugRefVisits_AddRef(this);}
+#define DBG_REF_DTOR if (IsDebugRefVisits()) {DebugRefVisits_RemoveRef(this);}
+bool IsDebugRefVisits();
+void SetDebugRefVisits(bool b=true);
+
 template <class T, class Parent = RefParent1<typename T::Parent> >
-class Ref : Moveable<Ref<T,Parent>> {
+class Ref {
 	T* o = 0;
 	Parent p;
 	
@@ -57,12 +64,12 @@ public:
 	using ParentT = Parent;
 	
 	
-	Ref() {}
-	Ref(Nuller) {}
-	Ref(Parent p, T* o) : p(p), o(o) {if (o) o->IncRef();}
-	Ref(const Ref& r) {*this = r;}
-	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();}}
-	~Ref() {Clear();}
+	Ref() {DBG_REF_CTOR}
+	Ref(Nuller) {DBG_REF_CTOR}
+	Ref(Parent p, T* o) : p(p), o(o) {if (o) o->IncRef(); DBG_REF_CTOR}
+	Ref(const Ref& r) {*this = r; DBG_REF_CTOR}
+	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();} DBG_REF_CTOR}
+	~Ref() {Clear(); DBG_REF_DTOR}
 	
 	
 	T* GetRefPtr() const {return o;}
@@ -218,7 +225,7 @@ class RefLinkedList {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r; return r;}
+	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;
@@ -439,7 +446,7 @@ class RefLinkedListIndirect {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r; return r;}
+	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;
@@ -490,6 +497,11 @@ public:
 		if (o)
 			it->value.Attach(o);
 		return it->value;
+	}
+	T* Detach(const Iterator& it) {
+		T* o = it.GetItem()->value.Detach();
+		Remove(it);
+		return o;
 	}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
@@ -606,6 +618,11 @@ public:
 		it.value	= values.Remove(iter.value);
 		return it;
 	}
+	V* Detach(const Iterator& iter) {
+		keys.Remove(iter.key);
+		V* v = values.Detach(iter.value);
+		return v;
+	}
 	
 	Iterator Find(const K& key) {
 		KeyIter k = keys.begin();
@@ -641,6 +658,19 @@ using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T, Parent>;
 template<class T, class Parent = RefParent1<typename T::Parent>>
 using TypeRefMap			= LinkedMap<TypeId, Ref<T,Parent>>;
 
+
+
+
+
+
+class RefClearVisitor : public RuntimeVisitor {
+	
+public:
+	RefClearVisitor() {
+		SetClearRefs();
+	}
+	
+};
 
 NAMESPACE_OULU_END
 

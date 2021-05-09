@@ -36,9 +36,9 @@ void ConnectAllInterfaces<T>::UnlinkAll() {
 }
 
 template <class T>
-void ConnectAllInterfaces<T>::Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_stack) {
+void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>& src_stack) {
 	
-	Vector<Ref<T>>* cur = 0;
+	LinkedList<Ref<T>>* cur = 0;
 	//int src_scope_count = src_stack.GetCount();
 	
 	for (EntityRef& e : *pool) {
@@ -56,7 +56,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_st
 	for (EntityRef& e : *pool) {
 		Ref<Sink> sink = e->FindInterface<Sink>();
 		if (sink) {
-			for(Vector<Ref<T>>& src_scope : src_stack) {
+			for(LinkedList<Ref<T>>& src_scope : src_stack) {
 				for (Ref<T>& src : src_scope) {
 					CookieRef src_cookie, sink_cookie;
 					if (src->Accept(sink, src_cookie, sink_cookie)) {
@@ -75,7 +75,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_st
 	}
 	
 	if (cur)
-		src_stack.Remove(src_stack.GetCount()-1);
+		src_stack.RemoveLast();
 	
 }
 
@@ -83,7 +83,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_st
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
 	Pool& pool = ConnectorBase::GetPool();
-	Vector<Vector<Ref<T>>> src_stack;
+	LinkedList<LinkedList<Ref<T>>> src_stack;
 	
 	Visit(pool, src_stack);
 	

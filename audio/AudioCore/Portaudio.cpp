@@ -4,8 +4,13 @@
 
 NAMESPACE_OULU_BEGIN
 
+
+bool __is_portaudio_uninit;
+namespace Portaudio {bool IsPortaudioUninitialized() {return __is_portaudio_uninit;}}
+
 void CloseAudioSys() {
 	Portaudio::AudioSys().Close();
+	__is_portaudio_uninit = true;
 }
 
 INITBLOCK {

@@ -114,6 +114,7 @@ struct StreamParameters {
 
 
 
+bool IsPortaudioUninitialized();
 
 class AudioBase : public Audio {
 protected:
@@ -153,9 +154,9 @@ public:
 	dword			GetSampleRate() const           {return fmt.sample_rate;}
 	StreamFlags		GetFlags() const                {return flags;}
 
-	void			Start()               {err = Pa_StartStream(stream); CHECK_ERR;}
-	void			Stop()                {err = Pa_StopStream(stream); CHECK_ERR;}
-	void			Abort()               {err = Pa_AbortStream(stream); CHECK_ERR;}
+	void			Start()               {if (!IsPortaudioUninitialized()) {err = Pa_StartStream(stream); CHECK_ERR;}}
+	void			Stop()                {if (!IsPortaudioUninitialized()) {err = Pa_StopStream(stream); CHECK_ERR;}}
+	void			Abort()               {if (!IsPortaudioUninitialized()) {err = Pa_AbortStream(stream); CHECK_ERR;}}
 	void			Close();
 
 	bool			IsStopped() const;

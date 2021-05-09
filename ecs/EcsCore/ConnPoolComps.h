@@ -40,7 +40,7 @@ public:
 	
 private:
 	
-	void Visit(PoolRef pool, Vector<Vector<Ref<T>>>& src_stack);
+	void Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>& src_stack);
 	
 };
 

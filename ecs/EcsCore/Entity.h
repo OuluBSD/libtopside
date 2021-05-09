@@ -68,8 +68,8 @@ public:
 	}
 	
 	template<typename T>
-	Vector<RefT_Entity<T>> FindInterfaces() {
-		Vector<RefT_Entity<T>> v;
+	LinkedList<RefT_Entity<T>> FindInterfaces() {
+		LinkedList<RefT_Entity<T>> v;
 		RefT_Entity<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())
 			if ((o = comp->As<T>()))

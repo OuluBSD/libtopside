@@ -159,7 +159,6 @@ class FfmpegFileInput : public MediaSourceStream {
 	bool pkt_ref = false;
 	
 	bool HasMediaOpen() const {return has_video || has_audio;}
-	void Clear();
 	void ClearDevice();
 	void ClearPacketData();
 	void ClearPacket();
@@ -174,6 +173,7 @@ public:
 	
 	bool	IsEof() const;
 	void	Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
+	void	Clear();
 	
 	
 	// Realtime

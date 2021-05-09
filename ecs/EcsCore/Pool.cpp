@@ -54,7 +54,7 @@ EntityRef Pool::Clone(const Entity& c) {
 	GetMachine().Get<ComponentStore>()->Clone(e, c);
 	return e;
 }
-	
+
 void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
 		it().UnlinkDeep();
@@ -63,6 +63,11 @@ void Pool::UnlinkDeep() {
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UnlinkAll();
 	}
+}
+
+void Pool::UnrefDeep() {
+	RefClearVisitor vis;
+	vis.Visit(*this);
 }
 
 void Pool::UninitializeComponentsDeep() {
@@ -86,7 +91,10 @@ void Pool::ClearComponentsDeep() {
 		it().ClearComponents();
 	}
 	
-	comps.Clear();
+	ConnectorStoreRef sys = GetMachine().Get<ConnectorStore>();
+	for (auto iter = comps.rbegin(); iter; --iter)
+		sys->ReturnComponent(comps.Detach(iter));
+	ASSERT(comps.IsEmpty());
 }
 
 void Pool::ClearDeep() {
@@ -102,6 +110,7 @@ void Pool::ReverseEntities() {
 }
 
 void Pool::Clear() {
+	UnrefDeep();
 	UnlinkDeep();
 	UninitializeComponentsDeep();
 	ClearComponentsDeep();

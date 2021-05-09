@@ -255,8 +255,6 @@ public:
 	}
 	
 	void UnlinkAll() {
-		for(auto iter = links.begin(); iter; ++iter)
-			iter().expt->Destroy();
 		links.Clear();
 	}
 };

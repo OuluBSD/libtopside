@@ -90,56 +90,72 @@ bool MP3PlayerStartup() {
 
 
 
-
+/*
+0:	v[0x7FFFFFFFE488]
+1:	v[0x7FFFFFFFE478]
+2:	v[0x7FFFFFFFE460]
+3:	v[0x80AE80688]
+4:	v[0x80AE57610]
+5:	v[0x80AE43230]
+6:	v[0x7FFFFFFFE2A8]
+7:	v[0x7FFFFFFFE200]
+8:	v[0x7FFFFFFFE138]
+*/
 void Main() {
 	SetCoutLog();
+	BreakRefAdd(0x80AE43230);
 	
 	if (!MP3PlayerStartup())
 		Exit(1);
 	
+	{
+		Machine mach;
 		
-	Machine mach;
-	RuntimeDiagnostics::Static().SetRoot(mach);
-	
-	RegistrySystemRef reg = mach.Add<RegistrySystem>();
-	EntityStoreRef es = mach.Add<EntityStore>();
-	PoolRef root = es->GetRoot();
-    mach.Add<ComponentStore>();
-    mach.Add<ConnectorStore>();
-    mach.Add<AudioSystem>();
-    mach.Add<ActionSystem>();
-    
-    
-    try {
-        if (run_sound_gen) {
-			VAR gen = root->Create<DummyGeneratorPrefab>();
-        }
-        else {
-            VAR player = root->Create<MP3PlayerPrefab>();
-        }
-        
-	    mach.Start();
+		//SetDebugRefVisits();
+		RuntimeDiagnostics::Static().SetRoot(mach);
+		
+		RegistrySystemRef reg = mach.Add<RegistrySystem>();
+		EntityStoreRef es = mach.Add<EntityStore>();
+		PoolRef root = es->GetRoot();
+	    mach.Add<ComponentStore>();
+	    mach.Add<ConnectorStore>();
+	    mach.Add<AudioSystem>();
+	    mach.Add<ActionSystem>();
 	    
-	    TimeStop t, total;
-	    while (mach.IsRunning()) {
-	        double dt = ResetSeconds(t);
-	        mach.Update(dt);
-	        Sleep(1);
+	    
+	    try {
+	        if (run_sound_gen) {
+				VAR gen = root->Create<DummyGeneratorPrefab>();
+	        }
+	        else {
+	            VAR player = root->Create<MP3PlayerPrefab>();
+	        }
 	        
-	        
-	        
-	        //if (total.Seconds() > 3)
-	        //    mach.SetNotRunning();
+		    mach.Start();
+		    
+		    TimeStop t, total;
+		    while (mach.IsRunning()) {
+		        double dt = ResetSeconds(t);
+		        mach.Update(dt);
+		        Sleep(1);
+		        
+		        
+		        
+		        //if (total.Seconds() > 3)
+		        //    mach.SetNotRunning();
+		    }
+		    
+		    RuntimeDiagnostics::Static().CaptureSnapshot();
+	    }
+	    catch (Exc e) {
+	        LOG("error: " << e);
+	        Exit(1);
 	    }
 	    
-	    RuntimeDiagnostics::Static().CaptureSnapshot();
-    }
-    catch (Exc e) {
-        LOG("error: " << e);
-        Exit(1);
-    }
+	    mach.Stop();
+	}
     
-    mach.Stop();
+    //RefDebugVisitor::Static().DumpUnvisited();
 }
 
 

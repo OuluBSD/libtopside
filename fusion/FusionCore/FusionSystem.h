@@ -760,7 +760,7 @@ protected:
 		MODE_AUDIO,
 	} Mode;
 	
-	Vector<RefT_Entity<FusionComponent>> comps;
+	LinkedList<RefT_Entity<FusionComponent>> comps;
 	Vector<String> common_source;
 	Vector<uint32> gl_stages;
 	String last_error;
@@ -774,7 +774,7 @@ protected:
 	void					Clear();
 	void					RefreshStageQueue();
 	void					RefreshPipeline();
-	void					RemoveComponent(RefT_Entity<FusionComponent> s) {VectorRemoveKey(comps, s);}
+	void					RemoveComponent(RefT_Entity<FusionComponent> s) {comps.RemoveKey(s);}
 	void					ProcessStageQueue(Mode m);
 	bool					IsModeStage(const FusionComponent& comp, Mode m) const;
 	void					RefreshStreamValues(Mode m);

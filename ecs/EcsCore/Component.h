@@ -87,9 +87,6 @@ struct Component :
 using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
 using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
 
-using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
-using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
-
 class ComponentMap : public ComponentMapBase {
 	
 	void ReturnComponent(ComponentStore& s, ComponentBase* c);

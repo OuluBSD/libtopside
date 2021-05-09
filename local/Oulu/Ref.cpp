@@ -2,6 +2,12 @@
 
 NAMESPACE_OULU_BEGIN
 
+bool __dbg_ref_visits;
+bool IsDebugRefVisits() {return __dbg_ref_visits;}
+void SetDebugRefVisits(bool b) {__dbg_ref_visits = b;}
+
+
+
 RefRoot* __cur_ref_root;
 
 RefRoot::RefRoot() {

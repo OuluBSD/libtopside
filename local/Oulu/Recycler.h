@@ -5,7 +5,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-
+void CallInExitBlock(Callback cb);
 
 template <class T, bool keep_as_constructed=false>
 class RecyclerPool {
@@ -13,7 +13,9 @@ class RecyclerPool {
 	Mutex lock;
 	
 public:
+	typedef RecyclerPool CLASSNAME;
 	RecyclerPool() {}
+	RecyclerPool(bool exit_block_clear) {if (exit_block_clear) CallInExitBlock(THISBACK(Clear));}
 	~RecyclerPool() {Clear();}
 	
 	void Clear() {
@@ -22,6 +24,8 @@ public:
 		auto end = pool.End();
 		while(t != end) {
 			T* o = *t;
+			if (keep_as_constructed)
+				o->~T();
 			MemoryFree(o);
 			t++;
 		}
@@ -58,7 +62,7 @@ public:
 		lock.Leave();
 	}
 	
-	static RecyclerPool& StaticPool() {static RecyclerPool pool; return pool;}
+	static RecyclerPool& StaticPool() {static RecyclerPool pool(1); return pool;}
 	
 };
 

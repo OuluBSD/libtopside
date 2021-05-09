@@ -43,6 +43,7 @@ struct LockedScopeRefCounterCaster<T,false> {
 class RuntimeVisitor {
 	bool break_out = false;
 	bool get_refs = false;
+	bool clear_refs = false;
 	
 	virtual bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {return true;}
 	virtual void OnExit() {}
@@ -58,6 +59,7 @@ public:
 	void Clear();
 	void BreakOut(bool b=true) {break_out = b;}
 	void SetActiveRefCounter(bool b=true) {get_refs = b;}
+	void SetClearRefs(bool b=true) {clear_refs = b;}
 	
 	template <class T>
 	void Visit(T& o) {
@@ -69,7 +71,9 @@ public:
 	}
 	
 	template <class T> void VisitRef(T& o) {
-		if (break_out) return;
+		if (break_out)return;
+		if (clear_refs)
+			o.Clear();
 		OnRef(typeid(typename T::Type), &o, GetRefCounter(o.Get()));
 	}
 	

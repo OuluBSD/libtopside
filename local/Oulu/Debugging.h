@@ -118,7 +118,9 @@ class RuntimeDiagnostics {
 public:
 	typedef RuntimeDiagnostics CLASSNAME;
 	RuntimeDiagnostics();
+	~RuntimeDiagnostics() {Clear();}
 	
+	void Clear() {vis.Clear();}
 	void CaptureSnapshot();
 	void OnRefError(LockedScopeRefCounter* r);
 	static RuntimeDiagnostics& Static() {static RuntimeDiagnostics s; return s;}
@@ -133,6 +135,47 @@ public:
 	Callback1<String> WhenFatalError;
 };
 
+
+
+class RefDebugVisitor : public RuntimeVisitor {
+	struct Item {
+		void* mem;
+		TypeId type;
+		LockedScopeRefCounter* ref;
+		bool visited;
+		Item() {Clear();}
+		void Clear() {mem = 0; type = typeid(void); ref = 0; visited = false;}
+		bool operator==(const Item& i) {return mem == i.mem;}
+		String ToString() const;
+	};
+	LinkedList<Item> items;
+	size_t break_ref_add = 0;
+	size_t break_ref_rem = 0;
+
+	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override {
+		Item cmp;
+		cmp.mem = mem;
+		Item* i = items.Find(cmp);
+		ASSERT(i);
+		if (i) {i->type = type; i->ref = ref; i->visited = true;}
+	}
+	
+	
+public:
+	
+	void Add(void* mem);
+	void Remove(void* mem);
+	void DumpUnvisited();
+	void BreakRefAdd(size_t addr) {break_ref_add = addr;}
+	void BreakRefRemove(size_t addr) {break_ref_rem = addr;}
+	
+	static RefDebugVisitor& Static() {static RefDebugVisitor v; return v;}
+	
+	
+};
+
+inline void BreakRefAdd(size_t addr)	{RefDebugVisitor::Static().BreakRefAdd(addr);}
+inline void BreakRefRemove(size_t addr)	{RefDebugVisitor::Static().BreakRefRemove(addr);}
 
 
 

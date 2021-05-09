@@ -39,6 +39,7 @@ public:
 	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
+	void				UnrefDeep();
 	void				UninitializeComponentsDeep();
 	void				ClearComponentsDeep();
 	void				ClearDeep();

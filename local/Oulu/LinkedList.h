@@ -29,7 +29,7 @@ class LinkedList {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r; return r;}
+	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;
@@ -63,6 +63,8 @@ public:
 	
 	
 	LinkedList() {}
+	LinkedList(LinkedList&& l) {Swap(first,l.first); Swap(last,l.last); Swap(count,l.count);}
+	
 	~LinkedList() {Clear();}
 	Item* AddItem() {
 		Item* it = GetRecyclerPool().New();
@@ -103,6 +105,28 @@ public:
 				last_rm = it->prev;
 				GetRecyclerPool().Return(it);
 				it = last_rm;
+			}
+		}
+	}
+	void RemoveLast(int count=1) {
+		if (!count) return;
+		ASSERT(count > 0 && count <= this->count);
+		count = std::min(count, this->count);
+		if (count == this->count)
+			Clear();
+		else {
+			Item* it = last;
+			for(int i = 0; i < count; i++)
+				it = it->prev;
+			Item* first_rm = it->next;
+			it->next = 0;
+			this->count -= count;
+			last = it;
+			it = first_rm;
+			while (it) {
+				first_rm = it->next;
+				GetRecyclerPool().Return(it);
+				it = first_rm;
 			}
 		}
 	}
@@ -166,14 +190,22 @@ public:
 		last = 0;
 		ASSERT(count == 0);
 	}
-	T& FindAdd(const T& k) {
-		Item* iter = first;
+	Iterator FindIter(const T& k) {
+		Iterator iter = first;
 		while (iter) {
-			if (iter->value == k)
-				return iter->value;
-			iter = iter->next;
+			if (*iter == k)
+				return iter;
+			++iter;
 		}
-		return Add(k);
+		return Iterator();
+	}
+	T* Find(const T& k) {
+		Iterator iter = FindIter(k);
+		return iter ? (T*)iter : 0;
+	}
+	T& FindAdd(const T& k) {
+		Iterator iter = FindIter(k);
+		return iter ? iter() : Add(k);
 	}
 	void RemoveKey(const T& k) {
 		for(Iterator it = begin(); it;) {

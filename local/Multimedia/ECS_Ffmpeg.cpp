@@ -21,6 +21,7 @@ void FfmpegComponent::Initialize() {
 }
 
 void FfmpegComponent::Uninitialize() {
+	file_in.Clear();
 	
 	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
 }
