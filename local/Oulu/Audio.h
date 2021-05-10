@@ -130,10 +130,10 @@ public:
 template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN=1, bool DST_NATIVE_ENDIAN=1> DST ConvertAudioSample(SRC v) {
 	static_assert(!SRC_NATIVE_ENDIAN || !DST_NATIVE_ENDIAN, "Only native endian sample should use default implementation");
 	if (!SRC_NATIVE_ENDIAN)
-		EndianSwap(v);
+		EndianSwapT(v);
 	DST r = ConvertAudioSample<SRC,DST,1,1>(v);
 	if (!DST_NATIVE_ENDIAN)
-		EndianSwap(r);
+		EndianSwapT(r);
 	return r;
 }
 

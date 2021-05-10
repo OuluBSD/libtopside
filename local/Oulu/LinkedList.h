@@ -16,6 +16,20 @@ void MemSwap(T& a, T& b) {
 }
 
 
+template <class T>
+void EndianSwapT(T& o) {
+	static const int bytes = sizeof(T);
+	static const int bytes_2 = bytes / 2;
+	if (bytes_2 > 0) {
+		byte* a = (byte*)&o;
+		byte* b = a + bytes - 1;
+		for(int i = 0; i < bytes_2; i++) {
+			byte c = *a;
+			*a++ = *b;
+			*b-- = c;
+		}
+	}
+}
 
 
 template <class T>
