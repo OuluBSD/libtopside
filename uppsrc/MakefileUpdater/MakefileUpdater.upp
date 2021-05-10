@@ -1,0 +1,10 @@
+uses
+	Oulu;
+
+file
+	MakefileUpdater.h,
+	MakefileUpdater.cpp;
+
+mainconfig
+	"" = "";
+
