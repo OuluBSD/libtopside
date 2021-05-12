@@ -6,9 +6,9 @@
 
 #ifdef flagASSIMP
 	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32)
-		#include <plugin/assimp/Importer.hpp>
-		#include <plugin/assimp/scene.h>
-		#include <plugin/assimp/postprocess.h>
+		#include <assimp/Importer.hpp>
+		#include <assimp/scene.h>
+		#include <assimp/postprocess.h>
 	#else
 		#include <assimp/Importer.hpp>
 		#include <assimp/scene.h>

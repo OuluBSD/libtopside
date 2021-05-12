@@ -28,12 +28,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*#include <winrt/Windows.Storage.h>
-#include <winrt/Windows.Storage.AccessCache.h>
-#include <winrt/Windows.Storage.FileProperties.h>
-#include <winrt/Windows.Storage.Pickers.h>
-#include <winrt/Windows.Storage.Streams.h>*/
-
 
 #endif
 

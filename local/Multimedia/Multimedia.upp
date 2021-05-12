@@ -3,11 +3,8 @@ description "\377B0,0,128";
 noblitz;
 
 uses
-	Oulu;
-
-uses(NEVER) plugin/avcpp;
-
-uses(POSIX) plugin/libv4l2;
+	Oulu,
+	libv4l2;
 
 uses(!ALTCORE) plugin/jpg;
 

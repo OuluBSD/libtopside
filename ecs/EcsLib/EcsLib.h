@@ -9,6 +9,13 @@
 	#include <Esc/Esc.h>
 #endif
 
+#ifdef flagUWP
+	#include <WinLib/WinLib.h>
+#endif
+
+#ifdef flagSTEAM
+	#include <SteamLib/SteamLib.h>
+#endif
 
 #if !defined(flagALTCORE) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)
 	// No WindowSystem
@@ -27,16 +34,21 @@
 #include "CommonComponents.h"
 #include "EasingSystem.h"
 #include "WorldLogic.h"
-#include "MotionController.h"
-#include "HolographicScene.h"
-#include "MoCtrl.h"
 #include "RegistrySystem.h"
+#include "PhysicsSystem.h"
+#include "PaintStrokeSystem.h"
+
+#include "Prefabs.h"
 
 #include "BasicShaders.h"
 #include "OctreeShaders.h"
 #include "PathTracerShaders.h"
+#include "ToolSystem.h"
+#include "PaintingSystem.h"
+#include "ShootingSystem.h"
+#include "ThrowingSystem.h"
+#include "ToolboxSystem.h"
 
-#include "Prefabs.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB

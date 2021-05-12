@@ -3,6 +3,23 @@
 
 NAMESPACE_OULU_BEGIN
 
+namespace Colors {
+
+extern vec4 Red;
+extern vec4 Chocolate;
+extern vec4 Yellow;
+extern vec4 Lime;
+extern vec4 Cyan;
+extern vec4 Blue;
+extern vec4 MediumPurple;
+extern vec4 White;
+extern vec4 DimGray;
+extern vec4 Black;
+extern vec4 Gray;
+extern vec4 Aquamarine;
+extern vec4 DarkSlateBlue;
+
+};
 
 class GeometryDraw : public DrawProxy {
 	

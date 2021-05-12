@@ -1,0 +1,20 @@
+description "\377I28,170,255";
+
+noblitz;
+
+library(FREEBSD) sndio;
+
+file
+	Copying,
+	Upp readonly separator,
+	pm_upp.h,
+	pm_upp_platform.c,
+	PortMidi readonly separator,
+	pminternal.h,
+	pmutil.h,
+	pmutil.c,
+	portmidi.h,
+	portmidi.c,
+	porttime.h,
+	porttime.c;
+

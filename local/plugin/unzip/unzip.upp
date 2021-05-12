@@ -1,8 +1,0 @@
-description "\3770,128,128";
-
-file
-	unzip.h,
-	unzip.c,
-	ioapi.h,
-	ioapi.c;
-

@@ -1,0 +1,16 @@
+uses
+	EcsLib;
+
+uses(UWP) Pbr;
+
+uses(UWP) DirectXTK;
+
+file
+	DemoRoom.h,
+	DemoRoomMain.h,
+	DemoRoomMain.cpp;
+
+mainconfig
+	"" = "UWP ALTCORE GUI",
+	"" = "STEAM ALTCORE";
+

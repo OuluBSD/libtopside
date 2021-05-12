@@ -1,0 +1,8 @@
+description "\377I28,212,255";
+
+file
+	stb_image.h,
+	stb_image_write.h,
+	stb_truetype.h,
+	impl.cpp;
+

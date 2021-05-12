@@ -98,6 +98,10 @@ mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
 mat4 rotate(mat4 const& m, float angle, vec3 const& v);
 
+
+quat MakeQuaternionFromAxisAngle(vec3 v, double s);
+
+
 NAMESPACE_OULU_END
 
 

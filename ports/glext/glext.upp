@@ -1,0 +1,13 @@
+description "\377I28,212,255";
+
+file
+	glext.h,
+	glext.cpp,
+	loader.cpp,
+	glcorearb.h,
+	glcorearb.cpp,
+	wglext.h,
+	wglext.cpp,
+	maindef.h,
+	resource.h;
+

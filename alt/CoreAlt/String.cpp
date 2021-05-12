@@ -24,9 +24,18 @@ String ToUtf8(const wchar_t* s, int len) {
 	if (len <= 0)
 		return String();
 	try {
+		#if defined flagMSC
+		thread_local static Vector<char> tmp;
+		int sz = len * 4;
+		tmp.SetCount(sz, 0);
+		char* buf = tmp.Begin();
+		WideCharToMultiByte(CP_UTF8, 0, s, len, buf, sz, 0, 0);
+		String ret(buf, sz);
+		#else
 		std::wstring ws(s, len);
 		std::string str = GetUnicodeConverter().to_bytes(ws);
 		String ret(str.c_str(), str.size());
+		#endif
 		return ret;
 	}
 	catch (std::range_error e) {
@@ -39,9 +48,18 @@ WString FromUtf8(const char* s, int len) {
 	if (len <= 0)
 		return WString();
 	try {
+		#if defined flagMSC
+		thread_local static Vector<wchar_t> tmp;
+		int sz = len;
+		tmp.SetCount(sz, 0);
+		wchar_t* buf = tmp.Begin();
+		MultiByteToWideChar(CP_UTF8, 0, s, len, buf, sz);
+		WString ret(buf, sz);
+		#else
 		std::string str(s, len);
 		std::wstring ws = GetUnicodeConverter().from_bytes(str);
 		WString ret(ws.c_str(), ws.size());
+		#endif
 		return ret;
 	}
 	catch (std::range_error e) {

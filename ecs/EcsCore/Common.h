@@ -19,6 +19,8 @@ class Machine;
 class EntityStore;
 class RegistrySystem;
 class Overlap;
+class ToolSystemBase;
+class ISpatialInteractionListener;
 struct ConnectorBase;
 struct ActionSource;
 struct AudioSource;
@@ -28,6 +30,7 @@ struct VideoSink;
 struct ControllerSource;
 struct MidiSource;
 struct DisplaySource;
+struct PaintComponent;
 template <class Main, class Base> class ComponentStoreT;
 
 using EntityParent			= RefParent1<Pool>;
@@ -51,6 +54,7 @@ using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
 using OverlapRef			= Ref<Overlap,				RefParent1<Entity>>;
+using PaintComponentRef		= Ref<PaintComponent,		RefParent1<Entity>>;
 using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
@@ -58,6 +62,9 @@ using EntityStoreRef		= Ref<EntityStore,			RefParent1<Machine>>;
 using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
 using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
+using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
+
+using ISpatialInteractionListenerRef = Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
 
 using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;

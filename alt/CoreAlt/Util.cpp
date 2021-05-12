@@ -12,7 +12,7 @@
 #endif
 
 #include <openssl/md5.h>
-#include <plugin/bz2lib/bz2lib.h>
+#include <bz2lib/bz2lib.h>
 
 NAMESPACE_UPP_BEGIN
 
@@ -196,7 +196,8 @@ bool DirectoryExists(String path) {
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
          (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 	#else
-	#error TODO
+	ASSERT(0, "Directories are not supported in UWP");
+	return false;
 	#endif
 	#else
 	DIR* dir = opendir(path.Begin());

@@ -29,12 +29,28 @@ template <class T, int I>
 struct FixedArray {
 	static const int size = I;
 	
+	struct Iterator {
+		T* ptr = 0;
+		
+		Iterator() {}
+		Iterator(T* p) : ptr(p) {}
+		T* operator->() const {return ptr;}
+		T& operator*() const {return *ptr;}
+		bool operator!=(const Iterator& i) const {return ptr != i.ptr;}
+		bool operator==(const Iterator& i) const {return ptr == i.ptr;}
+		void operator++() const {++ptr;}
+		void operator--() const {--ptr;}
+	};
+	
 	T vector[I];
 	
 	int GetCount() const {return size;}
 	T&       operator[](int i)       {ASSERT(i >= 0 && i < size); return vector[i];}
 	const T& operator[](int i) const {ASSERT(i >= 0 && i < size); return vector[i];}
 	void operator=(const T& value) {for(int i = 0; i < I; i++) this->vector[i] = value;}
+	
+	Iterator begin() const {return Iterator(&vector[0]);}
+	Iterator end() const {return Iterator(&vector[0] + I);}
 };
 
 template <class T, int I>

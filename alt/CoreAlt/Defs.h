@@ -82,16 +82,16 @@
 
 
 #ifdef flagGLM
-#include <plugin/glm/glm.hpp>
-#include <plugin/glm/gtc/type_ptr.hpp>
-#include <plugin/glm/gtx/transform.hpp>
-#include <plugin/glm/gtx/intersect.hpp>
-#include <plugin/f/gtx/matrix_decompose.hpp>
-#include <plugin/glm/gtx/euler_angles.hpp>
-#include <plugin/glm/gtc/matrix_transform.hpp>
-#include <plugin/glm/gtc/type_ptr.hpp>
-#include <plugin/glm/trigonometric.hpp>
-#include <plugin/glm/gtx/quaternion.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtx/intersect.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtx/euler_angles.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/trigonometric.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 using namespace glm;
 #endif

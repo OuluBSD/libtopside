@@ -45,4 +45,7 @@ typedef unsigned int	Gxbf;
 #include "OpenGLRenderer.h"
 #endif
 
+#include "Pbr.h"
+
+
 #endif

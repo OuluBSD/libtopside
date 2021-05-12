@@ -3,11 +3,9 @@ description "Digital audio workstation\377B128,128,0";
 flags(FREEBSD) BUILTIN_PORTMIDI;
 
 uses
-	Oulu;
-
-uses(BUILTIN_PORTMIDI | (WIN32&MSC)) plugin/portmidi;
-
-uses(BUILTIN_PORTAUDIO | (WIN32&MSC)) plugin/portaudio;
+	Oulu,
+	portaudio,
+	portmidi;
 
 library(!WIN32) fluidsynth;
 

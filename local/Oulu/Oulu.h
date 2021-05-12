@@ -12,7 +12,7 @@
 	#include <algorithm>
 	#include <Core/Core.h>
 	#include <Draw/Draw.h>
-	#include <plugin/bz2/bz2.h>
+	#include <bz2/bz2.h>
 	#define IML_HEADER <Draw/iml_header.h>
 	#define IML_SOURCE <Draw/iml_source.h>
 #endif

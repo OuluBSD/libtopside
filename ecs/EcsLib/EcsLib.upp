@@ -1,10 +1,17 @@
 description "Components\377B0,87,128";
 
+uses
+	EcsCore;
+
 uses(ALTCORE) EscAlt;
 
 uses(SDL2) OOSDL2;
 
 uses(GUI) OuluCtrl;
+
+uses(STEAM) SteamLib;
+
+uses(UWP) WinLib;
 
 file
 	Copying,
@@ -22,8 +29,6 @@ file
 	CommonComponents.cpp,
 	EasingSystem.h,
 	EasingSystem.cpp,
-	MotionController.h,
-	MotionController.cpp,
 	Shader.h,
 	WorldLogic.h,
 	BoundingBox.cpp,
@@ -35,13 +40,22 @@ file
 	WindowSystem.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
+	PhysicsSystem.h,
+	PhysicsSystem.cpp,
 	Prefabs.h,
+	PaintingSystem.h,
+	PaintingSystem.cpp,
+	PaintStrokeSystem.h,
+	PaintStrokeSystem.cpp,
+	ShootingSystem.h,
+	ShootingSystem.cpp,
+	ThrowingSystem.h,
+	ThrowingSystem.cpp,
+	ToolboxSystem.h,
+	ToolboxSystem.cpp,
+	ToolSystem.h,
+	ToolSystem.cpp,
 	Trash readonly separator,
-	MoCtrl.h,
-	MoCtrl.cpp,
-	HolographicScene.h,
-	HolographicScene.cpp,
-	SDL2.h,
 	BasicShaders.h,
 	BasicShaders.cpp,
 	OctreeShaders.h,

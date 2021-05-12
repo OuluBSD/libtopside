@@ -1,13 +1,13 @@
 #ifndef _EcsCore_EcsCore_h_
 #define _EcsCore_EcsCore_h_
 
+
+#include <Graphics/GL.h>
 #ifdef flagGUI
-	#include <Graphics/GL.h>
 	#include <OuluCtrl/OuluCtrl.h>
-#else
-	#include <Geometry/Geometry.h>
-	#include <Oulu/Oulu.h>
 #endif
+#include <Geometry/Geometry.h>
+#include <Oulu/Oulu.h>
 
 #include <Agent/Agent.h>
 

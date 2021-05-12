@@ -8,8 +8,10 @@
 
 #ifdef flagWIN32
 	#define GLEW_STATIC 1
+	#include <glew/glew.h>
+#else
+	#include <GL/glew.h>
 #endif
-#include <GL/glew.h>
 
 #if HAVE_GLUT
 	#include <GL/freeglut.h>

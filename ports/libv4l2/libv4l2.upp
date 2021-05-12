@@ -1,0 +1,22 @@
+description "\37728,170,255";
+
+library
+	v4l2;
+
+file
+	libv4l2.h,
+	logger.h,
+	logger.cpp,
+	V4l2Access.h,
+	V4l2Access.cpp,
+	V4l2Capture.h,
+	V4l2Capture.cpp,
+	V4l2Device.h,
+	V4l2Device.cpp,
+	V4l2MmapDevice.h,
+	V4l2MmapDevice.cpp,
+	V4l2Output.h,
+	V4l2Output.cpp,
+	V4l2ReadWriteDevice.h,
+	V4l2ReadWriteDevice.cpp;
+

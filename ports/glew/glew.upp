@@ -1,0 +1,11 @@
+description "\377I28,170,255";
+
+file
+	glew.h,
+	glew.c,
+	eglew.h,
+	glewinfo.c,
+	glxew.h,
+	visualinfo.c,
+	wglew.h;
+

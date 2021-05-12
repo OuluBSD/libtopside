@@ -145,6 +145,56 @@ public:
 	
 };
 
+
+
+
+
+
+
+
+
+
+
+namespace Pbr {
+    struct Model;
+}
+
+
+
+
+
+class PbrRenderable :
+	public Component<PbrRenderable>
+{
+	VIS_COMP_0_0
+	
+public:
+    void ResetModel(String name, Optional<mat4> offset = Null) {
+        model_name = name;
+        offset = offset;
+    }
+
+    String				model_name;
+    One<Pbr::Model>		model;
+    Optional<vec3>		color;
+    Optional<mat4>		offset;
+    Optional<double>	alpha_multiplier;
+    
+};
+
+
+class TextRenderable : Component<TextRenderable>
+{
+	VIS_COMP_0_0
+	
+public:
+    String				text = "";
+    double				font_size = 60.0;
+    
+    
+};
+
+
 NAMESPACE_OULU_END
 
 #endif

@@ -6,7 +6,7 @@
 #ifdef flagMYSQL
 	#include <MySql/MySql.h>
 #else
-	#include <plugin/sqlite3/Sqlite3.h>
+	#include <sqlite3/Sqlite3.h>
 	#define flagSTANDALONE
 #endif
 #include <Sql/Sql.h>
@@ -26,7 +26,7 @@
 #ifdef flagMYSQL
 	#define SCHEMADIALECT <MySql/MySqlSchema.h>
 #else
-	#define SCHEMADIALECT <plugin/sqlite3/Sqlite3Schema.h>
+	#define SCHEMADIALECT <sqlite3/Sqlite3Schema.h>
 #endif
 #define MODEL <ToyHub/Model.sch>
 #include <Sql/sch_header.h>

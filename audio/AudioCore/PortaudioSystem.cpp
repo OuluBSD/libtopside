@@ -174,6 +174,6 @@ INITBLOCK {
 	        (sizeof(PaInt16)  == 2) &&
 	        (sizeof(PaUint32) == 4) &&
 	        (sizeof(PaInt32)  == 4),
-	        "PortAudio: type sizes in <plugin/portaudio/pa_types.h> does not match your platform");
+	        "PortAudio: type sizes in <portaudio/pa_types.h> does not match your platform");
 }
 #endif
