@@ -9,9 +9,11 @@ uses(SDL2) OOSDL2;
 
 uses(GUI) OuluCtrl;
 
-uses(STEAM) SteamLib;
-
 uses(UWP) WinLib;
+
+uses(STEAM & !UWP) SteamLib;
+
+uses(!STEAM & !UWP) OpenLib;
 
 file
 	Copying,
@@ -42,19 +44,19 @@ file
 	RegistrySystem.cpp,
 	PhysicsSystem.h,
 	PhysicsSystem.cpp,
-	Prefabs.h,
-	PaintingSystem.h,
-	PaintingSystem.cpp,
 	PaintStrokeSystem.h,
 	PaintStrokeSystem.cpp,
-	ShootingSystem.h,
-	ShootingSystem.cpp,
-	ThrowingSystem.h,
-	ThrowingSystem.cpp,
+	Prefabs.h,
 	ToolboxSystem.h,
 	ToolboxSystem.cpp,
 	ToolSystem.h,
 	ToolSystem.cpp,
+	PaintingSystem.h,
+	PaintingSystem.cpp,
+	ShootingSystem.h,
+	ShootingSystem.cpp,
+	ThrowingSystem.h,
+	ThrowingSystem.cpp,
 	Trash readonly separator,
 	BasicShaders.h,
 	BasicShaders.cpp,

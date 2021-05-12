@@ -22,6 +22,7 @@ mat4 ortho(float left, float right, float bottom, float top, float near, float f
 mat4 ToMat4(const quat& q);
 
 template <class T> T cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
+template <class T> T inverse(const T& o) {return o.GetInverse();}
 template<class T, class K> T scale(const T& a, const K& b) {return a.Scale(b);}
 template<class T, class K> T translate(const T& a, const K& b) {return a.Translate(b);}
 template<class T> float dot(const T& a, const T& b) {return a.GetDotProduct(b);}
@@ -29,10 +30,11 @@ vec3 combine(const vec3& a, const vec3& b, float ascl, float bscl);
 
 inline mat4 scale(const vec3& b) {mat4 a; a.SetIdentity(); return a.Scale(b);}
 inline mat4 translate(const vec3& b) {mat4 a; a.SetIdentity(); return a.Translate(b);}
+inline vec3 transform(const vec3& v, const mat4& m) {return (v.Extend(1.0) * m).Splice();}
+vec3 transform(const vec3& v, const quat& m);
 
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
 quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
-
 
 template <class T> T min(const T& a, const T& b) {return T::GetMin(a, b);}
 template <class T> T max(const T& a, const T& b) {return T::GetMax(a, b);}
@@ -97,9 +99,7 @@ T safe_normalize(T v) {
 mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
 mat4 rotate(mat4 const& m, float angle, vec3 const& v);
-
-
-quat MakeQuaternionFromAxisAngle(vec3 v, double s);
+quat MakeQuaternionFromAxisAngle(vec3 v, float angle);
 
 
 NAMESPACE_OULU_END

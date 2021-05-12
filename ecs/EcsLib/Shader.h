@@ -14,70 +14,70 @@ public:
 	unsigned int ID;
 	// constructor generates the shader on the fly
 	// ------------------------------------------------------------------------
-	bool Load(String vertexPath, String fragmentPath, String geometryPath = "") {
-		LOG("Shader::Load: " << vertexPath << ", " << fragmentPath << ", " << geometryPath);
+	bool Load(String vertex_path, String fragment_path, String geometry_path = "") {
+		LOG("Shader::Load: " << vertex_path << ", " << fragment_path << ", " << geometry_path);
 		
-		// 1. retrieve the vertex/fragment source code from filePath
-		String vertexCode;
-		String fragmentCode;
-		String geometryCode;
-		FileIn vShaderFile;
-		FileIn fShaderFile;
-		FileIn gShaderFile;
+		// 1. retrieve the vertex/fragment source code from file_path
+		String vertex_code;
+		String fragment_code;
+		String geometry_code;
+		FileIn v_shader_file;
+		FileIn f_shader_file;
+		FileIn g_shader_file;
 		
 		try {
 			// open files
-			if (!vShaderFile.Open(vertexPath)) throw Exc();
-			if (!fShaderFile.Open(fragmentPath)) throw Exc();
+			if (!v_shader_file.Open(vertex_path)) throw Exc();
+			if (!f_shader_file.Open(fragment_path)) throw Exc();
 			
 			// convert stream into string
-			int v_size = vShaderFile.GetSize();
-			vertexCode = vShaderFile.Get(v_size);
-			int f_size = fShaderFile.GetSize();
-			fragmentCode = fShaderFile.Get(f_size);
+			int v_size = v_shader_file.GetSize();
+			vertex_code = v_shader_file.Get(v_size);
+			int f_size = f_shader_file.GetSize();
+			fragment_code = f_shader_file.Get(f_size);
 			
 			// close file handlers
-			vShaderFile.Close();
-			fShaderFile.Close();
+			v_shader_file.Close();
+			f_shader_file.Close();
 			
 			// if geometry shader path is present, also load a geometry shader
-			if (geometryPath.GetCount()) {
-				if (!gShaderFile.Open(geometryPath)) throw Exc();
-				geometryCode = gShaderFile.Get(gShaderFile.GetSize());
-				gShaderFile.Close();
+			if (geometry_path.GetCount()) {
+				if (!g_shader_file.Open(geometry_path)) throw Exc();
+				geometry_code = g_shader_file.Get(g_shader_file.GetSize());
+				g_shader_file.Close();
 			}
 		}
 		
 		catch (Exc e) {
-			LOG("ERROR: shaders not successfully read: " << vertexPath);
+			LOG("ERROR: shaders not successfully read: " << vertex_path);
 			return false;
 		}
 		
-		const char* vShaderCode = vertexCode.Begin();
-		const char * fShaderCode = fragmentCode.Begin();
+		const char* v_shader_code = vertex_code.Begin();
+		const char * f_shader_code = fragment_code.Begin();
 		
 		// 2. compile shaders
 		unsigned int vertex, fragment;
 		
 		// vertex shader
 		vertex = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertex, 1, &vShaderCode, NULL);
+		glShaderSource(vertex, 1, &v_shader_code, NULL);
 		glCompileShader(vertex);
 		if (!CheckCompileErrors(vertex, "VERTEX")) return false;
 		
 		// fragment Shader
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragment, 1, &fShaderCode, NULL);
+		glShaderSource(fragment, 1, &f_shader_code, NULL);
 		glCompileShader(fragment);
 		if (!CheckCompileErrors(fragment, "FRAGMENT")) return false;
 		
 		// if geometry shader is given, compile geometry shader
 		unsigned int geometry;
 		
-		if (geometryPath.GetCount()) {
-			const char * gShaderCode = geometryCode.Begin();
+		if (geometry_path.GetCount()) {
+			const char * g_shader_code = geometry_code.Begin();
 			geometry = glCreateShader(GL_GEOMETRY_SHADER);
-			glShaderSource(geometry, 1, &gShaderCode, NULL);
+			glShaderSource(geometry, 1, &g_shader_code, NULL);
 			glCompileShader(geometry);
 			if (!CheckCompileErrors(geometry, "GEOMETRY")) return false;
 		}
@@ -86,7 +86,7 @@ public:
 		ID = glCreateProgram();
 		glAttachShader(ID, vertex);
 		glAttachShader(ID, fragment);
-		if (geometryPath.GetCount())
+		if (geometry_path.GetCount())
 			glAttachShader(ID, geometry);
 		glLinkProgram(ID);
 		
@@ -96,7 +96,7 @@ public:
 		glDeleteShader(vertex);
 		glDeleteShader(fragment);
 		
-		if (geometryPath.GetCount())
+		if (geometry_path.GetCount())
 			glDeleteShader(geometry);
 		
 		is_loaded = true;
@@ -195,14 +195,14 @@ private:
 	// ------------------------------------------------------------------------
 	bool CheckCompileErrors(GLuint shader, String type) {
 		GLint success;
-		GLchar infoLog[1024];
+		GLchar info_log[1024];
 		
 		if (type != "PROGRAM") {
 			glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 			
 			if (!success) {
-				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-				LOG("ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- ");
+				glGetShaderInfoLog(shader, 1024, NULL, info_log);
+				LOG("ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << info_log << "\n -- --------------------------------------------------- -- ");
 			}
 		}
 		
@@ -210,8 +210,8 @@ private:
 			glGetProgramiv(shader, GL_LINK_STATUS, &success);
 			
 			if (!success) {
-				glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-				LOG("ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- ");
+				glGetProgramInfoLog(shader, 1024, NULL, info_log);
+				LOG("ERROR::PROGRAM_LINKING_ERROR of type: " << type << "\n" << info_log << "\n -- --------------------------------------------------- -- ");
 			}
 		}
 		

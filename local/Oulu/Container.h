@@ -38,8 +38,8 @@ struct FixedArray {
 		T& operator*() const {return *ptr;}
 		bool operator!=(const Iterator& i) const {return ptr != i.ptr;}
 		bool operator==(const Iterator& i) const {return ptr == i.ptr;}
-		void operator++() const {++ptr;}
-		void operator--() const {--ptr;}
+		void operator++() {++ptr;}
+		void operator--() {--ptr;}
 	};
 	
 	T vector[I];
@@ -49,8 +49,8 @@ struct FixedArray {
 	const T& operator[](int i) const {ASSERT(i >= 0 && i < size); return vector[i];}
 	void operator=(const T& value) {for(int i = 0; i < I; i++) this->vector[i] = value;}
 	
-	Iterator begin() const {return Iterator(&vector[0]);}
-	Iterator end() const {return Iterator(&vector[0] + I);}
+	Iterator begin() {return Iterator(&vector[0]);}
+	Iterator end() {return Iterator(&vector[0] + I);}
 };
 
 template <class T, int I>

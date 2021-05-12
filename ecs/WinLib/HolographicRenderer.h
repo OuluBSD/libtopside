@@ -21,8 +21,8 @@ class HolographicRenderer : public System<HolographicRenderer>, public DX::IDevi
 {
 public:
     HolographicRenderer(
-        Engine& core, 
-        Shared<DX::DeviceResources> deviceResources, 
+        Engine& core,
+        Shared<DX::DeviceResources> deviceResources,
         Shared<Pbr::Resources> pbr_res,
         ID3D11ShaderResourceView* skyboxTexture);
 

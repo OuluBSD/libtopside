@@ -4,8 +4,15 @@
 NAMESPACE_OULU_BEGIN
 
 	
-struct Easing : Component<Easing>
+class Easing :
+	public Component<Easing>
 {
+	VIS_COMP_0_0
+	
+public:
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	
     vec3 target_position = { 0,0,0 };
     quat target_orientation = identity<quat>();
     float position_easing_factor = 0;

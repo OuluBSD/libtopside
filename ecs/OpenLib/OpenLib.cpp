@@ -1,11 +1,7 @@
-#include "GL.h"
+#include "OpenLib.h"
 
 NAMESPACE_OULU_BEGIN
-namespace Pbr {
 
 
 
-
-
-}
 NAMESPACE_OULU_END

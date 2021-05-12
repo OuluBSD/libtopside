@@ -62,9 +62,7 @@ inline mat4 remove_scale(const mat4& transform)
 
 #if 0
 
-inline quat MakeQuaternionFromAxisAngle(vec3 v, float angle) {
-	return rotate(identity<quat>(), angle, v);
-}
+
 
 inline vec3 transform(vec3 const& position, mat4 const& matrix) {
     return vec3  (position.x * matrix[0][0] + position.y * matrix[1][0] + position.z * matrix[2][0] + matrix[3][0],

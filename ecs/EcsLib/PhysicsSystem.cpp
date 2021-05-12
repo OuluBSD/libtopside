@@ -4,26 +4,30 @@
 NAMESPACE_OULU_BEGIN
 
 
-const float3 PhysicsSystem::EarthGravity = { 0, -9.8f, 0 };
+const vec3 PhysicsSystem::EarthGravity = { 0, -9.8f, 0 };
 
-void PhysicsSystem::Update(float dt)
+void PhysicsSystem::Update(double dt)
 {
-    for (auto[transform, rigidBody] : m_engine.Get<EntityStore>()->GetComponents<Transform, RigidBody>())
-    {
-        rigidBody->velocity += rigidBody->acceleration * dt;
-        transform->position += rigidBody->velocity * dt;
+	PoolRef p = GetMachine().Get<EntityStore>()->GetRoot();
+	auto comps = p->GetComponents<Transform, RigidBody>();
+    for (auto& tuple : comps) {
+        Transform& transform = tuple.Get<Transform>();
+        RigidBody& rigid_body = tuple.Get<RigidBody>();
+        
+        rigid_body.velocity += rigid_body.acceleration * dt;
+        transform.position += rigid_body.velocity * dt;
 
-        const float3 adjustedAngular = winrt::Windows::Foundation::Numerics::transform(rigidBody->angularVelocity, inverse(transform->orientation));
+        const vec3 adjusted_angular = Oulu::transform(rigid_body.angular_velocity, inverse(transform.orientation));
 
-        const float angle = length(adjustedAngular);
+        const float angle = adjusted_angular.GetLength();
         if (angle > 0.0f)
         {
-            const float3 axis = adjustedAngular / angle;
-            transform->orientation *= make_quaternion_from_axis_angle(axis, angle * dt);
+            const vec3 axis = adjusted_angular / angle;
+            transform.orientation *= MakeQuaternionFromAxisAngle(axis, angle * dt);
         }
 
-        rigidBody->velocity *= rigidBody->dampingFactor;
-        rigidBody->angularVelocity *= rigidBody->dampingFactor;
+        rigid_body.velocity *= rigid_body.damping_factor;
+        rigid_body.angular_velocity *= rigid_body.damping_factor;
     }
 }
 

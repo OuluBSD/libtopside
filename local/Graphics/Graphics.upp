@@ -32,9 +32,6 @@ file
 	OpenGLFramebuffer.cpp,
 	OpenGLShader.h,
 	OpenGLShader.cpp,
-	Pbr readonly separator,
-	Pbr.h,
-	Pbr.cpp,
 	Trash readonly separator,
 	Pipeline.h,
 	Pipeline.cpp;

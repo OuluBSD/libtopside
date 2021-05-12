@@ -51,7 +51,7 @@ void DemoRoomMain::SetHolographicSpace(HolographicSpace const& holospace)
     machine->Add<PaintingInteractionSystem>();
     machine->Add<ThrowingInteractionSystem>();
 
-    machine->Add<PaintStrokeSystem>(pbr_res);
+    machine->Add<PaintStrokeSystem>()->SetResources(pbr_res);
 
     machine->Add<HolographicRenderer>(dev_res, pbr_res, skyboxTexture.Get());
 

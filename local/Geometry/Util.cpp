@@ -304,5 +304,31 @@ mat4 rotate(mat4 const& m, float angle, vec3 const& v) {
 	res[3] = m[3];
 	return res;
 }
+
+quat MakeQuaternionFromAxisAngle(vec3 v, float angle) {
+	double s = FastSin(angle * 0.5);
+	quat r;
+	r[0] = v[0] * s;
+	r[1] = v[1] * s;
+	r[2] = v[2] * s;
+	r[3] = FastCos(angle * 0.5);
+	return r;
+}
+
+vec3 transform(const vec3& v, const quat& q) {
+	// https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
 	
+	// Extract the vector part of the quaternion
+    vec3 u = q.data.Splice();
+
+    // Extract the scalar part of the quaternion
+    float s = q.data[3];
+
+    // Do the math
+    vec3 vprime = u * (2.0f * dot(u, v))
+          + v * ((s*s - dot(u, u)))
+          + cross(u, v) * (2.0f * s);
+    return vprime;
+}
+
 NAMESPACE_OULU_END

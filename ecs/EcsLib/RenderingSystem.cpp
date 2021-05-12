@@ -67,7 +67,7 @@ void DefaultRenderApp::Initialize() {
 }
 
 bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw) {
-	double deltaTime = config.dt;
+	double delta_time = config.dt;
 	
 	bool needs_fast_rerender = false;
 	
@@ -126,7 +126,7 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
     /*mat4 model = mat4(1.0f);
     model = translate(model, vec3(0.0f, -1.75f, 0.0f)); // translate it down so it's at the center of the scene
     model = scale(model, vec3(0.2f, 0.2f, 0.2f));	// it's a bit too big for our scene, so scale it down
-    float a = deltaTime * 0.1 * 360 / (2 * M_PI);
+    float a = delta_time * 0.1 * 360 / (2 * M_PI);
     model = rotate(model, a, vec3(0.25, 1.0, 0));
     shader.SetMat4("model", model);*/
     //RenderFrame();

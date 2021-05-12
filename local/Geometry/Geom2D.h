@@ -55,7 +55,7 @@ struct Rectangle {
 	F Width() const { return sz[0]; }
 	F Height() const { return sz[1]; }
 	vec2 GetSize() const { return sz; }
-	vec2 GetCenter() const { return pos + sz * 0.5; }
+	vec2 GetCenter() const { return pos + sz.Multiply(0.5); }
 	vec2 GetMin() const {vec2 p = pos + sz; return vec2 {std::min(pos[0], p[0]), std::min(pos[1], p[1])};}
 	vec2 GetMax() const {vec2 p = pos + sz; return vec2 {std::max(pos[0], p[0]), std::max(pos[1], p[1])};}
 	bool Contains(const vec2& pt) const;

@@ -1,266 +1,240 @@
 #include "EcsLib.h"
 
 
-struct MotionControllerPrefab : EntityPrefab<Transform, PbrRenderable, MotionControllerComponent, ToolComponent>
+NAMESPACE_OULU_BEGIN
+
+
+struct MotionControllerPrefab :
+	EntityPrefab<Transform, PbrRenderable, MotionControllerComponent, ToolComponent>
 {};
 
 struct TextDisplay : EntityPrefab<Transform, TextRenderable>
 {};
 
-static const String InstructionalText = "Press the menu button to bring interaction objects toward you.\n\nGrasp (grasp button) an interaction object to use it.";
+static const String instruction_txt = "Press the menu button to bring interaction objects toward you.\n\n_grasp (grasp button) an interaction object to use it.";
 
-namespace  {
+
+
+bool HitTest(vec3 positionA, vec3 positionB, float diameter) {
+	auto distance = (positionA - positionB).GetLength();
+	return distance < diameter;
+}
+
+
+
+
+
+
+void ToolboxSystem::Uninitialize() {
+	entities.Clear();
+}
+
+
+void ToolboxSystem::AddToolSystem(ToolSystemBaseRef system) {
+	system->Register(entities);
+	selector_objects.GetAdd(system->GetType()) = system->CreateToolSelector();
+	selectors.GetAdd(system->GetType()) = system;
 	
-bool HitTest(vec3 positionA, vec3 positionB, float diameter)
-{
-    auto distance = length(positionA - positionB);
-    return distance < diameter;
+	for (auto& context : ctrls) {
+		SwitchToolType(context.ctrl, system->GetType());
+	}
 }
 
+void ToolboxSystem::RemoveToolSystem(ToolSystemBaseRef system) {
+	selectors.RemoveKey(system->GetType());
+	selector_objects.RemoveKey(system->GetType());
+	system->Unregister();
 }
 
-void ToolboxSystem::AddToolSystem(ToolSystemBaseRef system)
-{
-    system->Register({ m_controllers[Left].Controller, m_controllers[Right].Controller });
-
-    m_selectorObjects.emplace(system->type(), system->CreateToolSelector());
-
-    m_selectors.emplace(system->type(), system);
-    
-    for (auto& context : m_controllers)
-    {
-        SwitchToolType(*context.Controller, system->type());
-    }
+void ToolboxSystem::Start() {
+	auto es = GetMachine().Get<EntityStore>();
+	
+	for (size_t i = 0; i < ctrls.GetCount(); ++i) {
+		const ControllerHand hand = static_cast<ControllerHand>(i);
+		ctrls[i].hand = hand;
+		ctrls[i].ctrl = es->GetRoot()->Create<MotionControllerPrefab>();
+		ctrls[i].ctrl->Get<MotionControllerComponent>()->req_hand = ControllerHandToHandedness(hand);
+		ctrls[i].ctrl->Get<MotionControllerComponent>()->attach_ctrl_model = true;
+		entities.Add(ctrls[i].ctrl);
+	}
+	
+	instruction_text = es->GetRoot()->Create<TextDisplay>();
+	instruction_text->Get<TextRenderable>()->text = instruction_txt;
+	instruction_text->Get<Transform>()->position = { 0, 1.5f, -5.f };
+	instruction_text->Get<Transform>()->size = vec3{ 2.0f };
+	ctrls[Left].dbg_txt = es->GetRoot()->Create<TextDisplay>();
+	ctrls[Left].dbg_txt->Get<Transform>()->position = { -2.5, 1.25f, -4.f };
+	ctrls[Left].dbg_txt->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, M_PI * 0.15f);
+	ctrls[Left].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
+	ctrls[Left].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
+	ctrls[Right].dbg_txt = es->GetRoot()->Create<TextDisplay>();
+	ctrls[Right].dbg_txt->Get<Transform>()->position = { 2.5, 1.25f, -4.f };
+	ctrls[Right].dbg_txt->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, -M_PI * 0.15f);
+	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
+	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
+	GetMachine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
 }
 
-void ToolboxSystem::RemoveToolSystem(const ToolSystemBaseRef& system)
-{
-    m_selectors.erase(system->type());
-
-    m_selectorObjects.erase(system->type());
-
-    system->Unregister();
+void ToolboxSystem::Stop() {
+	GetMachine().Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ISpatialInteractionListener>());
 }
 
-void ToolboxSystem::Start()
-{
-    auto m_es = GetMachine().Get<EntityStore>();
-
-    for (size_t i = 0; i < m_controllers.GetCount(); ++i)
-    {
-        const ControllerHand hand = static_cast<ControllerHand>(i);
-
-        m_controllers[i].Hand = hand;
-        m_controllers[i].Controller = m_es->GetRoot()->Create<MotionControllerPrefab>();
-        m_controllers[i].Controller->Get<MotionControllerComponent>()->req_hand = ControllerHandToHandedness(hand);
-        m_controllers[i].Controller->Get<MotionControllerComponent>()->attachControllerModel = true;
-    }
-
-    instruction_text = m_es->GetRoot()->Create<TextDisplay>();
-    instruction_text->Get<TextRenderable>()->Text = InstructionalText;
-    instruction_text->Get<Transform>()->position = { 0, 1.5f, -5.f };
-    instruction_text->Get<Transform>()->scale = vec3{ 2.0f };
-
-    m_controllers[Left].DebugText = m_es->GetRoot()->Create<TextDisplay>();
-    m_controllers[Left].DebugText->Get<Transform>()->position = { -2.5, 1.25f, -4.f };
-    m_controllers[Left].DebugText->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, M_PI * 0.15f);
-    m_controllers[Left].DebugText->Get<Transform>()->scale = vec3{ 2.0f };
-    m_controllers[Left].DebugText->Get<TextRenderable>()->font_size = 52.0f;
-
-    m_controllers[Right].DebugText = m_es->GetRoot()->Create<TextDisplay>();
-    m_controllers[Right].DebugText->Get<Transform>()->position = { 2.5, 1.25f, -4.f };
-    m_controllers[Right].DebugText->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, -M_PI * 0.15f);
-    m_controllers[Right].DebugText->Get<Transform>()->scale = vec3{ 2.0f };
-    m_controllers[Right].DebugText->Get<TextRenderable>()->font_size = 52.0f;
-
-    GetMachine().Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
-}
-
-void ToolboxSystem::Stop()
-{
-    GetMachine().Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
-}
-
-void ToolboxSystem::Update(double dt)
-{
-    static float fps[32] = {};
-    static uint32 currFps = 0;
-    fps[currFps++] = dt;
-    currFps %= _countof(fps);
-
-    const float avgDt = std::accumulate(std::begin(fps), std::end(fps), 0.0f) / _countof(fps);
-
-    instruction_text->Get<TextRenderable>()->Text = std::to_wstring(static_cast<int>(std::round(1.0f / avgDt))) + L" FPS\n\n" + InstructionalText.data();
-
-    if (!m_showToolbox)
-    {
-        {
-            int i = 0;
-            for (auto& selectorPair : m_selectorObjects)
-            {
-                auto selector = selectorPair.second;
-
-                const float offset = (i - floorf(m_selectorObjects.GetCount() / 2.f)) / m_selectorObjects.GetCount();
-                selector->Get<Easing>()->TargetPosition = vec3{ offset, 1.25f, -5.f };
-
-                ++i;
-            }
-        }
-
-        // Update the debug text for each Controller based on the currently selected tool
-        for (size_t i = 0; i < m_controllers.GetCount(); ++i)
-        {
-            String displayedText = String(ControllerHandToString(m_controllers[i].Hand)) + L": ";
-
-            if (auto tool = m_controllers[i].Controller->Get<ToolComponent>())
-            {
-                displayedText += tool->title + L"\n\n" + tool->description;
-            }
-
-            m_controllers[i].DebugText->Get<TextRenderable>()->Text = displayedText;
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < m_controllers.GetCount(); ++i)
-        {
-            String displayedText = String(ControllerHandToString(m_controllers[i].Hand)) + L" switch to: ";
-
-            const vec3 controllerPosition = m_controllers[i].Controller->Get<Transform>()->position;
-
-            for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>())
-            {
-                if (HitTest(controllerPosition, transform->position, 0.15f))
-                {
-                    auto it = m_selectors.find(selector->type);
-                    if (it != m_selectors.end())
-                    {
-                        displayedText += it->second->GetDisplayName();
-                        displayedText += L"\n\n";
-                        displayedText += it->second->GetInstructions();
-                    }
-                }
-            }
-
-            m_controllers[i].DebugText->Get<TextRenderable>()->Text = displayedText;
-        }
-    }
+void ToolboxSystem::Update(double dt) {
+	static const int fps_sz = 32;
+	static float fps[fps_sz] = {};
+	static uint32 curr_fps = 0;
+	fps[curr_fps++] = dt;
+	curr_fps %= fps_sz;
+	const float avg_dt = std::accumulate(std::begin(fps), std::end(fps), 0.0f) / fps_sz;
+	instruction_text->Get<TextRenderable>()->text =
+		IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;
+	
+	if (!show_toolbox) {
+		{
+			int i = 0;
+			for (auto& selector : selector_objects) {
+				const float offset = (i - floorf(selector_objects.GetCount() / 2.f)) / selector_objects.GetCount();
+				selector->Get<Easing>()->target_position = vec3{ offset, 1.25f, -5.f };
+				++i;
+			}
+		}
+		
+		// Update the debug text for each Controller based on the currently selected tool
+		for (size_t i = 0; i < ctrls.GetCount(); ++i) {
+			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + ": ";
+			
+			if (auto tool = ctrls[i].ctrl->Get<ToolComponent>()) {
+				displayed_text += tool->title + "\n\n" + tool->description;
+			}
+			
+			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
+		}
+	}
+	else {
+		for (size_t i = 0; i < ctrls.GetCount(); ++i) {
+			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + " switch to: ";
+			const vec3 ctrl_position = ctrls[i].ctrl->Get<Transform>()->position;
+			
+			TODO
+			#if 0
+			for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
+				if (HitTest(ctrl_position, transform->position, 0.15f)) {
+					auto it = selectors.find(selector->type);
+					
+					if (it != selectors.end()) {
+						displayed_text += it->second->GetDisplayName();
+						displayed_text += "\n\n";
+						displayed_text += it->second->GetInstructions();
+					}
+				}
+			}
+			#endif
+			
+			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
+		}
+	}
 }
 
 
-void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args)
-{
-    if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
-        return;
-
-    auto controller = FindController(args.State().Source());
-
-    if (!controller)
-        return;
-
-    // Bring the toolbox in front of user
-    if (args.PressKind() == SpatialInteractionPressKind::Menu)
-    {
-        m_showToolbox = !m_showToolbox;
-        if (m_showToolbox)
-        {
-            auto holoScene = GetMachine().Get<HolographicScene>();
-            if (SpatialPointerPose pointerPose = SpatialPointerPose::TryGetAtTimestamp(holoScene->WorldCoordinateSystem(), holoScene->CurrentTimestamp()))
-            {
-                const vec3 headPosition = pointerPose.Head().Position();
-                const vec3 forward = pointerPose.Head().ForwardDirection();
-                const vec3 headUp = pointerPose.Head().UpDirection();
-
-                const vec3 headDirection = normalize(vec3{ forward.x, 0.0f, forward.z });
-
-                vec3 headRight = cross(headDirection, headUp);
-                headRight.y = 0;
-                headRight = normalize(headRight);
-
-                const vec3 toolkitCenter = headDirection * 0.5f;
-
-                {
-                    int i = 0;
-                    for (auto& selectorPair : m_selectorObjects)
-                    {
-                        auto selector = selectorPair.second;
-
-                        const float offset = (i - floorf(m_selectorObjects.GetCount() / 2.f)) / m_selectorObjects.GetCount();
-                        const vec3 targetPosition = toolkitCenter + headPosition + headRight * offset + vec3{ 0, -0.3f, 0 };
-                        selector->Get<Easing>()->TargetPosition = targetPosition;
-
-                        ++i;
-                    }
-                }
-            }
-        }
-    }
-    else if (args.PressKind() == SpatialInteractionPressKind::Grasp && m_showToolbox)
-    {
-        if (const SpatialInteractionSourceLocation& location = controller->Get<MotionControllerComponent>()->location)
-        {
-            if (location.Position())
-            {
-                const vec3 position = location.Position().Value();
-
-                for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>())
-                {
-                    if (HitTest(position, transform->position, 0.15f))
-                    {
-                        SwitchToolType(*controller, selector->type);
-                        m_showToolbox = false;
-                        break;
-                    }
-                }
-            }
-        }
-    }
+void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& args) {
+	if (args.State().Source().Kind() != SpatialInteractionSourceKind::Controller)
+		return;
+		
+	auto ctrl = FindController(args.State().Source());
+	
+	if (!ctrl)
+		return;
+		
+	// Bring the toolbox in front of user
+	if (args.PressKind() == SpatialInteractionPressKind::Menu) {
+		show_toolbox = !show_toolbox;
+		
+		if (show_toolbox) {
+			auto holo_scene = GetMachine().Get<HolographicScene>();
+			
+			if (SpatialPointerPose pointer_pose = SpatialPointerPose::TryGetAtTimestamp(holo_scene->WorldCoordinateSystem(), holo_scene->CurrentTimestamp())) {
+				const vec3 head_position = pointer_pose.Head().Position();
+				const vec3 forward = pointer_pose.Head().ForwardDirection();
+				const vec3 head_up = pointer_pose.Head().UpDirection();
+				const vec3 head_direction = normalize(vec3{ forward[0], 0.0f, forward[2] });
+				vec3 head_right = cross(head_direction, head_up);
+				head_right[1] = 0;
+				head_right = normalize(head_right);
+				const vec3 toolkit_center = head_direction * 0.5f;
+				{
+					int i = 0;
+					
+					for (auto& selector : this->selector_objects) {
+						const float offset = (i - floorf(this->selector_objects.GetCount() / 2.f)) / this->selector_objects.GetCount();
+						const vec3 target_position = toolkit_center + head_position + head_right * offset + vec3{ 0, -0.3f, 0 };
+						selector->Get<Easing>()->target_position = target_position;
+						++i;
+					}
+				}
+			}
+		}
+	}
+	else if (args.PressKind() == SpatialInteractionPressKind::Grasp && this->show_toolbox) {
+		if (const SpatialInteractionSourceLocation& location = ctrl->Get<MotionControllerComponent>()->location) {
+			if (!location.pos.IsNull()) {
+				const vec3 position = location.pos;
+				
+				TODO
+				#if 0
+				for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
+					if (HitTest(position, transform->position, 0.15f)) {
+						SwitchToolType(*ctrl, selector->type);
+						this->show_toolbox = false;
+						break;
+					}
+				}
+				#endif
+			}
+		}
+	}
 }
 
-String ToolboxSystem::ControllerHandToString(ControllerHand hand) 
-{
-    return hand == Left ? L"Left" : L"Right";
+String ToolboxSystem::ControllerHandToString(ControllerHand hand) {
+	return hand == Left ? "Left" : "Right";
 }
 
-SpatialInteractionSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) 
-{
-    return hand == Left ? SpatialInteractionSourceHandedness::Left : SpatialInteractionSourceHandedness::Right;
+SpatialInteractionSourceHandedness ToolboxSystem::ControllerHandToHandedness(ControllerHand hand) {
+	return hand == Left ? SpatialInteractionSourceHandedness::Left : SpatialInteractionSourceHandedness::Right;
 }
 
-void ToolboxSystem::SwitchToolType(Entity& entity, const detail::type_id& newType)
-{
-    ToolComponent* tool = entity.Get<ToolComponent>();
-
-    { // Disable old tool
-        auto it = m_selectors.find(tool->tool_type);
-        if (it != m_selectors.end())
-        {
-            it->second->Deactivate(entity);
-        }
-    }
-
-    { // Enable new tool
-        auto it = m_selectors.find(newType);
-        if (it != m_selectors.end())
-        {
-            it->second->Activate(entity);
-            tool->tool_type = it->second->type();
-            tool->description = it->second->GetInstructions();
-            tool->title = it->second->GetDisplayName();
-        }
-    }
+void ToolboxSystem::SwitchToolType(EntityRef entity, const TypeId& new_type) {
+	ToolComponentRef tool = entity->Get<ToolComponent>();
+	{
+		// Disable old tool
+		auto it = selectors.Find(tool->tool_type);
+		
+		if (it) {
+			it()->Deactivate(entity);
+		}
+	}
+	{
+		// Enable new tool
+		auto it = selectors.Find(new_type);
+		
+		if (it) {
+			ToolSystemBase& c = *it();
+			c.Activate(entity);
+			tool->tool_type = c.GetType();
+			tool->description = c.GetInstructions();
+			tool->title = c.GetDisplayName();
+		}
+	}
 }
 
-EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source)
-{
-    for (auto& context : m_controllers)
-    {
-        if (context.Controller->Get<MotionControllerComponent>()->IsSource(source))
-        {
-            return context.Controller;
-        }
-    }
-
-    return nullptr;
+EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source) {
+	for (auto& context : ctrls) {
+		if (context.ctrl->Get<MotionControllerComponent>()->IsSource(source)) {
+			return context.ctrl;
+		}
+	}
+	
+	return EntityRef();
 }
 
+
+NAMESPACE_OULU_END

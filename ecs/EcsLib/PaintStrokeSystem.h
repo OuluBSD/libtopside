@@ -4,10 +4,16 @@
 NAMESPACE_OULU_BEGIN
 
 
-struct PaintStrokeComponent :
+class PaintStrokeComponent :
 	public Component<PaintStrokeComponent>
 {
-    Vector<Rect> squares;
+	VIS_COMP_0_0
+	
+public:
+	COPY_PANIC(PaintStrokeComponent)
+	void Visit(RuntimeVisitor& vis) override {}
+	
+    Vector<Square> squares;
     bool stroke_changed = true;
 
     void AddPoint(const mat4& trans_mtx, float width);
@@ -20,9 +26,11 @@ class PaintStrokeSystem :
 	public System<PaintStrokeSystem>
 {
 public:
-    PaintStrokeSystem(Machine& core, Shared<Pbr::Resources> pbr_res);
+    PaintStrokeSystem() {}
     ~PaintStrokeSystem() = default;
 
+	void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
+	
 protected:
     void Update(double) override;
 

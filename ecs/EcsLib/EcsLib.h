@@ -9,12 +9,12 @@
 	#include <Esc/Esc.h>
 #endif
 
-#ifdef flagUWP
+#if defined flagUWP
 	#include <WinLib/WinLib.h>
-#endif
-
-#ifdef flagSTEAM
+#elif defined flagSTEAM
 	#include <SteamLib/SteamLib.h>
+#else
+	#include <OpenLib/OpenLib.h>
 #endif
 
 #if !defined(flagALTCORE) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)
@@ -43,11 +43,12 @@
 #include "BasicShaders.h"
 #include "OctreeShaders.h"
 #include "PathTracerShaders.h"
+
+#include "ToolboxSystem.h"
 #include "ToolSystem.h"
 #include "PaintingSystem.h"
 #include "ShootingSystem.h"
 #include "ThrowingSystem.h"
-#include "ToolboxSystem.h"
 
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB

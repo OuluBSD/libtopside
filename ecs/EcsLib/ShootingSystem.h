@@ -3,14 +3,22 @@
 
 NAMESPACE_OULU_BEGIN
 
-struct ShootingComponent : Component<ShootingComponent>
+class ShootingComponent :
+	public Component<ShootingComponent>
 {
+	VIS_COMP_0_0
+	
+public:
+	COPY_PANIC(ShootingComponent)
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
     EntityRef gun;
 
-    float bulletSpeed = 20.0f;
+    float bullet_speed = 20.0f;
     mat4 barrel_to_ctrl;
 };
 
@@ -29,7 +37,7 @@ protected:
     String GetDisplayName() const override;
     EntityRef CreateToolSelector() const override;
 
-    void Register(LinkedList<EntityRef>& entities) override;
+    void Register(const LinkedList<EntityRef>& entities) override;
     void Activate(EntityRef entity) override;
     void Deactivate(EntityRef entity) override;
 

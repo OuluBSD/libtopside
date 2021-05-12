@@ -7,10 +7,15 @@ static constexpr float paint_tip_thickness = 0.008f;
 NAMESPACE_OULU_BEGIN
 
 	
-struct PaintComponent :
-	Component<PaintComponent>
+class PaintComponent :
+	public Component<PaintComponent>
 {
 	VIS_COMP_0_0
+	
+public:
+	COPY_PANIC(PaintComponent)
+	void Visit(RuntimeVisitor& vis) override {}
+	
 	
     enum class State
     {
@@ -67,7 +72,7 @@ protected:
     String GetDisplayName() const override;
     EntityRef CreateToolSelector() const override;
 
-    void Register(LinkedList<EntityRef>& entities) override;
+    void Register(const LinkedList<EntityRef>& entities) override;
     void Activate(EntityRef entity) override;
     void Deactivate(EntityRef entity) override;
 

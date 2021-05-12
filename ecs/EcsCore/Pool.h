@@ -69,17 +69,17 @@ public:
 	}
 	
 	template<typename... ComponentTs>
-	Vector < RTuple < Entity*, ComponentTs*... >> GetComponentsWithEntity() {
+	Vector<RTuple<EntityRef,RefT_Entity<ComponentTs>...>> GetComponentsWithEntity() {
 		static_assert(sizeof...(ComponentTs) > 0, "Need at least one component");
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all derive from Component");
 		
-		Vector < RTuple < Entity*, ComponentTs*... >> components;
+		Vector<RTuple<EntityRef,RefT_Entity<ComponentTs>...>> components;
 		
 		for (EntityRef object : objects) {
 			auto requested_components = object->TryGetComponents<ComponentTs...>();
 			
 			if (AllValidComponents(requested_components)) {
-				RTuple<Entity*, ComponentTs*...> t(object.Get(), requested_components);
+				RTuple<EntityRef, RefT_Entity<ComponentTs>...> t(object.Get(), requested_components);
 				components.Add(t);
 				//components.Add(TupleCat(Tuple(object.Get()), Pick(requested_components)));
 			}
@@ -89,11 +89,11 @@ public:
 	}
 	
 	template<typename... ComponentTs>
-	Vector < RTuple < ComponentTs*... >> GetComponents() {
+	Vector<RTuple<RefT_Entity<ComponentTs>...>> GetComponents() {
 		static_assert(sizeof...(ComponentTs) > 0, "Need at least one component");
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all derive from Component");
 		
-		Vector < RTuple < ComponentTs*... >> components;
+		Vector<RTuple<RefT_Entity<ComponentTs>...>> components;
 		
 		for (EntityRef object : objects) {
 			auto requested_components = object->TryGetComponents<ComponentTs...>();
@@ -135,8 +135,8 @@ public:
 	template<typename Tuple>
 	bool AllValidComponents(const Tuple& components) {
 		bool all_valid_components = true;
-		components.ForEach([&](auto* component) {
-			all_valid_components &= component != nullptr && !component->IsDestroyed() && component->IsEnabled();
+		components.ForEach([&](auto component) {
+			all_valid_components &= component && !component->IsDestroyed() && component->IsEnabled();
 		});
 		return all_valid_components;
 	}

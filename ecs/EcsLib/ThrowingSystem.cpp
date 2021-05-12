@@ -1,6 +1,9 @@
 #include "EcsLib.h"
 
 
+NAMESPACE_OULU_BEGIN
+
+
 constexpr float BallHoldingDistance = 0.075f;
 
 String ThrowingInteractionSystem::GetInstructions() const
@@ -26,20 +29,20 @@ EntityRef ThrowingInteractionSystem::CreateToolSelector() const
 
 void ThrowingInteractionSystem::Update(double dt)
 {
-    for (auto& enabledEntity : GetEnabledEntities())
+    for (auto& enabled_entity : GetEnabledEntities())
     {
-        auto[entity, throwing] = enabledEntity;
+        auto[entity, throwing] = enabled_entity;
 
-        if (throwing->ballObject)
+        if (throwing->ball_object)
         {
             if (const SpatialInteractionSourceLocation location = entity->Get<MotionControllerComponent>()->location)
             {
-                if (const SpatialPointerInteractionSourcePose pointerPose = location.SourcePointerPose())
+                if (const SpatialPointerInteractionSourcePose pointer_pose = location.SourcePointerPose())
                 {
-                    auto transform = throwing->ballObject->Get<Transform>();
+                    auto transform = throwing->ball_object->Get<Transform>();
 
-                    transform->position = pointerPose.Position() + pointerPose.ForwardDirection() * BallHoldingDistance;
-                    transform->orientation = pointerPose.Orientation();
+                    transform->position = pointer_pose.Position() + pointer_pose.ForwardDirection() * BallHoldingDistance;
+                    transform->orientation = pointer_pose.Orientation();
 
                     if (transform->scale.x < 1.0f)
                     {
@@ -55,14 +58,14 @@ void ThrowingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 {
     if (args.PressKind() == SpatialInteractionPressKind::Select)
     {
-        if (auto enabledEntity = TryGetEntityFromSource(args.State().Source()))
+        if (auto enabled_entity = TryGetEntityFromSource(args.State().Source()))
         {
-            auto throwing = std::get<ThrowingComponent*>(*enabledEntity);
+            auto throwing = std::get<ThrowingComponent*>(*enabled_entity);
 
             auto ball = GetMachine().Get<EntityStore>()->Create<Baseball>();
             ball->Get<Transform>()->scale = vec3{ throwing->scale };
             ball->Get<RigidBody>()->SetEnabled(false);
-            throwing->ballObject = std::move(ball);
+            throwing->ball_object = std::move(ball);
         }
     }
 }
@@ -71,16 +74,16 @@ void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 {
     if (args.PressKind() == SpatialInteractionPressKind::Select)
     {
-        if (auto enabledEntity = TryGetEntityFromSource(args.State().Source()))
+        if (auto enabled_entity = TryGetEntityFromSource(args.State().Source()))
         {
-            auto throwing = std::get<ThrowingComponent*>(*enabledEntity);
+            auto throwing = std::get<ThrowingComponent*>(*enabled_entity);
             fail_fast_if(!throwing);
 
-            if (throwing->ballObject)
+            if (throwing->ball_object)
             {
                 // We no longer need to keep a reference to the thrown ball.
-                auto ball = throwing->ballObject;
-                throwing->ballObject.reset();
+                auto ball = throwing->ball_object;
+                throwing->ball_object.reset();
 
                 // If the controller has no motion, release the ball with no initial velocity.
                 ball->Get<RigidBody>()->SetEnabled(true);
@@ -88,21 +91,21 @@ void ThrowingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
                 ball->Get<RigidBody>()->angular_velocity = {};
 
                 // If controller has motion, use velocity and angular velocity at ball's holding distances.
-                const SpatialCoordinateSystem coordinateSystem = GetMachine().Get<HolographicScene>()->WorldCoordinateSystem();
-                if (const SpatialInteractionSourceLocation graspLocation = args.State().Properties().TryGetLocation(coordinateSystem))
+                const SpatialCoordinateSystem coordinate_system = GetMachine().Get<HolographicScene>()->WorldCoordinateSystem();
+                if (const SpatialInteractionSourceLocation grasp_location = args.State().Properties().TryGetLocation(coordinate_system))
                 {
-                    if (const SpatialPointerInteractionSourcePose pointerPose = graspLocation.SourcePointerPose())
+                    if (const SpatialPointerInteractionSourcePose pointer_pose = grasp_location.SourcePointerPose())
                     {
-                        if (const IReference<vec3> graspAngularVelocity = graspLocation.AngularVelocity())
+                        if (const IReference<vec3> grasp_angular_velocity = grasp_location.AngularVelocity())
                         {
-                            const vec3 ballPosition = pointerPose.Position() + (pointerPose.ForwardDirection() * BallHoldingDistance);
+                            const vec3 ball_position = pointer_pose.Position() + (pointer_pose.ForwardDirection() * BallHoldingDistance);
 
-                            if (const Optional<vec3> ballVelocity = SpatialInputUtilities::Physics::GetVelocityNearSourceLocation(graspLocation, ballPosition))
+                            if (const Optional<vec3> ball_velocity = SpatialInputUtilities::Physics::GetVelocityNearSourceLocation(grasp_location, ball_position))
                             {
-                                ball->Get<Transform>()->position = ballPosition;
-                                ball->Get<Transform>()->orientation = pointerPose.Orientation();
-                                ball->Get<RigidBody>()->velocity = ballVelocity.value();
-                                ball->Get<RigidBody>()->angular_velocity = graspAngularVelocity.Value();
+                                ball->Get<Transform>()->position = ball_position;
+                                ball->Get<Transform>()->orientation = pointer_pose.Orientation();
+                                ball->Get<RigidBody>()->velocity = ball_velocity.value();
+                                ball->Get<RigidBody>()->angular_velocity = grasp_angular_velocity.Value();
                             }
                         }
                     }
@@ -116,8 +119,8 @@ void ThrowingComponent::SetEnabled(bool enable)
 {
     Enableable::SetEnabled(enable);
 
-    if (ballObject) {
-        ballObject->SetEnabled(enable);
+    if (ball_object) {
+        ball_object->SetEnabled(enable);
     }
 }
 
@@ -125,8 +128,10 @@ void ThrowingComponent::Destroy()
 {
     Destroyable::Destroy();
 
-    if (ballObject) {
-        ballObject->Destroy();
+    if (ball_object) {
+        ball_object->Destroy();
     }
 }
 
+
+NAMESPACE_OULU_END

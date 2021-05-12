@@ -11,6 +11,7 @@ file
 	DemoRoomMain.cpp;
 
 mainconfig
-	"" = "UWP ALTCORE GUI",
-	"" = "STEAM ALTCORE";
+	"" = "ALTCORE",
+	"" = "ALTCORE UWP",
+	"" = "ALTCORE STEAM";
 

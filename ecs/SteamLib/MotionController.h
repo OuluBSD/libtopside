@@ -19,7 +19,7 @@ public:
 	
 	
 	SpatialInteractionSourceHandedness req_hand;
-	
+	bool attach_ctrl_model = false;
 	
 };
 

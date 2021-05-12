@@ -6,12 +6,12 @@ NAMESPACE_OULU_BEGIN
 
 void PaintingInteractionSystem::Start()
 {
-    GetMachine().Get<ToolboxSystem>()->AddToolSystem(AsRefT());
+    GetMachine().Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
 }
 
 void PaintingInteractionSystem::Stop()
 {
-    GetMachine().Get<ToolboxSystem>()->RemoveToolSystem(AsRefT());
+    GetMachine().Get<ToolboxSystem>()->RemoveToolSystem(AsRef<ToolSystemBase>());
 }
 
 String PaintingInteractionSystem::GetInstructions() const 
@@ -38,7 +38,7 @@ EntityRef PaintingInteractionSystem::CreateToolSelector() const
     return selector;
 }
 
-void PaintingInteractionSystem::Register(LinkedList<EntityRef>& entities)
+void PaintingInteractionSystem::Register(const LinkedList<EntityRef>& entities)
 {
     ToolSystem::Register(std::move(entities));
 
@@ -64,10 +64,10 @@ void PaintingInteractionSystem::Register(LinkedList<EntityRef>& entities)
         
         for (auto color : colors)
         {
-            auto colorPicker = es->GetRoot()->Create<StaticSphere>();
-            colorPicker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
-            colorPicker->Get<PbrRenderable>()->color = color;
-            paint->clr_pick_objects.Add(colorPicker);
+            auto color_picker = es->GetRoot()->Create<StaticSphere>();
+            color_picker->Get<Transform>()->size = { 0.01f, 0.01f, 0.01f };
+            color_picker->Get<PbrRenderable>()->color = color;
+            paint->clr_pick_objects.Add(color_picker);
         }
 
         paint->beam = es->GetRoot()->Create<StaticCube>();
@@ -113,10 +113,10 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
     if (args.PressKind() == SpatialInteractionPressKind::Thumbstick)
     {
         // Destroy all the paint strokes currently active
-        for (auto& enabledEntity : GetEnabledEntities())
+        for (auto& enabled_entity : GetEnabledEntities())
         {
-            auto entity = enabledEntity.Get<EntityRef>();
-            auto paint = enabledEntity.Getget<PaintComponentRef>();
+            auto entity = enabled_entity.Get<EntityRef>();
+            auto paint = enabled_entity.Getget<PaintComponentRef>();
             
             for (auto& stroke : paint->strokes)
             {
@@ -133,9 +133,9 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
         }
 
         // Destroy all the persistent strokes
-        for (auto& strokeGroup : persistent_strokes)
+        for (auto& stroke_group : persistent_strokes)
         {
-            for (auto& stroke : strokeGroup)
+            for (auto& stroke : stroke_group)
             {
                 stroke->Destroy();
             }
@@ -147,67 +147,67 @@ void PaintingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 
 void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args)
 {
-    const auto& sourceState = args.State();
-    const auto& source = sourceState.Source();
+    const auto& source_state = args.State();
+    const auto& source = source_state.Source();
 
-    if (auto enabledEntity = TryGetEntityFromSource(source))
+    if (auto enabled_entity = TryGetEntityFromSource(source))
     {
-        bool newStrokeStarted = false;
-        auto entity = std::get<Entity*>(*enabledEntity);
-        auto paint = std::get<PaintComponent*>(*enabledEntity);
+        bool new_stroke_started = false;
+        auto entity = std::get<Entity*>(*enabled_entity);
+        auto paint = std::get<PaintComponent*>(*enabled_entity);
 
-        const auto& paint_brushModel = paint->paint_brush->Get<PbrRenderable>()->Model;
-        if (paint_brushModel && !paint->brush_tip_offset_from_holding_pose)
+        const auto& paint_brush_model = paint->paint_brush->Get<PbrRenderable>()->Model;
+        if (paint_brush_model && !paint->brush_tip_offset_from_holding_pose)
         {
-            Optional<Pbr::NodeIndex_t> touchNode = paint_brushModel->FindFirstNode("PaintTip");
-            if (touchNode)
+            Optional<Pbr::NodeIndex_t> touch_node = paint_brush_model->FindFirstNode("PaintTip");
+            if (touch_node)
             {
                 // Calcluate paint tip offset from holding pose
                 // we use offset as it does not rely on the current transform of the model
                 // we initialize it once as the value will not change
-                const auto brushTipWorldTransform = paint_brushModel->GetNodeWorldTransform(touchNode.value());
-                const auto paint_brushWorldTransform = paint_brushModel->GetNode(Pbr::RootNodeIndex).GetTransform();
-                paint->brush_tip_offset_from_holding_pose = brushTipWorldTransform * XMMatrixInverse(nullptr, paint_brushWorldTransform);
+                const auto brush_tip_world_transform = paint_brush_model->GetNodeWorldTransform(touch_node.value());
+                const auto paint_brush_world_transform = paint_brush_model->GetNode(Pbr::RootNodeIndex).GetTransform();
+                paint->brush_tip_offset_from_holding_pose = brush_tip_world_transform * XMMatrixInverse(nullptr, paint_brush_world_transform);
             }
         }
 
         const auto controller = entity->Get<MotionControllerComponent>();
         if (controller->IsSource(source))
         {
-            const auto& controllerProperties = sourceState.ControllerProperties();
+            const auto& controller_properties = source_state.ControllerProperties();
 
-            paint->touchpad_x = static_cast<float>(controllerProperties.TouchpadX());
-            paint->touchpad_y = static_cast<float>(controllerProperties.TouchpadY());
+            paint->touchpad_x = static_cast<float>(controller_properties.TouchpadX());
+            paint->touchpad_y = static_cast<float>(controller_properties.TouchpadY());
 
-            paint->thumbstick_x = static_cast<float>(controllerProperties.ThumbstickX());
-            paint->thumbstick_y = static_cast<float>(controllerProperties.ThumbstickY());
+            paint->thumbstick_x = static_cast<float>(controller_properties.ThumbstickX());
+            paint->thumbstick_y = static_cast<float>(controller_properties.ThumbstickY());
 
             if (paint->cur_state == PaintComponent::State::Idle)
             {
-                if (sourceState.IsSelectPressed())
+                if (source_state.IsSelectPressed())
                 {
                     paint->cur_state = PaintComponent::State::Painting;
-                    newStrokeStarted = true;
+                    new_stroke_started = true;
                 }
-                else if (sourceState.IsGrasped())
+                else if (source_state.IsGrasped())
                 {
                     paint->cur_state = PaintComponent::State::Manipulating;
                 }
-                else if (controllerProperties.IsTouchpadTouched())
+                else if (controller_properties.IsTouchpadTouched())
                 {
                     paint->cur_state = PaintComponent::State::ColorSelection;
                 }
             }
             else if (paint->cur_state == PaintComponent::State::Painting)
             {
-                if (sourceState.IsSelectPressed() == false)
+                if (source_state.IsSelectPressed() == false)
                 {
                     paint->cur_state = PaintComponent::State::Idle;
                 }
             }
             else if (paint->cur_state == PaintComponent::State::Manipulating)
             {
-                if (sourceState.IsGrasped() == false)
+                if (source_state.IsGrasped() == false)
                 {
                     paint->cur_state = PaintComponent::State::Idle;
 
@@ -218,21 +218,21 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
             {
                 if (paint->wait_touchpad_release == false)
                 {
-                    if (controllerProperties.IsTouchpadPressed())
+                    if (controller_properties.IsTouchpadPressed())
                     {
                         paint->wait_touchpad_release = true;
                         paint->selected_color = SelectColor(paint->touchpad_x, paint->touchpad_y);
 
-                        SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(sourceState.Source(), 100ms);
+                        SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(source_state.Source(), 100ms);
                     }
                 }
 
-                if (controllerProperties.IsTouchpadPressed() == false)
+                if (controller_properties.IsTouchpadPressed() == false)
                 {
                     paint->wait_touchpad_release = false;
                 }
 
-                if (controllerProperties.IsTouchpadTouched() == false)
+                if (controller_properties.IsTouchpadTouched() == false)
                 {
                     paint->cur_state = PaintComponent::State::Idle;
                 }
@@ -241,7 +241,7 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
             if (paint->cur_state == PaintComponent::State::Painting)
             {
                 // Start new stroke
-                if (newStrokeStarted)
+                if (new_stroke_started)
                 {
                     paint->stroke_in_progress = GetMachine().Get<EntityStore>()->Create<PaintStroke>();
                     paint->stroke_in_progress->Get<PbrRenderable>()->Color = paint->selected_color;
@@ -249,7 +249,7 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
                     paint->strokes.Add(paint->stroke_in_progress);
                 }
 
-                auto properties = sourceState.Properties();
+                auto properties = source_state.Properties();
 
                 // We generate stroke points in source updated using the arguments provided by the event
                 // This will result in a smoother paint stroke
@@ -257,10 +257,10 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
                 {
                     if (paint->brush_tip_offset_from_holding_pose && paint->stroke_in_progress)
                     {
-                        mat4 paintToWorld;
-                        XMStoreFloat4x4(&paintToWorld, *paint->brush_tip_offset_from_holding_pose * XMLoadFloat4x4(&location_util::matrix(location)));
+                        mat4 paint_to_world;
+                        XMStoreFloat4x4(&paint_to_world, *paint->brush_tip_offset_from_holding_pose * XMLoadFloat4x4(&location_util::matrix(location)));
 
-                        paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(mat4_util::remove_scale(paintToWorld), paint_tip_thickness);
+                        paint->stroke_in_progress->Get<PaintStrokeComponent>()->AddPoint(mat4_util::remove_scale(paint_to_world), paint_tip_thickness);
                     }
                 }
             }
@@ -274,10 +274,10 @@ void PaintingInteractionSystem::OnSourceReleased(const SpatialInteractionSourceE
 
 void PaintingInteractionSystem::Update(double dt)
 {
-    for (auto& enabledEntity : GetEnabledEntities())
+    for (auto& enabled_entity : GetEnabledEntities())
     {
-        auto entity = std::get<Entity*>(enabledEntity);
-        auto paint = std::get<PaintComponent*>(enabledEntity);
+        auto entity = std::get<Entity*>(enabled_entity);
+        auto paint = std::get<PaintComponent*>(enabled_entity);
 
         const MotionControllerComponent* controller = entity->Get<MotionControllerComponent>();
 
@@ -290,34 +290,34 @@ void PaintingInteractionSystem::Update(double dt)
             go->Get<PbrRenderable>()->SetEnabled(paint->cur_state == PaintComponent::State::ColorSelection);
         }
 
-        const bool showController = paint->cur_state == PaintComponent::State::Manipulating;
+        const bool show_controller = paint->cur_state == PaintComponent::State::Manipulating;
             
-        entity->Get<PbrRenderable>()->SetEnabled(showController);
-        paint->paint_brush->Get<PbrRenderable>()->SetEnabled(!showController);
+        entity->Get<PbrRenderable>()->SetEnabled(show_controller);
+        paint->paint_brush->Get<PbrRenderable>()->SetEnabled(!show_controller);
 
         if (auto location = controller->location)
         {
             const vec3 position = location_util::position(location);
             const quaternion orientation = location_util::orientation(location);
 
-            const mat32 paintTipColor = paint->cur_state == PaintComponent::State::ColorSelection ? SelectColor(paint->touchpad_x, paint->touchpad_y) : paint->selected_color;
-            paint->paint_brush->Get<PbrRenderable>()->Color = paintTipColor;
+            const mat32 paint_tip_color = paint->cur_state == PaintComponent::State::ColorSelection ? SelectColor(paint->touchpad_x, paint->touchpad_y) : paint->selected_color;
+            paint->paint_brush->Get<PbrRenderable>()->Color = paint_tip_color;
 
             if (paint->cur_state == PaintComponent::State::Manipulating)
             {
                 // Update the paint strokes based on the change in location
                 if (paint->prev_manip_loc)
                 {
-                    const vec3 previousPosition = location_util::position(paint->prev_manip_loc);
-                    const quaternion previousOrientation = location_util::orientation(paint->prev_manip_loc);
+                    const vec3 previous_position = location_util::position(paint->prev_manip_loc);
+                    const quaternion previous_orientation = location_util::orientation(paint->prev_manip_loc);
 
-                    const quaternion orientationDelta = orientation * inverse(previousOrientation);
+                    const quaternion orientation_delta = orientation * inverse(previous_orientation);
 
-                    const mat4 manipulationTransform = make_mat4_translation(-previousPosition) * make_mat4_from_quaternion(orientationDelta) * make_mat4_translation(position);
+                    const mat4 manipulation_transform = make_mat4_translation(-previous_position) * make_mat4_from_quaternion(orientation_delta) * make_mat4_translation(position);
 
                     for (auto stroke : paint->strokes)
                     {
-                        stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulationTransform);
+                        stroke->Get<Transform>()->SetFromMatrix(stroke->Get<Transform>()->GetMatrix() * manipulation_transform);
                     }
                 }
 
@@ -328,52 +328,52 @@ void PaintingInteractionSystem::Update(double dt)
                 constexpr double ThumbstickMovementThresholdPercent = 0.2f; // Deadzone to prevent slight thumbstick movement
                 constexpr float MovementSpeedInMetersPerSecond = 2.5f;
 
-                if (auto pointerPose = location.SourcePointerPose())
+                if (auto pointer_pose = location.SourcePointerPose())
                 {
-                    const vec3 position = pointerPose.Position();
-                    const vec3 forward = pointerPose.ForwardDirection();
+                    const vec3 position = pointer_pose.Position();
+                    const vec3 forward = pointer_pose.ForwardDirection();
 
                     if (abs(paint->thumbstick_y) > ThumbstickMovementThresholdPercent)
                     {
-                        const vec3 forwardMovement = forward * paint->thumbstick_y * MovementSpeedInMetersPerSecond * dt;
+                        const vec3 forward_movement = forward * paint->thumbstick_y * MovementSpeedInMetersPerSecond * dt;
 
                         // Move all paintings along beam path
                         for (auto& stroke : paint->strokes)
                         {
-                            stroke->Get<Transform>()->position += forwardMovement;
+                            stroke->Get<Transform>()->position += forward_movement;
                         }
                     }
 
                     paint->beam->Get<Transform>()->position = position + forward * (paint->beam->Get<Transform>()->scale.z * 0.5f);
-                    paint->beam->Get<Transform>()->orientation = pointerPose.Orientation();
+                    paint->beam->Get<Transform>()->orientation = pointer_pose.Orientation();
                 }
             }
             else if (paint->cur_state == PaintComponent::State::ColorSelection)
             {
-                constexpr float colorpickerDiameter = 0.025f;
-                constexpr float colorpickerHeight = 0.015f;
+                constexpr float colorpicker_diameter = 0.025f;
+                constexpr float colorpicker_height = 0.015f;
 
-                const mat4 paint_brushToWorld = paint->paint_brush->Get<Transform>()->GetMatrix();
+                const mat4 paint_brush_to_world = paint->paint_brush->Get<Transform>()->GetMatrix();
 
-                const vec3 touchpad_indicatorOnPaintBrush = { paint->touchpad_x * colorpickerDiameter, colorpickerHeight, paint->touchpad_y * colorpickerDiameter * -1 };
-                const vec3 touchpad_indicatorInWorld = transform(touchpad_indicatorOnPaintBrush, paint_brushToWorld);
+                const vec3 touchpad_indicator_on_paint_brush = { paint->touchpad_x * colorpicker_diameter, colorpicker_height, paint->touchpad_y * colorpicker_diameter * -1 };
+                const vec3 touchpad_indicator_in_world = transform(touchpad_indicator_on_paint_brush, paint_brush_to_world);
 
-                paint->touchpad_indicator->Get<Transform>()->position = touchpad_indicatorInWorld;
+                paint->touchpad_indicator->Get<Transform>()->position = touchpad_indicator_in_world;
 
                 // Color picker plane defined as slightly above the touchpad with the same orientation as the touchpad
-                const int numColors = static_cast<int>(paint->clr_pick_objects.GetCount());
+                const int num_colors = static_cast<int>(paint->clr_pick_objects.GetCount());
 
-                for (int i = 0; i < numColors; ++i)
+                for (int i = 0; i < num_colors; ++i)
                 {
-                    const float angle = (static_cast<float>(i*-1 - 1) / static_cast<float>(numColors)) * (2 * M_PI) - M_PI;
-                    const float nextAngle = (static_cast<float>((i + 1)*-1 - 1) / static_cast<float>(numColors)) * (2 * M_PI) - M_PI;
-                    const float angleDelta = (nextAngle - angle) / 2; // Want color icon to appear in the middle of the segment, not the start.
-                    const float finalAngle = angle - angleDelta;
+                    const float angle = (static_cast<float>(i*-1 - 1) / static_cast<float>(num_colors)) * (2 * M_PI) - M_PI;
+                    const float next_angle = (static_cast<float>((i + 1)*-1 - 1) / static_cast<float>(num_colors)) * (2 * M_PI) - M_PI;
+                    const float angle_delta = (next_angle - angle) / 2; // Want color icon to appear in the middle of the segment, not the start.
+                    const float final_angle = angle - angle_delta;
 
-                    const vec3 colorIndicatorOnPaintBrush = { std::cos(finalAngle) * colorpickerDiameter, colorpickerHeight, std::sin(finalAngle) * colorpickerDiameter };
-                    const vec3 colorIndicatorInWorld = transform(colorIndicatorOnPaintBrush, paint_brushToWorld);
+                    const vec3 color_indicator_on_paint_brush = { std::cos(final_angle) * colorpicker_diameter, colorpicker_height, std::sin(final_angle) * colorpicker_diameter };
+                    const vec3 color_indicator_in_world = transform(color_indicator_on_paint_brush, paint_brush_to_world);
 
-                    paint->clr_pick_objects[i]->Get<Transform>()->position = colorIndicatorInWorld;
+                    paint->clr_pick_objects[i]->Get<Transform>()->position = color_indicator_in_world;
                 }
             }
         }
@@ -398,8 +398,8 @@ void PaintComponent::SetEnabled(bool enable)
 {
     Enableable::SetEnabled(enable);
 
-    for (auto& colorPicker : clr_pick_objects) {
-        colorPicker->SetEnabled(enable);
+    for (auto& color_picker : clr_pick_objects) {
+        color_picker->SetEnabled(enable);
     }
 
     if (touchpad_indicator) {
@@ -419,8 +419,8 @@ void PaintComponent::Destroy()
 {
     Destroyable::Destroy();
 
-    for (auto& colorPicker : clr_pick_objects) {
-        colorPicker->Destroy();
+    for (auto& color_picker : clr_pick_objects) {
+        color_picker->Destroy();
     }
 
     if (touchpad_indicator) {

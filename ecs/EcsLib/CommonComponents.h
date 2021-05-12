@@ -169,6 +169,9 @@ class PbrRenderable :
 	VIS_COMP_0_0
 	
 public:
+	COPY_PANIC(PbrRenderable)
+	void Visit(RuntimeVisitor& vis) override {}
+	
     void ResetModel(String name, Optional<mat4> offset = Null) {
         model_name = name;
         offset = offset;
@@ -183,11 +186,15 @@ public:
 };
 
 
-class TextRenderable : Component<TextRenderable>
+class TextRenderable :
+	public Component<TextRenderable>
 {
 	VIS_COMP_0_0
 	
 public:
+	COPY_PANIC(TextRenderable);
+	void Visit(RuntimeVisitor& vis) override {}
+	
     String				text = "";
     double				font_size = 60.0;
     

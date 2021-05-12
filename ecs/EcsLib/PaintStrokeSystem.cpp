@@ -4,108 +4,105 @@
 NAMESPACE_OULU_BEGIN
 
 
-PaintStrokeSystem::PaintStrokeSystem(
-    Machine& core,
-    Shared<Pbr::Resources> pbr_res) :
-    System(core),
-    pbr_res(std::move(pbr_res))
-{}
 
 void PaintStrokeSystem::Update(double)
 {
+	TODO
+	#if 0
     for (auto& comp_set : GetMachine().Get<EntityStore>()->GetComponents<PaintStrokeComponent, PbrRenderable>())
     {
-        auto[paintStroke, pbr] = comp_set;
+        auto[paint_stroke, pbr] = comp_set;
 
-        if (paintStroke->stroke_changed)
+        if (paint_stroke->stroke_changed)
         {
-            Shared<Pbr::Material> strokeMaterial = Pbr::Material::CreateFlat(
+            Shared<Pbr::Material> stroke_material = Pbr::Material::CreateFlat(
                 *pbr_res,
                 *pbr->Color /* base color */,
                 0.95f /* roughness */);
 
             // Load the primitive into D3D buffers with associated materia.
-            Pbr::Primitive strokePrimitive(*pbr_res, paintStroke->GetPrimitiveData(), std::move(strokeMaterial));
+            Pbr::Primitive stroke_primitive(*pbr_res, paint_stroke->GetPrimitiveData(), std::move(stroke_material));
 
             // Add the primitive into the model.
             if (auto& model = pbr->Model)
             {
                 model->Clear();
-                model->AddPrimitive(std::move(strokePrimitive));
+                model->AddPrimitive(stroke_primitive);
             }
 
-            paintStroke->stroke_changed = false;
+            paint_stroke->stroke_changed = false;
         }
     }
+    #endif
 }
 
 void PaintStrokeComponent::AddPoint(const mat4& transformation, float width)
 {
-    const float halfWidth = width / 2.0f;
+    const float half_width = width / 2.0f;
 
-    PaintStrokeComponent::Square square;
+    Square square;
 
-    square.tl = transform(vec3{ -halfWidth, 0.0f, +halfWidth }, transformation);
-    square.tr = transform(vec3{ +halfWidth, 0.0f, +halfWidth }, transformation);
-    square.bt = transform(vec3{ +halfWidth, 0.0f, -halfWidth }, transformation);
-    square.bl = transform(vec3{ -halfWidth, 0.0f, -halfWidth }, transformation);
+    square.tl = transform(vec3{ -half_width, 0.0f, +half_width }, transformation);
+    square.tr = transform(vec3{ +half_width, 0.0f, +half_width }, transformation);
+    square.br = transform(vec3{ +half_width, 0.0f, -half_width }, transformation);
+    square.bl = transform(vec3{ -half_width, 0.0f, -half_width }, transformation);
 
-    squares.Add(std::move(square));
+    squares.Add(square);
 
     stroke_changed = true;
 }
 
 Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData()
 {
-    Pbr::PrimitiveBuilder primitiveBuilder;
+    Pbr::PrimitiveBuilder primitive_builder;
 
     if (squares.GetCount() > 0)
     {
+		Vector<Pbr::Vertex>& vertices	= primitive_builder.vertices;
+        Vector<uint32>& indices			= primitive_builder.indices;
+		
         // Vertices
-        Vector<Pbr::Vertex> vertices;
-        vertices.reserve(squares.GetCount() * 4);
-        const size_t expectedVerticesCapacity = vertices.capacity();
-
-        constexpr XMFLOAT3 Normal{ 0.0f, 0.0f, 1.0f };
-        constexpr XMFLOAT4 Tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
-        constexpr XMFLOAT2 TexCoord{ 0.0f, 0.0f };
+        const size_t expected_vertices_capacity = squares.GetCount() * 4;
+        vertices.Reserve(expected_vertices_capacity);
+        
+        vec3 normal { 0.0f, 0.0f, 1.0f };
+        vec4 tangent{ 1.0f, 0.0f, 0.0f, 1.0f };
+        vec2 tex_coord{ 0.0f, 0.0f };
 
         for (auto& square : squares)
         {
-            vertices.Add({ AsRef<XMFLOAT3>(square.tl), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.Add({ AsRef<XMFLOAT3>(square.tr), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.Add({ AsRef<XMFLOAT3>(square.br), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
-            vertices.Add({ AsRef<XMFLOAT3>(square.bl), Normal, Tangent, TexCoord, Pbr::RootNodeIndex });
+            vertices.Add(Pbr::Vertex{ {}, square.tl, normal, tangent, tex_coord, Pbr::RootNodeIndex });
+            vertices.Add(Pbr::Vertex{ {}, square.tr, normal, tangent, tex_coord, Pbr::RootNodeIndex });
+            vertices.Add(Pbr::Vertex{ {}, square.br, normal, tangent, tex_coord, Pbr::RootNodeIndex });
+            vertices.Add(Pbr::Vertex{ {}, square.bl, normal, tangent, tex_coord, Pbr::RootNodeIndex });
         }
 
-        constexpr size_t numIndicesPerFace = 6u;
-        constexpr size_t numBackFrontFaces = 2u;
-        const size_t numSideFaces = 4u * (squares.GetCount() - 1);
+        const size_t num_indices_per_face = 6u;
+        const size_t num_back_front_faces = 2u;
+        const size_t num_side_faces = 4u * (squares.GetCount() - 1);
 
         // Indices
-        Vector<uint32> indices;
-        indices.reserve(numIndicesPerFace * (numBackFrontFaces + numSideFaces));
-
-        const size_t expectedIndicesCapacity = indices.capacity();
-
-        auto addSquare = [&indices](uint32 topLeft, uint32 topRight, uint32 bottomRight, uint32 bottomLeft)
+        const size_t expected_indices_capacity = num_indices_per_face * (num_back_front_faces + num_side_faces);
+		indices.Reserve(expected_indices_capacity);
+        
+        auto add_square = [&indices](uint32 top_left, uint32 top_right, uint32 bottom_right, uint32 bottom_left)
         {
-            indices.Add(topLeft); indices.Add(topRight); indices.Add(bottomRight);
-            indices.Add(topLeft); indices.Add(bottomRight); indices.Add(bottomLeft);
+            indices.Add(top_left); indices.Add(top_right); indices.Add(bottom_right);
+            indices.Add(top_left); indices.Add(bottom_right); indices.Add(bottom_left);
         };
 
         // Back face
-        addSquare(1, 0, 3, 2);
+        add_square(1, 0, 3, 2);
 
         // Front face
-        const uint32 frontStart = static_cast<uint32>(4 * (squares.GetCount() - 1));
-        addSquare(frontStart, frontStart + 1, frontStart + 2, frontStart + 3);
+        const uint32 front_start = static_cast<uint32>(4 * (squares.GetCount() - 1));
+        add_square(front_start, front_start + 1, front_start + 2, front_start + 3);
 
         // Side faces
-        const uint32 sidesCount = static_cast<uint32>(squares.GetCount() - 1);
-        for (uint32 sideIndex = 0; sideIndex < sidesCount; sideIndex++)
+        const uint32 sides_count = static_cast<uint32>(squares.GetCount() - 1);
+        for (uint32 side_index = 0; side_index < sides_count; side_index++)
         {
-            const uint32 start = sideIndex * 4u;
+            const uint32 start = side_index * 4u;
 
             // +0 = back / top / left
             // +1 = back / top / right
@@ -116,21 +113,18 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData()
             // +6 = front / bottom / right
             // +7 = front / bottom / left
 
-            addSquare(start + 0, start + 1, start + 5, start + 4); // Top
-            addSquare(start + 5, start + 1, start + 2, start + 6); // Right
-            addSquare(start + 0, start + 4, start + 7, start + 3); // Left
-            addSquare(start + 7, start + 6, start + 2, start + 3); // Bottom
+            add_square(start + 0, start + 1, start + 5, start + 4); // Top
+            add_square(start + 5, start + 1, start + 2, start + 6); // Right
+            add_square(start + 0, start + 4, start + 7, start + 3); // Left
+            add_square(start + 7, start + 6, start + 2, start + 3); // Bottom
         }
 
         // Make sure we only allocate memory once
-        fail_fast_if(expectedVerticesCapacity != vertices.GetCount());
-        fail_fast_if(expectedIndicesCapacity != indices.GetCount());
-
-        primitiveBuilder.Vertices = std::move(vertices);
-        primitiveBuilder.Indices = std::move(indices);
+        ASSERT(expected_vertices_capacity == vertices.GetCount());
+        ASSERT(expected_indices_capacity == indices.GetCount());
     }
 
-    return primitiveBuilder;
+    return primitive_builder;
 }
 
 

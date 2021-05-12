@@ -3,14 +3,22 @@
 
 NAMESPACE_OULU_BEGIN
 
-struct ThrowingComponent : Component<ThrowingComponent>
+
+class ThrowingComponent :
+	public Component<ThrowingComponent>
 {
+	VIS_COMP_0_0
+	
+public:
+	COPY_PANIC(ThrowingComponent)
+	void Visit(RuntimeVisitor& vis) override {}
+	
     void SetEnabled(bool enable) override;
     void Destroy() override;
 
-    EntityRef ballObject;
+    EntityRef ball_object;
 
-    float distanceFromPointer = 0.05f;
+    float distance_from_pointer = 0.05f;
     float scale = 0.25f;
 };
 
@@ -36,6 +44,7 @@ protected:
     void OnSourceReleased(const SpatialInteractionSourceEventArgs& args) override;
     
 };
+
 
 NAMESPACE_OULU_END
 

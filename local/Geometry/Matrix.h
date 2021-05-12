@@ -6,6 +6,7 @@ NAMESPACE_OULU_BEGIN
 #define STRICT_MTX_CHECK(x) ASSERT(x)
 
 template <class T, int I> struct PartVec {};
+template <class T, int R, int C> struct Matrix;
 
 template <class T> struct PartVec<T, 2> {
 	static inline T GetCrossProduct(const T& a, const T& b);
@@ -36,7 +37,12 @@ struct Vec : Moveable<Vec<T, I> > {
 		ASSERT(list.size() == I);
 		int i = 0; for(auto& v : list) data[i++] = v;
 	}
+	Vec(Nuller) {SetNull();}
 	//Vec(const byte* b, T mul, T offset) {Set(b, mul, offset);}
+	
+	void SetNull() {for(int i = 0; i < I; i++) data[i] = std::numeric_limits<T>::max();}
+	bool IsNull() const {for(int i = 0; i < I; i++) if (data[i] != std::numeric_limits<T>::max()) return false; return true;}
+	//operator bool() const {return !IsNull();}
 	
 	void Clear() {memset(this, 0, sizeof(Vec));}
 	void ClearFrom(int i) {for(; i < I; i++) data[i] = 0.0;}
@@ -61,6 +67,10 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec operator/(T v)          const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] / v; return r;}
 	Vec operator^(const Vec& v) const {return GetCrossProduct(v);}
 	T   operator*(const Vec& v) const {return GetDotProduct(v);}
+	
+	Vec Multiply(T v)           const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v; return r;}
+	
+	Vec operator*(const Matrix<T,I,I>& m) const;
 	
 	bool operator==(const Vec& v) const {for(int i = 0; i < I; i++) if (data[i] != v.data[i]) return false; return true;}
 	bool operator!=(const Vec& v) const {return !(*this == v);}
@@ -165,6 +175,11 @@ struct quat {
 	quat& SetIdentity() {data.SetIdentity(); return *this;}
 	const float& operator[](int i) const {return data[i];}
 	float& operator[](int i) {return data[i];}
+	quat GetConjugate() const;
+	quat GetInverse() const {return GetConjugate();}
+	
+	quat operator*(const quat& q) const;
+	void operator*=(const quat& q) {quat n = *this * q; data = n.data;}
 	
 	String ToString() const {return data.ToString();}
 };
@@ -452,6 +467,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		return m.Multiply(*this);
 	}
 	
+	
 	operator const vec2& () {static_assert(R == 1 && C == 2, "Expecting Matrix<1,2>"); return data[0];}
 	operator const vec3& () {static_assert(R == 1 && C == 3, "Expecting Matrix<1,3>"); return data[0];}
 	operator const vec4& () {static_assert(R == 1 && C == 4, "Expecting Matrix<1,4>"); return data[0];}
@@ -624,6 +640,25 @@ struct Pyramid : Moveable<Pyramid<T>> {
 
 typedef Pyramid<uint8> pyra8;
 
+
+
+
+
+
+
+
+
+
+struct Square : Moveable<Square> {
+	vec3 tl, tr, br, bl;
+	
+};
+
+
 NAMESPACE_OULU_END
+
+
+#include "Matrix.inl"
+
 
 #endif

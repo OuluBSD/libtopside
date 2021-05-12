@@ -1,0 +1,9 @@
+uses
+	Oulu;
+
+file
+	CleanCamelCase.cpp;
+
+mainconfig
+	"" = "";
+

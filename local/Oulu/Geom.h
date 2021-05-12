@@ -5,7 +5,6 @@
 NAMESPACE_OULU_BEGIN
 
 
-
 template <class T>
 struct Size3_ : Moveable<Size3_<T>> {
 	T cx = 0, cy = 0, cz = 0;

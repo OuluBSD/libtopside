@@ -70,7 +70,6 @@ struct MinimalVertexShader : public Component<MinimalVertexShader>, public Shade
 };
 
 
-// opengl: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl_FragDepth.xhtml
 struct MinimalDepthShader : public Component<MinimalDepthShader>, public ShaderSink {
 	IFACE_CB(ShaderSink)
 	

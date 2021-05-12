@@ -230,6 +230,14 @@ public:
 		}
 	}
 	
+	void Append(const LinkedList& l) {
+		for (Iterator it = l.begin(); it; ++it)
+			Add(it());
+	}
+	
+	void operator<<=(const LinkedList& l) {Clear(); Append(l);}
+	
+	
 	
 	Iterator begin() const		{return Iterator(first);}
 	Iterator end() const		{return Iterator();}
@@ -261,6 +269,7 @@ public:
 		bool operator!=(const Iterator& i) const {return key != i.key;}
 		V*   operator->() {return &value();}
 		V&   operator*() {return *value;}
+		V&   operator()() {return *value;}
 		operator bool() const {return key;}
 		V& Get() {return value.Get();}
 	};
@@ -270,6 +279,12 @@ public:
 	void Clear() {keys.Clear(); values.Clear();}
 	
 	V& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	V& GetAdd(const K& k) {
+		Iterator it = Find(k);
+		if (it)
+			return *it;
+		return Add(k);
+	}
 	int GetCount() const {return keys.GetCount();}
 	bool IsEmpty() const {return keys.IsEmpty();}
 	Iterator Remove(const Iterator& iter) {
@@ -287,7 +302,11 @@ public:
 				return Iterator(k, v);
 		return Iterator();
 	}
-	
+	void RemoveKey(const K& key) {
+		Iterator it = Find(key);
+		if (it)
+			Remove(it);
+	}
 	LinkedList<V>& GetValues() {return values;}
 	
 

@@ -16,21 +16,42 @@ public:
     
     virtual EntityRef CreateToolSelector() const = 0;
 
-    virtual void Register(LinkedList<EntityRef>& entities) = 0;
+    virtual void Register(const LinkedList<EntityRef>& entities) = 0;
     virtual void Unregister() = 0;
     virtual void Activate(EntityRef entity) = 0;
     virtual void Deactivate(EntityRef entity) = 0;
 };
 
-struct ToolSelectorKey : Component<ToolSelectorKey>
+class ToolSelectorKey :
+	public Component<ToolSelectorKey>
 {
-    TypeId type{ typeid(nullptr_t) };
+	VIS_COMP_0_0
+	
+public:
+	COPY_PANIC(ToolSelectorKey)
+	void Visit(RuntimeVisitor& vis) override {}
+	
+    TypeId type { typeid(void) };
 };
 
 struct ToolSelectorPrefab :
-	EntityPrefab<Transform, PbrRenderable, ToolSelectorKey, RigidBody, Easing>
-{
-    static ComponentMap Make(ComponentStore& store);
+	EntityPrefab<
+		Transform,
+		PbrRenderable,
+		ToolSelectorKey,
+		RigidBody,
+		Easing
+> {
+	
+    Components Make(Entity& e) {
+	    auto components = EntityPrefab::Make(e);
+	
+	    components.Get<RigidBody>().angular_velocity = { 0.0f, -3.0f, 0.0f }; // Spin in place
+	    components.Get<RigidBody>().damping_factor = 1.0f;
+	    components.Get<Easing>().position_easing_factor = 0.1f;
+	
+	    return components;
+	}
 };
 
 // CRTP implementation helper
@@ -43,72 +64,76 @@ class ToolSystem :
     public ISpatialInteractionListener,
     public EnableSharedFromThis<T>
 {
-
+public:
+	using ToolComponentRef = Ref<ToolComponent, RefParent1<Entity>>;
+	
+	
 protected:
     // System
     void Start() override
     {
-        GetMachine().Get<ToolboxSystem>()->AddToolSystem(shared_from_this());
+        Machine& m = GetMachine();
+        m.Get<ToolboxSystem>()->AddToolSystem(AsRef<ToolSystemBase>());
     }
 
     void Stop() override
     {
-        GetMachine().Get<ToolboxSystem>()->RemoveToolSystem(shared_from_this());
+        Machine& m = GetMachine();
+        m.Get<ToolboxSystem>()->RemoveToolSystem(AsRef<ToolSystemBase>());
     }
 
     // ToolSystemBase
-    void Register(LinkedList<EntityRef>& entities) override
+    void Register(const LinkedList<EntityRef>& entities) override
     {
-        m_entities = std::move(entities);
+        m_entities <<= entities;
 
-        for (auto& entity : m_entities)
-        {
+        for (auto& entity : m_entities) {
             entity->Add<ToolComponent>()->SetEnabled(false);
         }
-
-        GetMachine().Get<SpatialInteractionSystem>()->AddListener(shared_from_this());
+		Machine& m = GetMachine();
+        m.Get<SpatialInteractionSystem>()->AddListener(AsRef<ToolSystemBase>());
     }
 
-    void Unregister() override 
+    void Unregister() override
     {
-        GetMachine().Get<SpatialInteractionSystem>()->RemoveListener(shared_from_this());
+        Machine& m = GetMachine();
+        m.Get<SpatialInteractionSystem>()->RemoveListener(AsRef<ToolSystemBase>());
 
         for (auto& entity : m_entities)
         {
             entity->Remove<ToolComponent>();
         }
 
-        m_entities.clear();
+        m_entities.Clear();
     }
 
     void Activate(EntityRef entity) override
     {
-        entity.Get<ToolComponent>()->SetEnabled(true);
+        entity->Get<ToolComponent>()->SetEnabled(true);
     }
 
     void Deactivate(EntityRef entity) override
     {
-        entity.Get<ToolComponent>()->SetEnabled(false);
+        entity->Get<ToolComponent>()->SetEnabled(false);
     }
 
     // Internal helpers
-    Vector<RTuple<EntityRef, ToolComponent*>> GetEnabledEntities() const
+    Vector<RTuple<EntityRef, ToolComponentRef>> GetEnabledEntities() const
     {
-        Vector<RTuple<EntityRef, ToolComponent*>> entities;
+        Vector<RTuple<EntityRef, ToolComponentRef>> entities;
 
         for (auto& entity : m_entities)
         {
             auto comp = entity->Get<ToolComponent>();
-            if (comp->IsEnabled())
-            {
-                entities.Add(std::make_tuple(entity.get(), std::move(comp)));
+            if (comp->IsEnabled()) {
+                entities.Add(RTuple<EntityRef, ToolComponentRef>(entity, comp));
             }
         }
 
         return entities;
     }
 
-    Optional<RTuple<EntityRef, ToolComponent*>> TryGetEntityFromSource(const SpatialInteractionSource& source) const
+    Optional<RTuple<EntityRef, ToolComponentRef>> TryGetEntityFromSource(const SpatialInteractionSource& source) const
     {
         for (auto& entity : m_entities)
         {
@@ -117,7 +142,7 @@ protected:
             {
                 if (entity->Get<MotionControllerComponent>()->IsSource(source))
                 {
-                    return std::make_tuple(entity.get(), std::move(comp));
+                    return RTuple<EntityRef, ToolComponentRef>(entity, comp);
                 }
             }
         }

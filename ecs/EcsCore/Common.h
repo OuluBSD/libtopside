@@ -21,6 +21,7 @@ class RegistrySystem;
 class Overlap;
 class ToolSystemBase;
 class ISpatialInteractionListener;
+class ToolComponent;
 struct ConnectorBase;
 struct ActionSource;
 struct AudioSource;
@@ -55,6 +56,7 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
 using OverlapRef			= Ref<Overlap,				RefParent1<Entity>>;
 using PaintComponentRef		= Ref<PaintComponent,		RefParent1<Entity>>;
+using ToolComponentRef		= Ref<ToolComponent,		RefParent1<Entity>>;
 using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
@@ -101,10 +103,6 @@ struct HolographicFrame {
 	}
 	
 	
-};
-
-struct SpatialCoordinateSystem {
-
 };
 
 class IPredictionUpdateListener {

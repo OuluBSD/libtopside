@@ -115,13 +115,13 @@ void TextRenderer::CreateDeviceDependentResources()
     // This is where we format the text that will be written on the render target.
     DirectX::ThrowIfFailed(
         dev_res->GetDWriteFactory()->CreateTextFormat(
-            L"Consolas",
+            "Consolas",
             NULL,
             DWRITE_FONT_WEIGHT_NORMAL,
             DWRITE_FONT_STYLE_NORMAL,
             DWRITE_FONT_STRETCH_NORMAL,
             m_fontSize,
-            L"",
+            "",
             m_textFormat.ReleaseAndGetAddressOf()
         )
     );

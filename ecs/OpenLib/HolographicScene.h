@@ -1,0 +1,29 @@
+#ifndef _OpenLib_HolographicScene_h_
+#define _OpenLib_HolographicScene_h_
+
+NAMESPACE_OULU_BEGIN
+
+class HolographicScene :
+	public System<HolographicScene>
+{
+	
+public:
+	void Visit(RuntimeVisitor& vis) override {}
+    
+    
+    bool Initialize() override;
+    void Start() override;
+    void Update(double dt) override;
+    void Stop() override;
+    void Uninitialize() override;
+    
+    
+    const SpatialCoordinateSystem&		WorldCoordinateSystem() const;
+    PerceptionTimestamp					CurrentTimestamp() const;
+    
+};
+
+
+NAMESPACE_OULU_END
+
+#endif
