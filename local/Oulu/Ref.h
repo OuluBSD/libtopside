@@ -93,7 +93,7 @@ public:
 	Ref& operator=(const Ref& r) {return Set(r);}
 	
 	bool operator==(const Ref& r) const {return r.o == o;}
-	bool operator==(T* o) const {return this->o == o;}
+	bool operator==(const T* o) const {return this->o == o;}
 	T* operator->() {return o;}
 	const T* operator->() const {return o;}
 	T& operator*() {ASSERT(o); return *o;}

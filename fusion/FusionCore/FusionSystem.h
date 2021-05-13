@@ -23,7 +23,6 @@ int GetOglChCode(int channels, bool is_float=false);
 ArrayMap<String,String>& CommonHashToName();
 
 struct BasicFusionStream : public VideoStream {
-	int depth = 0;
 	VideoSourceFormat fmt;
 	
 	BasicFusionStream() {fmt.Add();}
@@ -34,13 +33,13 @@ struct BasicFusionStream : public VideoStream {
 	void						DropVideoFrames(int frames) override {}
 	int							GetVideoBufferSize() const override {return 1;}
 	Video&						GetVideo() override {TODO}
-	int							GetActiveVideoFormat() const override {return 0;}
+	int							GetActiveVideoFormatIdx() const override {return 0;}
 	int							GetFormatCount() const override {return 1;}
 	const VideoSourceFormat&	GetFormat(int i) const override {ASSERT(!i); return fmt;}
 	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override {return 0;}
-	void						Clear() {fmt[0].SetFormat(MakeVideoFormat(Size(0,0), 0, 0, 0, 0)); depth = 0;}
+	void						Clear() {fmt[0].SetFormat(MakeVideoFormat(Size(0,0), 0, 0, 0, 0));}
 	
-	int							GetDepth() const {return depth;}
+	//int							GetDepth() const {return fmt[0].GetFormat().depth;}
 	
 };
 
@@ -71,6 +70,7 @@ struct FusionStream : public RealtimeStream {
 	double atotal_seconds = 0;
 	double audio_last_sync_sec = 0;
 	AudioFormat aud_fmt;
+	int aframes = 0;
 	int aframes_after_sync = 0;
 	int asink_frame = 0;
 	bool is_audio_sync;
@@ -114,6 +114,7 @@ struct FusionStream : public RealtimeStream {
 		audio_sample_size = 0;
 		audio_sample_channels = 0;*/
 		aud_fmt = AudioFormat();
+		aframes = 0;
 		aframes_after_sync = 0;
 		asink_frame = 0;
 		is_audio_sync = false;
@@ -187,7 +188,7 @@ protected:
 	friend class FusionContextComponent;
 	friend struct FusionComponentInputVector;
 	
-	const VideoStream* stream = 0;
+	VideoStream* stream = 0;
 	String filepath;
 	int id = -1;
 	Type type = INVALID;

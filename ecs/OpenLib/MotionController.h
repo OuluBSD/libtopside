@@ -31,6 +31,18 @@ public:
 };
 
 
+class MotionControllerSystem :
+    public System<MotionControllerSystem>
+{
+	
+public:
+	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_CTOR(MotionControllerSystem);
+	
+	
+};
+
+
 NAMESPACE_OULU_END
 
 #endif

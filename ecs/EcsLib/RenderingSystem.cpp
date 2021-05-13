@@ -89,12 +89,12 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 	/*Camera* cam = fb_draw->GetCamera();
 	if (!cam)
 		return;*/
-	const auto& cams = CameraSource::GetSinks();
+	const auto& cams = CameraSource::GetConnections();
 	
 	if (cams.IsEmpty())
 		return !needs_fast_rerender;
 	
-	CameraSink& cam_out = *cams[0];
+	CameraSinkRef cam_out = cams.begin()()->AsRef<CameraSink>();
 	Camerable* cam = cam_out.GetCamerable();
 	Transform* trans = cam_out.GetTransform();
 	if (!cam || !trans)

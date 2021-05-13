@@ -69,7 +69,6 @@ bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	
 	cfg.SetHeader(in);
 	stream.fmt[0].SetFormat(MakeVideoFormat(data_res, 0,0,0,0));
-	stream.depth = 0;
 	
 	TODO
 	#if 0

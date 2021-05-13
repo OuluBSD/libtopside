@@ -8,6 +8,7 @@ class HolographicScene :
 {
 	
 public:
+	SYS_CTOR(HolographicScene);
 	void Visit(RuntimeVisitor& vis) override {}
     
     

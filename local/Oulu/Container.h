@@ -48,6 +48,7 @@ struct FixedArray {
 	T&       operator[](int i)       {ASSERT(i >= 0 && i < size); return vector[i];}
 	const T& operator[](int i) const {ASSERT(i >= 0 && i < size); return vector[i];}
 	void operator=(const T& value) {for(int i = 0; i < I; i++) this->vector[i] = value;}
+	T& Top() {return vector[I-1];}
 	
 	Iterator begin() {return Iterator(&vector[0]);}
 	Iterator end() {return Iterator(&vector[0] + I);}

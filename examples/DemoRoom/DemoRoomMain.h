@@ -5,38 +5,38 @@ NAMESPACE_OULU_BEGIN
 
 class Engine;
 
-NAMESPACE_OULU_END
-
-
-// Updates, renders, and presents holographic content using Direct3D.
-NAMESPACE_OULU_BEGIN
 
 
 class DemoRoomMain {
 	
 public:
+	typedef DemoRoomMain CLASSNAME;
     DemoRoomMain();
     ~DemoRoomMain();
 
     // Sets the holographic space. This is our closest analogue to setting a new window
     // for the app.
-    void SetHolographicSpace(HolographicSpace const& holospace);
+    void SetHolographicSpace(const HolographicSpace& holospace);
 
     // Starts the holographic frame and updates the content.
     void Update();
+    void ProcessUpdate();
 
     // Handle saving and loading of app state owned by AppMain.
     void SaveAppState();
     void LoadAppState();
 
 private:
-    std::unique_ptr<Neso::Engine>		machine;
+    One<Machine>				machine;
 
     // Cached pointer to device resources.
-    SharedDeviceResources				dev_res;
+    DeviceResources				dev_res;
+    Pbr::Resources				pbr_res;
 
     // Render loop timer.
-    StopTimer							timer;
+    StepTimer					timer;
+    
+    
 };
 
 

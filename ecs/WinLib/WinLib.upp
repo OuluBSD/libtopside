@@ -23,8 +23,6 @@ file
 	HolographicRenderer.cpp,
 	HolographicScene.h,
 	HolographicScene.cpp,
-	PbrModelCache.h,
-	PbrModelCache.cpp,
 	Physics.h,
 	QuadRenderer.h,
 	QuadRenderer.cpp,

@@ -305,13 +305,13 @@ mat4 rotate(mat4 const& m, float angle, vec3 const& v) {
 	return res;
 }
 
-quat MakeQuaternionFromAxisAngle(vec3 v, float angle) {
-	double s = FastSin(angle * 0.5);
+quat make_quat_from_axis_angle(vec3 v, float angle) {
+	double s = sinf(angle * 0.5);
 	quat r;
 	r[0] = v[0] * s;
 	r[1] = v[1] * s;
 	r[2] = v[2] * s;
-	r[3] = FastCos(angle * 0.5);
+	r[3] = cosf(angle * 0.5);
 	return r;
 }
 
@@ -330,5 +330,134 @@ vec3 transform(const vec3& v, const quat& q) {
           + cross(u, v) * (2.0f * s);
     return vprime;
 }
+
+mat4 make_mat4_from_quat(const quat& q) {
+	mat4 m1{
+		{q[3], q[2], -q[1], q[0]},
+		{-q[2], q[3], q[0], q[1]},
+		{q[1], -q[0], q[3], q[2]},
+		{-q[0], -q[1], -q[2], q[3]}
+	};
+	
+	mat4 m2{
+		{q[3], q[2], -q[1], -q[0]},
+		{-q[2], q[3], q[0], -q[1]},
+		{q[1], -q[0], q[3], -q[2]},
+		{q[0], q[1], q[2], q[3]}
+	};
+	
+	return m1 * m2;
+}
+
+quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll)
+{
+    float sr, cr, sp, cp, sy, cy;
+
+    float half_roll = roll * 0.5f;
+    sr = sinf(half_roll);
+    cr = cosf(half_roll);
+
+    float half_pitch = pitch * 0.5f;
+    sp = sinf(half_pitch);
+    cp = cosf(half_pitch);
+
+    float half_yaw = yaw * 0.5f;
+    sy = sinf(half_yaw);
+    cy = cosf(half_yaw);
+
+    return quat(
+		cy * sp * cr + sy * cp * sr,
+		sy * cp * cr - cy * sp * sr,
+		cy * cp * sr - sy * sp * cr,
+		cy * cp * cr + sy * sp * sr
+	);
+}
+
+mat4 make_mat4_rotation_x(float angle) {
+	float c = cosf(angle);
+	float s = sinf(angle);
+	
+	return mat4{
+		{1,  0, 0, 0},
+		{0,  c, s, 0},
+		{0, -s, c, 0},
+		{0,  0, 0, 1}
+	};
+}
+
+mat4 make_mat4_rotation_y(float angle) {
+	float c = cosf(angle);
+	float s = sinf(angle);
+	return mat4{
+		{c, 0, -s, 0},
+		{0, 1,  0, 0},
+		{s, 0,  c, 0},
+		{0, 0,  0, 1}
+	};
+}
+
+mat4 make_mat4_rotation_z(float angle) {
+	float c = cosf(angle);
+	float s = sinf(angle);
+	return mat4{
+		{c, s, 0, 0},
+		{-s, c, 0, 0},
+		{0, 0, 1, 0},
+		{0, 0, 0, 1}
+	};
+}
+
+mat4 make_mat4_translation(const vec3& position) {
+    return mat4{
+		{1, 0, 0, 0},
+		{0, 1, 0, 0},
+		{0, 0, 1, 0},
+		{position[0], position[1], position[2], 1}
+	};
+}
+
+quat make_quat_from_rotation_matrix(const mat4& m) {
+    if (m[1][1] + m[2][2] + m[3][3] > 0.0f)
+    {
+        float s = sqrtf(1.0f + m[1][1] + m[2][2] + m[3][3]);
+        float inv_s = 0.5f / s;
+
+        return quat((m[2][3] - m[3][2]) * inv_s,
+                   (m[3][1] - m[1][3]) * inv_s,
+                   (m[1][2] - m[2][1]) * inv_s,
+                   s * 0.5f);
+    }
+    else if (m[1][1] >= m[2][2] && m[1][1] >= m[3][3])
+    {
+        float s = sqrtf(1.0f + m[1][1] - m[2][2] - m[3][3]);
+        float inv_s = 0.5f / s;
+
+        return quat(0.5f * s,
+                    (m[1][2] + m[2][1]) * inv_s,
+                    (m[1][3] + m[3][1]) * inv_s,
+                    (m[2][3] - m[3][2]) * inv_s);
+    }
+    else if (m[2][2] > m[3][3])
+    {
+        float s = sqrtf(1.0f + m[2][2] - m[1][1] - m[3][3]);
+        float inv_s = 0.5f / s;
+
+        return quat((m[2][1] + m[1][2]) * inv_s,
+                    0.5f * s,
+                    (m[3][2] + m[2][3]) * inv_s,
+                    (m[3][1] - m[1][3]) * inv_s);
+    }
+    else
+    {
+        float s = sqrtf(1.0f + m[3][3] - m[1][1] - m[2][2]);
+        float inv_s = 0.5f / s;
+
+        return quat((m[3][1] + m[1][3]) * inv_s,
+                    (m[3][2] + m[2][3]) * inv_s,
+                    0.5f * s,
+                    (m[1][2] - m[2][1]) * inv_s);
+    }
+}
+
 
 NAMESPACE_OULU_END

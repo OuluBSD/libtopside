@@ -12,11 +12,12 @@ public:
 	vec3 size = one<vec3>();
 	quat orientation = identity<quat>();
 	
-	/*void SetFromMatrix(const mat4& matrix) {
+	void SetFromMatrix(const mat4& matrix) {
 		vec3 skew;
 		vec4 persp;
-		decompose(matrix, size, orientation, position, skew, persp);
-	}*/
+		bool succ = Decompose(matrix, size, orientation, position, skew, persp);
+		ASSERT(succ);
+	}
 	
 	void operator=(const Transform& t) {
 		position		= t.position;
@@ -179,7 +180,7 @@ public:
 
     String				model_name;
     One<Pbr::Model>		model;
-    Optional<vec3>		color;
+    Optional<vec4>		color;
     Optional<mat4>		offset;
     Optional<double>	alpha_multiplier;
     

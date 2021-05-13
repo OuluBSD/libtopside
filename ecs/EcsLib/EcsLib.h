@@ -32,6 +32,7 @@
 #include "Camera.h"
 #include "Model.h"
 #include "CommonComponents.h"
+#include "PbrModelCache.h"
 #include "EasingSystem.h"
 #include "WorldLogic.h"
 #include "RegistrySystem.h"

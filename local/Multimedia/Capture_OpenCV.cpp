@@ -154,7 +154,7 @@ void OpenCVCaptureDevice::DropVideoFrames(int frames) {
 	TODO
 }
 
-int OpenCVCaptureDevice::GetActiveVideoFormat() const {
+int OpenCVCaptureDevice::GetActiveVideoFormatIdx() const {
 	TODO
 }
 

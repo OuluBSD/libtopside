@@ -38,8 +38,3 @@ file
 	Util.h,
 	Util.cpp;
 
-mainconfig
-	"" = "",
-	"" = "USEMALLOC",
-	"" = "ALTCORE";
-

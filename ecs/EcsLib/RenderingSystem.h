@@ -55,7 +55,7 @@ class DefaultRenderApp :
 	VectorRendModel rends;
 	
 public:
-	VIS_COMP_2_0(DisplaySource, CameraSource)
+	VIS_COMP_2_0(Display, Camera)
 	COPY_PANIC(DefaultRenderApp);
 	IFACE_CB(DisplaySource);
 	IFACE_CB(CameraSource);

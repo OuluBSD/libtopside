@@ -120,6 +120,9 @@ public:
     }
 };
 
+
+#if 0
+
 struct AtomicBool {
 	std::atomic<bool> value;
 	AtomicBool() {value = 0;}
@@ -144,12 +147,23 @@ struct AtomicInt {
 	int operator--(int) {return value--;}
 };
 
+#else
+using AtomicBool = std::atomic<bool>;
+using AtomicInt = std::atomic<int>;
+#endif
+
+using Atomic = AtomicInt;
+
+inline int AtomicInc(AtomicInt& a) {return ++a;}
+inline int AtomicDec(AtomicInt& a) {return --a;}
+
+
 struct FakeAtomicInt : Moveable<FakeAtomicInt> {
 	SpinLock lock;
 	int value;
 	FakeAtomicInt() : value(0) {}
 	FakeAtomicInt(int i) : value(i) {}
-	FakeAtomicInt(const AtomicInt& ai) : value(ai.value) {}
+	FakeAtomicInt(const AtomicInt& ai) : value(ai) {}
 	operator int() {return value;}
 	int operator = (int i) {
 		lock.Enter();
@@ -171,11 +185,6 @@ struct FakeAtomicInt : Moveable<FakeAtomicInt> {
 	}
 	int Get() const {return value;}
 };
-
-typedef AtomicInt Atomic;
-
-inline int AtomicInc(AtomicInt& a) {return ++a;}
-inline int AtomicDec(AtomicInt& a) {return --a;}
 
 NAMESPACE_UPP_END
 

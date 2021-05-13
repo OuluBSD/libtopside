@@ -171,6 +171,14 @@ typedef Vec<int, 4> ivec4;
 struct quat {
 	vec4 data;
 	
+	quat() {}
+	quat(const quat& q) {*this = q;}
+	quat(float x, float y, float z, float w) : data(x,y,z,w) {}
+	
+	void operator=(const quat& q) {data = q.data;}
+	
+	void SetNull() {data.SetNull();}
+	bool IsNull() const {return data.IsNull();}
 	
 	quat& SetIdentity() {data.SetIdentity(); return *this;}
 	const float& operator[](int i) const {return data[i];}
@@ -245,6 +253,10 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 		ASSERT(list.size() == R);
 		int i = 0; for(auto& v : list) data[i++] = v;
 	}
+	
+	void SetNull() {for(int i = 0; i < R; i++) data[i].SetNull();}
+	bool IsNull() const {for(int i = 0; i < R; i++) if (!data[i].IsNull()) return false; return true;}
+	
 	void operator=(const Matrix& m) {memcpy(this, &m, sizeof(Matrix));}
 	vec& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	const vec& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}

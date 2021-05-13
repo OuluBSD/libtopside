@@ -3,61 +3,6 @@
 
 NAMESPACE_OULU_BEGIN
 
-inline vec3 right(const mat4& transform)
-{
-    return { +transform[0][0], +transform[0][1], +transform[0][2] };
-}
-
-inline vec3 left(const mat4& transform)
-{
-    return { -transform[0][0], -transform[0][1], -transform[0][2] };
-}
-
-inline vec3 up(const mat4& transform)
-{
-    return { +transform[1][0], +transform[1][1], +transform[1][2] };
-}
-
-inline vec3 down(const mat4& transform)
-{
-    return { -transform[1][0], -transform[1][1], -transform[1][2] };
-}
-
-inline vec3 backward(const mat4& transform)
-{
-    return { +transform[2][0], +transform[2][1], +transform[2][2] };
-}
-
-inline vec3 forward(const mat4& transform)
-{
-    return { -transform[2][0], -transform[2][1], -transform[2][2] };
-}
-
-inline vec3 position(const mat4& transform)
-{
-    return { +transform[3][0], +transform[3][1], +transform[3][2] };
-}
-
-inline quat orientation(const mat4& transform)
-{
-    vec3 baller_position, size, skew;
-	quat orientation;
-	vec4 persp;
-	Decompose(transform, size, orientation, baller_position, skew, persp);
-	return orientation;
-}
-
-
-
-inline mat4 remove_scale(const mat4& transform)
-{
-    quat rotation;
-    vec3 scale, translation, skew;
-    vec4 pers;
-    Decompose(transform, scale, rotation, translation, skew, pers);
-    return ToMat4(rotation) * translate(translation);
-}
-
 
 
 #if 0
@@ -69,8 +14,6 @@ inline vec3 transform(vec3 const& position, mat4 const& matrix) {
                   position.x * matrix[0][1] + position.y * matrix[1][1] + position.z * matrix[2][1] + matrix[3][1],
                   position.x * matrix[0][2] + position.y * matrix[1][2] + position.z * matrix[2][2] + matrix[3][2]);
 }
-
-inline float ConvertToRadians(float angle) {return angle / 180.0 * M_PI;}
 
 inline quat make_quaternion_from_yaw_pitch_roll(float yaw, float pitch, float roll) {
     float sr, cr, sp, cp, sy, cy;

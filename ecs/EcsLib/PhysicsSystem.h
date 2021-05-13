@@ -9,8 +9,8 @@ class PhysicsSystem :
 {
 	
 public:
-	
-	using System::System;
+	void Visit(RuntimeVisitor& vis) override {}
+	SYS_CTOR(PhysicsSystem);
 	
 	static const vec3 EarthGravity;
 	

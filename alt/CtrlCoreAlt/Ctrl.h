@@ -435,6 +435,12 @@ public:
 
 class ParentCtrl : public Ctrl {
 	
+public:
+	
+	
+	virtual void Updated() {}
+	
+	
 };
 
 

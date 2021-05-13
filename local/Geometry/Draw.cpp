@@ -5,7 +5,7 @@ NAMESPACE_OULU_BEGIN
 
 namespace Colors {
 
-#define FLTCLR(r, g, b) r / 255.0, g / 255.0, b / 255.0
+#define FLTCLR(r, g, b) r / 255.0, g / 255.0, b / 255.0, 1.0
 
 vec4 Red			{FLTCLR(128,	  0,	  0)};
 vec4 Chocolate		{FLTCLR(128,	 90,	 70)};

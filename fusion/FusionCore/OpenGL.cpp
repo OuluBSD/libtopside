@@ -97,12 +97,12 @@ void FusionContextComponent::Ogl_CreatePipeline() {
 	gl_stages.SetCount(comps.GetCount());
 	glGenProgramPipelines(gl_stages.GetCount(), gl_stages.Begin());
 	
-	for(int i = 0; i < comps.GetCount(); i++) {
-		FusionComponent& s = *comps[i];
+	int i = 0;
+	for (FusionComponentRef& comp : comps) {
 		uint32& gl_s = gl_stages[i];
 		
 		for(int j = 0; j < FusionComponent::PROG_COUNT; j++) {
-			GLint& prog = s.prog[j];
+			GLint& prog = comp->prog[j];
 			if (prog >= 0) {
 				int bit = 1 << j;
 				ASSERT(j != FusionComponent::PROG_VERTEX   || bit == GL_VERTEX_SHADER_BIT);
@@ -110,6 +110,8 @@ void FusionContextComponent::Ogl_CreatePipeline() {
 				glUseProgramStages(gl_s, bit, prog);
 			}
 		}
+		
+		++i;
 	}
 }
 
@@ -235,11 +237,10 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 		if (ch < in.GetCount()) {
 			FusionComponentInput& in = this->in[ch];
 			if (in.stream) {
-				Size sz = in.stream->GetVideoSize();
-				int depth = in.stream->GetVideoDepth();
-				values[0] = sz.cx;
-				values[1] = sz.cy;
-				values[2] = depth;
+				const auto& fmt = in.stream->GetVideo().GetVideoFormat();
+				values[0] = fmt.res.cx;
+				values[1] = fmt.res.cy;
+				values[2] = fmt.depth;
 			}
 			/*else if (
 				in.type == FusionComponentInput::TEXTURE ||
@@ -348,8 +349,8 @@ GLint FusionComponent::Ogl_GetInputTex(int input_i) const {
 		return -1;
 	
 	const FusionComponentInput& in = this->in[input_i];
-	FusionComponent& in_comp = ctx->GetComponentById(in.id);
-	int tex = in_comp.Ogl_GetOutputTexture(&in_comp == this);
+	FusionComponentRef in_comp = ctx->GetComponentById(in.id);
+	int tex = in_comp->Ogl_GetOutputTexture(in_comp == this);
 	ASSERT(tex > 0);
 	
 	return tex;

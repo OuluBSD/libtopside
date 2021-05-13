@@ -99,7 +99,83 @@ T safe_normalize(T v) {
 mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
 mat4 rotate(mat4 const& m, float angle, vec3 const& v);
-quat MakeQuaternionFromAxisAngle(vec3 v, float angle);
+quat make_quat_from_axis_angle(vec3 v, float angle);
+mat4 make_mat4_from_quat(const quat& q);
+quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll);
+mat4 make_mat4_rotation_x(float angle);
+mat4 make_mat4_rotation_y(float angle);
+mat4 make_mat4_rotation_z(float angle);
+mat4 make_mat4_translation(const vec3& position);
+quat make_quat_from_rotation_matrix(const mat4& matrix);
+inline mat4 rotate(const quat& q) {return make_mat4_from_quat(q);}
+inline mat4 make_mat4_from_yaw_pitch_roll(float yaw, float pitch, float roll) {return make_mat4_from_quat(make_quat_from_yaw_pitch_roll(yaw, pitch, roll));}
+
+
+
+
+namespace MatrixUtils {
+
+
+inline vec3 right(const mat4& transform)
+{
+    return { +transform[0][0], +transform[0][1], +transform[0][2] };
+}
+
+inline vec3 left(const mat4& transform)
+{
+    return { -transform[0][0], -transform[0][1], -transform[0][2] };
+}
+
+inline vec3 up(const mat4& transform)
+{
+    return { +transform[1][0], +transform[1][1], +transform[1][2] };
+}
+
+inline vec3 down(const mat4& transform)
+{
+    return { -transform[1][0], -transform[1][1], -transform[1][2] };
+}
+
+inline vec3 backward(const mat4& transform)
+{
+    return { +transform[2][0], +transform[2][1], +transform[2][2] };
+}
+
+inline vec3 forward(const mat4& transform)
+{
+    return { -transform[2][0], -transform[2][1], -transform[2][2] };
+}
+
+inline vec3 position(const mat4& transform)
+{
+    return { +transform[3][0], +transform[3][1], +transform[3][2] };
+}
+
+inline quat orientation(const mat4& transform)
+{
+    vec3 baller_position, size, skew;
+	quat orientation;
+	vec4 persp;
+	Decompose(transform, size, orientation, baller_position, skew, persp);
+	return orientation;
+}
+
+
+
+inline mat4 RemoveScale(const mat4& transform)
+{
+    quat rotation;
+    vec3 scale, translation, skew;
+    vec4 pers;
+    Decompose(transform, scale, rotation, translation, skew, pers);
+    return ToMat4(rotation) * translate(translation);
+}
+
+
+}
+
+
+inline float ConvertToRadians(float angle) {return angle / 180.0 * M_PI;}
 
 
 NAMESPACE_OULU_END

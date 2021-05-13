@@ -17,7 +17,9 @@ class SkyboxRenderer;
 // HolographicRenderer
 // A stereoscopic 3D rendering system, manages rendering everything in the scene
 // through DirectX 11 and Windows::Perception APIs
-class HolographicRenderer : public System<HolographicRenderer>, public DX::IDeviceNotify
+class HolographicRenderer :
+	public System<HolographicRenderer>,
+	public DX::IDeviceNotify
 {
 public:
     HolographicRenderer(

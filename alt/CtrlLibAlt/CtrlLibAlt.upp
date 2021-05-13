@@ -17,5 +17,6 @@ file
 	Bar.h,
 	Bar.cpp,
 	FileSel.h,
-	FileSel.cpp;
+	FileSel.cpp,
+	TabCtrl.h;
 

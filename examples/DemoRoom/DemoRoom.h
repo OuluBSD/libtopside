@@ -4,15 +4,7 @@
 #include <EcsLib/EcsLib.h>
 
 
-#include "AppView.h"
 #include "DemoRoomMain.h"
-#include "MotionControllerSystem.h"
-#include "PaintStrokeSystem.h"
-#include "ToolboxSystem.h"
-#include "ToolSystem.h"
-#include "PaintingSystem.h"
-#include "ShootingSystem.h"
-#include "ThrowingSystem.h"
 
 
 #endif

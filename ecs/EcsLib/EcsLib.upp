@@ -29,6 +29,8 @@ file
 	Viewport.cpp,
 	CommonComponents.h,
 	CommonComponents.cpp,
+	PbrModelCache.h,
+	PbrModelCache.cpp,
 	EasingSystem.h,
 	EasingSystem.cpp,
 	Shader.h,

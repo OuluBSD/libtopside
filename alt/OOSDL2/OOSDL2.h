@@ -9,7 +9,7 @@
 	#include <DrawAlt/Draw.h>
 	#include <Geometry/Geometry.h>
 #endif
-#include <VirtualAudio/VirtualAudio.h>
+
 
 #define NAMESPACE_SDL2_NAME		OOSDL2
 #define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_OULU_NAME { namespace NAMESPACE_SDL2_NAME {

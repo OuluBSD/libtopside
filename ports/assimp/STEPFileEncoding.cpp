@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "STEPFileEncoding.h"
 #include "fast_atof.h"
-#include <Various/utf8.h>
+#include <utf8/utf8.h>
 
 #include <memory>
 

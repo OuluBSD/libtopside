@@ -16,6 +16,7 @@ file
 	Compat.h,
 	Compat.cpp,
 	Types.h,
+	Chrono.h,
 	Recycler.h,
 	LinkedList.h,
 	TypeTraits.h,

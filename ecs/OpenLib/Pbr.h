@@ -35,6 +35,25 @@ struct PrimitiveBuilder
 };
 
 
+struct Material {
+	struct ConstantBufferData {
+		vec4 base_clr_factor;
+		
+	};
+	
+	
+	TrackChanges<ConstantBufferData> parameters;
+	
+};
+
+
+struct Node {
+	
+	
+	mat4 GetTransform() const;
+	
+};
+
 struct Resources {
 	
 	
@@ -42,9 +61,28 @@ struct Resources {
 };
 
 
+struct Primitive {
+	
+	
+	Material& GetMaterial();
+	const Material& GetMaterial() const;
+	
+};
+
 struct Model {
 	
 	
+    void Clone(const Pbr::Resources& pbr_res, Model& dst) const;
+	
+	Optional<NodeIndex_t> FindFirstNode(char const* name, std::optional<NodeIndex_t> const& parentNodeIndex = {}) const;
+	mat4 GetNodeWorldTransform(NodeIndex_t nodeIndex) const;
+    NodeIndex_t GetNodeCount() const;// { return (NodeIndex_t)m_nodes.size(); }
+    Node& GetNode(NodeIndex_t nodeIndex);// { return m_nodes[nodeIndex]; }
+    const Node& GetNode(NodeIndex_t nodeIndex) const;// { return m_nodes[nodeIndex]; }
+    
+    int GetPrimitiveCount() const;
+    Primitive& GetPrimitive(int i);
+    
 };
 
 }

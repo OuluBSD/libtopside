@@ -52,7 +52,7 @@ public:
 	void						DropVideoFrames(int frames) override;
 	int							GetVideoBufferSize() const override {return 1;}
 	Video&						GetVideo() override {return vbuffer;}
-	int							GetActiveVideoFormat() const override;
+	int							GetActiveVideoFormatIdx() const override;
 	int							GetFormatCount() const override;
 	const VideoSourceFormat&	GetFormat(int i) const override;
 	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override;

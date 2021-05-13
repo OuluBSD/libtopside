@@ -189,7 +189,7 @@ public:
 	void	FillVideoBuffer() override;
 	void	DropVideoFrames(int frames) override;
 	Video&	GetVideo() override;
-	int		GetActiveVideoFormat() const override;
+	int		GetActiveVideoFormatIdx() const override;
 	int		GetVideoBufferSize() const override {return vframe.GetQueueSize();}
 	
 	// Media

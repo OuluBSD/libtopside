@@ -115,7 +115,7 @@ NAMESPACE_OULU_BEGIN
 using SharedDeviceResources = Shared<DX::DeviceResources>;
 using HolographicSpace = winrt::Windows::Graphics::Holographic::HolographicSpace;
 
-void LoadDefaultResources(SharedDeviceResources& dr, HolographicSpace& hs, String diff, String spec, String skybox, String lut);
+void LoadDefaultResources(DeviceResources& dr, HolographicSpace& hs, String diff, String spec, String skybox, String lut);
 
 
 NAMESPACE_OULU_END

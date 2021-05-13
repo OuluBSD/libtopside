@@ -5,6 +5,7 @@ NAMESPACE_OULU_BEGIN
 bool HolographicScene::Initialize() {
 	
 	
+	return true;
 }
 
 void HolographicScene::Start() {

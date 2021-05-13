@@ -7,7 +7,8 @@ NAMESPACE_OULU_BEGIN
 typedef enum {
 	Thumbstick,
 	Menu,
-	Grasp
+	Grasp,
+	Select
 }
 SpatialInteractionPressKind;
 
@@ -17,6 +18,19 @@ typedef enum {
 }
 SpatialInteractionSourceKind;
 
+
+
+struct SpatialInteractionControllerProperties {
+	
+	
+	double								TouchpadX() const;
+	double								TouchpadY() const;
+	double								ThumbstickX() const;
+	double								ThumbstickY() const;
+	bool								IsTouchpadTouched() const;
+	bool								IsTouchpadPressed() const;
+	
+};
 
 struct SpatialCoordinateSystem {
 
@@ -60,6 +74,14 @@ struct SpatialPointerInteractionSourcePose {
 	
 	
 	
+	vec3											Position() const;
+	vec3											ForwardDirection() const;
+	quat											Orientation() const;
+	
+	bool IsNull() const;
+	
+	operator bool() const {return !IsNull();}
+	
 };
 
 struct SpatialInteractionSourceLocation {
@@ -71,14 +93,36 @@ struct SpatialInteractionSourceLocation {
 	vec3	velocity;
 	
 	
-	operator bool() const;
+	vec3		AngularVelocity() const {return angular_vel;}
+	
+	const SpatialPointerInteractionSourcePose&		SourcePointerPose() const;
+	
+	void SetNull();
+	bool IsNull() const;
+	
+	operator bool() const {return !IsNull();}
+	void operator=(void* o) {ASSERT(!o); SetNull();}
 	
 };
 
+
+struct SpatialInteractionSourceProperties {
+	
+	
+	const SpatialInteractionSourceLocation&			TryGetLocation(const SpatialCoordinateSystem& coord) const;
+	
+	
+};
+
+
 struct SpatialInteractionSourceState {
 	
+	bool											IsSelectPressed() const;
+	bool											IsGrasped() const;
 	
-	const SpatialInteractionSource&			Source() const;
+	const SpatialInteractionSource&					Source() const;
+	const SpatialInteractionControllerProperties&	ControllerProperties() const;
+	const SpatialInteractionSourceProperties&		Properties() const;
 	
 };
 
@@ -90,10 +134,11 @@ struct SpatialInteractionSourceEventArgs {
 	
 };
 
-class ISpatialInteractionListener : public RefScopeEnabler<ISpatialInteractionListener, Machine> {
+class ISpatialInteractionListener :
+	public RefScopeEnabler<ISpatialInteractionListener, Machine>
+{
 	
 public:
-	using Parent = Machine;
 	
     virtual void OnSourceDetected(const SpatialInteractionSourceEventArgs& args) {};
     virtual void OnSourceLost(const SpatialInteractionSourceEventArgs& args) {};
@@ -109,6 +154,9 @@ class SpatialInteractionSystem : public System<SpatialInteractionSystem>
 	LinkedList<ISpatialInteractionListenerRef> listeners;
 	
 public:
+	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_CTOR(SpatialInteractionSystem);
+	
 	using Parent = Machine;
 	
 	
@@ -122,6 +170,25 @@ public:
     
 };
 
+
+class SpatialInputUtilities {
+	public:
+	
+	class Physics {
+		public:
+			
+		static vec3 GetVelocityNearSourceLocation(const SpatialInteractionSourceLocation& loc, const vec3 pos);
+		
+	};
+	
+	class Haptics {
+		public:
+		
+		static void SendContinuousBuzzForDuration(const SpatialInteractionSource& src, MilliSeconds ts);
+		
+	};
+	
+};
 
 NAMESPACE_OULU_END
 

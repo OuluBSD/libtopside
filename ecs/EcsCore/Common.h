@@ -13,6 +13,7 @@ class ComponentMap;
 class Camerable;
 class Renderable;
 class Transform;
+class Transform2D;
 class Camerable;
 class Renderable;
 class Machine;
@@ -22,6 +23,9 @@ class Overlap;
 class ToolSystemBase;
 class ISpatialInteractionListener;
 class ToolComponent;
+class MotionControllerComponent;
+class PbrRenderable;
+class CoreWindow;
 struct ConnectorBase;
 struct ActionSource;
 struct AudioSource;
@@ -53,10 +57,13 @@ using MidiSourceRef			= Ref<MidiSource,			RefParent1<Entity>>;
 using DisplaySourceRef		= Ref<DisplaySource,		RefParent1<Entity>>;
 using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
+using Transform2DRef		= Ref<Transform2D,			RefParent1<Entity>>;
 using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
 using OverlapRef			= Ref<Overlap,				RefParent1<Entity>>;
 using PaintComponentRef		= Ref<PaintComponent,		RefParent1<Entity>>;
 using ToolComponentRef		= Ref<ToolComponent,		RefParent1<Entity>>;
+using PbrRenderableRef		= Ref<PbrRenderable,		RefParent1<Entity>>;
+using CoreWindowRef			= Ref<CoreWindow,		RefParent1<Entity>>;
 using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
@@ -66,7 +73,8 @@ using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 
-using ISpatialInteractionListenerRef = Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
+using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
+using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
 
 using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;
@@ -84,6 +92,12 @@ using RefT_Pool				= Ref<T,					RefParent1<Pool>>;
 
 struct PerceptionTimestamp {
 	double ts = 0;
+	
+	PerceptionTimestamp() {}
+	PerceptionTimestamp(double ts) : ts(ts) {}
+	PerceptionTimestamp(const PerceptionTimestamp& t) : ts(t.ts) {}
+	
+	
 };
 
 struct HolographicFramePrediction {
@@ -119,7 +133,11 @@ public:
 };
 
 struct HolographicSpace {
-
+	
+	
+	
+	operator bool() const;
+	
 };
 
 

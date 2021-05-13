@@ -110,6 +110,7 @@ public:
 	void Pick(Optional& o) {obj = o.obj; o.obj = NULL;}
 	bool IsEmpty() const { return obj == NULL; }
 	T& GetObject() const {return *obj;}
+	T& value() const {return *obj;}
 	T* operator->() {ASSERT(obj); return obj;}
 	operator bool () const {return obj != NULL;}
 	T& operator*() {return *obj;}

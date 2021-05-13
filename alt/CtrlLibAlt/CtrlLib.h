@@ -10,6 +10,7 @@
 #include "StaticCtrl.h"
 #include "FileSel.h"
 #include "Bar.h"
+#include "TabCtrl.h"
 
 NAMESPACE_UPP
 

@@ -237,7 +237,7 @@ bool FfmpegFileInput::IsEof() const {
 	return is_eof;
 }
 
-int FfmpegFileInput::GetActiveVideoFormat() const {
+int FfmpegFileInput::GetActiveVideoFormatIdx() const {
 	return 0;
 }
 

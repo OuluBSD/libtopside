@@ -6,21 +6,24 @@ NAMESPACE_OULU_BEGIN
 
 struct VideoFormat {
 	Size res = {0,0};
+	int depth = 0; // volume video is a thing
 	double fps = 0;
 	int var_size = 0;
 	int channels = 0;
 	int pitch = 0;
 	
 	void Clear();
-	bool IsValid() const {return res.cx > 0 && res.cy > 0 && fps > 0 && var_size > 0 && channels > 0 && pitch >= GetMinPitch();}
+	bool IsValid() const {return res.cx > 0 && res.cy > 0 && depth > 0 && fps > 0 && var_size > 0 && channels > 0 && pitch >= GetMinPitch();}
 	int GetMinPitch() const {return res.cx * channels * var_size;}
 	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); pitch = GetMinPitch() + bytes;}
 	void SetPitch(int bytes) {pitch = bytes; ASSERT(bytes >= GetMinPitch());}
 	Size GetSize() const {return res;}
+	int GetDepth() const {return depth;}
 	int GetFrameBytes() const {return res.cy * pitch;}
 	bool operator!=(const VideoFormat& fmt) const {return !(*this == fmt);}
 	bool operator==(const VideoFormat& fmt) const {
 		return	res == fmt.res &&
+				depth == fmt.depth &&
 				fps == fmt.fps &&
 				var_size == fmt.var_size &&
 				channels == fmt.channels &&
@@ -30,7 +33,7 @@ struct VideoFormat {
 	
 };
 
-VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch);
+VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch, int depth=1);
 
 
 
@@ -78,7 +81,6 @@ protected:
 	VideoCodecFormat					codec;
 	Array<VideoSourceFormatResolution>	res;
 	
-	VideoSourceFormatResolution&		GetResolution(int i) {return res[i];}
 	
 	
 public:
@@ -89,6 +91,7 @@ public:
 	String								GetDescription() const {return desc;}
 	int									GetResolutionCount() const {return res.GetCount();}
 	const VideoSourceFormatResolution&	GetResolution(int i) const {return res[i];}
+	VideoSourceFormatResolution&		GetResolution(int i) {return res[i];}
 	VideoCodecFormat					GetCodecFormat() const {return codec;}
 	
 	VideoSourceFormatResolution&		operator[](int i) {return res[i];}
@@ -174,10 +177,13 @@ public:
 	virtual void						DropVideoFrames(int frames) = 0;
 	virtual int							GetVideoBufferSize() const = 0;
 	virtual Video&						GetVideo() = 0;
-	virtual int							GetActiveVideoFormat() const = 0;
+	virtual int							GetActiveVideoFormatIdx() const = 0;
 	virtual int							GetFormatCount() const = 0;
 	virtual const VideoSourceFormat&	GetFormat(int i) const = 0;
 	virtual bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) = 0;
+	
+	
+	const VideoSourceFormat&			GetActiveVideoFormat() const {return GetFormat(GetActiveVideoFormatIdx());}
 	
 	//virtual Size		GetVideoSize() const {return Size(0,0);}
 	//virtual int		GetVideoDepth() const {return 0;}

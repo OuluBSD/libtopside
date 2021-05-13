@@ -118,8 +118,8 @@ protected:
 	void DrawEnd(DrawCommand& cmd);
 	
 public:
-	Weak<Transform>    transform;
-	Weak<Transform2D>  transform2d;
+	Ref<Transform>    transform;
+	Ref<Transform2D>  transform2d;
 	
 public:
 	typedef CoreWindow CLASSNAME;
@@ -225,12 +225,12 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
         auto components = EntityPrefab::Make(e);
 		
 		//components.Get<CoreWindow>()->renderable2d = components.GetRef<Renderable2D>();
-		components.Get<CoreWindow>()->transform2d = components.GetRef<Transform2D>();
+		components.Get<CoreWindowRef>()->transform2d = components.Get<Transform2DRef>();
 		
-		components.Get<Transform2D>()->position = vec2(0, 0);
-		components.Get<Transform2D>()->size = vec2(320, 240);
+		components.Get<Transform2DRef>()->position = vec2(0, 0);
+		components.Get<Transform2DRef>()->size = vec2(320, 240);
 		
-		T& t = components.Get<CoreWindow>()->Create<T>();
+		T& t = components.Get<CoreWindowRef>()->Create<T>();
 		ASSERT(&t);
 		
         return components;

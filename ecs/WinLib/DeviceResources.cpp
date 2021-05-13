@@ -321,12 +321,12 @@ using SharedDeviceResources = Shared<DX::DeviceResources>;
 using HolographicSpace = winrt::Windows::Graphics::Holographic::HolographicSpace;
 
 
-void LoadDefaultResources(SharedDeviceResources& dr, HolographicSpace& hs, String diff, String spec, String skybox, String lut) {
+void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String diff, String spec, String skybox, String lut) {
 	hs = std::make_shared<DX::DeviceResources>();
 	
-	dev_res->SetHolographicSpace(hs);
+	dev_res.SetHolographicSpace(hs);
 	
-	const auto pbr_res = std::make_shared<Pbr::Resources>(dev_res->GetD3DDevice());
+	const auto pbr_res = std::make_shared<Pbr::Resources>(dev_res.GetD3DDevice());
 
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuseEnvironmentMap;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specularEnvironmentMap;
@@ -335,9 +335,9 @@ void LoadDefaultResources(SharedDeviceResources& dr, HolographicSpace& hs, Strin
 
     auto resourceLoadingTask = std::async(std::launch::async, [&]
     {
-        auto diffuseTextureFuture = DX::LoadDDSTextureAsync(dev_res->GetD3DDevice(), diff);
-        auto specularTextureFuture = DX::LoadDDSTextureAsync(dev_res->GetD3DDevice(), spec);
-        auto skyboxTextureFuture = DX::LoadDDSTextureAsync(dev_res->GetD3DDevice(), skybox);
+        auto diffuseTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), diff);
+        auto specularTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), spec);
+        auto skyboxTextureFuture = DX::LoadDDSTextureAsync(dev_res.GetD3DDevice(), skybox);
         auto brdfLutFileDataFuture = DX::ReadDataAsync(lut);
 
         diffuseEnvironmentMap = diffuseTextureFuture.get();
@@ -346,14 +346,14 @@ void LoadDefaultResources(SharedDeviceResources& dr, HolographicSpace& hs, Strin
         std::vector<byte> brdfLutFileData = brdfLutFileDataFuture.get();
 
         // Read the BRDF Lookup Table used by the PBR system into a DirectX texture.
-        brdlutTexture = Pbr::Texture::LoadImage(dev_res->GetD3DDevice(), brdfLutFileData.data(), static_cast<uint32_t>(brdfLutFileData.size()));
+        brdlutTexture = Pbr::Texture::LoadImage(dev_res.GetD3DDevice(), brdfLutFileData.data(), static_cast<uint32_t>(brdfLutFileData.size()));
     });
 
     // Launch the loading tasks on another thread and wait for them to complete
     resourceLoadingTask.wait();
 
     pbr_res->SetBrdfLut(brdlutTexture.Get());
-    pbr_res->SetEnvironmentMap(dev_res->GetD3DDeviceContext(), specularEnvironmentMap.Get(), diffuseEnvironmentMap.Get());
+    pbr_res->SetEnvironmentMap(dev_res.GetD3DDeviceContext(), specularEnvironmentMap.Get(), diffuseEnvironmentMap.Get());
 }
 
 

@@ -273,17 +273,17 @@ void DNA :: DumpToFile()
 }
 
 // ------------------------------------------------------------------------------------------------
-Shared< ElemBase > DNA :: ConvertBlobToStructure(
+std::shared_ptr< ElemBase > DNA :: ConvertBlobToStructure(
     const Structure& structure,
     const FileDatabase& db
 ) const
 {
     std::map<std::string, FactoryPair >::const_iterator it = converters.find(structure.name);
     if (it == converters.end()) {
-        return Shared< ElemBase >();
+        return std::shared_ptr< ElemBase >();
     }
 
-    Shared< ElemBase > ret = (structure.*((*it).second.first))();
+    std::shared_ptr< ElemBase > ret = (structure.*((*it).second.first))();
     (structure.*((*it).second.second))(ret,db);
 
     return ret;

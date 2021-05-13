@@ -4,13 +4,17 @@
 NAMESPACE_OULU_BEGIN
 
 
-VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch) {
+VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch, int depth) {
 	VideoFormat f;
 	f.res = res;
+	f.depth = depth;
 	f.fps = fps;
 	f.var_size = var_size;
 	f.channels = channels;
+	if (pitch <= 0)
+		pitch = res.cx * var_size * channels;
 	f.pitch = pitch;
+	ASSERT(f.IsValid());
 	return f;
 }
 
@@ -75,6 +79,7 @@ bool VolatileVideoBuffer::PaintOpenGLTexture(int texture) {
 
 void VideoFormat::Clear() {
 	res = Size(0,0);
+	depth = 0;
 	fps = 0;
 	var_size = 0;
 	channels = 0;

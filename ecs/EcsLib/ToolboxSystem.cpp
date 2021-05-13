@@ -64,12 +64,12 @@ void ToolboxSystem::Start() {
 	instruction_text->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Left].dbg_txt = es->GetRoot()->Create<TextDisplay>();
 	ctrls[Left].dbg_txt->Get<Transform>()->position = { -2.5, 1.25f, -4.f };
-	ctrls[Left].dbg_txt->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, M_PI * 0.15f);
+	ctrls[Left].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, M_PI * 0.15f);
 	ctrls[Left].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Left].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
 	ctrls[Right].dbg_txt = es->GetRoot()->Create<TextDisplay>();
 	ctrls[Right].dbg_txt->Get<Transform>()->position = { 2.5, 1.25f, -4.f };
-	ctrls[Right].dbg_txt->Get<Transform>()->orientation = MakeQuaternionFromAxisAngle({ 0, 1, 0 }, -M_PI * 0.15f);
+	ctrls[Right].dbg_txt->Get<Transform>()->orientation = make_quat_from_axis_angle({ 0, 1, 0 }, -M_PI * 0.15f);
 	ctrls[Right].dbg_txt->Get<Transform>()->size = vec3{ 2.0f };
 	ctrls[Right].dbg_txt->Get<TextRenderable>()->font_size = 52.0f;
 	GetMachine().Get<SpatialInteractionSystem>()->AddListener(AsRef<ISpatialInteractionListener>());
@@ -87,11 +87,12 @@ void ToolboxSystem::Update(double dt) {
 	curr_fps %= fps_sz;
 	const float avg_dt = std::accumulate(std::begin(fps), std::end(fps), 0.0f) / fps_sz;
 	instruction_text->Get<TextRenderable>()->text =
-		IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;
-	
+	        IntStr(static_cast<int>(std::round(1.0f / avg_dt))) + " FPS\n\n" + instruction_txt;
+	        
 	if (!show_toolbox) {
 		{
 			int i = 0;
+			
 			for (auto& selector : selector_objects) {
 				const float offset = (i - floorf(selector_objects.GetCount() / 2.f)) / selector_objects.GetCount();
 				selector->Get<Easing>()->target_position = vec3{ offset, 1.25f, -5.f };
@@ -114,9 +115,9 @@ void ToolboxSystem::Update(double dt) {
 		for (size_t i = 0; i < ctrls.GetCount(); ++i) {
 			String displayed_text = String(ControllerHandToString(ctrls[i].hand)) + " switch to: ";
 			const vec3 ctrl_position = ctrls[i].ctrl->Get<Transform>()->position;
-			
 			TODO
-			#if 0
+#if 0
+			
 			for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
 				if (HitTest(ctrl_position, transform->position, 0.15f)) {
 					auto it = selectors.find(selector->type);
@@ -128,8 +129,8 @@ void ToolboxSystem::Update(double dt) {
 					}
 				}
 			}
-			#endif
 			
+#endif
 			ctrls[i].dbg_txt->Get<TextRenderable>()->text = displayed_text;
 		}
 	}
@@ -178,9 +179,9 @@ void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& arg
 		if (const SpatialInteractionSourceLocation& location = ctrl->Get<MotionControllerComponent>()->location) {
 			if (!location.pos.IsNull()) {
 				const vec3 position = location.pos;
-				
 				TODO
-				#if 0
+#if 0
+				
 				for (auto[transform, selector] : GetMachine().Get<EntityStore>()->GetComponents<Transform, ToolSelectorKey>()) {
 					if (HitTest(position, transform->position, 0.15f)) {
 						SwitchToolType(*ctrl, selector->type);
@@ -188,7 +189,8 @@ void ToolboxSystem::OnSourcePressed(const SpatialInteractionSourceEventArgs& arg
 						break;
 					}
 				}
-				#endif
+				
+#endif
 			}
 		}
 	}

@@ -35,6 +35,7 @@ NAMESPACE_OULU_END
 
 #include "Compat.h"
 #include "Types.h"
+#include "Chrono.h"
 #include "Recycler.h"
 #include "LinkedList.h"
 #include "TypeTraits.h"

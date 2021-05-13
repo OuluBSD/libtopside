@@ -23,7 +23,7 @@ void PhysicsSystem::Update(double dt)
         if (angle > 0.0f)
         {
             const vec3 axis = adjusted_angular / angle;
-            transform.orientation *= MakeQuaternionFromAxisAngle(axis, angle * dt);
+            transform.orientation *= make_quat_from_axis_angle(axis, angle * dt);
         }
 
         rigid_body.velocity *= rigid_body.damping_factor;

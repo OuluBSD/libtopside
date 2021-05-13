@@ -45,7 +45,7 @@ public:
 
 public:
 	struct Style : ChStyle<Style> {
-		Value  look[6];
+		Object look[6];
 		Font   font;
 		Color  textcolor[6];
 		bool   light[6];
@@ -70,7 +70,7 @@ public:
 		Size                 buttonminsize;
 		Size                 maxiconsize;
 		int                  buttonkind;
-		Value                look, arealook;
+		Object               look, arealook;
 		SeparatorCtrl::Style breaksep;
 		SeparatorCtrl::Style separator;
 	};

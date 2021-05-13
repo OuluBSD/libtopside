@@ -2,7 +2,7 @@
 #define _DrawAlt_Draw_h_
 
 #include <CoreAlt/Core.h>
-#include <guiplatform.h>
+#include <altguiplatform.h>
 
 #ifdef GUIPLATFORM_VIRTUALGUI_BACKEND_INCLUDE
 	#include GUIPLATFORM_VIRTUALGUI_BACKEND_INCLUDE

@@ -11,7 +11,7 @@ public:
 	virtual void Paint(Draw& w);
 
 	struct Style : ChStyle<Style> {
-		Value l1, l2;
+		Object l1, l2;
 	};
 };
 
@@ -26,7 +26,7 @@ public:
 	StaticRect& SetColor(Color c) {clr = c; return *this;}
 	
 	struct Style : ChStyle<Style> {
-		Value def_clr;
+		Object def_clr;
 	};
 };
 

@@ -90,8 +90,8 @@ void FusionDataSink::Ogl_RecvStatic(const StaticSinkData& d) {
 	
 	GLuint& tex = color_buf[0];
 	
-	stream.sz = Size(d.w, d.h);
-	stream.depth = d.d;
+	VideoSourceFormatResolution& res = stream.fmt.GetResolution(0);
+	res.SetFormat(MakeVideoFormat(Size(d.w, d.h), 60, 1, 4, -1, d.d));
 	
 	if (d.d == 1) {
 		bool is_cubemap = cfg.GetFusionType() == FusionComponentInput::CUBEMAP;
