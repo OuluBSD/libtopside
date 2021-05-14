@@ -1,4 +1,4 @@
-#include "AudioShaderEditor.h"
+#include "EcsCtrlDemo.h"
 
 
 using namespace Oulu;
@@ -13,8 +13,6 @@ GUI_APP_MAIN {
 		
 		//SetDebugRefVisits();
 		RuntimeDiagnostics::Static().SetRoot(m);
-		
-		String audiofile_path;
 		
 		{
 			RegistrySystem& reg = *m.Add<RegistrySystem>();
@@ -36,7 +34,7 @@ GUI_APP_MAIN {
 		
 		
 		{
-			AudioShaderEditor e(m);
+			EcsCtrlDemo e(m);
 			if (!e.InitializeDefault()) {
 				SetExitCode(1);
 				return;

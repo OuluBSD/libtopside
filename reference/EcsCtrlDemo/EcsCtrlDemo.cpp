@@ -1,12 +1,12 @@
-#include "AudioShaderEditor.h"
+#include "EcsCtrlDemo.h"
 
 
 NAMESPACE_OULU_BEGIN
 
 
-AudioShaderEditor::AudioShaderEditor(Machine& mach) : mach(mach) {
+EcsCtrlDemo::EcsCtrlDemo(Machine& mach) : mach(mach) {
 	MaximizeBox().Sizeable();
-	Title("AudioShaderEditor");
+	Title("EcsCtrlDemo");
 	
 	tc.Set(-1, THISBACK(MachineUpdater));
 	
@@ -20,7 +20,7 @@ AudioShaderEditor::AudioShaderEditor(Machine& mach) : mach(mach) {
 	
 }
 
-bool AudioShaderEditor::InitializeDefault() {
+bool EcsCtrlDemo::InitializeDefault() {
 	PoolRef p = GetPool();
 	p->Add<ConnectAllInterfaces<AudioSource>>();
 	
@@ -36,15 +36,15 @@ bool AudioShaderEditor::InitializeDefault() {
 	return true;
 }
 
-void AudioShaderEditor::OnError() {
+void EcsCtrlDemo::OnError() {
 	mach.SetNotRunning();
 }
 
-void AudioShaderEditor::MachineUpdater() {
+void EcsCtrlDemo::MachineUpdater() {
 	mach.Update(ResetSeconds(ts));
 }
 
-void AudioShaderEditor::Updated() {
+void EcsCtrlDemo::Updated() {
 	tabs.Updated();
 }
 

@@ -1,5 +1,5 @@
-#ifndef _AudioShaderEditor_AudioShaderEditor_h
-#define _AudioShaderEditor_AudioShaderEditor_h
+#ifndef _EcsCtrlDemo_EcsCtrlDemo_h
+#define _EcsCtrlDemo_EcsCtrlDemo_h
 
 #include <Complete/Complete.h>
 using namespace Upp;
@@ -10,7 +10,7 @@ NAMESPACE_OULU_BEGIN
 
 
 
-class AudioShaderEditor :
+class EcsCtrlDemo :
 	public TopWindow
 {
 	TabMgrCtrl tabs;
@@ -22,8 +22,8 @@ class AudioShaderEditor :
 	
 	
 public:
-	typedef AudioShaderEditor CLASSNAME;
-	AudioShaderEditor(Machine& mach);
+	typedef EcsCtrlDemo CLASSNAME;
+	EcsCtrlDemo(Machine& mach);
 	
 	bool InitializeDefault();
 	

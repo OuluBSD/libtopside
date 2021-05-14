@@ -1,10 +1,12 @@
+description "Shows how to use basic EcsCtrl widgets to inspect ECS engine.\377";
+
 uses
 	Complete;
 
 file
 	main.cpp,
-	AudioShaderEditor.h,
-	AudioShaderEditor.cpp;
+	EcsCtrlDemo.h,
+	EcsCtrlDemo.cpp;
 
 mainconfig
 	"" = "GUI USEMALLOC",
