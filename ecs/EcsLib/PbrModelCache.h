@@ -1,6 +1,6 @@
 #pragma once
 
-
+#ifdef flagVR
 
 namespace Pbr {
 struct Model;
@@ -46,3 +46,4 @@ private:
 NAMESPACE_OULU_END
 
 
+#endif

@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -8,7 +9,8 @@ class ThrowingComponent :
 	public Component<ThrowingComponent> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(ThrowingComponent)
+public:
+	COPY_PANIC(ThrowingComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	void SetEnabled(bool enable) override;
@@ -54,3 +56,4 @@ protected:
 
 NAMESPACE_OULU_END
 
+#endif

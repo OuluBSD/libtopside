@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -7,7 +8,8 @@ class ShootingComponent :
 	public Component<ShootingComponent> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(ShootingComponent)
+public:
+	COPY_PANIC(ShootingComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -55,3 +57,5 @@ protected:
 };
 
 NAMESPACE_OULU_END
+
+#endif

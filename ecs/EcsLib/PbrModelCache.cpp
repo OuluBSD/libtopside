@@ -1,5 +1,5 @@
 #include "EcsLib.h"
-
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -19,7 +19,8 @@ PbrRenderableRef PbrModelCache::SetModel(String name, PbrRenderableRef pbr_rend_
 	
 	if (it) {
 		// Each instance gets its own copy of the model data (the heavyweight model data is immutable and reference counted).
-		it()->Clone(*pbr_res, pbr_rend_comp->model);
+		pbr_rend_comp->model.Create();
+		it()->Clone(*pbr_res, *pbr_rend_comp->model);
 		LOG("Model " << pbr_rend_comp->model_name << " successfully attached to Entity [Deferred]");
 	}
 	
@@ -77,3 +78,5 @@ void PbrModelCache::Uninitialize() {
 
 
 NAMESPACE_OULU_END
+
+#endif

@@ -45,11 +45,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ObjExporter.h"
 #include "Exceptional.h"
 #include "StringComparison.h"
-#include <assimp/version.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/Exporter.hpp>
-#include <assimp/material.h>
-#include <assimp/scene.h>
+#include <ports/assimp/version.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/Exporter.hpp>
+#include <ports/assimp/material.h>
+#include <ports/assimp/scene.h>
 #include <memory>
 
 using namespace Assimp;

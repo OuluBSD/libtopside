@@ -47,12 +47,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ObjFileData.h"
 #include "IOStreamBuffer.h"
 #include <memory>
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/ai_assert.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/DefaultIOSystem.h>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/ai_assert.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/importerdesc.h>
 
 static const aiImporterDesc desc = {
     "Wavefront Object Importer",

@@ -55,8 +55,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 
 // Header files, Assimp.
-#include <assimp/types.h>
-#include <assimp/scene.h>
+#include <ports/assimp/types.h>
+#include <ports/assimp/scene.h>
 
 /// \class CAMFImporter_NodeElement
 /// Base class for elements of nodes.

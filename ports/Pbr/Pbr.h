@@ -17,8 +17,8 @@
 #include <DirectXColors.h>
 #include <DirectXTK/GltfHelper.h>
 
-#include <tiny_gltf/tiny_gltf.h>
-#include <stb/stb_image.h>
+#include <ports/tiny_gltf/tiny_gltf.h>
+#include <ports/stb/stb_image.h>
 
 
 #ifndef flagVISUALSTUDIO

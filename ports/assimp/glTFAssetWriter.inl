@@ -39,9 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ----------------------------------------------------------------------
 */
 
-#include <plugin/rapidjson/stringbuffer.h>
-#include <plugin/rapidjson/writer.h>
-#include <plugin/rapidjson/prettywriter.h>
+#include <ports/rapidjson/stringbuffer.h>
+#include <ports/rapidjson/writer.h>
+#include <ports/rapidjson/prettywriter.h>
 
 namespace glTF {
 

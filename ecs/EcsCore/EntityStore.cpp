@@ -4,7 +4,11 @@
 NAMESPACE_OULU_BEGIN
 
 bool EntityStore::Initialize() {
-	GetRoot()->SetName("root");
+	root.Clear();
+	Pool& p = root.Add();
+	p.SetParent(PoolParent(this,0));
+	p.SetName("root");
+	p.SetId(Pool::GetNextId());
 	return true;
 }
 

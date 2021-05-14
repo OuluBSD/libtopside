@@ -77,9 +77,20 @@ public:
 	
 	
 	LinkedList() {}
+	LinkedList(const LinkedList& l) = delete;
 	LinkedList(LinkedList&& l) {Swap(first,l.first); Swap(last,l.last); Swap(count,l.count);}
 	
 	~LinkedList() {Clear();}
+	
+	T& At(int i) {
+		int j = 0;
+		for(Iterator it = begin(); it; ++it, ++j)
+			if (j == i)
+				return *it;
+		ASSERT(0);
+		throw Exc("Position not found in LinkedList: " + IntStr(i));
+	}
+	
 	Item* AddItem() {
 		Item* it = GetRecyclerPool().New();
 		if (!first) {

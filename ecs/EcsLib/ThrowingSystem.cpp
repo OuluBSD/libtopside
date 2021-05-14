@@ -1,8 +1,8 @@
 #include "EcsLib.h"
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
-
 
 
 String ThrowingInteractionSystem::GetInstructions() const {
@@ -110,3 +110,5 @@ void ThrowingComponent::Destroy() {
 
 
 NAMESPACE_OULU_END
+
+#endif

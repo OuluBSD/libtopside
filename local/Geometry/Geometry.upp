@@ -1,8 +1,9 @@
 description "Classes for 2D/3D/etc operations.\377B128,0,54";
 
 uses
-	Oulu,
-	assimp;
+	Oulu;
+
+uses(BUILTIN_ASSIMP) ports/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX) assimp;
 

@@ -51,10 +51,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Q3DLoader.h"
 #include "StreamReader.h"
 #include "fast_atof.h"
-#include <assimp/IOSystem.hpp>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/scene.h>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/importerdesc.h>
 
 using namespace Assimp;
 

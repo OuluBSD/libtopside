@@ -13,8 +13,14 @@ class WindowSystem : public System<WindowSystem>, public Windows {
 	void Visit(RuntimeVisitor& vis) override {
 		vis & ents;
 	}
+	
 public:
-	WindowSystem(Machine& m);
+	SYS_CTOR(WindowSystem);
+	
+	static constexpr const char* POOL_NAME = "windows";
+	
+	PoolRef GetPool() const {return GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
+	
 	
 	void Invalidate();
 	

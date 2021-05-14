@@ -114,7 +114,7 @@ struct aiTexel
 
 } PACK_STRUCT;
 
-#include <assimp/Compiler/poppack1.h>
+#include <ports/assimp/Compiler/poppack1.h>
 
 // --------------------------------------------------------------------------------
 /** Helper structure to describe an embedded texture

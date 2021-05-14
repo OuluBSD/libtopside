@@ -54,8 +54,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "BlenderModifier.h"
 #include "BlenderBMesh.h"
 #include "StringUtils.h"
-#include <assimp/scene.h>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/importerdesc.h>
 
 #include "StringComparison.h"
 #include "StreamReader.h"

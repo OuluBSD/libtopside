@@ -1,8 +1,8 @@
 #undef STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
+#include <ports/stb/stb_image.h>
 
 #undef STB_TRUETYPE_IMPLEMENTATION
-#include <stb/stb_truetype.h>
+#include <ports/stb/stb_truetype.h>
 
 NAMESPACE_UPP
 

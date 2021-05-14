@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StreamReader.h"
 #include "fast_atof.h"
 #include <vector>
-#include <assimp/DefaultLogger.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
 
 namespace Assimp {
     namespace DXF {

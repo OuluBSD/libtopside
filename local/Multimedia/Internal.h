@@ -33,7 +33,7 @@ extern "C" {
 	#ifdef flagWIN32
 		#error V4L2 is not supported in windows
 	#else
-		#include <libv4l2/libv4l2.h>
+		#include <ports/libv4l2/libv4l2.h>
 	#endif
 #endif
 

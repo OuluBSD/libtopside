@@ -19,16 +19,16 @@ struct EntityDataCtrl : public ComponentCtrl {
 };
 
 class EntityCtrl : public ParentCtrl {
-	ArrayMap<TypeId, ComponentCtrl> comp_ctrls;
-	Splitter vsplit, hsplit;
-	EntityListCtrl ent_list;
-	EntityContentCtrl ent_content;
-	EntityDataCtrl ent_data;
-	ParentCtrl ent_cont;
+	ArrayMap<TypeId, ComponentCtrl>		comp_ctrls;
+	Splitter							vsplit, hsplit;
+	EntityBrowserCtrl					ent_browser;
+	EntityContentCtrl					ent_content;
+	EntityDataCtrl						ent_data;
+	ParentCtrl							ent_cont;
 	
-	EntityRef sel_ent;
-	ComponentCtrl* active_ctrl = 0;
-	
+	EntityRef							sel_ent;
+	ComponentCtrl*						active_ctrl = 0;
+	Machine*							mach = 0;
 	
 	void ClearActiveCtrl();
 	void UpdateEntityData();
@@ -39,6 +39,7 @@ public:
 	typedef EntityCtrl CLASSNAME;
 	EntityCtrl();
 	
+	void SetMachine(Machine& m) {mach = &m; ent_browser.SetMachine(m);}
 	void Updated() override;
 	void OnEntityCursorChanged();
 	void OnContentCursorChanged();

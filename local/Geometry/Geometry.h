@@ -6,13 +6,13 @@
 
 #ifdef flagASSIMP
 	#if defined flagBUILTIN_ASSIMP || (defined flagMSC && defined flagWIN32)
-		#include <assimp/Importer.hpp>
-		#include <assimp/scene.h>
-		#include <assimp/postprocess.h>
+		#include <ports/assimp/Importer.hpp>
+		#include <ports/assimp/scene.h>
+		#include <ports/assimp/postprocess.h>
 	#else
-		#include <assimp/Importer.hpp>
-		#include <assimp/scene.h>
-		#include <assimp/postprocess.h>
+		#include <ports/assimp/Importer.hpp>
+		#include <ports/assimp/scene.h>
+		#include <ports/assimp/postprocess.h>
 	#endif
 #endif
 

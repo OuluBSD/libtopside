@@ -53,6 +53,7 @@ void RenderingSystem::Remove(DisplaySourceRef src) {
 
 
 
+#if 0
 
 #if defined flagGUI && flagALTCORE
 
@@ -188,6 +189,7 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 	return !needs_fast_rerender;
 }
 
+#endif
 #endif
 
 NAMESPACE_OULU_END

@@ -4,15 +4,9 @@
 #include <Complete/Complete.h>
 using namespace Upp;
 
-#define LAYOUTFILE <AudioShaderEditor/AudioShaderEditor.lay>
-#include <CtrlCore/lay.h>
-
-
-#include "Editor.h"
 
 
 NAMESPACE_OULU_BEGIN
-
 
 
 
@@ -29,13 +23,18 @@ class AudioShaderEditor :
 	
 public:
 	typedef AudioShaderEditor CLASSNAME;
-	AudioShaderEditor();
+	AudioShaderEditor(Machine& mach);
 	
-	bool InitializeDefault(String audio_path);
+	bool InitializeDefault();
 	
 	void Updated() override;
 	void OnError();
 	
+	
+	Machine& mach;
+	static constexpr const char* POOL_NAME = "shaders";
+	
+	PoolRef GetPool() {return mach.Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
 };
 

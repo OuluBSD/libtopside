@@ -1,7 +1,6 @@
 #pragma once
 
-
-
+#ifdef flagVR
 
 
 NAMESPACE_OULU_BEGIN
@@ -11,7 +10,8 @@ class PaintComponent :
 	public Component<PaintComponent> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(PaintComponent)
+public:
+	COPY_PANIC(PaintComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -108,3 +108,4 @@ private:
 
 NAMESPACE_OULU_END
 
+#endif

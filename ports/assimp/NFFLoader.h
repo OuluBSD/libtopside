@@ -46,8 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AI_NFFLOADER_H_INCLUDED
 
 #include "BaseImporter.h"
-#include <assimp/types.h>
-#include <assimp/material.h>
+#include <ports/assimp/types.h>
+#include <ports/assimp/material.h>
 #include <vector>
 
 

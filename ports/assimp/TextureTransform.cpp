@@ -43,10 +43,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/scene.h>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/postprocess.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/scene.h>
 
 #include "TextureTransform.h"
 #include "StringUtils.h"

@@ -48,10 +48,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FileSystemFilter.h"
 #include "Importer.h"
 #include "ByteSwapper.h"
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/postprocess.h>
+#include <ports/assimp/importerdesc.h>
 #include <ios>
 #include <list>
 #include <memory>
@@ -302,7 +302,7 @@ void BaseImporter::GetExtensionList(std::set<std::string>& extensions)
     return false;
 }
 
-#include <utf8/utf8.h>
+#include <ports/utf8/utf8.h>
 
 // ------------------------------------------------------------------------------------------------
 // Convert to UTF8 data

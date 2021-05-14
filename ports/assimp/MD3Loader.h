@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ByteSwapper.h"
 #include "MD3FileData.h"
 #include "StringComparison.h"
-#include <assimp/types.h>
+#include <ports/assimp/types.h>
 
 #include <list>
 

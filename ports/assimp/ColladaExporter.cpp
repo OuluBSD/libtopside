@@ -45,13 +45,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ColladaExporter.h"
 #include "Bitmap.h"
 #include "fast_atof.h"
-#include <assimp/SceneCombiner.h>
+#include <ports/assimp/SceneCombiner.h>
 #include "StringUtils.h"
 #include "XMLTools.h"
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/Exporter.hpp>
-#include <assimp/scene.h>
+#include <ports/assimp/DefaultIOSystem.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/Exporter.hpp>
+#include <ports/assimp/scene.h>
 
 #include "Exceptional.h"
 

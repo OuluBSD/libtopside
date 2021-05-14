@@ -43,8 +43,8 @@
 #include <SDKDDKVer.h>
 
 
-#include <tiny_gltf/tiny_gltf.h>
-#include <mikktspace/mikktspace.h>
+#include <ports/tiny_gltf/tiny_gltf.h>
+#include <ports/mikktspace/mikktspace.h>
 
 
 #include "DDSTextureLoader.h"

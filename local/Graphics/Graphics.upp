@@ -4,9 +4,9 @@ uses
 	Oulu,
 	Geometry;
 
-uses(MSC) glew;
+uses(MSC) ports/glew;
 
-uses(MSC) glext;
+uses(MSC) ports/glext;
 
 file
 	GL.h,

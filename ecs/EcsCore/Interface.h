@@ -9,7 +9,7 @@ NAMESPACE_OULU_BEGIN
 
 #if 0
 class InterfaceBase : public ExchangeProvider {
-	/*void DbgChk(InterfaceBase* b);
+	void DbgChk(InterfaceBase* b);
 	
 protected:
 	Vector<InterfaceBase*> conns;
@@ -21,7 +21,7 @@ protected:
 	
 public:
 	
-	bool UnlinkManually(InterfaceBase& iface) {return Unlink0(&iface);}
+	bool UnlinkManually(ExchangeProviderBaseRef iface) {return Unlink0(&iface);}
 	void UnlinkAll() {for(auto c: conns) c->RemoveConnection(this); conns.Clear();}
 	void RemoveConnection(InterfaceBase* b);
 	void AddConnection(InterfaceBase* b) {ASSERT(Find(b) < 0); DbgChk(b); conns.Add(b);}
@@ -37,12 +37,12 @@ public:
 	virtual State* OnLink(InterfaceBase* iface) {return NULL;}
 	virtual void OnUnlink(InterfaceBase* iface) {}
 	virtual ComponentBase* AsComponentBase() = 0;
-	*/
+	
 	
 public:
 	virtual ~InterfaceBase() {UnlinkAll();}
 	
-	bool UnlinkManually(InterfaceBase& iface);
+	bool UnlinkManually(ExchangeProviderBaseRef iface);
 	virtual TypeId GetProviderType() = 0;
 	
 };

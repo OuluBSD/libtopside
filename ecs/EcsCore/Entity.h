@@ -21,9 +21,8 @@ class Entity :
 protected:
 	friend class Pool;
 	
-	void Init(EntityId i) {id = i;}
+	void SetId(EntityId i) {id = i;}
 	//void SetId(EntityId i) {id = i;}
-	void SetPrefab(String s) {prefab = s;}
 	void SetCreated(int64 i) {created = i;}
 	void SetChanged(int64 i) {changed = i;}
 	
@@ -36,6 +35,9 @@ public:
 	Entity();
 	virtual ~Entity();
 	
+	static EntityId GetNextId();
+	
+	void SetPrefab(String s) {prefab = s;}
 	String GetPrefab() const {return prefab;}
 	String GetName() const {return name;}
 	EntityId GetId() const {return id;}
@@ -186,6 +188,18 @@ struct EntityPrefab {
 	static Components Make(Entity& e) {
 		return e.CreateComponents<ComponentTs...>();
 	}
+};
+
+
+class EntityHashVisitor : public RuntimeVisitor {
+	CombineHash ch;
+	
+	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+public:
+	
+	
+	operator hash_t() const {return ch;}
+	
 };
 
 

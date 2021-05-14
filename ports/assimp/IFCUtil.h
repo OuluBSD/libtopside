@@ -49,8 +49,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IFCReaderGen.h"
 #include "IFCLoader.h"
 #include "STEPFile.h"
-#include <assimp/mesh.h>
-#include <assimp/material.h>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/material.h>
 
 struct aiNode;
 

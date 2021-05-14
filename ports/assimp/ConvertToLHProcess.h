@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_CONVERTTOLHPROCESS_H_INC
 #define AI_CONVERTTOLHPROCESS_H_INC
 
-#include <assimp/types.h>
+#include <ports/assimp/types.h>
 #include "BaseProcess.h"
 
 struct aiMesh;

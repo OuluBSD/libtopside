@@ -55,9 +55,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "C4DImporter.h"
 #include "TinyFormatter.h"
 #include <memory>
-#include <assimp/IOSystem.hpp>
-#include <assimp/scene.h>
-#include <assimp/ai_assert.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/ai_assert.h>
 
 #if defined(_M_X64) || defined(__amd64__)
 #   define __C4D_64BIT

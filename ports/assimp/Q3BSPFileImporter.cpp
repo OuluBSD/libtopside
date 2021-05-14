@@ -52,12 +52,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #   include "z.h"
 #endif
 
-#include <assimp/types.h>
-#include <assimp/mesh.h>
-#include <assimp/scene.h>
-#include <assimp/ai_assert.h>
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/types.h>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/ai_assert.h>
+#include <ports/assimp/DefaultIOSystem.h>
+#include <ports/assimp/importerdesc.h>
 #include <vector>
 #include <sstream>
 #include "StringComparison.h"

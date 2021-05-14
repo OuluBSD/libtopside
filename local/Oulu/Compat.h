@@ -118,8 +118,17 @@ template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));
 template<> inline double ToDouble(const Value& o) {return o;}
 
 
+using NullOpt = std::nullopt_t;
+
+#define null_opt std::nullopt
+
+template <class T> using Optional = std::optional<T>;
+
+//template <class T, class ...Args> std::optional<T> MakeOptional(Args... args) {return std::make_optional(args...);}
+template <class T> std::optional<T> MakeOptional(const T& o) {return std::make_optional(o);}
 
 NAMESPACE_UPP_END
+
 
 #include <CoreAlt/Shared.h>
 #include <CoreAlt/Object.h>
@@ -195,6 +204,7 @@ public:
 };
 
 template<> inline hash_t GetHashValue(const float& a)         { return memhash(&a, sizeof(a)); }
+
 
 END_UPP_NAMESPACE
 #endif

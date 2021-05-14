@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 #include "zlib.h"
-#include <unzip/ioapi.h>
+#include <ports/unzip/ioapi.h>
 #include "iowin32.h"
 
 #ifndef INVALID_HANDLE_VALUE

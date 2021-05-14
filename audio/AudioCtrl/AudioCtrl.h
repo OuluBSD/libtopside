@@ -11,7 +11,7 @@
 #include "Slider.h"
 #include "MidiFileCtrl.h"
 #include "AudioSourceCtrl.h"
-#include "MediaSourceCtrl.h"
+#include "VideoSourceCtrl.h"
 
 
 #endif

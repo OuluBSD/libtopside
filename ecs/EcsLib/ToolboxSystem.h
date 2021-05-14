@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -76,3 +77,5 @@ private:
 };
 
 NAMESPACE_OULU_END
+
+#endif

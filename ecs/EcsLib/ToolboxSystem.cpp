@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -240,3 +241,5 @@ EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source) 
 
 
 NAMESPACE_OULU_END
+
+#endif

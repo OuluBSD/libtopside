@@ -10,7 +10,7 @@ public:
 	typedef AudioSourceCtrl CLASSNAME;
 	AudioSourceCtrl();
 	
-	void SetInterface(ComponentBase& c, InterfaceBase& b) override;
+	void SetInterface(ComponentBaseRef c, ExchangeProviderBaseRef b) override;
 	
 };
 

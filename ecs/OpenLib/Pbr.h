@@ -74,7 +74,7 @@ struct Model {
 	
     void Clone(const Pbr::Resources& pbr_res, Model& dst) const;
 	
-	Optional<NodeIndex_t> FindFirstNode(char const* name, std::optional<NodeIndex_t> const& parentNodeIndex = {}) const;
+	Optional<NodeIndex_t> FindFirstNode(char const* name, Optional<NodeIndex_t> const& parentNodeIndex = {}) const;
 	mat4 GetNodeWorldTransform(NodeIndex_t nodeIndex) const;
     NodeIndex_t GetNodeCount() const;// { return (NodeIndex_t)m_nodes.size(); }
     Node& GetNode(NodeIndex_t nodeIndex);// { return m_nodes[nodeIndex]; }

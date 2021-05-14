@@ -11,6 +11,8 @@
 #include "FileSel.h"
 #include "Bar.h"
 #include "TabCtrl.h"
+#include "ArrayCtrl.h"
+#include "TreeCtrl.h"
 
 NAMESPACE_UPP
 

@@ -1,6 +1,5 @@
 uses
-	Complete,
-	FusionCore;
+	Complete;
 
 file
 	ShaderViewer.h,

@@ -52,9 +52,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "fast_atof.h"
 #include "ParsingUtils.h"
 #include "StringUtils.h"
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/IOSystem.hpp>
-#include <assimp/light.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/light.h>
 #include "TinyFormatter.h"
 
 #include <memory>

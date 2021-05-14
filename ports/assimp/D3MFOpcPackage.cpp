@@ -45,10 +45,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "D3MFOpcPackage.h"
 #include "Exceptional.h"
 
-#include <assimp/IOStream.hpp>
-#include <assimp/IOSystem.hpp>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/ai_assert.h>
+#include <ports/assimp/IOStream.hpp>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/ai_assert.h>
 
 #include <cstdlib>
 #include <memory>
@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <algorithm>
 #include <cassert>
-#include <unzip/unzip.h>
+#include <ports/unzip/unzip.h>
 #include "3MFXmlTags.h"
 
 namespace Assimp {

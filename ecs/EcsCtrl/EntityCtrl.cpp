@@ -20,17 +20,17 @@ EntityCtrl::EntityCtrl() {
 	hsplit.SetPos(2000);
 	
 	vsplit.Vert();
-	vsplit << ent_list << ent_content;
-	vsplit.SetPos(4000);
+	vsplit << ent_browser << ent_content;
+	//vsplit.SetPos(4000);
 	
 	
-	ent_list.WhenEntityChanged << THISBACK(OnEntityCursorChanged);
+	ent_browser.WhenEntityChanged << THISBACK(OnEntityCursorChanged);
 	ent_content.WhenContentCursor << THISBACK(OnContentCursorChanged);
 	
 }
 
 void EntityCtrl::OnEntityCursorChanged() {
-	EntityRef ent = ent_list.GetSelected();
+	EntityRef ent = ent_browser.GetSelected();
 	if (ent != sel_ent) {
 		sel_ent = ent;
 		ent_content.SetEntity(sel_ent);
@@ -40,7 +40,7 @@ void EntityCtrl::OnEntityCursorChanged() {
 
 void EntityCtrl::OnContentCursorChanged() {
 	if (sel_ent) {
-		ComponentBase* c;
+		ComponentBaseRef c;
 		
 		ent_content.GetCursor(c);
 		
@@ -54,7 +54,7 @@ void EntityCtrl::OnContentCursorChanged() {
 }
 
 void EntityCtrl::Updated() {
-	ent_list.Updated();
+	ent_browser.Updated();
 	ent_content.Updated();
 }
 

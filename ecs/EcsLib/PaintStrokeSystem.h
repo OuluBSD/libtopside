@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -8,7 +9,8 @@ class PaintStrokeComponent :
 	public Component<PaintStrokeComponent> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(PaintStrokeComponent)
+public:
+	COPY_PANIC(PaintStrokeComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	Vector<Square> squares;
@@ -38,3 +40,5 @@ private:
 
 
 NAMESPACE_OULU_END
+
+#endif

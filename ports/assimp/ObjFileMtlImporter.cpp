@@ -49,8 +49,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ObjFileData.h"
 #include "fast_atof.h"
 #include "ParsingUtils.h"
-#include <assimp/material.h>
-#include <assimp/DefaultLogger.hpp>
+#include <ports/assimp/material.h>
+#include <ports/assimp/DefaultLogger.hpp>
 
 
 namespace Assimp    {

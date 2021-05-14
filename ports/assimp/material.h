@@ -493,7 +493,7 @@ struct aiUVTransform
 
 } PACK_STRUCT;
 
-#include <assimp/Compiler/poppack1.h>
+#include <ports/assimp/Compiler/poppack1.h>
 
 //! @cond AI_DOX_INCLUDE_INTERNAL
 // ---------------------------------------------------------------------------

@@ -2,12 +2,12 @@
 #define _plugin_assimp_z_h_
 
 #ifdef flagALTCORE
-	#include <zlib/zlib.h>
+	#include <ports/zlib/zlib.h>
 #else
-	#include <z/lib/zlib.h>
+	#include <plugin/z/lib/zlib.h>
 #endif
 
-#include <unzip/unzip.h>
+#include <ports/unzip/unzip.h>
 
 #undef max
 #undef min

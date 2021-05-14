@@ -7,7 +7,7 @@
 
 #ifdef flagWIN32
 	#define GLEW_STATIC 1
-	#include <glew/glew.h>
+	#include <ports/glew/glew.h>
 #else
 	#include <GL/glew.h>
 #endif
@@ -22,7 +22,7 @@
 		#include <GL/glext.h>
 	#endif
 #elif defined flagMSC
-	#include <glext/glext.h>
+	#include <ports/glext/glext.h>
 #else
 	#include "glext.h"
 #endif

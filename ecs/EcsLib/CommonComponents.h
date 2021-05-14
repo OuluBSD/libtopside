@@ -173,7 +173,7 @@ public:
 	COPY_PANIC(PbrRenderable)
 	void Visit(RuntimeVisitor& vis) override {}
 	
-    void ResetModel(String name, Optional<mat4> offset = Null) {
+    void ResetModel(String name, Optional<mat4> offset = null_opt) {
         model_name = name;
         offset = offset;
     }

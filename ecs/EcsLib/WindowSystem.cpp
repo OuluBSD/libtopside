@@ -6,9 +6,7 @@
 NAMESPACE_OULU_BEGIN
 
 
-WindowSystem::WindowSystem(Machine& m) : System<WindowSystem>(m) {
-	
-}
+
 
 bool WindowSystem::Initialize() {
 	Size sz = VirtualGui3DAltPtr->GetSize();
@@ -50,7 +48,7 @@ void WindowSystem::Uninitialize() {
 }
 
 void WindowSystem::CloseWindow(CoreWindow& cw) {
-	Entity* ent = ents->FindEntity<CoreWindow>(&cw);
+	EntityRef ent = GetPool()->FindEntity<CoreWindow>(&cw);
 	if (ent) {
 		ent->Destroy();
 	}

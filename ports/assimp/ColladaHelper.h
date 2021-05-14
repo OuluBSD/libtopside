@@ -47,9 +47,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <map>
 #include <vector>
 #include <stdint.h>
-#include <assimp/light.h>
-#include <assimp/mesh.h>
-#include <assimp/material.h>
+#include <ports/assimp/light.h>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/material.h>
 
 struct aiMaterial;
 

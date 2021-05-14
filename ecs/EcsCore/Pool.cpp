@@ -12,7 +12,7 @@ Pool::~Pool() {
 	DBG_DESTRUCT
 }
 
-EntityId Pool::GetNextId() {
+PoolId Pool::GetNextId() {
 	static Atomic64 next_id;
 	return ++next_id;
 }
@@ -25,13 +25,15 @@ Machine& Pool::GetMachine() {
 	if (machine)
 		return *machine;
 	Pool* p = this;
-	while (p) {
-		const PoolParent& par = RefScopeParent<PoolParent>::GetParent();
+	int levels = 0;
+	while (p && levels++ < 1000) {
+		const PoolParent& par = p->RefScopeParent<PoolParent>::GetParent();
 		if (par.a) {
 			machine = &par.a->GetMachine();
 			ASSERT(machine);
 			return *machine;
 		}
+		ASSERT(p != par.b);
 		p = par.b;
 	}
 	throw Exc("Machine ptr not found");
@@ -45,13 +47,18 @@ void Pool::Initialize(Entity& e, String prefab) {
 	
 }
 
-EntityRef Pool::Clone(const Entity& c) {
+EntityRef Pool::CreateEmpty() {
 	Entity& e = objects.Add();
 	e.SetParent(this);
-	e.Init(GetNextId());
+	e.SetId(GetNextId());
 	Initialize(e);
-	e.CopyHeader(c);
-	GetMachine().Get<ComponentStore>()->Clone(e, c);
+	return e;
+}
+
+EntityRef Pool::Clone(const Entity& c) {
+	EntityRef e = CreateEmpty();
+	e->CopyHeader(c);
+	GetMachine().Get<ComponentStore>()->Clone(*e, c);
 	return e;
 }
 
@@ -126,6 +133,17 @@ void Pool::PruneFromContainer() {
 void Pool::InitializeComponent(ConnectorBase& comp) {
 	comp.pool = this;
 	comp.Initialize();
+}
+
+
+
+
+bool PoolHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+	if (type == typeid(Pool)) {
+		Pool& p = *(Pool*)mem;
+		ch.Put(p.GetId());
+	}
+	return true;
 }
 
 

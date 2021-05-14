@@ -11,8 +11,8 @@
 // Header files, Assimp.
 #include "Exceptional.h"
 #include "StringUtils.h"
-#include <assimp/Exporter.hpp>
-#include <assimp/IOSystem.hpp>
+#include <ports/assimp/Exporter.hpp>
+#include <ports/assimp/IOSystem.hpp>
 
 using namespace std;
 

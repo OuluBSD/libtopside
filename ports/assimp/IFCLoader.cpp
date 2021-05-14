@@ -52,7 +52,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tuple>
 
 #ifndef ASSIMP_BUILD_NO_COMPRESSED_IFC
-#   include <unzip/unzip.h>
+#   include <ports/unzip/unzip.h>
 #endif
 
 #include "IFCLoader.h"
@@ -61,9 +61,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "IFCUtil.h"
 
 #include "MemoryIOWrapper.h"
-#include <assimp/scene.h>
-#include <assimp/Importer.hpp>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/importerdesc.h>
 
 
 namespace Assimp {

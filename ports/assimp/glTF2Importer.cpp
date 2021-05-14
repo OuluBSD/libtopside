@@ -45,11 +45,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StringComparison.h"
 #include "StringUtils.h"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/ai_assert.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/ai_assert.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/importerdesc.h>
 
 #include <memory>
 
@@ -58,8 +58,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "glTF2Asset.h"
 // This is included here so WriteLazyDict<T>'s definition is found.
 #include "glTF2AssetWriter.h"
-#include <rapidjson/document.h>
-#include <rapidjson/rapidjson.h>
+#include <ports/rapidjson/document.h>
+#include <ports/rapidjson/rapidjson.h>
 
 using namespace Assimp;
 using namespace glTF2;

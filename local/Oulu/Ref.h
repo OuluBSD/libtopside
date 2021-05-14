@@ -93,7 +93,9 @@ public:
 	Ref& operator=(const Ref& r) {return Set(r);}
 	
 	bool operator==(const Ref& r) const {return r.o == o;}
+	bool operator!=(const Ref& r) const {return r.o != o;}
 	bool operator==(const T* o) const {return this->o == o;}
+	bool operator!=(const T* o) const {return this->o != o;}
 	T* operator->() {return o;}
 	const T* operator->() const {return o;}
 	T& operator*() {ASSERT(o); return *o;}
@@ -363,7 +365,14 @@ public:
 		ASSERT(count == 0);
 	}
 	
-	
+	R At(int i) {
+		int j = 0;
+		for(Iterator it = begin(); it; ++it, ++j)
+			if (j == i)
+				return *it;
+		ASSERT(0);
+		throw Exc("Position not found in RefLinkedList: " + IntStr(i));
+	}
 	
 	Iterator begin()	{return Iterator(first);}
 	Iterator end()		{return Iterator();}
@@ -634,6 +643,16 @@ public:
 	}
 	//R* FindPtr(const K& k);
 	//const R* FindPtr(const K& k) const;
+	
+	R At(int i) {
+		int j = 0;
+		for(Iterator it = begin(); it; ++it, ++j)
+			if (j == i)
+				return *it;
+		ASSERT(0);
+		throw Exc("Position not found in RefLinkedMapIndirect: " + IntStr(i));
+	}
+	
 	
 	RefLinkedListIndirect<V>& GetValues() {return values;}
 	

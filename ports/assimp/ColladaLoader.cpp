@@ -46,11 +46,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef ASSIMP_BUILD_NO_COLLADA_IMPORTER
 
 #include "ColladaLoader.h"
-#include <assimp/anim.h>
-#include <assimp/scene.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/Importer.hpp>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/anim.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/Importer.hpp>
+#include <ports/assimp/importerdesc.h>
 
 #include "ColladaParser.h"
 #include "fast_atof.h"
@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "math.h"
 #include <algorithm>
 #include <numeric>
-#include <assimp/Defines.h>
+#include <ports/assimp/Defines.h>
 
 using namespace Assimp;
 using namespace Assimp::Formatter;

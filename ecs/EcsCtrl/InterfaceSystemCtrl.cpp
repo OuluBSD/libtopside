@@ -21,16 +21,16 @@ InterfaceSystemCtrl::InterfaceSystemCtrl() {
 	hsplit.SetPos(2000);
 	
 	vsplit.Vert();
-	vsplit << ent_list << iface_list;
+	vsplit << ent_browser << iface_list;
 	vsplit.SetPos(4000);
 	
-	ent_list.WhenEntityChanged << THISBACK(OnEntityCursorChanged);
+	ent_browser.WhenEntityChanged << THISBACK(OnEntityCursorChanged);
 	iface_list.WhenInterfaceCursor << THISBACK(OnInterfaceCursorChanged);
 	
 }
 
 void InterfaceSystemCtrl::OnEntityCursorChanged() {
-	EntityRef ent = ent_list.GetSelected();
+	EntityRef ent = ent_browser.GetSelected();
 	if (ent != sel_ent) {
 		sel_ent = ent;
 		iface_list.SetEntity(sel_ent);
@@ -40,12 +40,12 @@ void InterfaceSystemCtrl::OnEntityCursorChanged() {
 
 void InterfaceSystemCtrl::OnInterfaceCursorChanged() {
 	if (sel_ent) {
-		ComponentBase* c;
-		InterfaceBase* b;
+		ComponentBaseRef c;
+		ExchangeProviderBaseRef b;
 		iface_list.GetCursor(c, b);
 		
 		if (c && b)
-			SetInterfaceCtrl(*c, *b);
+			SetInterfaceCtrl(c, b);
 		else
 			ClearActiveCtrl();
 	}
@@ -54,7 +54,7 @@ void InterfaceSystemCtrl::OnInterfaceCursorChanged() {
 }
 
 void InterfaceSystemCtrl::Updated() {
-	ent_list.Updated();
+	ent_browser.Updated();
 	iface_list.Updated();
 }
 
@@ -65,10 +65,10 @@ void InterfaceSystemCtrl::ClearActiveCtrl() {
 	}
 }
 
-void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBase& c, InterfaceBase& b) {
+void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBaseRef c, ExchangeProviderBaseRef b) {
 	ClearActiveCtrl();
 	
-	TypeId type = b.GetProviderType();
+	TypeId type = b->GetProviderType();
 	int i = iface_ctrls.Find(type);
 	if (i < 0) {
 		active_ctrl = NewInterfaceCtrl(type);

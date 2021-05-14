@@ -21,16 +21,16 @@
 #include <limits>
 #include <stdint.h>
 #include <stdexcept>
-#include <assimp/defs.h>
+#include <ports/assimp/defs.h>
 
 #include "StringComparison.h"
-#include <assimp/DefaultLogger.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
 
 
 #ifdef _MSC_VER
 #  include <stdint.h>
 #else
-#  include <assimp/Compiler/pstdint.h>
+#  include <ports/assimp/Compiler/pstdint.h>
 #endif
 
 namespace Assimp

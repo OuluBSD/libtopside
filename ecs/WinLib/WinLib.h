@@ -36,8 +36,8 @@
 #include <wrl\client.h>
 #include <ppl.h>
 
-#include <Pbr\Pbr.h>
-#include <DirectXTK\DirectXTK.h>
+#include <ports/Pbr/Pbr.h>
+#include <ports/DirectXTK\DirectXTK.h>
 
 
 #pragma comment(lib, "windowsapp")
@@ -77,7 +77,7 @@
   
 #include <Pbr/Pbr.h>
 
-#include <DirectXTK/DirectXTK.h>
+#include <ports/DirectXTK/DirectXTK.h>
 
 
 using namespace DirectX;

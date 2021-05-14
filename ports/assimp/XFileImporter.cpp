@@ -50,11 +50,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "XFileParser.h"
 #include "TinyFormatter.h"
 #include "ConvertToLHProcess.h"
-#include <assimp/Defines.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/scene.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/Defines.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/importerdesc.h>
 
 #include <cctype>
 #include <memory>

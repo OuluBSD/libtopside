@@ -4,6 +4,95 @@
 NAMESPACE_OULU_BEGIN
 
 
+PoolTreeCtrl::PoolTreeCtrl() {
+	Add(tree.SizePos());
+	tree.WhenCursor << THISBACK(OnCursor);
+}
+
+void PoolTreeCtrl::SetMachine(Machine& m) {
+	mach = &m;
+	es = m.TryGet<EntityStore>();
+}
+
+void PoolTreeCtrl::OnCursor() {
+	if (!es || !tree.IsCursor())
+		return;
+	
+	int cursor = tree.GetCursor();
+	Value val = tree.Get(cursor);
+	
+	if (IsTypeRaw<PoolRef>(val)) {
+		PoolRef new_sel = val.To<PoolRef>();
+		
+		if (new_sel != selected) {
+			selected = new_sel;
+			WhenPoolChanged();
+		}
+	}
+}
+
+hash_t PoolTreeCtrl::GetPoolTreeHash() const {
+	hash_t h = 0;
+	if (es) {
+		PoolHashVisitor vis;
+		vis.Visit(*es.Get()->GetRoot());
+		h = vis;
+	}
+	return h;
+}
+
+void PoolTreeCtrl::Updated() {
+	hash_t h = GetPoolTreeHash();
+	if (h == last_hash)
+		ClearModify();
+	else {
+		last_hash = h;
+		SetModify();
+	}
+	
+	if (IsModified()) {
+		ClearModify();
+		Data();
+	}
+}
+
+void PoolTreeCtrl::Data() {
+	if (!es)
+		return;
+	
+	PoolRef root = es->GetRoot();
+	
+	String root_name = root->GetName();
+	if (root_name.IsEmpty())
+		root_name = "Root";
+	tree.Clear();
+	tree.SetRoot(CtrlImg::Dir(), RawToValue(root), root_name);
+	AddPool(0, root);
+	tree.OpenDeep(0);
+	
+	if (!tree.IsCursor())
+		tree.SetCursor(0);
+}
+
+void PoolTreeCtrl::AddPool(int parent, PoolRef pool) {
+	PoolVec& sub = pool->GetPools();
+	for (PoolRef& p : sub) {
+		String name = p->GetName();
+		if (name.IsEmpty())
+			name = IntStr64(p->GetId());
+		int i = tree.Add(parent, CtrlImg::Dir(), RawToValue(p), name);
+		AddPool(i, p);
+	}
+}
+
+
+
+
+
+
+
+
+
 EntityListCtrl::EntityListCtrl() {
 	ParentCtrl::Add(list.SizePos());
 	
@@ -15,17 +104,19 @@ EntityListCtrl::EntityListCtrl() {
 	
 	list.WhenCursor << THISBACK(OnCursor);
 	
-	es = GetMachine().TryGet<EntityStore>();
+}
+
+void EntityListCtrl::SetPool(PoolRef pool) {
+	this->pool = pool;
+	es = pool->GetMachine().TryGet<EntityStore>();
 }
 
 hash_t EntityListCtrl::GetEntityListHash() const {
 	hash_t v = 0;
-	if (es) {
-		CombineHash ch;
-		const auto& ents = es->GetEntities();
-		for (const auto& e : ents)
-			ch.Put(e->GetId());
-		v = ch;
+	if (pool) {
+		EntityHashVisitor vis;
+		vis.Visit(*pool.Get());
+		v = vis;
 	}
 	return v;
 }
@@ -46,7 +137,7 @@ void EntityListCtrl::Updated() {
 }
 
 void EntityListCtrl::OnCursor() {
-	if (!es || !list.IsCursor())
+	if (!pool || !list.IsCursor())
 		return;
 	
 	int cursor = list.GetCursor();
@@ -54,9 +145,9 @@ void EntityListCtrl::OnCursor() {
 	
 	EntityRef new_sel;
 	
-	Vector<EntityRef>& v = es->GetEntities();
+	EntityVec& v = pool->GetEntities();
 	if (ent_i >= 0 && ent_i < v.GetCount())
-		new_sel = v[ent_i];
+		new_sel = v.At(ent_i);
 	
 	if (new_sel != selected) {
 		selected = new_sel;
@@ -65,9 +156,10 @@ void EntityListCtrl::OnCursor() {
 }
 
 void EntityListCtrl::Data() {
-	if (!es)
+	if (!pool)
 		return;
-	Vector<EntityRef>& v = es->GetEntities();
+	
+	EntityVec& v = pool->GetEntities();
 	
 	int cursor = -1;
 	int i = 0;
@@ -154,17 +246,18 @@ void EntityContentCtrl::OnCursor() {
 }
 
 void EntityContentCtrl::AddTreeEntity(int tree_i, const Entity& e) {
-	const ComponentMap& m = e.GetComponents();
+	ComponentMap& m = const_cast<Entity&>(e).GetComponents();
 	
-	for(int i = 0; i < m.GetCount(); i++) {
-		TypeId type = m.GetKey(i);
+	int i = 0;
+	for(auto iter = m.begin(); iter; ++iter, ++i) {
+		TypeId type = *iter.key;
 		int node_i = tree.Add(tree_i, comp_icon, type.CleanDemangledName());
 		node_comps.Add(node_i, i);
 	}
 }
 
-void EntityContentCtrl::GetCursor(ComponentBase*& c) {
-	c = 0;
+void EntityContentCtrl::GetCursor(ComponentBaseRef& c) {
+	c.Clear();
 	
 	int i = tree.GetCursor();
 	if (i == 0)
@@ -175,7 +268,7 @@ void EntityContentCtrl::GetCursor(ComponentBase*& c) {
 		int comp = node_comps[j];
 		auto& map = ent->GetComponents();
 		if (comp >= 0 && comp < map.GetCount())
-			c = &*map[comp];
+			c = map.At(comp);
 	}
 }
 
@@ -183,6 +276,41 @@ void EntityContentCtrl::GetCursor(ComponentBase*& c) {
 
 
 
+
+
+
+
+
+
+EntityBrowserCtrl::EntityBrowserCtrl() {
+	ent_list.WhenEntityChanged = Proxy(WhenEntityChanged);
+	
+	Add(vsplit.SizePos());
+	
+	vsplit.Vert();
+	vsplit << pool_tree << ent_list;
+	
+	pool_tree.WhenPoolChanged << THISBACK(OnPoolCursorChanged);
+}
+
+void EntityBrowserCtrl::Updated() {
+	pool_tree.Updated();
+	ent_list.Updated();
+}
+
+void EntityBrowserCtrl::Data() {
+	pool_tree.Data();
+	ent_list.Data();
+}
+
+void EntityBrowserCtrl::OnPoolCursorChanged() {
+	PoolRef pool = pool_tree.GetSelected();
+	if (pool != sel_pool) {
+		sel_pool = pool;
+		ent_list.SetPool(sel_pool);
+		ent_list.Update();
+	}
+}
 
 
 
@@ -236,26 +364,28 @@ void InterfaceListCtrl::Data() {
 	ifaces.Clear();
 	write_cursor = 0;
 	ComponentMap& comps = ent->GetComponents();
-	for(int i = 0; i < comps.GetCount(); i++) {
-		auto& comp = comps[i];
+	int i = 0;
+	for (auto& comp : comps) {
 		ComponentBase& b = *comp;
 		#define IFACE(x) {\
-			x##Source* src = b.As##x##Source(); \
+			auto src = b.As##x##Source(); \
 			if (src) AddInterface(i, src); \
-			x##Sink* sink = b.As##x##Sink(); \
+			auto sink = b.As##x##Sink(); \
 			if (sink) AddInterface(i, sink); \
 		}
 		IFACE_LIST
 		#undef IFACE
+		++i;
 	}
 	list.SetCount(write_cursor);
 	
 	WhenInterfaceCursor();
 }
 
-void InterfaceListCtrl::GetCursor(ComponentBase*& c, InterfaceBase*& i) {
-	c = 0;
-	i = 0;
+void InterfaceListCtrl::GetCursor(ComponentBaseRef& c,  ExchangeProviderBaseRef& i) {
+	c.Clear();
+	i.Clear();
+	
 	if (!ent || !list.IsCursor())
 		return;
 	
@@ -264,11 +394,11 @@ void InterfaceListCtrl::GetCursor(ComponentBase*& c, InterfaceBase*& i) {
 	int iface_i = list.Get(cursor, 1);
 	
 	ComponentMap& comps = ent->GetComponents();
-	ComponentBase& comp = *comps[comp_i];
-	InterfaceBase& iface = *ifaces[iface_i];
+	ComponentBaseRef comp = comps.At(comp_i);
+	ExchangeProviderBaseRef iface = ifaces.At(iface_i);
 	
-	c = &comp;
-	i = &iface;
+	c = comp;
+	i = iface;
 }
 
 

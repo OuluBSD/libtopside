@@ -13,7 +13,7 @@ AudioSourceCtrl::AudioSourceCtrl() {
 	s.Color(Color(176, 237, 255));
 }
 
-void AudioSourceCtrl::SetInterface(ComponentBase& c, InterfaceBase& b) {
+void AudioSourceCtrl::SetInterface(ComponentBaseRef c, ExchangeProviderBaseRef b) {
 	
 }
 

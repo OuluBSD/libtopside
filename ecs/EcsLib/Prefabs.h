@@ -1,6 +1,7 @@
 #ifndef _System_Prefabs_h_
 #define _System_Prefabs_h_
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -153,4 +154,5 @@ struct StaticModel : EntityPrefab<Transform, ModelComponent>
 
 NAMESPACE_OULU_END
 
+#endif
 #endif

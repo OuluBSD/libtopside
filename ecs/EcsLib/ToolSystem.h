@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -25,7 +26,8 @@ class ToolSelectorKey :
 	public Component<ToolSelectorKey> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(ToolSelectorKey)
+public:
+	COPY_PANIC(ToolSelectorKey)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	TypeId type { typeid(void) };
@@ -135,10 +137,12 @@ protected:
 			}
 		}
 		
-		return NullOpt();
+		return null_opt;
 	}
 	
 	LinkedList<EntityRef> m_entities;
 };
 
 NAMESPACE_OULU_END
+
+#endif

@@ -43,10 +43,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "StringComparison.h"
 
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/DefaultIOStream.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/ai_assert.h>
+#include <ports/assimp/DefaultIOSystem.h>
+#include <ports/assimp/DefaultIOStream.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/ai_assert.h>
 #include <stdlib.h>
 
 #ifdef __unix__

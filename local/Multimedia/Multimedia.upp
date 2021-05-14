@@ -4,7 +4,7 @@ noblitz;
 
 uses
 	Oulu,
-	libv4l2;
+	ports/libv4l2;
 
 uses(!ALTCORE) plugin/jpg;
 

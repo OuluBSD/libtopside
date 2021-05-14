@@ -53,20 +53,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "fast_atof.h"
 #include "GenericProperty.h"
 
-#include <assimp/SceneCombiner.h>
+#include <ports/assimp/SceneCombiner.h>
 #include "StandardShapes.h"
 #include "Importer.h"
 
 // We need MathFunctions.h to compute the lcm/gcd of a number
 #include "MathFunctions.h"
 #include <memory>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/mesh.h>
-#include <assimp/material.h>
-#include <assimp/scene.h>
-#include <assimp/IOSystem.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/importerdesc.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/material.h>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/postprocess.h>
+#include <ports/assimp/importerdesc.h>
 
 using namespace Assimp;
 using namespace irr;

@@ -44,9 +44,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef AI_B3DIMPORTER_H_INC
 #define AI_B3DIMPORTER_H_INC
 
-#include <assimp/types.h>
-#include <assimp/mesh.h>
-#include <assimp/material.h>
+#include <ports/assimp/types.h>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/material.h>
 #include "BaseImporter.h"
 
 #include <vector>

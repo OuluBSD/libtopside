@@ -1,7 +1,7 @@
 description "\377I28,212,255";
 
 uses
-	modernjson;
+	ports/modernjson;
 
 file
 	tiny_gltf.h;

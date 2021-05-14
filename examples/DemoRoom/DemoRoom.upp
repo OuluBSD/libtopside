@@ -1,6 +1,5 @@
 uses
-	EcsLib,
-	FusionCore;
+	EcsLib;
 
 uses(UWP) Pbr;
 

@@ -12,6 +12,11 @@ Entity::~Entity() {
 	DBG_DESTRUCT
 }
 
+EntityId Entity::GetNextId() {
+	static Atomic64 next_id;
+	return ++next_id;
+}
+
 void Entity::OnChange() {
 	changed = GetMachine().GetTicks();
 }
@@ -90,5 +95,22 @@ void Entity::VisitSources(RuntimeVisitor& vis){
 
 
 
-	
+
+
+
+bool EntityHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+	if (type == typeid(Entity)) {
+		Entity& e = *(Entity*)mem;
+		ch.Put(1);
+		ch.Put(e.GetId());
+	}
+	else if (type == typeid(Pool)) {
+		Pool& p = *(Pool*)mem;
+		ch.Put(2);
+		ch.Put(p.GetId());
+	}
+	return true;
+}
+
+
 NAMESPACE_OULU_END

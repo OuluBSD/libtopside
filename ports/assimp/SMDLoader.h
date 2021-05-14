@@ -51,10 +51,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ParsingUtils.h"
 
 // public Assimp headers
-#include <assimp/types.h>
-#include <assimp/texture.h>
-#include <assimp/anim.h>
-#include <assimp/material.h>
+#include <ports/assimp/types.h>
+#include <ports/assimp/texture.h>
+#include <ports/assimp/anim.h>
+#include <ports/assimp/material.h>
 
 struct aiNode;
 

@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -69,7 +70,7 @@ void ShootingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 			bullet->Get<Transform>()->position = position;
 			bullet->Get<Transform>()->orientation = orientation;
 			bullet->Get<RigidBody>()->velocity = bullet_velocity;
-			SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(args.State().Source(), 125ms);
+			SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(args.State().Source(), 125_ms);
 		}
 	}
 }
@@ -80,7 +81,7 @@ void ShootingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
 		const bool should_render_controller = args.State().IsGrasped();
 		entity->Get<PbrRenderable>()->SetEnabled(should_render_controller);
-		shooting->gun->Get<PbrRenderable>()->alpha_multiplier = should_render_controller ? MakeOptional(0.25) : NullOpt();
+		shooting->gun->Get<PbrRenderable>()->alpha_multiplier = should_render_controller ? MakeOptional(0.25) : null_opt;
 	}
 }
 
@@ -102,3 +103,5 @@ void ShootingComponent::Destroy() {
 
 
 NAMESPACE_OULU_END
+
+#endif

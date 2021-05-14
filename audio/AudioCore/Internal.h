@@ -3,16 +3,16 @@
 
 
 #if defined flagBUILTIN_PORTAUDIO || (defined flagWIN32 && defined flagMSC)
-	#include <portaudio/portaudio.h>
-	#include <portaudio/pa_types.h>
+	#include <ports/portaudio/portaudio.h>
+	#include <ports/portaudio/pa_types.h>
 #else
 	#include <portaudio.h>
 #endif
 
 #if defined flagBUILTIN_PORTMIDI || (defined flagWIN32 && defined flagMSC)
-	#include <portmidi/portmidi.h>
-	#include <portmidi/pmutil.h>
-	#include <portmidi/porttime.h>
+	#include <ports/portmidi/portmidi.h>
+	#include <ports/portmidi/pmutil.h>
+	#include <ports/portmidi/porttime.h>
 #else
 	#include <portmidi.h>
 	#include <porttime.h>

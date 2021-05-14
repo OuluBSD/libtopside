@@ -9,12 +9,14 @@
 	#include <Esc/Esc.h>
 #endif
 
-#if defined flagUWP
-	#include <WinLib/WinLib.h>
-#elif defined flagSTEAM
-	#include <SteamLib/SteamLib.h>
-#else
-	#include <OpenLib/OpenLib.h>
+#ifdef flagVR
+	#if defined flagUWP
+		#include <WinLib/WinLib.h>
+	#elif defined flagSTEAM
+		#include <SteamLib/SteamLib.h>
+	#else
+		#include <OpenLib/OpenLib.h>
+	#endif
 #endif
 
 #if !defined(flagALTCORE) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)

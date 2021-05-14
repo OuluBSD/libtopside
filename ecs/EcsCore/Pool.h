@@ -14,10 +14,17 @@ class Pool :
 	Machine*			machine = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
+	PoolId				id;
 	
+protected:
+	friend class EntityStore;
+	
+	void SetId(PoolId i) {id = i;}
 	
 public:
 	typedef Pool CLASSNAME;
+	
+	static PoolId GetNextId();
 	
 	Pool();
 	~Pool();
@@ -28,7 +35,7 @@ public:
 	} Bit;
 	
 	
-	static EntityId GetNextId();
+	PoolId GetId() const {return id;}
 	
 	void SetName(String s)			{name = s;}
 	void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
@@ -61,7 +68,7 @@ public:
 		
 		Entity& e = objects.Add();
 		e.SetParent(this);
-		e.Init(GetNextId());
+		e.SetId(GetNextId());
 		PrefabT::Make(e);
 		Initialize(e, TypeId(typeid(PrefabT)).CleanDemangledName());
 		
@@ -107,15 +114,15 @@ public:
 	}
 	
 	template <class T>
-	Entity* FindEntity(T* component) {
+	EntityRef FindEntity(T* component) {
 		if (!component)
-			return 0;
+			return EntityRef();
 		for (EntityRef object : objects) {
-			T* t = object->Find<T>();
+			RefT_Entity<T> t = object->Find<T>();
 			if (t == component)
-				return object.Get();
+				return object;
 		}
-		return 0;
+		return EntityRef();
 	}
 	
 	EntityRef FindEntityByName(String name) {
@@ -148,6 +155,7 @@ public:
 		Pool& p = pools.Add();
 		p.SetParent(PoolParent(0, this));
 		p.SetName(name);
+		p.SetId(GetNextId());
 		return p;
 	}
 	
@@ -190,6 +198,18 @@ private:
 	ConnectorMap			comps;
 	
 	void InitializeComponent(ConnectorBase& comp);
+	
+};
+
+
+class PoolHashVisitor : public RuntimeVisitor {
+	CombineHash ch;
+	
+	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+public:
+	
+	
+	operator hash_t() const {return ch;}
 	
 };
 

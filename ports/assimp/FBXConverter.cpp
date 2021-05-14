@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "FBXImporter.h"
 #include "StringComparison.h"
 
-#include <assimp/scene.h>
+#include <ports/assimp/scene.h>
 
 #include <tuple>
 #include <memory>

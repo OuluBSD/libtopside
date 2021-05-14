@@ -4,11 +4,39 @@
 NAMESPACE_OULU_BEGIN
 
 
+class PoolTreeCtrl : public ParentCtrl {
+	Machine*		mach = 0;
+	TreeCtrl		tree;
+	EntityStoreRef	es;
+	PoolRef			selected;
+	uint64			last_hash = 0;
+
+	void OnCursor();
+	hash_t GetPoolTreeHash() const;
+	
+	void AddPool(int parent, PoolRef pool);
+	
+public:
+	typedef PoolTreeCtrl CLASSNAME;
+	PoolTreeCtrl();
+	
+	void SetMachine(Machine& m);
+	void Updated() override;
+	void Data();
+	
+	PoolRef GetSelected() {return selected;}
+	
+	Callback WhenPoolChanged;
+	
+};
+
+
 class EntityListCtrl : public ParentCtrl {
-	ArrayCtrl list;
-	Ref<EntityStore> es;
-	EntityRef selected;
-	uint64 last_hash = 0;
+	EntityStoreRef	es;
+	PoolRef			pool;
+	ArrayCtrl		list;
+	EntityRef		selected;
+	uint64			last_hash = 0;
 
 	void OnCursor();
 	hash_t GetEntityListHash() const;
@@ -17,6 +45,7 @@ public:
 	typedef EntityListCtrl CLASSNAME;
 	EntityListCtrl();
 	
+	void SetPool(PoolRef pool);
 	void Updated() override;
 	void Data();
 	
@@ -26,6 +55,28 @@ public:
 	
 };
 
+
+class EntityBrowserCtrl : public ParentCtrl {
+	Splitter			vsplit;
+	PoolTreeCtrl		pool_tree;
+	EntityListCtrl		ent_list;
+	PoolRef				sel_pool;
+	
+	void OnPoolCursorChanged();
+	
+public:
+	typedef EntityBrowserCtrl CLASSNAME;
+	EntityBrowserCtrl();
+	
+	void SetMachine(Machine& m) {pool_tree.SetMachine(m);}
+	//void SetPool(PoolRef pool) {ent_list.SetPool(pool);}
+	void Updated() override;
+	void Data();
+	EntityRef GetSelected() {return ent_list.GetSelected();}
+	
+	Callback WhenEntityChanged;
+	
+};
 
 class EntityContentCtrl : public ParentCtrl {
 	TreeCtrl tree;
@@ -44,7 +95,7 @@ public:
 	void Updated() override;
 	
 	void SetEntity(EntityRef e) {ent = e;}
-	void GetCursor(ComponentBase*& c);
+	void GetCursor(ComponentBaseRef& c);
 	
 	Callback WhenContentCursor;
 	
@@ -52,7 +103,7 @@ public:
 
 
 class InterfaceListCtrl : public ParentCtrl {
-	Vector<InterfaceBase*> ifaces;
+	LinkedList<ExchangeProviderBaseRef> ifaces;
 	ArrayCtrl list;
 	EntityRef ent;
 	int64 ent_changed_time = -1;
@@ -63,13 +114,13 @@ class InterfaceListCtrl : public ParentCtrl {
 	
 	
 	template <class T>
-	void AddInterface(int comp_i, T* o) {
+	void AddInterface(int comp_i, Ref<T> o) {
 		int iface_i = ifaces.GetCount();
-		ifaces << o;
+		ifaces.Add(o);
 		list.Set(write_cursor, 0, comp_i);
 		list.Set(write_cursor, 1, iface_i);
 		list.Set(write_cursor, 2, TypeId(typeid(T)).CleanDemangledName());
-		list.Set(write_cursor, 3, o->GetConnectionCount());
+		list.Set(write_cursor, 3, o->GetConnections().GetCount());
 		write_cursor++;
 	}
 	
@@ -80,7 +131,7 @@ public:
 	void Updated() override;
 	
 	void SetEntity(EntityRef e) {ent = e;}
-	void GetCursor(ComponentBase*& c, InterfaceBase*& i);
+	void GetCursor(ComponentBaseRef& c, ExchangeProviderBaseRef& i);
 	
 	Callback WhenInterfaceCursor;
 	

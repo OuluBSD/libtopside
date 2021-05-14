@@ -3,7 +3,7 @@
 
  
 #if !defined flagALTCORE && defined flagGUI
-	#include <jpg/jpg.h>
+	#include <plugin/jpg/jpg.h>
 #endif
 
 #include <Oulu/Oulu.h>

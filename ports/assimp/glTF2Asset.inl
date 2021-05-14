@@ -42,7 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "StringUtils.h"
 
 // Header files, Assimp
-#include <plugin/assimp/DefaultLogger.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
 
 using namespace Assimp;
 

@@ -3,15 +3,15 @@ description "\377I28,212,255";
 noblitz;
 
 uses
-	utf8,
-	poly2tri,
-	tiny_gltf,
-	mikktspace,
-	stb,
-	irrxml,
-	rapidjson,
-	unzip,
-	zlib;
+	ports/utf8,
+	ports/poly2tri,
+	ports/tiny_gltf,
+	ports/mikktspace,
+	ports/stb,
+	ports/irrxml,
+	ports/rapidjson,
+	ports/unzip,
+	ports/zlib;
 
 uses(!ALTCORE) plugin/z;
 

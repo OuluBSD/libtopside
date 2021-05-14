@@ -44,9 +44,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "LimitBoneWeightsProcess.h"
 #include "StringUtils.h"
-#include <assimp/postprocess.h>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/scene.h>
+#include <ports/assimp/postprocess.h>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/scene.h>
 #include <stdio.h>
 
 using namespace Assimp;

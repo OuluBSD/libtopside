@@ -45,12 +45,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "3DSExporter.h"
 #include "3DSLoader.h"
 #include "3DSHelper.h"
-#include <assimp/SceneCombiner.h>
+#include <ports/assimp/SceneCombiner.h>
 #include "SplitLargeMeshes.h"
 #include "StringComparison.h"
-#include <assimp/IOSystem.hpp>
-#include <assimp/DefaultLogger.hpp>
-#include <assimp/Exporter.hpp>
+#include <ports/assimp/IOSystem.hpp>
+#include <ports/assimp/DefaultLogger.hpp>
+#include <ports/assimp/Exporter.hpp>
 #include <memory>
 
 using namespace Assimp;

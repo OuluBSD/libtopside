@@ -44,8 +44,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "MakeVerboseFormat.h"
-#include <assimp/scene.h>
-#include <assimp/DefaultLogger.hpp>
+#include <ports/assimp/scene.h>
+#include <ports/assimp/DefaultLogger.hpp>
 
 using namespace Assimp;
 

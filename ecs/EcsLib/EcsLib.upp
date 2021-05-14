@@ -9,11 +9,11 @@ uses(SDL2) OOSDL2;
 
 uses(GUI) OuluCtrl;
 
-uses(UWP) WinLib;
+uses(VR & UWP) WinLib;
 
-uses(STEAM & !UWP) SteamLib;
+uses(VR & STEAM & !UWP) SteamLib;
 
-uses(!STEAM & !UWP) OpenLib;
+uses(VR & !STEAM & !UWP) OpenLib;
 
 file
 	Copying,
@@ -29,8 +29,6 @@ file
 	Viewport.cpp,
 	CommonComponents.h,
 	CommonComponents.cpp,
-	PbrModelCache.h,
-	PbrModelCache.cpp,
 	EasingSystem.h,
 	EasingSystem.cpp,
 	Shader.h,
@@ -46,6 +44,9 @@ file
 	RegistrySystem.cpp,
 	PhysicsSystem.h,
 	PhysicsSystem.cpp,
+	VR readonly separator,
+	PbrModelCache.h,
+	PbrModelCache.cpp,
 	PaintStrokeSystem.h,
 	PaintStrokeSystem.cpp,
 	Prefabs.h,

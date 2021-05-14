@@ -41,7 +41,7 @@ protected:
 
 
 
-
+#if 0
 #ifdef flagGUI
 
 class DefaultRenderApp :
@@ -69,6 +69,7 @@ public:
 	
 };
 
+#endif
 #endif
 
 NAMESPACE_OULU_END

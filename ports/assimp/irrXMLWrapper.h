@@ -43,8 +43,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define INCLUDED_AI_IRRXML_WRAPPER
 
 // some long includes ....
-#include <irrxml/irrXML.h>
-#include <assimp/IOStream.hpp>
+#include <ports/irrxml/irrXML.h>
+#include <ports/assimp/IOStream.hpp>
 #include "BaseImporter.h"
 #include <vector>
 

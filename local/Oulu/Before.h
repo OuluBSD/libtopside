@@ -4,6 +4,7 @@
 #include <random>
 #include <memory>
 #include <cstring>
+#include <optional>
 
 #ifdef __GNUG__
 #include <cstdlib>

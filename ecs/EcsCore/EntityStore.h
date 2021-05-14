@@ -19,9 +19,7 @@ class EntityStore : public System<EntityStore> {
 		WRITE
 	};
 public:
-	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
-		root.Add().SetParent(PoolParent(this,0));
-	}
+	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
 	
 	PoolRef GetRoot()	{return *root.begin();}
 	PoolVec& GetRootVec()	{return root;}

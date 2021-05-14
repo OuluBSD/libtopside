@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "BaseProcess.h"
 #include "ProcessHelper.h"
-#include <assimp/types.h>
+#include <ports/assimp/types.h>
 #include <set>
 
 struct aiMesh;

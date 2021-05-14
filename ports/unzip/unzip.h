@@ -49,11 +49,11 @@ extern "C" {
 
 #ifndef _ZLIB_H
 	#ifdef flagALTCORE
-		#include <zlib/zlib.h>
-		#include <bz2lib/bz2lib.h>
+		#include <ports/zlib/zlib.h>
+		#include <ports/bz2lib/bz2lib.h>
 	#else
-		#include <z/lib/zlib.h>
-		#include <bz2/lib/bzlib.h>
+		#include <zlib.h>
+		#include <plugin/bz2/lib/bzlib.h>
 	#endif
 #endif
 

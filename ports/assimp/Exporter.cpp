@@ -54,7 +54,7 @@ Here we implement only the C++ interface (Assimp::Exporter).
 #ifndef ASSIMP_BUILD_NO_EXPORT
 
 #include "BlobIOSystem.h"
-#include <assimp/SceneCombiner.h>
+#include <ports/assimp/SceneCombiner.h>
 #include "BaseProcess.h"
 #include "Importer.h" // need this for GetPostProcessingStepInstanceList()
 
@@ -65,11 +65,11 @@ Here we implement only the C++ interface (Assimp::Exporter).
 #include "ScenePrivate.h"
 #include <memory>
 
-#include <assimp/DefaultIOSystem.h>
-#include <assimp/Exporter.hpp>
-#include <assimp/mesh.h>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
+#include <ports/assimp/DefaultIOSystem.h>
+#include <ports/assimp/Exporter.hpp>
+#include <ports/assimp/mesh.h>
+#include <ports/assimp/postprocess.h>
+#include <ports/assimp/scene.h>
 
 namespace Assimp {
 

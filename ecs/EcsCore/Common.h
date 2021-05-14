@@ -26,6 +26,8 @@ class ToolComponent;
 class MotionControllerComponent;
 class PbrRenderable;
 class CoreWindow;
+class SoundGeneratorComponent;
+class PortaudioSinkComponent;
 struct ConnectorBase;
 struct ActionSource;
 struct AudioSource;
@@ -63,7 +65,7 @@ using OverlapRef			= Ref<Overlap,				RefParent1<Entity>>;
 using PaintComponentRef		= Ref<PaintComponent,		RefParent1<Entity>>;
 using ToolComponentRef		= Ref<ToolComponent,		RefParent1<Entity>>;
 using PbrRenderableRef		= Ref<PbrRenderable,		RefParent1<Entity>>;
-using CoreWindowRef			= Ref<CoreWindow,		RefParent1<Entity>>;
+using CoreWindowRef			= Ref<CoreWindow,			RefParent1<Entity>>;
 using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
@@ -73,6 +75,8 @@ using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 
+using SoundGeneratorComponentRef		= Ref<SoundGeneratorComponent,			RefParent1<Entity>>;
+using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
 using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
 
@@ -82,6 +86,7 @@ using PoolVec				= RefLinkedList<		Pool,			PoolParent>;
 
 using VAR					= EntityRef;
 using EntityId				= int64;
+using PoolId				= int64;
 
 template <class T>
 using RefT_Entity			= Ref<T,					RefParent1<Entity>>;

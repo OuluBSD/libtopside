@@ -83,6 +83,7 @@ public:
 
 
 class NullOpt {};
+inline constexpr NullOpt null_opt {};
 
 template <class T>
 class Optional {

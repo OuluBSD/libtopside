@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -108,3 +109,5 @@ Pbr::PrimitiveBuilder PaintStrokeComponent::GetPrimitiveData() {
 
 
 NAMESPACE_OULU_END
+
+#endif

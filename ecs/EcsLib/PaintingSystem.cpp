@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#ifdef flagVR
 
 NAMESPACE_OULU_BEGIN
 
@@ -76,11 +77,11 @@ void PaintingInteractionSystem::Deactivate(EntityRef entity) {
 	
 	// Copy out the strokes from the component so they can persist in the world.
 	if (paint->stroke_in_progress) {
-		Swap(paint->strokes.Add(), paint->stroke_in_progress);
+		MemSwap(paint->strokes.Add(), paint->stroke_in_progress);
 	}
 	
 	if (paint->strokes.GetCount()) {
-		Swap(persistent_strokes.Add(), paint->strokes);
+		MemSwap(persistent_strokes.Add(), paint->strokes);
 	}
 	
 	ToolSystem::Deactivate(entity);
@@ -178,7 +179,7 @@ void PaintingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEv
 					if (controller_properties.IsTouchpadPressed()) {
 						paint->wait_touchpad_release = true;
 						paint->selected_color = SelectColor(paint->touchpad_x, paint->touchpad_y);
-						SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(source_state.Source(), 100ms);
+						SpatialInputUtilities::Haptics::SendContinuousBuzzForDuration(source_state.Source(), 100_ms);
 					}
 				}
 				
@@ -358,3 +359,5 @@ void PaintComponent::Destroy() {
 
 
 NAMESPACE_OULU_END
+
+#endif
