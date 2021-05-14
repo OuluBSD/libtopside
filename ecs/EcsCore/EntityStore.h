@@ -18,8 +18,10 @@ class EntityStore : public System<EntityStore> {
 		READ,
 		WRITE
 	};
+	
+	void InitRoot();
 public:
-	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
+	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {InitRoot();}
 	
 	PoolRef GetRoot()	{return *root.begin();}
 	PoolVec& GetRootVec()	{return root;}

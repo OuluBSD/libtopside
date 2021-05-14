@@ -3,12 +3,15 @@
 
 NAMESPACE_OULU_BEGIN
 
-bool EntityStore::Initialize() {
+void EntityStore::InitRoot() {
 	root.Clear();
 	Pool& p = root.Add();
 	p.SetParent(PoolParent(this,0));
 	p.SetName("root");
 	p.SetId(Pool::GetNextId());
+}
+
+bool EntityStore::Initialize() {
 	return true;
 }
 
