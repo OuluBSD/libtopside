@@ -1,5 +1,7 @@
 ![Banner](https://raw.githubusercontent.com/OuluBSD/libtopside/main/doc/banner_210516.jpg)
 
+> Programmers are enslaved under exploitative social labor standards, teachers teaching old methods, and poor management.
+
 Libtopside is a unfinished collection of libraries that enable modern games and programs.
 
 The intention is to follow U++ conventions, but still make a standalone solution that works even without U++ and only with standard C libraries.
