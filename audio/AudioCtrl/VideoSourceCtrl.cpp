@@ -2,6 +2,8 @@
 
 NAMESPACE_OULU_BEGIN
 
+
+
 INITBLOCK {
 	MakeInterfaceCtrlFactory<VideoSource, VideoSourceCtrl>();
 }

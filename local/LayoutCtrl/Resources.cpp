@@ -1,13 +1,12 @@
-#include <Core/Core.h>
-#include "Resources.brc"
-
 #include "LayoutCtrl.h"
 
 
 
 NAMESPACE_LAYOUT_BEGIN
 
-String GetMasterCss() { return String(brc_mastercss, brc_mastercss_length);}
+String GetMasterCss() {
+	return LoadFile(ShareDirFile("master.css"));
+}
 
 void GetHttpCookie(HttpCookie& h, const Cookie& c) {
 	h.id = c.id;

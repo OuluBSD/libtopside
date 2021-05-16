@@ -1,6 +1,10 @@
 #ifndef _OuluCtrl_OuluCtrl_h_
 #define _OuluCtrl_OuluCtrl_h_
 
+#ifndef flagGUI
+	#error "OuluCtrl library requires GUI flag to be set"
+#endif
+
 #include "Defs.h"
 #include "Compat.h"
 #include "Image.h"

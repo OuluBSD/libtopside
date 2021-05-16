@@ -12,5 +12,6 @@ file
 	Ctrl.h,
 	Ctrl.cpp,
 	TopWindow.h,
-	TopWindow.cpp;
+	TopWindow.cpp,
+	Images.h;
 

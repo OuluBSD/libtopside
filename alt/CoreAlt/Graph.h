@@ -129,9 +129,9 @@ public:
 	void FromRange1() {Mul(255.0);}
 };
 
-typedef ColorT<byte>	Color;
-typedef ColorT<float>	Colorf32;
-typedef ColorT<double>	Colorf;
+using Color		= ColorT<byte>;
+using Colorf32	= ColorT<float>;
+using Colorf	= ColorT<double>;
 
 enum {
 	SPCLR_DEFAULT_INK = 254,

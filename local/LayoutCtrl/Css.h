@@ -16,7 +16,8 @@ public:
 	}
 	
 	Css(const Css& src) {
-		selectors <<= src.selectors;
+		for (auto& it : src.selectors)
+			selectors.Add().Create(*it);
 	}
 	
 	~Css()
@@ -50,7 +51,7 @@ private:
 inline void Css::AddSelector( CssSelector* selector )
 {
 	selector->order = (int) selectors.GetCount();
-	selectors.Add(selector);
+	selectors.Add() = selector;
 }
 
 

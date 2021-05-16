@@ -692,7 +692,8 @@ void FfmpegAudioFrameQueue::DropAudioBuffer() {
 bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 	if (buf.IsEmpty())
 		return false;
-	auto frame_iter = buf.begin();
+	TODO
+	/*auto frame_iter = buf.begin();
 	Frame& f = *frame_iter();
 	
 	int var_size = av_get_bytes_per_sample(f.frame->format);
@@ -714,7 +715,7 @@ bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 		f.frame->data[0]);
 	
 	av_frame_free(&f.frame);
-	buf.Remove(frame_iter);
+	buf.Remove(frame_iter);*/
 	return true;
 }
 #endif
@@ -844,13 +845,14 @@ void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool
 
 #ifdef flagOPENGL
 bool FfmpegVideoFrameQueue::PaintOpenGLTexture(int texture) {
-	if (frames.IsEmpty())
+	TODO
+	/*if (frames.IsEmpty())
 		return false;
 	auto frame_iter = frames.begin();
 	Frame& f = *frame_iter();
 	bool b = f.PaintOpenGLTexture(texture, vid_fmt);
 	frames.Remove(frame_iter);
-	return b;
+	return b;*/
 }
 
 bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt) {

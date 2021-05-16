@@ -61,6 +61,20 @@ class ImageDraw : public SImageDraw {
 public:
 	ImageDraw(Size sz) : SImageDraw(sz) {}
 	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
+	
+	Size GetPageSize() const override;
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
+	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+		            Color ink, int n, const int *dx) override;
+	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+	                        const int *counts, int count_count,
+	                        int width, Color color, Color doxor) override;
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
+	
+	Draw& Alpha();
+	
 };
 
 #define GUIPLATFORM_CTRL_TOP_DECLS   Ctrl *owner_window;

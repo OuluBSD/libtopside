@@ -3,9 +3,12 @@
 
 #include <EcsLib/EcsLib.h>
 
-#ifndef flagALTCORE
-	#include <GraphLib/GraphLib.h>
+#ifndef flagGUI
+	#error "EscCtrl library requires GUI flag to be set"
 #endif
+
+
+#include <GraphLib/GraphLib.h>
 
 #include "Parts.h"
 #include "ComponentCtrl.h"

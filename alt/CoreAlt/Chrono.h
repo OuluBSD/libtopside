@@ -22,6 +22,8 @@ struct Date {
 	double ToDouble() const {return (double)Get();}
 	hash_t GetHashValue() const {return 32 * (32 * ( 16 * (day + 32 * (month + 8 * year))));}
 	
+	void Serialize(Stream& s) {s % year % month % day;}
+	
 	static bool IsLeapYear(int year);
 	static int GetDaysOfMonth(int m, int y);
 	
@@ -45,12 +47,20 @@ struct Time : public Date {
 	hash_t GetHashValue() const {return sec + 32 * (min + 32 * (hour + 16 * (day + 32 * (month + 8 * year))));}
 	int GetStamp() const;
 	
+	Time& operator+=(int seconds);
 	bool operator==(const Time& t) const {return hour == t.hour && min == t.min && sec == t.sec;}
+	bool operator>=(const Time& t) const;
+	bool operator<=(const Time& t) const;
+	bool operator>(const Time& t) const;
+	bool operator<(const Time& t) const;
 	
 	String ToString() const;
 	String ToDiffString() const;
 	int64 ToInt() const {return Get();}
 	double ToDouble() const {return (double)Get();}
+	
+	void Serialize(Stream& s) {Date::Serialize(s); s % hour % min % sec;}
+	
 	static Time GetSys();
 };
 
@@ -88,6 +98,7 @@ public:
 
 
 
+Time GetUtcTime();
 Time GetSysTime();
 
 String GetTimeString(Time t);

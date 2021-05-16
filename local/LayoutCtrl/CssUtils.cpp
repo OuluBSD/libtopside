@@ -300,7 +300,7 @@ bool CssSelector::Parse( const String& text )
 		break;
 	}
 
-	left = 0;
+	left.Clear();
 
 	if (!left.IsEmpty()) {
 		this->left = new CssSelector(NULL);

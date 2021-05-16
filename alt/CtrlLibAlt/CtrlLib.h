@@ -13,6 +13,8 @@
 #include "TabCtrl.h"
 #include "ArrayCtrl.h"
 #include "TreeCtrl.h"
+#include "Splitter.h"
+#include "ScrollBar.h"
 
 NAMESPACE_UPP
 

@@ -188,7 +188,7 @@ uint32 HtmlCtrl::CreateFont(const String& faceName, int size, int weight, FontSt
 	// http://www.w3.org/TR/css3-fonts/#font-weight-prop
 	if (weight >= 600) fnt.Bold(1);
 	
-	if (size) 
+	if (size)
 		fnt.Height(size);
 	
 	if (decoration & FontDecorationLinethrough)

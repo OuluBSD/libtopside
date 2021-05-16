@@ -91,7 +91,7 @@ public:
 	void		Exchange(VideoEx& e) override;
 	int			GetQueueSize() const override;
 	bool		IsQueueFull() const override;
-#ifdef flagOPENGFfmpegFileInputL
+#ifdef flagOPENGL
 	bool		PaintOpenGLTexture(int texture) override;
 #endif
 	VideoFormat	GetVideoFormat() const override;

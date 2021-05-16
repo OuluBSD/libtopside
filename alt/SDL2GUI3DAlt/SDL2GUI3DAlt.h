@@ -87,7 +87,8 @@ END_UPP_NAMESPACE
 			GuiMainFn_(); \
 			Close_SDL2GUI3DAlt_ECS(); \
 		} \
-		return ::UPP::AppExit__(); \
+		::UPP::AppExit__(); \
+		return ::UPP::GetExitCode(); \
 	} \
 	\
 	void GuiMainFn_()
@@ -101,7 +102,8 @@ END_UPP_NAMESPACE
 			GuiMainFn_(); \
 			Close_SDL2GUI3DAlt_ECS(); \
 		} \
-		return ::UPP::AppExit__(); \
+		::UPP::AppExit__(); \
+		return ::UPP::GetExitCode(); \
 	} \
 	\
 	void GuiMainFn_()

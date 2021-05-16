@@ -72,5 +72,6 @@ file
 	JSON.h,
 	JSON.cpp,
 	System.h,
-	CtrlEvent.h;
+	CtrlEvent.h,
+	Internet.h;
 

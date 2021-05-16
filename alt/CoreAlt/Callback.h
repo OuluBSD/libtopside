@@ -102,6 +102,18 @@ public:
 };
 
 template <class T, class A0, class A1>
+class Caller_2 : public CallBase {
+	void (T::* fn)(A0, A1);
+	T* obj;
+	A0 a0;
+	A1 a1;
+
+public:
+	Caller_2(void (T::* fn)(A0,A1), T* obj, A0 a0, A1 a1) : fn(fn), obj(obj), a0(a0), a1(a1) {}
+	void Execute() override { (*obj.*fn)(a0, a1); }
+};
+
+template <class T, class A0, class A1>
 class Caller1_1 : public CallBase1<A0> {
 	void (T::* fn)(A0, A1);
 	T* obj;
@@ -120,6 +132,18 @@ class Caller2 : public CallBase2<A0, A1> {
 public:
 	Caller2(void (T::* fn)(A0, A1), T* obj) : fn(fn), obj(obj) {}
 	void Execute(const A0& a0, const A1& a1) override { (*obj.*fn)(a0, a1); }
+};
+
+template <class T, class A0, class A1, class A2>
+class Caller1_2 : public CallBase1<A2> {
+	void (T::* fn)(A2, A0, A1);
+	T* obj;
+	A0 a0;
+	A1 a1;
+
+public:
+	Caller1_2(void (T::* fn)(A2,A0,A1), T* obj, A0 a0, A1 a1) : fn(fn), obj(obj), a0(a0), a1(a1) {}
+	void Execute(const A2& a2) override { (*obj.*fn)(a2, a0, a1); }
 };
 
 
@@ -301,6 +325,17 @@ inline Callback2<A0, A1> callback(void (T::* fn)(A0, A1), T* obj) {
 	return Callback2<A0, A1>(new Caller2<T, A0, A1>(fn, obj));
 }
 
+template <class T, class A0, class A1>
+inline Callback callback2(void (T::* fn)(A0, A1), T* obj, A0 a0, A1 a1) {
+	return Callback(new Caller_2<T, A0, A1>(fn, obj, a0, a1));
+}
+
+template <class T, class A0, class A1, class A2>
+inline Callback1<A2> callback2(void (T::* fn)(A2, A0, A1), T* obj, A0 a0, A1 a1) {
+	return Callback1<A2>(new Caller1_2<T, A0, A1, A2>(fn, obj, a0, a1));
+}
+
+
 /*wrong
 template <class T, class A0, class A1>
 inline Callback callback2(void (T::* fn)(A0, A1), T* obj) {
@@ -309,6 +344,7 @@ inline Callback callback2(void (T::* fn)(A0, A1), T* obj) {
 
 #define THISBACK(x) callback<CLASSNAME>(&CLASSNAME::x, this)
 #define THISBACK1(x, a0) callback1<CLASSNAME, decltype(a0)>(&CLASSNAME::x, this, a0)
+#define THISBACK2(x, a0, a1) callback2<CLASSNAME, decltype(a0), decltype(a1)>(&CLASSNAME::x, this, a0, a1)
 
 
 inline Callback Proxy(const Callback& cb) {

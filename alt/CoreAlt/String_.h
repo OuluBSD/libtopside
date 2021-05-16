@@ -147,7 +147,8 @@ class StringT : Moveable<StringT<T>> {
 	
 public:
 	StringT() {Zero();}
-	StringT(const T* c) {Zero(); *this = c;}
+	StringT(const char* c) {Zero(); *this = c;}
+	StringT(const wchar_t* c) {Zero(); *this = c;}
 	StringT(const T* c, int len) {Zero(); Set(c, len);}
 	StringT(const T* b, const T* e) {Zero(); int len = (int)(e-b); if (len > 0) Set(b, len);}
 	StringT(T c, int len) {Zero(); Cat(c, len);}
@@ -167,7 +168,9 @@ public:
 	void Serialize(Stream& s);
 	
 	StringT& operator=(const Object& c);
-	StringT& operator=(const T* c) {
+	StringT& operator=(const char* c);
+	StringT& operator=(const wchar_t* c);
+	/*StringT& operator=(const T* c) {
 		Clear();
 		if (!c) return *this;
 		count = Length(c);
@@ -182,7 +185,7 @@ public:
 			is_big = true;
 		}
 		return *this;
-	}
+	}*/
 	StringT& Set(const T* c, int len) {
 		Clear();
 		if (!c) return *this;
@@ -252,6 +255,7 @@ public:
 		count = str.count;
 		return *this;
 	}
+	StringT& operator+=(int i) {return Cat(i);}
 	StringT& Cat(T c, int count) {
 		for(int i = 0; i < count; i++) Cat(c);
 		return *this;
@@ -420,6 +424,7 @@ public:
 		}
 		return -1;
 	}
+	int FindFirstOf(const T* str, int pos=0) const;
 	int FindFirstNotOf(const T* str) const {
 		if (GetCount() <= 0 || !str) return -1;
 		const T* it  = Begin();
@@ -534,6 +539,8 @@ public:
 		int len = (int)strnlen(s, 1 << 20);
 		if (len != GetCount()) return true; return Compare(s, Begin(), len) != 0;
 	}
+	int Compare(const char* s) const {return Compare(s, Begin(), std::max(GetCount(), (int)strnlen(s, 1 << 20)));}
+	int Compare(const StringT& s) const {return Compare(s.Begin(), Begin(), std::max(GetCount(), s.GetCount()));}
 	
 	T operator[] (int i) const {return Get(i);}
 	T Get(int i) const { ASSERT(i >= 0 && i < count); return *(Begin() + i); }
@@ -572,7 +579,8 @@ public:
 		return StringT(output);
 	}
 
-	StringT ToString() const { return *this; }
+	StringT<char> ToString() const;
+	StringT<wchar_t> ToWString() const;
 
 	hash_t GetHashValue() const {
 		CombineHash ch;
@@ -621,6 +629,9 @@ inline int ToLower(int chr) {
 
 String ToUpper(const String& s);
 String ToLower(const String& s);
+
+WString ToUpper(const WString& s);
+WString ToLower(const WString& s);
 
 inline String ToUpperFirst(const String& s) {
 	return ToUpper(s.Left(1)) + s.Mid(1);
@@ -734,6 +745,8 @@ String AsCString(const String& s);
 // Expecting sys-wide UTF-8... (is checked?)
 WString FromUtf8(const String& x);
 
+
+int CompareNoCase(String a, String b);
 
 
 NAMESPACE_UPP_END

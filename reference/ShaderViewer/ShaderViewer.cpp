@@ -10,7 +10,8 @@ void ShaderViewer::OnError() {
 }
 
 void ShaderViewer::Initialize() {
-	fusion = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteFusion>();
+	TODO
+	/*fusion = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteFusion>();
 	fusion->Find<Connector>()->ConnectAll();
 	
 	ctx = fusion->Find<FusionContextComponent>();
@@ -24,7 +25,7 @@ void ShaderViewer::Initialize() {
 			GetMachine().SetNotRunning();
 			return;
 		}
-	}
+	}*/
 }
 
 void ShaderViewer::Uninitialize() {

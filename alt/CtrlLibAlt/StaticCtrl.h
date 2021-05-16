@@ -11,7 +11,7 @@ public:
 	virtual void Paint(Draw& w);
 
 	struct Style : ChStyle<Style> {
-		Object l1, l2;
+		Value l1, l2;
 	};
 };
 
@@ -23,10 +23,12 @@ public:
 	virtual Size GetMinSize() const;
 	virtual void Paint(Draw& w);
 	
-	StaticRect& SetColor(Color c) {clr = c; return *this;}
+	StaticRect& Background(const Value& chvalue);
+	StaticRect& Color(typename Upp::Color c)                   { Background(c); return *this; }
+
 	
 	struct Style : ChStyle<Style> {
-		Object def_clr;
+		Value def_clr;
 	};
 };
 

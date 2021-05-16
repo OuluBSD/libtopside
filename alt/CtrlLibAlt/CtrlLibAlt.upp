@@ -20,5 +20,8 @@ file
 	FileSel.cpp,
 	TabCtrl.h,
 	ArrayCtrl.h,
-	TreeCtrl.h;
+	TreeCtrl.h,
+	ScrollBar.h,
+	ScrollBar.cpp,
+	Splitter.h;
 

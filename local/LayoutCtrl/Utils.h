@@ -10,7 +10,7 @@ class Element;
 #define REMOVELAST(x) x.Remove(x.GetCount()-1)
 
 
-inline int HexInt(const String& s) {char* c; return strtol(s.Begin(), &c, 16);}
+
 
 
 inline int RoundFlt(float val) {

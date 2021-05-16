@@ -2,6 +2,7 @@
 
 NAMESPACE_OULU_BEGIN
 
+
 INITBLOCK {
 	MakeInterfaceCtrlFactory<AudioSource, AudioSourceCtrl>();
 }

@@ -8,7 +8,7 @@ template<class T> void PteAttach(T* o, void* ptr);
 template<class T> void PteRelease(T* o, void* ptr);
 
 template <class T>
-class Ptr {
+class Ptr : Moveable<Ptr<T>> {
 	T* o = 0;
 	
 public:

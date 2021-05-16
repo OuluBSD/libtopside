@@ -32,22 +32,42 @@ public:
 	Font(RawSysFont* f) {if (f) {ref = new FontRef(f);}}
 	Font(FontRef* r) {if (r) {ref = r;}}
 	~Font() {Clear();}
-	void operator=(const Font& fnt) {Clear(); ref = fnt.ref; if (ref) ref->Inc();}
-	void Clear() {if (ref) ref->Dec(); ref = NULL;}
-	bool IsEmpty() const {return ref == NULL;}
-	SysFont* GetSysFont() {if (!ref) return NULL; return &ref->font;}
 	
-	static Font LoadFont(String dir, String name, int ptsize=16, int weight=1, bool italic=false);
+	void operator=(const Font& fnt) {Clear(); ref = fnt.ref; if (ref) ref->Inc();}
+	bool operator==(const Font& fnt) const;
+	
+	void		Clear() {if (ref) ref->Dec(); ref = NULL;}
+	bool		IsEmpty() const {return ref == NULL;}
+	SysFont*	GetSysFont() {if (!ref) return NULL; return &ref->font;}
+	void		Face(int i);
+	void		Height(int i);
+	void		Italic(bool b=true);
+	void		Bold(bool b=true);
+	void		Strikeout(bool b=true);
+	void		Underline(bool b=true);
+	int			GetAscent() const;
+	int			GetDescent() const;
+	int			GetHeight() const;
+	
+	static Font		LoadFont(String dir, String name, int ptsize=16, int weight=1, bool italic=false);
+	static int		GetFaceCount();
+	static String	GetFaceName(int i);
+	
 };
 
 
 Size GetStdFontSize();
 Font GetStdFont(int size=-1);
 void SetStdFont(Font fnt);
+Font Arial(int size=-1);
+Font Monospace(int size=-1);
+Font Serif(int size=-1);
+Font SansSerif(int size=-1);
 
 inline Font StdFont(int size=-1) {return GetStdFont();}
 
 Size GetTextSize(String s, Font fnt);
+Size GetTextSize(WString ws, Font fnt);
 
 RawSysFont* LoadSysFont(String path, int size);
 Size GetSysFontTextSize(RawSysFont* fnt, String s);

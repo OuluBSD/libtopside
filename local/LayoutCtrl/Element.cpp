@@ -1528,7 +1528,7 @@ int HtmlTag::FixLineWidth( int max_width, ElementFloat flt )
 				if(css_text_indent.GetValue() != 0)
 				{
 					bool LineBox_found = false;
-					for(Vector<One<Box> >::Iterator iter = boxes.Begin(); iter < boxes.End(); iter++)
+					for(Vector<One<Box> >::Iterator iter = boxes.Begin(); iter != boxes.End(); iter++)
 					{
 						if((*iter)->GetType() == BOX_LINE)
 						{
@@ -2786,11 +2786,11 @@ int HtmlTag::NewBox( Element* el, int max_width )
 		FontMetrics fm;
 		GetFont(&fm);
 		LineBox* lb = new LineBox(line_top, line_left + first_line_margin + text_indent, line_right, LineHeight(), fm, text_align);
-		boxes.Add(lb);
+		boxes.Add() = lb;
 	} else
 	{
 		BlockBox* bb = new BlockBox(line_top, line_left, line_right);
-		boxes.Add(bb);
+		boxes.Add() = bb;
 	}
 
 	return line_top;
@@ -3154,7 +3154,7 @@ void HtmlTag::DrawListMarker( Draw& hdc, const Position &pos )
 		GetDocument()->GetHtmlCtrl().GetImageSize(lm.image, lm.baseurl, img_size);
 	} else
 	{
-		lm.baseurl = 0;
+		lm.baseurl.Clear();
 	}
 
 	int ln_height	= LineHeight();

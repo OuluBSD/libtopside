@@ -66,18 +66,22 @@ public:
 	virtual void MouseLeave() {Refresh();}
 	virtual void LeftDown(Point p, dword keyflags);
 	
-	int GetCount() const {return data.GetCount();}
-	int Get(int pos) const {return data.Get(pos);}
-	void Remove(int i, int n);
-	bool Insert(int i, const wchar_t* c, int n);
+	int			GetCount() const {return data.GetCount();}
+	int			Get(int pos) const {return data.Get(pos);}
+	void		Remove(int i, int n);
+	bool		Insert(int i, const wchar_t* c, int n);
+	void		SetData(Value v);
+	void		SetFont(Font fnt);
+	void		LayoutRow(StbTexteditRow* r, int n);
+	float		GetWidth(int n, int i);
+	Value		GetData() const;
+	
+	static void		LayoutRowStatic(StbTexteditRow* r, TextCtrl* obj, int n) {obj->LayoutRow(r, n);}
+	static float	GetWidthStatic(TextCtrl* obj, int n, int i) {return obj->GetWidth(n, i);}
+	static int		KeyToText(int k);
 	
 	
-	static void LayoutRowStatic(StbTexteditRow* r, TextCtrl* obj, int n) {obj->LayoutRow(r, n);}
-	static float GetWidthStatic(TextCtrl* obj, int n, int i) {return obj->GetWidth(n, i);}
-	static int KeyToText(int k);
-	
-	void LayoutRow(StbTexteditRow* r, int n);
-	float GetWidth(int n, int i);
+	Callback		WhenEnter;
 	
 };
 

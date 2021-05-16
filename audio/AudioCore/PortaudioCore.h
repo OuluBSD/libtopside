@@ -135,7 +135,7 @@ public:
 	bool			IsQueueFull() const override {return false;}
 	
 #ifdef flagOPENGL
-	virtual bool	PaintOpenGLTexture(int texture) {TODO; return false;}
+	virtual bool	PaintOpenGLTexture(int texture) override {TODO; return false;}
 #endif
 	
 	dword			GetFrameCount() const {return total_frames;}

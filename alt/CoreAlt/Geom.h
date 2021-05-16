@@ -23,15 +23,15 @@ struct Point_ : Moveable<Point_<T>> {
 	double Length() { return sqrt(x * x + y * y); }
 	double Slope() { return y / x; }
 
-	Point_ operator+(const Point_& b) const { return Point_(x + b.x, y + b.y); }
-
 	Point_ operator-() const { return Point_(-x, -y); }
-
-	Point_ operator-(const Point_& b) const { return Point_(x - b.x, y - b.y); }
-
 	Point_ operator*(double k) const { return Point_(x * k, y * k); }
-
 	Point_ operator/(double k) const { return Point_(x / k, y / k); }
+
+	Point_ operator+(const Point_& b) const { return Point_(x + b.x, y + b.y); }
+	Point_ operator-(const Point_& b) const { return Point_(x - b.x, y - b.y); }
+	Point_ operator*(const Point_& b) const { return Point_(x * b.x, y * b.y); }
+	Point_ operator/(const Point_& b) const { return Point_(x / b.x, y / b.y); }
+
 
 	template <class V>
 	Point_& operator=(const V& b) {
@@ -75,8 +75,14 @@ struct Point_ : Moveable<Point_<T>> {
 		return Point(x * b.x, y * b.y);
 	}
 	
-	
 	String ToString() const {return "Point(" + IntStr(x) + ", " + IntStr(y) + ")";}
+	
+	operator Point_<int>() const {return Point_<int>(x,y);}
+	operator Point_<double>() const {return Point_<double>(x,y);}
+	
+	bool	IsNull() const {return IsNull(x) || IsNull(y);}
+	void	SetNull() const {SetNull(x); SetNull(y);}
+	
 };
 
 
@@ -116,17 +122,26 @@ struct Size_ : Moveable<Size_<T>> {
 	}
 
 	Size_& operator+=(Size_ p) { cx += p.cx; cy += p.cy; return *this; }
-	Size_& operator+=(T t) { cx += t;    cy += t;    return *this; }
+	Size_& operator+=(double t) { cx += t;    cy += t;    return *this; }
 	Size_& operator-=(Size_ p) { cx -= p.cx; cy -= p.cy; return *this; }
-	Size_& operator-=(T t) { cx -= t;    cy -= t;    return *this; }
+	Size_& operator-=(double t) { cx -= t;    cy -= t;    return *this; }
 	Size_& operator*=(Size_ p) { cx *= p.cx; cy *= p.cy; return *this; }
-	Size_& operator*=(T t) { cx *= t;    cy *= t;    return *this; }
+	Size_& operator*=(double t) { cx *= t;    cy *= t;    return *this; }
 	Size_& operator/=(Size_ p) { cx /= p.cx; cy /= p.cy; return *this; }
-	Size_& operator/=(T t) { cx /= t;    cy /= t;    return *this; }
+	Size_& operator/=(double t) { cx /= t;    cy /= t;    return *this; }
 	Size_& operator<<=(int sh) { cx <<= sh;   cy <<= sh;   return *this; }
 	Size_& operator>>=(int sh) { cx >>= sh;   cy >>= sh;   return *this; }
 	
+	Size_ operator*(double v) {return Size_(cx * v, cy * v);}
+	Size_ operator/(double v) {return Size_(cx * v, cy * v);}
 	String ToString() const {return "Size(" + IntStr(cx) + ", " + IntStr(cy) + ")";}
+	
+	operator Size_<int>() const {return Size_<int>(cx,cy);}
+	operator Size_<double>() const {return Size_<double>(cx,cy);}
+	
+	bool	IsNull() const {return IsNull(cx) || IsNull(cy);}
+	void	SetNull() const {SetNull(cx); SetNull(cy);}
+	
 };
 
 template <class T>
@@ -142,7 +157,7 @@ typedef Size_<double> Sizef;
 
 template <class T>
 struct Rect_ : Moveable<Rect_<T>> {
-	T top = 0, left = 0, bottom = 0, right = 0;
+	T left = 0, top = 0, right = 0, bottom = 0;
 
 	typedef Point_<T>  Pt;
 	typedef Size_<T>   Sz;
@@ -165,11 +180,22 @@ struct Rect_ : Moveable<Rect_<T>> {
 	//bool operator!=(const Rect_& src) { return !(*this == src); }
 
 	Point TopLeft() const { return Point(left, top); }
+	Point TopRight() const { return Point(right, top); }
+	Point BottomRight() const { return Point(right, bottom); }
+	Point BottomLeft() const { return Point(left, bottom); }
 
+	T GetWidth() const { return right - left; }
+	T GetHeight() const { return bottom - top; }
 	T Width() const { return right - left; }
 	T Height() const { return bottom - top; }
 	Sz GetSize() const { return Sz(Width(), Height()); }
-	bool Contains(const Point_<T>& pt) {return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;}
+	bool Contains(const Point_<T>& pt) const {return pt.x >= left && pt.x <= right && pt.y >= top && pt.y <= bottom;}
+	bool Contains(const Rect_<T>& r) const {return Contains(TopLeft()) && Contains(TopRight()) && Contains(BottomRight()) && Contains(BottomLeft());}
+	bool Intersects(const Rect_<T>& r) const {
+		if(IsNull() || r.IsNull()) return false;
+		return r.right >= left && r.bottom >= top && r.left <= right && r.top <= bottom;
+	}
+	Point_<T> CenterPoint() const {return Point_<T>((right+left)/(T)2, (top+bottom)/(T)2);}
 	
 	void   InflateHorz(T dx) { left -= dx; right += dx; }
 	void   InflateVert(T dy) { top -= dy; bottom += dy; }
@@ -187,6 +213,12 @@ struct Rect_ : Moveable<Rect_<T>> {
 	void   Deflate(T l, T t, T r, T b) { Inflate(-l, -t, -r, -b); }
 	void   Deflate(const Rect_& r) { Deflate(r.left, r.top, r.right, r.bottom); }
 
+	operator Rect_<int>() const {return Rect_<int>(left,top,right,bottom);}
+	operator Rect_<double>() const {return Rect_<double>(left,top,right,bottom);}
+	
+	bool	IsNull() const {return Upp::IsNull(left) || Upp::IsNull(top) || Upp::IsNull(right) || Upp::IsNull(bottom);}
+	void	SetNull() const {Upp::SetNull(left); Upp::SetNull(top); Upp::SetNull(right); Upp::SetNull(bottom);}
+	
 };
 
 template <class T>

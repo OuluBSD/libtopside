@@ -29,7 +29,7 @@ protected:
 	
 public:
 	virtual void FrameLayout(Rect& r) = 0;
-	//virtual void FrameAddSize(Size& sz) = 0;
+	virtual void FrameAddSize(Size& sz) = 0;
 	virtual void FramePaint(Draw& w, const Rect& r);
 	virtual void FrameAdd(Ctrl& parent);
 	virtual void FrameRemove();
@@ -332,6 +332,11 @@ public:
 	virtual void LostFocus() {}
 	virtual void ChildGotFocus() {}
 	virtual void ChildLostFocus() {}
+	virtual void Updated() {}
+	virtual bool IsModified() const;
+	virtual void SetModify();
+	virtual void ClearModify();
+	void    Update();
 	
 	Callback WhenAction;
 	
@@ -438,7 +443,6 @@ class ParentCtrl : public Ctrl {
 public:
 	
 	
-	virtual void Updated() {}
 	
 	
 };

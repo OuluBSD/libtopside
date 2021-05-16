@@ -12,6 +12,8 @@ class BarCtrl : public Bar, public CtrlFrame {
 	
 public:
 	
+	void Set(Callback1<Bar&> menu);
+	
 };
 
 
@@ -45,7 +47,7 @@ public:
 
 public:
 	struct Style : ChStyle<Style> {
-		Object look[6];
+		Value look[6];
 		Font   font;
 		Color  textcolor[6];
 		bool   light[6];
@@ -70,7 +72,7 @@ public:
 		Size                 buttonminsize;
 		Size                 maxiconsize;
 		int                  buttonkind;
-		Object               look, arealook;
+		Value               look, arealook;
 		SeparatorCtrl::Style breaksep;
 		SeparatorCtrl::Style separator;
 	};
@@ -81,6 +83,9 @@ class MenuBar : public BarCtrl {
 	
 	
 public:
+	
+	void   FrameLayout(Rect& r) override;
+	void   FrameAddSize(Size& sz) override;
 	
 	static void Execute(Callback1<Bar&> cb);
 	

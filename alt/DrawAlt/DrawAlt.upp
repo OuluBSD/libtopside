@@ -10,15 +10,15 @@ uses(!GUI & SDL2) NonGUISDL2;
 file
 	Copying,
 	Draw.h,
-	DrawClasses.h,
-	DrawClasses.cpp,
 	Image.h,
 	Image.cpp,
+	Font.h,
+	Font.cpp,
+	DrawClasses.h,
+	DrawClasses.cpp,
 	iml_header.h,
 	iml_source.h,
 	SDraw.h,
 	SDraw.cpp,
-	Font.h,
-	Font.cpp,
 	Chameleon.h;
 

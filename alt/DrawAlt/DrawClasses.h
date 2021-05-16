@@ -13,7 +13,7 @@ class Painting {
 };
 
 
-inline Color DefaultInk() { return SpecialColor(254); }
+Color DefaultInk(); // { return SpecialColor(254); }
 
 
 class Draw : NoCopy {
@@ -25,6 +25,8 @@ public:
 	virtual ~Draw() {}
 	
 	void DrawLine(int x1, int y1, int x2, int y2, int width = 0, Color color = DefaultInk());
+	void DrawText(int x, int y, const WString& text, Font font = StdFont(),
+		          Color ink = DefaultInk(), const int *dx = NULL);
 	void DrawText(int x, int y, const String& text, Font font = StdFont(),
 		          Color ink = DefaultInk(), const int *dx = NULL);
 	
@@ -36,6 +38,10 @@ public:
 	void DrawPolyline(const Vector<Point>& vertices,
 		              int width = 0, Color color = DefaultInk(), Color doxor = Null);
 
+	void DrawImage(int x, int y, const Image& img);
+	void DrawImage(int x, int y, const Image& img, const Rect& src);
+	void DrawImage(int x, int y, int cx, int cy, const Image& img);
+	
 	virtual Size GetPageSize() const = 0;
 	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) = 0;
 	virtual	void DrawRectOp(int x, int y, int cx, int cy, Color color) = 0;
@@ -44,7 +50,17 @@ public:
 	virtual void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                                const int *counts, int count_count,
 	                                int width, Color color, Color doxor) = 0;
+	virtual bool ClipOp(const Rect& r) = 0;
+	virtual void EndOp() = 0;
 	
+	void   DrawPolygon(const Vector<Point>& vertices,
+	                   Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
+
+	void DrawEllipse(const Rect& r, Color color = DefaultInk(),
+	                 int pen = Null, Color pencolor = DefaultInk());
+	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
+		             int pen = Null, Color pencolor = DefaultInk());
+
 	#if 0
 	
 	enum {
@@ -62,9 +78,7 @@ public:
 	virtual void EndPage();
 
 	virtual void BeginOp() = 0;
-	virtual void EndOp() = 0;
 	virtual void OffsetOp(Point p) = 0;
-	virtual bool ClipOp(const Rect& r) = 0;
 	virtual bool ClipoffOp(const Rect& r) = 0;
 	virtual bool ExcludeClipOp(const Rect& r) = 0;
 	virtual bool IntersectClipOp(const Rect& r) = 0;
@@ -129,7 +143,6 @@ public:
 	bool  IsPainting(int x, int y, int cx, int cy) const;
 
 	void DrawImage(int x, int y, int cx, int cy, const Image& img, const Rect& src);
-	void DrawImage(int x, int y, int cx, int cy, const Image& img);
 	void DrawImage(int x, int y, int cx, int cy, const Image& img, const Rect& src, Color color);
 	void DrawImage(int x, int y, int cx, int cy, const Image& img, Color color);
 
@@ -138,8 +151,6 @@ public:
 	void DrawImage(const Rect& r, const Image& img, const Rect& src, Color color);
 	void DrawImage(const Rect& r, const Image& img, Color color);
 
-	void DrawImage(int x, int y, const Image& img, const Rect& src);
-	void DrawImage(int x, int y, const Image& img);
 	void DrawImage(int x, int y, const Image& img, const Rect& src, Color color);
 	void DrawImage(int x, int y, const Image& img, Color color);
 
@@ -147,11 +158,6 @@ public:
 	void DrawData(const Rect& r, const String& data, const char *type);
 
 	void DrawLine(Point p1, Point p2, int width = 0, Color color = DefaultInk());
-
-	void DrawEllipse(const Rect& r, Color color = DefaultInk(),
-	                 int pen = Null, Color pencolor = DefaultInk());
-	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
-		             int pen = Null, Color pencolor = DefaultInk());
 
 	void DrawArc(const Rect& rc, Point start, Point end, int width = 0, Color color = DefaultInk());
 
@@ -182,9 +188,7 @@ public:
 	                    Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
 	void   DrawPolygon(const Point *vertices, int vertex_count,
 	                   Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
-	void   DrawPolygon(const Vector<Point>& vertices,
-	                   Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
-
+	
 	void DrawDrawing(const Rect& r, const Drawing& iw) { DrawDrawingOp(r, iw); }
 	void DrawDrawing(int x, int y, int cx, int cy, const Drawing& iw);
 	void DrawDrawing(int x, int y, const Drawing& iw);
@@ -246,14 +250,17 @@ struct DrawProxy : Draw {
 	
 	void SetTarget(Draw& d) {ptr = &d;}
 	
-	virtual Size GetPageSize() const;
-	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color);
-	virtual	void DrawRectOp(int x, int y, int cx, int cy, Color color);
-	virtual void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		                    Color ink, int n, const int *dx);
-	virtual void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+	Size GetPageSize() const override;
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
+	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+		                    Color ink, int n, const int *dx) override;
+	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                                const int *counts, int count_count,
-	                                int width, Color color, Color doxor);
+	                                int width, Color color, Color doxor) override;
+	
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
 	
 	#if 0
 	virtual dword GetInfo() const;
@@ -304,6 +311,9 @@ struct SImageDraw : Draw {
 public:
 	SImageDraw(Size sz);
 	SImageDraw(int w, int h);
+	
+	
+	operator Image() const;
 	
 };
 

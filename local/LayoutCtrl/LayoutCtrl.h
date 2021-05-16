@@ -1,7 +1,6 @@
 #ifndef _LayoutCtrl_LayoutCtrl_h
 #define _LayoutCtrl_LayoutCtrl_h
 
-#include <CtrlLib/CtrlLib.h>
 #include <OuluCtrl/OuluCtrl.h>
 
 

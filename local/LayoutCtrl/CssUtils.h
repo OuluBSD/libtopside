@@ -529,7 +529,7 @@ public:
 		}
 		combinator	= val.combinator;
 		specificity	= val.specificity;
-		order			= val.order;
+		order		= val.order;
 		media_query	= val.media_query;
 	}
 

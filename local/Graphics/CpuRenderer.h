@@ -123,6 +123,8 @@ public:
 	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                        const int *counts, int count_count,
 	                        int width, Color color, Color doxor) override;
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
 	
 };
 

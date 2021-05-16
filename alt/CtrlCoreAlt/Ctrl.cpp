@@ -977,5 +977,10 @@ Image Ctrl::DefaultCursor() {
 	TODO
 }
 
+void Ctrl::Update() {
+	SetModify();
+	Updated();
+}
+
 
 END_UPP_NAMESPACE

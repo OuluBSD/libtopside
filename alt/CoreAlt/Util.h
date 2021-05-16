@@ -685,9 +685,12 @@ Vector<int> GetSortOrder(const V& vec, const S& sorter) {
 
 
 
+template <class T> struct StdEqual {bool operator()(const T& a, const T& b) const {return a == b;}};
 template <class T> struct StdLess {bool operator()(const T& a, const T& b) const {return a < b;}};
 template <class T> struct StdGreater {bool operator()(const T& a, const T& b) const {return a > b;}};
 
+template <class Iterator, class T, class Sort>
+Iterator Find(Iterator begin, Iterator end, T value, Sort s);
 
 
 

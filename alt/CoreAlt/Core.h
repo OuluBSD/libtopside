@@ -1,4 +1,6 @@
 #ifndef CORE_H
+#define CORE_H
+
 #define DLOG(x) LOG(x)
 
 #ifndef flagALTCORE
@@ -41,6 +43,7 @@
 #include "JSON.h"
 #include "System.h"
 #include "CtrlEvent.h"
+#include "Internet.h"
 
 
 

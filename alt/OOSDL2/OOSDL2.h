@@ -116,19 +116,19 @@ class Screen : public Component {
 protected:
 	friend class Events;
 	
-    SDL_Window* win = NULL;
-    SDL_Renderer* rend = NULL;
-    SDL_Texture* fb = NULL;
-    SDL_RendererInfo rend_info;
-    Rect desired_rect;
-	Size screen_sz;
-	String title;
-	SDL_GLContext glcontext = 0;
-	CpuRenderer sw_rend;
-	CpuFramebufferDraw sw_draw;
-	OpenGLRenderer hw_rend;
-	OpenGLFramebufferDraw hw_draw;
-	SystemDraw					sysdraw;
+    SDL_Window*				win = NULL;
+    SDL_Renderer*			rend = NULL;
+    SDL_Texture*			fb = NULL;
+    SDL_RendererInfo		rend_info;
+    Rect					desired_rect;
+	Size					screen_sz;
+	String					title;
+	SDL_GLContext			glcontext = 0;
+	CpuRenderer				sw_rend;
+	CpuFramebufferDraw		sw_draw;
+	OpenGLRenderer			hw_rend;
+	OpenGLFramebufferDraw	hw_draw;
+	SystemDraw				sysdraw;
 	bool is_opengl = false;
 	bool is_dx11 = false;
 	bool full_screen = false;

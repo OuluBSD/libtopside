@@ -76,7 +76,7 @@ String Uuid::ToString() const {
 
 Vector<String> __cmdline;
 void ParseCommandLine(const char* cmdline) {
-	__cmdline = Split(cmdline, " ");
+	__cmdline = Split(String(cmdline), " ");
 }
 
 void ParseCommandLine(int argc, const char** argv) {

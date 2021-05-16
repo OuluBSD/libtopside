@@ -2,7 +2,7 @@
 #define _DrawAlt_Image_h_
 
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
 
 typedef enum {
@@ -63,7 +63,7 @@ public:
 	const byte* GetIter(int x, int y) const;
 	const byte* Begin() const {return GetIter(0,0);}
 	const byte* End() const {Size sz = GetSize(); return GetIter(0, sz.cy);}
-	void Serialize(Stream& s) {TODO}
+	void Serialize(Stream& s);
 	operator bool() const {return data;}
 	
 	void MakeSysAccel();
@@ -116,6 +116,7 @@ class StreamRaster {
 public:
 	
 	static Image LoadFileAny(String path);
+	static Image LoadStringAny(String data);
 	
 };
 
@@ -123,9 +124,25 @@ public:
 
 
 
+enum {
+	FILTER_NEAREST = 0,
+	FILTER_BILINEAR = 1,
+	FILTER_BSPLINE = 2,
+	FILTER_COSTELLO = 3,
+	FILTER_BICUBIC_MITCHELL = 4,
+	FILTER_BICUBIC_CATMULLROM = 5,
+	FILTER_LANCZOS2 = 6,
+	FILTER_LANCZOS3 = 7,
+	FILTER_LANCZOS4 = 8,
+	FILTER_LANCZOS5 = 9,
+};
+
+Image RescaleFilter(const Image& img, int cx, int cy, int filter);
+Image RescaleFilter(const Image& img, Size sz, Rect r, int filter);
+Image CachedRescale(const Image& img, Size sz);
 
 
-NAMESPACE_UPP_END
+END_UPP_NAMESPACE
 
 
 #endif

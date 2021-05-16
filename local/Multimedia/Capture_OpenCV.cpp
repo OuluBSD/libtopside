@@ -59,7 +59,8 @@ public:
 	
 	#ifdef flagOPENGL
 	bool PaintOpenGLTexture(int texture) {
-		if (type == OPENCV && data != NULL) {
+		TODO
+		/*if (type == OPENCV && data != NULL) {
 			glBindTexture (GL_TEXTURE_2D, texture);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -67,7 +68,7 @@ public:
 			
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fmt.res.cx, fmt.res.cy, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
 			return true;
-		}
+		}*/
 		return false;
 	}
 	#endif

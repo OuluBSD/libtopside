@@ -17,6 +17,7 @@ file
 	Local.h,
 	Keys.h,
 	After.h,
+	Gui.h,
 	Image.cpp,
 	FB.iml,
 	Ctrl.h,
