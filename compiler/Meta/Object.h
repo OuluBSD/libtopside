@@ -1,7 +1,7 @@
 #ifndef _Meta_Object_h_
 #define _Meta_Object_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 struct ByteCode : Moveable<ByteCode> {
 	Vector<byte> data;
@@ -72,6 +72,6 @@ struct Object : Moveable<Object> {
 	void Clear() {header.Clear(); bc.Clear();}
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

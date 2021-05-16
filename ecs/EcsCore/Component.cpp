@@ -1,6 +1,6 @@
 #include "EcsCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ComponentBase::ComponentBase() {
@@ -32,4 +32,4 @@ void ComponentMap::ReturnComponent(ComponentStore& s, ComponentBase* c) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

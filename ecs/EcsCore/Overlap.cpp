@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool OverlapSystem::Initialize() {
@@ -147,4 +147,4 @@ void CreateOctreeEntityFromString(PoolRef octree_root, String map_str, const Arr
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

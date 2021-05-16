@@ -43,7 +43,7 @@ std::future<void> LoadAndCacheModel(
 
 }
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void MotionControllerSystem::Start()
 {
@@ -161,4 +161,4 @@ bool MotionControllerComponent::IsSource(const SpatialInteractionSource& rhs) co
     return (this->source && rhs) ? this->source.Id() == rhs.Id() : false;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

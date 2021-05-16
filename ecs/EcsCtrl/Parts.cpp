@@ -1,7 +1,7 @@
 #include "EcsCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 PoolTreeCtrl::PoolTreeCtrl() {
@@ -402,4 +402,4 @@ void InterfaceListCtrl::GetCursor(ComponentBaseRef& c,  ExchangeProviderBaseRef&
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

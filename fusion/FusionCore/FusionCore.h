@@ -7,9 +7,9 @@
 #include <stdarg.h> // va_list, va_copy, va_start, va_end
 #include <stdio.h>  // vsnprintf
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 #ifdef flagGUI
-	#include <OuluCtrl/OuluCtrl.h>
+	#include <LocalCtrl/LocalCtrl.h>
 #endif
 #include <Multimedia/Multimedia.h>
 #include <EcsCore/EcsCore.h>
@@ -20,7 +20,7 @@
 	#error OpenGL is not included
 #endif
 
-#define NAMESPACE_FUSION_BEGIN namespace Oulu { namespace FusionCore {
+#define NAMESPACE_FUSION_BEGIN namespace Topside { namespace FusionCore {
 #define NAMESPACE_FUSION_END   }}
 #define NAMESPACE_FUSION       FusionCore
 #define NS_SHADER              NAMESPACE_FUSION

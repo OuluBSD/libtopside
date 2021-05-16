@@ -2,7 +2,7 @@
 #define _Sequencer_SessionTrackCtrl_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 	
 class SessionTrackCtrl : public ParentCtrl {
@@ -18,6 +18,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

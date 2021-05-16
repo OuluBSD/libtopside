@@ -1,7 +1,7 @@
 #ifndef _OpenLib_Pbr_h_
 #define _OpenLib_Pbr_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 namespace Pbr {
 
 using NodeIndex_t = uint16; // This type must align with the type used in the Pbr shaders.
@@ -86,6 +86,6 @@ struct Model {
 };
 
 }
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

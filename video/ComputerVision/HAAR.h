@@ -2,7 +2,7 @@
 #define _ComputerVision_HAAR_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class haar {
 	double edges_density = 0.07;
@@ -321,6 +321,6 @@ public:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -1,6 +1,6 @@
 #include "Editor.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class PlanUnit {
@@ -39,10 +39,10 @@ class CompilationUnit {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 
 GUI_APP_MAIN {
@@ -52,7 +52,7 @@ GUI_APP_MAIN {
 	UppAssembly as;
 	UppAssemblyData ad(as);
 	#ifdef flagWIN32
-	as.AddPath("C:\\Oulu\\tests\\cpp");
+	as.AddPath("C:\\Topside\\tests\\cpp");
 	#else
 	as.AddPath(GetHomeDirFile("fos/tests/plan"));
 	#endif

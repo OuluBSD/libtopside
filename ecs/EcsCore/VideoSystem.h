@@ -2,7 +2,7 @@
 #define _EcsCore_VideoSystem_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class VideoSystem : public System<VideoSystem> {
@@ -40,7 +40,7 @@ public:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

@@ -1,6 +1,6 @@
 #include "MP3Player.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
 bool run_sound_gen;
@@ -164,10 +164,10 @@ void Main() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 CONSOLE_APP_MAIN {
-	Oulu::Main();
+	Topside::Main();
 }
 

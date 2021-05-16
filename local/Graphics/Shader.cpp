@@ -1,6 +1,6 @@
 #include "GL.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void Shader::PushMultiplyMat4(String key, const mat4& mat) {
@@ -38,4 +38,4 @@ Shader* Shader::NewDefault() {
 	return 0;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

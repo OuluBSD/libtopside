@@ -1,7 +1,7 @@
 #ifndef _Statistics_Random_h_
 #define _Statistics_Random_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class RandomNumberGenerator : Moveable<RandomNumberGenerator> {
@@ -69,6 +69,6 @@ public:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

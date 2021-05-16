@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void FusionAudioBuffer::Initialize() {
@@ -32,4 +32,4 @@ bool FusionAudioBuffer::LoadResources() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

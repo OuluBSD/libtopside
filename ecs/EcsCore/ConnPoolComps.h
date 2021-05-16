@@ -2,7 +2,7 @@
 #define _EcsCore_ConnPoolComps_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T>
@@ -46,7 +46,7 @@ private:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #include "ConnPoolComps.inl"

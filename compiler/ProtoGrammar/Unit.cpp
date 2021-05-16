@@ -1,7 +1,7 @@
 #include "Grammar.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ParsingUnit::ParsingUnit() : ErrorSourceBuffered("ParsingUnit") {
@@ -120,4 +120,4 @@ void ParsingUnit::OnMessage(ProcMsg msg) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

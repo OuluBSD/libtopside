@@ -1,6 +1,6 @@
 #include "GL.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void CpuFramebuffer::Zero() {
@@ -41,7 +41,7 @@ void CpuFramebuffer::DrawPixel(int x, int y, RGBA color) {
 		byte* it = GetIterator(x, y);
 		ASSERT(it);
 		for(int i = 0; i < stride; i++)
-			it[i] = Oulu::AtRGBA(color, i);
+			it[i] = Topside::AtRGBA(color, i);
 	}
 }
 
@@ -215,4 +215,4 @@ void CpuFramebufferDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_co
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

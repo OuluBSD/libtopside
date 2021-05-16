@@ -1,7 +1,7 @@
 #ifndef _ManyCore_Octree_h_
 #define _ManyCore_Octree_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class OctreeNode;
@@ -94,7 +94,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

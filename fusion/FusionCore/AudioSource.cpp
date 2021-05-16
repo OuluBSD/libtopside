@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void FusionAudioSource::Initialize() {
@@ -119,4 +119,4 @@ void FusionAudioSource::EndAudioSource() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

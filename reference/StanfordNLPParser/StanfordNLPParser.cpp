@@ -1,8 +1,8 @@
 #include <Language/Language.h>
 
 using namespace Upp;
-using namespace Oulu;
-using namespace Oulu::Language;
+using namespace Topside;
+using namespace Topside::Language;
 
 /*
 

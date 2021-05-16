@@ -1,6 +1,6 @@
 #include "Grammar.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 MultiValuePrinter::MultiValuePrinter() {
 	
@@ -290,7 +290,7 @@ bool MetaBootstrapGenerator::Process(String title, const ParsingUnit& pu) {
 	String c_out, h_out;
 	//c_out << "#if 0\n";
 	c_out << "#ifndef flagBOOTSTRAP\n";
-	c_out << "#include \"Grammar.h\"\n\nNAMESPACE_OULU_BEGIN\n\n";
+	c_out << "#include \"Grammar.h\"\n\nNAMESPACE_TOPSIDE_BEGIN\n\n";
 	
 	String cls_name = title + "Simplifier";
 	
@@ -372,4 +372,4 @@ bool MetaBootstrapGenerator::Process(String title, const ParsingUnit& pu) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

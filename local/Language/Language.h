@@ -1,11 +1,11 @@
 #ifndef _Language_Language_h
 #define _Language_Language_h
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 
 #define LANGUAGE						Language
-#define NAMESPACE_LANGUAGE_BEGIN		namespace  Oulu { namespace  LANGUAGE {
+#define NAMESPACE_LANGUAGE_BEGIN		namespace  Topside { namespace  LANGUAGE {
 #define NAMESPACE_LANGUAGE_END			}}
 
 NAMESPACE_LANGUAGE_BEGIN

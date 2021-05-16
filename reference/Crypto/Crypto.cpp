@@ -1,6 +1,6 @@
-#include <Oulu/Oulu.h>
-using namespace Oulu::Crypto;
-using namespace Oulu;
+#include <Local/Local.h>
+using namespace Topside::Crypto;
+using namespace Topside;
 using namespace Upp;
 
 
@@ -71,7 +71,7 @@ CONSOLE_APP_MAIN {
 			LOG("\tPrivate: " << priv);
 			
 			
-			#ifdef flagALTCORE
+			#ifndef flagUPP
 			// Somehow this fails in WIN32 & MSC...
 			// The reason is very weird and even the debugger doesn't behave right.
 			ASSERT(msg == BZ2Decompress(BZ2Compress(msg)));

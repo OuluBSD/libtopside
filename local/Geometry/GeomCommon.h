@@ -2,7 +2,7 @@
 #define _Math_GeomCommon_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 template <int I>
@@ -142,7 +142,7 @@ bool IntersectsSAT(const S0& s0, const S1& s1) {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

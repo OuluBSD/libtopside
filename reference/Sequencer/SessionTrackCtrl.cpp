@@ -1,7 +1,7 @@
 #include "Sequencer.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 SessionTrackCtrl::SessionTrackCtrl() {
@@ -14,4 +14,4 @@ void SessionTrackCtrl::Data() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

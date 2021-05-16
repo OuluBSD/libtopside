@@ -1,7 +1,7 @@
 #ifndef _EcsCore_ComponentStore_h_
 #define _EcsCore_ComponentStore_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class Main, class Base>
@@ -16,7 +16,7 @@ public:
 	SYS_CTOR(ComponentStoreT);
 	
 	using Parent = Machine;
-	using Factory = Oulu::Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
+	using Factory = Topside::Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsComponent = std::is_base_of<Base, T>;
 	
 	template <class T>
@@ -79,6 +79,6 @@ using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
 using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

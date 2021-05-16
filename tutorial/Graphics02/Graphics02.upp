@@ -7,7 +7,7 @@ file
 	Tutorial2.cpp;
 
 mainconfig
-	"AltCore 3D backend" = "GUI ALTCORE VIRTUALGUI3DALT SDL2GUI3DALT",
-	"U++ 3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
-	"U++ 2D backend (normal)" = "GUI";
+	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "GUI UPP";
 

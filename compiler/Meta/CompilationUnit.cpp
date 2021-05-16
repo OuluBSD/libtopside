@@ -1,6 +1,6 @@
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 CompilationUnit::CompilationUnit() {
@@ -36,4 +36,4 @@ bool CompilationUnit::CompileString(String mach, String path, String code) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

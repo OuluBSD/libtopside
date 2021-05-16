@@ -2,7 +2,7 @@
 
 int TestDeepNN();
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 // Function which sets Node<Value> value in GenerateTree function
 void SetValue(NodeValue* i) {
@@ -233,11 +233,11 @@ void ActionPlannerExample() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 CONSOLE_APP_MAIN {
 	

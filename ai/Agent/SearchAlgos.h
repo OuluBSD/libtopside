@@ -2,7 +2,7 @@
 #define _Agent_SearchAlgos_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>	inline double GetSearcherUtility(Node<T>& n) {return n.T::GetUtility();}
 template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
@@ -27,10 +27,10 @@ public:
 	
 	Searcher() {}
 	
-	inline bool TerminalTest(NodeT& n) {return Oulu::TerminalTest(n);}
-	inline double Utility(NodeT& n) {return Oulu::GetSearcherUtility(n);}
-	inline double Estimate(NodeT& n) {return Oulu::GetSearcherEstimate(n);}
-	inline double Distance(NodeT& n, NodeT& dest) {return Oulu::GetSearcherDistance(n, dest);}
+	inline bool TerminalTest(NodeT& n) {return Topside::TerminalTest(n);}
+	inline double Utility(NodeT& n) {return Topside::GetSearcherUtility(n);}
+	inline double Estimate(NodeT& n) {return Topside::GetSearcherEstimate(n);}
+	inline double Distance(NodeT& n, NodeT& dest) {return Topside::GetSearcherDistance(n, dest);}
 	
 	virtual Vector<T*> Search(NodeT& src) = 0;
 	
@@ -571,7 +571,7 @@ public:
 	}
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

@@ -3,7 +3,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Block;
@@ -255,7 +255,7 @@ String HighEscapeString(String s);
 String HighEscapeCharString(String s);
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif
 #endif

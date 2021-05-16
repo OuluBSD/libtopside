@@ -1,7 +1,7 @@
 #ifndef _NonGUISDL2_NonGUISDL2_h_
 #define _NonGUISDL2_NonGUISDL2_h_
 
-#include <DrawAlt/Draw.h>
+#include <Draw/Draw.h>
 // Not here: #include <OOSDL2/OOSDL2.h>
 
 

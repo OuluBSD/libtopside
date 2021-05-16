@@ -1,6 +1,6 @@
 #include "WebcamCV.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 WebcamCV::WebcamCV() {
@@ -161,12 +161,12 @@ VideoOutputFrame& WebcamCV::GetOutputFrame() {
 
 	
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 
 GUI_APP_MAIN {
-	using namespace Oulu;
+	using namespace Topside;
 	
 	SetCoutLog();
 	

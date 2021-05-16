@@ -1,7 +1,7 @@
 #include "Geometry.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 OctreeNodePool::OctreeNodePool() {
@@ -155,4 +155,4 @@ uint64 Octree::GetSeekBits(vec3 pos, int level) const {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

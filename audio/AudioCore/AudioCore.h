@@ -1,11 +1,11 @@
 #ifndef _AudioCore_AudioCore_h_
 #define _AudioCore_AudioCore_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 
 #define NAMESPACE_MIDI_NAME Midi
-#define NAMESPACE_MIDI_BEGIN namespace  NAMESPACE_OULU_NAME { namespace  NAMESPACE_MIDI_NAME {
+#define NAMESPACE_MIDI_BEGIN namespace  NAMESPACE_TOPSIDE_NAME { namespace  NAMESPACE_MIDI_NAME {
 #define NAMESPACE_MIDI_END }}
 
 #include "Message.h"

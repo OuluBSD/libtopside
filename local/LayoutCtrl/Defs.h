@@ -4,7 +4,7 @@
 
 
 #define LAYOUT							Layout
-#define NAMESPACE_LAYOUT_BEGIN		namespace  Oulu { namespace  LAYOUT {
+#define NAMESPACE_LAYOUT_BEGIN		namespace  Topside { namespace  LAYOUT {
 #define NAMESPACE_LAYOUT_END			}}
 
 NAMESPACE_LAYOUT_BEGIN

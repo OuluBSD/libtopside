@@ -1,7 +1,7 @@
 #ifndef _ComputerVision_Struct_h_
 #define _ComputerVision_Struct_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 // implementation from CCV project
@@ -184,6 +184,6 @@ struct keypoint_t {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

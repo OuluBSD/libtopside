@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor) {
@@ -460,4 +460,4 @@ quat make_quat_from_rotation_matrix(const mat4& m) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -2,7 +2,7 @@
 
 #ifndef flagBOOTSTRAP
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 MetaSimplifier::MetaSimplifier(AstResolver& ar) : ErrorSource("MetaSimplifier"), ar(ar) {

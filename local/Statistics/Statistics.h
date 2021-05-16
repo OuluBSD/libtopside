@@ -1,7 +1,7 @@
 #ifndef _Statistics_Statistics_h_
 #define _Statistics_Statistics_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 
 #include "Dataset.h"

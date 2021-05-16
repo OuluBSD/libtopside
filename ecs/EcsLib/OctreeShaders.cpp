@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 OctreeVertexLoaderShader::OctreeVertexLoaderShader() {
@@ -269,6 +269,6 @@ void OctreeFragmentShader::Shader::NativeShaderProcess(CpuPipelineThreadData& th
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

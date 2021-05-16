@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class PhysicsSystem :
@@ -21,4 +21,4 @@ protected:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

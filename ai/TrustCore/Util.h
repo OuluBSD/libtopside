@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 typedef VectorMap<int,double> RankingMap;
 
@@ -10,4 +10,4 @@ RankingMap EdgesToRankedForm(const TrustEdgeVec& edges);
 
 int AppleSeed(int node_count, int source, const Array<TrustEdge>& trust_edges, double init_energy, double spread_factor, double threshold, RankingMap& rankings, Graph& graph);
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

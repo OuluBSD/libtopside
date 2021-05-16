@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 quat quat::GetConjugate() const {
 	// https://mathworld.wolfram.com/QuaternionConjugate.html
@@ -31,4 +31,4 @@ quat quat::operator*(const quat& b) const {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

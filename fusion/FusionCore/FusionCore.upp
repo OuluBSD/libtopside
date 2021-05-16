@@ -3,12 +3,12 @@ description "\377B255,0,255";
 noblitz;
 
 uses
-	Oulu,
+	Local,
 	ComputerVision,
 	EcsCore,
 	Structural;
 
-uses(GUI) OuluCtrl;
+uses(GUI) LocalCtrl;
 
 file
 	TODO.txt,

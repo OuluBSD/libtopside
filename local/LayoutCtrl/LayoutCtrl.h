@@ -1,7 +1,7 @@
 #ifndef _LayoutCtrl_LayoutCtrl_h
 #define _LayoutCtrl_LayoutCtrl_h
 
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 
 
 #include "Defs.h"

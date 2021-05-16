@@ -2,17 +2,17 @@
 #define _SDL2_SDL2_h_
 
 
-#if defined flagALTCORE && defined flagGUI
-	#include <CtrlLibAlt/CtrlLib.h>
+#if !defined flagUPP && defined flagGUI
+	#include <CtrlLib/CtrlLib.h>
 	#include <Graphics/GL.h>
 #else
-	#include <DrawAlt/Draw.h>
+	#include <Draw/Draw.h>
 	#include <Geometry/Geometry.h>
 #endif
 
 
 #define NAMESPACE_SDL2_NAME		OOSDL2
-#define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_OULU_NAME { namespace NAMESPACE_SDL2_NAME {
+#define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SDL2_NAME {
 #define NAMESPACE_SDL2_END		}}
 
 NAMESPACE_SDL2_BEGIN

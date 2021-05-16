@@ -4,7 +4,7 @@
 
 #ifndef flagBOOTSTRAP
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class MetaSimplifier : public ErrorSource {

@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 // IFrameworkView class. Connects the app with the Windows shell and handles application lifecycle events.
 class AppView sealed : public winrt::implements<AppView, winrt::Windows::ApplicationModel::Core::IFrameworkView>
@@ -57,5 +57,5 @@ private:
     AppView holographicView;
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

@@ -1,7 +1,7 @@
 #ifndef _Geometry_ModelBuilder_h_
 #define _Geometry_ModelBuilder_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 #define DEFAULT_SLICES 16
@@ -97,6 +97,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

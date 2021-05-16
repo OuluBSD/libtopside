@@ -1,6 +1,6 @@
 #include "ShaderViewer.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 String multistage_arg;
 
@@ -60,9 +60,9 @@ void ShaderViewerStartup() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
-RENDER_APP_(Oulu::ShaderViewer)
-APP_STARTUP_(Oulu::ShaderViewerStartup);
+RENDER_APP_(Topside::ShaderViewer)
+APP_STARTUP_(Topside::ShaderViewerStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

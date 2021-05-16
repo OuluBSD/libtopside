@@ -1,7 +1,7 @@
 #ifndef _OpenLib_Math_h_
 #define _OpenLib_Math_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -24,6 +24,6 @@ inline mat4 Matrix(const SpatialInteractionSourceLocation& location) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -5,10 +5,10 @@
 #include <FusionCore/FusionCore.h>
 #include <AudioCore/System.h>
 #include <Music/Music.h>
-#include <EscAlt/Esc.h>
-using namespace Oulu;
+#include <Esc/Esc.h>
+using namespace Topside;
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class OrchestraConductor :
@@ -28,6 +28,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

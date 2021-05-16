@@ -2,7 +2,7 @@ description "Parses conllu and regular Finnish text using Turku-NPP.\377B128,128
 
 uses
 	plugin/pcre,
-	Oulu;
+	Local;
 
 file
 	Language.h,

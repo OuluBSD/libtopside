@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 Callback VideoSystem::WhenUninit;
 
@@ -85,4 +85,4 @@ void VideoSystem::Remove(VideoExchangePointRef expt) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

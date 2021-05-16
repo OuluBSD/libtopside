@@ -1,6 +1,6 @@
 #include "AudioCtrl.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 INITBLOCK {
@@ -20,4 +20,4 @@ void AudioSourceCtrl::SetInterface(ComponentBaseRef c, ExchangeProviderBaseRef b
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

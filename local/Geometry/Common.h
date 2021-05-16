@@ -1,7 +1,7 @@
 #ifndef _Math_Common_h_
 #define _Math_Common_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 inline float Determinant3(float a1, float a2, float a3, float b1, float b2, float b3, float c1, float c2, float c3) {
@@ -11,6 +11,6 @@ inline float Determinant3(float a1, float a2, float a3, float b1, float b2, floa
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

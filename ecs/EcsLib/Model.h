@@ -1,7 +1,7 @@
 #ifndef _EcsLib_Model_h_
 #define _EcsLib_Model_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -60,6 +60,6 @@ protected:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

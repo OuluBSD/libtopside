@@ -1,0 +1,17 @@
+description "\377B0,0,255";
+
+uses
+	Draw;
+
+file
+	Copying,
+	CtrlCore.h,
+	Util.h,
+	Util.cpp,
+	MKeys.h,
+	Ctrl.h,
+	Ctrl.cpp,
+	TopWindow.h,
+	TopWindow.cpp,
+	Images.h;
+

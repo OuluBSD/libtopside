@@ -1,7 +1,7 @@
 #ifndef _FusionCore_FusionSystem_h_
 #define _FusionCore_FusionSystem_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 // Graphics Debug Log
 #undef DLOG
@@ -895,6 +895,6 @@ protected:
     
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

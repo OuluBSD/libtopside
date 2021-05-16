@@ -1,7 +1,7 @@
 #ifndef _Statistics_CKMeans_h_
 #define _Statistics_CKMeans_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 typedef Vector<int> VecInt;
 typedef Vector<double> VecFloat;
@@ -24,6 +24,6 @@ void FillMatrixColumn(
 void FillMatrices(const VecFloat& data, MatFloat& matrix, MatFloat& backtrack_matrix);
 MatFloat CKMeans(const VecFloat& x, int cluster_count);
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

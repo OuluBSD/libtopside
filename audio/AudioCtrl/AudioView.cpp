@@ -1,7 +1,7 @@
 #include "AudioCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 AudioWindowCtrl::AudioWindowCtrl() {
@@ -233,4 +233,4 @@ void AudioViewCtrl::SetView(int type) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -1,7 +1,7 @@
 #ifndef _System_Camera_h_
 #define _System_Camera_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Viewport : public Component<Viewport> {
@@ -17,6 +17,6 @@ struct Viewport : public Component<Viewport> {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

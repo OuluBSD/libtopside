@@ -7,7 +7,7 @@ bool Edge::IsColliding(const Edge& e) const {
 	Pointf b = target->GetPoint();
 	Pointf c = e.source->GetPoint();
 	Pointf d = e.target->GetPoint();
-	return Oulu::IsColliding(a, b, c, d);
+	return Topside::IsColliding(a, b, c, d);
 }
 
 bool Edge::IsColliding(const Node& n) const {
@@ -21,10 +21,10 @@ bool Edge::IsColliding(const Node& n) const {
 	Pointf tr(ct.x + w2, ct.y - h2);
 	Pointf br(ct.x + w2, ct.y + h2);
 	Pointf bl(ct.x - w2, ct.y + h2);
-	return	Oulu::IsColliding(a, b, tl, tr) ||
-			Oulu::IsColliding(a, b, tr, br) ||
-			Oulu::IsColliding(a, b, br, bl) ||
-			Oulu::IsColliding(a, b, bl, tl);
+	return	Topside::IsColliding(a, b, tl, tr) ||
+			Topside::IsColliding(a, b, tr, br) ||
+			Topside::IsColliding(a, b, br, bl) ||
+			Topside::IsColliding(a, b, bl, tl);
 }
 
 

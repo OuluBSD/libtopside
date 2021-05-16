@@ -1,7 +1,7 @@
 #include "System.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -235,4 +235,4 @@ void MidiFileComponent::EmitTrack(int i) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

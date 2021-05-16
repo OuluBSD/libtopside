@@ -1,5 +1,5 @@
-#ifdef flagALTCORE
-	#include <EscAlt/Esc.h>
+#ifndef flagUPP
+	#include <Esc/Esc.h>
 #else
 	#include <Esc/Esc.h>
 #endif

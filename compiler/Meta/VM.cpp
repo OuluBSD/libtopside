@@ -1,6 +1,6 @@
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 VM::VM() : ErrorSource("VM") {
@@ -587,4 +587,4 @@ bool SimpleProgramProcess::Process(String mach, String asm_path, String file_in_
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

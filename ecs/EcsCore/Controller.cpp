@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool ControllerSystem::Initialize() {
@@ -249,6 +249,6 @@ void ControllerSystem::ProcessController(vr::TrackedDeviceIndex_t device, vr::VR
 
 #endif
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

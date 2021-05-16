@@ -3,7 +3,7 @@ description "Homebrew cryptographic example\377";
 noblitz;
 
 uses
-	Oulu;
+	Local;
 
 file
 	Crypto.cpp;

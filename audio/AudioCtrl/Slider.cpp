@@ -1,7 +1,7 @@
 #include "AudioCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 AudioSlider::AudioSlider() {
@@ -71,4 +71,4 @@ void AudioSlider::Paint(Draw& w) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

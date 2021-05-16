@@ -2,7 +2,7 @@
 #define _LanguageCtrl_LanguageCtrl_h_
 
 
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 #include <Language/Language.h>
 
 

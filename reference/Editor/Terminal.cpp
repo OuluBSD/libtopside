@@ -1,7 +1,7 @@
 #include "Editor.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Terminal::Terminal() {
@@ -83,4 +83,4 @@ bool Terminal::Key(dword key, int count) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

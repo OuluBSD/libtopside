@@ -2,7 +2,7 @@
 #define _Agent_ActionPlanner_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class ActionPlanner;
 class ActionNode;
@@ -167,6 +167,6 @@ template <>	inline bool TerminalTest<ActionNode>(Node<ActionNode>& n) {
 	return !n.GetTotalCount();
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

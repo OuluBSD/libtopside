@@ -33,7 +33,7 @@
 
 
 #define TOYHUB						ToyHub
-#define NAMESPACE_TOYHUB_BEGIN		namespace  Oulu { namespace  TOYHUB {
+#define NAMESPACE_TOYHUB_BEGIN		namespace  Topside { namespace  TOYHUB {
 #define NAMESPACE_TOYHUB_END		}}
 
 NAMESPACE_TOYHUB_BEGIN

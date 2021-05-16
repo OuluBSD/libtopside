@@ -2,7 +2,7 @@
 #define _EcsCore_TypeTraits_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 template <typename Base, typename... Ts>
 using AllRefBaseOf = AllTrue<std::is_base_of<Base, typename Ts::Type>::value...>;
@@ -25,6 +25,6 @@ struct RTupleAllComponents : std::false_type {};
 template <typename... Ts>
 struct RTupleAllComponents<RTuple<Ts...>> : AllRefBaseOf<ComponentBase, Ts...> {};
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

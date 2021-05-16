@@ -2,7 +2,7 @@
 #define _EcsCore_Action_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 #if 0
 
@@ -53,7 +53,7 @@ public:
 
 #endif
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

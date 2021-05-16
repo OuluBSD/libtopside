@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void Vertex::Set(vec3 pos, vec3 norm) {
@@ -65,7 +65,7 @@ void Texture::Create(Size sz, byte channels) {
 void Texture::Set(Image i) {
 	Clear();
 	
-	#ifdef flagALTCORE
+	#ifndef flagUPP
 	Image::ImageDataRef* data = i.GetData();
 	if (data) {
 		auto& sysimg = data->img;
@@ -174,4 +174,4 @@ Material DefaultMaterial() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

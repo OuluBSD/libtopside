@@ -7,7 +7,7 @@
 #include "Portaudio.h"
 #include "Generators.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class MixerContextComponent :
@@ -282,7 +282,7 @@ PREFAB_BEGIN(MidiFileController)
 		MidiFileComponent
 PREFAB_END;
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

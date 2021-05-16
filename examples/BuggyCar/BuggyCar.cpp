@@ -1,6 +1,6 @@
 #include "BuggyCar.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void BuggyWheel::OnAttach() {
@@ -32,15 +32,15 @@ void BuggyCarStartup() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_(Oulu::DefaultRenderApp)
-APP_STARTUP_(Oulu::BuggyCarStartup);
+RENDER_APP_(Topside::DefaultRenderApp)
+APP_STARTUP_(Topside::BuggyCarStartup);
 
 NAMESPACE_UPP
 INITBLOCK(AppFlags) {
-	using namespace Oulu;
+	using namespace Topside;
 	AppFlags& f = GetAppFlags();
 	if (1)
 		f.gfx = AppFlags::GFX_OPENGL;

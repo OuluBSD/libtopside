@@ -2,7 +2,7 @@
 #define _Agent_Node_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>
 class Node : public T {
@@ -352,7 +352,7 @@ T GenerateTree(int total, int branching_low, int branching_high, Callback1<T*> s
 	return root;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

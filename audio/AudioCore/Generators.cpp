@@ -2,7 +2,7 @@
 #include "System.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
@@ -105,4 +105,4 @@ void SoundGeneratorComponent::EndAudioSource() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

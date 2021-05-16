@@ -3,7 +3,7 @@
 #include "PortaudioCore.h"
 
 
-NAMESPACE_OULU_BEGIN;
+NAMESPACE_TOPSIDE_BEGIN;
 namespace Portaudio {
 
 extern "C"{
@@ -276,5 +276,5 @@ void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, Sam
 }
 
 }
-NAMESPACE_OULU_END;
+NAMESPACE_TOPSIDE_END;
 

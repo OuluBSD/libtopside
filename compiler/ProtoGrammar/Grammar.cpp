@@ -1,7 +1,7 @@
 #include "Grammar.h"
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 
 void GenerateBootstrap() {

@@ -1,7 +1,7 @@
 #ifndef _GL_GpuRenderer_h_
 #define _GL_GpuRenderer_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class OpenGLFramebuffer : public Framebuffer {
@@ -74,6 +74,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

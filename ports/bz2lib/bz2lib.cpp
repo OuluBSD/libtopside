@@ -1,4 +1,4 @@
-#include <CoreAlt/Core.h>
+#include <Core/Core.h>
 #include "bz2lib.h"
 
 NAMESPACE_UPP

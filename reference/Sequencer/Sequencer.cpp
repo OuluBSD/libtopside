@@ -4,7 +4,7 @@
 #define IMAGEFILE <Sequencer/Images.iml>
 #include <Draw/iml_source.h>
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 FileSel& SequencerFs()
 {
@@ -214,4 +214,4 @@ void Sequencer::About() {
 	PromptOK("[A5 Sequencer]&Using [*^www://upp.sf.net^ Ultimate`+`+] technology.");
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

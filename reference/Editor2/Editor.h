@@ -1,7 +1,7 @@
 #ifndef _Editor_Builder_h
 #define _Editor_Builder_h
 
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 
 using namespace Upp;
 

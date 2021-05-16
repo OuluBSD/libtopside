@@ -1,7 +1,7 @@
 #include "Editor.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 RightTabs::RightTabs()
@@ -214,5 +214,5 @@ void ElepDisplay::Paint(Draw& w, const Rect& r, const Value& q, Color ink, Color
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

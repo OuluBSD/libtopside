@@ -2,7 +2,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void AntlrGrammar::VisitGrammarSpec(const GrammarNode& n) {
@@ -725,6 +725,6 @@ void AntlrGrammar::VisitLexerCommandExpr(const GrammarNode& n) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

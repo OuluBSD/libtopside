@@ -1,7 +1,7 @@
 #include "System.h"
 #if HAVE_OPENCV
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool OpenCVComponent::LoadFileAny(String path) {
@@ -49,6 +49,6 @@ bool OpenCVComponent::LoadInput(int id) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

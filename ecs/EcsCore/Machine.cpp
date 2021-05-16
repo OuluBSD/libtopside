@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 SystemBase::SystemBase() {
@@ -124,5 +124,5 @@ void Machine::Visit(RuntimeVisitor& vis) {
 		vis.Visit(iter());
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

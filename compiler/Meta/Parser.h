@@ -1,7 +1,7 @@
 #ifndef _Meta_Parser_h_
 #define _Meta_Parser_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 enum {
 	IR_INS,
@@ -77,6 +77,6 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

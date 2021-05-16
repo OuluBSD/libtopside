@@ -1,6 +1,6 @@
 #include "GL.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 bool CpuShader::Load(String vertex_path, String fragment_path, String geometry_path) {
 	TODO
@@ -54,4 +54,4 @@ void CpuShader::SetMat4(const String &name, const mat4 &mat) const {
 	
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

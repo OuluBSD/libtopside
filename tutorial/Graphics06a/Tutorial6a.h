@@ -3,9 +3,9 @@
 
 #include <Complete/Complete.h>
 #include <FusionCore/FusionCore.h>
-using namespace Oulu;
+using namespace Topside;
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 struct Graphics6a : public Component<Graphics6a>, public DisplaySink {
 	NS_SHADER::MultiStage ms;
@@ -24,6 +24,6 @@ struct Graphics6a : public Component<Graphics6a>, public DisplaySink {
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

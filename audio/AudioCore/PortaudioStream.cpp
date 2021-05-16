@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include "PortaudioCore.h"
 
-NAMESPACE_OULU_BEGIN;
+NAMESPACE_TOPSIDE_BEGIN;
 namespace Portaudio {
 	
 
@@ -40,4 +40,4 @@ int AudioStream::WriteAvailable() {
 
 
 }
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

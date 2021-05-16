@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class ThrowingComponent :
@@ -54,6 +54,6 @@ protected:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -2,11 +2,11 @@
 #define _Multimedia_Multimedia_h_
 
  
-#if !defined flagALTCORE && defined flagGUI
+#if defined flagUPP && defined flagGUI
 	#include <plugin/jpg/jpg.h>
 #endif
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 #include "Internal.h"
 #include "Audio.h"

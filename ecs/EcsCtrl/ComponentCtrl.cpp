@@ -1,7 +1,7 @@
 #include "EcsCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ComponentCtrlFactoryMap& GetComponentCtrlFactoryMap() {static ComponentCtrlFactoryMap map; return map;}
@@ -20,4 +20,4 @@ ComponentCtrl* NewComponentCtrl(TypeId comp) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

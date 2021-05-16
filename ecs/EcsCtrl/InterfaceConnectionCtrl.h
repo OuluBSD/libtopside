@@ -1,7 +1,7 @@
 #ifndef _EcsCtrl_InterfaceConnectionCtrl_h_
 #define _EcsCtrl_InterfaceConnectionCtrl_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class InterfaceConnectionGraph : public Ctrl {
@@ -65,6 +65,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

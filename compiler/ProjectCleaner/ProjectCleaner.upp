@@ -1,5 +1,5 @@
 uses
-	Oulu;
+	Local;
 
 library
 	"clang LLVM clang-cpp LTO Remarks";

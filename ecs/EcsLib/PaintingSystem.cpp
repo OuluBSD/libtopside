@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void PaintingInteractionSystem::Start() {
@@ -358,6 +358,6 @@ void PaintComponent::Destroy() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _ComputerVision_ComputerVision_h_
 #define _ComputerVision_ComputerVision_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 #include <Geometry/Geometry.h>
 #include <Multimedia/Multimedia.h>
 

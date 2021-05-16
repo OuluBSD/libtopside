@@ -2,7 +2,7 @@
 #define _Geometry4_Geometry4_h_
 
 #include <Complete/Complete.h>
-using namespace Oulu;
+using namespace Topside;
 
 
 

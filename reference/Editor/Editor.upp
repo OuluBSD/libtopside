@@ -2,7 +2,7 @@ noblitz;
 
 uses
 	Esc,
-	OuluCtrl,
+	LocalCtrl,
 	CodeEditor;
 
 file

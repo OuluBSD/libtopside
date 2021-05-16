@@ -1,6 +1,6 @@
 #include "EcsLib.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 /*void Transform::MoveTo(const OverlapSink& conn) {
@@ -105,4 +105,4 @@ void StaticVolumeComponent::EmitStatic() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

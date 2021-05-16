@@ -13,8 +13,6 @@ uses
 	ports/unzip,
 	ports/zlib;
 
-uses(!ALTCORE) plugin/z;
-
 file
 	config.h,
 	z.h,

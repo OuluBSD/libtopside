@@ -1,7 +1,7 @@
 #ifndef _Parser_Unit_h_
 #define _Parser_Unit_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class ParsingUnit : public ErrorSourceBuffered {
@@ -28,6 +28,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

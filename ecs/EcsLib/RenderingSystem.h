@@ -1,7 +1,7 @@
 #ifndef _EcsLib_RenderingSystem_h_
 #define _EcsLib_RenderingSystem_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class RenderingSystem : public System<RenderingSystem> {
@@ -72,6 +72,6 @@ public:
 #endif
 #endif
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

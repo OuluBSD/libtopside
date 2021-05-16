@@ -1,6 +1,6 @@
 #include "TrustCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -113,4 +113,4 @@ int AppleSeed(int node_count, int source, const Array<TrustEdge>& trust_edges, d
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

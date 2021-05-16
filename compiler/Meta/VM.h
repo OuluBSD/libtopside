@@ -1,7 +1,7 @@
 #ifndef _Meta_VM_h_
 #define _Meta_VM_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class VM : public ErrorSource {
@@ -131,6 +131,6 @@ struct SimpleProgramProcess : public ErrorSourceBuffered {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

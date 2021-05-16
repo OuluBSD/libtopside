@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct MotionControllerPrefab :
@@ -240,6 +240,6 @@ EntityRef ToolboxSystem::FindController(const SpatialInteractionSource& source) 
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

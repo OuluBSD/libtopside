@@ -1,6 +1,6 @@
 #include "OpenLib.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 bool HolographicScene::Initialize() {
 	
@@ -30,4 +30,4 @@ void HolographicScene::Uninitialize() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

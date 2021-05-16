@@ -1,7 +1,7 @@
 #ifndef _Statistics_Dataset_h_
 #define _Statistics_Dataset_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 typedef enum {
 	DATATYPE_TEST,
@@ -18,6 +18,6 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

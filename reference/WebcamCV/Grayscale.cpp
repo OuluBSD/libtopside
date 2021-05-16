@@ -111,7 +111,7 @@ $(window).unload(function() {
 #endif
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void WebcamCV::TickGrayscale() {
 	if (HaveEnoughVideoData()) {
@@ -122,4 +122,4 @@ void WebcamCV::TickGrayscale() {
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

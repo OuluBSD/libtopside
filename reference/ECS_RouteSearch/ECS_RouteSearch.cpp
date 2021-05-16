@@ -1,6 +1,6 @@
 #include "ECS_RouteSearch.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void DumpTransforms(String s, PoolRef pool) {
 	LOG(s);
@@ -725,8 +725,8 @@ void DummyActor::DoSinkAction(ActGroupId a) {
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 CONSOLE_APP_MAIN {
-	Oulu::RunTest();
+	Topside::RunTest();
 }

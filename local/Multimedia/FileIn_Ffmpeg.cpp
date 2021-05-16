@@ -3,7 +3,7 @@
 
 #if HAVE_FFMPEG
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void FfmpegFileInput::Clear() {
@@ -875,6 +875,6 @@ bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFo
 #endif
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

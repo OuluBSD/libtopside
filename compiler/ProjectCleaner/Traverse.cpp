@@ -17,7 +17,7 @@ using namespace clang;
 using namespace clang::ast_matchers;
 using namespace clang::tooling;
 using namespace llvm;
-using namespace Oulu;
+using namespace Topside;
 
 
 
@@ -277,7 +277,7 @@ int ClangToolMain(int argc, const char **argv, Vector<CodeItem>& out) {
 }
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void AddInclude(Stream& s, String file) {
@@ -455,4 +455,4 @@ void CppImportToolFork(String path, const Vector<String>& includes, const Vector
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

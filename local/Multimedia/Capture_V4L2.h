@@ -3,7 +3,7 @@
 
 #if HAVE_V4L2_CAP
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class CaptureDevice_V4L2 : public MediaSourceStream {
@@ -18,7 +18,7 @@ protected:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

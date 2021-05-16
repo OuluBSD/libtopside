@@ -1,7 +1,7 @@
 #ifndef _Meta_Compiler_h_
 #define _Meta_Compiler_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class Compiler : public ErrorSource {
 	enum {
@@ -40,6 +40,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

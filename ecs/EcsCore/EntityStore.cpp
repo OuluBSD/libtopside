@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void EntityStore::InitRoot() {
 	root.Clear();
@@ -52,4 +52,4 @@ int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

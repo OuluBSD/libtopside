@@ -66,7 +66,7 @@ Still missing:
 */
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 const char* def_arch = R"V0G0N(
 {
@@ -141,7 +141,7 @@ void Pipeline::Process() {
 }
 
 PipelineNode* Pipeline::FindNode(String path) {
-	Vector<String> parts = Oulu::Split(path, ".", false);
+	Vector<String> parts = Topside::Split(path, ".", false);
 	PipelineNode* n = &root;
 	for(const String& part : parts) {
 		int i = n->branch.Find(part);
@@ -463,6 +463,6 @@ void CpuPipelineThreadData::TestSetDepth(DepthValue& buf_value, float depth) {
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

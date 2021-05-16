@@ -4,7 +4,7 @@
 #include <Complete/Complete.h>
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 
 struct DemoMoney : public SemanticEx {

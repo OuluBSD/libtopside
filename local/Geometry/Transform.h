@@ -3,7 +3,7 @@
 
 #if 0
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 inline vec3 right(const mat4& transform) {
@@ -105,7 +105,7 @@ inline mat4 make_mat4_rotation_x(float radians) {
 				0,  0, 0, 1);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

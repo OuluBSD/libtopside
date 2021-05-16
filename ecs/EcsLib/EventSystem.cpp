@@ -1,11 +1,11 @@
 #include "EcsLib.h"
 
-#ifdef flagVIRTUALGUI3DALT
-#include <VirtualGui3DAlt/VirtualGuiAlt.h>
+#ifdef flagVIRTUALGUI3D
+#include <VirtualGui3D/VirtualGui3D.h>
 #endif
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -55,4 +55,4 @@ void EventSystem::Remove(MidiSourceRef out) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

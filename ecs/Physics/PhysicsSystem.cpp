@@ -2,7 +2,7 @@
 
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void OdeObject::Paint(Shader& s) {
@@ -136,14 +136,14 @@ void AddMachinePhysicsSystem() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #ifdef flagAUTOSTART_SYSTEMS
 NAMESPACE_UPP
 
 INITBLOCK(PhysicsSystem) {
-	Oulu::Machine::WhenStarting << callback(Oulu::AddMachinePhysicsSystem);
+	Topside::Machine::WhenStarting << callback(Topside::AddMachinePhysicsSystem);
 }
 
 END_UPP_NAMESPACE

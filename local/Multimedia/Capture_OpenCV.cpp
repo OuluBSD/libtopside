@@ -26,7 +26,7 @@
 
 #if HAVE_OPENCV
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class OpenCVCaptureDevice::Data {
@@ -172,6 +172,6 @@ bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_m
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -1,6 +1,6 @@
 #include "Music.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 MusicVocalistComponent::MusicVocalistComponent() {
@@ -21,4 +21,4 @@ void MusicVocalistComponent::EvaluateRequest(String req_str) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

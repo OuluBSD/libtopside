@@ -2,7 +2,7 @@
 #define _Sequencer_TrackEditor_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class TrackEditorCtrl;
@@ -198,7 +198,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

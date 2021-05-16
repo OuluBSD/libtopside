@@ -2,7 +2,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 enum {
 	TYPE_CXX,
@@ -40,7 +40,7 @@ void ProcessGrammar(String title, int type) {
 	FileOut c_out(out_dir + "Generated_" + title + ".cpp");
 	c_out << time_header << "\n";
 	c_out << "#include \"Grammar.h\"\n";
-	c_out << "namespace Oulu::" << title << " {\n";
+	c_out << "namespace Topside::" << title << " {\n";
 	if (type == TYPE_CXX)
 		c_out << g.GetCppParserImplementation();
 	else if (type == TYPE_PYTHON3)
@@ -70,11 +70,11 @@ void ProcessGrammar(String title, int type) {
 		enumtype_out << g.GetPython3ParserEnumType();
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 CONSOLE_APP_MAIN {
 	ParserService().Start();

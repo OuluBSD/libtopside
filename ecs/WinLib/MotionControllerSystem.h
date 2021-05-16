@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 struct MotionControllerComponent : Component<MotionControllerComponent>
 {
@@ -56,5 +56,5 @@ private:
         const winrt::Windows::UI::Input::Spatial::SpatialInteractionSource& source);
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

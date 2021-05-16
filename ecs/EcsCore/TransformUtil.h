@@ -1,7 +1,7 @@
 #ifndef _EcsCore_TransformUtil_h_
 #define _EcsCore_TransformUtil_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -51,6 +51,6 @@ inline mat4 make_mat4_rotation_x(float radians) {
 #endif
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

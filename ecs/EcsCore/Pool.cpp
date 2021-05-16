@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Pool::Pool() {
@@ -147,4 +147,4 @@ bool PoolHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

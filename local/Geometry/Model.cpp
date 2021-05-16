@@ -1,7 +1,7 @@
 #include "Geometry.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool Model::AddTextureFile(int mesh_i, TexType type, String path) {
@@ -155,4 +155,4 @@ void ModelLoader::LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, 
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

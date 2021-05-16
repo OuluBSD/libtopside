@@ -17,7 +17,7 @@ GUI_APP_MAIN {
 	    mach->Add<PipelineSystem>();
 	    mach->Add<ConnectorSystem>();
 	    
-	    #ifdef flagSDL2
+	    #if HAVE_SDL2
 	    mach->Add<SDL2_System>();
 	    #endif
 	    
@@ -26,7 +26,7 @@ GUI_APP_MAIN {
 			EntityRef pipe = ents.Create<OctreeEditPipeline>();
 		    pipe->Find<Connector>()->ConnectAll();
 			
-		    #ifdef flagSDL2
+		    #if HAVE_SDL2
 			EntityRef app = ents.Create<StandaloneSDL2>();
 			#else
 			#error Use at least one system

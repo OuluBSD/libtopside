@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 namespace Colors {
@@ -37,4 +37,4 @@ void GeometryDraw::DrawHLine(int x0, int x1, int y, int line_width, Color c) {
 	DrawProxy::DrawLine(x0, y, x1, y, line_width, c);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -2,9 +2,9 @@
 #define _AudioCtrl_AudioView_h_
 
 #include <AudioCore/AudioCore.h>
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 using namespace Upp;
 
 class AudioCtrl;
@@ -67,6 +67,6 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

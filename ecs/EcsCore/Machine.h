@@ -2,7 +2,7 @@
 #define _EcsCore_Machine_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class Machine;
 
@@ -44,6 +44,7 @@ public:
 };
 
 #define SYS_CTOR(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
+#define SYS_CTOR_(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
 
 class Machine :
 	public RefScopeEnabler<Machine,RefRoot>
@@ -123,7 +124,7 @@ private:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

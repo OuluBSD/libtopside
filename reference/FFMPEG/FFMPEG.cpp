@@ -2,7 +2,7 @@
 
 
 void TestFfmpeg() {
-	using namespace Oulu;
+	using namespace Topside;
 	
 	AudioFrame aframe;
 	MediaVideoFrame vframe;

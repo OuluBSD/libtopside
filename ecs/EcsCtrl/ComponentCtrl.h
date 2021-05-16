@@ -2,7 +2,7 @@
 #define _EcsCtrl_ComponentCtrl_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class ComponentCtrl : public ParentCtrl {
@@ -27,7 +27,7 @@ template <class I, class C> void MakeComponentCtrlFactory() {
 	RegisterComponentCtrlFactory(typeid(I), &ComponentCtrlFactoryFn<C>);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

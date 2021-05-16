@@ -1,6 +1,6 @@
 uses
 	CodeEditor,
-	OuluCtrl;
+	LocalCtrl;
 
 library
 	"clang LLVM clang-cpp LTO Remarks";

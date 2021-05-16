@@ -2,7 +2,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 ParserService::ParserService() {
@@ -67,6 +67,6 @@ void ParserService::Recompile() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

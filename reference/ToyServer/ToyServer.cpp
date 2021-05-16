@@ -1,12 +1,12 @@
 #include <ToyHub/ToyHub.h>
 
-#ifdef flagALTCORE
+#ifndef flagUPP
 	#error ToyServer requires Skylark currently, which depends on U++ Core.
 #endif
 
 
 using namespace Upp;
-using namespace Oulu::ToyHub;
+using namespace Topside::ToyHub;
 
 // Local server URL: 127.0.0.1:8001
 CONSOLE_APP_MAIN

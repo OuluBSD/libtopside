@@ -2,7 +2,7 @@
 #include "Internal.h"
 #include "PortaudioCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool __is_portaudio_uninit;
@@ -94,4 +94,4 @@ Audio& PortaudioSinkComponent::GetAudioSink() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

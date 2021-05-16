@@ -1,7 +1,7 @@
 #include "Agent.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 WorldState::WorldState() {
 	
@@ -295,4 +295,4 @@ double ActionNode::GetEstimate() {
 	return GetDistance(*goal);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

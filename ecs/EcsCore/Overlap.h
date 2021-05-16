@@ -2,7 +2,7 @@
 #define _EcsCore_Overlap_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -89,7 +89,7 @@ PREFAB_BEGIN(DefaultOctreeNode)
 	OverlapDetector
 PREFAB_END
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

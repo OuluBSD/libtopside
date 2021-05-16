@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 ////////////////////////////////////////////////////////////////////////////////
 // ToolSystemBase
@@ -143,6 +143,6 @@ protected:
 	LinkedList<EntityRef> m_entities;
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -2,7 +2,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 String NodeTreeString(const GrammarNode& n, int indent) {
@@ -193,7 +193,7 @@ void RemoteParser::ReadNode(CParser& p, GrammarNode& n) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

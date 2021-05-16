@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 const vec3 PhysicsSystem::EarthGravity = { 0, -9.8f, 0 };
@@ -17,7 +17,7 @@ void PhysicsSystem::Update(double dt)
         rigid_body.velocity += rigid_body.acceleration * dt;
         transform.position += rigid_body.velocity * dt;
 
-        const vec3 adjusted_angular = Oulu::transform(rigid_body.angular_velocity, inverse(transform.orientation));
+        const vec3 adjusted_angular = Topside::transform(rigid_body.angular_velocity, inverse(transform.orientation));
 
         const float angle = adjusted_angular.GetLength();
         if (angle > 0.0f)
@@ -32,4 +32,4 @@ void PhysicsSystem::Update(double dt)
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

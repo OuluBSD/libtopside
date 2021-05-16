@@ -2,7 +2,7 @@
 #define _Tutorial4_Tutorial4_h_
 
 #include <Complete/Complete.h>
-using namespace Oulu;
+using namespace Topside;
 
 
 

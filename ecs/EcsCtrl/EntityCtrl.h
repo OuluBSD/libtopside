@@ -2,7 +2,7 @@
 #define _EcsCtrl_EntityCtrl_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct EntityDataCtrl : public ComponentCtrl {
@@ -48,7 +48,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

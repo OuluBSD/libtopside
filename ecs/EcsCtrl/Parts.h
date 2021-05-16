@@ -1,7 +1,7 @@
 #ifndef _EcsCtrl_Parts_h_
 #define _EcsCtrl_Parts_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class PoolTreeCtrl : public ParentCtrl {
@@ -138,6 +138,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

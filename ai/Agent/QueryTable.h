@@ -4,7 +4,7 @@
 
 // Theory: http://www.saedsayad.com/decision_tree.htm
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>
 class QueryTable {
@@ -114,6 +114,6 @@ public:
 	}
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

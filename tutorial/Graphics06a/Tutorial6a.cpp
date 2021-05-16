@@ -5,7 +5,7 @@ Tutorial 6a:
 	This tutorial shows how shaders are used by the engine.
 */
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void Graphics6a::Initialize() {
@@ -64,9 +64,9 @@ void Graphics6aStartup() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_(Oulu::Graphics6a)
-APP_STARTUP_(Oulu::Graphics6aStartup);
+RENDER_APP_(Topside::Graphics6a)
+APP_STARTUP_(Topside::Graphics6aStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);

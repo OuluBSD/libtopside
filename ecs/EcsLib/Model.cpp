@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
@@ -64,5 +64,5 @@ void ModelComponent::Signal() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

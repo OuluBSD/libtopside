@@ -2,7 +2,7 @@
 #define _Math_Util_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T> T zero() {T o; memset(&o, 0, sizeof(T));return o;}
@@ -178,7 +178,7 @@ inline mat4 RemoveScale(const mat4& transform)
 inline float ConvertToRadians(float angle) {return angle / 180.0 * M_PI;}
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

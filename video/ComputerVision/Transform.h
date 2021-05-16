@@ -2,7 +2,7 @@
 #define _ComputerVision_Transform_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class transform {
 
@@ -169,6 +169,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -3,7 +3,7 @@
 
 #if HAVE_V4L2_DEVMGR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class V4L2_Device {
 	
@@ -57,7 +57,7 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif
 #endif

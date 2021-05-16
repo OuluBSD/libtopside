@@ -1,0 +1,46 @@
+description "Essential classes for GUI classes in Topside namespace.\377B0,0,255";
+
+noblitz;
+
+uses
+	Local,
+	CtrlLib;
+
+uses(!UPP) VirtualGui3D;
+
+uses(!UPP) SDL2GUI3D;
+
+library(POSIX) "GL GLEW glut";
+
+library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";
+
+library(NEVER) libglew32mx.a;
+
+library(WIN32) "opengl32 glew32 freetype";
+
+file
+	LocalCtrl.h,
+	CtrlUtils.cpp,
+	Defs.h,
+	Compat.h,
+	PathCtrl.h,
+	PathCtrl.cpp,
+	Container.h,
+	TabMgrCtrl.h,
+	TabMgrCtrl.cpp,
+	Images readonly separator,
+	Image.h,
+	Image.cpp,
+	Images.iml,
+	DbgImages.iml,
+	Styles readonly separator,
+	BlueBar.h,
+	BlueSkin.cpp,
+	BlueSkin.iml,
+	GrayBar.h,
+	GraySkin.cpp,
+	GraySkin.iml,
+	"Ctrl Containers" readonly separator,
+	ToolMenu.h,
+	ToolMenu.cpp;
+

@@ -1,6 +1,6 @@
 #include "EcsCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Entity::Entity() {
@@ -113,4 +113,4 @@ bool EntityHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* r
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

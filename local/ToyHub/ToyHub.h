@@ -1,11 +1,11 @@
 #ifndef _ToyHub_ToyHub_h_
 #define _ToyHub_ToyHub_h_
 
-#ifdef flagALTCORE
+#ifndef flagUPP
 	#error ToyHub requires Skylark currently, which depends on U++ Core.
 #endif
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 using namespace Upp; // sql schema requires
 
 #include "Defs.h"

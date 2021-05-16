@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 String ThrowingInteractionSystem::GetInstructions() const {
@@ -109,6 +109,6 @@ void ThrowingComponent::Destroy() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

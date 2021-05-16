@@ -1,7 +1,7 @@
 #include "Geometry.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool mb_is_colored_only = false;
@@ -1043,4 +1043,4 @@ void PrimitiveFactory::create_diamond_brilliant_cut(Mesh& mesh,
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

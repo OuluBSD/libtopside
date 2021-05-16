@@ -2,7 +2,7 @@
 
 #ifdef flagGUI
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometry_path) {
@@ -238,6 +238,6 @@ bool OpenGLShader::CheckCompileErrors(GLuint shader, String type) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

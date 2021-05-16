@@ -1,7 +1,7 @@
 #include "Multimedia.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 int MediaSourceStream::GetFormatCount() const {
@@ -130,4 +130,4 @@ void MediaStreamThread::PaintOpenGL(GLuint active_tex) {
 #endif
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

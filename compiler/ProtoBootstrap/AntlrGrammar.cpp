@@ -2,7 +2,7 @@
 
 #ifdef flagMAIN
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 int Uncapitalize(String& s, int begin, int end) {
@@ -1589,6 +1589,6 @@ String AntlrGrammar::GetHighGrammarText() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

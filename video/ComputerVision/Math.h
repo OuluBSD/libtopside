@@ -2,7 +2,7 @@
 #define _ComputerVision_Math_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void get_gaussian_kernel(int size, double sigma, Vector<double>& kernel, data_type) {
 	//var i = 0, x = 0.0, t = 0.0, sigma_x = 0.0, scale_2x = 0.0;
@@ -421,6 +421,6 @@ int median(const Vector<int>& array, int low, int high) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

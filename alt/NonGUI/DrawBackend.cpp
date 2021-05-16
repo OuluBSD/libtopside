@@ -1,5 +1,5 @@
 #include "NonGUI.h"
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 NAMESPACE_UPP_BEGIN
 

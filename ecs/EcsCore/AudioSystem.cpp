@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 Callback AudioSystem::WhenUninit;
 
@@ -119,4 +119,4 @@ void AudioSystem::Remove(AudioExchangePointRef expt) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

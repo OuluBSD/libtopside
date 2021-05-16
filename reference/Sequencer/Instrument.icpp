@@ -1,6 +1,6 @@
 #include "Sequencer.h"
 
-using namespace Oulu;
+using namespace Topside;
 
 NAMESPACE_UPP
 

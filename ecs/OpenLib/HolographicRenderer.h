@@ -2,7 +2,7 @@
 #define _OpenLib_HolographicRenderer_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class HolographicRenderer :
@@ -17,7 +17,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

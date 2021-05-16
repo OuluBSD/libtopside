@@ -1,13 +1,13 @@
 #ifndef _AudioCore_Record_h_
 #define _AudioCore_Record_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 class Record;
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 using namespace Upp;
 
 
@@ -78,7 +78,7 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 

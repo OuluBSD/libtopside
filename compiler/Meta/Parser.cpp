@@ -1,6 +1,6 @@
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 String IR::ToString() const {
 	String s = GetTypeString();
@@ -213,4 +213,4 @@ String Parser::GetIRString(const IR& ir) const {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

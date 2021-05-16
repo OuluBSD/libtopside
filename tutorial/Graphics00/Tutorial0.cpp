@@ -1,7 +1,7 @@
 #include <Complete/Complete.h>
 
 
-using namespace Oulu;
+using namespace Topside;
 
 struct Tutorial0 : Component<Tutorial0>, public DisplaySink {
 	IFACE_CB(DisplaySink);

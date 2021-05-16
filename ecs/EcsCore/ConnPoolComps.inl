@@ -1,5 +1,5 @@
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T>
@@ -90,4 +90,4 @@ void ConnectAllInterfaces<T>::Update(double dt) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

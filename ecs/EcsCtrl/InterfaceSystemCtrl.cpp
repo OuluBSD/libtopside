@@ -1,7 +1,7 @@
 #include "EcsCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 InterfaceDataCtrl::InterfaceDataCtrl() {
@@ -88,4 +88,4 @@ void InterfaceSystemCtrl::SetInterfaceCtrl(ComponentBaseRef c, ExchangeProviderB
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -1,7 +1,7 @@
 #include "Sequencer.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 TrackEditorCtrl::TrackEditorCtrl() {
@@ -819,5 +819,5 @@ void PianorollCtrl::NoteOff(Point p) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

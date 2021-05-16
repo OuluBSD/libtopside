@@ -2,7 +2,7 @@
 #define _AudioCtrl_Slider_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class AudioSlider : public Ctrl {
@@ -18,7 +18,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

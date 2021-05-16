@@ -1,10 +1,10 @@
 #ifndef _ProjectCleaner_ProjectCleaner_h_
 #define _ProjectCleaner_ProjectCleaner_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -94,9 +94,9 @@ struct CodeItem : Moveable<CodeItem> {
 	}
 };
 
-NAMESPACE_OULU_END
-int ClangToolMain(int argc, const char **argv, Upp::Vector<Oulu::CodeItem>& out);
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_END
+int ClangToolMain(int argc, const char **argv, Upp::Vector<Topside::CodeItem>& out);
+NAMESPACE_TOPSIDE_BEGIN
 
 void CppImportTool(String path, const Vector<String>& includes, const Vector<String>& defines, Vector<CodeItem>& out);
 void CppImportToolFork(String path, const Vector<String>& includes, const Vector<String>& defines, Vector<CodeItem>& out);
@@ -193,6 +193,6 @@ struct UppProjectProcessor {
 	Callback1<int> WhenLoaded;
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

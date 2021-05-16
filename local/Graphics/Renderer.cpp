@@ -1,10 +1,10 @@
 #include "GL.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 Renderer::Renderer() {
 	screen_sz = Size(0,0);
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

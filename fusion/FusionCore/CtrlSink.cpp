@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void FusionControllerSink::Initialize() {
@@ -231,4 +231,4 @@ bool FusionControllerSink::Key(dword key, int count) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

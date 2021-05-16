@@ -2,7 +2,7 @@
 #define _ComputerVision_FAST_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class fast_corners {
 	typedef Vector<int> PixVec;
@@ -251,6 +251,6 @@ private:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

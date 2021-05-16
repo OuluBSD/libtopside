@@ -1,7 +1,7 @@
 #ifndef _Math_Matrix_h_
 #define _Math_Matrix_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 #define STRICT_MTX_CHECK(x) ASSERT(x)
 
@@ -437,7 +437,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	bool IsClose(const Matrix& m) const {
 		for(int r = 0; r < R; r++)
 			for(int c = 0; c < C; c++)
-				if (!Oulu::IsClose(data[r][c], m.data[r][c]))
+				if (!Topside::IsClose(data[r][c], m.data[r][c]))
 					return false;
 		return true;
 	}
@@ -667,7 +667,7 @@ struct Square : Moveable<Square> {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #include "Matrix.inl"

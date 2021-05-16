@@ -3,7 +3,7 @@ using namespace Upp;
 
 
 GUI_APP_MAIN {
-	Oulu::Layout::Client c;
+	Topside::Layout::Client c;
 	
 	String path;
 	const auto& cmds = CommandLine();

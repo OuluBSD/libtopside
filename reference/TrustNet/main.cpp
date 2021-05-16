@@ -7,7 +7,7 @@ void TrustNetTest();
 
 CONSOLE_APP_MAIN {
 	using namespace Upp;
-	using namespace Oulu;
+	using namespace Topside;
 	
 	SetCoutLog();
 	

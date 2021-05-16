@@ -2,7 +2,7 @@
 #define _ProtoGrammar_AstResolver_h_
 #ifndef flagBOOTSTRAP
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class AstResolver;
@@ -42,7 +42,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif
 #endif

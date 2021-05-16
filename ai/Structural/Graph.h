@@ -1,7 +1,7 @@
 #ifndef _Structural_Graph_h_
 #define _Structural_Graph_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class Graph;
@@ -76,6 +76,6 @@ public:
 	void DumpSorted();
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

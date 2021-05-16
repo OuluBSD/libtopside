@@ -1,7 +1,7 @@
 #include "EcsCtrl.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 InterfaceCtrlFactoryMap& GetInterfaceCtrlFactoryMap() {static InterfaceCtrlFactoryMap map; return map;}
@@ -21,4 +21,4 @@ InterfaceCtrl* NewInterfaceCtrl(TypeId iface) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

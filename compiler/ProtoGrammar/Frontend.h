@@ -2,7 +2,7 @@
 #define _Parser_Frontend_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 

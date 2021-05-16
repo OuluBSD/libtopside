@@ -2,7 +2,7 @@
 #define _ComputerVision_Matrix_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void identity(M, int value = 1) {
@@ -227,6 +227,6 @@ double determinant_3x3(M11, M12, M13,
 			M31 * M12 * M23 - M31 * M13 * M22;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

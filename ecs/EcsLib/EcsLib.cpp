@@ -5,14 +5,14 @@ NAMESPACE_UPP
 
 
 bool Open_NonGUI_ECS() {
-	using namespace Oulu;
+	using namespace Topside;
 	Machine mach;
 	
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
 	EntityStore& ents = *mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
     
-    #ifdef flagSDL2
+    #if HAVE_SDL2
     mach.Add<SDL2System>();
     #endif
     mach.Add<EventSystem>();
@@ -29,7 +29,7 @@ bool Open_NonGUI_ECS() {
 }
 
 void Close_NonGUI_ECS() {
-	using namespace Oulu;
+	using namespace Topside;
 	Machine mach;
 	
 	mach.Stop();

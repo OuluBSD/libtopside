@@ -1,7 +1,7 @@
 #include <Language/Language.h>
 
 using namespace Upp;
-using namespace Oulu::Language;
+using namespace Topside::Language;
 
 
 CONSOLE_APP_MAIN {

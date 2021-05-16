@@ -2,7 +2,7 @@
 
 #ifdef flagGUI
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void OpenGLRenderer::PreFrame() {
@@ -53,6 +53,6 @@ int OpenGLRenderer::AddModel(Model& model) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

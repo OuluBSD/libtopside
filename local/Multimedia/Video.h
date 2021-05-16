@@ -1,7 +1,7 @@
 #ifndef _Multimedia_Video_h_
 #define _Multimedia_Video_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -49,6 +49,6 @@ struct DataPtrVideoBuffer : public Video {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

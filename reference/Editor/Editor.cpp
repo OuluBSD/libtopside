@@ -1,7 +1,7 @@
 #include "Editor.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Editor::Editor() {
@@ -334,4 +334,4 @@ bool Editor::HotKey(dword key) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

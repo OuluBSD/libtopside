@@ -1,7 +1,7 @@
 #ifndef _AudioCore_Portaudio_h_
 #define _AudioCore_Portaudio_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 namespace Portaudio {
 class BufferedAudioDeviceStream;
@@ -45,6 +45,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

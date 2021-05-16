@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void Frustum2::Initialize() {
@@ -74,6 +74,6 @@ QuadtreeComponent& QuadtreeComponent::DrawLine(vec3 a, vec3 b, float width) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

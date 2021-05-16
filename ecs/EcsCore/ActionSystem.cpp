@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool ActionSystem::Initialize() {
@@ -37,4 +37,4 @@ void ActionSystem::Remove(ActionSourceRef src) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

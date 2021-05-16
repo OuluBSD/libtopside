@@ -4,7 +4,7 @@
 #include "System.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 Fluidsynth::Fluidsynth() {
 	
@@ -341,6 +341,6 @@ void FluidsynthComponent::OpenTrackListener(int track_i) {
 	this->track_i = track_i;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

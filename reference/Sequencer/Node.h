@@ -1,7 +1,7 @@
 #ifndef _Sequencer_Node_h_
 #define _Sequencer_Node_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class SessionEditor;
 class TrackCtrl;
@@ -29,6 +29,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

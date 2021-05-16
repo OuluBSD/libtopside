@@ -1,6 +1,6 @@
 #include "AudioCtrl.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 INITBLOCK {
 	MakeComponentCtrlFactory<MidiFileComponent, MidiFileCtrl>();
@@ -40,4 +40,4 @@ void MidiFileCtrl::SetComponent(ComponentBase& base) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

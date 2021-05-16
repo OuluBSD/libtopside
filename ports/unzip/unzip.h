@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 #ifndef _ZLIB_H
-	#ifdef flagALTCORE
+	#ifndef flagUPP
 		#include <ports/zlib/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else

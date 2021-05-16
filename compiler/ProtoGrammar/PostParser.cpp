@@ -2,7 +2,7 @@
 #include "Grammar.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 	
 
 #define GRAMMAR_NAME Grammar

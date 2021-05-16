@@ -3,10 +3,8 @@ description "\377B0,0,128";
 noblitz;
 
 uses
-	Oulu,
+	Local,
 	ports/libv4l2;
-
-uses(!ALTCORE) plugin/jpg;
 
 library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
 

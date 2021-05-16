@@ -1,7 +1,7 @@
 #include "AltTopWindow.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 ExampleApp::ExampleApp() {
 	v	<< Point(10, 10)
@@ -77,5 +77,5 @@ void ExampleApp::MouseWheel(Point p, int zdelta, dword keyflags) {
 	
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

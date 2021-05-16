@@ -1,6 +1,6 @@
 #include "EcsCtrl.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 EntityDataCtrl::EntityDataCtrl() {
@@ -125,4 +125,4 @@ void EntityDataCtrl::AddEntityDataRow(Value key, Value value) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

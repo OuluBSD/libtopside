@@ -1,7 +1,7 @@
 #ifndef _Sequencer_Parts_h_
 #define _Sequencer_Parts_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class SimpleStereoMixer {
 	double value[CH_COUNT];
@@ -43,6 +43,6 @@ public:
 	}
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

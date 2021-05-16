@@ -1,6 +1,6 @@
 #include "EcsCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 /*
 AudioSink* VirtualAudioPtr;
@@ -84,5 +84,5 @@ void ActionSink::OnLink(Source src, Cookie src_c, Cookie sink_c) {
 	return src ? OnLinkActionSource(*src) : 0;*/
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

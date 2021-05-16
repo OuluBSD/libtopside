@@ -1,7 +1,7 @@
 #pragma once
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class TrustNet : Moveable<TrustNet> {
@@ -72,4 +72,4 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

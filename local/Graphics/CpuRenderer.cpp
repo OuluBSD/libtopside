@@ -1,6 +1,6 @@
 #include "GL.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 bool CpuMemoryFramebuffer::Create(int w, int h, int channels) {
 	int sz = w * h * channels;
@@ -24,7 +24,7 @@ void CpuRenderer::PreFrame() {
 
 void CpuRenderer::PostFrame() {
 	RawSysTexture* fb = output.GetRawSysTexture();
-#if defined(flagSDL2)
+#if HAVE_SDL2
 	if (rend && fb) {
 		SDL_RenderCopy(rend, fb, NULL, NULL);
 		SDL_RenderPresent(rend);
@@ -39,4 +39,4 @@ int CpuRenderer::AddModel(Model& model) {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

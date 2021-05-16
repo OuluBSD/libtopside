@@ -1,6 +1,6 @@
 #include "OrchestraConductor.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
 bool use_fluidsynth;
@@ -118,9 +118,9 @@ void OrchestraConductorStartup() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
-CONSOLE_ECS_APP_(Oulu::OrchestraConductor)
-APP_STARTUP_(Oulu::OrchestraConductorStartup);
+CONSOLE_ECS_APP_(Topside::OrchestraConductor)
+APP_STARTUP_(Topside::OrchestraConductorStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

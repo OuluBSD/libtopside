@@ -1,7 +1,7 @@
 #ifndef _OpenLib_HolographicScene_h_
 #define _OpenLib_HolographicScene_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class HolographicScene :
 	public System<HolographicScene>
@@ -25,6 +25,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

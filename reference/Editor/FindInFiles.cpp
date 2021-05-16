@@ -1,7 +1,7 @@
 #include "Editor.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 FindInFilesDlg::FindInFilesDlg() {
@@ -128,4 +128,4 @@ void Editor::DoFindInFiles() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

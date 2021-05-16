@@ -1,6 +1,6 @@
 #include "Geometry.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -104,4 +104,4 @@ vec3 BoundingBox::GetWrap(vec3 pos) const {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -2,7 +2,7 @@
 #define _Math_Geom2D_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Circle {
@@ -30,7 +30,7 @@ struct Circle {
 };
 
 
-// Note: Oulu::Oulu::Rectangle differs from Oulu::Rect:
+// Note: Topside::Topside::Rectangle differs from Topside::Rect:
 //	- it's origin + size, not min + max
 //  - it's positive y value upwards, not downwards (as is easier in 2d gui)
 
@@ -254,6 +254,6 @@ private:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

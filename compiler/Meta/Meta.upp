@@ -1,5 +1,5 @@
 uses
-	OuluCtrl;
+	LocalCtrl;
 
 file
 	main.cpp,

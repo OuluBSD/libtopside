@@ -1,7 +1,7 @@
 #ifndef _ManyCore_GeomTypes_h_
 #define _ManyCore_GeomTypes_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Vertex : Moveable<Vertex> {
@@ -144,6 +144,6 @@ enum TexType {
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -2,10 +2,10 @@
 #define _WebcamCV_WebcamCV_h_
 
 #include <ComputerVision/ComputerVision.h>
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class WebcamCV : public TopWindow {
@@ -52,6 +52,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

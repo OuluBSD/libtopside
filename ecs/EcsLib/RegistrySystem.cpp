@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool RegistrySystem::Initialize() {
@@ -26,4 +26,4 @@ void RegistrySystem::Uninitialize() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

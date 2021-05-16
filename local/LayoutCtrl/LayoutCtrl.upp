@@ -2,7 +2,7 @@ description "\377B0,0,255";
 
 uses
 	CtrlLib,
-	OuluCtrl;
+	LocalCtrl;
 
 file
 	LayoutCtrl.h,

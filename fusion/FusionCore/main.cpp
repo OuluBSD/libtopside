@@ -159,9 +159,9 @@ void NewMain() {
 NAMESPACE_FUSION_END
 
 #if 0
-int main(int argc, char **argv) {return Oulu::Shader::OldMain(argc, argv);}
+int main(int argc, char **argv) {return Topside::Shader::OldMain(argc, argv);}
 #else
-CONSOLE_APP_MAIN {Oulu::Shader::NewMain();}
+CONSOLE_APP_MAIN {Topside::Shader::NewMain();}
 #endif
 
 #endif

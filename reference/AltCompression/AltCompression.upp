@@ -1,7 +1,7 @@
 description "Compression and hashing algorithm support in CoreAlt\377";
 
 uses
-	Oulu;
+	Local;
 
 file
 	main.cpp;

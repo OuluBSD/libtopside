@@ -16,7 +16,7 @@
 	#endif
 #endif
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 #undef rad2
 #undef far
@@ -38,9 +38,9 @@
 
 NAMESPACE_UPP_BEGIN
 
-NTL_MOVEABLE(Oulu::Circle);
-NTL_MOVEABLE(Oulu::Rectangle);
-NTL_MOVEABLE(Oulu::OrientedRectangle);
+NTL_MOVEABLE(Topside::Circle);
+NTL_MOVEABLE(Topside::Rectangle);
+NTL_MOVEABLE(Topside::OrientedRectangle);
 
 NAMESPACE_UPP_END
 

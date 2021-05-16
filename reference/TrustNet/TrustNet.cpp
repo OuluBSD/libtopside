@@ -2,7 +2,7 @@
 
 void TrustNetTest() {
 	using namespace Upp;
-	using namespace Oulu;
+	using namespace Topside;
 	
 	enum {
 		OLIVER,

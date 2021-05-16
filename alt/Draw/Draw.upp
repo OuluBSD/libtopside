@@ -1,0 +1,24 @@
+description "\377B157,86,255";
+
+uses
+	Core;
+
+uses(!GUI & !SDL2) NonGUI;
+
+uses(!GUI & SDL2) NonGUISDL2;
+
+file
+	Copying,
+	Draw.h,
+	Image.h,
+	Image.cpp,
+	Font.h,
+	Font.cpp,
+	DrawClasses.h,
+	DrawClasses.cpp,
+	iml_header.h,
+	iml_source.h,
+	SDraw.h,
+	SDraw.cpp,
+	Chameleon.h;
+

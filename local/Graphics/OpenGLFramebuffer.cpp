@@ -3,7 +3,7 @@
 #ifdef flagGUI
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 OpenGLFramebuffer::OpenGLFramebuffer() : sz(0,0) {
@@ -112,6 +112,6 @@ void OpenGLFramebufferDraw::DrawPolyPolylineOp(const Point *vertices, int vertex
 	TODO
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

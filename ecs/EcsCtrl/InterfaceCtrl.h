@@ -2,7 +2,7 @@
 #define _EcsCtrl_InterfaceCtrl_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class InterfaceCtrl : public ParentCtrl {
@@ -27,6 +27,6 @@ template <class I, class C> void MakeInterfaceCtrlFactory() {
 	RegisterInterfaceCtrlFactory(typeid(I), &InterfaceCtrlFactoryFn<C>);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

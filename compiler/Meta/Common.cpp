@@ -2,7 +2,7 @@
 
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 String EscapeString(String s) {
 	s.Replace("\\", "\\\\");
@@ -56,6 +56,6 @@ void ErrorSource::Error(String msg, int file, int line, int col) {
 	WhenMessage(&m);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

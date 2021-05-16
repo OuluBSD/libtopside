@@ -183,7 +183,7 @@ using namespace winrt::Windows::UI::Input::Spatial;
 #include "MotionControllerSystem.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 using SpatialInteractionSource				= winrt::Windows::UI::Input::Spatial::SpatialInteractionSource;
@@ -192,5 +192,5 @@ using SpatialInteractionSourceEventArgs		= winrt::Windows::UI::Input::Spatial::S
 using SpatialInteractionSourceHandedness	= winrt::Windows::UI::Input::Spatial::SpatialInteractionSourceHandedness;
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

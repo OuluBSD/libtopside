@@ -1,7 +1,7 @@
 #include "Statistics.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 Vector<int> RandomNumberGenerator::Permutation(int num) {
 	Vector<int> v;
@@ -11,4 +11,4 @@ Vector<int> RandomNumberGenerator::Permutation(int num) {
 	return v;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -2,7 +2,7 @@
 #define _GL_Renderer_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class Renderer {
@@ -11,10 +11,10 @@ public:
 	
 	Size screen_sz;
 	
-	#if defined(flagSDL2)
+#if HAVE_SDL2
 	SDL_Window* win = NULL;
     SDL_Renderer* rend = NULL;
-	#endif
+#endif
 	
 	Renderer();
 	virtual ~Renderer() {}
@@ -31,6 +31,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

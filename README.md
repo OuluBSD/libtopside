@@ -1,6 +1,6 @@
-![Banner](https://raw.githubusercontent.com/OuluBSD/liboulu/main/doc/banner_210419.jpg)
+![Banner](https://raw.githubusercontent.com/OuluBSD/libtopside/main/doc/banner_210516.jpg)
 
-Liboulu is a unfinished collection of libraries that enable modern games and programs.
+Libtopside is a unfinished collection of libraries that enable modern games and programs.
 
 The intention is to follow U++ conventions, but still make a standalone solution that works even without U++ and only with standard C libraries.
 This solution is certainly too radical compared to current industrial solutions, but the aim is to prove the usefulness of this solution in the long run.
@@ -20,7 +20,7 @@ The biggest challenges:
 ## How to compile
 
 ### In FreeBSD
-This is an example to build the BuggyCar project in the examples directory. Modify it to your needs. System-wide installation doesn't exist.
+This is an example to build the MP3Player project in the reference directory. Modify it to your needs. System-wide installation doesn't exist.
 
 You might want to test other packages in examples and reference directories. However, note that they probably won't build, because this whole repository is in very alpha state still.
 
@@ -28,10 +28,10 @@ Instead of these commands, you should use U++ TheIDE editor and create new assem
 
 ```
 pkg install upp git
-git clone https://github.com/OuluBSD/liboulu.git
-cd liboulu
+git clone https://github.com/OuluBSD/libtopside.git
+cd libtopside
 umk \
-	examples,reference,tutorial,ai,ecs,fusion,video,audio,compiler,local,alt,uppsrc,/usr/local/share/upp/uppsrc \
-	BuggyCar GCC \
-	-v +GUI,ALTCORE,VIRTUALGUI3DALT,SDL2GUI3DALT ~/
+	examples,reference,tutorial,ai,ecs,fusion,video,audio,compiler,local,alt,. \
+	MP3Player GCC \
+	-v +GUI ~/
 ```

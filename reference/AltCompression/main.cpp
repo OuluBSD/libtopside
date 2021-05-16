@@ -1,7 +1,7 @@
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 using namespace Upp;
-using namespace Oulu;
+using namespace Topside;
 
 void Print(int lvl, String s) {
 	String e, l;

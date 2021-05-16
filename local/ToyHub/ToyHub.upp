@@ -3,7 +3,7 @@ description "\377B255,127,0";
 uses
 	Skylark;
 
-uses(!ALTCORE) Oulu;
+uses(UPP) Local;
 
 uses(MYSQL) MySql;
 

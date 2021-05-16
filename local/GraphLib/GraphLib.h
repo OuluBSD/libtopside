@@ -1,11 +1,11 @@
 #ifndef _GraphLib_GraphLib_h_
 #define _GraphLib_GraphLib_h_
 
-#include <OuluCtrl/OuluCtrl.h>
+#include <LocalCtrl/LocalCtrl.h>
 
 
 #define GRAPHLIB						GraphLib
-#define NAMESPACE_GRAPHLIB_BEGIN		namespace  Oulu { namespace  GRAPHLIB {
+#define NAMESPACE_GRAPHLIB_BEGIN		namespace  Topside { namespace  GRAPHLIB {
 #define NAMESPACE_GRAPHLIB_END			}}
 
 

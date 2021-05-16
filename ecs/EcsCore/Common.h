@@ -2,7 +2,7 @@
 #define _EcsCore_Common_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct RealtimeSourceConfig;
@@ -37,6 +37,7 @@ struct VideoSink;
 struct ControllerSource;
 struct MidiSource;
 struct DisplaySource;
+struct DisplaySink;
 struct PaintComponent;
 template <class Main, class Base> class ComponentStoreT;
 
@@ -57,6 +58,7 @@ using VideoSinkRef			= Ref<VideoSink,			RefParent1<Entity>>;
 using ControllerSourceRef	= Ref<ControllerSource,		RefParent1<Entity>>;
 using MidiSourceRef			= Ref<MidiSource,			RefParent1<Entity>>;
 using DisplaySourceRef		= Ref<DisplaySource,		RefParent1<Entity>>;
+using DisplaySinkRef		= Ref<DisplaySink,			RefParent1<Entity>>;
 using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using Transform2DRef		= Ref<Transform2D,			RefParent1<Entity>>;
@@ -196,6 +198,6 @@ typedef enum {
 #define VIS_COMP_2_2(a, b, c, d)	VIS_SOURCES_2(a, b)		VIS_SINKS_2(c, d)
 
 	
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

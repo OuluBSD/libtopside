@@ -1,7 +1,7 @@
 #ifndef _EcsCore_Connector_h_
 #define _EcsCore_Connector_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -115,6 +115,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

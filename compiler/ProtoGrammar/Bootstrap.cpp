@@ -1,7 +1,7 @@
 #include "Grammar.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 BootstrapGenerator::BootstrapGenerator() {
@@ -14,7 +14,7 @@ bool BootstrapGenerator::Process(String title, const ParsingUnit& pu) {
 	
 	c_out << "#ifndef flagBOOTSTRAP\n";
 	
-	c_out << "#include \"Grammar.h\"\n\nnamespace Oulu::" << title << " {\n\n";
+	c_out << "#include \"Grammar.h\"\n\nnamespace Topside::" << title << " {\n\n";
 	
 	Grammar::Parser p;
 	
@@ -352,4 +352,4 @@ bool BootstrapGenerator::Process(String title, const ParsingUnit& pu) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

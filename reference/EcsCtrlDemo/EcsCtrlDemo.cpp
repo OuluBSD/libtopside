@@ -1,7 +1,7 @@
 #include "EcsCtrlDemo.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 EcsCtrlDemo::EcsCtrlDemo(Machine& mach) : mach(mach) {
@@ -49,5 +49,5 @@ void EcsCtrlDemo::Updated() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 

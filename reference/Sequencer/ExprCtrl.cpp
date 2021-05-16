@@ -1,6 +1,6 @@
 #include "Sequencer.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 	
 	
 ExprCtrl::ExprCtrl() {
@@ -558,4 +558,4 @@ void ExprParentCtrl::MouseWheel(Point pt, int zdelta, dword kf) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

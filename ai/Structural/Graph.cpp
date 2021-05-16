@@ -1,7 +1,7 @@
 #include "Structural.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Graph::Graph() {
@@ -167,4 +167,4 @@ void Graph::DumpSorted() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

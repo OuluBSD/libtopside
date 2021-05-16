@@ -1,6 +1,6 @@
 #include "System.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 SDL2System::SDL2System(Machine& m) : System<SDL2System>(m) {
@@ -160,7 +160,7 @@ void SDL2EventsComponent::Uninitialize() {
 		ev_sys->RemoveControllable(*this);
 }
 
-void SDL2EventsComponent::EmitController() {
+void SDL2EventsComponent::EmitController(double dt) {
 	if (obj) {
 		ev.ctrl.SetCount(1);
 		CtrlEvent& e = ev.ctrl[0];
@@ -187,7 +187,7 @@ void SDL2JoystickComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2JoystickComponent::EmitController() {
+void SDL2JoystickComponent::EmitController(double dt) {
 	TODO
 }
 
@@ -203,7 +203,7 @@ void SDL2GameControllerComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2GameControllerComponent::EmitController() {
+void SDL2GameControllerComponent::EmitController(double dt) {
 	TODO
 }
 
@@ -219,7 +219,7 @@ void SDL2SensorComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2SensorComponent::EmitController() {
+void SDL2SensorComponent::EmitController(double dt) {
 	TODO
 }
 
@@ -386,4 +386,4 @@ void SDL2ContextComponent::Uninitialize() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

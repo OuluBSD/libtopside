@@ -3,7 +3,7 @@
 
 #if HAVE_FFMPEG
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class FfmpegFileInput;
 
@@ -66,7 +66,7 @@ class FfmpegVideoFrameQueue :
 		void Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
 		bool PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
 	};
-	using Recycler = Oulu::Recycler<Frame,true>;
+	using Recycler = Topside::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
 	struct SwsContext* img_convert_ctx = 0;
@@ -205,7 +205,7 @@ public:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif
 #endif

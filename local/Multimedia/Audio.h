@@ -1,7 +1,7 @@
 #ifndef _Multimedia_Audio_h_
 #define _Multimedia_Audio_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class AudioFrame : public Audio {
@@ -24,6 +24,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

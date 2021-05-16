@@ -1,17 +1,17 @@
 #ifndef _Structural_Structural_h_
 #define _Structural_Structural_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 #include "Graph.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void StructuralTests();
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

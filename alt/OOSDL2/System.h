@@ -4,7 +4,7 @@
 #include <EcsLib/EcsLib.h>
 #include <OOSDL2/OOSDL2.h>
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class SDL2TimerComponent :
@@ -41,11 +41,14 @@ public:
 	
 	SDL2AudioInputComponent() = default;
 	
-	void Initialize() override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
-	//void EmitAudioSource(double dt) override;
-	//void Play(const RealtimeSourceConfig& config, Audio& aud) override;
+	void				Initialize() override;
+	void				Uninitialize() override;
+	void				Visit(RuntimeVisitor& vis) override {}
+	AudioStream&		GetAudioSource() override;
+	void				BeginAudioSource() override;
+	void				EndAudioSource() override;
+	//void				EmitAudioSource(double dt) override;
+	//void				Play(const RealtimeSourceConfig& config, Audio& aud) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::AudioInput* GetOOSDL2() {return &*obj;}
@@ -69,19 +72,20 @@ public:
 	
 	SDL2AudioOutputComponent() = default;
 	
-	void Initialize() override;
-	void Uninitialize() override;
-	void RecvAudio(AudioSource& src, double dt) override;
-	void Visit(RuntimeVisitor& vis) override {}
+	void			Initialize() override;
+	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {}
+	AudioFormat		GetAudioFormat() override;
+	Audio&			GetAudioSink() override;
 	
-	SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
+	/*SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
 	void			CommitPlay() override {}
 	void			UndoPlay() override {ASSERT_(0, "UndoPlay is not implemented");}
 	bool			IsAudioSampleFloating() override {return obj ? obj->IsSampleFloating() : 0;}
 	int				GetAudioSampleRate() override {return obj ? obj->GetSampleRate() : 0;}
 	int				GetAudioChannels() override {return obj ? obj->GetChannels() : 0;}
 	int				GetAudioFrequency() override {return obj ? obj->GetFrequency() : 0;}
-	int				GetAudioSampleSize() override {return obj ? obj->GetSampleSize() : 0;}
+	int				GetAudioSampleSize() override {return obj ? obj->GetSampleSize() : 0;}*/
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}
@@ -143,7 +147,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController() override;
+	void EmitController(double dt) override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_SYSTEM || type == CTRL_KEYBOARD || type == CTRL_MOUSE;}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
@@ -168,7 +172,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController() override;
+	void EmitController(double dt) override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_JOYSTICK;}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
@@ -193,7 +197,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController() override;
+	void EmitController(double dt) override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
@@ -218,7 +222,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController() override;
+	void EmitController(double dt) override;
 	bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
@@ -299,6 +303,8 @@ public:
 };
 
 
+using SDL2ContextComponentRef		= Ref<SDL2ContextComponent,			RefParent1<Entity>>;
+
 
 
 
@@ -308,18 +314,17 @@ public:
 class SDL2System : public System<SDL2System> {
 	LinkedList<SDL2ContextComponentRef> comps;
 	
-	Oulu::OOSDL2::Context ctx;
+	Topside::OOSDL2::Context ctx;
 	OOSDL2::Image img;
 	OOSDL2::Font fnt;
 	
 	
-	void Visit(RuntimeVisitor& vis) override {
-		vis && comps;
-	}
+	void Visit(RuntimeVisitor& vis) override {vis && comps;}
+	
 public:
 	SDL2System(Machine& m);
 	
-	const Vector<SDL2ContextComponent*>& GetContext() const {return comps;}
+	const LinkedList<SDL2ContextComponentRef>& GetContext() const {return comps;}
 	
 protected:
 	friend class Font;
@@ -330,7 +335,6 @@ protected:
     void Update(double dt) override;
     void Stop() override;
     void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis || comps;}
     
 protected:
 	friend class SDL2ContextComponent;
@@ -380,8 +384,9 @@ struct SDL2StandaloneConsole : EntityPrefab<
 	SDL2SensorComponent,
 	SDL2ImageComponent,
 	SDL2FontComponent,
-	SDL2ContextComponent,
-	// Never: DirectWindow,>
+	SDL2ContextComponent
+	// Never: DirectWindow,
+>
 {
     static Components Make(Entity& e)
     {
@@ -405,6 +410,6 @@ struct StandaloneLineIn : EntityPrefab<
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

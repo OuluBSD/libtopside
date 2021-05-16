@@ -2,7 +2,7 @@
 #define _ComputerVision_ImageProcessing_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, int code = COLOR_RGBA2GRAY);
 
@@ -1332,6 +1332,6 @@ void skindetector(src, dst) {
 #endif
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

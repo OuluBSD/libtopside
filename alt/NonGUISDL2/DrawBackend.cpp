@@ -1,5 +1,5 @@
 #include "NonGUISDL2.h"
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 #include <OOSDL2/OOSDL2.h>
 
 NAMESPACE_UPP_BEGIN
@@ -19,13 +19,13 @@ Size GetSysFontTextSize(RawSysFont* fnt, String s) {
 }
 
 void SysFont::Clear() {
-	if (raw && Oulu::OOSDL2::IsSDL2Open())
+	if (raw && Topside::OOSDL2::IsSDL2Open())
 		TTF_CloseFont(raw);
 	raw = 0;
 }
 
 void SysImage::Clear() {
-	if (raw && Oulu::OOSDL2::IsSDL2Open()) {
+	if (raw && Topside::OOSDL2::IsSDL2Open()) {
 		if (--raw->refcount == 0)
 			SDL_FreeSurface(raw);
 	}

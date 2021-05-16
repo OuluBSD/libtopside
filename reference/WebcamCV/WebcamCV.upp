@@ -1,6 +1,6 @@
 uses
 	ComputerVision,
-	OuluCtrl;
+	LocalCtrl;
 
 file
 	WebcamCV.h,

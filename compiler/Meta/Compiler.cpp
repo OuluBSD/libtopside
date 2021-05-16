@@ -1,6 +1,6 @@
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Compiler::Compiler() : ErrorSource("Compiler") {
@@ -118,4 +118,4 @@ void Compiler::Set(dword addr, dword value) {
 	*ptr = value;
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

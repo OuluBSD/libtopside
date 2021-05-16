@@ -1,7 +1,7 @@
 description "Parses Antlr v4 grammar and generates manual-like parser.\377B128,128,128";
 
 uses
-	Oulu;
+	Local;
 
 file
 	Bootstrap.h,

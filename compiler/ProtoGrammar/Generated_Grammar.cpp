@@ -1,6 +1,6 @@
 // Generated at 12/21/2020 07:40:50
 #include "Grammar.h"
-namespace Oulu::Grammar {
+namespace Topside::Grammar {
 bool Parser::FileInput() {
 	RET(FILE_INPUT)
 	SAVE;

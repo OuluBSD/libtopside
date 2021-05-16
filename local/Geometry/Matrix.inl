@@ -1,4 +1,4 @@
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 template <class T, int I>
 Vec<T,I> Vec<T,I>::operator*(const Matrix<T,I,I>& m) const {
@@ -13,4 +13,4 @@ Vec<T,I> Vec<T,I>::operator*(const Matrix<T,I,I>& m) const {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

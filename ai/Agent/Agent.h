@@ -1,7 +1,7 @@
 #ifndef _Agent_Agent_h_
 #define _Agent_Agent_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 
 #include "Node.h"

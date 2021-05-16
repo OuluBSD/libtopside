@@ -1,7 +1,7 @@
 #include "DemoRoom.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 // Loads and initializes application assets when the application is loaded.
@@ -179,4 +179,4 @@ void DemoRoomMain::LoadAppState()
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

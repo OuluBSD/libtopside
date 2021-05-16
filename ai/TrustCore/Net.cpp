@@ -1,7 +1,7 @@
 #include "TrustCore.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void TrustNet::Clear() {
 	trust_threshold = 0.5;
@@ -256,4 +256,4 @@ RankingMap TrustNet::FirstOrderRankings(int rootid, const Array<TrustEdge>& assi
 	return EdgesToRankedForm(edges);
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

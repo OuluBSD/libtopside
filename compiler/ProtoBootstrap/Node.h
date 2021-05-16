@@ -2,7 +2,7 @@
 #define _Common_Node_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 enum {
@@ -210,7 +210,7 @@ public:
 String NodeTreeStringSimple(const Node& n, int depth=0, String tab="\t");
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

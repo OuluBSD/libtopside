@@ -3,7 +3,7 @@ description "Digital audio workstation\377B128,128,0";
 flags(FREEBSD) BUILTIN_PORTMIDI;
 
 uses
-	Oulu;
+	Local;
 
 uses((BUILTIN_PORTAUDIO | (WIN32&MSC))) ports/portaudio;
 

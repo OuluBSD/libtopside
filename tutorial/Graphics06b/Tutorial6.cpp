@@ -7,7 +7,7 @@ Tutorial 6b:
 	Source: https://github.com/ssloy/tinyrenderer/wiki/Lesson-6-Shaders-for-the-software-renderer
 */
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 void Graphics6Startup() {
@@ -33,9 +33,9 @@ void Graphics6Startup() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_(Oulu::DefaultRenderApp)
-APP_STARTUP_(Oulu::Graphics6Startup);
+RENDER_APP_(Topside::DefaultRenderApp)
+APP_STARTUP_(Topside::Graphics6Startup);
 APP_DEFAULT_GFX_(GFX_OPENGL);

@@ -1,7 +1,7 @@
 #include "Bootstrap.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 	
 
 String NodeTreeStringSimple(const Node& n, int depth, String tab) {
@@ -39,4 +39,4 @@ String NodeTreeStringSimple(const Node& n, int depth, String tab) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

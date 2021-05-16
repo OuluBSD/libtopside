@@ -109,7 +109,7 @@ RetType DX::DeviceResources::UseHolographicCameraResources(LCallback const& call
 
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 using SharedDeviceResources = Shared<DX::DeviceResources>;
@@ -118,4 +118,4 @@ using HolographicSpace = winrt::Windows::Graphics::Holographic::HolographicSpace
 void LoadDefaultResources(DeviceResources& dr, HolographicSpace& hs, String diff, String spec, String skybox, String lut);
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

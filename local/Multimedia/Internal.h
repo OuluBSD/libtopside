@@ -13,7 +13,7 @@
 		
 		#define HAVE_V4L2_CAP 0
 		
-		#ifndef flagALTCORE
+		#ifdef flagUPP
 			#define V4L2_SLOW 0
 		#endif
 	#endif

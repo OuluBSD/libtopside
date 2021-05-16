@@ -11,7 +11,7 @@ bool Open_NonGUI_ECS();
 void Close_NonGUI_ECS();
 
 #if 0
-	#ifdef flagALTCORE
+	#ifndef flagUPP
 		#if defined(flagWIN32)
 			#define ECS_MAIN \
 			void ConsoleMainFn_(); \
@@ -61,7 +61,7 @@ void Close_NonGUI_ECS();
 	void EcsMainFn_()
 
 
-#define CONSOLE_ECS_APP_(x) ECS_MAIN {Oulu::SimpleEntityApp<x>();}
+#define CONSOLE_ECS_APP_(x) ECS_MAIN {Topside::SimpleEntityApp<x>();}
 
 
 #endif

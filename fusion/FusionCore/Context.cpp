@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 int FusionContextComponent::id_counter;
@@ -765,4 +765,4 @@ bool FusionContextComponent::ConnectComponents() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

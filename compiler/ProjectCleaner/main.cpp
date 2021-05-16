@@ -5,7 +5,7 @@
 
 CONSOLE_APP_MAIN {
 	using namespace Upp;
-	using namespace Oulu;
+	using namespace Topside;
 	
 	const auto& cmds = CommandLine();
 	if (cmds.GetCount() && cmds[0] == "clang") {

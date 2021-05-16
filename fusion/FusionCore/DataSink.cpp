@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 ArrayMap<String,String>& CommonHashToName() {
 	static ArrayMap<String,String> map;
@@ -241,7 +241,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 		return false;
 	}
 	
-#ifdef flagSDL2
+#if HAVE_SDL2
 	Ref<SDL2System> sdl2_sys = m.Get<SDL2System>();
 	if (sdl2_sys) {
 		if (type == FusionComponentInput::TEXTURE ||
@@ -291,4 +291,4 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

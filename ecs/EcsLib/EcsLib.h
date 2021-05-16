@@ -3,8 +3,8 @@
 
 #include <EcsCore/EcsCore.h>
 
-#ifdef flagALTCORE
-	#include <EscAlt/Esc.h>
+#ifndef flagUPP
+	#include <Esc/Esc.h>
 #else
 	#include <Esc/Esc.h>
 #endif
@@ -19,7 +19,7 @@
 	#endif
 #endif
 
-#if !defined(flagALTCORE) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)
+#if defined(flagUPP) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)
 	// No WindowSystem
 #elif defined(flagGUI)
 	#define HAVE_WINDOWSYSTEM 1
@@ -64,14 +64,14 @@
 
 #endif
 
-#ifdef flagSDL2
+#if HAVE_SDL2
 	#include <OOSDL2/System.h>
 #endif
 
 #include <Multimedia/System.h>
 
-#ifdef flagSDL2GUI3DALT
-#include <SDL2GUI3DAlt/System.h>
+#if HAVE_SDL2
+	#include <SDL2GUI3D/System.h>
 #endif
 
 

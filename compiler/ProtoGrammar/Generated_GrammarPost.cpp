@@ -1,7 +1,7 @@
 #ifndef flagBOOTSTRAP
 #include "Grammar.h"
 
-namespace Oulu::Grammar {
+namespace Topside::Grammar {
 
 bool PostParser::FileInput(const Node& n) {
 	ASSERT_TYPE(n, NODE_FILE_INPUT);

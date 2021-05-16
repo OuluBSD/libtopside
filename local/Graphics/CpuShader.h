@@ -1,7 +1,7 @@
 #ifndef _GL_CpuShader_h_
 #define _GL_CpuShader_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class CpuShader : public Shader {
 	bool is_loaded = false;
@@ -32,6 +32,6 @@ private:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

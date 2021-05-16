@@ -2,7 +2,7 @@
 #define _ComputerVision_YAPE06_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class yape06 {
 
@@ -95,6 +95,6 @@ public:
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

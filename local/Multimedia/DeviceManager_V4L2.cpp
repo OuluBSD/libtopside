@@ -8,7 +8,7 @@
 #include <sys/ioctl.h>
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 MediaStream* V4L2_Device::FindOpenDevice() {
 	for (OpenCVCaptureDevice& m : caps)
@@ -123,6 +123,6 @@ void V4L2_DeviceManager::Refresh() {
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

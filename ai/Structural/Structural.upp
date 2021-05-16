@@ -1,7 +1,7 @@
 description "\377B0,0,128";
 
 uses
-	Oulu;
+	Local;
 
 file
 	Structural.h,

@@ -1,7 +1,7 @@
 #ifndef _GL_CpuRenderer_h_
 #define _GL_CpuRenderer_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 class CpuFramebuffer : public Framebuffer {
 	
@@ -40,7 +40,7 @@ public:
 };
 
 
-#if defined flagSDL2GUI3DALT
+#if HAVE_SDL2
 class CpuOutputFramebuffer : public CpuFramebuffer {
 	SDL_Texture* fb;
 	byte* pixels;
@@ -129,6 +129,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _GL_GpuShader_h_
 #define _GL_GpuShader_h_
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class OpenGLShader : public Shader {
@@ -40,6 +40,6 @@ private:
 	
 };
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

@@ -3,7 +3,7 @@
 
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 /*struct StandaloneWindow : EntityPrefab
 	<DirectWindow, Connector>
@@ -63,8 +63,8 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		    mach.Add<RenderingSystem>();
 		    mach.Add<AudioSystem>();
 		    
-		    #ifdef flagSDL2GUI3DALT
-		    mach.Add<SDL2GUI3DAltSystem>();
+		    #if HAVE_SDL2
+		    mach.Add<SDL2GUI3DSystem>();
 		    #endif
 		    
 		    #ifdef flagOPENVR
@@ -95,7 +95,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		
 		PoolRef root = ents->GetRoot();
 		
-		#ifdef flagSDL2
+		#if HAVE_SDL2
 			#ifdef flagGUI
 				EntityRef app = root->Create<StandaloneWindow>();
 			#else
@@ -127,18 +127,18 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	#endif
 }
 
-#define CONSOLE_APP_(x) CONSOLE_APP_MAIN {Oulu::SimpleEntityApp<x>();}
-#define RENDER_APP_(x) RENDER_APP_MAIN {Oulu::SimpleEntityApp<x>();}
+#define CONSOLE_APP_(x) CONSOLE_APP_MAIN {Topside::SimpleEntityApp<x>();}
+#define RENDER_APP_(x) RENDER_APP_MAIN {Topside::SimpleEntityApp<x>();}
 #define APP_STARTUP_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Oulu::Machine::WhenStarting << callback(x);} \
+	INITBLOCK {Topside::Machine::WhenStarting << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Oulu::GetAppFlags().gfx = Oulu::AppFlags::x;} \
+	INITBLOCK {Topside::GetAppFlags().gfx = Topside::AppFlags::x;} \
 	END_UPP_NAMESPACE
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

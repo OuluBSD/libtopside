@@ -7,8 +7,8 @@ using namespace Upp;
 #define LAYOUTFILE <Editor/Layouts.lay>
 #include <CtrlCore/lay.h>
 
-#include <Oulu/Oulu.h>
-#include <OuluCtrl/OuluCtrl.h>
+#include <Local/Local.h>
+#include <LocalCtrl/LocalCtrl.h>
 #include <Esc/Esc.h>
 
 
@@ -16,7 +16,7 @@ using namespace Upp;
 #include "Terminal.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 struct FindInFilesDlg : WithFindInFilesLayout<ParentCtrl> {
@@ -181,6 +181,6 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

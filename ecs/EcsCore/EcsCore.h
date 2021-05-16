@@ -4,10 +4,10 @@
 
 #include <Graphics/GL.h>
 #ifdef flagGUI
-	#include <OuluCtrl/OuluCtrl.h>
+	#include <LocalCtrl/LocalCtrl.h>
 #endif
 #include <Geometry/Geometry.h>
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 #include <Agent/Agent.h>
 

@@ -1,6 +1,6 @@
 #include "Meta.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 Linker::Linker() : ErrorSource("Linker") {
@@ -20,4 +20,4 @@ bool Linker::Link() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

@@ -1,6 +1,6 @@
 #include "Physics.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void StaticBox::OnAttach() {
 	OdeObject::OnAttach();
@@ -16,4 +16,4 @@ void StaticBox::OnAttach() {
 
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

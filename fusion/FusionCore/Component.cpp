@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 void RemoveToken(String& glsl, String token) {
 	if (glsl.Left(token.GetCount() + 1) == token + " ") glsl = glsl.Mid(token.GetCount() + 1);
@@ -370,4 +370,4 @@ void FusionComponent::OnError(String fn, String msg) {
 	}
 }
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

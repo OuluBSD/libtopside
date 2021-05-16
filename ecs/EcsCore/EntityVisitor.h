@@ -2,7 +2,7 @@
 #define _EcsCore_EntityVisitor_h_
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 class EntityVisitor {
@@ -138,7 +138,7 @@ public:
 };
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
 #endif

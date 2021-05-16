@@ -1,7 +1,7 @@
 #ifndef _Bootstrap_Bootstrap_h_
 #define _Bootstrap_Bootstrap_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 
 #include "Node.h"
 #include "MacroInterpreter.h"

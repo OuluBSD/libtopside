@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 RenderingSystem::RenderingSystem(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
@@ -55,7 +55,7 @@ void RenderingSystem::Remove(DisplaySourceRef src) {
 
 #if 0
 
-#if defined flagGUI && flagALTCORE
+#if defined flagGUI && !defined flagUPP
 
 DefaultRenderApp::DefaultRenderApp() {
 	
@@ -192,4 +192,4 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 #endif
 #endif
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

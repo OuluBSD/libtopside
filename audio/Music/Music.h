@@ -1,11 +1,11 @@
 #ifndef _Music_Music_h_
 #define _Music_Music_h_
 
-#include <Oulu/Oulu.h>
+#include <Local/Local.h>
 #include <EcsLib/EcsLib.h>
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
@@ -184,6 +184,6 @@ PREFAB_BEGIN(CompleteMusicComposer)
 PREFAB_END;
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 #endif

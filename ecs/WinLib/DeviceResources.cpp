@@ -315,7 +315,7 @@ void DX::DeviceResources::Present(HolographicFrame frame)
 
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 using SharedDeviceResources = Shared<DX::DeviceResources>;
 using HolographicSpace = winrt::Windows::Graphics::Holographic::HolographicSpace;
@@ -357,4 +357,4 @@ void LoadDefaultResources(DeviceResources& dev_res, HolographicSpace& hs, String
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END

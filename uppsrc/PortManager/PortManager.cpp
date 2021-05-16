@@ -1,7 +1,7 @@
 #include "PortManager.h"
 
 
-NAMESPACE_OULU_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 PortManager::PortManager() {
@@ -27,8 +27,8 @@ void PortManagerMain() {
 }
 
 
-NAMESPACE_OULU_END
+NAMESPACE_TOPSIDE_END
 
 
-CONSOLE_APP_MAIN {Oulu::PortManagerMain();}
+CONSOLE_APP_MAIN {Topside::PortManagerMain();}
 
