@@ -10,6 +10,5 @@ file
 	AppleSeedTest.cpp;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE";
+	"" = "";
 

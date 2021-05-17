@@ -3,9 +3,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-SDL2System::SDL2System(Machine& m) : System<SDL2System>(m) {
-	
-}
 
 bool SDL2System::Initialize() {
 	return img.Open() && fnt.Open();
@@ -28,12 +25,12 @@ void SDL2System::Uninitialize() {
 	fnt.Close();
 }
 
-void SDL2System::AddContext(SDL2ContextComponent& comp) {
-	VectorFindAdd(comps, &comp);
+void SDL2System::AddContext(SDL2ContextComponentRef comp) {
+	comps.FindAdd(comp);
 }
 
-void SDL2System::RemoveContext(SDL2ContextComponent& comp) {
-	VectorRemoveKey(comps, &comp);
+void SDL2System::RemoveContext(SDL2ContextComponentRef comp) {
+	comps.RemoveKey(comp);
 }
 
 
@@ -42,7 +39,7 @@ void SDL2System::RemoveContext(SDL2ContextComponent& comp) {
 
 
 #define OBJ_CREATE \
-	auto* ev_ctx = GetEntity().Find<SDL2ContextComponent>(); \
+	auto ev_ctx = GetEntity().Find<SDL2ContextComponent>(); \
 	/*ASSERT(ev_ctx);*/ \
 	if (ev_ctx) { \
 		obj.Create(ev_ctx->GetOOSDL2()); \
@@ -66,9 +63,9 @@ void SDL2AudioInputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2AudioInputComponent::EmitAudioSource(double dt) {
+/*void SDL2AudioInputComponent::EmitAudioSource(double dt) {
 	TODO
-}
+}*/
 
 /*void SDL2AudioInputComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
 	TODO
@@ -90,9 +87,9 @@ void SDL2AudioOutputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {
+/*void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {
 	DefaultRecvAudio(src, dt, obj->GetSystemAudio());
-}
+}*/
 
 
 
@@ -102,7 +99,7 @@ void SDL2ScreenComponent::Initialize() {
 	config.dt = 0;
 	SetFPS(60);
 	OBJ_CREATE
-	auto* ev_comp = GetEntity().Find<SDL2EventsComponent>();
+	auto ev_comp = GetEntity().Find<SDL2EventsComponent>();
 	if (ev_comp)
 		ev = ev_comp->GetOOSDL2();
 }
@@ -149,7 +146,7 @@ void SDL2EventsComponent::Initialize() {
 	if (!ev_sys)
 		return;
 	
-	ev_sys -> AddControllable(*this);
+	ev_sys -> Add(Ref<ControllerSource>());
 }
 
 void SDL2EventsComponent::Uninitialize() {
@@ -157,7 +154,7 @@ void SDL2EventsComponent::Uninitialize() {
 	
 	Ref<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
 	if (ev_sys)
-		ev_sys->RemoveControllable(*this);
+		ev_sys->Remove(Ref<ControllerSource>());
 }
 
 void SDL2EventsComponent::EmitController(double dt) {
@@ -169,7 +166,7 @@ void SDL2EventsComponent::EmitController(double dt) {
 			if (e.type == EVENT_SHUTDOWN) {
 				GetMachine().SetNotRunning();
 			}
-			for(ControllerSink* sink : ControllerSource::GetSinks())
+			for(ControllerSinkRef sink : ControllerSource::GetConnections())
 				sink->RecvController(ev);
 		}
 	}
@@ -299,7 +296,7 @@ void SDL2ImageComponent::EmitStatic() {
 		data.pitch = pitch;
 		data.data = img_data;
 		
-		for(StaticSink* sink : StaticSource::GetSinks())
+		for(StaticSinkRef sink : StaticSource::GetConnections())
 			sink->RecvStatic(data);
 		id++;
 	}
@@ -341,19 +338,19 @@ void SDL2ContextComponent::Initialize() {
 	
 	Ref<SDL2System> sdl2_sys = e.GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
-		sdl2_sys	-> AddContext(*this);
+		sdl2_sys->AddContext(*this);
 	
-	SDL2TimerComponent* tim				= e.Find<SDL2TimerComponent>();
-	SDL2AudioInputComponent* ain		= e.Find<SDL2AudioInputComponent>();
-	SDL2AudioOutputComponent* aout		= e.Find<SDL2AudioOutputComponent>();
+	auto tim		= e.Find<SDL2TimerComponent>();
+	auto ain		= e.Find<SDL2AudioInputComponent>();
+	auto aout		= e.Find<SDL2AudioOutputComponent>();
 #ifdef flagGUI
-	SDL2ScreenComponent* scr			= e.Find<SDL2ScreenComponent>();
+	auto scr		= e.Find<SDL2ScreenComponent>();
 #endif
 	
-	SDL2EventsComponent* ev				= e.Find<SDL2EventsComponent>();
-	SDL2JoystickComponent* joy			= e.Find<SDL2JoystickComponent>();
-	SDL2GameControllerComponent* gc		= e.Find<SDL2GameControllerComponent>();
-	SDL2SensorComponent* sens			= e.Find<SDL2SensorComponent>();
+	auto ev			= e.Find<SDL2EventsComponent>();
+	auto joy		= e.Find<SDL2JoystickComponent>();
+	auto gc			= e.Find<SDL2GameControllerComponent>();
+	auto sens		= e.Find<SDL2SensorComponent>();
 	
 	#define AddObj(x) if(x) {obj->Add(x->GetObj()); comps.Add(x);}
 	

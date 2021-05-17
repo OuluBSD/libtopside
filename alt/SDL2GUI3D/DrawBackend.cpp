@@ -6,9 +6,9 @@ RawSysFont* LoadSysFont(String path, int size) {
 	return TTF_OpenFont(path.Begin(), size);
 }
 
-Size GetSysFontTextSize(SysFont* fnt, String s) {
+Size GetSysFontTextSize(RawSysFont* fnt, String s) {
 	Size sz;
-	TTF_SizeText(fnt->GetSysFont()->GetRaw(), s.Begin(), &sz.cx, &sz.cy);
+	TTF_SizeText(fnt, s.Begin(), &sz.cx, &sz.cy);
 	return sz;
 }
 

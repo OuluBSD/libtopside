@@ -144,7 +144,7 @@ struct Vec : Moveable<Vec<T, I> > {
 		String s = "[";
 		for(int i = 0; i < I; i++) {
 			if (i) s << ", ";
-			s << ::Upp::ToString(data[i]);
+			s << ::Upp::AsString(data[i]);
 		}
 		s << "]";
 		return s;

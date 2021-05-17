@@ -6,7 +6,6 @@ file
 	ECS_RouteSearch.cpp;
 
 mainconfig
-	"" = "ALTCORE",
 	"" = "",
 	"" = "USEMALLOC";
 

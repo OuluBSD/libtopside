@@ -1,6 +1,6 @@
 #include <ToyHub/ToyHub.h>
 
-#ifndef flagUPP
+#ifndef UPP_VERSION
 	#error ToyServer requires Skylark currently, which depends on U++ Core.
 #endif
 

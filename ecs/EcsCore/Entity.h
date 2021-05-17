@@ -165,7 +165,7 @@ private:
 	
 	template<typename T>
 	RefT_Entity<T> Add0() {
-		T* comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>();
+		auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>();
 		ASSERT(comp);
 		comp->SetParent(this);
 		comps.Add(comp);

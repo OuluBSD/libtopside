@@ -96,7 +96,7 @@ struct HtmlToken : Moveable<HtmlToken> {
 	String ToString() const {
 		String s = "type=" + GetTypeString();
 		if (int_value) s << " int=" << IntStr(int_value);
-		if (!str_value.IsEmpty()) s << " str=" << Upp::ToString(str_value);
+		if (!str_value.IsEmpty()) s << " str=" << Upp::AsString(str_value);
 		return s;
 	}
 	WString GetTextValue() const {
@@ -218,7 +218,7 @@ public:
 	}
 	void Serialize(Stream& s) {s % sub % attr % type % text % int_value;}
 	
-	#ifdef flagUPP
+	#ifdef UPP_VERSION
 	void Jsonize(JsonIO& json) {
 		json
 			("type", type)

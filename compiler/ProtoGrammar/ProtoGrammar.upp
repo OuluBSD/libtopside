@@ -49,6 +49,5 @@ file
 
 mainconfig
 	"" = "",
-	"" = "BOOTSTRAP",
-	"" = "ALTCORE";
+	"" = "BOOTSTRAP";
 

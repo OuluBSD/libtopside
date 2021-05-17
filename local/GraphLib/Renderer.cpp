@@ -181,7 +181,7 @@ void Renderer::DrawEdge(Draw& w, Edge& edge) {
 	GetConnectionPoints(*edge.source, *edge.target, p);
 	
 	// distances between objects and according coordinates connection
-	typedef Tuple2<int, int> Comb;
+	typedef Tuple<int, int> Comb;
 	Vector<Comb> d;
 	Vector<int> dis;
 	int dx;

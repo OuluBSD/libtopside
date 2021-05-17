@@ -112,6 +112,15 @@ void OpenGLFramebufferDraw::DrawPolyPolylineOp(const Point *vertices, int vertex
 	TODO
 }
 
+bool OpenGLFramebufferDraw::ClipOp(const Rect& r) {
+	TODO
+}
+
+void OpenGLFramebufferDraw::EndOp() {
+	TODO
+}
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

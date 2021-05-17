@@ -11,7 +11,7 @@ bool Open_NonGUI_ECS();
 void Close_NonGUI_ECS();
 
 #if 0
-	#ifndef flagUPP
+	#ifndef UPP_VERSION
 		#if defined(flagWIN32)
 			#define ECS_MAIN \
 			void ConsoleMainFn_(); \

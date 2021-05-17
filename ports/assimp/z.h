@@ -1,7 +1,7 @@
 #ifndef _plugin_assimp_z_h_
 #define _plugin_assimp_z_h_
 
-#ifndef flagUPP
+#ifndef UPP_VERSION
 	#include <ports/zlib/zlib.h>
 #else
 	#include <plugin/z/lib/zlib.h>

@@ -124,5 +124,38 @@ void Machine::Visit(RuntimeVisitor& vis) {
 		vis.Visit(iter());
 }
 
+
+
+
+
+
+
+Machine* __active_machine;
+
+Machine& GetActiveMachine() {
+	ASSERT(__active_machine);
+	return *__active_machine;
+}
+
+void SetActiveMachine(Machine& m) {
+	__active_machine = &m;
+}
+
+void ClearActiveMachine() {
+	__active_machine = 0;
+}
+
+void SingleMachine::Run(bool gui, void(*fn)()) {
+	if (Open(gui)) {
+		fn();
+		Close();
+	}
+}
+
+#if UPP_VERSION
+bool SingleMachine::Open(bool gui) {TODO return false;}
+void SingleMachine::Close() {TODO}
+#endif
+
 NAMESPACE_TOPSIDE_END
 

@@ -123,6 +123,25 @@ private:
 };
 
 
+Machine& GetActiveMachine();
+void SetActiveMachine(Machine& m);
+void ClearActiveMachine();
+
+
+class SingleMachine {
+	Machine mach;
+	
+	bool Open(bool gui);
+	void Close();
+	
+public:
+	SingleMachine() {SetActiveMachine(mach);}
+	~SingleMachine() {ClearActiveMachine();}
+	
+	void Run(bool gui, void(*fn)());
+	
+};
+
 
 NAMESPACE_TOPSIDE_END
 

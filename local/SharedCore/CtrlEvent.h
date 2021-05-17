@@ -1,10 +1,7 @@
 #ifndef _CoreAlt_CtrlEvent_h_
 #define _CoreAlt_CtrlEvent_h_
 
-
 NAMESPACE_UPP
-
-
 
 
 enum {
@@ -70,6 +67,7 @@ public:
 
 
 inline double ResetSeconds(TimeStop& ts) {double s = ts.Seconds(); ts.Reset(); return s;}
+
 
 END_UPP_NAMESPACE
 

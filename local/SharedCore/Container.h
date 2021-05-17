@@ -1,7 +1,7 @@
 #ifndef _CoreAlt_Container_h_
 #define _CoreAlt_Container_h_
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
 
 template <class T>
@@ -17,13 +17,13 @@ public:
 template <class T> Pick<T> PickFn(T& o) {return Pick<T>(o);}
 
 // The file is included in Topside and this is required to prevent regular U++ errors
-#ifndef flagUPP
+#ifndef UPP_VERSION
 template <class T> Pick<T> pick(T& o) {return Pick<T>(o);}
 #endif
 
 
 
 
-NAMESPACE_UPP_END
+END_UPP_NAMESPACE
 
 #endif

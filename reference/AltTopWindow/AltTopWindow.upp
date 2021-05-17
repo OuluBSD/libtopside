@@ -7,7 +7,5 @@ file
 	AltTopWindow.cpp;
 
 mainconfig
-	"" = "GUI ALTCORE VIRTUALGUI3D SDL2GUI3D",
-	"" = "GUI VIRTUALGUI3D SDL2GUI3D",
 	"" = "GUI";
 

@@ -35,15 +35,15 @@ bool AudioOutput::IsSampleSigned() const {
 	return	audio_fmt.format == AUDIO_F32 ||
 			audio_fmt.format == AUDIO_S8 ||
 			audio_fmt.format == AUDIO_S16 ||
-			audio_fmt.format == AUDIO_S32 ||
+			audio_fmt.format == AUDIO_S32
 			;
 }
 
-void AudioOutput::Put(Uint8* stream, int len) {
+/*void AudioOutput::Put(Uint8* stream, int len) {
 	if (snd_buf.IsEmpty())
 		return;
 	
-	AudioFormat aud_fmt = snd_buf.GetFormat();
+	AudioFormat aud_fmt = snd_buf.GetAudioFormat();
 	
 	if (len % aud_fmt.var_size != 0) {
 		LOG("OOSDL2::AudioOutput::Put: error: invalid sample size in read length");
@@ -70,7 +70,7 @@ void AudioOutput::Put(Uint8* stream, int len) {
 	snd_buf.Get(stream, len);
 	
 	frames++;
-}
+}*/
 
 bool AudioOutput::Open0() {
 	SDL_zero(audio_fmt);
@@ -101,8 +101,9 @@ bool AudioOutput::Open0() {
 	    aud_fmt.is_var_bigendian = true;
 	    #endif
 	    
-		snd_buf.SetSize(aud_fmt, audio_frames);
-		snd_buf.Zero();
+	    TODO
+		//snd_buf.SetSize(aud_fmt, audio_frames);
+		//snd_buf.Zero();
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    

@@ -16,7 +16,8 @@ EcsCtrlDemo::EcsCtrlDemo(Machine& mach) : mach(mach) {
 	tabs.Add<InterfaceSystemCtrl>("Interfaces").SetMachine(mach);
 	tabs.Add<InterfaceConnectionCtrl>("Connections").SetMachine(mach);
 	
-	data_tc.Set(-500, callback(this, &Ctrl::Update));
+	Ctrl* c = this;
+	data_tc.Set(-500, callback(c, &Ctrl::Update));
 	
 }
 

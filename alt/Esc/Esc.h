@@ -75,7 +75,7 @@ public:
 	bool                    Append(EscValue a);
 
 	operator WString() const;
-	operator String() const                     { return ::UPP::ToString(operator WString()); }
+	operator String() const                     { return ::Upp::AsString(operator WString()); }
 
 	EscValue(const char *s)                     { InitString(ToWString(String(s))); }
 	EscValue(const WString& s)                  { InitString(s); }

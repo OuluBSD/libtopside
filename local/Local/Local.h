@@ -3,7 +3,7 @@
 
 #include "Before.h"
 
-#ifndef flagUPP
+#ifndef UPP_VERSION
 	#include <Core/Core.h>
 	#include <Draw/Draw.h>
 	#define IML_HEADER <Draw/iml_header.h>
@@ -44,10 +44,10 @@ NAMESPACE_TOPSIDE_END
 #include "Exchange.h"
 #include "Interface.h"
 #include "Index.h"
-#include <Core/Container.h>
+#include <SharedCore/Container.h>
 #include "Container.h"
 #include "RTuple.h"
-#include <Core/Shared.h>
+#include <SharedCore/Shared.h>
 #include "Util.h"
 #include "Process.h"
 #include "Heap.h"

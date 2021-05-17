@@ -3,7 +3,7 @@
 
 #include <EcsCore/EcsCore.h>
 
-#ifndef flagUPP
+#ifndef UPP_VERSION
 	#include <Esc/Esc.h>
 #else
 	#include <Esc/Esc.h>
@@ -19,7 +19,7 @@
 	#endif
 #endif
 
-#if defined(flagUPP) && defined(flagGUI) && !defined(flagVIRTUALGUI3D)
+#if defined(UPP_VERSION) && defined(flagGUI)
 	// No WindowSystem
 #elif defined(flagGUI)
 	#define HAVE_WINDOWSYSTEM 1

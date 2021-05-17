@@ -2,7 +2,7 @@
 	#define GUIPLATFORM_KEYCODES_INCLUDE <VirtualGui3D/Keys.h>
 	#define GUIPLATFORM_INCLUDE          <VirtualGui3D/VirtualGui3D.h>
 	#define VIRTUALGUI 1
-    #if !defined(flagUPP)
+    #if !defined(UPP_VERSION)
         #define GUIPLATFORM_VIRTUALGUI_BACKEND_INCLUDE     <SDL2GUI3D/DrawBackend.h>
         #define HAVE_SDL2 1
     #endif

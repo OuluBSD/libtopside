@@ -219,7 +219,7 @@ bool HtmlParser::Parse(String html) {
 				else if (b1 != -1) b = b1;
 				else b = b2;
 				if (b != -1) {
-					#ifdef flagUPP
+					#ifdef UPP_VERSION
 					String charset = TrimBoth(meta.Mid(a, b-a));
 					int charset_id = CharsetByName(charset);
 					if (charset_id && charset_id != CHARSET_UTF8) {

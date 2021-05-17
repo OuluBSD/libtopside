@@ -1,5 +1,6 @@
+#include <Local/Local.h>
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
 
 
@@ -329,4 +330,4 @@ String StdFormat(const Object& q) {
 }
 
 
-NAMESPACE_UPP_END
+END_UPP_NAMESPACE

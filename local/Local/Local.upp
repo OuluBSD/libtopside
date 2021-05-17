@@ -2,13 +2,13 @@ description "Essential classes for Topside namespace.\377B128,0,0";
 
 uses
 	Core,
-	Draw;
+	Draw,
+	SharedCore;
 
 file
 	Local.h,
 	Before.h,
 	Compat.h,
-	Compat.cpp,
 	Types.h,
 	Chrono.h,
 	Recycler.h,

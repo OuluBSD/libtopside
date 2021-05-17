@@ -10,6 +10,8 @@ class TabCtrl : public Ctrl {
 public:
 	
 	
+	void Add(Ctrl& c, String title);
+	
 	
 };
 

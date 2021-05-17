@@ -63,12 +63,12 @@ NAMESPACE_UPP_BEGIN
 #define LLOG(x)
 
 
-#define DUMP(x) {LOG( #x  " = " << ToString(x));}
+#define DUMP(x) {LOG( #x  " = " << ::Upp::AsString(x));}
 
 #define DUMPC(c) {\
 LOG(#c << " {"); \
 for (int i = 0; i < c.GetCount(); i++) \
-	LOG("\t[" << i << "]: " << ToString(c[i])); \
+	LOG("\t[" << i << "]: " << ::Upp::AsString(c[i])); \
 LOG("}"); \
 }
 
@@ -76,14 +76,14 @@ LOG("}"); \
 LOG(#c << " {"); \
 for (int i = 0; i < c.GetCount(); i++) {\
 	for (int j = 0; j < c[i].GetCount(); j++) {\
-		LOG("\t[" << i << "][" << j << "]: " << ToString(c[i][j])); }}\
+		LOG("\t[" << i << "][" << j << "]: " << ::Upp::AsString(c[i][j])); }}\
 LOG("}"); \
 }
 
 #define DUMPM(m) {\
 LOG(#m << " {"); \
 for (int i = 0; i < m.GetCount(); i++) \
-	LOG("\t[" << i << "]: " << ToString(m.GetKey(i)) << ": " << ToString(m[i])); \
+	LOG("\t[" << i << "]: " << ::Upp::AsString(m.GetKey(i)) << ": " << ::Upp::AsString(m[i])); \
 LOG("}"); \
 }
 

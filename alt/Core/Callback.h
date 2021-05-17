@@ -301,37 +301,37 @@ inline Callback1<A0> callback(void (* fn)(A0)) {
 }
 
 template <class T>
-inline Callback callback(void (T::* fn)(), T* obj) {
+inline Callback callback(T* obj, void (T::* fn)()) {
 	return Callback(new Caller<T>(fn, obj));
 }
 
 template <class T, class A0>
-inline Callback1<A0> callback(void (T::* fn)(A0), T* obj) {
+inline Callback1<A0> callback(T* obj, void (T::* fn)(A0)) {
 	return Callback1<A0>(new Caller1<T, A0>(fn, obj));
 }
 
 template <class T, class A0>
-inline Callback callback1(void (T::* fn)(A0), T* obj, A0 a0) {
+inline Callback callback1(T* obj, void (T::* fn)(A0), A0 a0) {
 	return Callback(new Caller_1<T, A0>(fn, obj, a0));
 }
 
 template <class T, class A1, class A0>
-inline Callback1<A0> callback1(void (T::* fn)(A0, A1), T* obj, A1 a1) {
+inline Callback1<A0> callback1(T* obj, void (T::* fn)(A0, A1), A1 a1) {
 	return Callback1<A0>(new Caller1_1<T, A0, A1>(fn, obj, a1));
 }
 
 template <class T, class A0, class A1>
-inline Callback2<A0, A1> callback(void (T::* fn)(A0, A1), T* obj) {
+inline Callback2<A0, A1> callback(T* obj, void (T::* fn)(A0, A1)) {
 	return Callback2<A0, A1>(new Caller2<T, A0, A1>(fn, obj));
 }
 
 template <class T, class A0, class A1>
-inline Callback callback2(void (T::* fn)(A0, A1), T* obj, A0 a0, A1 a1) {
+inline Callback callback2(T* obj, void (T::* fn)(A0, A1), A0 a0, A1 a1) {
 	return Callback(new Caller_2<T, A0, A1>(fn, obj, a0, a1));
 }
 
 template <class T, class A0, class A1, class A2>
-inline Callback1<A2> callback2(void (T::* fn)(A2, A0, A1), T* obj, A0 a0, A1 a1) {
+inline Callback1<A2> callback2(T* obj, void (T::* fn)(A2, A0, A1), A0 a0, A1 a1) {
 	return Callback1<A2>(new Caller1_2<T, A0, A1, A2>(fn, obj, a0, a1));
 }
 
@@ -342,9 +342,9 @@ inline Callback callback2(void (T::* fn)(A0, A1), T* obj) {
 	return Callback(new Caller2<T, A0, A1>(fn, obj));
 }*/
 
-#define THISBACK(x) callback<CLASSNAME>(&CLASSNAME::x, this)
-#define THISBACK1(x, a0) callback1<CLASSNAME, decltype(a0)>(&CLASSNAME::x, this, a0)
-#define THISBACK2(x, a0, a1) callback2<CLASSNAME, decltype(a0), decltype(a1)>(&CLASSNAME::x, this, a0, a1)
+#define THISBACK(x) callback<CLASSNAME>(this, &CLASSNAME::x)
+#define THISBACK1(x, a0) callback1<CLASSNAME, decltype(a0)>(this, &CLASSNAME::x, a0)
+#define THISBACK2(x, a0, a1) callback2<CLASSNAME, decltype(a0), decltype(a1)>(this, &CLASSNAME::x, a0, a1)
 
 
 inline Callback Proxy(const Callback& cb) {

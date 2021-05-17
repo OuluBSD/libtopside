@@ -1,4 +1,4 @@
-#ifndef flagUPP
+#ifndef UPP_VERSION
 	#include <Esc/Esc.h>
 #else
 	#include <Esc/Esc.h>

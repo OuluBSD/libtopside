@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 #ifndef _ZLIB_H
-	#ifndef flagUPP
+	#ifndef UPP_VERSION
 		#include <ports/zlib/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else

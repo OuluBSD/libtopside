@@ -7,6 +7,6 @@ file
 	UI.html highlight html;
 
 mainconfig
-	"" = "ALTCORE",
-	"" = "ALTCORE VERBOSE_SHADERCORE";
+	"" = "",
+	"" = "VERBOSE_SHADERCORE";
 

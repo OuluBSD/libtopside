@@ -215,4 +215,13 @@ void CpuFramebufferDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_co
 	}
 }
 
+bool CpuFramebufferDraw::ClipOp(const Rect& r) {
+	TODO
+}
+
+void CpuFramebufferDraw::EndOp() {
+	TODO
+}
+
+
 NAMESPACE_TOPSIDE_END

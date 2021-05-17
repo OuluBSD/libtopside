@@ -7,7 +7,7 @@ extern char **environ;
 #endif
 
 
-#ifdef flagUPP
+#ifdef UPP_VERSION
 
 #define MemoryCompare memcmp
 #define MemoryCopy    memcpy
@@ -129,10 +129,7 @@ template <class T> std::optional<T> MakeOptional(const T& o) {return std::make_o
 
 NAMESPACE_UPP_END
 
-
-#include <Core/Shared.h>
-#include <Core/Object.h>
-#include <Core/CtrlEvent.h>
+#include <SharedCore/SharedCore.h>
 
 #define CompatFileHandle(x) x
 

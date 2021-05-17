@@ -3,7 +3,7 @@
 
 #define DLOG(x) LOG(x)
 
-#ifdef flagUPP
+#ifdef UPP_VERSION
 	#error Cannot compile Topside Core with UPP flag set
 #endif
 
@@ -11,7 +11,7 @@
 #define END_UPP_NAMESPACE }
 #define NAMESPACE_UPP_BEGIN namespace  Upp {
 #define NAMESPACE_UPP_END }
-
+#define HAVE
 
 
 #include "Config.h"
@@ -24,9 +24,9 @@
 #include "Algo.h"
 #include "String_.h"
 #include "Tuple.h"
-#include "Container.h"
+#include <SharedCore/Container.h>
 #include "Vector.h"
-#include "Shared.h"
+#include <SharedCore/Shared.h>
 #include "Stream.h"
 #include "Math.h"
 #include "Callback.h"
@@ -38,11 +38,11 @@
 #include "Socket.h"
 #include "Ptr.h"
 #include "Value.h"
-#include "Object.h"
+#include <SharedCore/Object.h>
 #include "Parser.h"
 #include "JSON.h"
 #include "System.h"
-#include "CtrlEvent.h"
+#include <SharedCore/CtrlEvent.h>
 #include "Internet.h"
 
 

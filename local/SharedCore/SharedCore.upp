@@ -1,0 +1,11 @@
+description "\377B128,0,0";
+
+file
+	SharedCore.h,
+	Shared.h,
+	Object.h,
+	Object.cpp,
+	CtrlEvent.h,
+	Container.h,
+	Container.cpp;
+

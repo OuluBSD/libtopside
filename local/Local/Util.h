@@ -259,7 +259,7 @@ inline int HammingDistance64(int count, const uint64* a, const uint64* b) {
 }
 
 
-#ifdef flagUPP
+#ifdef UPP_VERSION
 inline String GetDataDirectory() {return GetDataFile("");}
 #endif
 inline String GetDataDirectoryFile(String file) {return AppendFileName(GetDataDirectory(), file);}

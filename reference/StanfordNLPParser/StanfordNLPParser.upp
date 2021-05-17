@@ -8,6 +8,5 @@ file
 	Apple.txt;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE";
+	"" = "";
 

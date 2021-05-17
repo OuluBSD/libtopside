@@ -1,8 +1,7 @@
-#include "Core.h"
+#include <Local/Local.h>
 
 
-
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
 
 void TestShared() {
@@ -47,4 +46,4 @@ void TestShared() {
 }
 
 
-NAMESPACE_UPP_END
+END_UPP_NAMESPACE

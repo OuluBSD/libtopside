@@ -82,7 +82,7 @@ void Ctrl::Invalidate() {
 	using namespace Topside;
 	static Ref<WindowSystem> win;
 	if (!win) {
-		win = GetMachine().Get<WindowSystem>();
+		win = GetActiveMachine().Get<WindowSystem>();
 		if (win)
 			win->Invalidate();
 	}

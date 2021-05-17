@@ -9,6 +9,5 @@ file
 	Crypto.cpp;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE";
+	"" = "";
 

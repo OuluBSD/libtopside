@@ -55,7 +55,7 @@ void RenderingSystem::Remove(DisplaySourceRef src) {
 
 #if 0
 
-#if defined flagGUI && !defined flagUPP
+#if defined flagGUI && !defined UPP_VERSION
 
 DefaultRenderApp::DefaultRenderApp() {
 	

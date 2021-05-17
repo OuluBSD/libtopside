@@ -286,7 +286,7 @@ class SDL2ContextComponent :
 	public Component<SDL2ContextComponent>
 {
 	One<OOSDL2::Context> obj;
-	Vector<ComponentBase*> comps;
+	LinkedList<ComponentBaseRef> comps;
 	
 public:
 	VIS_COMP_0_0
@@ -322,7 +322,7 @@ class SDL2System : public System<SDL2System> {
 	void Visit(RuntimeVisitor& vis) override {vis && comps;}
 	
 public:
-	SDL2System(Machine& m);
+	SYS_CTOR(SDL2System)
 	
 	const LinkedList<SDL2ContextComponentRef>& GetContext() const {return comps;}
 	
@@ -338,8 +338,8 @@ protected:
     
 protected:
 	friend class SDL2ContextComponent;
-	void AddContext(SDL2ContextComponent& comp);
-	void RemoveContext(SDL2ContextComponent& comp);
+	void AddContext(SDL2ContextComponentRef comp);
+	void RemoveContext(SDL2ContextComponentRef comp);
 	
 };
 

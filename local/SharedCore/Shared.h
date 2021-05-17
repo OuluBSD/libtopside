@@ -1,8 +1,7 @@
 #ifndef _CoreAlt_Shared_h_
 #define _CoreAlt_Shared_h_
 
-NAMESPACE_UPP_BEGIN
-
+NAMESPACE_UPP
 
 
 struct WeakBase {
@@ -54,7 +53,7 @@ public:
 	Shared(Shared&& s) {r = s.r; s.r = NULL; o = s.o; s.o = NULL;}
 	Shared(const Shared& o) {*this = o;}
 	Shared(T* o, Base* r) {SetPtr(o, r);}
-	#ifndef flagUPP
+	#ifndef UPP_VERSION
 	Shared(const Pick<Shared>& pick) {Swap(pick.Get(), *this);}
 	#endif
 	~Shared() { Clear(); }
@@ -138,7 +137,7 @@ public:
 	void SetDeleted() override {r = NULL;}
 	void Clear() {if (r) r->DecWeak(this); r = NULL; o = NULL;}
 	void operator=(const Shared<T>& s) { Clear(); r = s.r; o = s.o; if (r) r->IncWeak(this);}
-	#ifndef flagUPP
+	#ifndef UPP_VERSION
 	void operator=(Pick<Weak<T>>& p) { Clear(); r = p.Get().r; o = p.Get().o; if (r) r->IncWeak(this);}
 	#endif
 	void operator=(const Weak<T>& p) { Clear(); r = p.r; o = p.o; if (r) r->IncWeak(this);}
@@ -190,6 +189,7 @@ template <class T> void RemoveLast(T& o) {
 		o.Remove(c-1);
 }
 
-NAMESPACE_UPP_END
+
+END_UPP_NAMESPACE
 
 #endif

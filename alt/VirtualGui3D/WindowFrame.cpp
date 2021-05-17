@@ -139,10 +139,10 @@ void SubMenuFrame::LocalMenu(Bar& bar) {
 		bar.Add("Maximize / Restore", THISBACK(Maximize));
 		bar.Add("Minimize", THISBACK(Minimize));
 		bar.Separator();
-		bar.Add("Close All", callback(&Windows::CloseAll, wins));
+		bar.Add("Close All", callback(wins, &Windows::CloseAll));
 		bar.Add("Close Others", THISBACK(CloseOthers));
 	}
-	bar.Add("Tile Windows", callback(&Windows::OrderTileWindows, wins));
+	bar.Add("Tile Windows", callback(wins, &Windows::OrderTileWindows));
 	
 }
 

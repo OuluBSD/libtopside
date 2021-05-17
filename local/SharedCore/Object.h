@@ -1,7 +1,7 @@
 #ifndef _CoreAlt_Object_h_
 #define _CoreAlt_Object_h_
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
 
 const dword VALUE_ARRAY_AND_MAP_V   = 13;
@@ -71,7 +71,7 @@ public:
 	ObjectTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ObjectTypeNo<T>(0);}
 	~ObjectTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_V;}}
 	void* Get() override {return ptr;}
-	String ToString() const override {if (ptr) return ::Upp::ToString(*ptr); return "NULL";}
+	String ToString() const override {if (ptr) return ::Upp::AsString(*ptr); return "NULL";}
 	int64 ToInt() const override {if (ptr) return ::Upp::ToInt(*ptr); return 0;}
 	double ToDouble() const override {if (ptr) return ::Upp::ToDouble(*ptr); return 0;}
 	hash_t GetHashValue() const override {if (ptr) return Upp::GetHashValue(*ptr); return 0;}
@@ -167,7 +167,7 @@ template <class T> T& Object::Get() const {
 	throw Exc("Unexpected value type");
 }
 
-#ifndef flagUPP
+#ifndef UPP_VERSION
 template<class T> inline StringT<T>& StringT<T>::operator=(const Object& c) {return *this = c.ToString();}
 #endif
 
@@ -279,6 +279,7 @@ String Format(String pattern, Object v0=Object(), Object v1=Object(), Object v2=
 
 String StdFormat(const Object& q);
 
-NAMESPACE_UPP_END
+
+END_UPP_NAMESPACE
 
 #endif

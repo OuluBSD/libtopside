@@ -47,7 +47,7 @@ struct OffsetLoop {
 	void TestSetMin(OffsetLoop v) {if (v.value < value) value = v.value;}
 	void TestSetMax(OffsetLoop v) {if (v.value > value) value = v.value;}
 	
-	String ToString() const {return Upp::ToString(value);}
+	String ToString() const {return Upp::AsString(value);}
 	
 	
 	static OffsetLoop GetDifference(OffsetLoop min, OffsetLoop max) {

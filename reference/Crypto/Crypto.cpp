@@ -71,7 +71,7 @@ CONSOLE_APP_MAIN {
 			LOG("\tPrivate: " << priv);
 			
 			
-			#ifndef flagUPP
+			#ifndef UPP_VERSION
 			// Somehow this fails in WIN32 & MSC...
 			// The reason is very weird and even the debugger doesn't behave right.
 			ASSERT(msg == BZ2Decompress(BZ2Compress(msg)));

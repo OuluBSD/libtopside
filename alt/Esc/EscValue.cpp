@@ -213,7 +213,7 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 			if(hex && FitsInInt64(number) && (int64)number == number)
 				s << " " << HexStr((int64)number);
 			if(hex && number >= 0 && number < 65536 && (int)number == number)
-				s << " " << AsCString(::UPP::ToString(WString((wchar_t)number, 1)));
+				s << " " << AsCString(::Upp::AsString(WString((wchar_t)number, 1)));
 			return s;
 		}
 	case ESC_INT64:
@@ -223,7 +223,7 @@ String EscValue::ToString(int maxlen, int indent_step, bool hex, int indent) con
 			if(hex)
 				s << " " << HexStr(i64);
 			if(hex && i64 >= 0 && i64 < 65536)
-				s << " " << AsCString(::UPP::ToString(WString((int)i64, 1)));
+				s << " " << AsCString(::Upp::AsString(WString((int)i64, 1)));
 			return s;
 		}
 	case ESC_ARRAY:

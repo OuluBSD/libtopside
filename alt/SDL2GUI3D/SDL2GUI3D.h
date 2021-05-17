@@ -70,8 +70,6 @@ public:
 };
 
 
-bool Open_SDL2GUI3D_ECS(bool gui);
-void Close_SDL2GUI3D_ECS();
 
 END_UPP_NAMESPACE
 
@@ -83,10 +81,7 @@ END_UPP_NAMESPACE
 		::SetWin32Instances(hinst, hprev, show); \
 		char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
 		::UPP::AppInit__(0, (const char **)cmdline); \
-		if (Open_SDL2GUI3D_ECS(gui)) { \
-			GuiMainFn_(); \
-			Close_SDL2GUI3D_ECS(); \
-		} \
+		Topside::SingleMachine().Run(gui, GuiMainFn_); \
 		::UPP::AppExit__(); \
 		return ::UPP::GetExitCode(); \
 	} \
@@ -98,10 +93,7 @@ END_UPP_NAMESPACE
 	\
 	extern "C" int main(int argc, char *argv[]) {\
 		::UPP::AppInit__(argc, (const char **)argv); \
-		if (Open_SDL2GUI3D_ECS(gui)) { \
-			GuiMainFn_(); \
-			Close_SDL2GUI3D_ECS(); \
-		} \
+		Topside::SingleMachine().Run(gui, GuiMainFn_); \
 		::UPP::AppExit__(); \
 		return ::UPP::GetExitCode(); \
 	} \

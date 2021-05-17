@@ -33,6 +33,5 @@ file
 	Common.cpp;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE";
+	"" = "";
 

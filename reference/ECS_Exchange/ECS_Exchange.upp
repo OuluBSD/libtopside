@@ -6,6 +6,5 @@ file
 	ECS_Exchange.cpp;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE";
+	"" = "";
 

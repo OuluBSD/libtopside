@@ -6,7 +6,5 @@ file
 	ECS_TextEditor.cpp;
 
 mainconfig
-	"" = "",
-	"" = "ALTCORE",
-	"" = "USEMALLOC";
+	"" = "";
 

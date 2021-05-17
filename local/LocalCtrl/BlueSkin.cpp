@@ -1,6 +1,6 @@
 #include "LocalCtrl.h"
 
-#ifdef flagUPP
+#ifdef UPP_VERSION
 
 NAMESPACE_TOPSIDE_BEGIN
 

@@ -2,9 +2,9 @@
 #define _Multimedia_Multimedia_h_
 
  
-#if defined flagUPP && defined flagGUI
+/*#if defined UPP_VERSION && defined flagGUI
 	#include <plugin/jpg/jpg.h>
-#endif
+#endif*/
 
 #include <Local/Local.h>
 

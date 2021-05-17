@@ -84,7 +84,7 @@ void Spring::LayoutIteration() {
 			}
 		}
 		
-		for (Node& node : graph->nodes) {
+		for (Node& node : graph->nodes.GetValues()) {
 			if (a.IsColliding(node)) {
 				//LayoutRepulsive(*a.target, node);
 				//LayoutRepulsive(*a.source, node);

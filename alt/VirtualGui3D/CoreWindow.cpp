@@ -736,10 +736,10 @@ void WindowDecoration::RightDown(Point p, dword keyflags) {
 }
 
 void WindowDecoration::LocalMenu(Bar& bar) {
-	bar.Add("Maximize / Restore", callback(&CoreWindow::Maximize, win));
-	bar.Add("Minimize", callback(&CoreWindow::Minimize, win));
+	bar.Add("Maximize / Restore", callback(win, &CoreWindow::Maximize));
+	bar.Add("Minimize", callback(win, &CoreWindow::Minimize));
 	bar.Separator();
-	bar.Add("Close", callback(&CoreWindow::Close, win));
+	bar.Add("Close", callback(win, &CoreWindow::Close));
 }
 
 

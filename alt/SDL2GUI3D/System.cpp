@@ -27,16 +27,13 @@ void SDL2GUI3DSystem::Uninitialize() {
 }
 
 
-NAMESPACE_TOPSIDE_END
 
-NAMESPACE_UPP
 
-bool Open_SDL2GUI3D_ECS(bool gui) {
-	using namespace Topside;
-	Machine& mach = Topside::GetMachine();
+bool SingleMachine::Open(bool gui) {
+	Machine& mach = GetActiveMachine();
 	
-	RegistrySystem& reg = *mach.Add<RegistrySystem>();
-	EntityStore& ents = *mach.Add<EntityStore>();
+	RegistrySystemRef reg = mach.Add<RegistrySystem>();
+	EntityStoreRef ents = mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
     //mach.Add<ConnectorSystem>();
     TODO
@@ -67,24 +64,23 @@ bool Open_SDL2GUI3D_ECS(bool gui) {
     mach.Add<OpenVR>();
     #endif
     
-    reg.SetAppName("SDL2 ECS machine");
+    reg->SetAppName("SDL2 ECS machine");
     
     if (!mach.Start())
 		return false;
     
-    EntityRef app = ents.Create<StandaloneWindow>();
+    PoolRef pool = ents->GetRoot()->GetAddPool("windows");
+    EntityRef app = pool->Create<SDL2StandaloneWindow>();
     //app->Find<Connector>()->ConnectAll();
     TODO
     
 	return true;
 }
 
-void Close_SDL2GUI3D_ECS() {
-	using namespace Topside;
-	Machine& mach = Topside::GetMachine();
-	
+void SingleMachine::Close() {
+	Machine& mach = GetActiveMachine();
 	mach.Stop();
 }
 
 
-END_UPP_NAMESPACE
+NAMESPACE_TOPSIDE_END

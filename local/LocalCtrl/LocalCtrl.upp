@@ -6,10 +6,6 @@ uses
 	Local,
 	CtrlLib;
 
-uses(!UPP) VirtualGui3D;
-
-uses(!UPP) SDL2GUI3D;
-
 library(POSIX) "GL GLEW glut";
 
 library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";

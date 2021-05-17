@@ -1,8 +1,6 @@
 #include "EcsLib.h"
 
-#ifdef flagVIRTUALGUI3D
-#include <VirtualGui3D/VirtualGui3D.h>
-#endif
+
 
 
 NAMESPACE_TOPSIDE_BEGIN

@@ -659,16 +659,16 @@ String TrimRight(String s);
 String TrimBoth(String s);
 
 
-template <class T> inline String ToString(const T& o) {return o.ToString();}
-template<> inline String ToString(const bool& o) {return o ? "true" : "false";}
-template<> inline String ToString(const int& o) {return IntStr(o);}
-template<> inline String ToString(const uint32& o) {return IntStr64(o);}
-template<> inline String ToString(const int64& o) {return IntStr64(o);}
-template<> inline String ToString(const byte& o) {return IntStr(o);}
-template<> inline String ToString(const char& o) {String s; s.Cat(o); return s;}
-template<> inline String ToString(const float& o) {return DblStr(o);}
-template<> inline String ToString(const double& o) {return DblStr(o);}
-template<> inline String ToString(const String& o) {return o;}
+template <class T> inline String AsString(const T& o) {return o.ToString();}
+template<> inline String AsString(const bool& o) {return o ? "true" : "false";}
+template<> inline String AsString(const int& o) {return IntStr(o);}
+template<> inline String AsString(const uint32& o) {return IntStr64(o);}
+template<> inline String AsString(const int64& o) {return IntStr64(o);}
+template<> inline String AsString(const byte& o) {return IntStr(o);}
+template<> inline String AsString(const char& o) {String s; s.Cat(o); return s;}
+template<> inline String AsString(const float& o) {return DblStr(o);}
+template<> inline String AsString(const double& o) {return DblStr(o);}
+template<> inline String AsString(const String& o) {return o;}
 template <class T> inline WString ToWString(const T& o) {return o.ToWString();}
 
 String ToUtf8(const wchar_t* s, int len);
@@ -679,7 +679,8 @@ typedef std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> UnicodeConverter;
 inline UnicodeConverter& GetUnicodeConverter() {static UnicodeConverter conv; return conv;}
 #endif
 
-template<> inline String ToString(const WString& o) {return ToUtf8(o.Begin(), o.GetCount());}
+template<> inline String AsString(const WString& o) {return ToUtf8(o.Begin(), o.GetCount());}
+		   inline String ToString(const WString& o) {return ToUtf8(o.Begin(), o.GetCount());}
 template<> inline WString ToWString(const CString& o) {return FromUtf8(o, -1);}
 template<> inline WString ToWString(const String& o) {return FromUtf8(o.Begin(), o.GetCount());}
 inline WString ToWString(const wchar_t* o) {return WString(o);}
