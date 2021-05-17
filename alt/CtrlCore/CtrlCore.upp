@@ -12,7 +12,9 @@ file
 	MKeys.h,
 	Ctrl.h,
 	Ctrl.cpp,
+	Bar.cpp,
 	TopWindow.h,
 	TopWindow.cpp,
-	Images.h;
+	Images.h,
+	Images.cpp;
 

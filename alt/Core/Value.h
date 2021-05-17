@@ -54,7 +54,6 @@ class Value {
 	
 public:
 	Value() {}
-	Value(const Value& v) {*this = v;}
 	Value(bool b);
 	Value(int i);
 	Value(int64 i);
@@ -67,12 +66,13 @@ public:
 	Value(const ValueArray& a);
 	Value(const ValueMap& m);
 	Value(Color m);
+	Value(const Value& v) {*this = v;}
 	
 	Value& operator=(const Value& v);
 	
 	
 	template <class T>
-	T&	To();
+	T&	To() {TODO}
 	
 	
 	operator int() const;

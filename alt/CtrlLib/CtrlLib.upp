@@ -4,6 +4,8 @@ uses
 	CtrlCore,
 	VirtualGui3D;
 
+uses(GUI) SDL2GUI3D;
+
 file
 	Copying,
 	CtrlLib.h,
@@ -11,7 +13,6 @@ file
 	Button.cpp,
 	EditString.h,
 	EditString.cpp,
-	stb_textedit.h,
 	Keys.h,
 	StaticCtrl.h,
 	StaticCtrl.cpp,
@@ -20,9 +21,13 @@ file
 	FileSel.h,
 	FileSel.cpp,
 	TabCtrl.h,
+	TabCtrl.cpp,
 	ArrayCtrl.h,
+	ArrayCtrl.cpp,
 	TreeCtrl.h,
+	TreeCtrl.cpp,
 	ScrollBar.h,
 	ScrollBar.cpp,
-	Splitter.h;
+	Splitter.h,
+	Splitter.cpp;
 

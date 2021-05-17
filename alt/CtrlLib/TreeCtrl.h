@@ -8,7 +8,7 @@ class TreeCtrl : public Ctrl {
 	
 	
 public:
-	
+	TreeCtrl();
 	
 	void	OpenDeep(int cursor);
 	

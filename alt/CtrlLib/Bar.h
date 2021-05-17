@@ -11,6 +11,7 @@ class BarCtrl : public Bar, public CtrlFrame {
 	
 	
 public:
+	BarCtrl();
 	
 	void Set(Callback1<Bar&> menu);
 	
@@ -21,6 +22,8 @@ class ToolButton : public Ctrl, public Bar::Item {
 	using Ctrl::Key;
 
 public:
+	ToolButton();
+	
 	virtual void   Paint(Draw& w);
 	virtual void   MouseEnter(Point, dword);
 	virtual void   MouseLeave();
@@ -57,14 +60,17 @@ public:
 	};
 };
 
+
 class ToolBar : public BarCtrl {
 public:
+	ToolBar();
+	
 	virtual bool HotKey(dword key);
 	virtual void Paint(Draw& w);
 
 protected:
-	virtual Item& AddItem(Callback  cb);
-	virtual Item& AddSubMenu(Callback1<Bar&> proc);
+	virtual Bar::Item& AddItem(Callback  cb);
+	virtual Bar::Item& AddSubMenu(Callback1<Bar&> proc);
 
 public:
 	struct Style : ChStyle<Style> {
@@ -83,6 +89,7 @@ class MenuBar : public BarCtrl {
 	
 	
 public:
+	MenuBar();
 	
 	void   FrameLayout(Rect& r) override;
 	void   FrameAddSize(Size& sz) override;

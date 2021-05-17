@@ -66,6 +66,7 @@ Ctrl::Ctrl() {
 	pending_fx_redraw = true;
 	pending_redraw = true;
 	pending_layout = true;
+	modify = false;
 	
 	cmd_begin.next = &cmd_frame;
 	cmd_frame.prev = &cmd_begin;
@@ -980,6 +981,102 @@ Image Ctrl::DefaultCursor() {
 void Ctrl::Update() {
 	SetModify();
 	Updated();
+}
+
+bool Ctrl::IsModified() const {
+	GuiLock __;
+	return modify;
+}
+
+void Ctrl::SetModify() {
+	GuiLock __;
+	modify = true;
+}
+
+void Ctrl::ClearModify() {
+	GuiLock __;
+	modify = false;
+}
+
+
+
+
+
+
+
+
+
+
+Bar::Item::Item() {
+	
+}
+
+Bar::Item::~Item() {
+	
+}
+
+Bar::Item& Bar::Item::Text(const char *text) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Key(dword key) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Repeat(bool repeat) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Image(const class Image& img) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Check(bool check) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Radio(bool check) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Enable(bool _enable) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Bold(bool bold) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Tip(const char *tip) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Help(const char *help) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Topic(const char *topic) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Description(const char *desc) {
+	TODO
+}
+
+void Bar::Item::FinalSync() {
+	TODO
+}
+
+Bar::Item& Bar::Item::Label(const char *text) {
+	TODO
+}
+
+Bar::Item& Bar::Item::RightLabel(const char *text) {
+	TODO
+}
+
+Bar::Item& Bar::Item::Key(KeyInfo& (*key)()) {
+	TODO
 }
 
 

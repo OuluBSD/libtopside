@@ -536,6 +536,24 @@ void Vector<T>::Serialize(Stream& str) {
 }
 
 template <class T>
+void Array<T>::Serialize(Stream& s) {
+	T** data = l.GetData();
+	if (s.IsLoading()) {
+		int count = 0;
+		s % count;
+		SetCount(count);
+		for(T **it = data, **end = data + count; it != end; ++it)
+			s % **it;
+	}
+	else if (s.IsStoring()) {
+		int count = GetCount();
+		s % count;
+		for(T **it = data, **end = data + count; it != end; ++it)
+			s % **it;
+	}
+}
+
+template <class T>
 void LoadFromFile(T& o, String path) {
 	FileIn fin(path);
 	if (!fin.IsOpen()) return;

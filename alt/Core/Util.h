@@ -690,7 +690,12 @@ template <class T> struct StdLess {bool operator()(const T& a, const T& b) const
 template <class T> struct StdGreater {bool operator()(const T& a, const T& b) const {return a > b;}};
 
 template <class Iterator, class T, class Sort>
-Iterator Find(Iterator begin, Iterator end, T value, Sort s);
+Iterator Find(Iterator it, Iterator end, T value, Sort s) {
+	while (it != end)
+		if (s(*it, value))
+			return it;
+	return end;
+}
 
 
 

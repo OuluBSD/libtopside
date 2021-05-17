@@ -37,6 +37,7 @@ file
 	Algo.h,
 	String_.h,
 	StringInline.inl highlight cpp,
+	StringTmpl.inl highlight cpp,
 	String.cpp,
 	Tuple.h,
 	Vector.h,
@@ -61,10 +62,12 @@ file
 	Ptr.h,
 	Topt.h,
 	Value.h,
+	Value.cpp,
 	Parser.h,
 	Parser.cpp,
 	JSON.h,
 	JSON.cpp,
 	System.h,
-	Internet.h;
+	Internet.h,
+	Internet.cpp;
 

@@ -1,7 +1,6 @@
 #include "Physics.h"
 
 
-
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -37,11 +36,11 @@ void OdeObject::Paint(Shader& s) {
 
 
 
-PhysicsSystem* OdeNode::GetWorld() {
+OdeSystem* OdeNode::GetWorld() {
 	OdeNode* n = this;
 	while (n->portal)
 		n = n->portal;
-	return dynamic_cast<PhysicsSystem*>(n);
+	return dynamic_cast<OdeSystem*>(n);
 }
 
 OdeSpace* OdeNode::GetSpace() {
@@ -101,9 +100,9 @@ void OdeObject::DetachContent() {
 
 
 
-vec3 PhysicsSystem::EarthGravity = {0, -9.81, 0};
+vec3 OdeSystem::EarthGravity = {0, -9.81, 0};
 
-void PhysicsSystem::NearCallback(void *, dGeomID o1, dGeomID o2) {
+void OdeSystem::NearCallback(void *, dGeomID o1, dGeomID o2) {
 	
 	// only collide things with the ground
 	/*int g1 = (o1 == ground.geom || o1 == ground_box.geom);
@@ -129,8 +128,8 @@ void PhysicsSystem::NearCallback(void *, dGeomID o1, dGeomID o2) {
 	}
 }
 
-void AddMachinePhysicsSystem() {
-	GetMachine().Add<PhysicsSystem>();
+void AddMachineOdeSystem() {
+	GetActiveMachine().Add<OdeSystem>();
 }
 
 
@@ -142,8 +141,8 @@ NAMESPACE_TOPSIDE_END
 #ifdef flagAUTOSTART_SYSTEMS
 NAMESPACE_UPP
 
-INITBLOCK(PhysicsSystem) {
-	Topside::Machine::WhenStarting << callback(Topside::AddMachinePhysicsSystem);
+INITBLOCK(OdeSystem) {
+	Topside::Machine::WhenStarting << callback(Topside::AddMachineOdeSystem);
 }
 
 END_UPP_NAMESPACE

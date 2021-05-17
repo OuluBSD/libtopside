@@ -5615,7 +5615,7 @@ bool ElSpace::IsBreak() const
 		ws == WhiteSpacePreLine ||
 		ws == WhiteSpacePreWrap)
 	{
-		if(text == WString("\n"))
+		if(text == WString(L"\n"))
 		{
 			return true;
 		}
@@ -5869,18 +5869,18 @@ void ElText::ParseStyles(bool is_reparse)
 
 	if(IsWhiteSpace())
 	{
-		transformed_text = " ";
+		transformed_text = L" ";
 		use_transformed = true;
 	} else
 	{
-		if(text == WString("\t"))
+		if(text == WString(L"\t"))
 		{
-			transformed_text = "    ";
+			transformed_text = L"    ";
 			use_transformed = true;
 		}
-		if(text == WString("\n") || text == WString("\r"))
+		if(text == WString(L"\n") || text == WString(L"\r"))
 		{
-			transformed_text = "";
+			transformed_text = L"";
 			use_transformed = true;
 		}
 	}

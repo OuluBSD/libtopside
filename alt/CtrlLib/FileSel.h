@@ -10,6 +10,8 @@ class FileSel : public TopWindow {
 	
 public:
 	
+	FileSel();
+	
 	void ActiveDir(String path);
 	
 	operator Callback1<Stream&>();

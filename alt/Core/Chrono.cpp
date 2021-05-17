@@ -165,6 +165,26 @@ int Time::GetStamp() const {
 	return Get() - begin;
 }
 
+Time& Time::operator+=(int seconds) {
+	TODO
+}
+
+bool Time::operator>=(const Time& t) const {
+	TODO
+}
+
+bool Time::operator<=(const Time& t) const {
+	TODO
+}
+
+bool Time::operator>(const Time& t) const {
+	TODO
+}
+
+bool Time::operator<(const Time& t) const {
+	TODO
+}
+
 
 
 
@@ -449,6 +469,10 @@ Time GetSysTime() {
 	Time t;
 	GetSysTimeObject(t.year, t.month, t.day, t.hour, t.min, t.sec);
 	return t;
+}
+
+Time GetUtcTime() {
+	TODO
 }
 
 

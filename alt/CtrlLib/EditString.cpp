@@ -1,9 +1,9 @@
 #include "CtrlLib.h"
 
 
+
 #define STB_TEXTEDIT_IMPLEMENTATION
-#include "stb_textedit.h"
-#undef STB_TEXTEDIT_IMPLEMENTATION
+#include <ports/stb/stb_textedit.h>
 
 
 NAMESPACE_UPP
@@ -171,6 +171,7 @@ void TextCtrl::LeftDown(Point p, dword keyflags) {
 }
 
 bool TextCtrl::Key(dword key, int count) {
+	TODO
 	//Refresh();
 	
 	/*int dx = 0, dy = 0;
@@ -202,12 +203,14 @@ bool TextCtrl::Key(dword key, int count) {
 }
 
 void TextCtrl::MouseMove(Point p, dword keyflags) {
+	TODO
 	/*Pointf& pt = v[3];
 	pt.x = p.x;
 	pt.y = p.y;*/
 }
 
 void TextCtrl::MouseWheel(Point p, int zdelta, dword keyflags) {
+	TODO
 	/*
 	int dy = 0;
 	if (zdelta > 0)
@@ -225,6 +228,18 @@ void TextCtrl::MouseWheel(Point p, int zdelta, dword keyflags) {
 	
 	win->SetFrameRect(r);
 	*/
+}
+
+void TextCtrl::SetData(Value v) {
+	TODO
+}
+
+void TextCtrl::SetFont(Font fnt) {
+	TODO
+}
+
+Value TextCtrl::GetData() const {
+	TODO
 }
 
 

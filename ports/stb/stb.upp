@@ -4,5 +4,6 @@ file
 	stb_image.h,
 	stb_image_write.h,
 	stb_truetype.h,
+	stb_textedit.h,
 	impl.cpp;
 

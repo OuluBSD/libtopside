@@ -489,22 +489,6 @@ public:
 		K& operator()() {return **p;}
 	};
 	
-	/*struct Iterator {
-		typename Vector<K*>::Iterator kit;
-		Iterator() {}
-		Iterator(typename Vector<K*>::Iterator kit) : kit(kit) {}
-		Iterator(const Iterator& it) {*this = it;}
-		void operator=(const Iterator& it) {kit = it.kit;}
-		void operator++() {kit++;}
-		void operator++(int i) {kit++;}
-		void operator--(int i) {kit--;}
-		void operator+=(int i) {kit += i;}
-		K* operator->() const {return kit.Get();}
-		K* Get() const {return *kit.Get();}
-		bool operator!=(const Iterator& it) const {return it.kit != kit;}
-		operator K*() const {return Get();}
-		K& operator()() const {return *Get();}
-	};*/
 	template <class T, int I>
 	struct Iterator0 {
 		T kit;

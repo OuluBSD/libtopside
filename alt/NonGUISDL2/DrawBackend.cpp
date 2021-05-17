@@ -4,6 +4,11 @@
 
 NAMESPACE_UPP_BEGIN
 
+Image StreamRaster::LoadStringAny(String content) {
+	SDL_RWops* mem = SDL_RWFromConstMem(content.Begin(), content.GetCount());
+	return Image(IMG_Load_RW(mem, 1));
+}
+
 Image StreamRaster::LoadFileAny(String path) {
 	return Image(IMG_Load(path.Begin()));
 }

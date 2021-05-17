@@ -3,6 +3,46 @@
 
 NAMESPACE_UPP
 
+bool Font::operator==(const Font& fnt) const {
+	TODO
+}
+
+void Font::Face(int i) {
+	TODO
+}
+
+void Font::Height(int i) {
+	TODO
+}
+
+void Font::Italic(bool b) {
+	TODO
+}
+
+void Font::Bold(bool b) {
+	TODO
+}
+
+void Font::Strikeout(bool b) {
+	TODO
+}
+
+void Font::Underline(bool b) {
+	TODO
+}
+
+int Font::GetAscent() const {
+	TODO
+}
+
+int Font::GetDescent() const {
+	TODO
+}
+
+int Font::GetHeight() const {
+	TODO
+}
+
 Font Font::LoadFont(String dir, String name, int ptsize, int weight, bool italic) {
 	String path = AppendFileName(dir, name);
 	switch (weight) {
@@ -37,6 +77,19 @@ Font Font::LoadFont(String dir, String name, int ptsize, int weight, bool italic
 	return ref;
 }
 
+int Font::GetFaceCount() {
+	TODO
+}
+
+String Font::GetFaceName(int i) {
+	TODO
+}
+
+
+
+
+
+
 int __std_font_sz = 15;
 Font __std_font;
 
@@ -62,5 +115,28 @@ Size GetTextSize(String s, Font fnt) {
 		return Size(0,0);
 	return GetSysFontTextSize(fnt.GetSysFont()->GetRaw(), s);
 }
+
+Size GetTextSize(WString s, Font fnt) {
+	return GetTextSize(s.ToString(), fnt);
+}
+
+Font Arial(int size) {
+	TODO
+}
+
+Font Monospace(int size) {
+	TODO
+}
+
+Font Serif(int size) {
+	TODO
+}
+
+Font SansSerif(int size) {
+	TODO
+}
+
+
+
 
 END_UPP_NAMESPACE

@@ -266,7 +266,6 @@ private:
 	RealtimeSourceConfig		cfg;
 	
 };
-extern AudioSink* VirtualAudioPtr;
 
 
 

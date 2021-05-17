@@ -23,12 +23,13 @@ void BuggyWheel::OnAttach() {
 
 
 void BuggyCarStartup() {
-	Machine& mach = GetMachine();
+	Machine& mach = GetActiveMachine();
 	mach.Add<PhysicsSystem>();
 	
-	EntityStore& ents = *mach.Get<EntityStore>();
-	ents.Create<StaticGroundPlanePrefab>();
-	ents.Create<BuggyCarPrefab>();
+	EntityStoreRef ents = mach.Get<EntityStore>();
+	PoolRef pool = ents->GetRoot()->GetAddPool("models");
+	pool->Create<StaticGroundPlanePrefab>();
+	pool->Create<BuggyCarPrefab>();
 }
 
 
@@ -39,7 +40,7 @@ RENDER_APP_(Topside::DefaultRenderApp)
 APP_STARTUP_(Topside::BuggyCarStartup);
 
 NAMESPACE_UPP
-INITBLOCK(AppFlags) {
+INITBLOCK {
 	using namespace Topside;
 	AppFlags& f = GetAppFlags();
 	if (1)

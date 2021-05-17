@@ -3,7 +3,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 /*
-AudioSink* VirtualAudioPtr;
 
 void InterfaceBase::DbgChk(InterfaceBase* b) {
 	for(auto c: b->conns) {

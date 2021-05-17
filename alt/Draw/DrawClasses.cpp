@@ -3,6 +3,13 @@
 NAMESPACE_UPP
 
 
+Color DefaultInk() {
+	TODO
+}
+
+
+
+
 
 
 void Draw::DrawLine(int x1, int y1, int x2, int y2, int width, Color color) {
@@ -14,12 +21,20 @@ void Draw::DrawText(int x, int y, const String& text, Font font, Color ink, cons
 	DrawTextOp(x, y, 0, ws.Begin(), font, ink, 0, dx);
 }
 
+void Draw::DrawText(int x, int y, const char* text, Font font, Color ink, const int *dx) {
+	DrawText(x, y, String(text), font, ink, dx);
+}
+	          
+void Draw::DrawText(int x, int y, const WString& text, Font font, Color ink, const int *dx) {
+	DrawText(x, y, text.ToString(), font, ink, dx);
+}
+
 void Draw::DrawRect(int x, int y, int cx, int cy, Color color) {
 	DrawRectOp(x, y, cx, cy, color);
 }
 
 void Draw::DrawRect(const Rect& rect, Color color) {
-	DrawRectOp(rect.left, rect.top, rect.Width(), rect.Height(), color);
+	DrawRectOp(rect.top, rect.top, rect.Width(), rect.Height(), color);
 }
 
 void Draw::DrawPolyline(const Point *vertices, int count, int width, Color color, Color doxor) {
@@ -30,6 +45,32 @@ void Draw::DrawPolyline(const Vector<Point>& vertices, int width, Color color, C
 	int count = vertices.GetCount();
 	DrawPolyPolylineOp(vertices.Begin(), count, &count, 1, width, color, doxor);
 }
+
+void Draw::DrawImage(int x, int y, const Image& img) {
+	TODO
+}
+
+void Draw::DrawImage(int x, int y, const Image& img, const Rect& src) {
+	TODO
+}
+
+void Draw::DrawImage(int x, int y, int cx, int cy, const Image& img) {
+	TODO
+}
+
+void Draw::DrawPolygon(const Vector<Point>& vertices, Color color, int width, Color outline, uint64 pattern, Color doxor) {
+	TODO
+}
+
+void Draw::DrawEllipse(const Rect& r, Color color, int pen, Color pencolor) {
+	TODO
+}
+
+void Draw::DrawEllipse(int x, int y, int cx, int cy, Color color, int pen, Color pencolor) {
+	TODO
+}
+
+
 
 
 
@@ -56,6 +97,14 @@ void DrawProxy::DrawPolyPolylineOp(const Point *vertices, int vertex_count, cons
 	ptr->DrawPolyPolylineOp(vertices, vertex_count, counts, count_count, width, color, doxor);
 }
 
+bool DrawProxy::ClipOp(const Rect& r) {
+	return ptr->ClipOp(r);
+}
+
+void DrawProxy::EndOp() {
+	ptr->EndOp();
+}
+
 #if 0
 
 dword DrawProxy::GetInfo() const {
@@ -74,16 +123,8 @@ void DrawProxy::BeginOp() {
 	ptr->BeginOp();
 }
 
-void DrawProxy::EndOp() {
-	ptr->EndOp();
-}
-
 void DrawProxy::OffsetOp(Point p) {
 	ptr->OffsetOp(p);
-}
-
-bool DrawProxy::ClipOp(const Rect& r) {
-	return ptr->ClipOp(r);
 }
 
 bool DrawProxy::ClipoffOp(const Rect& r) {
@@ -166,5 +207,34 @@ void DrawProxy::Escape(const String& data) {
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SImageDraw::SImageDraw(Size sz) {
+	TODO
+}
+
+SImageDraw::SImageDraw(int w, int h) {
+	TODO
+}
+
+SImageDraw::operator Image() const {
+	TODO
+}
+
 
 END_UPP_NAMESPACE

@@ -197,6 +197,7 @@ protected:
 	bool         pending_fx_redraw:1;
 	bool         pending_redraw:1;
 	bool         pending_layout:1;
+	bool         modify:1;
 	
 	Ctrl* parent = NULL;
 	Vector<Ctrl*> children;

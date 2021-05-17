@@ -3,3 +3,6 @@
 
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "stb_truetype.h"
+
+//#define STB_TEXTEDIT_IMPLEMENTATION
+//#include "stb_textedit.h"

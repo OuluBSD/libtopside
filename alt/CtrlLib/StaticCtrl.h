@@ -7,6 +7,8 @@ NAMESPACE_UPP
 
 class SeparatorCtrl : public Ctrl {
 public:
+	SeparatorCtrl();
+	
 	virtual Size GetMinSize() const;
 	virtual void Paint(Draw& w);
 
@@ -20,6 +22,8 @@ class StaticRect : public Ctrl {
 	Color clr;
 	
 public:
+	StaticRect();
+	
 	virtual Size GetMinSize() const;
 	virtual void Paint(Draw& w);
 	

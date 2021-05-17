@@ -159,7 +159,7 @@ int ValueIndex( const T& val, const String& strings, int defValue = -1, wchar de
 		}
 		if(item_len == val.GetCount())
 		{
-			if(val == T(strings.Mid(delim_start, item_len)))
+			if(val == Convert<T>(strings.Mid(delim_start, item_len)))
 			{
 				return idx;
 			}

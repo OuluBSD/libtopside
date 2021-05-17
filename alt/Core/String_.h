@@ -147,8 +147,7 @@ class StringT : Moveable<StringT<T>> {
 	
 public:
 	StringT() {Zero();}
-	StringT(const char* c) {Zero(); *this = c;}
-	StringT(const wchar_t* c) {Zero(); *this = c;}
+	StringT(const T* c) {Zero(); *this = c;}
 	StringT(const T* c, int len) {Zero(); Set(c, len);}
 	StringT(const T* b, const T* e) {Zero(); int len = (int)(e-b); if (len > 0) Set(b, len);}
 	StringT(T c, int len) {Zero(); Cat(c, len);}
@@ -168,9 +167,8 @@ public:
 	void Serialize(Stream& s);
 	
 	StringT& operator=(const Object& c);
-	StringT& operator=(const char* c);
-	StringT& operator=(const wchar_t* c);
-	/*StringT& operator=(const T* c) {
+	
+	StringT& operator=(const T* c) {
 		Clear();
 		if (!c) return *this;
 		count = Length(c);
@@ -185,7 +183,8 @@ public:
 			is_big = true;
 		}
 		return *this;
-	}*/
+	}
+	
 	StringT& Set(const T* c, int len) {
 		Clear();
 		if (!c) return *this;
@@ -385,95 +384,8 @@ public:
 	int GetLength() const { return count; } // lazy... not utf-8 correct
 	
 	bool IsEmpty() const { return count == 0; }
-	int Find(T chr, int pos = 0) const {
-		if (GetCount() == 0) return -1;
-		if (pos == count)
-			return -1;
-		ASSERT(pos >= 0 && pos < GetCount());
-		const T* cur = Begin();
-		for (int i = pos; i < count; i++) {
-			if (*(cur + i) == chr)
-				return i;
-		}
-		return -1;
-	}
-	int Find(const StringT& str, int pos = 0) const {
-		if (GetCount() == 0) return -1;
-		if (pos == count)
-			return -1;
-		ASSERT(pos >= 0 && pos < GetCount());
-		const T* cur = Begin();
-		const T* cmp = str.Begin();
-		int len = str.GetCount();
-		for (int i = pos; i < count; i++) {
-			if (Compare(cur + i, cmp, len) == 0)
-				return i;
-		}
-		return -1;
-	}
-	int ReverseFind(const StringT& str) const { return ReverseFind(str, GetCount() - 1); }
-	int ReverseFind(const StringT& str, int pos) const {
-		if (GetCount() == 0) return -1;
-		ASSERT(pos >= 0 && pos < GetCount());
-		const T* cur = Begin();
-		const T* cmp = str.Begin();
-		int len = str.GetCount();
-		for (int i = pos; i >= 0; i--) {
-			if (Compare(cur + i, cmp, len) == 0)
-				return i;
-		}
-		return -1;
-	}
-	int FindFirstOf(const T* str, int pos=0) const;
-	int FindFirstNotOf(const T* str) const {
-		if (GetCount() <= 0 || !str) return -1;
-		const T* it  = Begin();
-		const T* end = End();
-		int i = 0;
-		while (it != end) {
-			T chr = *it++;
-			const T* cmp_it = str;
-			bool match = false;
-			while (1) {
-				T cmp_chr = *cmp_it++;
-				if (!cmp_chr)
-					break;
-				if (chr == cmp_chr) {
-					match = true;
-					break;
-				}
-			}
-			if (!match)
-				return i;
-			i++;
-		}
-		return -1;
-	}
-	int ReverseFindFirstNotOf(const T* str) const {
-		if (GetCount() <= 0 || !str) return -1;
-		const T* begin = Begin();
-		const T* it = End();
-		int i = GetCount();
-		while (it != begin) {
-			T chr = *--it;
-			const T* cmp_it = str;
-			bool match = false;
-			while (1) {
-				T cmp_chr = *cmp_it++;
-				if (!cmp_chr)
-					break;
-				if (chr == cmp_chr) {
-					match = true;
-					break;
-				}
-			}
-			i--;
-			if (!match)
-				return i;
-		}
-		return -1;
-	}
-	StringT Mid(int i) const { if (i >= GetCount()) return ""; if (i < 0) i = 0; return Mid(i, GetCount() - i); }
+	
+	StringT Mid(int i) const { if (i >= GetCount()) return StringT(); if (i < 0) i = 0; return Mid(i, GetCount() - i); }
 	StringT Mid(int i, int size) const {
 		size = min(size, count - i);
 		if (size <= 0) return StringT();
@@ -595,6 +507,9 @@ public:
 	
 	#include "StringInline.inl"
 };
+
+#include "StringTmpl.inl"
+
 
 typedef StringT<char> String;
 typedef StringT<wchar_t> WString;

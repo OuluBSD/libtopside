@@ -38,7 +38,7 @@
 #define STB_TEXTEDIT_K_PGDOWN				UPP::K_PAGEDOWN
 
 
-#include "stb_textedit.h"
+#include <ports/stb/stb_textedit.h>
 
 
 NAMESPACE_UPP

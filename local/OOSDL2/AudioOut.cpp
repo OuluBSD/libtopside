@@ -4,7 +4,7 @@ NAMESPACE_SDL2_BEGIN
 
 
 AudioOutput::AudioOutput(Context* ctx) : Component(ctx) {
-	sys_aud.Set(&snd_buf);
+	sys_aud.Set(&buf);
 	
 	SDL_zero(audio_fmt);
 	SetDesiredAudioFmt(
@@ -39,38 +39,53 @@ bool AudioOutput::IsSampleSigned() const {
 			;
 }
 
-/*void AudioOutput::Put(Uint8* stream, int len) {
-	if (snd_buf.IsEmpty())
+void AudioOutput::SinkCallback(Uint8* output, int size) {
+	if (buf.IsEmpty() || !output)
 		return;
 	
-	AudioFormat aud_fmt = snd_buf.GetAudioFormat();
+	if (consumer.IsEmptySource())
+		consumer.SetSource(buf);
+
+	ASSERT(size == fmt.GetFrameBytes());
 	
-	if (len % aud_fmt.var_size != 0) {
-		LOG("OOSDL2::AudioOutput::Put: error: invalid sample size in read length");
-		return;
+	if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
+		
+		off32 begin_offset = buf.GetOffset();
+		if (0) {
+			AUDIOLOG("AudioOutput::SinkCallback: trying to consume " << begin_offset.ToString());
+			AUDIOLOG("AudioOutput::SinkCallback: dumping");
+			buf.Dump();
+		}
+		
+		consumer.TestSetOffset(begin_offset);
+		
+		consumer.SetDestination(fmt, output, size);
+		consumer.ConsumeAll(false);
+		consumer.ClearDestination();
+		
+		off32 end_offset = consumer.GetOffset();
+		off32 diff = off32::GetDifference(begin_offset, end_offset);
+		if (diff) {
+			AUDIOLOG("AudioOutput::SinkCallback: device consumed count=" << diff.ToString());
+			buf.RemoveFirst(diff.value);
+		}
+		else if (consumer.HasLeftover()) {
+			AUDIOLOG("AudioOutput::SinkCallback: device consumed packet partially");
+		}
+		else if (!consumer.HasLeftover()) {
+			AUDIOLOG("error: AudioOutput::SinkCallback: device error");
+		}
 	}
-	
-	int read_total_samples = len / aud_fmt.var_size;
-	if (read_total_samples % aud_fmt.channels != 0) {
-		LOG("OOSDL2::AudioOutput::Put: error: invalid channel size in read length");
-		return;
+	else {
+		#if DEBUG_AUDIO_PIPE
+		AUDIOLOG("error: AudioOutput::SinkCallback: got empty data");
+		#endif
+		
+		memset(output, 0, size);
 	}
-	int read_ch_samples = read_total_samples / aud_fmt.channels;
-	
-	if (read_ch_samples % aud_fmt.sample_rate != 0) {
-		LOG("OOSDL2::AudioOutput::Put: error: invalid sample rate in read length");
-		return;
-	}
-	int read_frames = read_ch_samples / aud_fmt.sample_rate;
-	
-	int queue_samples = snd_buf.GetQueueSize(); // per 1 channel (not total samples)
-	int queue_frames = queue_samples / aud_fmt.sample_rate;
-	ASSERT(queue_samples % aud_fmt.sample_rate == 0);
-	
-	snd_buf.Get(stream, len);
 	
 	frames++;
-}*/
+}
 
 bool AudioOutput::Open0() {
 	SDL_zero(audio_fmt);
@@ -87,23 +102,23 @@ bool AudioOutput::Open0() {
 	    
 	    int audio_frames = 2; //max(1, 1024 / audio_fmt.samples);
 	    
-	    AudioFormat aud_fmt;
-	    aud_fmt.var_size = GetSampleSize();
-	    aud_fmt.is_var_float = IsSampleFloating();
-	    aud_fmt.is_var_signed = IsSampleSigned();
-	    aud_fmt.freq = audio_fmt.freq;
-	    aud_fmt.sample_rate = audio_fmt.samples;
-	    aud_fmt.channels = audio_fmt.channels;
+	    
+	    fmt.var_size = GetSampleSize();
+	    fmt.is_var_float = IsSampleFloating();
+	    fmt.is_var_signed = IsSampleSigned();
+	    fmt.freq = audio_fmt.freq;
+	    fmt.sample_rate = audio_fmt.samples;
+	    fmt.channels = audio_fmt.channels;
 	    
 	    #if CPU_LITTLE_ENDIAN
-	    aud_fmt.is_var_bigendian = false;
+	    fmt.is_var_bigendian = false;
 	    #else
-	    aud_fmt.is_var_bigendian = true;
+	    fmt.is_var_bigendian = true;
 	    #endif
 	    
 	    TODO
-		//snd_buf.SetSize(aud_fmt, audio_frames);
-		//snd_buf.Zero();
+		//buf.SetSize(aud_fmt, audio_frames);
+		//buf.Zero();
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    
@@ -115,16 +130,16 @@ void AudioOutput::Close0() {
 	if (audio_dev) {
 		SDL_PauseAudioDevice(audio_dev, 1);
 		SDL_CloseAudioDevice(audio_dev);
-		snd_buf.Clear();
+		buf.Clear();
 		audio_dev = 0;
 	}
 }
 
 
 
-void StaticAudioOutputPut(void* userdata, Uint8* stream, int len) {
+void StaticAudioOutputSinkCallback(void* userdata, Uint8* stream, int len) {
 	if (userdata)
-		((AudioOutput*)userdata)->Put(stream, len);
+		((AudioOutput*)userdata)->SinkCallback(stream, len);
 	else
 		memset(stream, 0, len);
 }
@@ -148,7 +163,7 @@ void AudioOutput::SetDesiredAudioFmt(int sample_freq, int sample_bytes, bool is_
 	}
 	audio_desired.channels = channels;
 	audio_desired.samples = sample_rate;
-	audio_desired.callback = StaticAudioOutputPut;
+	audio_desired.callback = StaticAudioOutputSinkCallback;
 	audio_desired.userdata = this;
 }
 

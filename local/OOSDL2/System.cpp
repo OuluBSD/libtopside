@@ -55,6 +55,11 @@ void SDL2TimerComponent::Uninitialize() {
 
 
 
+
+
+
+
+
 void SDL2AudioInputComponent::Initialize() {
 	OBJ_CREATE
 }
@@ -63,28 +68,40 @@ void SDL2AudioInputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-/*void SDL2AudioInputComponent::EmitAudioSource(double dt) {
+AudioStream& SDL2AudioInputComponent::GetAudioSource() {
 	TODO
-}*/
+}
 
-/*void SDL2AudioInputComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
+void SDL2AudioInputComponent::BeginAudioSource() {
 	TODO
-}*/
+}
+
+void SDL2AudioInputComponent::EndAudioSource() {
+	TODO
+}
+
+
+
+
 
 
 
 void SDL2AudioOutputComponent::Initialize() {
 	aconfig.frames_after_sync = 0;
 	SetAudioSyncInterval(15);
-	if (VirtualAudioPtr == 0)
-		VirtualAudioPtr = this;
 	OBJ_CREATE
 }
 
 void SDL2AudioOutputComponent::Uninitialize() {
-	if (VirtualAudioPtr == this)
-		VirtualAudioPtr = 0;
 	obj.Clear();
+}
+
+AudioFormat SDL2AudioOutputComponent::GetAudioFormat() {
+	TODO
+}
+
+Audio& SDL2AudioOutputComponent::GetAudioSink() {
+	TODO
 }
 
 /*void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {

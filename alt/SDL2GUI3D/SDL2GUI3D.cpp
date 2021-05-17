@@ -26,7 +26,7 @@ SDL2GUI3D::~SDL2GUI3D() {
 
 void SDL2GUI3D::RecvAudio(Uint8* stream, int len) {
 	if (aout)
-		aout->Put(stream, len);
+		aout->SinkCallback(stream, len);
 }
 
 SDL2GUI3D* SDL2GUI3D::Current() {

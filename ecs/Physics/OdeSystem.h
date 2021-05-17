@@ -1,10 +1,10 @@
-#ifndef _System_PhysicsSystem_h_
-#define _System_PhysicsSystem_h_
+#ifndef _System_OdeSystem_h_
+#define _System_OdeSystem_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class PhysicsSystem;
+class OdeSystem;
 class OdeSpace;
 
 class OdeNode {
@@ -38,7 +38,7 @@ public:
 	virtual void OnDetach() {}
 	virtual String ToString() {return "OdeNode";}
 	
-	PhysicsSystem* GetWorld();
+	OdeSystem* GetWorld();
 	OdeSpace* GetSpace();
 	dWorldID GetWorldId();
 	dSpaceID GetWorldSpaceId();
@@ -156,7 +156,7 @@ public:
 	
 };
 
-class PhysicsSystem : public OdeSpace, public System<PhysicsSystem> {
+class OdeSystem : public OdeSpace, public System<OdeSystem> {
 	
 protected:
 	dWorldID world = NULL;
@@ -166,11 +166,14 @@ protected:
 	
 	
 public:
-	typedef PhysicsSystem CLASSNAME;
+	typedef OdeSystem CLASSNAME;
+	
+	void Visit(RuntimeVisitor& vis) {}
+	using Parent = Machine;
 	
 	static vec3 EarthGravity;
 	
-	PhysicsSystem(Machine& m) : System<PhysicsSystem>(m) {
+	SYS_CTOR_(OdeSystem) {
 		// create world
 		dInitODE2(0);
 		world = dWorldCreate();
@@ -191,7 +194,7 @@ public:
 		
 		dAllocateODEDataForThread(dAllocateMaskAll);
 	}
-	~PhysicsSystem() {
+	~OdeSystem() {
 		dThreadingImplementationShutdownProcessing(threading);
 		dThreadingFreeThreadPool(pool);
 		dWorldSetStepThreadingImplementation(world, NULL, NULL);
@@ -230,19 +233,20 @@ public:
 	dWorldID GetWorldId() const {ASSERT(world); return world;}
 	dJointGroupID GetJointGroupId() const {ASSERT(contactgroup); return contactgroup;}
 	
-	void Collide() {ASSERT(space != NULL); dSpaceCollide(space, this, &PhysicsSystem::StaticNearCallback);}
+	void Collide() {ASSERT(space != NULL); dSpaceCollide(space, this, &OdeSystem::StaticNearCallback);}
 	void StepWorld(double seconds) {dWorldStep(world, seconds);}
 	void RemoveContactJoints() {dJointGroupEmpty(contactgroup);}
 	
 	virtual void NearCallback(void *, dGeomID o1, dGeomID o2);
-	static void StaticNearCallback(void *data, dGeomID o1, dGeomID o2) {((PhysicsSystem*)data)->NearCallback(NULL, o1, o2);}
+	static void StaticNearCallback(void *data, dGeomID o1, dGeomID o2) {((OdeSystem*)data)->NearCallback(NULL, o1, o2);}
 	
 };
 
+using OdeSystemRef = Ref<OdeSystem>;
 
 
 
-void AddMachinePhysicsSystem();
+void AddMachineOdeSystem();
 
 
 

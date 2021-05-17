@@ -11,8 +11,9 @@ library(!WIN32) ode;
 
 file
 	Physics.h,
-	PhysicsSystem.h,
-	PhysicsSystem.cpp,
-	PhysicsPrefab.h,
-	PhysicsPrefab.cpp;
+	"Open Dynamics Engine" readonly separator,
+	OdeSystem.h,
+	OdeSystem.cpp,
+	OdePrefab.h,
+	OdePrefab.cpp;
 

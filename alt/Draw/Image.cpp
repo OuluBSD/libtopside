@@ -24,5 +24,36 @@ const byte* Image::GetIter(int x, int y) const {
 
 
 
+void ImageBuffer::Create(Size sz) {
+	TODO
+}
+
+void ImageBuffer::Clear() {
+	TODO
+}
+
+Image ImageBuffer::GetImage() {
+	TODO
+}
+
+
+
+
+
+
+Image RescaleFilter(const Image& img, int cx, int cy, int filter) {
+	TODO
+}
+
+Image RescaleFilter(const Image& img, Size sz, Rect r, int filter) {
+	TODO
+}
+
+Image CachedRescale(const Image& img, Size sz) {
+	TODO
+}
+
+
+
 NAMESPACE_UPP_END
 

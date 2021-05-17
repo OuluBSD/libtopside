@@ -83,7 +83,9 @@ public:
 class AudioOutput : public Component {
 	SDL_AudioSpec audio_fmt, audio_desired;
 	SDL_AudioDeviceID audio_dev = 0;
-	VolatileAudioBuffer snd_buf;
+	AudioPacketConsumer consumer;
+	VolatileAudioBuffer buf;
+	AudioFormat fmt;
 	SystemAudio sys_aud;
 	dword frames = 0;
 	
@@ -94,7 +96,7 @@ class AudioOutput : public Component {
 public:
 	AudioOutput(Context* ctx);
 	
-	void			Put(Uint8* stream, int len);
+	void			SinkCallback(Uint8* stream, int len);
 	void			SetDesiredAudioFmt(int sample_freq, int sample_bytes, bool is_var_floating, int channels, int sample_rate);
 	int				GetSampleRate() {return audio_fmt.samples;}
 	int				GetChannels() {return audio_fmt.channels;}
@@ -103,7 +105,7 @@ public:
 	dword			GetFrameCount() const {return frames;}
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
-	Audio&			GetAudio() {return snd_buf;}
+	Audio&			GetAudio() {return buf;}
 	SystemAudio&	GetSystemAudio() {return sys_aud;}
 	
 };

@@ -8,7 +8,7 @@ class ArrayCtrl : public Ctrl {
 	
 	
 public:
-	
+	ArrayCtrl();
 	
 	void	AddIndex();
 	void	AddColumn(String key);

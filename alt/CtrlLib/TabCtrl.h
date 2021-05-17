@@ -8,7 +8,7 @@ class TabCtrl : public Ctrl {
 	
 	
 public:
-	
+	TabCtrl();
 	
 	void Add(Ctrl& c, String title);
 	

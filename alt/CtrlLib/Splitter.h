@@ -8,7 +8,7 @@ class Splitter : public Ctrl {
 	
 	
 public:
-	
+	Splitter();
 	
 	
 	Splitter& Add(Ctrl& c);

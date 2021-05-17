@@ -57,6 +57,7 @@ struct BuggyCar : public OdeSpace, public Component<BuggyCar> {
 	
 	dReal speed=0, steer=0;	// user commands
 	
+	using Parent = Entity;
 	
 	typedef BuggyCar CLASSNAME;
 	BuggyCar() {}
@@ -64,7 +65,7 @@ struct BuggyCar : public OdeSpace, public Component<BuggyCar> {
 	void operator = (const BuggyCar& c) {Panic("Not implemented");}
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	virtual void OnAttach() {
+	void OnAttach() override {
 		OdeSpace::OnAttach();
 		
 		Attach(chassis);
@@ -146,13 +147,11 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
     {
         auto components = EntityPrefab::Make(e);
 		
-		components.Get<Transform>().position[1] = 3.0;
+		components.Get<TransformRef>()->position[1] = 3.0;
+		components.Get<RenderableRef>()->cb << components.Get<Ref<BuggyCar>>()->GetPaintCallback();
 		
-		components.Get<Renderable>()->cb << components.Get<BuggyCar>()->GetPaintCallback();
-		
-		Shared<PhysicsSystem> w = store.GetMachine().Get<PhysicsSystem>();
-		PhysicsSystem& ow = dynamic_cast<PhysicsSystem&>(*w);
-		ow.Attach(*components.Get<BuggyCar>());
+		OdeSystemRef w = e.GetMachine().Get<OdeSystem>();
+		w->Attach(*components.Get<Ref<BuggyCar>>());
 		
         return components;
     }

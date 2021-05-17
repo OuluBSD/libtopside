@@ -3,7 +3,6 @@
 
 NAMESPACE_UPP
 
-//VirtualAudio* VirtualAudioPtr;
 
 
 

@@ -44,6 +44,14 @@ public:
 	void DrawImage(int x, int y, const Image& img, const Rect& src);
 	void DrawImage(int x, int y, int cx, int cy, const Image& img);
 	
+	void DrawPolygon(const Vector<Point>& vertices,
+	                   Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
+
+	void DrawEllipse(const Rect& r, Color color = DefaultInk(),
+	                 int pen = Null, Color pencolor = DefaultInk());
+	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
+		             int pen = Null, Color pencolor = DefaultInk());
+
 	virtual Size GetPageSize() const = 0;
 	virtual void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) = 0;
 	virtual	void DrawRectOp(int x, int y, int cx, int cy, Color color) = 0;
@@ -55,14 +63,6 @@ public:
 	virtual bool ClipOp(const Rect& r) = 0;
 	virtual void EndOp() = 0;
 	
-	void   DrawPolygon(const Vector<Point>& vertices,
-	                   Color color = DefaultInk(), int width = 0, Color outline = Null, uint64 pattern = 0, Color doxor = Null);
-
-	void DrawEllipse(const Rect& r, Color color = DefaultInk(),
-	                 int pen = Null, Color pencolor = DefaultInk());
-	void DrawEllipse(int x, int y, int cx, int cy, Color color = DefaultInk(),
-		             int pen = Null, Color pencolor = DefaultInk());
-
 	#if 0
 	
 	enum {

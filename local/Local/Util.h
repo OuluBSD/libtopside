@@ -197,6 +197,10 @@ bool IsArg(const WString& n, const char* cmp, int cmp_len);
 
 void GetDirectoryFiles(String dir, Index<String>& files);
 
+template <class To, class From>	To Convert(const From& from) {return from;}
+template <> inline WString Convert<WString,String>(const String& s) {return s.ToWString();}
+template <> inline String Convert<String,WString>(const WString& s) {return s.ToString();}
+
 
 
 inline bool operator==(const Vector<byte>& a, const Vector<byte>& b) {

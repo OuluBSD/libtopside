@@ -212,6 +212,15 @@ String ToLower(const String& s) {
 	return out.GetResult();
 }
 
+WString ToUpper(const WString& s) {
+	TODO
+}
+
+WString ToLower(const WString& s) {
+	TODO
+}
+
+
 #ifdef __GNUC__
 typedef __attribute__((__may_alias__)) size_t WT;
 #define WS (sizeof(WT))

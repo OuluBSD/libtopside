@@ -9,10 +9,12 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 	VIS_COMP_0_0
 	typedef StaticGroundPlane CLASSNAME;
 	
+	using Parent = Entity;
+	
 	void operator=(const StaticGroundPlane& ) {Panic("Not implemented");}
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	virtual void OnAttach() {
+	void OnAttach() override {
 		OdeObject::OnAttach();
 		
 		geom = dCreatePlane(GetSpace()->GetSpaceId(), 0, 1, 0, 0);
@@ -26,22 +28,24 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 		model = mb.AsModel();
 	}
 	
-	virtual String ToString() {return "StaticGroundPlane";}
+	String ToString() override {return "StaticGroundPlane";}
 };
+
+using StaticGroundPlaneRef = Ref<StaticGroundPlane>;
 
 struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroundPlane>
 {
     static Components Make(Entity& e)
     {
         auto components = EntityPrefab::Make(e);
+		auto ground = components.Get<StaticGroundPlaneRef>();
 		
-		components.Get<Transform>().position[1] = -5.0;
+		components.Get<TransformRef>()->position[1] = -5.0;
+		components.Get<RenderableRef>()->cb << ground->GetPaintCallback();
 		
-		components.Get<Renderable>()->cb << components.Get<StaticGroundPlane>()->GetPaintCallback();
-		
-		Ref<PhysicsSystem> w = store.GetMachine().Get<PhysicsSystem>();
-		PhysicsSystem& ow = dynamic_cast<PhysicsSystem&>(*w);
-		StaticGroundPlane* plane = components.Get<StaticGroundPlane>();
+		OdeSystemRef w = e.GetMachine().Get<OdeSystem>();
+		OdeSystem& ow = dynamic_cast<OdeSystem&>(*w);
+		StaticGroundPlaneRef plane = components.Get<StaticGroundPlane>();
 		ASSERT(plane);
 		ow.OdeNode::Attach(*plane);
 		
@@ -58,10 +62,9 @@ struct StaticBox : public OdeObject {
 	StaticBox& SetRotationZ(double angle) {dMatrix3 R; dRFromAxisAndAngle(R, 0, 0, 1, angle); dGeomSetRotation(geom, R); return *this;}
 	StaticBox& SetPosition(double x, double y, double z) {dGeomSetPosition(geom, x, y, z); return *this;}
 	
-	virtual void OnAttach();
+	void OnAttach() override;
 	
-	
-	virtual String ToString() {return "StaticBox";}
+	String ToString() override {return "StaticBox";}
 };
 
 
@@ -80,7 +83,7 @@ public:
 		for (int k = 0; k < 3; k++) sides[k] = dRandReal() * 0.5 + 0.1;
 	}
 	
-	virtual String ToString() {return "OdeScalarObject";}
+	String ToString() override {return "OdeScalarObject";}
 };
 
 struct OdeSphere : public OdeScalarObject {
@@ -97,7 +100,7 @@ struct OdeSphere : public OdeScalarObject {
 		return *this;
 	}
 	
-	virtual void OnAttach() {
+	void OnAttach() override {
 		OdeObject::OnAttach();
 		
 		dQFromAxisAndAngle(orient, 1, 0, 0, M_PI*0.5);	// Set orientation from axis (1i+0j+0k) and it's (angle 90 degrees)
@@ -113,7 +116,7 @@ struct OdeSphere : public OdeScalarObject {
 		AttachContent();
 	}
 	
-	virtual String ToString() {return "Sphere";}
+	String ToString() override {return "Sphere";}
 };
 
 
