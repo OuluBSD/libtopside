@@ -30,6 +30,7 @@ struct RefParent1 {
 	operator bool() const {return o;}
 	operator T&() const {ASSERT(o); return *o;}
 	operator T*() const {ASSERT(o); return o;}
+	T* operator->() const {ASSERT(o); return o;}
 	
 };
 

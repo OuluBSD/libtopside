@@ -40,7 +40,7 @@ public:
 
 
 
-void Startup();
+void Initializer();
 
 
 NAMESPACE_TOPSIDE_END

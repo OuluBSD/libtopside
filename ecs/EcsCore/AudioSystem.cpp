@@ -19,7 +19,7 @@ void AudioSystem::Update(double dt) {
 	
 	for (AudioSourceRef src : srcs) {
 		AudioStream& stream = src->GetAudioSource();
-		int buf_sz = stream.GetAudio().GetQueueSize();
+		int buf_sz = stream.Get().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
 		
 		#if 0 && DEBUG_AUDIO_PIPE

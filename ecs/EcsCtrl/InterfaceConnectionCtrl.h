@@ -38,12 +38,12 @@ class InterfaceConnectionCtrl : public ParentCtrl {
 		auto& conns = i->GetConnections();
 		for(auto& b : conns) {
 			ComponentBaseRef tgt_base = b.dst->template AsRef<ComponentBase>();
-			Entity& tgt_ent = tgt_base->GetEntity();
+			EntityRef tgt_ent = tgt_base->GetEntity();
 			
-			String id_str = "(" + IntStr64(tgt_ent.GetId()) + ")";
+			String id_str = "(" + IntStr64(tgt_ent->GetId()) + ")";
 			String b_name = TypeId(typeid(typename T::Type)).CleanDemangledName() + id_str;
 			String c_name = tgt_base->GetType().CleanDemangledName() + id_str;
-			String e_name = tgt_ent.GetPrefab() + id_str;
+			String e_name = tgt_ent->GetPrefab() + id_str;
 			
 			g.AddNode(b_name).SetFill(fill_iface);
 			g.AddNode(c_name).SetFill(fill_comp);

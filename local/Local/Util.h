@@ -537,10 +537,11 @@ struct AppFlags {
 	
 	
 	GfxMode gfx = GFX_OPENGL;
-	
+	bool have_ode_physics = false;
 	
 	bool IsOpenGL() const {return gfx == GFX_OPENGL;}
 	bool IsSoftwareRenderer() const {return gfx == GFX_SW;}
+	bool HaveOdePhysics() const {return have_ode_physics;}
 	
 };
 

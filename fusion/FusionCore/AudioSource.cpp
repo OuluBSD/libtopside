@@ -38,7 +38,7 @@ void FusionAudioSource::UpdateTexBuffers() {
 	auto* stream = Stream();
 	if (stream) {
 		ClearTex();
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 		int sr = max(stream->aud_fmt.sample_rate, 1);
 		int ch = max(stream->aud_fmt.channels, 1);
 		Ogl_CreateTex(
@@ -88,7 +88,7 @@ void FusionAudioSource::UseRenderedFramebuffer() {
 	Audio& aud = *stream->sys_aud;
 	const AudioFormat& fmt = stream->aud_fmt;
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	ASSERT(color_buf[buf_i] > 0);
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 	glReadPixels(0, 0, fmt.sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, audio_buf.Begin());

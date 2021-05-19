@@ -25,10 +25,13 @@ bool OpenCVComponent::LoadInput(int id) {
 	V4L2_Device& dev = devmgr.GetNative(id);
 	for(int l = 0; l < dev.GetCaptureCount() && !vi.IsCap(); l++) {
 		OpenCVCaptureDevice& cap = dev.GetCapture(l);
-		int fmt, res;
-		if (cap.FindClosestFormat(def_cap_sz, def_cap_fps, 0.5, 1.5, fmt, res)) {
-			if (cap.OpenDevice(fmt, res)) {
-				vi.SetCap(cap.AsRef<MediaSourceStream>());
+		int fmt_i = -1;
+		MediaFormat desired_format;
+		TODO
+		//if (cap.FindClosestFormat(def_cap_sz, def_cap_fps, 0.5, 1.5, fmt, res)) {
+		if (cap.FindClosestFormat(desired_format, fmt_i)) {
+			if (cap.Open(fmt_i)) {
+				vi.SetCap(cap.AsRef<MediaStream>());
 				vi.Start(true);
 				
 				return true;

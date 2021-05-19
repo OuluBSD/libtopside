@@ -22,7 +22,7 @@ protected:
 	Topside::OOSDL2::Screen* scr = 0;
 	Topside::OOSDL2::Events* ev = 0;
 	
-	SystemAudio					empty_aud;
+	Topside::AudioProxy			empty_aud;
 	SystemDraw					empty_draw;
 	String						desired_title;
 	void*						sys;

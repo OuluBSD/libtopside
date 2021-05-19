@@ -53,6 +53,34 @@ public:
 
 
 
+
+
+
+class DisplayExchangePoint : public ExchangePoint {
+	ConnectorBase* conn = 0;
+	off32 offset;
+	bool use_consumer = false;
+	bool dbg_offset_is_set = false;
+	
+public:
+	typedef DisplayExchangePoint CLASSNAME;
+	DisplayExchangePoint();
+	~DisplayExchangePoint() {Deinit();}
+	
+	void Init(ConnectorBase* conn);
+	void Deinit();
+	void Update(double dt) override;
+	void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
+	void UseConsumer(bool b=true) {use_consumer = b;}
+	void Destroy() {conn = 0;}
+	
+	off32 GetOffset() const {return offset;}
+	
+};
+
+
+
+
 NAMESPACE_TOPSIDE_END
 
 

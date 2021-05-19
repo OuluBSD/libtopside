@@ -18,11 +18,11 @@ public:
 	CombineHash& Put64(int64 value) {Put((int)(value >> 32)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
 	
 	template <class T> CombineHash& operator << (const T& value) { Put(value.GetHashValue()); return *this; }
-	template <> CombineHash& operator << (const int& value) { Put(value); return *this; }
-	template <> CombineHash& operator << (const int64& value) { Put(value); return *this; }
 	
 };
 
+template <> inline CombineHash& CombineHash::operator << (const int& value) { Put(value); return *this; }
+template <> inline CombineHash& CombineHash::operator << (const int64& value) { Put(value); return *this; }
 
 
 

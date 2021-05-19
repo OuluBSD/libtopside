@@ -8,12 +8,18 @@ file
 	OpenLib.cpp,
 	Common.h,
 	Spatial.h,
+	Spatial.cpp,
 	MotionController.h,
+	MotionController.cpp,
 	Pbr.h,
+	Pbr.cpp,
 	HolographicScene.h,
 	HolographicScene.cpp,
 	HolographicRenderer.h,
+	HolographicRenderer.cpp,
 	Math.h,
 	StepTimer.h,
-	DeviceResources.h;
+	StepTimer.cpp,
+	DeviceResources.h,
+	DeviceResources.cpp;
 

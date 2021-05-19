@@ -39,7 +39,7 @@ void SDL2System::RemoveContext(SDL2ContextComponentRef comp) {
 
 
 #define OBJ_CREATE \
-	auto ev_ctx = GetEntity().Find<SDL2ContextComponent>(); \
+	auto ev_ctx = GetEntity()->Find<SDL2ContextComponent>(); \
 	/*ASSERT(ev_ctx);*/ \
 	if (ev_ctx) { \
 		obj.Create(ev_ctx->GetOOSDL2()); \
@@ -116,7 +116,7 @@ void SDL2ScreenComponent::Initialize() {
 	config.dt = 0;
 	SetFPS(60);
 	OBJ_CREATE
-	auto ev_comp = GetEntity().Find<SDL2EventsComponent>();
+	auto ev_comp = GetEntity()->Find<SDL2EventsComponent>();
 	if (ev_comp)
 		ev = ev_comp->GetOOSDL2();
 }
@@ -126,6 +126,20 @@ void SDL2ScreenComponent::Uninitialize() {
 	obj.Clear();
 }
 
+DisplayFormat SDL2ScreenComponent::GetDisplayFormat() {
+	TODO
+}
+
+Display& SDL2ScreenComponent::GetSink() {
+	TODO
+}
+
+void SDL2ScreenComponent::SetTitle(String s) {
+	if (obj)
+		obj->SetTitle(s);
+}
+	
+#if 0
 void SDL2ScreenComponent::RecvDisplay(DisplaySource& src, double dt) {
 	frame_age += dt;
 	config.dt += dt;
@@ -145,11 +159,7 @@ void SDL2ScreenComponent::RecvDisplay(DisplaySource& src, double dt) {
 		obj->CommitDraw();
 	}
 }
-
-void SDL2ScreenComponent::SetTitle(String s) {
-	if (obj)
-		obj->SetTitle(s);
-}
+#endif
 
 #endif
 
@@ -159,19 +169,17 @@ void SDL2ScreenComponent::SetTitle(String s) {
 void SDL2EventsComponent::Initialize() {
 	OBJ_CREATE
 	
-	Ref<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
-	if (!ev_sys)
-		return;
-	
-	ev_sys -> Add(Ref<ControllerSource>());
+	Ref<EventSystem> ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
+	if (ev_sys)
+		ev_sys -> Add(AsRef<ControllerSource>());
 }
 
 void SDL2EventsComponent::Uninitialize() {
 	obj.Clear();
 	
-	Ref<EventSystem> ev_sys = GetEntity().GetMachine().Get<EventSystem>();
+	Ref<EventSystem> ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
 	if (ev_sys)
-		ev_sys->Remove(Ref<ControllerSource>());
+		ev_sys->Remove(AsRef<ControllerSource>());
 }
 
 void SDL2EventsComponent::EmitController(double dt) {
@@ -351,23 +359,23 @@ SDL2ContextComponent::SDL2ContextComponent() {
 
 void SDL2ContextComponent::Initialize() {
 	DLOG("SDL2ContextComponent::Initialize");
-	Entity& e = GetEntity();
+	EntityRef e = GetEntity();
 	
-	Ref<SDL2System> sdl2_sys = e.GetMachine().Get<SDL2System>();
+	Ref<SDL2System> sdl2_sys = e->GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
 		sdl2_sys->AddContext(*this);
 	
-	auto tim		= e.Find<SDL2TimerComponent>();
-	auto ain		= e.Find<SDL2AudioInputComponent>();
-	auto aout		= e.Find<SDL2AudioOutputComponent>();
+	auto tim		= e->Find<SDL2TimerComponent>();
+	auto ain		= e->Find<SDL2AudioInputComponent>();
+	auto aout		= e->Find<SDL2AudioOutputComponent>();
 #ifdef flagGUI
-	auto scr		= e.Find<SDL2ScreenComponent>();
+	auto scr		= e->Find<SDL2ScreenComponent>();
 #endif
 	
-	auto ev			= e.Find<SDL2EventsComponent>();
-	auto joy		= e.Find<SDL2JoystickComponent>();
-	auto gc			= e.Find<SDL2GameControllerComponent>();
-	auto sens		= e.Find<SDL2SensorComponent>();
+	auto ev			= e->Find<SDL2EventsComponent>();
+	auto joy		= e->Find<SDL2JoystickComponent>();
+	auto gc			= e->Find<SDL2GameControllerComponent>();
+	auto sens		= e->Find<SDL2SensorComponent>();
 	
 	#define AddObj(x) if(x) {obj->Add(x->GetObj()); comps.Add(x);}
 	
@@ -392,7 +400,7 @@ void SDL2ContextComponent::Initialize() {
 }
 
 void SDL2ContextComponent::Uninitialize() {
-	Ref<SDL2System> sdl2_sys = GetEntity().GetMachine().Get<SDL2System>();
+	Ref<SDL2System> sdl2_sys = GetEntity()->GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
 		sdl2_sys	-> RemoveContext(*this);
 	

@@ -59,7 +59,7 @@ void WindowSystem::Invalidate() {
 }
 
 void WindowSystem::SetDesktopSize(Size sz) {
-	TODO
+	vdesktop_sz = sz;
 }
 
 

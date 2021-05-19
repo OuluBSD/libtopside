@@ -101,7 +101,7 @@ void Texture::Set(Image i) {
 void Texture::MakeAccel() {
 	if (tex_id < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
 		if (compression == COMP_NONE) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 			GLuint* texture = (GLuint*)&tex_id;
 			glGenTextures(1, texture);
 			glBindTexture(GL_TEXTURE_2D, *texture);
@@ -121,7 +121,7 @@ void Texture::MakeAccel() {
 
 void Texture::ClearAccel() {
 	if (tex_id >= 0) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 		glDeleteTextures(1, (GLuint*)&tex_id);
 		tex_id = -1;
 #endif

@@ -4,6 +4,10 @@
 
 #include <EcsCore/EcsCore.h>
 
+#define NAMESPACE_PBR_NAME Pbr
+#define NAMESPACE_PBR_BEGIN namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_PBR_NAME {
+#define NAMESPACE_PBR_END }}
+
 #include "Common.h"
 #include "Spatial.h"
 #include "MotionController.h"

@@ -128,7 +128,7 @@ bool FusionComponent::Open() {
 	if (!LoadResources())
 		return false;
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	if (!Ogl_CompilePrograms())
 		return false;
 	
@@ -151,7 +151,7 @@ void FusionComponent::Close() {
 void FusionComponent::Initialize() {
 	DLOG("FusionComponent(" << GetTypeString() << ")::Initialize");
 	
-	Ref<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetECS().GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> AddComponent(*this);
 }
@@ -164,7 +164,7 @@ void FusionComponent::Uninitialize() {
 		ctx = 0;
 	}
 	
-	Ref<FusionSystem> fusion_sys = GetECS().GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetECS().GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> RemoveComponent(*this);
 	
@@ -241,13 +241,13 @@ void FusionComponent::Clear() {
 }
 
 void FusionComponent::ClearTex() {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	Ogl_ClearTex();
 #endif
 }
 
 void FusionComponent::ClearProg() {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	Ogl_ClearProg();
 #endif
 }

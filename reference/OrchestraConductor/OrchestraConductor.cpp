@@ -78,7 +78,7 @@ void OrchestraConductor::Uninitialize() {
 	
 }
 
-void OrchestraConductorStartup() {
+void OrchestraConductorInitializer() {
 	SetCoutLog();
 	
 	
@@ -121,6 +121,6 @@ void OrchestraConductorStartup() {
 NAMESPACE_TOPSIDE_END
 
 CONSOLE_ECS_APP_(Topside::OrchestraConductor)
-APP_STARTUP_(Topside::OrchestraConductorStartup);
+APP_INITIALIZE_(Topside::OrchestraConductorStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

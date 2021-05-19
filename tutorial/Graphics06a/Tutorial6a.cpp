@@ -41,7 +41,7 @@ void Graphics6a::Render(SystemDraw& draw) {
 
 
 
-void Graphics6aStartup() {
+void Graphics6aInitializer() {
 	/*Machine& mach = GetMachine();
 	
 	EntityStore& ents = *mach.Get<EntityStore>();
@@ -68,5 +68,5 @@ NAMESPACE_TOPSIDE_END
 
 
 RENDER_APP_(Topside::Graphics6a)
-APP_STARTUP_(Topside::Graphics6aStartup);
+APP_INITIALIZE_(Topside::Graphics6aStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);

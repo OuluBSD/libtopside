@@ -6,6 +6,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+FfmpegFileInput::FfmpegFileInput() {
+	avproxy.Set(aframe, vframe);
+}
+
 void FfmpegFileInput::Clear() {
 	ClearDevice();
 	
@@ -53,7 +57,11 @@ void FfmpegFileInput::ClearPacket() {
 	}
 }
 
-bool FfmpegFileInput::Open0(String path) {
+bool FfmpegFileInput::IsOpen() const {
+	return is_dev_open;
+}
+
+bool FfmpegFileInput::OpenFile(String path) {
 	Clear();
 	
 	this->path = path;
@@ -82,13 +90,12 @@ bool FfmpegFileInput::Open0(String path) {
 	}
 	if (has_video) {
 		vframe.Init(*v.codec_ctx);
-		VideoSourceFormat& vf = fmts.Add();
-		VideoSourceFormatResolution& res = vf.Add();
-		res.SetFormat(vframe.vid_fmt);
 	}
 	
 	return HasMediaOpen();
 }
+
+#if 0
 
 bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
 	ClearDevice();
@@ -106,10 +113,6 @@ bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
     
 	is_dev_open = audio_open || video_open;
 	is_eof = !is_dev_open;
-	return is_dev_open;
-}
-
-bool FfmpegFileInput::IsDeviceOpen() const {
 	return is_dev_open;
 }
 
@@ -241,7 +244,7 @@ int FfmpegFileInput::GetActiveVideoFormatIdx() const {
 	return 0;
 }
 
-
+#endif
 
 
 
@@ -534,7 +537,7 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		Audio& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
+		AudioVolatileBuffer* vol_aud = dynamic_cast<AudioVolatileBuffer*>(&sink);
 		if (vol_aud) {
 			off32 begin = e.GetOffset();
 			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
@@ -583,7 +586,7 @@ bool FfmpegAudioFrameQueue::IsQueueFull() const {
 	return buf.GetCount() >= min_buf_size;
 }
 
-AudioFormat FfmpegAudioFrameQueue::GetAudioFormat() const {
+AudioFormat FfmpegAudioFrameQueue::GetFormat() const {
 	return aud_fmt;
 }
 
@@ -688,7 +691,9 @@ void FfmpegAudioFrameQueue::DropAudioBuffer() {
 	}
 }
 
-#ifdef flagOPENGL
+#if HAVE_OPENGL
+
+#if 0
 bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 	if (buf.IsEmpty())
 		return false;
@@ -718,6 +723,8 @@ bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 	buf.Remove(frame_iter);*/
 	return true;
 }
+#endif
+
 #endif
 
 
@@ -798,7 +805,7 @@ bool FfmpegVideoFrameQueue::IsQueueFull() const {
 	return frames.GetCount() >= min_buf_size;
 }
 
-VideoFormat FfmpegVideoFrameQueue::GetVideoFormat() const {
+VideoFormat FfmpegVideoFrameQueue::GetFormat() const {
 	return vid_fmt;
 }
 
@@ -843,7 +850,9 @@ void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool
 	#endif
 }
 
-#ifdef flagOPENGL
+#if HAVE_OPENGL
+
+#if 0
 bool FfmpegVideoFrameQueue::PaintOpenGLTexture(int texture) {
 	TODO
 	/*if (frames.IsEmpty())
@@ -872,6 +881,8 @@ bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFo
 	
 	return true;
 }
+#endif
+
 #endif
 
 

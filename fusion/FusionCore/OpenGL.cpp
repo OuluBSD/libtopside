@@ -1,6 +1,6 @@
 #include "FusionCore.h"
 
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 
 NAMESPACE_TOPSIDE_BEGIN
 

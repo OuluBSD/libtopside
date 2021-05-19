@@ -12,7 +12,11 @@ ComponentBase::~ComponentBase() {
 }
 
 Machine& ComponentBase::GetMachine() {
-	return ent->GetMachine();
+	return GetParent()->GetMachine();
+}
+
+EntityRef ComponentBase::GetEntity() {
+	return GetParent()->AsRefT();
 }
 
 

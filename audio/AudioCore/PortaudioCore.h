@@ -134,7 +134,7 @@ public:
 	AudioFormat		GetAudioFormat() const override {return fmt;}
 	bool			IsQueueFull() const override {return false;}
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	virtual bool	PaintOpenGLTexture(int texture) override {TODO; return false;}
 #endif
 	
@@ -199,7 +199,7 @@ private:
 };
 
 class BufferedAudioDeviceStream : public AudioDeviceStream {
-	VolatileAudioBuffer	buf;
+	AudioVolatileBuffer	buf;
 	AudioPacketConsumer consumer;
 	
 	void			SinkCallback(StreamCallbackArgs& args);
@@ -216,7 +216,7 @@ public:
 	AudioFormat				GetAudioFormat() const override {return buf.GetAudioFormat();}
 	bool					IsQueueFull() const override {return buf.IsQueueFull();}
 	
-	VolatileAudioBuffer&	GetBuffer() {return buf;}
+	AudioVolatileBuffer&	GetBuffer() {return buf;}
 	
 };
 

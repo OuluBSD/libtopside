@@ -316,7 +316,7 @@ String FindShareDir() {
 	if (DirectoryExists(config_share))
 		return config_share;
 	
-	String home_upphub_share = AppendFileName(AppendFileName(GetHomeDirFile("upphub"), "UppCommon"), "share");
+	String home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
 	if (DirectoryExists(home_upphub_share))
 		return home_upphub_share;
 	

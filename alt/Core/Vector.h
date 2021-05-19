@@ -870,7 +870,7 @@ public:
 	V& operator[](int i) {return GetPos(i);}
 	
 	V& Top() { ASSERT(GetCount() > 0); return values.Top(); }
-	V Pop() {V v(values.Top()); Remove(values.GetCount()-1); return v;}
+	//V Pop() {V v(values.Top()); Remove(values.GetCount()-1); return v;}
 
 	int Find(const K& key) const { return keys.Find(key); }
 	Iterator FindIterator(const K& key) const { Iterator it = Begin(); int pos = Find(key); it += pos == -1 ? GetCount() : pos; return it;}
@@ -878,7 +878,7 @@ public:
 	const V* FindPtr(const K& key) const {int pos = Find(key); if (pos < 0) return 0; return &values.Get(pos);}
 	V& Get(const K& key) { return values[Find(key)]; }
 	const V& Get(const K& key) const { return values[Find(key)]; }
-	V  Get(const K& key, V value) const {int i = Find(key); if (i < 0) return value; return values[i]; }
+	const V& Get(const K& key, const V& value) const {int i = Find(key); if (i < 0) return value; return values[i]; }
 	int GetCount() const { return keys.GetCount(); }
 	bool IsEmpty() const { return GetCount() == 0; }
 

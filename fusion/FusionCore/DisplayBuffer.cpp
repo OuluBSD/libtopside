@@ -30,7 +30,7 @@ void FusionDisplayBuffer::UpdateTexBuffers() {
 	if (stream) {
 		ASSERT(stream->video_size.cx > 0 && stream->video_size.cy > 0);
 		ClearTex();
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 		Ogl_CreateTex(
 			stream->video_size, 4,
 			1, 1,

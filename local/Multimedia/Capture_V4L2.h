@@ -6,7 +6,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CaptureDevice_V4L2 : public MediaSourceStream {
+class CaptureDevice_V4L2 : public MediaStream {
 	
 protected:
 	friend class V4L2_DeviceManager;

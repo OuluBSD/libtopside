@@ -45,10 +45,7 @@ ExchangeBase::~ExchangeBase() {
 }
 	
 
-void AudioEx::SetOffset(off32 packet_count) {
-	//AUDIOLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
-	this->offset = packet_count;
-}
+
 
 
 

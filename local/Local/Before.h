@@ -13,7 +13,7 @@
 #endif
 
 #define NAMESPACE_TOPSIDE_NAME Topside
-#define NAMESPACE_TOPSIDE_BEGIN namespace  Topside {
+#define NAMESPACE_TOPSIDE_BEGIN namespace NAMESPACE_TOPSIDE_NAME {
 #define NAMESPACE_TOPSIDE_END }
 
 

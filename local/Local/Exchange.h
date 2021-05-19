@@ -115,68 +115,6 @@ public:
 
 
 
-class SemanticEx : public ExchangeBase {
-	
-	
-};
-
-
-class Audio;
-class AudioExchangePoint;
-
-class AudioEx : public ExchangeBase {
-	bool storing = false;
-	AudioExchangePoint* expt = 0;
-	Audio* src = 0;
-	Audio* sink = 0;
-	const RealtimeSourceConfig* src_conf = 0;
-	off32 offset;
-	
-public:
-	AudioEx(AudioExchangePoint* expt) : expt(expt) {}
-	
-	Audio&						Sink() const {return *sink;}
-	Audio&						Source() const {return *src;}
-	const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
-	AudioExchangePoint&			GetExchangePoint() {return *expt;}
-	off32						GetOffset() const {return offset;}
-	virtual bool				IsLoading() {return !storing;}
-	virtual bool				IsStoring() {return storing;}
-	
-	void	SetLoading(Audio& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
-	void	SetStoring(Audio& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
-	void	SetOffset(off32 packet_count);
-	
-	
-	
-};
-
-
-class Video;
-class VideoExchangePoint;
-
-class VideoEx : public ExchangeBase {
-	bool storing = false;
-	VideoExchangePoint* expt = 0;
-	Video* src = 0;
-	Video* sink = 0;
-	const RealtimeSourceConfig* src_conf = 0;
-public:
-	VideoEx(VideoExchangePoint* expt) : expt(expt) {}
-	
-	Video& Sink() const {return *sink;}
-	Video& Source() const {return *src;}
-	const RealtimeSourceConfig& SourceConfig() const {return *src_conf;}
-	
-	void SetLoading(Video& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
-	void SetStoring(Video& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
-	
-	VideoExchangePoint& GetExchangePoint() {return *expt;}
-	
-	virtual bool IsLoading() {return !storing;}
-	virtual bool IsStoring() {return storing;}
-	
-};
 
 
 
@@ -184,13 +122,10 @@ public:
 
 class ExchangeProviderCookie : public RefScopeEnabler<ExchangeProviderCookie,ExchangePoint> {
 	
-	
 public:
 	
 	
 };
-
-
 
 
 

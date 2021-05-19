@@ -11,14 +11,14 @@ FusionContextComponent::FusionContextComponent() {
 
 void FusionContextComponent::Initialize() {
 	DLOG("FusionContextComponent::Initialize");
-	Ref<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> AddContext(*this);
 	
 }
 
 void FusionContextComponent::Uninitialize() {
-	Ref<FusionSystem> fusion_sys = GetEntity().GetMachine().Get<FusionSystem>();
+	Ref<FusionSystem> fusion_sys = GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> RemoveContext(*this);
 }
@@ -75,8 +75,8 @@ void FusionContextComponent::Update(double dt) {
 
 void FusionContextComponent::FindComponents() {
 	comps.Clear();
-	Entity& e = GetEntity();
-	for (ComponentRef& comp : e.GetComponents().GetValues()) {
+	EntityRef e = GetEntity();
+	for (ComponentRef& comp : e->GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
 			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);
@@ -91,9 +91,9 @@ void FusionContextComponent::FindComponents() {
 
 void FusionContextComponent::DumpEntityComponents() {
 	LOG("Entity: FusionComponents:");
-	Entity& e = GetEntity();
+	EntityRef e = GetEntity();
 	int i = 0;
-	for (ComponentRef& comp : e.GetComponents().GetValues()) {
+	for (ComponentRef& comp : e->GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
 			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);
@@ -126,7 +126,7 @@ void FusionContextComponent::Clear() {
 	}
 	common_source.Clear();
 	comps.Clear();
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	Ogl_ClearPipeline();
 #endif
 	last_error.Clear();
@@ -164,7 +164,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 	int i = 0;
 	for(FusionComponentRef& comp : comps) {
 		if (IsModeStage(*comp, m)) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 			Ogl_ProcessStage(*comp, gl_stages[i]);
 #endif
 		}
@@ -459,7 +459,6 @@ bool FusionContextComponent::Load(Object json) {
 			if (FusionComponent::IsTypeTemporary(type)) {
 				
 				// Create new comp
-				Entity& e = GetEntity();
 				RefT_Entity<FusionComponent> comp;
 				switch (type) {
 					case FusionComponent::FUSION_DATA_SINK:			comp = AddEntityComponent<FusionDataSink>(); break;
@@ -607,7 +606,7 @@ void FusionContextComponent::RefreshStageQueue() {
 void FusionContextComponent::RefreshPipeline() {
 	DLOG("FusionContextComponent::RefreshPipeline begin");
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	Ogl_CreatePipeline();
 #endif
 	
@@ -642,7 +641,7 @@ void FusionContextComponent::UpdateSoundBuffers() {
 }
 
 bool FusionContextComponent::CheckInputTextures() {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	for(auto& comp : comps)
 		if (!comp->Ogl_CheckInputTextures())
 			return false;
@@ -658,7 +657,6 @@ void FusionContextComponent::Close() {
 
 bool FusionContextComponent::CreateComponents(FusionComponentInputVector& v) {
 	const char* fn_name = "CreateComponents";
-	Entity& e = GetEntity();
 	
 	for(FusionComponentInput& in : v.in) {
 		switch (in.type) {
@@ -697,7 +695,6 @@ bool FusionContextComponent::CreateComponents(FusionComponentInputVector& v) {
 
 bool FusionContextComponent::ConnectComponents() {
 	const char* fn_name = "ConnectComponents";
-	Entity& e = GetEntity();
 	bool succ = true;
 	
 	DumpEntityComponents();

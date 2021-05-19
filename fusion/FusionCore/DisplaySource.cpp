@@ -50,6 +50,7 @@ bool FusionDisplaySource::LoadResources() {
 	return true;
 }
 
+#if 0
 void FusionDisplaySource::EmitDisplay(double dt) {
 	for(Ref<DisplaySink> c : DisplaySource::GetConnections())
 		c->RecvDisplay(*this, dt);
@@ -68,6 +69,7 @@ bool FusionDisplaySource::Render(const DisplaySinkConfig& config, SystemDraw& dr
 	}
 	return true; // "nothing to do" is also success. Only busy video source fails
 }
+#endif
 
 bool FusionDisplaySource::Accept(ExchangeSinkProviderRef sink, CookieRef& src_c, CookieRef& sink_c) {
 	return true;
@@ -80,6 +82,19 @@ void FusionDisplaySource::SetVideoSize(Size sz) {
 		UpdateTexBuffers();
 	}
 }
+
+DisplayStream& FusionDisplaySource::GetDisplaySource() {
+	TODO
+}
+
+void FusionDisplaySource::BeginDisplaySource() {
+	TODO
+}
+
+void FusionDisplaySource::EndDisplaySource() {
+	TODO
+}
+
 
 
 

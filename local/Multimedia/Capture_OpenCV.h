@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class OpenCVCaptureDevice : public MediaSourceStream {
+class OpenCVCaptureDevice : public MediaStream {
 	
 protected:
 	friend class V4L2_DeviceManager;
@@ -16,7 +16,10 @@ protected:
 	
 	//Vector<char> buffer;
 	DataPtrVideoBuffer vbuffer;
-	VolatileAudioBuffer abuffer;
+	AudioVolatileBuffer abuffer;
+	SimpleAudioStream astream;
+	SimpleVideoStream vstream;
+	AVMediaProxy avproxy;
 	Image sw_frame;
 	uint32 open_pix_fmt = 0;
 	Size open_frame_sz;
@@ -39,19 +42,37 @@ public:
 	
 	void						Visit(RuntimeVisitor& vis) {}
 	
+	
+	Media&						Get() override {return avproxy;}
+	void						FillBuffer() override {}
+	void						DropBuffer() override {}
+	int							GetActiveFormatIdx() const override;
+	int							GetFormatCount() const override;
+	MediaFormat					GetFormat(int i) const override;
+	bool						FindClosestFormat(const MediaFormat&, int& idx) override;
+	//void						FillAudioBuffer() override {}
+	//void						FillVideoBuffer() override;
+	bool						IsOpen() const override;
+	//Audio&						GetAudio() override {return abuffer;}
+	//Video&						GetVideo() override {return vbuffer;}
+	AudioStream&				GetAudioStream() override {return astream;}
+	VideoStream&				GetVideoStream() override {return vstream;}
+	bool						Open(int fmt_idx) override;
+	void						Close() override;
+	
+	String						GetPath() const {return path;}
+	double						GetSeconds() const {return cur_time.Seconds();}
+	
+	
+	/*
 	// RealtimeStream
-	double						GetSeconds() const override {return cur_time.Seconds();}
 	
 	// AudioStream
-	Audio&						GetAudio() override {return abuffer;}
-	void						FillAudioBuffer() override {}
-	void						DropAudioBuffer() override {}
+	void						DropBuffer(AudCtx) override {}
 	
 	// VideoStream
-	void						FillVideoBuffer() override;
 	void						DropVideoFrames(int frames) override;
 	int							GetVideoBufferSize() const override {return 1;}
-	Video&						GetVideo() override {return vbuffer;}
 	int							GetActiveVideoFormatIdx() const override;
 	int							GetFormatCount() const override;
 	const VideoSourceFormat&	GetFormat(int i) const override;
@@ -60,10 +81,8 @@ public:
 	// MediaStream
 	bool						Open0(String path) override;
 	bool						OpenDevice0(int fmt, int res) override;
-	bool						IsDeviceOpen() const override;
-	void						Close() override;
 	String						GetPath() const override {return path;}
-	
+	*/
 	
 	
 };

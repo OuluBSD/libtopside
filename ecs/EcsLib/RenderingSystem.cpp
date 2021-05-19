@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 RenderingSystem::RenderingSystem(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
 	invalid = 0;
-	vscreen_sz = Size(0,0);
+	vscreen_sz = Size(800,600);
 }
 
 bool RenderingSystem::Initialize() {
@@ -19,8 +19,50 @@ void RenderingSystem::Start() {
 }
 
 void RenderingSystem::Update(double dt) {
-	for(DisplaySourceRef& scr : screens) {
-		scr->EmitDisplay(dt);
+
+	for (DisplaySourceRef src : srcs) {
+		DisplayStream& stream = src->GetDisplaySource();
+		int buf_sz = stream.GetDisplay().GetQueueSize();
+		bool buffer_full = buf_sz >= 2;
+		
+		src->Update(dt, buffer_full);
+		if (src->Cfg().render) {
+			#if DEBUG_DISPLAY_PIPE
+			DISPLAYLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
+			#endif
+			
+			src->BeginDisplaySource();
+		}
+	}
+	
+	for (DisplayExchangePointRef expt : expts) {
+		DisplaySourceRef src = expt->Source();
+		off32 begin_offset = expt->GetOffset();
+		
+		expt->SetOffset(begin_offset);
+		expt->Update(dt);
+		
+		off32 end_offset = expt->GetOffset();
+		src->SetOffset(begin_offset, end_offset);
+		
+		#if DEBUG_DISPLAY_PIPE
+		off32 diff = off32::GetDifference(begin_offset, end_offset);
+		if (diff) {
+			auto sink = expt->Sink();
+			DISPLAYLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
+		}
+		#endif
+	}
+	
+	for (DisplaySourceRef src :srcs) {
+		const auto& cfg = src->Cfg();
+		if (cfg.begin_offset != cfg.end_offset) {
+			#if DEBUG_DISPLAY_PIPE
+			DISPLAYLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
+			#endif
+			
+			src->EndDisplaySource();
+		}
 	}
 }
 
@@ -35,7 +77,7 @@ void RenderingSystem::Uninitialize() {
 }
 
 void RenderingSystem::Add(DisplaySourceRef src) {
-	screens.FindAdd(src);
+	srcs.FindAdd(src);
 	
 	Ref<RegistrySystem> reg = GetMachine().TryGet<RegistrySystem>();
 	if (reg)
@@ -43,7 +85,23 @@ void RenderingSystem::Add(DisplaySourceRef src) {
 }
 
 void RenderingSystem::Remove(DisplaySourceRef src) {
-	screens.RemoveKey(src);
+	srcs.RemoveKey(src);
+}
+
+void RenderingSystem::Add(DisplaySinkRef r) {
+	sinks.FindAdd(src);
+}
+
+void RenderingSystem::Add(DisplayExchangePointRef r) {
+	expts.FindAdd(src);
+}
+
+void RenderingSystem::Remove(DisplaySinkRef r) {
+	sinks.RemoveKey(src);
+}
+
+void RenderingSystem::Remove(DisplayExchangePointRef r) {
+	expts.RemoveKey(src);
 }
 
 
@@ -52,10 +110,7 @@ void RenderingSystem::Remove(DisplaySourceRef src) {
 
 
 
-
-#if 0
-
-#if defined flagGUI && !defined UPP_VERSION
+#if defined flagGUI
 
 DefaultRenderApp::DefaultRenderApp() {
 	
@@ -65,8 +120,28 @@ void DefaultRenderApp::Initialize() {
 	// Load shaders
 	simple_shader = Shader::NewDefault();
 	//simple_shader->Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
+	
+	AddToSystem<RenderingSystem>(DisplaySource::AsRefT());
 }
 
+void DefaultRenderApp::Uninitialize() {
+	RemoveFromSystem<RenderingSystem>(DisplaySource::AsRefT());
+	
+}
+
+DisplayStream& DefaultRenderApp::GetDisplaySource() {
+	TODO
+}
+
+void DefaultRenderApp::BeginDisplaySource() {
+	TODO
+}
+
+void DefaultRenderApp::EndDisplaySource() {
+	TODO
+}
+
+#if 0
 bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw) {
 	double delta_time = config.dt;
 	
@@ -188,8 +263,8 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 	
 	return !needs_fast_rerender;
 }
-
 #endif
+
 #endif
 
 NAMESPACE_TOPSIDE_END

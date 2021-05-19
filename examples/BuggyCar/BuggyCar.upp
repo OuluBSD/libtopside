@@ -7,5 +7,6 @@ file
 	BuggyCar.cpp;
 
 mainconfig
-	"" = "GUI OPENGL";
+	"" = "GUI",
+	"" = "GUI VR";
 

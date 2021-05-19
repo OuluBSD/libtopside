@@ -57,7 +57,7 @@ public:
 	
 	void Close() {camera.release();}
 	
-	#ifdef flagOPENGL
+	#if HAVE_OPENGL
 	bool PaintOpenGLTexture(int texture) {
 		TODO
 		/*if (type == OPENCV && data != NULL) {
@@ -100,12 +100,17 @@ public:
 
 
 OpenCVCaptureDevice::OpenCVCaptureDevice() {
+	avproxy.Set(abuffer, vbuffer);
+	astream.Set(abuffer);
+	vstream.Set(vbuffer);
 	ocv = new Data(this);
 }
 
 OpenCVCaptureDevice::~OpenCVCaptureDevice() {
 	Close();
 }
+
+#if 0
 
 bool OpenCVCaptureDevice::Open0(String path) {
 	return path.IsEmpty() || path == this->path;
@@ -137,7 +142,7 @@ void OpenCVCaptureDevice::Close() {
 		ocv->Close();
 }
 
-bool OpenCVCaptureDevice::IsDeviceOpen() const {
+bool OpenCVCaptureDevice::IsOpen() const {
 	if (ocv && ocv->IsDeviceOpen())
 		return true;
 	
@@ -171,6 +176,7 @@ bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_m
 	TODO
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END
 

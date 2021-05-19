@@ -40,7 +40,7 @@ public:
     }
     
     void SetupAutomatic();
-#ifdef flagOPENGL
+#if HAVE_OPENGL
     void SetupOpenGL();
 #endif
     

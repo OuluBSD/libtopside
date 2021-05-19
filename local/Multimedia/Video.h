@@ -40,11 +40,8 @@ struct DataPtrVideoBuffer : public Video {
 	
 	void Exchange(VideoEx& e) override {}
 	int GetQueueSize() const override {return fmt.GetFrameBytes();}
-	VideoFormat GetVideoFormat() const override {return fmt;}
+	VideoFormat GetFormat() const override {return fmt;}
 	bool IsQueueFull() const override {return false;}
-#ifdef flagOPENGL
-	bool PaintOpenGLTexture(int texture) override;
-#endif
 	
 };
 

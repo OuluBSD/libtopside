@@ -2,6 +2,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
+
 bool HolographicScene::Initialize() {
 	
 	
@@ -28,6 +30,15 @@ void HolographicScene::Uninitialize() {
 	
 	
 }
+
+const SpatialCoordinateSystem& HolographicScene::WorldCoordinateSystem() const {
+	TODO
+}
+
+PerceptionTimestamp HolographicScene::CurrentTimestamp() const {
+	TODO
+}
+
 
 
 NAMESPACE_TOPSIDE_END

@@ -11,7 +11,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class MediaStreamThread : Moveable<MediaStreamThread> {
-	MediaSourceStreamRef cap;
+	MediaStreamRef cap;
 	
 	RunningFlagSingle flag;
 	String last_error;
@@ -34,12 +34,12 @@ public:
 	
 	MediaStream& Cap() {ASSERT(cap); return *cap;}
 	bool IsCap() const {return cap;}
-	void SetCap(MediaSourceStreamRef cap) {this->cap = cap;}
+	void SetCap(MediaStreamRef cap) {this->cap = cap;}
 	bool IsRunning() const {return flag.IsRunning();}
 	
 	String GetLastError() const {return last_error;}
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	void PaintOpenGL(GLuint active_tex);
 #endif
 	

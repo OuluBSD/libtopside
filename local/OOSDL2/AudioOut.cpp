@@ -4,8 +4,6 @@ NAMESPACE_SDL2_BEGIN
 
 
 AudioOutput::AudioOutput(Context* ctx) : Component(ctx) {
-	sys_aud.Set(&buf);
-	
 	SDL_zero(audio_fmt);
 	SetDesiredAudioFmt(
 		44100,
@@ -100,7 +98,6 @@ bool AudioOutput::Open0() {
 	        LOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
 	    }
 	    
-	    int audio_frames = 2; //max(1, 1024 / audio_fmt.samples);
 	    
 	    
 	    fmt.var_size = GetSampleSize();
@@ -116,9 +113,8 @@ bool AudioOutput::Open0() {
 	    fmt.is_var_bigendian = true;
 	    #endif
 	    
-	    TODO
-		//buf.SetSize(aud_fmt, audio_frames);
-		//buf.Zero();
+	    int audio_frames = 2; //max(1, 1024 / audio_fmt.samples);
+		buf.SetSize(fmt, audio_frames);
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    

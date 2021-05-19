@@ -19,7 +19,7 @@ void VideoSystem::Update(double dt) {
 
 	for (VideoSourceRef src : srcs) {
 		VideoStream& stream = src->GetVideoSource();
-		bool buffer_full = stream.GetVideoBufferSize() >= 2;
+		bool buffer_full = stream.GetBufferSize() >= 2;
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render)

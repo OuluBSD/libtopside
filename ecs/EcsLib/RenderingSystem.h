@@ -6,7 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class RenderingSystem : public System<RenderingSystem> {
 	Ref<EntityStore> ents;
-	LinkedList<DisplaySourceRef> screens;
+	LinkedList<DisplaySourceRef> srcs;
+	LinkedList<DisplaySinkRef> sinks;
+	LinkedList<DisplayExchangePointRef> expts;
 	
 	bool invalid;
 	Size vscreen_sz;
@@ -14,13 +16,17 @@ class RenderingSystem : public System<RenderingSystem> {
 	
 	void Visit(RuntimeVisitor& vis) override {
 		vis & ents
-			&& screens;
+			&& srcs;
 	}
 public:
 	RenderingSystem(Machine& m);
 	
-	void Add(DisplaySourceRef src);
-	void Remove(DisplaySourceRef src);
+	void Add(DisplaySourceRef r);
+	void Add(DisplaySinkRef r);
+	void Add(DisplayExchangePointRef r);
+	void Remove(DisplaySourceRef r);
+	void Remove(DisplaySinkRef r);
+	void Remove(DisplayExchangePointRef r);
 	
 	void RunTest();
 	
@@ -62,9 +68,12 @@ public:
 	
 	DefaultRenderApp();
 	
-	void Initialize() override;
-	bool Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
-	void Visit(RuntimeVisitor& vis) override {TODO vis & ents;}
+	void					Initialize() override;
+	void					Uninitialize() override;
+	void					Visit(RuntimeVisitor& vis) override {TODO vis & ents;}
+	DisplayStream&			GetDisplaySource() override;
+	void					BeginDisplaySource() override;
+	void					EndDisplaySource() override;
 	
 };
 

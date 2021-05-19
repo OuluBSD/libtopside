@@ -21,7 +21,7 @@ void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
 		Audio& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		VolatileAudioBuffer* vol_aud = dynamic_cast<VolatileAudioBuffer*>(&sink);
+		AudioVolatileBuffer* vol_aud = dynamic_cast<AudioVolatileBuffer*>(&sink);
 		if (vol_aud) {
 			while (!vol_aud->IsQueueFull()) {
 				AudioPacket p = CreateAudioPacket();

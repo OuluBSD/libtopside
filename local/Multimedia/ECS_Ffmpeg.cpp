@@ -29,9 +29,9 @@ void FfmpegComponent::Uninitialize() {
 bool FfmpegComponent::LoadFileAny(String path) {
 	vi.Stop();
 	
-	if (file_in.Open(path)) {
-		if (file_in.OpenDevice(0, 0)) {
-			vi.SetCap(file_in.AsRef<MediaSourceStream>());
+	if (file_in.OpenFile(path)) {
+		if (file_in.Open(0)) {
+			vi.SetCap(file_in.AsRef<MediaStream>());
 
 			vi.Start(false);
 			
@@ -46,16 +46,16 @@ bool FfmpegComponent::LoadFileAny(String path) {
 }
 
 VideoStream& FfmpegComponent::GetVideoSource() {
-	return file_in;
+	return file_in.GetVideoStream();
 }
 
 void FfmpegComponent::BeginVideoSource() {
-	file_in.FillVideoBuffer();
+	file_in.GetVideoStream().FillBuffer();
 }
 
 void FfmpegComponent::EndVideoSource(bool any_sink_consumed) {
 	if (any_sink_consumed)
-		file_in.DropVideoFrames(1);
+		file_in.GetVideoStream().DropBuffer();
 }
 
 /*void FfmpegComponent::EmitVideoSource(double dt) {
@@ -71,11 +71,11 @@ void FfmpegComponent::EndVideoSource(bool any_sink_consumed) {
 }*/
 
 AudioStream& FfmpegComponent::GetAudioSource() {
-	return file_in;
+	return file_in.GetAudioStream();
 }
 
 void FfmpegComponent::BeginAudioSource() {
-	file_in.FillAudioBuffer();
+	file_in.GetAudioStream().FillBuffer();
 }
 
 /*void FfmpegComponent::BeginUpdate(AudioExchangePointRef expt) {
@@ -90,7 +90,7 @@ void FfmpegComponent::BeginAudioSource() {
 }*/
 
 void FfmpegComponent::EndAudioSource() {
-	file_in.DropAudioBuffer();
+	file_in.GetAudioStream().DropBuffer();
 }
 
 /*void FfmpegComponent::EmitAudioSource(double dt) {

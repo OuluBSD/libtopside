@@ -60,9 +60,7 @@ public:
 	
 public:
 	typedef OdeObject CLASSNAME;
-	OdeObject() {
-		model.LoadModel(FindLocalFile("models" DIR_SEPS "cube.obj"));
-	}
+	OdeObject();
 	virtual ~OdeObject() {if (geom) dGeomDestroy(geom); if (body) dBodyDestroy(body);}
 	
 	virtual void OnAttach() {body = dBodyCreate(GetWorldId());} // Create ID for physics body

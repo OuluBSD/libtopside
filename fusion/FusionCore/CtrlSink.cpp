@@ -22,7 +22,7 @@ void FusionControllerSink::Reset() {
 }
 
 void FusionControllerSink::PreProcess() {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	if (changed && data.GetCount() && color_buf[0] > 0) {
 		changed = false;
 		glBindTexture(GL_TEXTURE_2D, color_buf[0]);
@@ -41,7 +41,7 @@ void FusionControllerSink::UpdateTexBuffers() {
 	if (stream) {
 		ClearTex();
 		if (data_res.cx > 0 && data_res.cy > 0) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 			Ogl_CreateTex(
 				data_res, 1,
 				0, 0,
@@ -59,8 +59,8 @@ bool FusionControllerSink::LoadResources() {
 
 bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
 	const char* fn_name = "LoadAsInput";
-	Entity& e = GetEntity();
-	Machine& m = e.GetMachine();
+	EntityRef e = GetEntity();
+	Machine& m = e->GetMachine();
 	Ref<EventSystem> ev_sys = m.TryGet<EventSystem>();
 	if (ev_sys.IsEmpty())
 		return false;

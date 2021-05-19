@@ -22,10 +22,14 @@ void BuggyWheel::OnAttach() {
 }
 
 
+void BuggyCarInitializer() {
+	Machine& mach = GetActiveMachine();
+	//mach.Add<EntityStore>();
+	mach.Add<PhysicsSystem>();
+}
+
 void BuggyCarStartup() {
 	Machine& mach = GetActiveMachine();
-	mach.Add<PhysicsSystem>();
-	
 	EntityStoreRef ents = mach.Get<EntityStore>();
 	PoolRef pool = ents->GetRoot()->GetAddPool("models");
 	pool->Create<StaticGroundPlanePrefab>();
@@ -36,7 +40,8 @@ void BuggyCarStartup() {
 NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_(Topside::DefaultRenderApp)
+GUI_APP_(Topside::DefaultRenderApp)
+APP_INITIALIZE_(Topside::BuggyCarInitializer);
 APP_STARTUP_(Topside::BuggyCarStartup);
 
 NAMESPACE_UPP
@@ -47,5 +52,7 @@ INITBLOCK {
 		f.gfx = AppFlags::GFX_OPENGL;
 	else
 		f.gfx = AppFlags::GFX_SW;
+	
+	f.have_ode_physics = true;
 }
 END_UPP_NAMESPACE

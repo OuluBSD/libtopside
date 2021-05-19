@@ -13,7 +13,8 @@ SystemBase::~SystemBase() {
 }
 
 
-Callback Machine::WhenStarting;
+Callback Machine::WhenInitialize;
+Callback Machine::WhenPreUpdate;
 
 
 
@@ -32,7 +33,7 @@ Machine::~Machine() {
 bool Machine::Start() {
 	ASSERT_(!is_initialized && !is_started, "Shouldn't call Start if we already started");
 	
-	WhenStarting();
+	WhenInitialize();
 	
 	for (auto system : systems) {
 		if (!system->Initialize())
@@ -52,6 +53,9 @@ bool Machine::Start() {
 
 void Machine::Update(double dt) {
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
+	
+	if (!ticks)
+		WhenPreUpdate();
 	
 	if (dt <= 0.0)
 		return;

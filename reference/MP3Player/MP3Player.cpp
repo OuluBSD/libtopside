@@ -64,7 +64,7 @@ void MP3Player::Uninitialize() {
 	GetEntity().Destroy();
 }
 
-bool MP3PlayerStartup() {
+bool MP3PlayerInitializer() {
 	SetCoutLog();
 	
 	CommandLineArguments cmd;
@@ -112,7 +112,7 @@ void Main() {
 	
 	//BreakRefAdd(0x80AE43230);
 	
-	if (!MP3PlayerStartup())
+	if (!MP3PlayerInitializer())
 		Exit(1);
 	
 	{

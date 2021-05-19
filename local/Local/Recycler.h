@@ -93,16 +93,16 @@ public:
 
 
 template <class T>
-class RecylerRefBase {
+class RecyclerRefBase {
 	T* obj = NULL;
 	Vector<WeakBase*> weaks;
 	Atomic refs;
 	
 public:
-	using Pool = RecyclerPool<RecylerRefBase<T>>;
+	using Pool = RecyclerPool<RecyclerRefBase<T>>;
 	
-	RecylerRefBase() {refs = 1;}
-	virtual ~RecylerRefBase() {ASSERT(!obj);}
+	RecyclerRefBase() {refs = 1;}
+	virtual ~RecyclerRefBase() {ASSERT(!obj);}
 	void SetObj(T* o) {obj = o;}
 	void Clear() {T::Pool::StaticPool().Return(obj); obj = 0;}
 	void Inc() {refs++;}
@@ -119,7 +119,7 @@ public:
 };
 
 
-template <class T> using SharedRecycler = Shared<T, RecylerRefBase<T>>;
+template <class T> using SharedRecycler = Shared<T, RecyclerRefBase<T>>;
 
 
 

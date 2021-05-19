@@ -41,7 +41,7 @@ void FusionMediaSink::UpdateTexBuffers() {
 		else
 			res = fmt.vid.res;
 		if (res.cx > 0 && res.cy > 0) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 			Ogl_CreateTex(
 				res, 4,
 				0, 0,
@@ -63,8 +63,8 @@ void FusionMediaSink::Event(const CtrlEvent& e) {
 
 bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 	const char* fn_name = "LoadAsInput";
-	Entity& e = GetEntity();
-	Machine& m = e.GetMachine();
+	EntityRef e = GetEntity();
+	Machine& m = e->GetMachine();
 	String err;
 	String path = in.GetFilepath();
 	
@@ -139,7 +139,7 @@ void FusionMediaSink::RecvVideo(Video& video, double dt) {
 		UpdateTexBuffers();
 	}
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	GLuint tex = Ogl_GetTex();
 	if (tex > 0) {
 		if (fmt.IsValid()) {

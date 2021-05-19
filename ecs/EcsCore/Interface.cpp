@@ -34,6 +34,12 @@ String InterfaceBase::GetComponentBaseTypeString(ComponentBase* base) {
 }*/
 
 
+void DisplaySource::SetTitle(String s) {
+	for (Ref<DisplaySink> sink : GetConnections())
+		sink->SetTitle(s);
+}
+
+
 
 
 

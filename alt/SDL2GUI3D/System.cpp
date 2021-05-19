@@ -1,5 +1,6 @@
 #include "System.h"
 #include <FusionCore/FusionCore.h>
+#include <Physics/Physics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -30,14 +31,12 @@ void SDL2GUI3DSystem::Uninitialize() {
 
 
 bool SingleMachine::Open(bool gui) {
+	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef ents = mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
-    //mach.Add<ConnectorSystem>();
-    TODO
-    
     mach.Add<SDL2System>();
     mach.Add<SDL2GUI3DSystem>();
     mach.Add<EventSystem>();
@@ -48,16 +47,13 @@ bool SingleMachine::Open(bool gui) {
     if (gui)
 		mach.Add<WindowSystem>();
 	
-    /*mach.Add<HolographicScene>();
+    mach.Add<HolographicScene>();
     mach.Add<EasingSystem>();
-    mach.Add<AudioSystem>();
-    mach.Add<ControllerSystem>();
     mach.Add<MotionControllerSystem>();
     mach.Add<WorldLogicSystem>();
 	   
-    bool physics = false;
-    if (physics)
-		mach.Add<PhysicsSystem>();*/
+    if (flags.HaveOdePhysics())
+		mach.Add<OdeSystem>();
 	
     
     #ifdef flagOPENVR
@@ -72,7 +68,6 @@ bool SingleMachine::Open(bool gui) {
     PoolRef pool = ents->GetRoot()->GetAddPool("windows");
     EntityRef app = pool->Create<SDL2StandaloneWindow>();
     //app->Find<Connector>()->ConnectAll();
-    TODO
     
 	return true;
 }

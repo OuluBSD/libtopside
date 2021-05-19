@@ -45,7 +45,7 @@ struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroun
 		
 		OdeSystemRef w = e.GetMachine().Get<OdeSystem>();
 		OdeSystem& ow = dynamic_cast<OdeSystem&>(*w);
-		StaticGroundPlaneRef plane = components.Get<StaticGroundPlane>();
+		StaticGroundPlaneRef plane = components.Get<StaticGroundPlaneRef>();
 		ASSERT(plane);
 		ow.OdeNode::Attach(*plane);
 		

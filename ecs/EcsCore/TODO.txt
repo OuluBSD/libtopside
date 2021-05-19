@@ -3,3 +3,4 @@
 	- loops all entities & interfaces
 		- ConnectorSystem::Update 
 - audio sync smooth fade (to avoid loud snap)
+- use templates and macro for Audio / Video / Display classes

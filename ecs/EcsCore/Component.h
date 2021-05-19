@@ -14,7 +14,6 @@ class ComponentBase :
 {
 protected:
 	friend class Entity;
-	Entity* ent = NULL;
 	
 public:
 	virtual TypeId GetType() const = 0;
@@ -34,8 +33,7 @@ public:
 	ComponentBase();
 	virtual ~ComponentBase();
 	
-	Entity& GetEntity() {ASSERT(ent); return *ent;}
-	Entity* GetEntityPtr() const {return ent;}
+	EntityRef GetEntity();
 	
 	template <class T> RefT_Entity<T> As() {return ComponenBase_Static_As<T>(this);}
 	
@@ -127,7 +125,8 @@ public:
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
 		const TypeId type = typeid(ComponentT);
-		ASSERT_(component->GetType() == type, "ComponentRef type does not match T");
+		const TypeId actual_type = component->GetType();
+		ASSERT_(actual_type == type, "ComponentRef type does not match T: " + actual_type.CleanDemangledName() + " != " + type.CleanDemangledName());
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");

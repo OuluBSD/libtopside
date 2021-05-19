@@ -78,13 +78,13 @@ void FusionDataSink::UpdateTexBuffers() {
 }
 
 void FusionDataSink::RecvStatic(const StaticSinkData& data)  {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	Ogl_RecvStatic(data);
 #endif
 }
 
 
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 void FusionDataSink::Ogl_RecvStatic(const StaticSinkData& d) {
 	const char* fn_name = "RecvStatic";
 	
@@ -218,8 +218,8 @@ bool FusionDataSink::LoadResources() {
 
 bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	const char* fn_name = "LoadAsInput";
-	Entity& e = GetEntity();
-	Machine& m = e.GetMachine();
+	EntityRef e = GetEntity();
+	Machine& m = e->GetMachine();
 	String err;
 	
 	cfg.SetHeader(in);
@@ -246,7 +246,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	if (sdl2_sys) {
 		if (type == FusionComponentInput::TEXTURE ||
 			type == FusionComponentInput::CUBEMAP) {
-			SDL2ImageComponent* comp = e.Add<SDL2ImageComponent>();
+			SDL2ImageComponent* comp = e->Add<SDL2ImageComponent>();
 			if (comp->LinkManually(*this)) {
 				conn->SetUpdateInterfaces(true);
 				String path = in.GetFilepath();
@@ -264,7 +264,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 			comp->Destroy();
 		}
 		else if (type == FusionComponentInput::VOLUME) {
-			StaticVolumeComponent* comp = e.Add<StaticVolumeComponent>();
+			StaticVolumeComponent* comp = e->Add<StaticVolumeComponent>();
 			if (comp->LinkManually(*this)) {
 				conn->SetUpdateInterfaces(true);
 				if (comp->LoadFileAny(in.GetFilepath())) {

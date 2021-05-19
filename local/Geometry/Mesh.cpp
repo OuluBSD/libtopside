@@ -14,7 +14,7 @@ void Mesh::Clear() {
 	is_lines = false;
 	
 	if (VBO) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 		glDeleteBuffers(1, &VBO);
 		glDeleteBuffers(1, &EBO);
 		glDeleteVertexArrays(1, &VAO);
@@ -32,7 +32,7 @@ void Mesh::Set(const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
 void Mesh::SetupAutomatic() {
 	AppFlags& f = GetAppFlags();
 	if (f.IsOpenGL()) {
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 		SetupOpenGL();
 #else
 		LOG("error: opengl is not supported in this executable");
@@ -40,8 +40,9 @@ void Mesh::SetupAutomatic() {
 	}
 }
 
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 void Mesh::SetupOpenGL() {
+	ASSERT(VAO == 0);
 	
 	// Create objects
 	glGenVertexArrays(1, &VAO);

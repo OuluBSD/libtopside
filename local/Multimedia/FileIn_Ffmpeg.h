@@ -35,11 +35,8 @@ public:
 	
 	void		Exchange(AudioEx& e) override;
 	int			GetQueueSize() const override;
-	AudioFormat	GetAudioFormat() const override;
+	AudioFormat	GetFormat() const override;
 	bool		IsQueueFull() const override;
-#ifdef flagOPENGL
-	bool		PaintOpenGLTexture(int texture) override;
-#endif
 	
 };
 
@@ -91,10 +88,7 @@ public:
 	void		Exchange(VideoEx& e) override;
 	int			GetQueueSize() const override;
 	bool		IsQueueFull() const override;
-#ifdef flagOPENGL
-	bool		PaintOpenGLTexture(int texture) override;
-#endif
-	VideoFormat	GetVideoFormat() const override;
+	VideoFormat	GetFormat() const override;
 	
 	void		Process(double time_pos, AVFrame* frame, bool vflip=true);
 	void		DropFrames(int i);
@@ -142,9 +136,10 @@ public:
 
 
 
-class FfmpegFileInput : public MediaSourceStream {
+class FfmpegFileInput : public MediaStream {
 	FfmpegAudioFrameQueue aframe;
 	FfmpegVideoFrameQueue vframe;
+	AVMediaProxy avproxy;
 	
 	bool has_audio;
 	bool has_video;
@@ -170,34 +165,48 @@ class FfmpegFileInput : public MediaSourceStream {
 	void FillBuffersNull();
 	
 public:
+	FfmpegFileInput();
 	
 	bool	IsEof() const;
 	void	Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
 	void	Clear();
+	double	GetSeconds() const;
 	
 	
+	Media&						Get() override {return avproxy;}
+	void						FillBuffer() override {}
+	void						DropBuffer() override {}
+	int							GetActiveFormatIdx() const override;
+	int							GetFormatCount() const override;
+	MediaFormat					GetFormat(int i) const override;
+	bool						FindClosestFormat(const MediaFormat&, int& idx) override;;
+	//void	FillVideoBuffer() override;
+	//void	FillAudioBuffer() override;
+	bool	IsOpen() const override;
+	bool	Open(int fmt_idx) override;
+	void	Close() override;
+	//Audio&	GetAudio() override;
+	//Video&	GetVideo() override;
+	AudioStream&	GetAudioStream() override;
+	VideoStream&	GetVideoStream() override;
+	bool	OpenFile(String path);
+	
+	/*
 	// Realtime
-	double	GetSeconds() const override;
 	String	GetLastError() const override;
 	
 	// Audio
-	Audio&	GetAudio() override;
-	void	FillAudioBuffer() override;
 	void	DropAudioBuffer() override;
 	
 	// Video
-	void	FillVideoBuffer() override;
 	void	DropVideoFrames(int frames) override;
-	Video&	GetVideo() override;
 	int		GetActiveVideoFormatIdx() const override;
 	int		GetVideoBufferSize() const override {return vframe.GetQueueSize();}
 	
 	// Media
 	bool	Open0(String path) override;
 	bool	OpenDevice0(int fmt, int res) override;
-	bool	IsDeviceOpen() const override;
-	void	Close() override;
-	String	GetPath() const override;
+	String	GetPath() const override;*/
 	
 	
 	

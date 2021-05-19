@@ -85,6 +85,7 @@ using SoundGeneratorComponentRef		= Ref<SoundGeneratorComponent,			RefParent1<En
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
 using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
+using DisplayExchangePointRef			= Ref<DisplayExchangePoint,				RefParent1<MetaExchangePoint>>;
 
 using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;

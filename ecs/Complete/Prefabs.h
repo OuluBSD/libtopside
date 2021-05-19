@@ -18,18 +18,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T> void SimpleEntityApp() {
-	Machine mach;
+	Machine& mach = GetActiveMachine();
 	
-	TODO
-	#if 0
 	try {
 		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
-			throw Exc("EntityStore wasn't added to the ECS machine");
+			throw Exc("EntityStore was not added to the ECS machine");
 		
-		EntityRef app = ents->GetRoot()->CreateEmpty();
+		PoolRef pool = ents->GetRoot()->GetAddPool("app");
+		EntityRef app = pool->CreateEmpty();
 		app->Add<T>();
-		app->Add<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
+		//pool->Add<ConnectAllInterfaces<T>>();
 		
 	    TimeStop t;
 	    while (mach.IsRunning()) {
@@ -42,11 +41,10 @@ template <class T> void SimpleEntityApp() {
 	catch (Exc e) {
 		LOG("error: " << e);
 	}
-	#endif
 }
 
 template <class T> void SimpleEngineMain(String title, bool start_machine=false) {
-	Machine mach;
+	Machine& mach = GetActiveMachine();
 	
 	TODO
 	#if 0
@@ -91,7 +89,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	try {
 		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
-			throw Exc("EntityStore wasn't added to the ECS machine");
+			throw Exc("EntityStore was not added to the ECS machine");
 		
 		PoolRef root = ents->GetRoot();
 		
@@ -129,9 +127,14 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 
 #define CONSOLE_APP_(x) CONSOLE_APP_MAIN {Topside::SimpleEntityApp<x>();}
 #define RENDER_APP_(x) RENDER_APP_MAIN {Topside::SimpleEntityApp<x>();}
+#define GUI_APP_(x) GUI_APP_MAIN {Topside::SimpleEntityApp<x>();}
+#define APP_INITIALIZE_(x) \
+	NAMESPACE_UPP \
+	INITBLOCK {Topside::Machine::WhenInitialize << callback(x);} \
+	END_UPP_NAMESPACE
 #define APP_STARTUP_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Topside::Machine::WhenStarting << callback(x);} \
+	INITBLOCK {Topside::Machine::WhenPreUpdate << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \

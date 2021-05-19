@@ -85,14 +85,18 @@ public:
 	}
 	template<typename T> RefT_Entity<T> Add() {
 		OnChange();
-		return Add0<T>();
+		auto comp = Add0<T>();
+		InitializeComponent(*comp);
+		return comp;
 	}
 	template<typename T> RefT_Entity<T> GetAdd() {
 		T* o = Find<T>();
 		if (o)
 			return o;
 		OnChange();
-		return Add0<T>();
+		auto comp = Add0<T>();
+		InitializeComponent(*comp);
+		return comp;
 	}
 	
 	
@@ -143,7 +147,9 @@ public:
 	RTuple<RefT_Entity<ComponentTs>...> CreateComponents() {
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
-		return RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>() }... };
+		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>() }... };
+		tuple.ForEach([this](Ref<ComponentBase> comp) {InitializeComponent(*comp);});
+		return tuple;
 	}
 	
 	//void CloneComponents(const Entity& e);
@@ -169,8 +175,6 @@ private:
 		ASSERT(comp);
 		comp->SetParent(this);
 		comps.Add(comp);
-		InitializeComponent(*comp);
-		ASSERT(comp->GetEntityPtr());
 		return RefT_Entity<T>(this, comp);
 	}
 	

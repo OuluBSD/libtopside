@@ -80,11 +80,14 @@ class DummySoundGeneratorAudio :
 	
 public:
 	DummySoundGeneratorAudio();
-	void Exchange(AudioEx& e);
-	int GetQueueSize() const;
-	AudioFormat GetAudioFormat() const;
-	bool IsQueueFull() const;
+	
+	void Exchange(AudioEx& e) override;
+	AudioFormat GetFormat() const override;
+	int GetQueueSize() const override;
+	bool IsQueueFull() const override;
+	
 	double GetSeconds() const {return time;}
+	
 };
 
 class DummySoundGeneratorStream :
@@ -94,10 +97,19 @@ class DummySoundGeneratorStream :
 	
 public:
 	DummySoundGeneratorStream() {}
-	double GetSeconds() const override {return gen.GetSeconds();}
-	Audio& GetAudio() override {return gen;}
-	void FillAudioBuffer() override {}
-	void DropAudioBuffer() override {}
+	
+	double				GetSeconds() const {return gen.GetSeconds();}
+	
+	bool				IsOpen() const override;
+	bool				Open(int fmt_idx) override;
+	void				Close() override;
+	Audio&				Get() override {return gen;}
+	void				FillBuffer() override {}
+	void				DropBuffer() override {}
+	int					GetActiveFormatIdx() const override {return 0;}
+	int					GetFormatCount() const override {return 1;}
+	AudioFormat			GetFormat(int i) const override {return gen.GetFormat();}
+	bool				FindClosestFormat(const AudioFormat& fmt, int& idx) override {idx = 0; return true;}
 	
 };
 

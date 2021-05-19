@@ -143,6 +143,9 @@ NAMESPACE_UPP_BEGIN
 #define PKG(x) <x/x.h>
 
 
+#define HAVE_OPENGL 1
+
+
 typedef unsigned char	uint8;
 typedef char			int8;
 typedef unsigned short	uint16;

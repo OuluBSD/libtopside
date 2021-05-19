@@ -8,8 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class T> inline Ref<T> ComponenBase_Static_As(ConnectorBase*) {return 0;}
 
 struct ConnectorBase : Destroyable, Enableable, RefScopeEnabler<ConnectorBase,Pool> {
-	Pool* pool = NULL;
-
+	
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
 	virtual void Update(double dt) = 0;
@@ -25,8 +24,7 @@ public:
 	ConnectorBase();
 	virtual ~ConnectorBase();
 	
-	Pool& GetPool() {ASSERT(pool); return *pool;}
-	Pool* GetPoolPtr() const {return pool;}
+	PoolRef GetPool();
 	
 	
 };

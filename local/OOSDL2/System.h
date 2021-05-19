@@ -60,7 +60,7 @@ class SDL2AudioOutputComponent :
 	public AudioSink
 {
 	One<OOSDL2::AudioOutput> obj;
-	SystemAudio empty_aud;
+	AudioProxy empty_aud;
     RealtimeSourceConfig aconfig;
 	
 	
@@ -101,7 +101,7 @@ class SDL2ScreenComponent :
 	public DisplaySink
 {
 	One<OOSDL2::Screen> obj;
-    DisplaySinkConfig config;
+    DisplayFormat fmt;
 	OOSDL2::Events* ev = 0;
 	double frame_age = 0;
 	
@@ -113,17 +113,17 @@ public:
 	
 	SDL2ScreenComponent() = default;
 	
-	void Initialize() override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
-	void RecvDisplay(DisplaySource& src, double dt) override;
-	void SetTitle(String s) override;
-	uint32 GetTickCount() override {return ev ? ev->GetTickCount() : 0;}
+	void			Initialize() override;
+	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {}
+	DisplayFormat	GetDisplayFormat() override;
+	Display&		GetSink() override;
+	void			SetTitle(String s) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
 	
-	void SetFPS(int fps) {config.fps = fps; config.fps_dt = 1.0 / fps;}
+	void SetFPS(int fps) {fmt.fps = fps;}
 	
 };
 

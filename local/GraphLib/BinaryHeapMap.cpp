@@ -91,7 +91,9 @@ Node* BinaryMinHeap::ExtractMin() {
 	if (tree.GetCount() == 1)
 		tree.Clear();
 	else {
-		tree[0] = tree.Pop();
+		int last = tree.GetCount()-1;
+		tree[0] = tree[last];
+		tree.Remove(last);
 		BubbleDown(0);
 	}
 

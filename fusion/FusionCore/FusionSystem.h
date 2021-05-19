@@ -23,21 +23,23 @@ int GetOglChCode(int channels, bool is_float=false);
 ArrayMap<String,String>& CommonHashToName();
 
 struct BasicFusionStream : public VideoStream {
-	VideoSourceFormat fmt;
+	VideoFormat fmt;
 	
-	BasicFusionStream() {fmt.Add();}
+	BasicFusionStream() {}
 	
-	double						GetSeconds() const override {return 0;}
-	
-	void						FillVideoBuffer() override {}
-	void						DropVideoFrames(int frames) override {}
-	int							GetVideoBufferSize() const override {return 1;}
-	Video&						GetVideo() override {TODO}
-	int							GetActiveVideoFormatIdx() const override {return 0;}
+	void						FillBuffer() override {}
+	void						DropBuffer() override {}
+	//int							GetVideoBufferSize() const override {return 1;}
+	Video&						Get() override {TODO}
+	int							GetActiveFormatIdx() const override {return 0;}
 	int							GetFormatCount() const override {return 1;}
-	const VideoSourceFormat&	GetFormat(int i) const override {ASSERT(!i); return fmt;}
-	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override {return 0;}
-	void						Clear() {fmt[0].SetFormat(MakeVideoFormat(Size(0,0), 0, 0, 0, 0));}
+	VideoFormat					GetFormat(int i) const override {ASSERT(!i); return fmt;}
+	bool						FindClosestFormat(const VideoFormat&, int& idx) override {return 0;}
+	void						Clear() {fmt = MakeVideoFormat(Size(0,0), 0, 0, 0, 0);}
+	
+	bool						IsOpen() const override;
+	bool						Open(int fmt_idx) override;
+	void						Close() override;
 	
 	//int							GetDepth() const {return fmt[0].GetFormat().depth;}
 	
@@ -122,7 +124,7 @@ struct FusionStream : public RealtimeStream {
 	
 	
 	// Realtime
-	double GetSeconds() const override {return vtotal_seconds;}
+	double GetSeconds() const {return vtotal_seconds;}
 	
 	
 };
@@ -278,7 +280,7 @@ protected:
 	};
 	
 	Array<FusionComponentInput>	in;
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	GLint						prog[PROG_COUNT] = {-1,-1,-1,-1,-1};
 	GLuint						color_buf[2] = {0,0};
 	GLuint						depth_buf[2] = {0,0};
@@ -337,7 +339,7 @@ protected:
 	bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
 	void				OnError(String fn, String msg);
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	void				Ogl_SetVars(GLint prog, const FusionStream& stream);
 	void				Ogl_SetVar(int var, GLint prog, const FusionStream& stream);
 	void				Ogl_CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat);
@@ -431,7 +433,7 @@ class FusionDataSink :
 	void			RecvStatic(const StaticSinkData& data) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	void Ogl_RecvStatic(const StaticSinkData& data);
 #endif
 	
@@ -584,13 +586,14 @@ class FusionDisplaySource :
 	void			UpdateTexBuffers() override;
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
-	void			EmitDisplay(double dt) override;
-	bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	bool			Accept(ExchangeSinkProviderRef sink, CookieRef& src_c, CookieRef& sink_c) override;
 	ComponentBase&	GetECS() override {return *this;}
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);
 	void			Visit(RuntimeVisitor& vis) override {}
+	DisplayStream&	GetDisplaySource() override;
+	void			BeginDisplaySource() override;
+	void			EndDisplaySource() override;
 	
 	
 public:
@@ -796,19 +799,19 @@ protected:
 	bool					CreateComponents(FusionComponentInputVector& v);
 	bool					ConnectComponents();
 	
-#ifdef flagOPENGL
+#if HAVE_OPENGL
 	void				Ogl_ProcessStage(FusionComponent& s, GLuint gl_stage);
 	void				Ogl_ClearPipeline();
 	void				Ogl_CreatePipeline();
 #endif
 	
 	template <class T> RefT_Entity<T> AddEntityComponent() {
-		RefT_Entity<T> o = GetEntity().Add<T>();
+		RefT_Entity<T> o = GetEntity()->Add<T>();
 		o->ctx = this;
 		return o;
 	}
 	template <class T> bool AddEntityFusionComponent(FusionComponentInput& in) {
-		RefT_Entity<T> o = GetEntity().Add<T>();
+		RefT_Entity<T> o = GetEntity()->Add<T>();
 		if (!o)
 			return false;
 		o->ctx = this;

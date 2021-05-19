@@ -27,6 +27,22 @@
 	#define AUDIOLOG(x)
 #endif
 
+#ifdef flagDEBUG_VIDEO
+	#define DEBUG_VIDEO_PIPE 1
+	#define VIDEOLOG(x) LOG("VIDEO DEBUG: " << x)
+#else
+	#define DEBUG_VIDEO_PIPE 0
+	#define VIDEOLOG(x)
+#endif
+
+#ifdef flagDEBUG_DISPLAY
+	#define DEBUG_DISPLAY_PIPE 1
+	#define DISPLAYLOG(x) LOG("DISPLAY DEBUG: " << x)
+#else
+	#define DEBUG_DISPLAY_PIPE 0
+	#define DISPLAYLOG(x)
+#endif
+
 
 NAMESPACE_TOPSIDE_BEGIN
 using namespace Upp;
@@ -42,6 +58,8 @@ NAMESPACE_TOPSIDE_END
 #include "Visitor.h"
 #include "Ref.h"
 #include "Exchange.h"
+#include "Realtime.h"
+#include "Templates.h"
 #include "Interface.h"
 #include "Index.h"
 #include <SharedCore/Container.h>
@@ -67,10 +85,9 @@ NAMESPACE_TOPSIDE_END
 #include "UnitTest.h"
 #include "Image.h"
 #include "Geom.h"
-#include "Realtime.h"
 #include "Audio.h"
-#include "SystemAudio.h"
 #include "Video.h"
+#include "Display.h"
 #include "Media.h"
 #include "Html.h"
 #include "Url.h"

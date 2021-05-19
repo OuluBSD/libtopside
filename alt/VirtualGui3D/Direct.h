@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class DirectWindow :
-	public Component<CoreWindow>
+	public Component<DirectWindow>
 {
     DisplaySinkRef scr;
 	//static uint32 prev_ticks;
@@ -14,6 +14,7 @@ class DirectWindow :
 	
 public:
 	VIS_COMP_0_0
+	COPY_PANIC(DirectWindow)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	//IFACE_CB(DisplaySink);

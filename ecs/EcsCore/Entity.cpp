@@ -27,7 +27,6 @@ void Entity::InitializeComponents() {
 }
 
 void Entity::InitializeComponent(ComponentBase& comp) {
-	comp.ent = this;
 	comp.Initialize();
 }
 

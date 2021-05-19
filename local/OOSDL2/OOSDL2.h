@@ -84,9 +84,8 @@ class AudioOutput : public Component {
 	SDL_AudioSpec audio_fmt, audio_desired;
 	SDL_AudioDeviceID audio_dev = 0;
 	AudioPacketConsumer consumer;
-	VolatileAudioBuffer buf;
+	AudioVolatileBuffer buf;
 	AudioFormat fmt;
-	SystemAudio sys_aud;
 	dword frames = 0;
 	
 	bool Open0() override;
@@ -106,7 +105,6 @@ public:
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
 	Audio&			GetAudio() {return buf;}
-	SystemAudio&	GetSystemAudio() {return sys_aud;}
 	
 };
 

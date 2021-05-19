@@ -1,8 +1,8 @@
 #ifndef _OpenLib_Pbr_h_
 #define _OpenLib_Pbr_h_
 
-NAMESPACE_TOPSIDE_BEGIN
-namespace Pbr {
+NAMESPACE_PBR_BEGIN
+
 
 using NodeIndex_t = uint16; // This type must align with the type used in the Pbr shaders.
 
@@ -26,11 +26,13 @@ struct PrimitiveBuilder
     Vector<Pbr::Vertex>		vertices;
     Vector<uint32>			indices;
 
+
+    PrimitiveBuilder() {}
+    PrimitiveBuilder(PrimitiveBuilder&& b) : vertices(std::move(b.vertices)), indices(std::move(b.indices)) {}
+    
     PrimitiveBuilder& AddSphere(float diameter, uint32 tessellation, Pbr::NodeIndex_t trans_idx = Pbr::RootNodeIndex);
     PrimitiveBuilder& AddCube(float side_length, Pbr::NodeIndex_t trans_idx = Pbr::RootNodeIndex);
     
-    PrimitiveBuilder() {}
-    PrimitiveBuilder(PrimitiveBuilder&& b) : vertices(std::move(b.vertices)), indices(std::move(b.indices)) {}
     
 };
 
@@ -72,10 +74,13 @@ struct Primitive {
 struct Model {
 	
 	
+	Model();
+	
     void Clone(const Pbr::Resources& pbr_res, Model& dst) const;
 	
-	Optional<NodeIndex_t> FindFirstNode(char const* name, Optional<NodeIndex_t> const& parentNodeIndex = {}) const;
+	Optional<NodeIndex_t> FindFirstNode(char const* name, const Optional<NodeIndex_t>& parent_node_idx = {}) const;
 	mat4 GetNodeWorldTransform(NodeIndex_t nodeIndex) const;
+    
     NodeIndex_t GetNodeCount() const;// { return (NodeIndex_t)m_nodes.size(); }
     Node& GetNode(NodeIndex_t nodeIndex);// { return m_nodes[nodeIndex]; }
     const Node& GetNode(NodeIndex_t nodeIndex) const;// { return m_nodes[nodeIndex]; }
@@ -85,7 +90,7 @@ struct Model {
     
 };
 
-}
-NAMESPACE_TOPSIDE_END
+
+NAMESPACE_PBR_END
 
 #endif

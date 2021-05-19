@@ -33,7 +33,7 @@ void ShaderViewer::Uninitialize() {
 	fusion.Clear();
 }
 
-void ShaderViewerStartup() {
+void ShaderViewerInitializer() {
 	SetCoutLog();
 	
 	//StructuralTests();
@@ -63,6 +63,6 @@ void ShaderViewerStartup() {
 NAMESPACE_TOPSIDE_END
 
 RENDER_APP_(Topside::ShaderViewer)
-APP_STARTUP_(Topside::ShaderViewerStartup);
+APP_INITIALIZE_(Topside::ShaderViewerStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

@@ -32,11 +32,11 @@ bool ModelComponent::AddTextureFile(int mesh_i, TexType type, String path) {
 }
 
 void ModelComponent::GetModels(VectorRendModel& models) {
-	Entity& e = GetEntity();
+	EntityRef e = GetEntity();
 	RendModel& m = models.Add();
 	m.a = GetModel();
-	m.b.a = e.Find<Transform>();
-	m.b.b = e.Find<Renderable>();
+	m.b.a = e->Find<Transform>();
+	m.b.b = e->Find<Renderable>();
 }
 
 #if 0

@@ -12,7 +12,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 MediaStream* V4L2_Device::FindOpenDevice() {
 	for (OpenCVCaptureDevice& m : caps)
-		if (m.IsDeviceOpen())
+		if (m.IsOpen())
 			return &m;
 	
 	/*for (FfmpegFileInput& m : inputs)
@@ -44,6 +44,8 @@ V4L2_DeviceManager::V4L2_DeviceManager() {
 void V4L2_DeviceManager::Refresh() {
 	devs.Clear();
 	
+	TODO
+	#if 0
 	for (int i = 0; i < 10; i++) {
 		String path = "/dev/video" + IntStr(i);
 		int fd = v4l2_open(path, O_RDWR);
@@ -71,8 +73,6 @@ void V4L2_DeviceManager::Refresh() {
 				VideoSourceFormat& capfmt = cap->fmts.Add();
 				capfmt.SetDescription((const char*)fmtdesc.description);
 				
-				TODO
-				#if 0
 				capfmt.pix_fmt = fmtdesc.pixelformat;
 				
 				struct v4l2_frmsizeenum frmsize;
@@ -114,15 +114,17 @@ void V4L2_DeviceManager::Refresh() {
 					}
 					frmsize.index++;
 				}
-				#endif
 				
 				fmtdesc.index++;
 			}
 			v4l2_close(fd);
 		}
 	}
+	#endif
 }
 
 NAMESPACE_TOPSIDE_END
 
 #endif
+
+

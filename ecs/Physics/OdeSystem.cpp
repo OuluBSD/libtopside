@@ -4,34 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void OdeObject::Paint(Shader& s) {
-	
-	
-	if (is_override_phys_geom) {
-		s.SetMat4("model", override_geom * model_geom);
-	}
-	else {
-		dVector3 pos;
-		dGeomCopyPosition (geom, pos);
-		vec3 v3 = MakeVec3(pos);
-		mat4 trans = translate(identity<mat4>(), v3);
-		
-		dQuaternion result;
-		dGeomGetQuaternion (geom, result);
-		quat q;
-		q[3] = result[0];
-		q[0] = result[1];
-		q[1] = result[2];
-		q[2] = result[3];
-		mat4 rot = ToMat4(q);
-		
-		s.SetMat4("model", trans * rot * model_geom);
-	}
-	
-	
-	s.Paint(*model.GetModel());
-}
-
 
 
 
@@ -68,6 +40,9 @@ dSpaceID OdeNode::GetWorldSpaceId() {
 
 
 
+OdeObject::OdeObject() {
+	model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
+}
 
 void OdeObject::AttachContent() {
 	ASSERT(geom != 0);
@@ -88,6 +63,34 @@ void OdeObject::DetachContent() {
 	ASSERT(geom != 0);
 	ASSERT(body != 0);
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
+}
+
+void OdeObject::Paint(Shader& s) {
+	
+	
+	if (is_override_phys_geom) {
+		s.SetMat4("model", override_geom * model_geom);
+	}
+	else {
+		dVector3 pos;
+		dGeomCopyPosition (geom, pos);
+		vec3 v3 = MakeVec3(pos);
+		mat4 trans = translate(identity<mat4>(), v3);
+		
+		dQuaternion result;
+		dGeomGetQuaternion (geom, result);
+		quat q;
+		q[3] = result[0];
+		q[0] = result[1];
+		q[1] = result[2];
+		q[2] = result[3];
+		mat4 rot = ToMat4(q);
+		
+		s.SetMat4("model", trans * rot * model_geom);
+	}
+	
+	
+	s.Paint(*model.GetModel());
 }
 
 
@@ -142,7 +145,7 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_UPP
 
 INITBLOCK(OdeSystem) {
-	Topside::Machine::WhenStarting << callback(Topside::AddMachineOdeSystem);
+	Topside::Machine::WhenInitialize << callback(Topside::AddMachineOdeSystem);
 }
 
 END_UPP_NAMESPACE

@@ -21,14 +21,20 @@ SpatialInteractionSourceKind;
 
 
 struct SpatialInteractionControllerProperties {
+	double touch_x = 0;
+	double touch_y = 0;
+	double thumb_x = 0;
+	double thumb_y = 0;
+	bool is_touch_touch = 0;
+	bool is_touch_press = 0;
 	
 	
-	double								TouchpadX() const;
-	double								TouchpadY() const;
-	double								ThumbstickX() const;
-	double								ThumbstickY() const;
-	bool								IsTouchpadTouched() const;
-	bool								IsTouchpadPressed() const;
+	double			TouchpadX() const {return touch_x;}
+	double			TouchpadY() const {return touch_y;}
+	double			ThumbstickX() const {return thumb_x;}
+	double			ThumbstickY() const {return thumb_y;}
+	bool			IsTouchpadTouched() const {return is_touch_touch;}
+	bool			IsTouchpadPressed() const {return is_touch_press;}
 	
 };
 
@@ -36,20 +42,29 @@ struct SpatialCoordinateSystem {
 
 };
 
-struct HeadPose {
+struct Pose {
+	vec3 pos, fwd_dir, up_dir;
 	
 	
-	vec3								Position() const;
-	vec3								ForwardDirection() const;
-	vec3								UpDirection() const;
+	vec3			Position() const			{return pos;}
+	vec3			ForwardDirection() const	{return fwd_dir;}
+	vec3			UpDirection() const			{return up_dir;}
+	quat			Orientation() const			{TODO}
+	
+	bool IsNull() const {TODO}
+	operator bool() const {return !IsNull();}
+	
+};
+
+struct HeadPose : public Pose {
 	
 	
 };
 
 struct SpatialPointerPose {
+	HeadPose head;
 	
-	
-	const HeadPose&						Head() const;
+	const HeadPose&						Head() const {return head;}
 	
 	static SpatialPointerPose TryGetAtTimestamp(SpatialCoordinateSystem coord, PerceptionTimestamp ts);
 	
@@ -58,29 +73,19 @@ struct SpatialPointerPose {
 };
 
 struct SpatialInteractionSource {
+	SpatialInteractionSourceKind kind;
 	
-	
-	SpatialInteractionSourceKind		Kind() const;
+	const SpatialInteractionSourceKind&		Kind() const {return kind;}
 	
 };
 
 struct SpatialInteractionSourcePositionAccuracy {
 	
 	
-	
 };
 
-struct SpatialPointerInteractionSourcePose {
+struct SpatialPointerInteractionSourcePose : public Pose {
 	
-	
-	
-	vec3											Position() const;
-	vec3											ForwardDirection() const;
-	quat											Orientation() const;
-	
-	bool IsNull() const;
-	
-	operator bool() const {return !IsNull();}
 	
 };
 
@@ -92,13 +97,12 @@ struct SpatialInteractionSourceLocation {
 	vec3	pos;
 	vec3	velocity;
 	
-	
 	vec3		AngularVelocity() const {return angular_vel;}
 	
-	const SpatialPointerInteractionSourcePose&		SourcePointerPose() const;
+	const SpatialPointerInteractionSourcePose&		SourcePointerPose() const {return src_ptr_pose;}
 	
-	void SetNull();
-	bool IsNull() const;
+	void SetNull() {pos.SetNull();}
+	bool IsNull() const {return pos.IsNull();}
 	
 	operator bool() const {return !IsNull();}
 	void operator=(void* o) {ASSERT(!o); SetNull();}
@@ -107,30 +111,37 @@ struct SpatialInteractionSourceLocation {
 
 
 struct SpatialInteractionSourceProperties {
+	SpatialInteractionSourceLocation loc;
 	
-	
-	const SpatialInteractionSourceLocation&			TryGetLocation(const SpatialCoordinateSystem& coord) const;
+	const SpatialInteractionSourceLocation&			TryGetLocation(const SpatialCoordinateSystem& coord) const {return loc;}
 	
 	
 };
 
 
 struct SpatialInteractionSourceState {
+	SpatialInteractionSource src;
+	SpatialInteractionControllerProperties ctrl_prop;
+	SpatialInteractionSourceProperties src_prop;
+	bool is_select_press = false;
+	bool is_grasped = false;
+	bool is_valid = false;
 	
-	bool											IsSelectPressed() const;
-	bool											IsGrasped() const;
+	bool IsSelectPressed() const {return is_select_press;}
+	bool IsGrasped() const {return is_grasped;}
 	
-	const SpatialInteractionSource&					Source() const;
-	const SpatialInteractionControllerProperties&	ControllerProperties() const;
-	const SpatialInteractionSourceProperties&		Properties() const;
+	const SpatialInteractionSource&					Source() const {return src;}
+	const SpatialInteractionControllerProperties&	ControllerProperties() const {return ctrl_prop;}
+	const SpatialInteractionSourceProperties&		Properties() const {return src_prop;}
 	
 };
 
 struct SpatialInteractionSourceEventArgs {
+	SpatialInteractionPressKind kind;
+	SpatialInteractionSourceState state;
 	
-	
-	const SpatialInteractionPressKind&		PressKind() const;
-	const SpatialInteractionSourceState&	State() const;
+	const SpatialInteractionPressKind&		PressKind() const {return kind;}
+	const SpatialInteractionSourceState&	State() const {return state;}
 	
 };
 
@@ -160,13 +171,8 @@ public:
 	using Parent = Machine;
 	
 	
-    void AddListener(ISpatialInteractionListenerRef listener) {
-        listeners.Add(listener);
-    }
-
-    void RemoveListener(ISpatialInteractionListenerRef listener) {
-        listeners.RemoveKey(listener);
-    }
+    void AddListener(ISpatialInteractionListenerRef listener) {listeners.Add(listener);}
+	void RemoveListener(ISpatialInteractionListenerRef listener) {listeners.RemoveKey(listener);}
     
 };
 

@@ -195,42 +195,6 @@ protected:
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
 #define IFACE_BASE(x)	TypeId GetProviderType() override {return TypeId(typeid(x));}
 
-
-//									---- Display ----
-
-// The line between the display and the video connector is thin. Display IO is used by those
-// components that primarily read or write video at display speed and resolution, and whose
-// content would be human-viewable (rather than just processable).
-
-struct DisplaySource;
-
-struct DisplaySinkConfig {
-	double fps;
-	double fps_dt;
-	double dt;
-};
-
-struct DisplaySink : IO_OUT(Display) {
-	IFACE_BASE(DisplaySink)
-	
-	virtual void RecvDisplay(DisplaySource& src, double dt) = 0;
-	virtual void SetTitle(String s) = 0;
-	virtual uint32 GetTickCount() = 0;
-	
-};
-
-struct DisplaySource : IO_IN(Display) {
-	IFACE_BASE(DisplaySource)
-	
-	virtual void EmitDisplay(double dt) = 0;
-	virtual bool Render(const DisplaySinkConfig& config, SystemDraw& draw) = 0;
-	
-	virtual void SetTitle(String s) {TODO}// {for (const Connection& c : GetSinks()) c.sink->SetTitle(s);}
-	
-};
-
-
-
 //									---- Audio ----
 
 // The boundary between audio playback and media streaming is also thin, as between display and
@@ -244,8 +208,8 @@ struct AudioSource;
 struct AudioSink : IO_OUT(Audio) {
 	IFACE_BASE(AudioSink)
 	
-	virtual AudioFormat		GetAudioFormat() = 0;
-	virtual Audio&			GetAudioSink() = 0;
+	virtual AudioFormat			GetAudioFormat() = 0;
+	virtual Audio&				GetAudioSink() = 0;
 	
 };
 struct AudioSource : IO_IN(Audio) {
@@ -277,8 +241,8 @@ struct VideoSink : IO_OUT(Video) {
 	IFACE_BASE(VideoSink)
 	
 	
-	virtual VideoFormat		GetVideoFormat() = 0;
-	virtual Video&			GetVideoSink() = 0;
+	virtual VideoFormat			GetVideoFormat() = 0;
+	virtual Video&				GetVideoSink() = 0;
 	
 };
 
@@ -304,6 +268,47 @@ private:
 };
 
 
+
+
+
+
+//									---- Display ----
+
+// The line between the display and the video connector is thin. Display interface inherits
+// video interface, but contains additional information, such as used graphics accelerator,
+// vr device format, etc.
+
+struct DisplaySource;
+
+struct DisplaySink : IO_OUT(Display) {
+	IFACE_BASE(DisplaySink)
+	
+	
+	virtual DisplayFormat			GetDisplayFormat() = 0;
+	virtual Display&				GetSink() = 0;
+	virtual void					SetTitle(String s) = 0;
+	
+};
+
+struct DisplaySource : IO_IN(Display) {
+	IFACE_BASE(DisplaySource)
+	
+	using Sink = DisplaySink;
+	using ExPt = DisplayExchangePoint;
+
+	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
+	const RealtimeSourceConfig&	Cfg() const {return cfg;}
+	void						SetTitle(String s);
+	
+	virtual DisplayStream&			GetDisplaySource() = 0;
+	virtual void					BeginDisplaySource() = 0;
+	virtual void					EndDisplaySource() = 0;
+	
+	
+private:
+	RealtimeSourceConfig			cfg;
+	
+};
 
 
 

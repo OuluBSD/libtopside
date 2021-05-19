@@ -98,10 +98,12 @@ void Pool::ClearComponentsDeep() {
 		it().ClearComponents();
 	}
 	
-	ConnectorStoreRef sys = GetMachine().Get<ConnectorStore>();
-	for (auto iter = comps.rbegin(); iter; --iter)
-		sys->ReturnComponent(comps.Detach(iter));
-	ASSERT(comps.IsEmpty());
+	if (!comps.IsEmpty()) {
+		ConnectorStoreRef sys = GetMachine().Get<ConnectorStore>();
+		for (auto iter = comps.rbegin(); iter; --iter)
+			sys->ReturnComponent(comps.Detach(iter));
+		ASSERT(comps.IsEmpty());
+	}
 }
 
 void Pool::ClearDeep() {
@@ -131,7 +133,6 @@ void Pool::PruneFromContainer() {
 }
 
 void Pool::InitializeComponent(ConnectorBase& comp) {
-	comp.pool = this;
 	comp.Initialize();
 }
 

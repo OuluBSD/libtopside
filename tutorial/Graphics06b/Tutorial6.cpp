@@ -10,7 +10,7 @@ Tutorial 6b:
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void Graphics6Startup() {
+void Graphics6Initializer() {
 	Machine& mach = GetMachine();
 	mach.Add<PhysicsSystem>();
 	
@@ -37,5 +37,5 @@ NAMESPACE_TOPSIDE_END
 
 
 RENDER_APP_(Topside::DefaultRenderApp)
-APP_STARTUP_(Topside::Graphics6Startup);
+APP_INITIALIZE_(Topside::Graphics6Startup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
