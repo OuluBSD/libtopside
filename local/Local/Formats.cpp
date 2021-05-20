@@ -53,6 +53,24 @@ void VideoFormat::Clear() {
 
 
 
+void AVMediaProxy::Exchange(MediaEx& e) {
+	TODO
+}
+
+int AVMediaProxy::GetQueueSize() const {
+	TODO
+}
+
+MediaFormat AVMediaProxy::GetFormat() const {
+	TODO
+}
+
+bool AVMediaProxy::IsQueueFull() const {
+	TODO
+}
+
+
+
 
 #if HAVE_OPENGL
 template <>
@@ -229,5 +247,9 @@ int AcceleratorHeaderVector::Find(const AcceleratorHeader& a) const {
 void AcceleratorHeaderVector::Add(const AcceleratorHeader& a) {
 	in.Add().SetHeader(a);
 }
+
+
+
+
 
 NAMESPACE_TOPSIDE_END

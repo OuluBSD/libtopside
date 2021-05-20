@@ -49,14 +49,14 @@ public:
 	
 	
 	// Audio
-	AudioStream&	GetStream(AudCtx) override;
-	void			BeginStream(AudCtx) override;
-	void			EndStream(AudCtx) override;
+	AudioStream&	GetStream(AudCtx) override {TODO}
+	void			BeginStream(AudCtx) override {TODO}
+	void			EndStream(AudCtx) override {TODO}
 	
 	// Video
-	VideoStream&	GetStream(VidCtx) override;
-	void			BeginStream(VidCtx) override;
-	void			EndStream(VidCtx) override;
+	VideoStream&	GetStream(VidCtx) override {TODO}
+	void			BeginStream(VidCtx) override {TODO}
+	void			EndStream(VidCtx) override {TODO}
 	
 };
 

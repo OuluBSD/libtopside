@@ -173,23 +173,23 @@ public:
 	double	GetSeconds() const;
 	
 	
+	//void	FillVideoBuffer() override;
+	//void	FillAudioBuffer() override;
+	bool						IsOpen() const override;
+	bool						Open(int fmt_idx) override;
+	void						Close() override;
 	Media&						Get() override {return avproxy;}
 	void						FillBuffer() override {}
 	void						DropBuffer() override {}
-	int							GetActiveFormatIdx() const override;
-	int							GetFormatCount() const override;
-	MediaFormat					GetFormat(int i) const override;
-	bool						FindClosestFormat(const MediaFormat&, int& idx) override;;
-	//void	FillVideoBuffer() override;
-	//void	FillAudioBuffer() override;
-	bool	IsOpen() const override;
-	bool	Open(int fmt_idx) override;
-	void	Close() override;
+	int							GetActiveFormatIdx() const override {TODO}
+	int							GetFormatCount() const override {TODO}
+	MediaFormat					GetFormat(int i) const override {TODO}
+	bool						FindClosestFormat(const MediaFormat&, int& idx) override {TODO}
 	//Audio&	GetAudio() override;
 	//Video&	GetVideo() override;
-	AudioStream&	GetAudioStream() override;
-	VideoStream&	GetVideoStream() override;
-	bool	OpenFile(String path);
+	AudioStream&				GetAudioStream() override;
+	VideoStream&				GetVideoStream() override;
+	bool						OpenFile(String path);
 	
 	/*
 	// Realtime

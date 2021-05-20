@@ -43,7 +43,7 @@ public:
 	void RemoveFirst(int count=1) {
 		lock.EnterWrite();
 		count = min(count, packets[data_i].GetCount());
-		AUDIOLOG("RealtimePacketBuffer::RemoveFirst: " << IntStr(count));
+		RTLOG("RealtimePacketBuffer::RemoveFirst: " << IntStr(count));
 		packets[data_i].RemoveFirst(count);
 		lock.LeaveWrite();
 	}
@@ -119,7 +119,7 @@ public:
 
 template <class Ctx>
 struct ContextT {
-	using C = ContextT;
+	using C = Ctx;
 	using Format = typename Ctx::Format;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
@@ -157,6 +157,7 @@ struct ContextT {
 		void Init(ConnectorBase* conn);
 		void Deinit();
 		void Update(double dt) override;
+		
 		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
 		void UseConsumer(bool b=true) {use_consumer = b;}
 		void Destroy() {conn = 0;}
@@ -362,10 +363,10 @@ struct ContextT {
 		
 		void		SetSize(Format fmt, int frames) {preferred_fmt = fmt; Buffer::SetLimit(frames);}
 		
-		void		Exchange(Ex& e)	override;
+		void		Exchange(Ex& e)			override;
 		int			GetQueueSize() const	override {return Buffer::GetQueueSize();}
 		Format		GetFormat() const		override {return preferred_fmt;}
-		bool		IsQueueFull() const		override;
+		bool		IsQueueFull() const		override {return Buffer::IsQueueFull();}
 		
 		
 		
@@ -400,16 +401,31 @@ struct ContextT {
 	};
 	
 	
+	class SimpleValue : public Value {
+		Format fmt;
+		off32 offset;
+		double time = 0;
+	public:
+		void Exchange(Ex& e) override;
+		int GetQueueSize() const override;
+		Format GetFormat() const override;
+		bool IsQueueFull() const override;
+		virtual void StorePacket(Packet& p) = 0;
+	};
+	
+	
 	class SimpleStream :
 		public Stream
 	{
 		Value* ptr = 0;
 	public:
+		SimpleStream() {}
+		SimpleStream(Value& v) : ptr(&v) {}
 		void			Set(Value& v) {ptr = &v;}
 		bool			IsOpen() const override {return true;}
 		bool			Open(int fmt_idx) override {ASSERT(fmt_idx == 0); return true;}
 		void			Close() override {}
-		Value&			Get() override {return *ptr;}
+		Value&			Get() override {ASSERT(ptr); return *ptr;}
 		void			FillBuffer() override {}
 		void			DropBuffer() override {}
 		int				GetActiveFormatIdx() const override {return 0;}
@@ -428,14 +444,15 @@ struct ContextT {
 #include "Templates.inl"
 
 
-#define LOCAL_CTX(x, value_base, stream_base) \
+#define LOCAL_CTX(x, value_base, stream_base, sys_base, sink_base) \
 	struct x##Context { \
 		static constexpr const char* Name = #x; \
 		using Format			= x##Format; \
 		using Ctx				= x##Context; \
 		using ValueBase			= value_base; \
 		using StreamBase		= stream_base; \
-		static x##Context& Static() {return Single<x##Context>();} \
+		using CustomSystemBase	= sys_base; \
+		using CustomSinkBase	= sink_base; \
 	}; \
 	using x##T = ContextT<x##Context>; \
 	using x = x##T::Value; \
@@ -450,12 +467,15 @@ struct ContextT {
 	using x##Proxy = x##T::Proxy; \
 	using x##PacketBuffer = x##T::PacketBuffer; \
 	using Simple##x##Stream = x##T::SimpleStream; \
+	using Simple##x = x##T::SimpleValue; \
 	using x##StreamRef = Ref<x##Stream,RefParent1<ComponentBase>>; \
-	x##Packet Create##x##Packet() {return x##T::CreatePacket();}
+	inline x##Packet Create##x##Packet() {return x##T::CreatePacket();}
 
 
 struct DummyValueBase {};
 struct DummyStreamBase {};
+struct DummyCustomSystemBase {};
+struct DummyCustomSinkBase {};
 
 NAMESPACE_TOPSIDE_END
 

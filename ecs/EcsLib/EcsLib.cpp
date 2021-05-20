@@ -37,3 +37,19 @@ void Close_NonGUI_ECS() {
 
 
 END_UPP_NAMESPACE
+
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+
+CamerableRef HumanCustomSinkBase::GetCamerable() {
+	return CamerableRef();
+}
+
+TransformRef HumanCustomSinkBase::GetTransform() {
+	return TransformRef();
+}
+
+
+NAMESPACE_TOPSIDE_END

@@ -68,14 +68,13 @@
 
 #include "Templates.h"
 
-#include "Interface.h"
-
 #include "Component.h"
 #include "Connector.h"
 #include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"
 #include "Pool.h"
+#include "Templates.inl"
 #include "EntityVisitor.h"
 #include "Overlap.h"
 #include "Action.h"

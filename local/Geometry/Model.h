@@ -120,6 +120,9 @@ public:
     
 };
 
+using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;
+
+
 class ModelLoader :
 	public RefScopeEnabler<ModelLoader,RefRoot>
 {

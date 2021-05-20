@@ -30,7 +30,7 @@
 
 #include "Defs.h"
 #include "Viewport.h"
-#include "Shader.h"
+//#include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
 #include "CommonComponents.h"
@@ -59,7 +59,7 @@
 #endif
 
 #include "EventSystem.h"
-#include "RenderingSystem.h"
+#include "DisplaySystem.h"
 #include "WindowSystem.h"
 
 #endif

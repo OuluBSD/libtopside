@@ -42,6 +42,7 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<HumanSystem>();
     mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();
+    mach.Add<DeviceSystem>();
     mach.Add<FusionSystem>();
     
     if (gui)

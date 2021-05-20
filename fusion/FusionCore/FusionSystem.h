@@ -37,9 +37,9 @@ struct BasicFusionStream : public VideoStream {
 	bool						FindClosestFormat(const VideoFormat&, int& idx) override {return 0;}
 	void						Clear() {fmt = MakeVideoFormat(Size(0,0), 0, 0, 0, 0);}
 	
-	bool						IsOpen() const override;
-	bool						Open(int fmt_idx) override;
-	void						Close() override;
+	bool						IsOpen() const override {TODO}
+	bool						Open(int fmt_idx) override {TODO}
+	void						Close() override {TODO}
 	
 	//int							GetDepth() const {return fmt[0].GetFormat().depth;}
 	
@@ -457,15 +457,15 @@ public:
 	void			Uninitialize() override;
 	
 	// AcceleratorSource
-	AcceleratorStream&	GetStream(AccCtx) override;
-	void				BeginStream(AccCtx) override;
-	void				EndStream(AccCtx) override;
+	AcceleratorStream&	GetStream(AccCtx) override {TODO}
+	void				BeginStream(AccCtx) override {TODO}
+	void				EndStream(AccCtx) override {TODO}
 	
 	// StaticSink
-	StaticFormat		GetFormat(StcCtx) override;
-	Static&				GetValue(StcCtx) override;
+	StaticFormat		GetFormat(StcCtx) override {TODO}
+	Static&				GetValue(StcCtx) override {TODO}
 	
-	bool			LoadAsInput(const AcceleratorHeader& in);
+	bool			LoadAsInput(const AcceleratorHeader& in) {TODO}
 	
 	VideoStream*	GetVideoStream() {return &stream;}
 	
@@ -489,7 +489,7 @@ class FusionMediaSink :
 	void			PostProcess() override;
 	void			ClearData() override;
 	void			UpdateTexBuffers() override;
-	void			Event(const CtrlEvent& e) override;
+	void			Event(const CtrlEvent& e) override {TODO}
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	//const AcceleratorHeader& GetHeader() const override {return cfg;}
@@ -516,9 +516,9 @@ public:
 	void			Uninitialize() override;
 	
 	// AcceleratorSource
-	AcceleratorStream&	GetStream(AccCtx) override;
-	void				BeginStream(AccCtx) override;
-	void				EndStream(AccCtx) override;
+	AcceleratorStream&	GetStream(AccCtx) override {TODO}
+	void				BeginStream(AccCtx) override {TODO}
+	void				EndStream(AccCtx) override {TODO}
 	
 	// AudioSink
 	AudioFormat			GetFormat(AudCtx) override {return aud_fmt;}
@@ -548,7 +548,7 @@ class FusionControllerSink :
 	void			PreProcess() override;
 	void			ClearData() override;
 	void			UpdateTexBuffers() override;
-	void			Event(const CtrlEvent& e) override;
+	void			Event(const CtrlEvent& e) override {TODO}
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	//const AcceleratorHeader& GetHeader() const override {return cfg;}
@@ -576,13 +576,13 @@ public:
 	VideoStream*	GetVideoStream() {return &stream;}
 	
 	// AcceleratorSource
-	AcceleratorStream&	GetStream(AccCtx) override;
-	void				BeginStream(AccCtx) override;
-	void				EndStream(AccCtx) override;
+	AcceleratorStream&	GetStream(AccCtx) override {TODO}
+	void				BeginStream(AccCtx) override {TODO}
+	void				EndStream(AccCtx) override {TODO}
 	
 	// HumanSink
-	HumanFormat			GetFormat(HumCtx) override;
-	Human&				GetValue(HumCtx) override;
+	HumanFormat			GetFormat(HumCtx) override {TODO}
+	Human&				GetValue(HumCtx) override {TODO}
 	
 	void			LeftDown(Point p, dword keyflags);
 	void			LeftUp(Point p, dword keyflags);
@@ -638,8 +638,8 @@ public:
 	void				EndStream(DisCtx) override;
 	
 	// AcceleratorSink
-	AcceleratorFormat	GetFormat(AccCtx) override;
-	Accelerator&		GetValue(AccCtx) override;
+	AcceleratorFormat	GetFormat(AccCtx) override {TODO}
+	Accelerator&		GetValue(AccCtx) override {TODO}
 	
 	void			SetVideoSize(Size sz);
 	void			SetFPS(int fps);
@@ -685,13 +685,13 @@ public:
 	void			Uninitialize() override;
 	
 	// AcceleratorSource
-	AcceleratorStream&	GetStream(AccCtx) override;
-	void				BeginStream(AccCtx) override;
-	void				EndStream(AccCtx) override;
+	AcceleratorStream&	GetStream(AccCtx) override {TODO}
+	void				BeginStream(AccCtx) override {TODO}
+	void				EndStream(AccCtx) override {TODO}
 	
 	// AcceleratorSink
-	AcceleratorFormat	GetFormat(AccCtx) override;
-	Accelerator&		GetValue(AccCtx) override;
+	AcceleratorFormat	GetFormat(AccCtx) override {TODO}
+	Accelerator&		GetValue(AccCtx) override {TODO}
 	
 	//void SetVideoSize(Size sz);
 	//void SetFPS(int fps);
@@ -726,8 +726,8 @@ class FusionAudioSource :
 	void			EndStream(AudCtx) override;
 	
 	// AcceleratorSink
-	AcceleratorFormat	GetFormat(AccCtx) override;
-	Accelerator&		GetValue(AccCtx) override;
+	AcceleratorFormat	GetFormat(AccCtx) override {TODO}
+	Accelerator&		GetValue(AccCtx) override {TODO}
 	
 public:
 	COPY_PANIC(FusionAudioSource);

@@ -216,8 +216,8 @@ protected:
 	ExProv base;
 	
 public:
-	using Sink = ExchangeSinkProviderRef;
-	using Source = ExchangeSourceProviderRef;
+	using SinkProv = ExchangeSinkProviderRef;
+	using SourceProv = ExchangeSourceProviderRef;
 	using Cookie = CookieRef;
 	
 protected:
@@ -225,7 +225,7 @@ protected:
 	
 	void AddSource(ExchangePointRef expt, ExchangeSourceProviderRef src) {base.AddLink(expt, src);}
 	int FindSource(ExchangeSourceProviderRef src) {return base.FindLink(src);}
-	virtual void OnLink(Source src, Cookie src_c, Cookie sink_c) {}
+	virtual void OnLink(SourceProv src, Cookie src_c, Cookie sink_c) {}
 	
 public:
 	ExchangeSinkProvider();
@@ -234,7 +234,7 @@ public:
 	
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
 	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(Source src) {base.Unlink(src);}
+	void Unlink(SourceProv src) {base.Unlink(src);}
 	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
@@ -253,8 +253,8 @@ class ExchangeSourceProvider :
 	static bool print_debug;
 	
 public:
-	using Sink = ExchangeSinkProviderRef;
-	using Source = ExchangeSourceProviderRef;
+	using SinkProv = ExchangeSinkProviderRef;
+	using SourceProv = ExchangeSourceProviderRef;
 	using Cookie = CookieRef;
 	
 protected:
@@ -262,18 +262,18 @@ protected:
 	
 	void AddSink(ExchangePointRef expt, ExchangeSinkProviderRef sink) {base.AddLink(expt, sink);}
 	int FindSink(ExchangeSinkProviderRef sink) {return base.FindLink(sink);}
-	virtual void OnLink(Sink sink, Cookie src_c, Cookie sink_c) {}
+	virtual void OnLink(SinkProv sink, Cookie src_c, Cookie sink_c) {}
 	
 public:
 	ExchangeSourceProvider();
 	virtual ~ExchangeSourceProvider();
 	
 	
-	virtual bool Accept(Sink sink, Cookie& src_c, Cookie& sink_c) {return true;}
-	void Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c);
+	virtual bool Accept(SinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
+	void Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c);
 	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
 	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(Sink sink) {base.Unlink(sink);}
+	void Unlink(SinkProv sink) {base.Unlink(sink);}
 	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}

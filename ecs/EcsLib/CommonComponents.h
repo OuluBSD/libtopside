@@ -134,9 +134,9 @@ protected:
 		StaticVolumeComponent& comp;
 		
 		VolumeStream(StaticVolumeComponent* c) : comp(*c) {}
-		bool LoadFileAny(String path) override;
-		Size GetResolution() const override;
-		int GetDepth() const override;
+		bool LoadFileAny(String path) override {TODO}
+		Size GetResolution() const override {TODO}
+		int GetDepth() const override {TODO}
 	};
 	
 	VolumeStream stream;

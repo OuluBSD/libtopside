@@ -39,9 +39,9 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-#if HAVE_OPENGL
+/*#if HAVE_OPENGL
 	void PaintOpenGL(GLuint active_tex);
-#endif
+#endif*/
 	
 	
 	Callback WhenError;

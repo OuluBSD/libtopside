@@ -1,13 +1,61 @@
 #define TMPL(x)	template <class Ctx> x ContextT<Ctx>::
 
 
-TMPL(bool) VolatileBuffer::IsQueueFull() const {
+
+
+
+
+
+
+
+TMPL(void) SimpleValue::Exchange(Ex& e) {
+	if (e.IsStoring()) {
+		Value& sink = e.Sink();
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		VolatileBuffer* vol = dynamic_cast<VolatileBuffer*>(&sink);
+		if (vol) {
+			while (!vol->IsQueueFull()) {
+				Packet p = CreatePacket();
+				p->Set(fmt, offset, time);
+				//p->Data().SetCount(fmt.GetFrameBytes(), 0);
+				StorePacket(p);
+				vol->Put(p, false);
+				++offset;
+				time += fmt.GetFrameSeconds();
+			}
+		}
+		else TODO
+	}
+	else TODO
+}
+
+TMPL(int) SimpleValue::GetQueueSize() const {
+	return 2;
+}
+
+TMPL(typename ContextT<Ctx>::Format) SimpleValue::GetFormat() const {
+	return fmt;
+}
+
+TMPL(bool) SimpleValue::IsQueueFull() const {
+	return true;
+}
+
+
+
+
+
+
+
+
+/*TMPL(bool) VolatileBuffer::IsQueueFull() const {
 	if (Buffer::IsEmpty())
 		return false;
 	int sz = Buffer::GetQueueSizeBytes();
 	int preferred_sz = preferred_fmt.GetFrameBytes() * 2;
 	return sz >= preferred_sz;
-}
+}*/
 
 TMPL(void) VolatileBuffer::Exchange(Ex& e) {
 	if (e.IsLoading()) {
@@ -187,7 +235,7 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 TMPL(bool) PacketConsumer::ConsumePacket() {
 	ASSERT(dst_buf || dst_remaining > 0);
 	if (leftover) {
-		AUDIOLOG("PacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
+		RTLOG("PacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
 		ASSERT(leftover_size > 0);
 		int data_shift = leftover->GetData().GetCount() - leftover_size;
 		Packet p;
@@ -197,7 +245,7 @@ TMPL(bool) PacketConsumer::ConsumePacket() {
 	}
 	else
 	if (src->GetQueueSize()) {
-		AUDIOLOG("PacketConsumer::ConsumePacket: get " << offset.ToString());
+		RTLOG("PacketConsumer::ConsumePacket: get " << offset.ToString());
 		
 		Packet p = src->Get(offset);
 		if (p) {
@@ -233,7 +281,7 @@ TMPL(bool) PacketConsumer::IsFinished() const {
 }
 
 TMPL(void) Ex::SetOffset(off32 packet_count) {
-	//AUDIOLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
+	//RTLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
 	this->offset = packet_count;
 }
 #undef TMPL

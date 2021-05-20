@@ -58,7 +58,7 @@ bool ExchangeSourceProvider::print_debug = false;
 
 
 
-void ExchangeSourceProvider::Link(ExchangePointRef expt, Sink sink, Cookie& src_c, Cookie& sink_c) {
+void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
 	base.AddLink(expt, sink);
 	sink->base.AddLink(expt, AsRefT());

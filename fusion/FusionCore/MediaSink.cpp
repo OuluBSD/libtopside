@@ -57,9 +57,9 @@ bool FusionMediaSink::LoadResources() {
 	return true;
 }
 
-void FusionMediaSink::Event(const CtrlEvent& e) {
+/*void FusionMediaSink::Event(const CtrlEvent& e) {
 	TODO
-}
+}*/
 
 bool FusionMediaSink::LoadAsInput(const AcceleratorHeader& in) {
 	const char* fn_name = "LoadAsInput";

@@ -95,6 +95,22 @@ bool FfmpegFileInput::OpenFile(String path) {
 	return HasMediaOpen();
 }
 
+bool FfmpegFileInput::Open(int fmt_idx) {
+	TODO
+}
+
+void FfmpegFileInput::Close() {
+	Clear();
+}
+
+AudioStream& FfmpegFileInput::GetAudioStream() {
+	TODO
+}
+
+VideoStream& FfmpegFileInput::GetVideoStream() {
+	TODO
+}
+
 #if 0
 
 bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
@@ -158,7 +174,7 @@ bool FfmpegFileInput::ReadFrame() {
 	}
 	
 	if (!is_eof) {
-		AUDIOLOG("FfmpegFileInput::ReadFrame: end of file");
+		RTLOG("FfmpegFileInput::ReadFrame: end of file");
 		is_eof = true;
 		WhenStopped();
 	}
@@ -206,10 +222,6 @@ void FfmpegFileInput::DropVideoFrames(int frames) {
 	
 	if (frames)
 		vframe.DropFrames(frames);
-}
-
-void FfmpegFileInput::Close() {
-	Clear();
 }
 
 String FfmpegFileInput::GetPath() const {
@@ -540,7 +552,7 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		AudioVolatileBuffer* vol_aud = dynamic_cast<AudioVolatileBuffer*>(&sink);
 		if (vol_aud) {
 			off32 begin = e.GetOffset();
-			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
+			RTLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
 			ASSERT(!sink.IsQueueFull());
 			/*if (!(p->GetOffset() == begin)) {
 				vol_aud->Dump();
@@ -557,7 +569,7 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 			e.SetOffset(end);
 			
 			off32 diff = off32::GetDifference(begin, end);
-			AUDIOLOG("FfmpegAudioFrameQueue::Exchange: produced count=" << diff.ToString());
+			RTLOG("FfmpegAudioFrameQueue::Exchange: produced count=" << diff.ToString());
 			
 			begin_offset_min.TestSetMin(begin);
 			begin_offset_max.TestSetMax(begin);
@@ -593,7 +605,7 @@ AudioFormat FfmpegAudioFrameQueue::GetFormat() const {
 void FfmpegAudioFrameQueue::FillBuffersNull() {
 	if (buf.GetCount() < min_buf_size) {
 		AudioPacket p = CreateAudioPacket();
-		AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: filling buffer with empty packets " << IntStr64(frame_counter));
+		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: filling buffer with empty packets " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
 		p->Set(aud_fmt, offset, -1);
 		p->Data().SetCount(aud_fmt.GetFrameBytes(), 0);
@@ -626,7 +638,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			ASSERT(aud_fmt.GetFrameBytes() >= frame->linesize[0]);
 			auto& p = buf.Add();
 			p = CreateAudioPacket();
-			AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
+			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 			off32 offset{frame_counter++};
 			p->Set(aud_fmt, offset, time_pos);
 			Vector<byte>& data = p->Data();
@@ -641,7 +653,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		memset(srcn, 0, sizeof(srcn));
 		auto& p = buf.Add();
 		p = CreateAudioPacket();
-		AUDIOLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
+		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
 		p->Set(aud_fmt, offset, time_pos);
 		Vector<byte>& data = p->Data();
@@ -684,7 +696,7 @@ void FfmpegAudioFrameQueue::DropAudioBuffer() {
 	if (min_end_diff) {
 		auto iter = buf.begin();
 		for(int i = 0; i < min_end_diff.value; i++) {
-			AUDIOLOG("FfmpegAudioFrameQueue::DropAudioBuffer: dropping " << iter()->GetOffset().ToString());
+			RTLOG("FfmpegAudioFrameQueue::DropAudioBuffer: dropping " << iter()->GetOffset().ToString());
 			++iter;
 		}
 		buf.RemoveFirst(min_end_diff.value);

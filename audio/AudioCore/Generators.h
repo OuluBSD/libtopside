@@ -91,25 +91,15 @@ public:
 };
 
 class DummySoundGeneratorStream :
-	public AudioStream
+	public SimpleAudioStream
 {
 	DummySoundGeneratorAudio gen;
 	
 public:
-	DummySoundGeneratorStream() {}
+	DummySoundGeneratorStream() : SimpleAudioStream(gen) {}
 	
 	double				GetSeconds() const {return gen.GetSeconds();}
 	
-	bool				IsOpen() const override;
-	bool				Open(int fmt_idx) override;
-	void				Close() override;
-	Audio&				Get() override {return gen;}
-	void				FillBuffer() override {}
-	void				DropBuffer() override {}
-	int					GetActiveFormatIdx() const override {return 0;}
-	int					GetFormatCount() const override {return 1;}
-	AudioFormat			GetFormat(int i) const override {return gen.GetFormat();}
-	bool				FindClosestFormat(const AudioFormat& fmt, int& idx) override {idx = 0; return true;}
 	
 };
 
@@ -146,8 +136,8 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	// Device
-	DeviceFormat	GetFormat(DevCtx) override;
-	Device&			GetValue(DevCtx) override;
+	DeviceFormat	GetFormat(DevCtx) override {TODO}
+	Device&			GetValue(DevCtx) override {TODO}
 	
 	// Audio
 	AudioStream&	GetStream(AudCtx) override;

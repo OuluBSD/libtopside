@@ -7,22 +7,22 @@ bool run_sound_gen;
 
 
 void DummyGenerator::OnError() {
-	GetEntity().GetMachine().SetNotRunning();
+	GetEntity()->GetMachine().SetNotRunning();
 }
 
 void DummyGenerator::Initialize() {
-	Entity& e = GetEntity();
-	gen     = e.Find<SoundGeneratorComponent>();
-	audio   = e.Find<PortaudioSinkComponent>();
+	EntityRef e = GetEntity();
+	gen     = e->Find<SoundGeneratorComponent>();
+	audio   = e->Find<PortaudioSinkComponent>();
 	
-	Pool& p = e.GetPool();
-	p.Add<ConnectAllInterfaces<AudioSource>>();
+	PoolRef p = e->GetPool();
+	p->Add<ConnectAllInterfaces<AudioSource>>();
 }
 
 void DummyGenerator::Uninitialize() {
 	gen.Clear();
 	audio.Clear();
-	GetEntity().Destroy();
+	GetEntity()->Destroy();
 }
 
 
@@ -31,24 +31,24 @@ void DummyGenerator::Uninitialize() {
 
 
 void MP3Player::OnError() {
-	GetEntity().GetMachine().SetNotRunning();
+	GetEntity()->GetMachine().SetNotRunning();
 }
 
 void MP3Player::OnStop() {
-	GetEntity().GetMachine().SetNotRunning();
+	GetEntity()->GetMachine().SetNotRunning();
 }
 
 void MP3Player::Initialize() {
-	Entity& e = GetEntity();
-	file_in = e.Find<FfmpegComponent>();
-	audio   = e.Find<PortaudioSinkComponent>();
+	EntityRef e = GetEntity();
+	file_in = e->Find<FfmpegComponent>();
+	audio   = e->Find<PortaudioSinkComponent>();
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
 	
 	file_in->WhenStopped = THISBACK(OnStop);
 	
-	Pool& p = e.GetPool();
-	p.Add<ConnectAllInterfaces<AudioSource>>();
+	PoolRef p = e->GetPool();
+	p->Add<ConnectAllInterfaces<AudioSource>>();
 	
 	if (!file_in->LoadFileAny(file_path)) {
 		LOG("opening media file failed: " << file_in->GetLastError());
@@ -61,7 +61,7 @@ void MP3Player::Initialize() {
 void MP3Player::Uninitialize() {
 	file_in.Clear();
 	audio.Clear();
-	GetEntity().Destroy();
+	GetEntity()->Destroy();
 }
 
 bool MP3PlayerInitializer() {
@@ -127,7 +127,6 @@ void Main() {
 	    mach.Add<ComponentStore>();
 	    mach.Add<ConnectorStore>();
 	    mach.Add<AudioSystem>();
-	    mach.Add<ActionSystem>();
 	    
 	    
 	    try {

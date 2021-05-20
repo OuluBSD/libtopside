@@ -10,11 +10,8 @@ class Entity;
 class ComponentBase;
 class Pool;
 class ComponentMap;
-class Camerable;
 class Renderable;
-class Transform;
 class Transform2D;
-class Camerable;
 class Renderable;
 class Machine;
 class EntityStore;
@@ -63,8 +60,6 @@ using MidiSourceRef			= Ref<MidiSource,			RefParent1<Entity>>;
 using DisplaySourceRef		= Ref<DisplaySource,		RefParent1<Entity>>;
 using DisplaySinkRef		= Ref<DisplaySink,			RefParent1<Entity>>;
 using StaticSinkRef			= Ref<StaticSink,			RefParent1<Entity>>;*/
-using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
-using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using Transform2DRef		= Ref<Transform2D,			RefParent1<Entity>>;
 using RenderableRef			= Ref<Renderable,			RefParent1<Entity>>;
 using OverlapRef			= Ref<Overlap,				RefParent1<Entity>>;
@@ -242,19 +237,6 @@ protected:
 
 #define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
 #define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->AsRef<x>();}
-
-#define IFACE_LIST \
-	IFACE(Human)\
-	IFACE(Audio)\
-	IFACE(Video)\
-	IFACE(Media)\
-	IFACE(Display)\
-	IFACE(Static)\
-	IFACE(Model)\
-	IFACE(Device)\
-	IFACE(Physics)\
-	IFACE(Scripting)\
-	IFACE(Accelerator)
 
 
 

@@ -152,9 +152,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_SYSTEM || type == CTRL_KEYBOARD || type == CTRL_MOUSE;}
-	DeviceStream&		GetStream(DevCtx) override;
-	void				BeginStream(DevCtx) override;
-	void				EndStream(DevCtx) override;
+	DeviceStream&		GetStream(DevCtx) override {TODO}
+	void				BeginStream(DevCtx) override {TODO}
+	void				EndStream(DevCtx) override {TODO}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Events* GetOOSDL2() {return &*obj;}
@@ -180,9 +180,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_JOYSTICK;}
-	HumanStream&		GetStream(HumCtx) override;
-	void				BeginStream(HumCtx) override;
-	void				EndStream(HumCtx) override;
+	HumanStream&		GetStream(HumCtx) override {TODO}
+	void				BeginStream(HumCtx) override {TODO}
+	void				EndStream(HumCtx) override {TODO}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Joystick* GetOOSDL2() {return &*obj;}
@@ -208,9 +208,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
-	HumanStream&		GetStream(HumCtx) override;
-	void				BeginStream(HumCtx) override;
-	void				EndStream(HumCtx) override;
+	HumanStream&		GetStream(HumCtx) override {TODO}
+	void				BeginStream(HumCtx) override {TODO}
+	void				EndStream(HumCtx) override {TODO}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::GameController* GetOOSDL2() {return &*obj;}
@@ -236,9 +236,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
-	HumanStream&		GetStream(HumCtx) override;
-	void				BeginStream(HumCtx) override;
-	void				EndStream(HumCtx) override;
+	HumanStream&		GetStream(HumCtx) override {TODO}
+	void				BeginStream(HumCtx) override {TODO}
+	void				EndStream(HumCtx) override {TODO}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Sensor* GetOOSDL2() {return &*obj;}
@@ -267,9 +267,9 @@ public:
 	//bool LoadFileAny(String path) override;
 	//Size GetResolution() const override;
 	//void EmitStatic() override;
-	StaticStream&		GetStream(StcCtx) override;
-	void				BeginStream(StcCtx) override;
-	void				EndStream(StcCtx) override;
+	StaticStream&		GetStream(StcCtx) override {TODO}
+	void				BeginStream(StcCtx) override {TODO}
+	void				EndStream(StcCtx) override {TODO}
 	
 	String GetLastError() const {return last_error;}
 	
@@ -295,9 +295,9 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitStatic() override;
-	StaticStream&		GetStream(StcCtx) override;
-	void				BeginStream(StcCtx) override;
-	void				EndStream(StcCtx) override;
+	StaticStream&		GetStream(StcCtx) override {TODO}
+	void				BeginStream(StcCtx) override {TODO}
+	void				EndStream(StcCtx) override {TODO}
 	
 	static bool AllowDuplicates() {return true;}
 	

@@ -231,8 +231,8 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			
 			off32 begin_offset = buf.GetOffset();
 			if (0) {
-				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
 				buf.Dump();
 			}
 			
@@ -245,19 +245,19 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
 			if (diff) {
-				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
 				buf.RemoveFirst(diff.value);
 			}
 			else if (consumer.HasLeftover()) {
-				AUDIOLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
 			}
 			else if (!consumer.HasLeftover()) {
-				AUDIOLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
+				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
 			}
 		}
 		else {
-			#if DEBUG_AUDIO_PIPE
-			AUDIOLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
+			#if DEBUG_RT_PIPE
+			RTLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
 			#endif
 			
 			memset(args.output, 0, size);

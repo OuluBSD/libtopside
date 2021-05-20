@@ -19,29 +19,14 @@
 #undef Complex
 
 
-#ifdef flagDEBUG_AUDIO
-	#define DEBUG_AUDIO_PIPE 1
-	#define AUDIOLOG(x) LOG("AUDIO DEBUG: " << x)
+#ifdef flagDEBUG_RT
+	#define DEBUG_RT_PIPE 1
+	#define RTLOG(x) LOG("REALTIME DEBUG: " << x)
 #else
-	#define DEBUG_AUDIO_PIPE 0
-	#define AUDIOLOG(x)
+	#define DEBUG_RT_PIPE 0
+	#define RTLOG(x)
 #endif
 
-#ifdef flagDEBUG_VIDEO
-	#define DEBUG_VIDEO_PIPE 1
-	#define VIDEOLOG(x) LOG("VIDEO DEBUG: " << x)
-#else
-	#define DEBUG_VIDEO_PIPE 0
-	#define VIDEOLOG(x)
-#endif
-
-#ifdef flagDEBUG_DISPLAY
-	#define DEBUG_DISPLAY_PIPE 1
-	#define DISPLAYLOG(x) LOG("DISPLAY DEBUG: " << x)
-#else
-	#define DEBUG_DISPLAY_PIPE 0
-	#define DISPLAYLOG(x)
-#endif
 
 
 NAMESPACE_TOPSIDE_BEGIN

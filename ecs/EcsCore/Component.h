@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class T> inline RefT_Entity<T> ComponenBase_Static_As(ComponentBase*) {return 0;}
+template <class T> inline RefT_Entity<T> ComponenBase_Static_As(ComponentBase*) {return RefT_Entity<T>();}
 
 class ComponentBase :
 	public Destroyable,

@@ -143,7 +143,9 @@ NAMESPACE_UPP_BEGIN
 #define PKG(x) <x/x.h>
 
 
-#define HAVE_OPENGL 1
+#ifdef flagGUI
+	#define HAVE_OPENGL 1
+#endif
 
 
 typedef unsigned char	uint8;

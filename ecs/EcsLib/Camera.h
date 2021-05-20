@@ -21,7 +21,7 @@ public:
 	
 	void operator=(const Camerable& c) {target = c.target;}
 	
-	CamerableRef GetCamerable() {return ComponentBase::AsRef<Camerable>();}
+	CamerableRef GetCamerable() override {return ComponentBase::AsRef<Camerable>();}
 	//TransformRef GetTransform();
 	
 	HumanFormat		GetFormat(HumCtx) override;

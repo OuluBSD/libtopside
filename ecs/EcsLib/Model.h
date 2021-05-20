@@ -51,8 +51,8 @@ public:
     
 	void GetModels(VectorRendModel& models);
 	
-	ModelFormat		GetFormat(MdlCtx) override;
-	Model&			GetValue(MdlCtx) override;
+	ModelFormat		GetFormat(MdlCtx) override {TODO}
+	Model&			GetValue(MdlCtx) override {TODO}
 	
 protected:
 	ModelLoader loader;

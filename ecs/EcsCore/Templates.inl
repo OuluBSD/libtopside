@@ -1,12 +1,16 @@
-#define TMPL(x)	template <class Ctx, class EcsCtx> x ContextEcsT<Ctx,EcsCtx>::
+#define TMPL(x)	template <class Ctx> x ContextT<Ctx>::
+#define TMPL_ECS(x)	template <class Ctx> x ContextEcsT<Ctx>::
+#define USING(x) using x = typename ContextEcsT<Ctx>::x;
+#define CTX ((C*)0)
 
-
+NAMESPACE_TOPSIDE_BEGIN
 
 
 
 
 
 TMPL(void) ExchangePoint::Init(ConnectorBase* conn) {
+	USING(System)
 	this->conn = conn;
 	if (conn) {
 		PoolRef pool = conn->GetPool();
@@ -19,6 +23,7 @@ TMPL(void) ExchangePoint::Init(ConnectorBase* conn) {
 }
 
 TMPL(void) ExchangePoint::Deinit() {
+	USING(System)
 	if (conn) {
 		PoolRef pool = conn->GetPool();
 		Machine& mach = pool->GetMachine();
@@ -31,23 +36,27 @@ TMPL(void) ExchangePoint::Deinit() {
 }
 
 TMPL(void) ExchangePoint::Update(double dt) {
+	USING(Source)
+	USING(Sink)
+	USING(Stream)
+	USING(Value)
 	ASSERT(dbg_offset_is_set);
 	Ref<Source>	src			= this->src;
-	Ref<Sink>		sink		= this->sink;
+	Ref<Sink>	sink		= this->sink;
 	
 	Ex ex(this);
 	ex.SetOffset(offset);
 	
-	Stream& src_stream = src->GetSource();
-	& src_audio = src_stream.Get();
+	Stream& src_stream = src->GetStream(CTX);
+	Value& src_audio = src_stream.Get();
 	int src_sz = src_audio.GetQueueSize();
 	
 	if (src_sz) {
-		& sink_audio = sink->GetSink();
+		Value& sink_audio = sink->GetValue(CTX);
 		bool sink_full = sink_audio.IsQueueFull();
 		
-		if (!sink_full) {AUDIOLOG("ExchangePoint::Update: exchanging");}
-		else {AUDIOLOG("ExchangePoint::Update: sink full");}
+		if (!sink_full) {RTLOG("ExchangePoint::Update: exchanging");}
+		else {RTLOG("ExchangePoint::Update: sink full");}
 		
 		int iter = 0;
 		int total_exchanged = 0;
@@ -66,7 +75,7 @@ TMPL(void) ExchangePoint::Update(double dt) {
 			}
 			
 			if (ex.IsFail()) {
-				AUDIOLOG("error: ExchangePoint::Update: exchange failed");
+				RTLOG("error: ExchangePoint::Update: exchange failed");
 				break;
 			}
 			
@@ -80,12 +89,12 @@ TMPL(void) ExchangePoint::Update(double dt) {
 			sink_full = sink_audio.IsQueueFull();
 			++iter;
 			if (src_sz && !sink_full) {
-				AUDIOLOG("ExchangePoint::Update: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
+				RTLOG("ExchangePoint::Update: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
 			}
 		}
 	}
 	else {
-		AUDIOLOG("ExchangePoint::Update: offset " << offset.ToString() << " empty source");
+		RTLOG("ExchangePoint::Update: offset " << offset.ToString() << " empty source");
 	}
 	
 	SetOffset(ex.GetOffset());
@@ -99,34 +108,38 @@ TMPL(void) ExchangePoint::Update(double dt) {
 
 //Callback System::WhenUninit;
 
-TMPL(bool) System::Initialize() {
+TMPL_ECS(bool) System::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL(void) System::Start() {
-	ents = GetMachine().Get<EntityStore>();
+TMPL_ECS(void) System::Start() {
+	Machine& m = SystemBase::GetMachine();
+	ents = m.Get<EntityStore>();
 }
 
-TMPL(void) System::Update(double dt) {
+TMPL_ECS(void) System::Update(double dt) {
+	USING(ExchangePointRef)
+	USING(C)
+	
 	
 	for (SourceRef src : srcs) {
-		Stream& stream = src->GetSource();
+		Stream& stream = src->GetStream(CTX);
 		int buf_sz = stream.Get().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
 		
 		#if 0 && DEBUG_AUDIO_PIPE
-		AUDIOLOG("update source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
+		RTLOG("update source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 		#endif
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render) {
 			#if DEBUG_AUDIO_PIPE
-			AUDIOLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
+			RTLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			
-			src->BeginSource();
+			src->BeginStream(CTX);
 		}
 	}
 	
@@ -135,7 +148,7 @@ TMPL(void) System::Update(double dt) {
 		off32 begin_offset = expt->GetOffset();
 		
 		#if 0 && DEBUG_AUDIO_PIPE
-		AUDIOLOG("expt updpate " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
+		RTLOG("expt updpate " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
 		#endif
 		
 		expt->SetOffset(begin_offset);
@@ -148,7 +161,7 @@ TMPL(void) System::Update(double dt) {
 		off32 diff = off32::GetDifference(begin_offset, end_offset);
 		if (diff) {
 			auto sink = expt->Sink();
-			AUDIOLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
+			RTLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
 		}
 		#endif
 	}
@@ -157,21 +170,21 @@ TMPL(void) System::Update(double dt) {
 		const auto& cfg = src->Cfg();
 		if (cfg.begin_offset != cfg.end_offset) {
 			#if DEBUG_AUDIO_PIPE
-			AUDIOLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
+			RTLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			
-			src->EndSource();
+			src->EndStream(CTX);
 		}
 	}
 	
 }
 
-TMPL(void) System::Stop() {
+TMPL_ECS(void) System::Stop() {
 	
 	
 }
 
-TMPL(void) System::Uninitialize() {
+TMPL_ECS(void) System::Uninitialize() {
 	srcs.Clear();
 	sinks.Clear();
 	expts.Clear();
@@ -179,32 +192,39 @@ TMPL(void) System::Uninitialize() {
 	WhenUninit();
 }
 
-TMPL(void) System::Add(SourceRef src) {
+TMPL_ECS(void) System::Add(SourceRef src) {
 	ASSERT(src);
 	srcs.FindAdd(src);
 }
 
-TMPL(void) System::Remove(SourceRef src) {
+TMPL_ECS(void) System::Remove(SourceRef src) {
 	srcs.RemoveKey(src);
 }
 
-TMPL(void) System::Add(SinkRef sink) {
+TMPL_ECS(void) System::Add(SinkRef sink) {
 	ASSERT(sink);
 	sinks.FindAdd(sink);
 }
 
-TMPL(void) System::Remove(SinkRef sink) {
+TMPL_ECS(void) System::Remove(SinkRef sink) {
 	sinks.RemoveKey(sink);
 }
 
-TMPL(void) System::Add(ExchangePointRef expt) {
+TMPL_ECS(void) System::Add(ExchangePointRef expt) {
 	ASSERT(expt);
 	expts.FindAdd(expt);
 }
 
-TMPL(void) System::Remove(ExchangePointRef expt) {
+TMPL_ECS(void) System::Remove(ExchangePointRef expt) {
 	expts.RemoveKey(expt);
 }
 
 
+
+NAMESPACE_TOPSIDE_END
+
+
 #undef TMPL
+#undef TMPL_ECS
+#undef USING
+#undef CTX

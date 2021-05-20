@@ -84,8 +84,6 @@ bool StaticVolumeComponent::LoadFileAny(String path) {
 	return true;
 }
 
-#endif
-
 Size StaticVolumeComponent::VolumeStream::GetResolution() const {
 	return comp.sz;
 }
@@ -93,6 +91,8 @@ Size StaticVolumeComponent::VolumeStream::GetResolution() const {
 int  StaticVolumeComponent::VolumeStream::GetDepth() const {
 	return comp.depth;
 }
+
+#endif
 
 /*void StaticVolumeComponent::EmitStatic() {
 	StaticValueData data;

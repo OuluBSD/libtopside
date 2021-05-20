@@ -7,23 +7,28 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class Ctx, class EcsCtx>
+template <class Ctx>
 struct ContextEcsT {
 	using C = Ctx;
 	using Format = typename Ctx::Format;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
-	using CustomSystemBase = typename EcsCtx::CustomSystemBase;
+	using CustomSystemBase = typename Ctx::CustomSystemBase;
+	using CustomSinkBase = typename Ctx::CustomSinkBase;
 	using Value = typename ContextT<Ctx>::Value;
 	using Stream = typename ContextT<Ctx>::Stream;
+	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
 	
 	
-	class Sink : public InterfaceSink<Sink> {
+	class Sink :
+		public InterfaceSink<Sink>,
+		public CustomSinkBase
+	{
 	public:
 		TypeId GetProviderType() override {return TypeId(typeid(Sink));}
 		
-		virtual Format			GetFormat(C&) = 0;
-		virtual Value&			GetValue(C&) = 0;
+		virtual Format			GetFormat(C*) = 0;
+		virtual Value&			GetValue(C*) = 0;
 		
 	};
 	
@@ -32,14 +37,15 @@ struct ContextEcsT {
 		TypeId GetProviderType() override {return TypeId(typeid(Source));}
 		
 		using ExPt = ExchangePoint;
+		using Sink = ContextEcsT::Sink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
 		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 		
-		virtual Stream&				GetStream(C&) = 0;
-		virtual void				BeginStream(C&) = 0;
-		virtual void				EndStream(C&) = 0;
+		virtual Stream&				GetStream(C*) = 0;
+		virtual void				BeginStream(C*) = 0;
+		virtual void				EndStream(C*) = 0;
 		
 	private:
 		RealtimeSourceConfig		cfg;
@@ -107,15 +113,9 @@ public:
 	
 };
 
-struct DummyCustomSystemBase {};
 
-#define ECS_CTX(x, sys_base) \
-	struct x##EcsContext { \
-		static constexpr const char* Name = #x; \
-		using CustomSystemBase = sys_base; \
-		static x##EcsContext& Static() {return Single<x##EcsContext>();} \
-	}; \
-	using x##EcsT = ContextEcsT<x##Context, x##EcsContext>; \
+#define ECS_CTX(x) \
+	using x##EcsT = ContextEcsT<x##Context>; \
 	using x##ExchangePoint = x##T::ExchangePoint; \
 	using x##ExchangePointRef = Ref<x##ExchangePoint, RefParent1<MetaExchangePoint>>; \
 	using x##Sink = x##EcsT::Sink; \
@@ -126,17 +126,52 @@ struct DummyCustomSystemBase {};
 
 
 
-ECS_CTX(Human,			DummyCustomSystemBase)
-ECS_CTX(Audio,			DummyCustomSystemBase)
-ECS_CTX(Video,			DummyCustomSystemBase)
-ECS_CTX(Media,			DummyCustomSystemBase)
-ECS_CTX(Display,		DisplaySystemBase)
-ECS_CTX(Static,			DummyCustomSystemBase)
-ECS_CTX(Model,			DummyCustomSystemBase)
-ECS_CTX(Device,			DummyCustomSystemBase)
-ECS_CTX(Physics,		PhysicsSystemBase)
-ECS_CTX(Scripting,		DummyCustomSystemBase)
-ECS_CTX(Accelerator,	DummyCustomSystemBase)
+#define IFACE(x) ECS_CTX(x)
+IFACE_LIST
+#undef IFACE
+
+
+
+typedef enum {
+	#define IFACE(x) IFACE_##x##Source , IFACE_##x##Sink ,
+	IFACE_LIST
+	#undef IFACE
+} IfaceType;
+
+
+
+template <class T>
+class InterfaceVisitor : public RuntimeVisitor {
+	TypeId match_type;
+	T* last = 0;
+	bool stop_when_found = false;
+	
+	
+	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override {
+		if (type == match_type) {
+			last = (T*)mem;
+			if (stop_when_found) {
+				BreakOut();
+				return false;
+			}
+			else return OnInterfaceEntry(*(T*)mem);
+		}
+		return true;
+	}
+	void OnExit() override {}
+	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override {}
+	
+public:
+	InterfaceVisitor() : match_type(typeid(T)) {}
+	
+	
+	T* GetLast() const {return last;}
+	void StopWhenFound(bool b=true) {stop_when_found = b;}
+	
+	virtual bool OnInterfaceEntry(T& o) {return true;}
+	
+};
+
 
 
 NAMESPACE_TOPSIDE_END

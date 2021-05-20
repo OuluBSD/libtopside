@@ -77,13 +77,13 @@ public:
 	//const AcceleratorHeader& GetHeader() const override;
 	
 	// AcceleratorSource
-	AcceleratorStream&	GetStream(AccCtx) override;
-	void				BeginStream(AccCtx) override;
-	void				EndStream(AccCtx) override;
+	AcceleratorStream&	GetStream(AccCtx) override {TODO}
+	void				BeginStream(AccCtx) override {TODO}
+	void				EndStream(AccCtx) override {TODO}
 	
 	// AcceleratorSink
-	AcceleratorFormat	GetFormat(AccCtx) override;
-	Accelerator&		GetValue(AccCtx) override;
+	AcceleratorFormat	GetFormat(AccCtx) override {TODO}
+	Accelerator&		GetValue(AccCtx) override {TODO}
 	
 	String GetLastError() const {return last_error;}
 	
@@ -182,7 +182,7 @@ public:
 	void Uninitialize() override;
 	//void EmitMidi(double dt) override;
 	//bool IsSupported(DevType type) override {return true;}
-	void OnLink(Sink sink, Cookie src_c, Cookie sink_c) override;
+	void OnLink(SinkProv sink, Cookie src_c, Cookie sink_c) override {TODO}
 	void Visit(RuntimeVisitor& vis) override {}
 	bool OpenFilePath(String path);
 	void Clear();
@@ -191,9 +191,9 @@ public:
 	void DumpMidiFile();
 	
 	// DeviceSource
-	DeviceStream&		GetStream(DevCtx) override;
-	void				BeginStream(DevCtx) override;
-	void				EndStream(DevCtx) override;
+	DeviceStream&		GetStream(DevCtx) override {TODO}
+	void				BeginStream(DevCtx) override {TODO}
+	void				EndStream(DevCtx) override {TODO}
 	
 	String GetLastError() const {return last_error;}
 	

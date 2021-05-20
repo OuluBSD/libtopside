@@ -4,6 +4,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class Camerable;
+class Transform;
+
+using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
+using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
+
+
+
 struct AudioFormat {
 	int freq = 0;
 	int sample_rate = 0;
@@ -50,9 +58,9 @@ struct AudioFormat {
 	}
 };
 
-LOCAL_CTX(Audio, DummyValueBase, DummyStreamBase)
-#define AUDCTX AudioContext::Static()
-#define AudCtx AudioContext&
+LOCAL_CTX(Audio, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define AUDCTX ((AudioContext*)0)
+#define AudCtx AudioContext*
 
 
 struct VideoFormat {
@@ -89,9 +97,9 @@ struct VideoFormat {
 VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, int pitch, int depth=1, String codec=String());
 
 
-LOCAL_CTX(Video, DummyValueBase, DummyStreamBase)
-#define VIDCTX VideoContext::Static()
-#define VidCtx VideoContext&
+LOCAL_CTX(Video, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define VIDCTX ((VideoContext*)0)
+#define VidCtx VideoContext*
 
 
 
@@ -124,9 +132,9 @@ struct AVStreamBase {
 	virtual VideoStream& GetVideoStream() = 0;
 };
 
-LOCAL_CTX(Media, AVBase, AVStreamBase)
-#define MEDCTX MediaContext::Static()
-#define MedCtx MediaContext&
+LOCAL_CTX(Media, AVBase, AVStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define MEDCTX ((MediaContext*)0)
+#define MedCtx MediaContext*
 
 
 class AVMediaProxy : public Media {
@@ -168,10 +176,11 @@ struct DisplayFormat {
 	
 };
 
+class DisplaySystemBase;
 
-LOCAL_CTX(Display, DummyValueBase, DummyStreamBase)
-#define DISCTX DisplayContext::Static()
-#define DisCtx DisplayContext&
+LOCAL_CTX(Display, DummyValueBase, DummyStreamBase, DisplaySystemBase, DummyCustomSinkBase)
+#define DISCTX ((DisplayContext*)0)
+#define DisCtx DisplayContext*
 
 
 
@@ -213,9 +222,9 @@ struct StaticStreamBase {
 	
 };
 
-LOCAL_CTX(Static, DummyValueBase, StaticStreamBase)
-#define STCCTX StaticContext::Static()
-#define StcCtx StaticContext&
+LOCAL_CTX(Static, DummyValueBase, StaticStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define STCCTX ((StaticContext*)0)
+#define StcCtx StaticContext*
 
 
 
@@ -240,9 +249,9 @@ struct DeviceFormat {
 };
 
 
-LOCAL_CTX(Device, DummyValueBase, DummyStreamBase)
-#define DEVCTX DeviceContext::Static()
-#define DevCtx DeviceContext&
+LOCAL_CTX(Device, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define DEVCTX ((DeviceContext*)0)
+#define DevCtx DeviceContext*
 
 
 
@@ -266,10 +275,11 @@ struct PhysicsFormat {
 	
 };
 
+class PhysicsSystemBase;
 
-LOCAL_CTX(Physics, DummyValueBase, DummyStreamBase)
-#define PHYCTX PhysicsContext::Static()
-#define PhyCtx PhysicsContext&
+LOCAL_CTX(Physics, DummyValueBase, DummyStreamBase, PhysicsSystemBase, DummyCustomSinkBase)
+#define PHYCTX ((PhysicsContext*)0)
+#define PhyCtx PhysicsContext*
 
 
 
@@ -295,9 +305,9 @@ struct ScriptingFormat {
 };
 
 
-LOCAL_CTX(Scripting, DummyValueBase, DummyStreamBase)
-#define SCRCTX ScriptingContext::Static()
-#define ScrCtx ScriptingContext&
+LOCAL_CTX(Scripting, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define SCRCTX ((ScriptingContext*)0)
+#define ScrCtx ScriptingContext*
 
 
 
@@ -321,10 +331,14 @@ struct HumanFormat {
 	
 };
 
+struct HumanCustomSinkBase {
+	virtual CamerableRef GetCamerable();
+	virtual TransformRef GetTransform();
+};
 
-LOCAL_CTX(Human, DummyValueBase, DummyStreamBase)
-#define HUMCTX HumanContext::Static()
-#define HumCtx HumanContext&
+LOCAL_CTX(Human, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, HumanCustomSinkBase)
+#define HUMCTX ((HumanContext*)0)
+#define HumCtx HumanContext*
 
 
 
@@ -350,9 +364,9 @@ struct ModelFormat {
 };
 
 
-LOCAL_CTX(Model, DummyValueBase, DummyStreamBase)
-#define MDLCTX ModelContext::Static()
-#define MdlCtx ModelContext&
+LOCAL_CTX(Model, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define MDLCTX ((ModelContext*)0)
+#define MdlCtx ModelContext*
 
 
 
@@ -407,7 +421,7 @@ protected:
 	
 public:
 	
-	void				Set(int id, Type t, String path, int filter, int wrap, bool vflip);
+	void				Set(int id, Type t, String path, int filter, int wrap, bool vflip) {TODO}
 	void				Set(int id, VideoStream* s) {this->id = id; stream = s;}
 	void				SetHeader(const AcceleratorHeader& in);
 	void				CopyIdStream(const AcceleratorHeader& in);
@@ -462,9 +476,27 @@ struct AcceleratorFormat {
 };
 
 
-LOCAL_CTX(Accelerator, DummyValueBase, AcceleratorStreamBase)
-#define ACCCTX AcceleratorContext::Static()
-#define AccCtx AcceleratorContext&
+LOCAL_CTX(Accelerator, DummyValueBase, AcceleratorStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+#define ACCCTX ((AcceleratorContext*)0)
+#define AccCtx AcceleratorContext*
+
+
+
+
+
+
+#define IFACE_LIST \
+	IFACE(Human)\
+	IFACE(Audio)\
+	IFACE(Video)\
+	IFACE(Media)\
+	IFACE(Display)\
+	IFACE(Static)\
+	IFACE(Model)\
+	IFACE(Device)\
+	IFACE(Physics)\
+	IFACE(Scripting)\
+	IFACE(Accelerator)
 
 
 NAMESPACE_TOPSIDE_END

@@ -57,9 +57,10 @@ bool FusionControllerSink::LoadResources() {
 	return true;
 }
 
-#if 0
 
 bool FusionControllerSink::LoadAsInput(const AcceleratorHeader& in) {
+	TODO
+	#if 0
 	const char* fn_name = "LoadAsInput";
 	EntityRef e = GetEntity();
 	Machine& m = e->GetMachine();
@@ -71,8 +72,6 @@ bool FusionControllerSink::LoadAsInput(const AcceleratorHeader& in) {
 	
 	cfg.SetHeader(in);
 	
-	TODO
-	#if 0
 	stream.fmt[0].SetFormat(MakeVideoFormat(data_res, 0,0,0,0));
 	
 	Ref<Connector> conn = GetEntity().GetConnector();
@@ -104,12 +103,14 @@ bool FusionControllerSink::LoadAsInput(const AcceleratorHeader& in) {
 	else {
 		err = "unsupported type";
 	}
-	#endif
 	
 	if (err.IsEmpty()) err = "unknown error";
 	OnError(fn_name, err);
+	#endif
 	return false;
 }
+
+#if 0
 
 void FusionControllerSink::RecvController(const EventFrame& e) {
 	for (const CtrlEvent& ev : e.ctrl)

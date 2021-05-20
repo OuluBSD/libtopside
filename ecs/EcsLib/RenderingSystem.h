@@ -49,46 +49,6 @@ protected:
 #endif
 
 
-#ifdef flagGUI
-
-class DefaultRenderApp :
-	public Component<DefaultRenderApp>,
-	public DisplaySource,
-	public HumanSource
-{
-	One<Shader> simple_shader;
-	EntityStoreRef ents;
-	
-	VectorRendModel rends;
-	
-public:
-	VIS_COMP_2_0(Display, Human)
-	COPY_PANIC(DefaultRenderApp);
-	IFACE_CB(DisplaySource);
-	IFACE_CB(HumanSource);
-	IFACE_GENERIC;
-	
-	DefaultRenderApp();
-	
-	// Component
-	void					Initialize() override;
-	void					Uninitialize() override;
-	void					Visit(RuntimeVisitor& vis) override {TODO vis & ents;}
-	
-	// DisplaySource
-	DisplayStream&			GetStream(DisCtx) override;
-	void					BeginStream(DisCtx) override;
-	void					EndStream(DisCtx) override;
-	
-	// HumanSource
-	HumanStream&			GetStream(HumCtx) override;
-	void					BeginStream(HumCtx) override;
-	void					EndStream(HumCtx) override;
-	
-};
-
-#endif
-
 NAMESPACE_TOPSIDE_END
 
 #endif

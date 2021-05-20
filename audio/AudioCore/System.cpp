@@ -72,6 +72,26 @@ void MixerChannelOutputComponent::Uninitialize() {
 	TODO
 }*/
 
+AcceleratorStream& MixerChannelOutputComponent::GetStream(AccCtx) {
+	TODO
+}
+
+void MixerChannelOutputComponent::BeginStream(AccCtx) {
+	TODO
+}
+
+void MixerChannelOutputComponent::EndStream(AccCtx) {
+	TODO
+}
+
+AcceleratorFormat MixerChannelOutputComponent::GetFormat(AccCtx) {
+	TODO
+}
+
+Accelerator& MixerChannelOutputComponent::GetValue(AccCtx) {
+	TODO
+}
+
 
 
 MixerAudioSourceComponent::MixerAudioSourceComponent() {
@@ -95,6 +115,14 @@ void MixerAudioSourceComponent::BeginStream(AudCtx) {
 }
 
 void MixerAudioSourceComponent::EndStream(AudCtx) {
+	TODO
+}
+
+AcceleratorFormat MixerAudioSourceComponent::GetFormat(AccCtx) {
+	TODO
+}
+
+Accelerator& MixerAudioSourceComponent::GetValue(AccCtx) {
 	TODO
 }
 

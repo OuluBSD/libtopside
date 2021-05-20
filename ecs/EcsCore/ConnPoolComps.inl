@@ -54,7 +54,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>
 	}
 	
 	for (EntityRef& e : *pool) {
-		Ref<Sink> sink = e->FindInterface<Sink>();
+		auto sink = e->FindInterface<Sink>();
 		if (sink) {
 			for(LinkedList<Ref<T>>& src_scope : src_stack) {
 				for (Ref<T>& src : src_scope) {
@@ -82,7 +82,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>
 
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
-	Pool& pool = ConnectorBase::GetPool();
+	PoolRef pool = ConnectorBase::GetPool();
 	LinkedList<LinkedList<Ref<T>>> src_stack;
 	
 	Visit(pool, src_stack);
