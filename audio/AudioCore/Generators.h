@@ -115,7 +115,7 @@ public:
 
 class SoundGeneratorComponent :
 	public Component<SoundGeneratorComponent>,
-	public MidiSink,
+	public DeviceSink,
 	public AudioSource
 {
 	DummySoundGeneratorStream gen;
@@ -133,7 +133,7 @@ class SoundGeneratorComponent :
 public:
 	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SoundGeneratorComponent);
-	IFACE_CB(MidiSink);
+	IFACE_CB(DeviceSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	
@@ -141,14 +141,18 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void RecvMidi(const MidiFrame& e) override;
-	void Configure(const Midi::File& file) override;
+	//void RecvMidi(const MidiFrame& e) override;
+	//void Configure(const Midi::File& file) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
+	// Device
+	DeviceFormat	GetFormat(DevCtx) override;
+	Device&			GetValue(DevCtx) override;
+	
 	// Audio
-	AudioStream&	GetAudioSource() override;
-	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	AudioStream&	GetStream(AudCtx) override;
+	void			BeginStream(AudCtx) override;
+	void			EndStream(AudCtx) override;
 	
 	
 	void SetPreset(int i) {preset_i = i;}

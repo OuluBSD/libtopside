@@ -436,7 +436,7 @@ void CpuPipelineData::BeginStage() {
 	}
 }
 
-int CpuPipelineData::PutModel(One<Model>& model, bool can_pick) {
+int CpuPipelineData::PutModel(One<ModelMesh>& model, bool can_pick) {
 	if (model.IsEmpty()) {
 		LOG("error: CpuPipelineData::PutModel: empty model");
 		return -1;

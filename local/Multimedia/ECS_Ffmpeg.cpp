@@ -45,17 +45,18 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	return false;
 }
 
-VideoStream& FfmpegComponent::GetVideoSource() {
+VideoStream& FfmpegComponent::GetStream(VidCtx) {
 	return file_in.GetVideoStream();
 }
 
-void FfmpegComponent::BeginVideoSource() {
+void FfmpegComponent::BeginStream(VidCtx) {
 	file_in.GetVideoStream().FillBuffer();
 }
 
-void FfmpegComponent::EndVideoSource(bool any_sink_consumed) {
-	if (any_sink_consumed)
-		file_in.GetVideoStream().DropBuffer();
+void FfmpegComponent::EndStream(VidCtx) {
+	TODO
+	//if (any_sink_consumed)
+	//	file_in.GetVideoStream().DropBuffer();
 }
 
 /*void FfmpegComponent::EmitVideoSource(double dt) {
@@ -70,11 +71,11 @@ void FfmpegComponent::EndVideoSource(bool any_sink_consumed) {
 	}
 }*/
 
-AudioStream& FfmpegComponent::GetAudioSource() {
+AudioStream& FfmpegComponent::GetStream(AudCtx) {
 	return file_in.GetAudioStream();
 }
 
-void FfmpegComponent::BeginAudioSource() {
+void FfmpegComponent::BeginStream(AudCtx) {
 	file_in.GetAudioStream().FillBuffer();
 }
 
@@ -89,7 +90,7 @@ void FfmpegComponent::BeginAudioSource() {
 	TODO // absolute off32
 }*/
 
-void FfmpegComponent::EndAudioSource() {
+void FfmpegComponent::EndStream(AudCtx) {
 	file_in.GetAudioStream().DropBuffer();
 }
 

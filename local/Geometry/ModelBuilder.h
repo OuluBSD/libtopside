@@ -82,7 +82,7 @@ public:
 
 
 class ModelBuilder {
-	Model model;
+	ModelMesh model;
 	
 public:
 	
@@ -92,8 +92,8 @@ public:
 	Mesh& AddCylinder(const vec3& pos, float radius, float length);
 	
 	
-	operator const Model&() const {return model;}
-	const Model& AsModel() const {return model;}
+	operator const ModelMesh&() const {return model;}
+	const ModelMesh& AsModel() const {return model;}
 };
 
 

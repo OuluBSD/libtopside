@@ -4,6 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+typedef RTuple<Ref<ModelMesh>, TransformRef, RenderableRef> RendModel;
+typedef Vector<RendModel> VectorRendModel;
 
 
 struct PrimitiveShape :
@@ -22,21 +24,21 @@ struct PrimitiveShape :
 	
 protected:
 	Shape2DWrapper shape;
-	One<Model> model;
+	One<ModelMesh> model;
 	
 	
 	
 };
 
 
-struct ModelComponent :
+class ModelComponent :
 	public Component<ModelComponent>,
 	public ModelSink
 {
 	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
-	
+public:
 	
 	void Visit(RuntimeVisitor& vis) override {}
     void operator=(const ModelComponent& src) {}
@@ -45,9 +47,12 @@ struct ModelComponent :
     //void Paint(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
     void Dispatch() {TODO}
-	Ref<Model> GetModel() {return loader.GetModel();}
+	Ref<ModelMesh> GetModel() {return loader.GetModel();}
     
-	void GetModels(VectorRendModel& models) override;
+	void GetModels(VectorRendModel& models);
+	
+	ModelFormat		GetFormat(MdlCtx) override;
+	Model&			GetValue(MdlCtx) override;
 	
 protected:
 	ModelLoader loader;

@@ -116,7 +116,7 @@ void SDL2GUI3D::RenderWindows() {
 		int x1 = x0 + t_size.cx * 2;
 		int y1 = y0 + t_size.cy * 2;
 		
-		Model model;
+		ModelMesh model;
 		Mesh& mesh = model.meshes.Add();
 		mesh.vertices.Reserve(4);
 		mesh.vertices.Add().Set(x0, y0, 0, 0, 1);

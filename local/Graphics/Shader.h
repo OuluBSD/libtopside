@@ -18,8 +18,8 @@ public:
 	
 	virtual bool Load(String vertex_path, String fragment_path, String geometry_path = "") = 0;
 	virtual bool IsLoaded() const = 0;
-	virtual void Paint(Model& model) = 0;
-    virtual void Paint(Model& model, Mesh& mesh) = 0;
+	virtual void Paint(ModelMesh& model) = 0;
+    virtual void Paint(ModelMesh& model, Mesh& mesh) = 0;
 	virtual void Use() = 0;
 	virtual void SetBool(const String &name, bool value) const = 0;
 	virtual void SetInt(const String &name, int value) const = 0;

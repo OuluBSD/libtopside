@@ -186,7 +186,7 @@ void Mesh::Dump(int indent) {
 	}
 }
 
-void Model::Dump() {
+void ModelMesh::Dump() {
 	for(int i = 0; i < meshes.GetCount(); i++) {
 		LOG("Mesh " << i << ":");
 		meshes[i].Dump(1);

@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool OpenCVComponent::LoadFileAny(String path) {
+/*bool OpenCVComponent::LoadFileAny(String path) {
 	vi.Stop();
 	
 	if (path.Left(6) == "<input" && path.Right(1) == ">") {
@@ -14,7 +14,7 @@ bool OpenCVComponent::LoadFileAny(String path) {
 	}
 	
 	return false;
-}
+}*/
 
 bool OpenCVComponent::LoadInput(int id) {
 	if (id < 0 || id >= devmgr.GetNativeCount()) {

@@ -15,8 +15,8 @@ bool Open_NonGUI_ECS() {
     #if HAVE_SDL2
     mach.Add<SDL2System>();
     #endif
-    mach.Add<EventSystem>();
-    mach.Add<RenderingSystem>();
+    mach.Add<HumanSystem>();
+    mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();
     mach.Add<FusionSystem>();
     

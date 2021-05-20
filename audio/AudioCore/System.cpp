@@ -50,9 +50,9 @@ void MixerChannelInputComponent::Uninitialize() {
 	
 }
 
-const FusionComponentInput& MixerChannelInputComponent::GetHeader() const {
+/*const AcceleratorHeader& MixerChannelInputComponent::GetHeader() const {
 	TODO
-}
+}*/
 
 
 
@@ -68,9 +68,9 @@ void MixerChannelOutputComponent::Uninitialize() {
 	
 }
 
-const FusionComponentInput& MixerChannelOutputComponent::GetHeader() const {
+/*const AcceleratorHeader& MixerChannelOutputComponent::GetHeader() const {
 	TODO
-}
+}*/
 
 
 
@@ -86,15 +86,15 @@ void MixerAudioSourceComponent::Uninitialize() {
 	
 }
 
-AudioStream& MixerAudioSourceComponent::GetAudioSource() {
+AudioStream& MixerAudioSourceComponent::GetStream(AudCtx) {
 	TODO
 }
 
-void MixerAudioSourceComponent::BeginAudioSource() {
+void MixerAudioSourceComponent::BeginStream(AudCtx) {
 	TODO
 }
 
-void MixerAudioSourceComponent::EndAudioSource() {
+void MixerAudioSourceComponent::EndStream(AudCtx) {
 	TODO
 }
 
@@ -105,16 +105,16 @@ void MixerAudioSourceComponent::EndAudioSource() {
 
 
 MidiFileComponent::MidiFileComponent() {
-	MidiSource::SetMultiConnection();
+	DeviceSource::SetMultiConnection();
 	
 }
 
 void MidiFileComponent::Initialize() {
-	AddToSystem<EventSystem>(AsRef<MidiSource>());
+	AddToSystem<DeviceSystem>(AsRef<DeviceSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	RemoveFromSystem<EventSystem>(AsRef<MidiSource>());
+	RemoveFromSystem<DeviceSystem>(AsRef<DeviceSource>());
 }
 
 void MidiFileComponent::Clear() {
@@ -172,6 +172,8 @@ void MidiFileComponent::DumpMidiFile() {
 		}
 	}
 }
+
+#if 0
 
 void MidiFileComponent::EmitMidi(double dt) {
 	
@@ -232,6 +234,8 @@ void MidiFileComponent::EmitTrack(int i) {
 			c->RecvMidi(tmp);
 	
 }
+
+#endif
 
 
 

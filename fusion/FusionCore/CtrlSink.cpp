@@ -45,8 +45,8 @@ void FusionControllerSink::UpdateTexBuffers() {
 			Ogl_CreateTex(
 				data_res, 1,
 				0, 0,
-				FusionComponentInput::FILTER_NEAREST,
-				FusionComponentInput::WRAP_CLAMP);
+				AcceleratorHeader::FILTER_NEAREST,
+				AcceleratorHeader::WRAP_CLAMP);
 #endif
 		}
 	}
@@ -57,28 +57,31 @@ bool FusionControllerSink::LoadResources() {
 	return true;
 }
 
-bool FusionControllerSink::LoadAsInput(const FusionComponentInput& in) {
+#if 0
+
+bool FusionControllerSink::LoadAsInput(const AcceleratorHeader& in) {
 	const char* fn_name = "LoadAsInput";
 	EntityRef e = GetEntity();
 	Machine& m = e->GetMachine();
-	Ref<EventSystem> ev_sys = m.TryGet<EventSystem>();
+	Ref<DeviceSystem> ev_sys = m.TryGet<DeviceSystem>();
 	if (ev_sys.IsEmpty())
 		return false;
 	
 	String err;
 	
 	cfg.SetHeader(in);
-	stream.fmt[0].SetFormat(MakeVideoFormat(data_res, 0,0,0,0));
 	
 	TODO
 	#if 0
+	stream.fmt[0].SetFormat(MakeVideoFormat(data_res, 0,0,0,0));
+	
 	Ref<Connector> conn = GetEntity().GetConnector();
 	if (!conn) {
 		OnError(fn_name, "entity doesn't have Connector component");
 		return false;
 	}
 	
-	if (in.GetFusionType() == FusionComponentInput::KEYBOARD) {
+	if (in.GetFusionType() == AcceleratorHeader::KEYBOARD) {
 		bool found_any = false;
 		for (ControllerSource* src : ev_sys->GetSources()) {
 			if (src->IsSupportedKeyboard()) {
@@ -229,6 +232,6 @@ bool FusionControllerSink::Key(dword key, int count) {
 	return true;
 }
 
-
+#endif
 
 NAMESPACE_TOPSIDE_END

@@ -94,13 +94,13 @@ bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometr
 	return true;
 }
 
-void OpenGLShader::Paint(Model& model) {
+void OpenGLShader::Paint(ModelMesh& model) {
 	ASSERT(is_loaded);
 	for (Mesh& mesh : model.meshes)
         Paint(model, mesh);
 }
 
-void OpenGLShader::Paint(Model& model, Mesh& mesh) {
+void OpenGLShader::Paint(ModelMesh& model, Mesh& mesh) {
 	
 	// TODO glsl shaders etc.
 	
@@ -108,7 +108,7 @@ void OpenGLShader::Paint(Model& model, Mesh& mesh) {
 	
 }
 
-void OpenGLShader::BasicMeshPaint(Model& model, Mesh& mesh) {
+void OpenGLShader::BasicMeshPaint(ModelMesh& model, Mesh& mesh) {
 	if (!mesh.VAO)
 		return;
 	

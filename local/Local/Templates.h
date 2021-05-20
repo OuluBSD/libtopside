@@ -4,6 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class ConnectorBase;
+
 
 template <class T>
 class RealtimePacketBuffer {
@@ -119,7 +121,6 @@ template <class Ctx>
 struct ContextT {
 	using C = ContextT;
 	using Format = typename Ctx::Format;
-	using ExchangePoint = typename Ctx::ExchangePoint;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
 	
@@ -138,6 +139,29 @@ struct ContextT {
 		virtual int GetQueueSize() const = 0;
 		virtual Format GetFormat() const = 0;
 		virtual bool IsQueueFull() const = 0;
+		
+	};
+	
+	
+	class ExchangePoint : public Topside::ExchangePoint {
+		ConnectorBase* conn = 0;
+		off32 offset;
+		bool use_consumer = false;
+		bool dbg_offset_is_set = false;
+		
+	public:
+		typedef ExchangePoint CLASSNAME;
+		ExchangePoint() {}
+		~ExchangePoint() {Deinit();}
+		
+		void Init(ConnectorBase* conn);
+		void Deinit();
+		void Update(double dt) override;
+		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
+		void UseConsumer(bool b=true) {use_consumer = b;}
+		void Destroy() {conn = 0;}
+		
+		off32 GetOffset() const {return offset;}
 		
 	};
 	
@@ -371,7 +395,7 @@ struct ContextT {
 		virtual bool			FindClosestFormat(const Format& fmt, int& idx) = 0;
 		
 		
-		const Format& GetActiveFormat(C&) const {return GetFormat(GetActiveFormatIdx());}
+		Format GetActiveFormat() const {return GetFormat(GetActiveFormatIdx());}
 		
 	};
 	
@@ -405,12 +429,10 @@ struct ContextT {
 
 
 #define LOCAL_CTX(x, value_base, stream_base) \
-	class x##ExchangePoint; \
 	struct x##Context { \
 		static constexpr const char* Name = #x; \
 		using Format			= x##Format; \
 		using Ctx				= x##Context; \
-		using ExchangePoint		= x##ExchangePoint; \
 		using ValueBase			= value_base; \
 		using StreamBase		= stream_base; \
 		static x##Context& Static() {return Single<x##Context>();} \

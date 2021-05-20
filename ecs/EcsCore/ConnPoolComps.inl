@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>
 void ConnectAllInterfaces<T>::Initialize() {
-	Machine& m = ConnectorBase::GetPool().GetMachine();
+	Machine& m = ConnectorBase::GetPool()->GetMachine();
 	sys = m.Get<EntityStore>();
 	ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
 	Refresh();
@@ -18,7 +18,7 @@ void ConnectAllInterfaces<T>::Uninitialize() {
 
 template <class T>
 void ConnectAllInterfaces<T>::UnlinkAll() {
-	Machine& mach = ConnectorBase::GetPool().GetMachine();
+	Machine& mach = ConnectorBase::GetPool()->GetMachine();
 	
 	if (!mach.IsRunning()) {
 		for (ExchangePointRef& pt : pts) {

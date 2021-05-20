@@ -72,7 +72,7 @@ CONSOLE_APP_MAIN {
     mach.Add<ComponentStore>();
     mach.Add<ConnectorSystem>();
     mach.Add<OverlapSystem>();
-    mach.Add<EventSystem>();
+    mach.Add<HumanSystem>();
     mach.Add<ExchangeSystem>();
     mach.Add<StateSystem>();
     mach.Add<ActionSystem>();

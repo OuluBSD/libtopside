@@ -131,12 +131,8 @@ public:
 	
 	void			Exchange(AudioEx& e) override;
 	int				GetQueueSize() const override {return 0;}
-	AudioFormat		GetAudioFormat() const override {return fmt;}
+	AudioFormat		GetFormat() const override {return fmt;}
 	bool			IsQueueFull() const override {return false;}
-	
-#if HAVE_OPENGL
-	virtual bool	PaintOpenGLTexture(int texture) override {TODO; return false;}
-#endif
 	
 	dword			GetFrameCount() const {return total_frames;}
 	
@@ -175,7 +171,7 @@ public:
 
 class AudioDeviceStream : public AudioBase {
 	StreamCallbackData	scallback;
-	SystemAudio			aud;
+	AudioProxy			aud;
 	
 public:
 	Callback1<StreamCallbackArgs&>		WhenAction;
@@ -191,7 +187,7 @@ public:
 
 	void			operator<<=(Callback1<StreamCallbackArgs&> cb)    {WhenAction = cb;}
 
-	SystemAudio&	GetSystemAudio() {return aud;}
+	Audio&			GetAudio() {return aud;}
 	
 private:
 	void			SetFinishCallback();
@@ -213,7 +209,7 @@ public:
 	
 	void					Exchange(AudioEx& e) override {buf.Exchange(e);}
 	int						GetQueueSize() const override {return buf.GetQueueSize();}
-	AudioFormat				GetAudioFormat() const override {return buf.GetAudioFormat();}
+	AudioFormat				GetFormat() const override {return buf.GetFormat();}
 	bool					IsQueueFull() const override {return buf.IsQueueFull();}
 	
 	AudioVolatileBuffer&	GetBuffer() {return buf;}
@@ -221,7 +217,7 @@ public:
 };
 
 class AudioStream : public AudioBase {
-	SystemAudio		aud;
+	AudioProxy		aud;
 	
 public:
 	AudioStream() {aud.Set(this);};
@@ -230,7 +226,7 @@ public:
 	void			Open(const StreamParameters& inparam,const StreamParameters& outparam);
 	void			OpenDefault(int inchannels=0, int outchannels=2, SampleFormat format=SND_FLOAT32);
 
-	SystemAudio&	GetSystemAudio() {return aud;}
+	Audio&			GetAudio() {return aud;}
 	int				ReadAvailable();
 	int				WriteAvailable();
 };

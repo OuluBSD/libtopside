@@ -28,6 +28,7 @@ void StaticVolumeComponent::Uninitialize() {
 	
 }
 
+#if 0
 bool StaticVolumeComponent::LoadFileAny(String path) {
 	const char* fn_name = "LoadFileAny";
 	
@@ -83,16 +84,18 @@ bool StaticVolumeComponent::LoadFileAny(String path) {
 	return true;
 }
 
-Size StaticVolumeComponent::GetResolution() const {
-	return sz;
+#endif
+
+Size StaticVolumeComponent::VolumeStream::GetResolution() const {
+	return comp.sz;
 }
 
-int  StaticVolumeComponent::GetDepth() const {
-	return depth;
+int  StaticVolumeComponent::VolumeStream::GetDepth() const {
+	return comp.depth;
 }
 
-void StaticVolumeComponent::EmitStatic() {
-	StaticSinkData data;
+/*void StaticVolumeComponent::EmitStatic() {
+	StaticValueData data;
 	data.obj_i = 0;
 	data.w = sz.cx;
 	data.h = sz.cy;
@@ -102,7 +105,7 @@ void StaticVolumeComponent::EmitStatic() {
 	data.data = values.Begin();
 	for(Ref<StaticSink> c : StaticSource::GetConnections())
 		c->RecvStatic(data);
-}
+}*/
 
 
 NAMESPACE_TOPSIDE_END

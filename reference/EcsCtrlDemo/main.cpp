@@ -20,8 +20,8 @@ GUI_APP_MAIN {
 		    m.Add<ComponentStore>();
 		    m.Add<ConnectorStore>();
 		    m.Add<AudioSystem>();
-		    m.Add<EventSystem>();
-		    m.Add<RenderingSystem>();
+		    m.Add<HumanSystem>();
+		    m.Add<DisplaySystem>();
 		    m.Add<FusionSystem>();
 		    
 		    reg.SetAppName("ECS machine");

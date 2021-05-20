@@ -219,11 +219,13 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 		double values[4];
 		for(int j = 0; j < 4; j++) {
 			if (j < in.GetCount()) {
-				FusionComponentInput& in = this->in[j];
-				if (in.stream)
+				AcceleratorHeader& in = this->in[j];
+				
+				TODO // get time from packet
+				/*if (in.stream)
 					values[j] = in.stream->GetSeconds();
 				else
-					values[j] = stream.vtotal_seconds;
+					values[j] = stream.vtotal_seconds;*/
 			}
 			else
 				values[j] = stream.vtotal_seconds;
@@ -235,17 +237,17 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 		int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 		GLfloat values[3] = {0,0,0};
 		if (ch < in.GetCount()) {
-			FusionComponentInput& in = this->in[ch];
-			if (in.stream) {
-				const auto& fmt = in.stream->GetVideo().GetVideoFormat();
+			AcceleratorHeader& in = this->in[ch];
+			if (in.GetVideo()) {
+				const auto& fmt = in.GetVideo()->GetActiveFormat();
 				values[0] = fmt.res.cx;
 				values[1] = fmt.res.cy;
 				values[2] = fmt.depth;
 			}
 			/*else if (
-				in.type == FusionComponentInput::TEXTURE ||
-				in.type == FusionComponentInput::CUBEMAP ||
-				in.type == FusionComponentInput::VOLUME) {
+				in.type == AcceleratorHeader::TEXTURE ||
+				in.type == AcceleratorHeader::CUBEMAP ||
+				in.type == AcceleratorHeader::VOLUME) {
 				ASSERT(in.id >= 0);
 				if (in.id >= 0 && ctx) {
 					FusionComponent& comp = ctx->GetComponentById(in.id);
@@ -348,8 +350,8 @@ GLint FusionComponent::Ogl_GetInputTex(int input_i) const {
 	if (!ctx || input_i < 0 || input_i >= in.GetCount())
 		return -1;
 	
-	const FusionComponentInput& in = this->in[input_i];
-	FusionComponentRef in_comp = ctx->GetComponentById(in.id);
+	const AcceleratorHeader& in = this->in[input_i];
+	FusionComponentRef in_comp = ctx->GetComponentById(in.GetId());
 	int tex = in_comp->Ogl_GetOutputTexture(in_comp == this);
 	ASSERT(tex > 0);
 	
@@ -357,12 +359,12 @@ GLint FusionComponent::Ogl_GetInputTex(int input_i) const {
 }
 
 int FusionComponent::Ogl_GetTexType(int input_i) const {
-	const FusionComponentInput& in = this->in[input_i];
+	const AcceleratorHeader& in = this->in[input_i];
 	
-	if (in.type == FusionComponentInput::VOLUME)
+	if (in.GetType() == AcceleratorHeader::VOLUME)
 		return GL_TEXTURE_3D;
 	
-	else if (in.type == FusionComponentInput::CUBEMAP)
+	else if (in.GetType() == AcceleratorHeader::CUBEMAP)
 		return GL_TEXTURE_CUBE_MAP;
 	
 	else
@@ -428,10 +430,10 @@ bool FusionComponent::Ogl_CompileFragmentShader() {
 	
 	for(int j = 0; j < 4; j++) {
 		if (j < in.GetCount()) {
-			FusionComponentInput& in = this->in[j];
-			if (in.type == FusionComponentInput::CUBEMAP)
+			AcceleratorHeader& in = this->in[j];
+			if (in.GetType() == AcceleratorHeader::CUBEMAP)
 				code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
-			else if (in.type == FusionComponentInput::VOLUME)
+			else if (in.GetType() == AcceleratorHeader::VOLUME)
 				code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
 			else
 				code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
@@ -650,27 +652,27 @@ GLint FusionComponent::Ogl_GetOutputTexture(bool reading_self) const {
 }
 
 void FusionComponent::Ogl_TexFlags(int type, int filter, int repeat) {
-	if (filter == FusionComponentInput::FILTER_NEAREST) {
+	if (filter == AcceleratorHeader::FILTER_NEAREST) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
-	else if (filter == FusionComponentInput::FILTER_LINEAR) {
+	else if (filter == AcceleratorHeader::FILTER_LINEAR) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	else if (filter == FusionComponentInput::FILTER_MIPMAP) {
+	else if (filter == AcceleratorHeader::FILTER_MIPMAP) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(type);
 	}
 	
-	if (repeat == FusionComponentInput::WRAP_REPEAT) {
+	if (repeat == AcceleratorHeader::WRAP_REPEAT) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		if (type == GL_TEXTURE_3D)
 			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	}
-	else if (repeat == FusionComponentInput::WRAP_CLAMP) {
+	else if (repeat == AcceleratorHeader::WRAP_CLAMP) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		if (type == GL_TEXTURE_3D)

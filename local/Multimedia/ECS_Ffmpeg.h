@@ -34,15 +34,16 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
 	
 	// Audio
-	AudioStream&	GetAudioSource() override;
-	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	AudioStream&	GetStream(AudCtx) override;
+	void			BeginStream(AudCtx) override;
+	void			EndStream(AudCtx) override;
 	
 	// Video
-	VideoStream&	GetVideoSource() override;
-	void			BeginVideoSource() override;
-	void			EndVideoSource(bool any_sink_consumed) override;
-	bool			LoadFileAny(String path) override;
+	VideoStream&	GetStream(VidCtx) override;
+	void			BeginStream(VidCtx) override;
+	void			EndStream(VidCtx) override;
+	
+	bool			LoadFileAny(String path);
 	
 	
 	String GetLastError() const {return last_error;}

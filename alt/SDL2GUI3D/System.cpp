@@ -39,8 +39,8 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<ComponentStore>();
     mach.Add<SDL2System>();
     mach.Add<SDL2GUI3DSystem>();
-    mach.Add<EventSystem>();
-    mach.Add<RenderingSystem>();
+    mach.Add<HumanSystem>();
+    mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();
     mach.Add<FusionSystem>();
     

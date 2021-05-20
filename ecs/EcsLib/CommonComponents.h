@@ -121,26 +121,40 @@ class StaticVolumeComponent :
 {
 	VIS_COMP_1_0(Static)
 	
+protected:
+	friend class VolumeStream;
+	
 	Vector<byte> values;
 	String errstr;
 	Size sz;
 	int depth;
 	int stride;
 	
+	struct VolumeStream : public SimpleStaticStream {
+		StaticVolumeComponent& comp;
+		
+		VolumeStream(StaticVolumeComponent* c) : comp(*c) {}
+		bool LoadFileAny(String path) override;
+		Size GetResolution() const override;
+		int GetDepth() const override;
+	};
+	
+	VolumeStream stream;
+	
 public:
 	COPY_PANIC(StaticVolumeComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
 	
-	StaticVolumeComponent() = default;
+	StaticVolumeComponent() : stream(this) {}
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	bool LoadFileAny(String path) override;
-	Size GetResolution() const override;
-	int GetDepth() const override;
-	void EmitStatic() override;
 	void Visit(RuntimeVisitor& vis) override {}
+	
+	StaticStream& GetStream(StcCtx) override {return stream;}
+	void BeginStream(StcCtx) override {}
+	void EndStream(StcCtx) override {}
 	
 	String GetLastError() const {return errstr;}
 	

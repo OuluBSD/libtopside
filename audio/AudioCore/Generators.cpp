@@ -42,7 +42,7 @@ int DummySoundGeneratorAudio::GetQueueSize() const {
 	return 10;
 }
 
-AudioFormat DummySoundGeneratorAudio::GetAudioFormat() const {
+AudioFormat DummySoundGeneratorAudio::GetFormat() const {
 	return fmt;
 }
 
@@ -77,28 +77,32 @@ void SoundGeneratorComponent::Uninitialize() {
 	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
 }
 
+#if 0
+
 void SoundGeneratorComponent::RecvMidi(const MidiFrame& e) {
 	TODO
 }
 
 void SoundGeneratorComponent::Configure(const Midi::File& file) {
-	/*if (mode == MODE_TRACK_NUM) {
+	if (mode == MODE_TRACK_NUM) {
 		if (track_i >= 0 && track_i < file.GetTrackCount()) {
 			Ref<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
 			fs_sys->Assign(file, track_i, this);
 		}
-	}*/
+	}
 }
 
-AudioStream& SoundGeneratorComponent::GetAudioSource() {
+#endif
+
+AudioStream& SoundGeneratorComponent::GetStream(AudCtx) {
 	return gen;
 }
 
-void SoundGeneratorComponent::BeginAudioSource() {
+void SoundGeneratorComponent::BeginStream(AudCtx) {
 	
 }
 
-void SoundGeneratorComponent::EndAudioSource() {
+void SoundGeneratorComponent::EndStream(AudCtx) {
 	
 }
 

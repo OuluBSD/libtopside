@@ -2,6 +2,9 @@
 #define _EcsCore_VideoSystem_h_
 
 
+#if 0
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -43,4 +46,5 @@ public:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

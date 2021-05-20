@@ -14,7 +14,7 @@ void CloseAudioSys() {
 }
 
 INITBLOCK {
-	AudioSystem::WhenUninit << callback(CloseAudioSys);
+	AudioSystem::WhenUninit() << callback(CloseAudioSys);
 }
 
 
@@ -81,11 +81,11 @@ void PortaudioSinkComponent::RecvMedia(Media& media) {
 }
 #endif
 
-AudioFormat PortaudioSinkComponent::GetAudioFormat() {
+AudioFormat PortaudioSinkComponent::GetFormat(AudCtx) {
 	TODO
 }
 
-Audio& PortaudioSinkComponent::GetAudioSink() {
+Audio& PortaudioSinkComponent::GetValue(AudCtx) {
 	if (obj)
 		return obj->GetBuffer();
 	throw Exc("PortaudioSinkComponent: obj is null");

@@ -6,11 +6,11 @@ NAMESPACE_TOPSIDE_BEGIN
 void FusionDisplaySource::Initialize() {
 	FusionComponent::Initialize();
 	
-	AddToSystem<RenderingSystem>(DisplaySource::AsRefT());
+	AddToSystem<DisplaySystem>(AsRef<DisplaySource>());
 }
 
 void FusionDisplaySource::Uninitialize() {
-	RemoveFromSystem<RenderingSystem>(DisplaySource::AsRefT());
+	RemoveFromSystem<DisplaySystem>(AsRef<DisplaySource>());
 	
 	FusionComponent::Uninitialize();
 }
@@ -83,15 +83,15 @@ void FusionDisplaySource::SetVideoSize(Size sz) {
 	}
 }
 
-DisplayStream& FusionDisplaySource::GetDisplaySource() {
+DisplayStream& FusionDisplaySource::GetStream(DisCtx) {
 	TODO
 }
 
-void FusionDisplaySource::BeginDisplaySource() {
+void FusionDisplaySource::BeginStream(DisCtx) {
 	TODO
 }
 
-void FusionDisplaySource::EndDisplaySource() {
+void FusionDisplaySource::EndStream(DisCtx) {
 	TODO
 }
 

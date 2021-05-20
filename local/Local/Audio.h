@@ -10,54 +10,6 @@ END_UPP_NAMESPACE
 
 NAMESPACE_TOPSIDE_BEGIN
 
-struct AudioFormat {
-	int freq = 0;
-	int sample_rate = 0;
-	int var_size = 0;
-	int channels = 0;
-	bool is_var_float = 0;
-	bool is_var_signed = 0;
-	bool is_var_bigendian = 0;
-	
-	bool IsValid() const {return var_size > 0 && sample_rate > 0 && channels > 0 && freq > 0;}
-	bool IsCopyCompatible(const AudioFormat& fmt) const {
-		return	var_size			== fmt.var_size &&
-				channels			== fmt.channels &&
-				is_var_float		== fmt.is_var_float &&
-				is_var_signed		== fmt.is_var_signed &&
-				is_var_bigendian	== fmt.is_var_bigendian;
-	}
-	bool IsPlaybackCompatible(const AudioFormat& fmt) const {
-		return	freq				== fmt.freq &&
-				IsCopyCompatible(fmt);
-	}
-	bool IsSame(const AudioFormat& fmt) const {
-		return	sample_rate			== fmt.sample_rate &&
-				IsCopyCompatible(fmt);
-	}
-	void Clear() {memset(this, 0, sizeof(AudioFormat));}
-	bool operator!=(const AudioFormat& fmt) const {return !IsSame(fmt);}
-	bool operator==(const AudioFormat& fmt) const {return IsSame(fmt);}
-	
-	int GetSampleBytes() const {return var_size * channels;}
-	int GetFrameBytes() const {return var_size * channels * sample_rate;}
-	int GetFrameBytes(int dst_sample_rate) const {return var_size * channels * dst_sample_rate;}
-	double GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
-	
-	template <class T> bool IsSampleType() const {
-		#if CPU_LITTLE_ENDIAN
-		if (is_var_bigendian) return false;
-		#else
-		if (!is_var_bigendian) return false;
-		#endif
-		if (is_var_float != (std::is_same<T,float>() || std::is_same<T,double>())) return false;
-		if (is_var_signed != (std::is_same<T,float>() || std::is_same<T,double>() || std::is_same<T,int>() || std::is_same<T,short>() || std::is_same<T,char>())) return false;
-		return var_size == sizeof(T);
-	}
-};
-
-
-
 
 template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN=1, bool DST_NATIVE_ENDIAN=1> DST ConvertAudioSample(SRC v) {
 	static_assert(!SRC_NATIVE_ENDIAN || !DST_NATIVE_ENDIAN, "Only native endian sample should use default implementation");
@@ -168,10 +120,6 @@ INTEGERS_TO_FLOATS(double)
 FLOATS_TO_INTEGERS(float)
 FLOATS_TO_INTEGERS(double)
 
-
-LOCAL_CTX(Audio, DummyValueBase, DummyStreamBase)
-#define AUDCTX AudioContext::Static()
-#define AudCtx AudioContext&
 
 NAMESPACE_TOPSIDE_END
 

@@ -3,6 +3,10 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
+#if 0
+
+
 Callback VideoSystem::WhenUninit;
 
 bool VideoSystem::Initialize() {
@@ -18,12 +22,12 @@ void VideoSystem::Start() {
 void VideoSystem::Update(double dt) {
 
 	for (VideoSourceRef src : srcs) {
-		VideoStream& stream = src->GetVideoSource();
+		VideoStream& stream = src->GetStream(VidCtx);
 		bool buffer_full = stream.GetBufferSize() >= 2;
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render)
-			src->BeginVideoSource();
+			src->BeginStream(VidCtx);
 	}
 	
 	for (VideoExchangePointRef expt : expts) {
@@ -82,7 +86,7 @@ void VideoSystem::Remove(VideoExchangePointRef expt) {
 
 
 
-
+#endif
 
 
 NAMESPACE_TOPSIDE_END

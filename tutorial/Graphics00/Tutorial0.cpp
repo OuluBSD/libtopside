@@ -33,8 +33,8 @@ RENDER_APP_MAIN {
 		EntityStore& ents = *mach.Add<EntityStore>();
 	    mach.Add<ComponentStore>();
 	    mach.Add<ConnectorSystem>();
-	    mach.Add<EventSystem>();
-	    mach.Add<RenderingSystem>();
+	    mach.Add<HumanSystem>();
+	    mach.Add<DisplaySystem>();
 	    
 	    reg.SetAppName("Tutorial0");
 	    

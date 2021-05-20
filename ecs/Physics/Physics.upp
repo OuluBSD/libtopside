@@ -1,8 +1,5 @@
 description "\377B141,85,150";
 
-uses
-	EcsLib;
-
 library(DEBUG & WIN32) ode_singled;
 
 library(!DEBUG & WIN32) ode_single;

@@ -1,6 +1,9 @@
 #include "EcsCore.h"
 
 
+#if 0
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -148,3 +151,6 @@ void CreateOctreeEntityFromString(PoolRef octree_root, String map_str, const Arr
 }
 
 NAMESPACE_TOPSIDE_END
+
+
+#endif

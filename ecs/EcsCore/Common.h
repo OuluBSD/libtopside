@@ -29,17 +29,17 @@ class CoreWindow;
 class SoundGeneratorComponent;
 class PortaudioSinkComponent;
 struct ConnectorBase;
-struct ActionSource;
+/*struct ActionSource;
 struct AudioSource;
 struct AudioSink;
 struct VideoSource;
-struct VideoSink;
+struct VideoSink;x
 struct ControllerSource;
 struct ControllerSink;
 struct MidiSource;
 struct DisplaySource;
 struct DisplaySink;
-struct StaticSink;
+struct StaticSink;*/
 struct PaintComponent;
 template <class Main, class Base> class ComponentStoreT;
 
@@ -48,11 +48,11 @@ using PoolParent			= RefParent2<EntityStore,Pool>;
 using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
 using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
 
-using AudioExchangePointRef	= Ref<AudioExchangePoint,	RefParent1<MetaExchangePoint>>;
-using VideoExchangePointRef	= Ref<VideoExchangePoint,	RefParent1<MetaExchangePoint>>;
+/*using AudioExchangePointRef	= Ref<AudioExchangePoint,	RefParent1<MetaExchangePoint>>;
+using VideoExchangePointRef	= Ref<VideoExchangePoint,	RefParent1<MetaExchangePoint>>;*/
 using ComponentBaseRef		= Ref<ComponentBase,		RefParent1<Entity>>;
 using ComponentRef			= Ref<ComponentBase,		RefParent1<Entity>>;
-using ActionSourceRef		= Ref<ActionSource,			RefParent1<Entity>>;
+/*using ActionSourceRef		= Ref<ActionSource,			RefParent1<Entity>>;
 using AudioSourceRef		= Ref<AudioSource,			RefParent1<Entity>>;
 using AudioSinkRef			= Ref<AudioSink,			RefParent1<Entity>>;
 using VideoSourceRef		= Ref<VideoSource,			RefParent1<Entity>>;
@@ -62,7 +62,7 @@ using ControllerSinkRef		= Ref<ControllerSink,		RefParent1<Entity>>;
 using MidiSourceRef			= Ref<MidiSource,			RefParent1<Entity>>;
 using DisplaySourceRef		= Ref<DisplaySource,		RefParent1<Entity>>;
 using DisplaySinkRef		= Ref<DisplaySink,			RefParent1<Entity>>;
-using StaticSinkRef			= Ref<StaticSink,			RefParent1<Entity>>;
+using StaticSinkRef			= Ref<StaticSink,			RefParent1<Entity>>;*/
 using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 using Transform2DRef		= Ref<Transform2D,			RefParent1<Entity>>;
@@ -85,7 +85,7 @@ using SoundGeneratorComponentRef		= Ref<SoundGeneratorComponent,			RefParent1<En
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
 using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
-using DisplayExchangePointRef			= Ref<DisplayExchangePoint,				RefParent1<MetaExchangePoint>>;
+//using DisplayExchangePointRef			= Ref<DisplayExchangePoint,				RefParent1<MetaExchangePoint>>;
 
 using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;
@@ -202,7 +202,62 @@ typedef enum {
 #define VIS_COMP_2_1(a, b, c)		VIS_SOURCES_2(a, b)		VIS_SINKS_1(c)
 #define VIS_COMP_2_2(a, b, c, d)	VIS_SOURCES_2(a, b)		VIS_SINKS_2(c, d)
 
+
+
+
+
+
+
+template <class I>
+class InterfaceSink : public ExchangeSinkProvider {
 	
+	
+public:
+	
+	virtual ComponentBase* AsComponentBase() = 0;
+	
+	
+};
+
+#ifdef flagDEBUG
+void InterfaceDebugPrint(TypeId type, String s);
+#endif
+
+template <class I, class O>
+class InterfaceSource : public ExchangeSourceProvider {
+	
+public:
+	
+	virtual ComponentBase* AsComponentBase() = 0;
+	
+	
+protected:
+	
+};
+
+
+
+
+#define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
+
+#define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
+#define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->AsRef<x>();}
+
+#define IFACE_LIST \
+	IFACE(Human)\
+	IFACE(Audio)\
+	IFACE(Video)\
+	IFACE(Media)\
+	IFACE(Display)\
+	IFACE(Static)\
+	IFACE(Model)\
+	IFACE(Device)\
+	IFACE(Physics)\
+	IFACE(Scripting)\
+	IFACE(Accelerator)
+
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

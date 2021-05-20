@@ -57,16 +57,16 @@ public:
 
 class MixerChannelInputComponent :
 	public Component<MixerChannelInputComponent>,
-	public FusionSource,
-	public FusionSink
+	public AcceleratorSource,
+	public AcceleratorSink
 {
 	String last_error;
 	
 public:
-	VIS_COMP_1_1(Fusion, Fusion)
+	VIS_COMP_1_1(Accelerator, Accelerator)
 	COPY_PANIC(MixerChannelInputComponent);
-	IFACE_CB(FusionSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSink);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	MixerChannelInputComponent();
@@ -74,7 +74,16 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	const FusionComponentInput& GetHeader() const override;
+	//const AcceleratorHeader& GetHeader() const override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	String GetLastError() const {return last_error;}
 	
@@ -82,16 +91,16 @@ public:
 
 class MixerChannelOutputComponent :
 	public Component<MixerChannelOutputComponent>,
-	public FusionSource,
-	public FusionSink
+	public AcceleratorSource,
+	public AcceleratorSink
 {
 	String last_error;
 	
 public:
-	VIS_COMP_1_1(Fusion, Fusion)
+	VIS_COMP_1_1(Accelerator, Accelerator)
 	COPY_PANIC(MixerChannelOutputComponent);
-	IFACE_CB(FusionSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSink);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	MixerChannelOutputComponent();
@@ -99,7 +108,16 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	const FusionComponentInput& GetHeader() const override;
+	//const AcceleratorHeader& GetHeader() const override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	String GetLastError() const {return last_error;}
 	
@@ -109,14 +127,14 @@ public:
 class MixerAudioSourceComponent :
 	public Component<MixerAudioSourceComponent>,
 	public AudioSource,
-	public FusionSink
+	public AcceleratorSink
 {
 	String last_error;
 	
 public:
-	VIS_COMP_1_1(Audio, Fusion)
+	VIS_COMP_1_1(Audio, Accelerator)
 	COPY_PANIC(MixerAudioSourceComponent);
-	IFACE_CB(FusionSink);
+	IFACE_CB(AcceleratorSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	
@@ -125,9 +143,15 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	AudioStream&		GetAudioSource() override;
-	void				BeginAudioSource() override;
-	void				EndAudioSource() override;
+	
+	// AudioSource
+	AudioStream&		GetStream(AudCtx) override;
+	void				BeginStream(AudCtx) override;
+	void				EndStream(AudCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	String GetLastError() const {return last_error;}
 	
@@ -138,7 +162,7 @@ public:
 
 class MidiFileComponent :
 	public Component<MidiFileComponent>,
-	public MidiSource
+	public DeviceSource
 {
 	String last_error;
 	Midi::File file;
@@ -147,17 +171,17 @@ class MidiFileComponent :
 	MidiFrame tmp;
 	
 public:
-	VIS_COMP_1_0(Midi)
+	VIS_COMP_1_0(Device)
 	COPY_PANIC(MidiFileComponent);
-	IFACE_CB(MidiSource);
+	IFACE_CB(DeviceSource);
 	IFACE_GENERIC;
 	
 	MidiFileComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void EmitMidi(double dt) override;
-	bool IsSupported(DevType type) override {return true;}
+	//void EmitMidi(double dt) override;
+	//bool IsSupported(DevType type) override {return true;}
 	void OnLink(Sink sink, Cookie src_c, Cookie sink_c) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	bool OpenFilePath(String path);
@@ -165,6 +189,11 @@ public:
 	void CollectTrackEvents(int i);
 	void EmitTrack(int i);
 	void DumpMidiFile();
+	
+	// DeviceSource
+	DeviceStream&		GetStream(DevCtx) override;
+	void				BeginStream(DevCtx) override;
+	void				EndStream(DevCtx) override;
 	
 	String GetLastError() const {return last_error;}
 	
@@ -179,7 +208,7 @@ public:
 
 class FluidsynthComponent :
 	public Component<FluidsynthComponent>,
-	public FusionSource,
+	public AcceleratorSource,
 	public MidiSink
 {
 	String last_error;
@@ -193,10 +222,10 @@ class FluidsynthComponent :
 	};
 	
 public:
-	VIS_COMP_1_1(Fusion, Midi)
+	VIS_COMP_1_1(Accelerator, Midi)
 	COPY_PANIC(FluidsynthComponent);
 	IFACE_CB(MidiSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FluidsynthComponent();
@@ -208,15 +237,22 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void OpenTrackListener(int track_i);
 	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
 	String GetLastError() const {return last_error;}
-	const FusionComponentInput& GetHeader() const override {return cfg;}
+	const AcceleratorHeader& GetHeader() const override {return cfg;}
 	
 	
 };
 
 
 
-class FluidsynthSystem : public System<FluidsynthSystem> {
+class FluidsynthSystem :
+	public System<FluidsynthSystem>
+{
 	LinkedList<FluidsynthComponentRef> comps;
 	LinkedList<FluidsynthComponentRef> track_comps;
 	

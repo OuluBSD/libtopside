@@ -21,6 +21,7 @@ file
 	Copying,
 	AudioCore.h,
 	Internal.h,
+	Midi.h,
 	Audio readonly separator,
 	Record.h,
 	Record.cpp,

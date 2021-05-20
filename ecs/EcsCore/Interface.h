@@ -76,124 +76,19 @@ public:
 
 
 
-template <class I>
-class InterfaceSink : public ExchangeSinkProvider {
-	
-	
-public:
-	
-	virtual ComponentBase* AsComponentBase() = 0;
-	
-	
-};
 
-#ifdef flagDEBUG
-void InterfaceDebugPrint(TypeId type, String s);
-#endif
 
-template <class I, class O>
-class InterfaceSource : public ExchangeSourceProvider {
-	
 
-public:
-	
-	virtual ComponentBase* AsComponentBase() = 0;
-	
-	
-	/*struct Connection : Moveable<Connection> {
-		O* sink;
-		State* src_state = 0;
-		State* sink_state = 0;
-		Connection(O* o) {sink = o;}
-		bool operator==(const Connection& c) const {return sink == c.sink;}
-	};
-	
-	bool LinkManually(O& sink, State** ret_src_state=0, State** ret_sink_state=0) {return Link0(sink, ret_src_state, ret_sink_state);}
-	
-	const Vector<Connection>& GetSinks() const {return sinks;}
-	
-	virtual bool PassLink(O& sink) {return true;}
-	virtual bool PassUnlink(O& sink) {return true;}*/
-	
-protected:
-	/*
-	Vector<Connection> sinks;
-	
-	#ifdef flagDEBUG
-	static const bool print_debug = true;
-	#else
-	static const bool print_debug = false;
-	#endif
-	
-	bool LinkInterface(O& sink, State**& src_state, State**& sink_state) {
-		int found = -1;
-		Connection& conn = VectorFindAdd(sinks, Connection(&sink), &found);
-		src_state = &conn.src_state;
-		sink_state = &conn.sink_state;
-		return found < 0;
-	}
-	bool UnlinkInterface(O& sink) {
-		return VectorRemoveKey(sinks, Connection(&sink)) > 0;
-	}
-	
-	
-	bool Link0(O& sink, State** ret_src_state=0, State** ret_sink_state=0) {
-		ASSERT(conns.IsEmpty() || IsMultiConnection());
-		if (Find(&sink) >= 0)
-			return false;
-		State** src_state;
-		State** sink_state;
-		if (PassLink(sink) && LinkInterface(sink, src_state, sink_state)) {
-			if (print_debug) {
-				String s;
-				TypeId t = GetTypeId<I>();
-				s << t.CleanDemangledName() <<
-					"<" << GetComponentBaseTypeString(AsComponentBase()) << "> linked to " <<
-					GetTypeId<O>().CleanDemangledName() <<
-					"<" << GetComponentBaseTypeString(sink.AsComponentBase()) << ">";
-				InterfaceDebugPrint(t, s);
-			}
-			AddConnection(&sink);
-			sink.AddConnection(this);
-			*src_state = OnLink(&sink);
-			*sink_state = sink.OnLink(this);
-			if (ret_src_state)
-				*ret_src_state = *src_state;
-			if (ret_sink_state)
-				*ret_sink_state = *sink_state;
-			return true;
-		}
-		return false;
-	}
-	
-	virtual bool Unlink0(InterfaceBase* iface) {
-		O* o = dynamic_cast<O*>(iface);
-		ASSERT_(o, "Unlink before destructor");
-		if (o) {
-			OnUnlink(iface);
-			iface->OnUnlink(this);
-			if (PassUnlink(*o) && UnlinkInterface(*o)) {
-				if (print_debug) {
-					TypeId t = GetTypeId<I>();
-					String s;
-					s << t.CleanDemangledName() << " unlinked from " << GetTypeId<O>().CleanDemangledName();
-					InterfaceDebugPrint(t, s);
-				}
-				return true;
-			}
-			else {
-				LOG("error: couldn't unlink " << GetTypeId<I>().CleanDemangledName() << " from " << GetTypeId<O>().DemangledName());
-			}
-		}
-		return false;
-	}*/
-	
-	
-};
+#if 0
 
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
 #define IFACE_BASE(x)	TypeId GetProviderType() override {return TypeId(typeid(x));}
+
+
+
+
+
 
 //									---- Audio ----
 
@@ -204,32 +99,6 @@ protected:
 // data contains multiple unrelated audio sources, it is better to call it an audio stream.
 
 
-struct AudioSource;
-struct AudioSink : IO_OUT(Audio) {
-	IFACE_BASE(AudioSink)
-	
-	virtual AudioFormat			GetAudioFormat() = 0;
-	virtual Audio&				GetAudioSink() = 0;
-	
-};
-struct AudioSource : IO_IN(Audio) {
-	IFACE_BASE(AudioSource)
-	
-	using Sink = AudioSink;
-	using ExPt = AudioExchangePoint;
-	
-	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
-	const RealtimeSourceConfig&	Cfg() const {return cfg;}
-	void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
-	
-	virtual AudioStream&		GetAudioSource() = 0;
-	virtual void				BeginAudioSource() = 0;
-	virtual void				EndAudioSource() = 0;
-	
-private:
-	RealtimeSourceConfig		cfg;
-	
-};
 
 
 
@@ -241,8 +110,8 @@ struct VideoSink : IO_OUT(Video) {
 	IFACE_BASE(VideoSink)
 	
 	
-	virtual VideoFormat			GetVideoFormat() = 0;
-	virtual Video&				GetVideoSink() = 0;
+	virtual VideoFormat			GetFormat(VidCtx) = 0;
+	virtual Video&				GetValue(VidCtx) = 0;
 	
 };
 
@@ -255,9 +124,9 @@ struct VideoSource : IO_IN(Video) {
 	void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 	const RealtimeSourceConfig&	Cfg() const {return cfg;}
 	
-	virtual VideoStream&		GetVideoSource() = 0;
-	virtual void				BeginVideoSource() = 0;
-	virtual void				EndVideoSource(bool any_sink_consumed) = 0;
+	virtual VideoStream&		GetStream(VidCtx) = 0;
+	virtual void				BeginStream(VidCtx) = 0;
+	virtual void				EndStream(VidCtx) = 0;
 	
 	virtual bool LoadFileAny(String path) {return false;}
 	
@@ -284,8 +153,9 @@ struct DisplaySink : IO_OUT(Display) {
 	IFACE_BASE(DisplaySink)
 	
 	
-	virtual DisplayFormat			GetDisplayFormat() = 0;
-	virtual Display&				GetSink() = 0;
+	virtual DisplayFormat			GetFormat(DisCtx) = 0;
+	virtual Display&				GetValue(DisCtx) = 0;
+	
 	virtual void					SetTitle(String s) = 0;
 	
 };
@@ -300,9 +170,9 @@ struct DisplaySource : IO_IN(Display) {
 	const RealtimeSourceConfig&	Cfg() const {return cfg;}
 	void						SetTitle(String s);
 	
-	virtual DisplayStream&			GetDisplaySource() = 0;
-	virtual void					BeginDisplaySource() = 0;
-	virtual void					EndDisplaySource() = 0;
+	virtual DisplayStream&			GetStream(DisCtx) = 0;
+	virtual void					BeginStream(DisCtx) = 0;
+	virtual void					EndStream(DisCtx) = 0;
 	
 	
 private:
@@ -461,7 +331,7 @@ struct ModelSource : IO_IN(Model) {
 // change itself, except for data set manually by the user. Different levels of detail are also
 // supported. At its most complex, the connector enables octree-type solutions.
 
-struct StaticSinkData {
+struct StaticValueData {
 	int obj_i;
 	int w;
 	int h;
@@ -474,7 +344,7 @@ struct StaticSinkData {
 struct StaticSink : IO_OUT(Static) {
 	IFACE_BASE(StaticSink)
 	
-	virtual void RecvStatic(const StaticSinkData&) = 0;
+	virtual void RecvStatic(const StaticValueData&) = 0;
 };
 
 struct StaticSource : IO_IN(Static) {
@@ -498,24 +368,24 @@ struct StaticSource : IO_IN(Static) {
 
 class FusionComponentInput;
 
-struct FusionSink : IO_OUT(Fusion) {
-	IFACE_BASE(FusionSink)
+struct AcceleratorSink : IO_OUT(Fusion) {
+	IFACE_BASE(AcceleratorSink)
 	
-	FusionSink() {
+	AcceleratorSink() {
 		SetMultiConnection();
 	}
 	
 	
 };
 
-struct FusionSource : IO_IN(Fusion) {
-	IFACE_BASE(FusionSource)
+struct AcceleratorSource : IO_IN(Fusion) {
+	IFACE_BASE(AcceleratorSource)
 	
-	FusionSource() {
+	AcceleratorSource() {
 		SetMultiConnection();
 	}
 	
-	virtual const FusionComponentInput& GetHeader() const = 0;
+	virtual const AcceleratorHeader& GetHeader() const = 0;
 	
 };
 
@@ -667,29 +537,24 @@ struct RouteSource : IO_IN(Route) {
 	virtual double GetHeuristicValue(RouteSink& sink) = 0;
 };
 
+#endif
 
 
-#define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
 
-#define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
-#define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->AsRef<x>();}
 
-#define IFACE_LIST \
-	IFACE(Display)\
-	IFACE(Audio)\
-	IFACE(Controller)\
-	IFACE(Midi)\
+
+	
+/*	IFACE(Midi)\
 	IFACE(Camera)\
-	IFACE(Video)\
 	IFACE(Model)\
 	IFACE(Static) \
 	IFACE(Fusion) \
 	IFACE(Semantic) \
 	IFACE(Overlap) \
 	IFACE(Action) \
-	IFACE(Route)
+	IFACE(Route)*/
 	
-	
+
 typedef enum {
 	#define IFACE(x) IFACE_##x##Source , IFACE_##x##Sink ,
 	IFACE_LIST

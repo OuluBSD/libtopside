@@ -1,6 +1,9 @@
 #include "EcsCore.h"
 
 
+#if 0
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -38,3 +41,5 @@ void ActionSystem::Remove(ActionSourceRef src) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

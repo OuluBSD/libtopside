@@ -38,7 +38,7 @@ struct Baseball : EntityPrefab<Transform, PbrRenderable, RigidBody>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<RigidBody>().acceleration = PhysicsSystem::EarthGravity;
+        components.Get<RigidBody>().acceleration = e.GetMachine().Get<PhysicsSystem>()->var.gravity;
         components.Get<PbrRenderable>().ResetModel(Knownmodel_names::Baseball);
 
         return components;
@@ -51,7 +51,7 @@ struct Bullet : EntityPrefab<Transform, PbrRenderable, RigidBody>
     {
         auto components = EntityPrefab::Make(e);
 
-        components.Get<RigidBody>().acceleration = PhysicsSystem::EarthGravity;
+        components.Get<RigidBody>().acceleration = e.GetMachine().Get<PhysicsSystem>()->var.gravity;
         components.Get<PbrRenderable>().ResetModel(Knownmodel_names::UnitSphere);
         components.Get<PbrRenderable>().color = vec4(0, 0, 1, 1);
         components.Get<Transform>().size = vec3(0.025f);

@@ -472,7 +472,7 @@ void CoreWindow::DrawLine(DrawCommand& cmd) {
 	float x1 = -width * 0.5 + pos_x1;
 	float y1 = -height * 0.5 + pos_y1;
 	
-	Model model;
+	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(2);
 	mesh.vertices.Add().Set(x0, y0, 0, 0, 1);
@@ -501,7 +501,7 @@ void CoreWindow::DrawImage(DrawCommand& cmd) {
 	float x1 = x0 - scale_x;
 	float y1 = y0 - scale_y;
 	
-	Model model;
+	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(4);
 	mesh.vertices.Add().Set(x0, y0, 0, 1, 1);
@@ -535,7 +535,7 @@ void CoreWindow::DrawRect(DrawCommand& cmd) {
 	float x1 = x0 - scale_x;
 	float y1 = y0 - scale_y;
 	
-	Model model;
+	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(4);
 	mesh.vertices.Add().Set(x0, y0, 0, 0, 1);
@@ -565,7 +565,7 @@ void CoreWindow::DrawTriangles(DrawCommand& cmd) {
 	
 	const Trianglef* tri = cmd.triangles.GetData();
 	int count = cmd.triangles.GetCount();
-	Model model;
+	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(count * 3);
 	mesh.indices.Reserve(count * 3);
@@ -607,7 +607,7 @@ void CoreWindow::DrawPolyline(DrawCommand& cmd) {
 	int width = sz.cx;
 	int height = sz.cy;
 	
-	Model model;
+	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(2);
 	const Pointf *a = &cmd.pts[0];

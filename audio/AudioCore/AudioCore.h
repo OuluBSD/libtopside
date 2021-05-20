@@ -18,6 +18,8 @@
 
 #include "Fluidsynth.h"
 
+#include "Midi.h"
+
 
 
 #endif

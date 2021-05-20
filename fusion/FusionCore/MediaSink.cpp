@@ -45,8 +45,8 @@ void FusionMediaSink::UpdateTexBuffers() {
 			Ogl_CreateTex(
 				res, 4,
 				0, 0,
-				FusionComponentInput::FILTER_MIPMAP,
-				FusionComponentInput::WRAP_CLAMP);
+				AcceleratorHeader::FILTER_MIPMAP,
+				AcceleratorHeader::WRAP_CLAMP);
 #endif
 		}
 		#endif
@@ -61,17 +61,17 @@ void FusionMediaSink::Event(const CtrlEvent& e) {
 	TODO
 }
 
-bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
+bool FusionMediaSink::LoadAsInput(const AcceleratorHeader& in) {
 	const char* fn_name = "LoadAsInput";
 	EntityRef e = GetEntity();
 	Machine& m = e->GetMachine();
 	String err;
-	String path = in.GetFilepath();
+	String path = in.GetPath();
 	
 	cfg.SetHeader(in);
 	stream.Clear();
 	
-	auto type = in.GetFusionType();
+	auto type = in.GetType();
 	
 	TODO
 	#if 0
@@ -81,18 +81,18 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 		return false;
 	}
 	
-	if (type != FusionComponentInput::WEBCAM && !FileExists(path)) {
+	if (type != AcceleratorHeader::WEBCAM && !FileExists(path)) {
 		OnError(fn_name, "file does not exist: \"" + path + "\"");
 		return false;
 	}
 	
-	if (type == FusionComponentInput::VIDEO ||
-		type == FusionComponentInput::WEBCAM ||
-		type == FusionComponentInput::MUSIC) {
+	if (type == AcceleratorHeader::VIDEO ||
+		type == AcceleratorHeader::WEBCAM ||
+		type == AcceleratorHeader::MUSIC) {
 		Ref<FfmpegComponent> comp = e.Add<FfmpegComponent>();
 		if (comp->LinkManually(*this)) {
 			conn->SetUpdateInterfaces(true);
-			if (path.IsEmpty() && type == FusionComponentInput::WEBCAM)
+			if (path.IsEmpty() && type == AcceleratorHeader::WEBCAM)
 				path = "<input0>";
 			if (comp->LoadFileAny(path)) {
 				MediaStreamThread& in = comp->GetInput();
@@ -117,7 +117,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 		}
 		comp->Destroy();
 	}
-	else if (type == FusionComponentInput::MUSICSTREAM) {
+	else if (type == AcceleratorHeader::MUSICSTREAM) {
 		TODO
 	}
 	else {
@@ -132,7 +132,7 @@ bool FusionMediaSink::LoadAsInput(const FusionComponentInput& in) {
 
 #if 0
 void FusionMediaSink::RecvVideo(Video& video, double dt) {
-	VideoFormat fmt = video.GetVideoFormat();
+	VideoFormat fmt = video.GetFormat(VidCtx);
 	
 	if (fmt != this->vid_fmt) {
 		this->vid_fmt = fmt;
@@ -166,11 +166,11 @@ void FusionMediaSink::RecvVideo(Video& video, double dt) {
 	TODO
 	
 }*/
-Audio& FusionMediaSink::GetAudioSink() {
+Audio& FusionMediaSink::GetValue(AudCtx) {
 	TODO
 }
 
-Video& FusionMediaSink::GetVideoSink() {
+Video& FusionMediaSink::GetValue(VidCtx) {
 	TODO
 }
 

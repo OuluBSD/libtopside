@@ -2,6 +2,9 @@
 #define _EcsCore_ActionSystem_h_
 
 
+#if 0
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -31,4 +34,5 @@ protected:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

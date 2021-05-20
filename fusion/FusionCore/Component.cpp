@@ -12,98 +12,15 @@ void RemoveToken(String& glsl, String token) {
 
 
 
-#define VALUE(str, i) if (t == i) return #str;
-
-String FusionComponentInput::GetStringFromType(FusionComponentInput::Type t) {
-	VALUE(texture, TEXTURE);
-	VALUE(cubemap, CUBEMAP);
-	VALUE(webcam, WEBCAM);
-	VALUE(music, MUSIC);
-	VALUE(musicstream, MUSICSTREAM);
-	VALUE(keyboard, KEYBOARD);
-	VALUE(volume, VOLUME);
-	VALUE(video, VIDEO);
-	VALUE(buffer, BUFFER);
-	VALUE(empty, EMPTY);
-	return "invalid";
-}
-
-#undef VALUE
-
-#define VALUE(str, i) if (s == #str) return i;
-
-FusionComponentInput::Type FusionComponentInput::GetTypeFromString(String s) {
-	VALUE(texture, TEXTURE);
-	VALUE(cubemap, CUBEMAP);
-	VALUE(webcam, WEBCAM);
-	VALUE(music, MUSIC);
-	VALUE(musicstream, MUSICSTREAM);
-	VALUE(keyboard, KEYBOARD);
-	VALUE(volume, VOLUME);
-	VALUE(video, VIDEO);
-	VALUE(buffer, BUFFER);
-	VALUE(empty, EMPTY);
-	return INVALID;
-}
-
-int FusionComponentInput::GetFilterFromString(String s) {
-	VALUE(nearest, FILTER_NEAREST);
-	VALUE(linear, FILTER_LINEAR);
-	VALUE(mipmap, FILTER_MIPMAP);
-	return DEFAULT_FILTER;
-}
-
-int FusionComponentInput::GetWrapFromString(String s) {
-	VALUE(clamp, WRAP_CLAMP);
-	VALUE(repeat, WRAP_REPEAT);
-	return DEFAULT_WRAP;
-}
-
-bool FusionComponentInput::IsEqualHeader(const FusionComponentInput& i) const {
-	return	filepath == i.filepath &&
-			type == i.type &&
-			wrap == i.wrap &&
-			filter == i.filter &&
-			vflip == i.vflip;
-}
-
-void FusionComponentInput::SetHeader(const FusionComponentInput& i) {
-	filepath = i.filepath;
-	type = i.type;
-	wrap = i.wrap;
-	filter = i.filter;
-	vflip = i.vflip;
-}
-
-#undef VALUE
 
 
 
 
 
 
-int FusionComponentInputVector::Find(const FusionComponentInput& a) const {
-	for(int i = 0; i < in.GetCount(); i++) {
-		const FusionComponentInput& b = in[i];
-		if (a.IsEqualHeader(b))
-			return i;
-	}
-	return -1;
-}
-
-void FusionComponentInputVector::Add(const FusionComponentInput& a) {
-	FusionComponentInput& b = in.Add();
-	b.filepath = a.filepath;
-	b.type = a.type;
-	b.wrap = a.wrap;
-	b.filter = a.filter;
-	b.vflip = a.vflip;
-}
 
 
-
-
-bool FusionComponentInput::IsTypeComponentSource(Type type) {
+bool AcceleratorHeader::IsTypeComponentSource(Type type) {
 	return type != INVALID && type != BUFFER && type != EMPTY;
 }
 
@@ -282,24 +199,26 @@ bool FusionComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 		if (!in_el.IsMap())
 			continue;
 		ObjectMap& in_map = in_el.GetMap();
-		FusionComponentInput& in = this->in.Add();
+		AcceleratorHeader& in = this->in.Add();
 		if (in_map.IsEmpty()) {
-			in.type = FusionComponentInput::EMPTY;
+			in.SetType(AcceleratorHeader::EMPTY);
 			continue;
 		}
-		in.id		= (int)in_map.TryGet("id", -1).ToInt(); // TODO fix all of these, not safe now
-		in.type		= FusionComponentInput::GetTypeFromString(in_map.TryGet("type", "").ToString());
-		in.filepath	= in_map.TryGet("filename", "").ToString();
-		in.filter	= FusionComponentInput::GetFilterFromString(in_map.TryGet("filter", "linear").ToString());
-		in.wrap		= FusionComponentInput::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString());
-		in.vflip	= ScanBoolString(in_map.TryGet("vflip", "false").ToString());
+		String path = in_map.TryGet("filename", "").ToString();
 		
-		if (in.type != FusionComponentInput::BUFFER) {
-			in.id = -1;
+		in.Set(		(int)in_map.TryGet("id", -1).ToInt(), // TODO fix all of these, not safe now
+					AcceleratorHeader::GetTypeFromString(in_map.TryGet("type", "").ToString()),
+					path,
+					AcceleratorHeader::GetFilterFromString(in_map.TryGet("filter", "linear").ToString()),
+					AcceleratorHeader::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString()),
+					ScanBoolString(in_map.TryGet("vflip", "false").ToString()));
+		
+		if (in.GetType() != AcceleratorHeader::BUFFER) {
+			in.SetId(-1);
 		}
 		
-		if (in.filepath.GetCount() && GetFileDirectory(in.filepath).IsEmpty()) {
-			String filename = GetFileName(in.filepath);
+		if (path.GetCount() && GetFileDirectory(path).IsEmpty()) {
+			String filename = GetFileName(path);
 			String title = GetFileTitle(filename);
 			filename = CommonHashToName().Get(title, title) + GetFileExt(filename);
 			
@@ -307,7 +226,7 @@ bool FusionComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 			for (String dir : dirs) {
 				String filepath = AppendFileName(dir, filename);
 				if (FileExists(filepath)) {
-					in.filepath = filepath;
+					in.SetPath(filepath);
 					found = true;
 					break;
 				}

@@ -89,7 +89,7 @@ protected:
 };
 
 
-class Model : public RefScopeEnabler<Model,ModelLoader> {
+class ModelMesh : public RefScopeEnabler<ModelMesh,ModelLoader> {
 	
 public:
     Vector<Mesh> meshes;
@@ -97,15 +97,15 @@ public:
     
     
     
-	Model() {}
-	Model(const Model& m) {*this = m;}
+	ModelMesh() {}
+	ModelMesh(const ModelMesh& m) {*this = m;}
     
     void Clear() {
 		meshes.Clear();
 		textures.Clear();
 	}
 	
-	void operator=(const Model& src) {
+	void operator=(const ModelMesh& src) {
         textures <<= src.textures;
         meshes <<= src.meshes;
 	}
@@ -125,14 +125,14 @@ class ModelLoader :
 {
 	
 public:
-	One<Model> model;
+	One<ModelMesh> model;
 	
 	void Clear() {model.Clear();}
     bool LoadModel(String path);
-    void Set(const Model& m) {model = new Model(m);}
-    void operator=(const Model& m) {Set(m);}
+    void Set(const ModelMesh& m) {model = new ModelMesh(m);}
+    void operator=(const ModelMesh& m) {Set(m);}
 	
-	Ref<Model> GetModel() {return model ? model->AsRefT() : Null;}
+	Ref<ModelMesh> GetModel() {return model ? model->AsRefT() : Null;}
 	
 protected:
 	friend class ModelBuilder;
@@ -145,8 +145,8 @@ protected:
     bool LoadModelAssimp(String path);
     
     void ProcessNode(aiNode *node, const aiScene *scene);
-    void ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
-    void LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, int type);
+    void ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
     #endif
     
 };

@@ -23,6 +23,7 @@ class OpenCVComponent :
 	Size def_cap_sz;
 	int def_cap_fps;
 	
+	
 public:
 	COPY_PANIC(OpenCVComponent);
 	IFACE_CB(AudioSource);
@@ -35,7 +36,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis % cap;}
 	
-	bool LoadFileAny(String path) override;
+	//bool LoadFileAny(String path) override;
 	
 	bool LoadInput(int id);
 	
@@ -48,14 +49,14 @@ public:
 	
 	
 	// Audio
-	AudioStream&	GetAudioSource() override;
-	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	AudioStream&	GetStream(AudCtx) override;
+	void			BeginStream(AudCtx) override;
+	void			EndStream(AudCtx) override;
 	
 	// Video
-	VideoStream&	GetVideoSource() override;
-	void			BeginVideoSource() override;
-	void			EndVideoSource(bool any_sink_consumed) override;
+	VideoStream&	GetStream(VidCtx) override;
+	void			BeginStream(VidCtx) override;
+	void			EndStream(VidCtx) override;
 	
 };
 

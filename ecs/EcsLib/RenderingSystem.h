@@ -3,8 +3,9 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
 
-class RenderingSystem : public System<RenderingSystem> {
+class RenderingSystem : public System<DisplaySystem> {
 	Ref<EntityStore> ents;
 	LinkedList<DisplaySourceRef> srcs;
 	LinkedList<DisplaySinkRef> sinks;
@@ -45,6 +46,7 @@ protected:
     
 };
 
+#endif
 
 
 #ifdef flagGUI
@@ -52,7 +54,7 @@ protected:
 class DefaultRenderApp :
 	public Component<DefaultRenderApp>,
 	public DisplaySource,
-	public CameraSource
+	public HumanSource
 {
 	One<Shader> simple_shader;
 	EntityStoreRef ents;
@@ -60,20 +62,28 @@ class DefaultRenderApp :
 	VectorRendModel rends;
 	
 public:
-	VIS_COMP_2_0(Display, Camera)
+	VIS_COMP_2_0(Display, Human)
 	COPY_PANIC(DefaultRenderApp);
 	IFACE_CB(DisplaySource);
-	IFACE_CB(CameraSource);
+	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
 	
 	DefaultRenderApp();
 	
+	// Component
 	void					Initialize() override;
 	void					Uninitialize() override;
 	void					Visit(RuntimeVisitor& vis) override {TODO vis & ents;}
-	DisplayStream&			GetDisplaySource() override;
-	void					BeginDisplaySource() override;
-	void					EndDisplaySource() override;
+	
+	// DisplaySource
+	DisplayStream&			GetStream(DisCtx) override;
+	void					BeginStream(DisCtx) override;
+	void					EndStream(DisCtx) override;
+	
+	// HumanSource
+	HumanStream&			GetStream(HumCtx) override;
+	void					BeginStream(HumCtx) override;
+	void					EndStream(HumCtx) override;
 	
 };
 

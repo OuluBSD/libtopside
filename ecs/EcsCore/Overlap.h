@@ -2,6 +2,9 @@
 #define _EcsCore_Overlap_h_
 
 
+#if 0
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -90,6 +93,9 @@ PREFAB_BEGIN(DefaultOctreeNode)
 PREFAB_END
 
 NAMESPACE_TOPSIDE_END
+
+
+#endif
 
 
 #endif

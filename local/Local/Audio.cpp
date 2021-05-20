@@ -95,29 +95,4 @@ bool ContextT<AudioContext>::Convert(const AudioPacket& src, AudioPacket& dst) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#if HAVE_OPENGL
-template <>
-bool ContextT<AudioContext>::PacketValue::PaintOpenGLTexture(int texture) {
-	TODO
-}
-#endif
-
-
-
 NAMESPACE_TOPSIDE_END

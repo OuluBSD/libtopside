@@ -488,7 +488,7 @@ bool FusionContextComponent::Load(Object json) {
 					return false;
 				}
 				
-				for(FusionComponentInput& in : comp->in) {ASSERT(in.id < 0 || in.type == FusionComponentInput::BUFFER);}
+				for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::BUFFER);}
 				
 				comps.Add(comp);
 			}
@@ -514,9 +514,9 @@ bool FusionContextComponent::Load(Object json) {
 	}
 	
 	// Find unique inputs
-	FusionComponentInputVector v;
+	AcceleratorHeaderVector v;
 	for (auto& comp : comps)
-		for(FusionComponentInput& in : comp->in)
+		for(AcceleratorHeader& in : comp->in)
 			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
 				v.Add(in);
 	
@@ -528,15 +528,14 @@ bool FusionContextComponent::Load(Object json) {
 		// Connect created components for inputs
 		DumpEntityComponents();
 		for (auto& comp : comps) {
-			for(FusionComponentInput& in : comp->in) {
+			for(AcceleratorHeader& in : comp->in) {
 				if (in.IsTypeComponentSource()) {
 					int i = v.Find(in);
 					ASSERT(i >= 0);
-					FusionComponentInput& found = v.in[i];
-					ASSERT(in.id < 0);
-					in.id = found.id;
-					in.stream = found.stream;
-					ASSERT(in.id >= 0);
+					AcceleratorHeader& found = v.in[i];
+					ASSERT(in.GetId() < 0);
+					in.CopyIdStream(found);
+					ASSERT(in.GetId() >= 0);
 				}
 			}
 		}
@@ -561,9 +560,9 @@ void FusionContextComponent::RefreshStageQueue() {
 		for(const FusionComponentRef& s : comps) {
 			if (s->id >= 0) {
 				for(int j = 0; j < s->in.GetCount(); j++) {
-					const FusionComponentInput& in = s->in[j];
-					if (in.id >= 0)
-						g.AddEdgeKey(in.id, s->id);
+					const AcceleratorHeader& in = s->in[j];
+					if (in.GetId() >= 0)
+						g.AddEdgeKey(in.GetId(), s->id);
 				}
 			}
 		}
@@ -655,36 +654,36 @@ void FusionContextComponent::Close() {
 	Clear();
 }
 
-bool FusionContextComponent::CreateComponents(FusionComponentInputVector& v) {
+bool FusionContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 	const char* fn_name = "CreateComponents";
 	
-	for(FusionComponentInput& in : v.in) {
-		switch (in.type) {
-		case FusionComponentInput::TEXTURE:
-		case FusionComponentInput::CUBEMAP:
-		case FusionComponentInput::VOLUME:
+	for(AcceleratorHeader& in : v.in) {
+		switch (in.GetType()) {
+		case AcceleratorHeader::TEXTURE:
+		case AcceleratorHeader::CUBEMAP:
+		case AcceleratorHeader::VOLUME:
 			if (!AddEntityFusionComponent<FusionDataSink>(in))
 				return false;
 			break;
 			
-		case FusionComponentInput::WEBCAM:
-		case FusionComponentInput::VIDEO:
-		case FusionComponentInput::MUSIC:
-		case FusionComponentInput::MUSICSTREAM:
+		case AcceleratorHeader::WEBCAM:
+		case AcceleratorHeader::VIDEO:
+		case AcceleratorHeader::MUSIC:
+		case AcceleratorHeader::MUSICSTREAM:
 			if (!AddEntityFusionComponent<FusionMediaSink>(in))
 				return false;
 			break;
 			
-		case FusionComponentInput::KEYBOARD:
+		case AcceleratorHeader::KEYBOARD:
 			if (!AddEntityFusionComponent<FusionControllerSink>(in))
 				return false;
 			break;
 			
-		case FusionComponentInput::EMPTY:
-		case FusionComponentInput::BUFFER:
+		case AcceleratorHeader::EMPTY:
+		case AcceleratorHeader::BUFFER:
 			break;
 			
-		case FusionComponentInput::INVALID:
+		case AcceleratorHeader::INVALID:
 			OnError(fn_name, "Invalid type");
 			return false;
 		}
@@ -705,28 +704,28 @@ bool FusionContextComponent::ConnectComponents() {
 	
 	for (Ref<FusionComponent>& comp_sink : comps) {
 		ComponentBase& sink_base = comp_sink->GetECS();
-		Ref<FusionSink> sink = sink_base.AsFusionSink();
+		Ref<AcceleratorSink> sink = sink_base.AsAcceleratorSink();
 		if (!sink)
 			continue;
 		ASSERT(sink->GetConnections().IsEmpty());
 		
-		for (const FusionComponentInput& in : comp_sink->in) {
+		for (const AcceleratorHeader& in : comp_sink->in) {
 			if (in.IsTypeEmpty())
 				continue;
 			
 			bool found = false;
 			for (Ref<FusionComponent>& comp_src : comps) {
 				ComponentBase& src_base = comp_src->GetECS();
-				Ref<FusionSource> src = src_base.AsFusionSource();
+				Ref<AcceleratorSource> src = src_base.AsAcceleratorSource();
 				
 				if (!src)
 					continue;
 				
 				bool match = false;
-				if (in.id >= 0)
-					match = comp_src->GetId() == in.id;
+				if (in.GetId() >= 0)
+					match = comp_src->GetId() == in.GetId();
 				else
-					match = src->GetHeader().IsEqualHeader(in);
+					match = src->GetStream(ACCCTX).GetHeader().IsEqualHeader(in);
 				
 				if (match) {
 					CookieRef src_cookie, sink_cookie;
@@ -749,7 +748,7 @@ bool FusionContextComponent::ConnectComponents() {
 			}
 			
 			if (!found) {
-				OnError(fn_name, "could not find FusionSource for input sink " + comp_sink->ToString() + ", " + in.ToString());
+				OnError(fn_name, "could not find AcceleratorSource for input sink " + comp_sink->ToString() + ", " + in.ToString());
 				succ = false;
 				break;
 			}

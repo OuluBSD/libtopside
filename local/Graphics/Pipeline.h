@@ -135,7 +135,7 @@ struct PipelineData {
 	
 	virtual ~PipelineData() {}
 	virtual PipelineType GetType() = 0;
-	virtual int PutModel(One<Model>& model, bool can_pick) = 0;
+	virtual int PutModel(One<ModelMesh>& model, bool can_pick) = 0;
 	
 };
 
@@ -273,7 +273,7 @@ struct CpuPipelineData : public PipelineData {
 	
 	
 	PipelineType GetType() override {return PIPELINE_CPU;}
-	int PutModel(One<Model>& model, bool can_pick) override;
+	int PutModel(One<ModelMesh>& model, bool can_pick) override;
 	
 	void ResetThreads(int count) {}
 	

@@ -38,8 +38,8 @@ SDL2GUI3D* SDL2GUI3D::Current() {
 	
 	try {
 	    mach.Add<RegistrySystem>();
-	    mach.Add<EventSystem>();
-	    mach.Add<RenderingSystem>();
+	    mach.Add<HumanSystem>();
+	    mach.Add<DisplaySystem>();
 	    mach.Add<WindowSystem>();
 	    #ifdef flagOPENVR
 	    mach.Add<OpenVR>();

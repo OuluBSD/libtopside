@@ -44,8 +44,8 @@ void FusionAudioSource::UpdateTexBuffers() {
 		Ogl_CreateTex(
 			Size(sr, 1), ch,
 			0, 0,
-			FusionComponentInput::FILTER_LINEAR,
-			FusionComponentInput::WRAP_CLAMP);
+			AcceleratorHeader::FILTER_LINEAR,
+			AcceleratorHeader::WRAP_CLAMP);
 		audio_buf.SetCount(sr * ch, 0);
 #endif
 	}
@@ -70,7 +70,7 @@ bool FusionAudioSource::LoadResources() {
 	stream->asink_frame = config.sink_frame;
 	stream->aframes_after_sync = config.frames_after_sync;
 	
-	AudioFormat cur_fmt = aud.GetAudioFormat();
+	AudioFormat cur_fmt = aud.GetFormat(AudCtx);
 	if (cur_fmt != stream->aud_fmt) {
 		stream->aud_fmt = cur_fmt;
 		ctx->UpdateSoundBuffers();
@@ -105,15 +105,15 @@ void FusionAudioSource::UseRenderedFramebuffer() {
 	stream->sys_aud = 0;
 }
 
-AudioStream& FusionAudioSource::GetAudioSource() {
+AudioStream& FusionAudioSource::GetStream(AudCtx) {
 	TODO
 }
 
-void FusionAudioSource::BeginAudioSource() {
+void FusionAudioSource::BeginStream(AudCtx) {
 	TODO
 }
 
-void FusionAudioSource::EndAudioSource() {
+void FusionAudioSource::EndStream(AudCtx) {
 	TODO
 }
 

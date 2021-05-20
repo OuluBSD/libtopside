@@ -2,9 +2,11 @@
 #define _EcsLib_EventSystem_h_
 
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
-class EventSystem : public System<EventSystem> {
+class EventSystem : public System<DeviceSystem> {
 	Ref<EntityStore> ents;
 	LinkedList<ControllerSourceRef> outputs;
 	LinkedList<MidiSourceRef> midis;
@@ -42,4 +44,5 @@ protected:
 NAMESPACE_TOPSIDE_END
 
 
+#endif
 #endif

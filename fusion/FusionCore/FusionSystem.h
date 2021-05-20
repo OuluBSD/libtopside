@@ -131,6 +131,8 @@ struct FusionStream : public RealtimeStream {
 
 
 
+#if 0
+
 class FusionComponentInput {
 	
 public:
@@ -168,10 +170,9 @@ public:
 	String				GetFilterString() const {return GetStringFromFilter(filter);}
 	String				GetWrapString() const {return GetStringFromWrap(wrap);}
 	bool				IsTypeComponentSource() {return IsTypeComponentSource(type);}
-	String				GetFilepath() const {return filepath;}
 	String				ToString() const {return GetTypeString();}
-	bool				IsEqualHeader(const FusionComponentInput& in) const;
-	void				SetHeader(const FusionComponentInput& in);
+	bool				IsEqualHeader(const AcceleratorHeader& in) const;
+	void				SetHeader(const AcceleratorHeader& in);
 	bool				IsVertFlip() const {return vflip;}
 	int					GetFilter() const {return filter;}
 	int					GetWrap() const {return wrap;}
@@ -204,9 +205,11 @@ protected:
 struct FusionComponentInputVector {
 	Array<FusionComponentInput> in;
 	
-	int Find(const FusionComponentInput& a) const;
-	void Add(const FusionComponentInput& a);
+	int Find(const AcceleratorHeader& a) const;
+	void Add(const AcceleratorHeader& a);
 };
+
+#endif
 
 class FusionComponent : public RefScopeEnabler<FusionComponent,Entity> {
 	
@@ -279,7 +282,7 @@ protected:
 		PROG_COUNT
 	};
 	
-	Array<FusionComponentInput>	in;
+	Array<AcceleratorHeader>	in;
 #if HAVE_OPENGL
 	GLint						prog[PROG_COUNT] = {-1,-1,-1,-1,-1};
 	GLuint						color_buf[2] = {0,0};
@@ -325,7 +328,7 @@ protected:
 	virtual bool		RequiresShaderCode() const {return false;}
 	virtual void		ClearData() {}
 	virtual void		UseRenderedFramebuffer() {}
-	virtual bool		LoadAsInput(const FusionComponentInput& in) {OnError("LoadAsInput", "not implemented"); return false;}
+	//virtual bool		LoadAsInput(const AcceleratorHeader& in) {OnError("LoadAsInput", "not implemented"); return false;}
 	
 	bool				Open();
 	void				Close();
@@ -416,11 +419,11 @@ private:
 class FusionDataSink :
 	public Component<FusionDataSink>,
 	public FusionComponent,
-	public FusionSource,
+	public AcceleratorSource,
 	public StaticSink
 	
 {
-	VIS_COMP_1_1(Fusion, Static)
+	VIS_COMP_1_1(Accelerator, Static)
 	
 	void			Reset() override;
 	void			PreProcess() override;
@@ -429,21 +432,22 @@ class FusionDataSink :
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
-	const FusionComponentInput& GetHeader() const override {return cfg;}
-	void			RecvStatic(const StaticSinkData& data) override;
+	
+	//const AcceleratorHeader& GetHeader() const override {return cfg;}
+	//void			RecvStatic(const StaticValueData& data) override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-#if HAVE_OPENGL
-	void Ogl_RecvStatic(const StaticSinkData& data);
-#endif
+/*#if HAVE_OPENGL
+	void Ogl_RecvStatic(const StaticValueData& data);
+#endif*/
 	
-	FusionComponentInput cfg;
+	AcceleratorHeader cfg;
 	BasicFusionStream stream;
 	
 public:
 	COPY_PANIC(FusionDataSink);
 	IFACE_CB(StaticSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FusionDataSink() : FusionComponent(FUSION_DATA_SINK) {StaticSink::SetMultiConnection(false);}
@@ -451,7 +455,17 @@ public:
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
-	bool			LoadAsInput(const FusionComponentInput& in) override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// StaticSink
+	StaticFormat		GetFormat(StcCtx) override;
+	Static&				GetValue(StcCtx) override;
+	
+	bool			LoadAsInput(const AcceleratorHeader& in);
 	
 	VideoStream*	GetVideoStream() {return &stream;}
 	
@@ -464,11 +478,11 @@ public:
 class FusionMediaSink :
 	public Component<FusionMediaSink>,
 	public FusionComponent,
-	public FusionSource,
+	public AcceleratorSource,
 	public VideoSink,
 	public AudioSink
 {
-	VIS_COMP_1_2(Fusion, Video, Audio)
+	VIS_COMP_1_2(Accelerator, Video, Audio)
 	
 	void			Reset() override;
 	void			PreProcess() override;
@@ -478,10 +492,10 @@ class FusionMediaSink :
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
-	const FusionComponentInput& GetHeader() const override {return cfg;}
+	//const AcceleratorHeader& GetHeader() const override {return cfg;}
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-	FusionComponentInput cfg;
+	AcceleratorHeader cfg;
 	VideoFormat vid_fmt;
 	AudioFormat aud_fmt;
 	BasicFusionStream stream;
@@ -490,24 +504,29 @@ public:
 	COPY_PANIC(FusionMediaSink);
 	IFACE_CB(VideoSink);
 	IFACE_CB(AudioSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FusionMediaSink() : FusionComponent(FUSION_MEDIA_SINK) {}
 	
 	VideoStream*	GetVideoStream() {return &stream;}
+	bool			LoadAsInput(const AcceleratorHeader& in);
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
-	bool			LoadAsInput(const FusionComponentInput& in) override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
 	
 	// AudioSink
-	AudioFormat		GetAudioFormat() override {return aud_fmt;}
-	Audio&			GetAudioSink() override;
+	AudioFormat			GetFormat(AudCtx) override {return aud_fmt;}
+	Audio&				GetValue(AudCtx) override;
 	
 	// VideoSink
-	VideoFormat		GetVideoFormat() override {return vid_fmt;}
-	Video&			GetVideoSink() override;
+	VideoFormat			GetFormat(VidCtx) override {return vid_fmt;}
+	Video&				GetValue(VidCtx) override;
 	
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
@@ -518,10 +537,10 @@ public:
 class FusionControllerSink :
 	public Component<FusionControllerSink>,
 	public FusionComponent,
-	public FusionSource,
-	public ControllerSink
+	public AcceleratorSource,
+	public HumanSink
 {
-	VIS_COMP_1_1(Fusion, Controller)
+	VIS_COMP_1_1(Accelerator, Human)
 	//ArrayMap<int, FusionDataBuffer> data_bufs;
 	bool is_left_down = false;
 	
@@ -532,10 +551,10 @@ class FusionControllerSink :
 	void			Event(const CtrlEvent& e) override;
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
-	const FusionComponentInput& GetHeader() const override {return cfg;}
+	//const AcceleratorHeader& GetHeader() const override {return cfg;}
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-	FusionComponentInput cfg;
+	AcceleratorHeader cfg;
 	BasicFusionStream stream;
 	Vector<byte> data;
 	Size data_res;
@@ -543,8 +562,8 @@ class FusionControllerSink :
 	
 public:
 	COPY_PANIC(FusionControllerSink);
-	IFACE_CB(ControllerSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(HumanSink);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FusionControllerSink() : FusionComponent(FUSION_CTRL_SINK) {}
@@ -552,9 +571,18 @@ public:
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
-	bool			LoadAsInput(const FusionComponentInput& in) override;
-	void			RecvController(const EventFrame& e) override;
+	bool			LoadAsInput(const AcceleratorHeader& in);
+	//void			RecvController(const EventFrame& e) override;
 	VideoStream*	GetVideoStream() {return &stream;}
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// HumanSink
+	HumanFormat			GetFormat(HumCtx) override;
+	Human&				GetValue(HumCtx) override;
 	
 	void			LeftDown(Point p, dword keyflags);
 	void			LeftUp(Point p, dword keyflags);
@@ -577,9 +605,9 @@ class FusionDisplaySource :
 	public Component<FusionDisplaySource>,
 	public FusionComponent,
 	public DisplaySource,
-	public FusionSink
+	public AcceleratorSink
 {
-	VIS_COMP_1_1(Display, Fusion)
+	VIS_COMP_1_1(Display, Accelerator)
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -591,15 +619,11 @@ class FusionDisplaySource :
 	bool			RequiresShaderCode() const override {return true;}
 	//FusionVideoInput*	FindVideoInput(String path);
 	void			Visit(RuntimeVisitor& vis) override {}
-	DisplayStream&	GetDisplaySource() override;
-	void			BeginDisplaySource() override;
-	void			EndDisplaySource() override;
-	
 	
 public:
 	COPY_PANIC(FusionDisplaySource);
 	IFACE_CB(DisplaySource);
-	IFACE_CB(FusionSink);
+	IFACE_CB(AcceleratorSink);
 	IFACE_GENERIC;
 	
 	FusionDisplaySource() : FusionComponent(FUSION_DISPLAY_SOURCE) {}
@@ -607,6 +631,15 @@ public:
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
+	
+	// DisplaySource
+	DisplayStream&		GetStream(DisCtx) override;
+	void				BeginStream(DisCtx) override;
+	void				EndStream(DisCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	void			SetVideoSize(Size sz);
 	void			SetFPS(int fps);
@@ -618,10 +651,10 @@ public:
 class FusionDisplayBuffer :
 	public Component<FusionDisplayBuffer>,
 	public FusionComponent,
-	public FusionSource,
-	public FusionSink
+	public AcceleratorSource,
+	public AcceleratorSink
 {
-	VIS_COMP_1_1(Fusion, Fusion)
+	VIS_COMP_1_1(Accelerator, Accelerator)
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -633,23 +666,32 @@ class FusionDisplayBuffer :
 	//bool			Render(const DisplaySinkConfig& config, SystemDraw& draw) override;
 	//bool			Link(DisplaySink& sink) override;
 	//FusionVideoInput* FindVideoInput(String path);
-	const FusionComponentInput& GetHeader() const override {return cfg;}
+	//const AcceleratorHeader& GetHeader() const override {return cfg;}
 	bool			RequiresShaderCode() const override {return true;}
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-	FusionComponentInput cfg;
+	AcceleratorHeader cfg;
 	
 	
 public:
 	COPY_PANIC(FusionDisplayBuffer);
-	IFACE_CB(FusionSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSink);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FusionDisplayBuffer() : FusionComponent(FUSION_DISPLAY_BUFFER) {}
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	//void SetVideoSize(Size sz);
 	//void SetFPS(int fps);
@@ -664,9 +706,9 @@ class FusionAudioSource :
 	public Component<FusionAudioSource>,
 	public FusionComponent,
 	public AudioSource,
-	public FusionSink
+	public AcceleratorSink
 {
-	VIS_COMP_1_1(Audio, Fusion)
+	VIS_COMP_1_1(Audio, Accelerator)
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -679,14 +721,18 @@ class FusionAudioSource :
 	void			Visit(RuntimeVisitor& vis) override {}
 	
 	// AudioSource
-	AudioStream&	GetAudioSource() override;
-	void			BeginAudioSource() override;
-	void			EndAudioSource() override;
+	AudioStream&	GetStream(AudCtx) override;
+	void			BeginStream(AudCtx) override;
+	void			EndStream(AudCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 public:
 	COPY_PANIC(FusionAudioSource);
 	IFACE_CB(AudioSource);
-	IFACE_CB(FusionSink);
+	IFACE_CB(AcceleratorSink);
 	IFACE_GENERIC;
 	
 	FusionAudioSource() : FusionComponent(FUSION_AUDIO_SOURCE) {}
@@ -702,10 +748,10 @@ public:
 class FusionAudioBuffer :
 	public Component<FusionAudioBuffer>,
 	public FusionComponent,
-	public FusionSource,
-	public FusionSink
+	public AcceleratorSource,
+	public AcceleratorSink
 {
-	VIS_COMP_1_1(Fusion, Fusion)
+	VIS_COMP_1_1(Accelerator, Accelerator)
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -715,22 +761,31 @@ class FusionAudioBuffer :
 	bool			LoadResources() override;
 	ComponentBase&	GetECS() override {return *this;}
 	//void UseRenderedFramebuffer(Stage& s) override;
-	const FusionComponentInput& GetHeader() const override {return cfg;}
+	//const AcceleratorHeader& GetHeader() const override {return cfg;}
 	bool			RequiresShaderCode() const override {return true;}
 	void			Visit(RuntimeVisitor& vis) override {}
 	
-	FusionComponentInput cfg;
+	AcceleratorHeader cfg;
 	
 public:
 	COPY_PANIC(FusionAudioBuffer);
-	IFACE_CB(FusionSink);
-	IFACE_CB(FusionSource);
+	IFACE_CB(AcceleratorSink);
+	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
 	
 	FusionAudioBuffer() : FusionComponent(FUSION_AUDIO_BUFFER) {}
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
+	
+	// AcceleratorSource
+	AcceleratorStream&	GetStream(AccCtx) override;
+	void				BeginStream(AccCtx) override;
+	void				EndStream(AccCtx) override;
+	
+	// AcceleratorSink
+	AcceleratorFormat	GetFormat(AccCtx) override;
+	Accelerator&		GetValue(AccCtx) override;
 	
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	
@@ -796,7 +851,7 @@ protected:
 	void					UpdateSoundBuffers();
 	bool					CheckInputTextures();
 	void					Close();
-	bool					CreateComponents(FusionComponentInputVector& v);
+	bool					CreateComponents(AcceleratorHeaderVector& v);
 	bool					ConnectComponents();
 	
 #if HAVE_OPENGL
@@ -810,7 +865,7 @@ protected:
 		o->ctx = this;
 		return o;
 	}
-	template <class T> bool AddEntityFusionComponent(FusionComponentInput& in) {
+	template <class T> bool AddEntityFusionComponent(AcceleratorHeader& in) {
 		RefT_Entity<T> o = GetEntity()->Add<T>();
 		if (!o)
 			return false;
@@ -821,8 +876,7 @@ protected:
 		}
 		o->ctx = this;
 		o->id = ++id_counter;
-		in.id = o->id;
-		in.stream = o->GetVideoStream();
+		in.Set(o->id, o->GetVideoStream());
 		comps.Add(o);
 		return true;
 	}

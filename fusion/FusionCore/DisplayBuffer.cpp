@@ -34,8 +34,8 @@ void FusionDisplayBuffer::UpdateTexBuffers() {
 		Ogl_CreateTex(
 			stream->video_size, 4,
 			1, 1,
-			FusionComponentInput::FILTER_LINEAR,
-			FusionComponentInput::WRAP_CLAMP);
+			AcceleratorHeader::FILTER_LINEAR,
+			AcceleratorHeader::WRAP_CLAMP);
 #endif
 	}
 }

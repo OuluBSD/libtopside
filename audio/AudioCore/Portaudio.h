@@ -39,8 +39,8 @@ public:
 	
 	String GetLastError() const {return last_error;}
 	
-	AudioFormat		GetAudioFormat() override;
-	Audio&			GetAudioSink() override;
+	AudioFormat		GetFormat(AudCtx) override;
+	Audio&			GetValue(AudCtx) override;
 	
 };
 

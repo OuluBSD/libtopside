@@ -1,6 +1,8 @@
 #include "EcsLib.h"
 
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -33,3 +35,5 @@ void PhysicsSystem::Update(double dt)
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

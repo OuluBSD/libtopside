@@ -44,9 +44,9 @@ public:
 	void				Initialize() override;
 	void				Uninitialize() override;
 	void				Visit(RuntimeVisitor& vis) override {}
-	AudioStream&		GetAudioSource() override;
-	void				BeginAudioSource() override;
-	void				EndAudioSource() override;
+	AudioStream&		GetStream(AudCtx) override;
+	void				BeginStream(AudCtx) override;
+	void				EndStream(AudCtx) override;
 	//void				EmitAudioSource(double dt) override;
 	//void				Play(const RealtimeSourceConfig& config, Audio& aud) override;
 	
@@ -75,8 +75,9 @@ public:
 	void			Initialize() override;
 	void			Uninitialize() override;
 	void			Visit(RuntimeVisitor& vis) override {}
-	AudioFormat		GetAudioFormat() override;
-	Audio&			GetAudioSink() override;
+	
+	AudioFormat		GetFormat(AudCtx) override;
+	Audio&			GetValue(AudCtx) override;
 	
 	/*SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
 	void			CommitPlay() override {}
@@ -103,6 +104,7 @@ class SDL2ScreenComponent :
 	One<OOSDL2::Screen> obj;
     DisplayFormat fmt;
 	OOSDL2::Events* ev = 0;
+	double dt = 0;
 	double frame_age = 0;
 	
 public:
@@ -116,9 +118,10 @@ public:
 	void			Initialize() override;
 	void			Uninitialize() override;
 	void			Visit(RuntimeVisitor& vis) override {}
-	DisplayFormat	GetDisplayFormat() override;
-	Display&		GetSink() override;
-	void			SetTitle(String s) override;
+	//void			SetTitle(String s) override;
+	
+	DisplayFormat	GetFormat(DisCtx) override;
+	Display&		GetValue(DisCtx) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
@@ -131,15 +134,15 @@ public:
 
 class SDL2EventsComponent :
 	public Component<SDL2EventsComponent>,
-	public ControllerSource
+	public DeviceSource
 {
 	One<OOSDL2::Events> obj;
 	EventFrame ev;
 	
 public:
-	VIS_COMP_1_0(Controller)
+	VIS_COMP_1_0(Device)
 	COPY_PANIC(SDL2EventsComponent);
-	IFACE_CB(ControllerSource);
+	IFACE_CB(DeviceSource);
 	IFACE_GENERIC;
 	
 	SDL2EventsComponent() = default;
@@ -147,8 +150,11 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController(double dt) override;
-	bool IsSupported(CtrlType type) override {return type == CTRL_SYSTEM || type == CTRL_KEYBOARD || type == CTRL_MOUSE;}
+	//void EmitController(double dt) override;
+	//bool IsSupported(CtrlType type) override {return type == CTRL_SYSTEM || type == CTRL_KEYBOARD || type == CTRL_MOUSE;}
+	DeviceStream&		GetStream(DevCtx) override;
+	void				BeginStream(DevCtx) override;
+	void				EndStream(DevCtx) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Events* GetOOSDL2() {return &*obj;}
@@ -157,14 +163,14 @@ public:
 
 class SDL2JoystickComponent :
 	public Component<SDL2JoystickComponent>,
-	public ControllerSource
+	public HumanSource
 {
 	One<OOSDL2::Joystick> obj;
 	
 public:
-	VIS_COMP_1_0(Controller)
+	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2JoystickComponent);
-	IFACE_CB(ControllerSource);
+	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
 	
 	SDL2JoystickComponent() = default;
@@ -172,8 +178,11 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController(double dt) override;
-	bool IsSupported(CtrlType type) override {return type == CTRL_JOYSTICK;}
+	//void EmitController(double dt) override;
+	//bool IsSupported(CtrlType type) override {return type == CTRL_JOYSTICK;}
+	HumanStream&		GetStream(HumCtx) override;
+	void				BeginStream(HumCtx) override;
+	void				EndStream(HumCtx) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Joystick* GetOOSDL2() {return &*obj;}
@@ -182,14 +191,14 @@ public:
 
 class SDL2GameControllerComponent :
 	public Component<SDL2GameControllerComponent>,
-	public ControllerSource
+	public HumanSource
 {
 	One<OOSDL2::GameController> obj;
 	
 public:
-	VIS_COMP_1_0(Controller)
+	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2GameControllerComponent);
-	IFACE_CB(ControllerSource);
+	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
 	
 	SDL2GameControllerComponent() = default;
@@ -197,8 +206,11 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController(double dt) override;
-	bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
+	//void EmitController(double dt) override;
+	//bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
+	HumanStream&		GetStream(HumCtx) override;
+	void				BeginStream(HumCtx) override;
+	void				EndStream(HumCtx) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::GameController* GetOOSDL2() {return &*obj;}
@@ -207,14 +219,14 @@ public:
 
 class SDL2SensorComponent :
 	public Component<SDL2SensorComponent>,
-	public ControllerSource
+	public HumanSource
 {
 	One<OOSDL2::Sensor> obj;
 	
 public:
-	VIS_COMP_1_0(Controller)
+	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2SensorComponent);
-	IFACE_CB(ControllerSource);
+	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
 	
 	SDL2SensorComponent() = default;
@@ -222,8 +234,11 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitController(double dt) override;
-	bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
+	//void EmitController(double dt) override;
+	//bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
+	HumanStream&		GetStream(HumCtx) override;
+	void				BeginStream(HumCtx) override;
+	void				EndStream(HumCtx) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Sensor* GetOOSDL2() {return &*obj;}
@@ -249,9 +264,12 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	bool LoadFileAny(String path) override;
-	Size GetResolution() const override;
-	void EmitStatic() override;
+	//bool LoadFileAny(String path) override;
+	//Size GetResolution() const override;
+	//void EmitStatic() override;
+	StaticStream&		GetStream(StcCtx) override;
+	void				BeginStream(StcCtx) override;
+	void				EndStream(StcCtx) override;
 	
 	String GetLastError() const {return last_error;}
 	
@@ -276,7 +294,10 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void EmitStatic() override;
+	//void EmitStatic() override;
+	StaticStream&		GetStream(StcCtx) override;
+	void				BeginStream(StcCtx) override;
+	void				EndStream(StcCtx) override;
 	
 	static bool AllowDuplicates() {return true;}
 	

@@ -68,15 +68,15 @@ void SDL2AudioInputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-AudioStream& SDL2AudioInputComponent::GetAudioSource() {
+AudioStream& SDL2AudioInputComponent::GetStream(AudCtx) {
 	TODO
 }
 
-void SDL2AudioInputComponent::BeginAudioSource() {
+void SDL2AudioInputComponent::BeginStream(AudCtx) {
 	TODO
 }
 
-void SDL2AudioInputComponent::EndAudioSource() {
+void SDL2AudioInputComponent::EndStream(AudCtx) {
 	TODO
 }
 
@@ -96,11 +96,11 @@ void SDL2AudioOutputComponent::Uninitialize() {
 	obj.Clear();
 }
 
-AudioFormat SDL2AudioOutputComponent::GetAudioFormat() {
+AudioFormat SDL2AudioOutputComponent::GetFormat(AudCtx) {
 	TODO
 }
 
-Audio& SDL2AudioOutputComponent::GetAudioSink() {
+Audio& SDL2AudioOutputComponent::GetValue(AudCtx) {
 	TODO
 }
 
@@ -113,7 +113,7 @@ Audio& SDL2AudioOutputComponent::GetAudioSink() {
 #ifdef flagGUI
 
 void SDL2ScreenComponent::Initialize() {
-	config.dt = 0;
+	dt = 0;
 	SetFPS(60);
 	OBJ_CREATE
 	auto ev_comp = GetEntity()->Find<SDL2EventsComponent>();
@@ -126,23 +126,24 @@ void SDL2ScreenComponent::Uninitialize() {
 	obj.Clear();
 }
 
-DisplayFormat SDL2ScreenComponent::GetDisplayFormat() {
+DisplayFormat SDL2ScreenComponent::GetFormat(DisCtx) {
 	TODO
 }
 
-Display& SDL2ScreenComponent::GetSink() {
+Display& SDL2ScreenComponent::GetValue(DisCtx) {
 	TODO
 }
+
+#if 0
 
 void SDL2ScreenComponent::SetTitle(String s) {
 	if (obj)
 		obj->SetTitle(s);
 }
 	
-#if 0
 void SDL2ScreenComponent::RecvDisplay(DisplaySource& src, double dt) {
 	frame_age += dt;
-	config.dt += dt;
+	this->dt += dt;
 	
 	if (frame_age >= config.fps_dt) {
 		if (frame_age > 2 * config.fps_dt)
@@ -169,20 +170,20 @@ void SDL2ScreenComponent::RecvDisplay(DisplaySource& src, double dt) {
 void SDL2EventsComponent::Initialize() {
 	OBJ_CREATE
 	
-	Ref<EventSystem> ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
+	Ref<DeviceSystem> ev_sys = GetEntity()->GetMachine().Get<DeviceSystem>();
 	if (ev_sys)
-		ev_sys -> Add(AsRef<ControllerSource>());
+		ev_sys -> Add(AsRef<DeviceSource>());
 }
 
 void SDL2EventsComponent::Uninitialize() {
 	obj.Clear();
 	
-	Ref<EventSystem> ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
+	Ref<DeviceSystem> ev_sys = GetEntity()->GetMachine().Get<DeviceSystem>();
 	if (ev_sys)
-		ev_sys->Remove(AsRef<ControllerSource>());
+		ev_sys->Remove(AsRef<DeviceSource>());
 }
 
-void SDL2EventsComponent::EmitController(double dt) {
+/*void SDL2EventsComponent::EmitController(double dt) {
 	if (obj) {
 		ev.ctrl.SetCount(1);
 		CtrlEvent& e = ev.ctrl[0];
@@ -195,7 +196,7 @@ void SDL2EventsComponent::EmitController(double dt) {
 				sink->RecvController(ev);
 		}
 	}
-}
+}*/
 
 
 
@@ -209,9 +210,9 @@ void SDL2JoystickComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2JoystickComponent::EmitController(double dt) {
+/*void SDL2JoystickComponent::EmitController(double dt) {
 	TODO
-}
+}*/
 
 
 
@@ -225,9 +226,9 @@ void SDL2GameControllerComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2GameControllerComponent::EmitController(double dt) {
+/*void SDL2GameControllerComponent::EmitController(double dt) {
 	TODO
-}
+}*/
 
 
 
@@ -241,9 +242,9 @@ void SDL2SensorComponent::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2SensorComponent::EmitController(double dt) {
+/*void SDL2SensorComponent::EmitController(double dt) {
 	TODO
-}
+}*/
 
 
 
@@ -258,6 +259,8 @@ void SDL2ImageComponent::Initialize() {
 void SDL2ImageComponent::Uninitialize() {
 	img.Clear();
 }
+
+#if 0
 
 bool SDL2ImageComponent::LoadFileAny(String path) {
 	img.Clear();
@@ -312,7 +315,7 @@ void SDL2ImageComponent::EmitStatic() {
 		int pitch = img.GetPitch();
 		const byte* img_data = img.Begin();
 		
-		StaticSinkData data;
+		StaticValueData data;
 		data.obj_i = id;
 		data.w = w;
 		data.h = h;
@@ -327,6 +330,7 @@ void SDL2ImageComponent::EmitStatic() {
 	}
 }
 
+#endif
 
 
 
@@ -343,9 +347,9 @@ void SDL2FontComponent::Uninitialize() {
 	fnt.Clear();
 }
 
-void SDL2FontComponent::EmitStatic() {
+/*void SDL2FontComponent::EmitStatic() {
 	TODO
-}
+}*/
 
 
 

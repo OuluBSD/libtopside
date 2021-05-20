@@ -34,22 +34,23 @@ String InterfaceBase::GetComponentBaseTypeString(ComponentBase* base) {
 }*/
 
 
-void DisplaySource::SetTitle(String s) {
+/*void DisplaySource::SetTitle(String s) {
 	for (Ref<DisplaySink> sink : GetConnections())
 		sink->SetTitle(s);
-}
+}*/
 
 
 
 
 
-
+#if 0
 #ifdef flagDEBUG
 void InterfaceDebugPrint(TypeId type, String s) {
 	if (type != typeid(RouteSource)) {
 		LOG(s);
 	}
 }
+#endif
 #endif
 
 
@@ -81,13 +82,14 @@ void InterfaceDebugPrint(TypeId type, String s) {
 
 
 
-
+#if 0
 void ActionSink::OnLink(Source src, Cookie src_c, Cookie sink_c) {
 	TODO
 	/*ActionSource* src = dynamic_cast<ActionSource*>(iface);
 	ASSERT(src);
 	return src ? OnLinkActionSource(*src) : 0;*/
 }
+#endif
 
 NAMESPACE_TOPSIDE_END
 

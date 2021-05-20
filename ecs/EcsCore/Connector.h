@@ -7,8 +7,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class T> inline Ref<T> ComponenBase_Static_As(ConnectorBase*) {return 0;}
 
-struct ConnectorBase : Destroyable, Enableable, RefScopeEnabler<ConnectorBase,Pool> {
+class ConnectorBase :
+	public Destroyable,
+	public Enableable,
+	public RefScopeEnabler<ConnectorBase,Pool>
+{
 	
+public:
 	virtual TypeId GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
 	virtual void Update(double dt) = 0;

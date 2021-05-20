@@ -1,7 +1,12 @@
 #include "EcsLib.h"
 
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
+
+
+#if 0
 
 
 RenderingSystem::RenderingSystem(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {
@@ -21,7 +26,7 @@ void RenderingSystem::Start() {
 void RenderingSystem::Update(double dt) {
 
 	for (DisplaySourceRef src : srcs) {
-		DisplayStream& stream = src->GetDisplaySource();
+		DisplayStream& stream = src->GetStream(DisCtx);
 		int buf_sz = stream.GetDisplay().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
 		
@@ -31,7 +36,7 @@ void RenderingSystem::Update(double dt) {
 			DISPLAYLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			
-			src->BeginDisplaySource();
+			src->BeginStream(DisCtx);
 		}
 	}
 	
@@ -61,7 +66,7 @@ void RenderingSystem::Update(double dt) {
 			DISPLAYLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			
-			src->EndDisplaySource();
+			src->EndStream(DisCtx);
 		}
 	}
 }
@@ -121,23 +126,23 @@ void DefaultRenderApp::Initialize() {
 	simple_shader = Shader::NewDefault();
 	//simple_shader->Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
 	
-	AddToSystem<RenderingSystem>(DisplaySource::AsRefT());
+	AddToSystem<DisplaySystem>(AsRef<DisplaySource>());
 }
 
 void DefaultRenderApp::Uninitialize() {
-	RemoveFromSystem<RenderingSystem>(DisplaySource::AsRefT());
+	RemoveFromSystem<DisplaySystem>(AsRef<DisplaySource>());
 	
 }
 
-DisplayStream& DefaultRenderApp::GetDisplaySource() {
+DisplayStream& DefaultRenderApp::GetStream(DisCtx) {
 	TODO
 }
 
-void DefaultRenderApp::BeginDisplaySource() {
+void DefaultRenderApp::BeginStream(DisCtx) {
 	TODO
 }
 
-void DefaultRenderApp::EndDisplaySource() {
+void DefaultRenderApp::EndStream(DisCtx) {
 	TODO
 }
 
@@ -165,7 +170,7 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 	/*Camera* cam = fb_draw->GetCamera();
 	if (!cam)
 		return;*/
-	const auto& cams = CameraSource::GetConnections();
+	const auto& cams = HumanSource::GetConnections();
 	
 	if (cams.IsEmpty())
 		return !needs_fast_rerender;
@@ -266,5 +271,9 @@ bool DefaultRenderApp::Render(const DisplaySinkConfig& config, SystemDraw& draw)
 #endif
 
 #endif
+#endif
 
 NAMESPACE_TOPSIDE_END
+
+
+#endif

@@ -4,13 +4,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool Model::AddTextureFile(int mesh_i, TexType type, String path) {
+bool ModelMesh::AddTextureFile(int mesh_i, TexType type, String path) {
 	if (mesh_i < 0 || mesh_i >= meshes.GetCount())
 		return false;
 	return AddTextureFile(meshes[mesh_i], type, path);
 }
 
-bool Model::AddTextureFile(Mesh& mesh, TexType type, String path){
+bool ModelMesh::AddTextureFile(Mesh& mesh, TexType type, String path){
 	if (FileExists(path)) {
         Image src = StreamRaster::LoadFileAny(path);
         return SetTexture(mesh, type, src);
@@ -18,7 +18,7 @@ bool Model::AddTextureFile(Mesh& mesh, TexType type, String path){
 	return false;
 }
 
-bool Model::SetTexture(Mesh& mesh, TexType type, Image img) {
+bool ModelMesh::SetTexture(Mesh& mesh, TexType type, Image img) {
 	if (IsPositive(img.GetSize())) {
         mesh.tex_id[type] = textures.GetCount();
         textures.Add().Set(img);
@@ -27,7 +27,7 @@ bool Model::SetTexture(Mesh& mesh, TexType type, Image img) {
     return false;
 }
 
-void Model::MakeModel(Shape2DWrapper& shape) {
+void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 	ASSERT(shape.shape);
 	if (shape.shape) {
 		static thread_local Vector<tri3> faces;
@@ -70,7 +70,7 @@ bool ModelLoader::LoadModelAssimp(String path)
     this->path = path;
     this->directory = GetFileDirectory(path);
 	
-	model = new Model();
+	model = new ModelMesh();
 	
     ProcessNode(scene->mRootNode, scene);
     
@@ -90,7 +90,7 @@ void ModelLoader::ProcessNode(aiNode *node, const aiScene *scene)
     }
 }
 
-void ModelLoader::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
+void ModelLoader::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
 {
     out.vertices.SetCount(mesh->mNumVertices);
     out.tex_coords.SetCount(mesh->mNumVertices);
@@ -137,7 +137,7 @@ void ModelLoader::ProcessMesh(Model& mout, Mesh& out, aiMesh *mesh, const aiScen
 	out.SetupAutomatic();
 }
 
-void ModelLoader::LoadMaterialTextures(Model& mout, Mesh& out, aiMaterial *mat, int type) {
+void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type) {
     for(unsigned int i = 0; i < mat->GetTextureCount((aiTextureType) type); i++) {
         if (out.tex_id[type] >= 0) {
             LOG("warning: ModelLoader: multiple textures per mesh: " << path);

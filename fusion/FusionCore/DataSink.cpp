@@ -77,7 +77,10 @@ void FusionDataSink::UpdateTexBuffers() {
 	// pass
 }
 
-void FusionDataSink::RecvStatic(const StaticSinkData& data)  {
+
+#if 0
+
+void FusionDataSink::RecvStatic(const StaticValueData& data)  {
 #if HAVE_OPENGL
 	Ogl_RecvStatic(data);
 #endif
@@ -85,16 +88,18 @@ void FusionDataSink::RecvStatic(const StaticSinkData& data)  {
 
 
 #if HAVE_OPENGL
-void FusionDataSink::Ogl_RecvStatic(const StaticSinkData& d) {
+void FusionDataSink::Ogl_RecvStatic(const StaticValueData& d) {
 	const char* fn_name = "RecvStatic";
 	
 	GLuint& tex = color_buf[0];
 	
+	TODO
+	#if 0
 	VideoSourceFormatResolution& res = stream.fmt.GetResolution(0);
 	res.SetFormat(MakeVideoFormat(Size(d.w, d.h), 60, 1, 4, -1, d.d));
 	
 	if (d.d == 1) {
-		bool is_cubemap = cfg.GetFusionType() == FusionComponentInput::CUBEMAP;
+		bool is_cubemap = cfg.GetFusionType() == AcceleratorHeader::CUBEMAP;
 		
 		GLenum type		= is_cubemap ? GL_TEXTURE_CUBE_MAP : GL_TEXTURE_2D;
 		GLenum tex_type	= is_cubemap ? GL_TEXTURE_CUBE_MAP_POSITIVE_X + d.obj_i : GL_TEXTURE_2D;
@@ -203,9 +208,10 @@ void FusionDataSink::Ogl_RecvStatic(const StaticSinkData& d) {
 		
 		glBindTexture(GL_TEXTURE_3D, 0);
 	}
-	
+	#endif
 	
 }
+#endif
 #endif
 
 void FusionDataSink::Event(const CtrlEvent& e) {
@@ -216,7 +222,8 @@ bool FusionDataSink::LoadResources() {
 	return true;
 }
 
-bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
+#if 0
+bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 	const char* fn_name = "LoadAsInput";
 	EntityRef e = GetEntity();
 	Machine& m = e->GetMachine();
@@ -244,13 +251,13 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 #if HAVE_SDL2
 	Ref<SDL2System> sdl2_sys = m.Get<SDL2System>();
 	if (sdl2_sys) {
-		if (type == FusionComponentInput::TEXTURE ||
-			type == FusionComponentInput::CUBEMAP) {
+		if (type == AcceleratorHeader::TEXTURE ||
+			type == AcceleratorHeader::CUBEMAP) {
 			SDL2ImageComponent* comp = e->Add<SDL2ImageComponent>();
 			if (comp->LinkManually(*this)) {
 				conn->SetUpdateInterfaces(true);
 				String path = in.GetFilepath();
-				if (type == FusionComponentInput::CUBEMAP)
+				if (type == AcceleratorHeader::CUBEMAP)
 					path = "<cubemap>" + path;
 				if (comp->LoadFileAny(path)) {
 					DLOG("FusionDataSink::LoadAsInput: successfully loaded " + in.GetFilepath());
@@ -263,7 +270,7 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 			}
 			comp->Destroy();
 		}
-		else if (type == FusionComponentInput::VOLUME) {
+		else if (type == AcceleratorHeader::VOLUME) {
 			StaticVolumeComponent* comp = e->Add<StaticVolumeComponent>();
 			if (comp->LinkManually(*this)) {
 				conn->SetUpdateInterfaces(true);
@@ -290,5 +297,6 @@ bool FusionDataSink::LoadAsInput(const FusionComponentInput& in) {
 	return false;
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END

@@ -1,7 +1,7 @@
 #include "EcsLib.h"
 
 
-
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -54,3 +54,5 @@ void EventSystem::Remove(MidiSourceRef out) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

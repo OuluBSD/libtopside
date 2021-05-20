@@ -202,7 +202,7 @@ void FfmpegFileInput::DropAudioBuffer() {
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
-	frames = std::min(frames, vframe.GetQueueSize() / vframe.GetVideoFormat().GetFrameBytes());
+	frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
 	
 	if (frames)
 		vframe.DropFrames(frames);
