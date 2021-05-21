@@ -3,7 +3,7 @@
 NAMESPACE_UPP_BEGIN
 
 
-
+const NullOpt null_opt;
 
 
 

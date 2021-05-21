@@ -109,6 +109,7 @@ TMPL(bool) PacketProducer::ProducePacket() {
 			return false;
 		Packet p = iter();
 		dst->Put(p, dst_realtime);
+		internal_written_bytes += p->GetSizeBytes();
 		++offset;
 		return true;
 	}
@@ -116,6 +117,7 @@ TMPL(bool) PacketProducer::ProducePacket() {
 }
 
 TMPL(void) PacketProducer::ProduceAll(bool blocking) {
+	internal_written_bytes = 0;
 	while (!IsFinished()) {
 		if (!ProducePacket()) {
 			if (!blocking) {
@@ -149,7 +151,7 @@ TMPL(void) PacketConsumer::SetDestination(const Format& fmt, void* dst, int dst_
 	dst_buf = 0;
 	dst_iter = (byte*)dst;
 	dst_iter_end = dst_iter + dst_size;
-	dst_remaining = dst_size;
+	this->dst_size = dst_size;
 }
 
 TMPL(void) PacketConsumer::SetDestination(VolatileBuffer& dst) {
@@ -158,7 +160,7 @@ TMPL(void) PacketConsumer::SetDestination(VolatileBuffer& dst) {
 	dst_buf = &dst;
 	dst_iter = 0;
 	dst_iter_end = 0;
-	dst_remaining = 0;
+	dst_size = 0;
 }
 
 TMPL(void) PacketConsumer::ClearDestination() {
@@ -167,7 +169,7 @@ TMPL(void) PacketConsumer::ClearDestination() {
 	dst_buf = 0;
 	dst_iter = 0;
 	dst_iter_end = 0;
-	dst_remaining = 0;
+	dst_size = 0;
 }
 
 TMPL(void) PacketConsumer::TestSetOffset(off32 offset) {
@@ -189,20 +191,19 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 			const Vector<byte>& src_data = src->GetData();
 			int copy_sz = src_data.GetCount() - src_data_shift;
 			ASSERT(copy_sz > 0);
+			int dst_remaining = dst_size - internal_written_bytes;
 			if (copy_sz < dst_remaining) {
 				memcpy(dst_iter, src_data.Begin() + src_data_shift, copy_sz);
 				dst_iter += copy_sz;
-				dst_remaining -= copy_sz;
-				ASSERT(dst_remaining >= 0);
 				ASSERT(dst_iter != dst_iter_end);
 			}
 			else {
 				copy_sz = dst_remaining;
 				memcpy(dst_iter, src_data.Begin() + src_data_shift, copy_sz);
 				dst_iter += copy_sz;
-				dst_remaining = 0;
 				ASSERT(dst_iter == dst_iter_end);
 			}
+			internal_written_bytes += copy_sz;
 			leftover_size = src_data.GetCount() - src_data_shift - copy_sz;
 			ASSERT(!leftover);
 			ASSERT(leftover_size >= 0);
@@ -214,6 +215,7 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 			}
 		}
 		else {
+			internal_written_bytes += src->GetSizeBytes();
 			dst_buf->Put(src, internal_count == 0 && dst_realtime);
 			++offset;
 			++internal_count;
@@ -224,8 +226,8 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 		src2->Set(dst_fmt, src->GetOffset(), src->GetTime());
 		Convert(src, src2);
 		if (src_data_shift) {
-			int src_sample = src_fmt.GetSampleBytes();
-			int dst_sample = dst_fmt.GetSampleBytes();
+			int src_sample = src_fmt.GetSampleSize();
+			int dst_sample = dst_fmt.GetSampleSize();
 			src_data_shift = src_data_shift * dst_sample / src_sample;
 		}
 		Consume(src2, src_data_shift);
@@ -233,7 +235,7 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 }
 
 TMPL(bool) PacketConsumer::ConsumePacket() {
-	ASSERT(dst_buf || dst_remaining > 0);
+	ASSERT(dst_buf || internal_written_bytes < dst_size);
 	if (leftover) {
 		RTLOG("PacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
 		ASSERT(leftover_size > 0);
@@ -258,9 +260,11 @@ TMPL(bool) PacketConsumer::ConsumePacket() {
 
 TMPL(void) PacketConsumer::ConsumeAll(bool blocking) {
 	internal_count = 0;
+	internal_written_bytes = 0;
 	while (!IsFinished()) {
 		if (!ConsumePacket()) {
 			if (!blocking) {
+				int dst_remaining = dst_size - internal_written_bytes;
 				if (dst_iter)
 					memset(dst_iter, 0, dst_remaining);
 				break;
@@ -275,7 +279,7 @@ TMPL(void) PacketConsumer::ConsumeAll(bool blocking) {
 
 TMPL(bool) PacketConsumer::IsFinished() const {
 	if (dst_mem)
-		return dst_remaining == 0;
+		return internal_written_bytes >= dst_size;
 	else
 		return dst_buf->IsQueueFull();
 }

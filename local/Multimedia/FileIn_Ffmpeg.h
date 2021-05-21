@@ -14,7 +14,7 @@ class FfmpegAudioFrameQueue :
 	AudioPacketProducer producer;
 	AudioPacketBuffer buf;
 	dword frame_counter = 0;
-	int min_buf_size = MIN_AUDIO_BUFFER_FRAMES;
+	int min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
 	off32 begin, begin_offset_min, begin_offset_max, end_offset_min, end_offset_max;
 	dword exchange_count = 0;
 	
@@ -22,6 +22,7 @@ protected:
 	friend class FfmpegFileInput;
 	
 	AudioFormat aud_fmt;
+	
 	
 public:
 	~FfmpegAudioFrameQueue() {Clear();}
@@ -35,6 +36,7 @@ public:
 	
 	void		Exchange(AudioEx& e) override;
 	int			GetQueueSize() const override;
+	int			GetQueueSamples() const;
 	AudioFormat	GetFormat() const override;
 	bool		IsQueueFull() const override;
 	
@@ -69,7 +71,7 @@ class FfmpegVideoFrameQueue :
 	struct SwsContext* img_convert_ctx = 0;
 	Pool pool;
 	LinkedList<Recycler> frames;
-	int min_buf_size = 2;
+	int min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
 	
 	
 protected:
@@ -99,7 +101,8 @@ typedef Ref<FfmpegVideoFrameQueue> FfmpegVideoFrameQueueRef;
 
 
 
-class FfmpegFileChannel {
+class FfmpegFileChannel
+{
 	
 protected:
 	friend class FfmpegFileInput;
@@ -113,6 +116,7 @@ protected:
 	int stream_i = -1;
 	bool is_open = false;
 	String errstr;
+	
 	
 	//int read_frame_i = 0;
 	
@@ -136,10 +140,13 @@ public:
 
 
 
-class FfmpegFileInput : public MediaStream {
+class FfmpegFileInput :
+	public RefScopeEnabler<FfmpegFileInput,ComponentBase>
+{
+	
+protected:
 	FfmpegAudioFrameQueue aframe;
 	FfmpegVideoFrameQueue vframe;
-	AVMediaProxy avproxy;
 	
 	bool has_audio;
 	bool has_video;
@@ -164,6 +171,23 @@ class FfmpegFileInput : public MediaStream {
 	bool ProcessAudioFrame();
 	void FillBuffersNull();
 	
+	
+	struct LocalAudioStream : public AudioStream {
+		FfmpegFileInput& par;
+		LocalAudioStream(FfmpegFileInput* par) : par(*par) {}
+		bool			IsOpen() const override;
+		bool			Open(int fmt_idx) override;
+		void			Close() override;
+		Audio&			Get() override;
+		void			FillBuffer() override;
+		void			DropBuffer() override;
+		int				GetActiveFormatIdx() const override;
+		int				GetFormatCount() const override;
+		AudioFormat		GetFormat(int i) const override;
+		bool			FindClosestFormat(const AudioFormat& fmt, int& idx) override;
+	};
+	LocalAudioStream astream;
+	
 public:
 	FfmpegFileInput();
 	
@@ -173,41 +197,23 @@ public:
 	double	GetSeconds() const;
 	
 	
-	//void	FillVideoBuffer() override;
-	//void	FillAudioBuffer() override;
-	bool						IsOpen() const override;
-	bool						Open(int fmt_idx) override;
-	void						Close() override;
-	Media&						Get() override {return avproxy;}
-	void						FillBuffer() override {}
-	void						DropBuffer() override {}
-	int							GetActiveFormatIdx() const override {TODO}
-	int							GetFormatCount() const override {TODO}
-	MediaFormat					GetFormat(int i) const override {TODO}
-	bool						FindClosestFormat(const MediaFormat&, int& idx) override {TODO}
-	//Audio&	GetAudio() override;
-	//Video&	GetVideo() override;
-	AudioStream&				GetAudioStream() override;
-	VideoStream&				GetVideoStream() override;
+	void	FillVideoBuffer();
+	void	FillAudioBuffer();
+	
+	bool						IsOpen() const;
+	bool						Open();
+	void						Close();
+	Audio&						GetAudio();
+	Video&						GetVideo();
+	AudioStream&				GetAudioStream();
+	VideoStream&				GetVideoStream();
 	bool						OpenFile(String path);
 	
-	/*
-	// Realtime
-	String	GetLastError() const override;
+	String	GetLastError() const;
 	
-	// Audio
-	void	DropAudioBuffer() override;
-	
-	// Video
-	void	DropVideoFrames(int frames) override;
-	int		GetActiveVideoFormatIdx() const override;
-	int		GetVideoBufferSize() const override {return vframe.GetQueueSize();}
-	
-	// Media
-	bool	Open0(String path) override;
-	bool	OpenDevice0(int fmt, int res) override;
-	String	GetPath() const override;*/
-	
+	void	DropVideoFrames(int frames);
+	void	DropAudioBuffer();
+	String						GetPath() const;
 	
 	
 	Callback WhenStopped;

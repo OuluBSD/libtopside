@@ -13,7 +13,7 @@ public:
 	DummySoundGenerator() {}
 	void Play(const AudioPacket& p) {
 		int total_bytes = frame.GetCount() * sizeof(T);
-		int copy_size = p->GetFormat().GetFrameBytes();
+		int copy_size = p->GetFormat().GetFrameSize();
 		p->Data().SetCount(copy_size, 0);
 		int frame_remaining = total_bytes - frame_offset;
 		byte* dst = p->Data().Begin();

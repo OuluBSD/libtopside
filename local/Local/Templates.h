@@ -10,12 +10,12 @@ class ConnectorBase;
 template <class T>
 class RealtimePacketBuffer {
 	static const int BUFFER_COUNT = 2;
-	static const int PACKET_LIMIT = 1024;
+	static const int SAMPLE_LIMIT = 4*1024; // large default
 	
 	RWMutex lock;
 	LinkedList<T> packets[BUFFER_COUNT];
 	int data_i = 0;
-	int size_limit = 0;
+	int sample_limit = SAMPLE_LIMIT;
 	
 	
 public:
@@ -37,7 +37,7 @@ public:
 		for(int i = 0; i < BUFFER_COUNT; i++)
 			packets[i].Clear();
 		data_i = 0;
-		size_limit = 0;
+		sample_limit = SAMPLE_LIMIT;
 		lock.LeaveWrite();
 	}
 	void RemoveFirst(int count=1) {
@@ -48,10 +48,14 @@ public:
 		lock.LeaveWrite();
 	}
 	
-	void		SetLimit(int i) {size_limit = i;}
+	void		SetLimit(int samples) {ASSERT(samples > 0); sample_limit = samples;}
 	
 	int			GetQueueSize() const {return packets[data_i].GetCount();}
-	bool		IsQueueFull() const {return packets[data_i].GetCount() >= size_limit;}
+	int			GetQueueSamples() const {int bytes = 0; for (auto& p : packets[data_i]) bytes += p->GetSizeSamples(); return bytes;}
+	bool		IsQueueFull() const {
+		int sz = GetQueueSamples();
+		return sz >= sample_limit;
+	}
 	bool		IsEmpty() const {return packets[data_i].IsEmpty();}
 	
 	int GetQueueSizeBytes() const {
@@ -105,7 +109,7 @@ public:
 			LinkedList<T>& l = packets[data_i];
 			ASSERT(l.IsEmpty());
 			l.Add(p);
-			ASSERT(size_limit > 0);
+			ASSERT(sample_limit > 0);
 		}
 		else {
 			LinkedList<T>& l = packets[data_i];
@@ -218,6 +222,7 @@ struct ContextT {
 		double					GetTime() const {return time;}
 		bool					IsOffset(const off32& o) const {return offset.value == o.value;}
 		int						GetSizeBytes() const {return data.GetCount();}
+		int						GetSizeSamples() const {return data.GetCount() / fmt.GetSampleSize();}
 		
 	#if HAVE_OPENGL
 		virtual bool PaintOpenGLTexture(int texture);
@@ -264,6 +269,7 @@ struct ContextT {
 		VolatileBuffer*		dst = 0;
 		off32				offset;
 		bool				dst_realtime = false;
+		int					internal_written_bytes;
 		
 	public:
 		PacketProducer() {}
@@ -280,6 +286,7 @@ struct ContextT {
 		bool		IsFinished() const;
 		bool		IsEmptySource() const {return src == 0;}
 		off32		GetOffset() const {return offset;}
+		int			GetLastMemoryBytes() const {return internal_written_bytes;}
 		
 		operator bool() const {return IsFinished();}
 		
@@ -298,10 +305,11 @@ struct ContextT {
 		void*			dst_mem = 0;
 		byte*			dst_iter = 0;
 		byte*			dst_iter_end = 0;
-		int				dst_remaining = 0;
+		int				dst_size = 0;
 		bool			dst_realtime = 0;
 		
 		int				internal_count;
+		int				internal_written_bytes;
 		
 		void Consume(Packet& p, int data_shift);
 		
@@ -323,6 +331,7 @@ struct ContextT {
 		bool		IsEmptySource() const {return src == 0;}
 		off32		GetOffset() const {return offset;}
 		bool		HasLeftover() const {return leftover_size != 0;}
+		int			GetLastMemoryBytes() const {return internal_written_bytes;}
 		
 		operator bool() const {return IsFinished();}
 		
@@ -361,7 +370,7 @@ struct ContextT {
 		}
 		#endif
 		
-		void		SetSize(Format fmt, int frames) {preferred_fmt = fmt; Buffer::SetLimit(frames);}
+		void		SetSampleSize(Format fmt, int samples) {preferred_fmt = fmt; Buffer::SetLimit(samples);}
 		
 		void		Exchange(Ex& e)			override;
 		int			GetQueueSize() const	override {return Buffer::GetQueueSize();}

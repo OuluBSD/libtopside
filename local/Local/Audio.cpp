@@ -84,8 +84,8 @@ template <>
 bool ContextT<AudioContext>::Convert(const AudioPacket& src, AudioPacket& dst) {
 	AudioFormat src_fmt = src->GetFormat();
 	AudioFormat dst_fmt = dst->GetFormat();
-	int src_sample = src_fmt.GetSampleBytes();
-	int dst_sample = dst_fmt.GetSampleBytes();
+	int src_sample = src_fmt.GetSampleSize();
+	int dst_sample = dst_fmt.GetSampleSize();
 	const Vector<byte>& src_data = src->GetData();
 	int src_samples = src_data.GetCount() / src_sample;
 	Vector<byte>& dst_data = dst->Data();

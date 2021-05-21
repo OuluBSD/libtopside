@@ -6,8 +6,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-FfmpegFileInput::FfmpegFileInput() {
-	avproxy.Set(aframe, vframe);
+FfmpegFileInput::FfmpegFileInput() :
+	astream(this)
+{
+	
 }
 
 void FfmpegFileInput::Clear() {
@@ -95,31 +97,10 @@ bool FfmpegFileInput::OpenFile(String path) {
 	return HasMediaOpen();
 }
 
-bool FfmpegFileInput::Open(int fmt_idx) {
-	TODO
-}
-
-void FfmpegFileInput::Close() {
-	Clear();
-}
-
-AudioStream& FfmpegFileInput::GetAudioStream() {
-	TODO
-}
-
-VideoStream& FfmpegFileInput::GetVideoStream() {
-	TODO
-}
-
-#if 0
-
-bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
+bool FfmpegFileInput::Open() {
 	ClearDevice();
 	
 	if (!HasMediaOpen())
-		return false;
-	
-	if (fmt != 0 || res != 0)
 		return false;
 	
 	bool audio_open = has_audio ? a.OpenDevice() : false;
@@ -130,6 +111,18 @@ bool FfmpegFileInput::OpenDevice0(int fmt, int res) {
 	is_dev_open = audio_open || video_open;
 	is_eof = !is_dev_open;
 	return is_dev_open;
+}
+
+void FfmpegFileInput::Close() {
+	Clear();
+}
+
+AudioStream& FfmpegFileInput::GetAudioStream() {
+	return astream;
+}
+
+VideoStream& FfmpegFileInput::GetVideoStream() {
+	TODO
 }
 
 void FfmpegFileInput::FillVideoBuffer() {
@@ -218,14 +211,11 @@ void FfmpegFileInput::DropAudioBuffer() {
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
-	frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
+	TODO
+	/*frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
 	
 	if (frames)
-		vframe.DropFrames(frames);
-}
-
-String FfmpegFileInput::GetPath() const {
-	return path;
+		vframe.DropFrames(frames);*/
 }
 
 Audio& FfmpegFileInput::GetAudio() {
@@ -240,6 +230,10 @@ String FfmpegFileInput::GetLastError() const {
 	return errstr;
 }
 
+String FfmpegFileInput::GetPath() const {
+	return path;
+}
+
 double FfmpegFileInput::GetSeconds() const {
 	if (a.IsOpen())
 		return a.GetSeconds();
@@ -252,14 +246,54 @@ bool FfmpegFileInput::IsEof() const {
 	return is_eof;
 }
 
-int FfmpegFileInput::GetActiveVideoFormatIdx() const {
+
+
+
+bool FfmpegFileInput::LocalAudioStream::IsOpen() const {
+	return par.is_dev_open && par.has_audio;
+}
+
+bool FfmpegFileInput::LocalAudioStream::Open(int fmt_idx) {
+	ASSERT(!fmt_idx);
+	if (par.is_dev_open)
+		return par.has_audio;
+	if (par.Open())
+		return par.has_audio;
+	return false;
+}
+
+void FfmpegFileInput::LocalAudioStream::Close() {
+	par.Close();
+}
+
+Audio& FfmpegFileInput::LocalAudioStream::Get() {
+	return par.aframe;
+}
+
+void FfmpegFileInput::LocalAudioStream::FillBuffer() {
+	par.FillAudioBuffer();
+}
+
+void FfmpegFileInput::LocalAudioStream::DropBuffer() {
+	par.DropAudioBuffer();
+}
+
+int FfmpegFileInput::LocalAudioStream::GetActiveFormatIdx() const {
 	return 0;
 }
 
-#endif
+int FfmpegFileInput::LocalAudioStream::GetFormatCount() const {
+	return 1;
+}
 
+AudioFormat FfmpegFileInput::LocalAudioStream::GetFormat(int i) const {
+	return par.aframe.aud_fmt;
+}
 
-
+bool FfmpegFileInput::LocalAudioStream::FindClosestFormat(const AudioFormat& fmt, int& idx) {
+	idx = 0;
+	return true;
+}
 
 
 
@@ -523,8 +557,6 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 
 
-
-
 void FfmpegAudioFrameQueue::Init() {
 	Clear();
 	
@@ -595,7 +627,14 @@ int FfmpegAudioFrameQueue::GetQueueSize() const {
 }
 
 bool FfmpegAudioFrameQueue::IsQueueFull() const {
-	return buf.GetCount() >= min_buf_size;
+	return GetQueueSamples() >= min_buf_samples;
+}
+
+int FfmpegAudioFrameQueue::GetQueueSamples() const {
+	int size = 0;
+	for(auto& p : buf)
+		size += p->GetSizeSamples();
+	return size;
 }
 
 AudioFormat FfmpegAudioFrameQueue::GetFormat() const {
@@ -603,12 +642,13 @@ AudioFormat FfmpegAudioFrameQueue::GetFormat() const {
 }
 
 void FfmpegAudioFrameQueue::FillBuffersNull() {
-	if (buf.GetCount() < min_buf_size) {
+	if (!IsQueueFull()) {
 		AudioPacket p = CreateAudioPacket();
 		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: filling buffer with empty packets " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
 		p->Set(aud_fmt, offset, -1);
-		p->Data().SetCount(aud_fmt.GetFrameBytes(), 0);
+		p->Data().SetCount(aud_fmt.GetFrameSize(), 0);
+		buf.Add(p);
 	}
 }
 
@@ -635,14 +675,14 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	// Non-planar data
 	if (frame->data[1] == 0) {
 		if (frame->data[0]) {
-			ASSERT(aud_fmt.GetFrameBytes() >= frame->linesize[0]);
+			ASSERT(aud_fmt.GetFrameSize() >= frame->linesize[0]);
 			auto& p = buf.Add();
 			p = CreateAudioPacket();
 			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 			off32 offset{frame_counter++};
 			p->Set(aud_fmt, offset, time_pos);
 			Vector<byte>& data = p->Data();
-			int sz = max(frame->linesize[0], aud_fmt.GetFrameBytes());
+			int sz = max(frame->linesize[0], aud_fmt.GetFrameSize());
 			data.SetCount(sz, 0);
 			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
 		}
@@ -657,7 +697,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		off32 offset{frame_counter++};
 		p->Set(aud_fmt, offset, time_pos);
 		Vector<byte>& data = p->Data();
-		data.SetCount(aud_fmt.GetFrameBytes(), 0);
+		data.SetCount(aud_fmt.GetFrameSize(), 0);
 		byte* dst = data.Begin();
 		
 		for(int i = 0; i < frame->channels; i++)
@@ -810,11 +850,13 @@ void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
 }
 
 int FfmpegVideoFrameQueue::GetQueueSize() const {
-	return frames.GetCount() * vid_fmt.GetFrameBytes();
+	//return frames.GetCount() * vid_fmt.GetFrameBytes();
+	TODO
 }
 
 bool FfmpegVideoFrameQueue::IsQueueFull() const {
-	return frames.GetCount() >= min_buf_size;
+	//return frames.GetCount() >= min_buf_size;
+	TODO
 }
 
 VideoFormat FfmpegVideoFrameQueue::GetFormat() const {

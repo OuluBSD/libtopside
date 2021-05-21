@@ -83,7 +83,7 @@ struct RealtimeSourceConfig {
 	void SetOffset(off32 begin, off32 end) {begin_offset = begin; end_offset = end;}
 };
 
-#define MIN_AUDIO_BUFFER_FRAMES 2
+#define MIN_AUDIO_BUFFER_SAMPLES 1024
 
 
 

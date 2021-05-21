@@ -26,7 +26,7 @@ void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
 			while (!vol_aud->IsQueueFull()) {
 				AudioPacket p = CreateAudioPacket();
 				p->Set(fmt, offset, time);
-				p->Data().SetCount(fmt.GetFrameBytes(), 0);
+				p->Data().SetCount(fmt.GetFrameSize(), 0);
 				gen.Play(p);
 				vol_aud->Put(p, false);
 				++offset;

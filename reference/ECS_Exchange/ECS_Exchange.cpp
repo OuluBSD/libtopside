@@ -31,7 +31,7 @@ template <class T> void AudioBufferUnitTestT() {
 	}
 	
 	AudioVolatileBuffer b;
-	b.SetSize(fmt, frames);
+	b.SetSize(fmt, fmt.sample_rate);
 	
 	for(int i = 0; i < frames; i++)
 		b.Put((T*)from.Begin(), from.GetCount() * fmt.var_size, false);

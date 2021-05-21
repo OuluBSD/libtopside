@@ -41,9 +41,9 @@ struct AudioFormat {
 	bool operator!=(const AudioFormat& fmt) const {return !IsSame(fmt);}
 	bool operator==(const AudioFormat& fmt) const {return IsSame(fmt);}
 	
-	int GetSampleBytes() const {return var_size * channels;}
-	int GetFrameBytes() const {return var_size * channels * sample_rate;}
-	int GetFrameBytes(int dst_sample_rate) const {return var_size * channels * dst_sample_rate;}
+	int GetSampleSize() const {return var_size * channels;}
+	int GetFrameSize() const {return var_size * channels * sample_rate;}
+	int GetFrameSize(int dst_sample_rate) const {return var_size * channels * dst_sample_rate;}
 	double GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
 	
 	template <class T> bool IsSampleType() const {
@@ -72,16 +72,16 @@ struct VideoFormat {
 	int pitch = 0;
 	String codec;
 	
-	void Clear();
-	bool IsValid() const {return res.cx > 0 && res.cy > 0 && depth > 0 && fps > 0 && var_size > 0 && channels > 0 && pitch >= GetMinPitch();}
-	int GetMinPitch() const {return res.cx * channels * var_size;}
-	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); pitch = GetMinPitch() + bytes;}
-	void SetPitch(int bytes) {pitch = bytes; ASSERT(bytes >= GetMinPitch());}
-	Size GetSize() const {return res;}
-	int GetDepth() const {return depth;}
-	int GetFrameBytes() const {return res.cy * pitch;}
-	bool operator!=(const VideoFormat& fmt) const {return !(*this == fmt);}
-	bool operator==(const VideoFormat& fmt) const {
+	void	Clear();
+	bool	IsValid() const {return res.cx > 0 && res.cy > 0 && depth > 0 && fps > 0 && var_size > 0 && channels > 0 && pitch >= GetMinPitch();}
+	int		GetMinPitch() const {return res.cx * channels * var_size;}
+	void	SetLinePadding(int bytes) {ASSERT(bytes >= 0); pitch = GetMinPitch() + bytes;}
+	void	SetPitch(int bytes) {pitch = bytes; ASSERT(bytes >= GetMinPitch());}
+	Size	GetSize() const {return res;}
+	int		GetDepth() const {return depth;}
+	int		GetFrameBytes() const {return res.cy * pitch;}
+	bool	operator!=(const VideoFormat& fmt) const {return !(*this == fmt);}
+	bool	operator==(const VideoFormat& fmt) const {
 		return	res == fmt.res &&
 				depth == fmt.depth &&
 				fps == fmt.fps &&

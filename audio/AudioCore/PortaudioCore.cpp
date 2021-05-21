@@ -225,7 +225,7 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 		consumer.SetSource(buf);
 	
 	if (args.output) {
-		int size = fmt.GetFrameBytes();
+		int size = fmt.GetFrameSize();
 		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
@@ -241,6 +241,9 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
 			consumer.ClearDestination();
+			if (consumer.GetLastMemoryBytes() != size) {
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
+			}
 			
 			off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
@@ -267,12 +270,12 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 
 void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
-	buf.SetSize(fmt, MIN_AUDIO_BUFFER_FRAMES);
+	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
-	buf.SetSize(fmt, MIN_AUDIO_BUFFER_FRAMES);
+	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 
 }
