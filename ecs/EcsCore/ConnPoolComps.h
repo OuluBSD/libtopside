@@ -21,7 +21,7 @@ public:
 	COPY_PANIC(ConnectAllInterfaces);
 	
 	using Source	= T;
-	using Sink		= typename T::Sink;
+	using Sink		= typename T::SinkClass;
 	using ISource	= InterfaceSource<Source, Sink>;
 	using ISink		= InterfaceSink<Sink>;
 	

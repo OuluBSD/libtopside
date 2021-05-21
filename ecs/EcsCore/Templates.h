@@ -45,7 +45,7 @@ struct ContextEcsT {
 		TypeId GetProviderType() override {return TypeId(AsTypeCls<Source>());}
 		
 		using ExPt = ExchangePoint;
-		using Sink = ContextEcsT::Sink;
+		using SinkClass = ContextEcsT::Sink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
