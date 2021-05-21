@@ -12,13 +12,13 @@ OdeSystem* OdeNode::GetWorld() {
 	OdeNode* n = this;
 	while (n->portal)
 		n = n->portal;
-	return dynamic_cast<OdeSystem*>(n);
+	return CastPtr<OdeSystem>(n);
 }
 
 OdeSpace* OdeNode::GetSpace() {
 	OdeNode* n = this;
 	while (n) {
-		OdeSpace* s = dynamic_cast<OdeSpace*>(n);
+		OdeSpace* s = CastPtr<OdeSpace>(n);
 		if (s)
 			return s;
 		n = n->portal;

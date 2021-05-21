@@ -31,6 +31,7 @@ class DefaultRenderApp :
 	bool Render(SystemDraw& draw);
 	
 public:
+	RTTI_COMP2(DefaultRenderApp, DisplaySource, HumanSource)
 	VIS_COMP_2_0(Display, Human)
 	COPY_PANIC(DefaultRenderApp);
 	IFACE_CB(DisplaySource);

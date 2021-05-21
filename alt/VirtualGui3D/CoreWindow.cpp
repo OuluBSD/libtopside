@@ -678,7 +678,7 @@ void WindowDecoration::Paint(Draw& id) {
 	id.DrawLine(0,sz.cy-1, sz.cx-1, sz.cy-1, 1, border_br);
 	
 	Color left, right;
-	if (dynamic_cast<CoreWindow*>(GetParent())->IsActive()) {
+	if (CastPtr<CoreWindow>(GetParent())->IsActive()) {
 		left = Color(0, 64, 128);
 		right = Color(57, 141, 195);
 	} else {

@@ -5,7 +5,6 @@
 #include <FusionCore/FusionCore.h>
 #include <AudioCore/System.h>
 #include <Music/Music.h>
-#include <Esc/Esc.h>
 using namespace Topside;
 
 NAMESPACE_TOPSIDE_BEGIN

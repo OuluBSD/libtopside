@@ -92,11 +92,30 @@ I FindIf(I begin, I end, std::function<T> fn) {
 
 
 
-template <class T, class K>
-inline bool IsInheritedBy(const K& o) {return dynamic_cast<const T*>(&o);}
+//template <class T, class K> inline bool IsInheritedBy(const K& o) {return CastConstPtr<T>(&o);}
+//template <class T, class K> inline T& Cast(K& o) {return CastRef<T>(o);}
 
-template <class T, class K>
-inline T& Cast(K& o) {return dynamic_cast<T&>(o);}
+template <class T, class S> T*			CastPtr(S* o) {
+	void* p = o->GetBasePtr(AsTypeCls<T>());
+	return (T*)p;
+}
+
+template <class T, class S> const T*	CastConstPtr(const S* o) {
+	void* p = o->GetBasePtr(AsTypeCls<T>());
+	return (const T*)p;
+}
+
+template <class T, class S> T&			CastRef(S& o) {
+	void* p = o.GetBasePtr(AsTypeCls<T>());
+	if (!p) __BREAK__;
+	return *(T*)p;
+}
+
+template <class T, class S> const T&	CastConstRef(const S& o) {
+	void* p = o.GetBasePtr(AsTypeCls<T>());
+	if (!p) __BREAK__;
+	return *(const T*)p;
+}
 
 
 

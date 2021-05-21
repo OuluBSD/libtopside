@@ -3,7 +3,8 @@ description "U++ compatible Non-GUI code. Streams, NTL containers, concrete type
 options(BUILDER_OPTION) NOWARNINGS;
 
 uses
-	ports/bz2lib;
+	ports/bz2lib,
+	RTTI;
 
 library(WIN32) "shlwapi comdlg32";
 

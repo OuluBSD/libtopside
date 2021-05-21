@@ -9,7 +9,7 @@ void AssertFalse(bool b, String s="Assertion failed");
 
 template <class T>
 T& PtrRef(T* o, String throw_msg) {
-	if (!o) throw throw_msg;
+	if (!o) Throw(throw_msg);
 	return *o;
 }
 

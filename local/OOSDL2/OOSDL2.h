@@ -278,7 +278,7 @@ public:
 	T* FindContextComponent() {
 		T* o;
 		for(Component* c : comps)
-			if ((o = dynamic_cast<T*>(c)))
+			if ((o = CastPtr<T>(c)))
 				return o;
 		return 0;
 	}
@@ -308,7 +308,7 @@ public:
 	T* FindComponent() {
 		T* o;
 		for(Component& c : comps)
-			if ((o = dynamic_cast<T*>(&c)))
+			if ((o = CastPtr<T>(&c)))
 				return o;
 		return 0;
 	}

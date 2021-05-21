@@ -19,20 +19,22 @@ inline String Demangle(const char* name) {
     return name;
 }
 
-class TypeId : std::reference_wrapper<const std::type_info>, Moveable<TypeId>
+#ifdef flagSTDRTTI
+class TypeId :
+	TYPE_WRAPPER,
+	Moveable<TypeId>
 {
-    //TypeId() = delete;
-
 public:
-	typedef std::reference_wrapper<const std::type_info> Wrap;
-    using reference_wrapper::reference_wrapper;
+	typedef TYPE_WRAPPER Wrap;
+    using TYPE_WRAPPER_CTOR;
 	
-	TypeId() : Wrap(typeid(void)) {}
+	TypeId() : Wrap(AsVoidTypeId()) {}
 	TypeId(const TypeId& id) : Wrap(id) {}
 	TypeId(const Wrap& w) : Wrap(w) {}
 	
-    hash_t GetHashValue() const { return (uint32)get().hash_code(); }
-    char const* name() const { return get().name(); }
+	
+    hash_t GetHashValue() const { return (hash_t)get().hash_code(); }
+    //char const* name() const { return get().name(); }
     String DemangledName() const {return Demangle(name());}
 	String CleanDemangledName() const {
 		String s(DemangledName());
@@ -41,25 +43,35 @@ public:
 		return s;
 	}
 	
-	void operator=(const TypeId& id) {
-		Wrap::operator=(id);
-	}
-	
-    bool operator==(TypeId const& other) const {
-        return get() == other.get();
-    }
-
-    bool operator!=(TypeId const& other) const {
-        return !(*this == other);
-    }
-
-    bool operator<(TypeId const& other) const {
-        return get().before(other);
-    }
+	void operator=(const TypeId& id) {Wrap::operator=(id);}
+    bool operator==(TypeId const& other) const {return get() == other.get();}
+    bool operator!=(TypeId const& other) const {return !(*this == other);}
+    bool operator<(TypeId const& other) const {return get().before(other);}
     
 };
-
-template<class T> inline TypeId GetTypeId() {return typeid(T);}
+#else
+class TypeId : Moveable<TypeId>
+{
+	TypeCls type;
+	const RTTI* rtti;
+	
+public:
+	TypeId() : type(0) {}
+	TypeId(const TypeId& id) : type(id.type), rtti(id.rtti) {}
+	TypeId(const TypeCls& t) : type(t), rtti(0) {}
+	TypeId(const RTTI& t) : type(t.GetTypeId()), rtti(&t) {}
+	
+	String DemangledName() const {return rtti ? String(rtti->GetDynamicName()) : ("Unknown" + HexStr(type));}
+	String CleanDemangledName() const {return DemangledName();}
+	
+    hash_t GetHashValue() const { return (hash_t)type; }
+	void operator=(const TypeId& id) {type = id.type;}
+    bool operator==(const TypeId& other) const {return type == other.type;}
+    bool operator!=(const TypeId& other) const {return type != other.type;}
+    bool operator<(const TypeId& other) const {return type < other.type;}
+    
+};
+#endif
 
 template<class T> using TypeMap				= LinkedMap<TypeId, T>;
 
@@ -93,9 +105,11 @@ void EraseIf(Container* container, Predicate&& predicate)
     //container->Remove(RemoveIf(container->begin(), container->end(), Pick(predicate)), container->end());
 }
 
-class Destroyable
+class Destroyable :
+	RTTIBase
 {
 public:
+	RTTI_DECL0(Destroyable)
     virtual ~Destroyable() = default;
 
     virtual void Destroy() { destroyed = true; }
@@ -118,9 +132,11 @@ protected:
 };
 
 
-class Enableable
+class Enableable :
+	RTTIBase
 {
 public:
+	RTTI_DECL0(Enableable)
     virtual ~Enableable() = default;
 
     virtual void SetEnabled(bool enable) { m_enabled = enable; }
@@ -182,7 +198,7 @@ template <typename T, typename... Ts>
 using AllSame = AllTrue<std::is_same<T, Ts>::value...>;
 
 template <typename T, typename Base>
-bool IsInstance(const Base& o) {return dynamic_cast<const T*>(&o) != 0;}
+bool IsInstance(const Base& o) {return CastConstPtr<T>(&o) != 0;}
 
 
 NAMESPACE_TOPSIDE_END

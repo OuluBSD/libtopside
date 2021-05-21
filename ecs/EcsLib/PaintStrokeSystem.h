@@ -10,6 +10,7 @@ class PaintStrokeComponent :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(PaintStrokeComponent)
 	COPY_PANIC(PaintStrokeComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -26,6 +27,7 @@ class PaintStrokeSystem :
 	public System<PaintStrokeSystem> {
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_RTTI(PaintStrokeSystem)
 	SYS_CTOR(PaintStrokeSystem);
 	~PaintStrokeSystem() = default;
 	

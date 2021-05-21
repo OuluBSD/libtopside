@@ -5,7 +5,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class EntityVisitor {
+class EntityVisitor :
+	RTTIBase
+{
 	struct Item : Moveable<Item> {
 		int pool_pos;
 		PoolVec::Iterator pool;
@@ -87,6 +89,8 @@ public:
 class EntityChildrenVisitor : public EntityVisitor {
 	
 public:
+	RTTI_DECL1(EntityChildrenVisitor, EntityVisitor)
+	
 	EntityChildrenVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
 	EntityChildrenVisitor(Machine& m)			: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
 	EntityChildrenVisitor(Entity& e)			: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
@@ -96,6 +100,8 @@ public:
 class EntityCurrentVisitor : public EntityVisitor {
 	
 public:
+	RTTI_DECL1(EntityCurrentVisitor, EntityVisitor)
+	
 	EntityCurrentVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
 	EntityCurrentVisitor(Machine& m)			: EntityVisitor(m, POOL_CURRENT_ONLY) {}
 	EntityCurrentVisitor(Entity& e)				: EntityVisitor(e, POOL_CURRENT_ONLY) {}
@@ -127,11 +133,13 @@ class EntityComponentVisitor : public EntityVisitor {
 			FindNextDepthFirstWithComps();
 	}
 public:
+	RTTI_DECL1(EntityComponentVisitor, EntityVisitor)
+	
 	EntityComponentVisitor(PoolVec& pool) : EntityVisitor(pool) {Init();}
 	EntityComponentVisitor(Machine& m) : EntityVisitor(m) {Init();}
 	
 	
-	template<typename ComponentT> ComponentT* Get() {return cur_comps.template Find<ComponentT>();}
+	template<typename ComponentT> RefT_Entity<ComponentT> Get() {return cur_comps.template Get<RefT_Entity<ComponentT>>();}
 	
 	void operator++(int) {FindNextDepthFirstWithComps();}
 	

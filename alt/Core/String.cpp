@@ -29,7 +29,9 @@ bool FitsInInt64(double x) {
 String ToUtf8(const wchar_t* s, int len) {
 	if (len <= 0)
 		return String();
+	#ifdef flagSTDEXC
 	try {
+	#endif
 		#if defined flagMSC
 		thread_local static Vector<char> tmp;
 		int sz = len * 4;
@@ -43,17 +45,21 @@ String ToUtf8(const wchar_t* s, int len) {
 		String ret(str.c_str(), str.size());
 		#endif
 		return ret;
+	#ifdef flagSTDEXC
 	}
 	catch (std::range_error e) {
 		LOG("ToUtf8: std::range_error: " + String(e.what()));
 	}
+	#endif
 	return String();
 }
 
 WString FromUtf8(const char* s, int len) {
 	if (len <= 0)
 		return WString();
+	#ifdef flagSTDEXC
 	try {
+	#endif
 		#if defined flagMSC
 		thread_local static Vector<wchar_t> tmp;
 		int sz = len;
@@ -67,10 +73,12 @@ WString FromUtf8(const char* s, int len) {
 		WString ret(ws.c_str(), ws.size());
 		#endif
 		return ret;
+	#ifdef flagSTDEXC
 	}
 	catch (std::range_error e) {
 		LOG("FromUtf8: std::range_error: " + String(e.what()));
 	}
+	#endif
 	return WString();
 }
 

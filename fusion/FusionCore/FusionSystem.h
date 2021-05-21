@@ -25,6 +25,8 @@ ArrayMap<String,String>& CommonHashToName();
 struct BasicFusionStream : public VideoStream {
 	VideoFormat fmt;
 	
+	
+	RTTI_DECL1(BasicFusionStream, VideoStream)
 	BasicFusionStream() {}
 	
 	void						FillBuffer() override {}
@@ -83,7 +85,8 @@ struct FusionStream : public RealtimeStream {
 	TimeStop aframe_time;
 	double audio_sync_ival = 1.0f;*/
 	
-	
+public:
+	RTTI_DECL1(FusionStream, RealtimeStream)
 	FusionStream() {Clear();}
 	void Clear() {
 		name.Clear();
@@ -211,7 +214,11 @@ struct FusionComponentInputVector {
 
 #endif
 
+
+
+
 class FusionComponent : public RefScopeEnabler<FusionComponent,Entity> {
+	RTTI_DECL_R0(FusionComponent)
 	
 protected:
 	// Stage
@@ -424,7 +431,9 @@ class FusionDataSink :
 	
 {
 	VIS_COMP_1_1(Accelerator, Static)
+	RTTI_COMP3(FusionDataSink, FusionComponent, AcceleratorSource, StaticSink)
 	
+private:
 	void			Reset() override;
 	void			PreProcess() override;
 	void			ClearData() override;
@@ -482,8 +491,9 @@ class FusionMediaSink :
 	public VideoSink,
 	public AudioSink
 {
+	RTTI_COMP4(FusionMediaSink, FusionComponent, AcceleratorSource, VideoSink, AudioSink)
 	VIS_COMP_1_2(Accelerator, Video, Audio)
-	
+private:
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -540,7 +550,9 @@ class FusionControllerSink :
 	public AcceleratorSource,
 	public HumanSink
 {
+	RTTI_COMP3(FusionControllerSink, FusionComponent, AcceleratorSource, HumanSink)
 	VIS_COMP_1_1(Accelerator, Human)
+private:
 	//ArrayMap<int, FusionDataBuffer> data_bufs;
 	bool is_left_down = false;
 	
@@ -607,7 +619,9 @@ class FusionDisplaySource :
 	public DisplaySource,
 	public AcceleratorSink
 {
+	RTTI_COMP3(FusionDisplaySource, FusionComponent, DisplaySource, AcceleratorSink)
 	VIS_COMP_1_1(Display, Accelerator)
+private:
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -654,7 +668,9 @@ class FusionDisplayBuffer :
 	public AcceleratorSource,
 	public AcceleratorSink
 {
+	RTTI_COMP3(FusionDisplayBuffer, FusionComponent, AcceleratorSource, AcceleratorSink)
 	VIS_COMP_1_1(Accelerator, Accelerator)
+public:
 	void			Reset() override;
 	void			PreProcess() override;
 	void			PostProcess() override;
@@ -708,7 +724,9 @@ class FusionAudioSource :
 	public AudioSource,
 	public AcceleratorSink
 {
+	RTTI_COMP3(FusionAudioSource, FusionComponent, AudioSource, AcceleratorSink)
 	VIS_COMP_1_1(Audio, Accelerator)
+private:
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -751,7 +769,9 @@ class FusionAudioBuffer :
 	public AcceleratorSource,
 	public AcceleratorSink
 {
+	RTTI_COMP3(FusionAudioBuffer, FusionComponent, AcceleratorSource, AcceleratorSink)
 	VIS_COMP_1_1(Accelerator, Accelerator)
+private:
 	Vector<float> audio_buf;
 	
 	void			Reset() override;
@@ -796,7 +816,9 @@ public:
 class FusionContextComponent :
 	public Component<FusionContextComponent>
 {
+	RTTI_COMP0(FusionContextComponent)
 	VIS_COMP_0_0
+private:
 	static int id_counter;
 	
 protected:
@@ -831,7 +853,7 @@ protected:
 	
 	
 	void					Clear();
-	void					RefreshStageQueue();
+	bool					RefreshStageQueue();
 	void					RefreshPipeline();
 	void					RemoveComponent(RefT_Entity<FusionComponent> s) {comps.RemoveKey(s);}
 	void					ProcessStageQueue(Mode m);
@@ -930,6 +952,7 @@ class FusionSystem : public System<FusionSystem> {
 			&& comps;
 	}
 public:
+	SYS_RTTI(FusionSystem)
 	SYS_CTOR(FusionSystem);
 	
 protected:

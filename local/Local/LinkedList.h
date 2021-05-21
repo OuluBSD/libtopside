@@ -10,9 +10,9 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class T>
 void MemSwap(T& a, T& b) {
 	uint8 tmp[sizeof(T)];
-	MemoryCopy(tmp, &a, sizeof(T));
-	MemoryCopy(&a, &b, sizeof(T));
-	MemoryCopy(&b, tmp, sizeof(T));
+	MemoryCopy((void*)tmp, (void*)&a, sizeof(T));
+	MemoryCopy((void*)&a, (void*)&b, sizeof(T));
+	MemoryCopy((void*)&b, (void*)tmp, sizeof(T));
 }
 
 
@@ -88,7 +88,7 @@ public:
 			if (j == i)
 				return *it;
 		ASSERT(0);
-		throw Exc("Position not found in LinkedList: " + IntStr(i));
+		THROW(Exc("Position not found in LinkedList: " + IntStr(i)));
 	}
 	
 	Item* AddItem() {

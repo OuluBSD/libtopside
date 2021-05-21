@@ -5,7 +5,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class LockedScopeRefCounter {
+class LockedScopeRefCounter :
+	RTTIBase
+{
 	
 private:
 	std::atomic<int> refs;
@@ -18,6 +20,7 @@ protected:
 	#endif
 	
 public:
+	RTTI_DECL0(LockedScopeRefCounter)
 	LockedScopeRefCounter();
 	virtual ~LockedScopeRefCounter();
 	
@@ -31,7 +34,7 @@ public:
 
 template <class T, bool is_base>
 struct LockedScopeRefCounterCaster {
-	LockedScopeRefCounter* Cast(T* o) {return dynamic_cast<LockedScopeRefCounter*>(o);}
+	LockedScopeRefCounter* Cast(T* o) {return CastPtr<LockedScopeRefCounter>(o);}
 };
 
 template <class T>
@@ -40,7 +43,9 @@ struct LockedScopeRefCounterCaster<T,false> {
 };
 	
 
-class RuntimeVisitor {
+class RuntimeVisitor :
+	RTTIBase
+{
 	bool break_out = false;
 	bool get_refs = false;
 	bool clear_refs = false;
@@ -54,6 +59,7 @@ class RuntimeVisitor {
 	}
 	
 public:
+	RTTI_DECL0(RuntimeVisitor)
 	RuntimeVisitor() {}
 	
 	void Clear();
@@ -64,7 +70,7 @@ public:
 	template <class T>
 	void Visit(T& o) {
 		if (break_out) return;
-		if (OnEntry(typeid(T), &o, GetRefCounter(&o))) {
+		if (OnEntry(AsTypeId(o), &o, GetRefCounter(&o))) {
 			o.Visit(*this);
 			OnExit();
 		}
@@ -74,7 +80,7 @@ public:
 		if (break_out)return;
 		if (clear_refs)
 			o.Clear();
-		OnRef(typeid(typename T::Type), &o, GetRefCounter(o.Get()));
+		OnRef(AsTypeCls<typename T::Type>(), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>

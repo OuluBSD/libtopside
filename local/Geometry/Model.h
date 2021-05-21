@@ -92,11 +92,12 @@ protected:
 class ModelMesh : public RefScopeEnabler<ModelMesh,ModelLoader> {
 	
 public:
-    Vector<Mesh> meshes;
+	Vector<Mesh> meshes;
 	Vector<Texture> textures;
     
     
     
+	RTTI_DECL_R0(ModelMesh)
 	ModelMesh() {}
 	ModelMesh(const ModelMesh& m) {*this = m;}
     
@@ -126,14 +127,17 @@ using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;
 class ModelLoader :
 	public RefScopeEnabler<ModelLoader,RefRoot>
 {
+	One<ModelMesh> model;
 	
 public:
-	One<ModelMesh> model;
+	RTTI_DECL_R0(ModelLoader)
+	ModelLoader();
 	
 	void Clear() {model.Clear();}
     bool LoadModel(String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m);}
     void operator=(const ModelMesh& m) {Set(m);}
+	operator bool() const {return !model.IsEmpty();}
 	
 	Ref<ModelMesh> GetModel() {return model ? model->AsRefT() : Null;}
 	

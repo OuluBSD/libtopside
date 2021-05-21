@@ -230,7 +230,7 @@ void TraverseMap(PoolRef externals, String map) {
 				State* src_user_arg;
 				src.LinkManually(sink, &src_user_arg);
 				ASSERT(src_user_arg);
-				SimpleRouteNode::SinkData& sink_data = *dynamic_cast<SimpleRouteNode::SinkData*>(src_user_arg);
+				SimpleRouteNode::SinkData& sink_data = *CastPtr<SimpleRouteNode::SinkData>(src_user_arg);
 				sink_data.value_mul = t.act_value_mul[i];
 			}
 		}
@@ -466,7 +466,7 @@ double SimpleTransformValue(Entity& a, Entity& b) {
 
 double SimpleRouteNode::GetStepValue(const ExchangePoint& c) {
 	TODO
-	/*SinkData& sink_data = *dynamic_cast<SinkData*>(c.src_state);
+	/*SinkData& sink_data = *CastPtr<SinkData>(c.src_state);
 	double value = SimpleTransformValue(GetEntity(), c.sink->AsComponentBase()->GetEntity());
 	//ASSERT(sink_data.value_mul > 0.0);
 	double result = value * sink_data.value_mul;
@@ -478,10 +478,10 @@ double SimpleRouteNode::GetHeuristicValue(RouteSink& sink) {
 }
 
 void SimpleRouteNode::OnLink(Ref provider, Cookie cookie) {
-	// this fails if component has both sink and source: RouteSink* sink = dynamic_cast<RouteSink*>(iface);
+	// this fails if component has both sink and source: RouteSink* sink = CastPtr<RouteSink>(iface);
 	
 	TODO
-	/*if (iface->GetProviderType() == typeid(RouteSink))
+	/*if (iface->GetProviderType() == AsTypeId(RouteSink))
 		return &data.Add();
 	
 	return 0;*/

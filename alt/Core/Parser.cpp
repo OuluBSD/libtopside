@@ -299,7 +299,7 @@ bool CParser::GetFloating(double& dbl) {
 }
 
 void CParser::ThrowError(const char *s) {
-	throw CParser::Error(String(s) + " at " + pos.fn + ":" + IntStr(pos.line) + ":" + IntStr(pos.col));
+	Throw(CParser::Error(String(s) + " at " + pos.fn + ":" + IntStr(pos.line) + ":" + IntStr(pos.col)));
 }
 
 String CParser::ReadId() {

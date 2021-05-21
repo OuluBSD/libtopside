@@ -105,7 +105,7 @@ void TrackListExprCtrl::Layout() {
 }
 
 void TrackListExprCtrl::TimeChanges() {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	SessionEditor& se = tlc.GetEditor();
 	Session& ses = se.GetSession();
 	int time_cursor = ses.GetTimeCursor();
@@ -122,7 +122,7 @@ void TrackListExprCtrl::TimeChanges() {
 
 
 void TimelineCtrl::Paint(Draw& w) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	int scroll = tlc.GetScroll();
 	Size sz(GetSize());
 	
@@ -170,7 +170,7 @@ void TimelineCtrl::MouseMove(Point p, dword keyflags) {
 }
 
 void TimelineCtrl::SetPosition(Point p) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	
 	int scroll = tlc.GetScroll();
@@ -193,7 +193,7 @@ TrackHeaderList::TrackHeaderList() {
 }
 
 void TrackHeaderList::Layout() {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	SessionEditor& e = tlc.GetEditor();
 	Session& ses = e.GetSession();
 	int row_height = tlc.GetRowHeight();
@@ -229,7 +229,7 @@ TrackList::TrackList() {
 }
 
 void TrackList::Paint(Draw& w) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	
 	int row_height = tlc.GetRowHeight();
@@ -276,7 +276,7 @@ void TrackList::Paint(Draw& w) {
 }
 
 void TrackList::LeftDown(Point p, dword keyflags) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	
 	int row_height = tlc.GetRowHeight();
@@ -301,7 +301,7 @@ void TrackList::LeftDown(Point p, dword keyflags) {
 }
 
 void TrackList::Layout() {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	SessionEditor& e = tlc.GetEditor();
 	Session& ses = e.GetSession();
 	
@@ -372,7 +372,7 @@ TrackHeaderCtrl::TrackHeaderCtrl() {
 
 
 void TrackHeaderCtrl::Paint(Draw& w) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	Track& t = ses.GetTrack(id);
 	
@@ -386,7 +386,7 @@ void TrackHeaderCtrl::Paint(Draw& w) {
 }
 
 void TrackHeaderCtrl::LeftDown(Point p, dword keyflags) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	Track& t = ses.GetTrack(id);
 	
@@ -453,7 +453,7 @@ void BlockCtrl::LeftDown(Point p, dword keyflags) {
 }
 
 void BlockCtrl::MouseMove(Point p, dword keyflags) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	p += GetScreenRect().TopLeft();
 	int xdiff = p.x - prev_mouse_pt.x;
 	int ydiff = p.y - prev_mouse_pt.y;
@@ -493,14 +493,14 @@ void BlockCtrl::LeftUp(Point p, dword keyflags) {
 }
 
 void BlockCtrl::LeftDouble(Point p, dword keyflags) {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	SessionEditor& se = tlc.GetEditor();
 	se.SetMidiEditor(track, block);
 	
 }
 
 void BlockCtrl::Backward() {
-	TrackListCtrl& tlc = dynamic_cast<TrackListCtrl&>(*GetParentCtrl());
+	TrackListCtrl& tlc = CastRef<TrackListCtrl>(*GetParentCtrl());
 	Session& ses = tlc.GetEditor().GetSession();
 	Track& t = ses.GetTrack(track);
 	Block& block = t.GetBlock(this->block);

@@ -203,7 +203,7 @@ Volume& Neural::Forward(Volume& d) {
 		prev = &cur.out;
 	}
 	
-	throw Exc("No last layer found in Neural::Forward");
+	THROW(Exc("No last layer found in Neural::Forward"));
 }
 
 double Neural::Backward(const Volume& output) {

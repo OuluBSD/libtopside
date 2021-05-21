@@ -9,6 +9,7 @@ NAMESPACE_TOPSIDE_BEGIN
 // Base abstract class for all ToolSystems
 class ToolSystemBase : public SystemBase {
 public:
+	RTTI_DECL1(ToolSystemBase, SystemBase);
 	using SystemBase::SystemBase;
 	
 	virtual String GetInstructions() const = 0;
@@ -27,10 +28,11 @@ class ToolSelectorKey :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(ToolSelectorKey)
 	COPY_PANIC(ToolSelectorKey)
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	TypeId type { typeid(void) };
+	TypeId type { AsVoidTypeId() };
 };
 
 struct ToolSelectorPrefab :
@@ -63,7 +65,7 @@ class ToolSystem :
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
-	TypeId GetType() const override {return typeid(T);}
+	TypeId GetType() const override {return AsTypeCls<T>();}
 	
 	using ToolComponentRef = Ref<ToolComponent, RefParent1<Entity>>;
 	

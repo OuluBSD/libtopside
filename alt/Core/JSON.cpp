@@ -42,7 +42,7 @@ Object ParseArray(CParser& p) {
 			arr.Add(dbl);
 		}
 		else {
-			throw Exc("Unexpected token at " + IntStr(p.GetLine()) + ":" + IntStr(p.GetColumn()));
+			THROW(Exc("Unexpected token at " + IntStr(p.GetLine()) + ":" + IntStr(p.GetColumn())));
 		}
 		
 		p.Char(',');
@@ -101,7 +101,7 @@ Object ParseMap(CParser& p) {
 			vm.Add(key, value);
 		}
 		else {
-			throw Exc("Unexpected token at " + IntStr(p.GetLine()) + ":" + IntStr(p.GetColumn()));
+			THROW(Exc("Unexpected token at " + IntStr(p.GetLine()) + ":" + IntStr(p.GetColumn())));
 		}
 		
 		p.Char(',');
@@ -117,6 +117,7 @@ Object ParseJSON(String json) {
 	return ParseMap(p);
 }
 
+#ifdef flagSTDEXC
 Object ParseJSONSafe(String json) {
 	Object v;
 	
@@ -129,6 +130,6 @@ Object ParseJSONSafe(String json) {
 	
 	return v;
 }
-
+#endif
 
 NAMESPACE_UPP_END

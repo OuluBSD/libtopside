@@ -36,12 +36,12 @@ struct RTuple : Moveable<RTuple<First, Rest...>> {
 	RTuple<Rest...> b;
 	
 	First& operator->() {return a;}
-	template <class T> T* Find() const {if (typeid(&a) == typeid(T)) return (T*)&a; if (typeid(a) == typeid(T)) return (T*)&a; return b.template Find<T>();}
+	template <class T> T* Find() const {if (AsTypeCls<First>() == AsTypeCls<T>()) return (T*)&a; if (AsTypeCls<First>() == AsTypeCls<T>()) return (T*)&a; return b.template Find<T>();}
 	template <class T> void ForEach(T fn) const {fn(a); b.ForEach(fn);}
 	
 	template <class T> T& Get() {
 		T* ptr = Find<T>();
-		if (!ptr) throw Exc("Could not find type from tuple");
+		if (!ptr) THROW(Exc("Could not find type from tuple"))
 		return *ptr;
 	}
 };
@@ -56,7 +56,13 @@ struct RTuple<First> : Moveable<RTuple<First>> {
 	First a;
 	
 	First& operator->() {return a;}
-	template <class T> T* Find() const {if (typeid(&a) == typeid(T)) return (T*)&a; if (typeid(a) == typeid(T)) return (T*)&a; return NULL;}
+	template <class T> T* Find() const {
+		//if (AsTypeId(&a) == AsTypeCls<T>())
+		//	return (T*)&a;
+		if (AsTypeCls<First>() == AsTypeCls<T>())
+			return (T*)&a;
+		return NULL;
+	}
 	template <class T> void ForEach(T fn) const {fn(a);}
 	
 	operator First& () {return a;}
@@ -64,7 +70,7 @@ struct RTuple<First> : Moveable<RTuple<First>> {
 	
 	template <class T> T& Get() {
 		T* ptr = Find<T>();
-		if (!ptr) throw Exc("Could not find type from tuple");
+		if (!ptr) THROW(Exc("Could not find type from tuple"))
 		return *ptr;
 	}
 };
@@ -90,7 +96,7 @@ auto Get(const RTuple<First, Rest...>& t) -> decltype(GetImpl<index, First, Rest
 
 template <class T, class A> T Get(const A& a) {
 	T* ptr = a.template Find<T>();
-	if (!ptr) throw Exc("Couldn't find type from tuple");
+	if (!ptr) THROW(Exc("Couldn't find type from tuple"))
 	return *ptr;
 }
 

@@ -128,8 +128,9 @@ void Main() {
 	    mach.Add<ConnectorStore>();
 	    mach.Add<AudioSystem>();
 	    
-	    
+	    #ifdef flagSTDEXC
 	    try {
+	    #endif
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();
 	        }
@@ -150,11 +151,13 @@ void Main() {
 		    }
 		    
 		    RuntimeDiagnostics::Static().CaptureSnapshot();
+		#ifdef flagSTDEXC
 	    }
 	    catch (Exc e) {
 	        LOG("error: " << e);
 	        Exit(1);
 	    }
+	    #endif
 	    
 	    mach.Stop();
 	}

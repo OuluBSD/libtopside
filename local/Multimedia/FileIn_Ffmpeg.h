@@ -25,6 +25,8 @@ protected:
 	
 	
 public:
+	using Parent = FfmpegFileInput;
+	RTTI_DECL_R1(FfmpegAudioFrameQueue, AudioInputFrame)
 	~FfmpegAudioFrameQueue() {Clear();}
 	
 	void		Visit(RuntimeVisitor& vis) {}
@@ -80,6 +82,8 @@ protected:
 	VideoFormat vid_fmt;
 	
 public:
+	RTTI_DECL_R1(FfmpegVideoFrameQueue, VideoInputFrame)
+	using Parent = FfmpegFileInput;
 	~FfmpegVideoFrameQueue() {Clear();}
 	
 	void		Visit(RuntimeVisitor& vis) {}
@@ -143,8 +147,6 @@ public:
 class FfmpegFileInput :
 	public RefScopeEnabler<FfmpegFileInput,ComponentBase>
 {
-	
-protected:
 	FfmpegAudioFrameQueue aframe;
 	FfmpegVideoFrameQueue vframe;
 	
@@ -173,6 +175,7 @@ protected:
 	
 	
 	struct LocalAudioStream : public AudioStream {
+		RTTI_DECL1(LocalAudioStream, AudioStream)
 		FfmpegFileInput& par;
 		LocalAudioStream(FfmpegFileInput* par) : par(*par) {}
 		bool			IsOpen() const override;
@@ -189,6 +192,7 @@ protected:
 	LocalAudioStream astream;
 	
 public:
+	RTTI_DECL_R0(FfmpegFileInput)
 	FfmpegFileInput();
 	
 	bool	IsEof() const;

@@ -8,6 +8,7 @@ class WorldLogicSystem : public System<WorldLogicSystem>
 	void Visit(RuntimeVisitor& vis) override {}
 	
 public:
+	SYS_RTTI(WorldLogicSystem)
     SYS_CTOR(WorldLogicSystem)
 
 protected:
@@ -18,7 +19,7 @@ protected:
         for (;visitor; visitor++)
         {
             EntityRef entity = *visitor;
-            Transform* transform = visitor.Get<Transform>();
+            TransformRef transform = visitor.Get<Transform>();
 			
             if (transform->position[1] < -1000.0f)
             {

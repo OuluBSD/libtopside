@@ -430,7 +430,7 @@ String SharedFile(String file) {
 
 void StringParser::PassChar(int chr, bool do_pass_white) {
 	if (!IsChar(chr))
-		throw Exc("unexpected char");
+		THROW(Exc("unexpected char"));
 	cursor++;
 	if (do_pass_white)
 		PassWhite();

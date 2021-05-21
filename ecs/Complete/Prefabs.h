@@ -20,10 +20,12 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class T> void SimpleEntityApp() {
 	Machine& mach = GetActiveMachine();
 	
+	#ifdef flagSTDEXC
 	try {
+	#endif
 		Ref<EntityStore> ents = mach.TryGet<EntityStore>();
 		if (ents.IsEmpty())
-			throw Exc("EntityStore was not added to the ECS machine");
+			THROW(Exc("EntityStore was not added to the ECS machine"));
 		
 		PoolRef pool = ents->GetRoot()->GetAddPool("app");
 		EntityRef app = pool->CreateEmpty();
@@ -37,10 +39,12 @@ template <class T> void SimpleEntityApp() {
 	        if (t.Seconds() < 0.001)
 				Sleep(1);
 	    }
+	#ifdef flagSTDEXC
 	}
 	catch (Exc e) {
 		LOG("error: " << e);
 	}
+	#endif
 }
 
 template <class T> void SimpleEngineMain(String title, bool start_machine=false) {

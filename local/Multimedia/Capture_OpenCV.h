@@ -37,6 +37,7 @@ protected:
 	
 	
 public:
+	RTTI_DECL1(OpenCVCaptureDevice, MediaStream)
 	OpenCVCaptureDevice();
 	~OpenCVCaptureDevice();
 	

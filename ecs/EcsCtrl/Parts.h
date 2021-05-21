@@ -119,7 +119,7 @@ class InterfaceListCtrl : public ParentCtrl {
 		ifaces.Add(o);
 		list.Set(write_cursor, 0, comp_i);
 		list.Set(write_cursor, 1, iface_i);
-		list.Set(write_cursor, 2, TypeId(typeid(T)).CleanDemangledName());
+		list.Set(write_cursor, 2, TypeId(AsTypeCls<T>()).CleanDemangledName());
 		list.Set(write_cursor, 3, o->GetConnections().GetCount());
 		write_cursor++;
 	}

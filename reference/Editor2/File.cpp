@@ -21,8 +21,8 @@ time_t File::GetModificationTime() {
 int File::GetId() {
 	// CINDEX_LINKAGE int 	clang_getFileUniqueID (CXFile file, CXFileUniqueID *outID)
 	//return clang_getFileUniqueID 
-	Panic("todo");
-	throw Exc("TODO");
+	TODO
+	return 0;
 }
 
 bool File::IsIncludeOnce(Unit& unit) {

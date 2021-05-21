@@ -72,7 +72,7 @@ void Ctrl::DoPaint() {
 }
 
 void Ctrl::PaintScene(SystemDraw& draw) {
-	dynamic_cast<SDL2GUI3D*>(draw.gui)->Render(invalid);
+	CastPtr<SDL2GUI3D>(draw.gui)->Render(invalid);
 	invalid = false;
 }
 

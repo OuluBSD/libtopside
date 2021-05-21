@@ -128,6 +128,13 @@ struct ContextT {
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
 	
+	static const char* TypeStringT(const char* t) {
+		thread_local static String s;
+		s.Clear();
+		s << "ContextT<" << AsTypeName<Ctx>() << ">::" << t;
+		return s;
+	}
+	
 	class Ex;
 	
 	class Value :
@@ -136,6 +143,7 @@ struct ContextT {
 	{
 		
 	public:
+		RTTI_DECL_T2(Value, ValueBase, RealtimeStream)
 		Value() = default;
 		virtual ~Value() = default;
 		
@@ -147,13 +155,16 @@ struct ContextT {
 	};
 	
 	
-	class ExchangePoint : public Topside::ExchangePoint {
+	class ExchangePoint :
+		public Topside::ExchangePoint
+	{
 		ConnectorBase* conn = 0;
 		off32 offset;
 		bool use_consumer = false;
 		bool dbg_offset_is_set = false;
 		
 	public:
+		RTTI_DECL_T1(ExchangePoint, Topside::ExchangePoint)
 		typedef ExchangePoint CLASSNAME;
 		ExchangePoint() {}
 		~ExchangePoint() {Deinit();}
@@ -171,7 +182,9 @@ struct ContextT {
 	};
 	
 	
-	class Ex : public ExchangeBase {
+	class Ex :
+		public ExchangeBase
+	{
 		bool storing = false;
 		ExchangePoint* expt = 0;
 		Value* src = 0;
@@ -180,6 +193,7 @@ struct ContextT {
 		off32 offset;
 		
 	public:
+		RTTI_DECL_T1(Ex, ExchangeBase)
 		Ex(ExchangePoint* expt) : expt(expt) {}
 		
 		Value&						Sink() const {return *sink;}
@@ -187,8 +201,8 @@ struct ContextT {
 		const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
 		ExchangePoint&				GetExchangePoint() {return *expt;}
 		off32						GetOffset() const {return offset;}
-		virtual bool				IsLoading() {return !storing;}
-		virtual bool				IsStoring() {return storing;}
+		virtual bool				IsLoading() override {return !storing;}
+		virtual bool				IsStoring() override {return storing;}
 		
 		void	SetLoading(Value& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
 		void	SetStoring(Value& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
@@ -197,7 +211,10 @@ struct ContextT {
 	};
 	
 	
-	class PacketValue : Moveable<PacketValue> {
+	class PacketValue :
+		RTTIBase,
+		Moveable<PacketValue>
+	{
 		Vector<byte>		data;
 		Format				fmt;
 		off32				offset;
@@ -205,9 +222,9 @@ struct ContextT {
 		
 		
 	public:
-		
 		using Pool = RecyclerPool<PacketValue>;
 		
+		RTTI_DECL0(PacketValue);
 		PacketValue() {}
 		
 		Vector<byte>&			Data() {return data;}
@@ -243,10 +260,13 @@ struct ContextT {
 	}
 	
 	
-	class Proxy : public Value {
+	class Proxy :
+		public Value
+	{
 		Value* o = 0;
 		
 	public:
+		RTTI_DECL_T1(Proxy, Value)
 		Proxy() = default;
 		Proxy(Value* o) : o(o) {}
 		
@@ -264,7 +284,9 @@ struct ContextT {
 	class VolatileBuffer;
 	
 	
-	class PacketProducer {
+	class PacketProducer :
+		RTTIBase
+	{
 		PacketBuffer*		src = 0;
 		VolatileBuffer*		dst = 0;
 		off32				offset;
@@ -272,6 +294,7 @@ struct ContextT {
 		int					internal_written_bytes;
 		
 	public:
+		RTTI_DECL_T0(PacketProducer)
 		PacketProducer() {}
 		
 		void		SetOffset(off32 offset) {this->offset = offset;}
@@ -293,7 +316,9 @@ struct ContextT {
 	};
 	
 	
-	class PacketConsumer {
+	class PacketConsumer :
+		RTTIBase
+	{
 		
 		VolatileBuffer*	src = 0;
 		off32			offset;
@@ -314,6 +339,7 @@ struct ContextT {
 		void Consume(Packet& p, int data_shift);
 		
 	public:
+		RTTI_DECL_T0(PacketConsumer)
 		PacketConsumer() {}
 		
 		void		SetOffset(off32 offset) {ASSERT(!HasLeftover()); this->offset = offset;}
@@ -350,6 +376,7 @@ struct ContextT {
 		#endif
 		
 	public:
+		RTTI_DECL_T1(VolatileBuffer, Value)
 		using Buffer = RealtimePacketBuffer<Packet>;
 		
 		VolatileBuffer() = default;
@@ -384,12 +411,11 @@ struct ContextT {
 	
 	class Stream :
 		public virtual RealtimeStream,
-		public RefScopeEnabler<Stream,ComponentBase>,
 		public StreamBase
 	{
 		
 	public:
-		using Parent = ComponentBase;
+		RTTI_DECL_T2(Stream, RealtimeStream, StreamBase)
 		
 		virtual ~Stream() {}
 		
@@ -410,11 +436,14 @@ struct ContextT {
 	};
 	
 	
-	class SimpleValue : public Value {
+	class SimpleValue :
+		public Value
+	{
 		Format fmt;
 		off32 offset;
 		double time = 0;
 	public:
+		RTTI_DECL_T1(SimpleValue, Value)
 		void Exchange(Ex& e) override;
 		int GetQueueSize() const override;
 		Format GetFormat() const override;
@@ -428,6 +457,7 @@ struct ContextT {
 	{
 		Value* ptr = 0;
 	public:
+		RTTI_DECL_T1(SimpleStream, Stream)
 		SimpleStream() {}
 		SimpleStream(Value& v) : ptr(&v) {}
 		void			Set(Value& v) {ptr = &v;}
@@ -454,7 +484,8 @@ struct ContextT {
 
 
 #define LOCAL_CTX(x, value_base, stream_base, sys_base, sink_base) \
-	struct x##Context { \
+	struct x##Context: RTTIBase { \
+		RTTI_DECL0(x##Context) \
 		static constexpr const char* Name = #x; \
 		using Format			= x##Format; \
 		using Ctx				= x##Context; \
@@ -481,10 +512,10 @@ struct ContextT {
 	inline x##Packet Create##x##Packet() {return x##T::CreatePacket();}
 
 
-struct DummyValueBase {};
-struct DummyStreamBase {};
-struct DummyCustomSystemBase {};
-struct DummyCustomSinkBase {};
+struct DummyValueBase			: RTTIBase {RTTI_DECL0(DummyValueBase)};
+struct DummyStreamBase			: RefScopeEnabler<DummyStreamBase,ComponentBase> {RTTI_DECL_R0(DummyStreamBase)};
+struct DummyCustomSystemBase	: RTTIBase {RTTI_DECL0(DummyCustomSystemBase)};
+struct DummyCustomSinkBase		: RTTIBase {RTTI_DECL0(DummyCustomSinkBase)};
 
 NAMESPACE_TOPSIDE_END
 

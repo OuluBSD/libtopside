@@ -1,5 +1,6 @@
 #include <Local/Local.h>
 
+#ifdef flagSTDEXC
 
 NAMESPACE_UPP
 
@@ -47,3 +48,5 @@ void TestShared() {
 
 
 END_UPP_NAMESPACE
+
+#endif

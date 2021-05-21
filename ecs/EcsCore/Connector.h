@@ -26,6 +26,7 @@ public:
 	static bool AllowDuplicates() {return false;}
 	
 public:
+	RTTI_DECL_R2(ConnectorBase, Destroyable, Enableable)
 	ConnectorBase();
 	virtual ~ConnectorBase();
 	
@@ -38,9 +39,10 @@ public:
 
 template<typename T>
 struct Connector : ConnectorBase {
+	RTTI_DECL_R1(Connector, ConnectorBase)
 
 	TypeId GetType() const override {
-		return typeid(T);
+		return AsTypeCls<T>();
 	}
 	
 	void CopyTo(ConnectorBase* target) const override {
@@ -50,6 +52,7 @@ struct Connector : ConnectorBase {
 	}
 };
 
+#define CONN_RTTI(x)  RTTI_DECL1(x, Connector<x>)
 
 
 class ConnectorMap : public ConnectorMapBase {
@@ -68,10 +71,10 @@ public:
 	RefT_Pool<ConnectorT> Get() {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
-		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
+		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
-			throw Exc("Could not find component " + TypeId(typeid(ConnectorT)).CleanDemangledName());
+			THROW(Exc("Could not find component " + AsTypeString<ConnectorT>()));
 		
 		return it->AsRef<ConnectorT>();
 	}
@@ -80,7 +83,7 @@ public:
 	RefT_Pool<ConnectorT> Find() {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
-		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(typeid(ConnectorT));
+		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		if (IS_EMPTY_SHAREDPTR(it))
 			return NULL;
 		else
@@ -91,7 +94,7 @@ public:
 	void Add(ConnectorT* component) {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
-		const TypeId type = typeid(ConnectorT);
+		const TypeId type = AsTypeCls<ConnectorT>();
 		ASSERT_(component->GetType() == type, "ConnectorRef type does not match T");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(type);
@@ -103,7 +106,7 @@ public:
 	void Remove(ConnectorStoreRef s) {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
-		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(typeid(ConnectorT));
+		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		ASSERT_(iter, "Tried to remove non-existent component");
 		
 		iter.value().Uninitialize();

@@ -22,6 +22,7 @@ class FfmpegComponent :
 	int def_cap_fps;
 	
 public:
+	RTTI_COMP2(FfmpegComponent, AudioSource, VideoSource)
 	COPY_PANIC(FfmpegComponent);
 	IFACE_CB(AudioSource);
 	IFACE_CB(VideoSource);

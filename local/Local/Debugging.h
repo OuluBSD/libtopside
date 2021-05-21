@@ -32,8 +32,8 @@ public:
 	void CheckUnrefs(bool b=true) {checking_unrefs = b;}
 	
 	
-	template <class T> void Construct(T* o) {Construct(Item {{}, CTOR, typeid(T), o});}
-	template <class T> void Destruct(T* o) {Destruct(Item {{}, CTOR, typeid(T), o});}
+	template <class T> void Construct(T* o) {Construct(Item {{}, CTOR, AsTypeCls<T>(), o});}
+	template <class T> void Destruct(T* o) {Destruct(Item {{}, CTOR, AsTypeCls<T>(), o});}
 	template <class T> void IncRef(T* o, TypeId type) {IncRef(Item {{}, REF, type, o});}
 	template <class T> void DecRef(T* o, TypeId type) {DecRef(Item {{}, REF, type, o});}
 	
@@ -96,6 +96,7 @@ class RuntimeDiagnosticVisitor : public RuntimeVisitor {
 	void RecursiveUnfocus(Scope& s);
 	
 public:
+	RTTI_DECL1(RuntimeDiagnosticVisitor, RuntimeVisitor)
 	bool IsEmpty() const {return root.var.mem == 0;}
 	void Clear();
 	void Dump();
@@ -160,6 +161,7 @@ class RefDebugVisitor : public RuntimeVisitor {
 	
 	
 public:
+	RTTI_DECL1(RefDebugVisitor, RuntimeVisitor)
 	
 	void Add(void* mem);
 	void Remove(void* mem);

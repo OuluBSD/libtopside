@@ -26,6 +26,7 @@ public:
 	
 	static PoolId GetNextId();
 	
+	RTTI_DECL_R0(Pool)
 	Pool();
 	~Pool();
 	
@@ -70,7 +71,7 @@ public:
 		e.SetParent(this);
 		e.SetId(GetNextId());
 		PrefabT::Make(e);
-		Initialize(e, TypeId(typeid(PrefabT)).CleanDemangledName());
+		Initialize(e, AsTypeName<PrefabT>());
 		
 		return e.AsRefT();
 	}
@@ -207,6 +208,7 @@ class PoolHashVisitor : public RuntimeVisitor {
 	
 	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
 public:
+	RTTI_DECL1(PoolHashVisitor, RuntimeVisitor)
 	
 	
 	operator hash_t() const {return ch;}

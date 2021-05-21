@@ -8,6 +8,8 @@ class Transform : public Component<Transform> {
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(Transform)
+	
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
 	quat orientation = identity<quat>();
@@ -45,6 +47,8 @@ class Transform2D : public Component<Transform2D> {
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(Transform2D)
+	
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
 	
@@ -61,6 +65,8 @@ class RigidBody : public Component<RigidBody> {
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(RigidBody)
+	
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
 	vec3 angular_velocity = zero<vec3>();
@@ -85,6 +91,8 @@ class Renderable : public Component<Renderable> {
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(Renderable)
+	
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
 		this->offset = offset;
@@ -142,6 +150,7 @@ protected:
 	VolumeStream stream;
 	
 public:
+	RTTI_COMP1(StaticVolumeComponent, StaticSource)
 	COPY_PANIC(StaticVolumeComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
@@ -184,6 +193,7 @@ class PbrRenderable :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(PbrRenderable)
 	COPY_PANIC(PbrRenderable)
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -207,6 +217,7 @@ class TextRenderable :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(TextRenderable)
 	COPY_PANIC(TextRenderable);
 	void Visit(RuntimeVisitor& vis) override {}
 	

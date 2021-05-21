@@ -25,6 +25,7 @@ class OpenCVComponent :
 	
 	
 public:
+	RTTI_COMP2(OpenCVComponent, AudioSource, VideoSource)
 	COPY_PANIC(OpenCVComponent);
 	IFACE_CB(AudioSource);
 	IFACE_CB(VideoSource);

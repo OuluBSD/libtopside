@@ -9,6 +9,7 @@ class Machine;
 
 class SystemBase : public RefScopeEnabler<SystemBase,Machine> {
 public:
+	RTTI_DECL_R0(SystemBase)
 	using RScope = RefScopeEnabler<SystemBase,Machine>;
 	
     SystemBase();
@@ -35,14 +36,17 @@ template<typename T>
 class System :
 	public SystemBase
 {
+	using SystemT = System<T>;
 public:
+	RTTI_DECL1(SystemT, SystemBase)
     using SystemBase::SystemBase;
 	
 	System() {};
-    TypeId GetType() const override {return typeid(T);}
+    TypeId GetType() const override {return AsTypeCls<T>();}
     
 };
 
+#define SYS_RTTI(x)  RTTI_DECL1(x, System<x>)
 #define SYS_CTOR(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
 #define SYS_CTOR_(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
 
@@ -52,6 +56,7 @@ class Machine :
 	int64 ticks = 0;
 	
 public:
+	RTTI_DECL_R0(Machine)
 	int64 GetTicks() const {return ticks;}
 	
 	
@@ -67,7 +72,7 @@ public:
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
         
-        SystemCollection::Iterator it = FindSystem(typeid(SystemT));
+        SystemCollection::Iterator it = FindSystem(AsTypeCls<SystemT>());
         return it ? it->AsRef<SystemT>() : Ref<SystemT>();
     }
 
@@ -77,7 +82,7 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 		
 		SystemT* syst = new SystemT(*this, args...);
-        Add(typeid(SystemT), syst);
+        Add(AsTypeCls<SystemT>(), syst);
         return syst->template AsRef<SystemT>();
     }
 
@@ -87,7 +92,7 @@ public:
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
 
         ASSERT(is_initialized && is_started);
-        Remove(typeid(SystemT));
+        Remove(AsTypeCls<SystemT>());
     }
 
     Machine();

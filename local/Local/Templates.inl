@@ -13,7 +13,7 @@ TMPL(void) SimpleValue::Exchange(Ex& e) {
 		Value& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		VolatileBuffer* vol = dynamic_cast<VolatileBuffer*>(&sink);
+		VolatileBuffer* vol = CastPtr<VolatileBuffer>(&sink);
 		if (vol) {
 			while (!vol->IsQueueFull()) {
 				Packet p = CreatePacket();
@@ -63,7 +63,7 @@ TMPL(void) VolatileBuffer::Exchange(Ex& e) {
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
 		
-		VolatileBuffer* vol_aud = dynamic_cast<VolatileBuffer*>(&aud);
+		VolatileBuffer* vol_aud = CastPtr<VolatileBuffer>(&aud);
 		if (vol_aud) {
 			if (consumer.IsEmpty()) {
 				consumer.Create();

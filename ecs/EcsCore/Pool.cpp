@@ -36,7 +36,7 @@ Machine& Pool::GetMachine() {
 		ASSERT(p != par.b);
 		p = par.b;
 	}
-	throw Exc("Machine ptr not found");
+	THROW(Exc("Machine ptr not found"));
 }
 
 void Pool::Initialize(Entity& e, String prefab) {
@@ -140,7 +140,7 @@ void Pool::InitializeComponent(ConnectorBase& comp) {
 
 
 bool PoolHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
-	if (type == typeid(Pool)) {
+	if (type == AsTypeCls<Pool>()) {
 		Pool& p = *(Pool*)mem;
 		ch.Put(p.GetId());
 	}

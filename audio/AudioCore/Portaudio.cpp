@@ -88,7 +88,7 @@ AudioFormat PortaudioSinkComponent::GetFormat(AudCtx) {
 Audio& PortaudioSinkComponent::GetValue(AudCtx) {
 	if (obj)
 		return obj->GetBuffer();
-	throw Exc("PortaudioSinkComponent: obj is null");
+	THROW(Exc("PortaudioSinkComponent: obj is null"));
 }
 
 

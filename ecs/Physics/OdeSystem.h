@@ -171,6 +171,7 @@ public:
 	
 	static vec3 EarthGravity;
 	
+	SYS_RTTI(OdeSystem)
 	SYS_CTOR_(OdeSystem) {
 		// create world
 		dInitODE2(0);

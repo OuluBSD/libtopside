@@ -5,6 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>	inline double GetSearcherUtility(Node<T>& n) {return n.T::GetUtility();}
+#ifdef flagSTDEXC
 template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 	Object& o = n.GetData();
 	ObjectArray& arr = o.GetArray();
@@ -13,6 +14,7 @@ template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 	double value = ov.ToDouble();
 	return value;
 }
+#endif
 template <class T>	inline double GetSearcherEstimate(Node<T>& n) {return n.T::GetEstimate();}
 template <class T>	inline double GetSearcherDistance(Node<T>& n, Node<T>& dest) {return n.T::GetDistance(dest);}
 template <class T>	inline bool TerminalTest(Node<T>& n) {return n.GetTotalCount() == 0;}

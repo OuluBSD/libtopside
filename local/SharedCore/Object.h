@@ -1,6 +1,7 @@
 #ifndef _CoreAlt_Object_h_
 #define _CoreAlt_Object_h_
 
+
 NAMESPACE_UPP
 
 
@@ -37,9 +38,9 @@ public:
 	//void     Jsonize(JsonIO& jio)                   { NEVER(); }
 	hash_t   GetHashValue() const                   { return 0; }
 	bool     operator==(const T&) const             { NEVER(); return false; }
-	String   ToString() const                       { return typeid(T).name(); }
+	String   ToString() const                       { return AsTypeName<T>(); }
 	int      Compare(const T&) const                { NEVER(); return 0; }
-	int      PolyCompare(const Object&) const        { NEVER(); return 0; }
+	int      PolyCompare(const Object&) const       { NEVER(); return 0; }
 	
 	//operator ObjectTypeRef();
 };
@@ -158,13 +159,13 @@ template <class T> T* Object::Try() const {
 template <class T> Object::operator T&() const {
 	if (obj && obj->GetType() == ObjectTypeNo<T>(0))
 		return *(T*)obj->Get();
-	throw Exc("Unexpected value type");
+	THROW(Exc("Unexpected value type"));
 }
 
 template <class T> T& Object::Get() const {
 	if (obj && obj->GetType() == ObjectTypeNo<T>(0))
 		return *(T*)obj->Get();
-	throw Exc("Unexpected value type");
+	THROW(Exc("Unexpected value type"));
 }
 
 #ifndef UPP_VERSION
@@ -227,7 +228,7 @@ public:
 	Object TryGet(String key, Object def=Object()) {int i = Find(key); if (i >= 0) return GetObject(i); else return def;}
 	Object* TryFind(String key) {int i = Find(key); if (i >= 0) return &GetObject(i); return NULL;}
 	int Find(String key) const {for(int i = 0; i < keys.GetCount(); i++) if (keys[i] == key) return i; return -1;}
-	Object& Get(String key) {int i = Find(key); if (i == -1) throw Exc("Unexpected key"); return values[i];}
+	Object& Get(String key) {int i = Find(key); if (i == -1) THROW(Exc("Unexpected key")); return values[i];}
 	int GetIterPos(Object* v) const {for(int i = 0; i < values.GetCount(); i++) if (&values[i] == v) return i; return -1;}
 	void SetAt(int i, const Object& v) {values[i] = v;}
 	void Remove(int i) {keys.Remove(i); values.Remove(i);}

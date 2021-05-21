@@ -343,6 +343,7 @@ class SDL2System : public System<SDL2System> {
 	void Visit(RuntimeVisitor& vis) override {vis && comps;}
 	
 public:
+	SYS_RTTI(SDL2System)
 	SYS_CTOR(SDL2System)
 	
 	const LinkedList<SDL2ContextComponentRef>& GetContext() const {return comps;}

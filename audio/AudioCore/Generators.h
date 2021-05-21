@@ -79,6 +79,7 @@ class DummySoundGeneratorAudio :
 	double time = 0;
 	
 public:
+	RTTI_DECL1(DummySoundGeneratorAudio, Audio)
 	DummySoundGeneratorAudio();
 	
 	void Exchange(AudioEx& e) override;
@@ -96,6 +97,7 @@ class DummySoundGeneratorStream :
 	DummySoundGeneratorAudio gen;
 	
 public:
+	RTTI_DECL1(DummySoundGeneratorStream, SimpleAudioStream)
 	DummySoundGeneratorStream() : SimpleAudioStream(gen) {}
 	
 	double				GetSeconds() const {return gen.GetSeconds();}
@@ -121,6 +123,7 @@ class SoundGeneratorComponent :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
+	RTTI_COMP2(SoundGeneratorComponent, DeviceSink, AudioSource)
 	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SoundGeneratorComponent);
 	IFACE_CB(DeviceSink);

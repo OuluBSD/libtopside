@@ -12,6 +12,7 @@ class SDL2GUI3DSystem : public System<SDL2GUI3DSystem> {
 	
 	void Visit(RuntimeVisitor& vis) override {}
 public:
+	SYS_RTTI(SDL2GUI3DSystem)
 	SYS_CTOR_(SDL2GUI3DSystem), gui(this) {}
 	
 	

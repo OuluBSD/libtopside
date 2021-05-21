@@ -1,6 +1,8 @@
 #ifndef _Structural_Graph_h_
 #define _Structural_Graph_h_
 
+#ifdef flagSTDEXC
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -56,6 +58,10 @@ class Graph {
 public:
 	Graph();
 	
+	
+	bool IsError() const;
+	String GetError() const;
+	
 	void Clear();
 	void TopologicalSort();
 	void BreadthFirstSearch(int key_i, DfsVisitor& vis);
@@ -78,4 +84,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

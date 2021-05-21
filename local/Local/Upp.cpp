@@ -141,24 +141,22 @@ bool UppProject::Load(String name, String path) {
 			else if (mode == CONFIGS) {
 				String key;
 				String value;
-				try {
-					int j = line.Find("=");
-					if (j < 0)
-						throw Exc("Not found char '='");
-					
-					key = TrimBoth(line.Left(j));
-					if (key.GetCount() >= 2 && key.Left(1) == "\"" && key.Right(1) == "\"")
-						key = key.Mid(1, key.GetCount()-2);
-					
-					value = TrimBoth(line.Mid(j+1));
-					if (value.GetCount() >= 2 && value.Left(1) == "\"" && value.Right(1) == "\"")
-						value = value.Mid(1, value.GetCount()-2);
-					
-					configs.Add(key, value);
+				
+				int j = line.Find("=");
+				if (j < 0) {
+					LOG("Not found char '='");
+					return false;
 				}
-				catch (Exc e) {
-					LOG(e);
-				}
+				
+				key = TrimBoth(line.Left(j));
+				if (key.GetCount() >= 2 && key.Left(1) == "\"" && key.Right(1) == "\"")
+					key = key.Mid(1, key.GetCount()-2);
+				
+				value = TrimBoth(line.Mid(j+1));
+				if (value.GetCount() >= 2 && value.Left(1) == "\"" && value.Right(1) == "\"")
+					value = value.Mid(1, value.GetCount()-2);
+				
+				configs.Add(key, value);
 			}
 		}
 	}

@@ -17,6 +17,7 @@ protected:
     void Uninitialize() override;
     
 public:
+	SYS_RTTI(RegistrySystem)
     SYS_CTOR(RegistrySystem)
 	
 	

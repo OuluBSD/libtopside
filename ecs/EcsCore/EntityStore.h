@@ -21,6 +21,7 @@ class EntityStore : public System<EntityStore> {
 	
 	void InitRoot();
 public:
+	SYS_RTTI(EntityStore)
 	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {InitRoot();}
 	
 	PoolRef GetRoot()	{return *root.begin();}

@@ -26,8 +26,8 @@ bool ModelComponent::LoadModel(String path) {
 }
 
 bool ModelComponent::AddTextureFile(int mesh_i, TexType type, String path) {
-	if (loader.model)
-		return loader.model->AddTextureFile(mesh_i, type, path);
+	if (loader)
+		return loader.GetModel()->AddTextureFile(mesh_i, type, path);
 	return false;
 }
 

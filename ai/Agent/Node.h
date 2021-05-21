@@ -68,17 +68,17 @@ public:
 	template <class R> R* FindNode() {
 		for(int i = 0; i < sub.GetCount(); i++) {
 			NodeT* ptr = &sub[i];
-			R* dc_ptr = dynamic_cast<R*>(ptr);
+			R* dc_ptr = CastPtr<R>(ptr);
 			if (dc_ptr) return dc_ptr;
 		}
 		return 0;
 	}
 	template <class R> R* Get() {
-		return dynamic_cast<R*>(this);
+		return CastPtr<R>(this);
 	}
 	
 	template <class R> bool Is() {
-		return dynamic_cast<R*>(this) != 0;
+		return CastPtr<R>(this) != 0;
 	}
 	
 	int GetDepth() {NodeT* ptr = this; for(int i = 0;; i++) {ptr = ptr->parent; if (!ptr) return i;}}

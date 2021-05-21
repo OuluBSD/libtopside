@@ -3,6 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#ifdef flagSTDEXC
 
 void StructuralTests() {
 	Graph g;
@@ -123,5 +124,6 @@ void StructuralTests() {
 	LOG("Finished");
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END

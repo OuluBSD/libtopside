@@ -5,10 +5,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class RealtimeStream {
+class RealtimeStream :
+	RTTIBase,
+	public RefScopeEnabler<RealtimeStream, ComponentBase>
+{
 	
 public:
-	
+	RTTI_DECL_R0(RealtimeStream)
 	virtual ~RealtimeStream() {}
 	
 	//virtual double GetSeconds() const = 0;

@@ -7,9 +7,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Entity :
+	public RefScopeEnabler<Entity,Pool>,
 	public Destroyable,
-	public Enableable,
-	public RefScopeEnabler<Entity,Pool>
+	public Enableable
 {
 	EntityId id = -1;
 	int64 created = 0;
@@ -32,6 +32,7 @@ protected:
 	}
 	
 public:
+	RTTI_DECL_R2(Entity, Destroyable, Enableable)
 	Entity();
 	virtual ~Entity();
 	
@@ -199,7 +200,9 @@ class EntityHashVisitor : public RuntimeVisitor {
 	CombineHash ch;
 	
 	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	
 public:
+	RTTI_DECL1(EntityHashVisitor, RuntimeVisitor)
 	
 	
 	operator hash_t() const {return ch;}

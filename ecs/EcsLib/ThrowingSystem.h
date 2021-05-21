@@ -10,6 +10,7 @@ class ThrowingComponent :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(ThrowingComponent)
 	COPY_PANIC(ThrowingComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	

@@ -56,11 +56,14 @@ bool IsDebugRefVisits();
 void SetDebugRefVisits(bool b=true);
 
 template <class T, class Parent = RefParent1<typename T::Parent> >
-class Ref {
+class Ref :
+	RTTIBase
+{
 	T* o = 0;
 	Parent p;
 	
 public:
+	RTTI_DECL0(Ref)
 	using Type = T;
 	using ParentT = Parent;
 	
@@ -83,7 +86,7 @@ public:
 			std::is_base_of<V,T>() ||
 			std::is_base_of<T,V>(), "T must inherit V or vice versa");
 		if (!r.IsEmpty()) {
-			o = dynamic_cast<T*>(r.Get());
+			o = CastPtr<T>(r.Get());
 			ASSERT(o);
 			o->IncRef();
 		}
@@ -107,11 +110,11 @@ public:
 	void Clear() {if (o) o->DecRef(); o = 0; p.Clear();}
 	template <class V>	V* As() {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
-		return dynamic_cast<V*>(o);
+		return CastPtr<V>(o);
 	}
 	template <class V>	Ref<V,Parent> AsRef() {
 		static_assert(std::is_same<V, T>() || std::is_base_of<T,V>() || std::is_base_of<V,T>(), "V must inherit T or vice versa");
-		V* v = dynamic_cast<V*>(o);
+		V* v = CastPtr<V>(o);
 		return Ref<V,Parent>(p, v);
 	}
 	template <class V> void WrapObject(const Parent& p, V* v) {
@@ -119,15 +122,25 @@ public:
 		ASSERT(!o);
 		Clear();
 		this->p = p;
-		o = dynamic_cast<T*>(v);
+		o = CastPtr<T>(v);
 		o->IncRef();
 		ASSERT(o);
+	}
+	
+	Ref& Set(const Ref& r) {
+		Clear();
+		o = r.o;
+		p = r.GetRefParent();
+		if (o)
+			o->IncRef();
+		return *this;
 	}
 	
 	template <class V>
 	Ref& Set(const Ref<V,Parent>& r) {
 		Clear();
-		o = dynamic_cast<T*>(r.GetRefPtr());
+		V* v = r.GetRefPtr();
+		o = CastPtr<T>(v);
 		p = r.GetRefParent();
 		if (o)
 			o->IncRef();
@@ -139,7 +152,8 @@ public:
 
 
 template <class RParent>
-class RefScopeParent
+class RefScopeParent :
+	RTTIBase
 {
 	RParent		parent;
 	
@@ -158,7 +172,7 @@ public:
 	template <class V>
 	Ref<V,RParent> AsRef() {
 		ASSERT(parent);
-		return Ref<V,RParent>(parent, dynamic_cast<V*>(this));
+		return Ref<V,RParent>(parent, CastPtr<V>(this));
 	}
 	
 	template <class V> operator Ref<V,RParent>() {return AsRef<V>();}
@@ -179,13 +193,13 @@ public:
 	
 	RefScopeEnabler() {
 		#ifdef flagDEBUG_STACK
-		dbg_type = typeid(T);
+		dbg_type = AsTypeCls<T>();
 		#endif
 	}
 	
 	/*RefScopeEnabler(RParent p) : SP(p) {
 		#ifdef flagDEBUG_STACK
-		dbg_type = typeid(T);
+		dbg_type = AsTypeCls<T>();
 		#endif
 	}*/
 	
@@ -193,12 +207,13 @@ public:
 	template <class V=T>
 	Ref<V,RParent> AsRefStatic() {
 		static_assert(std::is_convertible<LScope,V>(), "RefScopeEnabler<T> must be convertible to V");
-		return Ref<V,RParent>(SP::GetParent(), static_cast<V*>(this));
+		V* o = static_cast<V*>(this);
+		return Ref<V,RParent>(SP::GetParent(), o);
 	}
 	
 	template <class V=T>
 	Ref<V,RParent> AsRefT() {
-		V* o = dynamic_cast<V*>(this);
+		V* o = CastPtr<V>(this);
 		ASSERT(o);
 		return Ref<V,RParent>(SP::GetParent(), o);
 	}
@@ -372,7 +387,7 @@ public:
 			if (j == i)
 				return *it;
 		ASSERT(0);
-		throw Exc("Position not found in RefLinkedList: " + IntStr(i));
+		THROW(Exc("Position not found in RefLinkedList: " + IntStr(i)));
 	}
 	
 	Iterator begin()	{return Iterator(first);}
@@ -651,7 +666,7 @@ public:
 			if (j == i)
 				return *it;
 		ASSERT(0);
-		throw Exc("Position not found in RefLinkedMapIndirect: " + IntStr(i));
+		THROW(Exc("Position not found in RefLinkedMapIndirect: " + IntStr(i)));
 	}
 	
 	

@@ -5,7 +5,6 @@ NAMESPACE_UPP_BEGIN
 
 
 
-class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 inline void* MemoryAlloc(size_t size) {return malloc(size);}
 inline void MemoryFree(void* ptr) {free(ptr);}
 
@@ -53,6 +52,11 @@ template<> inline bool  IsNull(const int& i)     { return i == INT_NULL; }
 template<> inline bool  IsNull(const int64& i)   { return i == INT64_NULL; }
 template<> inline bool  IsNull(const double& r)  { double d=r<0.0?-r:+r; return !(d < -DOUBLE_NULL); }
 template<> inline bool  IsNull(const bool& r  )  { return false; }
+
+
+
+
+
 
 
 NAMESPACE_UPP_END

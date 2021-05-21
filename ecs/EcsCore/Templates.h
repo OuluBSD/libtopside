@@ -22,19 +22,27 @@ struct ContextEcsT {
 	
 	class Sink :
 		public InterfaceSink<Sink>,
-		public CustomSinkBase
+		public CustomSinkBase,
+		RTTIBase
 	{
 	public:
-		TypeId GetProviderType() override {return TypeId(typeid(Sink));}
+		RTTI_DECL2(Sink, InterfaceSink<Sink>, CustomSinkBase)
+		TypeId GetProviderType() override {return TypeId(AsTypeCls<Sink>());}
 		
 		virtual Format			GetFormat(C*) = 0;
 		virtual Value&			GetValue(C*) = 0;
 		
 	};
 	
-	class Source : public InterfaceSource<Source, Sink> {
+	class Source :
+		public InterfaceSource<Source, Sink>,
+		RTTIBase
+	{
+		using InterfaceSourceT = InterfaceSource<Source, Sink>;
+		
 	public:
-		TypeId GetProviderType() override {return TypeId(typeid(Source));}
+		RTTI_DECL1(Source, InterfaceSourceT)
+		TypeId GetProviderType() override {return TypeId(AsTypeCls<Source>());}
 		
 		using ExPt = ExchangePoint;
 		using Sink = ContextEcsT::Sink;
@@ -79,6 +87,7 @@ struct ContextEcsT {
 	    void Uninitialize() override;
 	    
 	public:
+		RTTI_DECL2(System, Topside::System<System>, CustomSystemBase)
 	    SYS_CTOR(System)
 		
 		void Add(SourceRef src);
@@ -99,15 +108,23 @@ struct PhysicsGlobalVariables {
 	vec3 gravity;
 };
 
-class PhysicsSystemBase {
+class PhysicsSystemBase :
+	RTTIBase
+{
 public:
+	RTTI_DECL0(PhysicsSystemBase)
+	
 	PhysicsGlobalVariables var;
 	
 };
 
-class DisplaySystemBase {
+class DisplaySystemBase :
+	RTTIBase
+{
 	Size screen_sz;
 public:
+	RTTI_DECL0(DisplaySystemBase)
+	
 	Size GetVirtualScreenSize() const{return screen_sz;}
 	void SetVirtualScreenSize(Size sz) {screen_sz = sz;}
 	
@@ -142,6 +159,8 @@ typedef enum {
 
 template <class T>
 class InterfaceVisitor : public RuntimeVisitor {
+	using InterfaceVisitorT = InterfaceVisitor<T>;
+	
 	TypeId match_type;
 	T* last = 0;
 	bool stop_when_found = false;
@@ -162,7 +181,8 @@ class InterfaceVisitor : public RuntimeVisitor {
 	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override {}
 	
 public:
-	InterfaceVisitor() : match_type(typeid(T)) {}
+	RTTI_DECL1(InterfaceVisitorT, RuntimeVisitor)
+	InterfaceVisitor() : match_type(AsTypeCls<T>()) {}
 	
 	
 	T* GetLast() const {return last;}

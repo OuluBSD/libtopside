@@ -49,7 +49,8 @@ void FusionContextComponent::Update(double dt) {
 		Reset();
 		
 		//  Reload stage pointers
-		RefreshStageQueue();
+		if (!RefreshStageQueue())
+			return;
 		DumpEntityComponents();
 		
 		is_open = true;
@@ -79,7 +80,7 @@ void FusionContextComponent::FindComponents() {
 	for (ComponentRef& comp : e->GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
-			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);
+			FusionComponent* fcomp = CastPtr<FusionComponent>(&base);
 			if (fcomp) {
 				ASSERT(!fcomp->ctx);
 				fcomp->ctx = this;
@@ -96,12 +97,12 @@ void FusionContextComponent::DumpEntityComponents() {
 	for (ComponentRef& comp : e->GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
-			FusionComponent* fcomp = dynamic_cast<FusionComponent*>(&base);
+			FusionComponent* fcomp = CastPtr<FusionComponent>(&base);
 			if (fcomp) {
 				LOG("\t" << i++ << ": FusionComponent: " << fcomp->ToString());
 			}
 			else {
-				LOG("\t" << i++ << ": " << base.GetType().DemangledName());
+				LOG("\t" << i++ << ": " << base.GetDynamicName());
 			}
 		}
 	}
@@ -231,7 +232,7 @@ RefT_Entity<FusionComponent> FusionContextComponent::GetComponentById(int id) co
 	for (const auto& s : comps)
 		if (s->id == id)
 			return s;
-	throw Exc("FusionComponent not found");
+	THROW(Exc("FusionComponent not found"));
 }
 
 bool FusionContextComponent::LoadFileAny(String path, Object& dst) {
@@ -260,24 +261,29 @@ bool FusionContextComponent::LoadFileToy(String path, Object& dst) {
 		OnError(fn_name, "file doesn't exist");
 		return false;
 	}
-	try {
-		dst = ParseJSON(LoadFile(path));
-		
-		ASSERT(dst.IsMap());
-		ObjectMap& map = dst.GetMap();
-		for(int i = 0; i < 100; i++) {
-			String stage = "stage" + IntStr(i);
-			String stage_file = AppendFileName(file_dir, "stage" + IntStr(i) + ".glsl");
-			if (!FileExists(stage_file))
-				break;
-			String glsl = LoadFile(stage_file);
-			if (glsl.IsEmpty())
-				throw Exc("empty shader for stage " + IntStr(i));
+	
+	bool fail = false;
+	dst = ParseJSON(LoadFile(path));
+	
+	ASSERT(dst.IsMap());
+	ObjectMap& map = dst.GetMap();
+	for(int i = 0; i < 100; i++) {
+		String stage = "stage" + IntStr(i);
+		String stage_file = AppendFileName(file_dir, "stage" + IntStr(i) + ".glsl");
+		if (!FileExists(stage_file))
+			break;
+		String glsl = LoadFile(stage_file);
+		if (glsl.IsEmpty()) {
+			fail = true;
+			last_error = "empty shader for stage " + IntStr(i);
+		}
+		else {
 			map.Add(IntStr(i), glsl);
 		}
 	}
-	catch (Exc e) {
-		OnError(fn_name, e);
+	
+	if (fail) {
+		OnError(fn_name, last_error);
 		return false;
 	}
 	
@@ -548,58 +554,65 @@ bool FusionContextComponent::Load(Object json) {
 	return true;
 }
 
-void FusionContextComponent::RefreshStageQueue() {
+bool FusionContextComponent::RefreshStageQueue() {
 	DLOG("FusionContextComponent::RefreshStageQueue: begin");
 	
-	try {
-		// Solve dependencies
-		Graph g;
-		for(auto& s : comps)
-			if (s->id >= 0)
-				g.AddKey(s->id);
-		for(const FusionComponentRef& s : comps) {
-			if (s->id >= 0) {
-				for(int j = 0; j < s->in.GetCount(); j++) {
-					const AcceleratorHeader& in = s->in[j];
-					if (in.GetId() >= 0)
-						g.AddEdgeKey(in.GetId(), s->id);
-				}
+	// Solve dependencies
+	#if 0
+	
+	//#ifdef flagSTDEXC
+	Graph g;
+	for(auto& s : comps)
+		if (s->id >= 0)
+			g.AddKey(s->id);
+	for(const FusionComponentRef& s : comps) {
+		if (s->id >= 0) {
+			for(int j = 0; j < s->in.GetCount(); j++) {
+				const AcceleratorHeader& in = s->in[j];
+				if (in.GetId() >= 0)
+					g.AddEdgeKey(in.GetId(), s->id);
 			}
 		}
-		g.TopologicalSort();
-		
-		#if 0
-		DLOG("\ttopologically sorted stage list:");
-		for(int i = 0; i < g.GetSortedCount(); i++) {
-			DLOG("\t\t" << i << ": " << g.GetKey(i).ToString());
-		}
-		#endif
-		
-		struct TopologicalStages {
-			Graph& g;
-			bool operator()(const RefT_Entity<FusionComponent>& a, const RefT_Entity<FusionComponent>& b) const {
-				int a_pos = g.FindSorted(a->id);
-				int b_pos = g.FindSorted(b->id);
-				return a_pos < b_pos;
-			}
-		};
-		TopologicalStages sorter {g};
-		TODO
-		//Sort(comps, sorter);
-		
-		#if 1
-		DLOG("\ttopologically sorted stage list:");
-		for(int i = 0; i < comps.GetCount(); i++) {
-			DLOG("\t\t" << i << ": " << comps[i]->ToString());
-		}
-		#endif
 	}
-	catch (Exc e) {
-		OnError("RefreshStageQueue", "Topological stage sorting failed: " + e);
-		Close();
+	g.TopologicalSort();
+	if (g.IsError()) {
+		OnError("RefreshStageQueue", g.GetError());
+		return false;
 	}
 	
+	
+	DLOG("\ttopologically sorted stage list:");
+	for(int i = 0; i < g.GetSortedCount(); i++) {
+		DLOG("\t\t" << i << ": " << g.GetKey(i).ToString());
+	}
+	
+	struct TopologicalStages {
+		Graph& g;
+		bool operator()(const RefT_Entity<FusionComponent>& a, const RefT_Entity<FusionComponent>& b) const {
+			int a_pos = g.FindSorted(a->id);
+			int b_pos = g.FindSorted(b->id);
+			return a_pos < b_pos;
+		}
+	};
+	TopologicalStages sorter {g};
+	#endif
+	
+	TODO
+	/*Sort(comps, sorter);
+	if (sorter.IsError()) {
+		OnError("RefreshStageQueue", sorter.GetError());
+		return false;
+	}*/
+	#if 1
+	DLOG("\ttopologically sorted stage list:");
+	for(int i = 0; i < comps.GetCount(); i++) {
+		DLOG("\t\t" << i << ": " << comps[i]->ToString());
+	}
+	#endif
+	
+	
 	DLOG("FusionContextComponent::RefreshStageQueue: end");
+	return true;
 }
 
 void FusionContextComponent::RefreshPipeline() {

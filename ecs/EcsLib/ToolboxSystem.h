@@ -9,12 +9,14 @@ class ToolSystemBase;
 class ToolComponent : public Component<ToolComponent> {
 	VIS_COMP_0_0
 	
-public: COPY_PANIC(ToolComponent)
+public:
+	RTTI_COMP0(ToolComponent)
+	COPY_PANIC(ToolComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	String title;
 	String description;
-	TypeId tool_type { typeid(void) };
+	TypeId tool_type { AsVoidTypeId() };
 	
 };
 
@@ -28,6 +30,7 @@ class ToolboxSystem :
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_RTTI(ToolboxSystem)
 	SYS_CTOR(ToolboxSystem);
 	
 	using Parent = Machine;

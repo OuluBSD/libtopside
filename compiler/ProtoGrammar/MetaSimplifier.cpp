@@ -132,7 +132,7 @@ Ast::Node* MetaSimplifier::AstExpressionStatement(NodeVec& cont) {
 
 Ast::Node* MetaSimplifier::AstIdentifier(NodeVec& cont) {
 	if (cont.GetCount() == 1) {
-		Ast::Literal* lit = dynamic_cast<Ast::Literal*>(&cont[0]);
+		Ast::Literal* lit = CastPtr<Ast::Literal>(&cont[0]);
 		if (lit)  {
 			if (lit->str.IsEmpty()) {
 				PushError("Expected string value for identifier");

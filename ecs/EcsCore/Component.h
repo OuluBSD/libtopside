@@ -30,6 +30,7 @@ public:
 	Machine& GetMachine();
 	
 public:
+	RTTI_DECL_R2(ComponentBase, Destroyable, Enableable)
 	ComponentBase();
 	virtual ~ComponentBase();
 	
@@ -70,9 +71,12 @@ template<typename T>
 struct Component :
 	ComponentBase
 {
+	using ComponentT = Component<T>;
+	
+	RTTI_DECL1(ComponentT, ComponentBase)
 
 	TypeId GetType() const override {
-		return typeid(T);
+		return AsTypeCls<T>();
 	}
 	
 	void CopyTo(ComponentBase* target) const override {
@@ -81,6 +85,8 @@ struct Component :
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
 };
+
+#define COMP_RTTI(x)  RTTI_DECL1(x, Component<x>)
 
 using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
 using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
@@ -101,10 +107,10 @@ public:
 	RefT_Entity<ComponentT> Get() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsTypeCls<ComponentT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
-			throw Exc("Could not find component " + TypeId(typeid(ComponentT)).CleanDemangledName());
+			THROW(Exc("Could not find component " + AsTypeString<ComponentT>()));
 		
 		return it->AsRef<ComponentT>();
 	}
@@ -113,7 +119,7 @@ public:
 	RefT_Entity<ComponentT> Find() {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(typeid(ComponentT));
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsTypeCls<ComponentT>());
 		if (IS_EMPTY_SHAREDPTR(it))
 			return Null;
 		else
@@ -124,9 +130,9 @@ public:
 	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		const TypeId type = typeid(ComponentT);
+		const TypeId type = AsTypeCls<ComponentT>();
 		const TypeId actual_type = component->GetType();
-		ASSERT_(actual_type == type, "ComponentRef type does not match T: " + actual_type.CleanDemangledName() + " != " + type.CleanDemangledName());
+		ASSERT_(actual_type == type, "ComponentRef type does not match " + AsTypeString<ComponentT>());
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
@@ -137,7 +143,7 @@ public:
 	void Remove(ComponentStoreRef s) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator iter = ComponentMapBase::Find(typeid(ComponentT));
+		ComponentMapBase::Iterator iter = ComponentMapBase::Find(AsTypeCls<ComponentT>());
 		ASSERT_(iter, "Tried to remove non-existent component");
 		
 		iter.value().Uninitialize();

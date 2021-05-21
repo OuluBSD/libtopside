@@ -142,7 +142,7 @@ struct NamedDeclPrinter : public MatchFinder::MatchCallback {
 				ci.name = name.getAsString().c_str();
 				ci.qual_name = qual_name;
 				
-				#define IS(x) (dynamic_cast<const x*>(p) != 0)
+				#define IS(x) (CastConstPtr<x>(p) != 0)
 				if (IS(NamespaceDecl) || IS(NamespaceAliasDecl))
 					ci.type = CodeItem::NAMESPACE;
 				else if (IS(ClassTemplateDecl) || IS(ClassTemplatePartialSpecializationDecl) || IS(EnumDecl))

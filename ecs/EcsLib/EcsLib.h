@@ -3,9 +3,7 @@
 
 #include <EcsCore/EcsCore.h>
 
-#ifndef UPP_VERSION
-	#include <Esc/Esc.h>
-#else
+#if defined UPP_VERSION || (defined flagSTDEXC)
 	#include <Esc/Esc.h>
 #endif
 

@@ -474,7 +474,8 @@ String Builder::GetExePath(Package& p) {
 		return GetExeDirectory(p) + DIR_SEPS + p.name + ".elf";
 	else
 		Panic("builder not implemented yet");
-	throw Exc("TODO");
+	TODO;
+	return String();
 }
 
 int Builder::ParseLinkerLog(const String& log) {

@@ -25,7 +25,7 @@ void Ctrl::CloseTopCtrls() {
 CoreWindow* Ctrl::GetWindow() {
 	Ctrl* c = this;
 	while (c) {
-		CoreWindow* cw = dynamic_cast<CoreWindow*>(c);
+		CoreWindow* cw = CastPtr<CoreWindow>(c);
 		if (cw)
 			return cw;
 		c = c->GetParent();

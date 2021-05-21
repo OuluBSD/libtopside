@@ -12,6 +12,7 @@
 	#define COMPILER_CLANG 1
 	#endif
 	
+	#define UNREACHABLE __builtin_unreachable()
 	
 	#if defined(__WIN32) || defined(_WIN32) || defined(WIN32)
 		#define COMPILER_MINGW 1

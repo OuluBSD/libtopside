@@ -58,7 +58,7 @@ struct NumberParser {
 	
 };
 
-class CParser {
+class CParser : public RtErr {
 	String input;
 	
 	bool pass_whitespace = true;
@@ -85,7 +85,7 @@ public:
 	CParser(String input, String fn, int line=0) {this->input = input; pos.fn = fn; pos.line = line;}
 	CParser(String s) {input = s;}
 	
-	struct Error : public Exc                 { Error(const char *s) : Exc(s) {} };
+	using Error = Exc;
 	
 	//void Next() {pos++; col++;}
 	bool IsEnd() const;

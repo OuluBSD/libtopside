@@ -24,6 +24,7 @@ class PortaudioSinkComponent :
 	
 public:
 	typedef PortaudioSinkComponent CLASSNAME;
+	RTTI_COMP1(PortaudioSinkComponent, AudioSink)
 	VIS_COMP_0_1(Audio)
 	COPY_PANIC(PortaudioSinkComponent);
 	IFACE_CB(AudioSink);

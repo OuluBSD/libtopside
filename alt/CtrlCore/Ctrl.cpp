@@ -143,7 +143,7 @@ TopWindow* Ctrl::GetTopWindow() {
 	while (c) {
 		Ctrl* par = c->GetParent();
 		if (!par) {
-			TopWindow* tw = dynamic_cast<TopWindow*>(c);
+			TopWindow* tw = CastPtr<TopWindow>(c);
 			return tw;
 		}
 		c = par;
@@ -541,7 +541,7 @@ bool Ctrl::DeepMouseMove(const Point& pt, dword keyflags) {
 			
 			for(int i = children.GetCount()-1; i >= 0; i--) {
 				Ctrl* c = children[i];
-				if (dynamic_cast<Button*>(c) && c->frame_r.Contains(cpt)) {
+				if (CastPtr<Button>(c) && c->frame_r.Contains(cpt)) {
 					LOG("");
 				}
 			}

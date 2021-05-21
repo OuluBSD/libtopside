@@ -1,5 +1,6 @@
 #include "Structural.h"
 
+#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -168,3 +169,5 @@ void Graph::DumpSorted() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

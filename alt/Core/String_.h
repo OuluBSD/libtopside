@@ -514,6 +514,7 @@ public:
 typedef StringT<char> String;
 typedef StringT<wchar_t> WString;
 
+
 inline String operator+ (const char* c, const String& l) { String s(c); s.Cat(l); return s; }
 inline String operator+ (const String& c, const String& l) { String s(c); s.Cat(l); return s; }
 inline WString operator+ (const wchar_t* c, const WString& l) { WString s(c); s.Cat(l); return s; }
@@ -528,7 +529,11 @@ typedef Exc NeverExc;
 typedef Exc TodoExc;
 typedef Exc SystemExc;
 
-#define NEVER() throw NeverExc()
+template<> inline const char* AsTypeName<Exc>() {return "Exc";}
+template<> inline const char* AsTypeName<String>() {return "String";}
+template<> inline const char* AsTypeName<WString>() {return "WString";}
+
+#define NEVER() THROW(NeverExc())
 
 inline int ToUpper(int chr) {
 	if (chr >= 'a' && chr <= 'z')
@@ -662,8 +667,27 @@ String AsCString(const String& s);
 WString FromUtf8(const String& x);
 
 
+template <class T> String AsTypeString() {return AsTypeName<T>();}
+
 int CompareNoCase(String a, String b);
 
+
+
+
+struct RtErr {
+	bool is_err = false;
+	String err_msg;
+public:
+	
+	void SetRtErr(String msg) {is_err = true; err_msg = msg;}
+	void Clear() {is_err = false; err_msg.Clear();}
+	bool IsRtErr() const {return is_err;}
+	String GetRtErr() const {return err_msg;}
+};
+
+#define PRE_ERR(x) SetRtErr(x + ": " + GetRtErr())
+#define CHK_RT_ERR if (IsRtErr()) return;
+#define CHK_RT_ERR_(x) if (IsRtErr()) {PRE_ERR(x); return;}
 
 NAMESPACE_UPP_END
 

@@ -1,5 +1,6 @@
 #include <Local/Local.h>
 
+
 NAMESPACE_UPP
 
 
@@ -64,25 +65,25 @@ ObjectMap* Object::TryGetMap() {
 
 const ObjectMap& Object::GetMap() const {
 	if (!Is<ObjectMap>())
-		throw Exc("Not a ObjectMap");
+		THROW(Exc("Not a ObjectMap"));
 	return Get<ObjectMap>();
 }
 
 const ObjectArray& Object::GetArray() const {
 	if (!Is<ObjectArray>())
-		throw Exc("Not a ObjectArray");
+		THROW(Exc("Not a ObjectArray"));
 	return Get<ObjectArray>();
 }
 
 ObjectMap& Object::GetMap() {
 	if (!Is<ObjectMap>())
-		throw Exc("Not a ObjectMap");
+		THROW(Exc("Not a ObjectMap"));
 	return Get<ObjectMap>();
 }
 
 ObjectArray& Object::GetArray() {
 	if (!Is<ObjectArray>())
-		throw Exc("Not a ObjectArray");
+		THROW(Exc("Not a ObjectArray"));
 	return Get<ObjectArray>();
 }
 
@@ -331,3 +332,4 @@ String StdFormat(const Object& q) {
 
 
 END_UPP_NAMESPACE
+

@@ -496,16 +496,16 @@ void Shape2DWrapper::Create(ShapeId type, const vec2& ax_vec) {
 }
 
 bool Shape2DWrapper::ShapeBase::Intersects(const ShapeBase& b) {
-	const ShapeLine* l = dynamic_cast<const ShapeLine*>(&b);
+	const ShapeLine* l = CastConstPtr<ShapeLine>(&b);
 	if (l) return Intersects(l->l);
 	
-	const ShapeCircle* c = dynamic_cast<const ShapeCircle*>(&b);
+	const ShapeCircle* c = CastConstPtr<ShapeCircle>(&b);
 	if (c) return Intersects(c->c);
 	
-	const ShapeRect* r = dynamic_cast<const ShapeRect*>(&b);
+	const ShapeRect* r = CastConstPtr<ShapeRect>(&b);
 	if (r) return Intersects(r->r);
 	
-	const ShapeOrientedRect* o = dynamic_cast<const ShapeOrientedRect*>(&b);
+	const ShapeOrientedRect* o = CastConstPtr<ShapeOrientedRect>(&b);
 	if (o) return Intersects(o->o);
 	
 	return false;

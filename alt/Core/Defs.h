@@ -103,9 +103,13 @@ using namespace std::chrono;
 
 
 
-
+#ifndef flagSTD_RTTI
+	#include <RTTI/RTTI.h>
+#endif
 
 NAMESPACE_UPP_BEGIN
+
+class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 
 #define UPP Upp
 
@@ -179,6 +183,36 @@ inline void IGNORE_RESULT(const T&) {}
 typedef void* VOID_PTR;
 typedef const void* CONST_VOID_PTR;
 
+
+
+
+#ifdef flagSTDRTTI
+	template <class T> std::type_info AsTypeCls() {return typeid(T);}
+	template <class T> std::type_info AsTypeId(const T& o) {return typeid(T);}
+	template <class T> const char* AsTypeName() {return typeid(T).name();}
+	#define AsVoidTypeId() typeid(void)
+#else
+	template <class T> TypeCls AsTypeCls() {return T::TypeIdClass();}
+	template <class T> const RTTI& AsTypeId(const T& o) {const RTTI* r = o.GetTypeInfo(AsTypeCls<T>()); ASSERT(r); return *r;}
+	template <class T> const char* AsTypeName() {return T::GetTypeName();}
+	inline const RTTI& AsVoidTypeId() {return GetTypenameRTTI<void>();}
+#endif
+
+
+
+#ifdef flagSTDEXC
+	template <class T> void Throw(const T& o) {throw o;}
+	#define THROW_SPECIFIER		throw()
+	#define THROW(x)			{throw(x);}
+	#define TYPE_WRAPPER		std::reference_wrapper<const std::type_info>
+	#define TYPE_WRAPPER_CTOR	reference_wrapper::reference_wrapper
+#else
+	template <class T> void Throw(const T& o) {const char* name = AsTypeName<T>(); __BREAK__;}
+	#define THROW_SPECIFIER
+	#define THROW(x)			{Throw(x); UNREACHABLE;}
+	#define TYPE_WRAPPER		RTTIWrapper
+	#define TYPE_WRAPPER_CTOR	RTTIWrapper::RTTIWrapper
+#endif
 
 
 

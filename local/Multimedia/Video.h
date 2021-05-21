@@ -12,6 +12,7 @@ protected:
 	
 	
 public:
+	RTTI_DECL1(VideoInputFrame, Video)
 	
 };
 
@@ -23,10 +24,14 @@ protected:
 	
 	
 public:
+	RTTI_DECL1(VideoOutputFrame, Video)
 	
 };
 
 struct DataPtrVideoBuffer : public Video {
+	RTTI_DECL1(DataPtrVideoBuffer, Video)
+	
+	
 	void* data = 0;
 	VideoFormat fmt;
 	int type = 0;

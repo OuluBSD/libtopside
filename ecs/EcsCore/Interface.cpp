@@ -46,7 +46,7 @@ String InterfaceBase::GetComponentBaseTypeString(ComponentBase* base) {
 #if 0
 #ifdef flagDEBUG
 void InterfaceDebugPrint(TypeId type, String s) {
-	if (type != typeid(RouteSource)) {
+	if (type != AsTypeId(RouteSource)) {
 		LOG(s);
 	}
 }
@@ -85,7 +85,7 @@ void InterfaceDebugPrint(TypeId type, String s) {
 #if 0
 void ActionSink::OnLink(Source src, Cookie src_c, Cookie sink_c) {
 	TODO
-	/*ActionSource* src = dynamic_cast<ActionSource*>(iface);
+	/*ActionSource* src = CastPtr<ActionSource>(iface);
 	ASSERT(src);
 	return src ? OnLinkActionSource(*src) : 0;*/
 }

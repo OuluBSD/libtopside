@@ -55,7 +55,7 @@ NAMESPACE_UPP_BEGIN
 #define MACROSTR(x) #x
 #define COUT(x) {::Upp::String ____s; ____s << x; Cout() << ____s << "\n";}
 #define COUTLOG(x) {::Upp::String ____s; ____s << x; LOG(____s); Cout() << ____s << "\n";}
-#define TODO {Panic("TODO " __FILE__ ":" + Upp::IntStr(__LINE__)); throw Upp::Exc("TODO");}
+#define TODO {Panic("TODO " __FILE__ ":" + Upp::IntStr(__LINE__)); THROW(Upp::Exc("TODO"));}
 #define SYNON_UNION_2(type, name0, name1) union {type name0; type name1;};
 
 

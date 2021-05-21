@@ -117,12 +117,18 @@ struct MediaFormat {
 	}
 };
 
-struct AVBase {
+struct AVBase :
+	RTTIBase
+{
+	RTTI_DECL0(AVBase)
 	virtual Audio& GetAudio() = 0;
 	virtual Video& GetVideo() = 0;
 };
 
-struct AVStreamBase {
+struct AVStreamBase :
+	RTTIBase
+{
+	RTTI_DECL0(AVStreamBase)
 	//virtual void FillVideoBuffer() = 0;
 	//virtual void FillAudioBuffer() = 0;
 	//virtual void Close() = 0;
@@ -143,6 +149,7 @@ public:
 	Video* vid = 0;
 
 public:
+	RTTI_DECL1(AVMediaProxy, Media)
 
 	AVMediaProxy() = default;
 
@@ -214,7 +221,11 @@ struct StaticValueData {
 	const byte* data;
 };
 
-struct StaticStreamBase {
+struct StaticStreamBase :
+	RTTIBase
+{
+	RTTI_DECL0(StaticStreamBase)
+	
 	virtual bool LoadFileAny(String path) {return false;}
 	virtual bool GetImage(Image& img) {return false;}
 	virtual Size GetResolution() const {return Size(0,0);}
@@ -331,7 +342,10 @@ struct HumanFormat {
 	
 };
 
-struct HumanCustomSinkBase {
+struct HumanCustomSinkBase :
+	RTTIBase
+{
+	RTTI_DECL0(HumanCustomSinkBase)
 	virtual CamerableRef GetCamerable();
 	virtual TransformRef GetTransform();
 };
@@ -377,9 +391,13 @@ typedef enum {
 	
 } AcceleratorType;
 
-class AcceleratorHeader {
+class AcceleratorHeader :
+	RTTIBase
+{
 	
 public:
+	RTTI_DECL0(AcceleratorHeader)
+	
 	enum {
 		FILTER_NEAREST,
 		FILTER_LINEAR,
@@ -456,8 +474,11 @@ struct AcceleratorHeaderVector {
 	void Add(const AcceleratorHeader& a);
 };
 
-class AcceleratorStreamBase {
+class AcceleratorStreamBase :
+	RTTIBase
+{
 public:
+	RTTI_DECL0(AcceleratorStreamBase)
 	virtual const AcceleratorHeader& GetHeader() const = 0;
 };
 

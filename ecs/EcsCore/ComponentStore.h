@@ -13,6 +13,8 @@ class ComponentStoreT :
 	void Visit(RuntimeVisitor& vis) override {}
 	
 public:
+	using ComponentStore = ComponentStoreT<Main,Base>;
+	RTTI_DECL1(ComponentStoreT, System<ComponentStore>)
 	SYS_CTOR(ComponentStoreT);
 	
 	using Parent = Machine;
@@ -27,7 +29,7 @@ public:
 	T* CreateComponent() {
 		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		const TypeId key(typeid(T));
+		const TypeId key(AsTypeCls<T>());
 		auto it = Factory::producers.Find(key);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
@@ -36,7 +38,7 @@ public:
 			Factory::refurbishers.Add(key) = r;
 		}
 		
-		return static_cast<T*>(CreateComponent(typeid(T)));
+		return static_cast<T*>(CreateComponent(AsTypeCls<T>()));
 	}
 	
 	void Clone(Main& dst, const Main& src) {

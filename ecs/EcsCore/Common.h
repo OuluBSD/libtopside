@@ -150,11 +150,15 @@ struct HolographicSpace {
 
 
 #define PREFAB_BEGIN(x) \
+struct x##_ : RTTIBase {RTTI_DECL0(x##_)}; \
+\
 struct x : \
+	x##_, \
 	EntityPrefab<
 
 #define PREFAB_END \
 > { \
+	 \
     static Components Make(Entity& e) \
     { \
         auto components = EntityPrefab::Make(e); \
@@ -204,11 +208,13 @@ typedef enum {
 
 
 template <class I>
-class InterfaceSink : public ExchangeSinkProvider {
-	
+class InterfaceSink :
+	public ExchangeSinkProvider
+{
+	using Sink = InterfaceSink<I>;
 	
 public:
-	
+	RTTI_DECL1(Sink, ExchangeSinkProvider)
 	virtual ComponentBase* AsComponentBase() = 0;
 	
 	
@@ -219,10 +225,13 @@ void InterfaceDebugPrint(TypeId type, String s);
 #endif
 
 template <class I, class O>
-class InterfaceSource : public ExchangeSourceProvider {
+class InterfaceSource :
+	public ExchangeSourceProvider
+{
+	using Source = InterfaceSource<I,O>;
 	
 public:
-	
+	RTTI_DECL1(Source, ExchangeSourceProvider)
 	virtual ComponentBase* AsComponentBase() = 0;
 	
 	

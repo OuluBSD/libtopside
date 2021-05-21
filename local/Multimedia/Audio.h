@@ -8,6 +8,7 @@ class AudioFrame : public Audio {
 	
 	
 public:
+	RTTI_DECL1(AudioFrame, Audio)
 	virtual ~AudioFrame() {}
 	
 };
@@ -20,6 +21,7 @@ protected:
 	
 	
 public:
+	RTTI_DECL1(AudioInputFrame, AudioFrame)
 	
 };
 

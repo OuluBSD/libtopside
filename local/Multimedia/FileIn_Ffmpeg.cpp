@@ -581,7 +581,7 @@ void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
 		Audio& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		AudioVolatileBuffer* vol_aud = dynamic_cast<AudioVolatileBuffer*>(&sink);
+		AudioVolatileBuffer* vol_aud = CastPtr<AudioVolatileBuffer>(&sink);
 		if (vol_aud) {
 			off32 begin = e.GetOffset();
 			RTLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());

@@ -17,6 +17,7 @@ class MixerContextComponent :
 	String post_load_file_path;
 	
 public:
+	RTTI_COMP0(MixerContextComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MixerContextComponent);
 	
@@ -41,6 +42,7 @@ class MixerChannelContextComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MixerChannelContextComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MixerChannelContextComponent);
 	
@@ -63,6 +65,7 @@ class MixerChannelInputComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP2(MixerChannelInputComponent, AcceleratorSource, AcceleratorSink)
 	VIS_COMP_1_1(Accelerator, Accelerator)
 	COPY_PANIC(MixerChannelInputComponent);
 	IFACE_CB(AcceleratorSink);
@@ -97,6 +100,7 @@ class MixerChannelOutputComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP2(MixerChannelOutputComponent, AcceleratorSource, AcceleratorSink)
 	VIS_COMP_1_1(Accelerator, Accelerator)
 	COPY_PANIC(MixerChannelOutputComponent);
 	IFACE_CB(AcceleratorSink);
@@ -132,6 +136,7 @@ class MixerAudioSourceComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP2(MixerAudioSourceComponent, AudioSource, AcceleratorSink)
 	VIS_COMP_1_1(Audio, Accelerator)
 	COPY_PANIC(MixerAudioSourceComponent);
 	IFACE_CB(AcceleratorSink);
@@ -171,6 +176,7 @@ class MidiFileComponent :
 	MidiFrame tmp;
 	
 public:
+	RTTI_COMP1(MidiFileComponent, DeviceSource)
 	VIS_COMP_1_0(Device)
 	COPY_PANIC(MidiFileComponent);
 	IFACE_CB(DeviceSource);
@@ -222,6 +228,7 @@ class FluidsynthComponent :
 	};
 	
 public:
+	RTTI_COMP2(FluidsynthComponent, AcceleratorSource, MidiSink)
 	VIS_COMP_1_1(Accelerator, Midi)
 	COPY_PANIC(FluidsynthComponent);
 	IFACE_CB(MidiSink);
@@ -259,6 +266,7 @@ class FluidsynthSystem :
 	Fluidsynth fs;
 	
 	
+	SYS_RTTI(FluidsynthSystem)
 	void Visit(RuntimeVisitor& vis) override {
 		vis && comps
 			&& track_comps;

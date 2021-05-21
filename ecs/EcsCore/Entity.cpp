@@ -98,12 +98,12 @@ void Entity::VisitSources(RuntimeVisitor& vis){
 
 
 bool EntityHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
-	if (type == typeid(Entity)) {
+	if (type == AsTypeCls<Entity>()) {
 		Entity& e = *(Entity*)mem;
 		ch.Put(1);
 		ch.Put(e.GetId());
 	}
-	else if (type == typeid(Pool)) {
+	else if (type == AsTypeCls<Pool>()) {
 		Pool& p = *(Pool*)mem;
 		ch.Put(2);
 		ch.Put(p.GetId());

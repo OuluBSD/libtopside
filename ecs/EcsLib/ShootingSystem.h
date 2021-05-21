@@ -9,6 +9,7 @@ class ShootingComponent :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
 	void Visit(RuntimeVisitor& vis) override {}
 	

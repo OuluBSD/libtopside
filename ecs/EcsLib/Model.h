@@ -12,6 +12,7 @@ struct PrimitiveShape :
 	public Component<PrimitiveShape>,
 	public ModelSink
 {
+	RTTI_COMP1(PrimitiveShape, ModelSink)
 	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
@@ -35,6 +36,7 @@ class ModelComponent :
 	public Component<ModelComponent>,
 	public ModelSink
 {
+	RTTI_COMP1(ModelComponent, ModelSink)
 	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;

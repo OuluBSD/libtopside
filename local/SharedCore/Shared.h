@@ -76,7 +76,7 @@ public:
 		static_assert(std::is_base_of<T, K>() || std::is_base_of<K, T>(), "K -> T or T -> K inheritance is required");
 		
 		if (o) {
-			K* ptr = dynamic_cast<K*>(o);
+			K* ptr = CastPtr<K>(o);
 			if (ptr) {
 				SharedT<K> s;
 				s.SetPtr(ptr, r);
@@ -162,7 +162,7 @@ public:
 	
 	Shared<T> GetSharedFromThis() {
 		/*if (weak.IsEmpty()) {
-			Shared<T> s(dynamic_cast<T*>(this));
+			Shared<T> s(CastPtr<T>(this));
 			weak = s;
 			return s;
 		}*/

@@ -15,6 +15,7 @@ class MusicDrummerComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicDrummerComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicDrummerComponent);
 	
@@ -39,6 +40,7 @@ class MusicBassistComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicBassistComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicBassistComponent);
 	
@@ -63,6 +65,7 @@ class MusicGuitaristComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicGuitaristComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicGuitaristComponent);
 	
@@ -88,6 +91,7 @@ class MusicVocalistComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicVocalistComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicVocalistComponent);
 	
@@ -112,6 +116,7 @@ class MusicConductorComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicConductorComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicConductorComponent);
 	
@@ -136,6 +141,7 @@ class MusicComposerComponent :
 	String last_error;
 	
 public:
+	RTTI_COMP0(MusicComposerComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(MusicComposerComponent);
 	

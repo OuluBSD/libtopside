@@ -127,7 +127,10 @@ inline ShapeId GetRandomShape2() {return (ShapeId)Random(4);}
 
 struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 	
-	struct ShapeBase {
+	struct ShapeBase :
+		RTTIBase
+	{
+		RTTI_DECL0(ShapeBase)
 		virtual ~ShapeBase() {}
 		virtual bool Intersects(const line2&) = 0;
 		virtual bool Intersects(const Circle&) = 0;
@@ -143,59 +146,63 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 	};
 	
 	struct ShapeLine : public ShapeBase {
+		RTTI_DECL1(ShapeLine, ShapeBase)
 		line2 l;
 		ShapeLine(line2 l) : l(l) {}
-		bool Intersects(const line2& l) {throw Exc("Not implemented");}
-		bool Intersects(const Circle& c) {return c.Intersects(l);}
-		bool Intersects(const Rectangle& r) {return r.Intersects(l);}
-		bool Intersects(const OrientedRectangle& o) {return o.Intersects(l);}
-		vec2 GetPos() {return (l.a + l.b) * 0.5;}
-		void Move(const vec2& v) {l.a += v; l.b += v;}
-		void Rotate(float rad);
-		void GetFaces(Vector<line2>& faces) {faces.Add(l);}
-		void GetFaces(Vector<tri3>& faces);
+		bool Intersects(const line2& l) override {THROW(Exc("Not implemented"));}
+		bool Intersects(const Circle& c) override {return c.Intersects(l);}
+		bool Intersects(const Rectangle& r) override {return r.Intersects(l);}
+		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(l);}
+		vec2 GetPos() override {return (l.a + l.b) * 0.5;}
+		void Move(const vec2& v) override {l.a += v; l.b += v;}
+		void Rotate(float rad) override;
+		void GetFaces(Vector<line2>& faces) override {faces.Add(l);}
+		void GetFaces(Vector<tri3>& faces) override;
 	};
 	
 	struct ShapeCircle : public ShapeBase {
+		RTTI_DECL1(ShapeCircle, ShapeBase)
 		Circle c;
 		ShapeCircle(Circle c) : c(c) {}
-		bool Intersects(const line2& l) {return c.Intersects(l);}
-		bool Intersects(const Circle& c) {return this->c.Intersects(c);}
-		bool Intersects(const Rectangle& r) {return r.Intersects(c);}
-		bool Intersects(const OrientedRectangle& o) {return o.Intersects(c);}
-		vec2 GetPos() {return c.ct;}
-		void Move(const vec2& v) {c.ct += v;}
-		void Rotate(float rad) {}
-		void GetFaces(Vector<line2>& faces);
-		void GetFaces(Vector<tri3>& faces);
+		bool Intersects(const line2& l) override {return c.Intersects(l);}
+		bool Intersects(const Circle& c) override {return this->c.Intersects(c);}
+		bool Intersects(const Rectangle& r) override {return r.Intersects(c);}
+		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(c);}
+		vec2 GetPos() override {return c.ct;}
+		void Move(const vec2& v) override {c.ct += v;}
+		void Rotate(float rad) override {}
+		void GetFaces(Vector<line2>& faces) override;
+		void GetFaces(Vector<tri3>& faces) override;
 	};
 	
 	struct ShapeRect : public ShapeBase {
+		RTTI_DECL1(ShapeRect, ShapeBase)
 		Rectangle r;
 		ShapeRect(Rectangle r) : r(r) {}
-		bool Intersects(const line2& l) {return r.Intersects(l);}
-		bool Intersects(const Circle& c) {return r.Intersects(c);}
-		bool Intersects(const Rectangle& r) {return this->r.Intersects(r);}
-		bool Intersects(const OrientedRectangle& o) {return o.Intersects(r);}
-		vec2 GetPos() {return r.GetCenter();}
-		void Move(const vec2& v) {r.pos += v;}
-		void Rotate(float rad) {}
-		void GetFaces(Vector<line2>& faces);
-		void GetFaces(Vector<tri3>& faces);
+		bool Intersects(const line2& l) override {return r.Intersects(l);}
+		bool Intersects(const Circle& c) override {return r.Intersects(c);}
+		bool Intersects(const Rectangle& r) override {return this->r.Intersects(r);}
+		bool Intersects(const OrientedRectangle& o) override {return o.Intersects(r);}
+		vec2 GetPos() override {return r.GetCenter();}
+		void Move(const vec2& v) override {r.pos += v;}
+		void Rotate(float rad) override {}
+		void GetFaces(Vector<line2>& faces) override;
+		void GetFaces(Vector<tri3>& faces) override;
 	};
 	
 	struct ShapeOrientedRect : public ShapeBase {
+		RTTI_DECL1(ShapeOrientedRect, ShapeBase)
 		OrientedRectangle o;
 		ShapeOrientedRect(OrientedRectangle o) : o(o) {}
-		bool Intersects(const line2& l) {return o.Intersects(l);}
-		bool Intersects(const Circle& c) {return o.Intersects(c);}
-		bool Intersects(const Rectangle& r) {return o.Intersects(r);}
-		bool Intersects(const OrientedRectangle& o) {return this->o.Intersects(o);}
-		vec2 GetPos() {return o.ct;}
-		void Move(const vec2& v) {o.ct += v;}
-		void Rotate(float rad) {o.rot = fmodf(o.rot + rad, (float)M_2PI); }
-		void GetFaces(Vector<line2>& faces);
-		void GetFaces(Vector<tri3>& faces);
+		bool Intersects(const line2& l) override {return o.Intersects(l);}
+		bool Intersects(const Circle& c) override {return o.Intersects(c);}
+		bool Intersects(const Rectangle& r) override {return o.Intersects(r);}
+		bool Intersects(const OrientedRectangle& o) override {return this->o.Intersects(o);}
+		vec2 GetPos() override {return o.ct;}
+		void Move(const vec2& v) override {o.ct += v;}
+		void Rotate(float rad) override {o.rot = fmodf(o.rot + rad, (float)M_2PI); }
+		void GetFaces(Vector<line2>& faces) override;
+		void GetFaces(Vector<tri3>& faces) override;
 	};
 	
 	

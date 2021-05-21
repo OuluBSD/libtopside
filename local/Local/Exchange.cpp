@@ -189,7 +189,7 @@ void MetaExchangePoint::Remove(ExchangePoint* expt) {
 			return;
 		}
 	}
-	throw Exc("MetaExchangePoint::Remove: internal error");
+	THROW(Exc("MetaExchangePoint::Remove: internal error"));
 }
 
 void MetaExchangePoint::UnlinkAll() {

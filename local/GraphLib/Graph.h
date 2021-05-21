@@ -99,7 +99,7 @@ protected:
 public:
 	Graph();
 
-
+	
 	Graph& SetFillColor(Color clr) {fill_clr = clr; return *this;}
 	Graph& SetNodeStroke(int line_width, Color clr) {node_line_width = line_width; border_clr = clr; return *this;}
 	Graph& SetEdgeStroke(int line_width, Color clr) {edge_line_width = line_width; line_clr = clr; return *this;}

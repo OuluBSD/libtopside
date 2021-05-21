@@ -12,7 +12,7 @@ SessionEditor& NodeParentCtrl::GetEditor() {
 	Ctrl* c = this;
 	while (c) {
 		c = c->GetParent();
-		SessionEditor* se = dynamic_cast<SessionEditor*>(c);
+		SessionEditor* se = CastPtr<SessionEditor>(c);
 		if (se) return *se;
 	}
 	throw Exc("Couldn't find editor");
@@ -22,7 +22,7 @@ TrackListCtrl& NodeParentCtrl::GetTrackList() {
 	Ctrl* c = this;
 	while (c) {
 		c = c->GetParent();
-		TrackListCtrl* se = dynamic_cast<TrackListCtrl*>(c);
+		TrackListCtrl* se = CastPtr<TrackListCtrl>(c);
 		if (se) return *se;
 	}
 	throw Exc("Couldn't find tracklist");

@@ -24,7 +24,7 @@ void MidiFileCtrl::Updated() {
 }
 
 void MidiFileCtrl::SetComponent(ComponentBase& base) {
-	MidiFileComponent* new_comp = dynamic_cast<MidiFileComponent*>(&base);
+	MidiFileComponent* new_comp = CastPtr<MidiFileComponent>(&base);
 	if (new_comp && new_comp == comp)
 		return;
 	

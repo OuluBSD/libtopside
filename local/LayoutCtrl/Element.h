@@ -25,7 +25,7 @@ protected:
 public:
 	Element();
 	
-	Element* GetParentElement() const {return dynamic_cast<Element*>(GetParent());}
+	Element* GetParentElement() const {return CastPtr<Element>(GetParent());}
 	ConstDocument* GetDocument() const;
 	Document* GetDocument();
 	

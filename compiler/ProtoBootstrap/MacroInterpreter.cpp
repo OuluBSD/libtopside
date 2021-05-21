@@ -9,7 +9,7 @@ MacroInterpreter::MacroInterpreter() : ErrorSource("MacroInterpreter") {
 
 /*bool MacroInterpreter::Process() {
 	InputStage* stage = GetUnit().GetPreviousStage();
-	tk = stage ? dynamic_cast<Tokenizer*>(stage) : 0;
+	tk = stage ? CastPtr<Tokenizer>(stage) : 0;
 	if (!tk) {
 		AddError(FileLocation(), t_("Tokenizer stage should be before MacroInterpreter"));
 		return false;

@@ -14,8 +14,8 @@ Element::Element()  {
 	skip = false;
 }
 
-ConstDocument* Element::GetDocument() const {return dynamic_cast<ConstDocument*>(GetTopParent());}
-Document* Element::GetDocument() {return dynamic_cast<Document*>(GetTopParent());}
+ConstDocument* Element::GetDocument() const {return CastPtr<ConstDocument>(GetTopParent());}
+Document* Element::GetDocument() {return CastPtr<Document>(GetTopParent());}
 
 bool Element::IsPointInside( int x, int y )
 {
@@ -1702,7 +1702,7 @@ void HtmlTag::ParseBackground()
 	
 	
 	// Late body background color change
-	if (bg.color.a > 0 && dynamic_cast<ElBody*>(this))
+	if (bg.color.a > 0 && CastPtr<ElBody>(this))
 		GetDocument()->GetHtmlCtrl().SetBackgroundColor(bg.color);
 	
 	

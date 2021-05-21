@@ -1,8 +1,9 @@
 description "Components\377B0,87,128";
 
 uses
-	EcsCore,
-	Esc;
+	EcsCore;
+
+uses(STDEXC) Esc;
 
 uses(GUI) LocalCtrl;
 

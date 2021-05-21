@@ -24,7 +24,7 @@ InterfaceCtrl* NewInterfaceCtrl(TypeId iface);
 
 template <class T> InterfaceCtrl* InterfaceCtrlFactoryFn() {return new T();}
 template <class I, class C> void MakeInterfaceCtrlFactory() {
-	RegisterInterfaceCtrlFactory(typeid(I), &InterfaceCtrlFactoryFn<C>);
+	RegisterInterfaceCtrlFactory(AsTypeId(I), &InterfaceCtrlFactoryFn<C>);
 }
 
 NAMESPACE_TOPSIDE_END

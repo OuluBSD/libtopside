@@ -1,0 +1,6 @@
+description "\377B81,0,45";
+
+file
+	RTTI.h,
+	RTTI.cpp;
+

@@ -96,7 +96,7 @@ CONSOLE_APP_MAIN {
 
 void DemoCat::OnLink(Ref provider, Cookie cookie) {
 	TODO
-	/*ActionSource* asrc = dynamic_cast<ActionSource*>(iface);
+	/*ActionSource* asrc = CastPtr<ActionSource*>(iface);
 	
 	if (asrc) {
 		ag = asrc->AddActionGroup(ACT_COUNT, ATOM_COUNT);

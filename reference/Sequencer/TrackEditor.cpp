@@ -200,7 +200,7 @@ void TrackExprCtrl::Layout() {
 }
 
 void TrackExprCtrl::TimeChanges() {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	SessionEditor& se = tec.GetEditor();
 	Session& ses = se.GetSession();
 	Block& block = tec.GetBlock();
@@ -227,7 +227,7 @@ SequencerCtrl::SequencerCtrl() {
 }
 
 void SequencerCtrl::LeftDown(Point p, dword keyflags) {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	int mode = tec.GetMode();
 	
 	left_down_pt = p;
@@ -313,7 +313,7 @@ void SequencerCtrl::MouseMove(Point p, dword keyflags) {
 }
 
 void SequencerCtrl::Layout() {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	Block& block = tec.GetBlock();
 	
 	int vsb = tec.GetVScroll();
@@ -349,7 +349,7 @@ void SequencerCtrl::Paint(Draw& w) {
 		Size sz = GetSize();
 		w.DrawRect(sz, Color(217, 227, 255));
 		
-		TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+		TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 		Block& block = tec.GetBlock();
 		int scroll = tec.GetHScroll();
 		
@@ -472,7 +472,7 @@ void SequencerCtrl::PushSelection() {
 }
 
 void SequencerCtrl::MoveStack(Point p) {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	
 	p.y -= p.y % tec.row_height;
 	p.x -= p.x % (int)tec.snap;
@@ -494,7 +494,7 @@ void SequencerCtrl::MoveStack(Point p) {
 }
 
 void SequencerCtrl::BackwardStack() {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	Session& ses = tec.GetEditor().GetSession();
 	ses.DoBegin();
 	
@@ -510,7 +510,7 @@ void SequencerCtrl::BackwardStack() {
 }
 
 void SequencerCtrl::RemoveSelected() {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	SessionEditor& se = tec.GetEditor();
 	Session& ses = se.GetSession();
 	Block& block = tec.GetBlock();
@@ -602,7 +602,7 @@ void NoteCtrl::LeftDown(Point p, dword keyflags) {
 }
 
 TrackEditorCtrl& NoteCtrl::GetTrackEditor() {
-	return dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	return CastRef<TrackEditorCtrl>(*GetParentCtrl());
 }
 
 void NoteCtrl::Backward() {
@@ -649,7 +649,7 @@ void NoteCtrl::Backward() {
 
 void TimebarCtrl::Paint(Draw& d) {
 	try {
-		TrackEditorCtrl& pc = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+		TrackEditorCtrl& pc = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 		
 		int scroll = pc.GetScroll();
 		int pad_shift = pc.GetLeftPadShift();
@@ -704,7 +704,7 @@ void TimebarCtrl::MouseMove(Point p, dword keyflags) {
 }
 
 void TimebarCtrl::SetPosition(Point p) {
-	TrackEditorCtrl& pc = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& pc = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	Session& ses = pc.GetEditor().GetSession();
 	
 	int scroll = pc.GetScroll();
@@ -737,7 +737,7 @@ void PianorollCtrl::Paint(Draw& w) {
 		Size sz = GetSize();
 		w.DrawRect(sz, Color(217, 227, 255));
 		
-		TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+		TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 		Block& block = tec.GetBlock();
 		
 		int x0 = 0;
@@ -790,7 +790,7 @@ void PianorollCtrl::MouseMove(Point p, dword keyflags) {
 }
 
 void PianorollCtrl::NoteOn(Point p) {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	Session& ses = tec.GetEditor().GetSession();
 	int y = tec.vsb + p.y;
 	int pitch = tec.row_count - 1 - y / tec.row_height;
@@ -807,7 +807,7 @@ void PianorollCtrl::NoteOn(Point p) {
 }
 
 void PianorollCtrl::NoteOff(Point p) {
-	TrackEditorCtrl& tec = dynamic_cast<TrackEditorCtrl&>(*GetParentCtrl());
+	TrackEditorCtrl& tec = CastRef<TrackEditorCtrl>(*GetParentCtrl());
 	Session& ses = tec.GetEditor().GetSession();
 	int track_id = tec.GetTrackId();
 	Bus& bus = ses.GetSystem().GetSource(track_id);

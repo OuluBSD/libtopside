@@ -11,6 +11,7 @@ class Camerable :
 	vec3 target = zero<vec3>();
 	
 public:
+	RTTI_COMP1(Camerable, HumanSink)
 	VIS_COMP_0_1(Human)
 	IFACE_CB(HumanSink);
 	IFACE_GENERIC;

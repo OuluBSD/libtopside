@@ -1,5 +1,6 @@
 #include "Local.h"
 
+#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -166,3 +167,5 @@ String JoinUrl(String base, String rel_path) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

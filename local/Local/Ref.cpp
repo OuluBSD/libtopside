@@ -36,7 +36,7 @@ RefRoot& RefRoot::Get() {
 
 LockedScopeRefCounter::LockedScopeRefCounter()
 #ifdef flagDEBUG_STACK
-: dbg_type(typeid(LockedScopeRefCounter))
+: dbg_type(AsTypeId(LockedScopeRefCounter))
 #endif
 {
 	refs = 0;

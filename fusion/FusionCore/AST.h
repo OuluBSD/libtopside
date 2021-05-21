@@ -32,7 +32,7 @@ struct Memory : Moveable<Memory> {
 // Nodes are to inherit from Node or astCollector
 template <typename T>
 struct Node {
-    void *operator new(size_t size, Vector<Memory> *collector) throw() {
+    void *operator new(size_t size, Vector<Memory> *collector) THROW_SPECIFIER {
         void *data = malloc(size);
         if (data)
             collector->Add().Set((T*)data);

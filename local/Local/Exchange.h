@@ -89,13 +89,16 @@ struct RealtimeSourceConfig {
 
 
 
-class ExchangeBase : public RefScopeEnabler<ExchangeBase,ExchangeProviderBase> {
+class ExchangeBase :
+	public RefScopeEnabler<ExchangeBase,ExchangeProviderBase>
+{
 	bool fail = false;
 	
 protected:
 	
 	
 public:
+	RTTI_DECL_R0(ExchangeBase)
 	ExchangeBase();
 	virtual ~ExchangeBase();
 	
@@ -120,9 +123,12 @@ public:
 
 
 
-class ExchangeProviderCookie : public RefScopeEnabler<ExchangeProviderCookie,ExchangePoint> {
+class ExchangeProviderCookie :
+	public RefScopeEnabler<ExchangeProviderCookie,ExchangePoint>
+{
 	
 public:
+	RTTI_DECL_R0(ExchangeProviderCookie)
 	
 	
 };
@@ -136,7 +142,13 @@ template <class R>
 class ExchangeProviderT {
 	
 public:
-	struct Link : Moveable<Link> {
+	
+	struct Link :
+		Moveable<Link>,
+		RTTIBase
+	{
+		RTTI_DECL0(Link)
+		
 		ExchangePointRef expt;
 		R dst;
 		
@@ -195,9 +207,12 @@ public:
 };
 
 
-class ExchangeProviderBase : public RefScopeEnabler<ExchangeProviderBase,Entity> {
+class ExchangeProviderBase :
+	public RefScopeEnabler<ExchangeProviderBase,Entity>
+{
 	
 public:
+	RTTI_DECL_R0(ExchangeProviderBase)
 	
 	//bool UnlinkManually(ExchangeProviderBase& p);
 	virtual TypeId GetProviderType() = 0;
@@ -206,7 +221,9 @@ public:
 };
 
 
-class ExchangeSinkProvider : public ExchangeProviderBase {
+class ExchangeSinkProvider :
+	public ExchangeProviderBase
+{
 	
 protected:
 	friend class ExchangeSourceProvider;
@@ -219,6 +236,7 @@ public:
 	using SinkProv = ExchangeSinkProviderRef;
 	using SourceProv = ExchangeSourceProviderRef;
 	using Cookie = CookieRef;
+	RTTI_DECL1(ExchangeSinkProvider, ExchangeProviderBase)
 	
 protected:
 	friend class ExchangePoint;
@@ -256,6 +274,7 @@ public:
 	using SinkProv = ExchangeSinkProviderRef;
 	using SourceProv = ExchangeSourceProviderRef;
 	using Cookie = CookieRef;
+	RTTI_DECL1(ExchangeSourceProvider, ExchangeProviderBase)
 	
 protected:
 	friend class ExchangePoint;
@@ -286,7 +305,9 @@ typedef ExchangeSourceProviderRef ExchangeSourceProviderRef;
 
 
 
-class ExchangePoint : public RefScopeEnabler<ExchangePoint,MetaExchangePoint> {
+class ExchangePoint :
+	public RefScopeEnabler<ExchangePoint,MetaExchangePoint>
+{
 	
 protected:
 	friend class MetaExchangePoint;
@@ -298,6 +319,7 @@ protected:
 	CookieRef					sink_cookie;
 	
 public:
+	RTTI_DECL_R0(ExchangePoint)
 	typedef ExchangePoint CLASSNAME;
 	ExchangePoint();
 	virtual ~ExchangePoint();
@@ -320,12 +342,15 @@ public:
 
 
 
-class MetaExchangePoint : public RefScopeEnabler<MetaExchangePoint,Pool> {
+class MetaExchangePoint :
+	public RefScopeEnabler<MetaExchangePoint,Pool>
+{
 	
 protected:
 	RefLinkedListIndirect<ExchangePoint> pts;
 	
 public:
+	RTTI_DECL_R0(MetaExchangePoint)
 	typedef MetaExchangePoint CLASSNAME;
 	MetaExchangePoint();
 	virtual ~MetaExchangePoint();

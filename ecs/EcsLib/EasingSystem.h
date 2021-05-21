@@ -10,6 +10,7 @@ class Easing :
 	VIS_COMP_0_0
 	
 public:
+	RTTI_COMP0(Easing)
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -36,6 +37,7 @@ class EasingSystem : public System<EasingSystem>
 	void Visit(RuntimeVisitor& vis) override {}
 	
 public:
+	SYS_RTTI(EasingSystem)
     SYS_CTOR(EasingSystem)
 
 protected:

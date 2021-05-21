@@ -11,6 +11,7 @@ class HolographicRenderer :
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {}
+	SYS_RTTI(HolographicRenderer)
 	SYS_CTOR(HolographicRenderer);
 	
 	

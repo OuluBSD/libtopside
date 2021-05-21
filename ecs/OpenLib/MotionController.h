@@ -37,6 +37,7 @@ class MotionControllerSystem :
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
+	SYS_RTTI(MotionControllerSystem)
 	SYS_CTOR(MotionControllerSystem);
 	
 	

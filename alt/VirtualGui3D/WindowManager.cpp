@@ -39,7 +39,7 @@ void WindowManager::Run() {
 
 void WindowManager::Close() {
 	for(int i = 0; i < screens.GetCount(); i++) {
-		Windows* wins = dynamic_cast<Windows*>(&screens[i]);
+		Windows* wins = CastPtr<Windows>(&screens[i]);
 		if (wins) {
 			wins->CloseAll();
 			wins->ProcessCloseQueue();

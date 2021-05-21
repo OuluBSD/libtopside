@@ -14,9 +14,9 @@ public:
 	Object();
 	virtual ~Object() {}
 	
-	template <class T> bool Is() {return dynamic_cast<T*>(this);}
-	template <class T> T* As() {return dynamic_cast<T*>(this);}
-	template <class T> const T* As() const {return dynamic_cast<const T*>(this);}
+	template <class T> bool Is() {return CastPtr<T>(this);}
+	template <class T> T* As() {return CastPtr<T>(this);}
+	template <class T> const T* As() const {return CastConstPtr<T>(this);}
 	
 	void Clear() {sub.Clear();}
 	Object& Add() {Object& o = sub.Add(); o.parent = this; return o;}
@@ -36,14 +36,14 @@ public:
 	}
 	template <class T> T* Find() {
 		for(int i = 0; i < sub.GetCount(); i++) {
-			T* o = dynamic_cast<T*>(&sub[i]);
+			T* o = CastPtr<T>(&sub[i]);
 			if (o) return o;
 		}
 		return NULL;
 	}
 	template <class T> T* ReverseFind() {
 		for(int i = sub.GetCount()-1; i >= 0; i--) {
-			T* o = dynamic_cast<T*>(&sub[i]);
+			T* o = CastPtr<T>(&sub[i]);
 			if (o) return o;
 		}
 		return NULL;

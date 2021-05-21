@@ -41,7 +41,7 @@ class InterfaceConnectionCtrl : public ParentCtrl {
 			EntityRef tgt_ent = tgt_base->GetEntity();
 			
 			String id_str = "(" + IntStr64(tgt_ent->GetId()) + ")";
-			String b_name = TypeId(typeid(typename T::Type)).CleanDemangledName() + id_str;
+			String b_name = TypeId(AsTypeId(typename T::Type)).CleanDemangledName() + id_str;
 			String c_name = tgt_base->GetType().CleanDemangledName() + id_str;
 			String e_name = tgt_ent->GetPrefab() + id_str;
 			

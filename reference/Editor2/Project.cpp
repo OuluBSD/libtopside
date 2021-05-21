@@ -171,7 +171,7 @@ Package& Project::GetOpenUsedPackage(int i) {
 	}
 	
 	Panic("GetOpenUsedPackage failed");
-	throw Exc("TODO");
+	return *(Package*)0;
 }
 
 Assembly& Project::GetOpenAssembly() {

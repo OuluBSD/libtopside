@@ -9,7 +9,7 @@ int RegisterTypeNo__(const char *type);
 
 template <class T>
 int StaticTypeNo() {
-	static int typeno = RegisterTypeNo__(typeid(T).name());
+	static int typeno = RegisterTypeNo__(AsTypeName<T>());
 	return typeno;
 }
 

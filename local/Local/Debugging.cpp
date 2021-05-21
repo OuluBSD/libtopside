@@ -138,7 +138,7 @@ void RuntimeDiagnostics::OnRefError(LockedScopeRefCounter* r) {
 
 void RuntimeDiagnosticVisitor::Scope::Clear() {
 	sub_scopes.Clear();
-	var.type = typeid(void);
+	var.type = AsVoidTypeId();
 	var.mem = 0;
 	parent = 0;
 	focused = 0;

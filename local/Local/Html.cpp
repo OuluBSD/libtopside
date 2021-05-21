@@ -1,5 +1,6 @@
 #include "Local.h"
 
+#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -389,3 +390,5 @@ HtmlNode& HtmlNode::TryGetTag(String key) {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

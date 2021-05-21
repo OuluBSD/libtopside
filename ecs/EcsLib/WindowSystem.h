@@ -16,6 +16,7 @@ class WindowSystem : public System<WindowSystem>, public Windows {
 	}
 	
 public:
+	SYS_RTTI(WindowSystem)
 	SYS_CTOR(WindowSystem);
 	
 	static constexpr const char* POOL_NAME = "windows";

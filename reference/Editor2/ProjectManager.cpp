@@ -55,7 +55,7 @@ Package& ProjectManager::GetPackage(int assembly, String name) {
 	}
 	
 	Panic("GetOpenUsedPackage failed");
-	throw Exc("TODO");
+	return *(Package*)0;
 }
 
 
