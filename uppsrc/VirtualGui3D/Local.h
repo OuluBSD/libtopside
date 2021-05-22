@@ -5,6 +5,8 @@
 namespace Upp {
 
 class TopWindowFrame : public Ctrl {
+	RTTI_DECL1(TopWindowFrame, Ctrl)
+	
 public:
 	virtual void  Layout();
 	virtual void  Paint(Draw& w);

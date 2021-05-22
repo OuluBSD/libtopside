@@ -1,4 +1,4 @@
-#include "NonGUISDL2.h"
+#include "NonCtrlSDL2.h"
 #include <Local/Local.h>
 #include <OOSDL2/OOSDL2.h>
 

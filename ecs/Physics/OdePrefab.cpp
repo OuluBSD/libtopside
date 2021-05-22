@@ -1,5 +1,7 @@
 #include "Physics.h"
 
+#ifdef flagODE
+
 NAMESPACE_TOPSIDE_BEGIN
 
 void StaticBox::OnAttach() {
@@ -17,3 +19,5 @@ void StaticBox::OnAttach() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

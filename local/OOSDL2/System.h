@@ -13,6 +13,7 @@ class SDL2TimerComponent :
 	One<OOSDL2::Timer> obj;
 	
 public:
+	RTTI_COMP0(SDL2TimerComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(SDL2TimerComponent);
 	
@@ -34,6 +35,7 @@ class SDL2AudioInputComponent :
 	One<OOSDL2::AudioInput> obj;
 	
 public:
+	RTTI_COMP1(SDL2AudioInputComponent, AudioSource)
 	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SDL2AudioInputComponent);
 	IFACE_CB(AudioSource);
@@ -65,6 +67,7 @@ class SDL2AudioOutputComponent :
 	
 	
 public:
+	RTTI_COMP1(SDL2AudioOutputComponent, AudioSink)
 	VIS_COMP_0_1(Audio)
 	COPY_PANIC(SDL2AudioOutputComponent);
 	IFACE_CB(AudioSink);
@@ -108,6 +111,7 @@ class SDL2ScreenComponent :
 	double frame_age = 0;
 	
 public:
+	RTTI_COMP1(SDL2ScreenComponent, DisplaySink)
 	VIS_COMP_0_1(Display)
 	COPY_PANIC(SDL2ScreenComponent);
 	IFACE_CB(DisplaySink);
@@ -140,6 +144,7 @@ class SDL2EventsComponent :
 	EventFrame ev;
 	
 public:
+	RTTI_COMP1(SDL2EventsComponent, DeviceSource)
 	VIS_COMP_1_0(Device)
 	COPY_PANIC(SDL2EventsComponent);
 	IFACE_CB(DeviceSource);
@@ -168,6 +173,7 @@ class SDL2JoystickComponent :
 	One<OOSDL2::Joystick> obj;
 	
 public:
+	RTTI_COMP1(SDL2JoystickComponent, HumanSource)
 	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2JoystickComponent);
 	IFACE_CB(HumanSource);
@@ -196,6 +202,7 @@ class SDL2GameControllerComponent :
 	One<OOSDL2::GameController> obj;
 	
 public:
+	RTTI_COMP1(SDL2GameControllerComponent, HumanSource)
 	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2GameControllerComponent);
 	IFACE_CB(HumanSource);
@@ -224,6 +231,7 @@ class SDL2SensorComponent :
 	One<OOSDL2::Sensor> obj;
 	
 public:
+	RTTI_COMP1(SDL2SensorComponent, HumanSource)
 	VIS_COMP_1_0(Human)
 	COPY_PANIC(SDL2SensorComponent);
 	IFACE_CB(HumanSource);
@@ -254,6 +262,7 @@ class SDL2ImageComponent :
 	
 	
 public:
+	RTTI_COMP1(SDL2ImageComponent, StaticSource)
 	VIS_COMP_1_0(Static)
 	COPY_PANIC(SDL2ImageComponent);
 	IFACE_CB(StaticSource);
@@ -284,6 +293,7 @@ class SDL2FontComponent :
 	Font fnt;
 	
 public:
+	RTTI_COMP1(SDL2FontComponent, StaticSource)
 	VIS_COMP_1_0(Static)
 	COPY_PANIC(SDL2FontComponent);
 	IFACE_CB(StaticSource);
@@ -310,6 +320,7 @@ class SDL2ContextComponent :
 	LinkedList<ComponentBaseRef> comps;
 	
 public:
+	RTTI_COMP0(SDL2ContextComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(SDL2ContextComponent);
 	
@@ -370,7 +381,7 @@ protected:
 
 
 
-#ifdef flagGUI
+#if defined flagGUI && defined flagCTRL
 
 struct SDL2StandaloneWindow : EntityPrefab<
 	SDL2TimerComponent,

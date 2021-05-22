@@ -15,6 +15,7 @@ class ShaderViewer :
 	FusionContextComponentRef ctx;
 	
 public:
+	RTTI_COMP0(ShaderViewer)
 	VIS_COMP_0_0
 	typedef ShaderViewer CLASSNAME;
 	ShaderViewer() {}

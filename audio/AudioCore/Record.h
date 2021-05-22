@@ -31,7 +31,9 @@ public:
 	
 };
 
-class Record : public ObjectType< Record, UNKNOWN_V, Moveable_<Record> > {
+class Record :
+	public ValueType< Record, UNKNOWN_V, Moveable_<Record> >
+{
 private:
 	struct Data {
 		Atomic refcount;

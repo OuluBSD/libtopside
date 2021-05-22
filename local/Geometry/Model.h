@@ -89,7 +89,10 @@ protected:
 };
 
 
-class ModelMesh : public RefScopeEnabler<ModelMesh,ModelLoader> {
+class ModelMesh :
+	public RefScopeEnabler<ModelMesh,ModelLoader>,
+	RTTIBase
+{
 	
 public:
 	Vector<Mesh> meshes;

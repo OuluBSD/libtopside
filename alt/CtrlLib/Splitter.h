@@ -8,6 +8,7 @@ class Splitter : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(Splitter, Ctrl)
 	Splitter();
 	
 	

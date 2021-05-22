@@ -20,6 +20,7 @@ protected:
 	int channel;
 	
 public:
+	RTTI_DECL1(AudioWindowCtrl, Ctrl)
 	AudioWindowCtrl();
 	
 };
@@ -59,6 +60,7 @@ protected:
 	Array<AudioHeatmapCtrl> hmaps;
 	
 public:
+	RTTI_DECL1(AudioViewCtrl, Ctrl)
 	typedef AudioViewCtrl CLASSNAME;
 	AudioViewCtrl();
 	

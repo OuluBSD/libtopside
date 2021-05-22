@@ -13,6 +13,7 @@ class Button : public Ctrl {
 	TimeCallback tc;
 	
 public:
+	RTTI_DECL1(Button, Ctrl)
 	typedef Button CLASSNAME;
 	Button();
 	
@@ -33,6 +34,7 @@ class ButtonOption : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(ButtonOption, Ctrl)
 	typedef ButtonOption CLASSNAME;
 	ButtonOption();
 	

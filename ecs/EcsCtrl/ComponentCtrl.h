@@ -24,7 +24,7 @@ ComponentCtrl* NewComponentCtrl(TypeId comp);
 
 template <class T> ComponentCtrl* ComponentCtrlFactoryFn() {return new T();}
 template <class I, class C> void MakeComponentCtrlFactory() {
-	RegisterComponentCtrlFactory(AsTypeId(I), &ComponentCtrlFactoryFn<C>);
+	RegisterComponentCtrlFactory(AsTypeCls<I>(), &ComponentCtrlFactoryFn<C>);
 }
 
 NAMESPACE_TOPSIDE_END

@@ -14,7 +14,7 @@ Geometry1::~Geometry1() {
 void Geometry1::Render(SystemDraw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
-	GeometryDraw fb(draw);
+	DrawGeometry fb(draw);
 	
 	
 	Color red {255, 0, 0};

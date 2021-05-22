@@ -8,6 +8,7 @@ class ArrayCtrl : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(ArrayCtrl, Ctrl)
 	ArrayCtrl();
 	
 	void	AddIndex();

@@ -3,9 +3,13 @@ description "\377B157,86,255";
 uses
 	Core;
 
-uses(!GUI & !SDL2) NonGUI;
+uses(!GUI) NonGUI;
 
-uses(!GUI & SDL2) NonGUISDL2;
+uses(GUI & !CTRL) NonCtrlSDL2;
+
+uses(GUI & CTRL) SDL2GUI3D;
+
+uses(GUI & CTRL) VirtualGui3D;
 
 file
 	Copying,

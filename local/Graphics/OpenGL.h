@@ -5,15 +5,7 @@
 	#error <Graphics/OpenGL.h> should only be included, when GUI flag is set.
 #endif
 
-#ifdef flagWIN32
-	#define GLEW_STATIC 1
-	#include <ports/glew/glew.h>
-#else
-	#include <GL/glew.h>
-#endif
 
-#include <GL/gl.h>
-#include <GL/glu.h>
 
 #if defined flagPOSIX || defined flagCLANG || defined flagGCC
 	#ifdef flagWIN32

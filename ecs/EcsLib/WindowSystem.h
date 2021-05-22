@@ -6,7 +6,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class WindowSystem : public System<WindowSystem>, public Windows {
+class WindowSystem :
+	public System<WindowSystem>,
+	public Windows
+{
 	Ref<EntityStore> ents;
 	Size vdesktop_sz;
 	//Shader simple_shader;

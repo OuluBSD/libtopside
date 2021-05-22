@@ -577,6 +577,17 @@ enum {
 
 void StdLogSetup(dword flags);
 
+
+
+
+class XmlIO : public Stream {
+	
+};
+
+class JsonIO : public Stream {
+	
+};
+
 NAMESPACE_UPP_END
 
 #endif

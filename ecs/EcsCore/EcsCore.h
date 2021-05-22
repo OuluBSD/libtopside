@@ -3,13 +3,13 @@
 
 
 #include <Graphics/GL.h>
-#ifdef flagGUI
-	#include <LocalCtrl/LocalCtrl.h>
-#endif
 #include <Geometry/Geometry.h>
 #include <Local/Local.h>
-
 #include <Agent/Agent.h>
+
+#if HAVE_SDL2
+	#include <OOSDL2/OOSDL2.h>
+#endif
 
 #ifdef flagMSC
 	#define CXX2A_STATIC_ASSERT(x, y) static_assert(x, y)
@@ -18,6 +18,7 @@
 #endif
 
 
+#include "Defs.h"
 #include "TransformUtil.h"
 
 /*#include "Common.h"

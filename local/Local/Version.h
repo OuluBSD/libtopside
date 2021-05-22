@@ -31,7 +31,7 @@ struct FLOATTRANS : Moveable<FLOATTRANS> {
 	bool operator==(double d) {return value == d;}
 	bool operator!=(double d) {return value != d;}
 	operator double() const {return value;}
-	operator Object() const {return value;}
+	operator Value() const {return value;}
 	String ToString() const {return DblStr(value);}
 };
 

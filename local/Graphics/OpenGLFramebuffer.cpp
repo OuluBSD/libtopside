@@ -93,30 +93,30 @@ void OpenGLFramebuffer::Clear() {
 
 
 
-void OpenGLFramebufferDraw::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
+void DrawFramebufferOpenGL::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
 	TODO
 }
 
-void OpenGLFramebufferDraw::DrawRectOp(int x, int y, int cx, int cy, Color color) {
+void DrawFramebufferOpenGL::DrawRectOp(int x, int y, int cx, int cy, Color color) {
 	TODO
 }
 
-void OpenGLFramebufferDraw::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+void DrawFramebufferOpenGL::DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
 	                        Color ink, int n, const int *dx) {
 	TODO
 }
 
-void OpenGLFramebufferDraw::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+void DrawFramebufferOpenGL::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
                                     const int *counts, int count_count,
                                     int width, Color color, Color doxor) {
 	TODO
 }
 
-bool OpenGLFramebufferDraw::ClipOp(const Rect& r) {
+bool DrawFramebufferOpenGL::ClipOp(const Rect& r) {
 	TODO
 }
 
-void OpenGLFramebufferDraw::EndOp() {
+void DrawFramebufferOpenGL::EndOp() {
 	TODO
 }
 

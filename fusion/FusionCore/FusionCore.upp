@@ -8,8 +8,6 @@ uses
 	EcsCore,
 	Structural;
 
-uses(GUI) LocalCtrl;
-
 file
 	TODO.txt,
 	FusionCore.h,

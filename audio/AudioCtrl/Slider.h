@@ -10,6 +10,7 @@ class AudioSlider : public Ctrl {
 	int value, min, max, diff;
 	Color bg;
 public:
+	RTTI_DECL1(AudioSlider, Ctrl)
 	AudioSlider();
 	
 	void Set(String name, int value, int min, int max);

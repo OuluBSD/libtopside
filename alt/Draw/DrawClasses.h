@@ -16,10 +16,14 @@ class Painting {
 Color DefaultInk(); // { return SpecialColor(254); }
 
 
-class Draw : NoCopy {
+class Draw :
+	NoCopy,
+	RTTIBase
+{
 	struct DrawingPos;
 	
 public:
+	RTTI_DECL0(Draw)
 	
 	//Draw(){}
 	virtual ~Draw() {}

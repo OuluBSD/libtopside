@@ -41,13 +41,13 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 	void operator=(const Tutorial2&) {}
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	void Triangle1(GeometryDraw& fb, vec2 a, vec2 b, vec2 c, Color color) {
+	void Triangle1(DrawGeometry& fb, vec2 a, vec2 b, vec2 c, Color color) {
 		fb.DrawLine(a, b, 1, color);
 		fb.DrawLine(b, c, 1, color);
 		fb.DrawLine(c, a, 1, color);
 	}
 	
-	void Triangle2(GeometryDraw& fb, vec2 a, vec2 b, vec2 c) {
+	void Triangle2(DrawGeometry& fb, vec2 a, vec2 b, vec2 c) {
 		Color red {255, 0, 0};
 		Color green {0, 255, 0};
 		// sort the vertices, t0, t1, t2 lower−to−upper (bubblesort yay!)
@@ -59,7 +59,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		fb.DrawLine(c, a, 1, red);
 	}
 	
-	void Triangle3(GeometryDraw& fb, vec2 a, vec2 b, vec2 c, Color clr, bool lower, bool upper, bool border, bool fill) {
+	void Triangle3(DrawGeometry& fb, vec2 a, vec2 b, vec2 c, Color clr, bool lower, bool upper, bool border, bool fill) {
 		Color white {255, 255, 255};
 		Color red {255, 0, 0};
 		Color green {0, 255, 0};
@@ -127,7 +127,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 			              u[0]  / u[2]);
 	}
 	
-	void Triangle4(GeometryDraw& fb, vec2 pts[3], Color color, bool have_noise) {
+	void Triangle4(DrawGeometry& fb, vec2 pts[3], Color color, bool have_noise) {
 		Size sz = fb.GetPageSize();
 		int w = sz.cx;
 		int h = sz.cy;
@@ -157,7 +157,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		}
 	}
 	
-	void DrawObj(GeometryDraw& fb, bool clown_colors) {
+	void DrawObj(DrawGeometry& fb, bool clown_colors) {
 		Size sz = fb.GetPageSize();
 		int height = std::min(sz.cy, sz.cx);
 		int width = height;
@@ -202,7 +202,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		Size sz = draw.GetPageSize();
 		draw.DrawRect(sz, Black());
 		
-		GeometryDraw fb(draw);
+		DrawGeometry fb(draw);
 		
 		Color white {255, 255, 255};
 		Color red {255, 0, 0};

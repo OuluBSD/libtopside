@@ -44,7 +44,7 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	if (consumer.IsEmptySource())
 		consumer.SetSource(buf);
 
-	ASSERT(size == fmt.GetFrameBytes());
+	ASSERT(size == fmt.GetFrameSize());
 	
 	if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
 		
@@ -113,8 +113,7 @@ bool AudioOutput::Open0() {
 	    fmt.is_var_bigendian = true;
 	    #endif
 	    
-	    int audio_frames = 2; //max(1, 1024 / audio_fmt.samples);
-		buf.SetSize(fmt, audio_frames);
+	    buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    

@@ -1,6 +1,8 @@
 #ifndef _System_OdeSystem_h_
 #define _System_OdeSystem_h_
 
+#ifdef flagODE
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -166,7 +168,7 @@ protected:
 public:
 	typedef OdeSystem CLASSNAME;
 	
-	void Visit(RuntimeVisitor& vis) {}
+	void Visit(RuntimeVisitor& vis) override {}
 	using Parent = Machine;
 	
 	static vec3 EarthGravity;
@@ -206,19 +208,19 @@ public:
 		dCloseODE();
 	}
 	
-    virtual bool Initialize() {
+    bool Initialize() override {
 		SetGravity(-0.5);
 		dAllocateODEDataForThread(dAllocateMaskAll);
 		return true;
 	}
-    virtual void Start() {}
-    virtual void Update(double dt) {
+    void Start() override {}
+    void Update(double dt) override {
 		Collide();
 		StepWorld(dt);
 		RemoveContactJoints();
 	}
-    virtual void Stop() {}
-    virtual void Uninitialize() {}
+    void Stop() override {}
+    void Uninitialize() override {}
     
 	void SetGravity(double d) {dWorldSetGravity(world, 0, d, 0);}
 	void SetCFM(double d) {dWorldSetCFM(world, d);}
@@ -251,4 +253,5 @@ void AddMachineOdeSystem();
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

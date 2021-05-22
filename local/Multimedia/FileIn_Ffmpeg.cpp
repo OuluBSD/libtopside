@@ -84,11 +84,11 @@ bool FfmpegFileInput::OpenFile(String path) {
 	av_dump_format(file_fmt_ctx, 0, path.Begin(), 0);
 	
 	// Find the first video stream
-	has_audio = a.OpenAudio(file_fmt_ctx, aframe.aud_fmt);
+	has_audio = a.OpenAudio(file_fmt_ctx, aframe.fmt);
 	has_video = v.OpenVideo(file_fmt_ctx, vframe.vid_fmt);
 	
 	if (has_audio) {
-		aframe.Init();
+		aframe.Clear();
 	}
 	if (has_video) {
 		vframe.Init(*v.codec_ctx);
@@ -137,7 +137,7 @@ void FfmpegFileInput::FillVideoBuffer() {
 	}
 }
 
-void FfmpegFileInput::FillAudioBuffer() {
+/*void FfmpegFileInput::FillAudioBuffer() {
 	while (!aframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
@@ -154,7 +154,7 @@ void FfmpegFileInput::FillAudioBuffer() {
 		FillBuffersNull();
 	
 	ClearPacketData();
-}
+}*/
 
 bool FfmpegFileInput::ReadFrame() {
 	ClearPacketData();
@@ -204,10 +204,6 @@ void FfmpegFileInput::FillBuffersNull() {
 		aframe.FillBuffersNull();
 	if (has_video)
 		vframe.FillBuffersNull();
-}
-
-void FfmpegFileInput::DropAudioBuffer() {
-	aframe.DropAudioBuffer();
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
@@ -262,38 +258,8 @@ bool FfmpegFileInput::LocalAudioStream::Open(int fmt_idx) {
 	return false;
 }
 
-void FfmpegFileInput::LocalAudioStream::Close() {
-	par.Close();
-}
 
-Audio& FfmpegFileInput::LocalAudioStream::Get() {
-	return par.aframe;
-}
 
-void FfmpegFileInput::LocalAudioStream::FillBuffer() {
-	par.FillAudioBuffer();
-}
-
-void FfmpegFileInput::LocalAudioStream::DropBuffer() {
-	par.DropAudioBuffer();
-}
-
-int FfmpegFileInput::LocalAudioStream::GetActiveFormatIdx() const {
-	return 0;
-}
-
-int FfmpegFileInput::LocalAudioStream::GetFormatCount() const {
-	return 1;
-}
-
-AudioFormat FfmpegFileInput::LocalAudioStream::GetFormat(int i) const {
-	return par.aframe.aud_fmt;
-}
-
-bool FfmpegFileInput::LocalAudioStream::FindClosestFormat(const AudioFormat& fmt, int& idx) {
-	idx = 0;
-	return true;
-}
 
 
 
@@ -557,107 +523,12 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 
 
-void FfmpegAudioFrameQueue::Init() {
-	Clear();
-	
-}
-
-void FfmpegAudioFrameQueue::Clear() {
-	buf.Clear();
-}
-
-void FfmpegAudioFrameQueue::Exchange(AudioEx& e) {
-	if (producer.IsEmptySource())
-		producer.SetSource(buf);
-	if (e.IsStoring()) {
-		if (buf.IsEmpty()) {
-			e.SetFail();
-			return;
-		}
-		auto frame_iter = buf.begin();
-		AudioPacket& p = frame_iter();
-		ASSERT(p->GetFormat() == aud_fmt);
-		
-		Audio& sink = e.Sink();
-		const RealtimeSourceConfig& conf = e.SourceConfig();
-		
-		AudioVolatileBuffer* vol_aud = CastPtr<AudioVolatileBuffer>(&sink);
-		if (vol_aud) {
-			off32 begin = e.GetOffset();
-			RTLOG("FfmpegAudioFrameQueue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
-			ASSERT(!sink.IsQueueFull());
-			/*if (!(p->GetOffset() == begin)) {
-				vol_aud->Dump();
-			}
-			ASSERT(p->GetOffset() == begin);*/
-			
-			producer.SetOffset(begin);
-			producer.SetDestination(*vol_aud);
-			producer.SetDestinationRealtime(conf.sync);
-			producer.ProduceAll();
-			producer.ClearDestination();
-			
-			off32 end = producer.GetOffset();
-			e.SetOffset(end);
-			
-			off32 diff = off32::GetDifference(begin, end);
-			RTLOG("FfmpegAudioFrameQueue::Exchange: produced count=" << diff.ToString());
-			
-			begin_offset_min.TestSetMin(begin);
-			begin_offset_max.TestSetMax(begin);
-			end_offset_min.TestSetMin(end);
-			end_offset_max.TestSetMax(end);
-			
-			exchange_count += diff.value;
-			
-			if (!diff)
-				e.SetFail();
-		}
-		else {
-			TODO
-		}
-	}
-	else {
-		Panic("Invalid AudioEx in FfmpegAudioFrameQueue");
-	}
-}
-
-int FfmpegAudioFrameQueue::GetQueueSize() const {
-	return buf.GetCount();
-}
-
-bool FfmpegAudioFrameQueue::IsQueueFull() const {
-	return GetQueueSamples() >= min_buf_samples;
-}
-
-int FfmpegAudioFrameQueue::GetQueueSamples() const {
-	int size = 0;
-	for(auto& p : buf)
-		size += p->GetSizeSamples();
-	return size;
-}
-
-AudioFormat FfmpegAudioFrameQueue::GetFormat() const {
-	return aud_fmt;
-}
-
-void FfmpegAudioFrameQueue::FillBuffersNull() {
-	if (!IsQueueFull()) {
-		AudioPacket p = CreateAudioPacket();
-		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: filling buffer with empty packets " << IntStr64(frame_counter));
-		off32 offset{frame_counter++};
-		p->Set(aud_fmt, offset, -1);
-		p->Data().SetCount(aud_fmt.GetFrameSize(), 0);
-		buf.Add(p);
-	}
-}
-
 void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	// Sometimes you get the sample rate at this point
-	if (!aud_fmt.sample_rate)
-		aud_fmt.sample_rate = frame->nb_samples;
-	//breaks in the end of file: ASSERT(aud_fmt.sample_rate == frame->nb_samples);
-	ASSERT(aud_fmt.IsValid());
+	if (!fmt.sample_rate)
+		fmt.sample_rate = frame->nb_samples;
+	//breaks in the end of file: ASSERT(fmt.sample_rate == frame->nb_samples);
+	ASSERT(fmt.IsValid());
 	int var_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
 	
 	#ifdef flagDEBUG
@@ -666,23 +537,23 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		frame->format == AV_SAMPLE_FMT_DBL ||
 		frame->format == AV_SAMPLE_FMT_FLTP ||
 		frame->format == AV_SAMPLE_FMT_DBLP;
-	ASSERT(aud_fmt.IsValid());
-	ASSERT(frame->sample_rate == aud_fmt.freq);
-	ASSERT(frame->channels == aud_fmt.channels);
-	ASSERT(var_size == aud_fmt.var_size);
+	ASSERT(fmt.IsValid());
+	ASSERT(frame->sample_rate == fmt.freq);
+	ASSERT(frame->channels == fmt.channels);
+	ASSERT(var_size == fmt.var_size);
 	#endif
 	
 	// Non-planar data
 	if (frame->data[1] == 0) {
 		if (frame->data[0]) {
-			ASSERT(aud_fmt.GetFrameSize() >= frame->linesize[0]);
+			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
 			auto& p = buf.Add();
 			p = CreateAudioPacket();
 			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 			off32 offset{frame_counter++};
-			p->Set(aud_fmt, offset, time_pos);
+			p->Set(fmt, offset, time_pos);
 			Vector<byte>& data = p->Data();
-			int sz = max(frame->linesize[0], aud_fmt.GetFrameSize());
+			int sz = max(frame->linesize[0], fmt.GetFrameSize());
 			data.SetCount(sz, 0);
 			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
 		}
@@ -695,9 +566,9 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		p = CreateAudioPacket();
 		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
-		p->Set(aud_fmt, offset, time_pos);
+		p->Set(fmt, offset, time_pos);
 		Vector<byte>& data = p->Data();
-		data.SetCount(aud_fmt.GetFrameSize(), 0);
+		data.SetCount(fmt.GetFrameSize(), 0);
 		byte* dst = data.Begin();
 		
 		for(int i = 0; i < frame->channels; i++)
@@ -720,28 +591,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	exchange_count = 0;
 }
 
-void FfmpegAudioFrameQueue::DropAudioBuffer() {
-	if (exchange_count == 0)
-		return;
-	
-	/*off32 min_begin_diff = std::min(
-		off32::GetDifference(begin, begin_offset_min),
-		off32::GetDifference(begin, begin_offset_max));
-	ASSERT(min_begin_diff.value == 0);*/
-	
-	off32 min_end_diff = std::min(
-		off32::GetDifference(begin, end_offset_min),
-		off32::GetDifference(begin, end_offset_max));
-	
-	if (min_end_diff) {
-		auto iter = buf.begin();
-		for(int i = 0; i < min_end_diff.value; i++) {
-			RTLOG("FfmpegAudioFrameQueue::DropAudioBuffer: dropping " << iter()->GetOffset().ToString());
-			++iter;
-		}
-		buf.RemoveFirst(min_end_diff.value);
-	}
-}
+
 
 #if HAVE_OPENGL
 

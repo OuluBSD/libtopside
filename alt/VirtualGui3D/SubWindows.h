@@ -1,6 +1,8 @@
 #ifndef _CtrlCore_Windows_h_
 #define _CtrlCore_Windows_h_
 
+#ifdef flagCTRL
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -25,6 +27,7 @@ protected:
 	void CloseOthers();
 	
 public:
+	RTTI_DECL1(SubMenuFrame, Ctrl)
 	typedef SubMenuFrame CLASSNAME;
 	SubMenuFrame(Windows* wins);
 	
@@ -37,6 +40,7 @@ public:
 };
 
 class Windows : public Ctrl {
+	RTTI_DECL1(Windows, Ctrl)
 	
 protected:
 	friend class OpenVR;
@@ -142,4 +146,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

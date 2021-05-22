@@ -8,6 +8,7 @@ class ScrollBar : public CtrlFrame {
 	
 	
 public:
+	RTTI_DECL1(ScrollBar, CtrlFrame)
 	
 	
 	void FrameLayout(Rect& r) override;

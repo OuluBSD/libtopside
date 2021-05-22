@@ -1,5 +1,7 @@
 #include <EcsLib/EcsLib.h>
 
+#ifdef flagCTRL
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -519,3 +521,5 @@ bool Windows::DeepKey(dword key, int count) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

@@ -634,17 +634,45 @@ private:
 	//FusionVideoInput*	FindVideoInput(String path);
 	void			Visit(RuntimeVisitor& vis) override {}
 	
+private:
+	struct LocalDisplay : public SimpleBufferedDisplay {
+		RTTI_DECL1(LocalDisplay, SimpleBufferedDisplay)
+		FusionDisplaySource& par;
+		LocalDisplay(FusionDisplaySource* par) : par(*par) {}
+		
+	};
+	struct LocalDisplayStream : public SimpleBufferedDisplayStream {
+		RTTI_DECL1(LocalDisplayStream, DisplayStream)
+		FusionDisplaySource& par;
+		LocalDisplayStream(FusionDisplaySource* par) : par(*par), SimpleBufferedDisplayStream(par->dvalue) {}
+		bool			IsOpen() const override {return par.IsOpen();}
+		bool			Open(int fmt_idx) override {ASSERT(fmt_idx == 0); return par.Open();}
+		void			Close() override {par.Close();}
+		bool			IsEof() override {return !par.IsOpen();}
+		bool			ReadFrame() override {return par.ReadFrame();}
+		bool			ProcessFrame() override {return par.ProcessFrame();}
+		bool			ProcessOtherFrame() override {return false;}
+		void			ClearPacketData() override {par.ClearPacketData();}
+	};
+	
+	LocalDisplay		dvalue;
+	LocalDisplayStream	dstream;
+	
+	
 public:
 	COPY_PANIC(FusionDisplaySource);
 	IFACE_CB(DisplaySource);
 	IFACE_CB(AcceleratorSink);
 	IFACE_GENERIC;
 	
-	FusionDisplaySource() : FusionComponent(FUSION_DISPLAY_SOURCE) {}
+	FusionDisplaySource() : FusionComponent(FUSION_DISPLAY_SOURCE), dvalue(this), dstream(this) {}
 	
+	bool				ReadFrame();
+	bool				ProcessFrame();
+	void				ClearPacketData();
 	
-	void			Initialize() override;
-	void			Uninitialize() override;
+	void				Initialize() override;
+	void				Uninitialize() override;
 	
 	// DisplaySource
 	DisplayStream&		GetStream(DisCtx) override;
@@ -655,8 +683,8 @@ public:
 	AcceleratorFormat	GetFormat(AccCtx) override {TODO}
 	Accelerator&		GetValue(AccCtx) override {TODO}
 	
-	void			SetVideoSize(Size sz);
-	void			SetFPS(int fps);
+	void				SetVideoSize(Size sz);
+	void				SetFPS(int fps);
 	
 };
 
@@ -818,6 +846,8 @@ class FusionContextComponent :
 {
 	RTTI_COMP0(FusionContextComponent)
 	VIS_COMP_0_0
+	void Visit(RuntimeVisitor& vis) override {vis && comps;}
+	
 private:
 	static int id_counter;
 	
@@ -911,7 +941,6 @@ public:
 	
 	void		Initialize() override;
 	void		Uninitialize() override;
-	void		Visit(RuntimeVisitor& vis) override {TODO}
 	
     void		Update(double dt);
 	String		GetLastError() const {return last_error;}
@@ -926,18 +955,16 @@ public:
 
 
 
-struct CompleteFusion :
-	EntityPrefab<
+PREFAB_BEGIN(CompleteFusion)
 		FusionDisplaySource,
 		FusionAudioSource,
 		FusionContextComponent
-> {
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-		return components;
-    }
-};
+PREFAB_END
+
+PREFAB_BEGIN(VideoOnlyFusion)
+		FusionDisplaySource,
+		FusionContextComponent
+PREFAB_END
 
 
 

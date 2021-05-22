@@ -28,7 +28,7 @@ struct Geometry3 : public Component<Geometry3>, public DisplaySink {
 	float RandomAngularVel() const {return (0.1 + Randomf() * 0.9) * M_2PI;}
 	void ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right);
 	
-	void DrawLine(GeometryDraw& fb, vec2 a, vec2 b, Color clr);
+	void DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr);
 	void Render(SystemDraw& draw) override;
 	
 };

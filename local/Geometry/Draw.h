@@ -21,11 +21,12 @@ extern vec4 DarkSlateBlue;
 
 };
 
-class GeometryDraw : public DrawProxy {
+class DrawGeometry : public DrawProxy {
 	
 	
 public:
-	GeometryDraw(Draw& d) {SetTarget(&d);}
+	RTTI_DECL1(DrawGeometry, DrawProxy)
+	DrawGeometry(Draw& d) {SetTarget(&d);}
 	
 	void DrawLine(const vec2& a, const vec2& b, int line_width, Color c);
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, Color c);

@@ -4,11 +4,14 @@
 
 NAMESPACE_LAYOUT_BEGIN
 
-class Object {
+class Object :
+	RTTIBase
+{
 	Array<Object> sub;
 	Object* parent = NULL;
 	
 public:
+	RTTI_DECL0(Object)
 	typedef const Object ConstObject;
 	
 	Object();

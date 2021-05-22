@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class AudioFrame : public Audio {
+class AudioFrame : public SimpleBufferedAudio {
 	
 	
 public:

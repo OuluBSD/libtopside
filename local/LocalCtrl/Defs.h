@@ -21,7 +21,7 @@
 #include <Local/Local.h>
 
 #include <CtrlLib/CtrlLib.h>
-#if HAVE_SDL2
+#if defined flagGUI && defined flagCTRL
 	#include <SDL2GUI3D/SDL2GUI3D.h>
 #endif
 

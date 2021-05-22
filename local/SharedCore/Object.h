@@ -275,11 +275,6 @@ template<> inline dword ObjectTypeNo(const ObjectArrayMapComb*)   { return VALUE
 String GetObjectTreeString(const Object& v, String key="", int indent=0);
 
 
-String Format(String pattern, Object v0=Object(), Object v1=Object(), Object v2=Object(), Object v3=Object(), Object v4=Object(), Object v5=Object(), Object v6=Object(), Object v7=Object());
-
-
-String StdFormat(const Object& q);
-
 
 END_UPP_NAMESPACE
 

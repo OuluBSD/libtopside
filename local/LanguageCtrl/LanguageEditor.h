@@ -34,6 +34,7 @@ protected:
 	
 	
 public:
+	RTTI_DECL1(LanguageEditor, Ctrl)
 	typedef LanguageEditor CLASSNAME;
 	LanguageEditor();
 	

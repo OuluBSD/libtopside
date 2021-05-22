@@ -52,8 +52,10 @@ public:
 	
 };
 
-class OpenGLFramebufferDraw : public FramebufferDraw {
+class DrawFramebufferOpenGL : public DrawFramebuffer {
 public:
+	RTTI_DECL1(DrawFramebufferOpenGL, DrawFramebuffer)
+	
 	OpenGLRenderer* rend = 0;
 	OpenGLFramebuffer* fb = 0;
 	

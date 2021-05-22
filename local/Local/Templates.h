@@ -452,6 +452,38 @@ struct ContextT {
 	};
 	
 	
+	class SimpleBufferedValue :
+		public Value
+	{
+		
+	protected:
+		PacketProducer	producer;
+		PacketBuffer	buf;
+		dword			frame_counter = 0;
+		int				min_buf_samples = std::max<int>(1, 3 * Ctx::Format::def_sample_rate);
+		off32			begin;
+		off32			begin_offset_min;
+		off32			begin_offset_max;
+		off32			end_offset_min;
+		off32			end_offset_max;
+		dword			exchange_count = 0;
+		Format			fmt;
+		
+	public:
+		RTTI_DECL_T1(SimpleBufferedValue, Value)
+		void		Exchange(Ex& e) override;
+		int			GetQueueSize() const override;
+		Format		GetFormat() const override;
+		bool		IsQueueFull() const override;
+		int			GetQueueSamples() const;
+		void		Clear() {buf.Clear();}
+		void		FillBuffersNull();
+		void		Visit(RuntimeVisitor& vis) {}
+		void		DropBuffer();
+		
+	};
+	
+	
 	class SimpleStream :
 		public Stream
 	{
@@ -471,6 +503,30 @@ struct ContextT {
 		int				GetFormatCount() const override {return 1;}
 		Format			GetFormat(int i) const override {return ptr->GetFormat();}
 		bool			FindClosestFormat(const Format& fmt, int& idx) override {idx = 0; return true;}
+	};
+	
+	
+	class SimpleBufferedStream :
+		public Stream
+	{
+		SimpleBufferedValue* ptr = 0;
+	public:
+		RTTI_DECL_T1(SimpleBufferedStream, Stream)
+		SimpleBufferedStream() {}
+		SimpleBufferedStream(SimpleBufferedValue& v) : ptr(&v) {}
+		void			Set(SimpleBufferedValue& v) {ptr = &v;}
+		Value&			Get() override {ASSERT(ptr); return *ptr;}
+		void			FillBuffer() override;
+		void			DropBuffer() override {ptr->DropBuffer();}
+		int				GetActiveFormatIdx() const override {return 0;}
+		int				GetFormatCount() const override {return 1;}
+		Format			GetFormat(int i) const override {return ptr->GetFormat();}
+		bool			FindClosestFormat(const Format& fmt, int& idx) override {idx = 0; return true;}
+		virtual bool			IsEof() = 0;
+		virtual bool			ReadFrame() = 0;
+		virtual bool			ProcessFrame() = 0;
+		virtual bool			ProcessOtherFrame() = 0;
+		virtual void			ClearPacketData() = 0;
 	};
 	
 	
@@ -506,8 +562,10 @@ struct ContextT {
 	using x##Ex = x##T::Ex; \
 	using x##Proxy = x##T::Proxy; \
 	using x##PacketBuffer = x##T::PacketBuffer; \
-	using Simple##x##Stream = x##T::SimpleStream; \
 	using Simple##x = x##T::SimpleValue; \
+	using SimpleBuffered##x = x##T::SimpleBufferedValue; \
+	using Simple##x##Stream = x##T::SimpleStream; \
+	using SimpleBuffered##x##Stream = x##T::SimpleBufferedStream; \
 	using x##StreamRef = Ref<x##Stream,RefParent1<ComponentBase>>; \
 	inline x##Packet Create##x##Packet() {return x##T::CreatePacket();}
 

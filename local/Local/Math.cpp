@@ -224,7 +224,7 @@ double OnlineBivariate::GetPDF(double x, double y) const {
 
 
 
-String OnlineVariance::ToString() const {return Format("k=%v count=%v ex=%v ex2=%v mean=%v", k, count, ex, ex2, GetMean());}
-String StdDeviant::ToString() const {return Format("mean=%v, dev=%v", mean, dev);}
+String OnlineVariance::ToString() const {return Format("k=%n count=%d ex=%n ex2=%n mean=%n", k, count, ex, ex2, GetMean());}
+String StdDeviant::ToString() const {return Format("mean=%n, dev=%n", mean, dev);}
 
 NAMESPACE_TOPSIDE_END

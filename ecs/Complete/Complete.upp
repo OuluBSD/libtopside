@@ -5,12 +5,6 @@ uses
 	AudioCore,
 	FusionCore;
 
-uses(GUI) AudioCtrl;
-
-uses(GUI) EcsCtrl;
-
-uses(GUI) LayoutCtrl;
-
 uses(NEVER) Physics;
 
 file

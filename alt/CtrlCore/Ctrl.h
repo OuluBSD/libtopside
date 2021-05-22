@@ -14,7 +14,9 @@ NAMESPACE_UPP
 
 class Ctrl;
 
-class CtrlFrame {
+class CtrlFrame :
+	RTTIBase
+{
 	
 protected:
 	friend class Ctrl;
@@ -28,6 +30,8 @@ protected:
 	void SetWithMouse(CtrlFrame* c);
 	
 public:
+	RTTI_DECL0(CtrlFrame)
+	
 	virtual void FrameLayout(Rect& r) = 0;
 	virtual void FrameAddSize(Size& sz) = 0;
 	virtual void FramePaint(Draw& w, const Rect& r);
@@ -78,7 +82,9 @@ struct KeyInfo {
 };
 
 
-class Bar {
+class Bar :
+	RTTIBase
+{
 public:
 	struct Item {
 		virtual Item& Text(const char *text);
@@ -109,6 +115,7 @@ private:
 	
 	
 public:
+	RTTI_DECL0(Bar)
 	typedef Bar CLASSNAME;
 	Bar();
 	
@@ -137,9 +144,14 @@ struct LogPos {
 class TopWindow;
 //class CoreWindow;
 
-class Ctrl : public Pte<Ctrl> {
+class Ctrl :
+	public Pte<Ctrl>,
+	RTTIBase
+{
 	
 public:
+	RTTI_DECL0(Ctrl)
+	
 	enum {
 		UNKNOWN,
 		LEFT_DOWN,
@@ -417,6 +429,7 @@ public:
 };
 
 class EmptySpaceCtrl : public Ctrl {
+	RTTI_DECL1(EmptySpaceCtrl, Ctrl)
 	
 };
 
@@ -442,6 +455,7 @@ public:
 class ParentCtrl : public Ctrl {
 	
 public:
+	RTTI_DECL1(ParentCtrl, Ctrl)
 	
 	
 	

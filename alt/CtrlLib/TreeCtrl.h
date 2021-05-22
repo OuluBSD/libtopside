@@ -8,6 +8,7 @@ class TreeCtrl : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(TreeCtrl, Ctrl)
 	TreeCtrl();
 	
 	void	OpenDeep(int cursor);

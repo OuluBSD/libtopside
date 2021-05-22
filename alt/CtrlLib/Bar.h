@@ -11,6 +11,7 @@ class BarCtrl : public Bar, public CtrlFrame {
 	
 	
 public:
+	RTTI_DECL2(BarCtrl, Bar, CtrlFrame)
 	BarCtrl();
 	
 	void Set(Callback1<Bar&> menu);
@@ -22,6 +23,7 @@ class ToolButton : public Ctrl, public Bar::Item {
 	using Ctrl::Key;
 
 public:
+	RTTI_DECL1(ToolButton, Ctrl)
 	ToolButton();
 	
 	virtual void   Paint(Draw& w);

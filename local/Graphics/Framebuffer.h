@@ -25,8 +25,10 @@ public:
 	
 };
 
-class FramebufferDraw : public Draw {
+class DrawFramebuffer : public Draw {
 public:
+	RTTI_DECL1(DrawFramebuffer, Draw)
+	
 	virtual Renderer* GetRenderer() = 0;
 	virtual Framebuffer* GetFramebuffer() = 0;
 	

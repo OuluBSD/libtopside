@@ -1,6 +1,8 @@
 #ifndef _CtrlCore_CoreWindow_h_
 #define _CtrlCore_CoreWindow_h_
 
+#ifdef flagCTRL
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -23,6 +25,7 @@ class WindowDecoration : public Ctrl {
 	Point left_down_pt;
 	
 public:
+	RTTI_DECL1(WindowDecoration, Ctrl)
 	typedef WindowDecoration CLASSNAME;
 	WindowDecoration(CoreWindow*);
 	
@@ -49,9 +52,12 @@ class CoreWindow :
 	public Ctrl,
 	public Component<CoreWindow>
 {
+	RTTI_COMP1(CoreWindow, Ctrl)
 	VIS_COMP_0_0
 	
 	struct ResizeFrame : public CtrlFrame {
+		RTTI_DECL1(ResizeFrame, CtrlFrame)
+	
 		CoreWindow* win = NULL;
 		Size sz;
 		int frame_width = 8;
@@ -240,4 +246,5 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

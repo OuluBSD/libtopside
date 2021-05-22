@@ -1,5 +1,6 @@
 #include <EcsLib/EcsLib.h>
 
+#ifdef flagCTRL
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -744,3 +745,5 @@ void WindowDecoration::LocalMenu(Bar& bar) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

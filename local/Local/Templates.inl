@@ -49,6 +49,159 @@ TMPL(bool) SimpleValue::IsQueueFull() const {
 
 
 
+
+
+
+TMPL(void) SimpleBufferedValue::Exchange(Ex& e) {
+	if (producer.IsEmptySource())
+		producer.SetSource(buf);
+	if (e.IsStoring()) {
+		if (buf.IsEmpty()) {
+			e.SetFail();
+			return;
+		}
+		auto frame_iter = buf.begin();
+		Packet& p = frame_iter();
+		
+		// Compare exchange and source formats
+		auto cmp_fmt = p->GetFormat();
+		auto val_fmt = GetFormat();
+		ASSERT(cmp_fmt == val_fmt);
+		
+		Value& sink = e.Sink();
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		VolatileBuffer* vol_aud = CastPtr<VolatileBuffer>(&sink);
+		if (vol_aud) {
+			off32 begin = e.GetOffset();
+			RTLOG("SimpleBufferedValue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
+			ASSERT(!sink.IsQueueFull());
+			
+			/*if (!(p->GetOffset() == begin)) {
+				vol_aud->Dump();
+			}
+			ASSERT(p->GetOffset() == begin);*/
+			
+			producer.SetOffset(begin);
+			producer.SetDestination(*vol_aud);
+			producer.SetDestinationRealtime(conf.sync);
+			producer.ProduceAll();
+			producer.ClearDestination();
+			
+			off32 end = producer.GetOffset();
+			e.SetOffset(end);
+			
+			off32 diff = off32::GetDifference(begin, end);
+			RTLOG("SimpleBufferedValue::Exchange: produced count=" << diff.ToString());
+			
+			begin_offset_min.TestSetMin(begin);
+			begin_offset_max.TestSetMax(begin);
+			end_offset_min.TestSetMin(end);
+			end_offset_max.TestSetMax(end);
+			
+			exchange_count += diff.value;
+			
+			if (!diff)
+				e.SetFail();
+		}
+		else {
+			TODO
+		}
+	}
+	else {
+		Panic("Invalid Ex in SimpleBufferedValue");
+	}
+}
+
+TMPL(int) SimpleBufferedValue::GetQueueSize() const {
+	return buf.GetCount();
+}
+
+TMPL(typename ContextT<Ctx>::Format) SimpleBufferedValue::GetFormat() const {
+	return fmt;
+}
+
+TMPL(bool) SimpleBufferedValue::IsQueueFull() const {
+	return GetQueueSamples() >= min_buf_samples;
+}
+
+TMPL(int) SimpleBufferedValue::GetQueueSamples() const {
+	int size = 0;
+	for(auto& p : buf)
+		size += p->GetSizeSamples();
+	return size;
+}
+
+TMPL(void) SimpleBufferedValue::FillBuffersNull() {
+	if (!IsQueueFull()) {
+		Packet p = CreatePacket();
+		RTLOG("SimpleBufferedValue::FillBuffersNull: filling buffer with empty packets " << IntStr64(frame_counter));
+		off32 offset{frame_counter++};
+		p->Set(fmt, offset, -1);
+		p->Data().SetCount(fmt.GetFrameSize(), 0);
+		buf.Add(p);
+	}
+}
+
+TMPL(void) SimpleBufferedValue::DropBuffer() {
+	if (exchange_count == 0)
+		return;
+	
+	/*off32 min_begin_diff = std::min(
+		off32::GetDifference(begin, begin_offset_min),
+		off32::GetDifference(begin, begin_offset_max));
+	ASSERT(min_begin_diff.value == 0);*/
+	
+	off32 min_end_diff = std::min(
+		off32::GetDifference(begin, end_offset_min),
+		off32::GetDifference(begin, end_offset_max));
+	
+	if (min_end_diff) {
+		auto iter = buf.begin();
+		for(int i = 0; i < min_end_diff.value; i++) {
+			RTLOG("SimpleBufferedValue::DropBuffer: dropping " << iter()->GetOffset().ToString());
+			++iter;
+		}
+		buf.RemoveFirst(min_end_diff.value);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+TMPL(void) SimpleBufferedStream::FillBuffer() {
+	while (!ptr->IsQueueFull() && !IsEof()) {
+		if (ReadFrame()) {
+			if (ProcessFrame())
+				continue;
+			if (ProcessOtherFrame())
+				continue;
+			
+			ClearPacketData();
+		}
+		else break;
+	}
+	
+	if (IsEof())
+		ptr->FillBuffersNull();
+	
+	ClearPacketData();
+}
+
+
+
+
+
+
+
 /*TMPL(bool) VolatileBuffer::IsQueueFull() const {
 	if (Buffer::IsEmpty())
 		return false;

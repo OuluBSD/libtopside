@@ -11,17 +11,10 @@ class FfmpegAudioFrameQueue :
 	public AudioInputFrame,
 	public RefScopeEnabler<FfmpegAudioFrameQueue,FfmpegFileInput>
 {
-	AudioPacketProducer producer;
-	AudioPacketBuffer buf;
-	dword frame_counter = 0;
-	int min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
-	off32 begin, begin_offset_min, begin_offset_max, end_offset_min, end_offset_max;
-	dword exchange_count = 0;
 	
 protected:
 	friend class FfmpegFileInput;
 	
-	AudioFormat aud_fmt;
 	
 	
 public:
@@ -29,18 +22,7 @@ public:
 	RTTI_DECL_R1(FfmpegAudioFrameQueue, AudioInputFrame)
 	~FfmpegAudioFrameQueue() {Clear();}
 	
-	void		Visit(RuntimeVisitor& vis) {}
-	void		Init();
-	void		Clear();
 	void		FillAudioBuffer(double time_pos, AVFrame* frame);
-	void		FillBuffersNull();
-	void		DropAudioBuffer();
-	
-	void		Exchange(AudioEx& e) override;
-	int			GetQueueSize() const override;
-	int			GetQueueSamples() const;
-	AudioFormat	GetFormat() const override;
-	bool		IsQueueFull() const override;
 	
 };
 
@@ -174,20 +156,20 @@ class FfmpegFileInput :
 	void FillBuffersNull();
 	
 	
-	struct LocalAudioStream : public AudioStream {
+	struct LocalAudioStream : public SimpleBufferedAudioStream {
 		RTTI_DECL1(LocalAudioStream, AudioStream)
 		FfmpegFileInput& par;
-		LocalAudioStream(FfmpegFileInput* par) : par(*par) {}
+		LocalAudioStream(FfmpegFileInput* par) :
+			par(*par),
+			SimpleBufferedAudioStream(par->aframe) {}
 		bool			IsOpen() const override;
 		bool			Open(int fmt_idx) override;
-		void			Close() override;
-		Audio&			Get() override;
-		void			FillBuffer() override;
-		void			DropBuffer() override;
-		int				GetActiveFormatIdx() const override;
-		int				GetFormatCount() const override;
-		AudioFormat		GetFormat(int i) const override;
-		bool			FindClosestFormat(const AudioFormat& fmt, int& idx) override;
+		void			Close() override {par.Close();}
+		bool			IsEof() override {return par.IsEof();}
+		bool			ReadFrame() override {return par.ReadFrame();}
+		bool			ProcessFrame() override {return par.ProcessAudioFrame();}
+		bool			ProcessOtherFrame() override {return par.ProcessVideoFrame();}
+		void			ClearPacketData() override {par.ClearPacketData();}
 	};
 	LocalAudioStream astream;
 	
@@ -216,7 +198,6 @@ public:
 	String	GetLastError() const;
 	
 	void	DropVideoFrames(int frames);
-	void	DropAudioBuffer();
 	String						GetPath() const;
 	
 	

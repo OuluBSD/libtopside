@@ -1,7 +1,9 @@
 description "\3770,128,128";
 
 library
-	"SDL2 SDL2main SDL2_ttf SDL2_image";
+	"SDL2 SDL2main SDL2_ttf SDL2_image",
+	"GL GLU",
+	GLEW;
 
 file
 	OOSDL2.h,

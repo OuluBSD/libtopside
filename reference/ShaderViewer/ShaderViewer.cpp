@@ -10,9 +10,13 @@ void ShaderViewer::OnError() {
 }
 
 void ShaderViewer::Initialize() {
-	TODO
-	/*fusion = GetEntity().GetMachine().Get<EntityStore>()->Create<CompleteFusion>();
-	fusion->Find<Connector>()->ConnectAll();
+	PoolRef pool = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool("fusion");
+	//fusion = pool->Create<CompleteFusion>();
+	fusion = pool->Create<VideoOnlyFusion>();
+	ASSERT(fusion);
+	pool->Add<ConnectAllInterfaces<AudioSource>>();
+	pool->Add<ConnectAllInterfaces<DisplaySource>>();
+	pool->Add<ConnectAllInterfaces<AcceleratorSource>>();
 	
 	ctx = fusion->Find<FusionContextComponent>();
 	if (ctx) {
@@ -25,12 +29,13 @@ void ShaderViewer::Initialize() {
 			GetMachine().SetNotRunning();
 			return;
 		}
-	}*/
+	}
 }
 
 void ShaderViewer::Uninitialize() {
-	fusion->Destroy();
-	fusion.Clear();
+	ASSERT(!fusion)
+	//fusion->Destroy();
+	//fusion.Clear();
 }
 
 void ShaderViewerInitializer() {
@@ -63,6 +68,6 @@ void ShaderViewerInitializer() {
 NAMESPACE_TOPSIDE_END
 
 RENDER_APP_(Topside::ShaderViewer)
-APP_INITIALIZE_(Topside::ShaderViewerStartup);
+APP_INITIALIZE_(Topside::ShaderViewerInitializer);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

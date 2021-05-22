@@ -23,6 +23,7 @@ protected:
 	bool						skip = 0;
 	
 public:
+	RTTI_DECL1(Element, Object)
 	Element();
 	
 	Element* GetParentElement() const {return CastPtr<Element>(GetParent());}

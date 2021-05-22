@@ -44,7 +44,7 @@ struct DataPtrVideoBuffer : public Video {
 	void SetOpenCVFormat(VideoFormat fmt) {this->fmt = fmt; type = OPENCV;}
 	
 	void Exchange(VideoEx& e) override {}
-	int GetQueueSize() const override {return fmt.GetFrameBytes();}
+	int GetQueueSize() const override {return 1;}
 	VideoFormat GetFormat() const override {return fmt;}
 	bool IsQueueFull() const override {return false;}
 	

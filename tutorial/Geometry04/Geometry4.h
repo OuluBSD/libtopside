@@ -38,7 +38,7 @@ struct Geometry4 : public Component<Geometry4>, public DisplaySink {
 	
 	void Initialize() override;
 	
-	void DrawLine(GeometryDraw& fb, vec2 a, vec2 b, Color clr);
+	void DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr);
 	void Render(SystemDraw& draw) override;
 	
 };

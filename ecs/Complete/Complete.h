@@ -9,6 +9,9 @@
 
 #ifdef flagGUI
 	#include <FusionCore/FusionCore.h>
+#endif
+
+#ifdef flagCTRL
 	#include <EcsCtrl/EcsCtrl.h>
 #endif
 

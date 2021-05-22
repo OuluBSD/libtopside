@@ -11,6 +11,7 @@ class TopWindow : public Ctrl {
 	String title;
 	
 public:
+	RTTI_DECL1(TopWindow, Ctrl)
 	TopWindow();
 	virtual ~TopWindow() {}
 	//void Init(SysWindow* sw, int id);
@@ -20,7 +21,8 @@ public:
 	virtual String	GetTitle() {return title;}
 	virtual void	RefreshData() {};
 	virtual void	FocusEvent() {}
-	virtual void	SetFrameRect(const Rect& r);
+	void	SetFrameRect(const Rect& r) override;
+	
 	void			Title(const String& title);
 	int				Run(bool appmodal=false);
 	TopWindow&		Sizeable(bool b=true);

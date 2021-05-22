@@ -152,6 +152,18 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 #endif
 
 
+#ifdef COMPILER_MSC
+#define force_inline __forceinline
+#define never_inline __declspec(noinline)
+#elif defined(COMPILER_GCC)
+#define force_inline __attribute__((always_inline)) inline
+#define never_inline __attribute__((noinline))
+#else
+#define force_inline inline
+#define never_inline
+#endif
+
+
 typedef unsigned char	uint8;
 typedef char			int8;
 typedef unsigned short	uint16;

@@ -50,6 +50,20 @@ bool FusionDisplaySource::LoadResources() {
 	return true;
 }
 
+bool FusionDisplaySource::ReadFrame() {
+	TODO
+}
+
+bool FusionDisplaySource::ProcessFrame() {
+	TODO
+	// draw sinkistä
+	
+}
+
+void FusionDisplaySource::ClearPacketData() {
+	
+}
+
 #if 0
 void FusionDisplaySource::EmitDisplay(double dt) {
 	for(Ref<DisplaySink> c : DisplaySource::GetConnections())
@@ -84,11 +98,11 @@ void FusionDisplaySource::SetVideoSize(Size sz) {
 }
 
 DisplayStream& FusionDisplaySource::GetStream(DisCtx) {
-	TODO
+	return dstream;
 }
 
 void FusionDisplaySource::BeginStream(DisCtx) {
-	TODO
+	dstream.FillBuffer();
 }
 
 void FusionDisplaySource::EndStream(DisCtx) {
@@ -97,5 +111,7 @@ void FusionDisplaySource::EndStream(DisCtx) {
 
 
 
+
+		
 
 NAMESPACE_TOPSIDE_END

@@ -19,7 +19,7 @@
 
 #if defined(UPP_VERSION) && defined(flagGUI)
 	// No WindowSystem
-#elif defined(flagGUI)
+#elif defined(flagGUI) && defined(flagCTRL)
 	#define HAVE_WINDOWSYSTEM 1
 #endif
 
@@ -68,7 +68,7 @@
 
 #include <Multimedia/System.h>
 
-#if HAVE_SDL2
+#if defined flagGUI && defined flagCTRL
 	#include <SDL2GUI3D/System.h>
 #endif
 

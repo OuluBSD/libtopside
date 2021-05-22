@@ -13,6 +13,8 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
 struct AudioFormat {
+	static const int def_sample_rate = 1024;
+	
 	int freq = 0;
 	int sample_rate = 0;
 	int var_size = 0;
@@ -64,6 +66,8 @@ LOCAL_CTX(Audio, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCu
 
 
 struct VideoFormat {
+	static const int def_sample_rate = 60;
+	
 	Size res = {0,0};
 	int depth = 0; // volume video is a thing
 	double fps = 0;
@@ -79,7 +83,7 @@ struct VideoFormat {
 	void	SetPitch(int bytes) {pitch = bytes; ASSERT(bytes >= GetMinPitch());}
 	Size	GetSize() const {return res;}
 	int		GetDepth() const {return depth;}
-	int		GetFrameBytes() const {return res.cy * pitch;}
+	int		GetSampleSize() const {return res.cy * pitch * depth * var_size;}
 	bool	operator!=(const VideoFormat& fmt) const {return !(*this == fmt);}
 	bool	operator==(const VideoFormat& fmt) const {
 		return	res == fmt.res &&
@@ -105,6 +109,8 @@ LOCAL_CTX(Video, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, DummyCu
 
 
 struct MediaFormat {
+	static const int def_sample_rate = 30;
+	
 	AudioFormat snd;
 	VideoFormat vid;
 	
@@ -168,12 +174,17 @@ public:
 
 
 struct DisplayFormat {
+	static const int def_sample_rate = 60;
+	
 	VideoFormat vid;
 	double fps;
 	
-	void Clear() {vid.Clear();}
-	bool IsValid() const {return vid.IsValid();}
-	double GetFrameSeconds() const {return 1.0 / fps;}
+	void	Clear() {vid.Clear();}
+	bool	IsValid() const {return vid.IsValid();}
+	double	GetFrameSeconds() const {return 1.0 / fps;}
+	int		GetSampleSize() const {return vid.GetSampleSize();}
+	int		GetFrameSize() const {return GetSampleSize();}
+	
 	bool operator!=(const DisplayFormat& fmt) const {return !(*this == fmt);}
 	bool operator==(const DisplayFormat& fmt) const {
 		return	vid == fmt.vid &&
@@ -198,6 +209,8 @@ typedef enum {
 } StaticType;
 
 struct StaticFormat {
+	static const int def_sample_rate = 1;
+	
 	StaticType type;
 	
 	void Clear() {type = STCTYPE_NULL;}
@@ -246,6 +259,8 @@ typedef enum {
 } DeviceType;
 
 struct DeviceFormat {
+	static const int def_sample_rate = 1;
+	
 	DeviceType type;
 	
 	void Clear() {type = DEVTYPE_NULL;}
@@ -273,6 +288,8 @@ typedef enum {
 } PhysicsType;
 
 struct PhysicsFormat {
+	static const int def_sample_rate = 1;
+	
 	PhysicsType type;
 	
 	void Clear() {type = PHYSTYPE_NULL;}
@@ -302,6 +319,8 @@ typedef enum {
 } ScriptingType;
 
 struct ScriptingFormat {
+	static const int def_sample_rate = 1;
+	
 	ScriptingType type;
 	
 	void Clear() {type = SCRIPTTYPE_NULL;}
@@ -329,6 +348,8 @@ typedef enum {
 } HumanType;
 
 struct HumanFormat {
+	static const int def_sample_rate = 1;
+	
 	HumanType type;
 	
 	void Clear() {type = HUMTYPE_NULL;}
@@ -364,6 +385,8 @@ typedef enum {
 } ModelType;
 
 struct ModelFormat {
+	static const int def_sample_rate = 1;
+	
 	ModelType type;
 	
 	void Clear() {type = MDLTYPE_NULL;}
@@ -483,6 +506,8 @@ public:
 };
 
 struct AcceleratorFormat {
+	static const int def_sample_rate = 1;
+	
 	AcceleratorType type;
 	
 	void Clear() {type = ACCTYPE_NULL;}

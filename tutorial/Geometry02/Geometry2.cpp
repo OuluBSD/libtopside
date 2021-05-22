@@ -12,7 +12,7 @@ Geometry2::~Geometry2() {
 void Geometry2::Render(SystemDraw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
-	GeometryDraw fb(draw);
+	DrawGeometry fb(draw);
 
 	Color white {255, 255, 255};
 	Color red {255, 0, 0};
@@ -217,7 +217,7 @@ void Geometry2::Render(SystemDraw& draw) {
 	}
 }
 
-void Geometry2::DrawLine(GeometryDraw& fb, float scale, vec4 a, vec4 b, Color clr) {
+void Geometry2::DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color clr) {
 	fb.DrawLine(a.Splice<0,2>() * scale, b.Splice<0,2>() * scale, 1, clr);
 }
 

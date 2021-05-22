@@ -39,12 +39,15 @@ typedef ArrayMap<String, PropertyValue>	PropsMap;
 
 class Style : public Object
 {
+	
 private:
 	PropsMap			properties;
 	static StrMap		valid_values;
 	
 	void __CheckStyleDefaultValues();
+	
 public:
+	RTTI_DECL1(Style, Object)
 	Style();
 	Style(const Style& val);
 
@@ -499,8 +502,10 @@ enum CssCombinator
 
 class CssSelector : public Object, public Moveable<CssSelector>
 {
+	
 public:
 	typedef Vector<One<CssSelector> > vector;
+	
 public:
 	SelectorSpecificity		specificity;
 	CssElementSelector		right;
@@ -509,7 +514,9 @@ public:
 	Style*					style = NULL;
 	int						order;
 	Ptr<MediaQueryList>		media_query;
+	
 public:
+	RTTI_DECL1(CssSelector, Object)
 	CssSelector(MediaQueryList* media)
 	{
 		media_query	= media;
@@ -586,6 +593,7 @@ inline bool operator < (CssSelector* v1, CssSelector* v2)
 class UsedSelector : public Object
 {
 public:
+	RTTI_DECL1(UsedSelector, Object)
 	typedef Vector<UsedSelector*>	vector;
 
 	ConstCssSelector*	selector;

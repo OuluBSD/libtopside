@@ -4,8 +4,8 @@ uses
 	OOSDL2;
 
 file
-	NonGUISDL2.h,
-	NonGUISDL2.cpp,
+	NonCtrlSDL2.h,
+	NonCtrlSDL2.cpp,
 	DrawBackend.h,
 	DrawBackend.cpp;
 

@@ -270,65 +270,6 @@ String GetObjectTreeString(const Object& v, String key, int indent) {
 
 
 
-String Format(String pattern, Object v0, Object v1, Object v2, Object v3, Object v4, Object v5, Object v6, Object v7) {
-	static const int MAX_ARGS = 8;
-	Object* v[MAX_ARGS] = {&v0, &v1, &v2, &v3, &v4, &v5, &v6, &v7};
-	
-	if (pattern.IsEmpty()) return "";
-	
-	int arg = 0;
-	String out;
-	const char* it  = pattern.Begin();
-	const char* end = pattern.End();
-	while (it != end) {
-		int chr = *it++;
-		
-		if (chr == '\\' && *it == '%') {
-			chr = *it++;
-			out.Cat(chr);
-		}
-		else if (chr == '\%') {
-			enum {
-				MAIN_SWITCH
-			};
-			enum {
-				TYPE_INVALID,
-				TYPE_VALUE,
-			};
-			int state = MAIN_SWITCH;
-			int type = TYPE_INVALID;
-			while (it != end) {
-				chr = *it++;
-				if (state == MAIN_SWITCH) {
-					if (chr == 'v') {
-						type = TYPE_VALUE;
-						break;
-					}
-					else break;
-				}
-				else break;
-			}
-			if (type == TYPE_INVALID)
-				out << "<invalid>";
-			else if (type == TYPE_VALUE) {
-				if (arg < MAX_ARGS)
-					out << v[arg++]->ToString();
-				else
-					out << "<arg overflow " << arg++ << ">";
-			}
-		}
-		else {
-			out.Cat(chr);
-		}
-	}
-	return out;
-}
-
-
-
-String StdFormat(const Object& q) {
-	TODO
-}
 
 
 END_UPP_NAMESPACE

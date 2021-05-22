@@ -8,6 +8,7 @@ file
 	Copying,
 	TODO.txt,
 	EcsCore.h,
+	Defs.h,
 	TypeTraits.h,
 	Common.h,
 	Machine.h,

@@ -3,7 +3,7 @@
 
 
 #if !defined UPP_VERSION && defined flagGUI
-	#include <CtrlLib/CtrlLib.h>
+	#include <Draw/Draw.h>
 	#include <Graphics/GL.h>
 #else
 	#include <Draw/Draw.h>
@@ -21,7 +21,10 @@ NAMESPACE_SDL2_BEGIN
 class Context;
 
 
-class Stateful {
+class Stateful :
+	RTTIBase
+{
+	RTTI_DECL0(Stateful)
 	
 protected:
 	bool is_open = false;
@@ -39,7 +42,10 @@ public:
 	
 };
 
-class Component : public Stateful {
+class Component :
+	public Stateful
+{
+	RTTI_DECL1(Component, Stateful)
 	
 protected:
 	friend class Context;
@@ -56,7 +62,9 @@ public:
 
 
 class Timer : public Component {
+	RTTI_DECL1(Timer, Component)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	uint32 GetInitFlag() const override {return SDL_INIT_TIMER;}
@@ -68,7 +76,9 @@ public:
 
 
 class AudioInput : public Component {
+	RTTI_DECL1(AudioInput, Component)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	uint32 GetInitFlag() const override {return SDL_INIT_AUDIO;}
@@ -81,6 +91,9 @@ public:
 
 
 class AudioOutput : public Component {
+	RTTI_DECL1(AudioOutput, Component)
+	
+private:
 	SDL_AudioSpec audio_fmt, audio_desired;
 	SDL_AudioDeviceID audio_dev = 0;
 	AudioPacketConsumer consumer;
@@ -112,6 +125,7 @@ public:
 #ifdef flagGUI
 
 class Screen : public Component {
+	RTTI_DECL1(Screen, Component)
 	
 protected:
 	friend class Events;
@@ -125,9 +139,9 @@ protected:
 	String					title;
 	SDL_GLContext			glcontext = 0;
 	CpuRenderer				sw_rend;
-	CpuFramebufferDraw		sw_draw;
+	DrawFramebufferCpu		sw_draw;
 	OpenGLRenderer			hw_rend;
-	OpenGLFramebufferDraw	hw_draw;
+	DrawFramebufferOpenGL	hw_draw;
 	SystemDraw				sysdraw;
 	bool is_opengl = false;
 	bool is_dx11 = false;
@@ -163,6 +177,9 @@ void EnableOpenGLDebugMessages(bool b);
 
 
 class Events : public Component {
+	RTTI_DECL1(Events, Component)
+	
+private:
 	bool is_lalt = false, is_lshift = false, is_lctrl = false;
 	bool is_ralt = false, is_rshift = false, is_rctrl = false;
 	Point prev_mouse_pt;
@@ -193,7 +210,9 @@ public:
 
 
 class Joystick : public Component {
+	RTTI_DECL1(Joystick, Component)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	uint32 GetInitFlag() const override {return SDL_INIT_JOYSTICK;}
@@ -206,7 +225,9 @@ public:
 
 
 class GameController : public Component {
+	RTTI_DECL1(GameController, Component)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	uint32 GetInitFlag() const override {return SDL_INIT_GAMECONTROLLER;}
@@ -219,7 +240,9 @@ public:
 
 
 class Sensor : public Component {
+	RTTI_DECL1(Sensor, Component)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	uint32 GetInitFlag() const override {return SDL_INIT_SENSOR;}
@@ -232,7 +255,9 @@ public:
 
 
 class Image : public Stateful {
+	RTTI_DECL1(Image, Stateful)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	
@@ -244,7 +269,9 @@ public:
 
 
 class Font : public Stateful {
+	RTTI_DECL1(Font, Stateful)
 	
+private:
 	bool Open0() override;
 	void Close0() override;
 	
@@ -258,6 +285,9 @@ public:
 
 
 class Context : public Stateful {
+	RTTI_DECL1(Context, Stateful)
+	
+private:
 	Vector<Component*> comps;
 	String last_error;
 	
@@ -288,6 +318,9 @@ public:
 
 
 class Bundle : public Context {
+	RTTI_DECL1(Bundle, Context)
+	
+private:
 	Array<Component> comps;
 	dword enabled = 0xFFFFFFFF;
 	

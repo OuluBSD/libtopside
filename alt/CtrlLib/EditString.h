@@ -56,6 +56,7 @@ class TextCtrl : public Ctrl {
 	static bool Intersects(int b0, int e0, int b1, int e1);
 	
 public:
+	RTTI_DECL1(TextCtrl, Ctrl)
 	typedef TextCtrl CLASSNAME;
 	TextCtrl(bool multiline=false);
 	

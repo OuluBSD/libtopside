@@ -78,7 +78,7 @@ bool DefaultRenderApp::Render(SystemDraw& draw) {
 	glEnable(GL_BLEND);
 	glDisable(GL_MULTISAMPLE);*/
 	
-	FramebufferDraw* fb_draw = CastPtr<FramebufferDraw>(draw.ptr);
+	DrawFramebuffer* fb_draw = CastPtr<DrawFramebuffer>(draw.ptr);
 	if (!fb_draw)
 		return !needs_fast_rerender;
 	/*Framebuffer* fb = fb_draw->GetFramebuffer();

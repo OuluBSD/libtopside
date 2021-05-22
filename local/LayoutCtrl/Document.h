@@ -31,7 +31,9 @@ class Document : public Object {
 	void FixTableParent(Element* el_ptr, StyleDisplay disp, const String& disp_str);
 	
 public:
+	RTTI_DECL1(Document, Object)
 	Document(HtmlCtrl* ctrl) : ctrl(ctrl) {}
+	
 	bool			Init(String html, String address);
 	void			SetBaseUrl(String url) {base_addr = url;}
 	Element*		CreateElement(HtmlNode& n);

@@ -6,7 +6,9 @@ NAMESPACE_UPP
 
 
 class SeparatorCtrl : public Ctrl {
+	
 public:
+	RTTI_DECL1(SeparatorCtrl, Ctrl)
 	SeparatorCtrl();
 	
 	virtual Size GetMinSize() const;
@@ -22,6 +24,7 @@ class StaticRect : public Ctrl {
 	Color clr;
 	
 public:
+	RTTI_DECL1(StaticRect, Ctrl)
 	StaticRect();
 	
 	virtual Size GetMinSize() const;

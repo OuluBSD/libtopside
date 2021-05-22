@@ -106,6 +106,7 @@ public:
 #define RTTI_ELSE(x, fn) else return x::fn(id);
 
 #define RTTI_DECL_0(Type, TypeString) \
+	public: \
         static const char* GetTypeName() {return TypeString;} \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}\

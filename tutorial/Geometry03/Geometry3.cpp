@@ -31,7 +31,7 @@ Geometry3::~Geometry3() {
 void Geometry3::Render(SystemDraw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
-	GeometryDraw fb(draw);
+	DrawGeometry fb(draw);
 
 	Color white {255, 255, 255};
 	Color red {255, 0, 0};
@@ -96,7 +96,7 @@ void Geometry3::Render(SystemDraw& draw) {
 	}
 }
 
-void Geometry3::DrawLine(GeometryDraw& fb, vec2 a, vec2 b, Color clr) {
+void Geometry3::DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr) {
 	a = (view * a.Embed<4>()).Project().Splice<0,2>();
 	b = (view * b.Embed<4>()).Project().Splice<0,2>();
 	fb.DrawLine(a, b, 1, clr);

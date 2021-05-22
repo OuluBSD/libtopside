@@ -106,8 +106,9 @@ public:
 	
 };
 
-class CpuFramebufferDraw : public FramebufferDraw {
+class DrawFramebufferCpu : public DrawFramebuffer {
 public:
+	RTTI_DECL1(DrawFramebufferCpu, DrawFramebuffer)
 	CpuRenderer* rend = 0;
 	CpuFramebuffer* fb = 0;
 	

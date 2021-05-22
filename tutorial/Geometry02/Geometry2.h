@@ -20,7 +20,7 @@ struct Geometry2 : public Component<Geometry2>, public DisplaySink {
 	~Geometry2();
 	void operator=(const Geometry2& t) {Panic("Can't copy Geometry2");}
 	
-	void DrawLine(GeometryDraw& fb, float scale, vec4 a, vec4 b, Color clr);
+	void DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color clr);
 	void Render(SystemDraw& draw) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	

@@ -29,6 +29,7 @@ struct MediaQueryExpression : Moveable<MediaQueryExpression>
 class MediaQuery : public Object
 {
 public:
+	RTTI_DECL1(MediaQuery, Object)
 	typedef Vector<MediaQuery*>	vector;
 	
 private:
@@ -49,19 +50,24 @@ class Context;
 class MediaQueryList : public Object, public Pte<MediaQueryList>
 {
 public:
+	RTTI_DECL1(MediaQueryList, Object)
 	typedef Vector<MediaQueryList*>	vector;
+	
 private:
 	MediaQuery::vector	queries;
 	bool				is_used;
+	
 public:
 	MediaQueryList(const MediaQueryList& val);
 
 	static MediaQueryList* CreateFromString(const String& str, Document* doc);
 	bool IsUsed() const;
 	bool ApplyMediaFeatures(const MediaFeatures& features);	// returns true if the is_used changed
+	
 protected:
 	friend class Context;
 	MediaQueryList();
+	
 };
 
 inline MediaQueryList::MediaQueryList(const MediaQueryList& val)

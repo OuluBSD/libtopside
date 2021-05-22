@@ -1,5 +1,6 @@
 #include "Physics.h"
 
+#ifdef flagODE
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -149,4 +150,5 @@ INITBLOCK(OdeSystem) {
 }
 
 END_UPP_NAMESPACE
+#endif
 #endif

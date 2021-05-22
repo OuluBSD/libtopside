@@ -8,9 +8,6 @@
 #include <stdio.h>  // vsnprintf
 
 #include <Local/Local.h>
-#ifdef flagGUI
-	#include <LocalCtrl/LocalCtrl.h>
-#endif
 #include <Multimedia/Multimedia.h>
 #include <EcsCore/EcsCore.h>
 #include <EcsLib/EcsLib.h>

@@ -10,28 +10,19 @@ class Css : public Object
 	CssSelector::vector	selectors;
 	
 public:
-	Css()
-	{
-
-	}
-	
+	RTTI_DECL1(Css, Object)
+	Css() {}
 	Css(const Css& src) {
 		for (auto& it : src.selectors)
 			selectors.Add().Create(*it);
 	}
-	
-	~Css()
-	{
+	~Css() {}
 
-	}
-
-	const CssSelector::vector& Selectors() const
-	{
+	const CssSelector::vector& Selectors() const {
 		return selectors;
 	}
 
-	void Clear()
-	{
+	void Clear() {
 		selectors.Clear();
 	}
 

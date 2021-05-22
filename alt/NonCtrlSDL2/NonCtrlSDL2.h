@@ -1,5 +1,5 @@
-#ifndef _NonGUISDL2_NonGUISDL2_h_
-#define _NonGUISDL2_NonGUISDL2_h_
+#ifndef _NonCtrlSDL2_NonCtrlSDL2_h_
+#define _NonCtrlSDL2_NonCtrlSDL2_h_
 
 #include <Draw/Draw.h>
 // Not here: #include <OOSDL2/OOSDL2.h>
@@ -12,6 +12,7 @@ NAMESPACE_UPP
 
 class SystemDraw : public DrawProxy {
 public:
+	RTTI_DECL1(SystemDraw, DrawProxy)
 	
 	bool    CanSetSurface()                         { return false; }
 	static void Flush()                             {}
@@ -83,17 +84,11 @@ public:
 };
 
 
-class EventFrame {
-	
-public:
-	Vector<CtrlEvent> ctrl;
-	
-};
+
 
 
 
 END_UPP_NAMESPACE
-
 
 
 #endif

@@ -8,6 +8,7 @@ class TabCtrl : public Ctrl {
 	
 	
 public:
+	RTTI_DECL1(TabCtrl, Ctrl)
 	TabCtrl();
 	
 	void Add(Ctrl& c, String title);

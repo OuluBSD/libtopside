@@ -5,8 +5,6 @@ uses
 
 uses(STDEXC) Esc;
 
-uses(GUI) LocalCtrl;
-
 uses(VR & UWP) WinLib;
 
 uses(VR & STEAM & !UWP) SteamLib;
