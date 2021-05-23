@@ -1,5 +1,5 @@
 #include "EcsLib.h"
-#include <FusionCore/FusionCore.h>
+#include <AccelCore/AccelCore.h>
 
 NAMESPACE_UPP
 
@@ -18,7 +18,7 @@ bool Open_NonGUI_ECS() {
     mach.Add<HumanSystem>();
     mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();
-    mach.Add<FusionSystem>();
+    mach.Add<AccelSystem>();
     
     reg.SetAppName("ECS machine");
     

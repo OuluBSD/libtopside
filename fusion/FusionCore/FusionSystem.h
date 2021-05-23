@@ -971,17 +971,18 @@ PREFAB_END
 
 
 
-class FusionSystem : public System<FusionSystem> {
-	LinkedList<FusionContextComponentRef>	ctxs;
-	LinkedList<FusionComponentRef>			comps;
+
+class AccelSystem : public System<AccelSystem> {
+	LinkedList<AccelContextComponentRef>	ctxs;
+	LinkedList<AccelComponentRef>			comps;
 	
 	void Visit(RuntimeVisitor& vis) override {
 		vis && ctxs
 			&& comps;
 	}
 public:
-	SYS_RTTI(FusionSystem)
-	SYS_CTOR(FusionSystem);
+	SYS_RTTI(AccelSystem)
+	SYS_CTOR(AccelSystem);
 	
 protected:
 	
@@ -992,13 +993,13 @@ protected:
     void Uninitialize() override;
     
 protected:
-	friend class FusionContextComponent;
-	friend class FusionComponent;
+	friend class AccelContextComponent;
+	friend class AccelComponent;
 	
-    void AddContext(FusionContextComponentRef ctx);
-    void RemoveContext(FusionContextComponentRef ctx);
-    void AddComponent(FusionComponentRef comp);
-    void RemoveComponent(FusionComponentRef comp);
+    void AddContext(AccelContextComponentRef ctx);
+    void RemoveContext(AccelContextComponentRef ctx);
+    void AddComponent(AccelComponentRef comp);
+    void RemoveComponent(AccelComponentRef comp);
     void UpdateTexBuffers();
     
 };

@@ -3,7 +3,9 @@ description "\377B0,131,159";
 uses
 	Music,
 	AudioCore,
-	FusionCore;
+	AccelCore;
+
+uses(NEVER) FusionCore;
 
 uses(NEVER) Physics;
 

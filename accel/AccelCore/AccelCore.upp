@@ -1,0 +1,15 @@
+description "\377B0,175,51";
+
+uses
+	Local,
+	ComputerVision,
+	EcsCore,
+	Structural;
+
+file
+	AccelCore.h,
+	AccelSystem.h,
+	AccelSystem.cpp,
+	AccelContext.cpp,
+	AccelComponent.cpp;
+

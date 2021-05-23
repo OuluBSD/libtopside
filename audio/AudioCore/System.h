@@ -2,7 +2,7 @@
 #define _AudioCore_System_h_
 
 #include <EcsLib/EcsLib.h>
-#include <FusionCore/FusionCore.h>
+#include <AccelCore/AccelCore.h>
 #include "AudioCore.h"
 #include "Portaudio.h"
 #include "Generators.h"

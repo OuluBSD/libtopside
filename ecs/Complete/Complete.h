@@ -8,7 +8,7 @@
 #include <AudioCore/System.h>
 
 #ifdef flagGUI
-	#include <FusionCore/FusionCore.h>
+	#include <AccelCore/AccelCore.h>
 #endif
 
 #ifdef flagCTRL

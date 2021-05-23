@@ -2,7 +2,7 @@
 #define _MP3Player_MP3Player_h_
 
 #include <Complete/Complete.h>
-#include <FusionCore/FusionCore.h>
+#include <AccelCore/AccelCore.h>
 using namespace Topside;
 
 NAMESPACE_TOPSIDE_BEGIN
