@@ -458,6 +458,7 @@ public:
 	IFACE_CB(StaticSink);
 	IFACE_CB(AcceleratorSource);
 	IFACE_GENERIC;
+	using Parent = Entity;
 	
 	FusionDataSink() : FusionComponent(FUSION_DATA_SINK) {StaticSink::SetMultiConnection(false);}
 	

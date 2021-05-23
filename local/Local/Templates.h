@@ -510,14 +510,16 @@ struct ContextT {
 		public Stream
 	{
 		SimpleBufferedValue* ptr = 0;
+		bool skip_drop = false;
 	public:
 		RTTI_DECL_T1(SimpleBufferedStream, Stream)
 		SimpleBufferedStream() {}
 		SimpleBufferedStream(SimpleBufferedValue& v) : ptr(&v) {}
+		void			SetSkipDrop(bool b=true) {skip_drop = b;}
 		void			Set(SimpleBufferedValue& v) {ptr = &v;}
 		Value&			Get() override {ASSERT(ptr); return *ptr;}
 		void			FillBuffer() override;
-		void			DropBuffer() override {ptr->DropBuffer();}
+		void			DropBuffer() override {if (!skip_drop) ptr->DropBuffer();}
 		int				GetActiveFormatIdx() const override {return 0;}
 		int				GetFormatCount() const override {return 1;}
 		Format			GetFormat(int i) const override {return ptr->GetFormat();}

@@ -259,4 +259,14 @@ void AcceleratorHeaderVector::Add(const AcceleratorHeader& a) {
 
 
 
+
+
+#if HAVE_OPENGL
+template <>
+bool ContextT<StaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
+	TODO
+}
+#endif
+
+
 NAMESPACE_TOPSIDE_END

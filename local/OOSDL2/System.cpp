@@ -252,6 +252,12 @@ void SDL2SensorComponent::Uninitialize() {
 
 
 
+SDL2ImageComponent::SDL2ImageComponent() :
+	svalue(this), sstream(this)
+{
+	
+}
+
 void SDL2ImageComponent::Initialize() {
 	
 }
@@ -262,6 +268,7 @@ void SDL2ImageComponent::Uninitialize() {
 
 bool SDL2ImageComponent::LoadFileAny(String path) {
 	img.Clear();
+	sstream.SetSkipDrop(false);
 	
 	if (path.Left(9) == "<cubemap>") {
 		path = path.Mid(9);
@@ -282,7 +289,7 @@ bool SDL2ImageComponent::LoadFileAny(String path) {
 			
 			img << Image(surf);
 		}
-		EmitStatic();
+		sstream.SetSkipDrop();
 		return true;
 	}
 	else {
@@ -292,12 +299,10 @@ bool SDL2ImageComponent::LoadFileAny(String path) {
 			return false;
 		}
 		img << Image(surf);
-		EmitStatic();
+		sstream.SetSkipDrop();
 		return true;
 	}
 }
-
-#endif
 
 Size SDL2ImageComponent::GetResolution() const {
 	if (img.GetCount())
@@ -305,6 +310,19 @@ Size SDL2ImageComponent::GetResolution() const {
 	return Size(0,0);
 }
 
+StaticStream& SDL2ImageComponent::GetStream(StcCtx) {
+	return sstream;
+}
+
+void SDL2ImageComponent::BeginStream(StcCtx) {
+	TODO
+}
+
+void SDL2ImageComponent::EndStream(StcCtx) {
+	TODO
+}
+
+#if 0
 void SDL2ImageComponent::EmitStatic() {
 	int id = 0;
 	for(Image& img : this->img) {
@@ -329,6 +347,7 @@ void SDL2ImageComponent::EmitStatic() {
 		id++;
 	}
 }
+#endif
 
 
 

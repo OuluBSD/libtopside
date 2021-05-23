@@ -90,4 +90,20 @@ void ConnectAllInterfaces<T>::Update(double dt) {
 }
 
 
+template <class T>
+bool ConnectAllInterfaces<T>::LinkManually(SourceRef src, SinkRef sink) {
+	ASSERT(src	->AsComponentBase()->GetEntity()->HasPoolParent(ConnectorBase::GetPool()));
+	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(ConnectorBase::GetPool()));
+	CookieRef src_cookie, sink_cookie;
+	if (src->Accept(sink, src_cookie, sink_cookie)) {
+		Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+		src->Link(ep, sink, src_cookie, sink_cookie);
+		ep->Init(this);
+		ep->Set(src, sink, src_cookie, sink_cookie);
+		return true;
+	}
+	return false;
+}
+
+
 NAMESPACE_TOPSIDE_END

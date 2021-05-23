@@ -234,6 +234,26 @@ RefT_Pool<T> Entity::FindConnector() {
 	return r;
 }
 
+template<typename T>
+RefT_Pool<T> Entity::FindCommonConnector(EntityRef sink) {
+	RefT_Pool<T> ret;
+	int src_depth = GetPoolDepth();
+	int sink_depth = sink->GetPoolDepth();
+	Pool* src_pool = &GetPool();
+	Pool* sink_pool = &sink->GetPool();
+	while (src_depth > sink_depth) {src_pool = src_pool->GetParent(); --src_depth;}
+	while (sink_depth > src_depth) {sink_pool = sink_pool->GetParent(); --sink_depth;}
+	while (src_pool && sink_pool) {
+		if (src_pool == sink_pool) {
+			ret = src_pool->Find<T>();
+			if (ret) break;
+		}
+		src_pool = src_pool->GetParent();
+		sink_pool = sink_pool->GetParent();
+	}
+	return ret;
+}
+
 
 NAMESPACE_TOPSIDE_END
 

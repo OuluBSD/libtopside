@@ -28,7 +28,6 @@ void StaticVolumeComponent::Uninitialize() {
 	
 }
 
-#if 0
 bool StaticVolumeComponent::LoadFileAny(String path) {
 	const char* fn_name = "LoadFileAny";
 	
@@ -79,10 +78,11 @@ bool StaticVolumeComponent::LoadFileAny(String path) {
 	this->depth = d;
 	this->stride = channels;
 	
-	EmitStatic();
+	TODO //EmitStatic();
 	
 	return true;
 }
+
 
 Size StaticVolumeComponent::VolumeStream::GetResolution() const {
 	return comp.sz;
@@ -92,7 +92,6 @@ int  StaticVolumeComponent::VolumeStream::GetDepth() const {
 	return comp.depth;
 }
 
-#endif
 
 /*void StaticVolumeComponent::EmitStatic() {
 	StaticValueData data;

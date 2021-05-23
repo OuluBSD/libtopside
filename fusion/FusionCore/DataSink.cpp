@@ -244,7 +244,7 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 		if (type == AcceleratorHeader::TEXTURE ||
 			type == AcceleratorHeader::CUBEMAP) {
 			SDL2ImageComponentRef comp = e->Add<SDL2ImageComponent>();
-			if (comp->LinkManually<AcceleratorSource>(*this)) {
+			if (comp->LinkManually<StaticSource>(*this)) {
 				String path = in.GetPath();
 				if (type == AcceleratorHeader::CUBEMAP)
 					path = "<cubemap>" + path;
@@ -261,8 +261,8 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 		}
 		else if (type == AcceleratorHeader::VOLUME) {
 			StaticVolumeComponentRef comp = e->Add<StaticVolumeComponent>();
-			if (comp->LinkManually<AcceleratorSource>(*this)) {
-				if (comp->LoadFileAny(in.GetFilepath())) {
+			if (comp->LinkManually<StaticSource>(*this)) {
+				if (comp->LoadFileAny(in.GetPath())) {
 					DLOG("FusionDataSink::LoadAsInput: successfully loaded " + in.GetFilepath());
 					return true;
 				}

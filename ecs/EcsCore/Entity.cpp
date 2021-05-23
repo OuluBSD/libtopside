@@ -92,6 +92,27 @@ void Entity::VisitSources(RuntimeVisitor& vis){
 		c->VisitSources(vis);
 }
 
+int Entity::GetPoolDepth() const {
+	int d = 0;
+	Pool* p = &GetPool();
+	while (1) {
+		p = p->GetParent();
+		if (!p) break;
+		++d;
+	}
+	return d;
+}
+
+bool Entity::HasPoolParent(PoolRef pool) const {
+	Pool* p = &GetPool();
+	while (p) {
+		if (p == &*pool)
+			return true;
+		p = p->GetParent();
+	}
+	return false;
+}
+
 
 
 

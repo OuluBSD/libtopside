@@ -142,9 +142,9 @@ protected:
 		StaticVolumeComponent& comp;
 		
 		VolumeStream(StaticVolumeComponent* c) : comp(*c) {}
-		bool LoadFileAny(String path) override {TODO}
-		Size GetResolution() const override {TODO}
-		int GetDepth() const override {TODO}
+		bool LoadFileAny(String path) override {return comp.LoadFileAny(path);}
+		Size GetResolution() const override;
+		int GetDepth() const override;
 	};
 	
 	VolumeStream stream;
@@ -166,7 +166,7 @@ public:
 	void EndStream(StcCtx) override {}
 	
 	String GetLastError() const {return errstr;}
-	
+	bool LoadFileAny(String path);
 };
 
 

@@ -17,6 +17,7 @@ void ShaderViewer::Initialize() {
 	pool->Add<ConnectAllInterfaces<AudioSource>>();
 	pool->Add<ConnectAllInterfaces<DisplaySource>>();
 	pool->Add<ConnectAllInterfaces<AcceleratorSource>>();
+	pool->Add<ConnectAllInterfaces<StaticSource>>();
 	
 	ctx = fusion->Find<FusionContextComponent>();
 	if (ctx) {

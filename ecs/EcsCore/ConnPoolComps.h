@@ -50,12 +50,12 @@ private:
 };
 
 template <class Source, class T> bool ComponentBase::LinkManually(T& o) {
-	using ConnAll = ConnectAllInterfaces<T>;
-	using Sink = typename Source::Sink;
+	using ConnAll = ConnectAllInterfaces<Source>;
+	using Sink = typename Source::SinkClass;
 	EntityRef src_e = GetEntity();
 	EntityRef sink_e = o.GetEntity();
 	
-	RefT_Pool<ConnAll> conn = src_e->FindConnector<ConnAll>(sink_e);
+	RefT_Pool<ConnAll> conn = src_e->FindCommonConnector<ConnAll>(sink_e);
 	if (!conn)
 		return false;
 	

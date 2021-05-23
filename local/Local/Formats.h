@@ -215,6 +215,8 @@ struct StaticFormat {
 	
 	void Clear() {type = STCTYPE_NULL;}
 	bool IsValid() const {return type != STCTYPE_NULL;}
+	int GetSampleSize() const {TODO}
+	int GetFrameSize() const {TODO}
 	
 	bool operator!=(const StaticFormat& fmt) const {return !(*this == fmt);}
 	bool operator==(const StaticFormat& fmt) const {

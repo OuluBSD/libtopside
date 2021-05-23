@@ -80,8 +80,10 @@ public:
 		return v;
 	}
 	
-	template<typename T>
-	RefT_Pool<T> FindConnector();
+	template<typename T> RefT_Pool<T> FindConnector();
+	template<typename T> RefT_Pool<T> FindCommonConnector(EntityRef sink);
+	int GetPoolDepth() const;
+	bool HasPoolParent(PoolRef pool) const;
 	
 	template<typename T> void Remove() {
 		OnChange();

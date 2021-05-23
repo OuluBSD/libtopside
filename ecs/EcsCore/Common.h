@@ -25,6 +25,7 @@ class PbrRenderable;
 class CoreWindow;
 class SoundGeneratorComponent;
 class PortaudioSinkComponent;
+class StaticVolumeComponent;
 struct ConnectorBase;
 /*struct ActionSource;
 struct AudioSource;
@@ -78,6 +79,7 @@ using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 
 using SoundGeneratorComponentRef		= Ref<SoundGeneratorComponent,			RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
+using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
 using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
 //using DisplayExchangePointRef			= Ref<DisplayExchangePoint,				RefParent1<MetaExchangePoint>>;

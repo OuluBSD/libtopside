@@ -85,7 +85,7 @@ public:
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		if (IS_EMPTY_SHAREDPTR(it))
-			return NULL;
+			return RefT_Pool<ConnectorT>();
 		else
 			return it->AsRef<ConnectorT>();
 	}
