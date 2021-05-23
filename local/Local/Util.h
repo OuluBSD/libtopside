@@ -550,6 +550,19 @@ inline bool IsOpenGL() {return GetAppFlags().IsOpenGL();}
 
 
 
+
+class ErrorReporter {
+	String last_error;
+public:
+	ErrorReporter() {}
+	
+	void ClearError() {last_error.Clear();}
+	void SetError(String s) {last_error = s;}
+	bool IsError() const {return !last_error.IsEmpty();}
+	String GetError() const {return last_error;}
+	
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

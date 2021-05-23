@@ -6,5 +6,6 @@ file
 	ShaderViewer.cpp;
 
 mainconfig
-	"AltCore 3D backend" = "GUI OPENGL";
+	"AltCore 3D backend" = "GUI OPENGL",
+	"" = "GUI OPENGL VERBOSE_SHADERCORE";
 

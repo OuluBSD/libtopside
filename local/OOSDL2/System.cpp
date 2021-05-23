@@ -260,8 +260,6 @@ void SDL2ImageComponent::Uninitialize() {
 	img.Clear();
 }
 
-#if 0
-
 bool SDL2ImageComponent::LoadFileAny(String path) {
 	img.Clear();
 	
@@ -299,6 +297,8 @@ bool SDL2ImageComponent::LoadFileAny(String path) {
 	}
 }
 
+#endif
+
 Size SDL2ImageComponent::GetResolution() const {
 	if (img.GetCount())
 		return img[0].GetSize();
@@ -330,7 +330,6 @@ void SDL2ImageComponent::EmitStatic() {
 	}
 }
 
-#endif
 
 
 

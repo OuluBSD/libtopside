@@ -1,7 +1,6 @@
 #ifndef _Structural_Graph_h_
 #define _Structural_Graph_h_
 
-#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -41,7 +40,7 @@ protected:
 };
 
 
-class Graph {
+class Graph : public ErrorReporter {
 	Vector<Vector<int> > dependers, dependencies;
 	Index<Object> keys;
 	
@@ -58,18 +57,14 @@ class Graph {
 public:
 	Graph();
 	
-	
-	bool IsError() const;
-	String GetError() const;
-	
 	void Clear();
 	void TopologicalSort();
 	void BreadthFirstSearch(int key_i, DfsVisitor& vis);
 	void DepthFirstSearch(DfsVisitor& vis);
 	
 	int  AddKey(Object key);
-	void AddEdge(int dependency, int depender);
-	void AddEdgeKey(Object dependency, Object depender);
+	bool AddEdge(int dependency, int depender);
+	bool AddEdgeKey(Object dependency, Object depender);
 	
 	int GetKeyCount() const {return keys.GetCount();}
 	Object GetKey(int i) const {return keys[i];}
@@ -84,5 +79,4 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
-#endif
 #endif

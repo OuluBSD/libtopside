@@ -1,6 +1,5 @@
 #include "Structural.h"
 
-#ifdef flagSTDEXC
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -10,6 +9,7 @@ Graph::Graph() {
 }
 
 void Graph::Clear() {
+	ClearError();
 	keys.Clear();
 	dependers.Clear();
 	dependencies.Clear();
@@ -23,27 +23,31 @@ int Graph::AddKey(Object key) {
 	return i;
 }
 
-void Graph::AddEdge(int dependency, int depender) {
+bool Graph::AddEdge(int dependency, int depender) {
 	if (dependency < 0 || dependency >= keys.GetCount() ||
-		depender   < 0 || depender   >= keys.GetCount())
-		throw Exc("Invalid Graph key");
+		depender   < 0 || depender   >= keys.GetCount()) {
+		SetError("Invalid Graph key");
+		return false;
+	}
 	dependers[dependency].Add(depender);
 	dependencies[depender].Add(dependency);
+	return true;
 }
 
-void Graph::AddEdgeKey(Object dependency, Object depender) {
+bool Graph::AddEdgeKey(Object dependency, Object depender) {
 	int a = keys.Find(dependency);
-	if (a < 0)
-		throw Exc("Dependency key not found");
-	int b = keys.Find(depender);
-	if (b < 0)
-		throw Exc("Depender key not found");
+	if (a < 0) {SetError("Dependency key not found"); return false;}
 	
-	if (a < 0 || a >= keys.GetCount() ||
-		b   < 0 || b   >= keys.GetCount())
-		throw Exc("Invalid Graph key");
+	int b = keys.Find(depender);
+	if (b < 0) {SetError("Depender key not found"); return false;}
+	
+	if (a < 0 || a >= keys.GetCount() || b   < 0 || b   >= keys.GetCount()) {
+		SetError("Invalid Graph key");
+		return false;
+	}
 	dependers[a].Add(b);
 	dependencies[b].Add(a);
+	return true;
 }
 
 // A recursive function used by TopologicalSort
@@ -170,4 +174,3 @@ void Graph::DumpSorted() {
 
 NAMESPACE_TOPSIDE_END
 
-#endif

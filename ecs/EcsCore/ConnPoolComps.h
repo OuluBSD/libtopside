@@ -24,6 +24,8 @@ public:
 	using Sink		= typename T::SinkClass;
 	using ISource	= InterfaceSource<Source, Sink>;
 	using ISink		= InterfaceSink<Sink>;
+	using SourceRef	= RefT_Entity<Source>;
+	using SinkRef	= RefT_Entity<Sink>;
 	
 	void Refresh() {if (sys) refresh_ticks = sys->PostRefresh(refresh_ticks, this);}
 	TypeId GetType() const override {return AsTypeCls<ConnectAllInterfaces<T>>();}
@@ -38,6 +40,7 @@ public:
 		MetaExchangePoint::Visit(vis);
 	}
 		
+	bool LinkManually(SourceRef src, SinkRef sink);
 	
 	
 private:
@@ -46,6 +49,26 @@ private:
 	
 };
 
+template <class Source, class T> bool ComponentBase::LinkManually(T& o) {
+	using ConnAll = ConnectAllInterfaces<T>;
+	using Sink = typename Source::Sink;
+	EntityRef src_e = GetEntity();
+	EntityRef sink_e = o.GetEntity();
+	
+	RefT_Pool<ConnAll> conn = src_e->FindConnector<ConnAll>(sink_e);
+	if (!conn)
+		return false;
+	
+	RefT_Entity<Source> src		= src_e		->FindInterface<Source>();
+	if (!src)
+		return false;
+	
+	RefT_Entity<Sink> sink		= sink_e	->FindInterface<Sink>();
+	if (!sink)
+		return false;
+	
+	return conn->LinkManually(src, sink);
+}
 
 
 NAMESPACE_TOPSIDE_END

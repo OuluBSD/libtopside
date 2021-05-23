@@ -462,7 +462,7 @@ protected:
 	
 public:
 	
-	void				Set(int id, Type t, String path, int filter, int wrap, bool vflip) {TODO}
+	void				Set(int id, Type t, String path, int filter, int wrap, bool vflip);
 	void				Set(int id, VideoStream* s) {this->id = id; stream = s;}
 	void				SetHeader(const AcceleratorHeader& in);
 	void				CopyIdStream(const AcceleratorHeader& in);

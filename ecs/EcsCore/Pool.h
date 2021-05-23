@@ -114,6 +114,11 @@ public:
 		return components;
 	}
 	
+	template<typename T>
+	RefT_Pool<T> Find() {
+		return comps.Find<T>();
+	}
+	
 	template <class T>
 	EntityRef FindEntity(T* component) {
 		if (!component)
@@ -214,6 +219,20 @@ public:
 	operator hash_t() const {return ch;}
 	
 };
+
+
+
+template<typename T>
+RefT_Pool<T> Entity::FindConnector() {
+	RefT_Pool<T> r;
+	Pool* p = &GetPool();
+	while (p) {
+		r = p->Find<T>();
+		if (r) break;
+		p = p->GetParent();
+	}
+	return r;
+}
 
 
 NAMESPACE_TOPSIDE_END

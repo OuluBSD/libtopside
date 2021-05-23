@@ -80,6 +80,9 @@ public:
 		return v;
 	}
 	
+	template<typename T>
+	RefT_Pool<T> FindConnector();
+	
 	template<typename T> void Remove() {
 		OnChange();
 		Remove0<T>();

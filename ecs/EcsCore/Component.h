@@ -58,6 +58,9 @@ public:
 		if (sys)
 			sys->Remove(ref);
 	}
+	
+	template <class Source, class T> bool LinkManually(T& o);
+	
 };
 
 #define IFACE(x) \

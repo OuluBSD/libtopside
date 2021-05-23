@@ -143,7 +143,14 @@ bool ContextT<MediaContext>::SimpleStream::FindClosestFormat(const MediaFormat& 
 
 
 
-
+void AcceleratorHeader::Set(int id, Type t, String path, int filter, int wrap, bool vflip) {
+	this->id = id;
+	this->type = t;
+	this->filepath = path;
+	this->filter = filter;
+	this->wrap = wrap;
+	this->vflip = vflip;
+}
 
 #define VALUE(str, i) if (t == i) return #str;
 

@@ -4,7 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class OpenGLShader : public Shader {
+class OpenGLShader :
+	public Shader,
+	public ErrorReporter
+{
 	bool is_loaded = false;
 	
     void BasicMeshPaint(ModelMesh& model, Mesh& mesh);

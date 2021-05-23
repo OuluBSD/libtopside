@@ -222,7 +222,6 @@ bool FusionDataSink::LoadResources() {
 	return true;
 }
 
-#if 0
 bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 	const char* fn_name = "LoadAsInput";
 	EntityRef e = GetEntity();
@@ -232,19 +231,10 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 	cfg.SetHeader(in);
 	stream.Clear();
 	
-	auto type = in.GetFusionType();
+	auto type = in.GetType();
 	
-	TODO
-	#if 0
-	//ctx->DumpEntityComponents();
-	Ref<Connector> conn = GetEntity().GetConnector();
-	if (!conn) {
-		OnError(fn_name, "entity doesn't have Connector component");
-		return false;
-	}
-	
-	if (!FileExists(in.GetFilepath())) {
-		OnError(fn_name, "file does not exist: \"" + in.GetFilepath() + "\"");
+	if (!FileExists(in.GetPath())) {
+		OnError(fn_name, "file does not exist: \"" + in.GetPath() + "\"");
 		return false;
 	}
 	
@@ -253,14 +243,13 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 	if (sdl2_sys) {
 		if (type == AcceleratorHeader::TEXTURE ||
 			type == AcceleratorHeader::CUBEMAP) {
-			SDL2ImageComponent* comp = e->Add<SDL2ImageComponent>();
-			if (comp->LinkManually(*this)) {
-				conn->SetUpdateInterfaces(true);
-				String path = in.GetFilepath();
+			SDL2ImageComponentRef comp = e->Add<SDL2ImageComponent>();
+			if (comp->LinkManually<AcceleratorSource>(*this)) {
+				String path = in.GetPath();
 				if (type == AcceleratorHeader::CUBEMAP)
 					path = "<cubemap>" + path;
 				if (comp->LoadFileAny(path)) {
-					DLOG("FusionDataSink::LoadAsInput: successfully loaded " + in.GetFilepath());
+					DLOG("FusionDataSink::LoadAsInput: successfully loaded " + in.GetPath());
 					return true;
 				}
 				err = comp->GetLastError();
@@ -271,9 +260,8 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 			comp->Destroy();
 		}
 		else if (type == AcceleratorHeader::VOLUME) {
-			StaticVolumeComponent* comp = e->Add<StaticVolumeComponent>();
-			if (comp->LinkManually(*this)) {
-				conn->SetUpdateInterfaces(true);
+			StaticVolumeComponentRef comp = e->Add<StaticVolumeComponent>();
+			if (comp->LinkManually<AcceleratorSource>(*this)) {
 				if (comp->LoadFileAny(in.GetFilepath())) {
 					DLOG("FusionDataSink::LoadAsInput: successfully loaded " + in.GetFilepath());
 					return true;
@@ -290,13 +278,11 @@ bool FusionDataSink::LoadAsInput(const AcceleratorHeader& in) {
 		}
 	}
 #endif
-	#endif
 	
 	if (err.IsEmpty()) err = "unknown error";
 	OnError(fn_name, err);
 	return false;
 }
 
-#endif
 
 NAMESPACE_TOPSIDE_END

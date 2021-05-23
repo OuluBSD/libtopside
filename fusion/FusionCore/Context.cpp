@@ -558,9 +558,7 @@ bool FusionContextComponent::RefreshStageQueue() {
 	DLOG("FusionContextComponent::RefreshStageQueue: begin");
 	
 	// Solve dependencies
-	#if 0
 	
-	//#ifdef flagSTDEXC
 	Graph g;
 	for(auto& s : comps)
 		if (s->id >= 0)
@@ -586,7 +584,7 @@ bool FusionContextComponent::RefreshStageQueue() {
 		DLOG("\t\t" << i << ": " << g.GetKey(i).ToString());
 	}
 	
-	struct TopologicalStages {
+	struct TopologicalStages : public ErrorReporter {
 		Graph& g;
 		bool operator()(const RefT_Entity<FusionComponent>& a, const RefT_Entity<FusionComponent>& b) const {
 			int a_pos = g.FindSorted(a->id);
@@ -594,19 +592,19 @@ bool FusionContextComponent::RefreshStageQueue() {
 			return a_pos < b_pos;
 		}
 	};
-	TopologicalStages sorter {g};
-	#endif
+	TopologicalStages sorter {{},g};
 	
-	TODO
-	/*Sort(comps, sorter);
+	Sort(comps, sorter);
 	if (sorter.IsError()) {
 		OnError("RefreshStageQueue", sorter.GetError());
 		return false;
-	}*/
+	}
+	
 	#if 1
 	DLOG("\ttopologically sorted stage list:");
-	for(int i = 0; i < comps.GetCount(); i++) {
-		DLOG("\t\t" << i << ": " << comps[i]->ToString());
+	int i = 0;
+	for(auto& comp : comps) {
+		DLOG("\t\t" << i++ << ": " << comp->ToString());
 	}
 	#endif
 	
@@ -711,8 +709,9 @@ bool FusionContextComponent::ConnectComponents() {
 	
 	DumpEntityComponents();
 	DLOG("Component vector:");
-	for(int i = 0; i < comps.GetCount(); i++) {
-		DLOG("\t" << i << ": " << comps[i]->ToString());
+	int i = 0;
+	for(auto& comp : comps) {
+		DLOG("\t" << i << ": " << comp->ToString());
 	}
 	
 	for (Ref<FusionComponent>& comp_sink : comps) {

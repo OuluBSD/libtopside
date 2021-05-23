@@ -37,7 +37,7 @@ struct BasicFusionStream : public VideoStream {
 	int							GetFormatCount() const override {return 1;}
 	VideoFormat					GetFormat(int i) const override {ASSERT(!i); return fmt;}
 	bool						FindClosestFormat(const VideoFormat&, int& idx) override {return 0;}
-	void						Clear() {fmt = MakeVideoFormat(Size(0,0), 0, 0, 0, 0);}
+	void						Clear() {fmt.Clear();}
 	
 	bool						IsOpen() const override {TODO}
 	bool						Open(int fmt_idx) override {TODO}
@@ -474,9 +474,9 @@ public:
 	StaticFormat		GetFormat(StcCtx) override {TODO}
 	Static&				GetValue(StcCtx) override {TODO}
 	
-	bool			LoadAsInput(const AcceleratorHeader& in) {TODO}
+	bool				LoadAsInput(const AcceleratorHeader& in);
 	
-	VideoStream*	GetVideoStream() {return &stream;}
+	VideoStream*		GetVideoStream() {return &stream;}
 	
 	static bool AllowDuplicates() {return true;} // override ComponentBase
 	

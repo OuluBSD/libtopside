@@ -273,7 +273,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	//bool LoadFileAny(String path) override;
+	bool LoadFileAny(String path);
 	//Size GetResolution() const override;
 	//void EmitStatic() override;
 	StaticStream&		GetStream(StcCtx) override {TODO}
@@ -285,6 +285,7 @@ public:
 	static bool AllowDuplicates() {return true;}
 	
 };
+
 
 class SDL2FontComponent :
 	public Component<SDL2FontComponent>,
@@ -335,6 +336,7 @@ public:
 };
 
 
+using SDL2ImageComponentRef			= Ref<SDL2ImageComponent,			RefParent1<Entity>>;
 using SDL2ContextComponentRef		= Ref<SDL2ContextComponent,			RefParent1<Entity>>;
 
 

@@ -51,6 +51,8 @@ class LinkedList {
 	
 public:
 	
+	using ElPtr = Item*;
+	
 	class Iterator {
 		Item* it = 0;
 		
@@ -73,6 +75,13 @@ public:
 		T&   Get() const {ASSERT(it); return it->value;}
 		operator T*() const {return &it->value;}
 		operator bool() const {return it;}
+		ElPtr GetElPtr() const {return it;}
+	};
+	
+	struct RefGet {
+		Item* p = 0;
+		RefGet(ElPtr it) : p(it) {}
+		T& operator()() {return p->value;}
 	};
 	
 	
@@ -250,7 +259,9 @@ public:
 	
 	
 	
+	Iterator Begin() const		{return Iterator(first);}
 	Iterator begin() const		{return Iterator(first);}
+	Iterator End() const		{return Iterator();}
 	Iterator end() const		{return Iterator();}
 	Iterator rbegin() const		{return last ? Iterator(last) : Iterator();}
 	Iterator rend() const		{return Iterator();}

@@ -7,6 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometry_path) {
 	LOG("Shader::Load: " << vertex_path << ", " << fragment_path << ", " << geometry_path);
+	ClearError();
 	
 	// 1. retrieve the vertex/fragment source code from filePath
 	String vertex_code;
@@ -16,32 +17,25 @@ bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometr
 	FileIn f_shader_file;
 	FileIn g_shader_file;
 	
-	try {
-		// open files
-		if (!v_shader_file.Open(vertex_path)) throw Exc();
-		if (!f_shader_file.Open(fragment_path)) throw Exc();
-		
-		// convert stream into string
-		int v_size = v_shader_file.GetSize();
-		vertex_code = v_shader_file.Get(v_size);
-		int f_size = f_shader_file.GetSize();
-		fragment_code = f_shader_file.Get(f_size);
-		
-		// close file handlers
-		v_shader_file.Close();
-		f_shader_file.Close();
-		
-		// if geometry shader path is present, also load a geometry shader
-		if (geometry_path.GetCount()) {
-			if (!g_shader_file.Open(geometry_path)) throw Exc();
-			geometry_code = g_shader_file.Get(g_shader_file.GetSize());
-			g_shader_file.Close();
-		}
-	}
+	// open files
+	if (!v_shader_file.Open(vertex_path)) {SetError("vertex shader file could not been loaded"); return false;}
+	if (!f_shader_file.Open(fragment_path)) {SetError("fragment shader file could not been loaded"); return false;}
 	
-	catch (Exc e) {
-		LOG("ERROR: shaders not successfully read: " << vertex_path);
-		return false;
+	// convert stream into string
+	int v_size = v_shader_file.GetSize();
+	vertex_code = v_shader_file.Get(v_size);
+	int f_size = f_shader_file.GetSize();
+	fragment_code = f_shader_file.Get(f_size);
+	
+	// close file handlers
+	v_shader_file.Close();
+	f_shader_file.Close();
+	
+	// if geometry shader path is present, also load a geometry shader
+	if (geometry_path.GetCount()) {
+		if (!g_shader_file.Open(geometry_path))  {SetError("geometry shader file could not been loaded"); return false;}
+		geometry_code = g_shader_file.Get(g_shader_file.GetSize());
+		g_shader_file.Close();
 	}
 	
 	const char* v_shader_code = vertex_code.Begin();
