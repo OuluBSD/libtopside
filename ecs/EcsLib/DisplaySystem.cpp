@@ -93,7 +93,7 @@ bool DefaultRenderApp::Render(SystemDraw& draw) {
 		return !needs_fast_rerender;
 	
 	HumanSinkRef cam_out = cams.begin()().dst->AsRef<HumanSink>();
-	CamerableRef cam = cam_out->GetCamerable();
+	ViewableRef cam = cam_out->GetViewable();
 	TransformRef trans = cam_out->GetTransform();
 	if (!cam || !trans)
 		return !needs_fast_rerender;

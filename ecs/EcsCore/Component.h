@@ -63,11 +63,7 @@ public:
 	
 };
 
-#define IFACE(x) \
-template<> inline RefT_Entity<x##Source> ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Source();} \
-template<> inline RefT_Entity<x##Sink>   ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Sink();}
-IFACE_LIST
-#undef IFACE
+
 
 
 template<typename T>

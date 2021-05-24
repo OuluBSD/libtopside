@@ -46,7 +46,6 @@ public:
 	Framebuffer& GetOutputFramebuffer() override {return output;}
 	void PreFrame() override;
 	void PostFrame() override;
-	int AddModel(Model& model) override;
 	
 	OpenGLOutputFramebuffer& GetOutputOpenGLFramebuffer() {return output;}
 	

@@ -1,7 +1,7 @@
 #ifndef _EcsLib_EcsLib_h_
 #define _EcsLib_EcsLib_h_
 
-#include <EcsCore/EcsCore.h>
+#include <TemplatesLib/TemplatesLib.h>
 
 #if defined UPP_VERSION || (defined flagSTDEXC)
 	#include <Esc/Esc.h>
@@ -63,10 +63,10 @@
 #endif
 
 #if HAVE_SDL2
-	#include <OOSDL2/System.h>
+	#include <EcsSDL2/EcsSDL2.h>
 #endif
 
-#include <Multimedia/System.h>
+#include <EcsMultimedia/EcsMultimedia.h>
 
 #if defined flagGUI && defined flagCTRL
 	#include <SDL2GUI3D/System.h>

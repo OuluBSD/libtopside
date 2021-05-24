@@ -130,16 +130,7 @@ public:
 	const Machine&		GetMachine() const;
 	Pool&				GetPool() const;
 	
-	#define IFACE_(x, post)\
-		RefT_Entity<x##post> Find##x##post() {\
-			InterfaceVisitor<x##post> vis; \
-			vis.StopWhenFound(); \
-			Visit##post##s(vis); \
-			x##post* last = vis.GetLast(); \
-			if (last) \
-				return last->AsRefT(); \
-			return RefT_Entity<x##post>();\
-		}
+	#define IFACE_(x, post) RefT_Entity<x##post> Find##x##post();
 	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
 	IFACE_LIST
 	#undef IFACE

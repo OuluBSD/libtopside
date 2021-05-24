@@ -1,0 +1,9 @@
+description "\3770,128,128";
+
+uses
+	OOSDL2;
+
+file
+	EcsSDL2.h,
+	EcsSDL2.cpp;
+

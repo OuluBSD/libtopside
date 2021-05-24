@@ -1,0 +1,17 @@
+description "\3770,128,128";
+
+uses
+	EcsCore,
+	AudioCore;
+
+file
+	EcsAudioCore.h,
+	System.h,
+	System.cpp,
+	Generators.h,
+	Generators.cpp,
+	Portaudio.h,
+	Portaudio.cpp,
+	Fluidsynth.h,
+	Fluidsynth.cpp;
+

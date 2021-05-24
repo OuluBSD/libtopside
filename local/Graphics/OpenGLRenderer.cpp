@@ -48,9 +48,6 @@ void OpenGLRenderer::PostFrame() {
 	//	SDL_GL_SwapWindow(win);
 }
 
-int OpenGLRenderer::AddModel(Model& model) {
-	TODO
-}
 
 
 NAMESPACE_TOPSIDE_END

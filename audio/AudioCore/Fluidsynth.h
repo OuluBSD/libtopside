@@ -26,7 +26,7 @@ public:
 	
 	bool LoadSoundfontFile(String path);
 	
-	void ConfigureTrack(const Midi::File& file, int track_i);
+	void ConfigureTrack(const MidiIO::File& file, int track_i);
 	
 };
 

@@ -1,5 +1,7 @@
 #include "Local.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -270,3 +272,5 @@ bool ContextT<StaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

@@ -4,6 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
+Machine& GetPoolMachine(PoolRef pool) {return pool->GetMachine();}
+//EntityStoreRef GetMachineEntityStore(Machine& m) {return m.Get<EntityStore>();}
+
+
+
 Pool::Pool() {
 	DBG_CONSTRUCT
 }
@@ -146,6 +152,10 @@ bool PoolHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref
 	}
 	return true;
 }
+
+
+
+
 
 
 NAMESPACE_TOPSIDE_END

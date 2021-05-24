@@ -1,5 +1,4 @@
 #include "EcsLib.h"
-#include <AccelCore/AccelCore.h>
 
 NAMESPACE_UPP
 
@@ -18,7 +17,6 @@ bool Open_NonGUI_ECS() {
     mach.Add<HumanSystem>();
     mach.Add<DisplaySystem>();
     mach.Add<AudioSystem>();
-    mach.Add<AccelSystem>();
     
     reg.SetAppName("ECS machine");
     
@@ -43,8 +41,8 @@ END_UPP_NAMESPACE
 NAMESPACE_TOPSIDE_BEGIN
 
 
-CamerableRef HumanCustomSinkBase::GetCamerable() {
-	return CamerableRef();
+ViewableRef HumanCustomSinkBase::GetViewable() {
+	return ViewableRef();
 }
 
 TransformRef HumanCustomSinkBase::GetTransform() {

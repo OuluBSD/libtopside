@@ -2,7 +2,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-/*Ref<Transform> Camerable::GetTransform() {
+/*Ref<Transform> Viewable::GetTransform() {
 	EntityRef ent = GetEntity();
 	return ent->Find<Transform>();
 }*/

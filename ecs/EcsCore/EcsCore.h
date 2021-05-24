@@ -4,18 +4,14 @@
 
 #include <Graphics/GL.h>
 #include <Geometry/Geometry.h>
-#include <Local/Local.h>
+#include <TemplatesCore/TemplatesCore.h>
 #include <Agent/Agent.h>
 
 #if HAVE_SDL2
 	#include <OOSDL2/OOSDL2.h>
 #endif
 
-#ifdef flagMSC
-	#define CXX2A_STATIC_ASSERT(x, y) static_assert(x, y)
-#else
-	#define CXX2A_STATIC_ASSERT(x, y)
-#endif
+
 
 
 #include "Defs.h"
@@ -62,20 +58,15 @@
 #include "AudioSystem.h"
 #include "VideoSystem.h"*/
 
-#include "Common.h"
-#include "Machine.h"
+
+
 
 #include "EntityStore.h"
-
-#include "Templates.h"
-
 #include "Component.h"
 #include "Connector.h"
-#include "TypeTraits.h"
 #include "ComponentStore.h"
 #include "Entity.h"
 #include "Pool.h"
-#include "Templates.inl"
 #include "EntityVisitor.h"
 #include "Overlap.h"
 #include "Action.h"

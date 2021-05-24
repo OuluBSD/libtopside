@@ -18,7 +18,5 @@ file
 	GameController.cpp,
 	Sensor.cpp,
 	Image.cpp,
-	Font.cpp,
-	System.h,
-	System.cpp;
+	Font.cpp;
 

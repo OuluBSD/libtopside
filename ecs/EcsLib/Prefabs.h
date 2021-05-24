@@ -124,7 +124,7 @@ struct StaticCube : EntityPrefab<Transform, ModelComponent>
     }
 };
 
-struct CameraPrefab : EntityPrefab<Transform, Viewport, Camerable>
+struct CameraPrefab : EntityPrefab<Transform, Viewport, Viewable>
 {
     static Components Make(Entity& e)
     {

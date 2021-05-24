@@ -1,0 +1,13 @@
+description "\377B76,76,76";
+
+uses
+	EcsMach,
+	Geometry;
+
+file
+	TemplatesCore.h,
+	Context.h,
+	Context.inl highlight cpp,
+	Classes.h,
+	Defs.h;
+

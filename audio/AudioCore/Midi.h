@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class MidiFrame {
 	
 public:
-	Vector<const Midi::Event*> midi;
+	Vector<const MidiIO::Event*> midi;
 	
 	void Reset() {midi.SetCount(0);}
 };

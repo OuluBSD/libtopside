@@ -5,7 +5,7 @@
 #include <Music/Music.h>
 
 #include <EcsLib/EcsLib.h>
-#include <AudioCore/System.h>
+#include <EcsAudioCore/EcsAudioCore.h>
 
 #ifdef flagGUI
 	#include <AccelCore/AccelCore.h>

@@ -8,13 +8,13 @@
 	#if defined flagFREEBSD && defined flagGCC
 		// skip v4l2 because of weird VideoDevice::open
 	#else
-		#define HAVE_V4L2_DEVMGR 1
-		#define HAVE_OPENCV 1
+		#define HAVE_V4L2_DEVMGR	0
+		#define HAVE_OPENCV			0
 		
-		#define HAVE_V4L2_CAP 0
+		#define HAVE_V4L2_CAP		0
 		
 		#ifdef UPP_VERSION
-			#define V4L2_SLOW 0
+			#define V4L2_SLOW		0
 		#endif
 	#endif
 #endif

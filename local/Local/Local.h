@@ -44,7 +44,6 @@ NAMESPACE_TOPSIDE_END
 #include "Ref.h"
 #include "Exchange.h"
 #include "Realtime.h"
-#include "Templates.h"
 #include "Interface.h"
 #include "Index.h"
 #include <SharedCore/Container.h>
@@ -71,7 +70,6 @@ NAMESPACE_TOPSIDE_END
 #include "Image.h"
 #include "Geom.h"
 #include "Audio.h"
-#include "Formats.h"
 #include "Html.h"
 #include "Url.h"
 #include "Debugging.h"

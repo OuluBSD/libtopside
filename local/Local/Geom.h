@@ -45,8 +45,8 @@ bool operator==(const Size3_<T>& a, const Size3_<T>& b) {
 }
 
 typedef Size3_<int> Size3;
-typedef Size3_<float> Size3f;
-typedef Size3_<double> Size3d;
+typedef Size3_<float> Size3F32;
+typedef Size3_<double> Size3f;
 
 
 

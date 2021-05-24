@@ -58,10 +58,10 @@ void SDL2GUI3D::Render(bool do_render) {
 void SDL2GUI3D::RenderFrame() {
 	
 	/*if (data->cam.IsEmpty()) {
-		Vector<Tuple<Entity*, Camerable*>> wins = data->ents->GetComponentsWithEntity<Camerable>();
+		Vector<Tuple<Entity*, Viewable*>> wins = data->ents->GetComponentsWithEntity<Viewable>();
 		
 		for(int i = 0; i < wins.GetCount(); i++) {
-			Tuple<Entity*, Camerable*>& tuple = wins[i];
+			Tuple<Entity*, Viewable*>& tuple = wins[i];
 			ASSERT(tuple.a->HasWeak());
 			data->cam = tuple.a->GetSharedFromThis();
 			break;
@@ -85,7 +85,7 @@ void SDL2GUI3D::RenderWindows() {
 	glDisable(GL_DEPTH_TEST);
 	
 	Transform& t = *data->cam->Get<Transform>();
-	Camerable& c = *data->cam->Get<Camerable>();
+	Viewable& c = *data->cam->Get<Viewable>();
 	
 	int width = screen_sz.cx;
 	int height = screen_sz.cy;

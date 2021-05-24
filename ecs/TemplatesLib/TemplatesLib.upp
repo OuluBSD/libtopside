@@ -1,0 +1,9 @@
+description "\377B102,102,102";
+
+uses
+	EcsCore;
+
+file
+	TemplatesLib.h,
+	EcsCore.inl highlight cpp;
+

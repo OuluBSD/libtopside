@@ -1,0 +1,19 @@
+description "\377B51,51,51";
+
+uses
+	Local;
+
+file
+	TemplatesMach.h,
+	PacketBuffer.h,
+	Context.h,
+	Context.inl highlight cpp,
+	Classes.h,
+	Classes.cpp,
+	Defs.h,
+	Special.h,
+	Interface.h,
+	Audio.cpp,
+	Trash readonly separator,
+	DefAccel.h;
+

@@ -1,0 +1,13 @@
+description "\377B128,0,0";
+
+uses
+	TemplatesMach;
+
+file
+	EcsMach.h,
+	Defs.h,
+	Common.h,
+	TypeTraits.h,
+	Machine.h,
+	Machine.cpp;
+

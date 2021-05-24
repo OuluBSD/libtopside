@@ -2,37 +2,11 @@
 #define _EcsCore_Defs_h_
 
 
-#if defined(flagWIN32)
-	#define GUI_APP_MAIN_(gui) \
-	void GuiMainFn_(); \
-	\
-	int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
-		::SetWin32Instances(hinst, hprev, show); \
-		char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
-		::UPP::AppInit__(0, (const char **)cmdline); \
-		Topside::SingleMachine().Run(gui, GuiMainFn_); \
-		::UPP::AppExit__(); \
-		return ::UPP::GetExitCode(); \
-	} \
-	\
-	void GuiMainFn_()
-#else
-	#define GUI_APP_MAIN_(gui) \
-	void GuiMainFn_(); \
-	\
-	extern "C" int main(int argc, char *argv[]) {\
-		::UPP::AppInit__(argc, (const char **)argv); \
-		Topside::SingleMachine().Run(gui, GuiMainFn_); \
-		::UPP::AppExit__(); \
-		return ::UPP::GetExitCode(); \
-	} \
-	\
-	void GuiMainFn_()
-#endif
-
-#define GUI_APP_MAIN			GUI_APP_MAIN_(true)
-#define RENDER_APP_MAIN			GUI_APP_MAIN_(false)
-
+#define RTTI_COMP0(comp) RTTI_DECL1(comp, Component<comp>)
+#define RTTI_COMP1(comp, iface0) RTTI_DECL2(comp, Component<comp>, iface0)
+#define RTTI_COMP2(comp, iface0, iface1) RTTI_DECL3(comp, Component<comp>, iface0, iface1)
+#define RTTI_COMP3(comp, iface0, iface1, iface2) RTTI_DECL4(comp, Component<comp>, iface0, iface1, iface2)
+#define RTTI_COMP4(comp, iface0, iface1, iface2, iface3) RTTI_DECL5(comp, Component<comp>, iface0, iface1, iface2, iface3)
 
 
 #endif

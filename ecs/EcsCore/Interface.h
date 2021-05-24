@@ -182,7 +182,7 @@ struct CameraSource;
 struct CameraSink : IO_OUT(Camera) {
 	IFACE_BASE(CameraSink)
 	
-	virtual CamerableRef GetCamerable() = 0;
+	virtual ViewableRef GetViewable() = 0;
 	virtual TransformRef GetTransform() = 0;
 	
 };

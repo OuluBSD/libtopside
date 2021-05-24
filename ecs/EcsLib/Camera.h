@@ -4,14 +4,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class Camerable :
-	public Component<Camerable>,
+class Viewable :
+	public Component<Viewable>,
 	public HumanSink
 {
 	vec3 target = zero<vec3>();
 	
 public:
-	RTTI_COMP1(Camerable, HumanSink)
+	RTTI_COMP1(Viewable, HumanSink)
 	VIS_COMP_0_1(Human)
 	IFACE_CB(HumanSink);
 	IFACE_GENERIC;
@@ -20,9 +20,9 @@ public:
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}
 	
-	void operator=(const Camerable& c) {target = c.target;}
+	void operator=(const Viewable& c) {target = c.target;}
 	
-	CamerableRef GetCamerable() override {return ComponentBase::AsRef<Camerable>();}
+	ViewableRef GetViewable() override {return ComponentBase::AsRef<Viewable>();}
 	//TransformRef GetTransform();
 	
 	HumanFormat		GetFormat(HumCtx) override;

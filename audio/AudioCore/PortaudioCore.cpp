@@ -1,6 +1,4 @@
-#include "System.h"
-#include "Internal.h"
-#include "PortaudioCore.h"
+#include "AudioCore.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN;
@@ -63,37 +61,7 @@ void AudioBase::OpenDefaultStream(PaStreamCallback* cb, void* data,
 
 void AudioBase::SetFormat(int out_ch, SampleFormat format) {
 	fmt.channels = out_ch;
-	fmt.is_var_float = format == SND_FLOAT32;
-	#if CPU_LITTLE_ENDIAN
-	fmt.is_var_bigendian = false;
-	#else
-	fmt.is_var_bigendian = true;
-	#endif
-	switch (format) {
-		case SND_FLOAT32:
-		case SND_INT32:
-			fmt.var_size = 4;
-			fmt.is_var_signed = true;
-			break;
-		case SND_INT24:
-			fmt.var_size = 3;
-			fmt.is_var_signed = true;
-			break;
-		case SND_INT16:
-			fmt.var_size = 2;
-			fmt.is_var_signed = true;
-			break;
-		case SND_INT8:
-			fmt.var_size = 1;
-			fmt.is_var_signed = true;
-			break;
-		case SND_UINT8:
-			fmt.var_size = 1;
-			fmt.is_var_signed = false;
-			break;
-		default:
-			fmt.var_size = 0;
-	}
+	fmt.fmt = format;
 }
 
 void AudioBase::Close(){
@@ -105,9 +73,9 @@ void AudioBase::Close(){
 }
 
 
-void AudioBase::Exchange(AudioEx& e) {
+/*void AudioBase::Exchange(AudioEx& e) {
 	TODO
-}
+}*/
 
 /*
 void AudioBase::Get(void* data, int size) {
@@ -208,75 +176,6 @@ void AudioDeviceStream::SetFinishCallback(){
 
 
 
-
-
-
-
-
-
-
-
-BufferedAudioDeviceStream::BufferedAudioDeviceStream() {
-	WhenAction << THISBACK(SinkCallback);
-}
-
-void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
-	if (consumer.IsEmptySource())
-		consumer.SetSource(buf);
-	
-	if (args.output) {
-		int size = fmt.GetFrameSize();
-		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
-			ASSERT(args.fpb == fmt.sample_rate);
-			
-			off32 begin_offset = buf.GetOffset();
-			if (0) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
-				buf.Dump();
-			}
-			
-			consumer.TestSetOffset(begin_offset);
-			
-			consumer.SetDestination(fmt, args.output, size);
-			consumer.ConsumeAll(false);
-			consumer.ClearDestination();
-			if (consumer.GetLastMemoryBytes() != size) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
-			}
-			
-			off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
-				buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}
-		}
-		else {
-			#if DEBUG_RT_PIPE
-			RTLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
-			#endif
-			
-			memset(args.output, 0, size);
-		}
-	}
-}
-
-void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
-	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
-	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
-}
-
-void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
-	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
-	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
-}
 
 }
 NAMESPACE_TOPSIDE_END;

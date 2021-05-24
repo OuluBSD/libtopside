@@ -24,7 +24,6 @@ public:
 	virtual Framebuffer& GetOutputFramebuffer() = 0;
 	virtual void PreFrame() = 0;
 	virtual void PostFrame() = 0;
-	virtual int AddModel(Model& model) = 0;
 	
 	
 	

@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class Renderer;
-class Camerable;
+class Viewable;
 
 
 class Framebuffer {

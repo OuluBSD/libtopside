@@ -1,13 +1,15 @@
 #ifndef _Local_Formats_h_
 #define _Local_Formats_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class Camerable;
+class Viewable;
 class Transform;
 
-using CamerableRef			= Ref<Camerable,			RefParent1<Entity>>;
+using ViewableRef			= Ref<Viewable,			RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
@@ -37,7 +39,7 @@ struct AudioFormat {
 	}
 	bool IsSame(const AudioFormat& fmt) const {
 		return	sample_rate			== fmt.sample_rate &&
-				IsCopyCompatible(fmt);
+				IsPlaybackCompatible(fmt);
 	}
 	void Clear() {memset(this, 0, sizeof(AudioFormat));}
 	bool operator!=(const AudioFormat& fmt) const {return !IsSame(fmt);}
@@ -148,27 +150,6 @@ LOCAL_CTX(Media, AVBase, AVStreamBase, DummyCustomSystemBase, DummyCustomSinkBas
 #define MEDCTX ((MediaContext*)0)
 #define MedCtx MediaContext*
 
-
-class AVMediaProxy : public Media {
-public:
-	Audio* aud = 0;
-	Video* vid = 0;
-
-public:
-	RTTI_DECL1(AVMediaProxy, Media)
-
-	AVMediaProxy() = default;
-
-	void Set(Audio& a, Video& v) {aud = &a; vid = &v;}
-	Audio& GetAudio() override {return *aud;}
-	Video& GetVideo() override {return *vid;}
-
-	void			Exchange(MediaEx& e) override;
-	int				GetQueueSize() const override;
-	MediaFormat		GetFormat() const override;
-	bool			IsQueueFull() const override;
-	
-};
 
 
 
@@ -369,7 +350,7 @@ struct HumanCustomSinkBase :
 	RTTIBase
 {
 	RTTI_DECL0(HumanCustomSinkBase)
-	virtual CamerableRef GetCamerable();
+	virtual ViewableRef GetViewable();
 	virtual TransformRef GetTransform();
 };
 
@@ -548,5 +529,7 @@ LOCAL_CTX(Accelerator, DummyValueBase, AcceleratorStreamBase, DummyCustomSystemB
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif
 
 #endif

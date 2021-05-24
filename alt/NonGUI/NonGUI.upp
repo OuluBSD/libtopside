@@ -4,7 +4,5 @@ file
 	NonGUI.h,
 	NonGUI.cpp,
 	DrawBackend.h,
-	DrawBackend.cpp,
-	System.h,
-	System.cpp;
+	DrawBackend.cpp;
 

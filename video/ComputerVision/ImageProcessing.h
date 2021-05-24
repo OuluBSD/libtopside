@@ -4,7 +4,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, int code = COLOR_RGBA2GRAY);
+//void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, int code = COLOR_RGBA2GRAY);
 
 
 

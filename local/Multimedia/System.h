@@ -15,7 +15,5 @@ NAMESPACE_TOPSIDE_END
 
 
 
-#include "ECS_OpenCV.h"
-#include "ECS_Ffmpeg.h"
 
 #endif

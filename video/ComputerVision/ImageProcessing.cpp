@@ -4,6 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if 0
 
 // TODO: add support for RGB/BGR order
 // for raw arrays
@@ -40,5 +41,7 @@ void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, 
 	}
 	#endif
 }
+#endif
+
 
 NAMESPACE_TOPSIDE_END

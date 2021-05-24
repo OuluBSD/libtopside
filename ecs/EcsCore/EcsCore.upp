@@ -2,21 +2,16 @@ description "ECS and base classes for machin abstraction\377B0,0,128";
 
 uses
 	Graphics,
-	Agent;
+	Agent,
+	TemplatesCore;
 
 file
 	Copying,
 	TODO.txt,
 	EcsCore.h,
 	Defs.h,
-	TypeTraits.h,
-	Common.h,
-	Machine.h,
-	Machine.cpp,
 	EntityStore.h,
 	EntityStore.cpp,
-	Templates.h,
-	Templates.inl highlight cpp,
 	Component.h,
 	Component.cpp,
 	ComponentStore.h,

@@ -43,12 +43,5 @@ file
 	PortaudioCore.h,
 	PortaudioCore.cpp,
 	PortaudioStream.cpp,
-	PortaudioSystem.cpp,
-	System readonly separator,
-	System.h,
-	System.cpp,
-	Generators.h,
-	Generators.cpp,
-	Portaudio.h,
-	Portaudio.cpp;
+	PortaudioSystem.cpp;
 

@@ -1,6 +1,5 @@
-#include "System.h"
-#include "Internal.h"
-#include "PortaudioCore.h"
+#include "AudioCore.h"
+
 
 NAMESPACE_TOPSIDE_BEGIN;
 namespace Portaudio {

@@ -143,8 +143,8 @@ protected:
 		
 		VolumeStream(StaticVolumeComponent* c) : comp(*c) {}
 		bool LoadFileAny(String path) override {return comp.LoadFileAny(path);}
-		Size GetResolution() const override;
-		int GetDepth() const override;
+		Size GetResolution() const;
+		int GetDepth() const;
 	};
 	
 	VolumeStream stream;
@@ -167,6 +167,8 @@ public:
 	
 	String GetLastError() const {return errstr;}
 	bool LoadFileAny(String path);
+	
+	
 };
 
 

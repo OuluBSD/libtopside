@@ -1,6 +1,7 @@
 #ifndef _AudioCore_PortaudioCore_h_
 #define _AudioCore_PortaudioCore_h_
 
+
 NAMESPACE_TOPSIDE_BEGIN
 namespace Portaudio {
 
@@ -44,6 +45,13 @@ enum StreamCallbackFlags {
 	SND_OUTPUT_UNDERFLOW	= paOutputUnderflow,
 	SND_OUTPUT_OVERFLOW		= paOutputOverflow,
 	SND_PRIMING_OUTPUT		= paPrimingOutput
+};
+
+struct AudioFormat {
+	int				channels = 0;
+	int				freq = 0;
+	int				sample_rate = 0;
+	SampleFormat	fmt = SND_UNKNOWN;
 };
 
 struct StreamTimeInfo {
@@ -116,7 +124,7 @@ struct StreamParameters {
 
 bool IsPortaudioUninitialized();
 
-class AudioBase : public Audio {
+class AudioBase {
 protected:
 	mutable int		err;
 	PaStream*		stream;
@@ -129,10 +137,10 @@ public:
 	AudioBase();
 	AudioBase(const AudioBase& s) : err(s.err), fmt(s.fmt), flags(s.flags) {stream = s.stream;}
 	
-	void			Exchange(AudioEx& e) override;
+	/*void			Exchange(AudioEx& e) override;
 	int				GetQueueSize() const override {return 0;}
 	AudioFormat		GetFormat() const override {return fmt;}
-	bool			IsQueueFull() const override {return false;}
+	bool			IsQueueFull() const override {return false;}*/
 	
 	dword			GetFrameCount() const {return total_frames;}
 	
@@ -171,14 +179,14 @@ public:
 
 class AudioDeviceStream : public AudioBase {
 	StreamCallbackData	scallback;
-	AudioProxy			aud;
+	//AudioProxy			aud;
 	
 public:
 	Callback1<StreamCallbackArgs&>		WhenAction;
 	Callback1<void *>					WhenFinished;
 
-	AudioDeviceStream() {aud.Set(this);}
-	AudioDeviceStream(const Audio &) {aud.Set(this);}
+	AudioDeviceStream() {} //aud.Set(this);}
+	//AudioDeviceStream(const Audio &) {} //aud.Set(this);}
 
 	void			Open(void* data,const StreamParameters& inparam,const StreamParameters& outparam);
 	void			Open(const StreamParameters& inparam,const StreamParameters& outparam);
@@ -187,46 +195,22 @@ public:
 
 	void			operator<<=(Callback1<StreamCallbackArgs&> cb)    {WhenAction = cb;}
 
-	Audio&			GetAudio() {return aud;}
+	//Audio&			GetAudio() {return aud;}
 	
 private:
 	void			SetFinishCallback();
 	
 };
 
-class BufferedAudioDeviceStream : public AudioDeviceStream {
-	AudioVolatileBuffer	buf;
-	AudioPacketConsumer consumer;
-	
-	void			SinkCallback(StreamCallbackArgs& args);
-	
-public:
-	typedef BufferedAudioDeviceStream CLASSNAME;
-	BufferedAudioDeviceStream();
-	
-	void					OpenDefault(void* data, int inchannels=0,int outchannels=2,SampleFormat format=SND_FLOAT32);
-	void					OpenDefault(int inchannels=0, int outchannels=2,SampleFormat format=SND_FLOAT32);
-	
-	void					Exchange(AudioEx& e) override {buf.Exchange(e);}
-	int						GetQueueSize() const override {return buf.GetQueueSize();}
-	AudioFormat				GetFormat() const override {return buf.GetFormat();}
-	bool					IsQueueFull() const override {return buf.IsQueueFull();}
-	
-	AudioVolatileBuffer&	GetBuffer() {return buf;}
-	
-};
-
 class AudioStream : public AudioBase {
-	AudioProxy		aud;
 	
 public:
-	AudioStream() {aud.Set(this);};
-	AudioStream(const AudioStream& s){stream = s.stream; aud.Set(this);}
+	AudioStream() {}
+	AudioStream(const AudioStream& s){stream = s.stream;}
 
 	void			Open(const StreamParameters& inparam,const StreamParameters& outparam);
 	void			OpenDefault(int inchannels=0, int outchannels=2, SampleFormat format=SND_FLOAT32);
 
-	Audio&			GetAudio() {return aud;}
 	int				ReadAvailable();
 	int				WriteAvailable();
 };

@@ -32,9 +32,7 @@ void CpuRenderer::PostFrame() {
 #endif
 }
 
-int CpuRenderer::AddModel(Model& model) {
-	TODO
-}
+
 
 
 
