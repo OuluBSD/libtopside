@@ -109,6 +109,8 @@ struct ContextT {
 	public:
 		using Pool = RecyclerPool<PacketValue>;
 		
+		static const int def_sample_rate = Ctx::Format::def_sample_rate;
+		
 		RTTI_DECL0(PacketValue);
 		PacketValue() {}
 		
@@ -124,7 +126,8 @@ struct ContextT {
 		double					GetTime() const {return time;}
 		bool					IsOffset(const off32& o) const {return offset.value == o.value;}
 		int						GetSizeBytes() const {return data.GetCount();}
-		int						GetSizeSamples() const {return data.GetCount() / fmt.GetSampleSize();}
+		int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
+		int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
 		
 	#if HAVE_OPENGL
 		virtual bool PaintOpenGLTexture(int texture);
@@ -343,15 +346,11 @@ struct ContextT {
 	{
 		
 	protected:
+		LinkedMap<Value*, off32> sink_offsets;
 		PacketProducer	producer;
 		PacketBuffer	buf;
 		dword			frame_counter = 0;
 		int				min_buf_samples = std::max<int>(1, 3 * Ctx::Format::def_sample_rate);
-		off32			begin;
-		off32			begin_offset_min;
-		off32			begin_offset_max;
-		off32			end_offset_min;
-		off32			end_offset_max;
 		dword			exchange_count = 0;
 		Format			fmt;
 		
@@ -361,7 +360,8 @@ struct ContextT {
 		int			GetQueueSize() const override;
 		Format		GetFormat() const override;
 		bool		IsQueueFull() const override;
-		int			GetQueueSamples() const;
+		int			GetQueueTotalSamples() const;
+		int			GetQueueChannelSamples() const;
 		void		Clear() {buf.Clear();}
 		void		FillBuffersNull();
 		void		Visit(RuntimeVisitor& vis) {}

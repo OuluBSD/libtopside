@@ -49,16 +49,17 @@ TMPL(void) ExchangePoint::Update(double dt) {
 	ex.SetOffset(offset);
 	
 	Stream& src_stream = src->GetStream(CTX);
-	Value& src_audio = src_stream.Get();
-	int src_sz = src_audio.GetQueueSize();
+	Value& src_value = src_stream.Get();
+	int src_sz = src_value.GetQueueSize();
 	
 	if (src_sz) {
-		Value& sink_audio = sink->GetValue(CTX);
-		bool sink_full = sink_audio.IsQueueFull();
+		Value& sink_value = sink->GetValue(CTX);
+		bool sink_full = sink_value.IsQueueFull();
 		
 		if (!sink_full) {RTLOG("ExchangePoint::Update: exchanging");}
 		else {RTLOG("ExchangePoint::Update: sink full");}
 		
+		#if 1
 		int iter = 0;
 		int total_exchanged = 0;
 		int max_exchange = src_sz;
@@ -67,12 +68,12 @@ TMPL(void) ExchangePoint::Update(double dt) {
 			
 			// Consumer works with single connection only
 			if (use_consumer) {
-				ex.SetLoading(src_audio, src->Cfg());
-				sink_audio.Exchange(ex);
+				ex.SetLoading(src_value, src->Cfg());
+				sink_value.Exchange(ex);
 			}
 			else {
-				ex.SetStoring(sink_audio, src->Cfg());
-				src_audio.Exchange(ex);
+				ex.SetStoring(sink_value, src->Cfg());
+				src_value.Exchange(ex);
 			}
 			
 			if (ex.IsFail()) {
@@ -86,13 +87,32 @@ TMPL(void) ExchangePoint::Update(double dt) {
 			if (total_exchanged >= max_exchange)
 				break;
 			
-			src_sz = src_audio.GetQueueSize();
-			sink_full = sink_audio.IsQueueFull();
+			src_sz = src_value.GetQueueSize();
+			sink_full = sink_value.IsQueueFull();
 			++iter;
 			if (src_sz && !sink_full) {
 				RTLOG("ExchangePoint::Update: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
 			}
 		}
+		#else
+		if (src_sz && !sink_full) {
+			off32 begin = ex.GetOffset();
+				
+			// Consumer works with single connection only
+			if (use_consumer) {
+				ex.SetLoading(src_value, src->Cfg());
+				sink_value.Exchange(ex);
+			}
+			else {
+				ex.SetStoring(sink_value, src->Cfg());
+				src_value.Exchange(ex);
+			}
+			
+			if (ex.IsFail()) {
+				RTLOG("error: ExchangePoint::Update: exchange failed");
+			}
+		}
+		#endif
 	}
 	else {
 		RTLOG("ExchangePoint::Update: offset " << offset.ToString() << " empty source");
@@ -129,13 +149,13 @@ TMPL_ECS(void) System::Update(double dt) {
 		int buf_sz = stream.Get().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
 		
-		#if 0 && DEBUG_AUDIO_PIPE
+		#if 0 && DEBUG_RT_PIPE
 		RTLOG("update source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 		#endif
 		
 		src->Update(dt, buffer_full);
 		if (src->Cfg().render) {
-			#if DEBUG_AUDIO_PIPE
+			#if DEBUG_RT_PIPE
 			RTLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			
@@ -147,7 +167,7 @@ TMPL_ECS(void) System::Update(double dt) {
 		SourceRef src = expt->Source();
 		off32 begin_offset = expt->GetOffset();
 		
-		#if 0 && DEBUG_AUDIO_PIPE
+		#if 0 && DEBUG_RT_PIPE
 		RTLOG("expt updpate " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
 		#endif
 		
@@ -157,7 +177,7 @@ TMPL_ECS(void) System::Update(double dt) {
 		off32 end_offset = expt->GetOffset();
 		src->SetOffset(begin_offset, end_offset);
 		
-		#if DEBUG_AUDIO_PIPE
+		#if DEBUG_RT_PIPE
 		off32 diff = off32::GetDifference(begin_offset, end_offset);
 		if (diff) {
 			auto sink = expt->Sink();
@@ -169,7 +189,7 @@ TMPL_ECS(void) System::Update(double dt) {
 	for (SourceRef src :srcs) {
 		const auto& cfg = src->Cfg();
 		if (cfg.begin_offset != cfg.end_offset) {
-			#if DEBUG_AUDIO_PIPE
+			#if DEBUG_RT_PIPE
 			RTLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
 			#endif
 			

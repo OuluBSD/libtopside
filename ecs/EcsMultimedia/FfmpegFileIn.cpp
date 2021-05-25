@@ -540,6 +540,8 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	ASSERT(var_size == fmt.GetSampleSize());
 	#endif
 	
+	int frame_sz = frame->nb_samples * frame->channels * var_size;
+	
 	// Non-planar data
 	if (frame->data[1] == 0) {
 		if (frame->data[0]) {
@@ -550,8 +552,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			off32 offset{frame_counter++};
 			p->Set(fmt, offset, time_pos);
 			Vector<byte>& data = p->Data();
-			int sz = max(frame->linesize[0], fmt.GetFrameSize());
-			data.SetCount(sz, 0);
+			data.SetCount(frame->linesize[0], 0);
 			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
 		}
 	}
@@ -564,8 +565,17 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
 		p->Set(fmt, offset, time_pos);
+		
+		if (0) {
+			LOG("frame-sz:     " << frame_sz);
+			LOG("fmt:          " << fmt.ToString());
+			LOG("f-nb-samples: " << frame->nb_samples);
+			LOG("f-channels:   " << frame->channels);
+			__BREAK__
+		}
+		
 		Vector<byte>& data = p->Data();
-		data.SetCount(fmt.GetFrameSize(), 0);
+		data.SetCount(frame_sz, 0);
 		byte* dst = data.Begin();
 		
 		for(int i = 0; i < frame->channels; i++)
@@ -580,11 +590,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		}
 		ASSERT(dst == data.End());
 	}
-	begin = buf.IsEmpty() ? off32() : buf.begin()()->GetOffset();
-	begin_offset_min.SetMax();
-	begin_offset_max.SetMin();
-	end_offset_min.SetMax();
-	end_offset_max.SetMin();
+	
 	exchange_count = 0;
 }
 

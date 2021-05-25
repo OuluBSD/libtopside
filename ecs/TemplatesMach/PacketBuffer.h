@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class T>
 class RealtimePacketBuffer {
 	static const int BUFFER_COUNT = 2;
-	static const int SAMPLE_LIMIT = 4*1024; // large default
+	static const int SAMPLE_LIMIT = 3 * T::Class::def_sample_rate; // large default
 	
 	RWMutex lock;
 	LinkedList<T> packets[BUFFER_COUNT];
@@ -49,9 +49,10 @@ public:
 	void		SetLimit(int samples) {ASSERT(samples > 0); sample_limit = samples;}
 	
 	int			GetQueueSize() const {return packets[data_i].GetCount();}
-	int			GetQueueSamples() const {int bytes = 0; for (auto& p : packets[data_i]) bytes += p->GetSizeSamples(); return bytes;}
+	int			GetQueueTotalSamples() const {int bytes = 0; for (auto& p : packets[data_i]) bytes += p->GetSizeTotalSamples(); return bytes;}
+	int			GetQueueChannelSamples() const {int bytes = 0; for (auto& p : packets[data_i]) bytes += p->GetSizeChannelSamples(); return bytes;}
 	bool		IsQueueFull() const {
-		int sz = GetQueueSamples();
+		int sz = GetQueueChannelSamples();
 		return sz >= sample_limit;
 	}
 	bool		IsEmpty() const {return packets[data_i].IsEmpty();}

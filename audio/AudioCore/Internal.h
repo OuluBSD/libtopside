@@ -9,7 +9,7 @@
 	#include <portaudio.h>
 #endif
 
-#if defined flagBUILTIN_PORTMIDI || (defined flagWIN32 && defined flagMSC)
+#if defined flagBUILTIN_PORTMIDI || (defined flagWIN32 && defined flagMSC) || flagFREEBSD
 	#include <ports/portmidi/portmidi.h>
 	#include <ports/portmidi/pmutil.h>
 	#include <ports/portmidi/porttime.h>

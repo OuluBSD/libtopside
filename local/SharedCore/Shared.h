@@ -47,6 +47,7 @@ protected:
 
 public:
 	using S = Shared<T,Base>;
+	using Class = T;
 	template <class K> using SharedT = Shared<K,Base>;
 	
 	Shared() {}

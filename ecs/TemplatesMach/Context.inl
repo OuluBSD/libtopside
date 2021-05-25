@@ -64,6 +64,7 @@ TMPL(void) SimpleBufferedValue::Exchange(Ex& e) {
 		}
 		auto frame_iter = buf.begin();
 		Packet& p = frame_iter();
+		off32 buf_read_pos = p->GetOffset();
 		
 		// Compare exchange and source formats
 		auto cmp_fmt = p->GetFormat();
@@ -75,16 +76,23 @@ TMPL(void) SimpleBufferedValue::Exchange(Ex& e) {
 		
 		VolatileBuffer* vol_aud = CastPtr<VolatileBuffer>(&sink);
 		if (vol_aud) {
-			off32 begin = e.GetOffset();
-			RTLOG("SimpleBufferedValue::Exchange: offset " << begin.ToString() << " with incoming " << p->GetOffset().ToString());
+			off32 expected = e.GetOffset();
+			RTLOG("SimpleBufferedValue::Exchange: expected offset " << expected.ToString() << " with buffer read position " << buf_read_pos.ToString());
 			ASSERT(!sink.IsQueueFull());
 			
-			/*if (!(p->GetOffset() == begin)) {
+			/*if (!(p->GetOffset() == expected)) {
 				vol_aud->Dump();
 			}
-			ASSERT(p->GetOffset() == begin);*/
+			ASSERT(p->GetOffset() == expected);*/
 			
-			producer.SetOffset(begin);
+			if (1)
+				producer.SetOffset(expected);
+			else {
+				producer.SetOffset(buf_read_pos);
+				if (buf_read_pos != expected) {RTLOG("SimpleBufferedValue::Exchange: warning: reading unexpected buffer offset");}
+				expected = buf_read_pos;
+			}
+			
 			producer.SetDestination(*vol_aud);
 			producer.SetDestinationRealtime(conf.sync);
 			producer.ProduceAll();
@@ -93,13 +101,10 @@ TMPL(void) SimpleBufferedValue::Exchange(Ex& e) {
 			off32 end = producer.GetOffset();
 			e.SetOffset(end);
 			
-			off32 diff = off32::GetDifference(begin, end);
+			off32 diff = off32::GetDifference(expected, end);
 			RTLOG("SimpleBufferedValue::Exchange: produced count=" << diff.ToString());
 			
-			begin_offset_min.TestSetMin(begin);
-			begin_offset_max.TestSetMax(begin);
-			end_offset_min.TestSetMin(end);
-			end_offset_max.TestSetMax(end);
+			sink_offsets.GetAdd(&e.Sink()) = end;
 			
 			exchange_count += diff.value;
 			
@@ -124,13 +129,20 @@ TMPL(typename ContextT<Ctx>::Format) SimpleBufferedValue::GetFormat() const {
 }
 
 TMPL(bool) SimpleBufferedValue::IsQueueFull() const {
-	return GetQueueSamples() >= min_buf_samples;
+	return GetQueueChannelSamples() >= min_buf_samples;
 }
 
-TMPL(int) SimpleBufferedValue::GetQueueSamples() const {
+TMPL(int) SimpleBufferedValue::GetQueueChannelSamples() const {
 	int size = 0;
 	for(auto& p : buf)
-		size += p->GetSizeSamples();
+		size += p->GetSizeChannelSamples();
+	return size;
+}
+
+TMPL(int) SimpleBufferedValue::GetQueueTotalSamples() const {
+	int size = 0;
+	for(auto& p : buf)
+		size += p->GetSizeTotalSamples();
 	return size;
 }
 
@@ -148,23 +160,34 @@ TMPL(void) SimpleBufferedValue::FillBuffersNull() {
 TMPL(void) SimpleBufferedValue::DropBuffer() {
 	if (exchange_count == 0)
 		return;
+	ASSERT(sink_offsets.GetCount());
 	
-	/*off32 min_begin_diff = std::min(
-		off32::GetDifference(begin, begin_offset_min),
-		off32::GetDifference(begin, begin_offset_max));
-	ASSERT(min_begin_diff.value == 0);*/
+	// Find sink with lowest read position
+	auto sink_iter = sink_offsets.begin();
+	off32 end_offset_min = sink_iter();
+	for(++sink_iter; sink_iter; ++sink_iter)
+		end_offset_min = std::min(end_offset_min, sink_iter());
 	
-	off32 min_end_diff = std::min(
-		off32::GetDifference(begin, end_offset_min),
-		off32::GetDifference(begin, end_offset_max));
-	
-	if (min_end_diff) {
-		auto iter = buf.begin();
-		for(int i = 0; i < min_end_diff.value; i++) {
-			RTLOG("SimpleBufferedValue::DropBuffer: dropping " << iter()->GetOffset().ToString());
-			++iter;
+	int rem_count = 0;
+	auto pkt_iter = buf.begin();
+	off32 anchor = pkt_iter()->GetOffset(); // for integer overflow
+	for(; pkt_iter; ++pkt_iter) {
+		if (off32::GetDifferenceI64(anchor, pkt_iter()->GetOffset(), end_offset_min) > 0) {
+			RTLOG("SimpleBufferedValue::DropBuffer: dropping " << pkt_iter()->GetOffset().ToString());
+			++rem_count;
 		}
-		buf.RemoveFirst(min_end_diff.value);
+		else break;
+	}
+	
+	if (1) {
+		RTLOG("SimpleBufferedValue::DropBuffer: "
+			"exchange_count " << exchange_count << ", " <<
+			"rem_count " << rem_count << ", " <<
+			"end_offset_min " << end_offset_min.ToString());}
+	
+	if (rem_count) {
+		buf.RemoveFirst(rem_count);
+		sink_offsets.Clear();
 	}
 }
 
@@ -265,6 +288,7 @@ TMPL(bool) PacketProducer::ProducePacket() {
 		Packet p = iter();
 		dst->Put(p, dst_realtime);
 		internal_written_bytes += p->GetSizeBytes();
+		offset = p->GetOffset();
 		++offset;
 		return true;
 	}

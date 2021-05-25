@@ -60,6 +60,14 @@ struct OffsetLoop {
 		return ret;
 	}
 	
+	static int64 GetDifferenceI64(OffsetLoop overflow_anchor, OffsetLoop min, OffsetLoop max) {
+		int64 anchor = overflow_anchor.value;
+		int64 a = (int64)min.value;
+		int64 b = (int64)max.value;
+		if (b < anchor)
+			b += (int64)limits::max() - (int64)limits::min();
+		return b - a;
+	}
 	
 };
 
@@ -75,6 +83,7 @@ struct RealtimeSourceConfig {
     dword last_sync_src_frame = 0;
 	dword frames_after_sync = 0;
 	dword src_frame = 0;
+	bool enable_sync = false;
 	bool sync = 0;
 	bool render = 0;
 	off32 begin_offset, end_offset;

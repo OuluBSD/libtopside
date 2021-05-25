@@ -7,12 +7,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN>
-static void AudioTypeConvert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
+static void AudioTypeConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
+	int limit = std::min(src_ch_samples, src_fmt.sample_rate);
 	const SRC* src_it = (const SRC*)src;
-	const SRC* src_end = src_it + src_fmt.sample_rate * src_fmt.channels;
+	const SRC* src_end = src_it + limit * src_fmt.channels;
 	DST* dst_it = (DST*)dst;
-	DST* dst_end = dst_it + src_fmt.sample_rate * dst_fmt.channels;
-	for(int i = 0; i < src_fmt.sample_rate; i++) {
+	DST* dst_end = dst_it + limit * dst_fmt.channels;
+	for(int i = 0; i < limit; i++) {
 		for(int j = 0; j < dst_fmt.channels; j++) {
 			SRC src_v = src_it[j % src_fmt.channels];
 			DST dst_v = ConvertAudioSample<SRC, DST, SRC_NATIVE_ENDIAN, DST_NATIVE_ENDIAN>(src_v);
@@ -26,7 +27,7 @@ static void AudioTypeConvert(const AudioFormat& src_fmt, const byte* src, const 
 
 
 
-bool AudioConvert(const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
+bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
 	#define LIST_A(nat_is_be) \
 		ITEM_A(nat_is_be, unsigned char, 0) \
 		ITEM_A(nat_is_be, unsigned short, 0) \
@@ -58,15 +59,15 @@ bool AudioConvert(const AudioFormat& src_fmt, const byte* src, const AudioFormat
 			dst_fmt_is_var_signed == b_signed) {\
 			if (src_fmt_is_var_bigendian == nat_is_be) { \
 				if (dst_fmt_is_var_bigendian == nat_is_be) \
-					AudioTypeConvert<a,b,1,1>(src_fmt, src, dst_fmt, dst); \
+					AudioTypeConvert<a,b,1,1>(src_ch_samples, src_fmt, src, dst_fmt, dst); \
 				else \
-					AudioTypeConvert<a,b,1,0>(src_fmt, src, dst_fmt, dst); \
+					AudioTypeConvert<a,b,1,0>(src_ch_samples, src_fmt, src, dst_fmt, dst); \
 			} \
 			else { \
 				if (dst_fmt_is_var_bigendian == nat_is_be) \
-					AudioTypeConvert<a,b,0,1>(src_fmt, src, dst_fmt, dst); \
+					AudioTypeConvert<a,b,0,1>(src_ch_samples, src_fmt, src, dst_fmt, dst); \
 				else \
-					AudioTypeConvert<a,b,0,0>(src_fmt, src, dst_fmt, dst); \
+					AudioTypeConvert<a,b,0,0>(src_ch_samples, src_fmt, src, dst_fmt, dst); \
 			} \
 			return true; \
 		}
@@ -94,13 +95,24 @@ bool ContextT<AudioContext>::Convert(const AudioPacket& src, AudioPacket& dst) {
 	AudioFormat src_fmt = src->GetFormat();
 	AudioFormat dst_fmt = dst->GetFormat();
 	int src_sample = src_fmt.GetSampleSize();
+	int src_channels = src_fmt.channels;
 	int dst_sample = dst_fmt.GetSampleSize();
+	int dst_channels = dst_fmt.channels;
 	const Vector<byte>& src_data = src->GetData();
-	int src_samples = src_data.GetCount() / src_sample;
+	int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
 	Vector<byte>& dst_data = dst->Data();
-	int dst_size = src_samples * dst_sample;
+	int dst_size = src_ch_samples * dst_sample * dst_channels;
 	dst_data.SetCount(dst_size);
-	return AudioConvert(src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
+	if (0) {
+		LOG("src-size:     " << src_data.GetCount());
+		LOG("src-ch-sz:    " << src_ch_samples);
+		LOG("src-sample:   " << src_sample);
+		LOG("src-channels: " << src_channels);
+		LOG("dst-size:     " << dst_size);
+		LOG("dst-sample:   " << dst_sample);
+		LOG("dst-channels: " << dst_channels);
+	}
+	return AudioConvert(src_ch_samples, src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
 }
 
 

@@ -10,7 +10,7 @@ void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
 	this->dt += dt;
 	++src_frame;
 	
-	if (sync_age >= sync_dt) {
+	if (enable_sync && sync_age >= sync_dt) {
 		if (sync_age > 2 * sync_dt)
 			sync_age = sync_dt;
 		else

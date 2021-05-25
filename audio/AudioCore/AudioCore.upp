@@ -7,13 +7,13 @@ uses
 
 uses((BUILTIN_PORTAUDIO | (WIN32&MSC))) ports/portaudio;
 
-uses((BUILTIN_PORTMIDI | (WIN32&MSC))) ports/portmidi;
+uses((BUILTIN_PORTMIDI | (WIN32&MSC) | FREEBSD)) ports/portmidi;
 
 library(!WIN32) fluidsynth;
 
 library(WIN32 & !MSC) libfluidsynth.dll.a;
 
-library(!(BUILTIN_PORTMIDI | (WIN32&MSC))) portmidi;
+library(!(BUILTIN_PORTMIDI | (WIN32&MSC) | FREEBSD)) portmidi;
 
 library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 

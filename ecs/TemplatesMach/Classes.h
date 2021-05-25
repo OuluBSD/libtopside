@@ -19,35 +19,39 @@ class HumanSample {
 
 class SoundSample {
 public:
-	static const int def_sample_rate = 44100;
+	static const int def_sample_rate = 1024;
 	
+	#define SND_SMPL_LIST \
+		SND_SMPL(S_U8_LE) \
+		SND_SMPL(S_U16_LE) \
+		SND_SMPL(S_U24_LE) \
+		SND_SMPL(S_U32_LE) \
+		SND_SMPL(S_U64_LE) \
+		SND_SMPL(S_S8_LE) \
+		SND_SMPL(S_S16_LE) \
+		SND_SMPL(S_S24_LE) \
+		SND_SMPL(S_S32_LE) \
+		SND_SMPL(S_S64_LE) \
+		SND_SMPL(S_FLT_LE) \
+		SND_SMPL(S_DBL_LE) \
+		SND_SMPL(S_U8_BE) \
+		SND_SMPL(S_U16_BE) \
+		SND_SMPL(S_U24_BE) \
+		SND_SMPL(S_U32_BE) \
+		SND_SMPL(S_U64_BE) \
+		SND_SMPL(S_S8_BE) \
+		SND_SMPL(S_S16_BE) \
+		SND_SMPL(S_S24_BE) \
+		SND_SMPL(S_S32_BE) \
+		SND_SMPL(S_S64_BE) \
+		SND_SMPL(S_FLT_BE) \
+		SND_SMPL(S_DBL_BE)
+		
 	typedef enum {
 		INVALID,
-		S_U8_LE,
-		S_U16_LE,
-		S_U24_LE,
-		S_U32_LE,
-		S_U64_LE,
-		S_S8_LE,
-		S_S16_LE,
-		S_S24_LE,
-		S_S32_LE,
-		S_S64_LE,
-		S_FLT_LE,
-		S_DBL_LE,
-		S_U8_BE,
-		S_U16_BE,
-		S_U24_BE,
-		S_U32_BE,
-		S_U64_BE,
-		S_S8_BE,
-		S_S16_BE,
-		S_S24_BE,
-		S_S32_BE,
-		S_S64_BE,
-		S_FLT_BE,
-		S_DBL_BE,
-		
+		#define SND_SMPL(x) x ,
+		SND_SMPL_LIST
+		#undef SND_SMPL
 		TYPE_COUNT
 	} Type;
 	
@@ -56,6 +60,7 @@ public:
 	
 	
 	static void Clear(Type& t) {t = INVALID;}
+	static String ToString(Type t);
 	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
 	static int GetSize(Type t);
 	static bool IsUnsigned(Type t);
@@ -73,26 +78,31 @@ class LightSampleFD
 {
 	
 public:
-	static const int def_sample_rate = 60;
+	static const int def_sample_rate = 1;
+	
+	#define LTFD_SMPL_LIST \
+		LTFD_SMPL(S_R_U8_LE) \
+		LTFD_SMPL(S_RG_U8_LE) \
+		LTFD_SMPL(S_RGB_U8_LE) \
+		LTFD_SMPL(S_RGBA_U8_LE) \
+		LTFD_SMPL(S_BGR_U8_LE) \
+		LTFD_SMPL(S_R_FLT_LE) \
+		LTFD_SMPL(S_RG_FLT_LE) \
+		LTFD_SMPL(S_RGB_FLT_LE) \
+		LTFD_SMPL(S_RGBA_FLT_LE) \
+		LTFD_SMPL(S_BGR_FLT_LE)
 	
 	typedef enum {
 		INVALID,
-		S_R_U8_LE,
-		S_RG_U8_LE,
-		S_RGB_U8_LE,
-		S_RGBA_U8_LE,
-		S_BGR_U8_LE,
-		S_R_FLT_LE,
-		S_RG_FLT_LE,
-		S_RGB_FLT_LE,
-		S_RGBA_FLT_LE,
-		S_BGR_FLT_LE,
-		
+		#define LTFD_SMPL(x) x ,
+		LTFD_SMPL_LIST
+		#undef LTFD_SMPL
 		TYPE_COUNT
 	} Type;
 	
 	
 	static void Clear(Type& t) {t = INVALID;}
+	static String ToString(Type t);
 	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
 	static int GetSize(Type t);
 	static bool IsUnsigned(Type t);
@@ -141,6 +151,7 @@ class MaterialSampleFD {
 };
 
 
+
 template <int> struct DimBase;
 template<> struct DimBase<1> {
 	union {
@@ -153,9 +164,12 @@ template<> struct DimBase<1> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	void Clear() {for(int i = 0; i < 1; i++) size[i] = 0;}
+	String ToString() const {return "len(" + IntStr(channels) + ")";}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0];}
+	int GetArea() const {return size[0];}
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 1; i++) size[i] = b.size[i]; return *this;}
 };
+
 template<> struct DimBase<2> {
 	union {
 		int size[2];
@@ -177,7 +191,9 @@ template<> struct DimBase<2> {
 		for(int i = 0; i < 2; i++) size[i] = 0;
 		width_pad = 0;
 	}
+	String ToString() const {return res.ToString();}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0] && size[1] == b.size[1];}
+	int GetArea() const {return size[0] * size[1];}
 	DimBase& operator=(const DimBase& b) {
 		for(int i = 0; i < 2; i++) size[i] = b.size[i];
 		width_pad = b.width_pad;
@@ -187,6 +203,7 @@ template<> struct DimBase<2> {
 	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); width_pad = bytes;}
 	
 };
+
 template<> struct DimBase<3> {
 	union {
 		int size[3];
@@ -205,13 +222,26 @@ template<> struct DimBase<3> {
 	
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
+	
+	String ToString() const {return res.ToString();}
 	void Clear() {for(int i = 0; i < 3; i++) size[i] = 0;}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0] && size[1] == b.size[1] && size[2] == b.size[2];}
+	int GetArea() const {return size[0] * size[1] * size[2];}
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 3; i++) size[i] = b.size[i]; return *this;}
 };
 
+
+class OnceBase {
+public:
+	
+	static const int def_sample_rate = 1;
+};
+
+
 template <class T>
-class T1D {
+class T1D :
+	public OnceBase
+{
 	
 public:
 	int len = 0;
@@ -219,7 +249,9 @@ public:
 };
 
 template <class T>
-class T2D {
+class T2D :
+	public OnceBase
+{
 	
 public:
 	Size sz = {0,0};
@@ -227,7 +259,9 @@ public:
 };
 
 template <class T>
-class T3D {
+class T3D :
+	public OnceBase
+{
 	
 public:
 	Size3 vol = {0,0,0};
@@ -235,17 +269,23 @@ public:
 };
 
 template <class T>
-class T1DFD {
+class T1DFD :
+	public OnceBase
+{
 	
 };
 
 template <class T>
-class T2DFD {
+class T2DFD :
+	public OnceBase
+{
 	
 };
 
 template <class T>
-class T3DFD {
+class T3DFD :
+	public OnceBase
+{
 	
 };
 
@@ -260,6 +300,7 @@ public:
 	void Set(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
 	void SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
 	
+	String ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
 	bool IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}
 	bool IsSame(const TimeSeriesBase& b) const {
 		return	b.freq == freq &&
@@ -290,6 +331,7 @@ public:
 	void Clear() {Sample::Clear(type);}
 	void SetType(SampleType t) {type = t;}
 	
+	String ToString() const {return Sample::ToString(type);}
 	int GetSampleSize() const {return Sample::GetSize(type);}
 	bool IsSampleFloat() const {return Sample::IsFloating(type);}
 	bool IsSampleSigned() const {return Sample::IsSigned(type);}
@@ -307,6 +349,8 @@ public:
 
 #define TS_FUNCS(dim) \
 	using TSClass = T##dim##DTimeSeries<T>; \
+	T##dim##DTimeSeries() {Clear();} \
+	T##dim##DTimeSeries(const T##dim##DTimeSeries& s) {*this = s;} \
 	static const int def_sample_rate = T::def_sample_rate; \
 	bool IsSame(const TSClass& b) const {\
 		return		TimeSeriesBase::IsSame(b) && \
@@ -316,13 +360,14 @@ public:
 	bool operator==(const TSClass& b) const {return IsSame(b);} \
 	bool operator!=(const TSClass& b) const {return !IsSame(b);} \
 	void Clear() {TimeSeriesBase::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
-	int GetFrameSize() const {return TimeSeriesBase::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
+	int GetFrameSize() const {return DimBase<dim>::GetArea() * TimeSeriesBase::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
 	TSClass& operator=(const TSClass& c) { \
 					TimeSeriesBase::operator=(c); \
 					SampleBase<T>::operator=(c); \
 					DimBase<dim>::operator=(c); \
 		return *this; \
 	} \
+	String ToString() const {return DimBase<1>::ToString() + ", " + TimeSeriesBase::ToString() + ", " + SampleBase<T>::ToString();} \
 	
 
 
@@ -369,22 +414,38 @@ public:
 
 
 template <class T>
-class T1DTimeSeriesFD {
+class T1DTimeSeriesFD :
+	public TimeSeriesBase
+{
 	
 };
 
 template <class T>
-class T2DTimeSeriesFD {
+class T2DTimeSeriesFD :
+	public TimeSeriesBase
+{
 	
 };
 
 template <class T>
-class T3DTimeSeriesFD {
+class T3DTimeSeriesFD :
+	public TimeSeriesBase
+{
+	
+};
+
+
+
+class SparseBase {
+public:
+	static const int def_sample_rate = 1;
 	
 };
 
 template <class T>
-class T1DSparseTimeSeries {
+class T1DSparseTimeSeries :
+	public SparseBase
+{
 	
 };
 
@@ -433,6 +494,8 @@ class T1DMulti4 {
 	T1D<T3>		o3;
 	
 public:
+	static const int def_sample_rate = 1;
+	
 	
 };
 
@@ -445,6 +508,7 @@ class AVTimeSeries {
 	T1D<T1>		o1;
 	
 public:
+	static const int def_sample_rate = 1;
 	
 };
 

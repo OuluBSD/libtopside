@@ -14,6 +14,16 @@ template <> SoundSample::Type SoundSample::GetSampleType<int64>() {return S_S64_
 template <> SoundSample::Type SoundSample::GetSampleType<float>() {return S_FLT_LE;}
 template <> SoundSample::Type SoundSample::GetSampleType<double>() {return S_DBL_LE;}
 
+String SoundSample::ToString(Type t) {
+	switch (t) {
+		#define SND_SMPL(x) case x: return &(#x[2]);
+		SND_SMPL_LIST
+		#undef SND_SMPL
+		default: break;
+	}
+	return "<invalid-sample-type>";
+}
+
 int SoundSample::GetSize(Type t) {
 	switch (t) {
 		case INVALID: return 0;
@@ -73,6 +83,16 @@ bool SoundSample::IsBigEndian(Type t) {
 
 
 
+
+String LightSampleFD::ToString(Type t) {
+	switch (t) {
+		#define LTFD_SMPL(x) case x: return &(#x[2]);
+		LTFD_SMPL_LIST
+		#undef LTFD_SMPL
+		default: break;
+	}
+	return "<invalid-sample-type>";
+}
 
 int LightSampleFD::GetSize(Type t) {
 	switch (t) {

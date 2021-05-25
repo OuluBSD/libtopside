@@ -37,6 +37,7 @@ AudioBase::AudioBase() : err(paNoError), flags(SND_NOFLAG){
 	fmt.sample_rate = 1024;
 	fmt.channels = 2;
 	SetFormat(2, SND_FLOAT32);
+	stream = 0;
 	AudioSys();
 }
 
