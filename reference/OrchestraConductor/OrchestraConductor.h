@@ -2,7 +2,7 @@
 #define _OrchestraConductor_OrchestraConductor_h_
 
 #include <Complete/Complete.h>
-#include <FusionCore/FusionCore.h>
+#include <AccelCore/AccelCore.h>
 #include <AudioCore/System.h>
 #include <Music/Music.h>
 using namespace Topside;

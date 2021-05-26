@@ -2,10 +2,10 @@ uses
 	Complete;
 
 file
-	ShaderViewer.h,
-	ShaderViewer.cpp;
+	ShaderPlayer.h,
+	ShaderPlayer.cpp;
 
 mainconfig
-	"AltCore 3D backend" = "GUI OPENGL",
+	"" = "GUI OPENGL",
 	"" = "GUI OPENGL VERBOSE_SHADERCORE";
 

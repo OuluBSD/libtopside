@@ -12,10 +12,7 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
 
-class HumanSample {
-	
-	
-};
+
 
 class SoundSample {
 public:
@@ -114,41 +111,38 @@ public:
 	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
 };
 
-class SpaceSample {
-	
-};
-
-class VertexSample {
-	
-};
-
-class TexLocSample {
-	
-};
-
-class BoneSample {
-	
-};
-
-class DeviceSample {
-	
-};
-
-class MidiSample {
-	
-};
-
-class PhysicsSample {
-	
-};
-
-class MaterialSample {
-	
-};
-
-class MaterialSampleFD {
-	
-};
+#define DUMMY_SAMPLE(x) \
+	class x { \
+		public: \
+		static const int def_sample_rate = 1024; \
+		typedef enum { \
+			INVALID, \
+			\
+			TYPE_COUNT \
+		} Type; \
+		static void Clear(Type& t) {t = INVALID;} \
+		static String ToString(Type t) {return IntStr((int)t);} \
+		static bool IsCopyCompatible(Type a, Type b) {return a == b;} \
+		static int GetSize(Type t) {return 0;} \
+		static bool IsUnsigned(Type t) {return false;} \
+		static bool IsSigned(Type t) {return false;} \
+		static bool IsFloating(Type t) {return false;} \
+		static bool IsDecimal(Type t) {return false;} \
+		static bool IsLittleEndian(Type t) {return false;} \
+		static bool IsBigEndian(Type t) {return false;} \
+		static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;} \
+	};
+		
+DUMMY_SAMPLE(HumanSample)
+DUMMY_SAMPLE(SpaceSample)
+DUMMY_SAMPLE(VertexSample)
+DUMMY_SAMPLE(TexLocSample)
+DUMMY_SAMPLE(BoneSample)
+DUMMY_SAMPLE(DeviceSample)
+DUMMY_SAMPLE(MidiSample)
+DUMMY_SAMPLE(PhysicsSample)
+DUMMY_SAMPLE(MaterialSample)
+DUMMY_SAMPLE(MaterialSampleFD)
 
 
 
@@ -235,62 +229,28 @@ class OnceBase {
 public:
 	
 	static const int def_sample_rate = 1;
+	
+	void Clear() {}
+	
+	int GetSampleRate() const {return 1;}
+	bool IsSame(const OnceBase& b) const {return true;}
+	String ToString() const {return "OnceBase";}
+	
 };
 
-
-template <class T>
-class T1D :
-	public OnceBase
-{
-	
+class SparseTimeSeriesBase {
 public:
-	int len = 0;
+	static const int def_sample_rate = 1;
+	
+	void Clear() {}
+	
+	int GetSampleRate() const {return 1;}
+	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
+	String ToString() const {return "SparseTimeSeriesBase";}
 	
 };
 
-template <class T>
-class T2D :
-	public OnceBase
-{
-	
-public:
-	Size sz = {0,0};
-	
-};
-
-template <class T>
-class T3D :
-	public OnceBase
-{
-	
-public:
-	Size3 vol = {0,0,0};
-	
-};
-
-template <class T>
-class T1DFD :
-	public OnceBase
-{
-	
-};
-
-template <class T>
-class T2DFD :
-	public OnceBase
-{
-	
-};
-
-template <class T>
-class T3DFD :
-	public OnceBase
-{
-	
-};
-
-class TimeSeriesBase :
-	RTTIBase {
+class TimeSeriesBase {
 public:
 	int freq = 0;
 	int sample_rate = 0;
@@ -317,7 +277,6 @@ public:
 	}
 	
 };
-
 
 template <class T>
 class SampleBase {
@@ -347,109 +306,64 @@ public:
 };
 
 
-#define TS_FUNCS(dim) \
-	using TSClass = T##dim##DTimeSeries<T>; \
-	T##dim##DTimeSeries() {Clear();} \
-	T##dim##DTimeSeries(const T##dim##DTimeSeries& s) {*this = s;} \
+
+
+#define FUNC_TMPL(dim, post, d) \
+	using Class = d##dim##post<T>; \
+	d##dim##post() {Clear();} \
+	d##dim##post(const d##dim##post& s) {*this = s;} \
 	static const int def_sample_rate = T::def_sample_rate; \
-	bool IsSame(const TSClass& b) const {\
-		return		TimeSeriesBase::IsSame(b) && \
+	bool IsSame(const Class& b) const {\
+		return		post##Base::IsSame(b) && \
 					SampleBase<T>::IsCopyCompatible(b) && \
 					DimBase<dim>::IsSame(b); \
 	} \
-	bool operator==(const TSClass& b) const {return IsSame(b);} \
-	bool operator!=(const TSClass& b) const {return !IsSame(b);} \
-	void Clear() {TimeSeriesBase::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
-	int GetFrameSize() const {return DimBase<dim>::GetArea() * TimeSeriesBase::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
-	TSClass& operator=(const TSClass& c) { \
-					TimeSeriesBase::operator=(c); \
+	bool operator==(const Class& b) const {return IsSame(b);} \
+	bool operator!=(const Class& b) const {return !IsSame(b);} \
+	void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
+	int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
+	Class& operator=(const Class& c) { \
+					post##Base::operator=(c); \
 					SampleBase<T>::operator=(c); \
 					DimBase<dim>::operator=(c); \
 		return *this; \
 	} \
-	String ToString() const {return DimBase<1>::ToString() + ", " + TimeSeriesBase::ToString() + ", " + SampleBase<T>::ToString();} \
+	String ToString() const {return DimBase<dim>::ToString() + ", " + post##Base::ToString() + ", " + SampleBase<T>::ToString();} \
 	
 
 
-template <class T>
-class T1DTimeSeries :
-	public TimeSeriesBase,
-	public SampleBase<T>,
-	public DimBase<1>
-{
-	RTTI_DECL1(T1DTimeSeries, TimeSeriesBase)
-	
-public:
-	TS_FUNCS(1)
-	
-	
-};
+#define COMBINE_CLASS(dim, post, d) \
+	template <class T> \
+	class d##dim##post : \
+		public post##Base, \
+		public SampleBase<T>, \
+		public DimBase<dim> \
+	{ \
+	 \
+	public: \
+		FUNC_TMPL(dim, post, d) \
+	 \
+	};
 
-template <class T>
-class T2DTimeSeries :
-	public TimeSeriesBase,
-	public SampleBase<T>,
-	public DimBase<2>
-{
-	RTTI_DECL1(T2DTimeSeries, TimeSeriesBase)
-	
-public:
-	TS_FUNCS(2)
-	
-};
+#define COMBINE_CLASS_3(post, d) \
+	COMBINE_CLASS(1, post, d) \
+	COMBINE_CLASS(2, post, d) \
+	COMBINE_CLASS(3, post, d)
 
-template <class T>
-class T3DTimeSeries :
-	public TimeSeriesBase,
-	public SampleBase<T>,
-	public DimBase<3>
-{
-	RTTI_DECL1(T3DTimeSeries, TimeSeriesBase)
-	
-public:
-	TS_FUNCS(3)
-	
-};
+#define COMBINE_CLASS_TDFD(x) \
+	COMBINE_CLASS_3(x, TD) \
+	COMBINE_CLASS_3(x, FD)
 
 
-
-template <class T>
-class T1DTimeSeriesFD :
-	public TimeSeriesBase
-{
-	
-};
-
-template <class T>
-class T2DTimeSeriesFD :
-	public TimeSeriesBase
-{
-	
-};
-
-template <class T>
-class T3DTimeSeriesFD :
-	public TimeSeriesBase
-{
-	
-};
+COMBINE_CLASS_TDFD(Once)
+COMBINE_CLASS_TDFD(TimeSeries)
+COMBINE_CLASS_TDFD(SparseTimeSeries)
 
 
-
-class SparseBase {
-public:
-	static const int def_sample_rate = 1;
-	
-};
-
-template <class T>
-class T1DSparseTimeSeries :
-	public SparseBase
-{
-	
-};
-
-
+#undef FUNC_TMPL
+#undef COMBINE_CLASS
+#undef COMBINE_CLASS_3
+#undef COMBINE_CLASS_TDFD
 
 
 
@@ -482,16 +396,16 @@ public:
 
 
 template <class T>
-class T1DMulti4 {
+class TD1OnceMulti4 {
 	using T0 = typename T::T0;
 	using T1 = typename T::T1;
 	using T2 = typename T::T2;
 	using T3 = typename T::T3;
 	
-	T1D<T0>		o0;
-	T1D<T1>		o1;
-	T1D<T2>		o2;
-	T1D<T3>		o3;
+	TD1Once<T0>		o0;
+	TD1Once<T1>		o1;
+	TD1Once<T2>		o2;
+	TD1Once<T3>		o3;
 	
 public:
 	static const int def_sample_rate = 1;
@@ -501,11 +415,11 @@ public:
 
 template <class T>
 class AVTimeSeries {
-	using T0 = T1DTimeSeries<typename T::T0>;
-	using T1 = T2DTimeSeries<typename T::T1>;
+	using T0 = TD1TimeSeries<typename T::T0>;
+	using T1 = TD2TimeSeries<typename T::T1>;
 	
-	T1D<T0>		o0;
-	T1D<T1>		o1;
+	T0		o0;
+	T1		o1;
 	
 public:
 	static const int def_sample_rate = 1;
@@ -516,5 +430,6 @@ public:
 
 
 NAMESPACE_TOPSIDE_END
+
 
 #endif

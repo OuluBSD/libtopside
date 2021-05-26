@@ -10,6 +10,8 @@
 	#include <Geometry/Geometry.h>
 #endif
 
+#include <TemplatesMach/TemplatesMach.h>
+
 
 #define NAMESPACE_SDL2_NAME		OOSDL2
 #define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SDL2_NAME {

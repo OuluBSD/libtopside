@@ -23,7 +23,14 @@
 #define NS_SHADER              NAMESPACE_FUSION
 
 
-#include "AccelSystem.h"
+#include "Header.h"
+#include "Context.h"
+#include "ComponentBase.h"
+#include "Templates.h"
+#include "Templates.inl"
+#include "Defs.h"
+#include "System.h"
+#include "Prefab.h"
 
 
 #endif

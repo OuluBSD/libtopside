@@ -1,6 +1,6 @@
 #include "AccelCore.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+/*NAMESPACE_TOPSIDE_BEGIN
 
 
 AccelComponent::AccelComponent() {
@@ -15,3 +15,4 @@ void AccelComponent::Update0(double dt) {
 
 
 NAMESPACE_TOPSIDE_END
+*/

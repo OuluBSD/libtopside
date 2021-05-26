@@ -74,12 +74,7 @@ bool AVMediaProxy::IsQueueFull() const {
 
 
 
-#if HAVE_OPENGL
-template <>
-bool ContextT<DisplayContext>::PacketValue::PaintOpenGLTexture(int texture) {
-	TODO
-}
-#endif
+
 
 
 

@@ -8,8 +8,16 @@ uses
 
 file
 	AccelCore.h,
-	AccelSystem.h,
-	AccelSystem.cpp,
-	AccelContext.cpp,
-	AccelComponent.cpp;
+	Header.h,
+	System.h,
+	System.cpp,
+	Context.h,
+	Context.cpp,
+	Templates.h,
+	Templates.inl highlight cpp,
+	Defs.h,
+	Prefab.h,
+	Trash readonly separator,
+	ComponentBase.h,
+	Component.cpp;
 

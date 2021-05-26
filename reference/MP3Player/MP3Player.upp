@@ -9,6 +9,7 @@ file
 
 mainconfig
 	"" = "",
+	"" = "GUI",
 	"" = "VERBOSE_SHADERCORE",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "BUILTIN_ASSIMP BUILTIN_PORTAUDIO BUILTIN_PORTMIDI",

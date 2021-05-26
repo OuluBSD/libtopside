@@ -98,21 +98,40 @@ bool AudioOutput::Open0() {
 	        LOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
 	    }
 	    
-	    
-	    
-	    fmt.var_size = GetSampleSize();
-	    fmt.is_var_float = IsSampleFloating();
-	    fmt.is_var_signed = IsSampleSigned();
+	    #if CPU_LITTLE_ENDIAN
+	    if (IsSampleFloating()) {
+	        fmt.type = GetSampleSize() == 4 ? SoundSample::S_FLT_LE : SoundSample::S_DBL_LE;
+	    }
+	    else {
+	        int sz = GetSampleSize();
+	        if (IsSampleSigned()) {
+	            switch (sz) {
+	                case 1: fmt.type = SoundSample::S_S8_LE; break;
+	                case 2: fmt.type = SoundSample::S_S16_LE; break;
+	                case 3: fmt.type = SoundSample::S_S24_LE; break;
+	                case 4: fmt.type = SoundSample::S_S32_LE; break;
+	                case 8: fmt.type = SoundSample::S_S64_LE; break;
+	                default: LOG("OOSDL2::AudioOutput::Open0: error: unexpected format"); return false;
+	            }
+	        }
+	        else  {
+	            switch (sz) {
+	                case 1: fmt.type = SoundSample::S_U8_LE; break;
+	                case 2: fmt.type = SoundSample::S_U16_LE; break;
+	                case 3: fmt.type = SoundSample::S_U24_LE; break;
+	                case 4: fmt.type = SoundSample::S_U32_LE; break;
+	                case 8: fmt.type = SoundSample::S_U64_LE; break;
+	                default: LOG("OOSDL2::AudioOutput::Open0: error: unexpected format"); return false;
+	            }
+	        }
+	    }
+	    #else
+	    #error TODO
+	    #endif
 	    fmt.freq = audio_fmt.freq;
 	    fmt.sample_rate = audio_fmt.samples;
 	    fmt.channels = audio_fmt.channels;
-	    
-	    #if CPU_LITTLE_ENDIAN
-	    fmt.is_var_bigendian = false;
-	    #else
-	    fmt.is_var_bigendian = true;
-	    #endif
-	    
+		
 	    buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.

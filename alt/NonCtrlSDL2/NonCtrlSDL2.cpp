@@ -21,7 +21,7 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<AudioSystem>();
     mach.Add<StaticSystem>();
     mach.Add<DeviceSystem>();
-    mach.Add<FusionSystem>();
+    mach.Add<AccelSystem>();
     
     //if (gui)
 	//	mach.Add<WindowSystem>();

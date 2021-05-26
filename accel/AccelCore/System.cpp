@@ -15,8 +15,12 @@ void AccelSystem::Start() {
 void AccelSystem::Update(double dt) {
 	DLOG("AccelSystem::Update: begin");
 	
-	for (AccelComponentRef& comp : comps)
+	/*#define IFACE(x) \
+	for (Accel##x##ComponentRef& comp : comps_##x) \
 		comp->Update0(dt);
+	IFACE_LIST
+	#undef IFACE*/
+	TODO
 	
 	for (AccelContextComponentRef& ctx : ctxs)
 		ctx->Update(dt);
@@ -40,13 +44,6 @@ void AccelSystem::Remove(AccelContextComponentRef ctx) {
 	ctxs.RemoveKey(ctx);
 }
 
-void AccelSystem::Add(AccelComponentRef comp) {
-	comps.FindAdd(comp);
-}
-
-void AccelSystem::Remove(AccelComponentRef comp) {
-	comps.RemoveKey(comp);
-}
 
 
 

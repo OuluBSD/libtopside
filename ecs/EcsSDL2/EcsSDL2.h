@@ -130,7 +130,7 @@ public:
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
 	
-	void SetFPS(int fps) {fmt.fps = fps;}
+	void SetFPS(int fps) {fmt.SetFPS(fps);}
 	
 };
 

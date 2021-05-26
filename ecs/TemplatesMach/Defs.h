@@ -7,7 +7,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define LOCAL_CTX(x, format, sample, value_base, stream_base, sys_base, sink_base) \
 	using x##Format = format < sample >; \
-	struct x##Context: RTTIBase { \
+	class x##Context: RTTIBase { \
+		public: \
 		RTTI_DECL0(x##Context) \
 		static constexpr const char* Name = #x; \
 		using Format			= x##Format; \
@@ -71,13 +72,13 @@ using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSampl
 using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 
 #define IFACE_CTX_LIST \
-	IFACE_CTX(Audio,		T1DTimeSeries,			SoundSample) \
-	IFACE_CTX(Model,		T1DMulti4,				ModelSample) \
-	IFACE_CTX(Static,		T3D,					MaterialSample) \
-	IFACE_CTX(Video,		T2DTimeSeries,			LightSampleFD) \
-	IFACE_CTX(Display,		T2DTimeSeries,			LightSampleFD) \
-	IFACE_CTX(Device,		T1DSparseTimeSeries,	DeviceSample) \
-	IFACE_CTX(Midi,			T1DSparseTimeSeries,	MidiSample) \
+	IFACE_CTX(Audio,		TD1TimeSeries,			SoundSample) \
+	IFACE_CTX(Model,		TD1OnceMulti4,			ModelSample) \
+	IFACE_CTX(Static,		TD3Once,				MaterialSample) \
+	IFACE_CTX(Video,		TD2TimeSeries,			LightSampleFD) \
+	IFACE_CTX(Display,		TD2TimeSeries,			LightSampleFD) \
+	IFACE_CTX(Device,		TD1SparseTimeSeries,	DeviceSample) \
+	IFACE_CTX(Midi,			TD1SparseTimeSeries,	MidiSample) \
 	/* skip Human here */
 	/* skip Media here */
 	
@@ -118,6 +119,9 @@ IFACE_CTX_LIST
 #define VIDCTX ((VideoContext*)0)
 #define VidCtx VideoContext*
 
+#define DISCTX ((DisplayContext*)0)
+#define DisCtx DisplayContext*
+
 #define MDLCTX ((ModelContext*)0)
 #define MdlCtx ModelContext*
 
@@ -141,7 +145,7 @@ struct HumanCustomSinkBase :
 	virtual ViewableRef GetViewable();
 	virtual TransformRef GetTransform();
 };
-LOCAL_CTX(Human, T1DSparseTimeSeries, HumanSample, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, HumanCustomSinkBase)
+LOCAL_CTX(Human, TD1SparseTimeSeries, HumanSample, DummyValueBase, DummyStreamBase, DummyCustomSystemBase, HumanCustomSinkBase)
 #define HUMCTX ((HumanContext*)0)
 #define HumCtx HumanContext*
 

@@ -1,25 +1,25 @@
-#include "ShaderViewer.h"
+#include "ShaderPlayer.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 String multistage_arg;
 
 
-void ShaderViewer::OnError() {
+void ShaderPlayer::OnError() {
 	GetMachine().SetNotRunning();
 }
 
-void ShaderViewer::Initialize() {
-	PoolRef pool = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool("fusion");
-	//fusion = pool->Create<CompleteFusion>();
-	fusion = pool->Create<VideoOnlyFusion>();
-	ASSERT(fusion);
+void ShaderPlayer::Initialize() {
+	PoolRef pool = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool("accel");
+	//accel = pool->Create<CompleteAccel>();
+	accel = pool->Create<AudioOnlyAccel>();
+	ASSERT(accel);
 	pool->Add<ConnectAllInterfaces<AudioSource>>();
 	pool->Add<ConnectAllInterfaces<DisplaySource>>();
-	pool->Add<ConnectAllInterfaces<AcceleratorSource>>();
+	//pool->Add<ConnectAllInterfaces<AcceleratorSource>>();
 	pool->Add<ConnectAllInterfaces<StaticSource>>();
 	
-	ctx = fusion->Find<FusionContextComponent>();
+	ctx = accel->Find<AccelContextComponent>();
 	if (ctx) {
 		ctx->WhenError << THISBACK(OnError);
 		if (multistage_arg.GetCount()) {
@@ -33,13 +33,13 @@ void ShaderViewer::Initialize() {
 	}
 }
 
-void ShaderViewer::Uninitialize() {
-	ASSERT(!fusion)
-	//fusion->Destroy();
-	//fusion.Clear();
+void ShaderPlayer::Uninitialize() {
+	ASSERT(!accel)
+	//accel->Destroy();
+	//accel.Clear();
 }
 
-void ShaderViewerInitializer() {
+void ShaderPlayerInitializer() {
 	SetCoutLog();
 	
 	//StructuralTests();
@@ -68,7 +68,7 @@ void ShaderViewerInitializer() {
 
 NAMESPACE_TOPSIDE_END
 
-RENDER_APP_(Topside::ShaderViewer)
-APP_INITIALIZE_(Topside::ShaderViewerInitializer);
+RENDER_APP_(Topside::ShaderPlayer)
+APP_INITIALIZE_(Topside::ShaderPlayerInitializer);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

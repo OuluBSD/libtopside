@@ -225,7 +225,7 @@ typedef enum {
 #define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
 
 #define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
-#define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->AsRef<x>();}
+#define IFACE_CB(x)		RefT_Entity<x> As##x() override {return ((x*)this)->template AsRef<x>();}
 
 
 

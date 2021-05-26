@@ -8,6 +8,7 @@ file
 	PacketBuffer.h,
 	Context.h,
 	Context.inl highlight cpp,
+	Context.cpp,
 	Classes.h,
 	Classes.cpp,
 	Defs.h,
