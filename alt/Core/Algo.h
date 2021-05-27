@@ -117,6 +117,20 @@ template <class T, class S> const T&	CastConstRef(const S& o) {
 	return *(const T*)p;
 }
 
+template <class T, class S> T&			CastRef(S* o) {
+	ASSERT(o);
+	void* p = o->GetBasePtr(AsTypeCls<T>());
+	if (!p) __BREAK__;
+	return *(T*)p;
+}
+
+template <class T, class S> const T&	CastConstRef(const S* o) {
+	ASSERT(o);
+	void* p = o->GetBasePtr(AsTypeCls<T>());
+	if (!p) __BREAK__;
+	return *(const T*)p;
+}
+
 
 
 

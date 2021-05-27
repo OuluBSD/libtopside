@@ -94,7 +94,7 @@ String LightSampleFD::ToString(Type t) {
 	return "<invalid-sample-type>";
 }
 
-int LightSampleFD::GetSize(Type t) {
+int LightSampleFD::GetChannelCountFD(Type t) {
 	switch (t) {
 		case INVALID: return 0;
 		case S_R_U8_LE: return 1;
@@ -102,15 +102,37 @@ int LightSampleFD::GetSize(Type t) {
 		case S_RGB_U8_LE: return 3;
 		case S_RGBA_U8_LE: return 4;
 		case S_BGR_U8_LE: return 3;
-		case S_R_FLT_LE: return 1 * sizeof(float);
-		case S_RG_FLT_LE: return 2 * sizeof(float);
-		case S_RGB_FLT_LE: return 3 * sizeof(float);
-		case S_RGBA_FLT_LE: return 4 * sizeof(float);
-		case S_BGR_FLT_LE: return 3 * sizeof(float);
+		case S_R_FLT_LE: return 1;
+		case S_RG_FLT_LE: return 2;
+		case S_RGB_FLT_LE: return 3;
+		case S_RGBA_FLT_LE: return 4;
+		case S_BGR_FLT_LE: return 3;
 		default: break;
 	}
 	THROW(Exc("LightSampleFD::GetSize invalid type"));
 	return 0;
+}
+
+int LightSampleFD::GetChannelSizeFD(Type t) {
+	switch (t) {
+		case S_R_U8_LE:
+		case S_RG_U8_LE:
+		case S_RGB_U8_LE:
+		case S_RGBA_U8_LE:
+		case S_BGR_U8_LE: return 1;
+		
+		case S_R_FLT_LE:
+		case S_RG_FLT_LE:
+		case S_RGB_FLT_LE:
+		case S_RGBA_FLT_LE:
+		case S_BGR_FLT_LE: return sizeof(float);
+		
+		default: return 0;
+	}
+}
+
+int LightSampleFD::GetSize(Type t) {
+	return GetChannelSizeFD(t) * GetChannelCountFD(t);
 }
 
 bool LightSampleFD::IsUnsigned(Type t) {

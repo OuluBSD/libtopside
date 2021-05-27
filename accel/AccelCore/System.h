@@ -7,16 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class AccelSystem : public System<AccelSystem> {
 	LinkedList<AccelContextComponentRef>	ctxs;
-	/*#define IFACE(x) LinkedList<Accel##x##ComponentRef> comps_##x;
-	IFACE_LIST
-	#undef IFACE*/
+	LinkedList<AccelComponentRef> comps;
 	
 	void Visit(RuntimeVisitor& vis) override {
-		vis && ctxs
-		/*#define IFACE(x) && comps_##x;
-		IFACE_LIST
-		#undef IFACE*/
-			;
+		vis && ctxs;
 	}
 public:
 	SYS_RTTI(AccelSystem)
@@ -36,12 +30,8 @@ protected:
 	
     void Add(AccelContextComponentRef ctx);
     void Remove(AccelContextComponentRef ctx);
-	
-	/*#define IFACE(x) \
-		void Add(Accel##x##ComponentRef comp) {comps_##x.FindAdd(comp);} \
-		void Remove(Accel##x##ComponentRef comp) {comps_##x.RemoveKey(comp);}
-	IFACE_LIST
-	#undef IFACE*/
+	void Add(AccelComponentRef comp) {comps.FindAdd(comp);}
+	void Remove(AccelComponentRef comp) {comps.RemoveKey(comp);}
     
     void UpdateTexBuffers();
     

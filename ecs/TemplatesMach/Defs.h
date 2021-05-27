@@ -75,6 +75,7 @@ using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 	IFACE_CTX(Audio,		TD1TimeSeries,			SoundSample) \
 	IFACE_CTX(Model,		TD1OnceMulti4,			ModelSample) \
 	IFACE_CTX(Static,		TD3Once,				MaterialSample) \
+	IFACE_CTX(Photo,		TD2Once,				LightSampleFD) \
 	IFACE_CTX(Video,		TD2TimeSeries,			LightSampleFD) \
 	IFACE_CTX(Display,		TD2TimeSeries,			LightSampleFD) \
 	IFACE_CTX(Device,		TD1SparseTimeSeries,	DeviceSample) \
@@ -99,6 +100,7 @@ using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 	IFACE(Audio) \
 	IFACE(Model) \
 	IFACE(Static) \
+	IFACE(Photo) \
 	IFACE(Video) \
 	IFACE(Display) \
 	IFACE(Device) \

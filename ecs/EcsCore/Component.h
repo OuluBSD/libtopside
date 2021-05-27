@@ -23,6 +23,7 @@ public:
 	virtual void VisitSinks(RuntimeVisitor& vis) = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
+	virtual TypeCls GetContextType() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const {return "<not implemented>";}
 	
 	static bool AllowDuplicates() {return false;}

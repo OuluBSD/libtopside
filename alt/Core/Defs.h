@@ -203,11 +203,13 @@ typedef const void* CONST_VOID_PTR;
 	template <class T> std::type_info AsTypeId(const T& o) {return typeid(T);}
 	template <class T> const char* AsTypeName() {return typeid(T).name();}
 	#define AsVoidTypeId() typeid(void)
+	#define AsVoidTypeCls() typeid(void)
 #else
 	template <class T> TypeCls AsTypeCls() {return T::TypeIdClass();}
 	template <class T> const RTTI& AsTypeId(const T& o) {const RTTI* r = o.GetTypeInfo(AsTypeCls<T>()); ASSERT(r); return *r;}
 	template <class T> const char* AsTypeName() {return T::GetTypeName();}
 	inline const RTTI& AsVoidTypeId() {return GetTypenameRTTI<void>();}
+	inline TypeCls AsVoidTypeCls() {return GetTypenameRTTI<void>().GetTypeId();}
 #endif
 
 

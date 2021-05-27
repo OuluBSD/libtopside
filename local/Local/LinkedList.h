@@ -100,6 +100,15 @@ public:
 		THROW(Exc("Position not found in LinkedList: " + IntStr(i)));
 	}
 	
+	const T& At(int i) const {
+		int j = 0;
+		for(Iterator it = begin(); it; ++it, ++j)
+			if (j == i)
+				return *it;
+		ASSERT(0);
+		THROW(Exc("Position not found in LinkedList: " + IntStr(i)));
+	}
+	
 	Item* AddItem() {
 		Item* it = GetRecyclerPool().New();
 		if (!first) {

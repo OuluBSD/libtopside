@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-int AccelContextComponent::id_counter;
+int AccelContextComponent::comp_id_counter;
 
 
 void AccelContextComponent::Initialize() {
@@ -23,7 +23,6 @@ void AccelContextComponent::Uninitialize() {
 void AccelContextComponent::Update(double dt) {
 	DLOG("AccelContextComponent::Update: begin");
 	
-	#if 0
 	//lock.Enter();
 	
 	if (!post_load.IsVoid()) {
@@ -32,12 +31,8 @@ void AccelContextComponent::Update(double dt) {
 		Object to_load;
 		Swap(post_load, to_load);
 		
-		for(AccelComponentRef& comp : comps) {
-			if (comp->IsTypeTemporary()) {
-				comp->Close();
-				comp->GetECS().Destroy();
-			}
-		}
+		for(AccelComponentGroup& g : groups)
+			g.CloseTemporary();
 		
 		Clear();
 		FindComponents();
@@ -52,12 +47,9 @@ void AccelContextComponent::Update(double dt) {
 		DumpEntityComponents();
 		
 		is_open = true;
-		for(AccelComponentRef& comp : comps) {
-			if (!comp->IsOpen() && !comp->Open()) {
-				DLOG("AccelContextComponent::Update: error: a component did not open properly");
-				is_open = false;
-			}
-		}
+		for(AccelComponentGroup& g : groups)
+			if (!g.Open())
+				{is_open = false; break;}
 		
 		if (!is_open) {
 			DLOG("AccelContextComponent::Update: error: did not open properly");
@@ -68,34 +60,17 @@ void AccelContextComponent::Update(double dt) {
 	}
 	
 	//lock.Leave();
-	#endif
 	
 	DLOG("AccelContextComponent::Update: end");
 }
 
 
 void AccelContextComponent::FindComponents() {
-	TODO
-	#if 0
-	comps.Clear();
-	EntityRef e = GetEntity();
-	for (ComponentRef& comp : e->GetComponents().GetValues()) {
-		if (comp) {
-			ComponentBase& base = *comp;
-			AccelComponent* fcomp = CastPtr<AccelComponent>(&base);
-			if (fcomp) {
-				ASSERT(!fcomp->ctx);
-				fcomp->ctx = this;
-				comps.Add(fcomp->AsRefT());
-			}
-		}
-	}
-	#endif
+	for(AccelComponentGroup& g : groups)
+		g.FindComponents();
 }
 
 void AccelContextComponent::DumpEntityComponents() {
-	TODO
-	#if 0
 	LOG("Entity: AccelComponents:");
 	EntityRef e = GetEntity();
 	int i = 0;
@@ -111,36 +86,27 @@ void AccelContextComponent::DumpEntityComponents() {
 			}
 		}
 	}
-	#endif
 }
 
 void AccelContextComponent::PostLoadFileAny(String path) {
-	TODO
-	#if 0
 	Object content;
 	if (LoadFileAny(path, content)) {
 		post_load = content;
 	}
-	#endif
 }
 
 void AccelContextComponent::Reset() {
-	TODO
-	#if 0
 	stream.total_time.Reset();
-	#endif
 }
 
 void AccelContextComponent::Clear() {
-	TODO
-	#if 0
-	for(auto& comp : comps) {
-		comp->Clear();
-		if (comp->IsTypeTemporary())
-			comp->GetECS().Destroy();
+	for(auto& comp : groups) {
+		comp.Clear();
+		//if (comp->IsTypeTemporary())
+		//	comp->GetECS().Destroy();
 	}
 	common_source.Clear();
-	comps.Clear();
+	groups.Clear();
 #if HAVE_OPENGL
 	Ogl_ClearPipeline();
 #endif
@@ -148,7 +114,6 @@ void AccelContextComponent::Clear() {
 	post_load = Null;
 	stream.Clear();
 	is_open = false;
-	#endif
 }
 
 bool AccelContextComponent::Render() {
@@ -203,9 +168,7 @@ void AccelContextComponent::ProcessStageQueue(TypeCls m) {
 	#endif
 }
 
-bool AccelContextComponent::IsModeStage(ComponentBaseRef comp, TypeCls m) const {
-	TODO
-	#if 0
+/*bool AccelContextComponent::IsModeStage(ComponentBaseRef comp, TypeCls m) const {
 	auto type = comp.GetAccelType();
 	if (type == AccelComponent::FUSION_AUDIO_SINK ||
 		type == AccelComponent::FUSION_AUDIO_BUFFER ||
@@ -213,8 +176,7 @@ bool AccelContextComponent::IsModeStage(ComponentBaseRef comp, TypeCls m) const 
 		return m == MODE_AUDIO;
 	else
 		return m == MODE_DEFAULT;
-	#endif
-}
+}*/
 
 void AccelContextComponent::RefreshStreamValues(TypeCls m) {
 	TODO
@@ -270,8 +232,6 @@ void AccelContextComponent::RefreshStreamValues(TypeCls m) {
 }*/
 
 bool AccelContextComponent::LoadFileAny(String path, Object& dst) {
-	TODO
-	#if 0
 	if (DirectoryExists(path)) {
 		if (path.Right(1) == DIR_SEPS)
 			path = path.Left(path.GetCount()-1);
@@ -285,12 +245,17 @@ bool AccelContextComponent::LoadFileAny(String path, Object& dst) {
 		return LoadFileToy(path, dst);
 	
 	return false;
-	#endif
 }
 
 bool AccelContextComponent::LoadFileToy(String path, Object& dst) {
 	const char* fn_name = "LoadFileToy";
 	Clear();
+	
+	AccelComponentGroup& video = groups.Add();
+	AccelComponentGroup& audio = groups.Add();
+	video.AddContext<VideoContext>();
+	video.AddContext<DisplayContext>();
+	audio.AddContext<AudioContext>();
 	
 	String file_dir = GetFileDirectory(path);
 	
@@ -432,14 +397,12 @@ int AccelContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	int i = ids.Find(orig_id);
 	if (i >= 0)
 		return ids[i];
-	int id = ++id_counter;
+	int id = ++comp_id_counter;
 	ids.Add(orig_id, id);
 	return id;
 }
 
 bool AccelContextComponent::Load(Object json) {
-	TODO
-	#if 0
 	DLOG("AccelContextComponent::Load");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
@@ -498,17 +461,40 @@ bool AccelContextComponent::Load(Object json) {
 			common_source.Add(frag_code);
 		}
 		else {
-			AccelComponent::Type type = AccelComponent::GetTypeFromString(type_str);
-			if (type == AccelComponent::FUSION_INVALID) {
+			TypeCls type = AccelComponent::GetTypeFromString(type_str);
+			if (type == AsVoidTypeCls()) {
 				OnError(fn_name, "Invalid type string '" + type_str + "'");
 				return false;
 			}
 			
 			if (AccelComponent::IsTypeTemporary(type)) {
+				AccelComponentGroup* group = 0;
+				
+				// Find group
+				if (0)
+					;
+				#define IFACE(x) \
+					else if (type == AsTypeCls<Accel##x##PipeComponent>()) group = FindGroupContext<x##Context>(); \
+					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) group = FindGroupContext<x##Context>(); \
+					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) group = FindGroupContext<x##Context>();
+				IFACE_LIST
+				#undef IFACE
+				if (!group) {
+					OnError(fn_name, "No group exists for type '" + type_str + "'");
+					return false;
+				}
 				
 				// Create new comp
 				RefT_Entity<AccelComponent> comp;
-				switch (type) {
+				if (0)
+					;
+				#define IFACE(x) \
+					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(); \
+					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(); \
+					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>();
+				IFACE_LIST
+				#undef IFACE
+			/*	switch (type) {
 					case AccelComponent::FUSION_DATA_SINK:			comp = AddEntityComponent<AccelDataSink>(); break;
 					//case AccelComponent::FUSION_CTRL_SOURCE:		comp = AddEntityComponent<AccelControllerSource>(); break;
 					//case AccelComponent::FUSION_CTRL_BUFFER:		comp = AddEntityComponent<AccelControllerBuffer>(); break;
@@ -526,33 +512,26 @@ bool AccelContextComponent::Load(Object json) {
 						
 					default:
 						OnError(fn_name, "Unimplemented accel component type");
-				}
+				}*/
 				if (!comp)
 					return false;
 				
 				if (!comp->Load(st_map, i, frag_code)) {
-					comp->GetECS().Destroy();
+					comp->AsRef<ComponentBase>()->GetEntity()->Destroy();
 					OnError(fn_name, "Loading stage " + IntStr(i) + " failed");
 					return false;
 				}
 				
-				for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::BUFFER);}
+				for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::TYPE_BUFFER);}
 				
-				comps.Add(comp);
+				group->Add(comp);
 			}
 			else {
 				// Find existing component
 				bool found = false;
-				for (auto& comp : comps) {
-					if (comp->GetAccelType() == type) {
-						if (!comp->Load(st_map, i, frag_code)) {
-							OnError(fn_name, "Loading stage " + IntStr(i) + " failed");
-							return false;
-						}
-						found = true;
+				for (auto& group : groups)
+					if ((found = group.LoadExisting(type, st_map, i, frag_code)))
 						break;
-					}
-				}
 				if (!found) {
 					OnError(fn_name, "did not find existing component for persistent type '" + type_str + "'");
 					return false;
@@ -563,10 +542,9 @@ bool AccelContextComponent::Load(Object json) {
 	
 	// Find unique inputs
 	AcceleratorHeaderVector v;
-	for (auto& comp : comps)
-		for(AcceleratorHeader& in : comp->in)
-			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
-				v.Add(in);
+	for (AccelComponentGroup& g : groups)
+		g.FindUniqueInputs(v);
+	
 	
 	if (v.in.GetCount()) {
 		// Create components for unique inputs
@@ -575,18 +553,8 @@ bool AccelContextComponent::Load(Object json) {
 		
 		// Connect created components for inputs
 		DumpEntityComponents();
-		for (auto& comp : comps) {
-			for(AcceleratorHeader& in : comp->in) {
-				if (in.IsTypeComponentSource()) {
-					int i = v.Find(in);
-					ASSERT(i >= 0);
-					AcceleratorHeader& found = v.in[i];
-					ASSERT(in.GetId() < 0);
-					in.CopyIdStream(found);
-					ASSERT(in.GetId() >= 0);
-				}
-			}
-		}
+		for (auto& group : groups)
+			group.ConnectInputs(v);
 		
 		// Connect inputs
 		if (!ConnectComponents())
@@ -594,26 +562,25 @@ bool AccelContextComponent::Load(Object json) {
 	}
 	
 	return true;
-	#endif
 }
 
 bool AccelContextComponent::RefreshStageQueue() {
-	TODO
-	#if 0
 	DLOG("AccelContextComponent::RefreshStageQueue: begin");
 	
 	// Solve dependencies
 	
 	Graph g;
-	for(auto& s : comps)
-		if (s->id >= 0)
-			g.AddKey(s->id);
-	for(const AccelComponentRef& s : comps) {
-		if (s->id >= 0) {
-			for(int j = 0; j < s->in.GetCount(); j++) {
-				const AcceleratorHeader& in = s->in[j];
-				if (in.GetId() >= 0)
-					g.AddEdgeKey(in.GetId(), s->id);
+	for(auto& gr : groups)
+		for(auto& s : gr.comps)
+			if (s->id >= 0)
+				g.AddKey(s->id);
+	for(auto& gr : groups) {
+		for(const AccelComponentRef& s : gr.comps) {
+			if (s->id >= 0) {
+				for(const AcceleratorHeader& in : s->in) {
+					if (in.GetId() >= 0)
+						g.AddEdgeKey(in.GetId(), s->id);
+				}
 			}
 		}
 	}
@@ -639,29 +606,32 @@ bool AccelContextComponent::RefreshStageQueue() {
 	};
 	TopologicalStages sorter {{},g};
 	
-	Sort(comps, sorter);
-	if (sorter.IsError()) {
-		OnError("RefreshStageQueue", sorter.GetError());
-		return false;
+	for(auto& gr : groups) {
+		Sort(gr.comps, sorter);
+		if (sorter.IsError()) {
+			OnError("RefreshStageQueue", sorter.GetError());
+			return false;
+		}
 	}
 	
 	#if 1
 	DLOG("\ttopologically sorted stage list:");
 	int i = 0;
-	for(auto& comp : comps) {
-		DLOG("\t\t" << i++ << ": " << comp->ToString());
+	for(auto& gr : groups) {
+		int j = 0;
+		for(auto& comp : gr.comps) {
+			DLOG("\t\t" << i << ": " << j++ << ": " << comp->ToString());
+		}
+		++i;
 	}
 	#endif
 	
 	
 	DLOG("AccelContextComponent::RefreshStageQueue: end");
 	return true;
-	#endif
 }
 
 void AccelContextComponent::RefreshPipeline() {
-	TODO
-	#if 0
 	DLOG("AccelContextComponent::RefreshPipeline begin");
 	
 #if HAVE_OPENGL
@@ -676,11 +646,11 @@ void AccelContextComponent::RefreshPipeline() {
 		return;
 	}
 	
-	for(auto& comp : comps)
-		comp->Reset();
+	for(auto& gr : groups)
+		for(auto& comp : gr.comps)
+			comp->Reset();
 	
 	DLOG("AccelContextComponent::RefreshPipeline end");
-	#endif
 }
 
 void AccelContextComponent::UpdateTexBuffers() {

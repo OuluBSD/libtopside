@@ -5,6 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
 class RefRoot
 {
 	
@@ -54,6 +55,8 @@ void DebugRefVisits_RemoveRef(void* mem);
 #define DBG_REF_DTOR if (IsDebugRefVisits()) {DebugRefVisits_RemoveRef(this);}
 bool IsDebugRefVisits();
 void SetDebugRefVisits(bool b=true);
+
+#define SCOPE_REF(x) auto& x = *x##_;
 
 template <class T, class Parent = RefParent1<typename T::Parent> >
 class Ref :

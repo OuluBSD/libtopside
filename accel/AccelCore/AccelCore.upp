@@ -9,15 +9,18 @@ uses
 file
 	AccelCore.h,
 	Header.h,
-	System.h,
-	System.cpp,
+	Stream.h,
+	Stream.cpp,
+	ComponentBase.h,
+	ComponentBase.cpp,
+	OpenGL.cpp,
 	Context.h,
 	Context.cpp,
 	Templates.h,
 	Templates.inl highlight cpp,
 	Defs.h,
+	System.h,
+	System.cpp,
 	Prefab.h,
-	Trash readonly separator,
-	ComponentBase.h,
-	Component.cpp;
+	Trash readonly separator;
 

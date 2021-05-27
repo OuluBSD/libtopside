@@ -1,4 +1,4 @@
-#include "FusionCore.h"
+#include "AccelCore.h"
 
 #if HAVE_OPENGL
 
@@ -26,11 +26,20 @@ int GetOglChCode(int channels, bool is_float) {
 }
 
 
+void Ogl_RemoveToken(String& glsl, String token) {
+	if (glsl.Left(token.GetCount() + 1) == token + " ") glsl = glsl.Mid(token.GetCount() + 1);
+	glsl.Replace((String)" " + token + " ", " ");
+	glsl.Replace((String)"\n" + token + " ", "\n");
+}
 
 
 
-void FusionContextComponent::Ogl_ProcessStage(FusionComponent& s, GLuint gl_stage) {
-	GLint& fg_prog = s.prog[FusionComponent::PROG_FRAGMENT];
+
+
+
+void AccelContextComponent::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage) {
+	SCOPE_REF(s)
+	GLint& fg_prog = s.prog[AccelComponent::PROG_FRAGMENT];
 	ASSERT(fg_prog >= 0 || !s.RequiresShaderCode());
 	if (fg_prog < 0)
 		return;
@@ -46,7 +55,7 @@ void FusionContextComponent::Ogl_ProcessStage(FusionComponent& s, GLuint gl_stag
 	
 	int bi = s.NewWriteBuffer();
 	
-	if (s.type != FusionComponent::FUSION_DISPLAY_SOURCE) {
+	if (!s.IsSinkInAccelerator()) {
 		ASSERT(s.frame_buf[bi] > 0);
 		const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
 		
@@ -84,29 +93,39 @@ void FusionContextComponent::Ogl_ProcessStage(FusionComponent& s, GLuint gl_stag
 	glBindProgramPipeline(0);
 }
 
-void FusionContextComponent::Ogl_ClearPipeline() {
+void AccelContextComponent::Ogl_ClearPipeline() {
+	for (AccelComponentGroup& group : groups)
+		group.Ogl_ClearPipeline();
+}
+
+void AccelContextComponent::Ogl_CreatePipeline() {
+	for (AccelComponentGroup& group : groups)
+		group.Ogl_CreatePipeline();
+}
+
+void AccelComponentGroup::Ogl_ClearPipeline() {
 	if (gl_stages.GetCount()) {
 		glDeleteProgramPipelines(gl_stages.GetCount(), gl_stages.Begin());
 		gl_stages.Clear();
 	}
 }
 
-void FusionContextComponent::Ogl_CreatePipeline() {
+void AccelComponentGroup::Ogl_CreatePipeline() {
 	Ogl_ClearPipeline();
 	
 	gl_stages.SetCount(comps.GetCount());
 	glGenProgramPipelines(gl_stages.GetCount(), gl_stages.Begin());
 	
 	int i = 0;
-	for (FusionComponentRef& comp : comps) {
+	for (AccelComponentRef& comp : comps) {
 		uint32& gl_s = gl_stages[i];
 		
-		for(int j = 0; j < FusionComponent::PROG_COUNT; j++) {
+		for(int j = 0; j < AccelComponent::PROG_COUNT; j++) {
 			GLint& prog = comp->prog[j];
 			if (prog >= 0) {
 				int bit = 1 << j;
-				ASSERT(j != FusionComponent::PROG_VERTEX   || bit == GL_VERTEX_SHADER_BIT);
-				ASSERT(j != FusionComponent::PROG_FRAGMENT || bit == GL_FRAGMENT_SHADER_BIT);
+				ASSERT(j != AccelComponent::PROG_VERTEX   || bit == GL_VERTEX_SHADER_BIT);
+				ASSERT(j != AccelComponent::PROG_FRAGMENT || bit == GL_FRAGMENT_SHADER_BIT);
 				glUseProgramStages(gl_s, bit, prog);
 			}
 		}
@@ -122,22 +141,22 @@ void FusionContextComponent::Ogl_CreatePipeline() {
 
 
 
-void FusionComponent::Ogl_FindVariables(GLint prog) {
+void AccelComponent::Ogl_FindVariables(GLint prog) {
 	for(int i = 0; i < VAR_COUNT; i++) {
-		const char* var_name = VarNames()[i];
+		const char* var_name = names[i];
 		GLint idx = glGetUniformLocation(prog, var_name);
 		var_idx[i] = idx;
 	}
 	is_searched_vars = true;
 }
 
-void FusionComponent::Ogl_SetVars(GLint prog, const FusionStream& stream) {
+void AccelComponent::Ogl_SetVars(GLint prog, const AccelStream& stream) {
 	for(int i = 0; i < VAR_COUNT; i++)
 		if (var_idx[i] >= 0)
 			Ogl_SetVar(i, prog, stream);
 }
 
-void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream) {
+void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) {
 	int uindex = var_idx[var];
 	ASSERT(uindex >= 0);
 	if (uindex < 0)
@@ -164,9 +183,7 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 	}
 	
 	else if (var == VAR_COMPAT_FRAME) {
-		if (type == FUSION_AUDIO_SOURCE ||
-			type == FUSION_AUDIO_BUFFER ||
-			type == FUSION_AUDIO_SINK)
+		if (IsIn<AudioContext>())
 			glUniform1i(uindex, stream.aframes);
 		else
 			glUniform1i(uindex, stream.vframes);
@@ -217,18 +234,18 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 	
 	else if (var == VAR_COMPAT_CHANNELTIME) {
 		double values[4];
-		for(int j = 0; j < 4; j++) {
-			if (j < in.GetCount()) {
-				AcceleratorHeader& in = this->in[j];
-				
-				TODO // get time from packet
-				/*if (in.stream)
-					values[j] = in.stream->GetSeconds();
-				else
-					values[j] = stream.vtotal_seconds;*/
-			}
+		int j = 0;
+		for (AcceleratorHeader& h : in) {
+			TODO // get time from packet
+			/*if (h.stream)
+				values[j] = h.stream->GetSeconds();
 			else
-				values[j] = stream.vtotal_seconds;
+				values[j] = stream.vtotal_seconds;*/
+			
+			++j;
+		}
+		for(; j < 4; ++j) {
+			values[j] = stream.vtotal_seconds;
 		}
 		glUniform4f(uindex, values[0], values[1], values[2], values[3]);
 	}
@@ -237,12 +254,12 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 		int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 		GLfloat values[3] = {0,0,0};
 		if (ch < in.GetCount()) {
-			AcceleratorHeader& in = this->in[ch];
+			AcceleratorHeader& in = this->in.At(ch);
 			if (in.GetVideo()) {
 				const auto& fmt = in.GetVideo()->GetActiveFormat();
 				values[0] = fmt.res.cx;
 				values[1] = fmt.res.cy;
-				values[2] = fmt.depth;
+				values[2] = fmt.GetChannelCountFD();
 			}
 			/*else if (
 				in.type == AcceleratorHeader::TEXTURE ||
@@ -250,7 +267,7 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 				in.type == AcceleratorHeader::VOLUME) {
 				ASSERT(in.id >= 0);
 				if (in.id >= 0 && ctx) {
-					FusionComponent& comp = ctx->GetComponentById(in.id);
+					AccelComponentRef comp = ctx->GetComponentById(in.id);
 					values[0] = in.res.cx;
 					values[1] = in.res.cy;
 					values[2] = in.vol_depth;
@@ -264,7 +281,7 @@ void FusionComponent::Ogl_SetVar(int var, GLint prog, const FusionStream& stream
 	}
 }
 
-void FusionComponent::Ogl_ClearTex() {
+void AccelComponent::Ogl_ClearTex() {
 	for(int bi = 0; bi < 2; bi++) {
 		GLuint& color_buf = this->color_buf[bi];
 		GLuint& depth_buf = this->depth_buf[bi];
@@ -285,7 +302,7 @@ void FusionComponent::Ogl_ClearTex() {
 	}
 }
 
-void FusionComponent::Ogl_ClearProg() {
+void AccelComponent::Ogl_ClearProg() {
 	for(int i = 0; i < PROG_COUNT; i++) {
 		auto& prog = this->prog[i];
 		if (prog >= 0) {
@@ -295,7 +312,7 @@ void FusionComponent::Ogl_ClearProg() {
 	}
 }
 
-void FusionComponent::Ogl_CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat) {
+void AccelComponent::Ogl_CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat) {
 	int buf_count = 1;
 	if (is_doublebuf)
 		buf_count++;
@@ -343,28 +360,28 @@ void FusionComponent::Ogl_CreateTex(Size sz, int channels, bool create_depth, bo
 	OOSDL2::EnableOpenGLDebugMessages(0);
 }
 
-GLint FusionComponent::Ogl_GetInputTex(int input_i) const {
+GLint AccelComponent::Ogl_GetInputTex(int input_i) const {
 	const char* fn_name = "Ogl_GetInputTex";
-	DLOG("FusionComponent(" << GetTypeString() << ")::GetInputTex");
+	DLOG("AccelComponent(" << GetTypeString() << ")::GetInputTex");
 	ASSERT(ctx);
 	if (!ctx || input_i < 0 || input_i >= in.GetCount())
 		return -1;
 	
-	const AcceleratorHeader& in = this->in[input_i];
-	FusionComponentRef in_comp = ctx->GetComponentById(in.GetId());
+	const AcceleratorHeader& in = this->in.At(input_i);
+	AccelComponentRef in_comp = ctx->GetComponentById(in.GetId());
 	int tex = in_comp->Ogl_GetOutputTexture(in_comp == this);
 	ASSERT(tex > 0);
 	
 	return tex;
 }
 
-int FusionComponent::Ogl_GetTexType(int input_i) const {
-	const AcceleratorHeader& in = this->in[input_i];
+int AccelComponent::Ogl_GetTexType(int input_i) const {
+	const AcceleratorHeader& in = this->in.At(input_i);
 	
-	if (in.GetType() == AcceleratorHeader::VOLUME)
+	if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
 		return GL_TEXTURE_3D;
 	
-	else if (in.GetType() == AcceleratorHeader::CUBEMAP)
+	else if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
 		return GL_TEXTURE_CUBE_MAP;
 	
 	else
@@ -380,7 +397,7 @@ int FusionComponent::Ogl_GetTexType(int input_i) const {
 
 
 
-bool FusionComponent::Ogl_CompilePrograms() {
+bool AccelComponent::Ogl_CompilePrograms() {
 	const char* fn_name = "Ogl_CompilePrograms";
 	for(int i = 0; i < PROG_COUNT; i++) {
 		if (i == PROG_FRAGMENT && !Ogl_CompileFragmentShader())
@@ -390,7 +407,7 @@ bool FusionComponent::Ogl_CompilePrograms() {
 	return true;
 }
 
-bool FusionComponent::Ogl_CompileFragmentShader() {
+bool AccelComponent::Ogl_CompileFragmentShader() {
 	const char* fn_name = "Ogl_CompilePrograms";
 	
 	ASSERT(prog[PROG_FRAGMENT] < 0);
@@ -430,10 +447,10 @@ bool FusionComponent::Ogl_CompileFragmentShader() {
 	
 	for(int j = 0; j < 4; j++) {
 		if (j < in.GetCount()) {
-			AcceleratorHeader& in = this->in[j];
-			if (in.GetType() == AcceleratorHeader::CUBEMAP)
+			AcceleratorHeader& in = this->in.At(j);
+			if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
 				code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
-			else if (in.GetType() == AcceleratorHeader::VOLUME)
+			else if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
 				code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
 			else
 				code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
@@ -443,20 +460,20 @@ bool FusionComponent::Ogl_CompileFragmentShader() {
 	}
 	code << "\n";
 	
-	for(int j = 0; j < ctx->common_source.GetCount(); j++) {
-		code += ctx->common_source[j] + "\n";
+	for (String& src : ctx->ctx->common_source) {
+		code += src + "\n";
 	}
 	
 	code += fg_glsl;
 	
-	if (type == FusionComponent::FUSION_DISPLAY_SOURCE || type == FusionComponent::FUSION_DISPLAY_BUFFER) {
+	if (IsIn<VideoContext>() || IsIn<DisplayContext>()) {
 		code +=		"\nvoid main (void) {\n"
 					"	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);\n"
 					"	mainImage (color, gl_FragCoord.xy);\n"
 					"	gl_FragColor = color;\n"
 					"}\n\n";
 	}
-	else if (type == FusionComponent::FUSION_AUDIO_SOURCE || type == FusionComponent::FUSION_AUDIO_BUFFER) {
+	else if (IsIn<AudioContext>()) {
 		code +=		"\nvoid main (void) {\n"
 					"	float t = in_audio_seconds + gl_FragCoord.x / iSampleRate;\n"
 					"	vec2 value = mainSound (t);\n"
@@ -484,7 +501,7 @@ bool FusionComponent::Ogl_CompileFragmentShader() {
 	return true;
 }
 
-bool FusionComponent::Ogl_CompileProgram(int prog_i, String shader_source) {
+bool AccelComponent::Ogl_CompileProgram(int prog_i, String shader_source) {
 	GLint frag, program;
 	
 	OOSDL2::EnableOpenGLDebugMessages(1);
@@ -508,7 +525,7 @@ bool FusionComponent::Ogl_CompileProgram(int prog_i, String shader_source) {
 	return true;
 }
 
-GLint FusionComponent::Ogl_CompileShader(int prog_i, String shader_source) {
+GLint AccelComponent::Ogl_CompileShader(int prog_i, String shader_source) {
 	const char* fn_name = "Ogl_CompileShader";
 	
 	GLenum shader_type;
@@ -547,9 +564,9 @@ GLint FusionComponent::Ogl_CompileShader(int prog_i, String shader_source) {
 	return shader;
 }
 
-bool FusionComponent::Ogl_LinkStages() {
+bool AccelComponent::Ogl_LinkStages() {
 	const char* fn_name = "Ogl_LinkStages";
-	for(int j = 0; j < FusionComponent::PROG_COUNT; j++) {
+	for(int j = 0; j < AccelComponent::PROG_COUNT; j++) {
 		if (prog[j] >= 0) {
 			LOG("\tLinking stage " << GetTypeString() << ": " << name << ": program " << j);
 			
@@ -563,7 +580,7 @@ bool FusionComponent::Ogl_LinkStages() {
 	return true;
 }
 
-bool FusionComponent::Ogl_LinkProgram(int prog_i) {
+bool AccelComponent::Ogl_LinkProgram(int prog_i) {
 	const char* fn_name = "Ogl_LinkProgram";
 	GLint program = prog[prog_i];
 	GLint status = GL_FALSE;
@@ -614,7 +631,7 @@ bool FusionComponent::Ogl_LinkProgram(int prog_i) {
 	return true;
 }
 
-bool FusionComponent::Ogl_CheckInputTextures() {
+bool AccelComponent::Ogl_CheckInputTextures() {
 	const char* fn_name = "Ogl_CheckInputTextures";
 	bool fail = false;
 	for(int i = 0; i < PROG_COUNT; i++) {
@@ -641,7 +658,7 @@ bool FusionComponent::Ogl_CheckInputTextures() {
 	return !fail;
 }
 
-GLint FusionComponent::Ogl_GetOutputTexture(bool reading_self) const {
+GLint AccelComponent::Ogl_GetOutputTexture(bool reading_self) const {
 	ASSERT(!reading_self || is_doublebuf);
 	int buf_i = this->buf_i;
 	if (reading_self)
@@ -651,7 +668,7 @@ GLint FusionComponent::Ogl_GetOutputTexture(bool reading_self) const {
 	return color_buf[buf_i];
 }
 
-void FusionComponent::Ogl_TexFlags(int type, int filter, int repeat) {
+void AccelComponent::Ogl_TexFlags(int type, int filter, int repeat) {
 	if (filter == AcceleratorHeader::FILTER_NEAREST) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

@@ -15,8 +15,6 @@ file
 	System.cpp,
 	Context.cpp,
 	Component.cpp,
-	OpenGL.cpp,
-	DataSink.cpp,
 	MediaSink.cpp,
 	CtrlSink.cpp,
 	DisplaySource.cpp,

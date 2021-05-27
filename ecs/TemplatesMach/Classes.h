@@ -102,6 +102,8 @@ public:
 	static String ToString(Type t);
 	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
 	static int GetSize(Type t);
+	static int GetChannelSizeFD(Type t);
+	static int GetChannelCountFD(Type t);
 	static bool IsUnsigned(Type t);
 	static bool IsSigned(Type t);
 	static bool IsFloating(Type t);
@@ -298,6 +300,8 @@ public:
 	bool IsCopyCompatible(const SampleBase& b) const {return Sample::IsCopyCompatible(type, b.type);}
 	bool IsValid() const {return Sample::IsValid(type);}
 	template <class K> bool IsSampleType() const {return Sample::template IsSampleType<K>(type);}
+	int GetChannelSizeFD() const {return Sample::GetChannelSizeFD(type);}
+	int GetChannelCountFD() const {return Sample::GetChannelCountFD(type);}
 	
 	void operator=(const SampleBase& c) {
 		type = c.type;

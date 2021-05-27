@@ -15,12 +15,8 @@ void AccelSystem::Start() {
 void AccelSystem::Update(double dt) {
 	DLOG("AccelSystem::Update: begin");
 	
-	/*#define IFACE(x) \
-	for (Accel##x##ComponentRef& comp : comps_##x) \
+	for (AccelComponentRef& comp : comps)
 		comp->Update0(dt);
-	IFACE_LIST
-	#undef IFACE*/
-	TODO
 	
 	for (AccelContextComponentRef& ctx : ctxs)
 		ctx->Update(dt);

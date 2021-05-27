@@ -16,7 +16,7 @@ struct ContextAccelT {
 	using CustomSystemBase = typename Ctx::CustomSystemBase;
 	using CustomSinkBase = typename Ctx::CustomSinkBase;
 	using Value = typename ContextT<Ctx>::Value;
-	using Stream = typename ContextT<Ctx>::Stream;
+	using CtxStream = typename ContextT<Ctx>::Stream;
 	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
 	using BaseSource = typename ContextEcsT<Ctx>::Source;
 	using BaseSink = typename ContextEcsT<Ctx>::Sink;
@@ -51,7 +51,7 @@ struct ContextAccelT {
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
 		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 		
-		virtual Stream&				GetStream(C*) = 0;
+		virtual CtxStream&			GetStream(C*) = 0;
 		virtual void				BeginStream(C*) = 0;
 		virtual void				EndStream(C*) = 0;
 		
@@ -64,23 +64,31 @@ struct ContextAccelT {
 	class PipeComponent :
 		public Component<PipeComponent>,
 		public AccelSource,
-		public AccelSink
+		public AccelSink,
+		public AccelComponent
 	{
-		RTTI_COMP2(PipeComponent, AccelSource, AccelSink)
+		RTTI_COMP3(PipeComponent, AccelSource, AccelSink, AccelComponent)
 		VIS_COMP_1_1(Accel, Accel)
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
 		
+		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		
 		// AccelSink
 		Format				GetFormat(C*) override;
 		Value&				GetValue(C*) override;
 		
 		// AccelSource
-		Stream&				GetStream(C*) override;
+		CtxStream&			GetStream(C*) override;
 		void				BeginStream(C*) override;
 		void				EndStream(C*) override;
+		
+		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		void Update(double dt) override;
+		bool LoadResources() override;
+		void Reset() override;
 		
 	};
 	
@@ -88,23 +96,31 @@ struct ContextAccelT {
 	class ConvertInputComponent :
 		public Component<ConvertInputComponent>,
 		public BaseSource,
-		public AccelSink
+		public AccelSink,
+		public AccelComponent
 	{
-		RTTI_COMP2(ConvertInputComponent, BaseSource, AccelSink)
+		RTTI_COMP3(ConvertInputComponent, BaseSource, AccelSink, AccelComponent)
 		VIS_COMP_1_1(Base, Accel)
 		COPY_PANIC(ConvertInputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
 		
+		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		
 		// AccelSink
 		Format				GetFormat(C*) override;
 		Value&				GetValue(C*) override;
 		
 		// BaseSource
-		Stream&				GetStream(C*) override;
+		CtxStream&			GetStream(C*) override;
 		void				BeginStream(C*) override;
 		void				EndStream(C*) override;
+		
+		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		void Update(double dt) override;
+		bool LoadResources() override;
+		void Reset() override;
 		
 	};
 	
@@ -112,23 +128,31 @@ struct ContextAccelT {
 	class ConvertOutputComponent :
 		public Component<ConvertOutputComponent>,
 		public AccelSource,
-		public BaseSink
+		public BaseSink,
+		public AccelComponent
 	{
-		RTTI_COMP2(ConvertOutputComponent, AccelSource, BaseSink)
+		RTTI_COMP3(ConvertOutputComponent, AccelSource, BaseSink, AccelComponent)
 		VIS_COMP_1_1(Accel, Base)
 		COPY_PANIC(ConvertOutputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
 		
+		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		
 		// BaseSink
 		Format				GetFormat(C*) override;
 		Value&				GetValue(C*) override;
 		
 		// AccelSource
-		Stream&				GetStream(C*) override;
+		CtxStream&			GetStream(C*) override;
 		void				BeginStream(C*) override;
 		void				EndStream(C*) override;
+		
+		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		void Update(double dt) override;
+		bool LoadResources() override;
+		void Reset() override;
 		
 	};
 	
