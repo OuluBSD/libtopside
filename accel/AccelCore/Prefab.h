@@ -4,21 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-/*PREFAB_BEGIN(CompleteAccel)
-		AccelDisplaySource,
-		AccelAudioSource,
-		AccelContextComponent
-PREFAB_END*/
-
-/*PREFAB_BEGIN(VideoOnlyAccel)
-		AccelDisplaySource,
-		AccelContextComponent
-PREFAB_END*/
-
-PREFAB_BEGIN(AudioOnlyAccel)
-		AccelAudioConvertInputComponent,
-		AccelAudioPipeComponent,
-		AccelAudioConvertOutputComponent,
+PREFAB_BEGIN(CompleteAccel)
 		AccelContextComponent
 PREFAB_END
 

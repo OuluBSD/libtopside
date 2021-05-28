@@ -5,5 +5,29 @@ uses
 
 file
 	EcsSDL2.h,
-	EcsSDL2.cpp;
+	EcsSDL2.cpp,
+	Timer.h,
+	Timer.cpp,
+	AudioIn.h,
+	AudioIn.cpp,
+	AudioOut.h,
+	AudioOut.cpp,
+	Screen.h,
+	Screen.cpp,
+	Events.h,
+	Events.cpp,
+	Joystick.h,
+	Joystick.cpp,
+	GameController.h,
+	GameController.cpp,
+	Sensor.h,
+	Sensor.cpp,
+	Image.h,
+	Image.cpp,
+	Font.h,
+	Font.cpp,
+	Context.h,
+	Context.cpp,
+	System.h,
+	System.cpp;
 

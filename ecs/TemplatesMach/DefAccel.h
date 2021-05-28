@@ -119,7 +119,7 @@ struct AccelFormat {
 };
 
 
-LOCAL_CTX(Accel, DummyValueBase, AccelStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
+LOCAL_CTX(Accel, DummyValueBase, AccelStreamBase, DummyCustomSystemBase, DummyCustomSinkBase, DummyCustomPacketBase)
 #define ACCCTX ((AccelContext*)0)
 #define AccCtx AccelContext*
 

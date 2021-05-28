@@ -7,5 +7,5 @@ file
 
 mainconfig
 	"" = "GUI OPENGL",
-	"" = "GUI OPENGL VERBOSE_SHADERCORE";
+	"" = "GUI OPENGL VERBOSE_ACCELCORE";
 

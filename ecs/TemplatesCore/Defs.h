@@ -12,6 +12,7 @@ NAMESPACE_TOPSIDE_BEGIN
 	using x##Sink = x##EcsT::BaseSink; \
 	using x##Source = x##EcsT::BaseSource; \
 	using x##System = x##EcsT::System; \
+	using x##SystemRef = Ref<x##System, RefParent1<Machine>>; \
 	using x##SinkRef = Ref<x##Sink, RefParent1<Entity>>; \
 	using x##SourceRef = Ref<x##Source, RefParent1<Entity>>;
 

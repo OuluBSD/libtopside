@@ -41,8 +41,8 @@ public:
 	template <class T> RefT_Entity<T> As() {return ComponenBase_Static_As<T>(this);}
 	
 	#define IFACE(x) \
-	virtual RefT_Entity<x##Source> As##x##Source() {return Null;} \
-	virtual RefT_Entity<x##Sink>   As##x##Sink()   {return Null;}
+	RefT_Entity<x##Source> As##x##Source() {return As<x##Source>();} \
+	RefT_Entity<x##Sink>   As##x##Sink()   {return As<x##Sink>();}
 	IFACE_LIST
 	#undef IFACE
 	
@@ -61,7 +61,7 @@ public:
 			sys->Remove(ref);
 	}
 	
-	template <class Source, class T> bool LinkManually(T& o);
+	template <class Source, class T> bool LinkManually(T& o, String* err_msg=0);
 	
 };
 

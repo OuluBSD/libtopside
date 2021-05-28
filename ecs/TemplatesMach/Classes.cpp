@@ -160,4 +160,34 @@ bool LightSampleFD::IsBigEndian(Type t) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+String DeviceSample::ToString(Type t) {
+	switch (t) {
+		case S_CTRL_EVENT: return "CtrlEvent";
+		default: break;
+	}
+	return "<invalid>";
+}
+
+int DeviceSample::GetSize(Type t) {
+	switch (t) {
+		case S_CTRL_EVENT: return sizeof(CtrlEvent);
+		default: break;
+	}
+	ASSERT_(0, "invalid type");
+	return 0;
+}
+
+
 NAMESPACE_TOPSIDE_END

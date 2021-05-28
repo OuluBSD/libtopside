@@ -366,6 +366,7 @@ struct ContextT {
 		void		FillBuffersNull();
 		void		Visit(RuntimeVisitor& vis) {}
 		void		DropBuffer();
+		void		AddPacket(Packet p) {buf.Add(p);}
 		
 	};
 	

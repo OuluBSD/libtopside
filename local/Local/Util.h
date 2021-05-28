@@ -538,15 +538,20 @@ struct AppFlags {
 	
 	GfxMode gfx = GFX_OPENGL;
 	bool have_ode_physics = false;
+	bool is_ogl_ctx_open = false;
 	
 	bool IsOpenGL() const {return gfx == GFX_OPENGL;}
 	bool IsSoftwareRenderer() const {return gfx == GFX_SW;}
 	bool HaveOdePhysics() const {return have_ode_physics;}
+	bool IsOpenGLContextOpen() const {return is_ogl_ctx_open;}
+	
+	void SetOpenGLContextOpen(bool b=true) {is_ogl_ctx_open = b;}
 	
 };
 
 inline AppFlags& GetAppFlags() {return Single<AppFlags>();}
 inline bool IsOpenGL() {return GetAppFlags().IsOpenGL();}
+inline bool IsOpenGLContextOpen() {return GetAppFlags().IsOpenGLContextOpen();}
 
 
 

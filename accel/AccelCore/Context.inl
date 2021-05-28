@@ -10,7 +10,6 @@ TMPL(typename ContextT<Ctx>::Stream&) PipeComponent::GetStream(Ctx*) {TODO}
 TMPL(void) PipeComponent::BeginStream(Ctx*) {TODO}
 TMPL(void) PipeComponent::EndStream(Ctx*) {TODO}
 TMPL(void) PipeComponent::Update(double dt) {TODO}
-TMPL(bool) PipeComponent::LoadResources() {TODO}
 TMPL(void) PipeComponent::Reset() {TODO}
 TMPL(bool) PipeComponent::LoadAsInput(const AcceleratorHeader& in) {TODO}
 
@@ -20,7 +19,6 @@ TMPL(typename ContextT<Ctx>::Stream&) ConvertInputComponent::GetStream(Ctx*) {TO
 TMPL(void) ConvertInputComponent::BeginStream(Ctx*) {TODO}
 TMPL(void) ConvertInputComponent::EndStream(Ctx*) {TODO}
 TMPL(void) ConvertInputComponent::Update(double dt) {TODO}
-TMPL(bool) ConvertInputComponent::LoadResources() {TODO}
 TMPL(void) ConvertInputComponent::Reset() {TODO}
 TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
 	const auto& conns = AccelSink::GetConnections();
@@ -45,17 +43,24 @@ TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
 		ComponentBaseRef that_comp_base = comp->template AsRef<ComponentBase>();
 		ASSERT(this_comp_base && that_comp_base);
 		
-		if (!that_comp_base->template LinkManually<AccelSource>(*this))
+		String err_msg;
+		if (!that_comp_base->template LinkManually<BaseSource>(*this, &err_msg)) {
+			ctx->GetParent()->OnError("ConvertInputComponent::LoadAsInput", "Manual linking failed: " + err_msg);
 			return false;
+		}
 	}
 	
 	String p = in.GetPath();
 	if (p.GetCount()) {
 		Stream& stream = comp->GetStream((C*)0);
-		return stream.LoadFileAny(p);
+		if (!stream.LoadFileAny(p)) {
+			ctx->GetParent()->OnError("ConvertInputComponent::LoadAsInput", "Stream failed to load '" + p + "'");
+			return false;
+		}
+		return true;
 	}
 	else {
-		LOG("ConvertInputComponent::LoadAsInput: internal error: unhandled header");
+		ctx->GetParent()->OnError("ConvertInputComponent::LoadAsInput", "Unhandled header configuration");
 		return false;
 	}
 }
@@ -66,9 +71,7 @@ TMPL(typename ContextT<Ctx>::Stream&) ConvertOutputComponent::GetStream(Ctx*) {T
 TMPL(void) ConvertOutputComponent::BeginStream(Ctx*) {TODO}
 TMPL(void) ConvertOutputComponent::EndStream(Ctx*) {TODO}
 TMPL(void) ConvertOutputComponent::Update(double dt) {TODO}
-TMPL(bool) ConvertOutputComponent::LoadResources() {TODO}
 TMPL(void) ConvertOutputComponent::Reset() {TODO}
-TMPL(bool) ConvertOutputComponent::LoadAsInput(const AcceleratorHeader& in) {TODO}
 
 
 NAMESPACE_TOPSIDE_END

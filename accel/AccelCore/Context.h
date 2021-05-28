@@ -86,7 +86,6 @@ struct ContextAccelT {
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
 		void Update(double dt) override;
-		bool LoadResources() override;
 		void Reset() override;
 		bool LoadAsInput(const AcceleratorHeader& in) override;
 		
@@ -95,46 +94,13 @@ struct ContextAccelT {
 	
 	class ConvertInputComponent :
 		public Component<ConvertInputComponent>,
-		public BaseSource,
-		public AccelSink,
-		public AccelComponent
-	{
-		RTTI_COMP3(ConvertInputComponent, BaseSource, AccelSink, AccelComponent)
-		VIS_COMP_1_1(Base, Accel)
-		COPY_PANIC(ConvertInputComponent)
-		IFACE_GENERIC
-		void Visit(RuntimeVisitor& vis) override {}
-	public:
-		
-		TypeCls GetContextType() const override {return AsTypeCls<C>();}
-		
-		// AccelSink
-		Format				GetFormat(C*) override;
-		Value&				GetValue(C*) override;
-		
-		// BaseSource
-		CtxStream&			GetStream(C*) override;
-		void				BeginStream(C*) override;
-		void				EndStream(C*) override;
-		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
-		void Update(double dt) override;
-		bool LoadResources() override;
-		void Reset() override;
-		bool LoadAsInput(const AcceleratorHeader& in) override;
-		
-	};
-	
-	
-	class ConvertOutputComponent :
-		public Component<ConvertOutputComponent>,
 		public AccelSource,
 		public BaseSink,
 		public AccelComponent
 	{
-		RTTI_COMP3(ConvertOutputComponent, AccelSource, BaseSink, AccelComponent)
-		VIS_COMP_1_1(Accel, Base)
-		COPY_PANIC(ConvertOutputComponent)
+		RTTI_COMP3(ConvertInputComponent, AccelSource, BaseSink, AccelComponent)
+		VIS_COMP_1_1(Base, Accel)
+		COPY_PANIC(ConvertInputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
@@ -152,9 +118,40 @@ struct ContextAccelT {
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
 		void Update(double dt) override;
-		bool LoadResources() override;
 		void Reset() override;
 		bool LoadAsInput(const AcceleratorHeader& in) override;
+		
+	};
+	
+	
+	class ConvertOutputComponent :
+		public Component<ConvertOutputComponent>,
+		public BaseSource,
+		public AccelSink,
+		public AccelComponent
+	{
+		RTTI_COMP3(ConvertOutputComponent, BaseSource, AccelSink, AccelComponent)
+		VIS_COMP_1_1(Accel, Base)
+		COPY_PANIC(ConvertOutputComponent)
+		IFACE_GENERIC
+		void Visit(RuntimeVisitor& vis) override {}
+	public:
+		
+		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		
+		// AccelSink
+		Format				GetFormat(C*) override;
+		Value&				GetValue(C*) override;
+		
+		// BaseSource
+		CtxStream&			GetStream(C*) override;
+		void				BeginStream(C*) override;
+		void				EndStream(C*) override;
+		
+		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		void Update(double dt) override;
+		void Reset() override;
+		bool LoadAsInput(const AcceleratorHeader& in) override {return false;}
 		
 	};
 	

@@ -106,9 +106,9 @@ public:
 	
 	virtual bool		IsContext(TypeCls t) const = 0;
 	virtual void		Update(double dt) = 0;
-	virtual bool		LoadResources() = 0;
 	virtual void		Reset() = 0;
 	
+	virtual bool		LoadResources() {return true;}
 	virtual bool		RequiresShaderCode() const {return false;}
 	virtual void		UseRenderedFramebuffer() {}
 	virtual void		ClearData() {}

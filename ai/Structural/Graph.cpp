@@ -8,6 +8,12 @@ Graph::Graph() {
 	
 }
 
+void Graph::DumpKeys() {
+	LOG("Graph:");
+	for (auto& key : keys) {
+		LOG("\t" << key.ToString());
+	}
+}
 void Graph::Clear() {
 	ClearError();
 	keys.Clear();
@@ -36,10 +42,12 @@ bool Graph::AddEdge(int dependency, int depender) {
 
 bool Graph::AddEdgeKey(Object dependency, Object depender) {
 	int a = keys.Find(dependency);
-	if (a < 0) {SetError("Dependency key not found"); return false;}
+	if (a < 0) {
+		SetError("Dependency key not found"); return false;}
 	
 	int b = keys.Find(depender);
-	if (b < 0) {SetError("Depender key not found"); return false;}
+	if (b < 0) {
+		SetError("Depender key not found"); return false;}
 	
 	if (a < 0 || a >= keys.GetCount() || b   < 0 || b   >= keys.GetCount()) {
 		SetError("Invalid Graph key");

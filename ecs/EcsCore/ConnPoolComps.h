@@ -49,23 +49,32 @@ private:
 	
 };
 
-template <class Source, class T> bool ComponentBase::LinkManually(T& o) {
+template <class Source, class T> bool ComponentBase::LinkManually(T& o, String* err_msg) {
 	using ConnAll = ConnectAllInterfaces<Source>;
 	using Sink = typename Source::SinkClass;
 	EntityRef src_e = GetEntity();
 	EntityRef sink_e = o.GetEntity();
 	
 	RefT_Pool<ConnAll> conn = src_e->FindCommonConnector<ConnAll>(sink_e);
-	if (!conn)
+	if (!conn) {
+		if (err_msg)
+			*err_msg = "could not find common connector for ConnectAllInterfaces<" + AsTypeString<Source>() + ">";
 		return false;
+	}
 	
 	RefT_Entity<Source> src		= src_e		->FindInterface<Source>();
-	if (!src)
+	if (!src) {
+		if (err_msg)
+			*err_msg = "could not find source interface " + AsTypeString<Source>();
 		return false;
+	}
 	
 	RefT_Entity<Sink> sink		= sink_e	->FindInterface<Sink>();
-	if (!sink)
+	if (!sink) {
+		if (err_msg)
+			*err_msg = "could not find sink interface for " + AsTypeString<Sink>();
 		return false;
+	}
 	
 	return conn->LinkManually(src, sink);
 }

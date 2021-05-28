@@ -113,6 +113,38 @@ public:
 	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
 };
 
+
+class DeviceSample
+{
+	
+public:
+	static const int def_sample_rate = 1;
+	
+	#define DEV_SMPL_LIST \
+		DEV_SMPL(S_CTRL_EVENT)
+	
+	typedef enum {
+		INVALID,
+		#define DEV_SMPL(x) x ,
+		DEV_SMPL_LIST
+		#undef DEV_SMPL
+		TYPE_COUNT
+	} Type;
+	
+	
+	static void Clear(Type& t) {t = INVALID;}
+	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
+	static String ToString(Type t);
+	static int GetSize(Type t);
+	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
+};
+
+
+
+
+
+
+
 #define DUMMY_SAMPLE(x) \
 	class x { \
 		public: \
@@ -140,7 +172,6 @@ DUMMY_SAMPLE(SpaceSample)
 DUMMY_SAMPLE(VertexSample)
 DUMMY_SAMPLE(TexLocSample)
 DUMMY_SAMPLE(BoneSample)
-DUMMY_SAMPLE(DeviceSample)
 DUMMY_SAMPLE(MidiSample)
 DUMMY_SAMPLE(PhysicsSample)
 DUMMY_SAMPLE(MaterialSample)
@@ -157,8 +188,11 @@ template<> struct DimBase<1> {
 		int length;
 	};
 	
+	using DimArg = int;
+	
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
+	void SetDim(DimArg a) {size[0] = a;}
 	void Clear() {for(int i = 0; i < 1; i++) size[i] = 0;}
 	String ToString() const {return "len(" + IntStr(channels) + ")";}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0];}
@@ -181,8 +215,12 @@ template<> struct DimBase<2> {
 	};
 	int width_pad;
 	
+	using DimArg = Size;
+	
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
+	
+	void SetDim(DimArg a) {res = a;}
 	void Clear() {
 		for(int i = 0; i < 2; i++) size[i] = 0;
 		width_pad = 0;
@@ -216,9 +254,12 @@ template<> struct DimBase<3> {
 		};
 	};
 	
+	using DimArg = Size3;
+	
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	
+	void SetDim(DimArg a) {res = a;}
 	String ToString() const {return res.ToString();}
 	void Clear() {for(int i = 0; i < 3; i++) size[i] = 0;}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0] && size[1] == b.size[1] && size[2] == b.size[2];}
@@ -233,6 +274,7 @@ public:
 	static const int def_sample_rate = 1;
 	
 	void Clear() {}
+	void SetTimeSeries(int,int) {Panic("never");}
 	
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const OnceBase& b) const {return true;}
@@ -245,6 +287,7 @@ public:
 	static const int def_sample_rate = 1;
 	
 	void Clear() {}
+	void SetTimeSeries(int,int) {Panic("never");}
 	
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
@@ -259,7 +302,7 @@ public:
 	
 	
 	void Clear() {freq = 0; sample_rate = 0;}
-	void Set(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
+	void SetTimeSeries(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
 	void SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
 	
 	String ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
@@ -314,8 +357,11 @@ public:
 
 #define FUNC_TMPL(dim, post, d) \
 	using Class = d##dim##post<T>; \
+	using SampleType = typename SampleBase<T>::Sample::Type; \
+	using DimArg = typename DimBase<dim>::DimArg; \
 	d##dim##post() {Clear();} \
 	d##dim##post(const d##dim##post& s) {*this = s;} \
+	d##dim##post(SampleType type, DimArg dim_, int freq=0, int sample_rate=0) {Set(type, dim_, freq, sample_rate);} \
 	static const int def_sample_rate = T::def_sample_rate; \
 	bool IsSame(const Class& b) const {\
 		return		post##Base::IsSame(b) && \
@@ -324,6 +370,12 @@ public:
 	} \
 	bool operator==(const Class& b) const {return IsSame(b);} \
 	bool operator!=(const Class& b) const {return !IsSame(b);} \
+	void Set(SampleType type, DimArg dim_, int freq=0, int sample_rate=0) { \
+		SampleBase<T>::SetType(type); \
+		DimBase<dim>::SetDim(dim_); \
+		if (freq || sample_rate) \
+			post##Base::SetTimeSeries(freq, sample_rate); \
+	} \
 	void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
 	int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
 	Class& operator=(const Class& c) { \

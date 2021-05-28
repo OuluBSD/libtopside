@@ -128,7 +128,7 @@ protected:
 public:
 	
 	void				Set(int id, Type t, String path, Filter filter, Wrap wrap, bool vflip);
-	void				Set(int id, AccelComponentVideoStream* v, AccelComponentAudioStream* a) {ASSERT(v || a); this->id = id; vstream = v; astream = a;}
+	void				Set(AccelComponentVideoStream* v, AccelComponentAudioStream* a) {ASSERT(v || a); vstream = v; astream = a;}
 	void				SetHeader(const AcceleratorHeader& in);
 	void				CopyIdStream(const AcceleratorHeader& in);
 	void				SetType(Type t) {type = t;}

@@ -57,6 +57,7 @@ class Graph : public ErrorReporter {
 public:
 	Graph();
 	
+	void DumpKeys();
 	void Clear();
 	void TopologicalSort();
 	void BreadthFirstSearch(int key_i, DfsVisitor& vis);

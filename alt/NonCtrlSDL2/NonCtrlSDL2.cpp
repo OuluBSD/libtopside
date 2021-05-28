@@ -16,11 +16,10 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<ComponentStore>();
     mach.Add<ConnectorStore>();
     mach.Add<SDL2System>();
-    mach.Add<HumanSystem>();
-    mach.Add<DisplaySystem>();
-    mach.Add<AudioSystem>();
-    mach.Add<StaticSystem>();
-    mach.Add<DeviceSystem>();
+    
+    #define IFACE(x) mach.Add<x##System>();
+    IFACE_LIST
+    #undef IFACE
     mach.Add<AccelSystem>();
     
     //if (gui)
@@ -44,9 +43,10 @@ bool SingleMachine::Open(bool gui) {
     if (!mach.Start())
 		return false;
     
-    //PoolRef pool = ents->GetRoot()->GetAddPool("windows");
-    //EntityRef app = pool->Create<SDL2StandaloneWindow>();
-    //app->Find<Connector>()->ConnectAll();
+    PoolRef pool = ents->GetRoot()->GetAddPool("system");
+    pool->AddConnectEverything();
+    EntityRef app = pool->Create<SDL2StandaloneWindow>();
+    pool->ConnectEverything();
     
 	return true;
 }

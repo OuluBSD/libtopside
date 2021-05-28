@@ -74,20 +74,26 @@ public:
 	}
 	
 	template <class Ctx, class T> bool AddEntityAccelComponent(AcceleratorHeader& in) {
+		static const char* fn_name = "AccelContextComponent::AddEntityAccelComponent";
 		AccelComponentGroup* g = FindGroupContext<Ctx>();
-		if (!g)
+		if (!g) {
+			OnError(fn_name, "No group found with given context");
 			return false;
+		}
 		RefT_Entity<T> o = GetEntity()->Add<T>();
-		if (!o)
+		if (!o) {
+			OnError(fn_name, "Adding component failed");
 			return false;
+		}
 		o->ctx = g->AsRefT();
 		if (!o->LoadAsInput(in)) {
+			//OnError(fn_name, "Loading AcceleratorHeader in component failed");
 			o->Destroy();
 			return false;
 		}
 		ASSERT(o->ctx);
-		o->id = ++id_counter;
-		in.Set(o->id, o->GetVideoStream(), o->GetAudioStream());
+		o->id = in.GetId();
+		in.Set(o->GetVideoStream(), o->GetAudioStream());
 		g->Add(o);
 		return true;
 	}

@@ -75,6 +75,7 @@ bool Screen::Open0() {
 		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 		glcontext = SDL_GL_CreateContext(win);
+		GetAppFlags().SetOpenGLContextOpen();
 		
 		// Glew
 		GLenum err = glewInit();
@@ -87,6 +88,7 @@ bool Screen::Open0() {
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback( OpenGLMessageCallback, 0 );
 		#endif
+		
 	}
 	
 	// Software framebuffer

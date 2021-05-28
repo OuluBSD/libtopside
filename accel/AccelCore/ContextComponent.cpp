@@ -38,13 +38,18 @@ void AccelContextComponent::Update(double dt) {
 		FindComponents();
 		DumpEntityComponents();
 		
-		Load(to_load);
+		if (!Load(to_load))
+			return;
 		Reset();
 		
 		//  Reload stage pointers
 		if (!RefreshStageQueue())
 			return;
 		DumpEntityComponents();
+		
+		#if HAVE_OPENGL
+		ASSERT_(IsOpenGLContextOpen(), "OpenGL is not started. Probably SDL2 (or similar) system is not added to the ECS.");
+		#endif
 		
 		is_open = true;
 		for(AccelComponentGroup& g : groups)
@@ -497,12 +502,13 @@ bool AccelContextComponent::Load(Object json) {
 				if (0)
 					;
 				#define IFACE(x) \
-					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(*group); \
-					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(*group); \
-					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>(*group);
+					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(*group);
+					//else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(*group); \
+					//else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>(*group);
 				IFACE_LIST
 				#undef IFACE
-			/*	switch (type) {
+				/*
+				switch (type) {
 					case AccelComponent::FUSION_DATA_SINK:			comp = AddEntityComponent<AccelDataSink>(); break;
 					//case AccelComponent::FUSION_CTRL_SOURCE:		comp = AddEntityComponent<AccelControllerSource>(); break;
 					//case AccelComponent::FUSION_CTRL_BUFFER:		comp = AddEntityComponent<AccelControllerBuffer>(); break;
@@ -530,7 +536,7 @@ bool AccelContextComponent::Load(Object json) {
 					return false;
 				}
 				
-				for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::TYPE_BUFFER);}
+				//for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::TYPE_BUFFER);}
 			}
 			else {
 				// Find existing component
@@ -580,12 +586,15 @@ bool AccelContextComponent::RefreshStageQueue() {
 		for(auto& s : gr.comps)
 			if (s->id >= 0)
 				g.AddKey(s->id);
+	g.DumpKeys();
 	for(auto& gr : groups) {
 		for(const AccelComponentRef& s : gr.comps) {
 			if (s->id >= 0) {
 				for(const AcceleratorHeader& in : s->in) {
-					if (in.GetId() >= 0)
-						g.AddEdgeKey(in.GetId(), s->id);
+					int id = in.GetId();
+					LOG("id: " << id);
+					if (id >= 0)
+						g.AddEdgeKey(id, s->id);
 				}
 			}
 		}

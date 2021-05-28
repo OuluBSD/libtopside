@@ -62,6 +62,10 @@ public:
 	void				Initialize(Entity& e, String prefab="Custom");
 	EntityRef			CreateEmpty();
 	EntityRef			Clone(const Entity& e);
+	void				AddConnectEverything();
+	void				AddConnectEverythingWithAccel();
+	void				ConnectEverything();
+	void				ConnectEverythingWithAccel();
 	
 	template<typename PrefabT>
 	EntityRef Create() {

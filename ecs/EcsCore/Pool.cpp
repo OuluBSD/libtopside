@@ -68,6 +68,20 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 
+void Pool::AddConnectEverything() {
+	#define IFACE(x) \
+		Add<ConnectAllInterfaces<x##Source>>();
+	IFACE_LIST
+	#undef IFACE
+}
+
+void Pool::ConnectEverything() {
+	#define IFACE(x) \
+		Find<ConnectAllInterfaces<x##Source>>()->Update(0);
+	IFACE_LIST
+	#undef IFACE
+}
+
 void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
 		it().UnlinkDeep();

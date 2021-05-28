@@ -210,9 +210,9 @@ bool AccelComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 					AcceleratorHeader::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString()),
 					ScanBoolString(in_map.TryGet("vflip", "false").ToString()));
 		
-		if (in.GetType() != AcceleratorHeader::TYPE_BUFFER) {
+		/*if (in.GetType() != AcceleratorHeader::TYPE_BUFFER) {
 			in.SetId(-1);
-		}
+		}*/
 		
 		if (path.GetCount() && GetFileDirectory(path).IsEmpty()) {
 			String filename = GetFileName(path);
@@ -338,11 +338,13 @@ AccelComponentGroup::AccelComponentGroup() {
 }
 
 bool AccelComponentGroup::Open() {
+	int dbg_i = 0;
 	for(AccelComponentRef& comp : comps) {
 		if (!comp->IsOpen() && !comp->Open()) {
 			DLOG("AccelComponentGroup::Open: error: a component did not open properly");
 			return false;
 		}
+		++dbg_i;
 	}
 	return true;
 }
@@ -393,9 +395,11 @@ void AccelComponentGroup::FindComponents() {
 }
 
 AccelComponentRef AccelComponentGroup::GetComponentById(int id) const {
-	
-	TODO
-	
+	ASSERT(id >= 0);
+	for (const auto& s : comps)
+		if (s->id == id)
+			return s;
+	THROW(Exc("AccelComponent not found"));
 }
 
 void AccelComponentGroup::FindUniqueInputs(AcceleratorHeaderVector& v) {

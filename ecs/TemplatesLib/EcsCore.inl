@@ -18,8 +18,8 @@ IFACE_LIST
 
 
 #define IFACE(x) \
-template<> inline RefT_Entity<x##Source> ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Source();} \
-template<> inline RefT_Entity<x##Sink>   ComponenBase_Static_As(ComponentBase* c) {return c->As##x##Sink();}
+template<> inline RefT_Entity<x##Source> ComponenBase_Static_As(ComponentBase* c) {x##Source* p = CastPtr<x##Source>(c); if (p) return p->AsRefT(); return RefT_Entity<x##Source>();} \
+template<> inline RefT_Entity<x##Sink>   ComponenBase_Static_As(ComponentBase* c) {x##Sink* p = CastPtr<x##Sink>(c); if (p) return p->AsRefT(); return RefT_Entity<x##Sink>();}
 IFACE_LIST
 #undef IFACE
 

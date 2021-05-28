@@ -11,13 +11,9 @@ void ShaderPlayer::OnError() {
 
 void ShaderPlayer::Initialize() {
 	PoolRef pool = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool("accel");
-	//accel = pool->Create<CompleteAccel>();
-	accel = pool->Create<AudioOnlyAccel>();
+	pool->AddConnectEverythingWithAccel();
+	accel = pool->Create<CompleteAccel>();
 	ASSERT(accel);
-	pool->Add<ConnectAllInterfaces<AudioSource>>();
-	pool->Add<ConnectAllInterfaces<DisplaySource>>();
-	//pool->Add<ConnectAllInterfaces<AcceleratorSource>>();
-	pool->Add<ConnectAllInterfaces<StaticSource>>();
 	
 	ctx = accel->Find<AccelContextComponent>();
 	if (ctx) {

@@ -22,6 +22,12 @@
 #define NAMESPACE_FUSION       FusionCore
 #define NS_SHADER              NAMESPACE_FUSION
 
+#undef DLOG
+#ifdef flagVERBOSE_ACCELCORE
+	#define DLOG(x) LOG(x)
+#else
+	#define DLOG(x)
+#endif
 
 #include "Header.h"
 #include "Stream.h"

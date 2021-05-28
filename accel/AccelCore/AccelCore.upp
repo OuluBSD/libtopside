@@ -8,6 +8,7 @@ uses
 
 file
 	AccelCore.h,
+	AccelCore.cpp,
 	Header.h,
 	Stream.h,
 	Stream.cpp,
