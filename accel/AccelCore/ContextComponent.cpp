@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-int AccelContextComponent::comp_id_counter;
+int AccelContextComponent::id_counter;
 
 
 void AccelContextComponent::Initialize() {
@@ -114,6 +114,22 @@ void AccelContextComponent::Clear() {
 	post_load = Null;
 	stream.Clear();
 	is_open = false;
+	
+	AddDefaultGroups();
+}
+
+void AccelContextComponent::AddDefaultGroups() {
+	AccelComponentGroup& video = groups.Add();
+	video.SetParent(this);
+	video.AddContext<VideoContext>();
+	video.AddContext<DisplayContext>();
+	video.AddContext<PhotoContext>();
+	video.AddContext<DeviceContext>();
+	
+	AccelComponentGroup& audio = groups.Add();
+	audio.SetParent(this);
+	audio.AddContext<AudioContext>();
+	audio.AddContext<DeviceContext>();
 }
 
 bool AccelContextComponent::Render() {
@@ -251,12 +267,6 @@ bool AccelContextComponent::LoadFileToy(String path, Object& dst) {
 	const char* fn_name = "LoadFileToy";
 	Clear();
 	
-	AccelComponentGroup& video = groups.Add();
-	AccelComponentGroup& audio = groups.Add();
-	video.AddContext<VideoContext>();
-	video.AddContext<DisplayContext>();
-	audio.AddContext<AudioContext>();
-	
 	String file_dir = GetFileDirectory(path);
 	
 	if (!FileExists(path)) {
@@ -295,12 +305,9 @@ bool AccelContextComponent::LoadFileToy(String path, Object& dst) {
 }
 
 void AccelContextComponent::OnError(TypeCls type, String fn, String msg) {
-	TODO
-	#if 0
 	LOG(AccelComponent::GetStringFromType(type) << ":" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
-	#endif
 }
 
 void AccelContextComponent::OnError(String fn, String msg) {
@@ -397,7 +404,7 @@ int AccelContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	int i = ids.Find(orig_id);
 	if (i >= 0)
 		return ids[i];
-	int id = ++comp_id_counter;
+	int id = ++id_counter;
 	ids.Add(orig_id, id);
 	return id;
 }
@@ -469,6 +476,7 @@ bool AccelContextComponent::Load(Object json) {
 			
 			if (AccelComponent::IsTypeTemporary(type)) {
 				AccelComponentGroup* group = 0;
+				ASSERT(groups.GetCount());
 				
 				// Find group
 				if (0)
@@ -489,9 +497,9 @@ bool AccelContextComponent::Load(Object json) {
 				if (0)
 					;
 				#define IFACE(x) \
-					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(); \
-					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(); \
-					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>();
+					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(*group); \
+					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(*group); \
+					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>(*group);
 				IFACE_LIST
 				#undef IFACE
 			/*	switch (type) {
@@ -523,8 +531,6 @@ bool AccelContextComponent::Load(Object json) {
 				}
 				
 				for(AcceleratorHeader& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == AcceleratorHeader::TYPE_BUFFER);}
-				
-				group->Add(comp);
 			}
 			else {
 				// Find existing component
@@ -638,8 +644,8 @@ void AccelContextComponent::RefreshPipeline() {
 	Ogl_CreatePipeline();
 #endif
 	
-	UpdateTexBuffers();
-	UpdateSoundBuffers();
+	for(auto& gr : groups)
+		gr.UpdateBuffers();
 	
 	if (!CheckInputTextures()) {
 		Close();
@@ -653,88 +659,57 @@ void AccelContextComponent::RefreshPipeline() {
 	DLOG("AccelContextComponent::RefreshPipeline end");
 }
 
-void AccelContextComponent::UpdateTexBuffers() {
-	TODO
-	#if 0
-	for(auto& comp : comps)
-		if (comp->type != AccelComponent::FUSION_AUDIO_SINK &&
-			comp->type != AccelComponent::FUSION_AUDIO_BUFFER &&
-			comp->type != AccelComponent::FUSION_AUDIO_SOURCE)
-				comp->UpdateTexBuffers();
-	#endif
-}
-
-void AccelContextComponent::UpdateSoundBuffers() {
-	TODO
-	#if 0
-	for(auto& comp : comps)
-		if (comp->type == AccelComponent::FUSION_AUDIO_SINK ||
-			comp->type == AccelComponent::FUSION_AUDIO_BUFFER ||
-			comp->type == AccelComponent::FUSION_AUDIO_SOURCE)
-				comp->UpdateTexBuffers();
-	#endif
-}
-
 bool AccelContextComponent::CheckInputTextures() {
-	TODO
-	#if 0
-	#if HAVE_OPENGL
-	for(auto& comp : comps)
-		if (!comp->Ogl_CheckInputTextures())
+	for(auto& gr : groups)
+		if (!gr.CheckInputTextures())
 			return false;
-#endif
 	return true;
-	#endif
 }
 
 void AccelContextComponent::Close() {
-	TODO
-	#if 0
-	for(auto& comp : comps)
-		comp->Close();
+	for(auto& gr : groups)
+		for(auto& comp : gr.comps)
+			comp->Close();
 	Clear();
-	#endif
 }
 
 bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
-	TODO
-	#if 0
 	const char* fn_name = "CreateComponents";
 	
 	for(AcceleratorHeader& in : v.in) {
 		switch (in.GetType()) {
-		case AcceleratorHeader::TEXTURE:
-		case AcceleratorHeader::CUBEMAP:
-		case AcceleratorHeader::VOLUME:
-			if (!AddEntityAccelComponent<AccelDataSink>(in))
+		case AcceleratorHeader::TYPE_TEXTURE:
+		case AcceleratorHeader::TYPE_CUBEMAP:
+		case AcceleratorHeader::TYPE_VOLUME:
+			if (!AddEntityAccelComponent<PhotoContext, AccelPhotoConvertInputComponent>(in))
 				return false;
 			break;
 			
-		case AcceleratorHeader::WEBCAM:
-		case AcceleratorHeader::VIDEO:
-		case AcceleratorHeader::MUSIC:
-		case AcceleratorHeader::MUSICSTREAM:
-			if (!AddEntityAccelComponent<AccelMediaSink>(in))
+		case AcceleratorHeader::TYPE_WEBCAM:
+		case AcceleratorHeader::TYPE_VIDEO:
+		case AcceleratorHeader::TYPE_MUSIC:
+		case AcceleratorHeader::TYPE_MUSICSTREAM:
+			if (!AddEntityAccelComponent<VideoContext, AccelVideoConvertInputComponent>(in))
 				return false;
 			break;
 			
-		case AcceleratorHeader::KEYBOARD:
-			if (!AddEntityAccelComponent<AccelControllerSink>(in))
+		case AcceleratorHeader::TYPE_KEYBOARD:
+			if (!AddEntityAccelComponent<DeviceContext, AccelDeviceConvertInputComponent>(in))
 				return false;
 			break;
 			
-		case AcceleratorHeader::EMPTY:
-		case AcceleratorHeader::BUFFER:
+		case AcceleratorHeader::TYPE_EMPTY:
+		case AcceleratorHeader::TYPE_BUFFER:
 			break;
 			
-		case AcceleratorHeader::INVALID:
+		case AcceleratorHeader::TYPE_INVALID:
+		default:
 			OnError(fn_name, "Invalid type");
 			return false;
 		}
 		
 	}
 	return true;
-	#endif
 }
 
 bool AccelContextComponent::ConnectComponents() {

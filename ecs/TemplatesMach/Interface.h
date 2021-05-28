@@ -4,15 +4,25 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class InterfaceBase :
+	RTTIBase
+{
+public:
+	RTTI_DECL0(InterfaceBase)
+	
+	virtual ComponentBase* AsComponentBase() = 0;
+	
+};
+
 template <class I>
 class InterfaceSink :
-	public ExchangeSinkProvider
+	public ExchangeSinkProvider,
+	public InterfaceBase
 {
 	using Sink = InterfaceSink<I>;
 	
 public:
-	RTTI_DECL1(Sink, ExchangeSinkProvider)
-	virtual ComponentBase* AsComponentBase() = 0;
+	RTTI_DECL2(Sink, ExchangeSinkProvider, InterfaceBase)
 	
 	
 };
@@ -23,13 +33,13 @@ void InterfaceDebugPrint(TypeId type, String s);
 
 template <class I, class O>
 class InterfaceSource :
-	public ExchangeSourceProvider
+	public ExchangeSourceProvider,
+	public InterfaceBase
 {
 	using Source = InterfaceSource<I,O>;
 	
 public:
-	RTTI_DECL1(Source, ExchangeSourceProvider)
-	virtual ComponentBase* AsComponentBase() = 0;
+	RTTI_DECL2(Source, ExchangeSourceProvider, InterfaceBase)
 	
 	
 protected:

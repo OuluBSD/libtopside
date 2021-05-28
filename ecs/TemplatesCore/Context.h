@@ -13,42 +13,42 @@ struct ContextEcsT {
 	using CustomSystemBase = typename Ctx::CustomSystemBase;
 	using CustomSinkBase = typename Ctx::CustomSinkBase;
 	using Value = typename ContextT<Ctx>::Value;
-	using Stream = typename ContextT<Ctx>::Stream;
+	using CtxStream = typename ContextT<Ctx>::Stream;
 	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
 	
 	
-	class Sink :
-		public InterfaceSink<Sink>,
+	class BaseSink :
+		public InterfaceSink<BaseSink>,
 		public CustomSinkBase,
 		RTTIBase
 	{
 	public:
-		RTTI_DECL2(Sink, InterfaceSink<Sink>, CustomSinkBase)
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<Sink>());}
+		RTTI_DECL2(BaseSink, InterfaceSink<BaseSink>, CustomSinkBase)
+		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSink>());}
 		
 		virtual Format			GetFormat(C*) = 0;
 		virtual Value&			GetValue(C*) = 0;
 		
 	};
 	
-	class Source :
-		public InterfaceSource<Source, Sink>,
+	class BaseSource :
+		public InterfaceSource<BaseSource, BaseSink>,
 		RTTIBase
 	{
-		using InterfaceSourceT = InterfaceSource<Source, Sink>;
+		using InterfaceSourceT = InterfaceSource<BaseSource, BaseSink>;
 		
 	public:
-		RTTI_DECL1(Source, InterfaceSourceT)
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<Source>());}
+		RTTI_DECL1(BaseSource, InterfaceSourceT)
+		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSource>());}
 		
 		using ExPt = ExchangePoint;
-		using SinkClass = ContextEcsT::Sink;
+		using SinkClass = ContextEcsT::BaseSink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
 		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 		
-		virtual Stream&				GetStream(C*) = 0;
+		virtual CtxStream&			GetStream(C*) = 0;
 		virtual void				BeginStream(C*) = 0;
 		virtual void				EndStream(C*) = 0;
 		
@@ -57,9 +57,10 @@ struct ContextEcsT {
 		
 	};
 	
-	using SourceRef			= Ref<Source,			RefParent1<Entity>>;
-	using SinkRef			= Ref<Sink,				RefParent1<Entity>>;
-	using ExchangePointRef	= Ref<ExchangePoint, RefParent1<MetaExchangePoint>>;
+	using SourceRef			= Ref<BaseSource,		RefParent1<Entity>>;
+	using SinkRef			= Ref<BaseSink,			RefParent1<Entity>>;
+	using ExchangePointRef	= Ref<ExchangePoint,	RefParent1<MetaExchangePoint>>;
+	
 	
 	class System :
 		public Topside::System<System>,

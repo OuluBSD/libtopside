@@ -112,6 +112,10 @@ public:
 	virtual bool		RequiresShaderCode() const {return false;}
 	virtual void		UseRenderedFramebuffer() {}
 	virtual void		ClearData() {}
+	virtual void		UpdateTexBuffers() {}
+	virtual bool		LoadAsInput(const AcceleratorHeader& in) {OnError("LoadAsInput", "not implemented"); return false;}
+	virtual AccelComponentVideoStream* GetVideoStream() {return NULL;}
+	virtual AccelComponentAudioStream* GetAudioStream() {return NULL;}
 	
 #if HAVE_OPENGL
 	void				Ogl_SetVars(GLint prog, const AccelStream& stream);
@@ -144,7 +148,7 @@ using AccelComponentRef				= Ref<AccelComponent,				RefParent1<Entity>>;
 
 
 
-class AccelComponentGroup : public RefScopeEnabler<AccelComponentGroup,Entity> {
+class AccelComponentGroup : public RefScopeEnabler<AccelComponentGroup,AccelContextComponent> {
 	RTTI_DECL_R0(AccelComponentGroup)
 	COPY_PANIC(AccelComponentGroup);
 	
@@ -152,7 +156,6 @@ public:
 	LinkedList<AccelComponentRef> comps;
 	Vector<uint32> gl_stages;
 	
-	AccelContextComponentRef ctx;
 	LinkedList<TypeCls> group_classes;
 	
 public:
@@ -170,6 +173,8 @@ public:
 	void				FindUniqueInputs(AcceleratorHeaderVector& v);
 	bool				LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
 	void				ConnectInputs(AcceleratorHeaderVector& v);
+	void				UpdateBuffers();
+	bool				CheckInputTextures();
 	
 	template <class T> void AddContext() {group_classes.FindAdd(AsTypeCls<T>());}
 	bool HasContext(TypeCls type) {return group_classes.Find(type) != 0;}

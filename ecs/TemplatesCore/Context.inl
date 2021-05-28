@@ -37,18 +37,18 @@ TMPL(void) ExchangePoint::Deinit() {
 }
 
 TMPL(void) ExchangePoint::Update(double dt) {
-	USING(Source)
-	USING(Sink)
-	USING(Stream)
+	USING(BaseSource)
+	USING(BaseSink)
+	USING(CtxStream)
 	USING(Value)
 	ASSERT(dbg_offset_is_set);
-	Ref<Source>	src			= this->src;
-	Ref<Sink>	sink		= this->sink;
+	Ref<BaseSource>	src			= this->src;
+	Ref<BaseSink>	sink		= this->sink;
 	
 	Ex ex(this);
 	ex.SetOffset(offset);
 	
-	Stream& src_stream = src->GetStream(CTX);
+	CtxStream& src_stream = src->GetStream(CTX);
 	Value& src_value = src_stream.Get();
 	int src_sz = src_value.GetQueueSize();
 	
@@ -145,7 +145,7 @@ TMPL_ECS(void) System::Update(double dt) {
 	
 	
 	for (SourceRef src : srcs) {
-		Stream& stream = src->GetStream(CTX);
+		CtxStream& stream = src->GetStream(CTX);
 		int buf_sz = stream.Get().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
 		

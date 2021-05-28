@@ -3,6 +3,8 @@
 
 #include <EcsCore/EcsCore.h>
 
+#include "Context.h"
+#include "Context.inl"
 #include "EcsCore.inl"
 
 #endif

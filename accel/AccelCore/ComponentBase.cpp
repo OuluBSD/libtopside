@@ -133,7 +133,7 @@ void AccelComponent::Uninitialize() {
 }
 
 AccelStream* AccelComponent::Stream() {
-	return ctx ? &ctx->ctx->stream : 0;
+	return ctx ? &ctx->GetParent()->stream : 0;
 }
 
 int AccelComponent::NewWriteBuffer() {
@@ -282,8 +282,8 @@ bool AccelComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 }
 
 void AccelComponent::OnError(String fn, String msg) {
-	if (ctx && ctx->ctx) {
-		ctx->ctx->OnError(GetRTTI().GetTypeId(), fn, msg);
+	if (ctx && ctx->GetParent()) {
+		ctx->GetParent()->OnError(GetRTTI().GetTypeId(), fn, msg);
 	}
 	else {
 		LOG("AccelComponent::" << fn << ": error: " << msg);
@@ -374,7 +374,8 @@ void AccelComponentGroup::Clear() {
 
 void AccelComponentGroup::FindComponents() {
 	comps.Clear();
-	EntityRef e = ctx->GetEntity();
+	ASSERT(GetParent());
+	EntityRef e = GetParent()->GetEntity();
 	for (ComponentRef& comp : e->GetComponents().GetValues()) {
 		if (comp) {
 			ComponentBase& base = *comp;
@@ -409,7 +410,7 @@ bool AccelComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_map, int stag
 	for (auto& comp : comps) {
 		if (comp->GetTypeId() == type) {
 			if (!comp->Load(st_map, stage_i, frag_code)) {
-				ctx->OnError(fn_name, "Loading stage " + IntStr(stage_i) + " failed");
+				GetParent()->OnError(fn_name, "Loading stage " + IntStr(stage_i) + " failed");
 				return false;
 			}
 			return true;
@@ -431,6 +432,20 @@ void AccelComponentGroup::ConnectInputs(AcceleratorHeaderVector& v) {
 			}
 		}
 	}
+}
+
+void AccelComponentGroup::UpdateBuffers() {
+	for(auto& comp : comps)
+		comp->UpdateTexBuffers();
+}
+
+bool AccelComponentGroup::CheckInputTextures() {
+#if HAVE_OPENGL
+	for(auto& comp : comps)
+		if (!comp->Ogl_CheckInputTextures())
+			return false;
+#endif
+	return true;
 }
 
 

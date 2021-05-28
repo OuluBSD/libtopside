@@ -3,6 +3,47 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+template <class Ctx>
+class AccelComponentStream :
+	public VideoStream
+{
+	RTTI_DECL0(AccelComponentStream)
+	
+public:
+	using Format = typename Ctx::Format;
+	using Value = typename ContextT<Ctx>::Value;
+	
+	Format fmt;
+	
+public:
+	
+	AccelComponentStream() {}
+	
+	void						FillBuffer() override {}
+	void						DropBuffer() override {}
+	Value&						Get() override {TODO}
+	int							GetActiveFormatIdx() const override {return 0;}
+	int							GetFormatCount() const override {return 1;}
+	Format						GetFormat(int i) const override {ASSERT(!i); return fmt;}
+	bool						FindClosestFormat(const Format&, int& idx) override {return 0;}
+	void						Clear() {fmt.Clear();}
+	
+	bool						IsOpen() const override {TODO}
+	bool						Open(int fmt_idx) override {TODO}
+	void						Close() override {TODO}
+	
+};
+
+
+#define IFACE(x) using AccelComponent##x##Stream = AccelComponentStream<x##Context>;
+IFACE_LIST
+#undef IFACE
+
+
+
+
+
+
 
 typedef enum {
 	ACCTYPE_NULL,
@@ -74,7 +115,8 @@ public:
 	static const char* type_names[ACCEL_TYPE_COUNT+1];
 	
 protected:
-	VideoStream* stream = 0;
+	AccelComponentVideoStream* vstream = 0;
+	AccelComponentAudioStream* astream = 0;
 	String filepath;
 	int id = -1;
 	Type type = TYPE_INVALID;
@@ -86,14 +128,16 @@ protected:
 public:
 	
 	void				Set(int id, Type t, String path, Filter filter, Wrap wrap, bool vflip);
-	void				Set(int id, VideoStream* s) {this->id = id; stream = s;}
+	void				Set(int id, AccelComponentVideoStream* v, AccelComponentAudioStream* a) {ASSERT(v || a); this->id = id; vstream = v; astream = a;}
 	void				SetHeader(const AcceleratorHeader& in);
 	void				CopyIdStream(const AcceleratorHeader& in);
 	void				SetType(Type t) {type = t;}
 	void				SetId(int i) {id = i;}
 	void				SetPath(String s) {filepath = s;}
 	
-	VideoStream*		GetVideo() const {return stream;}
+	AccelComponentVideoStream*		GetVideo() const {return vstream;}
+	AccelComponentAudioStream*		GetAudio() const {return astream;}
+	
 	int					GetId() const {return id;}
 	Type				GetType() const {return type;}
 	String				GetPath() const {return filepath;}
@@ -129,7 +173,7 @@ class AccelContextComponent;
 using AccelContextComponentRef		= Ref<AccelContextComponent,		RefParent1<Entity>>;
 
 class AccelComponentGroup;
-using AccelComponentGroupRef				= Ref<AccelComponentGroup,				RefParent1<Entity>>;
+using AccelComponentGroupRef		= Ref<AccelComponentGroup,			RefParent1<AccelContextComponent>>;
 
 NAMESPACE_TOPSIDE_END
 

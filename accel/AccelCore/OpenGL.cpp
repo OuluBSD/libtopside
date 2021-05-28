@@ -460,7 +460,7 @@ bool AccelComponent::Ogl_CompileFragmentShader() {
 	}
 	code << "\n";
 	
-	for (String& src : ctx->ctx->common_source) {
+	for (String& src : ctx->GetParent()->common_source) {
 		code += src + "\n";
 	}
 	

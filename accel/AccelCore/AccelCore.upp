@@ -14,13 +14,14 @@ file
 	ComponentBase.h,
 	ComponentBase.cpp,
 	OpenGL.cpp,
+	ContextComponent.h,
+	ContextComponent.cpp,
 	Context.h,
-	Context.cpp,
-	Templates.h,
-	Templates.inl highlight cpp,
+	Context.inl highlight cpp,
 	Defs.h,
 	System.h,
 	System.cpp,
 	Prefab.h,
+	srcimp.tpp,
 	Trash readonly separator;
 

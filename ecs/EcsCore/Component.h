@@ -21,6 +21,7 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSources(RuntimeVisitor& vis) = 0;
 	virtual void VisitSinks(RuntimeVisitor& vis) = 0;
+	virtual bool IsContext(TypeCls t) const {return false;}
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual TypeCls GetContextType() const {return AsVoidTypeId().GetTypeId();}

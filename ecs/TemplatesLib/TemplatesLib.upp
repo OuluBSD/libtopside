@@ -5,5 +5,7 @@ uses
 
 file
 	TemplatesLib.h,
+	Context.h,
+	Context.inl highlight cpp,
 	EcsCore.inl highlight cpp;
 

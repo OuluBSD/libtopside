@@ -89,7 +89,8 @@ void AcceleratorHeader::SetHeader(const AcceleratorHeader& i) {
 
 void AcceleratorHeader::CopyIdStream(const AcceleratorHeader& in) {
 	id = in.id;
-	stream = in.stream;
+	astream = in.astream;
+	vstream = in.vstream;
 }
 
 bool AcceleratorHeader::IsTypeComponentSource(Type i) {
