@@ -8,13 +8,13 @@ class SDL2EventsComponent :
 	public Component<SDL2EventsComponent>,
 	public DeviceSource
 {
-
+	
 	struct LocalDevice : public SimpleBufferedDevice {
 		
 	};
 	
 	struct LocalDeviceStream : public SimpleBufferedDeviceStream {
-		RTTI_DECL1(LocalDeviceStream, DeviceStream)
+		RTTI_DECL1(LocalDeviceStream, SimpleBufferedDeviceStream)
 		SDL2EventsComponent& par;
 		LocalDeviceStream(SDL2EventsComponent* par) :
 			par(*par),

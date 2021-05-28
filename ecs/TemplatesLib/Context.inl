@@ -4,11 +4,37 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+TMPL(typename ContextT<Ctx>::Stream&) InputComponent::GetStream(Ctx*) {
+	return stream;
+}
 
+TMPL(void) InputComponent::BeginStream(Ctx*) {
+	stream.FillBuffer();
+}
 
-TMPL(typename ContextT<Ctx>::Stream&) InputComponent::GetStream(Ctx*) {TODO}
-TMPL(void) InputComponent::BeginStream(Ctx*) {TODO}
-TMPL(void) InputComponent::EndStream(Ctx*) {TODO}
+TMPL(void) InputComponent::EndStream(Ctx*) {
+	stream.DropBuffer();
+}
+
+TMPL(bool) InputComponent::ReadFrame() {
+	TODO
+}
+
+TMPL(bool) InputComponent::ProcessDeviceFrame() {
+	TODO
+}
+
+TMPL(bool) InputComponent::LocalStream::IsOpen() const {
+	TODO
+}
+
+TMPL(bool) InputComponent::LocalStream::Open(int fmt_idx) {
+	TODO
+}
+
+TMPL(bool) InputComponent::LocalStream::LoadFileAny(String path) {
+	TODO
+}
 
 
 NAMESPACE_TOPSIDE_END

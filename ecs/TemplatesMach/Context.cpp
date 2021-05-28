@@ -29,6 +29,11 @@ template <>
 bool ContextT<DeviceContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
+
+template <>
+bool ContextT<PhotoContext>::PacketValue::PaintOpenGLTexture(int texture) {
+	TODO
+}
 #endif
 
 
