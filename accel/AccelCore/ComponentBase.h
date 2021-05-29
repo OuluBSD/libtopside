@@ -84,6 +84,7 @@ public:
 	
 	
 	AccelComponent();
+	~AccelComponent();
 	void				Update0(double dt);
 	void				Clear();
 	void				ClearTex();
@@ -105,14 +106,16 @@ public:
 	template <class T> bool IsIn() {return IsContext(AsTypeCls<T>());}
 	
 	virtual bool		IsContext(TypeCls t) const = 0;
-	virtual void		Update(double dt) = 0;
-	virtual void		Reset() = 0;
+	virtual void		UpdateTexBuffers() = 0;
 	
+	virtual void		PreProcess() {}
+	virtual void		PostProcess() {}
+	virtual void		Update(double dt) {}
 	virtual bool		LoadResources() {return true;}
 	virtual bool		RequiresShaderCode() const {return false;}
 	virtual void		UseRenderedFramebuffer() {}
 	virtual void		ClearData() {}
-	virtual void		UpdateTexBuffers() {}
+	virtual void		Reset() {}
 	virtual bool		LoadAsInput(const AcceleratorHeader& in) {OnError("LoadAsInput", "not implemented"); return false;}
 	virtual AccelComponentVideoStream* GetVideoStream() {return NULL;}
 	virtual AccelComponentAudioStream* GetAudioStream() {return NULL;}
@@ -135,6 +138,7 @@ public:
 	void				Ogl_TexFlags(int type, int filter, int repeat);
 	void				Ogl_ClearTex();
 	void				Ogl_ClearProg();
+	void				Ogl_UpdateTex(Size sz, const Vector<byte>& data);
 	GLuint				Ogl_GetTex() const {return color_buf[buf_i];}
 #endif
 	
@@ -157,6 +161,7 @@ public:
 	Vector<uint32> gl_stages;
 	
 	LinkedList<TypeCls> group_classes;
+	AccelStream stream;
 	
 public:
 	
@@ -164,6 +169,8 @@ public:
 	AccelComponentGroup();
 	bool				Open();
 	void				Clear();
+	void				Reset();
+	void				Process();
 	void				Close();
 	void				CloseTemporary();
 	void				FindComponents();
@@ -175,9 +182,12 @@ public:
 	void				ConnectInputs(AcceleratorHeaderVector& v);
 	void				UpdateBuffers();
 	bool				CheckInputTextures();
+	void				RefreshStreamValues();
+	bool				IsLast(const AccelComponent* comp) const;
 	
 	template <class T> void AddContext() {group_classes.FindAdd(AsTypeCls<T>());}
-	bool HasContext(TypeCls type) {return group_classes.Find(type) != 0;}
+	template <class T> bool HasContext() const {return HasContext(AsTypeCls<T>());}
+	bool HasContext(TypeCls type) const {return group_classes.Find(type) != 0;}
 	
 #if HAVE_OPENGL
 	void				Ogl_ProcessStage(AccelComponentRef s, GLuint gl_stage);

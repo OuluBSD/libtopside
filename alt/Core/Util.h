@@ -523,15 +523,15 @@ void SortByKey(V& map, const S& sorter) {
 template <class H, class I, class J>
 inline void IterSwapObject(H ha, H hb, I a, I b, J va, J vb) { if (a != b) {Swap(*ha, *hb); Swap(*a, *b); Swap(*va, *vb);}}
 
-template <class H, class I, class J, class Less>
+template <class Reff, class H, class I, class J, class Less>
 inline void OrderIterObject2__(H ha, H hb, I a, I b, J va, J vb, const Less& less)
 {
-	if(less(*b, *a)) {
+	if(less(Reff(*b), Reff(*a))) {
 		IterSwapObject<H,I,J>(ha, hb, a, b, va, vb);
 	}
 }
 
-template <class H, class I, class J, class Less>
+template <class Reff, class H, class I, class J, class Less>
 inline void FinalSortObject__(H hbegin, H hend, I begin, I end, J vbegin, J vend, const Less& less) {
 	if(begin == end)
 		return;
@@ -549,7 +549,7 @@ inline void FinalSortObject__(H hbegin, H hend, I begin, I end, J vbegin, J vend
 		J vnext = vlast;
 		J vptr = vlast;
 		for(;;) {
-			if(less(*best, *--ptr)) {  // best holds, scan for better candidate
+			if(less(Reff(*best), Reff(*--ptr))) {  // best holds, scan for better candidate
 				do if(ptr == begin) { // best is the final minimum
 					IterSwapObject<H,I,J>(hbegin, hbest, begin, best, vbegin, vbest);
 					++hbegin;
@@ -557,7 +557,7 @@ inline void FinalSortObject__(H hbegin, H hend, I begin, I end, J vbegin, J vend
 					++vbegin;
 					goto NEXT_ITEM;
 				}
-				while(less(*best, *--ptr));
+				while(less(Reff(*best), Reff(*--ptr)));
 				if(ptr == begin) { // begin is the final minimum, best is 2nd least
 					IterSwapObject<H,I,J>(++hbegin, hbest, ++begin, best, ++vbegin, vbest);
 					++hbegin;
@@ -588,7 +588,7 @@ inline void FinalSortObject__(H hbegin, H hend, I begin, I end, J vbegin, J vend
 	}
 }
 
-template <class H, class I, class J, class Less>
+template <class Reff, class H, class I, class J, class Less>
 void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 {
 	for(;;) {
@@ -596,7 +596,7 @@ void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 		if(count < 2)
 			return;
 		if(count < 8) {                         // Final optimized SelectSort
-			FinalSortObject__(hl, hh, l, h, vl, vh, less);
+			FinalSortObject__<Reff>(hl, hh, l, h, vl, vh, less);
 			return;
 		}
 		int pass = 4;
@@ -604,9 +604,9 @@ void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 			H hmiddle = hl + (count >> 1);        // get the middle element
 			I middle = l + (count >> 1);
 			J vmiddle = vl + (count >> 1);
-			OrderIterObject2__<H,I,J,Less>(hl, hmiddle, l, middle, vl, vmiddle, less);      // sort l, middle, h-1 to find median of 3
-			OrderIterObject2__<H,I,J,Less>(hmiddle, hh - 1, middle, h - 1, vmiddle, vh - 1, less);
-			OrderIterObject2__<H,I,J,Less>(hl, hmiddle, l, middle, vl, vmiddle, less);      // median is now in middle
+			OrderIterObject2__<Reff,H,I,J,Less>(hl, hmiddle, l, middle, vl, vmiddle, less);      // sort l, middle, h-1 to find median of 3
+			OrderIterObject2__<Reff,H,I,J,Less>(hmiddle, hh - 1, middle, h - 1, vmiddle, vh - 1, less);
+			OrderIterObject2__<Reff,H,I,J,Less>(hl, hmiddle, l, middle, vl, vmiddle, less);      // median is now in middle
 			IterSwapObject<H,I,J>(hl + 1, hmiddle, l + 1, middle, vl + 1, vmiddle);        // move median pivot to l + 1
 			H hii = hl + 1;
 			I ii = l + 1;
@@ -616,7 +616,7 @@ void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 				I i = l + 2;
 				J vi = vl + 2;
 				for(; i != h - 1; ++i, ++vi)   // do partitioning; already l <= pivot <= h - 1
-					if(less(*i, *(l + 1)))
+					if(less(Reff(*i), Reff(*(l + 1))))
 						IterSwapObject<H,I,J>(++hii, hi, ++ii, i, ++vii, vi);
 			}
 			IterSwapObject<H,I,J>(hii, hl + 1, ii, l + 1, vii, vl + 1);          // put pivot back in between partitions
@@ -624,7 +624,7 @@ void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 			I iih = ii;
 			J viih = vii;
 			// Find middle range of elements equal to pivot
-			while(iih + 1 != h && !less(*ii, *(iih + 1))) {
+			while(iih + 1 != h && !less(Reff(*ii), Reff(*(iih + 1)))) {
 				++hiih;
 				++iih;
 				++viih;
@@ -632,13 +632,13 @@ void SortObject__(H hl, H hh, I l, I h, J vl, J vh, const Less& less)
 			// partition sizes ok or we have done max attempts
 			if(pass > 5 || min(ii - l, h - iih) > (max(ii - l, h - iih) >> pass)) {
 				if(ii - l < h - iih - 1) {       // recurse on smaller partition, tail on larger
-					SortObject__(hl, hii, l, ii, vl, vii, less);
+					SortObject__<Reff>(hl, hii, l, ii, vl, vii, less);
 					hl = hiih + 1;
 					l = iih + 1;
 					vl = viih + 1;
 				}
 				else {
-					SortObject__(hiih + 1, hh, iih + 1, h, viih + 1, vh, less);
+					SortObject__<Reff>(hiih + 1, hh, iih + 1, h, viih + 1, vh, less);
 					hh = hii;
 					h = ii;
 					vh = vii;
@@ -662,7 +662,7 @@ void SortByValue(V& map, const S& sorter) {
 		return;
 	auto begin = map.Begin().GetIter();
 	auto end = map.End().GetIter();
-	SortObject__<typename V::HashPtr, typename V::ObjectPtr, typename V::KeyPtr, S>(begin.a, end.a, begin.c, end.c, begin.b, end.b, sorter);
+	SortObject__<typename V::SortRef, typename V::HashPtr, typename V::ObjectPtr, typename V::KeyPtr, S>(begin.a, end.a, begin.c, end.c, begin.b, end.b, sorter);
 }
 
 

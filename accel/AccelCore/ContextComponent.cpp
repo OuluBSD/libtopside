@@ -101,23 +101,22 @@ void AccelContextComponent::PostLoadFileAny(String path) {
 }
 
 void AccelContextComponent::Reset() {
-	stream.total_time.Reset();
+	for(AccelComponentGroup& g : groups) {
+		g.stream.Reset();
+		g.stream.total_time.Reset();
+	}
 }
 
 void AccelContextComponent::Clear() {
-	for(auto& comp : groups) {
-		comp.Clear();
+	for(auto& gr : groups) {
+		gr.Clear();
 		//if (comp->IsTypeTemporary())
 		//	comp->GetECS().Destroy();
 	}
 	common_source.Clear();
 	groups.Clear();
-#if HAVE_OPENGL
-	Ogl_ClearPipeline();
-#endif
 	last_error.Clear();
 	post_load = Null;
-	stream.Clear();
 	is_open = false;
 	
 	AddDefaultGroups();
@@ -138,107 +137,13 @@ void AccelContextComponent::AddDefaultGroups() {
 }
 
 bool AccelContextComponent::Render() {
-	TODO
-	#if 0
 	if (is_open /*&& lock.TryEnter()*/ ) {
-		ProcessStageQueue(MODE_DEFAULT);
+		for (auto& gr : groups)
+			gr.Process();
 		//lock.Leave();
 		return true;
 	}
 	return false;
-	#endif
-}
-
-/*void AccelContextComponent::Play() {
-	TODO
-	#if 0
-	if (is_open)
-		ProcessStageQueue(MODE_AUDIO);
-	#endif
-}*/
-
-void AccelContextComponent::ProcessStageQueue(TypeCls m) {
-	TODO
-	#if 0
-	ASSERT(is_open);
-	if (!is_open)
-		return;
-	
-	RefreshStreamValues(m);
-	
-	
-	for(auto& comp : comps) {
-		if (IsModeStage(*comp, m))
-			comp->PreProcess();
-	}
-	
-	int i = 0;
-	for(AccelComponentRef& comp : comps) {
-		if (IsModeStage(*comp, m)) {
-#if HAVE_OPENGL
-			Ogl_ProcessStage(*comp, gl_stages[i]);
-#endif
-		}
-	}
-	
-	for(AccelComponentRef& comp : comps) {
-		if (IsModeStage(*comp, m))
-			comp->PostProcess();
-	}
-	
-	#endif
-}
-
-/*bool AccelContextComponent::IsModeStage(ComponentBaseRef comp, TypeCls m) const {
-	auto type = comp.GetAccelType();
-	if (type == AccelComponent::FUSION_AUDIO_SINK ||
-		type == AccelComponent::FUSION_AUDIO_BUFFER ||
-		type == AccelComponent::FUSION_AUDIO_SOURCE)
-		return m == MODE_AUDIO;
-	else
-		return m == MODE_DEFAULT;
-}*/
-
-void AccelContextComponent::RefreshStreamValues(TypeCls m) {
-	TODO
-	#if 0
-	if (m == MODE_DEFAULT) {
-		stream.time = GetSysTime();
-		#ifdef flagWIN32
-		{
-			SYSTEMTIME time;
-			GetLocalTime(&time);
-			stream.time_us = time.wMilliseconds * 1000;
-		}
-		#else
-		{
-			struct timeval start;
-			gettimeofday(&start, NULL);
-			stream.time_us = start.tv_usec;
-		}
-		#endif
-		stream.vtotal_seconds = stream.total_time.Seconds();
-		stream.frame_seconds = stream.vframe_time.Seconds();
-	}
-	else if (m == MODE_AUDIO) {
-		if (stream.asink_frame == 0 || stream.is_audio_sync) {
-			stream.audio_last_sync_sec = stream.total_time.Seconds();
-			stream.atotal_seconds = stream.audio_last_sync_sec;
-			stream.is_audio_sync = true;
-			stream.aframes_after_sync = 0;
-		}
-		else {
-			ASSERT(stream.aud_fmt.sample_rate != 0);
-			int samples_after_last_sync =
-				stream.aframes_after_sync * stream.aud_fmt.sample_rate;
-			//DUMP(samples_after_last_sync);
-			stream.atotal_seconds =
-				stream.audio_last_sync_sec +
-				(float)samples_after_last_sync / (float)stream.aud_fmt.freq;
-			stream.is_audio_sync = false;
-		}
-	}
-	#endif
 }
 
 /*ComponentBaseRef AccelContextComponent::GetComponentById(int id) const {
@@ -415,7 +320,7 @@ int AccelContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 }
 
 bool AccelContextComponent::Load(Object json) {
-	DLOG("AccelContextComponent::Load");
+	DLOG("AccelContextComponent::Load begin");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
 		OnError(fn_name, "invalid json");
@@ -429,8 +334,8 @@ bool AccelContextComponent::Load(Object json) {
 	
 	ObjectMap& map = json.GetMap();
 	
-	stream.name = map.GetAdd("name", "unnamed").ToString();
-	stream.description = map.GetAdd("description", "").ToString();
+	name = map.GetAdd("name", "unnamed").ToString();
+	description = map.GetAdd("description", "").ToString();
 	
 	Object& stages = map.GetAdd("stages", ObjectArray());
 	if (!stages.IsArray()) {
@@ -569,10 +474,16 @@ bool AccelContextComponent::Load(Object json) {
 			group.ConnectInputs(v);
 		
 		// Connect inputs
-		if (!ConnectComponents())
+		if (!ConnectComponentInputs())
 			return false;
+		
 	}
 	
+	// Connect outputs
+	if (!ConnectComponentOutputs())
+		return false;
+	
+	DLOG("AccelContextComponent::Load end");
 	return true;
 }
 
@@ -613,13 +524,14 @@ bool AccelContextComponent::RefreshStageQueue() {
 	
 	struct TopologicalStages : public ErrorReporter {
 		Graph& g;
+		TopologicalStages(Graph& g) : g(g) {}
 		bool operator()(const RefT_Entity<AccelComponent>& a, const RefT_Entity<AccelComponent>& b) const {
 			int a_pos = g.FindSorted(a->id);
 			int b_pos = g.FindSorted(b->id);
 			return a_pos < b_pos;
 		}
 	};
-	TopologicalStages sorter {{},g};
+	TopologicalStages sorter(g);
 	
 	for(auto& gr : groups) {
 		Sort(gr.comps, sorter);
@@ -650,7 +562,8 @@ void AccelContextComponent::RefreshPipeline() {
 	DLOG("AccelContextComponent::RefreshPipeline begin");
 	
 #if HAVE_OPENGL
-	Ogl_CreatePipeline();
+	for(auto& gr : groups)
+		gr.Ogl_CreatePipeline();
 #endif
 	
 	for(auto& gr : groups)
@@ -721,10 +634,10 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 	return true;
 }
 
-bool AccelContextComponent::ConnectComponents() {
+bool AccelContextComponent::ConnectComponentInputs() {
 	TODO
 	#if 0
-	const char* fn_name = "ConnectComponents";
+	const char* fn_name = "ConnectComponentInputs";
 	bool succ = true;
 	
 	DumpEntityComponents();
@@ -791,6 +704,70 @@ bool AccelContextComponent::ConnectComponents() {
 	
 	return succ;
 	#endif
+}
+
+bool AccelContextComponent::ConnectComponentOutputs() {
+	DLOG("AccelContextComponent::ConnectComponentOutputs begin");
+	const char* fn_name = "AccelContextComponent::ConnectComponentOutputs";
+	
+	for (AccelComponentGroup& gr : groups) {
+		if (gr.HasContext<AudioContext>()) {
+			if (gr.comps.IsEmpty())
+				continue;
+			EntityRef e = GetEntity();
+			ComponentBaseRef comp = gr.comps.Top()->AsRef<ComponentBase>();
+			
+			AccelAudioSourceRef accel_aud_src = comp->As<AccelAudioSource>();
+			if (!accel_aud_src) {
+				OnError(fn_name, "last audio group component does not have AccelAudioSource interface");
+				return false;
+			}
+			
+			AccelAudioConvertOutputComponentRef aud_out = e->Find<AccelAudioConvertOutputComponent>();
+			if (!aud_out) {
+				aud_out = AddEntityComponent<AccelAudioConvertOutputComponent>(gr);
+				
+				AudioSourceRef aud_src = aud_out->As<AudioSource>();
+				if (!aud_src) {
+					OnError(fn_name, "could not find AudioSource interface");
+					return false;
+				}
+				
+				auto aud_src_conn = e->FindConnector<ConnectAllInterfaces<AudioSource>>();
+				if (!aud_src_conn) {
+					OnError(fn_name, "could not find AudioSource connector");
+					return false;
+				}
+				
+				// Connect AudioSource to any existing AudioSink
+				if (!aud_src_conn->LinkAny(aud_src)) {
+					OnError(fn_name, "could not link AudioSource automatically");
+					return false;
+				}
+			}
+			
+			AccelAudioSinkRef accel_aud_sink = comp->As<AccelAudioSink>();
+			if (!accel_aud_sink) {
+				OnError(fn_name, "component does not have AccelAudioSink interface");
+				return false;
+			}
+			
+			auto accel_aud_src_conn = e->FindConnector<ConnectAllInterfaces<AccelAudioSource>>();
+			if (!accel_aud_src_conn) {
+				OnError(fn_name, "could not find AccelAudioSource connector");
+				return false;
+			}
+			
+			if (!accel_aud_src_conn->LinkManually(accel_aud_src, accel_aud_sink)) {
+				OnError(fn_name, "could not link AccelAudioSource to AccelAudioSink manually");
+				return false;
+			}
+			
+		}
+	}
+	
+	DLOG("AccelContextComponent::ConnectComponentOutputs end");
+	return true;
 }
 
 

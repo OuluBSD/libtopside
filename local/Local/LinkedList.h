@@ -108,6 +108,8 @@ public:
 		ASSERT(0);
 		THROW(Exc("Position not found in LinkedList: " + IntStr(i)));
 	}
+	T& Top() {return last->value;}
+	const T& Top() const {return last->value;}
 	
 	Item* AddItem() {
 		Item* it = GetRecyclerPool().New();
@@ -233,7 +235,7 @@ public:
 		last = 0;
 		ASSERT(count == 0);
 	}
-	Iterator FindIter(const T& k) {
+	Iterator FindIter(const T& k) const {
 		Iterator iter = first;
 		while (iter) {
 			if (*iter == k)
@@ -242,10 +244,8 @@ public:
 		}
 		return Iterator();
 	}
-	T* Find(const T& k) {
-		Iterator iter = FindIter(k);
-		return iter ? (T*)iter : 0;
-	}
+	T*       Find(const T& k)       {Iterator iter = FindIter(k); return iter ? (T*)iter : 0;}
+	const T* Find(const T& k) const {Iterator iter = FindIter(k); return iter ? (T*)iter : 0;}
 	T& FindAdd(const T& k) {
 		Iterator iter = FindIter(k);
 		return iter ? iter() : Add(k);

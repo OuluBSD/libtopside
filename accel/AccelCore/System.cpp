@@ -21,6 +21,9 @@ void AccelSystem::Update(double dt) {
 	for (AccelContextComponentRef& ctx : ctxs)
 		ctx->Update(dt);
 	
+	for (AccelContextComponentRef& ctx : ctxs)
+		ctx->Render();
+	
 	DLOG("AccelSystem::Update: end\n");
 }
 

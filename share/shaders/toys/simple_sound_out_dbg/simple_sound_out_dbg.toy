@@ -1,0 +1,18 @@
+{
+	name: "Simple sound out for debugging. No image buffer at all. This was used to fix the ECS after the complicateds template upgrade.",
+	owner: "sppp",
+	likes: 1,
+	date: 20210529,
+	
+	stages: [
+		{
+			type: sound,
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}
+

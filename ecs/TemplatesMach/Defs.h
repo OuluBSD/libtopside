@@ -159,8 +159,8 @@ struct AVBase :
 	RTTIBase
 {
 	RTTI_DECL0(AVBase)
-	virtual Audio& GetAudio() = 0;
-	virtual Video& GetVideo() = 0;
+	virtual Audio& GetAudio() {THROW(Exc("pure function called"));}
+	virtual Video& GetVideo() {THROW(Exc("pure function called"));}
 };
 
 struct AVStreamBase :
@@ -168,8 +168,8 @@ struct AVStreamBase :
 {
 	RTTI_DECL0(AVStreamBase)
 	
-	virtual AudioStream& GetAudioStream() = 0;
-	virtual VideoStream& GetVideoStream() = 0;
+	virtual AudioStream& GetAudioStream() {THROW(Exc("pure function called"));}
+	virtual VideoStream& GetVideoStream() {THROW(Exc("pure function called"));}
 };
 LOCAL_CTX(Media, AVTimeSeries, AVSample, AVBase, AVStreamBase, DummyCustomSystemBase, DummyCustomSinkBase)
 #define MEDCTX ((MediaContext*)0)

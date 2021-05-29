@@ -14,7 +14,7 @@ class ConnectAllInterfaces :
 	Ref<EntityStore> sys;
 	
 	int64 refresh_ticks = -1;
-	
+	int tmp_link_count = 0;
 	
 public:
 	RTTI_DECL2(ConnectAllInterfaces, ConnectorT, MetaExchangePoint)
@@ -39,13 +39,16 @@ public:
 		vis & sys;
 		MetaExchangePoint::Visit(vis);
 	}
-		
+	
+	bool LinkAll();
+	bool LinkAny(SourceRef src);
 	bool LinkManually(SourceRef src, SinkRef sink);
 	
 	
 private:
 	
 	void Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>& src_stack);
+	void Visit(SourceRef src, PoolRef pool);
 	
 };
 

@@ -37,7 +37,7 @@ void Ogl_RemoveToken(String& glsl, String token) {
 
 
 
-void AccelContextComponent::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage) {
+void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage) {
 	SCOPE_REF(s)
 	GLint& fg_prog = s.prog[AccelComponent::PROG_FRAGMENT];
 	ASSERT(fg_prog >= 0 || !s.RequiresShaderCode());
@@ -66,9 +66,7 @@ void AccelContextComponent::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_sta
 	    glDrawBuffers(sizeof bufs / sizeof bufs[0], bufs);
 	}
 	
-	
 	s.Ogl_SetVars(prog, stream);
-	
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 	glRectf(-1.0, -1.0, 1.0, 1.0);
@@ -91,16 +89,6 @@ void AccelContextComponent::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_sta
 	OOSDL2::EnableOpenGLDebugMessages(0);
 	
 	glBindProgramPipeline(0);
-}
-
-void AccelContextComponent::Ogl_ClearPipeline() {
-	for (AccelComponentGroup& group : groups)
-		group.Ogl_ClearPipeline();
-}
-
-void AccelContextComponent::Ogl_CreatePipeline() {
-	for (AccelComponentGroup& group : groups)
-		group.Ogl_CreatePipeline();
 }
 
 void AccelComponentGroup::Ogl_ClearPipeline() {
@@ -312,6 +300,12 @@ void AccelComponent::Ogl_ClearProg() {
 	}
 }
 
+void AccelComponent::Ogl_UpdateTex(Size sz, const Vector<byte>& data) {
+	glBindTexture(GL_TEXTURE_2D, color_buf[0]);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, sz.cx, sz.cy, GL_RED, GL_UNSIGNED_BYTE, data.Begin());
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void AccelComponent::Ogl_CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat) {
 	int buf_count = 1;
 	if (is_doublebuf)
@@ -422,83 +416,101 @@ bool AccelComponent::Ogl_CompileFragmentShader() {
 			return true;
 	}
 	
-	DLOG("\tCompiling stage " << GetTypeString() << ": " << id << ": " << name);
+	int max_tries = 1;
+	if (IsIn<AudioContext>())
+		max_tries = 2;
 	
-	String code;
-	
-	code =		"#version 430\n"
-				"#define GL_ES\n"
-	
-				"uniform vec2      in_mouse;\n"
-				"uniform float     in_audio_seconds;\n"
-				
-				"uniform vec3      iResolution;           // viewport resolution (in pixels)\n"
-				"uniform float     iTime;                 // shader playback time (in seconds)\n"
-				"uniform float     iTimeDelta;            // duration since the previous frame (in seconds)\n"
-				"uniform int       iFrame;                // frames since the shader (re)started\n"
-				"uniform vec2      iOffset;               \n"
-				"uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click\n"
-				"uniform vec4      iDate;                 // (year, month, day, time in secs)\n"
-				"uniform float     iFrameRate;\n"
-				"uniform float     iSampleRate;           // sound sample rate (i.e., 44100)\n"
-				"uniform float     iChannelTime[4];       // channel playback time (in seconds)\n"
-				"uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)\n"
-				;
-	
-	for(int j = 0; j < 4; j++) {
-		if (j < in.GetCount()) {
-			AcceleratorHeader& in = this->in.At(j);
-			if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
-				code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
-			else if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
-				code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
+	for (int tries = 0; tries < max_tries; tries++) {
+		DLOG("\tCompiling stage: tries " << tries << ": " << GetTypeString() << ": " << id << ": " << name);
+		
+		String code;
+		
+		code =		"#version 430\n"
+					"#define GL_ES\n"
+		
+					"uniform vec2      in_mouse;\n"
+					"uniform float     in_audio_seconds;\n"
+					
+					"uniform vec3      iResolution;           // viewport resolution (in pixels)\n"
+					"uniform float     iTime;                 // shader playback time (in seconds)\n"
+					"uniform float     iTimeDelta;            // duration since the previous frame (in seconds)\n"
+					"uniform int       iFrame;                // frames since the shader (re)started\n"
+					"uniform vec2      iOffset;               \n"
+					"uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click\n"
+					"uniform vec4      iDate;                 // (year, month, day, time in secs)\n"
+					"uniform float     iFrameRate;\n"
+					"uniform float     iSampleRate;           // sound sample rate (i.e., 44100)\n"
+					"uniform float     iChannelTime[4];       // channel playback time (in seconds)\n"
+					"uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)\n"
+					;
+		
+		for(int j = 0; j < 4; j++) {
+			if (j < in.GetCount()) {
+				AcceleratorHeader& in = this->in.At(j);
+				if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
+					code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
+				else if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
+					code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
+				else
+					code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
+			}
 			else
 				code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
 		}
-		else
-			code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
+		code << "\n";
+		
+		for (String& src : ctx->GetParent()->common_source) {
+			code += src + "\n";
+		}
+		
+		code += fg_glsl;
+		
+		if (IsIn<VideoContext>() || IsIn<DisplayContext>()) {
+			code +=		"\nvoid main (void) {\n"
+						"	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);\n"
+						"	mainImage (color, gl_FragCoord.xy);\n"
+						"	gl_FragColor = color;\n"
+						"}\n\n";
+		}
+		else if (IsIn<AudioContext>()) {
+			if (tries == 0) {
+				code +=		"\nvoid main (void) {\n"
+							"	vec2 value = mainSound (int(gl_FragCoord.x), in_audio_seconds);\n"
+							"	gl_FragColor = vec4(value, 0.0, 1.0);\n"
+							"}\n\n";
+			}
+			else if (tries == 1) {
+				code +=		"\nvoid main (void) {\n"
+							"	float t = in_audio_seconds + gl_FragCoord.x / iSampleRate;\n"
+							"	vec2 value = mainSound (t);\n"
+							"	gl_FragColor = vec4(value, 0.0, 1.0);\n"
+							"}\n\n";
+			}
+		}
+		else {
+			OnError(fn_name, "type of stage " + IntStr(id) + " is not supported");
+			return false;
+		}
+		
+		// Hotfixes
+		code.Replace("precision float;", "");
+		if (code.Find("vec4 char(") >= 0)
+			code.Replace("char(", "_char(");
+		
+		//LOG(code);
+		
+		if (!Ogl_CompileProgram(PROG_FRAGMENT, code)) {
+			if (tries < max_tries-1)
+				continue;
+			LOG(GetLineNumStr(code));
+			Close();
+			break;
+		}
+		
+		return true;
 	}
-	code << "\n";
 	
-	for (String& src : ctx->GetParent()->common_source) {
-		code += src + "\n";
-	}
-	
-	code += fg_glsl;
-	
-	if (IsIn<VideoContext>() || IsIn<DisplayContext>()) {
-		code +=		"\nvoid main (void) {\n"
-					"	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);\n"
-					"	mainImage (color, gl_FragCoord.xy);\n"
-					"	gl_FragColor = color;\n"
-					"}\n\n";
-	}
-	else if (IsIn<AudioContext>()) {
-		code +=		"\nvoid main (void) {\n"
-					"	float t = in_audio_seconds + gl_FragCoord.x / iSampleRate;\n"
-					"	vec2 value = mainSound (t);\n"
-					"	gl_FragColor = vec4(value, 0.0, 1.0);\n"
-					"}\n\n";
-	}
-	else {
-		OnError(fn_name, "type of stage " + IntStr(id) + " is not supported");
-		return false;
-	}
-	
-	// Hotfixes
-	code.Replace("precision float;", "");
-	if (code.Find("vec4 char(") >= 0)
-		code.Replace("char(", "_char(");
-	
-	//LOG(code);
-	
-	if (!Ogl_CompileProgram(PROG_FRAGMENT, code)) {
-		LOG(GetLineNumStr(code));
-		Close();
-		return false;
-	}
-	
-	return true;
+	return false;
 }
 
 bool AccelComponent::Ogl_CompileProgram(int prog_i, String shader_source) {

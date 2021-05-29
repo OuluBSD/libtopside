@@ -113,8 +113,8 @@ bool AcceleratorHeader::IsTypeComponentSource(Type i) {
 
 
 void AccelStream::Clear() {
-	name.Clear();
-	description.Clear();
+	//name.Clear();
+	//description.Clear();
 	time = Time(2020,1,1);
 	total_time.Reset();
 	frame_seconds = 0;
@@ -142,11 +142,17 @@ void AccelStream::Clear() {
 	audio_sample_rate = 0;
 	audio_sample_size = 0;
 	audio_sample_channels = 0;*/
-	aud_fmt = AudioFormat();
+	aud_fmt.Set(SoundSample::S_FLT_LE, 2, 44100, 1024);
 	aframes = 0;
 	aframes_after_sync = 0;
 	asink_frame = 0;
 	is_audio_sync = false;
+}
+
+void AccelStream::Reset() {
+	vframe_time.Reset();
+	vframes = 0;
+	audio_last_sync_sec = 0;
 }
 
 

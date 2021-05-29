@@ -8,7 +8,6 @@ class AccelStream {
 public:
 	
 	// Generic
-	String name, description;
 	Time time;
 	TimeStop total_time;
 	double frame_seconds = 0;
@@ -38,7 +37,9 @@ public:
 	bool is_audio_sync = 0;
 	
 	
+	AccelStream() {Clear();}
 	void Clear();
+	void Reset();
 	
 };
 

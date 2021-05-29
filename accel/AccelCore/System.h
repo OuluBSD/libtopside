@@ -33,7 +33,6 @@ protected:
 	void Add(AccelComponentRef comp) {comps.FindAdd(comp);}
 	void Remove(AccelComponentRef comp) {comps.RemoveKey(comp);}
     
-    void UpdateTexBuffers();
     
 };
 

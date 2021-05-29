@@ -22,9 +22,9 @@ public:
 	Vector<String> common_source;
 	String last_error;
 	Object post_load;
+	String name, description;
 	
 	// Generic
-	AccelStream stream;
 	bool is_open = false;
 	
 	
@@ -36,7 +36,6 @@ public:
 	//void					RemoveComponent(AccelComponentRef s) {comps.RemoveKey(s);}
 	void					ProcessStageQueue(TypeCls ctx);
 	//bool					IsModeStage(AccelComponentRef comp, TypeCls ctx) const;
-	void					RefreshStreamValues(TypeCls ctx);
 	void					FindComponents();
 	bool					LoadFileAny(String path, Object& dst);
 	bool					LoadFileToy(String path, Object& dst);
@@ -49,13 +48,8 @@ public:
 	bool					CheckInputTextures();
 	void					Close();
 	bool					CreateComponents(AcceleratorHeaderVector& v);
-	bool					ConnectComponents();
-	
-#if HAVE_OPENGL
-	void					Ogl_ProcessStage(AccelComponentRef s, GLuint gl_stage);
-	void					Ogl_ClearPipeline();
-	void					Ogl_CreatePipeline();
-#endif
+	bool					ConnectComponentInputs();
+	bool					ConnectComponentOutputs();
 	
 	
 	template <class T> RefT_Entity<T> AddEntityComponent(AccelComponentGroup& g) {

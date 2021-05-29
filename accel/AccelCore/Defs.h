@@ -13,6 +13,8 @@ NAMESPACE_TOPSIDE_BEGIN
 	using Accel##x##PipeComponent = x##AccelT::PipeComponent; \
 	using Accel##x##ConvertInputComponent = x##AccelT::ConvertInputComponent; \
 	using Accel##x##ConvertOutputComponent = x##AccelT::ConvertOutputComponent; \
+	using Accel##x##ConvertInputComponentRef = Ref<x##AccelT::ConvertInputComponent, RefParent1<Entity>>; \
+	using Accel##x##ConvertOutputComponentRef = Ref<x##AccelT::ConvertOutputComponent, RefParent1<Entity>>; \
 	
 
 

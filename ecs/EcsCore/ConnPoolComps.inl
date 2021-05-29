@@ -37,18 +37,13 @@ void ConnectAllInterfaces<T>::UnlinkAll() {
 
 template <class T>
 void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>& src_stack) {
-	
 	LinkedList<Ref<T>>* cur = 0;
-	//int src_scope_count = src_stack.GetCount();
 	
 	for (EntityRef& e : *pool) {
-		
 		Ref<T> src = e->FindInterface<T>();
-		
 		if (src) {
 			if (!cur)
 				cur = &src_stack.Add();
-			
 			cur->Add(src);
 		}
 	}
@@ -64,6 +59,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>
 						src->Link(ep, sink, src_cookie, sink_cookie);
 						ep->Init(this);
 						ep->Set(src, sink, src_cookie, sink_cookie);
+						++tmp_link_count;
 					}
 				}
 			}
@@ -76,19 +72,51 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>
 	
 	if (cur)
 		src_stack.RemoveLast();
+}
+
+template <class T>
+void ConnectAllInterfaces<T>::Visit(SourceRef src, PoolRef pool) {
+	for (EntityRef& e : *pool) {
+		auto sink = e->FindInterface<Sink>();
+		if (sink) {
+			CookieRef src_cookie, sink_cookie;
+			if (src->Accept(sink, src_cookie, sink_cookie)) {
+				Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+				src->Link(ep, sink, src_cookie, sink_cookie);
+				ep->Init(this);
+				ep->Set(src, sink, src_cookie, sink_cookie);
+				++tmp_link_count;
+			}
+		}
+	}
 	
+	for (auto iter = pool->BeginPool(); iter; ++iter) {
+		Visit(src, *iter);
+	}
 }
 
 
 template <class T>
 void ConnectAllInterfaces<T>::Update(double dt) {
-	PoolRef pool = ConnectorBase::GetPool();
-	LinkedList<LinkedList<Ref<T>>> src_stack;
-	
-	Visit(pool, src_stack);
-	
+	LinkAll();
 }
 
+template <class T>
+bool ConnectAllInterfaces<T>::LinkAll() {
+	tmp_link_count = 0;
+	PoolRef pool = ConnectorBase::GetPool();
+	LinkedList<LinkedList<Ref<T>>> src_stack;
+	Visit(pool, src_stack);
+	return tmp_link_count > 0;
+}
+
+template <class T>
+bool ConnectAllInterfaces<T>::LinkAny(SourceRef src) {
+	tmp_link_count = 0;
+	PoolRef pool = ConnectorBase::GetPool();
+	Visit(src, pool);
+	return tmp_link_count > 0;
+}
 
 template <class T>
 bool ConnectAllInterfaces<T>::LinkManually(SourceRef src, SinkRef sink) {

@@ -64,7 +64,11 @@ const char* AccelComponent::names[VAR_COUNT+1] = {
 
 
 AccelComponent::AccelComponent() {
-	
+	DLOG("AccelComponent::AccelComponent: constructing")
+}
+
+AccelComponent::~AccelComponent() {
+	DLOG("AccelComponent::~AccelComponent: destructing")
 }
 
 void AccelComponent::Update0(double dt) {
@@ -75,7 +79,7 @@ void AccelComponent::Update0(double dt) {
 }
 
 bool AccelComponent::IsSinkInAccelerator() const {
-	TODO
+	return IsContext(AsTypeCls<VideoContext>()) && ctx->IsLast(this);
 }
 
 bool AccelComponent::Open() {
@@ -114,7 +118,7 @@ void AccelComponent::Initialize() {
 	
 	Ref<AccelSystem> accel_sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().Get<AccelSystem>();
 	if (accel_sys)
-		accel_sys	-> Add(AsRef<AccelContextComponent>());
+		accel_sys	-> Add(AsRef<AccelComponent>());
 }
 
 void AccelComponent::Uninitialize() {
@@ -127,13 +131,13 @@ void AccelComponent::Uninitialize() {
 	
 	Ref<AccelSystem> accel_sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().Get<AccelSystem>();
 	if (accel_sys)
-		accel_sys	-> Remove(AsRef<AccelContextComponent>());
+		accel_sys	-> Remove(AsRef<AccelComponent>());
 	
 	//Clear();
 }
 
 AccelStream* AccelComponent::Stream() {
-	return ctx ? &ctx->GetParent()->stream : 0;
+	return ctx ? &ctx->stream : 0;
 }
 
 int AccelComponent::NewWriteBuffer() {
@@ -275,7 +279,7 @@ bool AccelComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 	code[PROG_FRAGMENT] = glsl;
 	
 	#else
-	#error TODO
+	Panic("not implemented");
 	#endif
 	
 	return true;
@@ -333,6 +337,18 @@ bool AccelComponent::IsTypeTemporary(TypeCls type) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 AccelComponentGroup::AccelComponentGroup() {
 	
 }
@@ -341,7 +357,7 @@ bool AccelComponentGroup::Open() {
 	int dbg_i = 0;
 	for(AccelComponentRef& comp : comps) {
 		if (!comp->IsOpen() && !comp->Open()) {
-			DLOG("AccelComponentGroup::Open: error: a component did not open properly");
+			DLOG("AccelComponentGroup::Open: error: a component did not open properly (comp #" + IntStr(dbg_i) + ")");
 			return false;
 		}
 		++dbg_i;
@@ -372,6 +388,11 @@ void AccelComponentGroup::Clear() {
 	#endif
 	comps.Clear();
 	gl_stages.Clear();
+	stream.Clear();
+}
+
+void AccelComponentGroup::Reset() {
+	stream.Reset();
 }
 
 void AccelComponentGroup::FindComponents() {
@@ -450,6 +471,68 @@ bool AccelComponentGroup::CheckInputTextures() {
 			return false;
 #endif
 	return true;
+}
+
+void AccelComponentGroup::Process() {
+	ASSERT(GetParent()->is_open);
+	RefreshStreamValues();
+	
+	for(auto& comp : comps)
+		comp->PreProcess();
+	
+	int i = 0;
+	for(AccelComponentRef& comp : comps) {
+#if HAVE_OPENGL
+		Ogl_ProcessStage(*comp, gl_stages[i]);
+#endif
+	}
+	
+	for(AccelComponentRef& comp : comps)
+		comp->PostProcess();
+	
+}
+
+void AccelComponentGroup::RefreshStreamValues() {
+	if (HasContext<VideoContext>()) {
+		stream.time = GetSysTime();
+		#ifdef flagWIN32
+		{
+			SYSTEMTIME time;
+			GetLocalTime(&time);
+			stream.time_us = time.wMilliseconds * 1000;
+		}
+		#else
+		{
+			struct timeval start;
+			gettimeofday(&start, NULL);
+			stream.time_us = start.tv_usec;
+		}
+		#endif
+		stream.vtotal_seconds = stream.total_time.Seconds();
+		stream.frame_seconds = stream.vframe_time.Seconds();
+	}
+	else if (HasContext<AudioContext>()) {
+		if (stream.asink_frame == 0 || stream.is_audio_sync) {
+			stream.audio_last_sync_sec = stream.total_time.Seconds();
+			stream.atotal_seconds = stream.audio_last_sync_sec;
+			stream.is_audio_sync = true;
+			stream.aframes_after_sync = 0;
+		}
+		else {
+			ASSERT(stream.aud_fmt.sample_rate != 0);
+			int samples_after_last_sync =
+				stream.aframes_after_sync * stream.aud_fmt.sample_rate;
+			//DUMP(samples_after_last_sync);
+			stream.atotal_seconds =
+				stream.audio_last_sync_sec +
+				(float)samples_after_last_sync / (float)stream.aud_fmt.freq;
+			stream.is_audio_sync = false;
+		}
+	}
+}
+
+bool AccelComponentGroup::IsLast(const AccelComponent* comp) const {
+	return comps.GetCount() && comps.Top() == comp;
 }
 
 

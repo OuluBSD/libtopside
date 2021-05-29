@@ -17,6 +17,8 @@ struct ContextAccelT {
 	using Value = typename ContextT<Ctx>::Value;
 	using CtxStream = typename ContextT<Ctx>::Stream;
 	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
+	using SimpleBufferedValue = typename ContextT<Ctx>::SimpleBufferedValue;
+	using SimpleBufferedStream = typename ContextT<Ctx>::SimpleBufferedStream;
 	using BaseSource = typename ContextEcsT<Ctx>::BaseSource;
 	using BaseSink = typename ContextEcsT<Ctx>::BaseSink;
 	
@@ -73,7 +75,9 @@ struct ContextAccelT {
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
 		
-		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		void				Initialize() override {AccelComponent::Initialize();}
+		void				Uninitialize() override {AccelComponent::Uninitialize();}
+		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
 		
 		// AccelSink
 		Format				GetFormat(C*) override;
@@ -85,9 +89,8 @@ struct ContextAccelT {
 		void				EndStream(C*) override;
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
-		void Update(double dt) override;
-		void Reset() override;
 		bool LoadAsInput(const AcceleratorHeader& in) override;
+		void UpdateTexBuffers() override;
 		
 	};
 	
@@ -105,7 +108,9 @@ struct ContextAccelT {
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
 		
-		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		void				Initialize() override {AccelComponent::Initialize();}
+		void				Uninitialize() override {AccelComponent::Uninitialize();}
+		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
 		
 		// BaseSink
 		Format				GetFormat(C*) override;
@@ -117,9 +122,9 @@ struct ContextAccelT {
 		void				EndStream(C*) override;
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
-		void Update(double dt) override;
-		void Reset() override;
 		bool LoadAsInput(const AcceleratorHeader& in) override;
+		void PreProcess() override;
+		void UpdateTexBuffers() override;
 		
 	};
 	
@@ -135,9 +140,36 @@ struct ContextAccelT {
 		COPY_PANIC(ConvertOutputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
+		
+		struct LocalValue : public SimpleBufferedValue {
+			RTTI_DECL1(LocalValue, SimpleBufferedValue)
+			ConvertOutputComponent& par;
+			LocalValue(ConvertOutputComponent* par) : par(*par) {}
+			
+		};
+		struct LocalStream : public SimpleBufferedStream {
+			RTTI_DECL1(LocalStream, SimpleBufferedStream)
+			ConvertOutputComponent& par;
+			LocalStream(ConvertOutputComponent* par) : par(*par), SimpleBufferedStream(par->value) {}
+			bool			IsOpen() const override {return par.IsOpen();}
+			bool			Open(int fmt_idx) override {ASSERT(fmt_idx == 0); return par.Open();}
+			void			Close() override {par.Close();}
+			bool			IsEof() override {return !par.IsOpen();}
+			bool			ReadFrame() override {return par.ReadFrame();}
+			bool			ProcessFrame() override {return par.ProcessFrame();}
+			bool			ProcessOtherFrame() override {return false;}
+			void			ClearPacketData() override {par.ClearPacketData();}
+		};
+		
+		LocalValue		value;
+		LocalStream		stream;
 	public:
 		
-		TypeCls GetContextType() const override {return AsTypeCls<C>();}
+		ConvertOutputComponent() : stream(this), value(this) {}
+		
+		void				Initialize() override {AccelComponent::Initialize();}
+		void				Uninitialize() override {AccelComponent::Uninitialize();}
+		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
 		
 		// AccelSink
 		Format				GetFormat(C*) override;
@@ -149,10 +181,11 @@ struct ContextAccelT {
 		void				EndStream(C*) override;
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
-		void Update(double dt) override;
-		void Reset() override;
 		bool LoadAsInput(const AcceleratorHeader& in) override {return false;}
-		
+		void UpdateTexBuffers() override;
+		bool ReadFrame();
+		bool ProcessFrame();
+		void ClearPacketData();
 	};
 	
 	

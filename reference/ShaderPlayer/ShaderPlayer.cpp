@@ -10,8 +10,10 @@ void ShaderPlayer::OnError() {
 }
 
 void ShaderPlayer::Initialize() {
-	PoolRef pool = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool("accel");
-	pool->AddConnectEverythingWithAccel();
+	PoolRef root = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot();
+	root->AddConnectEverythingWithAccel();
+	
+	PoolRef pool = root->GetAddPool("accel");
 	accel = pool->Create<CompleteAccel>();
 	ASSERT(accel);
 	

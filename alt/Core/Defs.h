@@ -147,8 +147,10 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 #define PKG(x) <x/x.h>
 
 
-#if defined flagGUI && flagOPENGL
-	#define HAVE_OPENGL 1
+#if defined flagGUI
+	#if defined(flagPOSIX) || defined(flagOPENGL)
+		#define HAVE_OPENGL 1
+	#endif
 #endif
 
 

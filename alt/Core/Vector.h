@@ -161,8 +161,9 @@ class Vector : Moveable<Vector<K>> {
 	void Pick0(Vector& v) { Clear(); data = v.data; v.data = 0; alloc = v.alloc; v.alloc = 0; count = v.count; v.count = 0; }
 	
 public:
-	typedef K* ElPtr;
-	typedef K value_type;
+	using ElPtr = K*;
+	using ObjectPtr = K*;
+	using value_type = K;
 	
 	struct RefGet {
 		ElPtr p = 0;
@@ -482,7 +483,8 @@ class Array {
 	VectorK l;
 
 public:
-	typedef K** ElPtr;
+	using ElPtr = K**;
+	using ObjectPtr = K*;
 	
 	struct RefGet {
 		ElPtr p = 0;
@@ -755,9 +757,20 @@ class Map : Moveable<Map<K,V,Array>> {
 	Array<V> values;
 
 public:
-	typedef typename Index<K>::HashPtr HashPtr;
-	typedef typename Index<K>::ObjectPtr KeyPtr;
-	typedef typename Array<V>::ElPtr ObjectPtr;
+	using HashPtr = typename Index<K>::HashPtr;
+	using KeyPtr = typename Index<K>::ObjectPtr;
+	using ObjectPtr = typename Array<V>::ElPtr;
+	
+	struct SortRef {
+		K* k = 0;
+		V* v = 0;
+		SortRef(K* k) : k(k) {}
+		SortRef(V* v) : v(v) {}
+		SortRef(const K& k) : k(k) {}
+		SortRef(const V& v) : v(v) {}
+		operator const K&() const {return *k;}
+		operator const V&() const {return *v;}
+	};
 	
 	template <class P, class S, int I>
 	struct Iterator0 {
@@ -777,7 +790,7 @@ public:
 		Iterator0 operator+(int i) const {Iterator0 o(*this); o.kit += i; o.vit += i; return o;}
 		Ret operator->() {return Get();}
 		Ret Get() const {return Ret(*kit.Get(), *vit.Get());}
-		ElPtr GetIter() const {return Tuple<uint32*,K*,V*>(kit.GetHashPtr(), kit.GetObjectPtr(), vit.GetElPtr());}
+		ElPtr GetIter() const {return ElPtr(kit.GetHashPtr(), kit.GetObjectPtr(), vit.GetElPtr());}
 		V& GetObject() const {return Get().second;}
 		bool operator==(V* ptr) const {return vit == ptr;}
 		bool operator!=(V* ptr) const {return vit != ptr;}
