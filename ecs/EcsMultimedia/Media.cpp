@@ -48,20 +48,24 @@ void MediaStreamThread::Process() {
 }
 
 void MediaStreamThread::FillVideoBuffer() {
-	if (cap)
-		cap->GetVideoStream().FillBuffer();
+	if (vcap)
+		vcap->FillBuffer();
 }
 
 void MediaStreamThread::FillAudioBuffer() {
-	if (cap)
-		cap->GetAudioStream().FillBuffer();
+	if (acap)
+		acap->FillBuffer();
 }
 
 
 void MediaStreamThread::Clear() {
-	if (cap) {
-		cap->Close();
-		cap.Clear();
+	if (acap) {
+		acap->Close();
+		acap.Clear();
+	}
+	if (vcap) {
+		vcap->Close();
+		vcap.Clear();
 	}
 }
 

@@ -3,11 +3,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool SDL2EventsComponent::LocalDeviceStream::IsOpen() const {
+bool SDL2EventsComponent::LocalStream::IsOpen() const {
 	TODO
 }
 
-bool SDL2EventsComponent::LocalDeviceStream::Open(int fmt_idx) {
+bool SDL2EventsComponent::LocalStream::Open(int fmt_idx) {
 	TODO
 }
 
@@ -20,17 +20,17 @@ bool SDL2EventsComponent::LocalDeviceStream::Open(int fmt_idx) {
 void SDL2EventsComponent::Initialize() {
 	OBJ_CREATE
 	
-	DeviceSystemRef ev_sys = GetEntity()->GetMachine().Get<DeviceSystem>();
+	EventSystemRef ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
 	if (ev_sys)
-		ev_sys -> Add(AsRef<DeviceSource>());
+		ev_sys -> Add(AsRef<EventSource>());
 }
 
 void SDL2EventsComponent::Uninitialize() {
 	obj.Clear();
 	
-	DeviceSystemRef ev_sys = GetEntity()->GetMachine().Get<DeviceSystem>();
+	EventSystemRef ev_sys = GetEntity()->GetMachine().Get<EventSystem>();
 	if (ev_sys)
-		ev_sys->Remove(AsRef<DeviceSource>());
+		ev_sys->Remove(AsRef<EventSource>());
 }
 
 CtrlEvent& SDL2EventsComponent::AddTmpEvent() {
@@ -59,10 +59,10 @@ bool SDL2EventsComponent::ReadFrame() {
 	return !tmp_events.IsEmpty();
 }
 
-bool SDL2EventsComponent::ProcessDeviceFrame() {
+bool SDL2EventsComponent::ProcessFrame() {
 	if (!tmp_events.IsEmpty()) {
-		DevicePacket p = CreateDevicePacket();
-		p->SetFormat(DeviceFormat(DeviceSample::S_CTRL_EVENT, 1));
+		EventPacket p = CreateEventPacket();
+		p->SetFormat(EventFormat(EventSample::CTRL_EVENT, 1));
 		MemSwap(p->Data(), tmp_events);
 		value.AddPacket(p);
 		return true;

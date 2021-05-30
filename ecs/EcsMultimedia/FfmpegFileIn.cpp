@@ -362,14 +362,14 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fm
 	fmt.SetFPS(fps);
 	
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
-	fmt.SetType(LightSampleFD::S_RGBA_U8_LE);
+	fmt.SetType(LightSampleFD::RGBA_U8_LE);
 	#else
 	switch (vcodec->format) {
 	case AV_PIX_FMT_RGB24:
-		fmt.SetType(LightSampleFD::S_RGB_U8_LE);
+		fmt.SetType(LightSampleFD::RGB_U8_LE);
 		break;
 	case AV_PIX_FMT_RGBA:
-		fmt.SetType(LightSampleFD::S_RGBA_U8_LE);
+		fmt.SetType(LightSampleFD::RGBA_U8_LE);
 		break;
 	case AV_PIX_FMT_VAAPI:
 		errstr = "VAAPI support unimplemented";
@@ -418,17 +418,17 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fm
 			break;
 			
 		#if CPU_LITTLE_ENDIAN
-		SET_FMT(AV_SAMPLE_FMT_U8, S_U8_LE);
-		SET_FMT(AV_SAMPLE_FMT_S16, S_S16_LE);
-		SET_FMT(AV_SAMPLE_FMT_S32, S_S32_LE);
-		SET_FMT(AV_SAMPLE_FMT_FLT, S_FLT_LE);
-		SET_FMT(AV_SAMPLE_FMT_DBL, S_DBL_LE);
+		SET_FMT(AV_SAMPLE_FMT_U8,		U8_LE);
+		SET_FMT(AV_SAMPLE_FMT_S16,		S16_LE);
+		SET_FMT(AV_SAMPLE_FMT_S32,		S32_LE);
+		SET_FMT(AV_SAMPLE_FMT_FLT,		FLT_LE);
+		SET_FMT(AV_SAMPLE_FMT_DBL,		DBL_LE);
 		
-		SET_FMT(AV_SAMPLE_FMT_U8P, S_U8_LE);
-		SET_FMT(AV_SAMPLE_FMT_S16P, S_S16_LE);
-		SET_FMT(AV_SAMPLE_FMT_S32P, S_S32_LE);
-	    SET_FMT(AV_SAMPLE_FMT_FLTP, S_FLT_LE);
-	    SET_FMT(AV_SAMPLE_FMT_DBLP, S_DBL_LE);
+		SET_FMT(AV_SAMPLE_FMT_U8P,		U8_LE);
+		SET_FMT(AV_SAMPLE_FMT_S16P,		S16_LE);
+		SET_FMT(AV_SAMPLE_FMT_S32P,		S32_LE);
+	    SET_FMT(AV_SAMPLE_FMT_FLTP,		FLT_LE);
+	    SET_FMT(AV_SAMPLE_FMT_DBLP,		DBL_LE);
 	    #else
 	    #error TODO
 	    #endif

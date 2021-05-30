@@ -299,8 +299,8 @@ String AccelComponent::GetStringFromType(TypeCls i) {
 		if (i == AsTypeCls<Accel##x##Source>()) return "Accel" #x "Source"; \
 		if (i == AsTypeCls<Accel##x##Sink>()) return "Accel" #x "Sink"; \
 		if (i == AsTypeCls<Accel##x##PipeComponent>()) return "Accel" #x "PipeComponent"; \
-		if (i == AsTypeCls<Accel##x##ConvertInputComponent>()) return "Accel" #x "ConvertInputComponent"; \
-		if (i == AsTypeCls<Accel##x##ConvertOutputComponent>()) return "Accel" #x "ConvertOutputComponent";
+		if (i == AsTypeCls<ConvertCenterAccel##x##InputComponent>()) return "ConvertCenterAccel" #x "InputComponent"; \
+		if (i == AsTypeCls<ConvertCenterAccel##x##OutputComponent>()) return "ConvertCenterAccel" #x "OutputComponent";
 	IFACE_LIST
 	#undef IFACE
 	return "invalid";
@@ -314,7 +314,7 @@ TypeCls AccelComponent::GetTypeFromString(String s) {
 	VALUE(imagebuffer,	AccelVideoPipeComponent);
 	VALUE(sound,		AccelAudioPipeComponent);
 	VALUE(soundbuf,		AccelAudioPipeComponent);
-	VALUE(cubemap,		AccelPhotoConvertInputComponent);
+	VALUE(cubemap,		ConvertCenterAccelPhotoInputComponent);
 	//VALUE(vertex,		Accel_DATA_SINK);
 	//VALUE(data,			Accel_DATA_SINK);
 	//VALUE(ctrl,			Accel_CTRL_SINK);

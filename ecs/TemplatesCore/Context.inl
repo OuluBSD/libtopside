@@ -1,6 +1,6 @@
-#define TMPL(x)	template <class Ctx> x ContextT<Ctx>::
-#define TMPL_ECS(x)	template <class Ctx> x ContextEcsT<Ctx>::
-#define USING(x) using x = typename ContextEcsT<Ctx>::x;
+#define TMPL(x)	template <class Dev> x ContextMachT<Dev>::
+#define TMPL_ECS(x)	template <class Dev> x ContextEcsT<Dev>::
+#define USING(x) using x = typename ContextEcsT<Dev>::x;
 #define CTX ((C*)0)
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -163,12 +163,18 @@ TMPL_ECS(void) System::Update(double dt) {
 		}
 	}
 	
+	int dbg_i = 0;
 	for (ExchangePointRef expt : expts) {
-		SourceRef src = expt->Source();
 		off32 begin_offset = expt->GetOffset();
+		#if 1 && DEBUG_RT_PIPE
+		const RTTI& expt_rtti = expt->GetRTTI();
+		RTLOG("expt " << dbg_i << " update " << HexStr((size_t)&expt_rtti.GetRTTI()) << "<" << expt_rtti.GetDynamicName() << "> offset " << IntStr(begin_offset.value));
+		#endif
 		
+		SinkRef sink = expt->Sink();
+		SourceRef src = expt->Source();
 		#if 0 && DEBUG_RT_PIPE
-		RTLOG("expt updpate " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
+		RTLOG("expt updpate src " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
 		#endif
 		
 		expt->SetOffset(begin_offset);
@@ -180,10 +186,10 @@ TMPL_ECS(void) System::Update(double dt) {
 		#if DEBUG_RT_PIPE
 		off32 diff = off32::GetDifference(begin_offset, end_offset);
 		if (diff) {
-			auto sink = expt->Sink();
 			RTLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
 		}
 		#endif
+		++dbg_i;
 	}
 	
 	for (SourceRef src :srcs) {

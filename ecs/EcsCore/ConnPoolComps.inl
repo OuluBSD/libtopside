@@ -56,6 +56,7 @@ void ConnectAllInterfaces<T>::Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>
 					CookieRef src_cookie, sink_cookie;
 					if (src->Accept(sink, src_cookie, sink_cookie)) {
 						Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+						RTLOG("ConnectAllInterfaces<T>::Visit(pool,stack): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 						src->Link(ep, sink, src_cookie, sink_cookie);
 						ep->Init(this);
 						ep->Set(src, sink, src_cookie, sink_cookie);
@@ -82,6 +83,7 @@ void ConnectAllInterfaces<T>::Visit(SourceRef src, PoolRef pool) {
 			CookieRef src_cookie, sink_cookie;
 			if (src->Accept(sink, src_cookie, sink_cookie)) {
 				Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+				RTLOG("ConnectAllInterfaces<T>::Visit(src,pool): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 				src->Link(ep, sink, src_cookie, sink_cookie);
 				ep->Init(this);
 				ep->Set(src, sink, src_cookie, sink_cookie);
@@ -125,6 +127,7 @@ bool ConnectAllInterfaces<T>::LinkManually(SourceRef src, SinkRef sink) {
 	CookieRef src_cookie, sink_cookie;
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
 		Ref<typename T::ExPt> ep = MetaExchangePoint::Add<typename T::ExPt>();
+		RTLOG("ConnectAllInterfaces<T>::LinkManually: created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 		src->Link(ep, sink, src_cookie, sink_cookie);
 		ep->Init(this);
 		ep->Set(src, sink, src_cookie, sink_cookie);

@@ -8,7 +8,7 @@ DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
 	fmt.channels = 2;
 	fmt.sample_rate = 777;
 	fmt.freq = 44100;
-	fmt.SetType(SoundSample::S_U8_LE);
+	fmt.SetType(SoundSample::U8_LE);
 	gen.GenerateStereoSine(fmt);
 }
 

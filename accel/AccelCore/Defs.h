@@ -4,27 +4,30 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#define ACCEL_CTX(x) \
-	using x##AccelT = ContextAccelT<x##Context>; \
-	using Accel##x##Source = x##AccelT::AccelSource; \
-	using Accel##x##Sink = x##AccelT::AccelSink; \
-	using Accel##x##SourceRef = Ref<Accel##x##Source, RefParent1<Entity>>; \
-	using Accel##x##SinkRef = Ref<Accel##x##Sink, RefParent1<Entity>>; \
-	using Accel##x##PipeComponent = x##AccelT::PipeComponent; \
-	using Accel##x##ConvertInputComponent = x##AccelT::ConvertInputComponent; \
-	using Accel##x##ConvertOutputComponent = x##AccelT::ConvertOutputComponent; \
-	using Accel##x##ConvertInputComponentRef = Ref<x##AccelT::ConvertInputComponent, RefParent1<Entity>>; \
-	using Accel##x##ConvertOutputComponentRef = Ref<x##AccelT::ConvertOutputComponent, RefParent1<Entity>>; \
-	
-
-
-#define IFACE(x) ACCEL_CTX(x)
+#define ECS_CTX(dev, value, prefix) \
+	using prefix##AccelT = ContextAccelT<dev##value##Context>; \
+	using prefix##PipeComponent = prefix##AccelT::PipeComponent;
+#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
+#define IFACE(x) DEV_IFACE(x)
 IFACE_LIST
 #undef IFACE
+#undef IFACE_CTX_CLS
+#undef ECS_CTX
 
-#undef ACCEL_CTX
 
 
+#define DEV_CONV_CTX(from, to, value) \
+	using Conv##from##to##value##T = ContextConvT<from##value##Context, to##value##Context>; \
+	using Convert##from##to##value##InputComponent = Conv##from##to##value##T::ConvertInputComponent; \
+	using Convert##from##to##value##OutputComponent = Conv##from##to##value##T::ConvertOutputComponent; \
+	using Convert##from##to##value##InputComponentRef = Ref<Conv##from##to##value##T::ConvertInputComponent, RefParent1<Entity>>; \
+	using Convert##from##to##value##OutputComponentRef = Ref<Conv##from##to##value##T::ConvertOutputComponent, RefParent1<Entity>>;
+
+
+
+#define IFACE(value) DEV_CONV_CTX(Center, Accel, value)
+IFACE_LIST
+#undef IFACE
 
 
 

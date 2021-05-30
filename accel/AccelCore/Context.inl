@@ -1,14 +1,16 @@
-#define TMPL(x)	template <class Ctx> x ContextAccelT<Ctx>::
+#define TMPL(x)			template <class Dev> x ContextAccelT<Dev>::
+#define CONV_TMPL(x)	template <class From, class To> x ContextConvT<From,To>::
 
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#define CLS ContextAccelT<Dev>
 
-TMPL(typename Ctx::Format) PipeComponent::GetFormat(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Value&) PipeComponent::GetValue(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Stream&) PipeComponent::GetStream(Ctx*) {TODO}
-TMPL(void) PipeComponent::BeginStream(Ctx*) {TODO}
-TMPL(void) PipeComponent::EndStream(Ctx*) {TODO}
+TMPL(typename CLS::Format) PipeComponent::GetFormat(Ctx*) {TODO}
+TMPL(typename CLS::Value&) PipeComponent::GetValue(Ctx*) {TODO}
+TMPL(typename CLS::CtxStream&) PipeComponent::GetStream(typename Dev::Value*) {TODO}
+TMPL(void) PipeComponent::BeginStream(typename Dev::Value*) {TODO}
+TMPL(void) PipeComponent::EndStream(typename Dev::Value*) {TODO}
 TMPL(bool) PipeComponent::LoadAsInput(const AcceleratorHeader& in) {TODO}
 TMPL(void) PipeComponent::UpdateTexBuffers() {
 	auto* stream = Stream();
@@ -25,16 +27,22 @@ TMPL(void) PipeComponent::UpdateTexBuffers() {
 	}
 }
 
-TMPL(typename Ctx::Format) ConvertInputComponent::GetFormat(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Value&) ConvertInputComponent::GetValue(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Stream&) ConvertInputComponent::GetStream(Ctx*) {TODO}
-TMPL(void) ConvertInputComponent::BeginStream(Ctx*) {TODO}
-TMPL(void) ConvertInputComponent::EndStream(Ctx*) {TODO}
-TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
-	const auto& conns = AccelSink::GetConnections();
+#undef CLS
+
+
+
+#define CLS ContextConvT<From,To>
+
+CONV_TMPL(typename CLS::FromFormat) ConvertInputComponent::GetFormat(F*) {TODO}
+CONV_TMPL(typename CLS::FromValue&) ConvertInputComponent::GetValue(F*) {TODO}
+CONV_TMPL(typename CLS::ToStream&) ConvertInputComponent::GetStream(T*) {TODO}
+CONV_TMPL(void) ConvertInputComponent::BeginStream(T*) {TODO}
+CONV_TMPL(void) ConvertInputComponent::EndStream(T*) {TODO}
+CONV_TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
+	const auto& conns = FromSink::GetConnections();
 	
-	using InputComponent = typename ContextLibT<Ctx>::InputComponent;
-	using Stream = typename ContextT<Ctx>::Stream;
+	using InputComponent = typename ContextLibT<From>::InputComponent;
+	using Stream = typename ContextMachT<From>::Stream;
 	
 	RefT_Entity<InputComponent> comp;
 	
@@ -54,7 +62,7 @@ TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
 		ASSERT(this_comp_base && that_comp_base);
 		
 		String err_msg;
-		if (!that_comp_base->template LinkManually<BaseSource>(*this, &err_msg)) {
+		if (!that_comp_base->template LinkManually<FromSource>(*this, &err_msg)) {
 			ctx->GetParent()->OnError("ConvertInputComponent::LoadAsInput", "Manual linking failed: " + err_msg);
 			return false;
 		}
@@ -62,7 +70,7 @@ TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
 	
 	String p = in.GetPath();
 	if (p.GetCount()) {
-		Stream& stream = comp->GetStream((C*)0);
+		Stream& stream = comp->GetStream((F*)0);
 		if (!stream.LoadFileAny(p)) {
 			ctx->GetParent()->OnError("ConvertInputComponent::LoadAsInput", "Stream failed to load '" + p + "'");
 			return false;
@@ -74,7 +82,7 @@ TMPL(bool) ConvertInputComponent::LoadAsInput(const AcceleratorHeader& in) {
 		return false;
 	}
 }
-TMPL(void) ConvertInputComponent::PreProcess() {
+CONV_TMPL(void) ConvertInputComponent::PreProcess() {
 	TODO
 	#if 0
 	if (changed && data.GetCount() && color_buf[0] > 0) {
@@ -86,7 +94,7 @@ TMPL(void) ConvertInputComponent::PreProcess() {
 	}
 	#endif
 }
-TMPL(void) ConvertInputComponent::UpdateTexBuffers() {
+CONV_TMPL(void) ConvertInputComponent::UpdateTexBuffers() {
 	TODO
 	#if 0
 	auto* stream = Stream();
@@ -105,12 +113,18 @@ TMPL(void) ConvertInputComponent::UpdateTexBuffers() {
 	#endif
 }
 
-TMPL(typename Ctx::Format) ConvertOutputComponent::GetFormat(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Value&) ConvertOutputComponent::GetValue(Ctx*) {TODO}
-TMPL(typename ContextT<Ctx>::Stream&) ConvertOutputComponent::GetStream(Ctx*) {return stream;}
-TMPL(void) ConvertOutputComponent::BeginStream(Ctx*) {stream.FillBuffer();}
-TMPL(void) ConvertOutputComponent::EndStream(Ctx*) {stream.DropBuffer();}
-TMPL(void) ConvertOutputComponent::UpdateTexBuffers() {
+
+
+
+
+
+
+CONV_TMPL(typename CLS::ToFormat) ConvertOutputComponent::GetFormat(T*) {TODO}
+CONV_TMPL(typename CLS::ToValue&) ConvertOutputComponent::GetValue(T*) {TODO}
+CONV_TMPL(typename CLS::FromStream&) ConvertOutputComponent::GetStream(F*) {return stream;}
+CONV_TMPL(void) ConvertOutputComponent::BeginStream(F*) {stream.FillBuffer();}
+CONV_TMPL(void) ConvertOutputComponent::EndStream(F*) {stream.DropBuffer();}
+CONV_TMPL(void) ConvertOutputComponent::UpdateTexBuffers() {
 	auto* stream = Stream();
 	if (stream) {
 		ClearTex();
@@ -129,17 +143,19 @@ TMPL(void) ConvertOutputComponent::UpdateTexBuffers() {
 	}
 }
 
-TMPL(bool) ConvertOutputComponent::ReadFrame() {
+CONV_TMPL(bool) ConvertOutputComponent::ReadFrame() {
 	TODO
 }
 
-TMPL(bool) ConvertOutputComponent::ProcessFrame() {
+CONV_TMPL(bool) ConvertOutputComponent::ProcessFrame() {
 	TODO
 }
 
-TMPL(void) ConvertOutputComponent::ClearPacketData() {
+CONV_TMPL(void) ConvertOutputComponent::ClearPacketData() {
 	TODO
 }
+
+#undef CLS
 
 
 NAMESPACE_TOPSIDE_END

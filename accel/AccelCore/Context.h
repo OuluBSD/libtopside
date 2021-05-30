@@ -7,20 +7,28 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ConnectorBase;
 
-template <class Ctx>
+template <class Dev>
 struct ContextAccelT {
-	using C = Ctx;
+	using DevCtx		= Dev;
+	using Ctx			= typename Dev::Value;
+	using C				= Ctx;
+	using ToCtx			= Ctx;
 	using Format = typename Ctx::Format;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
-	using CustomSystemBase = typename Ctx::CustomSystemBase;
-	using Value = typename ContextT<Ctx>::Value;
-	using CtxStream = typename ContextT<Ctx>::Stream;
-	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
-	using SimpleBufferedValue = typename ContextT<Ctx>::SimpleBufferedValue;
-	using SimpleBufferedStream = typename ContextT<Ctx>::SimpleBufferedStream;
-	using BaseSource = typename ContextEcsT<Ctx>::BaseSource;
-	using BaseSink = typename ContextEcsT<Ctx>::BaseSink;
+	using SystemBase = typename Ctx::SystemBase;
+	using Value = typename ContextMachT<Dev>::Value;
+	using CtxStream = typename ContextMachT<Dev>::Stream;
+	using ExchangePoint = typename ContextMachT<Dev>::ExchangePoint;
+	using SimpleBufferedValue = typename ContextMachT<Dev>::SimpleBufferedValue;
+	using SimpleBufferedStream = typename ContextMachT<Dev>::SimpleBufferedStream;
+	using BaseSource = typename ContextEcsT<Dev>::BaseSource;
+	using BaseSink = typename ContextEcsT<Dev>::BaseSink;
+	using System = typename ContextEcsT<Dev>::System;
+	
+	
+	#if 0
+	
 	
 	class AccelSink :
 		public InterfaceSink<AccelSink>,
@@ -61,15 +69,32 @@ struct ContextAccelT {
 		
 	};
 	
+	class AccelExchangePoint : public ExchangePointT<BaseSource, BaseSink, System> {
+	public:
+		RTTI_DECL1(AccelExchangePoint, ExchangePointT);
+		void Init(ConnectorBase* conn);
+		void Deinit();
+	};
+	
+	
+	#endif
+	
+	
+	
+	
+	#define RTTI_ACCEL_CTX_COMP(comp, src, sink) \
+			RTTI_DECL_4(comp, Component<comp>, \
+					src, sink, AccelComponent, \
+					ToCtx::GetName() + #comp)
 	
 	class PipeComponent :
 		public Component<PipeComponent>,
-		public AccelSource,
-		public AccelSink,
+		public BaseSource,
+		public BaseSink,
 		public AccelComponent
 	{
-		RTTI_COMP3(PipeComponent, AccelSource, AccelSink, AccelComponent)
-		VIS_COMP_1_1(Accel, Accel)
+		RTTI_ACCEL_CTX_COMP(PipeComponent, BaseSource, BaseSink)
+		VIS_COMP_1_1(Base, Base)
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
@@ -95,14 +120,42 @@ struct ContextAccelT {
 	};
 	
 	
+};
+
+
+
+template <class From, class To>
+struct ContextConvT {
+	using FromDevCtx = From;
+	using FromCtx = typename From::Value;
+	using F = FromCtx;
+	using FromSource = typename ContextEcsT<From>::BaseSource;
+	using FromSink = typename ContextEcsT<From>::BaseSink;
+	using FromFormat = typename From::Value::Format;
+	using FromValue = typename ContextMachT<From>::Value;
+	using FromStream = typename ContextMachT<From>::Stream;
+	using FromSimpleBufferedValue = typename ContextMachT<From>::SimpleBufferedValue;
+	using FromSimpleBufferedStream = typename ContextMachT<From>::SimpleBufferedStream;
+	
+	using ToDevCtx = To;
+	using ToCtx = typename To::Value;
+	using T = ToCtx;
+	using ToSource = typename ContextEcsT<To>::BaseSource;
+	using ToSink = typename ContextEcsT<To>::BaseSink;
+	using ToFormat = typename To::Value::Format;
+	using ToValue = typename ContextMachT<To>::Value;
+	using ToStream = typename ContextMachT<To>::Stream;
+	using ToSimpleBufferedValue = typename ContextMachT<To>::SimpleBufferedValue;
+	using ToSimpleBufferedStream = typename ContextMachT<To>::SimpleBufferedStream;
+	
 	class ConvertInputComponent :
 		public Component<ConvertInputComponent>,
-		public AccelSource,
-		public BaseSink,
+		public FromSink,
+		public ToSource,
 		public AccelComponent
 	{
-		RTTI_COMP3(ConvertInputComponent, AccelSource, BaseSink, AccelComponent)
-		VIS_COMP_1_1(Base, Accel)
+		RTTI_ACCEL_CTX_COMP(ConvertInputComponent, FromSink, ToSource)
+		VIS_COMP_1_1(To, From)
 		COPY_PANIC(ConvertInputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
@@ -110,18 +163,18 @@ struct ContextAccelT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
+		TypeCls				GetContextType() const override {return AsTypeCls<T>();}
 		
 		// BaseSink
-		Format				GetFormat(C*) override;
-		Value&				GetValue(C*) override;
+		FromFormat			GetFormat(F*) override;
+		FromValue&			GetValue(F*) override;
 		
 		// AccelSource
-		CtxStream&			GetStream(C*) override;
-		void				BeginStream(C*) override;
-		void				EndStream(C*) override;
+		ToStream&			GetStream(T*) override;
+		void				BeginStream(T*) override;
+		void				EndStream(T*) override;
 		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		bool IsContext(TypeCls t) const override {return AsTypeCls<T>() == t;}
 		bool LoadAsInput(const AcceleratorHeader& in) override;
 		void PreProcess() override;
 		void UpdateTexBuffers() override;
@@ -131,26 +184,26 @@ struct ContextAccelT {
 	
 	class ConvertOutputComponent :
 		public Component<ConvertOutputComponent>,
-		public BaseSource,
-		public AccelSink,
+		public ToSink,
+		public FromSource,
 		public AccelComponent
 	{
-		RTTI_COMP3(ConvertOutputComponent, BaseSource, AccelSink, AccelComponent)
-		VIS_COMP_1_1(Accel, Base)
+		RTTI_ACCEL_CTX_COMP(ConvertOutputComponent, ToSink, FromSource)
+		VIS_COMP_1_1(From, To)
 		COPY_PANIC(ConvertOutputComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 		
-		struct LocalValue : public SimpleBufferedValue {
-			RTTI_DECL1(LocalValue, SimpleBufferedValue)
+		struct LocalValue : public FromSimpleBufferedValue {
+			RTTI_DECL1(LocalValue, FromSimpleBufferedValue)
 			ConvertOutputComponent& par;
 			LocalValue(ConvertOutputComponent* par) : par(*par) {}
 			
 		};
-		struct LocalStream : public SimpleBufferedStream {
-			RTTI_DECL1(LocalStream, SimpleBufferedStream)
+		struct LocalStream : public FromSimpleBufferedStream {
+			RTTI_DECL1(LocalStream, FromSimpleBufferedStream)
 			ConvertOutputComponent& par;
-			LocalStream(ConvertOutputComponent* par) : par(*par), SimpleBufferedStream(par->value) {}
+			LocalStream(ConvertOutputComponent* par) : par(*par), FromSimpleBufferedStream(par->value) {}
 			bool			IsOpen() const override {return par.IsOpen();}
 			bool			Open(int fmt_idx) override {ASSERT(fmt_idx == 0); return par.Open();}
 			void			Close() override {par.Close();}
@@ -169,18 +222,18 @@ struct ContextAccelT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
+		TypeCls				GetContextType() const override {return AsTypeCls<F>();}
 		
 		// AccelSink
-		Format				GetFormat(C*) override;
-		Value&				GetValue(C*) override;
+		ToFormat			GetFormat(T*) override;
+		ToValue&			GetValue(T*) override;
 		
 		// BaseSource
-		CtxStream&			GetStream(C*) override;
-		void				BeginStream(C*) override;
-		void				EndStream(C*) override;
+		FromStream&			GetStream(F*) override;
+		void				BeginStream(F*) override;
+		void				EndStream(F*) override;
 		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		bool IsContext(TypeCls t) const override {return AsTypeCls<F>() == t;}
 		bool LoadAsInput(const AcceleratorHeader& in) override {return false;}
 		void UpdateTexBuffers() override;
 		bool ReadFrame();

@@ -1,4 +1,4 @@
-#define TMPL(x)	template <class Ctx> x ContextT<Ctx>::
+#define TMPL(x)	template <class Dev> x ContextMachT<Dev>::
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -18,7 +18,7 @@ TMPL(void) SimpleValue::Exchange(Ex& e) {
 		VolatileBuffer* vol = CastPtr<VolatileBuffer>(&sink);
 		if (vol) {
 			while (!vol->IsQueueFull()) {
-				Packet p = CreatePacket();
+				Packet p = CtxT::CreatePacket();
 				p->Set(fmt, offset, time);
 				//p->Data().SetCount(fmt.GetFrameBytes(), 0);
 				StorePacket(p);
@@ -36,7 +36,7 @@ TMPL(int) SimpleValue::GetQueueSize() const {
 	return 2;
 }
 
-TMPL(typename ContextT<Ctx>::Format) SimpleValue::GetFormat() const {
+TMPL(typename Dev::Value::Format) SimpleValue::GetFormat() const {
 	return fmt;
 }
 
@@ -124,7 +124,7 @@ TMPL(int) SimpleBufferedValue::GetQueueSize() const {
 	return buf.GetCount();
 }
 
-TMPL(typename ContextT<Ctx>::Format) SimpleBufferedValue::GetFormat() const {
+TMPL(typename Dev::Value::Format) SimpleBufferedValue::GetFormat() const {
 	return fmt;
 }
 
@@ -148,7 +148,7 @@ TMPL(int) SimpleBufferedValue::GetQueueTotalSamples() const {
 
 TMPL(void) SimpleBufferedValue::FillBuffersNull() {
 	if (!IsQueueFull()) {
-		Packet p = CreatePacket();
+		Packet p = CtxT::CreatePacket();
 		RTLOG("SimpleBufferedValue::FillBuffersNull: filling buffer with empty packets " << IntStr64(frame_counter));
 		off32 offset{frame_counter++};
 		p->Set(fmt, offset, -1);
@@ -401,7 +401,7 @@ TMPL(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 		}
 	}
 	else {
-		Packet src2 = CreatePacket();
+		Packet src2 = CtxT::CreatePacket();
 		src2->Set(dst_fmt, src->GetOffset(), src->GetTime());
 		Convert(src, src2);
 		if (src_data_shift) {

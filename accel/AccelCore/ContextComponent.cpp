@@ -128,12 +128,12 @@ void AccelContextComponent::AddDefaultGroups() {
 	video.AddContext<VideoContext>();
 	video.AddContext<DisplayContext>();
 	video.AddContext<PhotoContext>();
-	video.AddContext<DeviceContext>();
+	video.AddContext<EventContext>();
 	
 	AccelComponentGroup& audio = groups.Add();
 	audio.SetParent(this);
 	audio.AddContext<AudioContext>();
-	audio.AddContext<DeviceContext>();
+	audio.AddContext<EventContext>();
 }
 
 bool AccelContextComponent::Render() {
@@ -393,8 +393,8 @@ bool AccelContextComponent::Load(Object json) {
 					;
 				#define IFACE(x) \
 					else if (type == AsTypeCls<Accel##x##PipeComponent>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) group = FindGroupContext<x##Context>();
+					else if (type == AsTypeCls<ConvertCenterAccel##x##InputComponent>()) group = FindGroupContext<x##Context>(); \
+					else if (type == AsTypeCls<ConvertCenterAccel##x##OutputComponent>()) group = FindGroupContext<x##Context>();
 				IFACE_LIST
 				#undef IFACE
 				if (!group) {
@@ -603,7 +603,7 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 		case AcceleratorHeader::TYPE_TEXTURE:
 		case AcceleratorHeader::TYPE_CUBEMAP:
 		case AcceleratorHeader::TYPE_VOLUME:
-			if (!AddEntityAccelComponent<PhotoContext, AccelPhotoConvertInputComponent>(in))
+			if (!AddEntityAccelComponent<PhotoContext, ConvertCenterAccelPhotoInputComponent>(in))
 				return false;
 			break;
 			
@@ -611,12 +611,12 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 		case AcceleratorHeader::TYPE_VIDEO:
 		case AcceleratorHeader::TYPE_MUSIC:
 		case AcceleratorHeader::TYPE_MUSICSTREAM:
-			if (!AddEntityAccelComponent<VideoContext, AccelVideoConvertInputComponent>(in))
+			if (!AddEntityAccelComponent<VideoContext, ConvertCenterAccelVideoInputComponent>(in))
 				return false;
 			break;
 			
 		case AcceleratorHeader::TYPE_KEYBOARD:
-			if (!AddEntityAccelComponent<DeviceContext, AccelDeviceConvertInputComponent>(in))
+			if (!AddEntityAccelComponent<EventContext, ConvertCenterAccelEventInputComponent>(in))
 				return false;
 			break;
 			
@@ -723,9 +723,9 @@ bool AccelContextComponent::ConnectComponentOutputs() {
 				return false;
 			}
 			
-			AccelAudioConvertOutputComponentRef aud_out = e->Find<AccelAudioConvertOutputComponent>();
+			ConvertCenterAccelAudioOutputComponentRef aud_out = e->Find<ConvertCenterAccelAudioOutputComponent>();
 			if (!aud_out) {
-				aud_out = AddEntityComponent<AccelAudioConvertOutputComponent>(gr);
+				aud_out = AddEntityComponent<ConvertCenterAccelAudioOutputComponent>(gr);
 				
 				AudioSourceRef aud_src = aud_out->As<AudioSource>();
 				if (!aud_src) {

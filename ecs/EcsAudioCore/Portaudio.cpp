@@ -15,22 +15,22 @@ AudioFormat ConvertPortaudioFormat(Portaudio::AudioFormat fmt) {
 		#endif
 		
 		case Portaudio::SND_FLOAT32:
-			r.SetType(SoundSample::S_FLT_LE);
+			r.SetType(SoundSample::FLT_LE);
 			break;
 		case Portaudio::SND_INT32:
-			r.SetType(SoundSample::S_S32_LE);
+			r.SetType(SoundSample::S32_LE);
 			break;
 		case Portaudio::SND_INT24:
-			r.SetType(SoundSample::S_S24_LE);
+			r.SetType(SoundSample::S24_LE);
 			break;
 		case Portaudio::SND_INT16:
-			r.SetType(SoundSample::S_S16_LE);
+			r.SetType(SoundSample::S16_LE);
 			break;
 		case Portaudio::SND_INT8:
-			r.SetType(SoundSample::S_S8_LE);
+			r.SetType(SoundSample::S8_LE);
 			break;
 		case Portaudio::SND_UINT8:
-			r.SetType(SoundSample::S_U8_LE);
+			r.SetType(SoundSample::U8_LE);
 			break;
 		default:
 			THROW(Exc("invalid portaudio sound sample format"));

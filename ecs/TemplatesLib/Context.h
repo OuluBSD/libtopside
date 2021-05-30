@@ -4,27 +4,33 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Ctx>
+template <class Dev>
 struct ContextLibT {
-	using C = Ctx;
+	using DevCtx		= Dev;
+	using Ctx			= typename Dev::Value;
+	using C				= Ctx;
+	using Mach			= ContextMachT<Dev>;
+	using Ecs			= ContextEcsT<Dev>;
 	using Format = typename Ctx::Format;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
-	using CustomSystemBase = typename Ctx::CustomSystemBase;
-	using Value = typename ContextT<Ctx>::Value;
-	using CtxStream = typename ContextT<Ctx>::Stream;
-	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
-	using SimpleBufferedValue = typename ContextT<Ctx>::SimpleBufferedValue;
-	using SimpleBufferedStream = typename ContextT<Ctx>::SimpleBufferedStream;
-	using BaseSink = typename ContextEcsT<Ctx>::BaseSink;
-	using BaseSource = typename ContextEcsT<Ctx>::BaseSource;
+	using Value = typename Mach::Value;
+	using CtxStream = typename Mach::Stream;
+	using ExchangePoint = typename Mach::ExchangePoint;
+	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
+	using SimpleBufferedStream = typename Mach::SimpleBufferedStream;
+	using BaseSink = typename Ecs::BaseSink;
+	using BaseSource = typename Ecs::BaseSource;
 	
+	
+	#define RTTI_CTX_LIB_INPUT_COMP(comp, src) \
+			RTTI_DECL_2(comp, Component<comp>, src, Ctx::GetName() + #comp)
 	
 	class InputComponent :
 		public Component<InputComponent>,
 		public BaseSource
 	{
-		RTTI_COMP1(InputComponent, BaseSource)
+		RTTI_CTX_LIB_INPUT_COMP(InputComponent, BaseSource)
 		VIS_COMP_1_0(Base)
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC

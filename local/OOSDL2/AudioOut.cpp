@@ -100,27 +100,27 @@ bool AudioOutput::Open0() {
 	    
 	    #if CPU_LITTLE_ENDIAN
 	    if (IsSampleFloating()) {
-	        fmt.type = GetSampleSize() == 4 ? SoundSample::S_FLT_LE : SoundSample::S_DBL_LE;
+	        fmt.type = GetSampleSize() == 4 ? SoundSample::FLT_LE : SoundSample::DBL_LE;
 	    }
 	    else {
 	        int sz = GetSampleSize();
 	        if (IsSampleSigned()) {
 	            switch (sz) {
-	                case 1: fmt.type = SoundSample::S_S8_LE; break;
-	                case 2: fmt.type = SoundSample::S_S16_LE; break;
-	                case 3: fmt.type = SoundSample::S_S24_LE; break;
-	                case 4: fmt.type = SoundSample::S_S32_LE; break;
-	                case 8: fmt.type = SoundSample::S_S64_LE; break;
+	                case 1: fmt.type = SoundSample::S8_LE; break;
+	                case 2: fmt.type = SoundSample::S16_LE; break;
+	                case 3: fmt.type = SoundSample::S24_LE; break;
+	                case 4: fmt.type = SoundSample::S32_LE; break;
+	                case 8: fmt.type = SoundSample::S64_LE; break;
 	                default: LOG("OOSDL2::AudioOutput::Open0: error: unexpected format"); return false;
 	            }
 	        }
 	        else  {
 	            switch (sz) {
-	                case 1: fmt.type = SoundSample::S_U8_LE; break;
-	                case 2: fmt.type = SoundSample::S_U16_LE; break;
-	                case 3: fmt.type = SoundSample::S_U24_LE; break;
-	                case 4: fmt.type = SoundSample::S_U32_LE; break;
-	                case 8: fmt.type = SoundSample::S_U64_LE; break;
+	                case 1: fmt.type = SoundSample::U8_LE; break;
+	                case 2: fmt.type = SoundSample::U16_LE; break;
+	                case 3: fmt.type = SoundSample::U24_LE; break;
+	                case 4: fmt.type = SoundSample::U32_LE; break;
+	                case 8: fmt.type = SoundSample::U64_LE; break;
 	                default: LOG("OOSDL2::AudioOutput::Open0: error: unexpected format"); return false;
 	            }
 	        }

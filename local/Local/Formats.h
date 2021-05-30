@@ -514,19 +514,6 @@ LOCAL_CTX(Accelerator, DummyValueBase, AcceleratorStreamBase, DummyCustomSystemB
 
 
 
-#define IFACE_LIST \
-	IFACE(Human)\
-	IFACE(Audio)\
-	IFACE(Video)\
-	IFACE(Media)\
-	IFACE(Display)\
-	IFACE(Static)\
-	IFACE(Model)\
-	IFACE(Device)\
-	IFACE(Physics)\
-	IFACE(Scripting)\
-	IFACE(Accelerator)
-
 
 NAMESPACE_TOPSIDE_END
 

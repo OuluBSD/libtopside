@@ -3,159 +3,175 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <> SoundSample::Type SoundSample::GetSampleType<uint8>() {return S_U8_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<uint16>() {return S_U16_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<uint32>() {return S_U32_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<uint64>() {return S_U64_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<int8>() {return S_S8_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<int16>() {return S_S16_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<int32>() {return S_S32_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<int64>() {return S_S64_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<float>() {return S_FLT_LE;}
-template <> SoundSample::Type SoundSample::GetSampleType<double>() {return S_DBL_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<uint8>() {return U8_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<uint16>() {return U16_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<uint32>() {return U32_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<uint64>() {return U64_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<int8>() {return S8_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<int16>() {return S16_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<int32>() {return S32_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<int64>() {return S64_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<float>() {return FLT_LE;}
+template <> BinarySample::Type BinarySample::GetSampleType<double>() {return DBL_LE;}
 
-String SoundSample::ToString(Type t) {
+String BinarySample::ToString(Type t) {
 	switch (t) {
-		#define SND_SMPL(x) case x: return &(#x[2]);
-		SND_SMPL_LIST
-		#undef SND_SMPL
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return #type_code "_" #endianess;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return #type_code "_" #endianess "_" #pack_code;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
 		default: break;
 	}
 	return "<invalid-sample-type>";
 }
 
-int SoundSample::GetSize(Type t) {
+int BinarySample::GetSize(Type t) {
+	return GetPackedSingleSize(t) * GetPackedCount(t);
+}
+
+int BinarySample::GetPackedSingleSize(Type t) {
 	switch (t) {
 		case INVALID: return 0;
-		case S_U8_LE: return 1;
-		case S_U16_LE: return 2;
-		case S_U24_LE: return 3;
-		case S_U32_LE: return 4;
-		case S_U64_LE: return 8;
-		case S_S8_LE: return 1;
-		case S_S16_LE: return 2;
-		case S_S24_LE: return 3;
-		case S_S32_LE: return 4;
-		case S_S64_LE: return 8;
-		case S_FLT_LE: return 4;
-		case S_DBL_LE: return 8;
-		case S_U8_BE: return 1;
-		case S_U16_BE: return 2;
-		case S_U24_BE: return 3;
-		case S_U32_BE: return 4;
-		case S_U64_BE: return 8;
-		case S_S8_BE: return 1;
-		case S_S16_BE: return 2;
-		case S_S24_BE: return 3;
-		case S_S32_BE: return 4;
-		case S_S64_BE: return 8;
-		case S_FLT_BE: return 4;
-		case S_DBL_BE: return 8;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return type_sz;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return type_sz;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
 		default: break;
 	}
-	THROW(Exc("SoundSample::GetSize invalid type"));
+	THROW(Exc("BinarySample::GetPackedSingleSize invalid type"));
 	return 0;
 }
 
-bool SoundSample::IsUnsigned(Type t) {
-	return	(t >= S_U8_LE && t <= S_U64_LE) || (t >= S_U8_BE && t <= S_U64_BE);
-}
-
-bool SoundSample::IsSigned(Type t) {
-	return	(t >= S_S8_LE && t <= S_DBL_LE) || (t >= S_S8_BE && t <= S_DBL_BE);
-}
-
-bool SoundSample::IsFloating(Type t) {
-	return	(t >= S_FLT_LE && t <= S_DBL_LE) || (t >= S_FLT_BE && t <= S_DBL_BE);
-}
-
-bool SoundSample::IsDecimal(Type t) {
-	return	(t >= S_U8_LE && t <= S_S64_LE) || (t >= S_U8_BE && t <= S_S64_BE);
-}
-
-bool SoundSample::IsLittleEndian(Type t) {
-	return	(t >= S_U8_LE && t <= S_DBL_LE);
-}
-
-bool SoundSample::IsBigEndian(Type t) {
-	return	(t >= S_U8_BE && t <= S_DBL_BE);
-}
-
-
-
-
-String LightSampleFD::ToString(Type t) {
-	switch (t) {
-		#define LTFD_SMPL(x) case x: return &(#x[2]);
-		LTFD_SMPL_LIST
-		#undef LTFD_SMPL
-		default: break;
-	}
-	return "<invalid-sample-type>";
-}
-
-int LightSampleFD::GetChannelCountFD(Type t) {
+int BinarySample::GetPackedCount(Type t) {
 	switch (t) {
 		case INVALID: return 0;
-		case S_R_U8_LE: return 1;
-		case S_RG_U8_LE: return 2;
-		case S_RGB_U8_LE: return 3;
-		case S_RGBA_U8_LE: return 4;
-		case S_BGR_U8_LE: return 3;
-		case S_R_FLT_LE: return 1;
-		case S_RG_FLT_LE: return 2;
-		case S_RGB_FLT_LE: return 3;
-		case S_RGBA_FLT_LE: return 4;
-		case S_BGR_FLT_LE: return 3;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return 1;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return pack_sz;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
 		default: break;
 	}
-	THROW(Exc("LightSampleFD::GetSize invalid type"));
+	THROW(Exc("BinarySample::GetPackedCount invalid type"));
 	return 0;
 }
 
-int LightSampleFD::GetChannelSizeFD(Type t) {
+bool BinarySample::IsUnsigned(Type t) {
 	switch (t) {
-		case S_R_U8_LE:
-		case S_RG_U8_LE:
-		case S_RGB_U8_LE:
-		case S_RGBA_U8_LE:
-		case S_BGR_U8_LE: return 1;
-		
-		case S_R_FLT_LE:
-		case S_RG_FLT_LE:
-		case S_RGB_FLT_LE:
-		case S_RGBA_FLT_LE:
-		case S_BGR_FLT_LE: return sizeof(float);
-		
-		default: return 0;
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return !(type_signed);
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return !(type_signed);
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		default: break;
 	}
+	THROW(Exc("BinarySample::IsUnsigned invalid type"));
+	return false;
 }
 
-int LightSampleFD::GetSize(Type t) {
-	return GetChannelSizeFD(t) * GetChannelCountFD(t);
+bool BinarySample::IsSigned(Type t) {
+	switch (t) {
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return type_signed;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return type_signed;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		default: break;
+	}
+	THROW(Exc("BinarySample::IsSigned invalid type"));
+	return false;
 }
 
-bool LightSampleFD::IsUnsigned(Type t) {
-	return	(t >= S_R_U8_LE && t <= S_BGR_U8_LE);
+bool BinarySample::IsFloating(Type t) {
+	switch (t) {
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return type_flt;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return type_flt;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		default: break;
+	}
+	THROW(Exc("BinarySample::IsFloating invalid type"));
+	return false;
 }
 
-bool LightSampleFD::IsSigned(Type t) {
-	return	(t >= S_R_FLT_LE && t <= S_BGR_FLT_LE);
+bool BinarySample::IsDecimal(Type t) {
+	switch (t) {
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return !(type_flt);
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return !(type_flt);
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		default: break;
+	}
+	THROW(Exc("BinarySample::IsDecimal invalid type"));
+	return false;
 }
 
-bool LightSampleFD::IsFloating(Type t) {
-	return	(t >= S_R_FLT_LE && t <= S_BGR_FLT_LE);
+bool BinarySample::IsLittleEndian(Type t) {
+	static const bool LE = true;
+	static const bool BE = false;
+	switch (t) {
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess : return endianess;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code : return endianess;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		#undef ENDIANESS
+		default: break;
+	}
+	THROW(Exc("BinarySample::IsLittleEndian invalid type"));
+	return false;
 }
 
-bool LightSampleFD::IsDecimal(Type t) {
-	return	(t >= S_R_U8_LE && t <= S_BGR_U8_LE);
-}
-
-bool LightSampleFD::IsLittleEndian(Type t) {
-	return true;
-}
-
-bool LightSampleFD::IsBigEndian(Type t) {
+bool BinarySample::IsBigEndian(Type t) {
+	static const bool BE = true;
+	static const bool LE = false;
+	switch (t) {
+		case INVALID: return 0;
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess: return endianess;
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			case type_code##_##endianess##_##pack_code: return endianess;
+		PACKED_SAMPLE_LIST
+		#undef TYPE
+		#undef ENDIANESS
+		default: break;
+	}
+	THROW(Exc("BinarySample::IsBigEndian invalid type"));
 	return false;
 }
 
@@ -172,17 +188,19 @@ bool LightSampleFD::IsBigEndian(Type t) {
 
 
 
-String DeviceSample::ToString(Type t) {
+
+
+String EventSample::ToString(Type t) {
 	switch (t) {
-		case S_CTRL_EVENT: return "CtrlEvent";
+		case CTRL_EVENT: return "CtrlEvent";
 		default: break;
 	}
 	return "<invalid>";
 }
 
-int DeviceSample::GetSize(Type t) {
+int EventSample::GetSize(Type t) {
 	switch (t) {
-		case S_CTRL_EVENT: return sizeof(CtrlEvent);
+		case CTRL_EVENT: return sizeof(CtrlEvent);
 		default: break;
 	}
 	ASSERT_(0, "invalid type");

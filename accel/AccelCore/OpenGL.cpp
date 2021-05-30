@@ -247,7 +247,7 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 				const auto& fmt = in.GetVideo()->GetActiveFormat();
 				values[0] = fmt.res.cx;
 				values[1] = fmt.res.cy;
-				values[2] = fmt.GetChannelCountFD();
+				values[2] = fmt.GetPackedCount();
 			}
 			/*else if (
 				in.type == AcceleratorHeader::TEXTURE ||

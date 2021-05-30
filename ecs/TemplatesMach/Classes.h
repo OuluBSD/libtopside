@@ -12,43 +12,56 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
 
+//#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz)
+
+#define TYPE_LIST(endianess, pack_code, pack_sz) \
+	TYPE(U8,	1,	0,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(S8,	1,	1,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(U16,	2,	0,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(S16,	2,	1,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(U24,	3,	0,	0,	0,	endianess, pack_code, pack_sz) \
+	TYPE(S24,	3,	1,	0,	0,	endianess, pack_code, pack_sz) \
+	TYPE(U32,	4,	0,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(S32,	4,	1,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(U64,	8,	0,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(S64,	8,	1,	0,	1,	endianess, pack_code, pack_sz) \
+	TYPE(FLT,	4,	1,	1,	1,	endianess, pack_code, pack_sz) \
+	TYPE(DBL,	8,	1,	1,	1,	endianess, pack_code, pack_sz)
+
+#define SAMPLE_LIST \
+	TYPE_LIST(LE,,) \
+	TYPE_LIST(BE,,)
+
+#define ENDIAN_TYPE_LIST(pack_code, pack_sz) \
+	TYPE_LIST(LE, pack_code, pack_sz) \
+	TYPE_LIST(BE, pack_code, pack_sz)
+
+#define PACKED_SAMPLE_LIST \
+	ENDIAN_TYPE_LIST(A, 1) \
+	ENDIAN_TYPE_LIST(AB, 2) \
+	ENDIAN_TYPE_LIST(ABC, 3) \
+	ENDIAN_TYPE_LIST(ABCD, 4) \
+	ENDIAN_TYPE_LIST(BA, 2) \
+	ENDIAN_TYPE_LIST(CBA, 3) \
+	ENDIAN_TYPE_LIST(DCBA, 4)
 
 
-class SoundSample {
+class BinarySample {
 public:
-	static const int def_sample_rate = 1024;
+	static const int def_sample_rate = 1;
 	
-	#define SND_SMPL_LIST \
-		SND_SMPL(S_U8_LE) \
-		SND_SMPL(S_U16_LE) \
-		SND_SMPL(S_U24_LE) \
-		SND_SMPL(S_U32_LE) \
-		SND_SMPL(S_U64_LE) \
-		SND_SMPL(S_S8_LE) \
-		SND_SMPL(S_S16_LE) \
-		SND_SMPL(S_S24_LE) \
-		SND_SMPL(S_S32_LE) \
-		SND_SMPL(S_S64_LE) \
-		SND_SMPL(S_FLT_LE) \
-		SND_SMPL(S_DBL_LE) \
-		SND_SMPL(S_U8_BE) \
-		SND_SMPL(S_U16_BE) \
-		SND_SMPL(S_U24_BE) \
-		SND_SMPL(S_U32_BE) \
-		SND_SMPL(S_U64_BE) \
-		SND_SMPL(S_S8_BE) \
-		SND_SMPL(S_S16_BE) \
-		SND_SMPL(S_S24_BE) \
-		SND_SMPL(S_S32_BE) \
-		SND_SMPL(S_S64_BE) \
-		SND_SMPL(S_FLT_BE) \
-		SND_SMPL(S_DBL_BE)
+
 		
 	typedef enum {
 		INVALID,
-		#define SND_SMPL(x) x ,
-		SND_SMPL_LIST
-		#undef SND_SMPL
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			type_code##_##endianess ,
+		SAMPLE_LIST
+		#undef TYPE
+		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
+			type_code##_##endianess##_##pack_code ,
+		PACKED_SAMPLE_LIST
+		#undef TYPE
 		TYPE_COUNT
 	} Type;
 	
@@ -60,6 +73,8 @@ public:
 	static String ToString(Type t);
 	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
 	static int GetSize(Type t);
+	static int GetPackedSingleSize(Type t);
+	static int GetPackedCount(Type t);
 	static bool IsUnsigned(Type t);
 	static bool IsSigned(Type t);
 	static bool IsFloating(Type t);
@@ -69,60 +84,56 @@ public:
 	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
 };
 
+class SoundSample : public BinarySample {
+	
+public:
+	static const int def_sample_rate = 1024;
+	
+};
 
 
-class LightSampleFD
+class LightSampleFD : public BinarySample
 {
 	
 public:
-	static const int def_sample_rate = 1;
 	
 	#define LTFD_SMPL_LIST \
-		LTFD_SMPL(S_R_U8_LE) \
-		LTFD_SMPL(S_RG_U8_LE) \
-		LTFD_SMPL(S_RGB_U8_LE) \
-		LTFD_SMPL(S_RGBA_U8_LE) \
-		LTFD_SMPL(S_BGR_U8_LE) \
-		LTFD_SMPL(S_R_FLT_LE) \
-		LTFD_SMPL(S_RG_FLT_LE) \
-		LTFD_SMPL(S_RGB_FLT_LE) \
-		LTFD_SMPL(S_RGBA_FLT_LE) \
-		LTFD_SMPL(S_BGR_FLT_LE)
+		LTFD_SMPL(R_U8_LE,		U8_LE_A) \
+		LTFD_SMPL(RG_U8_LE,		U8_LE_AB) \
+		LTFD_SMPL(RGB_U8_LE,	U8_LE_ABC) \
+		LTFD_SMPL(RGBA_U8_LE,	U8_LE_ABCD) \
+		LTFD_SMPL(BGR_U8_LE,	U8_LE_CBA) \
+		LTFD_SMPL(R_FLT_LE,		FLT_LE_A) \
+		LTFD_SMPL(RG_FLT_LE,	FLT_LE_AB) \
+		LTFD_SMPL(RGB_FLT_LE,	FLT_LE_ABC) \
+		LTFD_SMPL(RGBA_FLT_LE,	FLT_LE_ABCD) \
+		LTFD_SMPL(BGR_FLT_LE,	FLT_LE_CBA)
 	
-	typedef enum {
-		INVALID,
-		#define LTFD_SMPL(x) x ,
-		LTFD_SMPL_LIST
-		#undef LTFD_SMPL
-		TYPE_COUNT
-	} Type;
+	#define LTFD_SMPL(a,b) static const Type a = b;
+	LTFD_SMPL_LIST
+	#undef LTFD_SMPL
 	
-	
-	static void Clear(Type& t) {t = INVALID;}
-	static String ToString(Type t);
-	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
-	static int GetSize(Type t);
-	static int GetChannelSizeFD(Type t);
-	static int GetChannelCountFD(Type t);
-	static bool IsUnsigned(Type t);
-	static bool IsSigned(Type t);
-	static bool IsFloating(Type t);
-	static bool IsDecimal(Type t);
-	static bool IsLittleEndian(Type t);
-	static bool IsBigEndian(Type t);
-	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
 };
 
 
-class DeviceSample
+/*class EventSample : public BinarySample
 {
+public:
 	
+	static const DefaultType = U32_LE_ABCD;
+	
+};*/
+
+
+class EventSample
+{
+
 public:
 	static const int def_sample_rate = 1;
-	
+
 	#define DEV_SMPL_LIST \
-		DEV_SMPL(S_CTRL_EVENT)
-	
+		DEV_SMPL(CTRL_EVENT)
+
 	typedef enum {
 		INVALID,
 		#define DEV_SMPL(x) x ,
@@ -130,8 +141,8 @@ public:
 		#undef DEV_SMPL
 		TYPE_COUNT
 	} Type;
-	
-	
+
+
 	static void Clear(Type& t) {t = INVALID;}
 	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
 	static String ToString(Type t);
@@ -145,27 +156,7 @@ public:
 
 
 
-#define DUMMY_SAMPLE(x) \
-	class x { \
-		public: \
-		static const int def_sample_rate = 1024; \
-		typedef enum { \
-			INVALID, \
-			\
-			TYPE_COUNT \
-		} Type; \
-		static void Clear(Type& t) {t = INVALID;} \
-		static String ToString(Type t) {return IntStr((int)t);} \
-		static bool IsCopyCompatible(Type a, Type b) {return a == b;} \
-		static int GetSize(Type t) {return 0;} \
-		static bool IsUnsigned(Type t) {return false;} \
-		static bool IsSigned(Type t) {return false;} \
-		static bool IsFloating(Type t) {return false;} \
-		static bool IsDecimal(Type t) {return false;} \
-		static bool IsLittleEndian(Type t) {return false;} \
-		static bool IsBigEndian(Type t) {return false;} \
-		static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;} \
-	};
+#define DUMMY_SAMPLE(x) class x : public BinarySample {};
 		
 DUMMY_SAMPLE(HumanSample)
 DUMMY_SAMPLE(SpaceSample)
@@ -343,8 +334,8 @@ public:
 	bool IsCopyCompatible(const SampleBase& b) const {return Sample::IsCopyCompatible(type, b.type);}
 	bool IsValid() const {return Sample::IsValid(type);}
 	template <class K> bool IsSampleType() const {return Sample::template IsSampleType<K>(type);}
-	int GetChannelSizeFD() const {return Sample::GetChannelSizeFD(type);}
-	int GetChannelCountFD() const {return Sample::GetChannelCountFD(type);}
+	int GetPackedSingleSize() const {return Sample::GetPackedSingleSize(type);}
+	int GetPackedCount() const {return Sample::GetPackedCount(type);}
 	
 	void operator=(const SampleBase& c) {
 		type = c.type;

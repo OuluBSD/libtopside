@@ -133,16 +133,16 @@ Audio& MixerAudioSourceComponent::GetValue(AudCtx) {
 
 
 MidiFileComponent::MidiFileComponent() {
-	DeviceSource::SetMultiConnection();
+	EventSource::SetMultiConnection();
 	
 }
 
 void MidiFileComponent::Initialize() {
-	AddToSystem<DeviceSystem>(AsRef<DeviceSource>());
+	AddToSystem<EventSystem>(AsRef<EventSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	RemoveFromSystem<DeviceSystem>(AsRef<DeviceSource>());
+	RemoveFromSystem<EventSystem>(AsRef<EventSource>());
 }
 
 void MidiFileComponent::Clear() {

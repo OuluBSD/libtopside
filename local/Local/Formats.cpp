@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #if HAVE_OPENGL
 template <>
-bool ContextT<AudioContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AudioContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 #endif
@@ -32,7 +32,7 @@ VideoFormat MakeVideoFormat(Size res, double fps, int var_size, int channels, in
 
 #if HAVE_OPENGL
 template <>
-bool ContextT<VideoContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<VideoContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 #endif
@@ -85,7 +85,7 @@ bool AVMediaProxy::IsQueueFull() const {
 
 #if 0
 template <>
-bool ContextT<MediaContext>::SimpleStream::FindClosestFormat(const MediaFormat& fmt, int& idx) {
+bool ContextMachT<MediaContext>::SimpleStream::FindClosestFormat(const MediaFormat& fmt, int& idx) {
 	// Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res
 	double tgt_bw = (double)cap_sz.cx * (double)cap_sz.cy * (double)fps;
 	double bw_low = bw_min * tgt_bw;
@@ -183,7 +183,7 @@ void AcceleratorHeaderVector::Add(const AcceleratorHeader& a) {
 
 #if HAVE_OPENGL
 template <>
-bool ContextT<StaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<StaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 #endif

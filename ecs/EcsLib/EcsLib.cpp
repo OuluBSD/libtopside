@@ -41,13 +41,13 @@ END_UPP_NAMESPACE
 NAMESPACE_TOPSIDE_BEGIN
 
 
-ViewableRef HumanCustomSinkBase::GetViewable() {
+/*ViewableRef HumanCustomSinkBase::GetViewable() {
 	return ViewableRef();
 }
 
 TransformRef HumanCustomSinkBase::GetTransform() {
 	return TransformRef();
-}
+}*/
 
 
 NAMESPACE_TOPSIDE_END

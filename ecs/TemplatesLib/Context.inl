@@ -1,10 +1,11 @@
-#define TMPL(x)	template <class Ctx> x ContextLibT<Ctx>::
+#define TMPL(x)	template <class Dev> x ContextLibT<Dev>::
 	
 	
 NAMESPACE_TOPSIDE_BEGIN
 
+#define CLS ContextLibT<Dev>
 
-TMPL(typename ContextT<Ctx>::Stream&) InputComponent::GetStream(Ctx*) {
+TMPL(typename CLS::CtxStream&) InputComponent::GetStream(Ctx*) {
 	return stream;
 }
 
@@ -36,6 +37,7 @@ TMPL(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 	TODO
 }
 
+#undef CLS
 
 NAMESPACE_TOPSIDE_END
 

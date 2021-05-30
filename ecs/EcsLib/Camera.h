@@ -22,7 +22,7 @@ public:
 	
 	void operator=(const Viewable& c) {target = c.target;}
 	
-	ViewableRef GetViewable() override {return ComponentBase::AsRef<Viewable>();}
+	//ViewableRef GetViewable() override {return ComponentBase::AsRef<Viewable>();}
 	//TransformRef GetTransform();
 	
 	HumanFormat		GetFormat(HumCtx) override;

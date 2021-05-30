@@ -107,7 +107,7 @@ public:
 
 class SoundGeneratorComponent :
 	public Component<SoundGeneratorComponent>,
-	public DeviceSink,
+	public EventSink,
 	public AudioSource
 {
 	DummySoundGeneratorStream gen;
@@ -123,10 +123,10 @@ class SoundGeneratorComponent :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
-	RTTI_COMP2(SoundGeneratorComponent, DeviceSink, AudioSource)
+	RTTI_COMP2(SoundGeneratorComponent, EventSink, AudioSource)
 	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SoundGeneratorComponent);
-	IFACE_CB(DeviceSink);
+	IFACE_CB(EventSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	
@@ -139,8 +139,8 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	// Device
-	DeviceFormat	GetFormat(DevCtx) override {TODO}
-	Device&			GetValue(DevCtx) override {TODO}
+	EventFormat		GetFormat(EvCtx) override {TODO}
+	Event&			GetValue(EvCtx) override {TODO}
 	
 	// Audio
 	AudioStream&	GetStream(AudCtx) override;

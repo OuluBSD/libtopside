@@ -6,25 +6,25 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class SDL2EventsComponent :
 	public Component<SDL2EventsComponent>,
-	public DeviceSource
+	public EventSource
 {
 	
-	struct LocalDevice : public SimpleBufferedDevice {
+	struct Local : public SimpleBufferedEvent {
 		
 	};
 	
-	struct LocalDeviceStream : public SimpleBufferedDeviceStream {
-		RTTI_DECL1(LocalDeviceStream, SimpleBufferedDeviceStream)
+	struct LocalStream : public SimpleBufferedEventStream {
+		RTTI_DECL1(LocalStream, SimpleBufferedEventStream)
 		SDL2EventsComponent& par;
-		LocalDeviceStream(SDL2EventsComponent* par) :
+		LocalStream(SDL2EventsComponent* par) :
 			par(*par),
-			SimpleBufferedDeviceStream(par->value) {}
+			SimpleBufferedEventStream(par->value) {}
 		bool			IsOpen() const override;
 		bool			Open(int fmt_idx) override;
 		void			Close() override {par.obj->Close();}
 		bool			IsEof() override {return par.obj.IsEmpty();}
 		bool			ReadFrame() override {return par.ReadFrame();}
-		bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
+		bool			ProcessFrame() override {return par.ProcessFrame();}
 		bool			ProcessOtherFrame() override {return false;}
 		void			ClearPacketData() override {}
 	};
@@ -33,16 +33,16 @@ class SDL2EventsComponent :
 	
 	One<OOSDL2::Events> obj;
 	Vector<byte> tmp_events;
-	LocalDevice value;
-	LocalDeviceStream stream;
+	Local value;
+	LocalStream stream;
 	
 	CtrlEvent& AddTmpEvent();
 	
 public:
-	RTTI_COMP1(SDL2EventsComponent, DeviceSource)
-	VIS_COMP_1_0(Device)
+	RTTI_COMP1(SDL2EventsComponent, EventSource)
+	VIS_COMP_1_0(Event)
 	COPY_PANIC(SDL2EventsComponent);
-	IFACE_CB(DeviceSource);
+	IFACE_CB(EventSource);
 	IFACE_GENERIC;
 	
 	SDL2EventsComponent() : stream(this) {}
@@ -50,12 +50,12 @@ public:
 	void				Initialize() override;
 	void				Uninitialize() override;
 	void				Visit(RuntimeVisitor& vis) override {}
-	DeviceStream&		GetStream(DevCtx) override {return stream;}
-	void				BeginStream(DevCtx) override {stream.FillBuffer();}
-	void				EndStream(DevCtx) override {stream.DropBuffer();}
+	EventStream&		GetStream(EvCtx) override {return stream;}
+	void				BeginStream(EvCtx) override {stream.FillBuffer();}
+	void				EndStream(EvCtx) override {stream.DropBuffer();}
 	
 	bool				ReadFrame();
-	bool				ProcessDeviceFrame();
+	bool				ProcessFrame();
 	OOSDL2::Component&	GetObj() {return *obj;}
 	OOSDL2::Events*		GetOOSDL2() {return &*obj;}
 	

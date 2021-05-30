@@ -96,7 +96,7 @@ void AcceleratorHeader::CopyIdStream(const AcceleratorHeader& in) {
 bool AcceleratorHeader::IsTypeComponentSource(Type i) {
 	#define IFACE(x) \
 		if (i == AsTypeCls<Accel##x##PipeComponent>()) return true; \
-		if (i == AsTypeCls<Accel##x##ConvertInputComponent>()) return true;
+		if (i == AsTypeCls<ConvertCenterAccel##x##InputComponent>()) return true;
 	IFACE_LIST
 	#undef IFACE
 	return false;
@@ -142,7 +142,7 @@ void AccelStream::Clear() {
 	audio_sample_rate = 0;
 	audio_sample_size = 0;
 	audio_sample_channels = 0;*/
-	aud_fmt.Set(SoundSample::S_FLT_LE, 2, 44100, 1024);
+	aud_fmt.Set(SoundSample::FLT_LE, 2, 44100, 1024);
 	aframes = 0;
 	aframes_after_sync = 0;
 	asink_frame = 0;

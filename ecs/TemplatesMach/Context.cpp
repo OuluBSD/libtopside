@@ -6,32 +6,32 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #if HAVE_OPENGL
 template <>
-bool ContextT<AudioContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelAudioContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 
 template <>
-bool ContextT<VideoContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelVideoContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 
 template <>
-bool ContextT<DisplayContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelDisplayContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 
 template <>
-bool ContextT<StaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelStaticContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 
 template <>
-bool ContextT<DeviceContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelEventContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 
 template <>
-bool ContextT<PhotoContext>::PacketValue::PaintOpenGLTexture(int texture) {
+bool ContextMachT<AccelPhotoContext>::PacketValue::PaintOpenGLTexture(int texture) {
 	TODO
 }
 #endif

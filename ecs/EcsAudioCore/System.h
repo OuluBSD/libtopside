@@ -162,7 +162,7 @@ public:
 
 class MidiFileComponent :
 	public Component<MidiFileComponent>,
-	public DeviceSource
+	public EventSource
 {
 	String last_error;
 	MidiIO::File file;
@@ -171,10 +171,10 @@ class MidiFileComponent :
 	MidiFrame tmp;
 	
 public:
-	RTTI_COMP1(MidiFileComponent, DeviceSource)
-	VIS_COMP_1_0(Device)
+	RTTI_COMP1(MidiFileComponent, EventSource)
+	VIS_COMP_1_0(Event)
 	COPY_PANIC(MidiFileComponent);
-	IFACE_CB(DeviceSource);
+	IFACE_CB(EventSource);
 	IFACE_GENERIC;
 	
 	MidiFileComponent();
@@ -191,10 +191,10 @@ public:
 	void EmitTrack(int i);
 	void DumpMidiFile();
 	
-	// DeviceSource
-	DeviceStream&		GetStream(DevCtx) override {TODO}
-	void				BeginStream(DevCtx) override {TODO}
-	void				EndStream(DevCtx) override {TODO}
+	// EventSource
+	EventStream&		GetStream(EvCtx) override {TODO}
+	void				BeginStream(EvCtx) override {TODO}
+	void				EndStream(EvCtx) override {TODO}
 	
 	String GetLastError() const {return last_error;}
 	

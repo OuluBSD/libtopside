@@ -7,16 +7,85 @@ NAMESPACE_TOPSIDE_BEGIN
 class ConnectorBase;
 
 template <class Ctx>
-struct ContextT {
+struct ContextDataT {
+	using C = Ctx;
+	using Format = typename Ctx::Format;
+	using StreamBase = typename Ctx::StreamBase;
+	
+	
+	class PacketValue :
+		RTTIBase,
+		Moveable<PacketValue>
+	{
+		Vector<byte>		data;
+		Format				fmt;
+		off32				offset;
+		double				time;
+		
+		
+	public:
+		using Pool = RecyclerPool<PacketValue>;
+		
+		static const int def_sample_rate = Ctx::Format::def_sample_rate;
+		
+		RTTI_DECL0(PacketValue);
+		PacketValue() {}
+		
+		Vector<byte>&			Data() {return data;}
+		void					Set(Format fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
+		void					SetFormat(Format fmt) {this->fmt = fmt;}
+		void					SetOffset(off32 offset) {this->offset = offset;}
+		void					SetTime(double seconds) {time = seconds;}
+		
+		const Vector<byte>&		GetData() const {return data;}
+		Format					GetFormat() const {return fmt;}
+		off32					GetOffset() const {return offset;}
+		double					GetTime() const {return time;}
+		bool					IsOffset(const off32& o) const {return offset.value == o.value;}
+		int						GetSizeBytes() const {return data.GetCount();}
+		int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
+		int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
+		
+	#if HAVE_OPENGL
+		virtual bool PaintOpenGLTexture(int texture);
+	#endif
+		
+	};
+	
+	
+	using Packet			= SharedRecycler<PacketValue>;
+	using PacketBuffer		= LinkedList<Packet>;
+	using RecRefBase		= RecyclerRefBase<PacketValue>;
+	
+	static Packet CreatePacket() {
+		PacketValue* obj = PacketValue::Pool::StaticPool().New();
+		RecRefBase* base = RecRefBase::Pool::StaticPool().New();
+		base->SetObj(obj);
+		return Packet(obj, base);
+	}
+	
+};
+
+
+template <class Dev>
+struct ContextMachT {
+	using DevCtx = Dev;
+	using Ctx = typename Dev::Value;
 	using C = Ctx;
 	using Format = typename Ctx::Format;
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
+	using CtxT = ContextDataT<Ctx>;
+	using PacketValue = typename ContextDataT<Ctx>::PacketValue;
+	using Packet = typename ContextDataT<Ctx>::Packet;
+	using PacketBuffer = typename ContextDataT<Ctx>::PacketBuffer;
+	using RecRefBase = typename ContextDataT<Ctx>::RecRefBase;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
-		s << "ContextT<" << AsTypeName<Ctx>() << ">::" << t;
+		//s << "ContextMachT<" << AsTypeName<Ctx>() << ">::" << t;
+		s << Ctx::GetName() << t;
 		return s;
 	}
 	
@@ -94,58 +163,6 @@ struct ContextT {
 		void	SetOffset(off32 packet_count);
 		
 	};
-	
-	
-	class PacketValue :
-		RTTIBase,
-		Moveable<PacketValue>
-	{
-		Vector<byte>		data;
-		Format				fmt;
-		off32				offset;
-		double				time;
-		
-		
-	public:
-		using Pool = RecyclerPool<PacketValue>;
-		
-		static const int def_sample_rate = Ctx::Format::def_sample_rate;
-		
-		RTTI_DECL0(PacketValue);
-		PacketValue() {}
-		
-		Vector<byte>&			Data() {return data;}
-		void					Set(Format fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
-		void					SetFormat(Format fmt) {this->fmt = fmt;}
-		void					SetOffset(off32 offset) {this->offset = offset;}
-		void					SetTime(double seconds) {time = seconds;}
-		
-		const Vector<byte>&		GetData() const {return data;}
-		Format					GetFormat() const {return fmt;}
-		off32					GetOffset() const {return offset;}
-		double					GetTime() const {return time;}
-		bool					IsOffset(const off32& o) const {return offset.value == o.value;}
-		int						GetSizeBytes() const {return data.GetCount();}
-		int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
-		int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
-		
-	#if HAVE_OPENGL
-		virtual bool PaintOpenGLTexture(int texture);
-	#endif
-		
-	};
-	
-	
-	using Packet			= SharedRecycler<PacketValue>;
-	using PacketBuffer		= LinkedList<Packet>;
-	using RecRefBase		= RecyclerRefBase<PacketValue>;
-	
-	static Packet CreatePacket() {
-		PacketValue* obj = PacketValue::Pool::StaticPool().New();
-		RecRefBase* base = RecRefBase::Pool::StaticPool().New();
-		base->SetObj(obj);
-		return Packet(obj, base);
-	}
 	
 	
 	class Proxy :

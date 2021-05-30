@@ -3,15 +3,16 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-template <class Ctx>
+template <class Dev>
 class AccelComponentStream :
-	public VideoStream
+	public ContextMachT<Dev>::Stream
 {
 	RTTI_DECL0(AccelComponentStream)
 	
 public:
+	using Ctx = typename Dev::Value;
 	using Format = typename Ctx::Format;
-	using Value = typename ContextT<Ctx>::Value;
+	using Value = typename ContextMachT<Dev>::Value;
 	
 	Format fmt;
 	
@@ -35,7 +36,7 @@ public:
 };
 
 
-#define IFACE(x) using AccelComponent##x##Stream = AccelComponentStream<x##Context>;
+#define IFACE(x) using AccelComponent##x##Stream = AccelComponentStream<Accel##x##Context>;
 IFACE_LIST
 #undef IFACE
 

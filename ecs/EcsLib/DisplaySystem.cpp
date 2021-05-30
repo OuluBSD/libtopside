@@ -93,6 +93,9 @@ bool DefaultRenderApp::Render(SystemDraw& draw) {
 		return !needs_fast_rerender;
 	
 	HumanSinkRef cam_out = cams.begin()().dst->AsRef<HumanSink>();
+	
+	TODO
+	#if 0
 	ViewableRef cam = cam_out->GetViewable();
 	TransformRef trans = cam_out->GetTransform();
 	if (!cam || !trans)
@@ -182,6 +185,7 @@ bool DefaultRenderApp::Render(SystemDraw& draw) {
 	}
 	
 	//glDisable(GL_TEXTURE_2D);
+	#endif
 	
 	return !needs_fast_rerender;
 }

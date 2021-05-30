@@ -91,7 +91,7 @@ bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* sr
 }
 
 template <>
-bool ContextT<AudioContext>::Convert(const AudioPacket& src, AudioPacket& dst) {
+bool ContextMachT<CenterAudioContext>::Convert(const AudioPacket& src, AudioPacket& dst) {
 	AudioFormat src_fmt = src->GetFormat();
 	AudioFormat dst_fmt = dst->GetFormat();
 	int src_sample = src_fmt.GetSampleSize();

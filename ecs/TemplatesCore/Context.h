@@ -4,26 +4,29 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Ctx>
+template <class Dev>
 struct ContextEcsT {
-	using C = Ctx;
-	using Format = typename Ctx::Format;
-	using ValueBase = typename Ctx::ValueBase;
-	using StreamBase = typename Ctx::StreamBase;
-	using CustomSystemBase = typename Ctx::CustomSystemBase;
-	using CustomSinkBase = typename Ctx::CustomSinkBase;
-	using Value = typename ContextT<Ctx>::Value;
-	using CtxStream = typename ContextT<Ctx>::Stream;
-	using ExchangePoint = typename ContextT<Ctx>::ExchangePoint;
+	using DevCtx		= Dev;
+	using Ctx			= typename Dev::Value;
+	using C				= Ctx;
+	using Mach			= ContextMachT<Dev>;
+	using Format		= typename Ctx::Format;
+	using ValueBase		= typename Ctx::ValueBase;
+	using StreamBase	= typename Ctx::StreamBase;
+	using SystemBase	= typename Ctx::SystemBase;
+	using SinkBase		= typename Ctx::SinkBase;
+	using Value			= typename Mach::Value;
+	using CtxStream		= typename Mach::Stream;
+	using ExchangePoint	= typename Mach::ExchangePoint;
 	
 	
 	class BaseSink :
 		public InterfaceSink<BaseSink>,
-		public CustomSinkBase,
+		public SinkBase,
 		RTTIBase
 	{
 	public:
-		RTTI_DECL2(BaseSink, InterfaceSink<BaseSink>, CustomSinkBase)
+		RTTI_DECL_2(BaseSink, InterfaceSink<BaseSink>, SinkBase, Ctx::GetName() + "Sink")
 		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSink>());}
 		
 		virtual Format			GetFormat(C*) = 0;
@@ -38,7 +41,7 @@ struct ContextEcsT {
 		using InterfaceSourceT = InterfaceSource<BaseSource, BaseSink>;
 		
 	public:
-		RTTI_DECL1(BaseSource, InterfaceSourceT)
+		RTTI_DECL_1(BaseSource, InterfaceSourceT, Ctx::GetName() + "Source")
 		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSource>());}
 		
 		using ExPt = ExchangePoint;
@@ -62,9 +65,12 @@ struct ContextEcsT {
 	using ExchangePointRef	= Ref<ExchangePoint,	RefParent1<MetaExchangePoint>>;
 	
 	
+	#define RTTI_CTX_SYS(sys, base) \
+			RTTI_DECL_2(sys, Topside::System<sys>, base, Ctx::GetName() + #sys)
+	
 	class System :
 		public Topside::System<System>,
-		public CustomSystemBase
+		public SystemBase
 	{
 		LinkedList<SourceRef> srcs;
 		LinkedList<SinkRef> sinks;
@@ -83,7 +89,7 @@ struct ContextEcsT {
 	    void Uninitialize() override;
 	    
 	public:
-		RTTI_DECL2(System, Topside::System<System>, CustomSystemBase)
+		RTTI_CTX_SYS(System, SystemBase)
 	    SYS_CTOR(System)
 		
 		void Add(SourceRef src);

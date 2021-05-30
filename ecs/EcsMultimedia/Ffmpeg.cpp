@@ -32,7 +32,9 @@ bool FfmpegComponent::LoadFileAny(String path) {
 	
 	if (file_in.OpenFile(path)) {
 		if (file_in.Open()) {
-			vi.SetCap(file_in.AsRef<MediaStream>());
+			vi.SetCap(
+				file_in.GetAudioStream().AsRefT(),
+				file_in.GetVideoStream().AsRefT());
 
 			vi.Start(false);
 			
