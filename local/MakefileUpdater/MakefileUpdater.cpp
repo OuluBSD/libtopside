@@ -40,7 +40,7 @@ struct Repository {
 		Add("examples",		102,	FULL_COMPAT);
 		//Add("fusion");
 		Add("local",		 10,	FULL_COMPAT);
-		Add("ports",		  2,	FULL_COMPAT);
+		Add("lib",			  2,	FULL_COMPAT);
 		Add("reference",	101,	FULL_COMPAT);
 		Add("tutorial",		100,	FULL_COMPAT);
 		Add("uppsrc",		  0,	UPP);
