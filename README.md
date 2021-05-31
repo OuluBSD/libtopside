@@ -32,8 +32,5 @@ Instead of these commands, you should use U++ TheIDE editor and create new assem
 pkg install upp git
 git clone https://github.com/OuluBSD/libtopside.git
 cd libtopside
-umk \
-	examples,reference,tutorial,ai,ecs,fusion,video,audio,compiler,local,alt,. \
-	MP3Player GCC \
-	-v +GUI ~/
+umk examples,reference,tutorial,ai,ecs,accel,video,audio,compiler,local,alt,lib MP3Player CLANG -budsH4 ~/
 ```
