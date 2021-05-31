@@ -66,7 +66,8 @@ struct ContextDataT {
 	
 	
 	
-	struct StreamState {
+	struct StreamState : RTTIBase {
+		RTTI_DECL0(StreamState)
 		Format fmt;
 		TimeStop frame_time;
 		double total_seconds = 0;

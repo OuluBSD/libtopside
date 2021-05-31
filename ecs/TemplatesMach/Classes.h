@@ -46,7 +46,9 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 	ENDIAN_TYPE_LIST(DCBA, 4)
 
 
-class BinarySample {
+class BinarySample : RTTIBase {
+	RTTI_DECL0(BinarySample)
+	
 public:
 	static const int def_sample_rate = 1;
 	
@@ -85,6 +87,7 @@ public:
 };
 
 class SoundSample : public BinarySample {
+	RTTI_DECL1(SoundSample, BinarySample)
 	
 public:
 	static const int def_sample_rate = 1024;
@@ -92,8 +95,8 @@ public:
 };
 
 
-class LightSampleFD : public BinarySample
-{
+class LightSampleFD : public BinarySample {
+	RTTI_DECL1(LightSampleFD, BinarySample)
 	
 public:
 	
@@ -125,8 +128,8 @@ public:
 };*/
 
 
-class EventSample
-{
+class EventSample : RTTIBase {
+	RTTI_DECL0(EventSample)
 
 public:
 	static const int def_sample_rate = 1;
@@ -156,7 +159,10 @@ public:
 
 
 
-#define DUMMY_SAMPLE(x) class x : public BinarySample {};
+#define DUMMY_SAMPLE(x) \
+	class x : public BinarySample { \
+		RTTI_DECL1(x, BinarySample) \
+	};
 		
 DUMMY_SAMPLE(HumanSample)
 DUMMY_SAMPLE(SpaceSample)
@@ -171,7 +177,9 @@ DUMMY_SAMPLE(MaterialSampleFD)
 
 
 template <int> struct DimBase;
-template<> struct DimBase<1> {
+template<> struct DimBase<1> : RTTIBase {
+	RTTI_DECL0(DimBase<1>)
+	static const int n = 1;
 	union {
 		int size[1];
 		int channels;
@@ -184,14 +192,17 @@ template<> struct DimBase<1> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	void SetDim(DimArg a) {size[0] = a;}
-	void Clear() {for(int i = 0; i < 1; i++) size[i] = 0;}
+	void Clear() {for(int i = 0; i < n; i++) size[i] = 0;}
 	String ToString() const {return "len(" + IntStr(channels) + ")";}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0];}
 	int GetArea() const {return size[0];}
-	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 1; i++) size[i] = b.size[i]; return *this;}
+	bool IsValid() const {for(int i = 0; i < n; i++) if (size[i] <= 0) return false; return true;}
+	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) size[i] = b.size[i]; return *this;}
 };
 
-template<> struct DimBase<2> {
+template<> struct DimBase<2> : RTTIBase {
+	RTTI_DECL0(DimBase<2>)
+	static const int n = 2;
 	union {
 		int res[2];
 		Size size;
@@ -213,14 +224,15 @@ template<> struct DimBase<2> {
 	
 	void SetDim(DimArg a) {size = a;}
 	void Clear() {
-		for(int i = 0; i < 2; i++) res[i] = 0;
+		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
 	}
 	String ToString() const {return size.ToString();}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
 	int GetArea() const {return res[0] * res[1];}
+	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
 	DimBase& operator=(const DimBase& b) {
-		for(int i = 0; i < 2; i++) res[i] = b.res[i];
+		for(int i = 0; i < n; i++) res[i] = b.res[i];
 		width_pad = b.width_pad;
 		return *this;
 	}
@@ -229,7 +241,9 @@ template<> struct DimBase<2> {
 	
 };
 
-template<> struct DimBase<3> {
+template<> struct DimBase<3> : RTTIBase {
+	RTTI_DECL0(DimBase<3>)
+	static const int n = 3;
 	union {
 		int res[3];
 		Size3 size;
@@ -252,14 +266,16 @@ template<> struct DimBase<3> {
 	
 	void SetDim(DimArg a) {size = a;}
 	String ToString() const {return size.ToString();}
-	void Clear() {for(int i = 0; i < 3; i++) res[i] = 0;}
+	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
 	int GetArea() const {return res[0] * res[1] * res[2];}
-	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 3; i++) res[i] = b.res[i]; return *this;}
+	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 };
 
 
-class OnceBase {
+class OnceBase : RTTIBase {
+	RTTI_DECL0(OnceBase)
 public:
 	
 	static const int def_sample_rate = 1;
@@ -270,10 +286,12 @@ public:
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const OnceBase& b) const {return true;}
 	String ToString() const {return "OnceBase";}
+	bool IsValid() const {return true;}
 	
 };
 
-class SparseTimeSeriesBase {
+class SparseTimeSeriesBase : RTTIBase {
+	RTTI_DECL0(OnceBase)
 public:
 	static const int def_sample_rate = 1;
 	
@@ -283,10 +301,12 @@ public:
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
 	String ToString() const {return "SparseTimeSeriesBase";}
+	bool IsValid() const {return true;}
 	
 };
 
-class TimeSeriesBase {
+class TimeSeriesBase : RTTIBase {
+	RTTI_DECL0(TimeSeriesBase)
 public:
 	int freq = 0;
 	int sample_rate = 0;
@@ -302,6 +322,7 @@ public:
 		return	b.freq == freq &&
 				b.sample_rate == sample_rate;
 	}
+	bool IsValid() const {return freq > 0 && sample_rate > 0;}
 	double GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
 	int GetSampleRate() const {return sample_rate;}
 	int GetFrequency() const {return freq;}
@@ -315,7 +336,8 @@ public:
 };
 
 template <class T>
-class SampleBase {
+class SampleBase : RTTIBase {
+	RTTI_DECL0(SampleBase)
 public:
 	using Sample = T;
 	using SampleType = typename T::Type;
@@ -369,6 +391,11 @@ public:
 	} \
 	void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
 	int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
+	bool IsValid() const { \
+		return		post##Base::IsValid() && \
+					SampleBase<T>::IsValid() && \
+					DimBase<dim>::IsValid(); \
+	} \
 	Class& operator=(const Class& c) { \
 					post##Base::operator=(c); \
 					SampleBase<T>::operator=(c); \
@@ -388,6 +415,7 @@ public:
 	{ \
 	 \
 	public: \
+		RTTI_DECL3(d##dim##post, post##Base, SampleBase<T>, DimBase<dim>) \
 		FUNC_TMPL(dim, post, d) \
 	 \
 	};
@@ -443,7 +471,9 @@ public:
 
 
 template <class T>
-class TD1OnceMulti4 {
+class TD1OnceMulti4 : RTTIBase {
+	RTTI_DECL0(TD1OnceMulti4);
+	
 	using T0 = typename T::T0;
 	using T1 = typename T::T1;
 	using T2 = typename T::T2;
@@ -461,13 +491,15 @@ public:
 	int GetFrameSize() const {TODO}
 	int GetArea() const {return 1;}
 	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear();}
-	
+	bool IsValid() const {return o0.IsValid() && o1.IsValid() && o2.IsValid() && o3.IsValid();}
 	bool operator==(const TD1OnceMulti4<T>& o) const {TODO}
 	
 };
 
 template <class T>
-class AVTimeSeries {
+class AVTimeSeries : RTTIBase {
+	RTTI_DECL0(AVTimeSeries);
+	
 	using T0 = TD1TimeSeries<typename T::T0>;
 	using T1 = TD2TimeSeries<typename T::T1>;
 	

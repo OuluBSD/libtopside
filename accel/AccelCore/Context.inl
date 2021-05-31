@@ -15,15 +15,20 @@ TMPL(bool) PipeComponent::LoadAsInput(const AcceleratorHeader& in) {TODO}
 TMPL(void) PipeComponent::UpdateTexBuffers() {
 	auto* stream = Stream();
 	if (stream) {
-		ASSERT(stream->vid.fmt.size.cx > 0 && stream->vid.fmt.size.cy > 0);
+		auto& state = stream->template Get<Ctx>();
+		ASSERT(state.fmt.IsValid());
 		ClearTex();
+		DimBase<2>* base = CastPtr<DimBase<2>>(&state);
+		if (base) {
 #if HAVE_OPENGL
 		Ogl_CreateTex(
-			stream->vid.fmt.size, 4,
+			base->size, 4,
 			1, 1,
 			AcceleratorHeader::FILTER_LINEAR,
 			AcceleratorHeader::WRAP_CLAMP);
 #endif
+		}
+		else {TODO}
 	}
 }
 
