@@ -174,7 +174,7 @@ IFACE_CTX_LIST;
 // Make dev context classes
 #define IFACE_CTX_CLS(dev, value, prefix) \
 	struct dev##value##Context { \
-		String GetPrefix() const {return #prefix;} \
+		static String GetPrefix() {return #prefix;} \
 		using Value = value##Context; \
 		using Dev = dev##Context; \
 	};

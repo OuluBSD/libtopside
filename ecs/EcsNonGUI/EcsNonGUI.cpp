@@ -13,7 +13,7 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<ComponentStore>();
     mach.Add<HumanSystem>();
     mach.Add<AudioSystem>();
-    mach.Add<DeviceSystem>();
+    mach.Add<EventSystem>();
     
     reg->SetAppName("SDL2 ECS machine");
     

@@ -165,7 +165,7 @@ public:
 	RefScopeParent(RParent p) : parent(p) {}
 	virtual ~RefScopeParent() {}
 	
-	void SetParent(RParent p) {parent = p;}
+	virtual void SetParent(RParent p) {parent = p;}
 	
 	const RParent& GetParent() const {
 		ASSERT(parent);

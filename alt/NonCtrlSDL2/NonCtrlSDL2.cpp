@@ -17,9 +17,11 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<ConnectorStore>();
     mach.Add<SDL2System>();
     
-    #define IFACE(x) mach.Add<x##System>();
+    #define IFACE_CTX_CLS(dev, value, prefix) mach.Add<prefix##System>();
+    #define IFACE(x) DEV_IFACE(x)
     IFACE_LIST
     #undef IFACE
+    #undef IFACE_CTX_CLS
     mach.Add<AccelSystem>();
     
     //if (gui)

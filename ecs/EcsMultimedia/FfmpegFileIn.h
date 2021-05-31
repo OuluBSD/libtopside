@@ -155,7 +155,6 @@ class FfmpegFileInput :
 	bool ProcessAudioFrame();
 	void FillBuffersNull();
 	
-	
 	struct LocalAudioStream : public SimpleBufferedAudioStream {
 		RTTI_DECL1(LocalAudioStream, AudioStream)
 		FfmpegFileInput& par;
@@ -177,6 +176,11 @@ public:
 	RTTI_DECL_R0(FfmpegFileInput)
 	FfmpegFileInput();
 	
+	void SetParent(RefParent1<ComponentBase> p) override {
+		RefScopeParent::SetParent(p);
+		astream.SetParent(p);
+	}
+	
 	bool	IsEof() const;
 	void	Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
 	void	Clear();
@@ -186,6 +190,8 @@ public:
 	void	FillVideoBuffer();
 	void	FillAudioBuffer();
 	
+	bool						IsOpenAudio() const {return has_audio;}
+	bool						IsOpenVideo() const {return has_video;}
 	bool						IsOpen() const;
 	bool						Open();
 	void						Close();

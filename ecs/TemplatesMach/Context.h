@@ -84,8 +84,7 @@ struct ContextMachT {
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
-		//s << "ContextMachT<" << AsTypeName<Ctx>() << ">::" << t;
-		s << Ctx::GetName() << t;
+		s << Dev::GetPrefix() << t;
 		return s;
 	}
 	
