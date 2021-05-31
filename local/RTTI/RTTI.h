@@ -2,6 +2,7 @@
 #define _RTTI_RTTI_h_
 
 #include <string.h>
+#include <type_traits>
 
 
 namespace Upp {
@@ -134,6 +135,7 @@ public:
 
 #define RTTI_DECL_1(Type, ParentType, TypeString)                      \
     public:                                                            \
+		static_assert(std::is_convertible<Type*, ParentType*>(), "Invalid parent type"); \
         static const char* GetTypeName() {return TypeString;}          \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}\
@@ -160,6 +162,8 @@ public:
 
 #define RTTI_DECL_2(Type, ParentType0, ParentType1, TypeString)        \
     public:                                                            \
+		static_assert(std::is_convertible<Type*, ParentType0*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
         static const char* GetTypeName() {return TypeString;}          \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}\
@@ -191,6 +195,9 @@ public:
 
 #define RTTI_DECL_3(Type, ParentType0, ParentType1, ParentType2, TypeString)        \
     public:                                                            \
+		static_assert(std::is_convertible<Type*, ParentType0*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType2*>(), "Invalid parent type"); \
         static const char* GetTypeName() {return TypeString;}          \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}          \
@@ -224,6 +231,10 @@ public:
 
 #define RTTI_DECL_4(Type, ParentType0, ParentType1, ParentType2, ParentType3, TypeString)        \
     public:                                                            \
+		static_assert(std::is_convertible<Type*, ParentType0*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType2*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType3*>(), "Invalid parent type"); \
         static const char* GetTypeName() {return TypeString;}          \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}          \
@@ -261,6 +272,11 @@ public:
 
 #define RTTI_DECL_5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4, TypeString)        \
     public:                                                            \
+		static_assert(std::is_convertible<Type*, ParentType0*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType2*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType3*>(), "Invalid parent type"); \
+		static_assert(std::is_convertible<Type*, ParentType4*>(), "Invalid parent type"); \
         static const char* GetTypeName() {return TypeString;}          \
         static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {return TypeString;}          \

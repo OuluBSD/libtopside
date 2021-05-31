@@ -18,14 +18,14 @@ IFACE_LIST
 
 #define DEV_CONV_CTX(from, to, value) \
 	using Conv##from##to##value##T = ContextConvT<from##value##Context, to##value##Context>; \
-	using Convert##from##to##value##InputComponent = Conv##from##to##value##T::ConvertInputComponent; \
-	using Convert##from##to##value##OutputComponent = Conv##from##to##value##T::ConvertOutputComponent; \
-	using Convert##from##to##value##InputComponentRef = Ref<Conv##from##to##value##T::ConvertInputComponent, RefParent1<Entity>>; \
-	using Convert##from##to##value##OutputComponentRef = Ref<Conv##from##to##value##T::ConvertOutputComponent, RefParent1<Entity>>;
+	using Convert##from##to##value##Component = Conv##from##to##value##T::ConvertComponent; \
+	using Convert##from##to##value##ComponentRef = Ref<Conv##from##to##value##T::ConvertComponent, RefParent1<Entity>>;
 
 
 
-#define IFACE(value) DEV_CONV_CTX(Center, Accel, value)
+#define IFACE(value) \
+	DEV_CONV_CTX(Center, Accel, value) \
+	DEV_CONV_CTX(Accel, Center, value)
 IFACE_LIST
 #undef IFACE
 

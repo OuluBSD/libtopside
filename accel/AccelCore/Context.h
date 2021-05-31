@@ -22,14 +22,22 @@ struct ContextAccelT {
 	using ExchangePoint = typename ContextMachT<Dev>::ExchangePoint;
 	using SimpleBufferedValue = typename ContextMachT<Dev>::SimpleBufferedValue;
 	using SimpleBufferedStream = typename ContextMachT<Dev>::SimpleBufferedStream;
+	using Ex = typename ContextMachT<Dev>::Ex;
 	using BaseSource = typename ContextEcsT<Dev>::BaseSource;
 	using BaseSink = typename ContextEcsT<Dev>::BaseSink;
 	using System = typename ContextEcsT<Dev>::System;
 	
 	
-	#if 0
+	static const char* TypeStringT(const char* t) {
+		thread_local static String s;
+		s.Clear();
+		s << Dev::GetPrefix() << t;
+		return s;
+	}
 	
 	
+	
+	/*
 	class AccelSink :
 		public InterfaceSink<AccelSink>,
 		RTTIBase
@@ -75,9 +83,7 @@ struct ContextAccelT {
 		void Init(ConnectorBase* conn);
 		void Deinit();
 	};
-	
-	
-	#endif
+	*/
 	
 	
 	
@@ -98,8 +104,38 @@ struct ContextAccelT {
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
+		
 	public:
 		
+		// TODO: LocalSinkValue
+		
+		class LocalSourceValue : public SimpleBufferedValue {
+		public:
+			RTTI_DECL_T1(LocalSourceValue, SimpleBufferedValue)
+		};
+		
+		// TODO: select source/sink format based on cheap troughput/storage using template arg
+		class LocalStream :
+			public SimpleBufferedStream,
+			RTTIBase
+		{
+		public:
+			PipeComponent& par;
+			RTTI_DECL_T1(LocalStream, SimpleBufferedStream);
+			LocalStream(PipeComponent* p) : par(*p), SimpleBufferedStream(p->src_value) {}
+			bool			IsOpen() const override;
+			bool			Open(int fmt_idx) override;
+			void			Close() override;
+			bool			IsEof() override;
+			bool			ReadFrame() override;
+			bool			ProcessFrame() override;
+			bool			ProcessOtherFrame() override;
+			void			ClearPacketData() override;
+		};
+		LocalStream			stream;
+		LocalSourceValue	src_value;
+		
+		PipeComponent() : stream(this) {}
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
 		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
@@ -148,15 +184,15 @@ struct ContextConvT {
 	using ToSimpleBufferedValue = typename ContextMachT<To>::SimpleBufferedValue;
 	using ToSimpleBufferedStream = typename ContextMachT<To>::SimpleBufferedStream;
 	
-	class ConvertInputComponent :
-		public Component<ConvertInputComponent>,
+	class ConvertComponent :
+		public Component<ConvertComponent>,
 		public FromSink,
 		public ToSource,
 		public AccelComponent
 	{
-		RTTI_ACCEL_CTX_COMP(ConvertInputComponent, FromSink, ToSource)
+		RTTI_ACCEL_CTX_COMP(ConvertComponent, FromSink, ToSource)
 		VIS_COMP_1_1(To, From)
-		COPY_PANIC(ConvertInputComponent)
+		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
 	public:
@@ -181,6 +217,8 @@ struct ContextConvT {
 		
 	};
 	
+	
+	/*
 	
 	class ConvertOutputComponent :
 		public Component<ConvertOutputComponent>,
@@ -242,7 +280,6 @@ struct ContextConvT {
 	};
 	
 	
-	#if 0
 	class SourceComponent :
 		public Component<Source>,
 		public AccelComponent,
@@ -318,7 +355,7 @@ struct ContextConvT {
 		
 	};
 	
-	#endif
+	*/
 	
 };
 

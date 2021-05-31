@@ -66,7 +66,7 @@ void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage
 	    glDrawBuffers(sizeof bufs / sizeof bufs[0], bufs);
 	}
 	
-	s.Ogl_SetVars(prog, stream);
+	s.Ogl_SetVars(prog, GetParent()->stream);
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 	glRectf(-1.0, -1.0, 1.0, 1.0);
@@ -155,54 +155,63 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 	}
 	
 	else if (var == VAR_AUDIOTIME) {
-		glUniform1f(uindex, stream.atotal_seconds);
+		glUniform1f(uindex, stream.aud.total_seconds);
 	}
 	
 	else if (var == VAR_COMPAT_RESOLUTION) {
-		glUniform3f(uindex, stream.video_size.cx, stream.video_size.cy, 1.0);
+		glUniform3f(uindex, stream.vid.fmt.size.cx, stream.vid.fmt.size.cy, 1.0);
 	}
 	
 	else if (var == VAR_COMPAT_TIME) {
-		glUniform1f(uindex, stream.vtotal_seconds);
+		glUniform1f(uindex, stream.vid.total_seconds);
 	}
 	
 	else if (var == VAR_COMPAT_TIMEDELTA) {
-		glUniform1f(uindex, stream.frame_seconds);
+		glUniform1f(uindex, stream.vid.frame_seconds);
 	}
 	
 	else if (var == VAR_COMPAT_FRAME) {
 		if (IsIn<AudioContext>())
-			glUniform1i(uindex, stream.aframes);
+			glUniform1i(uindex, stream.aud.frames);
 		else
-			glUniform1i(uindex, stream.vframes);
+			glUniform1i(uindex, stream.vid.frames);
 	}
 	
 	else if (var == VAR_COMPAT_MOUSE) {
+		TODO
+		#if 0
 		glUniform4f(uindex,
-			stream.mouse_toycompat_click.x,
-			stream.mouse_toycompat_click.y,
-			stream.mouse_toycompat_drag.x,
-			stream.mouse_toycompat_drag.y);
+			stream.ev.mouse_toycompat_click.x,
+			stream.ev.mouse_toycompat_click.y,
+			stream.ev.mouse_toycompat_drag.x,
+			stream.ev.mouse_toycompat_drag.y);
+		#endif
 	}
 	
 	else if (var == VAR_COMPAT_DATE) {
-		double sec = ((int)stream.time.hour * 60 + (int)stream.time.minute) * 60 + (int)stream.time.second;
+		double sec =
+			((int)stream.time.hour * 60 +
+			 (int)stream.time.minute) * 60 +
+			 (int)stream.time.second;
 		sec += 0.000001 * stream.time_us;
 		glUniform4f(uindex, stream.time.year, stream.time.month, stream.time.day, sec);
 	}
 	
 	else if (var == VAR_COMPAT_SAMPLERATE) {
-		glUniform1f(uindex, stream.aud_fmt.freq);
+		glUniform1f(uindex, stream.aud.fmt.freq);
 	}
 	
 	else if (var == VAR_COMPAT_OFFSET) {
-		if (stream.video_size.cx > 0 && stream.video_size.cy > 0) {
-			float x = stream.video_offset.x;
-			float y = stream.video_size.cy - stream.video_size.cy - stream.video_offset.y; // -y_offset
+		TODO
+		#if 0
+		if (stream.vid.fmt.size.cx > 0 && stream.vid.fmt.size.cy > 0) {
+			float x = stream.vid.offset.x;
+			float y = stream.vid.fmt.size.cy - stream.vid.fmt.size.cy - stream.vid.offset.y; // -y_offset
 			glUniform2f(uindex, x, y);
 		} else {
 			glUniform2f(uindex, 0.0, 0.0);
 		}
+		#endif
 	}
 	
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
@@ -217,7 +226,7 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 	}
 	
 	else if (var == VAR_COMPAT_FRAMERATE) {
-		glUniform1f(uindex, stream.fps_limit);
+		glUniform1f(uindex, stream.vid.fmt.GetFPS());
 	}
 	
 	else if (var == VAR_COMPAT_CHANNELTIME) {
@@ -233,7 +242,7 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 			++j;
 		}
 		for(; j < 4; ++j) {
-			values[j] = stream.vtotal_seconds;
+			values[j] = stream.vid.total_seconds;
 		}
 		glUniform4f(uindex, values[0], values[1], values[2], values[3]);
 	}
@@ -245,8 +254,8 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 			AcceleratorHeader& in = this->in.At(ch);
 			if (in.GetVideo()) {
 				const auto& fmt = in.GetVideo()->GetActiveFormat();
-				values[0] = fmt.res.cx;
-				values[1] = fmt.res.cy;
+				values[0] = fmt.size.cx;
+				values[1] = fmt.size.cy;
 				values[2] = fmt.GetPackedCount();
 			}
 			/*else if (
@@ -256,8 +265,8 @@ void AccelComponent::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) 
 				ASSERT(in.id >= 0);
 				if (in.id >= 0 && ctx) {
 					AccelComponentRef comp = ctx->GetComponentById(in.id);
-					values[0] = in.res.cx;
-					values[1] = in.res.cy;
+					values[0] = in.size.cx;
+					values[1] = in.size.cy;
 					values[2] = in.vol_depth;
 				}
 			}*/

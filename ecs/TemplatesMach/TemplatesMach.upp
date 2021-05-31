@@ -12,6 +12,7 @@ file
 	Classes.h,
 	Classes.cpp,
 	Defs.h,
+	DevContext.h,
 	Special.h,
 	Interface.h,
 	Audio.cpp,

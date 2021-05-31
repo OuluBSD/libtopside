@@ -128,7 +128,7 @@ bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 	const VideoSourceFormatResolution& res = fmt.GetResolution(res_i);
 	
 	VideoFormat vid_fmt = res.GetFormat();
-	Size sz = vid_fmt.res;
+	Size sz = vid_fmt.size;
 	const double fps = vid_fmt.fps;
 	
 	if (ocv && ocv->OpenDevice0(sz, fps, vid_fmt))

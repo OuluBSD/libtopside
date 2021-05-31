@@ -9,6 +9,7 @@
 #include "Context.inl"
 #include "Classes.h"
 #include "Defs.h"
+#include "DevContext.h"
 #include "Special.h"
 #include "Interface.h"
 

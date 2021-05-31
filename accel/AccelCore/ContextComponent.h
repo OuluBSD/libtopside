@@ -23,6 +23,7 @@ public:
 	String last_error;
 	Object post_load;
 	String name, description;
+	AccelStream stream;
 	
 	// Generic
 	bool is_open = false;
@@ -50,6 +51,7 @@ public:
 	bool					CreateComponents(AcceleratorHeaderVector& v);
 	bool					ConnectComponentInputs();
 	bool					ConnectComponentOutputs();
+	void					RefreshStreamValues();
 	
 	
 	template <class T> RefT_Entity<T> AddEntityComponent(AccelComponentGroup& g) {

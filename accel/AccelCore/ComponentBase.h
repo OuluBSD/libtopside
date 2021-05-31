@@ -161,7 +161,7 @@ public:
 	Vector<uint32> gl_stages;
 	
 	LinkedList<TypeCls> group_classes;
-	AccelStream stream;
+	
 	
 public:
 	
@@ -169,7 +169,6 @@ public:
 	AccelComponentGroup();
 	bool				Open();
 	void				Clear();
-	void				Reset();
 	void				Process();
 	void				Close();
 	void				CloseTemporary();
@@ -182,7 +181,6 @@ public:
 	void				ConnectInputs(AcceleratorHeaderVector& v);
 	void				UpdateBuffers();
 	bool				CheckInputTextures();
-	void				RefreshStreamValues();
 	bool				IsLast(const AccelComponent* comp) const;
 	
 	template <class T> void AddContext() {group_classes.FindAdd(AsTypeCls<T>());}

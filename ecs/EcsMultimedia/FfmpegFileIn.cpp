@@ -358,7 +358,7 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fm
 	double fps = (double)vstream->avg_frame_rate.num / (double)vstream->avg_frame_rate.den;
 	Size frame_sz(vcodec->width, vcodec->height);
 	
-	fmt.res = frame_sz;
+	fmt.size = frame_sz;
 	fmt.SetFPS(fps);
 	
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
@@ -652,7 +652,7 @@ void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
 	Clear();
 	ASSERT(vid_fmt.IsValid());
 	
-	Size sz = vid_fmt.res;
+	Size sz = vid_fmt.size;
 	
 	img_convert_ctx =
 		sws_getContext(
@@ -664,7 +664,7 @@ void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
 
 void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
 	if (!video_dst_bufsize) {
-		Size sz = vid_fmt.res;
+		Size sz = vid_fmt.size;
 		
 	    video_dst_bufsize =
 			av_image_alloc(	video_dst_data, video_dst_linesize,
@@ -737,19 +737,19 @@ void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool
 	if (vflip) {
 		for(int i = 0; i < 4; i++) {
 			video_dst_linesize_vflip[i] = -video_dst_linesize[i];
-			video_dst_data_vflip[i] = video_dst_data[i] + (vid_fmt.res.cy - 1) * video_dst_linesize[i];
+			video_dst_data_vflip[i] = video_dst_data[i] + (vid_fmt.size.cy - 1) * video_dst_linesize[i];
 		}
 	    sws_scale(
 			img_convert_ctx,
 			frame->data, frame->linesize,
-			0, vid_fmt.res.cy,
+			0, vid_fmt.size.cy,
 			video_dst_data_vflip, video_dst_linesize_vflip);
 	}
 	else {
 	    sws_scale(
 			img_convert_ctx,
 			frame->data, frame->linesize,
-			0, vid_fmt.res.cy,
+			0, vid_fmt.size.cy,
 			video_dst_data, video_dst_linesize);
 	}
 	#else
@@ -781,8 +781,8 @@ bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFo
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
-		vid_fmt.res.cx,
-		vid_fmt.res.cy,
+		vid_fmt.size.cx,
+		vid_fmt.size.cy,
 		0, GL_RGBA, GL_UNSIGNED_BYTE,
 		video_dst_data[0]);
 	

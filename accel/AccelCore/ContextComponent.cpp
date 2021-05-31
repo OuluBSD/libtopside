@@ -101,10 +101,8 @@ void AccelContextComponent::PostLoadFileAny(String path) {
 }
 
 void AccelContextComponent::Reset() {
-	for(AccelComponentGroup& g : groups) {
-		g.stream.Reset();
-		g.stream.total_time.Reset();
-	}
+	stream.Reset();
+	stream.total_time.Reset();
 }
 
 void AccelContextComponent::Clear() {
@@ -113,6 +111,7 @@ void AccelContextComponent::Clear() {
 		//if (comp->IsTypeTemporary())
 		//	comp->GetECS().Destroy();
 	}
+	stream.Clear();
 	common_source.Clear();
 	groups.Clear();
 	last_error.Clear();
@@ -138,12 +137,53 @@ void AccelContextComponent::AddDefaultGroups() {
 
 bool AccelContextComponent::Render() {
 	if (is_open /*&& lock.TryEnter()*/ ) {
+		RefreshStreamValues();
+		
 		for (auto& gr : groups)
 			gr.Process();
 		//lock.Leave();
 		return true;
 	}
 	return false;
+}
+
+void AccelContextComponent::RefreshStreamValues() {
+	#ifdef flagWIN32
+	{
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+		stream.time_us = time.wMilliseconds * 1000;
+	}
+	#else
+	{
+		struct timeval start;
+		gettimeofday(&start, NULL);
+		stream.time_us = start.tv_usec;
+	}
+	#endif
+	
+	TODO // separate video / audio... it's not in sync!!!
+	
+	stream.time = GetSysTime();
+	stream.vid.total_seconds = stream.total_time.Seconds();
+	stream.vid.frame_seconds = stream.vid.frame_time.Seconds();
+	
+	if (stream.aud.sink_frame == 0 || stream.aud.is_sync) {
+		stream.aud.last_sync_sec = stream.total_time.Seconds();
+		stream.aud.total_seconds = stream.aud.last_sync_sec;
+		stream.aud.is_sync = true;
+		stream.aud.frames_after_sync = 0;
+	}
+	else {
+		ASSERT(stream.aud.fmt.sample_rate != 0);
+		int samples_after_last_sync =
+			stream.aud.frames_after_sync * stream.aud.fmt.sample_rate;
+		//DUMP(samples_after_last_sync);
+		stream.aud.total_seconds =
+			stream.aud.last_sync_sec +
+			(float)samples_after_last_sync / (float)stream.aud.fmt.freq;
+		stream.aud.is_sync = false;
+	}
 }
 
 /*ComponentBaseRef AccelContextComponent::GetComponentById(int id) const {
@@ -393,8 +433,8 @@ bool AccelContextComponent::Load(Object json) {
 					;
 				#define IFACE(x) \
 					else if (type == AsTypeCls<Accel##x##PipeComponent>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<ConvertCenterAccel##x##InputComponent>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<ConvertCenterAccel##x##OutputComponent>()) group = FindGroupContext<x##Context>();
+					else if (type == AsTypeCls<ConvertCenterAccel##x##Component>()) group = FindGroupContext<x##Context>(); \
+					else if (type == AsTypeCls<ConvertAccelCenter##x##Component>()) group = FindGroupContext<x##Context>();
 				IFACE_LIST
 				#undef IFACE
 				if (!group) {
@@ -408,8 +448,8 @@ bool AccelContextComponent::Load(Object json) {
 					;
 				#define IFACE(x) \
 					else if (type == AsTypeCls<Accel##x##PipeComponent>()) comp = AddEntityComponent<Accel##x##PipeComponent>(*group);
-					//else if (type == AsTypeCls<Accel##x##ConvertInputComponent>()) comp = AddEntityComponent<Accel##x##ConvertInputComponent>(*group); \
-					//else if (type == AsTypeCls<Accel##x##ConvertOutputComponent>()) comp = AddEntityComponent<Accel##x##ConvertOutputComponent>(*group);
+					//else if (type == AsTypeCls<Accel##x##ConvertComponent>()) comp = AddEntityComponent<Accel##x##ConvertComponent>(*group); \
+					//else if (type == AsTypeCls<x##AccelConvertComponent>()) comp = AddEntityComponent<x##AccelConvertComponent>(*group);
 				IFACE_LIST
 				#undef IFACE
 				/*
@@ -603,7 +643,7 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 		case AcceleratorHeader::TYPE_TEXTURE:
 		case AcceleratorHeader::TYPE_CUBEMAP:
 		case AcceleratorHeader::TYPE_VOLUME:
-			if (!AddEntityAccelComponent<PhotoContext, ConvertCenterAccelPhotoInputComponent>(in))
+			if (!AddEntityAccelComponent<PhotoContext, ConvertCenterAccelPhotoComponent>(in))
 				return false;
 			break;
 			
@@ -611,12 +651,12 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 		case AcceleratorHeader::TYPE_VIDEO:
 		case AcceleratorHeader::TYPE_MUSIC:
 		case AcceleratorHeader::TYPE_MUSICSTREAM:
-			if (!AddEntityAccelComponent<VideoContext, ConvertCenterAccelVideoInputComponent>(in))
+			if (!AddEntityAccelComponent<VideoContext, ConvertCenterAccelVideoComponent>(in))
 				return false;
 			break;
 			
 		case AcceleratorHeader::TYPE_KEYBOARD:
-			if (!AddEntityAccelComponent<EventContext, ConvertCenterAccelEventInputComponent>(in))
+			if (!AddEntityAccelComponent<EventContext, ConvertCenterAccelEventComponent>(in))
 				return false;
 			break;
 			
@@ -723,9 +763,9 @@ bool AccelContextComponent::ConnectComponentOutputs() {
 				return false;
 			}
 			
-			ConvertCenterAccelAudioOutputComponentRef aud_out = e->Find<ConvertCenterAccelAudioOutputComponent>();
+			ConvertAccelCenterAudioComponentRef aud_out = e->Find<ConvertAccelCenterAudioComponent>();
 			if (!aud_out) {
-				aud_out = AddEntityComponent<ConvertCenterAccelAudioOutputComponent>(gr);
+				aud_out = AddEntityComponent<ConvertAccelCenterAudioComponent>(gr);
 				
 				AudioSourceRef aud_src = aud_out->As<AudioSource>();
 				if (!aud_src) {

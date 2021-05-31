@@ -64,6 +64,23 @@ struct ContextDataT {
 		return Packet(obj, base);
 	}
 	
+	
+	
+	struct StreamState {
+		Format fmt;
+		TimeStop frame_time;
+		double total_seconds = 0;
+		double frame_seconds = 0;
+		double last_sync_sec = 0;
+		int frames = 0;
+		int frames_after_sync = 0;
+		int sink_frame = 0;
+		bool is_sync = 0;
+		
+		void Clear();
+		void Reset();
+	};
+
 };
 
 
@@ -329,11 +346,11 @@ struct ContextMachT {
 		virtual Value&			Get() = 0;
 		virtual void			FillBuffer() = 0;
 		virtual void			DropBuffer() = 0;
-		virtual int				GetActiveFormatIdx() const = 0;
-		virtual int				GetFormatCount() const = 0;
 		virtual Format			GetFormat(int i) const = 0;
-		virtual bool			FindClosestFormat(const Format& fmt, int& idx) = 0;
 		
+		virtual int				GetActiveFormatIdx() const {return 0;}
+		virtual int				GetFormatCount() const {return 1;}
+		virtual bool			FindClosestFormat(const Format& fmt, int& idx) {idx = 0; return true;}
 		virtual bool			LoadFileAny(String path) {return false;}
 		
 		Format GetActiveFormat() const {return GetFormat(GetActiveFormatIdx());}

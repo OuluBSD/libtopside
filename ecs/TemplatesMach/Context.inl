@@ -1,6 +1,34 @@
-#define TMPL(x)	template <class Dev> x ContextMachT<Dev>::
+#define TMPL(x)			template <class Dev> x ContextMachT<Dev>::
+#define TMPL_DATA(x)	template <class Ctx> x ContextDataT<Ctx>::
 
 NAMESPACE_TOPSIDE_BEGIN
+
+
+
+
+
+
+TMPL_DATA(void) StreamState::Clear() {
+	fmt.Clear();
+	sink_frame = 0;
+	is_sync = 0;
+	
+	frame_time.Reset();
+	total_seconds = 0;
+	frame_seconds = 0;
+	last_sync_sec = 0;
+	frames = 0;
+	frames_after_sync = 0;
+}
+
+TMPL_DATA(void) StreamState::Reset() {
+	frame_time.Reset();
+	total_seconds = 0;
+	frame_seconds = 0;
+	last_sync_sec = 0;
+	frames = 0;
+	frames_after_sync = 0;
+}
 
 
 
@@ -13,6 +41,8 @@ NAMESPACE_TOPSIDE_BEGIN
 TMPL(void) SimpleValue::Exchange(Ex& e) {
 	if (e.IsStoring()) {
 		Value& sink = e.Sink();
+		
+		// Arguments for this individual SimpleValue::Exchange event
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
 		VolatileBuffer* vol = CastPtr<VolatileBuffer>(&sink);

@@ -16,17 +16,16 @@ NAMESPACE_TOPSIDE_BEGIN
 	IFACE(Midi) \
 	IFACE(Human)
 
-#define DEV_LIST \
-	DEV(Center) \
-	DEV(Accel) \
-	DEV(Net) \
-	DEV(Perma)
-
-#define DEV_IFACE(value) \
-	IFACE_CTX_CLS(Center,	value,	value) \
-	IFACE_CTX_CLS(Accel,	value,	Accel##value) \
-	IFACE_CTX_CLS(Net,		value,	Net##value) \
-	IFACE_CTX_CLS(Perma,	value,	Perma##value)
+#define IFACE_VAR_LIST \
+	IFACE(Audio,	aud) \
+	IFACE(Model,	mdl) \
+	IFACE(Static,	stc) \
+	IFACE(Photo,	pho) \
+	IFACE(Video,	vid) \
+	IFACE(Display,	dpy) \
+	IFACE(Event,	ev) \
+	IFACE(Midi,		mid) \
+	IFACE(Human,	hum)
 
 #define IFACE_CTX_LIST \
 	IFACE_CTX(Audio,		TD1TimeSeries,			SoundSample) \
@@ -52,29 +51,53 @@ NAMESPACE_TOPSIDE_BEGIN
 	IFACE_CTX(Volumetric,	T3D,					MaterialSample) \
 	IFACE_CTX(VolumetricFD,	T3DFD,					MaterialSampleFD)*/
 
+#define DEV_LIST \
+	DEV(Center) \
+	DEV(Accel) \
+	DEV(Net) \
+	DEV(Perma)
+
+#define DEV_IFACE(value) \
+	IFACE_CTX_CLS(Center,	value,	value) \
+	IFACE_CTX_CLS(Accel,	value,	Accel##value) \
+	IFACE_CTX_CLS(Net,		value,	Net##value) \
+	IFACE_CTX_CLS(Perma,	value,	Perma##value)
+
 // e.g. CPU context
-class CenterContext {
+struct CenterContext {
 	
+	
+	static String GetName() {return "CenterContext";}
 	
 };
 
 // e.g. GPU context
-class AccelContext {
+struct AccelContext {
 	
+	
+	static String GetName() {return "AccelContext";}
 	
 };
 
 // e.g. exchange over tcp connection
-class NetContext {
+struct NetContext {
 	
+	
+	static String GetName() {return "NetContext";}
 	
 };
 
 // e.g. file system storage
-class PermaContext {
+struct PermaContext {
 	
+	
+	static String GetName() {return "PermaContext";}
 	
 };
+
+
+
+
 
 
 
@@ -161,7 +184,14 @@ IFACE_CTX_LIST;
 
 
 
-// Make data context classes
+
+
+
+
+
+
+
+// Declare data context classes
 #define IFACE_CTX(value, format, sample) \
 	using value##T = ContextDataT<value##Context>; \
 	using value##Packet = value##T::Packet; \
@@ -171,7 +201,7 @@ IFACE_CTX_LIST;
 
 
 
-// Make dev context classes
+// Declare dev context classes
 #define IFACE_CTX_CLS(dev, value, prefix) \
 	struct dev##value##Context { \
 		static String GetPrefix() {return #prefix;} \

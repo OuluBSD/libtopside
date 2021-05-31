@@ -193,8 +193,8 @@ template<> struct DimBase<1> {
 
 template<> struct DimBase<2> {
 	union {
-		int size[2];
-		Size res;
+		int res[2];
+		Size size;
 		union {
 			int channels;
 			int sources;
@@ -211,16 +211,16 @@ template<> struct DimBase<2> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	
-	void SetDim(DimArg a) {res = a;}
+	void SetDim(DimArg a) {size = a;}
 	void Clear() {
-		for(int i = 0; i < 2; i++) size[i] = 0;
+		for(int i = 0; i < 2; i++) res[i] = 0;
 		width_pad = 0;
 	}
-	String ToString() const {return res.ToString();}
-	bool IsSame(const DimBase& b) const {return size[0] == b.size[0] && size[1] == b.size[1];}
-	int GetArea() const {return size[0] * size[1];}
+	String ToString() const {return size.ToString();}
+	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
+	int GetArea() const {return res[0] * res[1];}
 	DimBase& operator=(const DimBase& b) {
-		for(int i = 0; i < 2; i++) size[i] = b.size[i];
+		for(int i = 0; i < 2; i++) res[i] = b.res[i];
 		width_pad = b.width_pad;
 		return *this;
 	}
@@ -231,8 +231,8 @@ template<> struct DimBase<2> {
 
 template<> struct DimBase<3> {
 	union {
-		int size[3];
-		Size3 res;
+		int res[3];
+		Size3 size;
 		union {
 			int channels;
 			int sources;
@@ -250,12 +250,12 @@ template<> struct DimBase<3> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	
-	void SetDim(DimArg a) {res = a;}
-	String ToString() const {return res.ToString();}
-	void Clear() {for(int i = 0; i < 3; i++) size[i] = 0;}
-	bool IsSame(const DimBase& b) const {return size[0] == b.size[0] && size[1] == b.size[1] && size[2] == b.size[2];}
-	int GetArea() const {return size[0] * size[1] * size[2];}
-	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 3; i++) size[i] = b.size[i]; return *this;}
+	void SetDim(DimArg a) {size = a;}
+	String ToString() const {return size.ToString();}
+	void Clear() {for(int i = 0; i < 3; i++) res[i] = 0;}
+	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
+	int GetArea() const {return res[0] * res[1] * res[2];}
+	DimBase& operator=(const DimBase& b) {for(int i = 0; i < 3; i++) res[i] = b.res[i]; return *this;}
 };
 
 
@@ -457,6 +457,12 @@ class TD1OnceMulti4 {
 public:
 	static const int def_sample_rate = 1;
 	
+	int GetSampleSize() const {TODO}
+	int GetFrameSize() const {TODO}
+	int GetArea() const {return 1;}
+	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear();}
+	
+	bool operator==(const TD1OnceMulti4<T>& o) const {TODO}
 	
 };
 

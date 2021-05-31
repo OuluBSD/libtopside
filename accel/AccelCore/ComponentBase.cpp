@@ -137,7 +137,7 @@ void AccelComponent::Uninitialize() {
 }
 
 AccelStream* AccelComponent::Stream() {
-	return ctx ? &ctx->stream : 0;
+	return ctx ? &ctx->GetParent()->stream : 0;
 }
 
 int AccelComponent::NewWriteBuffer() {
@@ -299,8 +299,7 @@ String AccelComponent::GetStringFromType(TypeCls i) {
 		if (i == AsTypeCls<Accel##x##Source>()) return "Accel" #x "Source"; \
 		if (i == AsTypeCls<Accel##x##Sink>()) return "Accel" #x "Sink"; \
 		if (i == AsTypeCls<Accel##x##PipeComponent>()) return "Accel" #x "PipeComponent"; \
-		if (i == AsTypeCls<ConvertCenterAccel##x##InputComponent>()) return "ConvertCenterAccel" #x "InputComponent"; \
-		if (i == AsTypeCls<ConvertCenterAccel##x##OutputComponent>()) return "ConvertCenterAccel" #x "OutputComponent";
+		if (i == AsTypeCls<ConvertCenterAccel##x##Component>()) return "ConvertCenterAccel" #x "Component";
 	IFACE_LIST
 	#undef IFACE
 	return "invalid";
@@ -314,7 +313,7 @@ TypeCls AccelComponent::GetTypeFromString(String s) {
 	VALUE(imagebuffer,	AccelVideoPipeComponent);
 	VALUE(sound,		AccelAudioPipeComponent);
 	VALUE(soundbuf,		AccelAudioPipeComponent);
-	VALUE(cubemap,		ConvertCenterAccelPhotoInputComponent);
+	VALUE(cubemap,		ConvertCenterAccelPhotoComponent);
 	//VALUE(vertex,		Accel_DATA_SINK);
 	//VALUE(data,			Accel_DATA_SINK);
 	//VALUE(ctrl,			Accel_CTRL_SINK);
@@ -388,11 +387,6 @@ void AccelComponentGroup::Clear() {
 	#endif
 	comps.Clear();
 	gl_stages.Clear();
-	stream.Clear();
-}
-
-void AccelComponentGroup::Reset() {
-	stream.Reset();
 }
 
 void AccelComponentGroup::FindComponents() {
@@ -474,8 +468,10 @@ bool AccelComponentGroup::CheckInputTextures() {
 }
 
 void AccelComponentGroup::Process() {
+	if (comps.IsEmpty())
+		return;
+	
 	ASSERT(GetParent()->is_open);
-	RefreshStreamValues();
 	
 	for(auto& comp : comps)
 		comp->PreProcess();
@@ -490,45 +486,6 @@ void AccelComponentGroup::Process() {
 	for(AccelComponentRef& comp : comps)
 		comp->PostProcess();
 	
-}
-
-void AccelComponentGroup::RefreshStreamValues() {
-	if (HasContext<VideoContext>()) {
-		stream.time = GetSysTime();
-		#ifdef flagWIN32
-		{
-			SYSTEMTIME time;
-			GetLocalTime(&time);
-			stream.time_us = time.wMilliseconds * 1000;
-		}
-		#else
-		{
-			struct timeval start;
-			gettimeofday(&start, NULL);
-			stream.time_us = start.tv_usec;
-		}
-		#endif
-		stream.vtotal_seconds = stream.total_time.Seconds();
-		stream.frame_seconds = stream.vframe_time.Seconds();
-	}
-	else if (HasContext<AudioContext>()) {
-		if (stream.asink_frame == 0 || stream.is_audio_sync) {
-			stream.audio_last_sync_sec = stream.total_time.Seconds();
-			stream.atotal_seconds = stream.audio_last_sync_sec;
-			stream.is_audio_sync = true;
-			stream.aframes_after_sync = 0;
-		}
-		else {
-			ASSERT(stream.aud_fmt.sample_rate != 0);
-			int samples_after_last_sync =
-				stream.aframes_after_sync * stream.aud_fmt.sample_rate;
-			//DUMP(samples_after_last_sync);
-			stream.atotal_seconds =
-				stream.audio_last_sync_sec +
-				(float)samples_after_last_sync / (float)stream.aud_fmt.freq;
-			stream.is_audio_sync = false;
-		}
-	}
 }
 
 bool AccelComponentGroup::IsLast(const AccelComponent* comp) const {

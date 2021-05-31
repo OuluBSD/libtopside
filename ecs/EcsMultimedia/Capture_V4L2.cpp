@@ -18,7 +18,7 @@ bool CaptureDevice_V4L2::OpenDevice0(int fmt_i, int res_i) {
 	
 	uint32 pix_fmt = fmt.GetPixelFormat();
 	VideoFormat vid_fmt = res.GetFormat(VidCtx);
-	Size sz = vid_fmt.res;
+	Size sz = vid_fmt.size;
 	const double fps = vid_fmt.fps;
 	
 	
