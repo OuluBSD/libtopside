@@ -195,7 +195,7 @@ struct EntityPrefab {
 class EntityHashVisitor : public RuntimeVisitor {
 	CombineHash ch;
 	
-	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
 	
 public:
 	RTTI_DECL1(EntityHashVisitor, RuntimeVisitor)

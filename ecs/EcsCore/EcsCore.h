@@ -72,6 +72,9 @@
 #include "Action.h"
 #include "ActionSystem.h"
 #include "ConnPoolComps.h"
+#include "ConnPoolComps.inl"
+#include "ConnDevComps.h"
+#include "ConnDevComps.inl"
 #include "AudioSystem.h"
 #include "VideoSystem.h"
 

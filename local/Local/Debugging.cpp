@@ -150,7 +150,7 @@ void RuntimeDiagnosticVisitor::Clear() {
 	cur_scope = 0;
 }
 
-bool RuntimeDiagnosticVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+bool RuntimeDiagnosticVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
 	if (!cur_scope) {
 		root.parent = 0;
 		root.var.mem = mem;
@@ -175,7 +175,7 @@ void RuntimeDiagnosticVisitor::OnExit() {
 	cur_scope = cur_scope->parent;
 }
 
-void RuntimeDiagnosticVisitor::OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+void RuntimeDiagnosticVisitor::OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
 	ASSERT(cur_scope);
 	Var& var = cur_scope->refs.Add();
 	var.mem = mem;

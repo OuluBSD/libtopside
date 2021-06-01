@@ -50,9 +50,9 @@ class RuntimeVisitor :
 	bool get_refs = false;
 	bool clear_refs = false;
 	
-	virtual bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {return true;}
+	virtual bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {return true;}
 	virtual void OnExit() {}
-	virtual void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) {}
+	virtual void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {}
 	
 	template <class T> LockedScopeRefCounter* GetRefCounter(T* o) {
 		return !get_refs ? 0 : LockedScopeRefCounterCaster<T,std::is_base_of<LockedScopeRefCounter,T>::value>().Cast(o);
@@ -70,7 +70,7 @@ public:
 	template <class T>
 	void Visit(T& o) {
 		if (break_out) return;
-		if (OnEntry(AsTypeId(o), &o, GetRefCounter(&o))) {
+		if (OnEntry(o.GetRTTI(), &o, GetRefCounter(&o))) {
 			o.Visit(*this);
 			OnExit();
 		}
@@ -80,7 +80,8 @@ public:
 		if (break_out)return;
 		if (clear_refs)
 			o.Clear();
-		OnRef(AsTypeCls<typename T::Type>(), &o, GetRefCounter(o.Get()));
+		//OnRef(AsTypeCls<typename T::Type>(), &o, GetRefCounter(o.Get()));
+		OnRef(o->GetRTTI(), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>

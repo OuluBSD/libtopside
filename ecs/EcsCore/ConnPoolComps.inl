@@ -7,7 +7,6 @@ void ConnectAllInterfaces<T>::Initialize() {
 	Machine& m = ConnectorBase::GetPool()->GetMachine();
 	sys = m.Get<EntityStore>();
 	ASSERT_(sys, "EntityStore is required for MetaExchangePoints");
-	Refresh();
 }
 
 

@@ -13,7 +13,6 @@ class ConnectAllInterfaces :
 	using ConnectorT = Connector<ConnectAllInterfaces<T>>;
 	Ref<EntityStore> sys;
 	
-	int64 refresh_ticks = -1;
 	int tmp_link_count = 0;
 	
 public:
@@ -27,14 +26,13 @@ public:
 	using SourceRef	= RefT_Entity<Source>;
 	using SinkRef	= RefT_Entity<Sink>;
 	
-	void Refresh() {if (sys) refresh_ticks = sys->PostRefresh(refresh_ticks, this);}
 	TypeId GetType() const override {return AsTypeCls<ConnectAllInterfaces<T>>();}
 	void CopyTo(ConnectorBase* component) const override {}
 	void Initialize() override;
 	void Uninitialize() override;
 	String ToString() const override {return MetaExchangePoint::ToString();}
 	void UnlinkAll() override;
-	void Update(double dt) override;
+	void Update(double dt=0) override;
 	void Visit(RuntimeVisitor& vis) override {
 		vis & sys;
 		MetaExchangePoint::Visit(vis);
@@ -86,6 +84,5 @@ template <class Source, class T> bool ComponentBase::LinkManually(T& o, String* 
 NAMESPACE_TOPSIDE_END
 
 
-#include "ConnPoolComps.inl"
 
 #endif

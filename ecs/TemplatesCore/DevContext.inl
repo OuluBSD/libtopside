@@ -1,8 +1,40 @@
+#define TMPL(x)			template <class DevCtx> x ContextDevMachT<DevCtx>::
 #define TMPL_ECS(x)		template <class DevCtx> x ContextDevEcsT<DevCtx>::
 #define USING(x)		using x = typename ContextDevEcsT<DevCtx>::x;
 #define CTX				((C*)0)
 
 NAMESPACE_TOPSIDE_BEGIN
+
+
+
+TMPL(void) ExchangePoint::Init(ConnectorBase* conn) {
+	USING(System)
+	this->conn = conn;
+	if (conn) {
+		PoolRef pool = GetConnectorBasePool(conn);
+		Machine& mach = GetPoolMachine(pool);
+		Ref<System> sys = mach.Get<System>();
+		ASSERT(sys);
+		if (sys)
+			sys->Add(AsRef<ExchangePoint>());
+	}
+}
+TMPL(void) ExchangePoint::Deinit() {
+	USING(System)
+	if (conn) {
+		PoolRef pool = GetConnectorBasePool(conn);
+		Machine& mach = GetPoolMachine(pool);
+		Ref<System> sys = mach.Get<System>();
+		ASSERT(sys);
+		if (sys)
+			sys->Remove(AsRef<ExchangePoint>());
+		conn = 0;
+	}
+}
+TMPL(void) ExchangePoint::Update(double dt) {TODO}
+
+
+
 
 
 //Callback System::WhenUninit;
@@ -129,6 +161,7 @@ TMPL_ECS(void) System::Remove(ExchangePointRef expt) {
 
 NAMESPACE_TOPSIDE_END
 
+#undef TMPL
 #undef TMPL_ECS
 #undef USING
 #undef CTX

@@ -143,30 +143,23 @@ void Pool::InitializeComponent(ConnectorBase& comp) {
 }
 
 void Pool::AddConnectEverything() {
-	TODO
-	/*#define IFACE(x) \
-		Add<ConnectAllInterfaces<x##Source>>();
-	IFACE_LIST
-	#undef IFACE*/
+	Add<ConnectAllDevInterfaces<CenterContext>>();
 }
 
 void Pool::ConnectEverything() {
-	TODO
-	/*#define IFACE(x) \
-		Find<ConnectAllInterfaces<x##Source>>()->Update(0);
-	IFACE_LIST
-	#undef IFACE*/
+	Find<ConnectAllDevInterfaces<CenterContext>>()->Update();
 }
 
 void Pool::AddConnectEverythingWithAccel() {
-	TODO
+	Add<ConnectAllDevInterfaces<CenterContext>>();
+	Add<ConnectAllDevInterfaces<AccelContext>>();
 }
 
 
 
 
 
-bool PoolHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+bool PoolHashVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
 	if (type == AsTypeCls<Pool>()) {
 		Pool& p = *(Pool*)mem;
 		ch.Put(p.GetId());

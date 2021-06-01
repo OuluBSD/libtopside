@@ -9,9 +9,9 @@ struct ContextDevEcsT {
 	using C				= DevCtx;
 	using SinkBase		= typename DevCtx::SinkBase;
 	using Format		= typename DevCtx::Format;
-	using ExchangePoint	= typename ContextDevT<DevCtx>::ExchangePoint;
-	using CtxStream		= typename ContextDevT<DevCtx>::Stream;
-	using SystemBase	= typename ContextDevT<DevCtx>::SystemBase;
+	using ExchangePoint	= typename ContextDevMachT<DevCtx>::ExchangePoint;
+	using CtxStream		= typename ContextDevMachT<DevCtx>::Stream;
+	using SystemBase	= typename ContextDevMachT<DevCtx>::SystemBase;
 	
 	struct ComponentGroup {
 		

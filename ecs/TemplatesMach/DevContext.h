@@ -5,10 +5,56 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class DevCtx>
-struct ContextDevT {
-	using Format		= typename DevCtx::Format;
+
+#define DEV(x) struct x##Specifier {static String GetName() {return #x;}};
+DEV_LIST
+#undef DEV
+
+
+
+template <class DevSpec>
+struct ContextDevBaseT {
+	using Spec = DevSpec;
 	
+	static const char* TypeStringT(const char* t) {
+		thread_local static String s;
+		s.Clear();
+		s << Spec::GetName() << t;
+		return s;
+	}
+	
+	
+	class Format {
+		
+		
+	};
+	
+	
+	struct Context : RTTIBase {
+		RTTI_DECL_T0(Context)
+		using Spec = DevSpec;
+		
+		
+		struct Format : RTTIBase {
+			
+		};
+		
+		struct SinkBase : RTTIBase {
+			RTTI_DECL0(SinkBase)
+		};
+		
+		static String GetName() {return DevSpec::GetName();}
+		
+	};
+	
+};
+
+
+
+template <class DevCtx>
+struct ContextDevMachT {
+	using Format = typename ContextDevBaseT<typename DevCtx::Spec>::Format;
+	using Context = typename ContextDevBaseT<typename DevCtx::Spec>::Context;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
@@ -16,27 +62,6 @@ struct ContextDevT {
 		s << DevCtx::GetName() << t;
 		return s;
 	}
-	
-	
-	class Ex;
-	
-	class Value :
-		RTTIBase,
-		virtual public RealtimeStream
-	{
-		
-	public:
-		RTTI_DECL_T1(Value, RealtimeStream)
-		Value() = default;
-		virtual ~Value() = default;
-		
-		virtual void Exchange(Ex& e) = 0;
-		virtual int GetQueueSize() const = 0;
-		virtual Format GetFormat() const = 0;
-		virtual bool IsQueueFull() const = 0;
-		
-	};
-	
 	
 	// This class enables device to process all interface types at once, like
 	// when OpenGL shader processes all types of data in single pipeline.
@@ -66,6 +91,27 @@ struct ContextDevT {
 		
 	};
 	
+	
+	
+	
+	class Ex;
+	
+	class Value :
+		RTTIBase,
+		virtual public RealtimeStream
+	{
+		
+	public:
+		RTTI_DECL_T1(Value, RealtimeStream)
+		Value() = default;
+		virtual ~Value() = default;
+		
+		virtual void Exchange(Ex& e) = 0;
+		virtual int GetQueueSize() const = 0;
+		virtual Format GetFormat() const = 0;
+		virtual bool IsQueueFull() const = 0;
+		
+	};
 	
 	
 	
@@ -149,9 +195,11 @@ struct ContextDevT {
 
 
 #define DEV(x) \
-	using x##Format = x##Context::Format; \
-	using x##T = ContextDevT<x##Context>; \
-	using x##Stream = ContextDevT<x##Context>::Stream;
+	using x##BaseT = ContextDevBaseT<x##Specifier>; \
+	using x##Context = x##BaseT::Context; \
+	using x##Format = x##BaseT::Format; \
+	using x##T = ContextDevMachT<x##Context>; \
+	using x##Stream = x##T::Stream;
 DEV_LIST
 #undef DEV
 

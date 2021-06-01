@@ -118,7 +118,7 @@ bool Entity::HasPoolParent(PoolRef pool) const {
 
 
 
-bool EntityHashVisitor::OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) {
+bool EntityHashVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
 	if (type == AsTypeCls<Entity>()) {
 		Entity& e = *(Entity*)mem;
 		ch.Put(1);

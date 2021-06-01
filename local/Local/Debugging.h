@@ -87,9 +87,9 @@ class RuntimeDiagnosticVisitor : public RuntimeVisitor {
 	LockedScopeRefCounter* cursor = 0;
 	
 	
-	bool OnEntry(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
 	void OnExit() override;
-	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override;
+	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
 	
 	void DumpVisit(const Scope& s, int depth, bool only_focused);
 	void RecursiveFocus(Scope& s);
@@ -151,7 +151,7 @@ class RefDebugVisitor : public RuntimeVisitor {
 	size_t break_ref_add = 0;
 	size_t break_ref_rem = 0;
 
-	void OnRef(TypeId type, void* mem, LockedScopeRefCounter* ref) override {
+	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {
 		Item cmp;
 		cmp.mem = mem;
 		Item* i = items.Find(cmp);

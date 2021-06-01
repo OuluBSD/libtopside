@@ -63,12 +63,10 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& 
 	base.AddLink(expt, sink);
 	sink->base.AddLink(expt, AsRefT());
 	if (print_debug) {
-		TypeId src_type = GetProviderType();
-		TypeId sink_type = sink->GetProviderType();
 		String s;
-		s << src_type.CleanDemangledName() <<
+		s << GetRTTI().GetDynamicName() <<
 			"<" << GetConfigString() << "> linked to " <<
-			sink_type.CleanDemangledName() <<
+			sink->GetRTTI().GetDynamicName() <<
 			"<" << sink->GetConfigString() << ">";
 		LOG(s);
 	}
