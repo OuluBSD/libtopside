@@ -32,6 +32,7 @@
 #include "Header.h"
 #include "Stream.h"
 #include "ComponentBase.h"
+#include "CompGroup.h"
 #include "ContextComponent.h"
 #include "Context.h"
 #include "Context.inl"

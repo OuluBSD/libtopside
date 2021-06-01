@@ -55,7 +55,7 @@ void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage
 	
 	int bi = s.NewWriteBuffer();
 	
-	if (!s.IsSinkInAccelerator()) {
+	if (HasContext<DisplayContext>() && !s.IsSinkInAccelerator()) {
 		ASSERT(s.frame_buf[bi] > 0);
 		const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
 		

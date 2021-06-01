@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class T> inline Ref<T> ComponenBase_Static_As(ConnectorBase*) {return 0;}
+template <class T> inline RefT_Pool<T> ConnectorBase_Static_As(ConnectorBase*) {return 0;}
 
 class ConnectorBase :
 	public Destroyable,

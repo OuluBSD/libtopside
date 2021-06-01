@@ -10,6 +10,7 @@
 #include "Classes.h"
 #include "Defs.h"
 #include "DevContext.h"
+#include "DevContext.inl"
 #include "Special.h"
 #include "Interface.h"
 

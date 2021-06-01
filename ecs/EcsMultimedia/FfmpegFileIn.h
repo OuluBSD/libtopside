@@ -20,7 +20,7 @@ protected:
 public:
 	using Parent = FfmpegFileInput;
 	RTTI_DECL_R1(FfmpegAudioFrameQueue, AudioInputFrame)
-	~FfmpegAudioFrameQueue() {Clear();}
+	~FfmpegAudioFrameQueue() {ClearBuffer();}
 	
 	void		FillAudioBuffer(double time_pos, AVFrame* frame);
 	

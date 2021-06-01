@@ -72,11 +72,13 @@ public:
 	String							name;
 	String							description;
 	String							code[PROG_COUNT];
+	Size							fb_size = {0,0};
 	int								id = -1;
 	int								buf_i = 0;
 	bool							is_doublebuf = false;
 	bool							is_searched_vars = false;
 	bool							is_open = false;
+	bool							has_fbo = false;
 	
 	
 	
@@ -103,10 +105,13 @@ public:
 	AccelStream*		Stream();
 	bool				IsTypeTemporary() {return IsTypeTemporary(GetTypeId());}
 	
+	template <class Ctx> void UpdateTexBuffersT();
 	template <class T> bool IsIn() {return IsContext(AsTypeCls<T>());}
 	
 	virtual bool		IsContext(TypeCls t) const = 0;
 	virtual void		UpdateTexBuffers() = 0;
+	virtual bool		IsEmptyStream() const = 0;
+	virtual void		ClearStream() = 0;
 	
 	virtual void		PreProcess() {}
 	virtual void		PostProcess() {}
@@ -152,51 +157,50 @@ using AccelComponentRef				= Ref<AccelComponent,				RefParent1<Entity>>;
 
 
 
-class AccelComponentGroup : public RefScopeEnabler<AccelComponentGroup,AccelContextComponent> {
-	RTTI_DECL_R0(AccelComponentGroup)
-	COPY_PANIC(AccelComponentGroup);
-	
-public:
-	LinkedList<AccelComponentRef> comps;
-	Vector<uint32> gl_stages;
-	
-	LinkedList<TypeCls> group_classes;
-	
-	
-public:
-	
-	
-	AccelComponentGroup();
-	bool				Open();
-	void				Clear();
-	void				Process();
-	void				Close();
-	void				CloseTemporary();
-	void				FindComponents();
-	AccelComponentRef	GetComponentById(int id) const;
-	void				Add(AccelComponentRef r) {comps.FindAdd(r);}
-	void				Remove(AccelComponentRef r) {comps.RemoveKey(r);}
-	void				FindUniqueInputs(AcceleratorHeaderVector& v);
-	bool				LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
-	void				ConnectInputs(AcceleratorHeaderVector& v);
-	void				UpdateBuffers();
-	bool				CheckInputTextures();
-	bool				IsLast(const AccelComponent* comp) const;
-	
-	template <class T> void AddContext() {group_classes.FindAdd(AsTypeCls<T>());}
-	template <class T> bool HasContext() const {return HasContext(AsTypeCls<T>());}
-	bool HasContext(TypeCls type) const {return group_classes.Find(type) != 0;}
-	
-#if HAVE_OPENGL
-	void				Ogl_ProcessStage(AccelComponentRef s, GLuint gl_stage);
-	void				Ogl_ClearPipeline();
-	void				Ogl_CreatePipeline();
-#endif
-	
-};
 
 
 
+
+
+template <class Ctx> void AccelComponent::UpdateTexBuffersT() {
+	auto* stream = Stream();
+	if (stream) {
+		fb_size.Clear();
+		auto& state = stream->template Get<Ctx>();
+		ASSERT(state.fmt.IsValid());
+		ClearTex();
+		TimeSeriesBase* ts = CastPtr<TimeSeriesBase>(&state.fmt);
+		DimBase<1>* base1 = CastPtr<DimBase<1>>(&state.fmt);
+		DimBase<2>* base2 = CastPtr<DimBase<2>>(&state.fmt);
+		if (ts) {
+			if (base1) {
+				int sr = max(ts->sample_rate, 1);
+				int ch = max(base1->channels, 1);
+				fb_size = Size(sr, 1);
+	#if HAVE_OPENGL
+				Ogl_CreateTex(
+					fb_size, ch,
+					0, has_fbo,
+					AcceleratorHeader::FILTER_LINEAR,
+					AcceleratorHeader::WRAP_CLAMP);
+	#endif
+			}
+			else if (base2) {
+				fb_size = base2->size;
+	#if HAVE_OPENGL
+				Ogl_CreateTex(
+					fb_size, 4,
+					1, has_fbo,
+					AcceleratorHeader::FILTER_LINEAR,
+					AcceleratorHeader::WRAP_CLAMP);
+	#endif
+			}
+			else {TODO}
+		}
+		else {TODO}
+	}
+	else {ASSERT_(false, "no stream");}
+}
 
 NAMESPACE_TOPSIDE_END
 

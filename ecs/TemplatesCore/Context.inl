@@ -127,7 +127,7 @@ TMPL(void) ExchangePoint::Update(double dt) {
 
 
 
-//Callback System::WhenUninit;
+
 
 TMPL_ECS(bool) System::Initialize() {
 	

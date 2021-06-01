@@ -7,6 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class DevCtx>
 struct ContextDevT {
+	using Format		= typename DevCtx::Format;
 	
 	
 	static const char* TypeStringT(const char* t) {
@@ -15,6 +16,67 @@ struct ContextDevT {
 		s << DevCtx::GetName() << t;
 		return s;
 	}
+	
+	
+	class Ex;
+	
+	class Value :
+		RTTIBase,
+		virtual public RealtimeStream
+	{
+		
+	public:
+		RTTI_DECL_T1(Value, RealtimeStream)
+		Value() = default;
+		virtual ~Value() = default;
+		
+		virtual void Exchange(Ex& e) = 0;
+		virtual int GetQueueSize() const = 0;
+		virtual Format GetFormat() const = 0;
+		virtual bool IsQueueFull() const = 0;
+		
+	};
+	
+	
+	// This class enables device to process all interface types at once, like
+	// when OpenGL shader processes all types of data in single pipeline.
+	class ExchangePoint :
+		public Topside::ExchangePoint
+	{
+		ConnectorBase* conn = 0;
+		off32 offset;
+		bool use_consumer = false;
+		bool dbg_offset_is_set = false;
+		
+	public:
+		RTTI_DECL_T1(ExchangePoint, Topside::ExchangePoint)
+		typedef ExchangePoint CLASSNAME;
+		ExchangePoint() {}
+		~ExchangePoint() {Deinit();}
+		
+		void Init(ConnectorBase* conn);
+		void Deinit();
+		void Update(double dt) override;
+		
+		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
+		void UseConsumer(bool b=true) {use_consumer = b;}
+		void Destroy() {conn = 0;}
+		
+		off32 GetOffset() const {return offset;}
+		
+	};
+	
+	
+	
+	
+	
+	class SystemBase : RTTIBase
+	{
+	public:
+		RTTI_DECL_T0(SystemBase)
+		
+	};
+	
 	
 	class Stream : RTTIBase
 	{
@@ -87,6 +149,7 @@ struct ContextDevT {
 
 
 #define DEV(x) \
+	using x##Format = x##Context::Format; \
 	using x##T = ContextDevT<x##Context>; \
 	using x##Stream = ContextDevT<x##Context>::Stream;
 DEV_LIST

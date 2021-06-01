@@ -64,32 +64,64 @@ NAMESPACE_TOPSIDE_BEGIN
 	IFACE_CTX_CLS(Perma,	value,	Perma##value)
 
 // e.g. CPU context
-struct CenterContext {
+struct CenterContext : RTTIBase {
+	RTTI_DECL0(CenterContext)
 	
+	struct Format : RTTIBase {
+		
+	};
+	
+	struct SinkBase : RTTIBase {
+		RTTI_DECL0(SinkBase)
+	};
 	
 	static String GetName() {return "CenterContext";}
 	
 };
 
 // e.g. GPU context
-struct AccelContext {
+struct AccelContext : RTTIBase {
+	RTTI_DECL0(AccelContext)
 	
+	struct Format : RTTIBase {
+		
+	};
+	
+	struct SinkBase : RTTIBase {
+		RTTI_DECL0(SinkBase)
+	};
 	
 	static String GetName() {return "AccelContext";}
 	
 };
 
 // e.g. exchange over tcp connection
-struct NetContext {
+struct NetContext : RTTIBase {
+	RTTI_DECL0(NetContext)
 	
+	struct Format : RTTIBase {
+		
+	};
+	
+	struct SinkBase : RTTIBase {
+		RTTI_DECL0(SinkBase)
+	};
 	
 	static String GetName() {return "NetContext";}
 	
 };
 
 // e.g. file system storage
-struct PermaContext {
+struct PermaContext : RTTIBase {
+	RTTI_DECL0(PermaContext)
 	
+	struct Format : RTTIBase {
+		
+	};
+	
+	struct SinkBase : RTTIBase {
+		RTTI_DECL0(SinkBase)
+	};
 	
 	static String GetName() {return "PermaContext";}
 	

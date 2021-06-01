@@ -26,7 +26,7 @@ void FfmpegFileInput::Clear() {
 void FfmpegFileInput::ClearDevice() {
 	is_eof = true;
 	is_dev_open = 0;
-	aframe.Clear();
+	aframe.ClearBuffer();
 	vframe.Clear();
 	
 	ClearPacket();
@@ -88,7 +88,7 @@ bool FfmpegFileInput::OpenFile(String path) {
 	has_video = v.OpenVideo(file_fmt_ctx, vframe.vid_fmt);
 	
 	if (has_audio) {
-		aframe.Clear();
+		aframe.ClearBuffer();
 	}
 	if (has_video) {
 		vframe.Init(*v.codec_ctx);

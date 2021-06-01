@@ -29,7 +29,8 @@ public:
 	bool is_open = false;
 	
 	
-	bool					Render();
+	bool					CreatePackets();
+	bool					CreatePackets(AccelComponentGroup& gr);
 	void					Clear();
 	void					AddDefaultGroups();
 	bool					RefreshStageQueue();
@@ -51,8 +52,19 @@ public:
 	bool					CreateComponents(AcceleratorHeaderVector& v);
 	bool					ConnectComponentInputs();
 	bool					ConnectComponentOutputs();
-	void					RefreshStreamValues();
 	
+	void					RefreshStreamValuesBase();
+	void					RefreshStreamValuesAll();
+	void					RefreshStreamValuesVideo();
+	void					RefreshStreamValuesAudio();
+	template <class T> void	RefreshStreamValues() {}
+	template<> void			RefreshStreamValues<VideoContext>() {RefreshStreamValuesVideo();}
+	template<> void			RefreshStreamValues<AudioContext>() {RefreshStreamValuesAudio();}
+	void					RefreshStreamValues(TypeCls t) {
+		#define IFACE(x) if (t == AsTypeCls<x##Context>()) {RefreshStreamValues<x##Context>(); return;}
+		IFACE_LIST
+		#undef IFACE
+	}
 	
 	template <class T> RefT_Entity<T> AddEntityComponent(AccelComponentGroup& g) {
 		RefT_Entity<T> o = GetEntity()->Add<T>();

@@ -110,6 +110,7 @@ struct Size_ : Moveable<Size_<T>> {
 	Size_(const Size_& sz) { *this = sz; }
 	Size_(T cx, T cy) : cx(cx), cy(cy) {}
 	
+	void Clear() {cx = 0; cy = 0;}
 	bool IsEmpty() const {return cx == 0 && cy == 0;}
 	bool IsPositive() const {return cx > 0 && cy > 0;}
 	bool IsEqual(const Size_& sz) const {return cx == sz.cx && cy == sz.cy;}

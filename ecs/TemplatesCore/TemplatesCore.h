@@ -7,6 +7,8 @@
 #include "Context.h"
 #include "Context.inl"
 #include "Classes.h"
+#include "DevContext.h"
+#include "DevContext.inl"
 #include "Defs.h"
 
 #endif

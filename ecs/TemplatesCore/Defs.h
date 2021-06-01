@@ -23,6 +23,12 @@ IFACE_LIST
 #undef ECS_CTX
 
 
+#define DEV(dev) \
+	using dev##DevEcsT				= ContextDevEcsT<dev##Context>; \
+	using dev##System				= ContextDevEcsT<dev##Context>::System;
+DEV_LIST
+#undef DEV
+
 
 typedef enum {
 	#define IFACE(x) IFACE_##x##Source , IFACE_##x##Sink ,

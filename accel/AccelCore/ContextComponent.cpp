@@ -61,6 +61,11 @@ void AccelContextComponent::Update(double dt) {
 			return;
 		}
 		
+		stream.vid.fmt.Set(LightSampleFD::FLT_LE_ABCD, Size(640,480));
+		stream.vid.fmt.SetFPS(60);
+		stream.aud.fmt.Set(SoundSample::S16_LE, 2, 44100, 1024);
+		RefreshStreamValuesAll();
+		
 		RefreshPipeline();
 	}
 	
@@ -135,19 +140,44 @@ void AccelContextComponent::AddDefaultGroups() {
 	audio.AddContext<EventContext>();
 }
 
-bool AccelContextComponent::Render() {
+bool AccelContextComponent::CreatePackets() {
+	if (groups.IsFilled()) {
+		RefreshStreamValuesBase();
+		
+		int dbg_i = 0;
+		for (auto& gr : groups) {
+			CreatePackets(gr);
+			++dbg_i;
+		}
+			
+		return true;
+	}
+	return false;
+}
+
+bool AccelContextComponent::CreatePackets(AccelComponentGroup& gr) {
 	if (is_open /*&& lock.TryEnter()*/ ) {
-		RefreshStreamValues();
+		
+		for (const TypeCls& t : gr.GetGroupClasses())
+			RefreshStreamValues(t);
 		
 		for (auto& gr : groups)
-			gr.Process();
+			gr.CreatePackets();
 		//lock.Leave();
 		return true;
 	}
 	return false;
 }
 
-void AccelContextComponent::RefreshStreamValues() {
+void AccelContextComponent::RefreshStreamValuesAll() {
+	RefreshStreamValuesBase();
+	#define IFACE(x) RefreshStreamValues<x##Context>();
+	IFACE_LIST
+	#undef IFACE
+}
+
+void AccelContextComponent::RefreshStreamValuesBase() {
+	stream.time = GetSysTime();
 	#ifdef flagWIN32
 	{
 		SYSTEMTIME time;
@@ -161,13 +191,14 @@ void AccelContextComponent::RefreshStreamValues() {
 		stream.time_us = start.tv_usec;
 	}
 	#endif
-	
-	TODO // separate video / audio... it's not in sync!!!
-	
-	stream.time = GetSysTime();
+}
+
+void AccelContextComponent::RefreshStreamValuesVideo() {
 	stream.vid.total_seconds = stream.total_time.Seconds();
 	stream.vid.frame_seconds = stream.vid.frame_time.Seconds();
-	
+}
+
+void AccelContextComponent::RefreshStreamValuesAudio() {
 	if (stream.aud.sink_frame == 0 || stream.aud.is_sync) {
 		stream.aud.last_sync_sec = stream.total_time.Seconds();
 		stream.aud.total_seconds = stream.aud.last_sync_sec;

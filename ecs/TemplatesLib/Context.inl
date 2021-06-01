@@ -1,6 +1,6 @@
 #define TMPL(x)	template <class Dev> x ContextLibT<Dev>::
-	
-	
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 #define CLS ContextLibT<Dev>

@@ -22,7 +22,7 @@ void AccelSystem::Update(double dt) {
 		ctx->Update(dt);
 	
 	for (AccelContextComponentRef& ctx : ctxs)
-		ctx->Render();
+		ctx->CreatePackets();
 	
 	DLOG("AccelSystem::Update: end\n");
 }

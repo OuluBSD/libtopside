@@ -12,26 +12,6 @@ TMPL(typename CLS::CtxStream&) PipeComponent::GetStream(typename Dev::Value*) {r
 TMPL(void) PipeComponent::BeginStream(typename Dev::Value*) {TODO}
 TMPL(void) PipeComponent::EndStream(typename Dev::Value*) {TODO}
 TMPL(bool) PipeComponent::LoadAsInput(const AcceleratorHeader& in) {TODO}
-TMPL(void) PipeComponent::UpdateTexBuffers() {
-	auto* stream = Stream();
-	if (stream) {
-		auto& state = stream->template Get<Ctx>();
-		ASSERT(state.fmt.IsValid());
-		ClearTex();
-		DimBase<2>* base = CastPtr<DimBase<2>>(&state);
-		if (base) {
-#if HAVE_OPENGL
-		Ogl_CreateTex(
-			base->size, 4,
-			1, 1,
-			AcceleratorHeader::FILTER_LINEAR,
-			AcceleratorHeader::WRAP_CLAMP);
-#endif
-		}
-		else {TODO}
-	}
-}
-
 TMPL(bool) PipeComponent::LocalStream::IsOpen() const {TODO}
 TMPL(bool) PipeComponent::LocalStream::Open(int fmt_idx) {TODO}
 TMPL(void) PipeComponent::LocalStream::Close() {TODO}
@@ -54,7 +34,7 @@ TMPL(bool) PipeComponent::LocalSourceValue::IsQueueFull() const {TODO}*/
 
 CONV_TMPL(typename CLS::FromFormat) ConvertComponent::GetFormat(F*) {TODO}
 CONV_TMPL(typename CLS::FromValue&) ConvertComponent::GetValue(F*) {TODO}
-CONV_TMPL(typename CLS::ToStream&) ConvertComponent::GetStream(T*) {TODO}
+CONV_TMPL(typename CLS::ToStream&) ConvertComponent::GetStream(T*) {return stream;}
 CONV_TMPL(void) ConvertComponent::BeginStream(T*) {TODO}
 CONV_TMPL(void) ConvertComponent::EndStream(T*) {TODO}
 CONV_TMPL(bool) ConvertComponent::LoadAsInput(const AcceleratorHeader& in) {
@@ -102,55 +82,33 @@ CONV_TMPL(bool) ConvertComponent::LoadAsInput(const AcceleratorHeader& in) {
 	}
 }
 CONV_TMPL(void) ConvertComponent::PreProcess() {
-	TODO
-	#if 0
-	if (changed && data.GetCount() && color_buf[0] > 0) {
-		changed = false;
-		ASSERT(data.GetCount() == data_res.cx * data_res.cy);
-#if HAVE_OPENGL
-		Ogl_UpdateTex(data_res, data.Begin());
-#endif
-	}
-	#endif
-}
-CONV_TMPL(void) ConvertComponent::UpdateTexBuffers() {
-	TODO
-	#if 0
-	if (AsTypeCls<ToCtx>() == AsTypeCls<AudioContext>()) {
-		auto* stream = Stream();
-		if (stream) {
-			ClearTex();
+	if (AsTypeCls<typename To::Dev>() == AsTypeCls<AccelContext>()) {
+		auto& buf = sink_value.GetBuffer();
+		if (buf.IsFilled() && color_buf[0] > 0) {
+			auto& packet = buf.First();
+			auto fmt = packet->GetFormat();
+			const Vector<byte>& data = packet->GetData();
+			ASSERT(!data.IsEmpty() && data.GetCount() == fb_size.cx * fb_size.cy);
 	#if HAVE_OPENGL
-			int sr = stream->aud_fmt.sample_rate;
-			int ch = stream->aud_fmt.channels;
-			ASSERT(sr > 0);
-			ASSERT(ch > 0);
-			ASSERT(stream->aud_fmt.template IsSampleType<float>());
-			Ogl_CreateTex(
-				Size(sr, 1), ch,
-				0, 0,
-				AcceleratorHeader::FILTER_LINEAR,
-				AcceleratorHeader::WRAP_CLAMP);
+			Ogl_UpdateTex(fb_size, data);
 	#endif
+			buf.RemoveFirst();
 		}
 	}
-	else {
-		auto* stream = Stream();
-		if (stream) {
-			ClearTex();
-			if (stream->data_res.cx > 0 && stream->data_res.cy > 0) {
-	#if HAVE_OPENGL
-				Ogl_CreateTex(
-					stream->data_res, 1,
-					0, 0,
-					AcceleratorHeader::FILTER_NEAREST,
-					AcceleratorHeader::WRAP_CLAMP);
-	#endif
-			}
-		}
+	else if (AsTypeCls<typename From::Dev>() == AsTypeCls<AccelContext>()) {
+		// pass
 	}
-	#endif
+	else {TODO}
 }
+CONV_TMPL(bool) ConvertComponent::LocalStream::IsOpen() const {TODO}
+CONV_TMPL(bool) ConvertComponent::LocalStream::Open(int fmt_idx) {TODO}
+CONV_TMPL(void) ConvertComponent::LocalStream::Close() {TODO}
+CONV_TMPL(bool) ConvertComponent::LocalStream::IsEof() {TODO}
+CONV_TMPL(bool) ConvertComponent::LocalStream::ReadFrame() {TODO}
+CONV_TMPL(bool) ConvertComponent::LocalStream::ProcessFrame() {TODO}
+CONV_TMPL(bool) ConvertComponent::LocalStream::ProcessOtherFrame() {TODO}
+CONV_TMPL(void) ConvertComponent::LocalStream::ClearPacketData() {TODO}
+
 
 
 
@@ -163,8 +121,6 @@ CONV_TMPL(typename CLS::ToValue&) ConvertOutputComponent::GetValue(T*) {TODO}
 CONV_TMPL(typename CLS::FromStream&) ConvertOutputComponent::GetStream(F*) {return stream;}
 CONV_TMPL(void) ConvertOutputComponent::BeginStream(F*) {stream.FillBuffer();}
 CONV_TMPL(void) ConvertOutputComponent::EndStream(F*) {stream.DropBuffer();}
-CONV_TMPL(void) ConvertOutputComponent::UpdateTexBuffers() {
-}
 
 CONV_TMPL(bool) ConvertOutputComponent::ReadFrame() {
 	TODO

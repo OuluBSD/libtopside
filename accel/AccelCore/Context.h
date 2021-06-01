@@ -107,7 +107,10 @@ struct ContextAccelT {
 		
 	public:
 		
-		// TODO: LocalSinkValue
+		class LocalSinkValue : public SimpleBufferedValue {
+		public:
+			RTTI_DECL_T1(LocalSinkValue, SimpleBufferedValue)
+		};
 		
 		class LocalSourceValue : public SimpleBufferedValue {
 		public:
@@ -132,8 +135,9 @@ struct ContextAccelT {
 			bool			ProcessOtherFrame() override;
 			void			ClearPacketData() override;
 		};
-		LocalStream			stream;
+		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
+		LocalStream			stream;
 		
 		PipeComponent() : stream(this) {}
 		void				Initialize() override {AccelComponent::Initialize();}
@@ -149,9 +153,11 @@ struct ContextAccelT {
 		void				BeginStream(C*) override;
 		void				EndStream(C*) override;
 		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
-		bool LoadAsInput(const AcceleratorHeader& in) override;
-		void UpdateTexBuffers() override;
+		bool				IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		bool				LoadAsInput(const AcceleratorHeader& in) override;
+		void				UpdateTexBuffers() override {UpdateTexBuffersT<Ctx>();}
+		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
+		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 		
 	};
 	
@@ -184,6 +190,13 @@ struct ContextConvT {
 	using ToSimpleBufferedValue = typename ContextMachT<To>::SimpleBufferedValue;
 	using ToSimpleBufferedStream = typename ContextMachT<To>::SimpleBufferedStream;
 	
+	static const char* TypeStringT(const char* t) {
+		thread_local static String s;
+		s.Clear();
+		s << From::GetPrefix() << "2" << To::GetPrefix() << t;
+		return s;
+	}
+	
 	class ConvertComponent :
 		public Component<ConvertComponent>,
 		public FromSink,
@@ -195,7 +208,37 @@ struct ContextConvT {
 		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}
+		
+		
+		struct LocalSink : FromSimpleBufferedValue {
+			
+		};
+		struct LocalSource : ToSimpleBufferedValue {
+			
+		};
+		class LocalStream :
+			public ToSimpleBufferedStream,
+			RTTIBase
+		{
+		public:
+			ConvertComponent& par;
+			RTTI_DECL_T1(LocalStream, ToSimpleBufferedStream);
+			LocalStream(ConvertComponent* p) : par(*p), ToSimpleBufferedStream(p->src_value) {}
+			bool			IsOpen() const override;
+			bool			Open(int fmt_idx) override;
+			void			Close() override;
+			bool			IsEof() override;
+			bool			ReadFrame() override;
+			bool			ProcessFrame() override;
+			bool			ProcessOtherFrame() override;
+			void			ClearPacketData() override;
+		};
+		LocalSink sink_value;
+		LocalSource src_value;
+		LocalStream stream;
+		
 	public:
+		ConvertComponent() : stream(this) {}
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
@@ -210,10 +253,12 @@ struct ContextConvT {
 		void				BeginStream(T*) override;
 		void				EndStream(T*) override;
 		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<T>() == t;}
-		bool LoadAsInput(const AcceleratorHeader& in) override;
-		void PreProcess() override;
-		void UpdateTexBuffers() override;
+		bool				IsContext(TypeCls t) const override {return AsTypeCls<T>() == t;}
+		bool				LoadAsInput(const AcceleratorHeader& in) override;
+		void				PreProcess() override;
+		void				UpdateTexBuffers() override {UpdateTexBuffersT<ToCtx>();}
+		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
+		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 		
 	};
 	
@@ -273,7 +318,6 @@ struct ContextConvT {
 		
 		bool IsContext(TypeCls t) const override {return AsTypeCls<F>() == t;}
 		bool LoadAsInput(const AcceleratorHeader& in) override {return false;}
-		void UpdateTexBuffers() override;
 		bool ReadFrame();
 		bool ProcessFrame();
 		void ClearPacketData();
@@ -292,7 +336,6 @@ struct ContextConvT {
 		void			Reset() override;
 		void			PreProcess() override;
 		void			PostProcess() override;
-		void			UpdateTexBuffers() override;
 		void			Event(const CtrlEvent& e) override;
 		bool			LoadResources() override;
 		bool			Accept(ExchangeSinkProviderRef sink, CookieRef& src_c, CookieRef& sink_c) override;

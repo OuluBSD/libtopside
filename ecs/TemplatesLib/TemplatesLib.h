@@ -5,6 +5,9 @@
 
 #include "Context.h"
 #include "Context.inl"
+#include "DevContext.h"
+#include "DevContext.inl"
 #include "EcsCore.inl"
+#include "Defs.h"
 
 #endif

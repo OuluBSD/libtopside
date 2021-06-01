@@ -2,8 +2,9 @@ description "\377B0,131,159";
 
 uses
 	Music,
-	AudioCore,
-	AccelCore;
+	AudioCore;
+
+uses(NEVER) AccelCore;
 
 uses(NEVER) FusionCore;
 

@@ -390,17 +390,19 @@ struct ContextMachT {
 		
 	public:
 		RTTI_DECL_T1(SimpleBufferedValue, Value)
-		void		Exchange(Ex& e) override;
-		int			GetQueueSize() const override;
-		Format		GetFormat() const override;
-		bool		IsQueueFull() const override;
-		int			GetQueueTotalSamples() const;
-		int			GetQueueChannelSamples() const;
-		void		Clear() {buf.Clear();}
-		void		FillBuffersNull();
-		void		Visit(RuntimeVisitor& vis) {}
-		void		DropBuffer();
-		void		AddPacket(Packet p) {buf.Add(p);}
+		void			Exchange(Ex& e) override;
+		int				GetQueueSize() const override;
+		Format			GetFormat() const override;
+		bool			IsQueueFull() const override;
+		int				GetQueueTotalSamples() const;
+		int				GetQueueChannelSamples() const;
+		void			ClearBuffer() {buf.Clear();}
+		bool			IsEmpty() const {return buf.IsEmpty();}
+		void			FillBuffersNull();
+		void			Visit(RuntimeVisitor& vis) {}
+		void			DropBuffer();
+		void			AddPacket(Packet p) {buf.Add(p);}
+		PacketBuffer&	GetBuffer() {return buf;}
 		
 	};
 	

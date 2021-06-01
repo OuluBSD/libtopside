@@ -49,7 +49,7 @@ struct ContextLibT {
 				SimpleBufferedStream(par->value) {}
 			bool			IsOpen() const override;
 			bool			Open(int fmt_idx) override;
-			void			Close() override {par.value.Clear();}
+			void			Close() override {par.value.ClearBuffer();}
 			bool			IsEof() override {return false;}
 			bool			ReadFrame() override {return par.ReadFrame();}
 			bool			ProcessFrame() override {return par.ProcessDeviceFrame();}

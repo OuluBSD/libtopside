@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class T> inline RefT_Entity<T> ComponenBase_Static_As(ComponentBase*) {return RefT_Entity<T>();}
+template <class T> inline RefT_Entity<T> ComponentBase_Static_As(ComponentBase*) {return RefT_Entity<T>();}
 
 class ComponentBase :
 	public Destroyable,
@@ -38,7 +38,7 @@ public:
 	
 	EntityRef GetEntity();
 	
-	template <class T> RefT_Entity<T> As() {return ComponenBase_Static_As<T>(this);}
+	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
 	
 	#define IFACE(x) \
 	RefT_Entity<x##Source> As##x##Source() {return As<x##Source>();} \

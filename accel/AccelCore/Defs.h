@@ -20,23 +20,21 @@ IFACE_LIST
 	using Conv##from##to##value##T = ContextConvT<from##value##Context, to##value##Context>; \
 	using Convert##from##to##value##Component = Conv##from##to##value##T::ConvertComponent; \
 	using Convert##from##to##value##ComponentRef = Ref<Conv##from##to##value##T::ConvertComponent, RefParent1<Entity>>;
-
-
-
 #define IFACE(value) \
 	DEV_CONV_CTX(Center, Accel, value) \
 	DEV_CONV_CTX(Accel, Center, value)
 IFACE_LIST
 #undef IFACE
+#undef DEV_CONV_CTX
 
 
 
 #define IFACE(x) \
-template<> inline RefT_Entity<Accel##x##Source> ComponenBase_Static_As(ComponentBase* c) {\
+template<> inline RefT_Entity<Accel##x##Source> ComponentBase_Static_As<Accel##x##Source>(ComponentBase* c) {\
 	Accel##x##Source* ptr = CastPtr<Accel##x##Source>(c); \
 	return ptr ? ptr->AsRef<Accel##x##Source>() : RefT_Entity<Accel##x##Source>(); \
 } \
-template<> inline RefT_Entity<Accel##x##Sink>   ComponenBase_Static_As(ComponentBase* c) {\
+template<> inline RefT_Entity<Accel##x##Sink>   ComponentBase_Static_As<Accel##x##Sink>(ComponentBase* c) {\
 	Accel##x##Sink* ptr = CastPtr<Accel##x##Sink>(c); \
 	return ptr ? ptr->AsRef<Accel##x##Sink>() : RefT_Entity<Accel##x##Sink>(); \
 }

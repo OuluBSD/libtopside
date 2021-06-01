@@ -108,6 +108,10 @@ public:
 		ASSERT(0);
 		THROW(Exc("Position not found in LinkedList: " + IntStr(i)));
 	}
+	
+	T& First() {return first->value;}
+	const T& First() const {return first->value;}
+	
 	T& Top() {return last->value;}
 	const T& Top() const {return last->value;}
 	
@@ -130,6 +134,7 @@ public:
 	T& Add(const T& o) {T& r = AddItem()->value; r = o; return r;}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
+	bool IsFilled() const {return count != 0;}
 	operator bool() const {return count > 0;}
 	void RemoveFirst(int count=1) {
 		if (!count) return;

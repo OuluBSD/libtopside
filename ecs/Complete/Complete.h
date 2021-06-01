@@ -7,9 +7,9 @@
 #include <EcsLib/EcsLib.h>
 #include <EcsAudioCore/EcsAudioCore.h>
 
-#ifdef flagGUI
-	#include <AccelCore/AccelCore.h>
-#endif
+//#ifdef flagGUI
+	//#include <AccelCore/AccelCore.h>
+//#endif
 
 #ifdef flagCTRL
 	#include <EcsCtrl/EcsCtrl.h>
