@@ -1,19 +1,19 @@
-#define TMPL(x)	template <class Dev> x ContextLibT<Dev>::
+#define TMPL(x)	template <class ValDevSpec> x ScopeValDevLibT<ValDevSpec>::
 
 
 NAMESPACE_TOPSIDE_BEGIN
 
-#define CLS ContextLibT<Dev>
+#define CLS ScopeValDevLibT<ValDevSpec>
 
-TMPL(typename CLS::CtxStream&) InputComponent::GetStream(Ctx*) {
+TMPL(typename CLS::CtxStream&) InputComponent::GetStream(C*) {
 	return stream;
 }
 
-TMPL(void) InputComponent::BeginStream(Ctx*) {
+TMPL(void) InputComponent::BeginStream(C*) {
 	stream.FillBuffer();
 }
 
-TMPL(void) InputComponent::EndStream(Ctx*) {
+TMPL(void) InputComponent::EndStream(C*) {
 	stream.DropBuffer();
 }
 

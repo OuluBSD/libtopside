@@ -31,7 +31,7 @@ public:
 	virtual void Paint(Draw& w);
 	
 	StaticRect& Background(const Value& chvalue);
-	StaticRect& SetColor(typename Upp::Color c)                { Background(c); return *this; }
+	StaticRect& SetColor(typename UPP::Color c)                { Background(c); return *this; }
 
 	
 	struct Style : ChStyle<Style> {

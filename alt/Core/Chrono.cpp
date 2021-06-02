@@ -418,20 +418,20 @@ int64 CurrentTime() {
 		t.tm_hour, t.tm_min, t.tm_sec);
 }
 
-uint64 NanoSeconds() {
+uint64 GetNanoSeconds() {
 	auto p2 = std::chrono::high_resolution_clock::now();
 	return std::chrono::duration_cast<std::chrono::microseconds>(p2.time_since_epoch()).count();
 }
 
-uint64 MilliSeconds() {
+uint64 GetMilliSeconds() {
 	auto p2 = std::chrono::steady_clock::now();
 	return (int)std::chrono::duration_cast<std::chrono::milliseconds>(p2.time_since_epoch()).count();
 }
 
 void GetSysSeedValues(int64* a, int64* b, int64* c) {
 	if (a) *a = CurrentTime();
-	if (b) *b = NanoSeconds();
-	if (c) *c = MilliSeconds();
+	if (b) *b = GetNanoSeconds();
+	if (c) *c = GetMilliSeconds();
 }
 
 

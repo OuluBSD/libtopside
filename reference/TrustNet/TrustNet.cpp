@@ -1,8 +1,8 @@
 #include <TrustLib/TrustLib.h>
 
 void TrustNetTest() {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	enum {
 		OLIVER,

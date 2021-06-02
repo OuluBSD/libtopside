@@ -5,10 +5,10 @@ uses
 
 file
 	TemplatesLib.h,
-	Context.h,
-	Context.inl highlight cpp,
-	DevContext.h,
-	DevContext.inl highlight cpp,
+	ValDevScope.h,
+	ValDevScope.inl highlight cpp,
+	DevScope.h,
+	DevScope.inl highlight cpp,
 	EcsCore.inl highlight cpp,
-	Defs.h;
+	DevSpec.h;
 

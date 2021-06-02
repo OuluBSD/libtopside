@@ -2,7 +2,7 @@
 
 #define LLOG(x)
 
-namespace Upp {
+namespace UPP {
 
 dword fbKEYtoK(dword chr) {
 	if(chr == SDLK_TAB)

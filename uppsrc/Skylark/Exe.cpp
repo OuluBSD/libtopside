@@ -3,7 +3,7 @@
 #define LTIMING(x) // RTIMING(x)
 #define LLOG(x)    // DLOG(x)
 
-namespace Upp {
+namespace UPP {
 
 force_inline
 bool Compiler::IsTrue(const Value& v)

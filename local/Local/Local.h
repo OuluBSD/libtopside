@@ -2,38 +2,6 @@
 #define _Local_Local_h_
 
 #include "Before.h"
-
-#ifndef UPP_VERSION
-	#include <Core/Core.h>
-	#include <Draw/Draw.h>
-	#define IML_HEADER <Draw/iml_header.h>
-	#define IML_SOURCE <Draw/iml_source.h>
-#else
-	#include <algorithm>
-	#include <Core/Core.h>
-	#include <Draw/Draw.h>
-	#include <plugin/bz2/bz2.h>
-	#define IML_HEADER <Draw/iml_header.h>
-	#define IML_SOURCE <Draw/iml_source.h>
-#endif
-#undef Complex
-
-
-#ifdef flagDEBUG_RT
-	#define DEBUG_RT_PIPE 1
-	#define RTLOG(x) LOG("REALTIME DEBUG: " << x)
-#else
-	#define DEBUG_RT_PIPE 0
-	#define RTLOG(x)
-#endif
-
-
-
-NAMESPACE_TOPSIDE_BEGIN
-using namespace Upp;
-NAMESPACE_TOPSIDE_END
-
-
 #include "Compat.h"
 #include "Types.h"
 #include "Chrono.h"

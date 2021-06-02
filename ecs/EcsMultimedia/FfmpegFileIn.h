@@ -49,7 +49,7 @@ class FfmpegVideoFrameQueue :
 		void Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
 		bool PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
 	};
-	using Recycler = Topside::Recycler<Frame,true>;
+	using Recycler = TS::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
 	struct SwsContext* img_convert_ctx = 0;

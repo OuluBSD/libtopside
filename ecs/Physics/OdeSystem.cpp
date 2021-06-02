@@ -146,7 +146,7 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_UPP
 
 INITBLOCK(OdeSystem) {
-	Topside::Machine::WhenInitialize << callback(Topside::AddMachineOdeSystem);
+	TS::Machine::WhenInitialize << callback(TS::AddMachineOdeSystem);
 }
 
 END_UPP_NAMESPACE

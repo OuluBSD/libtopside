@@ -2,7 +2,7 @@
 #define _CodeGen_CodeGen_h_
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 #include "Editor.h"
 

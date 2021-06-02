@@ -4,11 +4,11 @@
 #include <EcsMach/EcsMach.h>
 #include <Geometry/Geometry.h>
 
-#include "Context.h"
-#include "Context.inl"
+#include "ValDevScope.h"
+#include "ValDevScope.inl"
 #include "Classes.h"
-#include "DevContext.h"
-#include "DevContext.inl"
-#include "Defs.h"
+#include "DevScope.h"
+#include "DevScope.inl"
+#include "Spec.h"
 
 #endif

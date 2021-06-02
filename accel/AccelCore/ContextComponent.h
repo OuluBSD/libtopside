@@ -61,7 +61,7 @@ public:
 	template<> void			RefreshStreamValues<VideoContext>() {RefreshStreamValuesVideo();}
 	template<> void			RefreshStreamValues<AudioContext>() {RefreshStreamValuesAudio();}
 	void					RefreshStreamValues(TypeCls t) {
-		#define IFACE(x) if (t == AsTypeCls<x##Context>()) {RefreshStreamValues<x##Context>(); return;}
+		#define IFACE(x) if (t == AsTypeCls<x##Spec>()) {RefreshStreamValues<x##Spec>(); return;}
 		IFACE_LIST
 		#undef IFACE
 	}

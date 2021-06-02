@@ -176,7 +176,7 @@ public:
 	virtual bool				IsNthLastChild(Element* el, int num, int off, bool of_type);
 	virtual bool				IsOnlyChild(Element* el, bool of_type);
 	virtual bool				GetPredefinedHeight(int& p_height) const;
-	virtual void				CalcDocumentSize(Upp::Size& sz, int x = 0, int y = 0);
+	virtual void				CalcDocumentSize(UPP::Size& sz, int x = 0, int y = 0);
 	virtual void				GetRedrawBox(Position& pos, int x = 0, int y = 0);
 	virtual void				AddStyle(Style* st);
 	virtual Element*			GetElementByPoint(int x, int y, int client_x, int client_y);
@@ -522,7 +522,7 @@ public:
 	virtual void				DrawChildren( Draw& hdc, int x, int y, const Position& clip, DrawFlag flag, int zindex );
 	virtual int					GetZIndex() const;
 	virtual void				DrawStackingContext(Draw& hdc, int x, int y, const Position& clip, bool with_positioned);
-	virtual void				CalcDocumentSize(Upp::Size& sz, int x = 0, int y = 0);
+	virtual void				CalcDocumentSize(UPP::Size& sz, int x = 0, int y = 0);
 	virtual void				GetRedrawBox(Position& pos, int x = 0, int y = 0);
 	virtual void				AddStyle(Style* st);
 	virtual Element*			GetElementByPoint(int x, int y, int client_x, int client_y);

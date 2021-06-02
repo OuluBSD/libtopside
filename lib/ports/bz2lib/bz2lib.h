@@ -8,7 +8,7 @@
 #endif
 
 #ifdef CORE_H
-namespace Upp {
+namespace UPP {
 
 void BZ2Decompress(Stream& out, Stream& in);
 void BZ2Compress(Stream& out, Stream& in);

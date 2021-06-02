@@ -30,7 +30,7 @@ struct Circle {
 };
 
 
-// Note: Topside::Topside::Rectangle differs from Topside::Rect:
+// Note: TS::TS::Rectangle differs from TS::Rect:
 //	- it's origin + size, not min + max
 //  - it's positive y value upwards, not downwards (as is easier in 2d gui)
 

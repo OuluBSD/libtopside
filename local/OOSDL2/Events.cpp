@@ -41,7 +41,7 @@ void Events::PutKeyFlags(dword& key) {
 	if (is_lctrl || is_rctrl)		key |= K_CTRL;
 }
 
-bool Events::Poll(Upp::CtrlEvent& e) {
+bool Events::Poll(UPP::CtrlEvent& e) {
 	SDL_Event event;
 	Size screen_sz;
 	Point mouse_pt;

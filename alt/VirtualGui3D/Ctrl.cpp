@@ -3,10 +3,10 @@
 
 NAMESPACE_UPP
 
-Topside::Windows* Ctrl::wm;
+TS::Windows* Ctrl::wm;
 
 
-Topside::CoreWindow* Ctrl::GetWindow() {
+TS::CoreWindow* Ctrl::GetWindow() {
 	TopWindow* tw = GetTopWindow();
 	return tw ? tw->GetWindow() : 0;
 }
@@ -35,7 +35,7 @@ CoreWindow* Ctrl::GetWindow() {
 
 #endif
 
-Topside::Windows* Ctrl::GetWindows() {
+TS::Windows* Ctrl::GetWindows() {
 	ASSERT(wm);
 	return wm;
 }

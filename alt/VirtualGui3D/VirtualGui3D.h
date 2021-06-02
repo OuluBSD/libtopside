@@ -36,7 +36,7 @@ enum KM {
 };
 
 struct VirtualGui3DAlt {
-	virtual bool        Poll(Upp::CtrlEvent& e) = 0;
+	virtual bool        Poll(UPP::CtrlEvent& e) = 0;
 	virtual Size        GetSize() = 0;
 	virtual void        SetTitle(String title) = 0;
 	virtual SystemDraw& BeginDraw() = 0;

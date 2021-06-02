@@ -1,7 +1,7 @@
 #ifndef _CtrlCoreAlt_Ctrl_h_
 #define _CtrlCoreAlt_Ctrl_h_
 
-namespace Topside {
+namespace TS {
 
 class Windows;
 class WindowManager;

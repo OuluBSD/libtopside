@@ -120,7 +120,7 @@ void OrchestraConductorInitializer() {
 
 NAMESPACE_TOPSIDE_END
 
-CONSOLE_ECS_APP_(Topside::OrchestraConductor)
-APP_INITIALIZE_(Topside::OrchestraConductorStartup);
+CONSOLE_ECS_APP_(TS::OrchestraConductor)
+APP_INITIALIZE_(TS::OrchestraConductorStartup);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

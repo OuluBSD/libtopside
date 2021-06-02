@@ -1,30 +1,32 @@
-#ifndef _TemplatesLib_Context_h_
-#define _TemplatesLib_Context_h_
+#ifndef _TemplatesLib_ValDevScope_h_
+#define _TemplatesLib_ValDevScope_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Dev>
-struct ContextLibT {
-	using DevCtx		= Dev;
-	using Ctx			= typename Dev::Value;
-	using C				= Ctx;
-	using Mach			= ContextMachT<Dev>;
-	using Ecs			= ContextEcsT<Dev>;
-	using Format = typename Ctx::Format;
-	using ValueBase = typename Ctx::ValueBase;
-	using StreamBase = typename Ctx::StreamBase;
-	using Value = typename Mach::Value;
-	using CtxStream = typename Mach::Stream;
+template <class ValDevSpec>
+struct ScopeValDevLibT {
+	using ValSpec		= typename ValDevSpec::Value;
+	using DevSpec		= typename ValDevSpec::Dev;
+	using ValMach		= ScopeValMachT<ValSpec>;
+	using Mach			= ScopeValDevMachT<DevSpec>;
+	using C				= ValSpec;
+	using Ctx			= typename Mach::Context;
+	using Ecs			= ScopeValDevEcsT<ValDevSpec>;
+	using Format		= typename Mach::Format;
+	using ValueBase		= typename Mach::ValueBase;
+	using StreamBase	= typename Mach::StreamBase;
+	using Value			= typename Mach::Value;
+	using CtxStream		= typename Mach::Stream;
 	using ExchangePoint = typename Mach::ExchangePoint;
-	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
-	using SimpleBufferedStream = typename Mach::SimpleBufferedStream;
-	using BaseSink = typename Ecs::BaseSink;
-	using BaseSource = typename Ecs::BaseSource;
+	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
+	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
+	using BaseSink		= typename Ecs::BaseSink;
+	using BaseSource	= typename Ecs::BaseSource;
 	
 	
 	#define RTTI_CTX_LIB_INPUT_COMP(comp, src) \
-			RTTI_DECL_2(comp, Component<comp>, src, Ctx::GetName() + #comp)
+			RTTI_DECL_2(comp, Component<comp>, src, ValDevSpec::GetName() + #comp)
 	
 	class InputComponent :
 		public Component<InputComponent>,

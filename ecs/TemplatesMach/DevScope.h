@@ -1,19 +1,20 @@
-#ifndef _TemplatesMach_DevContext_h_
-#define _TemplatesMach_DevContext_h_
+#ifndef _TemplatesMach_DevScope_h_
+#define _TemplatesMach_DevScope_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 
 
-#define DEV(x) struct x##Specifier {static String GetName() {return #x;}};
+// Specifier
+#define DEV(x) struct x##Spec {static String GetName() {return #x;}};
 DEV_LIST
 #undef DEV
 
 
 
 template <class DevSpec>
-struct ContextDevBaseT {
+struct ContextDevMachT {
 	using Spec = DevSpec;
 	
 	static const char* TypeStringT(const char* t) {
@@ -24,49 +25,33 @@ struct ContextDevBaseT {
 	}
 	
 	
-	class Format {
+	class Format : RTTIBase {
+		RTTI_DECL_T0(Format)
 		
 		
 	};
 	
+	struct SinkBase : RTTIBase {
+		RTTI_DECL_T0(SinkBase)
+		
+	};
+	
+
 	
 	struct Context : RTTIBase {
 		RTTI_DECL_T0(Context)
 		using Spec = DevSpec;
 		
 		
-		struct Format : RTTIBase {
-			
-		};
-		
-		struct SinkBase : RTTIBase {
-			RTTI_DECL0(SinkBase)
-		};
-		
-		static String GetName() {return DevSpec::GetName();}
 		
 	};
 	
-};
-
-
-
-template <class DevCtx>
-struct ContextDevMachT {
-	using Format = typename ContextDevBaseT<typename DevCtx::Spec>::Format;
-	using Context = typename ContextDevBaseT<typename DevCtx::Spec>::Context;
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
-		s << DevCtx::GetName() << t;
-		return s;
-	}
 	
 	// This class enables device to process all interface types at once, like
 	// when OpenGL shader processes all types of data in single pipeline.
 	class ExchangePoint :
-		public Topside::ExchangePoint
+		public TS::ExchangePoint
 	{
 		ConnectorBase* conn = 0;
 		off32 offset;
@@ -74,7 +59,7 @@ struct ContextDevMachT {
 		bool dbg_offset_is_set = false;
 		
 	public:
-		RTTI_DECL_T1(ExchangePoint, Topside::ExchangePoint)
+		RTTI_DECL_T1(ExchangePoint, TS::ExchangePoint)
 		typedef ExchangePoint CLASSNAME;
 		ExchangePoint() {}
 		~ExchangePoint() {Deinit();}
@@ -129,7 +114,7 @@ struct ContextDevMachT {
 	public:
 		RTTI_DECL_T0(Stream)
 		
-		template<class Ctx> using State = typename ContextDataT<Ctx>::StreamState;
+		template<class Ctx> using State = typename ScopeValMachT<Spec>::StreamState;
 		
 		
 		// Generic
@@ -142,8 +127,8 @@ struct ContextDevMachT {
 		
 		// Context states & formats
 		#define IFACE(cls, var) \
-			State<cls##Context> var; \
-			template<> State<cls##Context>& Get<cls##Context>() {return var;}
+			State<cls##Spec> var; \
+			template<> State<cls##Spec>& Get<cls##Spec>() {return var;}
 		IFACE_VAR_LIST
 		#undef IFACE
 		
@@ -195,11 +180,10 @@ struct ContextDevMachT {
 
 
 #define DEV(x) \
-	using x##BaseT = ContextDevBaseT<x##Specifier>; \
-	using x##Context = x##BaseT::Context; \
-	using x##Format = x##BaseT::Format; \
-	using x##T = ContextDevMachT<x##Context>; \
-	using x##Stream = x##T::Stream;
+	using x##MachT = ContextDevMachT<x##Spec>; \
+	using x##Context = x##MachT::Context; \
+	using x##Format = x##MachT::Format; \
+	using x##Stream = x##MachT::Stream;
 DEV_LIST
 #undef DEV
 

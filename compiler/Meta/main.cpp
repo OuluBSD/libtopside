@@ -1,7 +1,7 @@
 #include "Meta.h"
 
-using namespace Topside;
-using namespace Upp;
+using namespace TS;
+using namespace UPP;
 
 CONSOLE_APP_MAIN {
 	

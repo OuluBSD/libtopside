@@ -1,6 +1,6 @@
 #include "SDL2GUI3D.h"
 
-namespace Upp {
+namespace UPP {
 
 SystemDraw& SDL2GUI3D::BeginDraw()
 {

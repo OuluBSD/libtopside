@@ -3,7 +3,7 @@
 #if 0
 
 NAMESPACE_TOPSIDE_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 FFT2::FFT2(const Image& input )
 {

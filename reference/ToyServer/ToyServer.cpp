@@ -5,8 +5,8 @@
 #endif
 
 
-using namespace Upp;
-using namespace Topside::ToyHub;
+using namespace UPP;
+using namespace TS::ToyHub;
 
 // Local server URL: 127.0.0.1:8001
 CONSOLE_APP_MAIN

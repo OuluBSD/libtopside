@@ -5,7 +5,7 @@
 #define LDUMPM(x)  //DDUMPM(x)
 #define LLOGHEX(x) //DLOGHEX(x)
 
-namespace Upp {
+namespace UPP {
 
 namespace Ini {
 INI_STRING(session_cookie, "__skylark_session_cookie__", "Skylark session cookie ID");
@@ -178,7 +178,7 @@ Http& Http::NewSessionId()
 Http& Http::SetLanguage(int lang_)
 {
 	Renderer::SetLanguage(lang_);
-	Upp::SetLanguage(lang_);
+	UPP::SetLanguage(lang_);
 	SessionSet("__lang__", lang);
 	SessionSet("language", ToLower(LNGAsText(lang)));
 	return *this;

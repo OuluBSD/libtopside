@@ -1,6 +1,6 @@
 #include "Sequencer.h"
 
-using namespace Topside;
+using namespace TS;
 
 NAMESPACE_UPP
 

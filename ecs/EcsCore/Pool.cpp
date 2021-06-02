@@ -143,16 +143,16 @@ void Pool::InitializeComponent(ConnectorBase& comp) {
 }
 
 void Pool::AddConnectEverything() {
-	Add<ConnectAllDevInterfaces<CenterContext>>();
+	Add<ConnectAllDevInterfaces<CenterSpec>>();
 }
 
 void Pool::ConnectEverything() {
-	Find<ConnectAllDevInterfaces<CenterContext>>()->Update();
+	Find<ConnectAllDevInterfaces<CenterSpec>>()->Update();
 }
 
 void Pool::AddConnectEverythingWithAccel() {
-	Add<ConnectAllDevInterfaces<CenterContext>>();
-	Add<ConnectAllDevInterfaces<AccelContext>>();
+	Add<ConnectAllDevInterfaces<CenterSpec>>();
+	Add<ConnectAllDevInterfaces<AccelSpec>>();
 }
 
 

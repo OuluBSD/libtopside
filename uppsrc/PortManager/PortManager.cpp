@@ -11,8 +11,8 @@ PortManager::PortManager() {
 
 
 void PortManagerMain() {
-	using namespace Upp;
-	using namespace Upp;
+	using namespace UPP;
+	using namespace UPP;
 	SetCoutLog();
 	
 	PortManager mgr;
@@ -30,5 +30,5 @@ void PortManagerMain() {
 NAMESPACE_TOPSIDE_END
 
 
-CONSOLE_APP_MAIN {Topside::PortManagerMain();}
+CONSOLE_APP_MAIN {TS::PortManagerMain();}
 

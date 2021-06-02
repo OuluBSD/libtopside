@@ -5,14 +5,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class Dev>
 class AccelComponentStream :
-	public ContextMachT<Dev>::Stream
+	public ScopeValDevMachT<Dev>::Stream
 {
 	RTTI_DECL0(AccelComponentStream)
 	
 public:
 	using Ctx = typename Dev::Value;
 	using Format = typename Ctx::Format;
-	using Value = typename ContextMachT<Dev>::Value;
+	using Value = typename ScopeValDevMachT<Dev>::Value;
 	
 	Format fmt;
 	
@@ -36,7 +36,7 @@ public:
 };
 
 
-#define IFACE(x) using AccelComponent##x##Stream = AccelComponentStream<Accel##x##Context>;
+#define IFACE(x) using AccelComponent##x##Stream = AccelComponentStream<Accel##x##Spec>;
 IFACE_LIST
 #undef IFACE
 

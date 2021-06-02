@@ -10,7 +10,7 @@
 
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 
 class Lexer {

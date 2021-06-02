@@ -11,7 +11,7 @@ class Document : public Object {
 	Vector<CssText>				css;
 	Css							styles;
 	RGBA						def_color;
-	Upp::Size					size;
+	UPP::Size					size;
 	Vector<Position>			fixed_boxes;
 	Vector<MediaQueryList*>		media_lists;
 	Element*					over_element;

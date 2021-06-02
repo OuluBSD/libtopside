@@ -31,7 +31,7 @@ TMPL(bool) LinkAll() {
 }
 
 TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& src_stack) {
-	using ExPt = typename ContextDevEcsT<T>::ExchangePoint;
+	using ExPt = typename ScopeDevEcsT<T>::ExchangePoint;
 	
 	LinkedList<InterfaceSourceBaseRef>* cur = 0;
 	

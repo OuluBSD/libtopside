@@ -2,7 +2,7 @@
 #define _MIDIMESSAGE_H_INCLUDED
 
 NAMESPACE_MIDI_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 enum {
 	MIDIMETA_SEQNUM		= 0x00, // 2 bytes.		Sequence number. The number of a sequence. At delta time 0

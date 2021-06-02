@@ -217,8 +217,8 @@ struct Rect_ : Moveable<Rect_<T>> {
 	operator Rect_<int>() const {return Rect_<int>(left,top,right,bottom);}
 	operator Rect_<double>() const {return Rect_<double>(left,top,right,bottom);}
 	
-	bool	IsNull() const {return Upp::IsNull(left) || Upp::IsNull(top) || Upp::IsNull(right) || Upp::IsNull(bottom);}
-	void	SetNull() const {Upp::SetNull(left); Upp::SetNull(top); Upp::SetNull(right); Upp::SetNull(bottom);}
+	bool	IsNull() const {return UPP::IsNull(left) || UPP::IsNull(top) || UPP::IsNull(right) || UPP::IsNull(bottom);}
+	void	SetNull() const {UPP::SetNull(left); UPP::SetNull(top); UPP::SetNull(right); UPP::SetNull(bottom);}
 	
 };
 
@@ -240,15 +240,16 @@ inline Rect RectC(int x, int y, int w, int h) { return Rect(x, y, x + w, y + h);
 
 
 
+
 template <class T>
-struct Triangle_ : Moveable<Triangle_<T>> {
+struct Tri_ : Moveable<Tri_<T>> {
 	typedef Point_<T> Pt;
 
 	Pt a, b, c;
 
-	Triangle_() {}
-	Triangle_(const Triangle_& t) { *this = t; }
-	void operator=(const Triangle_& t) {
+	Tri_() {}
+	Tri_(const Tri_& t) { *this = t; }
+	void operator=(const Tri_& t) {
 		a = t.a;
 		b = t.b;
 		c = t.c;
@@ -260,9 +261,9 @@ struct Triangle_ : Moveable<Triangle_<T>> {
 	}
 };
 
-typedef Triangle_<int> Triangle;
-typedef Triangle_<float> TriangleF32;
-typedef Triangle_<double> Trianglef;
+typedef Tri_<int> Tri;
+typedef Tri_<float> TriF32;
+typedef Tri_<double> Trif;
 
 
 

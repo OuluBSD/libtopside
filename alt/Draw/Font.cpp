@@ -101,7 +101,7 @@ Size GetStdFontSize() {
 Font GetStdFont(int size) {
 	size = size < 0 ? GetStdFontSize().cy : size;
 	if (__std_font.IsEmpty()) {
-		__std_font = Font(Font::LoadFont(Topside::ShareDirFile("fonts"), "Roboto", size));
+		__std_font = Font(Font::LoadFont(TS::ShareDirFile("fonts"), "Roboto", size));
 	}
 	return __std_font;
 }

@@ -2,7 +2,7 @@
 #define _MP3Player_MP3Player_h_
 
 #include <Complete/Complete.h>
-using namespace Topside;
+using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
 

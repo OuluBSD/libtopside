@@ -162,7 +162,7 @@ NAMESPACE_TOPSIDE_END
 
 
 GUI_APP_MAIN {
-	Topside::WaveEditor ed;
+	TS::WaveEditor ed;
 	
 	const auto& args = CommandLine();
 	if (args.GetCount())

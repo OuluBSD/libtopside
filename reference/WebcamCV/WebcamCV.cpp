@@ -166,7 +166,7 @@ NAMESPACE_TOPSIDE_END
 
 
 GUI_APP_MAIN {
-	using namespace Topside;
+	using namespace TS;
 	
 	SetCoutLog();
 	

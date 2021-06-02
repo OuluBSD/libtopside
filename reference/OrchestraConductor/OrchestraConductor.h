@@ -5,7 +5,7 @@
 #include <AccelCore/AccelCore.h>
 #include <AudioCore/System.h>
 #include <Music/Music.h>
-using namespace Topside;
+using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
 

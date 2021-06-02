@@ -141,7 +141,7 @@ void Pipeline::Process() {
 }
 
 PipelineNode* Pipeline::FindNode(String path) {
-	Vector<String> parts = Topside::Split(path, ".", false);
+	Vector<String> parts = TS::Split(path, ".", false);
 	PipelineNode* n = &root;
 	for(const String& part : parts) {
 		int i = n->branch.Find(part);

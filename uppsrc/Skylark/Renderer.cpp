@@ -3,7 +3,7 @@
 #define LLOG(x)    // DLOG(x)
 #define LTIMING(x) // RTIMING(x)
 
-namespace Upp {
+namespace UPP {
 
 Renderer& Renderer::operator()(const ValueMap& map)
 {

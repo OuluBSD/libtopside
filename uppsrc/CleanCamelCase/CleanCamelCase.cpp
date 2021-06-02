@@ -1,7 +1,7 @@
 #include <Local/Local.h>
 
-using namespace Topside;
-using namespace Upp;
+using namespace TS;
+using namespace UPP;
 
 struct IdParser {
 	bool is_valid = false;

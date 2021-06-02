@@ -24,7 +24,7 @@ struct DrawCommand {
 	int i[5];
 	RGBA clr;
 	Image img;
-	Vector<Trianglef> triangles;
+	Vector<Trif> triangles;
 	Vector<Pointf> pts;
 	bool is_cached = false;
 	

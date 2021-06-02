@@ -29,10 +29,10 @@ public:
 	
 	Searcher() {}
 	
-	inline bool TerminalTest(NodeT& n) {return Topside::TerminalTest(n);}
-	inline double Utility(NodeT& n) {return Topside::GetSearcherUtility(n);}
-	inline double Estimate(NodeT& n) {return Topside::GetSearcherEstimate(n);}
-	inline double Distance(NodeT& n, NodeT& dest) {return Topside::GetSearcherDistance(n, dest);}
+	inline bool TerminalTest(NodeT& n) {return TS::TerminalTest(n);}
+	inline double Utility(NodeT& n) {return TS::GetSearcherUtility(n);}
+	inline double Estimate(NodeT& n) {return TS::GetSearcherEstimate(n);}
+	inline double Distance(NodeT& n, NodeT& dest) {return TS::GetSearcherDistance(n, dest);}
 	
 	virtual Vector<T*> Search(NodeT& src) = 0;
 	

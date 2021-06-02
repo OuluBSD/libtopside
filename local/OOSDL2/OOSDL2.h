@@ -202,7 +202,7 @@ public:
 	Events(Context* ctx) : Component(ctx) {}
 	
 	void			PutKeyFlags(dword& key);
-	bool            Poll(Upp::CtrlEvent& e);
+	bool            Poll(UPP::CtrlEvent& e);
 	uint32          GetTickCount();
 	void            WaitEvent(int ms);
 	bool            IsWaitingEvent();

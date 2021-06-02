@@ -4,7 +4,7 @@ NAMESPACE_UPP
 
 
 bool Open_NonGUI_ECS() {
-	using namespace Topside;
+	using namespace TS;
 	Machine mach;
 	
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
@@ -27,7 +27,7 @@ bool Open_NonGUI_ECS() {
 }
 
 void Close_NonGUI_ECS() {
-	using namespace Topside;
+	using namespace TS;
 	Machine mach;
 	
 	mach.Stop();

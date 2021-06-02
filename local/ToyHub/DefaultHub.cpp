@@ -21,7 +21,7 @@ void LoadDefaultHub(String db_name, String lang) {
 	if (ff.Search(ShareDirFile("toyhub" DIR_SEPS "*"))) {
 		do {
 			if (ff.IsFile())
-				SetPage(en_hub, root, ff.GetName(), Upp::LoadFile(ff.GetPath()), lang, model, format);
+				SetPage(en_hub, root, ff.GetName(), UPP::LoadFile(ff.GetPath()), lang, model, format);
 		}
 		while (ff.Next());
 	}

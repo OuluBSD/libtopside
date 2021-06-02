@@ -1,6 +1,6 @@
 #include "RTTI.h"
 
-namespace Upp {
+namespace UPP {
 
 
 bool RTTI::operator==(const RTTI& w) const {

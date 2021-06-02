@@ -2,7 +2,7 @@
 #define _Editor_Clang_h_
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 /*
 	Easy to use API for clang. Wraps c-api.

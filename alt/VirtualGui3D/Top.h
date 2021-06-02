@@ -1,13 +1,13 @@
 //$ class TopWindow {
 
 private:
-	Topside::CoreWindow* cw = NULL;
+	TS::CoreWindow* cw = NULL;
 	int id;
 	
 public:
-	void Init(Topside::CoreWindow* cw, int id);
+	void Init(TS::CoreWindow* cw, int id);
 	
-	Topside::CoreWindow* GetWindow() const {return cw;}
+	TS::CoreWindow* GetWindow() const {return cw;}
 	
 	
 //$ };

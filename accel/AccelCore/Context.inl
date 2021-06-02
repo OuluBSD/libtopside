@@ -40,8 +40,8 @@ CONV_TMPL(void) ConvertComponent::EndStream(T*) {TODO}
 CONV_TMPL(bool) ConvertComponent::LoadAsInput(const AcceleratorHeader& in) {
 	const auto& conns = FromSink::GetConnections();
 	
-	using InputComponent = typename ContextLibT<From>::InputComponent;
-	using Stream = typename ContextMachT<From>::Stream;
+	using InputComponent = typename ScopeValDevLibT<From>::InputComponent;
+	using Stream = typename ScopeValDevMachT<From>::Stream;
 	
 	RefT_Entity<InputComponent> comp;
 	

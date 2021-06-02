@@ -40,7 +40,7 @@ void ProcessGrammar(String title, int type) {
 	FileOut c_out(out_dir + "Generated_" + title + ".cpp");
 	c_out << time_header << "\n";
 	c_out << "#include \"Grammar.h\"\n";
-	c_out << "namespace Topside::" << title << " {\n";
+	c_out << "namespace TS::" << title << " {\n";
 	if (type == TYPE_CXX)
 		c_out << g.GetCppParserImplementation();
 	else if (type == TYPE_PYTHON3)
@@ -73,8 +73,8 @@ void ProcessGrammar(String title, int type) {
 NAMESPACE_TOPSIDE_END
 
 
-using namespace Upp;
-using namespace Topside;
+using namespace UPP;
+using namespace TS;
 
 CONSOLE_APP_MAIN {
 	ParserService().Start();

@@ -177,7 +177,7 @@ public:
 		String s;
 		for(int i = 0; i < indent; i++)
 			s += "-";
-		s += ": " + ::Upp::AsString(*(T*)this) + "\n";
+		s += ": " + ::UPP::AsString(*(T*)this) + "\n";
 		for(int i = 0; i < sub.GetCount(); i++) {
 			s += sub[i].AsString(indent+1);
 		}

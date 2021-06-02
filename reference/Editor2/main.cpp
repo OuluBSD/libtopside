@@ -45,7 +45,7 @@ void CleanAssembly(String ass_dir, const Index<String>& pkgs, String output_dir)
 
 
 
-using namespace Topside;
+using namespace TS;
 
 
 GUI_APP_MAIN {

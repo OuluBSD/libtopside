@@ -10,7 +10,7 @@
 #include <SDL.h>
 #endif
 
-namespace Upp {
+namespace UPP {
 	
 struct SDL2GUI3D : VirtualGui3D {
 	virtual Size        GetSize();

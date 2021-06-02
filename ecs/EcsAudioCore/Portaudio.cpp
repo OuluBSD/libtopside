@@ -51,7 +51,7 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 		consumer.SetSource(buf);
 	
 	if (args.output) {
-		Topside::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
+		TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
 		
 		int size = fmt.GetFrameSize();
 		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
@@ -99,14 +99,14 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
 	
-	Topside::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
+	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
 	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
 	
-	Topside::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
+	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
 	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 

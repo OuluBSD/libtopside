@@ -3,7 +3,7 @@
 
 #include <LocalCtrl/LocalCtrl.h>
 
-using namespace Upp;
+using namespace UPP;
 
 #include "NodeCache.h"
 #include "ProjectManager.h"

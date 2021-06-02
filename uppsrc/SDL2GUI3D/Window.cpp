@@ -1,6 +1,6 @@
 #include "SDL2GUI3D.h"
 
-namespace Upp {
+namespace UPP {
 
 Size SDL2GUI3D::GetSize()
 {

@@ -13,9 +13,9 @@
 	
 
 */
-using namespace Upp;
-using namespace Topside;
-using namespace Topside::Language;
+using namespace UPP;
+using namespace TS;
+using namespace TS::Language;
 
 
 CONSOLE_APP_MAIN {

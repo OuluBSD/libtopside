@@ -25,7 +25,7 @@ void Close_NonGUI_ECS();
 					Close_NonGUI_ECS(); \
 				} \
 				::UPP::AppExit__(); \
-				return ::Upp::GetExitCode(); \
+				return ::UPP::GetExitCode(); \
 			} \
 			\
 			void ConsoleMainFn_()
@@ -40,7 +40,7 @@ void Close_NonGUI_ECS();
 					Close_NonGUI_ECS(); \
 				} \
 				::UPP::AppExit__(); \
-				return ::Upp::GetExitCode(); \
+				return ::UPP::GetExitCode(); \
 			} \
 			\
 			void ConsoleMainFn_()
@@ -61,7 +61,7 @@ void Close_NonGUI_ECS();
 	void EcsMainFn_()
 
 
-#define CONSOLE_ECS_APP_(x) ECS_MAIN {Topside::SimpleEntityApp<x>();}
+#define CONSOLE_ECS_APP_(x) ECS_MAIN {TS::SimpleEntityApp<x>();}
 
 
 

@@ -3,7 +3,7 @@
 
 #include <Core/Core.h>
 
-using namespace Upp;
+using namespace UPP;
 
 #include "Common.h"
 #include "Clang.h"

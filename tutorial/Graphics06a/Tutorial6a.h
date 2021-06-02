@@ -3,7 +3,7 @@
 
 #include <Complete/Complete.h>
 #include <AccelCore/AccelCore.h>
-using namespace Topside;
+using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
 

@@ -5,7 +5,7 @@
 
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 #define LAYOUTFILE <ProjectCleaner/ProjectCleaner.lay>
 #include <CtrlCore/lay.h>

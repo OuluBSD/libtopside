@@ -1,6 +1,6 @@
 #include "Skylark.h"
 
-namespace Upp {
+namespace UPP {
 
 Value Cycle(const Vector<Value>& arg, const Renderer *)
 {

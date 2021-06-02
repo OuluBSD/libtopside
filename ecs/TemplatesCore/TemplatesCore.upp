@@ -6,10 +6,10 @@ uses
 
 file
 	TemplatesCore.h,
-	Context.h,
-	Context.inl highlight cpp,
+	ValDevScope.h,
+	ValDevScope.inl highlight cpp,
 	Classes.h,
-	DevContext.h,
-	DevContext.inl highlight cpp,
-	Defs.h;
+	DevScope.h,
+	DevScope.inl highlight cpp,
+	Spec.h;
 

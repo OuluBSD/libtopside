@@ -2,7 +2,7 @@
 
 #ifdef VIRTUALGUI
 
-namespace Upp {
+namespace UPP {
 
 class TopWindowFrame : public Ctrl {
 	RTTI_DECL1(TopWindowFrame, Ctrl)

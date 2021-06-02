@@ -2,8 +2,8 @@
 #include "Sequencer.h"
 
 GUI_APP_MAIN {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	GetMidi();
 	

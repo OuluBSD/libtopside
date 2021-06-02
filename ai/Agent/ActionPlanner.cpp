@@ -98,7 +98,7 @@ void ActionPlanner::GetPossibleStateTransition(const WorldState& src, Array<Worl
 		const WorldState& pre = act.precond;
 		
 		// Check that precondition is not using something outside of src values
-		int count = Upp::min(pre.using_act.GetCount(), src.using_act.GetCount());
+		int count = UPP::min(pre.using_act.GetCount(), src.using_act.GetCount());
 		bool fail = false;
 		for(int j = count; j < pre.using_act.GetCount(); j++)
 			if (pre.using_act[j] && pre.values[j]) {fail = true; break;}
@@ -188,13 +188,13 @@ String ActionPlannerWrapper::GetDescription()
 		WorldState& pre  = act.precond;
 		WorldState& post = act.postcond;
 		
-		int count = Upp::min(atoms.GetCount(), pre.values.GetCount());
+		int count = UPP::min(atoms.GetCount(), pre.values.GetCount());
 		for(int i = 0; i < count; i++) {
 			bool v = pre.values[i];
 			str += " " + atoms[i] + "==" + IntStr(v) + "\n";
 		}
 		
-		count = Upp::min(atoms.GetCount(), post.values.GetCount());
+		count = UPP::min(atoms.GetCount(), post.values.GetCount());
 		for(int i = 0; i < count; i++) {
 			bool v = post.values[i];
 			str += " " + atoms[i] + "==" + IntStr(v) + "\n";
@@ -277,7 +277,7 @@ double ActionNode::GetDistance(const ActionNode& to) {
 	Vector<bool>& using_act = ws->using_act;
 	const Vector<bool>& to_using_act = to.ws->using_act;
 	
-	int count = Upp::min(values.GetCount(), to_values.GetCount());
+	int count = UPP::min(values.GetCount(), to_values.GetCount());
 	
 	for(int j = count; j < to_using_act.GetCount(); j++)
 		if (to_using_act[j] && to_values[j])

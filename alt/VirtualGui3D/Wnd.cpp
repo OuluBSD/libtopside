@@ -12,7 +12,7 @@ void Ctrl::SetDesktopSize(Size sz) {
 void Ctrl::EventLoop(Ctrl *ctrl) {
 	/*bool quit = false;
 	TimeStop t;
-	Topside::Machine& mach = Topside::GetMachine();
+	TS::Machine& mach = TS::GetMachine();
 	ProcessEvents(&quit);
 	while (!quit && !Thread::IsShutdownThreads() && mach.IsRunning()) {
 		double dt = t.ResetSeconds();
@@ -79,7 +79,7 @@ void Ctrl::PaintScene(SystemDraw& draw) {
 #endif
 
 void Ctrl::Invalidate() {
-	using namespace Topside;
+	using namespace TS;
 	static Ref<WindowSystem> win;
 	if (!win) {
 		win = GetActiveMachine().Get<WindowSystem>();

@@ -72,10 +72,10 @@ public:
 	ObjectTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ObjectTypeNo<T>(0);}
 	~ObjectTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_V;}}
 	void* Get() override {return ptr;}
-	String ToString() const override {if (ptr) return ::Upp::AsString(*ptr); return "NULL";}
-	int64 ToInt() const override {if (ptr) return ::Upp::ToInt(*ptr); return 0;}
-	double ToDouble() const override {if (ptr) return ::Upp::ToDouble(*ptr); return 0;}
-	hash_t GetHashValue() const override {if (ptr) return Upp::GetHashValue(*ptr); return 0;}
+	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
+	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
+	double ToDouble() const override {if (ptr) return ::UPP::ToDouble(*ptr); return 0;}
+	hash_t GetHashValue() const override {if (ptr) return UPP::GetHashValue(*ptr); return 0;}
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 

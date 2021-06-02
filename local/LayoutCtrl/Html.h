@@ -96,7 +96,7 @@ public:
 	virtual String		GetDefaultFontName() const;
 	virtual void		DrawListMarker(Draw& hdc, const ListMarker& marker);
 	virtual void		LoadImage(const String& src, const String& baseurl, bool render_on_ready);
-	virtual void		GetImageSize(const String& src, const String& baseurl, Upp::Size& sz);
+	virtual void		GetImageSize(const String& src, const String& baseurl, UPP::Size& sz);
 	virtual void		GetImageSize(int cache_id, Size& sz);
 	virtual void		DrawImage(Draw& hdc, const String& src, const String& baseurl, const Position& pos);
 	virtual void		DrawBackground(Draw& hdc, const BackgroundPaint& bg);

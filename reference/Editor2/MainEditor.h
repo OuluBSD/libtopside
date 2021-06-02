@@ -2,7 +2,7 @@
 #define _Editor_MainEditor_h_
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 #include "Terminal.h"
 #include "Navigator.h"

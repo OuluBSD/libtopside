@@ -181,8 +181,8 @@ struct OnlineFrequencyWindow {
 
 
 int64 CurrentTime();
-uint64 NanoSeconds();
-uint64 MilliSeconds();
+uint64 GetNanoSeconds();
+uint64 GetMilliSeconds();
 
 String GetTimeDurationString(Time begin, Time end);
 

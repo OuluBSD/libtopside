@@ -2,7 +2,7 @@
 #define _EcsCtrlDemo_EcsCtrlDemo_h
 
 #include <Complete/Complete.h>
-using namespace Upp;
+using namespace UPP;
 
 
 

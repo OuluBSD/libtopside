@@ -2,7 +2,7 @@
 #define _Editor_Navigator_h_
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 class IDE;
 

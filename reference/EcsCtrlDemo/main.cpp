@@ -1,8 +1,8 @@
 #include "EcsCtrlDemo.h"
 
 
-using namespace Topside;
-using namespace Upp;
+using namespace TS;
+using namespace UPP;
 
 
 GUI_APP_MAIN {

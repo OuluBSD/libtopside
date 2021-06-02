@@ -2,7 +2,7 @@
 #define _EasyClang_Clang_h_
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 
 #include <clang-c/Index.h>

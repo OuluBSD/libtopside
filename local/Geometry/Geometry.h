@@ -38,9 +38,9 @@
 
 NAMESPACE_UPP_BEGIN
 
-NTL_MOVEABLE(Topside::Circle);
-NTL_MOVEABLE(Topside::Rectangle);
-NTL_MOVEABLE(Topside::OrientedRectangle);
+NTL_MOVEABLE(TS::Circle);
+NTL_MOVEABLE(TS::Rectangle);
+NTL_MOVEABLE(TS::OrientedRectangle);
 
 NAMESPACE_UPP_END
 

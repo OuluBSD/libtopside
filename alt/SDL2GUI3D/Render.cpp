@@ -2,7 +2,7 @@
 #include "After.h"
 
 NAMESPACE_UPP
-using namespace Topside;
+using namespace TS;
 
 
 #if 0

@@ -1,6 +1,6 @@
 #include "AltTopWindow.h"
 
-using namespace Topside;
+using namespace TS;
 
 GUI_APP_MAIN {
 	ExampleApp().Run();

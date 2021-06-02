@@ -4,8 +4,8 @@
 
 
 void AppleSeedTest() {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	enum {A, B, C, D, E, X, Y, COUNT};
 	

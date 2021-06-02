@@ -6,8 +6,8 @@ void AppleSeedTest();
 void TrustNetTest();
 
 CONSOLE_APP_MAIN {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	SetCoutLog();
 	

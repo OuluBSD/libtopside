@@ -1,6 +1,6 @@
 #include "SDL2GUI3D.h"
 
-namespace Upp {
+namespace UPP {
 
 #define LLOG(x)  LOG(x)
 #define LDUMP(x) //DDUMP(x)

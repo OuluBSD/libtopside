@@ -30,7 +30,7 @@ inline bool IsRare(const WString& n) {
 		IsConstChar(n, "Num", 3);
 }
 
-inline bool IsArg(Node& n, const char* cmp, int cmp_len) {return n.IsType(NODE_NL) && Topside::IsArg(n.GetText(), cmp, cmp_len);}
+inline bool IsArg(Node& n, const char* cmp, int cmp_len) {return n.IsType(NODE_NL) && TS::IsArg(n.GetText(), cmp, cmp_len);}
 inline bool IsA(Node& n) {return n.IsType(NODE_NL) && IsA(n.GetText());}
 inline bool IsV(Node& n) {return n.IsType(NODE_NL) && IsV(n.GetText());}
 inline bool IsS(Node& n) {return n.IsType(NODE_NL) && IsS(n.GetText());}

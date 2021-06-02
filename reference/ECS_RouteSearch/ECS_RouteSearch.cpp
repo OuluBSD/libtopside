@@ -728,5 +728,5 @@ void DummyActor::DoSinkAction(ActGroupId a) {
 NAMESPACE_TOPSIDE_END
 
 CONSOLE_APP_MAIN {
-	Topside::RunTest();
+	TS::RunTest();
 }

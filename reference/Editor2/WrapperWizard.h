@@ -2,7 +2,7 @@
 #define _Editor_WrapperWizard_h_
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 #define LAYOUTFILE <Editor/WrapperWizard.lay>
 #include <CtrlCore/lay.h>

@@ -1,4 +1,4 @@
-#define TMPL(x)	template <class DevCtx> x ContextDevLibT<DevCtx>::
+#define TMPL(x)	template <class DevSpec> x ScopeDevLibT<DevSpec>::
 
 
 NAMESPACE_TOPSIDE_BEGIN

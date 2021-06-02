@@ -4,13 +4,23 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+
 inline Color RandomColor(int begin=0, int range=256) { return Color(begin + Random(range), begin + Random(range) , begin + Random(range)); }
 
-double Interpolate( double val, double y0, double x0, double y1, double x1 );
+void FindColors(RgbaRange i, RGBA& fg, RGBA& bg);
+Point FindWeightCenter(RgbaRange i, RGBA fg, RGBA bg);
+int64 DifferenceSum(RgbaRange i0, Point a0, RgbaRange i1, Point a1, RGBA fg, RGBA bg);
+RGBA BlendRGBA(RGBA a, RGBA b, double blend);
+
+Color Rainbow(double progress);
+Color CoolBlue(double progress);
+//double GetKeypointFactor(const TesterProgram& prog, const FontTester& fnt, Image i, int x, int y);
+double Interpolate(double x, double x0, double y0, double x1, double y1);
 double JetPaletteBase( double val );
 double JetPaletteRed( double gray );
 double JetPaletteGreen( double gray );
 double JetPaletteBlue( double gray );
+Color JetPalette(double gray);
 
 inline byte AtRGBA(RGBA rgba, int i) {
 	ASSERT(i >= 0 && i < 4);
@@ -22,6 +32,7 @@ inline byte AtRGBA(RGBA rgba, int i) {
 	}
 	return 0;
 }
+
 
 NAMESPACE_TOPSIDE_END
 

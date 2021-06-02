@@ -134,7 +134,7 @@ bool Element::GetPredefinedHeight(int& p_height) const
 	return true;
 }
 
-void Element::CalcDocumentSize( Upp::Size& sz, int x /*= 0*/, int y /*= 0*/ )
+void Element::CalcDocumentSize( UPP::Size& sz, int x /*= 0*/, int y /*= 0*/ )
 {
 	if(IsVisible())
 	{
@@ -1217,7 +1217,7 @@ int HtmlTag::Select(const CssElementSelector& selector, bool apply_pseudo)
 					}
 					break;
 				default:
-					if(Upp::Find(pseudo_classes.Begin(), pseudo_classes.End(), i->val, StdEqual<String>() ) == pseudo_classes.End())
+					if(UPP::Find(pseudo_classes.Begin(), pseudo_classes.End(), i->val, StdEqual<String>() ) == pseudo_classes.End())
 					{
 						return SelectNoMatch;
 					}
@@ -1639,14 +1639,14 @@ int HtmlTag::FindNextLineTop( int top, int width, int def_right )
 		{
 			if(el->pos.Top() >= top)
 			{
-				if(Upp::Find(points.Begin(), points.End(), el->pos.Top(), StdEqual<int>()) == points.End())
+				if(UPP::Find(points.Begin(), points.End(), el->pos.Top(), StdEqual<int>()) == points.End())
 				{
 					points.Add(el->pos.Top());
 				}
 			}
 			if(el->pos.Bottom() >= top)
 			{
-				if(Upp::Find(points.Begin(), points.End(), el->pos.Bottom(), StdEqual<int>()) == points.End())
+				if(UPP::Find(points.Begin(), points.End(), el->pos.Bottom(), StdEqual<int>()) == points.End())
 				{
 					points.Add(el->pos.Bottom());
 				}
@@ -1657,14 +1657,14 @@ int HtmlTag::FindNextLineTop( int top, int width, int def_right )
 		{
 			if(el->pos.Top() >= top)
 			{
-				if(Upp::Find(points.Begin(), points.End(), el->pos.Top(), StdEqual<int>()) == points.End())
+				if(UPP::Find(points.Begin(), points.End(), el->pos.Top(), StdEqual<int>()) == points.End())
 				{
 					points.Add(el->pos.Top());
 				}
 			}
 			if(el->pos.Bottom() >= top)
 			{
-				if(Upp::Find(points.Begin(), points.End(), el->pos.Bottom(), StdEqual<int>()) == points.End())
+				if(UPP::Find(points.Begin(), points.End(), el->pos.Bottom(), StdEqual<int>()) == points.End())
 				{
 					points.Add(el->pos.Bottom());
 				}
@@ -2580,7 +2580,7 @@ int HtmlTag::PlaceElement( Element* el, int max_width )
 				break;
 			case DisplayInlineText:
 				{
-					Upp::Size sz;
+					UPP::Size sz;
 					el->GetContentSize(sz, line_right);
 					el->pos = sz;
 				}
@@ -2684,7 +2684,7 @@ bool HtmlTag::SetPseudoClass( const String& pclass, bool add )
 	bool ret = false;
 	if(add)
 	{
-		if(Upp::Find(pseudo_classes.Begin(), pseudo_classes.End(), pclass, StdEqual<String>()) == pseudo_classes.End())
+		if(UPP::Find(pseudo_classes.Begin(), pseudo_classes.End(), pclass, StdEqual<String>()) == pseudo_classes.End())
 		{
 			pseudo_classes.Add(pclass);
 			ret = true;
@@ -3072,7 +3072,7 @@ void HtmlTag::InitBackgroundPaint( Position pos, BackgroundPaint &bg_paint, Back
 		
 		if(bg_paint.image_size.cx && bg_paint.image_size.cy)
 		{
-			Upp::Size img_new_sz = bg_paint.image_size;
+			UPP::Size img_new_sz = bg_paint.image_size;
 			double img_ar_width		= (double) bg_paint.image_size.cx / (double) bg_paint.image_size.cy;
 			double img_ar_height	= (double) bg_paint.image_size.cy / (double) bg_paint.image_size.cx;
 
@@ -3599,7 +3599,7 @@ void HtmlTag::ParseNthChildParams( String param, int &num, int &off )
 	}
 }
 
-void HtmlTag::CalcDocumentSize( Upp::Size& sz, int x /*= 0*/, int y /*= 0*/ )
+void HtmlTag::CalcDocumentSize( UPP::Size& sz, int x /*= 0*/, int y /*= 0*/ )
 {
 	if(IsVisible() && el_position != ElementPositionFixed)
 	{
@@ -5262,7 +5262,7 @@ int ElImage::Render( int x, int y, int max_width, bool second_pass )
 
 	pos.MoveTo(x, y);
 
-	Upp::Size sz;
+	UPP::Size sz;
 	GetDocument()->GetHtmlCtrl().GetImageSize(src, "", sz);
 
 	pos.width		= sz.cx;

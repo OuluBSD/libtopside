@@ -2,6 +2,6 @@
 #define _SimpleMETA2_SimpleMETA2_h
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 #endif

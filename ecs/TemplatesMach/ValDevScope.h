@@ -1,108 +1,28 @@
-#ifndef _TemplatesMach_Context_h_
-#define _TemplatesMach_Context_h_
+#ifndef _TemplatesMach_ValDevScope_h_
+#define _TemplatesMach_ValDevScope_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ConnectorBase;
-
-template <class Ctx>
-struct ContextDataT {
-	using C = Ctx;
-	using Format = typename Ctx::Format;
-	using StreamBase = typename Ctx::StreamBase;
-	
-	
-	class PacketValue :
-		RTTIBase,
-		Moveable<PacketValue>
-	{
-		Vector<byte>		data;
-		Format				fmt;
-		off32				offset;
-		double				time;
-		
-		
-	public:
-		using Pool = RecyclerPool<PacketValue>;
-		
-		static const int def_sample_rate = Ctx::Format::def_sample_rate;
-		
-		RTTI_DECL0(PacketValue);
-		PacketValue() {}
-		
-		Vector<byte>&			Data() {return data;}
-		void					Set(Format fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
-		void					SetFormat(Format fmt) {this->fmt = fmt;}
-		void					SetOffset(off32 offset) {this->offset = offset;}
-		void					SetTime(double seconds) {time = seconds;}
-		
-		const Vector<byte>&		GetData() const {return data;}
-		Format					GetFormat() const {return fmt;}
-		off32					GetOffset() const {return offset;}
-		double					GetTime() const {return time;}
-		bool					IsOffset(const off32& o) const {return offset.value == o.value;}
-		int						GetSizeBytes() const {return data.GetCount();}
-		int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
-		int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
-		
-	#if HAVE_OPENGL
-		virtual bool PaintOpenGLTexture(int texture);
-	#endif
-		
-	};
-	
-	
-	using Packet			= SharedRecycler<PacketValue>;
-	using PacketBuffer		= LinkedList<Packet>;
-	using RecRefBase		= RecyclerRefBase<PacketValue>;
-	
-	static Packet CreatePacket() {
-		PacketValue* obj = PacketValue::Pool::StaticPool().New();
-		RecRefBase* base = RecRefBase::Pool::StaticPool().New();
-		base->SetObj(obj);
-		return Packet(obj, base);
-	}
-	
-	
-	
-	struct StreamState : RTTIBase {
-		RTTI_DECL0(StreamState)
-		Format fmt;
-		TimeStop frame_time;
-		double total_seconds = 0;
-		double frame_seconds = 0;
-		double last_sync_sec = 0;
-		int frames = 0;
-		int frames_after_sync = 0;
-		int sink_frame = 0;
-		bool is_sync = 0;
-		
-		void Clear();
-		void Reset();
-	};
-
-};
-
-
-template <class Dev>
-struct ContextMachT {
-	using DevCtx = Dev;
-	using Ctx = typename Dev::Value;
-	using C = Ctx;
-	using Format = typename Ctx::Format;
-	using ValueBase = typename Ctx::ValueBase;
-	using StreamBase = typename Ctx::StreamBase;
-	using CtxT = ContextDataT<Ctx>;
-	using PacketValue = typename ContextDataT<Ctx>::PacketValue;
-	using Packet = typename ContextDataT<Ctx>::Packet;
-	using PacketBuffer = typename ContextDataT<Ctx>::PacketBuffer;
-	using RecRefBase = typename ContextDataT<Ctx>::RecRefBase;
+template <class ValDevSpec>
+struct ScopeValDevMachT {
+	using ValSpec = typename ValDevSpec::Value;
+	using DevSpec = typename ValDevSpec::Dev;
+	using ValueBase = typename ValSpec::ValueBase;
+	using StreamBase = typename ValSpec::StreamBase;
+	using CtxT = ScopeValMachT<ValSpec>;
+	using C = ValSpec;
+	using Ctx = typename CtxT::Context;
+	using Format = typename CtxT::Format;
+	using PacketValue = typename CtxT::PacketValue;
+	using Packet = typename CtxT::Packet;
+	using PacketBuffer = typename CtxT::PacketBuffer;
+	using RecRefBase = typename CtxT::RecRefBase;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
-		s << Dev::GetPrefix() << t;
+		s << ValDevSpec::GetPrefix() << t;
 		return s;
 	}
 	
@@ -127,7 +47,7 @@ struct ContextMachT {
 	
 	
 	class ExchangePoint :
-		public Topside::ExchangePoint
+		public TS::ExchangePoint
 	{
 		ConnectorBase* conn = 0;
 		off32 offset;
@@ -135,7 +55,7 @@ struct ContextMachT {
 		bool dbg_offset_is_set = false;
 		
 	public:
-		RTTI_DECL_T1(ExchangePoint, Topside::ExchangePoint)
+		RTTI_DECL_T1(ExchangePoint, TS::ExchangePoint)
 		typedef ExchangePoint CLASSNAME;
 		ExchangePoint() {}
 		~ExchangePoint() {Deinit();}

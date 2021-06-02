@@ -134,4 +134,4 @@ void MakefileUpdaterMain() {
 NAMESPACE_TOPSIDE_END
 
 
-CONSOLE_APP_MAIN {Topside::MakefileUpdaterMain();}
+CONSOLE_APP_MAIN {TS::MakefileUpdaterMain();}

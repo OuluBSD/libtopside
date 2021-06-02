@@ -96,7 +96,7 @@ struct HtmlToken : Moveable<HtmlToken> {
 	String ToString() const {
 		String s = "type=" + GetTypeString();
 		if (int_value) s << " int=" << IntStr(int_value);
-		if (!str_value.IsEmpty()) s << " str=" << Upp::AsString(str_value);
+		if (!str_value.IsEmpty()) s << " str=" << UPP::AsString(str_value);
 		return s;
 	}
 	WString GetTextValue() const {

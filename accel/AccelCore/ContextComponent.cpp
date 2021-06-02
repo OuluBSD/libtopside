@@ -171,7 +171,7 @@ bool AccelContextComponent::CreatePackets(AccelComponentGroup& gr) {
 
 void AccelContextComponent::RefreshStreamValuesAll() {
 	RefreshStreamValuesBase();
-	#define IFACE(x) RefreshStreamValues<x##Context>();
+	#define IFACE(x) RefreshStreamValues<x##Spec>();
 	IFACE_LIST
 	#undef IFACE
 }
@@ -463,9 +463,9 @@ bool AccelContextComponent::Load(Object json) {
 				if (0)
 					;
 				#define IFACE(x) \
-					else if (type == AsTypeCls<Accel##x##PipeComponent>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<ConvertCenterAccel##x##Component>()) group = FindGroupContext<x##Context>(); \
-					else if (type == AsTypeCls<ConvertAccelCenter##x##Component>()) group = FindGroupContext<x##Context>();
+					else if (type == AsTypeCls<Accel##x##PipeComponent>()) group = FindGroupContext<x##Spec>(); \
+					else if (type == AsTypeCls<ConvertCenterAccel##x##Component>()) group = FindGroupContext<x##Spec>(); \
+					else if (type == AsTypeCls<ConvertAccelCenter##x##Component>()) group = FindGroupContext<x##Spec>();
 				IFACE_LIST
 				#undef IFACE
 				if (!group) {

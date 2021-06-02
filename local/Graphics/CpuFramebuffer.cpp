@@ -41,7 +41,7 @@ void CpuFramebuffer::DrawPixel(int x, int y, RGBA color) {
 		byte* it = GetIterator(x, y);
 		ASSERT(it);
 		for(int i = 0; i < stride; i++)
-			it[i] = Topside::AtRGBA(color, i);
+			it[i] = TS::AtRGBA(color, i);
 	}
 }
 

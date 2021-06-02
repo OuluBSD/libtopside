@@ -36,11 +36,12 @@ vec3 transform(const vec3& v, const quat& m);
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
 quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
 
-template <class T> T min(const T& a, const T& b) {return T::GetMin(a, b);}
-template <class T> T max(const T& a, const T& b) {return T::GetMax(a, b);}
+
+template <class T> T Min(const T& a, const T& b) {return T::GetMin(a, b);}
+template <class T> T Max(const T& a, const T& b) {return T::GetMax(a, b);}
 #define DEF_MINMAX(T) \
-	template <> inline T min(const T& a, const T& b) {return a < b ? a : b;} \
-	template <> inline T max(const T& a, const T& b) {return a > b ? a : b;}
+	template <> inline T Min(const T& a, const T& b) {return a < b ? a : b;} \
+	template <> inline T Max(const T& a, const T& b) {return a > b ? a : b;}
 DEF_MINMAX(int)
 DEF_MINMAX(float)
 DEF_MINMAX(double)

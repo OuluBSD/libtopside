@@ -49,7 +49,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	
 	hash_t GetHashValue() const {
 		CombineHash c;
-		for(int i = 0; i < I; i++) c.Put(Upp::GetHashValue(data[i]));
+		for(int i = 0; i < I; i++) c.Put(UPP::GetHashValue(data[i]));
 		return c;
 	}
 	T& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < I); return data[i];}
@@ -144,7 +144,7 @@ struct Vec : Moveable<Vec<T, I> > {
 		String s = "[";
 		for(int i = 0; i < I; i++) {
 			if (i) s << ", ";
-			s << ::Upp::AsString(data[i]);
+			s << ::UPP::AsString(data[i]);
 		}
 		s << "]";
 		return s;
@@ -437,7 +437,7 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	bool IsClose(const Matrix& m) const {
 		for(int r = 0; r < R; r++)
 			for(int c = 0; c < C; c++)
-				if (!Topside::IsClose(data[r][c], m.data[r][c]))
+				if (!TS::IsClose(data[r][c], m.data[r][c]))
 					return false;
 		return true;
 	}

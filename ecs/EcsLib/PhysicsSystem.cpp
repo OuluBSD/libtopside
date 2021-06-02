@@ -19,7 +19,7 @@ void PhysicsSystem::Update(double dt)
         rigid_body.velocity += rigid_body.acceleration * dt;
         transform.position += rigid_body.velocity * dt;
 
-        const vec3 adjusted_angular = Topside::transform(rigid_body.angular_velocity, inverse(transform.orientation));
+        const vec3 adjusted_angular = TS::transform(rigid_body.angular_velocity, inverse(transform.orientation));
 
         const float angle = adjusted_angular.GetLength();
         if (angle > 0.0f)

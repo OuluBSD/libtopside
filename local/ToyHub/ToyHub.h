@@ -6,7 +6,7 @@
 #endif
 
 #include <Local/Local.h>
-using namespace Upp; // sql schema requires
+using namespace UPP; // sql schema requires
 
 #include "Defs.h"
 #include "Database.h"

@@ -17,7 +17,7 @@
 	#error OpenGL is not included
 #endif
 
-#define NAMESPACE_FUSION_BEGIN namespace Topside { namespace FusionCore {
+#define NAMESPACE_FUSION_BEGIN namespace TS { namespace FusionCore {
 #define NAMESPACE_FUSION_END   }}
 #define NAMESPACE_FUSION       FusionCore
 #define NS_SHADER              NAMESPACE_FUSION

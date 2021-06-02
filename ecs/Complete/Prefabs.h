@@ -129,20 +129,20 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	#endif
 }
 
-#define CONSOLE_APP_(x) CONSOLE_APP_MAIN {Topside::SimpleEntityApp<x>();}
-#define RENDER_APP_(x) RENDER_APP_MAIN {Topside::SimpleEntityApp<x>();}
-#define GUI_APP_(x) GUI_APP_MAIN {Topside::SimpleEntityApp<x>();}
+#define CONSOLE_APP_(x) CONSOLE_APP_MAIN {TS::SimpleEntityApp<x>();}
+#define RENDER_APP_(x) RENDER_APP_MAIN {TS::SimpleEntityApp<x>();}
+#define GUI_APP_(x) GUI_APP_MAIN {TS::SimpleEntityApp<x>();}
 #define APP_INITIALIZE_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Topside::Machine::WhenInitialize << callback(x);} \
+	INITBLOCK {TS::Machine::WhenInitialize << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_STARTUP_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Topside::Machine::WhenPreUpdate << callback(x);} \
+	INITBLOCK {TS::Machine::WhenPreUpdate << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {Topside::GetAppFlags().gfx = Topside::AppFlags::x;} \
+	INITBLOCK {TS::GetAppFlags().gfx = TS::AppFlags::x;} \
 	END_UPP_NAMESPACE
 
 NAMESPACE_TOPSIDE_END

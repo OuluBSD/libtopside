@@ -1,7 +1,7 @@
 #include "Esc.h"
 
 
-namespace Upp {
+namespace UPP {
 
 #define LTIMING(x) // RTIMING(x)
 

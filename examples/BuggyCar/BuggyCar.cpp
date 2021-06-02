@@ -40,13 +40,13 @@ void BuggyCarStartup() {
 NAMESPACE_TOPSIDE_END
 
 
-GUI_APP_(Topside::DefaultRenderApp)
-APP_INITIALIZE_(Topside::BuggyCarInitializer);
-APP_STARTUP_(Topside::BuggyCarStartup);
+GUI_APP_(TS::DefaultRenderApp)
+APP_INITIALIZE_(TS::BuggyCarInitializer);
+APP_STARTUP_(TS::BuggyCarStartup);
 
 NAMESPACE_UPP
 INITBLOCK {
-	using namespace Topside;
+	using namespace TS;
 	AppFlags& f = GetAppFlags();
 	if (1)
 		f.gfx = AppFlags::GFX_OPENGL;

@@ -65,7 +65,7 @@ void Ctrl::DoMouseFB(int event, Point p, int zdelta)
 	else
 	if(a == Ctrl::DOWN && ignoreclick)
 		return;
-	LLOG("### Mouse event: " << event << " position " << p << " zdelta " << zdelta << ", capture " << Upp::Name(captureCtrl));
+	LLOG("### Mouse event: " << event << " position " << p << " zdelta " << zdelta << ", capture " << UPP::Name(captureCtrl));
 	if(captureCtrl)
 		MouseEventFB(captureCtrl->GetTopCtrl(), event, p, zdelta);
 	else

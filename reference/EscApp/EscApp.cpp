@@ -4,7 +4,7 @@
 	#include <Esc/Esc.h>
 #endif
 
-using namespace Upp;
+using namespace UPP;
 
 #define PRINT(x) {Cout() << x; VppLog() << x;}
 

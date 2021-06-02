@@ -111,7 +111,6 @@ NAMESPACE_UPP_BEGIN
 
 class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 
-#define UPP Upp
 
 #if PLATFORM_POSIX
 	#define DIR_SEPS "/"
@@ -136,8 +135,8 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 #undef ASSERT
 #undef ASSERT_
 #ifdef flagDEBUG
-#define ASSERT(x) {if (!(x)) {Upp::LogCString("Assertion failed: " #x); __BREAK__; Upp::Panic();}}
-#define ASSERT_(x, msg) {if (!(x)) {LOG(Upp::String("Assertion failed: ") + msg); __BREAK__; Upp::Panic();}}
+#define ASSERT(x) {if (!(x)) {UPP::LogCString("Assertion failed: " #x); __BREAK__; UPP::Panic();}}
+#define ASSERT_(x, msg) {if (!(x)) {LOG(UPP::String("Assertion failed: ") + msg); __BREAK__; UPP::Panic();}}
 #else
 #define ASSERT(x)
 #define ASSERT_(x, msg)

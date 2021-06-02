@@ -51,6 +51,6 @@ NAMESPACE_TOPSIDE_END
 
 
 CONSOLE_APP_MAIN {
-	Topside::Main();
+	TS::Main();
 }
 

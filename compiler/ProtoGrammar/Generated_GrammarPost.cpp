@@ -1,7 +1,7 @@
 #ifndef flagBOOTSTRAP
 #include "Grammar.h"
 
-namespace Topside::Grammar {
+namespace TS::Grammar {
 
 bool PostParser::FileInput(const Node& n) {
 	ASSERT_TYPE(n, NODE_FILE_INPUT);

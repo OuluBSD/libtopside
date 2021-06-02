@@ -7,7 +7,7 @@ Tutorial 3:
 	Source: https://github.com/ssloy/tinyrenderer/wiki/Lesson-3-Hidden-faces-removal-(z-buffer)
 */
 
-using namespace Topside;
+using namespace TS;
 
 
 struct Tutorial3 : public Component<Tutorial3>, public DisplaySink {

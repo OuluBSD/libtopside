@@ -1,7 +1,7 @@
 #include <Esc/Esc.h>
 
 
-namespace Upp {
+namespace UPP {
 
 EscValue EscFromStdValue(const Object& v)
 {

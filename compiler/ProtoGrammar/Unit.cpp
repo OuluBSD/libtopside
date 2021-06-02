@@ -34,7 +34,7 @@ bool ParsingUnit::LoadFile(String filepath) {
 	ClearMessages();
 	root.Clear();
 	
-	String content = Upp::LoadFile(filepath);
+	String content = UPP::LoadFile(filepath);
 	if (content.IsEmpty())
 		return false;
 	

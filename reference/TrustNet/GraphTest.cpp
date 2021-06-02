@@ -3,8 +3,8 @@
 
 
 void GraphTest() {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	enum {ALICE, BOB, CAROLE, DANIEL, MARJORY, BEA, PERSON_COUNT};
 	

@@ -3,7 +3,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 #include <CodeEditor/CodeEditor.h>
-using namespace Upp;
+using namespace UPP;
 #define LAYOUTFILE <Editor/Layouts.lay>
 #include <CtrlCore/lay.h>
 

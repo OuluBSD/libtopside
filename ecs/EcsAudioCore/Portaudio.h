@@ -11,7 +11,7 @@ namespace Portaudio {
 
 class BufferedAudioDeviceStream :
 	public AudioDeviceStream,
-	public Topside::Audio
+	public TS::Audio
 {
 	AudioVolatileBuffer	buf;
 	AudioPacketConsumer consumer;
@@ -27,7 +27,7 @@ public:
 	
 	void					Exchange(AudioEx& e) override {buf.Exchange(e);}
 	int						GetQueueSize() const override {return buf.GetQueueSize();}
-	Topside::AudioFormat	GetFormat() const override {return buf.GetFormat();}
+	TS::AudioFormat	GetFormat() const override {return buf.GetFormat();}
 	bool					IsQueueFull() const override {return buf.IsQueueFull();}
 	
 	AudioVolatileBuffer&	GetBuffer() {return buf;}

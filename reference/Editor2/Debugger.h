@@ -2,7 +2,7 @@
 #define _Editor_Debugger_h_
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 
 enum {DBG_IDLE, DBG_RUNNING, DBG_PAUSED, DBG_STOPPING};

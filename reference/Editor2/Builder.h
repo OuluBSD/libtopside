@@ -2,7 +2,7 @@
 #define _Editor_Builder_h_
 
 #include <Core/Core.h>
-using namespace Upp;
+using namespace UPP;
 
 #include "Project.h"
 

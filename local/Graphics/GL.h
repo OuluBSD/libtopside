@@ -12,7 +12,7 @@ typedef unsigned int	Gxu;
 typedef unsigned int	Gxbf;
 
 
-#define NAMESPACE_GL_BEGIN namespace  Topside { namespace  GL {
+#define NAMESPACE_GL_BEGIN namespace  TS { namespace  GL {
 #define NAMESPACE_GL_END }}
 
 

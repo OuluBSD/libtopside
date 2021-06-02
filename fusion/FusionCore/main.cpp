@@ -159,9 +159,9 @@ void NewMain() {
 NAMESPACE_FUSION_END
 
 #if 0
-int main(int argc, char **argv) {return Topside::Shader::OldMain(argc, argv);}
+int main(int argc, char **argv) {return TS::Shader::OldMain(argc, argv);}
 #else
-CONSOLE_APP_MAIN {Topside::Shader::NewMain();}
+CONSOLE_APP_MAIN {TS::Shader::NewMain();}
 #endif
 
 #endif

@@ -36,6 +36,6 @@ void Graphics6Initializer() {
 NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_(Topside::DefaultRenderApp)
-APP_INITIALIZE_(Topside::Graphics6Startup);
+RENDER_APP_(TS::DefaultRenderApp)
+APP_INITIALIZE_(TS::Graphics6Startup);
 APP_DEFAULT_GFX_(GFX_OPENGL);

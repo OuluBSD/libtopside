@@ -169,8 +169,8 @@ void Main() {
 NAMESPACE_TOPSIDE_END
 
 #ifdef flagGUI
-GUI_APP_MAIN {Topside::Main();}
+GUI_APP_MAIN {TS::Main();}
 #else
-CONSOLE_APP_MAIN {Topside::Main();}
+CONSOLE_APP_MAIN {TS::Main();}
 #endif
 

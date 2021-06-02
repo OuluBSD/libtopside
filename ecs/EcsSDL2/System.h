@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class SDL2System : public System<SDL2System> {
 	LinkedList<SDL2ContextComponentRef> comps;
 	
-	Topside::OOSDL2::Context ctx;
+	TS::OOSDL2::Context ctx;
 	OOSDL2::Image img;
 	OOSDL2::Font fnt;
 	

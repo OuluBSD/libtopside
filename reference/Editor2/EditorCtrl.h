@@ -5,7 +5,7 @@
 
 #include <CtrlLib/CtrlLib.h>
 #include <CodeEditor/CodeEditor.h>
-using namespace Upp;
+using namespace UPP;
 
 
 class CodeEdit : public CodeEditor {

@@ -1026,7 +1026,7 @@ int AntlrGrammar::GetMaximumPhase(Block& b) {
 }
 
 void AntlrGrammar::Sort() {
-	Upp::Sort(rules, Rule());
+	UPP::Sort(rules, Rule());
 }
 
 void AntlrGrammar::CountUses() {

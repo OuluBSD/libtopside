@@ -2,7 +2,7 @@
 
 #define LLOG(x)  // DLOG(x)
 
-namespace Upp {
+namespace UPP {
 
 String RawHtmlText::ToString() const
 {

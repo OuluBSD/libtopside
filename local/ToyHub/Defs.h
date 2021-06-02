@@ -33,11 +33,11 @@
 
 
 #define TOYHUB						ToyHub
-#define NAMESPACE_TOYHUB_BEGIN		namespace  Topside { namespace  TOYHUB {
+#define NAMESPACE_TOYHUB_BEGIN		namespace  TS { namespace  TOYHUB {
 #define NAMESPACE_TOYHUB_END		}}
 
 NAMESPACE_TOYHUB_BEGIN
-using namespace Upp;
+using namespace UPP;
 NAMESPACE_TOYHUB_END
 
 

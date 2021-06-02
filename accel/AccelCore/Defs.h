@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #define ECS_CTX(dev, value, prefix) \
-	using prefix##AccelT = ContextAccelT<dev##value##Context>; \
+	using prefix##AccelT = ContextAccelT<dev##value##Spec>; \
 	using prefix##PipeComponent = prefix##AccelT::PipeComponent;
 #define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
 #define IFACE(x) DEV_IFACE(x)
@@ -17,7 +17,7 @@ IFACE_LIST
 
 
 #define DEV_CONV_CTX(from, to, value) \
-	using Conv##from##to##value##T = ContextConvT<from##value##Context, to##value##Context>; \
+	using Conv##from##to##value##T = ContextConvT<from##value##Spec, to##value##Spec>; \
 	using Convert##from##to##value##Component = Conv##from##to##value##T::ConvertComponent; \
 	using Convert##from##to##value##ComponentRef = Ref<Conv##from##to##value##T::ConvertComponent, RefParent1<Entity>>;
 #define IFACE(value) \

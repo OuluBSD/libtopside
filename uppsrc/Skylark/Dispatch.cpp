@@ -14,7 +14,7 @@
 
 #define LTIMING(x)  //RTIMING(x)
 
-namespace Upp {
+namespace UPP {
 
 enum { DISPATCH_VARARGS = -1 };
 
@@ -439,7 +439,7 @@ void Http::Dispatch(TcpSocket& socket)
 						throw AuthExc("identity error");
 				}
 				lang = Nvl(Int(".__lang__"), LNG_ENGLISH);
-				Upp::SetLanguage(lang);
+				UPP::SetLanguage(lang);
 				var.GetAdd(".__lang__") = lang;
 				var.GetAdd(".language") = ToLower(LNGAsText(lang));
 				handlerid = bd.id;

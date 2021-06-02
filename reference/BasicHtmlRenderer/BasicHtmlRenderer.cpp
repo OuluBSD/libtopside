@@ -1,9 +1,9 @@
 #include <LayoutCtrl/LayoutCtrl.h>
-using namespace Upp;
+using namespace UPP;
 
 
 GUI_APP_MAIN {
-	Topside::Layout::Client c;
+	TS::Layout::Client c;
 	
 	String path;
 	const auto& cmds = CommandLine();

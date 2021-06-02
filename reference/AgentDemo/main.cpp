@@ -236,8 +236,8 @@ void ActionPlannerExample() {
 NAMESPACE_TOPSIDE_END
 
 
-using namespace Upp;
-using namespace Topside;
+using namespace UPP;
+using namespace TS;
 
 CONSOLE_APP_MAIN {
 	

@@ -2,7 +2,7 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 
 

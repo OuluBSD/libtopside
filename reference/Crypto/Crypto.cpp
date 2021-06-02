@@ -1,7 +1,7 @@
 #include <Local/Local.h>
-using namespace Topside::Crypto;
-using namespace Topside;
-using namespace Upp;
+using namespace TS::Crypto;
+using namespace TS;
+using namespace UPP;
 
 
 

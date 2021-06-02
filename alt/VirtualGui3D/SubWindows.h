@@ -69,12 +69,12 @@ protected:
 protected:
 	typedef Windows CLASSNAME;
 	
-	friend class Upp::TopWindow;
+	friend class UPP::TopWindow;
 	friend class CoreWindow;
 	friend class SubMenuFrame;
 	//friend class Core;
-	friend class Upp::CtrlFrame;
-	friend class Upp::Ctrl;
+	friend class UPP::CtrlFrame;
+	friend class UPP::Ctrl;
 	
 	void QueueCloseWindow(int win_id) {close_window_queue.Add(win_id);}
 	void MoveWindow(Point pt, int win_id);

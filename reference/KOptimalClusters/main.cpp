@@ -1,8 +1,8 @@
 #include <Statistics/Statistics.h>
 
 CONSOLE_APP_MAIN {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 
 	{
 		VecFloat input;

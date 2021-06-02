@@ -4,7 +4,7 @@
 #include <Core/Core.h>
 
 
-namespace Upp {
+namespace UPP {
 
 enum EscTypeKind { ESC_VOID, ESC_DOUBLE, ESC_ARRAY, ESC_MAP, ESC_LAMBDA, ESC_INT64 };
 
@@ -75,7 +75,7 @@ public:
 	bool                    Append(EscValue a);
 
 	operator WString() const;
-	operator String() const                     { return ::Upp::AsString(operator WString()); }
+	operator String() const                     { return ::UPP::AsString(operator WString()); }
 
 	EscValue(const char *s)                     { InitString(ToWString(String(s))); }
 	EscValue(const WString& s)                  { InitString(s); }

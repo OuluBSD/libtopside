@@ -14,7 +14,7 @@ bool BootstrapGenerator::Process(String title, const ParsingUnit& pu) {
 	
 	c_out << "#ifndef flagBOOTSTRAP\n";
 	
-	c_out << "#include \"Grammar.h\"\n\nnamespace Topside::" << title << " {\n\n";
+	c_out << "#include \"Grammar.h\"\n\nnamespace TS::" << title << " {\n\n";
 	
 	Grammar::Parser p;
 	

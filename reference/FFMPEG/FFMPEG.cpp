@@ -2,7 +2,7 @@
 
 
 void TestFfmpeg() {
-	using namespace Topside;
+	using namespace TS;
 	
 	AudioFrame aframe;
 	MediaVideoFrame vframe;

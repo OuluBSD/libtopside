@@ -1,6 +1,6 @@
 #define TMPL(x)			template <class DevCtx> x ContextDevMachT<DevCtx>::
-#define TMPL_ECS(x)		template <class DevCtx> x ContextDevEcsT<DevCtx>::
-#define USING(x)		using x = typename ContextDevEcsT<DevCtx>::x;
+#define TMPL_ECS(x)		template <class DevCtx> x ScopeDevEcsT<DevCtx>::
+#define USING(x)		using x = typename ScopeDevEcsT<DevCtx>::x;
 #define CTX				((C*)0)
 
 NAMESPACE_TOPSIDE_BEGIN

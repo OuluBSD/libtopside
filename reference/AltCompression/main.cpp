@@ -1,7 +1,7 @@
 #include <Local/Local.h>
 
-using namespace Upp;
-using namespace Topside;
+using namespace UPP;
+using namespace TS;
 
 void Print(int lvl, String s) {
 	String e, l;

@@ -2,7 +2,7 @@
 #include <CtrlCore/stdids.h>
 #endif
 
-namespace Upp {
+namespace UPP {
 
 #define IMAGECLASS FBImg
 #define IMAGEFILE <VirtualGui3D/FB.iml>

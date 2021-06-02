@@ -3,7 +3,7 @@
 
 
 NAMESPACE_MIDI_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 
 // Interface to convert bytes between binary and ASCII forms.

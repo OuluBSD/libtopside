@@ -2,7 +2,7 @@
 #define _FFT_FFT_h_
 
 NAMESPACE_TOPSIDE_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 #if 1
 inline float Magnitude(const Complex& c) {

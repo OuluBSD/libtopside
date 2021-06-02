@@ -4,8 +4,8 @@
 
 
 CONSOLE_APP_MAIN {
-	using namespace Upp;
-	using namespace Topside;
+	using namespace UPP;
+	using namespace TS;
 	
 	const auto& cmds = CommandLine();
 	if (cmds.GetCount() && cmds[0] == "clang") {

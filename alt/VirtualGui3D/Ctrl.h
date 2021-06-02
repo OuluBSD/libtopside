@@ -1,5 +1,5 @@
 //$ class Ctrl {
-	static Topside::Windows* wm;
+	static TS::Windows* wm;
 	
 	//static bool           invalid;
 	//static uint32 prev_ticks;
@@ -15,9 +15,9 @@ public:
 	//static void SetDesktopSize(Size sz);
 	static void Invalidate();
 	
-	Topside::CoreWindow* GetWindow();
-	static Topside::Windows* GetWindows();
+	TS::CoreWindow* GetWindow();
+	static TS::Windows* GetWindows();
 	
-	static void SetWindows(Topside::Windows* wm) {ASSERT(!Ctrl::wm); Ctrl::wm = wm;}
+	static void SetWindows(TS::Windows* wm) {ASSERT(!Ctrl::wm); Ctrl::wm = wm;}
 	
 //$ };

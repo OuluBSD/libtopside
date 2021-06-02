@@ -637,7 +637,7 @@ void Document::AddMediaList(MediaQueryList* list )
 {
 	if(list)
 	{
-		if(Upp::Find(media_lists.Begin(), media_lists.End(), list, StdEqual<MediaQueryList*>()) == media_lists.End())
+		if(UPP::Find(media_lists.Begin(), media_lists.End(), list, StdEqual<MediaQueryList*>()) == media_lists.End())
 		{
 			media_lists.Add(list);
 		}

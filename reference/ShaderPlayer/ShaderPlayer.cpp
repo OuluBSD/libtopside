@@ -66,7 +66,7 @@ void ShaderPlayerInitializer() {
 
 NAMESPACE_TOPSIDE_END
 
-RENDER_APP_(Topside::ShaderPlayer)
-APP_INITIALIZE_(Topside::ShaderPlayerInitializer);
+RENDER_APP_(TS::ShaderPlayer)
+APP_INITIALIZE_(TS::ShaderPlayerInitializer);
 APP_DEFAULT_GFX_(GFX_OPENGL);
 

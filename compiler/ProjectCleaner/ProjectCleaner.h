@@ -95,7 +95,7 @@ struct CodeItem : Moveable<CodeItem> {
 };
 
 NAMESPACE_TOPSIDE_END
-int ClangToolMain(int argc, const char **argv, Upp::Vector<Topside::CodeItem>& out);
+int ClangToolMain(int argc, const char **argv, UPP::Vector<TS::CodeItem>& out);
 NAMESPACE_TOPSIDE_BEGIN
 
 void CppImportTool(String path, const Vector<String>& includes, const Vector<String>& defines, Vector<CodeItem>& out);

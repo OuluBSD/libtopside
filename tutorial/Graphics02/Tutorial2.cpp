@@ -8,7 +8,7 @@ Tutorial 2:
 	Source: https://github.com/ssloy/tinyrenderer/wiki/Lesson-2-Triangle-rasterization-and-back-face-culling
 */
 
-using namespace Topside;
+using namespace TS;
 
 
 struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {

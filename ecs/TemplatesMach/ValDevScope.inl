@@ -1,40 +1,7 @@
-#define TMPL(x)			template <class Dev> x ContextMachT<Dev>::
-#define TMPL_DATA(x)	template <class Ctx> x ContextDataT<Ctx>::
+#define TMPL(x)			template <class Dev> x ScopeValDevMachT<Dev>::
+#define DataT			typename ScopeValMachT<typename Dev::Value>
 
 NAMESPACE_TOPSIDE_BEGIN
-
-
-
-
-
-
-TMPL_DATA(void) StreamState::Clear() {
-	fmt.Clear();
-	sink_frame = 0;
-	is_sync = 0;
-	
-	frame_time.Reset();
-	total_seconds = 0;
-	frame_seconds = 0;
-	last_sync_sec = 0;
-	frames = 0;
-	frames_after_sync = 0;
-}
-
-TMPL_DATA(void) StreamState::Reset() {
-	frame_time.Reset();
-	total_seconds = 0;
-	frame_seconds = 0;
-	last_sync_sec = 0;
-	frames = 0;
-	frames_after_sync = 0;
-}
-
-
-
-
-
-
 
 
 
@@ -66,7 +33,7 @@ TMPL(int) SimpleValue::GetQueueSize() const {
 	return 2;
 }
 
-TMPL(typename Dev::Value::Format) SimpleValue::GetFormat() const {
+TMPL(DataT::Format) SimpleValue::GetFormat() const {
 	return fmt;
 }
 
@@ -154,7 +121,7 @@ TMPL(int) SimpleBufferedValue::GetQueueSize() const {
 	return buf.GetCount();
 }
 
-TMPL(typename Dev::Value::Format) SimpleBufferedValue::GetFormat() const {
+TMPL(DataT::Format) SimpleBufferedValue::GetFormat() const {
 	return fmt;
 }
 
@@ -497,6 +464,10 @@ TMPL(void) Ex::SetOffset(off32 packet_count) {
 	//RTLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
 	this->offset = packet_count;
 }
-#undef TMPL
+
+
 
 NAMESPACE_TOPSIDE_END
+
+#undef TMPL
+#undef DataT

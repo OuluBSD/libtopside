@@ -3,11 +3,11 @@
 
 #include <EcsCore/EcsCore.h>
 
-#include "Context.h"
-#include "Context.inl"
-#include "DevContext.h"
-#include "DevContext.inl"
+#include "ValDevScope.h"
+#include "ValDevScope.inl"
+#include "DevScope.h"
+#include "DevScope.inl"
 #include "EcsCore.inl"
-#include "Defs.h"
+#include "DevSpec.h"
 
 #endif

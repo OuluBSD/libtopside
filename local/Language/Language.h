@@ -5,11 +5,11 @@
 
 
 #define LANGUAGE						Language
-#define NAMESPACE_LANGUAGE_BEGIN		namespace  Topside { namespace  LANGUAGE {
+#define NAMESPACE_LANGUAGE_BEGIN		namespace  TS { namespace  LANGUAGE {
 #define NAMESPACE_LANGUAGE_END			}}
 
 NAMESPACE_LANGUAGE_BEGIN
-using namespace Upp;
+using namespace UPP;
 NAMESPACE_LANGUAGE_END
 
 

@@ -1,6 +1,6 @@
 #include "Skylark.h"
 
-namespace Upp {
+namespace UPP {
 
 String GetFileOnPath1(const char *file, const char *path)
 {

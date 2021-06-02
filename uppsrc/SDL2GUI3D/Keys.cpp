@@ -1,6 +1,6 @@
 #include "SDL2GUI3D.h"
 
-namespace Upp {
+namespace UPP {
 
 Tuple<int, int> SDL_key_map[] = {
 #if 0

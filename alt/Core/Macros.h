@@ -54,23 +54,23 @@ NAMESPACE_UPP_BEGIN
 #define MK_str_(x)		#x
 
 #define MACROSTR(x) #x
-#define COUT(x) {::Upp::String ____s; ____s << x; Cout() << ____s << "\n";}
-#define COUTLOG(x) {::Upp::String ____s; ____s << x; LOG(____s); Cout() << ____s << "\n";}
-#define TODO {Panic("TODO " __FILE__ ":" + Upp::IntStr(__LINE__)); THROW(Upp::Exc("TODO"));}
+#define COUT(x) {::UPP::String ____s; ____s << x; Cout() << ____s << "\n";}
+#define COUTLOG(x) {::UPP::String ____s; ____s << x; LOG(____s); Cout() << ____s << "\n";}
+#define TODO {Panic("TODO " __FILE__ ":" + UPP::IntStr(__LINE__)); THROW(UPP::Exc("TODO"));}
 #define TODO_ {Panic(); UNREACHABLE;}
 #define SYNON_UNION_2(type, name0, name1) union {type name0; type name1;};
 
 
-#define LOG(x) {Upp::VppLog() << x << EOL; Upp::VppLog().Flush();}
+#define LOG(x) {UPP::VppLog() << x << EOL; UPP::VppLog().Flush();}
 #define LLOG(x)
 
 
-#define DUMP(x) {LOG( #x  " = " << ::Upp::AsString(x));}
+#define DUMP(x) {LOG( #x  " = " << ::UPP::AsString(x));}
 
 #define DUMPC(c) {\
 LOG(#c << " {"); \
 for (int i = 0; i < c.GetCount(); i++) \
-	LOG("\t[" << i << "]: " << ::Upp::AsString(c[i])); \
+	LOG("\t[" << i << "]: " << ::UPP::AsString(c[i])); \
 LOG("}"); \
 }
 
@@ -78,14 +78,14 @@ LOG("}"); \
 LOG(#c << " {"); \
 for (int i = 0; i < c.GetCount(); i++) {\
 	for (int j = 0; j < c[i].GetCount(); j++) {\
-		LOG("\t[" << i << "][" << j << "]: " << ::Upp::AsString(c[i][j])); }}\
+		LOG("\t[" << i << "][" << j << "]: " << ::UPP::AsString(c[i][j])); }}\
 LOG("}"); \
 }
 
 #define DUMPM(m) {\
 LOG(#m << " {"); \
 for (int i = 0; i < m.GetCount(); i++) \
-	LOG("\t[" << i << "]: " << ::Upp::AsString(m.GetKey(i)) << ": " << ::Upp::AsString(m[i])); \
+	LOG("\t[" << i << "]: " << ::UPP::AsString(m.GetKey(i)) << ": " << ::UPP::AsString(m[i])); \
 LOG("}"); \
 }
 
@@ -101,7 +101,7 @@ LOG("}"); \
 					char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
 					UPP::AppInit__(0, (const char **)cmdline); \
 					AppMain(); \
-					return ::Upp::AppExit__(); \
+					return ::UPP::AppExit__(); \
 				} \
 				\
 				void AppMain()
@@ -112,7 +112,7 @@ LOG("}"); \
 				int main(int argc, const char** argv) {\
 					UPP::AppInit__(argc, (const char **)argv); \
 					AppMain(); \
-					return ::Upp::AppExit__(); \
+					return ::UPP::AppExit__(); \
 				} \
 				\
 				void AppMain()
@@ -126,8 +126,8 @@ LOG("}"); \
 	extern "C" int main(int argc, const char** argv) {\
 		UPP::AppInit__(argc, (const char **)argv); \
 		AppMain(); \
-		::Upp::AppExit__(); \
-		return ::Upp::GetExitCode(); \
+		::UPP::AppExit__(); \
+		return ::UPP::GetExitCode(); \
 	} \
 	\
 	void AppMain()
@@ -163,10 +163,10 @@ LOG("}"); \
 #endif
 
 #define LINEID(pre, x) COMBINE(COMBINE(pre, x), __LINE__)
-#define INITBLOCK void LINEID(Init,MK__s) (); static Topside::Callinit LINEID(initcb,MK__s) (LINEID(Init,MK__s)); void LINEID(Init,MK__s) ()
-#define EXITBLOCK void LINEID(Exit,MK__s) (); static Topside::Callexit LINEID(exitcb,MK__s) (LINEID(Exit,MK__s)); void LINEID(Exit,MK__s) ()
-#define INITBLOCK_(x) void LINEID(Init,x) (); static Topside::Callinit LINEID(initcb,x) (LINEID(Init,x)); void LINEID(Init,x) ()
-#define EXITBLOCK_(x) void LINEID(Exit,x) (); static Topside::Callexit LINEID(exitcb,x) (LINEID(Exit,x)); void LINEID(Exit,x) ()
+#define INITBLOCK void LINEID(Init,MK__s) (); static TS::Callinit LINEID(initcb,MK__s) (LINEID(Init,MK__s)); void LINEID(Init,MK__s) ()
+#define EXITBLOCK void LINEID(Exit,MK__s) (); static TS::Callexit LINEID(exitcb,MK__s) (LINEID(Exit,MK__s)); void LINEID(Exit,MK__s) ()
+#define INITBLOCK_(x) void LINEID(Init,x) (); static TS::Callinit LINEID(initcb,x) (LINEID(Init,x)); void LINEID(Init,x) ()
+#define EXITBLOCK_(x) void LINEID(Exit,x) (); static TS::Callexit LINEID(exitcb,x) (LINEID(Exit,x)); void LINEID(Exit,x) ()
 #define ONCELOCK static std::atomic_flag __once; if (!__once.test_and_set())
 #define ONCELOCK_(once) if (!once.test_and_set())
 

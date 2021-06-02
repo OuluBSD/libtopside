@@ -1,23 +1,25 @@
-#ifndef _TemplatesCore_Context_h_
-#define _TemplatesCore_Context_h_
+#ifndef _TemplatesCore_DevContext_h_
+#define _TemplatesCore_DevContext_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class Dev>
-struct ContextEcsT {
-	using DevCtx		= Dev;
-	using Ctx			= typename Dev::Value;
-	using C				= Ctx;
-	using Mach			= ContextMachT<Dev>;
-	using Format		= typename Ctx::Format;
-	using ValueBase		= typename Ctx::ValueBase;
-	using StreamBase	= typename Ctx::StreamBase;
-	using SystemBase	= typename Ctx::SystemBase;
-	using SinkBase		= typename Ctx::SinkBase;
-	using Value			= typename Mach::Value;
-	using CtxStream		= typename Mach::Stream;
+template <class DevSpec>
+struct ScopeDevEcsT {
+	using Mach			= ContextDevMachT<DevSpec>;
+	using C				= typename Mach::Context;
+	using Ctx			= typename Mach::Context;
+	using SinkBase		= typename Mach::SinkBase;
+	using Format		= typename Mach::Format;
 	using ExchangePoint	= typename Mach::ExchangePoint;
+	using CtxStream		= typename Mach::Stream;
+	using SystemBase	= typename Mach::SystemBase;
+	
+	
+	struct ComponentGroup {
+		
+		
+	};
 	
 	
 	class BaseSink :
@@ -26,7 +28,7 @@ struct ContextEcsT {
 		RTTIBase
 	{
 	public:
-		RTTI_DECL_2(BaseSink, InterfaceSink<BaseSink>, SinkBase, Ctx::GetName() + "Sink")
+		RTTI_DECL_2(BaseSink, InterfaceSink<BaseSink>, SinkBase, DevSpec::GetName() + "Sink")
 		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSink>());}
 		
 		virtual Format			GetFormat(C*) = 0;
@@ -41,11 +43,11 @@ struct ContextEcsT {
 		using InterfaceSourceT = InterfaceSource<BaseSource, BaseSink>;
 		
 	public:
-		RTTI_DECL_1(BaseSource, InterfaceSourceT, Ctx::GetName() + "Source")
+		RTTI_DECL_1(BaseSource, InterfaceSourceT, DevSpec::GetName() + "Source")
 		TypeId GetProviderType() override {return TypeId(AsTypeCls<BaseSource>());}
 		
 		using ExPt = ExchangePoint;
-		using SinkClass = ContextEcsT::BaseSink;
+		using SinkClass = ScopeDevEcsT::BaseSink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
@@ -66,10 +68,10 @@ struct ContextEcsT {
 	
 	
 	#define RTTI_CTX_SYS(sys, base) \
-			RTTI_DECL_2(sys, Topside::System<sys>, base, Ctx::GetName() + #sys)
+			RTTI_DECL_2(sys, TS::System<sys>, base, DevSpec::GetName() + #sys)
 	
 	class System :
-		public Topside::System<System>,
+		public TS::System<System>,
 		public SystemBase
 	{
 		LinkedList<SourceRef> srcs;

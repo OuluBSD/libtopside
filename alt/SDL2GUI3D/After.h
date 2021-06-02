@@ -2,7 +2,7 @@
 #define _SDL2GUI3D_After_h_
 
 NAMESPACE_UPP
-using namespace Topside;
+using namespace TS;
 
 /*struct SDL2GUI3D_MachineData {
 	Ref<EntityStore> ents;

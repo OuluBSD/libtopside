@@ -7,11 +7,27 @@
 	#error Cannot compile Topside Core with UPP flag set
 #endif
 
-#define NAMESPACE_UPP namespace  Upp {
-#define END_UPP_NAMESPACE }
-#define NAMESPACE_UPP_BEGIN namespace  Upp {
-#define NAMESPACE_UPP_END }
-#define HAVE
+
+#ifdef flagDEBUG
+	#define HAVE_SHORT_NAMESPACE 1
+#else
+	#define HAVE_SHORT_NAMESPACE 0
+#endif
+
+
+#if HAVE_SHORT_NAMESPACE
+	#define NAMESPACE_UPP namespace  ts {
+	#define END_UPP_NAMESPACE }
+	#define NAMESPACE_UPP_BEGIN namespace  ts {
+	#define NAMESPACE_UPP_END }
+	#define UPP ts
+#else
+	#define NAMESPACE_UPP namespace  Upp {
+	#define END_UPP_NAMESPACE }
+	#define NAMESPACE_UPP_BEGIN namespace  Upp {
+	#define NAMESPACE_UPP_END }
+	#define UPP Upp
+#endif
 
 
 

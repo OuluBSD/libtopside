@@ -1,13 +1,15 @@
-#ifndef _TemplatesLib_Defs_h_
-#define _TemplatesLib_Defs_h_
+#ifndef _TemplatesLib_DevSpec_h_
+#define _TemplatesLib_DevSpec_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 #define DEV(dev) \
-	using dev##DevLibT							= ContextDevLibT<dev##Context>; \
+	using dev##DevLibT							= ScopeDevLibT<dev##Spec>; \
 	using dev##ContextComponent					= typename dev##DevLibT::ContextComponent; \
+	using dev##ComponentGroup					= typename dev##DevLibT::ComponentGroup; \
 	using dev##ContextComponentRef				= RefT_Entity<dev##ContextComponent>; \
+	using dev##ComponentGroupRef				= RefT_Entity<dev##ComponentGroup>; \
 	PREFAB_BEGIN(Complete##dev) \
 		dev##ContextComponent \
 	PREFAB_END

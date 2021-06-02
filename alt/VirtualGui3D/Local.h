@@ -1,7 +1,7 @@
 #include <LocalCtrl/LocalCtrl.h>
 
 
-namespace Upp {
+namespace UPP {
 
 
 

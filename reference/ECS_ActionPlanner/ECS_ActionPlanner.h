@@ -2,8 +2,8 @@
 #define _ECS_ActionPlanner_ECS_ActionPlanner_h_
 
 #include <Complete/Complete.h>
-using namespace Upp;
-using namespace Topside;
+using namespace UPP;
+using namespace TS;
 
 
 struct DemoCat :

@@ -18,18 +18,18 @@ protected:
 	friend class SDL2GUI3DSystem;
 	//SDL2GUI3D_MachineData* data = 0;
 	
-	Topside::OOSDL2::AudioOutput* aout = 0;
-	Topside::OOSDL2::Screen* scr = 0;
-	Topside::OOSDL2::Events* ev = 0;
+	TS::OOSDL2::AudioOutput* aout = 0;
+	TS::OOSDL2::Screen* scr = 0;
+	TS::OOSDL2::Events* ev = 0;
 	
-	Topside::AudioProxy			empty_aud;
+	TS::AudioProxy			empty_aud;
 	SystemDraw					empty_draw;
 	String						desired_title;
 	void*						sys;
 	
 	
 public:
-	bool            Poll(Upp::CtrlEvent& e) override {return ev ? ev->Poll(e) : false;}
+	bool            Poll(UPP::CtrlEvent& e) override {return ev ? ev->Poll(e) : false;}
 	Size            GetSize() override {return scr ? scr->GetSize() : Size(0,0);}
 	void            SetTitle(String title) override {desired_title = title; if (scr) scr->SetTitle(title);}
 	SystemDraw&     BeginDraw() override {return scr ? scr->BeginDraw() : empty_draw;}

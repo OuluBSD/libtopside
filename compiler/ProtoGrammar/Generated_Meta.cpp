@@ -1,6 +1,6 @@
 // Generated at 12/21/2020 07:40:50
 #include "Grammar.h"
-namespace Topside::Meta {
+namespace TS::Meta {
 bool Parser::FileInput() {
 	RET(FILE_INPUT)
 	SAVE;

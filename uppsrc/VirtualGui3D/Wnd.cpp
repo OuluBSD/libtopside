@@ -115,7 +115,7 @@ Ctrl *Ctrl::GetOwner()
 	int q = FindTopCtrl();
 	if(q > 0 && topctrl[q]->top) {
 		Ctrl *x = topctrl[q]->top->owner_window;
-		LDUMP(Upp::Name(x));
+		LDUMP(UPP::Name(x));
 		return dynamic_cast<TopWindowFrame *>(x) ? x->GetOwner() : x;
 	}
 	return NULL;

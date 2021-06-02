@@ -2,7 +2,7 @@
 #define _Geometry1_Geometry1_h_
 
 #include <Complete/Complete.h>
-using namespace Topside;
+using namespace TS;
 
 
 

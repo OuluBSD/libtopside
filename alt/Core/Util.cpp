@@ -585,22 +585,22 @@ String GetHomeDirFile(const char *fp) {
 
 
 void AppInit__(int argc, const char** argv) {
-	::Upp::__ForceSetThreadId(MAIN_THREAD_ID);
-	::Upp::SeedRandom();
+	::UPP::__ForceSetThreadId(MAIN_THREAD_ID);
+	::UPP::SeedRandom();
 	
 	#ifdef flagWIN32
 	char chr[512]; GetModuleFileNameA(NULL, chr, 512);
-	::Upp::SetExeFilePath(chr);
-	::Upp::ParseCommandLine((LPSTR)argv);
+	::UPP::SetExeFilePath(chr);
+	::UPP::ParseCommandLine((LPSTR)argv);
 	#else
 	if (argc > 0)
-		::Upp::SetExeFilePath(argv[0]);
-	::Upp::ParseCommandLine(argc, argv);
+		::UPP::SetExeFilePath(argv[0]);
+	::UPP::ParseCommandLine(argc, argv);
 	#endif
 	
-	::Upp::StdLogSetup(LOG_FILE);
-	::Upp::ReadCoreCmdlineArgs();
-	::Upp::RunInitBlocks();
+	::UPP::StdLogSetup(LOG_FILE);
+	::UPP::ReadCoreCmdlineArgs();
+	::UPP::RunInitBlocks();
 	
 	#if defined flagDEBUG && defined flagPOSIX
 	AddLocalFileDirectory(GetHomeDirectory() + "/upphub/UppCommon/share");
@@ -608,8 +608,8 @@ void AppInit__(int argc, const char** argv) {
 }
 
 void AppExit__() {
-	::Upp::Thread::ShutdownThreads();
-	::Upp::RunExitBlocks();
+	::UPP::Thread::ShutdownThreads();
+	::UPP::RunExitBlocks();
 }
 
 

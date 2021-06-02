@@ -4,7 +4,7 @@
 #include <CtrlLib/CtrlLib.h>
 #include <CodeEditor/CodeEditor.h>
 #include <AudioCore/AudioCore.h>
-using namespace Upp;
+using namespace UPP;
 
 #define IMAGECLASS SequencerImg
 #define IMAGEFILE <Sequencer/Images.iml>

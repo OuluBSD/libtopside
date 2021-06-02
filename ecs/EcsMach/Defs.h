@@ -10,7 +10,7 @@
 		::SetWin32Instances(hinst, hprev, show); \
 		char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
 		::UPP::AppInit__(0, (const char **)cmdline); \
-		Topside::SingleMachine().Run(gui, GuiMainFn_); \
+		TS::SingleMachine().Run(gui, GuiMainFn_); \
 		::UPP::AppExit__(); \
 		return ::UPP::GetExitCode(); \
 	} \
@@ -22,7 +22,7 @@
 	\
 	extern "C" int main(int argc, char *argv[]) {\
 		::UPP::AppInit__(argc, (const char **)argv); \
-		Topside::SingleMachine().Run(gui, GuiMainFn_); \
+		TS::SingleMachine().Run(gui, GuiMainFn_); \
 		::UPP::AppExit__(); \
 		return ::UPP::GetExitCode(); \
 	} \

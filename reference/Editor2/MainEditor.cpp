@@ -182,7 +182,7 @@ int AppendJScript(Translation::Cursor cur, String& out) {
 	
 	if (kind == CXCursor_VarDecl) {
 		out << "var " <<  disname << " = ";
-		if (name == "Upp::String")	out += "\"\"";
+		if (name == "UPP::String")	out += "\"\"";
 		else if (name == "int")		out += "0";
 		else if (name == "double")	out += "0.0";
 		else if (name == "float")	out += "0.0";
@@ -210,7 +210,7 @@ int AppendJScript(Translation::Cursor cur, String& out) {
 	}
 	else if (kind == CXCursor_CallExpr) {
 		int count = cur.GetCount();
-		if (name == "Upp::String" && disname == "operator<<" && count == 4) {
+		if (name == "UPP::String" && disname == "operator<<" && count == 4) {
 			String a = cur[0].GetDisplayName();
 			String b = cur[2].GetDisplayName();
 			out << a << " = " << a << ".concat(" << b << ")";

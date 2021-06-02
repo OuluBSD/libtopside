@@ -2,7 +2,7 @@
 #define _Local_Interface_h_
 
 NAMESPACE_TOPSIDE_BEGIN
-using namespace Upp;
+using namespace UPP;
 
 
 

@@ -5,12 +5,12 @@
 
 
 #define GRAPHLIB						GraphLib
-#define NAMESPACE_GRAPHLIB_BEGIN		namespace  Topside { namespace  GRAPHLIB {
+#define NAMESPACE_GRAPHLIB_BEGIN		namespace  TS { namespace  GRAPHLIB {
 #define NAMESPACE_GRAPHLIB_END			}}
 
 
 NAMESPACE_GRAPHLIB_BEGIN
-using namespace Upp;
+using namespace UPP;
 NAMESPACE_GRAPHLIB_END
 
 

@@ -1,6 +1,6 @@
 #include "Iml.h"
 
-namespace Upp {
+namespace UPP {
 
 SKYLARK(Iml, "iml/*")
 {

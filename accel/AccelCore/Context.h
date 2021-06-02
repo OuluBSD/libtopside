@@ -17,15 +17,15 @@ struct ContextAccelT {
 	using ValueBase = typename Ctx::ValueBase;
 	using StreamBase = typename Ctx::StreamBase;
 	using SystemBase = typename Ctx::SystemBase;
-	using Value = typename ContextMachT<Dev>::Value;
-	using CtxStream = typename ContextMachT<Dev>::Stream;
-	using ExchangePoint = typename ContextMachT<Dev>::ExchangePoint;
-	using SimpleBufferedValue = typename ContextMachT<Dev>::SimpleBufferedValue;
-	using SimpleBufferedStream = typename ContextMachT<Dev>::SimpleBufferedStream;
-	using Ex = typename ContextMachT<Dev>::Ex;
-	using BaseSource = typename ContextEcsT<Dev>::BaseSource;
-	using BaseSink = typename ContextEcsT<Dev>::BaseSink;
-	using System = typename ContextEcsT<Dev>::System;
+	using Value = typename ScopeValDevMachT<Dev>::Value;
+	using CtxStream = typename ScopeValDevMachT<Dev>::Stream;
+	using ExchangePoint = typename ScopeValDevMachT<Dev>::ExchangePoint;
+	using SimpleBufferedValue = typename ScopeValDevMachT<Dev>::SimpleBufferedValue;
+	using SimpleBufferedStream = typename ScopeValDevMachT<Dev>::SimpleBufferedStream;
+	using Ex = typename ScopeValDevMachT<Dev>::Ex;
+	using BaseSource = typename ScopeValDevEcsT<Dev>::BaseSource;
+	using BaseSink = typename ScopeValDevEcsT<Dev>::BaseSink;
+	using System = typename ScopeValDevEcsT<Dev>::System;
 	
 	
 	static const char* TypeStringT(const char* t) {
@@ -171,24 +171,24 @@ struct ContextConvT {
 	using FromDevCtx = From;
 	using FromCtx = typename From::Value;
 	using F = FromCtx;
-	using FromSource = typename ContextEcsT<From>::BaseSource;
-	using FromSink = typename ContextEcsT<From>::BaseSink;
+	using FromSource = typename ScopeValDevEcsT<From>::BaseSource;
+	using FromSink = typename ScopeValDevEcsT<From>::BaseSink;
 	using FromFormat = typename From::Value::Format;
-	using FromValue = typename ContextMachT<From>::Value;
-	using FromStream = typename ContextMachT<From>::Stream;
-	using FromSimpleBufferedValue = typename ContextMachT<From>::SimpleBufferedValue;
-	using FromSimpleBufferedStream = typename ContextMachT<From>::SimpleBufferedStream;
+	using FromValue = typename ScopeValDevMachT<From>::Value;
+	using FromStream = typename ScopeValDevMachT<From>::Stream;
+	using FromSimpleBufferedValue = typename ScopeValDevMachT<From>::SimpleBufferedValue;
+	using FromSimpleBufferedStream = typename ScopeValDevMachT<From>::SimpleBufferedStream;
 	
 	using ToDevCtx = To;
 	using ToCtx = typename To::Value;
 	using T = ToCtx;
-	using ToSource = typename ContextEcsT<To>::BaseSource;
-	using ToSink = typename ContextEcsT<To>::BaseSink;
+	using ToSource = typename ScopeValDevEcsT<To>::BaseSource;
+	using ToSink = typename ScopeValDevEcsT<To>::BaseSink;
 	using ToFormat = typename To::Value::Format;
-	using ToValue = typename ContextMachT<To>::Value;
-	using ToStream = typename ContextMachT<To>::Stream;
-	using ToSimpleBufferedValue = typename ContextMachT<To>::SimpleBufferedValue;
-	using ToSimpleBufferedStream = typename ContextMachT<To>::SimpleBufferedStream;
+	using ToValue = typename ScopeValDevMachT<To>::Value;
+	using ToStream = typename ScopeValDevMachT<To>::Stream;
+	using ToSimpleBufferedValue = typename ScopeValDevMachT<To>::SimpleBufferedValue;
+	using ToSimpleBufferedStream = typename ScopeValDevMachT<To>::SimpleBufferedStream;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;

@@ -1,7 +1,7 @@
 #include <Esc/Esc.h>
 
 
-namespace Upp {
+namespace UPP {
 
 #ifdef _MSC_VER
 #pragma inline_depth(255)

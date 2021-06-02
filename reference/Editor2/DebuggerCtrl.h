@@ -2,7 +2,7 @@
 #define _Editor_DebuggerCtrl_h_
 
 #include <CtrlLib/CtrlLib.h>
-using namespace Upp;
+using namespace UPP;
 
 
 class DebuggerCtrl : public ParentCtrl {
