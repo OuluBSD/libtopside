@@ -315,6 +315,7 @@ public:
 	void Clear() {keys.Clear(); values.Clear();}
 	
 	V& Add(const K& k) {keys.AddItem()->value = k; return values.Add();}
+	V& Add(const K& k, const V& v) {V& o = Add(k); o = v; return o;}
 	V& GetAdd(const K& k) {
 		Iterator it = Find(k);
 		if (it)

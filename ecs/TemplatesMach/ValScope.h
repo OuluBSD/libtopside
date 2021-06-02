@@ -25,18 +25,7 @@ struct ScopeValMachT {
 		using FormatBase::FormatBase;
 	};
 	
-	class Context :
-		RTTIBase
-	{
-	public:
-		RTTI_DECL_T0(Context)
-		static String GetName() {return ValSpec::GetName();}
-		using Format			= typename ScopeValMachT::Format;
-		using Ctx				= typename ScopeValMachT::Context;
-	};
-	
-	using C = Context;
-	using Ctx = Context;
+	using V = ValSpec;
 	
 	
 	class PacketValue :
@@ -52,7 +41,7 @@ struct ScopeValMachT {
 	public:
 		using Pool = RecyclerPool<PacketValue>;
 		
-		static const int def_sample_rate = Ctx::Format::def_sample_rate;
+		static const int def_sample_rate = Format::def_sample_rate;
 		
 		RTTI_DECL0(PacketValue);
 		PacketValue() {}

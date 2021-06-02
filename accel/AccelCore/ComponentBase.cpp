@@ -79,7 +79,7 @@ void AccelComponent::Update0(double dt) {
 }
 
 bool AccelComponent::IsSinkInAccelerator() const {
-	return IsContext(AsTypeCls<VideoContext>()) && ctx->IsLast(this);
+	return IsValSpec(AsTypeCls<VideoContext>()) && ctx->IsLast(this);
 }
 
 bool AccelComponent::Open() {

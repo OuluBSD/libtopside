@@ -6,6 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define DEV(dev) \
 	using dev##DevLibT							= ScopeDevLibT<dev##Spec>; \
+	using dev##Component						= typename dev##DevLibT::Component; \
 	using dev##ContextComponent					= typename dev##DevLibT::ContextComponent; \
 	using dev##ComponentGroup					= typename dev##DevLibT::ComponentGroup; \
 	using dev##ContextComponentRef				= RefT_Entity<dev##ContextComponent>; \

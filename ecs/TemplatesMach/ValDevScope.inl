@@ -1,5 +1,5 @@
-#define TMPL(x)			template <class Dev> x ScopeValDevMachT<Dev>::
-#define DataT			typename ScopeValMachT<typename Dev::Value>
+#define TMPL(x)			template <class ValDevSpec> x ScopeValDevMachT<ValDevSpec>::
+#define DataT			typename ScopeValMachT<typename ValDevSpec::Val>
 
 NAMESPACE_TOPSIDE_BEGIN
 

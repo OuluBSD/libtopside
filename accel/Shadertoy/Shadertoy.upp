@@ -1,0 +1,8 @@
+description "\377B255,0,255";
+
+file
+	Shadertoy.h,
+	Shadertoy.cpp,
+	Loader.h,
+	Loader.cpp;
+

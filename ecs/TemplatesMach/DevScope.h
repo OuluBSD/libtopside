@@ -7,8 +7,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // Specifier
-#define DEV(x) struct x##Spec {static String GetName() {return #x;}};
-DEV_LIST
+#define DEV(x, pre, var) struct x##Spec {\
+	static String GetName() {return #x;}\
+	static String GetPrefix() {return #pre;}\
+	using ComponentConfBase = x##ComponentConfBase; \
+	using ComponentBase = x##ComponentBase; \
+};
+DEV_FULL_LIST
 #undef DEV
 
 
@@ -24,7 +29,7 @@ template <class Stream> \
 IFACE_VAR_LIST
 #undef IFACE
 
-	
+
 template <class DevSpec>
 struct ContextDevMachT {
 	using Spec = DevSpec;
@@ -43,20 +48,22 @@ struct ContextDevMachT {
 		
 	};
 	
+	
+	struct ComponentConf :
+		public DevSpec::ComponentConfBase
+	{
+		
+	};
+	
+	
+	
+	
 	struct SinkBase : RTTIBase {
 		RTTI_DECL_T0(SinkBase)
 		
 	};
 	
 
-	
-	struct Context : RTTIBase {
-		RTTI_DECL_T0(Context)
-		using Spec = DevSpec;
-		
-		
-		
-	};
 	
 	
 	
@@ -186,17 +193,6 @@ struct ContextDevMachT {
 	};
 };
 
-
-
-
-
-#define DEV(x) \
-	using x##MachT = ContextDevMachT<x##Spec>; \
-	using x##Context = x##MachT::Context; \
-	using x##Format = x##MachT::Format; \
-	using x##Stream = x##MachT::Stream;
-DEV_LIST
-#undef DEV
 
 
 NAMESPACE_TOPSIDE_END

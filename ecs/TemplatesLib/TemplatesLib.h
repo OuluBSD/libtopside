@@ -3,10 +3,14 @@
 
 #include <EcsCore/EcsCore.h>
 
-#include "ValDevScope.h"
-#include "ValDevScope.inl"
+#include "DevClasses.h"
 #include "DevScope.h"
+#include "AccelScope.inl"
+#include "ValDevScope.h"
+
 #include "DevScope.inl"
+
+#include "ValDevScope.inl"
 #include "EcsCore.inl"
 #include "DevSpec.h"
 

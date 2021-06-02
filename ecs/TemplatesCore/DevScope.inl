@@ -1,7 +1,7 @@
 #define TMPL(x)			template <class DevCtx> x ContextDevMachT<DevCtx>::
-#define TMPL_ECS(x)		template <class DevCtx> x ScopeDevEcsT<DevCtx>::
-#define USING(x)		using x = typename ScopeDevEcsT<DevCtx>::x;
-#define CTX				((C*)0)
+#define TMPL_ECS(x)		template <class DevCtx> x ScopeDevCoreT<DevCtx>::
+#define USING(x)		using x = typename ScopeDevCoreT<DevCtx>::x;
+#define CTX				((V*)0)
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -51,7 +51,7 @@ TMPL_ECS(void) System::Start() {
 
 TMPL_ECS(void) System::Update(double dt) {
 	USING(ExchangePointRef)
-	USING(C)
+	USING(D)
 	
 	TODO
 	#if 0

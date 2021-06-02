@@ -23,8 +23,8 @@ struct ContextAccelT {
 	using SimpleBufferedValue = typename ScopeValDevMachT<Dev>::SimpleBufferedValue;
 	using SimpleBufferedStream = typename ScopeValDevMachT<Dev>::SimpleBufferedStream;
 	using Ex = typename ScopeValDevMachT<Dev>::Ex;
-	using BaseSource = typename ScopeValDevEcsT<Dev>::BaseSource;
-	using BaseSink = typename ScopeValDevEcsT<Dev>::BaseSink;
+	using ValSource = typename ScopeValDevEcsT<Dev>::ValSource;
+	using ValSink = typename ScopeValDevEcsT<Dev>::ValSink;
 	using System = typename ScopeValDevEcsT<Dev>::System;
 	
 	
@@ -77,7 +77,7 @@ struct ContextAccelT {
 		
 	};
 	
-	class AccelExchangePoint : public ExchangePointT<BaseSource, BaseSink, System> {
+	class AccelExchangePoint : public ExchangePointT<ValSource, ValSink, System> {
 	public:
 		RTTI_DECL1(AccelExchangePoint, ExchangePointT);
 		void Init(ConnectorBase* conn);
@@ -95,11 +95,11 @@ struct ContextAccelT {
 	
 	class PipeComponent :
 		public Component<PipeComponent>,
-		public BaseSource,
-		public BaseSink,
+		public ValSource,
+		public ValSink,
 		public AccelComponent
 	{
-		RTTI_ACCEL_CTX_COMP(PipeComponent, BaseSource, BaseSink)
+		RTTI_ACCEL_CTX_COMP(PipeComponent, ValSource, ValSink)
 		VIS_COMP_1_1(Base, Base)
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
@@ -142,7 +142,7 @@ struct ContextAccelT {
 		PipeComponent() : stream(this) {}
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetContextType() const override {return AsTypeCls<C>();}
+		TypeCls				GetValSpecType() const override {return AsTypeCls<C>();}
 		
 		// AccelSink
 		Format				GetFormat(C*) override;
@@ -153,7 +153,7 @@ struct ContextAccelT {
 		void				BeginStream(C*) override;
 		void				EndStream(C*) override;
 		
-		bool				IsContext(TypeCls t) const override {return AsTypeCls<C>() == t;}
+		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<C>() == t;}
 		bool				LoadAsInput(const AcceleratorHeader& in) override;
 		void				UpdateTexBuffers() override {UpdateTexBuffersT<Ctx>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
@@ -171,8 +171,8 @@ struct ContextConvT {
 	using FromDevCtx = From;
 	using FromCtx = typename From::Value;
 	using F = FromCtx;
-	using FromSource = typename ScopeValDevEcsT<From>::BaseSource;
-	using FromSink = typename ScopeValDevEcsT<From>::BaseSink;
+	using FromSource = typename ScopeValDevEcsT<From>::ValSource;
+	using FromSink = typename ScopeValDevEcsT<From>::ValSink;
 	using FromFormat = typename From::Value::Format;
 	using FromValue = typename ScopeValDevMachT<From>::Value;
 	using FromStream = typename ScopeValDevMachT<From>::Stream;
@@ -182,8 +182,8 @@ struct ContextConvT {
 	using ToDevCtx = To;
 	using ToCtx = typename To::Value;
 	using T = ToCtx;
-	using ToSource = typename ScopeValDevEcsT<To>::BaseSource;
-	using ToSink = typename ScopeValDevEcsT<To>::BaseSink;
+	using ToSource = typename ScopeValDevEcsT<To>::ValSource;
+	using ToSink = typename ScopeValDevEcsT<To>::ValSink;
 	using ToFormat = typename To::Value::Format;
 	using ToValue = typename ScopeValDevMachT<To>::Value;
 	using ToStream = typename ScopeValDevMachT<To>::Stream;
@@ -242,9 +242,9 @@ struct ContextConvT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetContextType() const override {return AsTypeCls<T>();}
+		TypeCls				GetValSpecType() const override {return AsTypeCls<T>();}
 		
-		// BaseSink
+		// ValSink
 		FromFormat			GetFormat(F*) override;
 		FromValue&			GetValue(F*) override;
 		
@@ -253,7 +253,7 @@ struct ContextConvT {
 		void				BeginStream(T*) override;
 		void				EndStream(T*) override;
 		
-		bool				IsContext(TypeCls t) const override {return AsTypeCls<T>() == t;}
+		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<T>() == t;}
 		bool				LoadAsInput(const AcceleratorHeader& in) override;
 		void				PreProcess() override;
 		void				UpdateTexBuffers() override {UpdateTexBuffersT<ToCtx>();}
@@ -305,18 +305,18 @@ struct ContextConvT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetContextType() const override {return AsTypeCls<F>();}
+		TypeCls				GetValSpecType() const override {return AsTypeCls<F>();}
 		
 		// AccelSink
 		ToFormat			GetFormat(T*) override;
 		ToValue&			GetValue(T*) override;
 		
-		// BaseSource
+		// ValSource
 		FromStream&			GetStream(F*) override;
 		void				BeginStream(F*) override;
 		void				EndStream(F*) override;
 		
-		bool IsContext(TypeCls t) const override {return AsTypeCls<F>() == t;}
+		bool IsValSpec(TypeCls t) const override {return AsTypeCls<F>() == t;}
 		bool LoadAsInput(const AcceleratorHeader& in) override {return false;}
 		bool ReadFrame();
 		bool ProcessFrame();

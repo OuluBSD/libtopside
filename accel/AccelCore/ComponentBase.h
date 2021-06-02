@@ -106,9 +106,9 @@ public:
 	bool				IsTypeTemporary() {return IsTypeTemporary(GetTypeId());}
 	
 	template <class Ctx> void UpdateTexBuffersT();
-	template <class T> bool IsIn() {return IsContext(AsTypeCls<T>());}
+	template <class T> bool IsIn() {return IsValSpec(AsTypeCls<T>());}
 	
-	virtual bool		IsContext(TypeCls t) const = 0;
+	virtual bool		IsValSpec(TypeCls t) const = 0;
 	virtual void		UpdateTexBuffers() = 0;
 	virtual bool		IsEmptyStream() const = 0;
 	virtual void		ClearStream() = 0;

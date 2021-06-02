@@ -6,13 +6,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class ValDevSpec>
 struct ScopeValDevMachT {
-	using ValSpec = typename ValDevSpec::Value;
+	using ValSpec = typename ValDevSpec::Val;
 	using DevSpec = typename ValDevSpec::Dev;
 	using ValueBase = typename ValSpec::ValueBase;
 	using StreamBase = typename ValSpec::StreamBase;
 	using CtxT = ScopeValMachT<ValSpec>;
-	using C = ValSpec;
-	using Ctx = typename CtxT::Context;
+	using V = ValSpec;
 	using Format = typename CtxT::Format;
 	using PacketValue = typename CtxT::PacketValue;
 	using Packet = typename CtxT::Packet;
@@ -304,7 +303,7 @@ struct ScopeValDevMachT {
 		PacketProducer	producer;
 		PacketBuffer	buf;
 		dword			frame_counter = 0;
-		int				min_buf_samples = std::max<int>(1, 3 * Ctx::Format::def_sample_rate);
+		int				min_buf_samples = std::max<int>(1, 3 * Format::def_sample_rate);
 		dword			exchange_count = 0;
 		Format			fmt;
 		
@@ -368,11 +367,11 @@ struct ScopeValDevMachT {
 		int				GetFormatCount() const override {return 1;}
 		Format			GetFormat(int i) const override {return ptr->GetFormat();}
 		bool			FindClosestFormat(const Format& fmt, int& idx) override {idx = 0; return true;}
-		virtual bool			IsEof() = 0;
-		virtual bool			ReadFrame() = 0;
-		virtual bool			ProcessFrame() = 0;
-		virtual bool			ProcessOtherFrame() = 0;
-		virtual void			ClearPacketData() = 0;
+		virtual bool	IsEof() = 0;
+		virtual bool	ReadFrame() = 0;
+		virtual bool	ProcessFrame() = 0;
+		virtual bool	ProcessOtherFrame() = 0;
+		virtual void	ClearPacketData() = 0;
 	};
 	
 	

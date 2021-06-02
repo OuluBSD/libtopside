@@ -21,10 +21,10 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSources(RuntimeVisitor& vis) = 0;
 	virtual void VisitSinks(RuntimeVisitor& vis) = 0;
-	virtual bool IsContext(TypeCls t) const {return false;}
+	virtual bool IsValSpec(TypeCls t) const {return false;}
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
-	virtual TypeCls GetContextType() const {return AsVoidTypeId().GetTypeId();}
+	virtual TypeCls GetValSpecType() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const {return "<not implemented>";}
 	
 	static bool AllowDuplicates() {return false;}

@@ -54,6 +54,12 @@
 	DEV(Net) \
 	DEV(Perma)
 
+#define DEV_FULL_LIST \
+	DEV(Center, , ctr) \
+	DEV(Accel, Accel, acl) \
+	DEV(Net, Net, net) \
+	DEV(Perma, Perma, prm)
+
 #define DEV_IFACE(value) \
 	IFACE_CTX_CLS(Center,	value,	value) \
 	IFACE_CTX_CLS(Accel,	value,	Accel##value) \

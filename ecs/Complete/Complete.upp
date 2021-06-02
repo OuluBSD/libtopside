@@ -2,7 +2,8 @@ description "\377B0,131,159";
 
 uses
 	Music,
-	AudioCore;
+	AudioCore,
+	Shadertoy;
 
 uses(NEVER) AccelCore;
 

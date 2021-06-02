@@ -8,16 +8,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-
+template <class DevSpec, class ValSpec>
+struct VD {
+	static String GetName() {return DevSpec::GetName() + ValSpec::GetName();}
+	static String GetPrefix() {return DevSpec::GetPrefix() + ValSpec::GetName();}
+	using Val = ValSpec;
+	using Dev = DevSpec;
+};
 
 
 // Declare dev context classes
-#define IFACE_CTX_CLS(dev, value, prefix) \
-	struct dev##value##Spec { \
-		static String GetPrefix() {return #prefix;} \
-		using Value = value##Spec; \
-		using Dev = dev##Spec; \
-	};
+#define IFACE_CTX_CLS(dev, value, prefix) using dev##value##Spec = VD<dev##Spec, value##Spec>;
 #define IFACE(value) DEV_IFACE(value)
 IFACE_LIST;
 #undef IFACE

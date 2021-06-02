@@ -6,12 +6,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #define ECS_CTX(dev, value, prefix) \
-	using prefix##EcsT				= ScopeValDevEcsT<dev##value##Spec>; \
+	using prefix##CoreT				= ScopeValDevCoreT<dev##value##Spec>; \
 	using prefix##ExchangePoint		= prefix##MachT::ExchangePoint; \
 	using prefix##ExchangePointRef	= Ref<prefix##ExchangePoint, RefParent1<MetaExchangePoint>>; \
-	using prefix##Sink				= prefix##EcsT::BaseSink; \
-	using prefix##Source			= prefix##EcsT::BaseSource; \
-	using prefix##System			= prefix##EcsT::System; \
+	using prefix##Sink				= prefix##CoreT::ValSink; \
+	using prefix##Source			= prefix##CoreT::ValSource; \
+	using prefix##System			= prefix##CoreT::System; \
 	using prefix##SystemRef			= Ref<prefix##System, RefParent1<Machine>>; \
 	using prefix##SinkRef			= Ref<prefix##Sink, RefParent1<Entity>>; \
 	using prefix##SourceRef			= Ref<prefix##Source, RefParent1<Entity>>;
@@ -24,8 +24,8 @@ IFACE_LIST
 
 
 #define DEV(dev) \
-	using dev##DevEcsT				= ScopeDevEcsT<dev##Spec>; \
-	using dev##System				= ScopeDevEcsT<dev##Spec>::System;
+	using dev##DevCoreT				= ScopeDevCoreT<dev##Spec>; \
+	using dev##System				= ScopeDevCoreT<dev##Spec>::System;
 DEV_LIST
 #undef DEV
 

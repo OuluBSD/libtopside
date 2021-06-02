@@ -1,7 +1,7 @@
 #define TMPL(x)			template <class Dev> x ScopeValDevMachT<Dev>::
-#define TMPL_ECS(x)		template <class Dev> x ScopeValDevEcsT<Dev>::
-#define USING(x)		using x = typename ScopeValDevEcsT<Dev>::x;
-#define CTX				((C*)0)
+#define TMPL_ECS(x)		template <class Dev> x ScopeValDevCoreT<Dev>::
+#define USING(x)		using x = typename ScopeValDevCoreT<Dev>::x;
+#define CTX				((V*)0)
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -37,13 +37,13 @@ TMPL(void) ExchangePoint::Deinit() {
 }
 
 TMPL(void) ExchangePoint::Update(double dt) {
-	USING(BaseSource)
-	USING(BaseSink)
+	USING(ValSource)
+	USING(ValSink)
 	USING(CtxStream)
 	USING(Value)
 	ASSERT(dbg_offset_is_set);
-	Ref<BaseSource>	src			= this->src;
-	Ref<BaseSink>	sink		= this->sink;
+	Ref<ValSource>	src			= this->src;
+	Ref<ValSink>	sink		= this->sink;
 	
 	Ex ex(this);
 	ex.SetOffset(offset);
@@ -141,10 +141,10 @@ TMPL_ECS(void) System::Start() {
 
 TMPL_ECS(void) System::Update(double dt) {
 	USING(ExchangePointRef)
-	USING(C)
+	USING(V)
 	
 	
-	for (SourceRef src : srcs) {
+	for (ValSourceRef src : srcs) {
 		CtxStream& stream = src->GetStream(CTX);
 		int buf_sz = stream.Get().GetQueueSize();
 		bool buffer_full = buf_sz >= 2;
@@ -171,8 +171,8 @@ TMPL_ECS(void) System::Update(double dt) {
 		RTLOG("expt " << dbg_i << " update " << HexStr((size_t)&expt_rtti.GetRTTI()) << "<" << expt_rtti.GetDynamicName() << "> offset " << IntStr(begin_offset.value));
 		#endif
 		
-		SinkRef sink = expt->Sink();
-		SourceRef src = expt->Source();
+		ValSinkRef sink = expt->Sink();
+		ValSourceRef src = expt->Source();
 		#if 0 && DEBUG_RT_PIPE
 		RTLOG("expt updpate src " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
 		#endif
@@ -192,7 +192,7 @@ TMPL_ECS(void) System::Update(double dt) {
 		++dbg_i;
 	}
 	
-	for (SourceRef src :srcs) {
+	for (ValSourceRef src :srcs) {
 		const auto& cfg = src->Cfg();
 		if (cfg.begin_offset != cfg.end_offset) {
 			#if DEBUG_RT_PIPE
@@ -218,21 +218,21 @@ TMPL_ECS(void) System::Uninitialize() {
 	WhenUninit();
 }
 
-TMPL_ECS(void) System::Add(SourceRef src) {
+TMPL_ECS(void) System::Add(ValSourceRef src) {
 	ASSERT(src);
 	srcs.FindAdd(src);
 }
 
-TMPL_ECS(void) System::Remove(SourceRef src) {
+TMPL_ECS(void) System::Remove(ValSourceRef src) {
 	srcs.RemoveKey(src);
 }
 
-TMPL_ECS(void) System::Add(SinkRef sink) {
+TMPL_ECS(void) System::Add(ValSinkRef sink) {
 	ASSERT(sink);
 	sinks.FindAdd(sink);
 }
 
-TMPL_ECS(void) System::Remove(SinkRef sink) {
+TMPL_ECS(void) System::Remove(ValSinkRef sink) {
 	sinks.RemoveKey(sink);
 }
 

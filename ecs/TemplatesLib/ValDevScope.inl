@@ -5,15 +5,15 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define CLS ScopeValDevLibT<ValDevSpec>
 
-TMPL(typename CLS::CtxStream&) InputComponent::GetStream(C*) {
+TMPL(typename CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
 }
 
-TMPL(void) InputComponent::BeginStream(C*) {
+TMPL(void) InputComponent::BeginStream(V*) {
 	stream.FillBuffer();
 }
 
-TMPL(void) InputComponent::EndStream(C*) {
+TMPL(void) InputComponent::EndStream(V*) {
 	stream.DropBuffer();
 }
 
