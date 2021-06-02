@@ -10,7 +10,24 @@ const char* AccelComponentBase::names[VAR_COUNT+1] = {
 };
 
 void AccelComponentBase::ClearTex() {TODO}
-
+TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
+	#define VALUE(str, i) if (type_str == #str) return AsTypeCls<i>();
+	using Video			= typename ScopeValDevLibT<VD<AccelSpec,VideoSpec>>::PipeComponent;
+	using Audio			= typename ScopeValDevLibT<VD<AccelSpec,AudioSpec>>::PipeComponent;
+	using ConvPhoto		= typename ScopeConvDevLibT<PhotoSpec,CenterSpec,AccelSpec>::ConvertComponent;
+	VALUE(image,		Video);
+	VALUE(imagebuf,		Video);
+	VALUE(imagebuffer,	Video);
+	VALUE(sound,		Audio);
+	VALUE(soundbuf,		Audio);
+	VALUE(cubemap,		ConvPhoto);
+	//VALUE(vertex,		Accel_DATA_SINK);
+	//VALUE(data,			Accel_DATA_SINK);
+	//VALUE(ctrl,			Accel_CTRL_SINK);
+	//VALUE(library,		);
+	return AsVoidTypeCls();
+	#undef VALUE
+}
 
 
 
@@ -92,7 +109,6 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 			
 			if (DevComponent::IsDevPipeComponent(type)) {
 				DevComponentGroup* group = 0;
-				ASSERT(groups.GetCount());
 				
 				// Find group
 				if (0)

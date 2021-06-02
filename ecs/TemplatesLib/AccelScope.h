@@ -74,6 +74,7 @@ struct AccelComponentBase :
 	
 	
 	bool				IsAudioSpec() const {TODO}
+	static TypeCls		GetTypeFromString(String type_str);
 	
 protected:
 	void				ClearTex();
@@ -100,6 +101,7 @@ protected:
 	void				Ogl_UpdateTex(Size sz, const Vector<byte>& data);
 	GLuint				Ogl_GetTex() const {return color_buf[buf_i];}
 #endif
+	
 	
 };
 

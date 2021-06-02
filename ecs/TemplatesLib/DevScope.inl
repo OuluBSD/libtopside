@@ -6,8 +6,29 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-TMPL_DEVLIB(void) DevComponent::Initialize() {TODO}
-TMPL_DEVLIB(void) DevComponent::Uninitialize() {TODO}
+TMPL_DEVLIB(void) DevComponent::Initialize() {
+	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Initialize");
+	Ref<DevComponent> ref = DevComponentBase::template AsRef<DevComponent>();
+	
+	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
+	if (sys)
+		sys	-> Add(ref);
+}
+TMPL_DEVLIB(void) DevComponent::Uninitialize() {
+	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Uninitialize");
+	Ref<DevComponent> ref = DevComponentBase::template AsRef<DevComponent>();
+	
+	if (group) {
+		group->Remove(ref);
+		group.Clear();
+	}
+	
+	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
+	if (sys)
+		sys	-> Remove(ref);
+	
+	//Clear();
+}
 
 TMPL_DEVLIB(String) DevComponent::GetStringFromType(TypeCls i) {
 	#define IFACE(x) \
@@ -24,16 +45,22 @@ TMPL_DEVLIB(String) DevComponent::GetStringFromType(TypeCls i) {
 }
 
 TMPL_DEVLIB(void) DevComponent::OnError(String fn, String msg) {
-	if (gr && gr->GetParent()) {
-		gr->GetParent()->OnError(RTTI::GetRTTI().GetTypeId(), fn, msg);
+	if (group && group->GetParent()) {
+		group->GetParent()->OnError(RTTI::GetRTTI().GetTypeId(), fn, msg);
 	}
 	else {
 		LOG(DevSpec::GetName() + "Component::" << fn << ": error: " << msg);
 	}
 }
 TMPL_DEVLIB(CLS::Stream*) DevComponent::Stream() {TODO}
-TMPL_DEVLIB(TypeCls) DevComponent::GetTypeFromString(String type_str) {TODO}
-TMPL_DEVLIB(bool) DevComponent::IsDevPipeComponent(TypeCls type) {TODO}
+TMPL_DEVLIB(bool) DevComponent::IsDevPipeComponent(TypeCls type) {
+	#define IFACE(x) \
+	if (type == AsTypeCls<typename ScopeValDevLibT<VD<DevSpec, x##Spec>>::PipeComponent>()) \
+		return true;
+	IFACE_LIST
+	#undef IFACE
+	return false;
+}
 
 
 
@@ -211,7 +238,15 @@ TMPL_DEVLIB(bool) ContextComponent::RefreshStageQueue() {TODO}
 TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesAll() {TODO}
 TMPL_DEVLIB(void) ContextComponent::RefreshPipeline() {TODO}
 TMPL_DEVLIB(void) ContextComponent::OnError(String fn, String msg) {TODO}
-TMPL_DEVLIB(CLS::DevComponentGroup&) ContextComponent::GetAddGroupContext(TypeCls val_spec) {TODO}
+TMPL_DEVLIB(CLS::DevComponentGroup&) ContextComponent::GetAddGroupContext(TypeCls val_spec) {
+	for(DevComponentGroup& gr : groups)
+		if (gr.group_class == val_spec)
+			return gr;
+	DevComponentGroup& gr = groups.Add();
+	gr.SetParent(this);
+	gr.group_class = val_spec;
+	return gr;
+}
 TMPL_DEVLIB(bool) ContextComponent::ConnectComponentInputs() {TODO}
 TMPL_DEVLIB(bool) ContextComponent::ConnectComponentOutputs() {TODO}
 TMPL_DEVLIB(bool) ContextComponent::CreateComponents(DevComponentConfVector& v) {TODO}                            ;

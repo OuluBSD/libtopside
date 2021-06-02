@@ -24,6 +24,8 @@ struct ScopeDevLibT {
 	using ContextComponentRef		= Ref<ContextComponent, RefParent1<Entity>>;
 	class DevComponentGroup;
 	using DevComponentGroupRef		= Ref<DevComponentGroup, RefParent1<ContextComponent>>;
+	class DevComponent;
+	using DevComponentRef			= Ref<DevComponent, RefParent1<Entity>>;
 	
 	
 	struct DevComponentConfVector {
@@ -42,6 +44,7 @@ struct ScopeDevLibT {
 		public SystemBase
 	{
 		LinkedList<ContextComponentRef> ctxs;
+		LinkedList<DevComponentRef> comps;
 		
 		void Visit(RuntimeVisitor& vis) override {
 			vis && ctxs;
@@ -57,6 +60,8 @@ struct ScopeDevLibT {
 		RTTI_CTX_SYS(DevSystem, SystemBase)
 	    SYS_CTOR(DevSystem)
 		
+		void Add(DevComponentRef comp) {comps.FindAdd(comp);}
+		void Remove(DevComponentRef comp) {comps.RemoveKey(comp);}
 		void AddCtx(ContextComponentRef ctx);
 		void RemoveCtx(ContextComponentRef ctx);
 		
@@ -81,7 +86,7 @@ struct ScopeDevLibT {
 		void Visit(RuntimeVisitor& vis) {}
 		
 	protected:
-		DevComponentGroupRef		gr;
+		DevComponentGroupRef		group;
 		LinkedList<ComponentConf>	in;
 		
 		void				OnError(String fn, String msg);
@@ -99,12 +104,11 @@ struct ScopeDevLibT {
 		void				Initialize();
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
-		void				SetGroup(DevComponentGroupRef g) {gr = g;}
+		void				SetGroup(DevComponentGroupRef g) {group = g;}
 		String				ToString() const {return GetTypeString() + " " + DevComponentBase::ToString();}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
 		
-		static String		GetStringFromType(TypeCls t);
-		static TypeCls		GetTypeFromString(String type_str);
+		static String		GetStringFromType(TypeCls i);
 		static bool			IsDevPipeComponent(TypeCls type);
 		
 		template <class ValSpec> void UpdateDevBuffersValT();
@@ -112,7 +116,6 @@ struct ScopeDevLibT {
 		
 	};
 	
-	using DevComponentRef = Ref<DevComponent>;
 	
 	
 	
@@ -122,7 +125,8 @@ struct ScopeDevLibT {
 	{
 		LinkedList<DevComponentRef> comps;
 		
-		
+	protected:
+		friend class ContextComponent;
 		TypeCls group_class;
 		
 	public:
