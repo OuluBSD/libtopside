@@ -6,15 +6,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class DevSpec>
 struct ScopeDevCoreT {
-	using Mach			= ContextDevMachT<DevSpec>;
+	using Mach			= ScopeDevMachT<DevSpec>;
 	using D				= DevSpec;
 	using SinkBase		= typename Mach::SinkBase;
 	using Format		= typename Mach::Format;
 	using ExchangePoint	= typename Mach::ExchangePoint;
 	using CtxStream		= typename Mach::Stream;
-	using SystemBase	= typename Mach::SystemBase;
-	
-	
 	
 	
 	class ValSink :
@@ -61,46 +58,6 @@ struct ScopeDevCoreT {
 	using SinkRef			= Ref<ValSink,			RefParent1<Entity>>;
 	using ExchangePointRef	= Ref<ExchangePoint,	RefParent1<MetaExchangePoint>>;
 	
-	
-	#define RTTI_CTX_SYS(sys, base) \
-			RTTI_DECL_2(sys, TS::System<sys>, base, DevSpec::GetName() + #sys)
-	
-	class System :
-		public TS::System<System>,
-		public SystemBase
-	{
-		LinkedList<SourceRef> srcs;
-		LinkedList<SinkRef> sinks;
-		LinkedList<ExchangePointRef> expts;
-		
-		void Visit(RuntimeVisitor& vis) override {
-			vis && srcs
-				&& sinks
-				&& expts;
-		}
-	protected:
-	    bool Initialize() override;
-	    void Start() override;
-	    void Update(double dt) override;
-	    void Stop() override;
-	    void Uninitialize() override;
-	    
-	public:
-		RTTI_CTX_SYS(System, SystemBase)
-	    SYS_CTOR(System)
-		
-		void Add(SourceRef src);
-		void Add(SinkRef sink);
-		void Add(ExchangePointRef sink);
-		void Remove(SourceRef src);
-		void Remove(SinkRef sink);
-		void Remove(ExchangePointRef sink);
-		
-		static inline Callback& WhenUninit() {static Callback cb; return cb;}
-		
-	};
-	
-	#undef RTTI_CTX_SYS
 	
 };
 

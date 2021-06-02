@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #define DEV(x) \
-	using x##MachT = ContextDevMachT<x##Spec>; \
+	using x##MachT = ScopeDevMachT<x##Spec>; \
 	using x##Format = x##MachT::Format; \
 	using x##Stream = x##MachT::Stream; \
 	using x##CompConf = x##MachT::ComponentConf;

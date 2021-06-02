@@ -24,8 +24,7 @@ IFACE_LIST
 
 
 #define DEV(dev) \
-	using dev##DevCoreT				= ScopeDevCoreT<dev##Spec>; \
-	using dev##System				= ScopeDevCoreT<dev##Spec>::System;
+	using dev##DevCoreT				= ScopeDevCoreT<dev##Spec>;
 DEV_LIST
 #undef DEV
 

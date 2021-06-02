@@ -1,5 +1,3 @@
-#define TMPL(x)	template <class Spec> x ScopeValMachT<Spec>::
-
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -7,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-TMPL(void) StreamState::Clear() {
+TMPL_VALMACH(void) StreamState::Clear() {
 	fmt.Clear();
 	sink_frame = 0;
 	is_sync = 0;
@@ -20,7 +18,7 @@ TMPL(void) StreamState::Clear() {
 	frames_after_sync = 0;
 }
 
-TMPL(void) StreamState::Reset() {
+TMPL_VALMACH(void) StreamState::Reset() {
 	frame_time.Reset();
 	total_seconds = 0;
 	frame_seconds = 0;
@@ -31,11 +29,5 @@ TMPL(void) StreamState::Reset() {
 
 
 
-
-
-
-
-
-#undef TMPL
 
 NAMESPACE_TOPSIDE_END

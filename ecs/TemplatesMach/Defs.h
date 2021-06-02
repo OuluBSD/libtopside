@@ -67,4 +67,24 @@
 	IFACE_CTX_CLS(Perma,	value,	Perma##value)
 
 
+#define CLS_DEVMACH				ScopeDevMachT<DevSpec>
+#define TMPL_VALMACH(x)	template <class ValSpec> x ScopeValMachT<ValSpec>::
+#define TMPL_VALCORE(x)	template <class ValSpec> x ScopeValCoreT<ValSpec>::
+#define TMPL_VALLIB(x)	template <class ValSpec> x ScopeValLibT<ValSpec>::
+#define TMPL_DEVMACH(x)	template <class DevSpec> x ScopeDevMachT<DevSpec>::
+#define TMPL_DEVCORE(x)	template <class DevSpec> x ScopeDevCoreT<DevSpec>::
+#define TMPL_DEVLIB(x)	template <class DevSpec> x ScopeDevLibT<DevSpec>::
+#define TMPL_VALDEVMACH(x)	template <class ValDevSpec> x ScopeValDevMachT<ValDevSpec>::
+#define TMPL_VALDEVCORE(x)	template <class ValDevSpec> x ScopeValDevCoreT<ValDevSpec>::
+#define TMPL_VALDEVLIB(x)	template <class ValDevSpec> x ScopeValDevLibT<ValDevSpec>::
+#define USING_VALMACH(x) using x = typename ScopeValMachT<ValSpec>::x;
+#define USING_VALCORE(x) using x = typename ScopeValCoreT<ValSpec>::x;
+#define USING_VALLIB(x) using x = typename ScopeValLibT<ValSpec>::x;
+#define USING_DEVMACH(x) using x = typename ScopeDevMachT<DevSpec>::x;
+#define USING_DEVCORE(x) using x = typename ScopeDevCoreT<DevSpec>::x;
+#define USING_DEVLIB(x) using x = typename ScopeDevLibT<DevSpec>::x;
+#define USING_VALDEVMACH(x) using x = typename ScopeValDevMachT<ValDevSpec>::x;
+#define USING_VALDEVCORE(x) using x = typename ScopeValDevCoreT<ValDevSpec>::x;
+#define USING_VALDEVLIB(x) using x = typename ScopeValDevLibT<ValDevSpec>::x;
+
 #endif

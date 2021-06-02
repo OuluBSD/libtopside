@@ -8,6 +8,7 @@ file
 	DevClasses.h,
 	DevScope.h,
 	DevScope.inl highlight cpp,
+	DevScope.cpp,
 	AccelScope.inl highlight cpp,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,

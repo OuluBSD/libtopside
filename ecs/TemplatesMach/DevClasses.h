@@ -88,6 +88,7 @@ class ContextComponentBase;
 struct TypeContextLoader {
 	String last_error;
 	
+	void Clear() {last_error.Clear();}
 	virtual bool Load(String path, Object& o, ContextComponentBase* b) = 0;
 	
 	Callback WhenError;

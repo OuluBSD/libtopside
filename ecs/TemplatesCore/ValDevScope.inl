@@ -1,5 +1,3 @@
-#define TMPL(x)			template <class Dev> x ScopeValDevMachT<Dev>::
-#define TMPL_ECS(x)		template <class Dev> x ScopeValDevCoreT<Dev>::
 #define USING(x)		using x = typename ScopeValDevCoreT<Dev>::x;
 #define CTX				((V*)0)
 
@@ -10,8 +8,8 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 
-TMPL(void) ExchangePoint::Init(ConnectorBase* conn) {
-	USING(System)
+TMPL_VALDEVMACH(void) ExchangePoint::Init(ConnectorBase* conn) {
+	USING_VALDEVCORE(System)
 	this->conn = conn;
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
@@ -23,8 +21,8 @@ TMPL(void) ExchangePoint::Init(ConnectorBase* conn) {
 	}
 }
 
-TMPL(void) ExchangePoint::Deinit() {
-	USING(System)
+TMPL_VALDEVMACH(void) ExchangePoint::Deinit() {
+	USING_VALDEVCORE(System)
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
 		Machine& mach = GetPoolMachine(pool);
@@ -36,11 +34,11 @@ TMPL(void) ExchangePoint::Deinit() {
 	}
 }
 
-TMPL(void) ExchangePoint::Update(double dt) {
-	USING(ValSource)
-	USING(ValSink)
-	USING(CtxStream)
-	USING(Value)
+TMPL_VALDEVMACH(void) ExchangePoint::Update(double dt) {
+	USING_VALDEVCORE(ValSource)
+	USING_VALDEVCORE(ValSink)
+	USING_VALDEVCORE(CtxStream)
+	USING_VALDEVMACH(Value)
 	ASSERT(dbg_offset_is_set);
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
@@ -129,19 +127,19 @@ TMPL(void) ExchangePoint::Update(double dt) {
 
 
 
-TMPL_ECS(bool) System::Initialize() {
+TMPL_VALDEVCORE(bool) System::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL_ECS(void) System::Start() {
+TMPL_VALDEVCORE(void) System::Start() {
 	
 }
 
-TMPL_ECS(void) System::Update(double dt) {
-	USING(ExchangePointRef)
-	USING(V)
+TMPL_VALDEVCORE(void) System::Update(double dt) {
+	USING_VALDEVCORE(ExchangePointRef)
+	USING_VALDEVCORE(V)
 	
 	
 	for (ValSourceRef src : srcs) {
@@ -205,12 +203,12 @@ TMPL_ECS(void) System::Update(double dt) {
 	
 }
 
-TMPL_ECS(void) System::Stop() {
+TMPL_VALDEVCORE(void) System::Stop() {
 	
 	
 }
 
-TMPL_ECS(void) System::Uninitialize() {
+TMPL_VALDEVCORE(void) System::Uninitialize() {
 	srcs.Clear();
 	sinks.Clear();
 	expts.Clear();
@@ -218,30 +216,30 @@ TMPL_ECS(void) System::Uninitialize() {
 	WhenUninit();
 }
 
-TMPL_ECS(void) System::Add(ValSourceRef src) {
+TMPL_VALDEVCORE(void) System::Add(ValSourceRef src) {
 	ASSERT(src);
 	srcs.FindAdd(src);
 }
 
-TMPL_ECS(void) System::Remove(ValSourceRef src) {
+TMPL_VALDEVCORE(void) System::Remove(ValSourceRef src) {
 	srcs.RemoveKey(src);
 }
 
-TMPL_ECS(void) System::Add(ValSinkRef sink) {
+TMPL_VALDEVCORE(void) System::Add(ValSinkRef sink) {
 	ASSERT(sink);
 	sinks.FindAdd(sink);
 }
 
-TMPL_ECS(void) System::Remove(ValSinkRef sink) {
+TMPL_VALDEVCORE(void) System::Remove(ValSinkRef sink) {
 	sinks.RemoveKey(sink);
 }
 
-TMPL_ECS(void) System::Add(ExchangePointRef expt) {
+TMPL_VALDEVCORE(void) System::Add(ExchangePointRef expt) {
 	ASSERT(expt);
 	expts.FindAdd(expt);
 }
 
-TMPL_ECS(void) System::Remove(ExchangePointRef expt) {
+TMPL_VALDEVCORE(void) System::Remove(ExchangePointRef expt) {
 	expts.RemoveKey(expt);
 }
 
@@ -250,7 +248,5 @@ TMPL_ECS(void) System::Remove(ExchangePointRef expt) {
 NAMESPACE_TOPSIDE_END
 
 
-#undef TMPL
-#undef TMPL_ECS
 #undef USING
 #undef CTX

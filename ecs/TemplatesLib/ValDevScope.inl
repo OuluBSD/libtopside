@@ -1,44 +1,41 @@
-#define TMPL(x)	template <class ValDevSpec> x ScopeValDevLibT<ValDevSpec>::
-
-
 NAMESPACE_TOPSIDE_BEGIN
 
-#define CLS ScopeValDevLibT<ValDevSpec>
+#define CLS typename ScopeValDevLibT<ValDevSpec>
 
-TMPL(typename CLS::CtxStream&) InputComponent::GetStream(V*) {
+
+TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
 }
 
-TMPL(void) InputComponent::BeginStream(V*) {
+TMPL_VALDEVLIB(void) InputComponent::BeginStream(V*) {
 	stream.FillBuffer();
 }
 
-TMPL(void) InputComponent::EndStream(V*) {
+TMPL_VALDEVLIB(void) InputComponent::EndStream(V*) {
 	stream.DropBuffer();
 }
 
-TMPL(bool) InputComponent::ReadFrame() {
+TMPL_VALDEVLIB(bool) InputComponent::ReadFrame() {
 	TODO
 }
 
-TMPL(bool) InputComponent::ProcessDeviceFrame() {
+TMPL_VALDEVLIB(bool) InputComponent::ProcessDeviceFrame() {
 	TODO
 }
 
-TMPL(bool) InputComponent::LocalStream::IsOpen() const {
+TMPL_VALDEVLIB(bool) InputComponent::LocalStream::IsOpen() const {
 	TODO
 }
 
-TMPL(bool) InputComponent::LocalStream::Open(int fmt_idx) {
+TMPL_VALDEVLIB(bool) InputComponent::LocalStream::Open(int fmt_idx) {
 	TODO
 }
 
-TMPL(bool) InputComponent::LocalStream::LoadFileAny(String path) {
+TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 	TODO
 }
+
 
 #undef CLS
 
 NAMESPACE_TOPSIDE_END
-
-#undef TMPL

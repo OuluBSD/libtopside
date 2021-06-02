@@ -21,17 +21,17 @@ DEV_FULL_LIST
 // A hack for GCC to enable template specialization inside template
 template <class Stream, class ValSpec>
 	typename ScopeValMachT<ValSpec>::StreamState&
-		ContextDevMachT_Stream_Get(Stream* s);
+		ScopeDevMachT_Stream_Get(Stream* s);
 #define IFACE(cls, var) \
 template <class Stream> \
 	typename ScopeValMachT<cls##Spec>::StreamState& \
-		ContextDevMachT_Stream_Get(Stream* s) {return s->var;}
+		ScopeDevMachT_Stream_Get(Stream* s) {return s->var;}
 IFACE_VAR_LIST
 #undef IFACE
 
 
 template <class DevSpec>
-struct ContextDevMachT {
+struct ScopeDevMachT {
 	using Spec = DevSpec;
 	
 	static const char* TypeStringT(const char* t) {
@@ -85,7 +85,8 @@ struct ContextDevMachT {
 		
 		void Init(ConnectorBase* conn);
 		void Deinit();
-		void Update(double dt) override;
+		void Update(double dt) override {Update0(dt);} // hack: call non-virtual to prevent linking error
+		void Update0(double);
 		
 		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
 		void UseConsumer(bool b=true) {use_consumer = b;}
@@ -142,7 +143,7 @@ struct ContextDevMachT {
 		int time_us = 0;
 		
 		
-		template<class ValSpec> State<ValSpec>& Get() {return ContextDevMachT_Stream_Get<Stream, ValSpec>(this);}
+		template<class ValSpec> State<ValSpec>& Get() {return ScopeDevMachT_Stream_Get<Stream, ValSpec>(this);}
 		
 		// Context states & formats
 		#define IFACE(cls, var) \
@@ -151,23 +152,23 @@ struct ContextDevMachT {
 		#undef IFACE
 		
 		
-		void Clear() {
-			time.Set(0);
-			total_time.Reset();
-			time_us = 0;
-			
-			#define IFACE(cls, var) var.Clear();
-			IFACE_VAR_LIST
-			#undef IFACE
-		}
+		virtual bool			IsOpen() const = 0;
+		virtual bool			Open(int fmt_idx) = 0;
+		virtual void			Close() = 0;
+		virtual Value&			Get() = 0;
+		virtual void			FillBuffer() = 0;
+		virtual void			DropBuffer() = 0;
+		virtual Format			GetFormat(int i) const = 0;
 		
-		void Reset() {
-			total_time.Reset();
-			time_us = 0;
-			#define IFACE(cls, var) var.Reset();
-			IFACE_VAR_LIST
-			#undef IFACE
-		}
+		virtual int				GetActiveFormatIdx() const {return 0;}
+		virtual int				GetFormatCount() const {return 1;}
+		virtual bool			FindClosestFormat(const Format& fmt, int& idx) {idx = 0; return true;}
+		virtual bool			LoadFileAny(String path) {return false;}
+		
+		void Clear();
+		void Reset();
+		
+		
 		
 		/*
 		// Controller
