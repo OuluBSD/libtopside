@@ -1,10 +1,13 @@
 #define CTX				((D*)0)
+#define CLS				typename ScopeDevLibT<DevSpec>
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 
 
+TMPL_DEVLIB(void) DevComponent::Initialize() {TODO}
+TMPL_DEVLIB(void) DevComponent::Uninitialize() {TODO}
 
 TMPL_DEVLIB(String) DevComponent::GetStringFromType(TypeCls i) {
 	#define IFACE(x) \
@@ -21,13 +24,16 @@ TMPL_DEVLIB(String) DevComponent::GetStringFromType(TypeCls i) {
 }
 
 TMPL_DEVLIB(void) DevComponent::OnError(String fn, String msg) {
-	if (ctx && ctx->GetParent()) {
-		ctx->GetParent()->OnError(RTTI::GetRTTI().GetTypeId(), fn, msg);
+	if (gr && gr->GetParent()) {
+		gr->GetParent()->OnError(RTTI::GetRTTI().GetTypeId(), fn, msg);
 	}
 	else {
 		LOG(DevSpec::GetName() + "Component::" << fn << ": error: " << msg);
 	}
 }
+TMPL_DEVLIB(CLS::Stream*) DevComponent::Stream() {TODO}
+TMPL_DEVLIB(TypeCls) DevComponent::GetTypeFromString(String type_str) {TODO}
+TMPL_DEVLIB(bool) DevComponent::IsDevPipeComponent(TypeCls type) {TODO}
 
 
 
@@ -37,6 +43,14 @@ TMPL_DEVLIB(bool) DevComponentGroup::Open() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::CloseTemporary() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::Clear() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::FindComponents() {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::FindUniqueInputs(DevComponentConfVector& v) {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::ConnectInputs(DevComponentConfVector& v) {TODO}
+TMPL_DEVLIB(bool) DevComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code) {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::UpdateCompFlags() {TODO}
+		
+		
+		
+		
 		
 		
 		
@@ -191,12 +205,16 @@ TMPL_DEVLIB(void) ContextComponent::DumpEntityComponents() {
 		}
 	}
 }
-TMPL_DEVLIB(bool) ContextComponent::Load(Object& o) {TODO}
+
+TMPL_DEVLIB(bool) ContextComponent::Load(Object& json) {TODO}
 TMPL_DEVLIB(bool) ContextComponent::RefreshStageQueue() {TODO}
 TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesAll() {TODO}
 TMPL_DEVLIB(void) ContextComponent::RefreshPipeline() {TODO}
-
-
+TMPL_DEVLIB(void) ContextComponent::OnError(String fn, String msg) {TODO}
+TMPL_DEVLIB(CLS::DevComponentGroup&) ContextComponent::GetAddGroupContext(TypeCls val_spec) {TODO}
+TMPL_DEVLIB(bool) ContextComponent::ConnectComponentInputs() {TODO}
+TMPL_DEVLIB(bool) ContextComponent::ConnectComponentOutputs() {TODO}
+TMPL_DEVLIB(bool) ContextComponent::CreateComponents(DevComponentConfVector& v) {TODO}                            ;
 
 
 
@@ -259,3 +277,4 @@ TMPL_DEVLIB(void) DevSystem::RemoveCtx(ContextComponentRef ctx) {
 NAMESPACE_TOPSIDE_END
 
 #undef CTX
+#undef CLS

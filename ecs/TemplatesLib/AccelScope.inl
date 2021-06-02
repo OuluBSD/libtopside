@@ -6,7 +6,7 @@ template <>
 template <class ValSpec>
 void
 ScopeDevLibT<AccelSpec>::DevComponent
-::UpdateTexBuffersValT() {
+::UpdateDevBuffersValT() {
 	auto* stream = Stream();
 	if (stream) {
 		fb_size.Clear();
@@ -45,6 +45,8 @@ ScopeDevLibT<AccelSpec>::DevComponent
 	}
 	else {ASSERT_(false, "no stream");}
 }
+
+
 
 
 NAMESPACE_TOPSIDE_END

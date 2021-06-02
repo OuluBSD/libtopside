@@ -42,7 +42,8 @@ using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 
 // Declare value classes
 #define IFACE_CTX(value, format, sample) \
-	struct value##Spec {\
+	struct value##Spec : RTTIBase {\
+		RTTI_DECL0(value##Spec) \
 		static String GetName() {return #value;}\
 		using FormatBase		= format < sample >; \
 		using ValueBase			= TS::CommonValueBase; \

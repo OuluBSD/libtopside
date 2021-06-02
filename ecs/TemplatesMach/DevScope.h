@@ -7,9 +7,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // Specifier
-#define DEV(x, pre, var) struct x##Spec {\
+#define DEV(x, pre, var) \
+struct x##Spec : RTTIBase {\
+	RTTI_DECL0(x##Spec) \
 	static String GetName() {return #x;}\
 	static String GetPrefix() {return #pre;}\
+	using ComponentGroupBase = x##ComponentGroupBase; \
 	using ComponentConfBase = x##ComponentConfBase; \
 	using ComponentBase = x##ComponentBase; \
 };
@@ -19,13 +22,15 @@ DEV_FULL_LIST
 
 
 // A hack for GCC to enable template specialization inside template
-template <class Stream, class ValSpec>
-	typename ScopeValMachT<ValSpec>::StreamState&
-		ScopeDevMachT_Stream_Get(Stream* s);
+template <class ValSpec>
+struct StreamStateGetter {};
 #define IFACE(cls, var) \
-template <class Stream> \
+template <> \
+struct StreamStateGetter<cls##Spec> {\
+	template <class Stream> \
 	typename ScopeValMachT<cls##Spec>::StreamState& \
-		ScopeDevMachT_Stream_Get(Stream* s) {return s->var;}
+		Get(Stream* s) {return s->var;} \
+};
 IFACE_VAR_LIST
 #undef IFACE
 
@@ -141,7 +146,9 @@ struct ScopeDevMachT {
 		int time_us = 0;
 		
 		
-		template<class ValSpec> State<ValSpec>& Get() {return ScopeDevMachT_Stream_Get<DevStream, ValSpec>(this);}
+		template<class ValSpec> State<ValSpec>& Get() {
+			return StreamStateGetter<ValSpec>().template Get<DevStream>(this);
+		}
 		
 		// Context states & formats
 		#define IFACE(cls, var) \

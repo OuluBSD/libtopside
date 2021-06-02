@@ -27,7 +27,12 @@ NAMESPACE_TOPSIDE_BEGIN
 	ACCEL_VAR(COMPAT_CHANNELRESOLUTION2,	"iChannelResolution[2]") \
 	ACCEL_VAR(COMPAT_CHANNELRESOLUTION3,	"iChannelResolution[3]")
 
-struct AccelComponentBase {
+struct AccelComponentBase :
+	RTTIBase,
+	public RefScopeEnabler<AccelComponentBase, Entity>
+{
+	RTTI_DECL0(AccelComponentBase)
+	
 	enum {
 		#define ACCEL_VAR(v, n) VAR_##v,
 		ACCEL_VAR_LIST
@@ -68,9 +73,11 @@ struct AccelComponentBase {
 	bool				has_fbo = false;
 	
 	
+	bool				IsAudioSpec() const {TODO}
+	
 protected:
 	void				ClearTex();
-	
+	String				ToString() const {return "(id: " + IntStr(id) + ")";}
 	
 #if HAVE_OPENGL
 	void				Ogl_SetVars(GLint prog, const AccelStream& stream);

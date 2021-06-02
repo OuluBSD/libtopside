@@ -36,6 +36,15 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 }
 
 
+
+TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
+TMPL_VALDEVLIB(CLS::Value&) PipeComponent::GetValue(V*) {TODO}
+TMPL_VALDEVLIB(CLS::CtxStream&) PipeComponent::GetStream(V*) {TODO}
+TMPL_VALDEVLIB(void) PipeComponent::BeginStream(V*) {TODO}
+TMPL_VALDEVLIB(void) PipeComponent::EndStream(V*) {TODO}
+TMPL_VALDEVLIB(bool) PipeComponent::LoadAsInput(const DevCompConf& in) {TODO}
+
+
 #undef CLS
 
 NAMESPACE_TOPSIDE_END

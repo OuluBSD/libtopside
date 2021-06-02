@@ -5,12 +5,16 @@ uses
 
 file
 	TemplatesLib.h,
-	DevClasses.h,
+	AccelScope.h,
+	AccelScope.inl highlight cpp,
+	AccelScope.cpp,
+	AccelOpenGL.cpp,
 	DevScope.h,
 	DevScope.inl highlight cpp,
-	AccelScope.inl highlight cpp,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
-	EcsCore.inl highlight cpp,
-	DevSpec.h;
+	ConvDevScope.h,
+	ConvDevScope.inl highlight cpp,
+	DevSpec.h,
+	EcsCore.inl highlight cpp;
 

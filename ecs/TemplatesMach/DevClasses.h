@@ -3,13 +3,42 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-struct CenterComponentBase {};
-struct NetComponentBase {};
-struct PermaComponentBase {};
+struct CenterComponentGroupBase {};
+struct NetComponentGroupBase {};
+struct PermaComponentGroupBase {};
+
+struct CenterComponentBase :
+	RTTIBase,
+	public RefScopeEnabler<CenterComponentBase, Entity>
+{
+	RTTI_DECL0(CenterComponentBase)
+	String ToString() const {return String();}
+};
+
+struct NetComponentBase :
+	RTTIBase,
+	public RefScopeEnabler<NetComponentBase, Entity>
+{
+	RTTI_DECL0(NetComponentBase)
+	String ToString() const {return String();}
+};
+
+struct PermaComponentBase :
+	RTTIBase,
+	public RefScopeEnabler<PermaComponentBase, Entity>
+{
+	RTTI_DECL0(PermaComponentBase)
+	String ToString() const {return String();}
+};
 
 struct CenterComponentConfBase {};
 struct NetComponentConfBase {};
 struct PermaComponentConfBase {};
+
+struct AccelComponentGroupBase {
+	Vector<uint32> gl_stages;
+	
+};
 
 struct AccelComponentConfBase {
 

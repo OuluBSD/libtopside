@@ -127,14 +127,14 @@ struct ScopeValDevLibT {
 			PipeComponent& par;
 			RTTI_DECL_T1(LocalStream, SimpleBufferedStream);
 			LocalStream(PipeComponent* p) : par(*p), SimpleBufferedStream(p->src_value) {}
-			bool			IsOpen() const override;
-			bool			Open(int fmt_idx) override;
-			void			Close() override;
-			bool			IsEof() override;
-			bool			ReadFrame() override;
-			bool			ProcessFrame() override;
-			bool			ProcessOtherFrame() override;
-			void			ClearPacketData() override;
+			bool			IsOpen() const override {TODO}
+			bool			Open(int fmt_idx) override {TODO}
+			void			Close() override {TODO}
+			bool			IsEof() override {TODO}
+			bool			ReadFrame() override {TODO}
+			bool			ProcessFrame() override {TODO}
+			bool			ProcessOtherFrame() override {TODO}
+			void			ClearPacketData() override {TODO}
 		};
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
@@ -159,7 +159,7 @@ struct ScopeValDevLibT {
 		
 		// DevComponent
 		bool				LoadAsInput(const DevCompConf& in) override;
-		void				UpdateTexBuffers() override {DevComponent::template UpdateTexBuffersValT<ValSpec>();}
+		void				UpdateTexBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 		
