@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <>
 template <class ValSpec>
 void
-ScopeDevLibT<AccelSpec>::Component
+ScopeDevLibT<AccelSpec>::DevComponent
 ::UpdateTexBuffersValT() {
 	auto* stream = Stream();
 	if (stream) {

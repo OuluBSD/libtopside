@@ -6,46 +6,47 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class DevSpec>
 struct ScopeDevCoreT {
-	using Mach			= ScopeDevMachT<DevSpec>;
-	using D				= DevSpec;
-	using SinkBase		= typename Mach::SinkBase;
-	using Format		= typename Mach::Format;
-	using ExchangePoint	= typename Mach::ExchangePoint;
-	using CtxStream		= typename Mach::Stream;
+	using Mach				= ScopeDevMachT<DevSpec>;
+	using D					= DevSpec;
+	using DevFormat			= typename Mach::DevFormat;
+	using DevStream			= typename Mach::DevStream;
 	
 	
-	class ValSink :
-		public InterfaceSink<ValSink>,
-		public SinkBase,
+	/*
+	using DevExchangePoint	= typename Mach::DevExchangePoint;
+	
+	class DevSink :
+		public InterfaceSink<DevSink>,
+		public DevSinkBase,
 		RTTIBase
 	{
 	public:
-		RTTI_DECL_2(ValSink, InterfaceSink<ValSink>, SinkBase, DevSpec::GetName() + "Sink")
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<ValSink>());}
+		RTTI_DECL_2(DevSink, InterfaceSink<DevSink>, DevSinkBase, DevSpec::GetName() + "Sink")
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<DevSink>());}
 		
-		virtual Format			GetFormat(D*) = 0;
-		virtual Value&			GetValue(D*) = 0;
+		virtual DevFormat			GetFormat(D*) = 0;
+		virtual DevValue&			GetValue(D*) = 0;
 		
 	};
 	
-	class ValSource :
-		public InterfaceSource<ValSource, ValSink>,
+	class DevSource :
+		public InterfaceSource<DevSource, DevSink>,
 		RTTIBase
 	{
-		using InterfaceSourceT = InterfaceSource<ValSource, ValSink>;
+		using InterfaceSourceT = InterfaceSource<DevSource, DevSink>;
 		
 	public:
-		RTTI_DECL_1(ValSource, InterfaceSourceT, DevSpec::GetName() + "Source")
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<ValSource>());}
+		RTTI_DECL_1(DevSource, InterfaceSourceT, DevSpec::GetName() + "Source")
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<DevSource>());}
 		
-		using ExPt = ExchangePoint;
-		using SinkClass = ScopeDevCoreT::ValSink;
+		using ExPt = DevExchangePoint;
+		using Sink = ScopeDevCoreT::DevSink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
 		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 		
-		virtual CtxStream&			GetStream(D*) = 0;
+		virtual DevStream&			GetStream(D*) = 0;
 		virtual void				BeginStream(D*) = 0;
 		virtual void				EndStream(D*) = 0;
 		
@@ -54,10 +55,11 @@ struct ScopeDevCoreT {
 		
 	};
 	
-	using SourceRef			= Ref<ValSource,		RefParent1<Entity>>;
-	using SinkRef			= Ref<ValSink,			RefParent1<Entity>>;
-	using ExchangePointRef	= Ref<ExchangePoint,	RefParent1<MetaExchangePoint>>;
+	using DevSourceRef			= Ref<DevSource,		RefParent1<Entity>>;
+	using DevSinkRef			= Ref<DevSink,			RefParent1<Entity>>;
 	
+	using DevExchangePointRef	= Ref<DevExchangePoint,	RefParent1<MetaExchangePoint>>;
+	*/
 	
 };
 

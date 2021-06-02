@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-TMPL_DEVLIB(String) Component::GetStringFromType(TypeCls i) {
+TMPL_DEVLIB(String) DevComponent::GetStringFromType(TypeCls i) {
 	#define IFACE(x) \
 		if (i == AsTypeCls<typename ScopeValDevCoreT<VD<DevSpec, x##Spec>>::ValSource>()) \
 			return DevSpec::GetPrefix() + #x "Source"; \
@@ -20,7 +20,7 @@ TMPL_DEVLIB(String) Component::GetStringFromType(TypeCls i) {
 	return "invalid";
 }
 
-TMPL_DEVLIB(void) Component::OnError(String fn, String msg) {
+TMPL_DEVLIB(void) DevComponent::OnError(String fn, String msg) {
 	if (ctx && ctx->GetParent()) {
 		ctx->GetParent()->OnError(RTTI::GetRTTI().GetTypeId(), fn, msg);
 	}
@@ -33,14 +33,20 @@ TMPL_DEVLIB(void) Component::OnError(String fn, String msg) {
 
 
 
-
+TMPL_DEVLIB(bool) DevComponentGroup::Open() {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::CloseTemporary() {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::Clear() {TODO}
+TMPL_DEVLIB(void) DevComponentGroup::FindComponents() {TODO}
+		
+		
+		
 TMPL_DEVLIB() ContextComponent::ContextComponent() {
 	
 }
 
 TMPL_DEVLIB(void) ContextComponent::Initialize() {
 	DLOG(DevSpec::GetName() + "ContextComponent::Initialize");
-	Ref<System> sys = TS::ComponentBase::GetEntity()->GetMachine().template Get<System>();
+	Ref<DevSystem> sys = TS::ComponentBase::GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> AddCtx(TS::ComponentBase::AsRef<ContextComponent>());
 	
@@ -48,7 +54,7 @@ TMPL_DEVLIB(void) ContextComponent::Initialize() {
 
 TMPL_DEVLIB(void) ContextComponent::Uninitialize() {
 	DLOG(DevSpec::GetName() + "ContextComponent::Uninitialize");
-	Ref<System> sys = TS::ComponentBase::GetEntity()->GetMachine().template Get<System>();
+	Ref<DevSystem> sys = TS::ComponentBase::GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> RemoveCtx(TS::ComponentBase::AsRef<ContextComponent>());
 }
@@ -89,13 +95,106 @@ TMPL_DEVLIB(bool) ContextComponent::LoadFileAny(String path, Object& dst) {
 }
 
 TMPL_DEVLIB(void) ContextComponent::Update() {
-	TODO
+	DLOG("ContextComponent::Update: begin");
+	
+	//lock.Enter();
+	
+	if (!post_load.IsVoid()) {
+		DLOG("ContextComponent::Update: load new program");
+		
+		Object to_load;
+		Swap(post_load, to_load);
+		
+		for(DevComponentGroup& g : groups)
+			g.CloseTemporary();
+		
+		Clear();
+		FindComponents();
+		DumpEntityComponents();
+		
+		if (!Load(to_load))
+			return;
+		Reset();
+		
+		//  Reload stage pointers
+		if (!RefreshStageQueue())
+			return;
+		DumpEntityComponents();
+		
+		#if HAVE_OPENGL
+		ASSERT_(IsOpenGLContextOpen(), "OpenGL is not started. Probably SDL2 (or similar) system is not added to the ECS.");
+		#endif
+		
+		is_open = true;
+		for(DevComponentGroup& g : groups)
+			if (!g.Open())
+				{is_open = false; break;}
+		
+		if (!is_open) {
+			DLOG("ContextComponent::Update: error: did not open properly");
+			return;
+		}
+		
+		stream.vid.fmt.Set(LightSampleFD::FLT_LE_ABCD, Size(640,480));
+		stream.vid.fmt.SetFPS(60);
+		stream.aud.fmt.Set(SoundSample::S16_LE, 2, 44100, 1024);
+		RefreshStreamValuesAll();
+		
+		RefreshPipeline();
+	}
+	
+	//lock.Leave();
+	
+	DLOG("ContextComponent::Update: end");
 }
 
 TMPL_DEVLIB(void) ContextComponent::CreatePackets() {
 	TODO
 }
 
+TMPL_DEVLIB(void) ContextComponent::Clear() {
+	for(auto& gr : groups)
+		gr.Clear();
+	
+	stream.Clear();
+	common_source.Clear();
+	groups.Clear();
+	last_error.Clear();
+	post_load = Null;
+	is_open = false;
+	
+}
+
+TMPL_DEVLIB(void) ContextComponent::Reset() {
+	stream.Reset();
+}
+
+TMPL_DEVLIB(void) ContextComponent::FindComponents() {
+	for(DevComponentGroup& g : groups)
+		g.FindComponents();
+}
+
+TMPL_DEVLIB(void) ContextComponent::DumpEntityComponents() {
+	LOG(DevSpec::GetName() + "ContextComponent:");
+	EntityRef e = TS::ComponentBase::GetEntity();
+	int i = 0;
+	for (ComponentRef& comp : e->GetComponents().GetValues()) {
+		if (comp) {
+			auto& base = *comp;
+			DevComponent* fcomp = CastPtr<DevComponent>(&base);
+			if (fcomp) {
+				LOG("\t" << i++ << ": " << DevSpec::GetName() << "Component: " << fcomp->ToString());
+			}
+			else {
+				LOG("\t" << i++ << ": " << base.GetDynamicName());
+			}
+		}
+	}
+}
+TMPL_DEVLIB(bool) ContextComponent::Load(Object& o) {TODO}
+TMPL_DEVLIB(bool) ContextComponent::RefreshStageQueue() {TODO}
+TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesAll() {TODO}
+TMPL_DEVLIB(void) ContextComponent::RefreshPipeline() {TODO}
 
 
 
@@ -108,26 +207,23 @@ TMPL_DEVLIB(void) ContextComponent::CreatePackets() {
 
 
 
+//Callback DevSystem::WhenUninit;
 
-//Callback System::WhenUninit;
-
-TMPL_DEVLIB(bool) System::Initialize() {
+TMPL_DEVLIB(bool) DevSystem::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL_DEVLIB(void) System::Start() {
+TMPL_DEVLIB(void) DevSystem::Start() {
 	
 }
 
-TMPL_DEVLIB(void) System::Update(double dt) {
-	if (ctxs.IsEmpty() && srcs.IsEmpty() && expts.IsEmpty() && sinks.IsEmpty())
+TMPL_DEVLIB(void) DevSystem::Update(double dt) {
+	if (ctxs.IsEmpty())
 		return;
 	
-	RTLOG(DevSpec::GetName() + "System: begin");
-	USING_DEVLIB(ExchangePointRef)
-	USING_DEVLIB(D)
+	RTLOG(DevSpec::GetName() + "DevSystem::Update: begin");
 	
 	
 	for (ContextComponentRef& ctx : ctxs)
@@ -137,115 +233,26 @@ TMPL_DEVLIB(void) System::Update(double dt) {
 		ctx->CreatePackets();
 	
 	
-	
-	for (SourceRef src : srcs) {
-		CtxStream& stream = src->GetStream(CTX);
-		int buf_sz = stream.Get().GetQueueSize();
-		bool buffer_full = buf_sz >= 2;
-		
-		#if 1 && DEBUG_RT_PIPE
-		RTLOG("update source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
-		#endif
-		
-		src->Update(dt, buffer_full);
-		if (src->Cfg().render) {
-			#if DEBUG_RT_PIPE
-			RTLOG("begin source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
-			#endif
-			
-			src->BeginStream(CTX);
-		}
-	}
-	
-	int dbg_i = 0;
-	for (ExchangePointRef expt : expts) {
-		off32 begin_offset = expt->GetOffset();
-		#if 1 && DEBUG_RT_PIPE
-		const RTTI& expt_rtti = expt->GetRTTI();
-		RTLOG("expt " << dbg_i << " update " << HexStr((size_t)&expt_rtti.GetRTTI()) << "<" << expt_rtti.GetDynamicName() << "> offset " << IntStr(begin_offset.value));
-		#endif
-		
-		SinkRef sink = expt->Sink();
-		SourceRef src = expt->Source();
-		#if 0 && DEBUG_RT_PIPE
-		RTLOG("expt updpate src " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << "> offset " << IntStr(begin_offset.value));
-		#endif
-		
-		expt->SetOffset(begin_offset);
-		expt->Update(dt);
-		
-		off32 end_offset = expt->GetOffset();
-		src->SetOffset(begin_offset, end_offset);
-		
-		#if DEBUG_RT_PIPE
-		off32 diff = off32::GetDifference(begin_offset, end_offset);
-		if (diff) {
-			RTLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
-		}
-		#endif
-		++dbg_i;
-	}
-	
-	for (SourceRef src :srcs) {
-		const auto& cfg = src->Cfg();
-		if (cfg.begin_offset != cfg.end_offset) {
-			#if DEBUG_RT_PIPE
-			RTLOG("end source " << HexStr((size_t)&*src) << "<" << src->GetConfigString() << ">");
-			#endif
-			
-			src->EndStream(CTX);
-		}
-	}
-	
-	RTLOG(DevSpec::GetName() + "System: end");
+	RTLOG(DevSpec::GetName() + "DevSystem::Update: end");
 }
 
-TMPL_DEVLIB(void) System::Stop() {
+TMPL_DEVLIB(void) DevSystem::Stop() {
 	
 	
 }
 
-TMPL_DEVLIB(void) System::Uninitialize() {
-	srcs.Clear();
-	sinks.Clear();
-	expts.Clear();
+TMPL_DEVLIB(void) DevSystem::Uninitialize() {
+	ctxs.Clear();
 	
 	WhenUninit();
 }
 
-TMPL_DEVLIB(void) System::Add(SourceRef src) {
-	ASSERT(src);
-	srcs.FindAdd(src);
-}
-
-TMPL_DEVLIB(void) System::Remove(SourceRef src) {
-	srcs.RemoveKey(src);
-}
-
-TMPL_DEVLIB(void) System::Add(SinkRef sink) {
-	ASSERT(sink);
-	sinks.FindAdd(sink);
-}
-
-TMPL_DEVLIB(void) System::Remove(SinkRef sink) {
-	sinks.RemoveKey(sink);
-}
-
-TMPL_DEVLIB(void) System::Add(ExchangePointRef expt) {
-	ASSERT(expt);
-	expts.FindAdd(expt);
-}
-
-TMPL_DEVLIB(void) System::Remove(ExchangePointRef expt) {
-	expts.RemoveKey(expt);
-}
-
-TMPL_DEVLIB(void) System::AddCtx(ContextComponentRef ctx) {
+TMPL_DEVLIB(void) DevSystem::AddCtx(ContextComponentRef ctx) {
 	ASSERT(ctx);
 	ctxs.FindAdd(ctx);
 }
 
-TMPL_DEVLIB(void) System::RemoveCtx(ContextComponentRef ctx) {
+TMPL_DEVLIB(void) DevSystem::RemoveCtx(ContextComponentRef ctx) {
 	ctxs.RemoveKey(ctx);
 }
 

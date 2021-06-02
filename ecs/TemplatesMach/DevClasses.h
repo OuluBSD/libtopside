@@ -113,6 +113,15 @@ struct ContextComponentBase {
 	template <class DevSpec> static void RegisterDefaultFileExt(String file_ext) {
 		GetDefaultExt<DevSpec>().FindAdd(file_ext);
 	}
+	
+protected:
+	String last_error;
+	
+	
+public:
+	
+	Callback WhenError;
+	
 };
 
 

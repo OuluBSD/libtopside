@@ -31,8 +31,6 @@ TMPL(bool) LinkAll() {
 }
 
 TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& src_stack) {
-	using ExPt = typename ScopeDevCoreT<T>::ExchangePoint;
-	
 	LinkedList<InterfaceSourceBaseRef>* cur = 0;
 	
 	for (EntityRef& e : *pool) {
@@ -58,9 +56,12 @@ TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& s
 						for (InterfaceSourceBaseRef& src : src_scope) {
 							TypeCls src_sink_cls = src->GetSinkCls();
 							if (sink_cls == src_sink_cls) {
+								TypeCls valdev_spec = sink->GetValDevSpec();
+								ASSERT(valdev_spec == src->GetValDevSpec());
 								CookieRef src_cookie, sink_cookie;
 								if (src->Accept(sink, src_cookie, sink_cookie)) {
-									Ref<ExPt> ep = MetaExchangePoint::Add<ExPt>();
+									ValExchangePointBaseRef ep = MetaExchangePoint::Add(valdev_spec);
+									ASSERT(ep);
 									RTLOG("ConnectAllDevInterfaces<T>::Visit(pool,stack): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 									src->Link(ep, sink, src_cookie, sink_cookie);
 									ep->Init(this);

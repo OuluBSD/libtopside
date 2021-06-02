@@ -70,6 +70,8 @@ public:
     bool operator!=(const TypeId& other) const {return type != other.type;}
     bool operator<(const TypeId& other) const {return type < other.type;}
     
+    operator TypeCls() const {return type;}
+    
 };
 #endif
 

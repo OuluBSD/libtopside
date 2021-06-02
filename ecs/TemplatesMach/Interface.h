@@ -79,7 +79,7 @@ class InterfaceVisitor : public RuntimeVisitor {
 	
 	
 	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {
-		TypeId cls = type.GetTypeId();
+		TypeCls cls = type.GetTypeId();
 		if (cls == match_type) {
 			last = (T*)mem;
 			if (stop_when_found) {

@@ -224,7 +224,7 @@ public:
 	RTTI_DECL_R0(ExchangeProviderBase)
 	
 	//bool UnlinkManually(ExchangeProviderBase& p);
-	virtual TypeId GetProviderType() = 0;
+	virtual TypeId GetValDevSpec() = 0;
 	virtual String GetConfigString() {return String();}
 	
 };
@@ -376,6 +376,8 @@ public:
 		return o->AsRefT();
 	}
 
+	Ref<ExchangePoint> Add(TypeCls valdev_spec);
+	
 	void Remove(ExchangePoint* expt);
 	
 	String ToString() const;

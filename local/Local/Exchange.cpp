@@ -180,6 +180,12 @@ String MetaExchangePoint::ToString() const {
 	
 }
 
+Ref<ExchangePoint> MetaExchangePoint::Add(TypeCls valdev_spec) {
+	
+	TODO
+	
+}
+
 void MetaExchangePoint::Remove(ExchangePoint* expt) {
 	for (auto iter = pts.begin(); iter; ++iter) {
 		if (*iter == expt) {

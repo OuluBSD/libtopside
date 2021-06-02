@@ -44,7 +44,7 @@ struct ContextAccelT {
 	{
 	public:
 		RTTI_DECL1(AccelSink, InterfaceSink<AccelSink>)
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<AccelSink>());}
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<AccelSink>());}
 		
 		virtual Format			GetFormat(C*) = 0;
 		virtual Value&			GetValue(C*) = 0;
@@ -59,7 +59,7 @@ struct ContextAccelT {
 		
 	public:
 		RTTI_DECL1(AccelSource, InterfaceSourceT)
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<AccelSource>());}
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<AccelSource>());}
 		
 		using ExPt = ExchangePoint;
 		using SinkClass = ContextAccelT::AccelSink;

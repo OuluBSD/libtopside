@@ -42,14 +42,14 @@ struct ScopeDevMachT {
 	}
 	
 	
-	class Format : RTTIBase {
-		RTTI_DECL_T0(Format)
+	class DevFormat : RTTIBase {
+		RTTI_DECL_T0(DevFormat)
 		
 		
 	};
 	
 	
-	struct ComponentConf :
+	struct DevComponentConf :
 		public DevSpec::ComponentConfBase
 	{
 		
@@ -58,10 +58,10 @@ struct ScopeDevMachT {
 	
 	
 	
-	struct SinkBase : RTTIBase {
-		RTTI_DECL_T0(SinkBase)
+	/*struct DevSinkBase : RTTIBase {
+		RTTI_DECL_T0(DevSinkBase)
 		
-	};
+	};*/
 	
 
 	
@@ -69,8 +69,8 @@ struct ScopeDevMachT {
 	
 	// This class enables device to process all interface types at once, like
 	// when OpenGL shader processes all types of data in single pipeline.
-	class ExchangePoint :
-		public TS::ExchangePoint
+	/*class DevExchangePoint :
+		public ExchangePoint
 	{
 		ConnectorBase* conn = 0;
 		off32 offset;
@@ -78,10 +78,10 @@ struct ScopeDevMachT {
 		bool dbg_offset_is_set = false;
 		
 	public:
-		RTTI_DECL_T1(ExchangePoint, TS::ExchangePoint)
-		typedef ExchangePoint CLASSNAME;
-		ExchangePoint() {}
-		~ExchangePoint() {Deinit();}
+		RTTI_DECL_T1(DevExchangePoint, ExchangePoint)
+		typedef DevExchangePoint CLASSNAME;
+		DevExchangePoint() {}
+		~DevExchangePoint() {Deinit();}
 		
 		void Init(ConnectorBase* conn);
 		void Deinit();
@@ -94,45 +94,43 @@ struct ScopeDevMachT {
 		
 		off32 GetOffset() const {return offset;}
 		
-	};
+	};*/
 	
 	
+	/*class Ex;
 	
-	
-	class Ex;
-	
-	class Value :
+	class DevValue :
 		RTTIBase,
 		virtual public RealtimeStream
 	{
 		
 	public:
-		RTTI_DECL_T1(Value, RealtimeStream)
-		Value() = default;
-		virtual ~Value() = default;
+		RTTI_DECL_T1(DevValue, RealtimeStream)
+		DevValue() = default;
+		virtual ~DevValue() = default;
 		
 		virtual void Exchange(Ex& e) = 0;
 		virtual int GetQueueSize() const = 0;
-		virtual Format GetFormat() const = 0;
+		virtual DevFormat GetFormat() const = 0;
 		virtual bool IsQueueFull() const = 0;
 		
-	};
+	};*/
 	
 	
 	
 	
-	class SystemBase : RTTIBase
+	class DevSystemBase : RTTIBase
 	{
 	public:
-		RTTI_DECL_T0(SystemBase)
+		RTTI_DECL_T0(DevSystemBase)
 		
 	};
 	
 	
-	class Stream : RTTIBase
+	class DevStream : RTTIBase
 	{
 	public:
-		RTTI_DECL_T0(Stream)
+		RTTI_DECL_T0(DevStream)
 		
 		template<class ValSpec> using State = typename ScopeValMachT<ValSpec>::StreamState;
 		
@@ -143,7 +141,7 @@ struct ScopeDevMachT {
 		int time_us = 0;
 		
 		
-		template<class ValSpec> State<ValSpec>& Get() {return ScopeDevMachT_Stream_Get<Stream, ValSpec>(this);}
+		template<class ValSpec> State<ValSpec>& Get() {return ScopeDevMachT_Stream_Get<DevStream, ValSpec>(this);}
 		
 		// Context states & formats
 		#define IFACE(cls, var) \
@@ -152,17 +150,9 @@ struct ScopeDevMachT {
 		#undef IFACE
 		
 		
-		virtual bool			IsOpen() const = 0;
-		virtual bool			Open(int fmt_idx) = 0;
-		virtual void			Close() = 0;
-		virtual Value&			Get() = 0;
-		virtual void			FillBuffer() = 0;
-		virtual void			DropBuffer() = 0;
-		virtual Format			GetFormat(int i) const = 0;
-		
 		virtual int				GetActiveFormatIdx() const {return 0;}
 		virtual int				GetFormatCount() const {return 1;}
-		virtual bool			FindClosestFormat(const Format& fmt, int& idx) {idx = 0; return true;}
+		virtual bool			FindClosestFormat(const DevFormat& fmt, int& idx) {idx = 0; return true;}
 		virtual bool			LoadFileAny(String path) {return false;}
 		
 		void Clear();

@@ -6,19 +6,19 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class ValDevSpec>
 struct ScopeValDevCoreT {
-	using ValSpec		= typename ValDevSpec::Val;
-	using DevSpec		= typename ValDevSpec::Dev;
-	using Data			= ScopeValMachT<ValSpec>;
-	using Mach			= ScopeValDevMachT<ValDevSpec>;
-	using V				= ValSpec;
-	using Format		= typename Data::Format;
-	using ValueBase		= typename ValSpec::ValueBase;
-	using StreamBase	= typename ValSpec::StreamBase;
-	using SystemBase	= typename ValSpec::SystemBase;
-	using SinkBase		= typename ValSpec::SinkBase;
-	using Value			= typename Mach::Value;
-	using CtxStream		= typename Mach::Stream;
-	using ExchangePoint	= typename Mach::ExchangePoint;
+	using ValSpec			= typename ValDevSpec::Val;
+	using DevSpec			= typename ValDevSpec::Dev;
+	using Data				= ScopeValMachT<ValSpec>;
+	using Mach				= ScopeValDevMachT<ValDevSpec>;
+	using V					= ValSpec;
+	using Format			= typename Data::Format;
+	using ValueBase			= typename ValSpec::ValueBase;
+	using StreamBase		= typename ValSpec::StreamBase;
+	using SystemBase		= typename ValSpec::SystemBase;
+	using SinkBase			= typename ValSpec::SinkBase;
+	using Value				= typename Mach::Value;
+	using CtxStream			= typename Mach::Stream;
+	using ValExchangePoint	= typename Mach::ValExchangePoint;
 	
 	
 	class ValSink :
@@ -28,7 +28,7 @@ struct ScopeValDevCoreT {
 	{
 	public:
 		RTTI_DECL_2(ValSink, InterfaceSink<ValSink>, SinkBase, ValDevSpec::GetName() + "Sink")
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<ValSink>());}
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSink>());}
 		
 		virtual Format			GetFormat(V*) = 0;
 		virtual Value&			GetValue(V*) = 0;
@@ -43,9 +43,9 @@ struct ScopeValDevCoreT {
 		
 	public:
 		RTTI_DECL_1(ValSource, InterfaceSourceT, ValDevSpec::GetName() + "Source")
-		TypeId GetProviderType() override {return TypeId(AsTypeCls<ValSource>());}
+		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSource>());}
 		
-		using ExPt = ExchangePoint;
+		using ExPt = ValExchangePoint;
 		using Sink = ScopeValDevCoreT::ValSink;
 		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
@@ -63,19 +63,19 @@ struct ScopeValDevCoreT {
 	
 	using ValSourceRef			= Ref<ValSource,		RefParent1<Entity>>;
 	using ValSinkRef			= Ref<ValSink,			RefParent1<Entity>>;
-	using ExchangePointRef		= Ref<ExchangePoint,	RefParent1<MetaExchangePoint>>;
+	using ValExchangePointRef	= Ref<ValExchangePoint,	RefParent1<MetaExchangePoint>>;
 	
 	
 	#define RTTI_CTX_SYS(sys, base) \
-			RTTI_DECL_2(sys, TS::System<sys>, base, ValDevSpec::GetName() + #sys)
+			RTTI_DECL_2(sys, System<sys>, base, ValDevSpec::GetName() + #sys)
 	
-	class System :
-		public TS::System<System>,
+	class ValSystem :
+		public System<ValSystem>,
 		public SystemBase
 	{
 		LinkedList<ValSourceRef> srcs;
 		LinkedList<ValSinkRef> sinks;
-		LinkedList<ExchangePointRef> expts;
+		LinkedList<ValExchangePointRef> expts;
 		
 		void Visit(RuntimeVisitor& vis) override {
 			vis && srcs
@@ -90,15 +90,15 @@ struct ScopeValDevCoreT {
 	    void Uninitialize() override;
 	    
 	public:
-		RTTI_CTX_SYS(System, SystemBase)
-	    SYS_CTOR(System)
+		RTTI_CTX_SYS(ValSystem, SystemBase)
+	    SYS_CTOR(ValSystem)
 		
 		void Add(ValSourceRef src);
 		void Add(ValSinkRef sink);
-		void Add(ExchangePointRef sink);
+		void Add(ValExchangePointRef sink);
 		void Remove(ValSourceRef src);
 		void Remove(ValSinkRef sink);
-		void Remove(ExchangePointRef sink);
+		void Remove(ValExchangePointRef sink);
 		
 		static inline Callback& WhenUninit() {static Callback cb; return cb;}
 		

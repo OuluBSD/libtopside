@@ -6,10 +6,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define DEV(dev) \
 	using dev##DevLibT							= ScopeDevLibT<dev##Spec>; \
-	using dev##System							= typename dev##DevLibT::System; \
-	using dev##Component						= typename dev##DevLibT::Component; \
+	using dev##System							= typename dev##DevLibT::DevSystem; \
+	using dev##Component						= typename dev##DevLibT::DevComponent; \
 	using dev##ContextComponent					= typename dev##DevLibT::ContextComponent; \
-	using dev##ComponentGroup					= typename dev##DevLibT::ComponentGroup; \
+	using dev##ComponentGroup					= typename dev##DevLibT::DevComponentGroup; \
 	using dev##ContextComponentRef				= RefT_Entity<dev##ContextComponent>; \
 	using dev##ComponentGroupRef				= RefT_Entity<dev##ComponentGroup>; \
 	PREFAB_BEGIN(Complete##dev) \

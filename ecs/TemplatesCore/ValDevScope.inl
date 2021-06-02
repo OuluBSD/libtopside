@@ -8,7 +8,7 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 
-TMPL_VALDEVMACH(void) ExchangePoint::Init(ConnectorBase* conn) {
+TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
 	USING_VALDEVCORE(System)
 	this->conn = conn;
 	if (conn) {
@@ -21,7 +21,7 @@ TMPL_VALDEVMACH(void) ExchangePoint::Init(ConnectorBase* conn) {
 	}
 }
 
-TMPL_VALDEVMACH(void) ExchangePoint::Deinit() {
+TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
 	USING_VALDEVCORE(System)
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
@@ -34,7 +34,7 @@ TMPL_VALDEVMACH(void) ExchangePoint::Deinit() {
 	}
 }
 
-TMPL_VALDEVMACH(void) ExchangePoint::Update(double dt) {
+TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
 	USING_VALDEVCORE(ValSource)
 	USING_VALDEVCORE(ValSink)
 	USING_VALDEVCORE(CtxStream)
@@ -127,18 +127,18 @@ TMPL_VALDEVMACH(void) ExchangePoint::Update(double dt) {
 
 
 
-TMPL_VALDEVCORE(bool) System::Initialize() {
+TMPL_VALDEVCORE(bool) ValSystem::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL_VALDEVCORE(void) System::Start() {
+TMPL_VALDEVCORE(void) ValSystem::Start() {
 	
 }
 
-TMPL_VALDEVCORE(void) System::Update(double dt) {
-	USING_VALDEVCORE(ExchangePointRef)
+TMPL_VALDEVCORE(void) ValSystem::Update(double dt) {
+	USING_VALDEVCORE(ValExchangePointRef)
 	USING_VALDEVCORE(V)
 	
 	
@@ -162,7 +162,7 @@ TMPL_VALDEVCORE(void) System::Update(double dt) {
 	}
 	
 	int dbg_i = 0;
-	for (ExchangePointRef expt : expts) {
+	for (ValExchangePointRef expt : expts) {
 		off32 begin_offset = expt->GetOffset();
 		#if 1 && DEBUG_RT_PIPE
 		const RTTI& expt_rtti = expt->GetRTTI();
@@ -203,12 +203,12 @@ TMPL_VALDEVCORE(void) System::Update(double dt) {
 	
 }
 
-TMPL_VALDEVCORE(void) System::Stop() {
+TMPL_VALDEVCORE(void) ValSystem::Stop() {
 	
 	
 }
 
-TMPL_VALDEVCORE(void) System::Uninitialize() {
+TMPL_VALDEVCORE(void) ValSystem::Uninitialize() {
 	srcs.Clear();
 	sinks.Clear();
 	expts.Clear();
@@ -216,30 +216,30 @@ TMPL_VALDEVCORE(void) System::Uninitialize() {
 	WhenUninit();
 }
 
-TMPL_VALDEVCORE(void) System::Add(ValSourceRef src) {
+TMPL_VALDEVCORE(void) ValSystem::Add(ValSourceRef src) {
 	ASSERT(src);
 	srcs.FindAdd(src);
 }
 
-TMPL_VALDEVCORE(void) System::Remove(ValSourceRef src) {
+TMPL_VALDEVCORE(void) ValSystem::Remove(ValSourceRef src) {
 	srcs.RemoveKey(src);
 }
 
-TMPL_VALDEVCORE(void) System::Add(ValSinkRef sink) {
+TMPL_VALDEVCORE(void) ValSystem::Add(ValSinkRef sink) {
 	ASSERT(sink);
 	sinks.FindAdd(sink);
 }
 
-TMPL_VALDEVCORE(void) System::Remove(ValSinkRef sink) {
+TMPL_VALDEVCORE(void) ValSystem::Remove(ValSinkRef sink) {
 	sinks.RemoveKey(sink);
 }
 
-TMPL_VALDEVCORE(void) System::Add(ExchangePointRef expt) {
+TMPL_VALDEVCORE(void) ValSystem::Add(ValExchangePointRef expt) {
 	ASSERT(expt);
 	expts.FindAdd(expt);
 }
 
-TMPL_VALDEVCORE(void) System::Remove(ExchangePointRef expt) {
+TMPL_VALDEVCORE(void) ValSystem::Remove(ValExchangePointRef expt) {
 	expts.RemoveKey(expt);
 }
 

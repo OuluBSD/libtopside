@@ -43,7 +43,7 @@ public:
 	virtual ~InterfaceBase() {UnlinkAll();}
 	
 	bool UnlinkManually(ExchangeProviderBaseRef iface);
-	virtual TypeId GetProviderType() = 0;
+	virtual TypeId GetValDevSpec() = 0;
 	
 };
 
@@ -56,7 +56,7 @@ public:
 	virtual ~InterfaceSourceBase() {UnlinkAll();}
 	
 	bool UnlinkManually(InterfaceSinkBase& iface);
-	virtual TypeId GetProviderType() = 0;
+	virtual TypeId GetValDevSpec() = 0;
 	
 };
 
@@ -66,7 +66,7 @@ public:
 	virtual ~InterfaceSinkBase() {UnlinkAll();}
 	
 	bool UnlinkManually(InterfaceSourceBase& iface);
-	virtual TypeId GetProviderType() = 0;
+	virtual TypeId GetValDevSpec() = 0;
 	
 };
 
@@ -74,7 +74,7 @@ public:
 
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
-#define IFACE_BASE(x)	TypeId GetProviderType() override {return TypeId(AsTypeId(x));}
+#define IFACE_BASE(x)	TypeId GetValDevSpec() override {return TypeId(AsTypeId(x));}
 
 
 

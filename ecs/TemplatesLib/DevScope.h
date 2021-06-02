@@ -10,37 +10,31 @@ struct ScopeDevLibT {
 	using ComponentBase		= typename DevSpec::ComponentBase;
 	using Mach				= ScopeDevMachT<DevSpec>;
 	using Core				= ScopeDevCoreT<DevSpec>;
-	using Stream			= typename Mach::Stream;
-	using ComponentConf		= typename Mach::ComponentConf;
-	using SystemBase		= typename Mach::SystemBase;
-	using CtxStream			= typename Mach::Stream;
-	using SourceRef			= typename Core::SourceRef;
-	using SinkRef			= typename Core::SinkRef;
-	using ExchangePointRef	= typename Core::ExchangePointRef;
+	using Stream			= typename Mach::DevStream;
+	using ComponentConf		= typename Mach::DevComponentConf;
+	using SystemBase		= typename Mach::DevSystemBase;
+	using CtxStream			= typename Mach::DevStream;
+	//using SourceRef			= typename Core::SourceRef;
+	//using SinkRef			= typename Core::SinkRef;
+	//using ExchangePointRef	= typename Core::ExchangePointRef;
 	
 	class ContextComponent;
-	using ContextComponentRef	= Ref<ContextComponent, RefParent1<Entity>>;
-	class ComponentGroup;
-	using ComponentGroupRef		= Ref<ComponentGroup, RefParent1<ContextComponent>>;
+	using ContextComponentRef		= Ref<ContextComponent, RefParent1<Entity>>;
+	class DevComponentGroup;
+	using DevComponentGroupRef		= Ref<DevComponentGroup, RefParent1<ContextComponent>>;
 	
 	
 	#define RTTI_CTX_SYS(sys, base) \
-			RTTI_DECL_2(sys, TS::System<sys>, base, DevSpec::GetName() + #sys)
+			RTTI_DECL_2(sys, System<sys>, base, DevSpec::GetName() + #sys)
 	
-	class System :
-		public TS::System<System>,
+	class DevSystem :
+		public System<DevSystem>,
 		public SystemBase
 	{
 		LinkedList<ContextComponentRef> ctxs;
 		
-		LinkedList<SourceRef> srcs;
-		LinkedList<SinkRef> sinks;
-		LinkedList<ExchangePointRef> expts;
-		
 		void Visit(RuntimeVisitor& vis) override {
-			vis && srcs
-				&& sinks
-				&& expts;
+			vis && ctxs;
 		}
 	protected:
 	    bool Initialize() override;
@@ -50,16 +44,10 @@ struct ScopeDevLibT {
 	    void Uninitialize() override;
 	    
 	public:
-		RTTI_CTX_SYS(System, SystemBase)
-	    SYS_CTOR(System)
+		RTTI_CTX_SYS(DevSystem, SystemBase)
+	    SYS_CTOR(DevSystem)
 		
-		void Add(SourceRef src);
-		void Add(SinkRef sink);
-		void Add(ExchangePointRef sink);
 		void AddCtx(ContextComponentRef ctx);
-		void Remove(SourceRef src);
-		void Remove(SinkRef sink);
-		void Remove(ExchangePointRef sink);
 		void RemoveCtx(ContextComponentRef ctx);
 		
 		static inline Callback& WhenUninit() {static Callback cb; return cb;}
@@ -76,17 +64,17 @@ struct ScopeDevLibT {
 		return s;
 	}
 	
-	class Component :
-		public TS::Component<Component>,
+	class DevComponent :
+		public Component<DevComponent>,
 		public ComponentBase
 	{
-		RTTI_COMP0(Component);
+		RTTI_COMP0(DevComponent);
 		VIS_COMP_0_0
-		COPY_PANIC(Component)
+		COPY_PANIC(DevComponent)
 		void Visit(RuntimeVisitor& vis) override {}
 		
 	protected:
-		ComponentGroupRef			ctx;
+		DevComponentGroupRef		ctx;
 		LinkedList<ComponentConf>	in;
 		
 		void				OnError(String fn, String msg);
@@ -110,9 +98,14 @@ struct ScopeDevLibT {
 	
 	
 	
-	class ComponentGroup :
-		public RefScopeEnabler<ComponentGroup, ContextComponent>
+	class DevComponentGroup :
+		public RefScopeEnabler<DevComponentGroup, ContextComponent>
 	{
+	public:
+		bool Open();
+		void CloseTemporary();
+		void Clear();
+		void FindComponents();
 		
 	};
 	
@@ -127,9 +120,21 @@ struct ScopeDevLibT {
 		
 		
 	private:
+		LinkedList<DevComponentGroup>	groups;
+		Vector<String>	common_source;
+		CtxStream		stream;
 		Object			post_load;
+		bool			is_open = false;
 		
+		void			Clear();
+		void			Reset();
+		void			FindComponents();
+		void			DumpEntityComponents();
 		bool			LoadFileAny(String path, Object& dst);
+		bool			Load(Object& o);
+		bool			RefreshStageQueue();
+		void			RefreshStreamValuesAll();
+		void			RefreshPipeline();
 		
 	public:
 		

@@ -4,6 +4,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class ValExchangePointBase :
+	public ExchangePoint
+{
+	
+public:
+	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
+	virtual void Init(ConnectorBase* conn) = 0;
+	
+};
+
+using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
+
+
 template <class ValDevSpec>
 struct ScopeValDevMachT {
 	using ValSpec = typename ValDevSpec::Val;
@@ -45,8 +58,8 @@ struct ScopeValDevMachT {
 	};
 	
 	
-	class ExchangePoint :
-		public TS::ExchangePoint
+	class ValExchangePoint :
+		public ValExchangePointBase
 	{
 		ConnectorBase* conn = 0;
 		off32 offset;
@@ -54,12 +67,12 @@ struct ScopeValDevMachT {
 		bool dbg_offset_is_set = false;
 		
 	public:
-		RTTI_DECL_T1(ExchangePoint, TS::ExchangePoint)
-		typedef ExchangePoint CLASSNAME;
-		ExchangePoint() {}
-		~ExchangePoint() {Deinit();}
+		RTTI_DECL_T1(ValExchangePoint, ValExchangePointBase)
+		typedef ValExchangePoint CLASSNAME;
+		ValExchangePoint() {}
+		~ValExchangePoint() {Deinit();}
 		
-		void Init(ConnectorBase* conn);
+		void Init(ConnectorBase* conn) override;
 		void Deinit();
 		void Update(double dt) override;
 		
@@ -76,7 +89,7 @@ struct ScopeValDevMachT {
 		public ExchangeBase
 	{
 		bool storing = false;
-		ExchangePoint* expt = 0;
+		ValExchangePoint* expt = 0;
 		Value* src = 0;
 		Value* sink = 0;
 		const RealtimeSourceConfig* src_conf = 0;
@@ -84,12 +97,12 @@ struct ScopeValDevMachT {
 		
 	public:
 		RTTI_DECL_T1(Ex, ExchangeBase)
-		Ex(ExchangePoint* expt) : expt(expt) {}
+		Ex(ValExchangePoint* expt) : expt(expt) {}
 		
 		Value&						Sink() const {return *sink;}
 		Value&						Source() const {return *src;}
 		const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
-		ExchangePoint&				GetExchangePoint() {return *expt;}
+		ValExchangePoint			GetExchangePoint() {return *expt;}
 		off32						GetOffset() const {return offset;}
 		virtual bool				IsLoading() override {return !storing;}
 		virtual bool				IsStoring() override {return storing;}

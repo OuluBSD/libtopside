@@ -481,7 +481,7 @@ void SimpleRouteNode::OnLink(Ref provider, Cookie cookie) {
 	// this fails if component has both sink and source: RouteSink* sink = CastPtr<RouteSink>(iface);
 	
 	TODO
-	/*if (iface->GetProviderType() == AsTypeId(RouteSink))
+	/*if (iface->GetValDevSpec() == AsTypeId(RouteSink))
 		return &data.Add();
 	
 	return 0;*/
