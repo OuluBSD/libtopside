@@ -13,6 +13,18 @@ DEV_LIST
 
 
 
+// A hack for GCC to enable template specialization inside template
+template <class Stream, class ValSpec>
+	typename ScopeValMachT<ValSpec>::StreamState&
+		ContextDevMachT_Stream_Get(Stream* s);
+#define IFACE(cls, var) \
+template <class Stream> \
+	typename ScopeValMachT<cls##Spec>::StreamState& \
+		ContextDevMachT_Stream_Get(Stream* s) {return s->var;}
+IFACE_VAR_LIST
+#undef IFACE
+
+	
 template <class DevSpec>
 struct ContextDevMachT {
 	using Spec = DevSpec;
@@ -114,7 +126,7 @@ struct ContextDevMachT {
 	public:
 		RTTI_DECL_T0(Stream)
 		
-		template<class Ctx> using State = typename ScopeValMachT<Spec>::StreamState;
+		template<class ValSpec> using State = typename ScopeValMachT<ValSpec>::StreamState;
 		
 		
 		// Generic
@@ -123,12 +135,11 @@ struct ContextDevMachT {
 		int time_us = 0;
 		
 		
-		template<class Ctx> State<Ctx>& Get();
+		template<class ValSpec> State<ValSpec>& Get() {return ContextDevMachT_Stream_Get<Stream, ValSpec>(this);}
 		
 		// Context states & formats
 		#define IFACE(cls, var) \
-			State<cls##Spec> var; \
-			template<> State<cls##Spec>& Get<cls##Spec>() {return var;}
+			State<cls##Spec> var;
 		IFACE_VAR_LIST
 		#undef IFACE
 		
