@@ -56,6 +56,7 @@ void AccelComponentGroupBase::Ogl_CreatePipeline() {
 	int i = 0;
 	for (AccelComponentRef& comp : comps) {
 		uint32& gl_s = gl_stages[i];
+		ASSERT(comp->GetPos() == i);
 		
 		for(int j = 0; j < AccelComponentBase::PROG_COUNT; j++) {
 			GLint& prog = comp->prog[j];
@@ -71,8 +72,7 @@ void AccelComponentGroupBase::Ogl_CreatePipeline() {
 	}
 }
 
-void AccelComponentGroupBase::Ogl_ProcessStage(AccelComponentBaseRef s_, GLuint gl_stage) {
-	SCOPE_REF(s)
+void AccelComponentGroupBase::Ogl_ProcessStage(AccelComponentBase& s, GLuint gl_stage) {
 	GLint& fg_prog = s.prog[AccelComponentBase::PROG_FRAGMENT];
 	ASSERT(fg_prog >= 0 || !s.RequiresDeviceProgram());
 	if (fg_prog < 0)

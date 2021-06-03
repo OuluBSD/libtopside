@@ -191,10 +191,14 @@ struct AccelComponentBase :
 	bool				Open();
 	void				UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count);
 	bool				IsAudioSpec() const {TODO}
+	void				PostProcess();
 	
 	virtual bool		RequiresDeviceProgram() const {return false;}
 	
 	static TypeCls		GetTypeFromString(String type_str);
+	
+	template <class ValSpec>
+	void ForwardPacket(typename ScopeValMachT<ValSpec>::Packet p);
 	
 protected:
 	friend class AccelComponentGroupBase;
@@ -249,7 +253,7 @@ struct AccelComponentGroupBase : RTTIBase {
 	template <class T> bool IsIn() {return IsValSpec(AsTypeCls<T>());}
 	
 #if HAVE_OPENGL
-	void				Ogl_ProcessStage(AccelComponentBaseRef s, GLuint gl_stage);
+	void				Ogl_ProcessStage(AccelComponentBase& s, GLuint gl_stage);
 	void				Ogl_ClearPipeline();
 	void				Ogl_CreatePipeline();
 #endif

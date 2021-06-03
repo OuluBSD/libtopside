@@ -32,6 +32,7 @@ TMPL_DEVLIB(void) DevComponent::Initialize() {
 	if (sys)
 		sys	-> Add(ref);
 }
+
 TMPL_DEVLIB(void) DevComponent::Uninitialize() {
 	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Uninitialize");
 	Ref<DevComponent> ref = DevComponentBase::template AsRef<DevComponent>();
@@ -112,6 +113,12 @@ TMPL_DEVLIB(bool) DevComponent::Open() {
 
 
 
+
+
+
+
+
+
 TMPL_DEVLIB(bool) DevComponentGroup::Open() {
 	int dbg_i = 0;
 	for(DevComponentRef& comp : comps) {
@@ -161,6 +168,7 @@ TMPL_DEVLIB(void) DevComponentGroup::UpdateCompFlags() {
 	int comp_i = 0;
 	int comp_count = comps.GetCount();
 	for (DevComponentRef& comp : comps) {
+		comp->pos = comp_i;
 		comp->UpdateCompFlags(val_spec, comp_i, comp_count);
 		++comp_i;
 	}
@@ -193,22 +201,6 @@ TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
 	InterfaceSinkBaseRef sink = comp->template AsRef<InterfaceSinkBase>();
 	if (!sink)
 		return false;
-	
-	
-	/*int i = 0;
-	for(DevComponentRef& comp : comps) {
-		adfgwdfgsdfg
-		
-#if HAVE_OPENGL
-		Ogl_ProcessStage(*comp, gl_stages[i]);
-#endif
-		++i;
-	}
-	
-	for(DevComponentRef& comp : comps)
-		comp->PostProcess();
-	
-	return true;*/
 	
 	
 	return DevComponentGroupBase::PostRefreshPacket(*sink);

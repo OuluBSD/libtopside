@@ -23,6 +23,7 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 	using Mach = ScopeValDevMachT<ValDevSpec>;
 	using Core = ScopeValDevCoreT<ValDevSpec>;
 	using DevMach = ScopeDevMachT<DevSpec>;
+	using DevLib = ScopeDevLibT<DevSpec>;
 	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
 	using Packet = typename ValData::Packet;
 	using Value = typename Mach::Value;
@@ -32,6 +33,7 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 	using TrackerInfo = typename ValData::TrackerInfo;
 	using PacketTracker = typename ValLib::PacketTracker;
 	using InternalPacketData = typename DevMach::InternalPacketData;
+	using DevComponent = typename DevLib::DevComponent;
 	
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
@@ -44,6 +46,10 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 	if (buf) {
 		AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
 		
+		DevComponent* comp = CastPtr<DevComponent>(val_sink->AsComponentBase());
+		if (!comp)
+			return false;
+		
 		Packet p = ValData::CreatePacket();
 		PacketTracker::Track(TrackerInfo("PostRefreshPacketT", __FILE__, __LINE__), *p);
 		
@@ -54,6 +60,8 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 		data.pos = 0;
 		data.count = ag.GetComponents().GetCount();
 		buf->AddPacket(p);
+		
+		comp->Forward();
 		
 		return true;
 	}
@@ -219,6 +227,21 @@ bool AccelComponentBase::CheckDevice() {
 		return false;
 #endif
 	return true;
+}
+
+/*void AccelComponentBase::Forward() {
+	using DevSpec = AccelSpec;
+	using DevMach = ScopeDevMachT<DevSpec>;
+	using InternalPacketData = typename DevMach::InternalPacketData;
+	
+	AccelComponent& c = CastRef<AccelComponent>(this);
+	
+	c.Forward();
+}*/
+
+void AccelComponentBase::PostProcess() {
+	AccelComponent& c = CastRef<AccelComponent>(this);
+	c.GetStreamState().Step(c.group->GetValSpec());
 }
 
 

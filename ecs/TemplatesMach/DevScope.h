@@ -173,6 +173,12 @@ struct ScopeDevMachT {
 			#undef IFACE
 		}
 		
+		void Step(TypeCls val_spec) {
+			#define IFACE(cls, var) if (val_spec == AsTypeCls<cls##Spec>()) {var.Step(); return;}
+			IFACE_VAR_LIST
+			#undef IFACE
+		}
+		
 		virtual int				GetActiveFormatIdx() const {return 0;}
 		virtual int				GetFormatCount() const {return 1;}
 		virtual bool			FindClosestFormat(const DevFormat& fmt, int& idx) {idx = 0; return true;}

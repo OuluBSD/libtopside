@@ -91,6 +91,7 @@ struct ScopeDevLibT {
 		DevComponentGroupRef			group;
 		LinkedList<DevComponentConf>	in;
 		int								id = -1;
+		int								pos = -1;
 		bool							is_open = false;
 		
 		bool				Open();
@@ -109,6 +110,8 @@ struct ScopeDevLibT {
 		
 	public:
 		
+		virtual void		Forward() = 0;
+		
 		void				Initialize();
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
@@ -116,6 +119,7 @@ struct ScopeDevLibT {
 		void				OnError(String fn, String msg);
 		
 		int					GetId() const {return id;}
+		int					GetPos() const {return pos;}
 		bool				IsOpen() const {return is_open;}
 		String				ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
@@ -148,18 +152,18 @@ struct ScopeDevLibT {
 	public:
 		RTTI_DECL_R1(DevComponentGroup, DevComponentGroupBase)
 		
-		bool		Open();
-		void		Close();
-		void		CloseTemporary();
-		void		Clear();
-		void		FindComponents();
-		void		FindUniqueInputs(DevComponentConfVector& v);
-		void		ConnectInputs(DevComponentConfVector& v);
-		bool		LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
-		void		Add(DevComponentRef r) {comps.FindAdd(r); UpdateCompFlags();}
-		void		Remove(DevComponentRef r) {comps.RemoveKey(r); UpdateCompFlags();}
-		void		UpdateCompFlags();
-		void		UpdateDevBuffers();
+		bool				Open();
+		void				Close();
+		void				CloseTemporary();
+		void				Clear();
+		void				FindComponents();
+		void				FindUniqueInputs(DevComponentConfVector& v);
+		void				ConnectInputs(DevComponentConfVector& v);
+		bool				LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
+		void				Add(DevComponentRef r) {comps.FindAdd(r); UpdateCompFlags();}
+		void				Remove(DevComponentRef r) {comps.RemoveKey(r); UpdateCompFlags();}
+		void				UpdateCompFlags();
+		void				UpdateDevBuffers();
 		bool				CreatePackets();
 		void				DumpComponents();
 		bool				CheckDevice();
@@ -170,6 +174,7 @@ struct ScopeDevLibT {
 		DevComponentRef		GetComponentById(int id) const;
 		
 		const LinkedList<DevComponentRef>& GetComponents() const {return comps;}
+		LinkedList<DevComponentRef>& GetComponents() {return comps;}
 		
 		ContextComponent* GetParent() {return RefScopeEnabler<DevComponentGroup, ContextComponent>::GetParent();}
 		

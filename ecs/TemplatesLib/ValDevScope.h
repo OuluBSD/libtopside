@@ -12,6 +12,7 @@ struct ScopeValDevLibT {
 	using Mach			= ScopeValDevMachT<ValDevSpec>;
 	using Core			= ScopeValDevCoreT<ValDevSpec>;
 	using V				= ValSpec;
+	using Packet		= typename ValMach::Packet;
 	using Format		= typename Mach::Format;
 	using ValueBase		= typename Mach::ValueBase;
 	using StreamBase	= typename Mach::StreamBase;
@@ -163,6 +164,7 @@ struct ScopeValDevLibT {
 		void				UpdateDevBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
+		void				Forward() override;
 		
 	};
 	

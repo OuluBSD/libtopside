@@ -107,6 +107,12 @@ struct ScopeValMachT {
 			return *(T*)b;
 		}
 		
+		template <class T> T& GetData() {
+			ASSERT(data.GetCount() == sizeof(T));
+			byte* b = &data[0];
+			return *(T*)b;
+		}
+		
 	#if HAVE_OPENGL
 		virtual bool PaintOpenGLTexture(int texture);
 	#endif
@@ -141,6 +147,7 @@ struct ScopeValMachT {
 		
 		void Clear();
 		void Reset();
+		void Step();
 	};
 
 };

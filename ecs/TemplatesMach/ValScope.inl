@@ -46,6 +46,10 @@ TMPL_VALMACH(void) StreamState::Reset() {
 	frames_after_sync = 0;
 }
 
+TMPL_VALMACH(void) StreamState::Step() {
+	frames++;
+	frame_time.Reset();
+}
 
 
 

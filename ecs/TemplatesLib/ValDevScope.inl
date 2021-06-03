@@ -39,10 +39,20 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 
 TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
 TMPL_VALDEVLIB(CLS::Value&) PipeComponent::GetValue(V*) {return sink_value;}
-TMPL_VALDEVLIB(CLS::CtxStream&) PipeComponent::GetStream(V*) {TODO}
+TMPL_VALDEVLIB(CLS::CtxStream&) PipeComponent::GetStream(V*) {return stream;}
 TMPL_VALDEVLIB(void) PipeComponent::BeginStream(V*) {TODO}
 TMPL_VALDEVLIB(void) PipeComponent::EndStream(V*) {TODO}
 TMPL_VALDEVLIB(bool) PipeComponent::LoadAsInput(const DevCompConf& in) {TODO}
+
+TMPL_VALDEVLIB(void) PipeComponent::Forward() {
+	auto& buf = sink_value.GetBuffer();
+	if (buf.IsEmpty())
+		return;
+	
+	Packet p = buf.First();
+	buf.RemoveFirst();
+	DevComponent::template ForwardPacket<ValSpec>(p);
+}
 
 
 #undef CLS
