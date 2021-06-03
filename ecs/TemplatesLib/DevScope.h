@@ -152,6 +152,7 @@ struct ScopeDevLibT {
 		void		Remove(DevComponentRef r) {comps.RemoveKey(r); UpdateCompFlags();}
 		void		UpdateCompFlags();
 		void		UpdateDevBuffers();
+		bool				CreatePackets();
 		
 		bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
 		DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}
@@ -194,10 +195,8 @@ struct ScopeDevLibT {
 		bool				ConnectComponentInputs();
 		bool				ConnectComponentOutputs();
 		bool				CreateComponents(DevComponentConfVector& v);
-		void				RefreshStreamValuesBase();
 		bool				CheckInputTextures();
 		
-		template <class ValSpec>	void RefreshStreamValues() {}
 		template <class ValSpec>	bool ConnectComponentOutputsT(DevComponentGroup& gr);
 		template <class ValSpec>	DevComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
 		
@@ -217,7 +216,8 @@ struct ScopeDevLibT {
 		void				Uninitialize() override;
 		void				PostLoadFileAny(String s);
 		void				Update();
-		void				CreatePackets();
+		bool				CreatePackets();
+		bool				CreatePackets(DevComponentGroup& gr);
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetStreamState() {return stream;}
 		

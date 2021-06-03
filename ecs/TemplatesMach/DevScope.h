@@ -176,6 +176,8 @@ struct ScopeDevMachT {
 		
 		void Clear();
 		void Reset();
+		void UpdateValuesBase();
+		void UpdateValues(TypeCls val_spec);
 		
 		
 		

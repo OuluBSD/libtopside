@@ -19,5 +19,25 @@ TMPL_DEVMACH(void) DevStreamState::Reset() {
 	#undef IFACE
 }
 
+TMPL_DEVMACH(void) DevStreamState::UpdateValuesBase() {
+	time = GetSysTime();
+	#ifdef flagWIN32
+	{
+		SYSTEMTIME time;
+		GetLocalTime(&time);
+		time_us = time.wMilliseconds * 1000;
+	}
+	#else
+	{
+		struct timeval start;
+		gettimeofday(&start, NULL);
+		time_us = start.tv_usec;
+	}
+	#endif
+}
+
+TMPL_DEVMACH(void) DevStreamState::UpdateValues(TypeCls val_spec) {
+	
+}
 
 NAMESPACE_TOPSIDE_END

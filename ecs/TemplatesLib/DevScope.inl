@@ -133,6 +133,9 @@ TMPL_DEVLIB(void) DevComponentGroup::UpdateDevBuffers() {
 		comp->UpdateDevBuffers();
 }
 
+TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
+	TODO
+}
 
 
 
@@ -247,8 +250,33 @@ TMPL_DEVLIB(void) ContextComponent::Update() {
 	DLOG("ContextComponent::Update: end");
 }
 
-TMPL_DEVLIB(void) ContextComponent::CreatePackets() {
-	TODO
+TMPL_DEVLIB(bool) ContextComponent::CreatePackets() {
+	if (groups.IsFilled()) {
+		stream.UpdateValuesBase();
+		
+		int dbg_i = 0;
+		for (auto& gr : groups) {
+			CreatePackets(gr);
+			++dbg_i;
+		}
+			
+		return true;
+	}
+	return false;
+}
+
+TMPL_DEVLIB(bool) ContextComponent::CreatePackets(DevComponentGroup& gr) {
+	if (is_open /*&& lock.TryEnter()*/ ) {
+		
+		stream.UpdateValues(gr.GetValSpec());
+		
+		for (auto& gr : groups)
+			gr.CreatePackets();
+		
+		//lock.Leave();
+		return true;
+	}
+	return false;
 }
 
 TMPL_DEVLIB(void) ContextComponent::Clear() {
@@ -369,27 +397,10 @@ TMPL_DEVLIB(bool) ContextComponent::CheckInputTextures() {TODO}
 TMPL_DEVLIB(void) ContextComponent::Close() {TODO}
 
 TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesAll() {
-	RefreshStreamValuesBase();
-	#define IFACE(x) RefreshStreamValues<x##Spec>();
+	stream.UpdateValuesBase();
+	#define IFACE(x) stream.UpdateValues(AsTypeCls<x##Spec>());
 	IFACE_LIST
 	#undef IFACE
-}
-
-TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesBase() {
-	stream.time = GetSysTime();
-	#ifdef flagWIN32
-	{
-		SYSTEMTIME time;
-		GetLocalTime(&time);
-		stream.time_us = time.wMilliseconds * 1000;
-	}
-	#else
-	{
-		struct timeval start;
-		gettimeofday(&start, NULL);
-		stream.time_us = start.tv_usec;
-	}
-	#endif
 }
 
 TMPL_DEVLIB(void) ContextComponent::RefreshPipeline() {
