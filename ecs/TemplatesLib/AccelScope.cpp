@@ -16,31 +16,46 @@ void AccelComponentGroupBase::RefreshPipeline() {
 
 template<class ValDevSpec>
 bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
-	using ValData = ScopeValMachT<typename ValDevSpec::Val>;
-	using ValLib = ScopeValLibT<typename ValDevSpec::Val>;
+	using ValSpec = typename ValDevSpec::Val;
+	using DevSpec = typename ValDevSpec::Dev;
+	using ValData = ScopeValMachT<ValSpec>;
+	using ValLib = ScopeValLibT<ValSpec>;
 	using Mach = ScopeValDevMachT<ValDevSpec>;
 	using Core = ScopeValDevCoreT<ValDevSpec>;
+	using DevMach = ScopeDevMachT<DevSpec>;
 	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
 	using Packet = typename ValData::Packet;
 	using Value = typename Mach::Value;
 	using Ex = typename Mach::Ex;
 	using ValSink = typename Core::ValSink;
+	using Format = typename ValData::Format;
 	using TrackerInfo = typename ValData::TrackerInfo;
 	using PacketTracker = typename ValLib::PacketTracker;
+	using InternalPacketData = typename DevMach::InternalPacketData;
 	
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
 		return false;
 	
-	#define CTX (typename ValDevSpec::Val*)0
+	#define CTX (ValSpec*)0
 	
 	Value& val = val_sink->GetValue(CTX);
 	SimpleBufferedValue* buf = CastPtr<SimpleBufferedValue>(&val);
 	if (buf) {
+		AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
+		
 		Packet p = ValData::CreatePacket();
 		PacketTracker::Track(TrackerInfo("PostRefreshPacketT", __FILE__, __LINE__), *p);
+		
+		Format fmt;
+		fmt.template SetDeviceInternal<DevSpec>();
+		
+		InternalPacketData& data = p->template SetData<InternalPacketData>();
+		data.pos = 0;
+		data.count = ag.GetComponents().GetCount();
 		buf->AddPacket(p);
-		TODO
+		
+		return true;
 	}
 	else {
 		TODO

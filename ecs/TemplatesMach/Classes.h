@@ -56,6 +56,7 @@ public:
 		
 	typedef enum {
 		INVALID,
+		DEV_INTERNAL,
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			type_code##_##endianess ,
 		SAMPLE_LIST
@@ -139,6 +140,7 @@ public:
 
 	typedef enum {
 		INVALID,
+		DEV_INTERNAL,
 		#define DEV_SMPL(x) x ,
 		DEV_SMPL_LIST
 		#undef DEV_SMPL
@@ -347,6 +349,7 @@ public:
 	
 	void Clear() {Sample::Clear(type);}
 	void SetType(SampleType t) {type = t;}
+	void SetDeviceInternal() {type = SampleType::DEV_INTERNAL;}
 	
 	String ToString() const {return Sample::ToString(type);}
 	int GetSampleSize() const {return Sample::GetSize(type);}
@@ -355,6 +358,7 @@ public:
 	bool IsSampleBigEndian() const {return Sample::IsBigEndian(type);}
 	bool IsCopyCompatible(const SampleBase& b) const {return Sample::IsCopyCompatible(type, b.type);}
 	bool IsValid() const {return Sample::IsValid(type);}
+	bool IsDeviceInternal() const {return type == SampleType::DEV_INTERNAL;}
 	template <class K> bool IsSampleType() const {return Sample::template IsSampleType<K>(type);}
 	int GetPackedSingleSize() const {return Sample::GetPackedSingleSize(type);}
 	int GetPackedCount() const {return Sample::GetPackedCount(type);}
@@ -483,6 +487,7 @@ class TD1OnceMulti4 : RTTIBase {
 	TD1Once<T1>		o1;
 	TD1Once<T2>		o2;
 	TD1Once<T3>		o3;
+	bool is_dev_internal = false;
 	
 public:
 	static const int def_sample_rate = 1;
@@ -492,7 +497,10 @@ public:
 	int GetArea() const {return 1;}
 	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear();}
 	bool IsValid() const {return o0.IsValid() && o1.IsValid() && o2.IsValid() && o3.IsValid();}
+	bool IsDeviceInternal() const {return is_dev_internal;}
 	bool operator==(const TD1OnceMulti4<T>& o) const {TODO}
+	
+	void SetDeviceInternal() {is_dev_internal = true;}
 	
 };
 

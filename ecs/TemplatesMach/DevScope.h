@@ -68,7 +68,11 @@ struct ScopeDevMachT {
 	};
 	
 	
-	
+	struct InternalPacketData {
+		int pos;
+		int count;
+		
+	};
 	
 	/*struct DevSinkBase : RTTIBase {
 		RTTI_DECL_T0(DevSinkBase)

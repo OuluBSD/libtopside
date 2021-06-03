@@ -21,8 +21,15 @@ struct ScopeValMachT {
 	
 	struct Format : public FormatBase {
 		RTTI_DECL_T1(Format, FormatBase)
-		
 		using FormatBase::FormatBase;
+		
+		TypeCls dev = 0;
+		
+		template <class T>
+		void SetDeviceInternal() {
+			FormatBase::SetDeviceInternal();
+			dev = AsTypeCls<T>();
+		}
 	};
 	
 	using V = ValSpec;
@@ -45,6 +52,7 @@ struct ScopeValMachT {
 		
 		void operator=(const TrackerInfo& i) {
 			handler_cls = i.handler_cls;
+			handler_fn = i.handler_fn;
 			file = i.file;
 			line = i.line;
 		}
@@ -91,6 +99,13 @@ struct ScopeValMachT {
 		void					StopTracking(TrackerInfo info);
 		PacketId				GetTrackingId() const {return id;}
 		bool					HasTrackingId() const {return id != 0;}
+		
+		template <class T> T& SetData() {
+			data.SetCount(sizeof(T));
+			byte* b = &data[0];
+			memset(b,0, sizeof(T));
+			return *(T*)b;
+		}
 		
 	#if HAVE_OPENGL
 		virtual bool PaintOpenGLTexture(int texture);
