@@ -179,6 +179,8 @@ struct AccelComponentBase :
 	
 	
 	void				Clear();
+	void				Close();
+	bool				Open();
 	void				UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count);
 	bool				IsAudioSpec() const {TODO}
 	bool				RequiresShaderCode() const {TODO}

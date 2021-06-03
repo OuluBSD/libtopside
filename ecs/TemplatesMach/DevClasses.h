@@ -20,6 +20,8 @@ NAMESPACE_TOPSIDE_BEGIN
 		RTTI_DECL_R0(x##ComponentBase) \
 		String ToString() const {return String();} \
 		void Clear() {} \
+		void Close() {} \
+		bool Open() {return false;} \
 	};
 DUMMY_DEV_LIST
 #undef DEV

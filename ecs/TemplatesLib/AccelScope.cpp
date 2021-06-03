@@ -140,6 +140,23 @@ void AccelComponentBase::Clear() {
 	ClearProg();
 }
 
+void AccelComponentBase::Close() {
+	// pass
+}
+
+bool AccelComponentBase::Open() {
+	
+#if HAVE_OPENGL
+	if (!Ogl_CompilePrograms())
+		return false;
+	
+	if (!Ogl_LinkStages())
+		return false;
+#endif
+	
+	return true;
+}
+
 
 
 

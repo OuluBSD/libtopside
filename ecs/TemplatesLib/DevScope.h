@@ -90,8 +90,11 @@ struct ScopeDevLibT {
 		DevComponentGroupRef			group;
 		LinkedList<DevComponentConf>	in;
 		int								id = -1;
+		bool							is_open = false;
 		
+		bool				Open();
 		void				Clear();
+		void				Close();
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetDevStreamState();
 		
@@ -109,6 +112,7 @@ struct ScopeDevLibT {
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
 		void				SetGroup(DevComponentGroupRef g) {group = g;}
 		
+		bool				IsOpen() const {return is_open;}
 		int					GetId() const {return id;}
 		String				ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}

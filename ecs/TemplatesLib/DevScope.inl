@@ -88,11 +88,42 @@ TMPL_DEVLIB(bool) DevComponent::IsDevPipeComponent(TypeCls type) {
 	return false;
 }
 
+TMPL_DEVLIB(void) DevComponent::Close() {
+	DevComponentBase::Close();
+	is_open = false;
+}
+
+TMPL_DEVLIB(bool) DevComponent::Open() {
+	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Open: begin");
+	const char* fn_name = "Open";
+	
+	if (is_open)
+		Close();
+	
+	if (DevComponentBase::Open())
+		is_open = true;
+	
+	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Open: end");
+	return is_open;
+}
 
 
 
 
-TMPL_DEVLIB(bool) DevComponentGroup::Open() {TODO}
+
+
+TMPL_DEVLIB(bool) DevComponentGroup::Open() {
+	int dbg_i = 0;
+	for(DevComponentRef& comp : comps) {
+		if (!comp->IsOpen() && !comp->Open()) {
+			DLOG(DevSpec::GetName() + "ComponentGroup::Open: error: a component did not open properly (comp #" + IntStr(dbg_i) + ")");
+			return false;
+		}
+		++dbg_i;
+	}
+	return true;
+}
+
 TMPL_DEVLIB(void) DevComponentGroup::CloseTemporary() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::Clear() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::FindComponents() {TODO}
