@@ -281,6 +281,8 @@ TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
 
 
 TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
+	using TrackerInfo = typename ScopeValMachT<typename ValDevSpec::Val>::TrackerInfo;
+	
 	if (src->GetCount()) {
 		auto iter = src->begin();
 		for (; iter; ++iter)
@@ -289,6 +291,7 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 		if (!iter)
 			return false;
 		Packet p = iter();
+		p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
 		dst->Put(p, dst_realtime);
 		internal_written_bytes += p->GetSizeBytes();
 		offset = p->GetOffset();
@@ -366,6 +369,8 @@ TMPL_VALDEVMACH(void) PacketConsumer::TestSetOffset(off32 offset) {
 }
 
 TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
+	using TrackerInfo = typename ScopeValMachT<typename ValDevSpec::Val>::TrackerInfo;
+	
 	Format src_fmt = src->GetFormat();
 	
 	if (dst_fmt.IsCopyCompatible(src_fmt)) {
@@ -392,11 +397,13 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 			if (leftover_size > 0)
 				leftover = src;
 			else {
+				src->StopTracking(TrackerInfo(this, __FILE__, __LINE__));
 				++offset;
 				++internal_count;
 			}
 		}
 		else {
+			src->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
 			internal_written_bytes += src->GetSizeBytes();
 			dst_buf->Put(src, internal_count == 0 && dst_realtime);
 			++offset;

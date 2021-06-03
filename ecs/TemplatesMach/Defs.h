@@ -88,4 +88,13 @@
 #define USING_VALDEVCORE(x) using x = typename ScopeValDevCoreT<ValDevSpec>::x;
 #define USING_VALDEVLIB(x) using x = typename ScopeValDevLibT<ValDevSpec>::x;
 
+
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+class InterfaceSinkBase;
+
+NAMESPACE_TOPSIDE_END
+
 #endif

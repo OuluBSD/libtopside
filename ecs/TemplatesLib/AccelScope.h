@@ -12,6 +12,7 @@ NAMESPACE_TOPSIDE_BEGIN
 		void UpdateBuffers() {} \
 		virtual bool				IsValSpec(TypeCls t) const = 0; \
 		virtual x##StreamState&		GetStreamState() = 0; \
+		bool PostRefreshPacket(InterfaceSinkBase& sink) {return false;} \
 	};
 DUMMY_DEV_LIST
 #undef DEV
@@ -240,6 +241,7 @@ struct AccelComponentGroupBase : RTTIBase {
 	Vector<uint32> gl_stages;
 	
 	void RefreshPipeline();
+	bool PostRefreshPacket(InterfaceSinkBase& sink);
 	
 	virtual bool				IsValSpec(TypeCls t) const = 0;
 	virtual AccelStreamState&	GetStreamState() = 0;

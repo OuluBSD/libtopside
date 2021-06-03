@@ -9,11 +9,13 @@
 #include "ValDevScope.h"
 #include "ConvDevScope.h"
 #include "DevSpec.h"
+#include "ValScope.h"
 
 #include "DevScope.inl"
 #include "AccelScope.inl"
 #include "ValDevScope.inl"
 #include "ConvDevScope.inl"
 #include "EcsCore.inl"
+#include "ValScope.inl"
 
 #endif

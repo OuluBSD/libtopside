@@ -27,6 +27,31 @@ struct ScopeValMachT {
 	
 	using V = ValSpec;
 	
+	typedef dword PacketId;
+	
+	
+	struct TrackerInfo {
+		const RTTI* handler_cls = 0;
+		const char* handler_fn = 0;
+		const char* file = 0;
+		int line = 0;
+		
+		TrackerInfo() {}
+		TrackerInfo(const TrackerInfo& i) {*this = i;}
+		TrackerInfo(const RTTI& o) {handler_cls = &o;}
+		template <class T> TrackerInfo(const T* o) {handler_cls = &o->GetRTTI();}
+		template <class T> TrackerInfo(const T* o, const char* file, int line) : handler_cls(&o->GetRTTI()), file(file), line(line) {}
+		TrackerInfo(const char* fn, const char* file, int line) : handler_fn(fn), file(file), line(line) {}
+		
+		void operator=(const TrackerInfo& i) {
+			handler_cls = i.handler_cls;
+			file = i.file;
+			line = i.line;
+		}
+		
+		
+		String ToString() const;
+	};
 	
 	class PacketValue :
 		RTTIBase,
@@ -36,7 +61,7 @@ struct ScopeValMachT {
 		Format				fmt;
 		off32				offset;
 		double				time;
-		
+		PacketId			id = 0;
 		
 	public:
 		using Pool = RecyclerPool<PacketValue>;
@@ -45,12 +70,14 @@ struct ScopeValMachT {
 		
 		RTTI_DECL0(PacketValue);
 		PacketValue() {}
+		~PacketValue() {StopTracking(this);}
 		
 		Vector<byte>&			Data() {return data;}
 		void					Set(Format fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
 		void					SetFormat(Format fmt) {this->fmt = fmt;}
 		void					SetOffset(off32 offset) {this->offset = offset;}
 		void					SetTime(double seconds) {time = seconds;}
+		void					SetTrackingId(PacketId i) {id = i;}
 		
 		const Vector<byte>&		GetData() const {return data;}
 		Format					GetFormat() const {return fmt;}
@@ -60,6 +87,10 @@ struct ScopeValMachT {
 		int						GetSizeBytes() const {return data.GetCount();}
 		int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
 		int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
+		void					CheckTracking(TrackerInfo info);
+		void					StopTracking(TrackerInfo info);
+		PacketId				GetTrackingId() const {return id;}
+		bool					HasTrackingId() const {return id != 0;}
 		
 	#if HAVE_OPENGL
 		virtual bool PaintOpenGLTexture(int texture);

@@ -3,6 +3,25 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
+TMPL_VALMACH(String) TrackerInfo::ToString() const {
+	String s;
+	
+	if (handler_cls)
+		s << "@" << handler_cls->GetDynamicName();
+	if (handler_fn)
+		s << "::" << handler_fn;
+	
+	if (file && line)
+		s << " (" << file << ":" << IntStr(line) << ")";
+	else if (file)
+		s << " (" << file << ")";
+	
+	if (s.IsEmpty())
+		s = "<no info>";
+	return s;
+}
+
+
 
 
 TMPL_VALMACH(void) StreamState::Clear() {

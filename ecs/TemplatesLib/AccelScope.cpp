@@ -14,6 +14,50 @@ void AccelComponentGroupBase::RefreshPipeline() {
 }
 
 
+template<class ValDevSpec>
+bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
+	using ValData = ScopeValMachT<typename ValDevSpec::Val>;
+	using ValLib = ScopeValLibT<typename ValDevSpec::Val>;
+	using Mach = ScopeValDevMachT<ValDevSpec>;
+	using Core = ScopeValDevCoreT<ValDevSpec>;
+	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
+	using Packet = typename ValData::Packet;
+	using Value = typename Mach::Value;
+	using Ex = typename Mach::Ex;
+	using ValSink = typename Core::ValSink;
+	using TrackerInfo = typename ValData::TrackerInfo;
+	using PacketTracker = typename ValLib::PacketTracker;
+	
+	ValSink* val_sink = CastPtr<ValSink>(&sink);
+	if (!val_sink)
+		return false;
+	
+	#define CTX (typename ValDevSpec::Val*)0
+	
+	Value& val = val_sink->GetValue(CTX);
+	SimpleBufferedValue* buf = CastPtr<SimpleBufferedValue>(&val);
+	if (buf) {
+		Packet p = ValData::CreatePacket();
+		PacketTracker::Track(TrackerInfo("PostRefreshPacketT", __FILE__, __LINE__), *p);
+		buf->AddPacket(p);
+		TODO
+	}
+	else {
+		TODO
+	}
+	
+	#undef CTX
+}
+
+bool AccelComponentGroupBase::PostRefreshPacket(InterfaceSinkBase& sink) {
+	#define IFACE(x) if (PostRefreshPacketT<TS::VD<AccelSpec,x##Spec>>(*this, sink)) return true;
+	IFACE_LIST
+	#undef IFACE
+	return false;
+}
+
+
+
 
 
 

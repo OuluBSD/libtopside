@@ -17,5 +17,7 @@ file
 	ConvDevScope.h,
 	ConvDevScope.inl highlight cpp,
 	DevSpec.h,
-	EcsCore.inl highlight cpp;
+	EcsCore.inl highlight cpp,
+	ValScope.h,
+	ValScope.inl highlight cpp;
 

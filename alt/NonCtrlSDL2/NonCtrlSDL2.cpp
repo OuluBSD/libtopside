@@ -27,6 +27,10 @@ bool SingleMachine::Open(bool gui) {
     #undef IFACE
     #undef IFACE_CTX_CLS
     
+    #define IFACE(x) mach.Add<ScopeValLibT<x##Spec>::PacketTracker>();
+    IFACE_LIST
+    #undef IFACE
+    
     //if (gui)
 	//	mach.Add<WindowSystem>();
 	

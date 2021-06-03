@@ -188,7 +188,11 @@ TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
 	for(DevComponentRef& comp : comps)
 		comp->ClearStream();
 	
-	TODO // use default System::Update(double dt) instead
+	
+	DevComponentRef& comp = comps.First();
+	InterfaceSinkBaseRef sink = comp->template AsRef<InterfaceSinkBase>();
+	if (!sink)
+		return false;
 	
 	
 	/*int i = 0;
@@ -202,9 +206,12 @@ TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
 	}
 	
 	for(DevComponentRef& comp : comps)
-		comp->PostProcess();*/
+		comp->PostProcess();
 	
-	return true;
+	return true;*/
+	
+	
+	return DevComponentGroupBase::PostRefreshPacket(*sink);
 }
 
 TMPL_DEVLIB(void) DevComponentGroup::DumpComponents() {
