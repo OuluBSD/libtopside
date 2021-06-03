@@ -5,12 +5,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class T>
+template <class ValDevSpec>
 class ConnectAllInterfaces :
-	public Connector<ConnectAllInterfaces<T>>,
+	public Connector<ConnectAllInterfaces<ValDevSpec>>,
 	public MetaExchangePoint
 {
-	using ConnectorT = Connector<ConnectAllInterfaces<T>>;
+	using ConnectorT = Connector<ConnectAllInterfaces<ValDevSpec>>;
 	Ref<EntityStore> sys;
 	
 	int tmp_link_count = 0;
@@ -19,14 +19,14 @@ public:
 	RTTI_DECL2(ConnectAllInterfaces, ConnectorT, MetaExchangePoint)
 	COPY_PANIC(ConnectAllInterfaces);
 	
-	using Source	= T;
-	using Sink		= typename T::Sink;
+	using Source	= typename ScopeValDevCoreT<ValDevSpec>::ValSource;
+	using Sink		= typename Source::Sink;
 	using ISource	= InterfaceSource<Source, Sink>;
 	using ISink		= InterfaceSink<Sink>;
 	using SourceRef	= RefT_Entity<Source>;
 	using SinkRef	= RefT_Entity<Sink>;
 	
-	TypeId GetType() const override {return AsTypeCls<ConnectAllInterfaces<T>>();}
+	TypeId GetType() const override {return AsTypeCls<ConnectAllInterfaces<ValDevSpec>>();}
 	void CopyTo(ConnectorBase* component) const override {}
 	void Initialize() override;
 	void Uninitialize() override;
@@ -45,14 +45,15 @@ public:
 	
 private:
 	
-	void Visit(PoolRef pool, LinkedList<LinkedList<Ref<T>>>& src_stack);
+	void Visit(PoolRef pool, LinkedList<LinkedList<Ref<Source>>>& src_stack);
 	void Visit(SourceRef src, PoolRef pool);
 	
 };
 
-template <class Source, class T> bool ComponentBase::LinkManually(T& o, String* err_msg) {
-	using ConnAll = ConnectAllInterfaces<Source>;
-	using Sink = typename Source::SinkClass;
+template <class ValDevSpec, class T> bool ComponentBase::LinkManually(T& o, String* err_msg) {
+	using ConnAll = ConnectAllInterfaces<ValDevSpec>;
+	using Source = typename ConnAll::Source;
+	using Sink = typename Source::Sink;
 	EntityRef src_e = GetEntity();
 	EntityRef sink_e = o.GetEntity();
 	

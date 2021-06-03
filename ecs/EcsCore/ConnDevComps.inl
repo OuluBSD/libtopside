@@ -1,4 +1,4 @@
-#define TMPL(x) template <class T> x ConnectAllDevInterfaces<T>::
+#define TMPL(x) template <class DevSpec> x ConnectAllDevInterfaces<DevSpec>::
 	
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -15,7 +15,27 @@ TMPL(void) Uninitialize() {
 }
 
 TMPL(void) UnlinkAll() {
-	TODO
+	PoolRef pool = ConnectorBase::GetPool();
+	VisitUnlink(pool);
+}
+
+TMPL(void) VisitUnlink(PoolRef pool) {
+	for (EntityRef& e : *pool) {
+		for(ComponentBaseRef& comp : e->GetComponents().GetValues()) {
+			CollectInterfacesVisitor vis;
+			vis.Visit(*comp);
+			for(InterfaceSourceBaseRef& src : vis.src_ifaces) {
+				src->UnlinkAll();
+			}
+			for(InterfaceSinkBaseRef& src : vis.sink_ifaces) {
+				src->UnlinkAll();
+			}
+		}
+	}
+	
+	for (auto iter = pool->BeginPool(); iter; ++iter) {
+		VisitUnlink(*iter);
+	}
 }
 
 TMPL(void) Update(double dt) {
@@ -40,7 +60,8 @@ TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& s
 			for(InterfaceSourceBaseRef& src : vis.src_ifaces) {
 				if (!cur)
 					cur = &src_stack.Add();
-				cur->Add(src);
+				if (src->GetDevSpec() == AsTypeCls<DevSpec>())
+					cur->Add(src);
 			}
 		}
 	}
@@ -62,7 +83,7 @@ TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& s
 								if (src->Accept(sink, src_cookie, sink_cookie)) {
 									ValExchangePointBaseRef ep = MetaExchangePoint::Add(valdev_spec);
 									ASSERT(ep);
-									RTLOG("ConnectAllDevInterfaces<T>::Visit(pool,stack): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
+									RTLOG("ConnectAllDevInterfaces<DevSpec>::Visit(pool,stack): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 									src->Link(ep, sink, src_cookie, sink_cookie);
 									ep->Init(this);
 									ep->Set(src, sink, src_cookie, sink_cookie);

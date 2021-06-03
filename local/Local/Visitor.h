@@ -80,8 +80,8 @@ public:
 		if (break_out)return;
 		if (clear_refs)
 			o.Clear();
-		//OnRef(AsTypeCls<typename T::Type>(), &o, GetRefCounter(o.Get()));
-		OnRef(o->GetRTTI(), &o, GetRefCounter(o.Get()));
+		else if (o)
+			OnRef(o->GetRTTI(), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>

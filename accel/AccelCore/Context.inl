@@ -61,7 +61,7 @@ CONV_TMPL(bool) ConvertComponent::LoadAsInput(const AcceleratorHeader& in) {
 		ASSERT(this_comp_base && that_comp_base);
 		
 		String err_msg;
-		if (!that_comp_base->template LinkManually<FromSource>(*this, &err_msg)) {
+		if (!that_comp_base->template LinkManually<From>(*this, &err_msg)) {
 			ctx->GetParent()->OnError("ConvertComponent::LoadAsInput", "Manual linking failed: " + err_msg);
 			return false;
 		}

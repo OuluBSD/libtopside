@@ -103,6 +103,7 @@ struct ScopeConvDevLibT {
 		}
 		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
 		
+		
 		// ValSink
 		Format				GetFormat(V*) override;
 		FromValue&			GetValue(V*) override;

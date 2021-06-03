@@ -137,6 +137,14 @@ TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
 	TODO
 }
 
+TMPL_DEVLIB(void) DevComponentGroup::DumpComponents() {
+	LOG(DevSpec::GetName() + "ComponentGroup::DumpComponents");
+	int i = 0;
+	for(DevComponentRef& comp : comps) {
+		LOG(i++ << ": " << comp->ToString());
+	}
+}
+
 
 
 
@@ -539,7 +547,8 @@ bool ScopeDevLibT<DevSpec>::ContextComponent::ConnectComponentOutputsT(DevCompon
 	EntityRef e = ComponentBase::GetEntity();
 	ComponentBaseRef comp = gr.comps.Top()->template AsRef<ComponentBase>();
 	
-	using VDCore = ScopeValDevCoreT<VD<DevSpec,ValSpec>>;
+	using VD = TS::VD<DevSpec,ValSpec>;
+	using VDCore = ScopeValDevCoreT<VD>;
 	using ValSource = typename VDCore::ValSource;
 	using ValSourceRef = typename VDCore::ValSourceRef;
 	using ValSink = typename VDCore::ValSink;
@@ -547,49 +556,54 @@ bool ScopeDevLibT<DevSpec>::ContextComponent::ConnectComponentOutputsT(DevCompon
 	using FromCenterComp = typename ScopeConvDevLibT<ValSpec,CenterSpec,DevSpec>::ConvertComponent;
 	using FromCenterCompRef = Ref<FromCenterComp, RefParent1<Entity>>;
 	
-	ValSourceRef accel_aud_src = comp->As<ValSource>();
-	if (!accel_aud_src) {
-		OnError(fn_name, "last audio group component does not have ValSource interface");
+	ValSourceRef valdev_src = comp->As<ValSource>();
+	if (!valdev_src) {
+		OnError(fn_name, "last " + ValSpec::GetName() + "-group component does not have " + VD::GetPrefix() + "Source interface");
+		gr.DumpComponents();
 		return false;
 	}
 	
-	FromCenterCompRef aud_out = e->Find<FromCenterComp>();
-	if (!aud_out) {
-		aud_out = AddEntityComponent<FromCenterComp>(gr);
+	FromCenterCompRef val_out = e->Find<FromCenterComp>();
+	if (!val_out) {
+		val_out = AddEntityComponent<FromCenterComp>(gr);
 		
-		ValSourceRef aud_src = aud_out->template As<ValSource>();
-		if (!aud_src) {
-			OnError(fn_name, "could not find ValSource interface");
+		ValSourceRef val_src = val_out->template As<ValSource>();
+		if (!val_src) {
+			OnError(fn_name, "could not find " + VD::GetPrefix() + "Source interface");
 			return false;
 		}
 		
-		auto aud_src_conn = e->FindConnector<ConnectAllInterfaces<ValSource>>();
-		if (!aud_src_conn) {
-			OnError(fn_name, "could not find ValSource connector");
+		auto val_src_conn	= e->FindConnector<ConnectAllInterfaces<VD>>();
+		auto dev_conn		= e->FindConnector<ConnectAllDevInterfaces<DevSpec>>();
+		if (!val_src_conn && !dev_conn) {
+			OnError(fn_name, "could not find " + VD::GetPrefix() + "Source nor " + DevSpec::GetName() + "Spec connector");
 			return false;
 		}
 		
 		// Connect ValSource to any existing ValSink
-		if (!aud_src_conn->LinkAny(aud_src)) {
-			OnError(fn_name, "could not link ValSource automatically");
+		if ((val_src_conn	&& !val_src_conn	->LinkAny(val_src)) &&
+			(dev_conn		&& !dev_conn		->template LinkAny<ValSpec>(val_src))) {
+			OnError(fn_name, "could not link " + VD::GetPrefix() + "Source automatically");
 			return false;
 		}
 	}
 	
-	ValSinkRef accel_aud_sink = comp->As<ValSink>();
-	if (!accel_aud_sink) {
-		OnError(fn_name, "component does not have DevValSink interface");
+	ValSinkRef valdev_sink = comp->As<ValSink>();
+	if (!valdev_sink) {
+		OnError(fn_name, "component does not have " + VD::GetPrefix() + "Sink interface");
 		return false;
 	}
 	
-	auto accel_aud_src_conn = e->FindConnector<ConnectAllInterfaces<ValSource>>();
-	if (!accel_aud_src_conn) {
-		OnError(fn_name, "could not find ValSource connector");
+	auto valdev_src_conn	= e->FindConnector<ConnectAllInterfaces<VD>>();
+	auto dev_conn			= e->FindConnector<ConnectAllDevInterfaces<DevSpec>>();
+	if (!valdev_src_conn && !dev_conn) {
+		OnError(fn_name, "could not find " + VD::GetPrefix() + "Source connector");
 		return false;
 	}
 	
-	if (!accel_aud_src_conn->LinkManually(accel_aud_src, accel_aud_sink)) {
-		OnError(fn_name, "could not link ValSource to DevValSink manually");
+	if ((valdev_src_conn && !valdev_src_conn->LinkManually(valdev_src, valdev_sink)) &&
+		(dev_conn && !dev_conn->template LinkManually<ValSpec>(valdev_src, valdev_sink))) {
+		OnError(fn_name, "could not link " + VD::GetPrefix() + "Source to DevValSink manually");
 		return false;
 	}
 	

@@ -17,10 +17,20 @@ IFACE_LIST
 
 
 
-#define IFACE(x) \
-template<> inline RefT_Entity<x##Source> ComponentBase_Static_As(ComponentBase* c) {x##Source* p = CastPtr<x##Source>(c); if (p) return p->AsRef<x##Source>(); return RefT_Entity<x##Source>();} \
-template<> inline RefT_Entity<x##Sink>   ComponentBase_Static_As(ComponentBase* c) {x##Sink* p = CastPtr<x##Sink>(c); if (p) return p->AsRef<x##Sink>(); return RefT_Entity<x##Sink>();}
+#define IFACE_CTX_CLS(dev, val, prefix) \
+template<> inline RefT_Entity<prefix##Source> ComponentBase_Static_As(ComponentBase* c) {\
+	prefix##Source* p = CastPtr<prefix##Source>(c);\
+	if (p) return p->AsRef<prefix##Source>();\
+	return RefT_Entity<prefix##Source>();\
+}\
+template<> inline RefT_Entity<prefix##Sink>   ComponentBase_Static_As(ComponentBase* c) {\
+	prefix##Sink* p = CastPtr<prefix##Sink>(c);\
+	if (p) return p->AsRef<prefix##Sink>();\
+	return RefT_Entity<prefix##Sink>();\
+}
+#define IFACE(x) DEV_IFACE(x)
 IFACE_LIST
 #undef IFACE
+#undef IFACE_CTX_CLS
 
 NAMESPACE_TOPSIDE_END

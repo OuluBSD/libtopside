@@ -5,12 +5,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template <class T>
+template <class DevSpec>
 class ConnectAllDevInterfaces :
-	public Connector<ConnectAllDevInterfaces<T>>,
+	public Connector<ConnectAllDevInterfaces<DevSpec>>,
 	public MetaExchangePoint
 {
-	using ConnectorT = Connector<ConnectAllDevInterfaces<T>>;
+	using ConnectorT = Connector<ConnectAllDevInterfaces<DevSpec>>;
 	Ref<EntityStore> sys;
 	
 	int64 refresh_ticks = -1;
@@ -32,8 +32,19 @@ public:
 	}
 	bool LinkAll();
 	
+	template <class ValSpec> bool LinkAny(typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSourceRef src) {
+		return ConnectAllInterfaces<VD<DevSpec,ValSpec>>().LinkAny(src);
+	}
+	
+	template <class ValSpec> bool LinkManually(
+		typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSourceRef src,
+		typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSinkRef sink) {
+		return ConnectAllInterfaces<VD<DevSpec,ValSpec>>().LinkManually(src, sink);
+	}
+	
 private:
 	
+	void VisitUnlink(PoolRef pool);
 	void Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& src_stack);
 	
 	

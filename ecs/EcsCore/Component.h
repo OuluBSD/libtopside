@@ -61,7 +61,7 @@ public:
 			sys->Remove(ref);
 	}
 	
-	template <class Source, class T> bool LinkManually(T& o, String* err_msg=0);
+	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	
 };
 

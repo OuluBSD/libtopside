@@ -23,7 +23,7 @@ EcsCtrlDemo::EcsCtrlDemo(Machine& mach) : mach(mach) {
 
 bool EcsCtrlDemo::InitializeDefault() {
 	PoolRef p = GetPool();
-	p->Add<ConnectAllInterfaces<AudioSource>>();
+	p->Add<ConnectAllInterfaces<AudioSpec>>();
 	
 	EntityRef reader = p->CreateEmpty();
 	reader->SetPrefab("Manual debug sound input");

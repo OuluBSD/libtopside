@@ -11,12 +11,15 @@ template <class T, bool keep_as_constructed=false>
 class RecyclerPool {
 	Vector<T*> pool;
 	Mutex lock;
+	bool destructed = false;
 	
 public:
 	typedef RecyclerPool CLASSNAME;
 	RecyclerPool() {}
-	RecyclerPool(bool exit_block_clear) {if (exit_block_clear) CallInExitBlock(THISBACK(Clear));}
-	~RecyclerPool() {Clear();}
+	RecyclerPool(bool exit_block_clear) {if (exit_block_clear) CallInExitBlock(THISBACK(Destruct));}
+	~RecyclerPool() {Destruct();}
+	
+	void Destruct() {if (!destructed) {Clear(); destructed = true;}}
 	
 	void Clear() {
 		lock.Enter();
@@ -55,6 +58,8 @@ public:
 	}
 	
 	void Return(T* o) {
+		if (destructed)
+			return;
 		if (!keep_as_constructed)
 			o->~T();
 		lock.Enter();

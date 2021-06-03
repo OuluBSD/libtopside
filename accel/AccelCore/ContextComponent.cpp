@@ -804,7 +804,7 @@ bool AccelContextComponent::ConnectComponentOutputs() {
 					return false;
 				}
 				
-				auto aud_src_conn = e->FindConnector<ConnectAllInterfaces<AudioSource>>();
+				auto aud_src_conn = e->FindConnector<ConnectAllInterfaces<AudioSpec>>();
 				if (!aud_src_conn) {
 					OnError(fn_name, "could not find AudioSource connector");
 					return false;

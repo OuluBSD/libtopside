@@ -153,6 +153,7 @@ struct ScopeDevLibT {
 		void		UpdateCompFlags();
 		void		UpdateDevBuffers();
 		bool				CreatePackets();
+		void				DumpComponents();
 		
 		bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
 		DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}

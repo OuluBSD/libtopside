@@ -14,6 +14,7 @@ public:
 	
 	virtual ComponentBase* AsComponentBase() = 0;
 	virtual TypeCls GetSinkCls() const = 0;
+	virtual TypeCls GetDevSpec() const {return AsTypeCls<CenterSpec>();}
 	
 };
 

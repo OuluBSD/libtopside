@@ -30,8 +30,10 @@ struct ScopeValDevCoreT {
 		RTTI_DECL_2(ValSink, InterfaceSink<ValSink>, SinkBase, ValDevSpec::GetName() + "Sink")
 		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSink>());}
 		
-		virtual Format			GetFormat(V*) = 0;
-		virtual Value&			GetValue(V*) = 0;
+		
+		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
+		virtual Format				GetFormat(V*) = 0;
+		virtual Value&				GetValue(V*) = 0;
 		
 	};
 	
@@ -48,10 +50,12 @@ struct ScopeValDevCoreT {
 		using ExPt = ValExchangePoint;
 		using Sink = ScopeValDevCoreT::ValSink;
 		
+		
 		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
 		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
 		
+		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
 		virtual CtxStream&			GetStream(V*) = 0;
 		virtual void				BeginStream(V*) = 0;
 		virtual void				EndStream(V*) = 0;
