@@ -57,6 +57,13 @@ struct ScopeDevMachT {
 	struct DevComponentConf :
 		public DevSpec::ComponentConfBase
 	{
+		int id = -1;
+		
+		
+		void				SetId(int i) {id = i;}
+		
+		int					GetId() const {return id;}
+		String				ToString() const {return DevSpec::ComponentConfBase::ToString() + " (id: " + IntStr(id) + ")";}
 		
 	};
 	
@@ -132,10 +139,10 @@ struct ScopeDevMachT {
 	};
 	
 	
-	class DevStream : RTTIBase
+	class DevStreamState : RTTIBase
 	{
 	public:
-		RTTI_DECL_T0(DevStream)
+		RTTI_DECL_T0(DevStreamState)
 		
 		template<class ValSpec> using State = typename ScopeValMachT<ValSpec>::StreamState;
 		
@@ -147,7 +154,7 @@ struct ScopeDevMachT {
 		
 		
 		template<class ValSpec> State<ValSpec>& Get() {
-			return StreamStateGetter<ValSpec>().template Get<DevStream>(this);
+			return StreamStateGetter<ValSpec>().template Get<DevStreamState>(this);
 		}
 		
 		// Context states & formats
@@ -156,6 +163,11 @@ struct ScopeDevMachT {
 		IFACE_VAR_LIST
 		#undef IFACE
 		
+		void Reset(TypeCls val_spec) {
+			#define IFACE(cls, var) if (val_spec == AsTypeCls<cls##Spec>()) {var.Reset(); return;}
+			IFACE_VAR_LIST
+			#undef IFACE
+		}
 		
 		virtual int				GetActiveFormatIdx() const {return 0;}
 		virtual int				GetFormatCount() const {return 1;}

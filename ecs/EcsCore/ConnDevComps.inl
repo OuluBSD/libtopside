@@ -57,7 +57,7 @@ TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& s
 							TypeCls src_sink_cls = src->GetSinkCls();
 							if (sink_cls == src_sink_cls) {
 								TypeCls valdev_spec = sink->GetValDevSpec();
-								ASSERT(valdev_spec == src->GetValDevSpec());
+								ASSERT(valdev_spec == (TypeCls)src->GetValDevSpec());
 								CookieRef src_cookie, sink_cookie;
 								if (src->Accept(sink, src_cookie, sink_cookie)) {
 									ValExchangePointBaseRef ep = MetaExchangePoint::Add(valdev_spec);

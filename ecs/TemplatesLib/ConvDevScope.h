@@ -51,11 +51,11 @@ struct ScopeConvDevLibT {
 		public Component<ConvertComponent>,
 		public FromSink,
 		public ToSource,
-		public FromComponent,
+		//public FromComponent,
 		public ToComponent
 	{
-		RTTI_DECL_5(ConvertComponent, Component<ConvertComponent>,
-					FromSink, ToSource, FromComponent, ToComponent,
+		RTTI_DECL_4(ConvertComponent, Component<ConvertComponent>,
+					FromSink, ToSource/*, FromComponent*/, ToComponent,
 					To::GetName() + "ConvertComponent")
 		VIS_COMP_1_1(To, From)
 		COPY_PANIC(ConvertComponent)
@@ -94,11 +94,11 @@ struct ScopeConvDevLibT {
 		ConvertComponent() : stream(this) {}
 		
 		void				Initialize() override {
-			FromComponent::Initialize();
+			//FromComponent::Initialize();
 			ToComponent::Initialize();
 		}
 		void				Uninitialize() override {
-			FromComponent::Uninitialize();
+			//FromComponent::Uninitialize();
 			ToComponent::Uninitialize();
 		}
 		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
@@ -114,10 +114,10 @@ struct ScopeConvDevLibT {
 		
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				LoadAsInput(const ToComponentConf& in) override;
-		bool				LoadAsInput(const FromComponentConf& in) override;
+		//bool				LoadAsInput(const FromComponentConf& in) override;
 		void				PreProcess() override;
-		void				UpdateTexBuffers() override {
-			FromComponent::template UpdateDevBuffersValT<ValSpec>();
+		void				UpdateDevBuffers() override {
+			//FromComponent::template UpdateDevBuffersValT<ValSpec>();
 			ToComponent::template UpdateDevBuffersValT<ValSpec>();
 		}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}

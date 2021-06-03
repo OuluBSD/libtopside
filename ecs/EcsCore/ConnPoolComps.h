@@ -20,7 +20,7 @@ public:
 	COPY_PANIC(ConnectAllInterfaces);
 	
 	using Source	= T;
-	using Sink		= typename T::SinkClass;
+	using Sink		= typename T::Sink;
 	using ISource	= InterfaceSource<Source, Sink>;
 	using ISink		= InterfaceSink<Sink>;
 	using SourceRef	= RefT_Entity<Source>;

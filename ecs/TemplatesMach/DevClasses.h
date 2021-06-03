@@ -3,114 +3,34 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-struct CenterComponentGroupBase {};
-struct NetComponentGroupBase {};
-struct PermaComponentGroupBase {};
-
-struct CenterComponentBase :
-	RTTIBase,
-	public RefScopeEnabler<CenterComponentBase, Entity>
-{
-	RTTI_DECL0(CenterComponentBase)
-	String ToString() const {return String();}
-};
-
-struct NetComponentBase :
-	RTTIBase,
-	public RefScopeEnabler<NetComponentBase, Entity>
-{
-	RTTI_DECL0(NetComponentBase)
-	String ToString() const {return String();}
-};
-
-struct PermaComponentBase :
-	RTTIBase,
-	public RefScopeEnabler<PermaComponentBase, Entity>
-{
-	RTTI_DECL0(PermaComponentBase)
-	String ToString() const {return String();}
-};
-
-struct CenterComponentConfBase {};
-struct NetComponentConfBase {};
-struct PermaComponentConfBase {};
-
-struct AccelComponentGroupBase {
-	Vector<uint32> gl_stages;
-	
-};
-
-struct AccelComponentConfBase {
-
-	
-	#define ACCEL_FILTER_LIST \
-		ACCEL_FILTER_ITEM(FILTER_INVALID, "invalid") \
-		ACCEL_FILTER_ITEM(FILTER_NEAREST, "nearest") \
-		ACCEL_FILTER_ITEM(FILTER_LINEAR, "linear") \
-		ACCEL_FILTER_ITEM(FILTER_MIPMAP, "mipmap")
-	
-	typedef enum {
-		#define ACCEL_FILTER_ITEM(x,y) x,
-		ACCEL_FILTER_LIST
-		#undef ACCEL_FILTER_ITEM
-		
-		ACCEL_FILTER_COUNT,
-		DEFAULT_FILTER = FILTER_LINEAR
-	} Filter;
-	
-	
-	#define ACCEL_WRAP_LIST \
-		ACCEL_WRAP_ITEM(WRAP_INVALID, "invalid") \
-		ACCEL_WRAP_ITEM(WRAP_CLAMP, "clamp") \
-		ACCEL_WRAP_ITEM(WRAP_REPEAT, "repeat")
-	
-	typedef enum {
-		#define ACCEL_WRAP_ITEM(x,y) x,
-		ACCEL_WRAP_LIST
-		#undef ACCEL_WRAP_ITEM
-		
-		ACCEL_WRAP_COUNT,
-		DEFAULT_WRAP = WRAP_REPEAT
-	} Wrap;
-	
-	
-	#define ACCEL_TYPE_LIST \
-		ACCEL_TYPE_ITEM(TYPE_INVALID, "invalid") \
-		ACCEL_TYPE_ITEM(TYPE_EMPTY, "empty") \
-		ACCEL_TYPE_ITEM(TYPE_BUFFER, "buffer") \
-		ACCEL_TYPE_ITEM(TYPE_KEYBOARD, "keyboard") \
-		ACCEL_TYPE_ITEM(TYPE_TEXTURE, "texture") \
-		ACCEL_TYPE_ITEM(TYPE_CUBEMAP, "cubemap") \
-		ACCEL_TYPE_ITEM(TYPE_WEBCAM, "webcam") \
-		ACCEL_TYPE_ITEM(TYPE_MUSIC, "music") \
-		ACCEL_TYPE_ITEM(TYPE_MUSICSTREAM, "musicstream") \
-		ACCEL_TYPE_ITEM(TYPE_VOLUME, "volume") \
-		ACCEL_TYPE_ITEM(TYPE_VIDEO, "video")
-		
-	typedef enum {
-		#define ACCEL_TYPE_ITEM(x,y) x,
-		ACCEL_TYPE_LIST
-		#undef ACCEL_TYPE_ITEM
-		ACCEL_TYPE_COUNT
-	} Type;
-	
-	
-	static const char* filter_names[ACCEL_FILTER_COUNT+1];
-	static const char* wrap_names[ACCEL_WRAP_COUNT+1];
-	static const char* type_names[ACCEL_TYPE_COUNT+1];
-	
-protected:
-	String filepath;
-	int id = -1;
-	Type type = TYPE_INVALID;
-	Wrap wrap = WRAP_REPEAT;
-	Filter filter = FILTER_LINEAR;
-	bool vflip = 0;
-
-};
 
 
+#define DUMMY_DEV_LIST \
+	DEV(Center) \
+	DEV(Net) \
+	DEV(Perma)
+
+#define DEV(x) \
+	struct x##ComponentGroupBase; \
+	struct x##ComponentConfBase {}; \
+	struct x##ComponentBase : \
+		RTTIBase, \
+		public RefScopeEnabler<x##ComponentBase, Entity> \
+	{ \
+		RTTI_DECL_R0(x##ComponentBase) \
+		String ToString() const {return String();} \
+		void Clear() {} \
+	};
+DUMMY_DEV_LIST
+#undef DEV
+
+
+
+struct AccelComponentGroupBase;
+struct AccelComponentConfBase;
 struct AccelComponentBase;
+
+
 class ContextComponentBase;
 
 

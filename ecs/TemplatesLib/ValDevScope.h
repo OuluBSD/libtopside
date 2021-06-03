@@ -159,7 +159,7 @@ struct ScopeValDevLibT {
 		
 		// DevComponent
 		bool				LoadAsInput(const DevCompConf& in) override;
-		void				UpdateTexBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
+		void				UpdateDevBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 		

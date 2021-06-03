@@ -2,6 +2,7 @@
 #define _TemplatesLib_TemplatesLib_h_
 
 #include <EcsCore/EcsCore.h>
+#include <Structural/Structural.h>
 
 #include "AccelScope.h"
 #include "DevScope.h"

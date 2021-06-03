@@ -77,6 +77,7 @@
 #define TMPL_VALDEVMACH(x)	template <class ValDevSpec> x ScopeValDevMachT<ValDevSpec>::
 #define TMPL_VALDEVCORE(x)	template <class ValDevSpec> x ScopeValDevCoreT<ValDevSpec>::
 #define TMPL_VALDEVLIB(x)	template <class ValDevSpec> x ScopeValDevLibT<ValDevSpec>::
+#define TMPL_CONVDEVLIB(x)	template <class ValSpec, class FromDevSpec, class ToDevSpec> x ScopeConvDevLibT<ValSpec,FromDevSpec,ToDevSpec>::
 #define USING_VALMACH(x) using x = typename ScopeValMachT<ValSpec>::x;
 #define USING_VALCORE(x) using x = typename ScopeValCoreT<ValSpec>::x;
 #define USING_VALLIB(x) using x = typename ScopeValLibT<ValSpec>::x;

@@ -37,15 +37,18 @@ void Ogl_RemoveToken(String& glsl, String token) {
 using AccelComponentRef = ScopeDevLibT<AccelSpec>::DevComponentRef;
 
 
-/*void AccelComponentGroup::Ogl_ClearPipeline() {
+void AccelComponentGroupBase::Ogl_ClearPipeline() {
 	if (gl_stages.GetCount()) {
 		glDeleteProgramPipelines(gl_stages.GetCount(), gl_stages.Begin());
 		gl_stages.Clear();
 	}
 }
 
-void AccelComponentGroup::Ogl_CreatePipeline() {
+void AccelComponentGroupBase::Ogl_CreatePipeline() {
 	Ogl_ClearPipeline();
+	
+	AccelComponentGroup& ag = CastRef<AccelComponentGroup>(this);
+	const auto& comps = ag.GetComponents();
 	
 	gl_stages.SetCount(comps.GetCount());
 	glGenProgramPipelines(gl_stages.GetCount(), gl_stages.Begin());
@@ -68,7 +71,7 @@ void AccelComponentGroup::Ogl_CreatePipeline() {
 	}
 }
 
-void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage) {
+void AccelComponentGroupBase::Ogl_ProcessStage(AccelComponentBaseRef s_, GLuint gl_stage) {
 	SCOPE_REF(s)
 	GLint& fg_prog = s.prog[AccelComponentBase::PROG_FRAGMENT];
 	ASSERT(fg_prog >= 0 || !s.RequiresShaderCode());
@@ -86,7 +89,7 @@ void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage
 	
 	int bi = s.NewWriteBuffer();
 	
-	if (HasContext<DisplayContext>() && !s.IsSinkInAccelerator()) {
+	if (IsIn<DisplaySpec>() && !s.IsSinkInAccelerator()) {
 		ASSERT(s.frame_buf[bi] > 0);
 		const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
 		
@@ -97,7 +100,7 @@ void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage
 	    glDrawBuffers(sizeof bufs / sizeof bufs[0], bufs);
 	}
 	
-	s.Ogl_SetVars(prog, GetParent()->stream);
+	s.Ogl_SetVars(prog, GetStreamState());
 	
 	glClear(GL_COLOR_BUFFER_BIT);
 	glRectf(-1.0, -1.0, 1.0, 1.0);
@@ -120,7 +123,11 @@ void AccelComponentGroup::Ogl_ProcessStage(AccelComponentRef s_, GLuint gl_stage
 	OOSDL2::EnableOpenGLDebugMessages(0);
 	
 	glBindProgramPipeline(0);
-}*/
+}
+
+
+
+
 
 void AccelComponentBase::Ogl_FindVariables(GLint prog) {
 	for(int i = 0; i < VAR_COUNT; i++) {
@@ -131,13 +138,13 @@ void AccelComponentBase::Ogl_FindVariables(GLint prog) {
 	is_searched_vars = true;
 }
 
-void AccelComponentBase::Ogl_SetVars(GLint prog, const AccelStream& stream) {
+void AccelComponentBase::Ogl_SetVars(GLint prog, const AccelStreamState& stream) {
 	for(int i = 0; i < VAR_COUNT; i++)
 		if (var_idx[i] >= 0)
 			Ogl_SetVar(i, prog, stream);
 }
 
-void AccelComponentBase::Ogl_SetVar(int var, GLint prog, const AccelStream& stream) {
+void AccelComponentBase::Ogl_SetVar(int var, GLint prog, const AccelStreamState& stream) {
 	int uindex = var_idx[var];
 	ASSERT(uindex >= 0);
 	if (uindex < 0)
@@ -711,7 +718,7 @@ GLint AccelComponentBase::Ogl_GetOutputTexture(bool reading_self) const {
 	int buf_i = this->buf_i;
 	if (reading_self)
 		buf_i = (buf_i + 1) % 2;
-	if (color_buf[buf_i] == 0) {DLOG(ToString() + " Ogl_GetOutputTexture failed");}
+	if (color_buf[buf_i] == 0) {DLOG("AccelComponentBase::Ogl_GetOutputTexture failed");}
 	ASSERT(color_buf[buf_i] > 0);
 	return color_buf[buf_i];
 }

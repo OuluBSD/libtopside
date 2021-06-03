@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 #define DEV(x) \
 	using x##MachT = ScopeDevMachT<x##Spec>; \
 	using x##Format = x##MachT::DevFormat; \
-	using x##Stream = x##MachT::DevStream; \
+	using x##StreamState = x##MachT::DevStreamState; \
 	using x##CompConf = x##MachT::DevComponentConf;
 DEV_LIST
 #undef DEV

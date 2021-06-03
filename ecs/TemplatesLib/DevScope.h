@@ -9,15 +9,14 @@ struct ScopeDevLibT {
 	using D						= DevSpec;
 	using DevComponentBase		= typename DevSpec::ComponentBase;
 	using DevComponentGroupBase	= typename DevSpec::ComponentGroupBase;
-	using Mach				= ScopeDevMachT<DevSpec>;
-	using Core				= ScopeDevCoreT<DevSpec>;
-	using Stream			= typename Mach::DevStream;
-	using ComponentConf		= typename Mach::DevComponentConf;
-	using SystemBase		= typename Mach::DevSystemBase;
-	using CtxStream			= typename Mach::DevStream;
-	using DevComponentConf	= typename Mach::DevComponentConf;
+	using Mach					= ScopeDevMachT<DevSpec>;
+	using Core					= ScopeDevCoreT<DevSpec>;
+	using StreamState			= typename Mach::DevStreamState;
+	using SystemBase			= typename Mach::DevSystemBase;
+	using DevStreamState		= typename Mach::DevStreamState;
+	using DevComponentConf		= typename Mach::DevComponentConf;
 	//using SourceRef			= typename Core::SourceRef;
-	//using SinkRef			= typename Core::SinkRef;
+	//using SinkRef				= typename Core::SinkRef;
 	//using ExchangePointRef	= typename Core::ExchangePointRef;
 	
 	class ContextComponent;
@@ -86,14 +85,18 @@ struct ScopeDevLibT {
 		void Visit(RuntimeVisitor& vis) {}
 		
 	protected:
-		DevComponentGroupRef		group;
-		LinkedList<ComponentConf>	in;
+		friend class DevComponentGroup;
 		
+		DevComponentGroupRef			group;
+		LinkedList<DevComponentConf>	in;
+		int								id = -1;
+		
+		void				Clear();
 		void				OnError(String fn, String msg);
-		Stream*				Stream();
+		DevStreamState&		GetDevStreamState();
 		
-		virtual bool		LoadAsInput(const ComponentConf& in) = 0;
-		virtual void		UpdateTexBuffers() = 0;
+		virtual bool		LoadAsInput(const DevComponentConf& in) = 0;
+		virtual void		UpdateDevBuffers() = 0;
 		virtual bool		IsEmptyStream() const = 0;
 		virtual void		ClearStream() = 0;
 		
@@ -105,8 +108,14 @@ struct ScopeDevLibT {
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
 		void				SetGroup(DevComponentGroupRef g) {group = g;}
-		String				ToString() const {return GetTypeString() + " " + DevComponentBase::ToString();}
+		
+		int					GetId() const {return id;}
+		String				ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
+		DevStreamState&		GetStreamState();
+		
+		DevComponentGroupRef GetGroup() const {return group;}
+		const LinkedList<DevComponentConf>& GetInputs() const {return in;}
 		
 		static String		GetStringFromType(TypeCls i);
 		static bool			IsDevPipeComponent(TypeCls type);
@@ -127,9 +136,11 @@ struct ScopeDevLibT {
 		
 	protected:
 		friend class ContextComponent;
-		TypeCls group_class;
+		TypeCls val_spec;
 		
 	public:
+		RTTI_DECL_R1(DevComponentGroup, DevComponentGroupBase)
+		
 		bool		Open();
 		void		CloseTemporary();
 		void		Clear();
@@ -140,6 +151,15 @@ struct ScopeDevLibT {
 		void		Add(DevComponentRef r) {comps.FindAdd(r); UpdateCompFlags();}
 		void		Remove(DevComponentRef r) {comps.RemoveKey(r); UpdateCompFlags();}
 		void		UpdateCompFlags();
+		void		UpdateDevBuffers();
+		
+		bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
+		DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}
+		TypeCls				GetValSpec() const {return val_spec;}
+		
+		const LinkedList<DevComponentRef>& GetComponents() const {return comps;}
+		
+		ContextComponent* GetParent() {return RefScopeEnabler<DevComponentGroup, ContextComponent>::GetParent();}
 		
 	};
 	
@@ -156,12 +176,13 @@ struct ScopeDevLibT {
 	private:
 		LinkedList<DevComponentGroup>	groups;
 		Vector<String>		common_source;
-		CtxStream			stream;
+		DevStreamState		stream;
 		Object				post_load;
 		bool				is_open = false;
 		
 		void				Clear();
 		void				Reset();
+		void				Close();
 		void				FindComponents();
 		void				DumpEntityComponents();
 		bool				LoadFileAny(String path, Object& dst);
@@ -169,13 +190,16 @@ struct ScopeDevLibT {
 		bool				RefreshStageQueue();
 		void				RefreshStreamValuesAll();
 		void				RefreshPipeline();
-		void				OnError(String fn, String msg);
 		DevComponentGroup&	GetAddGroupContext(TypeCls val_spec);
 		bool				ConnectComponentInputs();
 		bool				ConnectComponentOutputs();
 		bool				CreateComponents(DevComponentConfVector& v);
+		void				RefreshStreamValuesBase();
+		bool				CheckInputTextures();
 		
-		template<class ValSpec> DevComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
+		template <class ValSpec>	void RefreshStreamValues() {}
+		template <class ValSpec>	bool ConnectComponentOutputsT(DevComponentGroup& gr);
+		template <class ValSpec>	DevComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
 		
 		
 		template <class T> RefT_Entity<T> AddEntityComponent(DevComponentGroup& g) {
@@ -194,6 +218,9 @@ struct ScopeDevLibT {
 		void				PostLoadFileAny(String s);
 		void				Update();
 		void				CreatePackets();
+		void				OnError(String fn, String msg);
+		DevStreamState&		GetStreamState() {return stream;}
+		
 		
 		Callback WhenError;
 		

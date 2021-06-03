@@ -9,12 +9,12 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
-	USING_VALDEVCORE(System)
+	USING_VALDEVCORE(ValSystem)
 	this->conn = conn;
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
 		Machine& mach = GetPoolMachine(pool);
-		Ref<System> sys = mach.Get<System>();
+		Ref<ValSystem> sys = mach.Get<ValSystem>();
 		ASSERT(sys);
 		if (sys)
 			sys->Add(AsRef<ExchangePoint>());
@@ -22,11 +22,11 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
 }
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
-	USING_VALDEVCORE(System)
+	USING_VALDEVCORE(ValSystem)
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
 		Machine& mach = GetPoolMachine(pool);
-		Ref<System> sys = mach.Get<System>();
+		Ref<ValSystem> sys = mach.Get<ValSystem>();
 		ASSERT(sys);
 		if (sys)
 			sys->Remove(AsRef<ExchangePoint>());
