@@ -86,6 +86,7 @@ struct ScopeDevLibT {
 		
 	protected:
 		friend class DevComponentGroup;
+		friend DevComponentBase;
 		
 		DevComponentGroupRef			group;
 		LinkedList<DevComponentConf>	in;
@@ -95,13 +96,14 @@ struct ScopeDevLibT {
 		bool				Open();
 		void				Clear();
 		void				Close();
-		void				OnError(String fn, String msg);
 		DevStreamState&		GetDevStreamState();
+		
 		
 		virtual bool		LoadAsInput(const DevComponentConf& in) = 0;
 		virtual void		UpdateDevBuffers() = 0;
 		virtual bool		IsEmptyStream() const = 0;
 		virtual void		ClearStream() = 0;
+		virtual bool		IsValSpec(TypeCls) const = 0;
 		
 		virtual void		PreProcess() {}
 		
@@ -111,9 +113,10 @@ struct ScopeDevLibT {
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
 		void				SetGroup(DevComponentGroupRef g) {group = g;}
+		void				OnError(String fn, String msg);
 		
-		bool				IsOpen() const {return is_open;}
 		int					GetId() const {return id;}
+		bool				IsOpen() const {return is_open;}
 		String				ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
 		DevStreamState&		GetStreamState();
@@ -124,8 +127,8 @@ struct ScopeDevLibT {
 		static String		GetStringFromType(TypeCls i);
 		static bool			IsDevPipeComponent(TypeCls type);
 		
-		template <class ValSpec> void UpdateDevBuffersValT();
-		template <class ValSpec> bool IsIn() {return IsValSpec(AsTypeCls<ValSpec>());}
+		template <class ValSpec> void UpdateDevBuffersValT() {}
+		template <class ValSpec> bool IsIn() const {return IsValSpec(AsTypeCls<ValSpec>());}
 		
 	};
 	
@@ -146,6 +149,7 @@ struct ScopeDevLibT {
 		RTTI_DECL_R1(DevComponentGroup, DevComponentGroupBase)
 		
 		bool		Open();
+		void		Close();
 		void		CloseTemporary();
 		void		Clear();
 		void		FindComponents();
@@ -158,10 +162,12 @@ struct ScopeDevLibT {
 		void		UpdateDevBuffers();
 		bool				CreatePackets();
 		void				DumpComponents();
+		bool				CheckDevice();
 		
 		bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
 		DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}
 		TypeCls				GetValSpec() const {return val_spec;}
+		DevComponentRef		GetComponentById(int id) const;
 		
 		const LinkedList<DevComponentRef>& GetComponents() const {return comps;}
 		
@@ -200,7 +206,7 @@ struct ScopeDevLibT {
 		bool				ConnectComponentInputs();
 		bool				ConnectComponentOutputs();
 		bool				CreateComponents(DevComponentConfVector& v);
-		bool				CheckInputTextures();
+		bool				CheckDevice();
 		
 		template <class ValSpec>	bool ConnectComponentOutputsT(DevComponentGroup& gr);
 		template <class ValSpec>	DevComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
@@ -208,7 +214,7 @@ struct ScopeDevLibT {
 		
 		template <class T> RefT_Entity<T> AddEntityComponent(DevComponentGroup& g) {
 			RefT_Entity<T> o = ComponentBase::GetEntity()->template Add<T>();
-			o->SetGroup(g.AsRefT());
+			o->SetGroup(g.template AsRef<DevComponentGroup>());
 			g.Add(o);
 			return o;
 		}
@@ -225,7 +231,9 @@ struct ScopeDevLibT {
 		bool				CreatePackets(DevComponentGroup& gr);
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetStreamState() {return stream;}
+		bool				IsOpen() const {return is_open;}
 		
+		const Vector<String>& GetCommonSources() const {return common_source;}
 		
 		Callback WhenError;
 		

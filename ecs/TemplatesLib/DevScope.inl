@@ -124,6 +124,13 @@ TMPL_DEVLIB(bool) DevComponentGroup::Open() {
 	return true;
 }
 
+TMPL_DEVLIB(void) DevComponentGroup::Close() {
+	for(DevComponentRef& comp : comps) {
+		comp->Close();
+		comp->template AsRef<ComponentBase>()->Destroy();
+	}
+}
+
 TMPL_DEVLIB(void) DevComponentGroup::CloseTemporary() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::Clear() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::FindComponents() {TODO}
@@ -165,7 +172,39 @@ TMPL_DEVLIB(void) DevComponentGroup::UpdateDevBuffers() {
 }
 
 TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
-	TODO
+	if (comps.IsEmpty())
+		return false;
+	
+	ASSERT(GetParent()->IsOpen());
+	
+	for(auto& comp : comps)
+		comp->PreProcess();
+	
+	// Device cannot possibly store buffered packets (e.g. GPU):
+	// - 'cost' of storing packets is infinity
+	//   --> processing of packets must happen in edge-in (when sink gets packet)
+	for(DevComponentRef& comp : comps)
+		{ASSERT(comp->IsEmptyStream());}
+	for(DevComponentRef& comp : comps)
+		comp->ClearStream();
+	
+	TODO // use default System::Update(double dt) instead
+	
+	
+	/*int i = 0;
+	for(DevComponentRef& comp : comps) {
+		adfgwdfgsdfg
+		
+#if HAVE_OPENGL
+		Ogl_ProcessStage(*comp, gl_stages[i]);
+#endif
+		++i;
+	}
+	
+	for(DevComponentRef& comp : comps)
+		comp->PostProcess();*/
+	
+	return true;
 }
 
 TMPL_DEVLIB(void) DevComponentGroup::DumpComponents() {
@@ -175,6 +214,23 @@ TMPL_DEVLIB(void) DevComponentGroup::DumpComponents() {
 		LOG(i++ << ": " << comp->ToString());
 	}
 }
+
+TMPL_DEVLIB(CLS::DevComponentRef) DevComponentGroup::GetComponentById(int id) const {
+	ASSERT(id >= 0);
+	for (const auto& s : comps)
+		if (s->id == id)
+			return s;
+	THROW(Exc(DevSpec::GetName() + "Component not found"));
+}
+
+TMPL_DEVLIB(bool) DevComponentGroup::CheckDevice() {
+	for(DevComponentRef& comp : comps)
+		if (!comp->CheckDevice())
+			return false;
+	return true;
+}
+
+
 
 
 
@@ -432,8 +488,17 @@ TMPL_DEVLIB(bool) ContextComponent::RefreshStageQueue() {
 	return true;
 }
 
-TMPL_DEVLIB(bool) ContextComponent::CheckInputTextures() {TODO}
-TMPL_DEVLIB(void) ContextComponent::Close() {TODO}
+TMPL_DEVLIB(bool) ContextComponent::CheckDevice() {
+	for(auto& gr : groups)
+		if (!gr.CheckDevice())
+			return false;
+	return true;
+}
+
+TMPL_DEVLIB(void) ContextComponent::Close() {
+	for(auto& gr : groups)
+		gr.Close();
+}
 
 TMPL_DEVLIB(void) ContextComponent::RefreshStreamValuesAll() {
 	stream.UpdateValuesBase();
@@ -451,7 +516,7 @@ TMPL_DEVLIB(void) ContextComponent::RefreshPipeline() {
 	for(auto& gr : groups)
 		gr.UpdateDevBuffers();
 	
-	if (!CheckInputTextures()) {
+	if (!CheckDevice()) {
 		Close();
 		return;
 	}
@@ -578,63 +643,79 @@ bool ScopeDevLibT<DevSpec>::ContextComponent::ConnectComponentOutputsT(DevCompon
 	EntityRef e = ComponentBase::GetEntity();
 	ComponentBaseRef comp = gr.comps.Top()->template AsRef<ComponentBase>();
 	
-	using VD = TS::VD<DevSpec,ValSpec>;
-	using VDCore = ScopeValDevCoreT<VD>;
-	using ValSource = typename VDCore::ValSource;
-	using ValSourceRef = typename VDCore::ValSourceRef;
-	using ValSink = typename VDCore::ValSink;
-	using ValSinkRef = typename VDCore::ValSinkRef;
-	using FromCenterComp = typename ScopeConvDevLibT<ValSpec,CenterSpec,DevSpec>::ConvertComponent;
-	using FromCenterCompRef = Ref<FromCenterComp, RefParent1<Entity>>;
+	using FromDevSpec		= DevSpec;
+	using FromVD			= TS::VD<DevSpec,ValSpec>;
+	using FromVDCore		= ScopeValDevCoreT<FromVD>;
+	using FromSource		= typename FromVDCore::ValSource;
+	using FromSourceRef		= typename FromVDCore::ValSourceRef;
+	using FromSink			= typename FromVDCore::ValSink;
+	using FromSinkRef		= typename FromVDCore::ValSinkRef;
 	
-	ValSourceRef valdev_src = comp->As<ValSource>();
+	using ToDevSpec			= CenterSpec;
+	using ToVD				= TS::VD<ToDevSpec,ValSpec>;
+	using ToVDCore			= ScopeValDevCoreT<ToVD>;
+	using ToSource			= typename ToVDCore::ValSource;
+	using ToSourceRef		= typename ToVDCore::ValSourceRef;
+	using ToDevComp			= typename ScopeConvDevLibT<ValSpec,DevSpec,ToDevSpec>::ConvertComponent;
+	using ToDevCompRef		= Ref<ToDevComp, RefParent1<Entity>>;
+	
+	FromSourceRef valdev_src = comp->As<FromSource>();
 	if (!valdev_src) {
-		OnError(fn_name, "last " + ValSpec::GetName() + "-group component does not have " + VD::GetPrefix() + "Source interface");
+		OnError(fn_name, "last " + FromDevSpec::GetName() + "-group component does not have " + FromVD::GetPrefix() + "Source interface");
 		gr.DumpComponents();
 		return false;
 	}
 	
-	FromCenterCompRef val_out = e->Find<FromCenterComp>();
+	ToDevCompRef val_out = e->Find<ToDevComp>();
 	if (!val_out) {
-		val_out = AddEntityComponent<FromCenterComp>(gr);
+		val_out = ComponentBase::GetEntity()->template Add<ToDevComp>();
 		
-		ValSourceRef val_src = val_out->template As<ValSource>();
+		ToSourceRef val_src = val_out->template As<ToSource>();
 		if (!val_src) {
-			OnError(fn_name, "could not find " + VD::GetPrefix() + "Source interface");
+			OnError(fn_name, "could not find " + ToVD::GetPrefix() + "Source interface");
 			return false;
 		}
 		
-		auto val_src_conn	= e->FindConnector<ConnectAllInterfaces<VD>>();
-		auto dev_conn		= e->FindConnector<ConnectAllDevInterfaces<DevSpec>>();
+		auto val_src_conn	= e->FindConnector<ConnectAllInterfaces<ToVD>>();
+		auto dev_conn		= e->FindConnector<ConnectAllDevInterfaces<ToDevSpec>>();
 		if (!val_src_conn && !dev_conn) {
-			OnError(fn_name, "could not find " + VD::GetPrefix() + "Source nor " + DevSpec::GetName() + "Spec connector");
+			OnError(fn_name, "could not find " + ToVD::GetPrefix() + "Source nor " + ToDevSpec::GetName() + "Spec connector");
 			return false;
 		}
 		
 		// Connect ValSource to any existing ValSink
-		if ((val_src_conn	&& !val_src_conn	->LinkAny(val_src)) &&
-			(dev_conn		&& !dev_conn		->template LinkAny<ValSpec>(val_src))) {
-			OnError(fn_name, "could not link " + VD::GetPrefix() + "Source automatically");
+		bool linked = false;
+		if (			val_src_conn	&& val_src_conn	->template LinkAny<ToVD>(val_src))
+			linked = true;
+		if (!linked &&	dev_conn		&& dev_conn		->template LinkAny<ToVD>(val_src))
+			linked = true;
+		
+		if (!linked) {
+			OnError(fn_name, "could not link " + ToVD::GetPrefix() + "Source automatically");
 			return false;
 		}
 	}
 	
-	ValSinkRef valdev_sink = comp->As<ValSink>();
+	FromSinkRef valdev_sink = comp->As<FromSink>();
 	if (!valdev_sink) {
-		OnError(fn_name, "component does not have " + VD::GetPrefix() + "Sink interface");
+		OnError(fn_name, "component does not have " + FromVD::GetPrefix() + "Sink interface");
 		return false;
 	}
 	
-	auto valdev_src_conn	= e->FindConnector<ConnectAllInterfaces<VD>>();
-	auto dev_conn			= e->FindConnector<ConnectAllDevInterfaces<DevSpec>>();
+	auto valdev_src_conn	= e->FindConnector<ConnectAllInterfaces<FromVD>>();
+	auto dev_conn			= e->FindConnector<ConnectAllDevInterfaces<FromDevSpec>>();
 	if (!valdev_src_conn && !dev_conn) {
-		OnError(fn_name, "could not find " + VD::GetPrefix() + "Source connector");
+		OnError(fn_name, "could not find " + FromVD::GetPrefix() + "Source connector");
 		return false;
 	}
 	
-	if ((valdev_src_conn && !valdev_src_conn->LinkManually(valdev_src, valdev_sink)) &&
-		(dev_conn && !dev_conn->template LinkManually<ValSpec>(valdev_src, valdev_sink))) {
-		OnError(fn_name, "could not link " + VD::GetPrefix() + "Source to DevValSink manually");
+	bool linked = false;
+	if (			valdev_src_conn	&& valdev_src_conn	->template LinkManually<FromVD>(valdev_src, valdev_sink))
+		linked = true;
+	if (!linked &&	dev_conn		&& dev_conn			->template LinkManually<FromVD>(valdev_src, valdev_sink))
+		linked = true;
+	if (!linked) {
+		OnError(fn_name, "could not link " + FromVD::GetPrefix() + "Source to DevValSink manually");
 		return false;
 	}
 	

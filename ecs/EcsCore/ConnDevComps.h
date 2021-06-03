@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class DevSpec>
 class ConnectAllDevInterfaces :
 	public Connector<ConnectAllDevInterfaces<DevSpec>>,
-	public MetaExchangePoint
+	public AnyConnector
 {
 	using ConnectorT = Connector<ConnectAllDevInterfaces<DevSpec>>;
 	Ref<EntityStore> sys;
@@ -32,15 +32,6 @@ public:
 	}
 	bool LinkAll();
 	
-	template <class ValSpec> bool LinkAny(typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSourceRef src) {
-		return ConnectAllInterfaces<VD<DevSpec,ValSpec>>().LinkAny(src);
-	}
-	
-	template <class ValSpec> bool LinkManually(
-		typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSourceRef src,
-		typename ScopeValDevCoreT<VD<DevSpec,ValSpec>>::ValSinkRef sink) {
-		return ConnectAllInterfaces<VD<DevSpec,ValSpec>>().LinkManually(src, sink);
-	}
 	
 private:
 	

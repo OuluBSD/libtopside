@@ -71,6 +71,8 @@
 #include "Overlap.h"
 #include "Action.h"
 #include "ActionSystem.h"
+#include "ConnManual.h"
+#include "ConnAny.h"
 #include "ConnPoolComps.h"
 #include "ConnPoolComps.inl"
 #include "ConnDevComps.h"

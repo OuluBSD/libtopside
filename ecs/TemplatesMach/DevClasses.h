@@ -22,6 +22,9 @@ NAMESPACE_TOPSIDE_BEGIN
 		void Clear() {} \
 		void Close() {} \
 		bool Open() {return false;} \
+		bool CheckDevice() {return true;} \
+		void UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {TODO} \
+		virtual bool RequiresDeviceProgram() const {return false;} \
 	};
 DUMMY_DEV_LIST
 #undef DEV

@@ -33,12 +33,12 @@ public:
 		auto it = Factory::producers.Find(key);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
-			std::function<void(Base*)> r([] (Base* b){ return GetPool<T>().Return(static_cast<T*>(b));});
+			std::function<void(Base*)> r([] (Base* b){ return GetPool<T>().Return(CastPtr<T>(b));});
 			Factory::producers.Add(key) = p;
 			Factory::refurbishers.Add(key) = r;
 		}
 		
-		return static_cast<T*>(CreateComponent(AsTypeCls<T>()));
+		return CastPtr<T>(CreateComponent(AsTypeCls<T>()));
 	}
 	
 	void Clone(Main& dst, const Main& src) {

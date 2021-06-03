@@ -25,6 +25,8 @@ file
 	EntityVisitor.h,
 	EntityVisitor.cpp,
 	Components readonly separator,
+	ConnManual.h,
+	ConnAny.h,
 	ConnPoolComps.h,
 	ConnPoolComps.inl highlight cpp,
 	ConnDevComps.h,

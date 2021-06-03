@@ -17,6 +17,13 @@ DUMMY_DEV_LIST
 #undef DEV
 
 
+
+#if HAVE_OPENGL
+int GetOglChCode(int channels, bool is_float=false);
+void Ogl_RemoveToken(String& glsl, String token);
+#endif
+
+
 struct AccelComponentConfBase {
 
 	
@@ -183,7 +190,8 @@ struct AccelComponentBase :
 	bool				Open();
 	void				UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count);
 	bool				IsAudioSpec() const {TODO}
-	bool				RequiresShaderCode() const {TODO}
+	
+	virtual bool		RequiresDeviceProgram() const {return false;}
 	
 	static TypeCls		GetTypeFromString(String type_str);
 	
@@ -195,7 +203,7 @@ protected:
 	void				UseRenderedFramebuffer();
 	int					NewWriteBuffer();
 	bool				IsSinkInAccelerator() const;
-	
+	bool				CheckDevice();
 	
 #if HAVE_OPENGL
 	void				Ogl_SetVars(GLint prog, const AccelStreamState& stream);

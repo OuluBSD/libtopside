@@ -147,6 +147,7 @@ struct ScopeValDevLibT {
 		void				Uninitialize() override {DevComponent::Uninitialize();}
 		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
+		bool				RequiresDeviceProgram() const override {return true;}
 		
 		// DevSink
 		Format				GetFormat(V*) override;

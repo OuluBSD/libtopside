@@ -184,8 +184,8 @@ protected:
 		return -1;
 	}
 	void AddLink(ExchangePointRef expt, R r) {
-		ASSERT(FindLink(r) < 0);
-		ASSERT(links.IsEmpty() || multi_conn);
+		ASSERT_(FindLink(r) < 0, "Link is already added");
+		if (links.GetCount() && !multi_conn) {ASSERT_(0, "Multi-connection is not enabled");}
 		Link& l = links.Add();
 		l.expt = expt;
 		l.dst = r;

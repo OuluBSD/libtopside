@@ -38,7 +38,9 @@ public:
 
 
 template<typename T>
-struct Connector : ConnectorBase {
+struct Connector :
+	virtual ConnectorBase
+{
 	RTTI_DECL_R1(Connector, ConnectorBase)
 
 	TypeId GetType() const override {
@@ -48,7 +50,7 @@ struct Connector : ConnectorBase {
 	void CopyTo(ConnectorBase* target) const override {
 		ASSERT(target->GetType() == GetType());
 	    
-		*static_cast<T*>(target) = *static_cast<const T*>(this);
+		CastRef<T>(target) = CastRef<const T>(this);
 	}
 };
 

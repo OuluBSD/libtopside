@@ -74,7 +74,7 @@ void AccelComponentGroupBase::Ogl_CreatePipeline() {
 void AccelComponentGroupBase::Ogl_ProcessStage(AccelComponentBaseRef s_, GLuint gl_stage) {
 	SCOPE_REF(s)
 	GLint& fg_prog = s.prog[AccelComponentBase::PROG_FRAGMENT];
-	ASSERT(fg_prog >= 0 || !s.RequiresShaderCode());
+	ASSERT(fg_prog >= 0 || !s.RequiresDeviceProgram());
 	if (fg_prog < 0)
 		return;
 	
@@ -331,8 +331,6 @@ void AccelComponentBase::Ogl_CreateTex(Size sz, int channels, bool create_depth,
 	
 	OOSDL2::EnableOpenGLDebugMessages(1);
 	
-	TODO
-	#if 0
 	
 	for(int bi = 0; bi < buf_count; bi++) {
 		GLuint& color_buf = this->color_buf[bi];
@@ -373,41 +371,40 @@ void AccelComponentBase::Ogl_CreateTex(Size sz, int channels, bool create_depth,
 	}
 	
 	OOSDL2::EnableOpenGLDebugMessages(0);
-	#endif
 }
 
 GLint AccelComponentBase::Ogl_GetInputTex(int input_i) const {
-	TODO
-	#if 0
+	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
 	const char* fn_name = "Ogl_GetInputTex";
-	DLOG("AccelComponent(" << GetTypeString() << ")::GetInputTex");
-	ASSERT(ctx);
-	if (!ctx || input_i < 0 || input_i >= in.GetCount())
+	AccelComponent& c = CastRef<AccelComponent>(this);
+	DLOG("AccelComponent(" << c.GetTypeString() << ")::GetInputTex");
+	
+	ASSERT(c.group);
+	if (!c.group || input_i < 0 || input_i >= c.in.GetCount())
 		return -1;
 	
-	const AcceleratorHeader& in = this->in.At(input_i);
-	AccelComponentRef in_comp = ctx->GetComponentById(in.GetId());
+	const DevComponentConf& in = c.in.At(input_i);
+	AccelComponentBaseRef in_comp = c.group->GetComponentById(in.GetId());
+	ASSERT(in_comp);
 	int tex = in_comp->Ogl_GetOutputTexture(in_comp == this);
 	ASSERT(tex > 0);
 	
 	return tex;
-	#endif
 }
 
 int AccelComponentBase::Ogl_GetTexType(int input_i) const {
-	TODO
-	#if 0
-	const AcceleratorHeader& in = this->in.At(input_i);
+	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	AccelComponent& c = CastRef<AccelComponent>(this);
+	const DevComponentConf& in = c.in.At(input_i);
 	
-	if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
+	if (in.GetType() == DevComponentConf::TYPE_VOLUME)
 		return GL_TEXTURE_3D;
 	
-	else if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
+	else if (in.GetType() == DevComponentConf::TYPE_CUBEMAP)
 		return GL_TEXTURE_CUBE_MAP;
 	
 	else
 		return GL_TEXTURE_2D;
-	#endif
 }
 
 
@@ -430,16 +427,17 @@ bool AccelComponentBase::Ogl_CompilePrograms() {
 }
 
 bool AccelComponentBase::Ogl_CompileFragmentShader() {
-	TODO
-	#if 0
 	const char* fn_name = "Ogl_CompilePrograms";
+	
+	AccelComponent& c = CastRef<AccelComponent>(this);
+	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
 	
 	ASSERT(prog[PROG_FRAGMENT] < 0);
 	String& fg_glsl = code[PROG_FRAGMENT];
 	if (fg_glsl.GetCount() == 0) {
-		if (RequiresShaderCode()) {
+		if (RequiresDeviceProgram()) {
 			Close();
-			OnError(fn_name, "empty source code");
+			c.OnError(fn_name, "empty source code");
 			return false;
 		}
 		else
@@ -447,11 +445,11 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 	}
 	
 	int max_tries = 1;
-	if (IsIn<AudioContext>())
+	if (c.IsIn<AudioSpec>())
 		max_tries = 2;
 	
 	for (int tries = 0; tries < max_tries; tries++) {
-		DLOG("\tCompiling stage: tries " << tries << ": " << GetTypeString() << ": " << id << ": " << name);
+		DLOG("\tCompiling stage: tries " << tries << ": " << c.GetTypeName() << ": " << c.id << ": " << name);
 		
 		String code;
 		
@@ -475,11 +473,11 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 					;
 		
 		for(int j = 0; j < 4; j++) {
-			if (j < in.GetCount()) {
-				AcceleratorHeader& in = this->in.At(j);
-				if (in.GetType() == AcceleratorHeader::TYPE_CUBEMAP)
+			if (j < c.in.GetCount()) {
+				DevComponentConf& in = c.in.At(j);
+				if (in.GetType() == DevComponentConf::TYPE_CUBEMAP)
 					code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
-				else if (in.GetType() == AcceleratorHeader::TYPE_VOLUME)
+				else if (in.GetType() == DevComponentConf::TYPE_VOLUME)
 					code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
 				else
 					code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
@@ -489,20 +487,20 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 		}
 		code << "\n";
 		
-		for (String& src : ctx->GetParent()->common_source) {
+		for (String src : c.group->GetParent()->GetCommonSources()) {
 			code += src + "\n";
 		}
 		
 		code += fg_glsl;
 		
-		if (IsIn<VideoContext>() || IsIn<DisplayContext>()) {
+		if (c.IsIn<VideoSpec>() || c.IsIn<DisplaySpec>()) {
 			code +=		"\nvoid main (void) {\n"
 						"	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);\n"
 						"	mainImage (color, gl_FragCoord.xy);\n"
 						"	gl_FragColor = color;\n"
 						"}\n\n";
 		}
-		else if (IsIn<AudioContext>()) {
+		else if (c.IsIn<AudioSpec>()) {
 			if (tries == 0) {
 				code +=		"\nvoid main (void) {\n"
 							"	vec2 value = mainSound (int(gl_FragCoord.x), in_audio_seconds);\n"
@@ -518,7 +516,7 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 			}
 		}
 		else {
-			OnError(fn_name, "type of stage " + IntStr(id) + " is not supported");
+			c.OnError(fn_name, "type of stage " + IntStr(c.id) + " is not supported");
 			return false;
 		}
 		
@@ -541,7 +539,6 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 	}
 	
 	return false;
-	#endif
 }
 
 bool AccelComponentBase::Ogl_CompileProgram(int prog_i, String shader_source) {
@@ -569,16 +566,15 @@ bool AccelComponentBase::Ogl_CompileProgram(int prog_i, String shader_source) {
 }
 
 GLint AccelComponentBase::Ogl_CompileShader(int prog_i, String shader_source) {
-	TODO
-	#if 0
 	const char* fn_name = "Ogl_CompileShader";
+	AccelComponent& c = CastRef<AccelComponent>(this);
 	
 	GLenum shader_type;
 	if (prog_i == PROG_FRAGMENT) {
 		shader_type = GL_FRAGMENT_SHADER;
 	}
 	else {
-		OnError(fn_name, "TODO: other programs than fragment shader");
+		c.OnError(fn_name, "TODO: other programs than fragment shader");
 		return -1;
 	}
 	
@@ -587,7 +583,7 @@ GLint AccelComponentBase::Ogl_CompileShader(int prog_i, String shader_source) {
 	GLint loglen;
 	GLchar *error_message;
 	if (shader == 0) {
-		OnError(fn_name, "glCreateShader failed unexpectedly");
+		c.OnError(fn_name, "glCreateShader failed unexpectedly");
 		return -1;
 	}
 	
@@ -602,21 +598,19 @@ GLint AccelComponentBase::Ogl_CompileShader(int prog_i, String shader_source) {
 		Vector<GLchar> msg;
 		msg.SetCount(loglen);
 		glGetShaderInfoLog(shader, loglen, NULL, msg.Begin());
-		OnError(fn_name, "shader failed to compile: " + String(msg.Begin()));
+		c.OnError(fn_name, "shader failed to compile: " + String(msg.Begin()));
 		return -1;
 	}
 	
 	return shader;
-	#endif
 }
 
 bool AccelComponentBase::Ogl_LinkStages() {
-	TODO
-	#if 0
 	const char* fn_name = "Ogl_LinkStages";
+	AccelComponent& c = CastRef<AccelComponent>(this);
 	for(int j = 0; j < AccelComponentBase::PROG_COUNT; j++) {
 		if (prog[j] >= 0) {
-			LOG("\tLinking stage " << GetTypeString() << ": " << name << ": program " << j);
+			LOG("\tLinking stage " << c.GetTypeString() << ": " << name << ": program " << j);
 			
 			if (!Ogl_LinkProgram(j)) {
 				Close();
@@ -626,20 +620,18 @@ bool AccelComponentBase::Ogl_LinkStages() {
 	}
 	
 	return true;
-	#endif
 }
 
 bool AccelComponentBase::Ogl_LinkProgram(int prog_i) {
-	TODO
-	#if 0
+	AccelComponent& c = CastRef<AccelComponent>(this);
 	const char* fn_name = "Ogl_LinkProgram";
 	GLint program = prog[prog_i];
 	GLint status = GL_FALSE;
 	GLint loglen, n_uniforms;
 	
 	if (program < 0) {
-		if (RequiresShaderCode()) {
-			OnError(fn_name, "internal error: opengl program was expected to be valid");
+		if (RequiresDeviceProgram()) {
+			c.OnError(fn_name, "internal error: opengl program was expected to be valid");
 			return false;
 		}
 		else
@@ -657,10 +649,10 @@ bool AccelComponentBase::Ogl_LinkProgram(int prog_i) {
 		if (loglen) {
 			String s;
 			s.Set(msg.Begin(), loglen);
-			OnError(fn_name, s);
+			c.OnError(fn_name, s);
 		}
 		else
-			OnError(fn_name, "linking failed with unknown error");
+			c.OnError(fn_name, "linking failed with unknown error");
 		return false;
 	}
 	
@@ -680,13 +672,11 @@ bool AccelComponentBase::Ogl_LinkProgram(int prog_i) {
 	}
 	
 	return true;
-	#endif
 }
 
 bool AccelComponentBase::Ogl_CheckInputTextures() {
-	TODO
-	#if 0
 	const char* fn_name = "Ogl_CheckInputTextures";
+	AccelComponent& c = CastRef<AccelComponent>(this);
 	bool fail = false;
 	for(int i = 0; i < PROG_COUNT; i++) {
 		auto& prog = this->prog[i];
@@ -694,12 +684,12 @@ bool AccelComponentBase::Ogl_CheckInputTextures() {
 			for(int j = 0; j < CHANNEL_COUNT; j++) {
 				GLint uindex = glGetUniformLocation(prog, "iChannel" + IntStr(j));
 				if (uindex >= 0) {
-					if (in.GetCount() > j) {
+					if (c.in.GetCount() > j) {
 						int tex = Ogl_GetInputTex(j);
 						if (tex == 0) {
-							OnError(fn_name,
-								ToString() +
-								": no texture for stage " + IntStr(id) +
+							c.OnError(fn_name,
+								c.ToString() +
+								": no texture for stage " + IntStr(c.id) +
 								", program " + IntStr(i) +
 								", channel " + IntStr(j));
 							fail = true;
@@ -710,7 +700,6 @@ bool AccelComponentBase::Ogl_CheckInputTextures() {
 		}
 	}
 	return !fail;
-	#endif
 }
 
 GLint AccelComponentBase::Ogl_GetOutputTexture(bool reading_self) const {
@@ -724,35 +713,34 @@ GLint AccelComponentBase::Ogl_GetOutputTexture(bool reading_self) const {
 }
 
 void AccelComponentBase::Ogl_TexFlags(int type, int filter, int repeat) {
-	TODO
-	#if 0
-	if (filter == AcceleratorHeader::FILTER_NEAREST) {
+	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	
+	if (filter == DevComponentConf::FILTER_NEAREST) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
-	else if (filter == AcceleratorHeader::FILTER_LINEAR) {
+	else if (filter == DevComponentConf::FILTER_LINEAR) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	else if (filter == AcceleratorHeader::FILTER_MIPMAP) {
+	else if (filter == DevComponentConf::FILTER_MIPMAP) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(type);
 	}
 	
-	if (repeat == AcceleratorHeader::WRAP_REPEAT) {
+	if (repeat == DevComponentConf::WRAP_REPEAT) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		if (type == GL_TEXTURE_3D)
 			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	}
-	else if (repeat == AcceleratorHeader::WRAP_CLAMP) {
+	else if (repeat == DevComponentConf::WRAP_CLAMP) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		if (type == GL_TEXTURE_3D)
 			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP);
 	}
-	#endif
 }
 
 

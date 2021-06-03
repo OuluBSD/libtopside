@@ -8,12 +8,11 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class ValDevSpec>
 class ConnectAllInterfaces :
 	public Connector<ConnectAllInterfaces<ValDevSpec>>,
-	public MetaExchangePoint
+	public AnyConnector
 {
 	using ConnectorT = Connector<ConnectAllInterfaces<ValDevSpec>>;
 	Ref<EntityStore> sys;
 	
-	int tmp_link_count = 0;
 	
 public:
 	RTTI_DECL2(ConnectAllInterfaces, ConnectorT, MetaExchangePoint)
@@ -39,47 +38,13 @@ public:
 	}
 	
 	bool LinkAll();
-	bool LinkAny(SourceRef src);
-	bool LinkManually(SourceRef src, SinkRef sink);
 	
 	
 private:
 	
 	void Visit(PoolRef pool, LinkedList<LinkedList<Ref<Source>>>& src_stack);
-	void Visit(SourceRef src, PoolRef pool);
 	
 };
-
-template <class ValDevSpec, class T> bool ComponentBase::LinkManually(T& o, String* err_msg) {
-	using ConnAll = ConnectAllInterfaces<ValDevSpec>;
-	using Source = typename ConnAll::Source;
-	using Sink = typename Source::Sink;
-	EntityRef src_e = GetEntity();
-	EntityRef sink_e = o.GetEntity();
-	
-	RefT_Pool<ConnAll> conn = src_e->FindCommonConnector<ConnAll>(sink_e);
-	if (!conn) {
-		if (err_msg)
-			*err_msg = "could not find common connector for ConnectAllInterfaces<" + AsTypeString<Source>() + ">";
-		return false;
-	}
-	
-	RefT_Entity<Source> src		= src_e		->FindInterface<Source>();
-	if (!src) {
-		if (err_msg)
-			*err_msg = "could not find source interface " + AsTypeString<Source>();
-		return false;
-	}
-	
-	RefT_Entity<Sink> sink		= sink_e	->FindInterface<Sink>();
-	if (!sink) {
-		if (err_msg)
-			*err_msg = "could not find sink interface for " + AsTypeString<Sink>();
-		return false;
-	}
-	
-	return conn->LinkManually(src, sink);
-}
 
 
 NAMESPACE_TOPSIDE_END

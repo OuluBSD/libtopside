@@ -2,10 +2,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-#if HAVE_OPENGL
-int GetOglChCode(int channels, bool is_float=false);
-void Ogl_RemoveToken(String& glsl, String token);
-#endif
+
 
 
 
@@ -157,6 +154,13 @@ bool AccelComponentBase::Open() {
 	return true;
 }
 
+bool AccelComponentBase::CheckDevice() {
+#if HAVE_OPENGL
+	if (!Ogl_CheckInputTextures())
+		return false;
+#endif
+	return true;
+}
 
 
 
