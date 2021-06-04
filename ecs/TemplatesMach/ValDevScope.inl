@@ -489,6 +489,14 @@ TMPL_VALDEVMACH(void) Ex::SetOffset(off32 packet_count) {
 	this->offset = packet_count;
 }
 
+TMPL_VALDEVMACH(bool) Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
+	TODO
+}
+
+TMPL_VALDEVMACH(bool) Convert(const Packet& src, Packet& dst) {
+	TODO
+}
+
 
 
 NAMESPACE_TOPSIDE_END

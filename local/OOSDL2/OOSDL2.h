@@ -92,7 +92,10 @@ public:
 };
 
 
-class AudioOutput : public Component {
+class AudioOutput :
+	public Component,
+	virtual public PacketForwarder
+{
 	RTTI_DECL1(AudioOutput, Component)
 	
 private:

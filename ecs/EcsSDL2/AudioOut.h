@@ -55,6 +55,9 @@ public:
 	void			Uninitialize() override;
 	void			Visit(RuntimeVisitor& vis) override {}
 	
+	void			Forward(FwdScope& fwd) override;
+	void			ForwardExchange(FwdScope& fwd) override;
+	
 	AudioFormat		GetFormat(AudCtx) override;
 	Audio&			GetValue(AudCtx) override;
 	

@@ -72,6 +72,7 @@ struct ScopeValMachT {
 		off32				offset;
 		double				time;
 		PacketId			id = 0;
+		TypeCls				custom_data = 0;
 		
 	public:
 		using Pool = RecyclerPool<PacketValue>;
@@ -88,7 +89,7 @@ struct ScopeValMachT {
 		void					SetOffset(off32 offset) {this->offset = offset;}
 		void					SetTime(double seconds) {time = seconds;}
 		void					SetTrackingId(PacketId i) {id = i;}
-		void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0;}
+		void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = 0;}
 		
 		const Vector<byte>&		GetData() const {return data;}
 		Format					GetFormat() const {return fmt;}
@@ -106,13 +107,18 @@ struct ScopeValMachT {
 		String					ToString() const;
 		
 		template <class T> T& SetData() {
+			custom_data = AsTypeCls<T>();
 			data.SetCount(sizeof(T));
 			byte* b = &data[0];
 			memset(b,0, sizeof(T));
 			return *(T*)b;
 		}
 		
+		template <class T> bool IsData() {return custom_data == AsTypeCls<T>();}
+		bool IsCustomData() const {return custom_data != 0;}
+		
 		template <class T> T& GetData() {
+			ASSERT(custom_data == AsTypeCls<T>());
 			ASSERT(data.GetCount() == sizeof(T));
 			byte* b = &data[0];
 			return *(T*)b;

@@ -26,6 +26,13 @@ Audio& SDL2AudioOutputComponent::GetValue(AudCtx) {
 	DefaultRecvAudio(src, dt, obj->GetSystemAudio());
 }*/
 
+void SDL2AudioOutputComponent::Forward(FwdScope& fwd) {
+	// pass
+}
+
+void SDL2AudioOutputComponent::ForwardExchange(FwdScope& fwd) {
+	// pass
+}
 
 
 NAMESPACE_TOPSIDE_END

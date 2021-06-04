@@ -68,7 +68,9 @@ struct ScopeDevMachT {
 	};
 	
 	
-	struct InternalPacketData {
+	struct InternalPacketData : RTTIBase {
+		RTTI_DECL0(InternalPacketData)
+		
 		int pos;
 		int count;
 		void* dev_comp;

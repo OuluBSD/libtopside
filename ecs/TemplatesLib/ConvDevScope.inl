@@ -65,10 +65,17 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	
 	p_fmt = p->GetFormat();
 	auto src_fmt = src_value.GetFormat();
-	if (p_fmt != src_fmt) {DLOG("ConvertComponent::Forward: error: packet format differs\nPacket format: " << p_fmt.ToString() << "\nSource format: " << src_fmt.ToString());}
-	ASSERT(p_fmt == src_fmt);
-	
-	ToComponent::template ForwardPacket<ValSpec>(fwd, p);
+	if (p_fmt != src_fmt) {
+		//DLOG("ConvertComponent::Forward: error: packet format differs\nPacket format: " << p_fmt.ToString() << "\nSource format: " << src_fmt.ToString());
+		Packet new_p = Data::CreatePacket();
+		new_p->SetFormat(src_fmt);
+		TMach::Convert(p, new_p);
+		ASSERT(new_p->GetFormat() == src_fmt);
+		ToComponent::template ForwardPacket<ValSpec>(fwd, new_p);
+	}
+	else {
+		ToComponent::template ForwardPacket<ValSpec>(fwd, p);
+	}
 }
 
 TMPL_CONVDEVLIB(void) ConvertComponent::ForwardExchange(FwdScope& fwd) {

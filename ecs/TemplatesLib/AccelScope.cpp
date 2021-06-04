@@ -497,11 +497,12 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 	using ValSpec					= AudioSpec;
 	using FromDevSpec				= AccelSpec;
 	using ValMach					= ScopeValMachT<ValSpec>;
+	using Mach						= ScopeValMachT<ValSpec>;
 	using Format					= typename ValMach::Format;
 	using FromDevMach				= ScopeDevMachT<FromDevSpec>;
 	using FromInternalPacketData	= typename FromDevMach::InternalPacketData;
 	
-	FromInternalPacketData in = p->GetData<FromInternalPacketData>();
+	FromInternalPacketData& in = p->GetData<FromInternalPacketData>();
 	AccelComponent* acc_comp = reinterpret_cast<AccelComponent*>(in.dev_comp);
 	ASSERT(acc_comp);
 	
@@ -527,7 +528,7 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 	glReadPixels(0, 0, sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, data.Begin());
 	
-	if (1) {
+	if (0) {
 		float* f = (float*)(void*)data.Begin();
 		for(int i = 0; i < sample_rate; i++) {
 			String s;

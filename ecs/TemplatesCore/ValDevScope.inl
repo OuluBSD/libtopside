@@ -151,7 +151,10 @@ TMPL_VALDEVCORE(void) ValSystem::Update(double dt) {
 	USING_VALDEVCORE(ValExchangePointRef)
 	USING_VALDEVCORE(V)
 	
-	
+}
+
+#if 0
+TMPL_VALDEVCORE(void) ValSystem::Iterate(double dt) {
 	for (ValSourceRef src : srcs) {
 		CtxStream& stream = src->GetStream(CTX);
 		int buf_sz = stream.Get().GetQueueSize();
@@ -213,6 +216,7 @@ TMPL_VALDEVCORE(void) ValSystem::Update(double dt) {
 	}
 	
 }
+#endif
 
 TMPL_VALDEVCORE(void) ValSystem::Stop() {
 	

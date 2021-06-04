@@ -134,17 +134,23 @@ void ScopeDevLibT<DevSpec>::DevComponent::ForwardPacket(FwdScope& fwd, typename 
 	
 	DLOG("DevComponent::ForwardPacket: begin");
 	
-	InternalPacketData& data = p->template GetData<InternalPacketData>();
-	
-	p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
-	
-	DevComponentBase::Process();
-	
-	if (data.pos >= data.count-1)
-		PostProcess();
-	else {
-		data.pos++;
+	if (p->template IsData<InternalPacketData>()) {
+		InternalPacketData& data = p->template GetData<InternalPacketData>();
+		
+		p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
+		
+		DevComponentBase::Process();
+		
+		if (data.pos >= data.count-1)
+			PostProcess();
+		else {
+			data.pos++;
+		}
 	}
+	else {
+		DevComponentBase::Process();
+	}
+	
 	
 	ValSource* src = CastPtr<ValSource>(this);
 	if (src) {

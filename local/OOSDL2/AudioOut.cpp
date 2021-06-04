@@ -38,8 +38,12 @@ bool AudioOutput::IsSampleSigned() const {
 }
 
 void AudioOutput::SinkCallback(Uint8* output, int size) {
-	if (buf.IsEmpty() || !output)
+	if (buf.IsEmpty() || !output) {
+		if (0) {
+			RTLOG("AudioOutput::SinkCallback: empty buffer");
+		}
 		return;
+	}
 	
 	if (consumer.IsEmptySource())
 		consumer.SetSource(buf);
