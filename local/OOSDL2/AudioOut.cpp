@@ -44,6 +44,7 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	if (consumer.IsEmptySource())
 		consumer.SetSource(buf);
 
+	AudioFormat fmt = buf.GetFormat();
 	ASSERT(size == fmt.GetFrameSize());
 	
 	if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
@@ -98,6 +99,7 @@ bool AudioOutput::Open0() {
 	        LOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
 	    }
 	    
+	    AudioFormat fmt;
 	    #if CPU_LITTLE_ENDIAN
 	    if (IsSampleFloating()) {
 	        fmt.type = GetSampleSize() == 4 ? SoundSample::FLT_LE : SoundSample::DBL_LE;
@@ -132,9 +134,11 @@ bool AudioOutput::Open0() {
 	    fmt.sample_rate = audio_fmt.samples;
 	    fmt.channels = audio_fmt.channels;
 		
-	    buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	    buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
+	    
+	    LOG("OOSDL2::AudioOutput::Open0: opened format: " << fmt.ToString());
 	    
 	    return true;
 	}

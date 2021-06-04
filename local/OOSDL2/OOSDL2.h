@@ -100,7 +100,6 @@ private:
 	SDL_AudioDeviceID audio_dev = 0;
 	AudioPacketConsumer consumer;
 	AudioVolatileBuffer buf;
-	AudioFormat fmt;
 	dword frames = 0;
 	
 	bool Open0() override;

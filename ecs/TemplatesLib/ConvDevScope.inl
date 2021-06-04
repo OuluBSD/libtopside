@@ -8,6 +8,12 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	using ContextComponent		= typename DevLib::ContextComponent;
 	using ContextComponentRef	= typename DevLib::ContextComponentRef;
 	
+	auto sink_fmt = FromComponent::template GetDefaultFormat<ValSpec>();
+	sink_value.SetFormat(sink_fmt);
+	
+	auto src_fmt = ToComponent::template GetDefaultFormat<ValSpec>();
+	src_value.SetFormat(src_fmt);
+	
 	ToComponent::Initialize();
 	
 	ComponentBase* cb = CastPtr<ComponentBase>(this);
@@ -47,15 +53,20 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	Packet p = buf.First();
 	buf.RemoveFirst();
 	
-	Format fmt = p->GetFormat();
-	if (fmt.IsDeviceInternal()) {
-		TypeCls from_spec = AsTypeCls<FromDevSpec>();
-		TypeCls to_spec = AsTypeCls<ToDevSpec>();
-		TypeCls dev_spec = fmt.GetDevSpec();
-		ASSERT(dev_spec == from_spec && dev_spec != to_spec);
-		
-		ToComponent::template ConvertPacket<FromDevSpec, ValSpec>(p);
-	}
+	Format p_fmt = p->GetFormat();
+	ASSERT(p_fmt.IsValid());
+	
+	TypeCls from_spec = AsTypeCls<FromDevSpec>();
+	TypeCls to_spec = AsTypeCls<ToDevSpec>();
+	TypeCls dev_spec = p_fmt.GetDevSpec();
+	ASSERT(dev_spec == from_spec && dev_spec != to_spec);
+	
+	ToComponent::template ConvertPacket<FromDevSpec, ValSpec>(p);
+	
+	p_fmt = p->GetFormat();
+	auto src_fmt = src_value.GetFormat();
+	if (p_fmt != src_fmt) {DLOG("ConvertComponent::Forward: error: packet format differs\nPacket format: " << p_fmt.ToString() << "\nSource format: " << src_fmt.ToString());}
+	ASSERT(p_fmt == src_fmt);
 	
 	ToComponent::template ForwardPacket<ValSpec>(fwd, p);
 }

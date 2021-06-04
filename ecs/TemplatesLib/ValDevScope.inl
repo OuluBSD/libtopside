@@ -34,7 +34,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	Value& to_val = sink->GetValue((ValSpec*)0);
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
-		to_fmt = sink_comp->template GetDefaultFormat<ValSpec>();
+		to_fmt = DevComponent::template GetDefaultFormat<ValSpec>();
 		SimpleBufferedValue* sbuf;
 		if ((sbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
 			sbuf->SetFormat(to_fmt);
@@ -84,8 +84,9 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 
 TMPL_VALDEVLIB(void) PipeComponent::Initialize() {
 	DevComponent::Initialize();
-	sink_value	.SetFormat(DevComponent::template GetDefaultFormat<ValSpec>());
-	src_value	.SetFormat(DevComponent::template GetDefaultFormat<ValSpec>());
+	auto fmt = DevComponent::template GetDefaultFormat<ValSpec>();
+	sink_value	.SetFormat(fmt);
+	src_value	.SetFormat(fmt);
 }
 TMPL_VALDEVLIB(void) PipeComponent::Uninitialize() {
 	DevComponent::Uninitialize();
@@ -113,6 +114,7 @@ TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	
 	auto p_fmt = p->GetFormat();
 	auto src_fmt = src_value.GetFormat();
+	if (p_fmt != src_fmt) {DLOG("PipeComponent::Forward: error: packet format differs\nPacket format: " << p_fmt.ToString() << "\nSource format: " << src_fmt.ToString());}
 	ASSERT(p_fmt == src_fmt);
 	
 	DevComponentBase::Process();

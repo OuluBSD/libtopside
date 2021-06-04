@@ -19,7 +19,7 @@ AudioFormat SDL2AudioOutputComponent::GetFormat(AudCtx) {
 }
 
 Audio& SDL2AudioOutputComponent::GetValue(AudCtx) {
-	TODO
+	return obj->GetAudio();
 }
 
 /*void SDL2AudioOutputComponent::RecvAudio(AudioSource& src, double dt) {

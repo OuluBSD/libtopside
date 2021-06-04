@@ -62,7 +62,7 @@ bool SDL2EventsComponent::ReadFrame() {
 bool SDL2EventsComponent::ProcessFrame() {
 	if (!tmp_events.IsEmpty()) {
 		EventPacket p = CreateEventPacket();
-		p->SetFormat(EventFormat(EventSample::CTRL_EVENT, 1));
+		p->SetFormat(EventFormat(AsTypeCls<CenterSpec>(), EventSample::CTRL_EVENT, 1));
 		MemSwap(p->Data(), tmp_events);
 		value.AddPacket(p);
 		return true;

@@ -100,14 +100,14 @@ void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outch
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
 	
 	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
-	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
 	
 	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
-	buf.SetSampleSize(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 }
 
 

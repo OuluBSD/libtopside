@@ -23,23 +23,15 @@ struct ScopeValMachT {
 		RTTI_DECL_T1(Format, FormatBase)
 		using FormatBase::FormatBase;
 		
-		TypeCls dev_spec = 0;
 	public:
-		
-		void SetDevSpec(TypeCls t) {dev_spec = t;}
-		void ClearDevSpec() {dev_spec = 0;}
-		
-		TypeCls GetDevSpec() const {return dev_spec;}
-		bool IsDeviceSpecific() const {return dev_spec != 0;}
-		
-		template <class DevSpec>
-		void SetDeviceInternal() {
-			dev_spec = AsTypeCls<DevSpec>();
-		}
-		
-		void Invalidate() {dev_spec = 0; FormatBase::Invalidate();}
-		
 		String ToString() const {return FormatBase::ToString();}
+		TypeCls GetDevSpec() const {return FormatBase::GetDevSpec();}
+		
+		bool IsSame(const Format& f) {return FormatBase::IsSame(f);}
+		bool operator ==(const Format& f) {return IsSame(f);}
+		bool operator !=(const Format& f) {return !IsSame(f);}
+		
+		template <class DevSpec> void SetDefault() {FormatBase::template SetDefault<DevSpec>();}
 	};
 	
 	using V = ValSpec;
@@ -96,7 +88,7 @@ struct ScopeValMachT {
 		void					SetOffset(off32 offset) {this->offset = offset;}
 		void					SetTime(double seconds) {time = seconds;}
 		void					SetTrackingId(PacketId i) {id = i;}
-		void					Invalidate() {data.SetCount(0); fmt.Invalidate();}
+		void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0;}
 		
 		const Vector<byte>&		GetData() const {return data;}
 		Format					GetFormat() const {return fmt;}

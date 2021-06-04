@@ -54,8 +54,8 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 		
 		p->SetOffset(gr.offset++);
 		
-		Format fmt = comp->template GetDefaultFormat<ValSpec>();
-		fmt.template SetDeviceInternal<DevSpec>();
+		Format fmt = DevComponent::template GetDefaultFormat<ValSpec>();
+		RTLOG("CreateForwardPacketT: sending packet in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
@@ -501,12 +501,13 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 	using FromDevMach				= ScopeDevMachT<FromDevSpec>;
 	using FromInternalPacketData	= typename FromDevMach::InternalPacketData;
 	
-	Format fmt = p->GetFormat();
 	FromInternalPacketData in = p->GetData<FromInternalPacketData>();
 	AccelComponent* acc_comp = reinterpret_cast<AccelComponent*>(in.dev_comp);
 	ASSERT(acc_comp);
 	
-	p->Invalidate();
+	Format fmt = p->GetFormat();
+	fmt.SetDevSpec<CenterSpec>();
+	p->SetFormat(fmt);
 	
 	Vector<byte>& data = p->Data();
 	
@@ -562,7 +563,7 @@ ScopeDevLibT<AccelSpec>::DevComponent::GetDefaultFormat<AudioSpec>() {
 	using ValMach					= ScopeValMachT<ValSpec>;
 	using Format					= typename ValMach::Format;
 	Format fmt;
-	fmt.Set(SoundSample::FLT_LE, 2, 44100, 1024);
+	fmt.Set<AccelSpec>(SoundSample::FLT_LE, 2, 44100, 1024);
 	return fmt;
 }
 

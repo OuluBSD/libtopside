@@ -183,10 +183,10 @@ template <class DevSpec>
 template <class ValSpec>
 typename ScopeValMachT<ValSpec>::Format
 ScopeDevLibT<DevSpec>::DevComponent::GetDefaultFormat() {
-	TODO
+	typename ScopeValMachT<ValSpec>::Format fmt;
+	fmt.template SetDefault<DevSpec>();
+	return fmt;
 }
-
-
 
 
 
@@ -425,9 +425,10 @@ TMPL_DEVLIB(void) ContextComponent::Update() {
 			return;
 		}
 		
-		stream.vid.fmt.Set(LightSampleFD::FLT_LE_ABCD, Size(640,480));
-		stream.vid.fmt.SetFPS(60);
-		stream.aud.fmt.Set(SoundSample::S16_LE, 2, 44100, 1024);
+		#define IFACE(x) stream.template Get<x##Spec>().fmt = DevComponent::template GetDefaultFormat<x##Spec>();
+		IFACE_LIST
+		#undef IFACE
+		
 		RefreshStreamValuesAll();
 		
 		RefreshPipeline();

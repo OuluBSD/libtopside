@@ -65,7 +65,9 @@ public:
 			type_code##_##endianess##_##pack_code ,
 		PACKED_SAMPLE_LIST
 		#undef TYPE
-		TYPE_COUNT
+		TYPE_COUNT,
+		
+		DEFAULT = U8_LE,
 	} Type;
 	
 	template <class T> static Type GetSampleType();
@@ -144,7 +146,9 @@ public:
 		#define DEV_SMPL(x) x ,
 		DEV_SMPL_LIST
 		#undef DEV_SMPL
-		TYPE_COUNT
+		TYPE_COUNT,
+		
+		DEFAULT = CTRL_EVENT
 	} Type;
 
 
@@ -183,7 +187,7 @@ template<> struct DimBase<1> : RTTIBase {
 	RTTI_DECL0(DimBase<1>)
 	static const int n = 1;
 	union {
-		int size[1];
+		int res[1];
 		int channels;
 		int width;
 		int length;
@@ -193,14 +197,14 @@ template<> struct DimBase<1> : RTTIBase {
 	
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
-	void SetDim(DimArg a) {size[0] = a;}
-	//void SetDeviceInternal() {for(int i = 0; i < n; i++) size[i] = 1;}
-	void Clear() {for(int i = 0; i < n; i++) size[i] = 0;}
+	void SetDim(DimArg a) {res[0] = a;}
+	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	String ToString() const {return "len(" + IntStr(channels) + ")";}
-	bool IsSame(const DimBase& b) const {return size[0] == b.size[0];}
-	int GetArea() const {return size[0];}
-	bool IsValid() const {for(int i = 0; i < n; i++) if (size[i] <= 0) return false; return true;}
-	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) size[i] = b.size[i]; return *this;}
+	bool IsSame(const DimBase& b) const {return res[0] == b.res[0];}
+	int GetArea() const {return res[0];}
+	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 };
 
 template<> struct DimBase<2> : RTTIBase {
@@ -226,7 +230,7 @@ template<> struct DimBase<2> : RTTIBase {
 	DimBase(const DimBase& b) {*this = b;}
 	
 	void SetDim(DimArg a) {size = a;}
-	//void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {
 		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
@@ -269,7 +273,7 @@ template<> struct DimBase<3> : RTTIBase {
 	DimBase(const DimBase& b) {*this = b;}
 	
 	void SetDim(DimArg a) {size = a;}
-	//void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	String ToString() const {return size.ToString();}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
@@ -355,8 +359,7 @@ public:
 	
 	void Clear() {Sample::Clear(type);}
 	void SetType(SampleType t) {type = t;}
-	//void SetDeviceInternal() {type = SampleType::DEV_INTERNAL;}
-	void Invalidate() {type = SampleType::INVALID;}
+	void SetDefault() {type = Sample::DEFAULT;}
 	
 	String ToString() const {return Sample::ToString(type);}
 	int GetSampleSize() const {return Sample::GetSize(type);}
@@ -377,50 +380,32 @@ public:
 	
 };
 
-
-
-
-#define FUNC_TMPL(dim, post, d) \
-	using Class = d##dim##post<T>; \
-	using SampleType = typename SampleBase<T>::Sample::Type; \
-	using DimArg = typename DimBase<dim>::DimArg; \
-	d##dim##post() {Clear();} \
-	d##dim##post(const d##dim##post& s) {*this = s;} \
-	d##dim##post(SampleType type, DimArg dim_, int freq=0, int sample_rate=0) {Set(type, dim_, freq, sample_rate);} \
-	static const int def_sample_rate = T::def_sample_rate; \
-	bool IsSame(const Class& b) const {\
-		return		post##Base::IsSame(b) && \
-					SampleBase<T>::IsCopyCompatible(b) && \
-					DimBase<dim>::IsSame(b); \
-	} \
-	bool operator==(const Class& b) const {return IsSame(b);} \
-	bool operator!=(const Class& b) const {return !IsSame(b);} \
-	void Set(SampleType type, DimArg dim_, int freq=0, int sample_rate=0) { \
-		SampleBase<T>::SetType(type); \
-		DimBase<dim>::SetDim(dim_); \
-		if (freq || sample_rate) \
-			post##Base::SetTimeSeries(freq, sample_rate); \
-	} \
-	/*void SetDeviceInternal() { \
-		SampleBase<T>::SetDeviceInternal(); \
-		DimBase<dim>::SetDeviceInternal(); \
-		post##Base::SetDeviceInternal(); \
-	}*/ \
-	void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
-	int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
-	bool IsValid() const { \
-		return		post##Base::IsValid() && \
-					SampleBase<T>::IsValid() && \
-					DimBase<dim>::IsValid(); \
-	} \
-	Class& operator=(const Class& c) { \
-					post##Base::operator=(c); \
-					SampleBase<T>::operator=(c); \
-					DimBase<dim>::operator=(c); \
-		return *this; \
-	} \
-	String ToString() const {return DimBase<dim>::ToString() + ", " + post##Base::ToString() + ", " + SampleBase<T>::ToString();} \
+struct DevBase : RTTIBase {
+	TypeCls dev_spec = 0;
 	
+public:
+	RTTI_DECL0(DevBase)
+	
+	void Clear() {dev_spec = 0;}
+	void SetDevSpec(TypeCls t) {dev_spec = t;}
+	void operator=(const DevBase& b) {dev_spec = b.dev_spec;}
+	
+	template <class DevSpec>
+	void SetDevSpec() {
+		dev_spec = AsTypeCls<DevSpec>();
+	}
+	
+	TypeCls GetDevSpec() const {return dev_spec;}
+	bool IsDeviceSpecific() const {return dev_spec != 0;}
+	bool IsSame(const DevBase& f) const {return dev_spec == f.dev_spec;}
+	bool IsValid() const {return dev_spec != 0;}
+	
+	String ToString() const;
+};
+
+
+
+
 
 
 #define COMBINE_CLASS(dim, post, d) \
@@ -428,13 +413,68 @@ public:
 	class d##dim##post : \
 		public post##Base, \
 		public SampleBase<T>, \
-		public DimBase<dim> \
+		public DimBase<dim>, \
+		public DevBase \
 	{ \
 	 \
 	public: \
 		RTTI_DECL3(d##dim##post, post##Base, SampleBase<T>, DimBase<dim>) \
-		FUNC_TMPL(dim, post, d) \
-	 \
+		using Class = d##dim##post<T>; \
+		using SampleType = typename SampleBase<T>::Sample::Type; \
+		using DimArg = typename DimBase<dim>::DimArg; \
+		d##dim##post() {Clear();} \
+		d##dim##post(const d##dim##post& s) {*this = s;} \
+		d##dim##post(TypeCls dev_spec, SampleType type, DimArg dim_, int freq=0, int sample_rate=0) {Set(dev_spec, type, dim_, freq, sample_rate);} \
+		static const int def_sample_rate = T::def_sample_rate; \
+		bool IsSame(const Class& b) const {\
+			return		post##Base::IsSame(b) && \
+						SampleBase<T>::IsCopyCompatible(b) && \
+						DimBase<dim>::IsSame(b) && \
+						DevBase::IsSame(b); \
+		} \
+		bool operator==(const Class& b) const {return IsSame(b);} \
+		bool operator!=(const Class& b) const {return !IsSame(b);} \
+		template <class DevSpec>\
+		void Set(SampleType type, DimArg dim_, int freq=0, int sample_rate=0) { \
+			Set(AsTypeCls<DevSpec>(), type, dim_, freq, sample_rate); \
+		} \
+		void Set(TypeCls dev_spec, SampleType type, DimArg dim_, int freq=0, int sample_rate=0) { \
+			DevBase::SetDevSpec(dev_spec); \
+			SampleBase<T>::SetType(type); \
+			DimBase<dim>::SetDim(dim_); \
+			if (freq || sample_rate) \
+				post##Base::SetTimeSeries(freq, sample_rate); \
+		} \
+		template <class DevSpec> void SetDefault() {\
+			DevBase::SetDevSpec<DevSpec>(); \
+			SampleBase<T>::SetDefault(); \
+			DimBase<dim>::SetDefault(); \
+		} \
+		void SetDefaultTimeSeriesAudio() {post##Base::SetTimeSeries(44100, 1024);} \
+		void SetDefaultTimeSeriesVideo() {post##Base::SetTimeSeries(60, 1);} \
+		/*void SetDeviceInternal() { \
+			SampleBase<T>::SetDeviceInternal(); \
+			DimBase<dim>::SetDeviceInternal(); \
+			post##Base::SetDeviceInternal(); \
+		}*/ \
+		void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear(); DevBase::Clear();} \
+		int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
+		bool IsValid() const { \
+			return		post##Base::IsValid() && \
+						SampleBase<T>::IsValid() && \
+						DimBase<dim>::IsValid() && \
+						DevBase::IsValid(); \
+		} \
+		Class& operator=(const Class& c) { \
+						post##Base::operator=(c); \
+						SampleBase<T>::operator=(c); \
+						DimBase<dim>::operator=(c); \
+						DevBase::operator=(c); \
+			return *this; \
+		} \
+		String ToString() const {return DevBase::ToString() + ", " + DimBase<dim>::ToString() + ", " + post##Base::ToString() + ", " + SampleBase<T>::ToString();} \
+	\
+	\
 	};
 
 #define COMBINE_CLASS_3(post, d) \
@@ -452,7 +492,6 @@ COMBINE_CLASS_TDFD(TimeSeries)
 COMBINE_CLASS_TDFD(SparseTimeSeries)
 
 
-#undef FUNC_TMPL
 #undef COMBINE_CLASS
 #undef COMBINE_CLASS_3
 #undef COMBINE_CLASS_TDFD
@@ -500,7 +539,7 @@ class TD1OnceMulti4 : RTTIBase {
 	TD1Once<T1>		o1;
 	TD1Once<T2>		o2;
 	TD1Once<T3>		o3;
-	bool is_dev_internal = false;
+	TypeCls dev_spec = 0;
 	
 public:
 	static const int def_sample_rate = 1;
@@ -508,13 +547,12 @@ public:
 	int GetSampleSize() const {TODO}
 	int GetFrameSize() const {TODO}
 	int GetArea() const {return 1;}
-	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear();}
-	bool IsValid() const {return o0.IsValid() && o1.IsValid() && o2.IsValid() && o3.IsValid();}
-	bool IsDeviceInternal() const {return is_dev_internal;}
-	bool operator==(const TD1OnceMulti4<T>& o) const {TODO}
-	
-	//void SetDeviceInternal() {is_dev_internal = true;}
-	void Invalidate() {o0.Invalidate(); o1.Invalidate(); o2.Invalidate(); o3.Invalidate(); is_dev_internal = false;}
+	TypeCls GetDevSpec() const {return dev_spec;}
+	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear(); dev_spec = 0;}
+	bool IsValid() const {return o0.IsValid() && o1.IsValid() && o2.IsValid() && o3.IsValid() && dev_spec != 0;}
+	bool IsSame(const TD1OnceMulti4<T>& o) const {TODO}
+	bool operator==(const TD1OnceMulti4<T>& o) const {return IsSame(o);}
+	template <class DevSpec> void SetDefault() {dev_spec = AsTypeCls<DevSpec>(); o0.template SetDefault<DevSpec>(); o1.template SetDefault<DevSpec>(); o2.template SetDefault<DevSpec>(); o3.template SetDefault<DevSpec>();}
 	
 	String ToString() const {return "[" + o0.ToString() + ", " + o1.ToString() + ", " + o2.ToString() + ", " + o3.ToString() + "]";}
 	

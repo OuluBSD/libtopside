@@ -218,4 +218,16 @@ int EventSample::GetSize(Type t) {
 }
 
 
+
+String DevBase::ToString() const {
+	#define DEV(x) if (dev_spec == AsTypeCls<x##Spec>()) return #x;
+	DEV_LIST
+	#undef DEV
+	#define IFACE(x) if (dev_spec == AsTypeCls<x##Spec>()) Panic(#x "Spec as DevSpec in DevBase");
+	IFACE_LIST
+	#undef IFACE
+	return "invalid";
+}
+
+
 NAMESPACE_TOPSIDE_END

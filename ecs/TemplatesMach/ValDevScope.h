@@ -225,7 +225,7 @@ struct ScopeValDevMachT {
 		public Value,
 		public RealtimePacketBuffer<Packet>
 	{
-		Format preferred_fmt;
+		Format fmt;
 		One<PacketConsumer> consumer;
 		
 		#if DEBUG_REALTIME
@@ -254,11 +254,11 @@ struct ScopeValDevMachT {
 		}
 		#endif
 		
-		void		SetSampleSize(Format fmt, int samples) {preferred_fmt = fmt; Buffer::SetLimit(samples);}
+		void		SetFormat(Format fmt, int samples=2) {this->fmt = fmt; Buffer::SetLimit(samples);}
 		
 		void		Exchange(Ex& e)			override;
 		int			GetQueueSize() const	override {return Buffer::GetQueueSize();}
-		Format		GetFormat() const		override {return preferred_fmt;}
+		Format		GetFormat() const		override {return fmt;}
 		bool		IsQueueFull() const		override {return Buffer::IsQueueFull();}
 		
 		
