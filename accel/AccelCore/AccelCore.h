@@ -13,6 +13,8 @@
 #include <EcsLib/EcsLib.h>
 #include <Structural/Structural.h>
 
+#error Deprecated
+
 #if defined(flagGUI) && !defined(__gl_h_)
 	#error OpenGL is not included
 #endif

@@ -15,7 +15,7 @@ void AccelComponentGroupBase::RefreshPipeline() {
 
 
 template<class ValDevSpec>
-bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
+bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 	using ValSpec = typename ValDevSpec::Val;
 	using DevSpec = typename ValDevSpec::Dev;
 	using ValData = ScopeValMachT<ValSpec>;
@@ -51,17 +51,21 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 			return false;
 		
 		Packet p = ValData::CreatePacket();
-		PacketTracker::Track(TrackerInfo("PostRefreshPacketT", __FILE__, __LINE__), *p);
+		PacketTracker::Track(TrackerInfo("CreateForwardPacketT", __FILE__, __LINE__), *p);
+		
+		p->SetOffset(gr.offset++);
 		
 		Format fmt;
 		fmt.template SetDeviceInternal<DevSpec>();
+		p->SetFormat(fmt);
 		
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = ag.GetComponents().GetCount();
 		buf->AddPacket(p);
 		
-		comp->Forward();
+		for (FwdScope scope(comp); scope; scope++)
+			scope.Forward();
 		
 		return true;
 	}
@@ -72,8 +76,8 @@ bool PostRefreshPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
 	#undef CTX
 }
 
-bool AccelComponentGroupBase::PostRefreshPacket(InterfaceSinkBase& sink) {
-	#define IFACE(x) if (PostRefreshPacketT<TS::VD<AccelSpec,x##Spec>>(*this, sink)) return true;
+bool AccelComponentGroupBase::CreateForwardPacket(InterfaceSinkBase& sink) {
+	#define IFACE(x) if (CreateForwardPacketT<TS::VD<AccelSpec,x##Spec>>(*this, sink)) return true;
 	IFACE_LIST
 	#undef IFACE
 	return false;
@@ -239,10 +243,18 @@ bool AccelComponentBase::CheckDevice() {
 	c.Forward();
 }*/
 
-void AccelComponentBase::PostProcess() {
+void AccelComponentBase::Process() {
 	AccelComponent& c = CastRef<AccelComponent>(this);
-	c.GetStreamState().Step(c.group->GetValSpec());
+#if HAVE_OPENGL
+	int pos = c.GetPos();
+	ASSERT(pos >= 0);
+	uint32 gl_stage = c.group->gl_stages[pos];
+	ASSERT(gl_stage > 0);
+	c.group->Ogl_ProcessStage(*this, gl_stage);
+#endif
 }
+
+
 
 
 

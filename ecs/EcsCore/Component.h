@@ -10,6 +10,7 @@ template <class T> inline RefT_Entity<T> ComponentBase_Static_As(ComponentBase*)
 class ComponentBase :
 	public Destroyable,
 	public Enableable,
+	virtual public PacketForwarder,
 	public RefScopeEnabler<ComponentBase,Entity>
 {
 protected:
@@ -32,7 +33,7 @@ public:
 	Machine& GetMachine();
 	
 public:
-	RTTI_DECL_R2(ComponentBase, Destroyable, Enableable)
+	RTTI_DECL_R3(ComponentBase, Destroyable, Enableable, PacketForwarder)
 	ComponentBase();
 	virtual ~ComponentBase();
 	

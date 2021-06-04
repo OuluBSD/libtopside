@@ -27,6 +27,7 @@ void Entity::InitializeComponents() {
 }
 
 void Entity::InitializeComponent(ComponentBase& comp) {
+	comp.SetParent(this);
 	comp.Initialize();
 }
 

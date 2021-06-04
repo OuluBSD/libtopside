@@ -24,7 +24,7 @@ TMPL_VALMACH(String) TrackerInfo::ToString() const {
 
 
 
-TMPL_VALMACH(void) StreamState::Clear() {
+TMPL_VALMACH(void) ValStreamState::Clear() {
 	fmt.Clear();
 	sink_frame = 0;
 	is_sync = 0;
@@ -37,7 +37,7 @@ TMPL_VALMACH(void) StreamState::Clear() {
 	frames_after_sync = 0;
 }
 
-TMPL_VALMACH(void) StreamState::Reset() {
+TMPL_VALMACH(void) ValStreamState::Reset() {
 	frame_time.Reset();
 	total_seconds = 0;
 	frame_seconds = 0;
@@ -46,7 +46,8 @@ TMPL_VALMACH(void) StreamState::Reset() {
 	frames_after_sync = 0;
 }
 
-TMPL_VALMACH(void) StreamState::Step() {
+TMPL_VALMACH(void) ValStreamState::Step() {
+	offset++;
 	frames++;
 	frame_time.Reset();
 }

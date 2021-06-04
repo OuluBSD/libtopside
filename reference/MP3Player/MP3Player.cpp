@@ -16,7 +16,7 @@ void DummyGenerator::Initialize() {
 	audio   = e->Find<PortaudioSinkComponent>();
 	
 	PoolRef p = e->GetPool();
-	p->Add<ConnectAllInterfaces<AudioSpec>>();
+	p->Add<ConnectAllInterfaces<CenterAudioSpec>>();
 }
 
 void DummyGenerator::Uninitialize() {
@@ -48,7 +48,7 @@ void MP3Player::Initialize() {
 	file_in->WhenStopped = THISBACK(OnStop);
 	
 	PoolRef p = e->GetPool();
-	p->Add<ConnectAllInterfaces<AudioSpec>>();
+	p->Add<ConnectAllInterfaces<CenterAudioSpec>>();
 	
 	if (!file_in->LoadFileAny(file_path)) {
 		LOG("opening media file failed: " << file_in->GetLastError());

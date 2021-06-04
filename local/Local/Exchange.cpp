@@ -60,6 +60,7 @@ bool ExchangeSourceProvider::print_debug = false;
 
 void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
+	ASSERT_(CastPtr<LockedScopeRefCounter>(this) != CastPtr<LockedScopeRefCounter>(&*sink), "Linking to itself is not allowed");
 	base.AddLink(expt, sink);
 	sink->base.AddLink(expt, AsRefT());
 	if (print_debug) {
@@ -105,6 +106,48 @@ ExchangeSourceProvider::ExchangeSourceProvider() {
 ExchangeSourceProvider::~ExchangeSourceProvider() {
 	DBG_DESTRUCT
 }
+
+
+
+
+
+
+
+
+void FwdScope::Clear() {
+	cur = 0;
+	for(int i = 0; i < QUEUE_SIZE; i++)
+		next[i] = 0;
+	read_i = 0;
+	write_i = 0;
+}
+
+void FwdScope::Forward() {
+	if (cur) {
+		cur->ForwardSetup(*this);
+		cur->Forward(*this);
+		cur->ForwardExchange(*this);
+	}
+}
+
+void FwdScope::AddNext(PacketForwarder* cb) {
+	if (cb) {
+		ASSERT(!next[write_i]);
+		next[write_i] = cb;
+		write_i = (write_i + 1) % QUEUE_SIZE;
+	}
+}
+
+void FwdScope::ActivateNext() {
+	cur = next[read_i];
+	next[read_i] = 0;
+	read_i = (read_i + 1) % QUEUE_SIZE;
+}
+
+
+
+
+
 
 
 

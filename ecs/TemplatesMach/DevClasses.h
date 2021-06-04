@@ -21,9 +21,10 @@ NAMESPACE_TOPSIDE_BEGIN
 		String ToString() const {return String();} \
 		void Clear() {} \
 		void Close() {} \
+		void Process() {} \
 		bool Open() {return false;} \
 		bool CheckDevice() {return true;} \
-		void UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {TODO} \
+		void UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {} \
 		virtual bool RequiresDeviceProgram() const {return false;} \
 	};
 DUMMY_DEV_LIST

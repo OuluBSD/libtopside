@@ -36,6 +36,7 @@ int BinarySample::GetSize(Type t) {
 int BinarySample::GetPackedSingleSize(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 1;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return type_sz;
 		SAMPLE_LIST
@@ -53,6 +54,7 @@ int BinarySample::GetPackedSingleSize(Type t) {
 int BinarySample::GetPackedCount(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 1;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return 1;
 		SAMPLE_LIST
@@ -70,6 +72,7 @@ int BinarySample::GetPackedCount(Type t) {
 bool BinarySample::IsUnsigned(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 1;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return !(type_signed);
 		SAMPLE_LIST
@@ -87,6 +90,7 @@ bool BinarySample::IsUnsigned(Type t) {
 bool BinarySample::IsSigned(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 0;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return type_signed;
 		SAMPLE_LIST
@@ -104,6 +108,7 @@ bool BinarySample::IsSigned(Type t) {
 bool BinarySample::IsFloating(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 0;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return type_flt;
 		SAMPLE_LIST
@@ -121,6 +126,7 @@ bool BinarySample::IsFloating(Type t) {
 bool BinarySample::IsDecimal(Type t) {
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 0;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return !(type_flt);
 		SAMPLE_LIST
@@ -140,6 +146,7 @@ bool BinarySample::IsLittleEndian(Type t) {
 	static const bool BE = false;
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 1;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess : return endianess;
 		SAMPLE_LIST
@@ -160,6 +167,7 @@ bool BinarySample::IsBigEndian(Type t) {
 	static const bool LE = false;
 	switch (t) {
 		case INVALID: return 0;
+		case DEV_INTERNAL: return 0;
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return endianess;
 		SAMPLE_LIST

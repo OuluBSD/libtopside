@@ -13,8 +13,10 @@ void ShaderPlayer::Initialize() {
 	PoolRef root = GetEntity()->GetMachine().Get<EntityStore>()->GetRoot();
 	root->AddConnectEverythingWithAccel();
 	
+	root->Create<CenterStreamScope>();
+	
 	PoolRef pool = root->GetAddPool("accel");
-	accel = pool->Create<CompleteAccel>();
+	accel = pool->Create<AccelStreamScope>();
 	ASSERT(accel);
 	
 	ctx = accel->Find<AccelContextComponent>();

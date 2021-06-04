@@ -39,7 +39,8 @@ struct OffsetLoop {
 	bool operator!=(const OffsetLoop& o) const {return o.value != value;}
 	void operator+=(const OffsetLoop& o) {value += o.value;}
 	void operator-=(const OffsetLoop& o) {value -= o.value;}
-	void operator++() {++value;}
+	OffsetLoop& operator++() {++value; return *this;}
+	OffsetLoop operator++(int) {return OffsetLoop{value++};}
 	operator bool() const {return value;}
 	
 	void SetMax() {value = limits::max();}
@@ -273,8 +274,10 @@ public:
 class ExchangeSourceProvider :
 	public ExchangeProviderBase
 {
+public:
 	using ExProv = ExchangeProviderT<ExchangeSinkProviderRef>;
 	
+private:
 	ExProv base;
 	
 	static bool print_debug;
@@ -312,9 +315,47 @@ typedef ExchangeSourceProviderRef ExchangeSourceProviderRef;
 
 
 
+class PacketForwarder;
 
+class FwdScope {
+	static const int QUEUE_SIZE = 16;
+	PacketForwarder* next[QUEUE_SIZE];
+	PacketForwarder* cur;
+	int read_i, write_i;
+	
+public:
+	
+	
+	FwdScope() {Clear();}
+	FwdScope(PacketForwarder* cb) {Clear(); AddNext(cb); ActivateNext();}
+	FwdScope(PacketForwarder& cb) {Clear(); AddNext(cb); ActivateNext();}
+	
+	void Clear();
+	void Forward();
+	
+	void AddNext(PacketForwarder& cb) {AddNext(&cb);}
+	void AddNext(PacketForwarder* cb);
+	void ActivateNext();
+	
+	bool HasCurrent() const {return cur != 0;}
+	
+	void operator++(int) {ActivateNext();}
+	operator bool() const {return HasCurrent();}
+	
+};
+
+class PacketForwarder :
+	RTTIBase
+{
+public:
+	RTTI_DECL0(PacketForwarder)
+	virtual void ForwardSetup(FwdScope& fwd) {}
+	virtual void Forward(FwdScope& fwd) {Panic("not implemented in " + String(GetDynamicName()));}
+	virtual void ForwardExchange(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName()));}
+};
 
 class ExchangePoint :
+	virtual public PacketForwarder,
 	public RefScopeEnabler<ExchangePoint,MetaExchangePoint>
 {
 	
@@ -328,12 +369,11 @@ protected:
 	CookieRef					sink_cookie;
 	
 public:
-	RTTI_DECL_R0(ExchangePoint)
+	RTTI_DECL_R1(ExchangePoint, PacketForwarder)
 	typedef ExchangePoint CLASSNAME;
 	ExchangePoint();
 	virtual ~ExchangePoint();
 	
-	virtual void Update(double dt) = 0;
 	
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);

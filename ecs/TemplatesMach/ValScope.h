@@ -133,8 +133,8 @@ struct ScopeValMachT {
 	
 	
 	
-	struct StreamState : RTTIBase {
-		RTTI_DECL0(StreamState)
+	struct ValStreamState : RTTIBase {
+		RTTI_DECL0(ValStreamState)
 		Format fmt;
 		TimeStop frame_time;
 		double total_seconds = 0;
@@ -144,6 +144,7 @@ struct ScopeValMachT {
 		int frames_after_sync = 0;
 		int sink_frame = 0;
 		bool is_sync = 0;
+		off32 offset;
 		
 		void Clear();
 		void Reset();

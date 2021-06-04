@@ -19,17 +19,17 @@ using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
 
 template <class ValDevSpec>
 struct ScopeValDevMachT {
-	using ValSpec = typename ValDevSpec::Val;
-	using DevSpec = typename ValDevSpec::Dev;
-	using ValueBase = typename ValSpec::ValueBase;
-	using StreamBase = typename ValSpec::StreamBase;
-	using CtxT = ScopeValMachT<ValSpec>;
-	using V = ValSpec;
-	using Format = typename CtxT::Format;
-	using PacketValue = typename CtxT::PacketValue;
-	using Packet = typename CtxT::Packet;
-	using PacketBuffer = typename CtxT::PacketBuffer;
-	using RecRefBase = typename CtxT::RecRefBase;
+	using ValSpec		= typename ValDevSpec::Val;
+	using DevSpec		= typename ValDevSpec::Dev;
+	using ValMach		= ScopeValMachT<ValSpec>;
+	using V				= ValSpec;
+	using ValueBase		= typename ValSpec::ValueBase;
+	using StreamBase	= typename ValSpec::StreamBase;
+	using Format		= typename ValMach::Format;
+	using PacketValue	= typename ValMach::PacketValue;
+	using Packet		= typename ValMach::Packet;
+	using PacketBuffer	= typename ValMach::PacketBuffer;
+	using RecRefBase	= typename ValMach::RecRefBase;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
@@ -74,7 +74,9 @@ struct ScopeValDevMachT {
 		
 		void Init(ConnectorBase* conn) override;
 		void Deinit();
-		void Update(double dt) override;
+		void ForwardSetup(FwdScope& fwd) override;
+		void Forward(FwdScope& fwd) override;
+		void ForwardExchange(FwdScope& fwd) override;
 		
 		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
 		void UseConsumer(bool b=true) {use_consumer = b;}
@@ -98,6 +100,7 @@ struct ScopeValDevMachT {
 	public:
 		RTTI_DECL_T1(Ex, ExchangeBase)
 		Ex(ValExchangePoint* expt) : expt(expt) {}
+		Ex(ValExchangePoint& expt) : expt(&expt) {}
 		
 		Value&						Sink() const {return *sink;}
 		Value&						Source() const {return *src;}

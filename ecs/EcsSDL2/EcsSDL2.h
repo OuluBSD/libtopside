@@ -40,13 +40,15 @@ PREFAB_BEGIN(SDL2StandaloneWindow)
 	SDL2EventsComponent,
 	//SDL2AudioInputComponent,
 	SDL2AudioOutputComponent,
+	//SDL2DummyAudioOutputComponent,
 	SDL2ScreenComponent,
 	SDL2JoystickComponent,
 	SDL2GameControllerComponent,
 	SDL2SensorComponent,
 	SDL2ImageComponent,
 	SDL2FontComponent,
-	SDL2ContextComponent
+	SDL2ContextComponent,
+	CenterContextComponent
 PREFAB_END
 
 #endif
@@ -62,7 +64,8 @@ PREFAB_BEGIN(SDL2StandaloneConsole)
 	SDL2SensorComponent,
 	SDL2ImageComponent,
 	SDL2FontComponent,
-	SDL2ContextComponent
+	SDL2ContextComponent,
+	CenterContextComponent
 PREFAB_END
 
 

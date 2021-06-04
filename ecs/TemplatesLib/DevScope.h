@@ -79,9 +79,10 @@ struct ScopeDevLibT {
 	}
 	
 	class DevComponent :
-		public DevComponentBase
+		public DevComponentBase,
+		virtual public PacketForwarder
 	{
-		RTTI_DECL1(DevComponent, DevComponentBase);
+		RTTI_DECL2(DevComponent, DevComponentBase, PacketForwarder);
 		void Visit(RuntimeVisitor& vis) {}
 		
 	protected:
@@ -107,10 +108,11 @@ struct ScopeDevLibT {
 		virtual bool		IsValSpec(TypeCls) const = 0;
 		
 		virtual void		PreProcess() {}
+		void				PostProcess();
 		
 	public:
+		virtual TypeCls		GetValSpecType() const = 0;
 		
-		virtual void		Forward() = 0;
 		
 		void				Initialize();
 		void				Uninitialize();
@@ -133,6 +135,7 @@ struct ScopeDevLibT {
 		
 		template <class ValSpec> void UpdateDevBuffersValT() {}
 		template <class ValSpec> bool IsIn() const {return IsValSpec(AsTypeCls<ValSpec>());}
+		template <class ValSpec> void ForwardPacket(FwdScope& fwd, typename ScopeValMachT<ValSpec>::Packet p);
 		
 	};
 	
@@ -156,12 +159,11 @@ struct ScopeDevLibT {
 		void				Close();
 		void				CloseTemporary();
 		void				Clear();
-		void				FindComponents();
 		void				FindUniqueInputs(DevComponentConfVector& v);
 		void				ConnectInputs(DevComponentConfVector& v);
 		bool				LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
-		void				Add(DevComponentRef r) {comps.FindAdd(r); UpdateCompFlags();}
-		void				Remove(DevComponentRef r) {comps.RemoveKey(r); UpdateCompFlags();}
+		void				FindAdd(DevComponentRef r);
+		void				Remove(DevComponentRef r);
 		void				UpdateCompFlags();
 		void				UpdateDevBuffers();
 		bool				CreatePackets();
@@ -200,7 +202,6 @@ struct ScopeDevLibT {
 		void				Clear();
 		void				Reset();
 		void				Close();
-		void				FindComponents();
 		void				DumpEntityComponents();
 		bool				LoadFileAny(String path, Object& dst);
 		bool				Load(Object& o);
@@ -220,7 +221,7 @@ struct ScopeDevLibT {
 		template <class T> RefT_Entity<T> AddEntityComponent(DevComponentGroup& g) {
 			RefT_Entity<T> o = ComponentBase::GetEntity()->template Add<T>();
 			o->SetGroup(g.template AsRef<DevComponentGroup>());
-			g.Add(o);
+			g.FindAdd(o);
 			return o;
 		}
 		
@@ -230,6 +231,7 @@ struct ScopeDevLibT {
 		
 		void				Initialize() override;
 		void				Uninitialize() override;
+		void				FindComponents();
 		void				PostLoadFileAny(String s);
 		void				Update();
 		bool				CreatePackets();
@@ -237,6 +239,7 @@ struct ScopeDevLibT {
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetStreamState() {return stream;}
 		bool				IsOpen() const {return is_open;}
+		void				FindAdd(DevComponentRef c);
 		
 		const Vector<String>& GetCommonSources() const {return common_source;}
 		
@@ -246,6 +249,14 @@ struct ScopeDevLibT {
 	
 	
 };
+
+
+#define DEV(x) \
+	PREFAB_BEGIN(x##StreamScope) \
+			ScopeDevLibT<x##Spec>::ContextComponent \
+	PREFAB_END
+DEV_LIST
+#undef DEV
 
 
 NAMESPACE_TOPSIDE_END

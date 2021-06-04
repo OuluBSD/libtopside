@@ -259,6 +259,22 @@ RefT_Pool<T> Entity::FindCommonConnector(EntityRef sink) {
 }
 
 
+template<typename T>
+RefT_Entity<T> Entity::FindNearestWith() {
+	RefT_Entity<T> c = Find<T>();
+	if (!c) {
+		Pool* p = &GetPool();
+		while (p && !c) {
+			for (EntityRef& e : *p) {
+				c = e->Find<T>();
+				if (c) break;
+			}
+			p = p->GetParent();
+		}
+	}
+	return c;
+}
+	
 NAMESPACE_TOPSIDE_END
 
 #endif

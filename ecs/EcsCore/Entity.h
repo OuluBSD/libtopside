@@ -62,6 +62,9 @@ public:
 	}
 	
 	template<typename T>
+	RefT_Entity<T> FindNearestWith();
+	
+	template<typename T>
 	RefT_Entity<T> FindInterface() {
 		RefT_Entity<T> o;
 		for(Ref<ComponentBase>& comp : comps.GetValues())

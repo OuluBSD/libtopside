@@ -31,6 +31,7 @@ TMPL_DEVLIB(void) DevComponent::Initialize() {
 	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> Add(ref);
+	
 }
 
 TMPL_DEVLIB(void) DevComponent::Uninitialize() {
@@ -108,6 +109,76 @@ TMPL_DEVLIB(bool) DevComponent::Open() {
 	return is_open;
 }
 
+TMPL_DEVLIB(void) DevComponent::PostProcess() {
+	GetStreamState().Step(group->GetValSpec());
+}
+
+template <class DevSpec>
+template <class ValSpec>
+void ScopeDevLibT<DevSpec>::DevComponent::ForwardPacket(FwdScope& fwd, typename ScopeValMachT<ValSpec>::Packet p) {
+	using VD					= TS::VD<DevSpec,ValSpec>;
+	using DevMach				= ScopeDevMachT<DevSpec>;
+	using ValMach				= ScopeValMachT<ValSpec>;
+	using Mach					= ScopeValDevMachT<VD>;
+	using Core					= ScopeValDevCoreT<VD>;
+	using InternalPacketData	= typename DevMach::InternalPacketData;
+	using TrackerInfo			= typename ValMach::TrackerInfo;
+	using ValStream				= typename Mach::Stream;
+	using SimpleStream			= typename Mach::SimpleStream;
+	using PacketBuffer			= typename Mach::PacketBuffer;
+	using Value					= typename Mach::Value;
+	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
+	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
+	using ValSource				= typename Core::ValSource;
+	using ValSourceRef			= typename Core::ValSourceRef;
+	
+	DLOG("DevComponent::ForwardPacket: begin");
+	
+	InternalPacketData& data = p->template GetData<InternalPacketData>();
+	
+	p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
+	
+	DevComponentBase::Process();
+	
+	if (data.pos >= data.count-1)
+		PostProcess();
+	else {
+		data.pos++;
+	}
+	
+	ValSource* src = CastPtr<ValSource>(this);
+	if (src) {
+		ValStream& stream = src->GetStream((ValSpec*)0);
+		SimpleBufferedStream* sbstream = CastPtr<SimpleBufferedStream>(&stream);
+		if (sbstream) {
+			Value& value = sbstream->Get();
+			SimpleBufferedValue* bval = CastPtr<SimpleBufferedValue>(&value);
+			if (bval) {
+				PacketBuffer& buf = bval->GetBuffer();
+				buf.Add(p);
+			}
+			else {
+				TODO
+			}
+		}
+		else {
+			SimpleStream* sstream = CastPtr<SimpleStream>(&stream);
+			if (sstream) {
+				Value& value = sstream->Get();
+				
+				TODO
+			}
+			else {
+				TODO
+			}
+		}
+	}
+	
+	fwd.AddNext(this);
+	
+	DLOG("ComponentBase::ForwardPacket: end");
+}
+
 
 
 
@@ -140,7 +211,6 @@ TMPL_DEVLIB(void) DevComponentGroup::Close() {
 
 TMPL_DEVLIB(void) DevComponentGroup::CloseTemporary() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::Clear() {TODO}
-TMPL_DEVLIB(void) DevComponentGroup::FindComponents() {TODO}
 TMPL_DEVLIB(void) DevComponentGroup::ConnectInputs(DevComponentConfVector& v) {TODO}
 
 TMPL_DEVLIB(bool) DevComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code) {
@@ -162,6 +232,22 @@ TMPL_DEVLIB(void) DevComponentGroup::FindUniqueInputs(DevComponentConfVector& v)
 		for(DevComponentConf& in : comp->in)
 			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
 				v.Add(in);
+}
+
+TMPL_DEVLIB(void) DevComponentGroup::FindAdd(DevComponentRef r) {
+	DevComponentGroupRef g = this->template AsRef<DevComponentGroup>();
+	ASSERT(!r->group || r->group == g);
+	r->group = g;
+	comps.FindAdd(r);
+	UpdateCompFlags();
+}
+
+TMPL_DEVLIB(void) DevComponentGroup::Remove(DevComponentRef r) {
+	DevComponentGroupRef g = this->template AsRef<DevComponentGroup>();
+	ASSERT(r->group == g);
+	r->group.Clear();
+	comps.RemoveKey(r);
+	UpdateCompFlags();
 }
 
 TMPL_DEVLIB(void) DevComponentGroup::UpdateCompFlags() {
@@ -203,7 +289,7 @@ TMPL_DEVLIB(bool) DevComponentGroup::CreatePackets() {
 		return false;
 	
 	
-	return DevComponentGroupBase::PostRefreshPacket(*sink);
+	return DevComponentGroupBase::CreateForwardPacket(*sink);
 }
 
 TMPL_DEVLIB(void) DevComponentGroup::DumpComponents() {
@@ -246,6 +332,7 @@ TMPL_DEVLIB(void) ContextComponent::Initialize() {
 	if (sys)
 		sys	-> AddCtx(TS::ComponentBase::AsRef<ContextComponent>());
 	
+	FindComponents();
 }
 
 TMPL_DEVLIB(void) ContextComponent::Uninitialize() {
@@ -391,8 +478,17 @@ TMPL_DEVLIB(void) ContextComponent::Reset() {
 }
 
 TMPL_DEVLIB(void) ContextComponent::FindComponents() {
-	for(DevComponentGroup& g : groups)
-		g.FindComponents();
+	ComponentBase* b = CastPtr<ComponentBase>(this);
+	ASSERT(b);
+	EntityRef e = TS::ComponentBase::GetEntity();
+	for(ComponentBaseRef& c : e->GetComponents()) {
+		DevComponentRef d = c->AsRef<DevComponent>();
+		if (d) {
+			TypeCls val_spec = d->GetValSpecType();
+			DevComponentGroup& g = GetAddGroupContext(val_spec);
+			g.FindAdd(d);
+		}
+	}
 }
 
 TMPL_DEVLIB(void) ContextComponent::DumpEntityComponents() {
@@ -695,7 +791,7 @@ bool ScopeDevLibT<DevSpec>::ContextComponent::ConnectComponentOutputsT(DevCompon
 		}
 	}
 	
-	FromSinkRef valdev_sink = comp->As<FromSink>();
+	FromSinkRef valdev_sink = val_out->template As<FromSink>();
 	if (!valdev_sink) {
 		OnError(fn_name, "component does not have " + FromVD::GetPrefix() + "Sink interface");
 		return false;
@@ -761,6 +857,12 @@ TMPL_DEVLIB(bool) ContextComponent::CreateComponents(DevComponentConfVector& v) 
 	}
 	return true;
 	#endif
+}
+
+TMPL_DEVLIB(void) ContextComponent::FindAdd(DevComponentRef c) {
+	TypeCls val_spec = c->GetValSpecType();
+	DevComponentGroup& gr = GetAddGroupContext(val_spec);
+	gr.FindAdd(c);
 }
 
 

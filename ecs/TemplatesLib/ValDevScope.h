@@ -164,7 +164,8 @@ struct ScopeValDevLibT {
 		void				UpdateDevBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
-		void				Forward() override;
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
 		
 	};
 	

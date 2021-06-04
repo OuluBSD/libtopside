@@ -28,7 +28,7 @@ struct StreamStateGetter {};
 template <> \
 struct StreamStateGetter<cls##Spec> {\
 	template <class Stream> \
-	typename ScopeValMachT<cls##Spec>::StreamState& \
+	typename ScopeValMachT<cls##Spec>::ValStreamState& \
 		Get(Stream* s) {return s->var;} \
 };
 IFACE_VAR_LIST
@@ -148,7 +148,7 @@ struct ScopeDevMachT {
 	public:
 		RTTI_DECL_T0(DevStreamState)
 		
-		template<class ValSpec> using State = typename ScopeValMachT<ValSpec>::StreamState;
+		template<class ValSpec> using State = typename ScopeValMachT<ValSpec>::ValStreamState;
 		
 		
 		// Generic

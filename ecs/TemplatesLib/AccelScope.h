@@ -12,7 +12,7 @@ NAMESPACE_TOPSIDE_BEGIN
 		void UpdateBuffers() {} \
 		virtual bool				IsValSpec(TypeCls t) const = 0; \
 		virtual x##StreamState&		GetStreamState() = 0; \
-		bool PostRefreshPacket(InterfaceSinkBase& sink) {return false;} \
+		bool CreateForwardPacket(InterfaceSinkBase& sink) {return false;} \
 	};
 DUMMY_DEV_LIST
 #undef DEV
@@ -191,14 +191,12 @@ struct AccelComponentBase :
 	bool				Open();
 	void				UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count);
 	bool				IsAudioSpec() const {TODO}
-	void				PostProcess();
+	void				Process();
 	
 	virtual bool		RequiresDeviceProgram() const {return false;}
 	
 	static TypeCls		GetTypeFromString(String type_str);
 	
-	template <class ValSpec>
-	void ForwardPacket(typename ScopeValMachT<ValSpec>::Packet p);
 	
 protected:
 	friend class AccelComponentGroupBase;
@@ -243,9 +241,10 @@ struct AccelComponentGroupBase : RTTIBase {
 	RTTI_DECL0(AccelComponentGroupBase)
 	
 	Vector<uint32> gl_stages;
+	off32 offset;
 	
 	void RefreshPipeline();
-	bool PostRefreshPacket(InterfaceSinkBase& sink);
+	bool CreateForwardPacket(InterfaceSinkBase& sink);
 	
 	virtual bool				IsValSpec(TypeCls t) const = 0;
 	virtual AccelStreamState&	GetStreamState() = 0;

@@ -10,6 +10,7 @@ struct ScopeConvDevLibT {
 	using V = ValSpec;
 	using Data = ScopeValMachT<V>;
 	using Format = typename Data::Format;
+	using Packet = typename Data::Packet;
 	
 	using From = VD<FromDevSpec, ValSpec>;
 	using FMach = ScopeValDevMachT<From>;
@@ -93,14 +94,8 @@ struct ScopeConvDevLibT {
 	public:
 		ConvertComponent() : stream(this) {}
 		
-		void				Initialize() override {
-			//FromComponent::Initialize();
-			ToComponent::Initialize();
-		}
-		void				Uninitialize() override {
-			//FromComponent::Uninitialize();
-			ToComponent::Uninitialize();
-		}
+		void				Initialize() override;
+		void				Uninitialize() override;
 		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
 		
 		
@@ -123,7 +118,8 @@ struct ScopeConvDevLibT {
 		}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
-		void				Forward() override;
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
 		
 	};
 	

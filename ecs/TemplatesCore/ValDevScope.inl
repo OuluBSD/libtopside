@@ -34,11 +34,12 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
 	}
 }
 
-TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
+TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	USING_VALDEVCORE(ValSource)
 	USING_VALDEVCORE(ValSink)
 	USING_VALDEVCORE(CtxStream)
 	USING_VALDEVMACH(Value)
+	LOG(String(GetDynamicName()) + "(" + HexStr(this) << ")::Forward");
 	ASSERT(dbg_offset_is_set);
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
@@ -54,8 +55,8 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
 		Value& sink_value = sink->GetValue(CTX);
 		bool sink_full = sink_value.IsQueueFull();
 		
-		if (!sink_full) {RTLOG("ExchangePoint::Update: exchanging");}
-		else {RTLOG("ExchangePoint::Update: sink full");}
+		if (!sink_full) {RTLOG("ExchangePoint::Forward: exchanging");}
+		else {RTLOG("ExchangePoint::Forward: sink full");}
 		
 		#if 1
 		int iter = 0;
@@ -75,7 +76,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
 			}
 			
 			if (ex.IsFail()) {
-				RTLOG("error: ExchangePoint::Update: exchange failed");
+				RTLOG("error: ExchangePoint::Forward: exchange failed");
 				break;
 			}
 			
@@ -89,7 +90,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
 			sink_full = sink_value.IsQueueFull();
 			++iter;
 			if (src_sz && !sink_full) {
-				RTLOG("ExchangePoint::Update: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
+				RTLOG("ExchangePoint::Forward: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
 			}
 		}
 		#else
@@ -107,17 +108,26 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Update(double dt) {
 			}
 			
 			if (ex.IsFail()) {
-				RTLOG("error: ExchangePoint::Update: exchange failed");
+				RTLOG("error: ExchangePoint::Forward: exchange failed");
 			}
 		}
 		#endif
 	}
 	else {
-		RTLOG("ExchangePoint::Update: offset " << offset.ToString() << " empty source");
+		RTLOG("ExchangePoint::Forward: offset " << offset.ToString() << " empty source");
 	}
 	
 	SetOffset(ex.GetOffset());
 	dbg_offset_is_set = false;
+	
+	
+	fwd.AddNext(sink->AsComponentBase());
+}
+
+TMPL_VALDEVMACH(void) ValExchangePoint::ForwardExchange(FwdScope& fwd) {
+	USING_VALDEVCORE(ValSink)
+	Ref<ValSink> sink = this->sink;
+	fwd.AddNext(sink->AsComponentBase());
 }
 
 
@@ -176,7 +186,8 @@ TMPL_VALDEVCORE(void) ValSystem::Update(double dt) {
 		#endif
 		
 		expt->SetOffset(begin_offset);
-		expt->Update(dt);
+		for(FwdScope scope(*expt); scope; scope++)
+			scope.Forward();
 		
 		off32 end_offset = expt->GetOffset();
 		src->SetOffset(begin_offset, end_offset);

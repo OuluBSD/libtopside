@@ -3,6 +3,33 @@ NAMESPACE_TOPSIDE_BEGIN
 #define CLS typename ScopeValDevLibT<ValDevSpec>
 
 
+TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
+	USING_VALDEVMACH(ValSpec)
+	using ValSpec				= typename ValDevSpec::Val;
+	using DevSpec				= typename ValDevSpec::Dev;
+	using ValMach				= ScopeValMachT<ValSpec>;
+	using DevMach				= ScopeDevMachT<DevSpec>;
+	using DevLib				= ScopeDevLibT<DevSpec>;
+	using Core					= ScopeValDevCoreT<ValDevSpec>;
+	using ValStreamState		= typename ValMach::ValStreamState;
+	using DevStreamState		= typename DevMach::DevStreamState;
+	using DevComponent			= typename DevLib::DevComponent;
+	using SourceRef				= typename Core::ValSourceRef;
+	ASSERT(!dbg_offset_is_set);
+	
+	SourceRef src = this->src;
+	ASSERT(src);
+	DevComponent* comp = CastPtr<DevComponent>(src->AsComponentBase());
+	ASSERT(comp);
+	DevStreamState& state = comp->GetStreamState();
+	ValStreamState& vstate = state.template Get<ValSpec>();
+	off32 exp_offset = vstate.offset;
+	SetOffset(exp_offset);
+}
+
+
+
+
 TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
 }
@@ -44,16 +71,57 @@ TMPL_VALDEVLIB(void) PipeComponent::BeginStream(V*) {TODO}
 TMPL_VALDEVLIB(void) PipeComponent::EndStream(V*) {TODO}
 TMPL_VALDEVLIB(bool) PipeComponent::LoadAsInput(const DevCompConf& in) {TODO}
 
-TMPL_VALDEVLIB(void) PipeComponent::Forward() {
+TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	auto& buf = sink_value.GetBuffer();
 	if (buf.IsEmpty())
 		return;
 	
 	Packet p = buf.First();
 	buf.RemoveFirst();
-	DevComponent::template ForwardPacket<ValSpec>(p);
+	DevComponent::template ForwardPacket<ValSpec>(fwd, p);
 }
 
+TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
+	using ValSpec				= typename ValDevSpec::Val;
+	using DevSpec				= typename ValDevSpec::Dev;
+	using DevMach				= ScopeDevMachT<DevSpec>;
+	using ValMach				= ScopeValMachT<ValSpec>;
+	//using Mach					= ScopeValDevMachT<ValDevSpec>;
+	using Core					= ScopeValDevCoreT<ValDevSpec>;
+	using Format				= typename ValMach::Format;
+	using ValStreamState		= typename ValMach::ValStreamState;
+	using DevStreamState		= typename DevMach::DevStreamState;
+	using ValSource				= typename Core::ValSource;
+	using ValExchangePointRef	= typename Core::ValExchangePointRef;
+	//using Ex					= typename Mach::Ex;
+	
+	#if 1
+	ValSource& src = *this;
+	auto& conns = src.GetConnections();
+	for(auto& link : conns) {
+		ValExchangePointRef expt = link.expt;
+		ASSERT(expt);
+		if (expt) {
+			fwd.AddNext(*expt);
+		}
+	}
+	#else
+	DevStreamState& state = DevComponent::GetStreamState();
+	ValStreamState& vstate = state.template Get<ValSpec>();
+	off32 exp_offset = vstate.offset;
+	
+	ValSource& src = *this;
+	auto& conns = src.GetConnections();
+	for(auto& link : conns) {
+		ValExchangePointRef expt = link.expt;
+		ASSERT(expt);
+		if (expt) {
+			expt->SetOffset(vstate.offset);
+			fwd.AddNext(*expt);
+		}
+	}
+	#endif
+}
 
 #undef CLS
 
