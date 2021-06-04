@@ -24,6 +24,25 @@ TMPL_VALMACH(String) TrackerInfo::ToString() const {
 
 
 
+
+
+TMPL_VALMACH(String) PacketValue::ToString() const {
+	String s;
+	s.Cat('{');
+	s << "size: " << data.GetCount();
+	s << ", id: " << IntStr64(id);
+	s<< ", format: {" << fmt.ToString() << "}";
+	
+	s.Cat('}');
+	return s;
+}
+
+
+
+
+
+
+
 TMPL_VALMACH(void) ValStreamState::Clear() {
 	fmt.Clear();
 	sink_frame = 0;

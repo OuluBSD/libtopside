@@ -16,6 +16,8 @@ template <> BinarySample::Type BinarySample::GetSampleType<double>() {return DBL
 
 String BinarySample::ToString(Type t) {
 	switch (t) {
+		case INVALID: return "INVALID";
+		case DEV_INTERNAL: return "DEV_INTERNAL";
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
 			case type_code##_##endianess: return #type_code "_" #endianess;
 		SAMPLE_LIST

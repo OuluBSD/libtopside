@@ -179,6 +179,13 @@ void ScopeDevLibT<DevSpec>::DevComponent::ForwardPacket(FwdScope& fwd, typename 
 	DLOG("ComponentBase::ForwardPacket: end");
 }
 
+template <class DevSpec>
+template <class ValSpec>
+typename ScopeValMachT<ValSpec>::Format
+ScopeDevLibT<DevSpec>::DevComponent::GetDefaultFormat() {
+	TODO
+}
+
 
 
 

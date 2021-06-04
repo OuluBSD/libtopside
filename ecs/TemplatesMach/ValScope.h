@@ -19,17 +19,27 @@ struct ScopeValMachT {
 		return s;
 	}
 	
-	struct Format : public FormatBase {
+	class Format : public FormatBase {
 		RTTI_DECL_T1(Format, FormatBase)
 		using FormatBase::FormatBase;
 		
-		TypeCls dev = 0;
+		TypeCls dev_spec = 0;
+	public:
 		
-		template <class T>
+		void SetDevSpec(TypeCls t) {dev_spec = t;}
+		void ClearDevSpec() {dev_spec = 0;}
+		
+		TypeCls GetDevSpec() const {return dev_spec;}
+		bool IsDeviceSpecific() const {return dev_spec != 0;}
+		
+		template <class DevSpec>
 		void SetDeviceInternal() {
-			FormatBase::SetDeviceInternal();
-			dev = AsTypeCls<T>();
+			dev_spec = AsTypeCls<DevSpec>();
 		}
+		
+		void Invalidate() {dev_spec = 0; FormatBase::Invalidate();}
+		
+		String ToString() const {return FormatBase::ToString();}
 	};
 	
 	using V = ValSpec;
@@ -86,6 +96,7 @@ struct ScopeValMachT {
 		void					SetOffset(off32 offset) {this->offset = offset;}
 		void					SetTime(double seconds) {time = seconds;}
 		void					SetTrackingId(PacketId i) {id = i;}
+		void					Invalidate() {data.SetCount(0); fmt.Invalidate();}
 		
 		const Vector<byte>&		GetData() const {return data;}
 		Format					GetFormat() const {return fmt;}
@@ -99,6 +110,8 @@ struct ScopeValMachT {
 		void					StopTracking(TrackerInfo info);
 		PacketId				GetTrackingId() const {return id;}
 		bool					HasTrackingId() const {return id != 0;}
+		
+		String					ToString() const;
 		
 		template <class T> T& SetData() {
 			data.SetCount(sizeof(T));

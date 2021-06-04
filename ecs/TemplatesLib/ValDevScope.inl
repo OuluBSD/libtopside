@@ -72,12 +72,27 @@ TMPL_VALDEVLIB(void) PipeComponent::EndStream(V*) {TODO}
 TMPL_VALDEVLIB(bool) PipeComponent::LoadAsInput(const DevCompConf& in) {TODO}
 
 TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
+	using DevSpec				= typename ValDevSpec::Dev;
+	using DevMach				= ScopeDevMachT<DevSpec>;
+	using InternalPacketData	= typename DevMach::InternalPacketData;
+	using DevComponentBase		= typename DevSpec::ComponentBase;
+	
 	auto& buf = sink_value.GetBuffer();
 	if (buf.IsEmpty())
 		return;
 	
 	Packet p = buf.First();
 	buf.RemoveFirst();
+	
+	DevComponentBase::Process();
+	
+	InternalPacketData& data = p->template GetData<InternalPacketData>();
+	data.pos++;
+	data.ClearLinks();
+	data.dev_comp = CastPtr<DevComponent>(this);
+	ASSERT(data.dev_comp);
+	
+	
 	DevComponent::template ForwardPacket<ValSpec>(fwd, p);
 }
 

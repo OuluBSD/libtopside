@@ -16,24 +16,24 @@ void AccelComponentGroupBase::RefreshPipeline() {
 
 template<class ValDevSpec>
 bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
-	using ValSpec = typename ValDevSpec::Val;
-	using DevSpec = typename ValDevSpec::Dev;
-	using ValData = ScopeValMachT<ValSpec>;
-	using ValLib = ScopeValLibT<ValSpec>;
-	using Mach = ScopeValDevMachT<ValDevSpec>;
-	using Core = ScopeValDevCoreT<ValDevSpec>;
-	using DevMach = ScopeDevMachT<DevSpec>;
-	using DevLib = ScopeDevLibT<DevSpec>;
-	using SimpleBufferedValue = typename Mach::SimpleBufferedValue;
-	using Packet = typename ValData::Packet;
-	using Value = typename Mach::Value;
-	using Ex = typename Mach::Ex;
-	using ValSink = typename Core::ValSink;
-	using Format = typename ValData::Format;
-	using TrackerInfo = typename ValData::TrackerInfo;
-	using PacketTracker = typename ValLib::PacketTracker;
-	using InternalPacketData = typename DevMach::InternalPacketData;
-	using DevComponent = typename DevLib::DevComponent;
+	using ValSpec				= typename ValDevSpec::Val;
+	using DevSpec				= typename ValDevSpec::Dev;
+	using ValData				= ScopeValMachT<ValSpec>;
+	using ValLib				= ScopeValLibT<ValSpec>;
+	using Mach					= ScopeValDevMachT<ValDevSpec>;
+	using Core					= ScopeValDevCoreT<ValDevSpec>;
+	using DevMach				= ScopeDevMachT<DevSpec>;
+	using DevLib				= ScopeDevLibT<DevSpec>;
+	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
+	using Packet				= typename ValData::Packet;
+	using Value					= typename Mach::Value;
+	using Ex					= typename Mach::Ex;
+	using ValSink				= typename Core::ValSink;
+	using Format				= typename ValData::Format;
+	using TrackerInfo			= typename ValData::TrackerInfo;
+	using PacketTracker			= typename ValLib::PacketTracker;
+	using InternalPacketData	= typename DevMach::InternalPacketData;
+	using DevComponent			= typename DevLib::DevComponent;
 	
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
@@ -51,17 +51,18 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 			return false;
 		
 		Packet p = ValData::CreatePacket();
-		PacketTracker::Track(TrackerInfo("CreateForwardPacketT", __FILE__, __LINE__), *p);
 		
 		p->SetOffset(gr.offset++);
 		
-		Format fmt;
+		Format fmt = comp->template GetDefaultFormat<ValSpec>();
 		fmt.template SetDeviceInternal<DevSpec>();
 		p->SetFormat(fmt);
 		
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = ag.GetComponents().GetCount();
+		
+		PacketTracker::Track(TrackerInfo("CreateForwardPacketT", __FILE__, __LINE__), *p);
 		buf->AddPacket(p);
 		
 		for (FwdScope scope(comp); scope; scope++)
@@ -484,6 +485,87 @@ bool ScopeDevLibT<AccelSpec>::DevComponent::Load(ObjectMap& st_map, int stage_i,
 	
 	return true;
 }
+
+
+template <class ValSpec>
+void ConvertAccelCenterT(CenterComponent& conv, typename ScopeValMachT<ValSpec>::Packet& p) {
+	TODO
+}
+
+template <>
+void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
+	using ValSpec					= AudioSpec;
+	using FromDevSpec				= AccelSpec;
+	using ValMach					= ScopeValMachT<ValSpec>;
+	using Format					= typename ValMach::Format;
+	using FromDevMach				= ScopeDevMachT<FromDevSpec>;
+	using FromInternalPacketData	= typename FromDevMach::InternalPacketData;
+	
+	Format fmt = p->GetFormat();
+	FromInternalPacketData in = p->GetData<FromInternalPacketData>();
+	AccelComponent* acc_comp = reinterpret_cast<AccelComponent*>(in.dev_comp);
+	ASSERT(acc_comp);
+	
+	p->Invalidate();
+	
+	Vector<byte>& data = p->Data();
+	
+	/*Format::SampleType type = fmt.GetType();
+	if (type != Format::SampleType::FLT_LE) {
+		conv.OnError("ConvertAccelCenterT", "TODO type conversion: f32 -> ...");
+		p.Clear();
+		return;
+	}*/
+	
+#if HAVE_OPENGL
+	int sample_rate = fmt.GetSampleRate();
+	int sz = sample_rate * fmt.channels * sizeof(float);
+	data.SetCount(sz);
+	ASSERT(acc_comp->color_buf[acc_comp->buf_i] > 0);
+	RTLOG("ConvertAccelCenterT: read active opengl color buffer");
+	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glReadPixels(0, 0, sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, data.Begin());
+	
+	if (1) {
+		float* f = (float*)(void*)data.Begin();
+		for(int i = 0; i < sample_rate; i++) {
+			String s;
+			s << i << ":";
+			for(int j = 0; j < fmt.channels; j++) {
+				int begin = (1 + j) * 20;
+				if (s.GetCount() < begin) s.Cat(' ', begin - s.GetCount());
+				s << DblStr(*f);
+			}
+			LOG(s);
+		}
+		LOG("");
+		TODO
+	}
+#endif
+	
+}
+
+#define IFACE(x) \
+template<> template<> \
+void ScopeDevLibT<CenterSpec>::DevComponent::ConvertPacket<AccelSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
+	ConvertAccelCenterT<x##Spec>(*this, p);\
+}
+IFACE_LIST
+#undef IFACE
+
+template <>
+template <>
+typename ScopeValMachT<AudioSpec>::Format
+ScopeDevLibT<AccelSpec>::DevComponent::GetDefaultFormat<AudioSpec>() {
+	using ValSpec					= AudioSpec;
+	using FromDevSpec				= AccelSpec;
+	using ValMach					= ScopeValMachT<ValSpec>;
+	using Format					= typename ValMach::Format;
+	Format fmt;
+	fmt.Set(SoundSample::FLT_LE, 2, 44100, 1024);
+	return fmt;
+}
+
 
 
 template <>

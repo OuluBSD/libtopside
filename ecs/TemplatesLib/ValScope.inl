@@ -28,16 +28,16 @@ TMPL_VALLIB(void) PacketTracker::Uninitialize() {
 TMPL_VALLIB(void) PacketTracker::Track0(TrackerInfo info, PacketValue& p) {
 	ASSERT(p.GetTrackingId() == 0);
 	p.SetTrackingId(id_counter++);
-	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking begins (" + info.ToString() + ")");
+	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking begins (" + info.ToString() + ") " + p.ToString());
 }
 
 TMPL_VALLIB(void) PacketTracker::Checkpoint0(TrackerInfo info, PacketValue& p) {
-	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") checkpoint (" + info.ToString() + ")");
+	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") checkpoint (" + info.ToString() + ") " + p.ToString());
 	
 }
 
 TMPL_VALLIB(void) PacketTracker::StopTracking0(TrackerInfo info, PacketValue& p) {
-	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking ends (" + info.ToString() + ")");
+	RTLOG(ValSpec::GetName() + "PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking ends (" + info.ToString() + ") " + p.ToString());
 	
 }
 

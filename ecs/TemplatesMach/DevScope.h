@@ -71,7 +71,9 @@ struct ScopeDevMachT {
 	struct InternalPacketData {
 		int pos;
 		int count;
+		void* dev_comp;
 		
+		void ClearLinks() {dev_comp = 0;}
 	};
 	
 	/*struct DevSinkBase : RTTIBase {

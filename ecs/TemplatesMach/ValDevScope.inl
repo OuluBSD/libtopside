@@ -76,7 +76,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 		// Compare exchange and source formats
 		auto cmp_fmt = p->GetFormat();
 		auto val_fmt = GetFormat();
-		ASSERT(cmp_fmt.IsDeviceInternal() || cmp_fmt == val_fmt);
+		ASSERT(cmp_fmt == val_fmt);
 		
 		Value& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();

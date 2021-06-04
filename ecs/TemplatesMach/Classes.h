@@ -194,7 +194,7 @@ template<> struct DimBase<1> : RTTIBase {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	void SetDim(DimArg a) {size[0] = a;}
-	void SetDeviceInternal() {for(int i = 0; i < n; i++) size[i] = 1;}
+	//void SetDeviceInternal() {for(int i = 0; i < n; i++) size[i] = 1;}
 	void Clear() {for(int i = 0; i < n; i++) size[i] = 0;}
 	String ToString() const {return "len(" + IntStr(channels) + ")";}
 	bool IsSame(const DimBase& b) const {return size[0] == b.size[0];}
@@ -226,7 +226,7 @@ template<> struct DimBase<2> : RTTIBase {
 	DimBase(const DimBase& b) {*this = b;}
 	
 	void SetDim(DimArg a) {size = a;}
-	void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
+	//void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {
 		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
@@ -269,7 +269,7 @@ template<> struct DimBase<3> : RTTIBase {
 	DimBase(const DimBase& b) {*this = b;}
 	
 	void SetDim(DimArg a) {size = a;}
-	void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
+	//void SetDeviceInternal() {for(int i = 0; i < n; i++) res[i] = 1;}
 	String ToString() const {return size.ToString();}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
@@ -287,7 +287,7 @@ public:
 	
 	void Clear() {}
 	void SetTimeSeries(int,int) {Panic("never");}
-	void SetDeviceInternal() {}
+	//void SetDeviceInternal() {}
 	
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const OnceBase& b) const {return true;}
@@ -303,7 +303,7 @@ public:
 	
 	void Clear() {}
 	void SetTimeSeries(int,int) {Panic("never");}
-	void SetDeviceInternal() {}
+	//void SetDeviceInternal() {}
 	
 	int GetSampleRate() const {return 1;}
 	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
@@ -322,7 +322,7 @@ public:
 	void Clear() {freq = 0; sample_rate = 0;}
 	void SetTimeSeries(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
 	void SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
-	void SetDeviceInternal() {freq = 1; sample_rate = 1;}
+	//void SetDeviceInternal() {freq = 1; sample_rate = 1;}
 	
 	String ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
 	bool IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}
@@ -355,7 +355,8 @@ public:
 	
 	void Clear() {Sample::Clear(type);}
 	void SetType(SampleType t) {type = t;}
-	void SetDeviceInternal() {type = SampleType::DEV_INTERNAL;}
+	//void SetDeviceInternal() {type = SampleType::DEV_INTERNAL;}
+	void Invalidate() {type = SampleType::INVALID;}
 	
 	String ToString() const {return Sample::ToString(type);}
 	int GetSampleSize() const {return Sample::GetSize(type);}
@@ -368,6 +369,7 @@ public:
 	template <class K> bool IsSampleType() const {return Sample::template IsSampleType<K>(type);}
 	int GetPackedSingleSize() const {return Sample::GetPackedSingleSize(type);}
 	int GetPackedCount() const {return Sample::GetPackedCount(type);}
+	SampleType GetType() const {return type;}
 	
 	void operator=(const SampleBase& c) {
 		type = c.type;
@@ -399,11 +401,11 @@ public:
 		if (freq || sample_rate) \
 			post##Base::SetTimeSeries(freq, sample_rate); \
 	} \
-	void SetDeviceInternal() { \
+	/*void SetDeviceInternal() { \
 		SampleBase<T>::SetDeviceInternal(); \
 		DimBase<dim>::SetDeviceInternal(); \
 		post##Base::SetDeviceInternal(); \
-	} \
+	}*/ \
 	void Clear() {post##Base::Clear(); SampleBase<T>::Clear(); DimBase<dim>::Clear();} \
 	int GetFrameSize() const {return DimBase<dim>::GetArea() * post##Base::GetSampleRate() * SampleBase<T>::GetSampleSize();} \
 	bool IsValid() const { \
@@ -511,7 +513,10 @@ public:
 	bool IsDeviceInternal() const {return is_dev_internal;}
 	bool operator==(const TD1OnceMulti4<T>& o) const {TODO}
 	
-	void SetDeviceInternal() {is_dev_internal = true;}
+	//void SetDeviceInternal() {is_dev_internal = true;}
+	void Invalidate() {o0.Invalidate(); o1.Invalidate(); o2.Invalidate(); o3.Invalidate(); is_dev_internal = false;}
+	
+	String ToString() const {return "[" + o0.ToString() + ", " + o1.ToString() + ", " + o2.ToString() + ", " + o3.ToString() + "]";}
 	
 };
 

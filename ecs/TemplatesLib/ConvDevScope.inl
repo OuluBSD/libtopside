@@ -46,6 +46,17 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	
 	Packet p = buf.First();
 	buf.RemoveFirst();
+	
+	Format fmt = p->GetFormat();
+	if (fmt.IsDeviceInternal()) {
+		TypeCls from_spec = AsTypeCls<FromDevSpec>();
+		TypeCls to_spec = AsTypeCls<ToDevSpec>();
+		TypeCls dev_spec = fmt.GetDevSpec();
+		ASSERT(dev_spec == from_spec && dev_spec != to_spec);
+		
+		ToComponent::template ConvertPacket<FromDevSpec, ValSpec>(p);
+	}
+	
 	ToComponent::template ForwardPacket<ValSpec>(fwd, p);
 }
 
