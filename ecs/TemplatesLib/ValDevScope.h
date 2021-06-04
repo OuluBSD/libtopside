@@ -144,8 +144,8 @@ struct ScopeValDevLibT {
 		PipeComponent() : stream(this) {}
 		
 		// ComponentBase
-		void				Initialize() override {DevComponent::Initialize();}
-		void				Uninitialize() override {DevComponent::Uninitialize();}
+		void				Initialize() override;
+		void				Uninitialize() override;
 		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				RequiresDeviceProgram() const override {return true;}

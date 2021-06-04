@@ -8,23 +8,42 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using ValSpec				= typename ValDevSpec::Val;
 	using DevSpec				= typename ValDevSpec::Dev;
 	using ValMach				= ScopeValMachT<ValSpec>;
+	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using DevMach				= ScopeDevMachT<DevSpec>;
 	using DevLib				= ScopeDevLibT<DevSpec>;
 	using Core					= ScopeValDevCoreT<ValDevSpec>;
 	using ValStreamState		= typename ValMach::ValStreamState;
 	using DevStreamState		= typename DevMach::DevStreamState;
 	using DevComponent			= typename DevLib::DevComponent;
+	using Value					= typename Mach::Value;
 	using SourceRef				= typename Core::ValSourceRef;
+	using SinkRef				= typename Core::ValSinkRef;
 	ASSERT(!dbg_offset_is_set);
 	
 	SourceRef src = this->src;
 	ASSERT(src);
-	DevComponent* comp = CastPtr<DevComponent>(src->AsComponentBase());
-	ASSERT(comp);
-	DevStreamState& state = comp->GetStreamState();
+	DevComponent* src_comp = CastPtr<DevComponent>(src->AsComponentBase());
+	ASSERT(src_comp);
+	DevStreamState& state = src_comp->GetStreamState();
 	ValStreamState& vstate = state.template Get<ValSpec>();
 	off32 exp_offset = vstate.offset;
 	SetOffset(exp_offset);
+	
+	SinkRef sink = this->sink;
+	DevComponent* sink_comp = CastPtr<DevComponent>(sink->AsComponentBase());
+	Value& to_val = sink->GetValue((ValSpec*)0);
+	Format to_fmt = to_val.GetFormat();
+	if (!to_fmt.IsValid()) {
+		to_fmt = sink_comp->template GetDefaultFormat<ValSpec>();
+		SimpleBufferedValue* sbuf;
+		if ((sbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
+			sbuf->SetFormat(to_fmt);
+			ASSERT(to_val.GetFormat().IsValid());
+		}
+		else {
+			TODO
+		}
+	}
 }
 
 
@@ -63,6 +82,14 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 }
 
 
+TMPL_VALDEVLIB(void) PipeComponent::Initialize() {
+	DevComponent::Initialize();
+	sink_value	.SetFormat(DevComponent::template GetDefaultFormat<ValSpec>());
+	src_value	.SetFormat(DevComponent::template GetDefaultFormat<ValSpec>());
+}
+TMPL_VALDEVLIB(void) PipeComponent::Uninitialize() {
+	DevComponent::Uninitialize();
+}
 
 TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
 TMPL_VALDEVLIB(CLS::Value&) PipeComponent::GetValue(V*) {return sink_value;}
@@ -83,6 +110,10 @@ TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	
 	Packet p = buf.First();
 	buf.RemoveFirst();
+	
+	auto p_fmt = p->GetFormat();
+	auto src_fmt = src_value.GetFormat();
+	ASSERT(p_fmt == src_fmt);
 	
 	DevComponentBase::Process();
 	

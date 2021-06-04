@@ -337,6 +337,7 @@ struct ScopeValDevMachT {
 		void			Visit(RuntimeVisitor& vis) {}
 		void			DropBuffer();
 		void			AddPacket(Packet p) {buf.Add(p);}
+		void			SetFormat(Format f) {fmt = f;}
 		PacketBuffer&	GetBuffer() {return buf;}
 		
 	};
