@@ -106,7 +106,7 @@ public:
 };
 
 class SoundGeneratorComponent :
-	public Component<SoundGeneratorComponent>,
+	public DevComponent<CenterSpec,AudioSpec,SoundGeneratorComponent>,
 	public EventSink,
 	public AudioSource
 {
@@ -123,7 +123,8 @@ class SoundGeneratorComponent :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
-	RTTI_COMP2(SoundGeneratorComponent, EventSink, AudioSource)
+	using Component = DevComponent<CenterSpec,AudioSpec,SoundGeneratorComponent>;
+	RTTI_DCOMP2(SoundGeneratorComponent, EventSink, AudioSource)
 	VIS_COMP_1_0(Audio)
 	COPY_PANIC(SoundGeneratorComponent);
 	IFACE_CB(EventSink);
@@ -134,9 +135,8 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//void RecvMidi(const MidiFrame& e) override;
-	//void Configure(const Midi::File& file) override;
 	void Visit(RuntimeVisitor& vis) override {}
+	void CreatePackets() override;
 	
 	// Device
 	EventFormat		GetFormat(EvCtx) override {TODO}

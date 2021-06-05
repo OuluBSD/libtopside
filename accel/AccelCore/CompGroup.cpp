@@ -57,7 +57,7 @@ void AccelComponentGroup::FindComponents() {
 			ComponentBase& base = *comp;
 			AccelComponent* fcomp = CastPtr<AccelComponent>(&base);
 			if (fcomp) {
-				TypeCls comp_ctx = base.GetValSpecType();
+				TypeCls comp_ctx = base.GetValSpec();
 				if (group_classes.Find(comp_ctx)) {
 					ASSERT(!fcomp->ctx);
 					fcomp->ctx = AsRefT();

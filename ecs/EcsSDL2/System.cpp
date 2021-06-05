@@ -25,11 +25,11 @@ void SDL2System::Uninitialize() {
 	fnt.Close();
 }
 
-void SDL2System::AddContext(SDL2ContextComponentRef comp) {
+void SDL2System::AddContext(SDL2ContextConnectorRef comp) {
 	comps.FindAdd(comp);
 }
 
-void SDL2System::RemoveContext(SDL2ContextComponentRef comp) {
+void SDL2System::RemoveContext(SDL2ContextConnectorRef comp) {
 	comps.RemoveKey(comp);
 }
 

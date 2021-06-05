@@ -27,6 +27,7 @@
 
 
 #include "Defs.h"
+#include "Component.h"
 #include "Viewport.h"
 //#include "Shader.h"
 #include "Camera.h"

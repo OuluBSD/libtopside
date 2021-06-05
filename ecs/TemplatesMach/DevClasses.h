@@ -37,25 +37,29 @@ struct AccelComponentConfBase;
 struct AccelComponentBase;
 
 
-class ContextComponentBase;
+struct ContextConnectorBase;
 
 
 struct TypeContextLoader {
 	String last_error;
 	
 	void Clear() {last_error.Clear();}
-	virtual bool Load(String path, Object& o, ContextComponentBase* b) = 0;
+	virtual bool Load(String path, Object& o, ContextConnectorBase* b) = 0;
 	
 	Callback WhenError;
 	
 };
 
-struct ContextComponentBase {
-	typedef bool (*LoadFn)(String, Object&, ContextComponentBase*);
+struct ContextConnectorBase :
+	RTTIBase
+{
+	RTTI_DECL0(ContextConnectorBase)
+	
+	typedef bool (*LoadFn)(String, Object&, ContextConnectorBase*);
 	using ExtLoaders = LinkedMap<String, LoadFn>;
 	using DevLoaders = LinkedMap<TypeCls, ExtLoaders>;
 	
-	template <class T> static bool LoaderFn(String path, Object& o, ContextComponentBase* b) {return T().Load(path,o,b);}
+	template <class T> static bool LoaderFn(String path, Object& o, ContextConnectorBase* b) {return T().Load(path,o,b);}
 	template <class DevSpec> static ExtLoaders& GetExtLoaders() {static ExtLoaders l; return l;}
 	template <class DevSpec> static Index<String>& GetDefaultExt() {static Index<String> i; return i;}
 	

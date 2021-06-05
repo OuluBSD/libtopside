@@ -64,13 +64,13 @@ SoundGeneratorComponent::SoundGeneratorComponent() {
 }
 
 void SoundGeneratorComponent::Initialize() {
-	AddToSystem<AudioSystem>(AsRef<AudioSource>());
+	AddToContext<CenterSpec>(AsRef<CenterSource>());
 	
 }
 
 void SoundGeneratorComponent::Uninitialize() {
 	
-	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
+	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 #if 0
@@ -102,6 +102,9 @@ void SoundGeneratorComponent::EndStream(AudCtx) {
 	
 }
 
+void SoundGeneratorComponent::CreatePackets() {
+	TODO
+}
 
 
 

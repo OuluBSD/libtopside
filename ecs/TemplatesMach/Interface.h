@@ -6,8 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class InterfaceBase :
 	RTTIBase,
-	virtual public LockedScopeRefCounter,
-	virtual public RefScopeParent<RefParent1<Entity>>
+	public WeakRefScopeEnabler<InterfaceBase, Entity>
 {
 public:
 	RTTI_DECL0(InterfaceBase)

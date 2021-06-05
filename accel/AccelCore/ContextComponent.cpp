@@ -3,30 +3,30 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-int AccelContextComponent::id_counter;
+int AccelContextConnector::id_counter;
 
 
-void AccelContextComponent::Initialize() {
-	DLOG("AccelContextComponent::Initialize");
+void AccelContextConnector::Initialize() {
+	DLOG("AccelContextConnector::Initialize");
 	Ref<AccelSystem> fusion_sys = GetEntity()->GetMachine().Get<AccelSystem>();
 	if (fusion_sys)
-		fusion_sys	-> Add(AsRef<AccelContextComponent>());
+		fusion_sys	-> Add(AsRef<AccelContextConnector>());
 	
 }
 
-void AccelContextComponent::Uninitialize() {
+void AccelContextConnector::Uninitialize() {
 	Ref<AccelSystem> fusion_sys = GetEntity()->GetMachine().Get<AccelSystem>();
 	if (fusion_sys)
-		fusion_sys	-> Remove(AsRef<AccelContextComponent>());
+		fusion_sys	-> Remove(AsRef<AccelContextConnector>());
 }
 
-void AccelContextComponent::Update(double dt) {
-	DLOG("AccelContextComponent::Update: begin");
+void AccelContextConnector::Update(double dt) {
+	DLOG("AccelContextConnector::Update: begin");
 	
 	//lock.Enter();
 	
 	if (!post_load.IsVoid()) {
-		DLOG("AccelContextComponent::Update: load new program");
+		DLOG("AccelContextConnector::Update: load new program");
 		
 		Object to_load;
 		Swap(post_load, to_load);
@@ -57,7 +57,7 @@ void AccelContextComponent::Update(double dt) {
 				{is_open = false; break;}
 		
 		if (!is_open) {
-			DLOG("AccelContextComponent::Update: error: did not open properly");
+			DLOG("AccelContextConnector::Update: error: did not open properly");
 			return;
 		}
 		
@@ -71,16 +71,16 @@ void AccelContextComponent::Update(double dt) {
 	
 	//lock.Leave();
 	
-	DLOG("AccelContextComponent::Update: end");
+	DLOG("AccelContextConnector::Update: end");
 }
 
 
-void AccelContextComponent::FindComponents() {
+void AccelContextConnector::FindComponents() {
 	for(AccelComponentGroup& g : groups)
 		g.FindComponents();
 }
 
-void AccelContextComponent::DumpEntityComponents() {
+void AccelContextConnector::DumpEntityComponents() {
 	LOG("Entity: AccelComponents:");
 	EntityRef e = GetEntity();
 	int i = 0;
@@ -98,19 +98,19 @@ void AccelContextComponent::DumpEntityComponents() {
 	}
 }
 
-void AccelContextComponent::PostLoadFileAny(String path) {
+void AccelContextConnector::PostLoadFileAny(String path) {
 	Object content;
 	if (LoadFileAny(path, content)) {
 		post_load = content;
 	}
 }
 
-void AccelContextComponent::Reset() {
+void AccelContextConnector::Reset() {
 	stream.Reset();
 	stream.total_time.Reset();
 }
 
-void AccelContextComponent::Clear() {
+void AccelContextConnector::Clear() {
 	for(auto& gr : groups) {
 		gr.Clear();
 		//if (comp->IsTypeTemporary())
@@ -126,7 +126,7 @@ void AccelContextComponent::Clear() {
 	AddDefaultGroups();
 }
 
-void AccelContextComponent::AddDefaultGroups() {
+void AccelContextConnector::AddDefaultGroups() {
 	AccelComponentGroup& video = groups.Add();
 	video.SetParent(this);
 	video.AddContext<VideoContext>();
@@ -140,7 +140,7 @@ void AccelContextComponent::AddDefaultGroups() {
 	audio.AddContext<EventContext>();
 }
 
-bool AccelContextComponent::CreatePackets() {
+bool AccelContextConnector::CreatePackets() {
 	if (groups.IsFilled()) {
 		RefreshStreamValuesBase();
 		
@@ -155,7 +155,7 @@ bool AccelContextComponent::CreatePackets() {
 	return false;
 }
 
-bool AccelContextComponent::CreatePackets(AccelComponentGroup& gr) {
+bool AccelContextConnector::CreatePackets(AccelComponentGroup& gr) {
 	if (is_open /*&& lock.TryEnter()*/ ) {
 		
 		for (const TypeCls& t : gr.GetGroupClasses())
@@ -169,14 +169,14 @@ bool AccelContextComponent::CreatePackets(AccelComponentGroup& gr) {
 	return false;
 }
 
-void AccelContextComponent::RefreshStreamValuesAll() {
+void AccelContextConnector::RefreshStreamValuesAll() {
 	RefreshStreamValuesBase();
 	#define IFACE(x) RefreshStreamValues<x##Spec>();
 	IFACE_LIST
 	#undef IFACE
 }
 
-void AccelContextComponent::RefreshStreamValuesBase() {
+void AccelContextConnector::RefreshStreamValuesBase() {
 	stream.time = GetSysTime();
 	#ifdef flagWIN32
 	{
@@ -193,12 +193,12 @@ void AccelContextComponent::RefreshStreamValuesBase() {
 	#endif
 }
 
-void AccelContextComponent::RefreshStreamValuesVideo() {
+void AccelContextConnector::RefreshStreamValuesVideo() {
 	stream.vid.total_seconds = stream.total_time.Seconds();
 	stream.vid.frame_seconds = stream.vid.frame_time.Seconds();
 }
 
-void AccelContextComponent::RefreshStreamValuesAudio() {
+void AccelContextConnector::RefreshStreamValuesAudio() {
 	if (stream.aud.sink_frame == 0 || stream.aud.is_sync) {
 		stream.aud.last_sync_sec = stream.total_time.Seconds();
 		stream.aud.total_seconds = stream.aud.last_sync_sec;
@@ -217,7 +217,7 @@ void AccelContextComponent::RefreshStreamValuesAudio() {
 	}
 }
 
-/*ComponentBaseRef AccelContextComponent::GetComponentById(int id) const {
+/*ComponentBaseRef AccelContextConnector::GetComponentById(int id) const {
 	TODO
 	#if 0
 	ASSERT(id >= 0);
@@ -228,7 +228,7 @@ void AccelContextComponent::RefreshStreamValuesAudio() {
 	#endif
 }*/
 
-bool AccelContextComponent::LoadFileAny(String path, Object& dst) {
+bool AccelContextConnector::LoadFileAny(String path, Object& dst) {
 	if (DirectoryExists(path)) {
 		if (path.Right(1) == DIR_SEPS)
 			path = path.Left(path.GetCount()-1);
@@ -244,7 +244,7 @@ bool AccelContextComponent::LoadFileAny(String path, Object& dst) {
 	return false;
 }
 
-bool AccelContextComponent::LoadFileToy(String path, Object& dst) {
+bool AccelContextConnector::LoadFileToy(String path, Object& dst) {
 	const char* fn_name = "LoadFileToy";
 	Clear();
 	
@@ -285,19 +285,19 @@ bool AccelContextComponent::LoadFileToy(String path, Object& dst) {
 	return true;
 }
 
-void AccelContextComponent::OnError(TypeCls type, String fn, String msg) {
+void AccelContextConnector::OnError(TypeCls type, String fn, String msg) {
 	LOG(AccelComponent::GetStringFromType(type) << ":" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
 }
 
-void AccelContextComponent::OnError(String fn, String msg) {
-	LOG("AccelContextComponent::" << fn << ": error: " << msg);
+void AccelContextConnector::OnError(String fn, String msg) {
+	LOG("AccelContextConnector::" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
 }
 
-void AccelContextComponent::MakeUniqueIds(Object& v) {
+void AccelContextConnector::MakeUniqueIds(Object& v) {
 	if (!v.IsMap())
 		return;
 	//DLOG(GetObjectTreeString(v));
@@ -366,7 +366,7 @@ void AccelContextComponent::MakeUniqueIds(Object& v) {
 		}
 	}
 	
-	DLOG("AccelContextComponent::MakeUniqueIds: result");
+	DLOG("AccelContextConnector::MakeUniqueIds: result");
 	DLOG(GetObjectTreeString(v));
 	for(int i = 0; i < stage_ids.GetCount(); i++) {
 		DLOG("\t" << stage_ids.GetKey(i) << ": <source>");
@@ -379,7 +379,7 @@ void AccelContextComponent::MakeUniqueIds(Object& v) {
 	
 }
 
-int AccelContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
+int AccelContextConnector::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	if (orig_id < 0)
 		return -1;
 	int i = ids.Find(orig_id);
@@ -390,8 +390,8 @@ int AccelContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	return id;
 }
 
-bool AccelContextComponent::Load(Object json) {
-	DLOG("AccelContextComponent::Load begin");
+bool AccelContextConnector::Load(Object json) {
+	DLOG("AccelContextConnector::Load begin");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
 		OnError(fn_name, "invalid json");
@@ -554,12 +554,12 @@ bool AccelContextComponent::Load(Object json) {
 	if (!ConnectComponentOutputs())
 		return false;
 	
-	DLOG("AccelContextComponent::Load end");
+	DLOG("AccelContextConnector::Load end");
 	return true;
 }
 
-bool AccelContextComponent::RefreshStageQueue() {
-	DLOG("AccelContextComponent::RefreshStageQueue: begin");
+bool AccelContextConnector::RefreshStageQueue() {
+	DLOG("AccelContextConnector::RefreshStageQueue: begin");
 	
 	// Solve dependencies
 	
@@ -625,12 +625,12 @@ bool AccelContextComponent::RefreshStageQueue() {
 	#endif
 	
 	
-	DLOG("AccelContextComponent::RefreshStageQueue: end");
+	DLOG("AccelContextConnector::RefreshStageQueue: end");
 	return true;
 }
 
-void AccelContextComponent::RefreshPipeline() {
-	DLOG("AccelContextComponent::RefreshPipeline begin");
+void AccelContextConnector::RefreshPipeline() {
+	DLOG("AccelContextConnector::RefreshPipeline begin");
 	
 #if HAVE_OPENGL
 	for(auto& gr : groups)
@@ -649,24 +649,24 @@ void AccelContextComponent::RefreshPipeline() {
 		for(auto& comp : gr.comps)
 			comp->Reset();
 	
-	DLOG("AccelContextComponent::RefreshPipeline end");
+	DLOG("AccelContextConnector::RefreshPipeline end");
 }
 
-bool AccelContextComponent::CheckInputTextures() {
+bool AccelContextConnector::CheckInputTextures() {
 	for(auto& gr : groups)
 		if (!gr.CheckInputTextures())
 			return false;
 	return true;
 }
 
-void AccelContextComponent::Close() {
+void AccelContextConnector::Close() {
 	for(auto& gr : groups)
 		for(auto& comp : gr.comps)
 			comp->Close();
 	Clear();
 }
 
-bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
+bool AccelContextConnector::CreateComponents(AcceleratorHeaderVector& v) {
 	const char* fn_name = "CreateComponents";
 	
 	for(AcceleratorHeader& in : v.in) {
@@ -705,7 +705,7 @@ bool AccelContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 	return true;
 }
 
-bool AccelContextComponent::ConnectComponentInputs() {
+bool AccelContextConnector::ConnectComponentInputs() {
 	TODO
 	#if 0
 	const char* fn_name = "ConnectComponentInputs";
@@ -777,9 +777,9 @@ bool AccelContextComponent::ConnectComponentInputs() {
 	#endif
 }
 
-bool AccelContextComponent::ConnectComponentOutputs() {
-	DLOG("AccelContextComponent::ConnectComponentOutputs begin");
-	const char* fn_name = "AccelContextComponent::ConnectComponentOutputs";
+bool AccelContextConnector::ConnectComponentOutputs() {
+	DLOG("AccelContextConnector::ConnectComponentOutputs begin");
+	const char* fn_name = "AccelContextConnector::ConnectComponentOutputs";
 	
 	for (AccelComponentGroup& gr : groups) {
 		if (gr.HasContext<AudioContext>()) {
@@ -837,7 +837,7 @@ bool AccelContextComponent::ConnectComponentOutputs() {
 		}
 	}
 	
-	DLOG("AccelContextComponent::ConnectComponentOutputs end");
+	DLOG("AccelContextConnector::ConnectComponentOutputs end");
 	return true;
 }
 

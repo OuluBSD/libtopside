@@ -24,7 +24,7 @@ void ShadertoyContextLoader::OnError(String fn, String msg) {
 	WhenError();
 }
 
-bool ShadertoyContextLoader::Load(String path, Object& o, ContextComponentBase* b) {
+bool ShadertoyContextLoader::Load(String path, Object& o, ContextConnectorBase* b) {
 	LOG("ShadertoyContextLoader::Load: " << path << " to " << HexStr(b));
 	
 	String ext = GetFileExt(path);

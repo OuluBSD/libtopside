@@ -34,7 +34,7 @@ void Ogl_RemoveToken(String& glsl, String token) {
 
 
 
-using AccelComponentRef = ScopeDevLibT<AccelSpec>::DevComponentRef;
+using AccelComponentRef = ScopeDevLibT<AccelSpec>::StageComponentRef;
 
 
 void AccelComponentGroupBase::Ogl_ClearPipeline() {
@@ -374,7 +374,7 @@ void AccelComponentBase::Ogl_CreateTex(Size sz, int channels, bool create_depth,
 }
 
 GLint AccelComponentBase::Ogl_GetInputTex(int input_i) const {
-	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	using StageComponentConf = typename ScopeDevLibT<AccelSpec>::StageComponentConf;
 	const char* fn_name = "Ogl_GetInputTex";
 	AccelComponent& c = CastRef<AccelComponent>(this);
 	DLOG("AccelComponent(" << c.GetTypeString() << ")::GetInputTex");
@@ -383,7 +383,7 @@ GLint AccelComponentBase::Ogl_GetInputTex(int input_i) const {
 	if (!c.group || input_i < 0 || input_i >= c.in.GetCount())
 		return -1;
 	
-	const DevComponentConf& in = c.in.At(input_i);
+	const StageComponentConf& in = c.in.At(input_i);
 	AccelComponentBaseRef in_comp = c.group->GetComponentById(in.GetId());
 	ASSERT(in_comp);
 	int tex = in_comp->Ogl_GetOutputTexture(in_comp == this);
@@ -393,14 +393,14 @@ GLint AccelComponentBase::Ogl_GetInputTex(int input_i) const {
 }
 
 int AccelComponentBase::Ogl_GetTexType(int input_i) const {
-	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	using StageComponentConf = typename ScopeDevLibT<AccelSpec>::StageComponentConf;
 	AccelComponent& c = CastRef<AccelComponent>(this);
-	const DevComponentConf& in = c.in.At(input_i);
+	const StageComponentConf& in = c.in.At(input_i);
 	
-	if (in.GetType() == DevComponentConf::TYPE_VOLUME)
+	if (in.GetType() == StageComponentConf::TYPE_VOLUME)
 		return GL_TEXTURE_3D;
 	
-	else if (in.GetType() == DevComponentConf::TYPE_CUBEMAP)
+	else if (in.GetType() == StageComponentConf::TYPE_CUBEMAP)
 		return GL_TEXTURE_CUBE_MAP;
 	
 	else
@@ -430,7 +430,7 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 	const char* fn_name = "Ogl_CompilePrograms";
 	
 	AccelComponent& c = CastRef<AccelComponent>(this);
-	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	using StageComponentConf = typename ScopeDevLibT<AccelSpec>::StageComponentConf;
 	
 	ASSERT(prog[PROG_FRAGMENT] < 0);
 	String& fg_glsl = code[PROG_FRAGMENT];
@@ -474,10 +474,10 @@ bool AccelComponentBase::Ogl_CompileFragmentShader() {
 		
 		for(int j = 0; j < 4; j++) {
 			if (j < c.in.GetCount()) {
-				DevComponentConf& in = c.in.At(j);
-				if (in.GetType() == DevComponentConf::TYPE_CUBEMAP)
+				StageComponentConf& in = c.in.At(j);
+				if (in.GetType() == StageComponentConf::TYPE_CUBEMAP)
 					code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
-				else if (in.GetType() == DevComponentConf::TYPE_VOLUME)
+				else if (in.GetType() == StageComponentConf::TYPE_VOLUME)
 					code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
 				else
 					code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
@@ -713,29 +713,29 @@ GLint AccelComponentBase::Ogl_GetOutputTexture(bool reading_self) const {
 }
 
 void AccelComponentBase::Ogl_TexFlags(int type, int filter, int repeat) {
-	using DevComponentConf = typename ScopeDevLibT<AccelSpec>::DevComponentConf;
+	using StageComponentConf = typename ScopeDevLibT<AccelSpec>::StageComponentConf;
 	
-	if (filter == DevComponentConf::FILTER_NEAREST) {
+	if (filter == StageComponentConf::FILTER_NEAREST) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
-	else if (filter == DevComponentConf::FILTER_LINEAR) {
+	else if (filter == StageComponentConf::FILTER_LINEAR) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
-	else if (filter == DevComponentConf::FILTER_MIPMAP) {
+	else if (filter == StageComponentConf::FILTER_MIPMAP) {
 		glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glGenerateMipmap(type);
 	}
 	
-	if (repeat == DevComponentConf::WRAP_REPEAT) {
+	if (repeat == StageComponentConf::WRAP_REPEAT) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
 		if (type == GL_TEXTURE_3D)
 			glTexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
 	}
-	else if (repeat == DevComponentConf::WRAP_CLAMP) {
+	else if (repeat == StageComponentConf::WRAP_CLAMP) {
 		glTexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP);
 		glTexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP);
 		if (type == GL_TEXTURE_3D)

@@ -11,7 +11,7 @@ class ShaderPlayer :
 	public Component<ShaderPlayer>
 {
 	EntityRef accel;
-	AccelContextComponentRef ctx;
+	AccelStageContextConnectorRef ctx;
 	
 public:
 	RTTI_COMP0(ShaderPlayer)

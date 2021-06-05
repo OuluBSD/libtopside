@@ -11,8 +11,8 @@ NAMESPACE_TOPSIDE_BEGIN
 	using prefix##ExchangePointRef	= Ref<prefix##ExchangePoint, RefParent1<MetaExchangePoint>>; \
 	using prefix##Sink				= prefix##CoreT::ValSink; \
 	using prefix##Source			= prefix##CoreT::ValSource; \
-	using prefix##System			= prefix##CoreT::ValSystem; \
-	using prefix##SystemRef			= Ref<prefix##System, RefParent1<Machine>>; \
+	/*using prefix##System			= prefix##CoreT::ValSystem; \
+	using prefix##SystemRef			= Ref<prefix##System, RefParent1<Machine>>;*/ \
 	using prefix##SinkRef			= Ref<prefix##Sink, RefParent1<Entity>>; \
 	using prefix##SourceRef			= Ref<prefix##Source, RefParent1<Entity>>;
 #define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)

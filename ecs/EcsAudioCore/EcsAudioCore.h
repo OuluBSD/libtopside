@@ -2,7 +2,7 @@
 #define _EcsAudioCore_EcsAudioCore_h_
 
 #include <AudioCore/AudioCore.h>
-#include <EcsCore/EcsCore.h>
+#include <EcsLib/EcsLib.h>
 
 #include "System.h"
 #include "Portaudio.h"

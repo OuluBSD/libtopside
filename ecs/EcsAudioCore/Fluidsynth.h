@@ -56,9 +56,9 @@ using FluidsynthComponentRef = RefT_Entity<FluidsynthComponent>;
 
 
 PREFAB_BEGIN(CompleteFluidsynth)
-		MixerChannelContextComponent,
-		FluidsynthComponent,
-		MixerChannelOutputComponent
+		//MixerChannelContextConnector,
+		FluidsynthComponent
+		//MixerChannelOutputComponent
 PREFAB_END;
 
 

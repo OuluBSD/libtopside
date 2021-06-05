@@ -18,10 +18,10 @@ void AccelSystem::Update(double dt) {
 	for (AccelComponentRef& comp : comps)
 		comp->Update0(dt);
 	
-	for (AccelContextComponentRef& ctx : ctxs)
+	for (AccelContextConnectorRef& ctx : ctxs)
 		ctx->Update(dt);
 	
-	for (AccelContextComponentRef& ctx : ctxs)
+	for (AccelContextConnectorRef& ctx : ctxs)
 		ctx->CreatePackets();
 	
 	DLOG("AccelSystem::Update: end\n");
@@ -35,11 +35,11 @@ void AccelSystem::Uninitialize() {
 	
 }
 
-void AccelSystem::Add(AccelContextComponentRef ctx) {
+void AccelSystem::Add(AccelContextConnectorRef ctx) {
 	ctxs.FindAdd(ctx);
 }
 
-void AccelSystem::Remove(AccelContextComponentRef ctx) {
+void AccelSystem::Remove(AccelContextConnectorRef ctx) {
 	ctxs.RemoveKey(ctx);
 }
 

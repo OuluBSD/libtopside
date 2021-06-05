@@ -124,13 +124,19 @@ void Main() {
 		RegistrySystemRef reg = mach.Add<RegistrySystem>();
 		EntityStoreRef es = mach.Add<EntityStore>();
 		PoolRef root = es->GetRoot();
-	    mach.Add<ComponentStore>();
+		mach.Add<ComponentStore>();
 	    mach.Add<ConnectorStore>();
-	    mach.Add<AudioSystem>();
+	    
+	    mach.Add<CenterSystem>();
+	    //mach.Add<AudioSystem>();
+	    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
 	    
 	    #ifdef flagSTDEXC
 	    try {
 	    #endif
+			root->Add<CenterContextConnector>();
+			//root->Add<CenterStageContextConnector>();
+			
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();
 	        }

@@ -9,6 +9,7 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
+	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	this->conn = conn;
 	if (conn) {
@@ -19,9 +20,11 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
 		if (sys)
 			sys->Add(AsRef<ExchangePoint>());
 	}
+	#endif
 }
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
+	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
@@ -32,6 +35,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
 			sys->Remove(AsRef<ExchangePoint>());
 		conn = 0;
 	}
+	#endif
 }
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
@@ -136,6 +140,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardExchange(FwdScope& fwd) {
 
 
 
+#if HAVE_VALSYSTEM
 
 TMPL_VALDEVCORE(bool) ValSystem::Initialize() {
 	
@@ -228,7 +233,7 @@ TMPL_VALDEVCORE(void) ValSystem::Uninitialize() {
 	sinks.Clear();
 	expts.Clear();
 	
-	WhenUninit();
+	WhenUninit()();
 }
 
 TMPL_VALDEVCORE(void) ValSystem::Add(ValSourceRef src) {
@@ -257,7 +262,7 @@ TMPL_VALDEVCORE(void) ValSystem::Add(ValExchangePointRef expt) {
 TMPL_VALDEVCORE(void) ValSystem::Remove(ValExchangePointRef expt) {
 	expts.RemoveKey(expt);
 }
-
+#endif
 
 
 NAMESPACE_TOPSIDE_END

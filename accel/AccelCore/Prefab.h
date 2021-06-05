@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 PREFAB_BEGIN(CompleteAccel)
-		AccelContextComponent
+		AccelContextConnector
 PREFAB_END
 
 

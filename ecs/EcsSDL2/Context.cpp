@@ -4,14 +4,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-SDL2ContextComponent::SDL2ContextComponent() {
+SDL2ContextConnector::SDL2ContextConnector() {
 	obj.Create();
 	
 	
 }
 
-void SDL2ContextComponent::Initialize() {
-	DLOG("SDL2ContextComponent::Initialize");
+void SDL2ContextConnector::Initialize() {
+	DLOG("SDL2ContextConnector::Initialize");
 	EntityRef e = GetEntity();
 	
 	Ref<SDL2System> sdl2_sys = e->GetMachine().Get<SDL2System>();
@@ -47,12 +47,12 @@ void SDL2ContextComponent::Initialize() {
 	#undef AddObj
 	
 	if (!obj->Open()) {
-		LOG("SDL2ContextComponent::Initialize: error: " << obj->GetLastError());
+		LOG("SDL2ContextConnector::Initialize: error: " << obj->GetLastError());
 		GetMachine().SetNotRunning();
 	}
 }
 
-void SDL2ContextComponent::Uninitialize() {
+void SDL2ContextConnector::Uninitialize() {
 	Ref<SDL2System> sdl2_sys = GetEntity()->GetMachine().Get<SDL2System>();
 	if (sdl2_sys)
 		sdl2_sys	-> RemoveContext(*this);

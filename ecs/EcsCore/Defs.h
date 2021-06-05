@@ -8,5 +8,17 @@
 #define RTTI_COMP3(comp, iface0, iface1, iface2) RTTI_DECL4(comp, TS::Component<comp>, iface0, iface1, iface2)
 #define RTTI_COMP4(comp, iface0, iface1, iface2, iface3) RTTI_DECL5(comp, TS::Component<comp>, iface0, iface1, iface2, iface3)
 
+#define RTTI_DCOMP0(comp) RTTI_DECL1(comp, comp::Component)
+#define RTTI_DCOMP1(comp, iface0) RTTI_DECL2(comp, comp::Component, iface0)
+#define RTTI_DCOMP2(comp, iface0, iface1) RTTI_DECL3(comp, comp::Component, iface0, iface1)
+#define RTTI_DCOMP3(comp, iface0, iface1, iface2) RTTI_DECL4(comp, comp::Component, iface0, iface1, iface2)
+#define RTTI_DCOMP4(comp, iface0, iface1, iface2, iface3) RTTI_DECL5(comp, comp::Component, iface0, iface1, iface2, iface3)
+
+#define RTTI_CONN0(comp) RTTI_DECL1(comp, TS::Connector<comp>)
+#define RTTI_CONN1(comp, iface0) RTTI_DECL2(comp, TS::Connector<comp>, iface0)
+#define RTTI_CONN2(comp, iface0, iface1) RTTI_DECL3(comp, TS::Connector<comp>, iface0, iface1)
+#define RTTI_CONN3(comp, iface0, iface1, iface2) RTTI_DECL4(comp, TS::Connector<comp>, iface0, iface1, iface2)
+#define RTTI_CONN4(comp, iface0, iface1, iface2, iface3) RTTI_DECL5(comp, TS::Connector<comp>, iface0, iface1, iface2, iface3)
+
 
 #endif

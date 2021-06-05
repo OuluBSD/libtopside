@@ -1,5 +1,5 @@
-#ifndef _AccelCore_ContextComponent_h_
-#define _AccelCore_ContextComponent_h_
+#ifndef _AccelCore_StageContextConnector_h_
+#define _AccelCore_StageContextConnector_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -7,10 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class AccelContextComponent :
-	public Component<AccelContextComponent>
+class AccelStageContextConnector :
+	public Component<AccelStageContextConnector>
 {
-	RTTI_COMP0(AccelContextComponent)
+	RTTI_COMP0(AccelStageContextConnector)
 	VIS_COMP_0_0
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -82,7 +82,7 @@ public:
 	}
 	
 	template <class Ctx, class T> bool AddEntityAccelComponent(AcceleratorHeader& in) {
-		static const char* fn_name = "AccelContextComponent::AddEntityAccelComponent";
+		static const char* fn_name = "AccelStageContextConnector::AddEntityAccelComponent";
 		AccelComponentGroup* g = FindGroupContext<Ctx>();
 		if (!g) {
 			OnError(fn_name, "No group found with given context");
@@ -107,9 +107,9 @@ public:
 	}
 	
 public:
-	COPY_PANIC(AccelContextComponent);
+	COPY_PANIC(AccelStageContextConnector);
 	
-	AccelContextComponent() {}
+	AccelStageContextConnector() {}
 	
 	void		Initialize() override;
 	void		Uninitialize() override;

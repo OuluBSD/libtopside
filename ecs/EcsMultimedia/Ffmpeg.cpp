@@ -18,13 +18,13 @@ FfmpegComponent::FfmpegComponent() {
 
 void FfmpegComponent::Initialize() {
 	
-	AddToSystem<AudioSystem>(AsRef<AudioSource>());
+	AddToContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void FfmpegComponent::Uninitialize() {
 	file_in.Clear();
 	
-	RemoveFromSystem<AudioSystem>(AsRef<AudioSource>());
+	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 bool FfmpegComponent::LoadFileAny(String path) {

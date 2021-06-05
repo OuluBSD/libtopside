@@ -309,7 +309,7 @@ public:
 	String GetLastError() const {return last_error;}
 	
 	template <class T>
-	T* FindContextComponent() {
+	T* FindContextConnector() {
 		T* o;
 		for(Component* c : comps)
 			if ((o = CastPtr<T>(c)))

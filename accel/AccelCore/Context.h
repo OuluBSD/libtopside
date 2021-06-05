@@ -142,7 +142,7 @@ struct ContextAccelT {
 		PipeComponent() : stream(this) {}
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetValSpecType() const override {return AsTypeCls<C>();}
+		TypeCls				GetValSpec() const override {return AsTypeCls<C>();}
 		
 		// AccelSink
 		Format				GetFormat(C*) override;
@@ -242,7 +242,7 @@ struct ContextConvT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetValSpecType() const override {return AsTypeCls<T>();}
+		TypeCls				GetValSpec() const override {return AsTypeCls<T>();}
 		
 		// ValSink
 		FromFormat			GetFormat(F*) override;
@@ -305,7 +305,7 @@ struct ContextConvT {
 		
 		void				Initialize() override {AccelComponent::Initialize();}
 		void				Uninitialize() override {AccelComponent::Uninitialize();}
-		TypeCls				GetValSpecType() const override {return AsTypeCls<F>();}
+		TypeCls				GetValSpec() const override {return AsTypeCls<F>();}
 		
 		// AccelSink
 		ToFormat			GetFormat(T*) override;

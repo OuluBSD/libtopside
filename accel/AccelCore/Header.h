@@ -170,11 +170,11 @@ struct AcceleratorHeaderVector {
 
 
 
-class AccelContextComponent;
-using AccelContextComponentRef		= Ref<AccelContextComponent,		RefParent1<Entity>>;
+class AccelContextConnector;
+using AccelContextConnectorRef		= Ref<AccelContextConnector,		RefParent1<Entity>>;
 
 class AccelComponentGroup;
-using AccelComponentGroupRef		= Ref<AccelComponentGroup,			RefParent1<AccelContextComponent>>;
+using AccelComponentGroupRef		= Ref<AccelComponentGroup,			RefParent1<AccelContextConnector>>;
 
 NAMESPACE_TOPSIDE_END
 

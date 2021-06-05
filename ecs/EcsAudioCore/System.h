@@ -5,18 +5,17 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class MixerContextComponent :
-	public Component<MixerContextComponent>
+class MixerContextConnector :
+	public Connector<MixerContextConnector>
 {
 	String last_error;
 	String post_load_file_path;
 	
 public:
-	RTTI_COMP0(MixerContextComponent)
-	VIS_COMP_0_0
-	COPY_PANIC(MixerContextComponent);
+	RTTI_CONN0(MixerContextConnector)
+	COPY_PANIC(MixerContextConnector);
 	
-	MixerContextComponent();
+	MixerContextConnector();
 	
 	void Initialize() override;
 	void Uninitialize() override;
@@ -31,17 +30,16 @@ public:
 };
 
 
-class MixerChannelContextComponent :
-	public Component<MixerChannelContextComponent>
+class MixerChannelContextConnector :
+	public Connector<MixerChannelContextConnector>
 {
 	String last_error;
 	
 public:
-	RTTI_COMP0(MixerChannelContextComponent)
-	VIS_COMP_0_0
-	COPY_PANIC(MixerChannelContextComponent);
+	RTTI_CONN0(MixerChannelContextConnector)
+	COPY_PANIC(MixerChannelContextConnector);
 	
-	MixerChannelContextComponent();
+	MixerChannelContextConnector();
 	
 	void Initialize() override;
 	void Uninitialize() override;
@@ -207,18 +205,18 @@ public:
 
 
 
-PREFAB_BEGIN(CompleteMixer)
-		MixerContextComponent
-PREFAB_END;
+/*PREFAB_BEGIN(CompleteMixer)
+		//MixerContextConnector
+PREFAB_END;*/
 
 PREFAB_BEGIN(CompleteMixerChannel)
-		MixerChannelContextComponent,
+		//MixerChannelContextConnector,
 		MixerChannelInputComponent,
 		MixerChannelOutputComponent
 PREFAB_END;
 
 PREFAB_BEGIN(CompleteMixerOutput)
-		MixerChannelContextComponent,
+		//MixerChannelContextConnector,
 		MixerChannelInputComponent,
 		MixerAudioSourceComponent
 PREFAB_END;

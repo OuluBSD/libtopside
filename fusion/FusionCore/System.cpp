@@ -18,7 +18,7 @@ void FusionSystem::Update(double dt) {
 	for (FusionComponentRef& comp : comps)
 		comp->Update0(dt);
 	
-	for (FusionContextComponentRef& ctx : ctxs)
+	for (FusionContextConnectorRef& ctx : ctxs)
 		ctx->Update(dt);
 	
 	DLOG("FusionSystem::Update: end\n");
@@ -32,11 +32,11 @@ void FusionSystem::Uninitialize() {
 	
 }
 
-void FusionSystem::AddContext(FusionContextComponentRef ctx) {
+void FusionSystem::AddContext(FusionContextConnectorRef ctx) {
 	ctxs.FindAdd(ctx);
 }
 
-void FusionSystem::RemoveContext(FusionContextComponentRef ctx) {
+void FusionSystem::RemoveContext(FusionContextConnectorRef ctx) {
 	ctxs.RemoveKey(ctx);
 }
 

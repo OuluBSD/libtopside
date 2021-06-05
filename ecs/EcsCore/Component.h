@@ -25,7 +25,7 @@ public:
 	virtual bool IsValSpec(TypeCls t) const {return false;}
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
-	virtual TypeCls GetValSpecType() const {return AsVoidTypeId().GetTypeId();}
+	virtual TypeCls GetValSpec() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const {return "<not implemented>";}
 	
 	static bool AllowDuplicates() {return false;}
@@ -61,6 +61,9 @@ public:
 		if (sys)
 			sys->Remove(ref);
 	}
+	
+	template <class DevSpec, class R> void AddToContext(R ref);
+	template <class DevSpec, class R> void RemoveFromContext(R ref);
 	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	

@@ -19,7 +19,7 @@ void ShaderPlayer::Initialize() {
 	accel = pool->Create<AccelStreamScope>();
 	ASSERT(accel);
 	
-	ctx = accel->Find<AccelContextComponent>();
+	ctx = accel->Find<AccelStageContextConnector>();
 	if (ctx) {
 		ctx->WhenError << THISBACK(OnError);
 		if (multistage_arg.GetCount()) {

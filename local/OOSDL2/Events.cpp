@@ -46,7 +46,7 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 	Size screen_sz;
 	Point mouse_pt;
 #ifdef flagGUI
-	Screen* scr = ctx->FindContextComponent<Screen>();
+	Screen* scr = ctx->FindContextConnector<Screen>();
 #endif
 	dword key;
 	int mouse_code;

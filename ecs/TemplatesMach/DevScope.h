@@ -54,7 +54,7 @@ struct ScopeDevMachT {
 	};
 	
 	
-	struct DevComponentConf :
+	struct StageComponentConf :
 		public DevSpec::ComponentConfBase
 	{
 		int id = -1;
@@ -78,12 +78,37 @@ struct ScopeDevMachT {
 		void ClearLinks() {dev_comp = 0;}
 	};
 	
-	/*struct DevSinkBase : RTTIBase {
-		RTTI_DECL_T0(DevSinkBase)
+	struct DevSink :
+		public WeakRefScopeEnabler<DevSink, Entity>,
+		RTTIBase
+	{
+		RTTI_DECL_T0(DevSink)
 		
-	};*/
+	};
 	
-
+	struct DevSource :
+		public WeakRefScopeEnabler<DevSink, Entity>,
+		RTTIBase
+	{
+		RTTI_DECL_T0(DevSource)
+		
+	};
+	
+	struct DevComponent :
+		public WeakRefScopeEnabler<DevComponent, Entity>,
+		RTTIBase
+	{
+		RTTI_DECL_T0(DevComponent)
+		
+		virtual TypeCls GetValSpec() const = 0;
+		virtual void CreatePackets() = 0;
+		
+	};
+	
+	using DevSinkRef		= Ref<DevSink, RefParent1<Entity>>;
+	using DevSourceRef		= Ref<DevSource, RefParent1<Entity>>;
+	using DevComponentRef	= Ref<DevComponent, RefParent1<Entity>>;
+	
 	
 	
 	

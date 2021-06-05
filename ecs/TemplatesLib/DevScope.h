@@ -6,32 +6,40 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class DevSpec>
 struct ScopeDevLibT {
-	using D						= DevSpec;
-	using DevComponentBase		= typename DevSpec::ComponentBase;
-	using DevComponentGroupBase	= typename DevSpec::ComponentGroupBase;
-	using Mach					= ScopeDevMachT<DevSpec>;
-	using Core					= ScopeDevCoreT<DevSpec>;
-	using StreamState			= typename Mach::DevStreamState;
-	using SystemBase			= typename Mach::DevSystemBase;
-	using DevStreamState		= typename Mach::DevStreamState;
-	using DevComponentConf		= typename Mach::DevComponentConf;
+	using D							= DevSpec;
+	using StageComponentBase		= typename DevSpec::ComponentBase;
+	using StageComponentGroupBase	= typename DevSpec::ComponentGroupBase;
+	using Mach						= ScopeDevMachT<DevSpec>;
+	using Core						= ScopeDevCoreT<DevSpec>;
+	using StreamState				= typename Mach::DevStreamState;
+	using SystemBase				= typename Mach::DevSystemBase;
+	using DevStreamState			= typename Mach::DevStreamState;
+	using StageComponentConf		= typename Mach::StageComponentConf;
+	using DevSource					= typename Mach::DevSource;
+	using DevSourceRef				= typename Mach::DevSourceRef;
+	using DevSink					= typename Mach::DevSink;
+	using DevSinkRef				= typename Mach::DevSinkRef;
+	using DevComponent				= typename Mach::DevComponent;
+	using DevComponentRef			= typename Mach::DevComponentRef;
 	//using SourceRef			= typename Core::SourceRef;
 	//using SinkRef				= typename Core::SinkRef;
 	//using ExchangePointRef	= typename Core::ExchangePointRef;
 	
-	class ContextComponent;
-	using ContextComponentRef		= Ref<ContextComponent, RefParent1<Entity>>;
-	class DevComponentGroup;
-	using DevComponentGroupRef		= Ref<DevComponentGroup, RefParent1<ContextComponent>>;
-	class DevComponent;
-	using DevComponentRef			= Ref<DevComponent, RefParent1<Entity>>;
+	class DevContextConnector;
+	using DevContextConnectorRef		= Ref<DevContextConnector, RefParent1<Pool>>;
+	class StageContextConnector;
+	using StageContextConnectorRef		= Ref<StageContextConnector, RefParent1<Pool>>;
+	class StageComponentGroup;
+	using StageComponentGroupRef		= Ref<StageComponentGroup, RefParent1<StageContextConnector>>;
+	class StageComponent;
+	using StageComponentRef			= Ref<StageComponent, RefParent1<Entity>>;
 	
 	
-	struct DevComponentConfVector {
-		Array<DevComponentConf> in;
+	struct StageComponentConfVector {
+		Array<StageComponentConf> in;
 		
-		int Find(const DevComponentConf& a) const;
-		void Add(const DevComponentConf& a);
+		int Find(const StageComponentConf& a) const;
+		void Add(const StageComponentConf& a);
 	};
 	
 	
@@ -42,11 +50,12 @@ struct ScopeDevLibT {
 		public System<DevSystem>,
 		public SystemBase
 	{
-		LinkedList<ContextComponentRef> ctxs;
-		LinkedList<DevComponentRef> comps;
+		LinkedList<StageContextConnectorRef> stages;
+		LinkedList<DevContextConnectorRef> devs;
+		LinkedList<StageComponentRef> comps;
 		
 		void Visit(RuntimeVisitor& vis) override {
-			vis && ctxs;
+			vis && stages && devs && comps;
 		}
 	protected:
 	    bool Initialize() override;
@@ -59,12 +68,16 @@ struct ScopeDevLibT {
 		RTTI_CTX_SYS(DevSystem, SystemBase)
 	    SYS_CTOR(DevSystem)
 		
-		void Add(DevComponentRef comp) {comps.FindAdd(comp);}
-		void Remove(DevComponentRef comp) {comps.RemoveKey(comp);}
-		void AddCtx(ContextComponentRef ctx);
-		void RemoveCtx(ContextComponentRef ctx);
+		void AddStage(StageContextConnectorRef stage)		{ASSERT(stage); stages.FindAdd(stage);}
+		void RemoveStage(StageContextConnectorRef stage)	{stages.RemoveKey(stage);}
+		void AddDev(DevContextConnectorRef dev)				{ASSERT(dev); devs.FindAdd(dev);}
+		void RemoveDev(DevContextConnectorRef dev)			{devs.RemoveKey(dev);}
+		void AddComp(StageComponentRef comp)				{ASSERT(comp); comps.FindAdd(comp);}
+		void RemoveComp(StageComponentRef comp)				{comps.RemoveKey(comp);}
 		
 		static inline Callback& WhenUninit() {static Callback cb; return cb;}
+		
+		
 		
 	};
 	
@@ -78,19 +91,19 @@ struct ScopeDevLibT {
 		return s;
 	}
 	
-	class DevComponent :
-		public DevComponentBase,
+	class StageComponent :
+		public StageComponentBase,
 		virtual public PacketForwarder
 	{
-		RTTI_DECL2(DevComponent, DevComponentBase, PacketForwarder);
+		RTTI_DECL2(StageComponent, StageComponentBase, PacketForwarder);
 		void Visit(RuntimeVisitor& vis) {}
 		
 	protected:
-		friend class DevComponentGroup;
-		friend DevComponentBase;
+		friend class StageComponentGroup;
+		friend StageComponentBase;
 		
-		DevComponentGroupRef			group;
-		LinkedList<DevComponentConf>	in;
+		StageComponentGroupRef			group;
+		LinkedList<StageComponentConf>	in;
 		int								id = -1;
 		int								pos = -1;
 		bool							is_open = false;
@@ -101,7 +114,7 @@ struct ScopeDevLibT {
 		DevStreamState&		GetDevStreamState();
 		
 		
-		virtual bool		LoadAsInput(const DevComponentConf& in) = 0;
+		virtual bool		LoadAsInput(const StageComponentConf& in) = 0;
 		virtual void		UpdateDevBuffers() = 0;
 		virtual bool		IsEmptyStream() const = 0;
 		virtual void		ClearStream() = 0;
@@ -111,13 +124,13 @@ struct ScopeDevLibT {
 		void				PostProcess();
 		
 	public:
-		virtual TypeCls		GetValSpecType() const = 0;
+		virtual TypeCls		GetValSpec() const = 0;
 		
 		
 		void				Initialize();
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
-		void				SetGroup(DevComponentGroupRef g) {group = g;}
+		void				SetGroup(StageComponentGroupRef g) {group = g;}
 		void				OnError(String fn, String msg);
 		
 		int					GetId() const {return id;}
@@ -127,8 +140,8 @@ struct ScopeDevLibT {
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
 		DevStreamState&		GetStreamState();
 		
-		DevComponentGroupRef GetGroup() const {return group;}
-		const LinkedList<DevComponentConf>& GetInputs() const {return in;}
+		StageComponentGroupRef GetGroup() const {return group;}
+		const LinkedList<StageComponentConf>& GetInputs() const {return in;}
 		
 		static String		GetStringFromType(TypeCls i);
 		static bool			IsDevPipeComponent(TypeCls type);
@@ -142,30 +155,69 @@ struct ScopeDevLibT {
 	};
 	
 	
-	
-	
-	class DevComponentGroup :
-		public RefScopeEnabler<DevComponentGroup, ContextComponent>,
-		public DevComponentGroupBase
+	class DevContextConnector :
+		public TS::Connector<DevContextConnector>
 	{
-		LinkedList<DevComponentRef> comps;
+		RTTI_CONN0(DevContextConnector)
+		COPY_PANIC(DevContextConnector)
+		void Visit(RuntimeVisitor& vis) override {}
+		
+		
+	private:
+		LinkedList<DevComponentRef>	devs;
+		LinkedList<DevSourceRef>	srcs;
+		LinkedList<DevSinkRef>		sinks;
+		DevStreamState				stream;
+		
+		void				FindAdd(DevComponentRef c);
+		void				Remove(DevComponentRef c);
+		
+		
+	public:
+		
+		DevContextConnector();
+		
+		void				Initialize() override;
+		void				Uninitialize() override;
+		void				Update(double dt) override;
+		void				CreatePackets();
+		DevStreamState&		GetStreamState() {return stream;}
+		
+		void				AddCtx(DevSourceRef r);
+		void				AddCtx(DevSinkRef r);
+		void				RemoveCtx(DevSourceRef r);
+		void				RemoveCtx(DevSinkRef r);
+		
+		
+		Callback WhenError;
+		
+	};
+	
+	
+	
+	
+	class StageComponentGroup :
+		public RefScopeEnabler<StageComponentGroup, StageContextConnector>,
+		public StageComponentGroupBase
+	{
+		LinkedList<StageComponentRef> comps;
 		
 	protected:
-		friend class ContextComponent;
+		friend class StageContextConnector;
 		TypeCls val_spec;
 		
 	public:
-		RTTI_DECL_R1(DevComponentGroup, DevComponentGroupBase)
+		RTTI_DECL_R1(StageComponentGroup, StageComponentGroupBase)
 		
 		bool				Open();
 		void				Close();
 		void				CloseTemporary();
 		void				Clear();
-		void				FindUniqueInputs(DevComponentConfVector& v);
-		void				ConnectInputs(DevComponentConfVector& v);
+		void				FindUniqueInputs(StageComponentConfVector& v);
+		void				ConnectInputs(StageComponentConfVector& v);
 		bool				LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code);
-		void				FindAdd(DevComponentRef r);
-		void				Remove(DevComponentRef r);
+		void				FindAdd(StageComponentRef r);
+		void				Remove(StageComponentRef r);
 		void				UpdateCompFlags();
 		void				UpdateDevBuffers();
 		bool				CreatePackets();
@@ -175,27 +227,26 @@ struct ScopeDevLibT {
 		bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
 		DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}
 		TypeCls				GetValSpec() const {return val_spec;}
-		DevComponentRef		GetComponentById(int id) const;
+		StageComponentRef		GetComponentById(int id) const;
 		
-		const LinkedList<DevComponentRef>& GetComponents() const {return comps;}
-		LinkedList<DevComponentRef>& GetComponents() {return comps;}
+		const LinkedList<StageComponentRef>& GetComponents() const {return comps;}
+		LinkedList<StageComponentRef>& GetComponents() {return comps;}
 		
-		ContextComponent* GetParent() {return RefScopeEnabler<DevComponentGroup, ContextComponent>::GetParent();}
+		StageContextConnector* GetParent() {return RefScopeEnabler<StageComponentGroup, StageContextConnector>::GetParent();}
 		
 	};
 	
-	class ContextComponent :
-		public TS::Component<ContextComponent>,
-		public ContextComponentBase
+	class StageContextConnector :
+		public TS::Connector<StageContextConnector>,
+		public ContextConnectorBase
 	{
-		RTTI_COMP0(ContextComponent)
-		VIS_COMP_0_0
-		COPY_PANIC(ContextComponent)
+		RTTI_CONN1(StageContextConnector, ContextConnectorBase)
+		COPY_PANIC(StageContextConnector)
 		void Visit(RuntimeVisitor& vis) override {}
 		
 		
 	private:
-		LinkedList<DevComponentGroup>	groups;
+		LinkedList<StageComponentGroup>		groups;
 		Vector<String>		common_source;
 		DevStreamState		stream;
 		Object				post_load;
@@ -210,40 +261,42 @@ struct ScopeDevLibT {
 		bool				RefreshStageQueue();
 		void				RefreshStreamValuesAll();
 		void				RefreshPipeline();
-		DevComponentGroup&	GetAddGroupContext(TypeCls val_spec);
+		StageComponentGroup&	GetAddGroupContext(TypeCls val_spec);
 		bool				ConnectComponentInputs();
 		bool				ConnectComponentOutputs();
-		bool				CreateComponents(DevComponentConfVector& v);
+		bool				CreateComponents(StageComponentConfVector& v);
 		bool				CheckDevice();
+		void				FindAdd(StageComponentRef c);
+		void				Remove(StageComponentRef c);
 		
-		template <class ValSpec>	bool ConnectComponentOutputsT(DevComponentGroup& gr);
-		template <class ValSpec>	DevComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
+		template <class ValSpec>	bool ConnectComponentOutputsT(StageComponentGroup& gr);
+		template <class ValSpec>	StageComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
 		
 		
-		template <class T> RefT_Entity<T> AddEntityComponent(DevComponentGroup& g) {
+		template <class T> RefT_Entity<T> AddEntityComponent(StageComponentGroup& g) {
 			RefT_Entity<T> o = ComponentBase::GetEntity()->template Add<T>();
-			o->SetGroup(g.template AsRef<DevComponentGroup>());
+			o->SetGroup(g.template AsRef<StageComponentGroup>());
 			g.FindAdd(o);
 			return o;
 		}
 		
 	public:
 		
-		ContextComponent();
+		StageContextConnector();
 		
 		void				Initialize() override;
 		void				Uninitialize() override;
+		void				Update(double dt) override;
 		void				FindComponents();
 		void				PostLoadFileAny(String s);
-		void				Update();
 		bool				CreatePackets();
-		bool				CreatePackets(DevComponentGroup& gr);
+		bool				CreatePackets(StageComponentGroup& gr);
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetStreamState() {return stream;}
 		bool				IsOpen() const {return is_open;}
-		void				FindAdd(DevComponentRef c);
 		
 		const Vector<String>& GetCommonSources() const {return common_source;}
+		
 		
 		Callback WhenError;
 		
@@ -253,12 +306,7 @@ struct ScopeDevLibT {
 };
 
 
-#define DEV(x) \
-	PREFAB_BEGIN(x##StreamScope) \
-			ScopeDevLibT<x##Spec>::ContextComponent \
-	PREFAB_END
-DEV_LIST
-#undef DEV
+
 
 
 NAMESPACE_TOPSIDE_END

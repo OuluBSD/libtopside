@@ -40,7 +40,7 @@ struct StreamCallbackArgs;
 
 
 class PortaudioSinkComponent :
-	public Component<PortaudioSinkComponent>,
+	public DevComponent<CenterSpec, AudioSpec, PortaudioSinkComponent>,
 	public AudioSink
 {
     RealtimeSourceConfig aconfig;
@@ -50,10 +50,10 @@ class PortaudioSinkComponent :
 	AudioFormat fmt;
 	
 	
-	
 public:
+	using Component = DevComponent<CenterSpec, AudioSpec, PortaudioSinkComponent>;
 	typedef PortaudioSinkComponent CLASSNAME;
-	RTTI_COMP1(PortaudioSinkComponent, AudioSink)
+	RTTI_DCOMP1(PortaudioSinkComponent, AudioSink)
 	VIS_COMP_0_1(Audio)
 	COPY_PANIC(PortaudioSinkComponent);
 	IFACE_CB(AudioSink);
@@ -66,6 +66,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
+	void CreatePackets() override {}
 	
 	String GetLastError() const {return last_error;}
 	

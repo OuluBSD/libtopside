@@ -2,7 +2,7 @@
 #define _EcsMultimedia_EcsMultimedia_h_
 
 #include <Multimedia/Multimedia.h>
-#include <EcsCore/EcsCore.h>
+#include <EcsLib/EcsLib.h>
 
 #include "Audio.h"
 #include "Video.h"

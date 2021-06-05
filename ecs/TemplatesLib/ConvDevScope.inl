@@ -4,9 +4,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	using DevLib				= ScopeDevLibT<ToDevSpec>;
-	using DevComponent			= typename DevLib::DevComponent;
-	using ContextComponent		= typename DevLib::ContextComponent;
-	using ContextComponentRef	= typename DevLib::ContextComponentRef;
+	using StageComponent			= typename DevLib::StageComponent;
+	using StageContextConnector		= typename DevLib::StageContextConnector;
+	using StageContextConnectorRef	= typename DevLib::StageContextConnectorRef;
 	
 	auto sink_fmt = FromComponent::template GetDefaultFormat<ValSpec>();
 	sink_value.SetFormat(sink_fmt);
@@ -18,10 +18,10 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	
 	ComponentBase* cb = CastPtr<ComponentBase>(this);
 	ASSERT(cb);
-	ContextComponentRef ctx = cb->GetEntity()->template FindNearestWith<ContextComponent>();
+	StageContextConnectorRef ctx = cb->GetEntity()->template FindNearestWith<StageContextConnector>();
 	ASSERT(ctx);
 	if (ctx)
-		ctx->FindAdd(this->template AsRef<DevComponent>());
+		ctx->FindAdd(this->template AsRef<StageComponent>());
 }
 
 TMPL_CONVDEVLIB(void) ConvertComponent::Uninitialize() {

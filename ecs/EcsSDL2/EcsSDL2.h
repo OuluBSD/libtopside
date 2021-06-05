@@ -7,7 +7,7 @@
 
 
 #define OBJ_CREATE \
-	auto ev_ctx = GetEntity()->Find<SDL2ContextComponent>(); \
+	auto ev_ctx = GetEntity()->Find<SDL2ContextConnector>(); \
 	/*ASSERT(ev_ctx);*/ \
 	if (ev_ctx) { \
 		obj.Create(ev_ctx->GetOOSDL2()); \
@@ -47,8 +47,8 @@ PREFAB_BEGIN(SDL2StandaloneWindow)
 	SDL2SensorComponent,
 	SDL2ImageComponent,
 	SDL2FontComponent,
-	SDL2ContextComponent,
-	CenterContextComponent
+	SDL2ContextConnector,
+	CenterContextConnector
 PREFAB_END
 
 #endif
@@ -64,15 +64,15 @@ PREFAB_BEGIN(SDL2StandaloneConsole)
 	SDL2SensorComponent,
 	SDL2ImageComponent,
 	SDL2FontComponent,
-	SDL2ContextComponent,
-	CenterContextComponent
+	SDL2ContextConnector,
+	CenterContextConnector
 PREFAB_END
 
 
 
 PREFAB_BEGIN(StandaloneLineIn)
 	SDL2AudioInputComponent,
-	SDL2ContextComponent
+	SDL2ContextConnector
 PREFAB_END
 
 

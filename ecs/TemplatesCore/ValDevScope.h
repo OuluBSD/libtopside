@@ -10,6 +10,7 @@ struct ScopeValDevCoreT {
 	using DevSpec			= typename ValDevSpec::Dev;
 	using Data				= ScopeValMachT<ValSpec>;
 	using Mach				= ScopeValDevMachT<ValDevSpec>;
+	using DevMach			= ScopeDevMachT<DevSpec>;
 	using V					= ValSpec;
 	using Format			= typename Data::Format;
 	using ValueBase			= typename ValSpec::ValueBase;
@@ -19,15 +20,18 @@ struct ScopeValDevCoreT {
 	using Value				= typename Mach::Value;
 	using CtxStream			= typename Mach::Stream;
 	using ValExchangePoint	= typename Mach::ValExchangePoint;
+	using DevSource			= typename DevMach::DevSource;
+	using DevSink			= typename DevMach::DevSink;
 	
 	
 	class ValSink :
 		public InterfaceSink<ValSink>,
 		public SinkBase,
+		public DevSink,
 		RTTIBase
 	{
 	public:
-		RTTI_DECL_2(ValSink, InterfaceSink<ValSink>, SinkBase, ValDevSpec::GetName() + "Sink")
+		RTTI_DECL_3(ValSink, InterfaceSink<ValSink>, SinkBase, DevSink, ValDevSpec::GetName() + "Sink")
 		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSink>());}
 		
 		
@@ -39,12 +43,13 @@ struct ScopeValDevCoreT {
 	
 	class ValSource :
 		public InterfaceSource<ValSource, ValSink>,
+		public DevSource,
 		RTTIBase
 	{
 		using InterfaceSourceT = InterfaceSource<ValSource, ValSink>;
 		
 	public:
-		RTTI_DECL_1(ValSource, InterfaceSourceT, ValDevSpec::GetName() + "Source")
+		RTTI_DECL_2(ValSource, InterfaceSourceT, DevSource, ValDevSpec::GetName() + "Source")
 		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSource>());}
 		
 		using ExPt = ValExchangePoint;
@@ -73,6 +78,7 @@ struct ScopeValDevCoreT {
 	#define RTTI_CTX_SYS(sys, base) \
 			RTTI_DECL_2(sys, System<sys>, base, ValDevSpec::GetName() + #sys)
 	
+	#if HAVE_VALSYSTEM
 	class ValSystem :
 		public System<ValSystem>,
 		public SystemBase
@@ -107,6 +113,7 @@ struct ScopeValDevCoreT {
 		static inline Callback& WhenUninit() {static Callback cb; return cb;}
 		
 	};
+	#endif
 	
 	#undef RTTI_CTX_SYS
 	

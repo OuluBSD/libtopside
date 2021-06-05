@@ -4,8 +4,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 INITBLOCK {
-	ContextComponentBase::RegisterDefaultFileExt<AccelSpec>(".toy");
-	ContextComponentBase::Register<AccelSpec, ShadertoyContextLoader>(".toy");
+	ContextConnectorBase::RegisterDefaultFileExt<AccelSpec>(".toy");
+	ContextConnectorBase::Register<AccelSpec, ShadertoyContextLoader>(".toy");
 }
 
 

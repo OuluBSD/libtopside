@@ -184,6 +184,25 @@ public:
 
 
 template <class T, class ParentT, class RParent=RefParent1<ParentT>>
+class WeakRefScopeEnabler :
+	virtual public LockedScopeRefCounter,
+	virtual public RefScopeParent<RParent>
+{
+	
+public:
+	
+	WeakRefScopeEnabler() {
+		#ifdef flagDEBUG_STACK
+		dbg_type = AsTypeCls<T>();
+		#endif
+	}
+	
+	
+	
+};
+
+
+template <class T, class ParentT, class RParent=RefParent1<ParentT>>
 class RefScopeEnabler :
 	virtual public LockedScopeRefCounter,
 	virtual public RefScopeParent<RParent>
@@ -193,19 +212,6 @@ public:
 	using Parent	= ParentT;
 	using LScope	= RefScopeEnabler<T,ParentT,RParent>;
 	using SP		= RefScopeParent<RParent>;
-	
-	RefScopeEnabler() {
-		#ifdef flagDEBUG_STACK
-		dbg_type = AsTypeCls<T>();
-		#endif
-	}
-	
-	/*RefScopeEnabler(RParent p) : SP(p) {
-		#ifdef flagDEBUG_STACK
-		dbg_type = AsTypeCls<T>();
-		#endif
-	}*/
-	
 	
 	template <class V=T>
 	Ref<V,RParent> AsRefStatic() {
@@ -220,7 +226,6 @@ public:
 		ASSERT(o);
 		return Ref<V,RParent>(SP::GetParent(), o);
 	}
-	
 	
 };
 

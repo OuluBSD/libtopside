@@ -22,6 +22,7 @@ file
 	EcsLib.h,
 	EcsLib.cpp,
 	Defs.h,
+	Component.h,
 	Camera.h,
 	Camera.cpp,
 	Model.h,

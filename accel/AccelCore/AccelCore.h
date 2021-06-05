@@ -35,7 +35,7 @@
 #include "Stream.h"
 #include "ComponentBase.h"
 #include "CompGroup.h"
-#include "ContextComponent.h"
+#include "StageContextConnector.h"
 #include "Context.h"
 #include "Context.inl"
 #include "Defs.h"

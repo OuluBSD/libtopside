@@ -10,29 +10,29 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-MixerContextComponent::MixerContextComponent() {
+MixerContextConnector::MixerContextConnector() {
 	
 }
 
-void MixerContextComponent::Initialize() {
+void MixerContextConnector::Initialize() {
 	
 }
 
-void MixerContextComponent::Uninitialize() {
+void MixerContextConnector::Uninitialize() {
 	
 }
 
 
 
-MixerChannelContextComponent::MixerChannelContextComponent() {
+MixerChannelContextConnector::MixerChannelContextConnector() {
 	
 }
 
-void MixerChannelContextComponent::Initialize() {
+void MixerChannelContextConnector::Initialize() {
 	
 }
 
-void MixerChannelContextComponent::Uninitialize() {
+void MixerChannelContextConnector::Uninitialize() {
 	
 }
 
@@ -138,11 +138,11 @@ MidiFileComponent::MidiFileComponent() {
 }
 
 void MidiFileComponent::Initialize() {
-	AddToSystem<EventSystem>(AsRef<EventSource>());
+	AddToContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	RemoveFromSystem<EventSystem>(AsRef<EventSource>());
+	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void MidiFileComponent::Clear() {

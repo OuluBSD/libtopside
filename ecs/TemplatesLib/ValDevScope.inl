@@ -14,7 +14,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using Core					= ScopeValDevCoreT<ValDevSpec>;
 	using ValStreamState		= typename ValMach::ValStreamState;
 	using DevStreamState		= typename DevMach::DevStreamState;
-	using DevComponent			= typename DevLib::DevComponent;
+	using StageComponent			= typename DevLib::StageComponent;
 	using Value					= typename Mach::Value;
 	using SourceRef				= typename Core::ValSourceRef;
 	using SinkRef				= typename Core::ValSinkRef;
@@ -22,7 +22,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	
 	SourceRef src = this->src;
 	ASSERT(src);
-	DevComponent* src_comp = CastPtr<DevComponent>(src->AsComponentBase());
+	StageComponent* src_comp = CastPtr<StageComponent>(src->AsComponentBase());
 	ASSERT(src_comp);
 	DevStreamState& state = src_comp->GetStreamState();
 	ValStreamState& vstate = state.template Get<ValSpec>();
@@ -30,11 +30,11 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	SetOffset(exp_offset);
 	
 	SinkRef sink = this->sink;
-	DevComponent* sink_comp = CastPtr<DevComponent>(sink->AsComponentBase());
+	StageComponent* sink_comp = CastPtr<StageComponent>(sink->AsComponentBase());
 	Value& to_val = sink->GetValue((ValSpec*)0);
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
-		to_fmt = DevComponent::template GetDefaultFormat<ValSpec>();
+		to_fmt = StageComponent::template GetDefaultFormat<ValSpec>();
 		SimpleBufferedValue* sbuf;
 		VolatileBuffer* vbuf;
 		if ((sbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
@@ -88,13 +88,13 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 
 
 TMPL_VALDEVLIB(void) PipeComponent::Initialize() {
-	DevComponent::Initialize();
-	auto fmt = DevComponent::template GetDefaultFormat<ValSpec>();
+	StageComponent::Initialize();
+	auto fmt = StageComponent::template GetDefaultFormat<ValSpec>();
 	sink_value	.SetFormat(fmt);
 	src_value	.SetFormat(fmt);
 }
 TMPL_VALDEVLIB(void) PipeComponent::Uninitialize() {
-	DevComponent::Uninitialize();
+	StageComponent::Uninitialize();
 }
 
 TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
@@ -108,7 +108,7 @@ TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	using DevSpec				= typename ValDevSpec::Dev;
 	using DevMach				= ScopeDevMachT<DevSpec>;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
-	using DevComponentBase		= typename DevSpec::ComponentBase;
+	using StageComponentBase		= typename DevSpec::ComponentBase;
 	
 	auto& buf = sink_value.GetBuffer();
 	if (buf.IsEmpty())
@@ -122,16 +122,16 @@ TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	if (p_fmt != src_fmt) {DLOG("PipeComponent::Forward: error: packet format differs\nPacket format: " << p_fmt.ToString() << "\nSource format: " << src_fmt.ToString());}
 	ASSERT(p_fmt == src_fmt);
 	
-	DevComponentBase::Process();
+	StageComponentBase::Process();
 	
 	InternalPacketData& data = p->template GetData<InternalPacketData>();
 	data.pos++;
 	data.ClearLinks();
-	data.dev_comp = CastPtr<DevComponent>(this);
+	data.dev_comp = CastPtr<StageComponent>(this);
 	ASSERT(data.dev_comp);
 	
 	
-	DevComponent::template ForwardPacket<ValSpec>(fwd, p);
+	StageComponent::template ForwardPacket<ValSpec>(fwd, p);
 }
 
 TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
@@ -159,7 +159,7 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 		}
 	}
 	#else
-	DevStreamState& state = DevComponent::GetStreamState();
+	DevStreamState& state = StageComponent::GetStreamState();
 	ValStreamState& vstate = state.template Get<ValSpec>();
 	off32 exp_offset = vstate.offset;
 	

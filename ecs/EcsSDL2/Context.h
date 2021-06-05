@@ -5,18 +5,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class SDL2ContextComponent :
-	public Component<SDL2ContextComponent>
+class SDL2ContextConnector :
+	public Connector<SDL2ContextConnector>
 {
 	One<OOSDL2::Context> obj;
 	LinkedList<ComponentBaseRef> comps;
 	
 public:
-	RTTI_COMP0(SDL2ContextComponent)
-	VIS_COMP_0_0
-	COPY_PANIC(SDL2ContextComponent);
+	RTTI_CONN0(SDL2ContextConnector)
+	COPY_PANIC(SDL2ContextConnector);
 	
-	SDL2ContextComponent();
+	SDL2ContextConnector();
 	
 	void Initialize() override;
 	void Uninitialize() override;
@@ -26,7 +25,7 @@ public:
 	
 };
 
-using SDL2ContextComponentRef		= Ref<SDL2ContextComponent,			RefParent1<Entity>>;
+using SDL2ContextConnectorRef		= Ref<SDL2ContextConnector,			RefParent1<Entity>>;
 
 
 NAMESPACE_TOPSIDE_END

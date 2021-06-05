@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class AccelComponentGroup : public RefScopeEnabler<AccelComponentGroup,AccelContextComponent> {
+class AccelComponentGroup : public RefScopeEnabler<AccelComponentGroup,AccelContextConnector> {
 	RTTI_DECL_R0(AccelComponentGroup)
 	COPY_PANIC(AccelComponentGroup);
 	

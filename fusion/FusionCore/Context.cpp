@@ -3,33 +3,33 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-int FusionContextComponent::id_counter;
+int FusionStageContextConnector::id_counter;
 
-FusionContextComponent::FusionContextComponent() {
+FusionStageContextConnector::FusionStageContextConnector() {
 	
 }
 
-void FusionContextComponent::Initialize() {
-	DLOG("FusionContextComponent::Initialize");
+void FusionStageContextConnector::Initialize() {
+	DLOG("FusionStageContextConnector::Initialize");
 	Ref<FusionSystem> fusion_sys = GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> AddContext(*this);
 	
 }
 
-void FusionContextComponent::Uninitialize() {
+void FusionStageContextConnector::Uninitialize() {
 	Ref<FusionSystem> fusion_sys = GetEntity()->GetMachine().Get<FusionSystem>();
 	if (fusion_sys)
 		fusion_sys	-> RemoveContext(*this);
 }
 
-void FusionContextComponent::Update(double dt) {
-	DLOG("FusionContextComponent::Update: begin");
+void FusionStageContextConnector::Update(double dt) {
+	DLOG("FusionStageContextConnector::Update: begin");
 	
 	//lock.Enter();
 	
 	if (!post_load.IsVoid()) {
-		DLOG("FusionContextComponent::Update: load new program");
+		DLOG("FusionStageContextConnector::Update: load new program");
 		
 		Object to_load;
 		Swap(post_load, to_load);
@@ -56,13 +56,13 @@ void FusionContextComponent::Update(double dt) {
 		is_open = true;
 		for(FusionComponentRef& comp : comps) {
 			if (!comp->IsOpen() && !comp->Open()) {
-				DLOG("FusionContextComponent::Update: error: a component did not open properly");
+				DLOG("FusionStageContextConnector::Update: error: a component did not open properly");
 				is_open = false;
 			}
 		}
 		
 		if (!is_open) {
-			DLOG("FusionContextComponent::Update: error: did not open properly");
+			DLOG("FusionStageContextConnector::Update: error: did not open properly");
 			return;
 		}
 		
@@ -71,10 +71,10 @@ void FusionContextComponent::Update(double dt) {
 	
 	
 	//lock.Leave();
-	DLOG("FusionContextComponent::Update: end");
+	DLOG("FusionStageContextConnector::Update: end");
 }
 
-void FusionContextComponent::FindComponents() {
+void FusionStageContextConnector::FindComponents() {
 	comps.Clear();
 	EntityRef e = GetEntity();
 	for (ComponentRef& comp : e->GetComponents().GetValues()) {
@@ -90,7 +90,7 @@ void FusionContextComponent::FindComponents() {
 	}
 }
 
-void FusionContextComponent::DumpEntityComponents() {
+void FusionStageContextConnector::DumpEntityComponents() {
 	LOG("Entity: FusionComponents:");
 	EntityRef e = GetEntity();
 	int i = 0;
@@ -108,18 +108,18 @@ void FusionContextComponent::DumpEntityComponents() {
 	}
 }
 
-void FusionContextComponent::PostLoadFileAny(String path) {
+void FusionStageContextConnector::PostLoadFileAny(String path) {
 	Object content;
 	if (LoadFileAny(path, content)) {
 		post_load = content;
 	}
 }
 
-void FusionContextComponent::Reset() {
+void FusionStageContextConnector::Reset() {
 	stream.total_time.Reset();
 }
 
-void FusionContextComponent::Clear() {
+void FusionStageContextConnector::Clear() {
 	for(auto& comp : comps) {
 		comp->Clear();
 		if (comp->IsTypeTemporary())
@@ -136,7 +136,7 @@ void FusionContextComponent::Clear() {
 	is_open = false;
 }
 
-bool FusionContextComponent::Render() {
+bool FusionStageContextConnector::Render() {
 	if (is_open /*&& lock.TryEnter()*/ ) {
 		ProcessStageQueue(MODE_DEFAULT);
 		//lock.Leave();
@@ -145,12 +145,12 @@ bool FusionContextComponent::Render() {
 	return false;
 }
 
-void FusionContextComponent::Play() {
+void FusionStageContextConnector::Play() {
 	if (is_open)
 		ProcessStageQueue(MODE_AUDIO);
 }
 
-void FusionContextComponent::ProcessStageQueue(Mode m) {
+void FusionStageContextConnector::ProcessStageQueue(Mode m) {
 	ASSERT(is_open);
 	if (!is_open)
 		return;
@@ -178,7 +178,7 @@ void FusionContextComponent::ProcessStageQueue(Mode m) {
 	
 }
 
-bool FusionContextComponent::IsModeStage(const FusionComponent& comp, Mode m) const {
+bool FusionStageContextConnector::IsModeStage(const FusionComponent& comp, Mode m) const {
 	auto type = comp.GetFusionType();
 	if (type == FusionComponent::FUSION_AUDIO_SINK ||
 		type == FusionComponent::FUSION_AUDIO_BUFFER ||
@@ -188,7 +188,7 @@ bool FusionContextComponent::IsModeStage(const FusionComponent& comp, Mode m) co
 		return m == MODE_DEFAULT;
 }
 
-void FusionContextComponent::RefreshStreamValues(Mode m) {
+void FusionStageContextConnector::RefreshStreamValues(Mode m) {
 	if (m == MODE_DEFAULT) {
 		stream.time = GetSysTime();
 		#ifdef flagWIN32
@@ -227,7 +227,7 @@ void FusionContextComponent::RefreshStreamValues(Mode m) {
 	}
 }
 
-RefT_Entity<FusionComponent> FusionContextComponent::GetComponentById(int id) const {
+RefT_Entity<FusionComponent> FusionStageContextConnector::GetComponentById(int id) const {
 	ASSERT(id >= 0);
 	for (const auto& s : comps)
 		if (s->id == id)
@@ -235,7 +235,7 @@ RefT_Entity<FusionComponent> FusionContextComponent::GetComponentById(int id) co
 	THROW(Exc("FusionComponent not found"));
 }
 
-bool FusionContextComponent::LoadFileAny(String path, Object& dst) {
+bool FusionStageContextConnector::LoadFileAny(String path, Object& dst) {
 	if (DirectoryExists(path)) {
 		if (path.Right(1) == DIR_SEPS)
 			path = path.Left(path.GetCount()-1);
@@ -251,7 +251,7 @@ bool FusionContextComponent::LoadFileAny(String path, Object& dst) {
 	return false;
 }
 
-bool FusionContextComponent::LoadFileToy(String path, Object& dst) {
+bool FusionStageContextConnector::LoadFileToy(String path, Object& dst) {
 	const char* fn_name = "LoadFileToy";
 	Clear();
 	
@@ -292,19 +292,19 @@ bool FusionContextComponent::LoadFileToy(String path, Object& dst) {
 	return true;
 }
 
-void FusionContextComponent::OnError(FusionComponent::Type type, String fn, String msg) {
+void FusionStageContextConnector::OnError(FusionComponent::Type type, String fn, String msg) {
 	LOG(FusionComponent::GetStringFromType(type) << ":" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
 }
 
-void FusionContextComponent::OnError(String fn, String msg) {
-	LOG("FusionContextComponent::" << fn << ": error: " << msg);
+void FusionStageContextConnector::OnError(String fn, String msg) {
+	LOG("FusionStageContextConnector::" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
 }
 
-void FusionContextComponent::MakeUniqueIds(Object& v) {
+void FusionStageContextConnector::MakeUniqueIds(Object& v) {
 	if (!v.IsMap())
 		return;
 	//DLOG(GetObjectTreeString(v));
@@ -373,7 +373,7 @@ void FusionContextComponent::MakeUniqueIds(Object& v) {
 		}
 	}
 	
-	DLOG("FusionContextComponent::MakeUniqueIds: result");
+	DLOG("FusionStageContextConnector::MakeUniqueIds: result");
 	DLOG(GetObjectTreeString(v));
 	for(int i = 0; i < stage_ids.GetCount(); i++) {
 		DLOG("\t" << stage_ids.GetKey(i) << ": <source>");
@@ -386,7 +386,7 @@ void FusionContextComponent::MakeUniqueIds(Object& v) {
 	
 }
 
-int FusionContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
+int FusionStageContextConnector::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	if (orig_id < 0)
 		return -1;
 	int i = ids.Find(orig_id);
@@ -397,8 +397,8 @@ int FusionContextComponent::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {
 	return id;
 }
 
-bool FusionContextComponent::Load(Object json) {
-	DLOG("FusionContextComponent::Load");
+bool FusionStageContextConnector::Load(Object json) {
+	DLOG("FusionStageContextConnector::Load");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
 		OnError(fn_name, "invalid json");
@@ -554,8 +554,8 @@ bool FusionContextComponent::Load(Object json) {
 	return true;
 }
 
-bool FusionContextComponent::RefreshStageQueue() {
-	DLOG("FusionContextComponent::RefreshStageQueue: begin");
+bool FusionStageContextConnector::RefreshStageQueue() {
+	DLOG("FusionStageContextConnector::RefreshStageQueue: begin");
 	
 	// Solve dependencies
 	
@@ -609,12 +609,12 @@ bool FusionContextComponent::RefreshStageQueue() {
 	#endif
 	
 	
-	DLOG("FusionContextComponent::RefreshStageQueue: end");
+	DLOG("FusionStageContextConnector::RefreshStageQueue: end");
 	return true;
 }
 
-void FusionContextComponent::RefreshPipeline() {
-	DLOG("FusionContextComponent::RefreshPipeline begin");
+void FusionStageContextConnector::RefreshPipeline() {
+	DLOG("FusionStageContextConnector::RefreshPipeline begin");
 	
 #if HAVE_OPENGL
 	Ogl_CreatePipeline();
@@ -631,10 +631,10 @@ void FusionContextComponent::RefreshPipeline() {
 	for(auto& comp : comps)
 		comp->Reset();
 	
-	DLOG("FusionContextComponent::RefreshPipeline end");
+	DLOG("FusionStageContextConnector::RefreshPipeline end");
 }
 
-void FusionContextComponent::UpdateTexBuffers() {
+void FusionStageContextConnector::UpdateTexBuffers() {
 	for(auto& comp : comps)
 		if (comp->type != FusionComponent::FUSION_AUDIO_SINK &&
 			comp->type != FusionComponent::FUSION_AUDIO_BUFFER &&
@@ -642,7 +642,7 @@ void FusionContextComponent::UpdateTexBuffers() {
 				comp->UpdateTexBuffers();
 }
 
-void FusionContextComponent::UpdateSoundBuffers() {
+void FusionStageContextConnector::UpdateSoundBuffers() {
 	for(auto& comp : comps)
 		if (comp->type == FusionComponent::FUSION_AUDIO_SINK ||
 			comp->type == FusionComponent::FUSION_AUDIO_BUFFER ||
@@ -650,7 +650,7 @@ void FusionContextComponent::UpdateSoundBuffers() {
 				comp->UpdateTexBuffers();
 }
 
-bool FusionContextComponent::CheckInputTextures() {
+bool FusionStageContextConnector::CheckInputTextures() {
 #if HAVE_OPENGL
 	for(auto& comp : comps)
 		if (!comp->Ogl_CheckInputTextures())
@@ -659,13 +659,13 @@ bool FusionContextComponent::CheckInputTextures() {
 	return true;
 }
 
-void FusionContextComponent::Close() {
+void FusionStageContextConnector::Close() {
 	for(auto& comp : comps)
 		comp->Close();
 	Clear();
 }
 
-bool FusionContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
+bool FusionStageContextConnector::CreateComponents(AcceleratorHeaderVector& v) {
 	const char* fn_name = "CreateComponents";
 	
 	for(AcceleratorHeader& in : v.in) {
@@ -703,7 +703,7 @@ bool FusionContextComponent::CreateComponents(AcceleratorHeaderVector& v) {
 	return true;
 }
 
-bool FusionContextComponent::ConnectComponents() {
+bool FusionStageContextConnector::ConnectComponents() {
 	const char* fn_name = "ConnectComponents";
 	bool succ = true;
 	

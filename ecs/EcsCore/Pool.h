@@ -192,7 +192,8 @@ public:
 	RefT_Pool<T> Add() {
 		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
 		ASSERT(comp);
-		comp->SetParent(this);
+		RefScopeParent<RefParent1<Pool>>* rp = comp;
+		rp->SetParent(this);
 		comps.Add(comp);
 		InitializeComponent(*comp);
 		return RefT_Pool<T>(this, comp);

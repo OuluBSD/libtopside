@@ -11,9 +11,7 @@ bool SingleMachine::Open(bool gui) {
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef ents = mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
-    mach.Add<HumanSystem>();
-    mach.Add<AudioSystem>();
-    mach.Add<EventSystem>();
+    mach.Add<CenterSystem>();
     
     reg->SetAppName("SDL2 ECS machine");
     

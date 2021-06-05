@@ -23,8 +23,8 @@ struct ScopeValDevLibT {
 	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
 	using ValSink		= typename Core::ValSink;
 	using ValSource		= typename Core::ValSource;
-	using DevCompConf	= typename ScopeDevMachT<DevSpec>::DevComponentConf;
-	using DevComponent	= typename ScopeDevLibT<DevSpec>::DevComponent;
+	using DevCompConf	= typename ScopeDevMachT<DevSpec>::StageComponentConf;
+	using StageComponent	= typename ScopeDevLibT<DevSpec>::StageComponent;
 	
 	#define RTTI_CTX_LIB_INPUT_COMP(comp, src) \
 			RTTI_DECL_2(comp, Component<comp>, src, ValDevSpec::GetName() + #comp)
@@ -78,7 +78,7 @@ struct ScopeValDevLibT {
 	public:
 		InputComponent() : stream(this) {}
 		
-		TypeCls GetValSpecType() const override {return AsTypeCls<V>();}
+		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		
 		// ValSource
@@ -92,14 +92,14 @@ struct ScopeValDevLibT {
 	
 	#define RTTI_DEV_CTX_COMP(comp, src, sink) \
 			RTTI_DECL_4(comp, Component<comp>, \
-					src, sink, DevComponent, \
+					src, sink, StageComponent, \
 					DevSpec::GetName() + #comp)
 	
 	class PipeComponent :
 		public Component<PipeComponent>,
 		public ValSource,
 		public ValSink,
-		public DevComponent
+		public StageComponent
 	{
 		RTTI_DEV_CTX_COMP(PipeComponent, ValSource, ValSink)
 		VIS_COMP_1_1(Val, Val)
@@ -146,7 +146,7 @@ struct ScopeValDevLibT {
 		// ComponentBase
 		void				Initialize() override;
 		void				Uninitialize() override;
-		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
+		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				RequiresDeviceProgram() const override {return true;}
 		
@@ -159,9 +159,9 @@ struct ScopeValDevLibT {
 		void				BeginStream(V*) override;
 		void				EndStream(V*) override;
 		
-		// DevComponent
+		// StageComponent
 		bool				LoadAsInput(const DevCompConf& in) override;
-		void				UpdateDevBuffers() override {DevComponent::template UpdateDevBuffersValT<ValSpec>();}
+		void				UpdateDevBuffers() override {StageComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 		void				Forward(FwdScope& fwd) override;

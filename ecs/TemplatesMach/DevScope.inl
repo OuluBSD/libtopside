@@ -40,4 +40,12 @@ TMPL_DEVMACH(void) DevStreamState::UpdateValues(TypeCls val_spec) {
 	
 }
 
+#define DEV(x) \
+	using x##Source		= typename ScopeDevMachT<x##Spec>::DevSource; \
+	using x##SourceRef	= typename ScopeDevMachT<x##Spec>::DevSourceRef; \
+	using x##Sink		= typename ScopeDevMachT<x##Spec>::DevSink; \
+	using x##SinkRef	= typename ScopeDevMachT<x##Spec>::DevSinkRef;
+DEV_LIST
+#undef DEV
+
 NAMESPACE_TOPSIDE_END

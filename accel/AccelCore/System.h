@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class AccelSystem : public System<AccelSystem> {
-	LinkedList<AccelContextComponentRef>	ctxs;
+	LinkedList<AccelContextConnectorRef>	ctxs;
 	LinkedList<AccelComponentRef> comps;
 	
 	void Visit(RuntimeVisitor& vis) override {
@@ -25,11 +25,11 @@ protected:
     void Uninitialize() override;
     
 protected:
-	friend class AccelContextComponent;
+	friend class AccelContextConnector;
 	friend class AccelComponent;
 	
-    void Add(AccelContextComponentRef ctx);
-    void Remove(AccelContextComponentRef ctx);
+    void Add(AccelContextConnectorRef ctx);
+    void Remove(AccelContextConnectorRef ctx);
 	void Add(AccelComponentRef comp) {comps.FindAdd(comp);}
 	void Remove(AccelComponentRef comp) {comps.RemoveKey(comp);}
     

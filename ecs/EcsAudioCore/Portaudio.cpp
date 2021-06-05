@@ -125,7 +125,7 @@ void CloseAudioSys() {
 }
 
 INITBLOCK {
-	AudioSystem::WhenUninit() << callback(CloseAudioSys);
+	CenterSystem::WhenUninit() << callback(CloseAudioSys);
 }
 
 
@@ -158,11 +158,11 @@ void PortaudioSinkComponent::Initialize() {
 	
 	obj->Start();
 	
-	AddToSystem<AudioSystem>(AsRef<AudioSink>());
+	AddToContext<CenterSpec>(AsRef<CenterSink>());
 }
 
 void PortaudioSinkComponent::Uninitialize() {
-	RemoveFromSystem<AudioSystem>(AsRef<AudioSink>());
+	RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
 	
 	//dev.Clear();
 	//sys.Clear();

@@ -13,10 +13,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class FusionComponent;
-class FusionContextComponent;
+class FusionContextConnector;
 
 using FusionComponentRef			= Ref<FusionComponent,				RefParent1<Entity>>;
-using FusionContextComponentRef		= Ref<FusionContextComponent,		RefParent1<Entity>>;
+using FusionContextConnectorRef		= Ref<FusionContextConnector,		RefParent1<Entity>>;
 
 
 int GetOglChCode(int channels, bool is_float=false);
@@ -191,7 +191,7 @@ public:
 	
 protected:
 	friend class FusionComponent;
-	friend class FusionContextComponent;
+	friend class FusionContextConnector;
 	friend struct FusionComponentInputVector;
 	
 	VideoStream* stream = 0;
@@ -320,10 +320,10 @@ protected:
 protected:
 	// Context - Component Interaction
 	
-	friend class FusionContextComponent;
+	friend class FusionContextConnector;
 	
 	
-	FusionContextComponent* ctx = 0;
+	FusionContextConnector* ctx = 0;
 	
 	
 	virtual void		Reset() = 0;
@@ -842,10 +842,10 @@ public:
 
 
 
-class FusionContextComponent :
-	public Component<FusionContextComponent>
+class FusionContextConnector :
+	public Component<FusionContextConnector>
 {
-	RTTI_COMP0(FusionContextComponent)
+	RTTI_COMP0(FusionContextConnector)
 	VIS_COMP_0_0
 	void Visit(RuntimeVisitor& vis) override {vis && comps;}
 	
@@ -936,9 +936,9 @@ protected:
 	
 	
 public:
-	COPY_PANIC(FusionContextComponent);
+	COPY_PANIC(FusionContextConnector);
 	
-	FusionContextComponent();
+	FusionContextConnector();
 	
 	void		Initialize() override;
 	void		Uninitialize() override;
@@ -959,12 +959,12 @@ public:
 PREFAB_BEGIN(CompleteFusion)
 		FusionDisplaySource,
 		FusionAudioSource,
-		FusionContextComponent
+		FusionContextConnector
 PREFAB_END
 
 PREFAB_BEGIN(VideoOnlyFusion)
 		FusionDisplaySource,
-		FusionContextComponent
+		FusionContextConnector
 PREFAB_END
 
 
@@ -973,7 +973,7 @@ PREFAB_END
 
 
 class AccelSystem : public System<AccelSystem> {
-	LinkedList<AccelContextComponentRef>	ctxs;
+	LinkedList<AccelContextConnectorRef>	ctxs;
 	LinkedList<AccelComponentRef>			comps;
 	
 	void Visit(RuntimeVisitor& vis) override {
@@ -993,11 +993,11 @@ protected:
     void Uninitialize() override;
     
 protected:
-	friend class AccelContextComponent;
+	friend class AccelContextConnector;
 	friend class AccelComponent;
 	
-    void AddContext(AccelContextComponentRef ctx);
-    void RemoveContext(AccelContextComponentRef ctx);
+    void AddContext(AccelContextConnectorRef ctx);
+    void RemoveContext(AccelContextConnectorRef ctx);
     void AddComponent(AccelComponentRef comp);
     void RemoveComponent(AccelComponentRef comp);
     void UpdateTexBuffers();

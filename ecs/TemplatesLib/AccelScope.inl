@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <>
 template <class ValSpec>
 void
-ScopeDevLibT<AccelSpec>::DevComponent
+ScopeDevLibT<AccelSpec>::StageComponent
 ::UpdateDevBuffersValT() {
 	auto& stream = GetStreamState();
 	
@@ -25,8 +25,8 @@ ScopeDevLibT<AccelSpec>::DevComponent
 			Ogl_CreateTex(
 				fb_size, ch,
 				0, has_fbo,
-				DevComponentConf::FILTER_LINEAR,
-				DevComponentConf::WRAP_CLAMP);
+				StageComponentConf::FILTER_LINEAR,
+				StageComponentConf::WRAP_CLAMP);
 #endif
 		}
 		else if (base2) {
@@ -35,8 +35,8 @@ ScopeDevLibT<AccelSpec>::DevComponent
 			Ogl_CreateTex(
 				fb_size, 4,
 				1, has_fbo,
-				DevComponentConf::FILTER_LINEAR,
-				DevComponentConf::WRAP_CLAMP);
+				StageComponentConf::FILTER_LINEAR,
+				StageComponentConf::WRAP_CLAMP);
 #endif
 		}
 		else {TODO}

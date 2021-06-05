@@ -20,7 +20,7 @@ public:
 	typedef ShadertoyContextLoader CLASSNAME;
 	ShadertoyContextLoader();
 	
-	bool		Load(String path, Object& o, ContextComponentBase* b) override;
+	bool		Load(String path, Object& o, ContextConnectorBase* b) override;
 	
 	
 	

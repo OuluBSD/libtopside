@@ -23,8 +23,8 @@ struct ScopeConvDevLibT {
 	using FromSimpleBufferedStream = typename FMach::SimpleBufferedStream;
 	using FromSource = typename FCore::ValSource;
 	using FromSink = typename FCore::ValSink;
-	using FromComponent = typename FDevLib::DevComponent;
-	using FromComponentConf = typename FDevMach::DevComponentConf;
+	using FromComponent = typename FDevLib::StageComponent;
+	using FromComponentConf = typename FDevMach::StageComponentConf;
 	
 	using To = VD<ToDevSpec, ValSpec>;
 	using TMach = ScopeValDevMachT<To>;
@@ -37,8 +37,8 @@ struct ScopeConvDevLibT {
 	using ToSimpleBufferedStream = typename TMach::SimpleBufferedStream;
 	using ToSource = typename TCore::ValSource;
 	using ToSink = typename TCore::ValSink;
-	using ToComponent = typename TDevLib::DevComponent;
-	using ToComponentConf = typename TDevMach::DevComponentConf;
+	using ToComponent = typename TDevLib::StageComponent;
+	using ToComponentConf = typename TDevMach::StageComponentConf;
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
@@ -96,7 +96,7 @@ struct ScopeConvDevLibT {
 		
 		void				Initialize() override;
 		void				Uninitialize() override;
-		TypeCls				GetValSpecType() const override {return AsTypeCls<V>();}
+		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		
 		
 		// ValSink

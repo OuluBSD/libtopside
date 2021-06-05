@@ -33,7 +33,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	using TrackerInfo			= typename ValData::TrackerInfo;
 	using PacketTracker			= typename ValLib::PacketTracker;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
-	using DevComponent			= typename DevLib::DevComponent;
+	using StageComponent			= typename DevLib::StageComponent;
 	
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
@@ -46,7 +46,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	if (buf) {
 		AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
 		
-		DevComponent* comp = CastPtr<DevComponent>(val_sink->AsComponentBase());
+		StageComponent* comp = CastPtr<StageComponent>(val_sink->AsComponentBase());
 		if (!comp)
 			return false;
 		
@@ -54,7 +54,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 		
 		p->SetOffset(gr.offset++);
 		
-		Format fmt = DevComponent::template GetDefaultFormat<ValSpec>();
+		Format fmt = StageComponent::template GetDefaultFormat<ValSpec>();
 		RTLOG("CreateForwardPacketT: sending packet in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
@@ -372,7 +372,7 @@ bool AccelComponentConfBase::IsTypeComponentSource(Type i) {
 
 
 template <>
-bool ScopeDevLibT<AccelSpec>::DevComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
+bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
 	const char* fn_name = "AccelComponent::Load";
 	Clear();
 	
@@ -397,21 +397,21 @@ bool ScopeDevLibT<AccelSpec>::DevComponent::Load(ObjectMap& st_map, int stage_i,
 		if (!in_el.IsMap())
 			continue;
 		ObjectMap& in_map = in_el.GetMap();
-		DevComponentConf& in = this->in.Add();
+		StageComponentConf& in = this->in.Add();
 		if (in_map.IsEmpty()) {
-			in.SetType(DevComponentConf::TYPE_EMPTY);
+			in.SetType(StageComponentConf::TYPE_EMPTY);
 			continue;
 		}
 		String path = in_map.TryGet("filename", "").ToString();
 		
 		in.SetId(	(int)in_map.TryGet("id", -1).ToInt()); // TODO fix all of these, not safe now
-		in.Set(		DevComponentConf::GetTypeFromString(in_map.TryGet("type", "").ToString()),
+		in.Set(		StageComponentConf::GetTypeFromString(in_map.TryGet("type", "").ToString()),
 					path,
-					DevComponentConf::GetFilterFromString(in_map.TryGet("filter", "linear").ToString()),
-					DevComponentConf::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString()),
+					StageComponentConf::GetFilterFromString(in_map.TryGet("filter", "linear").ToString()),
+					StageComponentConf::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString()),
 					ScanBoolString(in_map.TryGet("vflip", "false").ToString()));
 		
-		/*if (in.GetType() != DevComponentConf::TYPE_BUFFER) {
+		/*if (in.GetType() != StageComponentConf::TYPE_BUFFER) {
 			in.SetId(-1);
 		}*/
 		
@@ -549,7 +549,7 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 
 #define IFACE(x) \
 template<> template<> \
-void ScopeDevLibT<CenterSpec>::DevComponent::ConvertPacket<AccelSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
+void ScopeDevLibT<CenterSpec>::StageComponent::ConvertPacket<AccelSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
 	ConvertAccelCenterT<x##Spec>(*this, p);\
 }
 IFACE_LIST
@@ -558,7 +558,7 @@ IFACE_LIST
 template <>
 template <>
 typename ScopeValMachT<AudioSpec>::Format
-ScopeDevLibT<AccelSpec>::DevComponent::GetDefaultFormat<AudioSpec>() {
+ScopeDevLibT<AccelSpec>::StageComponent::GetDefaultFormat<AudioSpec>() {
 	using ValSpec					= AudioSpec;
 	using FromDevSpec				= AccelSpec;
 	using ValMach					= ScopeValMachT<ValSpec>;
@@ -571,10 +571,10 @@ ScopeDevLibT<AccelSpec>::DevComponent::GetDefaultFormat<AudioSpec>() {
 
 
 template <>
-bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
+bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 	using DevSpec = AccelSpec;
 	
-	DLOG("DevContextComponent::Load begin");
+	DLOG("DevStageContextConnector::Load begin");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
 		OnError(fn_name, "invalid json");
@@ -590,7 +590,7 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 	
 	String name = map.GetAdd("name", "unnamed").ToString();
 	String description = map.GetAdd("description", "").ToString();
-	DLOG("DevContextComponent::Load: name='" << name << "'");
+	DLOG("DevStageContextConnector::Load: name='" << name << "'");
 	
 	Object& stages = map.GetAdd("stages", ObjectArray());
 	if (!stages.IsArray()) {
@@ -633,14 +633,14 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 			common_source.Add(frag_code);
 		}
 		else {
-			TypeCls type = DevComponent::GetTypeFromString(type_str);
+			TypeCls type = StageComponent::GetTypeFromString(type_str);
 			if (type == AsVoidTypeCls()) {
 				OnError(fn_name, "Invalid type string '" + type_str + "'");
 				return false;
 			}
 			
-			if (DevComponent::IsDevPipeComponent(type)) {
-				DevComponentGroup* group = 0;
+			if (StageComponent::IsDevPipeComponent(type)) {
+				StageComponentGroup* group = 0;
 				
 				// Find group
 				if (0)
@@ -662,7 +662,9 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 				
 				
 				// Create new comp
-				RefT_Entity<DevComponent> comp;
+				TODO
+				#if 0
+				RefT_Entity<StageComponent> comp;
 				if (0)
 					;
 				#define IFACE(x) \
@@ -684,8 +686,9 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 					OnError(fn_name, "Loading stage " + IntStr(i) + " failed");
 					return false;
 				}
+				#endif
 				
-				//for(DevComponentConf& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == DevComponentConf::TYPE_BUFFER);}
+				//for(StageComponentConf& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == StageComponentConf::TYPE_BUFFER);}
 			}
 			else {
 				// Find existing component
@@ -702,8 +705,8 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 	}
 	
 	// Find unique inputs
-	DevComponentConfVector v;
-	for (DevComponentGroup& g : groups)
+	StageComponentConfVector v;
+	for (StageComponentGroup& g : groups)
 		g.FindUniqueInputs(v);
 	
 	
@@ -727,7 +730,7 @@ bool ScopeDevLibT<AccelSpec>::ContextComponent::Load(Object& json) {
 	if (!ConnectComponentOutputs())
 		return false;
 	
-	DLOG("DevContextComponent::Load end");
+	DLOG("DevStageContextConnector::Load end");
 	return true;
 }
 

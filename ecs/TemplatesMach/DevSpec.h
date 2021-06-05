@@ -9,7 +9,7 @@ NAMESPACE_TOPSIDE_BEGIN
 	using x##MachT = ScopeDevMachT<x##Spec>; \
 	using x##Format = x##MachT::DevFormat; \
 	using x##StreamState = x##MachT::DevStreamState; \
-	using x##CompConf = x##MachT::DevComponentConf;
+	using x##CompConf = x##MachT::StageComponentConf;
 DEV_LIST
 #undef DEV
 

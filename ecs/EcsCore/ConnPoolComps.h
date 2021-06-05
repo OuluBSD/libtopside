@@ -18,6 +18,7 @@ public:
 	RTTI_DECL2(ConnectAllInterfaces, ConnectorT, MetaExchangePoint)
 	COPY_PANIC(ConnectAllInterfaces);
 	
+	
 	using Source	= typename ScopeValDevCoreT<ValDevSpec>::ValSource;
 	using Sink		= typename Source::Sink;
 	using ISource	= InterfaceSource<Source, Sink>;
