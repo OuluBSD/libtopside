@@ -9,7 +9,6 @@ struct ScopeValLibT {
 	using Mach = ScopeValMachT<ValSpec>;
 	using PacketValue = typename Mach::PacketValue;
 	using Packet = typename Mach::Packet;
-	using TrackerInfo = typename Mach::TrackerInfo;
 	using PacketId = typename Mach::PacketId;
 	
 	
@@ -41,6 +40,10 @@ struct ScopeValLibT {
 	    SYS_CTOR(PacketTracker)
 		
 		
+		static void Track(TrackerInfo info, Packet& p) {Track(info, *p);}
+		static void Checkpoint(TrackerInfo info, Packet& p) {Checkpoint(info, *p);}
+		static void StopTracking(TrackerInfo info, Packet& p) {StopTracking(info, *p);}
+		
 		static void Track(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Track0(info,p);}
 		static void Checkpoint(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Checkpoint0(info,p);}
 		static void StopTracking(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->StopTracking0(info,p);}
@@ -50,6 +53,9 @@ struct ScopeValLibT {
 	#undef RTTI_CTX_SYS
 };
 
+#define IFACE(x) using x##PacketTracker = typename ScopeValLibT<x##Spec>::PacketTracker;
+IFACE_LIST
+#undef IFACE
 
 NAMESPACE_TOPSIDE_END
 

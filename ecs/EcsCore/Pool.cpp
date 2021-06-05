@@ -155,6 +155,32 @@ void Pool::AddConnectEverythingWithAccel() {
 	Add<ConnectAllDevInterfaces<AccelSpec>>();
 }
 
+void Pool::Dump() {
+	LOG(GetTreeString());
+}
+
+String Pool::GetTreeString(int indent) {
+	String s;
+	
+	String pre;
+	pre.Cat('\t', indent);
+	
+	s << ".." << name << "[" << id << "]\n";
+	
+	for (ConnectorRef& c : comps) {
+		s.Cat('\t', indent+1);
+		s << "." << c->ToString();
+		s << "\n";
+	}
+	
+	for (EntityRef& e : objects)
+		s << e->GetTreeString(indent+1);
+	
+	for (PoolRef& p : pools)
+		s << p->GetTreeString(indent+1);
+	
+	return s;
+}
 
 
 

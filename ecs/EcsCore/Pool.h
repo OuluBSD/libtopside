@@ -52,6 +52,8 @@ public:
 	void				ClearComponentsDeep();
 	void				ClearDeep();
 	void				PruneFromContainer();
+	void				Dump();
+	String				GetTreeString(int indent=0);
 	
 	Pool*				GetParent() const;
 	Machine&			GetMachine();

@@ -61,7 +61,6 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 	using ValSpec				= typename ValDevSpec::Val;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
-	using TrackerInfo			= typename ValMach::TrackerInfo;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
 	
 	if (e.IsStoring()) {
@@ -292,8 +291,6 @@ TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
 
 
 TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
-	using TrackerInfo = typename ScopeValMachT<typename ValDevSpec::Val>::TrackerInfo;
-	
 	if (src->GetCount()) {
 		auto iter = src->begin();
 		for (; iter; ++iter)
@@ -380,8 +377,6 @@ TMPL_VALDEVMACH(void) PacketConsumer::TestSetOffset(off32 offset) {
 }
 
 TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
-	using TrackerInfo = typename ScopeValMachT<typename ValDevSpec::Val>::TrackerInfo;
-	
 	Format src_fmt = src->GetFormat();
 	
 	if (dst_fmt.IsCopyCompatible(src_fmt)) {

@@ -139,7 +139,7 @@ bool AccelComponentGroup::CheckInputTextures() {
 	return true;
 }
 
-void AccelComponentGroup::CreatePackets() {
+void AccelComponentGroup::ForwardPackets() {
 	if (comps.IsEmpty())
 		return;
 	

@@ -21,10 +21,10 @@ struct ScopeValDevLibT {
 	using ValExchangePoint		= typename Mach::ValExchangePoint;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
 	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
-	using ValSink		= typename Core::ValSink;
-	using ValSource		= typename Core::ValSource;
-	using DevCompConf	= typename ScopeDevMachT<DevSpec>::StageComponentConf;
-	using StageComponent	= typename ScopeDevLibT<DevSpec>::StageComponent;
+	using ValSink				= typename Core::ValSink;
+	using ValSource				= typename Core::ValSource;
+	using DevCompConf			= typename ScopeDevMachT<DevSpec>::StageComponentConf;
+	using StageComponent		= typename ScopeDevLibT<DevSpec>::StageComponent;
 	
 	#define RTTI_CTX_LIB_INPUT_COMP(comp, src) \
 			RTTI_DECL_2(comp, Component<comp>, src, ValDevSpec::GetName() + #comp)

@@ -136,7 +136,6 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void CreatePackets() override;
 	
 	// Device
 	EventFormat		GetFormat(EvCtx) override {TODO}

@@ -14,20 +14,35 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using Core					= ScopeValDevCoreT<ValDevSpec>;
 	using ValStreamState		= typename ValMach::ValStreamState;
 	using DevStreamState		= typename DevMach::DevStreamState;
-	using StageComponent			= typename DevLib::StageComponent;
+	using DevComponent			= typename DevLib::DevComponent;
+	using StageComponent		= typename DevLib::StageComponent;
 	using Value					= typename Mach::Value;
 	using SourceRef				= typename Core::ValSourceRef;
 	using SinkRef				= typename Core::ValSinkRef;
-	ASSERT(!dbg_offset_is_set);
+	using DevContextConnectorBaseRef	= typename DevMach::DevContextConnectorBaseRef;
+	using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
 	
-	SourceRef src = this->src;
-	ASSERT(src);
-	StageComponent* src_comp = CastPtr<StageComponent>(src->AsComponentBase());
-	ASSERT(src_comp);
-	DevStreamState& state = src_comp->GetStreamState();
-	ValStreamState& vstate = state.template Get<ValSpec>();
-	off32 exp_offset = vstate.offset;
-	SetOffset(exp_offset);
+	//ASSERT(!dbg_offset_is_set);
+	if (!dbg_offset_is_set) {
+		SourceRef src = this->src;
+		ASSERT(src);
+		DevComponent* dev_comp;
+		StageComponent* stage_comp;
+		DevStreamState* state;
+		if ((dev_comp = CastPtr<DevComponent>(src->AsComponentBase()))) {
+			DevContextConnectorBaseRef cb = dev_comp->GetContext();
+			DevContextConnectorRef c = cb;
+			state = &c->GetStreamState();
+		}
+		else if ((stage_comp = CastPtr<StageComponent>(src->AsComponentBase()))) {
+			state = &stage_comp->GetStreamState();
+		}
+		else {TODO}
+		
+		ValStreamState& vstate = state->template Get<ValSpec>();
+		off32 exp_offset = vstate.offset;
+		SetOffset(exp_offset);
+	}
 	
 	SinkRef sink = this->sink;
 	StageComponent* sink_comp = CastPtr<StageComponent>(sink->AsComponentBase());

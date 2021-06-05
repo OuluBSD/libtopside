@@ -19,6 +19,11 @@ EntityRef ComponentBase::GetEntity() {
 	return GetParent()->AsRefT();
 }
 
+String ComponentBase::ToString() const {
+	return GetDynamicName();
+}
+
+
 
 
 

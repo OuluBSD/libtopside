@@ -138,11 +138,12 @@ MidiFileComponent::MidiFileComponent() {
 }
 
 void MidiFileComponent::Initialize() {
-	AddToContext<CenterSpec>(AsRef<CenterSource>());
+	TODO // DevComponent::Initiralize
+	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void MidiFileComponent::Uninitialize() {
-	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
+	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void MidiFileComponent::Clear() {

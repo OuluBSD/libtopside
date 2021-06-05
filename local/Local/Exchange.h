@@ -225,7 +225,7 @@ public:
 	RTTI_DECL_R0(ExchangeProviderBase)
 	
 	//bool UnlinkManually(ExchangeProviderBase& p);
-	virtual TypeId GetValDevSpec() = 0;
+	virtual TypeCls GetValDevSpec() = 0;
 	virtual String GetConfigString() {return String();}
 	
 };
@@ -407,16 +407,26 @@ public:
 	virtual void UnlinkAll();
 	
 	template <class T>
-	Ref<T> Add(T* o=NULL) {
-		if (!o)
-			o = new T();
+	Ref<T> Add() {
+		T* o = new T();
 		pts.Add(o);
 		o->SetParent(this);
 		o->meta_expt = AsRefT();
 		return o->AsRefT();
 	}
 
-	Ref<ExchangePoint> Add(TypeCls valdev_spec);
+	template <class T>
+	Ref<T> Add(T* o) {
+		if (o) {
+			pts.Add(o);
+			o->SetParent(this);
+			o->meta_expt = AsRefT();
+			return o->AsRefT();
+		}
+		else return Ref<T>();
+	}
+
+	//Ref<ExchangePoint> Add(TypeCls valdev_spec);
 	
 	void Remove(ExchangePoint* expt);
 	

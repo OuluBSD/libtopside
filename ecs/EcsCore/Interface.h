@@ -74,7 +74,7 @@ public:
 
 #define IO_OUT(x)		public InterfaceSink<x##Sink>
 #define IO_IN(x)		public InterfaceSource<x##Source, x##Sink>
-#define IFACE_BASE(x)	TypeId GetValDevSpec() override {return TypeId(AsTypeId(x));}
+#define IFACE_BASE(x)	TypeCls GetValDevSpec() override {return TypeCls(AsTypeCls(x::VD));}
 
 
 

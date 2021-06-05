@@ -21,6 +21,7 @@ void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
 		if (vol_aud) {
 			while (!vol_aud->IsQueueFull()) {
 				AudioPacket p = CreateAudioPacket();
+				AudioPacketTracker::Track(TrackerInfo(this, __FILE__, __LINE__), p);
 				p->Set(fmt, offset, time);
 				p->Data().SetCount(fmt.GetFrameSize(), 0);
 				gen.Play(p);
@@ -64,13 +65,15 @@ SoundGeneratorComponent::SoundGeneratorComponent() {
 }
 
 void SoundGeneratorComponent::Initialize() {
-	AddToContext<CenterSpec>(AsRef<CenterSource>());
+	Component::Initialize();
+	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 	
 }
 
 void SoundGeneratorComponent::Uninitialize() {
+	Component::Uninitialize();
 	
-	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
+	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 #if 0
@@ -102,9 +105,7 @@ void SoundGeneratorComponent::EndStream(AudCtx) {
 	
 }
 
-void SoundGeneratorComponent::CreatePackets() {
-	TODO
-}
+
 
 
 

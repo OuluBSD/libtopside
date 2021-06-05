@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <class DevSpec, class R>
+/*template <class DevSpec, class R>
 void ComponentBase::AddToContext(R ref) {
 	ASSERT(ref);
 	using DevContextConnector = typename ScopeDevLibT<DevSpec>::DevContextConnector;
@@ -20,7 +20,7 @@ void ComponentBase::RemoveFromContext(R ref) {
 	Ref<DevContextConnector> c = GetEntity()->FindConnector<DevContextConnector>();
 	if (c)
 		c->RemoveCtx(ref);
-}
+}*/
 
 
 
@@ -147,7 +147,6 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 	using Mach					= ScopeValDevMachT<VD>;
 	using Core					= ScopeValDevCoreT<VD>;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
-	using TrackerInfo			= typename ValMach::TrackerInfo;
 	using ValStream				= typename Mach::Stream;
 	using SimpleStream			= typename Mach::SimpleStream;
 	using PacketBuffer			= typename Mach::PacketBuffer;
@@ -303,7 +302,7 @@ TMPL_DEVLIB(void) StageComponentGroup::UpdateDevBuffers() {
 		comp->UpdateDevBuffers();
 }
 
-TMPL_DEVLIB(bool) StageComponentGroup::CreatePackets() {
+TMPL_DEVLIB(bool) StageComponentGroup::ForwardPackets() {
 	if (comps.IsEmpty())
 		return false;
 	
@@ -384,19 +383,23 @@ TMPL_DEVLIB(void) DevContextConnector::Update(double dt) {
 	
 }
 
-TMPL_DEVLIB(void) DevContextConnector::CreatePackets() {
+TMPL_DEVLIB(void) DevContextConnector::ForwardPackets(double dt) {
 	for (DevComponentRef& dev : devs) {
-		dev->CreatePackets();
+		dev->ForwardPackets(dt);
 	}
 }
 
 TMPL_DEVLIB(void) DevContextConnector::FindAdd(DevComponentRef r) {
 	ASSERT(r);
+	ASSERT_(!r->GetContext(), "Did you AddToContext but it was not needed?");
+	r->SetContext(this->template AsRef<DevContextConnector>());
 	devs.FindAdd(r);
 }
 
 TMPL_DEVLIB(void) DevContextConnector::Remove(DevComponentRef r) {
 	ASSERT(r);
+	ASSERT(r->GetContext() == this->template AsRef<DevContextConnector>());
+	r->ClearContext();
 	devs.RemoveKey(r);
 }
 
@@ -425,6 +428,30 @@ TMPL_DEVLIB(void) DevContextConnector::RemoveCtx(DevSinkRef r) {
 }
 
 
+
+
+
+TMPL_DEVMACH(void) DevComponent::Initialize() {
+	USING_DEVLIB(DevContextConnector)
+	USING_DEVLIB(DevContextConnectorRef)
+	ASSERT(!ctx);
+	ComponentBase* cb = CastPtr<ComponentBase>(this);
+	ASSERT(cb);
+	DevContextConnectorRef conn = cb->GetEntity()->FindConnector<DevContextConnector>();
+	ASSERT(conn);
+	conn->FindAdd(this->template AsRef<DevComponent>());
+	ctx = conn;
+}
+
+TMPL_DEVMACH(void) DevComponent::Uninitialize() {
+	USING_DEVLIB(DevContextConnector)
+	USING_DEVLIB(DevContextConnectorRef)
+	ASSERT(ctx);
+	DevContextConnectorRef conn = ctx;
+	ASSERT(conn);
+	conn->Remove(this->template AsRef<DevComponent>());
+	ctx.Clear();
+}
 
 
 
@@ -547,13 +574,13 @@ TMPL_DEVLIB(void) StageContextConnector::Update(double dt) {
 	DLOG("StageContextConnector::Update: end");
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::CreatePackets() {
+TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets() {
 	if (groups.IsFilled()) {
 		stream.UpdateValuesBase();
 		
 		int dbg_i = 0;
 		for (auto& gr : groups) {
-			CreatePackets(gr);
+			ForwardPackets(gr);
 			++dbg_i;
 		}
 			
@@ -562,13 +589,13 @@ TMPL_DEVLIB(bool) StageContextConnector::CreatePackets() {
 	return false;
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::CreatePackets(StageComponentGroup& gr) {
+TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets(StageComponentGroup& gr) {
 	if (is_open /*&& lock.TryEnter()*/ ) {
 		
 		stream.UpdateValues(gr.GetValSpec());
 		
 		for (auto& gr : groups)
-			gr.CreatePackets();
+			gr.ForwardPackets();
 		
 		//lock.Leave();
 		return true;
@@ -1029,13 +1056,15 @@ TMPL_DEVLIB(void) DevSystem::Update(double dt) {
 			ctx->Update(dt);
 		
 		for (StageContextConnectorRef& ctx : stages)
-			ctx->CreatePackets();
-		
+			ctx->ForwardPackets();
 	}
 	
 	if (!devs.IsEmpty()) {
 		for (DevContextConnectorRef& dev : devs)
-			dev->CreatePackets();
+			dev->Update(dt);
+		
+		for (DevContextConnectorRef& dev : devs)
+			dev->ForwardPackets(dt);
 	}
 	
 	

@@ -22,7 +22,7 @@ void AccelSystem::Update(double dt) {
 		ctx->Update(dt);
 	
 	for (AccelContextConnectorRef& ctx : ctxs)
-		ctx->CreatePackets();
+		ctx->ForwardPackets(dt);
 	
 	DLOG("AccelSystem::Update: end\n");
 }

@@ -21,7 +21,6 @@ public:
 	virtual void UnlinkAll() {};
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
-	virtual String ToString() const {return "<not implemented>";}
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -32,6 +31,7 @@ public:
 	
 	PoolRef GetPool();
 	
+	virtual String ToString() const;
 	
 };
 

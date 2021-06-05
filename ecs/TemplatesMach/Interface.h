@@ -46,7 +46,10 @@ class InterfaceSink :
 public:
 	RTTI_DECL1(Sink, InterfaceSinkBase)
 	
-	TypeCls GetSinkCls() const override {return AsTypeCls<I>();}
+	TypeCls GetSinkCls() const override {
+		//LOG("InterfaceSink: " << GetDynamicName() << " " << IntStr64(AsTypeCls<I>()));
+		return AsTypeCls<I>();
+	}
 	
 };
 
@@ -54,16 +57,19 @@ public:
 void InterfaceDebugPrint(TypeId type, String s);
 #endif
 
-template <class I, class O>
+template <class O, class I>
 class InterfaceSource :
 	public InterfaceSourceBase
 {
-	using Source = InterfaceSource<I,O>;
+	using Source = InterfaceSource<O,I>;
 	
 public:
 	RTTI_DECL1(Source, InterfaceSourceBase)
 	
-	TypeCls GetSinkCls() const override {return AsTypeCls<I>();}
+	TypeCls GetSinkCls() const override {
+		//LOG("InterfaceSource: " << GetDynamicName() << " " << IntStr64(AsTypeCls<I>()));
+		return AsTypeCls<I>();
+	}
 	
 protected:
 	

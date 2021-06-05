@@ -17,6 +17,22 @@ EntityId Entity::GetNextId() {
 	return ++next_id;
 }
 
+String Entity::GetTreeString(int indent) {
+	String s;
+	
+	s.Cat('\t', indent);
+	
+	s << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << ": " << prefab << "\n";
+	
+	for (ComponentBaseRef& c : comps) {
+		s.Cat('\t', indent+1);
+		s << c->ToString();
+		s.Cat('\n');
+	}
+	
+	return s;
+}
+
 void Entity::OnChange() {
 	changed = GetMachine().GetTicks();
 }

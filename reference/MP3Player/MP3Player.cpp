@@ -15,8 +15,7 @@ void DummyGenerator::Initialize() {
 	gen     = e->Find<SoundGeneratorComponent>();
 	audio   = e->Find<PortaudioSinkComponent>();
 	
-	PoolRef p = e->GetPool();
-	p->Add<ConnectAllInterfaces<CenterAudioSpec>>();
+    e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
 void DummyGenerator::Uninitialize() {
@@ -47,15 +46,13 @@ void MP3Player::Initialize() {
 	
 	file_in->WhenStopped = THISBACK(OnStop);
 	
-	PoolRef p = e->GetPool();
-	p->Add<ConnectAllInterfaces<CenterAudioSpec>>();
-	
 	if (!file_in->LoadFileAny(file_path)) {
 		LOG("opening media file failed: " << file_in->GetLastError());
 		GetMachine().SetNotRunning();
 		return;
 	}
 	
+    e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
 void MP3Player::Uninitialize() {
@@ -123,19 +120,22 @@ void Main() {
 		
 		RegistrySystemRef reg = mach.Add<RegistrySystem>();
 		EntityStoreRef es = mach.Add<EntityStore>();
-		PoolRef root = es->GetRoot();
+		
 		mach.Add<ComponentStore>();
 	    mach.Add<ConnectorStore>();
 	    
 	    mach.Add<CenterSystem>();
-	    //mach.Add<AudioSystem>();
 	    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
 	    
 	    #ifdef flagSTDEXC
 	    try {
 	    #endif
+			PoolRef root = es->GetRoot();
 			root->Add<CenterContextConnector>();
+			root->Add<ConnectAllCenterInterfaces>();
 			//root->Add<CenterStageContextConnector>();
+			
+			//root->Create<CompletePortaudio>();
 			
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();
@@ -146,10 +146,15 @@ void Main() {
 	        
 		    mach.Start();
 		    
+		    int iter = 0;
 		    TimeStop t, total;
 		    while (mach.IsRunning()) {
 		        double dt = ResetSeconds(t);
 		        mach.Update(dt);
+		        
+		        if (!iter++)
+		            root->Dump();
+		        
 		        Sleep(1);
 		        
 		        if (run_sound_gen && total.Seconds() > 3)

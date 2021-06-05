@@ -21,6 +21,7 @@ struct ScopeDevLibT {
 	using DevSinkRef				= typename Mach::DevSinkRef;
 	using DevComponent				= typename Mach::DevComponent;
 	using DevComponentRef			= typename Mach::DevComponentRef;
+	using DevContextConnectorBase	= typename Mach::DevContextConnectorBase;
 	//using SourceRef			= typename Core::SourceRef;
 	//using SinkRef				= typename Core::SinkRef;
 	//using ExchangePointRef	= typename Core::ExchangePointRef;
@@ -34,7 +35,14 @@ struct ScopeDevLibT {
 	class StageComponent;
 	using StageComponentRef			= Ref<StageComponent, RefParent1<Entity>>;
 	
-	
+
+	static const char* TypeStringT(const char* t) {
+		thread_local static String s;
+		s.Clear();
+		s << DevSpec::GetName() << t;
+		return s;
+	}
+		
 	struct StageComponentConfVector {
 		Array<StageComponentConf> in;
 		
@@ -50,6 +58,8 @@ struct ScopeDevLibT {
 		public System<DevSystem>,
 		public SystemBase
 	{
+	protected:
+		friend class DevContextConnector;
 		LinkedList<StageContextConnectorRef> stages;
 		LinkedList<DevContextConnectorRef> devs;
 		LinkedList<StageComponentRef> comps;
@@ -83,13 +93,6 @@ struct ScopeDevLibT {
 	
 	#undef RTTI_CTX_SYS
 	
-	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
-		s << DevSpec::GetName() << t;
-		return s;
-	}
 	
 	class StageComponent :
 		public StageComponentBase,
@@ -156,9 +159,11 @@ struct ScopeDevLibT {
 	
 	
 	class DevContextConnector :
-		public TS::Connector<DevContextConnector>
+		public TS::Connector<DevContextConnector>,
+		public DevContextConnectorBase
 	{
-		RTTI_CONN0(DevContextConnector)
+		using Connector = TS::Connector<DevContextConnector>;
+		RTTI_DECL_T2(DevContextConnector, Connector, DevContextConnectorBase)
 		COPY_PANIC(DevContextConnector)
 		void Visit(RuntimeVisitor& vis) override {}
 		
@@ -169,9 +174,6 @@ struct ScopeDevLibT {
 		LinkedList<DevSinkRef>		sinks;
 		DevStreamState				stream;
 		
-		void				FindAdd(DevComponentRef c);
-		void				Remove(DevComponentRef c);
-		
 		
 	public:
 		
@@ -180,9 +182,11 @@ struct ScopeDevLibT {
 		void				Initialize() override;
 		void				Uninitialize() override;
 		void				Update(double dt) override;
-		void				CreatePackets();
+		void				ForwardPackets(double dt);
 		DevStreamState&		GetStreamState() {return stream;}
 		
+		void				FindAdd(DevComponentRef c);
+		void				Remove(DevComponentRef c);
 		void				AddCtx(DevSourceRef r);
 		void				AddCtx(DevSinkRef r);
 		void				RemoveCtx(DevSourceRef r);
@@ -220,7 +224,7 @@ struct ScopeDevLibT {
 		void				Remove(StageComponentRef r);
 		void				UpdateCompFlags();
 		void				UpdateDevBuffers();
-		bool				CreatePackets();
+		bool				ForwardPackets();
 		void				DumpComponents();
 		bool				CheckDevice();
 		
@@ -240,7 +244,8 @@ struct ScopeDevLibT {
 		public TS::Connector<StageContextConnector>,
 		public ContextConnectorBase
 	{
-		RTTI_CONN1(StageContextConnector, ContextConnectorBase)
+		using Connector = TS::Connector<StageContextConnector>;
+		RTTI_DECL_T2(StageContextConnector, Connector, ContextConnectorBase)
 		COPY_PANIC(StageContextConnector)
 		void Visit(RuntimeVisitor& vis) override {}
 		
@@ -266,8 +271,6 @@ struct ScopeDevLibT {
 		bool				ConnectComponentOutputs();
 		bool				CreateComponents(StageComponentConfVector& v);
 		bool				CheckDevice();
-		void				FindAdd(StageComponentRef c);
-		void				Remove(StageComponentRef c);
 		
 		template <class ValSpec>	bool ConnectComponentOutputsT(StageComponentGroup& gr);
 		template <class ValSpec>	StageComponentGroup&	GetAddGroupContext() {return GetAddGroupContext(AsTypeCls<ValSpec>());}
@@ -289,11 +292,13 @@ struct ScopeDevLibT {
 		void				Update(double dt) override;
 		void				FindComponents();
 		void				PostLoadFileAny(String s);
-		bool				CreatePackets();
-		bool				CreatePackets(StageComponentGroup& gr);
+		bool				ForwardPackets();
+		bool				ForwardPackets(StageComponentGroup& gr);
 		void				OnError(String fn, String msg);
 		DevStreamState&		GetStreamState() {return stream;}
 		bool				IsOpen() const {return is_open;}
+		void				FindAdd(StageComponentRef c);
+		void				Remove(StageComponentRef c);
 		
 		const Vector<String>& GetCommonSources() const {return common_source;}
 		

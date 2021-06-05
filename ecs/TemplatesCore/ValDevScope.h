@@ -32,7 +32,7 @@ struct ScopeValDevCoreT {
 	{
 	public:
 		RTTI_DECL_3(ValSink, InterfaceSink<ValSink>, SinkBase, DevSink, ValDevSpec::GetName() + "Sink")
-		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSink>());}
+		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
 		
 		
 		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
@@ -50,7 +50,7 @@ struct ScopeValDevCoreT {
 		
 	public:
 		RTTI_DECL_2(ValSource, InterfaceSourceT, DevSource, ValDevSpec::GetName() + "Source")
-		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<ValSource>());}
+		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
 		
 		using ExPt = ValExchangePoint;
 		using Sink = ScopeValDevCoreT::ValSink;

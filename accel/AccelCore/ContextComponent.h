@@ -29,8 +29,8 @@ public:
 	bool is_open = false;
 	
 	
-	bool					CreatePackets();
-	bool					CreatePackets(AccelComponentGroup& gr);
+	bool					ForwardPackets();
+	bool					ForwardPackets(AccelComponentGroup& gr);
 	void					Clear();
 	void					AddDefaultGroups();
 	bool					RefreshStageQueue();

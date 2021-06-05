@@ -12,6 +12,9 @@ public:
 	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
 	virtual void Init(ConnectorBase* conn) = 0;
 	
+	
+	static ValExchangePointBase* Create(TypeCls t);
+	
 };
 
 using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
@@ -85,6 +88,8 @@ struct ScopeValDevMachT {
 		off32 GetOffset() const {return offset;}
 		
 	};
+	
+	using ValExchangePointRef = Ref<ValExchangePoint>;
 	
 	
 	class Ex :

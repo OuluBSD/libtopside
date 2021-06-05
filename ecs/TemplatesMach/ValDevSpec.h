@@ -9,7 +9,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class DevSpec, class ValSpec>
-struct VD {
+struct VD : RTTIBase
+{
+	RTTI_DECL0(VD)
 	static String GetName() {return DevSpec::GetName() + ValSpec::GetName();}
 	static String GetPrefix() {return DevSpec::GetPrefix() + ValSpec::GetName();}
 	using Val = ValSpec;

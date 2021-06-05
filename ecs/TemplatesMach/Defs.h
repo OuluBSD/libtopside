@@ -94,6 +94,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class InterfaceSinkBase;
+class Entity;
+class EntityStore;
+class Pool;
 
 NAMESPACE_TOPSIDE_END
 

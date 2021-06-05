@@ -7,6 +7,7 @@ file
 	TemplatesMach.h,
 	Defs.h,
 	PacketBuffer.h,
+	PacketBuffer.cpp,
 	ValScope.h,
 	ValScope.inl highlight cpp,
 	ValScope.cpp,

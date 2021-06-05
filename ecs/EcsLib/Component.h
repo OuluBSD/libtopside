@@ -6,16 +6,23 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template<typename DevSpec, typename ValSpec, typename T>
-struct DevComponent :
-	Component<T>,
-	ScopeDevMachT<DevSpec>::DevComponent
+class DevComponent :
+	public Component<T>,
+	public ScopeDevMachT<DevSpec>::DevComponent
 {
+	bool is_open = false;
+public:
 	using ComponentT = Component<T>;
 	using DevComponentT = typename ScopeDevMachT<DevSpec>::DevComponent;
 	
 	RTTI_DECL2(DevComponent, ComponentT, DevComponentT);
 	
+	
+	void Initialize() override {ASSERT(!is_open); ScopeDevMachT<DevSpec>::DevComponent::Initialize(); is_open = true;}
+	void Uninitialize() override {ASSERT(is_open); ScopeDevMachT<DevSpec>::DevComponent::Uninitialize(); is_open = false;}
+	
 	TypeCls GetValSpec() const override {return AsTypeCls<ValSpec>();}
+	void ForwardPackets(double dt) override;
 	
 };
 

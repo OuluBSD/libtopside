@@ -23,7 +23,7 @@ public:
 	AccelComponentGroup();
 	bool				Open();
 	void				Clear();
-	void				CreatePackets();
+	void				ForwardPackets();
 	void				Close();
 	void				CloseTemporary();
 	void				FindComponents();

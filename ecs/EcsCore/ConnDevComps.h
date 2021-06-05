@@ -17,7 +17,7 @@ class ConnectAllDevInterfaces :
 	int tmp_link_count = 0;
 	
 public:
-	RTTI_DECL2(ConnectAllDevInterfaces, ConnectorT, MetaExchangePoint)
+	RTTI_DECL_2(ConnectAllDevInterfaces, ConnectorT, MetaExchangePoint, "ConnectAll" + DevSpec::GetName() + "Interfaces")
 	COPY_PANIC(ConnectAllDevInterfaces);
 	
 	void CopyTo(ConnectorBase* component) const override {}
@@ -41,6 +41,10 @@ private:
 	
 };
 
+
+#define DEV(x) using ConnectAll##x##Interfaces = ConnectAllDevInterfaces<x##Spec>;
+DEV_LIST
+#undef DEV
 
 
 NAMESPACE_TOPSIDE_END

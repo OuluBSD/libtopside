@@ -94,15 +94,34 @@ struct ScopeDevMachT {
 		
 	};
 	
-	struct DevComponent :
+	class DevContextConnectorBase :
+		public WeakRefScopeEnabler<DevContextConnectorBase, Pool>,
+		RTTIBase
+	{
+		RTTI_DECL0(DevContextConnectorBase)
+		
+	};
+	
+	using DevContextConnectorBaseRef = Ref<DevContextConnectorBase, RefParent1<Pool>>;
+	
+	
+	class DevComponent :
 		public WeakRefScopeEnabler<DevComponent, Entity>,
 		RTTIBase
 	{
+		DevContextConnectorBaseRef ctx;
+	public:
 		RTTI_DECL_T0(DevComponent)
 		
 		virtual TypeCls GetValSpec() const = 0;
-		virtual void CreatePackets() = 0;
+		virtual void ForwardPackets(double dt) = 0;
 		
+		void ClearContext() {ctx.Clear();}
+		void SetContext(DevContextConnectorBaseRef r) {ctx = r;}
+		DevContextConnectorBaseRef GetContext() {return ctx;}
+		
+		void Initialize();
+		void Uninitialize();
 	};
 	
 	using DevSinkRef		= Ref<DevSink, RefParent1<Entity>>;

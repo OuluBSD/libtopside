@@ -66,7 +66,9 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void CreatePackets() override {}
+	void ForwardPackets(double dt) override {}
+	void Forward(FwdScope& fwd) override {}
+	void ForwardExchange(FwdScope& fwd) override {}
 	
 	String GetLastError() const {return last_error;}
 	
@@ -75,6 +77,9 @@ public:
 	
 };
 
+PREFAB_BEGIN(CompletePortaudio)
+	PortaudioSinkComponent
+PREFAB_END
 
 NAMESPACE_TOPSIDE_END
 

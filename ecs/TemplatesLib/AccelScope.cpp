@@ -30,7 +30,6 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	using Ex					= typename Mach::Ex;
 	using ValSink				= typename Core::ValSink;
 	using Format				= typename ValData::Format;
-	using TrackerInfo			= typename ValData::TrackerInfo;
 	using PacketTracker			= typename ValLib::PacketTracker;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
 	using StageComponent			= typename DevLib::StageComponent;

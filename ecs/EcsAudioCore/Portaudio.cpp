@@ -147,6 +147,8 @@ PortaudioSinkComponent::~PortaudioSinkComponent() {
 }
 
 void PortaudioSinkComponent::Initialize() {
+	Component::Initialize();
+	
 	//sys = GetMachine().TryGet<PortaudioSystem>();
 	//if (sys)
 	//	dev.Create(sys->GetDefaultOutput());
@@ -158,11 +160,13 @@ void PortaudioSinkComponent::Initialize() {
 	
 	obj->Start();
 	
-	AddToContext<CenterSpec>(AsRef<CenterSink>());
+	//AddToContext<CenterSpec>(AsRef<CenterSink>());
 }
 
 void PortaudioSinkComponent::Uninitialize() {
-	RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
+	Component::Uninitialize();
+	
+	//RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
 	
 	//dev.Clear();
 	//sys.Clear();

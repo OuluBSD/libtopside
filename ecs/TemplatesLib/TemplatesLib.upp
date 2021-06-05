@@ -15,6 +15,7 @@ file
 	DevScope.cpp,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
+	ValDevScope.cpp,
 	ConvDevScope.h,
 	ConvDevScope.inl highlight cpp,
 	DevSpec.h,

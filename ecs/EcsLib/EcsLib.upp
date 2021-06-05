@@ -1,8 +1,7 @@
 description "Components\377B0,87,128";
 
 uses
-	TemplatesLib,
-	EcsMultimedia;
+	TemplatesLib;
 
 uses(GUI) EcsSDL2;
 
@@ -23,6 +22,7 @@ file
 	EcsLib.cpp,
 	Defs.h,
 	Component.h,
+	Component.inl highlight cpp,
 	Camera.h,
 	Camera.cpp,
 	Model.h,

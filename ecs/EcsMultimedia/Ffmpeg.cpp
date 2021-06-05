@@ -17,14 +17,15 @@ FfmpegComponent::FfmpegComponent() {
 }
 
 void FfmpegComponent::Initialize() {
+	TODO // DevComponent::Initiralize
 	
-	AddToContext<CenterSpec>(AsRef<CenterSource>());
+	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 void FfmpegComponent::Uninitialize() {
 	file_in.Clear();
 	
-	RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
+	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
 bool FfmpegComponent::LoadFileAny(String path) {

@@ -140,13 +140,13 @@ void AccelContextConnector::AddDefaultGroups() {
 	audio.AddContext<EventContext>();
 }
 
-bool AccelContextConnector::CreatePackets() {
+bool AccelContextConnector::ForwardPackets() {
 	if (groups.IsFilled()) {
 		RefreshStreamValuesBase();
 		
 		int dbg_i = 0;
 		for (auto& gr : groups) {
-			CreatePackets(gr);
+			ForwardPackets(gr);
 			++dbg_i;
 		}
 			
@@ -155,14 +155,14 @@ bool AccelContextConnector::CreatePackets() {
 	return false;
 }
 
-bool AccelContextConnector::CreatePackets(AccelComponentGroup& gr) {
+bool AccelContextConnector::ForwardPackets(AccelComponentGroup& gr) {
 	if (is_open /*&& lock.TryEnter()*/ ) {
 		
 		for (const TypeCls& t : gr.GetGroupClasses())
 			RefreshStreamValues(t);
 		
 		for (auto& gr : groups)
-			gr.CreatePackets();
+			gr.ForwardPackets();
 		//lock.Leave();
 		return true;
 	}

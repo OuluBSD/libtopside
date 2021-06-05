@@ -1,7 +1,8 @@
 description "\377B168,173,0";
 
 uses
-	EcsLib;
+	EcsLib,
+	EcsMultimedia;
 
 file
 	Music.h,
