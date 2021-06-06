@@ -15,11 +15,12 @@ void DefaultRenderApp::Initialize() {
 	simple_shader = Shader::NewDefault();
 	//simple_shader->Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
 	
-	AddToSystem<DisplaySystem>(AsRef<DisplaySource>());
+	TODO
+	//AddToSystem<DisplaySystem>(AsRef<DisplaySource>());
 }
 
 void DefaultRenderApp::Uninitialize() {
-	RemoveFromSystem<DisplaySystem>(AsRef<DisplaySource>());
+	//emoveFromSystem<DisplaySystem>(AsRef<DisplaySource>());
 	
 }
 

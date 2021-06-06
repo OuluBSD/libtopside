@@ -42,9 +42,6 @@
 
 #if defined flagPOSIX
 	#include <unistd.h>
-#endif
-
-#if defined flagFREEBSD
 	#include <sys/time.h>
 #endif
 
