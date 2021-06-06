@@ -3,7 +3,7 @@ description "Classes for 2D/3D/etc operations.\377B128,0,54";
 uses
 	Local;
 
-uses(BUILTIN_ASSIMP) ports/assimp;
+uses(BUILTIN_ASSIMP | MSC) ports/assimp;
 
 library(!BUILTIN_ASSIMP & POSIX) assimp;
 

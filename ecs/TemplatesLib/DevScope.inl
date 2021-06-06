@@ -51,17 +51,17 @@ TMPL_DEVLIB(void) StageComponentConfVector::Add(const StageComponentConf& a) {
 
 TMPL_DEVLIB(void) StageComponent::Initialize() {
 	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Initialize");
-	Ref<StageComponent> ref = StageComponentBase::template AsRef<StageComponent>();
+	StageComponentRef ref = StageComponentBase::template AsRef<StageComponent>();
 	
 	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
-		sys	-> Add(ref);
+		sys	-> AddComp(ref);
 	
 }
 
 TMPL_DEVLIB(void) StageComponent::Uninitialize() {
 	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Uninitialize");
-	Ref<StageComponent> ref = StageComponentBase::template AsRef<StageComponent>();
+	StageComponentRef ref = StageComponentBase::template AsRef<StageComponent>();
 	
 	if (group) {
 		group->Remove(ref);
@@ -70,7 +70,7 @@ TMPL_DEVLIB(void) StageComponent::Uninitialize() {
 	
 	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
-		sys	-> Remove(ref);
+		sys	-> RemoveComp(ref);
 	
 	//Clear();
 }
@@ -361,7 +361,7 @@ TMPL_DEVLIB(bool) StageComponentGroup::CheckDevice() {
 
 
 
-TMPL_DEVLIB() DevContextConnector::DevContextConnector() {
+TMPL_DEVLIB_CTOR DevContextConnector::DevContextConnector() {
 	
 }
 
@@ -464,7 +464,7 @@ TMPL_DEVMACH(void) DevComponent::Uninitialize() {
 
 
 
-TMPL_DEVLIB() StageContextConnector::StageContextConnector() {
+TMPL_DEVLIB_CTOR StageContextConnector::StageContextConnector() {
 	
 }
 

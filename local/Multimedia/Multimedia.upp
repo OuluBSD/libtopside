@@ -3,14 +3,15 @@ description "\377B0,0,128";
 noblitz;
 
 uses
-	Local,
-	ports/libv4l2;
+	Local;
+
+uses(POSIX) ports/libv4l2;
 
 library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
 
 library(POSIX) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
-library(WIN32) "swscale avcodec avformat avutil swresample avdevice avfilter";
+library(WIN32 & FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
 file
 	Multimedia.h,

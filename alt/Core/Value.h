@@ -58,7 +58,7 @@ template<> inline dword ValueTypeNo(const int*)     { return INT_V; }
 template<> inline dword ValueTypeNo(const int64*)   { return INT64_V; }
 template<> inline dword ValueTypeNo(const double*)  { return DOUBLE_V; }
 template<> inline dword ValueTypeNo(const bool*)    { return BOOL_V; }
-template<> inline dword ValueTypeNo(const String*)  { return STRING_V; }
+template<> inline dword ValueTypeNo<String>(const String*)  { return STRING_V; }
 template<> inline dword ValueTypeNo(const WString*) { return WSTRING_V; }
 template<> inline dword ValueTypeNo(const Date*)    { return DATE_V; }
 template<> inline dword ValueTypeNo(const Time*)    { return TIME_V; }

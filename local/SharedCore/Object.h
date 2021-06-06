@@ -12,7 +12,7 @@ class Object;
 
 
 template <class T>
-inline dword ObjectTypeNo(const T *)                 { return StaticTypeNo<T>() + 0x8000000; }
+dword ObjectTypeNo(const T *)                 { return StaticTypeNo<T>() + 0x8000000; }
 
 template<> inline dword ObjectTypeNo(const void*)    { return VOID_V; }
 template<> inline dword ObjectTypeNo(const int*)     { return INT_V; }
@@ -115,6 +115,7 @@ public:
 	template <class T> bool		Is() const {if (obj) return obj->GetType() == ObjectTypeNo<T>(0); return false;}
 	template <class T> T*		Try() const;
 	
+	template <class T> operator const T&() const;
 	template <class T> operator T&() const;
 	template <class T> T& Get() const;
 	const ObjectMap* TryGetMap() const;
@@ -154,6 +155,12 @@ template <class T> T* Object::Try() const {
 	if (obj && obj->GetType() == ObjectTypeNo<T>(0))
 		return (T*)obj->Get();
 	return NULL;
+}
+
+template <class T> Object::operator const T&() const {
+	if (obj && obj->GetType() == ObjectTypeNo<T>(0))
+		return *(const T*)obj->Get();
+	THROW(Exc("Unexpected value type"));
 }
 
 template <class T> Object::operator T&() const {

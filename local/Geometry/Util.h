@@ -176,7 +176,7 @@ inline mat4 RemoveScale(const mat4& transform)
 }
 
 
-inline float ConvertToRadians(float angle) {return angle / 180.0 * M_PI;}
+inline float ConvertToRadians(float angle) {return (float)(angle / 180.0 * M_PI);}
 
 
 NAMESPACE_TOPSIDE_END

@@ -13,9 +13,9 @@
  */
 
 #include "stdlib.h"
-#include <portmidi/portmidi.h>
-#include <portmidi/pmutil.h>
-#include <portmidi/pminternal.h>
+#include <ports/portmidi/portmidi.h>
+#include <ports/portmidi/pmutil.h>
+#include <ports/portmidi/pminternal.h>
 #include "pmwinmm.h"
 #ifdef DEBUG
 #include "stdio.h"

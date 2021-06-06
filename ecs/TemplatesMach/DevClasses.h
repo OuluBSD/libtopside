@@ -32,7 +32,7 @@ DUMMY_DEV_LIST
 
 
 
-struct AccelComponentGroupBase;
+class AccelComponentGroupBase;
 struct AccelComponentConfBase;
 struct AccelComponentBase;
 

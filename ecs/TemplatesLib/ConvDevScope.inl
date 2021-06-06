@@ -18,7 +18,7 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	
 	ComponentBase* cb = CastPtr<ComponentBase>(this);
 	ASSERT(cb);
-	StageContextConnectorRef ctx = cb->GetEntity()->template FindNearestWith<StageContextConnector>();
+	StageContextConnectorRef ctx = cb->GetEntity()->template FindNearestPoolWith<StageContextConnector>();
 	ASSERT(ctx);
 	if (ctx)
 		ctx->FindAdd(this->template AsRef<StageComponent>());

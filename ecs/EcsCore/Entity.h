@@ -63,7 +63,10 @@ public:
 	}
 	
 	template<typename T>
-	RefT_Entity<T> FindNearestWith();
+	RefT_Entity<T> FindNearestEntityWith();
+	
+	template<typename T>
+	RefT_Pool<T> FindNearestPoolWith();
 	
 	template<typename T>
 	RefT_Entity<T> FindInterface() {

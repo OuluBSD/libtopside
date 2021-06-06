@@ -432,6 +432,11 @@ public:
 						DimBase<dim>::IsSame(b) && \
 						DevBase::IsSame(b); \
 		} \
+		bool IsCopyCompatible(const d##dim##post& b) const {\
+			return		SampleBase<T>::IsCopyCompatible(b) && \
+						DimBase<dim>::IsSame(b) && \
+						DevBase::IsSame(b); \
+		} \
 		bool operator==(const Class& b) const {return IsSame(b);} \
 		bool operator!=(const Class& b) const {return !IsSame(b);} \
 		template <class DevSpec>\
@@ -508,7 +513,15 @@ public:
 	using T0 = S0;
 	using T1 = S1;
 	
+	struct Type {
+		typename S0::Type t0;
+		typename S1::Type t1;
+	};
 	
+	static bool IsCopyCompatible(Type a, Type b) {
+		return	T0::IsCopyCompatible(a.t0, b.t0) &&
+				T1::IsCopyCompatible(a.t1, b.t1);
+	}
 };
 
 template <class S0, class S1, class S2, class S3>
@@ -519,7 +532,19 @@ public:
 	using T2 = S2;
 	using T3 = S3;
 	
+	struct Type {
+		typename S0::Type t0;
+		typename S1::Type t1;
+		typename S2::Type t2;
+		typename S3::Type t3;
+	};
 	
+	static bool IsCopyCompatible(Type a, Type b) {
+		return	T0::IsCopyCompatible(a.t0, b.t0) &&
+				T1::IsCopyCompatible(a.t1, b.t1) &&
+				T2::IsCopyCompatible(a.t2, b.t2) &&
+				T3::IsCopyCompatible(a.t3, b.t3);
+	}
 };
 
 
@@ -551,6 +576,7 @@ public:
 	void Clear() {o0.Clear(); o1.Clear(); o2.Clear(); o3.Clear(); dev_spec = 0;}
 	bool IsValid() const {return o0.IsValid() && o1.IsValid() && o2.IsValid() && o3.IsValid() && dev_spec != 0;}
 	bool IsSame(const TD1OnceMulti4<T>& o) const {TODO}
+	bool IsCopyCompatible(const TD1OnceMulti4<T>& o) const {TODO}
 	bool operator==(const TD1OnceMulti4<T>& o) const {return IsSame(o);}
 	template <class DevSpec> void SetDefault() {dev_spec = AsTypeCls<DevSpec>(); o0.template SetDefault<DevSpec>(); o1.template SetDefault<DevSpec>(); o2.template SetDefault<DevSpec>(); o3.template SetDefault<DevSpec>();}
 	

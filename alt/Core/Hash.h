@@ -22,7 +22,7 @@ public:
 };
 
 template <> inline CombineHash& CombineHash::operator << (const int& value) { Put(value); return *this; }
-template <> inline CombineHash& CombineHash::operator << (const int64& value) { Put(value); return *this; }
+template <> inline CombineHash& CombineHash::operator << (const int64& value) { Put64(value); return *this; }
 
 
 

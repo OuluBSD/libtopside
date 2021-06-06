@@ -28,7 +28,7 @@ void DummyGenerator::Uninitialize() {
 
 
 
-
+#if HAVE_FFMPEG
 void MP3Player::OnError() {
 	GetEntity()->GetMachine().SetNotRunning();
 }
@@ -60,6 +60,9 @@ void MP3Player::Uninitialize() {
 	audio.Clear();
 	GetEntity()->Destroy();
 }
+#endif
+
+
 
 bool MP3PlayerInitializer() {
 	SetCoutLog();
@@ -84,7 +87,6 @@ bool MP3PlayerInitializer() {
 	
 	return run_sound_gen || FileExists(file_path);
 }
-
 
 
 /*
@@ -141,7 +143,11 @@ void Main() {
 				VAR gen = root->Create<DummyGeneratorPrefab>();
 	        }
 	        else {
+	            #if HAVE_FFMPEG
 	            VAR player = root->Create<MP3PlayerPrefab>();
+	            #else
+	            THROW(Exc("No mp3 support"));
+	            #endif
 	        }
 	        
 		    mach.Start();

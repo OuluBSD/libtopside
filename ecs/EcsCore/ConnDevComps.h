@@ -17,7 +17,7 @@ class ConnectAllDevInterfaces :
 	int tmp_link_count = 0;
 	
 public:
-	RTTI_DECL_2(ConnectAllDevInterfaces, ConnectorT, MetaExchangePoint, "ConnectAll" + DevSpec::GetName() + "Interfaces")
+	RTTI_DECL_2(ConnectAllDevInterfaces, ConnectorT, AnyConnector, "ConnectAll" + DevSpec::GetName() + "Interfaces")
 	COPY_PANIC(ConnectAllDevInterfaces);
 	
 	void CopyTo(ConnectorBase* component) const override {}
@@ -30,6 +30,8 @@ public:
 		vis & sys;
 		MetaExchangePoint::Visit(vis);
 	}
+	TypeId GetType() const override {return AsTypeCls<ConnectAllDevInterfaces<DevSpec>>();}
+	
 	bool LinkAll();
 	
 	
