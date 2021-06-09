@@ -41,18 +41,19 @@ public:
 		lock.Leave();
 	}
 	
-	T* New() {
+	template <typename... Args>
+	T* New(const Args&... args) {
 		T* o;
 		if (pool.IsEmpty()) {
 			o = (T*)MemoryAlloc(sizeof(T));
-			new (o) T();
+			new (o) T(args...);
 		}
 		else {
 			lock.Enter();
 			o = pool.Pop();
 			lock.Leave();
 			if (!keep_as_constructed)
-				new (o) T();
+				new (o) T(args...);
 		}
 		return o;
 	}

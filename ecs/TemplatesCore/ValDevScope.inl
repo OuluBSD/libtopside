@@ -44,18 +44,18 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	USING_VALDEVCORE(CtxStream)
 	USING_VALDEVMACH(Value)
 	LOG(String(GetDynamicName()) + "(" + HexStr(this) << ")::Forward");
-	ASSERT(dbg_offset_is_set);
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
 	
 	Ex ex(this);
-	ex.SetOffset(offset);
+	//ex.SetOffset(offset);
 	
 	CtxStream& src_stream = src->GetStream(CTX);
 	Value& src_value = src_stream.Get();
 	int src_sz = src_value.GetQueueSize();
 	
-	if (src_sz) {
+	TODO
+	/*if (src_sz) {
 		Value& sink_value = sink->GetValue(CTX);
 		bool sink_full = sink_value.IsQueueFull();
 		
@@ -118,12 +118,11 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 		#endif
 	}
 	else {
-		RTLOG("ExchangePoint::Forward: offset " << offset.ToString() << " empty source");
+		RTLOG("ExchangePoint::Forward: empty source");
 	}
 	
 	SetOffset(ex.GetOffset());
-	dbg_offset_is_set = false;
-	
+	*/
 	
 	fwd.AddNext(sink->AsComponentBase());
 }

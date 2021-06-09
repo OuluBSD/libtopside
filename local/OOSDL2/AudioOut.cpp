@@ -60,7 +60,7 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 			buf.Dump();
 		}
 		
-		consumer.TestSetOffset(begin_offset);
+		//consumer.TestSetOffset(begin_offset);
 		
 		consumer.SetDestination(fmt, output, size);
 		consumer.ConsumeAll(false);

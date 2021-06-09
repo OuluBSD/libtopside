@@ -24,15 +24,27 @@ using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
 using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Pool>>;
 
 
+
+template<class T> struct OffsetGen;
+
+
 template<class T>
 struct OffsetLoop {
 	using limits = std::numeric_limits<T>;
+	using Gen = OffsetGen<T>;
 	
-	T value = 0;
+	Gen* gen;
+	T value;
 	
 	
 	//OffsetLoop() {}
 	//OffsetLoop(T value) : value(value) {}
+	OffsetLoop(Gen* g, T value) : gen(g), value(value) {}
+	OffsetLoop(Gen* g) : gen(g), value(0) {}
+	OffsetLoop(Gen& g) : gen(&g), value(0) {}
+	OffsetLoop(const OffsetLoop& o) {*this = o;}
+	
+	OffsetLoop& operator=(const OffsetLoop& o) {gen = o.gen; value = o.value; return *this;}
 	
 	void Clear() {value = 0;}
 	bool operator==(const OffsetLoop& o) const {return o.value == value;}
@@ -40,7 +52,7 @@ struct OffsetLoop {
 	void operator+=(const OffsetLoop& o) {value += o.value;}
 	void operator-=(const OffsetLoop& o) {value -= o.value;}
 	OffsetLoop& operator++() {++value; return *this;}
-	OffsetLoop operator++(int) {return OffsetLoop{value++};}
+	OffsetLoop operator++(int) {return OffsetLoop(gen, value++);}
 	operator bool() const {return value;}
 	
 	void SetMax() {value = limits::max();}
@@ -52,7 +64,7 @@ struct OffsetLoop {
 	
 	
 	static OffsetLoop GetDifference(OffsetLoop min, OffsetLoop max) {
-		OffsetLoop ret;
+		OffsetLoop ret(min.gen, 0);
 		if (min != max)
 			ret.value =
 				min.value < max.value ?
@@ -72,7 +84,27 @@ struct OffsetLoop {
 	
 };
 
+template<class T>
+class OffsetGen {
+	using Offset = OffsetLoop<T>;
+	
+	Offset value;
+public:
+	
+	OffsetGen() : value(this) {}
+	
+	Offset Create() {return ++value;}
+	Offset GetCurrent() const {return value;}
+	
+	String ToString() const {return "gen(" + value.ToString() + ")";}
+	
+	//operator Offset() {return ++value;}
+};
+
+
 using off32 = OffsetLoop<dword>;
+using off32_gen = OffsetGen<dword>;
+
 
 
 
@@ -87,10 +119,13 @@ struct RealtimeSourceConfig {
 	bool enable_sync = false;
 	bool sync = 0;
 	bool render = 0;
-	off32 begin_offset, end_offset;
+	off32 cur_offset, prev_offset;
+	
+	
+	RealtimeSourceConfig(off32_gen& gen) : cur_offset(gen), prev_offset(gen) {}
 	
 	void Update(double dt, bool buffer_full);
-	void SetOffset(off32 begin, off32 end) {begin_offset = begin; end_offset = end;}
+	//void SetOffset(off32 begin, off32 end) {begin_offset = begin; end_offset = end;}
 };
 
 #define MIN_AUDIO_BUFFER_SAMPLES 1024

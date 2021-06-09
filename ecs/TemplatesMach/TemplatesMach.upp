@@ -6,6 +6,8 @@ uses
 file
 	TemplatesMach.h,
 	Defs.h,
+	Classes.h,
+	Classes.cpp,
 	PacketBuffer.h,
 	PacketBuffer.cpp,
 	ValScope.h,
@@ -13,8 +15,6 @@ file
 	ValScope.cpp,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
-	Classes.h,
-	Classes.cpp,
 	ValSpec.h,
 	DevClasses.h,
 	DevScope.h,

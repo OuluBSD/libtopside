@@ -4,13 +4,13 @@
 #include <Local/Local.h>
 
 
-#include "PacketBuffer.h"
 #include "Defs.h"
+#include "Classes.h"
+#include "PacketBuffer.h"
 #include "ValScope.h"
 #include "ValScope.inl"
 #include "ValDevScope.h"
 #include "ValDevScope.inl"
-#include "Classes.h"
 #include "ValSpec.h"
 #include "DevClasses.h"
 #include "DevScope.h"

@@ -23,7 +23,9 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
 	
 	//ASSERT(!dbg_offset_is_set);
-	if (!dbg_offset_is_set) {
+	
+	TODO
+	/*if (!dbg_offset_is_set) {
 		SourceRef src = this->src;
 		ASSERT(src);
 		DevComponent* dev_comp;
@@ -42,7 +44,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 		ValStreamState& vstate = state->template Get<ValSpec>();
 		off32 exp_offset = vstate.offset;
 		SetOffset(exp_offset);
-	}
+	}*/
 	
 	SinkRef sink = this->sink;
 	StageComponent* sink_comp = CastPtr<StageComponent>(sink->AsComponentBase());
@@ -192,5 +194,66 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 }
 
 #undef CLS
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Initialize() {
+	TODO
+}
+
+TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Uninitialize() {
+	TODO
+}
+
+template <class ValDevSpec>
+	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,ReceiptSpec>>::Format
+		ScopeValDevLibOrderT<ValDevSpec>::
+		DevCustomerComponent::GetFormat(R*) {
+	TODO
+}
+
+template <class ValDevSpec>
+	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,ReceiptSpec>>::Value&
+		ScopeValDevLibOrderT<ValDevSpec>::
+		DevCustomerComponent::GetValue(R*) {
+	TODO
+}
+
+template <class ValDevSpec>
+	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,OrderSpec>>::Stream&
+		ScopeValDevLibOrderT<ValDevSpec>::
+		DevCustomerComponent::GetStream(O*) {
+	TODO
+}
+
+TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::BeginStream(O*) {
+	TODO
+}
+
+TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::EndStream(O*) {
+	TODO
+}
+
+
+
+
 
 NAMESPACE_TOPSIDE_END

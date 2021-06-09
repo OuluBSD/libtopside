@@ -4,7 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ConnectorBase;
 
 template <class ValSpec>
 struct ScopeValMachT {
@@ -57,13 +56,12 @@ struct ScopeValMachT {
 		static const int def_sample_rate = Format::def_sample_rate;
 		
 		RTTI_DECL0(PacketValue);
-		PacketValue() {}
+		PacketValue(off32 offset) : offset(offset) {}
 		~PacketValue() {StopTracking(this);}
 		
 		Vector<byte>&			Data() {return data;}
-		void					Set(Format fmt, off32 offset, double time) {this->fmt = fmt; this->offset = offset; this->time = time;}
+		void					Set(Format fmt, double time) {this->fmt = fmt; this->time = time;}
 		void					SetFormat(Format fmt) {this->fmt = fmt;}
-		void					SetOffset(off32 offset) {this->offset = offset;}
 		void					SetTime(double seconds) {time = seconds;}
 		void					SetTrackingId(PacketId i) {id = i;}
 		void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = 0;}
@@ -112,8 +110,8 @@ struct ScopeValMachT {
 	using PacketBuffer		= LinkedList<Packet>;
 	using RecRefBase		= RecyclerRefBase<PacketValue>;
 	
-	static Packet CreatePacket() {
-		PacketValue* obj = PacketValue::Pool::StaticPool().New();
+	static Packet CreatePacket(off32 off) {
+		PacketValue* obj = PacketValue::Pool::StaticPool().New(off);
 		RecRefBase* base = RecRefBase::Pool::StaticPool().New();
 		base->SetObj(obj);
 		return Packet(obj, base);
@@ -132,7 +130,6 @@ struct ScopeValMachT {
 		int frames_after_sync = 0;
 		int sink_frame = 0;
 		bool is_sync = 0;
-		off32 offset;
 		
 		void Clear();
 		void Reset();

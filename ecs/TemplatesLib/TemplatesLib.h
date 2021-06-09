@@ -7,6 +7,7 @@
 #include "AccelScope.h"
 #include "DevScope.h"
 #include "ValDevScope.h"
+#include "ValDevSpec.h"
 #include "ConvDevScope.h"
 #include "DevSpec.h"
 #include "ValScope.h"

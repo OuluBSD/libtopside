@@ -75,7 +75,7 @@ class DummySoundGeneratorAudio :
 {
 	DummySoundGenerator<uint8> gen;
 	AudioFormat fmt;
-	off32 offset;
+	off32_gen og;
 	double time = 0;
 	
 public:

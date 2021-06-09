@@ -64,8 +64,6 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 				buf.Dump();
 			}
 			
-			consumer.TestSetOffset(begin_offset);
-			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
 			consumer.ClearDestination();
@@ -73,7 +71,8 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
 			}
 			
-			off32 end_offset = consumer.GetOffset();
+			TODO
+			/*off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
 			if (diff) {
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
@@ -84,7 +83,7 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 			}
 			else if (!consumer.HasLeftover()) {
 				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}
+			}*/
 		}
 		else {
 			#if DEBUG_RT_PIPE
@@ -152,8 +151,6 @@ void PortaudioSinkComponent::Initialize() {
 	//sys = GetMachine().TryGet<PortaudioSystem>();
 	//if (sys)
 	//	dev.Create(sys->GetDefaultOutput());
-	aconfig.frames_after_sync = 0;
-	aconfig.sync_dt = 1.5;
 	
 	obj.Create();
 	obj->OpenDefault();

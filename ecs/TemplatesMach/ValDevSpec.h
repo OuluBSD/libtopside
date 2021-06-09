@@ -57,6 +57,7 @@ IFACE_LIST;
 	DEV_VALUE_CTX(Perma,	value, Perma##value,	format, sample)
 IFACE_CTX_LIST
 #undef IFACE_CTX
+#undef DEV_VALUE_CTX
 
 
 

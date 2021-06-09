@@ -43,7 +43,6 @@ class PortaudioSinkComponent :
 	public DevComponent<CenterSpec, AudioSpec, PortaudioSinkComponent>,
 	public AudioSink
 {
-    RealtimeSourceConfig aconfig;
 	String last_error;
 	One<Portaudio::BufferedAudioDeviceStream> obj;
 	Vector<float> tmp;

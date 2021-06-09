@@ -241,7 +241,6 @@ struct AccelComponentGroupBase : RTTIBase {
 	RTTI_DECL0(AccelComponentGroupBase)
 	
 	Vector<uint32> gl_stages;
-	off32 offset;
 	
 	void RefreshPipeline();
 	bool CreateForwardPacket(InterfaceSinkBase& sink);

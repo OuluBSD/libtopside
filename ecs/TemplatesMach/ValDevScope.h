@@ -4,22 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class ValExchangePointBase :
-	public ExchangePoint
-{
-	
-public:
-	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
-	virtual void Init(ConnectorBase* conn) = 0;
-	
-	
-	static ValExchangePointBase* Create(TypeCls t);
-	
-};
-
-using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
-
-
 template <class ValDevSpec>
 struct ScopeValDevMachT {
 	using ValSpec		= typename ValDevSpec::Val;
@@ -65,9 +49,7 @@ struct ScopeValDevMachT {
 		public ValExchangePointBase
 	{
 		ConnectorBase* conn = 0;
-		off32 offset;
 		bool use_consumer = false;
-		bool dbg_offset_is_set = false;
 		
 	public:
 		RTTI_DECL_T1(ValExchangePoint, ValExchangePointBase)
@@ -81,11 +63,9 @@ struct ScopeValDevMachT {
 		void Forward(FwdScope& fwd) override;
 		void ForwardExchange(FwdScope& fwd) override;
 		
-		void SetOffset(off32 o) {offset = o; dbg_offset_is_set = true;}
 		void UseConsumer(bool b=true) {use_consumer = b;}
 		void Destroy() {conn = 0;}
 		
-		off32 GetOffset() const {return offset;}
 		
 	};
 	
@@ -100,7 +80,6 @@ struct ScopeValDevMachT {
 		Value* src = 0;
 		Value* sink = 0;
 		const RealtimeSourceConfig* src_conf = 0;
-		off32 offset;
 		
 	public:
 		RTTI_DECL_T1(Ex, ExchangeBase)
@@ -111,13 +90,11 @@ struct ScopeValDevMachT {
 		Value&						Source() const {return *src;}
 		const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
 		ValExchangePoint			GetExchangePoint() {return *expt;}
-		off32						GetOffset() const {return offset;}
 		virtual bool				IsLoading() override {return !storing;}
 		virtual bool				IsStoring() override {return storing;}
 		
 		void	SetLoading(Value& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
 		void	SetStoring(Value& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
-		void	SetOffset(off32 packet_count);
 		
 	};
 	
@@ -151,7 +128,6 @@ struct ScopeValDevMachT {
 	{
 		PacketBuffer*		src = 0;
 		VolatileBuffer*		dst = 0;
-		off32				offset;
 		bool				dst_realtime = false;
 		int					internal_written_bytes;
 		
@@ -159,7 +135,6 @@ struct ScopeValDevMachT {
 		RTTI_DECL_T0(PacketProducer)
 		PacketProducer() {}
 		
-		void		SetOffset(off32 offset) {this->offset = offset;}
 		void		SetSource(PacketBuffer& src) {this->src = &src;}
 		void		SetDestination(VolatileBuffer& dst) {this->dst = &dst;}
 		void		SetDestinationRealtime(bool b) {dst_realtime = b;}
@@ -170,7 +145,6 @@ struct ScopeValDevMachT {
 		bool		ProducePacket();
 		bool		IsFinished() const;
 		bool		IsEmptySource() const {return src == 0;}
-		off32		GetOffset() const {return offset;}
 		int			GetLastMemoryBytes() const {return internal_written_bytes;}
 		
 		operator bool() const {return IsFinished();}
@@ -183,7 +157,6 @@ struct ScopeValDevMachT {
 	{
 		
 		VolatileBuffer*	src = 0;
-		off32			offset;
 		int				leftover_size = 0;
 		Packet			leftover;
 		
@@ -204,20 +177,17 @@ struct ScopeValDevMachT {
 		RTTI_DECL_T0(PacketConsumer)
 		PacketConsumer() {}
 		
-		void		SetOffset(off32 offset) {ASSERT(!HasLeftover()); this->offset = offset;}
 		void		SetSource(VolatileBuffer& src);
 		void		SetDestination(const Format& fmt, void* dst, int src_dst_size);
 		void		SetDestination(VolatileBuffer& dst);
 		void		SetDestinationRealtime(bool b) {dst_realtime = b;}
 		void		ClearDestination();
 		void		ClearLeftover() {leftover_size = 0; leftover.Clear();}
-		void		TestSetOffset(off32 offset);
 		
 		void		ConsumeAll(bool blocking=false);
 		bool		ConsumePacket();
 		bool		IsFinished() const;
 		bool		IsEmptySource() const {return src == 0;}
-		off32		GetOffset() const {return offset;}
 		bool		HasLeftover() const {return leftover_size != 0;}
 		int			GetLastMemoryBytes() const {return internal_written_bytes;}
 		
@@ -323,7 +293,6 @@ struct ScopeValDevMachT {
 		LinkedMap<Value*, off32> sink_offsets;
 		PacketProducer	producer;
 		PacketBuffer	buf;
-		dword			frame_counter = 0;
 		int				min_buf_samples = std::max<int>(1, 3 * Format::def_sample_rate);
 		dword			exchange_count = 0;
 		Format			fmt;
@@ -338,7 +307,7 @@ struct ScopeValDevMachT {
 		int				GetQueueChannelSamples() const;
 		void			ClearBuffer() {buf.Clear();}
 		bool			IsEmpty() const {return buf.IsEmpty();}
-		void			FillBuffersNull();
+		//void			FillBuffersNull();
 		void			Visit(RuntimeVisitor& vis) {}
 		void			DropBuffer();
 		void			AddPacket(Packet p) {buf.Add(p);}

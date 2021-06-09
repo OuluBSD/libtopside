@@ -20,13 +20,13 @@ void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
 		AudioVolatileBuffer* vol_aud = CastPtr<AudioVolatileBuffer>(&sink);
 		if (vol_aud) {
 			while (!vol_aud->IsQueueFull()) {
-				AudioPacket p = CreateAudioPacket();
+				off32 offset = og.Create();
+				AudioPacket p = CreateAudioPacket(offset);
 				AudioPacketTracker::Track(TrackerInfo(this, __FILE__, __LINE__), p);
-				p->Set(fmt, offset, time);
+				p->Set(fmt, time);
 				p->Data().SetCount(fmt.GetFrameSize(), 0);
 				gen.Play(p);
 				vol_aud->Put(p, false);
-				++offset;
 				time += fmt.GetFrameSeconds();
 			}
 		}

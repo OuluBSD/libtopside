@@ -200,10 +200,11 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 }
 
 void FfmpegFileInput::FillBuffersNull() {
-	if (has_audio)
+	TODO
+	/*if (has_audio)
 		aframe.FillBuffersNull();
 	if (has_video)
-		vframe.FillBuffersNull();
+		vframe.FillBuffersNull();*/
 }
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
@@ -543,7 +544,8 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 	int frame_sz = frame->nb_samples * frame->channels * var_size;
 	
 	// Non-planar data
-	if (frame->data[1] == 0) {
+	TODO
+	/*if (frame->data[1] == 0) {
 		if (frame->data[0]) {
 			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
 			auto& p = buf.Add();
@@ -589,7 +591,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			}
 		}
 		ASSERT(dst == data.End());
-	}
+	}*/
 	
 	exchange_count = 0;
 }

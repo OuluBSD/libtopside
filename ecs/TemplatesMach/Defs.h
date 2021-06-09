@@ -3,6 +3,8 @@
 
 
 #define IFACE_LIST \
+	IFACE(Order) \
+	IFACE(Receipt) \
 	IFACE(Audio) \
 	IFACE(Model) \
 	IFACE(Static) \
@@ -14,6 +16,8 @@
 	IFACE(Human)
 
 #define IFACE_VAR_LIST \
+	IFACE(Order,	ord) \
+	IFACE(Receipt,	rcp) \
 	IFACE(Audio,	aud) \
 	IFACE(Model,	mdl) \
 	IFACE(Static,	stc) \
@@ -24,7 +28,7 @@
 	IFACE(Midi,		mid) \
 	IFACE(Human,	hum)
 
-#define IFACE_CTX_LIST \
+#define IFACE_CTX_ORDER_LIST \
 	IFACE_CTX(Audio,		TD1TimeSeries,			SoundSample) \
 	IFACE_CTX(Model,		TD1OnceMulti4,			ModelSample) \
 	IFACE_CTX(Static,		TD3Once,				MaterialSample) \
@@ -34,7 +38,7 @@
 	IFACE_CTX(Event,		TD1SparseTimeSeries,	EventSample) \
 	IFACE_CTX(Midi,			TD1SparseTimeSeries,	MidiSample) \
 	IFACE_CTX(Human,		TD1SparseTimeSeries,	HumanSample)
-	
+
 	/*
 	IFACE_CTX(Media,		AVTimeSeries,			AVSample) \
 	IFACE_CTX(AudioFD,		T2DTimeSeries,			SoundSampleFD) \
@@ -47,6 +51,12 @@
 	IFACE_CTX(Physics,		T1DSparseTimeSeries,	PhysicsSample) \
 	IFACE_CTX(Volumetric,	T3D,					MaterialSample) \
 	IFACE_CTX(VolumetricFD,	T3DFD,					MaterialSampleFD)*/
+
+#define IFACE_CTX_LIST \
+	IFACE_CTX(Order,		TD1SparseTimeSeries,	OrderSample) \
+	IFACE_CTX(Receipt,		TD1SparseTimeSeries,	ReceiptSample) \
+	IFACE_CTX_ORDER_LIST
+
 
 #define DEV_LIST \
 	DEV(Center) \
@@ -77,6 +87,7 @@
 #define TMPL_VALDEVMACH(x)	template <class ValDevSpec> x ScopeValDevMachT<ValDevSpec>::
 #define TMPL_VALDEVCORE(x)	template <class ValDevSpec> x ScopeValDevCoreT<ValDevSpec>::
 #define TMPL_VALDEVLIB(x)	template <class ValDevSpec> x ScopeValDevLibT<ValDevSpec>::
+#define TMPL_VALDEVLIB_ORD(x)	template <class ValDevSpec> x ScopeValDevLibOrderT<ValDevSpec>::
 #define TMPL_CONVDEVLIB(x)	template <class ValSpec, class FromDevSpec, class ToDevSpec> x ScopeConvDevLibT<ValSpec,FromDevSpec,ToDevSpec>::
 #define USING_VALMACH(x) using x = typename ScopeValMachT<ValSpec>::x;
 #define USING_VALCORE(x) using x = typename ScopeValCoreT<ValSpec>::x;

@@ -91,7 +91,8 @@ public:
 	
 	off32 GetOffset() const {
 		LinkedList<T>& l = const_cast<LinkedList<T>&>(packets[data_i]);
-		return l.IsEmpty() ? off32() : (*l.begin())->GetOffset();
+		if (l.IsEmpty()) THROW(Exc("RealtimePacketBuffer: empty buffer"));
+		return (*l.begin())->GetOffset();
 	}
 	
 	T Get(off32 offset) {

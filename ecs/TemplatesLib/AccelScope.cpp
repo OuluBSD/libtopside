@@ -49,7 +49,8 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 		if (!comp)
 			return false;
 		
-		Packet p = ValData::CreatePacket();
+		TODO
+	/*	Packet p = ValData::CreatePacket();
 		
 		p->SetOffset(gr.offset++);
 		
@@ -65,7 +66,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 		buf->AddPacket(p);
 		
 		for (FwdScope scope(comp); scope; scope++)
-			scope.Forward();
+			scope.Forward();*/
 		
 		return true;
 	}

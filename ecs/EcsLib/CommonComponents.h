@@ -125,7 +125,8 @@ public:
 
 class StaticVolumeComponent :
 	public Component<StaticVolumeComponent>,
-	public StaticSource
+	public StaticSource,
+	public GeneratorComponentBase
 {
 	VIS_COMP_1_0(Static)
 	
@@ -229,6 +230,39 @@ public:
     
 };
 
+
+/*class CustomerComponent :
+	public Component<CustomerComponent>,
+	public OrderSource,
+	public ReceiptSink
+{
+	RTTI_DECL_3(CustomerComponent, Component<CustomerComponent>, \
+				OrderSource, ReceiptSink, \
+				"CustomerComponent")
+	VIS_COMP_1_1(Order, Receipt)
+	COPY_PANIC(CustomerComponent)
+	IFACE_GENERIC
+	void Visit(RuntimeVisitor& vis) override {}
+	
+public:
+	CustomerComponent() {}
+	
+	// ComponentBase
+	void				Initialize() override;
+	void				Uninitialize() override;
+	TypeCls				GetValSpec() const override {return AsTypeCls<OrderSpec>();}
+	bool				IsValSpec(TypeCls t) const override {return AsTypeCls<OrderSpec>() == t;}
+	
+	// ReceiptSink
+	Format				GetFormat(ReceiptSpec*) override;
+	Value&				GetValue(ReceiptSpec*) override;
+	
+	// OrderSource
+	CtxStream&			GetStream(OrderSpec*) override;
+	void				BeginStream(OrderSpec*) override;
+	void				EndStream(OrderSpec*) override;
+	
+};*/
 
 NAMESPACE_TOPSIDE_END
 

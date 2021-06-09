@@ -28,6 +28,20 @@ public:
 
 
 
+
+
+class GeneratorComponentBase {
+	RealtimeSourceConfig cfg;
+	off32_gen gen;
+	
+public:
+	GeneratorComponentBase() : cfg(gen) {}
+	
+	
+};
+
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

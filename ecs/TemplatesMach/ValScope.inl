@@ -50,7 +50,6 @@ TMPL_VALMACH(void) ValStreamState::Reset() {
 }
 
 TMPL_VALMACH(void) ValStreamState::Step() {
-	offset++;
 	frames++;
 	frame_time.Reset();
 }

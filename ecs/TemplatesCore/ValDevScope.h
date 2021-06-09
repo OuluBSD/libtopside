@@ -56,9 +56,9 @@ struct ScopeValDevCoreT {
 		using Sink = ScopeValDevCoreT::ValSink;
 		
 		
-		void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
+		/*void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
 		const RealtimeSourceConfig&	Cfg() const {return cfg;}
-		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}
+		void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}*/
 		
 		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
 		virtual CtxStream&			GetStream(V*) = 0;
@@ -66,7 +66,6 @@ struct ScopeValDevCoreT {
 		virtual void				EndStream(V*) = 0;
 		
 	private:
-		RealtimeSourceConfig		cfg;
 		
 	};
 	

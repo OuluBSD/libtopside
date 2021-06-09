@@ -169,6 +169,71 @@ struct ScopeValDevLibT {
 		
 	};
 	
+};
+
+
+template <class ValDevSpec>
+struct ScopeValDevLibOrderT {
+	using ValSpec		= typename ValDevSpec::Val;
+	using DevSpec		= typename ValDevSpec::Dev;
+	using ValMach		= ScopeValMachT<ValSpec>;
+	using Mach			= ScopeValDevMachT<ValDevSpec>;
+	using Core			= ScopeValDevCoreT<ValDevSpec>;
+	
+	using R				= ReceiptSpec;
+	using RVD			= VD<DevSpec,ReceiptSpec>;
+	using RMach			= ScopeValDevMachT<RVD>;
+	using RCore			= ScopeValDevCoreT<RVD>;
+	using RFormat		= typename RMach::Format;
+	using RCtxStream	= typename RMach::Stream;
+	using RValue		= typename RMach::Value;
+	using RSink			= typename RCore::ValSink;
+	using RSource		= typename RCore::ValSource;
+	
+	using O				= OrderSpec;
+	using OVD			= VD<DevSpec,OrderSpec>;
+	using OMach			= ScopeValDevMachT<OVD>;
+	using OCore			= ScopeValDevCoreT<OVD>;
+	using OFormat		= typename OMach::Format;
+	using OCtxStream	= typename OMach::Stream;
+	using OValue		= typename OMach::Value;
+	using OSink			= typename OCore::ValSink;
+	using OSource		= typename OCore::ValSource;
+	
+	
+	class DevCustomerComponent :
+		public Component<DevCustomerComponent>,
+		public OSource,
+		public RSink
+	{
+		RTTI_DECL_3(DevCustomerComponent, Component<DevCustomerComponent>, \
+					OSource, RSink, \
+					ValDevSpec::GetName() + "DevCustomerComponent")
+		VIS_COMP_1_1(Order, Receipt)
+		COPY_PANIC(DevCustomerComponent)
+		IFACE_GENERIC
+		void Visit(RuntimeVisitor& vis) override {}
+		
+	public:
+		DevCustomerComponent() {}
+		
+		// ComponentBase
+		void				Initialize() override;
+		void				Uninitialize() override;
+		TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
+		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
+		
+		// ReceiptSink
+		RFormat				GetFormat(R*) override;
+		RValue&				GetValue(R*) override;
+		
+		// OrderSource
+		OCtxStream&			GetStream(O*) override;
+		void				BeginStream(O*) override;
+		void				EndStream(O*) override;
+		
+	};
+	
 	
 };
 

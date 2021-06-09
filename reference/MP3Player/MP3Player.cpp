@@ -135,7 +135,7 @@ void Main() {
 			root->Add<ConnectAllCenterInterfaces>();
 			//root->Add<CenterStageContextConnector>();
 			
-			//root->Create<CompletePortaudio>();
+			root->Create<AccelAudioCustomer>();
 			
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();

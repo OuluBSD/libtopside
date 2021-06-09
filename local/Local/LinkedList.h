@@ -40,6 +40,8 @@ class LinkedList {
 		Item* next = 0;
 		T value;
 		
+		Item() {}
+		Item(const Item& i) : prev(i.prev), next(i.next), value(i.value) {}
 	};
 	
 	typedef RecyclerPool<Item> Rec;

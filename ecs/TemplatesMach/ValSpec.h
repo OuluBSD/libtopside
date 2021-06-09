@@ -54,7 +54,7 @@ using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 	using value##T = ScopeValMachT<value##Spec>; \
 	using value##Packet = value##T::Packet; \
 	using value##Format = value##T::Format; \
-	inline value##Packet Create##value##Packet() {return value##T::CreatePacket();}
+	inline value##Packet Create##value##Packet(off32 off) {return value##T::CreatePacket(off);}
 IFACE_CTX_LIST;
 #undef IFACE_CTX
 

@@ -160,6 +160,64 @@ public:
 };
 
 
+class OrderSample : RTTIBase {
+	RTTI_DECL0(OrderSample)
+
+public:
+	static const int def_sample_rate = 1;
+
+	#define ORDER_SMPL_LIST \
+		ORDER_SMPL(AUDIO_ORDER)
+
+	typedef enum {
+		INVALID,
+		DEV_INTERNAL,
+		#define ORDER_SMPL(x) x ,
+		ORDER_SMPL_LIST
+		#undef ORDER_SMPL
+		TYPE_COUNT,
+		
+		DEFAULT = INVALID
+	} Type;
+
+
+	static void Clear(Type& t) {t = INVALID;}
+	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
+	static String ToString(Type t);
+	static int GetSize(Type t);
+	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
+};
+
+
+class ReceiptSample : RTTIBase {
+	RTTI_DECL0(ReceiptSample)
+
+public:
+	static const int def_sample_rate = 1;
+
+	#define RECEIPT_SMPL_LIST \
+		RECEIPT_SMPL(AUDIO_RECEIPT)
+
+	typedef enum {
+		INVALID,
+		DEV_INTERNAL,
+		#define RECEIPT_SMPL(x) x ,
+		RECEIPT_SMPL_LIST
+		#undef RECEIPT_SMPL
+		TYPE_COUNT,
+		
+		DEFAULT = INVALID
+	} Type;
+
+
+	static void Clear(Type& t) {t = INVALID;}
+	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
+	static String ToString(Type t);
+	static int GetSize(Type t);
+	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
+};
+
+
 
 
 
@@ -577,6 +635,29 @@ public:
 
 using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSample>;
 using AVSample = MultiSample2<SoundSample,LightSampleFD>;
+
+
+
+
+
+class ConnectorBase;
+
+
+class ValExchangePointBase :
+	public ExchangePoint
+{
+	
+public:
+	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
+	virtual void Init(ConnectorBase* conn) = 0;
+	
+	
+	static ValExchangePointBase* Create(TypeCls t);
+	
+};
+
+using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
+
 
 NAMESPACE_TOPSIDE_END
 

@@ -44,14 +44,15 @@ void DevComponent<DevSpec,ValSpec,T>::ForwardPackets(double dt) {
 		RTLOG("update source " << HexStr((size_t)&src) << "<" << src.GetConfigString() << ">");
 		#endif
 		
-		src.Update(dt, buffer_full);
+		TODO
+		/*src.Update(dt, buffer_full);
 		if (src.Cfg().render) {
 			#if DEBUG_RT_PIPE
 			RTLOG("begin source " << HexStr((size_t)&src) << "<" << src.GetConfigString() << ">");
 			#endif
 			
 			src.BeginStream(CTX);
-		}
+		}*/
 	}
 	
 	int dbg_i = 0;
@@ -59,7 +60,8 @@ void DevComponent<DevSpec,ValSpec,T>::ForwardPackets(double dt) {
 		ValExchangePointRef expt = link.expt;
 		ASSERT(expt);
 		
-		off32 begin_offset = expt->GetOffset();
+		TODO
+		/*off32 begin_offset = expt->GetOffset();
 		#if 1 && DEBUG_RT_PIPE
 		const RTTI& expt_rtti = expt->GetRTTI();
 		RTLOG("expt " << dbg_i << " update " << HexStr((size_t)&expt_rtti.GetRTTI()) << "<" << expt_rtti.GetDynamicName() << "> offset " << IntStr(begin_offset.value));
@@ -86,18 +88,19 @@ void DevComponent<DevSpec,ValSpec,T>::ForwardPackets(double dt) {
 			RTLOG("sink " << HexStr((size_t)&*sink) << "<" << sink->GetConfigString() << "> consumed " << diff.ToString());
 		}
 		#endif
-		++dbg_i;
+		++dbg_i;*/
 	}
 	
 	{
-		const auto& cfg = src.Cfg();
+		TODO
+		/*const auto& cfg = src.Cfg();
 		if (cfg.begin_offset != cfg.end_offset) {
 			#if DEBUG_RT_PIPE
 			RTLOG("end source " << HexStr((size_t)&src) << "<" << src.GetConfigString() << ">");
 			#endif
 			
 			src.EndStream(CTX);
-		}
+		}*/
 	}
 	
 	#undef CTX
