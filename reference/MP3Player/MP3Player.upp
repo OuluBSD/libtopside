@@ -5,7 +5,8 @@ uses
 
 file
 	MP3Player.h,
-	MP3Player.cpp;
+	MP3Player.cpp,
+	MP3Player.eon highlight cpp;
 
 mainconfig
 	"" = "",

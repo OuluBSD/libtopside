@@ -8,7 +8,16 @@ class PathwayRouter :
 	public Connector<PathwayRouter>,
 	public ManualConnector
 {
-	LinkedList<EntityRef> add_queue, maintained;
+	struct Item : RTTIBase {
+		EntityRef e;
+		String eon_code;
+		
+		RTTI_DECL0(Item)
+		void Visit(RuntimeVisitor& vis) {vis & e;}
+	};
+	
+	
+	LinkedList<Item> add_queue, maintained;
 	
 public:
 	RTTI_CONN0(PathwayRouter)
@@ -19,10 +28,11 @@ public:
 	TypeCls GetType() const override {return AsTypeCls<PathwayRouter>();}
 	void CopyTo(ConnectorBase* component) const override {}
 	void Update(double dt) override;
-	void Visit(RuntimeVisitor& vis) override {vis && add_queue && maintained;}
+	void Visit(RuntimeVisitor& vis) override {vis || add_queue || maintained;}
 	void UnlinkAll() override;
 	
-	void Add(EntityRef e);
+	void Add(EntityRef e, String eon_code);
+	void Remove(EntityRef e);
 	void ProcessAddQueue();
 	
 };
@@ -58,8 +68,8 @@ protected:
 protected:
 	friend class PathwayRouter;
 	
-    void Add(PathwayRouterRef p) {pathways.FindAdd(p);}
-    void Remove(PathwayRouterRef p) {pathways.RemoveKey(p);}
+    void Add(PathwayRouterRef p);
+    void Remove(PathwayRouterRef p);
     
 };
 

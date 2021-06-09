@@ -118,59 +118,68 @@ void Main() {
 		//SetDebugRefVisits();
 		RuntimeDiagnostics::Static().SetRoot(mach);
 		
-		RegistrySystemRef reg = mach.Add<RegistrySystem>();
-		EntityStoreRef es = mach.Add<EntityStore>();
-		
-		mach.Add<ComponentStore>();
-	    mach.Add<ConnectorStore>();
-	    mach.Add<PathwaySystem>();
-	    
-	    //mach.Add<CenterSystem>();
-	    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
-	    
 	    #ifdef flagSTDEXC
 	    try {
 	    #endif
-			PoolRef root = es->GetRoot();
-			//root->Add<CenterContextConnector>();
-			//root->Add<ConnectAllCenterInterfaces>();
-			//root->Add<CenterStageContextConnector>();
-			
-			auto customer				= root->Create<Customer>();
-			auto router					= root->Add<PathwayRouter>();
-			router->Add(customer);
-			
-	        if (run_sound_gen) {
-				VAR gen = root->Create<DummyGeneratorPrefab>();
-	        }
-	        else {
-	            VAR player = root->Create<MP3PlayerPrefab>();
-	        }
-	        
-	        
-	        reg.Clear();
-	        es.Clear();
-	        customer.Clear();
-	        router.Clear();
-	        
-		    mach.Start();
+			bool fail = false;
+			{
+				RegistrySystemRef reg	= mach.Add<RegistrySystem>();
+				EntityStoreRef es		= mach.Add<EntityStore>();
+				auto compstore			= mach.Add<ComponentStore>();
+			    auto connstore			= mach.Add<ConnectorStore>();
+			    EonLoaderRef eon		= mach.Add<EonLoader>();
+			    
+			    //mach.Add<CenterSystem>();
+			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
 		    
-		    int iter = 0;
-		    TimeStop t, total;
-		    while (mach.IsRunning()) {
-		        double dt = ResetSeconds(t);
-		        mach.Update(dt);
+				PoolRef root = es->GetRoot();
+				//root->Add<CenterContextConnector>();
+				//root->Add<ConnectAllCenterInterfaces>();
+				//root->Add<CenterStageContextConnector>();
+				
+				
+				
+				/*auto aud_gen				= root->Create<Customer>();
+				auto router					= root->Add<PathwayRouter>();
+				router->Add(aud_gen, conf_path);
+				
+		        if (run_sound_gen) {
+					VAR gen = root->Create<DummyGeneratorPrefab>();
+		        }
+		        else {
+		            VAR player = root->Create<MP3PlayerPrefab>();
+		        }
 		        
-		        if (!iter++)
-		            root->Dump();
 		        
-		        Sleep(1);
+		        reg.Clear();
+		        es.Clear();
+		        customer.Clear();
+		        router.Clear();*/
 		        
-		        if (run_sound_gen && total.Seconds() > 3)
-		            mach.SetNotRunning();
+		        if (!eon->LoadFile(GetDataFile("MP3Player.eon")))
+		            fail = true;
 		    }
-		    
-		    RuntimeDiagnostics::Static().CaptureSnapshot();
+		        
+		    if (!fail) {
+			    mach.Start();
+			    
+			    int iter = 0;
+			    TimeStop t, total;
+			    while (mach.IsRunning()) {
+			        double dt = ResetSeconds(t);
+			        mach.Update(dt);
+			        
+			        if (!iter++)
+			            mach.Get<EntityStore>()->GetRoot()->Dump();
+			        
+			        Sleep(1);
+			        
+			        if (run_sound_gen && total.Seconds() > 3)
+			            mach.SetNotRunning();
+			    }
+			    
+			    RuntimeDiagnostics::Static().CaptureSnapshot();
+		    }
 		#ifdef flagSTDEXC
 	    }
 	    catch (Exc e) {

@@ -65,6 +65,7 @@
 #include "Customer.h"
 #include "Router.h"
 #include "Dummy.h"
+#include "Eon.h"
 
 #endif
 

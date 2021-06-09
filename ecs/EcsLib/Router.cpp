@@ -17,8 +17,19 @@ void PathwayRouter::Uninitialize() {
 		sys->Remove(AsRef<PathwayRouter>());
 }
 
-void PathwayRouter::Add(EntityRef e) {
-	add_queue.Add(e);
+void PathwayRouter::Add(EntityRef e, String eon_code) {
+	Item& i = add_queue.Add();
+	i.e = e;
+	i.eon_code = eon_code;
+}
+
+void PathwayRouter::Remove(EntityRef e) {
+	for (auto iter = maintained.begin(); iter; ++iter) {
+		if (iter->e == e) {
+			maintained.Remove(iter);
+			break;
+		}
+	}
 }
 
 void PathwayRouter::Update(double dt) {
@@ -29,10 +40,11 @@ void PathwayRouter::Update(double dt) {
 
 void PathwayRouter::ProcessAddQueue() {
 	
-	for (EntityRef& e : add_queue) {
+	for (Item& i : add_queue) {
 		
 		
 		TODO
+		
 		
 	}
 	
@@ -65,6 +77,14 @@ void PathwayRouter::UnlinkAll() {
 
 
 
+
+void PathwaySystem::Add(PathwayRouterRef p) {
+	pathways.FindAdd(p);
+}
+
+void PathwaySystem::Remove(PathwayRouterRef p) {
+	pathways.RemoveKey(p);
+}
 
 bool PathwaySystem::Initialize() {
 	

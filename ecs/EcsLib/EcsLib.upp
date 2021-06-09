@@ -46,6 +46,8 @@ file
 	Router.cpp,
 	Dummy.h,
 	Dummy.cpp,
+	Eon.h,
+	Eon.cpp,
 	VR readonly separator,
 	PbrModelCache.h,
 	PbrModelCache.cpp,
