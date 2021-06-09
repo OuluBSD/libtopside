@@ -124,9 +124,9 @@ private:
     bool is_suspended = false;
     bool is_running = false;
     
-    SystemCollection::Iterator FindSystem(TypeId const& type_id) {return systems.Find(type_id);}
-    void Add(TypeId const& type_id, SystemBase* system);
-    void Remove(TypeId const& typeId);
+    SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
+    void Add(TypeCls type_id, SystemBase* system);
+    void Remove(TypeCls typeId);
 };
 
 

@@ -65,6 +65,7 @@ public:
 	String CleanDemangledName() const {return DemangledName();}
 	
     hash_t GetHashValue() const { return (hash_t)type; }
+	void operator=(const RTTI& id) {type = id.GetTypeId(); rtti = &id;}
 	void operator=(const TypeId& id) {type = id.type;}
     bool operator==(const TypeId& other) const {return type == other.type;}
     bool operator!=(const TypeId& other) const {return type != other.type;}
@@ -75,7 +76,7 @@ public:
 };
 #endif
 
-template<class T> using TypeMap				= LinkedMap<TypeId, T>;
+template<class T> using TypeMap				= LinkedMap<TypeCls, T>;
 
 
 

@@ -31,7 +31,7 @@ void ComponentMap::Dump() {
 	auto iter = ComponentMapBase::begin();
 	for(int i = 0; iter; ++iter, ++i) {
 		LOG(i << ": " <<
-			iter.key().CleanDemangledName() << ": \"" <<
+			iter.value().GetDynamicName() << ": \"" <<
 			iter.value().ToString() << "\"");
 	}
 }

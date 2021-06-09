@@ -437,20 +437,20 @@ TMPL_DEVMACH(void) DevComponent::Initialize() {
 	ASSERT(!ctx);
 	ComponentBase* cb = CastPtr<ComponentBase>(this);
 	ASSERT(cb);
-	DevContextConnectorRef conn = cb->GetEntity()->FindConnector<DevContextConnector>();
+	/*DevContextConnectorRef conn = cb->GetEntity()->FindConnector<DevContextConnector>();
 	ASSERT(conn);
 	conn->FindAdd(this->template AsRef<DevComponent>());
-	ctx = conn;
+	ctx = conn;*/
 }
 
 TMPL_DEVMACH(void) DevComponent::Uninitialize() {
 	USING_DEVLIB(DevContextConnector)
 	USING_DEVLIB(DevContextConnectorRef)
-	ASSERT(ctx);
+	/*ASSERT(ctx);
 	DevContextConnectorRef conn = ctx;
 	ASSERT(conn);
 	conn->Remove(this->template AsRef<DevComponent>());
-	ctx.Clear();
+	ctx.Clear();*/
 }
 
 

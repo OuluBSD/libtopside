@@ -142,7 +142,7 @@ void Pool::InitializeComponent(ConnectorBase& comp) {
 	comp.Initialize();
 }
 
-void Pool::AddConnectEverything() {
+/*void Pool::AddConnectEverything() {
 	Add<ConnectAllDevInterfaces<CenterSpec>>();
 }
 
@@ -153,7 +153,7 @@ void Pool::ConnectEverything() {
 void Pool::AddConnectEverythingWithAccel() {
 	Add<ConnectAllDevInterfaces<CenterSpec>>();
 	Add<ConnectAllDevInterfaces<AccelSpec>>();
-}
+}*/
 
 void Pool::Dump() {
 	LOG(GetTreeString());

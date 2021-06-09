@@ -1,3 +1,4 @@
+#if 0
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -90,3 +91,4 @@ bool ConnectAllInterfaces<ValDevSpec>::LinkAll() {
 
 
 NAMESPACE_TOPSIDE_END
+#endif

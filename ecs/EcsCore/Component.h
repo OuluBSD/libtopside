@@ -94,7 +94,7 @@ struct Component :
 #define COMP_RTTI(x)  RTTI_DECL1(x, Component<x>)
 
 using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
-using ComponentRefMap	= ArrayMap<TypeId,Ref<ComponentBase>>;
+using ComponentRefMap	= ArrayMap<TypeCls,Ref<ComponentBase>>;
 
 class ComponentMap : public ComponentMapBase {
 	
@@ -135,8 +135,8 @@ public:
 	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		const TypeId type = AsTypeCls<ComponentT>();
-		const TypeId actual_type = component->GetType();
+		TypeCls type = AsTypeCls<ComponentT>();
+		TypeCls actual_type = component->GetType();
 		ASSERT_(actual_type == type, "ComponentRef type does not match " + AsTypeString<ComponentT>());
 		
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);

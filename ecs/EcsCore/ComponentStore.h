@@ -29,7 +29,7 @@ public:
 	T* CreateComponent() {
 		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		const TypeId key(AsTypeCls<T>());
+		TypeCls key(AsTypeCls<T>());
 		auto it = Factory::producers.Find(key);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
@@ -47,7 +47,7 @@ public:
 		
 		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
 		for (; iter; ++iter) {
-			const TypeId& comp_type = iter.key();
+			TypeCls comp_type = iter.key();
 			Base* new_component = CreateComponent(comp_type);
 			dst.InitializeComponent(*new_component);
 			iter.value().CopyTo(new_component);
@@ -57,7 +57,7 @@ public:
 	
 	void ReturnComponent(Base* c) {
 		ASSERT(c);
-		TypeId type = c->GetType();
+		TypeCls type = c->GetType();
 		
 		auto iter = Factory::refurbishers.Find(type);
 		if (iter)
@@ -67,7 +67,7 @@ public:
 	
 private:
 	
-	Base* CreateComponent(const TypeId& typeId) {
+	Base* CreateComponent(TypeCls typeId) {
 		auto iter = Factory::producers.Find(typeId);
 		ASSERT_(iter, "Invalid to create non-existant component");
 		

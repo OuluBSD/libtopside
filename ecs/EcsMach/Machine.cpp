@@ -104,7 +104,7 @@ bool Machine::HasStarted() const {
 	return is_started;
 }
 
-void Machine::Add(const TypeId& type_id, SystemBase* system) {
+void Machine::Add(TypeCls type_id, SystemBase* system) {
 	ASSERT_(!is_started, "Invalid to add systems after the machine has started");
 	
 	auto it = FindSystem(type_id);
@@ -114,7 +114,7 @@ void Machine::Add(const TypeId& type_id, SystemBase* system) {
 	systems.Add(type_id, system);
 }
 
-void Machine::Remove(const TypeId& type_id) {
+void Machine::Remove(TypeCls type_id) {
 	ASSERT_(!is_started, "Invalid to remove systems after the machine has started");
 	
 	Machine::SystemCollection::Iterator it = FindSystem(type_id);

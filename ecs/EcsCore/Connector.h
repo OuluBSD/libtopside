@@ -96,7 +96,7 @@ public:
 	void Add(ConnectorT* component) {
 		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
-		const TypeId type = AsTypeCls<ConnectorT>();
+		TypeCls type = AsTypeCls<ConnectorT>();
 		ASSERT_(component->GetType() == type, "ConnectorRef type does not match T");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(type);

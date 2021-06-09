@@ -1,6 +1,7 @@
 #ifndef _EcsCore_ConnPoolComps_h_
 #define _EcsCore_ConnPoolComps_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -52,4 +53,5 @@ NAMESPACE_TOPSIDE_END
 
 
 
+#endif
 #endif

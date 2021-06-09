@@ -106,6 +106,7 @@ public:
 	T* operator->() {return o;}
 	const T* operator->() const {return o;}
 	T& operator*() {ASSERT(o); return *o;}
+	T& GetMutable() const {ASSERT(o); return *o;}
 	operator bool() const {return o != NULL;}
 	
 	bool IsEmpty() const {return o == NULL;}
@@ -693,13 +694,13 @@ public:
 
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefTypeMap			= RefLinkedMap<TypeId, T, Parent>;
+using RefTypeMap			= RefLinkedMap<TypeCls, T, Parent>;
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeId, T, Parent>;
+using RefTypeMapIndirect	= RefLinkedMapIndirect<TypeCls, T, Parent>;
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using TypeRefMap			= LinkedMap<TypeId, Ref<T,Parent>>;
+using TypeRefMap			= LinkedMap<TypeCls, Ref<T,Parent>>;
 
 
 

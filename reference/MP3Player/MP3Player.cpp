@@ -15,7 +15,7 @@ void DummyGenerator::Initialize() {
 	gen     = e->Find<SoundGeneratorComponent>();
 	audio   = e->Find<AudioSinkComponent>();
 	
-    e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
+    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
 void DummyGenerator::Uninitialize() {
@@ -52,7 +52,7 @@ void MP3Player::Initialize() {
 		return;
 	}
 	
-    e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
+    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
 void MP3Player::Uninitialize() {
@@ -107,7 +107,7 @@ Take any address and put to BreakRefAdd
 void Main() {
 	SetCoutLog();
 	
-	//BreakRefAdd(0x80AE43230);
+	//BreakRefAdd(0x7FFFFFFFE430);
 	
 	if (!MP3PlayerInitializer())
 		Exit(1);
@@ -123,8 +123,9 @@ void Main() {
 		
 		mach.Add<ComponentStore>();
 	    mach.Add<ConnectorStore>();
+	    mach.Add<PathwaySystem>();
 	    
-	    mach.Add<CenterSystem>();
+	    //mach.Add<CenterSystem>();
 	    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
 	    
 	    #ifdef flagSTDEXC
@@ -137,7 +138,7 @@ void Main() {
 			
 			auto customer				= root->Create<Customer>();
 			auto router					= root->Add<PathwayRouter>();
-			router->AddGoalFulfill(customer);
+			router->Add(customer);
 			
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();
@@ -145,6 +146,12 @@ void Main() {
 	        else {
 	            VAR player = root->Create<MP3PlayerPrefab>();
 	        }
+	        
+	        
+	        reg.Clear();
+	        es.Clear();
+	        customer.Clear();
+	        router.Clear();
 	        
 		    mach.Start();
 		    

@@ -1,3 +1,4 @@
+#if 0
 #ifndef _EcsCore_ConnDevComps_h_
 #define _EcsCore_ConnDevComps_h_
 
@@ -49,4 +50,5 @@ DEV_LIST
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

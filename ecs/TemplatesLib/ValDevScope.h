@@ -209,7 +209,7 @@ struct ScopeValDevLibOrderT {
 		RTTI_DECL_3(DevCustomerComponent, Component<DevCustomerComponent>, \
 					OSource, RSink, \
 					ValDevSpec::GetName() + "DevCustomerComponent")
-		VIS_COMP_1_1(Order, Receipt)
+		VIS_COMP_1_1(O, R)
 		COPY_PANIC(DevCustomerComponent)
 		IFACE_GENERIC
 		void Visit(RuntimeVisitor& vis) override {}

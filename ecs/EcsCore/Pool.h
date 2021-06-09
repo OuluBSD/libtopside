@@ -64,10 +64,10 @@ public:
 	void				Initialize(Entity& e, String prefab="Custom");
 	EntityRef			CreateEmpty();
 	EntityRef			Clone(const Entity& e);
-	void				AddConnectEverything();
+	/*void				AddConnectEverything();
 	void				AddConnectEverythingWithAccel();
 	void				ConnectEverything();
-	void				ConnectEverythingWithAccel();
+	void				ConnectEverythingWithAccel();*/
 	
 	template<typename PrefabT>
 	EntityRef Create() {
@@ -154,7 +154,7 @@ public:
 	template<typename Tuple>
 	bool AllValidComponents(const Tuple& components) {
 		bool all_valid_components = true;
-		components.ForEach([&](auto component) {
+		components.ForEach([&](auto& component) {
 			all_valid_components &= component && !component->IsDestroyed() && component->IsEnabled();
 		});
 		return all_valid_components;

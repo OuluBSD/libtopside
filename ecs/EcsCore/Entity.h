@@ -32,6 +32,7 @@ protected:
 	}
 	
 public:
+	typedef Entity CLASSNAME;
 	RTTI_DECL_R2(Entity, Destroyable, Enableable)
 	Entity();
 	virtual ~Entity();
@@ -120,6 +121,7 @@ public:
 	EntityRef Clone() const;
 	void InitializeComponents();
 	void InitializeComponent(ComponentBase& comp);
+	void InitializeComponentRef(ComponentBaseRef comp) {return InitializeComponent(*comp);}
 	void UninitializeComponents();
 	void ClearComponents();
 	
@@ -149,7 +151,9 @@ public:
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
 		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>() }... };
-		tuple.ForEach([this](Ref<ComponentBase> comp) {InitializeComponent(*comp);});
+		//Callback1<Ref<ComponentBase>> cb = THISBACK(InitializeComponentRef);
+		//tuple.ForEach(cb);
+		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
 		return tuple;
 	}
 	

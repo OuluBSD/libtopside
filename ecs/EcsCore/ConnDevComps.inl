@@ -1,3 +1,4 @@
+#if 0
 #define TMPL(x) template <class DevSpec> x ConnectAllDevInterfaces<DevSpec>::
 	
 NAMESPACE_TOPSIDE_BEGIN
@@ -111,3 +112,4 @@ TMPL(void) Visit(PoolRef pool, LinkedList<LinkedList<InterfaceSourceBaseRef>>& s
 NAMESPACE_TOPSIDE_END
 
 #undef TMPL
+#endif
