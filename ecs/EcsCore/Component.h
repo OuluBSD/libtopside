@@ -17,7 +17,7 @@ protected:
 	friend class Entity;
 	
 public:
-	virtual TypeId GetType() const = 0;
+	virtual TypeCls GetType() const = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSources(RuntimeVisitor& vis) = 0;
@@ -80,7 +80,7 @@ struct Component :
 	
 	RTTI_DECL1(ComponentT, ComponentBase)
 
-	TypeId GetType() const override {
+	TypeCls GetType() const override {
 		return AsTypeCls<T>();
 	}
 	

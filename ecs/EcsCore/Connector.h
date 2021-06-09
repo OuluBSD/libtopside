@@ -14,7 +14,7 @@ class ConnectorBase :
 {
 	
 public:
-	virtual TypeId GetType() const = 0;
+	virtual TypeCls GetType() const = 0;
 	virtual void CopyTo(ConnectorBase* component) const = 0;
 	virtual void Update(double dt) = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
@@ -43,7 +43,7 @@ struct Connector :
 {
 	RTTI_DECL_R1(Connector, ConnectorBase)
 
-	TypeId GetType() const override {
+	TypeCls GetType() const override {
 		return AsTypeCls<T>();
 	}
 	

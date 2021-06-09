@@ -65,7 +65,7 @@ class ToolSystem :
 	
 public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
-	TypeId GetType() const override {return AsTypeCls<T>();}
+	TypeCls GetType() const override {return AsTypeCls<T>();}
 	
 	using ToolComponentRef = Ref<ToolComponent, RefParent1<Entity>>;
 	

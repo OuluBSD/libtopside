@@ -15,7 +15,7 @@ public:
     SystemBase();
     virtual ~SystemBase();
 
-    virtual TypeId GetType() const = 0;
+    virtual TypeCls GetType() const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	
 	Machine& GetMachine() const {return RScope::GetParent();}
@@ -42,7 +42,7 @@ public:
     using SystemBase::SystemBase;
 	
 	System() {};
-    TypeId GetType() const override {return AsTypeCls<T>();}
+    TypeCls GetType() const override {return AsTypeCls<T>();}
     
 };
 

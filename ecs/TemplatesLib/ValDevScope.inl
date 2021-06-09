@@ -216,11 +216,11 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 
 
 TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Initialize() {
-	TODO
+	
 }
 
 TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Uninitialize() {
-	TODO
+	
 }
 
 template <class ValDevSpec>

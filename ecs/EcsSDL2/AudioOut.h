@@ -4,35 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-
-class SDL2DummyAudioOutputComponent :
-	public Component<SDL2DummyAudioOutputComponent>,
-	public AudioSink
-{
-	
-public:
-	RTTI_COMP1(SDL2DummyAudioOutputComponent, AudioSink)
-	VIS_COMP_0_1(Audio)
-	COPY_PANIC(SDL2DummyAudioOutputComponent);
-	IFACE_CB(AudioSink);
-	IFACE_GENERIC;
-	
-	SimpleBufferedAudio value;
-	
-	SDL2DummyAudioOutputComponent() = default;
-	
-	void			Initialize() override {}
-	void			Uninitialize() override {}
-	void			Visit(RuntimeVisitor& vis) override {}
-	
-	AudioFormat		GetFormat(AudCtx) override {return AudioFormat();}
-	Audio&			GetValue(AudCtx) override {return value;}
-	
-	void SetAudioSyncInterval(double seconds) {}
-	
-};
-
-
 class SDL2AudioOutputComponent :
 	public Component<SDL2AudioOutputComponent>,
 	public AudioSink

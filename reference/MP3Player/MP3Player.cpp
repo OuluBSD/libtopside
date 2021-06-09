@@ -13,7 +13,7 @@ void DummyGenerator::OnError() {
 void DummyGenerator::Initialize() {
 	EntityRef e = GetEntity();
 	gen     = e->Find<SoundGeneratorComponent>();
-	audio   = e->Find<PortaudioSinkComponent>();
+	audio   = e->Find<AudioSinkComponent>();
 	
     e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
@@ -40,7 +40,7 @@ void MP3Player::OnStop() {
 void MP3Player::Initialize() {
 	EntityRef e = GetEntity();
 	file_in = e->Find<FfmpegComponent>();
-	audio   = e->Find<PortaudioSinkComponent>();
+	audio   = e->Find<AudioSinkComponent>();
 	if (!file_in || !audio)
 		Panic("Invalid MP3 player");
 	
@@ -131,11 +131,13 @@ void Main() {
 	    try {
 	    #endif
 			PoolRef root = es->GetRoot();
-			root->Add<CenterContextConnector>();
-			root->Add<ConnectAllCenterInterfaces>();
+			//root->Add<CenterContextConnector>();
+			//root->Add<ConnectAllCenterInterfaces>();
 			//root->Add<CenterStageContextConnector>();
 			
-			root->Create<AccelAudioCustomer>();
+			auto customer				= root->Create<Customer>();
+			auto router					= root->Add<PathwayRouter>();
+			router->AddGoalFulfill(customer);
 			
 	        if (run_sound_gen) {
 				VAR gen = root->Create<DummyGeneratorPrefab>();

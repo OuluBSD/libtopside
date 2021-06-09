@@ -6,6 +6,12 @@ using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
+using AudioSinkComponent = PortaudioSinkComponent;
+#else
+using AudioSinkComponent = DummyAudioSinkComponent;
+#endif
+
 
 class DummyGenerator :
 	public Component<DummyGenerator>
@@ -13,7 +19,7 @@ class DummyGenerator :
 	VIS_COMP_0_0
 	
 	RefT_Entity<SoundGeneratorComponent> gen;
-	RefT_Entity<PortaudioSinkComponent> audio;
+	RefT_Entity<AudioSinkComponent> audio;
 	
 public:
 	typedef DummyGenerator CLASSNAME;
@@ -28,7 +34,7 @@ public:
 };
 
 PREFAB_BEGIN(DummyGeneratorPrefab)
-	PortaudioSinkComponent,
+	AudioSinkComponent,
 	SoundGeneratorComponent,
 	DummyGenerator
 PREFAB_END
@@ -41,7 +47,7 @@ class MP3Player :
 	VIS_COMP_0_0
 	
 	RefT_Entity<FfmpegComponent> file_in;
-	RefT_Entity<PortaudioSinkComponent> audio;
+	RefT_Entity<AudioSinkComponent> audio;
 	
 public:
 	typedef MP3Player CLASSNAME;
@@ -58,7 +64,7 @@ public:
 
 
 PREFAB_BEGIN(MP3PlayerPrefab)
-	PortaudioSinkComponent,
+	AudioSinkComponent,
 	FfmpegComponent,
 	MP3Player
 PREFAB_END

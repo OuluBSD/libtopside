@@ -62,6 +62,10 @@
 #include "DisplaySystem.h"
 #include "WindowSystem.h"
 
+#include "Customer.h"
+#include "Router.h"
+#include "Dummy.h"
+
 #endif
 
 #if HAVE_SDL2

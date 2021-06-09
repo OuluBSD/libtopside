@@ -2,7 +2,8 @@ description "\377B102,102,102";
 
 uses
 	EcsCore,
-	Structural;
+	Structural,
+	Agent;
 
 file
 	TemplatesLib.h,

@@ -26,7 +26,7 @@ public:
 	using SourceRef	= RefT_Entity<Source>;
 	using SinkRef	= RefT_Entity<Sink>;
 	
-	TypeId GetType() const override {return AsTypeCls<ConnectAllInterfaces<ValDevSpec>>();}
+	TypeCls GetType() const override {return AsTypeCls<ConnectAllInterfaces<ValDevSpec>>();}
 	void CopyTo(ConnectorBase* component) const override {}
 	void Initialize() override;
 	void Uninitialize() override;
