@@ -27,7 +27,7 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis & gen & audio;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & gen & audio;}
 	
 	COPY_PANIC(DummyGenerator);
 	
@@ -56,7 +56,7 @@ public:
 	void OnStop();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis & file_in & audio;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & file_in & audio;}
 	
 	COPY_PANIC(MP3Player);
 	

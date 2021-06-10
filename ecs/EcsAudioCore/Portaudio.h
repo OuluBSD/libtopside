@@ -58,13 +58,13 @@ public:
 	IFACE_CB(AudioSink);
 	IFACE_CB(VideoSink);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	PortaudioSinkComponent();
 	~PortaudioSinkComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	void ForwardPackets(double dt) override {}
 	void Forward(FwdScope& fwd) override {}
 	void ForwardExchange(FwdScope& fwd) override {}

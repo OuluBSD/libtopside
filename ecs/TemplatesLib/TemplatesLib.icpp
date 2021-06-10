@@ -37,6 +37,18 @@ INITBLOCK {
 	#undef IFACE_CTX
 	#undef IFACE_CTX_CLS
 	
+	
+	
+	#define ECS_CTX(dev, value, prefix) \
+		TS::EcsFactory::RegisterInterface<prefix##Source>(); \
+		TS::EcsFactory::RegisterInterface<prefix##Sink>();
+	#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
+	#define IFACE(x) DEV_IFACE(x)
+	IFACE_LIST
+	#undef IFACE
+	#undef IFACE_CTX_CLS
+	#undef ECS_CTX
+	
 }
 
 END_UPP_NAMESPACE

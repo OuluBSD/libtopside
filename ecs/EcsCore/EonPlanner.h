@@ -16,18 +16,20 @@ protected:
 	
 	Vector<String>		values;
 	Vector<bool>		using_act;
-	
+	TypeCls				cur_comp;
 public:
 	
 	WorldState();
 	void Clear();
 	
+	void SetComponent(TypeCls t) {cur_comp = t;}
 	bool Set(int index, bool value);
 	bool Set(int index, String value);
 	
 	WorldState& operator = (const WorldState& src);
 	
 	int64 GetHashValue();
+	TypeCls GetComponent() const {return cur_comp;}
 	
 };
 
@@ -66,7 +68,6 @@ protected:
 	
 	Array<WorldState> search_cache;
 	
-	Vector<TypeCls> tmp_cls;
 	
 public:
 	ActionPlanner();
@@ -85,7 +86,7 @@ public:
 	bool SetCost(int action_id, int cost );
 	
 	
-	void DoAction( int action_id, const WorldState& src, WorldState& dest);
+	void DoAction( TypeCls dst_comp, int action_id, const WorldState& src, WorldState& dest);
 	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
 	
 };
@@ -143,7 +144,6 @@ public:
 	inline void SetCost(double d) {cost = d;}
 	inline void SetActionId(int i) {act_id = i;}
 	
-	TypeCls GetComponentType();
 	double GetDistance(const ActionNode& to);
 	double GetEstimate();
 	inline double GetCost() const {return cost;}

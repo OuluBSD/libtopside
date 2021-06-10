@@ -46,6 +46,8 @@ struct LockedScopeRefCounterCaster<T,false> {
 class RuntimeVisitor :
 	RTTIBase
 {
+	
+protected:
 	bool break_out = false;
 	bool get_refs = false;
 	bool clear_refs = false;

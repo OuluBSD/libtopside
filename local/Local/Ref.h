@@ -173,9 +173,18 @@ public:
 		return parent;
 	}
 	
+	const RParent& GetParentUnsafe() const {
+		return parent;
+	}
+	
 	template <class V>
 	Ref<V,RParent> AsRef() {
 		ASSERT(parent);
+		return Ref<V,RParent>(parent, CastPtr<V>(this));
+	}
+	
+	template <class V>
+	Ref<V,RParent> AsRefUnsafe() {
 		return Ref<V,RParent>(parent, CastPtr<V>(this));
 	}
 	

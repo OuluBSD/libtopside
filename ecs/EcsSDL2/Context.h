@@ -19,7 +19,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {VisitSources(vis); VisitSinks(vis);}
 	
 	OOSDL2::Context* GetOOSDL2() {return &*obj;}
 	

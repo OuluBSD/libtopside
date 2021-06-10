@@ -25,12 +25,12 @@ public:
 
 class ToolSelectorKey :
 	public Component<ToolSelectorKey> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(ToolSelectorKey)
 	COPY_PANIC(ToolSelectorKey)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	TypeId type { AsVoidTypeId() };
 };

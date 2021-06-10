@@ -27,12 +27,12 @@ public:
 	IFACE_CB(MidiSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	FluidsynthComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	void OpenTrackListener(int track_i);
 	//void RecvMidi(const MidiFrame& e) override;
 	//void Configure(const MidiIO::File& file) override;

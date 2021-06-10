@@ -12,7 +12,7 @@ class AccelStageContextConnector :
 {
 	RTTI_COMP0(AccelStageContextConnector)
 	VIS_COMP_0_0
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 private:
 	static int id_counter;

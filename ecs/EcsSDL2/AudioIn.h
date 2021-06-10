@@ -17,12 +17,12 @@ public:
 	COPY_PANIC(SDL2AudioInputComponent);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2AudioInputComponent() = default;
 	
 	void				Initialize() override;
 	void				Uninitialize() override;
-	void				Visit(RuntimeVisitor& vis) override {}
 	AudioStream&		GetStream(AudCtx) override;
 	void				BeginStream(AudCtx) override;
 	void				EndStream(AudCtx) override;

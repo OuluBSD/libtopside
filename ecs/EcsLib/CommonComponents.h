@@ -5,10 +5,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Transform : public Component<Transform> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(Transform)
+	COMP_DEF_VISIT
 	
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
@@ -37,17 +38,17 @@ public:
 	}
 	//void MoveTo(const OverlapSink& conn);
 	
-	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 
 void CopyTransformPos(EntityRef from, EntityRef to);
 
 class Transform2D : public Component<Transform2D> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(Transform2D)
+	COMP_DEF_VISIT
 	
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
@@ -57,15 +58,15 @@ public:
         size = t.size;
     }
     
-	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 
 class RigidBody : public Component<RigidBody> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(RigidBody)
+	COMP_DEF_VISIT
 	
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
@@ -82,16 +83,16 @@ public:
         damping_factor = r.damping_factor;
     }
     
-	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 
 
 class Renderable : public Component<Renderable> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(Renderable)
+	COMP_DEF_VISIT
 	
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
@@ -117,7 +118,6 @@ public:
 #endif
 	//Model* GetModel() {return model ? model->GetModel() : 0;}
 	
-	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 
@@ -128,7 +128,6 @@ class StaticVolumeComponent :
 	public StaticSource,
 	public GeneratorComponentBase
 {
-	VIS_COMP_1_0(Static)
 	
 protected:
 	friend class VolumeStream;
@@ -151,16 +150,17 @@ protected:
 	VolumeStream stream;
 	
 public:
+	VIS_COMP_1_0(Static)
 	RTTI_COMP1(StaticVolumeComponent, StaticSource)
 	COPY_PANIC(StaticVolumeComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	StaticVolumeComponent() : stream(this) {}
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	
 	StaticStream& GetStream(StcCtx) override {return stream;}
 	void BeginStream(StcCtx) override {}
@@ -198,7 +198,7 @@ namespace Pbr {
 public:
 	RTTI_COMP0(PbrRenderable)
 	COPY_PANIC(PbrRenderable)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
     void ResetModel(String name, Optional<mat4> offset = null_opt) {
         model_name = name;
@@ -217,12 +217,12 @@ public:
 class TextRenderable :
 	public Component<TextRenderable>
 {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(TextRenderable)
 	COPY_PANIC(TextRenderable);
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
     String				text = "";
     double				font_size = 60.0;
@@ -242,7 +242,7 @@ public:
 	VIS_COMP_1_1(Order, Receipt)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 public:
 	CustomerComponent() {}

@@ -50,7 +50,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	void operator=(const Overlap& c) {}
 	
@@ -63,7 +63,7 @@ class OverlapDetector :
 	public OverlapSource
 {
 	VIS_COMP_1_0(Overlap)
-	
+	COMP_DEF_VISIT
 	
 public:
 	using Component::Component;
@@ -75,7 +75,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	
 	void operator=(const OverlapDetector& c) {}
 	

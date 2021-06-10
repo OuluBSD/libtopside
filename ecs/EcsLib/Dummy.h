@@ -6,7 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T>
-class DummySoundGenerator {
+class DummySoundGenerator
+{
 	Vector<T> frame;
 	int frame_offset = 0;
 	int frame_part_size = 0;
@@ -110,6 +111,7 @@ public:
 class DummySoundGeneratorComponent :
 	public DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>,
 	public EventSink,
+	public OrderSink,
 	public AudioSource
 {
 	DummySoundGeneratorStream gen;
@@ -126,20 +128,25 @@ class DummySoundGeneratorComponent :
 	
 public:
 	using Component = DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>;
-	RTTI_DCOMP2(DummySoundGeneratorComponent, EventSink, AudioSource)
-	VIS_COMP_1_0(Audio)
+	RTTI_DCOMP3(DummySoundGeneratorComponent, EventSink, OrderSink, AudioSource)
+	VIS_COMP_1_2(Audio, Order, Event)
 	COPY_PANIC(DummySoundGeneratorComponent);
+	IFACE_CB(OrderSink);
 	IFACE_CB(EventSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	DummySoundGeneratorComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	
-	// Device
+	// Order
+	OrderFormat		GetFormat(OrdCtx) override {TODO}
+	Order&			GetValue(OrdCtx) override {TODO}
+	
+	// Event
 	EventFormat		GetFormat(EvCtx) override {TODO}
 	Event&			GetValue(EvCtx) override {TODO}
 	
@@ -167,15 +174,18 @@ public:
 
 class DummyAudioSinkComponent :
 	public Component<DummyAudioSinkComponent>,
-	public AudioSink
+	public AudioSink,
+	public ReceiptSource
 {
 	
 public:
-	RTTI_COMP1(DummyAudioSinkComponent, AudioSink)
-	VIS_COMP_0_1(Audio)
+	RTTI_COMP2(DummyAudioSinkComponent, AudioSink, ReceiptSource)
+	VIS_COMP_1_1(Receipt, Audio)
 	COPY_PANIC(DummyAudioSinkComponent);
+	IFACE_CB(ReceiptSource);
 	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SimpleBufferedAudio value;
 	
@@ -183,10 +193,15 @@ public:
 	
 	void			Initialize() override {}
 	void			Uninitialize() override {}
-	void			Visit(RuntimeVisitor& vis) override {}
 	
+	// AudioSink
 	AudioFormat		GetFormat(AudCtx) override {return AudioFormat();}
 	Audio&			GetValue(AudCtx) override {return value;}
+	
+	// ReceiptSource
+	ReceiptStream&	GetStream(RcpCtx) override {TODO}
+	void			BeginStream(RcpCtx) override {TODO}
+	void			EndStream(RcpCtx) override {TODO}
 	
 	void SetAudioSyncInterval(double seconds) {}
 	

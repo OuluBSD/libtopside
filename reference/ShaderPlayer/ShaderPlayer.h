@@ -21,7 +21,7 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis & accel & ctx;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & accel & ctx;}
 	void operator=(const ShaderPlayer& t) {Panic("Can't copy ShaderPlayer");}
 	
 };

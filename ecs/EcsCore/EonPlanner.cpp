@@ -11,6 +11,7 @@ WorldState::WorldState() {
 void WorldState::Clear() {
 	values.Clear();
 	using_act.Clear();
+	cur_comp = 0;
 }
 
 bool WorldState::Set(int index, bool value) {
@@ -95,10 +96,11 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 	else return i;
 }
 
-void ActionPlanner::DoAction( int action_id, const WorldState& src, WorldState& dest) {
+void ActionPlanner::DoAction( TypeCls dst_comp, int action_id, const WorldState& src, WorldState& dest) {
 	const WorldState& post = acts[action_id].postcond;
 	
 	dest = src;
+	dest.SetComponent(dst_comp);
 	
 	for(int i = 0; i < post.using_act.GetCount(); i++) {
 		if (post.using_act[i]) {
@@ -110,18 +112,22 @@ void ActionPlanner::DoAction( int action_id, const WorldState& src, WorldState& 
 
 void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
 {
-	TypeCls comp_type = n.GetComponentType();
+	TypeCls comp_type = n.GetWorldState().GetComponent();
 	
-	EcsFactory::FindSinkComponents(comp_type, tmp_cls);
+	const auto& sink_comps = EcsFactory::GetSinkComponents(comp_type);
 	
 	acts.SetCount(0);
-	for (TypeCls sink_cls : tmp_cls) {
-		EcsFactory::GetComponentActions(sink_cls, src, acts);
+	for (TypeCls sink_cls : sink_comps) {
+		EcsFactory::GetComponentActions(src, sink_cls, acts);
 	}
 	
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
 		Action& act = acts[i];
+		TypeCls dst_comp_type = act.postcond.GetComponent();
+		ASSERT(dst_comp_type != comp_type);
+		ASSERT(act.precond.GetComponent() == comp_type);
+		
 		const WorldState& pre = act.precond;
 		
 		// Check that precondition is not using something outside of src values
@@ -146,7 +152,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const W
 			act_ids.Add(i);
 			action_costs.Add(act.cost);
 			WorldState& tmp = search_cache.Add();
-			DoAction( i, src, tmp );
+			DoAction(dst_comp_type, i, src, tmp);
 			dest.Add(&tmp);
 		}
 	}
@@ -327,9 +333,6 @@ double ActionNode::GetEstimate() {
 	return GetDistance(*goal);
 }
 
-TypeCls ActionNode::GetComponentType() {
-	TODO
-}
 
 }
 NAMESPACE_TOPSIDE_END

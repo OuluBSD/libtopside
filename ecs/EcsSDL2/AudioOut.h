@@ -19,12 +19,12 @@ public:
 	COPY_PANIC(SDL2AudioOutputComponent);
 	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2AudioOutputComponent() = default;
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
-	void			Visit(RuntimeVisitor& vis) override {}
 	
 	void			Forward(FwdScope& fwd) override;
 	void			ForwardExchange(FwdScope& fwd) override;

@@ -35,7 +35,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis % cap;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis % cap;}
 	
 	//bool LoadFileAny(String path) override;
 	

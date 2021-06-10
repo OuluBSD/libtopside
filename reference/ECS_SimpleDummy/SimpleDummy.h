@@ -22,7 +22,7 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis & gen & audio;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & gen & audio;}
 	
 	COPY_PANIC(DummyGenerator);
 	

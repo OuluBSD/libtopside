@@ -10,7 +10,7 @@ class SDL2GUI3DSystem : public System<SDL2GUI3DSystem> {
 	SDL2GUI3D gui;
 	
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 public:
 	SYS_RTTI(SDL2GUI3DSystem)

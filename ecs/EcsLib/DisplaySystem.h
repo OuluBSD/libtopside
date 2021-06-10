@@ -39,13 +39,13 @@ public:
 	IFACE_CB(DisplaySource);
 	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	DefaultRenderApp();
 	
 	// Component
 	void					Initialize() override;
 	void					Uninitialize() override;
-	void					Visit(RuntimeVisitor& vis) override;
 	
 	// DisplaySource
 	DisplayStream&			GetStream(DisCtx) override;

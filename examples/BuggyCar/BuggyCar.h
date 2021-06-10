@@ -66,7 +66,7 @@ struct BuggyCar :
 	BuggyCar() {}
 	
 	void operator = (const BuggyCar& c) {Panic("Not implemented");}
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	void OnAttach() override {
 		OdeSpace::OnAttach();

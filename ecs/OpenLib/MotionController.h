@@ -14,11 +14,11 @@ typedef enum {
 class MotionControllerComponent :
 	public Component<MotionControllerComponent>
 {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	COPY_PANIC(MotionControllerComponent)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	
 	SpatialInteractionSourceHandedness	req_hand;

@@ -14,7 +14,7 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 	using Parent = Entity;
 	
 	void operator=(const StaticGroundPlane& ) {Panic("Not implemented");}
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	void OnAttach() override {
 		OdeObject::OnAttach();

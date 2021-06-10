@@ -85,6 +85,12 @@ IFACE_CTX_LIST
 #define HUMCTX ((HumanSpec*)0)
 #define HumCtx HumanSpec*
 
+#define ORDCTX ((OrderSpec*)0)
+#define OrdCtx OrderSpec*
+
+#define RCPCTX ((ReceiptSpec*)0)
+#define RcpCtx ReceiptSpec*
+
 
 
 NAMESPACE_TOPSIDE_END

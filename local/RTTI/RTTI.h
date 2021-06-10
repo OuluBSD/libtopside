@@ -26,6 +26,7 @@ public:
 	virtual const RTTI* GetTypeInfo(TypeCls) const {return nullptr;}
 	virtual void* GetBasePtr(const char* id) const {return nullptr;}
 	virtual void* GetBasePtr(TypeCls id) const {return nullptr;}
+	virtual void* GetBasePtrUnder(TypeCls id, void* mem) const {return nullptr;}
 	
 	bool Is(TypeCls id) const {return GetBasePtr(id) != nullptr;}
 	bool Is(const char* id) const {return GetBasePtr(id) != nullptr;}
@@ -102,9 +103,12 @@ public:
 
 
 #define IF_NAME(Type) if (strcmp(id, GetTypeName()) == 0) return (Type*)this;
+#define IF_MEM(Type) if ((void*)(Type*)this == mem) return Type::GetBasePtr(id);
 #define RTTI_IF0(ret) if (id == TypeIdClass()) return ret;
 #define RTTI_IF1(r, par, fn)  else if (r* t = par::fn(id)) return t;
+#define RTTI_IF1_MEM(r, par, fn)  else if (r* t = par::fn(id, mem)) return t;
 #define RTTI_ELSE(x, fn) else return x::fn(id);
+#define RTTI_ELSE_MEM(x, fn) else return x::fn(id, mem);
 
 #define RTTI_DECL_0(Type, TypeString) \
 	public: \
@@ -130,7 +134,10 @@ public:
             IF_NAME(Type) \
             RTTI_ELSE(RTTI, GetBasePtr) \
         } \
-        
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_ELSE_MEM(RTTI, GetBasePtrUnder) \
+        }
 
 
 #define RTTI_DECL_1(Type, ParentType, TypeString)                      \
@@ -157,6 +164,10 @@ public:
         void* GetBasePtr(const char* id) const override { \
             IF_NAME(Type) \
             RTTI_ELSE(ParentType, GetBasePtr) \
+        } \
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_ELSE_MEM(ParentType, GetBasePtrUnder) \
         }
 
 
@@ -189,6 +200,11 @@ public:
             IF_NAME(Type) \
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_ELSE(ParentType1, GetBasePtr) \
+        } \
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
+            RTTI_ELSE_MEM(ParentType0, GetBasePtrUnder) \
         }
 
 
@@ -227,6 +243,12 @@ public:
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_IF1(void, ParentType1, GetBasePtr) \
             RTTI_ELSE(ParentType2, GetBasePtr) \
+        } \
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType1, GetBasePtrUnder) \
+            RTTI_ELSE_MEM(ParentType2, GetBasePtrUnder) \
         }
 
 #define RTTI_DECL_4(Type, ParentType0, ParentType1, ParentType2, ParentType3, TypeString)        \
@@ -268,6 +290,13 @@ public:
             RTTI_IF1(void, ParentType1, GetBasePtr) \
             RTTI_IF1(void, ParentType2, GetBasePtr) \
             RTTI_ELSE(ParentType3, GetBasePtr) \
+        } \
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType1, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType2, GetBasePtrUnder) \
+            RTTI_ELSE_MEM(ParentType3, GetBasePtrUnder) \
         }
 
 #define RTTI_DECL_5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4, TypeString)        \
@@ -314,6 +343,14 @@ public:
             RTTI_IF1(void, ParentType2, GetBasePtr) \
             RTTI_IF1(void, ParentType3, GetBasePtr) \
             RTTI_ELSE(ParentType4, GetBasePtr) \
+        } \
+        void* GetBasePtrUnder(TypeCls id, void* mem) const override { \
+			IF_MEM(Type) \
+            RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType1, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType2, GetBasePtrUnder) \
+            RTTI_IF1_MEM(void, ParentType3, GetBasePtrUnder) \
+            RTTI_ELSE_MEM(ParentType4, GetBasePtrUnder) \
         }
 
 

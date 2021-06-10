@@ -19,6 +19,7 @@ INITBLOCK {
 	EcsFactory::RegisterComponent<Viewport>();
 	//EcsFactory::RegisterComponent<PrimitiveShape>();
 	EcsFactory::RegisterComponent<ModelComponent>();
+	EcsFactory::RegisterComponent<DummySoundGeneratorComponent>();
 	EcsFactory::RegisterComponent<DummyAudioSinkComponent>();
 	EcsFactory::RegisterComponent<CustomerComponent>();
 	

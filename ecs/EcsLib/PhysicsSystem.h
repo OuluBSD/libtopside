@@ -12,7 +12,7 @@ class PhysicsSystem :
 {
 	
 public:
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	SYS_CTOR(PhysicsSystem);
 	
 	static const vec3 EarthGravity;

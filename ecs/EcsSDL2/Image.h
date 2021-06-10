@@ -40,12 +40,12 @@ public:
 	COPY_PANIC(SDL2ImageComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2ImageComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	bool LoadFileAny(String path);
 	Size GetResolution() const;
 	

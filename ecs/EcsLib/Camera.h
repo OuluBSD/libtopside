@@ -15,7 +15,7 @@ public:
 	VIS_COMP_0_1(Human)
 	IFACE_CB(HumanSink);
 	IFACE_GENERIC;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}

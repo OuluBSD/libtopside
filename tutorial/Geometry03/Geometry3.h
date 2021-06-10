@@ -24,7 +24,7 @@ struct Geometry3 : public Component<Geometry3>, public DisplaySink {
 	Geometry3();
 	~Geometry3();
 	void operator=(const Geometry3& t) {Panic("Can't copy Geometry3");}
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	float RandomAngularVel() const {return (0.1 + Randomf() * 0.9) * M_2PI;}
 	void ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right);
 	

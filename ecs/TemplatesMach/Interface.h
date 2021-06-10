@@ -31,6 +31,7 @@ class InterfaceSourceBase :
 {
 public:
 	RTTI_DECL2(InterfaceSourceBase, InterfaceBase, ExchangeSourceProvider)
+	virtual TypeCls GetSourceCls() const = 0;
 };
 
 using InterfaceSinkBaseRef = Ref<InterfaceSinkBase, RefParent1<Entity>>;
@@ -66,6 +67,7 @@ class InterfaceSource :
 public:
 	RTTI_DECL1(Source, InterfaceSourceBase)
 	
+	TypeCls GetSourceCls() const override {return AsTypeCls<O>();}
 	TypeCls GetSinkCls() const override {
 		//LOG("InterfaceSource: " << GetDynamicName() << " " << IntStr64(AsTypeCls<I>()));
 		return AsTypeCls<I>();
@@ -117,13 +119,16 @@ class CollectInterfacesVisitor : public RuntimeVisitor {
 		using Sink = InterfaceSinkBase;
 		using Src = InterfaceSourceBase;
 		
-		Sink* sink = (Sink*)type.GetBasePtr(AsTypeCls<Sink>());
-		if (sink)
-			sink_ifaces.Add(sink->AsRef<Sink>());
-		
-		Src* src = (Src*)type.GetBasePtr(AsTypeCls<Src>());
-		if (src)
-			src_ifaces.Add(src->AsRef<Src>());
+		Sink* sink = (Sink*)type.GetBasePtrUnder(AsTypeCls<Sink>(), mem);
+		if (sink) {
+			InterfaceSinkBaseRef r(sink->GetParentUnsafe(), sink);
+			sink_ifaces.FindAdd(r);
+		}
+		Src* src = (Src*)type.GetBasePtrUnder(AsTypeCls<Src>(), mem);
+		if (src) {
+			InterfaceSourceBaseRef r(src->GetParentUnsafe(), src);
+			src_ifaces.FindAdd(r);
+		}
 		
 		return true;
 	}
@@ -134,8 +139,47 @@ public:
 	LinkedList<InterfaceSinkBaseRef> sink_ifaces;
 	LinkedList<InterfaceSourceBaseRef> src_ifaces;
 	
+	
 };
 
+
+
+/*class ComponentInterfacesVisitor : public RuntimeVisitor {
+	
+	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {
+		using Sink = InterfaceSinkBase;
+		using Src = InterfaceSourceBase;
+		
+		Sink* sink = (Sink*)type.GetBasePtrUnder(AsTypeCls<Sink>(), mem);
+		if (sink) {
+			sink_ifaces.FindAdd(sink->AsRefUnsafe<Sink>());
+		}
+		Src* src = (Src*)type.GetBasePtrUnder(AsTypeCls<Src>(), mem);
+		if (src) {
+			src_ifaces.FindAdd(src->AsRefUnsafe<Src>());
+		}
+		
+		return true;
+	}
+	void OnExit() override {}
+	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {}
+	
+public:
+	LinkedList<InterfaceSinkBaseRef> sink_ifaces;
+	LinkedList<InterfaceSourceBaseRef> src_ifaces;
+	
+	
+	template <class T>
+	void Visit(T& o) {
+		if (break_out) return;
+		if (OnEntry(o.GetRTTI(), &o, GetRefCounter(&o))) {
+			o.VisitSources(*this);
+			o.VisitSinks(*this);
+			OnExit();
+		}
+	}
+	
+};*/
 
 NAMESPACE_TOPSIDE_END
 

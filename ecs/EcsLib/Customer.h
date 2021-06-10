@@ -5,16 +5,32 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class CustomerComponent : public Component<CustomerComponent> {
-	VIS_COMP_0_0
+class CustomerComponent :
+	public Component<CustomerComponent>,
+	public ReceiptSink,
+	public OrderSource
+{
 	
 public:
-	RTTI_COMP0(CustomerComponent)
+	VIS_COMP_1_1(Order, Receipt)
+	RTTI_COMP2(CustomerComponent, ReceiptSink, OrderSource)
 	COPY_PANIC(CustomerComponent)
-	void Visit(RuntimeVisitor& vis) override {}
+	IFACE_GENERIC
+	IFACE_CB(OrderSource)
+	IFACE_CB(ReceiptSink)
+	COMP_DEF_VISIT
 	
 	virtual void Initialize() override;
 	virtual void Uninitialize() override;
+	
+	// Receipt
+	ReceiptFormat		GetFormat(RcpCtx) override {TODO}
+	Receipt&			GetValue(RcpCtx) override {TODO}
+	
+	// Order
+	OrderStream&	GetStream(OrdCtx) override {TODO}
+	void			BeginStream(OrdCtx) override {TODO}
+	void			EndStream(OrdCtx) override {TODO}
 	
 };
 

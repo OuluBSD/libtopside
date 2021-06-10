@@ -87,9 +87,11 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	
 	Eon::WorldState src;
+	src.SetComponent(AsTypeCls<CustomerComponent>());
 	src.Set(CONNECTED, false);
 	
 	Eon::WorldState goal;
+	goal.SetComponent(AsTypeCls<CustomerComponent>());
 	goal.Set(CONNECTED, true);
 	
 	
@@ -114,13 +116,13 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	Eon::APlanNode goal_node;
 	goal_node.SetWorldState(goal);
 	
-	Eon::APlanNode root;
-	root.SetActionPlanner(planner);
-	root.SetGoal(goal_node);
-	root.SetWorldState(src);
+	Eon::APlanNode start_node;
+	start_node.SetActionPlanner(planner);
+	start_node.SetGoal(goal_node);
+	start_node.SetWorldState(src);
 	
 	AStar<Eon::ActionNode> as;
-	Vector<Eon::ActionNode*> plan = as.Search(root);
+	Vector<Eon::ActionNode*> plan = as.Search(start_node);
 	
 	if (plan.IsEmpty()) {
 		AddError("Eon action planner failed");

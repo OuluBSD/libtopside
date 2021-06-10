@@ -192,7 +192,7 @@ public:
 	bool Redraw(bool only_pending) override;
 	void LeftDown(Point p, dword keyflags) override;
 	void ChildGotFocus() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	virtual void ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dword keyflags);
 };
 

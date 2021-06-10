@@ -44,7 +44,7 @@ struct ScopeValDevLibT {
 		VIS_COMP_1_0(Val)
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
-		void Visit(RuntimeVisitor& vis) override {}
+		COMP_DEF_VISIT
 		
 		
 		struct LocalValue : public SimpleBufferedValue {
@@ -105,7 +105,7 @@ struct ScopeValDevLibT {
 		VIS_COMP_1_1(Val, Val)
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
-		void Visit(RuntimeVisitor& vis) override {}
+		COMP_DEF_VISIT
 		
 	public:
 		
@@ -212,7 +212,7 @@ struct ScopeValDevLibOrderT {
 		VIS_COMP_1_1(O, R)
 		COPY_PANIC(DevCustomerComponent)
 		IFACE_GENERIC
-		void Visit(RuntimeVisitor& vis) override {}
+		COMP_DEF_VISIT
 		
 	public:
 		DevCustomerComponent() {}

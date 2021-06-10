@@ -6,12 +6,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ShootingComponent :
 	public Component<ShootingComponent> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	
 	void SetEnabled(bool enable) override;

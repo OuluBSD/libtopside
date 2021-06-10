@@ -168,7 +168,7 @@ protected:
 public:
 	typedef OdeSystem CLASSNAME;
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	using Parent = Machine;
 	
 	static vec3 EarthGravity;

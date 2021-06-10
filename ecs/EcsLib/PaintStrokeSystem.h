@@ -7,12 +7,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class PaintStrokeComponent :
 	public Component<PaintStrokeComponent> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(PaintStrokeComponent)
 	COPY_PANIC(PaintStrokeComponent)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	Vector<Square> squares;
 	bool stroke_changed = true;

@@ -194,7 +194,7 @@ typedef enum {
 
 
 
-#define VIS_THIS(t) t::Visit(vis);
+#define VIS_THIS(t) vis.Visit(*(t*)this);
 
 #define VIS_SOURCES_0		void VisitSources(RuntimeVisitor& vis) override {}
 #define VIS_SOURCES_1(a)	void VisitSources(RuntimeVisitor& vis) override {VIS_THIS(a##Source)}
@@ -215,6 +215,8 @@ typedef enum {
 #define VIS_COMP_2_2(a, b, c, d)	VIS_SOURCES_2(a, b)		VIS_SINKS_2(c, d)
 
 
+#define COMP_DEF_VISIT_ VisitSinks(vis); VisitSources(vis);
+#define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_}
 
 
 

@@ -32,7 +32,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
+	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis % file_in;}
 	
 	// Audio
 	AudioStream&	GetStream(AudCtx) override;

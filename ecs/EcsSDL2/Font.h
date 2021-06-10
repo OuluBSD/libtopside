@@ -17,12 +17,12 @@ public:
 	COPY_PANIC(SDL2FontComponent);
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2FontComponent() = default;
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitStatic() override;
 	StaticStream&		GetStream(StcCtx) override {TODO}
 	void				BeginStream(StcCtx) override {TODO}

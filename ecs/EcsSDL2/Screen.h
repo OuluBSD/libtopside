@@ -22,12 +22,12 @@ public:
 	COPY_PANIC(SDL2ScreenComponent);
 	IFACE_CB(DisplaySink);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2ScreenComponent() = default;
 	
 	void			Initialize() override;
 	void			Uninitialize() override;
-	void			Visit(RuntimeVisitor& vis) override {}
 	//void			SetTitle(String s) override;
 	
 	DisplayFormat	GetFormat(DisCtx) override;

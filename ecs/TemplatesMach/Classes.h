@@ -359,7 +359,7 @@ public:
 };
 
 class SparseTimeSeriesBase : RTTIBase {
-	RTTI_DECL0(OnceBase)
+	RTTI_DECL0(SparseTimeSeriesBase)
 public:
 	static const int def_sample_rate = 1;
 	

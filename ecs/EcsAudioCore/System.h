@@ -19,7 +19,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	void PostLoadFileAny(String path) {post_load_file_path = path;}
 	
 	String GetLastError() const {return last_error;}
@@ -43,7 +43,7 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	String GetLastError() const {return last_error;}
 	
@@ -64,12 +64,12 @@ public:
 	IFACE_CB(AudioSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	MixerChannelInputComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
@@ -99,12 +99,12 @@ public:
 	IFACE_CB(AudioSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	MixerChannelOutputComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
@@ -135,12 +135,12 @@ public:
 	IFACE_CB(AudioSink);
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	MixerAudioSourceComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	
 	// AudioSource
 	AudioStream&		GetStream(AudCtx) override;
@@ -174,6 +174,7 @@ public:
 	COPY_PANIC(MidiFileComponent);
 	IFACE_CB(EventSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	MidiFileComponent();
 	
@@ -182,7 +183,6 @@ public:
 	//void EmitMidi(double dt) override;
 	//bool IsSupported(DevType type) override {return true;}
 	void OnLink(SinkProv sink, Cookie src_c, Cookie sink_c) override {TODO}
-	void Visit(RuntimeVisitor& vis) override {}
 	bool OpenFilePath(String path);
 	void Clear();
 	void CollectTrackEvents(int i);

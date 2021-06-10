@@ -15,7 +15,7 @@ class DirectWindow :
 public:
 	VIS_COMP_0_0
 	COPY_PANIC(DirectWindow)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	//IFACE_CB(DisplaySink);
 	//IFACE_CB(AudioSink);

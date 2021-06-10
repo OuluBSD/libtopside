@@ -17,12 +17,12 @@ public:
 	COPY_PANIC(SDL2SensorComponent);
 	IFACE_CB(HumanSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2SensorComponent() = default;
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
 	HumanStream&		GetStream(HumCtx) override {TODO}

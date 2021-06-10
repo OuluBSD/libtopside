@@ -61,7 +61,7 @@ struct ScopeConvDevLibT {
 		VIS_COMP_1_1(To, From)
 		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
-		void Visit(RuntimeVisitor& vis) override {}
+		COMP_DEF_VISIT
 		
 		
 		struct LocalSink : FromSimpleBufferedValue {

@@ -17,7 +17,7 @@ typedef Vector<RendModel> VectorRendModel;
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
     void operator=(const PrimitiveShape& src) {}
     
 	void SetShape(ShapeId type, const vec2& ax_vec);
@@ -36,13 +36,13 @@ class ModelComponent :
 	public Component<ModelComponent>,
 	public ModelSink
 {
+public:
 	RTTI_COMP1(ModelComponent, ModelSink)
 	VIS_COMP_0_1(Model)
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
-public:
+	COMP_DEF_VISIT
 	
-	void Visit(RuntimeVisitor& vis) override {}
     void operator=(const ModelComponent& src) {}
     
     bool LoadModel(String path);

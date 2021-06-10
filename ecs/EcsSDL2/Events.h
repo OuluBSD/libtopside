@@ -44,12 +44,12 @@ public:
 	COPY_PANIC(SDL2EventsComponent);
 	IFACE_CB(EventSource);
 	IFACE_GENERIC;
+	COMP_DEF_VISIT
 	
 	SDL2EventsComponent() : stream(this) {}
 	
 	void				Initialize() override;
 	void				Uninitialize() override;
-	void				Visit(RuntimeVisitor& vis) override {}
 	EventStream&		GetStream(EvCtx) override {return stream;}
 	void				BeginStream(EvCtx) override {stream.FillBuffer();}
 	void				EndStream(EvCtx) override {stream.DropBuffer();}

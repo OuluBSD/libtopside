@@ -14,12 +14,12 @@ public:
 	RTTI_COMP0(SDL2TimerComponent)
 	VIS_COMP_0_0
 	COPY_PANIC(SDL2TimerComponent);
+	COMP_DEF_VISIT
 	
 	SDL2TimerComponent() = default;
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::Timer* GetOOSDL2() {return &*obj;}

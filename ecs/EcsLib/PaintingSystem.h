@@ -8,12 +8,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class PaintComponent :
 	public Component<PaintComponent> {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(PaintComponent)
 	COPY_PANIC(PaintComponent)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	
 	

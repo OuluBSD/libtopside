@@ -53,8 +53,8 @@ Take any address and put to BreakRefAdd
 
 void Main() {
 	SetCoutLog();
-	
 	EcsFactory::Dump();
+	
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
 	

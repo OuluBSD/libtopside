@@ -20,7 +20,7 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	COPY_PANIC(OrchestraConductor);
 	

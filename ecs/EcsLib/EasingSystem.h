@@ -7,11 +7,11 @@ NAMESPACE_TOPSIDE_BEGIN
 class Easing :
 	public Component<Easing>
 {
-	VIS_COMP_0_0
 	
 public:
+	VIS_COMP_0_0
 	RTTI_COMP0(Easing)
-	void Visit(RuntimeVisitor& vis) override {}
+	COMP_DEF_VISIT
 	
 	
     vec3 target_position = { 0,0,0 };
