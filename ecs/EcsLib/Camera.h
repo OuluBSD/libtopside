@@ -25,8 +25,8 @@ public:
 	//ViewableRef GetViewable() override {return ComponentBase::AsRef<Viewable>();}
 	//TransformRef GetTransform();
 	
-	HumanFormat		GetFormat(HumCtx) override;
-	Human&			GetValue(HumCtx) override;
+	HumanFormat		GetFormat(HumCtx) override {TODO}
+	Human&			GetValue(HumCtx) override {TODO}
 	
 };
 

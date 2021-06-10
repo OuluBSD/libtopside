@@ -20,7 +20,6 @@ struct RGBAT : Moveable<RGBAT<T>> {
 		b = c.b;
 		a = c.a;
 	}
-	bool operator==(const RGBAT& p) {return MemoryCompare(this, &p, sizeof(RGBAT)) == 0;}
 	
 	T& operator[](int i) {ASSERT(i >= 0 && i < 4); return *(&r + i);}
 	
@@ -29,6 +28,10 @@ struct RGBAT : Moveable<RGBAT<T>> {
 typedef RGBAT<byte>		RGBA;
 typedef RGBAT<float>	RGBAf32;
 typedef RGBAT<double>	RGBAf;
+
+bool operator==(const RGBA& a, const RGBA& b);
+bool operator==(const RGBAf& a, const RGBAf& b);
+
 
 inline RGBA RGBAZero() {RGBA r{0,0,0,0}; return r;}
 

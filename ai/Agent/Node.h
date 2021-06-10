@@ -5,8 +5,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>
-class Node : public T {
+class Node :
+	public T,
+	RTTIBase
+{
 public:
+	RTTI_DECL1(Node, T)
 	
 	typedef T ValueType;
 	

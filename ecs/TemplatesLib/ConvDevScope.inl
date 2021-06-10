@@ -16,12 +16,13 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	
 	ToComponent::Initialize();
 	
-	ComponentBase* cb = CastPtr<ComponentBase>(this);
+	TODO
+	/*ComponentBase* cb = CastPtr<ComponentBase>(this);
 	ASSERT(cb);
 	StageContextConnectorRef ctx = cb->GetEntity()->template FindNearestWith<StageContextConnector>();
 	ASSERT(ctx);
 	if (ctx)
-		ctx->FindAdd(this->template AsRef<StageComponent>());
+		ctx->FindAdd(this->template AsRef<StageComponent>());*/
 }
 
 TMPL_CONVDEVLIB(void) ConvertComponent::Uninitialize() {
@@ -63,6 +64,8 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	
 	ToComponent::template ConvertPacket<FromDevSpec, ValSpec>(p);
 	
+	TODO
+	#if 0
 	p_fmt = p->GetFormat();
 	auto src_fmt = src_value.GetFormat();
 	if (p_fmt != src_fmt) {
@@ -76,6 +79,7 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	else {
 		ToComponent::template ForwardPacket<ValSpec>(fwd, p);
 	}
+	#endif
 }
 
 TMPL_CONVDEVLIB(void) ConvertComponent::ForwardExchange(FwdScope& fwd) {

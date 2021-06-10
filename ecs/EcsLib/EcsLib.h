@@ -65,6 +65,7 @@
 #include "Customer.h"
 #include "Router.h"
 #include "Dummy.h"
+
 #include "Eon.h"
 
 #endif
@@ -73,7 +74,6 @@
 	#include <EcsSDL2/EcsSDL2.h>
 #endif
 
-#include <EcsMultimedia/EcsMultimedia.h>
 
 #if defined flagGUI && defined flagCTRL
 	#include <SDL2GUI3D/System.h>

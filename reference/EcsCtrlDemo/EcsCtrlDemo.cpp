@@ -27,7 +27,7 @@ bool EcsCtrlDemo::InitializeDefault() {
 	
 	EntityRef reader = p->CreateEmpty();
 	reader->SetPrefab("Manual debug sound input");
-	SoundGeneratorComponentRef sg = reader->Add<SoundGeneratorComponent>();
+	DummySoundGeneratorComponentRef sg = reader->Add<DummySoundGeneratorComponent>();
 	sg->SetPreset(0);
 	
 	EntityRef output = p->CreateEmpty();

@@ -3,7 +3,8 @@ description "\377B0,131,159";
 uses
 	Music,
 	AudioCore,
-	Shadertoy;
+	Shadertoy,
+	EcsEssential;
 
 uses(NEVER) AccelCore;
 

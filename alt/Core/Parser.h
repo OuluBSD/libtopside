@@ -96,6 +96,7 @@ public:
 	String GetFileName() const {return pos.fn;}
 	Pos GetPos() const {return pos;}
 	void SetPos(const Pos& p) {pos = p;}
+	void Set(String input, String fn, int line=0) {this->input = input; pos.fn = fn; pos.line = line;}
 	
 	String ReadId();
 	String ReadString(char delim='\"', bool checkend=true);

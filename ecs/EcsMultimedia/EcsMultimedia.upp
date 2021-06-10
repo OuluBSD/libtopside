@@ -3,10 +3,12 @@ description "\3770,128,128";
 uses
 	Multimedia,
 	EcsAudioCore,
-	EcsLib;
+	EcsLib,
+	EcsEssential;
 
 file
 	EcsMultimedia.h,
+	EcsMultimedia.icpp,
 	Audio.h,
 	Video.h,
 	Video.cpp,

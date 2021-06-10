@@ -18,7 +18,7 @@ class DummyGenerator :
 {
 	VIS_COMP_0_0
 	
-	RefT_Entity<SoundGeneratorComponent> gen;
+	RefT_Entity<DummySoundGeneratorComponent> gen;
 	RefT_Entity<AudioSinkComponent> audio;
 	
 public:
@@ -35,7 +35,7 @@ public:
 
 PREFAB_BEGIN(DummyGeneratorPrefab)
 	AudioSinkComponent,
-	SoundGeneratorComponent,
+	DummySoundGeneratorComponent,
 	DummyGenerator
 PREFAB_END
 

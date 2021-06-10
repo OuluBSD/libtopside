@@ -219,6 +219,36 @@ int EventSample::GetSize(Type t) {
 
 
 
+
+
+
+
+
+
+String OrderSample::ToString(Type t) {
+	TODO
+}
+
+int OrderSample::GetSize(Type t) {
+	TODO
+}
+
+
+
+
+
+
+String ReceiptSample::ToString(Type t) {
+	TODO
+}
+
+int ReceiptSample::GetSize(Type t) {
+	TODO
+}
+
+
+
+
 String DevBase::ToString() const {
 	#define DEV(x) if (dev_spec == AsTypeCls<x##Spec>()) return #x;
 	DEV_LIST

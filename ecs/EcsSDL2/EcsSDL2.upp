@@ -5,7 +5,7 @@ uses
 
 file
 	EcsSDL2.h,
-	EcsSDL2.cpp,
+	EcsSDL2.icpp,
 	Timer.h,
 	Timer.cpp,
 	AudioIn.h,

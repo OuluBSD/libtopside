@@ -8,7 +8,7 @@ typedef RTuple<Ref<ModelMesh>, TransformRef, RenderableRef> RendModel;
 typedef Vector<RendModel> VectorRendModel;
 
 
-struct PrimitiveShape :
+/*struct PrimitiveShape :
 	public Component<PrimitiveShape>,
 	public ModelSink
 {
@@ -29,7 +29,7 @@ protected:
 	
 	
 	
-};
+};*/
 
 
 class ModelComponent :

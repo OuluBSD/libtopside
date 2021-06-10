@@ -1,0 +1,6 @@
+
+player.audio.generator: {
+	reg.app.arg.mode: "generator";
+	center.audio.test: true;
+	center.audio.sink.hw: true;
+}

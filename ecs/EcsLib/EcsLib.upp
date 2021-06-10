@@ -3,23 +3,14 @@ description "Components\377B0,87,128";
 uses
 	TemplatesLib;
 
-uses(GUI) EcsSDL2;
-
-uses(!GUI) EcsNonGUI;
-
 uses(STDEXC) Esc;
-
-uses(VR & UWP) WinLib;
-
-uses(VR & STEAM & !UWP) SteamLib;
-
-uses(VR & !STEAM & !UWP) OpenLib;
 
 file
 	Copying,
 	TODO.txt,
 	EcsLib.h,
-	EcsLib.cpp,
+	EcsLib.icpp,
+	NonGui.cpp,
 	Defs.h,
 	Component.h,
 	Component.inl highlight cpp,
@@ -34,8 +25,6 @@ file
 	EasingSystem.h,
 	EasingSystem.cpp,
 	WorldLogic.h,
-	DisplaySystem.h,
-	DisplaySystem.cpp,
 	WindowSystem.h,
 	WindowSystem.cpp,
 	RegistrySystem.h,
@@ -65,6 +54,8 @@ file
 	ThrowingSystem.h,
 	ThrowingSystem.cpp,
 	Trash readonly separator,
+	DisplaySystem.h,
+	DisplaySystem.cpp,
 	EventSystem.h,
 	EventSystem.cpp,
 	RenderingSystem.h,

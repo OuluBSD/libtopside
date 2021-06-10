@@ -25,7 +25,7 @@ class ToolComponent;
 class MotionControllerComponent;
 class PbrRenderable;
 class CoreWindow;
-class SoundGeneratorComponent;
+class DummySoundGeneratorComponent;
 class PortaudioSinkComponent;
 class StaticVolumeComponent;
 class Viewable;
@@ -83,7 +83,7 @@ using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 
-using SoundGeneratorComponentRef		= Ref<SoundGeneratorComponent,			RefParent1<Entity>>;
+using DummySoundGeneratorComponentRef	= Ref<DummySoundGeneratorComponent,		RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;

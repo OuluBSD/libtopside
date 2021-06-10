@@ -42,6 +42,9 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 
 
 
+ModelLoader::ModelLoader() {
+	
+}
 
 bool ModelLoader::LoadModel(String path) {
 	model.Clear();

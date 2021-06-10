@@ -1,9 +1,8 @@
-#include "MP3Player.h"
+#include "SimpleDummy.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
-bool run_sound_gen;
 
 
 void DummyGenerator::OnError() {
@@ -13,7 +12,7 @@ void DummyGenerator::OnError() {
 void DummyGenerator::Initialize() {
 	EntityRef e = GetEntity();
 	gen     = e->Find<DummySoundGeneratorComponent>();
-	audio   = e->Find<AudioSinkComponent>();
+	audio   = e->Find<DummyAudioSinkComponent>();
 	
     //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
@@ -27,62 +26,10 @@ void DummyGenerator::Uninitialize() {
 
 
 
-
-
-void MP3Player::OnError() {
-	GetEntity()->GetMachine().SetNotRunning();
-}
-
-void MP3Player::OnStop() {
-	GetEntity()->GetMachine().SetNotRunning();
-}
-
-void MP3Player::Initialize() {
-	EntityRef e = GetEntity();
-	file_in = e->Find<FfmpegComponent>();
-	audio   = e->Find<AudioSinkComponent>();
-	if (!file_in || !audio)
-		Panic("Invalid MP3 player");
-	
-	file_in->WhenStopped = THISBACK(OnStop);
-	
-	if (!file_in->LoadFileAny(file_path)) {
-		LOG("opening media file failed: " << file_in->GetLastError());
-		GetMachine().SetNotRunning();
-		return;
-	}
-	
-    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
-}
-
-void MP3Player::Uninitialize() {
-	file_in.Clear();
-	audio.Clear();
-	GetEntity()->Destroy();
-}
-
-bool MP3PlayerInitializer() {
+bool SimpleDummyInitializer() {
 	SetCoutLog();
 	
-	CommandLineArguments cmd;
-	cmd.AddArg('g', "Test sound generator", false);
-	cmd.AddArg('f', "The path for the music file", true, "path");
-	if (!cmd.Parse()) {
-		cmd.PrintHelp();
-		return false;
-	}
-	
-	const auto& inputs = cmd.GetInputs();
-	for(const auto& in : inputs) {
-		if (in.key == 'f') file_path = in.value;
-		if (in.key == 'g') run_sound_gen = true;
-	}
-	if (file_path.IsEmpty() && !run_sound_gen) {
-		cmd.PrintHelp();
-		return false;
-	}
-	
-	return run_sound_gen || FileExists(file_path);
+	return true;
 }
 
 
@@ -111,7 +58,7 @@ void Main() {
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
 	
-	if (!MP3PlayerInitializer())
+	if (!SimpleDummyInitializer())
 		Exit(1);
 	
 	{
@@ -149,7 +96,7 @@ void Main() {
 					VAR gen = root->Create<DummyGeneratorPrefab>();
 		        }
 		        else {
-		            VAR player = root->Create<MP3PlayerPrefab>();
+		            VAR player = root->Create<SimpleDummyPrefab>();
 		        }
 		        
 		        
@@ -158,7 +105,7 @@ void Main() {
 		        customer.Clear();
 		        router.Clear();*/
 		        
-		        eon->PostLoadFile(GetDataFile("MP3Player.eon"));
+		        eon->PostLoadFile(GetDataFile("SimpleDummy.eon"));
 		    }
 		        
 		    if (!fail) {
@@ -175,7 +122,7 @@ void Main() {
 			        
 			        Sleep(1);
 			        
-			        if (run_sound_gen && total.Seconds() > 3)
+			        if (total.Seconds() > 3)
 			            mach.SetNotRunning();
 			    }
 			    

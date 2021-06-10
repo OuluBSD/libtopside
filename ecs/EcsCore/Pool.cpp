@@ -61,6 +61,15 @@ EntityRef Pool::CreateEmpty() {
 	return e;
 }
 
+EntityRef Pool::GetAddEmpty(String name) {
+	EntityRef e = FindEntityByName(name);
+	if (e)
+		return e;
+	e = CreateEmpty();
+	e->SetName(name);
+	return e;
+}
+
 EntityRef Pool::Clone(const Entity& c) {
 	EntityRef e = CreateEmpty();
 	e->CopyHeader(c);

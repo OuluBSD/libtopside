@@ -63,6 +63,7 @@ public:
 	
 	void				Initialize(Entity& e, String prefab="Custom");
 	EntityRef			CreateEmpty();
+	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
 	/*void				AddConnectEverything();
 	void				AddConnectEverythingWithAccel();

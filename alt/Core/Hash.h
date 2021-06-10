@@ -17,6 +17,9 @@ public:
 	CombineHash& Put(int value) { hash = ((hash << 5) + hash) + value; return *this; }
 	CombineHash& Put64(int64 value) {Put((int)(value >> 32)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
 	
+	CombineHash& operator << (int value) { Put(value); return *this; }
+	CombineHash& operator << (hash_t value) { Put(value); return *this; }
+	CombineHash& operator << (int64 value) { Put64(value); return *this; }
 	template <class T> CombineHash& operator << (const T& value) { Put(value.GetHashValue()); return *this; }
 	
 };

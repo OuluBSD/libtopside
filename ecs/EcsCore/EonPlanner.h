@@ -1,8 +1,8 @@
-#ifndef _Agent_ActionPlanner_h_
-#define _Agent_ActionPlanner_h_
-
+#ifndef _EcsLib_EonPlanner_h_
+#define _EcsLib_EonPlanner_h_
 
 NAMESPACE_TOPSIDE_BEGIN
+namespace Eon {
 
 class ActionPlanner;
 class ActionNode;
@@ -14,7 +14,8 @@ protected:
 	friend class ActionPlannerWrapper;
 	friend class ActionNode;
 	
-	Vector<bool> values, using_act;
+	Vector<String>		values;
+	Vector<bool>		using_act;
 	
 public:
 	
@@ -22,6 +23,7 @@ public:
 	void Clear();
 	
 	bool Set(int index, bool value);
+	bool Set(int index, String value);
 	
 	WorldState& operator = (const WorldState& src);
 	
@@ -54,11 +56,17 @@ protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
 	
-	int atom_count = 0;
+	struct Atom : Moveable<Atom> {
+		Vector<String> id;
+	};
+	
+	VectorMap<String, Atom> atoms;
 	Vector<Action> acts;
 	ActionPlannerWrapper* wrapper = 0;
 	
 	Array<WorldState> search_cache;
+	
+	Vector<TypeCls> tmp_cls;
 	
 public:
 	ActionPlanner();
@@ -67,17 +75,18 @@ public:
 	void Clear();
 	
 	int GetActionCount() const {return acts.GetCount();}
-	int GetAtomCount() const {return atom_count;}
+	int GetAtomCount() const {return atoms.GetCount();}
 	
-	void AddSize(int action_count, int atom_count);
-	void SetSize(int action_count, int atom_count);
+	int GetAddAtom(String id);
+	int GetAddAtom(const Id& id);
+	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	
 	
 	void DoAction( int action_id, const WorldState& src, WorldState& dest);
-	void GetPossibleStateTransition(const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
+	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
 	
 };
 
@@ -134,6 +143,7 @@ public:
 	inline void SetCost(double d) {cost = d;}
 	inline void SetActionId(int i) {act_id = i;}
 	
+	TypeCls GetComponentType();
 	double GetDistance(const ActionNode& to);
 	double GetEstimate();
 	inline double GetCost() const {return cost;}
@@ -143,27 +153,30 @@ public:
 typedef Node<ActionNode> APlanNode;
 
 
-template <>	inline bool TerminalTest<ActionNode>(Node<ActionNode>& n) {
+}
+
+
+template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) {
 	if (n.GetEstimate() <= 0)
 		return true;
-	WorldState& ws = n.GetWorldState();
-	ActionPlanner& ap = APlanNode::GetActionPlanner();
-	Array<WorldState*> to;
+	Eon::WorldState& ws = n.GetWorldState();
+	Eon::ActionPlanner& ap = Eon::APlanNode::GetActionPlanner();
+	Array<Eon::WorldState*> to;
 	Vector<int> act_ids;
 	Vector<double> action_costs;
-	ap.GetPossibleStateTransition(ws, to, act_ids, action_costs);
+	ap.GetPossibleStateTransition(n, ws, to, act_ids, action_costs);
 	for(int i = 0; i < to.GetCount(); i++) {
-		WorldState& ws_to = *to[i];
+		Eon::WorldState& ws_to = *to[i];
 		int64 hash = ws_to.GetHashValue();
-		int j = ActionNode::tmp_sub.Find(hash);
+		int j = Eon::ActionNode::tmp_sub.Find(hash);
 		if (j == -1) {
-			APlanNode& sub = ActionNode::tmp_sub.Add(hash);// n.Add();
+			Eon::APlanNode& sub = Eon::ActionNode::tmp_sub.Add(hash);// n.Add();
 			sub.SetWorldState(ws_to);
 			sub.SetCost(action_costs[i]);
 			sub.SetActionId(act_ids[i]);
 			n.AddLink(sub);
 		} else {
-			n.AddLink(ActionNode::tmp_sub[j]);
+			n.AddLink(Eon::ActionNode::tmp_sub[j]);
 		}
 	}
 	return !n.GetTotalCount();

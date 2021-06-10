@@ -53,10 +53,11 @@ TMPL_DEVLIB(void) StageComponent::Initialize() {
 	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Initialize");
 	Ref<StageComponent> ref = StageComponentBase::template AsRef<StageComponent>();
 	
-	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
+	TODO
+	/*Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
-		sys	-> Add(ref);
-	
+		sys	-> AddStage(ref);
+	*/
 }
 
 TMPL_DEVLIB(void) StageComponent::Uninitialize() {
@@ -68,9 +69,10 @@ TMPL_DEVLIB(void) StageComponent::Uninitialize() {
 		group.Clear();
 	}
 	
-	Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
+	TODO
+	/*Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
 	if (sys)
-		sys	-> Remove(ref);
+		sys	-> RemoveStage(ref);*/
 	
 	//Clear();
 }

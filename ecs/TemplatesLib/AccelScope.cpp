@@ -555,6 +555,22 @@ void ScopeDevLibT<CenterSpec>::StageComponent::ConvertPacket<AccelSpec, x##Spec>
 IFACE_LIST
 #undef IFACE
 
+
+
+
+template <class ValSpec>
+void ConvertCenterAccelT(AccelComponent& conv, typename ScopeValMachT<ValSpec>::Packet& p) {
+	TODO
+}
+
+#define IFACE(x) \
+template<> template<> \
+void ScopeDevLibT<AccelSpec>::StageComponent::ConvertPacket<CenterSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
+	ConvertCenterAccelT<x##Spec>(*this, p);\
+}
+IFACE_LIST
+#undef IFACE
+
 template <>
 template <>
 typename ScopeValMachT<AudioSpec>::Format

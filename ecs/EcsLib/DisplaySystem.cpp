@@ -1,5 +1,6 @@
 #include "EcsLib.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -195,3 +196,5 @@ bool DefaultRenderApp::Render(SystemDraw& draw) {
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif

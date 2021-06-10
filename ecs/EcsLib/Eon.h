@@ -5,22 +5,58 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
+
+
+
+
+
+
+
+class EonState {
+	
+	
+};
+
+
+class EonScope {
+	EonState const_state;
+	EonState final_state;
+	
+public:
+	EonScope() {}
+	
+	void SetConstantState(const EonState& s) {const_state = s;}
+	
+	EonState& GetFinalState() {return final_state;}
+	
+	
+};
+
+
+
+
+
+
 class EonLoader :
 	public System<EonLoader>
 {
+	LinkedList<EonScope> scopes;
+	
 	LinkedList<PathwayRouterRef> pathways;
+	Vector<String> post_load_file;
+	Eon::CompilationUnit root;
+	EntityStoreRef es;
 	
 	
 	void Visit(RuntimeVisitor& vis) override {
-		vis && pathways;
+		(vis && pathways) & es;
 	}
 	
 public:
 	SYS_RTTI(EonLoader)
 	SYS_CTOR(EonLoader);
 	
-	bool LoadFile(String path);
-	bool Load(String content, String filepath="temp");
+	void PostLoadFile(String path) {post_load_file << path;}
 	
 protected:
 	
@@ -31,6 +67,15 @@ protected:
     void Uninitialize() override;
     
     
+	bool LoadFile(String path);
+	bool Load(String content, String filepath="temp");
+	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
+	bool LoadCustomerDefinition(Eon::CustomerDefinition& def);
+	EntityRef ResolveEntity(Eon::Id& id);
+	
+	void AddError(String msg);
+	
+	
 };
 
 using EonLoaderRef = Ref<EonLoader, RefParent1<Machine>>;

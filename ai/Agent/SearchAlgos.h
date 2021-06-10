@@ -5,7 +5,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>	inline double GetSearcherUtility(Node<T>& n) {return n.T::GetUtility();}
-#ifdef flagSTDEXC
 template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 	Object& o = n.GetData();
 	ObjectArray& arr = o.GetArray();
@@ -14,7 +13,6 @@ template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 	double value = ov.ToDouble();
 	return value;
 }
-#endif
 template <class T>	inline double GetSearcherEstimate(Node<T>& n) {return n.T::GetEstimate();}
 template <class T>	inline double GetSearcherDistance(Node<T>& n, Node<T>& dest) {return n.T::GetDistance(dest);}
 template <class T>	inline bool TerminalTest(Node<T>& n) {return n.GetTotalCount() == 0;}
@@ -414,6 +412,14 @@ class AStar : public Searcher<T> {
 	int max_worst;
 	bool do_search;
 	int limit;
+	
+	// The set of nodes already evaluated.
+	Index<NodePtr> closed_set;
+	
+	// The set of currently discovered nodes still to be evaluated.
+	// Initially, only the start node is known.
+	Index<NodePtr> open_set;
+	
 public:
 	AStar() : max_worst(0), limit(0) {}
 	
@@ -445,15 +451,27 @@ public:
 		return out;
 	}
 	
+	Vector<T*> GetBest() {
+		NodePtr* n = 0;
+		double best_score = DBL_MAX;
+		for (const NodePtr& p : closed_set) {
+			double score = p.g_score + p.f_score;
+			if (score < best_score) {
+				best_score = score;
+				n = const_cast<NodePtr*>(&p);
+			}
+		}
+		if (n)
+			return ReconstructPath(*n->ptr, closed_set, open_set);
+		
+		return Vector<T*>();
+	}
+	
 	virtual Vector<T*> Search(NodeT& src) {
 		do_search = true;
 		
-		// The set of nodes already evaluated.
-		Index<NodePtr> closed_set;
-		
-		// The set of currently discovered nodes still to be evaluated.
-		// Initially, only the start node is known.
-		Index<NodePtr> open_set;
+		closed_set.Clear();
+		open_set.Clear();
 		
 		// For the first node, that value is completely heuristic.
 		NodePtr np(&src);
@@ -557,6 +575,7 @@ public:
 					subptr.f_score = sub_f_score;
 					subptr.g_score = sub_g_score;
 					ASSERT(subptr.ptr);
+					open_set.Add(subptr);
 				}
 				else if (sub_g_score >= current_g_score)
 					continue; // This is not a better path.

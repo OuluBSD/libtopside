@@ -190,7 +190,7 @@ namespace Pbr {
 
 
 
-class PbrRenderable :
+/*class PbrRenderable :
 	public Component<PbrRenderable>
 {
 	VIS_COMP_0_0
@@ -211,7 +211,7 @@ public:
     Optional<mat4>		offset;
     Optional<double>	alpha_multiplier;
     
-};
+};*/
 
 
 class TextRenderable :

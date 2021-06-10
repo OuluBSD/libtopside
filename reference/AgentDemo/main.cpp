@@ -17,7 +17,9 @@ void SetValue(NodeValue* i) {
 }
 
 // Class which only only tells the utility value
-struct SimpleGeneratorNode {
+struct SimpleGeneratorNode : RTTIBase {
+	RTTI_DECL0(SimpleGeneratorNode)
+	
 	int value;
 	
 	String ToString() const {return IntStr(value);}
@@ -39,7 +41,9 @@ template <>	inline bool TerminalTest<SimpleGeneratorNode>(Node<SimpleGeneratorNo
 
 
 // Class which tells length of route from the root to the node
-struct RouteGeneratorNode {
+struct RouteGeneratorNode : RTTIBase {
+	RTTI_DECL0(RouteGeneratorNode)
+	
 	double length;
 	double length_to_node;
 	double estimate_to_goal;
@@ -77,7 +81,7 @@ String PtrVecStr(Vector<T*>& vec) {
 	String out;
 	for(int i = 0; i < vec.GetCount(); i++) {
 		if (i) out << "\n";
-		out << i << ": " << ToString(*vec[i]);
+		out << i << ": " << AsString(*vec[i]);
 	}
 	return out;
 }
@@ -213,6 +217,11 @@ void ActionPlannerExample() {
 	AStar<ActionNode> as;
 	Vector<ActionNode*> plan = as.Search(root);
 	
+	if (plan.IsEmpty()) {
+		LOG("error: did not found path");
+		LOG("warning: using best path found");
+		plan = as.GetBest();
+	}
 	
 	LOG("Beginning:");
 	int total_cost = 0;
@@ -267,7 +276,7 @@ CONSOLE_APP_MAIN {
 		
 		Vector<SimpleGeneratorNode*> ans = mm.Search(n);
 		LOG(n.AsString());
-		LOG(PtrVecStr(ans));
+		LOG(PtrVecStr<SimpleGeneratorNode>(ans));
 		
 		ans = ab.Search(n);
 		LOG(PtrVecStr(ans));

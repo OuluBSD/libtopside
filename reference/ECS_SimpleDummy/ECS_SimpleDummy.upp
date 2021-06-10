@@ -1,0 +1,17 @@
+uses
+	CompleteDummy;
+
+file
+	SimpleDummy.h,
+	SimpleDummy.cpp,
+	SimpleDummy.eon highlight cpp;
+
+mainconfig
+	"" = "",
+	"" = "GUI",
+	"" = "VERBOSE_SHADERCORE",
+	"" = "BUILTIN_PORTAUDIO",
+	"" = "BUILTIN_ASSIMP BUILTIN_PORTAUDIO BUILTIN_PORTMIDI",
+	"" = "USEMALLOC",
+	"" = "DEBUG_RT";
+

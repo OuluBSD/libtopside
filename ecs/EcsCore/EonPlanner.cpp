@@ -1,7 +1,7 @@
-#include "Agent.h"
-
+#include "EcsCore.h"
 
 NAMESPACE_TOPSIDE_BEGIN
+namespace Eon {
 
 WorldState::WorldState() {
 	
@@ -17,7 +17,18 @@ bool WorldState::Set(int index, bool value) {
 	if (index < 0) return false;
 	if (using_act.GetCount() <= index) {
 		using_act.SetCount(index+1, false);
-		values.SetCount(index+1, false);
+		values.SetCount(index+1);
+	}
+	using_act[index] = true;
+	values[index] = value ? "true" : "false";
+	return true;
+}
+
+bool WorldState::Set(int index, String value) {
+	if (index < 0) return false;
+	if (using_act.GetCount() <= index) {
+		using_act.SetCount(index+1, false);
+		values.SetCount(index+1);
 	}
 	using_act[index] = true;
 	values[index] = value;
@@ -35,7 +46,7 @@ int64 WorldState::GetHashValue() {
 	CombineHash c;
 	for(int i = 0; i < values.GetCount(); i++) {
 		c.Put(using_act[i]);
-		c.Put(values[i]);
+		c.Put(values[i].GetHashValue());
 	}
 	return c;
 }
@@ -55,25 +66,33 @@ ActionPlanner::ActionPlanner() {
 
 
 void ActionPlanner::Clear() {
-	atom_count = 0;
+	atoms.Clear();
 	acts.Clear();
 	search_cache.Clear();
 }
 
-void ActionPlanner::AddSize(int action_count, int atom_count) {
-	ASSERT(action_count >= 0 && atom_count >= 0);
-	this->atom_count += atom_count;
-	int new_action_count = acts.GetCount() + action_count;
-	acts.SetCount(new_action_count);
-	if (wrapper)
-		wrapper->OnResize();
+int ActionPlanner::GetAddAtom(String id) {
+	int i = atoms.Find(id);
+	if (i < 0) {
+		i = atoms.GetCount();
+		Atom& a = atoms.GetAdd(id);
+		a.id = Split(id, ".");
+		return i;
+	}
+	else return i;
 }
 
-void ActionPlanner::SetSize(int action_count, int atom_count) {
-	this->atom_count = atom_count;
-	acts.SetCount(action_count);
-	if (wrapper)
-		wrapper->OnResize();
+int ActionPlanner::GetAddAtom(const Id& id) {
+	String key = id.ToString();
+	int i = atoms.Find(key);
+	if (i < 0) {
+		i = atoms.GetCount();
+		Atom& a = atoms.GetAdd(key);
+		for(const String& s : id.parts)
+			a.id.Add(s);
+		return i;
+	}
+	else return i;
 }
 
 void ActionPlanner::DoAction( int action_id, const WorldState& src, WorldState& dest) {
@@ -89,10 +108,18 @@ void ActionPlanner::DoAction( int action_id, const WorldState& src, WorldState& 
 }
 
 
-void ActionPlanner::GetPossibleStateTransition(const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
+void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
 {
-	for ( int i=0; i < acts.GetCount(); ++i )
-	{
+	TypeCls comp_type = n.GetComponentType();
+	
+	EcsFactory::FindSinkComponents(comp_type, tmp_cls);
+	
+	acts.SetCount(0);
+	for (TypeCls sink_cls : tmp_cls) {
+		EcsFactory::GetComponentActions(sink_cls, src, acts);
+	}
+	
+	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
 		Action& act = acts[i];
 		const WorldState& pre = act.precond;
@@ -276,8 +303,8 @@ ActionNode::ActionNode() {
 double ActionNode::GetDistance(const ActionNode& to) {
 	double dist = 0;
 	
-	Vector<bool>& values = ws->values;
-	const Vector<bool>& to_values = to.ws->values;
+	Vector<String>& values = ws->values;
+	const Vector<String>& to_values = to.ws->values;
 	
 	Vector<bool>& using_act = ws->using_act;
 	const Vector<bool>& to_using_act = to.ws->using_act;
@@ -300,4 +327,9 @@ double ActionNode::GetEstimate() {
 	return GetDistance(*goal);
 }
 
+TypeCls ActionNode::GetComponentType() {
+	TODO
+}
+
+}
 NAMESPACE_TOPSIDE_END

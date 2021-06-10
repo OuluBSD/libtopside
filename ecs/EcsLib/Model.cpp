@@ -4,12 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
+/*void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
 	shape.Create(type, ax_vec);
 	
 	model = new ModelMesh();
 	model->MakeModel(shape);
-}
+}*/
 
 
 

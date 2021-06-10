@@ -2,10 +2,12 @@ description "\3770,128,128";
 
 uses
 	AudioCore,
-	EcsLib;
+	EcsLib,
+	EcsEssential;
 
 file
 	EcsAudioCore.h,
+	EcsAudioCore.icpp,
 	System.h,
 	System.cpp,
 	Generators.h,
