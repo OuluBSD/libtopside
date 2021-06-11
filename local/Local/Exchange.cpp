@@ -241,6 +241,10 @@ void MetaExchangePoint::UnlinkAll() {
 	pts.Clear();
 }
 
+ExchangePointRef MetaExchangePoint::Add(TypeCls expt) {
+	TODO
+}
+
 
 
 

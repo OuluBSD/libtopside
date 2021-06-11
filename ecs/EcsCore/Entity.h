@@ -48,10 +48,9 @@ public:
 	
 	String ToString() const {return IntStr64(id) + " " + prefab + (name.GetCount() ? ": " + name : "");}
 	String GetTreeString(int indent=0);
-	
 	void SetName(String s) {name = s;}
-	
 	void OnChange();
+	ComponentBaseRef GetAddTypeCls(TypeCls comp_type);
 	
 	template<typename T>
 	RefT_Entity<T> Get() {
@@ -186,6 +185,11 @@ private:
 		return RefT_Entity<T>(this, comp);
 	}
 	
+	ComponentBaseRef AddPtr(ComponentBase* comp) {
+		comp->SetParent(this);
+		comps.AddBase(comp);
+		return ComponentBaseRef(this, comp);
+	}
 };
 
 

@@ -122,6 +122,14 @@ public:
 	}
 	
 	template<typename T>
+	RefT_Pool<T> GetAdd() {
+		RefT_Pool<T> c = comps.Find<T>();
+		if (c)
+			return c;
+		return Add<T>();
+	}
+	
+	template<typename T>
 	RefT_Pool<T> Find() {
 		return comps.Find<T>();
 	}

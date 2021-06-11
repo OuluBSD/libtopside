@@ -17,6 +17,7 @@ protected:
 	Vector<String>		values;
 	Vector<bool>		using_act;
 	TypeCls				cur_comp;
+	TypeCls				src_iface, sink_iface;
 	ActionPlanner*		ap = 0;
 public:
 	
@@ -24,12 +25,12 @@ public:
 	void Clear();
 	
 	void SetActionPlanner(ActionPlanner& ap) {this->ap = &ap;}
-	void SetComponent(TypeCls t) {cur_comp = t;}
 	bool Set(int index, bool value);
 	bool Set(int index, String value);
 	bool Set(const String& key, bool value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
+	void SetTypes(TypeCls comp, TypeCls src, TypeCls sink) {cur_comp = comp; src_iface = src; sink_iface = sink;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	//bool IsTrue(const String& key) const;
@@ -37,6 +38,8 @@ public:
 	String Get(const String& key) const;
 	int64 GetHashValue();
 	TypeCls GetComponent() const {return cur_comp;}
+	TypeCls GetSourceInterface() const {ASSERT(src_iface); return src_iface;}
+	TypeCls GetSinkInterface() const {ASSERT(sink_iface); return sink_iface;}
 	String ToString() const;
 	bool Contains(const WorldState& ws) const;
 	
@@ -145,7 +148,7 @@ public:
 	bool SetCost(int action_id, int cost );
 	
 	
-	void DoAction( TypeCls dst_comp, int action_id, const WorldState& src, WorldState& dest);
+	void DoAction(TypeCls dst_comp, TypeCls src_iface, TypeCls sink_iface, int action_id, const WorldState& src, WorldState& dest);
 	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
 	
 };

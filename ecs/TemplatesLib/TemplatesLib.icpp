@@ -40,8 +40,8 @@ INITBLOCK {
 	
 	
 	#define ECS_CTX(dev, value, prefix) \
-		TS::EcsFactory::RegisterInterface<prefix##Source>(); \
-		TS::EcsFactory::RegisterInterface<prefix##Sink>();
+		TS::EcsFactory::RegisterInterfaceSource<prefix##Source>(); \
+		TS::EcsFactory::RegisterInterfaceSink<prefix##Sink>();
 	#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
 	#define IFACE(x) DEV_IFACE(x)
 	IFACE_LIST

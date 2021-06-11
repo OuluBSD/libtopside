@@ -675,7 +675,6 @@ class ValExchangePointBase :
 	
 public:
 	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
-	virtual void Init(ConnectorBase* conn) = 0;
 	
 	
 	static ValExchangePointBase* Create(TypeCls t);

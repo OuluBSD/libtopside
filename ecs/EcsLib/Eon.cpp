@@ -72,28 +72,31 @@ bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
 }
 
 bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
+	
+	// Target entity for components
 	EntityRef e = ResolveEntity(def.id);
 	if (!e) {
 		AddError("Could not resolve entity with id: " + def.id.ToString());
 		return false;
 	}
 	
+	// Enter scope
 	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
 	EonScope& current = scopes.Add();
 	
 	
-	
+	// Prepare action planner and world states
 	Eon::ActionPlanner planner;
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	
 	Eon::WorldState src;
 	src.SetActionPlanner(planner);
-	src.SetComponent(AsTypeCls<CustomerComponent>());
+	src.SetTypes(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	src.Set(CONNECTED, false);
 	
 	Eon::WorldState goal;
 	goal.SetActionPlanner(planner);
-	goal.SetComponent(AsTypeCls<CustomerComponent>());
+	goal.SetTypes(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	goal.Set(CONNECTED, true);
 	
 	
@@ -125,6 +128,8 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	start_node.SetGoal(goal_node);
 	start_node.SetWorldState(src);
 	
+	
+	// Do the action plan searching
 	AStar<Eon::ActionNode> as;
 	Vector<Eon::ActionNode*> plan = as.Search(start_node);
 	
@@ -133,6 +138,8 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		return false;
 	}
 	
+	
+	// Debug print found loop
 	if (1) {
 		int pos = 0;
 		for (Eon::ActionNode* n : plan) {
@@ -145,14 +152,49 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	}
 	
 	
+	// Implement found loop
+	Array<ComponentBaseRef> comps;
+	for (Eon::ActionNode* n : plan) {
+		const Eon::WorldState& ws = n->GetWorldState();
+		TypeCls comp = ws.GetComponent();
+		ComponentBaseRef cb = e->GetAddTypeCls(comp);
+		ASSERT(cb);
+		if (!cb) {
+			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+			AddError("Could not create component '" + comp_name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+		comps.Add(cb);
+	}
+	ConnectManuallyInterfacesRef conn = e->GetPool().GetAdd<ConnectManuallyInterfaces>();
+	
+	for(int i = 0; i < comps.GetCount(); i++) {
+		int b = (i + 1) % comps.GetCount();
+		ComponentBaseRef src = comps[i];
+		ComponentBaseRef dst = comps[b];
+		Eon::ActionNode& n = *plan[i];
+		const Eon::WorldState& ws = n.GetWorldState();
+		TypeCls src_iface = ws.GetSourceInterface();
+		TypeCls sink_iface = ws.GetSourceInterface();
+		if (!conn->LinkManually(src, dst, src_iface, sink_iface)) {
+			TypeCls comp = ws.GetComponent();
+			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+			String src_iface_name = EcsFactory::SourceDataMap().Get(src_iface).name;
+			AddError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+	}
 	
 	
+	// Process sub-loops
 	for (Eon::Statement& stmt : def.stmts) {
 		if (!stmt.value || stmt.value->type != Eon::Value::VAL_CUSTOMER)
 			continue;
 		LoadCustomerDefinition(stmt.value->customer);
 	}
 	
+	
+	// Exit scope
 	scopes.RemoveLast();
 	
 	return true;

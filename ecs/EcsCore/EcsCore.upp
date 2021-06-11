@@ -32,6 +32,7 @@ file
 	EntityVisitor.cpp,
 	Components readonly separator,
 	ConnManual.h,
+	ConnManual.cpp,
 	ConnAny.h,
 	Trash readonly separator,
 	ConnPoolComps.h,

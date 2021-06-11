@@ -23,6 +23,15 @@ String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
 
+InterfaceSourceBaseRef ComponentBase::FindSource(TypeCls t) {
+	TODO
+}
+
+InterfaceSinkBaseRef ComponentBase::FindSink(TypeCls t) {
+	TODO
+}
+
+
 
 
 

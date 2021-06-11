@@ -57,7 +57,7 @@ struct ScopeValDevMachT {
 		ValExchangePoint() {}
 		~ValExchangePoint() {Deinit();}
 		
-		void Init(ConnectorBase* conn) override;
+		void Init(MetaExchangePoint* conn) override;
 		void Deinit();
 		void ForwardSetup(FwdScope& fwd) override;
 		void Forward(FwdScope& fwd) override;

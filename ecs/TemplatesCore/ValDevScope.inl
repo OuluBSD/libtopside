@@ -8,7 +8,10 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 
-TMPL_VALDEVMACH(void) ValExchangePoint::Init(ConnectorBase* conn) {
+TMPL_VALDEVMACH(void) ValExchangePoint::Init(MetaExchangePoint* mexpt) {
+	ConnectorBase* conn = CastPtr<ConnectorBase>(mexpt);
+	ASSERT(conn);
+	
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	this->conn = conn;

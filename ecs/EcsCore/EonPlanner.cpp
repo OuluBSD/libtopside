@@ -12,6 +12,8 @@ void WorldState::Clear() {
 	values.Clear();
 	using_act.Clear();
 	cur_comp = 0;
+	src_iface = 0;
+	sink_iface = 0;
 }
 
 bool WorldState::Set(int index, bool value) {
@@ -168,11 +170,12 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 	else return i;
 }
 
-void ActionPlanner::DoAction( TypeCls dst_comp, int action_id, const WorldState& src, WorldState& dest) {
+void ActionPlanner::DoAction(TypeCls dst_comp, TypeCls src_iface, TypeCls sink_iface, int action_id, const WorldState& src, WorldState& dest) {
+	ASSERT(dst_comp && src_iface && sink_iface);
 	const WorldState& post = acts[action_id].postcond;
 	
 	dest = src;
-	dest.SetComponent(dst_comp);
+	dest.SetTypes(dst_comp, src_iface, sink_iface);
 	
 	for(int i = 0; i < post.using_act.GetCount(); i++) {
 		if (post.using_act[i]) {
@@ -196,6 +199,8 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const W
 		// Check precondition
 		Action& act = acts[i];
 		TypeCls dst_comp_type = act.postcond.GetComponent();
+		TypeCls src_iface = act.postcond.GetSourceInterface();
+		TypeCls sink_iface = act.postcond.GetSinkInterface();
 		ASSERT(dst_comp_type != comp_type);
 		ASSERT(act.precond.GetComponent() == comp_type);
 		
@@ -223,7 +228,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const W
 			act_ids.Add(i);
 			action_costs.Add(act.cost);
 			WorldState& tmp = search_cache.Add();
-			DoAction(dst_comp_type, i, src, tmp);
+			DoAction(dst_comp_type, src_iface, sink_iface, i, src, tmp);
 			dest.Add(&tmp);
 		}
 	}

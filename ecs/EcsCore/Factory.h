@@ -7,16 +7,30 @@ NAMESPACE_TOPSIDE_BEGIN
 class EcsFactory {
 	
 public:
+	struct Link : Moveable<Link> {
+		TypeCls dst_comp, iface_src, iface_sink;
+	};
+	
 	struct IfaceData : Moveable<IfaceData> {
 		TypeCls cls;
+		TypeCls expt_type;
 		String name;
 	};
-	static VectorMap<TypeCls,IfaceData>& IfaceDataMap() {static VectorMap<TypeCls,IfaceData> m; return m;}
+	static VectorMap<TypeCls,IfaceData>& SourceDataMap() {static VectorMap<TypeCls,IfaceData> m; return m;}
+	static VectorMap<TypeCls,IfaceData>& SinkDataMap()   {static VectorMap<TypeCls,IfaceData> m; return m;}
 	
-	template <class T> static void RegisterInterface() {
-		IfaceData& d = IfaceDataMap().GetAdd(AsTypeCls<T>());
+	template <class T> static void RegisterInterfaceSource() {
+		IfaceData& d = SourceDataMap().GetAdd(AsTypeCls<T>());
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
+		d.expt_type = AsTypeCls<typename T::ExPt>();
+	}
+	
+	template <class T> static void RegisterInterfaceSink() {
+		IfaceData& d = SinkDataMap().GetAdd(AsTypeCls<T>());
+		d.cls = AsTypeCls<T>();
+		d.name = T::GetTypeName();
+		d.expt_type = 0;
 	}
 	
 	typedef ComponentBase* (*NewFn)();
@@ -28,8 +42,8 @@ public:
 		TypeCls cls;
 		Vector<TypeCls> sinks, srcs, src_sinks;
 		
-		Vector<TypeCls> sink_comps;
-		bool searched_sink_comps = false;
+		Vector<Link> sink_links;
+		bool searched_sink_links = false;
 	};
 	static VectorMap<TypeCls,CompData>& CompDataMap() {static VectorMap<TypeCls,CompData> m; return m;}
 	
@@ -58,8 +72,8 @@ public:
 	}
 	
 	static void Dump();
-	static const Vector<TypeCls>& GetSinkComponents(TypeCls src_comp);
-	static void GetComponentActions(const Eon::WorldState& src, const Vector<TypeCls>& sink_comp, Vector<Eon::Action>& acts);
+	static const Vector<Link>& GetSinkComponents(TypeCls src_comp);
+	static void GetComponentActions(const Eon::WorldState& src, const Vector<Link>& sink_links, Vector<Eon::Action>& acts);
 	
 };
 

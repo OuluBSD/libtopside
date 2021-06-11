@@ -38,6 +38,8 @@ public:
 	virtual ~ComponentBase();
 	
 	EntityRef GetEntity();
+	InterfaceSourceBaseRef FindSource(TypeCls t);
+	InterfaceSinkBaseRef FindSink(TypeCls t);
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
 	
@@ -156,6 +158,13 @@ public:
 		
 		ReturnComponent(*s, iter.value.GetItem()->value.Detach());
 		ComponentMapBase::Remove(iter);
+	}
+	
+	void AddBase(ComponentBase* component) {
+		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
+		TypeCls type = component->GetType();
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
+		ComponentMapBase::Add(type, component);
 	}
 	
 	#undef IS_EMPTY_SHAREDPTR

@@ -12,6 +12,9 @@ class ManualConnector :
 public:
 	RTTI_DECL1(ManualConnector, MetaExchangePoint)
 	
+	void Visit(RuntimeVisitor& vis) override {
+		MetaExchangePoint::Visit(vis);
+	}
 	
 	template <class ValDevSpec> bool LinkManually(
 		typename ScopeValDevCoreT<ValDevSpec>::ValSourceRef src,
@@ -35,7 +38,37 @@ public:
 		return false;
 	}
 	
+	bool LinkManually(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls iface, TypeCls sink_iface);
+	
 };
+
+
+class ConnectManuallyInterfaces :
+	public Connector<ConnectManuallyInterfaces>,
+	public ManualConnector
+{
+	using ConnectorT = Connector<ConnectManuallyInterfaces>;
+	Ref<EntityStore> sys;
+	
+public:
+	RTTI_DECL2(ConnectManuallyInterfaces, ConnectorT, ManualConnector)
+	COPY_PANIC(ConnectManuallyInterfaces);
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	String ToString() const override {return MetaExchangePoint::ToString();}
+	void UnlinkAll() override;
+	void Update(double dt=0) override;
+	void Visit(RuntimeVisitor& vis) override {
+		vis & sys;
+		ManualConnector::Visit(vis);
+	}
+	
+};
+
+using ConnectManuallyInterfacesRef = RefT_Pool<ConnectManuallyInterfaces>;
+
+
 
 template <class ValDevSpec, class T> bool ComponentBase::LinkManually(T& o, String* err_msg) {
 	using ManConn = ManualConnector;

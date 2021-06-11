@@ -409,7 +409,7 @@ public:
 	ExchangePoint();
 	virtual ~ExchangePoint();
 	
-	
+	virtual void Init(MetaExchangePoint* mexpt) = 0;
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
@@ -460,6 +460,8 @@ public:
 		}
 		else return Ref<T>();
 	}
+	
+	ExchangePointRef Add(TypeCls expt);
 
 	//Ref<ExchangePoint> Add(TypeCls valdev_spec);
 	
