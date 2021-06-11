@@ -71,7 +71,7 @@ public:
 	
 	template<typename ConnectorT>
 	RefT_Pool<ConnectorT> Get() {
-		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		CXX2A_STATIC_ASSERT(ConnectorStore::IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
@@ -83,7 +83,7 @@ public:
 	
 	template<typename ConnectorT>
 	RefT_Pool<ConnectorT> Find() {
-		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		CXX2A_STATIC_ASSERT(ConnectorStore::IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator it = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		if (IS_EMPTY_SHAREDPTR(it))
@@ -94,7 +94,7 @@ public:
 	
 	template<typename ConnectorT>
 	void Add(ConnectorT* component) {
-		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		CXX2A_STATIC_ASSERT(ConnectorStore::IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		TypeCls type = AsTypeCls<ConnectorT>();
 		ASSERT_(component->GetType() == type, "ConnectorRef type does not match T");
@@ -106,7 +106,7 @@ public:
 	
 	template<typename ConnectorT>
 	void Remove(ConnectorStoreRef s) {
-		CXX2A_STATIC_ASSERT(IsConnector<ConnectorT>::value, "T should derive from Connector");
+		CXX2A_STATIC_ASSERT(ConnectorStore::IsConnector<ConnectorT>::value, "T should derive from Connector");
 		
 		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		ASSERT_(iter, "Tried to remove non-existent component");

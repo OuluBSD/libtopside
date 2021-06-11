@@ -237,7 +237,8 @@ using AccelComponentBaseRef = Ref<AccelComponentBase>;
 
 
 
-struct AccelComponentGroupBase : RTTIBase {
+class AccelComponentGroupBase : RTTIBase {
+public:
 	RTTI_DECL0(AccelComponentGroupBase)
 	
 	Vector<uint32> gl_stages;

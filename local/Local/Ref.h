@@ -200,6 +200,8 @@ class WeakRefScopeEnabler :
 {
 	
 public:
+	using SP = RefScopeParent<RParent>;
+	RTTI_DECL2(WeakRefScopeEnabler, LockedScopeRefCounter, SP)
 	
 	WeakRefScopeEnabler() {
 		#ifdef flagDEBUG_STACK
@@ -222,6 +224,7 @@ public:
 	using Parent	= ParentT;
 	using LScope	= RefScopeEnabler<T,ParentT,RParent>;
 	using SP		= RefScopeParent<RParent>;
+	RTTI_DECL2(RefScopeEnabler, LockedScopeRefCounter, SP)
 	
 	template <class V=T>
 	Ref<V,RParent> AsRefStatic() {

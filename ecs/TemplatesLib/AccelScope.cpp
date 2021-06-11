@@ -383,8 +383,8 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 	dirs.Add( ShareDirFile("videos") );
 	
 	
-	name = st_map.TryGet("name", "").ToString();
-	description = st_map.TryGet("description", "").ToString();
+	String name = st_map.TryGet("name", "").ToString();
+	String description = st_map.TryGet("description", "").ToString();
 	
 	Object& inputs = st_map.GetAdd("inputs", ObjectArray());
 	if (!inputs.IsArray()) {
@@ -589,6 +589,7 @@ ScopeDevLibT<AccelSpec>::StageComponent::GetDefaultFormat<AudioSpec>() {
 template <>
 bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 	using DevSpec = AccelSpec;
+	using DevComponentBase = AccelComponentBase;
 	
 	DLOG("DevStageContextConnector::Load begin");
 	const char* fn_name = "Load";
@@ -649,7 +650,7 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 			common_source.Add(frag_code);
 		}
 		else {
-			TypeCls type = StageComponent::GetTypeFromString(type_str);
+			TypeCls type = DevComponentBase::GetTypeFromString(type_str);
 			if (type == AsVoidTypeCls()) {
 				OnError(fn_name, "Invalid type string '" + type_str + "'");
 				return false;

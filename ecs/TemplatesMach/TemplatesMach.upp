@@ -1,5 +1,7 @@
 description "\377B51,51,51";
 
+noblitz;
+
 uses
 	Local;
 

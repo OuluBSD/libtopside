@@ -30,7 +30,7 @@ class PortaudioSinkComponent;
 class StaticVolumeComponent;
 class Viewable;
 class Transform;
-struct ConnectorBase;
+class ConnectorBase;
 /*struct ActionSource;
 struct AudioSource;
 struct AudioSink;
@@ -95,8 +95,8 @@ using EntityVec				= RefLinkedList<		Entity,			EntityParent>;
 using PoolVec				= RefLinkedList<		Pool,			PoolParent>;
 
 using VAR					= EntityRef;
-using EntityId				= int64;
-using PoolId				= int64;
+using EntityId				= int32;
+using PoolId				= int32;
 
 template <class T>
 using RefT_Entity			= Ref<T,					RefParent1<Entity>>;

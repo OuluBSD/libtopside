@@ -154,7 +154,10 @@
 	#define CPU_LITTLE_ENDIAN 1
 	#define CPU_UNALIGNED 1
 	#define CPU_X86 1
-
+	
+	#define UNREACHABLE __assume(0)
+	#define GLEW_INCLUDE <ports/glew/glew.h>
+	
 	#ifdef _WIN64
 		#define PLATFORM_WIN64 1
 		#define CPU_64 1

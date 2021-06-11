@@ -33,7 +33,7 @@ struct ScopeDevLibT {
 	class StageComponentGroup;
 	using StageComponentGroupRef		= Ref<StageComponentGroup, RefParent1<StageContextConnector>>;
 	class StageComponent;
-	using StageComponentRef			= Ref<StageComponent, RefParent1<Entity>>;
+	using StageComponentRef				= Ref<StageComponent, RefParent1<Entity>>;
 	
 
 	static const char* TypeStringT(const char* t) {
@@ -96,6 +96,7 @@ struct ScopeDevLibT {
 	
 	class StageComponent :
 		public StageComponentBase,
+		public WeakRefScopeEnabler<StageComponent, Entity>,
 		virtual public PacketForwarder
 	{
 		RTTI_DECL2(StageComponent, StageComponentBase, PacketForwarder);

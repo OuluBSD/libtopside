@@ -40,7 +40,7 @@ PREFAB_BEGIN(DummyGeneratorPrefab)
 PREFAB_END
 
 
-
+#if HAVE_FFMPEG
 class MP3Player :
 	public Component<MP3Player>
 {
@@ -68,6 +68,8 @@ PREFAB_BEGIN(MP3PlayerPrefab)
 	FfmpegComponent,
 	MP3Player
 PREFAB_END
+
+#endif
 
 
 NAMESPACE_TOPSIDE_END

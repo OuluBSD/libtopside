@@ -4,9 +4,9 @@ uses
 	Local,
 	Geometry;
 
-uses(MSC) ports/glew;
+uses(MSC & NEVER) ports/glew;
 
-uses(MSC) ports/glext;
+uses(MSC & NEVER) ports/glext;
 
 file
 	GL.h,

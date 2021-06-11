@@ -46,9 +46,7 @@ PREFAB_BEGIN(SDL2StandaloneWindow)
 	SDL2GameControllerComponent,
 	SDL2SensorComponent,
 	SDL2ImageComponent,
-	SDL2FontComponent,
-	SDL2ContextConnector,
-	CenterContextConnector
+	SDL2FontComponent
 PREFAB_END
 
 #endif
@@ -63,16 +61,13 @@ PREFAB_BEGIN(SDL2StandaloneConsole)
 	SDL2GameControllerComponent,
 	SDL2SensorComponent,
 	SDL2ImageComponent,
-	SDL2FontComponent,
-	SDL2ContextConnector,
-	CenterContextConnector
+	SDL2FontComponent
 PREFAB_END
 
 
 
 PREFAB_BEGIN(StandaloneLineIn)
-	SDL2AudioInputComponent,
-	SDL2ContextConnector
+	SDL2AudioInputComponent
 PREFAB_END
 
 

@@ -19,7 +19,7 @@ Pool::~Pool() {
 }
 
 PoolId Pool::GetNextId() {
-	static Atomic64 next_id;
+	static Atomic next_id;
 	return ++next_id;
 }
 

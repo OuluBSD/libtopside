@@ -1,5 +1,7 @@
 description "\377B102,102,102";
 
+noblitz;
+
 uses
 	EcsCore,
 	Structural,

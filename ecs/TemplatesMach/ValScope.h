@@ -26,7 +26,8 @@ struct ScopeValMachT {
 		String ToString() const {return FormatBase::ToString();}
 		TypeCls GetDevSpec() const {return FormatBase::GetDevSpec();}
 		
-		bool IsSame(const Format& f) {return FormatBase::IsSame(f);}
+		bool IsSame(const Format& f) const {return FormatBase::IsSame(f);}
+		bool IsCopyCompatible(const Format& f) const {return FormatBase::IsCopyCompatible(f);}
 		bool operator ==(const Format& f) {return IsSame(f);}
 		bool operator !=(const Format& f) {return !IsSame(f);}
 		

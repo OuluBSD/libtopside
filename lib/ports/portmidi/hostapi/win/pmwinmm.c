@@ -13,12 +13,12 @@
 
 #include "windows.h"
 #include "mmsystem.h"
-#include <portmidi/portmidi.h>
-#include <portmidi/pmutil.h>
-#include <portmidi/pminternal.h>
+#include <ports/portmidi/portmidi.h>
+#include <ports/portmidi/pmutil.h>
+#include <ports/portmidi/pminternal.h>
 #include "pmwinmm.h"
 #include <string.h>
-#include <portmidi/porttime.h>
+#include <ports/portmidi/porttime.h>
 
 /* asserts used to verify portMidi code logic is sound; later may want
     something more graceful */
