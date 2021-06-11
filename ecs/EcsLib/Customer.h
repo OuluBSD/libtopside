@@ -19,6 +19,10 @@ public:
 	IFACE_CB(OrderSource)
 	IFACE_CB(ReceiptSink)
 	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("loop.connected")
+	COMP_MAKE_ACTION_END
+	
 	
 	virtual void Initialize() override;
 	virtual void Uninitialize() override;

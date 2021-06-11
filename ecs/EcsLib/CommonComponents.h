@@ -10,6 +10,7 @@ public:
 	VIS_COMP_0_0
 	RTTI_COMP0(Transform)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
@@ -49,6 +50,7 @@ public:
 	VIS_COMP_0_0
 	RTTI_COMP0(Transform2D)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
@@ -67,6 +69,7 @@ public:
 	VIS_COMP_0_0
 	RTTI_COMP0(RigidBody)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
@@ -93,6 +96,7 @@ public:
 	VIS_COMP_0_0
 	RTTI_COMP0(Renderable)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
@@ -156,6 +160,7 @@ public:
 	IFACE_CB(StaticSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	StaticVolumeComponent() : stream(this) {}
 	
@@ -223,6 +228,7 @@ public:
 	RTTI_COMP0(TextRenderable)
 	COPY_PANIC(TextRenderable);
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
     String				text = "";
     double				font_size = 60.0;

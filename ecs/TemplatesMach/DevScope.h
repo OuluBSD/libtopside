@@ -7,11 +7,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 // Specifier
-#define DEV(x, pre, var) \
+#define DEV(x, pre, var, lowercase) \
 struct x##Spec : RTTIBase {\
 	RTTI_DECL0(x##Spec) \
 	static String GetName() {return #x;}\
 	static String GetPrefix() {return #pre;}\
+	static String GetNameLower() {return #lowercase;}\
 	using ComponentGroupBase = x##ComponentGroupBase; \
 	using ComponentConfBase = x##ComponentConfBase; \
 	using ComponentBase = x##ComponentBase; \

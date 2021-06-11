@@ -12,7 +12,7 @@ public:
 	VIS_COMP_0_0
 	RTTI_COMP0(Easing)
 	COMP_DEF_VISIT
-	
+	COMP_DEF_MAKE_ACTION
 	
     vec3 target_position = { 0,0,0 };
     quat target_orientation = identity<quat>();

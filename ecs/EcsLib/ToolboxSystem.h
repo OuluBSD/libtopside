@@ -13,6 +13,7 @@ public:
 	RTTI_COMP0(ToolComponent)
 	COPY_PANIC(ToolComponent)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	String title;
 	String description;

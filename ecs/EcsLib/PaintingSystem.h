@@ -14,7 +14,7 @@ public:
 	RTTI_COMP0(PaintComponent)
 	COPY_PANIC(PaintComponent)
 	COMP_DEF_VISIT
-	
+	COMP_DEF_MAKE_ACTION
 	
 	
 	enum class State {

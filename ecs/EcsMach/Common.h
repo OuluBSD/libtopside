@@ -217,7 +217,13 @@ typedef enum {
 
 #define COMP_DEF_VISIT_ VisitSinks(vis); VisitSources(vis);
 #define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_}
+#define COMP_DEF_MAKE_ACTION static bool MakeAction(Eon::Action& act) {return false;}
 
+#define COMP_MAKE_ACTION_BEGIN static bool MakeAction(Eon::Action& act) {bool fail = false, any_changes = false;
+#define COMP_MAKE_ACTION_END return !fail && any_changes;}
+#define COMP_MAKE_ACTION_FALSE_TO_TRUE(x) if (act.Pre().IsFalse(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
+#define COMP_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
+//#define COMP_MAKE_ACTION_REQ_TRUE_TO_TRUE(x, y) if (act.Pre().IsTrue(x)) {act.Post().SetTrue(y); any_changes = true;} else fail = true;
 
 
 

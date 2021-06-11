@@ -20,8 +20,10 @@ public:
 	}
 	
 	typedef ComponentBase* (*NewFn)();
+	typedef bool (*ActionFn)(Eon::Action& act);
 	struct CompData : Moveable<CompData> {
 		NewFn new_fn;
+		ActionFn action_fn;
 		String name;
 		TypeCls cls;
 		Vector<TypeCls> sinks, srcs, src_sinks;
@@ -32,12 +34,14 @@ public:
 	static VectorMap<TypeCls,CompData>& CompDataMap() {static VectorMap<TypeCls,CompData> m; return m;}
 	
 	template <class T> static ComponentBase* New() {return new T();}
+	template <class T> static bool MakeAction(Eon::Action& act) {return T::MakeAction(act);}
 	
 	template <class T> static void RegisterComponent() {
 		CompData& d = CompDataMap().GetAdd(AsTypeCls<T>());
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.new_fn = &New<T>;
+		d.action_fn = &MakeAction<T>;
 		{
 			T o;
 			CollectInterfacesVisitor vis;
@@ -55,7 +59,7 @@ public:
 	
 	static void Dump();
 	static const Vector<TypeCls>& GetSinkComponents(TypeCls src_comp);
-	static void GetComponentActions(const Eon::WorldState& src, TypeCls sink_comp, Vector<Eon::Action>& acts);
+	static void GetComponentActions(const Eon::WorldState& src, const Vector<TypeCls>& sink_comp, Vector<Eon::Action>& acts);
 	
 };
 

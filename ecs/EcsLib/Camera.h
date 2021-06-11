@@ -16,6 +16,7 @@ public:
 	IFACE_CB(HumanSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}

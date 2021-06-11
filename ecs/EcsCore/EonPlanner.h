@@ -17,19 +17,31 @@ protected:
 	Vector<String>		values;
 	Vector<bool>		using_act;
 	TypeCls				cur_comp;
+	ActionPlanner*		ap = 0;
 public:
 	
 	WorldState();
 	void Clear();
 	
+	void SetActionPlanner(ActionPlanner& ap) {this->ap = &ap;}
 	void SetComponent(TypeCls t) {cur_comp = t;}
 	bool Set(int index, bool value);
 	bool Set(int index, String value);
+	bool Set(const String& key, bool value);
+	void SetTrue(const String& key) {Set(key, true);}
+	void SetFalse(const String& key) {Set(key, false);}
 	
-	WorldState& operator = (const WorldState& src);
-	
+	ActionPlanner& GetActionPlanner() const {return *ap;}
+	//bool IsTrue(const String& key) const;
+	bool IsFalse(const String& key) const;
+	String Get(const String& key) const;
 	int64 GetHashValue();
 	TypeCls GetComponent() const {return cur_comp;}
+	String ToString() const;
+	bool Contains(const WorldState& ws) const;
+	
+	WorldState& operator=(const WorldState& src);
+	
 	
 };
 
@@ -40,6 +52,7 @@ protected:
 	friend class ActionPlanner;
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
+	friend class EcsFactory;
 	
 	WorldState precond, postcond;
 	double cost;
@@ -47,7 +60,49 @@ protected:
 public:
 
 	Action();
+	Action(const WorldState& cond) : precond(cond), postcond(cond), cost(0) {}
+	
+	const WorldState& Pre() const {return precond;}
+	const WorldState& Post() const {return postcond;}
+	WorldState& Pre() {return precond;}
+	WorldState& Post() {return postcond;}
+	
 };
+
+class ActionNode : RTTIBase {
+	WorldState* ws;
+	double cost;
+	int act_id;
+	
+	ActionPlanner* ap;
+	ActionNode* goal;
+	
+public:
+	RTTI_DECL0(ActionNode)
+	
+	
+	ActionNode();
+	
+	
+	void SetActionPlanner(ActionPlanner& ap_) {ap = &ap_;}
+	void SetGoal(ActionNode& ws) {goal = &ws;}
+	void SetWorldState(WorldState& ws) {this->ws = &ws;}
+	void SetCost(double d) {cost = d;}
+	void SetActionId(int i) {act_id = i;}
+	
+	ActionPlanner& GetActionPlanner() {return *ap;}
+	WorldState& GetWorldState() {return *ws;}
+	ActionNode& GetGoal() {return *goal;}
+	double GetDistance(const ActionNode& to);
+	double GetEstimate();
+	double GetCost() const {return cost;}
+	int GetActionId() const {return act_id;}
+	
+	bool Contains(const ActionNode& n) const;
+	
+};
+
+typedef Node<ActionNode> APlanNode;
 
 
 class ActionPlannerWrapper;
@@ -60,6 +115,8 @@ protected:
 	
 	struct Atom : Moveable<Atom> {
 		Vector<String> id;
+		
+		String ToString() const {return Join(id, ".");}
 	};
 	
 	VectorMap<String, Atom> atoms;
@@ -68,6 +125,8 @@ protected:
 	
 	Array<WorldState> search_cache;
 	
+public:
+	ArrayMap<hash_t, Node<ActionNode> > tmp_sub;
 	
 public:
 	ActionPlanner();
@@ -77,9 +136,9 @@ public:
 	
 	int GetActionCount() const {return acts.GetCount();}
 	int GetAtomCount() const {return atoms.GetCount();}
-	
 	int GetAddAtom(String id);
 	int GetAddAtom(const Id& id);
+	const Atom& GetAtom(int i) const {return atoms[i];}
 	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
@@ -118,40 +177,6 @@ public:
 	
 };
 
-class ActionNode : RTTIBase {
-	WorldState* ws;
-	double cost;
-	int act_id;
-	
-	static ActionPlanner* ap;
-	static ActionNode* goal;
-	
-public:
-	RTTI_DECL0(ActionNode)
-	
-	static ArrayMap<hash_t, Node<ActionNode> > tmp_sub;
-	
-	
-	ActionNode();
-	
-	static ActionPlanner& GetActionPlanner() {return *ap;}
-	WorldState& GetWorldState() {return *ws;}
-	
-	void SetActionPlanner(ActionPlanner& ap_) {ap = &ap_;}
-	void SetGoal(ActionNode& ws) {goal = &ws;}
-	
-	void SetWorldState(WorldState& ws) {this->ws = &ws;}
-	inline void SetCost(double d) {cost = d;}
-	inline void SetActionId(int i) {act_id = i;}
-	
-	double GetDistance(const ActionNode& to);
-	double GetEstimate();
-	inline double GetCost() const {return cost;}
-	inline int GetActionId() const {return act_id;}
-};
-
-typedef Node<ActionNode> APlanNode;
-
 
 }
 
@@ -160,26 +185,33 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 	if (n.GetEstimate() <= 0)
 		return true;
 	Eon::WorldState& ws = n.GetWorldState();
-	Eon::ActionPlanner& ap = Eon::APlanNode::GetActionPlanner();
+	Eon::ActionPlanner& ap = n.GetActionPlanner();
 	Array<Eon::WorldState*> to;
 	Vector<int> act_ids;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, ws, to, act_ids, action_costs);
+	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount());
 	for(int i = 0; i < to.GetCount(); i++) {
 		Eon::WorldState& ws_to = *to[i];
 		int64 hash = ws_to.GetHashValue();
-		int j = Eon::ActionNode::tmp_sub.Find(hash);
+		int j = ap.tmp_sub.Find(hash);
 		if (j == -1) {
-			Eon::APlanNode& sub = Eon::ActionNode::tmp_sub.Add(hash);// n.Add();
+			Eon::APlanNode& sub = ap.tmp_sub.Add(hash);// n.Add();
+			sub.SetActionPlanner(n.GetActionPlanner());
+			sub.SetGoal(n.GetGoal());
 			sub.SetWorldState(ws_to);
 			sub.SetCost(action_costs[i]);
 			sub.SetActionId(act_ids[i]);
 			n.AddLink(sub);
 		} else {
-			n.AddLink(Eon::ActionNode::tmp_sub[j]);
+			n.AddLink(ap.tmp_sub[j]);
 		}
 	}
-	return !n.GetTotalCount();
+	//if (n.GetTotalCount())
+	//	return false;
+	
+	Eon::ActionNode& goal = n.GetGoal();
+	return n.Contains(goal);
 }
 
 NAMESPACE_TOPSIDE_END

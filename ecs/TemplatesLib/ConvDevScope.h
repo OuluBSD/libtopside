@@ -55,6 +55,7 @@ struct ScopeConvDevLibT {
 		//public FromComponent,
 		public ToComponent
 	{
+	public:
 		RTTI_DECL_4(ConvertComponent, Component<ConvertComponent>,
 					FromSink, ToSource/*, FromComponent*/, ToComponent,
 					To::GetName() + "ConvertComponent")
@@ -62,8 +63,11 @@ struct ScopeConvDevLibT {
 		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(FromDevSpec::GetNameLower() + "." + ToDevSpec::GetNameLower() + ".conv")
+		COMP_MAKE_ACTION_END
 		
-		
+	private:
 		struct LocalSink : FromSimpleBufferedValue {
 			
 		};

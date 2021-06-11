@@ -31,6 +31,7 @@ public:
 	RTTI_COMP0(ToolSelectorKey)
 	COPY_PANIC(ToolSelectorKey)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	TypeId type { AsVoidTypeId() };
 };

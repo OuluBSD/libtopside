@@ -46,8 +46,24 @@ const Vector<TypeCls>& EcsFactory::GetSinkComponents(TypeCls src_comp) {
 	return d.sink_comps;
 }
 
-void EcsFactory::GetComponentActions(const Eon::WorldState& src, TypeCls sink_comp, Vector<Eon::Action>& acts) {
-	TODO
+void EcsFactory::GetComponentActions(const Eon::WorldState& src, const Vector<TypeCls>& sink_comps, Vector<Eon::Action>& acts) {
+	auto& m = CompDataMap();
+	//CompData& src_cd = m.Get(src.GetComponent());
+	
+	Eon::Action a;
+	a.Pre() = src;
+	
+	for (TypeCls sink : sink_comps) {
+		CompData& sink_cd = m.Get(sink);
+		
+		a.Post() = src;
+		a.Post().SetComponent(sink);
+		
+		if (sink_cd.action_fn(a)) {
+			MemSwap(acts.Add(), a);
+			a.Pre() = src;
+		}
+	}
 }
 
 

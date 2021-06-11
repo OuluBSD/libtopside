@@ -131,11 +131,14 @@ public:
 	RTTI_DCOMP3(DummySoundGeneratorComponent, EventSink, OrderSink, AudioSource)
 	VIS_COMP_1_2(Audio, Order, Event)
 	COPY_PANIC(DummySoundGeneratorComponent);
+	IFACE_GENERIC;
 	IFACE_CB(OrderSink);
 	IFACE_CB(EventSink);
 	IFACE_CB(AudioSource);
-	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")
+	COMP_MAKE_ACTION_END
 	
 	DummySoundGeneratorComponent();
 	
@@ -186,6 +189,10 @@ public:
 	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.test")
+	COMP_MAKE_ACTION_END
+	
 	
 	SimpleBufferedAudio value;
 	

@@ -65,10 +65,10 @@
 	DEV(Perma)
 
 #define DEV_FULL_LIST \
-	DEV(Center, , ctr) \
-	DEV(Accel, Accel, acl) \
-	DEV(Net, Net, net) \
-	DEV(Perma, Perma, prm)
+	DEV(Center, , ctr, center) \
+	DEV(Accel, Accel, acl, accel) \
+	DEV(Net, Net, net, net) \
+	DEV(Perma, Perma, prm, perma)
 
 #define DEV_IFACE(value) \
 	IFACE_CTX_CLS(Center,	value,	value) \

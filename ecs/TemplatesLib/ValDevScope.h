@@ -40,13 +40,17 @@ struct ScopeValDevLibT {
 		public Component<InputComponent>,
 		public ValSource
 	{
+	public:
 		RTTI_CTX_LIB_INPUT_COMP(InputComponent, ValSource)
 		VIS_COMP_1_0(Val)
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			//TODO
+		COMP_MAKE_ACTION_END
 		
-		
+	private:
 		struct LocalValue : public SimpleBufferedValue {
 			
 		};
@@ -101,14 +105,19 @@ struct ScopeValDevLibT {
 		public ValSink,
 		public StageComponent
 	{
+	public:
 		RTTI_DEV_CTX_COMP(PipeComponent, ValSource, ValSink)
 		VIS_COMP_1_1(Val, Val)
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			// TODO Probably should decrease count of allowed pipes, otherwise actionplanner creates
+			// these infinitely.
+			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+		COMP_MAKE_ACTION_END
 		
-	public:
-		
+	private:
 		class LocalSinkValue : public SimpleBufferedValue {
 		public:
 			RTTI_DECL_T1(LocalSinkValue, SimpleBufferedValue)
@@ -141,6 +150,7 @@ struct ScopeValDevLibT {
 		LocalSourceValue	src_value;
 		LocalStream			stream;
 		
+	public:
 		PipeComponent() : stream(this) {}
 		
 		// ComponentBase
@@ -206,6 +216,7 @@ struct ScopeValDevLibOrderT {
 		public OSource,
 		public RSink
 	{
+	public:
 		RTTI_DECL_3(DevCustomerComponent, Component<DevCustomerComponent>, \
 					OSource, RSink, \
 					ValDevSpec::GetName() + "DevCustomerComponent")
@@ -213,6 +224,9 @@ struct ScopeValDevLibOrderT {
 		COPY_PANIC(DevCustomerComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			//TODO
+		COMP_MAKE_ACTION_END
 		
 	public:
 		DevCustomerComponent() {}

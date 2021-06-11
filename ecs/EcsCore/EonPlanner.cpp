@@ -37,6 +37,8 @@ bool WorldState::Set(int index, String value) {
 }
 
 WorldState& WorldState::operator = (const WorldState& src) {
+	ap = src.ap;
+	cur_comp = src.cur_comp;
 	values <<= src.values;
 	using_act <<= src.using_act;
 	return *this;
@@ -52,6 +54,77 @@ int64 WorldState::GetHashValue() {
 	return c;
 }
 
+bool WorldState::Set(const String& key, bool value) {
+	int idx = ap->GetAddAtom(key);
+	return Set(idx, value);
+}
+
+/*bool WorldState::IsTrue(const String& key) const {
+	int idx = ap->GetAddAtom(key);
+	if (idx < values.GetCount())
+		return values[idx] == "true";
+	return false;
+}*/
+
+bool WorldState::IsFalse(const String& key) const {
+	int idx = ap->GetAddAtom(key);
+	if (idx < values.GetCount())
+		return values[idx] == "false";
+	return true;
+}
+
+String WorldState::Get(const String& key) const {
+	int idx = ap->GetAddAtom(key);
+	if (idx < values.GetCount())
+		return values[idx];
+	return String();
+}
+
+String WorldState::ToString() const {
+	String s;
+	for(int i = 0; i < values.GetCount(); i++) {
+		if (!using_act[i])
+			continue;
+		String v = values[i];
+		if (v.IsEmpty()) v = "false";
+		String k = ap->GetAtom(i).ToString();
+		if (!s.IsEmpty())
+			s << ",";
+		s << k << "=" << v;
+	}
+	return s;
+}
+
+bool WorldState::Contains(const WorldState& ws) const {
+	if (0) {
+		LOG("WorldState::Contains: this " << ToString());
+		LOG("                      vs   " << ws.ToString());
+	}
+	int a_count = using_act.GetCount();
+	int b_count = ws.using_act.GetCount();
+	int c_count = min(a_count, b_count);
+	for(int i = c_count; i < b_count; i++)
+		if (ws.using_act[i])
+			return false;
+	for(int i = 0; i < c_count; i++) {
+		if (ws.using_act[i]) {
+			if (!using_act[i])
+				return false;
+			if (ws.values[i] != values[i])
+				return false;
+		}
+	}
+	return true;
+}
+
+
+
+
+
+
+
+
+
 Action::Action() : cost(1.0) {
 	
 }
@@ -64,7 +137,6 @@ Action::Action() : cost(1.0) {
 ActionPlanner::ActionPlanner() {
 	
 }
-
 
 void ActionPlanner::Clear() {
 	atoms.Clear();
@@ -117,9 +189,8 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const W
 	const auto& sink_comps = EcsFactory::GetSinkComponents(comp_type);
 	
 	acts.SetCount(0);
-	for (TypeCls sink_cls : sink_comps) {
-		EcsFactory::GetComponentActions(src, sink_cls, acts);
-	}
+	EcsFactory::GetComponentActions(src, sink_comps, acts);
+	
 	
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
@@ -297,13 +368,13 @@ bool ActionPlannerWrapper::SetCost(String action_name, int cost )
 
 
 
-ActionPlanner* ActionNode::ap;
-ActionNode* ActionNode::goal;
-ArrayMap<hash_t, Node<ActionNode> > ActionNode::tmp_sub;
 
 ActionNode::ActionNode() {
 	cost = 0;
 	act_id = -1;
+	ap = 0;
+	goal = 0;
+	ws = 0;
 }
 
 double ActionNode::GetDistance(const ActionNode& to) {
@@ -330,7 +401,16 @@ double ActionNode::GetDistance(const ActionNode& to) {
 }
 
 double ActionNode::GetEstimate() {
+	ASSERT(goal);
 	return GetDistance(*goal);
+}
+
+bool ActionNode::Contains(const ActionNode& n) const {
+	if (ws == n.ws)
+		return true;
+	const WorldState& a = *ws;
+	const WorldState& b = *n.ws;
+	return a.Contains(b);
 }
 
 

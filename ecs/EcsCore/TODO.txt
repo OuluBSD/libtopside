@@ -1,3 +1,5 @@
+- make Eon::ActionPlanner to use string hashes instead of full strings in worldstates
+- move Eon::ActionPlanner code back to Agent package (fix compatibility)
 
 - optimize bottlenecks for large entity count
 	- loops all entities & interfaces

@@ -12,6 +12,7 @@ public:
 	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	
 	void SetEnabled(bool enable) override;

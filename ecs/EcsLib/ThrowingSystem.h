@@ -13,6 +13,8 @@ public:
 	RTTI_COMP0(ThrowingComponent)
 	COPY_PANIC(ThrowingComponent)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
+	
 	
 	void SetEnabled(bool enable) override;
 	void Destroy() override;

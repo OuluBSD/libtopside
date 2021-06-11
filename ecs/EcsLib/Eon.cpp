@@ -87,10 +87,12 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	
 	Eon::WorldState src;
+	src.SetActionPlanner(planner);
 	src.SetComponent(AsTypeCls<CustomerComponent>());
 	src.Set(CONNECTED, false);
 	
 	Eon::WorldState goal;
+	goal.SetActionPlanner(planner);
 	goal.SetComponent(AsTypeCls<CustomerComponent>());
 	goal.Set(CONNECTED, true);
 	
@@ -112,9 +114,11 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		else
 			Panic("internal error");
 	}
+	LOG("goal: " << goal.ToString());
 	
 	Eon::APlanNode goal_node;
 	goal_node.SetWorldState(goal);
+	goal_node.SetGoal(goal_node);
 	
 	Eon::APlanNode start_node;
 	start_node.SetActionPlanner(planner);
@@ -128,6 +132,18 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		AddError("Eon action planner failed");
 		return false;
 	}
+	
+	if (1) {
+		int pos = 0;
+		for (Eon::ActionNode* n : plan) {
+			const Eon::WorldState& ws = n->GetWorldState();
+			TypeCls comp = ws.GetComponent();
+			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+			LOG(pos++ << ": " << comp_name);
+			LOG("\t" << ws.ToString());
+		}
+	}
+	
 	
 	
 	
@@ -159,7 +175,7 @@ EntityRef EonLoader::ResolveEntity(Eon::Id& id) {
 }
 
 void EonLoader::AddError(String msg) {
-	LOG("EonLoader: " + msg);
+	LOG("EonLoader: error: " + msg);
 }
 
 

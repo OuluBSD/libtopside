@@ -13,6 +13,7 @@ public:
 	RTTI_COMP0(PaintStrokeComponent)
 	COPY_PANIC(PaintStrokeComponent)
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	Vector<Square> squares;
 	bool stroke_changed = true;

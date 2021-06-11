@@ -42,6 +42,7 @@ public:
 	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
     void operator=(const ModelComponent& src) {}
     
