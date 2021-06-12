@@ -24,11 +24,29 @@ String ComponentBase::ToString() const {
 }
 
 InterfaceSourceBaseRef ComponentBase::FindSource(TypeCls t) {
-	TODO
+	ASSERT(t != AsTypeCls<InterfaceSourceBase>());
+	CollectInterfacesVisitor vis;
+	vis.Visit(*this);
+	for (InterfaceSourceBaseRef& r : vis.src_ifaces) {
+		void* r_ptr = &*r;
+		void* type_ptr = r->GetBasePtrOver(t, r_ptr);
+		if (type_ptr)
+			return r;
+	}
+	return InterfaceSourceBaseRef();
 }
 
 InterfaceSinkBaseRef ComponentBase::FindSink(TypeCls t) {
-	TODO
+	ASSERT(t != AsTypeCls<InterfaceSinkBase>());
+	CollectInterfacesVisitor vis;
+	vis.Visit(*this);
+	for (InterfaceSinkBaseRef& r : vis.sink_ifaces) {
+		void* r_ptr = &*r;
+		void* type_ptr = r->GetBasePtrOver(t, r_ptr);
+		if (type_ptr)
+			return r;
+	}
+	return InterfaceSinkBaseRef();
 }
 
 

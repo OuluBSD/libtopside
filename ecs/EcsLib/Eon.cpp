@@ -168,14 +168,13 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	}
 	ConnectManuallyInterfacesRef conn = e->GetPool().GetAdd<ConnectManuallyInterfaces>();
 	
-	for(int i = 0; i < comps.GetCount(); i++) {
-		int b = (i + 1) % comps.GetCount();
+	for(int i = 0; i < comps.GetCount()-1; i++) {
 		ComponentBaseRef src = comps[i];
-		ComponentBaseRef dst = comps[b];
-		Eon::ActionNode& n = *plan[i];
+		ComponentBaseRef dst = comps[i+1];
+		Eon::ActionNode& n = *plan[i+1];
 		const Eon::WorldState& ws = n.GetWorldState();
 		TypeCls src_iface = ws.GetSourceInterface();
-		TypeCls sink_iface = ws.GetSourceInterface();
+		TypeCls sink_iface = ws.GetSinkInterface();
 		if (!conn->LinkManually(src, dst, src_iface, sink_iface)) {
 			TypeCls comp = ws.GetComponent();
 			String comp_name = EcsFactory::CompDataMap().Get(comp).name;

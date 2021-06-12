@@ -471,6 +471,20 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) {vis || pts;}
 	
+	
+public:
+	
+	typedef ExchangePoint* (*NewExpt)();
+	struct ExptData : Moveable<ExptData> {
+		NewExpt new_fn;
+	};
+	static VectorMap<TypeCls,ExptData>& ExptDataMap() {static VectorMap<TypeCls,ExptData> m; return m;}
+	template <class T> static ExchangePoint* New() {return new T();}
+	template <class T> static void RegisterExchangePoint() {
+		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());
+		d.new_fn = &New<T>;
+	}
+	
 };
 
 

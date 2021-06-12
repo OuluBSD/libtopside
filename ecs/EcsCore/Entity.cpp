@@ -46,6 +46,13 @@ ComponentBaseRef Entity::GetAddTypeCls(TypeCls comp_type) {
 	return AddPtr(EcsFactory::CompDataMap().Get(comp_type).new_fn());
 }
 
+ComponentBaseRef Entity::AddPtr(ComponentBase* comp) {
+	comp->SetParent(this);
+	comps.AddBase(comp);
+	InitializeComponent(*comp);
+	return ComponentBaseRef(this, comp);
+}
+
 void Entity::InitializeComponents() {
 	for(auto& comp : comps.GetValues())
 		InitializeComponent(*comp);

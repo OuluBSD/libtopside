@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 bool ManualConnector::LinkManually(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface) {
 	InterfaceSourceBaseRef src = src_comp->FindSource(src_iface);
-	InterfaceSinkBaseRef sink = src_comp->FindSink(sink_iface);
+	InterfaceSinkBaseRef sink = dst_comp->FindSink(sink_iface);
 	ASSERT(src && sink);
 	if (!src || !sink)
 		return false;
@@ -12,7 +12,14 @@ bool ManualConnector::LinkManually(ComponentBaseRef src_comp, ComponentBaseRef d
 	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(ConnectorBase::GetPool()));
 	CookieRef src_cookie, sink_cookie;
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		TypeCls expt_type = EcsFactory::SourceDataMap().Get(src_iface).expt_type;
+		const auto& src_d = EcsFactory::SourceDataMap().Get(src_iface);
+		if (src_d.sink_cls != sink_iface) {
+			ASSERT(0);
+			LOG("internal error: unexpected sink class type");
+			return false;
+		}
+		
+		TypeCls expt_type = src_d.expt_type;
 		ASSERT(expt_type);
 		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
 		RTLOG("ManualConnector::LinkManually(TypeCls...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));

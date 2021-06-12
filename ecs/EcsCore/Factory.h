@@ -14,6 +14,7 @@ public:
 	struct IfaceData : Moveable<IfaceData> {
 		TypeCls cls;
 		TypeCls expt_type;
+		TypeCls sink_cls;
 		String name;
 	};
 	static VectorMap<TypeCls,IfaceData>& SourceDataMap() {static VectorMap<TypeCls,IfaceData> m; return m;}
@@ -24,6 +25,8 @@ public:
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.expt_type = AsTypeCls<typename T::ExPt>();
+		d.sink_cls = AsTypeCls<typename T::Sink>();
+		MetaExchangePoint::RegisterExchangePoint<typename T::ExPt>();
 	}
 	
 	template <class T> static void RegisterInterfaceSink() {
@@ -31,7 +34,10 @@ public:
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.expt_type = 0;
+		d.sink_cls = 0;
 	}
+	
+	
 	
 	typedef ComponentBase* (*NewFn)();
 	typedef bool (*ActionFn)(Eon::Action& act);
@@ -70,6 +76,7 @@ public:
 			}
 		}
 	}
+	
 	
 	static void Dump();
 	static const Vector<Link>& GetSinkComponents(TypeCls src_comp);

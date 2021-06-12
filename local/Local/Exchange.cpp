@@ -242,7 +242,13 @@ void MetaExchangePoint::UnlinkAll() {
 }
 
 ExchangePointRef MetaExchangePoint::Add(TypeCls expt) {
-	TODO
+	const auto& m = ExptDataMap();
+	const auto& d = m.Get(expt);
+	ExchangePoint* o = d.new_fn();
+	pts.Add(o);
+	o->SetParent(this);
+	o->meta_expt = AsRefT();
+	return o->AsRefT();
 }
 
 

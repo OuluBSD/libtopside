@@ -185,11 +185,9 @@ private:
 		return RefT_Entity<T>(this, comp);
 	}
 	
-	ComponentBaseRef AddPtr(ComponentBase* comp) {
-		comp->SetParent(this);
-		comps.AddBase(comp);
-		return ComponentBaseRef(this, comp);
-	}
+	ComponentBaseRef AddPtr(ComponentBase* comp);
+	
+	
 };
 
 
