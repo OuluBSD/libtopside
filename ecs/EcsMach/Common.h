@@ -104,6 +104,9 @@ using RefT_Entity			= Ref<T,					RefParent1<Entity>>;
 template <class T>
 using RefT_Pool				= Ref<T,					RefParent1<Pool>>;
 
+template <class T>
+using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
+
 
 
 

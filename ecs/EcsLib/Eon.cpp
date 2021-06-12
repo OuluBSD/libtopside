@@ -131,9 +131,10 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	
 	// Do the action plan searching
 	AStar<Eon::ActionNode> as;
-	Vector<Eon::ActionNode*> plan = as.Search(start_node);
+	EonPlan ep;
+	ep.plan = as.Search(start_node);
 	
-	if (plan.IsEmpty()) {
+	if (ep.plan.IsEmpty()) {
 		AddError("Eon action planner failed");
 		return false;
 	}
@@ -142,7 +143,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	// Debug print found loop
 	if (1) {
 		int pos = 0;
-		for (Eon::ActionNode* n : plan) {
+		for (Eon::ActionNode* n : ep.plan) {
 			const Eon::WorldState& ws = n->GetWorldState();
 			TypeCls comp = ws.GetComponent();
 			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
@@ -154,7 +155,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	
 	// Implement found loop
 	Array<ComponentBaseRef> comps;
-	for (Eon::ActionNode* n : plan) {
+	for (Eon::ActionNode* n : ep.plan) {
 		const Eon::WorldState& ws = n->GetWorldState();
 		TypeCls comp = ws.GetComponent();
 		ComponentBaseRef cb = e->GetAddTypeCls(comp);
@@ -171,7 +172,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	for(int i = 0; i < comps.GetCount()-1; i++) {
 		ComponentBaseRef src = comps[i];
 		ComponentBaseRef dst = comps[i+1];
-		Eon::ActionNode& n = *plan[i+1];
+		Eon::ActionNode& n = *ep.plan[i+1];
 		const Eon::WorldState& ws = n.GetWorldState();
 		TypeCls src_iface = ws.GetSourceInterface();
 		TypeCls sink_iface = ws.GetSinkInterface();
@@ -182,6 +183,11 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 			AddError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
+	}
+	
+	CustomerComponentRef customer = comps[0]->AsRef<CustomerComponent>();
+	if (customer) {
+		customer->AddPlan(ep);
 	}
 	
 	

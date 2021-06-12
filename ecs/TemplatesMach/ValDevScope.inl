@@ -63,8 +63,8 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
 	
-	TODO
-	/*if (e.IsStoring()) {
+	
+	if (e.IsStoring()) {
 		if (buf.IsEmpty()) {
 			e.SetFail();
 			return;
@@ -87,34 +87,23 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 			if (producer.IsEmptySource())
 				producer.SetSource(buf);
 			
-			off32 expected = e.GetOffset();
-			RTLOG("SimpleBufferedValue::Exchange: expected offset " << expected.ToString() << " with buffer read position " << buf_read_pos.ToString());
+			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
 			ASSERT(!sink.IsQueueFull());
-			
-			if (1)
-				producer.SetOffset(expected);
-			else {
-				producer.SetOffset(buf_read_pos);
-				if (buf_read_pos != expected) {RTLOG("SimpleBufferedValue::Exchange: warning: reading unexpected buffer offset");}
-				expected = buf_read_pos;
-			}
 			
 			producer.SetDestination(*dst_vbuf);
 			producer.SetDestinationRealtime(conf.sync);
 			producer.ProduceAll();
 			producer.ClearDestination();
 			
-			off32 end = producer.GetOffset();
-			e.SetOffset(end);
+			int count = producer.GetCount();
+			RTLOG("SimpleBufferedValue::Exchange: produced count=" << count);
 			
-			off32 diff = off32::GetDifference(expected, end);
-			RTLOG("SimpleBufferedValue::Exchange: produced count=" << diff.ToString());
+			off32 end = producer.PickLastOffset();
+			sink_offsets.GetAdd(&e.Sink(), end) = end;
 			
-			sink_offsets.GetAdd(&e.Sink()) = end;
+			exchange_count += count;
 			
-			exchange_count += diff.value;
-			
-			if (!diff)
+			if (!count)
 				e.SetFail();
 		}
 		else if ((dst_buf = CastPtr<SimpleBufferedValue>(&sink))) {
@@ -131,7 +120,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 	}
 	else {
 		Panic("Invalid Ex in SimpleBufferedValue");
-	}*/
+	}
 }
 
 TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueSize() const {
@@ -176,7 +165,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::DropBuffer() {
 	ASSERT(sink_offsets.GetCount());
 	
 	// Find sink with lowest read position
-	auto sink_iter = sink_offsets.begin();
+	auto sink_iter = sink_offsets.GetValues().begin();
 	off32 end_offset_min = sink_iter();
 	for(++sink_iter; sink_iter; ++sink_iter)
 		end_offset_min = std::min(end_offset_min, sink_iter());
@@ -303,6 +292,8 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 		internal_written_bytes += p->GetSizeBytes();
 		/*offset = p->GetOffset();
 		++offset;*/
+		packet_count++;
+		last = p;
 		return true;
 	}
 	return false;
@@ -310,6 +301,7 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 
 TMPL_VALDEVMACH(void) PacketProducer::ProduceAll(bool blocking) {
 	internal_written_bytes = 0;
+	packet_count = 0;
 	while (!IsFinished()) {
 		if (!ProducePacket()) {
 			if (!blocking) {

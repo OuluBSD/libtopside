@@ -53,7 +53,7 @@ Take any address and put to BreakRefAdd
 
 void Main() {
 	SetCoutLog();
-	EcsFactory::Dump();
+	//EcsFactory::Dump();
 	
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
@@ -76,6 +76,7 @@ void Main() {
 				EntityStoreRef es			= mach.Add<EntityStore>();
 				ComponentStoreRef compstore	= mach.Add<ComponentStore>();
 			    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
+			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
 			    //mach.Add<CenterSystem>();

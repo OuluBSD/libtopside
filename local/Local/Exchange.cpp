@@ -120,6 +120,8 @@ void FwdScope::Clear() {
 		next[i] = 0;
 	read_i = 0;
 	write_i = 0;
+	cfg = 0;
+	first = 0;
 }
 
 void FwdScope::Forward() {
@@ -132,6 +134,10 @@ void FwdScope::Forward() {
 
 void FwdScope::AddNext(PacketForwarder* cb) {
 	if (cb) {
+		if (!first)
+			first = cb;
+		else if (cb == first)
+			return;
 		ASSERT(!next[write_i]);
 		next[write_i] = cb;
 		write_i = (write_i + 1) % QUEUE_SIZE;

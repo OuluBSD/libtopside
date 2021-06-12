@@ -301,6 +301,7 @@ public:
 	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
+	const ExProv::Link& GetSingleConnection() const {ASSERT(base.GetConnections().GetCount() == 1); return base.GetConnections().First();}
 	
 };
 
@@ -343,6 +344,7 @@ public:
 	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
 	
 	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
+	const ExProv::Link& GetSingleConnection() const {ASSERT(base.GetConnections().GetCount() == 1); return base.GetConnections().First();}
 	
 };
 
@@ -356,23 +358,27 @@ class FwdScope {
 	static const int QUEUE_SIZE = 16;
 	PacketForwarder* next[QUEUE_SIZE];
 	PacketForwarder* cur;
+	PacketForwarder* first;
 	int read_i, write_i;
+	RealtimeSourceConfig* cfg;
 	
 public:
 	
 	
 	FwdScope() {Clear();}
-	FwdScope(PacketForwarder* cb) {Clear(); AddNext(cb); ActivateNext();}
-	FwdScope(PacketForwarder& cb) {Clear(); AddNext(cb); ActivateNext();}
+	FwdScope(PacketForwarder* cb, RealtimeSourceConfig& cfg) {SetCfg(cfg); Clear(); AddNext(cb); ActivateNext();}
+	FwdScope(PacketForwarder& cb, RealtimeSourceConfig& cfg) {SetCfg(cfg); Clear(); AddNext(cb); ActivateNext();}
 	
 	void Clear();
 	void Forward();
 	
+	void SetCfg(RealtimeSourceConfig& cfg) {this->cfg = &cfg;}
 	void AddNext(PacketForwarder& cb) {AddNext(&cb);}
 	void AddNext(PacketForwarder* cb);
 	void ActivateNext();
 	
 	bool HasCurrent() const {return cur != 0;}
+	RealtimeSourceConfig& Cfg() {return *cfg;}
 	
 	void operator++(int) {ActivateNext();}
 	operator bool() const {return HasCurrent();}

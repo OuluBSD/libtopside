@@ -171,13 +171,14 @@ public:
 
 	typedef enum {
 		INVALID,
+		GENERIC,
 		DEV_INTERNAL,
 		#define ORDER_SMPL(x) x ,
 		ORDER_SMPL_LIST
 		#undef ORDER_SMPL
 		TYPE_COUNT,
 		
-		DEFAULT = INVALID
+		DEFAULT = GENERIC
 	} Type;
 
 

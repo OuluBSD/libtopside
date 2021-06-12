@@ -62,11 +62,11 @@
 #include "DisplaySystem.h"
 #include "WindowSystem.h"
 
-#include "Customer.h"
 #include "Router.h"
 #include "Dummy.h"
 
 #include "Eon.h"
+#include "Customer.h"
 
 #endif
 

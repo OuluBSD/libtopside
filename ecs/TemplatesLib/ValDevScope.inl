@@ -24,7 +24,6 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	
 	//ASSERT(!dbg_offset_is_set);
 	
-	TODO
 	/*if (!dbg_offset_is_set) {
 		SourceRef src = this->src;
 		ASSERT(src);
@@ -64,7 +63,8 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 			LOG("Unexpected value type: " << to_val.GetDynamicName());
 			TODO
 		}
-		ASSERT(to_val.GetFormat().IsValid());
+		auto fmt = to_val.GetFormat();
+		ASSERT(fmt.IsValid());
 	}
 }
 

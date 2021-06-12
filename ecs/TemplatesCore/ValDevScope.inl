@@ -50,35 +50,32 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
 	
-	Ex ex(this);
-	//ex.SetOffset(offset);
 	
 	CtxStream& src_stream = src->GetStream(CTX);
+	//src->BeginStream(CTX);
+	
+	Ex ex(this);
+	
 	Value& src_value = src_stream.Get();
 	int src_sz = src_value.GetQueueSize();
 	
-	TODO
-	/*if (src_sz) {
+	if (src_sz) {
 		Value& sink_value = sink->GetValue(CTX);
 		bool sink_full = sink_value.IsQueueFull();
 		
 		if (!sink_full) {RTLOG("ExchangePoint::Forward: exchanging");}
 		else {RTLOG("ExchangePoint::Forward: sink full");}
 		
-		#if 1
 		int iter = 0;
-		int total_exchanged = 0;
-		int max_exchange = src_sz;
 		while (src_sz && !sink_full) {
-			off32 begin = ex.GetOffset();
 			
 			// Consumer works with single connection only
 			if (use_consumer) {
-				ex.SetLoading(src_value, src->Cfg());
+				ex.SetLoading(src_value, fwd.Cfg());
 				sink_value.Exchange(ex);
 			}
 			else {
-				ex.SetStoring(sink_value, src->Cfg());
+				ex.SetStoring(sink_value, fwd.Cfg());
 				src_value.Exchange(ex);
 			}
 			
@@ -86,12 +83,6 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 				RTLOG("error: ExchangePoint::Forward: exchange failed");
 				break;
 			}
-			
-			off32 end = ex.GetOffset();
-			off32 exchanged = off32::GetDifference(begin, end);
-			total_exchanged += exchanged.value;
-			if (total_exchanged >= max_exchange)
-				break;
 			
 			src_sz = src_value.GetQueueSize();
 			sink_full = sink_value.IsQueueFull();
@@ -100,32 +91,12 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 				RTLOG("ExchangePoint::Forward: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
 			}
 		}
-		#else
-		if (src_sz && !sink_full) {
-			off32 begin = ex.GetOffset();
-				
-			// Consumer works with single connection only
-			if (use_consumer) {
-				ex.SetLoading(src_value, src->Cfg());
-				sink_value.Exchange(ex);
-			}
-			else {
-				ex.SetStoring(sink_value, src->Cfg());
-				src_value.Exchange(ex);
-			}
-			
-			if (ex.IsFail()) {
-				RTLOG("error: ExchangePoint::Forward: exchange failed");
-			}
-		}
-		#endif
 	}
 	else {
 		RTLOG("ExchangePoint::Forward: empty source");
 	}
 	
-	SetOffset(ex.GetOffset());
-	*/
+	//src->EndStream(CTX);
 	
 	fwd.AddNext(sink->AsComponentBase());
 }

@@ -130,6 +130,8 @@ struct ScopeValDevMachT {
 		VolatileBuffer*		dst = 0;
 		bool				dst_realtime = false;
 		int					internal_written_bytes;
+		int					packet_count;
+		Packet				last;
 		
 	public:
 		RTTI_DECL_T0(PacketProducer)
@@ -146,6 +148,8 @@ struct ScopeValDevMachT {
 		bool		IsFinished() const;
 		bool		IsEmptySource() const {return src == 0;}
 		int			GetLastMemoryBytes() const {return internal_written_bytes;}
+		int			GetCount() const {return packet_count;}
+		off32		PickLastOffset() {off32 o = last->GetOffset(); last.Clear(); return o;}
 		
 		operator bool() const {return IsFinished();}
 		
@@ -290,7 +294,7 @@ struct ScopeValDevMachT {
 	{
 		
 	protected:
-		LinkedMap<Value*, off32> sink_offsets;
+		ArrayMap<void*, off32> sink_offsets;
 		PacketProducer	producer;
 		PacketBuffer	buf;
 		int				min_buf_samples = std::max<int>(1, 3 * Format::def_sample_rate);

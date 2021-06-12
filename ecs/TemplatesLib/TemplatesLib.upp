@@ -16,7 +16,6 @@ file
 	AccelOpenGL.cpp,
 	DevScope.h,
 	DevScope.inl highlight cpp,
-	DevScope.cpp,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
 	ValDevScope.cpp,

@@ -78,7 +78,6 @@ class DummySoundGeneratorAudio :
 {
 	DummySoundGenerator<uint8> gen;
 	AudioFormat fmt;
-	off32_gen og;
 	double time = 0;
 	
 public:
@@ -126,6 +125,31 @@ class DummySoundGeneratorComponent :
 	
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
+protected:
+	struct LocalValue : public SimpleBufferedOrder {
+		
+	};
+	
+	struct LocalStream : public SimpleBufferedOrderStream {
+		RTTI_DECL1(LocalStream, SimpleBufferedOrderStream)
+		DummySoundGeneratorComponent& par;
+		LocalStream(DummySoundGeneratorComponent* par) :
+			par(*par),
+			SimpleBufferedOrderStream(par->value) {}
+		bool			IsOpen() const override {TODO}
+		bool			Open(int fmt_idx) override {TODO}
+		void			Close() override {par.value.ClearBuffer();}
+		bool			IsEof() override {return false;}
+		bool			ReadFrame() override {return par.ReadFrame();}
+		bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
+		bool			ProcessOtherFrame() override {return false;}
+		void			ClearPacketData() override {}
+		bool			LoadFileAny(String path) override {TODO}
+	};
+	
+	LocalValue			value;
+	LocalStream			stream;
+	
 public:
 	using Component = DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>;
 	RTTI_DCOMP3(DummySoundGeneratorComponent, EventSink, OrderSink, AudioSource)
@@ -144,16 +168,20 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	void ForwardExchange(FwdScope& fwd) override;
 	
-	// Order
+	// OrderSink
 	OrderFormat		GetFormat(OrdCtx) override {TODO}
-	Order&			GetValue(OrdCtx) override {TODO}
+	Order&			GetValue(OrdCtx) override {return value;}
+	bool			ReadFrame() {TODO}
+	bool			ProcessDeviceFrame() {TODO}
 	
-	// Event
+	// EventSink
 	EventFormat		GetFormat(EvCtx) override {TODO}
 	Event&			GetValue(EvCtx) override {TODO}
 	
-	// Audio
+	// AudioSource
 	AudioStream&	GetStream(AudCtx) override;
 	void			BeginStream(AudCtx) override;
 	void			EndStream(AudCtx) override;
@@ -194,16 +222,18 @@ public:
 	COMP_MAKE_ACTION_END
 	
 	
-	SimpleBufferedAudio value;
+	SimpleBufferedAudio sink_value;
 	
 	DummyAudioSinkComponent() = default;
 	
 	void			Initialize() override {}
 	void			Uninitialize() override {}
+	void			Forward(FwdScope& fwd) override;
+	void			ForwardExchange(FwdScope& fwd) override;
 	
 	// AudioSink
 	AudioFormat		GetFormat(AudCtx) override {return AudioFormat();}
-	Audio&			GetValue(AudCtx) override {return value;}
+	Audio&			GetValue(AudCtx) override {return sink_value;}
 	
 	// ReceiptSource
 	ReceiptStream&	GetStream(RcpCtx) override {TODO}
