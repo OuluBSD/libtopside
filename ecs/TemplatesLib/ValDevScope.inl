@@ -51,13 +51,14 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
 		to_fmt = StageComponent::template GetDefaultFormat<ValSpec>();
-		SimpleBufferedValue* sbuf;
-		VolatileBuffer* vbuf;
-		if ((sbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
-			sbuf->SetFormat(to_fmt);
+		SimpleBufferedValue* sbbuf;
+		SimpleValue* sbuf;
+		if ((sbbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
+			sbbuf->SetFormat(to_fmt);
 		}
-		else if ((vbuf = CastPtr<VolatileBuffer>(&to_val))) {
-			vbuf->SetFormat(to_fmt);
+		else if ((sbuf = CastPtr<SimpleValue>(&to_val))) {
+			//sbuf->SetFormat(to_fmt);
+			TODO
 		}
 		else {
 			LOG("Unexpected value type: " << to_val.GetDynamicName());

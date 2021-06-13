@@ -7,23 +7,50 @@ NAMESPACE_TOPSIDE_BEGIN
 TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
 	if (e.IsStoring()) {
 		Value& sink = e.Sink();
+		ASSERT(&e.Source() == this);
 		
 		// Arguments for this individual SimpleValue::Exchange event
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		VolatileBuffer* vol = CastPtr<VolatileBuffer>(&sink);
-		if (vol) {
-			while (!vol->IsQueueFull()) {
-				Packet p = ValMach::CreatePacket();
-				p->Set(fmt, offset, time);
-				//p->Data().SetCount(fmt.GetFrameBytes(), 0);
-				StorePacket(p);
-				vol->Put(p, false);
-				++offset;
-				time += fmt.GetFrameSeconds();
+		// Consumer model
+		/*if (use_consumer)*/ {
+			SimpleValue* sink_vol;
+			
+			if ((sink_vol = CastPtr<SimpleValue>(&sink))) {
+				auto& sink_buf = sink_vol->GetBuffer();
+				
+				while (this->GetQueueSize() > 0 && !sink_vol->IsQueueFull()) {
+					Packet src_p = this->Pick();
+					Packet sink_p = ValMach::CreatePacket(src_p->GetOffset());
+					sink_p->Set(fmt, time);
+					//p->Data().SetCount(fmt.GetFrameBytes(), 0);
+					StorePacket(sink_p);
+					sink_buf.Add(sink_p);
+					time += fmt.GetFrameSeconds();
+				}
 			}
+			else TODO
 		}
-		else TODO
+		// Producer model
+		/*else {
+			SimpleValue* sink_vol;
+			
+			if ((src_vol = CastPtr<SimpleValue>(&src))) {
+				if ((sink_vol = CastPtr<SimpleValue>(&sink))) {
+					while (src_vol->GetQueueSize() > 0 && !sink_vol->IsQueueFull()) {
+						Packet src_p = src_vol->Get(offset);
+						Packet sink_p = ValMach::CreatePacket(src_p->GetOffset());
+						sink_p->Set(fmt, time);
+						//p->Data().SetCount(fmt.GetFrameBytes(), 0);
+						StorePacket(sink_p);
+						vol->Put(sink_p, false);
+						time += fmt.GetFrameSeconds();
+					}
+				}
+				else TODO
+			}
+			else TODO
+		}*/
 	}
 	else TODO
 }
@@ -57,11 +84,36 @@ TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
 
 
 
+TMPL_VALDEVMACH(typename ScopeValMachT<typename ValDevSpec::Val>::Packet)
+SimpleValue::Pick() {
+	using ValSpec				= typename ValDevSpec::Val;
+	using ValMach				= ScopeValMachT<ValSpec>;
+	using Packet				= typename ValMach::Packet;
+	
+	if (buf.IsEmpty())
+		return Packet();
+	Packet p = buf.First();
+	buf.RemoveFirst();
+	return p;
+}
+
+
+
+
+
+
+
+
+
+
+
 TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 	using ValSpec				= typename ValDevSpec::Val;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
+	using PacketBuffer			= typename Mach::PacketBuffer;
+	using SimpleValue			= typename Mach::SimpleValue;
 	
 	
 	if (e.IsStoring()) {
@@ -81,16 +133,16 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 		Value& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
-		VolatileBuffer* dst_vbuf;
+		SimpleValue* dst_sbuf;
 		SimpleBufferedValue* dst_buf;
-		if ((dst_vbuf = CastPtr<VolatileBuffer>(&sink))) {
+		if ((dst_sbuf = CastPtr<SimpleValue>(&sink))) {
 			if (producer.IsEmptySource())
 				producer.SetSource(buf);
 			
 			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
 			ASSERT(!sink.IsQueueFull());
 			
-			producer.SetDestination(*dst_vbuf);
+			producer.SetDestination(*dst_sbuf, min_buf_samples);
 			producer.SetDestinationRealtime(conf.sync);
 			producer.ProduceAll();
 			producer.ClearDestination();
@@ -117,6 +169,54 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 		else {
 			TODO
 		}
+	}
+	else if (e.IsLoading()) {
+		if (buf.IsEmpty()) {
+			e.SetFail();
+			return;
+		}
+		auto val_fmt = GetFormat();
+		ASSERT(val_fmt.IsValid());
+		
+		
+		#if DEBUG_RT_PIPE
+		{
+			auto frame_iter = buf.begin();
+			Packet& p = frame_iter();
+			off32 buf_read_pos = p->GetOffset();
+			
+			// Compare exchange and source formats
+			auto cmp_fmt = p->GetFormat();
+			ASSERT(cmp_fmt == val_fmt);
+			
+			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
+		}
+		#endif
+		
+		
+		Value& src = e.Source();
+		Value& sink = e.Sink();
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		PacketBuffer& src_buf = src.GetBuffer();
+		
+		//LOG("BUF dyn name: " << src.GetDynamicName());
+		
+		ASSERT(!sink.IsQueueFull());
+		
+		consumer.SetSource(src_buf);
+		consumer.SetDestination(val_fmt, buf, min_buf_samples);
+		consumer.SetDestinationRealtime(conf.sync);
+		consumer.ConsumeAll();
+		consumer.ClearDestination();
+		
+		int count = consumer.GetCount();
+		RTLOG("SimpleBufferedValue::Exchange: produced count=" << count);
+		
+		exchange_count += count;
+		
+		if (!count)
+			e.SetFail();
 	}
 	else {
 		Panic("Invalid Ex in SimpleBufferedValue");
@@ -238,7 +338,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedStream::FillBuffer() {
 	return sz >= preferred_sz;
 }*/
 
-TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
+/*TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
 	if (e.IsLoading()) {
 		Value& aud = e.Source();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
@@ -269,7 +369,7 @@ TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
 	}
 	else
 		Panic("Invalid Ex");
-}
+}*/
 
 
 
@@ -286,9 +386,13 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 				break;*/
 		if (!iter)
 			return false;
+		if (tmp_realtime) {
+			dst->Clear();
+			tmp_realtime = false;
+		}
 		Packet p = iter();
 		p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
-		dst->Put(p, dst_realtime);
+		dst->Add(p);
 		internal_written_bytes += p->GetSizeBytes();
 		/*offset = p->GetOffset();
 		++offset;*/
@@ -302,6 +406,7 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 TMPL_VALDEVMACH(void) PacketProducer::ProduceAll(bool blocking) {
 	internal_written_bytes = 0;
 	packet_count = 0;
+	tmp_realtime = dst_realtime;
 	while (!IsFinished()) {
 		if (!ProducePacket()) {
 			if (!blocking) {
@@ -316,7 +421,7 @@ TMPL_VALDEVMACH(void) PacketProducer::ProduceAll(bool blocking) {
 }
 
 TMPL_VALDEVMACH(bool) PacketProducer::IsFinished() const {
-	return dst->IsQueueFull();
+	return dst->GetCount() >= packet_limit;
 }
 
 
@@ -325,23 +430,26 @@ TMPL_VALDEVMACH(bool) PacketProducer::IsFinished() const {
 
 
 
-TMPL_VALDEVMACH(void) PacketConsumer::SetSource(VolatileBuffer& src) {
-	this->src = &src;
+TMPL_VALDEVMACH(void) PacketConsumer::SetSource(PacketBuffer& src) {
+	this->src_buf = &src;
 }
 
 TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, void* dst, int dst_size) {
 	dst_fmt = fmt;
 	dst_mem = dst;
 	dst_buf = 0;
+	dst_buf_limit = 0;
 	dst_iter = (byte*)dst;
 	dst_iter_end = dst_iter + dst_size;
 	this->dst_size = dst_size;
 }
 
-TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(VolatileBuffer& dst) {
-	dst_fmt = dst.GetFormat();
+TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, PacketBuffer& dst, int limit) {
+	ASSERT(limit > 0);
+	dst_fmt = fmt;
 	dst_mem = 0;
 	dst_buf = &dst;
+	dst_buf_limit = limit;
 	dst_iter = 0;
 	dst_iter_end = 0;
 	dst_size = 0;
@@ -351,6 +459,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::ClearDestination() {
 	dst_fmt.Clear();
 	dst_mem = 0;
 	dst_buf = 0;
+	dst_buf_limit = 0;
 	dst_iter = 0;
 	dst_iter_end = 0;
 	dst_size = 0;
@@ -458,7 +567,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::ConsumeAll(bool blocking) {
 				break;
 			}
 			else {
-				while (!src->GetQueueSize())
+				while (!src_buf->GetCount())
 					Sleep(1);
 			}
 		}
@@ -469,7 +578,7 @@ TMPL_VALDEVMACH(bool) PacketConsumer::IsFinished() const {
 	if (dst_mem)
 		return internal_written_bytes >= dst_size;
 	else
-		return dst_buf->IsQueueFull();
+		return dst_buf->GetCount() >= dst_buf_limit;
 }
 
 /*TMPL_VALDEVMACH(void) Ex::SetOffset(off32 packet_count) {

@@ -126,6 +126,8 @@ void FwdScope::Clear() {
 
 void FwdScope::Forward() {
 	if (cur) {
+		int pos = read_i-1;
+		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << ")");
 		cur->ForwardSetup(*this);
 		cur->Forward(*this);
 		cur->ForwardExchange(*this);

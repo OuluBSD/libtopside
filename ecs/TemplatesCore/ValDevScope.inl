@@ -69,11 +69,12 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 		int iter = 0;
 		while (src_sz && !sink_full) {
 			
-			// Consumer works with single connection only
+			// Consumer model (works with single connection only)
 			if (use_consumer) {
 				ex.SetLoading(src_value, fwd.Cfg());
 				sink_value.Exchange(ex);
 			}
+			// Producer model
 			else {
 				ex.SetStoring(sink_value, fwd.Cfg());
 				src_value.Exchange(ex);

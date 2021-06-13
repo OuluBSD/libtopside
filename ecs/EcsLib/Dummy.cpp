@@ -12,9 +12,13 @@ DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
 	gen.GenerateStereoSine(fmt);
 }
 
-void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
+void DummySoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	TODO
-	/*if (e.IsStoring()) {
+}
+
+/*void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
+	TODO
+	if (e.IsStoring()) {
 		Audio& sink = e.Sink();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
@@ -37,7 +41,7 @@ void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
 		}
 		else TODO
 	}
-	else TODO*/
+	else TODO
 }
 
 int DummySoundGeneratorAudio::GetQueueSize() const {
@@ -50,7 +54,7 @@ AudioFormat DummySoundGeneratorAudio::GetFormat() const {
 
 bool DummySoundGeneratorAudio::IsQueueFull() const {
 	return true;
-}
+}*/
 
 
 
@@ -84,43 +88,96 @@ void DummySoundGeneratorComponent::Uninitialize() {
 }
 
 void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {
-	using DevMach = ScopeDevMachT<CenterSpec>;
-	using InternalPacketData = typename DevMach::InternalPacketData;
+	using FromValSpec				= OrderSpec;
+	using ToValSpec					= AudioSpec;
+	using DevSpec					= CenterSpec;
 	
-	TODO
-	/*AudioSource& val_src = *this;
-	OrderSink& val_sink = *this;
-	auto& sink_buf = sink_value.GetBuffer();
-	for(Packet& p : sink_buf) {
-		RTLOG("DummySoundGeneratorComponent::Forward: play packet " << p->GetOffset().ToString());
-		off32 off = p->GetOffset();
+	using DevMach					= ScopeDevMachT<DevSpec>;
+	using InternalPacketData		= typename DevMach::InternalPacketData;
+	
+	using FromValDevSpec			= VD<DevSpec, FromValSpec>;
+	using FromValMach				= ScopeValMachT<FromValSpec>;
+	using FromValDevMach			= ScopeValDevMachT<FromValDevSpec>;
+	using FromValDevCore			= ScopeValDevCoreT<FromValDevSpec>;
+	using FromPacket				= typename FromValMach::Packet;
+	using FromValue					= typename FromValDevMach::Value;
+	using FromPacketBuffer			= typename FromValDevMach::PacketBuffer;
+	using FromSimpleBufferedValue	= typename FromValDevMach::SimpleBufferedValue;
+	using FromSink					= typename FromValDevCore::ValSink;
+	#define FROMCTX (FromValSpec*)0
+	
+	using ToValDevSpec				= VD<DevSpec, ToValSpec>;
+	using ToValMach					= ScopeValMachT<ToValSpec>;
+	using ToValDevMach				= ScopeValDevMachT<ToValDevSpec>;
+	using ToValDevCore				= ScopeValDevCoreT<ToValDevSpec>;
+	using ToValLib					= ScopeValLibT<ToValSpec>;
+	using ToPacket					= typename ToValMach::Packet;
+	using ToFormat					= typename ToValMach::Format;
+	using ToValue					= typename ToValDevMach::Value;
+	using ToSimpleBufferedValue		= typename ToValDevMach::SimpleBufferedValue;
+	using ToSimpleValue				= typename ToValDevMach::SimpleValue;
+	using ToSource					= typename ToValDevCore::ValSource;
+	using ToSink					= typename ToValDevCore::ValSink;
+	using ToSinkRef					= typename ToValDevCore::ValSinkRef;
+	using ToPacketTracker			= typename ToValLib::PacketTracker;
+	#define TOCTX (ToValSpec*)0
+	
+	ToSource& iface_src = *this;
+	FromSink& iface_sink = *this;
+	FromValue& sink_val = iface_sink.GetValue(FROMCTX);
+	FromSimpleBufferedValue* sink_buf_val = CastPtr<FromSimpleBufferedValue>(&sink_val);
+	if (sink_buf_val) {
+		FromPacketBuffer& sink_buf = sink_buf_val->GetBuffer();
 		
-		auto& link = val_src.GetSingleConnection()
-		
-		AudioSinkRef val_sink = link.dst;
-		ASSERT(val_sink);
-		
-		Audio& val = val_sink->GetValue(RCPCTX);
-		SimpleBufferedAudio* buf = CastPtr<SimpleBufferedAudio>(&val);
-		if (buf) {
-			AudioPacket p = CreateAudioPacket(off);
+		for(FromPacket& p : sink_buf) {
+			RTLOG("DummySoundGeneratorComponent::Forward: play packet " << p->GetOffset().ToString());
+			off32 off = p->GetOffset();
 			
-			AudioFormat fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<AudioSpec>();
-			RTLOG("DummySoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
-			p->SetFormat(fmt);
-			
-			InternalPacketData& data = p->template SetData<InternalPacketData>();
-			data.pos = 0;
-			data.count = 1;
-			
-			AudioPacketTracker::Track(TrackerInfo("DummySoundGeneratorComponent::Forward", __FILE__, __LINE__), *p);
-			buf->AddPacket(p);
-			
+			ToValue& val = iface_src.GetStream(TOCTX).Get();
+			ToSimpleValue* sval;
+			ToSimpleBufferedValue* buf;
+			if ((sval = CastPtr<ToSimpleValue>(&val))) {
+				while (!sval->IsQueueFull()) {
+					ToPacket p = ToValMach::CreatePacket(off);
+					
+					ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
+					RTLOG("DummySoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
+					p->SetFormat(fmt);
+					
+					InternalPacketData& data = p->template SetData<InternalPacketData>();
+					data.pos = 0;
+					data.count = 1;
+					
+					sval->StorePacket(p);
+					
+					ToPacketTracker::Track(TrackerInfo("DummySoundGeneratorComponent::Forward", __FILE__, __LINE__), *p);
+					buf->AddPacket(p);
+				}
+			}
+			else if ((buf = CastPtr<ToSimpleBufferedValue>(&val))) {
+				ToPacket p = ToValMach::CreatePacket(off);
+				
+				ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
+				RTLOG("DummySoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
+				p->SetFormat(fmt);
+				
+				InternalPacketData& data = p->template SetData<InternalPacketData>();
+				data.pos = 0;
+				data.count = 1;
+				
+				StorePacket(p);
+				
+				ToPacketTracker::Track(TrackerInfo("DummySoundGeneratorComponent::Forward", __FILE__, __LINE__), *p);
+				buf->AddPacket(p);
+			}
+			else {
+				TODO
+			}
 		}
-		else {
-			TODO
-		}
-	}*/
+	}
+	else TODO
+	#undef FROMCTX
+	#undef TOCTX
 }
 
 void DummySoundGeneratorComponent::ForwardExchange(FwdScope& fwd) {

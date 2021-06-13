@@ -37,7 +37,7 @@ IFACE_LIST;
 	using prefix##MachT						= ScopeValDevMachT<dev##value##Spec>; \
 	using prefix							= prefix##MachT::Value; \
 	using prefix##Proxy						= prefix##MachT::Proxy; \
-	using prefix##VolatileBuffer			= prefix##MachT::VolatileBuffer; \
+	/*using prefix##VolatileBuffer			= prefix##MachT::VolatileBuffer;*/ \
 	using prefix##Stream					= prefix##MachT::Stream; \
 	using prefix##StreamRef					= Ref<prefix##Stream,RefParent1<ComponentBase>>; \
 	using prefix##PacketConsumer			= prefix##MachT::PacketConsumer; \

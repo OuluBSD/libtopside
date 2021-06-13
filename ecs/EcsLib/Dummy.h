@@ -74,20 +74,21 @@ public:
 };
 
 class DummySoundGeneratorAudio :
-	public Audio
+	public SimpleAudio
 {
 	DummySoundGenerator<uint8> gen;
 	AudioFormat fmt;
 	double time = 0;
 	
 public:
-	RTTI_DECL1(DummySoundGeneratorAudio, Audio)
+	RTTI_DECL1(DummySoundGeneratorAudio, SimpleAudio)
 	DummySoundGeneratorAudio();
 	
-	void Exchange(AudioEx& e) override;
+	void StorePacket(AudioPacket& p) override;
+	/*void Exchange(AudioEx& e) override;
 	AudioFormat GetFormat() const override;
 	int GetQueueSize() const override;
-	bool IsQueueFull() const override;
+	bool IsQueueFull() const override;*/
 	
 	double GetSeconds() const {return time;}
 	
@@ -96,6 +97,7 @@ public:
 class DummySoundGeneratorStream :
 	public SimpleAudioStream
 {
+public:
 	DummySoundGeneratorAudio gen;
 	
 public:
@@ -185,6 +187,7 @@ public:
 	AudioStream&	GetStream(AudCtx) override;
 	void			BeginStream(AudCtx) override;
 	void			EndStream(AudCtx) override;
+	void			StorePacket(AudioPacket& p) {gen.gen.StorePacket(p);}
 	
 	
 	void SetPreset(int i) {preset_i = i;}

@@ -41,7 +41,7 @@ struct ScopeValDevMachT {
 		virtual int GetQueueSize() const = 0;
 		virtual Format GetFormat() const = 0;
 		virtual bool IsQueueFull() const = 0;
-		
+		virtual PacketBuffer& GetBuffer() = 0;
 	};
 	
 	
@@ -49,7 +49,7 @@ struct ScopeValDevMachT {
 		public ValExchangePointBase
 	{
 		ConnectorBase* conn = 0;
-		bool use_consumer = false;
+		bool use_consumer = true;
 		
 	public:
 		RTTI_DECL_T1(ValExchangePoint, ValExchangePointBase)
@@ -116,31 +116,35 @@ struct ScopeValDevMachT {
 		int GetQueueSize() const override {if (o) return o->GetQueueSize(); return 0;}
 		Format GetFormat() const override {if (o) return o->GetFormat(); return Format();}
 		bool IsQueueFull() const override {if (o) return o->IsQueueFull(); return 0;}
-		
+		PacketBuffer& GetBuffer() override {if (o) return o->GetBuffer(); Panic("Empty proxy");}
 	};
 	
 	
-	class VolatileBuffer;
+	class SimpleValue;
 	
 	
 	class PacketProducer :
 		RTTIBase
 	{
 		PacketBuffer*		src = 0;
-		VolatileBuffer*		dst = 0;
+		PacketBuffer*		dst = 0;
 		bool				dst_realtime = false;
+		bool				tmp_realtime = false;
 		int					internal_written_bytes;
 		int					packet_count;
+		int					packet_limit;
 		Packet				last;
 		
 	public:
 		RTTI_DECL_T0(PacketProducer)
 		PacketProducer() {}
 		
-		void		SetSource(PacketBuffer& src) {this->src = &src;}
-		void		SetDestination(VolatileBuffer& dst) {this->dst = &dst;}
-		void		SetDestinationRealtime(bool b) {dst_realtime = b;}
-		void		ClearDestination() {dst = 0;}
+		void		SetSource(PacketBuffer& src)		{this->src = &src;}
+		void		SetSource(Value& src)				{this->src = &src.GetBuffer();}
+		void		SetDestination(PacketBuffer& dst, int packet_limit)	{this->dst = &dst; this->packet_limit = packet_limit;}
+		void		SetDestination(Value& dst, int packet_limit)		{this->dst = &dst.GetBuffer(); this->packet_limit = packet_limit;}
+		void		SetDestinationRealtime(bool b)		{dst_realtime = b;}
+		void		ClearDestination()					{dst = 0;}
 		
 		
 		void		ProduceAll(bool blocking=false);
@@ -160,12 +164,13 @@ struct ScopeValDevMachT {
 		RTTIBase
 	{
 		
-		VolatileBuffer*	src = 0;
+		PacketBuffer*	src_buf = 0;
 		int				leftover_size = 0;
 		Packet			leftover;
 		
 		Format			dst_fmt;
-		VolatileBuffer*	dst_buf = 0;
+		PacketBuffer*	dst_buf = 0;
+		int				dst_buf_limit = 0;
 		void*			dst_mem = 0;
 		byte*			dst_iter = 0;
 		byte*			dst_iter_end = 0;
@@ -181,9 +186,9 @@ struct ScopeValDevMachT {
 		RTTI_DECL_T0(PacketConsumer)
 		PacketConsumer() {}
 		
-		void		SetSource(VolatileBuffer& src);
+		void		SetSource(PacketBuffer& src);
 		void		SetDestination(const Format& fmt, void* dst, int src_dst_size);
-		void		SetDestination(VolatileBuffer& dst);
+		void		SetDestination(const Format& fmt, PacketBuffer& dst, int limit);
 		void		SetDestinationRealtime(bool b) {dst_realtime = b;}
 		void		ClearDestination();
 		void		ClearLeftover() {leftover_size = 0; leftover.Clear();}
@@ -191,16 +196,17 @@ struct ScopeValDevMachT {
 		void		ConsumeAll(bool blocking=false);
 		bool		ConsumePacket();
 		bool		IsFinished() const;
-		bool		IsEmptySource() const {return src == 0;}
+		bool		IsEmptySource() const {return src_buf == 0;}
 		bool		HasLeftover() const {return leftover_size != 0;}
 		int			GetLastMemoryBytes() const {return internal_written_bytes;}
+		int			GetCount() const {return internal_count;}
 		
 		operator bool() const {return IsFinished();}
 		
 	};
 	
 	
-	class VolatileBuffer :
+	/*class VolatileBuffer :
 		public Value,
 		public RealtimePacketBuffer<Packet>
 	{
@@ -240,9 +246,7 @@ struct ScopeValDevMachT {
 		Format		GetFormat() const		override {return fmt;}
 		bool		IsQueueFull() const		override {return Buffer::IsQueueFull();}
 		
-		
-		
-	};
+	};*/
 	
 	
 	class Stream :
@@ -276,16 +280,19 @@ struct ScopeValDevMachT {
 	class SimpleValue :
 		public Value
 	{
-		Format fmt;
-		off32 offset;
-		double time = 0;
+		Format			fmt;
+		double			time = 0;
+		PacketBuffer	buf;
+		
 	public:
 		RTTI_DECL_T1(SimpleValue, Value)
-		void Exchange(Ex& e) override;
-		int GetQueueSize() const override;
-		Format GetFormat() const override;
-		bool IsQueueFull() const override;
-		virtual void StorePacket(Packet& p) = 0;
+		void			Exchange(Ex& e) override;
+		int				GetQueueSize() const override;
+		Format			GetFormat() const override;
+		bool			IsQueueFull() const override;
+		PacketBuffer&	GetBuffer() override {return buf;}
+		virtual void	StorePacket(Packet& p) = 0;
+		Packet			Pick();
 	};
 	
 	
@@ -296,6 +303,7 @@ struct ScopeValDevMachT {
 	protected:
 		ArrayMap<void*, off32> sink_offsets;
 		PacketProducer	producer;
+		PacketConsumer	consumer;
 		PacketBuffer	buf;
 		int				min_buf_samples = std::max<int>(1, 3 * Format::def_sample_rate);
 		dword			exchange_count = 0;
@@ -307,6 +315,7 @@ struct ScopeValDevMachT {
 		int				GetQueueSize() const override;
 		Format			GetFormat() const override;
 		bool			IsQueueFull() const override;
+		PacketBuffer&	GetBuffer() override {return buf;}
 		int				GetQueueTotalSamples() const;
 		int				GetQueueChannelSamples() const;
 		void			ClearBuffer() {buf.Clear();}
@@ -316,7 +325,6 @@ struct ScopeValDevMachT {
 		void			DropBuffer();
 		void			AddPacket(Packet p) {buf.Add(p);}
 		void			SetFormat(Format f) {fmt = f;}
-		PacketBuffer&	GetBuffer() {return buf;}
 		
 	};
 	

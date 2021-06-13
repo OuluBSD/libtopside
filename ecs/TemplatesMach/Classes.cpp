@@ -226,7 +226,17 @@ int EventSample::GetSize(Type t) {
 
 
 String OrderSample::ToString(Type t) {
-	TODO
+	switch (t) {
+		case INVALID: return "INVALID";
+		case GENERIC: return "GENERIC";
+		case DEV_INTERNAL: return "DEV_INTERNAL";
+		#define ORDER_SMPL(type) \
+			case type: return #type;
+		ORDER_SMPL_LIST
+		#undef ORDER_SMPL
+		default: break;
+	}
+	return "<invalid-sample-type>";
 }
 
 int OrderSample::GetSize(Type t) {

@@ -95,6 +95,37 @@ public:
 		return (*l.begin())->GetOffset();
 	}
 	
+	T Pick() {
+		lock.EnterWrite();
+		ASSERT(data_i >= 0 && data_i < BUFFER_COUNT);
+		LinkedList<T>& l = packets[data_i];
+		if (l.IsEmpty()) {
+			lock.LeaveWrite();
+			return T();
+		}
+		auto iter = l.begin();
+		T p = iter();
+		l.RemoveFirst(1);
+		lock.LeaveWrite();
+		
+		return p;
+	}
+	
+	T Get() {
+		lock.EnterRead();
+		ASSERT(data_i >= 0 && data_i < BUFFER_COUNT);
+		LinkedList<T>& l = packets[data_i];
+		if (l.IsEmpty()) {
+			lock.LeaveRead();
+			return T();
+		}
+		auto iter = l.begin();
+		T p = iter();
+		lock.LeaveRead();
+		
+		return p;
+	}
+	
 	T Get(off32 offset) {
 		lock.EnterRead();
 		ASSERT(data_i >= 0 && data_i < BUFFER_COUNT);
