@@ -3,6 +3,7 @@
 NAMESPACE_UPP
 
 
+
 INITBLOCK {
 	
 	#if HAVE_OPENCV

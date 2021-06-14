@@ -95,7 +95,6 @@ void Main() {
 				
 				LOG(eon_str);
 		        eon->PostLoadString(eon_str);
-		        //eon->PostLoadFile(GetDataFile("SimpleDummy.eon"));
 		    }
 		        
 		    if (!fail) {

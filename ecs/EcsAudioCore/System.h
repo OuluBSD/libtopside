@@ -19,7 +19,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	COMP_DEF_VISIT
 	void PostLoadFileAny(String path) {post_load_file_path = path;}
 	
 	String GetLastError() const {return last_error;}
@@ -43,7 +42,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	COMP_DEF_VISIT
 	
 	String GetLastError() const {return last_error;}
 	
@@ -65,6 +63,7 @@ public:
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	MixerChannelInputComponent();
 	
@@ -100,6 +99,7 @@ public:
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	MixerChannelOutputComponent();
 	
@@ -136,6 +136,7 @@ public:
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	MixerAudioSourceComponent();
 	
@@ -175,6 +176,7 @@ public:
 	IFACE_CB(EventSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	MidiFileComponent();
 	

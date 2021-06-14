@@ -48,21 +48,21 @@ BufferedAudioDeviceStream::BufferedAudioDeviceStream() {
 
 void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 	if (consumer.IsEmptySource())
-		consumer.SetSource(buf);
+		consumer.SetSource(buf.GetBuffer());
 	
 	if (args.output) {
-		TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
+		TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
 		
 		int size = fmt.GetFrameSize();
 		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
 			ASSERT(args.fpb == fmt.sample_rate);
 			
-			off32 begin_offset = buf.GetOffset();
+			/*off32 begin_offset = buf.GetOffset();
 			if (0) {
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
 				buf.Dump();
-			}
+			}*/
 			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
@@ -71,7 +71,11 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
 			}
 			
-			TODO
+			int consumed_count = consumer.GetCount();
+			if (consumed_count) {
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << consumed_count);
+			}
+			
 			/*off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);
 			if (diff) {
@@ -98,15 +102,15 @@ void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
 void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
 	
-	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
-	buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
+	buf.SetFormat(fmt);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
 	
-	TS::AudioFormat fmt = ConvertPortaudioFormat(this->fmt);
-	buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
+	buf.SetFormat(fmt);
 }
 
 
@@ -137,7 +141,7 @@ INITBLOCK {
 
 
 
-PortaudioSinkComponent::PortaudioSinkComponent() {
+PortaudioSinkComponent::PortaudioSinkComponent() : src_stream(this) {
 	
 }
 
@@ -199,7 +203,7 @@ AudioFormat PortaudioSinkComponent::GetFormat(AudCtx) {
 
 Audio& PortaudioSinkComponent::GetValue(AudCtx) {
 	if (obj)
-		return obj->GetBuffer();
+		return *obj;
 	THROW(Exc("PortaudioSinkComponent: obj is null"));
 }
 

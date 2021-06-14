@@ -121,7 +121,7 @@ struct ScopeValDevMachT {
 		int GetQueueSize() const override {if (o) return o->GetQueueSize(); return 0;}
 		Format GetFormat() const override {if (o) return o->GetFormat(); return Format();}
 		bool IsQueueFull() const override {if (o) return o->IsQueueFull(); return 0;}
-		PacketBuffer& GetBuffer() override {if (o) return o->GetBuffer(); Panic("Empty proxy");}
+		PacketBuffer& GetBuffer() override {if (o) return o->GetBuffer(); PANIC("Empty proxy");}
 	};
 	
 	

@@ -28,6 +28,7 @@ public:
 	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
+	COMP_DEF_MAKE_ACTION
 	
 	FluidsynthComponent();
 	

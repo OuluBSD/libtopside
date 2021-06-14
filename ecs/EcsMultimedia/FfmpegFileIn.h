@@ -68,18 +68,19 @@ public:
 	using Parent = FfmpegFileInput;
 	~FfmpegVideoFrameQueue() {Clear();}
 	
-	void		Visit(RuntimeVisitor& vis) {}
-	void		Init(AVCodecContext& ctx);
-	void		Clear();
-	void		FillBuffersNull();
+	void			Visit(RuntimeVisitor& vis) {}
+	void			Init(AVCodecContext& ctx);
+	void			Clear();
+	void			FillBuffersNull();
 	
-	void		Exchange(VideoEx& e) override;
-	int			GetQueueSize() const override;
-	bool		IsQueueFull() const override;
-	VideoFormat	GetFormat() const override;
+	void				Exchange(VideoEx& e) override;
+	int					GetQueueSize() const override;
+	bool				IsQueueFull() const override;
+	VideoFormat			GetFormat() const override;
+	VideoPacketBuffer&	GetBuffer() override {TODO}
 	
-	void		Process(double time_pos, AVFrame* frame, bool vflip=true);
-	void		DropFrames(int i);
+	void				Process(double time_pos, AVFrame* frame, bool vflip=true);
+	void				DropFrames(int i);
 	
 };
 

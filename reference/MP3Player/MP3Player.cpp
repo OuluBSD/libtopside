@@ -106,6 +106,35 @@ You'll see something like this in log
 Take any address and put to BreakRefAdd
 */
 
+const char* eon_gen_str = R"EON_CODE(
+
+player.audio.generator: {
+	center.audio.src.test: true;
+	center.audio.sink: true;
+}
+
+)EON_CODE";
+
+const char* eon_aud_str = R"EON_CODE(
+player.audio.ffmpeg: {
+	perma.audio.source.file.path: reg.app.arg.file;
+	center.audio.source.decoder: true;
+	center.audio.sink.hw: true;
+}
+
+)EON_CODE";
+
+const char* eon_vid_str = R"EON_CODE(
+
+player.media.ffmpeg: {
+	reg.appmode: "video";
+	perma.video.source.file.path: reg.app.arg.file;
+	center.video.source.decoder: true;
+	center.video.sink.hw: true;
+}
+
+)EON_CODE";
+
 void Main() {
 	SetCoutLog();
 	
@@ -131,36 +160,16 @@ void Main() {
 				EntityStoreRef es			= mach.Add<EntityStore>();
 				ComponentStoreRef compstore	= mach.Add<ComponentStore>();
 			    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
+			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
-			    //mach.Add<CenterSystem>();
 			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
-		    
+				
 				PoolRef root = es->GetRoot();
-				//root->Add<CenterContextConnector>();
-				//root->Add<ConnectAllCenterInterfaces>();
-				//root->Add<CenterStageContextConnector>();
 				
-				
-				
-				/*auto aud_gen				= root->Create<Customer>();
-				auto router					= root->Add<PathwayRouter>();
-				router->Add(aud_gen, conf_path);
-				
-		        if (run_sound_gen) {
-					VAR gen = root->Create<DummyGeneratorPrefab>();
-		        }
-		        else {
-		            VAR player = root->Create<MP3PlayerPrefab>();
-		        }
-		        
-		        
-		        reg.Clear();
-		        es.Clear();
-		        customer.Clear();
-		        router.Clear();*/
-		        
-		        eon->PostLoadFile(GetDataFile("MP3Player.eon"));
+				String eon_str = eon_gen_str;
+				LOG(eon_str);
+		        eon->PostLoadString(eon_str);
 		    }
 		        
 		    if (!fail) {

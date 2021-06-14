@@ -11,8 +11,6 @@ class FfmpegComponent :
 	public AudioSource,
 	public VideoSource
 {
-	VIS_COMP_2_0(Audio, Video)
-	
 	FfmpegFileInput file_in;
 	
 	String last_error;
@@ -27,6 +25,11 @@ public:
 	IFACE_CB(AudioSource);
 	IFACE_CB(VideoSource);
 	IFACE_GENERIC;
+	VIS_COMP_2_0(Audio, Video)
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.source.decoder")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.video.source.decoder")
+	COMP_MAKE_ACTION_END
 	
 	FfmpegComponent();
 	
