@@ -27,11 +27,11 @@ Audio& SDL2AudioOutputComponent::GetValue(AudCtx) {
 }*/
 
 void SDL2AudioOutputComponent::Forward(FwdScope& fwd) {
-	// pass
+	TODO
 }
 
 void SDL2AudioOutputComponent::ForwardExchange(FwdScope& fwd) {
-	// pass
+	TODO
 }
 
 

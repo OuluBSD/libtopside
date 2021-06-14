@@ -31,6 +31,7 @@ struct ScopeValDevMachT {
 		public ValueBase,
 		virtual public RealtimeStream
 	{
+		bool locked = false;
 		
 	public:
 		RTTI_DECL_T2(Value, ValueBase, RealtimeStream)
@@ -42,6 +43,10 @@ struct ScopeValDevMachT {
 		virtual Format GetFormat() const = 0;
 		virtual bool IsQueueFull() const = 0;
 		virtual PacketBuffer& GetBuffer() = 0;
+		
+		void Lock() {ASSERT(!locked); locked = true;}
+		void Unlock() {ASSERT(locked); locked = false;}
+		bool IsLocked() const {return locked;}
 	};
 	
 	
@@ -88,7 +93,7 @@ struct ScopeValDevMachT {
 		
 		Value&						Sink() const {return *sink;}
 		Value&						Source() const {return *src;}
-		const RealtimeSourceConfig&	SourceConfig() const {return *src_conf;}
+		const RealtimeSourceConfig&	SourceConfig() const {ASSERT(src_conf); return *src_conf;}
 		ValExchangePoint			GetExchangePoint() {return *expt;}
 		virtual bool				IsLoading() override {return !storing;}
 		virtual bool				IsStoring() override {return storing;}
@@ -283,6 +288,7 @@ struct ScopeValDevMachT {
 		Format			fmt;
 		double			time = 0;
 		PacketBuffer	buf;
+		int				packet_limit = 2;
 		
 	public:
 		RTTI_DECL_T1(SimpleValue, Value)
@@ -293,6 +299,9 @@ struct ScopeValDevMachT {
 		PacketBuffer&	GetBuffer() override {return buf;}
 		virtual void	StorePacket(Packet& p) = 0;
 		Packet			Pick();
+		void			SetFormat(Format fmt) {this->fmt = fmt;}
+		void			SetLimit(int i) {packet_limit = i;}
+		void			AddPacket(Packet& p) {GetBuffer().Add(p);}
 	};
 	
 	

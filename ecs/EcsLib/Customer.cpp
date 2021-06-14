@@ -31,51 +31,54 @@ void CustomerComponent::AddPlan(EonPlan& ep) {
 }
 
 void CustomerComponent::Forward(FwdScope& fwd) {
-	using DevMach = ScopeDevMachT<CenterSpec>;
-	using InternalPacketData = typename DevMach::InternalPacketData;
-	
-	OrderSource& val_src = *this;
-	
-	ASSERT(plans.GetCount() == val_src.GetConnections());
-	int link_i = 0;
-	for (auto& link : val_src.GetConnections()) {
-		EonPlan& ep = plans[link_i];
-		OrderSinkRef val_sink = link.dst;
-		ASSERT(val_sink);
+	int read_i = fwd.GetPos();
+	if (read_i == 0) {
+		using DevMach = ScopeDevMachT<CenterSpec>;
+		using InternalPacketData = typename DevMach::InternalPacketData;
 		
-		Order& val = val_sink->GetValue(ORDCTX);
-		SimpleBufferedOrder* buf = CastPtr<SimpleBufferedOrder>(&val);
-		if (buf) {
-			/*AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
-			
-			StageComponent* comp = CastPtr<StageComponent>(val_sink->AsComponentBase());
-			if (!comp)
-				return false;*/
-			
-			off32 off = gen.Create();
-			OrderPacket p = CreateOrderPacket(off);
-			
-			OrderFormat fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<OrderSpec>();
-			RTLOG("CustomerComponent::Forward: sending packet in format: " << fmt.ToString());
-			p->SetFormat(fmt);
-			
-			InternalPacketData& data = p->template SetData<InternalPacketData>();
-			data.pos = 0;
-			data.count = ep.plan.GetCount()-1;
-			
-			OrderPacketTracker::Track(TrackerInfo("CustomerComponent::Forward", __FILE__, __LINE__), *p);
-			buf->AddPacket(p);
-			
-		}
-		else {
-			TODO
-		}
-		++link_i;
+		ASSERT(plans.GetCount() == 1);
+		EonPlan& ep = plans[0];
+		
+		SimpleOrder& src_buf = src_value;
+		
+		off32 off = gen.Create();
+		OrderPacket p = CreateOrderPacket(off);
+		
+		unfulfilled_offsets.Add(off.value);
+		
+		OrderFormat fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<OrderSpec>();
+		RTLOG("CustomerComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
+		p->SetFormat(fmt);
+		
+		InternalPacketData& data = p->template SetData<InternalPacketData>();
+		data.pos = 0;
+		data.count = ep.plan.GetCount()-1;
+		
+		OrderPacketTracker::Track(TrackerInfo("CustomerComponent::Forward", __FILE__, __LINE__), *p);
+		src_buf.AddPacket(p);
 	}
-	
+	else {
+		ReceiptPacketBuffer& buf = sink_value.GetBuffer();
+		for (ReceiptPacket& p : buf) {
+			off32 off = p->GetOffset();
+			unfulfilled_offsets.RemoveKey(off.value);
+			RTLOG("CustomerComponent::Forward: removing fulfilled packet " << off.ToString());
+		}
+		buf.Clear();
+		
+		
+		if (unfulfilled_offsets.GetCount() > max_unfulfilled) {
+			LOG("CustomerComponent::Forward: error: too many unfulfilled packets");
+			while (unfulfilled_offsets.GetCount() > max_unfulfilled)
+				unfulfilled_offsets.Remove(0);
+		}
+	}
 }
 
 void CustomerComponent::ForwardExchange(FwdScope& fwd) {
+	int read_i = fwd.GetPos();
+	if (read_i > 0)
+		return;
 	OrderSource& src = *this;
 	auto& conns = src.GetConnections();
 	for(auto& link : conns) {

@@ -361,24 +361,28 @@ class FwdScope {
 	PacketForwarder* first;
 	int read_i, write_i;
 	RealtimeSourceConfig* cfg;
+	bool is_failed = false;
 	
 public:
 	
 	
 	FwdScope() {Clear();}
-	FwdScope(PacketForwarder* cb, RealtimeSourceConfig& cfg) {SetCfg(cfg); Clear(); AddNext(cb); ActivateNext();}
-	FwdScope(PacketForwarder& cb, RealtimeSourceConfig& cfg) {SetCfg(cfg); Clear(); AddNext(cb); ActivateNext();}
+	FwdScope(PacketForwarder* cb, RealtimeSourceConfig& cfg) {Clear(); SetCfg(cfg); AddNext(cb); ActivateNext();}
+	FwdScope(PacketForwarder& cb, RealtimeSourceConfig& cfg) {Clear(); SetCfg(cfg); AddNext(cb); ActivateNext();}
 	
 	void Clear();
 	void Forward();
 	
 	void SetCfg(RealtimeSourceConfig& cfg) {this->cfg = &cfg;}
+	void SetFailed(bool b=true) {is_failed = b;}
 	void AddNext(PacketForwarder& cb) {AddNext(&cb);}
 	void AddNext(PacketForwarder* cb);
 	void ActivateNext();
 	
-	bool HasCurrent() const {return cur != 0;}
-	RealtimeSourceConfig& Cfg() {return *cfg;}
+	bool HasCurrent() const {return !is_failed && cur != 0;}
+	RealtimeSourceConfig& Cfg() {ASSERT(cfg); return *cfg;}
+	bool IsFailed() const {return is_failed;}
+	int GetPos() const {return read_i-1;}
 	
 	void operator++(int) {ActivateNext();}
 	operator bool() const {return HasCurrent();}

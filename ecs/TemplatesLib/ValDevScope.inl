@@ -57,8 +57,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 			sbbuf->SetFormat(to_fmt);
 		}
 		else if ((sbuf = CastPtr<SimpleValue>(&to_val))) {
-			//sbuf->SetFormat(to_fmt);
-			TODO
+			sbuf->SetFormat(to_fmt);
 		}
 		else {
 			LOG("Unexpected value type: " << to_val.GetDynamicName());
@@ -68,7 +67,6 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 		ASSERT(fmt.IsValid());
 	}
 }
-
 
 
 

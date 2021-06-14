@@ -122,6 +122,7 @@ void FwdScope::Clear() {
 	write_i = 0;
 	cfg = 0;
 	first = 0;
+	is_failed = false;
 }
 
 void FwdScope::Forward() {
@@ -136,9 +137,13 @@ void FwdScope::Forward() {
 
 void FwdScope::AddNext(PacketForwarder* cb) {
 	if (cb) {
+		ASSERT_(cb != cur, "Duplicate forward is not allowed");
 		if (!first)
 			first = cb;
-		else if (cb == first)
+		//else if (cb == first)
+		//	return;
+		int prev_write_i = write_i > 0 ? write_i - 1 : QUEUE_SIZE-1;
+		if (next[prev_write_i] == cb)
 			return;
 		ASSERT(!next[write_i]);
 		next[write_i] = cb;

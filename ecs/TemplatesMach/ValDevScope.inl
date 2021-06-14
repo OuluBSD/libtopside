@@ -7,32 +7,29 @@ NAMESPACE_TOPSIDE_BEGIN
 TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
 	if (e.IsStoring()) {
 		Value& sink = e.Sink();
-		ASSERT(&e.Source() == this);
+		ASSERT((Value*)&e.Source() == 0);
+		auto& src_buf = GetBuffer();
 		
 		// Arguments for this individual SimpleValue::Exchange event
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
 		// Consumer model
-		/*if (use_consumer)*/ {
-			SimpleValue* sink_vol;
+		/*if (use_consumer) {*/
+		SimpleValue* sink_val;
+		
+		if ((sink_val = CastPtr<SimpleValue>(&sink))) {
+			auto& sink_buf = sink_val->GetBuffer();
 			
-			if ((sink_vol = CastPtr<SimpleValue>(&sink))) {
-				auto& sink_buf = sink_vol->GetBuffer();
-				
-				while (this->GetQueueSize() > 0 && !sink_vol->IsQueueFull()) {
-					Packet src_p = this->Pick();
-					Packet sink_p = ValMach::CreatePacket(src_p->GetOffset());
-					sink_p->Set(fmt, time);
-					//p->Data().SetCount(fmt.GetFrameBytes(), 0);
-					StorePacket(sink_p);
-					sink_buf.Add(sink_p);
-					time += fmt.GetFrameSeconds();
-				}
+			while (this->GetQueueSize() > 0 && !sink_val->IsQueueFull()) {
+				Packet p = src_buf.First();
+				src_buf.RemoveFirst();
+				ASSERT(p->GetFormat() == fmt);
+				sink_buf.Add(p);
 			}
-			else TODO
 		}
+		else TODO
 		// Producer model
-		/*else {
+		/*} else {
 			SimpleValue* sink_vol;
 			
 			if ((src_vol = CastPtr<SimpleValue>(&src))) {
@@ -52,11 +49,33 @@ TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
 			else TODO
 		}*/
 	}
-	else TODO
+	else if (e.IsLoading()) {
+		Value& src = e.Source();
+		ASSERT((Value*)&e.Sink() == 0);
+		auto& sink_buf = GetBuffer();
+		
+		// Arguments for this individual SimpleValue::Exchange event
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		SimpleValue* src_val;
+		
+		if ((src_val = CastPtr<SimpleValue>(&src))) {
+			auto& src_buf = src_val->GetBuffer();
+			
+			while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
+				Packet p = src_buf.First();
+				src_buf.RemoveFirst();
+				ASSERT(p->GetFormat() == fmt);
+				sink_buf.Add(p);
+			}
+		}
+		else TODO
+	}
+	else Panic("SimpleValue::Exchange: Internal error. Ex not storing nor loading.");
 }
 
 TMPL_VALDEVMACH(int) SimpleValue::GetQueueSize() const {
-	return 2;
+	return buf.GetCount();
 }
 
 TMPL_VALDEVMACH(DataT::Format) SimpleValue::GetFormat() const {
@@ -64,7 +83,7 @@ TMPL_VALDEVMACH(DataT::Format) SimpleValue::GetFormat() const {
 }
 
 TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
-	return true;
+	return buf.GetCount() >= packet_limit;
 }
 
 
@@ -121,16 +140,26 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 			e.SetFail();
 			return;
 		}
-		auto frame_iter = buf.begin();
-		Packet& p = frame_iter();
-		off32 buf_read_pos = p->GetOffset();
-		
-		// Compare exchange and source formats
-		auto cmp_fmt = p->GetFormat();
 		auto val_fmt = GetFormat();
-		ASSERT(cmp_fmt == val_fmt);
+		ASSERT(val_fmt.IsValid());
 		
+		#if DEBUG_RT_PIPE
+		{
+			auto frame_iter = buf.begin();
+			Packet& p = frame_iter();
+			off32 buf_read_pos = p->GetOffset();
+			
+			// Compare exchange and source formats
+			auto cmp_fmt = p->GetFormat();
+			ASSERT(cmp_fmt == val_fmt);
+			
+			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
+		}
+		#endif
+		
+		Value& src = e.Source();
 		Value& sink = e.Sink();
+		ASSERT((Value*)&src == 0);
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
 		SimpleValue* dst_sbuf;
@@ -139,7 +168,6 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 			if (producer.IsEmptySource())
 				producer.SetSource(buf);
 			
-			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
 			ASSERT(!sink.IsQueueFull());
 			
 			producer.SetDestination(*dst_sbuf, min_buf_samples);
@@ -171,41 +199,39 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 		}
 	}
 	else if (e.IsLoading()) {
-		if (buf.IsEmpty()) {
-			e.SetFail();
-			return;
-		}
 		auto val_fmt = GetFormat();
 		ASSERT(val_fmt.IsValid());
 		
 		
+		Value& src = e.Source();
+		Value& sink = e.Sink();
+		ASSERT((Value*)&sink == 0);
+		const RealtimeSourceConfig& conf = e.SourceConfig();
+		
+		PacketBuffer& src_buf = src.GetBuffer();
+		if (src_buf.IsEmpty()) {
+			e.SetFail();
+			return;
+		}
+		//LOG("BUF dyn name: " << src.GetDynamicName());
 		#if DEBUG_RT_PIPE
 		{
-			auto frame_iter = buf.begin();
+			auto frame_iter = src_buf.begin();
 			Packet& p = frame_iter();
 			off32 buf_read_pos = p->GetOffset();
 			
 			// Compare exchange and source formats
-			auto cmp_fmt = p->GetFormat();
-			ASSERT(cmp_fmt == val_fmt);
+			//auto cmp_fmt = p->GetFormat();
+			//ASSERT(cmp_fmt == val_fmt);
 			
 			RTLOG("SimpleBufferedValue::Exchange: buffer read position " << buf_read_pos.ToString());
 		}
 		#endif
 		
-		
-		Value& src = e.Source();
-		Value& sink = e.Sink();
-		const RealtimeSourceConfig& conf = e.SourceConfig();
-		
-		PacketBuffer& src_buf = src.GetBuffer();
-		
-		//LOG("BUF dyn name: " << src.GetDynamicName());
-		
-		ASSERT(!sink.IsQueueFull());
+		ASSERT(!IsQueueFull());
 		
 		consumer.SetSource(src_buf);
-		consumer.SetDestination(val_fmt, buf, min_buf_samples);
+		consumer.SetDestination(val_fmt, this->buf, min_buf_samples);
 		consumer.SetDestinationRealtime(conf.sync);
 		consumer.ConsumeAll();
 		consumer.ClearDestination();
@@ -479,8 +505,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::ClearDestination() {
 TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 	Format src_fmt = src->GetFormat();
 	
-	TODO
-	/*if (dst_fmt.IsCopyCompatible(src_fmt)) {
+	if (dst_fmt.IsCopyCompatible(src_fmt)) {
 		if (dst_iter) {
 			const Vector<byte>& src_data = src->GetData();
 			int copy_sz = src_data.GetCount() - src_data_shift;
@@ -505,21 +530,21 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 				leftover = src;
 			else {
 				src->StopTracking(TrackerInfo(this, __FILE__, __LINE__));
-				++offset;
 				++internal_count;
 			}
 		}
 		else {
 			src->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
 			internal_written_bytes += src->GetSizeBytes();
-			dst_buf->Put(src, internal_count == 0 && dst_realtime);
-			++offset;
+			if (internal_count == 0 && dst_realtime)
+				dst_buf->Clear();
+			dst_buf->Add(src);
 			++internal_count;
 		}
 	}
 	else {
-		Packet src2 = ValMach::CreatePacket();
-		src2->Set(dst_fmt, src->GetOffset(), src->GetTime());
+		Packet src2 = ValMach::CreatePacket(src->GetOffset());
+		src2->Set(dst_fmt, src->GetTime());
 		Convert(src, src2);
 		if (src_data_shift) {
 			int src_sample = src_fmt.GetSampleSize();
@@ -527,12 +552,11 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 			src_data_shift = src_data_shift * dst_sample / src_sample;
 		}
 		Consume(src2, src_data_shift);
-	}*/
+	}
 }
 
 TMPL_VALDEVMACH(bool) PacketConsumer::ConsumePacket() {
-	TODO
-	/*ASSERT(dst_buf || internal_written_bytes < dst_size);
+	ASSERT(dst_buf || internal_written_bytes < dst_size);
 	if (leftover) {
 		RTLOG("PacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
 		ASSERT(leftover_size > 0);
@@ -543,16 +567,17 @@ TMPL_VALDEVMACH(bool) PacketConsumer::ConsumePacket() {
 		return true;
 	}
 	else
-	if (src->GetQueueSize()) {
-		RTLOG("PacketConsumer::ConsumePacket: get " << offset.ToString());
+	if (src_buf->GetCount()) {
+		RTLOG("PacketConsumer::ConsumePacket: pick next");
 		
-		Packet p = src->Get(offset);
+		Packet p = src_buf->First();
 		if (p) {
+			src_buf->RemoveFirst();
 			Consume(p, 0);
 			return true;
 		}
 	}
-	return false;*/
+	return false;
 }
 
 TMPL_VALDEVMACH(void) PacketConsumer::ConsumeAll(bool blocking) {
@@ -594,6 +619,33 @@ TMPL_VALDEVMACH(bool) Convert(const Packet& src, Packet& dst) {
 	TODO
 }
 
+
+bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
+
+template <>
+inline bool ScopeValDevMachT<CenterAudioSpec>::Convert(const AudioPacket& src, AudioPacket& dst) {
+	AudioFormat src_fmt = src->GetFormat();
+	AudioFormat dst_fmt = dst->GetFormat();
+	int src_sample = src_fmt.GetSampleSize();
+	int src_channels = src_fmt.channels;
+	int dst_sample = dst_fmt.GetSampleSize();
+	int dst_channels = dst_fmt.channels;
+	const Vector<byte>& src_data = src->GetData();
+	int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
+	Vector<byte>& dst_data = dst->Data();
+	int dst_size = src_ch_samples * dst_sample * dst_channels;
+	dst_data.SetCount(dst_size);
+	if (0) {
+		LOG("src-size:     " << src_data.GetCount());
+		LOG("src-ch-sz:    " << src_ch_samples);
+		LOG("src-sample:   " << src_sample);
+		LOG("src-channels: " << src_channels);
+		LOG("dst-size:     " << dst_size);
+		LOG("dst-sample:   " << dst_sample);
+		LOG("dst-channels: " << dst_channels);
+	}
+	return AudioConvert(src_ch_samples, src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
+}
 
 
 NAMESPACE_TOPSIDE_END

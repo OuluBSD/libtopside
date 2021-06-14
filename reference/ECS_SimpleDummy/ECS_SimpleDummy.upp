@@ -1,3 +1,5 @@
+description "ECS debugging program, which allows easier debugging with non-hw dummy classes.\377";
+
 uses
 	CompleteDummy;
 

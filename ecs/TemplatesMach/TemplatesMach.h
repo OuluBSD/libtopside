@@ -8,17 +8,18 @@
 #include "Classes.h"
 #include "PacketBuffer.h"
 #include "ValScope.h"
-#include "ValScope.inl"
 #include "ValDevScope.h"
-#include "ValDevScope.inl"
 #include "ValSpec.h"
 #include "DevClasses.h"
 #include "DevScope.h"
-#include "DevScope.inl"
 #include "DevSpec.h"
 #include "ValDevSpec.h"
 #include "Special.h"
 #include "Interface.h"
+
+#include "ValScope.inl"
+#include "ValDevScope.inl"
+#include "DevScope.inl"
 
 
 #endif

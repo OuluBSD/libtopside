@@ -46,7 +46,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	USING_VALDEVCORE(ValSink)
 	USING_VALDEVCORE(CtxStream)
 	USING_VALDEVMACH(Value)
-	LOG(String(GetDynamicName()) + "(" + HexStr(this) << ")::Forward");
+	RTLOG(String(GetDynamicName()) + "(" + HexStr(this) << ")::Forward");
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
 	
@@ -82,6 +82,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 			
 			if (ex.IsFail()) {
 				RTLOG("error: ExchangePoint::Forward: exchange failed");
+				fwd.SetFailed();
 				break;
 			}
 			

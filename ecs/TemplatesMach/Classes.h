@@ -202,12 +202,13 @@ public:
 	typedef enum {
 		INVALID,
 		DEV_INTERNAL,
+		GENERIC,
 		#define RECEIPT_SMPL(x) x ,
 		RECEIPT_SMPL_LIST
 		#undef RECEIPT_SMPL
 		TYPE_COUNT,
 		
-		DEFAULT = INVALID
+		DEFAULT = GENERIC
 	} Type;
 
 

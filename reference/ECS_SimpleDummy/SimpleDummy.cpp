@@ -79,33 +79,10 @@ void Main() {
 			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
-			    //mach.Add<CenterSystem>();
 			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
 		    
 				PoolRef root = es->GetRoot();
-				//root->Add<CenterContextConnector>();
-				//root->Add<ConnectAllCenterInterfaces>();
-				//root->Add<CenterStageContextConnector>();
 				
-				
-				
-				/*auto aud_gen				= root->Create<Customer>();
-				auto router					= root->Add<PathwayRouter>();
-				router->Add(aud_gen, conf_path);
-				
-		        if (run_sound_gen) {
-					VAR gen = root->Create<DummyGeneratorPrefab>();
-		        }
-		        else {
-		            VAR player = root->Create<SimpleDummyPrefab>();
-		        }
-		        
-		        
-		        reg.Clear();
-		        es.Clear();
-		        customer.Clear();
-		        router.Clear();*/
-		        
 		        eon->PostLoadFile(GetDataFile("SimpleDummy.eon"));
 		    }
 		        

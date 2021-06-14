@@ -11,26 +11,28 @@ class CustomerComponent :
 	public OrderSource,
 	public GeneratorComponentBase
 {
-	Vector<EonPlan> plans;
+	Vector<EonPlan>		plans;
+	Index<dword>		unfulfilled_offsets;
+	int					max_unfulfilled = 5;
 	
 protected:
-	friend struct LocalStream;
-	
-	struct LocalSinkValue : public SimpleBufferedReceipt {
+	struct LocalSinkValue : public SimpleReceipt {
+		void StorePacket(ReceiptPacket& p) override {TODO}
 		
 	};
 	
-	struct LocalSourceValue : public SimpleBufferedOrder {
+	struct LocalSourceValue : public SimpleOrder {
+		void StorePacket(OrderPacket& p) override {TODO}
 		
 	};
 	
-	struct LocalSourceStream : public SimpleBufferedOrderStream {
-		RTTI_DECL1(LocalSourceStream, SimpleBufferedOrderStream)
+	struct LocalSourceStream : public SimpleOrderStream {
+		RTTI_DECL1(LocalSourceStream, SimpleOrderStream)
 		CustomerComponent& par;
 		LocalSourceStream(CustomerComponent* par) :
 			par(*par),
-			SimpleBufferedOrderStream(par->src_value) {}
-		bool			IsOpen() const override {TODO}
+			SimpleOrderStream(par->src_value) {}
+		/*bool			IsOpen() const override {TODO}
 		bool			Open(int fmt_idx) override {TODO}
 		void			Close() override {par.src_value.ClearBuffer();}
 		bool			IsEof() override {return false;}
@@ -38,7 +40,7 @@ protected:
 		bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
 		bool			ProcessOtherFrame() override {return false;}
 		void			ClearPacketData() override {}
-		bool			LoadFileAny(String path) override {TODO}
+		bool			LoadFileAny(String path) override {TODO}*/
 	};
 	
 	LocalSinkValue			sink_value;

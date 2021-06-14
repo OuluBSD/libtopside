@@ -90,30 +90,6 @@ bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* sr
 	return false;
 }
 
-template <>
-bool ScopeValDevMachT<CenterAudioSpec>::Convert(const AudioPacket& src, AudioPacket& dst) {
-	AudioFormat src_fmt = src->GetFormat();
-	AudioFormat dst_fmt = dst->GetFormat();
-	int src_sample = src_fmt.GetSampleSize();
-	int src_channels = src_fmt.channels;
-	int dst_sample = dst_fmt.GetSampleSize();
-	int dst_channels = dst_fmt.channels;
-	const Vector<byte>& src_data = src->GetData();
-	int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
-	Vector<byte>& dst_data = dst->Data();
-	int dst_size = src_ch_samples * dst_sample * dst_channels;
-	dst_data.SetCount(dst_size);
-	if (0) {
-		LOG("src-size:     " << src_data.GetCount());
-		LOG("src-ch-sz:    " << src_ch_samples);
-		LOG("src-sample:   " << src_sample);
-		LOG("src-channels: " << src_channels);
-		LOG("dst-size:     " << dst_size);
-		LOG("dst-sample:   " << dst_sample);
-		LOG("dst-channels: " << dst_channels);
-	}
-	return AudioConvert(src_ch_samples, src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
-}
 
 
 NAMESPACE_TOPSIDE_END

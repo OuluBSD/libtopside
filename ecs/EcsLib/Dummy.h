@@ -9,13 +9,13 @@ template <class T>
 class DummySoundGenerator
 {
 	Vector<T> frame;
-	int frame_offset = 0;
 	int frame_part_size = 0;
 	
 public:
 	DummySoundGenerator() {}
-	void Play(const AudioPacket& p) {
+	void Play(int frame_offset, const AudioPacket& p) {
 		int total_bytes = frame.GetCount() * sizeof(T);
+		frame_offset = frame_offset % total_bytes;
 		int copy_size = p->GetFormat().GetFrameSize();
 		p->Data().SetCount(copy_size, 0);
 		int frame_remaining = total_bytes - frame_offset;
@@ -29,12 +29,12 @@ public:
 			memcpy(dst, src, right_side);
 			src = (byte*)(void*)frame.Begin();
 			memcpy(dst, src, left_side);
-			frame_offset = left_side;
+			//frame_offset = left_side;
 		}
 		// 1part
 		else {
 			memcpy(dst, src, copy_size);
-			frame_offset = (frame_offset + copy_size) % total_bytes;
+			//frame_offset = (frame_offset + copy_size) % total_bytes;
 		}
 	}
 	
@@ -69,7 +69,6 @@ public:
 			}
 		}
 		ASSERT(f == frame.End());
-		frame_offset = 0;
 	}
 };
 
@@ -78,7 +77,6 @@ class DummySoundGeneratorAudio :
 {
 	DummySoundGenerator<uint8> gen;
 	AudioFormat fmt;
-	double time = 0;
 	
 public:
 	RTTI_DECL1(DummySoundGeneratorAudio, SimpleAudio)
@@ -90,7 +88,6 @@ public:
 	int GetQueueSize() const override;
 	bool IsQueueFull() const override;*/
 	
-	double GetSeconds() const {return time;}
 	
 };
 
@@ -104,7 +101,6 @@ public:
 	RTTI_DECL1(DummySoundGeneratorStream, SimpleAudioStream)
 	DummySoundGeneratorStream() : SimpleAudioStream(gen) {}
 	
-	double				GetSeconds() const {return gen.GetSeconds();}
 	
 	
 };
@@ -128,29 +124,14 @@ class DummySoundGeneratorComponent :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 protected:
-	struct LocalValue : public SimpleBufferedOrder {
+	struct LocalSinkValue : public SimpleOrder {
+		
+		void StorePacket(OrderPacket& p) override {TODO}
 		
 	};
 	
-	struct LocalStream : public SimpleBufferedOrderStream {
-		RTTI_DECL1(LocalStream, SimpleBufferedOrderStream)
-		DummySoundGeneratorComponent& par;
-		LocalStream(DummySoundGeneratorComponent* par) :
-			par(*par),
-			SimpleBufferedOrderStream(par->value) {}
-		bool			IsOpen() const override {TODO}
-		bool			Open(int fmt_idx) override {TODO}
-		void			Close() override {par.value.ClearBuffer();}
-		bool			IsEof() override {return false;}
-		bool			ReadFrame() override {return par.ReadFrame();}
-		bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
-		bool			ProcessOtherFrame() override {return false;}
-		void			ClearPacketData() override {}
-		bool			LoadFileAny(String path) override {TODO}
-	};
 	
-	LocalValue			value;
-	LocalStream			stream;
+	LocalSinkValue		sink_value;
 	
 public:
 	using Component = DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>;
@@ -175,7 +156,7 @@ public:
 	
 	// OrderSink
 	OrderFormat		GetFormat(OrdCtx) override {TODO}
-	Order&			GetValue(OrdCtx) override {return value;}
+	Order&			GetValue(OrdCtx) override {return sink_value;}
 	bool			ReadFrame() {TODO}
 	bool			ProcessDeviceFrame() {TODO}
 	
@@ -211,6 +192,20 @@ class DummyAudioSinkComponent :
 	public AudioSink,
 	public ReceiptSource
 {
+protected:
+	
+	struct LocalSourceValue : public SimpleReceipt {
+		void StorePacket(ReceiptPacket& p) {}
+	};
+	
+	struct LocalSourceStream : public SimpleReceiptStream {
+		RTTI_DECL1(LocalSourceStream, SimpleReceiptStream)
+		DummyAudioSinkComponent& par;
+		LocalSourceStream(DummyAudioSinkComponent* par) :
+			par(*par),
+			SimpleReceiptStream(par->src_value) {}
+	};
+	
 	
 public:
 	RTTI_COMP2(DummyAudioSinkComponent, AudioSink, ReceiptSource)
@@ -225,23 +220,29 @@ public:
 	COMP_MAKE_ACTION_END
 	
 	
-	SimpleBufferedAudio sink_value;
+	SimpleBufferedAudio		sink_value;
+	LocalSourceValue		src_value;
+	LocalSourceStream		src_stream;
 	
-	DummyAudioSinkComponent() = default;
+	DummyAudioSinkComponent() : src_stream(this) {}
 	
 	void			Initialize() override {}
 	void			Uninitialize() override {}
 	void			Forward(FwdScope& fwd) override;
 	void			ForwardExchange(FwdScope& fwd) override;
+	void			Process(AudioPacket& p);
 	
 	// AudioSink
 	AudioFormat		GetFormat(AudCtx) override {return AudioFormat();}
 	Audio&			GetValue(AudCtx) override {return sink_value;}
 	
 	// ReceiptSource
-	ReceiptStream&	GetStream(RcpCtx) override {TODO}
+	ReceiptStream&	GetStream(RcpCtx) override {return src_stream;}
 	void			BeginStream(RcpCtx) override {TODO}
 	void			EndStream(RcpCtx) override {TODO}
+	bool			ReadFrame() {TODO}
+	bool			ProcessFrame() {TODO}
+	bool			ProcessDeviceFrame() {TODO}
 	
 	void SetAudioSyncInterval(double seconds) {}
 	

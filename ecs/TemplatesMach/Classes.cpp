@@ -240,7 +240,7 @@ String OrderSample::ToString(Type t) {
 }
 
 int OrderSample::GetSize(Type t) {
-	TODO
+	PANIC("Invalid call. (Do not use OrderSample with SimpleBufferedValue)");
 }
 
 
@@ -249,11 +249,21 @@ int OrderSample::GetSize(Type t) {
 
 
 String ReceiptSample::ToString(Type t) {
-	TODO
+	switch (t) {
+		case INVALID: return "INVALID";
+		case GENERIC: return "GENERIC";
+		case DEV_INTERNAL: return "DEV_INTERNAL";
+		#define RECEIPT_SMPL(type) \
+			case type: return #type;
+		RECEIPT_SMPL_LIST
+		#undef RECEIPT_SMPL
+		default: break;
+	}
+	return "<invalid-sample-type>";
 }
 
 int ReceiptSample::GetSize(Type t) {
-	TODO
+	PANIC("Invalid call. (Do not use ReceiptSample with SimpleBufferedValue)");
 }
 
 

@@ -138,7 +138,7 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 #define ASSERT(x)
 #define ASSERT_(x, msg)
 #endif
-#define PANIC(msg) ASSERT_(false, msg)
+#define PANIC(msg) ASSERT_(false, msg); UNREACHABLE
 
 #define PKG(x) <x/x.h>
 
