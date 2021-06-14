@@ -1,5 +1,0 @@
-
-player.audio.generator: {
-	center.audio.src.test: true;
-	center.audio.sink.test: true;
-}

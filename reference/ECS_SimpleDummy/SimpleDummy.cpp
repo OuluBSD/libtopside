@@ -51,6 +51,16 @@ You'll see something like this in log
 Take any address and put to BreakRefAdd
 */
 
+
+const char* eon_str = R"EON_CODE(
+
+player.audio.generator: {
+	center.audio.src.test: true;
+	center.audio.sink.test: true;
+}
+
+)EON_CODE";
+
 void Main() {
 	SetCoutLog();
 	//EcsFactory::Dump();
@@ -83,7 +93,9 @@ void Main() {
 		    
 				PoolRef root = es->GetRoot();
 				
-		        eon->PostLoadFile(GetDataFile("SimpleDummy.eon"));
+				LOG(eon_str);
+		        eon->PostLoadString(eon_str);
+		        //eon->PostLoadFile(GetDataFile("SimpleDummy.eon"));
 		    }
 		        
 		    if (!fail) {

@@ -54,6 +54,7 @@ class EonLoader :
 	
 	LinkedList<PathwayRouterRef> pathways;
 	Vector<String> post_load_file;
+	Vector<String> post_load_string;
 	Eon::CompilationUnit root;
 	EntityStoreRef es;
 	
@@ -67,6 +68,7 @@ public:
 	SYS_CTOR(EonLoader);
 	
 	void PostLoadFile(String path) {post_load_file << path;}
+	void PostLoadString(String s) {post_load_string << s;}
 	
 protected:
 	
@@ -76,7 +78,7 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-    
+    bool DoPostLoad();
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);

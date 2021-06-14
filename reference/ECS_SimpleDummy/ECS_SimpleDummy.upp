@@ -5,8 +5,7 @@ uses
 
 file
 	SimpleDummy.h,
-	SimpleDummy.cpp,
-	SimpleDummy.eon highlight cpp;
+	SimpleDummy.cpp;
 
 mainconfig
 	"" = "",

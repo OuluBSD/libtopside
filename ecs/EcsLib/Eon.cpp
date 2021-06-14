@@ -14,10 +14,24 @@ bool EonLoader::Initialize() {
 		return false;
 	}
 	
+	if (!DoPostLoad())
+		return false;
+	
+	return true;
+}
+
+bool EonLoader::DoPostLoad() {
 	for(String path : post_load_file) {
 		if (!LoadFile(path))
 			return false;
 	}
+	post_load_file.Clear();
+	
+	for(String s : post_load_string) {
+		if (!Load(s, "input"))
+			return false;
+	}
+	post_load_string.Clear();
 	
 	return true;
 }
@@ -27,6 +41,8 @@ void EonLoader::Start() {
 }
 
 void EonLoader::Update(double dt) {
+	
+	DoPostLoad();
 	
 }
 
