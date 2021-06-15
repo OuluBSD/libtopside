@@ -9,13 +9,23 @@ UnitTest::UnitTest() {
 	
 }
 
-void UnitTest::Test(String test_title, std::function<const char*(UnitTest& t)> fn) {
+void UnitTest::Test(String test_title, std::function<void(UnitTest& t)> fn) {
 	cur_fail = false;
 	cur_pass = false;
 	fail_msg.Clear();
 	pass_msg.Clear();
 	
-	const char* fail_arg = fn(*this);
+	String fail_arg;
+	try {
+		fn(*this);
+	}
+	catch (Exc e) {
+		fail_arg = e;
+	}
+	catch (UnitExc) {
+
+	}
+
 	
 	if (cur_pass || !cur_fail) {
 		String msg;

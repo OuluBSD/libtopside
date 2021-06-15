@@ -1,7 +1,7 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 // An implementation of std::find
 template <typename I, typename T>
@@ -19,6 +19,6 @@ int allocvfmt(char **str, const char *fmt, va_list vp);
 int allocfmt(char **str, const char *fmt, ...);
 
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
 
 #endif

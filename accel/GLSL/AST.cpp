@@ -1,6 +1,6 @@
-#include "FusionCore.h"
+#include "GLSL.h"
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 const char *Statement::GetName() const {
     switch (type) {
@@ -349,4 +349,4 @@ TernaryExpression::TernaryExpression()
 {
 }
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END

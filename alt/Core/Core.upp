@@ -6,6 +6,8 @@ uses
 	ports/bz2lib,
 	RTTI;
 
+uses(!GUI) NonGUI;
+
 library(WIN32) "shlwapi comdlg32";
 
 library(WIN32) Ws2_32;

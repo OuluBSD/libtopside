@@ -1,8 +1,8 @@
 #ifdef flagMAIN
 
-#include "FusionCore.h"
+#include "GLSL.h"
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 void PrintTU(TU *tu);
 
@@ -91,15 +91,7 @@ int OldMain(int argc, char **argv) {
     return 0;
 }
 
-void CompileToUSSL(MultiStage& pipe) {
-	// 
-	// 
-	// 
-	// 
-	// 
-	// 
-	
-}
+
 
 void CompileToUSSL(String path) {
 	#define EXPECT(cond, fail_msg) if (!(cond)) {LOG("error: " << fail_msg); SetExitCode(1); return;}
@@ -112,8 +104,7 @@ void CompileToUSSL(String path) {
 	String toy_path = AppendFileName(path, toy_filename);
 	EXPECT(FileExists(toy_path), "expecting file " + toy_filename + " in the given directory");
 	
-	MultiStage pipe;
-	EXPECT(pipe.Load(path), "couldn't load pipeline from .toy file");
+	TODO
 	
 	// 
 	// 
@@ -156,12 +147,12 @@ void NewMain() {
 	}
 }
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
 
 #if 0
 int main(int argc, char **argv) {return TS::Shader::OldMain(argc, argv);}
 #else
-CONSOLE_APP_MAIN {TS::Shader::NewMain();}
+CONSOLE_APP_MAIN {TS::GLSL::NewMain();}
 #endif
 
 #endif

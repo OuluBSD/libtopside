@@ -762,12 +762,12 @@ public:
 	using ObjectPtr = typename Array<V>::ElPtr;
 	
 	struct SortRef {
-		K* k = 0;
-		V* v = 0;
-		SortRef(K* k) : k(k) {}
-		SortRef(V* v) : v(v) {}
-		SortRef(const K& k) : k(k) {}
-		SortRef(const V& v) : v(v) {}
+		const K* k = 0;
+		const V* v = 0;
+		SortRef(const K* k) : k(k) {}
+		SortRef(const V* v) : v(v) {}
+		SortRef(const K& k) : k(&k) {}
+		SortRef(const V& v) : v(&v) {}
 		operator const K&() const {return *k;}
 		operator const V&() const {return *v;}
 	};

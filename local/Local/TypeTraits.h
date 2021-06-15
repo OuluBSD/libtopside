@@ -24,6 +24,7 @@ class TypeId :
 	TYPE_WRAPPER,
 	Moveable<TypeId>
 {
+	const RTTI* rtti = 0;
 public:
 	typedef TYPE_WRAPPER Wrap;
     using TYPE_WRAPPER_CTOR;
@@ -31,10 +32,11 @@ public:
 	TypeId() : Wrap(AsVoidTypeId()) {}
 	TypeId(const TypeId& id) : Wrap(id) {}
 	TypeId(const Wrap& w) : Wrap(w) {}
+	TypeId(const RTTI& t) : Wrap(typeid(t)), rtti(&t) {}
 	
 	
     hash_t GetHashValue() const { return (hash_t)get().hash_code(); }
-    //char const* name() const { return get().name(); }
+    char const* name() const { return get().name(); }
     String DemangledName() const {return Demangle(name());}
 	String CleanDemangledName() const {
 		String s(DemangledName());

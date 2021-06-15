@@ -1,6 +1,6 @@
-#include "FusionCore.h"
+#include "GLSL.h"
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 
 #undef KEYWORD
@@ -586,4 +586,4 @@ void PrintTU(TU *tu) {
 }
 
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END

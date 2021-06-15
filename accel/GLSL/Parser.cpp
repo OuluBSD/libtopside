@@ -1,7 +1,7 @@
-#include "FusionCore.h"
+#include "GLSL.h"
 
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 Parser::Parser(const char *source, const char *file_name)
     : ast(0)
@@ -1175,14 +1175,14 @@ CHECK_RETURN SwitchStatement *Parser::ParseSwitchStatement() {
                 // "It is a compile-time error to have two case label constant-expression of equal value"
                 if (value->type == Expression::INT_CONST) {
                     const int val = IVAL(value);
-                    if (NAMESPACE_FUSION::Find(seenInts.begin(), seenInts.end(), val) != seenInts.end()) {
+                    if (NAMESPACE_GLSL::Find(seenInts.begin(), seenInts.end(), val) != seenInts.end()) {
                         Fatal("duplicate case label `%d'", val);
                         return 0;
                     }
                     seenInts.Add(val);
                 } else if (value->type == Expression::UINT_CONST) {
                     const unsigned int val = UVAL(value);
-                    if (NAMESPACE_FUSION::Find(seenUInts.begin(), seenUInts.end(), val) != seenUInts.end()) {
+                    if (NAMESPACE_GLSL::Find(seenUInts.begin(), seenUInts.end(), val) != seenUInts.end()) {
                         Fatal("duplicate case label `%u'", val);
                         return 0;
                     }
@@ -1774,4 +1774,4 @@ const char *Parser::GetError() const {
 }
 
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END

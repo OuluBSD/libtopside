@@ -1,7 +1,7 @@
 #ifndef LEXER_HDR
 #define LEXER_HDR
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 #define KEYWORD(...)
 #define OPERATOR(...)
@@ -126,6 +126,6 @@ inline int Lexer::GetColumn() const {
     return location.column;
 }
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
 
 #endif

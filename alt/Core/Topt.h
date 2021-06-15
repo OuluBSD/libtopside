@@ -69,6 +69,7 @@ NTL_MOVEABLE(double)
 NTL_MOVEABLE(void *)
 NTL_MOVEABLE(const void *)
 NTL_MOVEABLE(wchar_t)
+NTL_MOVEABLE(TypeCls)
 
 #ifdef flagGLM
 NTL_MOVEABLE(glm::vec2)

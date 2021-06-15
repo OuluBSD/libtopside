@@ -1,7 +1,7 @@
 #ifndef PARSE_HDR
 #define PARSE_HDR
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 #if __GNUC__ >= 4
 #   define CHECK_RETURN __attribute__((warn_unused_result))
@@ -185,6 +185,6 @@ private:
     Vector<char *> strings; // Memory of strings held here
 };
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
 
 #endif

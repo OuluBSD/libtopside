@@ -1,0 +1,21 @@
+description "\377B0,128,0";
+
+noblitz;
+
+uses
+	Local;
+
+file
+	GLSL.h,
+	main.cpp,
+	PrintGLSL.cpp,
+	AST.h,
+	AST.cpp,
+	Lexemes.h,
+	Lexer.h,
+	Lexer.cpp,
+	Parser.h,
+	Parser.cpp,
+	Util.h,
+	Util.cpp;
+

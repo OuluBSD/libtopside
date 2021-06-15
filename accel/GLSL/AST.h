@@ -1,7 +1,7 @@
 #ifndef AST_HDR
 #define AST_HDR
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 // Type-erasure
 template <typename T>
@@ -463,6 +463,6 @@ struct TernaryExpression : Expression {
     Expression *on_false;
 };
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
 
 #endif

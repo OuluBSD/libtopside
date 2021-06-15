@@ -1,7 +1,7 @@
-#include "FusionCore.h"
+#include "GLSL.h"
 
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 // An implementation of vasprintf
 int allocvfmt(char **str, const char *fmt, va_list vp) {
@@ -28,4 +28,4 @@ int allocfmt(char **str, const char *fmt, ...) {
     return size;
 }
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END

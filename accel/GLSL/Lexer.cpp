@@ -1,6 +1,6 @@
-#include "FusionCore.h"
+#include "GLSL.h"
 
-NAMESPACE_FUSION_BEGIN
+NAMESPACE_GLSL_BEGIN
 
 // Lookup table of keywords
 #undef KEYWORD
@@ -488,4 +488,4 @@ void Lexer::Restore() {
     location = backup;
 }
 
-NAMESPACE_FUSION_END
+NAMESPACE_GLSL_END
