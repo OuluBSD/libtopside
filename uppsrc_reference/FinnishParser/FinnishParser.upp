@@ -9,5 +9,5 @@ file
 	Omena.txt;
 
 mainconfig
-	"" = "";
+	"" = " STDEXC STDRTTI";
 

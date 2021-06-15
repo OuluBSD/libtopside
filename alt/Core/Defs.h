@@ -196,55 +196,13 @@ typedef const void* CONST_VOID_PTR;
 
 
 
-#ifdef flagSTDRTTI
-
-struct RTTI {
-	const char* GetDynamicName() const {return "<unknown>";}
-	RTTI& GetRTTI() {return *this;}
-	const RTTI& GetRTTI() const {return *this;}
-};
-struct TypeCls : std::reference_wrapper<const std::type_info> {
-	using ti = std::reference_wrapper<const std::type_info>;
-	TypeCls() : ti(typeid(void)) {}
-	TypeCls(const TypeCls& t) : ti(t) {}
-	TypeCls(const ti& t) : ti(t) {}
-	TypeCls(const std::type_info& t) : ti(t) {}
-	void operator=(const TypeCls& t) {ti::operator=(t);}
-	void operator=(const RTTI& t) {ti::operator=(typeid(t));}
-	hash_t GetHashValue() const {return ti::get().hash_code();}
-};
-template <class T> TypeCls AsTypeCls() {return typeid(T);}
-template <class T> TypeCls AsTypeId(const T& o) {return typeid(T);}
-template <class T> const char* AsTypeName() {return typeid(T).name();}
-#define AsVoidTypeId() typeid(void)
-#define AsVoidTypeCls() typeid(void)
-
-#else
-
+#ifndef flagSTDRTTI
 template <class T> TypeCls AsTypeCls() {return T::TypeIdClass();}
 template <class T> const RTTI& AsTypeId(const T& o) {const RTTI* r = o.GetTypeInfo(AsTypeCls<T>()); ASSERT(r); return *r;}
 template <class T> const char* AsTypeName() {return T::GetTypeName();}
 inline const RTTI& AsVoidTypeId() {return GetTypenameRTTI<void>();}
 inline TypeCls AsVoidTypeCls() {return GetTypenameRTTI<void>().GetTypeId();}
-
 #endif
-
-
-
-#ifdef flagSTDEXC
-	template <class T> void Throw(const T& o) {throw o;}
-	#define THROW_SPECIFIER		throw()
-	#define THROW(x)			{throw(x);}
-	#define TYPE_WRAPPER		std::reference_wrapper<const std::type_info>
-	#define TYPE_WRAPPER_CTOR	reference_wrapper::reference_wrapper
-#else
-	template <class T> void Throw(const T& o) {const char* name = AsTypeName<T>(); __BREAK__;}
-	#define THROW_SPECIFIER
-	#define THROW(x)			{Throw(x); UNREACHABLE;}
-	#define TYPE_WRAPPER		RTTIWrapper
-	#define TYPE_WRAPPER_CTOR	RTTIWrapper::RTTIWrapper
-#endif
-
 
 
 NAMESPACE_UPP_END
@@ -267,36 +225,5 @@ errno_t getenv_s(
 
 
 
-// RTTI replacement
-
-#ifdef flagSTDRTTI
-#define RTTIBase virtual public RTTI
-
-#define RTTI_DECL0(Type)
-#define RTTI_DECL1(Type, ParentType)
-#define RTTI_DECL2(Type, ParentType0, ParentType1)
-#define RTTI_DECL3(Type, ParentType0, ParentType1, ParentType2)
-#define RTTI_DECL4(Type, ParentType0, ParentType1, ParentType2, ParentType3)
-#define RTTI_DECL5(Type, ParentType0, ParentType1, ParentType2, ParentType3, ParentType4)
-
-#define RTTI_DECL_T0(Type)
-#define RTTI_DECL_T1(Type, ParentType)
-#define RTTI_DECL_T2(Type, ParentType0, ParentType1)
-#define RTTI_DECL_T3(Type, ParentType0, ParentType1, ParentType2)
-#define RTTI_DECL_T4(Type, ParentType0, ParentType1, ParentType2, ParentType3)
-
-#define RTTI_DECL_R0(Type)
-#define RTTI_DECL_R1(Type, ParentType)
-#define RTTI_DECL_R2(Type, ParentType0, ParentType1)
-#define RTTI_DECL_R3(Type, ParentType0, ParentType1, ParentType2)
-#define RTTI_DECL_R4(Type, ParentType0, ParentType1, ParentType2, ParentType3)
-
-#define RTTI_DECL_TR0(Type)
-#define RTTI_DECL_TR1(Type, ParentType)
-#define RTTI_DECL_TR2(Type, ParentType0, ParentType1)
-#define RTTI_DECL_TR3(Type, ParentType0, ParentType1, ParentType2)
-#define RTTI_DECL_TR4(Type, ParentType0, ParentType1, ParentType2, ParentType3)
-
-#endif
 
 #endif

@@ -12,5 +12,5 @@ file
 	w3schools.jpg;
 
 mainconfig
-	"" = "GUI";
+	"" = "GUI STDEXC STDRTTI";
 

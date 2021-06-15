@@ -8,5 +8,5 @@ file
 	Apple.txt;
 
 mainconfig
-	"" = "";
+	"" = "STDEXC STDRTTI";
 

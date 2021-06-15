@@ -9,5 +9,5 @@ file
 	Apple.txt;
 
 mainconfig
-	"" = "GUI";
+	"" = "GUI STDEXC STDRTTI";
 

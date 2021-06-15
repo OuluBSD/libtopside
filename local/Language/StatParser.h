@@ -1,7 +1,7 @@
 #ifndef _Language_StatParser_h_
 #define _Language_StatParser_h_
 
-#include <pcre/Pcre.h>
+#include <plugin/pcre/Pcre.h>
 
 NAMESPACE_LANGUAGE_BEGIN
 

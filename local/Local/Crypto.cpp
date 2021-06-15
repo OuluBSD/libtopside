@@ -25,6 +25,7 @@ void Basic::GenerateKeys() {
 		for(int j = 0; j < 0x100; j++)
 			a.Cat(j);
 	
+	int iter = 0;
 	while(true) {
 		for(int i = 0; i < parts; i++) {
 			key64 p = Basic::GenerateProst();
@@ -47,9 +48,13 @@ void Basic::GenerateKeys() {
 		}
 		
 		String b = Decrypt(Encrypt(a));
-		if (a == b)
-			break;
+		if (a.GetCount() == b.GetCount() &&
+			MemoryCompare(a.Begin(), b.Begin(), a.GetCount()) == 0)
+			return;
+		
+		++iter;
 	}
+	Panic("Could not generate key");
 }
 
 bool Basic::SetKeys(String pub, String priv) {
@@ -254,7 +259,8 @@ bool Basic::IsProst(key64 n) {
 }
 
 key64 Basic::GenerateProst() {
-	key64 t = 10 + rand() % 90;
+	key64 r = Random();
+	key64 t = 10 + r % 90ULL;
 
 	do{
 		t++;
@@ -287,8 +293,9 @@ key64 Basic::GenerateCoprime(key64 x) {
 key64 Basic::GenerateD(key64 f, key64 e) {
 	//return (int) ((f * (1 + rand() % 4) + 1) / e);
 	for (int i = 1; i < 100; i++) {
-		if (((f * (i) + 1) % e) == 0) {
-			return (key64) ((f * (i) + 1) / e);
+		key64 v = (f * (i) + 1);
+		if ((v % e) == 0) {
+			return (key64) (v / e);
 		}
 	}
 	return 0;

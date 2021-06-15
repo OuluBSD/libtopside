@@ -20,6 +20,10 @@ template <> inline float Modulus(float val, float div) {float f = floorf(val / d
 template <> inline double Modulus(double val, double div) {double f = floor(val / div); return val - f * div;}
 
 template <class T> T Abs(const T& v) {return (v < 0 ? -1 : +1) * v;}
+template <> inline uint8  Abs(const uint8& v) {return v;}
+template <> inline uint16 Abs(const uint16& v) {return v;}
+template <> inline uint32 Abs(const uint32& v) {return v;}
+template <> inline uint64 Abs(const uint64& v) {return v;}
 
 
 // Fast math

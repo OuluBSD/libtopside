@@ -8,5 +8,5 @@ file
 	"Louvre E 116a.gly";
 
 mainconfig
-	"" = "";
+	"" = " STDEXC STDRTTI";
 

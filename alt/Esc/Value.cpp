@@ -55,7 +55,7 @@ Object StdValueFromEsc(const EscValue& v)
 
 void SIC_StdFormat(EscEscape& e)
 {
-	e = StdFormat(StdValueFromEsc(e[0]));
+	e = StdFormatObj(StdValueFromEsc(e[0]));
 }
 
 void StdValueLib(ArrayMap<String, EscValue>& global)

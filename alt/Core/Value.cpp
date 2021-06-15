@@ -146,4 +146,8 @@ String StdFormat(const Value& q) {
 	TODO
 }
 
+String StdFormatObj(const Object& q) {
+	TODO
+}
+
 END_UPP_NAMESPACE

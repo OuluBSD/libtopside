@@ -68,24 +68,6 @@ typedef RGBA1T<double>	RGBA1f;
 
 
 
-template <class T>
-struct RGBA_Range : Moveable<RGBA_Range<T>> {
-	RGBAT<T>* begin_ptr = NULL;
-	RGBAT<T>* end_ptr = NULL;
-	Size sz;
-	
-	
-	RGBAT<T>* Begin() const {return begin_ptr;}
-	RGBAT<T>* begin() const {return begin_ptr;}
-	RGBAT<T>* End() const {return end_ptr;}
-	RGBAT<T>* end() const {return end_ptr;}
-	Size GetSize() const {return sz;}
-};
-
-typedef RGBA_Range<byte>	RgbaRange;
-typedef RGBA_Range<float>	RgbaRangef32;
-typedef RGBA_Range<double>	RgbaRangef;
-
 
 
 
@@ -232,8 +214,6 @@ inline double GetBrightnessf(const RGBA& i) {
 
 
 
-inline int Dist(int a, int b) {return abs(a - b);}
-inline int Dist(RGBA a, RGBA b) {return Dist(a.r, b.r) + Dist(a.g, b.g) + Dist(a.b, b.b);}
 
 
 

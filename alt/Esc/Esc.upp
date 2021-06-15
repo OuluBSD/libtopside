@@ -1,7 +1,8 @@
 description "Esc scripting language interpreter\377B";
 
 uses
-	Core;
+	Core,
+	SharedCore;
 
 file
 	Esc.h options(BUILDER_OPTION) PCH,

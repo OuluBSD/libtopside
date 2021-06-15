@@ -16,12 +16,12 @@ void GetSysSeedValues(int64* a, int64* b, int64* c);
 class RNG : Moveable<RNG> {
 	uint64 state[4];
 	
-	uint64 s_rotl(const uint64 x, int k) {
-		return (x << k) | (x >> (64 - k)); // GCC/CLANG/MSC happily optimize this
+	uint64 s_rotl(const uint64 x, uint64 k) {
+		return (x << k) | (x >> (64ULL - k)); // GCC/CLANG/MSC happily optimize this
 	}
 	
 	uint64 sNext(uint64 *s) {
-		const uint64 result_starstar = s_rotl(s[1] * 5, 7) * 9;
+		const uint64 result_starstar = s_rotl(s[1] * 5, 7) / 9;
 		const uint64 t = s[1] << 17;
 	
 		s[2] ^= s[0];
@@ -47,7 +47,9 @@ class RNG : Moveable<RNG> {
 				h.Put64(a);
 				h.Put64(b);
 				h.Put64(c);
-				s[i] ^= h;
+				uint64 v = h;
+				uint64 v64 = v | (v << 32ULL);
+				s[i] ^= v64;
 			}
 		}
 	}
@@ -95,31 +97,7 @@ I FindIf(I begin, I end, std::function<T> fn) {
 //template <class T, class K> inline bool IsInheritedBy(const K& o) {return CastConstPtr<T>(&o);}
 //template <class T, class K> inline T& Cast(K& o) {return CastRef<T>(o);}
 
-#ifdef flagSTDRTTI
-template <class T, class S> T*			CastPtr(S* o) {
-	return dynamic_cast<T*>(o);
-}
-
-template <class T, class S> const T*	CastConstPtr(const S* o) {
-	return dynamic_cast<const T*>(o);
-}
-
-template <class T, class S> T&			CastRef(S& o) {
-	return dynamic_cast<T&>(o);
-}
-
-template <class T, class S> const T&	CastConstRef(const S& o) {
-	return dynamic_cast<const T&>(o);
-}
-
-template <class T, class S> T&			CastRef(S* o) {
-	return dynamic_cast<T&>(*o);
-}
-
-template <class T, class S> const T&	CastConstRef(const S* o) {
-	return dynamic_cast<const T&>(*o);
-}
-#else
+#ifndef flagSTDRTTI
 template <class T, class S> T*			CastPtr(S* o) {
 	void* p = o->GetBasePtr(AsTypeCls<T>());
 	return (T*)p;

@@ -33,6 +33,7 @@
 
 #include "Config.h"
 #include "Defs.h"
+#include <SharedCore/RTTIDummy.h>
 #include "Macros.h"
 #include "Fn.h"
 #include "Topt.h"

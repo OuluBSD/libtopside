@@ -16,7 +16,8 @@ CONSOLE_APP_MAIN {
 		key64 n = p*q;
 		key64 e = Basic::GenerateCoprime(f);
 		key64 d = Basic::GenerateD(f,e);
-	
+		ASSERT(n != 121 || p != 11 || q != 11);
+		
 		LOG("p = " << IntStr64(p));
 		LOG("q = " << IntStr64(q));
 		LOG("n = " << IntStr64(n));
@@ -31,8 +32,9 @@ CONSOLE_APP_MAIN {
 		a = "crypto";
 		LOG("Input: " << a);
 		for (int i = 0; i < a.GetCount(); i++) {
-			key64 x = a[i];
-			c.Add(Basic::PowerMod(x,e,n));
+			key64 x = (byte)a[i];
+			key64 chr = Basic::PowerMod(x,e,n);
+			c.Add(chr);
 		}
 		
 		LOG("Mid:");
@@ -42,7 +44,9 @@ CONSOLE_APP_MAIN {
 	
 		// Decryption
 		for (int i = 0; i < c.GetCount(); i++) {
-			b.Cat((char)(Basic::PowerMod(c[i],d,n)));
+			key64 chr = c[i];
+			key64 v = Basic::PowerMod(chr,d,n);
+			b.Cat((byte)v);
 		}
 		LOG("Output: " << b);
 	}

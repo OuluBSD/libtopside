@@ -323,7 +323,7 @@ bool     IsDate(const EscValue& v);
 bool     IsTime(const EscValue& v);
 
 String   Expand(const String& doc, ArrayMap<String, EscValue>& global,
-                int oplimit = 50000, String (*format)(const Object& v) = StdFormat);
+                int oplimit = 50000, String (*format)(const Object& v) = StdFormatObj);
 
 }
 

@@ -15,7 +15,7 @@ public:
 	hash_t Get() const { return hash; }
 
 	CombineHash& Put(int value) { hash = ((hash << 5) + hash) + value; return *this; }
-	CombineHash& Put64(int64 value) {Put((int)(value >> 32)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
+	CombineHash& Put64(int64 value) {Put((int)((uint64)value >> 32ULL)); Put((int)(value & 0xFFFFFFFFULL)); return *this; }
 	
 	CombineHash& operator << (int value) { Put(value); return *this; }
 	CombineHash& operator << (hash_t value) { Put(value); return *this; }

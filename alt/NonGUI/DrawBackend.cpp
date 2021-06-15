@@ -3,16 +3,20 @@
 
 NAMESPACE_UPP_BEGIN
 
+Image StreamRaster::LoadStringAny(String content) {
+	return Image();
+}
+
 Image StreamRaster::LoadFileAny(String path) {
-	TODO
+	return Image();
 }
 
 RawSysFont* LoadSysFont(String path, int size) {
-	TODO
+	return 0;
 }
 
 Size GetSysFontTextSize(RawSysFont* fnt, String s) {
-	TODO
+	return Size(0, 0);
 }
 
 void SysFont::Clear() {
@@ -22,7 +26,7 @@ void SysFont::Clear() {
 }
 
 RawSysImage* SysFont::RenderTextBlended(const char* s, SysColor c) {
-	TODO
+	return 0;
 }
 
 void SysImage::Clear() {
@@ -30,6 +34,7 @@ void SysImage::Clear() {
 		delete raw;
 	raw = 0;
 }
+
 
 NAMESPACE_UPP_END
 /*

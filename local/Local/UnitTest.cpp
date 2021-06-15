@@ -39,7 +39,7 @@ void UnitTest::Test(String test_title, std::function<void(UnitTest& t)> fn) {
 		msg << "failed test: " << test_title;
 		if (fail_msg.GetCount())
 			msg << " (" << fail_msg << ")";
-		if (fail_arg)
+		if (fail_arg.GetCount())
 			msg << " [" << fail_arg << "]";
 		fails.Add(msg);
 	}

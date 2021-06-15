@@ -5869,18 +5869,18 @@ void ElText::ParseStyles(bool is_reparse)
 
 	if(IsWhiteSpace())
 	{
-		transformed_text = L" ";
+		transformed_text = " ";
 		use_transformed = true;
 	} else
 	{
 		if(text == WString(L"\t"))
 		{
-			transformed_text = L"    ";
+			transformed_text = "    ";
 			use_transformed = true;
 		}
 		if(text == WString(L"\n") || text == WString(L"\r"))
 		{
-			transformed_text = L"";
+			transformed_text = "";
 			use_transformed = true;
 		}
 	}

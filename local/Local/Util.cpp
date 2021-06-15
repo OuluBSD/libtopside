@@ -330,7 +330,7 @@ String FindShareDir() {
 }
 
 String ShareDirFile(String file) {
-	return AppendFileName(FindShareDir(), file);
+	return AppendFileName(AppendFileName(FindShareDir(), "html"), file);
 }
 
 String TrimTrailingDirSep(String file) {

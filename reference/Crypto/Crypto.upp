@@ -9,5 +9,6 @@ file
 	Crypto.cpp;
 
 mainconfig
-	"" = "";
+	"" = "",
+	"" = "STDEXC STDRTTI";
 

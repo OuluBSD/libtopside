@@ -1,6 +1,4 @@
-![Banner](https://raw.githubusercontent.com/OuluBSD/libtopside/main/doc/banner_210529.jpg)
-
-> Programmers are usually enslaved under exploitative social labor standards, teachers teaching old methods, and poor management.
+![Banner](https://raw.githubusercontent.com/OuluBSD/libtopside/main/doc/banner_210516.jpg)
 
 Libtopside is a unfinished collection of libraries that enable modern games and programs.
 

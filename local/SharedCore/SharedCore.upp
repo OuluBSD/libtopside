@@ -2,6 +2,7 @@ description "\377B128,0,0";
 
 file
 	SharedCore.h,
+	RTTIDummy.h,
 	Shared.h,
 	Object.h,
 	Object.cpp,

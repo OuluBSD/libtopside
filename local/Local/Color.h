@@ -5,6 +5,23 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct RgbaRange : Moveable<RgbaRange> {
+	RGBA* begin_ptr = NULL;
+	RGBA* end_ptr = NULL;
+	Size sz;
+	
+	
+	RGBA* Begin() const {return begin_ptr;}
+	RGBA* begin() const {return begin_ptr;}
+	RGBA* End() const {return end_ptr;}
+	RGBA* end() const {return end_ptr;}
+	Size GetSize() const {return sz;}
+};
+
+inline int Dist(int a, int b) {return abs(a - b);}
+inline int Dist(RGBA a, RGBA b) {return Dist(a.r, b.r) + Dist(a.g, b.g) + Dist(a.b, b.b);}
+
+
 inline Color RandomColor(int begin=0, int range=256) { return Color(begin + Random(range), begin + Random(range) , begin + Random(range)); }
 
 void FindColors(RgbaRange i, RGBA& fg, RGBA& bg);
