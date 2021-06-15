@@ -63,7 +63,6 @@
 #include "WindowSystem.h"
 
 #include "Router.h"
-#include "Dummy.h"
 
 #include "Eon.h"
 #include "Customer.h"

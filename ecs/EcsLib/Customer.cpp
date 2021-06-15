@@ -36,6 +36,9 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 		using DevMach = ScopeDevMachT<CenterSpec>;
 		using InternalPacketData = typename DevMach::InternalPacketData;
 		
+		if (src_value.IsQueueFull())
+			return;
+		
 		ASSERT(plans.GetCount() == 1);
 		EonPlan& ep = plans[0];
 		
@@ -105,6 +108,15 @@ void CustomerSystem::Start() {
 }
 
 void CustomerSystem::Update(double dt) {
+	LinkedList<Once> cbs;
+	lock.Enter();
+	MemSwap(cbs, once_cbs);
+	lock.Leave();
+	
+	for (Once& o : cbs) {
+		for (FwdScope scope(o.fwd, *o.cfg); scope; scope++)
+			scope.Forward();
+	}
 	
 	for (CustomerComponentRef& customer : customers) {
 		customer->CreateOrder(dt);
@@ -126,6 +138,14 @@ void CustomerSystem::Add(CustomerComponentRef p) {
 
 void CustomerSystem::Remove(CustomerComponentRef p) {
 	customers.RemoveKey(p);
+}
+
+void CustomerSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
+	lock.Enter();
+	Once& o = once_cbs.Add();
+	o.fwd = &fwd;
+	o.cfg = &cfg;
+	lock.Leave();
 }
 
 

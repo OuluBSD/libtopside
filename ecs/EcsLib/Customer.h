@@ -89,7 +89,13 @@ using CustomerComponentRef = RefT_Entity<CustomerComponent>;
 class CustomerSystem :
 	public System<CustomerSystem>
 {
+	struct Once {
+		PacketForwarder*		fwd;
+		RealtimeSourceConfig*	cfg;
+	};
+	LinkedList<Once> once_cbs;
 	LinkedList<CustomerComponentRef> customers;
+	Mutex lock;
 	
 	void Visit(RuntimeVisitor& vis) override {
 		vis && customers;
@@ -100,6 +106,7 @@ public:
 	SYS_CTOR(CustomerSystem);
 	
 	
+	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	
 protected:
 	
@@ -114,6 +121,7 @@ protected:
 	
     void Add(CustomerComponentRef p);
     void Remove(CustomerComponentRef p);
+	
 	
 };
 

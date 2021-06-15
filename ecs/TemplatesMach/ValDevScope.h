@@ -182,7 +182,6 @@ struct ScopeValDevMachT {
 		int				dst_size = 0;
 		bool			dst_realtime = 0;
 		
-		int				internal_count;
 		int				internal_written_bytes;
 		
 		void Consume(Packet& p, int data_shift);
@@ -204,9 +203,12 @@ struct ScopeValDevMachT {
 		bool		IsEmptySource() const {return src_buf == 0;}
 		bool		HasLeftover() const {return leftover_size != 0;}
 		int			GetLastMemoryBytes() const {return internal_written_bytes;}
-		int			GetCount() const {return internal_count;}
+		int			GetCount() const {return consumed_packets.GetCount();}
 		
 		operator bool() const {return IsFinished();}
+		
+		
+		LinkedList<Packet>		consumed_packets;
 		
 	};
 	
@@ -329,11 +331,13 @@ struct ScopeValDevMachT {
 		int				GetQueueChannelSamples() const;
 		void			ClearBuffer() {buf.Clear();}
 		bool			IsEmpty() const {return buf.IsEmpty();}
+		//int			GetMinBufferSamples() const {return fmt.GetSampleRate() * 2;}
 		//void			FillBuffersNull();
 		void			Visit(RuntimeVisitor& vis) {}
 		void			DropBuffer();
 		void			AddPacket(Packet p) {buf.Add(p);}
 		void			SetFormat(Format f) {fmt = f;}
+		void			SetMinBufSamples(int i) {min_buf_samples = i;}
 		
 	};
 	

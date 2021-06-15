@@ -1,8 +1,7 @@
-#ifndef _EcsLib_Dummy_h_
-#define _EcsLib_Dummy_h_
+#ifndef _EcsDummy_AudioGenerator_h_
+#define _EcsDummy_AudioGenerator_h_
 
 NAMESPACE_TOPSIDE_BEGIN
-
 
 
 template <class T>
@@ -176,78 +175,6 @@ public:
 	
 	
 };
-
-
-
-
-
-
-
-
-
-
-
-class DummyAudioSinkComponent :
-	public Component<DummyAudioSinkComponent>,
-	public AudioSink,
-	public ReceiptSource
-{
-protected:
-	
-	struct LocalSourceValue : public SimpleReceipt {
-		void StorePacket(ReceiptPacket& p) {}
-	};
-	
-	struct LocalSourceStream : public SimpleReceiptStream {
-		RTTI_DECL1(LocalSourceStream, SimpleReceiptStream)
-		DummyAudioSinkComponent& par;
-		LocalSourceStream(DummyAudioSinkComponent* par) :
-			par(*par),
-			SimpleReceiptStream(par->src_value) {}
-	};
-	
-	
-public:
-	RTTI_COMP2(DummyAudioSinkComponent, AudioSink, ReceiptSource)
-	VIS_COMP_1_1(Receipt, Audio)
-	COPY_PANIC(DummyAudioSinkComponent);
-	IFACE_CB(ReceiptSource);
-	IFACE_CB(AudioSink);
-	IFACE_GENERIC;
-	COMP_DEF_VISIT
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.test")
-	COMP_MAKE_ACTION_END
-	
-	
-	SimpleBufferedAudio		sink_value;
-	LocalSourceValue		src_value;
-	LocalSourceStream		src_stream;
-	
-	DummyAudioSinkComponent() : src_stream(this) {}
-	
-	void			Initialize() override {}
-	void			Uninitialize() override {}
-	void			Forward(FwdScope& fwd) override;
-	void			ForwardExchange(FwdScope& fwd) override;
-	void			Process(AudioPacket& p);
-	
-	// AudioSink
-	AudioFormat		GetFormat(AudCtx) override {return AudioFormat();}
-	Audio&			GetValue(AudCtx) override {return sink_value;}
-	
-	// ReceiptSource
-	ReceiptStream&	GetStream(RcpCtx) override {return src_stream;}
-	void			BeginStream(RcpCtx) override {TODO}
-	void			EndStream(RcpCtx) override {TODO}
-	bool			ReadFrame() {TODO}
-	bool			ProcessFrame() {TODO}
-	bool			ProcessDeviceFrame() {TODO}
-	
-	void SetAudioSyncInterval(double seconds) {}
-	
-};
-
 
 
 NAMESPACE_TOPSIDE_END

@@ -28,6 +28,7 @@ TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
 			}
 		}
 		else TODO
+		
 		// Producer model
 		/*} else {
 			SimpleValue* sink_vol;
@@ -83,7 +84,17 @@ TMPL_VALDEVMACH(DataT::Format) SimpleValue::GetFormat() const {
 }
 
 TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
-	return buf.GetCount() >= packet_limit;
+	int sr = fmt.GetSampleRate();
+	if (sr > 1) {
+		int size = 0;
+		for(auto& p : buf)
+			size += p->GetSizeChannelSamples();
+		int c = size / sr;
+		return c >= packet_limit;
+	}
+	else {
+		return buf.GetCount() >= packet_limit;
+	}
 }
 
 
@@ -258,7 +269,8 @@ TMPL_VALDEVMACH(DataT::Format) SimpleBufferedValue::GetFormat() const {
 }
 
 TMPL_VALDEVMACH(bool) SimpleBufferedValue::IsQueueFull() const {
-	return GetQueueChannelSamples() >= min_buf_samples;
+	int cs = GetQueueChannelSamples();
+	return cs >= min_buf_samples;
 }
 
 TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueChannelSamples() const {
@@ -530,16 +542,16 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 				leftover = src;
 			else {
 				src->StopTracking(TrackerInfo(this, __FILE__, __LINE__));
-				++internal_count;
+				consumed_packets.Add(src);
 			}
 		}
 		else {
 			src->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
 			internal_written_bytes += src->GetSizeBytes();
-			if (internal_count == 0 && dst_realtime)
+			if (consumed_packets.IsEmpty() && dst_realtime)
 				dst_buf->Clear();
 			dst_buf->Add(src);
-			++internal_count;
+			consumed_packets.Add(src);
 		}
 	}
 	else {
@@ -581,7 +593,7 @@ TMPL_VALDEVMACH(bool) PacketConsumer::ConsumePacket() {
 }
 
 TMPL_VALDEVMACH(void) PacketConsumer::ConsumeAll(bool blocking) {
-	internal_count = 0;
+	consumed_packets.Clear();
 	internal_written_bytes = 0;
 	while (!IsFinished()) {
 		if (!ConsumePacket()) {

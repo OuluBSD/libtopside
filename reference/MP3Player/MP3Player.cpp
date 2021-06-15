@@ -137,8 +137,7 @@ player.media.ffmpeg: {
 
 void Main() {
 	SetCoutLog();
-	
-	EcsFactory::Dump();
+	//EcsFactory::Dump();
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
 	
