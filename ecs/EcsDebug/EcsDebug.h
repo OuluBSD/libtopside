@@ -1,5 +1,5 @@
-#ifndef _EcsDummy_EcsDummy_h_
-#define _EcsDummy_EcsDummy_h_
+#ifndef _EcsDebug_EcsDebug_h_
+#define _EcsDebug_EcsDebug_h_
 
 #include <EcsLib/EcsLib.h>
 

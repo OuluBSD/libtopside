@@ -1,11 +1,11 @@
-#ifndef _EcsDummy_SoundCard_h_
-#define _EcsDummy_SoundCard_h_
+#ifndef _EcsDebug_SoundCard_h_
+#define _EcsDebug_SoundCard_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class DummyAudioSinkComponent :
-	public Component<DummyAudioSinkComponent>,
+class DebugAudioSinkComponent :
+	public Component<DebugAudioSinkComponent>,
 	public AudioSink,
 	public ReceiptSource
 {
@@ -23,10 +23,10 @@ protected:
 	};
 	
 	struct LocalSinkValue : public SimpleBufferedAudio {
-		DummyAudioSinkComponent& par;
+		DebugAudioSinkComponent& par;
 		
 		void SinkCallback(StreamCallbackArgs& args);
-		LocalSinkValue(DummyAudioSinkComponent* par) : par(*par) {}
+		LocalSinkValue(DebugAudioSinkComponent* par) : par(*par) {}
 	};
 	
 	struct LocalSourceValue : public SimpleReceipt {
@@ -34,11 +34,11 @@ protected:
 	};
 	
 	struct LocalSourceStream : public SimpleReceiptStream {
-		DummyAudioSinkComponent& par;
+		DebugAudioSinkComponent& par;
 		AudioPacketConsumer consumer;
 		
 		RTTI_DECL1(LocalSourceStream, SimpleReceiptStream)
-		LocalSourceStream(DummyAudioSinkComponent* par) :
+		LocalSourceStream(DebugAudioSinkComponent* par) :
 			par(*par),
 			SimpleReceiptStream(par->src_value) {}
 		
@@ -48,10 +48,10 @@ protected:
 	LinkedList<AudioPacket> consumed_packets;
 	
 public:
-	typedef DummyAudioSinkComponent CLASSNAME;
-	RTTI_COMP2(DummyAudioSinkComponent, AudioSink, ReceiptSource)
+	typedef DebugAudioSinkComponent CLASSNAME;
+	RTTI_COMP2(DebugAudioSinkComponent, AudioSink, ReceiptSource)
 	VIS_COMP_1_1(Receipt, Audio)
-	COPY_PANIC(DummyAudioSinkComponent);
+	COPY_PANIC(DebugAudioSinkComponent);
 	IFACE_CB(ReceiptSource);
 	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
@@ -65,7 +65,7 @@ public:
 	LocalSourceValue		src_value;
 	LocalSourceStream		src_stream;
 	
-	DummyAudioSinkComponent() : src_stream(this), sink_value(this) {}
+	DebugAudioSinkComponent() : src_stream(this), sink_value(this) {}
 	
 	void			Initialize() override;
 	void			Uninitialize() override;

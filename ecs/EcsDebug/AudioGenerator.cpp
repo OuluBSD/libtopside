@@ -1,9 +1,9 @@
-#include "EcsDummy.h"
+#include "EcsDebug.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
+DebugSoundGeneratorAudio::DebugSoundGeneratorAudio() {
 	fmt.channels = 2;
 	fmt.sample_rate = 777;
 	fmt.freq = 44100;
@@ -11,7 +11,7 @@ DummySoundGeneratorAudio::DummySoundGeneratorAudio() {
 	gen.GenerateStereoSine(fmt);
 }
 
-void DummySoundGeneratorAudio::StorePacket(AudioPacket& p) {
+void DebugSoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -22,7 +22,7 @@ void DummySoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	gen.Play((int)offset, p);
 }
 
-/*void DummySoundGeneratorAudio::Exchange(AudioEx& e) {
+/*void DebugSoundGeneratorAudio::Exchange(AudioEx& e) {
 	TODO
 	if (e.IsStoring()) {
 		Audio& sink = e.Sink();
@@ -50,15 +50,15 @@ void DummySoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	else TODO
 }
 
-int DummySoundGeneratorAudio::GetQueueSize() const {
+int DebugSoundGeneratorAudio::GetQueueSize() const {
 	return 10;
 }
 
-AudioFormat DummySoundGeneratorAudio::GetFormat() const {
+AudioFormat DebugSoundGeneratorAudio::GetFormat() const {
 	return fmt;
 }
 
-bool DummySoundGeneratorAudio::IsQueueFull() const {
+bool DebugSoundGeneratorAudio::IsQueueFull() const {
 	return true;
 }*/
 
@@ -75,11 +75,11 @@ bool DummySoundGeneratorAudio::IsQueueFull() const {
 
 
 
-DummySoundGeneratorComponent::DummySoundGeneratorComponent() {
+DebugSoundGeneratorComponent::DebugSoundGeneratorComponent() {
 	
 }
 
-void DummySoundGeneratorComponent::Initialize() {
+void DebugSoundGeneratorComponent::Initialize() {
 	Component::Initialize();
 	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 	
@@ -89,13 +89,13 @@ void DummySoundGeneratorComponent::Initialize() {
 	GetStream(AUDCTX).Get().Lock();
 }
 
-void DummySoundGeneratorComponent::Uninitialize() {
+void DebugSoundGeneratorComponent::Uninitialize() {
 	Component::Uninitialize();
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
-void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {
+void DebugSoundGeneratorComponent::Forward(FwdScope& fwd) {
 	using FromValSpec				= OrderSpec;
 	using ToValSpec					= AudioSpec;
 	using DevSpec					= CenterSpec;
@@ -170,12 +170,12 @@ void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {
 		
 		for(int i = 0; i < c && !val.IsQueueFull(); i++) {
 			off32 off = in->GetOffset();
-			RTLOG("DummySoundGeneratorComponent::Forward: play packet " << off.ToString());
+			RTLOG("DebugSoundGeneratorComponent::Forward: play packet " << off.ToString());
 			
 			ToPacket to = ToValMach::CreatePacket(off);
 			
 			ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
-			RTLOG("DummySoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
+			RTLOG("DebugSoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
 			to->SetFormat(fmt);
 			
 			InternalPacketData& data = to->template SetData<InternalPacketData>();
@@ -184,7 +184,7 @@ void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {
 			
 			sval->StorePacket(to);
 			
-			ToPacketTracker::Track(TrackerInfo("DummySoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
+			ToPacketTracker::Track(TrackerInfo("DebugSoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
 			pbuf->Add(to);
 		}
 	}
@@ -193,7 +193,7 @@ void DummySoundGeneratorComponent::Forward(FwdScope& fwd) {
 	#undef TOCTX
 }
 
-void DummySoundGeneratorComponent::ForwardExchange(FwdScope& fwd) {
+void DebugSoundGeneratorComponent::ForwardExchange(FwdScope& fwd) {
 	AudioSource& src = *this;
 	auto& conns = src.GetConnections();
 	for(auto& link : conns) {
@@ -207,11 +207,11 @@ void DummySoundGeneratorComponent::ForwardExchange(FwdScope& fwd) {
 
 #if 0
 
-void DummySoundGeneratorComponent::RecvMidi(const MidiFrame& e) {
+void DebugSoundGeneratorComponent::RecvMidi(const MidiFrame& e) {
 	TODO
 }
 
-void DummySoundGeneratorComponent::Configure(const Midi::File& file) {
+void DebugSoundGeneratorComponent::Configure(const Midi::File& file) {
 	if (mode == MODE_TRACK_NUM) {
 		if (track_i >= 0 && track_i < file.GetTrackCount()) {
 			Ref<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
@@ -222,15 +222,15 @@ void DummySoundGeneratorComponent::Configure(const Midi::File& file) {
 
 #endif
 
-AudioStream& DummySoundGeneratorComponent::GetStream(AudCtx) {
+AudioStream& DebugSoundGeneratorComponent::GetStream(AudCtx) {
 	return gen;
 }
 
-void DummySoundGeneratorComponent::BeginStream(AudCtx) {
+void DebugSoundGeneratorComponent::BeginStream(AudCtx) {
 	TODO
 }
 
-void DummySoundGeneratorComponent::EndStream(AudCtx) {
+void DebugSoundGeneratorComponent::EndStream(AudCtx) {
 	TODO
 }
 

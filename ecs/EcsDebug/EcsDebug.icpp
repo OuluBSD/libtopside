@@ -1,0 +1,15 @@
+#include "EcsDebug.h"
+
+NAMESPACE_UPP
+
+
+
+
+
+
+INITBLOCK {
+	EcsFactory::RegisterComponent<DebugSoundGeneratorComponent>();
+	EcsFactory::RegisterComponent<DebugAudioSinkComponent>();
+}
+
+END_UPP_NAMESPACE

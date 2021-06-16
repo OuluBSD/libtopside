@@ -1,23 +1,23 @@
-#include "SimpleDummy.h"
+#include "ECS_Debug.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
 
 
-void DummyGenerator::OnError() {
+void DebugGenerator::OnError() {
 	GetEntity()->GetMachine().SetNotRunning();
 }
 
-void DummyGenerator::Initialize() {
+void DebugGenerator::Initialize() {
 	EntityRef e = GetEntity();
-	gen     = e->Find<DummySoundGeneratorComponent>();
-	audio   = e->Find<DummyAudioSinkComponent>();
+	gen     = e->Find<DebugSoundGeneratorComponent>();
+	audio   = e->Find<DebugAudioSinkComponent>();
 	
     //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
-void DummyGenerator::Uninitialize() {
+void DebugGenerator::Uninitialize() {
 	gen.Clear();
 	audio.Clear();
 	GetEntity()->Destroy();
@@ -26,7 +26,7 @@ void DummyGenerator::Uninitialize() {
 
 
 
-bool SimpleDummyInitializer() {
+bool SimpleDebugInitializer() {
 	SetCoutLog();
 	
 	return true;
@@ -68,7 +68,7 @@ void Main() {
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
 	
-	if (!SimpleDummyInitializer())
+	if (!SimpleDebugInitializer())
 		Exit(1);
 	
 	{

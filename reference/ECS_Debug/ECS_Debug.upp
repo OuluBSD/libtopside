@@ -1,11 +1,11 @@
 description "ECS debugging program, which allows easier debugging with non-hw dummy classes.\377";
 
 uses
-	CompleteDummy;
+	CompleteDebug;
 
 file
-	SimpleDummy.h,
-	SimpleDummy.cpp;
+	ECS_Debug.h,
+	ECS_Debug.cpp;
 
 mainconfig
 	"" = "",

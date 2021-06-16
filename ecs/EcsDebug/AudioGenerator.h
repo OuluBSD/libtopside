@@ -1,17 +1,17 @@
-#ifndef _EcsDummy_AudioGenerator_h_
-#define _EcsDummy_AudioGenerator_h_
+#ifndef _EcsDebug_AudioGenerator_h_
+#define _EcsDebug_AudioGenerator_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T>
-class DummySoundGenerator
+class DebugSoundGenerator
 {
 	Vector<T> frame;
 	int frame_part_size = 0;
 	
 public:
-	DummySoundGenerator() {}
+	DebugSoundGenerator() {}
 	void Play(int frame_offset, const AudioPacket& p) {
 		int total_bytes = frame.GetCount() * sizeof(T);
 		frame_offset = frame_offset % total_bytes;
@@ -71,15 +71,15 @@ public:
 	}
 };
 
-class DummySoundGeneratorAudio :
+class DebugSoundGeneratorAudio :
 	public SimpleAudio
 {
-	DummySoundGenerator<uint8> gen;
+	DebugSoundGenerator<uint8> gen;
 	AudioFormat fmt;
 	
 public:
-	RTTI_DECL1(DummySoundGeneratorAudio, SimpleAudio)
-	DummySoundGeneratorAudio();
+	RTTI_DECL1(DebugSoundGeneratorAudio, SimpleAudio)
+	DebugSoundGeneratorAudio();
 	
 	void StorePacket(AudioPacket& p) override;
 	/*void Exchange(AudioEx& e) override;
@@ -90,27 +90,27 @@ public:
 	
 };
 
-class DummySoundGeneratorStream :
+class DebugSoundGeneratorStream :
 	public SimpleAudioStream
 {
 public:
-	DummySoundGeneratorAudio gen;
+	DebugSoundGeneratorAudio gen;
 	
 public:
-	RTTI_DECL1(DummySoundGeneratorStream, SimpleAudioStream)
-	DummySoundGeneratorStream() : SimpleAudioStream(gen) {}
+	RTTI_DECL1(DebugSoundGeneratorStream, SimpleAudioStream)
+	DebugSoundGeneratorStream() : SimpleAudioStream(gen) {}
 	
 	
 	
 };
 
-class DummySoundGeneratorComponent :
-	public DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>,
+class DebugSoundGeneratorComponent :
+	public DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>,
 	public EventSink,
 	public OrderSink,
 	public AudioSource
 {
-	DummySoundGeneratorStream gen;
+	DebugSoundGeneratorStream gen;
 	String last_error;
 	int mode = 0;
 	int preset_i = -1;
@@ -133,10 +133,10 @@ protected:
 	LocalSinkValue		sink_value;
 	
 public:
-	using Component = DevComponent<CenterSpec,AudioSpec,DummySoundGeneratorComponent>;
-	RTTI_DCOMP3(DummySoundGeneratorComponent, EventSink, OrderSink, AudioSource)
+	using Component = DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>;
+	RTTI_DCOMP3(DebugSoundGeneratorComponent, EventSink, OrderSink, AudioSource)
 	VIS_COMP_1_2(Audio, Order, Event)
-	COPY_PANIC(DummySoundGeneratorComponent);
+	COPY_PANIC(DebugSoundGeneratorComponent);
 	IFACE_GENERIC;
 	IFACE_CB(OrderSink);
 	IFACE_CB(EventSink);
@@ -146,7 +146,7 @@ public:
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")
 	COMP_MAKE_ACTION_END
 	
-	DummySoundGeneratorComponent();
+	DebugSoundGeneratorComponent();
 	
 	void Initialize() override;
 	void Uninitialize() override;
