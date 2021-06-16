@@ -1,5 +1,5 @@
-#ifndef _EcsLib_WindowSystem_h_
-#define _EcsLib_WindowSystem_h_
+#ifndef _EcsLocal_WindowSystem_h_
+#define _EcsLocal_WindowSystem_h_
 
 #if HAVE_WINDOWSYSTEM
 

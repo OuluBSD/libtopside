@@ -138,9 +138,6 @@ public:
 	VIS_COMP_1_2(Audio, Order, Event)
 	COPY_PANIC(DebugSoundGeneratorComponent);
 	IFACE_GENERIC;
-	IFACE_CB(OrderSink);
-	IFACE_CB(EventSink);
-	IFACE_CB(AudioSource);
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")

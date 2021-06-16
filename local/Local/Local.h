@@ -20,7 +20,6 @@
 #include <SharedCore/Shared.h>
 #include "Util.h"
 #include "Process.h"
-#include "Heap.h"
 #include "Math.h"
 #include "Crypto.h"
 #include "Neural.h"

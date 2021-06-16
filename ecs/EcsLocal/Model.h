@@ -1,5 +1,5 @@
-#ifndef _EcsLib_Model_h_
-#define _EcsLib_Model_h_
+#ifndef _EcsLocal_Model_h_
+#define _EcsLocal_Model_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -39,7 +39,6 @@ class ModelComponent :
 public:
 	RTTI_COMP1(ModelComponent, ModelSink)
 	VIS_COMP_0_1(Model)
-	IFACE_CB(ModelSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION

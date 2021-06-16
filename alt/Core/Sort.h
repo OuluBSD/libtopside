@@ -1,6 +1,7 @@
 #ifndef _Core_Sort_h_
 #define _Core_Sort_h_
-NAMESPACE_TOPSIDE_BEGIN
+
+NAMESPACE_UPP_BEGIN
 
 
 template <class I>
@@ -568,6 +569,6 @@ Iterator Find(Iterator it, Iterator end, T value, Sort s) {
 	return end;
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_UPP_END
 
 #endif

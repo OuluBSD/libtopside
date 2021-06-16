@@ -1,7 +1,8 @@
 description "Audio player using the ECS library. Plays mp3:s and many other audio files.\377";
 
 uses
-	Complete;
+	Complete,
+	CompleteDebug;
 
 file
 	MP3Player.h,

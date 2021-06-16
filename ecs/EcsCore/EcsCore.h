@@ -12,8 +12,6 @@
 #endif
 
 
-
-
 #include "Defs.h"
 #include "EntityStore.h"
 #include "Component.h"
@@ -25,16 +23,8 @@
 #include "Entity.h"
 #include "Pool.h"
 #include "EntityVisitor.h"
-#include "Overlap.h"
-#include "Action.h"
-#include "ActionSystem.h"
 #include "ConnManual.h"
 #include "ConnAny.h"
-#include "ConnPoolComps.h"
-#include "ConnPoolComps.inl"
-#include "ConnDevComps.h"
-#include "ConnDevComps.inl"
-#include "AudioSystem.h"
-#include "VideoSystem.h"
+
 
 #endif

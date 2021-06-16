@@ -1,27 +1,6 @@
-#include "ECS_Debug.h"
+#include "TemplatesLocalTests.h"
 
 NAMESPACE_TOPSIDE_BEGIN
-
-String file_path;
-
-
-void DebugGenerator::OnError() {
-	GetEntity()->GetMachine().SetNotRunning();
-}
-
-void DebugGenerator::Initialize() {
-	EntityRef e = GetEntity();
-	gen     = e->Find<DebugSoundGeneratorComponent>();
-	audio   = e->Find<DebugAudioSinkComponent>();
-	
-    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
-}
-
-void DebugGenerator::Uninitialize() {
-	gen.Clear();
-	audio.Clear();
-	GetEntity()->Destroy();
-}
 
 
 

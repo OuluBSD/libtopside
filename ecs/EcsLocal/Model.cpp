@@ -1,4 +1,4 @@
-#include "EcsLib.h"
+#include "EcsLocal.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN

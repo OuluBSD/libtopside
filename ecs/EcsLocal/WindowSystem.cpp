@@ -1,4 +1,4 @@
-#include "EcsLib.h"
+#include "EcsLocal.h"
 
 #if HAVE_WINDOWSYSTEM
 

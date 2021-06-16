@@ -52,8 +52,6 @@ public:
 	RTTI_COMP2(DebugAudioSinkComponent, AudioSink, ReceiptSource)
 	VIS_COMP_1_1(Receipt, Audio)
 	COPY_PANIC(DebugAudioSinkComponent);
-	IFACE_CB(ReceiptSource);
-	IFACE_CB(AudioSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN

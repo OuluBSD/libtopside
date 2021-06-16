@@ -59,8 +59,6 @@ public:
 	RTTI_COMP2(MixerChannelInputComponent, AudioSource, AudioSink)
 	VIS_COMP_1_1(Audio, Audio)
 	COPY_PANIC(MixerChannelInputComponent);
-	IFACE_CB(AudioSink);
-	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -94,8 +92,6 @@ public:
 	RTTI_COMP2(MixerChannelOutputComponent, AudioSource, AudioSink)
 	VIS_COMP_1_1(Audio, Audio)
 	COPY_PANIC(MixerChannelOutputComponent);
-	IFACE_CB(AudioSink);
-	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -130,8 +126,6 @@ public:
 	RTTI_COMP2(MixerAudioSourceComponent, AudioSource, AudioSink)
 	VIS_COMP_1_1(Audio, Audio)
 	COPY_PANIC(MixerAudioSourceComponent);
-	IFACE_CB(AudioSink);
-	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -171,7 +165,6 @@ public:
 	RTTI_COMP1(MidiFileComponent, EventSource)
 	VIS_COMP_1_0(Event)
 	COPY_PANIC(MidiFileComponent);
-	IFACE_CB(EventSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION

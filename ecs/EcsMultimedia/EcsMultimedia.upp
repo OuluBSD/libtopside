@@ -3,7 +3,6 @@ description "\3770,128,128";
 uses
 	Multimedia,
 	EcsAudioCore,
-	EcsLib,
 	EcsEssential;
 
 file

@@ -22,8 +22,6 @@ class FfmpegComponent :
 public:
 	RTTI_COMP2(FfmpegComponent, AudioSource, VideoSource)
 	COPY_PANIC(FfmpegComponent);
-	IFACE_CB(AudioSource);
-	IFACE_CB(VideoSource);
 	IFACE_GENERIC;
 	VIS_COMP_2_0(Audio, Video)
 	COMP_MAKE_ACTION_BEGIN

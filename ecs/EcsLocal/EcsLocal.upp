@@ -1,0 +1,39 @@
+description "\377B51,138,51";
+
+uses
+	TemplatesLocal;
+
+file
+	EcsLocal.h,
+	EcsLocal.icpp,
+	Camera.cpp,
+	Camera.h,
+	Model.h,
+	Model.cpp,
+	Viewport.h,
+	Viewport.cpp,
+	CommonComponents.h,
+	CommonComponents.cpp,
+	EasingSystem.h,
+	EasingSystem.cpp,
+	WorldLogic.h,
+	WindowSystem.h,
+	WindowSystem.cpp,
+	VR readonly separator,
+	PbrModelCache.h,
+	PbrModelCache.cpp,
+	PaintStrokeSystem.h,
+	PaintStrokeSystem.cpp,
+	Prefabs.h,
+	ToolboxSystem.h,
+	ToolboxSystem.cpp,
+	ToolSystem.h,
+	ToolSystem.cpp,
+	PaintingSystem.h,
+	PaintingSystem.cpp,
+	ShootingSystem.h,
+	ShootingSystem.cpp,
+	ThrowingSystem.h,
+	ThrowingSystem.cpp,
+	_ readonly separator;
+

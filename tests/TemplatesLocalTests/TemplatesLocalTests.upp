@@ -1,0 +1,11 @@
+uses
+	TemplatesLocal,
+	EcsNonGUI;
+
+file
+	TemplatesLocalTests.h,
+	TemplatesLocalTests.cpp;
+
+mainconfig
+	"" = "";
+

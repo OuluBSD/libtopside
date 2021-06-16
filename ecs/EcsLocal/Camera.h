@@ -1,5 +1,5 @@
-#ifndef _EcsLib_Camera_h_
-#define _EcsLib_Camera_h_
+#ifndef _EcsLocal_Camera_h_
+#define _EcsLocal_Camera_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 

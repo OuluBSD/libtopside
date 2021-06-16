@@ -65,9 +65,6 @@ public:
 	RTTI_DCOMP2(PortaudioSinkComponent, AudioSink, ReceiptSource)
 	VIS_COMP_1_1(Receipt, Audio)
 	COPY_PANIC(PortaudioSinkComponent);
-	IFACE_CB(AudioSink);
-	IFACE_CB(VideoSink);
-	IFACE_CB(ReceiptSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN

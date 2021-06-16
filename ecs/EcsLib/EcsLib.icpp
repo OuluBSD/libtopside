@@ -2,34 +2,8 @@
 
 NAMESPACE_UPP
 
-
-
-
-
 INITBLOCK {
-	EcsFactory::RegisterComponent<Easing>();
-	EcsFactory::RegisterComponent<Viewable>();
-	EcsFactory::RegisterComponent<Transform>();
-	EcsFactory::RegisterComponent<Transform2D>();
-	EcsFactory::RegisterComponent<RigidBody>();
-	EcsFactory::RegisterComponent<Renderable>();
-	EcsFactory::RegisterComponent<StaticVolumeComponent>();
-	//EcsFactory::RegisterComponent<PbrRenderable>();
-	EcsFactory::RegisterComponent<TextRenderable>();
-	EcsFactory::RegisterComponent<Viewport>();
-	//EcsFactory::RegisterComponent<PrimitiveShape>();
-	EcsFactory::RegisterComponent<ModelComponent>();
 	EcsFactory::RegisterComponent<CustomerComponent>();
-	
-	#ifdef flagVR
-	EcsFactory::RegisterComponent<ToolSelectorKey>();
-	EcsFactory::RegisterComponent<ShootingComponent>();
-	EcsFactory::RegisterComponent<ThrowingComponent>();
-	EcsFactory::RegisterComponent<PaintStrokeComponent>();
-	EcsFactory::RegisterComponent<PaintComponent>();
-	EcsFactory::RegisterComponent<ToolComponent>();
-	
-	#endif
 	
 }
 

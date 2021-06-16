@@ -24,8 +24,6 @@ public:
 	RTTI_COMP2(FluidsynthComponent, AudioSource, MidiSink)
 	VIS_COMP_1_1(Audio, Midi)
 	COPY_PANIC(FluidsynthComponent);
-	IFACE_CB(MidiSink);
-	IFACE_CB(AudioSource);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
