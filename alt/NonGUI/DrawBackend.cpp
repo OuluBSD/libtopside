@@ -37,10 +37,3 @@ void SysImage::Clear() {
 
 
 NAMESPACE_UPP_END
-/*
-#define STB_IMAGE_IMPLEMENTATION
-#include <Various/stb_image.h>
-
-#define STB_TRUETYPE_IMPLEMENTATION
-#include <Various/stb_truetype.h>
-*/

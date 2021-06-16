@@ -31,8 +31,5 @@ file
 	OpenGLRenderer.cpp,
 	OpenGLFramebuffer.cpp,
 	OpenGLShader.h,
-	OpenGLShader.cpp,
-	Trash readonly separator,
-	Pipeline.h,
-	Pipeline.cpp;
+	OpenGLShader.cpp;
 

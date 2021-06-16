@@ -64,8 +64,6 @@ public:
 			sys->Remove(ref);
 	}
 	
-	//template <class DevSpec, class R> void AddToContext(R ref);
-	//template <class DevSpec, class R> void RemoveFromContext(R ref);
 	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	

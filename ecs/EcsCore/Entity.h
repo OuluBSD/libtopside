@@ -22,7 +22,6 @@ protected:
 	friend class Pool;
 	
 	void SetId(EntityId i) {id = i;}
-	//void SetId(EntityId i) {id = i;}
 	void SetCreated(int64 i) {created = i;}
 	void SetChanged(int64 i) {changed = i;}
 	

@@ -6,7 +6,6 @@ uses
 uses(STDEXC) Esc;
 
 file
-	Copying,
 	TODO.txt,
 	EcsLib.h,
 	EcsLib.icpp,
@@ -50,22 +49,5 @@ file
 	ShootingSystem.h,
 	ShootingSystem.cpp,
 	ThrowingSystem.h,
-	ThrowingSystem.cpp,
-	Trash readonly separator,
-	DisplaySystem.h,
-	DisplaySystem.cpp,
-	EventSystem.h,
-	EventSystem.cpp,
-	RenderingSystem.h,
-	RenderingSystem.cpp,
-	PhysicsSystem.h,
-	PhysicsSystem.cpp,
-	BoundingBox.cpp,
-	Shader.h,
-	BasicShaders.h,
-	BasicShaders.cpp,
-	OctreeShaders.h,
-	OctreeShaders.cpp,
-	PathTracerShaders.h,
-	PathTracerShaders.cpp;
+	ThrowingSystem.cpp;
 

@@ -173,10 +173,9 @@ public:
 			if ((int64)&links[i] == (int64)&n)
 				return;
 		}
-		links.Add(&n);}
-	/*int GetLinkCount() {return links.GetCount() + sub.GetCount();}
-	NodeT& AtLink(int i) {if (i < links.GetCount()) return *links[i]; else return sub[i-links.GetCount()];}
-	*/
+		links.Add(&n);
+	}
+	
 	String AsString(int indent=0) {
 		String s;
 		for(int i = 0; i < indent; i++)
@@ -299,7 +298,6 @@ public:
 		}
 		
 		NodeT& operator*() {
-			//if (pos.GetCount() && pos[0] == 1) throw Error("Iterator at end");
 			return *LASTCUR;
 		}
 		

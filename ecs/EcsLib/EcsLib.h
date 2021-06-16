@@ -30,7 +30,6 @@
 #include "Component.h"
 #include "Component.inl"
 #include "Viewport.h"
-//#include "Shader.h"
 #include "Camera.h"
 #include "Model.h"
 #include "CommonComponents.h"

@@ -88,11 +88,6 @@ inline String HexStr(void* i) {return Format("0x%X", (int64)i);}
 
 typedef Image RawSysTexture;
 
-//template <class T, class V> T Get(V& v) {return v.template Get<T>();}
-//template <int I, class V> auto Get(V& v) {return v.template Get<I>();}
-//inline bool IsMap(const Value& v) { return v.GetType() == VALUEMAP_V; }
-//inline ValueMap GetMap(const Value& v) {return v;}
-
 template <class T> inline int64 ToInt(const T& o) {return o.ToInt();}
 template<> inline int64 ToInt(const bool& o) {return (int64)o;}
 template<> inline int64 ToInt(const int& o) {return (int64)o;}

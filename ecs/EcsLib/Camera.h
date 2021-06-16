@@ -13,7 +13,6 @@ class Viewable :
 public:
 	RTTI_COMP1(Viewable, HumanSink)
 	VIS_COMP_0_1(Human)
-	IFACE_CB(HumanSink);
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION

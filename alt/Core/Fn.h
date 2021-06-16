@@ -4,22 +4,17 @@
 NAMESPACE_UPP_BEGIN
 
 
-
 inline void* MemoryAlloc(size_t size) {return malloc(size);}
 inline void MemoryFree(void* ptr) {free(ptr);}
 
 
-//$-constexpr int findarg(const T& x, const T1& p0, ...);
-
 template <class T, class K>
-constexpr int findarg(const T& x, const K& k)
-{
+constexpr int findarg(const T& x, const K& k) {
 	return x == k ? 0 : -1;
 }
 
 template <class T, class K, typename... L>
-constexpr int findarg(const T& sel, const K& k, const L& ...args)
-{
+constexpr int findarg(const T& sel, const K& k, const L& ...args) {
 	if(sel == k)
 		return 0;
 	int q = findarg(sel, args...);
@@ -52,10 +47,6 @@ template<> inline bool  IsNull(const int& i)     { return i == INT_NULL; }
 template<> inline bool  IsNull(const int64& i)   { return i == INT64_NULL; }
 template<> inline bool  IsNull(const double& r)  { double d=r<0.0?-r:+r; return !(d < -DOUBLE_NULL); }
 template<> inline bool  IsNull(const bool& r  )  { return false; }
-
-
-
-
 
 
 

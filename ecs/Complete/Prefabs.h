@@ -5,16 +5,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-/*struct StandaloneWindow : EntityPrefab
-	<DirectWindow, Connector>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-		return components;
-    }
-};*/
-
 
 
 template <class T> void SimpleEntityApp() {
@@ -30,7 +20,6 @@ template <class T> void SimpleEntityApp() {
 		PoolRef pool = ents->GetRoot()->GetAddPool("app");
 		EntityRef app = pool->CreateEmpty();
 		app->Add<T>();
-		//pool->Add<ConnectAllInterfaces<T>>();
 		
 	    TimeStop t;
 	    while (mach.IsRunning()) {
@@ -50,8 +39,6 @@ template <class T> void SimpleEntityApp() {
 template <class T> void SimpleEngineMain(String title, bool start_machine=false) {
 	Machine& mach = GetActiveMachine();
 	
-	TODO
-	#if 0
 	
 	if (start_machine) {
 		ASSERT(!mach.IsRunning());
@@ -60,10 +47,8 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		    RegistrySystem& reg = *mach.Add<RegistrySystem>();
 			EntityStore& ents = *mach.Add<EntityStore>();
 		    mach.Add<ComponentStore>();
-		    mach.Add<ConnectorSystem>();
-		    mach.Add<HumanSystem>();
-		    mach.Add<DisplaySystem>();
-		    mach.Add<AudioSystem>();
+		    mach.Add<ConnectorStore>();
+		    mach.Add<CustomerSystem>();
 		    
 		    #if HAVE_SDL2
 		    mach.Add<SDL2GUI3DSystem>();
@@ -108,8 +93,10 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 			app->Find<Connector>()->ConnectAll();
 		#endif
 		
+		#ifdef flagVR
 		EntityRef cam = root->Create<CameraPrefab>();
 		cam->Find<Connector>()->ConnectAll(CONNAREA_POOL_CURRENT);
+		#endif
 		
 	    TimeStop t;
 	    while (mach.IsRunning()) {
@@ -126,7 +113,6 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 		mach.Stop();
 	}
 	
-	#endif
 }
 
 #define CONSOLE_APP_(x) CONSOLE_APP_MAIN {TS::SimpleEntityApp<x>();}

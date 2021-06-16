@@ -26,8 +26,6 @@ public:
 	AudioStream&		GetStream(AudCtx) override;
 	void				BeginStream(AudCtx) override;
 	void				EndStream(AudCtx) override;
-	//void				EmitAudioSource(double dt) override;
-	//void				Play(const RealtimeSourceConfig& config, Audio& aud) override;
 	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::AudioInput* GetOOSDL2() {return &*obj;}

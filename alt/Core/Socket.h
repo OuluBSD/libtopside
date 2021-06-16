@@ -1,10 +1,6 @@
 #ifndef _CoreAlt_Socket_h_
 #define _CoreAlt_Socket_h_
 
-/*#ifdef flagWIN32
-#include <ws2tcpip.h>
-#endif*/
-
 NAMESPACE_UPP_BEGIN
 
 

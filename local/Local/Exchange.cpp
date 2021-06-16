@@ -225,20 +225,11 @@ MetaExchangePoint::~MetaExchangePoint() {
 	DBG_DESTRUCT
 }
 
-/*void MetaExchangePoint::Init(ConnectorBase* comp) {
-	this->comp = comp;
-	
-}*/
-
 String MetaExchangePoint::ToString() const {
 	String s = GetDynamicName();
 	s << " [expts: " << pts.GetCount() << "]";
 	return s;
 }
-
-/*Ref<ExchangePoint> MetaExchangePoint::Add(TypeCls valdev_spec) {
-	TODO
-}*/
 
 void MetaExchangePoint::Remove(ExchangePoint* expt) {
 	for (auto iter = pts.begin(); iter; ++iter) {

@@ -6,19 +6,18 @@ String file_path;
 bool run_sound_gen;
 
 
-void DummyGenerator::OnError() {
+void DebugGenerator::OnError() {
 	GetEntity()->GetMachine().SetNotRunning();
 }
 
-void DummyGenerator::Initialize() {
+void DebugGenerator::Initialize() {
 	EntityRef e = GetEntity();
-	gen     = e->Find<DummySoundGeneratorComponent>();
+	gen     = e->Find<DebugSoundGeneratorComponent>();
 	audio   = e->Find<AudioSinkComponent>();
 	
-    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
 }
 
-void DummyGenerator::Uninitialize() {
+void DebugGenerator::Uninitialize() {
 	gen.Clear();
 	audio.Clear();
 	GetEntity()->Destroy();

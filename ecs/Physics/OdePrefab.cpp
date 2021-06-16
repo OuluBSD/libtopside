@@ -15,9 +15,6 @@ void StaticBox::OnAttach() {
 	model = mb;
 }
 
-
-
-
 NAMESPACE_TOPSIDE_END
 
 #endif

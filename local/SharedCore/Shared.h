@@ -106,7 +106,6 @@ public:
 	
 };
 
-void TestShared();
 
 
 

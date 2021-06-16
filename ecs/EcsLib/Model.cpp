@@ -39,27 +39,6 @@ void ModelComponent::GetModels(VectorRendModel& models) {
 	m.b.b = e->Find<Renderable>();
 }
 
-#if 0
-void ModelComponent::Signal() {
-	if (loader.model) {
-		bool can_pick = GetConnections().GetCount() == 1;
-		
-		for(InterfaceBase* conn: GetConnections()) {
-			ModelSource* in = (ModelSource*)conn;
-			TODO
-			/*Ref<PipelineData> pdata = in->GetData();
-			if (pdata) {
-				pdata->PutModel(loader.model, can_pick);
-			}*/
-		}
-		
-		loader.model.Clear();
-	}
-}
-#endif
-
-
-
 
 
 

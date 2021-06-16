@@ -41,7 +41,6 @@ public:
 	void Clear() {unused.Clear(); owned.Clear();}
 };
 
-//inline DrawCommandCache& GetDrawCommandCache() {return Single<DrawCommandCache>();}
 
 
 

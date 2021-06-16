@@ -179,14 +179,12 @@ public:
 
 class AudioDeviceStream : public AudioBase {
 	StreamCallbackData	scallback;
-	//AudioProxy			aud;
 	
 public:
 	Callback1<StreamCallbackArgs&>		WhenAction;
 	Callback1<void *>					WhenFinished;
 
-	AudioDeviceStream() {} //aud.Set(this);}
-	//AudioDeviceStream(const Audio &) {} //aud.Set(this);}
+	AudioDeviceStream() {}
 
 	void			Open(void* data,const StreamParameters& inparam,const StreamParameters& outparam);
 	void			Open(const StreamParameters& inparam,const StreamParameters& outparam);
@@ -194,8 +192,6 @@ public:
 	void			OpenDefault(int inchannels=0, int outchannels=2,SampleFormat format=SND_FLOAT32);
 
 	void			operator<<=(Callback1<StreamCallbackArgs&> cb)    {WhenAction = cb;}
-
-	//Audio&			GetAudio() {return aud;}
 	
 private:
 	void			SetFinishCallback();

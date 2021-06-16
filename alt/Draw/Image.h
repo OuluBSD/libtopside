@@ -17,26 +17,12 @@ typedef enum {
 class Image : Moveable<Image> {
 	
 public:
-	/*struct ImageDataRef {
-		ImgDataType type = IMGDATA_NULL;
-		void* obj = NULL;
-		const byte* pixels = NULL;
-		uint16 width = 0, height = 0, stride = 0, pitch = 0;
-		Point hotspot;
-		int refs = 0;
-		ImageDataRef() : hotspot(0,0) {}
-		~ImageDataRef() {Clear();}
-		void Inc() {refs++;}
-		void Dec() {refs--; if (refs <= 0) delete this;}
-		void Clear();
-	};*/
 	struct ImageDataRef {
 		SysImage img;
 		SysAccelImage accel;
 		Point hotspot;
 		int refs = 1;
 		
-		//ImageDataRef() : hotspot(0,0) {}
 		ImageDataRef(RawSysImage* raw) : img(raw), hotspot(0,0) {}
 		void Inc() {refs++;}
 		void Dec() {refs--; if (refs <= 0) delete this;}
@@ -67,7 +53,6 @@ public:
 	operator bool() const {return data;}
 	
 	void MakeSysAccel();
-	//GLuint GetTexture() const {if (!data) return 0; return data->texture;}
 	
 	
 private:

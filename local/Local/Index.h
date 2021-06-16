@@ -138,7 +138,6 @@ struct OrderedLinkedList {
 	bool PopBegin(dword& key, dword& value);
 };
 
-void OrderedLinkedListTest();
 
 
 

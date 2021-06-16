@@ -122,11 +122,6 @@ struct OdeSphere : public OdeScalarObject {
 };
 
 
-
-
-
-
-
 NAMESPACE_TOPSIDE_END
 
 #endif

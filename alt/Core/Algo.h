@@ -94,8 +94,6 @@ I FindIf(I begin, I end, std::function<T> fn) {
 
 
 
-//template <class T, class K> inline bool IsInheritedBy(const K& o) {return CastConstPtr<T>(&o);}
-//template <class T, class K> inline T& Cast(K& o) {return CastRef<T>(o);}
 
 #ifndef flagSTDRTTI
 template <class T, class S> T*			CastPtr(S* o) {
@@ -157,38 +155,10 @@ public:
 };
 
 
-#if 0
-
-struct AtomicBool {
-	std::atomic<bool> value;
-	AtomicBool() {value = 0;}
-	AtomicBool(bool b) {value = b;}
-	AtomicBool(const AtomicBool& ai) {value = (bool)ai.value;}
-	operator bool() {return value;}
-	bool operator = (bool b) {value = b; return b;}
-	//int operator++(int) {return value++;}
-	//int operator--(int) {return value--;}
-};
-
-struct AtomicInt {
-	std::atomic<int> value;
-	AtomicInt() {value = 0;}
-	AtomicInt(int i) {value = i;}
-	AtomicInt(const AtomicInt& ai) {value = (int)ai.value;}
-	operator int() const {return value;}
-	int operator = (int i) {value = i; return i;}
-	int operator++() {return ++value;}
-	int operator--() {return --value;}
-	int operator++(int) {return value++;}
-	int operator--(int) {return value--;}
-};
-
-#else
 using AtomicBool = std::atomic<bool>;
 using AtomicInt = std::atomic<int>;
-#endif
-
 using Atomic = AtomicInt;
+
 
 inline int AtomicInc(AtomicInt& a) {return ++a;}
 inline int AtomicDec(AtomicInt& a) {return --a;}
@@ -221,6 +191,7 @@ struct FakeAtomicInt : Moveable<FakeAtomicInt> {
 	}
 	int Get() const {return value;}
 };
+
 
 NAMESPACE_UPP_END
 

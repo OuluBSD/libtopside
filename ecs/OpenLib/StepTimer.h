@@ -9,8 +9,6 @@ class StepTimer {
 	
 public:
 	
-	
-	
 	void ResetElapsedTime();
 	void Tick(Callback cb);
 	double GetElapsedSeconds() const;

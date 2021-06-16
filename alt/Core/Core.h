@@ -49,6 +49,7 @@
 #include "Math.h"
 #include "Callback.h"
 #include "Util.h"
+#include "Sort.h"
 #include "Chrono.h"
 #include "Geom.h"
 #include "Graph.h"

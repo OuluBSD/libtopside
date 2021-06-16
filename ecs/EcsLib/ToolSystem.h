@@ -4,7 +4,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-////////////////////////////////////////////////////////////////////////////////
 // ToolSystemBase
 // Base abstract class for all ToolSystems
 class ToolSystemBase : public SystemBase {

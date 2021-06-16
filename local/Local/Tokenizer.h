@@ -300,56 +300,6 @@ public:
 	
 	
 };
-/*
-class Tokenizer : public ErrorSource {
-	FileLocation loc;
-	int cursor = 0;
-	String input;
-	bool skip_comments = false;
-	bool skip_newlines = false;
-	bool skip_separateunary = false;
-	int pass_cursor = 0;
-	
-	int tab_size = 4;
-	
-protected:
-	
-	Vector<Token> tokens;
-	
-	void Next() {loc.col++; cursor++;}
-	Token& Add(int token_id);
-	void AppendString(String& s);
-	
-	
-public:
-	Tokenizer();
-	bool Process(String str, String path);
-	void SkipComments(bool b=true) {skip_comments = b;}
-	void SkipNewLines(bool b=true) {skip_newlines = b;}
-	void SkipSeparateUnary(bool b=true) {skip_separateunary = b;}
-	void SetTabSize(int i) {tab_size = i;}
-	
-	void Dump() const {DUMPC(tokens);}
-	
-	const Vector<Token>& GetTokens() const {return tokens;}
-	FileLocation GetLocation() const {return loc;}
-	
-	void Remove(int i) {tokens.Remove(i);}
-	//Token& Insert(int i, int type);
-	
-	int GetPassCursor() const {return pass_cursor;}
-	void PassToken(int tk);
-	bool IsToken(int tk);
-	bool TryPassToken(int tk);
-	String ReadString();
-	String ReadId();
-	int64 ReadInt();
-	double ReadDouble();
-	
-	
-	
-};
-*/
 
 class TokenizerCParser {
 	const Vector<Token>* tokens = NULL;

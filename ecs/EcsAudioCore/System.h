@@ -69,7 +69,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
 	AudioStream&	GetStream(AudCtx) override {TODO}
@@ -105,7 +104,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//const AudioHeader& GetHeader() const override;
 	
 	// AudioSource
 	AudioStream&	GetStream(AudCtx) override;

@@ -50,9 +50,6 @@ void MixerChannelInputComponent::Uninitialize() {
 	
 }
 
-/*const AudioHeader& MixerChannelInputComponent::GetHeader() const {
-	TODO
-}*/
 
 
 
@@ -68,9 +65,6 @@ void MixerChannelOutputComponent::Uninitialize() {
 	
 }
 
-/*const AudioHeader& MixerChannelOutputComponent::GetHeader() const {
-	TODO
-}*/
 
 AudioStream& MixerChannelOutputComponent::GetStream(AudCtx) {
 	TODO
@@ -126,9 +120,7 @@ Audio& MixerAudioSourceComponent::GetValue(AudCtx) {
 	TODO
 }
 
-/*void MixerAudioSourceComponent::Play(const RealtimeSourceConfig& config, Audio& aud) {
-	
-}*/
+
 
 
 

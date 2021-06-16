@@ -168,7 +168,6 @@ void ActionPlannerWrapper::OnResize() {
 String ActionPlannerWrapper::GetWorldstateDescription( const WorldState& ws )
 {
 	String str;
-	//str += ws.GetName() + ": ";
 	for(int i = 0; i < atoms.GetCount(); i++) {
 		if (ws.using_act.GetCount() <= i) break;
 		if (ws.using_act[i]) {

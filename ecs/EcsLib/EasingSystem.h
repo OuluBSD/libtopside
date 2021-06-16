@@ -28,10 +28,7 @@ public:
 };
 
 
-////////////////////////////////////////////////////////////////////////////////
-// EasingSystem
-// Manages the Easing component, which allows objects with a Transform component to be
-// interpolated to new position/orientations.
+
 class EasingSystem : public System<EasingSystem>
 {
 	void Visit(RuntimeVisitor& vis) override {}

@@ -191,7 +191,7 @@ using IsBaseOf = std::is_base_of<Base, T>;
 
 template<bool... Bs>
 using AllTrue = std::is_same<bool_pack<Bs..., true>, bool_pack<true, Bs...>>;
-////////////////////////////////////////
+
 
 template <typename Base, typename... Ts>
 using AllBaseOf = AllTrue<std::is_base_of<Base, Ts>::value...>;

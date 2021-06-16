@@ -27,21 +27,6 @@ void UppAssembly::AddPath(String dir) {
 			}
 		}
 	}
-	
-	
-	/*FindFile ff;
-	
-	if (ff.Search(AppendFileName(dir, "*"))) {
-		do {
-			if (ff.IsDirectory()) {
-				String upp_file = AppendFileName(ff.GetPath(), ff.GetName() + ".upp");
-				if (FileExists(upp_file)) {
-					prj_paths.Add(ff.GetName(), upp_file);
-				}
-			}
-		}
-		while (ff.Next());
-	}*/
 }
 
 

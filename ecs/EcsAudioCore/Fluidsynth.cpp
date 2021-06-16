@@ -54,6 +54,7 @@ void FluidsynthSystem::Start() {
 
 void FluidsynthSystem::Update(double dt) {
 	
+	TODO
 	#if 0
 	// lookup number of audio and effect (stereo-)channels of the synth
     // see "synth.audio-channels", "synth.effects-channels" and "synth.effects-groups" settings respectively
@@ -137,19 +138,6 @@ void FluidsynthComponent::Initialize() {
 void FluidsynthComponent::Uninitialize() {
 	
 }
-
-/*void FluidsynthComponent::RecvMidi(const MidiFrame& e) {
-	TODO
-}
-
-void FluidsynthComponent::Configure(const MidiIO::File& file) {
-	if (mode == MODE_TRACK_NUM) {
-		if (track_i >= 0 && track_i < file.GetTrackCount()) {
-			Ref<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
-			fs_sys->Assign(file, track_i, this);
-		}
-	}
-}*/
 
 void FluidsynthComponent::OpenTrackListener(int track_i) {
 	mode = MODE_TRACK_NUM;

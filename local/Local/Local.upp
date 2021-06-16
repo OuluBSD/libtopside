@@ -6,6 +6,7 @@ uses
 	SharedCore;
 
 file
+	Copying,
 	Local.h,
 	Before.h,
 	Compat.h,
@@ -31,8 +32,6 @@ file
 	Util.cpp,
 	Process.h,
 	Process.cpp,
-	Heap.h,
-	Heap.cpp,
 	Math.h,
 	Math.cpp,
 	FastMath.cpp,
@@ -71,9 +70,5 @@ file
 	Url.h,
 	Url.cpp,
 	Debugging.h,
-	Debugging.cpp,
-	Trash readonly separator,
-	Formats.h,
-	Formats.cpp,
-	_ readonly separator;
+	Debugging.cpp;
 

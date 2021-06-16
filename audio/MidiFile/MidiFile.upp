@@ -1,0 +1,19 @@
+description "\377128,128,0";
+
+uses
+	Local;
+
+file
+	Copying,
+	MidiFile.h,
+	Binasc.h,
+	Binasc.cpp,
+	Event.h,
+	Event.cpp,
+	EventList.h,
+	EventList.cpp,
+	Message.h,
+	Message.cpp,
+	File.h,
+	File.cpp;
+

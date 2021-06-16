@@ -32,15 +32,6 @@ protected:
 		LocalSourceStream(CustomerComponent* par) :
 			par(*par),
 			SimpleOrderStream(par->src_value) {}
-		/*bool			IsOpen() const override {TODO}
-		bool			Open(int fmt_idx) override {TODO}
-		void			Close() override {par.src_value.ClearBuffer();}
-		bool			IsEof() override {return false;}
-		bool			ReadFrame() override {return par.ReadFrame();}
-		bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
-		bool			ProcessOtherFrame() override {return false;}
-		void			ClearPacketData() override {}
-		bool			LoadFileAny(String path) override {TODO}*/
 	};
 	
 	LocalSinkValue			sink_value;
@@ -52,8 +43,6 @@ public:
 	RTTI_COMP3(CustomerComponent, ReceiptSink, OrderSource, GeneratorComponentBase)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
-	IFACE_CB(OrderSource)
-	IFACE_CB(ReceiptSink)
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("loop.connected")

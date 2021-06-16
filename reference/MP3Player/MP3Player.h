@@ -2,6 +2,7 @@
 #define _MP3Player_MP3Player_h_
 
 #include <Complete/Complete.h>
+#include <EcsDebug/EcsDebug.h>
 using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -9,34 +10,34 @@ NAMESPACE_TOPSIDE_BEGIN
 #if 0
 using AudioSinkComponent = PortaudioSinkComponent;
 #else
-using AudioSinkComponent = DummyAudioSinkComponent;
+using AudioSinkComponent = DebugAudioSinkComponent;
 #endif
 
 
-class DummyGenerator :
-	public Component<DummyGenerator>
+class DebugGenerator :
+	public Component<DebugGenerator>
 {
 	VIS_COMP_0_0
 	
-	RefT_Entity<DummySoundGeneratorComponent> gen;
+	RefT_Entity<DebugSoundGeneratorComponent> gen;
 	RefT_Entity<AudioSinkComponent> audio;
 	
 public:
-	typedef DummyGenerator CLASSNAME;
-	DummyGenerator() {}
+	typedef DebugGenerator CLASSNAME;
+	DebugGenerator() {}
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & gen & audio;}
 	
-	COPY_PANIC(DummyGenerator);
+	COPY_PANIC(DebugGenerator);
 	
 };
 
-PREFAB_BEGIN(DummyGeneratorPrefab)
+PREFAB_BEGIN(DebugGeneratorPrefab)
 	AudioSinkComponent,
-	DummySoundGeneratorComponent,
-	DummyGenerator
+	DebugSoundGeneratorComponent,
+	DebugGenerator
 PREFAB_END
 
 

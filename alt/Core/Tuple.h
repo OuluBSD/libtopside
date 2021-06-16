@@ -4,8 +4,6 @@
 NAMESPACE_UPP_BEGIN
 
 
-// TODO: replace... copied from U++ for compatibility reasons in a hurry
-#if 1
 
 template <int N, typename... T>
 struct TupleN;
@@ -33,10 +31,7 @@ struct TupleN<1, A>
 	void  Serialize(Stream& s)                { s % a; }
 	
 	int   GetCount() const                    { return 1; }
-
-	//Object Get(int i) const                    { ASSERT(i == 0); return a; }
-	//void  Set(int i, const Object& v)          { ASSERT(i == 0); a = v; }
-
+	
 	TupleN(const A& a) : a(a) {}
 	TupleN() {}
 	
@@ -152,10 +147,6 @@ public:
 
 	String ToString() const                   { String h = "("; Base::ToString(h); h << ")"; return h; }
 	
-	//Object Get(int i) const                    { return Base::Get(i); }
-	//void  Set(int i, const Object& v)          { return Base::Set(i, v); }
-	//ObjectArray GetArray() const               { ObjectArray va; for(int i = 0; i < GetCount(); i++) va.Add(Get(i)); return va; }
-	//void  SetArray(const ObjectArray& va)      { for(int i = 0; i < va.GetCount(); i++) Set(i, va[i]); }
 	
 	Tuple() {}
 	Tuple(const Args... args) : Base(args...) {};
@@ -166,20 +157,11 @@ Tuple<Args...> MakeTuple(const Args... args) {
 	return Tuple<Args...>(args...);
 }
 
-#endif
 
 
 
 
 
-
-
-
-
-/*template <class First, class T, class R>
-Tuple<First, T::> TupleCat(First f, T b) {
-	//return Tuple<First, decltype(b.b)>(f.a, b.b);
-}*/
 
 template <class A, class B>
 struct RefPair : Moveable<RefPair<A,B>> {

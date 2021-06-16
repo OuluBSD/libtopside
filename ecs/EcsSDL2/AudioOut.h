@@ -32,15 +32,6 @@ public:
 	AudioFormat		GetFormat(AudCtx) override;
 	Audio&			GetValue(AudCtx) override;
 	
-	/*SystemAudio&	BeginPlay() override {return obj ? obj->GetSystemAudio() : empty_aud;}
-	void			CommitPlay() override {}
-	void			UndoPlay() override {ASSERT_(0, "UndoPlay is not implemented");}
-	bool			IsAudioSampleFloating() override {return obj ? obj->IsSampleFloating() : 0;}
-	int				GetAudioSampleRate() override {return obj ? obj->GetSampleRate() : 0;}
-	int				GetAudioChannels() override {return obj ? obj->GetChannels() : 0;}
-	int				GetAudioFrequency() override {return obj ? obj->GetFrequency() : 0;}
-	int				GetAudioSampleSize() override {return obj ? obj->GetSampleSize() : 0;}*/
-	
 	OOSDL2::Component& GetObj() {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}
 	

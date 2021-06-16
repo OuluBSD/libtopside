@@ -3,9 +3,8 @@
 
 NAMESPACE_UPP_BEGIN
 
-inline
-	int SignificantBits(dword x)
-{ // basically log2(x) + 1 except that for 0 this is 0, number of significant bits of x
+inline int SignificantBits(dword x) {
+	// basically log2(x) + 1 except that for 0 this is 0, number of significant bits of x
 #ifdef COMPILER_MSC
 	DWORD index;
 	return _BitScanReverse(&index, x) ? index + 1 : 0;
@@ -14,9 +13,8 @@ inline
 #endif
 }
 
-inline
-	int SignificantBits64(uint64 x)
-{ // basically log2(x) + 1 except that for 0 this is 0, number of significant bits of x
+inline int SignificantBits64(uint64 x) {
+	// basically log2(x) + 1 except that for 0 this is 0, number of significant bits of x
 #ifdef COMPILER_MSC
 #ifdef CPU_64
 	DWORD index;

@@ -23,7 +23,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//void EmitController(double dt) override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
 	HumanStream&		GetStream(HumCtx) override {TODO}
 	void				BeginStream(HumCtx) override {TODO}

@@ -24,7 +24,7 @@ public:
 	mat4 barrel_to_ctrl;
 };
 
-////////////////////////////////////////////////////////////////////////////////
+
 // ShootingInteractionSystem
 // This ToolSystem manages the Gun tool which allows you to shoot balls in the 3D scene
 

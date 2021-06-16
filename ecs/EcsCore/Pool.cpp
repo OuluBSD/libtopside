@@ -6,7 +6,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
 Machine& GetPoolMachine(PoolRef pool) {return pool->GetMachine();}
-//EntityStoreRef GetMachineEntityStore(Machine& m) {return m.Get<EntityStore>();}
 
 
 
@@ -150,19 +149,6 @@ void Pool::PruneFromContainer() {
 void Pool::InitializeComponent(ConnectorBase& comp) {
 	comp.Initialize();
 }
-
-/*void Pool::AddConnectEverything() {
-	Add<ConnectAllDevInterfaces<CenterSpec>>();
-}
-
-void Pool::ConnectEverything() {
-	Find<ConnectAllDevInterfaces<CenterSpec>>()->Update();
-}
-
-void Pool::AddConnectEverythingWithAccel() {
-	Add<ConnectAllDevInterfaces<CenterSpec>>();
-	Add<ConnectAllDevInterfaces<AccelSpec>>();
-}*/
 
 void Pool::Dump() {
 	LOG(GetTreeString());

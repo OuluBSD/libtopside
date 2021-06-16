@@ -12,9 +12,7 @@ void SDL2FontComponent::Uninitialize() {
 	fnt.Clear();
 }
 
-/*void SDL2FontComponent::EmitStatic() {
-	TODO
-}*/
+
 
 
 

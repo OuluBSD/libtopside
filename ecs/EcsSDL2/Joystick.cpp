@@ -12,9 +12,7 @@ void SDL2JoystickComponent::Uninitialize() {
 	obj.Clear();
 }
 
-/*void SDL2JoystickComponent::EmitController(double dt) {
-	TODO
-}*/
+
 
 
 

@@ -175,28 +175,6 @@ void PortaudioSinkComponent::Uninitialize() {
 	obj.Clear();
 }
 
-#if 0
-void PortaudioSinkComponent::RecvMedia(Media& media) {
-	if (obj /*&& obj->WriteAvailable()*/) {
-		Audio& aud = media.GetAudio();
-		int frames = aud.GetQueueSize();
-		AudioFormat src_fmt = aud.GetFormat();
-		AudioFormat dst_fmt = obj->GetFormat();
-		if (src_fmt == dst_fmt) {
-			int size = src_fmt.sample_rate * src_fmt.channels;
-			tmp.SetCount(size);
-			for(int i = 0; i < frames; i++) {
-				float* f = tmp.Begin();
-				aud.Get(f, size * src_fmt.var_size);
-				obj->Put(f, src_fmt.sample_rate, true);
-			}
-		}
-		else Panic("Invalid sample type");
-	}
-	TODO
-}
-#endif
-
 AudioFormat PortaudioSinkComponent::GetFormat(AudCtx) {
 	TODO
 }

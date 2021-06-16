@@ -4,7 +4,6 @@ uses
 	Core;
 
 file
-	Copying,
 	VirtualGui3D.h,
 	Local.h,
 	VirtualGuiAlt.cpp,

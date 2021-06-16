@@ -23,7 +23,6 @@ public:
 	
 	void Initialize() override;
 	void Uninitialize() override;
-	//void EmitStatic() override;
 	StaticStream&		GetStream(StcCtx) override {TODO}
 	void				BeginStream(StcCtx) override {TODO}
 	void				EndStream(StcCtx) override {TODO}

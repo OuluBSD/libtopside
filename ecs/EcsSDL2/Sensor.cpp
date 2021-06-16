@@ -12,9 +12,7 @@ void SDL2SensorComponent::Uninitialize() {
 	obj.Clear();
 }
 
-/*void SDL2SensorComponent::EmitController(double dt) {
-	TODO
-}*/
+
 
 
 

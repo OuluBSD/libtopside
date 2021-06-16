@@ -12,9 +12,7 @@ void SDL2GameControllerComponent::Uninitialize() {
 	obj.Clear();
 }
 
-/*void SDL2GameControllerComponent::EmitController(double dt) {
-	TODO
-}*/
+
 
 
 

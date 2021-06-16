@@ -54,32 +54,6 @@ public:
 };
 
 
-// Use just CastPtr etc.
-
-/*
-#define RTTICastable public RTTICaster
-
-class RTTICaster :
-	RTTIBase
-{
-public:
-	
-	template <typename T>
-	T* Cast() {
-		if (Is(T::TypeIdClass()))
-			return (T*)this;
-		
-		return nullptr;
-	}
-	template <typename T>
-	const T* Cast() const {
-		if (Is(T::TypeIdClass()))
-			return (T*)this;
-		
-		return nullptr;
-	}
-	
-};*/
 
 class RTTIWrapper {
 	const RTTI* rtti;
@@ -97,17 +71,6 @@ public:
 	operator const RTTI&() const {return *rtti;}
 	
 };
-
-/*
-#define RTTI_Static(Type)                                              \
-    public:                                                            \
-        static const char* GetTypeName() {return #Type;}               \
-        static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
-		void* GetBasePtr(const char* name) const override {return strcmp(name, #Type) == 0 ? this : 0;} \
-		void* GetBasePtr(TypeCls id) const override {return id == TypeIdClass() ? this : 0;} \
-		const UPP::RTTI* GetTypeInfo(TypeCls id) const override {return nullptr;} \
-		UPP::RTTI* GetTypeInfo(TypeCls id) override {return nullptr;}
-*/
 
 
 #define IF_NAME(Type) if (strcmp(id, GetTypeName()) == 0) return (Type*)this;

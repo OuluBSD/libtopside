@@ -144,7 +144,7 @@ public:
 
 
 
-/*
+
 template <class T>
 class TreeArray {
 	
@@ -196,7 +196,7 @@ public:
 			for(int i = 0; i < branch.GetCount(); i++)
 				branch[i].down = this;
 	}
-};*/
+};
 
 
 

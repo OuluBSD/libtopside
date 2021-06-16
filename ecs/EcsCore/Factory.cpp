@@ -53,7 +53,6 @@ const Vector<EcsFactory::Link>& EcsFactory::GetSinkComponents(TypeCls src_comp) 
 
 void EcsFactory::GetComponentActions(const Eon::WorldState& src, const Vector<Link>& sink_links, Vector<Eon::Action>& acts) {
 	auto& m = CompDataMap();
-	//CompData& src_cd = m.Get(src.GetComponent());
 	
 	Eon::Action a;
 	a.Pre() = src;
@@ -63,7 +62,7 @@ void EcsFactory::GetComponentActions(const Eon::WorldState& src, const Vector<Li
 		
 		CompData& sink_cd = m.Get(sink);
 		
-		a.Post() = src; 
+		a.Post() = src;
 		a.Post().SetTypes(link.dst_comp, link.iface_src, link.iface_sink);
 		
 		if (sink_cd.action_fn(a)) {

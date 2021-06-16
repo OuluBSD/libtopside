@@ -6,7 +6,6 @@ uses
 	TemplatesCore;
 
 file
-	Copying,
 	TODO.txt,
 	EcsCore.h,
 	Defs.h,
@@ -30,33 +29,7 @@ file
 	Pool.cpp,
 	EntityVisitor.h,
 	EntityVisitor.cpp,
-	Components readonly separator,
 	ConnManual.h,
 	ConnManual.cpp,
-	ConnAny.h,
-	Trash readonly separator,
-	ConnPoolComps.h,
-	ConnPoolComps.inl highlight cpp,
-	ConnDevComps.h,
-	ConnDevComps.inl highlight cpp,
-	Overlap.h,
-	Overlap.cpp,
-	Action.h,
-	Action.cpp,
-	ActionSystem.h,
-	ActionSystem.cpp,
-	AudioSystem.h,
-	AudioSystem.cpp,
-	VideoSystem.h,
-	VideoSystem.cpp,
-	TransformUtil.h,
-	Interface.h,
-	Interface.cpp,
-	Controller.h,
-	Controller.cpp,
-	Listener.h,
-	Quadtree.h,
-	Quadtree.cpp,
-	Octree.h,
-	Octree.cpp;
+	ConnAny.h;
 

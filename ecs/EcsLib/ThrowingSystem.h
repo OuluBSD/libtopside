@@ -25,7 +25,7 @@ public:
 	float scale = 0.25f;
 };
 
-////////////////////////////////////////////////////////////////////////////////
+
 // ThrowingInteractionSystem
 // This ToolSystem manages the Throwing tool which allows you to throw baseballs in 3D scene
 class ThrowingInteractionSystem : public ToolSystem<ThrowingInteractionSystem, ThrowingComponent> {

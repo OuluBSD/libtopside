@@ -3,7 +3,8 @@ description "Digital audio workstation\377B128,128,0";
 flags(FREEBSD) BUILTIN_PORTMIDI;
 
 uses
-	Local;
+	Local,
+	MidiFile;
 
 uses((BUILTIN_PORTAUDIO | (WIN32&MSC))) ports/portaudio;
 
@@ -18,24 +19,12 @@ library(!(BUILTIN_PORTMIDI | (WIN32&MSC) | FREEBSD)) portmidi;
 library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 
 file
-	Copying,
 	AudioCore.h,
 	Internal.h,
 	Midi.h,
 	Audio readonly separator,
 	Record.h,
 	Record.cpp,
-	"Midi File" readonly separator,
-	Binasc.h,
-	Binasc.cpp,
-	Event.h,
-	Event.cpp,
-	EventList.h,
-	EventList.cpp,
-	MidiFile.h,
-	MidiFile.cpp,
-	Message.h,
-	Message.cpp,
 	"Midi Synth" readonly separator,
 	Fluidsynth.h,
 	Fluidsynth.cpp,

@@ -4,7 +4,8 @@ uses
 	Music,
 	AudioCore,
 	Shadertoy,
-	EcsEssential;
+	EcsEssential,
+	EcsLocal;
 
 uses(NEVER) Physics;
 

@@ -1,36 +1,28 @@
 #include <stdio.h>
 
 #if defined flagWIN32 && defined flagMSC
-#include <corecrt_io.h>
+	#include <corecrt_io.h>
 #endif
 
 #ifdef flagPOSIX
-
-#include <sys/types.h>
-#include <dirent.h>
-
-#include <unistd.h>
-#include <sys/types.h>
-#include <pwd.h>
-
+	#include <sys/types.h>
+	#include <dirent.h>
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <pwd.h>
 #endif
 
 #include <sys/stat.h>
 
 
 #ifdef flagWIN32
-
-#define _WINSOCKAPI_
-#include <windows.h>
-#include <fileapi.h>
-//#include <errno.h>
-#include <io.h> // _findfirst and _findnext set errno iff they return -1 
-#include <stdlib.h>
-#include <string.h>
-
-
+	#define _WINSOCKAPI_
+	#include <windows.h>
+	#include <fileapi.h>
+	#include <io.h>
+	#include <stdlib.h>
+	#include <string.h>
 #endif
-
 
 
 #include "Core.h"
@@ -528,30 +520,6 @@ String TrimBoth(String s) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 String Join(const Vector<String>& v, String join_str, bool ignore_empty) {
 	String out;
 	for (const String& s : v) {
@@ -565,66 +533,5 @@ String Join(const Vector<String>& v, String join_str, bool ignore_empty) {
 }
 
 
-
-
 NAMESPACE_UPP_END
 
-
-
-#ifdef flagMAIN
-using namespace SDK;
-
-CONSOLE_APP_MAIN {
-	ASSERT(SignificantBits(0xF) == 4);
-	ASSERT(SignificantBits64(0xF) == 4);
-	
-	CombineHash ch;
-	ch.Put(777999777).Put(123).Put64(0xF0F0F0F0F0F0F0F0);
-	dword hash = ch;
-	ASSERT(hash == 1894504625);
-	
-	ASSERT(min(1.0f, 2.0f) == 1.0f);
-	ASSERT(max(1.0f, 2.0f) == 2.0f);
-	ASSERT(fabs(-1.0) == 1.0);
-	
-	DUMP(Random());
-	DUMP(Randomf());
-	
-	int arr0[10];
-	for(int i = 0; i < 10; i++) arr0[i] = i;
-	ASSERT(*FindIf(arr0, arr0 + 10, [](int i) -> bool {return i == 6;}) == 6);
-	
-	// String
-	
-	
-	
-	Vector<int> v0;
-	for(int i = 0; i < 10; i++) v0.Add(i);
-	
-	Uuid uuid;
-	uuid.New();
-	DUMP(uuid);
-	
-	
-	Object value = ParseJSON(
-		"{\"menu\": {\n"
-		"  \"id\": \"file\",\n"
-		"  \"value\": \"File\",\n"
-		"  \"popup\": {\n"
-		"    \"menuitem\": [\n"
-		"      {\"value\": \"New\", \"onclick\": \"CreateNewDoc()\"},\n"
-		"      {\"value\": \"Open\", \"onclick\": \"OpenDoc()\"},\n"
-		"      {\"value\": \"Close\", \"onclick\": \"CloseDoc()\"}\n"
-		"    ]\n"
-		"  }\n"
-		"}}\n");
-	LOG(GetObjectTreeString(value));
-	
-	
-	
-	TestShared();
-	OrderedLinkedListTest();
-	EncryptionTest();
-}
-
-#endif

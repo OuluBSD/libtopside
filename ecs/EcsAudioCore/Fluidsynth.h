@@ -35,8 +35,6 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void OpenTrackListener(int track_i);
-	//void RecvMidi(const MidiFrame& e) override;
-	//void Configure(const MidiIO::File& file) override;
 	
 	// AudioSource
 	AudioStream&		GetStream(AudCtx) override;
@@ -57,9 +55,7 @@ using FluidsynthComponentRef = RefT_Entity<FluidsynthComponent>;
 
 
 PREFAB_BEGIN(CompleteFluidsynth)
-		//MixerChannelContextConnector,
 		FluidsynthComponent
-		//MixerChannelOutputComponent
 PREFAB_END;
 
 

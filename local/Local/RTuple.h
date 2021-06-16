@@ -57,8 +57,6 @@ struct RTuple<First> : Moveable<RTuple<First>> {
 	
 	First& operator->() {return a;}
 	template <class T> T* Find() const {
-		//if (AsTypeId(&a) == AsTypeCls<T>())
-		//	return (T*)&a;
 		if (AsTypeCls<First>() == AsTypeCls<T>())
 			return (T*)&a;
 		return NULL;

@@ -224,6 +224,4 @@ errno_t getenv_s(
 
 
 
-
-
 #endif

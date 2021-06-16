@@ -59,12 +59,6 @@ inline void MemorySet(void* dst, int value, int len) {
 
 void MemoryMoveSlow(void* dst, const void* src, int len);
 
-/*int CharInt(const char* s);
-int64 CharInt64(const char* s);
-uint64 CharIntU64(const char* s);
-const char* IntChar(char* p, int bufsize, int x);
-const char* IntChar64(char* p, int bufsize, int64 x);
-const char* IntCharU64(char* p, int bufsize, uint64 x);*/
 
 
 template <class T>
@@ -184,7 +178,7 @@ public:
 	void Replace(int i, int len, const StringT& value);
 	
 	int GetCount() const { return count; }
-	int GetLength() const { return count; } // lazy... not utf-8 correct
+	int GetLength() const { return count; }
 	
 	bool IsEmpty() const { return count == 0; }
 	bool IsString() const {TODO_}
@@ -408,16 +402,12 @@ String FromCString(const char *s, const char *lim);
 String AsCString(const char *s, const char *lim);
 String AsCString(const char *s);
 String AsCString(const String& s);
-
-// Expecting sys-wide UTF-8... (is checked?)
 WString FromUtf8(const String& x);
 
 
 template <class T> String AsTypeString() {return AsTypeName<T>();}
 
 int CompareNoCase(String a, String b);
-
-
 
 
 struct RtErr {

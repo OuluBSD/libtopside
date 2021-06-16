@@ -243,26 +243,6 @@ bool CParser::IsEnd() const {
 	return pos.cursor >= input.GetCount();
 }
 
-/*FileLocation CParser::GetLocation() const {
-	FileLocation loc;
-	loc.col = 1;
-	loc.line = 1;
-	loc.file = "CParser";
-	const char* it = input.Begin();
-	const char* end = it + std::max(0, pos);
-	while (it != end) {
-		char chr = *it++;
-		if (chr == '\n') {
-			loc.col = 1;
-			loc.line++;
-		}
-		else {
-			loc.col++;
-		}
-	}
-	return loc;
-}*/
-
 bool CParser::GetId(String& str) {
 	IdParser ip(input, pos.cursor);
 	if (ip.is_valid) {

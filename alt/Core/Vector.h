@@ -53,7 +53,6 @@ public:
 	One() {}
 	One(T* obj) : obj(obj) {}
 	One(One&& o) {obj = o.obj; o.obj = NULL;}
-	//One(const One& o) {if (o) obj = new T(*o.obj);}
 	~One() { Clear(); }
 
 	T& Create() { Attach(new T()); return *obj;}
@@ -99,7 +98,6 @@ public:
 	Optional(const Optional& opt) {if (opt.obj) this->obj = new T(*opt.obj);}
 	Optional(const T& obj) {this->obj = new T(obj);}
 	Optional(const Nuller& n) {}
-	//Optional(const std::nullopt_t& n) {}
 	Optional(const NullOpt& n) {}
 	Optional(T* obj) : obj(obj) {}
 	Optional(const Pick<T>& n) {*this = n;}
@@ -124,7 +122,9 @@ public:
 template <class T>
 Optional<T> MakeOptional(T value) {Optional<T> o; o = value; return o;}
 
-/*template <class T>
+
+
+template <class T>
 class Unique {
 	static One<T> obj;
 
@@ -138,7 +138,7 @@ public:
 	void Reset() {Clear(); Create();}
 	bool IsEmpty() const { return obj.IsEmpty(); }
 	T* operator->() {return obj.Get();}
-};*/
+};
 
 
 
@@ -231,10 +231,6 @@ public:
 	Iterator End() {return Iterator(data+count);}
 	ConstIterator Begin() const {return ConstIterator(data);}
 	ConstIterator End() const {return ConstIterator(data+count);}
-	/*Iterator begin() {return Begin();}
-	Iterator end() {return End();}
-	ConstIterator begin() const {return Begin();}
-	ConstIterator end() const {return End();}*/
 	K* begin() {return GetData();}
 	K* end() {return GetData() + GetCount();}
 	const K* begin() const {return GetData();}
@@ -377,7 +373,6 @@ public:
 		K* cur = it.Get();
 		int pos = cur - begin;
 		Remove(pos);
-		// TODO: Check this
 	}
 	void Remove(const Iterator& it, const Iterator& end) {
 		K* begin = data;
@@ -388,7 +383,6 @@ public:
 		int len = pos1 - pos0;
 		if (!len) return;
 		Remove(pos0, len);
-		// TODO: Check this
 	}
 	void Remove(const Vector<int>& sorted_list) {Remove(sorted_list.Begin(), sorted_list.GetCount());}
 	void Remove(const int* sorted_list, int n) {
@@ -884,7 +878,7 @@ public:
 	V& operator[](int i) {return GetPos(i);}
 	
 	V& Top() { ASSERT(GetCount() > 0); return values.Top(); }
-	//V Pop() {V v(values.Top()); Remove(values.GetCount()-1); return v;}
+	V Pop() {V v(std::move(values.Top())); Remove(values.GetCount()-1); return v;}
 
 	int Find(const K& key) const { return keys.Find(key); }
 	Iterator FindIterator(const K& key) const { Iterator it = Begin(); int pos = Find(key); it += pos == -1 ? GetCount() : pos; return it;}
@@ -900,7 +894,7 @@ public:
 		K* begin = keys.Get();
 		K* cur = &it.Get().first;
 		int pos = cur - begin;
-		// TODO: Check this
+		ASSERT(pos >= 0 && pos <= GetCount());
 		return pos;
 	}
 	void RemoveKey(const K& key) {int i = Find(key); if (i >= 0) Remove(i);}
@@ -933,91 +927,12 @@ public:
 	
 };
 
-template <class K, class V> using VectorMap = Map<K, V, Vector>;
-template <class K, class V> using ArrayMap = Map<K, V, Array>;
+template <class K, class V> using VectorMap			= Map<K, V, Vector>;
+template <class K, class V> using ArrayMap			= Map<K, V, Array>;
+template <class K, class V> using ArrayMapOrdered	= ArrayMap<K, V>;
 
-/*template <class K, class V>
-class ArrayMapOrdered {
-	
-};*/
-template <class K, class V> using ArrayMapOrdered = ArrayMap<K, V>;
-
-inline Vector<String> Split(String to_split, String split_str, bool ignore_empty=true) {
-	Vector<String> v;
-	
-	if (to_split.IsEmpty() || split_str.IsEmpty())
-		return v;
-	
-	int i = to_split.Find(split_str);
-	if (i == -1)
-		v.Add(to_split);
-	else {
-		int j = 0;
-		while (i >= 0) {
-			String str = to_split.Mid(j, i - j);
-			if (str.GetCount() == 0) {
-				if (!ignore_empty)
-					v.Add(str);
-			}
-			else {
-				v.Add(str);
-			}
-			i += split_str.GetCount();
-			j = i;
-			i = to_split.Find(split_str, i);
-		}
-		i = to_split.GetCount();
-		String str = to_split.Mid(j, i - j);
-		if (str.GetCount() == 0) {
-			if (!ignore_empty)
-				v.Add(str);
-		}
-		else {
-			v.Add(str);
-		}
-	}
-	
-	return v;
-}
-
-inline Vector<WString> Split(WString to_split, WString split_str, bool ignore_empty=true) {
-	Vector<WString> v;
-	
-	if (to_split.IsEmpty() || split_str.IsEmpty())
-		return v;
-	
-	int i = to_split.Find(split_str);
-	if (i == -1)
-		v.Add(to_split);
-	else {
-		int j = 0;
-		while (i >= 0) {
-			WString str = to_split.Mid(j, i - j);
-			if (str.GetCount() == 0) {
-				if (!ignore_empty)
-					v.Add(str);
-			}
-			else {
-				v.Add(str);
-			}
-			i += split_str.GetCount();
-			j = i;
-			i = to_split.Find(split_str, i);
-		}
-		i = to_split.GetCount();
-		WString str = to_split.Mid(j, i - j);
-		if (str.GetCount() == 0) {
-			if (!ignore_empty)
-				v.Add(str);
-		}
-		else {
-			v.Add(str);
-		}
-	}
-	
-	return v;
-}
-
+Vector<String> Split(String to_split, String split_str, bool ignore_empty=true);
+Vector<WString> Split(WString to_split, WString split_str, bool ignore_empty=true);
 String Join(const Vector<String>& v, String join_str, bool ignore_empty=true);
 
 
@@ -1100,7 +1015,6 @@ public:
 		ASSERT(s.IsEmpty());
 		ASSERT(!IsAttached(&s));
 		static_assert(std::is_base_of<Attachable<T>, T>(), "The class T must inherit Attachable<T>");
-		//T* o = reinterpret_cast<T*>(this);
 		T* o = CastPtr<T>(this);
 		ASSERT(o);
 		slots.Add(&s);

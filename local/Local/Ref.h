@@ -467,8 +467,6 @@ public:
 				return Iterator(k, v);
 		return Iterator();
 	}
-	//R* FindPtr(const K& k);
-	//const R* FindPtr(const K& k) const;
 	
 	RefLinkedList<V>& GetValues() {return values;}
 	
@@ -678,8 +676,6 @@ public:
 				return Iterator(k, v);
 		return Iterator();
 	}
-	//R* FindPtr(const K& k);
-	//const R* FindPtr(const K& k) const;
 	
 	R At(int i) {
 		int j = 0;

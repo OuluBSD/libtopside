@@ -8,7 +8,7 @@ NAMESPACE_UPP_BEGIN
 	#define NULL 0
 #endif
 
-// TODO translate
+
 #define t_(x) x
 
 #if !defined SCHAR_MIN
@@ -90,36 +90,7 @@ LOG("}"); \
 }
 
 
-#ifdef flagGUI
-	#if 0
-		#if defined(flagWIN32)
-			#define GUI_APP_MAIN \
-				void AppMain(); \
-				\
-				int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
-					::SetWin32Instances(hinst, hprev, show); \
-					char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
-					UPP::AppInit__(0, (const char **)cmdline); \
-					AppMain(); \
-					return ::UPP::AppExit__(); \
-				} \
-				\
-				void AppMain()
-		#else
-			#define GUI_APP_MAIN \
-				void AppMain(); \
-				\
-				int main(int argc, const char** argv) {\
-					UPP::AppInit__(argc, (const char **)argv); \
-					AppMain(); \
-					return ::UPP::AppExit__(); \
-				} \
-				\
-				void AppMain()
-			#define MAIN_FN
-		#endif
-	#endif
-#else
+#ifndef flagGUI
 	#define CONSOLE_APP_MAIN \
 	void AppMain(); \
 	\
@@ -172,7 +143,6 @@ LOG("}"); \
 
 
 
-
 #define GLOBAL_VP(type, name, param) \
 	name() { \
 		static type x param; \
@@ -188,6 +158,7 @@ LOG("}"); \
 		return x; \
 } \
 INITBLOCK { name(); }
+
 
 NAMESPACE_UPP_END
 

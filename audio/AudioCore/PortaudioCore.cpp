@@ -73,37 +73,6 @@ void AudioBase::Close(){
 	}
 }
 
-
-/*void AudioBase::Exchange(AudioEx& e) {
-	TODO
-}*/
-
-/*
-void AudioBase::Get(void* data, int size) {
-	int vars = size / fmt.var_size;
-	ASSERT(size % fmt.var_size == 0);
-	int samples = vars / fmt.channels;
-	ASSERT(vars % fmt.channels == 0);
-	int frames = samples / fmt.sample_rate;
-	ASSERT(samples % fmt.sample_rate == 0);
-	total_frames += frames;
-	err = Pa_ReadStream(stream, data, samples);
-	CHECK_ERR;
-}
-
-void AudioBase::Put(void* data, int size, bool realtime) {
-	int vars = size / fmt.var_size;
-	ASSERT(size % fmt.var_size == 0);
-	int samples = vars / fmt.channels;
-	ASSERT(vars % fmt.channels == 0);
-	int frames = samples / fmt.sample_rate;
-	ASSERT(samples % fmt.sample_rate == 0);
-	total_frames += frames;
-	err = Pa_WriteStream(stream,data,samples);
-	CHECK_ERR;
-}
-*/
-
 bool AudioBase::IsStopped() const{
 	int err = Pa_IsStreamStopped(stream);
 	CHECK_ERR;

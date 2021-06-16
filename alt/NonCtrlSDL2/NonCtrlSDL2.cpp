@@ -1,7 +1,6 @@
 #include "NonCtrlSDL2.h"
 #include <OOSDL2/OOSDL2.h>
 #include <EcsLib/EcsLib.h>
-//#include <AccelCore/AccelCore.h>
 #include <Physics/Physics.h>
 
 NAMESPACE_TOPSIDE_BEGIN

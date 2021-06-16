@@ -5,7 +5,6 @@ uses
 	OOSDL2;
 
 file
-	Copying,
 	SDL2GUI3D.h,
 	After.h,
 	SDL2GUI3D.cpp,

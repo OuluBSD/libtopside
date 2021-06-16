@@ -26,6 +26,5 @@ file
 	Special.h,
 	Interface.h,
 	Audio.cpp,
-	Trash readonly separator,
-	DefAccel.h;
+	Trash readonly separator;
 

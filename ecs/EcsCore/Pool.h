@@ -65,10 +65,6 @@ public:
 	EntityRef			CreateEmpty();
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
-	/*void				AddConnectEverything();
-	void				AddConnectEverythingWithAccel();
-	void				ConnectEverything();
-	void				ConnectEverythingWithAccel();*/
 	
 	template<typename PrefabT>
 	EntityRef Create() {
@@ -96,7 +92,6 @@ public:
 			if (AllValidComponents(requested_components)) {
 				RTuple<EntityRef, RefT_Entity<ComponentTs>...> t(object.Get(), requested_components);
 				components.Add(t);
-				//components.Add(TupleCat(Tuple(object.Get()), Pick(requested_components)));
 			}
 		}
 		
@@ -152,13 +147,6 @@ public:
 				return object;
 		return EntityRef();
 	}
-	
-	/*void ReleaseEntity(Entity& ent) {
-		for (int i = 0; i < objects.GetCount(); i++) {
-			if (objects[i].Get() == &ent)
-				objects.Remove(i--);
-		}
-	}*/
 	
 	template<typename Tuple>
 	bool AllValidComponents(const Tuple& components) {
