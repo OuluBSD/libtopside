@@ -117,12 +117,12 @@ Pool& Entity::GetPool() const {
 
 void Entity::VisitSinks(RuntimeVisitor& vis) {
 	for(ComponentBaseRef& c : comps)
-		c->VisitSinks(vis);
+		c->VisitSink(vis);
 }
 
 void Entity::VisitSources(RuntimeVisitor& vis){
 	for(ComponentBaseRef& c : comps)
-		c->VisitSources(vis);
+		c->VisitSource(vis);
 }
 
 int Entity::GetPoolDepth() const {

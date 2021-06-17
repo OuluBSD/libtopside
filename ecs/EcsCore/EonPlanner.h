@@ -196,6 +196,7 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount());
 	for(int i = 0; i < to.GetCount(); i++) {
 		Eon::WorldState& ws_to = *to[i];
+		//LOG("\t" << ws_to.ToString());
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		if (j == -1) {

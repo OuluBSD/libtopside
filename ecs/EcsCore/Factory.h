@@ -46,7 +46,7 @@ public:
 		ActionFn action_fn;
 		String name;
 		TypeCls cls;
-		Vector<TypeCls> sinks, srcs, src_sinks;
+		TypeCls sink, src, src_sink;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
@@ -64,16 +64,9 @@ public:
 		d.action_fn = &MakeAction<T>;
 		{
 			T o;
-			CollectInterfacesVisitor vis;
-			o.VisitSources(vis);
-			o.VisitSinks(vis);
-			for (InterfaceSinkBaseRef& r : vis.sink_ifaces) {
-				d.sinks.Add(r->GetSinkCls());
-			}
-			for (InterfaceSourceBaseRef& r : vis.src_ifaces) {
-				d.srcs.Add(r->GetSourceCls());
-				d.src_sinks.Add(r->GetSinkCls());
-			}
+			d.sink = ((InterfaceSinkBase*)&o)->GetSinkCls();
+			d.src = ((InterfaceSourceBase*)&o)->GetSourceCls();
+			d.src_sink = ((InterfaceSourceBase*)&o)->GetSinkCls();
 		}
 	}
 	

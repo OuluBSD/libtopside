@@ -20,8 +20,8 @@ public:
 	virtual TypeCls GetType() const = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
-	virtual void VisitSources(RuntimeVisitor& vis) = 0;
-	virtual void VisitSinks(RuntimeVisitor& vis) = 0;
+	virtual void VisitSource(RuntimeVisitor& vis) = 0;
+	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual bool IsValSpec(TypeCls t) const {return false;}
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
@@ -72,14 +72,20 @@ public:
 
 
 
-template<typename T>
+template<typename T, typename Sink, typename Source>
 struct Component :
-	ComponentBase
+	ComponentBase,
+	public Sink,
+	public Source
 {
-	using ComponentT = Component<T>;
+	static_assert(std::is_convertible<Sink*, ExchangeSinkProvider*>::value, "Sink must inherit ExchangeSinkProvider");
+	static_assert(std::is_convertible<Source*, ExchangeSourceProvider*>::value, "Sink must inherit ExchangeSourceProvider");
+	using ComponentT = Component<T,Sink,Source>;
 	
-	RTTI_DECL1(ComponentT, ComponentBase)
-
+	RTTI_DECL3(ComponentT, ComponentBase, Sink, Source)
+	void Visit0(RuntimeVisitor& vis) {vis.Visit(*(Sink*)this); vis.Visit(*(Source*)this);}
+	
+	
 	TypeCls GetType() const override {
 		return AsTypeCls<T>();
 	}
@@ -89,6 +95,9 @@ struct Component :
 	    
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
+	void VisitSource(RuntimeVisitor& vis) override {vis.Visit(*(Source*)this);}
+	void VisitSink(RuntimeVisitor& vis) override {vis.Visit(*(Sink*)this);}
+	
 };
 
 #define COMP_RTTI(x)  RTTI_DECL1(x, Component<x>)

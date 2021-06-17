@@ -46,9 +46,6 @@ struct ScopeValDevLibT {
 	using DevSimpleReceiptStream	= typename ReceiptMach::SimpleStream;
 	using DevReceiptSource			= typename ReceiptCore::ValSource;
 	
-	#define RTTI_CTX_LIB_INPUT_COMP(comp, sink, src) \
-			RTTI_DECL_3(comp, Component<comp>, sink, src, ValDevSpec::GetName() + #comp)
-	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
@@ -57,19 +54,12 @@ struct ScopeValDevLibT {
 	}
 	
 	
-	#define RTTI_DEV_CTX_COMP(comp, src, sink) \
-			RTTI_DECL_4(comp, Component<comp>, \
-					src, sink, StageComponent, \
-					DevSpec::GetName() + #comp)
-	
 	class InputComponent :
-		public Component<InputComponent>,
-		public DevOrderSink,
-		public ValSource
+		public Component<InputComponent, DevOrderSink, ValSource>
 	{
 	public:
-		RTTI_CTX_LIB_INPUT_COMP(InputComponent, DevOrderSink, ValSource)
-		VIS_COMP_1_1(Val, DevOrder)
+		using ComponentT = Component<InputComponent, DevOrderSink, ValSource>;
+		RTTI_DECL_1(InputComponent, ComponentT, ValDevSpec::GetName() + "InputComponent")
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
@@ -133,13 +123,11 @@ struct ScopeValDevLibT {
 	
 	
 	class OutputComponent :
-		public Component<OutputComponent>,
-		public ValSink,
-		public DevReceiptSource
+		public Component<OutputComponent, ValSink, DevReceiptSource>
 	{
 	public:
-		RTTI_CTX_LIB_INPUT_COMP(OutputComponent, ValSink, DevReceiptSource)
-		VIS_COMP_1_1(DevReceipt, Val)
+		using ComponentT = Component<OutputComponent, ValSink, DevReceiptSource>;
+		RTTI_DECL_1(OutputComponent, ComponentT, ValDevSpec::GetName() + "OutputComponent")
 		COPY_PANIC(OutputComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
@@ -207,14 +195,12 @@ struct ScopeValDevLibT {
 	
 	
 	class PipeComponent :
-		public Component<PipeComponent>,
-		public ValSource,
-		public ValSink,
+		public Component<PipeComponent, ValSink, ValSource>,
 		public StageComponent
 	{
 	public:
-		RTTI_DEV_CTX_COMP(PipeComponent, ValSource, ValSink)
-		VIS_COMP_1_1(Val, Val)
+		using ComponentT = Component<PipeComponent, ValSink, ValSource>;
+		RTTI_DECL_2(PipeComponent, ComponentT, StageComponent, ValDevSpec::GetName() + "DevCustomerComponent")
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
@@ -319,15 +305,11 @@ struct ScopeValDevLibOrderT {
 	
 	
 	class DevCustomerComponent :
-		public Component<DevCustomerComponent>,
-		public OSource,
-		public RSink
+		public Component<DevCustomerComponent, RSink, OSource>
 	{
 	public:
-		RTTI_DECL_3(DevCustomerComponent, Component<DevCustomerComponent>, \
-					OSource, RSink, \
-					ValDevSpec::GetName() + "DevCustomerComponent")
-		VIS_COMP_1_1(O, R)
+		using ComponentT = Component<DevCustomerComponent, RSink, OSource>;
+		RTTI_DECL_1(DevCustomerComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
 		COPY_PANIC(DevCustomerComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT

@@ -174,27 +174,7 @@ typedef enum {
 
 #define VIS_THIS(t) vis.Visit(*(t*)this);
 
-#define VIS_SOURCES_0		void VisitSources(RuntimeVisitor& vis) override {}
-#define VIS_SOURCES_1(a)	void VisitSources(RuntimeVisitor& vis) override {VIS_THIS(a##Source)}
-#define VIS_SOURCES_2(a, b)	void VisitSources(RuntimeVisitor& vis) override {VIS_THIS(a##Source) VIS_THIS(b##Source)}
-
-#define VIS_SINKS_0			void VisitSinks(RuntimeVisitor& vis) override {}
-#define VIS_SINKS_1(a)		void VisitSinks(RuntimeVisitor& vis) override {VIS_THIS(a##Sink)}
-#define VIS_SINKS_2(a, b)	void VisitSinks(RuntimeVisitor& vis) override {VIS_THIS(a##Sink) VIS_THIS(b##Sink)}
-
-#define VIS_COMP_0_0				VIS_SOURCES_0			VIS_SINKS_0
-#define VIS_COMP_0_1(a)				VIS_SOURCES_0			VIS_SINKS_1(a)
-#define VIS_COMP_0_2(a, b)			VIS_SOURCES_0			VIS_SINKS_2(a,b)
-#define VIS_COMP_1_0(a)				VIS_SOURCES_1(a)		VIS_SINKS_0
-#define VIS_COMP_1_1(a, b)			VIS_SOURCES_1(a)		VIS_SINKS_1(b)
-#define VIS_COMP_1_2(a, b, c)		VIS_SOURCES_1(a)		VIS_SINKS_2(b,c)
-#define VIS_COMP_2_0(a, b)			VIS_SOURCES_2(a, b)		VIS_SINKS_0
-#define VIS_COMP_2_1(a, b, c)		VIS_SOURCES_2(a, b)		VIS_SINKS_1(c)
-#define VIS_COMP_2_2(a, b, c, d)	VIS_SOURCES_2(a, b)		VIS_SINKS_2(c, d)
-
-
-#define COMP_DEF_VISIT_ VisitSinks(vis); VisitSources(vis);
-#define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_}
+#define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {ComponentT::Visit0(vis);}
 #define COMP_DEF_MAKE_ACTION static bool MakeAction(Eon::Action& act) {return false;}
 
 #define COMP_MAKE_ACTION_BEGIN static bool MakeAction(Eon::Action& act) {bool fail = false, any_changes = false;

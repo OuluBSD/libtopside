@@ -2,19 +2,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template<typename DevSpec, typename ValSpec, typename T>
-void DevComponent<DevSpec,ValSpec,T>::ForwardPackets(double dt) {
-	using ValDevSpec	= VD<DevSpec,ValSpec>;
-	using ValMach		= ScopeValMachT<ValSpec>;
-	using Mach			= ScopeValDevMachT<ValDevSpec>;
-	using Core			= ScopeValDevCoreT<ValDevSpec>;
-	using V				= ValSpec;
-	using Packet		= typename ValMach::Packet;
-	using Format		= typename Mach::Format;
-	using ValueBase		= typename Mach::ValueBase;
-	using StreamBase	= typename Mach::StreamBase;
-	using Value			= typename Mach::Value;
-	using CtxStream		= typename Mach::Stream;
+template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source>
+void DevComponent<DevSpec,ValSpec,T,Sink,Source>::ForwardPackets(double dt) {
+	using ValDevSpec			= VD<DevSpec,ValSpec>;
+	using ValMach				= ScopeValMachT<ValSpec>;
+	using Mach					= ScopeValDevMachT<ValDevSpec>;
+	using Core					= ScopeValDevCoreT<ValDevSpec>;
+	using V						= ValSpec;
+	using Packet				= typename ValMach::Packet;
+	using Format				= typename Mach::Format;
+	using ValueBase				= typename Mach::ValueBase;
+	using StreamBase			= typename Mach::StreamBase;
+	using Value					= typename Mach::Value;
+	using CtxStream				= typename Mach::Stream;
 	using ValExchangePoint		= typename Mach::ValExchangePoint;
 	using ValExchangePointRef	= typename Mach::ValExchangePointRef;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;

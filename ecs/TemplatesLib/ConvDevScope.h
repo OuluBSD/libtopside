@@ -49,17 +49,12 @@ struct ScopeConvDevLibT {
 	
 			
 	class ConvertComponent :
-		public Component<ConvertComponent>,
-		public FromSink,
-		public ToSource,
-		//public FromComponent,
+		public Component<ConvertComponent, FromSink, ToSource>,
 		public ToComponent
 	{
 	public:
-		RTTI_DECL_4(ConvertComponent, Component<ConvertComponent>,
-					FromSink, ToSource/*, FromComponent*/, ToComponent,
-					To::GetName() + "ConvertComponent")
-		VIS_COMP_1_1(To, From)
+		using ComponentT = Component<ConvertComponent, FromSink, ToSource>;
+		RTTI_DECL_2(ConvertComponent, ComponentT, ToComponent, To::GetName() + "ConvertComponent")
 		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT

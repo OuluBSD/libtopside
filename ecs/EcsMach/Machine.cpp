@@ -36,8 +36,10 @@ bool Machine::Start() {
 	WhenInitialize();
 	
 	for (auto system : systems) {
-		if (!system->Initialize())
+		if (!system->Initialize()) {
+			LOG("Could not initialize system " << system->GetDynamicName());
 			return false;
+		}
 	}
 	
 	is_initialized = true;

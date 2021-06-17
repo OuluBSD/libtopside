@@ -6,9 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class CustomerComponent :
-	public Component<CustomerComponent>,
-	public ReceiptSink,
-	public OrderSource,
+	public Component<CustomerComponent, ReceiptSink, OrderSource>,
 	public GeneratorComponentBase
 {
 	Vector<EonPlan>		plans;
@@ -39,8 +37,8 @@ protected:
 	LocalSourceStream		src_stream;
 	
 public:
-	VIS_COMP_1_1(Order, Receipt)
-	RTTI_COMP3(CustomerComponent, ReceiptSink, OrderSource, GeneratorComponentBase)
+	using ComponentT = Component<CustomerComponent, ReceiptSink, OrderSource>;
+	RTTI_COMP1(CustomerComponent, GeneratorComponentBase)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
 	COMP_DEF_VISIT
