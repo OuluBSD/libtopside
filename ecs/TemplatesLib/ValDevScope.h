@@ -19,15 +19,35 @@ struct ScopeValDevLibT {
 	using Value			= typename Mach::Value;
 	using CtxStream		= typename Mach::Stream;
 	using ValExchangePoint		= typename Mach::ValExchangePoint;
+	using SimpleValue			= typename Mach::SimpleValue;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
+	using SimpleStream			= typename Mach::SimpleStream;
 	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
 	using ValSink				= typename Core::ValSink;
 	using ValSource				= typename Core::ValSource;
 	using DevCompConf			= typename ScopeDevMachT<DevSpec>::StageComponentConf;
 	using StageComponent		= typename ScopeDevLibT<DevSpec>::StageComponent;
 	
-	#define RTTI_CTX_LIB_INPUT_COMP(comp, src) \
-			RTTI_DECL_2(comp, Component<comp>, src, ValDevSpec::GetName() + #comp)
+	using OrderValDevSpec		= VD<DevSpec, OrderSpec>;
+	using OrderMach				= ScopeValDevMachT<OrderValDevSpec>;
+	using OrderCore				= ScopeValDevCoreT<OrderValDevSpec>;
+	using DevOrderFormat		= typename OrderMach::Format;
+	using DevOrder				= typename OrderMach::Value;
+	using DevSimpleOrder		= typename OrderMach::SimpleValue;
+	using DevOrderSink			= typename OrderCore::ValSink;
+	
+	using ReceiptValDevSpec			= VD<DevSpec, ReceiptSpec>;
+	using ReceiptMach				= ScopeValDevMachT<ReceiptValDevSpec>;
+	using ReceiptCore				= ScopeValDevCoreT<ReceiptValDevSpec>;
+	using DevReceiptFormat			= typename ReceiptMach::Format;
+	using DevReceipt				= typename ReceiptMach::Value;
+	using DevReceiptStream			= typename ReceiptMach::Stream;
+	using DevSimpleReceipt			= typename ReceiptMach::SimpleValue;
+	using DevSimpleReceiptStream	= typename ReceiptMach::SimpleStream;
+	using DevReceiptSource			= typename ReceiptCore::ValSource;
+	
+	#define RTTI_CTX_LIB_INPUT_COMP(comp, sink, src) \
+			RTTI_DECL_3(comp, Component<comp>, sink, src, ValDevSpec::GetName() + #comp)
 	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
@@ -36,68 +56,155 @@ struct ScopeValDevLibT {
 		return s;
 	}
 	
+	
+	#define RTTI_DEV_CTX_COMP(comp, src, sink) \
+			RTTI_DECL_4(comp, Component<comp>, \
+					src, sink, StageComponent, \
+					DevSpec::GetName() + #comp)
+	
 	class InputComponent :
 		public Component<InputComponent>,
+		public DevOrderSink,
 		public ValSource
 	{
 	public:
-		RTTI_CTX_LIB_INPUT_COMP(InputComponent, ValSource)
-		VIS_COMP_1_0(Val)
+		RTTI_CTX_LIB_INPUT_COMP(InputComponent, DevOrderSink, ValSource)
+		VIS_COMP_1_1(Val, DevOrder)
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
 		COMP_DEF_VISIT
 		COMP_MAKE_ACTION_BEGIN
-			//TODO
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(
+				ToLower(DevSpec::GetName()) + "." +
+				ToLower(ValSpec::GetName()) + "." +
+				"src")
 		COMP_MAKE_ACTION_END
 		
 	private:
-		struct LocalValue : public SimpleBufferedValue {
+		struct LocalSinkValue : public DevSimpleOrder {
+			InputComponent& par;
+			
+			LocalSinkValue(InputComponent* par) : par(*par) {}
+			void StorePacket(OrderPacket& p) override {TODO}
+		};
+		
+		struct LocalSourceValue : public SimpleValue {
+			void StorePacket(Packet& p) {}
+		};
+		
+		struct LocalSourceStream : public SimpleStream {
+			InputComponent& par;
+			AudioPacketConsumer consumer;
+			
+			RTTI_DECL1(LocalSourceStream, SimpleStream)
+			LocalSourceStream(InputComponent* par) :
+				par(*par),
+				SimpleStream(par->src_value) {}
 			
 		};
 		
-		struct LocalStream : public SimpleBufferedStream {
-			RTTI_DECL1(LocalStream, SimpleBufferedStream)
-			InputComponent& par;
-			LocalStream(InputComponent* par) :
-				par(*par),
-				SimpleBufferedStream(par->value) {}
-			bool			IsOpen() const override;
-			bool			Open(int fmt_idx) override;
-			void			Close() override {par.value.ClearBuffer();}
-			bool			IsEof() override {return false;}
-			bool			ReadFrame() override {return par.ReadFrame();}
-			bool			ProcessFrame() override {return par.ProcessDeviceFrame();}
-			bool			ProcessOtherFrame() override {return false;}
-			void			ClearPacketData() override {}
-			bool			LoadFileAny(String path) override;
-		};
-		
-		LocalValue			value;
-		LocalStream			stream;
+		LocalSinkValue		sink_value;
+		LocalSourceValue	src_value;
+		LocalSourceStream	src_stream;
 		
 		
 		bool				ReadFrame();
 		bool				ProcessDeviceFrame();
 		
 	public:
-		InputComponent() : stream(this) {}
+		InputComponent() : sink_value(this), src_stream(this) {}
+		
+		void Forward(FwdScope& fwd) override;
+		void ForwardExchange(FwdScope& fwd) override;
 		
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		
+		// DevOrderSink
+		DevOrderFormat		GetFormat(OrdCtx) override {TODO}
+		DevOrder&			GetValue(OrdCtx) override {return sink_value;}
+		
 		// ValSource
-		CtxStream&			GetStream(V*) override;
-		void				BeginStream(V*) override;
-		void				EndStream(V*) override;
+		CtxStream&			GetStream(V*) override {return src_stream;}
+		void				BeginStream(V*) override {TODO}
+		void				EndStream(V*) override {TODO}
 		
 	};
 	
 	
+	class OutputComponent :
+		public Component<OutputComponent>,
+		public ValSink,
+		public DevReceiptSource
+	{
+	public:
+		RTTI_CTX_LIB_INPUT_COMP(OutputComponent, ValSink, DevReceiptSource)
+		VIS_COMP_1_1(DevReceipt, Val)
+		COPY_PANIC(OutputComponent)
+		IFACE_GENERIC
+		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(
+				ToLower(DevSpec::GetName()) + "." +
+				ToLower(ValSpec::GetName()) + "." +
+				"sink")
+		COMP_MAKE_ACTION_END
+		
+	private:
+		struct LocalSinkValue : public SimpleBufferedValue {
+			OutputComponent& par;
+			
+			LocalSinkValue(OutputComponent* par) : par(*par) {}
+		};
+		
+		struct LocalSourceValue : public DevSimpleReceipt {
+			void StorePacket(ReceiptPacket& p) {}
+		};
+		
+		struct LocalSourceStream : public DevSimpleReceiptStream {
+			OutputComponent& par;
+			AudioPacketConsumer consumer;
+			
+			RTTI_DECL1(LocalSourceStream, DevSimpleReceiptStream)
+			LocalSourceStream(OutputComponent* par) :
+				par(*par),
+				DevSimpleReceiptStream(par->src_value) {}
+			
+		};
+		
+		
+		LocalSinkValue			sink_value;
+		LocalSourceValue		src_value;
+		LocalSourceStream		src_stream;
+		RealtimeSourceConfig*	cfg = 0;
+		Mutex					lock;
+		LinkedList<Packet>		consumed_packets;
+		
+		
+		
+	public:
+		OutputComponent() : sink_value(this), src_stream(this) {}
+		
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
+		
+		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
+		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
+		
+		// ValSink
+		Format				GetFormat(V*) override {TODO}
+		Value&				GetValue(V*) override {return sink_value;}
+		
+		// DevReceiptSource
+		DevReceiptStream&	GetStream(RcpCtx) override {return src_stream;}
+		void				BeginStream(RcpCtx) override {TODO}
+		void				EndStream(RcpCtx) override {TODO}
+		bool				ReadFrame() {TODO}
+		bool				ProcessFrame() {TODO}
+		bool				ProcessDeviceFrame() {TODO}
+		
+	};
 	
-	#define RTTI_DEV_CTX_COMP(comp, src, sink) \
-			RTTI_DECL_4(comp, Component<comp>, \
-					src, sink, StageComponent, \
-					DevSpec::GetName() + #comp)
 	
 	class PipeComponent :
 		public Component<PipeComponent>,

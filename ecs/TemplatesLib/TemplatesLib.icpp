@@ -22,6 +22,7 @@ INITBLOCK {
 	
 	#define IFACE_CTX_CLS(dev, value, prefix) \
 		TS::EcsFactory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::InputComponent>();\
+		TS::EcsFactory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::OutputComponent>();\
 		TS::EcsFactory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::PipeComponent>();
 	#define IFACE(value) DEV_IFACE(value)
 	IFACE_LIST;

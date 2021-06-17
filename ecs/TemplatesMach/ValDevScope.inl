@@ -84,17 +84,7 @@ TMPL_VALDEVMACH(DataT::Format) SimpleValue::GetFormat() const {
 }
 
 TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
-	int sr = fmt.GetSampleRate();
-	if (sr > 1) {
-		int size = 0;
-		for(auto& p : buf)
-			size += p->GetSizeChannelSamples();
-		int c = size / sr;
-		return c >= packet_limit;
-	}
-	else {
-		return buf.GetCount() >= packet_limit;
-	}
+	return buf.GetCount() >= packet_limit;
 }
 
 

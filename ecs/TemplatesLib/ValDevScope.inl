@@ -69,8 +69,117 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 }
 
 
+TMPL_VALDEVLIB(void) InputComponent::Forward(FwdScope& fwd) {
+	using FromValSpec				= OrderSpec;
+	using ToValSpec					= typename ValDevSpec::Val;
+	using DevSpec					= typename ValDevSpec::Dev;
+	
+	using DevMach					= ScopeDevMachT<DevSpec>;
+	using InternalPacketData		= typename DevMach::InternalPacketData;
+	
+	using FromValDevSpec			= VD<DevSpec, FromValSpec>;
+	using FromValMach				= ScopeValMachT<FromValSpec>;
+	using FromValDevMach			= ScopeValDevMachT<FromValDevSpec>;
+	using FromValDevCore			= ScopeValDevCoreT<FromValDevSpec>;
+	using FromPacket				= typename FromValMach::Packet;
+	using FromValue					= typename FromValDevMach::Value;
+	using FromPacketBuffer			= typename FromValDevMach::PacketBuffer;
+	using FromSimpleValue			= typename FromValDevMach::SimpleValue;
+	using FromSimpleBufferedValue	= typename FromValDevMach::SimpleBufferedValue;
+	using FromSink					= typename FromValDevCore::ValSink;
+	#define FROMCTX (FromValSpec*)0
+	
+	using ToValDevSpec				= VD<DevSpec, ToValSpec>;
+	using ToValMach					= ScopeValMachT<ToValSpec>;
+	using ToValDevMach				= ScopeValDevMachT<ToValDevSpec>;
+	using ToValDevCore				= ScopeValDevCoreT<ToValDevSpec>;
+	using ToValLib					= ScopeValLibT<ToValSpec>;
+	using ToPacket					= typename ToValMach::Packet;
+	using ToFormat					= typename ToValMach::Format;
+	using ToValue					= typename ToValDevMach::Value;
+	using ToSimpleBufferedValue		= typename ToValDevMach::SimpleBufferedValue;
+	using ToSimpleValue				= typename ToValDevMach::SimpleValue;
+	using ToPacketBuffer			= typename ToValDevMach::PacketBuffer;
+	using ToSource					= typename ToValDevCore::ValSource;
+	using ToSink					= typename ToValDevCore::ValSink;
+	using ToSinkRef					= typename ToValDevCore::ValSinkRef;
+	using ToPacketTracker			= typename ToValLib::PacketTracker;
+	#define TOCTX (ToValSpec*)0
+	
+	ToSource& iface_src = *this;
+	FromSink& iface_sink = *this;
+	FromValue& sink_val = iface_sink.GetValue(FROMCTX);
+	
+	
+	FromSimpleBufferedValue* sink_buf_val;
+	FromSimpleValue* sink_sval;
+	FromPacketBuffer* sink_buf;
+	if ((sink_buf_val = CastPtr<FromSimpleBufferedValue>(&sink_val))) {
+		sink_buf = &sink_buf_val->GetBuffer();
+	}
+	else if ((sink_sval = CastPtr<FromSimpleValue>(&sink_val))) {
+		sink_buf = &sink_sval->GetBuffer();
+	}
+	else TODO
+	
+	
+	ToValue& val = iface_src.GetStream(TOCTX).Get();
+	ToSimpleValue* sval;
+	ToSimpleBufferedValue* sbcal;
+	ToPacketBuffer* pbuf;
+	if ((sval = CastPtr<ToSimpleValue>(&val))) {
+		pbuf = &sval->GetBuffer();
+	}
+	else if ((sbcal = CastPtr<ToSimpleBufferedValue>(&val))) {
+		pbuf = &sbcal->GetBuffer();
+	}
+	else TODO
+		
+	
+	while (sink_buf->GetCount() && !val.IsQueueFull()) {
+		FromPacket in = sink_buf->First();
+		sink_buf->RemoveFirst();
+		
+		int c = sink_buf->IsEmpty() ? 100 : 1;
+		
+		for(int i = 0; i < c && !val.IsQueueFull(); i++) {
+			off32 off = in->GetOffset();
+			RTLOG("InputComponent::Forward: play packet " << off.ToString());
+			
+			ToPacket to = ToValMach::CreatePacket(off);
+			
+			ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::template GetDefaultFormat<ToValSpec>();
+			RTLOG("InputComponent::Forward: sending packet in format: " << fmt.ToString());
+			to->SetFormat(fmt);
+			
+			InternalPacketData& data = to->template SetData<InternalPacketData>();
+			data.pos = 0;
+			data.count = 1;
+			
+			sval->StorePacket(to);
+			
+			ToPacketTracker::Track(TrackerInfo("InputComponent::Forward", __FILE__, __LINE__), *to);
+			pbuf->Add(to);
+		}
+	}
+	
+	#undef FROMCTX
+	#undef TOCTX
+}
 
-TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
+TMPL_VALDEVLIB(void) InputComponent::ForwardExchange(FwdScope& fwd) {
+	ValSource& src = *this;
+	auto& conns = src.GetConnections();
+	for(auto& link : conns) {
+		ExchangePointRef expt = link.expt;
+		ASSERT(expt);
+		if (expt) {
+			fwd.AddNext(*expt);
+		}
+	}
+}
+
+/*TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
 }
 
@@ -100,6 +209,84 @@ TMPL_VALDEVLIB(bool) InputComponent::LocalStream::Open(int fmt_idx) {
 
 TMPL_VALDEVLIB(bool) InputComponent::LocalStream::LoadFileAny(String path) {
 	TODO
+}*/
+
+TMPL_VALDEVLIB(void) OutputComponent::Forward(FwdScope& fwd) {
+	using FromValSpec				= typename ValDevSpec::Val;
+	using ToValSpec					= ReceiptSpec;
+	using DevSpec					= typename ValDevSpec::Dev;
+	
+	using DevMach					= ScopeDevMachT<DevSpec>;
+	using InternalPacketData		= typename DevMach::InternalPacketData;
+	
+	using FromValDevSpec			= VD<DevSpec, FromValSpec>;
+	using FromValMach				= ScopeValMachT<FromValSpec>;
+	using FromValDevMach			= ScopeValDevMachT<FromValDevSpec>;
+	using FromValDevCore			= ScopeValDevCoreT<FromValDevSpec>;
+	using FromPacket				= typename FromValMach::Packet;
+	using FromValue					= typename FromValDevMach::Value;
+	
+	using ToValDevSpec				= VD<DevSpec, ToValSpec>;
+	using ToValMach					= ScopeValMachT<ToValSpec>;
+	using ToValDevMach				= ScopeValDevMachT<ToValDevSpec>;
+	using ToValDevCore				= ScopeValDevCoreT<ToValDevSpec>;
+	using ToValLib					= ScopeValLibT<ToValSpec>;
+	using ToPacket					= typename ToValMach::Packet;
+	using ToFormat					= typename ToValMach::Format;
+	using ToPacketTracker			= typename ToValLib::PacketTracker;
+	
+	#define FROMCTX (FromValSpec*)0
+	
+	FromValue& sink_value = GetValue(FROMCTX);
+	//Receipt& src_value = GetStream(RCPCTX).Get();
+	auto& sink_buf = sink_value.GetBuffer();
+	auto& src_buf = src_value.GetBuffer();
+	
+	cfg = &fwd.Cfg();
+	
+	lock.Enter();
+	
+	Index<dword> offs;
+	for (auto& in : consumed_packets) {
+		off32 o = in->GetOffset();
+		if (offs.Find(o.value) >= 0)
+			continue;
+		offs.Add(o.value);
+		
+		ToPacket to = ToValMach::CreatePacket(o);
+	
+		ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::template GetDefaultFormat<ToValSpec>();
+		RTLOG("OutputComponent::Forward: sending packet in format: " << fmt.ToString());
+		to->SetFormat(fmt);
+		
+		InternalPacketData& data = to->template SetData<InternalPacketData>();
+		data.pos = 0;
+		data.count = 1;
+		
+		src_value.StorePacket(to);
+		
+		ToPacketTracker::Track(TrackerInfo("DebugSoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
+		src_buf.Add(to);
+	}
+	
+	lock.Leave();
+	
+	#undef FROMCTX
+}
+
+TMPL_VALDEVLIB(void) OutputComponent::ForwardExchange(FwdScope& fwd) {
+	auto& src_buf = src_value.GetBuffer();
+	if (!src_buf.IsEmpty()) {
+		DevReceiptSource& src = *this;
+		auto& conns = src.GetConnections();
+		for(auto& link : conns) {
+			ExchangePointRef expt = link.expt;
+			ASSERT(expt);
+			if (expt) {
+				fwd.AddNext(*expt);
+			}
+		}
+	}
 }
 
 

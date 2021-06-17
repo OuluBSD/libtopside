@@ -34,8 +34,8 @@ Take any address and put to BreakRefAdd
 const char* eon_str = R"EON_CODE(
 
 player.audio.generator: {
-	center.audio.src.test: true;
-	center.audio.sink.test: true;
+	center.audio.src: true;
+	center.audio.sink: true;
 }
 
 )EON_CODE";
@@ -69,7 +69,7 @@ void Main() {
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
 			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
-		    
+				
 				PoolRef root = es->GetRoot();
 				
 				LOG(eon_str);

@@ -3,9 +3,11 @@ uses
 	EcsNonGUI;
 
 file
+	Notes.txt,
 	TemplatesLocalTests.h,
 	TemplatesLocalTests.cpp;
 
 mainconfig
-	"" = "";
+	"" = "",
+	"" = "DEBUG_RT";
 
