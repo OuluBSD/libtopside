@@ -83,13 +83,11 @@ void CustomerComponent::ForwardExchange(FwdScope& fwd) {
 	if (read_i > 0)
 		return;
 	OrderSource& src = *this;
-	auto& conns = src.GetConnections();
-	for(auto& link : conns) {
-		ExchangePointRef expt = link.expt;
-		ASSERT(expt);
-		if (expt) {
-			fwd.AddNext(*expt);
-		}
+	
+	ExchangePointRef expt = src.GetExPt();
+	ASSERT(expt);
+	if (expt) {
+		fwd.AddNext(*expt);
 	}
 }
 

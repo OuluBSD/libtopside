@@ -47,16 +47,10 @@ void ConnectManuallyInterfaces::Uninitialize() {
 void ConnectManuallyInterfaces::UnlinkAll() {
 	Machine& mach = ConnectorBase::GetPool()->GetMachine();
 	
-	if (!mach.IsRunning()) {
-		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->UnlinkAll();
-			pt->Sink()		->UnlinkAll();
-		}
-	}
-	else {
-		for (ExchangePointRef& pt : pts) {
-			pt->Source()	->Unlink(pt->Sink());
-		}
+	for (ExchangePointRef& pt : pts) {
+		pt->Source()	->ClearLink();
+		pt->Sink()		->ClearLink();
+		pt->Clear();
 	}
 	
 	pts.Clear();

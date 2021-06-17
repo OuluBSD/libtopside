@@ -186,69 +186,41 @@ public:
 template <class R>
 class ExchangeProviderT {
 	
-public:
-	
-	struct Link :
-		Moveable<Link>,
-		RTTIBase
-	{
-		RTTI_DECL0(Link)
-		
-		ExchangePointRef expt;
-		R dst;
-		
-		template <class K> Ref<K> As() const {return dst;}
-		template <class K> operator Ref<K>() const {return dst;}
-		void Visit(RuntimeVisitor& vis) {vis & expt & dst;}
-	};
-	
 private:
-	LinkedList<Link> links;
-	bool multi_conn = false;
+	ExchangePointRef expt;
+	R dst;
 	
 protected:
 	friend class ExchangeSinkProvider;
 	friend class ExchangeSourceProvider;
-	int FindLink(R r) const {
-		int i = 0;
-		LinkedList<Link>& links = const_cast<LinkedList<Link>&>(this->links);
-		for(auto iter = links.begin(); iter; ++iter) {
-			if (iter().dst == r)
-				return i;
-			++i;
-		}
-		return -1;
-	}
-	void AddLink(ExchangePointRef expt, R r) {
-		ASSERT_(FindLink(r) < 0, "Link is already added");
-		if (links.GetCount() && !multi_conn) {ASSERT_(0, "Multi-connection is not enabled");}
-		Link& l = links.Add();
-		l.expt = expt;
-		l.dst = r;
+	
+	int IsLink(R r) const {return r == dst;}
+	
+	void SetLink(ExchangePointRef expt, R dst) {
+		ASSERT_(!this->dst, "Link is already set");
+		this->expt = expt;
+		this->dst = dst;
 	}
 	
-	LinkedList<Link>& GetConnections() {return links;}
 	
 public:
 	
-	void Visit(RuntimeVisitor& vis) {for (auto iter = links.begin(); iter; ++iter) vis % iter();}
-	void SetMultiConnection(bool b) {multi_conn = b;}
-	const LinkedList<Link>& GetConnections() const {return links;}
+	void Visit(RuntimeVisitor& vis) {vis & expt & dst;}
 	
-	void Unlink(R o) {
-		for(auto iter = links.begin(); iter; ++iter) {
-			Link& l = iter();
-			if (l.dst == o) {
-				l.expt->Destroy();
-				links.Remove(iter);
-				break;
-			}
+	/*void Unlink(R o) {
+		if (l.dst == o) {
+			l.expt->Destroy();
+			l.dst.Clear();
 		}
-	}
+	}*/
 	
-	void UnlinkAll() {
+	/*void UnlinkAll() {
 		links.Clear();
-	}
+	}*/
+	
+	void				ClearLink() {expt.Clear(); dst.Clear();}
+	ExchangePointRef	GetExPt() const {return expt;}
+	
 };
 
 
@@ -286,22 +258,18 @@ public:
 protected:
 	friend class ExchangePoint;
 	
-	void AddSource(ExchangePointRef expt, ExchangeSourceProviderRef src) {base.AddLink(expt, src);}
-	int FindSource(ExchangeSourceProviderRef src) {return base.FindLink(src);}
+	void SetSource(ExchangePointRef expt, ExchangeSourceProviderRef src) {base.SetLink(expt, src);}
+	int IsSource(ExchangeSourceProviderRef src) {return base.IsLink(src);}
+	
 	virtual void OnLink(SourceProv src, Cookie src_c, Cookie sink_c) {}
 	
 public:
 	ExchangeSinkProvider();
 	virtual ~ExchangeSinkProvider();
 	
-	
-	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(SourceProv src) {base.Unlink(src);}
-	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
-	
-	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
-	const ExProv::Link& GetSingleConnection() const {ASSERT(base.GetConnections().GetCount() == 1); return base.GetConnections().First();}
+	void				ClearLink() {base.ClearLink();}
+	void				Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef	GetExPt() const {return base.GetExPt();}
 	
 };
 
@@ -327,24 +295,19 @@ public:
 protected:
 	friend class ExchangePoint;
 	
-	void AddSink(ExchangePointRef expt, ExchangeSinkProviderRef sink) {base.AddLink(expt, sink);}
-	int FindSink(ExchangeSinkProviderRef sink) {return base.FindLink(sink);}
+	void SetSink(ExchangePointRef expt, ExchangeSinkProviderRef sink) {base.SetLink(expt, sink);}
+	int IsSink(ExchangeSinkProviderRef sink) {return base.IsLink(sink);}
 	virtual void OnLink(SinkProv sink, Cookie src_c, Cookie sink_c) {}
 	
 public:
 	ExchangeSourceProvider();
 	virtual ~ExchangeSourceProvider();
 	
-	
-	virtual bool Accept(SinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
-	void Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c);
-	void SetMultiConnection(bool b=true) {base.SetMultiConnection(b);}
-	void UnlinkAll() {base.UnlinkAll();}
-	void Unlink(SinkProv sink) {base.Unlink(sink);}
-	void Visit(RuntimeVisitor& vis) {base.Visit(vis);}
-	
-	const LinkedList<ExProv::Link>& GetConnections() const {return base.GetConnections();}
-	const ExProv::Link& GetSingleConnection() const {ASSERT(base.GetConnections().GetCount() == 1); return base.GetConnections().First();}
+	virtual bool		Accept(SinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
+	void				Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c);
+	void				ClearLink() {base.ClearLink();}
+	void				Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef	GetExPt() const {return base.GetExPt();}
 	
 };
 

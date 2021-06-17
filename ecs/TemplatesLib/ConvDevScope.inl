@@ -88,13 +88,10 @@ TMPL_CONVDEVLIB(void) ConvertComponent::ForwardExchange(FwdScope& fwd) {
 	using ValExchangePointRef	= typename Core::ValExchangePointRef;
 	
 	ValSource& src = *this;
-	auto& conns = src.GetConnections();
-	for(auto& link : conns) {
-		ValExchangePointRef expt = link.expt;
-		ASSERT(expt);
-		if (expt) {
-			fwd.AddNext(*expt);
-		}
+	ValExchangePointRef expt = src.GetExPt();
+	ASSERT(expt);
+	if (expt) {
+		fwd.AddNext(*expt);
 	}
 }
 

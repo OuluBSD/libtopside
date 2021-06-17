@@ -61,8 +61,8 @@ bool ExchangeSourceProvider::print_debug = false;
 void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
 	ASSERT_(CastPtr<LockedScopeRefCounter>(this) != CastPtr<LockedScopeRefCounter>(&*sink), "Linking to itself is not allowed");
-	base.AddLink(expt, sink);
-	sink->base.AddLink(expt, AsRefT());
+	base.SetLink(expt, sink);
+	sink->base.SetLink(expt, AsRefT());
 	if (print_debug) {
 		String s;
 		s << GetRTTI().GetDynamicName() <<
@@ -187,8 +187,8 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	this->src	= src;
 	this->sink	= sink;
 	ExchangePointRef thisref = AsRef<ExchangePoint>();
-	src->AddSink(thisref, sink);
-	sink->AddSource(thisref, src);
+	src->SetSink(thisref, sink);
+	sink->SetSource(thisref, src);
 }
 
 void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie) {
@@ -197,8 +197,8 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	this->sink_cookie	= sink_cookie;
 	this->src	= src;
 	this->sink	= sink;
-	ASSERT(src->FindSink(sink) >= 0);
-	ASSERT(sink->FindSource(src) >= 0);
+	ASSERT(src->IsSink(sink));
+	ASSERT(sink->IsSource(src));
 }
 
 void ExchangePoint::Destroy() {

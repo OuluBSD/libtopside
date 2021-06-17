@@ -169,13 +169,10 @@ TMPL_VALDEVLIB(void) InputComponent::Forward(FwdScope& fwd) {
 
 TMPL_VALDEVLIB(void) InputComponent::ForwardExchange(FwdScope& fwd) {
 	ValSource& src = *this;
-	auto& conns = src.GetConnections();
-	for(auto& link : conns) {
-		ExchangePointRef expt = link.expt;
-		ASSERT(expt);
-		if (expt) {
-			fwd.AddNext(*expt);
-		}
+	ExchangePointRef expt = src.GetExPt();
+	ASSERT(expt);
+	if (expt) {
+		fwd.AddNext(*expt);
 	}
 }
 
@@ -278,13 +275,10 @@ TMPL_VALDEVLIB(void) OutputComponent::ForwardExchange(FwdScope& fwd) {
 	auto& src_buf = src_value.GetBuffer();
 	if (!src_buf.IsEmpty()) {
 		DevReceiptSource& src = *this;
-		auto& conns = src.GetConnections();
-		for(auto& link : conns) {
-			ExchangePointRef expt = link.expt;
-			ASSERT(expt);
-			if (expt) {
-				fwd.AddNext(*expt);
-			}
+		ExchangePointRef expt = src.GetExPt();
+		ASSERT(expt);
+		if (expt) {
+			fwd.AddNext(*expt);
 		}
 	}
 }
@@ -351,32 +345,12 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 	using ValExchangePointRef	= typename Core::ValExchangePointRef;
 	//using Ex					= typename Mach::Ex;
 	
-	#if 1
 	ValSource& src = *this;
-	auto& conns = src.GetConnections();
-	for(auto& link : conns) {
-		ValExchangePointRef expt = link.expt;
-		ASSERT(expt);
-		if (expt) {
-			fwd.AddNext(*expt);
-		}
+	ValExchangePointRef expt = src.GetExPt();
+	ASSERT(expt);
+	if (expt) {
+		fwd.AddNext(*expt);
 	}
-	#else
-	DevStreamState& state = StageComponent::GetStreamState();
-	ValStreamState& vstate = state.template Get<ValSpec>();
-	off32 exp_offset = vstate.offset;
-	
-	ValSource& src = *this;
-	auto& conns = src.GetConnections();
-	for(auto& link : conns) {
-		ValExchangePointRef expt = link.expt;
-		ASSERT(expt);
-		if (expt) {
-			expt->SetOffset(vstate.offset);
-			fwd.AddNext(*expt);
-		}
-	}
-	#endif
 }
 
 #undef CLS
