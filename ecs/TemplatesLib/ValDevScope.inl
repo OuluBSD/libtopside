@@ -176,6 +176,10 @@ TMPL_VALDEVLIB(void) InputComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+TMPL_VALDEVLIB(bool) InputComponent::SetExtension(ComponentExtBase& ext) {
+	TODO
+}
+
 /*TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
 }
@@ -283,6 +287,11 @@ TMPL_VALDEVLIB(void) OutputComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+TMPL_VALDEVLIB(bool) OutputComponent::SetExtension(ComponentExtBase& ext) {
+	TODO
+}
+
+
 
 TMPL_VALDEVLIB(void) PipeComponent::Initialize() {
 	StageComponent::Initialize();
@@ -292,6 +301,10 @@ TMPL_VALDEVLIB(void) PipeComponent::Initialize() {
 }
 TMPL_VALDEVLIB(void) PipeComponent::Uninitialize() {
 	StageComponent::Uninitialize();
+}
+
+TMPL_VALDEVLIB(bool) PipeComponent::SetExtension(ComponentExtBase& ext) {
+	TODO
 }
 
 TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
@@ -374,7 +387,7 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 
 
 
-
+#if 0
 TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Initialize() {
 	
 }
@@ -411,7 +424,7 @@ TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::BeginStream(O*) {
 TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::EndStream(O*) {
 	TODO
 }
-
+#endif
 
 
 

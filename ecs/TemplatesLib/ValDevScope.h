@@ -54,11 +54,16 @@ struct ScopeValDevLibT {
 	}
 	
 	
+	
+	class InputExt : public ComponentExtBase {
+		
+	};
+	
 	class InputComponent :
-		public Component<InputComponent, DevOrderSink, ValSource>
+		public Component<InputComponent, DevOrderSink, ValSource, InputExt>
 	{
 	public:
-		using ComponentT = Component<InputComponent, DevOrderSink, ValSource>;
+		using ComponentT = Component<InputComponent, DevOrderSink, ValSource, InputExt>;
 		RTTI_DECL_1(InputComponent, ComponentT, ValDevSpec::GetName() + "InputComponent")
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
@@ -104,8 +109,10 @@ struct ScopeValDevLibT {
 	public:
 		InputComponent() : sink_value(this), src_stream(this) {}
 		
-		void Forward(FwdScope& fwd) override;
-		void ForwardExchange(FwdScope& fwd) override;
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
+		bool				SetExtension(ComponentExtBase& ext) override;
+		
 		
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
@@ -122,11 +129,15 @@ struct ScopeValDevLibT {
 	};
 	
 	
+	class OutputExt : public ComponentExtBase {
+		
+	};
+	
 	class OutputComponent :
-		public Component<OutputComponent, ValSink, DevReceiptSource>
+		public Component<OutputComponent, ValSink, DevReceiptSource, OutputExt>
 	{
 	public:
-		using ComponentT = Component<OutputComponent, ValSink, DevReceiptSource>;
+		using ComponentT = Component<OutputComponent, ValSink, DevReceiptSource, OutputExt>;
 		RTTI_DECL_1(OutputComponent, ComponentT, ValDevSpec::GetName() + "OutputComponent")
 		COPY_PANIC(OutputComponent)
 		IFACE_GENERIC
@@ -175,6 +186,7 @@ struct ScopeValDevLibT {
 		
 		void				Forward(FwdScope& fwd) override;
 		void				ForwardExchange(FwdScope& fwd) override;
+		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
@@ -194,12 +206,16 @@ struct ScopeValDevLibT {
 	};
 	
 	
+	class PipeExt : public ComponentExtBase {
+		
+	};
+	
 	class PipeComponent :
-		public Component<PipeComponent, ValSink, ValSource>,
+		public Component<PipeComponent, ValSink, ValSource, PipeExt>,
 		public StageComponent
 	{
 	public:
-		using ComponentT = Component<PipeComponent, ValSink, ValSource>;
+		using ComponentT = Component<PipeComponent, ValSink, ValSource, PipeExt>;
 		RTTI_DECL_2(PipeComponent, ComponentT, StageComponent, ValDevSpec::GetName() + "DevCustomerComponent")
 		COPY_PANIC(PipeComponent)
 		IFACE_GENERIC
@@ -252,6 +268,7 @@ struct ScopeValDevLibT {
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				RequiresDeviceProgram() const override {return true;}
+		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		// DevSink
 		Format				GetFormat(V*) override;
@@ -275,6 +292,8 @@ struct ScopeValDevLibT {
 };
 
 
+
+#if 0
 template <class ValDevSpec>
 struct ScopeValDevLibOrderT {
 	using ValSpec		= typename ValDevSpec::Val;
@@ -305,7 +324,7 @@ struct ScopeValDevLibOrderT {
 	
 	
 	class DevCustomerComponent :
-		public Component<DevCustomerComponent, RSink, OSource>
+		public Component<DevCustomerComponent, RSink, OSource>,
 	{
 	public:
 		using ComponentT = Component<DevCustomerComponent, RSink, OSource>;
@@ -325,6 +344,7 @@ struct ScopeValDevLibOrderT {
 		void				Uninitialize() override;
 		TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
+		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		// ReceiptSink
 		RFormat				GetFormat(R*) override;
@@ -339,6 +359,7 @@ struct ScopeValDevLibOrderT {
 	
 	
 };
+#endif
 
 
 NAMESPACE_TOPSIDE_END

@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#define DEV_VALUE_CTX(dev, value, prefix, format, sample) \
+/*#define DEV_VALUE_CTX(dev, value, prefix, format, sample) \
 	using prefix##LibOrderT					= ScopeValDevLibOrderT<VD<dev##Spec, value##Spec>>; \
 	using prefix##CustomerComponent			= prefix##LibOrderT::DevCustomerComponent; \
 	\
@@ -18,7 +18,7 @@ NAMESPACE_TOPSIDE_BEGIN
 	DEV_VALUE_CTX(Net,		value, Net##value,		format, sample) \
 	DEV_VALUE_CTX(Perma,	value, Perma##value,	format, sample)
 IFACE_CTX_ORDER_LIST
-#undef IFACE_CTX
+#undef IFACE_CTX*/
 
 
 NAMESPACE_TOPSIDE_END

@@ -9,7 +9,13 @@ uses
 
 file
 	TemplatesLib.h,
-	TemplatesLib.icpp,
+	InitConvert.icpp,
+	InitPipe.icpp,
+	InitIn.icpp,
+	InitOut.icpp,
+	InitOrder.icpp,
+	InitSource.icpp,
+	InitIfaceSink.icpp,
 	AccelScope.h,
 	AccelScope.inl highlight cpp,
 	AccelScope.cpp,

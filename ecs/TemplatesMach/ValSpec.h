@@ -32,8 +32,8 @@ public:
 
 
 
-using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSample>;
-using AVSample = MultiSample2<SoundSample,LightSampleFD>;
+//using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSample>;
+//using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 
 
 

@@ -269,6 +269,34 @@ int ReceiptSample::GetSize(Type t) {
 
 
 
+
+
+
+
+String DataSample::ToString(Type t) {
+	switch (t) {
+		case INVALID: return "INVALID";
+		#define DATA_SMPL(type) \
+			case type: return #type;
+		DATA_SMPL_LIST
+		#undef DATA_SMPL
+		default: break;
+	}
+	return "<invalid-sample-type>";
+}
+
+int DataSample::GetSize(Type t) {
+	PANIC("Invalid call. (Do not use DataSample with SimpleBufferedValue)");
+}
+
+
+
+
+
+
+
+
+
 String DevBase::ToString() const {
 	#define DEV(x) if (dev_spec == AsTypeCls<x##Spec>()) return #x;
 	DEV_LIST

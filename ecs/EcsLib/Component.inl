@@ -2,8 +2,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source>
-void DevComponent<DevSpec,ValSpec,T,Sink,Source>::ForwardPackets(double dt) {
+template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source, class Ext>
+void DevComponent<DevSpec,ValSpec,T,Sink,Source,Ext>::ForwardPackets(double dt) {
 	using ValDevSpec			= VD<DevSpec,ValSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;

@@ -169,16 +169,17 @@ bool AccelComponentBase::IsSinkInAccelerator() const {TODO}
 
 TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
 	#define VALUE(str, i) if (type_str == #str) return AsTypeCls<i>();
-	using Display		= typename ScopeValDevLibT<VD<AccelSpec,DisplaySpec>>::PipeComponent;
+	//using Display		= typename ScopeValDevLibT<VD<AccelSpec,DisplaySpec>>::PipeComponent;
 	using Video			= typename ScopeValDevLibT<VD<AccelSpec,VideoSpec>>::PipeComponent;
 	using Audio			= typename ScopeValDevLibT<VD<AccelSpec,AudioSpec>>::PipeComponent;
-	using ConvPhoto		= typename ScopeConvDevLibT<PhotoSpec,CenterSpec,AccelSpec>::ConvertComponent;
-	VALUE(image,		Display);
+	//using ConvPhoto		= typename ScopeConvDevLibT<PhotoSpec,CenterSpec,AccelSpec>::ConvertComponent;
+	using ConvVideo		= typename ScopeConvDevLibT<VideoSpec,CenterSpec,AccelSpec>::ConvertComponent;
+	VALUE(image,		Video);
 	VALUE(imagebuf,		Video);
 	VALUE(imagebuffer,	Video);
 	VALUE(sound,		Audio);
 	VALUE(soundbuf,		Audio);
-	VALUE(cubemap,		ConvPhoto);
+	VALUE(cubemap,		ConvVideo);
 	//VALUE(vertex,		Accel_DATA_SINK);
 	//VALUE(data,			Accel_DATA_SINK);
 	//VALUE(ctrl,			Accel_CTRL_SINK);
@@ -189,7 +190,8 @@ TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
 
 void AccelComponentBase::UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {
 	has_fbo = false;
-	if (val_spec == AsTypeCls<DisplaySpec>() && comp_i == comp_count-1)
+	TODO // Was DisplaySpec, now VideoSpec: information is missing
+	if (val_spec == AsTypeCls<VideoSpec>() && comp_i == comp_count-1)
 		has_fbo = true;
 }
 

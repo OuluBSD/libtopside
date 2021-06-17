@@ -220,25 +220,50 @@ public:
 };
 
 
+class DataSample : RTTIBase {
+	RTTI_DECL0(DataSample)
+
+public:
+	static const int def_sample_rate = 1;
+
+	#define DATA_SMPL_LIST \
+		DATA_SMPL(MODEL_DATA)
+
+	typedef enum {
+		INVALID,
+		DEV_INTERNAL,
+		#define DATA_SMPL(x) x ,
+		DATA_SMPL_LIST
+		#undef DATA_SMPL
+		TYPE_COUNT,
+		
+		DEFAULT = INVALID
+	} Type;
+
+
+	static void Clear(Type& t) {t = INVALID;}
+	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
+	static String ToString(Type t);
+	static int GetSize(Type t);
+	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
+};
 
 
 
 
 
-#define DUMMY_SAMPLE(x) \
+
+
+/*#define DUMMY_SAMPLE(x) \
 	class x : public BinarySample { \
 		RTTI_DECL1(x, BinarySample) \
 	};
 		
-DUMMY_SAMPLE(HumanSample)
 DUMMY_SAMPLE(SpaceSample)
 DUMMY_SAMPLE(VertexSample)
 DUMMY_SAMPLE(TexLocSample)
 DUMMY_SAMPLE(BoneSample)
-DUMMY_SAMPLE(MidiSample)
-DUMMY_SAMPLE(PhysicsSample)
-DUMMY_SAMPLE(MaterialSample)
-DUMMY_SAMPLE(MaterialSampleFD)
+DUMMY_SAMPLE(PhysicsSample)*/
 
 
 
@@ -661,8 +686,8 @@ public:
 
 
 
-using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSample>;
-using AVSample = MultiSample2<SoundSample,LightSampleFD>;
+//using ModelSample = MultiSample4<SpaceSample,VertexSample,TexLocSample,BoneSample>;
+//using AVSample = MultiSample2<SoundSample,LightSampleFD>;
 
 
 

@@ -1,0 +1,30 @@
+#include "TemplatesLib.h"
+
+NAMESPACE_UPP
+
+
+
+
+
+
+
+
+
+
+
+
+
+INITBLOCK {
+	
+	#define ECS_CTX(dev, value, prefix) \
+		TS::EcsFactory::RegisterInterfaceSink<prefix##Sink>();
+	#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
+	#define IFACE(x) DEV_IFACE(x)
+	IFACE_LIST
+	#undef IFACE
+	#undef IFACE_CTX_CLS
+	#undef ECS_CTX
+	
+}
+
+END_UPP_NAMESPACE

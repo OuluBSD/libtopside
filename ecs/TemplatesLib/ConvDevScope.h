@@ -47,13 +47,18 @@ struct ScopeConvDevLibT {
 		return s;
 	}
 	
-			
+	
+	
+	class ConvertExt : public ComponentExtBase {
+		
+	};
+	
 	class ConvertComponent :
-		public Component<ConvertComponent, FromSink, ToSource>,
+		public Component<ConvertComponent, FromSink, ToSource, ConvertExt>,
 		public ToComponent
 	{
 	public:
-		using ComponentT = Component<ConvertComponent, FromSink, ToSource>;
+		using ComponentT = Component<ConvertComponent, FromSink, ToSource, ConvertExt>;
 		RTTI_DECL_2(ConvertComponent, ComponentT, ToComponent, To::GetName() + "ConvertComponent")
 		COPY_PANIC(ConvertComponent)
 		IFACE_GENERIC
@@ -96,6 +101,7 @@ struct ScopeConvDevLibT {
 		void				Initialize() override;
 		void				Uninitialize() override;
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
+		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		
 		// ValSink

@@ -1,0 +1,23 @@
+#include "TemplatesLib.h"
+
+NAMESPACE_UPP
+
+
+
+
+
+
+
+INITBLOCK {
+	
+	#define IFACE(x) \
+		TS::EcsFactory::RegisterComponent<\
+			typename ScopeConvDevLibT<x##Spec,AccelSpec,CenterSpec>::ConvertComponent>(); \
+		TS::EcsFactory::RegisterComponent<\
+			typename ScopeConvDevLibT<x##Spec,CenterSpec,AccelSpec>::ConvertComponent>();
+	IFACE_LIST
+	#undef IFACE
+	
+}
+
+END_UPP_NAMESPACE

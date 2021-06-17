@@ -5,14 +5,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source>
+template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source, class Ext>
 class DevComponent :
-	public Component<T,Sink,Source>,
+	public Component<T,Sink,Source,Ext>,
 	public ScopeDevMachT<DevSpec>::DevComponent
 {
 	bool is_open = false;
 public:
-	using ComponentT = Component<T,Sink,Source>;
+	using ComponentT = Component<T,Sink,Source,Ext>;
 	using DevComponentT = typename ScopeDevMachT<DevSpec>::DevComponent;
 	
 	RTTI_DECL2(DevComponent, ComponentT, DevComponentT);

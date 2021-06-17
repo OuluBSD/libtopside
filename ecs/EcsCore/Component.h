@@ -4,6 +4,21 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class ComponentBase;
+
+
+class ComponentExtBase :
+	RTTIBase,
+	public RefScopeEnabler<ComponentExtBase, ComponentBase>
+{
+public:
+	RTTI_DECL0(ComponentExtBase)
+	
+};
+
+
+
+
 
 template <class T> inline RefT_Entity<T> ComponentBase_Static_As(ComponentBase*) {return RefT_Entity<T>();}
 
@@ -27,6 +42,7 @@ public:
 	virtual void Uninitialize() {};
 	virtual TypeCls GetValSpec() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const;
+	virtual bool SetExtension(ComponentExtBase& ext) {return false;}
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -72,7 +88,7 @@ public:
 
 
 
-template<typename T, typename Sink, typename Source>
+template<typename T, typename Sink, typename Source, typename Ext>
 struct Component :
 	ComponentBase,
 	public Sink,
@@ -80,10 +96,10 @@ struct Component :
 {
 	static_assert(std::is_convertible<Sink*, ExchangeSinkProvider*>::value, "Sink must inherit ExchangeSinkProvider");
 	static_assert(std::is_convertible<Source*, ExchangeSourceProvider*>::value, "Sink must inherit ExchangeSourceProvider");
-	using ComponentT = Component<T,Sink,Source>;
+	using ComponentT = Component<T,Sink,Source,Ext>;
 	
 	RTTI_DECL3(ComponentT, ComponentBase, Sink, Source)
-	void Visit0(RuntimeVisitor& vis) {vis.Visit(*(Sink*)this); vis.Visit(*(Source*)this);}
+	void Visit0(RuntimeVisitor& vis) {vis.Visit(*(Sink*)this); vis.Visit(*(Source*)this); vis & ext;}
 	
 	
 	TypeCls GetType() const override {
@@ -97,6 +113,21 @@ struct Component :
 	}
 	void VisitSource(RuntimeVisitor& vis) override {vis.Visit(*(Source*)this);}
 	void VisitSink(RuntimeVisitor& vis) override {vis.Visit(*(Sink*)this);}
+	
+protected:
+	Ref<Ext> ext;
+	
+public:
+	bool SetExtension(ComponentExtBase& c) override {
+		ext.Clear();
+		Ext* o = CastPtr<Ext>(&c);
+		ASSERT(o);
+		if (!o)
+			return false;
+		ext.WrapObject(RefParent1<ComponentBase>(this), o);
+		return true;
+	}
+	
 	
 };
 
