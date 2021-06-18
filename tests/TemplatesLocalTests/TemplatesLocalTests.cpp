@@ -37,6 +37,7 @@ tester.generator: {
 	customer.id.ABCD: true;
 	center.audio.src: true;
 	center.audio.sink: true;
+	center.audio.sink.realtime: true;
 }
 
 )EON_CODE";
@@ -47,6 +48,7 @@ void Main() {
 	
 	
 	EcsFactory::RegisterExtension<TestCustomer>();
+	EcsFactory::RegisterExtension<TestRealtimeSink>();
 	
 	
 	//BreakRefAdd(0x7FFFFFFFE430);

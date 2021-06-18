@@ -51,12 +51,14 @@ void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Act
 	Eon::Action a;
 	a.Pre() = src;
 	
-	for (const ExtData& e : d.ext.GetValues()) {
-		a.Post() = src;
-		a.Post().SetAs_AddExtension(comp, e.cls);
-		if (e.action_fn(a)) {
-			MemSwap(acts.Add(), a);
-			a.Pre() = src;
+	if (src.IsAddComponent()) {
+		for (const ExtData& e : d.ext.GetValues()) {
+			a.Post() = src;
+			a.Post().SetAs_AddExtension(comp, e.cls);
+			if (e.action_fn(a)) {
+				MemSwap(acts.Add(), a);
+				a.Pre() = src;
+			}
 		}
 	}
 	
@@ -71,6 +73,7 @@ void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Act
 			a.Pre() = src;
 		}
 	}
+	
 }
 
 

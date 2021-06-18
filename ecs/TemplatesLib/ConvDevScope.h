@@ -40,6 +40,8 @@ struct ScopeConvDevLibT {
 	using ToComponent = typename TDevLib::StageComponent;
 	using ToComponentConf = typename TDevMach::StageComponentConf;
 	
+	class ConvertComponent;
+	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
@@ -49,11 +51,13 @@ struct ScopeConvDevLibT {
 	
 	
 	
+	
 	class ConvertExt : public ComponentExtBase {
 		
 	public:
 		RTTI_DECL1(ConvertExt, ComponentExtBase);
 		using Ext = ConvertExt;
+		using Component = ConvertComponent;
 		
 	};
 	
@@ -98,7 +102,6 @@ struct ScopeConvDevLibT {
 		LocalSink			sink_value;
 		LocalSource			src_value;
 		LocalStream			stream;
-		One<ConvertExt>		ext;
 		
 	public:
 		ConvertComponent() : stream(this) {}

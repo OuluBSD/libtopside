@@ -51,6 +51,9 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Forward(FwdScope& fwd) {
 	if (buf.IsEmpty())
 		return;
 	
+	if (this->ext)
+		this->ext->Forward(fwd);
+	
 	Packet p = buf.First();
 	buf.RemoveFirst();
 	

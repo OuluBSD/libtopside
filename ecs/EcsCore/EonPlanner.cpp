@@ -1,4 +1,5 @@
 #include "EcsCore.h"
+//#include <EcsLib/EcsLib.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 namespace Eon {
@@ -14,6 +15,8 @@ void WorldState::Clear() {
 	cur_comp = 0;
 	src_iface = 0;
 	sink_iface = 0;
+	add_ext = 0;
+	type = INVALID;
 }
 
 bool WorldState::Set(int index, bool value) {
@@ -53,6 +56,11 @@ WorldState& WorldState::operator=(const WorldState& src) {
 
 int64 WorldState::GetHashValue() {
 	CombineHash c;
+	c.Put((int)type);
+	c.Put(cur_comp);
+	c.Put(add_ext);
+	c.Put(src_iface);
+	c.Put(sink_iface);
 	for(int i = 0; i < values.GetCount(); i++) {
 		c.Put(using_act[i]);
 		c.Put(values[i].GetHashValue());
@@ -65,12 +73,12 @@ bool WorldState::Set(const String& key, bool value) {
 	return Set(idx, value);
 }
 
-/*bool WorldState::IsTrue(const String& key) const {
+bool WorldState::IsTrue(const String& key) const {
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())
 		return values[idx] == "true";
 	return false;
-}*/
+}
 
 bool WorldState::IsFalse(const String& key) const {
 	int idx = ap->GetAddAtom(key);
@@ -174,13 +182,30 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 	else return i;
 }
 
-void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
+void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
 {
 	auto& src = n.GetWorldState();
 	TypeCls comp_type = src.GetComponent();
 	
+	/*bool dbg =
+		src.IsTrue("customer.id.ABCD")
+		&& src.IsTrue("center.audio.src")
+		&& src.IsTrue("center.audio.sink")
+		&& src.IsAddComponent()
+		&& src.GetComponent() == AsTypeCls<AudioOutputComponent>()
+		;
+	if (dbg) {
+		LOG("");
+	}*/
+	
 	acts.SetCount(0);
 	EcsFactory::GetComponentActions(src, acts);
+	
+	/*if (!(!dbg || acts.GetCount())) {
+		LOG(n.GetWorldState().ToString());
+		EcsFactory::GetComponentActions(src, acts);
+	}
+	ASSERT(!dbg || acts.GetCount());*/
 	
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
@@ -212,10 +237,10 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<W
 		}
 		
 		if (met) {
-			act_ids.Add(i);
 			action_costs.Add(act.cost);
 			WorldState& tmp = search_cache.Add(act.postcond);
 			dest.Add(&tmp);
+			//if (dbg) {LOG("\tDEBUG: " << tmp.ToString());}
 		}
 	}
 }
@@ -362,7 +387,6 @@ bool ActionPlannerWrapper::SetCost(String action_name, int cost )
 
 ActionNode::ActionNode() {
 	cost = 0;
-	act_id = -1;
 	ap = 0;
 	goal = 0;
 	ws = 0;

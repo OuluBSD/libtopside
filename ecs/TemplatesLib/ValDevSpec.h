@@ -10,6 +10,8 @@ NAMESPACE_TOPSIDE_BEGIN
 	using prefix##DevLibT					= ScopeValDevLibT<VD<dev##Spec, value##Spec>>; \
 	using prefix##InputComponent			= prefix##DevLibT::InputComponent; \
 	using prefix##OutputComponent			= prefix##DevLibT::OutputComponent; \
+	using prefix##InputExt					= prefix##DevLibT::InputExt; \
+	using prefix##OutputExt					= prefix##DevLibT::OutputExt; \
 	\
 	/*PREFAB_BEGIN(prefix##Customer) \
 		prefix##CustomerComponent \

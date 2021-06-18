@@ -45,7 +45,7 @@ public:
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddComponent() const {return type == ADD_COMP;}
 	bool IsAddExtension() const {return type == ADD_EXT;}
-	//bool IsTrue(const String& key) const;
+	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	String Get(const String& key) const;
 	int64 GetHashValue();
@@ -91,7 +91,6 @@ public:
 class ActionNode : RTTIBase {
 	WorldState* ws;
 	double cost;
-	int act_id;
 	
 	ActionPlanner* ap;
 	ActionNode* goal;
@@ -107,7 +106,6 @@ public:
 	void SetGoal(ActionNode& ws) {goal = &ws;}
 	void SetWorldState(WorldState& ws) {this->ws = &ws;}
 	void SetCost(double d) {cost = d;}
-	void SetActionId(int i) {act_id = i;}
 	
 	ActionPlanner& GetActionPlanner() {return *ap;}
 	WorldState& GetWorldState() {return *ws;}
@@ -115,7 +113,6 @@ public:
 	double GetDistance(const ActionNode& to);
 	double GetEstimate();
 	double GetCost() const {return cost;}
-	int GetActionId() const {return act_id;}
 	
 	bool Contains(const ActionNode& n) const;
 	
@@ -163,7 +160,7 @@ public:
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	
-	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
+	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	
 };
 
@@ -201,16 +198,18 @@ public:
 template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) {
 	if (n.GetEstimate() <= 0)
 		return true;
+	Eon::ActionNode& goal = n.GetGoal();
+	if (n.Contains(goal))
+		return true;
 	Eon::WorldState& ws = n.GetWorldState();
 	Eon::ActionPlanner& ap = n.GetActionPlanner();
 	Array<Eon::WorldState*> to;
-	Vector<int> act_ids;
 	Vector<double> action_costs;
-	ap.GetPossibleStateTransition(n, to, act_ids, action_costs);
-	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount());
+	ap.GetPossibleStateTransition(n, to, action_costs);
+	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Eon::WorldState& ws_to = *to[i];
-		//LOG("\t" << ws_to.ToString());
+		//LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		if (j == -1) {
@@ -219,7 +218,6 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 			sub.SetGoal(n.GetGoal());
 			sub.SetWorldState(ws_to);
 			sub.SetCost(action_costs[i]);
-			sub.SetActionId(act_ids[i]);
 			n.AddLink(sub);
 		} else {
 			n.AddLink(ap.tmp_sub[j]);
@@ -228,8 +226,7 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 	//if (n.GetTotalCount())
 	//	return false;
 	
-	Eon::ActionNode& goal = n.GetGoal();
-	return n.Contains(goal);
+	return false;
 }
 
 NAMESPACE_TOPSIDE_END

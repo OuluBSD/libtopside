@@ -12,7 +12,6 @@ class ComponentExtBase :
 	public RefScopeEnabler<ComponentExtBase, ComponentBase>
 {
 protected:
-	ComponentBaseRef base;
 	
 public:
 	RTTI_DECL0(ComponentExtBase)
@@ -20,6 +19,7 @@ public:
 	virtual void Initialize() {}
 	virtual void Uninitialize() {}
 	virtual void Visit(RuntimeVisitor& vis) = 0;
+	virtual void Forward(FwdScope& fwd) = 0;
 	
 	Ref<ComponentExtBase> AsRefT() {return Ref<ComponentExtBase>(GetParent(), this);}
 	

@@ -46,6 +46,10 @@ struct ScopeValDevLibT {
 	using DevSimpleReceiptStream	= typename ReceiptMach::SimpleStream;
 	using DevReceiptSource			= typename ReceiptCore::ValSource;
 	
+	class InputComponent;
+	class OutputComponent;
+	class PipeComponent;
+	
 	static const char* TypeStringT(const char* t) {
 		thread_local static String s;
 		s.Clear();
@@ -55,11 +59,14 @@ struct ScopeValDevLibT {
 	
 	
 	
+	
+	
 	class InputExt : public ComponentExtBase {
 		
 	public:
 		RTTI_DECL1(InputExt, ComponentExtBase);
 		using Ext = InputExt;
+		using Component = InputComponent;
 		
 	};
 	
@@ -105,7 +112,6 @@ struct ScopeValDevLibT {
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
 		LocalSourceStream	src_stream;
-		One<InputExt>		ext;
 		
 		
 		bool				ReadFrame();
@@ -137,6 +143,7 @@ struct ScopeValDevLibT {
 	public:
 		RTTI_DECL1(OutputExt, ComponentExtBase);
 		using Ext = OutputExt;
+		using Component = OutputComponent;
 		
 	};
 	
@@ -182,7 +189,6 @@ struct ScopeValDevLibT {
 		LocalSinkValue			sink_value;
 		LocalSourceValue		src_value;
 		LocalSourceStream		src_stream;
-		One<OutputExt>			ext;
 		RealtimeSourceConfig*	cfg = 0;
 		Mutex					lock;
 		LinkedList<Packet>		consumed_packets;
@@ -218,6 +224,7 @@ struct ScopeValDevLibT {
 	public:
 		RTTI_DECL1(PipeExt, ComponentExtBase);
 		using Ext = PipeExt;
+		using Component = PipeComponent;
 		
 	};
 	
@@ -269,7 +276,6 @@ struct ScopeValDevLibT {
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
 		LocalStream			stream;
-		One<PipeExt>		ext;
 		
 	public:
 		PipeComponent() : stream(this) {}

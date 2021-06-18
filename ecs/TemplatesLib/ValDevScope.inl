@@ -106,6 +106,9 @@ TMPL_VALDEVLIB(void) InputComponent::Forward(FwdScope& fwd) {
 	using ToPacketTracker			= typename ToValLib::PacketTracker;
 	#define TOCTX (ToValSpec*)0
 	
+	if (this->ext)
+		this->ext->Forward(fwd);
+	
 	ToSource& iface_src = *this;
 	FromSink& iface_sink = *this;
 	FromValue& sink_val = iface_sink.GetValue(FROMCTX);
@@ -233,6 +236,9 @@ TMPL_VALDEVLIB(void) OutputComponent::Forward(FwdScope& fwd) {
 	using ToFormat					= typename ToValMach::Format;
 	using ToPacketTracker			= typename ToValLib::PacketTracker;
 	
+	if (this->ext)
+		this->ext->Forward(fwd);
+	
 	#define FROMCTX (FromValSpec*)0
 	
 	FromValue& sink_value = GetValue(FROMCTX);
@@ -313,6 +319,9 @@ TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
 	auto& buf = sink_value.GetBuffer();
 	if (buf.IsEmpty())
 		return;
+	
+	if (this->ext)
+		this->ext->Forward(fwd);
 	
 	Packet p = buf.First();
 	buf.RemoveFirst();

@@ -4,11 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class CustomerComponent;
+
+
 class CustomerExt : public ComponentExtBase {
 	
 public:
 	RTTI_DECL1(CustomerExt, ComponentExtBase);
 	using Ext = CustomerExt;
+	using Component = CustomerComponent;
 	
 };
 

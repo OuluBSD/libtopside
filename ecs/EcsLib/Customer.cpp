@@ -40,6 +40,9 @@ bool CustomerComponent::SetExtension(ComponentExtBase* ext) {
 }
 
 void CustomerComponent::Forward(FwdScope& fwd) {
+	if (ext)
+		ext->Forward(fwd);
+	
 	int read_i = fwd.GetPos();
 	if (read_i == 0) {
 		using DevMach = ScopeDevMachT<CenterSpec>;
@@ -47,9 +50,6 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 		
 		if (src_value.IsQueueFull())
 			return;
-		
-		ASSERT(plans.GetCount() == 1);
-		EonPlan& ep = plans[0];
 		
 		SimpleOrder& src_buf = src_value;
 		
@@ -62,6 +62,8 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 		RTLOG("CustomerComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
+		ASSERT(plans.GetCount() == 1);
+		EonPlan& ep = plans[0];
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = ep.plan.GetCount()-1;
