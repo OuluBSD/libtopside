@@ -11,11 +11,21 @@ class ComponentExtBase :
 	RTTIBase,
 	public RefScopeEnabler<ComponentExtBase, ComponentBase>
 {
+protected:
+	ComponentBaseRef base;
+	
 public:
 	RTTI_DECL0(ComponentExtBase)
 	
+	virtual void Initialize() {}
+	virtual void Uninitialize() {}
+	virtual void Visit(RuntimeVisitor& vis) = 0;
+	
+	Ref<ComponentExtBase> AsRefT() {return Ref<ComponentExtBase>(GetParent(), this);}
+	
 };
 
+using ComponentExtBaseRef = Ref<ComponentExtBase, RefParent1<ComponentBase>>;
 
 
 
@@ -42,7 +52,10 @@ public:
 	virtual void Uninitialize() {};
 	virtual TypeCls GetValSpec() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const;
-	virtual bool SetExtension(ComponentExtBase& ext) {return false;}
+	virtual bool SetExtension(ComponentExtBase* ext) {return false;}
+	virtual ComponentExtBaseRef GetExtension() {return ComponentExtBaseRef();}
+	
+	ComponentExtBaseRef SetExtensionTypeCls(TypeCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -118,15 +131,17 @@ protected:
 	Ref<Ext> ext;
 	
 public:
-	bool SetExtension(ComponentExtBase& c) override {
+	bool SetExtension(ComponentExtBase* c) override {
 		ext.Clear();
-		Ext* o = CastPtr<Ext>(&c);
+		Ext* o = CastPtr<Ext>(c);
 		ASSERT(o);
 		if (!o)
 			return false;
 		ext.WrapObject(RefParent1<ComponentBase>(this), o);
 		return true;
 	}
+	
+	ComponentExtBaseRef GetExtension() override {return ext;}
 	
 	
 };

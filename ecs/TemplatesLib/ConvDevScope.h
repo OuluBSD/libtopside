@@ -51,6 +51,10 @@ struct ScopeConvDevLibT {
 	
 	class ConvertExt : public ComponentExtBase {
 		
+	public:
+		RTTI_DECL1(ConvertExt, ComponentExtBase);
+		using Ext = ConvertExt;
+		
 	};
 	
 	class ConvertComponent :
@@ -91,9 +95,10 @@ struct ScopeConvDevLibT {
 			bool			ProcessOtherFrame() override;
 			void			ClearPacketData() override;
 		};
-		LocalSink sink_value;
-		LocalSource src_value;
-		LocalStream stream;
+		LocalSink			sink_value;
+		LocalSource			src_value;
+		LocalStream			stream;
+		One<ConvertExt>		ext;
 		
 	public:
 		ConvertComponent() : stream(this) {}
@@ -101,8 +106,6 @@ struct ScopeConvDevLibT {
 		void				Initialize() override;
 		void				Uninitialize() override;
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
-		bool				SetExtension(ComponentExtBase& ext) override;
-		
 		
 		// ValSink
 		Format				GetFormat(V*) override;

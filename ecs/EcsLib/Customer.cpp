@@ -30,6 +30,15 @@ void CustomerComponent::AddPlan(EonPlan& ep) {
 	plans.Add(ep);
 }
 
+bool CustomerComponent::SetExtension(ComponentExtBase* ext) {
+	if (this->ext.IsEmpty()) {
+		ext->SetParent(this);
+		this->ext = ext;
+		return true;
+	}
+	return false;
+}
+
 void CustomerComponent::Forward(FwdScope& fwd) {
 	int read_i = fwd.GetPos();
 	if (read_i == 0) {

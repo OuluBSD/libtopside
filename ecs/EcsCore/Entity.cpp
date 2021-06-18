@@ -37,6 +37,15 @@ void Entity::OnChange() {
 	changed = GetMachine().GetTicks();
 }
 
+ComponentBaseRef Entity::GetTypeCls(TypeCls comp_type) {
+	for (ComponentBaseRef& comp : comps) {
+		TypeCls type = comp->GetTypeId();
+		if (type == comp_type)
+			return comp;
+	}
+	return ComponentBaseRef();
+}
+
 ComponentBaseRef Entity::GetAddTypeCls(TypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
 		TypeCls type = comp->GetTypeId();

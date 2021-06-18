@@ -3,6 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if 0
+
 void DebugAudioSinkComponent::Initialize() {
 	auto fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<AudioSpec>();
 	sink_value.SetFormat(fmt);
@@ -205,5 +207,7 @@ void DebugAudioSinkComponent::LocalSinkValue::SinkCallback(StreamCallbackArgs& a
 		}
 	}
 }
+
+#endif
 
 NAMESPACE_TOPSIDE_END

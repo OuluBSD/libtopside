@@ -30,10 +30,6 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Uninitialize() {
 	ToComponent::Uninitialize();
 }
 
-TMPL_CONVDEVLIB(bool) ConvertComponent::SetExtension(ComponentExtBase& ext) {
-	TODO
-}
-
 TMPL_CONVDEVLIB(CLS::Format) ConvertComponent::GetFormat(V*) {TODO}
 TMPL_CONVDEVLIB(CLS::FromValue&) ConvertComponent::GetValue(V*) {return sink_value;}
 TMPL_CONVDEVLIB(CLS::ToStream&) ConvertComponent::GetStream(V*) {return stream;}

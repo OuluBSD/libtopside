@@ -9,10 +9,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class DebugGenerator :
-	public Component<DebugGenerator>
+	public CustomerExt
 {
-	VIS_COMP_0_0
-	
 	RefT_Entity<DebugSoundGeneratorComponent>	gen;
 	RefT_Entity<DebugAudioSinkComponent>		audio;
 	
@@ -22,17 +20,17 @@ public:
 	void OnError();
 	void Initialize() override;
 	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis & gen & audio;}
+	void Visit(RuntimeVisitor& vis) override {vis & gen & audio;}
 	
 	COPY_PANIC(DebugGenerator);
 	
 };
 
-PREFAB_BEGIN(DebugGeneratorPrefab)
+/*PREFAB_BEGIN(DebugGeneratorPrefab)
 	DebugAudioSinkComponent,
 	DebugSoundGeneratorComponent,
 	DebugGenerator
-PREFAB_END
+PREFAB_END*/
 
 
 

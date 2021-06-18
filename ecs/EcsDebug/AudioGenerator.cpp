@@ -75,6 +75,8 @@ bool DebugSoundGeneratorAudio::IsQueueFull() const {
 
 
 
+#if 0
+
 DebugSoundGeneratorComponent::DebugSoundGeneratorComponent() {
 	
 }
@@ -205,23 +207,6 @@ void DebugSoundGeneratorComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-#if 0
-
-void DebugSoundGeneratorComponent::RecvMidi(const MidiFrame& e) {
-	TODO
-}
-
-void DebugSoundGeneratorComponent::Configure(const Midi::File& file) {
-	if (mode == MODE_TRACK_NUM) {
-		if (track_i >= 0 && track_i < file.GetTrackCount()) {
-			Ref<FluidsynthSystem> fs_sys = GetMachine().Get<FluidsynthSystem>();
-			fs_sys->Assign(file, track_i, this);
-		}
-	}
-}
-
-#endif
-
 AudioStream& DebugSoundGeneratorComponent::GetStream(AudCtx) {
 	return gen;
 }
@@ -234,5 +219,6 @@ void DebugSoundGeneratorComponent::EndStream(AudCtx) {
 	TODO
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END

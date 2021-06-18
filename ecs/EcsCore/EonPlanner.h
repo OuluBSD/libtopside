@@ -9,6 +9,13 @@ class ActionNode;
 
 class WorldState : public Moveable<WorldState> {
 
+public:
+	typedef enum {
+		INVALID,
+		ADD_COMP,
+		ADD_EXT
+	} Type;
+	
 protected:
 	friend class ActionPlanner;
 	friend class ActionPlannerWrapper;
@@ -17,7 +24,9 @@ protected:
 	Vector<String>		values;
 	Vector<bool>		using_act;
 	TypeCls				cur_comp;
+	TypeCls				add_ext;
 	TypeCls				src_iface, sink_iface;
+	Type				type = INVALID;
 	ActionPlanner*		ap = 0;
 public:
 	
@@ -30,14 +39,18 @@ public:
 	bool Set(const String& key, bool value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
-	void SetTypes(TypeCls comp, TypeCls src, TypeCls sink) {cur_comp = comp; src_iface = src; sink_iface = sink;}
+	void SetAs_AddExtension(TypeCls comp, TypeCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
+	void SetAs_AddComponent(TypeCls comp, TypeCls src, TypeCls sink) {type = ADD_COMP; cur_comp = comp; src_iface = src; sink_iface = sink;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
+	bool IsAddComponent() const {return type == ADD_COMP;}
+	bool IsAddExtension() const {return type == ADD_EXT;}
 	//bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	String Get(const String& key) const;
 	int64 GetHashValue();
 	TypeCls GetComponent() const {return cur_comp;}
+	TypeCls GetExtension() const {return add_ext;}
 	TypeCls GetSourceInterface() const {ASSERT(src_iface); return src_iface;}
 	TypeCls GetSinkInterface() const {ASSERT(sink_iface); return sink_iface;}
 	String ToString() const;
@@ -69,6 +82,9 @@ public:
 	const WorldState& Post() const {return postcond;}
 	WorldState& Pre() {return precond;}
 	WorldState& Post() {return postcond;}
+	
+	bool IsAddComponent() const {return postcond.IsAddComponent();}
+	bool IsAddExtension() const {return postcond.IsAddExtension();}
 	
 };
 
@@ -147,9 +163,7 @@ public:
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	
-	
-	void DoAction(TypeCls dst_comp, TypeCls src_iface, TypeCls sink_iface, int action_id, const WorldState& src, WorldState& dest);
-	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
+	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs);
 	
 };
 
@@ -192,7 +206,7 @@ template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) 
 	Array<Eon::WorldState*> to;
 	Vector<int> act_ids;
 	Vector<double> action_costs;
-	ap.GetPossibleStateTransition(n, ws, to, act_ids, action_costs);
+	ap.GetPossibleStateTransition(n, to, act_ids, action_costs);
 	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount());
 	for(int i = 0; i < to.GetCount(); i++) {
 		Eon::WorldState& ws_to = *to[i];

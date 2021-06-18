@@ -57,6 +57,10 @@ struct ScopeValDevLibT {
 	
 	class InputExt : public ComponentExtBase {
 		
+	public:
+		RTTI_DECL1(InputExt, ComponentExtBase);
+		using Ext = InputExt;
+		
 	};
 	
 	class InputComponent :
@@ -101,6 +105,7 @@ struct ScopeValDevLibT {
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
 		LocalSourceStream	src_stream;
+		One<InputExt>		ext;
 		
 		
 		bool				ReadFrame();
@@ -111,8 +116,6 @@ struct ScopeValDevLibT {
 		
 		void				Forward(FwdScope& fwd) override;
 		void				ForwardExchange(FwdScope& fwd) override;
-		bool				SetExtension(ComponentExtBase& ext) override;
-		
 		
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
@@ -130,6 +133,10 @@ struct ScopeValDevLibT {
 	
 	
 	class OutputExt : public ComponentExtBase {
+		
+	public:
+		RTTI_DECL1(OutputExt, ComponentExtBase);
+		using Ext = OutputExt;
 		
 	};
 	
@@ -175,6 +182,7 @@ struct ScopeValDevLibT {
 		LocalSinkValue			sink_value;
 		LocalSourceValue		src_value;
 		LocalSourceStream		src_stream;
+		One<OutputExt>			ext;
 		RealtimeSourceConfig*	cfg = 0;
 		Mutex					lock;
 		LinkedList<Packet>		consumed_packets;
@@ -186,7 +194,6 @@ struct ScopeValDevLibT {
 		
 		void				Forward(FwdScope& fwd) override;
 		void				ForwardExchange(FwdScope& fwd) override;
-		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
@@ -207,6 +214,10 @@ struct ScopeValDevLibT {
 	
 	
 	class PipeExt : public ComponentExtBase {
+		
+	public:
+		RTTI_DECL1(PipeExt, ComponentExtBase);
+		using Ext = PipeExt;
 		
 	};
 	
@@ -258,6 +269,7 @@ struct ScopeValDevLibT {
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
 		LocalStream			stream;
+		One<PipeExt>		ext;
 		
 	public:
 		PipeComponent() : stream(this) {}
@@ -268,7 +280,6 @@ struct ScopeValDevLibT {
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				RequiresDeviceProgram() const override {return true;}
-		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		// DevSink
 		Format				GetFormat(V*) override;
@@ -344,7 +355,6 @@ struct ScopeValDevLibOrderT {
 		void				Uninitialize() override;
 		TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
-		bool				SetExtension(ComponentExtBase& ext) override;
 		
 		// ReceiptSink
 		RFormat				GetFormat(R*) override;

@@ -19,9 +19,8 @@ void EcsFactory::Dump() {
 	}
 }
 
-const Vector<EcsFactory::Link>& EcsFactory::GetSinkComponents(TypeCls src_comp) {
+void EcsFactory::RefreshLinks(CompData& d) {
 	auto& m = EcsFactory::CompDataMap();
-	CompData& d = m.Get(src_comp);
 	if (!d.searched_sink_links) {
 		for (const auto& comp_data : m.GetValues()) {
 			if (d.src_sink == comp_data.sink) {
@@ -33,24 +32,40 @@ const Vector<EcsFactory::Link>& EcsFactory::GetSinkComponents(TypeCls src_comp) 
 		}
 		d.searched_sink_links = true;
 	}
-	
+}
+
+const Vector<EcsFactory::Link>& EcsFactory::GetSinkComponents(TypeCls src_comp) {
+	auto& m = EcsFactory::CompDataMap();
+	CompData& d = m.Get(src_comp);
+	RefreshLinks(d);
 	return d.sink_links;
 }
 
-void EcsFactory::GetComponentActions(const Eon::WorldState& src, const Vector<Link>& sink_links, Vector<Eon::Action>& acts) {
+void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts) {
 	auto& m = CompDataMap();
+	
+	TypeCls comp = src.GetComponent();
+	CompData& d = m.Get(comp);
+	RefreshLinks(d);
 	
 	Eon::Action a;
 	a.Pre() = src;
 	
-	for (const auto& link : sink_links) {
+	for (const ExtData& e : d.ext.GetValues()) {
+		a.Post() = src;
+		a.Post().SetAs_AddExtension(comp, e.cls);
+		if (e.action_fn(a)) {
+			MemSwap(acts.Add(), a);
+			a.Pre() = src;
+		}
+	}
+	
+	for (const Link& link : d.sink_links) {
 		TypeCls sink = link.dst_comp;
-		
-		CompData& sink_cd = m.Get(sink);
+		const CompData& sink_cd = m.Get(sink);
 		
 		a.Post() = src;
-		a.Post().SetTypes(link.dst_comp, link.iface_src, link.iface_sink);
-		
+		a.Post().SetAs_AddComponent(link.dst_comp, link.iface_src, link.iface_sink);
 		if (sink_cd.action_fn(a)) {
 			MemSwap(acts.Add(), a);
 			a.Pre() = src;

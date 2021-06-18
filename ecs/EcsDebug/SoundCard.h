@@ -5,6 +5,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class DebugAudioSinkComponent :
+	public AudioOutputComponent
+{
+public:
+	
+	
+	
+};
+
+
+#if 0
+class DebugAudioSinkComponent :
 	public Component<DebugAudioSinkComponent>,
 	public AudioSink,
 	public ReceiptSource
@@ -86,7 +97,7 @@ public:
 	void SetAudioSyncInterval(double seconds) {}
 	
 };
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 

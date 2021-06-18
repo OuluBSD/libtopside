@@ -33,7 +33,8 @@ Take any address and put to BreakRefAdd
 
 const char* eon_str = R"EON_CODE(
 
-player.audio.generator: {
+tester.generator: {
+	customer.id.ABCD: true;
 	center.audio.src: true;
 	center.audio.sink: true;
 }
@@ -43,6 +44,9 @@ player.audio.generator: {
 void Main() {
 	SetCoutLog();
 	EcsFactory::Dump();
+	
+	
+	EcsFactory::RegisterExtension<TestCustomer>();
 	
 	
 	//BreakRefAdd(0x7FFFFFFFE430);

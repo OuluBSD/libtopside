@@ -3,6 +3,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
+
+
+
+
+
 ComponentBase::ComponentBase() {
 	DBG_CONSTRUCT
 }
@@ -47,6 +53,20 @@ InterfaceSinkBaseRef ComponentBase::FindSink(TypeCls t) {
 			return r;
 	}
 	return InterfaceSinkBaseRef();
+}
+
+ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeCls ext) {
+	TypeCls comp = GetTypeId();
+	const auto& cd = EcsFactory::CompDataMap().Get(comp);
+	for (const auto& e : cd.ext.GetValues()) {
+		if (e.cls == ext) {
+			ComponentExtBase* b = e.new_fn();
+			if (SetExtension(b))
+				return GetExtension();
+			break;
+		}
+	}
+	return ComponentExtBaseRef();
 }
 
 

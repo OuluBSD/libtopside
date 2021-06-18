@@ -7,6 +7,8 @@ NAMESPACE_TOPSIDE_BEGIN
 class EcsFactory {
 	
 public:
+	
+	// Interfaces
 	struct Link : Moveable<Link> {
 		TypeCls dst_comp, iface_src, iface_sink;
 	};
@@ -39,9 +41,29 @@ public:
 	
 	
 	
-	typedef ComponentBase* (*NewFn)();
+	
+	// Component Extensions
+	
 	typedef bool (*ActionFn)(Eon::Action& act);
+	typedef ComponentExtBase* (*NewExt)();
+	struct ExtData : Moveable<ExtData> {
+		NewExt new_fn;
+		ActionFn action_fn;
+		String name;
+		TypeCls cls;
+		
+		Vector<Link> sink_links;
+		bool searched_sink_links = false;
+	};
+	template <class T> static ComponentExtBase* CreateExt() {return new T();}
+	
+	
+	
+	// Components
+	
+	typedef ComponentBase* (*NewFn)();
 	struct CompData : Moveable<CompData> {
+		VectorMap<TypeCls,ExtData> ext;
 		NewFn new_fn;
 		ActionFn action_fn;
 		String name;
@@ -53,14 +75,14 @@ public:
 	};
 	static VectorMap<TypeCls,CompData>& CompDataMap() {static VectorMap<TypeCls,CompData> m; return m;}
 	
-	template <class T> static ComponentBase* New() {return new T();}
+	template <class T> static ComponentBase* CreateComp() {return new T();}
 	template <class T> static bool MakeAction(Eon::Action& act) {return T::MakeAction(act);}
 	
 	template <class T> static void RegisterComponent() {
 		CompData& d = CompDataMap().GetAdd(AsTypeCls<T>());
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
-		d.new_fn = &New<T>;
+		d.new_fn = &CreateComp<T>;
 		d.action_fn = &MakeAction<T>;
 		{
 			T o;
@@ -70,10 +92,23 @@ public:
 		}
 	}
 	
+	template <class T> static void RegisterExtension() {
+		using Component = typename T::Component;
+		CompData& d = CompDataMap().GetAdd(AsTypeCls<Component>());
+		TypeCls t = AsTypeCls<T>();
+		ExtData& e = d.ext.GetAdd(t);
+		e.cls = t;
+		e.name = T::GetTypeName();
+		e.new_fn = &CreateExt<T>;
+		e.action_fn = &MakeAction<T>;
+	}
 	
 	static void Dump();
 	static const Vector<Link>& GetSinkComponents(TypeCls src_comp);
-	static void GetComponentActions(const Eon::WorldState& src, const Vector<Link>& sink_links, Vector<Eon::Action>& acts);
+	static void GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
+	static void RefreshLinks(CompData& d);
+	
+	
 	
 };
 

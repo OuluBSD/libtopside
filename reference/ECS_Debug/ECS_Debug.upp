@@ -9,10 +9,10 @@ file
 
 mainconfig
 	"" = "",
+	"" = "DEBUG_RT",
 	"" = "GUI",
 	"" = "VERBOSE_SHADERCORE",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "BUILTIN_ASSIMP BUILTIN_PORTAUDIO BUILTIN_PORTMIDI",
-	"" = "USEMALLOC",
-	"" = "DEBUG_RT";
+	"" = "USEMALLOC";
 

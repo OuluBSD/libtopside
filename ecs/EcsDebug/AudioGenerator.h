@@ -104,11 +104,23 @@ public:
 	
 };
 
+
+
+class DebugSoundGeneratorComponent :
+	public AudioInputComponent
+{
+public:
+	
+	
+	
+};
+
+#if 0
 class DebugSoundGeneratorComponent :
 	public DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>,
 	public EventSink,
 	public OrderSink,
-	public AudioSource
+	public AudioInputComponent
 {
 	DebugSoundGeneratorStream gen;
 	String last_error;
@@ -172,7 +184,7 @@ public:
 	
 	
 };
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 

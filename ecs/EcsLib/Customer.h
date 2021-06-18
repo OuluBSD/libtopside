@@ -6,15 +6,20 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class CustomerExt : public ComponentExtBase {
 	
+public:
+	RTTI_DECL1(CustomerExt, ComponentExtBase);
+	using Ext = CustomerExt;
+	
 };
 
 class CustomerComponent :
 	public Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>,
 	public GeneratorComponentBase
 {
-	Vector<EonPlan>		plans;
-	Index<dword>		unfulfilled_offsets;
-	int					max_unfulfilled = 5;
+	Vector<EonPlan>			plans;
+	Index<dword>			unfulfilled_offsets;
+	int						max_unfulfilled = 5;
+	One<ComponentExtBase>	ext;
 	
 protected:
 	struct LocalSinkValue : public SimpleReceipt {
@@ -51,10 +56,12 @@ public:
 	
 	
 	CustomerComponent();
-	virtual void Initialize() override;
-	virtual void Uninitialize() override;
-	void CreateOrder(double dt);
-	void AddPlan(EonPlan& ep);
+	virtual void		Initialize() override;
+	virtual void		Uninitialize() override;
+	bool				SetExtension(ComponentExtBase* ext) override;
+	ComponentExtBaseRef GetExtension() override {return ext ? ext->AsRefT() : ComponentExtBaseRef();}
+	void				CreateOrder(double dt);
+	void				AddPlan(EonPlan& ep);
 	
 	
 	// ReceiptSink

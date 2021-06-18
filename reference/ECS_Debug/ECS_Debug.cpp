@@ -6,11 +6,11 @@ String file_path;
 
 
 void DebugGenerator::OnError() {
-	GetEntity()->GetMachine().SetNotRunning();
+	base->GetEntity()->GetMachine().SetNotRunning();
 }
 
 void DebugGenerator::Initialize() {
-	EntityRef e = GetEntity();
+	EntityRef e = base->GetEntity();
 	gen     = e->Find<DebugSoundGeneratorComponent>();
 	audio   = e->Find<DebugAudioSinkComponent>();
 	
@@ -20,7 +20,7 @@ void DebugGenerator::Initialize() {
 void DebugGenerator::Uninitialize() {
 	gen.Clear();
 	audio.Clear();
-	GetEntity()->Destroy();
+	base->GetEntity()->Destroy();
 }
 
 
@@ -55,8 +55,8 @@ Take any address and put to BreakRefAdd
 const char* eon_str = R"EON_CODE(
 
 player.audio.generator: {
-	center.audio.src.test: true;
-	center.audio.sink.test: true;
+	center.audio.src: true;
+	center.audio.sink: true;
 }
 
 )EON_CODE";

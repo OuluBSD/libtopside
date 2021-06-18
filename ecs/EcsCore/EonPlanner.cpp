@@ -38,11 +38,15 @@ bool WorldState::Set(int index, String value) {
 	return true;
 }
 
-WorldState& WorldState::operator = (const WorldState& src) {
-	ap = src.ap;
-	cur_comp = src.cur_comp;
-	values <<= src.values;
-	using_act <<= src.using_act;
+WorldState& WorldState::operator=(const WorldState& src) {
+	values		<<= src.values;
+	using_act	<<= src.using_act;
+	cur_comp	= src.cur_comp;
+	add_ext		= src.add_ext;
+	src_iface	= src.src_iface;
+	sink_iface	= src.sink_iface;
+	type		= src.type;
+	ap			= src.ap;
 	return *this;
 }
 
@@ -170,39 +174,22 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 	else return i;
 }
 
-void ActionPlanner::DoAction(TypeCls dst_comp, TypeCls src_iface, TypeCls sink_iface, int action_id, const WorldState& src, WorldState& dest) {
-	ASSERT(dst_comp && src_iface && sink_iface);
-	const WorldState& post = acts[action_id].postcond;
-	
-	dest = src;
-	dest.SetTypes(dst_comp, src_iface, sink_iface);
-	
-	for(int i = 0; i < post.using_act.GetCount(); i++) {
-		if (post.using_act[i]) {
-			dest.Set(i, post.values[i]);
-		}
-	}
-}
-
-
-void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const WorldState& src, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
+void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<int>& act_ids, Vector<double>& action_costs)
 {
-	TypeCls comp_type = n.GetWorldState().GetComponent();
-	
-	const auto& sink_comps = EcsFactory::GetSinkComponents(comp_type);
+	auto& src = n.GetWorldState();
+	TypeCls comp_type = src.GetComponent();
 	
 	acts.SetCount(0);
-	EcsFactory::GetComponentActions(src, sink_comps, acts);
-	
+	EcsFactory::GetComponentActions(src, acts);
 	
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
 		Action& act = acts[i];
-		TypeCls dst_comp_type = act.postcond.GetComponent();
-		TypeCls src_iface = act.postcond.GetSourceInterface();
-		TypeCls sink_iface = act.postcond.GetSinkInterface();
-		ASSERT(dst_comp_type != comp_type);
+		
 		ASSERT(act.precond.GetComponent() == comp_type);
+		if      (act.IsAddComponent()) {ASSERT(act.postcond.GetComponent() != comp_type);}
+		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetComponent() == comp_type);}
+		else Panic("Invalid type");
 		
 		const WorldState& pre = act.precond;
 		
@@ -227,8 +214,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, const W
 		if (met) {
 			act_ids.Add(i);
 			action_costs.Add(act.cost);
-			WorldState& tmp = search_cache.Add();
-			DoAction(dst_comp_type, src_iface, sink_iface, i, src, tmp);
+			WorldState& tmp = search_cache.Add(act.postcond);
 			dest.Add(&tmp);
 		}
 	}

@@ -107,12 +107,12 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	
 	Eon::WorldState src;
 	src.SetActionPlanner(planner);
-	src.SetTypes(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
+	src.SetAs_AddComponent(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	src.Set(CONNECTED, false);
 	
 	Eon::WorldState goal;
 	goal.SetActionPlanner(planner);
-	goal.SetTypes(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
+	goal.SetAs_AddComponent(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	goal.Set(CONNECTED, true);
 	
 	
@@ -162,33 +162,79 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		for (Eon::ActionNode* n : ep.plan) {
 			const Eon::WorldState& ws = n->GetWorldState();
 			TypeCls comp = ws.GetComponent();
-			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
-			LOG(pos++ << ": " << comp_name);
+			const auto& d = EcsFactory::CompDataMap().Get(comp);
+			if (ws.IsAddComponent()) {LOG(pos++ << ": add comp: " << d.name);}
+			if (ws.IsAddExtension()) {
+				const auto& e = d.ext.Get(ws.GetExtension());
+				LOG(pos++ << ": add ext: " << e.name << " (to " << d.name << ")");
+			}
 			LOG("\t" << ws.ToString());
 		}
 	}
 	
 	
 	// Implement found loop
-	Array<ComponentBaseRef> comps;
+	struct AddedComp {
+		ComponentBaseRef r;
+		int plan_i;
+	};
+	Array<AddedComp> added_comps;
+	
+	int plan_i = 0;
 	for (Eon::ActionNode* n : ep.plan) {
 		const Eon::WorldState& ws = n->GetWorldState();
-		TypeCls comp = ws.GetComponent();
-		ComponentBaseRef cb = e->GetAddTypeCls(comp);
-		ASSERT(cb);
-		if (!cb) {
-			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
-			AddError("Could not create component '" + comp_name + "' at '" + def.id.ToString() + "'");
-			return false;
+		if (ws.IsAddComponent()) {
+			TypeCls comp = ws.GetComponent();
+			ComponentBaseRef cb = e->GetAddTypeCls(comp);
+			ASSERT(cb);
+			if (!cb) {
+				String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+				AddError("Could not create component '" + comp_name + "' at '" + def.id.ToString() + "'");
+				return false;
+			}
+			auto& c = added_comps.Add();
+			c.r = cb;
+			c.plan_i = plan_i;
 		}
-		comps.Add(cb);
+		else if (ws.IsAddExtension()) {
+			TypeCls comp = ws.GetComponent();
+			TypeCls ext = ws.GetExtension();
+			ComponentBaseRef cb = e->GetTypeCls(comp);
+			ASSERT(cb);
+			if (!cb) {
+				String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+				AddError("Could not find component '" + comp_name + "' at '" + def.id.ToString() + "'");
+				return false;
+			}
+			ComponentExtBaseRef existing_ext = cb->GetExtension();
+			if (existing_ext) {
+				const auto& c = EcsFactory::CompDataMap().Get(comp);
+				const auto& e = c.ext.Get(ext);
+				AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
+				return false;
+			}
+			ComponentExtBaseRef eb = cb->SetExtensionTypeCls(ext);
+			ASSERT(eb);
+			if (!eb) {
+				const auto& c = EcsFactory::CompDataMap().Get(comp);
+				const auto& e = c.ext.Get(ext);
+				AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
+				return false;
+			}
+		}
+		else {
+			Panic("Invalid world state type");
+		}
+		++plan_i;
 	}
 	ConnectManuallyInterfacesRef conn = e->GetPool().GetAdd<ConnectManuallyInterfaces>();
 	
-	for(int i = 0; i < comps.GetCount()-1; i++) {
-		ComponentBaseRef src = comps[i];
-		ComponentBaseRef dst = comps[i+1];
-		Eon::ActionNode& n = *ep.plan[i+1];
+	for(int i = 0; i < added_comps.GetCount()-1; i++) {
+		AddedComp& c0 = added_comps[i];
+		AddedComp& c1 = added_comps[i+1];
+		ComponentBaseRef src = c0.r;
+		ComponentBaseRef dst = c1.r;
+		Eon::ActionNode& n = *ep.plan[c1.plan_i];
 		const Eon::WorldState& ws = n.GetWorldState();
 		TypeCls src_iface = ws.GetSourceInterface();
 		TypeCls sink_iface = ws.GetSinkInterface();
@@ -201,7 +247,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		}
 	}
 	
-	CustomerComponentRef customer = comps[0]->AsRef<CustomerComponent>();
+	CustomerComponentRef customer = added_comps[0].r->AsRef<CustomerComponent>();
 	if (customer) {
 		customer->AddPlan(ep);
 	}
