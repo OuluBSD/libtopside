@@ -1,4 +1,4 @@
-#include "EcsLib.h"
+#include "EcsCore.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -26,17 +26,8 @@ void CustomerComponent::CreateOrder(double dt) {
 		scope.Forward();
 }
 
-void CustomerComponent::AddPlan(EonPlan& ep) {
+void CustomerComponent::AddPlan(Eon::Plan& ep) {
 	plans.Add(ep);
-}
-
-bool CustomerComponent::SetExtension(ComponentExtBase* ext) {
-	if (this->ext.IsEmpty()) {
-		ext->SetParent(this);
-		this->ext = ext;
-		return true;
-	}
-	return false;
 }
 
 void CustomerComponent::Forward(FwdScope& fwd) {
@@ -58,12 +49,12 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 		
 		unfulfilled_offsets.Add(off.value);
 		
-		OrderFormat fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<OrderSpec>();
+		OrderFormat fmt = ScopeDevCoreT<CenterSpec>::GetDefaultFormat<OrderSpec>();
 		RTLOG("CustomerComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
 		ASSERT(plans.GetCount() == 1);
-		EonPlan& ep = plans[0];
+		Eon::Plan& ep = plans[0];
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = ep.plan.GetCount()-1;

@@ -29,6 +29,8 @@ file
 	Pool.cpp,
 	EntityVisitor.h,
 	EntityVisitor.cpp,
+	Customer.h,
+	Customer.cpp,
 	ConnManual.h,
 	ConnManual.cpp,
 	ConnAny.h;

@@ -16,6 +16,7 @@ struct ScopeConvDevLibT {
 	using FMach = ScopeValDevMachT<From>;
 	using FCore = ScopeValDevCoreT<From>;
 	using FDevMach = ScopeDevMachT<FromDevSpec>;
+	using FDevCore = ScopeDevCoreT<FromDevSpec>;
 	using FDevLib = ScopeDevLibT<FromDevSpec>;
 	using FromValue = typename FMach::Value;
 	using FromStream = typename FMach::Stream;
@@ -30,6 +31,7 @@ struct ScopeConvDevLibT {
 	using TMach = ScopeValDevMachT<To>;
 	using TCore = ScopeValDevCoreT<To>;
 	using TDevMach = ScopeDevMachT<ToDevSpec>;
+	using TDevCore = ScopeDevCoreT<ToDevSpec>;
 	using TDevLib = ScopeDevLibT<ToDevSpec>;
 	using ToValue = typename TMach::Value;
 	using ToStream = typename TMach::Stream;

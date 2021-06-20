@@ -7,6 +7,8 @@
 #include "ValDevScope.h"
 #include "ValDevScope.inl"
 #include "Classes.h"
+#include "ValScope.h"
+#include "ValScope.inl"
 #include "DevScope.h"
 #include "DevScope.inl"
 #include "Spec.h"

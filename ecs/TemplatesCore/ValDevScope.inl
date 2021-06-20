@@ -46,7 +46,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	USING_VALDEVCORE(ValSink)
 	USING_VALDEVCORE(CtxStream)
 	USING_VALDEVMACH(Value)
-	RTLOG(String(GetDynamicName()) + "(" + HexStr(this) << ")::Forward");
+	RTLOG("ValExchangePoint::Forward: " << GetDynamicName() << "(" << HexStr(this) << ") begin");
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
 	

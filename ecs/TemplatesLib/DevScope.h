@@ -153,7 +153,6 @@ struct ScopeDevLibT {
 		template <class ValSpec> void UpdateDevBuffersValT() {}
 		template <class ValSpec> bool IsIn() const {return IsValSpec(AsTypeCls<ValSpec>());}
 		template <class ValSpec> void ForwardPacket(FwdScope& fwd, typename ScopeValMachT<ValSpec>::Packet p);
-		template <class ValSpec> static typename ScopeValMachT<ValSpec>::Format GetDefaultFormat();
 		template <class FromDevSpec, class ValSpec> void ConvertPacket(typename ScopeValMachT<ValSpec>::Packet& p);
 		
 	};

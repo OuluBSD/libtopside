@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 #if 0
 
 void DebugAudioSinkComponent::Initialize() {
-	auto fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<AudioSpec>();
+	auto fmt = ScopeDevCoreT<CenterSpec>::GetDefaultFormat<AudioSpec>();
 	sink_value.SetFormat(fmt);
 	sink_value.SetMinBufSamples(fmt.GetSampleRate() * 2);
 	
@@ -33,9 +33,10 @@ void DebugAudioSinkComponent::FakeHardwareProcess() {
 		}
 		ts.Reset();
 		
-		StreamCallbackArgs args;
-		args.output = data.Begin();
-		args.fpb = fmt.GetSampleRate();
+		StreamCallbackArgs	args;
+		args.output			= data.Begin();
+		args.size			= data.GetCount();
+		args.fpb			= fmt.GetSampleRate();
 		
 		sink_value.SinkCallback(args);
 	}
@@ -81,7 +82,7 @@ void DebugAudioSinkComponent::Forward(FwdScope& fwd) {
 		
 		ToPacket to = ToValMach::CreatePacket(in->GetOffset());
 		
-		ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
+		ToFormat fmt = ScopeDevCoreT<DevSpec>::GetDefaultFormat<ToValSpec>();
 		RTLOG("DebugAudioSinkComponent::Forward: sending packet in format: " << fmt.ToString());
 		to->SetFormat(fmt);
 		
@@ -106,7 +107,7 @@ void DebugAudioSinkComponent::Forward(FwdScope& fwd) {
 		
 		ToPacket to = ToValMach::CreatePacket(o);
 	
-		ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
+		ToFormat fmt = ScopeDevCoreT<DevSpec>::GetDefaultFormat<ToValSpec>();
 		RTLOG("DebugAudioSinkComponent::Forward: sending packet in format: " << fmt.ToString());
 		to->SetFormat(fmt);
 		
@@ -145,66 +146,9 @@ void DebugAudioSinkComponent::Process(AudioPacket& p) {
 
 
 void DebugAudioSinkComponent::LocalSinkValue::SinkCallback(StreamCallbackArgs& args) {
-	if (consumer.IsEmptySource())
-		consumer.SetSource(par.sink_value.GetBuffer());
-	
 	if (args.output) {
-		TS::AudioFormat fmt = par.sink_value.GetFormat();
-		
-		int size = fmt.GetFrameSize();
-		int qsize = par.sink_value.GetQueueSize();
-		if (qsize > 0 || consumer.HasLeftover()) {
-			ASSERT(args.fpb == fmt.sample_rate);
-			
-			/*off32 begin_offset = buf.GetOffset();
-			if (0) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
-				buf.Dump();
-			}*/
-			
-			
-			consumer.SetDestination(fmt, args.output, size);
-			consumer.ConsumeAll(false);
-			consumer.ClearDestination();
-			int csize = consumer.GetLastMemoryBytes();
-			int consumed_count = consumer.GetCount();
-			if (csize != size) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << csize << " (expected " << size << "), packets=" << consumed_count);
-			}
-			else {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback:  consumed " << csize << ", packets=" << consumed_count);
-			}
-			
-			par.lock.Enter();
-			par.consumed_packets.Append(consumer.consumed_packets);
-			par.lock.Leave();
-			
-			
-			auto sys = par.GetEntity()->GetMachine().TryGet<CustomerSystem>();
-			if (sys && par.cfg)
-				sys->AddOnce(par, *par.cfg);
-			
-			/*off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
-				buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}*/
-		}
-		else {
-			#if DEBUG_RT_PIPE
-			RTLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
-			#endif
-			
-			memset(args.output, 0, size);
-		}
+		ASSERT(args.fpb == GetValue(AUDCTX).GetFormat().sample_rate);
+		par.ForwardMem(args.output, args.size);
 	}
 }
 

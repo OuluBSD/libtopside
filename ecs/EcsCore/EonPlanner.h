@@ -121,6 +121,17 @@ public:
 typedef Node<ActionNode> APlanNode;
 
 
+struct Plan : Moveable<Plan> {
+	Vector<Eon::ActionNode*> plan;
+	
+	Plan() {}
+	Plan(const Plan& ep) {*this = ep;}
+	void operator=(const Plan& ep) {
+		plan <<= ep.plan;
+	}
+};
+
+
 class ActionPlannerWrapper;
 
 class ActionPlanner {

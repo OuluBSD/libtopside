@@ -9,8 +9,10 @@ struct ScopeDevCoreT {
 	using Mach				= ScopeDevMachT<DevSpec>;
 	using D					= DevSpec;
 	using DevFormat			= typename Mach::DevFormat;
-	using DevStream			= typename Mach::DevStream;
+	//using DevStream			= typename Mach::DevStream;
 	
+	
+	template <class ValSpec> static typename ScopeValMachT<ValSpec>::Format GetDefaultFormat();
 	
 	/*
 	using DevExchangePoint	= typename Mach::DevExchangePoint;

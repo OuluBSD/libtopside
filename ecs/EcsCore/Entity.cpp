@@ -76,6 +76,7 @@ void Entity::UninitializeComponents() {
 	auto& comps = this->comps.GetValues();
 	int dbg_i = 0;
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().ClearExtension();
 		it().Uninitialize();
 		dbg_i++;
 	}

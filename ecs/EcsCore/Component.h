@@ -53,6 +53,7 @@ public:
 	virtual TypeCls GetValSpec() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const;
 	virtual bool SetExtension(ComponentExtBase* ext) {return false;}
+	virtual void ClearExtension() {}
 	virtual ComponentExtBaseRef GetExtension() {return ComponentExtBaseRef();}
 	
 	ComponentExtBaseRef SetExtensionTypeCls(TypeCls ext);
@@ -137,11 +138,22 @@ public:
 		ASSERT(o);
 		if (!o)
 			return false;
+		c->SetParent(this);
+		c->Initialize();
 		ext.WrapObject(RefParent1<ComponentBase>(this), o);
 		return true;
 	}
 	
-	ComponentExtBaseRef GetExtension() override {return ext;}
+	void ClearExtension() override {
+		if (ext) {
+			ext->Uninitialize();
+			ext.Clear();
+		}
+	}
+	
+	ComponentExtBaseRef GetExtension() override {
+		return ext;
+	}
 	
 	
 };

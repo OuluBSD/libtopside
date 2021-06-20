@@ -12,16 +12,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-struct EonPlan : Moveable<EonPlan> {
-	Vector<Eon::ActionNode*> plan;
-	
-	EonPlan() {}
-	EonPlan(const EonPlan& ep) {*this = ep;}
-	void operator=(const EonPlan& ep) {
-		plan <<= ep.plan;
-	}
-};
-
 class EonState {
 	
 	

@@ -85,7 +85,7 @@ void DebugSoundGeneratorComponent::Initialize() {
 	Component::Initialize();
 	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 	
-	auto fmt = ScopeDevLibT<CenterSpec>::StageComponent::GetDefaultFormat<OrderSpec>();
+	auto fmt = ScopeDevCoreT<CenterSpec>::GetDefaultFormat<OrderSpec>();
 	sink_value.SetFormat(fmt);
 	
 	GetStream(AUDCTX).Get().Lock();
@@ -176,7 +176,7 @@ void DebugSoundGeneratorComponent::Forward(FwdScope& fwd) {
 			
 			ToPacket to = ToValMach::CreatePacket(off);
 			
-			ToFormat fmt = ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat<ToValSpec>();
+			ToFormat fmt = ScopeDevCoreT<DevSpec>::GetDefaultFormat<ToValSpec>();
 			RTLOG("DebugSoundGeneratorComponent::Forward: sending packet in format: " << fmt.ToString());
 			to->SetFormat(fmt);
 			

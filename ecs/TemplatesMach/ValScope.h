@@ -35,9 +35,7 @@ struct ScopeValMachT {
 	};
 	
 	using V = ValSpec;
-	
 	typedef dword PacketId;
-	
 	
 	
 	class PacketValue :

@@ -211,36 +211,7 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 	DLOG("ComponentBase::ForwardPacket: end");
 }
 
-template <class DevSpec>
-template <class ValSpec>
-typename ScopeValMachT<ValSpec>::Format
-ScopeDevLibT<DevSpec>::StageComponent::GetDefaultFormat() {
-	typename ScopeValMachT<ValSpec>::Format fmt;
-	fmt.template SetDefault<DevSpec>();
-	return fmt;
-}
 
-
-
-#define DEV(x) \
-template <> template <> inline \
-typename ScopeValMachT<AudioSpec>::Format \
-ScopeDevLibT<x##Spec>::StageComponent::GetDefaultFormat<AudioSpec>() { \
-	typename ScopeValMachT<AudioSpec>::Format fmt; \
-	fmt.Set<x##Spec>(SoundSample::S16_LE, 2, 44100, 1024); \
-	return fmt; \
-} \
-template <> template <> inline \
-typename ScopeValMachT<VideoSpec>::Format \
-ScopeDevLibT<x##Spec>::StageComponent::GetDefaultFormat<VideoSpec>() { \
-	typename ScopeValMachT<VideoSpec>::Format fmt; \
-	fmt.Set<x##Spec>(LightSampleFD::U8_LE_ABCD, Size(640, 480), 60, 1); \
-	return fmt; \
-}
-DEV(Center)
-DEV(Net)
-DEV(Perma)
-#undef DEV
 
 
 
@@ -582,7 +553,7 @@ TMPL_DEVLIB(void) StageContextConnector::Update(double dt) {
 			return;
 		}
 		
-		#define IFACE(x) stream.template Get<x##Spec>().fmt = StageComponent::template GetDefaultFormat<x##Spec>();
+		#define IFACE(x) stream.template Get<x##Spec>().fmt = Core::template GetDefaultFormat<x##Spec>();
 		IFACE_LIST
 		#undef IFACE
 		

@@ -147,7 +147,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	
 	// Do the action plan searching
 	AStar<Eon::ActionNode> as;
-	EonPlan ep;
+	Eon::Plan ep;
 	ep.plan = as.Search(start_node);
 	
 	if (ep.plan.IsEmpty()) {

@@ -8,10 +8,10 @@ TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	using StageContextConnector		= typename DevLib::StageContextConnector;
 	using StageContextConnectorRef	= typename DevLib::StageContextConnectorRef;
 	
-	auto sink_fmt = FromComponent::template GetDefaultFormat<ValSpec>();
+	auto sink_fmt = FDevCore::template GetDefaultFormat<ValSpec>();
 	sink_value.SetFormat(sink_fmt);
 	
-	auto src_fmt = ToComponent::template GetDefaultFormat<ValSpec>();
+	auto src_fmt = TDevCore::template GetDefaultFormat<ValSpec>();
 	src_value.SetFormat(src_fmt);
 	
 	ToComponent::Initialize();

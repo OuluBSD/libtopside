@@ -30,6 +30,7 @@ protected:
 	
 	struct StreamCallbackArgs {
 		void*			output;
+		int				size;
 		unsigned long	fpb;
 	};
 	

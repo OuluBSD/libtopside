@@ -6,35 +6,37 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class ValDevSpec>
 struct ScopeValDevLibT {
-	using ValSpec		= typename ValDevSpec::Val;
-	using DevSpec		= typename ValDevSpec::Dev;
-	using ValMach		= ScopeValMachT<ValSpec>;
-	using Mach			= ScopeValDevMachT<ValDevSpec>;
-	using Core			= ScopeValDevCoreT<ValDevSpec>;
-	using V				= ValSpec;
-	using Packet		= typename ValMach::Packet;
-	using Format		= typename Mach::Format;
-	using ValueBase		= typename Mach::ValueBase;
-	using StreamBase	= typename Mach::StreamBase;
-	using Value			= typename Mach::Value;
-	using CtxStream		= typename Mach::Stream;
-	using ValExchangePoint		= typename Mach::ValExchangePoint;
-	using SimpleValue			= typename Mach::SimpleValue;
-	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
-	using SimpleStream			= typename Mach::SimpleStream;
-	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
-	using ValSink				= typename Core::ValSink;
-	using ValSource				= typename Core::ValSource;
-	using DevCompConf			= typename ScopeDevMachT<DevSpec>::StageComponentConf;
-	using StageComponent		= typename ScopeDevLibT<DevSpec>::StageComponent;
+	using ValSpec					= typename ValDevSpec::Val;
+	using DevSpec					= typename ValDevSpec::Dev;
+	using ValMach					= ScopeValMachT<ValSpec>;
+	using Mach						= ScopeValDevMachT<ValDevSpec>;
+	using Core						= ScopeValDevCoreT<ValDevSpec>;
+	using DevCore					= ScopeDevCoreT<DevSpec>;
+	using V							= ValSpec;
+	using Packet					= typename ValMach::Packet;
+	using Format					= typename Mach::Format;
+	using ValueBase					= typename Mach::ValueBase;
+	using StreamBase				= typename Mach::StreamBase;
+	using Value						= typename Mach::Value;
+	using CtxStream					= typename Mach::Stream;
+	using ValExchangePoint			= typename Mach::ValExchangePoint;
+	using SimpleValue				= typename Mach::SimpleValue;
+	using SimpleBufferedValue		= typename Mach::SimpleBufferedValue;
+	using SimpleStream				= typename Mach::SimpleStream;
+	using SimpleBufferedStream		= typename Mach::SimpleBufferedStream;
+	using PacketConsumer			= typename Mach::PacketConsumer;
+	using ValSink					= typename Core::ValSink;
+	using ValSource					= typename Core::ValSource;
+	using DevCompConf				= typename ScopeDevMachT<DevSpec>::StageComponentConf;
+	using StageComponent			= typename ScopeDevLibT<DevSpec>::StageComponent;
 	
-	using OrderValDevSpec		= VD<DevSpec, OrderSpec>;
-	using OrderMach				= ScopeValDevMachT<OrderValDevSpec>;
-	using OrderCore				= ScopeValDevCoreT<OrderValDevSpec>;
-	using DevOrderFormat		= typename OrderMach::Format;
-	using DevOrder				= typename OrderMach::Value;
-	using DevSimpleOrder		= typename OrderMach::SimpleValue;
-	using DevOrderSink			= typename OrderCore::ValSink;
+	using OrderValDevSpec			= VD<DevSpec, OrderSpec>;
+	using OrderMach					= ScopeValDevMachT<OrderValDevSpec>;
+	using OrderCore					= ScopeValDevCoreT<OrderValDevSpec>;
+	using DevOrderFormat			= typename OrderMach::Format;
+	using DevOrder					= typename OrderMach::Value;
+	using DevSimpleOrder			= typename OrderMach::SimpleValue;
+	using DevOrderSink				= typename OrderCore::ValSink;
 	
 	using ReceiptValDevSpec			= VD<DevSpec, ReceiptSpec>;
 	using ReceiptMach				= ScopeValDevMachT<ReceiptValDevSpec>;
@@ -100,7 +102,7 @@ struct ScopeValDevLibT {
 		
 		struct LocalSourceStream : public SimpleStream {
 			InputComponent& par;
-			AudioPacketConsumer consumer;
+			PacketConsumer consumer;
 			
 			RTTI_DECL1(LocalSourceStream, SimpleStream)
 			LocalSourceStream(InputComponent* par) :
@@ -138,12 +140,15 @@ struct ScopeValDevLibT {
 	};
 	
 	
+	
 	class OutputExt : public ComponentExtBase {
 		
 	public:
 		RTTI_DECL1(OutputExt, ComponentExtBase);
 		using Ext = OutputExt;
 		using Component = OutputComponent;
+		
+		OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
 		
 	};
 	
@@ -176,7 +181,6 @@ struct ScopeValDevLibT {
 		
 		struct LocalSourceStream : public DevSimpleReceiptStream {
 			OutputComponent& par;
-			AudioPacketConsumer consumer;
 			
 			RTTI_DECL1(LocalSourceStream, DevSimpleReceiptStream)
 			LocalSourceStream(OutputComponent* par) :
@@ -190,17 +194,20 @@ struct ScopeValDevLibT {
 		LocalSourceValue		src_value;
 		LocalSourceStream		src_stream;
 		RealtimeSourceConfig*	cfg = 0;
+		
 		Mutex					lock;
 		LinkedList<Packet>		consumed_packets;
-		
+		PacketConsumer			consumer;
+		CustomerSystemRef		cust_sys;
 		
 		
 	public:
 		OutputComponent() : sink_value(this), src_stream(this) {}
 		
+		void				Initialize() override;
 		void				Forward(FwdScope& fwd) override;
 		void				ForwardExchange(FwdScope& fwd) override;
-		
+		bool				ForwardMem(void* mem, size_t mem_size);
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		

@@ -19,6 +19,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	using ValSpec				= typename ValDevSpec::Val;
 	using DevSpec				= typename ValDevSpec::Dev;
 	using ValData				= ScopeValMachT<ValSpec>;
+	using ValCore				= ScopeValCoreT<ValSpec>;
 	using ValLib				= ScopeValLibT<ValSpec>;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using Core					= ScopeValDevCoreT<ValDevSpec>;
@@ -30,9 +31,9 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	using Ex					= typename Mach::Ex;
 	using ValSink				= typename Core::ValSink;
 	using Format				= typename ValData::Format;
-	using PacketTracker			= typename ValLib::PacketTracker;
+	using PacketTracker			= typename ValCore::PacketTracker;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
-	using StageComponent			= typename DevLib::StageComponent;
+	using StageComponent		= typename DevLib::StageComponent;
 	
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
@@ -572,19 +573,6 @@ void ScopeDevLibT<AccelSpec>::StageComponent::ConvertPacket<CenterSpec, x##Spec>
 }
 IFACE_LIST
 #undef IFACE
-
-template <>
-template <>
-typename ScopeValMachT<AudioSpec>::Format
-ScopeDevLibT<AccelSpec>::StageComponent::GetDefaultFormat<AudioSpec>() {
-	using ValSpec					= AudioSpec;
-	using FromDevSpec				= AccelSpec;
-	using ValMach					= ScopeValMachT<ValSpec>;
-	using Format					= typename ValMach::Format;
-	Format fmt;
-	fmt.Set<AccelSpec>(SoundSample::FLT_LE, 2, 44100, 1024);
-	return fmt;
-}
 
 
 

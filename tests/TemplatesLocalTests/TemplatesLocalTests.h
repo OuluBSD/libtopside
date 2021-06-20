@@ -11,6 +11,7 @@ class TestCustomer :
 {
 	
 public:
+	RTTI_DECL1(TestCustomer, CustomerExt)
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
@@ -25,11 +26,17 @@ public:
 class TestRealtimeSink :
 	public AudioOutputExt
 {
+	RunningFlag				flag;
 	
 public:
+	RTTI_DECL1(TestRealtimeSink, AudioOutputExt)
+	typedef TestRealtimeSink CLASSNAME;
 	
+	void Initialize() override;
+	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {LOG("TestRealtimeSink::Forward");}
+	void IntervalSinkProcess();
 	
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.realtime")

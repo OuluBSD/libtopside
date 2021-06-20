@@ -9,7 +9,10 @@ file
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
 	Classes.h,
+	ValScope.h,
+	ValScope.inl highlight cpp,
 	DevScope.h,
 	DevScope.inl highlight cpp,
+	AccelScope.cpp,
 	Spec.h;
 

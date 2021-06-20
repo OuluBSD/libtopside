@@ -18,7 +18,5 @@ file
 	Router.h,
 	Router.cpp,
 	Eon.h,
-	Eon.cpp,
-	Customer.h,
-	Customer.cpp;
+	Eon.cpp;
 

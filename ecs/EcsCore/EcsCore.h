@@ -25,6 +25,7 @@
 #include "EntityVisitor.h"
 #include "ConnManual.h"
 #include "ConnAny.h"
+#include "Customer.h"
 
 
 #endif

@@ -27,24 +27,6 @@ public:
 };
 
 
-
-
-
-class GeneratorComponentBase : RTTIBase {
-	
-protected:
-	RealtimeSourceConfig cfg;
-	off32_gen gen;
-	
-public:
-	RTTI_DECL0(GeneratorComponentBase)
-	GeneratorComponentBase() : cfg(gen) {}
-	
-	
-};
-
-
-
 NAMESPACE_TOPSIDE_END
 
 #endif

@@ -31,7 +31,6 @@
 #include "RegistrySystem.h"
 #include "Router.h"
 #include "Eon.h"
-#include "Customer.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB

@@ -59,7 +59,7 @@ void Main() {
 	{
 		Machine mach;
 		
-		//SetDebugRefVisits();
+		SetDebugRefVisits();
 		RuntimeDiagnostics::Static().SetRoot(mach);
 		
 	    #ifdef flagSTDEXC
@@ -74,7 +74,7 @@ void Main() {
 			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
-			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
+			    mach.Add<ScopeValCoreT<AudioSpec>::PacketTracker>();
 				
 				PoolRef root = es->GetRoot();
 				
@@ -114,6 +114,41 @@ void Main() {
 	}
     
     //RefDebugVisitor::Static().DumpUnvisited();
+}
+
+
+
+
+void TestRealtimeSink::Initialize() {
+	
+	flag.Start(1);
+	Thread::Start(THISBACK(IntervalSinkProcess));
+}
+
+void TestRealtimeSink::Uninitialize() {
+	flag.Stop();
+}
+
+void TestRealtimeSink::IntervalSinkProcess() {
+	AudioOutputComponent& base = GetParentT();
+	AudioFormat fmt =  base.GetValue(AUDCTX).GetFormat();
+	Vector<byte> data;
+	data.SetCount(fmt.GetFrameSize());
+	double step_s = fmt.GetFrameSeconds();
+	TimeStop ts;
+	while (flag.IsRunning()) {
+		double t = ts.Seconds();
+		
+		if (t < step_s) {
+			Sleep(1);
+			continue;
+		}
+		ts.Reset();
+		
+		RTLOG("TestRealtimeSink::IntervalSinkProcess: trying to consume " << data.GetCount());
+		base.ForwardMem(data.Begin(), data.GetCount());
+	}
+	flag.DecreaseRunning();
 }
 
 
