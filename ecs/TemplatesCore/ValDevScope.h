@@ -32,12 +32,18 @@ struct ScopeValDevCoreT {
 	{
 	public:
 		RTTI_DECL_3(ValSink, InterfaceSink<ValSink>, SinkBase, DevSink, ValDevSpec::GetName() + "Sink")
-		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
+		void Visit(RuntimeVisitor& vis) {
+			vis.VisitThis<InterfaceSink<ValSink>>(this);
+			vis.VisitThis<SinkBase>(this);
+			vis.VisitThis<DevSink>(this);
+		}
 		
+		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
 		
 		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
 		virtual Format				GetFormat(V*) = 0;
 		virtual Value&				GetValue(V*) = 0;
+		virtual void				ClearSink() override {GetValue((V*)0).Clear();}
 		
 	};
 	
@@ -50,6 +56,11 @@ struct ScopeValDevCoreT {
 		
 	public:
 		RTTI_DECL_2(ValSource, InterfaceSourceT, DevSource, ValDevSpec::GetName() + "Source")
+		void Visit(RuntimeVisitor& vis) {
+			vis.VisitThis<InterfaceSource<ValSource, ValSink>>(this);
+			vis.VisitThis<DevSource>(this);
+		}
+		
 		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
 		
 		using ExPt = ValExchangePoint;
@@ -64,7 +75,7 @@ struct ScopeValDevCoreT {
 		virtual CtxStream&			GetStream(V*) = 0;
 		virtual void				BeginStream(V*) = 0;
 		virtual void				EndStream(V*) = 0;
-		
+		virtual void				ClearSource() override {GetStream((V*)0).Clear();}
 	private:
 		
 	};
@@ -101,6 +112,7 @@ struct ScopeValDevCoreT {
 	public:
 		RTTI_CTX_SYS(ValSystem, SystemBase)
 	    SYS_CTOR(ValSystem)
+		SYS_DEF_VISIT_(vis && srcs && sinks && expts)
 		
 		void Add(ValSourceRef src);
 		void Add(ValSinkRef sink);

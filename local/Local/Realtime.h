@@ -14,6 +14,8 @@ public:
 	RTTI_DECL_R0(RealtimeStream)
 	virtual ~RealtimeStream() {}
 	
+	virtual void Clear() = 0;
+	
 	virtual String GetLastError() const {return String();}
 	
 };

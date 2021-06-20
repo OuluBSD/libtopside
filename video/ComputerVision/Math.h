@@ -195,7 +195,8 @@ void qsort(Vector<T>& array, int low, int high, bool (*cmp)(const T*, const T*))
 	//int sp = 0, i = 0, n = 0, m = 0, ptr = 0, ptr2 = 0, d = 0;
 	int left0 = 0, left1 = 0, right0 = 0, right1 = 0, pivot = 0, a = 0, b = 0, c = 0, swap_cnt = 0;
 	
-	static thread_local Vector<int> stack = qsort_stack;
+	MAKE_STATIC_LOCAL(Vector<int>, stack)
+	stack = qsort_stack;
 	
 	if ((high - low + 1) <= 1)
 		return;

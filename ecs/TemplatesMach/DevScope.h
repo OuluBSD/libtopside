@@ -40,10 +40,10 @@ template <class DevSpec>
 struct ScopeDevMachT {
 	using Spec = DevSpec;
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
-		s << Spec::GetName() << t;
+	static String TypeStringT(const char* t) {
+		String s;
+		s << DevSpec::GetName();
+		s << t;
 		return s;
 	}
 	
@@ -84,6 +84,7 @@ struct ScopeDevMachT {
 		RTTIBase
 	{
 		RTTI_DECL_T0(DevSink)
+		void Visit(RuntimeVisitor& vis) {}
 		
 	};
 	
@@ -92,6 +93,7 @@ struct ScopeDevMachT {
 		RTTIBase
 	{
 		RTTI_DECL_T0(DevSource)
+		void Visit(RuntimeVisitor& vis) {}
 		
 	};
 	

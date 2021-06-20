@@ -25,7 +25,11 @@ class StackDebugger {
 	void IncRef(const Item& it);
 	void DecRef(const Item& it);
 public:
+	typedef StackDebugger CLASSNAME;
+	StackDebugger() {}
+	~StackDebugger() {Clear();}
 	
+	void Clear() {ctors.Clear(); refs.Clear();}
 	void NonZeroRefError();
 	void Dump();
 	void Log(String type, const Item& it);
@@ -38,7 +42,7 @@ public:
 	template <class T> void DecRef(T* o, TypeId type) {DecRef(Item {{}, REF, type, o});}
 	
 	
-	static StackDebugger& Static() {static StackDebugger s; return s;}
+	static StackDebugger& Static() {MAKE_STATIC(StackDebugger, s); return s;}
 	
 	
 };
@@ -69,7 +73,8 @@ public:
 class RuntimeDiagnosticVisitor : public RuntimeVisitor {
 	struct Var {
 		void* mem;
-		TypeId type;
+		TypeCls root_type, derived_type;
+		String root_name, derived_name;
 		LockedScopeRefCounter* ref;
 	};
 	struct Scope {
@@ -87,9 +92,9 @@ class RuntimeDiagnosticVisitor : public RuntimeVisitor {
 	LockedScopeRefCounter* cursor = 0;
 	
 	
-	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
+	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override;
 	void OnExit() override;
-	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
+	void OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override;
 	
 	void DumpVisit(const Scope& s, int depth, bool only_focused);
 	void RecursiveFocus(Scope& s);
@@ -118,13 +123,13 @@ class RuntimeDiagnostics {
 	
 public:
 	typedef RuntimeDiagnostics CLASSNAME;
-	RuntimeDiagnostics();
+	RuntimeDiagnostics() {}
 	~RuntimeDiagnostics() {Clear();}
 	
 	void Clear() {vis.Clear();}
 	void CaptureSnapshot();
 	void OnRefError(LockedScopeRefCounter* r);
-	static RuntimeDiagnostics& Static() {static RuntimeDiagnostics s; return s;}
+	static RuntimeDiagnostics& Static() {MAKE_STATIC(RuntimeDiagnostics, s); return s;}
 	
 	template <class T>
 	void SetRoot(T& o) {
@@ -150,8 +155,8 @@ class RefDebugVisitor : public RuntimeVisitor {
 	LinkedList<Item> items;
 	size_t break_ref_add = 0;
 	size_t break_ref_rem = 0;
-
-	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {
+	
+	void OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {
 		Item cmp;
 		cmp.mem = mem;
 		Item* i = items.Find(cmp);
@@ -161,15 +166,19 @@ class RefDebugVisitor : public RuntimeVisitor {
 	
 	
 public:
+	typedef RefDebugVisitor CLASSNAME;
 	RTTI_DECL1(RefDebugVisitor, RuntimeVisitor)
+	RefDebugVisitor() {}
+	~RefDebugVisitor() {Clear();}
 	
+	void Clear() {items.Clear(); break_ref_add = 0; break_ref_rem = 0;}
 	void Add(void* mem);
 	void Remove(void* mem);
 	void DumpUnvisited();
 	void BreakRefAdd(size_t addr) {break_ref_add = addr;}
 	void BreakRefRemove(size_t addr) {break_ref_rem = addr;}
 	
-	static RefDebugVisitor& Static() {static RefDebugVisitor v; return v;}
+	static RefDebugVisitor& Static() {MAKE_STATIC(RefDebugVisitor, v); return v;}
 	
 	
 };
@@ -179,6 +188,11 @@ inline void BreakRefRemove(size_t addr)	{RefDebugVisitor::Static().BreakRefRemov
 
 
 
+template <class T> void DumpRuntimeDiagnostics(T* o) {
+	RuntimeDiagnosticVisitor vis;
+	vis.Visit(*o);
+	vis.Dump();
+}
 
 NAMESPACE_TOPSIDE_END
 

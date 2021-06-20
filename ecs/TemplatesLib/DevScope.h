@@ -36,9 +36,8 @@ struct ScopeDevLibT {
 	using StageComponentRef				= Ref<StageComponent, RefParent1<Entity>>;
 	
 
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
+	static String TypeStringT(const char* t) {
+		String s;
 		s << DevSpec::GetName() << t;
 		return s;
 	}
@@ -64,9 +63,6 @@ struct ScopeDevLibT {
 		LinkedList<DevContextConnectorRef> devs;
 		LinkedList<StageComponentRef> comps;
 		
-		void Visit(RuntimeVisitor& vis) override {
-			vis && stages && devs && comps;
-		}
 	protected:
 	    bool Initialize() override;
 	    void Start() override;
@@ -77,6 +73,7 @@ struct ScopeDevLibT {
 	public:
 		RTTI_CTX_SYS(DevSystem, SystemBase)
 	    SYS_CTOR(DevSystem)
+		SYS_DEF_VISIT_(vis && stages && devs && comps)
 		
 		void AddStage(StageContextConnectorRef stage)		{ASSERT(stage); stages.FindAdd(stage);}
 		void RemoveStage(StageContextConnectorRef stage)	{stages.RemoveKey(stage);}

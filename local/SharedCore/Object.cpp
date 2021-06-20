@@ -208,7 +208,7 @@ hash_t ObjectArrayMapComb::GetHashValue() const {
 
 
 String GetObjectTreeString(const Object& v, String key, int indent) {
-	thread_local static Index<void*> visited;
+	MAKE_STATIC_LOCAL(Index<void*>, visited);
 	if (!indent)
 		visited.Clear();
 	

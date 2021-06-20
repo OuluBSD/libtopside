@@ -43,7 +43,9 @@ void ConvertToParamsHLine(const Vector<Pointf>& pts, int size, char* params) {
 	double width = end.x - begin.x;
 	int widthi = (int)max(1.0, width + 0.5);
 	
-	static thread_local Vector<double> wave, weight, paramsf;
+	MAKE_STATIC_LOCAL(Vector<double>, wave);
+	MAKE_STATIC_LOCAL(Vector<double>, weight);
+	MAKE_STATIC_LOCAL(Vector<double>, paramsf);
 	wave.SetCount(widthi);
 	weight.SetCount(widthi);
 	paramsf.SetCount(size);
@@ -150,7 +152,7 @@ void ConvertFromParamsHLine(int param_count, const char* params, int width, Vect
 }
 
 void ConvertToParamsLine(int point_count, const Point* pt, int size, char* params) {
-	thread_local static Vector<Pointf> pts;
+	MAKE_STATIC_LOCAL(Vector<Pointf>, pts);
 	
 	const Point* begin = pt;
 	const Point* end = pt + point_count - 1;
@@ -190,7 +192,7 @@ void ConvertToParamsLine(int point_count, const Point* pt, int size, char* param
 }
 
 void ConvertFromParamsLineAppend(int param_count, const char* params, Point begin, Point end, Vector<Point>& pts) {
-	thread_local static Vector<Pointf> hline;
+	MAKE_STATIC_LOCAL(Vector<Pointf>, hline);
 	Point diff = end - begin;
 	double len = FastSqrt((double)(diff.x * diff.x + diff.y * diff.y));
 	int steps = max((int)(max(diff.x, diff.y) / 2), 1);

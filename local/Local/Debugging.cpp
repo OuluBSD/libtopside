@@ -88,9 +88,7 @@ void StackDebugger::Log(String type, const Item& it) {
 
 
 
-RuntimeDiagnostics::RuntimeDiagnostics() {
-	
-}
+
 
 void RuntimeDiagnostics::CaptureSnapshot() {
 	vis.Clear();
@@ -138,7 +136,10 @@ void RuntimeDiagnostics::OnRefError(LockedScopeRefCounter* r) {
 
 void RuntimeDiagnosticVisitor::Scope::Clear() {
 	sub_scopes.Clear();
-	var.type = AsVoidTypeId();
+	var.root_type = AsVoidTypeCls();
+	var.root_name = "void";
+	var.derived_type = AsVoidTypeCls();
+	var.derived_name = "void";
 	var.mem = 0;
 	parent = 0;
 	focused = 0;
@@ -150,11 +151,14 @@ void RuntimeDiagnosticVisitor::Clear() {
 	cur_scope = 0;
 }
 
-bool RuntimeDiagnosticVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
+bool RuntimeDiagnosticVisitor::OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {
 	if (!cur_scope) {
 		root.parent = 0;
 		root.var.mem = mem;
-		root.var.type = type;
+		root.var.root_type = type.GetTypeId();
+		root.var.root_name = type.GetDynamicName();
+		root.var.derived_type = derived;
+		root.var.derived_name = derived_name;
 		root.var.ref = ref;
 		root.focused = 0;
 		cur_scope = &root;
@@ -163,7 +167,10 @@ bool RuntimeDiagnosticVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeR
 		Scope& scope = cur_scope->sub_scopes.Add();
 		scope.parent = cur_scope;
 		scope.var.mem = mem;
-		scope.var.type = type;
+		scope.var.root_type = type.GetTypeId();
+		scope.var.root_name = type.GetDynamicName();
+		scope.var.derived_type = derived;
+		scope.var.derived_name = derived_name;
 		scope.var.ref = ref;
 		scope.focused = 0;
 		cur_scope = &scope;
@@ -175,11 +182,14 @@ void RuntimeDiagnosticVisitor::OnExit() {
 	cur_scope = cur_scope->parent;
 }
 
-void RuntimeDiagnosticVisitor::OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
+void RuntimeDiagnosticVisitor::OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {
 	ASSERT(cur_scope);
 	Var& var = cur_scope->refs.Add();
 	var.mem = mem;
-	var.type = type;
+	var.root_type = type.GetTypeId();
+	var.root_name = type.GetDynamicName();
+	var.derived_type = derived;
+	var.derived_name = derived_name;
 	var.ref = ref;
 }
 
@@ -198,7 +208,13 @@ void RuntimeDiagnosticVisitor::DumpVisit(const Scope& scope, int depth, bool onl
 	String indent, s0, s1;
 	indent.Cat('\t', depth);
 	
-	s0 << scope.var.type.CleanDemangledName() << "[" << HexStr(scope.var.mem) << "]";
+	s0 << scope.var.derived_name;
+	
+	String dyn_name = scope.var.root_name;
+	if (dyn_name != scope.var.derived_name)
+		s0 << "\\" << dyn_name;
+	
+	s0 << "[" << HexStr(scope.var.mem) << "]";
 	if (scope.var.ref)
 		s0 << " &[" << HexStr(scope.var.ref) << "]";
 	LOG(indent << s0);
@@ -207,7 +223,7 @@ void RuntimeDiagnosticVisitor::DumpVisit(const Scope& scope, int depth, bool onl
 		if (only_focused && v.ref != cursor)
 			continue;
 		s1 = "";
-		s1 << indent << "\t-->" << v.type.CleanDemangledName() << "[" << HexStr(v.mem) << "]";
+		s1 << indent << "\t-->" << v.derived_name << "[" << HexStr(v.mem) << "]";
 		if (v.ref)
 			s1 << " &[" << HexStr(v.ref) << "]";
 		LOG(s1);
@@ -261,7 +277,7 @@ Vector<Callback> __exit_cbs;
 EXITBLOCK {
 	for (Callback& cb : __exit_cbs)
 		cb();
-	RuntimeDiagnostics::Static().Clear();
+	__exit_cbs.Clear();
 }
 
 void CallInExitBlock(Callback cb) {
@@ -307,11 +323,11 @@ void RefDebugVisitor::DumpUnvisited() {
 	}
 }
 
-void DebugRefVisits_AddRef(void* mem) {
+void DebugRefVisits_AddRef(RefCommon* mem) {
 	RefDebugVisitor::Static().Add(mem);
 }
 
-void DebugRefVisits_RemoveRef(void* mem) {
+void DebugRefVisits_RemoveRef(RefCommon* mem) {
 	RefDebugVisitor::Static().Remove(mem);
 }
 

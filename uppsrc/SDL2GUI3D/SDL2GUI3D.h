@@ -57,7 +57,7 @@ extern "C" int main(int argc, char *argv[]) {\
 	GuiMainFn_(); \
 	Ctrl::ExitFB(); \
 	Ctrl::CloseTopCtrls(); \
-	return GetExitCode(); \
+	return ::UPP::GetExitCode(); \
 } \
 \
 void GuiMainFn_()

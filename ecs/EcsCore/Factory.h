@@ -19,8 +19,9 @@ public:
 		TypeCls sink_cls;
 		String name;
 	};
-	static VectorMap<TypeCls,IfaceData>& SourceDataMap() {static VectorMap<TypeCls,IfaceData> m; return m;}
-	static VectorMap<TypeCls,IfaceData>& SinkDataMap()   {static VectorMap<TypeCls,IfaceData> m; return m;}
+	typedef VectorMap<TypeCls,IfaceData> IfaceMap;
+	static IfaceMap& SourceDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
+	static IfaceMap& SinkDataMap()   {MAKE_STATIC(IfaceMap, m); return m;}
 	
 	template <class T> static void RegisterInterfaceSource() {
 		IfaceData& d = SourceDataMap().GetAdd(AsTypeCls<T>());
@@ -73,7 +74,8 @@ public:
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
 	};
-	static VectorMap<TypeCls,CompData>& CompDataMap() {static VectorMap<TypeCls,CompData> m; return m;}
+	typedef VectorMap<TypeCls,CompData> CompMap;
+	static CompMap& CompDataMap() {MAKE_STATIC(CompMap, m); return m;}
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	template <class T> static bool MakeAction(Eon::Action& act) {return T::MakeAction(act);}
@@ -112,6 +114,21 @@ public:
 	
 };
 
+
+
+template <class Main, class Base> inline
+ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(TypeCls key) {
+	auto it = Factory::producers.Find(key);
+	if (!it) {
+		auto new_fn = EcsFactory::CompDataMap().Get(key).new_fn;
+		std::function<Base*()> p([new_fn] { return new_fn();});
+		std::function<void(Base*)> r([] (Base* b){ delete b;});
+		Factory::producers.Add(key) = p;
+		Factory::refurbishers.Add(key) = r;
+	}
+	
+	return CreateComponent(key);
+}
 
 NAMESPACE_TOPSIDE_END
 

@@ -184,8 +184,12 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	for (Eon::ActionNode* n : ep.plan) {
 		const Eon::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
+			bool is_last = plan_i == ep.plan.GetCount()-1;
 			TypeCls comp = ws.GetComponent();
-			ComponentBaseRef cb = e->GetAddTypeCls(comp);
+			ComponentBaseRef cb =
+				is_last ?
+					e->FindTypeCls(comp) :
+					e->GetAddTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
 				String comp_name = EcsFactory::CompDataMap().Get(comp).name;
@@ -206,12 +210,14 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 				AddError("Could not find component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
-			ComponentExtBaseRef existing_ext = cb->GetExtension();
-			if (existing_ext) {
-				const auto& c = EcsFactory::CompDataMap().Get(comp);
-				const auto& e = c.ext.Get(ext);
-				AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
-				return false;
+			{
+				ComponentExtBaseRef existing_ext = cb->GetExtension();
+				if (existing_ext) {
+					const auto& c = EcsFactory::CompDataMap().Get(comp);
+					const auto& e = c.ext.Get(ext);
+					AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
+					return false;
+				}
 			}
 			ComponentExtBaseRef eb = cb->SetExtensionTypeCls(ext);
 			ASSERT(eb);

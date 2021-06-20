@@ -30,7 +30,7 @@ bool ModelMesh::SetTexture(Mesh& mesh, TexType type, Image img) {
 void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 	ASSERT(shape.shape);
 	if (shape.shape) {
-		static thread_local Vector<tri3> faces;
+		MAKE_STATIC_LOCAL(Vector<tri3>, faces);
 		shape.shape->GetFaces(faces);
 		
 	}

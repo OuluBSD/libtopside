@@ -31,8 +31,8 @@ public:
 class ThrowingInteractionSystem : public ToolSystem<ThrowingInteractionSystem, ThrowingComponent> {
 	
 public:
-	void Visit(RuntimeVisitor& vis) override {TODO}
 	SYS_CTOR(ThrowingInteractionSystem);
+	SYS_DEF_VISIT
 	
 	using Parent = Machine;
 	static constexpr float BallHoldingDistance = 0.075f;

@@ -86,6 +86,15 @@ void Pool::UnlinkDeep() {
 	}
 }
 
+void Pool::ClearInterfacesDeep() {
+	for (PoolRef& p : pools)
+		p->ClearInterfacesDeep();
+	
+	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
+		it().ClearInterfaces();
+	}
+}
+
 void Pool::UnrefDeep() {
 	RefClearVisitor vis;
 	vis.Visit(*this);
@@ -100,7 +109,7 @@ void Pool::UninitializeComponentsDeep() {
 	}
 	
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().Uninitialize();
+		it().UninitializeWithExt();
 	}
 }
 
@@ -133,6 +142,7 @@ void Pool::ReverseEntities() {
 }
 
 void Pool::Clear() {
+	// useless ClearInterfacesDeep();
 	UnrefDeep();
 	UnlinkDeep();
 	UninitializeComponentsDeep();
@@ -180,8 +190,8 @@ String Pool::GetTreeString(int indent) {
 
 
 
-bool PoolHashVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
-	if (type == AsTypeCls<Pool>()) {
+bool PoolHashVisitor::OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {
+	if (derived == AsTypeCls<Pool>()) {
 		Pool& p = *(Pool*)mem;
 		ch.Put(p.GetId());
 	}

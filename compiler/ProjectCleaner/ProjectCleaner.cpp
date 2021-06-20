@@ -165,7 +165,7 @@ void CleanAssembly(String conf_path, String assembly_dir, const Index<String>& p
 
 
 
-String UppProjectProcessor::placeholder_str = "___phold___";
+const char* UppProjectProcessor::placeholder_str = "___phold___";
 
 UppProjectProcessor::UppProjectProcessor(UppAssemblyCache& cache) : cache(cache) {
 	ref_cache_dir = ConfigFile("ref_cache");

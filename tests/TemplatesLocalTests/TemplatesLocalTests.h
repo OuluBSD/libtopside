@@ -32,6 +32,7 @@ public:
 	RTTI_DECL1(TestRealtimeSink, AudioOutputExt)
 	typedef TestRealtimeSink CLASSNAME;
 	
+	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}

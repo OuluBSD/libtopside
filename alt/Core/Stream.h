@@ -147,6 +147,7 @@ public:
 	void Close() {
 		if (s) { fflush(s); fclose(s); s = NULL; }
 	}
+	void Clear() {Close();}
 	
 	String Get(int size) override {
 		if (!s || !size) return String();
@@ -272,6 +273,8 @@ class StringStream : public Stream {
 public:
 	StringStream() {}
 	StringStream(String s) {this->s.SetCount(s.GetCount()); memcpy(this->s.Begin(), s.Begin(), this->s.GetCount());}
+	
+	void Clear() {s.Clear(); cursor = 0; is_storing = true;}
 	
 	void Swap(StringStream& ss) {
 		::UPP::Swap(ss.s, s);

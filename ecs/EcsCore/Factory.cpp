@@ -20,6 +20,7 @@ void EcsFactory::Dump() {
 }
 
 void EcsFactory::RefreshLinks(CompData& d) {
+	ASSERT(d.src_sink);
 	auto& m = EcsFactory::CompDataMap();
 	if (!d.searched_sink_links) {
 		for (const auto& comp_data : m.GetValues()) {
@@ -28,6 +29,7 @@ void EcsFactory::RefreshLinks(CompData& d) {
 				l.dst_comp = comp_data.cls;
 				l.iface_src = d.src;
 				l.iface_sink = d.src_sink;
+				ASSERT(l.dst_comp && l.iface_src && l.iface_sink);
 			}
 		}
 		d.searched_sink_links = true;
@@ -64,6 +66,7 @@ void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Act
 	
 	for (const Link& link : d.sink_links) {
 		TypeCls sink = link.dst_comp;
+		ASSERT(sink != 0);
 		const CompData& sink_cd = m.Get(sink);
 		
 		a.Post() = src;

@@ -31,12 +31,12 @@ public:
 
 class EasingSystem : public System<EasingSystem>
 {
-	void Visit(RuntimeVisitor& vis) override {}
 	
 public:
 	SYS_RTTI(EasingSystem)
     SYS_CTOR(EasingSystem)
-
+	SYS_DEF_VISIT
+	
 protected:
     void Update(double) override;
 };

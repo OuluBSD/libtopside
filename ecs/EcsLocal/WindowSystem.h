@@ -15,6 +15,8 @@ class WindowSystem :
 	//Shader simple_shader;
 	
 	void Visit(RuntimeVisitor& vis) override {
+		vis.VisitThis<System<WindowSystem>>(this);
+		vis.VisitThis<Windows>(this);
 		vis & ents;
 	}
 	

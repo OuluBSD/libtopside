@@ -28,6 +28,7 @@ public:
 class CommonSinkBase : RTTIBase {
 public:
 	RTTI_DECL0(CommonSinkBase);
+	void Visit(RuntimeVisitor& vis) {}
 };
 
 

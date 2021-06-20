@@ -362,6 +362,8 @@ void AddInitBlock(Callback cb);
 void AddExitBlock(Callback cb);
 void RunInitBlocks();
 void RunExitBlocks();
+void AddThreadShutdownCallback(Callback cb);
+void RunThreadExitBlocks();
 
 struct Callinit {
 	Callinit(void (*fn)());
@@ -372,6 +374,13 @@ struct Callexit {
 };
 
 
+template <class T> ManagedStatic<T>::ManagedStatic(const char* f, int l) : file(f), line(l) {AddExitBlock(THISBACK(Destruct));}
+template <class T> template <class Arg>
+ManagedStatic<T>::ManagedStatic(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {AddExitBlock(THISBACK(Destruct));}
+
+template <class T> ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l) : file(f), line(l) {AddThreadShutdownCallback(THISBACK(Destruct));}
+template <class T> template <class Arg>
+ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {AddThreadShutdownCallback(THISBACK(Destruct));}
 
 NAMESPACE_UPP_END
 

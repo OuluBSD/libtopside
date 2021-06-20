@@ -51,6 +51,7 @@ void ParseCommandLine(const char* cmdline);
 const Vector<String>& CommandLine();
 int GetExitCode();
 void SetExitCode(int i);
+void Exit();
 void Exit(int i);
 void SetCoreArg(String key, String value);
 String GetExeDirFile(String filename);

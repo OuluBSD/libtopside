@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 CustomerComponent::CustomerComponent() : src_stream(this) {
-	
+	DumpRuntimeDiagnostics(this);
 }
 
 void CustomerComponent::Initialize() {
@@ -129,6 +129,7 @@ void CustomerSystem::Stop() {
 }
 
 void CustomerSystem::Uninitialize() {
+	once_cbs.Clear();
 	customers.Clear();
 }
 

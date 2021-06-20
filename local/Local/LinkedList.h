@@ -45,14 +45,14 @@ class LinkedList {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
+	static inline Rec& GetRecyclerPool() {MAKE_STATIC(Rec, r); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;
 	int count = 0;
 	
 public:
-	
+	typedef LinkedList CLASSNAME;
 	using ElPtr = Item*;
 	
 	class Iterator {
@@ -90,7 +90,6 @@ public:
 	LinkedList() {}
 	LinkedList(const LinkedList& l) = delete;
 	LinkedList(LinkedList&& l) {Swap(first,l.first); Swap(last,l.last); Swap(count,l.count);}
-	
 	~LinkedList() {Clear();}
 	
 	T& At(int i) {

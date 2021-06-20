@@ -43,12 +43,19 @@ public:
 	
 	System() {};
     TypeCls GetType() const override {return AsTypeCls<T>();}
+    void Visit(RuntimeVisitor& vis) override {vis.VisitThisPure<SystemBase>(this);}
     
 };
 
 #define SYS_RTTI(x)  RTTI_DECL1(x, System<x>)
-#define SYS_CTOR(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
-#define SYS_CTOR_(x) x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
+#define SYS_CTOR(x) \
+	typedef x CLASSNAME; \
+	x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
+#define SYS_CTOR_(x) \
+	typedef x CLASSNAME; \
+	x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
+#define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
+#define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
 
 class Machine :
 	public RefScopeEnabler<Machine,RefRoot>
@@ -106,6 +113,7 @@ public:
     void Suspend();
     void Resume();
     void DieFast() {Start(); Update(0); Stop();}
+	void Clear() {ticks=0; is_started=0; is_initialized=0; is_suspended=0; is_running=0; systems.Clear();}
 	
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}

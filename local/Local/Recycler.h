@@ -16,10 +16,7 @@ class RecyclerPool {
 public:
 	typedef RecyclerPool CLASSNAME;
 	RecyclerPool() {}
-	RecyclerPool(bool exit_block_clear) {if (exit_block_clear) CallInExitBlock(THISBACK(Destruct));}
-	~RecyclerPool() {Destruct();}
-	
-	void Destruct() {if (!destructed) {Clear(); destructed = true;}}
+	~RecyclerPool() {Clear(); destructed = true;}
 	
 	void Clear() {
 		lock.Enter();
@@ -59,8 +56,11 @@ public:
 	}
 	
 	void Return(T* o) {
-		if (destructed)
+		if (destructed) {
+			o->~T();
+			MemoryFree(o);
 			return;
+		}
 		if (!keep_as_constructed)
 			o->~T();
 		lock.Enter();
@@ -68,7 +68,7 @@ public:
 		lock.Leave();
 	}
 	
-	static RecyclerPool& StaticPool() {static RecyclerPool pool(1); return pool;}
+	static RecyclerPool& StaticPool() {MAKE_STATIC(RecyclerPool, pool); return pool;}
 	
 };
 
@@ -122,6 +122,7 @@ public:
 	}
 	void IncWeak(WeakBase* w) {weaks.Add(w);}
 	void DecWeak(WeakBase* w) {for(int i = 0; i < weaks.GetCount(); i++) if (weaks[i] == w) {weaks.Remove(i--);}}
+	int GetRefCount() const {return refs;}
 };
 
 

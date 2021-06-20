@@ -47,12 +47,17 @@ ComponentBaseRef Entity::GetTypeCls(TypeCls comp_type) {
 }
 
 ComponentBaseRef Entity::GetAddTypeCls(TypeCls comp_type) {
+	ComponentBaseRef cb = FindTypeCls(comp_type);
+	return cb ? cb : AddPtr(GetMachine().Get<ComponentStore>()->CreateComponentTypeCls(comp_type));
+}
+
+ComponentBaseRef Entity::FindTypeCls(TypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
 		TypeCls type = comp->GetTypeId();
 		if (type == comp_type)
 			return comp;
 	}
-	return AddPtr(EcsFactory::CompDataMap().Get(comp_type).new_fn());
+	return ComponentBaseRef();
 }
 
 ComponentBaseRef Entity::AddPtr(ComponentBase* comp) {
@@ -76,8 +81,7 @@ void Entity::UninitializeComponents() {
 	auto& comps = this->comps.GetValues();
 	int dbg_i = 0;
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().ClearExtension();
-		it().Uninitialize();
+		it().UninitializeWithExt();
 		dbg_i++;
 	}
 }
@@ -87,6 +91,11 @@ void Entity::ClearComponents() {
 	for (auto iter = comps.rbegin(); iter; --iter)
 		sys->ReturnComponent(comps.Detach(iter));
 	ASSERT(comps.IsEmpty());
+}
+
+void Entity::ClearInterfaces() {
+	for (auto iter = comps.rbegin(); iter; --iter)
+		iter().ClearSinkSource();
 }
 
 EntityRef Entity::Clone() const {
@@ -161,13 +170,13 @@ bool Entity::HasPoolParent(PoolRef pool) const {
 
 
 
-bool EntityHashVisitor::OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {
-	if (type == AsTypeCls<Entity>()) {
+bool EntityHashVisitor::OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {
+	if (derived == AsTypeCls<Entity>()) {
 		Entity& e = *(Entity*)mem;
 		ch.Put(1);
 		ch.Put(e.GetId());
 	}
-	else if (type == AsTypeCls<Pool>()) {
+	else if (derived == AsTypeCls<Pool>()) {
 		Pool& p = *(Pool*)mem;
 		ch.Put(2);
 		ch.Put(p.GetId());

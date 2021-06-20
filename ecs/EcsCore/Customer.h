@@ -63,7 +63,7 @@ protected:
 	
 public:
 	using ComponentT = Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>;
-	RTTI_COMP1(CustomerComponent, GeneratorComponentBase)
+	RTTI_COMP2(CustomerComponent, ComponentT, GeneratorComponentBase)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
 	COMP_DEF_VISIT
@@ -109,14 +109,10 @@ class CustomerSystem :
 	LinkedList<CustomerComponentRef> customers;
 	Mutex lock;
 	
-	void Visit(RuntimeVisitor& vis) override {
-		vis && customers;
-	}
-	
 public:
 	SYS_RTTI(CustomerSystem)
 	SYS_CTOR(CustomerSystem);
-	
+	SYS_DEF_VISIT_(vis && customers)
 	
 	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	

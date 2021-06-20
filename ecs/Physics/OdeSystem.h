@@ -195,6 +195,8 @@ public:
 		
 		dAllocateODEDataForThread(dAllocateMaskAll);
 	}
+	SYS_DEF_VISIT
+	
 	~OdeSystem() {
 		dThreadingImplementationShutdownProcessing(threading);
 		dThreadingFreeThreadPool(pool);

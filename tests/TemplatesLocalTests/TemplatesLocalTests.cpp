@@ -51,68 +51,68 @@ void Main() {
 	EcsFactory::RegisterExtension<TestRealtimeSink>();
 	
 	
-	//BreakRefAdd(0x7FFFFFFFE430);
+	//BreakRefAdd(0x802859038);
+	
 	
 	if (!SimpleDebugInitializer())
 		Exit(1);
 	
-	{
-		Machine mach;
-		
-		SetDebugRefVisits();
-		RuntimeDiagnostics::Static().SetRoot(mach);
-		
-	    #ifdef flagSTDEXC
-	    try {
-	    #endif
-			bool fail = false;
-			{
-				RegistrySystemRef reg		= mach.Add<RegistrySystem>();
-				EntityStoreRef es			= mach.Add<EntityStore>();
-				ComponentStoreRef compstore	= mach.Add<ComponentStore>();
-			    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
-			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
-			    EonLoaderRef eon			= mach.Add<EonLoader>();
-			    
-			    mach.Add<ScopeValCoreT<AudioSpec>::PacketTracker>();
-				
-				PoolRef root = es->GetRoot();
-				
-				LOG(eon_str);
-		        eon->PostLoadString(eon_str);
-		    }
+	MAKE_STATIC(Machine, mach);
+	
+	
+	//SetDebugRefVisits();
+	RuntimeDiagnostics::Static().SetRoot(mach);
+	
+    #ifdef flagSTDEXC
+    try {
+    #endif
+		bool fail = false;
+		{
+			RegistrySystemRef reg		= mach.Add<RegistrySystem>();
+			EntityStoreRef es			= mach.Add<EntityStore>();
+			ComponentStoreRef compstore	= mach.Add<ComponentStore>();
+		    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
+		    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
+		    EonLoaderRef eon			= mach.Add<EonLoader>();
+		    
+		    mach.Add<ScopeValCoreT<AudioSpec>::PacketTracker>();
+			
+			PoolRef root = es->GetRoot();
+			
+			LOG(eon_str);
+	        eon->PostLoadString(eon_str);
+	    }
+	        
+	    if (!fail) {
+		    mach.Start();
+		    
+		    int iter = 0;
+		    TimeStop t, total;
+		    while (mach.IsRunning()) {
+		        double dt = ResetSeconds(t);
+		        mach.Update(dt);
 		        
-		    if (!fail) {
-			    mach.Start();
-			    
-			    int iter = 0;
-			    TimeStop t, total;
-			    while (mach.IsRunning()) {
-			        double dt = ResetSeconds(t);
-			        mach.Update(dt);
-			        
-			        if (!iter++)
-			            mach.Get<EntityStore>()->GetRoot()->Dump();
-			        
-			        Sleep(1);
-			        
-			        if (total.Seconds() > 3)
-			            mach.SetNotRunning();
-			    }
-			    
-			    RuntimeDiagnostics::Static().CaptureSnapshot();
+		        if (!iter++)
+		            mach.Get<EntityStore>()->GetRoot()->Dump();
+		        
+		        Sleep(1);
+		        
+		        if (total.Seconds() > 3)
+		            mach.SetNotRunning();
 		    }
-		#ifdef flagSTDEXC
+		    
+		    RuntimeDiagnostics::Static().CaptureSnapshot();
 	    }
-	    catch (Exc e) {
-	        LOG("error: " << e);
-	        Exit(1);
-	    }
-	    #endif
-	    
-	    mach.Stop();
-	}
+	#ifdef flagSTDEXC
+    }
+    catch (Exc e) {
+        LOG("error: " << e);
+        Exit(1);
+    }
+    #endif
     
+    mach.Stop();
+	mach.Clear();
     //RefDebugVisitor::Static().DumpUnvisited();
 }
 

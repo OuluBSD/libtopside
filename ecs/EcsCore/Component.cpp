@@ -21,6 +21,12 @@ Machine& ComponentBase::GetMachine() {
 	return GetParent()->GetMachine();
 }
 
+void ComponentBase::UninitializeWithExt() {
+	ClearExtension();
+	Uninitialize();
+	ClearSinkSource();
+}
+
 EntityRef ComponentBase::GetEntity() {
 	return GetParent()->AsRefT();
 }

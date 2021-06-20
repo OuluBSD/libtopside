@@ -47,14 +47,10 @@ class PathwaySystem :
 	LinkedList<PathwayRouterRef> pathways;
 	
 	
-	void Visit(RuntimeVisitor& vis) override {
-		vis && pathways;
-	}
-	
 public:
 	SYS_RTTI(PathwaySystem)
 	SYS_CTOR(PathwaySystem);
-	
+	SYS_DEF_VISIT_(vis && pathways)
 	
 	
 protected:

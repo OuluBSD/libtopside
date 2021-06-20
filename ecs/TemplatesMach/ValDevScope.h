@@ -18,9 +18,8 @@ struct ScopeValDevMachT {
 	using PacketBuffer	= typename ValMach::PacketBuffer;
 	using RecRefBase	= typename ValMach::RecRefBase;
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
+	static String TypeStringT(const char* t) {
+		String s;
 		s << ValDevSpec::GetPrefix() << t;
 		return s;
 	}
@@ -150,6 +149,10 @@ struct ScopeValDevMachT {
 		void		SetDestination(Value& dst, int packet_limit)		{this->dst = &dst.GetBuffer(); this->packet_limit = packet_limit;}
 		void		SetDestinationRealtime(bool b)		{dst_realtime = b;}
 		void		ClearDestination()					{dst = 0;}
+		void		Clear() {
+			src=0; dst=0; dst_realtime=0; tmp_realtime=0; internal_written_bytes=0;
+			packet_count=0; packet_count=0; packet_limit=0; last.Clear();
+		}
 		
 		
 		void		ProduceAll(bool blocking=false);
@@ -196,6 +199,12 @@ struct ScopeValDevMachT {
 		void		SetDestinationRealtime(bool b) {dst_realtime = b;}
 		void		ClearDestination();
 		void		ClearLeftover() {leftover_size = 0; leftover.Clear();}
+		void		Clear() {
+			src_buf=0; leftover_size=0; leftover.Clear();
+			dst_fmt.Clear();
+			dst_buf=0; dst_buf_limit=0; dst_mem=0; dst_iter=0; dst_iter_end=0;
+			dst_size=0; dst_realtime=0; internal_written_bytes=0;
+		}
 		
 		void		ConsumeAll(bool blocking=false);
 		bool		ConsumePacket();
@@ -294,6 +303,8 @@ struct ScopeValDevMachT {
 		
 	public:
 		RTTI_DECL_T1(SimpleValue, Value)
+		~SimpleValue() {/*LOG("dtor SimpleValue " << HexStr((void*)this));*/ ASSERT(buf.IsEmpty());}
+		void			Clear() override {/*LOG("clear SimpleValue " << HexStr((void*)this));*/ fmt.Clear(); time = 0; buf.Clear(); packet_limit = 2;}
 		void			Exchange(Ex& e) override;
 		int				GetQueueSize() const override;
 		Format			GetFormat() const override;
@@ -322,6 +333,8 @@ struct ScopeValDevMachT {
 		
 	public:
 		RTTI_DECL_T1(SimpleBufferedValue, Value)
+		~SimpleBufferedValue() {ASSERT(buf.IsEmpty());}
+		void			Clear() override {sink_offsets.Clear(); producer.Clear(); consumer.Clear(); buf.Clear(); exchange_count = 0; fmt.Clear();}
 		void			Exchange(Ex& e) override;
 		int				GetQueueSize() const override;
 		Format			GetFormat() const override;
@@ -350,6 +363,7 @@ struct ScopeValDevMachT {
 		RTTI_DECL_T1(SimpleStream, Stream)
 		SimpleStream() {}
 		SimpleStream(Value& v) : ptr(&v) {}
+		void			Clear() override {ptr->Clear();}
 		void			Set(Value& v) {ptr = &v;}
 		bool			IsOpen() const override {return true;}
 		bool			Open(int fmt_idx) override {ASSERT(fmt_idx == 0); return true;}
@@ -376,6 +390,7 @@ struct ScopeValDevMachT {
 		SimpleBufferedStream(SimpleBufferedValue& v) : ptr(&v) {}
 		void			SetSkipDrop(bool b=true) {skip_drop = b;}
 		void			Set(SimpleBufferedValue& v) {ptr = &v;}
+		void			Clear() override {ptr->Clear();}
 		Value&			Get() override {ASSERT(ptr); return *ptr;}
 		void			FillBuffer() override;
 		void			DropBuffer() override {if (!skip_drop) ptr->DropBuffer();}

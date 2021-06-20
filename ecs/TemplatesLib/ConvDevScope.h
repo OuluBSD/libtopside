@@ -44,9 +44,8 @@ struct ScopeConvDevLibT {
 	
 	class ConvertComponent;
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
+	static String TypeStringT(const char* t) {
+		String s;
 		s << From::GetPrefix() << "2" << To::GetPrefix() << t;
 		return s;
 	}

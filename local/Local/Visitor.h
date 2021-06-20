@@ -52,9 +52,9 @@ protected:
 	bool get_refs = false;
 	bool clear_refs = false;
 	
-	virtual bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {return true;}
+	virtual bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {return true;}
 	virtual void OnExit() {}
-	virtual void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) {}
+	virtual void OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) {}
 	
 	template <class T> LockedScopeRefCounter* GetRefCounter(T* o) {
 		return !get_refs ? 0 : LockedScopeRefCounterCaster<T,std::is_base_of<LockedScopeRefCounter,T>::value>().Cast(o);
@@ -70,9 +70,29 @@ public:
 	void SetClearRefs(bool b=true) {clear_refs = b;}
 	
 	template <class T>
+	void VisitThis(T* o) {
+		ASSERT(o);
+		if (break_out) return;
+		if (OnEntry(o->GetRTTI(), T::TypeIdClass(), T::GetTypeName(), o, GetRefCounter(o))) {
+			o->T::Visit(*this);
+			OnExit();
+		}
+	}
+	
+	template <class T>
+	void VisitThisPure(T* o) {
+		ASSERT(o);
+		if (break_out) return;
+		if (OnEntry(o->GetRTTI(), T::TypeIdClass(), T::GetTypeName(), o, GetRefCounter(o))) {
+			// Pass actual visit
+			OnExit();
+		}
+	}
+	
+	template <class T>
 	void Visit(T& o) {
 		if (break_out) return;
-		if (OnEntry(o.GetRTTI(), &o, GetRefCounter(&o))) {
+		if (OnEntry(o.GetRTTI(), T::TypeIdClass(), T::GetTypeName(), &o, GetRefCounter(&o))) {
 			o.Visit(*this);
 			OnExit();
 		}
@@ -83,7 +103,7 @@ public:
 		if (clear_refs)
 			o.Clear();
 		else if (o)
-			OnRef(o->GetRTTI(), &o, GetRefCounter(o.Get()));
+			OnRef(o->GetRTTI(), T::Type::TypeIdClass(), T::Type::GetTypeName(), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>

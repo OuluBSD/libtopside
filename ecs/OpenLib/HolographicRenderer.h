@@ -13,7 +13,7 @@ public:
 	COMP_DEF_VISIT
 	SYS_RTTI(HolographicRenderer)
 	SYS_CTOR(HolographicRenderer);
-	
+	SYS_DEF_VISIT
 	
 };
 

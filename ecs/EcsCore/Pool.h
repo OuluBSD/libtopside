@@ -47,6 +47,7 @@ public:
 	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
+	void				ClearInterfacesDeep();
 	void				UnrefDeep();
 	void				UninitializeComponentsDeep();
 	void				ClearComponentsDeep();
@@ -215,7 +216,7 @@ private:
 class PoolHashVisitor : public RuntimeVisitor {
 	CombineHash ch;
 	
-	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
+	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override;
 public:
 	RTTI_DECL1(PoolHashVisitor, RuntimeVisitor)
 	

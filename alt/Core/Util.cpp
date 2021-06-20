@@ -90,7 +90,12 @@ const Vector<String>& CommandLine() {return __cmdline;}
 int __exitcode;
 int GetExitCode() {return __exitcode;}
 void SetExitCode(int i) {__exitcode = i;}
+void Exit() {Exit(GetExitCode());}
+#ifdef flagWIN32
+void Exit(int i) {::ExitProcess(i);}
+#else
 void Exit(int i) {::exit(i);}
+#endif
 
 
 String sDataPath;

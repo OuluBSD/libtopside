@@ -12,6 +12,7 @@ AtomicInt Thread::thrd_count;
 
 void thread_runner(Callback* cb) {
 	cb->Execute();
+	RunThreadExitBlocks();
 }
 
 void Thread::Run(Callback cb) {

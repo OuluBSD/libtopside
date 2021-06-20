@@ -205,7 +205,7 @@ protected:
 	
 public:
 	
-	void Visit(RuntimeVisitor& vis) {vis & expt & dst;}
+	void Visit(RuntimeVisitor& vis) {(vis & expt) & dst;}
 	
 	/*void Unlink(R o) {
 		if (l.dst == o) {
@@ -451,7 +451,8 @@ public:
 	struct ExptData : Moveable<ExptData> {
 		NewExpt new_fn;
 	};
-	static VectorMap<TypeCls,ExptData>& ExptDataMap() {static VectorMap<TypeCls,ExptData> m; return m;}
+	typedef VectorMap<TypeCls,ExptData> ExptMap;
+	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
 	template <class T> static ExchangePoint* New() {return new T();}
 	template <class T> static void RegisterExchangePoint() {
 		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());

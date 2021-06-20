@@ -16,9 +16,9 @@ class PbrModelCache : public System<PbrModelCache>
 {
 	
 public:
-	void Visit(RuntimeVisitor& vis) override {TODO}
 	SYS_RTTI(PbrModelCache)
 	SYS_CTOR(PbrModelCache);
+	SYS_DEF_VISIT
 	
     void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}
 

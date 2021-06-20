@@ -68,13 +68,10 @@ class FluidsynthSystem :
 	
 	
 	SYS_RTTI(FluidsynthSystem)
-	void Visit(RuntimeVisitor& vis) override {
-		vis && comps
-			&& track_comps;
-	}
 	
 public:
 	SYS_CTOR(FluidsynthSystem)
+	SYS_DEF_VISIT_(vis && comps && track_comps)
 	
 	const LinkedList<FluidsynthComponentRef>& GetContext() const {return comps;}
 	

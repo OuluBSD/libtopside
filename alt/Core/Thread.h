@@ -8,6 +8,7 @@ inline int CPU_Cores() {return std::thread::hardware_concurrency();}
 
 #define MAIN_THREAD_ID -1
 void __ForceSetThreadId(int i);
+void RunThreadExitCallbacks();
 
 class Thread {
 	One<std::thread> t;
@@ -32,6 +33,7 @@ public:
 		t->cb = cb;
 		t->t = new std::thread([t, cb]() {
 			cb.Execute();
+			RunThreadExitBlocks();
 			t->t->detach();
 			delete t;
 		});
@@ -44,6 +46,7 @@ public:
 		t->t = new std::thread([id, t, fn]() {
 			SetThreadId(id);
 			fn();
+			RunThreadExitBlocks();
 			t->t->detach();
 			delete t;
 		});

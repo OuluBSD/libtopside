@@ -20,7 +20,6 @@ struct ScopeValCoreT {
 	{
 		PacketId id_counter = 1;
 		
-		void Visit(RuntimeVisitor& vis) override {}
 		
 	protected:
 	    bool Initialize() override;
@@ -37,7 +36,7 @@ struct ScopeValCoreT {
 	public:
 		RTTI_CTX_SYS(PacketTracker)
 	    SYS_CTOR(PacketTracker)
-		
+		SYS_DEF_VISIT
 		
 		static void Track(TrackerInfo info, Packet& p) {Track(info, *p);}
 		static void Checkpoint(TrackerInfo info, Packet& p) {Checkpoint(info, *p);}

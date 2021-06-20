@@ -22,6 +22,8 @@ public:
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	
+	void UninitializeWithExt() {Uninitialize();}
+	
 	static bool AllowDuplicates() {return false;}
 	
 public:
@@ -111,7 +113,7 @@ public:
 		ConnectorMapBase::Iterator iter = ConnectorMapBase::Find(AsTypeCls<ConnectorT>());
 		ASSERT_(iter, "Tried to remove non-existent component");
 		
-		iter.value().Uninitialize();
+		iter.value().UninitializeWithExt();
 		iter.value().Destroy();
 		
 		ReturnConnector(*s, iter.value.GetItem()->value.Detach());

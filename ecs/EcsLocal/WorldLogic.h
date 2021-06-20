@@ -5,12 +5,13 @@ NAMESPACE_TOPSIDE_BEGIN
 	
 class WorldLogicSystem : public System<WorldLogicSystem>
 {
-	void Visit(RuntimeVisitor& vis) override {}
+	
 	
 public:
 	SYS_RTTI(WorldLogicSystem)
     SYS_CTOR(WorldLogicSystem)
-
+	SYS_DEF_VISIT
+	
 protected:
     void Update(double dt) override
     {

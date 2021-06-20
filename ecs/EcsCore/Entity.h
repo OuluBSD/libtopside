@@ -51,6 +51,7 @@ public:
 	void OnChange();
 	ComponentBaseRef GetTypeCls(TypeCls comp_type);
 	ComponentBaseRef GetAddTypeCls(TypeCls comp_type);
+	ComponentBaseRef FindTypeCls(TypeCls comp_type);
 	
 	template<typename T>
 	RefT_Entity<T> Get() {
@@ -126,6 +127,7 @@ public:
 	void InitializeComponentRef(ComponentBaseRef comp) {return InitializeComponent(*comp);}
 	void UninitializeComponents();
 	void ClearComponents();
+	void ClearInterfaces();
 	
 	EntityId Id() const {
 		return m_id;
@@ -161,7 +163,7 @@ public:
 	
 	//void CloneComponents(const Entity& e);
 	
-	void Visit(RuntimeVisitor& vis) {vis || comps; VisitSources(vis); VisitSinks(vis);}
+	void Visit(RuntimeVisitor& vis) {vis || comps;}
 	void VisitSinks(RuntimeVisitor& vis);
 	void VisitSources(RuntimeVisitor& vis);
 	
@@ -208,7 +210,7 @@ struct EntityPrefab {
 class EntityHashVisitor : public RuntimeVisitor {
 	CombineHash ch;
 	
-	bool OnEntry(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override;
+	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override;
 	
 public:
 	RTTI_DECL1(EntityHashVisitor, RuntimeVisitor)

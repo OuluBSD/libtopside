@@ -224,6 +224,10 @@ TMPL_VALDEVLIB(void) OutputComponent::Initialize() {
 	
 }
 
+TMPL_VALDEVLIB(void) OutputComponent::Uninitialize() {
+	ASSERT(this->ext.IsEmpty());
+}
+
 TMPL_VALDEVLIB(void) OutputComponent::Forward(FwdScope& fwd) {
 	using FromValSpec				= typename ValDevSpec::Val;
 	using ToValSpec					= ReceiptSpec;

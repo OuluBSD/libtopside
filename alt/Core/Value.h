@@ -40,7 +40,7 @@ const dword UNKNOWN_V = (dword)0xffffffff;
 
 
 inline int RegisterTypeNo__(const char *type) {
-	static Index<String> idx;
+	MAKE_STATIC(Index<String>, idx);
 	return idx.FindAdd(type);
 }
 

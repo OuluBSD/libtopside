@@ -177,7 +177,7 @@ RankingMap TrustNet::HighOnlyStrategy() {
 }
 
 Graph& TrustNet::TempGraph() {
-	static thread_local Graph g;
+	MAKE_STATIC_LOCAL(Graph, g);
 	return g;
 }
 

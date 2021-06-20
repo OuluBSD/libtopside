@@ -165,8 +165,8 @@ class SpatialInteractionSystem : public System<SpatialInteractionSystem>
 	LinkedList<ISpatialInteractionListenerRef> listeners;
 	
 public:
-	void Visit(RuntimeVisitor& vis) override {TODO}
 	SYS_CTOR(SpatialInteractionSystem);
+	SYS_DEF_VISIT
 	
 	using Parent = Machine;
 	

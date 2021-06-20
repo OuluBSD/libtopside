@@ -161,7 +161,7 @@ struct UppProjectProcessor {
 	
 	
 	
-	static String placeholder_str;
+	static const char* placeholder_str;
 	
 	typedef UppProjectProcessor CLASSNAME;
 	UppProjectProcessor(UppAssemblyCache& cache);

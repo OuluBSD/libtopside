@@ -52,9 +52,8 @@ struct ScopeValDevLibT {
 	class OutputComponent;
 	class PipeComponent;
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
+	static String TypeStringT(const char* t) {
+		String s;
 		s << ValDevSpec::GetPrefix() << t;
 		return s;
 	}
@@ -160,7 +159,7 @@ struct ScopeValDevLibT {
 		RTTI_DECL_1(OutputComponent, ComponentT, ValDevSpec::GetName() + "OutputComponent")
 		COPY_PANIC(OutputComponent)
 		IFACE_GENERIC
-		COMP_DEF_VISIT
+		COMP_DEF_VISIT_(vis & cust_sys)
 		COMP_MAKE_ACTION_BEGIN
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(
 				ToLower(DevSpec::GetName()) + "." +
@@ -205,6 +204,7 @@ struct ScopeValDevLibT {
 		OutputComponent() : sink_value(this), src_stream(this) {}
 		
 		void				Initialize() override;
+		void				Uninitialize() override;
 		void				Forward(FwdScope& fwd) override;
 		void				ForwardExchange(FwdScope& fwd) override;
 		bool				ForwardMem(void* mem, size_t mem_size);

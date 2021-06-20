@@ -58,7 +58,7 @@ template <class T, class Sorter> void RemoveDuplicates(Vector<T>& items, const S
 	if (items.GetCount() < 2)
 		return;
 	Sort(items, sorter);
-	thread_local static Vector<int> rem;
+	MAKE_STATIC_LOCAL(Vector<int>, rem);
 	rem.SetCount(0);
 	rem.Reserve(items.GetCount());
 	T* it = items.Begin();
@@ -81,7 +81,7 @@ template <class T, class Sorter> void AppendSorted(const Vector<T>& sorted_src_i
 	const T* src_it  = sorted_src_items.Begin();
 	const T* src_end = sorted_src_items.End();
 	
-	thread_local static Vector<T> tmp;
+	MAKE_STATIC_LOCAL(Vector<T>, tmp);
 	tmp.SetCount(0);
 	tmp.Reserve(sorted_dst_items.GetCount() + sorted_src_items.GetCount());
 	
@@ -106,7 +106,7 @@ template <class T, class Sorter> void AppendSortedNoDuplicates(const Vector<T>& 
 	const T* src_it  = sorted_src_items.Begin();
 	const T* src_end = sorted_src_items.End();
 	
-	thread_local static Vector<T> tmp;
+	MAKE_STATIC_LOCAL(Vector<T>, tmp);
 	tmp.SetCount(0);
 	tmp.Reserve(sorted_dst_items.GetCount() + sorted_src_items.GetCount());
 	
@@ -135,8 +135,8 @@ template <class T, class Sorter> void AppendSortedRemoveDuplicateSource(Vector<T
 	T* src_it    = src_begin;
 	T* src_end   = sorted_src_items.End();
 	
-	thread_local static Vector<int> rem;
-	thread_local static Vector<T> tmp;
+	MAKE_STATIC_LOCAL(Vector<int>, rem);
+	MAKE_STATIC_LOCAL(Vector<T>, tmp);
 	rem.SetCount(0);
 	rem.Reserve(sorted_src_items.GetCount());
 	tmp.SetCount(0);

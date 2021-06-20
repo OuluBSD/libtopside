@@ -33,7 +33,7 @@ String ToUtf8(const wchar_t* s, int len) {
 	try {
 	#endif
 		#if defined flagMSC
-		thread_local static Vector<char> tmp;
+		MAKE_STATIC_LOCAL(Vector<char>, tmp);
 		int sz = len * 4;
 		tmp.SetCount(sz, 0);
 		char* buf = tmp.Begin();
@@ -61,7 +61,7 @@ WString FromUtf8(const char* s, int len) {
 	try {
 	#endif
 		#if defined flagMSC
-		thread_local static Vector<wchar_t> tmp;
+		MAKE_STATIC_LOCAL(Vector<wchar_t>, tmp);
 		int sz = len;
 		tmp.SetCount(sz, 0);
 		wchar_t* buf = tmp.Begin();

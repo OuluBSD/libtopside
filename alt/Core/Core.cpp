@@ -255,15 +255,15 @@ void MemoryMoveSlow(void* dst, const void* src, int n) {
 
 
 MultiStream& LogMulti() {
-	static MultiStream s;
+	MAKE_STATIC(MultiStream, s);
 	return s;
 }
 
 Stream& VppLog() {return LogMulti();}
 
 Stream& LogFile() {
-	static FileOut fout;
-	static StringStream ss; // for early logging
+	MAKE_STATIC(FileOut, fout);
+	MAKE_STATIC(StringStream, ss); // for early logging
 	if (!fout.IsOpen()) {
 		String exepath = GetExeFilePath();
 		if (exepath.IsEmpty()) {
@@ -297,17 +297,17 @@ Stream& LogFile() {
 }
 
 Stream& Cout() {
-	static FileOut fout(stdout);
+	MAKE_STATIC_(FileOut, fout, stdout);
 	return fout;
 }
 
 Stream& Cerr() {
-	static FileOut fout(stderr);
+	MAKE_STATIC_(FileOut, fout, stderr);
 	return fout;
 }
 
 Stream& Cin() {
-	static FileIn fin(stdin);
+	MAKE_STATIC_(FileIn, fin, stdin);
 	return fin;
 }
 
@@ -327,7 +327,7 @@ String GetExeFilePath() {
 String GetHomeDir() {
 	#ifdef flagPOSIX
 	struct passwd *pw = getpwuid(getuid());
-	const char *homedir = pw->pw_dir;
+	String homedir = pw->pw_dir;
 	return homedir;
 	#else
 	char homedir[2048];

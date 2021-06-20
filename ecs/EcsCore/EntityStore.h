@@ -11,9 +11,6 @@ class EntityStore : public System<EntityStore> {
 	LinkedList<ConnectorBase*>		refresh_poolcomps[2];
 	Mutex							lock;
 	
-	void Visit(RuntimeVisitor& vis) override {
-		vis || root;
-	}
 	enum {
 		READ,
 		WRITE
@@ -22,7 +19,8 @@ class EntityStore : public System<EntityStore> {
 	void InitRoot();
 public:
 	SYS_RTTI(EntityStore)
-	EntityStore(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {InitRoot();}
+	SYS_CTOR_(EntityStore) {InitRoot();}
+	SYS_DEF_VISIT_(vis || root)
 	
 	PoolRef GetRoot()	{return *root.begin();}
 	PoolVec& GetRootVec()	{return root;}

@@ -172,9 +172,10 @@ typedef enum {
 
 
 
-#define VIS_THIS(t) vis.Visit(*(t*)this);
+#define VIS_THIS(t) vis.VisitThis<t>(this);
 
-#define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {ComponentT::Visit0(vis);}
+#define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this);}
+#define COMP_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); x;}
 #define COMP_DEF_MAKE_ACTION static bool MakeAction(Eon::Action& act) {return false;}
 
 #define COMP_MAKE_ACTION_BEGIN static bool MakeAction(Eon::Action& act) {bool fail = false, any_changes = false;

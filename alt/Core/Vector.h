@@ -236,14 +236,10 @@ public:
 	const K* begin() const {return GetData();}
 	const K* end() const {return GetData() + GetCount();}
 	
-	RIterator RBegin() {return ConstRIterator(data+count-1);}
-	RIterator REnd() {return ConstRIterator(data-1);}
-	ConstRIterator RBegin() const {return ConstRIterator(data+count-1);}
-	ConstRIterator REnd() const {return ConstRIterator(data-1);}
-	RIterator rbegin() {return RBegin();}
-	RIterator rend() {return REnd();}
-	ConstRIterator rbegin() const {return RBegin();}
-	ConstRIterator rend() const {return REnd();}
+	RIterator rbegin() {return RIterator(data+count-1);}
+	RIterator rend() {return RIterator(data-1);}
+	ConstRIterator rbegin() const {return ConstRIterator(data+count-1);}
+	ConstRIterator rend() const {return ConstRIterator(data-1);}
 	K* GetData() const {return data;}
 	
 	K& Add() {

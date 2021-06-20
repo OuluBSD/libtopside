@@ -32,6 +32,7 @@ struct RefParent1 {
 	operator T&() const {ASSERT(o); return *o;}
 	operator T*() const {ASSERT(o); return o;}
 	T* operator->() const {ASSERT(o); return o;}
+	String ToString() const {return "RefParent1(" + HexStr(o) + ")";}
 	
 };
 
@@ -46,11 +47,16 @@ struct RefParent2 {
 	void Clear() {a = 0; b = 0;}
 	
 	operator bool() const {return a || b;}
+	String ToString() const {return "RefParent2(" + HexStr(a) + ", " + HexStr(b) + ")";}
 	
 };
 
-void DebugRefVisits_AddRef(void* mem);
-void DebugRefVisits_RemoveRef(void* mem);
+struct RefCommon {
+	
+};
+
+void DebugRefVisits_AddRef(RefCommon* mem);
+void DebugRefVisits_RemoveRef(RefCommon* mem);
 #define DBG_REF_CTOR if (IsDebugRefVisits()) {DebugRefVisits_AddRef(this);}
 #define DBG_REF_DTOR if (IsDebugRefVisits()) {DebugRefVisits_RemoveRef(this);}
 bool IsDebugRefVisits();
@@ -58,32 +64,48 @@ void SetDebugRefVisits(bool b=true);
 
 #define SCOPE_REF(x) auto& x = *x##_;
 
+
 template <class T, class Parent = RefParent1<typename T::Parent> >
-class Ref :
-	RTTIBase
+class Ref : public RefCommon /*, RTTIBase*/
 {
 	T* o = 0;
 	Parent p;
 	
+	
+private:
+	// For debugging
+	
+	#if 0
+	void Dump(const char* title) {LOG(title << ": " << ToString());}
+	#else
+		#define Dump(x)
+	#endif
+	
 public:
-	RTTI_DECL0(Ref)
+	//RTTI_DECL0(Ref)
 	using Type = T;
 	using ParentT = Parent;
 	
+    //static const char* GetTypeName() {static auto s = "Ref<" + String(T::GetTypeName()) + ">" ; return s;}
+    //static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
 	
-	Ref() {DBG_REF_CTOR}
-	Ref(Nuller) {DBG_REF_CTOR}
-	Ref(Parent p, T* o) : p(p), o(o) {if (o) o->IncRef(); DBG_REF_CTOR}
-	Ref(const Ref& r) {*this = r; DBG_REF_CTOR}
-	Ref(Ref&& r) {if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();} DBG_REF_CTOR}
+	
+	Ref() {Dump("empty-ctor"); DBG_REF_CTOR}
+	Ref(Nuller) {Dump("null-ctor"); DBG_REF_CTOR}
+	Ref(Parent p, T* o) : p(p), o(o) {Dump("ptr-ctor"); if (o) o->IncRef(); DBG_REF_CTOR}
+	Ref(const Ref& r) {Dump("copy-ctor"); *this = r; DBG_REF_CTOR}
 	~Ref() {Clear(); DBG_REF_DTOR}
 	
-	
-	T* GetRefPtr() const {return o;}
-	const Parent& GetRefParent() const {return p;}
+	// These seems to cause memory errors
+	#if 1
+	Ref(Ref&& r) {Dump("move-ctor"); *this = r; r.Clear(); DBG_REF_CTOR}
+	#elif 0
+	Ref(Ref&& r) {Dump("move-ctor"); if (r.o) {o = r.o; r.o = 0; p = r.p; r.p.Clear();} DBG_REF_CTOR}
+	#endif
 	
 	template <class V>
 	Ref(const Ref<V,Parent>& r) {
+		Dump("copy-ctor-T");
 		static_assert(
 			std::is_same<V, T>() ||
 			std::is_base_of<V,T>() ||
@@ -92,8 +114,13 @@ public:
 			o = CastPtr<T>(r.Get());
 			ASSERT(o);
 			o->IncRef();
+			p = r.GetRefParent();
 		}
+		DBG_REF_CTOR
 	}
+	
+	T* GetRefPtr() const {return o;}
+	const Parent& GetRefParent() const {return p;}
 	
 	template <class V>
 	Ref& operator=(const Ref<V,Parent>& r) {return Set(r);}
@@ -151,6 +178,11 @@ public:
 		return *this;
 	}
 	
+	String ToString() const {return "Ref(this=" + HexStr((void*)this) + ", o=" + HexStr(o) + ", p=" + p.ToString() + ")";}
+	
+	#ifdef Dump
+		#undef Dump
+	#endif
 };
 
 
@@ -264,7 +296,7 @@ class RefLinkedList {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
+	static inline Rec& GetRecyclerPool() {MAKE_STATIC(Rec, r); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;
@@ -490,7 +522,7 @@ class RefLinkedListIndirect {
 	};
 	
 	typedef RecyclerPool<Item> Rec;
-	static inline Rec& GetRecyclerPool() {static Rec r(1); return r;}
+	static inline Rec& GetRecyclerPool() {MAKE_STATIC(Rec, r); return r;}
 	
 	Item* first = 0;
 	Item* last = 0;

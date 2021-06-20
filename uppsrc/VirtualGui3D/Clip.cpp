@@ -159,7 +159,8 @@ const char *ClipFmtsImage()
 {
 	static const char *q;
 	ONCELOCK {
-		static String s = "dib;" + ClipFmt<Image>();
+		MAKE_STATIC(String, s);
+		s = "dib;" + ClipFmt<Image>();
 		q = s;
 	}
 	return q;

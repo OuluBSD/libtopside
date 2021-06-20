@@ -26,6 +26,7 @@ struct RefBase {
 	}
 	void IncWeak(WeakBase* w) {weaks.Add(w);}
 	void DecWeak(WeakBase* w) {for(int i = 0; i < weaks.GetCount(); i++) if (weaks[i] == w) {weaks.Remove(i--);}}
+	int GetRefCount() const {return refs;}
 };
 
 template <class T>
@@ -53,7 +54,10 @@ public:
 	Shared() {}
 	Shared(Shared&& s) {r = s.r; s.r = NULL; o = s.o; s.o = NULL;}
 	Shared(const Shared& o) {*this = o;}
-	Shared(T* o, Base* r) {SetPtr(o, r);}
+	Shared(T* o, Base* r) : o(o), r(r) {
+		// if (r) r->Inc(); // NO! assume already referenced:
+		ASSERT(r->GetRefCount() > 0);
+	}
 	#ifndef UPP_VERSION
 	Shared(const Pick<Shared>& pick) {Swap(pick.Get(), *this);}
 	#endif

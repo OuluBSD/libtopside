@@ -11,9 +11,8 @@ struct ScopeValMachT {
 	using StreamBase = typename ValSpec::StreamBase;
 	
 	
-	static const char* TypeStringT(const char* t) {
-		thread_local static String s;
-		s.Clear();
+	static String TypeStringT(const char* t) {
+		String s;
 		s << ValSpec::GetName() << t;
 		return s;
 	}
@@ -56,7 +55,7 @@ struct ScopeValMachT {
 		
 		RTTI_DECL0(PacketValue);
 		PacketValue(off32 offset) : offset(offset) {}
-		~PacketValue() {StopTracking(this);}
+		~PacketValue() {data.Clear(); StopTracking(this);}
 		
 		Vector<byte>&			Data() {return data;}
 		void					Set(Format fmt, double time) {this->fmt = fmt; this->time = time;}

@@ -98,7 +98,7 @@ LOG("}"); \
 		UPP::AppInit__(argc, (const char **)argv); \
 		AppMain(); \
 		::UPP::AppExit__(); \
-		return ::UPP::GetExitCode(); \
+		return 0; \
 	} \
 	\
 	void AppMain()
@@ -145,7 +145,7 @@ LOG("}"); \
 
 #define GLOBAL_VP(type, name, param) \
 	name() { \
-		static type x param; \
+		MAKE_STATIC_(type, x, param); \
 		return x; \
 	}
 #define GLOBAL_VARP(type, name, param)	type& GLOBAL_VP(type, name, param)
@@ -154,7 +154,7 @@ LOG("}"); \
 #define GLOBAL_VP_INIT(type, name, param) \
 	name() \
 	{ \
-		static type x param; \
+		MAKE_STATIC_(type, x, param); \
 		return x; \
 } \
 INITBLOCK { name(); }

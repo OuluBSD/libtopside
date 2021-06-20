@@ -27,9 +27,9 @@ public:
 class PaintStrokeSystem :
 	public System<PaintStrokeSystem> {
 public:
-	void Visit(RuntimeVisitor& vis) override {TODO}
 	SYS_RTTI(PaintStrokeSystem)
 	SYS_CTOR(PaintStrokeSystem);
+	SYS_DEF_VISIT
 	~PaintStrokeSystem() = default;
 	
 	void SetResources(Shared<Pbr::Resources> pbr_res) {this->pbr_res = pbr_res;}

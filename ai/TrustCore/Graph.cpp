@@ -48,8 +48,9 @@ int Graph::Traverse(int root, int node) const {
     if (root == node)
 		return 0;
     
-    static thread_local Vector<int> queue, layer;
-    static thread_local Index<int> traversed;
+    MAKE_STATIC_LOCAL(Vector<int>, queue);
+    MAKE_STATIC_LOCAL(Vector<int>, layer);
+    MAKE_STATIC_LOCAL(Index<int>, traversed=;
     queue.SetCount(0);
     queue.Add(root);
     

@@ -10,7 +10,7 @@ class HolographicScene :
 public:
 	SYS_RTTI(HolographicScene)
 	SYS_CTOR(HolographicScene);
-	COMP_DEF_VISIT
+	SYS_DEF_VISIT
     
     
     bool Initialize() override;

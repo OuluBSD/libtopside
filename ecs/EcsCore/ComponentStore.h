@@ -10,12 +10,12 @@ class ComponentStoreT :
 	public Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >
 {
 	
-	void Visit(RuntimeVisitor& vis) override {}
 	
 public:
 	using ComponentStore = ComponentStoreT<Main,Base>;
 	RTTI_DECL1(ComponentStoreT, System<ComponentStore>)
 	SYS_CTOR(ComponentStoreT);
+	SYS_DEF_VISIT
 	
 	using Parent = Machine;
 	using Factory = TS::Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
@@ -26,6 +26,8 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
+	ComponentBase* CreateComponentTypeCls(TypeCls key);
+	
 	template<typename T>
 	T* CreateComponent() {
 		static_assert(IsComponent<T>::value, "T should be a component");
@@ -34,7 +36,7 @@ public:
 		auto it = Factory::producers.Find(key);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
-			std::function<void(Base*)> r([] (Base* b){ return GetPool<T>().Return(CastPtr<T>(b));});
+			std::function<void(Base*)> r([] (Base* b){ GetPool<T>().Return(CastPtr<T>(b));});
 			Factory::producers.Add(key) = p;
 			Factory::refurbishers.Add(key) = r;
 		}

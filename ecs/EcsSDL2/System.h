@@ -13,12 +13,10 @@ class SDL2System : public System<SDL2System> {
 	OOSDL2::Font fnt;
 	
 	
-	void Visit(RuntimeVisitor& vis) override {vis && comps;}
-	
 public:
 	SYS_RTTI(SDL2System)
 	SYS_CTOR(SDL2System)
-	
+	SYS_DEF_VISIT_(vis && comps)
 	const LinkedList<SDL2ContextConnectorRef>& GetContext() const {return comps;}
 	
 protected:

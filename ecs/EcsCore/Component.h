@@ -47,6 +47,7 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
+	virtual void ClearSinkSource() = 0;
 	virtual bool IsValSpec(TypeCls t) const {return false;}
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
@@ -61,6 +62,8 @@ public:
 	static bool AllowDuplicates() {return false;}
 	
 	Machine& GetMachine();
+	void UninitializeWithExt();
+	
 	
 public:
 	RTTI_DECL_R3(ComponentBase, Destroyable, Enableable, PacketForwarder)
@@ -104,7 +107,7 @@ public:
 
 template<typename T, typename Sink, typename Source, typename Ext>
 struct Component :
-	ComponentBase,
+	public ComponentBase,
 	public Sink,
 	public Source
 {
@@ -113,7 +116,11 @@ struct Component :
 	using ComponentT = Component<T,Sink,Source,Ext>;
 	
 	RTTI_DECL3(ComponentT, ComponentBase, Sink, Source)
-	void Visit0(RuntimeVisitor& vis) {vis.Visit(*(Sink*)this); vis.Visit(*(Source*)this); vis & ext;}
+	void Visit(RuntimeVisitor& vis) override {
+		vis.VisitThis<Sink>(this);
+		vis.VisitThis<Source>(this);
+		if (ext) vis % *ext;
+	}
 	
 	
 	TypeCls GetType() const override {
@@ -125,22 +132,29 @@ struct Component :
 	    
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
-	void VisitSource(RuntimeVisitor& vis) override {vis.Visit(*(Source*)this);}
-	void VisitSink(RuntimeVisitor& vis) override {vis.Visit(*(Sink*)this);}
+	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<Source>(this);}
+	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<Sink>(this);}
 	
+private:
+	void ClearSinkSource() override {
+		Sink::ClearSink();
+		Source::ClearSource();
+	}
 protected:
-	Ref<Ext> ext;
+	One<Ext> ext;
 	
 public:
+	~Component() {ASSERT(ext.IsEmpty());}
+	
 	bool SetExtension(ComponentExtBase* c) override {
 		ext.Clear();
 		Ext* o = CastPtr<Ext>(c);
 		ASSERT(o);
 		if (!o)
 			return false;
+		ext = o;
 		c->SetParent(this);
 		c->Initialize();
-		ext.WrapObject(RefParent1<ComponentBase>(this), o);
 		return true;
 	}
 	
@@ -152,7 +166,7 @@ public:
 	}
 	
 	ComponentExtBaseRef GetExtension() override {
-		return ext;
+		return ext ? ext->template AsRef<ComponentExtBase>() : ComponentExtBaseRef();
 	}
 	
 	
@@ -218,7 +232,7 @@ public:
 		ComponentMapBase::Iterator iter = ComponentMapBase::Find(AsTypeCls<ComponentT>());
 		ASSERT_(iter, "Tried to remove non-existent component");
 		
-		iter.value().Uninitialize();
+		iter.value().UninitializeWithExt();
 		iter.value().Destroy();
 		
 		ReturnComponent(*s, iter.value.GetItem()->value.Detach());
