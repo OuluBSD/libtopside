@@ -5,8 +5,8 @@ NAMESPACE_TOPSIDE_BEGIN
 TMPL_CONVDEVLIB(void) ConvertComponent::Initialize() {
 	using DevLib				= ScopeDevLibT<ToDevSpec>;
 	using StageComponent			= typename DevLib::StageComponent;
-	using StageContextConnector		= typename DevLib::StageContextConnector;
-	using StageContextConnectorRef	= typename DevLib::StageContextConnectorRef;
+	//using StageContextConnector		= typename DevLib::StageContextConnector;
+	//using StageContextConnectorRef	= typename DevLib::StageContextConnectorRef;
 	
 	auto sink_fmt = FDevCore::template GetDefaultFormat<ValSpec>();
 	sink_value.SetFormat(sink_fmt);

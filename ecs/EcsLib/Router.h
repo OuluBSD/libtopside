@@ -3,7 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-
+#if 0
 class PathwayRouter :
 	public Connector<PathwayRouter>,
 	public ManualConnector
@@ -74,4 +74,5 @@ using PathwaySystemRef = Ref<PathwaySystem, RefParent1<Machine>>;
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

@@ -15,8 +15,6 @@ file
 	Component.cpp,
 	ComponentStore.h,
 	ComponentStore.cpp,
-	Connector.h,
-	Connector.cpp,
 	EonParser.h,
 	EonParser.cpp,
 	EonPlanner.h,
@@ -31,6 +29,9 @@ file
 	EntityVisitor.cpp,
 	Customer.h,
 	Customer.cpp,
+	Trash readonly separator,
+	Connector.h,
+	Connector.cpp,
 	ConnManual.h,
 	ConnManual.cpp,
 	ConnAny.h;

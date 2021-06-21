@@ -9,7 +9,8 @@ class Pool;
 
 
 class Pool :
-	public RefScopeEnabler<Pool,EntityStore,RefParent2<EntityStore, Pool>>
+	public RefScopeEnabler<Pool,EntityStore,RefParent2<EntityStore, Pool>>,
+	RTTIBase
 {
 	Machine*			machine = 0;
 	BitField<dword>		freeze_bits;
@@ -67,6 +68,8 @@ public:
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
 	
+	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls iface, TypeCls sink_iface);
+	
 	template<typename PrefabT>
 	EntityRef Create() {
 		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
@@ -117,7 +120,7 @@ public:
 		return components;
 	}
 	
-	template<typename T>
+	/*template<typename T>
 	RefT_Pool<T> GetAdd() {
 		RefT_Pool<T> c = comps.Find<T>();
 		if (c)
@@ -128,7 +131,7 @@ public:
 	template<typename T>
 	RefT_Pool<T> Find() {
 		return comps.Find<T>();
-	}
+	}*/
 	
 	template <class T>
 	EntityRef FindEntity(T* component) {
@@ -183,7 +186,7 @@ public:
 	
 	
 	
-	template<typename T>
+	/*template<typename T>
 	void Remove() {
 		comps.Remove<T>(GetMachine().Get<ConnectorStore>());
 	}
@@ -197,7 +200,7 @@ public:
 		comps.Add(comp);
 		InitializeComponent(*comp);
 		return RefT_Pool<T>(this, comp);
-	}
+	}*/
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis || objects || pools;
@@ -206,9 +209,9 @@ private:
 	EntityVec				objects;
 	PoolVec					pools;
 	
-	ConnectorMap			comps;
+	/*ConnectorMap			comps;
 	
-	void InitializeComponent(ConnectorBase& comp);
+	void InitializeComponent(ConnectorBase& comp);*/
 	
 };
 
@@ -226,7 +229,7 @@ public:
 };
 
 
-
+/*
 template<typename T>
 RefT_Pool<T> Entity::FindConnector() {
 	RefT_Pool<T> r;
@@ -257,7 +260,7 @@ RefT_Pool<T> Entity::FindCommonConnector(EntityRef sink) {
 		sink_pool = sink_pool->GetParent();
 	}
 	return ret;
-}
+}*/
 
 
 template<typename T>
@@ -276,7 +279,7 @@ RefT_Entity<T> Entity::FindNearestEntityWith() {
 	return c;
 }
 
-template<typename T>
+/*template<typename T>
 RefT_Pool<T> Entity::FindNearestPoolWith() {
 	RefT_Pool<T> c;
 	Pool* p = &GetPool();
@@ -286,7 +289,7 @@ RefT_Pool<T> Entity::FindNearestPoolWith() {
 		p = p->GetParent();
 	}
 	return c;
-}
+}*/
 
 NAMESPACE_TOPSIDE_END
 

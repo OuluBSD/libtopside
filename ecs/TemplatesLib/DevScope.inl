@@ -64,10 +64,10 @@ TMPL_DEVLIB(void) StageComponent::Uninitialize() {
 	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Uninitialize");
 	StageComponentRef ref = StageComponentBase::template AsRef<StageComponent>();
 	
-	if (group) {
+	/*if (group) {
 		group->Remove(ref);
 		group.Clear();
-	}
+	}*/
 	
 	TODO
 	/*Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
@@ -92,15 +92,14 @@ TMPL_DEVLIB(String) StageComponent::GetStringFromType(TypeCls i) {
 }
 
 TMPL_DEVLIB(void) StageComponent::OnError(String fn, String msg) {
-	if (group && group->GetParent()) {
+	/*if (group && group->GetParent()) {
 		group->GetParent()->OnError(String(RTTI::GetRTTI().GetDynamicName()) + "::" + fn, msg);
 	}
-	else {
-		LOG(DevSpec::GetName() + "Component::" << fn << ": error: " << msg);
-	}
+	else {*/
+	LOG(DevSpec::GetName() + "Component::" << fn << ": error: " << msg);
 }
 
-TMPL_DEVLIB(CLS::DevStreamState&) StageComponent::GetStreamState() {return group->GetStreamState();}
+//TMPL_DEVLIB(CLS::DevStreamState&) StageComponent::GetStreamState() {return group->GetStreamState();}
 
 TMPL_DEVLIB(void) StageComponent::Clear() {
 	id = -1;
@@ -137,7 +136,8 @@ TMPL_DEVLIB(bool) StageComponent::Open() {
 }
 
 TMPL_DEVLIB(void) StageComponent::PostProcess() {
-	GetStreamState().Step(group->GetValSpec());
+	TODO
+	//GetStreamState().Step(group->GetValSpec());
 }
 
 template <class DevSpec>
@@ -219,6 +219,7 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 
 
 
+#if 0
 
 TMPL_DEVLIB(bool) StageComponentGroup::Open() {
 	int dbg_i = 0;
@@ -420,6 +421,7 @@ TMPL_DEVLIB(void) DevContextConnector::RemoveCtx(DevSinkRef r) {
 	Remove(r->template AsRef<DevComponent>());
 }
 
+#endif
 
 
 
@@ -456,7 +458,7 @@ TMPL_DEVMACH(void) DevComponent::Uninitialize() {
 
 
 
-
+#if 0
 TMPL_DEVLIB_CTOR StageContextConnector::StageContextConnector() {
 	
 }
@@ -1013,7 +1015,7 @@ TMPL_DEVLIB(void) StageContextConnector::Remove(StageComponentRef c) {
 	g.Remove(c);
 }
 
-
+#endif
 
 
 
@@ -1039,10 +1041,10 @@ TMPL_DEVLIB(void) DevSystem::Start() {
 }
 
 TMPL_DEVLIB(void) DevSystem::Update(double dt) {
-	if (stages.IsEmpty() && devs.IsEmpty() && comps.IsEmpty())
+	if (comps.IsEmpty())
 		return;
 	
-	RTLOG(DevSpec::GetName() + "DevSystem::Update: begin");
+	/*RTLOG(DevSpec::GetName() + "DevSystem::Update: begin");
 	
 	if (!stages.IsEmpty()) {
 		for (StageContextConnectorRef& ctx : stages)
@@ -1062,6 +1064,7 @@ TMPL_DEVLIB(void) DevSystem::Update(double dt) {
 	
 	
 	RTLOG(DevSpec::GetName() + "DevSystem::Update: end");
+	*/
 }
 
 TMPL_DEVLIB(void) DevSystem::Stop() {
@@ -1070,8 +1073,8 @@ TMPL_DEVLIB(void) DevSystem::Stop() {
 }
 
 TMPL_DEVLIB(void) DevSystem::Uninitialize() {
-	stages.Clear();
-	devs.Clear();
+	//stages.Clear();
+	//devs.Clear();
 	comps.Clear();
 	
 	WhenUninit()();

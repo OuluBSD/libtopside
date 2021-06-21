@@ -7,7 +7,8 @@ template <class ValSpec>
 void
 ScopeDevLibT<AccelSpec>::StageComponent
 ::UpdateDevBuffersValT() {
-	auto& stream = GetStreamState();
+	TODO
+	/*auto& stream = GetStreamState();
 	
 	fb_size.Clear();
 	auto& state = stream.template Get<ValSpec>();
@@ -41,7 +42,7 @@ ScopeDevLibT<AccelSpec>::StageComponent
 		}
 		else {TODO}
 	}
-	else {TODO}
+	else {TODO}*/
 }
 
 

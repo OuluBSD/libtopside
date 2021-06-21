@@ -30,14 +30,14 @@ class PortaudioSinkComponent;
 class StaticVolumeComponent;
 class Viewable;
 class Transform;
-class ConnectorBase;
+//class ConnectorBase;
 struct PaintComponent;
 template <class Main, class Base> class ComponentStoreT;
 
 using EntityParent			= RefParent1<Pool>;
 using PoolParent			= RefParent2<EntityStore,Pool>;
 using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
-using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
+//using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
 
 using ComponentBaseRef		= Ref<ComponentBase,		RefParent1<Entity>>;
 using ComponentRef			= Ref<ComponentBase,		RefParent1<Entity>>;
@@ -50,13 +50,13 @@ using PbrRenderableRef		= Ref<PbrRenderable,		RefParent1<Entity>>;
 using CoreWindowRef			= Ref<CoreWindow,			RefParent1<Entity>>;
 using ViewableRef			= Ref<Viewable,				RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
-using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
+//using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
 using EntityStoreRef		= Ref<EntityStore,			RefParent1<Machine>>;
 using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
 using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
-using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
+//using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 
 using DummySoundGeneratorComponentRef	= Ref<DummySoundGeneratorComponent,		RefParent1<Entity>>;
@@ -65,7 +65,7 @@ using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entit
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
 using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
 
-using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
+//using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;
 using PoolVec				= RefLinkedList<		Pool,			PoolParent>;
 
@@ -161,14 +161,14 @@ struct x : \
 
 
 
-typedef enum {
+/*typedef enum {
 	CONNAREA_INTERNAL,
 	CONNAREA_POOL_CURRENT,
 	CONNAREA_POOL_CHILDREN_ONLY,
 	CONNAREA_POOL_PARENTS_ONLY,
 	
 	CONNAREA_COUNT
-} ConnectorArea;
+} ConnectorArea;*/
 
 
 

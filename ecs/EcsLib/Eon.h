@@ -42,7 +42,6 @@ class EonLoader :
 {
 	LinkedList<EonScope> scopes;
 	
-	LinkedList<PathwayRouterRef> pathways;
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
 	Eon::CompilationUnit root;
@@ -52,7 +51,7 @@ class EonLoader :
 public:
 	SYS_RTTI(EonLoader)
 	SYS_CTOR(EonLoader);
-	SYS_DEF_VISIT_((vis && pathways) & es)
+	SYS_DEF_VISIT_(vis & es)
 	
 	void PostLoadFile(String path) {post_load_file << path;}
 	void PostLoadString(String s) {post_load_string << s;}

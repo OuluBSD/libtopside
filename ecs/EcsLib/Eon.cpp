@@ -233,7 +233,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		}
 		++plan_i;
 	}
-	ConnectManuallyInterfacesRef conn = e->GetPool().GetAdd<ConnectManuallyInterfaces>();
+	PoolRef pool = e->GetPool();
 	
 	for(int i = 0; i < added_comps.GetCount()-1; i++) {
 		AddedComp& c0 = added_comps[i];
@@ -244,7 +244,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 		const Eon::WorldState& ws = n.GetWorldState();
 		TypeCls src_iface = ws.GetSourceInterface();
 		TypeCls sink_iface = ws.GetSinkInterface();
-		if (!conn->LinkManually(src, dst, src_iface, sink_iface)) {
+		if (!pool->Link(src, dst, src_iface, sink_iface)) {
 			TypeCls comp = ws.GetComponent();
 			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
 			String src_iface_name = EcsFactory::SourceDataMap().Get(src_iface).name;

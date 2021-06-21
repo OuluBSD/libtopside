@@ -1,3 +1,4 @@
+#if 0
 #include "EcsLib.h"
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -105,3 +106,4 @@ void PathwaySystem::Uninitialize() {
 
 
 NAMESPACE_TOPSIDE_END
+#endif

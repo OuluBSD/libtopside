@@ -81,7 +81,8 @@ private:
 };
 
 using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
-using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
+
+//using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
 
 
 NAMESPACE_TOPSIDE_END

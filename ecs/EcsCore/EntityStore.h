@@ -8,7 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class EntityStore : public System<EntityStore> {
 	PoolVec							root;
 	
-	LinkedList<ConnectorBase*>		refresh_poolcomps[2];
+	//LinkedList<ConnectorBase*>		refresh_poolcomps[2];
 	Mutex							lock;
 	
 	enum {
@@ -26,7 +26,7 @@ public:
 	PoolVec& GetRootVec()	{return root;}
 	
 	
-	int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
+	//int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
 	
 protected:
 	void Update(double) override;

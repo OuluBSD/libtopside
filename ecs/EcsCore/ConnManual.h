@@ -1,6 +1,8 @@
 #ifndef _EcsCore_ConnManual_h_
 #define _EcsCore_ConnManual_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -106,4 +108,5 @@ template <class ValDevSpec, class T> bool ComponentBase::LinkManually(T& o, Stri
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

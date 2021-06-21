@@ -26,12 +26,12 @@ struct ScopeDevLibT {
 	//using SinkRef				= typename Core::SinkRef;
 	//using ExchangePointRef	= typename Core::ExchangePointRef;
 	
-	class DevContextConnector;
-	using DevContextConnectorRef		= Ref<DevContextConnector, RefParent1<Pool>>;
-	class StageContextConnector;
-	using StageContextConnectorRef		= Ref<StageContextConnector, RefParent1<Pool>>;
-	class StageComponentGroup;
-	using StageComponentGroupRef		= Ref<StageComponentGroup, RefParent1<StageContextConnector>>;
+	//class DevContextConnector;
+	//using DevContextConnectorRef		= Ref<DevContextConnector, RefParent1<Pool>>;
+	//class StageContextConnector;
+	//using StageContextConnectorRef		= Ref<StageContextConnector, RefParent1<Pool>>;
+	//class StageComponentGroup;
+	//using StageComponentGroupRef		= Ref<StageComponentGroup, RefParent1<StageContextConnector>>;
 	class StageComponent;
 	using StageComponentRef				= Ref<StageComponent, RefParent1<Entity>>;
 	
@@ -59,8 +59,8 @@ struct ScopeDevLibT {
 	{
 	protected:
 		friend class DevContextConnector;
-		LinkedList<StageContextConnectorRef> stages;
-		LinkedList<DevContextConnectorRef> devs;
+		//LinkedList<StageContextConnectorRef> stages;
+		//LinkedList<DevContextConnectorRef> devs;
 		LinkedList<StageComponentRef> comps;
 		
 	protected:
@@ -73,12 +73,13 @@ struct ScopeDevLibT {
 	public:
 		RTTI_CTX_SYS(DevSystem, SystemBase)
 	    SYS_CTOR(DevSystem)
-		SYS_DEF_VISIT_(vis && stages && devs && comps)
+		//SYS_DEF_VISIT_(vis && stages && devs && comps)
+		SYS_DEF_VISIT_(vis && comps)
 		
-		void AddStage(StageContextConnectorRef stage)		{ASSERT(stage); stages.FindAdd(stage);}
-		void RemoveStage(StageContextConnectorRef stage)	{stages.RemoveKey(stage);}
-		void AddDev(DevContextConnectorRef dev)				{ASSERT(dev); devs.FindAdd(dev);}
-		void RemoveDev(DevContextConnectorRef dev)			{devs.RemoveKey(dev);}
+		//void AddStage(StageContextConnectorRef stage)		{ASSERT(stage); stages.FindAdd(stage);}
+		//void RemoveStage(StageContextConnectorRef stage)	{stages.RemoveKey(stage);}
+		//void AddDev(DevContextConnectorRef dev)				{ASSERT(dev); devs.FindAdd(dev);}
+		//void RemoveDev(DevContextConnectorRef dev)			{devs.RemoveKey(dev);}
 		void AddComp(StageComponentRef comp)				{ASSERT(comp); comps.FindAdd(comp);}
 		void RemoveComp(StageComponentRef comp)				{comps.RemoveKey(comp);}
 		
@@ -103,7 +104,7 @@ struct ScopeDevLibT {
 		friend class StageComponentGroup;
 		friend StageComponentBase;
 		
-		StageComponentGroupRef			group;
+		//StageComponentGroupRef			group;
 		LinkedList<StageComponentConf>	in;
 		int								id = -1;
 		int								pos = -1;
@@ -131,7 +132,7 @@ struct ScopeDevLibT {
 		void				Initialize();
 		void				Uninitialize();
 		bool				Load(ObjectMap& st_map, int stage_i, String frag_code);
-		void				SetGroup(StageComponentGroupRef g) {group = g;}
+		//void				SetGroup(StageComponentGroupRef g) {group = g;}
 		void				OnError(String fn, String msg);
 		
 		int					GetId() const {return id;}
@@ -139,9 +140,9 @@ struct ScopeDevLibT {
 		bool				IsOpen() const {return is_open;}
 		String				ToString() const {return GetTypeString() + " (id: " + IntStr(id) + ")";}
 		String				GetTypeString() const {return GetStringFromType(RTTI::GetRTTI().GetTypeId());}
-		DevStreamState&		GetStreamState();
+		//DevStreamState&		GetStreamState();
 		
-		StageComponentGroupRef GetGroup() const {return group;}
+		//StageComponentGroupRef GetGroup() const {return group;}
 		const LinkedList<StageComponentConf>& GetInputs() const {return in;}
 		
 		static String		GetStringFromType(TypeCls i);
@@ -155,6 +156,7 @@ struct ScopeDevLibT {
 	};
 	
 	
+	#if 0
 	class DevContextConnector :
 		public TS::Connector<DevContextConnector>,
 		public DevContextConnectorBase
@@ -193,7 +195,6 @@ struct ScopeDevLibT {
 		Callback WhenError;
 		
 	};
-	
 	
 	
 	
@@ -236,6 +237,7 @@ struct ScopeDevLibT {
 		StageContextConnector* GetParent() {return RefScopeEnabler<StageComponentGroup, StageContextConnector>::GetParent();}
 		
 	};
+	
 	
 	class StageContextConnector :
 		public TS::Connector<StageContextConnector>,
@@ -303,7 +305,7 @@ struct ScopeDevLibT {
 		Callback WhenError;
 		
 	};
-	
+	#endif
 	
 };
 

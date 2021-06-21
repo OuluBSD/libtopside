@@ -44,7 +44,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	Value& val = val_sink->GetValue(CTX);
 	SimpleBufferedValue* buf = CastPtr<SimpleBufferedValue>(&val);
 	if (buf) {
-		AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
+		//AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
 		
 		StageComponent* comp = CastPtr<StageComponent>(val_sink->AsComponentBase());
 		if (!comp)
@@ -576,6 +576,8 @@ IFACE_LIST
 
 
 
+#if 0
+
 template <>
 bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 	using DevSpec = AccelSpec;
@@ -742,7 +744,7 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 }
 
 
-
+#endif
 
 
 

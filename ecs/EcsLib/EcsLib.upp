@@ -15,8 +15,9 @@ file
 	Component.inl highlight cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
-	Router.h,
-	Router.cpp,
 	Eon.h,
-	Eon.cpp;
+	Eon.cpp,
+	Trash readonly separator,
+	Router.h,
+	Router.cpp;
 

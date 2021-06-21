@@ -29,7 +29,6 @@
 #include "Component.h"
 #include "Component.inl"
 #include "RegistrySystem.h"
-#include "Router.h"
 #include "Eon.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB

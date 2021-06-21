@@ -1,3 +1,4 @@
+#if 0
 #ifndef _EcsCore_ConnAny_h_
 #define _EcsCore_ConnAny_h_
 
@@ -54,4 +55,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

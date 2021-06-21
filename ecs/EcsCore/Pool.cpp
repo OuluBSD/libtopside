@@ -4,7 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
+//PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
+
 Machine& GetPoolMachine(PoolRef pool) {return pool->GetMachine();}
 
 
@@ -76,14 +77,18 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 
+bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls iface, TypeCls sink_iface) {
+	TODO
+}
+
 void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
 		it().UnlinkDeep();
 	}
 	
-	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UnlinkAll();
-	}
+	}*/
 }
 
 void Pool::ClearInterfacesDeep() {
@@ -108,9 +113,9 @@ void Pool::UninitializeComponentsDeep() {
 		it().UninitializeComponents();
 	}
 	
-	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UninitializeWithExt();
-	}
+	}*/
 }
 
 void Pool::ClearComponentsDeep() {
@@ -121,12 +126,12 @@ void Pool::ClearComponentsDeep() {
 		it().ClearComponents();
 	}
 	
-	if (!comps.IsEmpty()) {
+	/*if (!comps.IsEmpty()) {
 		ConnectorStoreRef sys = GetMachine().Get<ConnectorStore>();
 		for (auto iter = comps.rbegin(); iter; --iter)
 			sys->ReturnComponent(comps.Detach(iter));
 		ASSERT(comps.IsEmpty());
-	}
+	}*/
 }
 
 void Pool::ClearDeep() {
@@ -156,9 +161,9 @@ void Pool::PruneFromContainer() {
 	Destroyable::PruneFromContainer(objects);
 }
 
-void Pool::InitializeComponent(ConnectorBase& comp) {
+/*void Pool::InitializeComponent(ConnectorBase& comp) {
 	comp.Initialize();
-}
+}*/
 
 void Pool::Dump() {
 	LOG(GetTreeString());
@@ -172,11 +177,11 @@ String Pool::GetTreeString(int indent) {
 	
 	s << ".." << name << "[" << id << "]\n";
 	
-	for (ConnectorRef& c : comps) {
+	/*for (ConnectorRef& c : comps) {
 		s.Cat('\t', indent+1);
 		s << "." << c->ToString();
 		s << "\n";
-	}
+	}*/
 	
 	for (EntityRef& e : objects)
 		s << e->GetTreeString(indent+1);

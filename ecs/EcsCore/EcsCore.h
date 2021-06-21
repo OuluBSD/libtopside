@@ -15,7 +15,6 @@
 #include "Defs.h"
 #include "EntityStore.h"
 #include "Component.h"
-#include "Connector.h"
 #include "ComponentStore.h"
 #include "EonParser.h"
 #include "EonPlanner.h"
@@ -23,8 +22,6 @@
 #include "Entity.h"
 #include "Pool.h"
 #include "EntityVisitor.h"
-#include "ConnManual.h"
-#include "ConnAny.h"
 #include "Customer.h"
 
 

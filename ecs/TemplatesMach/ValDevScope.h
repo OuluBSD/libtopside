@@ -52,7 +52,7 @@ struct ScopeValDevMachT {
 	class ValExchangePoint :
 		public ValExchangePointBase
 	{
-		ConnectorBase* conn = 0;
+		Pool* pool = 0;
 		bool use_consumer = true;
 		
 	public:
@@ -68,7 +68,7 @@ struct ScopeValDevMachT {
 		void ForwardExchange(FwdScope& fwd) override;
 		
 		void UseConsumer(bool b=true) {use_consumer = b;}
-		void Destroy() {conn = 0;}
+		void Destroy() {pool = 0;}
 		
 		
 	};

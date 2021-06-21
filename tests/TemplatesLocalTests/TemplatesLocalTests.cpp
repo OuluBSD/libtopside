@@ -31,13 +31,60 @@ Take any address and put to BreakRefAdd
 */
 
 
-const char* eon_str = R"EON_CODE(
+const char* gen_str = R"EON_CODE(
 
 tester.generator: {
 	customer.id.ABCD: true;
 	center.audio.src: true;
 	center.audio.sink: true;
 	center.audio.sink.realtime: true;
+}
+
+)EON_CODE";
+
+
+
+/*
+ 1:
+    - customer
+    - CenterAccelSideOutput
+ 2:
+    - customer
+	- AccelCenterSideInput
+	- AccelAudioPipeComponent
+	- AccelCenterSideOutput
+ 3:
+	- customer
+	- CenterAccelSideInput
+	- TestRealtimeSink
+
+*/
+
+const char* accel_str = R"EON_CODE(
+
+tester: {
+	
+	center.audio.sync: {
+		center.order.sink.sidechain: true;
+		accel.ctx.audio.sidechain: true;
+	};
+	
+	center.audio.output: {
+		center.audio.src.sidechain: true;
+		center.audio.sink: true;
+		center.audio.sink.realtime: true;
+	};
+	
+	accel.sync: {
+		center.order.src: true;
+		center.order.src.sidechain: true;
+		accel.filename: "$FILEPATH";
+		accel.audio.src: true;
+		accel.audio.sink: true;
+		center.audio.src: true;
+		center.audio.src.sidechain: true;
+	};
+	
 }
 
 )EON_CODE";
@@ -71,7 +118,7 @@ void Main() {
 			RegistrySystemRef reg		= mach.Add<RegistrySystem>();
 			EntityStoreRef es			= mach.Add<EntityStore>();
 			ComponentStoreRef compstore	= mach.Add<ComponentStore>();
-		    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
+		    //ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
 		    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 		    EonLoaderRef eon			= mach.Add<EonLoader>();
 		    
@@ -79,8 +126,8 @@ void Main() {
 			
 			PoolRef root = es->GetRoot();
 			
-			LOG(eon_str);
-	        eon->PostLoadString(eon_str);
+			LOG(gen_str);
+	        eon->PostLoadString(gen_str);
 	    }
 	        
 	    if (!fail) {

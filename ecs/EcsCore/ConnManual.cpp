@@ -1,3 +1,4 @@
+#if 0
 #include "EcsCore.h"
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -62,3 +63,4 @@ void ConnectManuallyInterfaces::Update(double dt) {
 
 
 NAMESPACE_TOPSIDE_END
+#endif

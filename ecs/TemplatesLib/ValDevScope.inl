@@ -20,8 +20,8 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using Value					= typename Mach::Value;
 	using SourceRef				= typename Core::ValSourceRef;
 	using SinkRef				= typename Core::ValSinkRef;
-	using DevContextConnectorBaseRef	= typename DevMach::DevContextConnectorBaseRef;
-	using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
+	//using DevContextConnectorBaseRef	= typename DevMach::DevContextConnectorBaseRef;
+	//using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
 	
 	//ASSERT(!dbg_offset_is_set);
 	

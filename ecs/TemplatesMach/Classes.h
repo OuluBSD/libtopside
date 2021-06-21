@@ -693,7 +693,6 @@ public:
 
 
 
-class ConnectorBase;
 
 
 class ValExchangePointBase :

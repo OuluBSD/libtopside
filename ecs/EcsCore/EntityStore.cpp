@@ -23,7 +23,7 @@ void EntityStore::Update(double dt) {
 	GetRoot()->PruneFromContainer();
 	
 	
-	if (refresh_poolcomps[WRITE]) {
+	/*if (refresh_poolcomps[WRITE]) {
 		lock.Enter();
 		MemSwap(refresh_poolcomps[READ], refresh_poolcomps[WRITE]);
 		refresh_poolcomps[WRITE].Clear();
@@ -31,11 +31,11 @@ void EntityStore::Update(double dt) {
 		
 		for (ConnectorBase* comp : refresh_poolcomps[READ])
 			comp->Update(dt);
-	}
+	}*/
 	
 }
 
-int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
+/*int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
 	Machine& mach = GetMachine();
 	
 	// Don't add refresh if EntityStore haven't called previous refresh yet
@@ -48,7 +48,7 @@ int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
 	lock.Leave();
 	
 	return cur_ticks;
-}
+}*/
 
 
 
