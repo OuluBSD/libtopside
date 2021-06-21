@@ -9,6 +9,7 @@
 #include "ValDevScope.h"
 #include "ValDevSpec.h"
 #include "ConvDevScope.h"
+#include "ConvValDevScope.h"
 #include "DevSpec.h"
 #include "ValScope.h"
 
@@ -16,6 +17,7 @@
 #include "AccelScope.inl"
 #include "ValDevScope.inl"
 #include "ConvDevScope.inl"
+#include "ConvValDevScope.inl"
 #include "EcsCore.inl"
 #include "ValScope.inl"
 

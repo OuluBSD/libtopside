@@ -710,6 +710,30 @@ public:
 using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
 
 
+
+
+
+class SideOutputBase :
+	RTTIBase
+{
+public:
+	RTTI_DECL0(SideOutputBase)
+	
+	virtual void				Forward(FwdScope& fwd) = 0;
+	virtual void				ForwardExchange(FwdScope& fwd) = 0;
+	
+};
+
+
+class SideInputBase :
+	RTTIBase
+{
+public:
+	RTTI_DECL0(SideInputBase)
+	
+};
+
+
 NAMESPACE_TOPSIDE_END
 
 

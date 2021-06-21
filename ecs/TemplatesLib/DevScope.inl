@@ -894,7 +894,7 @@ bool ScopeDevLibT<DevSpec>::StageContextConnector::ConnectComponentOutputsT(Stag
 	using ToVDCore			= ScopeValDevCoreT<ToVD>;
 	using ToSource			= typename ToVDCore::ValSource;
 	using ToSourceRef		= typename ToVDCore::ValSourceRef;
-	using ToDevComp			= typename ScopeConvDevLibT<ValSpec,DevSpec,ToDevSpec>::ConvertComponent;
+	using ToDevComp			= typename ScopeConvValDevLibT<ValSpec,DevSpec,ToDevSpec>::ConvertComponent;
 	using ToDevCompRef		= Ref<ToDevComp, RefParent1<Entity>>;
 	
 	FromSourceRef valdev_src = comp->As<FromSource>();

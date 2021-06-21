@@ -174,8 +174,8 @@ TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
 	//using Display		= typename ScopeValDevLibT<VD<AccelSpec,DisplaySpec>>::PipeComponent;
 	using Video			= typename ScopeValDevLibT<VD<AccelSpec,VideoSpec>>::PipeComponent;
 	using Audio			= typename ScopeValDevLibT<VD<AccelSpec,AudioSpec>>::PipeComponent;
-	//using ConvPhoto		= typename ScopeConvDevLibT<PhotoSpec,CenterSpec,AccelSpec>::ConvertComponent;
-	using ConvVideo		= typename ScopeConvDevLibT<VideoSpec,CenterSpec,AccelSpec>::ConvertComponent;
+	//using ConvPhoto		= typename ScopeConvValDevLibT<PhotoSpec,CenterSpec,AccelSpec>::ConvertComponent;
+	using ConvVideo		= typename ScopeConvValDevLibT<VideoSpec,CenterSpec,AccelSpec>::ConvertComponent;
 	VALUE(image,		Video);
 	VALUE(imagebuf,		Video);
 	VALUE(imagebuffer,	Video);
@@ -357,8 +357,8 @@ void AccelComponentConfBase::CopyIdStream(const AccelComponentConfBase& in) {
 
 bool AccelComponentConfBase::IsTypeComponentSource(Type i) {
 	#define PIPECOMP(ValSpec)		ScopeValDevLibT<VD<AccelSpec,ValSpec>>::PipeComponent
-	#define CONVCOMP_TO(ValSpec)	ScopeConvDevLibT<ValSpec,CenterSpec,AccelSpec>::ConvertComponent
-	#define CONVCOMP_FROM(ValSpec)	ScopeConvDevLibT<ValSpec,AccelSpec,CenterSpec>::ConvertComponent
+	#define CONVCOMP_TO(ValSpec)	ScopeConvValDevLibT<ValSpec,CenterSpec,AccelSpec>::ConvertComponent
+	#define CONVCOMP_FROM(ValSpec)	ScopeConvValDevLibT<ValSpec,AccelSpec,CenterSpec>::ConvertComponent
 	#define IFACE(x) \
 		if (i == AsTypeCls<PIPECOMP(x##Spec)>()) return true; \
 		if (i == AsTypeCls<CONVCOMP_TO(x##Spec)>()) return true;
@@ -659,9 +659,9 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 				#define IFACE(x) \
 					else if (type == AsTypeCls<PIPECOMP(x##Spec)>()) \
 						group = &GetAddGroupContext<x##Spec>(); \
-					else if (type == AsTypeCls<typename ScopeConvDevLibT<x##Spec,DevSpec,CenterSpec>::ConvertComponent>()) \
+					else if (type == AsTypeCls<typename ScopeConvValDevLibT<x##Spec,DevSpec,CenterSpec>::ConvertComponent>()) \
 						group = &GetAddGroupContext<x##Spec>(); \
-					else if (type == AsTypeCls<typename ScopeConvDevLibT<x##Spec,CenterSpec,DevSpec>::ConvertComponent>()) \
+					else if (type == AsTypeCls<typename ScopeConvValDevLibT<x##Spec,CenterSpec,DevSpec>::ConvertComponent>()) \
 						group = &GetAddGroupContext<x##Spec>();
 				IFACE_LIST
 				#undef IFACE
