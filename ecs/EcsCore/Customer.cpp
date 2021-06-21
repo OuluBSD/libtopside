@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-CustomerComponent::CustomerComponent() : src_stream(this) {
+CustomerComponent::CustomerComponent() : src_stream(this), cfg(gen) {
 	DumpRuntimeDiagnostics(this);
 }
 
@@ -20,10 +20,8 @@ void CustomerComponent::Uninitialize() {
 		sys->Remove(AsRef<CustomerComponent>());
 }
 
-void CustomerComponent::CreateOrder(double dt) {
+void CustomerComponent::UpdateConfig(double dt) {
 	cfg.Update(dt, src_value.IsQueueFull());
-	for (FwdScope scope(this, cfg); scope; scope++)
-		scope.Forward();
 }
 
 void CustomerComponent::AddPlan(Eon::Plan& ep) {
@@ -118,8 +116,10 @@ void CustomerSystem::Update(double dt) {
 			scope.Forward();
 	}
 	
-	for (CustomerComponentRef& customer : customers) {
-		customer->CreateOrder(dt);
+	for (CustomerComponentRef& c : customers) {
+		c->UpdateConfig(dt);
+		for (FwdScope scope(*c, c->cfg); scope; scope++)
+			scope.Forward();
 	}
 	
 }

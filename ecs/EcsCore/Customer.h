@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class CustomerComponent;
 
 
-class GeneratorComponentBase : RTTIBase {
+/*class GeneratorComponentBase : RTTIBase {
 	
 protected:
 	RealtimeSourceConfig cfg;
@@ -18,7 +18,7 @@ public:
 	GeneratorComponentBase() : cfg(gen) {}
 	
 	
-};
+};*/
 
 
 class CustomerExt : public ComponentExtBase {
@@ -32,11 +32,18 @@ public:
 
 class CustomerComponent :
 	public Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>,
-	public GeneratorComponentBase
+	RTTIBase
 {
 	Vector<Eon::Plan>		plans;
 	Index<dword>			unfulfilled_offsets;
 	int						max_unfulfilled = 5;
+	
+	
+	
+protected:
+	friend class CustomerSystem;
+	RealtimeSourceConfig cfg;
+	off32_gen gen;
 	
 protected:
 	struct LocalSinkValue : public SimpleReceipt {
@@ -63,7 +70,7 @@ protected:
 	
 public:
 	using ComponentT = Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>;
-	RTTI_COMP2(CustomerComponent, ComponentT, GeneratorComponentBase)
+	RTTI_COMP1(CustomerComponent, ComponentT)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
 	COMP_DEF_VISIT
@@ -75,7 +82,7 @@ public:
 	CustomerComponent();
 	virtual void		Initialize() override;
 	virtual void		Uninitialize() override;
-	void				CreateOrder(double dt);
+	void				UpdateConfig(double dt);
 	void				AddPlan(Eon::Plan& ep);
 	
 	

@@ -76,7 +76,7 @@ void DevComponent<DevSpec,ValSpec,T,Sink,Source,Ext>::ForwardPackets(double dt) 
 		#endif
 		
 		//expt->SetOffset(begin_offset);
-		for(FwdScope scope(*expt); scope; scope++)
+		for (FwdScope scope(*expt); scope; scope++)
 			scope.Forward();
 		
 		off32 end_offset = expt->GetOffset();

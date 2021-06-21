@@ -128,8 +128,7 @@ public:
 
 class StaticVolumeComponent :
 	public Component<StaticVolumeComponent>,
-	public StaticSource,
-	public GeneratorComponentBase
+	public StaticSource
 {
 	
 protected:

@@ -66,6 +66,7 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 		PacketTracker::Track(TrackerInfo("CreateForwardPacketT", __FILE__, __LINE__), *p);
 		buf->AddPacket(p);
 		
+		NOT HERE
 		for (FwdScope scope(comp); scope; scope++)
 			scope.Forward();*/
 		
