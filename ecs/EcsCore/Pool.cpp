@@ -77,14 +77,50 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 
-bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls iface, TypeCls sink_iface) {
-	TODO
+bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface) {
+	InterfaceSourceBaseRef src = src_comp->FindSource(src_iface);
+	InterfaceSinkBaseRef sink = dst_comp->FindSink(sink_iface);
+	ASSERT(src && sink);
+	if (!src || !sink)
+		return false;
+	ASSERT(src	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
+	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
+	CookieRef src_cookie, sink_cookie;
+	if (src->Accept(sink, src_cookie, sink_cookie)) {
+		const auto& src_d = EcsFactory::SourceDataMap().Get(src_iface);
+		if (src_d.sink_cls != sink_iface) {
+			ASSERT(0);
+			LOG("internal error: unexpected sink class type");
+			return false;
+		}
+		
+		TypeCls expt_type = src_d.expt_type;
+		ASSERT(expt_type);
+		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
+		RTLOG("ManualConnector::LinkManually(TypeCls...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
+		src->Link(ep, sink, src_cookie, sink_cookie);
+		ep->Init(this);
+		ep->Set(src, sink, src_cookie, sink_cookie);
+		return true;
+	}
+	return false;
+}
+
+void Pool::UnlinkExchangePoints() {
+	for (ExchangePointRef& pt : pts) {
+		pt->Source()	->ClearLink();
+		pt->Sink()		->ClearLink();
+		pt->Clear();
+	}
+	pts.Clear();
 }
 
 void Pool::UnlinkDeep() {
 	for (auto it = pools.rbegin(); it != pools.rend(); --it) {
 		it().UnlinkDeep();
 	}
+	
+	UnlinkExchangePoints();
 	
 	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UnlinkAll();

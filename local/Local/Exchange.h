@@ -14,6 +14,7 @@ class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
 class Pool;
+class EntityStore;
 class ComponentBase;
 using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
 using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Entity>>;
@@ -370,7 +371,6 @@ class ExchangePoint :
 protected:
 	friend class MetaExchangePoint;
 	
-	MetaExchangePointRef		meta_expt;
 	ExchangeSourceProviderRef	src;
 	ExchangeSinkProviderRef		sink;
 	CookieRef					src_cookie;
@@ -386,8 +386,7 @@ public:
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
-	void Destroy();
-	void Visit(RuntimeVisitor& vis) {vis & meta_expt & src & sink & src_cookie & sink_cookie;}
+	void Visit(RuntimeVisitor& vis) {vis & src & sink & src_cookie & sink_cookie;}
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}
@@ -400,7 +399,7 @@ public:
 
 
 class MetaExchangePoint :
-	public RefScopeEnabler<MetaExchangePoint,Pool>
+	public RefScopeEnabler<MetaExchangePoint,EntityStore,RefParent2<EntityStore, Pool>>
 {
 	
 protected:
@@ -419,7 +418,6 @@ public:
 		T* o = new T();
 		pts.Add(o);
 		o->SetParent(this);
-		o->meta_expt = AsRefT();
 		return o->AsRefT();
 	}
 
@@ -428,7 +426,6 @@ public:
 		if (o) {
 			pts.Add(o);
 			o->SetParent(this);
-			o->meta_expt = AsRefT();
 			return o->AsRefT();
 		}
 		else return Ref<T>();

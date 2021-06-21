@@ -9,7 +9,7 @@ class Pool;
 
 
 class Pool :
-	public RefScopeEnabler<Pool,EntityStore,RefParent2<EntityStore, Pool>>,
+	public MetaExchangePoint,
 	RTTIBase
 {
 	Machine*			machine = 0;
@@ -27,7 +27,7 @@ public:
 	
 	static PoolId GetNextId();
 	
-	RTTI_DECL_R0(Pool)
+	RTTI_DECL_R1(Pool, MetaExchangePoint)
 	Pool();
 	~Pool();
 	
@@ -48,6 +48,7 @@ public:
 	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
+	void				UnlinkExchangePoints();
 	void				ClearInterfacesDeep();
 	void				UnrefDeep();
 	void				UninitializeComponentsDeep();
@@ -68,7 +69,7 @@ public:
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
 	
-	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls iface, TypeCls sink_iface);
+	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface);
 	
 	template<typename PrefabT>
 	EntityRef Create() {

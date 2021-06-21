@@ -10,9 +10,9 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Init(MetaExchangePoint* mexpt) {
-	TODO
+	ASSERT(mexpt);
 	/*ConnectorBase* conn = CastPtr<ConnectorBase>(mexpt);
-	ASSERT(conn);
+	ASSERT(conn);*/
 	
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
@@ -25,12 +25,11 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Init(MetaExchangePoint* mexpt) {
 		if (sys)
 			sys->Add(AsRef<ExchangePoint>());
 	}
-	#endif*/
+	#endif
 }
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
-	TODO
-	/*#if HAVE_VALSYSTEM
+	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	if (conn) {
 		PoolRef pool = GetConnectorBasePool(conn);
@@ -41,7 +40,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
 			sys->Remove(AsRef<ExchangePoint>());
 		conn = 0;
 	}
-	#endif*/
+	#endif
 }
 
 TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {

@@ -201,10 +201,7 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 	ASSERT(sink->IsSource(src));
 }
 
-void ExchangePoint::Destroy() {
-	ASSERT(meta_expt);
-	meta_expt->Remove(this);
-}
+
 
 
 
@@ -251,7 +248,6 @@ ExchangePointRef MetaExchangePoint::Add(TypeCls expt) {
 	ExchangePoint* o = d.new_fn();
 	pts.Add(o);
 	o->SetParent(this);
-	o->meta_expt = AsRefT();
 	return o->AsRefT();
 }
 
