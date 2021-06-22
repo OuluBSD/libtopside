@@ -126,13 +126,19 @@ void Main() {
 			
 			PoolRef root = es->GetRoot();
 			
-			LOG(gen_str);
-	        eon->PostLoadString(gen_str);
+			String eon_code;
+			if (0)
+				eon_code = gen_str;
+			else if (1)
+				eon_code = accel_str;
+			else
+				Exit(1);
+			
+			LOG(GetLineNumStr(eon_code, 1));
+	        eon->PostLoadString(eon_code);
 	    }
 	        
-	    if (!fail) {
-		    mach.Start();
-		    
+	    if (!fail && mach.Start()) {
 		    int iter = 0;
 		    TimeStop t, total;
 		    while (mach.IsRunning()) {

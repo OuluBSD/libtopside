@@ -76,7 +76,8 @@ void Machine::Update(double dt) {
 }
 
 void Machine::Stop() {
-	ASSERT_(is_started, "Shouldn't call Stop if we haven't been started");
+	if (!is_started)
+		return;
 	
 	is_running = false;
 	is_started = false;

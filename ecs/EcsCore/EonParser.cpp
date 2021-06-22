@@ -112,11 +112,11 @@ bool Parser::Parse(Eon::CustomerDefinition& def) {
 	if (!Parse(def.id))
 		return false;
 	
+	PASS_CHAR(':')
 	return CustomerScope(def);
 }
 
 bool Parser::CustomerScope(Eon::CustomerDefinition& def) {
-	PASS_CHAR(':')
 	PASS_CHAR('{')
 	
 	while (!IsChar('}')) {
@@ -158,17 +158,17 @@ bool Parser::Parse(Eon::Value& v) {
 		v.type = Eon::Value::VAL_ID;
 		if (!Parse(v.id))
 			return false;
-		if (IsChar(':')) {
-			v.type = Eon::Value::VAL_CUSTOMER;
-			MemSwap(v.id, v.customer.id);
-			return CustomerScope(v.customer);
-		}
 		return true;
 	}
 	else if (IsString()) {
 		v.type = Eon::Value::VAL_STRING;
 		v.str = ReadString();
 		return true;
+	}
+	else if (IsChar('{')) {
+		v.type = Eon::Value::VAL_CUSTOMER;
+		MemSwap(v.id, v.customer.id);
+		return CustomerScope(v.customer);
 	}
 	else {
 		AddError("Unexpected token");
