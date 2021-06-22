@@ -1,6 +1,8 @@
 #ifndef _TemplatesLib_ConvValDevScope_h_
 #define _TemplatesLib_ConvValDevScope_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -142,4 +144,5 @@ struct ScopeConvValDevLibT {
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

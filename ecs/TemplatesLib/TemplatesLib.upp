@@ -9,7 +9,6 @@ uses
 
 file
 	TemplatesLib.h,
-	InitConvert.icpp,
 	InitPipe.icpp,
 	InitIn.icpp,
 	InitOut.icpp,
@@ -26,12 +25,13 @@ file
 	ValDevScope.inl highlight cpp,
 	ValDevScope.cpp,
 	ValDevSpec.h,
-	ConvDevScope.h,
-	ConvDevScope.inl,
-	ConvValDevScope.h,
-	ConvValDevScope.inl highlight cpp,
 	DevSpec.h,
 	EcsCore.inl highlight cpp,
 	ValScope.h,
-	ValScope.inl highlight cpp;
+	ValScope.inl highlight cpp,
+	Trash readonly separator,
+	InitConvert.icpp,
+	ConvDevScope.h,
+	ConvValDevScope.h,
+	ConvValDevScope.inl highlight cpp;
 

@@ -1,3 +1,4 @@
+#if 0
 #define CLS typename ScopeConvValDevLibT<ValSpec,FromDevSpec,ToDevSpec>
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -99,3 +100,4 @@ TMPL_CONVVALDEVLIB(void) ConvertComponent::ForwardExchange(FwdScope& fwd) {
 }
 
 NAMESPACE_TOPSIDE_END
+#endif

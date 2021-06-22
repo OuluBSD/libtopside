@@ -170,6 +170,8 @@ void AccelComponentBase::UseRenderedFramebuffer() {TODO}
 bool AccelComponentBase::IsSinkInAccelerator() const {TODO}
 
 TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
+	TODO
+	#if 0
 	#define VALUE(str, i) if (type_str == #str) return AsTypeCls<i>();
 	//using Display		= typename ScopeValDevLibT<VD<AccelSpec,DisplaySpec>>::PipeComponent;
 	using Video			= typename ScopeValDevLibT<VD<AccelSpec,VideoSpec>>::PipeComponent;
@@ -188,6 +190,7 @@ TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
 	//VALUE(library,		);
 	return AsVoidTypeCls();
 	#undef VALUE
+	#endif
 }
 
 void AccelComponentBase::UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {
@@ -356,6 +359,8 @@ void AccelComponentConfBase::CopyIdStream(const AccelComponentConfBase& in) {
 }
 
 bool AccelComponentConfBase::IsTypeComponentSource(Type i) {
+	TODO
+	#if 0
 	#define PIPECOMP(ValSpec)		ScopeValDevLibT<VD<AccelSpec,ValSpec>>::PipeComponent
 	#define CONVCOMP_TO(ValSpec)	ScopeConvValDevLibT<ValSpec,CenterSpec,AccelSpec>::ConvertComponent
 	#define CONVCOMP_FROM(ValSpec)	ScopeConvValDevLibT<ValSpec,AccelSpec,CenterSpec>::ConvertComponent
@@ -368,6 +373,7 @@ bool AccelComponentConfBase::IsTypeComponentSource(Type i) {
 	#undef CONVCOMP_TO
 	#undef CONVCOMP_FROM
 	return false;
+	#endif
 }
 
 

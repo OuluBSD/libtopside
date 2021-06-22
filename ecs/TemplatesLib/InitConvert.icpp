@@ -1,3 +1,4 @@
+#if 0
 #include "TemplatesLib.h"
 
 NAMESPACE_UPP
@@ -21,3 +22,4 @@ INITBLOCK {
 }
 
 END_UPP_NAMESPACE
+#endif
