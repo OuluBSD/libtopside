@@ -31,17 +31,53 @@ Take any address and put to BreakRefAdd
 */
 
 
-const char* gen_str = R"EON_CODE(
 
-tester.generator: {
+
+/*
+ 1:
+    - customer
+    - AudioInputComponent
+    - AudioOutputComponent
+*/
+const char* center_str = R"EON_CODE(
+
+loop tester.generator: {
 	customer.id.ABCD: true;
 	center.audio.src: true;
 	center.audio.sink: true;
 	center.audio.sink.realtime: true;
-}
+};
 
 )EON_CODE";
 
+
+/*
+1:
+	- customer
+    - AudioInputComponent
+    - CenterSideOutput(Perma)
+2:
+	- customer
+	- CenterSideInput(Center)
+	- FileWriter
+*/
+const char* perma_str = R"EON_CODE(
+
+sidechain tester: {
+	
+	loop generator: {
+		center.audio.generator: true;
+		center.perma.audio.side.out: true;
+	};
+	
+	loop writer: {
+		perma.center.audio.side.in: true;
+		perma.audio.sink.realtime: true;
+	};
+	
+};
+
+)EON_CODE";
 
 
 /*
@@ -62,37 +98,106 @@ tester.generator: {
 
 const char* accel_str = R"EON_CODE(
 
-tester: {
+sidechain tester: {
 	
-	center.audio.sync: {
-		center.order.sink.sidechain: true;
-		accel.ctx.audio.sidechain: true;
+	loop center.audio.sync: {
+		center.accel.order.side.out: true;
 	};
 	
-	center.audio.output: {
-		center.audio.src.sidechain: true;
-		center.audio.sink: true;
+	loop accel.audio.output: {
+		accel.center.order.side.in: true;
+		accel.filename: "$FILEPATH";
+		accel.center.audio.side.out: true;
+	};
+	
+	loop center.audio.output: {
+		center.accel.audio.side.in: true;
 		center.audio.sink.realtime: true;
 	};
 	
-	accel.sync: {
-		center.order.src: true;
-		center.order.src.sidechain: true;
-		accel.filename: "$FILEPATH";
-		accel.audio.src: true;
-		accel.audio.sink: true;
-		center.audio.src: true;
-		center.audio.src.sidechain: true;
-	};
-	
-}
+};
 
 )EON_CODE";
 
+
+/*
+1: local center
+	- customer
+    - CenterSideOutput(Net)
+2: local net
+	- customer
+	- NetSideInput(Center)
+	- NetSingleLinkOutput
+3: remote net
+	- customer
+	- NetSingleLinkInput
+	- NetSideOutput(Center)
+4: remote center
+	- customer
+	- CenterSideInput(Net)
+    - AudioInputComponent
+    - AudioOutputComponent
+	- CenterSideOutput(Net)
+5: local net
+	- customer
+	- NetSideInput(Center)
+	- NetSingleLinkOutput
+6: local net
+	- customer
+	- CenterSideInput(Net)
+	- TestRealtimeSink
+	
+*/
+const char* net_str = R"EON_CODE(
+
+sidechain local_in: {
+	loop local_in: {
+		center.net.order.side.out: true;
+	};
+	loop link_out: {
+		net.center.order.side.in: true;
+		net.order.remote.src: true;
+	};
+	loop link_in: {
+		net.audio.remote.src: true;
+		net.center.audio.side.out: true;
+	};
+	loop local_out: {
+		center.net.audio.side.in: true;
+		center.audio.sink.realtime: true;
+	};
+};
+
+net_sidechain remote: {
+	loop remote_link_in: {
+		net.order.remote.sink: true;
+		net.audio.generator: true;
+		net.audio.side.out: true;
+	};
+	loop remote_link_out: {
+		net.audio.side.in: true;
+		net.audio.remote.src: true;
+	};
+};
+
+
+)EON_CODE";
+
+
+bool TestParser() {
+	if (!TestParseEonCode(center_str)) return false;
+	if (!TestParseEonCode(perma_str)) return false;
+	if (!TestParseEonCode(accel_str)) return false;
+	if (!TestParseEonCode(net_str)) return false;
+	return true;
+}
+
 void Main() {
 	SetCoutLog();
-	EcsFactory::Dump();
+	//EcsFactory::Dump();
 	
+	if (!TestParser())
+		return;
 	
 	EcsFactory::RegisterExtension<TestCustomer>();
 	EcsFactory::RegisterExtension<TestRealtimeSink>();
@@ -127,10 +232,11 @@ void Main() {
 			PoolRef root = es->GetRoot();
 			
 			String eon_code;
-			if (0)
-				eon_code = gen_str;
-			else if (1)
-				eon_code = accel_str;
+			int test_i = 0;
+			if      (test_i == 0)	eon_code = center_str;
+			else if (test_i == 1)	eon_code = perma_str;
+			else if (test_i == 2)	eon_code = accel_str;
+			else if (test_i == 3)	eon_code = net_str;
 			else
 				Exit(1);
 			

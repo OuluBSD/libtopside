@@ -35,7 +35,7 @@ public:
 
 
 
-
+bool TestParseEonCode(String code);
 
 class EonLoader :
 	public System<EonLoader>
@@ -68,7 +68,7 @@ protected:
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
-	bool LoadCustomerDefinition(Eon::CustomerDefinition& def);
+	bool LoadLoopDefinition(Eon::LoopDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	
 	void AddError(String msg);

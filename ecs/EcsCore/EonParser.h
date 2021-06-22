@@ -25,13 +25,26 @@ struct Statement {
 	String GetTreeString(int indent=0) const;
 };
 
-struct CustomerDefinition {
+struct LoopDefinition {
 	Id id;
 	LinkedList<Statement> stmts;
 	
 	
-	void operator=(const CustomerDefinition& v) {id = v.id; stmts <<= v.stmts;}
+	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts;}
 	String GetTreeString(int indent=0) const;
+};
+
+struct SidechainDefinition {
+	typedef enum {
+		CENTER,
+		NET
+	} Type;
+	
+	LinkedList<SidechainDefinition> chains;
+	LinkedList<LoopDefinition> loops;
+	Type type;
+	Id id;
+	
 };
 
 struct Value {
@@ -44,7 +57,7 @@ struct Value {
 	} Type;
 	
 	Type type = VAL_INVALID;
-	CustomerDefinition customer;
+	LoopDefinition customer;
 	String str;
 	bool b;
 	Id id;
@@ -64,10 +77,12 @@ struct Value {
 };
 
 struct CompilationUnit {
-	LinkedList<CustomerDefinition> customers;
-	
+	LinkedList<SidechainDefinition>		chains;
+	LinkedList<LoopDefinition>			loops;
+	SidechainDefinition					main;
 	
 	String GetTreeString(int indent=0) const;
+	
 };
 
 
@@ -78,12 +93,15 @@ class Parser : public CParser {
 	
 	
 	bool Parse(Eon::CompilationUnit&);
-	bool Parse(Eon::Statement&);
-	bool Parse(Eon::CustomerDefinition&);
-	bool Parse(Eon::Id&);
+	bool ParseStmt(Eon::Statement&);
+	bool ParseLoop(Eon::LoopDefinition&);
+	bool ParseSidechain(Eon::SidechainDefinition&, Eon::SidechainDefinition::Type);
+	bool ParseId(Eon::Id&);
 	bool Parse(Eon::Value&);
 	bool EmptyStatement() {return Char(';');}
-	bool CustomerScope(Eon::CustomerDefinition&);
+	bool SidechainScope(Eon::SidechainDefinition&);
+	bool SidechainStmtList(Eon::SidechainDefinition&);
+	bool LoopScope(Eon::LoopDefinition&);
 	
 	void AddError(String msg);
 	

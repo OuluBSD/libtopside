@@ -46,7 +46,7 @@ String Statement::GetTreeString(int indent) const {
 	return s;
 }
 
-String CustomerDefinition::GetTreeString(int indent) const {
+String LoopDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << id.ToString() << ":\n";
@@ -82,7 +82,7 @@ String Value::GetTreeString(int indent) const {
 
 String CompilationUnit::GetTreeString(int indent) const {
 	String s;
-	for (CustomerDefinition& def : customers) {
+	for (LoopDefinition& def : loops) {
 		s << def.GetTreeString(indent) << "\n";
 	}
 	return s;
@@ -92,6 +92,7 @@ String CompilationUnit::GetTreeString(int indent) const {
 
 
 
+#define PASS_ID(x) if (!Id(x)) {String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 #define PASS_CHAR(x) if (!Char(x)) {String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 
 bool Parser::Parse(String content, String filepath) {
@@ -101,28 +102,90 @@ bool Parser::Parse(String content, String filepath) {
 }
 
 bool Parser::Parse(Eon::CompilationUnit& cunit) {
-	while (!IsEof()) {
-		if (!Parse(cunit.customers.Add()))
-			return false;
-	}
+	
+	cunit.main.type = SidechainDefinition::CENTER;
+	SidechainStmtList(cunit.main);
+	
 	return true;
 }
 
-bool Parser::Parse(Eon::CustomerDefinition& def) {
-	if (!Parse(def.id))
+bool Parser::ParseLoop(Eon::LoopDefinition& def) {
+	PASS_ID("loop")
+	
+	if (!ParseId(def.id))
 		return false;
 	
 	PASS_CHAR(':')
-	return CustomerScope(def);
+	if (!LoopScope(def))
+		return false;
+	
+	PASS_CHAR(';')
+	return true;
 }
 
-bool Parser::CustomerScope(Eon::CustomerDefinition& def) {
+bool Parser::ParseSidechain(Eon::SidechainDefinition& def, Eon::SidechainDefinition::Type t) {
+	if (t == Eon::SidechainDefinition::CENTER) {
+		PASS_ID("sidechain")
+	}
+	else if (t == Eon::SidechainDefinition::NET) {
+		PASS_ID("net_sidechain")
+	}
+	
+	def.type = t;
+	
+	if (!ParseId(def.id))
+		return false;
+	
+	PASS_CHAR(':')
+	if (!SidechainScope(def))
+		return false;
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::SidechainStmtList(Eon::SidechainDefinition& def) {
+	while (!IsEof() && !IsChar('}')) {
+		
+		if (EmptyStatement())
+			continue;
+		else if (IsId("loop")) {
+			if (!ParseLoop(cunit.loops.Add()))
+				return false;
+		}
+		else if (IsId("sidechain")) {
+			if (!ParseSidechain(cunit.chains.Add(), Eon::SidechainDefinition::CENTER))
+				return false;
+		}
+		else if (IsId("net_sidechain")) {
+			if (!ParseSidechain(cunit.chains.Add(), Eon::SidechainDefinition::NET))
+				return false;
+		}
+		else {
+			AddError("Expected scope specifier");
+			return false;
+		}
+		
+	}
+	
+	return true;
+}
+bool Parser::SidechainScope(Eon::SidechainDefinition& def) {
+	PASS_CHAR('{')
+	
+	SidechainStmtList(def);
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::LoopScope(Eon::LoopDefinition& def) {
 	PASS_CHAR('{')
 	
 	while (!IsChar('}')) {
 		if (EmptyStatement())
 			continue;
-		if (!Parse(def.stmts.Add()))
+		if (!ParseStmt(def.stmts.Add()))
 			return false;
 	}
 	
@@ -130,8 +193,8 @@ bool Parser::CustomerScope(Eon::CustomerDefinition& def) {
 	return true;
 }
 
-bool Parser::Parse(Eon::Statement& stmt) {
-	if (!Parse(stmt.id))
+bool Parser::ParseStmt(Eon::Statement& stmt) {
+	if (!ParseId(stmt.id))
 		return false;
 	
 	PASS_CHAR(':')
@@ -156,7 +219,7 @@ bool Parser::Parse(Eon::Value& v) {
 	}
 	else if (IsId()) {
 		v.type = Eon::Value::VAL_ID;
-		if (!Parse(v.id))
+		if (!ParseId(v.id))
 			return false;
 		return true;
 	}
@@ -168,7 +231,7 @@ bool Parser::Parse(Eon::Value& v) {
 	else if (IsChar('{')) {
 		v.type = Eon::Value::VAL_CUSTOMER;
 		MemSwap(v.id, v.customer.id);
-		return CustomerScope(v.customer);
+		return LoopScope(v.customer);
 	}
 	else {
 		AddError("Unexpected token");
@@ -176,7 +239,7 @@ bool Parser::Parse(Eon::Value& v) {
 	}
 }
 
-bool Parser::Parse(Eon::Id& id) {
+bool Parser::ParseId(Eon::Id& id) {
 	if (!IsId()) {
 		AddError("Expected id");
 		return false;
@@ -200,7 +263,8 @@ void Parser::AddError(String msg) {
 }
 
 
-
+#undef PASS_CHAR
+#undef PASS_ID
 
 }
 NAMESPACE_TOPSIDE_END

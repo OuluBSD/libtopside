@@ -73,9 +73,15 @@ String GetLineNumStr(String s, bool from_zero) {
 	const int tab_size = 4;
 	int begin = from_zero ? 0 : 1;
 	for(int i = 0; i < lines.GetCount(); i++) {
+		String& l = lines[i];
 		String nstr = IntStr(begin + i);
-		nstr.Cat('\t', nstr.GetCount() < tab_size ? 2 : 1);
-		out << nstr << lines[i] << "\n";
+		if (l.IsEmpty()) {
+			out << nstr << "\n";
+		}
+		else {
+			nstr.Cat('\t', nstr.GetCount() < tab_size ? 2 : 1);
+			out << nstr << l << "\n";
+		}
 	}
 	return out;
 }

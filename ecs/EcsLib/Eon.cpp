@@ -63,12 +63,22 @@ bool EonLoader::LoadFile(String path) {
 	return Load(eon, path);
 }
 
+bool TestParseEonCode(String content) {
+	Eon::Parser p;
+	if (!p.Parse(content, "<file>")) {
+		LOG(GetLineNumStr(content, 1));
+		return false;
+	}
+	p.Dump();
+	return true;
+}
+
 bool EonLoader::Load(String content, String filepath) {
 	DLOG("EonLoader::Load: Loading \"" << filepath << "\"");
 	
 	Eon::Parser p;
 	if (!p.Parse(content, filepath)) {
-		LOG(content);
+		LOG(GetLineNumStr(content, 1));
 		return false;
 	}
 	p.Dump();
@@ -79,15 +89,15 @@ bool EonLoader::Load(String content, String filepath) {
 
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
 	
-	for (Eon::CustomerDefinition& def : cunit.customers) {
-		if (!LoadCustomerDefinition(def))
+	for (Eon::LoopDefinition& def : cunit.loops) {
+		if (!LoadLoopDefinition(def))
 			return false;
 	}
 	
 	return true;
 }
 
-bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
+bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	
 	// Target entity for components
 	EntityRef e = ResolveEntity(def.id);
@@ -263,7 +273,7 @@ bool EonLoader::LoadCustomerDefinition(Eon::CustomerDefinition& def) {
 	for (Eon::Statement& stmt : def.stmts) {
 		if (!stmt.value || stmt.value->type != Eon::Value::VAL_CUSTOMER)
 			continue;
-		LoadCustomerDefinition(stmt.value->customer);
+		LoadLoopDefinition(stmt.value->customer);
 	}
 	
 	
