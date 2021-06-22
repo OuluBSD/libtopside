@@ -30,23 +30,51 @@ struct ScopeValDevLibT {
 	using DevCompConf				= typename ScopeDevMachT<DevSpec>::StageComponentConf;
 	using StageComponent			= typename ScopeDevLibT<DevSpec>::StageComponent;
 	
-	using OrderValDevSpec			= VD<DevSpec, OrderSpec>;
-	using OrderMach					= ScopeValDevMachT<OrderValDevSpec>;
-	using OrderCore					= ScopeValDevCoreT<OrderValDevSpec>;
-	using DevOrderFormat			= typename OrderMach::Format;
-	using DevOrder					= typename OrderMach::Value;
-	using DevSimpleOrder			= typename OrderMach::SimpleValue;
-	using DevOrderSink				= typename OrderCore::ValSink;
+	/*
+	using ValSpec					= typename ValDevSpec::Val;
+	using DevSpec					= typename ValDevSpec::Dev;
+	using ValMach					= ScopeValMachT<ValSpec>;
+	using Mach						= ScopeValDevMachT<ValDevSpec>;
+	using Core						= ScopeValDevCoreT<ValDevSpec>;
+	using V							= ValSpec;
+	using Packet					= typename ValMach::Packet;
+	using ValSink					= typename Core::ValSink;
+	using ValSource					= typename Core::ValSource;
+	using Format					= typename Mach::Format;
+	using SimpleValue				= typename Mach::SimpleValue;
+	using SimpleStream				= typename Mach::SimpleStream;
+	using CtxStream					= typename Mach::Stream;
+	*/
 	
-	using ReceiptValDevSpec			= VD<DevSpec, ReceiptSpec>;
-	using ReceiptMach				= ScopeValDevMachT<ReceiptValDevSpec>;
-	using ReceiptCore				= ScopeValDevCoreT<ReceiptValDevSpec>;
-	using DevReceiptFormat			= typename ReceiptMach::Format;
-	using DevReceipt				= typename ReceiptMach::Value;
-	using DevReceiptStream			= typename ReceiptMach::Stream;
-	using DevSimpleReceipt			= typename ReceiptMach::SimpleValue;
-	using DevSimpleReceiptStream	= typename ReceiptMach::SimpleStream;
-	using DevReceiptSource			= typename ReceiptCore::ValSource;
+	using R							= ReceiptSpec;
+	using RVD						= VD<DevSpec,ReceiptSpec>;
+	using RValMach					= ScopeValMachT<ReceiptSpec>;
+	using RMach						= ScopeValDevMachT<RVD>;
+	using RCore						= ScopeValDevCoreT<RVD>;
+	using RPacket					= typename RValMach::Packet;
+	using RFormat					= typename RMach::Format;
+	using RStream					= typename RMach::Stream;
+	using RSimpleStream				= typename RMach::SimpleStream;
+	using RValue					= typename RMach::Value;
+	using RSink						= typename RCore::ValSink;
+	using RSource					= typename RCore::ValSource;
+	using RSimpleValue				= typename RMach::SimpleValue;
+	
+	using O							= OrderSpec;
+	using OVD						= VD<DevSpec,OrderSpec>;
+	using OValMach					= ScopeValMachT<OrderSpec>;
+	using OMach						= ScopeValDevMachT<OVD>;
+	using OCore						= ScopeValDevCoreT<OVD>;
+	using OPacket					= typename OValMach::Packet;
+	using OFormat					= typename OMach::Format;
+	using OSimpleStream				= typename OMach::SimpleStream;
+	using OStream					= typename OMach::Stream;
+	using OValue					= typename OMach::Value;
+	using OSink						= typename OCore::ValSink;
+	using OSource					= typename OCore::ValSource;
+	using OSimpleValue				= typename OMach::SimpleValue;
+	
+	
 	
 	class InputComponent;
 	class OutputComponent;
@@ -72,10 +100,10 @@ struct ScopeValDevLibT {
 	};
 	
 	class InputComponent :
-		public Component<InputComponent, DevOrderSink, ValSource, InputExt>
+		public Component<InputComponent, OSink, ValSource, InputExt>
 	{
 	public:
-		using ComponentT = Component<InputComponent, DevOrderSink, ValSource, InputExt>;
+		using ComponentT = Component<InputComponent, OSink, ValSource, InputExt>;
 		RTTI_DECL_1(InputComponent, ComponentT, ValDevSpec::GetName() + "InputComponent")
 		COPY_PANIC(InputComponent)
 		IFACE_GENERIC
@@ -88,7 +116,7 @@ struct ScopeValDevLibT {
 		COMP_MAKE_ACTION_END
 		
 	private:
-		struct LocalSinkValue : public DevSimpleOrder {
+		struct LocalSinkValue : public OSimpleValue {
 			InputComponent& par;
 			
 			LocalSinkValue(InputComponent* par) : par(*par) {}
@@ -96,7 +124,7 @@ struct ScopeValDevLibT {
 		};
 		
 		struct LocalSourceValue : public SimpleValue {
-			void StorePacket(Packet& p) {}
+			void StorePacket(Packet& p) override {}
 		};
 		
 		struct LocalSourceStream : public SimpleStream {
@@ -127,14 +155,11 @@ struct ScopeValDevLibT {
 		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		
-		// DevOrderSink
-		DevOrderFormat		GetFormat(OrdCtx) override {TODO}
-		DevOrder&			GetValue(OrdCtx) override {return sink_value;}
+		// OSink
+		OValue&				GetValue(OrdCtx) override {return sink_value;}
 		
 		// ValSource
 		CtxStream&			GetStream(V*) override {return src_stream;}
-		void				BeginStream(V*) override {TODO}
-		void				EndStream(V*) override {TODO}
 		
 	};
 	
@@ -152,10 +177,10 @@ struct ScopeValDevLibT {
 	};
 	
 	class OutputComponent :
-		public Component<OutputComponent, ValSink, DevReceiptSource, OutputExt>
+		public Component<OutputComponent, ValSink, RSource, OutputExt>
 	{
 	public:
-		using ComponentT = Component<OutputComponent, ValSink, DevReceiptSource, OutputExt>;
+		using ComponentT = Component<OutputComponent, ValSink, RSource, OutputExt>;
 		RTTI_DECL_1(OutputComponent, ComponentT, ValDevSpec::GetName() + "OutputComponent")
 		COPY_PANIC(OutputComponent)
 		IFACE_GENERIC
@@ -174,17 +199,17 @@ struct ScopeValDevLibT {
 			LocalSinkValue(OutputComponent* par) : par(*par) {}
 		};
 		
-		struct LocalSourceValue : public DevSimpleReceipt {
-			void StorePacket(ReceiptPacket& p) {}
+		struct LocalSourceValue : public RSimpleValue {
+			void StorePacket(ReceiptPacket& p) override {}
 		};
 		
-		struct LocalSourceStream : public DevSimpleReceiptStream {
+		struct LocalSourceStream : public RSimpleStream {
 			OutputComponent& par;
 			
-			RTTI_DECL1(LocalSourceStream, DevSimpleReceiptStream)
+			RTTI_DECL1(LocalSourceStream, RSimpleStream)
 			LocalSourceStream(OutputComponent* par) :
 				par(*par),
-				DevSimpleReceiptStream(par->src_value) {}
+				RSimpleStream(par->src_value) {}
 			
 		};
 		
@@ -212,13 +237,11 @@ struct ScopeValDevLibT {
 		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		
 		// ValSink
-		Format				GetFormat(V*) override {TODO}
 		Value&				GetValue(V*) override {return sink_value;}
 		
-		// DevReceiptSource
-		DevReceiptStream&	GetStream(RcpCtx) override {return src_stream;}
-		void				BeginStream(RcpCtx) override {TODO}
-		void				EndStream(RcpCtx) override {TODO}
+		// RSource
+		RStream&			GetStream(RcpCtx) override {return src_stream;}
+		
 		bool				ReadFrame() {TODO}
 		bool				ProcessFrame() {TODO}
 		bool				ProcessDeviceFrame() {TODO}
@@ -282,10 +305,10 @@ struct ScopeValDevLibT {
 		};
 		LocalSinkValue		sink_value;
 		LocalSourceValue	src_value;
-		LocalStream			stream;
+		LocalStream			src_stream;
 		
 	public:
-		PipeComponent() : stream(this) {}
+		PipeComponent() : src_stream(this) {}
 		
 		// ComponentBase
 		void				Initialize() override;
@@ -293,60 +316,173 @@ struct ScopeValDevLibT {
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				RequiresDeviceProgram() const override {return true;}
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
 		
 		// DevSink
-		Format				GetFormat(V*) override;
 		Value&				GetValue(V*) override;
 		
 		// DevSource
 		CtxStream&			GetStream(V*) override;
-		void				BeginStream(V*) override;
-		void				EndStream(V*) override;
 		
 		// StageComponent
 		bool				LoadAsInput(const DevCompConf& in) override;
 		void				UpdateDevBuffers() override {StageComponent::template UpdateDevBuffersValT<ValSpec>();}
 		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
 		
 	};
 	
-};
+	
+	
 
+	
 
-
+	
+	
+	
+	class SideOutputComponent;
+	
+	class SideOutExt : public ComponentExtBase {
+		
+	public:
+		RTTI_DECL1(SideOutExt, ComponentExtBase);
+		using Ext = SideOutExt;
+		using Component = SideOutputComponent;
+		
+	};
+	
+	class SideOutputComponent :
+		public Component<SideOutputComponent, ValSink, RSource, SideOutExt>
+	{
+	public:
+		using ComponentT = Component<SideOutputComponent, ValSink, RSource, SideOutExt>;
+		RTTI_DECL_1(SideOutputComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
+		COPY_PANIC(SideOutputComponent)
+		IFACE_GENERIC
+		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+		COMP_MAKE_ACTION_END
+		
+	private:
+		class LocalSinkValue : public SimpleValue {
+		public:
+			RTTI_DECL_T1(LocalSinkValue, SimpleValue)
+			void StorePacket(Packet& p) override {}
+		};
+		
+		struct LocalSourceValue : public RSimpleValue {
+			void StorePacket(RPacket& p) override {}
+		};
+		
+		struct LocalSourceStream : public RSimpleStream {
+			SideOutputComponent& par;
+			PacketConsumer consumer;
+			
+			RTTI_DECL1(LocalSourceStream, RSimpleStream)
+			LocalSourceStream(SideOutputComponent* par) :
+				par(*par),
+				RSimpleStream(par->src_value) {}
+			
+		};
+		
+		LocalSinkValue		sink_value;
+		LocalSourceValue	src_value;
+		LocalSourceStream	src_stream;
+		
+	public:
+		SideOutputComponent() : src_stream(this) {}
+		
+		// ComponentBase
+		void				Initialize() override;
+		void				Uninitialize() override;
+		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
+		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
+		
+		// ValSink
+		Value&				GetValue(V*) override;
+		
+		// ReceiptSource
+		RStream&			GetStream(R*) override;
+		
+	};
+	
+	
+	
+	class SideInputComponent;
+	
+	class SideInExt : public ComponentExtBase {
+		
+	public:
+		RTTI_DECL1(SideInExt, ComponentExtBase);
+		using Ext = SideInExt;
+		using Component = SideInputComponent;
+		
+	};
+	
+	class SideInputComponent :
+		public Component<SideInputComponent, OSink, ValSource, SideInExt>
+	{
+	public:
+		using ComponentT = Component<SideInputComponent, OSink, ValSource, SideInExt>;
+		RTTI_DECL_1(SideInputComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
+		COPY_PANIC(SideInputComponent)
+		IFACE_GENERIC
+		COMP_DEF_VISIT
+		COMP_MAKE_ACTION_BEGIN
+			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+		COMP_MAKE_ACTION_END
+		
+	private:
+		class LocalSinkValue : public OSimpleValue {
+		public:
+			RTTI_DECL_T1(LocalSinkValue, OSimpleValue)
+			void StorePacket(OPacket& p) override {}
+		};
+		
+		struct LocalSourceValue : public SimpleValue {
+			void StorePacket(Packet& p) override {}
+		};
+		
+		struct LocalSourceStream : public SimpleStream {
+			SideInputComponent& par;
+			PacketConsumer consumer;
+			
+			RTTI_DECL1(LocalSourceStream, SimpleStream)
+			LocalSourceStream(SideInputComponent* par) :
+				par(*par),
+				SimpleStream(par->src_value) {}
+			
+		};
+		LocalSinkValue		sink_value;
+		LocalSourceValue	src_value;
+		LocalSourceStream	src_stream;
+		
+	public:
+		SideInputComponent() : src_stream(this) {}
+		
+		// ComponentBase
+		void				Initialize() override;
+		void				Uninitialize() override;
+		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
+		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
+		void				Forward(FwdScope& fwd) override;
+		void				ForwardExchange(FwdScope& fwd) override;
+		
+		// OrderSink
+		OValue&				GetValue(O*) override;
+		
+		// ValSource
+		CtxStream&			GetStream(V*) override;
+		
+		
+	};
+	
+	
 #if 0
-template <class ValDevSpec>
-struct ScopeValDevLibOrderT {
-	using ValSpec		= typename ValDevSpec::Val;
-	using DevSpec		= typename ValDevSpec::Dev;
-	using ValMach		= ScopeValMachT<ValSpec>;
-	using Mach			= ScopeValDevMachT<ValDevSpec>;
-	using Core			= ScopeValDevCoreT<ValDevSpec>;
-	
-	using R				= ReceiptSpec;
-	using RVD			= VD<DevSpec,ReceiptSpec>;
-	using RMach			= ScopeValDevMachT<RVD>;
-	using RCore			= ScopeValDevCoreT<RVD>;
-	using RFormat		= typename RMach::Format;
-	using RCtxStream	= typename RMach::Stream;
-	using RValue		= typename RMach::Value;
-	using RSink			= typename RCore::ValSink;
-	using RSource		= typename RCore::ValSource;
-	
-	using O				= OrderSpec;
-	using OVD			= VD<DevSpec,OrderSpec>;
-	using OMach			= ScopeValDevMachT<OVD>;
-	using OCore			= ScopeValDevCoreT<OVD>;
-	using OFormat		= typename OMach::Format;
-	using OCtxStream	= typename OMach::Stream;
-	using OValue		= typename OMach::Value;
-	using OSink			= typename OCore::ValSink;
-	using OSource		= typename OCore::ValSource;
-	
-	
 	class DevCustomerComponent :
 		public Component<DevCustomerComponent, RSink, OSource>,
 	{
@@ -379,10 +515,10 @@ struct ScopeValDevLibOrderT {
 		void				EndStream(O*) override;
 		
 	};
+#endif
 	
 	
 };
-#endif
 
 
 NAMESPACE_TOPSIDE_END

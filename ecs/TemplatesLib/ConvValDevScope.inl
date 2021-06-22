@@ -31,11 +31,8 @@ TMPL_CONVVALDEVLIB(void) ConvertComponent::Uninitialize() {
 	ToComponent::Uninitialize();
 }
 
-TMPL_CONVVALDEVLIB(CLS::Format) ConvertComponent::GetFormat(V*) {TODO}
 TMPL_CONVVALDEVLIB(CLS::FromValue&) ConvertComponent::GetValue(V*) {return sink_value;}
 TMPL_CONVVALDEVLIB(CLS::ToStream&) ConvertComponent::GetStream(V*) {return stream;}
-TMPL_CONVVALDEVLIB(void) ConvertComponent::BeginStream(V*) {TODO}
-TMPL_CONVVALDEVLIB(void) ConvertComponent::EndStream(V*) {TODO}
 TMPL_CONVVALDEVLIB(bool) ConvertComponent::LoadAsInput(const ToComponentConf& in) {TODO}
 TMPL_CONVVALDEVLIB(void) ConvertComponent::PreProcess() {TODO}
 TMPL_CONVVALDEVLIB(bool) ConvertComponent::LocalStream::IsOpen() const {TODO}

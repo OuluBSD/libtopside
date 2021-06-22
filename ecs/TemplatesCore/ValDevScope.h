@@ -41,7 +41,6 @@ struct ScopeValDevCoreT {
 		TypeCls GetValDevSpec() override {return TypeId(AsTypeCls<ValDevSpec>());}
 		
 		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
-		virtual Format				GetFormat(V*) = 0;
 		virtual Value&				GetValue(V*) = 0;
 		virtual void				ClearSink() override {GetValue((V*)0).Clear();}
 		
@@ -73,8 +72,6 @@ struct ScopeValDevCoreT {
 		
 		TypeCls						GetDevSpec() const override {return AsTypeCls<DevSpec>();}
 		virtual CtxStream&			GetStream(V*) = 0;
-		virtual void				BeginStream(V*) = 0;
-		virtual void				EndStream(V*) = 0;
 		virtual void				ClearSource() override {GetStream((V*)0).Clear();}
 	private:
 		

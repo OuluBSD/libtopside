@@ -17,9 +17,6 @@
 #include "Special.h"
 #include "Interface.h"
 
-#include "ValScope.inl"
-#include "ValDevScope.inl"
-#include "DevScope.inl"
-
+#include "Inlines.h"
 
 #endif

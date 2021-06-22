@@ -6,6 +6,7 @@ uses
 
 file
 	TemplatesCore.h,
+	Inlines.h,
 	ValDevScope.h,
 	ValDevScope.inl highlight cpp,
 	Classes.h,

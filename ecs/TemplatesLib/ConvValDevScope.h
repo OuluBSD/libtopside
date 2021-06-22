@@ -114,13 +114,10 @@ struct ScopeConvValDevLibT {
 		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
 		
 		// ValSink
-		Format				GetFormat(V*) override;
 		FromValue&			GetValue(V*) override;
 		
 		// DevSource
 		ToStream&			GetStream(V*) override;
-		void				BeginStream(V*) override;
-		void				EndStream(V*) override;
 		
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
 		bool				LoadAsInput(const ToComponentConf& in) override;

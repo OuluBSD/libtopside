@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #define DEV_VALUE_CTX(dev, value, prefix, format, sample) \
-	/*using prefix##LibOrderT					= ScopeValDevLibOrderT<VD<dev##Spec, value##Spec>>;*/ \
+	/*using prefix##LibOrderT					= ScopeValDevLibT<VD<dev##Spec, value##Spec>>;*/ \
 	/*using prefix##CustomerComponent			= prefix##LibOrderT::DevCustomerComponent;*/ \
 	using prefix##DevLibT					= ScopeValDevLibT<VD<dev##Spec, value##Spec>>; \
 	using prefix##InputComponent			= prefix##DevLibT::InputComponent; \

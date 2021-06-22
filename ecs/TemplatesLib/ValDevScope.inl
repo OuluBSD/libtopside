@@ -298,7 +298,7 @@ TMPL_VALDEVLIB(void) OutputComponent::Forward(FwdScope& fwd) {
 TMPL_VALDEVLIB(void) OutputComponent::ForwardExchange(FwdScope& fwd) {
 	auto& src_buf = src_value.GetBuffer();
 	if (!src_buf.IsEmpty()) {
-		DevReceiptSource& src = *this;
+		RSource& src = *this;
 		ExchangePointRef expt = src.GetExPt();
 		ASSERT(expt);
 		if (expt) {
@@ -389,11 +389,8 @@ TMPL_VALDEVLIB(void) PipeComponent::Uninitialize() {
 	StageComponent::Uninitialize();
 }
 
-TMPL_VALDEVLIB(CLS::Format) PipeComponent::GetFormat(V*) {TODO}
 TMPL_VALDEVLIB(CLS::Value&) PipeComponent::GetValue(V*) {return sink_value;}
-TMPL_VALDEVLIB(CLS::CtxStream&) PipeComponent::GetStream(V*) {return stream;}
-TMPL_VALDEVLIB(void) PipeComponent::BeginStream(V*) {TODO}
-TMPL_VALDEVLIB(void) PipeComponent::EndStream(V*) {TODO}
+TMPL_VALDEVLIB(CLS::CtxStream&) PipeComponent::GetStream(V*) {return src_stream;}
 TMPL_VALDEVLIB(bool) PipeComponent::LoadAsInput(const DevCompConf& in) {TODO}
 
 TMPL_VALDEVLIB(void) PipeComponent::Forward(FwdScope& fwd) {
@@ -451,7 +448,6 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-#undef CLS
 
 
 
@@ -466,8 +462,60 @@ TMPL_VALDEVLIB(void) PipeComponent::ForwardExchange(FwdScope& fwd) {
 
 
 
+TMPL_VALDEVLIB(void) SideOutputComponent::Initialize() {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideOutputComponent::Uninitialize() {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideOutputComponent::Forward(FwdScope& fwd) {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideOutputComponent::ForwardExchange(FwdScope& fwd) {
+	TODO
+}
+
+TMPL_VALDEVLIB(CLS::Value&) SideOutputComponent::GetValue(V*) {
+	TODO
+}
+
+TMPL_VALDEVLIB(CLS::RStream&) SideOutputComponent::GetStream(R*) {
+	TODO
+}
 
 
+
+
+
+
+
+
+TMPL_VALDEVLIB(void) SideInputComponent::Initialize() {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideInputComponent::Uninitialize() {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideInputComponent::Forward(FwdScope& fwd) {
+	TODO
+}
+
+TMPL_VALDEVLIB(void) SideInputComponent::ForwardExchange(FwdScope& fwd) {
+	TODO
+}
+
+TMPL_VALDEVLIB(CLS::OValue&) SideInputComponent::GetValue(O*) {
+	TODO
+}
+
+TMPL_VALDEVLIB(CLS::CtxStream&) SideInputComponent::GetStream(V*) {
+	TODO
+}
 
 
 
@@ -483,35 +531,30 @@ TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::Uninitialize() {
 
 template <class ValDevSpec>
 	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,ReceiptSpec>>::Format
-		ScopeValDevLibOrderT<ValDevSpec>::
+		ScopeValDevLibT<ValDevSpec>::
 		DevCustomerComponent::GetFormat(R*) {
 	TODO
 }
 
 template <class ValDevSpec>
 	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,ReceiptSpec>>::Value&
-		ScopeValDevLibOrderT<ValDevSpec>::
+		ScopeValDevLibT<ValDevSpec>::
 		DevCustomerComponent::GetValue(R*) {
 	TODO
 }
 
 template <class ValDevSpec>
 	typename ScopeValDevMachT<VD<typename ValDevSpec::Dev,OrderSpec>>::Stream&
-		ScopeValDevLibOrderT<ValDevSpec>::
+		ScopeValDevLibT<ValDevSpec>::
 		DevCustomerComponent::GetStream(O*) {
 	TODO
 }
 
-TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::BeginStream(O*) {
-	TODO
-}
-
-TMPL_VALDEVLIB_ORD(void) DevCustomerComponent::EndStream(O*) {
-	TODO
-}
 #endif
 
 
 
 
 NAMESPACE_TOPSIDE_END
+
+#undef CLS

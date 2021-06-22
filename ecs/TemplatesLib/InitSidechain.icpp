@@ -1,0 +1,24 @@
+#include "TemplatesLib.h"
+
+
+NAMESPACE_UPP
+
+
+
+
+
+
+
+INITBLOCK {
+	
+	#define IFACE_CTX_CLS(dev, value, prefix) \
+		TS::EcsFactory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::SideOutputComponent>(); \
+		TS::EcsFactory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::SideInputComponent>();
+	#define IFACE_CTX(value,	format,		sample) DEV_IFACE(value)
+	IFACE_CTX_ORDER_LIST
+	#undef IFACE_CTX
+	#undef IFACE_CTX_CLS
+	
+}
+
+END_UPP_NAMESPACE

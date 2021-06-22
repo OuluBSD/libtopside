@@ -9,12 +9,14 @@ uses
 
 file
 	TemplatesLib.h,
+	Inlines.h,
 	InitPipe.icpp,
 	InitIn.icpp,
 	InitOut.icpp,
 	InitOrder.icpp,
 	InitSource.icpp,
 	InitIfaceSink.icpp,
+	InitSidechain.icpp,
 	AccelScope.h,
 	AccelScope.inl highlight cpp,
 	AccelScope.cpp,
@@ -30,7 +32,6 @@ file
 	ValScope.h,
 	ValScope.inl highlight cpp,
 	Trash readonly separator,
-	InitConvert.icpp,
 	ConvDevScope.h,
 	ConvValDevScope.h,
 	ConvValDevScope.inl highlight cpp;

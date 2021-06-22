@@ -84,20 +84,17 @@ public:
 	virtual void		Uninitialize() override;
 	void				UpdateConfig(double dt);
 	void				AddPlan(Eon::Plan& ep);
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
 	
 	
 	// ReceiptSink
-	ReceiptFormat		GetFormat(RcpCtx) override {TODO}
 	Receipt&			GetValue(RcpCtx) override {return sink_value;}
-	void				Forward(FwdScope& fwd) override;
-	void				ForwardExchange(FwdScope& fwd) override;
 	bool				ReadFrame() {TODO}
 	bool				ProcessDeviceFrame() {TODO}
 	
 	// OrderSource
 	OrderStream&		GetStream(OrdCtx) override {return src_stream;}
-	void				BeginStream(OrdCtx) override {}
-	void				EndStream(OrdCtx) override {}
 	
 };
 
