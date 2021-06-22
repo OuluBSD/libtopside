@@ -9,6 +9,7 @@ struct Id {
 	LinkedList<String> parts;
 	
 	
+	void Set(String s) {parts.Clear(); parts.Add(s);}
 	void operator=(const Id& v) {parts <<= v.parts;}
 	String ToString() const;
 	String GetTreeString(int indent=0) const;
@@ -23,15 +24,17 @@ struct Statement {
 	
 	void operator=(const Statement& v);
 	String GetTreeString(int indent=0) const;
+	String ToString() const;
 };
 
 struct LoopDefinition {
 	Id id;
 	LinkedList<Statement> stmts;
+	LinkedList<Statement> ret_list;
 	
-	
-	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts;}
+	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts; ret_list <<= v.ret_list;}
 	String GetTreeString(int indent=0) const;
+	String ToString() const;
 };
 
 struct SidechainDefinition {
@@ -42,8 +45,12 @@ struct SidechainDefinition {
 	
 	LinkedList<SidechainDefinition> chains;
 	LinkedList<LoopDefinition> loops;
+	LinkedList<Statement> ret_list;
 	Type type;
 	Id id;
+	
+	String GetTypeString() const;
+	String GetTreeString(int indent=0) const;
 	
 };
 
@@ -74,11 +81,10 @@ struct Value {
 	}
 	void SetBool(bool b) {type = VAL_BOOLEAN; this->b = b;}
 	String GetTreeString(int indent=0) const;
+	String ToString() const;
 };
 
 struct CompilationUnit {
-	LinkedList<SidechainDefinition>		chains;
-	LinkedList<LoopDefinition>			loops;
 	SidechainDefinition					main;
 	
 	String GetTreeString(int indent=0) const;
@@ -97,7 +103,8 @@ class Parser : public CParser {
 	bool ParseLoop(Eon::LoopDefinition&);
 	bool ParseSidechain(Eon::SidechainDefinition&, Eon::SidechainDefinition::Type);
 	bool ParseId(Eon::Id&);
-	bool Parse(Eon::Value&);
+	bool ParseValue(Eon::Value&);
+	bool ParseReturnStmt(Eon::Statement&);
 	bool EmptyStatement() {return Char(';');}
 	bool SidechainScope(Eon::SidechainDefinition&);
 	bool SidechainStmtList(Eon::SidechainDefinition&);

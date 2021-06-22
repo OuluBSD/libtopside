@@ -12,22 +12,20 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-class EonState {
-	
-	
-};
+
 
 
 class EonScope {
-	EonState const_state;
-	EonState final_state;
+protected:
+	friend class EonLoader;
+	
+	Eon::WorldState current_state;
+	Eon::SidechainDefinition* def = 0;
 	
 public:
 	EonScope() {}
 	
-	void SetConstantState(const EonState& s) {const_state = s;}
-	
-	EonState& GetFinalState() {return final_state;}
+	void SetCurrentState(const Eon::WorldState& s) {current_state = s;}
 	
 	
 };
@@ -68,6 +66,7 @@ protected:
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
+	bool LoadSidechainDefinition(Eon::SidechainDefinition& def);
 	bool LoadLoopDefinition(Eon::LoopDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	

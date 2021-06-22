@@ -68,6 +68,28 @@ int64 WorldState::GetHashValue() {
 	return c;
 }
 
+bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
+	for (const Eon::Statement& ret : ret_list) {
+		String atom = ret.id.ToString();
+		if (!ret.value.IsEmpty()) {
+			const Eon::Value& v = *ret.value;
+			if (v.type == Eon::Value::VAL_STRING)
+				Set(atom, v.str);
+			else if (v.type == Eon::Value::VAL_BOOLEAN)
+				Set(atom, v.b ? "true" : "false");
+			else if (v.type == Eon::Value::VAL_ID)
+				Set(atom, v.id.ToString());
+			else
+				return false;
+		}
+		else if (ws.IsFalse(atom))
+			Set(atom, "false");
+		else
+			Set(atom, ws.Get(atom));
+	}
+	return true;
+}
+
 bool WorldState::Set(const String& key, bool value) {
 	int idx = ap->GetAddAtom(key);
 	return Set(idx, value);

@@ -33,6 +33,7 @@ public:
 	WorldState();
 	void Clear();
 	
+	bool Append(const WorldState& ws, LinkedList<Statement>& ret_list);
 	void SetActionPlanner(ActionPlanner& ap) {this->ap = &ap;}
 	bool Set(int index, bool value);
 	bool Set(int index, String value);

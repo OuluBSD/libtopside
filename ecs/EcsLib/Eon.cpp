@@ -88,12 +88,53 @@ bool EonLoader::Load(String content, String filepath) {
 }
 
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
-	
-	for (Eon::LoopDefinition& def : cunit.loops) {
-		if (!LoadLoopDefinition(def))
-			return false;
+	return LoadSidechainDefinition(cunit.main);
+}
+
+bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
+	// Enter scope
+	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
+	EonScope& scope = scopes.Add();
+	scope.def = &def;
+	if (parent) {
+		scope.current_state = parent->current_state;
 	}
 	
+	
+	for (Eon::SidechainDefinition& d : def.chains) {
+		if (!LoadSidechainDefinition(d)) {
+			scopes.RemoveLast();
+			return false;
+		}
+	}
+	
+	for (Eon::LoopDefinition& d : def.loops) {
+		if (!LoadLoopDefinition(d)) {
+			scopes.RemoveLast();
+			return false;
+		}
+	}
+	
+	if (scopes.GetCount() >= 2) {
+		EonScope& par = scopes.At(scopes.GetCount()-2);
+		const Eon::WorldState& src_ws = scope.current_state;
+		Eon::WorldState& dst_ws = par.current_state;
+		if (!dst_ws.Append(src_ws, par.def->ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+	}
+	
+	
+	// Add changes to parent state
+	if (parent) {
+		if (!parent->current_state.Append(scope.current_state, def.ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+	}
+	
+	scopes.RemoveLast();
 	return true;
 }
 
@@ -105,10 +146,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		AddError("Could not resolve entity with id: " + def.id.ToString());
 		return false;
 	}
-	
-	// Enter scope
-	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
-	EonScope& current = scopes.Add();
+	EonScope& scope = scopes.Top();
 	
 	
 	// Prepare action planner and world states
@@ -116,6 +154,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	
 	Eon::WorldState src;
+	src = scope.current_state;
 	src.SetActionPlanner(planner);
 	src.SetAs_AddComponent(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	src.Set(CONNECTED, false);
@@ -124,10 +163,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	goal.SetActionPlanner(planner);
 	goal.SetAs_AddComponent(AsTypeCls<CustomerComponent>(), AsTypeCls<ReceiptSource>(), AsTypeCls<ReceiptSink>());
 	goal.Set(CONNECTED, true);
-	
-	
-	if (parent)
-		current.SetConstantState(parent->GetFinalState());
+		
 	
 	for (Eon::Statement& stmt : def.stmts) {
 		if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
@@ -161,7 +197,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	ep.plan = as.Search(start_node);
 	
 	if (ep.plan.IsEmpty()) {
-		AddError("Eon action planner failed");
+		AddError("Plan implementation searching failed");
 		return false;
 	}
 	
@@ -277,8 +313,12 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	}
 	
 	
-	// Exit scope
-	scopes.RemoveLast();
+	// Add changes to parent state
+	const Eon::WorldState& ret_ws = ep.plan.Top()->GetWorldState();
+	if (!scope.current_state.Append(ret_ws, def.ret_list)) {
+		AddError("Invalid type in return value");
+		return false;
+	}
 	
 	return true;
 }

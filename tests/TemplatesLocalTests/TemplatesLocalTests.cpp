@@ -68,11 +68,17 @@ sidechain tester: {
 	loop generator: {
 		center.audio.generator: true;
 		center.perma.audio.side.out: true;
+		
+		return has.generator: true;
 	};
 	
 	loop writer: {
+		has.generator: true;
+		
 		perma.center.audio.side.in: true;
 		perma.audio.sink.realtime: true;
+		
+		return has.writer: true;
 	};
 	
 };
@@ -232,7 +238,7 @@ void Main() {
 			PoolRef root = es->GetRoot();
 			
 			String eon_code;
-			int test_i = 0;
+			int test_i = 1;
 			if      (test_i == 0)	eon_code = center_str;
 			else if (test_i == 1)	eon_code = perma_str;
 			else if (test_i == 2)	eon_code = accel_str;

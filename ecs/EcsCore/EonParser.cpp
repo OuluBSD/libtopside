@@ -46,13 +46,50 @@ String Statement::GetTreeString(int indent) const {
 	return s;
 }
 
+String Statement::ToString() const {
+	String s;
+	s << id.ToString();
+	if (!value.IsEmpty())
+		s << ": " << value->ToString();
+	return s;
+}
+
+String LoopDefinition::ToString() const {
+	return "loop " + id.ToString();
+}
+
 String LoopDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
-	s << id.ToString() << ":\n";
-	for (Statement& stmt : stmts) {
+	s << "loop " << id.ToString() << ":\n";
+	for (const Statement& stmt : stmts) {
 		s << stmt.GetTreeString(indent+1) << "\n";
 	}
+	for (const Statement& stmt : ret_list) {
+		s.Cat('\t', indent+1);
+		s << "return " << stmt.ToString() << "\n";
+	}
+	return s;
+}
+
+String Value::ToString() const {
+	String s;
+	if (type == VAL_INVALID) {
+		return "invalid";
+	}
+	else if (type == VAL_CUSTOMER) {
+		return customer.ToString();
+	}
+	else if (type == VAL_STRING) {
+		s << "\"" << str << "\"";
+	}
+	else if (type == VAL_BOOLEAN) {
+		s << (b ? "true" : "false");
+	}
+	else if (type == VAL_ID) {
+		return id.ToString();
+	}
+	else s << "<internal error>";
 	return s;
 }
 
@@ -80,13 +117,36 @@ String Value::GetTreeString(int indent) const {
 	return s;
 }
 
-String CompilationUnit::GetTreeString(int indent) const {
+String SidechainDefinition::GetTypeString() const {
+	switch (type) {
+		case CENTER: return "sidechain";
+		case NET: return "net_sidechain";
+		default: return "invalid";
+	}
+}
+
+String SidechainDefinition::GetTreeString(int indent) const {
 	String s;
+	s.Cat('\t', indent);
+	s << GetTypeString() << " " << id.ToString() << ":\n";
+	for (SidechainDefinition& def : chains) {
+		s << def.GetTreeString(indent+1) << "\n";
+	}
 	for (LoopDefinition& def : loops) {
-		s << def.GetTreeString(indent) << "\n";
+		s << def.GetTreeString(indent+1) << "\n";
+	}
+	for (const Statement& stmt : ret_list) {
+		s.Cat('\t', indent+1);
+		s << "return " << stmt.ToString() << "\n";
 	}
 	return s;
 }
+
+String CompilationUnit::GetTreeString(int indent) const {
+	return main.GetTreeString(indent);
+}
+
+
 
 
 
@@ -103,6 +163,7 @@ bool Parser::Parse(String content, String filepath) {
 
 bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	
+	cunit.main.id.Set("main");
 	cunit.main.type = SidechainDefinition::CENTER;
 	SidechainStmtList(cunit.main);
 	
@@ -150,15 +211,19 @@ bool Parser::SidechainStmtList(Eon::SidechainDefinition& def) {
 		if (EmptyStatement())
 			continue;
 		else if (IsId("loop")) {
-			if (!ParseLoop(cunit.loops.Add()))
+			if (!ParseLoop(def.loops.Add()))
 				return false;
 		}
 		else if (IsId("sidechain")) {
-			if (!ParseSidechain(cunit.chains.Add(), Eon::SidechainDefinition::CENTER))
+			if (!ParseSidechain(def.chains.Add(), Eon::SidechainDefinition::CENTER))
 				return false;
 		}
 		else if (IsId("net_sidechain")) {
-			if (!ParseSidechain(cunit.chains.Add(), Eon::SidechainDefinition::NET))
+			if (!ParseSidechain(def.chains.Add(), Eon::SidechainDefinition::NET))
+				return false;
+		}
+		else if (IsId("return")) {
+			if (!ParseReturnStmt(def.ret_list.Add()))
 				return false;
 		}
 		else {
@@ -185,8 +250,14 @@ bool Parser::LoopScope(Eon::LoopDefinition& def) {
 	while (!IsChar('}')) {
 		if (EmptyStatement())
 			continue;
-		if (!ParseStmt(def.stmts.Add()))
-			return false;
+		else if (IsId("return")) {
+			if (!ParseReturnStmt(def.ret_list.Add()))
+				return false;
+		}
+		else {
+			if (!ParseStmt(def.stmts.Add()))
+				return false;
+		}
 	}
 	
 	PASS_CHAR('}')
@@ -199,14 +270,14 @@ bool Parser::ParseStmt(Eon::Statement& stmt) {
 	
 	PASS_CHAR(':')
 	stmt.value.Create();
-	if (!Parse(*stmt.value))
+	if (!ParseValue(*stmt.value))
 		return false;
 	
 	PASS_CHAR(';')
 	return true;
 }
 
-bool Parser::Parse(Eon::Value& v) {
+bool Parser::ParseValue(Eon::Value& v) {
 	if (Id("true")) {
 		v.type = Eon::Value::VAL_BOOLEAN;
 		v.b = true;
@@ -253,6 +324,19 @@ bool Parser::ParseId(Eon::Id& id) {
 		}
 		id.parts.Add(ReadId());
 	}
+	return true;
+}
+
+bool Parser::ParseReturnStmt(Eon::Statement& stmt) {
+	PASS_ID("return")
+	if (!ParseId(stmt.id))
+		return false;
+	if (Char(':')) {
+		stmt.value.Create();
+		if (!ParseValue(*stmt.value))
+			return false;
+	}
+	PASS_CHAR(';')
 	return true;
 }
 
