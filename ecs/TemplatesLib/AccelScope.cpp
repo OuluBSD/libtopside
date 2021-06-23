@@ -1,21 +1,63 @@
 #include "TemplatesLib.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
+
+
+#if 0
+void StageComponent::UpdateDevBuffersValT() {
+	TODO
+	/*auto& stream = GetStreamState();
+	
+	fb_size.Clear();
+	auto& state = stream.template Get<ValSpec>();
+	ASSERT(state.fmt.IsValid());
+	ClearTex();
+	TimeSeriesBase* ts = CastPtr<TimeSeriesBase>(&state.fmt);
+	DimBase<1>* base1 = CastPtr<DimBase<1>>(&state.fmt);
+	DimBase<2>* base2 = CastPtr<DimBase<2>>(&state.fmt);
+	if (ts) {
+		if (base1) {
+			int sr = max(ts->sample_rate, 1);
+			int ch = max(base1->channels, 1);
+			fb_size = Size(sr, 1);
+#if HAVE_OPENGL
+			Ogl_CreateTex(
+				fb_size, ch,
+				0, has_fbo,
+				StageComponentConf::FILTER_LINEAR,
+				StageComponentConf::WRAP_CLAMP);
+#endif
+		}
+		else if (base2) {
+			fb_size = base2->size;
+#if HAVE_OPENGL
+			Ogl_CreateTex(
+				fb_size, 4,
+				1, has_fbo,
+				StageComponentConf::FILTER_LINEAR,
+				StageComponentConf::WRAP_CLAMP);
+#endif
+		}
+		else {TODO}
+	}
+	else {TODO}*/
+}
+
+#endif
 
 
 
-
-
-
-void AccelComponentGroupBase::RefreshPipeline() {
+/*void AccelComponentGroupBase::RefreshPipeline() {
 #if HAVE_OPENGL
 	Ogl_CreatePipeline();
 #endif
-}
+}*/
 
 
-template<class ValDevSpec>
-bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
+bool CreateForwardPacket(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) {
+	
+	TODO
+	#if 0
 	using ValSpec				= typename ValDevSpec::Val;
 	using DevSpec				= typename ValDevSpec::Dev;
 	using ValData				= ScopeValMachT<ValSpec>;
@@ -34,57 +76,62 @@ bool CreateForwardPacketT(AccelComponentGroupBase& gr, InterfaceSinkBase& sink) 
 	using PacketTracker			= typename ValCore::PacketTracker;
 	using InternalPacketData	= typename DevMach::InternalPacketData;
 	using StageComponent		= typename DevLib::StageComponent;
-	
+
 	ValSink* val_sink = CastPtr<ValSink>(&sink);
 	if (!val_sink)
 		return false;
-	
+
 	#define CTX (ValSpec*)0
-	
+
 	Value& val = val_sink->GetValue(CTX);
 	SimpleBufferedValue* buf = CastPtr<SimpleBufferedValue>(&val);
 	if (buf) {
 		//AccelComponentGroup& ag = CastRef<AccelComponentGroup>(gr);
-		
+
 		StageComponent* comp = CastPtr<StageComponent>(val_sink->AsComponentBase());
 		if (!comp)
 			return false;
-		
+
 		TODO
 	/*	Packet p = ValData::CreatePacket();
-		
+
 		p->SetOffset(gr.offset++);
-		
+
 		Format fmt = StageComponent::template GetDefaultFormat<ValSpec>();
 		RTLOG("CreateForwardPacketT: sending packet in format: " << fmt.ToString());
 		p->SetFormat(fmt);
-		
+
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = ag.GetComponents().GetCount();
-		
+
 		PacketTracker::Track(TrackerInfo("CreateForwardPacketT", __FILE__, __LINE__), *p);
 		buf->AddPacket(p);
-		
+
 		NOT HERE
 		for (FwdScope scope(comp); scope; scope++)
 			scope.Forward();*/
-		
+
 		return true;
 	}
 	else {
 		TODO
 	}
-	
+
 	#undef CTX
+	#endif
 }
 
+
+#if 0
 bool AccelComponentGroupBase::CreateForwardPacket(InterfaceSinkBase& sink) {
-	#define IFACE(x) if (CreateForwardPacketT<TS::VD<AccelSpec,x##Spec>>(*this, sink)) return true;
+	/*#define IFACE(x) if (CreateForwardPacketT<TS::VD<AccelSpec,x##Spec>>(*this, sink)) return true;
 	IFACE_LIST
 	#undef IFACE
-	return false;
+	return false;*/
+	TODO
 }
+#endif
 
 
 
@@ -196,22 +243,22 @@ TypeCls AccelComponentBase::GetTypeFromString(String type_str) {
 void AccelComponentBase::UpdateCompFlags(TypeCls val_spec, int comp_i, int comp_count) {
 	has_fbo = false;
 	TODO // Was DisplaySpec, now VideoSpec: information is missing
-	if (val_spec == AsTypeCls<VideoSpec>() && comp_i == comp_count-1)
-		has_fbo = true;
+	/*if (val_spec == AsTypeCls<VideoSpec>() && comp_i == comp_count-1)
+		has_fbo = true;*/
 }
 
 void AccelComponentBase::Clear() {
 	DLOG("AccelComponentBase::Clear");
-	
+
 	name.Clear();
 	description.Clear();
 	for(int i = 0; i < PROG_COUNT; i++)
 		code[i].Clear();
-	
+
 	buf_i = 0;
 	is_doublebuf = false;
 	is_searched_vars = false;
-	
+
 	ClearTex();
 	ClearProg();
 }
@@ -221,15 +268,15 @@ void AccelComponentBase::Close() {
 }
 
 bool AccelComponentBase::Open() {
-	
+
 #if HAVE_OPENGL
 	if (!Ogl_CompilePrograms())
 		return false;
-	
+
 	if (!Ogl_LinkStages())
 		return false;
 #endif
-	
+
 	return true;
 }
 
@@ -245,12 +292,13 @@ bool AccelComponentBase::CheckDevice() {
 	using DevSpec = AccelSpec;
 	using DevMach = ScopeDevMachT<DevSpec>;
 	using InternalPacketData = typename DevMach::InternalPacketData;
-	
+
 	AccelComponent& c = CastRef<AccelComponent>(this);
-	
+
 	c.Forward();
 }*/
 
+/*
 void AccelComponentBase::Process() {
 	AccelComponent& c = CastRef<AccelComponent>(this);
 #if HAVE_OPENGL
@@ -260,7 +308,7 @@ void AccelComponentBase::Process() {
 	ASSERT(gl_stage > 0);
 	c.group->Ogl_ProcessStage(*this, gl_stage);
 #endif
-}
+}*/
 
 
 
@@ -381,21 +429,23 @@ bool AccelComponentConfBase::IsTypeComponentSource(Type i) {
 
 
 
-template <>
-bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
+
+bool StageComponent::Load(ObjectMap& st_map, int stage_i, String frag_code) {
+	TODO
+	#if 0
 	const char* fn_name = "AccelComponent::Load";
 	Clear();
-	
-	
+
+
 	Index<String> dirs;
 	dirs.Add( ShareDirFile("imgs") );
 	dirs.Add( ShareDirFile("sounds") );
 	dirs.Add( ShareDirFile("videos") );
-	
-	
+
+
 	String name = st_map.TryGet("name", "").ToString();
 	String description = st_map.TryGet("description", "").ToString();
-	
+
 	Object& inputs = st_map.GetAdd("inputs", ObjectArray());
 	if (!inputs.IsArray()) {
 		OnError(fn_name, "no inputs");
@@ -413,23 +463,23 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 			continue;
 		}
 		String path = in_map.TryGet("filename", "").ToString();
-		
+
 		in.SetId(	(int)in_map.TryGet("id", -1).ToInt()); // TODO fix all of these, not safe now
 		in.Set(		StageComponentConf::GetTypeFromString(in_map.TryGet("type", "").ToString()),
 					path,
 					StageComponentConf::GetFilterFromString(in_map.TryGet("filter", "linear").ToString()),
 					StageComponentConf::GetWrapFromString(in_map.TryGet("wrap", "clamp").ToString()),
 					ScanBoolString(in_map.TryGet("vflip", "false").ToString()));
-		
+
 		/*if (in.GetType() != StageComponentConf::TYPE_BUFFER) {
 			in.SetId(-1);
 		}*/
-		
+
 		if (path.GetCount() && GetFileDirectory(path).IsEmpty()) {
 			String filename = GetFileName(path);
 			String title = GetFileTitle(filename);
 			filename = Accel_CommonHashToName().Get(title, title) + GetFileExt(filename);
-			
+
 			bool found = false;
 			for (String dir : dirs) {
 				String filepath = AppendFileName(dir, filename);
@@ -445,7 +495,7 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 			}
 		}
 	}
-	
+
 	Object& outputs = st_map.GetAdd("outputs", ObjectArray());
 	if (!outputs.IsArray()) {
 		OnError(fn_name, "no outputs");
@@ -457,7 +507,7 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 		if (!out_el.IsMap())
 			continue;
 		ObjectMap& out_map = out_el.GetMap();
-		
+
 		if (!i) {
 			id = (int)out_map.TryGet("id", -1).ToInt();
 		}
@@ -466,16 +516,16 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 			return false;
 		}
 	}
-	
+
 	#if HAVE_OPENGL
-	
+
 	// Load GLSL code
 	String& glsl = frag_code;
 	if (glsl.IsEmpty()) {
 		OnError(fn_name, "shader is empty for stage " + IntStr(id));
 		return false;
 	}
-	
+
 	// Hotfixes for GLSL code
 	#if HAVE_OPENGL
 	Ogl_RemoveToken(glsl, "lowp");
@@ -486,16 +536,19 @@ bool ScopeDevLibT<AccelSpec>::StageComponent::Load(ObjectMap& st_map, int stage_
 	#else
 	TODO
 	#endif
-	
+
 	code[PROG_FRAGMENT] = glsl;
-	
+
 	#else
 	Panic("not implemented");
 	#endif
-	
+
 	return true;
+	#endif
 }
 
+
+#if 0
 
 template <class ValSpec>
 void ConvertAccelCenterT(CenterComponent& conv, typename ScopeValMachT<ValSpec>::Packet& p) {
@@ -511,24 +564,24 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 	using Format					= typename ValMach::Format;
 	using FromDevMach				= ScopeDevMachT<FromDevSpec>;
 	using FromInternalPacketData	= typename FromDevMach::InternalPacketData;
-	
+
 	FromInternalPacketData& in = p->GetData<FromInternalPacketData>();
 	AccelComponent* acc_comp = reinterpret_cast<AccelComponent*>(in.dev_comp);
 	ASSERT(acc_comp);
-	
+
 	Format fmt = p->GetFormat();
 	fmt.SetDevSpec<CenterSpec>();
 	p->SetFormat(fmt);
-	
+
 	Vector<byte>& data = p->Data();
-	
+
 	/*Format::SampleType type = fmt.GetType();
 	if (type != Format::SampleType::FLT_LE) {
 		conv.OnError("ConvertAccelCenterT", "TODO type conversion: f32 -> ...");
 		p.Clear();
 		return;
 	}*/
-	
+
 #if HAVE_OPENGL
 	int sample_rate = fmt.GetSampleRate();
 	int sz = sample_rate * fmt.channels * sizeof(float);
@@ -537,7 +590,7 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 	RTLOG("ConvertAccelCenterT: read active opengl color buffer");
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
 	glReadPixels(0, 0, sample_rate, 1, GetOglChCode(fmt.channels), GL_FLOAT, data.Begin());
-	
+
 	if (0) {
 		float* f = (float*)(void*)data.Begin();
 		for(int i = 0; i < sample_rate; i++) {
@@ -554,60 +607,62 @@ void ConvertAccelCenterT<AudioSpec>(CenterComponent& conv, AudioPacket& p) {
 		TODO
 	}
 #endif
-	
+
 }
 
-#define IFACE(x) \
+#endif
+
+
+/*#define IFACE(x) \
 template<> template<> \
 void ScopeDevLibT<CenterSpec>::StageComponent::ConvertPacket<AccelSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
 	ConvertAccelCenterT<x##Spec>(*this, p);\
 }
 IFACE_LIST
-#undef IFACE
+#undef IFACE*/
 
 
 
 
-template <class ValSpec>
-void ConvertCenterAccelT(AccelComponent& conv, typename ScopeValMachT<ValSpec>::Packet& p) {
+
+/*void ConvertCenterAccelT(AccelComponent& conv, typename ScopeValMachT<ValSpec>::Packet& p) {
 	TODO
-}
+}*/
 
-#define IFACE(x) \
+/*#define IFACE(x) \
 template<> template<> \
 void ScopeDevLibT<AccelSpec>::StageComponent::ConvertPacket<CenterSpec, x##Spec>(typename ScopeValMachT<x##Spec>::Packet& p) { \
 	ConvertCenterAccelT<x##Spec>(*this, p);\
 }
 IFACE_LIST
-#undef IFACE
+#undef IFACE*/
 
 
 
 #if 0
 
-template <>
 bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 	using DevSpec = AccelSpec;
 	using DevComponentBase = AccelComponentBase;
-	
+
 	DLOG("DevStageContextConnector::Load begin");
 	const char* fn_name = "Load";
 	if (!json.IsMap()) {
 		OnError(fn_name, "invalid json");
 		return false;
 	}
-	
+
 	Index<String> dirs;
 	dirs.Add( ShareDirFile("imgs") );
 	dirs.Add( ShareDirFile("sounds") );
 	dirs.Add( ShareDirFile("videos") );
-	
+
 	ObjectMap& map = json.GetMap();
-	
+
 	String name = map.GetAdd("name", "unnamed").ToString();
 	String description = map.GetAdd("description", "").ToString();
 	DLOG("DevStageContextConnector::Load: name='" << name << "'");
-	
+
 	Object& stages = map.GetAdd("stages", ObjectArray());
 	if (!stages.IsArray()) {
 		OnError(fn_name, "no stages in");
@@ -620,9 +675,9 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 			OnError(fn_name, "unexpected element in stages");
 			return false;
 		}
-		
+
 		ObjectMap& st_map = st_el.GetMap();
-		
+
 		String frag_code;
 		Object& outputs = st_map.GetAdd("outputs", ObjectArray());
 		if (outputs.IsArray()) {
@@ -639,12 +694,12 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 				}
 			}
 		}
-		
+
 		String type_str = st_map.TryGet("type", "").ToString();
-		
+
 		if (type_str == "imagebuf" && st_arr.GetCount() == 1)
 			type_str = "image";
-		
+
 		if (type_str == "library") {
 			common_source.Add(frag_code);
 		}
@@ -654,10 +709,10 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 				OnError(fn_name, "Invalid type string '" + type_str + "'");
 				return false;
 			}
-			
+
 			if (StageComponent::IsDevPipeComponent(type)) {
 				StageComponentGroup* group = 0;
-				
+
 				// Find group
 				if (0)
 					;
@@ -675,8 +730,8 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 					OnError(fn_name, "No group exists for type '" + type_str + "'");
 					return false;
 				}
-				
-				
+
+
 				// Create new comp
 				TODO
 				#if 0
@@ -691,10 +746,10 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 				IFACE_LIST
 				#undef IFACE
 				#undef PIPECOMP
-				
+
 				if (!comp)
 					return false;
-				
+
 				if (!comp->Load(st_map, i, frag_code)) {
 					ComponentBaseRef cb = comp->template AsRef<ComponentBase>();
 					EntityRef e = cb->ComponentBase::GetEntity();
@@ -703,7 +758,7 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 					return false;
 				}
 				#endif
-				
+
 				//for(StageComponentConf& in : comp->in) {ASSERT(in.GetId() < 0 || in.GetType() == StageComponentConf::TYPE_BUFFER);}
 			}
 			else {
@@ -719,33 +774,33 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 			}
 		}
 	}
-	
+
 	// Find unique inputs
 	StageComponentConfVector v;
 	for (StageComponentGroup& g : groups)
 		g.FindUniqueInputs(v);
-	
-	
+
+
 	if (v.in.GetCount()) {
 		// Create components for unique inputs
 		if (!CreateComponents(v))
 			return false;
-		
+
 		// Connect created components for inputs
 		DumpEntityComponents();
 		for (auto& group : groups)
 			group.ConnectInputs(v);
-		
+
 		// Connect inputs
 		if (!ConnectComponentInputs())
 			return false;
-		
+
 	}
-	
+
 	// Connect outputs
 	if (!ConnectComponentOutputs())
 		return false;
-	
+
 	DLOG("DevStageContextConnector::Load end");
 	return true;
 }
@@ -759,6 +814,4 @@ bool ScopeDevLibT<AccelSpec>::StageContextConnector::Load(Object& json) {
 
 
 
-
-
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

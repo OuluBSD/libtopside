@@ -1,13 +1,13 @@
 #include "EcsCore.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
-void EcsFactory::Dump() {
+void Factory::Dump() {
 	const auto& fns = CompDataMap();
 	
-	LOG("EcsFactory::Dump:");
+	LOG("Factory::Dump:");
 	LOG("\tcomponents (" << fns.GetCount() << "):");
 	for(int i = 0; i < fns.GetCount(); i++) {
 		const auto& d = fns[i];
@@ -19,9 +19,9 @@ void EcsFactory::Dump() {
 	}
 }
 
-void EcsFactory::RefreshLinks(CompData& d) {
+void Factory::RefreshLinks(CompData& d) {
 	ASSERT(d.src_sink);
-	auto& m = EcsFactory::CompDataMap();
+	auto& m = Factory::CompDataMap();
 	if (!d.searched_sink_links) {
 		for (const auto& comp_data : m.GetValues()) {
 			if (d.src_sink == comp_data.sink) {
@@ -36,28 +36,29 @@ void EcsFactory::RefreshLinks(CompData& d) {
 	}
 }
 
-const Vector<EcsFactory::Link>& EcsFactory::GetSinkComponents(TypeCls src_comp) {
-	auto& m = EcsFactory::CompDataMap();
+const Vector<Factory::Link>& Factory::GetSinkComponents(EcsTypeCls src_comp) {
+	auto& m = Factory::CompDataMap();
 	CompData& d = m.Get(src_comp);
 	RefreshLinks(d);
 	return d.sink_links;
 }
 
-void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts) {
+void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts) {
 	auto& m = CompDataMap();
 	
-	TypeCls comp = src.GetComponent();
+	EcsTypeCls comp = src.GetComponent();
 	CompData& d = m.Get(comp);
 	RefreshLinks(d);
 	
 	Eon::Action a;
 	a.Pre() = src;
 	
-	if (src.IsAddComponent()) {
+	TODO
+	/*if (src.IsAddComponent()) {
 		for (const ExtData& e : d.ext.GetValues()) {
 			a.Post() = src;
 			a.Post().SetAs_AddExtension(comp, e.cls);
-			if (e.action_fn(a)) {
+			if (e.action_fn(vd, a)) {
 				MemSwap(acts.Add(), a);
 				a.Pre() = src;
 			}
@@ -71,15 +72,15 @@ void EcsFactory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Act
 		
 		a.Post() = src;
 		a.Post().SetAs_AddComponent(link.dst_comp, link.iface_src, link.iface_sink);
-		if (sink_cd.action_fn(a)) {
+		if (sink_cd.action_fn(vd, a)) {
 			MemSwap(acts.Add(), a);
 			a.Pre() = src;
 		}
-	}
+	}*/
 	
 }
 
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

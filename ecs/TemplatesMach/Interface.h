@@ -1,19 +1,19 @@
 #ifndef _TemplatesMach_Interface_h_
 #define _TemplatesMach_Interface_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class InterfaceBase :
-	RTTIBase,
-	public WeakRefScopeEnabler<InterfaceBase, Entity>
+	RTTIBase
 {
 public:
 	RTTI_DECL0(InterfaceBase)
 	
 	virtual ComponentBase* AsComponentBase() = 0;
-	virtual TypeCls GetSinkCls() const = 0;
-	virtual TypeCls GetDevSpec() const {return AsTypeCls<CenterSpec>();}
+	virtual EcsTypeCls GetEcsCls() const = 0;
+	virtual ValDevCls GetSinkCls() const = 0;
+	virtual DevCls GetDevSpec() const {return GetCenterDevCls();}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };
@@ -41,7 +41,7 @@ public:
 		vis.VisitThis<InterfaceBase>(this);
 		vis.VisitThis<ExchangeSourceProvider>(this);
 	}
-	virtual TypeCls GetSourceCls() const = 0;
+	virtual ValDevCls GetSourceCls() const = 0;
 	virtual void ClearSource() = 0;
 };
 
@@ -49,19 +49,18 @@ using InterfaceSinkBaseRef = Ref<InterfaceSinkBase, RefParent1<Entity>>;
 using InterfaceSourceBaseRef = Ref<InterfaceSourceBase, RefParent1<Entity>>;
 
 
-template <class I>
+
 class InterfaceSink :
 	public InterfaceSinkBase
 {
-	using Sink = InterfaceSink<I>;
+protected:
+	ValDevCls sink;
 	
 public:
-	RTTI_DECL1(Sink, InterfaceSinkBase)
+	RTTI_DECL1(InterfaceSink, InterfaceSinkBase)
+	InterfaceSink(ValDevCls sink_cls) : sink(sink_cls) {}
 	
-	TypeCls GetSinkCls() const override {
-		//LOG("InterfaceSink: " << GetDynamicName() << " " << IntStr64(AsTypeCls<I>()));
-		return AsTypeCls<I>();
-	}
+	ValDevCls GetSinkCls() const override {return sink;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSinkBase>(this);}
@@ -72,20 +71,19 @@ public:
 void InterfaceDebugPrint(TypeId type, String s);
 #endif
 
-template <class O, class I>
+
 class InterfaceSource :
 	public InterfaceSourceBase
 {
-	using Source = InterfaceSource<O,I>;
+	ValDevCls sink;
+	ValDevCls src;
 	
 public:
-	RTTI_DECL1(Source, InterfaceSourceBase)
+	RTTI_DECL1(InterfaceSource, InterfaceSourceBase)
+	InterfaceSource(ValDevCls sink_cls, ValDevCls src_cls) : sink(sink_cls), src(src_cls) {}
 	
-	TypeCls GetSourceCls() const override {return AsTypeCls<O>();}
-	TypeCls GetSinkCls() const override {
-		//LOG("InterfaceSource: " << GetDynamicName() << " " << IntStr64(AsTypeCls<I>()));
-		return AsTypeCls<I>();
-	}
+	ValDevCls GetSourceCls() const override {return src;}
+	ValDevCls GetSinkCls() const override {return sink;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSourceBase>(this);}
@@ -94,23 +92,23 @@ protected:
 	
 };
 
-template <class T>
 class InterfaceVisitor : public RuntimeVisitor {
-	using InterfaceVisitorT = InterfaceVisitor<T>;
-	
-	TypeCls match_type;
-	T* last = 0;
+	TypeCls iface_base;
+	EcsTypeCls match_type;
+	InterfaceBase* last = 0;
 	bool stop_when_found = false;
 	
 	
 	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {
-		if (derived == match_type) {
-			last = (T*)mem;
-			if (stop_when_found) {
-				BreakOut();
-				return false;
+		if (derived == iface_base) {
+			last = (InterfaceBase*)mem;
+			if (last->GetEcsCls() == match_type) {
+				if (stop_when_found) {
+					BreakOut();
+					return false;
+				}
+				else return OnInterfaceEntry(*(InterfaceBase*)mem);
 			}
-			else return OnInterfaceEntry(*(T*)mem);
 		}
 		return true;
 	}
@@ -118,14 +116,14 @@ class InterfaceVisitor : public RuntimeVisitor {
 	void OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {}
 	
 public:
-	RTTI_DECL1(InterfaceVisitorT, RuntimeVisitor)
-	InterfaceVisitor() : match_type(AsTypeCls<T>()) {}
+	RTTI_DECL1(InterfaceVisitor, RuntimeVisitor)
+	InterfaceVisitor(EcsTypeCls match) : match_type(match), iface_base(AsTypeCls<InterfaceBase>()) {}
 	
 	
-	T* GetLast() const {return last;}
+	InterfaceBase* GetLast() const {return last;}
 	void StopWhenFound(bool b=true) {stop_when_found = b;}
 	
-	virtual bool OnInterfaceEntry(T& o) {return true;}
+	virtual bool OnInterfaceEntry(InterfaceBase& o) {return true;}
 	
 };
 
@@ -217,6 +215,6 @@ public:
 	
 };*/
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

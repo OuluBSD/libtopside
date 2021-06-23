@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 void EntityStore::InitRoot() {
 	root.Clear();
@@ -52,4 +52,4 @@ void EntityStore::Update(double dt) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

@@ -2,7 +2,7 @@
 #ifndef _EcsCore_ConnAny_h_
 #define _EcsCore_ConnAny_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class AnyConnector :
@@ -53,7 +53,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

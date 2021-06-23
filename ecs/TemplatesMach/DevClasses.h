@@ -1,7 +1,7 @@
 #ifndef _TemplatesMach_DevClasses_h_
 #define _TemplatesMach_DevClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -84,6 +84,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

@@ -1,12 +1,12 @@
 #include "EcsCore.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
-CustomerComponent::CustomerComponent() : src_stream(this), cfg(gen) {
+/*CustomerComponent::CustomerComponent() : src_stream(this), cfg(gen) {
 	DumpRuntimeDiagnostics(this);
-}
+}*/
 
 void CustomerComponent::Initialize() {
 	CustomerSystemRef sys = GetMachine().TryGet<CustomerSystem>();
@@ -29,6 +29,8 @@ void CustomerComponent::AddPlan(Eon::Plan& ep) {
 }
 
 void CustomerComponent::Forward(FwdScope& fwd) {
+	TODO
+	#if 0
 	if (ext)
 		ext->Forward(fwd);
 	
@@ -76,13 +78,14 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 				unfulfilled_offsets.Remove(0);
 		}
 	}
+	#endif
 }
 
 void CustomerComponent::ForwardExchange(FwdScope& fwd) {
 	int read_i = fwd.GetPos();
 	if (read_i > 0)
 		return;
-	OrderSource& src = *this;
+	ValSource& src = *this;
 	
 	ExchangePointRef expt = src.GetExPt();
 	ASSERT(expt);
@@ -151,4 +154,4 @@ void CustomerSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

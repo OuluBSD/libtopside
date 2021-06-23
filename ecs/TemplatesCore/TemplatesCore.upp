@@ -6,14 +6,12 @@ uses
 
 file
 	TemplatesCore.h,
-	Inlines.h,
 	ValDevScope.h,
-	ValDevScope.inl highlight cpp,
+	ValDevScope.cpp highlight cpp,
 	Classes.h,
 	ValScope.h,
-	ValScope.inl highlight cpp,
+	ValScope.cpp highlight cpp,
 	DevScope.h,
-	DevScope.inl highlight cpp,
-	AccelScope.cpp,
+	DevScope.cpp highlight cpp,
 	Spec.h;
 

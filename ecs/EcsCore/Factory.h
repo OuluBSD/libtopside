@@ -1,10 +1,10 @@
 #ifndef _EcsCore_Factory_h_
 #define _EcsCore_Factory_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-class EcsFactory {
+class Factory {
 	
 public:
 	
@@ -16,10 +16,10 @@ public:
 	struct IfaceData : Moveable<IfaceData> {
 		TypeCls cls;
 		TypeCls expt_type;
-		TypeCls sink_cls;
+		ValDevCls sink_cls;
 		String name;
 	};
-	typedef VectorMap<TypeCls,IfaceData> IfaceMap;
+	typedef VectorMap<ValDevCls,IfaceData> IfaceMap;
 	static IfaceMap& SourceDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
 	static IfaceMap& SinkDataMap()   {MAKE_STATIC(IfaceMap, m); return m;}
 	
@@ -37,7 +37,7 @@ public:
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.expt_type = 0;
-		d.sink_cls = 0;
+		d.sink_cls = Null;
 	}
 	
 	
@@ -45,7 +45,7 @@ public:
 	
 	// Component Extensions
 	
-	typedef bool (*ActionFn)(Eon::Action& act);
+	typedef bool (*ActionFn)(ValDevCls vd, Eon::Action& act);
 	typedef ComponentExtBase* (*NewExt)();
 	struct ExtData : Moveable<ExtData> {
 		NewExt new_fn;
@@ -69,19 +69,20 @@ public:
 		ActionFn action_fn;
 		String name;
 		TypeCls cls;
-		TypeCls sink, src, src_sink;
+		ValDevCls sink, src, src_sink;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
 	};
-	typedef VectorMap<TypeCls,CompData> CompMap;
+	typedef VectorMap<EcsTypeCls,CompData> CompMap;
 	static CompMap& CompDataMap() {MAKE_STATIC(CompMap, m); return m;}
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
-	template <class T> static bool MakeAction(Eon::Action& act) {return T::MakeAction(act);}
+	template <class T> static bool MakeAction(ValDevCls vd, Eon::Action& act) {return T::MakeAction(vd, act);}
 	
 	template <class T> static void RegisterComponent() {
-		CompData& d = CompDataMap().GetAdd(AsTypeCls<T>());
+		TODO
+		/*CompData& d = CompDataMap().GetAdd(AsTypeCls<T>());
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
@@ -91,22 +92,23 @@ public:
 			d.sink = ((InterfaceSinkBase*)&o)->GetSinkCls();
 			d.src = ((InterfaceSourceBase*)&o)->GetSourceCls();
 			d.src_sink = ((InterfaceSourceBase*)&o)->GetSinkCls();
-		}
+		}*/
 	}
 	
 	template <class T> static void RegisterExtension() {
-		using Component = typename T::Component;
+		TODO
+		/*using Component = typename T::Component;
 		CompData& d = CompDataMap().GetAdd(AsTypeCls<Component>());
 		TypeCls t = AsTypeCls<T>();
 		ExtData& e = d.ext.GetAdd(t);
 		e.cls = t;
 		e.name = T::GetTypeName();
 		e.new_fn = &CreateExt<T>;
-		e.action_fn = &MakeAction<T>;
+		e.action_fn = &MakeAction<T>;*/
 	}
 	
 	static void Dump();
-	static const Vector<Link>& GetSinkComponents(TypeCls src_comp);
+	static const Vector<Link>& GetSinkComponents(EcsTypeCls src_comp);
 	static void GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
 	static void RefreshLinks(CompData& d);
 	
@@ -117,10 +119,10 @@ public:
 
 
 template <class Main, class Base> inline
-ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(TypeCls key) {
+ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(EcsTypeCls key) {
 	auto it = Factory::producers.Find(key);
 	if (!it) {
-		auto new_fn = EcsFactory::CompDataMap().Get(key).new_fn;
+		auto new_fn = Ecs::Factory::CompDataMap().Get(key).new_fn;
 		std::function<Base*()> p([new_fn] { return new_fn();});
 		std::function<void(Base*)> r([] (Base* b){ delete b;});
 		Factory::producers.Add(key) = p;
@@ -130,6 +132,6 @@ ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(TypeCls key) {
 	return CreateComponent(key);
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

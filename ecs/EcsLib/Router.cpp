@@ -1,7 +1,7 @@
 #if 0
 #include "EcsLib.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 void PathwayRouter::Initialize() {
@@ -105,5 +105,5 @@ void PathwaySystem::Uninitialize() {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 #endif

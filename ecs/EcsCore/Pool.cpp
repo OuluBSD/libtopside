@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 //PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
@@ -77,7 +77,7 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 
-bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface) {
+bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls src_iface, ValDevCls sink_iface) {
 	InterfaceSourceBaseRef src = src_comp->FindSource(src_iface);
 	InterfaceSinkBaseRef sink = dst_comp->FindSink(sink_iface);
 	ASSERT(src && sink);
@@ -87,7 +87,7 @@ bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls sr
 	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
 	CookieRef src_cookie, sink_cookie;
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		const auto& src_d = EcsFactory::SourceDataMap().Get(src_iface);
+		const auto& src_d = Ecs::Factory::SourceDataMap().Get(src_iface);
 		if (src_d.sink_cls != sink_iface) {
 			ASSERT(0);
 			LOG("internal error: unexpected sink class type");
@@ -244,4 +244,4 @@ bool PoolHashVisitor::OnEntry(const RTTI& type, TypeCls derived, const char* der
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

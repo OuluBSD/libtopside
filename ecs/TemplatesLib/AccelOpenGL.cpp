@@ -1,7 +1,7 @@
 #include "TemplatesLib.h"
 #if HAVE_OPENGL
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 int GetOglChCode(int channels, bool is_float) {
@@ -744,6 +744,6 @@ void AccelComponentBase::Ogl_TexFlags(int type, int filter, int repeat) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

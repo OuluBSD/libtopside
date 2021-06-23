@@ -1,6 +1,6 @@
 #include "TemplatesMach.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 String TrackerInfo::ToString() const {
@@ -22,4 +22,4 @@ String TrackerInfo::ToString() const {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

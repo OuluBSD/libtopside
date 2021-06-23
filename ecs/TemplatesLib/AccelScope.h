@@ -1,11 +1,11 @@
 #ifndef _TemplatesLib_DevClasses_h_
 #define _TemplatesLib_DevClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
-#define DEV(x) \
+/*#define DEV(x) \
 	struct x##ComponentGroupBase : RTTIBase { \
 		RTTI_DECL0(x##ComponentGroupBase) \
 		void RefreshPipeline() {} \
@@ -15,7 +15,7 @@ NAMESPACE_TOPSIDE_BEGIN
 		bool CreateForwardPacket(InterfaceSinkBase& sink) {return false;} \
 	};
 DUMMY_DEV_LIST
-#undef DEV
+#undef DEV*/
 
 
 
@@ -237,7 +237,7 @@ using AccelComponentBaseRef = Ref<AccelComponentBase>;
 
 
 
-class AccelComponentGroupBase : RTTIBase {
+/*class AccelComponentGroupBase : RTTIBase {
 public:
 	RTTI_DECL0(AccelComponentGroupBase)
 	
@@ -257,9 +257,9 @@ public:
 	void				Ogl_CreatePipeline();
 #endif
 	
-};
+};*/
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

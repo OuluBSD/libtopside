@@ -3,7 +3,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -127,7 +127,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

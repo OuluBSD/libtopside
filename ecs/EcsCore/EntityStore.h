@@ -2,7 +2,7 @@
 #define _EcsCore_EntityStore_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class EntityStore : public System<EntityStore> {
@@ -37,7 +37,7 @@ protected:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

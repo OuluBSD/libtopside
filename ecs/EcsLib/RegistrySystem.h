@@ -1,7 +1,7 @@
 #ifndef _EcsLib_RegistrySystem_h_
 #define _EcsLib_RegistrySystem_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class RegistrySystem : public System<RegistrySystem> {
@@ -31,6 +31,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

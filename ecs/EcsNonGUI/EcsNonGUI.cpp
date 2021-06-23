@@ -1,7 +1,7 @@
 #include "EcsNonGUI.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 bool SingleMachine::Open(bool gui) {
@@ -11,7 +11,7 @@ bool SingleMachine::Open(bool gui) {
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef ents = mach.Add<EntityStore>();
     mach.Add<ComponentStore>();
-    mach.Add<CenterSystem>();
+    mach.Add<CustomerSystem>();
     
     reg->SetAppName("SDL2 ECS machine");
     
@@ -27,4 +27,4 @@ void SingleMachine::Close() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

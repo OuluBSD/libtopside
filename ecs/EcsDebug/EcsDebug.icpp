@@ -8,8 +8,8 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
-	EcsFactory::RegisterComponent<DebugSoundGeneratorComponent>();
-	EcsFactory::RegisterComponent<DebugAudioSinkComponent>();
+	Ecs::Factory::RegisterComponent<DebugSoundGeneratorComponent>();
+	Ecs::Factory::RegisterComponent<DebugAudioSinkComponent>();
 }
 
 END_UPP_NAMESPACE

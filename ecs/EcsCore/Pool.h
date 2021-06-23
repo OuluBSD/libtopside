@@ -2,7 +2,7 @@
 #define _EcsCore_Pool_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class Pool;
 
@@ -69,7 +69,7 @@ public:
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
 	
-	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface);
+	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls src_iface, ValDevCls sink_iface);
 	
 	template<typename PrefabT>
 	EntityRef Create() {
@@ -292,6 +292,6 @@ RefT_Pool<T> Entity::FindNearestPoolWith() {
 	return c;
 }*/
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

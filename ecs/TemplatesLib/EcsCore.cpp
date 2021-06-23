@@ -1,6 +1,7 @@
-NAMESPACE_TOPSIDE_BEGIN
+#if 0
+NAMESPACE_ECS_BEGIN
 
-#define IFACE_(x, post)\
+/*#define IFACE_(x, post)\
 	inline RefT_Entity<x##post> Entity::Find##x##post() {\
 		InterfaceVisitor<x##post> vis; \
 		vis.StopWhenFound(); \
@@ -31,6 +32,7 @@ template<> inline RefT_Entity<prefix##Sink>   ComponentBase_Static_As(ComponentB
 #define IFACE(x) DEV_IFACE(x)
 IFACE_LIST
 #undef IFACE
-#undef IFACE_CTX_CLS
+#undef IFACE_CTX_CLS*/
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
+#endif

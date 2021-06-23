@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 EntityVisitor::EntityVisitor(PoolVec& pool, int mode) : base(pool), mode(mode) {
@@ -226,4 +226,4 @@ bool EntityParentVisitor::FindNextChildFirst() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

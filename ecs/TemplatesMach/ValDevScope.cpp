@@ -1,10 +1,11 @@
-#define DataT			typename ScopeValMachT<typename ValDevSpec::Val>
-
-NAMESPACE_TOPSIDE_BEGIN
+#include "TemplatesMach.h"
 
 
+NAMESPACE_ECS_BEGIN
 
-TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
+
+
+void SimpleValue::Exchange(Ex& e) {
 	if (e.IsStoring()) {
 		Value& sink = e.Sink();
 		ASSERT((Value*)&e.Source() == 0);
@@ -75,15 +76,15 @@ TMPL_VALDEVMACH(void) SimpleValue::Exchange(Ex& e) {
 	else Panic("SimpleValue::Exchange: Internal error. Ex not storing nor loading.");
 }
 
-TMPL_VALDEVMACH(int) SimpleValue::GetQueueSize() const {
+int SimpleValue::GetQueueSize() const {
 	return buf.GetCount();
 }
 
-TMPL_VALDEVMACH(DataT::Format) SimpleValue::GetFormat() const {
+Format SimpleValue::GetFormat() const {
 	return fmt;
 }
 
-TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
+bool SimpleValue::IsQueueFull() const {
 	return buf.GetCount() >= packet_limit;
 }
 
@@ -104,12 +105,7 @@ TMPL_VALDEVMACH(bool) SimpleValue::IsQueueFull() const {
 
 
 
-TMPL_VALDEVMACH(typename ScopeValMachT<typename ValDevSpec::Val>::Packet)
-SimpleValue::Pick() {
-	using ValSpec				= typename ValDevSpec::Val;
-	using ValMach				= ScopeValMachT<ValSpec>;
-	using Packet				= typename ValMach::Packet;
-	
+Packet SimpleValue::Pick() {
 	if (buf.IsEmpty())
 		return Packet();
 	Packet p = buf.First();
@@ -127,13 +123,13 @@ SimpleValue::Pick() {
 
 
 
-TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
-	using ValSpec				= typename ValDevSpec::Val;
+void SimpleBufferedValue::Exchange(Ex& e) {
+	/*using ValSpec				= typename ValDevSpec::Val;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
 	using PacketBuffer			= typename Mach::PacketBuffer;
-	using SimpleValue			= typename Mach::SimpleValue;
+	using SimpleValue			= typename Mach::SimpleValue;*/
 	
 	
 	if (e.IsStoring()) {
@@ -250,34 +246,34 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::Exchange(Ex& e) {
 	}
 }
 
-TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueSize() const {
+int SimpleBufferedValue::GetQueueSize() const {
 	return buf.GetCount();
 }
 
-TMPL_VALDEVMACH(DataT::Format) SimpleBufferedValue::GetFormat() const {
+Format SimpleBufferedValue::GetFormat() const {
 	return fmt;
 }
 
-TMPL_VALDEVMACH(bool) SimpleBufferedValue::IsQueueFull() const {
+bool SimpleBufferedValue::IsQueueFull() const {
 	int cs = GetQueueChannelSamples();
 	return cs >= min_buf_samples;
 }
 
-TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueChannelSamples() const {
+int SimpleBufferedValue::GetQueueChannelSamples() const {
 	int size = 0;
 	for(auto& p : buf)
 		size += p->GetSizeChannelSamples();
 	return size;
 }
 
-TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueTotalSamples() const {
+int SimpleBufferedValue::GetQueueTotalSamples() const {
 	int size = 0;
 	for(auto& p : buf)
 		size += p->GetSizeTotalSamples();
 	return size;
 }
 
-/*TMPL_VALDEVMACH(void) SimpleBufferedValue::FillBuffersNull() {
+/*void SimpleBufferedValue::FillBuffersNull() {
 	if (!IsQueueFull()) {
 		Packet p = ValMach::CreatePacket();
 		RTLOG("SimpleBufferedValue::FillBuffersNull: filling buffer with empty packets. offset " << offset.ToString());
@@ -287,7 +283,7 @@ TMPL_VALDEVMACH(int) SimpleBufferedValue::GetQueueTotalSamples() const {
 	}
 }*/
 
-TMPL_VALDEVMACH(void) SimpleBufferedValue::DropBuffer() {
+void SimpleBufferedValue::DropBuffer() {
 	if (exchange_count == 0)
 		return;
 	ASSERT(sink_offsets.GetCount());
@@ -332,7 +328,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedValue::DropBuffer() {
 
 
 
-TMPL_VALDEVMACH(void) SimpleBufferedStream::FillBuffer() {
+void SimpleBufferedStream::FillBuffer() {
 	while (!ptr->IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessFrame())
@@ -358,7 +354,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedStream::FillBuffer() {
 
 
 
-/*TMPL_VALDEVMACH(bool) VolatileBuffer::IsQueueFull() const {
+/*bool VolatileBuffer::IsQueueFull() const {
 	if (Buffer::IsEmpty())
 		return false;
 	int sz = Buffer::GetQueueSizeBytes();
@@ -366,7 +362,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedStream::FillBuffer() {
 	return sz >= preferred_sz;
 }*/
 
-/*TMPL_VALDEVMACH(void) VolatileBuffer::Exchange(Ex& e) {
+/*void VolatileBuffer::Exchange(Ex& e) {
 	if (e.IsLoading()) {
 		Value& aud = e.Source();
 		const RealtimeSourceConfig& conf = e.SourceConfig();
@@ -405,7 +401,7 @@ TMPL_VALDEVMACH(void) SimpleBufferedStream::FillBuffer() {
 
 
 
-TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
+bool PacketProducer::ProducePacket() {
 	if (src->GetCount()) {
 		auto iter = src->begin();
 		TODO
@@ -431,7 +427,7 @@ TMPL_VALDEVMACH(bool) PacketProducer::ProducePacket() {
 	return false;
 }
 
-TMPL_VALDEVMACH(void) PacketProducer::ProduceAll(bool blocking) {
+void PacketProducer::ProduceAll(bool blocking) {
 	internal_written_bytes = 0;
 	packet_count = 0;
 	tmp_realtime = dst_realtime;
@@ -448,7 +444,7 @@ TMPL_VALDEVMACH(void) PacketProducer::ProduceAll(bool blocking) {
 	}
 }
 
-TMPL_VALDEVMACH(bool) PacketProducer::IsFinished() const {
+bool PacketProducer::IsFinished() const {
 	return dst->GetCount() >= packet_limit;
 }
 
@@ -458,11 +454,11 @@ TMPL_VALDEVMACH(bool) PacketProducer::IsFinished() const {
 
 
 
-TMPL_VALDEVMACH(void) PacketConsumer::SetSource(PacketBuffer& src) {
+void PacketConsumer::SetSource(PacketBuffer& src) {
 	this->src_buf = &src;
 }
 
-TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, void* dst, int dst_size) {
+void PacketConsumer::SetDestination(const Format& fmt, void* dst, int dst_size) {
 	dst_fmt = fmt;
 	dst_mem = dst;
 	dst_buf = 0;
@@ -472,7 +468,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, void* ds
 	this->dst_size = dst_size;
 }
 
-TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, PacketBuffer& dst, int limit) {
+void PacketConsumer::SetDestination(const Format& fmt, PacketBuffer& dst, int limit) {
 	ASSERT(limit > 0);
 	dst_fmt = fmt;
 	dst_mem = 0;
@@ -483,7 +479,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::SetDestination(const Format& fmt, PacketBu
 	dst_size = 0;
 }
 
-TMPL_VALDEVMACH(void) PacketConsumer::ClearDestination() {
+void PacketConsumer::ClearDestination() {
 	dst_fmt.Clear();
 	dst_mem = 0;
 	dst_buf = 0;
@@ -493,7 +489,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::ClearDestination() {
 	dst_size = 0;
 }
 
-/*TMPL_VALDEVMACH(void) PacketConsumer::TestSetOffset(off32 offset) {
+/*void PacketConsumer::TestSetOffset(off32 offset) {
 	if (HasLeftover()) {
 		if (this->offset != offset) {
 			ClearLeftover();
@@ -504,7 +500,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::ClearDestination() {
 		SetOffset(offset);
 }*/
 
-TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
+void PacketConsumer::Consume(Packet& src, int src_data_shift) {
 	Format src_fmt = src->GetFormat();
 	
 	if (dst_fmt.IsCopyCompatible(src_fmt)) {
@@ -545,7 +541,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 		}
 	}
 	else {
-		Packet src2 = ValMach::CreatePacket(src->GetOffset());
+		Packet src2 = CreatePacket(src->GetOffset());
 		src2->Set(dst_fmt, src->GetTime());
 		Convert(src, src2);
 		if (src_data_shift) {
@@ -557,7 +553,7 @@ TMPL_VALDEVMACH(void) PacketConsumer::Consume(Packet& src, int src_data_shift) {
 	}
 }
 
-TMPL_VALDEVMACH(bool) PacketConsumer::ConsumePacket() {
+bool PacketConsumer::ConsumePacket() {
 	ASSERT(dst_buf || internal_written_bytes < dst_size);
 	if (leftover) {
 		RTLOG("PacketConsumer::ConsumePacket: consume leftover " << leftover->GetOffset().ToString() << ", " << leftover_size << " bytes");
@@ -582,7 +578,7 @@ TMPL_VALDEVMACH(bool) PacketConsumer::ConsumePacket() {
 	return false;
 }
 
-TMPL_VALDEVMACH(void) PacketConsumer::ConsumeAll(bool blocking) {
+void PacketConsumer::ConsumeAll(bool blocking) {
 	consumed_packets.Clear();
 	internal_written_bytes = 0;
 	while (!IsFinished()) {
@@ -601,31 +597,29 @@ TMPL_VALDEVMACH(void) PacketConsumer::ConsumeAll(bool blocking) {
 	}
 }
 
-TMPL_VALDEVMACH(bool) PacketConsumer::IsFinished() const {
+bool PacketConsumer::IsFinished() const {
 	if (dst_mem)
 		return internal_written_bytes >= dst_size;
 	else
 		return dst_buf->GetCount() >= dst_buf_limit;
 }
 
-/*TMPL_VALDEVMACH(void) Ex::SetOffset(off32 packet_count) {
+/*void Ex::SetOffset(off32 packet_count) {
 	//RTLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
 	this->offset = packet_count;
 }*/
 
-TMPL_VALDEVMACH(bool) Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
-	TODO
-}
-
-TMPL_VALDEVMACH(bool) Convert(const Packet& src, Packet& dst) {
+bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
 	TODO
 }
 
 
-bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
 
-template <>
-inline bool ScopeValDevMachT<CenterAudioSpec>::Convert(const AudioPacket& src, AudioPacket& dst) {
+bool AudioConvert(int src_ch_samples, const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst);
+
+bool Convert(const Packet& src, Packet& dst) {
+	TODO
+	#if 0
 	AudioFormat src_fmt = src->GetFormat();
 	AudioFormat dst_fmt = dst->GetFormat();
 	int src_sample = src_fmt.GetSampleSize();
@@ -647,9 +641,10 @@ inline bool ScopeValDevMachT<CenterAudioSpec>::Convert(const AudioPacket& src, A
 		LOG("dst-channels: " << dst_channels);
 	}
 	return AudioConvert(src_ch_samples, src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
+	#endif
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #undef DataT

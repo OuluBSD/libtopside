@@ -1,7 +1,7 @@
 #include "TemplatesLocalTests.h"
 
 NAMESPACE_TOPSIDE_BEGIN
-
+using namespace TS::ECS;
 
 
 
@@ -200,13 +200,13 @@ bool TestParser() {
 
 void Main() {
 	SetCoutLog();
-	//EcsFactory::Dump();
+	//Ecs::Factory::Dump();
 	
 	if (!TestParser())
 		return;
 	
-	EcsFactory::RegisterExtension<TestCustomer>();
-	EcsFactory::RegisterExtension<TestRealtimeSink>();
+	Ecs::Factory::RegisterExtension<TestCustomer>();
+	Ecs::Factory::RegisterExtension<TestRealtimeSink>();
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -233,7 +233,7 @@ void Main() {
 		    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
 		    EonLoaderRef eon			= mach.Add<EonLoader>();
 		    
-		    mach.Add<ScopeValCoreT<AudioSpec>::PacketTracker>();
+		    mach.Add<PacketTracker>();
 			
 			PoolRef root = es->GetRoot();
 			
@@ -295,8 +295,8 @@ void TestRealtimeSink::Uninitialize() {
 }
 
 void TestRealtimeSink::IntervalSinkProcess() {
-	AudioOutputComponent& base = GetParentT();
-	AudioFormat fmt =  base.GetValue(AUDCTX).GetFormat();
+	OutputComponent& base = CastRef<OutputComponent>(GetParent().Get());
+	Ecs::Format fmt =  base.GetValue().GetFormat();
 	Vector<byte> data;
 	data.SetCount(fmt.GetFrameSize());
 	double step_s = fmt.GetFrameSeconds();

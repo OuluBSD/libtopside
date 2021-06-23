@@ -1,10 +1,10 @@
 #ifndef _TemplatesLib_ValScope_h_
 #define _TemplatesLib_ValScope_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-template <class ValSpec>
+/*template <class ValSpec>
 struct ScopeValLibT {
 	using Mach = ScopeValMachT<ValSpec>;
 	using PacketValue = typename Mach::PacketValue;
@@ -13,9 +13,9 @@ struct ScopeValLibT {
 	
 	
 	
-};
+};*/
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

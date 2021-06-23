@@ -1,6 +1,6 @@
 #include "EcsCore.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -35,8 +35,9 @@ String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
 
-InterfaceSourceBaseRef ComponentBase::FindSource(TypeCls t) {
-	ASSERT(t != AsTypeCls<InterfaceSourceBase>());
+InterfaceSourceBaseRef ComponentBase::FindSource(ValDevCls t) {
+	TODO
+	/*ASSERT(t != AsTypeCls<InterfaceSourceBase>());
 	CollectInterfacesVisitor vis;
 	vis.Visit(*this);
 	for (InterfaceSourceBaseRef& r : vis.src_ifaces) {
@@ -45,11 +46,12 @@ InterfaceSourceBaseRef ComponentBase::FindSource(TypeCls t) {
 		if (type_ptr)
 			return r;
 	}
-	return InterfaceSourceBaseRef();
+	return InterfaceSourceBaseRef();*/
 }
 
-InterfaceSinkBaseRef ComponentBase::FindSink(TypeCls t) {
-	ASSERT(t != AsTypeCls<InterfaceSinkBase>());
+InterfaceSinkBaseRef ComponentBase::FindSink(ValDevCls t) {
+	TODO
+	/*ASSERT(t != AsTypeCls<InterfaceSinkBase>());
 	CollectInterfacesVisitor vis;
 	vis.Visit(*this);
 	for (InterfaceSinkBaseRef& r : vis.sink_ifaces) {
@@ -58,12 +60,13 @@ InterfaceSinkBaseRef ComponentBase::FindSink(TypeCls t) {
 		if (type_ptr)
 			return r;
 	}
-	return InterfaceSinkBaseRef();
+	return InterfaceSinkBaseRef();*/
 }
 
 ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeCls ext) {
 	TypeCls comp = GetTypeId();
-	const auto& cd = EcsFactory::CompDataMap().Get(comp);
+	TODO
+	/*const auto& cd = Ecs::Factory::CompDataMap().Get(comp);
 	for (const auto& e : cd.ext.GetValues()) {
 		if (e.cls == ext) {
 			ComponentExtBase* b = e.new_fn();
@@ -72,7 +75,7 @@ ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeCls ext) {
 			break;
 		}
 	}
-	return ComponentExtBaseRef();
+	return ComponentExtBaseRef();*/
 }
 
 
@@ -94,4 +97,4 @@ void ComponentMap::ReturnComponent(ComponentStore& s, ComponentBase* c) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

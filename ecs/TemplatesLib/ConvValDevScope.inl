@@ -1,7 +1,7 @@
 #if 0
 #define CLS typename ScopeConvValDevLibT<ValSpec,FromDevSpec,ToDevSpec>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 TMPL_CONVVALDEVLIB(void) ConvertComponent::Initialize() {
 	using DevLib				= ScopeDevLibT<ToDevSpec>;
@@ -33,7 +33,7 @@ TMPL_CONVVALDEVLIB(void) ConvertComponent::Uninitialize() {
 
 TMPL_CONVVALDEVLIB(CLS::FromValue&) ConvertComponent::GetValue(V*) {return sink_value;}
 TMPL_CONVVALDEVLIB(CLS::ToStream&) ConvertComponent::GetStream(V*) {return stream;}
-TMPL_CONVVALDEVLIB(bool) ConvertComponent::LoadAsInput(const ToComponentConf& in) {TODO}
+TMPL_CONVVALDEVLIB(bool) ConvertComponent::LoadAsInput(const StageComponentConf& in) {TODO}
 TMPL_CONVVALDEVLIB(void) ConvertComponent::PreProcess() {TODO}
 TMPL_CONVVALDEVLIB(bool) ConvertComponent::LocalStream::IsOpen() const {TODO}
 TMPL_CONVVALDEVLIB(bool) ConvertComponent::LocalStream::Open(int fmt_idx) {TODO}
@@ -96,5 +96,5 @@ TMPL_CONVVALDEVLIB(void) ConvertComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 #endif

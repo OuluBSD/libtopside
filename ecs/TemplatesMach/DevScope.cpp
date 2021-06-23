@@ -1,25 +1,31 @@
-NAMESPACE_TOPSIDE_BEGIN
+#include "TemplatesMach.h"
 
 
-TMPL_DEVMACH(void) DevStreamState::Clear() {
+NAMESPACE_ECS_BEGIN
+
+
+void DevStreamState::Clear() {
 	time.Set(0);
 	total_time.Reset();
 	time_us = 0;
 	
-	#define IFACE(cls, var) var.Clear();
+	TODO
+	/*#define IFACE(cls, var) var.Clear();
 	IFACE_VAR_LIST
-	#undef IFACE
+	#undef IFACE*/
 }
 
-TMPL_DEVMACH(void) DevStreamState::Reset() {
+void DevStreamState::Reset() {
 	total_time.Reset();
 	time_us = 0;
-	#define IFACE(cls, var) var.Reset();
+	
+	TODO
+	/*#define IFACE(cls, var) var.Reset();
 	IFACE_VAR_LIST
-	#undef IFACE
+	#undef IFACE*/
 }
 
-TMPL_DEVMACH(void) DevStreamState::UpdateValuesBase() {
+void DevStreamState::UpdateValuesBase() {
 	time = GetSysTime();
 	#ifdef flagWIN32
 	{
@@ -36,16 +42,16 @@ TMPL_DEVMACH(void) DevStreamState::UpdateValuesBase() {
 	#endif
 }
 
-TMPL_DEVMACH(void) DevStreamState::UpdateValues(TypeCls val_spec) {
+void DevStreamState::UpdateValues(TypeCls val_spec) {
 	
 }
 
-#define DEV(x) \
+/*#define DEV(x) \
 	using x##Source		= typename ScopeDevMachT<x##Spec>::DevSource; \
 	using x##SourceRef	= typename ScopeDevMachT<x##Spec>::DevSourceRef; \
 	using x##Sink		= typename ScopeDevMachT<x##Spec>::DevSink; \
 	using x##SinkRef	= typename ScopeDevMachT<x##Spec>::DevSinkRef;
 DEV_LIST
-#undef DEV
+#undef DEV*/
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

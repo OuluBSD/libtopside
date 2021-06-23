@@ -1,7 +1,7 @@
 #ifndef _EcsLib_Eon_h_
 #define _EcsLib_Eon_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -79,6 +79,6 @@ using EonLoaderRef = Ref<EonLoader, RefParent1<Machine>>;
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

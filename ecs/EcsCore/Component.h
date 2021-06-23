@@ -1,7 +1,7 @@
 #ifndef _EcsCore_Component_h_
 #define _EcsCore_Component_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class ComponentBase;
@@ -71,16 +71,18 @@ public:
 	virtual ~ComponentBase();
 	
 	EntityRef GetEntity();
-	InterfaceSourceBaseRef FindSource(TypeCls t);
-	InterfaceSinkBaseRef FindSink(TypeCls t);
+	InterfaceSourceBaseRef FindSource(ValDevCls t);
+	InterfaceSinkBaseRef FindSink(ValDevCls t);
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
 	
-	#define IFACE(x) \
+	/*#define IFACE(x) \
 	RefT_Entity<x##Source> As##x##Source() {return As<x##Source>();} \
 	RefT_Entity<x##Sink>   As##x##Sink()   {return As<x##Sink>();}
 	IFACE_LIST
-	#undef IFACE
+	#undef IFACE*/
+	RefT_Entity<ValSource>	AsSource();
+	RefT_Entity<ValSink>	AsSink();
 	
 	
 	template <class S, class R>
@@ -105,20 +107,18 @@ public:
 
 
 
-template<typename T, typename Sink, typename Source, typename Ext>
+template<typename T, typename Ext>
 struct Component :
 	public ComponentBase,
-	public Sink,
-	public Source
+	public ValSink,
+	public ValSource
 {
-	static_assert(std::is_convertible<Sink*, ExchangeSinkProvider*>::value, "Sink must inherit ExchangeSinkProvider");
-	static_assert(std::is_convertible<Source*, ExchangeSourceProvider*>::value, "Sink must inherit ExchangeSourceProvider");
-	using ComponentT = Component<T,Sink,Source,Ext>;
+	using ComponentT = Component<T,Ext>;
 	
-	RTTI_DECL3(ComponentT, ComponentBase, Sink, Source)
+	RTTI_DECL3(ComponentT, ComponentBase, ValSink, ValSource)
 	void Visit(RuntimeVisitor& vis) override {
-		vis.VisitThis<Sink>(this);
-		vis.VisitThis<Source>(this);
+		vis.VisitThis<ValSink>(this);
+		vis.VisitThis<ValSource>(this);
 		if (ext) vis % *ext;
 	}
 	
@@ -132,16 +132,17 @@ struct Component :
 	    
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
-	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<Source>(this);}
-	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<Sink>(this);}
+	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<ValSource>(this);}
+	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<ValSink>(this);}
 	
 private:
 	void ClearSinkSource() override {
-		Sink::ClearSink();
-		Source::ClearSource();
+		ValSink::ClearSink();
+		ValSource::ClearSource();
 	}
 protected:
-	One<Ext> ext;
+	One<Ext>	ext;
+	ValDevCls	vd;
 	
 public:
 	~Component() {ASSERT(ext.IsEmpty());}
@@ -251,6 +252,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

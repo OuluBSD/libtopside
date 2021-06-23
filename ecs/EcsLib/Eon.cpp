@@ -1,6 +1,6 @@
 #include "EcsLib.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -153,6 +153,8 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	Eon::ActionPlanner planner;
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	
+	TODO
+	#if 0
 	Eon::WorldState src;
 	src = scope.current_state;
 	src.SetActionPlanner(planner);
@@ -208,7 +210,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		for (Eon::ActionNode* n : ep.plan) {
 			const Eon::WorldState& ws = n->GetWorldState();
 			TypeCls comp = ws.GetComponent();
-			const auto& d = EcsFactory::CompDataMap().Get(comp);
+			const auto& d = Ecs::Factory::CompDataMap().Get(comp);
 			if (ws.IsAddComponent()) {LOG(pos++ << ": add comp: " << d.name);}
 			if (ws.IsAddExtension()) {
 				const auto& e = d.ext.Get(ws.GetExtension());
@@ -238,7 +240,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 					e->GetAddTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
-				String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
 				AddError("Could not create component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
@@ -252,14 +254,14 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 			ComponentBaseRef cb = e->GetTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
-				String comp_name = EcsFactory::CompDataMap().Get(comp).name;
+				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
 				AddError("Could not find component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			{
 				ComponentExtBaseRef existing_ext = cb->GetExtension();
 				if (existing_ext) {
-					const auto& c = EcsFactory::CompDataMap().Get(comp);
+					const auto& c = Ecs::Factory::CompDataMap().Get(comp);
 					const auto& e = c.ext.Get(ext);
 					AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
 					return false;
@@ -268,7 +270,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 			ComponentExtBaseRef eb = cb->SetExtensionTypeCls(ext);
 			ASSERT(eb);
 			if (!eb) {
-				const auto& c = EcsFactory::CompDataMap().Get(comp);
+				const auto& c = Ecs::Factory::CompDataMap().Get(comp);
 				const auto& e = c.ext.Get(ext);
 				AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
 				return false;
@@ -292,8 +294,8 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		TypeCls sink_iface = ws.GetSinkInterface();
 		if (!pool->Link(src, dst, src_iface, sink_iface)) {
 			TypeCls comp = ws.GetComponent();
-			String comp_name = EcsFactory::CompDataMap().Get(comp).name;
-			String src_iface_name = EcsFactory::SourceDataMap().Get(src_iface).name;
+			String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
+			String src_iface_name = Ecs::Factory::SourceDataMap().Get(src_iface).name;
 			AddError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
@@ -320,6 +322,8 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		return false;
 	}
 	
+	#endif
+	
 	return true;
 }
 
@@ -345,4 +349,4 @@ void EonLoader::AddError(String msg) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

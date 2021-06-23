@@ -1,7 +1,7 @@
 #ifndef _TemplatesMach_Classes_h_
 #define _TemplatesMach_Classes_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class Entity;
 class Viewable;
@@ -10,6 +10,59 @@ using ViewableRef			= Ref<Viewable,				RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
+
+struct ValCls : Moveable<ValCls> {
+	byte type = 0;
+	
+	
+	void operator=(const Nuller& n);
+	bool operator==(const ValCls& c) const;
+	bool operator!=(const ValCls& c) const;
+	operator bool() const;
+	hash_t GetHashValue() const;
+};
+
+struct DevCls : Moveable<DevCls> {
+	byte type = 0;
+	
+	
+	void operator=(const Nuller& n);
+	bool operator==(const DevCls& c) const;
+	bool operator!=(const DevCls& c) const;
+	operator bool() const;
+	hash_t GetHashValue() const;
+};
+
+struct ValDevCls : Moveable<ValDevCls> {
+	ValCls	val;
+	DevCls	dev;
+	
+	
+	void operator=(const Nuller& n);
+	bool operator==(const ValDevCls& c) const;
+	bool operator!=(const ValDevCls& c) const;
+	operator bool() const;
+	hash_t GetHashValue() const;
+};
+
+struct EcsTypeCls : Moveable<EcsTypeCls> {
+	ValCls	val;
+	DevCls	dev;
+	byte	type;
+	
+	
+	void operator=(const Nuller& n);
+	bool operator==(const EcsTypeCls& c) const;
+	bool operator!=(const EcsTypeCls& c) const;
+	operator bool() const;
+	hash_t GetHashValue() const;
+};
+
+DevCls GetCenterDevCls();
+
+String GetName(ValCls vd);
+String GetName(DevCls vd);
+String GetName(ValDevCls vd);
 
 
 //#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz)
@@ -734,7 +787,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

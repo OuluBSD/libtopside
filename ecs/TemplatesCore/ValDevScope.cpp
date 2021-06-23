@@ -1,7 +1,7 @@
-#define USING(x)		using x = typename ScopeValDevCoreT<Dev>::x;
-#define CTX				((V*)0)
+#include "TemplatesCore.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+
+NAMESPACE_ECS_BEGIN
 
 //PoolRef GetConnectorBasePool(ConnectorBase* conn);
 
@@ -9,7 +9,7 @@ Machine& GetPoolMachine(PoolRef pool);
 
 
 
-TMPL_VALDEVMACH(void) ValExchangePoint::Init(MetaExchangePoint* mexpt) {
+void ValExchangePoint::Init(MetaExchangePoint* mexpt) {
 	ASSERT(mexpt);
 	/*ConnectorBase* conn = CastPtr<ConnectorBase>(mexpt);
 	ASSERT(conn);*/
@@ -28,7 +28,7 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Init(MetaExchangePoint* mexpt) {
 	#endif
 }
 
-TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
+void ValExchangePoint::Deinit() {
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	if (conn) {
@@ -43,7 +43,9 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Deinit() {
 	#endif
 }
 
-TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
+void ValExchangePoint::Forward(FwdScope& fwd) {
+	TODO
+	#if 0
 	USING_VALDEVCORE(ValSource)
 	USING_VALDEVCORE(ValSink)
 	USING_VALDEVCORE(CtxStream)
@@ -103,13 +105,10 @@ TMPL_VALDEVMACH(void) ValExchangePoint::Forward(FwdScope& fwd) {
 	//src->EndStream(CTX);
 	
 	fwd.AddNext(sink->AsComponentBase());
+	#endif
 }
 
-TMPL_VALDEVMACH(void) ValExchangePoint::ForwardExchange(FwdScope& fwd) {
-	USING_VALDEVCORE(ValSink)
-	Ref<ValSink> sink = this->sink;
-	fwd.AddNext(sink->AsComponentBase());
-}
+
 
 
 
@@ -119,24 +118,24 @@ TMPL_VALDEVMACH(void) ValExchangePoint::ForwardExchange(FwdScope& fwd) {
 
 #if HAVE_VALSYSTEM
 
-TMPL_VALDEVCORE(bool) ValSystem::Initialize() {
+bool ValSystem::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Start() {
+void ValSystem::Start() {
 	
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Update(double dt) {
+void ValSystem::Update(double dt) {
 	USING_VALDEVCORE(ValExchangePointRef)
 	USING_VALDEVCORE(V)
 	
 }
 
 #if 0
-TMPL_VALDEVCORE(void) ValSystem::Iterate(double dt) {
+void ValSystem::Iterate(double dt) {
 	for (ValSourceRef src : srcs) {
 		CtxStream& stream = src->GetStream(CTX);
 		int buf_sz = stream.Get().GetQueueSize();
@@ -200,12 +199,12 @@ TMPL_VALDEVCORE(void) ValSystem::Iterate(double dt) {
 }
 #endif
 
-TMPL_VALDEVCORE(void) ValSystem::Stop() {
+void ValSystem::Stop() {
 	
 	
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Uninitialize() {
+void ValSystem::Uninitialize() {
 	srcs.Clear();
 	sinks.Clear();
 	expts.Clear();
@@ -213,37 +212,37 @@ TMPL_VALDEVCORE(void) ValSystem::Uninitialize() {
 	WhenUninit()();
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Add(ValSourceRef src) {
+void ValSystem::Add(ValSourceRef src) {
 	ASSERT(src);
 	srcs.FindAdd(src);
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Remove(ValSourceRef src) {
+void ValSystem::Remove(ValSourceRef src) {
 	srcs.RemoveKey(src);
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Add(ValSinkRef sink) {
+void ValSystem::Add(ValSinkRef sink) {
 	ASSERT(sink);
 	sinks.FindAdd(sink);
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Remove(ValSinkRef sink) {
+void ValSystem::Remove(ValSinkRef sink) {
 	sinks.RemoveKey(sink);
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Add(ValExchangePointRef expt) {
+void ValSystem::Add(ValExchangePointRef expt) {
 	ASSERT(expt);
 	expts.FindAdd(expt);
 }
 
-TMPL_VALDEVCORE(void) ValSystem::Remove(ValExchangePointRef expt) {
+void ValSystem::Remove(ValExchangePointRef expt) {
 	expts.RemoveKey(expt);
 }
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
-#undef USING
-#undef CTX
+//#undef USING
+//#undef CTX

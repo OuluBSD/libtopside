@@ -1,9 +1,10 @@
 #ifndef _TemplatesLib_DevSpec_h_
 #define _TemplatesLib_DevSpec_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
+#if 0
 #define DEV(dev) \
 	using dev##DevLibT							= ScopeDevLibT<dev##Spec>; \
 	using dev##System							= typename dev##DevLibT::DevSystem; \
@@ -16,8 +17,9 @@ NAMESPACE_TOPSIDE_BEGIN
 	using dev##ComponentGroupRef				= RefT_Entity<dev##ComponentGroup>;*/
 DEV_LIST
 #undef DEV
+#endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

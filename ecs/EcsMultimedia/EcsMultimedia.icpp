@@ -7,11 +7,11 @@ NAMESPACE_UPP
 INITBLOCK {
 	
 	#if HAVE_OPENCV
-	EcsFactory::RegisterComponent<OpenCVComponent>();
+	Ecs::Factory::RegisterComponent<OpenCVComponent>();
 	#endif
 	
 	#if HAVE_FFMPEG
-	EcsFactory::RegisterComponent<FfmpegComponent>();
+	Ecs::Factory::RegisterComponent<FfmpegComponent>();
 	#endif
 	
 }

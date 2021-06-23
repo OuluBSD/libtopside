@@ -3,7 +3,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class ManualConnector :
@@ -106,7 +106,7 @@ template <class ValDevSpec, class T> bool ComponentBase::LinkManually(T& o, Stri
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

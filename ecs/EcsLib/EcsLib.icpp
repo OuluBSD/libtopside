@@ -3,7 +3,7 @@
 NAMESPACE_UPP
 
 INITBLOCK {
-	EcsFactory::RegisterComponent<CustomerComponent>();
+	Ecs::Factory::RegisterComponent<Ecs::CustomerComponent>();
 	
 }
 

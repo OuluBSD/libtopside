@@ -2,7 +2,7 @@
 #define _EcsMech_Machine_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class Machine;
 
@@ -159,7 +159,7 @@ public:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

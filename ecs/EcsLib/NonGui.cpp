@@ -5,6 +5,7 @@ NAMESPACE_UPP
 
 bool Open_NonGUI_ECS() {
 	using namespace TS;
+	using namespace TS::ECS;
 	Machine mach;
 	
 	RegistrySystem& reg = *mach.Add<RegistrySystem>();
@@ -14,7 +15,7 @@ bool Open_NonGUI_ECS() {
     #if HAVE_SDL2
     mach.Add<SDL2System>();
     #endif
-    mach.Add<CenterSystem>();
+    mach.Add<CustomerSystem>();
     
     reg.SetAppName("ECS machine");
     
@@ -26,6 +27,7 @@ bool Open_NonGUI_ECS() {
 
 void Close_NonGUI_ECS() {
 	using namespace TS;
+	using namespace TS::ECS;
 	Machine mach;
 	
 	mach.Stop();

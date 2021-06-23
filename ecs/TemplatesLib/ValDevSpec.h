@@ -1,10 +1,10 @@
 #ifndef _TemplatesLib_ValDevSpec_h_
 #define _TemplatesLib_ValDevSpec_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+#if 0
+NAMESPACE_ECS_BEGIN
 
-
-#define DEV_VALUE_CTX(dev, value, prefix, format, sample) \
+/*#define DEV_VALUE_CTX(dev, value, prefix, format, sample) \
 	/*using prefix##LibOrderT					= ScopeValDevLibT<VD<dev##Spec, value##Spec>>;*/ \
 	/*using prefix##CustomerComponent			= prefix##LibOrderT::DevCustomerComponent;*/ \
 	using prefix##DevLibT					= ScopeValDevLibT<VD<dev##Spec, value##Spec>>; \
@@ -23,9 +23,10 @@ NAMESPACE_TOPSIDE_BEGIN
 	DEV_VALUE_CTX(Net,		value, Net##value,		format, sample) \
 	DEV_VALUE_CTX(Perma,	value, Perma##value,	format, sample)
 IFACE_CTX_ORDER_LIST
-#undef IFACE_CTX
+#undef IFACE_CTX*/
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
+#endif
 #endif

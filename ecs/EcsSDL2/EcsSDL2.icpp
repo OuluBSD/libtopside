@@ -7,16 +7,16 @@ NAMESPACE_UPP
 
 INITBLOCK {
 	
-	EcsFactory::RegisterComponent<SDL2GameControllerComponent>();
-	EcsFactory::RegisterComponent<SDL2EventsComponent>();
-	EcsFactory::RegisterComponent<SDL2JoystickComponent>();
-	EcsFactory::RegisterComponent<SDL2AudioInputComponent>();
-	EcsFactory::RegisterComponent<SDL2FontComponent>();
-	EcsFactory::RegisterComponent<SDL2SensorComponent>();
-	EcsFactory::RegisterComponent<SDL2ImageComponent>();
-	EcsFactory::RegisterComponent<SDL2ScreenComponent>();
-	EcsFactory::RegisterComponent<SDL2TimerComponent>();
-	EcsFactory::RegisterComponent<SDL2AudioOutputComponent>();
+	Ecs::Factory::RegisterComponent<SDL2GameControllerComponent>();
+	Ecs::Factory::RegisterComponent<SDL2EventsComponent>();
+	Ecs::Factory::RegisterComponent<SDL2JoystickComponent>();
+	Ecs::Factory::RegisterComponent<SDL2AudioInputComponent>();
+	Ecs::Factory::RegisterComponent<SDL2FontComponent>();
+	Ecs::Factory::RegisterComponent<SDL2SensorComponent>();
+	Ecs::Factory::RegisterComponent<SDL2ImageComponent>();
+	Ecs::Factory::RegisterComponent<SDL2ScreenComponent>();
+	Ecs::Factory::RegisterComponent<SDL2TimerComponent>();
+	Ecs::Factory::RegisterComponent<SDL2AudioOutputComponent>();
 	
 }
 

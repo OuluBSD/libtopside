@@ -2,7 +2,7 @@
 #if 0
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 ConnectorBase::ConnectorBase() {
@@ -22,5 +22,5 @@ String ConnectorBase::ToString() const {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 #endif

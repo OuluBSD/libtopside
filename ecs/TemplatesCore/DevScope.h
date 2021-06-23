@@ -1,18 +1,18 @@
 #ifndef _TemplatesCore_DevContext_h_
 #define _TemplatesCore_DevContext_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-template <class DevSpec>
+/*template <class DevSpec>
 struct ScopeDevCoreT {
 	using Mach				= ScopeDevMachT<DevSpec>;
 	using D					= DevSpec;
-	using DevFormat			= typename Mach::DevFormat;
+	using DevFormat			= typename Mach::DevFormat;*/
 	//using DevStream			= typename Mach::DevStream;
 	
 	
-	template <class ValSpec> static typename ScopeValMachT<ValSpec>::Format GetDefaultFormat();
+Format GetDefaultFormat(ValDevCls type);
 	
 	/*
 	using DevExchangePoint	= typename Mach::DevExchangePoint;
@@ -24,7 +24,7 @@ struct ScopeDevCoreT {
 	{
 	public:
 		RTTI_DECL_2(DevSink, InterfaceSink<DevSink>, DevSinkBase, DevSpec::GetName() + "Sink")
-		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<DevSink>());}
+		TypeId GetTypeCls() override {return TypeId(AsTypeCls<DevSink>());}
 		
 		virtual DevFormat			GetFormat(D*) = 0;
 		virtual DevValue&			GetValue(D*) = 0;
@@ -39,7 +39,7 @@ struct ScopeDevCoreT {
 		
 	public:
 		RTTI_DECL_1(DevSource, InterfaceSourceT, DevSpec::GetName() + "Source")
-		TypeId GetValDevSpec() override {return TypeId(AsTypeCls<DevSource>());}
+		TypeId GetTypeCls() override {return TypeId(AsTypeCls<DevSource>());}
 		
 		using ExPt = DevExchangePoint;
 		using Sink = ScopeDevCoreT::DevSink;
@@ -63,9 +63,9 @@ struct ScopeDevCoreT {
 	using DevExchangePointRef	= Ref<DevExchangePoint,	RefParent1<MetaExchangePoint>>;
 	*/
 	
-};
+//};
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

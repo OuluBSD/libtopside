@@ -5,7 +5,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+namespace Ecs {
+
 class Entity;
+class Pool;
+class EntityStore;
+class ComponentBase;
+
+}
+
 class ExchangeBase;
 class ExchangeProviderBase;
 class ExchangeSinkProvider;
@@ -13,17 +21,13 @@ class ExchangeSourceProvider;
 class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
-class Pool;
-class EntityStore;
-class ComponentBase;
 using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Entity>>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Entity>>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Entity>>;
-using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Ecs::Entity>>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Ecs::Entity>>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Ecs::Entity>>;
 using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
-using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Pool>>;
-
+using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Ecs::Pool>>;
+using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
 
 
 template<class T> struct OffsetGen;
@@ -226,14 +230,14 @@ public:
 
 
 class ExchangeProviderBase :
-	public RefScopeEnabler<ExchangeProviderBase,Entity>
+	public RefScopeEnabler<ExchangeProviderBase,Ecs::Entity>
 {
 	
 public:
 	RTTI_DECL_R0(ExchangeProviderBase)
 	
 	//bool UnlinkManually(ExchangeProviderBase& p);
-	virtual TypeCls GetValDevSpec() = 0;
+	virtual TypeCls GetTypeCls() const = 0;
 	virtual String GetConfigString() {return String();}
 	
 };
@@ -361,6 +365,9 @@ public:
 	virtual void ForwardSetup(FwdScope& fwd) {}
 	virtual void Forward(FwdScope& fwd) {Panic("not implemented in " + String(GetDynamicName()));}
 	virtual void ForwardExchange(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName()));}
+	
+	PacketForwarder& GetPacketForwarder() {return *this;}
+	
 };
 
 class ExchangePoint :
@@ -399,7 +406,7 @@ public:
 
 
 class MetaExchangePoint :
-	public RefScopeEnabler<MetaExchangePoint,EntityStore,RefParent2<EntityStore, Pool>>
+	public RefScopeEnabler<MetaExchangePoint,Ecs::EntityStore,RefParent2<Ecs::EntityStore, Ecs::Pool>>
 {
 	
 protected:

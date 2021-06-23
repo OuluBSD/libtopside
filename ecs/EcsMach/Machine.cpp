@@ -1,7 +1,7 @@
 #include "EcsMach.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 SystemBase::SystemBase() {
@@ -164,5 +164,5 @@ bool SingleMachine::Open(bool gui) {TODO return false;}
 void SingleMachine::Close() {TODO}
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 

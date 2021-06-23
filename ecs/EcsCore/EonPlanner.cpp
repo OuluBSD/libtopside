@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 //#include <EcsLib/EcsLib.h>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 namespace Eon {
 
 WorldState::WorldState() {
@@ -12,10 +12,10 @@ WorldState::WorldState() {
 void WorldState::Clear() {
 	values.Clear();
 	using_act.Clear();
-	cur_comp = 0;
-	src_iface = 0;
-	sink_iface = 0;
-	add_ext = 0;
+	cur_comp = Null;
+	src_iface = Null;
+	sink_iface = Null;
+	add_ext = Null;
 	type = INVALID;
 }
 
@@ -221,11 +221,11 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<W
 	}*/
 	
 	acts.SetCount(0);
-	EcsFactory::GetComponentActions(src, acts);
+	Ecs::Factory::GetComponentActions(src, acts);
 	
 	/*if (!(!dbg || acts.GetCount())) {
 		LOG(n.GetWorldState().ToString());
-		EcsFactory::GetComponentActions(src, acts);
+		Ecs::Factory::GetComponentActions(src, acts);
 	}
 	ASSERT(!dbg || acts.GetCount());*/
 	
@@ -452,4 +452,4 @@ bool ActionNode::Contains(const ActionNode& n) const {
 
 
 }
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

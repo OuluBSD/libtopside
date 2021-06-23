@@ -65,7 +65,7 @@
 	IFACE_CTX_CLS(Perma,	value,	Perma##value)
 
 
-#define CLS_DEVMACH				ScopeDevMachT<DevSpec>
+/*#define CLS_DEVMACH				ScopeDevMachT<DevSpec>
 #define TMPL_VALMACH(x)		template <class ValSpec> x ScopeValMachT<ValSpec>::
 #define TMPL_VALCORE(x)		template <class ValSpec> x ScopeValCoreT<ValSpec>::
 #define TMPL_VALLIB(x)		template <class ValSpec> x ScopeValLibT<ValSpec>::
@@ -87,18 +87,18 @@
 #define USING_DEVLIB(x)		using x = typename ScopeDevLibT<DevSpec>::x;
 #define USING_VALDEVMACH(x)	using x = typename ScopeValDevMachT<ValDevSpec>::x;
 #define USING_VALDEVCORE(x)	using x = typename ScopeValDevCoreT<ValDevSpec>::x;
-#define USING_VALDEVLIB(x)	using x = typename ScopeValDevLibT<ValDevSpec>::x;
+#define USING_VALDEVLIB(x)	using x = typename ScopeValDevLibT<ValDevSpec>::x;*/
 
 
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class InterfaceSinkBase;
 class Entity;
 class EntityStore;
 class Pool;
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

@@ -3,7 +3,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -120,7 +120,7 @@ struct ScopeConvValDevLibT {
 		ToStream&			GetStream(V*) override;
 		
 		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		bool				LoadAsInput(const ToComponentConf& in) override;
+		bool				LoadAsInput(const StageComponentConf& in) override;
 		//bool				LoadAsInput(const FromComponentConf& in) override;
 		void				PreProcess() override;
 		void				UpdateDevBuffers() override {
@@ -139,7 +139,7 @@ struct ScopeConvValDevLibT {
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

@@ -1,10 +1,13 @@
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source, class Ext>
-void DevComponent<DevSpec,ValSpec,T,Sink,Source,Ext>::ForwardPackets(double dt) {
-	using ValDevSpec			= VD<DevSpec,ValSpec>;
+template<typename T, class Ext>
+void DevComponent<T,Ext>::ForwardPackets(double dt) {
+	TODO
+	
+	#if 0
+	/*using ValDevSpec			= VD<DevSpec,ValSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using Mach					= ScopeValDevMachT<ValDevSpec>;
 	using Core					= ScopeValDevCoreT<ValDevSpec>;
@@ -24,7 +27,7 @@ void DevComponent<DevSpec,ValSpec,T,Sink,Source,Ext>::ForwardPackets(double dt) 
 	using ValSource				= typename Core::ValSource;
 	using ValSourceRef			= typename Core::ValSourceRef;
 	using DevCompConf			= typename ScopeDevMachT<DevSpec>::StageComponentConf;
-	using StageComponent		= typename ScopeDevLibT<DevSpec>::StageComponent;
+	using StageComponent		= typename ScopeDevLibT<DevSpec>::StageComponent;*/
 	
 	ASSERT(is_open);
 	
@@ -105,7 +108,9 @@ void DevComponent<DevSpec,ValSpec,T,Sink,Source,Ext>::ForwardPackets(double dt) 
 	
 	#undef CTX
 	RTLOG("DevComponent<" << DevSpec::GetName() << "," << ValSpec::GetName() << "::ForwardPackets: end");
+	
+	#endif
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

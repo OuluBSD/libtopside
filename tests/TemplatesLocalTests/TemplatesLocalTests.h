@@ -4,7 +4,7 @@
 #include <TemplatesLocal/TemplatesLocal.h>
 
 NAMESPACE_TOPSIDE_BEGIN
-
+using namespace TS::ECS;
 
 class TestCustomer :
 	public CustomerExt

@@ -1,7 +1,7 @@
 #include "EcsCore.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 namespace Eon {
 
@@ -351,4 +351,4 @@ void Parser::AddError(String msg) {
 #undef PASS_ID
 
 }
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

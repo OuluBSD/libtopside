@@ -1,7 +1,7 @@
 #ifndef _EcsCore_ComponentStore_h_
 #define _EcsCore_ComponentStore_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 template <class Main, class Base>
@@ -26,7 +26,7 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	ComponentBase* CreateComponentTypeCls(TypeCls key);
+	ComponentBase* CreateComponentTypeCls(EcsTypeCls key);
 	
 	template<typename T>
 	T* CreateComponent() {
@@ -85,6 +85,6 @@ using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
 //using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

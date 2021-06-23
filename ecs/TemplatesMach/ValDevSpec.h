@@ -2,10 +2,11 @@
 #define _TemplatesMach_ValDevSpec_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
+#if 0
 
 
 template <class DevSpec, class ValSpec>
@@ -17,6 +18,8 @@ struct VD : RTTIBase
 	using Val = ValSpec;
 	using Dev = DevSpec;
 };
+
+
 
 
 // Declare dev context classes
@@ -91,9 +94,10 @@ IFACE_CTX_LIST
 #define RCPCTX ((ReceiptSpec*)0)
 #define RcpCtx ReceiptSpec*
 
+#endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

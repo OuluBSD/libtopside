@@ -1,7 +1,7 @@
 #ifndef _EcsLib_Customer_h_
 #define _EcsLib_Customer_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class CustomerComponent;
@@ -31,7 +31,7 @@ public:
 };
 
 class CustomerComponent :
-	public Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>,
+	public Component<CustomerComponent, CustomerExt>,
 	RTTIBase
 {
 	Vector<Eon::Plan>		plans;
@@ -46,22 +46,22 @@ protected:
 	off32_gen gen;
 	
 protected:
-	struct LocalSinkValue : public SimpleReceipt {
-		void StorePacket(ReceiptPacket& p) override {TODO}
+	struct LocalSinkValue : public SimpleValue {
+		void StorePacket(Packet& p) override {TODO}
 		
 	};
 	
-	struct LocalSourceValue : public SimpleOrder {
-		void StorePacket(OrderPacket& p) override {TODO}
+	struct LocalSourceValue : public SimpleValue {
+		void StorePacket(Packet& p) override {TODO}
 		
 	};
 	
-	struct LocalSourceStream : public SimpleOrderStream {
-		RTTI_DECL1(LocalSourceStream, SimpleOrderStream)
+	struct LocalSourceStream : public SimpleStream {
+		RTTI_DECL1(LocalSourceStream, SimpleStream)
 		CustomerComponent& par;
 		LocalSourceStream(CustomerComponent* par) :
 			par(*par),
-			SimpleOrderStream(par->src_value) {}
+			SimpleStream(par->src_value) {}
 	};
 	
 	LocalSinkValue			sink_value;
@@ -69,7 +69,7 @@ protected:
 	LocalSourceStream		src_stream;
 	
 public:
-	using ComponentT = Component<CustomerComponent, ReceiptSink, OrderSource, CustomerExt>;
+	using ComponentT = Component<CustomerComponent, CustomerExt>;
 	RTTI_COMP1(CustomerComponent, ComponentT)
 	COPY_PANIC(CustomerComponent)
 	IFACE_GENERIC
@@ -86,15 +86,17 @@ public:
 	void				AddPlan(Eon::Plan& ep);
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
+	EcsTypeCls			GetEcsCls() const override;
+	TypeCls				GetTypeCls() const override;
 	
 	
 	// ReceiptSink
-	Receipt&			GetValue(RcpCtx) override {return sink_value;}
+	Value&				GetValue() override {return sink_value;}
 	bool				ReadFrame() {TODO}
 	bool				ProcessDeviceFrame() {TODO}
 	
 	// OrderSource
-	OrderStream&		GetStream(OrdCtx) override {return src_stream;}
+	Stream&				GetStream() override {return src_stream;}
 	
 };
 
@@ -147,6 +149,6 @@ PREFAB_BEGIN(Customer)
 PREFAB_END
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

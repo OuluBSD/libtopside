@@ -32,6 +32,7 @@ struct RefParent1 {
 	operator T&() const {ASSERT(o); return *o;}
 	operator T*() const {ASSERT(o); return o;}
 	T* operator->() const {ASSERT(o); return o;}
+	T* Get() const {ASSERT(o); return o;}
 	String ToString() const {return "RefParent1(" + HexStr(o) + ")";}
 	
 };

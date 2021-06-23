@@ -2,12 +2,11 @@
 #define _EcsMech_Common_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class SystemBase;
 
-struct RealtimeSourceConfig;
 class Entity;
 class ComponentBase;
 class Pool;
@@ -178,7 +177,7 @@ struct x : \
 #define COMP_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); x;}
 #define COMP_DEF_MAKE_ACTION static bool MakeAction(Eon::Action& act) {return false;}
 
-#define COMP_MAKE_ACTION_BEGIN static bool MakeAction(Eon::Action& act) {bool fail = false, any_changes = false;
+#define COMP_MAKE_ACTION_BEGIN static bool MakeAction(ValDevCls vd, Eon::Action& act) {bool fail = false, any_changes = false;
 #define COMP_MAKE_ACTION_END return !fail && any_changes;}
 #define COMP_MAKE_ACTION_FALSE_TO_TRUE(x) if (act.Pre().IsFalse(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
 #define COMP_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
@@ -196,6 +195,6 @@ struct x : \
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

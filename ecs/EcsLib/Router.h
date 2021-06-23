@@ -1,7 +1,7 @@
 #ifndef _EcsLib_Router_h_
 #define _EcsLib_Router_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 #if 0
 class PathwayRouter :
@@ -72,7 +72,7 @@ protected:
 using PathwaySystemRef = Ref<PathwaySystem, RefParent1<Machine>>;
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

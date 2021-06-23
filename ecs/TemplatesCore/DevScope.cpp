@@ -1,18 +1,35 @@
-NAMESPACE_TOPSIDE_BEGIN
+#include "TemplatesCore.h"
+
+NAMESPACE_ECS_BEGIN
 
 
 
-template <class DevSpec>
-template <class ValSpec>
-typename ScopeValMachT<ValSpec>::Format
-ScopeDevCoreT<DevSpec>::GetDefaultFormat() {
-	typename ScopeValMachT<ValSpec>::Format fmt;
+Format GetDefaultFormat(ValDevCls type) {
+	TODO
+	
+	/*
+	template <>
+	template <>
+	typename ScopeValMachT<AudioSpec>::Format
+	ScopeDevCoreT<AccelSpec>::GetDefaultFormat<AudioSpec>() {
+		using ValSpec					= AudioSpec;
+		using FromDevSpec				= AccelSpec;
+		using ValMach					= ScopeValMachT<ValSpec>;
+		using Format					= typename ValMach::Format;
+		Format fmt;
+		fmt.Set<AccelSpec>(SoundSample::FLT_LE, 2, 44100, 1024);
+		return fmt;
+	}
+	*/
+	
+	
+	/*typename ScopeValMachT<ValSpec>::Format fmt;
 	fmt.template SetDefault<DevSpec>();
-	return fmt;
+	return fmt;*/
 }
 
 
-#define DEV(x) \
+/*#define DEV(x) \
 template <> template <> inline \
 typename ScopeValMachT<AudioSpec>::Format \
 ScopeDevCoreT<x##Spec>::GetDefaultFormat<AudioSpec>() { \
@@ -30,7 +47,7 @@ ScopeDevCoreT<x##Spec>::GetDefaultFormat<VideoSpec>() { \
 DEV(Center)
 DEV(Net)
 DEV(Perma)
-#undef DEV
+#undef DEV*/
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

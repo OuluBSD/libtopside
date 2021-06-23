@@ -1,7 +1,7 @@
 #ifndef _TemplatesMach_ValSpec_h_
 #define _TemplatesMach_ValSpec_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -42,7 +42,7 @@ public:
 
 
 // Declare value classes
-#define IFACE_CTX(value, format, sample) \
+/*#define IFACE_CTX(value, format, sample) \
 	struct value##Spec : RTTIBase {\
 		RTTI_DECL0(value##Spec) \
 		static String GetName() {return #value;}\
@@ -57,10 +57,10 @@ public:
 	using value##Format = value##T::Format; \
 	inline value##Packet Create##value##Packet(off32 off) {return value##T::CreatePacket(off);}
 IFACE_CTX_LIST;
-#undef IFACE_CTX
+#undef IFACE_CTX*/
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

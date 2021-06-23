@@ -1,7 +1,7 @@
 #ifndef _TemplatesCore_Classes_h_
 #define _TemplatesCore_Classes_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -38,6 +38,6 @@ public:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

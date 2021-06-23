@@ -1,6 +1,6 @@
 #if 0
 #include "EcsCore.h"
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 bool ManualConnector::LinkManually(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, TypeCls src_iface, TypeCls sink_iface) {
@@ -13,7 +13,7 @@ bool ManualConnector::LinkManually(ComponentBaseRef src_comp, ComponentBaseRef d
 	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(ConnectorBase::GetPool()));
 	CookieRef src_cookie, sink_cookie;
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		const auto& src_d = EcsFactory::SourceDataMap().Get(src_iface);
+		const auto& src_d = Ecs::Factory::SourceDataMap().Get(src_iface);
 		if (src_d.sink_cls != sink_iface) {
 			ASSERT(0);
 			LOG("internal error: unexpected sink class type");
@@ -62,5 +62,5 @@ void ConnectManuallyInterfaces::Update(double dt) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 #endif

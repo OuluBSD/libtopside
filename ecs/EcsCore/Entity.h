@@ -2,7 +2,7 @@
 #define _EcsCore_Entity_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -49,9 +49,9 @@ public:
 	String GetTreeString(int indent=0);
 	void SetName(String s) {name = s;}
 	void OnChange();
-	ComponentBaseRef GetTypeCls(TypeCls comp_type);
-	ComponentBaseRef GetAddTypeCls(TypeCls comp_type);
-	ComponentBaseRef FindTypeCls(TypeCls comp_type);
+	ComponentBaseRef GetTypeCls(EcsTypeCls comp_type);
+	ComponentBaseRef GetAddTypeCls(EcsTypeCls comp_type);
+	ComponentBaseRef FindTypeCls(EcsTypeCls comp_type);
 	
 	template<typename T>
 	RefT_Entity<T> Get() {
@@ -140,11 +140,13 @@ public:
 	const Machine&		GetMachine() const;
 	Pool&				GetPool() const;
 	
-	#define IFACE_(x, post) RefT_Entity<x##post> Find##x##post();
+	/*#define IFACE_(x, post) RefT_Entity<x##post> Find##x##post();
 	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
 	IFACE_LIST
 	#undef IFACE
-	#undef IFACE_
+	#undef IFACE_*/
+	RefT_Entity<ValSink>		FindSink(ValDevCls vd);
+	RefT_Entity<ValSource>		FindSource(ValDevCls vd);
 	
 	
 	ComponentMap& GetComponents() {return comps;}
@@ -221,7 +223,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

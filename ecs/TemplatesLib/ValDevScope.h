@@ -1,10 +1,10 @@
 #ifndef _TemplatesLib_ValDevScope_h_
 #define _TemplatesLib_ValDevScope_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-template <class ValDevSpec>
+/*template <class ValDevSpec>
 struct ScopeValDevLibT {
 	using ValSpec					= typename ValDevSpec::Val;
 	using DevSpec					= typename ValDevSpec::Dev;
@@ -28,7 +28,7 @@ struct ScopeValDevLibT {
 	using ValSink					= typename Core::ValSink;
 	using ValSource					= typename Core::ValSource;
 	using DevCompConf				= typename ScopeDevMachT<DevSpec>::StageComponentConf;
-	using StageComponent			= typename ScopeDevLibT<DevSpec>::StageComponent;
+	using StageComponent			= typename ScopeDevLibT<DevSpec>::StageComponent;*/
 	
 	/*
 	using ValSpec					= typename ValDevSpec::Val;
@@ -46,7 +46,7 @@ struct ScopeValDevLibT {
 	using CtxStream					= typename Mach::Stream;
 	*/
 	
-	using R							= ReceiptSpec;
+	/*using R							= ReceiptSpec;
 	using RVD						= VD<DevSpec,ReceiptSpec>;
 	using RValMach					= ScopeValMachT<ReceiptSpec>;
 	using RMach						= ScopeValDevMachT<RVD>;
@@ -72,455 +72,465 @@ struct ScopeValDevLibT {
 	using OValue					= typename OMach::Value;
 	using OSink						= typename OCore::ValSink;
 	using OSource					= typename OCore::ValSource;
-	using OSimpleValue				= typename OMach::SimpleValue;
-	
-	
-	
-	class InputComponent;
-	class OutputComponent;
-	class PipeComponent;
-	
-	static String TypeStringT(const char* t) {
-		String s;
-		s << ValDevSpec::GetPrefix() << t;
-		return s;
-	}
-	
-	
-	
-	
-	
-	class InputExt : public ComponentExtBase {
-		
-	public:
-		RTTI_DECL1(InputExt, ComponentExtBase);
-		using Ext = InputExt;
-		using Component = InputComponent;
-		
-	};
-	
-	class InputComponent :
-		public Component<InputComponent, OSink, ValSource, InputExt>
-	{
-	public:
-		using ComponentT = Component<InputComponent, OSink, ValSource, InputExt>;
-		RTTI_DECL_1(InputComponent, ComponentT, ValDevSpec::GetName() + "InputComponent")
-		COPY_PANIC(InputComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT
-		COMP_MAKE_ACTION_BEGIN
-			COMP_MAKE_ACTION_FALSE_TO_TRUE(
-				ToLower(DevSpec::GetName()) + "." +
-				ToLower(ValSpec::GetName()) + "." +
-				"src")
-		COMP_MAKE_ACTION_END
-		
-	private:
-		struct LocalSinkValue : public OSimpleValue {
-			InputComponent& par;
-			
-			LocalSinkValue(InputComponent* par) : par(*par) {}
-			void StorePacket(OrderPacket& p) override {TODO}
-		};
-		
-		struct LocalSourceValue : public SimpleValue {
-			void StorePacket(Packet& p) override {}
-		};
-		
-		struct LocalSourceStream : public SimpleStream {
-			InputComponent& par;
-			PacketConsumer consumer;
-			
-			RTTI_DECL1(LocalSourceStream, SimpleStream)
-			LocalSourceStream(InputComponent* par) :
-				par(*par),
-				SimpleStream(par->src_value) {}
-			
-		};
-		
-		LocalSinkValue		sink_value;
-		LocalSourceValue	src_value;
-		LocalSourceStream	src_stream;
-		
-		
-		bool				ReadFrame();
-		bool				ProcessDeviceFrame();
-		
-	public:
-		InputComponent() : sink_value(this), src_stream(this) {}
-		
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
-		
-		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
-		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		
-		// OSink
-		OValue&				GetValue(OrdCtx) override {return sink_value;}
-		
-		// ValSource
-		CtxStream&			GetStream(V*) override {return src_stream;}
-		
-	};
-	
-	
-	
-	class OutputExt : public ComponentExtBase {
-		
-	public:
-		RTTI_DECL1(OutputExt, ComponentExtBase);
-		using Ext = OutputExt;
-		using Component = OutputComponent;
-		
-		OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
-		
-	};
-	
-	class OutputComponent :
-		public Component<OutputComponent, ValSink, RSource, OutputExt>
-	{
-	public:
-		using ComponentT = Component<OutputComponent, ValSink, RSource, OutputExt>;
-		RTTI_DECL_1(OutputComponent, ComponentT, ValDevSpec::GetName() + "OutputComponent")
-		COPY_PANIC(OutputComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT_(vis & cust_sys)
-		COMP_MAKE_ACTION_BEGIN
-			COMP_MAKE_ACTION_FALSE_TO_TRUE(
-				ToLower(DevSpec::GetName()) + "." +
-				ToLower(ValSpec::GetName()) + "." +
-				"sink")
-		COMP_MAKE_ACTION_END
-		
-	private:
-		struct LocalSinkValue : public SimpleBufferedValue {
-			OutputComponent& par;
-			
-			LocalSinkValue(OutputComponent* par) : par(*par) {}
-		};
-		
-		struct LocalSourceValue : public RSimpleValue {
-			void StorePacket(ReceiptPacket& p) override {}
-		};
-		
-		struct LocalSourceStream : public RSimpleStream {
-			OutputComponent& par;
-			
-			RTTI_DECL1(LocalSourceStream, RSimpleStream)
-			LocalSourceStream(OutputComponent* par) :
-				par(*par),
-				RSimpleStream(par->src_value) {}
-			
-		};
-		
-		
-		LocalSinkValue			sink_value;
-		LocalSourceValue		src_value;
-		LocalSourceStream		src_stream;
-		RealtimeSourceConfig*	cfg = 0;
-		
-		Mutex					lock;
-		LinkedList<Packet>		consumed_packets;
-		PacketConsumer			consumer;
-		CustomerSystemRef		cust_sys;
-		
-		
-	public:
-		OutputComponent() : sink_value(this), src_stream(this) {}
-		
-		void				Initialize() override;
-		void				Uninitialize() override;
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
-		bool				ForwardMem(void* mem, size_t mem_size);
-		TypeCls GetValSpec() const override {return AsTypeCls<V>();}
-		bool IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		
-		// ValSink
-		Value&				GetValue(V*) override {return sink_value;}
-		
-		// RSource
-		RStream&			GetStream(RcpCtx) override {return src_stream;}
-		
-		bool				ReadFrame() {TODO}
-		bool				ProcessFrame() {TODO}
-		bool				ProcessDeviceFrame() {TODO}
-		
-	};
-	
-	
-	class PipeExt : public ComponentExtBase {
-		
-	public:
-		RTTI_DECL1(PipeExt, ComponentExtBase);
-		using Ext = PipeExt;
-		using Component = PipeComponent;
-		
-	};
-	
-	class PipeComponent :
-		public Component<PipeComponent, ValSink, ValSource, PipeExt>,
-		public StageComponent
-	{
-	public:
-		using ComponentT = Component<PipeComponent, ValSink, ValSource, PipeExt>;
-		RTTI_DECL_2(PipeComponent, ComponentT, StageComponent, ValDevSpec::GetName() + "DevCustomerComponent")
-		COPY_PANIC(PipeComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT
-		COMP_MAKE_ACTION_BEGIN
-			// TODO Probably should decrease count of allowed pipes, otherwise actionplanner creates
-			// these infinitely.
-			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
-		COMP_MAKE_ACTION_END
-		
-	private:
-		class LocalSinkValue : public SimpleBufferedValue {
-		public:
-			RTTI_DECL_T1(LocalSinkValue, SimpleBufferedValue)
-		};
-		
-		class LocalSourceValue : public SimpleBufferedValue {
-		public:
-			RTTI_DECL_T1(LocalSourceValue, SimpleBufferedValue)
-		};
-		
-		// TODO: select source/sink format based on cheap troughput/storage using template arg
-		class LocalStream :
-			public SimpleBufferedStream,
-			RTTIBase
-		{
-		public:
-			PipeComponent& par;
-			RTTI_DECL_T1(LocalStream, SimpleBufferedStream);
-			LocalStream(PipeComponent* p) : par(*p), SimpleBufferedStream(p->src_value) {}
-			bool			IsOpen() const override {TODO}
-			bool			Open(int fmt_idx) override {TODO}
-			void			Close() override {TODO}
-			bool			IsEof() override {TODO}
-			bool			ReadFrame() override {TODO}
-			bool			ProcessFrame() override {TODO}
-			bool			ProcessOtherFrame() override {TODO}
-			void			ClearPacketData() override {TODO}
-		};
-		LocalSinkValue		sink_value;
-		LocalSourceValue	src_value;
-		LocalStream			src_stream;
-		
-	public:
-		PipeComponent() : src_stream(this) {}
-		
-		// ComponentBase
-		void				Initialize() override;
-		void				Uninitialize() override;
-		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
-		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		bool				RequiresDeviceProgram() const override {return true;}
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
-		
-		// DevSink
-		Value&				GetValue(V*) override;
-		
-		// DevSource
-		CtxStream&			GetStream(V*) override;
-		
-		// StageComponent
-		bool				LoadAsInput(const DevCompConf& in) override;
-		void				UpdateDevBuffers() override {StageComponent::template UpdateDevBuffersValT<ValSpec>();}
-		bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
-		void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
-		
-	};
-	
+	using OSimpleValue				= typename OMach::SimpleValue;*/
 	
 	
 
-	
+class InputComponent;
+class OutputComponent;
+class PipeComponent;
 
+/*static String TypeStringT(const char* t) {
+	String s;
+	s << ValDevSpec::GetPrefix() << t;
+	return s;
+}*/
+
+
+
+
+
+class InputExt : public ComponentExtBase {
 	
+public:
+	RTTI_DECL1(InputExt, ComponentExtBase);
+	using Ext = InputExt;
+	using Component = InputComponent;
 	
+};
+
+
+
+class InputComponent :
+	public Component<InputComponent, InputExt>
+{
+	ValDevCls vd;
 	
-	class SideOutputComponent;
+public:
+	using ComponentT = Component<InputComponent, InputExt>;
+	RTTI_DECL1(InputComponent, ComponentT)
+	COPY_PANIC(InputComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE(
+			ToLower(GetName(vd.dev)) + "." +
+			ToLower(GetName(vd.val)) + "." +
+			"src")
+	COMP_MAKE_ACTION_END
 	
-	class SideOutExt : public ComponentExtBase {
+private:
+	struct LocalSinkValue : public SimpleValue {
+		InputComponent& par;
 		
-	public:
-		RTTI_DECL1(SideOutExt, ComponentExtBase);
-		using Ext = SideOutExt;
-		using Component = SideOutputComponent;
+		LocalSinkValue(InputComponent* par) : par(*par) {}
+		void StorePacket(Packet& p) override {TODO}
+	};
+	
+	struct LocalSourceValue : public SimpleValue {
+		void StorePacket(Packet& p) override {}
+	};
+	
+	struct LocalSourceStream : public SimpleStream {
+		InputComponent& par;
+		PacketConsumer consumer;
+		
+		RTTI_DECL1(LocalSourceStream, SimpleStream)
+		LocalSourceStream(InputComponent* par) :
+			par(*par),
+			SimpleStream(par->src_value) {}
 		
 	};
 	
-	class SideOutputComponent :
-		public Component<SideOutputComponent, ValSink, RSource, SideOutExt>
+	LocalSinkValue		sink_value;
+	LocalSourceValue	src_value;
+	LocalSourceStream	src_stream;
+	
+	
+	bool				ReadFrame();
+	bool				ProcessDeviceFrame();
+	
+public:
+	InputComponent();// : sink_value(this), src_stream(this) {}
+	
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
+	
+	TypeCls GetValSpec() const override;// {return AsTypeCls<V>();}
+	bool IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
+	
+	// OSink
+	Value&				GetValue() override {return sink_value;}
+	
+	// ValSource
+	Stream&				GetStream() override {return src_stream;}
+	
+};
+
+
+
+class OutputExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(OutputExt, ComponentExtBase);
+	using Ext = OutputExt;
+	using Component = OutputComponent;
+	
+	OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
+	
+};
+
+
+
+class OutputComponent :
+	public Component<OutputComponent, OutputExt>
+{
+public:
+	using ComponentT = Component<OutputComponent, OutputExt>;
+	RTTI_DECL1(OutputComponent, ComponentT)
+	COPY_PANIC(OutputComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT_(vis & cust_sys)
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE(
+			ToLower(GetName(vd.dev)) + "." +
+			ToLower(GetName(vd.val)) + "." +
+			"sink")
+	COMP_MAKE_ACTION_END
+	
+private:
+	struct LocalSinkValue : public SimpleBufferedValue {
+		OutputComponent& par;
+		
+		LocalSinkValue(OutputComponent* par) : par(*par) {}
+	};
+	
+	struct LocalSourceValue : public SimpleValue {
+		void StorePacket(Packet& p) override {}
+	};
+	
+	struct LocalSourceStream : public SimpleStream {
+		OutputComponent& par;
+		
+		RTTI_DECL1(LocalSourceStream, SimpleStream)
+		LocalSourceStream(OutputComponent* par) :
+			par(*par),
+			SimpleStream(par->src_value) {}
+		
+	};
+	
+	
+	LocalSinkValue			sink_value;
+	LocalSourceValue		src_value;
+	LocalSourceStream		src_stream;
+	RealtimeSourceConfig*	cfg = 0;
+	
+	Mutex					lock;
+	LinkedList<Packet>		consumed_packets;
+	PacketConsumer			consumer;
+	CustomerSystemRef		cust_sys;
+	
+	
+public:
+	OutputComponent();// : sink_value(this), src_stream(this) {}
+	
+	void				Initialize() override;
+	void				Uninitialize() override;
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
+	bool				ForwardMem(void* mem, size_t mem_size);
+	TypeCls GetValSpec() const override;// {return AsTypeCls<V>();}
+	bool IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
+	
+	// ValSink
+	Value&				GetValue() override {return sink_value;}
+	
+	// RSource
+	Stream&				GetStream() override {return src_stream;}
+	
+	bool				ReadFrame() {TODO}
+	bool				ProcessFrame() {TODO}
+	bool				ProcessDeviceFrame() {TODO}
+	
+};
+
+
+class PipeExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(PipeExt, ComponentExtBase);
+	using Ext = PipeExt;
+	using Component = PipeComponent;
+	
+};
+
+class PipeComponent :
+	public Component<PipeComponent, PipeExt>,
+	public StageComponent
+{
+public:
+	using ComponentT = Component<PipeComponent, PipeExt>;
+	RTTI_DECL2(PipeComponent, ComponentT, StageComponent)
+	COPY_PANIC(PipeComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		// TODO Probably should decrease count of allowed pipes, otherwise actionplanner creates
+		// these infinitely.
+		//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+	COMP_MAKE_ACTION_END
+	
+private:
+	class LocalSinkValue : public SimpleBufferedValue {
+	public:
+		RTTI_DECL1(LocalSinkValue, SimpleBufferedValue)
+	};
+	
+	class LocalSourceValue : public SimpleBufferedValue {
+	public:
+		RTTI_DECL1(LocalSourceValue, SimpleBufferedValue)
+	};
+	
+	// TODO: select source/sink format based on cheap troughput/storage using template arg
+	class LocalStream :
+		public SimpleBufferedStream,
+		RTTIBase
 	{
 	public:
-		using ComponentT = Component<SideOutputComponent, ValSink, RSource, SideOutExt>;
-		RTTI_DECL_1(SideOutputComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
-		COPY_PANIC(SideOutputComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT
-		COMP_MAKE_ACTION_BEGIN
-			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
-		COMP_MAKE_ACTION_END
-		
-	private:
-		class LocalSinkValue : public SimpleValue {
-		public:
-			RTTI_DECL_T1(LocalSinkValue, SimpleValue)
-			void StorePacket(Packet& p) override {}
-		};
-		
-		struct LocalSourceValue : public RSimpleValue {
-			void StorePacket(RPacket& p) override {}
-		};
-		
-		struct LocalSourceStream : public RSimpleStream {
-			SideOutputComponent& par;
-			PacketConsumer consumer;
-			
-			RTTI_DECL1(LocalSourceStream, RSimpleStream)
-			LocalSourceStream(SideOutputComponent* par) :
-				par(*par),
-				RSimpleStream(par->src_value) {}
-			
-		};
-		
-		LocalSinkValue		sink_value;
-		LocalSourceValue	src_value;
-		LocalSourceStream	src_stream;
-		
+		PipeComponent& par;
+		RTTI_DECL1(LocalStream, SimpleBufferedStream);
+		LocalStream(PipeComponent* p) : par(*p), SimpleBufferedStream(p->src_value) {}
+		bool			IsOpen() const override {TODO}
+		bool			Open(int fmt_idx) override {TODO}
+		void			Close() override {TODO}
+		bool			IsEof() override {TODO}
+		bool			ReadFrame() override {TODO}
+		bool			ProcessFrame() override {TODO}
+		bool			ProcessOtherFrame() override {TODO}
+		void			ClearPacketData() override {TODO}
+	};
+	LocalSinkValue		sink_value;
+	LocalSourceValue	src_value;
+	LocalStream			src_stream;
+	
+public:
+	PipeComponent();// : src_stream(this) {}
+	
+	// ComponentBase
+	void				Initialize() override;
+	void				Uninitialize() override;
+	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
+	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
+	bool				RequiresDeviceProgram() const override {return true;}
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
+	
+	// DevSink
+	Value&				GetValue() override;
+	
+	// DevSource
+	Stream&				GetStream() override;
+	
+	// StageComponent
+	bool				LoadAsInput(const StageComponentConf& in) override;
+	void				UpdateDevBuffers() override;// {StageComponent::template UpdateDevBuffersValT<ValSpec>();}
+	bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
+	void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
+	
+};
+
+
+
+
+
+
+
+
+
+class SideOutputComponent;
+
+class SideOutExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(SideOutExt, ComponentExtBase);
+	using Ext = SideOutExt;
+	using Component = SideOutputComponent;
+	
+};
+
+class SideOutputComponent :
+	public Component<SideOutputComponent, SideOutExt>
+{
+public:
+	using ComponentT = Component<SideOutputComponent, SideOutExt>;
+	RTTI_DECL1(SideOutputComponent, ComponentT)
+	COPY_PANIC(SideOutputComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+	COMP_MAKE_ACTION_END
+	
+private:
+	class LocalSinkValue : public SimpleValue {
 	public:
-		SideOutputComponent() : src_stream(this) {}
+		RTTI_DECL1(LocalSinkValue, SimpleValue)
+		void StorePacket(Packet& p) override {}
+	};
+	
+	struct LocalSourceValue : public SimpleValue {
+		void StorePacket(Packet& p) override {}
+	};
+	
+	struct LocalSourceStream : public SimpleStream {
+		SideOutputComponent& par;
+		PacketConsumer consumer;
 		
-		// ComponentBase
-		void				Initialize() override;
-		void				Uninitialize() override;
-		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
-		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
-		
-		// ValSink
-		Value&				GetValue(V*) override;
-		
-		// ReceiptSource
-		RStream&			GetStream(R*) override;
+		RTTI_DECL1(LocalSourceStream, SimpleStream)
+		LocalSourceStream(SideOutputComponent* par) :
+			par(*par),
+			SimpleStream(par->src_value) {}
 		
 	};
 	
+	LocalSinkValue		sink_value;
+	LocalSourceValue	src_value;
+	LocalSourceStream	src_stream;
 	
+public:
+	SideOutputComponent();// : src_stream(this) {}
 	
-	class SideInputComponent;
+	// ComponentBase
+	void				Initialize() override;
+	void				Uninitialize() override;
+	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
+	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
 	
-	class SideInExt : public ComponentExtBase {
-		
+	// ValSink
+	Value&				GetValue() override;
+	
+	// ReceiptSource
+	Stream&				GetStream() override;
+	
+};
+
+
+
+class SideInputComponent;
+
+class SideInExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(SideInExt, ComponentExtBase);
+	using Ext = SideInExt;
+	using Component = SideInputComponent;
+	
+};
+
+class SideInputComponent :
+	public Component<SideInputComponent, SideInExt>
+{
+public:
+	using ComponentT = Component<SideInputComponent, SideInExt>;
+	RTTI_DECL1(SideInputComponent, ComponentT)
+	COPY_PANIC(SideInputComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
+	COMP_MAKE_ACTION_END
+	
+private:
+	class LocalSinkValue : public SimpleValue {
 	public:
-		RTTI_DECL1(SideInExt, ComponentExtBase);
-		using Ext = SideInExt;
-		using Component = SideInputComponent;
-		
+		RTTI_DECL1(LocalSinkValue, SimpleValue)
+		void StorePacket(Packet& p) override {}
 	};
 	
-	class SideInputComponent :
-		public Component<SideInputComponent, OSink, ValSource, SideInExt>
-	{
-	public:
-		using ComponentT = Component<SideInputComponent, OSink, ValSource, SideInExt>;
-		RTTI_DECL_1(SideInputComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
-		COPY_PANIC(SideInputComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT
-		COMP_MAKE_ACTION_BEGIN
-			//COMP_MAKE_ACTION_REQ_TRUE(DevSpec::GetNameLower() + "." + ValSpec::GetNameLower() + ".pipe")
-		COMP_MAKE_ACTION_END
-		
-	private:
-		class LocalSinkValue : public OSimpleValue {
-		public:
-			RTTI_DECL_T1(LocalSinkValue, OSimpleValue)
-			void StorePacket(OPacket& p) override {}
-		};
-		
-		struct LocalSourceValue : public SimpleValue {
-			void StorePacket(Packet& p) override {}
-		};
-		
-		struct LocalSourceStream : public SimpleStream {
-			SideInputComponent& par;
-			PacketConsumer consumer;
-			
-			RTTI_DECL1(LocalSourceStream, SimpleStream)
-			LocalSourceStream(SideInputComponent* par) :
-				par(*par),
-				SimpleStream(par->src_value) {}
-			
-		};
-		LocalSinkValue		sink_value;
-		LocalSourceValue	src_value;
-		LocalSourceStream	src_stream;
-		
-	public:
-		SideInputComponent() : src_stream(this) {}
-		
-		// ComponentBase
-		void				Initialize() override;
-		void				Uninitialize() override;
-		TypeCls				GetValSpec() const override {return AsTypeCls<V>();}
-		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<V>() == t;}
-		void				Forward(FwdScope& fwd) override;
-		void				ForwardExchange(FwdScope& fwd) override;
-		
-		// OrderSink
-		OValue&				GetValue(O*) override;
-		
-		// ValSource
-		CtxStream&			GetStream(V*) override;
-		
-		
+	struct LocalSourceValue : public SimpleValue {
+		void StorePacket(Packet& p) override {}
 	};
 	
-	
-#if 0
-	class DevCustomerComponent :
-		public Component<DevCustomerComponent, RSink, OSource>,
-	{
-	public:
-		using ComponentT = Component<DevCustomerComponent, RSink, OSource>;
-		RTTI_DECL_1(DevCustomerComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
-		COPY_PANIC(DevCustomerComponent)
-		IFACE_GENERIC
-		COMP_DEF_VISIT
-		COMP_MAKE_ACTION_BEGIN
-			//TODO
-		COMP_MAKE_ACTION_END
+	struct LocalSourceStream : public SimpleStream {
+		SideInputComponent& par;
+		PacketConsumer consumer;
 		
-	public:
-		DevCustomerComponent() {}
-		
-		// ComponentBase
-		void				Initialize() override;
-		void				Uninitialize() override;
-		TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
-		bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
-		
-		// ReceiptSink
-		RFormat				GetFormat(R*) override;
-		RValue&				GetValue(R*) override;
-		
-		// OrderSource
-		OCtxStream&			GetStream(O*) override;
-		void				BeginStream(O*) override;
-		void				EndStream(O*) override;
+		RTTI_DECL1(LocalSourceStream, SimpleStream)
+		LocalSourceStream(SideInputComponent* par) :
+			par(*par),
+			SimpleStream(par->src_value) {}
 		
 	};
-#endif
+	LocalSinkValue		sink_value;
+	LocalSourceValue	src_value;
+	LocalSourceStream	src_stream;
+	
+public:
+	SideInputComponent();// : src_stream(this) {}
+	
+	// ComponentBase
+	void				Initialize() override;
+	void				Uninitialize() override;
+	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
+	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
+	void				Forward(FwdScope& fwd) override;
+	void				ForwardExchange(FwdScope& fwd) override;
+	
+	// OrderSink
+	Value&				GetValue() override;
+	
+	// ValSource
+	Stream&				GetStream() override;
 	
 	
 };
 
 
-NAMESPACE_TOPSIDE_END
+#if 0
+class DevCustomerComponent :
+	public Component<DevCustomerComponent, RSink, OSource>,
+{
+public:
+	using ComponentT = Component<DevCustomerComponent, RSink, OSource>;
+	RTTI_DECL_1(DevCustomerComponent, ComponentT, ValDevSpec::GetName() + "DevCustomerComponent")
+	COPY_PANIC(DevCustomerComponent)
+	IFACE_GENERIC
+	COMP_DEF_VISIT
+	COMP_MAKE_ACTION_BEGIN
+		//TODO
+	COMP_MAKE_ACTION_END
+	
+public:
+	DevCustomerComponent() {}
+	
+	// ComponentBase
+	void				Initialize() override;
+	void				Uninitialize() override;
+	TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
+	bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
+	
+	// ReceiptSink
+	RFormat				GetFormat(R*) override;
+	RValue&				GetValue(R*) override;
+	
+	// OrderSource
+	OCtxStream&			GetStream(O*) override;
+	void				BeginStream(O*) override;
+	void				EndStream(O*) override;
+	
+};
+#endif
+
+
+
+
+
+
+struct AudioOutputExt : public OutputExt {};
+struct AudioInputExt : public InputExt {};
+
+NAMESPACE_ECS_END
 
 #endif

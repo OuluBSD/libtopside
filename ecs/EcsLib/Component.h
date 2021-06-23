@@ -1,32 +1,31 @@
 #ifndef _EcsLib_Component_h_
 #define _EcsLib_Component_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
-template<typename DevSpec, typename ValSpec, typename T, class Sink, class Source, class Ext>
+template<typename T, class Ext>
 class DevComponent :
-	public Component<T,Sink,Source,Ext>,
-	public ScopeDevMachT<DevSpec>::DevComponent
+	public Component<T,Ext>,
+	public DevComponentBase
 {
 	bool is_open = false;
 public:
-	using ComponentT = Component<T,Sink,Source,Ext>;
-	using DevComponentT = typename ScopeDevMachT<DevSpec>::DevComponent;
+	using ComponentT = Component<T,Ext>;
 	
-	RTTI_DECL2(DevComponent, ComponentT, DevComponentT);
+	RTTI_DECL2(DevComponent, ComponentT, DevComponentBase);
 	
+	DevComponent(ValDevCls vd);
+	void Initialize() override {ASSERT(!is_open); DevComponentBase::Initialize(); is_open = true;}
+	void Uninitialize() override {ASSERT(is_open); DevComponentBase::Uninitialize(); is_open = false;}
 	
-	void Initialize() override {ASSERT(!is_open); ScopeDevMachT<DevSpec>::DevComponent::Initialize(); is_open = true;}
-	void Uninitialize() override {ASSERT(is_open); ScopeDevMachT<DevSpec>::DevComponent::Uninitialize(); is_open = false;}
-	
-	TypeCls GetValSpec() const override {return AsTypeCls<ValSpec>();}
+	TypeCls GetValSpec() const override; // {return AsTypeCls<ValSpec>();}
 	void ForwardPackets(double dt) override;
 	
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

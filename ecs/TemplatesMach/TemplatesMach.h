@@ -3,6 +3,10 @@
 
 #include <Local/Local.h>
 
+#define ECS Ecs
+#define NAMESPACE_ECS_BEGIN namespace  TS { namespace  ECS {
+#define NAMESPACE_ECS_END }}
+
 
 #include "Defs.h"
 #include "Classes.h"
@@ -17,6 +21,5 @@
 #include "Special.h"
 #include "Interface.h"
 
-#include "Inlines.h"
 
 #endif

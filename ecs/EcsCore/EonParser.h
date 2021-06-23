@@ -1,7 +1,7 @@
 #ifndef _EcsLib_EonParser_h_
 #define _EcsLib_EonParser_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 namespace Eon {
 
@@ -124,6 +124,6 @@ public:
 };
 
 }
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

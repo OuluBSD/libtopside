@@ -1,7 +1,9 @@
-#define CTX				((D*)0)
-#define CLS				typename ScopeDevLibT<DevSpec>
+#include "TemplatesLib.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+//#define CTX				((D*)0)
+//#define CLS				typename ScopeDevLibT<DevSpec>
+
+NAMESPACE_ECS_BEGIN
 
 
 /*template <class DevSpec, class R>
@@ -29,7 +31,7 @@ void ComponentBase::RemoveFromContext(R ref) {
 
 
 
-TMPL_DEVLIB(int) StageComponentConfVector::Find(const StageComponentConf& a) const {
+int StageComponentConfVector::Find(const StageComponentConf& a) const {
 	int i = 0;
 	for (StageComponentConf& b : in) {
 		if (a.IsEqualHeader(b))
@@ -39,7 +41,7 @@ TMPL_DEVLIB(int) StageComponentConfVector::Find(const StageComponentConf& a) con
 	return -1;
 }
 
-TMPL_DEVLIB(void) StageComponentConfVector::Add(const StageComponentConf& a) {
+void StageComponentConfVector::Add(const StageComponentConf& a) {
 	ASSERT(Find(a) < 0);
 	in.Add(a);
 }
@@ -49,9 +51,9 @@ TMPL_DEVLIB(void) StageComponentConfVector::Add(const StageComponentConf& a) {
 
 
 
-TMPL_DEVLIB(void) StageComponent::Initialize() {
-	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Initialize");
-	StageComponentRef ref = StageComponentBase::template AsRef<StageComponent>();
+void StageComponent::Initialize() {
+	DLOG("StageComponent(" << GetTypeString() << ")::Initialize");
+	StageComponentRef ref = AsRef<StageComponent>();
 	
 	TODO
 	/*Ref<DevSystem> sys = CastRef<ComponentBase>(this).GetEntity()->GetMachine().template Get<DevSystem>();
@@ -60,9 +62,9 @@ TMPL_DEVLIB(void) StageComponent::Initialize() {
 	*/
 }
 
-TMPL_DEVLIB(void) StageComponent::Uninitialize() {
-	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Uninitialize");
-	StageComponentRef ref = StageComponentBase::template AsRef<StageComponent>();
+void StageComponent::Uninitialize() {
+	DLOG("StageComponent(" << GetTypeString() << ")::Uninitialize");
+	StageComponentRef ref = AsRef<StageComponent>();
 	
 	/*if (group) {
 		group->Remove(ref);
@@ -77,8 +79,9 @@ TMPL_DEVLIB(void) StageComponent::Uninitialize() {
 	//Clear();
 }
 
-TMPL_DEVLIB(String) StageComponent::GetStringFromType(TypeCls i) {
-	#define IFACE(x) \
+String StageComponent::GetStringFromType(TypeCls i) {
+	TODO
+	/*#define IFACE(x) \
 		if (i == AsTypeCls<typename ScopeValDevCoreT<VD<DevSpec, x##Spec>>::ValSource>()) \
 			return DevSpec::GetPrefix() + #x "Source"; \
 		if (i == AsTypeCls<typename ScopeValDevCoreT<VD<DevSpec, x##Spec>>::ValSink>()) \
@@ -87,63 +90,65 @@ TMPL_DEVLIB(String) StageComponent::GetStringFromType(TypeCls i) {
 			return DevSpec::GetPrefix() + #x "PipeComponent";
 		//if (i == AsTypeCls<ConvertCenterAccel##x##Component>()) return "ConvertCenterAccel" #x "Component";
 	IFACE_LIST
-	#undef IFACE
+	#undef IFACE*/
 	return "invalid";
 }
 
-TMPL_DEVLIB(void) StageComponent::OnError(String fn, String msg) {
+void StageComponent::OnError(String fn, String msg) {
 	/*if (group && group->GetParent()) {
 		group->GetParent()->OnError(String(RTTI::GetRTTI().GetDynamicName()) + "::" + fn, msg);
 	}
 	else {*/
-	LOG(DevSpec::GetName() + "Component::" << fn << ": error: " << msg);
+	LOG("StageComponent::" << fn << ": error: " << msg);
 }
 
-//TMPL_DEVLIB(CLS::DevStreamState&) StageComponent::GetStreamState() {return group->GetStreamState();}
+//DevStreamState& StageComponent::GetStreamState() {return group->GetStreamState();}
 
-TMPL_DEVLIB(void) StageComponent::Clear() {
+void StageComponent::Clear() {
 	id = -1;
 	in.Clear();
-	StageComponentBase::Clear();
+	TODO
+	//StageComponentBase::Clear();
 }
 
-TMPL_DEVLIB(bool) StageComponent::IsDevPipeComponent(TypeCls type) {
-	#define IFACE(x) \
+bool StageComponent::IsDevPipeComponent(TypeCls type) {
+	TODO
+	/*#define IFACE(x) \
 	if (type == AsTypeCls<typename ScopeValDevLibT<VD<DevSpec, x##Spec>>::PipeComponent>()) \
 		return true;
 	IFACE_LIST
-	#undef IFACE
+	#undef IFACE*/
 	return false;
 }
 
-TMPL_DEVLIB(void) StageComponent::Close() {
-	StageComponentBase::Close();
+void StageComponent::Close() {
+	TODO
+	//StageComponentBase::Close();
 	is_open = false;
 }
 
-TMPL_DEVLIB(bool) StageComponent::Open() {
-	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Open: begin");
+bool StageComponent::Open() {
+	DLOG("StageComponent(" << GetTypeString() << ")::Open: begin");
 	const char* fn_name = "Open";
 	
 	if (is_open)
 		Close();
 	
-	if (StageComponentBase::Open())
-		is_open = true;
+	TODO
+	//if (StageComponentBase::Open())
+	//	is_open = true;
 	
-	DLOG(DevSpec::GetName() + "Component(" << GetTypeString() << ")::Open: end");
+	DLOG("StageComponent(" << GetTypeString() << ")::Open: end");
 	return is_open;
 }
 
-TMPL_DEVLIB(void) StageComponent::PostProcess() {
+void StageComponent::PostProcess() {
 	TODO
 	//GetStreamState().Step(group->GetValSpec());
 }
 
-template <class DevSpec>
-template <class ValSpec>
-void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typename ScopeValMachT<ValSpec>::Packet p) {
-	using VD					= TS::VD<DevSpec,ValSpec>;
+void StageComponent::ForwardPacket(ValCls dst, FwdScope& fwd, Packet p) {
+	/*using VD					= TS::VD<DevSpec,ValSpec>;
 	using DevMach				= ScopeDevMachT<DevSpec>;
 	using ValMach				= ScopeValMachT<ValSpec>;
 	using Mach					= ScopeValDevMachT<VD>;
@@ -156,8 +161,9 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 	using SimpleBufferedValue	= typename Mach::SimpleBufferedValue;
 	using SimpleBufferedStream	= typename Mach::SimpleBufferedStream;
 	using ValSource				= typename Core::ValSource;
-	using ValSourceRef			= typename Core::ValSourceRef;
+	using ValSourceRef			= typename Core::ValSourceRef;*/
 	
+	#if 0
 	DLOG("StageComponent::ForwardPacket: begin");
 	
 	if (p->template IsData<InternalPacketData>()) {
@@ -209,6 +215,8 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 	fwd.AddNext(this);
 	
 	DLOG("ComponentBase::ForwardPacket: end");
+	
+	#endif
 }
 
 
@@ -221,7 +229,7 @@ void ScopeDevLibT<DevSpec>::StageComponent::ForwardPacket(FwdScope& fwd, typenam
 
 #if 0
 
-TMPL_DEVLIB(bool) StageComponentGroup::Open() {
+bool StageComponentGroup::Open() {
 	int dbg_i = 0;
 	for(StageComponentRef& comp : comps) {
 		if (!comp->IsOpen() && !comp->Open()) {
@@ -233,18 +241,18 @@ TMPL_DEVLIB(bool) StageComponentGroup::Open() {
 	return true;
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::Close() {
+void StageComponentGroup::Close() {
 	for(StageComponentRef& comp : comps) {
 		comp->Close();
 		comp->template AsRef<ComponentBase>()->Destroy();
 	}
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::CloseTemporary() {TODO}
-TMPL_DEVLIB(void) StageComponentGroup::Clear() {TODO}
-TMPL_DEVLIB(void) StageComponentGroup::ConnectInputs(StageComponentConfVector& v) {TODO}
+void StageComponentGroup::CloseTemporary() {TODO}
+void StageComponentGroup::Clear() {TODO}
+void StageComponentGroup::ConnectInputs(StageComponentConfVector& v) {TODO}
 
-TMPL_DEVLIB(bool) StageComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code) {
+bool StageComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_map, int stage_i, String frag_code) {
 	String fn_name = DevSpec::GetName() + "ComponentGroup::LoadExisting";
 	for (auto& comp : comps) {
 		if (comp->GetTypeId() == type) {
@@ -258,14 +266,14 @@ TMPL_DEVLIB(bool) StageComponentGroup::LoadExisting(TypeCls type, ObjectMap& st_
 	return false;
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::FindUniqueInputs(StageComponentConfVector& v) {
+void StageComponentGroup::FindUniqueInputs(StageComponentConfVector& v) {
 	for (auto& comp : comps)
 		for(StageComponentConf& in : comp->in)
 			if (/*in.IsTypeComponentSource() &&*/ v.Find(in) < 0)
 				v.Add(in);
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::FindAdd(StageComponentRef r) {
+void StageComponentGroup::FindAdd(StageComponentRef r) {
 	StageComponentGroupRef g = this->template AsRef<StageComponentGroup>();
 	ASSERT(!r->group || r->group == g);
 	r->group = g;
@@ -273,7 +281,7 @@ TMPL_DEVLIB(void) StageComponentGroup::FindAdd(StageComponentRef r) {
 	UpdateCompFlags();
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::Remove(StageComponentRef r) {
+void StageComponentGroup::Remove(StageComponentRef r) {
 	StageComponentGroupRef g = this->template AsRef<StageComponentGroup>();
 	ASSERT(r->group == g);
 	r->group.Clear();
@@ -281,7 +289,7 @@ TMPL_DEVLIB(void) StageComponentGroup::Remove(StageComponentRef r) {
 	UpdateCompFlags();
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::UpdateCompFlags() {
+void StageComponentGroup::UpdateCompFlags() {
 	int comp_i = 0;
 	int comp_count = comps.GetCount();
 	for (StageComponentRef& comp : comps) {
@@ -291,12 +299,12 @@ TMPL_DEVLIB(void) StageComponentGroup::UpdateCompFlags() {
 	}
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::UpdateDevBuffers() {
+void StageComponentGroup::UpdateDevBuffers() {
 	for(StageComponentRef& comp : comps)
 		comp->UpdateDevBuffers();
 }
 
-TMPL_DEVLIB(bool) StageComponentGroup::ForwardPackets() {
+bool StageComponentGroup::ForwardPackets() {
 	if (comps.IsEmpty())
 		return false;
 	
@@ -323,7 +331,7 @@ TMPL_DEVLIB(bool) StageComponentGroup::ForwardPackets() {
 	return StageComponentGroupBase::CreateForwardPacket(*sink);
 }
 
-TMPL_DEVLIB(void) StageComponentGroup::DumpComponents() {
+void StageComponentGroup::DumpComponents() {
 	LOG(DevSpec::GetName() + "ComponentGroup::DumpComponents");
 	int i = 0;
 	for(StageComponentRef& comp : comps) {
@@ -339,7 +347,7 @@ TMPL_DEVLIB(CLS::StageComponentRef) StageComponentGroup::GetComponentById(int id
 	THROW(Exc(DevSpec::GetName() + "Component not found"));
 }
 
-TMPL_DEVLIB(bool) StageComponentGroup::CheckDevice() {
+bool StageComponentGroup::CheckDevice() {
 	for(StageComponentRef& comp : comps)
 		if (!comp->CheckDevice())
 			return false;
@@ -355,67 +363,67 @@ TMPL_DEVLIB(bool) StageComponentGroup::CheckDevice() {
 
 
 
-TMPL_DEVLIB_CTOR DevContextConnector::DevContextConnector() {
+DevContextConnector::DevContextConnector() {
 	
 }
 
-TMPL_DEVLIB(void) DevContextConnector::Initialize() {
+void DevContextConnector::Initialize() {
 	DLOG(DevSpec::GetName() + "DevContextConnector::Initialize");
 	Ref<DevSystem> sys = TS::ConnectorBase::GetPool()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> AddDev(TS::ConnectorBase::AsRef<DevContextConnector>());
 }
 
-TMPL_DEVLIB(void) DevContextConnector::Uninitialize() {
+void DevContextConnector::Uninitialize() {
 	DLOG(DevSpec::GetName() + "DevContextConnector::Uninitialize");
 	Ref<DevSystem> sys = TS::ConnectorBase::GetPool()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> RemoveDev(TS::ConnectorBase::AsRef<DevContextConnector>());
 }
 
-TMPL_DEVLIB(void) DevContextConnector::Update(double dt) {
+void DevContextConnector::Update(double dt) {
 	
 }
 
-TMPL_DEVLIB(void) DevContextConnector::ForwardPackets(double dt) {
+void DevContextConnector::ForwardPackets(double dt) {
 	for (DevComponentRef& dev : devs) {
 		dev->ForwardPackets(dt);
 	}
 }
 
-TMPL_DEVLIB(void) DevContextConnector::FindAdd(DevComponentRef r) {
+void DevContextConnector::FindAdd(DevComponentRef r) {
 	ASSERT(r);
 	ASSERT_(!r->GetContext(), "Did you AddToContext but it was not needed?");
 	r->SetContext(this->template AsRef<DevContextConnector>());
 	devs.FindAdd(r);
 }
 
-TMPL_DEVLIB(void) DevContextConnector::Remove(DevComponentRef r) {
+void DevContextConnector::Remove(DevComponentRef r) {
 	ASSERT(r);
 	ASSERT(r->GetContext() == this->template AsRef<DevContextConnector>());
 	r->ClearContext();
 	devs.RemoveKey(r);
 }
 
-TMPL_DEVLIB(void) DevContextConnector::AddCtx(DevSourceRef r) {
+void DevContextConnector::AddCtx(DevSourceRef r) {
 	ASSERT(r);
 	srcs.FindAdd(r);
 	FindAdd(r->template AsRef<DevComponent>());
 }
 
-TMPL_DEVLIB(void) DevContextConnector::RemoveCtx(DevSourceRef r) {
+void DevContextConnector::RemoveCtx(DevSourceRef r) {
 	ASSERT(r);
 	srcs.RemoveKey(r);
 	Remove(r->template AsRef<DevComponent>());
 }
 
-TMPL_DEVLIB(void) DevContextConnector::AddCtx(DevSinkRef r) {
+void DevContextConnector::AddCtx(DevSinkRef r) {
 	ASSERT(r);
 	sinks.FindAdd(r);
 	FindAdd(r->template AsRef<DevComponent>());
 }
 
-TMPL_DEVLIB(void) DevContextConnector::RemoveCtx(DevSinkRef r) {
+void DevContextConnector::RemoveCtx(DevSinkRef r) {
 	ASSERT(r);
 	sinks.RemoveKey(r);
 	Remove(r->template AsRef<DevComponent>());
@@ -426,9 +434,9 @@ TMPL_DEVLIB(void) DevContextConnector::RemoveCtx(DevSinkRef r) {
 
 
 
-TMPL_DEVMACH(void) DevComponent::Initialize() {
-	USING_DEVLIB(DevContextConnector)
-	USING_DEVLIB(DevContextConnectorRef)
+void DevComponentBase::Initialize() {
+	//USING_DEVLIB(DevContextConnector);
+	//USING_DEVLIB(DevContextConnectorRef)
 	ASSERT(!ctx);
 	ComponentBase* cb = CastPtr<ComponentBase>(this);
 	ASSERT(cb);
@@ -438,9 +446,10 @@ TMPL_DEVMACH(void) DevComponent::Initialize() {
 	ctx = conn;*/
 }
 
-TMPL_DEVMACH(void) DevComponent::Uninitialize() {
-	USING_DEVLIB(DevContextConnector)
-	USING_DEVLIB(DevContextConnectorRef)
+void DevComponentBase::Uninitialize() {
+	//USING_DEVLIB(DevContextConnector)
+	//USING_DEVLIB(DevContextConnectorRef)
+	
 	/*ASSERT(ctx);
 	DevContextConnectorRef conn = ctx;
 	ASSERT(conn);
@@ -463,7 +472,7 @@ TMPL_DEVLIB_CTOR StageContextConnector::StageContextConnector() {
 	
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Initialize() {
+void StageContextConnector::Initialize() {
 	DLOG(DevSpec::GetName() + "StageContextConnector::Initialize");
 	Ref<DevSystem> sys = TS::ConnectorBase::GetPool()->GetMachine().template Get<DevSystem>();
 	if (sys)
@@ -472,21 +481,21 @@ TMPL_DEVLIB(void) StageContextConnector::Initialize() {
 	FindComponents();
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Uninitialize() {
+void StageContextConnector::Uninitialize() {
 	DLOG(DevSpec::GetName() + "StageContextConnector::Uninitialize");
 	Ref<DevSystem> sys = TS::ConnectorBase::GetPool()->GetMachine().template Get<DevSystem>();
 	if (sys)
 		sys	-> RemoveStage(TS::ConnectorBase::AsRef<StageContextConnector>());
 }
 
-TMPL_DEVLIB(void) StageContextConnector::PostLoadFileAny(String path) {
+void StageContextConnector::PostLoadFileAny(String path) {
 	Object content;
 	if (LoadFileAny(path, content)) {
 		post_load = content;
 	}
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::LoadFileAny(String path, Object& dst) {
+bool StageContextConnector::LoadFileAny(String path, Object& dst) {
 	
 	// If path is a directory instead of a file, then add default filename and extension
 	if (DirectoryExists(path)) {
@@ -514,7 +523,7 @@ TMPL_DEVLIB(bool) StageContextConnector::LoadFileAny(String path, Object& dst) {
 	return false;
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Update(double dt) {
+void StageContextConnector::Update(double dt) {
 	DLOG("StageContextConnector::Update: begin");
 	
 	//lock.Enter();
@@ -569,7 +578,7 @@ TMPL_DEVLIB(void) StageContextConnector::Update(double dt) {
 	DLOG("StageContextConnector::Update: end");
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets() {
+bool StageContextConnector::ForwardPackets() {
 	if (groups.IsFilled()) {
 		stream.UpdateValuesBase();
 		
@@ -584,7 +593,7 @@ TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets() {
 	return false;
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets(StageComponentGroup& gr) {
+bool StageContextConnector::ForwardPackets(StageComponentGroup& gr) {
 	if (is_open /*&& lock.TryEnter()*/ ) {
 		
 		stream.UpdateValues(gr.GetValSpec());
@@ -598,7 +607,7 @@ TMPL_DEVLIB(bool) StageContextConnector::ForwardPackets(StageComponentGroup& gr)
 	return false;
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Clear() {
+void StageContextConnector::Clear() {
 	for(auto& gr : groups)
 		gr.Clear();
 	
@@ -611,11 +620,11 @@ TMPL_DEVLIB(void) StageContextConnector::Clear() {
 	
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Reset() {
+void StageContextConnector::Reset() {
 	stream.Reset();
 }
 
-TMPL_DEVLIB(void) StageContextConnector::FindComponents() {
+void StageContextConnector::FindComponents() {
 	ComponentBase* b = CastPtr<ComponentBase>(this);
 	ASSERT(b);
 	PoolRef p = TS::ConnectorBase::GetPool();
@@ -630,7 +639,7 @@ TMPL_DEVLIB(void) StageContextConnector::FindComponents() {
 	}*/
 }
 
-TMPL_DEVLIB(void) StageContextConnector::DumpEntityComponents() {
+void StageContextConnector::DumpEntityComponents() {
 	LOG(DevSpec::GetName() + "StageContextConnector:");
 	PoolRef p = TS::ConnectorBase::GetPool();
 	TODO
@@ -650,9 +659,9 @@ TMPL_DEVLIB(void) StageContextConnector::DumpEntityComponents() {
 	}*/
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::Load(Object& json) {TODO}
+bool StageContextConnector::Load(Object& json) {TODO}
 
-TMPL_DEVLIB(bool) StageContextConnector::RefreshStageQueue() {
+bool StageContextConnector::RefreshStageQueue() {
 	DLOG(DevSpec::GetName() << "StageContextConnector::RefreshStageQueue: begin");
 	
 	// Solve dependencies
@@ -724,26 +733,26 @@ TMPL_DEVLIB(bool) StageContextConnector::RefreshStageQueue() {
 	return true;
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::CheckDevice() {
+bool StageContextConnector::CheckDevice() {
 	for(auto& gr : groups)
 		if (!gr.CheckDevice())
 			return false;
 	return true;
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Close() {
+void StageContextConnector::Close() {
 	for(auto& gr : groups)
 		gr.Close();
 }
 
-TMPL_DEVLIB(void) StageContextConnector::RefreshStreamValuesAll() {
+void StageContextConnector::RefreshStreamValuesAll() {
 	stream.UpdateValuesBase();
 	#define IFACE(x) stream.UpdateValues(AsTypeCls<x##Spec>());
 	IFACE_LIST
 	#undef IFACE
 }
 
-TMPL_DEVLIB(void) StageContextConnector::RefreshPipeline() {
+void StageContextConnector::RefreshPipeline() {
 	DLOG(DevSpec::GetName() << "StageContextConnector::RefreshPipeline begin");
 	
 	for(auto& gr : groups)
@@ -763,7 +772,7 @@ TMPL_DEVLIB(void) StageContextConnector::RefreshPipeline() {
 	DLOG(DevSpec::GetName() << "StageContextConnector::RefreshPipeline end");
 }
 
-TMPL_DEVLIB(void) StageContextConnector::OnError(String fn, String msg) {
+void StageContextConnector::OnError(String fn, String msg) {
 	LOG(DevSpec::GetName() << "StageContextConnector::" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
@@ -779,7 +788,7 @@ TMPL_DEVLIB(CLS::StageComponentGroup&) StageContextConnector::GetAddGroupContext
 	return gr;
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::ConnectComponentInputs() {
+bool StageContextConnector::ConnectComponentInputs() {
 	TODO
 	#if 0
 	const char* fn_name = "ConnectComponentInputs";
@@ -851,7 +860,7 @@ TMPL_DEVLIB(bool) StageContextConnector::ConnectComponentInputs() {
 	#endif
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::ConnectComponentOutputs() {
+bool StageContextConnector::ConnectComponentOutputs() {
 	DLOG(DevSpec::GetName() + "StageContextConnector::ConnectComponentOutputs begin");
 	bool ret = true;
 	
@@ -871,9 +880,7 @@ TMPL_DEVLIB(bool) StageContextConnector::ConnectComponentOutputs() {
 	return ret;
 }
 
-template <class DevSpec>
-template <class ValSpec>
-bool ScopeDevLibT<DevSpec>::StageContextConnector::ConnectComponentOutputsT(StageComponentGroup& gr) {
+bool StageContextConnector::ConnectComponentOutputsT(EcsTypeCls dst, StageComponentGroup& gr) {
 	String fn_name = DevSpec::GetName() + "StageContextConnector::ConnectComponentOutputs";
 	
 	TODO
@@ -961,7 +968,7 @@ bool ScopeDevLibT<DevSpec>::StageContextConnector::ConnectComponentOutputsT(Stag
 	return true;
 }
 
-TMPL_DEVLIB(bool) StageContextConnector::CreateComponents(StageComponentConfVector& v) {
+bool StageContextConnector::CreateComponents(StageComponentConfVector& v) {
 	TODO
 	#if 0
 	const char* fn_name = "CreateComponents";
@@ -1003,13 +1010,13 @@ TMPL_DEVLIB(bool) StageContextConnector::CreateComponents(StageComponentConfVect
 	#endif
 }
 
-TMPL_DEVLIB(void) StageContextConnector::FindAdd(StageComponentRef c) {
+void StageContextConnector::FindAdd(StageComponentRef c) {
 	ASSERT(c);
 	StageComponentGroup& g = GetAddGroupContext(c->GetValSpec());
 	g.FindAdd(c);
 }
 
-TMPL_DEVLIB(void) StageContextConnector::Remove(StageComponentRef c) {
+void StageContextConnector::Remove(StageComponentRef c) {
 	ASSERT(c);
 	StageComponentGroup& g = GetAddGroupContext(c->GetValSpec());
 	g.Remove(c);
@@ -1030,17 +1037,17 @@ TMPL_DEVLIB(void) StageContextConnector::Remove(StageComponentRef c) {
 
 //Callback DevSystem::WhenUninit;
 
-TMPL_DEVLIB(bool) DevSystem::Initialize() {
+bool DevSystem::Initialize() {
 	
 	
 	return true;
 }
 
-TMPL_DEVLIB(void) DevSystem::Start() {
+void DevSystem::Start() {
 	
 }
 
-TMPL_DEVLIB(void) DevSystem::Update(double dt) {
+void DevSystem::Update(double dt) {
 	if (comps.IsEmpty())
 		return;
 	
@@ -1067,12 +1074,12 @@ TMPL_DEVLIB(void) DevSystem::Update(double dt) {
 	*/
 }
 
-TMPL_DEVLIB(void) DevSystem::Stop() {
+void DevSystem::Stop() {
 	
 	
 }
 
-TMPL_DEVLIB(void) DevSystem::Uninitialize() {
+void DevSystem::Uninitialize() {
 	//stages.Clear();
 	//devs.Clear();
 	comps.Clear();
@@ -1081,7 +1088,7 @@ TMPL_DEVLIB(void) DevSystem::Uninitialize() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
-#undef CTX
-#undef CLS
+//#undef CTX
+//#undef CLS

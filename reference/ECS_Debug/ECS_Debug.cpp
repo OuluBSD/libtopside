@@ -63,7 +63,7 @@ player.audio.generator: {
 
 void Main() {
 	SetCoutLog();
-	EcsFactory::Dump();
+	Ecs::Factory::Dump();
 	
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
