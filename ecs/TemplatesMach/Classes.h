@@ -12,25 +12,49 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
 struct ValCls : Moveable<ValCls> {
-	byte type = 0;
+	typedef enum : byte {
+		INVALID,
+		AUDIO,
+		VIDEO,
+		EVENT,
+		DATA,
+		
+		TYPE_COUNT
+	} Type;
+	
+	Type type = INVALID;
 	
 	
-	void operator=(const Nuller& n);
-	bool operator==(const ValCls& c) const;
-	bool operator!=(const ValCls& c) const;
-	operator bool() const;
-	hash_t GetHashValue() const;
+	String GetName() const {return GetName(type);}
+	static String GetName(Type t);
+	void operator=(const Nuller& n) {type = INVALID;}
+	bool operator==(const ValCls& c) const {return type == c.type;}
+	bool operator!=(const ValCls& c) const {return type != c.type;}
+	operator bool() const {return type != INVALID;}
+	hash_t GetHashValue() const {return (int)type;}
 };
 
 struct DevCls : Moveable<DevCls> {
-	byte type = 0;
+	typedef enum : byte {
+		INVALID,
+		CENTER,
+		PERMA,
+		ACCEL,
+		NET,
+		
+		TYPE_COUNT
+	} Type;
+	
+	Type type = INVALID;
 	
 	
-	void operator=(const Nuller& n);
-	bool operator==(const DevCls& c) const;
-	bool operator!=(const DevCls& c) const;
-	operator bool() const;
-	hash_t GetHashValue() const;
+	String GetName() const {return GetName(type);}
+	static String GetName(Type t);
+	void operator=(const Nuller& n) {type = INVALID;}
+	bool operator==(const DevCls& c) const {return type == c.type;}
+	bool operator!=(const DevCls& c) const {return type != c.type;}
+	operator bool() const {return type != INVALID;}
+	hash_t GetHashValue() const {return (int)type;}
 };
 
 struct ValDevCls : Moveable<ValDevCls> {
@@ -38,31 +62,40 @@ struct ValDevCls : Moveable<ValDevCls> {
 	DevCls	dev;
 	
 	
-	void operator=(const Nuller& n);
-	bool operator==(const ValDevCls& c) const;
-	bool operator!=(const ValDevCls& c) const;
-	operator bool() const;
-	hash_t GetHashValue() const;
+	String GetName() const {return dev.GetName() + "." + val.GetName();}
+	void operator=(const Nuller& n) {val = n; dev = n;}
+	bool operator==(const ValDevCls& c) const {return val == c && dev == c;}
+	bool operator!=(const ValDevCls& c) const {return val != c || dev != c;}
+	operator bool() const {return val && dev;}
+	hash_t GetHashValue() const {return (int)dev.type * (int)ValCls::TYPE_COUNT + (int)val.type;}
 };
 
 struct EcsTypeCls : Moveable<EcsTypeCls> {
+	typedef enum : byte {
+		INVALID,
+		IFACE,
+		COMP_IN,
+		COMP_OUT,
+		COMP_PIPE,
+		COMP_SIDE,
+		
+		TYPE_COUNT
+	} Type;
+	
 	ValCls	val;
 	DevCls	dev;
-	byte	type;
+	Type type = INVALID;
 	
 	
-	void operator=(const Nuller& n);
-	bool operator==(const EcsTypeCls& c) const;
-	bool operator!=(const EcsTypeCls& c) const;
-	operator bool() const;
-	hash_t GetHashValue() const;
+	void operator=(const Nuller& n) {val = n; dev = n;}
+	bool operator==(const EcsTypeCls& c) const {return val == c && dev == c;}
+	bool operator!=(const EcsTypeCls& c) const {return val != c || dev != c;}
+	operator bool() const {return val && dev && type != INVALID;}
+	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)dev.type) * (int)ValCls::TYPE_COUNT + (int)val.type;}
 };
 
 DevCls GetCenterDevCls();
 
-String GetName(ValCls vd);
-String GetName(DevCls vd);
-String GetName(ValDevCls vd);
 
 
 //#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz)

@@ -44,9 +44,8 @@ public:
 	
 	//TypeCls GetTypeCls() override {return TypeId(AsTypeCls<ValDevSpec>());}
 	
-	DevCls						GetDevSpec() const override;// {return AsTypeCls<DevSpec>();}
 	virtual Value&				GetValue() = 0;
-	virtual void				ClearSink() override;// {GetValue((V*)0).Clear();}
+	virtual void				ClearSink() override {GetValue().Clear();}
 	
 };
 
@@ -78,9 +77,9 @@ public:
 	const RealtimeSourceConfig&	Cfg() const {return cfg;}
 	void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}*/
 	
-	DevCls						GetDevSpec() const override;// {return AsTypeCls<DevSpec>();}
+	//DevCls						GetDevSpec() const override;// {return AsTypeCls<DevSpec>();}
 	virtual Stream&				GetStream() = 0;
-	virtual void				ClearSource() override;// {GetStream((V*)0).Clear();}
+	virtual void				ClearSource() override {GetStream().Clear();}
 private:
 	
 };

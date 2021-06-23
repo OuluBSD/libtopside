@@ -35,7 +35,7 @@ String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
 
-InterfaceSourceBaseRef ComponentBase::FindSource(ValDevCls t) {
+InterfaceSourceRef ComponentBase::FindSource(ValDevCls t) {
 	TODO
 	/*ASSERT(t != AsTypeCls<InterfaceSourceBase>());
 	CollectInterfacesVisitor vis;
@@ -49,7 +49,7 @@ InterfaceSourceBaseRef ComponentBase::FindSource(ValDevCls t) {
 	return InterfaceSourceBaseRef();*/
 }
 
-InterfaceSinkBaseRef ComponentBase::FindSink(ValDevCls t) {
+InterfaceSinkRef ComponentBase::FindSink(ValDevCls t) {
 	TODO
 	/*ASSERT(t != AsTypeCls<InterfaceSinkBase>());
 	CollectInterfacesVisitor vis;

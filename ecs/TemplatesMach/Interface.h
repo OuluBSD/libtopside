@@ -18,7 +18,7 @@ public:
 	
 };
 
-class InterfaceSinkBase :
+/*class InterfaceSinkBase :
 	public InterfaceBase,
 	public ExchangeSinkProvider
 {
@@ -28,7 +28,6 @@ public:
 		vis.VisitThis<InterfaceBase>(this);
 		vis.VisitThis<ExchangeSinkProvider>(this);
 	}
-	virtual void ClearSink() = 0;
 };
 
 class InterfaceSourceBase :
@@ -45,25 +44,30 @@ public:
 	virtual void ClearSource() = 0;
 };
 
-using InterfaceSinkBaseRef = Ref<InterfaceSinkBase, RefParent1<Entity>>;
-using InterfaceSourceBaseRef = Ref<InterfaceSourceBase, RefParent1<Entity>>;
 
-
+*/
 
 class InterfaceSink :
-	public InterfaceSinkBase
+	public InterfaceBase,
+	public ExchangeSinkProvider
 {
 protected:
 	ValDevCls sink;
 	
 public:
-	RTTI_DECL1(InterfaceSink, InterfaceSinkBase)
+	RTTI_DECL2(InterfaceSink, InterfaceBase, ExchangeSinkProvider)
 	InterfaceSink(ValDevCls sink_cls) : sink(sink_cls) {}
 	
-	ValDevCls GetSinkCls() const override {return sink;}
+	ValDevCls	GetSinkCls() const override {return sink;}
+	DevCls		GetDevSpec() const override {return sink.dev;}
 	
 	// Catches the type for CollectInterfacesVisitor
-	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSinkBase>(this);}
+	void Visit(RuntimeVisitor& vis) {
+		vis.VisitThis<InterfaceBase>(this);
+		vis.VisitThis<ExchangeSinkProvider>(this);
+	}
+	
+	virtual void ClearSink() = 0;
 	
 };
 
@@ -73,24 +77,37 @@ void InterfaceDebugPrint(TypeId type, String s);
 
 
 class InterfaceSource :
-	public InterfaceSourceBase
+	public InterfaceBase,
+	public ExchangeSourceProvider
 {
 	ValDevCls sink;
 	ValDevCls src;
 	
 public:
-	RTTI_DECL1(InterfaceSource, InterfaceSourceBase)
+	RTTI_DECL2(InterfaceSource, InterfaceBase, ExchangeSourceProvider)
 	InterfaceSource(ValDevCls sink_cls, ValDevCls src_cls) : sink(sink_cls), src(src_cls) {}
 	
-	ValDevCls GetSourceCls() const override {return src;}
-	ValDevCls GetSinkCls() const override {return sink;}
+	ValDevCls	GetSourceCls() const {return src;}
+	ValDevCls	GetSinkCls() const override {return sink;}
+	DevCls		GetDevSpec() const override {return src.dev;}
 	
 	// Catches the type for CollectInterfacesVisitor
-	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSourceBase>(this);}
+	void Visit(RuntimeVisitor& vis) {
+		vis.VisitThis<InterfaceBase>(this);
+		vis.VisitThis<ExchangeSourceProvider>(this);
+	}
+	
+	virtual void ClearSource() = 0;
 	
 protected:
 	
 };
+
+
+
+using InterfaceSinkRef = Ref<InterfaceSink, RefParent1<Entity>>;
+using InterfaceSourceRef = Ref<InterfaceSource, RefParent1<Entity>>;
+
 
 class InterfaceVisitor : public RuntimeVisitor {
 	TypeCls iface_base;
@@ -130,23 +147,23 @@ public:
 class CollectInterfacesVisitor : public RuntimeVisitor {
 	
 	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {
-		using Sink = InterfaceSinkBase;
-		using Src = InterfaceSourceBase;
+		using Sink = InterfaceSink;
+		using Src = InterfaceSource;
 		
 		#if 1
-		if (derived == AsTypeCls<InterfaceSinkBase>())
-			sink_ifaces.FindAdd(((InterfaceSinkBase*)mem)->AsRef<InterfaceSinkBase>());
-		else if (derived == AsTypeCls<InterfaceSourceBase>())
-			src_ifaces.FindAdd(((InterfaceSourceBase*)mem)->AsRef<InterfaceSourceBase>());
+		if (derived == AsTypeCls<InterfaceSink>())
+			sink_ifaces.FindAdd(((InterfaceSink*)mem)->AsRef<InterfaceSink>());
+		else if (derived == AsTypeCls<InterfaceSource>())
+			src_ifaces.FindAdd(((InterfaceSource*)mem)->AsRef<InterfaceSource>());
 		#else
 		Sink* sink = (Sink*)type.GetBasePtrUnder(AsTypeCls<Sink>(), mem);
 		if (sink) {
-			InterfaceSinkBaseRef r(sink->GetParentUnsafe(), sink);
+			InterfaceSinkRef r(sink->GetParentUnsafe(), sink);
 			sink_ifaces.FindAdd(r);
 		}
 		Src* src = (Src*)type.GetBasePtrUnder(AsTypeCls<Src>(), mem);
 		if (src) {
-			InterfaceSourceBaseRef r(src->GetParentUnsafe(), src);
+			InterfaceSourceRef r(src->GetParentUnsafe(), src);
 			src_ifaces.FindAdd(r);
 		}
 		#endif
@@ -157,8 +174,8 @@ class CollectInterfacesVisitor : public RuntimeVisitor {
 	void OnRef(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {}
 	
 public:
-	LinkedList<InterfaceSinkBaseRef> sink_ifaces;
-	LinkedList<InterfaceSourceBaseRef> src_ifaces;
+	LinkedList<InterfaceSinkRef> sink_ifaces;
+	LinkedList<InterfaceSourceRef> src_ifaces;
 	
 	
 };
@@ -166,13 +183,13 @@ public:
 
 class ClearInterfacesVisitor : public RuntimeVisitor {
 	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {
-		using Sink = InterfaceSinkBase;
-		using Src = InterfaceSourceBase;
+		using Sink = InterfaceSink;
+		using Src = InterfaceSource;
 		
-		if (derived == AsTypeCls<InterfaceSinkBase>())
-			((InterfaceSinkBase*)mem)->ClearSink();
-		else if (derived == AsTypeCls<InterfaceSourceBase>())
-			((InterfaceSourceBase*)mem)->ClearSource();
+		if (derived == AsTypeCls<InterfaceSink>())
+			((InterfaceSink*)mem)->ClearSink();
+		else if (derived == AsTypeCls<InterfaceSource>())
+			((InterfaceSource*)mem)->ClearSource();
 		return true;
 	}
 };
@@ -199,8 +216,8 @@ class ClearInterfacesVisitor : public RuntimeVisitor {
 	void OnRef(const RTTI& type, void* mem, LockedScopeRefCounter* ref) override {}
 	
 public:
-	LinkedList<InterfaceSinkBaseRef> sink_ifaces;
-	LinkedList<InterfaceSourceBaseRef> src_ifaces;
+	LinkedList<InterfaceSinkRef> sink_ifaces;
+	LinkedList<InterfaceSourceRef> src_ifaces;
 	
 	
 	template <class T>

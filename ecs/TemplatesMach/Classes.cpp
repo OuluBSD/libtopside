@@ -3,6 +3,37 @@
 NAMESPACE_ECS_BEGIN
 
 
+DevCls GetCenterDevCls() {
+	DevCls c;
+	c.type = DevCls::CENTER;
+	return c;
+}
+
+String ValCls::GetName(Type t) {
+	switch (t) {
+		case AUDIO:		return "audio";
+		case VIDEO:		return "video";
+		case EVENT:		return "event";
+		case DATA:		return "data";
+		case INVALID:
+		default: return "invalid";
+	}
+}
+
+String DevCls::GetName(Type t) {
+	switch (t) {
+		case CENTER:	return "center";
+		case PERMA:		return "perma";
+		case ACCEL:		return "accel";
+		case NET:		return "net";
+		case INVALID:
+		default: return "invalid";
+	}
+}
+
+
+
+
 template <> BinarySample::Type BinarySample::GetSampleType<uint8>() {return U8_LE;}
 template <> BinarySample::Type BinarySample::GetSampleType<uint16>() {return U16_LE;}
 template <> BinarySample::Type BinarySample::GetSampleType<uint32>() {return U32_LE;}

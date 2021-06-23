@@ -154,7 +154,7 @@ public:
 	static String		GetStringFromType(TypeCls i);
 	static bool			IsDevPipeComponent(TypeCls type);
 	
-	//template <class ValSpec> void UpdateDevBuffersValT() {}
+	void UpdateDevBuffersValT();
 	//template <class ValSpec> bool IsIn() const {return IsValSpec(AsTypeCls<ValSpec>());}
 	void ForwardPacket(ValCls dst, FwdScope& fwd, Packet p);
 	//template <class FromDevSpec, class ValSpec> void ConvertPacket(Packet& p);

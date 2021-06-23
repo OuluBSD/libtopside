@@ -56,7 +56,8 @@ struct StageComponentConf /*:
 	int					GetId() const {return id;}
 	String				ToString() const;// {return DevSpec::ComponentConfBase::ToString() + " (id: " + IntStr(id) + ")";}
 	
-	bool				IsEqualHeader(const StageComponentConf& in) const;
+	// see AccelComponentConfBase
+	bool				IsEqualHeader(const StageComponentConf& in) const {TODO}
 	
 };
 

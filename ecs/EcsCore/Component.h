@@ -48,10 +48,10 @@ public:
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
-	virtual bool IsValSpec(TypeCls t) const {return false;}
+	virtual ValCls GetValSpec() const = 0;
+	virtual bool IsValSpec(ValCls t) const = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
-	virtual TypeCls GetValSpec() const {return AsVoidTypeId().GetTypeId();}
 	virtual String ToString() const;
 	virtual bool SetExtension(ComponentExtBase* ext) {return false;}
 	virtual void ClearExtension() {}
@@ -71,8 +71,8 @@ public:
 	virtual ~ComponentBase();
 	
 	EntityRef GetEntity();
-	InterfaceSourceBaseRef FindSource(ValDevCls t);
-	InterfaceSinkBaseRef FindSink(ValDevCls t);
+	InterfaceSourceRef FindSource(ValDevCls t);
+	InterfaceSinkRef FindSink(ValDevCls t);
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
 	
@@ -170,6 +170,8 @@ public:
 		return ext ? ext->template AsRef<ComponentExtBase>() : ComponentExtBaseRef();
 	}
 	
+	ValCls				GetValSpec() const override {return vd.val;}
+	bool				IsValSpec(ValCls t) const override {return vd.val == t;}
 	
 };
 

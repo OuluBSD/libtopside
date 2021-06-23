@@ -94,6 +94,16 @@ void CustomerComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+EcsTypeCls CustomerComponent::GetEcsCls() const {
+	TODO
+}
+
+TypeCls CustomerComponent::GetTypeCls() const {
+	TODO
+}
+
+
+
 
 
 

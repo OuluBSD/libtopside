@@ -323,7 +323,7 @@ bool StageComponentGroup::ForwardPackets() {
 	
 	
 	StageComponentRef& comp = comps.First();
-	InterfaceSinkBaseRef sink = comp->template AsRef<InterfaceSinkBase>();
+	InterfaceSinkRef sink = comp->AsRef<InterfaceSink>();
 	if (!sink)
 		return false;
 	

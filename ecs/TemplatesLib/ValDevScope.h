@@ -114,8 +114,8 @@ public:
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE(
-			ToLower(GetName(vd.dev)) + "." +
-			ToLower(GetName(vd.val)) + "." +
+			ToLower(vd.dev.GetName()) + "." +
+			ToLower(vd.val.GetName()) + "." +
 			"src")
 	COMP_MAKE_ACTION_END
 	
@@ -156,9 +156,6 @@ public:
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	
-	TypeCls GetValSpec() const override;// {return AsTypeCls<V>();}
-	bool IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
-	
 	// OSink
 	Value&				GetValue() override {return sink_value;}
 	
@@ -193,8 +190,8 @@ public:
 	COMP_DEF_VISIT_(vis & cust_sys)
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE(
-			ToLower(GetName(vd.dev)) + "." +
-			ToLower(GetName(vd.val)) + "." +
+			ToLower(vd.dev.GetName()) + "." +
+			ToLower(vd.val.GetName()) + "." +
 			"sink")
 	COMP_MAKE_ACTION_END
 	
@@ -239,8 +236,6 @@ public:
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	bool				ForwardMem(void* mem, size_t mem_size);
-	TypeCls GetValSpec() const override;// {return AsTypeCls<V>();}
-	bool IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
 	
 	// ValSink
 	Value&				GetValue() override {return sink_value;}
@@ -319,8 +314,6 @@ public:
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
-	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
-	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
 	bool				RequiresDeviceProgram() const override {return true;}
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
@@ -333,7 +326,7 @@ public:
 	
 	// StageComponent
 	bool				LoadAsInput(const StageComponentConf& in) override;
-	void				UpdateDevBuffers() override;// {StageComponent::template UpdateDevBuffersValT<ValSpec>();}
+	void				UpdateDevBuffers() override {StageComponent::UpdateDevBuffersValT();}
 	bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 	void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 	
@@ -403,8 +396,6 @@ public:
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
-	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
-	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	
@@ -473,8 +464,6 @@ public:
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
-	TypeCls				GetValSpec() const override;// {return AsTypeCls<V>();}
-	bool				IsValSpec(TypeCls t) const override;// {return AsTypeCls<V>() == t;}
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	

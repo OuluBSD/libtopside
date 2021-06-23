@@ -3,8 +3,8 @@
 NAMESPACE_ECS_BEGIN
 
 
-#if 0
 void StageComponent::UpdateDevBuffersValT() {
+	// cast this ComponentBase & GetVD
 	TODO
 	/*auto& stream = GetStreamState();
 	
@@ -43,7 +43,6 @@ void StageComponent::UpdateDevBuffersValT() {
 	else {TODO}*/
 }
 
-#endif
 
 
 

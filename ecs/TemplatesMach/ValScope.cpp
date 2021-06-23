@@ -3,7 +3,19 @@
 
 NAMESPACE_ECS_BEGIN
 
-
+String Format::ToString() const {TODO}
+TypeCls Format::GetDevSpec() const {TODO}
+int Format::GetSampleSize() const {TODO}
+int Format::GetArea() const {TODO}
+int Format::GetFrameSize() const {TODO}
+double Format::GetFrameSeconds() const {TODO}
+bool Format::IsValid() const {TODO}
+bool Format::IsSame(const Format& f) const {TODO}
+bool Format::IsCopyCompatible(const Format& f) const {TODO}
+bool Format::operator ==(const Format& f) {TODO}
+bool Format::operator !=(const Format& f) {TODO}
+void Format::SetDefault(ValDevCls t) {TODO}
+void Format::Clear() {TODO}
 
 
 
