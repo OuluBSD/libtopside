@@ -320,13 +320,13 @@ protected:
 	PacketProducer	producer;
 	PacketConsumer	consumer;
 	PacketBuffer	buf;
-	int				min_buf_samples = 0; //std::max<int>(1, 3 * Format::def_sample_rate);
+	//int				min_buf_samples = 0; //std::max<int>(1, 3 * Format::def_sample_rate);
 	dword			exchange_count = 0;
 	Format			fmt;
 	
 public:
 	RTTI_DECL1(SimpleBufferedValue, Value)
-	SimpleBufferedValue() {TODO /*min_buf_samples = std::max<int>(1, 3 * Format::GetDefaultSampleRate());*/}
+	SimpleBufferedValue();
 	~SimpleBufferedValue() {ASSERT(buf.IsEmpty());}
 	void			Clear() override {sink_offsets.Clear(); producer.Clear(); consumer.Clear(); buf.Clear(); exchange_count = 0; fmt.Clear();}
 	void			Exchange(Ex& e) override;
@@ -344,7 +344,7 @@ public:
 	void			DropBuffer();
 	void			AddPacket(Packet p) {buf.Add(p);}
 	void			SetFormat(Format f) {fmt = f;}
-	void			SetMinBufSamples(int i) {min_buf_samples = i;}
+	//void			SetMinBufSamples(int i) {min_buf_samples = i;}
 	
 };
 

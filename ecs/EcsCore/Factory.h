@@ -68,6 +68,7 @@ public:
 		NewFn new_fn;
 		ActionFn action_fn;
 		String name;
+		ValDevCls vd;
 		TypeCls cls;
 		ValDevCls sink, src, src_sink;
 		
@@ -80,19 +81,20 @@ public:
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	template <class T> static bool MakeAction(ValDevCls vd, Eon::Action& act) {return T::MakeAction(vd, act);}
 	
-	template <class T> static void RegisterComponent() {
-		TODO
-		/*CompData& d = CompDataMap().GetAdd(AsTypeCls<T>());
+	template <class T> static void RegisterComponent(DevCls dev, ValCls val) {
+		CompData& d = CompDataMap().GetAdd(AsEcsTypeCls<T>(dev, val));
+		d.vd.dev = dev;
+		d.vd.val = val;
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
 		d.action_fn = &MakeAction<T>;
 		{
 			T o;
-			d.sink = ((InterfaceSinkBase*)&o)->GetSinkCls();
-			d.src = ((InterfaceSourceBase*)&o)->GetSourceCls();
-			d.src_sink = ((InterfaceSourceBase*)&o)->GetSinkCls();
-		}*/
+			d.sink = ((InterfaceSink*)&o)->GetSinkCls();
+			d.src = ((InterfaceSource*)&o)->GetSourceCls();
+			d.src_sink = ((InterfaceSource*)&o)->GetSinkCls();
+		}
 	}
 	
 	template <class T> static void RegisterExtension() {

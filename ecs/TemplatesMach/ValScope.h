@@ -21,6 +21,7 @@ public:
 	int GetArea() const;
 	int GetFrameSize() const;
 	double GetFrameSeconds() const;
+	int GetMinBufSamples() const;
 	
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}

@@ -4,9 +4,15 @@ NAMESPACE_ECS_BEGIN
 
 
 
-/*CustomerComponent::CustomerComponent() : src_stream(this), cfg(gen) {
-	DumpRuntimeDiagnostics(this);
-}*/
+CustomerComponent::CustomerComponent() :
+	src_stream(this),
+	cfg(gen)
+{
+	//DumpRuntimeDiagnostics(this);
+	ValDevCls vd(DevCls::CENTER, ValCls::ORDER);
+	SetSinkType(vd);
+	SetSourceType(vd, vd);
+}
 
 void CustomerComponent::Initialize() {
 	CustomerSystemRef sys = GetMachine().TryGet<CustomerSystem>();
@@ -98,9 +104,7 @@ EcsTypeCls CustomerComponent::GetEcsCls() const {
 	TODO
 }
 
-TypeCls CustomerComponent::GetTypeCls() const {
-	TODO
-}
+
 
 
 
@@ -163,5 +167,15 @@ void CustomerSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 }
 
 
+
+
+
+template <> EcsTypeCls AsEcsTypeCls<CustomerComponent>(DevCls dev, ValCls val) {
+	EcsTypeCls c;
+	c.dev = dev;
+	c.val = val;
+	c.type = EcsTypeCls::CUSTOMER;
+	return c;
+}
 
 NAMESPACE_ECS_END

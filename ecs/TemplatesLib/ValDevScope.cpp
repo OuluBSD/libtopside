@@ -188,6 +188,14 @@ void InputComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+template <> EcsTypeCls AsEcsTypeCls<InputComponent>(DevCls dev, ValCls val) {
+	EcsTypeCls c;
+	c.dev = dev;
+	c.val = val;
+	c.type = EcsTypeCls::COMP_IN;
+	return c;
+}
+
 
 /*TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
 	return stream;
@@ -220,6 +228,7 @@ bool InputComponent::LocalStream::Open(int fmt_idx) {
 bool InputComponent::LocalStream::LoadFileAny(String path) {
 	TODO
 }*/
+
 
 void OutputComponent::Initialize() {
 	TODO
@@ -387,6 +396,15 @@ bool OutputComponent::ForwardMem(void* mem, size_t mem_size) {
 	return false;
 }
 
+template <> EcsTypeCls AsEcsTypeCls<OutputComponent>(DevCls dev, ValCls val) {
+	EcsTypeCls c;
+	c.dev = dev;
+	c.val = val;
+	c.type = EcsTypeCls::COMP_OUT;
+	return c;
+}
+
+
 
 
 
@@ -461,6 +479,14 @@ void PipeComponent::ForwardExchange(FwdScope& fwd) {
 	if (expt) {
 		fwd.AddNext(*expt);
 	}
+}
+
+template <> EcsTypeCls AsEcsTypeCls<PipeComponent>(DevCls dev, ValCls val) {
+	EcsTypeCls c;
+	c.dev = dev;
+	c.val = val;
+	c.type = EcsTypeCls::COMP_PIPE;
+	return c;
 }
 
 

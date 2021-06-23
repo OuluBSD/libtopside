@@ -9,6 +9,7 @@ int Format::GetSampleSize() const {TODO}
 int Format::GetArea() const {TODO}
 int Format::GetFrameSize() const {TODO}
 double Format::GetFrameSeconds() const {TODO}
+int Format::GetMinBufSamples() const {TODO}
 bool Format::IsValid() const {TODO}
 bool Format::IsSame(const Format& f) const {TODO}
 bool Format::IsCopyCompatible(const Format& f) const {TODO}

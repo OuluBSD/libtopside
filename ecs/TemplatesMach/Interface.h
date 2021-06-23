@@ -56,7 +56,9 @@ protected:
 	
 public:
 	RTTI_DECL2(InterfaceSink, InterfaceBase, ExchangeSinkProvider)
-	InterfaceSink(ValDevCls sink_cls) : sink(sink_cls) {}
+	InterfaceSink() {}
+	
+	void SetSinkType(ValDevCls sink) {this->sink = sink;}
 	
 	ValDevCls	GetSinkCls() const override {return sink;}
 	DevCls		GetDevSpec() const override {return sink.dev;}
@@ -85,7 +87,9 @@ class InterfaceSource :
 	
 public:
 	RTTI_DECL2(InterfaceSource, InterfaceBase, ExchangeSourceProvider)
-	InterfaceSource(ValDevCls sink_cls, ValDevCls src_cls) : sink(sink_cls), src(src_cls) {}
+	InterfaceSource() {}
+	
+	void SetSourceType(ValDevCls sink, ValDevCls src) {this->sink = sink; this->src = src;}
 	
 	ValDevCls	GetSourceCls() const {return src;}
 	ValDevCls	GetSinkCls() const override {return sink;}

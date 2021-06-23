@@ -20,7 +20,7 @@ public:
 	void Initialize() override {ASSERT(!is_open); DevComponentBase::Initialize(); is_open = true;}
 	void Uninitialize() override {ASSERT(is_open); DevComponentBase::Uninitialize(); is_open = false;}
 	
-	TypeCls GetValSpec() const override; // {return AsTypeCls<ValSpec>();}
+	ValCls GetValSpec() const override; // {return AsTypeCls<ValSpec>();}
 	void ForwardPackets(double dt) override;
 	
 };

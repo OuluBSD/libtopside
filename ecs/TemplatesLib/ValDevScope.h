@@ -151,10 +151,11 @@ private:
 	bool				ProcessDeviceFrame();
 	
 public:
-	InputComponent();// : sink_value(this), src_stream(this) {}
+	InputComponent() : sink_value(this), src_stream(this) {}
 	
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
+	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_IN);}
 	
 	// OSink
 	Value&				GetValue() override {return sink_value;}
@@ -229,13 +230,14 @@ private:
 	
 	
 public:
-	OutputComponent();// : sink_value(this), src_stream(this) {}
+	OutputComponent() : sink_value(this), src_stream(this) {}
 	
 	void				Initialize() override;
 	void				Uninitialize() override;
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	bool				ForwardMem(void* mem, size_t mem_size);
+	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_OUT);}
 	
 	// ValSink
 	Value&				GetValue() override {return sink_value;}
@@ -309,7 +311,7 @@ private:
 	LocalStream			src_stream;
 	
 public:
-	PipeComponent();// : src_stream(this) {}
+	PipeComponent() : src_stream(this) {}
 	
 	// ComponentBase
 	void				Initialize() override;
@@ -317,6 +319,9 @@ public:
 	bool				RequiresDeviceProgram() const override {return true;}
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
+	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_PIPE);}
+	bool				IsValSpec(ValCls c) const override {return vd.val == c;}
+	ValCls				GetValSpec() const override {return vd.val;}
 	
 	// DevSink
 	Value&				GetValue() override;
@@ -497,8 +502,8 @@ public:
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
-	TypeCls				GetValSpec() const override {return AsTypeCls<O>();}
-	bool				IsValSpec(TypeCls t) const override {return AsTypeCls<O>() == t;}
+	ValCls				GetValSpec() const override {return AsTypeCls<O>();}
+	bool				IsValSpec(ValCls t) const override {return AsTypeCls<O>() == t;}
 	
 	// ReceiptSink
 	RFormat				GetFormat(R*) override;

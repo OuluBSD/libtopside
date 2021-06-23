@@ -12,13 +12,12 @@ NAMESPACE_UPP
 
 INITBLOCK {
 	
-	TODO // register EcsTypeCls
-	/*#define IFACE_CTX_CLS(dev, value, prefix) \
-		TS::Ecs::Factory::RegisterComponent<typename ScopeValDevLibT< VD<dev##Spec,value##Spec> >::PipeComponent>();
+	#define IFACE_CTX_CLS(dev, value, prefix) \
+		TS::Ecs::Factory::RegisterComponent<Ecs::PipeComponent>(Ecs::DevCls::dev, Ecs::ValCls::value);
 	#define IFACE_CTX(value,	format,		sample) DEV_IFACE(value)
 	IFACE_CTX_ORDER_LIST;
 	#undef IFACE
-	#undef IFACE_CTX_CLS*/
+	#undef IFACE_CTX_CLS
 	
 }
 

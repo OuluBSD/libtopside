@@ -109,7 +109,7 @@ class DevComponentBase :
 public:
 	RTTI_DECL0(DevComponentBase)
 	
-	virtual TypeCls GetValSpec() const = 0;
+	virtual ValCls GetValSpec() const = 0;
 	virtual void ForwardPackets(double dt) = 0;
 	
 	void ClearContext() {ctx.Clear();}

@@ -237,7 +237,6 @@ public:
 	RTTI_DECL_R0(ExchangeProviderBase)
 	
 	//bool UnlinkManually(ExchangeProviderBase& p);
-	virtual TypeCls GetTypeCls() const = 0;
 	virtual String GetConfigString() {return String();}
 	
 };

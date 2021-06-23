@@ -87,8 +87,7 @@ public:
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	EcsTypeCls			GetEcsCls() const override;
-	TypeCls				GetTypeCls() const override;
-	
+
 	
 	// ReceiptSink
 	Value&				GetValue() override {return sink_value;}
@@ -147,6 +146,12 @@ using CustomerSystemRef = RefT_Machine<CustomerSystem>;
 PREFAB_BEGIN(Customer)
 	CustomerComponent
 PREFAB_END
+
+
+
+
+
+
 
 
 NAMESPACE_ECS_END

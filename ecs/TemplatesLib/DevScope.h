@@ -126,13 +126,13 @@ protected:
 	virtual void		UpdateDevBuffers() = 0;
 	virtual bool		IsEmptyStream() const = 0;
 	virtual void		ClearStream() = 0;
-	virtual bool		IsValSpec(TypeCls) const = 0;
+	virtual bool		IsValSpec(ValCls) const = 0;
 	
 	virtual void		PreProcess() {}
 	void				PostProcess();
 	
 public:
-	virtual TypeCls		GetValSpec() const = 0;
+	virtual ValCls		GetValSpec() const = 0;
 	
 	
 	void				Initialize();
@@ -235,9 +235,9 @@ public:
 	void				DumpComponents();
 	bool				CheckDevice();
 	
-	bool				IsValSpec(TypeCls t) const override {return t == val_spec;}
+	bool				IsValSpec(ValCls t) const override {return t == val_spec;}
 	DevStreamState&		GetStreamState() override {return GetParent()->GetStreamState();}
-	TypeCls				GetValSpec() const {return val_spec;}
+	ValCls				GetValSpec() const {return val_spec;}
 	StageComponentRef		GetComponentById(int id) const;
 	
 	const LinkedList<StageComponentRef>& GetComponents() const {return comps;}

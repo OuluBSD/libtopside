@@ -13,7 +13,7 @@ file
 	InitIn.icpp,
 	InitOut.icpp,
 	InitSource.icpp,
-	InitIfaceSink.icpp,
+	InitSink.icpp,
 	InitSidechain.icpp,
 	AccelScope.h,
 	AccelScope.cpp,

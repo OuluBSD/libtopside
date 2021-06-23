@@ -34,7 +34,7 @@ class ValSink :
 public:
 	RTTI_DECL2(ValSink, InterfaceSink, DevSink)
 	
-	ValSink(ValDevCls sink) : InterfaceSink(sink) {}
+	ValSink() {}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSink>(this);
@@ -60,7 +60,7 @@ class ValSource :
 public:
 	RTTI_DECL2(ValSource, InterfaceSource, DevSource)
 	
-	ValSource(ValDevCls src, ValDevCls sink);
+	ValSource() {}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSource>(this);

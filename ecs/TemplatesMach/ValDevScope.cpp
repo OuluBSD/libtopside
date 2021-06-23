@@ -122,6 +122,9 @@ Packet SimpleValue::Pick() {
 
 
 
+SimpleBufferedValue::SimpleBufferedValue() {
+	/*min_buf_samples = std::max<int>(1, 3 * Format::GetDefaultSampleRate());*/
+}
 
 void SimpleBufferedValue::Exchange(Ex& e) {
 	/*using ValSpec				= typename ValDevSpec::Val;
@@ -167,7 +170,7 @@ void SimpleBufferedValue::Exchange(Ex& e) {
 			
 			ASSERT(!sink.IsQueueFull());
 			
-			producer.SetDestination(*dst_sbuf, min_buf_samples);
+			producer.SetDestination(*dst_sbuf, fmt.GetMinBufSamples());
 			producer.SetDestinationRealtime(conf.sync);
 			producer.ProduceAll();
 			producer.ClearDestination();
@@ -228,7 +231,7 @@ void SimpleBufferedValue::Exchange(Ex& e) {
 		ASSERT(!IsQueueFull());
 		
 		consumer.SetSource(src_buf);
-		consumer.SetDestination(val_fmt, this->buf, min_buf_samples);
+		consumer.SetDestination(val_fmt, this->buf, fmt.GetMinBufSamples());
 		consumer.SetDestinationRealtime(conf.sync);
 		consumer.ConsumeAll();
 		consumer.ClearDestination();
@@ -256,7 +259,7 @@ Format SimpleBufferedValue::GetFormat() const {
 
 bool SimpleBufferedValue::IsQueueFull() const {
 	int cs = GetQueueChannelSamples();
-	return cs >= min_buf_samples;
+	return cs >= fmt.GetMinBufSamples();
 }
 
 int SimpleBufferedValue::GetQueueChannelSamples() const {

@@ -18,13 +18,25 @@ struct ValCls : Moveable<ValCls> {
 		VIDEO,
 		EVENT,
 		DATA,
+		ORDER,
+		RECEIPT,
 		
-		TYPE_COUNT
+		TYPE_COUNT,
+		
+		Audio = AUDIO,
+		Video = VIDEO,
+		Event = EVENT,
+		Data = DATA,
+		Order = ORDER,
+		Receipt = RECEIPT,
 	} Type;
 	
 	Type type = INVALID;
 	
 	
+	ValCls() {}
+	ValCls(Type t) : type(t) {}
+	ValCls(const ValCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
@@ -42,12 +54,20 @@ struct DevCls : Moveable<DevCls> {
 		ACCEL,
 		NET,
 		
-		TYPE_COUNT
+		TYPE_COUNT,
+		
+		Center = CENTER,
+		Perma = PERMA,
+		Accel = ACCEL,
+		Net = NET,
 	} Type;
 	
 	Type type = INVALID;
 	
 	
+	DevCls() {}
+	DevCls(Type t) : type(t) {}
+	DevCls(const DevCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
@@ -62,6 +82,9 @@ struct ValDevCls : Moveable<ValDevCls> {
 	DevCls	dev;
 	
 	
+	ValDevCls() {}
+	ValDevCls(DevCls::Type d, ValCls::Type v) : val(v), dev(d) {}
+	ValDevCls(const ValDevCls& v) : val(v.val), dev(v.dev) {}
 	String GetName() const {return dev.GetName() + "." + val.GetName();}
 	void operator=(const Nuller& n) {val = n; dev = n;}
 	bool operator==(const ValDevCls& c) const {return val == c && dev == c;}
@@ -78,6 +101,7 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 		COMP_OUT,
 		COMP_PIPE,
 		COMP_SIDE,
+		CUSTOMER,
 		
 		TYPE_COUNT
 	} Type;
@@ -86,13 +110,19 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 	DevCls	dev;
 	Type type = INVALID;
 	
-	
+	EcsTypeCls() {}
+	EcsTypeCls(ValDevCls vd, Type t) : val(vd.val), dev(vd.dev), type(t) {}
+	EcsTypeCls(const EcsTypeCls& c) : val(c.val), dev(c.dev), type(c.type) {}
 	void operator=(const Nuller& n) {val = n; dev = n;}
 	bool operator==(const EcsTypeCls& c) const {return val == c && dev == c;}
 	bool operator!=(const EcsTypeCls& c) const {return val != c || dev != c;}
 	operator bool() const {return val && dev && type != INVALID;}
 	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)dev.type) * (int)ValCls::TYPE_COUNT + (int)val.type;}
 };
+
+
+template <class T> EcsTypeCls AsEcsTypeCls(DevCls dev, ValCls val);
+
 
 DevCls GetCenterDevCls();
 

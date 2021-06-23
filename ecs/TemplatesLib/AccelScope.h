@@ -10,7 +10,7 @@ NAMESPACE_ECS_BEGIN
 		RTTI_DECL0(x##ComponentGroupBase) \
 		void RefreshPipeline() {} \
 		void UpdateBuffers() {} \
-		virtual bool				IsValSpec(TypeCls t) const = 0; \
+		virtual bool				IsValSpec(ValCls t) const = 0; \
 		virtual x##StreamState&		GetStreamState() = 0; \
 		bool CreateForwardPacket(InterfaceSinkBase& sink) {return false;} \
 	};
@@ -246,7 +246,7 @@ public:
 	void RefreshPipeline();
 	bool CreateForwardPacket(InterfaceSinkBase& sink);
 	
-	virtual bool				IsValSpec(TypeCls t) const = 0;
+	virtual bool				IsValSpec(ValCls t) const = 0;
 	virtual AccelStreamState&	GetStreamState() = 0;
 	
 	template <class T> bool IsIn() {return IsValSpec(AsTypeCls<T>());}
