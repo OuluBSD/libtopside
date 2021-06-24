@@ -97,6 +97,10 @@ public:
 	// OrderSource
 	Stream&				GetStream() override {return src_stream;}
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_CUSTOMER;}
+	static ValDevCls			GetDefaultValDev() {return ValDevCls(DevCls::CENTER, ValCls::ORDER);}
+	
 };
 
 using CustomerComponentRef = RefT_Entity<CustomerComponent>;

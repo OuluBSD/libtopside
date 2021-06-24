@@ -39,7 +39,8 @@ void Entity::OnChange() {
 
 ComponentBaseRef Entity::GetTypeCls(EcsTypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		TypeCls type = comp->GetTypeId();
+		EcsTypeCls type = comp->GetType();
+		ASSERT(type.IsValid());
 		if (type == comp_type)
 			return comp;
 	}
@@ -53,7 +54,7 @@ ComponentBaseRef Entity::GetAddTypeCls(EcsTypeCls comp_type) {
 
 ComponentBaseRef Entity::FindTypeCls(EcsTypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		TypeCls type = comp->GetTypeId();
+		EcsTypeCls type = comp->GetType();
 		if (type == comp_type)
 			return comp;
 	}

@@ -10,34 +10,39 @@ public:
 	
 	// Interfaces
 	struct Link : Moveable<Link> {
-		TypeCls dst_comp, iface_src, iface_sink;
+		EcsTypeCls dst_comp;
+		ValDevCls iface;
 	};
 	
 	struct IfaceData : Moveable<IfaceData> {
 		TypeCls cls;
 		TypeCls expt_type;
-		ValDevCls sink_cls;
+		ValDevCls vd;
 		String name;
 	};
 	typedef VectorMap<ValDevCls,IfaceData> IfaceMap;
 	static IfaceMap& SourceDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
 	static IfaceMap& SinkDataMap()   {MAKE_STATIC(IfaceMap, m); return m;}
 	
-	template <class T> static void RegisterInterfaceSource() {
-		IfaceData& d = SourceDataMap().GetAdd(AsTypeCls<T>());
+	template <class T> static void RegisterInterfaceSource(DevCls dev, ValCls val) {
+		ValDevCls vd(dev,val);
+		IfaceData& d = SourceDataMap().GetAdd(vd);
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.expt_type = AsTypeCls<typename T::ExPt>();
-		d.sink_cls = AsTypeCls<typename T::Sink>();
+		d.vd.dev = dev;
+		d.vd.val = val;
 		MetaExchangePoint::RegisterExchangePoint<typename T::ExPt>();
 	}
 	
-	template <class T> static void RegisterInterfaceSink() {
-		IfaceData& d = SinkDataMap().GetAdd(AsTypeCls<T>());
+	template <class T> static void RegisterInterfaceSink(DevCls dev, ValCls val) {
+		ValDevCls vd(dev,val);
+		IfaceData& d = SinkDataMap().GetAdd(vd);
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
 		d.expt_type = 0;
-		d.sink_cls = Null;
+		d.vd.dev = dev;
+		d.vd.val = val;
 	}
 	
 	
@@ -51,7 +56,7 @@ public:
 		NewExt new_fn;
 		ActionFn action_fn;
 		String name;
-		TypeCls cls;
+		EcsTypeCls cls;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
@@ -64,13 +69,13 @@ public:
 	
 	typedef ComponentBase* (*NewFn)();
 	struct CompData : Moveable<CompData> {
-		VectorMap<TypeCls,ExtData> ext;
+		VectorMap<EcsTypeCls,ExtData> ext;
 		NewFn new_fn;
 		ActionFn action_fn;
 		String name;
-		ValDevCls vd;
-		TypeCls cls;
-		ValDevCls sink, src, src_sink;
+		EcsTypeCls cls;
+		ValDevCls sink, side, src;
+		TypeCls rtti_cls;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
@@ -81,32 +86,35 @@ public:
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	template <class T> static bool MakeAction(ValDevCls vd, Eon::Action& act) {return T::MakeAction(vd, act);}
 	
-	template <class T> static void RegisterComponent(DevCls dev, ValCls val) {
-		CompData& d = CompDataMap().GetAdd(AsEcsTypeCls<T>(dev, val));
-		d.vd.dev = dev;
-		d.vd.val = val;
-		d.cls = AsTypeCls<T>();
+	template <class T> static void RegisterComponent(DevCls dev, ValCls sink, ValCls side, ValCls src) {
+		EcsTypeCls cls = AsEcsTypeCls<T>(dev, side);
+		CompData& d = CompDataMap().GetAdd(cls);
+		d.rtti_cls = AsTypeCls<T>();
+		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
 		d.action_fn = &MakeAction<T>;
 		{
 			T o;
-			d.sink = ((InterfaceSink*)&o)->GetSinkCls();
-			d.src = ((InterfaceSource*)&o)->GetSourceCls();
-			d.src_sink = ((InterfaceSource*)&o)->GetSinkCls();
+			d.sink = ValDevCls(dev, sink);
+			d.side = ValDevCls(dev, side);
+			d.src = ValDevCls(dev, src);
+			ASSERT(d.sink.IsValid());
+			ASSERT(d.side.IsValid());
+			ASSERT(d.src.IsValid());
 		}
 	}
 	
-	template <class T> static void RegisterExtension() {
-		TODO
-		/*using Component = typename T::Component;
-		CompData& d = CompDataMap().GetAdd(AsTypeCls<Component>());
-		TypeCls t = AsTypeCls<T>();
+	template <class T> static void RegisterExtension(DevCls dev, ValCls val) {
+		using Component = typename T::Component;
+		EcsTypeCls ct = AsEcsTypeCls<Component>(dev, val);
+		CompData& d = CompDataMap().GetAdd(ct);
+		EcsTypeCls t = AsEcsTypeCls<T>(dev, val);
 		ExtData& e = d.ext.GetAdd(t);
 		e.cls = t;
 		e.name = T::GetTypeName();
 		e.new_fn = &CreateExt<T>;
-		e.action_fn = &MakeAction<T>;*/
+		e.action_fn = &MakeAction<T>;
 	}
 	
 	static void Dump();

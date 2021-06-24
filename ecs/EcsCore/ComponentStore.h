@@ -4,10 +4,42 @@
 NAMESPACE_ECS_BEGIN
 
 
+template<class T> using EcsTypeMap				= LinkedMap<EcsTypeCls, T>;
+
+
+
+
+template<typename T, typename ProducerT, typename RefurbisherT>
+class EcsFactory
+{
+public:
+    using Type = T;
+    using Producer = ProducerT;
+    using Refurbisher = RefurbisherT;
+
+    void RegisterProducer(const EcsTypeCls& typeId, Producer producer, Refurbisher refurbisher)
+    {
+        auto p = producers.find(typeId);
+        AssertFalse(p != producers.end(), "multiple registrations for the same type is not allowed");
+        producers.insert(p, { typeId, pick<Producer>(producer) });
+        
+        auto r = refurbishers.find(typeId);
+        AssertFalse(r != refurbishers.end(), "multiple registrations for the same type is not allowed");
+        refurbishers.insert(r, { typeId, pick<Refurbisher>(refurbisher) });
+    }
+
+protected:
+    EcsTypeMap<ProducerT> producers;
+    EcsTypeMap<RefurbisherT> refurbishers;
+    
+};
+
+
+
 template <class Main, class Base>
 class ComponentStoreT :
 	public System<ComponentStoreT<Main,Base>>,
-	public Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >
+	public EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >
 {
 	
 	
@@ -18,7 +50,7 @@ public:
 	SYS_DEF_VISIT
 	
 	using Parent = Machine;
-	using Factory = TS::Factory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
+	using Factory = EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsComponent = std::is_base_of<Base, T>;
 	template<typename T> using IsConnector = std::is_base_of<Base, T>;
 	
@@ -29,10 +61,10 @@ public:
 	ComponentBase* CreateComponentTypeCls(EcsTypeCls key);
 	
 	template<typename T>
-	T* CreateComponent() {
+	T* CreateComponent(ValDevCls vd) {
 		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		TypeCls key(AsTypeCls<T>());
+		EcsTypeCls key  = AsEcsTypeCls<T>(vd);
 		auto it = Factory::producers.Find(key);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
@@ -41,7 +73,7 @@ public:
 			Factory::refurbishers.Add(key) = r;
 		}
 		
-		return CastPtr<T>(CreateComponent(AsTypeCls<T>()));
+		return CastPtr<T>(CreateComponent(key));
 	}
 	
 	void Clone(Main& dst, const Main& src) {
@@ -50,7 +82,7 @@ public:
 		
 		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
 		for (; iter; ++iter) {
-			TypeCls comp_type = iter.key();
+			EcsTypeCls comp_type = iter.key();
 			Base* new_component = CreateComponent(comp_type);
 			dst.InitializeComponent(*new_component);
 			iter.value().CopyTo(new_component);
@@ -60,7 +92,7 @@ public:
 	
 	void ReturnComponent(Base* c) {
 		ASSERT(c);
-		TypeCls type = c->GetType();
+		EcsTypeCls type = c->GetType();
 		
 		auto iter = Factory::refurbishers.Find(type);
 		if (iter)
@@ -70,11 +102,12 @@ public:
 	
 private:
 	
-	Base* CreateComponent(TypeCls typeId) {
+	Base* CreateComponent(EcsTypeCls typeId) {
 		auto iter = Factory::producers.Find(typeId);
 		ASSERT_(iter, "Invalid to create non-existant component");
 		
 		Base* obj = iter.value()();
+		obj->SetType(typeId);
 		return obj;
 	}
 	

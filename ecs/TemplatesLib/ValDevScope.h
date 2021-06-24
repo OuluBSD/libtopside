@@ -163,6 +163,9 @@ public:
 	// ValSource
 	Stream&				GetStream() override {return src_stream;}
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_IN;}
+	
 };
 
 
@@ -248,6 +251,9 @@ public:
 	bool				ReadFrame() {TODO}
 	bool				ProcessFrame() {TODO}
 	bool				ProcessDeviceFrame() {TODO}
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_OUT;}
 	
 };
 
@@ -335,6 +341,9 @@ public:
 	bool				IsEmptyStream() const override {return src_value.IsEmpty() && sink_value.IsEmpty();}
 	void				ClearStream() override {src_value.ClearBuffer(); sink_value.ClearBuffer();}
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_PIPE;}
+	
 };
 
 
@@ -396,19 +405,23 @@ private:
 	LocalSourceStream	src_stream;
 	
 public:
-	SideOutputComponent();// : src_stream(this) {}
+	SideOutputComponent() : src_stream(this) {}
 	
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
+	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_SIDE_OUT);}
 	
 	// ValSink
 	Value&				GetValue() override;
 	
 	// ReceiptSource
 	Stream&				GetStream() override;
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_SIDE_OUT;}
 	
 };
 
@@ -464,13 +477,14 @@ private:
 	LocalSourceStream	src_stream;
 	
 public:
-	SideInputComponent();// : src_stream(this) {}
+	SideInputComponent() : src_stream(this) {}
 	
 	// ComponentBase
 	void				Initialize() override;
 	void				Uninitialize() override;
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
+	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_SIDE_IN);}
 	
 	// OrderSink
 	Value&				GetValue() override;
@@ -478,6 +492,8 @@ public:
 	// ValSource
 	Stream&				GetStream() override;
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_SIDE_IN;}
 	
 };
 

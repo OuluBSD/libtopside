@@ -69,7 +69,7 @@ public:
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
 	
-	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls src_iface, ValDevCls sink_iface);
+	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface);
 	
 	template<typename PrefabT>
 	EntityRef Create() {

@@ -77,9 +77,9 @@ EntityRef Pool::Clone(const Entity& c) {
 	return e;
 }
 
-bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls src_iface, ValDevCls sink_iface) {
-	InterfaceSourceRef src = src_comp->FindSource(src_iface);
-	InterfaceSinkRef sink = dst_comp->FindSink(sink_iface);
+bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface) {
+	InterfaceSourceRef src = src_comp->FindSource(iface);
+	InterfaceSinkRef sink = dst_comp->FindSink(iface);
 	ASSERT(src && sink);
 	if (!src || !sink)
 		return false;
@@ -87,12 +87,12 @@ bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls 
 	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
 	CookieRef src_cookie, sink_cookie;
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		const auto& src_d = Ecs::Factory::SourceDataMap().Get(src_iface);
-		if (src_d.sink_cls != sink_iface) {
+		const auto& src_d = Ecs::Factory::SourceDataMap().Get(iface);
+		/*if (src_d.sink_cls != iface) {
 			ASSERT(0);
 			LOG("internal error: unexpected sink class type");
 			return false;
-		}
+		}*/
 		
 		TypeCls expt_type = src_d.expt_type;
 		ASSERT(expt_type);

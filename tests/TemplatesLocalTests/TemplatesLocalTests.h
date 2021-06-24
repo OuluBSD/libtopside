@@ -20,6 +20,9 @@ public:
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.id.ABCD")
 	COMP_MAKE_ACTION_END
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_CUSTOMER;}
+	
 };
 
 
@@ -42,6 +45,9 @@ public:
 	COMP_MAKE_ACTION_BEGIN
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.realtime")
 	COMP_MAKE_ACTION_END
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_AUDIO_OUT;}
 	
 };
 

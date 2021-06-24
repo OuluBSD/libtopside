@@ -63,10 +63,9 @@ InterfaceSinkRef ComponentBase::FindSink(ValDevCls t) {
 	return InterfaceSinkBaseRef();*/
 }
 
-ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeCls ext) {
-	TypeCls comp = GetTypeId();
-	TODO
-	/*const auto& cd = Ecs::Factory::CompDataMap().Get(comp);
+ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(EcsTypeCls ext) {
+	EcsTypeCls comp = GetType();
+	const auto& cd = Ecs::Factory::CompDataMap().Get(comp);
 	for (const auto& e : cd.ext.GetValues()) {
 		if (e.cls == ext) {
 			ComponentExtBase* b = e.new_fn();
@@ -75,7 +74,7 @@ ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeCls ext) {
 			break;
 		}
 	}
-	return ComponentExtBaseRef();*/
+	return ComponentExtBaseRef();
 }
 
 

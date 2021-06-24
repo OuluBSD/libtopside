@@ -25,7 +25,7 @@ protected:
 	Vector<bool>		using_act;
 	EcsTypeCls			cur_comp;
 	EcsTypeCls			add_ext;
-	ValDevCls			src_iface, sink_iface;
+	ValDevCls			iface;
 	Type				type = INVALID;
 	ActionPlanner*		ap = 0;
 public:
@@ -41,7 +41,7 @@ public:
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
 	void SetAs_AddExtension(EcsTypeCls comp, EcsTypeCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
-	void SetAs_AddComponent(EcsTypeCls comp, ValDevCls src, ValDevCls sink) {type = ADD_COMP; cur_comp = comp; src_iface = src; sink_iface = sink;}
+	void SetAs_AddComponent(EcsTypeCls comp, ValDevCls iface) {type = ADD_COMP; cur_comp = comp; this->iface = iface;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddComponent() const {return type == ADD_COMP;}
@@ -52,8 +52,7 @@ public:
 	int64 GetHashValue();
 	EcsTypeCls GetComponent() const {return cur_comp;}
 	EcsTypeCls GetExtension() const {return add_ext;}
-	ValDevCls GetSourceInterface() const {ASSERT(src_iface); return src_iface;}
-	ValDevCls GetSinkInterface() const {ASSERT(sink_iface); return sink_iface;}
+	ValDevCls GetInterface() const {ASSERT(iface.IsValid()); return iface;}
 	String ToString() const;
 	bool Contains(const WorldState& ws) const;
 	
@@ -224,10 +223,10 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 	Array<Ecs::Eon::WorldState*> to;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
-	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
+	LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Ecs::Eon::WorldState& ws_to = *to[i];
-		//LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
+		LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		if (j == -1) {

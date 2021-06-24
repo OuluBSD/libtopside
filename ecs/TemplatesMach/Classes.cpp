@@ -15,6 +15,8 @@ String ValCls::GetName(Type t) {
 		case VIDEO:		return "video";
 		case EVENT:		return "event";
 		case DATA:		return "data";
+		case ORDER:		return "order";
+		case RECEIPT:	return "receipt";
 		case INVALID:
 		default: return "invalid";
 	}
@@ -31,6 +33,20 @@ String DevCls::GetName(Type t) {
 	}
 }
 
+String EcsTypeCls::GetTypeString(Type t) {
+	switch (t) {
+		case IFACE:					return "interface";
+		case COMP_IN:				return "input-component";
+		case COMP_OUT:				return "output-component";
+		case COMP_PIPE:				return "pipe-component";
+		case COMP_SIDE_OUT:			return "side-out-component";
+		case COMP_SIDE_IN:			return "side-in-component";
+		case COMP_CUSTOMER:			return "customer-component";
+		case COMP_TEST_CUSTOMER:	return "test-customer-component";
+		case COMP_TEST_AUDIO_OUT:	return "test-audio-out-component";
+		default: return "invalid";
+	}
+}
 
 
 

@@ -16,15 +16,14 @@ NAMESPACE_UPP
 
 INITBLOCK {
 	
-	TODO // register EcsTypeCls
-	/*#define ECS_CTX(dev, value, prefix) \
-		TS::Ecs::Factory::RegisterInterfaceSource<prefix##Source>();
+	#define ECS_CTX(dev, val, prefix) \
+		TS::Ecs::Factory::RegisterInterfaceSource<Ecs::ValSource>(Ecs::DevCls::dev, Ecs::ValCls::val);
 	#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
 	#define IFACE(x) DEV_IFACE(x)
 	IFACE_LIST
 	#undef IFACE
 	#undef IFACE_CTX_CLS
-	#undef ECS_CTX*/
+	#undef ECS_CTX
 	
 }
 

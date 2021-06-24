@@ -42,14 +42,13 @@ protected:
 	friend class Entity;
 	
 public:
-	virtual TypeCls GetType() const = 0;
+	virtual EcsTypeCls GetType() const = 0;
+	virtual void SetType(EcsTypeCls t) = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
-	virtual ValCls GetValSpec() const = 0;
-	virtual bool IsValSpec(ValCls t) const = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const;
@@ -57,7 +56,10 @@ public:
 	virtual void ClearExtension() {}
 	virtual ComponentExtBaseRef GetExtension() {return ComponentExtBaseRef();}
 	
-	ComponentExtBaseRef SetExtensionTypeCls(TypeCls ext);
+	ValCls GetValSpec() const {return GetType().val;}
+	bool IsValSpec(ValCls t) const {return t == GetType().val;}
+	
+	ComponentExtBaseRef SetExtensionTypeCls(EcsTypeCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -123,9 +125,8 @@ struct Component :
 	}
 	
 	
-	TypeCls GetType() const override {
-		return AsTypeCls<T>();
-	}
+	EcsTypeCls GetType() const override {return AsEcsTypeCls<T>(vd);}
+	void SetType(EcsTypeCls t) override {vd = t;}
 	
 	void CopyTo(ComponentBase* target) const override {
 		ASSERT(target->GetType() == GetType());
@@ -142,7 +143,7 @@ private:
 	}
 protected:
 	One<Ext>	ext;
-	ValDevCls	vd;
+	EcsTypeCls	vd;
 	
 public:
 	~Component() {ASSERT(ext.IsEmpty());}
@@ -170,15 +171,13 @@ public:
 		return ext ? ext->template AsRef<ComponentExtBase>() : ComponentExtBaseRef();
 	}
 	
-	ValCls				GetValSpec() const override {return vd.val;}
-	bool				IsValSpec(ValCls t) const override {return vd.val == t;}
 	
 };
 
 #define COMP_RTTI(x)  RTTI_DECL1(x, Component<x>)
 
-using ComponentMapBase	= RefTypeMapIndirect<ComponentBase>;
-using ComponentRefMap	= ArrayMap<TypeCls,Ref<ComponentBase>>;
+using ComponentMapBase	= RefEcsTypeMapIndirect<ComponentBase>;
+using ComponentRefMap	= ArrayMap<EcsTypeCls,Ref<ComponentBase>>;
 
 class ComponentMap : public ComponentMapBase {
 	
@@ -196,7 +195,7 @@ public:
 	RefT_Entity<ComponentT> Get() {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsTypeCls<ComponentT>());
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsEcsTypeCls<ComponentT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
 			THROW(Exc("Could not find component " + AsTypeString<ComponentT>()));
@@ -208,7 +207,7 @@ public:
 	RefT_Entity<ComponentT> Find() {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsTypeCls<ComponentT>());
+		ComponentMapBase::Iterator it = ComponentMapBase::Find(AsEcsTypeCls<ComponentT>());
 		if (IS_EMPTY_SHAREDPTR(it))
 			return Null;
 		else
@@ -219,10 +218,8 @@ public:
 	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		TypeCls type = AsTypeCls<ComponentT>();
-		TypeCls actual_type = component->GetType();
-		ASSERT_(actual_type == type, "ComponentRef type does not match " + AsTypeString<ComponentT>());
-		
+		EcsTypeCls type = component->GetType();
+		ASSERT(type.IsValid());
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
 		ComponentMapBase::Add(type, component);
@@ -232,7 +229,7 @@ public:
 	void Remove(ComponentStoreRef s) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		ComponentMapBase::Iterator iter = ComponentMapBase::Find(AsTypeCls<ComponentT>());
+		ComponentMapBase::Iterator iter = ComponentMapBase::Find(AsEcsTypeCls<ComponentT>());
 		ASSERT_(iter, "Tried to remove non-existent component");
 		
 		iter.value().UninitializeWithExt();
@@ -244,7 +241,7 @@ public:
 	
 	void AddBase(ComponentBase* component) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
-		TypeCls type = component->GetType();
+		EcsTypeCls type = component->GetType();
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ComponentMapBase::Add(type, component);
 	}

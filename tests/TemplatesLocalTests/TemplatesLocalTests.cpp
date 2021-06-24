@@ -200,13 +200,13 @@ bool TestParser() {
 
 void Main() {
 	SetCoutLog();
-	//Ecs::Factory::Dump();
+	Ecs::Factory::Dump();
 	
 	if (!TestParser())
 		return;
 	
-	Ecs::Factory::RegisterExtension<TestCustomer>();
-	Ecs::Factory::RegisterExtension<TestRealtimeSink>();
+	Ecs::Factory::RegisterExtension<TestCustomer>(DevCls::CENTER, ValCls::ORDER);
+	Ecs::Factory::RegisterExtension<TestRealtimeSink>(DevCls::CENTER, ValCls::AUDIO);
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -238,7 +238,7 @@ void Main() {
 			PoolRef root = es->GetRoot();
 			
 			String eon_code;
-			int test_i = 1;
+			int test_i = 0;
 			if      (test_i == 0)	eon_code = center_str;
 			else if (test_i == 1)	eon_code = perma_str;
 			else if (test_i == 2)	eon_code = accel_str;

@@ -3,7 +3,7 @@
 NAMESPACE_UPP
 
 INITBLOCK {
-	Ecs::Factory::RegisterComponent<Ecs::CustomerComponent>(Ecs::DevCls::Center, Ecs::ValCls::Order);
+	Ecs::Factory::RegisterComponent<Ecs::CustomerComponent>(Ecs::DevCls::Center, Ecs::ValCls::RECEIPT, Ecs::ValCls::ORDER, Ecs::ValCls::ORDER);
 	
 }
 

@@ -13,8 +13,7 @@ void WorldState::Clear() {
 	values.Clear();
 	using_act.Clear();
 	cur_comp = Null;
-	src_iface = Null;
-	sink_iface = Null;
+	iface = Null;
 	add_ext = Null;
 	type = INVALID;
 }
@@ -46,8 +45,7 @@ WorldState& WorldState::operator=(const WorldState& src) {
 	using_act	<<= src.using_act;
 	cur_comp	= src.cur_comp;
 	add_ext		= src.add_ext;
-	src_iface	= src.src_iface;
-	sink_iface	= src.sink_iface;
+	iface		= src.iface;
 	type		= src.type;
 	ap			= src.ap;
 	return *this;
@@ -57,10 +55,9 @@ WorldState& WorldState::operator=(const WorldState& src) {
 int64 WorldState::GetHashValue() {
 	CombineHash c;
 	c.Put((int)type);
-	c.Put(cur_comp);
-	c.Put(add_ext);
-	c.Put(src_iface);
-	c.Put(sink_iface);
+	c.Put(cur_comp.GetHashValue());
+	c.Put(add_ext.GetHashValue());
+	c.Put(iface.GetHashValue());
 	for(int i = 0; i < values.GetCount(); i++) {
 		c.Put(using_act[i]);
 		c.Put(values[i].GetHashValue());
@@ -207,7 +204,7 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
 {
 	auto& src = n.GetWorldState();
-	TypeCls comp_type = src.GetComponent();
+	EcsTypeCls comp_type = src.GetComponent();
 	
 	/*bool dbg =
 		src.IsTrue("customer.id.ABCD")
@@ -233,8 +230,15 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<W
 		// Check precondition
 		Action& act = acts[i];
 		
+		if (act.precond.GetComponent() != comp_type) {
+			DUMP(act.precond.GetComponent());
+			DUMP(comp_type);
+		}
 		ASSERT(act.precond.GetComponent() == comp_type);
-		if      (act.IsAddComponent()) {ASSERT(act.postcond.GetComponent() != comp_type);}
+		if      (act.IsAddComponent()) {
+			if (act.postcond.GetComponent() == comp_type) {DUMP(comp_type);}
+			ASSERT(act.postcond.GetComponent() != comp_type);
+		}
 		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetComponent() == comp_type);}
 		else Panic("Invalid type");
 		

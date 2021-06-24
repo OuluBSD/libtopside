@@ -188,13 +188,7 @@ void InputComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-template <> EcsTypeCls AsEcsTypeCls<InputComponent>(DevCls dev, ValCls val) {
-	EcsTypeCls c;
-	c.dev = dev;
-	c.val = val;
-	c.type = EcsTypeCls::COMP_IN;
-	return c;
-}
+
 
 
 /*TMPL_VALDEVLIB(CLS::CtxStream&) InputComponent::GetStream(V*) {
@@ -396,13 +390,7 @@ bool OutputComponent::ForwardMem(void* mem, size_t mem_size) {
 	return false;
 }
 
-template <> EcsTypeCls AsEcsTypeCls<OutputComponent>(DevCls dev, ValCls val) {
-	EcsTypeCls c;
-	c.dev = dev;
-	c.val = val;
-	c.type = EcsTypeCls::COMP_OUT;
-	return c;
-}
+
 
 
 
@@ -481,13 +469,7 @@ void PipeComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-template <> EcsTypeCls AsEcsTypeCls<PipeComponent>(DevCls dev, ValCls val) {
-	EcsTypeCls c;
-	c.dev = dev;
-	c.val = val;
-	c.type = EcsTypeCls::COMP_PIPE;
-	return c;
-}
+
 
 
 
@@ -534,6 +516,8 @@ Stream& SideOutputComponent::GetStream() {
 
 
 
+
+
 void SideInputComponent::Initialize() {
 	TODO
 }
@@ -557,6 +541,8 @@ Value& SideInputComponent::GetValue() {
 Stream& SideInputComponent::GetStream() {
 	TODO
 }
+
+
 
 
 

@@ -38,11 +38,13 @@ struct ValCls : Moveable<ValCls> {
 	ValCls(Type t) : type(t) {}
 	ValCls(const ValCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
+	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
+	void operator=(const ValCls& n) {type = n.type;}
 	bool operator==(const ValCls& c) const {return type == c.type;}
 	bool operator!=(const ValCls& c) const {return type != c.type;}
-	operator bool() const {return type != INVALID;}
+	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)type;}
 };
 
@@ -69,11 +71,13 @@ struct DevCls : Moveable<DevCls> {
 	DevCls(Type t) : type(t) {}
 	DevCls(const DevCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
+	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
+	void operator=(const DevCls& n) {type = n.type;}
 	bool operator==(const DevCls& c) const {return type == c.type;}
 	bool operator!=(const DevCls& c) const {return type != c.type;}
-	operator bool() const {return type != INVALID;}
+	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)type;}
 };
 
@@ -84,13 +88,18 @@ struct ValDevCls : Moveable<ValDevCls> {
 	
 	ValDevCls() {}
 	ValDevCls(DevCls::Type d, ValCls::Type v) : val(v), dev(d) {}
+	ValDevCls(ValCls::Type v, DevCls::Type d) : val(v), dev(d) {}
+	ValDevCls(const DevCls& d, const ValCls& v) : val(v), dev(d) {}
 	ValDevCls(const ValDevCls& v) : val(v.val), dev(v.dev) {}
+	bool IsValid() const {return val.IsValid() && dev.IsValid();}
 	String GetName() const {return dev.GetName() + "." + val.GetName();}
 	void operator=(const Nuller& n) {val = n; dev = n;}
-	bool operator==(const ValDevCls& c) const {return val == c && dev == c;}
-	bool operator!=(const ValDevCls& c) const {return val != c || dev != c;}
-	operator bool() const {return val && dev;}
+	void operator=(const ValDevCls& n) {val = n.val; dev = n.dev;}
+	bool operator==(const ValDevCls& c) const {return val == c.val && dev == c.dev;}
+	bool operator!=(const ValDevCls& c) const {return val != c.val || dev != c.dev;}
+	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)dev.type * (int)ValCls::TYPE_COUNT + (int)val.type;}
+	String ToString() const {return dev.GetName() + "-" + val.GetName();}
 };
 
 struct EcsTypeCls : Moveable<EcsTypeCls> {
@@ -100,8 +109,11 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 		COMP_IN,
 		COMP_OUT,
 		COMP_PIPE,
-		COMP_SIDE,
-		CUSTOMER,
+		COMP_SIDE_OUT,
+		COMP_SIDE_IN,
+		COMP_CUSTOMER,
+		COMP_TEST_CUSTOMER,
+		COMP_TEST_AUDIO_OUT,
 		
 		TYPE_COUNT
 	} Type;
@@ -111,17 +123,36 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 	Type type = INVALID;
 	
 	EcsTypeCls() {}
-	EcsTypeCls(ValDevCls vd, Type t) : val(vd.val), dev(vd.dev), type(t) {}
+	EcsTypeCls(ValDevCls vd, Type t) : val(vd.val), dev(vd.dev), type(t) {ASSERT(IsValid());}
 	EcsTypeCls(const EcsTypeCls& c) : val(c.val), dev(c.dev), type(c.type) {}
+	bool IsValid() const {return val.IsValid() && dev.IsValid() && type > INVALID && type < TYPE_COUNT;}
 	void operator=(const Nuller& n) {val = n; dev = n;}
-	bool operator==(const EcsTypeCls& c) const {return val == c && dev == c;}
-	bool operator!=(const EcsTypeCls& c) const {return val != c || dev != c;}
-	operator bool() const {return val && dev && type != INVALID;}
+	void operator=(const EcsTypeCls& n) {val = n.val; dev = n.dev; type = n.type;}
+	bool operator==(const EcsTypeCls& c) const {return val == c.val && dev == c.dev && type == c.type;}
+	bool operator!=(const EcsTypeCls& c) const {return val != c.val || dev != c.dev || type != c.type;}
+	//operator bool() const {return IsValid();}
+	operator ValDevCls() const {return ValDevCls(dev, val);}
 	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)dev.type) * (int)ValCls::TYPE_COUNT + (int)val.type;}
+	String GetTypeString() const {return GetTypeString(type);}
+	static String GetTypeString(Type t);
+	String ToString() const {return GetTypeString() + "-" + dev.GetName() + "-" + val.GetName();}
 };
 
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefEcsTypeMapIndirect	= RefLinkedMapIndirect<EcsTypeCls, T, Parent>;
 
-template <class T> EcsTypeCls AsEcsTypeCls(DevCls dev, ValCls val);
+
+template <class T> EcsTypeCls AsEcsTypeCls(DevCls dev, ValCls val) {
+	EcsTypeCls c;
+	c.dev = dev;
+	c.val = val;
+	c.type = T::GetEcsType();
+	return c;
+}
+
+template <class T> EcsTypeCls AsEcsTypeCls(ValDevCls vd) {
+	return AsEcsTypeCls<T>(vd.dev, vd.val);
+}
 
 
 DevCls GetCenterDevCls();
