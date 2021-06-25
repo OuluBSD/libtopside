@@ -86,7 +86,7 @@ public:
 	virtual void		Initialize() override;
 	virtual void		Uninitialize() override;
 	void				UpdateConfig(double dt);
-	//void				AddPlan(Eon::Plan& ep);
+	void				AddPlan(Eon::Plan& ep);
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 

@@ -5,9 +5,7 @@ NAMESPACE_ECS_BEGIN
 
 
 
-ExtComponent::ExtComponent() :
-	src_stream(this),
-	sink_value(this)
+ExtComponent::ExtComponent()
 {
 	//DumpRuntimeDiagnostics(this);
 	ValDevCls vd(DevCls::CENTER, ValCls::ORDER);
@@ -18,39 +16,65 @@ ExtComponent::ExtComponent() :
 ExtComponent::~ExtComponent() {ASSERT(ext.IsEmpty());}
 
 void ExtComponent::Initialize() {
-	ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
-	if (sys)
-		sys->Add(AsRef<ExtComponent>());
+	ASSERT(type.IsValid());
+	if (type.sub == SubCompCls::CUSTOMER) {
+		customer.Create();
+		
+		ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
+		if (sys)
+			sys->Add(AsRef<ExtComponent>());
+	}
+	
+	if (type.sink.val == ValCls::AUDIO)
+		sink_buf.Create(this);
+	else
+		sink.Create(this);
+	
+	if (type.src.val == ValCls::AUDIO)
+		src_buf.Create(this);
+	else
+		src.Create(this);
+	
 }
 
 void ExtComponent::Uninitialize() {
-	ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
-	if (sys)
-		sys->Remove(AsRef<ExtComponent>());
+	if (customer) {
+		ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
+		if (sys)
+			sys->Remove(AsRef<ExtComponent>());
+		
+		customer.Clear();
+	}
+}
+
+void ExtComponent::SetType(const TypeCompCls& cls) {
+	type = cls;
+	ValSink::iface = cls.sink;
+	ValSource::iface = cls.src;
 }
 
 void ExtComponent::UpdateConfig(double dt) {
-	//if (cfg.IsEmpty())
-	//	cfg.Create(new RealtimeSourceConfig(gen));
-	customer->cfg.Update(dt, src_value.IsQueueFull());
+	ASSERT(customer);
+	customer->cfg.Update(dt, GetSourceValue().IsQueueFull());
 }
 
-/*void ExtComponent::AddPlan(Eon::Plan& ep) {
-	plans.Add(ep);
-}*/
+void ExtComponent::AddPlan(Eon::Plan& ep) {
+	customer->plans.Add(ep);
+}
 
 void ExtComponent::Forward(FwdScope& fwd) {
 	if (ext)
 		ext->Forward(fwd);
 	
+	ASSERT(this->customer);
 	CustomerData& c = *this->customer;
 	
 	int read_i = fwd.GetPos();
 	if (read_i == 0) {
+		Value& src_value = GetSourceValue();
+		
 		if (src_value.IsQueueFull())
 			return;
-		
-		SimpleValue& src_buf = src_value;
 		
 		off32 off = c.gen.Create();
 		Packet p = CreatePacket(off);
@@ -61,6 +85,7 @@ void ExtComponent::Forward(FwdScope& fwd) {
 		RTLOG("ExtComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
+		DUMP(c.plans.GetCount());
 		ASSERT(c.plans.GetCount() == 1);
 		Eon::Plan& ep = c.plans[0];
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
@@ -68,9 +93,11 @@ void ExtComponent::Forward(FwdScope& fwd) {
 		data.count = ep.plan.GetCount()-1;
 		
 		PacketTracker::Track(TrackerInfo("ExtComponent::Forward", __FILE__, __LINE__), *p);
-		src_buf.AddPacket(p);
+		src_value.GetBuffer().Add(p);
 	}
 	else {
+		Value& sink_value = GetValue();
+		
 		PacketBuffer& buf = sink_value.GetBuffer();
 		for (Packet& p : buf) {
 			off32 off = p->GetOffset();

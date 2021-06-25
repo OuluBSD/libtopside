@@ -58,21 +58,26 @@ int Format::GetMinBufSamples() const {
 	PROXY(GetMinBufSamples,)
 }
 
+bool Format::HasData() const {
+	return	vd.val != ValCls::ORDER &&
+			vd.val != ValCls::RECEIPT;
+}
+
 bool Format::IsValid() const {
-	if (!vd.IsValid())
-		return false;
+	if (!vd.IsValid()) return false;
+	if (!HasData()) return true;
 	PROXY(IsValid,)
 }
 
 bool Format::IsSame(const Format& f) const {
-	if (vd != f.vd)
-		return false;
+	if (vd != f.vd) return false;
+	if (!HasData()) return true;
 	PROXY(IsSame, f)
 }
 
 bool Format::IsCopyCompatible(const Format& f) const {
-	if (vd != f.vd)
-		return false;
+	if (vd != f.vd) return false;
+	if (!HasData()) return true;
 	PROXY(IsCopyCompatible, f)
 }
 

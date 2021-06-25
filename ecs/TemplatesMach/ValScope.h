@@ -99,6 +99,7 @@ public:
 	void operator=(const Format& f);
 	void SetDefault(ValDevCls t); // {FormatBase::template SetDefault<DevSpec>();}
 	void Clear();
+	bool HasData() const;
 	
 	void SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate);
 	void SetOrder();

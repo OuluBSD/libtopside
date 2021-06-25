@@ -74,7 +74,6 @@ public:
 		ActionFn action_fn;
 		String name;
 		TypeCompCls cls;
-		ValDevCls sink, side, src;
 		TypeCls rtti_cls;
 		
 		Vector<Link> sink_links;
@@ -92,21 +91,13 @@ public:
 		comp.side = side;
 		comp.src  = src;
 		TypeCompCls cls = AsTypeCompCls<T>(sub, comp);
+		ASSERT(cls.IsValid());
 		CompData& d = CompDataMap().GetAdd(cls);
 		d.rtti_cls = AsTypeCls<T>();
 		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
 		d.action_fn = &MakeAction<T>;
-		{
-			T o;
-			d.sink = sink;
-			d.side = side;
-			d.src  = src;
-			ASSERT(d.sink.IsValid());
-			ASSERT(d.side.IsValid());
-			ASSERT(d.src.IsValid());
-		}
 	}
 	
 	static LinkedList<TypeExtCls>& GetExtTypes() {static LinkedList<TypeExtCls> l; return l;}
@@ -116,7 +107,7 @@ public:
 		ASSERT(c.IsValid());
 		GetExtTypes().Add(c);
 		TypeCompCls comp = AsTypeCompCls(c);
-		CompData& d = CompDataMap().GetAdd(comp);
+		CompData& d = CompDataMap().Get(comp);
 		ExtData& e = d.ext.GetAdd(c);
 		e.cls = c;
 		e.name = T::GetTypeName();

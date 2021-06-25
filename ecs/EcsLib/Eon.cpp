@@ -302,10 +302,10 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		}
 	}
 	
-	/*ExtComponentRef comp = added_comps[0].r->AsRef<ExtComponent>();
+	ExtComponentRef comp = added_comps[0].r->AsRef<ExtComponent>();
 	if (comp) {
 		comp->AddPlan(ep);
-	}*/
+	}
 	
 	
 	// Process sub-loops

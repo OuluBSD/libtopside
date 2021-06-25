@@ -11,11 +11,11 @@ void Factory::Dump() {
 	LOG("\tcomponents (" << fns.GetCount() << "):");
 	for(int i = 0; i < fns.GetCount(); i++) {
 		const auto& d = fns[i];
-		LOG("\t\t" << i << ": " << d.name << "(" << d.side.ToString() << ")");
-		IfaceData& src = SourceDataMap().Get(d.src);
+		LOG("\t\t" << i << ": " << d.name << "(" << d.cls.ToString() << ")");
+		/*IfaceData& src = SourceDataMap().Get(d.cls.src);
 		LOG("\t\t\tsrc:  " << d.src.ToString());
-		IfaceData& sink = SinkDataMap().Get(d.sink);
-		LOG("\t\t\tsink: " << d.sink.ToString());
+		IfaceData& sink = SinkDataMap().Get(d.cls.sink);
+		LOG("\t\t\tsink: " << d.sink.ToString());*/
 	}
 }
 
@@ -23,10 +23,10 @@ void Factory::RefreshLinks(CompData& d) {
 	auto& m = Factory::CompDataMap();
 	if (!d.searched_sink_links) {
 		for (const auto& comp_data : m.GetValues()) {
-			if (d.src == comp_data.sink) {
+			if (d.cls.src == comp_data.cls.sink) {
 				Link& l = d.sink_links.Add();
 				l.dst_comp = comp_data.cls;
-				l.iface = d.src;
+				l.iface = d.cls.src;
 				ASSERT(l.dst_comp.IsValid() && l.iface.IsValid());
 			}
 		}
@@ -68,7 +68,7 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 		ASSERT(side.IsValid());
 		const CompData& side_cd = m.Get(side);
 		
-		ASSERT(src.GetComponent() != link.dst_comp);
+		//ASSERT(src.GetComponent() != link.dst_comp);
 		
 		a.Post() = src;
 		a.Post().SetAs_AddComponent(side);

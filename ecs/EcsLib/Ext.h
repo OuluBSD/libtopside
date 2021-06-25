@@ -26,40 +26,88 @@ public:
 	}
 	COPY_PANIC(ExtComponent)
 	IFACE_GENERIC
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_TO_TRUE(cls.sink.GetActionName() + ".sink")
-		COMP_MAKE_ACTION_TO_TRUE(cls.src.GetActionName() + ".src")
-		COMP_MAKE_ACTION_TO_TRUE(cls.side.GetActionName() + ".side")
-	COMP_MAKE_ACTION_END
+	COMP_MAKE_ACTION_BEGIN {
+		if (cls.side.vd.val == ValCls::ORDER) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE("loop.connected")
+		}
+		else if (cls.sub == SubCompCls::INPUT) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.src.GetActionName() + ".src")
+		}
+		else if (cls.sub == SubCompCls::OUTPUT) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".sink")
+		}
+		else {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.GetActionName() + ".side")
+		}
+	} COMP_MAKE_ACTION_END
 	
 	
 	TypeCompCls GetType() const override {return type;}
-	void SetType(const TypeCompCls& cls) override {type = cls; ValSink::iface = cls.sink; ValSource::iface = cls.src;}
+	void SetType(const TypeCompCls& cls) override;
 	
 	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<ValSource>(this);}
 	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<ValSink>(this);}
 	
 private:
-	struct LocalSinkValue : public SimpleBufferedValue {
+	struct LocalBufferedValue : public SimpleBufferedValue {
 		ExtComponent& par;
 		
-		LocalSinkValue(ExtComponent* par) : par(*par) {}
+		LocalBufferedValue(ExtComponent* par) : par(*par) {}
 	};
 	
-	struct LocalSourceValue : public SimpleValue {
+	struct LocalValue : public SimpleValue {
+		ExtComponent& par;
+		
+		LocalValue(ExtComponent* par) : par(*par) {}
 		void StorePacket(Packet& p) override {}
 	};
 	
-	struct LocalSourceStream : public SimpleStream {
+	struct LocalBufferedStream : public SimpleBufferedStream {
 		ExtComponent& par;
 		
-		RTTI_DECL1(LocalSourceStream, SimpleStream)
-		LocalSourceStream(ExtComponent* par) :
+		RTTI_DECL1(LocalBufferedStream, SimpleBufferedStream)
+		LocalBufferedStream(ExtComponent* par, SimpleBufferedValue& value) :
 			par(*par),
-			SimpleStream(par->src_value) {}
+			SimpleBufferedStream(value) {}
+		
+		bool	IsOpen() const override {TODO}
+		bool	Open(int fmt_idx) override {TODO}
+		void	Close() override {TODO}
+		bool	IsEof() override {TODO}
+		bool	ReadFrame() override {TODO}
+		bool	ProcessFrame() override {TODO}
+		bool	ProcessOtherFrame() override {TODO}
+		void	ClearPacketData() override {TODO}
+	};
+	
+	struct LocalStream : public SimpleStream {
+		ExtComponent& par;
+		
+		RTTI_DECL1(LocalStream, SimpleStream)
+		LocalStream(ExtComponent* par, SimpleValue& value) :
+			par(*par),
+			SimpleStream(value) {}
 		
 	};
 	
+	struct BufferedInput {
+		LocalBufferedValue value;
+		BufferedInput(ExtComponent* par) : value(par) {}
+	};
+	struct Input {
+		LocalValue value;
+		Input(ExtComponent* par) : value(par) {}
+	};
+	struct BufferedOutput {
+		LocalBufferedValue value;
+		LocalBufferedStream stream;
+		BufferedOutput(ExtComponent* par) : value(par), stream(par, value) {}
+	};
+	struct Output {
+		LocalValue value;
+		LocalStream stream;
+		Output(ExtComponent* par) : value(par), stream(par, value) {}
+	};
 	
 	void ClearSinkSource() override {
 		ValSink::ClearSink();
@@ -71,10 +119,10 @@ protected:
 	One<ComponentExtBase>	ext;
 	TypeCompCls				type;
 	
-	
-	LocalSinkValue			sink_value;
-	LocalSourceValue		src_value;
-	LocalSourceStream		src_stream;
+	One<Input>				sink;
+	One<BufferedInput>		sink_buf;
+	One<Output>				src;
+	One<BufferedOutput>		src_buf;
 	
 	Mutex					lock;
 	LinkedList<Packet>		consumed_packets;
@@ -103,6 +151,7 @@ public:
 	ComponentExtBaseRef		GetExtension() override;
 	InterfaceSourceRef		GetSource() override;
 	InterfaceSinkRef		GetSink() override;
+	void					AddPlan(Eon::Plan& ep);
 	
 	// ComponentBase
 	void					Initialize() override;
@@ -111,10 +160,11 @@ public:
 	void					ForwardExchange(FwdScope& fwd) override;
 	
 	// ValSink
-	Value&					GetValue() override {return sink_value;}
+	Value&					GetValue() override {return sink.IsEmpty() ? (Value&)sink_buf->value : (Value&)sink->value;}
 	
 	// ReceiptSource
-	Stream&					GetStream() override {return src_stream;}
+	Stream&					GetStream() override {return src.IsEmpty() ? (Stream&)src_buf->stream : (Stream&)src->stream;}
+	Value&					GetSourceValue() {return src.IsEmpty() ? (Value&)src_buf->value : (Value&)src->value;}
 	
 	static EcsTypeCls::Type GetEcsType() {return EcsTypeCls::COMP_EXT;}
 };

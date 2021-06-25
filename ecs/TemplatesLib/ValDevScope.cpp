@@ -75,6 +75,64 @@ void ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	}
 }
 
+void ValExchangePoint::Forward(FwdScope& fwd) {
+	RTLOG("ValExchangePoint::Forward: " << GetDynamicName() << "(" << HexStr(this) << ") begin");
+	Ref<ValSource>	src			= this->src;
+	Ref<ValSink>	sink		= this->sink;
+	
+	
+	Stream& src_stream = src->GetStream();
+	//src->BeginStream();
+	
+	Ex ex(this);
+	
+	Value& src_value = src_stream.Get();
+	int src_sz = src_value.GetQueueSize();
+	
+	if (src_sz) {
+		Value& sink_value = sink->GetValue();
+		bool sink_full = sink_value.IsQueueFull();
+		
+		if (!sink_full) {RTLOG("ExchangePoint::Forward: exchanging");}
+		else {RTLOG("ExchangePoint::Forward: sink full");}
+		
+		int iter = 0;
+		while (src_sz && !sink_full) {
+			
+			// Consumer model (works with single connection only)
+			if (use_consumer) {
+				ex.SetLoading(src_value, fwd.Cfg());
+				sink_value.Exchange(ex);
+			}
+			// Producer model
+			else {
+				ex.SetStoring(sink_value, fwd.Cfg());
+				src_value.Exchange(ex);
+			}
+			
+			if (ex.IsFail()) {
+				RTLOG("error: ExchangePoint::Forward: exchange failed");
+				fwd.SetFailed();
+				break;
+			}
+			
+			src_sz = src_value.GetQueueSize();
+			sink_full = sink_value.IsQueueFull();
+			++iter;
+			if (src_sz && !sink_full) {
+				RTLOG("ExchangePoint::Forward: going to iter " << iter << ", sz=" << src_sz << ", sink_full=" << (int)sink_full);
+			}
+		}
+	}
+	else {
+		RTLOG("ExchangePoint::Forward: empty source");
+	}
+	
+	//src->EndStream(CTX);
+	
+	fwd.AddNext(sink->AsComponentBase());
+}
+
 
 
 

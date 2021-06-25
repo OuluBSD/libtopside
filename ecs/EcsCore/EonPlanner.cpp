@@ -234,7 +234,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<W
 		ASSERT(act.precond.GetComponent() == comp_type);
 		if      (act.IsAddComponent()) {
 			if (act.postcond.GetComponent() == comp_type) {DUMP(comp_type);}
-			ASSERT(act.postcond.GetComponent() != comp_type);
+			//ASSERT(act.postcond.GetComponent() != comp_type);
 		}
 		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetComponent() == comp_type);}
 		else Panic("Invalid type");

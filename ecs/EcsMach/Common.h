@@ -182,7 +182,7 @@ struct x : \
 #define COMP_MAKE_ACTION_BEGIN static bool MakeAction(const TypeCompCls& cls, Eon::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.side.vd;
 #define COMP_MAKE_ACTION_END return !fail && any_changes;}
 #define COMP_MAKE_ACTION_FALSE_TO_TRUE(x) if (act.Pre().IsFalse(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
-#define COMP_MAKE_ACTION_TO_TRUE(x) act.Post().SetTrue(x); any_changes = true;
+//#define COMP_MAKE_ACTION_TO_TRUE(x) act.Post().SetTrue(x); any_changes = true;
 #define COMP_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
 //#define COMP_MAKE_ACTION_REQ_TRUE_TO_TRUE(x, y) if (act.Pre().IsTrue(x)) {act.Post().SetTrue(y); any_changes = true;} else fail = true;
 

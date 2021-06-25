@@ -9,6 +9,14 @@ using namespace TS::Ecs;
 
 
 
+void RegisterCustomer(Ecs::DevCls dev) {
+	TS::Ecs::Factory::RegisterComponent<Ecs::ExtComponent>(
+		Ecs::SubCompCls::CUSTOMER,
+		ValDevCls(dev, ValCls::RECEIPT),
+		ValDevCls(dev, ValCls::ORDER),
+		ValDevCls(dev, ValCls::ORDER));
+}
+
 void RegisterInput(Ecs::DevCls dev, Ecs::ValCls val) {
 	TS::Ecs::Factory::RegisterComponent<Ecs::ExtComponent>(
 		Ecs::SubCompCls::INPUT,
@@ -51,6 +59,8 @@ void RegisterSideOutput(Ecs::DevCls dev, Ecs::ValCls val) {
 
 
 INITBLOCK {
+	
+	RegisterCustomer(DevCls::CENTER);
 	
 	#define IFACE_CTX_CLS(dev, val, prefix) \
 		RegisterInput(Ecs::DevCls::dev, Ecs::ValCls::val); \
