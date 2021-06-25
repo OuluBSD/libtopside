@@ -99,6 +99,7 @@ class Entity;
 class EntityStore;
 class Pool;
 
+
 NAMESPACE_ECS_END
 
 #endif

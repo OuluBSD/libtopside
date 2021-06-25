@@ -11,7 +11,7 @@ NAMESPACE_UPP
 
 
 
-INITBLOCK {
+/*INITBLOCK {
 	
 	#define IFACE_CTX_CLS(dev, val, prefix) \
 		TS::Ecs::Factory::RegisterComponent<Ecs::InputComponent>(Ecs::DevCls::dev, Ecs::ValCls::ORDER, Ecs::ValCls::val, Ecs::ValCls::val);
@@ -21,5 +21,5 @@ INITBLOCK {
 	#undef IFACE_CTX_CLS
 	
 }
-
+*/
 END_UPP_NAMESPACE

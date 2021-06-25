@@ -11,13 +11,15 @@ file
 	EcsLib.icpp,
 	NonGui.cpp,
 	Defs.h,
-	Component.h,
-	Component.inl highlight cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	Eon.h,
 	Eon.cpp,
+	Ext.h,
+	Ext.cpp,
 	Trash readonly separator,
 	Router.h,
-	Router.cpp;
+	Router.cpp,
+	Component.h,
+	Component.inl highlight cpp;
 

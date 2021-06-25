@@ -9,12 +9,8 @@ uses
 
 file
 	TemplatesLib.h,
-	InitPipe.icpp,
-	InitIn.icpp,
-	InitOut.icpp,
 	InitSource.icpp,
 	InitSink.icpp,
-	InitSidechain.icpp,
 	AccelScope.h,
 	AccelScope.cpp,
 	AccelOpenGL.cpp,
@@ -29,5 +25,9 @@ file
 	ValDevSpec.h,
 	ConvDevScope.h,
 	ConvValDevScope.h,
-	ConvValDevScope.inl highlight cpp;
+	ConvValDevScope.inl highlight cpp,
+	InitExt.icpp,
+	InitIn.icpp,
+	InitPipe.icpp,
+	InitSidechain.icpp;
 

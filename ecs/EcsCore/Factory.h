@@ -10,7 +10,7 @@ public:
 	
 	// Interfaces
 	struct Link : Moveable<Link> {
-		EcsTypeCls dst_comp;
+		TypeCompCls dst_comp;
 		ValDevCls iface;
 	};
 	
@@ -50,13 +50,13 @@ public:
 	
 	// Component Extensions
 	
-	typedef bool (*ActionFn)(ValDevCls vd, Eon::Action& act);
+	typedef bool (*ActionFn)(const TypeCompCls& t, Eon::Action& act);
 	typedef ComponentExtBase* (*NewExt)();
 	struct ExtData : Moveable<ExtData> {
 		NewExt new_fn;
 		ActionFn action_fn;
 		String name;
-		EcsTypeCls cls;
+		TypeExtCls cls;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
@@ -69,25 +69,29 @@ public:
 	
 	typedef ComponentBase* (*NewFn)();
 	struct CompData : Moveable<CompData> {
-		VectorMap<EcsTypeCls,ExtData> ext;
+		VectorMap<TypeExtCls,ExtData> ext;
 		NewFn new_fn;
 		ActionFn action_fn;
 		String name;
-		EcsTypeCls cls;
+		TypeCompCls cls;
 		ValDevCls sink, side, src;
 		TypeCls rtti_cls;
 		
 		Vector<Link> sink_links;
 		bool searched_sink_links = false;
 	};
-	typedef VectorMap<EcsTypeCls,CompData> CompMap;
+	typedef VectorMap<TypeCompCls,CompData> CompMap;
 	static CompMap& CompDataMap() {MAKE_STATIC(CompMap, m); return m;}
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
-	template <class T> static bool MakeAction(ValDevCls vd, Eon::Action& act) {return T::MakeAction(vd, act);}
+	template <class T> static bool MakeAction(const TypeCompCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
 	
-	template <class T> static void RegisterComponent(DevCls dev, ValCls sink, ValCls side, ValCls src) {
-		EcsTypeCls cls = AsEcsTypeCls<T>(dev, side);
+	template <class T> static void RegisterComponent(SubCompCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
+		CompCls comp;
+		comp.sink = sink;
+		comp.side = side;
+		comp.src  = src;
+		TypeCompCls cls = AsTypeCompCls<T>(sub, comp);
 		CompData& d = CompDataMap().GetAdd(cls);
 		d.rtti_cls = AsTypeCls<T>();
 		d.cls = cls;
@@ -96,29 +100,32 @@ public:
 		d.action_fn = &MakeAction<T>;
 		{
 			T o;
-			d.sink = ValDevCls(dev, sink);
-			d.side = ValDevCls(dev, side);
-			d.src = ValDevCls(dev, src);
+			d.sink = sink;
+			d.side = side;
+			d.src  = src;
 			ASSERT(d.sink.IsValid());
 			ASSERT(d.side.IsValid());
 			ASSERT(d.src.IsValid());
 		}
 	}
 	
-	template <class T> static void RegisterExtension(DevCls dev, ValCls val) {
-		using Component = typename T::Component;
-		EcsTypeCls ct = AsEcsTypeCls<Component>(dev, val);
-		CompData& d = CompDataMap().GetAdd(ct);
-		EcsTypeCls t = AsEcsTypeCls<T>(dev, val);
-		ExtData& e = d.ext.GetAdd(t);
-		e.cls = t;
+	static LinkedList<TypeExtCls>& GetExtTypes() {static LinkedList<TypeExtCls> l; return l;}
+	
+	template <class T> static void RegisterExtension(TypeExtCls c) {
+		c.ext = GetExtTypes().GetCount();
+		ASSERT(c.IsValid());
+		GetExtTypes().Add(c);
+		TypeCompCls comp = AsTypeCompCls(c);
+		CompData& d = CompDataMap().GetAdd(comp);
+		ExtData& e = d.ext.GetAdd(c);
+		e.cls = c;
 		e.name = T::GetTypeName();
 		e.new_fn = &CreateExt<T>;
 		e.action_fn = &MakeAction<T>;
 	}
 	
 	static void Dump();
-	static const Vector<Link>& GetSinkComponents(EcsTypeCls src_comp);
+	static const Vector<Link>& GetSinkComponents(TypeCompCls src_comp);
 	static void GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
 	static void RefreshLinks(CompData& d);
 	
@@ -126,13 +133,24 @@ public:
 	
 };
 
+#define REG_EXT(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v) {\
+	TypeExtCls c; \
+	c.sink.dev = Ecs::DevCls::sink_d; \
+	c.sink.val = Ecs::ValCls::sink_v; \
+	c.side.dev = Ecs::DevCls::side_d; \
+	c.side.val = Ecs::ValCls::side_v; \
+	c.src.dev = Ecs::DevCls::src_d; \
+	c.src.val = Ecs::ValCls::src_v; \
+	c.sub = Ecs::SubCompCls::subcomp; \
+	Ecs::Factory::RegisterExtension<type>(c); \
+}
 
 
 template <class Main, class Base> inline
 ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(TypeCompCls cls) {
 	auto it = Factory::producers.Find(cls.side);
 	if (!it) {
-		auto new_fn = Ecs::Factory::CompDataMap().Get(cls.side).new_fn;
+		auto new_fn = Ecs::Factory::CompDataMap().Get(cls).new_fn;
 		std::function<Base*()> p([new_fn] { return new_fn();});
 		std::function<void(Base*)> r([] (Base* b){ delete b;});
 		Factory::producers.Add(cls.side) = p;

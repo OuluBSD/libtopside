@@ -49,9 +49,9 @@ public:
 	String GetTreeString(int indent=0);
 	void SetName(String s) {name = s;}
 	void OnChange();
-	ComponentBaseRef GetTypeCls(EcsTypeCls comp_type);
+	ComponentBaseRef GetTypeCls(TypeCompCls comp_type);
 	ComponentBaseRef GetAddTypeCls(TypeCompCls cls);
-	ComponentBaseRef FindTypeCls(EcsTypeCls comp_type);
+	ComponentBaseRef FindTypeCls(TypeCompCls comp_type);
 	
 	template<typename T>
 	RefT_Entity<T> Get() {

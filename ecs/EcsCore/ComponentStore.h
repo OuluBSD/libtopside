@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
-template<class T> using EcsTypeMap				= LinkedMap<EcsTypeCls, T>;
+template<class T> using EcsTypeMap = LinkedMap<EcsTypeCls, T>;
 
 
 
@@ -83,7 +83,7 @@ public:
 		
 		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
 		for (; iter; ++iter) {
-			EcsTypeCls comp_type = iter.key();
+			TypeCompCls comp_type = iter.key();
 			TypeCompCls cls; TODO
 			
 			Base* new_component = CreateComponent(cls);
@@ -95,9 +95,9 @@ public:
 	
 	void ReturnComponent(Base* c) {
 		ASSERT(c);
-		EcsTypeCls type = c->GetType();
+		TypeCompCls type = c->GetType();
 		
-		auto iter = Factory::refurbishers.Find(type);
+		auto iter = Factory::refurbishers.Find(type.side);
 		if (iter)
 			iter.Get()(c);
 	}

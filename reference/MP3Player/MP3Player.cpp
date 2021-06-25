@@ -158,7 +158,7 @@ void Main() {
 				EntityStoreRef es			= mach.Add<EntityStore>();
 				ComponentStoreRef compstore	= mach.Add<ComponentStore>();
 			    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
-			    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
+			    ExtSystemRef cust		= mach.Add<ExtSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
 			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();

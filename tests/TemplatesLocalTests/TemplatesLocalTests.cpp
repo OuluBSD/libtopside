@@ -205,8 +205,10 @@ void Main() {
 	if (!TestParser())
 		return;
 	
-	Ecs::Factory::RegisterExtension<TestCustomer>(DevCls::CENTER, ValCls::ORDER);
-	Ecs::Factory::RegisterExtension<TestRealtimeSink>(DevCls::CENTER, ValCls::AUDIO);
+	TypeExtCls t;
+	
+	REG_EXT(TestCustomer, CUSTOMER, CENTER,ORDER, CENTER,ORDER, CENTER,RECEIPT);
+	REG_EXT(TestRealtimeSink, OUTPUT, CENTER,AUDIO, CENTER,AUDIO, CENTER,RECEIPT);
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -230,7 +232,7 @@ void Main() {
 			EntityStoreRef es			= mach.Add<EntityStore>();
 			ComponentStoreRef compstore	= mach.Add<ComponentStore>();
 		    //ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
-		    CustomerSystemRef cust		= mach.Add<CustomerSystem>();
+		    ExtSystemRef cust		= mach.Add<ExtSystem>();
 		    EonLoaderRef eon			= mach.Add<EonLoader>();
 		    
 		    mach.Add<PacketTracker>();
@@ -295,7 +297,8 @@ void TestRealtimeSink::Uninitialize() {
 }
 
 void TestRealtimeSink::IntervalSinkProcess() {
-	OutputComponent& base = CastRef<OutputComponent>(GetParent().Get());
+	LOG("error: TODO IntervalSinkProcess");
+	/*OutputComponent& base = CastRef<OutputComponent>(GetParent().Get());
 	Ecs::Format fmt =  base.GetValue().GetFormat();
 	Vector<byte> data;
 	data.SetCount(fmt.GetFrameSize());
@@ -313,7 +316,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		RTLOG("TestRealtimeSink::IntervalSinkProcess: trying to consume " << data.GetCount());
 		base.ForwardMem(data.Begin(), data.GetCount());
 	}
-	flag.DecreaseRunning();
+	flag.DecreaseRunning();*/
 }
 
 

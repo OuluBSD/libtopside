@@ -15,7 +15,7 @@ bool Open_NonGUI_ECS() {
     #if HAVE_SDL2
     mach.Add<SDL2System>();
     #endif
-    mach.Add<CustomerSystem>();
+    mach.Add<ExtSystem>();
     
     reg.SetAppName("ECS machine");
     

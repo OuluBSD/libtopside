@@ -1,5 +1,6 @@
 #ifndef _EcsLib_Component_h_
 #define _EcsLib_Component_h_
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -28,4 +29,5 @@ public:
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

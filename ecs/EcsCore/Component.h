@@ -42,7 +42,7 @@ protected:
 	friend class Entity;
 	
 public:
-	virtual EcsTypeCls GetType() const = 0;
+	virtual TypeCompCls GetType() const = 0;
 	virtual void SetType(const TypeCompCls& cls) = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
@@ -58,10 +58,10 @@ public:
 	virtual void ClearExtension() {}
 	virtual ComponentExtBaseRef GetExtension() {return ComponentExtBaseRef();}
 	
-	ValCls GetValSpec() const {return GetType().val;}
-	bool IsValSpec(ValCls t) const {return t == GetType().val;}
+	ValCls GetValSpec() const {return GetType().side.vd.val;}
+	bool IsValSpec(ValCls t) const {return t == GetType().side.vd.val;}
 	
-	ComponentExtBaseRef SetExtensionTypeCls(EcsTypeCls ext);
+	ComponentExtBaseRef SetExtensionTypeCls(TypeExtCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -112,78 +112,27 @@ public:
 
 
 
-template<typename T, typename Ext>
+template<typename T>
 struct Component :
-	public ComponentBase,
-	public ValSink,
-	public ValSource
+	public ComponentBase
 {
-	using ComponentT = Component<T,Ext>;
-	
-	RTTI_DECL3(ComponentT, ComponentBase, ValSink, ValSource)
-	void Visit(RuntimeVisitor& vis) override {
-		vis.VisitThis<ValSink>(this);
-		vis.VisitThis<ValSource>(this);
-		if (ext) vis % *ext;
-	}
-	
-	
-	EcsTypeCls GetType() const override {return AsEcsTypeCls<T>(vd);}
-	void SetType(const TypeCompCls& cls) override {ValSink::iface = cls.sink; vd = cls.side; ValSource::iface = cls.src;}
-	
+public:
+	RTTI_DECL1(Component<T>, ComponentBase)
+	using ComponentT = Component<T>;
+
 	void CopyTo(ComponentBase* target) const override {
 		ASSERT(target->GetType() == GetType());
 	    
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
-	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<ValSource>(this);}
-	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<ValSink>(this);}
-	
-private:
-	void ClearSinkSource() override {
-		ValSink::ClearSink();
-		ValSource::ClearSource();
-	}
-protected:
-	One<Ext>	ext;
-	EcsTypeCls	vd;
-	
-public:
-	~Component() {ASSERT(ext.IsEmpty());}
-	
-	bool SetExtension(ComponentExtBase* c) override {
-		ext.Clear();
-		Ext* o = CastPtr<Ext>(c);
-		ASSERT(o);
-		if (!o)
-			return false;
-		ext = o;
-		c->SetParent(this);
-		c->Initialize();
-		return true;
-	}
-	
-	void ClearExtension() override {
-		if (ext) {
-			ext->Uninitialize();
-			ext.Clear();
-		}
-	}
-	
-	ComponentExtBaseRef GetExtension() override {
-		return ext ? ext->template AsRef<ComponentExtBase>() : ComponentExtBaseRef();
-	}
-	
-	
-	InterfaceSourceRef GetSource() override {return InterfaceSourceRef(GetParentUnsafe(), (InterfaceSource*)this);}
-	InterfaceSinkRef GetSink() override {return InterfaceSinkRef(GetParentUnsafe(), (InterfaceSink*)this);}
 	
 };
+
 
 #define COMP_RTTI(x)  RTTI_DECL1(x, Component<x>)
 
 using ComponentMapBase	= RefEcsTypeMapIndirect<ComponentBase>;
-using ComponentRefMap	= ArrayMap<EcsTypeCls,Ref<ComponentBase>>;
+using ComponentRefMap	= ArrayMap<TypeCompCls,Ref<ComponentBase>>;
 
 class ComponentMap : public ComponentMapBase {
 	
@@ -224,7 +173,7 @@ public:
 	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		EcsTypeCls type = component->GetType();
+		TypeCompCls type = component->GetType();
 		ASSERT(type.IsValid());
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
@@ -247,7 +196,7 @@ public:
 	
 	void AddBase(ComponentBase* component) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
-		EcsTypeCls type = component->GetType();
+		TypeCompCls type = component->GetType();
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ComponentMapBase::Add(type, component);
 	}

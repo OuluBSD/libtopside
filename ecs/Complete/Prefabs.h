@@ -48,7 +48,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 			EntityStore& ents = *mach.Add<EntityStore>();
 		    mach.Add<ComponentStore>();
 		    mach.Add<ConnectorStore>();
-		    mach.Add<CustomerSystem>();
+		    mach.Add<ExtSystem>();
 		    
 		    #if HAVE_SDL2
 		    mach.Add<SDL2GUI3DSystem>();

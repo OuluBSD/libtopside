@@ -10,7 +10,7 @@ NAMESPACE_UPP
 
 
 
-INITBLOCK {
+/*INITBLOCK {
 	
 	#define IFACE_CTX_CLS(dev, value, prefix) \
 		TS::Ecs::Factory::RegisterComponent<Ecs::PipeComponent>(Ecs::DevCls::dev, Ecs::ValCls::value, Ecs::ValCls::value, Ecs::ValCls::value);
@@ -19,6 +19,6 @@ INITBLOCK {
 	#undef IFACE
 	#undef IFACE_CTX_CLS
 	
-}
+}*/
 
 END_UPP_NAMESPACE

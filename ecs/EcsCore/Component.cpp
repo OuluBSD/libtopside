@@ -56,8 +56,8 @@ InterfaceSinkRef ComponentBase::FindSink(ValDevCls t) {
 	return InterfaceSinkBaseRef();
 }*/
 
-ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(EcsTypeCls ext) {
-	EcsTypeCls comp = GetType();
+ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeExtCls ext) {
+	TypeCompCls comp = GetType();
 	const auto& cd = Ecs::Factory::CompDataMap().Get(comp);
 	for (const auto& e : cd.ext.GetValues()) {
 		if (e.cls == ext) {
@@ -87,6 +87,24 @@ void ComponentMap::Dump() {
 void ComponentMap::ReturnComponent(ComponentStore& s, ComponentBase* c) {
 	s.ReturnComponent(c);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 NAMESPACE_ECS_END

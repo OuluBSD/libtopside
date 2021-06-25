@@ -23,9 +23,8 @@ protected:
 	
 	Vector<String>		values;
 	Vector<bool>		using_act;
-	EcsTypeCls			cur_comp;
-	EcsTypeCls			add_ext;
-	ValDevCls			iface;
+	TypeCompCls			cur_comp;
+	TypeExtCls			add_ext;
 	Type				type = INVALID;
 	ActionPlanner*		ap = 0;
 public:
@@ -40,8 +39,8 @@ public:
 	bool Set(const String& key, bool value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
-	void SetAs_AddExtension(EcsTypeCls comp, EcsTypeCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
-	void SetAs_AddComponent(EcsTypeCls comp, ValDevCls iface) {type = ADD_COMP; cur_comp = comp; this->iface = iface;}
+	void SetAs_AddExtension(TypeCompCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
+	void SetAs_AddComponent(TypeCompCls comp) {type = ADD_COMP; cur_comp = comp;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddComponent() const {return type == ADD_COMP;}
@@ -50,9 +49,9 @@ public:
 	bool IsFalse(const String& key) const;
 	String Get(const String& key) const;
 	int64 GetHashValue();
-	EcsTypeCls GetComponent() const {return cur_comp;}
-	EcsTypeCls GetExtension() const {return add_ext;}
-	ValDevCls GetInterface() const {ASSERT(iface.IsValid()); return iface;}
+	TypeCompCls GetComponent() const {return cur_comp;}
+	TypeExtCls GetExtension() const {return add_ext;}
+	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}
 	String ToString() const;
 	bool Contains(const WorldState& ws) const;
 	

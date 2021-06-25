@@ -34,7 +34,7 @@ void Factory::RefreshLinks(CompData& d) {
 	}
 }
 
-const Vector<Factory::Link>& Factory::GetSinkComponents(EcsTypeCls src_comp) {
+const Vector<Factory::Link>& Factory::GetSinkComponents(TypeCompCls src_comp) {
 	auto& m = Factory::CompDataMap();
 	CompData& d = m.Get(src_comp);
 	RefreshLinks(d);
@@ -44,7 +44,7 @@ const Vector<Factory::Link>& Factory::GetSinkComponents(EcsTypeCls src_comp) {
 void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action>& acts) {
 	auto& m = CompDataMap();
 	
-	EcsTypeCls comp = src.GetComponent();
+	TypeCompCls comp = src.GetComponent();
 	CompData& d = m.Get(comp);
 	RefreshLinks(d);
 	
@@ -56,7 +56,7 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 		for (const ExtData& e : d.ext.GetValues()) {
 			a.Post() = src;
 			a.Post().SetAs_AddExtension(comp, e.cls);
-			if (e.action_fn(d.side, a)) {
+			if (e.action_fn(comp, a)) {
 				MemSwap(acts.Add(), a);
 				a.Pre() = src;
 			}
@@ -64,14 +64,14 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 	}
 	
 	for (const Link& link : d.sink_links) {
-		EcsTypeCls side = link.dst_comp;
+		TypeCompCls side = link.dst_comp;
 		ASSERT(side.IsValid());
 		const CompData& side_cd = m.Get(side);
 		
 		ASSERT(src.GetComponent() != link.dst_comp);
 		
 		a.Post() = src;
-		a.Post().SetAs_AddComponent(link.dst_comp, link.iface);
+		a.Post().SetAs_AddComponent(side);
 		if (side_cd.action_fn(side_cd.cls, a)) {
 			MemSwap(acts.Add(), a);
 			a.Pre() = src;

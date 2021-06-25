@@ -30,6 +30,9 @@ public:
 	
 };
 
+
+
+#if 0
 class CustomerComponent :
 	public Component<CustomerComponent, CustomerExt>,
 	RTTIBase
@@ -41,7 +44,7 @@ class CustomerComponent :
 	
 	
 protected:
-	friend class CustomerSystem;
+	friend class ExtSystem;
 	RealtimeSourceConfig cfg;
 	off32_gen gen;
 	
@@ -83,7 +86,7 @@ public:
 	virtual void		Initialize() override;
 	virtual void		Uninitialize() override;
 	void				UpdateConfig(double dt);
-	void				AddPlan(Eon::Plan& ep);
+	//void				AddPlan(Eon::Plan& ep);
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 
@@ -110,51 +113,13 @@ public:
 
 using CustomerComponentRef = RefT_Entity<CustomerComponent>;
 
-
-
-class CustomerSystem :
-	public System<CustomerSystem>
-{
-	struct Once {
-		PacketForwarder*		fwd;
-		RealtimeSourceConfig*	cfg;
-	};
-	LinkedList<Once> once_cbs;
-	LinkedList<CustomerComponentRef> customers;
-	Mutex lock;
-	
-public:
-	SYS_RTTI(CustomerSystem)
-	SYS_CTOR(CustomerSystem);
-	SYS_DEF_VISIT_(vis && customers)
-	
-	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
-	
-protected:
-	
-    bool Initialize() override;
-    void Start() override;
-    void Update(double dt) override;
-    void Stop() override;
-    void Uninitialize() override;
-    
-protected:
-	friend class CustomerComponent;
-	
-    void Add(CustomerComponentRef p);
-    void Remove(CustomerComponentRef p);
-	
-	
-};
-
-using CustomerSystemRef = RefT_Machine<CustomerSystem>;
+#endif
 
 
 
 
-PREFAB_BEGIN(Customer)
-	CustomerComponent
-PREFAB_END
+
+
 
 
 

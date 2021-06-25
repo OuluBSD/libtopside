@@ -1,3 +1,4 @@
+#if 0
 
 NAMESPACE_ECS_BEGIN
 
@@ -114,3 +115,4 @@ void DevComponent<T,Ext>::ForwardPackets(double dt) {
 
 
 NAMESPACE_ECS_END
+#endif

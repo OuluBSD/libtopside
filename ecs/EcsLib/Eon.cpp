@@ -152,18 +152,20 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	// Prepare action planner and world states
 	Eon::ActionPlanner planner;
 	int CONNECTED = planner.GetAddAtom("loop.connected");
-	ValDevCls ord_vd(DevCls::CENTER, ValCls::ORDER);
-	ValDevCls rcp_vd(DevCls::CENTER, ValCls::RECEIPT);
+	CompCls customer;
+	customer.sink = VD(DevCls::CENTER, ValCls::RECEIPT);
+	customer.side = VD(DevCls::CENTER, ValCls::ORDER);
+	customer.src  = VD(DevCls::CENTER, ValCls::ORDER);
 	
 	Eon::WorldState src;
 	src = scope.current_state;
 	src.SetActionPlanner(planner);
-	src.SetAs_AddComponent(AsEcsTypeCls<CustomerComponent>(ord_vd), rcp_vd);
+	src.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
 	src.Set(CONNECTED, false);
 	
 	Eon::WorldState goal;
 	goal.SetActionPlanner(planner);
-	goal.SetAs_AddComponent(AsEcsTypeCls<CustomerComponent>(ord_vd), rcp_vd);
+	goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
 	goal.Set(CONNECTED, true);
 		
 	
@@ -209,7 +211,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		int pos = 0;
 		for (Eon::ActionNode* n : ep.plan) {
 			const Eon::WorldState& ws = n->GetWorldState();
-			EcsTypeCls comp = ws.GetComponent();
+			TypeCompCls comp = ws.GetComponent();
 			const auto& d = Ecs::Factory::CompDataMap().Get(comp);
 			if (ws.IsAddComponent()) {LOG(pos++ << ": add comp: " << d.name);}
 			if (ws.IsAddExtension()) {
@@ -233,12 +235,11 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		const Eon::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
 			bool is_last = plan_i == ep.plan.GetCount()-1;
-			EcsTypeCls comp = ws.GetComponent();
-			TypeCompCls type_comp; TODO
+			TypeCompCls comp = ws.GetComponent();
 			ComponentBaseRef cb =
 				is_last ?
 					e->FindTypeCls(comp) :
-					e->GetAddTypeCls(type_comp);
+					e->GetAddTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
 				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
@@ -250,8 +251,8 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 			c.plan_i = plan_i;
 		}
 		else if (ws.IsAddExtension()) {
-			EcsTypeCls comp = ws.GetComponent();
-			EcsTypeCls ext = ws.GetExtension();
+			TypeCompCls comp = ws.GetComponent();
+			TypeExtCls ext = ws.GetExtension();
 			ComponentBaseRef cb = e->GetTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
@@ -293,7 +294,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		const Eon::WorldState& ws = n.GetWorldState();
 		ValDevCls iface = ws.GetInterface();
 		if (!pool->Link(src, dst, iface)) {
-			EcsTypeCls comp = ws.GetComponent();
+			TypeCompCls comp = ws.GetComponent();
 			String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
 			String src_iface_name = Ecs::Factory::SourceDataMap().Get(iface).name;
 			AddError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
@@ -301,10 +302,10 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		}
 	}
 	
-	CustomerComponentRef customer = added_comps[0].r->AsRef<CustomerComponent>();
-	if (customer) {
-		customer->AddPlan(ep);
-	}
+	/*ExtComponentRef comp = added_comps[0].r->AsRef<ExtComponent>();
+	if (comp) {
+		comp->AddPlan(ep);
+	}*/
 	
 	
 	// Process sub-loops

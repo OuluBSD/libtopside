@@ -36,16 +36,42 @@ String DevCls::GetName(Type t) {
 String EcsTypeCls::GetTypeString(Type t) {
 	switch (t) {
 		case IFACE:					return "interface";
-		case COMP_IN:				return "input-component";
-		case COMP_OUT:				return "output-component";
-		case COMP_PIPE:				return "pipe-component";
-		case COMP_SIDE_OUT:			return "side-out-component";
-		case COMP_SIDE_IN:			return "side-in-component";
-		case COMP_CUSTOMER:			return "customer-component";
+		case COMP_EXT:				return "ext-component";
 		case COMP_TEST_CUSTOMER:	return "test-customer-component";
 		case COMP_TEST_AUDIO_OUT:	return "test-audio-out-component";
 		default: return "invalid";
 	}
+}
+
+String GetSubCompString(SubCompCls t) {
+	switch (t) {
+		case CUSTOMER:		return "customer";
+		case INPUT:			return "input";
+		case OUTPUT:		return "output";
+		case PIPE:			return "pipe";
+		case SIDE_INPUT:	return "side-input";
+		case SIDE_OUTPUT:	return "side-output";
+		default: return "invalid";
+	}
+}
+
+hash_t TypeCompCls::GetHashValue() const {
+	CombineHash c;
+	c.Put(sink.GetHashValue());
+	c.Put(src.GetHashValue());
+	c.Put(side.GetHashValue());
+	c.Put((int)sub);
+	return c;
+}
+
+hash_t TypeExtCls::GetHashValue() const {
+	CombineHash c;
+	c.Put(sink.GetHashValue());
+	c.Put(src.GetHashValue());
+	c.Put(side.GetHashValue());
+	c.Put(sub);
+	c.Put(ext);
+	return c;
 }
 
 

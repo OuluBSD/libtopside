@@ -76,9 +76,9 @@ struct ScopeValDevLibT {
 	
 	
 
-class InputComponent;
-class OutputComponent;
-class PipeComponent;
+//class InputComponent;
+//class OutputComponent;
+//class PipeComponent;
 
 /*static String TypeStringT(const char* t) {
 	String s;
@@ -95,11 +95,13 @@ class InputExt : public ComponentExtBase {
 public:
 	RTTI_DECL1(InputExt, ComponentExtBase);
 	using Ext = InputExt;
-	using Component = InputComponent;
 	
 };
 
 
+
+
+#if 0
 
 class InputComponent :
 	public Component<InputComponent, InputExt>
@@ -167,6 +169,7 @@ public:
 	
 };
 
+#endif
 
 
 class OutputExt : public ComponentExtBase {
@@ -174,13 +177,13 @@ class OutputExt : public ComponentExtBase {
 public:
 	RTTI_DECL1(OutputExt, ComponentExtBase);
 	using Ext = OutputExt;
-	using Component = OutputComponent;
 	
-	OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
+	//OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
 	
 };
 
 
+#if 0
 
 class OutputComponent :
 	public Component<OutputComponent, OutputExt>
@@ -228,7 +231,7 @@ private:
 	Mutex					lock;
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
-	CustomerSystemRef		cust_sys;
+	ExtSystemRef		cust_sys;
 	
 	
 public:
@@ -255,15 +258,19 @@ public:
 	
 };
 
+#endif
+
 
 class PipeExt : public ComponentExtBase {
 	
 public:
 	RTTI_DECL1(PipeExt, ComponentExtBase);
 	using Ext = PipeExt;
-	using Component = PipeComponent;
 	
 };
+
+
+#if 0
 
 class PipeComponent :
 	public Component<PipeComponent, PipeExt>,
@@ -343,6 +350,7 @@ public:
 	
 };
 
+#endif
 
 
 
@@ -361,6 +369,9 @@ public:
 	using Component = SideOutputComponent;
 	
 };
+
+
+#if 0
 
 class SideOutputComponent :
 	public Component<SideOutputComponent, SideOutExt>
@@ -421,6 +432,7 @@ public:
 	
 };
 
+#endif
 
 
 class SideInputComponent;
@@ -433,6 +445,11 @@ public:
 	using Component = SideInputComponent;
 	
 };
+
+
+
+
+#if 0
 
 class SideInputComponent :
 	public Component<SideInputComponent, SideInExt>
@@ -493,7 +510,6 @@ public:
 };
 
 
-#if 0
 class DevCustomerComponent :
 	public Component<DevCustomerComponent, RSink, OSource>,
 {

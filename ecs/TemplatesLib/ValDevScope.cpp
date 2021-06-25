@@ -76,6 +76,16 @@ void ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 }
 
 
+
+
+
+
+
+
+
+
+#if 0
+
 void InputComponent::Forward(FwdScope& fwd) {
 	TODO
 	#if 0
@@ -233,7 +243,7 @@ void OutputComponent::Initialize() {
 	//sink_value.SetMinBufSamples(fmt.GetSampleRate() * 2);
 	
 	
-	cust_sys = ComponentBase::GetEntity()->GetMachine().template TryGet<CustomerSystem>();
+	cust_sys = ComponentBase::GetEntity()->GetMachine().template TryGet<ExtSystem>();
 }
 
 void OutputComponent::Uninitialize() {
@@ -547,7 +557,6 @@ Stream& SideInputComponent::GetStream() {
 
 
 
-#if 0
 void DevCustomerComponent::Initialize() {
 	
 }

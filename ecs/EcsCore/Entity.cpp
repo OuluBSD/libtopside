@@ -37,9 +37,9 @@ void Entity::OnChange() {
 	changed = GetMachine().GetTicks();
 }
 
-ComponentBaseRef Entity::GetTypeCls(EcsTypeCls comp_type) {
+ComponentBaseRef Entity::GetTypeCls(TypeCompCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		EcsTypeCls type = comp->GetType();
+		TypeCompCls type = comp->GetType();
 		ASSERT(type.IsValid());
 		if (type == comp_type)
 			return comp;
@@ -48,13 +48,13 @@ ComponentBaseRef Entity::GetTypeCls(EcsTypeCls comp_type) {
 }
 
 ComponentBaseRef Entity::GetAddTypeCls(TypeCompCls cls) {
-	ComponentBaseRef cb = FindTypeCls(cls.side);
+	ComponentBaseRef cb = FindTypeCls(cls);
 	return cb ? cb : AddPtr(GetMachine().Get<ComponentStore>()->CreateComponentTypeCls(cls));
 }
 
-ComponentBaseRef Entity::FindTypeCls(EcsTypeCls comp_type) {
+ComponentBaseRef Entity::FindTypeCls(TypeCompCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		EcsTypeCls type = comp->GetType();
+		TypeCompCls type = comp->GetType();
 		if (type == comp_type)
 			return comp;
 	}

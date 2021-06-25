@@ -1,98 +1,10 @@
 #include "EcsCore.h"
 
+#if 0
 NAMESPACE_ECS_BEGIN
 
 
 
-CustomerComponent::CustomerComponent() :
-	src_stream(this),
-	cfg(gen)
-{
-	//DumpRuntimeDiagnostics(this);
-	ValDevCls vd(DevCls::CENTER, ValCls::ORDER);
-	SetSinkType(vd);
-	SetSourceType(vd);
-}
-
-void CustomerComponent::Initialize() {
-	CustomerSystemRef sys = GetMachine().TryGet<CustomerSystem>();
-	if (sys)
-		sys->Add(AsRef<CustomerComponent>());
-}
-
-void CustomerComponent::Uninitialize() {
-	CustomerSystemRef sys = GetMachine().TryGet<CustomerSystem>();
-	if (sys)
-		sys->Remove(AsRef<CustomerComponent>());
-}
-
-void CustomerComponent::UpdateConfig(double dt) {
-	cfg.Update(dt, src_value.IsQueueFull());
-}
-
-void CustomerComponent::AddPlan(Eon::Plan& ep) {
-	plans.Add(ep);
-}
-
-void CustomerComponent::Forward(FwdScope& fwd) {
-	if (ext)
-		ext->Forward(fwd);
-	
-	int read_i = fwd.GetPos();
-	if (read_i == 0) {
-		if (src_value.IsQueueFull())
-			return;
-		
-		SimpleValue& src_buf = src_value;
-		
-		off32 off = gen.Create();
-		Packet p = CreatePacket(off);
-		
-		unfulfilled_offsets.Add(off.value);
-		
-		Format fmt = GetDefaultFormat(VD(CENTER, ORDER));
-		RTLOG("CustomerComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
-		p->SetFormat(fmt);
-		
-		ASSERT(plans.GetCount() == 1);
-		Eon::Plan& ep = plans[0];
-		InternalPacketData& data = p->template SetData<InternalPacketData>();
-		data.pos = 0;
-		data.count = ep.plan.GetCount()-1;
-		
-		PacketTracker::Track(TrackerInfo("CustomerComponent::Forward", __FILE__, __LINE__), *p);
-		src_buf.AddPacket(p);
-	}
-	else {
-		PacketBuffer& buf = sink_value.GetBuffer();
-		for (Packet& p : buf) {
-			off32 off = p->GetOffset();
-			unfulfilled_offsets.RemoveKey(off.value);
-			RTLOG("CustomerComponent::Forward: removing fulfilled packet " << off.ToString());
-		}
-		buf.Clear();
-		
-		
-		if (unfulfilled_offsets.GetCount() > max_unfulfilled) {
-			LOG("CustomerComponent::Forward: error: too many unfulfilled packets");
-			while (unfulfilled_offsets.GetCount() > max_unfulfilled)
-				unfulfilled_offsets.Remove(0);
-		}
-	}
-}
-
-void CustomerComponent::ForwardExchange(FwdScope& fwd) {
-	int read_i = fwd.GetPos();
-	if (read_i > 0)
-		return;
-	ValSource& src = *this;
-	
-	ExchangePointRef expt = src.GetExPt();
-	ASSERT(expt);
-	if (expt) {
-		fwd.AddNext(*expt);
-	}
-}
 
 
 
@@ -101,64 +13,9 @@ void CustomerComponent::ForwardExchange(FwdScope& fwd) {
 
 
 
-
-
-
-
-bool CustomerSystem::Initialize() {
-	
-	return true;
-}
-
-void CustomerSystem::Start() {
-	
-}
-
-void CustomerSystem::Update(double dt) {
-	LinkedList<Once> cbs;
-	lock.Enter();
-	MemSwap(cbs, once_cbs);
-	lock.Leave();
-	
-	for (Once& o : cbs) {
-		for (FwdScope scope(o.fwd, *o.cfg); scope; scope++)
-			scope.Forward();
-	}
-	
-	for (CustomerComponentRef& c : customers) {
-		c->UpdateConfig(dt);
-		for (FwdScope scope(*c, c->cfg); scope; scope++)
-			scope.Forward();
-	}
-	
-}
-
-void CustomerSystem::Stop() {
-	
-}
-
-void CustomerSystem::Uninitialize() {
-	once_cbs.Clear();
-	customers.Clear();
-}
-
-void CustomerSystem::Add(CustomerComponentRef p) {
-	customers.FindAdd(p);
-}
-
-void CustomerSystem::Remove(CustomerComponentRef p) {
-	customers.RemoveKey(p);
-}
-
-void CustomerSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
-	lock.Enter();
-	Once& o = once_cbs.Add();
-	o.fwd = &fwd;
-	o.cfg = &cfg;
-	lock.Leave();
-}
 
 
 
 
 NAMESPACE_ECS_END
+#endif

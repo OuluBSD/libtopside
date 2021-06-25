@@ -103,78 +103,142 @@ struct ValDevCls : Moveable<ValDevCls> {
 	//operator bool() const {return IsValid();}
 	hash_t GetHashValue() const {return (int)dev.type * (int)ValCls::TYPE_COUNT + (int)val.type;}
 	String ToString() const {return dev.GetName() + "-" + val.GetName();}
+	String GetActionName() const {return ToLower(dev.GetName()) + "." + ToLower(val.GetName());}
 };
 
-#define VD(dev, val) ValDevCls(DevCls::dev, ValCls::val)
+#define VD(dev, val) Ecs::ValDevCls(Ecs::DevCls::dev, Ecs::ValCls::val)
 
 
 struct EcsTypeCls : Moveable<EcsTypeCls> {
 	typedef enum : byte {
 		INVALID,
 		IFACE,
-		COMP_IN,
-		COMP_OUT,
-		COMP_PIPE,
-		COMP_SIDE_OUT,
-		COMP_SIDE_IN,
-		COMP_CUSTOMER,
+		COMP_EXT,
 		COMP_TEST_CUSTOMER,
 		COMP_TEST_AUDIO_OUT,
 		
 		TYPE_COUNT
 	} Type;
 	
-	ValCls	val;
-	DevCls	dev;
-	Type type = INVALID;
+	ValDevCls		vd;
+	Type			type = INVALID;
 	
 	EcsTypeCls() {}
-	EcsTypeCls(ValDevCls vd, Type t) : val(vd.val), dev(vd.dev), type(t) {ASSERT(IsValid());}
-	EcsTypeCls(const EcsTypeCls& c) : val(c.val), dev(c.dev), type(c.type) {}
-	void Clear() {val.Clear(); dev.Clear(); type = INVALID;}
-	bool IsValid() const {return val.IsValid() && dev.IsValid() && type > INVALID && type < TYPE_COUNT;}
-	void operator=(const Nuller& n) {val = n; dev = n;}
-	void operator=(const EcsTypeCls& n) {val = n.val; dev = n.dev; type = n.type;}
-	bool operator==(const EcsTypeCls& c) const {return val == c.val && dev == c.dev && type == c.type;}
-	bool operator!=(const EcsTypeCls& c) const {return val != c.val || dev != c.dev || type != c.type;}
+	EcsTypeCls(ValDevCls vd, Type t) : vd(vd), type(t) {ASSERT(IsValid());}
+	EcsTypeCls(const EcsTypeCls& c) : vd(c.vd), type(c.type) {}
+	void Clear() {vd.Clear(); type = INVALID;}
+	bool IsValid() const {return vd.IsValid() && type > INVALID && type < TYPE_COUNT;}
+	void operator=(const Nuller& n) {vd = n;}
+	void operator=(const EcsTypeCls& n) {vd = n.vd; type = n.type;}
+	bool operator==(const EcsTypeCls& c) const {return vd == c.vd && type == c.type;}
+	bool operator!=(const EcsTypeCls& c) const {return vd != c.vd || type != c.type;}
 	//operator bool() const {return IsValid();}
-	operator ValDevCls() const {return ValDevCls(dev, val);}
-	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)dev.type) * (int)ValCls::TYPE_COUNT + (int)val.type;}
+	operator ValDevCls() const {return vd;}
+	hash_t GetHashValue() const {return ((int)type * (int)DevCls::TYPE_COUNT + (int)vd.dev.type) * (int)ValCls::TYPE_COUNT + (int)vd.val.type;}
 	String GetTypeString() const {return GetTypeString(type);}
 	static String GetTypeString(Type t);
-	String ToString() const {return GetTypeString() + "-" + dev.GetName() + "-" + val.GetName();}
+	String ToString() const {return GetTypeString() + "-" + vd.dev.GetName() + "-" + vd.val.GetName();}
+	String GetActionName() const {return ToLower(vd.dev.GetName()) + "." + ToLower(vd.val.GetName());}
 };
 
+typedef enum : byte {
+	INVALID,
+	CUSTOMER,
+	INPUT,
+	OUTPUT,
+	PIPE,
+	SIDE_INPUT,
+	SIDE_OUTPUT,
+	
+	SUBCOMP_COUNT
+} SubCompCls;
 
+String GetSubCompString(SubCompCls t);
 
 
 struct CompCls : Moveable<CompCls> {
 	ValDevCls sink, side, src;
 	
 	
+	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid();}
+	
 };
 
-struct TypeCompCls : Moveable<CompCls> {
+struct TypeCompCls : Moveable<TypeCompCls> {
 	ValDevCls sink, src;
 	EcsTypeCls side;
+	SubCompCls sub = SubCompCls::INVALID;
+	
+	
+	bool IsValidSub() const {return sub > SubCompCls::INVALID && sub < SubCompCls::SUBCOMP_COUNT;}
+	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && IsValidSub();}
+	hash_t GetHashValue() const;
+	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubCompCls::INVALID;}
+	void operator=(const TypeCompCls& n) {sink = n.sink; src = n.src; side = n.side; sub = n.sub;}
+	bool operator==(const TypeCompCls& c) const {
+		return	sink == c.sink &&
+				side == c.side &&
+				src == c.src &&
+				sub == c.sub;
+	}
+	bool operator!=(const TypeCompCls& c) const {return !(*this == c);}
+	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "))";}
+	
+};
+
+struct TypeExtCls : Moveable<TypeExtCls> {
+	ValDevCls sink, side, src;
+	SubCompCls sub = SubCompCls::INVALID;
+	int16 ext = -1;
+	
+	
+	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && sub != SubCompCls::INVALID && ext >= 0;}
+	hash_t GetHashValue() const;
+	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubCompCls::INVALID; ext = -1;}
+	bool operator==(const TypeExtCls& c) const {
+		return	sink == c.sink &&
+				side == c.side &&
+				src == c.src &&
+				sub == c.sub &&
+				ext == c.ext;
+	}
+	bool operator!=(const TypeExtCls& c) const {return !(*this == c);}
 	
 };
 
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefEcsTypeMapIndirect	= RefLinkedMapIndirect<EcsTypeCls, T, Parent>;
+using RefEcsTypeMapIndirect	= RefLinkedMapIndirect<TypeCompCls, T, Parent>;
 
 
-template <class T> EcsTypeCls AsEcsTypeCls(DevCls dev, ValCls val) {
+template <class T> EcsTypeCls AsEcsTypeCls(ValDevCls vd) {
 	EcsTypeCls c;
-	c.dev = dev;
-	c.val = val;
+	c.vd = vd;
 	c.type = T::GetEcsType();
 	return c;
 }
 
-template <class T> EcsTypeCls AsEcsTypeCls(ValDevCls vd) {
-	return AsEcsTypeCls<T>(vd.dev, vd.val);
+template <class T> TypeCompCls AsTypeCompCls(SubCompCls sub_type, CompCls vd) {
+	TypeCompCls c;
+	c.sub = sub_type;
+	c.side.vd.dev = vd.side.dev;
+	c.side.vd.val = vd.side.val;
+	c.side.type = T::GetEcsType();
+	c.sink = vd.sink;
+	c.src  = vd.src;
+	return c;
+}
+
+TypeCompCls AsTypeCompCls(TypeExtCls e);
+
+template <class T> TypeCompCls AsTypeExtCls(CompCls vd) {
+	TypeCompCls c;
+	c.side.vd.dev = vd.side.dev;
+	c.side.vd.val = vd.side.val;
+	c.side.type = T::GetEcsType();
+	c.sink = vd.sink;
+	c.src  = vd.src;
+	return c;
 }
 
 
