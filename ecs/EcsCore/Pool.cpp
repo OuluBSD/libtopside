@@ -78,8 +78,8 @@ EntityRef Pool::Clone(const Entity& c) {
 }
 
 bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface) {
-	InterfaceSourceRef src = src_comp->FindSource(iface);
-	InterfaceSinkRef sink = dst_comp->FindSink(iface);
+	InterfaceSourceRef src = src_comp->GetSource();
+	InterfaceSinkRef sink = dst_comp->GetSink();
 	ASSERT(src && sink);
 	if (!src || !sink)
 		return false;

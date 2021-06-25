@@ -43,13 +43,13 @@ public:
 
 
 class ValExchangePoint :
-	public ValExchangePointBase
+	public ExchangePoint
 {
 	Pool* pool = 0;
 	bool use_consumer = true;
 	
 public:
-	RTTI_DECL1(ValExchangePoint, ValExchangePointBase)
+	RTTI_DECL1(ValExchangePoint, ExchangePoint)
 	typedef ValExchangePoint CLASSNAME;
 	ValExchangePoint() {}
 	~ValExchangePoint() {Deinit();}
@@ -63,6 +63,8 @@ public:
 	void UseConsumer(bool b=true) {use_consumer = b;}
 	void Destroy() {pool = 0;}
 	
+	
+	static ValExchangePoint* Create(TypeCls t);
 	
 };
 

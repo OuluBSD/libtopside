@@ -11,9 +11,9 @@ public:
 	RTTI_DECL0(InterfaceBase)
 	
 	virtual ComponentBase* AsComponentBase() = 0;
-	virtual EcsTypeCls GetEcsCls() const = 0;
-	virtual ValDevCls GetSinkCls() const = 0;
-	virtual DevCls GetDevSpec() const {return GetCenterDevCls();}
+	virtual EcsTypeCls GetType() const = 0;
+	virtual ValDevCls GetSinkCls() const {return ValDevCls();}
+	virtual ValDevCls GetSourceCls() const {return ValDevCls();}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };
@@ -52,16 +52,15 @@ class InterfaceSink :
 	public ExchangeSinkProvider
 {
 protected:
-	ValDevCls sink;
+	ValDevCls iface;
 	
 public:
 	RTTI_DECL2(InterfaceSink, InterfaceBase, ExchangeSinkProvider)
 	InterfaceSink() {}
 	
-	void SetSinkType(ValDevCls sink) {this->sink = sink;}
+	void SetSinkType(ValDevCls iface) {this->iface = iface;}
 	
-	ValDevCls	GetSinkCls() const override {return sink;}
-	DevCls		GetDevSpec() const override {return sink.dev;}
+	ValDevCls	GetSinkCls() const override {return iface;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {
@@ -82,18 +81,17 @@ class InterfaceSource :
 	public InterfaceBase,
 	public ExchangeSourceProvider
 {
-	ValDevCls sink;
-	ValDevCls src;
+	
+protected:
+	ValDevCls iface;
 	
 public:
 	RTTI_DECL2(InterfaceSource, InterfaceBase, ExchangeSourceProvider)
 	InterfaceSource() {}
 	
-	void SetSourceType(ValDevCls sink, ValDevCls src) {this->sink = sink; this->src = src;}
+	void SetSourceType(ValDevCls iface) {this->iface = iface;}
 	
-	ValDevCls	GetSourceCls() const {return src;}
-	ValDevCls	GetSinkCls() const override {return sink;}
-	DevCls		GetDevSpec() const override {return src.dev;}
+	ValDevCls	GetSourceCls() const override {return iface;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {
@@ -114,21 +112,35 @@ using InterfaceSourceRef = Ref<InterfaceSource, RefParent1<Entity>>;
 
 
 class InterfaceVisitor : public RuntimeVisitor {
-	TypeCls iface_base;
-	EcsTypeCls match_type;
-	InterfaceBase* last = 0;
+	TypeCls iface_type;
+	ValDevCls match_type;
+	bool match_src;
+	InterfaceSource* last_src = 0;
+	InterfaceSink* last_sink = 0;
 	bool stop_when_found = false;
 	
 	
 	bool OnEntry(const RTTI& type, TypeCls derived, const char* derived_name, void* mem, LockedScopeRefCounter* ref) override {
-		if (derived == iface_base) {
-			last = (InterfaceBase*)mem;
-			if (last->GetEcsCls() == match_type) {
-				if (stop_when_found) {
-					BreakOut();
-					return false;
+		if (derived == iface_type) {
+			if (match_src) {
+				last_src = (InterfaceSource*)mem;
+				if (last_src->GetSourceCls() == match_type) {
+					if (stop_when_found) {
+						BreakOut();
+						return false;
+					}
+					else return OnInterfaceEntry(*last_src);
 				}
-				else return OnInterfaceEntry(*(InterfaceBase*)mem);
+			}
+			else {
+				last_sink = (InterfaceSink*)mem;
+				if (last_sink->GetSinkCls() == match_type) {
+					if (stop_when_found) {
+						BreakOut();
+						return false;
+					}
+					else return OnInterfaceEntry(*last_sink);
+				}
 			}
 		}
 		return true;
@@ -138,13 +150,18 @@ class InterfaceVisitor : public RuntimeVisitor {
 	
 public:
 	RTTI_DECL1(InterfaceVisitor, RuntimeVisitor)
-	InterfaceVisitor(EcsTypeCls match) : match_type(match), iface_base(AsTypeCls<InterfaceBase>()) {}
+	InterfaceVisitor(bool match_type_src, EcsTypeCls match) :
+		match_type(match),
+		match_src(match_type_src),
+		iface_type(match_type_src ? AsTypeCls<InterfaceSource>() : AsTypeCls<InterfaceSink>()) {}
 	
 	
-	InterfaceBase* GetLast() const {return last;}
+	InterfaceSource* GetLastSource() const {return last_src;}
+	InterfaceSink* GetLastSink() const {return last_sink;}
 	void StopWhenFound(bool b=true) {stop_when_found = b;}
 	
-	virtual bool OnInterfaceEntry(InterfaceBase& o) {return true;}
+	virtual bool OnInterfaceEntry(InterfaceSource& o) {return true;}
+	virtual bool OnInterfaceEntry(InterfaceSink& o) {return true;}
 	
 };
 

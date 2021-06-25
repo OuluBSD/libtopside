@@ -72,7 +72,7 @@ struct AccelComponentConfBase {
 		ACCEL_TYPE_ITEM(TYPE_VOLUME, "volume") \
 		ACCEL_TYPE_ITEM(TYPE_VIDEO, "video")
 		
-	typedef enum {
+	typedef enum : byte {
 		#define ACCEL_TYPE_ITEM(x,y) x,
 		ACCEL_TYPE_LIST
 		#undef ACCEL_TYPE_ITEM

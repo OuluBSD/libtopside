@@ -5,27 +5,25 @@ NAMESPACE_ECS_BEGIN
 
 
 Format GetDefaultFormat(ValDevCls type) {
-	TODO
+	DUMP(type)
+	Format fmt;
 	
-	/*
-	template <>
-	template <>
-	typename ScopeValMachT<AudioSpec>::Format
-	ScopeDevCoreT<AccelSpec>::GetDefaultFormat<AudioSpec>() {
-		using ValSpec					= AudioSpec;
-		using FromDevSpec				= AccelSpec;
-		using ValMach					= ScopeValMachT<ValSpec>;
-		using Format					= typename ValMach::Format;
-		Format fmt;
-		fmt.Set<AccelSpec>(SoundSample::FLT_LE, 2, 44100, 1024);
-		return fmt;
+	if (type.dev == DevCls::CENTER) {
+		if (type.val == ValCls::AUDIO) {
+			fmt.SetAudio(SoundSample::FLT_LE, 2, 44100, 1024);
+		}
+		else if (type.val == ValCls::ORDER) {
+			fmt.SetOrder();
+		}
+		else {
+			TODO
+		}
 	}
-	*/
+	else {
+		TODO
+	}
 	
-	
-	/*typename ScopeValMachT<ValSpec>::Format fmt;
-	fmt.template SetDefault<DevSpec>();
-	return fmt;*/
+	return fmt;
 }
 
 

@@ -38,7 +38,7 @@ struct LoopDefinition {
 };
 
 struct SidechainDefinition {
-	typedef enum {
+	typedef enum : byte {
 		CENTER,
 		NET
 	} Type;
@@ -55,7 +55,7 @@ struct SidechainDefinition {
 };
 
 struct Value {
-	typedef enum {
+	typedef enum : byte {
 		VAL_INVALID,
 		VAL_CUSTOMER,
 		VAL_STRING,

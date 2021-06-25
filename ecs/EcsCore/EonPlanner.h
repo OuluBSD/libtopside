@@ -10,7 +10,7 @@ class ActionNode;
 class WorldState : public Moveable<WorldState> {
 
 public:
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		ADD_COMP,
 		ADD_EXT

@@ -86,7 +86,6 @@ public:
 	void				AddPlan(Eon::Plan& ep);
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
-	EcsTypeCls			GetEcsCls() const override;
 
 	
 	// ReceiptSink
@@ -99,7 +98,13 @@ public:
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_CUSTOMER;}
-	static ValDevCls			GetDefaultValDev() {return ValDevCls(DevCls::CENTER, ValCls::ORDER);}
+	static CompCls				GetDefaultCompCls() {
+		CompCls c;
+		c.sink = VD(CENTER,RECEIPT);
+		c.side = VD(CENTER,ORDER);
+		c.src = VD(CENTER,ORDER);
+		return c;
+	}
 	
 };
 

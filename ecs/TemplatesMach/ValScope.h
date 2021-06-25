@@ -11,26 +11,101 @@ NAMESPACE_ECS_BEGIN
 	return s;
 }*/
 
+#define STD_FMT_SIZE (4*16)
+
+struct AudioFormat :
+	public SampleBase<SoundSample>,
+	public DimBase<1>,
+	public TimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<SoundSample>) +
+		sizeof(DimBase<1>) +
+		sizeof(TimeSeriesBase);
+	
+	void Set(SoundSample::Type t, int channels, int freq, int sample_rate);
+	
+	int GetFrameSize() const;
+	int GetMinBufSamples() const {return TimeSeriesBase::GetSampleRate() * 2;}
+	String ToString() const;
+	bool IsValid() const;
+	bool IsSame(const AudioFormat& fmt) const;
+	
+	
+	byte pad[STD_FMT_SIZE - base_size - 4];
+};
+
+struct VideoFormat {
+	
+	
+	
+	byte pad[STD_FMT_SIZE - 0];
+};
+
+struct DataFormat {
+	
+	
+	
+	byte pad[STD_FMT_SIZE - 0];
+};
+
+struct EventFormat {
+	
+	
+	
+	byte pad[STD_FMT_SIZE - 0];
+};
+
+#define TEST_FORMAT(x) \
+	static_assert(std::is_trivially_constructible<x>::value == true, #x " must be trivial to construct"); \
+	static_assert(sizeof(x) == STD_FMT_SIZE, "Expecting standard format size in " #x);
+
+TEST_FORMAT(AudioFormat)
+TEST_FORMAT(VideoFormat)
+TEST_FORMAT(DataFormat)
+TEST_FORMAT(EventFormat)
+
 class Format : RTTIBase {
+public:
 	RTTI_DECL0(Format)
 	
+	ValDevCls			vd;
+	union {
+		byte				data[STD_FMT_SIZE];
+		AudioFormat			aud;
+		VideoFormat			vid;
+		DataFormat			dat;
+		EventFormat			ev;
+	};
+	
 public:
-	String ToString() const; // {return FormatBase::ToString();}
-	TypeCls GetDevSpec() const; // {return FormatBase::GetDevSpec();}
+	Format() {memset(data, 0, sizeof(data));}
+	Format(const Format& f) : vd(f.vd) {memcpy(data, f.data, sizeof(data));}
+	
+	String ToString() const;
+	DevCls GetDevSpec() const {return vd.dev;}
 	int GetSampleSize() const;
 	int GetArea() const;
 	int GetFrameSize() const;
 	double GetFrameSeconds() const;
 	int GetMinBufSamples() const;
 	
+	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
 	bool operator ==(const Format& f); // {return IsSame(f);}
 	bool operator !=(const Format& f); // {return !IsSame(f);}
-	
+	void operator=(const Format& f);
 	void SetDefault(ValDevCls t); // {FormatBase::template SetDefault<DevSpec>();}
 	void Clear();
+	
+	void SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate);
+	void SetOrder();
+	
+	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
+	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
+	
 	
 };
 

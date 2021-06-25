@@ -43,12 +43,14 @@ protected:
 	
 public:
 	virtual EcsTypeCls GetType() const = 0;
-	virtual void SetType(EcsTypeCls t) = 0;
+	virtual void SetType(const TypeCompCls& cls) = 0;
 	virtual void CopyTo(ComponentBase* component) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
+	virtual InterfaceSourceRef GetSource() = 0;
+	virtual InterfaceSinkRef GetSink() = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const;
@@ -73,8 +75,9 @@ public:
 	virtual ~ComponentBase();
 	
 	EntityRef GetEntity();
-	InterfaceSourceRef FindSource(ValDevCls t);
-	InterfaceSinkRef FindSink(ValDevCls t);
+	
+	//InterfaceSourceRef FindSource(ValDevCls t);
+	//InterfaceSinkRef FindSink(ValDevCls t);
 	
 	template <class T> RefT_Entity<T> As() {return ComponentBase_Static_As<T>(this);}
 	
@@ -126,7 +129,7 @@ struct Component :
 	
 	
 	EcsTypeCls GetType() const override {return AsEcsTypeCls<T>(vd);}
-	void SetType(EcsTypeCls t) override {vd = t;}
+	void SetType(const TypeCompCls& cls) override {ValSink::iface = cls.sink; vd = cls.side; ValSource::iface = cls.src;}
 	
 	void CopyTo(ComponentBase* target) const override {
 		ASSERT(target->GetType() == GetType());
@@ -171,6 +174,9 @@ public:
 		return ext ? ext->template AsRef<ComponentExtBase>() : ComponentExtBaseRef();
 	}
 	
+	
+	InterfaceSourceRef GetSource() override {return InterfaceSourceRef(GetParentUnsafe(), (InterfaceSource*)this);}
+	InterfaceSinkRef GetSink() override {return InterfaceSinkRef(GetParentUnsafe(), (InterfaceSink*)this);}
 	
 };
 

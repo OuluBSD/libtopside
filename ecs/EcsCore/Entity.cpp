@@ -47,9 +47,9 @@ ComponentBaseRef Entity::GetTypeCls(EcsTypeCls comp_type) {
 	return ComponentBaseRef();
 }
 
-ComponentBaseRef Entity::GetAddTypeCls(EcsTypeCls comp_type) {
-	ComponentBaseRef cb = FindTypeCls(comp_type);
-	return cb ? cb : AddPtr(GetMachine().Get<ComponentStore>()->CreateComponentTypeCls(comp_type));
+ComponentBaseRef Entity::GetAddTypeCls(TypeCompCls cls) {
+	ComponentBaseRef cb = FindTypeCls(cls.side);
+	return cb ? cb : AddPtr(GetMachine().Get<ComponentStore>()->CreateComponentTypeCls(cls));
 }
 
 ComponentBaseRef Entity::FindTypeCls(EcsTypeCls comp_type) {

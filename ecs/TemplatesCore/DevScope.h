@@ -13,6 +13,7 @@ struct ScopeDevCoreT {
 	
 	
 Format GetDefaultFormat(ValDevCls type);
+
 	
 	/*
 	using DevExchangePoint	= typename Mach::DevExchangePoint;

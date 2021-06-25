@@ -11,7 +11,7 @@ CustomerComponent::CustomerComponent() :
 	//DumpRuntimeDiagnostics(this);
 	ValDevCls vd(DevCls::CENTER, ValCls::ORDER);
 	SetSinkType(vd);
-	SetSourceType(vd, vd);
+	SetSourceType(vd);
 }
 
 void CustomerComponent::Initialize() {
@@ -35,27 +35,22 @@ void CustomerComponent::AddPlan(Eon::Plan& ep) {
 }
 
 void CustomerComponent::Forward(FwdScope& fwd) {
-	TODO
-	#if 0
 	if (ext)
 		ext->Forward(fwd);
 	
 	int read_i = fwd.GetPos();
 	if (read_i == 0) {
-		using DevMach = ScopeDevMachT<CenterSpec>;
-		using InternalPacketData = typename DevMach::InternalPacketData;
-		
 		if (src_value.IsQueueFull())
 			return;
 		
-		SimpleOrder& src_buf = src_value;
+		SimpleValue& src_buf = src_value;
 		
 		off32 off = gen.Create();
-		OrderPacket p = CreateOrderPacket(off);
+		Packet p = CreatePacket(off);
 		
 		unfulfilled_offsets.Add(off.value);
 		
-		OrderFormat fmt = ScopeDevCoreT<CenterSpec>::GetDefaultFormat<OrderSpec>();
+		Format fmt = GetDefaultFormat(VD(CENTER, ORDER));
 		RTLOG("CustomerComponent::Forward: sending packet " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
@@ -65,12 +60,12 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 		data.pos = 0;
 		data.count = ep.plan.GetCount()-1;
 		
-		OrderPacketTracker::Track(TrackerInfo("CustomerComponent::Forward", __FILE__, __LINE__), *p);
+		PacketTracker::Track(TrackerInfo("CustomerComponent::Forward", __FILE__, __LINE__), *p);
 		src_buf.AddPacket(p);
 	}
 	else {
-		ReceiptPacketBuffer& buf = sink_value.GetBuffer();
-		for (ReceiptPacket& p : buf) {
+		PacketBuffer& buf = sink_value.GetBuffer();
+		for (Packet& p : buf) {
 			off32 off = p->GetOffset();
 			unfulfilled_offsets.RemoveKey(off.value);
 			RTLOG("CustomerComponent::Forward: removing fulfilled packet " << off.ToString());
@@ -84,7 +79,6 @@ void CustomerComponent::Forward(FwdScope& fwd) {
 				unfulfilled_offsets.Remove(0);
 		}
 	}
-	#endif
 }
 
 void CustomerComponent::ForwardExchange(FwdScope& fwd) {
@@ -100,9 +94,7 @@ void CustomerComponent::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-EcsTypeCls CustomerComponent::GetEcsCls() const {
-	TODO
-}
+
 
 
 

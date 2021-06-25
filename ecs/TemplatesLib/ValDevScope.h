@@ -155,7 +155,6 @@ public:
 	
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
-	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_IN);}
 	
 	// OSink
 	Value&				GetValue() override {return sink_value;}
@@ -240,7 +239,6 @@ public:
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
 	bool				ForwardMem(void* mem, size_t mem_size);
-	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_OUT);}
 	
 	// ValSink
 	Value&				GetValue() override {return sink_value;}
@@ -325,7 +323,6 @@ public:
 	bool				RequiresDeviceProgram() const override {return true;}
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
-	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_PIPE);}
 	bool				IsValSpec(ValCls c) const override {return vd.val == c;}
 	ValCls				GetValSpec() const override {return vd.val;}
 	
@@ -412,7 +409,6 @@ public:
 	void				Uninitialize() override;
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
-	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_SIDE_OUT);}
 	
 	// ValSink
 	Value&				GetValue() override;
@@ -484,7 +480,6 @@ public:
 	void				Uninitialize() override;
 	void				Forward(FwdScope& fwd) override;
 	void				ForwardExchange(FwdScope& fwd) override;
-	EcsTypeCls			GetEcsCls() const override {return EcsTypeCls(vd, EcsTypeCls::COMP_SIDE_IN);}
 	
 	// OrderSink
 	Value&				GetValue() override;

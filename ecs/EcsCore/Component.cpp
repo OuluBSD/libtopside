@@ -35,33 +35,26 @@ String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
 
-InterfaceSourceRef ComponentBase::FindSource(ValDevCls t) {
-	TODO
-	/*ASSERT(t != AsTypeCls<InterfaceSourceBase>());
+/*InterfaceSourceRef ComponentBase::FindSource(ValDevCls t) {
 	CollectInterfacesVisitor vis;
 	vis.Visit(*this);
-	for (InterfaceSourceBaseRef& r : vis.src_ifaces) {
-		void* r_ptr = &*r;
-		void* type_ptr = r->GetBasePtrOver(t, r_ptr);
-		if (type_ptr)
+	for (InterfaceSourceRef& r : vis.src_ifaces) {
+		if (r->GetSourceCls() == t)
 			return r;
 	}
-	return InterfaceSourceBaseRef();*/
+	return InterfaceSourceBaseRef();
 }
 
 InterfaceSinkRef ComponentBase::FindSink(ValDevCls t) {
-	TODO
-	/*ASSERT(t != AsTypeCls<InterfaceSinkBase>());
+	ASSERT(t != AsTypeCls<InterfaceSinkBase>());
 	CollectInterfacesVisitor vis;
 	vis.Visit(*this);
 	for (InterfaceSinkBaseRef& r : vis.sink_ifaces) {
-		void* r_ptr = &*r;
-		void* type_ptr = r->GetBasePtrOver(t, r_ptr);
-		if (type_ptr)
+		if (r->GetSinkCls() == t)
 			return r;
 	}
-	return InterfaceSinkBaseRef();*/
-}
+	return InterfaceSinkBaseRef();
+}*/
 
 ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(EcsTypeCls ext) {
 	EcsTypeCls comp = GetType();

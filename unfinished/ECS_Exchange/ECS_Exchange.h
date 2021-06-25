@@ -34,7 +34,7 @@ public:
 	IFACE_CB(SemanticSink);
 	IFACE_CB(SemanticSource);
 	
-	typedef enum {
+	typedef enum : byte {
 		CLIENT_MALE,
 		CLIENT_FEMALE,
 		PERSONEL_BAR,

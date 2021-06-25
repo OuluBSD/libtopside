@@ -9,7 +9,7 @@ void ValExchangePoint::ForwardExchange(FwdScope& fwd) {
 
 
 
-ValExchangePointBase* ValExchangePointBase::Create(TypeCls t) {
+ValExchangePoint* ValExchangePoint::Create(TypeCls t) {
 	TODO
 	/*#define IFACE_CTX_CLS(dev, val, prefix) \
 		if (t == AsTypeCls<VD<dev##Spec, val##Spec>>()) \
@@ -18,7 +18,7 @@ ValExchangePointBase* ValExchangePointBase::Create(TypeCls t) {
 	IFACE_LIST
 	#undef IFACE
 	#undef IFACE_CTX_CLS*/
-	ASSERT_(false, "Invalid TypeCls arg in ValExchangePointBase::Create");
+	ASSERT_(false, "Invalid TypeCls arg in ValExchangePoint::Create");
 	return 0;
 }
 
@@ -49,13 +49,15 @@ void ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 	
 	
 	
-	TODO
-	/*SinkRef sink = this->sink;
+	ValSinkRef sink = this->Sink();
+	ASSERT(sink);
 	StageComponent* sink_comp = CastPtr<StageComponent>(sink->AsComponentBase());
-	Value& to_val = sink->GetValue((ValSpec*)0);
+	Value& to_val = sink->GetValue();
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
-		to_fmt = DevCore::template GetDefaultFormat<ValSpec>();
+		ValDevCls vd = sink->GetSinkCls();
+		ASSERT(vd.IsValid());
+		to_fmt = GetDefaultFormat(vd);
 		SimpleBufferedValue* sbbuf;
 		SimpleValue* sbuf;
 		if ((sbbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
@@ -70,7 +72,7 @@ void ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 		}
 		auto fmt = to_val.GetFormat();
 		ASSERT(fmt.IsValid());
-	}*/
+	}
 }
 
 
@@ -225,15 +227,13 @@ bool InputComponent::LocalStream::LoadFileAny(String path) {
 
 
 void OutputComponent::Initialize() {
-	TODO
-	#if 0
-	auto fmt = DevCore::template GetDefaultFormat<ValSpec>();
+	ASSERT(vd.IsValid());
+	auto fmt = GetDefaultFormat(vd);
 	sink_value.SetFormat(fmt);
-	sink_value.SetMinBufSamples(fmt.GetSampleRate() * 2);
+	//sink_value.SetMinBufSamples(fmt.GetSampleRate() * 2);
 	
 	
 	cust_sys = ComponentBase::GetEntity()->GetMachine().template TryGet<CustomerSystem>();
-	#endif
 }
 
 void OutputComponent::Uninitialize() {

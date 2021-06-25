@@ -129,17 +129,17 @@ public:
 
 
 template <class Main, class Base> inline
-ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(EcsTypeCls key) {
-	auto it = Factory::producers.Find(key);
+ComponentBase* ComponentStoreT<Main,Base>::CreateComponentTypeCls(TypeCompCls cls) {
+	auto it = Factory::producers.Find(cls.side);
 	if (!it) {
-		auto new_fn = Ecs::Factory::CompDataMap().Get(key).new_fn;
+		auto new_fn = Ecs::Factory::CompDataMap().Get(cls.side).new_fn;
 		std::function<Base*()> p([new_fn] { return new_fn();});
 		std::function<void(Base*)> r([] (Base* b){ delete b;});
-		Factory::producers.Add(key) = p;
-		Factory::refurbishers.Add(key) = r;
+		Factory::producers.Add(cls.side) = p;
+		Factory::refurbishers.Add(cls.side) = r;
 	}
 	
-	return CreateComponent(key);
+	return CreateComponent(cls);
 }
 
 NAMESPACE_ECS_END

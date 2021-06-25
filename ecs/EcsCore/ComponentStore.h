@@ -58,22 +58,23 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	ComponentBase* CreateComponentTypeCls(EcsTypeCls key);
+	ComponentBase* CreateComponentTypeCls(TypeCompCls cls);
 	
 	template<typename T>
-	T* CreateComponent(ValDevCls vd) {
+	T* CreateComponent(CompCls cls) {
 		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		EcsTypeCls key  = AsEcsTypeCls<T>(vd);
-		auto it = Factory::producers.Find(key);
+		TypeCompCls t;
+		t.side  = AsEcsTypeCls<T>(cls.side);
+		auto it = Factory::producers.Find(t.side);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
 			std::function<void(Base*)> r([] (Base* b){ GetPool<T>().Return(CastPtr<T>(b));});
-			Factory::producers.Add(key) = p;
-			Factory::refurbishers.Add(key) = r;
+			Factory::producers.Add(t.side) = p;
+			Factory::refurbishers.Add(t.side) = r;
 		}
 		
-		return CastPtr<T>(CreateComponent(key));
+		return CastPtr<T>(CreateComponent(t));
 	}
 	
 	void Clone(Main& dst, const Main& src) {
@@ -83,7 +84,9 @@ public:
 		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
 		for (; iter; ++iter) {
 			EcsTypeCls comp_type = iter.key();
-			Base* new_component = CreateComponent(comp_type);
+			TypeCompCls cls; TODO
+			
+			Base* new_component = CreateComponent(cls);
 			dst.InitializeComponent(*new_component);
 			iter.value().CopyTo(new_component);
 			dst_comps.ComponentMapBase::Add(comp_type, new_component);
@@ -102,12 +105,12 @@ public:
 	
 private:
 	
-	Base* CreateComponent(EcsTypeCls typeId) {
-		auto iter = Factory::producers.Find(typeId);
+	Base* CreateComponent(TypeCompCls cls) {
+		auto iter = Factory::producers.Find(cls.side);
 		ASSERT_(iter, "Invalid to create non-existant component");
 		
 		Base* obj = iter.value()();
-		obj->SetType(typeId);
+		obj->SetType(cls);
 		return obj;
 	}
 	

@@ -50,7 +50,7 @@ public:
 	void SetName(String s) {name = s;}
 	void OnChange();
 	ComponentBaseRef GetTypeCls(EcsTypeCls comp_type);
-	ComponentBaseRef GetAddTypeCls(EcsTypeCls comp_type);
+	ComponentBaseRef GetAddTypeCls(TypeCompCls cls);
 	ComponentBaseRef FindTypeCls(EcsTypeCls comp_type);
 	
 	template<typename T>
@@ -156,7 +156,7 @@ public:
 	RTuple<RefT_Entity<ComponentTs>...> CreateComponents() {
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
-		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>(ComponentTs::GetDefaultValDev()) }... };
+		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>(ComponentTs::GetDefaultCompCls()) }... };
 		//Callback1<Ref<ComponentBase>> cb = THISBACK(InitializeComponentRef);
 		//tuple.ForEach(cb);
 		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
@@ -181,8 +181,8 @@ private:
 	}
 	
 	template<typename T>
-	RefT_Entity<T> Add0(ValDevCls vd) {
-		auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>(vd);
+	RefT_Entity<T> Add0(CompCls cls) {
+		auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>(cls);
 		ASSERT(comp);
 		comp->SetParent(this);
 		comps.Add(comp);

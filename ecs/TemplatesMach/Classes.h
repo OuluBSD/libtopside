@@ -37,6 +37,7 @@ struct ValCls : Moveable<ValCls> {
 	ValCls() {}
 	ValCls(Type t) : type(t) {}
 	ValCls(const ValCls& v) : type(v.type) {}
+	void Clear() {type = INVALID;}
 	String GetName() const {return GetName(type);}
 	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
@@ -71,6 +72,7 @@ struct DevCls : Moveable<DevCls> {
 	DevCls(Type t) : type(t) {}
 	DevCls(const DevCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
+	void Clear() {type = INVALID;}
 	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
@@ -91,6 +93,7 @@ struct ValDevCls : Moveable<ValDevCls> {
 	ValDevCls(ValCls::Type v, DevCls::Type d) : val(v), dev(d) {}
 	ValDevCls(const DevCls& d, const ValCls& v) : val(v), dev(d) {}
 	ValDevCls(const ValDevCls& v) : val(v.val), dev(v.dev) {}
+	void Clear() {val.Clear(); dev.Clear();}
 	bool IsValid() const {return val.IsValid() && dev.IsValid();}
 	String GetName() const {return dev.GetName() + "." + val.GetName();}
 	void operator=(const Nuller& n) {val = n; dev = n;}
@@ -101,6 +104,9 @@ struct ValDevCls : Moveable<ValDevCls> {
 	hash_t GetHashValue() const {return (int)dev.type * (int)ValCls::TYPE_COUNT + (int)val.type;}
 	String ToString() const {return dev.GetName() + "-" + val.GetName();}
 };
+
+#define VD(dev, val) ValDevCls(DevCls::dev, ValCls::val)
+
 
 struct EcsTypeCls : Moveable<EcsTypeCls> {
 	typedef enum : byte {
@@ -125,6 +131,7 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 	EcsTypeCls() {}
 	EcsTypeCls(ValDevCls vd, Type t) : val(vd.val), dev(vd.dev), type(t) {ASSERT(IsValid());}
 	EcsTypeCls(const EcsTypeCls& c) : val(c.val), dev(c.dev), type(c.type) {}
+	void Clear() {val.Clear(); dev.Clear(); type = INVALID;}
 	bool IsValid() const {return val.IsValid() && dev.IsValid() && type > INVALID && type < TYPE_COUNT;}
 	void operator=(const Nuller& n) {val = n; dev = n;}
 	void operator=(const EcsTypeCls& n) {val = n.val; dev = n.dev; type = n.type;}
@@ -137,6 +144,22 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 	static String GetTypeString(Type t);
 	String ToString() const {return GetTypeString() + "-" + dev.GetName() + "-" + val.GetName();}
 };
+
+
+
+
+struct CompCls : Moveable<CompCls> {
+	ValDevCls sink, side, src;
+	
+	
+};
+
+struct TypeCompCls : Moveable<CompCls> {
+	ValDevCls sink, src;
+	EcsTypeCls side;
+	
+};
+
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
 using RefEcsTypeMapIndirect	= RefLinkedMapIndirect<EcsTypeCls, T, Parent>;
@@ -193,15 +216,14 @@ DevCls GetCenterDevCls();
 	ENDIAN_TYPE_LIST(DCBA, 4)
 
 
-class BinarySample : RTTIBase {
-	RTTI_DECL0(BinarySample)
+class BinarySample {
 	
 public:
 	static const int def_sample_rate = 1;
 	
 
 		
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		DEV_INTERNAL,
 		#define TYPE(type_code, type_sz, type_signed, type_flt, type_aligned, endianess, pack_code, pack_sz) \
@@ -237,7 +259,6 @@ public:
 };
 
 class SoundSample : public BinarySample {
-	RTTI_DECL1(SoundSample, BinarySample)
 	
 public:
 	static const int def_sample_rate = 1024;
@@ -246,7 +267,6 @@ public:
 
 
 class LightSampleFD : public BinarySample {
-	RTTI_DECL1(LightSampleFD, BinarySample)
 	
 public:
 	
@@ -287,7 +307,7 @@ public:
 	#define DEV_SMPL_LIST \
 		DEV_SMPL(CTRL_EVENT)
 
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		DEV_INTERNAL,
 		#define DEV_SMPL(x) x ,
@@ -316,7 +336,7 @@ public:
 	#define ORDER_SMPL_LIST \
 		ORDER_SMPL(AUDIO_ORDER)
 
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		GENERIC,
 		DEV_INTERNAL,
@@ -346,7 +366,7 @@ public:
 	#define RECEIPT_SMPL_LIST \
 		RECEIPT_SMPL(AUDIO_RECEIPT)
 
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		DEV_INTERNAL,
 		GENERIC,
@@ -376,7 +396,7 @@ public:
 	#define DATA_SMPL_LIST \
 		DATA_SMPL(MODEL_DATA)
 
-	typedef enum {
+	typedef enum : byte {
 		INVALID,
 		DEV_INTERNAL,
 		#define DATA_SMPL(x) x ,
@@ -415,8 +435,8 @@ DUMMY_SAMPLE(PhysicsSample)*/
 
 
 template <int> struct DimBase;
-template<> struct DimBase<1> : RTTIBase {
-	RTTI_DECL0(DimBase<1>)
+template<> class DimBase<1> {
+public:
 	static const int n = 1;
 	union {
 		int res[1];
@@ -427,8 +447,6 @@ template<> struct DimBase<1> : RTTIBase {
 	
 	using DimArg = int;
 	
-	DimBase() {Clear();}
-	DimBase(const DimBase& b) {*this = b;}
 	void SetDim(DimArg a) {res[0] = a;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
@@ -439,8 +457,10 @@ template<> struct DimBase<1> : RTTIBase {
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 };
 
-template<> struct DimBase<2> : RTTIBase {
-	RTTI_DECL0(DimBase<2>)
+static_assert(std::is_trivially_constructible<DimBase<1>>::value == true, "DimBase<1> must be trivial to construct");
+
+
+template<> struct DimBase<2> {
 	static const int n = 2;
 	union {
 		int res[2];
@@ -458,8 +478,6 @@ template<> struct DimBase<2> : RTTIBase {
 	
 	using DimArg = Size;
 	
-	DimBase() {Clear();}
-	DimBase(const DimBase& b) {*this = b;}
 	
 	void SetDim(DimArg a) {size = a;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
@@ -481,8 +499,7 @@ template<> struct DimBase<2> : RTTIBase {
 	
 };
 
-template<> struct DimBase<3> : RTTIBase {
-	RTTI_DECL0(DimBase<3>)
+template<> struct DimBase<3> {
 	static const int n = 3;
 	union {
 		int res[3];
@@ -548,11 +565,9 @@ public:
 	
 };
 
-class TimeSeriesBase : RTTIBase {
-	RTTI_DECL0(TimeSeriesBase)
-public:
-	int freq = 0;
-	int sample_rate = 0;
+struct TimeSeriesBase {
+	int freq;
+	int sample_rate;
 	
 	
 	void Clear() {freq = 0; sample_rate = 0;}
@@ -579,9 +594,13 @@ public:
 	
 };
 
+static_assert(std::is_trivially_constructible<TimeSeriesBase>::value == true, "TimeSeriesBase must be trivial to construct");
+
+
+
 template <class T>
-class SampleBase : RTTIBase {
-	RTTI_DECL0(SampleBase)
+class SampleBase {
+	
 public:
 	using Sample = T;
 	using SampleType = typename T::Type;
@@ -611,6 +630,9 @@ public:
 	}
 	
 };
+
+static_assert(std::is_trivially_constructible<SampleBase<SoundSample>>::value == true, "SampleBase<SoundSample> must be trivial to construct");
+
 
 struct DevBase : RTTIBase {
 	TypeCls dev_spec = 0;
@@ -650,7 +672,6 @@ public:
 	{ \
 	 \
 	public: \
-		RTTI_DECL3(d##dim##post, post##Base, SampleBase<T>, DimBase<dim>) \
 		using Class = d##dim##post<T>; \
 		using SampleType = typename SampleBase<T>::Sample::Type; \
 		using DimArg = typename DimBase<dim>::DimArg; \
@@ -841,20 +862,6 @@ public:
 
 
 
-
-class ValExchangePointBase :
-	public ExchangePoint
-{
-	
-public:
-	RTTI_DECL1(ValExchangePointBase, ExchangePoint);
-	
-	
-	static ValExchangePointBase* Create(TypeCls t);
-	
-};
-
-using ValExchangePointBaseRef = Ref<ValExchangePointBase>;
 
 
 

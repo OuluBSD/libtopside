@@ -234,10 +234,11 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 		if (ws.IsAddComponent()) {
 			bool is_last = plan_i == ep.plan.GetCount()-1;
 			EcsTypeCls comp = ws.GetComponent();
+			TypeCompCls type_comp; TODO
 			ComponentBaseRef cb =
 				is_last ?
 					e->FindTypeCls(comp) :
-					e->GetAddTypeCls(comp);
+					e->GetAddTypeCls(type_comp);
 			ASSERT(cb);
 			if (!cb) {
 				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
