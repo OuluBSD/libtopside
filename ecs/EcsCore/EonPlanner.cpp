@@ -98,8 +98,10 @@ bool WorldState::IsTrue(const String& key) const {
 
 bool WorldState::IsFalse(const String& key) const {
 	int idx = ap->GetAddAtom(key);
-	if (idx < values.GetCount())
-		return values[idx] == "false";
+	if (idx < values.GetCount()) {
+		const auto& s = values[idx];
+		return s.IsEmpty() || s == "false";
+	}
 	return true;
 }
 
@@ -233,7 +235,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<W
 		}
 		ASSERT(act.precond.GetComponent() == comp_type);
 		if      (act.IsAddComponent()) {
-			if (act.postcond.GetComponent() == comp_type) {DUMP(comp_type);}
+			//if (act.postcond.GetComponent() == comp_type) {DUMP(comp_type);}
 			//ASSERT(act.postcond.GetComponent() != comp_type);
 		}
 		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetComponent() == comp_type);}

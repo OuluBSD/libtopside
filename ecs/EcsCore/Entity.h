@@ -175,19 +175,8 @@ private:
 	EntityId m_id;
 	
 	
-	template<typename T>
-	void Remove0() {
-		comps.Remove<T>(GetMachine().Get<ComponentStore>());
-	}
-	
-	template<typename T>
-	RefT_Entity<T> Add0(CompCls cls) {
-		auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>(cls);
-		ASSERT(comp);
-		comp->SetParent(this);
-		comps.Add(comp);
-		return RefT_Entity<T>(this, comp);
-	}
+	template<typename T> void Remove0();
+	template<typename T> RefT_Entity<T> Add0(CompCls cls);
 	
 	ComponentBaseRef AddPtr(ComponentBase* comp);
 	

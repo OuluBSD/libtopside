@@ -124,7 +124,7 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	END_UPP_NAMESPACE
 #define APP_STARTUP_(x) \
 	NAMESPACE_UPP \
-	INITBLOCK {TS::Machine::WhenPreUpdate << callback(x);} \
+	INITBLOCK {TS::Machine::WhenPreFirstUpdate << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \

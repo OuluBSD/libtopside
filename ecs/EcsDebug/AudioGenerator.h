@@ -3,16 +3,19 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+using namespace Ecs;
 
 template <class T>
 class DebugSoundGenerator
 {
+	
+	
 	Vector<T> frame;
 	int frame_part_size = 0;
 	
 public:
 	DebugSoundGenerator() {}
-	void Play(int frame_offset, const AudioPacket& p) {
+	void Play(int frame_offset, const Packet& p) {
 		int total_bytes = frame.GetCount() * sizeof(T);
 		frame_offset = frame_offset % total_bytes;
 		int copy_size = p->GetFormat().GetFrameSize();
@@ -72,16 +75,16 @@ public:
 };
 
 class DebugSoundGeneratorAudio :
-	public SimpleAudio
+	public SimpleValue
 {
 	DebugSoundGenerator<uint8> gen;
-	AudioFormat fmt;
+	Ecs::Format fmt;
 	
 public:
-	RTTI_DECL1(DebugSoundGeneratorAudio, SimpleAudio)
+	RTTI_DECL1(DebugSoundGeneratorAudio, SimpleValue)
 	DebugSoundGeneratorAudio();
 	
-	void StorePacket(AudioPacket& p) override;
+	//void StorePacket(Packet& p) override;
 	/*void Exchange(AudioEx& e) override;
 	AudioFormat GetFormat() const override;
 	int GetQueueSize() const override;
@@ -91,14 +94,14 @@ public:
 };
 
 class DebugSoundGeneratorStream :
-	public SimpleAudioStream
+	public SimpleStream
 {
 public:
 	DebugSoundGeneratorAudio gen;
 	
 public:
-	RTTI_DECL1(DebugSoundGeneratorStream, SimpleAudioStream)
-	DebugSoundGeneratorStream() : SimpleAudioStream(gen) {}
+	RTTI_DECL1(DebugSoundGeneratorStream, SimpleStream)
+	DebugSoundGeneratorStream() : SimpleStream(gen) {}
 	
 	
 	
@@ -106,6 +109,7 @@ public:
 
 
 
+#if 0
 class DebugSoundGeneratorComponent :
 	public AudioInputComponent
 {
@@ -115,7 +119,6 @@ public:
 	
 };
 
-#if 0
 class DebugSoundGeneratorComponent :
 	public DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>,
 	public EventSink,

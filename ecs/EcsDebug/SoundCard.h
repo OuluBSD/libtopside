@@ -3,6 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
 
 class DebugAudioSinkComponent :
 	public AudioOutputComponent
@@ -14,7 +15,6 @@ public:
 };
 
 
-#if 0
 class DebugAudioSinkComponent :
 	public Component<DebugAudioSinkComponent>,
 	public AudioSink,

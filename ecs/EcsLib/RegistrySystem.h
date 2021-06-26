@@ -28,6 +28,9 @@ public:
 	
 	String GetAppName() {return Get("app.name");}
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_REGISTRY;}
+	
 };
 
 

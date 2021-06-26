@@ -2,6 +2,7 @@
 #define _TemplatesLocalTests_TemplatesLocalTests_h_
 
 #include <TemplatesLocal/TemplatesLocal.h>
+#include <EcsDebug/EcsDebug.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 using namespace TS::ECS;
@@ -37,6 +38,10 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
+	
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.id.EFGH")
+	COMP_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_AUDIO_IN;}

@@ -4,14 +4,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 DebugSoundGeneratorAudio::DebugSoundGeneratorAudio() {
-	fmt.channels = 2;
-	fmt.sample_rate = 777;
-	fmt.freq = 44100;
-	fmt.SetType(SoundSample::U8_LE);
+	fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
 	gen.GenerateStereoSine(fmt);
 }
 
-void DebugSoundGeneratorAudio::StorePacket(AudioPacket& p) {
+/*void DebugSoundGeneratorAudio::StorePacket(Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -20,7 +17,7 @@ void DebugSoundGeneratorAudio::StorePacket(AudioPacket& p) {
 	p->Set(fmt, time);
 	p->Data().SetCount(frame, 0);
 	gen.Play((int)offset, p);
-}
+}*/
 
 /*void DebugSoundGeneratorAudio::Exchange(AudioEx& e) {
 	TODO

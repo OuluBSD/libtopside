@@ -54,6 +54,9 @@ public:
 	void PostLoadFile(String path) {post_load_file << path;}
 	void PostLoadString(String s) {post_load_string << s;}
 	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EON;}
+	
 protected:
 	
     bool Initialize() override;
@@ -71,6 +74,8 @@ protected:
 	EntityRef ResolveEntity(Eon::Id& id);
 	
 	void AddError(String msg);
+	
+	
 	
 	
 };

@@ -195,8 +195,15 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 			data.pos = 0;
 			data.count = 1;
 			
-			if (ext)
+			if (ext) {
+				ASSERT(WhenStorePacket);
+				WhenStorePacket(*ext, to);
 				ext->StorePacket(to);
+			}
+			else {
+				ASSERT(WhenCreatedEmptyPacket);
+				WhenCreatedEmptyPacket(to);
+			}
 			
 			PacketTracker::Track(TrackerInfo("ExtComponent::ForwardInput", __FILE__, __LINE__), *to);
 			pbuf->Add(to);
@@ -280,14 +287,20 @@ void ExtSystem::Update(double dt) {
 	lock.Leave();
 	
 	for (Once& o : cbs) {
-		for (FwdScope scope(o.fwd, *o.cfg); scope; scope++)
+		WhenOnceForward(o.fwd);
+		for (FwdScope scope(o.fwd, *o.cfg); scope; scope++) {
+			WhenFwdScopeForward(scope);
 			scope.Forward();
+		}
 	}
 	
 	for (ExtComponentRef& c : customers) {
 		c->UpdateConfig(dt);
-		for (FwdScope scope(*c, c->GetConfig()); scope; scope++)
+		WhenExtComponentForward(&*c);
+		for (FwdScope scope(*c, c->GetConfig()); scope; scope++) {
+			WhenFwdScopeForward(scope);
 			scope.Forward();
+		}
 	}
 	
 }

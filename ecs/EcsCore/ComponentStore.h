@@ -36,17 +36,17 @@ protected:
 
 
 
-template <class Main, class Base>
-class ComponentStoreT :
-	public System<ComponentStoreT<Main,Base>>,
-	public EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >
+class ComponentStore :
+	public System<ComponentStore>,
+	public EcsFactory<ComponentBase*, std::function<ComponentBase*()>, std::function<void(ComponentBase*)> >
 {
 	
 	
 public:
-	using ComponentStore = ComponentStoreT<Main,Base>;
-	RTTI_DECL1(ComponentStoreT, System<ComponentStore>)
-	SYS_CTOR(ComponentStoreT);
+	using Main = Entity;
+	using Base = ComponentBase;
+	RTTI_DECL1(ComponentStore, System<ComponentStore>)
+	SYS_CTOR(ComponentStore);
 	SYS_DEF_VISIT
 	
 	using Parent = Machine;
@@ -66,60 +66,45 @@ public:
 		
 		TypeCompCls t;
 		t.side  = AsEcsTypeCls<T>(cls.side);
-		auto it = Factory::producers.Find(t.side);
+		auto it = EcsFactory::producers.Find(t.side);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
 			std::function<void(Base*)> r([] (Base* b){ GetPool<T>().Return(CastPtr<T>(b));});
-			Factory::producers.Add(t.side) = p;
-			Factory::refurbishers.Add(t.side) = r;
+			EcsFactory::producers.Add(t.side) = p;
+			EcsFactory::refurbishers.Add(t.side) = r;
 		}
 		
 		return CastPtr<T>(CreateComponent(t));
 	}
 	
-	void Clone(Main& dst, const Main& src) {
-		const ComponentMap& src_comps = src.GetComponents();
-		ComponentMap& dst_comps = dst.GetComponents();
-		
-		ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
-		for (; iter; ++iter) {
-			TypeCompCls comp_type = iter.key();
-			TypeCompCls cls; TODO
-			
-			Base* new_component = CreateComponent(cls);
-			dst.InitializeComponent(*new_component);
-			iter.value().CopyTo(new_component);
-			dst_comps.ComponentMapBase::Add(comp_type, new_component);
-		}
-	}
-	
-	void ReturnComponent(Base* c) {
-		ASSERT(c);
-		TypeCompCls type = c->GetType();
-		
-		auto iter = Factory::refurbishers.Find(type.side);
-		if (iter)
-			iter.Get()(c);
-	}
+	void Clone(Main& dst, const Main& src);
+	void ReturnComponent(Base* c);
 
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_COMPONENTSTORE;}
 	
 private:
 	
-	Base* CreateComponent(TypeCompCls cls) {
-		auto iter = Factory::producers.Find(cls.side);
-		ASSERT_(iter, "Invalid to create non-existant component");
-		
-		Base* obj = iter.value()();
-		obj->SetType(cls);
-		return obj;
-	}
+	Base* CreateComponent(TypeCompCls cls);
 	
 };
 
-using ComponentStore = ComponentStoreT<Entity, ComponentBase>;
 
-//using ConnectorStore = ComponentStoreT<Pool, ConnectorBase>;
 
+
+
+template<typename T>
+void Entity::Remove0() {
+	comps.Remove<T>(GetMachine().Get<ComponentStore>());
+}
+
+template<typename T>
+RefT_Entity<T> Entity::Add0(CompCls cls) {
+	auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>(cls);
+	ASSERT(comp);
+	comp->SetParent(this);
+	comps.Add(comp);
+	return RefT_Entity<T>(this, comp);
+}
 
 NAMESPACE_ECS_END
 

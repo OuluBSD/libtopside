@@ -9,6 +9,8 @@ uses(NEVER) EcsAudioCore;
 file
 	EcsDebug.h,
 	EcsDebug.icpp,
+	Verifier.h,
+	Verifier.cpp,
 	AudioGenerator.h,
 	AudioGenerator.cpp,
 	SoundCard.h,

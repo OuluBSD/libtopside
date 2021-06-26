@@ -174,8 +174,15 @@ public:
 	Stream&					GetStream() override {return src.IsEmpty() ? (Stream&)src_buf->stream : (Stream&)src->stream;}
 	Value&					GetSourceValue()     {return src.IsEmpty() ? (Value&)src_buf->value : (Value&)src->value;}
 	
-	static EcsTypeCls::Type GetEcsType() {return EcsTypeCls::COMP_EXT;}
 	
+	
+	
+	Callback2<ComponentExtBase&, Packet&>	WhenStorePacket;
+	Callback1<Packet&>						WhenCreatedEmptyPacket;
+	
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_EXT;}
 	
 };
 
@@ -198,6 +205,14 @@ public:
 	SYS_DEF_VISIT_(vis && customers)
 	
 	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
+	
+	
+	Callback1<PacketForwarder*>				WhenOnceForward;
+	Callback1<ExtComponent*>				WhenExtComponentForward;
+	Callback1<FwdScope&>					WhenFwdScopeForward;
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EXT;}
 	
 protected:
 	

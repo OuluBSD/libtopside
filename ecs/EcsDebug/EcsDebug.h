@@ -5,5 +5,6 @@
 
 #include "AudioGenerator.h"
 #include "SoundCard.h"
+#include "Verifier.h"
 
 #endif

@@ -43,6 +43,7 @@ const char* center_str = R"EON_CODE(
 
 loop tester.generator: {
 	customer.id.ABCD: true;
+	customer.id.EFGH: true;
 	center.audio.src: true;
 	center.audio.sink: true;
 	center.audio.sink.realtime: true;
@@ -207,8 +208,9 @@ void Main() {
 	
 	TypeExtCls t;
 	
-	REG_EXT(TestCustomer, CUSTOMER, CENTER,RECEIPT, CENTER,ORDER, CENTER,ORDER);
-	REG_EXT(TestRealtimeSink, OUTPUT, CENTER,AUDIO, CENTER,AUDIO, CENTER,RECEIPT);
+	REG_EXT(TestCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestRealtimeSrc,	INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
+	REG_EXT(TestRealtimeSink,	OUTPUT,		CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -218,7 +220,25 @@ void Main() {
 		Exit(1);
 	
 	MAKE_STATIC(Machine, mach);
+	MAKE_STATIC(MachineVerifier, verifier);
+	{
+		verifier.AddSystem<RegistrySystem>();
+		verifier.AddSystem<EntityStore>();
+		verifier.AddSystem<ComponentStore>();
+		verifier.AddSystem<ExtSystem>();
+		verifier.AddSystem<EonLoader>();
+		
+		auto& ent		= verifier.GetRoot().AddPool("tester").AddPool("generator").AddEntity();
+		auto& customer	= ent.AddExtComponentWith<TestCustomer>		(VD(CENTER,ORDER));
+		auto& src		= ent.AddExtComponentWith<TestRealtimeSrc>	(VD(CENTER,AUDIO));
+		auto& sink		= ent.AddExtComponentWith<TestRealtimeSink>	(VD(CENTER,RECEIPT));
+		customer << src << sink << customer;
+		src.SetSourceFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
+		sink.SetSinkFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
+		
+	}
 	
+	verifier.Attach(mach);
 	
 	//SetDebugRefVisits();
 	RuntimeDiagnostics::Static().SetRoot(mach);

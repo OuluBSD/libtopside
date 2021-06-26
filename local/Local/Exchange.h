@@ -353,6 +353,7 @@ public:
 	RealtimeSourceConfig& Cfg() {ASSERT(cfg); return *cfg;}
 	bool IsFailed() const {return is_failed;}
 	int GetPos() const {return read_i-1;}
+	PacketForwarder* GetCurrent() const {return cur;}
 	
 	void operator++(int) {ActivateNext();}
 	operator bool() const {return HasCurrent();}

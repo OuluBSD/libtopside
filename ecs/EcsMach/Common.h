@@ -24,7 +24,7 @@ class ToolComponent;
 class MotionControllerComponent;
 class PbrRenderable;
 class CoreWindow;
-class DummySoundGeneratorComponent;
+class DebugSoundGeneratorComponent;
 class PortaudioSinkComponent;
 class StaticVolumeComponent;
 class Viewable;
@@ -32,11 +32,12 @@ class Transform;
 class ExtComponent;
 //class ConnectorBase;
 struct PaintComponent;
-template <class Main, class Base> class ComponentStoreT;
+class ComponentStore;
+//template <class Main, class Base> class ComponentStoreT;
 
 using EntityParent			= RefParent1<Pool>;
 using PoolParent			= RefParent2<EntityStore,Pool>;
-using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
+//using ComponentStore		= ComponentStoreT<Entity, ComponentBase>;
 //using ConnectorStore		= ComponentStoreT<Pool, ConnectorBase>;
 
 using ComponentBaseRef		= Ref<ComponentBase,		RefParent1<Entity>>;
@@ -60,7 +61,7 @@ using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 using ExtComponentRef		= Ref<ExtComponent,			RefParent1<Entity>>;
 
-using DummySoundGeneratorComponentRef	= Ref<DummySoundGeneratorComponent,		RefParent1<Entity>>;
+using DebugSoundGeneratorComponentRef	= Ref<DebugSoundGeneratorComponent,		RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;

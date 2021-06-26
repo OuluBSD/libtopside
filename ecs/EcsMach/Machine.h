@@ -120,8 +120,11 @@ public:
 	void Visit(RuntimeVisitor& vis);
 	
 	
+	Callback WhenUpdate;
+	Callback1<SystemBase&> WhenSystemUpdate;
+	
 	static Callback WhenInitialize;
-	static Callback WhenPreUpdate;
+	static Callback WhenPreFirstUpdate;
 	
 private:
     using SystemCollection = RefTypeMapIndirect<SystemBase> ;

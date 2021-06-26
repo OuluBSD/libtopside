@@ -112,6 +112,11 @@ struct ValDevCls : Moveable<ValDevCls> {
 struct EcsTypeCls : Moveable<EcsTypeCls> {
 	typedef enum : byte {
 		INVALID,
+		SYS_REGISTRY,
+		SYS_ENTITYSTORE,
+		SYS_COMPONENTSTORE,
+		SYS_EXT,
+		SYS_EON,
 		IFACE,
 		COMP_EXT,
 		COMP_TEST_CUSTOMER,

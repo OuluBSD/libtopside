@@ -14,7 +14,7 @@ SystemBase::~SystemBase() {
 
 
 Callback Machine::WhenInitialize;
-Callback Machine::WhenPreUpdate;
+Callback Machine::WhenPreFirstUpdate;
 
 
 
@@ -57,7 +57,8 @@ void Machine::Update(double dt) {
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
 	
 	if (!ticks)
-		WhenPreUpdate();
+		WhenPreFirstUpdate();
+	WhenUpdate();
 	
 	if (dt <= 0.0)
 		return;
@@ -69,6 +70,8 @@ void Machine::Update(double dt) {
 	}
 	
 	for (auto& system : systems) {
+		SystemBase* b = &*system;
+		WhenSystemUpdate(*b);
 		system->Update(dt);
 	}
 	
