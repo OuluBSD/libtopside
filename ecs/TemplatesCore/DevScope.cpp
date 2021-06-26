@@ -15,6 +15,9 @@ Format GetDefaultFormat(ValDevCls type) {
 		else if (type.val == ValCls::ORDER) {
 			fmt.SetOrder();
 		}
+		else if (type.val == ValCls::RECEIPT) {
+			fmt.SetReceipt();
+		}
 		else {
 			TODO
 		}

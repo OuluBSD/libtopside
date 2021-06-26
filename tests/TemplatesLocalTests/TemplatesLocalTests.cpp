@@ -286,6 +286,40 @@ void Main() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+void TestRealtimeSrc::Initialize()  {
+	
+}
+
+void TestRealtimeSrc::Uninitialize()  {
+	
+}
+
+void TestRealtimeSrc::Forward(FwdScope& fwd) {
+	LOG("TestRealtimeSrc::Forward");
+}
+
+void TestRealtimeSrc::StorePacket(Packet& p) {
+	LOG("TestRealtimeSrc::StorePacket");
+}
+
+
+
+
+
+
+
+
+
 void TestRealtimeSink::Initialize() {
 	
 	flag.Start(1);
@@ -315,10 +349,13 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		
 		RTLOG("TestRealtimeSink::IntervalSinkProcess: trying to consume " << data.GetCount());
 		base.ForwardMem(data.Begin(), data.GetCount());
-	}
-	flag.DecreaseRunning();*/
+	}*/
+	flag.DecreaseRunning();
 }
 
+void TestRealtimeSink::Forward(FwdScope& fwd) {
+	LOG("TestRealtimeSink::Forward");
+}
 
 NAMESPACE_TOPSIDE_END
 

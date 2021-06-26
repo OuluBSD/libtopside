@@ -232,6 +232,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	
 	int plan_i = 0;
 	for (Eon::ActionNode* n : ep.plan) {
+		LOG("Loading plan node " << plan_i);
 		const Eon::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
 			bool is_last = plan_i == ep.plan.GetCount()-1;

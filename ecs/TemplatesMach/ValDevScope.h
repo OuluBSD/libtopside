@@ -31,6 +31,7 @@ public:
 	virtual ~Value() = default;
 	
 	virtual void Exchange(Ex& e) = 0;
+	virtual void SetFormat(Format f) = 0;
 	virtual int GetQueueSize() const = 0;
 	virtual Format GetFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
@@ -305,9 +306,8 @@ public:
 	Format			GetFormat() const override;
 	bool			IsQueueFull() const override;
 	PacketBuffer&	GetBuffer() override {return buf;}
-	virtual void	StorePacket(Packet& p) = 0;
+	void			SetFormat(Format fmt) override {this->fmt = fmt;}
 	Packet			Pick();
-	void			SetFormat(Format fmt) {this->fmt = fmt;}
 	void			SetLimit(int i) {packet_limit = i;}
 	void			AddPacket(Packet& p) {GetBuffer().Add(p);}
 };
@@ -335,6 +335,7 @@ public:
 	int				GetQueueSize() const override;
 	Format			GetFormat() const override;
 	bool			IsQueueFull() const override;
+	void			SetFormat(Format f) override {fmt = f;}
 	PacketBuffer&	GetBuffer() override {return buf;}
 	int				GetQueueTotalSamples() const;
 	int				GetQueueChannelSamples() const;
@@ -345,7 +346,6 @@ public:
 	void			Visit(RuntimeVisitor& vis) {}
 	void			DropBuffer();
 	void			AddPacket(Packet p) {buf.Add(p);}
-	void			SetFormat(Format f) {fmt = f;}
 	//void			SetMinBufSamples(int i) {min_buf_samples = i;}
 	
 };

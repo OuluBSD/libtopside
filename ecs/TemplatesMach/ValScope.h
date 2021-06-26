@@ -103,6 +103,7 @@ public:
 	
 	void SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate);
 	void SetOrder();
+	void SetReceipt();
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}

@@ -19,11 +19,16 @@ void ExtComponent::Initialize() {
 	ASSERT(type.IsValid());
 	if (type.sub == SubCompCls::CUSTOMER) {
 		customer.Create();
+		cfg = &customer->cfg;
 		
 		ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
 		if (sys)
 			sys->Add(AsRef<ExtComponent>());
 	}
+	
+	Format sink_fmt = GetDefaultFormat(type.sink);
+	Format src_fmt = GetDefaultFormat(type.src);
+	ASSERT(sink_fmt.IsValid() && src_fmt.IsValid());
 	
 	if (type.sink.val == ValCls::AUDIO)
 		sink_buf.Create(this);
@@ -35,6 +40,19 @@ void ExtComponent::Initialize() {
 	else
 		src.Create(this);
 	
+	GetSinkValue().SetFormat(sink_fmt);
+	GetSourceValue().SetFormat(src_fmt);
+	
+}
+
+void ExtComponent::OnLink(ExchangeSourceProviderRef src, CookieRef src_c, CookieRef ) {
+	if (!customer) {
+		ExchangeSourceProviderRef src = GetSinkLink();
+		ExtComponentRef src_ext = src;
+		ASSERT(src_ext);
+		cfg = &src_ext->GetConfig();
+		ASSERT(cfg);
+	}
 }
 
 void ExtComponent::Uninitialize() {
@@ -66,6 +84,15 @@ void ExtComponent::Forward(FwdScope& fwd) {
 	if (ext)
 		ext->Forward(fwd);
 	
+	if (type.sub == SubCompCls::CUSTOMER)
+		ForwardCustomer(fwd);
+	else if (type.sub == SubCompCls::INPUT)
+		ForwardInput(fwd);
+	else
+		TODO
+}
+
+void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 	ASSERT(this->customer);
 	CustomerData& c = *this->customer;
 	
@@ -111,6 +138,68 @@ void ExtComponent::Forward(FwdScope& fwd) {
 			LOG("ExtComponent::Forward: error: too many unfulfilled packets");
 			while (c.unfulfilled_offsets.GetCount() > c.max_unfulfilled)
 				c.unfulfilled_offsets.Remove(0);
+		}
+	}
+}
+
+void ExtComponent::ForwardInput(FwdScope& fwd) {
+	ValSource& iface_src = *this;
+	ValSink& iface_sink = *this;
+	Value& sink_val = iface_sink.GetValue();
+	
+	
+	// From source
+	SimpleBufferedValue* sink_buf_val;
+	SimpleValue* sink_sval;
+	PacketBuffer* sink_buf;
+	if ((sink_buf_val = CastPtr<SimpleBufferedValue>(&sink_val))) {
+		sink_buf = &sink_buf_val->GetBuffer();
+	}
+	else if ((sink_sval = CastPtr<SimpleValue>(&sink_val))) {
+		sink_buf = &sink_sval->GetBuffer();
+	}
+	else TODO
+	
+	
+	// To sink
+	Value& val = iface_src.GetStream().Get();
+	SimpleValue* sval;
+	SimpleBufferedValue* sbcal;
+	PacketBuffer* pbuf;
+	if ((sval = CastPtr<SimpleValue>(&val))) {
+		pbuf = &sval->GetBuffer();
+	}
+	else if ((sbcal = CastPtr<SimpleBufferedValue>(&val))) {
+		pbuf = &sbcal->GetBuffer();
+	}
+	else TODO
+	
+	
+	while (sink_buf->GetCount() && !val.IsQueueFull()) {
+		Packet in = sink_buf->First();
+		sink_buf->RemoveFirst();
+		
+		int c = sink_buf->IsEmpty() ? 100 : 1;
+		
+		for(int i = 0; i < c && !val.IsQueueFull(); i++) {
+			off32 off = in->GetOffset();
+			RTLOG("ExtComponent::ForwardInput: play packet " << off.ToString());
+			
+			Packet to = CreatePacket(off);
+			
+			Format fmt = GetDefaultFormat(type.src);
+			RTLOG("ExtComponent::ForwardInput: sending packet in format: " << fmt.ToString());
+			to->SetFormat(fmt);
+			
+			InternalPacketData& data = to->template SetData<InternalPacketData>();
+			data.pos = 0;
+			data.count = 1;
+			
+			if (ext)
+				ext->StorePacket(to);
+			
+			PacketTracker::Track(TrackerInfo("ExtComponent::ForwardInput", __FILE__, __LINE__), *to);
+			pbuf->Add(to);
 		}
 	}
 }
@@ -197,7 +286,7 @@ void ExtSystem::Update(double dt) {
 	
 	for (ExtComponentRef& c : customers) {
 		c->UpdateConfig(dt);
-		for (FwdScope scope(*c, c->customer->cfg); scope; scope++)
+		for (FwdScope scope(*c, c->GetConfig()); scope; scope++)
 			scope.Forward();
 	}
 	

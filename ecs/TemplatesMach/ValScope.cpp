@@ -33,29 +33,31 @@ bool AudioFormat::IsSame(const AudioFormat& b) const {
 
 
 #define PROXY(x,y) if (IsAudio()) return aud.x(y); PANIC("Invalid type");
+#define PROXY_CHK(x,y) ASSERT(IsValid()) PROXY(x,y)
+
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
 	return "Invalid Format";
 }
 
 int Format::GetSampleSize() const {
-	PROXY(GetSampleSize,)
+	PROXY_CHK(GetSampleSize,)
 }
 
 int Format::GetArea() const {
-	PROXY(GetArea,)
+	PROXY_CHK(GetArea,)
 }
 
 int Format::GetFrameSize() const {
-	PROXY(GetFrameSize,)
+	PROXY_CHK(GetFrameSize,)
 }
 
 double Format::GetFrameSeconds() const {
-	PROXY(GetFrameSeconds,)
+	PROXY_CHK(GetFrameSeconds,)
 }
 
 int Format::GetMinBufSamples() const {
-	PROXY(GetMinBufSamples,)
+	PROXY_CHK(GetMinBufSamples,)
 }
 
 bool Format::HasData() const {
@@ -72,13 +74,13 @@ bool Format::IsValid() const {
 bool Format::IsSame(const Format& f) const {
 	if (vd != f.vd) return false;
 	if (!HasData()) return true;
-	PROXY(IsSame, f)
+	PROXY_CHK(IsSame, f)
 }
 
 bool Format::IsCopyCompatible(const Format& f) const {
 	if (vd != f.vd) return false;
 	if (!HasData()) return true;
-	PROXY(IsCopyCompatible, f)
+	PROXY_CHK(IsCopyCompatible, f)
 }
 
 bool Format::operator ==(const Format& f) {
@@ -106,6 +108,11 @@ void Format::SetAudio(SoundSample::Type t, int channels, int freq, int sample_ra
 
 void Format::SetOrder() {
 	vd = VD(CENTER, ORDER);
+	memset(data, 0, sizeof(data));
+}
+
+void Format::SetReceipt() {
+	vd = VD(CENTER, RECEIPT);
 	memset(data, 0, sizeof(data));
 }
 

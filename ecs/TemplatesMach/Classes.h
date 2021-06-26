@@ -115,6 +115,7 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 		IFACE,
 		COMP_EXT,
 		COMP_TEST_CUSTOMER,
+		COMP_TEST_AUDIO_IN,
 		COMP_TEST_AUDIO_OUT,
 		
 		TYPE_COUNT

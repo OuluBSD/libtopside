@@ -50,7 +50,6 @@ protected:
 	
 protected:
 	struct LocalSinkValue : public SimpleValue {
-		void StorePacket(Packet& p) override {TODO}
 		
 	};
 	

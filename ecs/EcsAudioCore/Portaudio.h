@@ -45,7 +45,7 @@ class PortaudioSinkComponent :
 protected:
 	
 	struct LocalSourceValue : public SimpleReceipt {
-		void StorePacket(ReceiptPacket& p) {}
+		
 	};
 	
 	struct LocalSourceStream : public SimpleReceiptStream {

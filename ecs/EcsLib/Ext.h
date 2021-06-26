@@ -48,6 +48,8 @@ public:
 	void VisitSource(RuntimeVisitor& vis) override {vis.VisitThis<ValSource>(this);}
 	void VisitSink(RuntimeVisitor& vis) override {vis.VisitThis<ValSink>(this);}
 	
+	void OnLink(ExchangeSourceProviderRef src, CookieRef src_c, CookieRef sink_c) override;
+	
 private:
 	struct LocalBufferedValue : public SimpleBufferedValue {
 		ExtComponent& par;
@@ -59,7 +61,6 @@ private:
 		ExtComponent& par;
 		
 		LocalValue(ExtComponent* par) : par(*par) {}
-		void StorePacket(Packet& p) override {}
 	};
 	
 	struct LocalBufferedStream : public SimpleBufferedStream {
@@ -129,6 +130,7 @@ protected:
 	PacketConsumer			consumer;
 	ExtSystemRef			cust_sys;
 	
+	RealtimeSourceConfig*	cfg = 0;
 	
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
@@ -141,6 +143,10 @@ protected:
 	};
 	One<CustomerData>		customer;
 	
+	
+	void					ForwardCustomer(FwdScope& fwd);
+	void					ForwardInput(FwdScope& fwd);
+	
 public:
 	ExtComponent();
 	~ExtComponent();
@@ -152,6 +158,7 @@ public:
 	InterfaceSourceRef		GetSource() override;
 	InterfaceSinkRef		GetSink() override;
 	void					AddPlan(Eon::Plan& ep);
+	RealtimeSourceConfig&	GetConfig() {ASSERT(cfg); return *cfg;}
 	
 	// ComponentBase
 	void					Initialize() override;
@@ -160,13 +167,16 @@ public:
 	void					ForwardExchange(FwdScope& fwd) override;
 	
 	// ValSink
-	Value&					GetValue() override {return sink.IsEmpty() ? (Value&)sink_buf->value : (Value&)sink->value;}
+	Value&					GetValue() override  {return sink.IsEmpty() ? (Value&)sink_buf->value : (Value&)sink->value;}
+	Value&					GetSinkValue()       {return sink.IsEmpty() ? (Value&)sink_buf->value : (Value&)sink->value;}
 	
 	// ReceiptSource
 	Stream&					GetStream() override {return src.IsEmpty() ? (Stream&)src_buf->stream : (Stream&)src->stream;}
-	Value&					GetSourceValue() {return src.IsEmpty() ? (Value&)src_buf->value : (Value&)src->value;}
+	Value&					GetSourceValue()     {return src.IsEmpty() ? (Value&)src_buf->value : (Value&)src->value;}
 	
 	static EcsTypeCls::Type GetEcsType() {return EcsTypeCls::COMP_EXT;}
+	
+	
 };
 
 

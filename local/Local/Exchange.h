@@ -225,6 +225,7 @@ public:
 	
 	void				ClearLink() {expt.Clear(); dst.Clear();}
 	ExchangePointRef	GetExPt() const {return expt;}
+	R					GetLink() const {return dst;}
 	
 };
 
@@ -271,9 +272,10 @@ public:
 	ExchangeSinkProvider();
 	virtual ~ExchangeSinkProvider();
 	
-	void				ClearLink() {base.ClearLink();}
-	void				Visit(RuntimeVisitor& vis) {base.Visit(vis);}
-	ExchangePointRef	GetExPt() const {return base.GetExPt();}
+	void						ClearLink() {base.ClearLink();}
+	void						Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef			GetExPt() const {return base.GetExPt();}
+	ExchangeSourceProviderRef	GetSinkLink() const {return base.GetLink();}
 	
 };
 
@@ -307,11 +309,12 @@ public:
 	ExchangeSourceProvider();
 	virtual ~ExchangeSourceProvider();
 	
-	virtual bool		Accept(SinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
-	void				Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c);
-	void				ClearLink() {base.ClearLink();}
-	void				Visit(RuntimeVisitor& vis) {base.Visit(vis);}
-	ExchangePointRef	GetExPt() const {return base.GetExPt();}
+	virtual bool				Accept(SinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
+	void						Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c);
+	void						ClearLink() {base.ClearLink();}
+	void						Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef			GetExPt() const {return base.GetExPt();}
+	ExchangeSinkProviderRef		GetSourceLink() const {return base.GetLink();}
 	
 };
 

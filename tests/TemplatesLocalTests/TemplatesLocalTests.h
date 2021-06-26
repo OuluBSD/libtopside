@@ -26,6 +26,23 @@ public:
 };
 
 
+class TestRealtimeSrc :
+	public AudioInputExt
+{
+	
+public:
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_AUDIO_IN;}
+	
+};
+
 class TestRealtimeSink :
 	public AudioOutputExt
 {
@@ -39,7 +56,7 @@ public:
 	void Initialize() override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	void Forward(FwdScope& fwd) override {LOG("TestRealtimeSink::Forward");}
+	void Forward(FwdScope& fwd) override;
 	void IntervalSinkProcess();
 	
 	COMP_MAKE_ACTION_BEGIN
