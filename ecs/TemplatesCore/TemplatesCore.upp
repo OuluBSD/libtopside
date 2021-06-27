@@ -13,5 +13,6 @@ file
 	ValScope.cpp highlight cpp,
 	DevScope.h,
 	DevScope.cpp highlight cpp,
-	Spec.h;
+	Spec.h,
+	Trash readonly separator;
 

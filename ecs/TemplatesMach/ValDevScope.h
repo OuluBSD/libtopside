@@ -67,6 +67,10 @@ public:
 	
 	static ValExchangePoint* Create(TypeCls t);
 	
+	Callback1<ValExchangePoint&> WhenEnterValExPtForward;
+	
+	Callback WhenLeaveValExPtForward;
+	
 };
 
 using ValExchangePointRef = Ref<ValExchangePoint>;

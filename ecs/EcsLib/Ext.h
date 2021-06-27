@@ -131,6 +131,7 @@ protected:
 	ExtSystemRef			cust_sys;
 	
 	RealtimeSourceConfig*	cfg = 0;
+	int						packets_forwarded = 0;
 	
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
@@ -146,6 +147,7 @@ protected:
 	
 	void					ForwardCustomer(FwdScope& fwd);
 	void					ForwardInput(FwdScope& fwd);
+	void					ForwardOutput(FwdScope& fwd);
 	
 public:
 	ExtComponent();
@@ -159,6 +161,7 @@ public:
 	InterfaceSinkRef		GetSink() override;
 	void					AddPlan(Eon::Plan& ep);
 	RealtimeSourceConfig&	GetConfig() {ASSERT(cfg); return *cfg;}
+	bool					ForwardMem(void* mem, size_t mem_size);
 	
 	// ComponentBase
 	void					Initialize() override;
@@ -177,8 +180,11 @@ public:
 	
 	
 	
-	Callback2<ComponentExtBase&, Packet&>	WhenStorePacket;
-	Callback1<Packet&>						WhenCreatedEmptyPacket;
+	Callback2<ComponentExtBase&, Packet&>	WhenEnterStorePacket;
+	Callback1<Packet&>						WhenEnterCreatedEmptyPacket;
+	
+	Callback1<Packet&>						WhenLeaveStorePacket;
+	Callback								WhenLeaveCreatedEmptyPacket;
 	
 	
 	
@@ -207,9 +213,13 @@ public:
 	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	
 	
-	Callback1<PacketForwarder*>				WhenOnceForward;
-	Callback1<ExtComponent*>				WhenExtComponentForward;
-	Callback1<FwdScope&>					WhenFwdScopeForward;
+	Callback1<PacketForwarder*>				WhenEnterOnceForward;
+	Callback1<ExtComponent*>				WhenEnterExtComponentForward;
+	Callback1<FwdScope&>					WhenEnterFwdScopeForward;
+	
+	Callback								WhenLeaveOnceForward;
+	Callback								WhenLeaveExtComponentForward;
+	Callback								WhenLeaveFwdScopeForward;
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EXT;}

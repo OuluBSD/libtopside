@@ -30,6 +30,9 @@ public:
 class TestRealtimeSrc :
 	public AudioInputExt
 {
+	Ecs::Format		internal_fmt;
+	double			time = 0;
+	byte			rolling_value = 0;
 	
 public:
 	
@@ -51,7 +54,8 @@ public:
 class TestRealtimeSink :
 	public AudioOutputExt
 {
-	RunningFlag				flag;
+	RunningFlag		flag;
+	byte			rolling_value = 0;
 	
 public:
 	RTTI_DECL1(TestRealtimeSink, AudioOutputExt)
@@ -62,6 +66,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
 	
 	COMP_MAKE_ACTION_BEGIN

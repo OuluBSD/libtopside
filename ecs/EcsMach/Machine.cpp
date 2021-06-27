@@ -58,24 +58,33 @@ void Machine::Update(double dt) {
 	
 	if (!ticks)
 		WhenPreFirstUpdate();
-	WhenUpdate();
 	
-	if (dt <= 0.0)
+	WhenEnterUpdate();
+	
+	if (dt <= 0.0) {
+		WhenLeaveUpdate();
 		return;
+	}
 	if (dt > 0.5)
 		dt = 0.5;
 		
 	if (is_suspended) {
+		WhenLeaveUpdate();
 		return;
 	}
 	
 	for (auto& system : systems) {
 		SystemBase* b = &*system;
-		WhenSystemUpdate(*b);
+		WhenEnterSystemUpdate(*b);
+		
 		system->Update(dt);
+		
+		WhenLeaveSystemUpdate();
 	}
 	
 	++ticks;
+	
+	WhenLeaveUpdate();
 }
 
 void Machine::Stop() {

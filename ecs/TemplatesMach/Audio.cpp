@@ -7,9 +7,8 @@ NAMESPACE_ECS_BEGIN
 
 
 template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN>
-static void AudioTypeConvert(int src_ch_samples, const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
-	TODO
-	/*int limit = std::min(src_ch_samples, src_fmt.sample_rate);
+static void AudioTypeConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
+	int limit = std::min(src_ch_samples, src_fmt.sample_rate);
 	const SRC* src_it = (const SRC*)src;
 	const SRC* src_end = src_it + limit * src_fmt.channels;
 	DST* dst_it = (DST*)dst;
@@ -23,14 +22,12 @@ static void AudioTypeConvert(int src_ch_samples, const Format& src_fmt, const by
 		src_it += src_fmt.channels;
 	}
 	ASSERT(src_it == src_end);
-	ASSERT(dst_it == dst_end);*/
+	ASSERT(dst_it == dst_end);
 }
 
 
 
-bool AudioConvert(int src_ch_samples, const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
-	TODO
-	/*
+bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
 	#define LIST_A(nat_is_be) \
 		ITEM_A(nat_is_be, unsigned char, 0) \
 		ITEM_A(nat_is_be, unsigned short, 0) \
@@ -90,7 +87,7 @@ bool AudioConvert(int src_ch_samples, const Format& src_fmt, const byte* src, co
 	#undef LIST_A
 	#undef ITEM_A
 	#undef ITEM_B
-	return false;*/
+	return false;
 }
 
 

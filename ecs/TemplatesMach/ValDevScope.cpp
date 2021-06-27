@@ -60,6 +60,8 @@ void SimpleValue::Exchange(Ex& e) {
 		const RealtimeSourceConfig& conf = e.SourceConfig();
 		
 		SimpleValue* src_val;
+		Format src_fmt = src.GetFormat();
+		Format& sink_fmt = fmt;
 		
 		if ((src_val = CastPtr<SimpleValue>(&src))) {
 			auto& src_buf = src_val->GetBuffer();
@@ -67,7 +69,13 @@ void SimpleValue::Exchange(Ex& e) {
 			while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
 				Packet p = src_buf.First();
 				src_buf.RemoveFirst();
-				ASSERT(p->GetFormat() == fmt);
+				Format pk_fmt = p->GetFormat();
+				if (pk_fmt != sink_fmt) {
+					DUMP(pk_fmt);
+					DUMP(src_fmt);
+					DUMP(sink_fmt);
+				}
+				ASSERT(pk_fmt == sink_fmt);
 				sink_buf.Add(p);
 			}
 		}
@@ -419,6 +427,7 @@ bool PacketProducer::ProducePacket() {
 		}
 		Packet p = iter();
 		p->CheckTracking(TrackerInfo(this, __FILE__, __LINE__));
+		TODO // or StopTracking?
 		dst->Add(p);
 		internal_written_bytes += p->GetSizeBytes();
 		/*offset = p->GetOffset();
@@ -532,6 +541,7 @@ void PacketConsumer::Consume(Packet& src, int src_data_shift) {
 			else {
 				src->StopTracking(TrackerInfo(this, __FILE__, __LINE__));
 				consumed_packets.Add(src);
+				PacketTracker_StopTracking("PacketConsumer::Consume", __FILE__, __LINE__, *src);
 			}
 		}
 		else {
@@ -541,6 +551,7 @@ void PacketConsumer::Consume(Packet& src, int src_data_shift) {
 				dst_buf->Clear();
 			dst_buf->Add(src);
 			consumed_packets.Add(src);
+			PacketTracker_StopTracking("PacketConsumer::Consume", __FILE__, __LINE__, *src);
 		}
 	}
 	else {
@@ -618,33 +629,36 @@ bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte
 
 
 
-bool AudioConvert(int src_ch_samples, const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst);
+bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
 
 bool Convert(const Packet& src, Packet& dst) {
-	TODO
-	#if 0
-	AudioFormat src_fmt = src->GetFormat();
-	AudioFormat dst_fmt = dst->GetFormat();
-	int src_sample = src_fmt.GetSampleSize();
-	int src_channels = src_fmt.channels;
-	int dst_sample = dst_fmt.GetSampleSize();
-	int dst_channels = dst_fmt.channels;
-	const Vector<byte>& src_data = src->GetData();
-	int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
-	Vector<byte>& dst_data = dst->Data();
-	int dst_size = src_ch_samples * dst_sample * dst_channels;
-	dst_data.SetCount(dst_size);
-	if (0) {
-		LOG("src-size:     " << src_data.GetCount());
-		LOG("src-ch-sz:    " << src_ch_samples);
-		LOG("src-sample:   " << src_sample);
-		LOG("src-channels: " << src_channels);
-		LOG("dst-size:     " << dst_size);
-		LOG("dst-sample:   " << dst_sample);
-		LOG("dst-channels: " << dst_channels);
+	Format src_fmt = src->GetFormat();
+	Format dst_fmt = dst->GetFormat();
+	if (src_fmt.IsAudio() && dst_fmt.IsAudio()) {
+		AudioFormat& srcf = src_fmt;
+		AudioFormat& dstf = dst_fmt;
+		int src_sample = srcf.GetSampleSize();
+		int src_channels = srcf.channels;
+		int dst_sample = dstf.GetSampleSize();
+		int dst_channels = dstf.channels;
+		const Vector<byte>& src_data = src->GetData();
+		int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
+		Vector<byte>& dst_data = dst->Data();
+		int dst_size = src_ch_samples * dst_sample * dst_channels;
+		dst_data.SetCount(dst_size);
+		if (0) {
+			LOG("src-size:     " << src_data.GetCount());
+			LOG("src-ch-sz:    " << src_ch_samples);
+			LOG("src-sample:   " << src_sample);
+			LOG("src-channels: " << src_channels);
+			LOG("dst-size:     " << dst_size);
+			LOG("dst-sample:   " << dst_sample);
+			LOG("dst-channels: " << dst_channels);
+		}
+		return AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
 	}
-	return AudioConvert(src_ch_samples, src_fmt, src_data.Begin(), dst_fmt, dst_data.Begin());
-	#endif
+	//else if (src_fmt.vd.val.type == ValCls::ORDER) {
+	TODO
 }
 
 

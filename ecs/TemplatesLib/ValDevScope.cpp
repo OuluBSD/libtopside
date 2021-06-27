@@ -76,6 +76,8 @@ void ValExchangePoint::ForwardSetup(FwdScope& fwd) {
 }
 
 void ValExchangePoint::Forward(FwdScope& fwd) {
+	WhenEnterValExPtForward(*this);
+	
 	RTLOG("ValExchangePoint::Forward: " << GetDynamicName() << "(" << HexStr(this) << ") begin");
 	Ref<ValSource>	src			= this->src;
 	Ref<ValSink>	sink		= this->sink;
@@ -131,6 +133,8 @@ void ValExchangePoint::Forward(FwdScope& fwd) {
 	//src->EndStream(CTX);
 	
 	fwd.AddNext(sink->AsComponentBase());
+	
+	WhenLeaveValExPtForward();
 }
 
 

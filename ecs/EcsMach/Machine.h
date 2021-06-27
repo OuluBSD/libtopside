@@ -120,8 +120,11 @@ public:
 	void Visit(RuntimeVisitor& vis);
 	
 	
-	Callback WhenUpdate;
-	Callback1<SystemBase&> WhenSystemUpdate;
+	Callback WhenEnterUpdate;
+	Callback1<SystemBase&> WhenEnterSystemUpdate;
+	
+	Callback WhenLeaveUpdate;
+	Callback WhenLeaveSystemUpdate;
 	
 	static Callback WhenInitialize;
 	static Callback WhenPreFirstUpdate;

@@ -9,7 +9,7 @@ class ComponentBase;
 
 class ComponentExtBase :
 	RTTIBase,
-	public RefScopeEnabler<ComponentExtBase, ComponentBase>
+	public RefScopeEnabler<ComponentExtBase, ExtComponent>
 {
 protected:
 	
@@ -26,7 +26,7 @@ public:
 	
 };
 
-using ComponentExtBaseRef = Ref<ComponentExtBase, RefParent1<ComponentBase>>;
+using ComponentExtBaseRef = Ref<ComponentExtBase, RefParent1<ExtComponent>>;
 
 
 

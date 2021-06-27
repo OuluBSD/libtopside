@@ -155,6 +155,7 @@ public:
 	void					StopTracking(TrackerInfo info);
 	PacketId				GetTrackingId() const {return id;}
 	bool					HasTrackingId() const {return id != 0;}
+	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
 	
 	String					ToString() const;
 	
@@ -194,6 +195,9 @@ static Packet CreatePacket(off32 off) {
 	return Packet(obj, base);
 }
 
+void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p);
+void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p);
+void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p);
 
 
 struct ValStreamState : RTTIBase {
@@ -212,6 +216,7 @@ struct ValStreamState : RTTIBase {
 	void Reset();
 	void Step();
 };
+
 
 
 

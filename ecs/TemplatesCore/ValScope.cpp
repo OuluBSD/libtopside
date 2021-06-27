@@ -31,20 +31,32 @@ void PacketTracker::Uninitialize() {
 void PacketTracker::Track0(TrackerInfo info, PacketValue& p) {
 	ASSERT(p.GetTrackingId() == 0);
 	p.SetTrackingId(id_counter++);
-	RTLOG("PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking begins (" + info.ToString() + ") " + p.ToString());
+	RTLOG("PacketTracker: packet(" + p.GetOffset().ToString() + "," + IntStr(p.GetTrackingId()) + ") tracking begins (" + info.ToString() + ") " + p.ToString());
 }
 
 void PacketTracker::Checkpoint0(TrackerInfo info, PacketValue& p) {
-	RTLOG("PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") checkpoint (" + info.ToString() + ") " + p.ToString());
+	RTLOG("PacketTracker: packet(" + p.GetOffset().ToString() + "," + IntStr(p.GetTrackingId()) + ") checkpoint (" + info.ToString() + ") " + p.ToString());
 	
 }
 
 void PacketTracker::StopTracking0(TrackerInfo info, PacketValue& p) {
-	RTLOG("PacketTracker: packet(" + IntStr(p.GetTrackingId()) + ") tracking ends (" + info.ToString() + ") " + p.ToString());
+	RTLOG("PacketTracker: packet(" + p.GetOffset().ToString() + "," + IntStr(p.GetTrackingId()) + ") tracking ends (" + info.ToString() + ") " + p.ToString());
 	
 }
 
 
+
+void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p) {
+	PacketTracker::Track(TrackerInfo(fn, file, line), p);
+}
+
+void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p) {
+	PacketTracker::Checkpoint(TrackerInfo(fn, file, line), p);
+}
+
+void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p) {
+	PacketTracker::StopTracking(TrackerInfo(fn, file, line), p);
+}
 
 
 

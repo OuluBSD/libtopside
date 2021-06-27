@@ -54,6 +54,53 @@ class MachineVerifier {
 	VerifierPool root;
 	Array<VerifierSystem> sys;
 	
+	
+protected:
+	typedef enum {
+		ROOT,
+		UPDATE,
+		SYSTEM_UPDATE,
+		ONCE_FORWARD,
+		EXTCOMP_FORWARD,
+		FWDSCOPE_FORWARD,
+		STORE_PACKET,
+		CREATE_EMPTY_PACKET,
+		VALEXPT_FWD,
+	} Type;
+	
+	struct ExpectedAction : Moveable<ExpectedAction> {
+		Type type;
+	};
+	
+	struct Scope : Moveable<Scope> {
+		Vector<ExpectedAction> enter;
+		Type type;
+		bool may_leave = false;
+		
+		ExpectedAction& AddEnter(Type t) {auto& a = enter.Add(); a.type = t;  return a;}
+		void MayLeave(bool b) {may_leave = b;}
+		bool CanEnter(Type t) const;
+	};
+	
+	struct PacketData {
+		int count;
+		int bytes;
+		int ch_samples;
+		
+		void Clear() {count = 0; bytes = 0; ch_samples = 0;}
+		void Add(Packet& p);
+	};
+	
+	Vector<Scope> stack;
+	PacketData cur_pk;
+	ExtComponent* c;
+	ValExchangePoint* vep;
+	
+	void SetDefaultExpected();
+	void Enter(Type t);
+	void Leave(Type t);
+	void MayLeaveTop();
+	
 public:
 	typedef MachineVerifier CLASSNAME;
 	MachineVerifier();
@@ -62,13 +109,23 @@ public:
 	void Attach(Machine& mach);
 	void Clear();
 	
-	void OnUpdate();
-	void OnSystemUpdate(SystemBase& base);
-	void OnOnceForward(PacketForwarder*);
-	void OnExtComponentForward(ExtComponent* c);
-	void OnFwdScopeForward(FwdScope& c);
-	void OnStorePacket(ComponentExtBase&, Packet& p);
-	void OnCreatedEmptyPacket(Packet& p);
+	void OnEnterUpdate();
+	void OnEnterSystemUpdate(SystemBase& base);
+	void OnEnterOnceForward(PacketForwarder*);
+	void OnEnterExtComponentForward(ExtComponent* c);
+	void OnEnterFwdScopeForward(FwdScope& c);
+	void OnEnterStorePacket(ComponentExtBase&, Packet& p);
+	void OnEnterCreatedEmptyPacket(Packet& p);
+	void OnEnterValExPtForward(ValExchangePoint& p);
+	
+	void OnLeaveUpdate();
+	void OnLeaveSystemUpdate();
+	void OnLeaveOnceForward();
+	void OnLeaveExtComponentForward();
+	void OnLeaveFwdScopeForward();
+	void OnLeaveStorePacket(Packet& p);
+	void OnLeaveCreatedEmptyPacket();
+	void OnLeaveValExPtForward();
 	
 	VerifierPool& GetRoot() {return root;}
 	

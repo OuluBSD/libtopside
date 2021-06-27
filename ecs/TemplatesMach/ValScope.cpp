@@ -37,6 +37,8 @@ bool AudioFormat::IsSame(const AudioFormat& b) const {
 
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
+	if (vd.val.type == ValCls::ORDER) return "OrderFormat";
+	if (vd.val.type == ValCls::RECEIPT) return "ReceiptFormat";
 	return "Invalid Format";
 }
 
@@ -176,6 +178,19 @@ bool PacketValue::PaintOpenGLTexture(int texture) {
 }
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 NAMESPACE_ECS_END
