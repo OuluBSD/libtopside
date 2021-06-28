@@ -22,7 +22,7 @@ public:
 	COMP_MAKE_ACTION_END
 	
 	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_CUSTOMER;}
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER;}
 	
 };
 
@@ -47,7 +47,7 @@ public:
 	COMP_MAKE_ACTION_END
 	
 	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_AUDIO_IN;}
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_AUDIO_IN;}
 	
 };
 
@@ -74,7 +74,7 @@ public:
 	COMP_MAKE_ACTION_END
 	
 	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::COMP_TEST_AUDIO_OUT;}
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_AUDIO_OUT;}
 	
 };
 

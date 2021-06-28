@@ -222,6 +222,7 @@ public:
 	Callback								WhenLeaveFwdScopeForward;
 	
 	
+	static inline Callback& WhenUninit() {static Callback cb; return cb;}
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EXT;}
 	
 protected:

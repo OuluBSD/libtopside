@@ -2,14 +2,13 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class PaintStrokeComponent :
 	public Component<PaintStrokeComponent> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(PaintStrokeComponent)
 	COPY_PANIC(PaintStrokeComponent)
 	COMP_DEF_VISIT
@@ -42,6 +41,6 @@ private:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

@@ -9,6 +9,6 @@ file
 	TemplatesLocalTests.cpp;
 
 mainconfig
-	"" = "",
-	"" = "DEBUG_RT";
+	"" = "DEBUG_RT",
+	"" = "";
 

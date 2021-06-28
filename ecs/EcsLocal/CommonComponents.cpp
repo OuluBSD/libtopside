@@ -1,6 +1,6 @@
 #include "EcsLocal.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 /*void Transform::MoveTo(const OverlapSink& conn) {
@@ -17,6 +17,8 @@ void CopyTransformPos(EntityRef from, EntityRef to) {
 }
 
 
+
+#if 0
 
 void StaticVolumeComponent::Initialize() {
 	sz = Size(0,0);
@@ -106,5 +108,7 @@ int  StaticVolumeComponent::VolumeStream::GetDepth() const {
 		c->RecvStatic(data);
 }*/
 
+#endif
 
-NAMESPACE_TOPSIDE_END
+
+NAMESPACE_ECS_END

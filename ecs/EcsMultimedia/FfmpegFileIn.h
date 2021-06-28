@@ -3,7 +3,7 @@
 
 #if HAVE_FFMPEG
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class FfmpegFileInput;
 
@@ -212,7 +212,7 @@ public:
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

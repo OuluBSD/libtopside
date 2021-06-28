@@ -2,14 +2,13 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class ThrowingComponent :
 	public Component<ThrowingComponent> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(ThrowingComponent)
 	COPY_PANIC(ThrowingComponent)
 	COMP_DEF_VISIT
@@ -57,6 +56,6 @@ protected:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

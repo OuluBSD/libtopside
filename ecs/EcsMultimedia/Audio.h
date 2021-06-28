@@ -1,14 +1,14 @@
 #ifndef _Multimedia_Audio_h_
 #define _Multimedia_Audio_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-class AudioFrame : public SimpleBufferedAudio {
+class AudioFrame : public SimpleBufferedValue {
 	
 	
 public:
-	RTTI_DECL1(AudioFrame, Audio)
+	RTTI_DECL1(AudioFrame, SimpleBufferedValue)
 	virtual ~AudioFrame() {}
 	
 };
@@ -26,6 +26,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

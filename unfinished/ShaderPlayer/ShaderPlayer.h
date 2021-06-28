@@ -15,7 +15,7 @@ class ShaderPlayer :
 	
 public:
 	RTTI_COMP0(ShaderPlayer)
-	VIS_COMP_0_0
+	
 	typedef ShaderPlayer CLASSNAME;
 	ShaderPlayer() {}
 	void OnError();

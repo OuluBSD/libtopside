@@ -1,10 +1,10 @@
 #include "EcsLocal.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 /*Ref<Transform> Viewable::GetTransform() {
 	EntityRef ent = GetEntity();
 	return ent->Find<Transform>();
 }*/
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

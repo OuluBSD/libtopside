@@ -1,9 +1,10 @@
 #include "EcsAudioCore.h"
 
+#if 0
 #if HAVE_FLUIDSYNTH
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -167,6 +168,7 @@ Midi& FluidsynthComponent::GetValue(MidCtx) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
+#endif
 #endif

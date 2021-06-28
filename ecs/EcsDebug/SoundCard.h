@@ -1,7 +1,7 @@
 #ifndef _EcsDebug_SoundCard_h_
 #define _EcsDebug_SoundCard_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 #if 0
 
@@ -100,6 +100,6 @@ public:
 };
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

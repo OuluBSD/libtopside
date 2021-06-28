@@ -5,7 +5,7 @@ NAMESPACE_ECS_BEGIN
 
 
 Format GetDefaultFormat(ValDevCls type) {
-	DUMP(type)
+	//DUMP(type)
 	Format fmt;
 	
 	if (type.dev == DevCls::CENTER) {

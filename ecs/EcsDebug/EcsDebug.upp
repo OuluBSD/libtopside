@@ -4,8 +4,6 @@ uses
 	EcsNonGUI,
 	TemplatesLocal;
 
-uses(NEVER) EcsAudioCore;
-
 file
 	EcsDebug.h,
 	EcsDebug.icpp,

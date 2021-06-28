@@ -3,15 +3,19 @@
 NAMESPACE_UPP
 
 INITBLOCK {
-	Ecs::Factory::RegisterComponent<MixerChannelInputComponent>();
+	using namespace Ecs;
+	
+	REG_EXT(PortaudioOutExt,	OUTPUT,		CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
+	
+	/*Ecs::Factory::RegisterComponent<MixerChannelInputComponent>();
 	Ecs::Factory::RegisterComponent<MixerChannelOutputComponent>();
 	Ecs::Factory::RegisterComponent<MixerAudioSourceComponent>();
 	Ecs::Factory::RegisterComponent<MidiFileComponent>();
-	Ecs::Factory::RegisterComponent<PortaudioSinkComponent>();
+	Ecs::Factory::RegisterComponent<PortaudioOutExt>();
 	
 	#if HAVE_FLUIDSYNTH
 	Ecs::Factory::RegisterComponent<FluidsynthComponent>();
-	#endif
+	#endif*/
 }
 
 END_UPP_NAMESPACE

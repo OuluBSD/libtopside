@@ -37,8 +37,8 @@ String EcsTypeCls::GetTypeString(Type t) {
 	switch (t) {
 		case IFACE:					return "interface";
 		case COMP_EXT:				return "ext-component";
-		case COMP_TEST_CUSTOMER:	return "test-customer-component";
-		case COMP_TEST_AUDIO_OUT:	return "test-audio-out-component";
+		case EXT_TEST_CUSTOMER:	return "test-customer-component";
+		case EXT_TEST_AUDIO_OUT:	return "test-audio-out-component";
 		default: return "invalid";
 	}
 }

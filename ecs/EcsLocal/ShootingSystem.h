@@ -2,13 +2,12 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class ShootingComponent :
 	public Component<ShootingComponent> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(ShootingComponent)
 	COPY_PANIC(ShootingComponent)
 	COMP_DEF_VISIT
@@ -58,6 +57,6 @@ protected:
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

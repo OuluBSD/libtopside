@@ -1,7 +1,7 @@
 #include "EcsMultimedia.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 void MediaStreamThread::Start(bool separate_thrd) {
@@ -80,4 +80,4 @@ void MediaStreamThread::PaintOpenGL(GLuint active_tex) {
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

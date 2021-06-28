@@ -2,14 +2,13 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 class ToolSystemBase;
 
 class ToolComponent : public Component<ToolComponent> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(ToolComponent)
 	COPY_PANIC(ToolComponent)
 	COMP_DEF_VISIT
@@ -80,6 +79,6 @@ private:
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

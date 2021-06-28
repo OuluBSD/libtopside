@@ -1,9 +1,9 @@
 #ifndef _EcsLocal_Camera_h_
 #define _EcsLocal_Camera_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
-
+#if 0
 class Viewable :
 	public Component<Viewable>,
 	public HumanSink
@@ -29,8 +29,8 @@ public:
 	Human&			GetValue(HumCtx) override {TODO}
 	
 };
+#endif
 
-
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

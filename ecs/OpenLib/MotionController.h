@@ -16,7 +16,6 @@ class MotionControllerComponent :
 {
 	
 public:
-	VIS_COMP_0_0
 	COPY_PANIC(MotionControllerComponent)
 	COMP_DEF_VISIT
 	

@@ -8,7 +8,11 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
-	//Ecs::Factory::RegisterComponent<DebugSoundGeneratorComponent>();
+	using namespace Ecs;
+	
+	REG_EXT(DebugAudioGeneratorExt,	INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
+	
+	//Ecs::Factory::RegisterComponent<DebugAudioGeneratorExt>();
 	//Ecs::Factory::RegisterComponent<DebugAudioSinkComponent>();
 }
 

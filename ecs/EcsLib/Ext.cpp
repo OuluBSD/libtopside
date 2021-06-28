@@ -114,7 +114,7 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 		
 		c.unfulfilled_offsets.Add(off.value);
 		
-		Format fmt = GetDefaultFormat(VD(CENTER, ORDER));
+		Format fmt = GetSourceValue().GetFormat();
 		ASSERT(fmt.IsValid());
 		RTLOG("ExtComponent::Forward: customer: sending order " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
@@ -241,14 +241,19 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 			src_total += p->GetSizeBytes();
 			src_ch_samples += p->GetSizeChannelSamples();
 		}
-		RTLOG("ExtComponent::ForwardInput: post sink=" << sink_buf->GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << "bytes, " << src_ch_samples << " ch-samples");
+		RTLOG("ExtComponent::ForwardInput: post sink=" << sink_buf->GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << " bytes, " << src_ch_samples << " ch-samples)");
 	}
 	
 }
 
 void ExtComponent::ForwardOutput(FwdScope& fwd) {
-	if (this->ext)
-		this->ext->Forward(fwd);
+	if (fwd.GetPos() > 0) {
+		if (this->ext)
+			this->ext->Forward(fwd);
+	}
+	else {
+		RTLOG("ExtComponent::ForwardOutput: skip duplicate extension forward");
+	}
 	
 	Value& sink_value = GetSinkValue();
 	Value& src_value = GetSourceValue();
@@ -499,6 +504,8 @@ void ExtSystem::Stop() {
 void ExtSystem::Uninitialize() {
 	once_cbs.Clear();
 	customers.Clear();
+	
+	WhenUninit()();
 }
 
 void ExtSystem::Add(ExtComponentRef p) {
@@ -516,6 +523,7 @@ void ExtSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 	o.cfg = &cfg;
 	lock.Leave();
 }
+
 
 
 

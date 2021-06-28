@@ -3,7 +3,7 @@
 #if HAVE_WINDOWSYSTEM
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -63,6 +63,6 @@ void WindowSystem::SetDesktopSize(Size sz) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

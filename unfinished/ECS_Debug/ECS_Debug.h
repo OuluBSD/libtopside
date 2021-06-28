@@ -11,7 +11,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class DebugGenerator :
 	public CustomerExt
 {
-	RefT_Entity<DebugSoundGeneratorComponent>	gen;
+	RefT_Entity<DebugAudioGeneratorExt>	gen;
 	RefT_Entity<DebugAudioSinkComponent>		audio;
 	
 public:
@@ -28,7 +28,7 @@ public:
 
 /*PREFAB_BEGIN(DebugGeneratorPrefab)
 	DebugAudioSinkComponent,
-	DebugSoundGeneratorComponent,
+	DebugAudioGeneratorExt,
 	DebugGenerator
 PREFAB_END*/
 

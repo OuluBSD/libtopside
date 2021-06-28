@@ -1,6 +1,6 @@
 #include "EcsDebug.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 #if 0
@@ -92,7 +92,7 @@ void DebugAudioSinkComponent::Forward(FwdScope& fwd) {
 		
 		src_value.StorePacket(to);
 		
-		ToPacketTracker::Track(TrackerInfo("DebugSoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
+		ToPacketTracker::Track(TrackerInfo("DebugAudioGeneratorExt::Forward", __FILE__, __LINE__), *to);
 		src_buf.Add(to);
 	}*/
 	
@@ -117,7 +117,7 @@ void DebugAudioSinkComponent::Forward(FwdScope& fwd) {
 		
 		src_value.StorePacket(to);
 		
-		ToPacketTracker::Track(TrackerInfo("DebugSoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
+		ToPacketTracker::Track(TrackerInfo("DebugAudioGeneratorExt::Forward", __FILE__, __LINE__), *to);
 		src_buf.Add(to);
 	}
 	
@@ -154,4 +154,4 @@ void DebugAudioSinkComponent::LocalSinkValue::SinkCallback(StreamCallbackArgs& a
 
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

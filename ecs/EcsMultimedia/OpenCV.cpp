@@ -2,7 +2,7 @@
 
 #if HAVE_OPENCV
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 /*bool OpenCVComponent::LoadFileAny(String path) {
@@ -53,6 +53,6 @@ bool OpenCVComponent::LoadInput(int id) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

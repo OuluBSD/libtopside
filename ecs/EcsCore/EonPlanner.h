@@ -222,10 +222,10 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 	Array<Ecs::Eon::WorldState*> to;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
-	LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
+	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Ecs::Eon::WorldState& ws_to = *to[i];
-		LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
+		//LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		if (j == -1) {

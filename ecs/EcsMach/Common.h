@@ -24,7 +24,7 @@ class ToolComponent;
 class MotionControllerComponent;
 class PbrRenderable;
 class CoreWindow;
-class DebugSoundGeneratorComponent;
+class DebugAudioGeneratorExt;
 class PortaudioSinkComponent;
 class StaticVolumeComponent;
 class Viewable;
@@ -61,7 +61,7 @@ using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
 using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
 using ExtComponentRef		= Ref<ExtComponent,			RefParent1<Entity>>;
 
-using DebugSoundGeneratorComponentRef	= Ref<DebugSoundGeneratorComponent,		RefParent1<Entity>>;
+using DebugAudioGeneratorExtRef	= Ref<DebugAudioGeneratorExt,		RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;

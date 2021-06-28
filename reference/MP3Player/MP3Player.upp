@@ -1,10 +1,11 @@
 description "Audio player using the ECS library. Plays mp3:s and many other audio files.\377";
 
 uses
-	Complete,
-	CompleteDebug;
+	CompleteDebug,
+	EcsAudioCore;
 
 file
+	main.cpp,
 	MP3Player.h,
 	MP3Player.cpp;
 

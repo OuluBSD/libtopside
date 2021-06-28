@@ -3,7 +3,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 namespace Knownmodel_names 
 {
@@ -152,7 +152,7 @@ struct StaticModel : EntityPrefab<Transform, ModelComponent>
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

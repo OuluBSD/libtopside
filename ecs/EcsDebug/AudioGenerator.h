@@ -1,15 +1,13 @@
 #ifndef _EcsDebug_AudioGenerator_h_
 #define _EcsDebug_AudioGenerator_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 using namespace Ecs;
 
 template <class T>
 class DebugSoundGenerator
 {
-	
-	
 	Vector<T> frame;
 	int frame_part_size = 0;
 	
@@ -74,58 +72,14 @@ public:
 	}
 };
 
-class DebugSoundGeneratorAudio :
-	public SimpleValue
+
+
+
+class DebugAudioGeneratorExt :
+	public AudioInputExt
 {
 	DebugSoundGenerator<uint8> gen;
 	Ecs::Format fmt;
-	
-public:
-	RTTI_DECL1(DebugSoundGeneratorAudio, SimpleValue)
-	DebugSoundGeneratorAudio();
-	
-	//void StorePacket(Packet& p) override;
-	/*void Exchange(AudioEx& e) override;
-	AudioFormat GetFormat() const override;
-	int GetQueueSize() const override;
-	bool IsQueueFull() const override;*/
-	
-	
-};
-
-class DebugSoundGeneratorStream :
-	public SimpleStream
-{
-public:
-	DebugSoundGeneratorAudio gen;
-	
-public:
-	RTTI_DECL1(DebugSoundGeneratorStream, SimpleStream)
-	DebugSoundGeneratorStream() : SimpleStream(gen) {}
-	
-	
-	
-};
-
-
-
-#if 0
-class DebugSoundGeneratorComponent :
-	public AudioInputComponent
-{
-public:
-	
-	
-	
-};
-
-class DebugSoundGeneratorComponent :
-	public DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>,
-	public EventSink,
-	public OrderSink,
-	public AudioInputComponent
-{
-	DebugSoundGeneratorStream gen;
 	String last_error;
 	int mode = 0;
 	int preset_i = -1;
@@ -137,58 +91,29 @@ class DebugSoundGeneratorComponent :
 	
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
-protected:
-	struct LocalSinkValue : public SimpleOrder {
-		
-		void StorePacket(OrderPacket& p) override {TODO}
-		
-	};
-	
-	
-	LocalSinkValue		sink_value;
-	
 public:
-	using Component = DevComponent<CenterSpec,AudioSpec,DebugSoundGeneratorComponent>;
-	RTTI_DCOMP3(DebugSoundGeneratorComponent, EventSink, OrderSink, AudioSource)
-	VIS_COMP_1_2(Audio, Order, Event)
-	COPY_PANIC(DebugSoundGeneratorComponent);
-	IFACE_GENERIC;
-	COMP_DEF_VISIT
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")
-	COMP_MAKE_ACTION_END
-	
-	DebugSoundGeneratorComponent();
+	DebugAudioGeneratorExt();
 	
 	void Initialize() override;
 	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
-	void ForwardExchange(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
 	
-	// OrderSink
-	OrderFormat		GetFormat(OrdCtx) override {TODO}
-	Order&			GetValue(OrdCtx) override {return sink_value;}
-	bool			ReadFrame() {TODO}
-	bool			ProcessDeviceFrame() {TODO}
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.dbg_generator")
+	COMP_MAKE_ACTION_END
 	
-	// EventSink
-	EventFormat		GetFormat(EvCtx) override {TODO}
-	Event&			GetValue(EvCtx) override {TODO}
 	
-	// AudioSource
-	AudioStream&	GetStream(AudCtx) override;
-	void			BeginStream(AudCtx) override;
-	void			EndStream(AudCtx) override;
-	void			StorePacket(AudioPacket& p) {gen.gen.StorePacket(p);}
-	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_DBG_AUDIO_IN;}
 	
 	void SetPreset(int i) {preset_i = i;}
 	String GetLastError() const {return last_error;}
 	
 	
 };
-#endif
 
-NAMESPACE_TOPSIDE_END
+
+NAMESPACE_ECS_END
 
 #endif

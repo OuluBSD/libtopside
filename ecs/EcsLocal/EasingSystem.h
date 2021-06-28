@@ -1,7 +1,7 @@
 #ifndef _System_EasingSystem_h_
 #define _System_EasingSystem_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 	
 class Easing :
@@ -9,7 +9,6 @@ class Easing :
 {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(Easing)
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -42,6 +41,6 @@ protected:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

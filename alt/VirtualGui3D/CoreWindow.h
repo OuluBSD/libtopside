@@ -53,7 +53,7 @@ class CoreWindow :
 	public Component<CoreWindow>
 {
 	RTTI_COMP1(CoreWindow, Ctrl)
-	VIS_COMP_0_0
+	
 	
 	struct ResizeFrame : public CtrlFrame {
 		RTTI_DECL1(ResizeFrame, CtrlFrame)

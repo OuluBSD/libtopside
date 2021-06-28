@@ -1,7 +1,9 @@
 #include "EcsAudioCore.h"
 
+#if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -260,4 +262,6 @@ void MidiFileComponent::EmitTrack(int i) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
+
+#endif

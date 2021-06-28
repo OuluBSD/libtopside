@@ -1,9 +1,9 @@
 #ifndef _AudioCore_Generators_h_
 #define _AudioCore_Generators_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

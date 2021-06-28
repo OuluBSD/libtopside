@@ -59,7 +59,7 @@ loop tester.generator: {
     - CenterSideOutput(Perma)
 2:
 	- customer
-	- CenterSideInput(Center)
+	- PermaSideInput(Center)
 	- FileWriter
 */
 const char* perma_str = R"EON_CODE(
@@ -376,6 +376,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 	#endif
 	int dbg_total_samples = 0;
 	int dbg_total_bytes = 0;
+	bool fail = false;
 	
 	while (flag.IsRunning()) {
 		double t = ts.Seconds();
@@ -407,6 +408,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		
 		if (!base.ForwardMem(data.Begin(), data.GetCount())) {
 			RTLOG("TestRealtimeSink::IntervalSinkProcess: error: could not get consumable data");
+			fail = true;
 			break;
 		}
 		
@@ -426,6 +428,9 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		}
 	}
 	RTLOG("TestRealtimeSink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+	if (!fail) {LOG("TestRealtimeSink::IntervalSinkProcess: success!");}
+	else       {LOG("TestRealtimeSink::IntervalSinkProcess: fail :(");}
+	
 	flag.DecreaseRunning();
 }
 

@@ -107,7 +107,7 @@ public:
 		ASSERT(c.IsValid());
 		GetExtTypes().Add(c);
 		TypeCompCls comp = AsTypeCompCls(c);
-		CompData& d = CompDataMap().Get(comp);
+		CompData& d = CompDataMap().GetAdd(comp);
 		ExtData& e = d.ext.GetAdd(c);
 		e.cls = c;
 		e.name = T::GetTypeName();

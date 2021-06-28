@@ -1,8 +1,9 @@
 #ifndef _AudioCore_System_h_
 #define _AudioCore_System_h_
 
+#if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class MixerContextConnector :
@@ -218,7 +219,8 @@ PREFAB_BEGIN(MidiFileController)
 		MidiFileComponent
 PREFAB_END;
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
+#endif
 #endif

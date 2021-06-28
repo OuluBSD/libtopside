@@ -1,6 +1,6 @@
 #include "EcsLocal.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 void EasingSystem::Update(double dt)
@@ -17,4 +17,4 @@ void EasingSystem::Update(double dt)
 }
 	
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

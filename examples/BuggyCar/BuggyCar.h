@@ -52,8 +52,6 @@ struct BuggyCar :
 	public OdeSpace,
 	public Component<BuggyCar>
 {
-	VIS_COMP_0_0
-	
 	BuggyChassis chassis;
 	Array<BuggyWheel> wheels;
 	Array<OdeJoint> joints;

@@ -131,11 +131,11 @@ protected:
 	
 	dword			total_frames = 0;
 	StreamFlags		flags;
-	AudioFormat		fmt;
+	AudioFormat		pa_fmt;
 	
 public:
 	AudioBase();
-	AudioBase(const AudioBase& s) : err(s.err), fmt(s.fmt), flags(s.flags) {stream = s.stream;}
+	AudioBase(const AudioBase& s) : err(s.err), pa_fmt(s.pa_fmt), flags(s.flags) {stream = s.stream;}
 	
 	/*void			Exchange(AudioEx& e) override;
 	int				GetQueueSize() const override {return 0;}
@@ -151,11 +151,11 @@ protected:
 	void			SetFormat(int out_ch, SampleFormat format);
 	
 public:
-	AudioBase&		SetFrequency(int freq)          {fmt.freq = freq; return *this;}
-	AudioBase&		SetSampleRate(dword sr)         {fmt.sample_rate = sr; return *this;}
+	AudioBase&		SetFrequency(int freq)          {pa_fmt.freq = freq; return *this;}
+	AudioBase&		SetSampleRate(dword sr)         {pa_fmt.sample_rate = sr; return *this;}
 	AudioBase&		SetFlags(StreamFlags f)         {flags = f; return *this;}
 	double			GetFrequency() const;
-	dword			GetSampleRate() const           {return fmt.sample_rate;}
+	dword			GetSampleRate() const           {return pa_fmt.sample_rate;}
 	StreamFlags		GetFlags() const                {return flags;}
 
 	void			Start()               {if (!IsPortaudioUninitialized()) {err = Pa_StartStream(stream); CHECK_ERR;}}
@@ -165,11 +165,12 @@ public:
 
 	bool			IsStopped() const;
 	bool			IsActive() const;
-	bool			IsOpen() const                 {return (stream != NULL);}
-	bool			IsError() const                {return err!=paNoError;};
-	void			ClearError() const             {err=paNoError;}
-	int				GetErrorCode() const           {return err;}
+	bool			IsOpen() const                  {return (stream != NULL);}
+	bool			IsError() const                 {return err!=paNoError;};
+	void			ClearError() const              {err=paNoError;}
+	int				GetErrorCode() const            {return err;}
 	String			GetError() const                {return Pa_GetErrorText(err);}
+	AudioFormat		GetFormat() const				{return pa_fmt;}
 
 	double			GetInputLatency() const;
 	double			GetOutputLatency() const;
@@ -274,6 +275,7 @@ public:
 	~AudioSystem();
 	
 	void						Close();
+	void						Clear() {Close();}
 	
 	const Vector<AudioDevice>	GetDevices() const;
 	const Vector<AudioAPI>		GetAPIs() const;

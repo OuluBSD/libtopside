@@ -3,7 +3,7 @@
 
 #if HAVE_OPENCV
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class OpenCVComponent :
@@ -62,7 +62,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

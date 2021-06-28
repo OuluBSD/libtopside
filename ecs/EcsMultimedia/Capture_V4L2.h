@@ -3,7 +3,7 @@
 
 #if HAVE_V4L2_CAP
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class CaptureDevice_V4L2 : public MediaStream {
@@ -20,7 +20,7 @@ protected:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

@@ -33,9 +33,9 @@ extern "C"{
 
 
 AudioBase::AudioBase() : err(paNoError), flags(SND_NOFLAG){
-	fmt.freq = 44100;
-	fmt.sample_rate = 1024;
-	fmt.channels = 2;
+	pa_fmt.freq = 44100;
+	pa_fmt.sample_rate = 1024;
+	pa_fmt.channels = 2;
 	SetFormat(2, SND_FLOAT32);
 	stream = 0;
 	AudioSys();
@@ -46,7 +46,7 @@ void AudioBase::OpenStream(PaStreamCallback* cb, void* data,
 	ASSERT(AudioSystem::Exists());
 	const PaStreamParameters* noparam=NULL;
 	err = Pa_OpenStream(&stream, IsNull(inparam)?noparam:inparam, IsNull(outparam)?noparam:outparam,
-	                    fmt.freq, fmt.sample_rate, flags, cb, data);
+	                    pa_fmt.freq, pa_fmt.sample_rate, flags, cb, data);
 	CHECK_ERR;
 	
 	TODO // set fmt values from params
@@ -56,13 +56,13 @@ void AudioBase::OpenDefaultStream(PaStreamCallback* cb, void* data,
                                int inchannels,int outchannels, SampleFormat format) {
 	ASSERT(AudioSystem::Exists());
 	SetFormat(outchannels, format);
-	err = Pa_OpenDefaultStream(&stream, inchannels, outchannels, format, fmt.freq, fmt.sample_rate, cb, data);
+	err = Pa_OpenDefaultStream(&stream, inchannels, outchannels, format, pa_fmt.freq, pa_fmt.sample_rate, cb, data);
 	CHECK_ERR;
 }
 
 void AudioBase::SetFormat(int out_ch, SampleFormat format) {
-	fmt.channels = out_ch;
-	fmt.fmt = format;
+	pa_fmt.channels = out_ch;
+	pa_fmt.fmt = format;
 }
 
 void AudioBase::Close(){

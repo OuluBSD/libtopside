@@ -1,13 +1,12 @@
 #ifndef _System_CommonComponents_h_
 #define _System_CommonComponents_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class Transform : public Component<Transform> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(Transform)
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -46,7 +45,6 @@ void CopyTransformPos(EntityRef from, EntityRef to);
 class Transform2D : public Component<Transform2D> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(Transform2D)
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -65,7 +63,6 @@ public:
 class RigidBody : public Component<RigidBody> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(RigidBody)
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -92,7 +89,6 @@ public:
 class Renderable : public Component<Renderable> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(Renderable)
 	COMP_DEF_VISIT
 	COMP_DEF_MAKE_ACTION
@@ -125,6 +121,8 @@ public:
 };
 
 
+
+#if 0
 
 class StaticVolumeComponent :
 	public Component<StaticVolumeComponent>,
@@ -174,7 +172,7 @@ public:
 	
 };
 
-
+#endif
 
 
 
@@ -195,7 +193,7 @@ namespace Pbr {
 /*class PbrRenderable :
 	public Component<PbrRenderable>
 {
-	VIS_COMP_0_0
+	
 	
 public:
 	RTTI_COMP0(PbrRenderable)
@@ -221,7 +219,6 @@ class TextRenderable :
 {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(TextRenderable)
 	COPY_PANIC(TextRenderable);
 	COMP_DEF_VISIT
@@ -236,6 +233,6 @@ public:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

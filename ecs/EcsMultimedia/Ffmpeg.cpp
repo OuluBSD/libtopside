@@ -5,7 +5,7 @@
 #include <EcsAudioCore/EcsAudioCore.h>
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 FfmpegComponent::FfmpegComponent() {
@@ -127,6 +127,6 @@ void FfmpegComponent::EndStream(AudCtx) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

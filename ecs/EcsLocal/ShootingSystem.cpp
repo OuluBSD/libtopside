@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 String ShootingInteractionSystem::GetInstructions() const {
@@ -102,6 +102,6 @@ void ShootingComponent::Destroy() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

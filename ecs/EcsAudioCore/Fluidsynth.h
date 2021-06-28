@@ -1,9 +1,10 @@
 #ifndef _EcsAudioCore_Fluidsynth_h_
 #define _EcsAudioCore_Fluidsynth_h_
 
+#if 0
 #if HAVE_FLUIDSYNTH
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class FluidsynthComponent :
@@ -96,7 +97,8 @@ protected:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

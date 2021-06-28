@@ -372,7 +372,7 @@ void OutputComponent::Forward(FwdScope& fwd) {
 		
 		src_value.StorePacket(to);
 		
-		ToPacketTracker::Track(TrackerInfo("DebugSoundGeneratorComponent::Forward", __FILE__, __LINE__), *to);
+		ToPacketTracker::Track(TrackerInfo("DebugAudioGeneratorExt::Forward", __FILE__, __LINE__), *to);
 		src_buf.Add(to);
 	}
 	

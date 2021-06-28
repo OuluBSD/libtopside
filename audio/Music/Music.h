@@ -16,7 +16,6 @@ class MusicDrummerComponent :
 	
 public:
 	RTTI_COMP0(MusicDrummerComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicDrummerComponent);
 	COMP_DEF_VISIT
 	
@@ -41,7 +40,6 @@ class MusicBassistComponent :
 	
 public:
 	RTTI_COMP0(MusicBassistComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicBassistComponent);
 	COMP_DEF_VISIT
 	
@@ -66,7 +64,6 @@ class MusicGuitaristComponent :
 	
 public:
 	RTTI_COMP0(MusicGuitaristComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicGuitaristComponent);
 	COMP_DEF_VISIT
 	
@@ -92,7 +89,6 @@ class MusicVocalistComponent :
 	
 public:
 	RTTI_COMP0(MusicVocalistComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicVocalistComponent);
 	COMP_DEF_VISIT
 	
@@ -117,7 +113,6 @@ class MusicConductorComponent :
 	
 public:
 	RTTI_COMP0(MusicConductorComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicConductorComponent);
 	COMP_DEF_VISIT
 	
@@ -142,7 +137,6 @@ class MusicComposerComponent :
 	
 public:
 	RTTI_COMP0(MusicComposerComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(MusicComposerComponent);
 	COMP_DEF_VISIT
 	

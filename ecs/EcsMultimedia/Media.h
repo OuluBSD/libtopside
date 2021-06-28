@@ -2,13 +2,13 @@
 #define _Multimedia_Media_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
 class MediaStreamThread : Moveable<MediaStreamThread> {
-	AudioStreamRef acap;
-	VideoStreamRef vcap;
+	StreamRef acap;
+	StreamRef vcap;
 	
 	RunningFlagSingle flag;
 	String last_error;
@@ -29,10 +29,10 @@ public:
 	void FillVideoBuffer();
 	void FillAudioBuffer();
 	
-	AudioStream& GetAudioStream() {ASSERT(acap); return *acap;}
-	VideoStream& GetVideoStream() {ASSERT(vcap); return *vcap;}
+	Stream& GetAudioStream() {ASSERT(acap); return *acap;}
+	Stream& GetVideoStream() {ASSERT(vcap); return *vcap;}
 	bool IsCap() const {return acap && vcap;}
-	void SetCap(AudioStreamRef acap, VideoStreamRef vcap) {this->acap = acap; this->vcap = vcap;}
+	void SetCap(AudioStreamRef acap, StreamRef vcap) {this->acap = acap; this->vcap = vcap;}
 	bool IsRunning() const {return flag.IsRunning();}
 	
 	String GetLastError() const {return last_error;}
@@ -48,7 +48,7 @@ public:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

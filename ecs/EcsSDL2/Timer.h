@@ -12,7 +12,6 @@ class SDL2TimerComponent :
 	
 public:
 	RTTI_COMP0(SDL2TimerComponent)
-	VIS_COMP_0_0
 	COPY_PANIC(SDL2TimerComponent);
 	COMP_DEF_VISIT
 	

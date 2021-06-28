@@ -13,7 +13,6 @@ class DirectWindow :
 	
 	
 public:
-	VIS_COMP_0_0
 	COPY_PANIC(DirectWindow)
 	COMP_DEF_VISIT
 	

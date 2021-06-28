@@ -2,7 +2,7 @@
 
 #if HAVE_V4L2_CAP
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 bool CaptureDevice_V4L2::OpenDevice0(int fmt_i, int res_i) {
@@ -69,6 +69,6 @@ int CaptureDevice_V4L2::FillVideoBuffer() {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

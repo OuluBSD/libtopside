@@ -1,7 +1,7 @@
 #ifndef _System_WorldLogic_h_
 #define _System_WorldLogic_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 	
 class WorldLogicSystem : public System<WorldLogicSystem>
 {
@@ -30,6 +30,6 @@ protected:
     }
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

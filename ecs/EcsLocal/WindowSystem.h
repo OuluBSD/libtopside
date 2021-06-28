@@ -3,7 +3,7 @@
 
 #if HAVE_WINDOWSYSTEM
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class WindowSystem :
@@ -49,7 +49,7 @@ protected:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

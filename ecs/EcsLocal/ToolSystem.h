@@ -2,7 +2,7 @@
 
 #ifdef flagVR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 // ToolSystemBase
 // Base abstract class for all ToolSystems
@@ -26,7 +26,6 @@ class ToolSelectorKey :
 	public Component<ToolSelectorKey> {
 	
 public:
-	VIS_COMP_0_0
 	RTTI_COMP0(ToolSelectorKey)
 	COPY_PANIC(ToolSelectorKey)
 	COMP_DEF_VISIT
@@ -145,6 +144,6 @@ protected:
 	LinkedList<EntityRef> m_entities;
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

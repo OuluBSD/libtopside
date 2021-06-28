@@ -1,15 +1,17 @@
 #include "EcsAudioCore.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
-AudioFormat ConvertPortaudioFormat(Portaudio::AudioFormat fmt) {
-	AudioFormat r;
-	r.channels = fmt.channels;
-	r.freq = fmt.freq;
-	r.sample_rate = fmt.sample_rate;
-	switch (fmt.fmt) {
+Format ConvertPortaudioFormat(Portaudio::AudioFormat pa_fmt) {
+	Format fmt;
+	fmt.vd = VD(CENTER,AUDIO);
+	AudioFormat& r = fmt;
+	r.channels = pa_fmt.channels;
+	r.freq = pa_fmt.freq;
+	r.sample_rate = pa_fmt.sample_rate;
+	switch (pa_fmt.fmt) {
 		#if CPU_BIG_ENDIAN
 		#error TODO
 		#endif
@@ -35,7 +37,7 @@ AudioFormat ConvertPortaudioFormat(Portaudio::AudioFormat fmt) {
 		default:
 			THROW(Exc("invalid portaudio sound sample format"));
 	}
-	return r;
+	return fmt;
 }
 
 
@@ -43,74 +45,17 @@ namespace Portaudio {
 	
 	
 BufferedAudioDeviceStream::BufferedAudioDeviceStream() {
-	WhenAction << THISBACK(SinkCallback);
-}
-
-void BufferedAudioDeviceStream::SinkCallback(StreamCallbackArgs& args) {
-	if (consumer.IsEmptySource())
-		consumer.SetSource(buf.GetBuffer());
 	
-	if (args.output) {
-		TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
-		
-		int size = fmt.GetFrameSize();
-		if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
-			ASSERT(args.fpb == fmt.sample_rate);
-			
-			/*off32 begin_offset = buf.GetOffset();
-			if (0) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
-				buf.Dump();
-			}*/
-			
-			consumer.SetDestination(fmt, args.output, size);
-			consumer.ConsumeAll(false);
-			consumer.ClearDestination();
-			if (consumer.GetLastMemoryBytes() != size) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
-			}
-			
-			int consumed_count = consumer.GetCount();
-			if (consumed_count) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << consumed_count);
-			}
-			
-			/*off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
-				buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
-			}*/
-		}
-		else {
-			#if DEBUG_RT_PIPE
-			RTLOG("error: BufferedAudioDeviceStream::SinkCallback: got empty data");
-			#endif
-			
-			memset(args.output, 0, size);
-		}
-	}
 }
 
 void BufferedAudioDeviceStream::OpenDefault(void* data, int inchannels,int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(data, inchannels, outchannels, format);
 	
-	TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
-	buf.SetFormat(fmt);
 }
 
 void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, SampleFormat format){
 	AudioDeviceStream::OpenDefault(inchannels, outchannels, format);
 	
-	TS::AudioFormat fmt = ConvertPortaudioFormat(AudioBase::fmt);
-	buf.SetFormat(fmt);
 }
 
 
@@ -120,7 +65,6 @@ void BufferedAudioDeviceStream::OpenDefault(int inchannels, int outchannels, Sam
 
 
 bool __is_portaudio_uninit;
-namespace Portaudio {bool IsPortaudioUninitialized() {return __is_portaudio_uninit;}}
 
 void CloseAudioSys() {
 	Portaudio::AudioSys().Close();
@@ -128,7 +72,7 @@ void CloseAudioSys() {
 }
 
 INITBLOCK {
-	CenterSystem::WhenUninit() << callback(CloseAudioSys);
+	ExtSystem::WhenUninit() << callback(CloseAudioSys);
 }
 
 
@@ -140,32 +84,36 @@ INITBLOCK {
 
 
 
-
-PortaudioSinkComponent::PortaudioSinkComponent() : src_stream(this) {
+PortaudioOutExt::PortaudioOutExt() {
 	
 }
 
-PortaudioSinkComponent::~PortaudioSinkComponent() {
+PortaudioOutExt::~PortaudioOutExt() {
 	obj.Clear();
 }
 
-void PortaudioSinkComponent::Initialize() {
-	Component::Initialize();
+void PortaudioOutExt::Initialize() {
 	
 	//sys = GetMachine().TryGet<PortaudioSystem>();
 	//if (sys)
 	//	dev.Create(sys->GetDefaultOutput());
 	
 	obj.Create();
+	obj->WhenAction << THISBACK(SinkCallback);
 	obj->OpenDefault();
+	
+	ExtComponent& ext = GetParent();
+	Value& sink_val = ext.GetSinkValue();
+	fmt = ConvertPortaudioFormat(obj->GetFormat());
+	ASSERT(fmt.IsValid());
+	sink_val.SetFormat(fmt);
 	
 	obj->Start();
 	
 	//AddToContext<CenterSpec>(AsRef<CenterSink>());
 }
 
-void PortaudioSinkComponent::Uninitialize() {
-	Component::Uninitialize();
+void PortaudioOutExt::Uninitialize() {
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
 	
@@ -175,17 +123,82 @@ void PortaudioSinkComponent::Uninitialize() {
 	obj.Clear();
 }
 
-AudioFormat PortaudioSinkComponent::GetFormat(AudCtx) {
+void PortaudioOutExt::Forward(FwdScope& fwd) {
+	
+}
+
+void PortaudioOutExt::StorePacket(Packet& p) {
 	TODO
 }
 
-Audio& PortaudioSinkComponent::GetValue(AudCtx) {
-	if (obj)
-		return *obj;
-	THROW(Exc("PortaudioSinkComponent: obj is null"));
+void PortaudioOutExt::SinkCallback(TS::Portaudio::StreamCallbackArgs& args) {
+	ExtComponent& ext = GetParent();
+	Value& sink_val = ext.GetSinkValue();
+	PacketBuffer& sink_buf = sink_val.GetBuffer();
+	
+	if (consumer.IsEmptySource())
+		consumer.SetSource(sink_buf);
+	
+	if (args.output) {
+		Ecs::AudioFormat& afmt = fmt;
+		
+		int size = fmt.GetFrameSize();
+		if (sink_buf.GetCount() > 0 || consumer.HasLeftover()) {
+			int sample_rate = afmt.GetSampleRate();
+			ASSERT(args.fpb == afmt.sample_rate);
+			
+			/*off32 begin_offset = sink_buf.GetOffset();
+			if (0) {
+				RTLOG("PortaudioOutExt::SinkCallback: trying to consume " << begin_offset.ToString());
+				RTLOG("PortaudioOutExt::SinkCallback: dumping");
+				sink_buf.Dump();
+			}*/
+			
+			consumer.SetDestination(fmt, args.output, size);
+			consumer.ConsumeAll(false);
+			consumer.ClearDestination();
+			if (consumer.GetLastMemoryBytes() != size) {
+				RTLOG("PortaudioOutExt::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
+			}
+			
+			int consumed_count = consumer.GetCount();
+			if (consumed_count) {
+				RTLOG("PortaudioOutExt::SinkCallback: device consumed count=" << consumed_count);
+			}
+			
+			/*off32 end_offset = consumer.GetOffset();
+			off32 diff = off32::GetDifference(begin_offset, end_offset);
+			if (diff) {
+				RTLOG("PortaudioOutExt::SinkCallback: device consumed count=" << diff.ToString());
+				sink_buf.RemoveFirst(diff.value);
+			}
+			else if (consumer.HasLeftover()) {
+				RTLOG("PortaudioOutExt::SinkCallback: device consumed packet partially");
+			}
+			else if (!consumer.HasLeftover()) {
+				RTLOG("error: PortaudioOutExt::SinkCallback: device error");
+			}*/
+		}
+		else {
+			#if DEBUG_RT_PIPE
+			RTLOG("error: PortaudioOutExt::SinkCallback: got empty data");
+			#endif
+			
+			memset(args.output, 0, size);
+		}
+	}
 }
 
 
 
 
+
+NAMESPACE_ECS_END
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+namespace Portaudio {bool IsPortaudioUninitialized() {return Ecs::__is_portaudio_uninit;}}
+
 NAMESPACE_TOPSIDE_END
+

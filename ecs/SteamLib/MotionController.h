@@ -13,7 +13,7 @@ typedef enum {
 class MotionControllerComponent :
 	public Component<MotionControllerComponent>
 {
-	VIS_COMP_0_0
+	
 	
 public:
 	

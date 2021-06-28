@@ -1,36 +1,40 @@
-#include "ECS_Debug.h"
+#include "MP3Player.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
-
-
-void DebugGenerator::OnError() {
-	base->GetEntity()->GetMachine().SetNotRunning();
-}
-
-void DebugGenerator::Initialize() {
-	EntityRef e = base->GetEntity();
-	gen     = e->Find<DebugAudioGeneratorExt>();
-	audio   = e->Find<DebugAudioSinkComponent>();
-	
-    //e->FindConnector<ConnectAllCenterInterfaces>()->LinkAll();
-}
-
-void DebugGenerator::Uninitialize() {
-	gen.Clear();
-	audio.Clear();
-	base->GetEntity()->Destroy();
-}
+bool run_sound_gen;
 
 
 
-
-bool SimpleDebugInitializer() {
+bool MP3PlayerInitializer() {
 	SetCoutLog();
 	
-	return true;
+	CommandLineArguments cmd;
+	cmd.AddArg('g', "Test sound generator", false);
+	cmd.AddArg('f', "The path for the music file", true, "path");
+	if (!cmd.Parse()) {
+		cmd.PrintHelp();
+		return false;
+	}
+	
+	const auto& inputs = cmd.GetInputs();
+	for(const auto& in : inputs) {
+		if (in.key == 'f') file_path = in.value;
+		if (in.key == 'g') run_sound_gen = true;
+	}
+	if (file_path.IsEmpty() && !run_sound_gen) {
+		cmd.PrintHelp();
+		return false;
+	}
+	
+	return run_sound_gen || FileExists(file_path);
 }
+
+
+
+
+
 
 
 
@@ -51,24 +55,51 @@ You'll see something like this in log
 Take any address and put to BreakRefAdd
 */
 
+const char* eon_gen_str = R"EON_CODE(
 
-const char* eon_str = R"EON_CODE(
+loop player.audio.generator: {
+	center.customer.mp3player: true;
+	center.audio.src.dbg_generator: true;
+	center.audio.sink.realtime: true;
+	center.audio.sink.hw: true;
+};
 
-player.audio.generator: {
-	center.audio.src: true;
-	center.audio.sink: true;
-}
+)EON_CODE";
+
+const char* eon_aud_str = R"EON_CODE(
+
+loop player.audio.ffmpeg: {
+	perma.audio.source.file.path: reg.app.arg.file;
+	center.audio.source.decoder: true;
+	center.audio.sink.hw: true;
+};
+
+)EON_CODE";
+
+const char* eon_vid_str = R"EON_CODE(
+
+loop player.media.ffmpeg: {
+	reg.appmode: "video";
+	perma.video.source.file.path: reg.app.arg.file;
+	center.video.source.decoder: true;
+	center.video.sink.hw: true;
+};
 
 )EON_CODE";
 
 void Main() {
 	SetCoutLog();
-	Ecs::Factory::Dump();
+	//Ecs::Factory::Dump();
 	
+	REG_EXT(AppCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	
+	#if HAVE_FFMPEG
+	REG_EXT(MP3Player,			INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
+	#endif
 	
 	//BreakRefAdd(0x7FFFFFFFE430);
 	
-	if (!SimpleDebugInitializer())
+	if (!MP3PlayerInitializer())
 		Exit(1);
 	
 	{
@@ -85,14 +116,14 @@ void Main() {
 				RegistrySystemRef reg		= mach.Add<RegistrySystem>();
 				EntityStoreRef es			= mach.Add<EntityStore>();
 				ComponentStoreRef compstore	= mach.Add<ComponentStore>();
-			    ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
-			    ExtSystemRef cust		= mach.Add<ExtSystem>();
+			    ExtSystemRef cust			= mach.Add<ExtSystem>();
 			    EonLoaderRef eon			= mach.Add<EonLoader>();
 			    
-			    mach.Add<ScopeValLibT<AudioSpec>::PacketTracker>();
-		    
+			    mach.Add<PacketTracker>();
+				
 				PoolRef root = es->GetRoot();
 				
+				String eon_str = eon_gen_str;
 				LOG(eon_str);
 		        eon->PostLoadString(eon_str);
 		    }
@@ -111,7 +142,7 @@ void Main() {
 			        
 			        Sleep(1);
 			        
-			        if (total.Seconds() > 3)
+			        if (run_sound_gen && total.Seconds() > 3)
 			            mach.SetNotRunning();
 			    }
 			    

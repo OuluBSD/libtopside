@@ -8,7 +8,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane> {
-	VIS_COMP_0_0
 	typedef StaticGroundPlane CLASSNAME;
 	
 	using Parent = Entity;

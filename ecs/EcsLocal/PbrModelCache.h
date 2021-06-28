@@ -7,7 +7,7 @@ struct Model;
 struct Resources;
 }
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 struct PbrRenderable;
@@ -44,7 +44,7 @@ private:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif
