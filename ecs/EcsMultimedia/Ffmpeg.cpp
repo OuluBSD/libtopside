@@ -13,7 +13,7 @@ FfmpegExt::FfmpegExt() {
 	def_cap_fps = 30;
 	
 	file_in.SetParent(this);
-	file_in.WhenStopped << TS::Proxy(WhenStopped);
+	file_in.WhenStopped << THISBACK(OnStop);
 }
 
 void FfmpegExt::SetError(String s) {
@@ -73,6 +73,7 @@ void FfmpegExt::OnError() {
 void FfmpegExt::OnStop() {
 	if (stops_machine)
 		GetParent()->GetEntity()->GetMachine().SetNotRunning();
+	WhenStopped();
 }
 
 bool FfmpegExt::LoadFileAny(String path) {

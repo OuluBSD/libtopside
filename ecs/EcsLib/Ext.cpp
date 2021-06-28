@@ -63,6 +63,9 @@ void ExtComponent::Uninitialize() {
 		
 		customer.Clear();
 	}
+	if (ext) {
+		ext->Uninitialize();
+	}
 }
 
 void ExtComponent::SetType(const TypeCompCls& cls) {

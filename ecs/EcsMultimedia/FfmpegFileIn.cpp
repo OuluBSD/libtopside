@@ -43,6 +43,8 @@ void FfmpegFileInput::Clear() {
 	path.Clear();
 	errstr.Clear();
 	
+	a.Clear();
+	v.Clear();
 }
 
 void FfmpegFileInput::ClearDevice() {
@@ -172,8 +174,8 @@ void FfmpegFileInput::FillAudioBuffer() {
 		else break;
 	}
 	
-	if (IsEof())
-		FillBuffersNull();
+	//if (IsEof())
+	//	FillBuffersNull();
 	
 	ClearPacketData();
 }
@@ -221,13 +223,12 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 	return false;
 }
 
-void FfmpegFileInput::FillBuffersNull() {
-	TODO
-	/*if (has_audio)
+/*void FfmpegFileInput::FillBuffersNull() {
+	if (has_audio)
 		aframe.FillBuffersNull();
 	if (has_video)
-		vframe.FillBuffersNull();*/
-}
+		vframe.FillBuffersNull();
+}*/
 
 void FfmpegFileInput::DropVideoFrames(int frames) {
 	TODO
@@ -333,6 +334,10 @@ void FfmpegFileChannel::Clear() {
 	if (codec_ctx)
 		avcodec_free_context(&codec_ctx);
 	codec_ctx = NULL;
+	
+	if (file_fmt_ctx)
+		avformat_close_input(&file_fmt_ctx);
+	file_fmt_ctx = NULL;
 	
 	stream_i = -1;
 	codec = NULL;
@@ -693,9 +698,9 @@ void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
 	}
 }
 
-void FfmpegVideoFrameQueue::FillBuffersNull() {
+/*void FfmpegVideoFrameQueue::FillBuffersNull() {
 	TODO
-}
+}*/
 
 void FfmpegVideoFrameQueue::Clear() {
 	VideoInputFrame::Clear();

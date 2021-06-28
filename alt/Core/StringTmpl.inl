@@ -147,15 +147,17 @@ TMPL_THIS Cat(const T* str, int str_count) {
 	if (!is_big) {
 		is_big = count + str_count >= buf_size;
 		if (!is_big) {
-			MemoryCopy(&buf[count], str, sizeof(T) * (str_count + 1));
+			MemoryCopy(&buf[count], str, sizeof(T) * str_count);
 			count += str_count;
+			buf[count] = 0;
 		}
 		else {
 			int alloc = count + str_count + 1;
 			T* buf = (T*)malloc(sizeof(T) * (alloc));
 			MemoryCopy(buf, this->buf, sizeof(T) * count);
-			MemoryCopy(&buf[count], str, sizeof(T) * (str_count + 1));
+			MemoryCopy(&buf[count], str, sizeof(T) * str_count);
 			count += str_count;
+			buf[count] = 0;
 			BIG = new String0T(buf, alloc);
 			is_big = true;
 		}
@@ -174,7 +176,7 @@ TMPL_THIS Cat(const T* str, int str_count) {
 			int alloc = count + str_count + 1;
 			T* buf = (T*)malloc(sizeof(T) * (alloc));
 			MemoryCopy(buf, BIG->Get(), sizeof(T) * count);
-			MemoryCopy(&buf[count], str, sizeof(T) * (str_count + 1));
+			MemoryCopy(&buf[count], str, sizeof(T) * str_count);
 			count += str_count;
 			buf[count] = 0;
 			BIG->Dec();

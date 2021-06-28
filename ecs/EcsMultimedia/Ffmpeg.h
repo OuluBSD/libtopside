@@ -26,7 +26,9 @@ class FfmpegExt :
 	int def_cap_fps;
 	bool stops_machine = false;
 	String file_path;
+	
 public:
+	typedef FfmpegExt CLASSNAME;
 	FfmpegExt();
 	
 	bool Initialize(const Eon::WorldState& ws) override;

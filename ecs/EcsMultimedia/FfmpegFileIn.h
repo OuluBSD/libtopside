@@ -75,7 +75,7 @@ public:
 	
 	void				Visit(RuntimeVisitor& vis) {}
 	void				Init(AVCodecContext& ctx);
-	void				FillBuffersNull();
+	//void				FillBuffersNull();
 	
 	void				Close() override;
 	void				Clear() override;
@@ -112,7 +112,7 @@ protected:
 	int DecodePacket(AVPacket& pkt, int *got_frame);
 	
 public:
-	
+	~FfmpegFileChannel() {Clear();}
 	bool IsOpen() const {return is_open;}
 	
 	void Clear();
@@ -156,12 +156,13 @@ class FfmpegFileInput :
 	bool ReadFrame();
 	bool ProcessVideoFrame();
 	bool ProcessAudioFrame();
-	void FillBuffersNull();
+	//void FillBuffersNull();
 	
 	
 public:
 	RTTI_DECL_R0(FfmpegFileInput)
 	FfmpegFileInput();
+	~FfmpegFileInput() {Clear();}
 	
 	bool						IsEof() const;
 	void						Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
