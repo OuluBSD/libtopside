@@ -7,8 +7,8 @@ NAMESPACE_ECS_BEGIN
 
 
 class MediaStreamThread : Moveable<MediaStreamThread> {
-	StreamRef acap;
-	StreamRef vcap;
+	AudioInputFrameRef acap;
+	VideoInputFrameRef vcap;
 	
 	RunningFlagSingle flag;
 	String last_error;
@@ -29,10 +29,10 @@ public:
 	void FillVideoBuffer();
 	void FillAudioBuffer();
 	
-	Stream& GetAudioStream() {ASSERT(acap); return *acap;}
-	Stream& GetVideoStream() {ASSERT(vcap); return *vcap;}
+	AudioInputFrame& GetAudio() {ASSERT(acap); return *acap;}
+	VideoInputFrame& GetVideo() {ASSERT(vcap); return *vcap;}
 	bool IsCap() const {return acap && vcap;}
-	void SetCap(AudioStreamRef acap, StreamRef vcap) {this->acap = acap; this->vcap = vcap;}
+	void SetCap(AudioInputFrameRef acap, VideoInputFrameRef vcap) {this->acap = acap; this->vcap = vcap;}
 	bool IsRunning() const {return flag.IsRunning();}
 	
 	String GetLastError() const {return last_error;}

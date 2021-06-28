@@ -6,9 +6,31 @@
 NAMESPACE_ECS_BEGIN
 
 
-FfmpegFileInput::FfmpegFileInput() :
-	astream(this)
+void FfmpegAudioFrameQueue::Close() {
+	GetParent()->AsRef<FfmpegFileInput>()->Close();
+}
+
+void FfmpegAudioFrameQueue::FillBuffer() {
+	GetParent()->AsRef<FfmpegFileInput>()->FillAudioBuffer();
+}
+
+void FfmpegVideoFrameQueue::Close() {
+	GetParent()->AsRef<FfmpegFileInput>()->Close();
+}
+
+void FfmpegVideoFrameQueue::FillBuffer() {
+	GetParent()->AsRef<FfmpegFileInput>()->FillVideoBuffer();
+}
+
+
+
+
+
+
+FfmpegFileInput::FfmpegFileInput()
 {
+	aframe.SetParent(this);
+	vframe.SetParent(this);
 	
 }
 
@@ -26,7 +48,7 @@ void FfmpegFileInput::Clear() {
 void FfmpegFileInput::ClearDevice() {
 	is_eof = true;
 	is_dev_open = 0;
-	aframe.ClearBuffer();
+	aframe.Clear();
 	vframe.Clear();
 	
 	ClearPacket();
@@ -59,6 +81,14 @@ void FfmpegFileInput::ClearPacket() {
 	}
 }
 
+void FfmpegFileInput::SetFormat(Format fmt) {
+	ASSERT(fmt.IsValid());
+	if (fmt.IsAudio()) {
+		aframe.fmt = fmt;
+	}
+	else TODO;
+}
+
 bool FfmpegFileInput::IsOpen() const {
 	return is_dev_open;
 }
@@ -85,10 +115,10 @@ bool FfmpegFileInput::OpenFile(String path) {
 	
 	// Find the first video stream
 	has_audio = a.OpenAudio(file_fmt_ctx, aframe.fmt);
-	has_video = v.OpenVideo(file_fmt_ctx, vframe.vid_fmt);
+	has_video = v.OpenVideo(file_fmt_ctx, vframe.fmt);
 	
 	if (has_audio) {
-		aframe.ClearBuffer();
+		aframe.Clear();
 	}
 	if (has_video) {
 		vframe.Init(*v.codec_ctx);
@@ -117,14 +147,6 @@ void FfmpegFileInput::Close() {
 	Clear();
 }
 
-AudioStream& FfmpegFileInput::GetAudioStream() {
-	return astream;
-}
-
-VideoStream& FfmpegFileInput::GetVideoStream() {
-	TODO
-}
-
 void FfmpegFileInput::FillVideoBuffer() {
 	while (!vframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
@@ -137,7 +159,7 @@ void FfmpegFileInput::FillVideoBuffer() {
 	}
 }
 
-/*void FfmpegFileInput::FillAudioBuffer() {
+void FfmpegFileInput::FillAudioBuffer() {
 	while (!aframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
@@ -154,7 +176,7 @@ void FfmpegFileInput::FillVideoBuffer() {
 		FillBuffersNull();
 	
 	ClearPacketData();
-}*/
+}
 
 bool FfmpegFileInput::ReadFrame() {
 	ClearPacketData();
@@ -215,13 +237,7 @@ void FfmpegFileInput::DropVideoFrames(int frames) {
 		vframe.DropFrames(frames);*/
 }
 
-Audio& FfmpegFileInput::GetAudio() {
-	return aframe;
-}
 
-Video& FfmpegFileInput::GetVideo() {
-	return vframe;
-}
 
 String FfmpegFileInput::GetLastError() const {
 	return errstr;
@@ -246,18 +262,11 @@ bool FfmpegFileInput::IsEof() const {
 
 
 
-bool FfmpegFileInput::LocalAudioStream::IsOpen() const {
-	return par.is_dev_open && par.has_audio;
+bool FfmpegFileInput::IsAudioOpen() const {
+	return is_dev_open && has_audio;
 }
 
-bool FfmpegFileInput::LocalAudioStream::Open(int fmt_idx) {
-	ASSERT(!fmt_idx);
-	if (par.is_dev_open)
-		return par.has_audio;
-	if (par.Open())
-		return par.has_audio;
-	return false;
-}
+
 
 
 
@@ -336,9 +345,16 @@ void FfmpegFileChannel::ClearDevice() {
 	frame_pos_time = 0;
 }
 
-bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fmt) {
+bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
+	if (!fmt.IsValid()) {
+		errstr = "invalid video format";
+		return false;
+	}
+	
+	VideoFormat& vfmt = fmt;
 	Clear();
 	fmt.Clear();
+	fmt.vd = VD(CENTER,VIDEO);
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
@@ -359,18 +375,18 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fm
 	double fps = (double)vstream->avg_frame_rate.num / (double)vstream->avg_frame_rate.den;
 	Size frame_sz(vcodec->width, vcodec->height);
 	
-	fmt.size = frame_sz;
-	fmt.SetFPS(fps);
+	vfmt.SetSize(frame_sz);
+	vfmt.SetFPS(fps);
 	
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
-	fmt.SetType(LightSampleFD::RGBA_U8_LE);
+	vfmt.SetType(LightSampleFD::RGBA_U8_LE);
 	#else
 	switch (vcodec->format) {
 	case AV_PIX_FMT_RGB24:
-		fmt.SetType(LightSampleFD::RGB_U8_LE);
+		vfmt.SetType(LightSampleFD::RGB_U8_LE);
 		break;
 	case AV_PIX_FMT_RGBA:
-		fmt.SetType(LightSampleFD::RGBA_U8_LE);
+		vfmt.SetType(LightSampleFD::RGBA_U8_LE);
 		break;
 	case AV_PIX_FMT_VAAPI:
 		errstr = "VAAPI support unimplemented";
@@ -381,16 +397,18 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fm
 	}
 	#endif
 	
-	fmt.SetLinePadding(0); // unknown at this point. Only AVFrame can tell
+	vfmt.SetLinePadding(0); // unknown at this point. Only AVFrame can tell
 	
 	is_open = true;
 	return true;
 }
 
-bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fmt) {
+bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
+	AudioFormat& afmt = fmt;
+	
 	Clear();
 	fmt.Clear();
-	
+	fmt.vd = VD(CENTER,AUDIO);
 	this->file_fmt_ctx = file_fmt_ctx;
 	
 	stream_i = -1;
@@ -407,15 +425,14 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fm
 	AVStream* astream = file_fmt_ctx->streams[stream_i];
 	AVCodecParameters* acodec = astream->codecpar;
 	
-	fmt.Clear();
-	fmt.channels = acodec->channels;
-	fmt.freq = acodec->sample_rate;
-	fmt.sample_rate = acodec->frame_size;
+	afmt.channels = acodec->channels;
+	afmt.freq = acodec->sample_rate;
+	afmt.sample_rate = acodec->frame_size;
 	
 	switch (acodec->format) {
 		#define SET_FMT(f, t) \
 		case f: \
-			fmt.SetType(SoundSample::t); \
+			afmt.SetType(SoundSample::t); \
 			break;
 			
 		#if CPU_LITTLE_ENDIAN
@@ -522,9 +539,12 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 
 void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
+	
 	// Sometimes you get the sample rate at this point
-	if (!fmt.sample_rate)
-		fmt.sample_rate = frame->nb_samples;
+	AudioFormat& afmt = fmt;
+	if (!afmt.sample_rate)
+		afmt.sample_rate = frame->nb_samples;
+	
 	//breaks in the end of file: ASSERT(fmt.sample_rate == frame->nb_samples);
 	ASSERT(fmt.IsValid());
 	int var_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
@@ -536,23 +556,22 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		frame->format == AV_SAMPLE_FMT_FLTP ||
 		frame->format == AV_SAMPLE_FMT_DBLP;
 	ASSERT(fmt.IsValid());
-	ASSERT(frame->sample_rate == fmt.freq);
-	ASSERT(frame->channels == fmt.channels);
-	ASSERT(var_size == fmt.GetSampleSize());
+	ASSERT(frame->sample_rate == afmt.freq);
+	ASSERT(frame->channels == afmt.channels);
+	ASSERT(var_size == afmt.GetSampleSize());
 	#endif
 	
 	int frame_sz = frame->nb_samples * frame->channels * var_size;
 	
 	// Non-planar data
-	TODO
-	/*if (frame->data[1] == 0) {
+	if (frame->data[1] == 0) {
 		if (frame->data[0]) {
 			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
 			auto& p = buf.Add();
-			p = CreateAudioPacket();
+			p = CreatePacket(offset);
 			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
-			off32 offset{frame_counter++};
-			p->Set(fmt, offset, time_pos);
+			p->Set(fmt, offset);
+			p->SetTime(time_pos);
 			Vector<byte>& data = p->Data();
 			data.SetCount(frame->linesize[0], 0);
 			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
@@ -563,10 +582,10 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		byte* srcn[AV_NUM_DATA_POINTERS];
 		memset(srcn, 0, sizeof(srcn));
 		auto& p = buf.Add();
-		p = CreateAudioPacket();
+		p = CreatePacket(offset);
 		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(frame_counter));
-		off32 offset{frame_counter++};
-		p->Set(fmt, offset, time_pos);
+		p->Set(fmt, offset);
+		p->SetTime(time_pos);
 		
 		if (0) {
 			LOG("frame-sz:     " << frame_sz);
@@ -591,9 +610,8 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 			}
 		}
 		ASSERT(dst == data.End());
-	}*/
+	}
 	
-	exchange_count = 0;
 }
 
 
@@ -652,9 +670,10 @@ bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 
 void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
 	Clear();
-	ASSERT(vid_fmt.IsValid());
+	ASSERT(fmt.IsValid());
 	
-	Size sz = vid_fmt.size;
+	VideoFormat& vfmt = fmt;
+	Size sz = vfmt.GetSize();
 	
 	img_convert_ctx =
 		sws_getContext(
@@ -666,7 +685,7 @@ void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
 
 void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
 	if (!video_dst_bufsize) {
-		Size sz = vid_fmt.size;
+		Size sz = vid_fmt.GetSize();
 		
 	    video_dst_bufsize =
 			av_image_alloc(	video_dst_data, video_dst_linesize,
@@ -679,6 +698,7 @@ void FfmpegVideoFrameQueue::FillBuffersNull() {
 }
 
 void FfmpegVideoFrameQueue::Clear() {
+	VideoInputFrame::Clear();
 	frames.Clear();
 	
 	if (img_convert_ctx) {
@@ -695,63 +715,49 @@ void FfmpegVideoFrameQueue::Frame::Clear() {
 	}
 }
 
-void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
+/*void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
 	if (e.IsLoading()) {
 		TODO
 	}
 	else {
 		Panic("Invalid VideoEx in FfmpegVideoFrameQueue");
 	}
-}
-
-int FfmpegVideoFrameQueue::GetQueueSize() const {
-	//return frames.GetCount() * vid_fmt.GetFrameBytes();
-	TODO
-}
-
-bool FfmpegVideoFrameQueue::IsQueueFull() const {
-	//return frames.GetCount() >= min_buf_size;
-	TODO
-}
-
-VideoFormat FfmpegVideoFrameQueue::GetFormat() const {
-	return vid_fmt;
-}
+}*/
 
 void FfmpegVideoFrameQueue::DropFrames(int i) {
 	frames.RemoveFirst(i);
 }
 
 void FfmpegVideoFrameQueue::Process(double time_pos, AVFrame* frame, bool vflip) {
-	ASSERT(vid_fmt.IsValid());
+	ASSERT(fmt.IsValid());
 	auto& f = frames.Add();
 	f.Create(pool);
-	f->Init(vid_fmt);
+	f->Init(fmt);
 	f->time_pos = time_pos;
-	f->Process(time_pos, frame, vflip, vid_fmt, img_convert_ctx);
+	f->Process(time_pos, frame, vflip, fmt, img_convert_ctx);
 }
 
 
 void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
 	TODO // Look FfmpegAudioFrameQueue::Process
-	
+	Size size = vid_fmt.GetSize();
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
 	if (vflip) {
 		for(int i = 0; i < 4; i++) {
 			video_dst_linesize_vflip[i] = -video_dst_linesize[i];
-			video_dst_data_vflip[i] = video_dst_data[i] + (vid_fmt.size.cy - 1) * video_dst_linesize[i];
+			video_dst_data_vflip[i] = video_dst_data[i] + (size.cy - 1) * video_dst_linesize[i];
 		}
 	    sws_scale(
 			img_convert_ctx,
 			frame->data, frame->linesize,
-			0, vid_fmt.size.cy,
+			0, size.cy,
 			video_dst_data_vflip, video_dst_linesize_vflip);
 	}
 	else {
 	    sws_scale(
 			img_convert_ctx,
 			frame->data, frame->linesize,
-			0, vid_fmt.size.cy,
+			0, size.cy,
 			video_dst_data, video_dst_linesize);
 	}
 	#else

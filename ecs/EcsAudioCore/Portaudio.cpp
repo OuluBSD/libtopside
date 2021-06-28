@@ -92,7 +92,7 @@ PortaudioOutExt::~PortaudioOutExt() {
 	obj.Clear();
 }
 
-void PortaudioOutExt::Initialize() {
+bool PortaudioOutExt::Initialize(const Eon::WorldState& ws) {
 	
 	//sys = GetMachine().TryGet<PortaudioSystem>();
 	//if (sys)
@@ -111,6 +111,7 @@ void PortaudioOutExt::Initialize() {
 	obj->Start();
 	
 	//AddToContext<CenterSpec>(AsRef<CenterSink>());
+	return true;
 }
 
 void PortaudioOutExt::Uninitialize() {

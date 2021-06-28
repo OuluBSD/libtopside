@@ -292,6 +292,8 @@ public:
 	
 };
 
+using StreamRef = Ref<Stream>;
+
 
 class SimpleValue :
 	public Value

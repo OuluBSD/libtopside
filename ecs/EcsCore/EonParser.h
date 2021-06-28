@@ -20,7 +20,7 @@ struct Value;
 struct Statement {
 	Id id;
 	One<Value> value;
-	
+	Array<Statement> args;
 	
 	void operator=(const Statement& v);
 	String GetTreeString(int indent=0) const;
@@ -82,6 +82,7 @@ struct Value {
 	void SetBool(bool b) {type = VAL_BOOLEAN; this->b = b;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
+	String GetValue() const;
 };
 
 struct CompilationUnit {
@@ -100,6 +101,7 @@ class Parser : public CParser {
 	
 	bool Parse(Eon::CompilationUnit&);
 	bool ParseStmt(Eon::Statement&);
+	bool ParseStmtArguments(Eon::Statement&);
 	bool ParseLoop(Eon::LoopDefinition&);
 	bool ParseSidechain(Eon::SidechainDefinition&, Eon::SidechainDefinition::Type);
 	bool ParseId(Eon::Id&);

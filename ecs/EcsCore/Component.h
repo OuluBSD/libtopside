@@ -3,8 +3,9 @@
 
 NAMESPACE_ECS_BEGIN
 
-
 class ComponentBase;
+namespace Eon {class WorldState;}
+
 
 
 class ComponentExtBase :
@@ -16,11 +17,12 @@ protected:
 public:
 	RTTI_DECL0(ComponentExtBase)
 	
-	virtual void Initialize() {}
+	virtual bool Initialize(const Eon::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void Forward(FwdScope& fwd) = 0;
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
+	virtual bool IsReady(ValDevCls vd) {return true;}
 	
 	Ref<ComponentExtBase> AsRefT() {return Ref<ComponentExtBase>(GetParent(), this);}
 	

@@ -8,9 +8,10 @@ NAMESPACE_ECS_BEGIN
 class FfmpegFileInput;
 
 class FfmpegAudioFrameQueue :
-	public AudioInputFrame,
-	public RefScopeEnabler<FfmpegAudioFrameQueue,FfmpegFileInput>
+	public AudioInputFrame
 {
+	off32_gen	gen;
+	off32		offset;
 	
 protected:
 	friend class FfmpegFileInput;
@@ -19,10 +20,15 @@ protected:
 	
 public:
 	using Parent = FfmpegFileInput;
-	RTTI_DECL_R1(FfmpegAudioFrameQueue, AudioInputFrame)
-	~FfmpegAudioFrameQueue() {ClearBuffer();}
+	RTTI_DECL1(FfmpegAudioFrameQueue, AudioInputFrame)
 	
-	void		FillAudioBuffer(double time_pos, AVFrame* frame);
+	FfmpegAudioFrameQueue() : offset(gen) {}
+	
+	void				FillAudioBuffer(double time_pos, AVFrame* frame);
+	void				Visit(RuntimeVisitor& vis) {}
+	
+	void				Close() override;
+	void				FillBuffer() override;
 	
 };
 
@@ -32,8 +38,7 @@ typedef Ref<FfmpegAudioFrameQueue> FfmpegAudioFrameQueueRef;
 
 #define FFMPEG_VIDEOFRAME_RGBA_CONVERSION 1
 class FfmpegVideoFrameQueue :
-	public VideoInputFrame,
-	public RefScopeEnabler<FfmpegVideoFrameQueue,FfmpegFileInput>
+	public VideoInputFrame
 {
 	struct Frame : Moveable<Frame> {
 		uint8_t *video_dst_data[4] = {0,0,0,0};
@@ -61,23 +66,20 @@ class FfmpegVideoFrameQueue :
 protected:
 	friend class FfmpegFileInput;
 	
-	VideoFormat vid_fmt;
+	Format fmt;
 	
 public:
-	RTTI_DECL_R1(FfmpegVideoFrameQueue, VideoInputFrame)
+	RTTI_DECL1(FfmpegVideoFrameQueue, VideoInputFrame)
 	using Parent = FfmpegFileInput;
 	~FfmpegVideoFrameQueue() {Clear();}
 	
-	void			Visit(RuntimeVisitor& vis) {}
-	void			Init(AVCodecContext& ctx);
-	void			Clear();
-	void			FillBuffersNull();
+	void				Visit(RuntimeVisitor& vis) {}
+	void				Init(AVCodecContext& ctx);
+	void				FillBuffersNull();
 	
-	void				Exchange(VideoEx& e) override;
-	int					GetQueueSize() const override;
-	bool				IsQueueFull() const override;
-	VideoFormat			GetFormat() const override;
-	VideoPacketBuffer&	GetBuffer() override {TODO}
+	void				Close() override;
+	void				Clear() override;
+	void				FillBuffer() override;
 	
 	void				Process(double time_pos, AVFrame* frame, bool vflip=true);
 	void				DropFrames(int i);
@@ -116,8 +118,8 @@ public:
 	void Clear();
 	void ClearDevice();
 	
-	bool OpenVideo(AVFormatContext* file_fmt_ctx, VideoFormat& fmt);
-	bool OpenAudio(AVFormatContext* file_fmt_ctx, AudioFormat& fmt);
+	bool OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt);
+	bool OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt);
 	bool OpenDevice();
 	
 	bool ReadFrame(AVPacket& pkt);
@@ -128,7 +130,7 @@ public:
 
 
 class FfmpegFileInput :
-	public RefScopeEnabler<FfmpegFileInput,ComponentBase>
+	public PacketBufferParent
 {
 	FfmpegAudioFrameQueue aframe;
 	FfmpegVideoFrameQueue vframe;
@@ -156,51 +158,29 @@ class FfmpegFileInput :
 	bool ProcessAudioFrame();
 	void FillBuffersNull();
 	
-	struct LocalAudioStream : public SimpleBufferedAudioStream {
-		RTTI_DECL1(LocalAudioStream, AudioStream)
-		FfmpegFileInput& par;
-		LocalAudioStream(FfmpegFileInput* par) :
-			par(*par),
-			SimpleBufferedAudioStream(par->aframe) {}
-		bool			IsOpen() const override;
-		bool			Open(int fmt_idx) override;
-		void			Close() override {par.Close();}
-		bool			IsEof() override {return par.IsEof();}
-		bool			ReadFrame() override {return par.ReadFrame();}
-		bool			ProcessFrame() override {return par.ProcessAudioFrame();}
-		bool			ProcessOtherFrame() override {return par.ProcessVideoFrame();}
-		void			ClearPacketData() override {par.ClearPacketData();}
-	};
-	LocalAudioStream astream;
 	
 public:
 	RTTI_DECL_R0(FfmpegFileInput)
 	FfmpegFileInput();
 	
-	void SetParent(RefParent1<ComponentBase> p) override {
-		RefScopeParent::SetParent(p);
-		astream.SetParent(p);
-	}
+	bool						IsEof() const;
+	void						Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
+	void						Clear();
+	double						GetSeconds() const;
+	bool						IsAudioOpen() const;
 	
-	bool	IsEof() const;
-	void	Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
-	void	Clear();
-	double	GetSeconds() const;
-	
-	
-	void	FillVideoBuffer();
-	void	FillAudioBuffer();
+	void						FillVideoBuffer();
+	void						FillAudioBuffer();
+	FfmpegAudioFrameQueue&		GetAudio() {return aframe;}
+	FfmpegVideoFrameQueue&		GetVideo() {return vframe;}
 	
 	bool						IsOpenAudio() const {return has_audio;}
 	bool						IsOpenVideo() const {return has_video;}
 	bool						IsOpen() const;
 	bool						Open();
 	void						Close();
-	Audio&						GetAudio();
-	Video&						GetVideo();
-	AudioStream&				GetAudioStream();
-	VideoStream&				GetVideoStream();
 	bool						OpenFile(String path);
+	void						SetFormat(Format fmt);
 	
 	String	GetLastError() const;
 	

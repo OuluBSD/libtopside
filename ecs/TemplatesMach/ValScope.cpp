@@ -6,7 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 void AudioFormat::Set(SoundSample::Type type, int channels, int freq, int sample_rate) {
 	SampleBase<SoundSample>::SetType(type);
-	DimBase<1>::SetDim(2);
+	DimBase<1>::SetSize(2);
 	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
 }
 
@@ -32,11 +32,38 @@ bool AudioFormat::IsSame(const AudioFormat& b) const {
 
 
 
-#define PROXY(x,y) if (IsAudio()) return aud.x(y); PANIC("Invalid type");
+
+
+
+
+
+
+int VideoFormat::GetFrameSize() const {
+	TODO
+}
+
+String VideoFormat::ToString() const {
+	TODO
+}
+
+bool VideoFormat::IsValid() const {
+	TODO
+}
+
+bool VideoFormat::IsSame(const VideoFormat& fmt) const {
+	TODO
+}
+
+
+#define PROXY(x,y) \
+	if (IsAudio()) return aud.x(y); \
+	if (IsVideo()) return vid.x(y); \
+	PANIC("Invalid type");
 #define PROXY_CHK(x,y) ASSERT(IsValid()) PROXY(x,y)
 
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
+	if (IsVideo()) return "VideoFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
 	if (vd.val.type == ValCls::ORDER) return "OrderFormat";
 	if (vd.val.type == ValCls::RECEIPT) return "ReceiptFormat";
 	return "Invalid Format";
@@ -190,6 +217,15 @@ bool PacketValue::PaintOpenGLTexture(int texture) {
 
 
 
+void PacketBufferBase::StorePacket(Packet& p) {
+	if (buf.GetCount()) {
+		Packet n = buf.First();
+		buf.RemoveFirst();
+		
+		n->SetOffset(p->GetOffset());
+		p = n;
+	}
+}
 
 
 

@@ -9,10 +9,11 @@ DebugAudioGeneratorExt::DebugAudioGeneratorExt() {
 	
 }
 
-void DebugAudioGeneratorExt::Initialize() {
+bool DebugAudioGeneratorExt::Initialize(const Eon::WorldState& ws) {
 	ExtComponent& ext = GetParent();
 	Value& src_val = ext.GetSourceValue();
 	src_val.SetFormat(fmt);
+	return true;
 }
 
 void DebugAudioGeneratorExt::Uninitialize() {

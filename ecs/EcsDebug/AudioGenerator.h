@@ -94,7 +94,7 @@ class DebugAudioGeneratorExt :
 public:
 	DebugAudioGeneratorExt();
 	
-	void Initialize() override;
+	bool Initialize(const Eon::WorldState& ws) override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;

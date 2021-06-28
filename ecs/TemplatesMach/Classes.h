@@ -519,13 +519,16 @@ public:
 	
 	using DimArg = int;
 	
-	void SetDim(DimArg a) {res[0] = a;}
+	void SetSize(DimArg a) {res[0] = a;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
+	
 	String ToString() const {return "len(" + IntStr(channels) + ")";}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0];}
 	int GetArea() const {return res[0];}
 	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	int GetSize() const {return res[0];}
+	
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 };
 
@@ -536,7 +539,6 @@ template<> struct DimBase<2> {
 	static const int n = 2;
 	union {
 		int res[2];
-		Size size;
 		union {
 			int channels;
 			int sources;
@@ -551,21 +553,23 @@ template<> struct DimBase<2> {
 	using DimArg = Size;
 	
 	
-	void SetDim(DimArg a) {size = a;}
+	void SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {
 		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
 	}
-	String ToString() const {return size.ToString();}
-	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
-	int GetArea() const {return res[0] * res[1];}
-	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
 	DimBase& operator=(const DimBase& b) {
 		for(int i = 0; i < n; i++) res[i] = b.res[i];
 		width_pad = b.width_pad;
 		return *this;
 	}
+	
+	String ToString() const {return Size(res[0], res[1]).ToString();}
+	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
+	int GetArea() const {return res[0] * res[1];}
+	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	Size GetSize() const {return Size(res[0], res[1]);}
 	
 	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); width_pad = bytes;}
 	
@@ -575,7 +579,6 @@ template<> struct DimBase<3> {
 	static const int n = 3;
 	union {
 		int res[3];
-		Size3 size;
 		union {
 			int channels;
 			int sources;
@@ -593,14 +596,17 @@ template<> struct DimBase<3> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	
-	void SetDim(DimArg a) {size = a;}
+	void SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy; res[2] = a.cz;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
-	String ToString() const {return size.ToString();}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
+	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
+	
+	String ToString() const {return Size3(res[0], res[1], res[2]).ToString();}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
 	int GetArea() const {return res[0] * res[1] * res[2];}
 	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
-	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
+	Size3 GetSize() const {return Size3(res[0], res[1], res[2]);}
+	
 };
 
 
@@ -771,7 +777,7 @@ public:
 		void Set(TypeCls dev_spec, SampleType type, DimArg dim_, int freq=0, int sample_rate=0) { \
 			DevBase::SetDevSpec(dev_spec); \
 			SampleBase<T>::SetType(type); \
-			DimBase<dim>::SetDim(dim_); \
+			DimBase<dim>::SetSize(dim_); \
 			if (freq || sample_rate) \
 				post##Base::SetTimeSeries(freq, sample_rate); \
 		} \
@@ -817,9 +823,9 @@ public:
 	COMBINE_CLASS_3(x, FD)
 
 
-COMBINE_CLASS_TDFD(Once)
+/*COMBINE_CLASS_TDFD(Once)
 COMBINE_CLASS_TDFD(TimeSeries)
-COMBINE_CLASS_TDFD(SparseTimeSeries)
+COMBINE_CLASS_TDFD(SparseTimeSeries)*/
 
 
 #undef COMBINE_CLASS
@@ -876,7 +882,7 @@ public:
 
 
 
-template <class T>
+/*template <class T>
 class TD1OnceMulti4 : RTTIBase {
 	RTTI_DECL0(TD1OnceMulti4);
 	
@@ -907,9 +913,9 @@ public:
 	
 	String ToString() const {return "[" + o0.ToString() + ", " + o1.ToString() + ", " + o2.ToString() + ", " + o3.ToString() + "]";}
 	
-};
+};*/
 
-template <class T>
+/*template <class T>
 class AVTimeSeries : RTTIBase {
 	RTTI_DECL0(AVTimeSeries);
 	
@@ -922,7 +928,7 @@ class AVTimeSeries : RTTIBase {
 public:
 	static const int def_sample_rate = 1;
 	
-};
+};*/
 
 
 

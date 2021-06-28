@@ -6,48 +6,51 @@
 NAMESPACE_ECS_BEGIN
 
 
-class FfmpegComponent :
-	public Component<FfmpegComponent>,
-	public AudioSource,
-	public VideoSource
+class FfmpegExt :
+	public ComponentExtBase
 {
-	FfmpegFileInput file_in;
+	typedef enum {
+		INVALID_MODE,
+		AUDIO_ONLY,
+		VIDEO_ONLY,
+		AUDIOVIDEO,
+	} Mode;
+	
+	FfmpegFileInput		file_in;
+	Mode				mode = INVALID_MODE;
 	
 	String last_error;
 	MediaStreamThread vi;
-	VideoProxy video_buf;
+	//VideoProxy video_buf;
 	Size def_cap_sz;
 	int def_cap_fps;
-	
+	bool stops_machine = false;
+	String file_path;
 public:
-	RTTI_COMP2(FfmpegComponent, AudioSource, VideoSource)
-	COPY_PANIC(FfmpegComponent);
-	IFACE_GENERIC;
-	VIS_COMP_2_0(Audio, Video)
+	FfmpegExt();
+	
+	bool Initialize(const Eon::WorldState& ws) override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
+	bool IsReady(ValDevCls vd) override;
+	
+	bool LoadFileAny(String path);
+	void OnError();
+	void OnStop();
+	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.source.decoder")
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.video.source.decoder")
+	if (vd.val.type == ValCls::AUDIO) {
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("perma.audio.source.decoder")
+	}
+	else if (vd.val.type == ValCls::VIDEO) {
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("perma.video.source.decoder")
+	}
 	COMP_MAKE_ACTION_END
 	
-	FfmpegComponent();
 	
-	void Initialize() override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis % file_in;}
-	
-	// Audio
-	AudioStream&	GetStream(AudCtx) override;
-	void			BeginStream(AudCtx) override;
-	void			EndStream(AudCtx) override;
-	
-	// Video
-	VideoStream&	GetStream(VidCtx) override;
-	void			BeginStream(VidCtx) override;
-	void			EndStream(VidCtx) override;
-	
-	bool			LoadFileAny(String path);
-	
-	
+	void SetError(String s);
 	String GetLastError() const {return last_error;}
 	
 	MediaStreamThread& GetInput() {return vi;}

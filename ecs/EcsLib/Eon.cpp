@@ -74,11 +74,11 @@ bool TestParseEonCode(String content) {
 }
 
 bool EonLoader::Load(String content, String filepath) {
-	DLOG("EonLoader::Load: Loading \"" << filepath << "\"");
+	RTLOG("EonLoader::Load: Loading \"" << filepath << "\"");
 	
 	Eon::Parser p;
 	if (!p.Parse(content, filepath)) {
-		LOG(GetLineNumStr(content, 1));
+		RTLOG(GetLineNumStr(content, 1));
 		return false;
 	}
 	p.Dump();
@@ -232,8 +232,8 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 	
 	int plan_i = 0;
 	for (Eon::ActionNode* n : ep.plan) {
-		LOG("Loading plan node " << plan_i);
-		const Eon::WorldState& ws = n->GetWorldState();
+		RTLOG("Loading plan node " << plan_i);
+		Eon::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
 			bool is_last = plan_i == ep.plan.GetCount()-1;
 			TypeCompCls comp = ws.GetComponent();
@@ -258,7 +258,7 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 			ASSERT(cb);
 			if (!cb) {
 				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
-				AddError("Could not find component '" + comp_name + "' at '" + def.id.ToString() + "'");
+				AddError("Could not fwsind component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			{
@@ -270,12 +270,34 @@ bool EonLoader::LoadLoopDefinition(Eon::LoopDefinition& def) {
 					return false;
 				}
 			}
+			
+			// Add arguments to ws
+			for(int i = 0; i < ws.values.GetCount(); i++) {
+				String key = planner.atoms.GetKey(i);
+				for (const Eon::Statement& stmt : def.stmts) {
+					String stmt_key = stmt.id.ToString();
+					if (stmt_key == key) {
+						//LOG(i << " " << key << " " << stmt_key);
+						for (const Eon::Statement& arg : stmt.args) {
+							//LOG("\t" << arg.id.ToString());
+							if (arg.value) {
+								String k = arg.id.ToString();
+								String v = arg.value->GetValue();
+								ws.Set("." + k, v);
+								//LOG("EonLoader::LoadLoopDefinition: add argument: " << k << " = " << v);
+							}
+						}
+					}
+				}
+			}
+			
+			
 			ComponentExtBaseRef eb = cb->SetExtensionTypeCls(ext);
 			ASSERT(eb);
-			if (!eb) {
+			if (!eb || !eb->Initialize(ws)) {
 				const auto& c = Ecs::Factory::CompDataMap().Get(comp);
 				const auto& e = c.ext.Get(ext);
-				AddError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
+				AddError("Could not " + String(!eb ? "create" : "initialize") + " extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 		}

@@ -3,6 +3,7 @@
 
 #include <CompleteDebug/CompleteDebug.h>
 #include <EcsAudioCore/EcsAudioCore.h>
+#include <EcsMultimedia/EcsMultimedia.h>
 using namespace TS;
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -32,33 +33,6 @@ public:
 
 
 
-#if HAVE_FFMPEG
-class MP3Player :
-	public AudioInputExt
-{
-	
-public:
-	typedef MP3Player CLASSNAME;
-	MP3Player() {}
-	void OnError();
-	void OnStop();
-	void Initialize() override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
-	void Forward(FwdScope& fwd) override;
-	void StorePacket(Packet& p) override;
-	
-	COPY_PANIC(MP3Player);
-	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.mp3player")
-	COMP_MAKE_ACTION_END
-	
-	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_AUDIO_IN;}
-	
-};
-#endif
 
 
 NAMESPACE_TOPSIDE_END

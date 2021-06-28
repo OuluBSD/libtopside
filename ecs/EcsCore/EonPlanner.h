@@ -2,6 +2,9 @@
 #define _EcsLib_EonPlanner_h_
 
 NAMESPACE_ECS_BEGIN
+
+class EonLoader;
+
 namespace Eon {
 
 class ActionPlanner;
@@ -20,6 +23,7 @@ protected:
 	friend class ActionPlanner;
 	friend class ActionPlannerWrapper;
 	friend class ActionNode;
+	friend class ::TS::Ecs::EonLoader;
 	
 	Vector<String>		values;
 	Vector<bool>		using_act;
@@ -37,6 +41,7 @@ public:
 	bool Set(int index, bool value);
 	bool Set(int index, String value);
 	bool Set(const String& key, bool value);
+	bool Set(const String& key, String value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
 	void SetAs_AddExtension(TypeCompCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
@@ -138,6 +143,7 @@ class ActionPlanner {
 protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
+	friend class ::TS::Ecs::EonLoader;
 	
 	struct Atom : Moveable<Atom> {
 		Vector<String> id;

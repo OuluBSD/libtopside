@@ -2,10 +2,10 @@ description "Audio player using the ECS library. Plays mp3:s and many other audi
 
 uses
 	CompleteDebug,
-	EcsAudioCore;
+	EcsAudioCore,
+	EcsMultimedia;
 
 file
-	main.cpp,
 	MP3Player.h,
 	MP3Player.cpp;
 

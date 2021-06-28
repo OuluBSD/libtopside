@@ -187,8 +187,11 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 	else TODO
 	
 	RTLOG("ExtComponent::ForwardInput: pre sink=" << sink_buf->GetCount() << ", src=" << val.GetBuffer().GetCount());
+	Format fmt = GetSourceValue().GetFormat();
 	
 	while (sink_buf->GetCount() && !val.IsQueueFull()) {
+		if (ext && !ext->IsReady(fmt.vd))
+			break;
 		Packet in = sink_buf->First();
 		sink_buf->RemoveFirst();
 		
@@ -214,7 +217,6 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 		else {
 			WhenEnterCreatedEmptyPacket(to);
 			
-			Format fmt = GetDefaultFormat(type.src);
 			RTLOG("ExtComponent::ForwardInput: sending packet in format: " << fmt.ToString());
 			to->SetFormat(fmt);
 			
@@ -332,7 +334,7 @@ bool ExtComponent::SetExtension(ComponentExtBase* c) {
 	ext.Clear();
 	ext = c;
 	c->SetParent(this);
-	c->Initialize();
+	// c->Initialize(); // not here, requires world-state
 	return true;
 }
 

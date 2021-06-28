@@ -4,12 +4,15 @@
 NAMESPACE_ECS_BEGIN
 
 
-class AudioFrame : public SimpleBufferedValue {
+class AudioFrame : public PacketBufferBase {
 	
 	
 public:
-	RTTI_DECL1(AudioFrame, SimpleBufferedValue)
+	RTTI_DECL1(AudioFrame, PacketBufferBase)
 	virtual ~AudioFrame() {}
+	
+	
+	Format fmt;
 	
 };
 
@@ -23,8 +26,10 @@ protected:
 public:
 	RTTI_DECL1(AudioInputFrame, AudioFrame)
 	
+	
 };
 
+using AudioInputFrameRef = Ref<AudioInputFrame>;
 
 NAMESPACE_ECS_END
 

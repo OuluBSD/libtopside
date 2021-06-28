@@ -89,6 +89,11 @@ bool WorldState::Set(const String& key, bool value) {
 	return Set(idx, value);
 }
 
+bool WorldState::Set(const String& key, String value) {
+	int idx = ap->GetAddAtom(key);
+	return Set(idx, value);
+}
+
 bool WorldState::IsTrue(const String& key) const {
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())

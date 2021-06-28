@@ -35,11 +35,24 @@ struct AudioFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
-struct VideoFormat {
+struct VideoFormat :
+	public SampleBase<LightSampleFD>,
+	public DimBase<2>,
+	public TimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<LightSampleFD>) +
+		sizeof(DimBase<2>) +
+		sizeof(TimeSeriesBase);
+	
+	int GetFrameSize() const;
+	int GetMinBufSamples() const {return 2;}
+	String ToString() const;
+	bool IsValid() const;
+	bool IsSame(const VideoFormat& fmt) const;
 	
 	
-	
-	byte pad[STD_FMT_SIZE - 0];
+	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
 struct DataFormat {
@@ -91,6 +104,7 @@ public:
 	int GetMinBufSamples() const;
 	
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
+	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
@@ -107,6 +121,8 @@ public:
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
+	operator const VideoFormat&() const {ASSERT(IsVideo()); return vid;}
+	operator       VideoFormat&()       {ASSERT(IsVideo()); return vid;}
 	
 	
 };
@@ -142,6 +158,7 @@ public:
 	void					SetTime(double seconds) {time = seconds;}
 	void					SetTrackingId(PacketId i) {id = i;}
 	void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = 0;}
+	void					SetOffset(off32 o) {offset = o;}
 	
 	const Vector<byte>&		GetData() const {return data;}
 	Format					GetFormat() const {return fmt;}
@@ -218,7 +235,45 @@ struct ValStreamState : RTTIBase {
 };
 
 
+class ComponentExtBase;
 
+class PacketBufferParent :
+	public RefScopeEnabler<PacketBufferParent, ComponentExtBase>,
+	RTTIBase
+{
+public:
+	RTTI_DECL0(PacketBufferParent)
+	
+};
+
+
+struct PacketBufferBase :
+	public RefScopeEnabler<PacketBufferBase, PacketBufferParent>,
+	RTTIBase
+{
+public:
+	RTTI_DECL0(PacketBufferBase)
+	
+	PacketBuffer buf;
+	int max_packets = 2;
+	
+	virtual void FillBuffer() = 0;
+	virtual void Close() = 0;
+	virtual void Clear() {buf.Clear();}
+	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
+	void StorePacket(Packet& p);
+	
+};
+
+struct PacketBufferBasePtr :
+	RTTIBase
+{
+	Ref<PacketBufferBase> base;
+	
+	RTTI_DECL0(PacketBufferBasePtr)
+	
+	
+};
 
 
 NAMESPACE_ECS_END

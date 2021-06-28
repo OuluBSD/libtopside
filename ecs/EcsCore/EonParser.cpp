@@ -43,6 +43,8 @@ String Statement::GetTreeString(int indent) const {
 		s << ": <no value>";
 	else
 		s << ":\n" << value->GetTreeString(indent+1);
+	for (Statement& arg : args)
+		s << arg.GetTreeString(indent+1);
 	return s;
 }
 
@@ -90,6 +92,23 @@ String Value::ToString() const {
 		return id.ToString();
 	}
 	else s << "<internal error>";
+	return s;
+}
+
+String Value::GetValue() const {
+	String s;
+	if (type == VAL_CUSTOMER) {
+		return customer.ToString();
+	}
+	else if (type == VAL_STRING) {
+		s << str;
+	}
+	else if (type == VAL_BOOLEAN) {
+		s << (b ? "true" : "false");
+	}
+	else if (type == VAL_ID) {
+		return id.ToString();
+	}
 	return s;
 }
 
@@ -152,8 +171,8 @@ String CompilationUnit::GetTreeString(int indent) const {
 
 
 
-#define PASS_ID(x) if (!Id(x)) {String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
-#define PASS_CHAR(x) if (!Char(x)) {String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
+#define PASS_ID(x) if (!Id(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
+#define PASS_CHAR(x) if (!Char(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 
 bool Parser::Parse(String content, String filepath) {
 	Set(content, filepath);
@@ -165,7 +184,8 @@ bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	
 	cunit.main.id.Set("main");
 	cunit.main.type = SidechainDefinition::CENTER;
-	SidechainStmtList(cunit.main);
+	if (!SidechainStmtList(cunit.main))
+		return false;
 	
 	return true;
 }
@@ -273,7 +293,27 @@ bool Parser::ParseStmt(Eon::Statement& stmt) {
 	if (!ParseValue(*stmt.value))
 		return false;
 	
+	if (IsChar('{')) {
+		if (!ParseStmtArguments(stmt))
+			return false;
+	}
+	
 	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseStmtArguments(Eon::Statement& stmt) {
+	PASS_CHAR('{')
+	
+	while (!IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		if (!ParseStmt(stmt.args.Add()))
+			return false;
+	}
+	
+	PASS_CHAR('}')
 	return true;
 }
 

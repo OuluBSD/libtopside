@@ -5,31 +5,35 @@ NAMESPACE_ECS_BEGIN
 
 
 
-class VideoInputFrame : public Value {
+class VideoInputFrame : public PacketBufferBase {
+	
+protected:
+	friend class V4L2_DeviceManager;
+	
+public:
+	RTTI_DECL1(VideoInputFrame, PacketBufferBase)
+	
+	
+	Format fmt;
+	
+};
+
+using VideoInputFrameRef = Ref<VideoInputFrame>;
+
+
+class VideoOutputFrame : public PacketBufferBase {
 	
 protected:
 	friend class V4L2_DeviceManager;
 	
 	
 public:
-	RTTI_DECL1(VideoInputFrame, Value)
+	RTTI_DECL1(VideoOutputFrame, PacketBufferBase)
 	
 };
 
-
-class VideoOutputFrame : public Value {
-	
-protected:
-	friend class V4L2_DeviceManager;
-	
-	
-public:
-	RTTI_DECL1(VideoOutputFrame, Value)
-	
-};
-
-struct DataPtrVideoBuffer : public Value {
-	RTTI_DECL1(DataPtrVideoBuffer, Value)
+struct DataPtrVideoBuffer : public PacketBufferBasePtr {
+	RTTI_DECL1(DataPtrVideoBuffer, PacketBufferBasePtr)
 	
 	
 	void* data = 0;
@@ -42,11 +46,6 @@ struct DataPtrVideoBuffer : public Value {
 	};
 	
 	void SetOpenCVFormat(Format fmt) {this->fmt = fmt; type = OPENCV;}
-	
-	void Exchange(Ex& e) override {}
-	int GetQueueSize() const override {return 1;}
-	Format GetFormat() const override {return fmt;}
-	bool IsQueueFull() const override {return false;}
 	
 };
 

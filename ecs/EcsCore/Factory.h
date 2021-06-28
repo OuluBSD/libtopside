@@ -125,7 +125,7 @@ public:
 };
 
 #define REG_EXT(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v) {\
-	TypeExtCls c; \
+	Ecs::TypeExtCls c; \
 	c.sink.dev = Ecs::DevCls::sink_d; \
 	c.sink.val = Ecs::ValCls::sink_v; \
 	c.side.dev = Ecs::DevCls::side_d; \
