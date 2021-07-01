@@ -42,8 +42,8 @@ Take any address and put to BreakRefAdd
 const char* center_str = R"EON_CODE(
 
 loop tester.generator: {
-	customer.id.ABCD: true;
-	customer.id.EFGH: true;
+	customer.single: true;
+	class.test_rt_src: true;
 	center.audio.src: true;
 	center.audio.sink: true;
 	center.audio.sink.realtime: true;
@@ -66,26 +66,24 @@ const char* perma_str = R"EON_CODE(
 
 sidechain tester: {
 	
-	loop generator: {
-		center.audio.generator: true;
-		center.perma.audio.side.out: true;
-		
-		return has.generator: true;
+	loop input: {
+		customer.input: true;
+		class.test_rt_src: true;
+		center.audio.src: true;
+		center.audio.side.out.center: true;
+		return has.input: true;
 	};
 	
-	loop writer: {
-		has.generator: true;
-		
-		perma.center.audio.side.in: true;
-		perma.audio.sink.realtime: true;
-		
-		return has.writer: true;
+	loop output: {
+		customer.output: true;
+		center.audio.side.in.center: true;
+		center.audio.sink.realtime: true;
+		return has.output: true;
 	};
 	
 };
 
 )EON_CODE";
-
 
 /*
  1:
@@ -209,6 +207,8 @@ void Main() {
 	TypeExtCls t;
 	
 	REG_EXT(TestCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestInputCustomer,	CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestOutputCustomer,	CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
 	REG_EXT(TestRealtimeSrc,	INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
 	REG_EXT(TestRealtimeSink,	OUTPUT,		CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
 	
@@ -260,7 +260,7 @@ void Main() {
 			PoolRef root = es->GetRoot();
 			
 			String eon_code;
-			int test_i = 0;
+			int test_i = 1;
 			if      (test_i == 0)	eon_code = center_str;
 			else if (test_i == 1)	eon_code = perma_str;
 			else if (test_i == 2)	eon_code = accel_str;
@@ -316,9 +316,10 @@ void Main() {
 
 
 
-void TestRealtimeSrc::Initialize()  {
+bool TestRealtimeSrc::Initialize(const Eon::WorldState& ws)  {
 	internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
 	time = 0;
+	return true;
 }
 
 void TestRealtimeSrc::Uninitialize()  {
@@ -351,10 +352,11 @@ void TestRealtimeSrc::StorePacket(Packet& p) {
 
 
 
-void TestRealtimeSink::Initialize() {
+bool TestRealtimeSink::Initialize(const Eon::WorldState& ws) {
 	
 	flag.Start(1);
 	Thread::Start(THISBACK(IntervalSinkProcess));
+	return true;
 }
 
 void TestRealtimeSink::Uninitialize() {

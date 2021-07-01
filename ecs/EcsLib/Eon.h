@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
-
+class EonLoader;
 
 
 
@@ -18,6 +18,7 @@ NAMESPACE_ECS_BEGIN
 class EonScope {
 protected:
 	friend class EonLoader;
+	friend class EonLoopLoader;
 	
 	Eon::WorldState current_state;
 	Eon::SidechainDefinition* def = 0;
@@ -32,19 +33,53 @@ public:
 
 
 
+class EonLoopLoader {
+	
+protected:
+	friend class EonLoader;
+	
+	EonLoader& loader;
+	Eon::LoopDefinition& def;
+	
+	Eon::ActionPlanner planner;
+	AStar<Eon::ActionNode> as;
+	Eon::Plan ep;
+	bool failed = false;
+	
+public:
+	EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def) : loader(*loader), def(def) {}
+	
+	
+	bool Parse();
+	bool Forward();
+	bool Load();
+	bool IsFailed() const {return failed;}
+	
+	void AddError(String msg);
+	
+	
+};
+
+
 
 bool TestParseEonCode(String code);
 
 class EonLoader :
 	public System<EonLoader>
 {
+protected:
+	friend class EonLoopLoader;
+	
 	LinkedList<EonScope> scopes;
+	Array<EonLoopLoader> loops;
 	
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
 	Eon::CompilationUnit root;
 	EntityStoreRef es;
 	
+	
+	void AddError(String msg);
 	
 public:
 	SYS_RTTI(EonLoader)
@@ -70,10 +105,9 @@ protected:
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
 	bool LoadSidechainDefinition(Eon::SidechainDefinition& def);
-	bool LoadLoopDefinition(Eon::LoopDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
+	bool SolveLoops(Eon::SidechainDefinition& def);
 	
-	void AddError(String msg);
 	
 	
 	

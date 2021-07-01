@@ -4,6 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 class EonLoader;
+class EonLoopLoader;
 
 namespace Eon {
 
@@ -24,6 +25,7 @@ protected:
 	friend class ActionPlannerWrapper;
 	friend class ActionNode;
 	friend class ::TS::Ecs::EonLoader;
+	friend class ::TS::Ecs::EonLoopLoader;
 	
 	Vector<String>		values;
 	Vector<bool>		using_act;
@@ -144,6 +146,7 @@ protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
 	friend class ::TS::Ecs::EonLoader;
+	friend class ::TS::Ecs::EonLoopLoader;
 	
 	struct Atom : Moveable<Atom> {
 		Vector<String> id;

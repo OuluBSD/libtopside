@@ -18,11 +18,51 @@ public:
 	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.id.ABCD")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.single")
 	COMP_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER;}
+	
+};
+
+
+class TestInputCustomer :
+	public CustomerExt
+{
+	
+public:
+	RTTI_DECL1(TestInputCustomer, CustomerExt)
+	
+	void Visit(RuntimeVisitor& vis) override {}
+	void Forward(FwdScope& fwd) override {LOG("TestInputCustomer::Forward");}
+	
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.input")
+	COMP_MAKE_ACTION_END
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER_INPUT;}
+	
+};
+
+
+class TestOutputCustomer :
+	public CustomerExt
+{
+	
+public:
+	RTTI_DECL1(TestOutputCustomer, CustomerExt)
+	
+	void Visit(RuntimeVisitor& vis) override {}
+	void Forward(FwdScope& fwd) override {LOG("TestOutputCustomer::Forward");}
+	
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.output")
+	COMP_MAKE_ACTION_END
+	
+	
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER_OUTPUT;}
 	
 };
 
@@ -36,14 +76,14 @@ class TestRealtimeSrc :
 	
 public:
 	
-	void Initialize() override;
+	bool Initialize(const Eon::WorldState& ws) override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.id.EFGH")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("class.test_rt_src")
 	COMP_MAKE_ACTION_END
 	
 	
@@ -62,7 +102,7 @@ public:
 	typedef TestRealtimeSink CLASSNAME;
 	
 	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
-	void Initialize() override;
+	bool Initialize(const Eon::WorldState& ws) override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
