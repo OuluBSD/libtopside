@@ -51,10 +51,12 @@ public:
 	// Component Extensions
 	
 	typedef bool (*ActionFn)(const TypeCompCls& t, Eon::Action& act);
+	typedef bool (*SideFn)(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
 	typedef ComponentExtBase* (*NewExt)();
 	struct ExtData : Moveable<ExtData> {
 		NewExt new_fn;
 		ActionFn action_fn;
+		SideFn side_fn;
 		String name;
 		TypeExtCls cls;
 		
@@ -84,6 +86,7 @@ public:
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
 	template <class T> static bool MakeAction(const TypeCompCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
+	template <class T> static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
 	template <class T> static void RegisterComponent(SubCompCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
 		CompCls comp;
@@ -113,6 +116,7 @@ public:
 		e.name = T::GetTypeName();
 		e.new_fn = &CreateExt<T>;
 		e.action_fn = &MakeAction<T>;
+		e.side_fn = &MakeSide<T>;
 	}
 	
 	static void Dump();

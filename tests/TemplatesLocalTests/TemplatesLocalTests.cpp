@@ -70,12 +70,14 @@ sidechain tester: {
 		customer.input: true;
 		class.test_rt_src: true;
 		center.audio.src: true;
+		center.audio.side.out: true;
 		center.audio.side.out.center: true;
 		return has.input: true;
 	};
 	
 	loop output: {
 		customer.output: true;
+		center.audio.side.in: true;
 		center.audio.side.in.center: true;
 		center.audio.sink.realtime: true;
 		return has.output: true;
@@ -206,11 +208,13 @@ void Main() {
 	
 	TypeExtCls t;
 	
-	REG_EXT(TestCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
-	REG_EXT(TestInputCustomer,	CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
-	REG_EXT(TestOutputCustomer,	CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
-	REG_EXT(TestRealtimeSrc,	INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
-	REG_EXT(TestRealtimeSink,	OUTPUT,		CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
+	REG_EXT(TestCustomer,			CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestInputCustomer,		CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestOutputCustomer,		CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	REG_EXT(TestRealtimeSrc,		INPUT,			CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
+	REG_EXT(TestRealtimeSink,		OUTPUT,			CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
+	REG_EXT(TestAudioSideInputExt,	SIDE_INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
+	REG_EXT(TestAudioSideOutputExt,	SIDE_OUTPUT,	CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -446,6 +450,31 @@ void TestRealtimeSink::StorePacket(Packet& p) {
 	p->SetFormat(GetParent()->GetSourceValue().GetFormat());
 }
 
+
+
+
+
+
+
+
+
+
+bool TestAudioSideInputExt::Initialize(const Eon::WorldState& ws) {return true;}
+void TestAudioSideInputExt::Uninitialize() {}
+void TestAudioSideInputExt::Forward(FwdScope& fwd) {}
+void TestAudioSideInputExt::StorePacket(Packet& p) {}
+bool TestAudioSideInputExt::MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {
+	return true;
+}
+
+bool TestAudioSideOutputExt::Initialize(const Eon::WorldState& ws) {return true;}
+void TestAudioSideOutputExt::Uninitialize() {}
+void TestAudioSideOutputExt::Forward(FwdScope& fwd) {}
+void TestAudioSideOutputExt::StorePacket(Packet& p) {}
+bool TestAudioSideOutputExt::MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {
+	return true;
+}
+	
 NAMESPACE_TOPSIDE_END
 
 #ifdef flagGUI

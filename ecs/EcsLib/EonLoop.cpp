@@ -4,7 +4,7 @@ NAMESPACE_ECS_BEGIN
 
 
 void EonLoopLoader::AddError(String msg) {
-	failed = true;
+	status = FAILED;
 	loader.AddError(msg);
 }
 
@@ -63,11 +63,33 @@ bool EonLoopLoader::Forward() {
 	if (ep.plan.IsEmpty()) {
 		
 		// Check side-channel connections
-		TODO
-		
-		
-		AddError("Plan implementation searching failed");
-		return false;
+		const auto& inputs = planner.GetSideInputs();
+		const auto& outputs = planner.GetSideOutputs();
+		bool is_input = planner.IsSideInput();
+		if (is_input && inputs.GetCount()) {
+			LOG("Side-inputs:");
+			for(int i = 0; i < inputs.GetCount(); i++) {
+				auto* n = inputs[i];
+				const Eon::WorldState& ws = n->GetWorldState();
+				LOG(i << ": " << n->GetEstimate() << ": " << ws.ToString());
+			}
+			status = WAITING_SIDE_INPUT;
+			return false;
+		}
+		else if (!is_input && outputs.GetCount()) {
+			LOG("Side-outputs:");
+			for(int i = 0; i < outputs.GetCount(); i++) {
+				auto* n = outputs[i];
+				const Eon::WorldState& ws = n->GetWorldState();
+				LOG(i << ": " << n->GetEstimate() << ": " << ws.ToString());
+			}
+			status = WAITING_SIDE_OUTPUT;
+			return false;
+		}
+		else {
+			AddError("Plan implementation searching failed");
+			return false;
+		}
 	}
 	
 	
@@ -226,6 +248,55 @@ bool EonLoopLoader::Load() {
 		return false;
 	}
 	
+	
+	return true;
+}
+
+bool EonLoopLoader::AcceptOutput(EonLoopLoader& out) {
+	ASSERT(status == WAITING_SIDE_INPUT);
+	ASSERT(out.status == WAITING_SIDE_OUTPUT);
+	const auto& inputs = planner.GetSideInputs();
+	const auto& outputs = out.planner.GetSideOutputs();
+	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
+	
+	int accepted_count = 0;
+	const Eon::APlanNode* accepted_in = 0;
+	const Eon::APlanNode* accepted_out = 0;
+	
+	for (const Eon::APlanNode* in : inputs) {
+		const Eon::WorldState& in_ws = in->GetWorldState();
+		ASSERT(in_ws.IsAddExtension());
+		TypeCompCls in_comp = in_ws.GetComponent();
+		TypeExtCls in_type = in_ws.GetExtension();
+		const auto& in_d = Ecs::Factory::CompDataMap().Get(in_comp);
+		const auto& in_e = in_d.ext.Get(in_type);
+			
+		for (const Eon::APlanNode* out : outputs) {
+			const Eon::WorldState& out_ws = out->GetWorldState();
+			ASSERT(out_ws.IsAddExtension());
+			TypeCompCls out_comp = out_ws.GetComponent();
+			TypeExtCls out_type = out_ws.GetExtension();
+			const auto& out_d = Ecs::Factory::CompDataMap().Get(out_comp);
+			const auto& out_e = out_d.ext.Get(out_type);
+			
+			if (in_e.side_fn(out_type, out_ws, in_type, in_ws)) {
+				if (out_e.side_fn(out_type, out_ws, in_type, in_ws)) {
+					accepted_in = in;
+					accepted_out = out;
+					accepted_count++;
+				}
+			}
+		}
+	}
+	
+	if (accepted_count == 0) {
+		AddError("No inputs accepts any outputs");
+		return false;
+	}
+	else if (accepted_count > 1) {
+		AddError("Too many accepting input/output combinations");
+		return false;
+	}
 	
 	return true;
 }

@@ -27,12 +27,13 @@ protected:
 	friend class ::TS::Ecs::EonLoader;
 	friend class ::TS::Ecs::EonLoopLoader;
 	
-	Vector<String>		values;
-	Vector<bool>		using_act;
-	TypeCompCls			cur_comp;
-	TypeExtCls			add_ext;
-	Type				type = INVALID;
-	ActionPlanner*		ap = 0;
+	
+	Vector<String>				values;
+	Vector<bool>				using_act;
+	TypeCompCls					cur_comp;
+	TypeExtCls					add_ext;
+	Type						type = INVALID;
+	ActionPlanner*				ap = 0;
 public:
 	
 	WorldState();
@@ -115,6 +116,7 @@ public:
 	
 	ActionPlanner& GetActionPlanner() {return *ap;}
 	WorldState& GetWorldState() {return *ws;}
+	const WorldState& GetWorldState() const {return *ws;}
 	ActionNode& GetGoal() {return *goal;}
 	double GetDistance(const ActionNode& to);
 	double GetEstimate();
@@ -148,17 +150,21 @@ protected:
 	friend class ::TS::Ecs::EonLoader;
 	friend class ::TS::Ecs::EonLoopLoader;
 	
+	using ANode = Node<Ecs::Eon::ActionNode>;
+	
 	struct Atom : Moveable<Atom> {
 		Vector<String> id;
 		
 		String ToString() const {return Join(id, ".");}
 	};
 	
-	VectorMap<String, Atom> atoms;
-	Vector<Action> acts;
-	ActionPlannerWrapper* wrapper = 0;
+	VectorMap<String, Atom>		atoms;
+	Vector<Action>				acts;
+	ActionPlannerWrapper*		wrapper = 0;
 	
-	Array<WorldState> search_cache;
+	Array<WorldState>			search_cache;
+	Vector<ANode*>				side_inputs, side_outputs;
+	int							side_in_max_est, side_out_max_est;
 	
 public:
 	ArrayMap<hash_t, Node<ActionNode> > tmp_sub;
@@ -174,10 +180,15 @@ public:
 	int GetAddAtom(String id);
 	int GetAddAtom(const Id& id);
 	const Atom& GetAtom(int i) const {return atoms[i];}
+	bool IsSideInput() const {return side_in_max_est <= side_out_max_est;}
+	const Vector<ANode*>& GetSideInputs() const {return side_inputs;}
+	const Vector<ANode*>& GetSideOutputs() const {return side_outputs;}
 	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
+	void AddSideInput(ANode& n);
+	void AddSideOutput(ANode& n);
 	
 	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	
@@ -221,6 +232,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::ActionNode>& n) {
+	using namespace Ecs;
 	if (n.GetEstimate() <= 0)
 		return true;
 	Ecs::Eon::ActionNode& goal = n.GetGoal();
@@ -228,15 +240,39 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 		return true;
 	Ecs::Eon::WorldState& ws = n.GetWorldState();
 	Ecs::Eon::ActionPlanner& ap = n.GetActionPlanner();
+	
+	bool req_ext = false;
+	if (ws.IsAddComponent()) {
+		TypeCompCls t = ws.GetComponent();
+		if (t.sub == SubCompCls::SIDE_INPUT || t.sub == SubCompCls::SIDE_OUTPUT)
+			req_ext = true;
+	}
+	
+	if (ws.IsAddExtension()) {
+		TypeExtCls t = ws.GetExtension();
+		if (t.sub == SubCompCls::SIDE_INPUT) {
+			ap.AddSideInput(n);
+			return false;
+		}
+		else if (t.sub == SubCompCls::SIDE_OUTPUT) {
+			ap.AddSideOutput(n);
+			return false;
+		}
+	}
+	
 	Array<Ecs::Eon::WorldState*> to;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
+	
 	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Ecs::Eon::WorldState& ws_to = *to[i];
+		if (req_ext && ws_to.IsAddComponent())
+			continue;
 		//LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
+		Ecs::Eon::APlanNode* an = 0;
 		if (j == -1) {
 			Ecs::Eon::APlanNode& sub = ap.tmp_sub.Add(hash);// n.Add();
 			sub.SetActionPlanner(n.GetActionPlanner());
@@ -244,9 +280,21 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 			sub.SetWorldState(ws_to);
 			sub.SetCost(action_costs[i]);
 			n.AddLink(sub);
+			an = &sub;
 		} else {
-			n.AddLink(ap.tmp_sub[j]);
+			an = &ap.tmp_sub[j];
+			n.AddLink(*an);
 		}
+		
+		/*if (ws_to.IsAddComponent()) {
+			TypeCompCls t = ws_to.GetComponent();
+			if (t.sub == SubCompCls::SIDE_INPUT) {
+				ap.AddSideInput(*an);
+			}
+			else if (t.sub == SubCompCls::SIDE_OUTPUT) {
+				ap.AddSideOutput(*an);
+			}
+		}*/
 	}
 	//if (n.GetTotalCount())
 	//	return false;

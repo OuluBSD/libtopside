@@ -34,6 +34,14 @@ public:
 
 
 class EonLoopLoader {
+public:
+	typedef enum {
+		NOT_READY,
+		WAITING_SIDE_INPUT,
+		WAITING_SIDE_OUTPUT,
+		READY,
+		FAILED,
+	} Status;
 	
 protected:
 	friend class EonLoader;
@@ -44,7 +52,8 @@ protected:
 	Eon::ActionPlanner planner;
 	AStar<Eon::ActionNode> as;
 	Eon::Plan ep;
-	bool failed = false;
+	Status status = NOT_READY;
+	EonLoopLoader* side_conn = 0;
 	
 public:
 	EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def) : loader(*loader), def(def) {}
@@ -53,7 +62,12 @@ public:
 	bool Parse();
 	bool Forward();
 	bool Load();
-	bool IsFailed() const {return failed;}
+	bool IsFailed() const {return status == FAILED;}
+	bool IsReady() const {return status == READY;}
+	bool IsWaitingSideInput() const {return status == WAITING_SIDE_INPUT;}
+	bool IsWaitingSideOutput() const {return status == WAITING_SIDE_OUTPUT;}
+	bool AcceptOutput(EonLoopLoader& out);
+	void SetSideConnection(EonLoopLoader* c) {side_conn = c;}
 	
 	void AddError(String msg);
 	

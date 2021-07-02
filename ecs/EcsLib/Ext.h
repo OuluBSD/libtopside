@@ -36,8 +36,14 @@ public:
 		else if (cls.sub == SubCompCls::OUTPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".sink")
 		}
+		else if (cls.sub == SubCompCls::SIDE_INPUT) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.src.GetActionName() + ".side.in")
+		}
+		else if (cls.sub == SubCompCls::SIDE_OUTPUT) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".side.out")
+		}
 		else {
-			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.GetActionName() + ".side")
+			//COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.GetActionName() + ".side")
 		}
 	} COMP_MAKE_ACTION_END
 	

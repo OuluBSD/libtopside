@@ -126,6 +126,8 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 		EXT_TEST_CUSTOMER_OUTPUT,
 		EXT_TEST_AUDIO_IN,
 		EXT_TEST_AUDIO_OUT,
+		EXT_TEST_SIDE_IN,
+		EXT_TEST_SIDE_OUT,
 		
 		TYPE_COUNT
 	} Type;

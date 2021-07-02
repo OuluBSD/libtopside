@@ -149,13 +149,83 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 	for (Eon::LoopDefinition& loop_def : def.loops)
 		loops.Add(new EonLoopLoader(this, loop_def));
 	
-	bool keep_going = true;
 	bool fail = false;
-	while (keep_going) {
-		for (EonLoopLoader& loop : loops) {
-			keep_going = keep_going && loop.Forward();
-			fail = fail || loop.IsFailed();
+	enum {FORWARDING, CONNECTING_SIDECHANNEL};
+	int mode = FORWARDING;
+	int mode_count = 0;
+	Vector<EonLoopLoader*> waiting_inputs, waiting_outputs;
+	while(!fail) {
+		if (mode == FORWARDING) {
+			if (!mode_count) {
+				bool ready = true;
+				bool keep_going = true;
+				waiting_inputs.Clear();
+				waiting_outputs.Clear();
+				while (keep_going) {
+					for (EonLoopLoader& loop : loops) {
+						keep_going = loop.Forward() && keep_going;
+						fail = fail || loop.IsFailed();
+						ready = ready && loop.IsReady();
+						if (loop.IsWaitingSideInput()) waiting_inputs.Add(&loop);
+						if (loop.IsWaitingSideOutput()) waiting_outputs.Add(&loop);
+					}
+				}
+				if (ready)
+					break;
+			}
+			else {
+				TODO
+			}
 		}
+		else if (mode == CONNECTING_SIDECHANNEL) {
+			if (waiting_inputs.IsEmpty() && waiting_outputs.IsEmpty()) {
+				AddError("Internal error. No waitin sidechannel io.");
+				fail = true;
+				break;
+			}
+			
+			if (waiting_inputs.IsEmpty()) {
+				AddError("No input side-ports");
+				fail = true;
+				break;
+			}
+			
+			if (waiting_outputs.IsEmpty()) {
+				AddError("No output side-ports");
+				fail = true;
+				break;
+			}
+			
+			for (EonLoopLoader* in : waiting_inputs) {
+				EonLoopLoader* accepted_out = 0;
+				int accepted_out_count = 0;
+				for (EonLoopLoader* out : waiting_outputs) {
+					if (in->AcceptOutput(*out)) {
+						accepted_out_count++;
+						accepted_out = out;
+					}
+				}
+				if (accepted_out_count > 1) {
+					AddError("Input can accept multiple outputs");
+					fail = true;
+					break;
+				}
+				if (accepted_out_count == 0) {
+					AddError("Input cannot accept any output");
+					fail = true;
+					break;
+				}
+				
+				in->SetSideConnection(accepted_out);
+			}
+			
+		}
+		else Panic("Invalid mode");
+		
+		
+		mode = (mode + 1) % 2;
+		if (mode_count++ >= 10)
+			break;
 	}
 	return !fail;
 }

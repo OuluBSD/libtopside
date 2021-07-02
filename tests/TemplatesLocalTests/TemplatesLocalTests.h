@@ -118,6 +118,52 @@ public:
 	
 };
 
+class TestAudioSideInputExt :
+	public SideInputExt
+{
+	
+public:
+	RTTI_DECL1(TestAudioSideInputExt, SideInputExt)
+	typedef TestAudioSideInputExt CLASSNAME;
+	
+	bool Initialize(const Eon::WorldState& ws) override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
+	
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.in.center")
+	COMP_MAKE_ACTION_END
+	
+	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_SIDE_OUT;}
+	
+};
+
+class TestAudioSideOutputExt :
+	public SideOutputExt
+{
+	
+public:
+	RTTI_DECL1(TestAudioSideOutputExt, SideOutputExt)
+	typedef TestAudioSideOutputExt CLASSNAME;
+	
+	bool Initialize(const Eon::WorldState& ws) override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {}
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(Packet& p) override;
+	
+	COMP_MAKE_ACTION_BEGIN
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.out.center")
+	COMP_MAKE_ACTION_END
+	
+	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
+	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_SIDE_OUT;}
+	
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

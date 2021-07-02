@@ -172,13 +172,15 @@ Action::Action() : cost(1.0) {
 
 
 ActionPlanner::ActionPlanner() {
-	
+	Clear();
 }
 
 void ActionPlanner::Clear() {
 	atoms.Clear();
 	acts.Clear();
 	search_cache.Clear();
+	side_in_max_est = INT_MAX;
+	side_out_max_est = INT_MAX;
 }
 
 int ActionPlanner::GetAddAtom(String id) {
@@ -299,6 +301,27 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
+void ActionPlanner::AddSideInput(ANode& n) {
+	int est = n.GetEstimate();
+	if (est < side_in_max_est) {
+		side_in_max_est = est;
+		side_inputs.Clear();
+		side_inputs.Add(&n);
+	}
+	else if (est == side_in_max_est)
+		side_inputs.Add(&n);
+}
+
+void ActionPlanner::AddSideOutput(ANode& n) {
+	int est = n.GetEstimate();
+	if (est < side_out_max_est) {
+		side_out_max_est = est;
+		side_outputs.Clear();
+		side_outputs.Add(&n);
+	}
+	else if (est == side_out_max_est)
+		side_outputs.Add(&n);
+}
 
 
 

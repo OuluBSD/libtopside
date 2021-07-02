@@ -51,7 +51,7 @@ void RegisterSideInput(Ecs::DevCls dev, Ecs::ValCls val) {
 
 void RegisterSideOutput(Ecs::DevCls dev, Ecs::ValCls val) {
 	TS::Ecs::Factory::RegisterComponent<Ecs::ExtComponent>(
-		Ecs::SubCompCls::SIDE_INPUT,
+		Ecs::SubCompCls::SIDE_OUTPUT,
 		ValDevCls(dev,val),
 		ValDevCls(dev,val),
 		VD(CENTER,RECEIPT));

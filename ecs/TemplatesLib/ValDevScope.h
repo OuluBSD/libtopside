@@ -98,6 +98,14 @@ public:
 	
 };
 
+class SideInputExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(SideInputExt, ComponentExtBase);
+	using Ext = SideInputExt;
+	
+};
+
 
 
 
@@ -177,6 +185,16 @@ class OutputExt : public ComponentExtBase {
 public:
 	RTTI_DECL1(OutputExt, ComponentExtBase);
 	using Ext = OutputExt;
+	
+	//OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
+	
+};
+
+class SideOutputExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(SideOutputExt, ComponentExtBase);
+	using Ext = SideOutputExt;
 	
 	//OutputComponent& GetParentT() {return CastRef<OutputComponent>(GetParent().o);}
 	

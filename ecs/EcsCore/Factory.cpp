@@ -51,7 +51,6 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 	Eon::Action a;
 	a.Pre() = src;
 	
-	
 	if (src.IsAddComponent()) {
 		for (const ExtData& e : d.ext.GetValues()) {
 			a.Post() = src;
@@ -68,6 +67,8 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 		ASSERT(side.IsValid());
 		const CompData& side_cd = m.Get(side);
 		
+		if (comp.sub != SubCompCls::CUSTOMER && side.side.vd.val != comp.side.vd.val)
+			continue;
 		//ASSERT(src.GetComponent() != link.dst_comp);
 		
 		a.Post() = src;
