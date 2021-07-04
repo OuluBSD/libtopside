@@ -137,6 +137,8 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 		}
 	}
 	
+	loops.Clear();
+	
 	if (scopes.GetCount() >= 2) {
 		EonScope& par = scopes.At(scopes.GetCount()-2);
 		const Eon::WorldState& src_ws = scope.current_state;
@@ -247,6 +249,7 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 		if (mode_count++ >= 10)
 			break;
 	}
+	
 	return !fail;
 }
 

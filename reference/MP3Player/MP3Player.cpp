@@ -162,7 +162,7 @@ void Main() {
 	
 	REG_EXT(AppCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
 	
-	//BreakRefAdd(0x7FFFFFFFE430);
+	//BreakRefAdd(0x80AE32468);
 	
 	if (!MP3PlayerInitializer())
 		Exit(1);

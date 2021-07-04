@@ -44,8 +44,10 @@ public:
 	
 };
 
-class EonLoopLoader {
+class EonLoopLoader : RTTIBase {
 public:
+	RTTI_DECL0(EonLoopLoader)
+	
 	typedef enum {
 		NOT_READY,
 		WAITING_SIDE_INPUT,
@@ -78,6 +80,7 @@ protected:
 public:
 	EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def);
 	
+	void Visit(RuntimeVisitor& vis) {vis && comps;}
 	
 	bool Parse();
 	bool Forward();
@@ -122,7 +125,7 @@ protected:
 public:
 	SYS_RTTI(EonLoader)
 	SYS_CTOR(EonLoader);
-	SYS_DEF_VISIT_(vis & es)
+	SYS_DEF_VISIT_((vis & es) || loops)
 	
 	void PostLoadFile(String path) {post_load_file << path;}
 	void PostLoadString(String s) {post_load_string << s;}
