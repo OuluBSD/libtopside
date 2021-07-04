@@ -56,7 +56,7 @@ public:
 	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	String Get(const String& key) const;
-	int64 GetHashValue();
+	int64 GetHashValue() const;
 	TypeCompCls GetComponent() const {return cur_comp;}
 	TypeExtCls GetExtension() const {return add_ext;}
 	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}
@@ -65,6 +65,8 @@ public:
 	
 	WorldState& operator=(const WorldState& src);
 	
+	bool operator==(const WorldState& ws) const {return GetHashValue() == ws.GetHashValue();}
+	bool operator!=(const WorldState& ws) const {return GetHashValue() != ws.GetHashValue();}
 	
 };
 
@@ -98,6 +100,7 @@ public:
 class ActionNode : RTTIBase {
 	WorldState* ws;
 	double cost;
+	int linked_count = 0;
 	
 	ActionPlanner* ap;
 	ActionNode* goal;
@@ -113,6 +116,8 @@ public:
 	void SetGoal(ActionNode& ws) {goal = &ws;}
 	void SetWorldState(WorldState& ws) {this->ws = &ws;}
 	void SetCost(double d) {cost = d;}
+	void IncLinked() {linked_count++;}
+	void ResetLinked() {linked_count=0;}
 	
 	ActionPlanner& GetActionPlanner() {return *ap;}
 	WorldState& GetWorldState() {return *ws;}
@@ -121,6 +126,7 @@ public:
 	double GetDistance(const ActionNode& to);
 	double GetEstimate();
 	double GetCost() const {return cost;}
+	int GetLinkedCount() const {return linked_count;}
 	
 	bool Contains(const ActionNode& n) const;
 	
@@ -144,13 +150,21 @@ class ActionPlannerWrapper;
 
 class ActionPlanner {
 	
+public:
+	using ANode = Node<Eon::ActionNode>;
+	using Searcher = AStar<Eon::ActionNode>;
+	
+	struct State : Moveable<State> {
+		ANode*					last;
+		Searcher				as;
+	};
+	
 protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
 	friend class ::TS::Ecs::EonLoader;
 	friend class ::TS::Ecs::EonLoopLoader;
 	
-	using ANode = Node<Ecs::Eon::ActionNode>;
 	
 	struct Atom : Moveable<Atom> {
 		Vector<String> id;
@@ -161,9 +175,9 @@ protected:
 	VectorMap<String, Atom>		atoms;
 	Vector<Action>				acts;
 	ActionPlannerWrapper*		wrapper = 0;
-	
+	EonLoopLoader*				loop_loader = 0;
 	Array<WorldState>			search_cache;
-	Vector<ANode*>				side_inputs, side_outputs;
+	Vector<State>				side_inputs, side_outputs;
 	int							side_in_max_est, side_out_max_est;
 	
 public:
@@ -174,6 +188,7 @@ public:
 	
 	
 	void Clear();
+	void ClearForward();
 	
 	int GetActionCount() const {return acts.GetCount();}
 	int GetAtomCount() const {return atoms.GetCount();}
@@ -181,16 +196,18 @@ public:
 	int GetAddAtom(const Id& id);
 	const Atom& GetAtom(int i) const {return atoms[i];}
 	bool IsSideInput() const {return side_in_max_est <= side_out_max_est;}
-	const Vector<ANode*>& GetSideInputs() const {return side_inputs;}
-	const Vector<ANode*>& GetSideOutputs() const {return side_outputs;}
+	Vector<State>& GetSideInputs() {return side_inputs;}
+	Vector<State>& GetSideOutputs() {return side_outputs;}
 	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
-	void AddSideInput(ANode& n);
-	void AddSideOutput(ANode& n);
+	void SetLoopLoader(EonLoopLoader* l) {loop_loader = l;}
+	void AddSideInput(const Searcher& as, ANode& n);
+	void AddSideOutput(const Searcher& as, ANode& n);
 	
 	void GetPossibleStateTransition(Node<Eon::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
+	EonLoopLoader& GetLoopLoader() const {return *loop_loader;}
 	
 };
 
@@ -226,83 +243,6 @@ public:
 
 
 NAMESPACE_ECS_END
-
-
-NAMESPACE_TOPSIDE_BEGIN
-
-
-template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::ActionNode>& n) {
-	using namespace Ecs;
-	if (n.GetEstimate() <= 0)
-		return true;
-	Ecs::Eon::ActionNode& goal = n.GetGoal();
-	if (n.Contains(goal))
-		return true;
-	Ecs::Eon::WorldState& ws = n.GetWorldState();
-	Ecs::Eon::ActionPlanner& ap = n.GetActionPlanner();
-	
-	bool req_ext = false;
-	if (ws.IsAddComponent()) {
-		TypeCompCls t = ws.GetComponent();
-		if (t.sub == SubCompCls::SIDE_INPUT || t.sub == SubCompCls::SIDE_OUTPUT)
-			req_ext = true;
-	}
-	
-	if (ws.IsAddExtension()) {
-		TypeExtCls t = ws.GetExtension();
-		if (t.sub == SubCompCls::SIDE_INPUT) {
-			ap.AddSideInput(n);
-			return false;
-		}
-		else if (t.sub == SubCompCls::SIDE_OUTPUT) {
-			ap.AddSideOutput(n);
-			return false;
-		}
-	}
-	
-	Array<Ecs::Eon::WorldState*> to;
-	Vector<double> action_costs;
-	ap.GetPossibleStateTransition(n, to, action_costs);
-	
-	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
-	for(int i = 0; i < to.GetCount(); i++) {
-		Ecs::Eon::WorldState& ws_to = *to[i];
-		if (req_ext && ws_to.IsAddComponent())
-			continue;
-		//LOG("\t" << n.GetEstimate() << ": " << ws_to.ToString());
-		int64 hash = ws_to.GetHashValue();
-		int j = ap.tmp_sub.Find(hash);
-		Ecs::Eon::APlanNode* an = 0;
-		if (j == -1) {
-			Ecs::Eon::APlanNode& sub = ap.tmp_sub.Add(hash);// n.Add();
-			sub.SetActionPlanner(n.GetActionPlanner());
-			sub.SetGoal(n.GetGoal());
-			sub.SetWorldState(ws_to);
-			sub.SetCost(action_costs[i]);
-			n.AddLink(sub);
-			an = &sub;
-		} else {
-			an = &ap.tmp_sub[j];
-			n.AddLink(*an);
-		}
-		
-		/*if (ws_to.IsAddComponent()) {
-			TypeCompCls t = ws_to.GetComponent();
-			if (t.sub == SubCompCls::SIDE_INPUT) {
-				ap.AddSideInput(*an);
-			}
-			else if (t.sub == SubCompCls::SIDE_OUTPUT) {
-				ap.AddSideOutput(*an);
-			}
-		}*/
-	}
-	//if (n.GetTotalCount())
-	//	return false;
-	
-	return false;
-}
-
-NAMESPACE_TOPSIDE_END
 
 
 #endif

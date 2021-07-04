@@ -50,7 +50,7 @@ WorldState& WorldState::operator=(const WorldState& src) {
 }
 
 
-int64 WorldState::GetHashValue() {
+int64 WorldState::GetHashValue() const {
 	CombineHash c;
 	c.Put((int)type);
 	c.Put(cur_comp.GetHashValue());
@@ -85,16 +85,19 @@ bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
 }
 
 bool WorldState::Set(const String& key, bool value) {
+	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	return Set(idx, value);
 }
 
 bool WorldState::Set(const String& key, String value) {
+	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	return Set(idx, value);
 }
 
 bool WorldState::IsTrue(const String& key) const {
+	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())
 		return values[idx] == "true";
@@ -102,6 +105,7 @@ bool WorldState::IsTrue(const String& key) const {
 }
 
 bool WorldState::IsFalse(const String& key) const {
+	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount()) {
 		const auto& s = values[idx];
@@ -111,6 +115,7 @@ bool WorldState::IsFalse(const String& key) const {
 }
 
 String WorldState::Get(const String& key) const {
+	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
 	if (idx < values.GetCount())
 		return values[idx];
@@ -118,6 +123,7 @@ String WorldState::Get(const String& key) const {
 }
 
 String WorldState::ToString() const {
+	ASSERT(ap);
 	String s;
 	for(int i = 0; i < values.GetCount(); i++) {
 		if (!using_act[i])
@@ -179,6 +185,12 @@ void ActionPlanner::Clear() {
 	atoms.Clear();
 	acts.Clear();
 	search_cache.Clear();
+	ClearForward();
+}
+
+void ActionPlanner::ClearForward() {
+	side_inputs.Clear();
+	side_outputs.Clear();
 	side_in_max_est = INT_MAX;
 	side_out_max_est = INT_MAX;
 }
@@ -301,26 +313,32 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
-void ActionPlanner::AddSideInput(ANode& n) {
+void ActionPlanner::AddSideInput(const Searcher& as, ANode& n) {
 	int est = n.GetEstimate();
 	if (est < side_in_max_est) {
 		side_in_max_est = est;
 		side_inputs.Clear();
-		side_inputs.Add(&n);
 	}
-	else if (est == side_in_max_est)
-		side_inputs.Add(&n);
+	if (est <= side_in_max_est) {
+		State& s = side_inputs.Add();
+		s.last = &n;
+		s.as = as;
+	}
 }
 
-void ActionPlanner::AddSideOutput(ANode& n) {
+void ActionPlanner::AddSideOutput(const Searcher& as, ANode& n) {
 	int est = n.GetEstimate();
+	if (est > 1)
+		return;
 	if (est < side_out_max_est) {
 		side_out_max_est = est;
 		side_outputs.Clear();
-		side_outputs.Add(&n);
 	}
-	else if (est == side_out_max_est)
-		side_outputs.Add(&n);
+	if (est <= side_out_max_est) {
+		State& s = side_outputs.Add();
+		s.last = &n;
+		s.as = as;
+	}
 }
 
 

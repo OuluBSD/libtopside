@@ -133,6 +133,7 @@ public:
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN
+		ASSERT(cls.sub == SubCompCls::SIDE_INPUT);
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.in.center")
 	COMP_MAKE_ACTION_END
 	
@@ -156,6 +157,7 @@ public:
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN
+		ASSERT(cls.sub == SubCompCls::SIDE_OUTPUT);
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.out.center")
 	COMP_MAKE_ACTION_END
 	

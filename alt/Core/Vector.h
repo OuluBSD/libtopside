@@ -700,6 +700,10 @@ public:
 	}
 
 	int GetCount() const { return values.GetCount(); }
+	void Append(const Index& idx) {
+		hashes.Append(idx.hashes);
+		values.Append(idx.values);
+	}
 	const K& Add(const K& value) {
 		hash_t hash = GetHashValue(value);
 		if (chk_duplicates && FindHash(hash) >= 0)

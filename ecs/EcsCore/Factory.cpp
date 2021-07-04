@@ -63,17 +63,19 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 	}
 	
 	for (const Link& link : d.sink_links) {
-		TypeCompCls side = link.dst_comp;
-		ASSERT(side.IsValid());
-		const CompData& side_cd = m.Get(side);
+		TypeCompCls dst = link.dst_comp;
+		ASSERT(dst.IsValid());
+		const CompData& dst_cd = m.Get(dst);
 		
-		if (comp.sub != SubCompCls::CUSTOMER && side.side.vd.val != comp.side.vd.val)
+		if (comp.sub != SubCompCls::CUSTOMER &&
+			dst.side.vd.val != comp.side.vd.val &&
+			dst.sink.val != ValCls::RECEIPT)
 			continue;
 		//ASSERT(src.GetComponent() != link.dst_comp);
 		
 		a.Post() = src;
-		a.Post().SetAs_AddComponent(side);
-		if (side_cd.action_fn(side_cd.cls, a)) {
+		a.Post().SetAs_AddComponent(dst);
+		if (dst_cd.action_fn(dst_cd.cls, a)) {
 			MemSwap(acts.Add(), a);
 			a.Pre() = src;
 		}

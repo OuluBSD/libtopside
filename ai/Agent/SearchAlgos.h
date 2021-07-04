@@ -423,6 +423,13 @@ class AStar : public Searcher<T> {
 public:
 	AStar() : max_worst(0), limit(0) {}
 	
+	void operator=(const AStar& as) {
+		max_worst = as.max_worst;
+		do_search = as.do_search;
+		limit = as.limit;
+		closed_set <<= as.closed_set;
+		open_set <<= as.open_set;
+	}
 	void SetLimit(int i) {limit = i;}
 	void Stop() {do_search = false;}
 	
@@ -449,6 +456,10 @@ public:
 			out[path.GetCount()-1-i] = path[i];
 		}
 		return out;
+	}
+	
+	Vector<T*> ReconstructPath(NodeT& current) {
+		return ReconstructPath(current, closed_set, open_set);
 	}
 	
 	Vector<T*> GetBest() {
@@ -479,6 +490,34 @@ public:
 		np.f_score = this->Estimate(src);
 		open_set.Add(np);
 		
+		return SearchMain();
+	}
+	
+	Vector<T*> ContinueSearch(NodeT& src) {
+		do_search = true;
+		
+		NodePtr copy;
+		int i = 0;
+		for (const NodePtr& np : open_set) {
+			if (np.ptr == &src) {
+				copy = np;
+				open_set.Remove(i);
+				break;
+			}
+			++i;
+		}
+		if (!copy.ptr)
+			return Vector<T*>();
+		
+		closed_set.Append(open_set);
+		open_set.Clear();
+		
+		open_set.Add(copy);
+		
+		return SearchMain();
+	}
+	
+	Vector<T*> SearchMain() {
 		Vector<double> worst_f_score;
 		Vector<int> worst_id;
 		worst_f_score.SetCount(max_worst);

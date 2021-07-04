@@ -8,6 +8,8 @@ NAMESPACE_ECS_BEGIN
 
 
 bool EonLoader::Initialize() {
+	def_ws.SetActionPlanner(def_planner);
+	
 	es = GetMachine().TryGet<EntityStore>();
 	if (!es) {
 		LOG("EonLoader requires EntityStore present in machine");
@@ -99,6 +101,8 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
 	EonScope& scope = scopes.Add();
 	scope.def = &def;
+	scope.SetCurrentState(def_ws);
+	
 	if (parent) {
 		scope.current_state = parent->current_state;
 	}
@@ -148,6 +152,8 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 	loops.Clear();
 	for (Eon::LoopDefinition& loop_def : def.loops)
 		loops.Add(new EonLoopLoader(this, loop_def));
+	if (loops.IsEmpty())
+		return true;
 	
 	bool fail = false;
 	enum {FORWARDING, CONNECTING_SIDECHANNEL};
@@ -156,26 +162,21 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 	Vector<EonLoopLoader*> waiting_inputs, waiting_outputs;
 	while(!fail) {
 		if (mode == FORWARDING) {
-			if (!mode_count) {
-				bool ready = true;
-				bool keep_going = true;
-				waiting_inputs.Clear();
-				waiting_outputs.Clear();
-				while (keep_going) {
-					for (EonLoopLoader& loop : loops) {
-						keep_going = loop.Forward() && keep_going;
-						fail = fail || loop.IsFailed();
-						ready = ready && loop.IsReady();
-						if (loop.IsWaitingSideInput()) waiting_inputs.Add(&loop);
-						if (loop.IsWaitingSideOutput()) waiting_outputs.Add(&loop);
-					}
+			bool ready = true;
+			bool keep_going = true;
+			waiting_inputs.Clear();
+			waiting_outputs.Clear();
+			while (keep_going) {
+				for (EonLoopLoader& loop : loops) {
+					keep_going = loop.Forward() && keep_going;
+					fail = fail || loop.IsFailed();
+					ready = ready && loop.IsReady();
+					if (loop.IsWaitingSideInput()) waiting_inputs.Add(&loop);
+					if (loop.IsWaitingSideOutput()) waiting_outputs.Add(&loop);
 				}
-				if (ready)
-					break;
 			}
-			else {
-				TODO
-			}
+			if (ready)
+				break;
 		}
 		else if (mode == CONNECTING_SIDECHANNEL) {
 			if (waiting_inputs.IsEmpty() && waiting_outputs.IsEmpty()) {
@@ -198,9 +199,11 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 			
 			for (EonLoopLoader* in : waiting_inputs) {
 				EonLoopLoader* accepted_out = 0;
+				Eon::ActionPlanner::State* accepted_in_node = 0;
+				Eon::ActionPlanner::State* accepted_out_node = 0;
 				int accepted_out_count = 0;
 				for (EonLoopLoader* out : waiting_outputs) {
-					if (in->AcceptOutput(*out)) {
+					if (in->AcceptOutput(*out, accepted_in_node, accepted_out_node)) {
 						accepted_out_count++;
 						accepted_out = out;
 					}
@@ -216,7 +219,8 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 					break;
 				}
 				
-				in->SetSideConnection(accepted_out);
+				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out);
+				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in);
 			}
 			
 		}

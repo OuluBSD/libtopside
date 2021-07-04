@@ -3,64 +3,94 @@
 NAMESPACE_ECS_BEGIN
 
 
+EonLoopLoader::EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def) : loader(*loader), def(def) {
+	planner.SetLoopLoader(this);
+}
+
 void EonLoopLoader::AddError(String msg) {
 	status = FAILED;
 	loader.AddError(msg);
 }
 
-bool EonLoopLoader::Forward() {
-	EonScope& scope = loader.scopes.Add();
-	
-	// Prepare action planner and world states
-	int CONNECTED = planner.GetAddAtom("loop.connected");
-	CompCls customer;
-	customer.sink = VD(DevCls::CENTER, ValCls::RECEIPT);
-	customer.side = VD(DevCls::CENTER, ValCls::ORDER);
-	customer.src  = VD(DevCls::CENTER, ValCls::ORDER);
-	
-	Eon::WorldState src;
-	src = scope.current_state;
-	src.SetActionPlanner(planner);
-	src.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-	src.Set(CONNECTED, false);
-	
-	Eon::WorldState goal;
-	goal.SetActionPlanner(planner);
-	goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-	goal.Set(CONNECTED, true);
-		
-	
-	for (Eon::Statement& stmt : def.stmts) {
-		if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
-			continue;
-		
-		int atom = planner.GetAddAtom(stmt.id);
-		if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
-			goal.Set(atom, stmt.value->b);
-		else if (stmt.value->type == Eon::Value::VAL_ID)
-			goal.Set(atom, stmt.value->id.ToString());
-		else if (stmt.value->type == Eon::Value::VAL_STRING)
-			goal.Set(atom, stmt.value->str);
-		else
-			Panic("internal error");
-	}
-	LOG("goal: " << goal.ToString());
-	
-	Eon::APlanNode goal_node;
-	goal_node.SetWorldState(goal);
-	goal_node.SetGoal(goal_node);
-	
-	Eon::APlanNode start_node;
-	start_node.SetActionPlanner(planner);
-	start_node.SetGoal(goal_node);
-	start_node.SetWorldState(src);
+void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
 	
 	
 	// Do the action plan searching
-	as.SetLimit(1000);
-	ep.plan = as.Search(start_node);
+	s.as.SetLimit(1000);
 	
-	if (ep.plan.IsEmpty()) {
+}
+
+bool EonLoopLoader::Forward() {
+	planner.ClearForward();
+	
+	EonScope& scope = loader.scopes.Top();
+	
+	
+	if (segments.GetCount() == 0) {
+		// Prepare action planner and world states
+		int CONNECTED = planner.GetAddAtom("loop.connected");
+		CompCls customer;
+		customer.sink = VD(DevCls::CENTER, ValCls::RECEIPT);
+		customer.side = VD(DevCls::CENTER, ValCls::ORDER);
+		customer.src  = VD(DevCls::CENTER, ValCls::ORDER);
+		
+		start = scope.current_state;
+		start.SetActionPlanner(planner);
+		start.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
+		start.Set(CONNECTED, false);
+		
+		goal.SetActionPlanner(planner);
+		goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
+		goal.Set(CONNECTED, true);
+		
+		
+		for (Eon::Statement& stmt : def.stmts) {
+			if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
+				continue;
+			
+			int atom = planner.GetAddAtom(stmt.id);
+			if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
+				goal.Set(atom, stmt.value->b);
+			else if (stmt.value->type == Eon::Value::VAL_ID)
+				goal.Set(atom, stmt.value->id.ToString());
+			else if (stmt.value->type == Eon::Value::VAL_STRING)
+				goal.Set(atom, stmt.value->str);
+			else
+				Panic("internal error");
+		}
+		LOG("goal: " << goal.ToString());
+		
+		goal_node.SetWorldState(goal);
+		goal_node.SetGoal(goal_node);
+		
+		start_node.SetActionPlanner(planner);
+		start_node.SetGoal(goal_node);
+		start_node.SetWorldState(start);
+		
+		
+		EonLoopSegment& seg = segments.Add();
+		seg.start_node = &start_node;
+	}
+	else {
+		ASSERT(segments.GetCount() >= 2);
+	}
+	
+	EonLoopSegment& seg = segments.Top();
+	ASSERT(seg.start_node);
+	SetupSegment(seg);
+	
+	LOG("start-node: " << seg.start_node->GetWorldState().ToString());
+	seg.start_node->ResetLinked();
+	if (segments.GetCount() == 1)
+		seg.ep.plan = seg.as.Search(*seg.start_node);
+	else
+		seg.ep.plan = seg.as.ContinueSearch(*seg.start_node);
+	
+	if (seg.ep.plan.IsEmpty()) {
+		if (accepted_side_node) {
+			AddError("Plan implementation searching failed after side-connection");
+			return false;
+		}
 		
 		// Check side-channel connections
 		const auto& inputs = planner.GetSideInputs();
@@ -69,9 +99,9 @@ bool EonLoopLoader::Forward() {
 		if (is_input && inputs.GetCount()) {
 			LOG("Side-inputs:");
 			for(int i = 0; i < inputs.GetCount(); i++) {
-				auto* n = inputs[i];
-				const Eon::WorldState& ws = n->GetWorldState();
-				LOG(i << ": " << n->GetEstimate() << ": " << ws.ToString());
+				auto& state = inputs[i];
+				const Eon::WorldState& ws = state.last->GetWorldState();
+				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
 			status = WAITING_SIDE_INPUT;
 			return false;
@@ -79,9 +109,9 @@ bool EonLoopLoader::Forward() {
 		else if (!is_input && outputs.GetCount()) {
 			LOG("Side-outputs:");
 			for(int i = 0; i < outputs.GetCount(); i++) {
-				auto* n = outputs[i];
-				const Eon::WorldState& ws = n->GetWorldState();
-				LOG(i << ": " << n->GetEstimate() << ": " << ws.ToString());
+				auto& state = outputs[i];
+				const Eon::WorldState& ws = state.last->GetWorldState();
+				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
 			status = WAITING_SIDE_OUTPUT;
 			return false;
@@ -92,15 +122,21 @@ bool EonLoopLoader::Forward() {
 		}
 	}
 	
+	// Set last node
+	seg.stop_node = seg.ep.plan.Top();
+	
 	
 	// Debug print found loop
 	if (1) {
 		int pos = 0;
-		for (Eon::ActionNode* n : ep.plan) {
+		EonLoopSegment& seg = segments.Top();
+		for (Eon::ActionNode* n : seg.ep.plan) {
 			const Eon::WorldState& ws = n->GetWorldState();
 			TypeCompCls comp = ws.GetComponent();
 			const auto& d = Ecs::Factory::CompDataMap().Get(comp);
-			if (ws.IsAddComponent()) {LOG(pos++ << ": add comp: " << d.name);}
+			if (ws.IsAddComponent()) {
+				LOG(pos++ << ": add comp: " << d.name);
+			}
 			if (ws.IsAddExtension()) {
 				const auto& e = d.ext.Get(ws.GetExtension());
 				LOG(pos++ << ": add ext: " << e.name << " (to " << d.name << ")");
@@ -109,7 +145,8 @@ bool EonLoopLoader::Forward() {
 		}
 	}
 	
-	return true;
+	status = READY;
+	return false; // don't continue
 }
 
 bool EonLoopLoader::Load() {
@@ -127,15 +164,19 @@ bool EonLoopLoader::Load() {
 	struct AddedComp {
 		ComponentBaseRef r;
 		int plan_i;
+		int seg_i;
 	};
 	Array<AddedComp> added_comps;
 	
+	int seg_i = segments.GetCount()-1;
+	EonLoopSegment& seg = segments.Top();
 	int plan_i = 0;
-	for (Eon::ActionNode* n : ep.plan) {
+	for (Eon::ActionNode* n : seg.ep.plan) {
+		
 		RTLOG("Loading plan node " << plan_i);
 		Eon::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
-			bool is_last = plan_i == ep.plan.GetCount()-1;
+			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
 			TypeCompCls comp = ws.GetComponent();
 			ComponentBaseRef cb =
 				is_last ?
@@ -150,6 +191,7 @@ bool EonLoopLoader::Load() {
 			auto& c = added_comps.Add();
 			c.r = cb;
 			c.plan_i = plan_i;
+			c.seg_i = seg_i;
 		}
 		else if (ws.IsAddExtension()) {
 			TypeCompCls comp = ws.GetComponent();
@@ -206,6 +248,8 @@ bool EonLoopLoader::Load() {
 		}
 		++plan_i;
 	}
+	
+	
 	PoolRef pool = e->GetPool();
 	
 	for(int i = 0; i < added_comps.GetCount()-1; i++) {
@@ -213,7 +257,8 @@ bool EonLoopLoader::Load() {
 		AddedComp& c1 = added_comps[i+1];
 		ComponentBaseRef src = c0.r;
 		ComponentBaseRef dst = c1.r;
-		Eon::ActionNode& n = *ep.plan[c1.plan_i];
+		EonLoopSegment& seg = segments[c1.seg_i];
+		Eon::ActionNode& n = *seg.ep.plan[c1.plan_i];
 		const Eon::WorldState& ws = n.GetWorldState();
 		ValDevCls iface = ws.GetInterface();
 		if (!pool->Link(src, dst, iface)) {
@@ -225,9 +270,13 @@ bool EonLoopLoader::Load() {
 		}
 	}
 	
-	ExtComponentRef comp = added_comps[0].r->AsRef<ExtComponent>();
+	AddedComp& first = added_comps[0];
+	AddedComp& last  = added_comps.Top();
+	EonLoopSegment& first_seg = segments[first.seg_i];
+	EonLoopSegment& last_seg  = segments[last.seg_i];
+	ExtComponentRef comp = first.r->AsRef<ExtComponent>();
 	if (comp) {
-		comp->AddPlan(ep);
+		comp->AddPlan(first_seg.ep);
 	}
 	
 	
@@ -242,7 +291,7 @@ bool EonLoopLoader::Load() {
 	
 	
 	// Add changes to parent state
-	const Eon::WorldState& ret_ws = ep.plan.Top()->GetWorldState();
+	const Eon::WorldState& ret_ws = last_seg.ep.plan.Top()->GetWorldState();
 	if (!scope.current_state.Append(ret_ws, def.ret_list)) {
 		AddError("Invalid type in return value");
 		return false;
@@ -252,37 +301,39 @@ bool EonLoopLoader::Load() {
 	return true;
 }
 
-bool EonLoopLoader::AcceptOutput(EonLoopLoader& out) {
+bool EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == WAITING_SIDE_INPUT);
 	ASSERT(out.status == WAITING_SIDE_OUTPUT);
-	const auto& inputs = planner.GetSideInputs();
-	const auto& outputs = out.planner.GetSideOutputs();
+	auto& inputs = planner.GetSideInputs();
+	auto& outputs = out.planner.GetSideOutputs();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
 	
 	int accepted_count = 0;
-	const Eon::APlanNode* accepted_in = 0;
-	const Eon::APlanNode* accepted_out = 0;
+	accepted_in = 0;
+	accepted_out = 0;
 	
-	for (const Eon::APlanNode* in : inputs) {
-		const Eon::WorldState& in_ws = in->GetWorldState();
+	for (auto& in_state : inputs) {
+		Eon::APlanNode* in = in_state.last;
+		Eon::WorldState& in_ws = in->GetWorldState();
 		ASSERT(in_ws.IsAddExtension());
 		TypeCompCls in_comp = in_ws.GetComponent();
 		TypeExtCls in_type = in_ws.GetExtension();
-		const auto& in_d = Ecs::Factory::CompDataMap().Get(in_comp);
-		const auto& in_e = in_d.ext.Get(in_type);
+		auto& in_d = Ecs::Factory::CompDataMap().Get(in_comp);
+		auto& in_e = in_d.ext.Get(in_type);
 			
-		for (const Eon::APlanNode* out : outputs) {
-			const Eon::WorldState& out_ws = out->GetWorldState();
+		for (auto& out_state : outputs) {
+			Eon::APlanNode* out = out_state.last;
+			Eon::WorldState& out_ws = out->GetWorldState();
 			ASSERT(out_ws.IsAddExtension());
 			TypeCompCls out_comp = out_ws.GetComponent();
 			TypeExtCls out_type = out_ws.GetExtension();
-			const auto& out_d = Ecs::Factory::CompDataMap().Get(out_comp);
-			const auto& out_e = out_d.ext.Get(out_type);
+			auto& out_d = Ecs::Factory::CompDataMap().Get(out_comp);
+			auto& out_e = out_d.ext.Get(out_type);
 			
 			if (in_e.side_fn(out_type, out_ws, in_type, in_ws)) {
 				if (out_e.side_fn(out_type, out_ws, in_type, in_ws)) {
-					accepted_in = in;
-					accepted_out = out;
+					accepted_in = &in_state;
+					accepted_out = &out_state;
 					accepted_count++;
 				}
 			}
@@ -299,6 +350,17 @@ bool EonLoopLoader::AcceptOutput(EonLoopLoader& out) {
 	}
 	
 	return true;
+}
+
+void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, EonLoopLoader* c) {
+	EonLoopSegment& prev = segments.Top();
+	prev.stop_node = state->last;
+	prev.ep.plan = prev.as.ReconstructPath(*state->last);
+	ASSERT(prev.ep.plan.GetCount());
+	EonLoopSegment& seg = segments.Add();
+	seg.start_node = state->last;
+	seg.side_conn = c;
+	seg.as = state->as;
 }
 
 
