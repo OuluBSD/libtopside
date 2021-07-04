@@ -125,6 +125,18 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 		}
 	}
 	
+	// Link side-connections
+	for (EonLoopLoader& loop0 : loops) {
+		for (EonLoopLoader& loop1 : loops) {
+			if (&loop0 != &loop1) {
+				if (!ConnectSides(loop0, loop1)) {
+					AddError("Side connecting failed");
+					return false;
+				}
+			}
+		}
+	}
+	
 	if (scopes.GetCount() >= 2) {
 		EonScope& par = scopes.At(scopes.GetCount()-2);
 		const Eon::WorldState& src_ws = scope.current_state;
@@ -219,6 +231,10 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 					break;
 				}
 				
+				int conn_id = tmp_side_id_counter++;
+				accepted_in_node->last->SetSideInId(conn_id);
+				accepted_out_node->last->SetSideOutId(conn_id);
+				
 				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out);
 				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in);
 			}
@@ -254,6 +270,44 @@ void EonLoader::AddError(String msg) {
 	LOG("EonLoader: error: " + msg);
 }
 
+bool EonLoader::ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1) {
+	
+	for (ComponentBaseRef& in : loop0.comps) {
+		int in_conn = in->GetSideIn();
+		if (in_conn < 0)
+			continue;
+		
+		bool found = false;
+		for (ComponentBaseRef& out : loop1.comps) {
+			int out_conn = out->GetSideOut();
+			if (out_conn < 0)
+				continue;
+			
+			if (in_conn == out_conn) {
+				found = true;
+				
+				if (!out->LinkSideIn(in)) {
+					AddError("Side-output refused linking to side-input");
+					return false;
+				}
+				if (!in->LinkSideOut(out)) {
+					AddError("Side-input refused linking to side-output");
+					return false;
+				}
+				LOG(out->ToString() + "<> side-linked to " + in->ToString() + "<>");
+				break;
+			}
+		}
+		
+		if (!found) {
+			AddError("Could not link connection id " + IntStr(in_conn));
+			return false;
+		}
+	}
+	
+	
+	return true;
+}
 
 
 NAMESPACE_ECS_END

@@ -409,8 +409,8 @@ public:
 };
 
 
-static bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst);
-static bool Convert(const Packet& src, Packet& dst);
+bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst);
+bool Convert(const Packet& src, Packet& dst);
 	
 
 

@@ -5,6 +5,7 @@
 #include <EcsAudioCore/EcsAudioCore.h>
 
 #include "AudioGenerator.h"
+#include "SideExt.h"
 #include "SoundCard.h"
 #include "Verifier.h"
 

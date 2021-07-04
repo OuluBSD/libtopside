@@ -12,5 +12,7 @@ file
 	AudioGenerator.h,
 	AudioGenerator.cpp,
 	SoundCard.h,
+	SideExt.h,
+	SideExt.cpp,
 	SoundCard.cpp;
 

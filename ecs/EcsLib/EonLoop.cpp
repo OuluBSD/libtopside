@@ -165,6 +165,8 @@ bool EonLoopLoader::Load() {
 		ComponentBaseRef r;
 		int plan_i;
 		int seg_i;
+		int side_in;
+		int side_out;
 	};
 	Array<AddedComp> added_comps;
 	
@@ -192,8 +194,16 @@ bool EonLoopLoader::Load() {
 			c.r = cb;
 			c.plan_i = plan_i;
 			c.seg_i = seg_i;
+			c.side_in  = -1;
+			c.side_out = -1;
 		}
 		else if (ws.IsAddExtension()) {
+			POPO(Pol::Ecs::Eon::Loader::CorrespondingAddCompAndExt);
+			auto& c = added_comps.Top();
+			c.side_in = n->GetSideInId();
+			c.side_out = n->GetSideOutId();
+			
+			
 			TypeCompCls comp = ws.GetComponent();
 			TypeExtCls ext = ws.GetExtension();
 			ComponentBaseRef cb = e->GetTypeCls(comp);
@@ -212,6 +222,7 @@ bool EonLoopLoader::Load() {
 					return false;
 				}
 			}
+			
 			
 			// Add arguments to ws
 			for(int i = 0; i < ws.values.GetCount(); i++) {
@@ -268,6 +279,12 @@ bool EonLoopLoader::Load() {
 			AddError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
+		if (c0.side_in >= 0)
+			src->SetSideIn(c0.side_in);
+		if (c0.side_out >= 0)
+			src->SetSideOut(c0.side_out);
+		
+		comps.Add(src);
 	}
 	
 	AddedComp& first = added_comps[0];

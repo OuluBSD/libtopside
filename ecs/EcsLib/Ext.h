@@ -23,6 +23,7 @@ public:
 		vis.VisitThis<ValSource>(this);
 		if (ext) vis % *ext;
 		vis & cust_sys;
+		vis & side_in_conn & side_out_conn;
 	}
 	COPY_PANIC(ExtComponent)
 	IFACE_GENERIC
@@ -100,6 +101,7 @@ private:
 	struct BufferedInput {
 		LocalBufferedValue value;
 		BufferedInput(ExtComponent* par) : value(par) {}
+		~BufferedInput() {value.ClearBuffer();}
 	};
 	struct Input {
 		LocalValue value;
@@ -109,6 +111,7 @@ private:
 		LocalBufferedValue value;
 		LocalBufferedStream stream;
 		BufferedOutput(ExtComponent* par) : value(par), stream(par, value) {}
+		~BufferedOutput() {value.ClearBuffer();}
 	};
 	struct Output {
 		LocalValue value;
@@ -130,6 +133,11 @@ protected:
 	One<BufferedInput>		sink_buf;
 	One<Output>				src;
 	One<BufferedOutput>		src_buf;
+	
+	int						side_in = -1, side_out = -1;
+	ExtComponentRef			side_in_conn, side_out_conn;
+	One<Input>				side_sink;
+	One<BufferedInput>		side_sink_buf;
 	
 	Mutex					lock;
 	LinkedList<Packet>		consumed_packets;
@@ -154,6 +162,17 @@ protected:
 	void					ForwardCustomer(FwdScope& fwd);
 	void					ForwardInput(FwdScope& fwd);
 	void					ForwardOutput(FwdScope& fwd);
+	void					ForwardSideInput(FwdScope& fwd);
+	void					ForwardSideOutput(FwdScope& fwd);
+	void					ForwardConsumed(FwdScope& fwd);
+	void					ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
+	
+	int GetSideIn() override {return side_in;}
+	int GetSideOut() override {return side_out;}
+	void SetSideIn(int i) override {ASSERT(side_in < 0); side_in = i;}
+	void SetSideOut(int i) override {ASSERT(side_out < 0); side_out = i;}
+	bool LinkSideIn(ComponentBaseRef in) override;
+	bool LinkSideOut(ComponentBaseRef out) override;
 	
 public:
 	ExtComponent();
@@ -183,6 +202,8 @@ public:
 	Stream&					GetStream() override {return src.IsEmpty() ? (Stream&)src_buf->stream : (Stream&)src->stream;}
 	Value&					GetSourceValue()     {return src.IsEmpty() ? (Value&)src_buf->value : (Value&)src->value;}
 	
+	// Side-connection
+	Value&					GetSideSinkValue()		{return side_sink.IsEmpty() ? (Value&)side_sink_buf->value : (Value&)side_sink->value;}
 	
 	
 	

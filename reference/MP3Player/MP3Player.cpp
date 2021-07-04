@@ -4,6 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 String file_path;
 bool run_sound_gen;
+bool use_splitted_loop;
 
 
 
@@ -13,6 +14,7 @@ bool MP3PlayerInitializer() {
 	CommandLineArguments cmd;
 	cmd.AddArg('g', "Test sound generator", false);
 	cmd.AddArg('f', "The path for the music file", true, "path");
+	cmd.AddArg('2', "Use secondary mode with splitted eon loops", false);
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
 		return false;
@@ -22,6 +24,7 @@ bool MP3PlayerInitializer() {
 	for(const auto& in : inputs) {
 		if (in.key == 'f') file_path = in.value;
 		if (in.key == 'g') run_sound_gen = true;
+		if (in.key == '2') use_splitted_loop = true;
 	}
 	if (file_path.IsEmpty() && !run_sound_gen) {
 		cmd.PrintHelp();
@@ -66,6 +69,34 @@ loop player.audio.generator: {
 
 )EON_CODE";
 
+
+const char* eon_gen_split_str = R"EON_CODE(
+
+sidechain player.audio.generator: {
+	
+	loop output: {
+		center.customer.mp3player: true;
+		center.audio.src: true;
+		center.audio.src.dbg_generator: true;
+		center.audio.side.out: true;
+		center.audio.side.out.center: true;
+		return has.output: true;
+	};
+	
+	loop input: {
+		center.customer.mp3player: true;
+		center.audio.side.in: true;
+		center.audio.side.in.center: true;
+		center.audio.sink.realtime: true;
+		center.audio.sink.hw: true;
+		return has.input: true;
+	};
+	
+};
+
+)EON_CODE";
+
+
 const char* eon_aud_str = R"EON_CODE(
 
 loop player.audio.ffmpeg: {
@@ -73,6 +104,32 @@ loop player.audio.ffmpeg: {
 	perma.audio.source.decoder: true {filepath: "$FILE"; stop_machine: true;};
 	center.audio.sink.realtime: true;
 	center.audio.sink.hw: true;
+};
+
+)EON_CODE";
+
+
+const char* eon_aud_split_str = R"EON_CODE(
+
+sidechain player.audio.generator: {
+	
+	loop output: {
+		center.customer.mp3player: true;
+		perma.audio.source.decoder: true {filepath: "$FILE"; stop_machine: true;};
+		center.audio.side.out: true;
+		center.audio.side.out.center: true;
+		return has.output: true;
+	};
+	
+	loop input: {
+		center.customer.mp3player: true;
+		center.audio.side.in: true;
+		center.audio.side.in.center: true;
+		center.audio.sink.realtime: true;
+		center.audio.sink.hw: true;
+		return has.input: true;
+	};
+	
 };
 
 )EON_CODE";
@@ -132,10 +189,17 @@ void Main() {
 				PoolRef root = es->GetRoot();
 				
 				String eon_str;
-				if (run_sound_gen)
-					eon_str = eon_gen_str;
+				if (run_sound_gen) {
+					if (!use_splitted_loop)
+						eon_str = eon_gen_str;
+					else
+						eon_str = eon_gen_split_str;
+				}
 				else {
-					eon_str = eon_aud_str;
+					if (!use_splitted_loop)
+						eon_str = eon_aud_str;
+					else
+						eon_str = eon_aud_split_str;
 					eon_str.Replace("$FILE", file_path);
 				}
 				LOG(eon_str);

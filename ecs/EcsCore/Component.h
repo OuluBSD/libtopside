@@ -23,6 +23,8 @@ public:
 	virtual void Forward(FwdScope& fwd) = 0;
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
+	virtual bool LinkSideIn(ComponentExtBase& in) {return true;}
+	virtual bool LinkSideOut(ComponentExtBase& out) {return true;}
 	
 	Ref<ComponentExtBase> AsRefT() {return Ref<ComponentExtBase>(GetParent(), this);}
 	
@@ -62,6 +64,12 @@ public:
 	virtual bool SetExtension(ComponentExtBase* ext) {return false;}
 	virtual void ClearExtension() {}
 	virtual ComponentExtBaseRef GetExtension() {return ComponentExtBaseRef();}
+	virtual int GetSideIn() {return -1;}
+	virtual int GetSideOut() {return -1;}
+	virtual void SetSideIn(int i) {Panic("Unimplemented");}
+	virtual void SetSideOut(int i) {Panic("Unimplemented");}
+	virtual bool LinkSideIn(ComponentBaseRef in) {Panic("Unimplemented"); return false;}
+	virtual bool LinkSideOut(ComponentBaseRef out) {Panic("Unimplemented"); return false;}
 	
 	ValCls GetValSpec() const {return GetType().side.vd.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().side.vd.val;}

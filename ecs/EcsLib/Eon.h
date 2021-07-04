@@ -70,6 +70,8 @@ protected:
 	Status						status = NOT_READY;
 	const Eon::APlanNode*		accepted_side_node = 0;
 	
+	Array<ComponentBaseRef>		comps;
+	
 	
 	void SetupSegment(EonLoopSegment& s);
 	
@@ -107,6 +109,7 @@ protected:
 	
 	Eon::WorldState def_ws;
 	Eon::ActionPlanner def_planner;
+	int tmp_side_id_counter = 0;
 	
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
@@ -142,7 +145,7 @@ protected:
 	bool LoadSidechainDefinition(Eon::SidechainDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	bool SolveLoops(Eon::SidechainDefinition& def);
-	
+	bool ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
 	
 	
 	

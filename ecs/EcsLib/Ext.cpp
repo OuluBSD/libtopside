@@ -16,6 +16,15 @@ ExtComponent::ExtComponent()
 ExtComponent::~ExtComponent() {ASSERT(ext.IsEmpty());}
 
 void ExtComponent::Initialize() {
+	// unlinked
+	if (this == (void*)0x802160900) {
+		LOG("");
+	}
+	// linked
+	if (this == (void*)0x802059300) {
+		LOG("");
+	}
+	
 	ASSERT(type.IsValid());
 	if (type.sub == SubCompCls::CUSTOMER) {
 		customer.Create();
@@ -40,6 +49,24 @@ void ExtComponent::Initialize() {
 	else
 		src.Create(this);
 	
+	/*if (type.sub == SubCompCls::SIDE_OUTPUT) {
+		if (type.side.vd.val == ValCls::AUDIO)
+			side_src_buf.Create(this);
+		else
+			side_src.Create(this);
+		Format side_src_fmt = GetDefaultFormat(type.side.vd);
+		GetSideSourceValue().SetFormat(side_src_fmt);
+	}*/
+	
+	if (type.sub == SubCompCls::SIDE_INPUT) {
+		if (type.side.vd.val == ValCls::AUDIO)
+			side_sink_buf.Create(this);
+		else
+			side_sink.Create(this);
+		Format side_sink_fmt = GetDefaultFormat(type.side.vd);
+		GetSideSinkValue().SetFormat(side_sink_fmt);
+	}
+	
 	GetSinkValue().SetFormat(sink_fmt);
 	GetSourceValue().SetFormat(src_fmt);
 	
@@ -56,6 +83,15 @@ void ExtComponent::OnLink(ExchangeSourceProviderRef src, CookieRef src_c, Cookie
 }
 
 void ExtComponent::Uninitialize() {
+	/*sink.Clear();
+	sink_buf.Clear();
+	src.Clear();
+	src_buf.Clear();*/
+	side_in_conn.Clear();
+	side_out_conn.Clear();
+	side_sink.Clear();
+	side_sink_buf.Clear();
+	
 	if (customer) {
 		ExtSystemRef sys = GetMachine().TryGet<ExtSystem>();
 		if (sys)
@@ -95,6 +131,10 @@ void ExtComponent::Forward(FwdScope& fwd) {
 		ForwardInput(fwd);
 	else if (type.sub == SubCompCls::OUTPUT)
 		ForwardOutput(fwd);
+	else if (type.sub == SubCompCls::SIDE_INPUT)
+		ForwardSideInput(fwd);
+	else if (type.sub == SubCompCls::SIDE_OUTPUT)
+		ForwardSideOutput(fwd);
 	else
 		TODO
 }
@@ -108,7 +148,7 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 		Value& src_value = GetSourceValue();
 		
 		if (src_value.IsQueueFull()) {
-			RTLOG("ExtComponent::Forward: customer: skipping order, because queue is full");
+			RTLOG("ExtComponent::ForwardCustomer: customer: skipping order, because queue is full");
 			return;
 		}
 		
@@ -119,7 +159,7 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 		
 		Format fmt = GetSourceValue().GetFormat();
 		ASSERT(fmt.IsValid());
-		RTLOG("ExtComponent::Forward: customer: sending order " << off.ToString() << " in format: " << fmt.ToString());
+		RTLOG("ExtComponent::ForwardCustomer: customer: sending order " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
 		//DUMP(c.plans.GetCount());
@@ -132,7 +172,7 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 		WhenEnterCreatedEmptyPacket(p);
 		WhenLeaveCreatedEmptyPacket();
 		
-		PacketTracker::Track(TrackerInfo("ExtComponent::Forward", __FILE__, __LINE__), *p);
+		PacketTracker::Track(TrackerInfo("ExtComponent::ForwardCustomer", __FILE__, __LINE__), *p);
 		src_value.GetBuffer().Add(p);
 		packets_forwarded++;
 	}
@@ -143,7 +183,7 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 		for (Packet& p : buf) {
 			off32 off = p->GetOffset();
 			c.unfulfilled_offsets.RemoveKey(off.value);
-			RTLOG("ExtComponent::Forward: customer: removing fulfilled packet " << off.ToString());
+			RTLOG("ExtComponent::ForwardCustomer: customer: removing fulfilled packet " << off.ToString());
 		}
 		buf.Clear();
 		
@@ -158,12 +198,10 @@ void ExtComponent::ForwardCustomer(FwdScope& fwd) {
 }
 
 void ExtComponent::ForwardInput(FwdScope& fwd) {
-	ValSource& iface_src = *this;
-	ValSink& iface_sink = *this;
-	Value& sink_val = iface_sink.GetValue();
-	
 	
 	// From source
+	ValSink& iface_sink = *this;
+	Value& sink_val = iface_sink.GetValue();
 	SimpleBufferedValue* sink_buf_val;
 	SimpleValue* sink_sval;
 	PacketBuffer* sink_buf;
@@ -175,8 +213,14 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 	}
 	else TODO
 	
+	ForwardInputBuffer(fwd, *sink_buf);
+}
+
+
+void ExtComponent::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	
 	// To sink
+	ValSource& iface_src = *this;
 	Value& val = iface_src.GetStream().Get();
 	SimpleValue* sval;
 	SimpleBufferedValue* sbcal;
@@ -189,16 +233,16 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 	}
 	else TODO
 	
-	RTLOG("ExtComponent::ForwardInput: pre sink=" << sink_buf->GetCount() << ", src=" << val.GetBuffer().GetCount());
+	RTLOG("ExtComponent::ForwardInput: pre sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount());
 	Format fmt = GetSourceValue().GetFormat();
 	
-	while (sink_buf->GetCount() && !val.IsQueueFull()) {
+	while (sink_buf.GetCount() && !val.IsQueueFull()) {
 		if (ext && !ext->IsReady(fmt.vd))
 			break;
-		Packet in = sink_buf->First();
-		sink_buf->RemoveFirst();
+		Packet in = sink_buf.First();
+		sink_buf.RemoveFirst();
 		
-		//int c = sink_buf->IsEmpty() ? 100 : 1;
+		//int c = sink_buf.IsEmpty() ? 100 : 1;
 		
 		//for(int i = 0; i < c && !val.IsQueueFull(); i++) {
 		off32 off = in->GetOffset();
@@ -246,12 +290,14 @@ void ExtComponent::ForwardInput(FwdScope& fwd) {
 			src_total += p->GetSizeBytes();
 			src_ch_samples += p->GetSizeChannelSamples();
 		}
-		RTLOG("ExtComponent::ForwardInput: post sink=" << sink_buf->GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << " bytes, " << src_ch_samples << " ch-samples)");
+		RTLOG("ExtComponent::ForwardInput: post sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << " bytes, " << src_ch_samples << " ch-samples)");
 	}
 	
 }
 
 void ExtComponent::ForwardOutput(FwdScope& fwd) {
+	POPO(Pol::Ecs::ExtComp::ConsumerFirst);
+	POPO(Pol::Ecs::ExtComp::SkipDulicateExtFwd);
 	if (fwd.GetPos() > 0) {
 		if (this->ext)
 			this->ext->Forward(fwd);
@@ -260,6 +306,11 @@ void ExtComponent::ForwardOutput(FwdScope& fwd) {
 		RTLOG("ExtComponent::ForwardOutput: skip duplicate extension forward");
 	}
 	
+	
+	ForwardConsumed(fwd);
+}
+
+void ExtComponent::ForwardConsumed(FwdScope& fwd) {
 	Value& sink_value = GetSinkValue();
 	Value& src_value = GetSourceValue();
 	auto& sink_buf = sink_value.GetBuffer();
@@ -289,7 +340,7 @@ void ExtComponent::ForwardOutput(FwdScope& fwd) {
 		data.pos = 0;
 		data.count = 1;
 		
-		if (ext) {
+		if (ext && type.sub != SubCompCls::SIDE_OUTPUT) {
 			WhenEnterStorePacket(*ext, to);
 			
 			ext->StorePacket(to);
@@ -313,6 +364,101 @@ void ExtComponent::ForwardOutput(FwdScope& fwd) {
 		packets_forwarded++;
 	}
 	
+}
+
+void ExtComponent::ForwardSideInput(FwdScope& fwd) {
+	POPO(Pol::Ecs::ExtComp::ConsumerFirst);
+	POPO(Pol::Ecs::ExtComp::SkipDulicateExtFwd);
+	if (fwd.GetPos() > 0) {
+		if (this->ext)
+			this->ext->Forward(fwd);
+	}
+	else {
+		RTLOG("ExtComponent::ForwardSideInput: skip duplicate extension forward");
+	}
+	
+	Value& sink_value = GetSinkValue();
+	auto& sink_buf = sink_value.GetBuffer();
+	Format sink_fmt = sink_value.GetFormat();
+	
+	Value& side_sink_value = GetSideSinkValue();
+	auto& side_sink_buf = side_sink_value.GetBuffer();
+	Format side_sink_fmt = side_sink_value.GetFormat();
+	
+	Value& src_value = GetSourceValue();
+	auto& src_buf = src_value.GetBuffer();
+	Format src_fmt = src_value.GetFormat();
+	
+	while (sink_buf.GetCount() && side_sink_buf.GetCount() && !src_value.IsQueueFull()) {
+		Packet side_p = side_sink_buf.First();
+		Packet sink_p = sink_buf.First();
+		side_sink_buf.RemoveFirst();
+		sink_buf.RemoveFirst();
+		
+		PacketTracker::StopTracking(TrackerInfo("ExtComponent::ForwardSideInput", __FILE__, __LINE__), sink_p);
+		off32 off = sink_p->GetOffset();
+		sink_p.Clear();
+		
+		RTLOG("ExtComponent::ForwardSideInput: forwarding side packet in format: " << side_p->GetFormat().ToString());
+		
+		if (side_p->GetFormat() == src_fmt) {
+			side_p->SetOffset(off);
+			src_buf.Add(side_p);
+		}
+		else {
+			Packet dst = CreatePacket(off);
+			if (Convert(side_p, dst))
+				src_buf.Add(dst);
+			else {
+				RTLOG("ExtComponent::ForwardSideInput: error: packet conversion failed");
+			}
+		}
+	}
+}
+
+void ExtComponent::ForwardSideOutput(FwdScope& fwd) {
+	POPO(Pol::Ecs::ExtComp::ConsumerFirst);
+	POPO(Pol::Ecs::ExtComp::SkipDulicateExtFwd);
+	if (fwd.GetPos() > 0) {
+		if (this->ext)
+			this->ext->Forward(fwd);
+	}
+	else {
+		RTLOG("ExtComponent::ForwardOutput: skip duplicate extension forward");
+	}
+	
+	Value& sink_value = GetSinkValue();
+	auto& sink_buf = sink_value.GetBuffer();
+	
+	
+	//LOG(HexStr((void*)this) << " side_in_conn = " << HexStr(side_in_conn.Get()));
+	ASSERT(side_in_conn);
+	Value& side_sink_value = side_in_conn->GetSideSinkValue();
+	auto& side_sink_buf = side_sink_value.GetBuffer();
+	Format side_sink_fmt = side_sink_value.GetFormat();
+	
+	while (sink_buf.GetCount() && !side_sink_value.IsQueueFull()) {
+		Packet in = sink_buf.First();
+		sink_buf.RemoveFirst();
+		
+		off32 o = in->GetOffset();
+		
+		RTLOG("ExtComponent::ForwardSideOutput: sending side-out packet(" << o.ToString() << ")");
+		
+		consumed_packets.Add(in);
+		
+		if (in->GetFormat() != side_sink_fmt) {
+			Packet dst = CreatePacket(o);
+			dst->SetFormat(side_sink_fmt);
+			Convert(in, dst);
+			in = dst;
+		}
+		
+		side_sink_buf.Add(in);
+	}
+	
+	
+	ForwardConsumed(fwd);
 }
 
 void ExtComponent::ForwardExchange(FwdScope& fwd) {
@@ -430,6 +576,45 @@ bool ExtComponent::ForwardMem(void* mem, size_t mem_size) {
 		}
 	}
 	return false;
+}
+
+bool ExtComponent::LinkSideIn(ComponentBaseRef in) {
+	ExtComponentRef ein = in;
+	ASSERT(ein);
+	ASSERT(!side_in_conn);
+	if (!ein)
+		return false;
+	
+	ASSERT(ein->type.sub == SubCompCls::SIDE_INPUT);
+	if (ext && ein->ext) {
+		if (ext->LinkSideIn(*ein->ext)) {
+			side_in_conn = ein;
+			LOG(HexStr((void*)this) << " side_in_conn = " << HexStr(&*side_in_conn));
+			return true;
+		}
+		return false;
+	}
+	
+	return true;
+}
+
+bool ExtComponent::LinkSideOut(ComponentBaseRef out) {
+	ExtComponentRef eout = out;
+	ASSERT(eout);
+	if (!eout)
+		return false;
+	
+	ASSERT(eout->type.sub == SubCompCls::SIDE_OUTPUT);
+	if (ext && eout->ext) {
+		if (ext->LinkSideOut(*eout->ext)) {
+			side_out_conn = eout;
+			LOG(HexStr((void*)this) << " side_out_conn = " << HexStr(&*side_out_conn));
+			return true;
+		}
+		return false;
+	}
+	
+	return true;
 }
 
 

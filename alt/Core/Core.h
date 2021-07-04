@@ -31,6 +31,8 @@
 
 
 
+#include <SharedCore/Policies.h>
+
 #include "Config.h"
 #include "Defs.h"
 #include <SharedCore/RTTIDummy.h>

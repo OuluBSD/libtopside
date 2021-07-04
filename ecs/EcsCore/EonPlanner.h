@@ -104,6 +104,7 @@ class ActionNode : RTTIBase {
 	
 	ActionPlanner* ap;
 	ActionNode* goal;
+	int side_in = -1, side_out = -1;
 	
 public:
 	RTTI_DECL0(ActionNode)
@@ -116,6 +117,8 @@ public:
 	void SetGoal(ActionNode& ws) {goal = &ws;}
 	void SetWorldState(WorldState& ws) {this->ws = &ws;}
 	void SetCost(double d) {cost = d;}
+	void SetSideInId(int i) {side_in = i;}
+	void SetSideOutId(int i) {side_out = i;}
 	void IncLinked() {linked_count++;}
 	void ResetLinked() {linked_count=0;}
 	
@@ -127,6 +130,8 @@ public:
 	double GetEstimate();
 	double GetCost() const {return cost;}
 	int GetLinkedCount() const {return linked_count;}
+	int GetSideInId() const {return side_in;}
+	int GetSideOutId() const {return side_out;}
 	
 	bool Contains(const ActionNode& n) const;
 	
