@@ -8,6 +8,7 @@
 #include "SideExt.h"
 #include "SoundCard.h"
 #include "Verifier.h"
+#include "Testers.h"
 
 
 

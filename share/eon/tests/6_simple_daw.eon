@@ -1,0 +1,20 @@
+machine local: {
+	at.host: "main";
+	at.host.audio.hw: true;
+	
+	sidechain process: {
+		loop midi_in: {
+		};
+		loop ch0: {
+		};
+		loop ch1: {
+		};
+		loop side_chain_ch: {
+		};
+		loop master_out: {
+		};
+		loop audio_out: {
+		};
+	};
+};
+

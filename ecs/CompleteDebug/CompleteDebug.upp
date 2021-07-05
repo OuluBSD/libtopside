@@ -1,7 +1,8 @@
 description "\377B0,128,128";
 
 uses
-	EcsDebug;
+	EcsDebug,
+	EcsLocal;
 
 file
 	CompleteDebug.h,

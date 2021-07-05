@@ -1,0 +1,10 @@
+- client/server
+	- internet radio
+
+- converters
+	- midi to mp3
+	- internet video addr to mp3
+
+- funny
+	- old tv effect video player
+

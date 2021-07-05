@@ -1,0 +1,22 @@
+machine local: {
+	at.host: "main";
+	at.host.opengl: true;
+	
+	sidechain process: {
+		loop local_in: {
+		};
+		loop local_out: {
+		};
+		loop local_slot1_in: {
+		};
+		loop local_slot2_in: {
+		};
+		loop accel_slot1_in: {
+		};
+		loop accel_slot2_in: {
+		};
+		loop accel_pipeline: {
+		};
+	};
+};
+
