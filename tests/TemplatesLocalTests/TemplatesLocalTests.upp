@@ -1,7 +1,7 @@
 uses
 	TemplatesLocal,
 	EcsNonGUI,
-	EcsDebug;
+	CompleteDebug;
 
 file
 	Notes.txt,

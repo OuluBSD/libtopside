@@ -200,6 +200,14 @@ public:
 	
 };
 
+class ConverterExt : public ComponentExtBase {
+	
+public:
+	RTTI_DECL1(ConverterExt, ComponentExtBase);
+	using Ext = ConverterExt;
+	
+	
+};
 
 #if 0
 

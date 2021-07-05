@@ -73,7 +73,7 @@ public:
 	void VisitThis(T* o) {
 		ASSERT(o);
 		if (break_out) return;
-		if (OnEntry(o->GetRTTI(), T::TypeIdClass(), T::GetTypeName(), o, GetRefCounter(o))) {
+		if (OnEntry(o->GetRTTI(), GetTypeIdClass<T>(), GetTypeNameT<T>(), o, GetRefCounter(o))) {
 			o->T::Visit(*this);
 			OnExit();
 		}
@@ -83,7 +83,7 @@ public:
 	void VisitThisPure(T* o) {
 		ASSERT(o);
 		if (break_out) return;
-		if (OnEntry(o->GetRTTI(), T::TypeIdClass(), T::GetTypeName(), o, GetRefCounter(o))) {
+		if (OnEntry(o->GetRTTI(), GetTypeIdClass<T>(), GetTypeNameT<T>(), o, GetRefCounter(o))) {
 			// Pass actual visit
 			OnExit();
 		}
@@ -92,7 +92,7 @@ public:
 	template <class T>
 	void Visit(T& o) {
 		if (break_out) return;
-		if (OnEntry(o.GetRTTI(), T::TypeIdClass(), T::GetTypeName(), &o, GetRefCounter(&o))) {
+		if (OnEntry(o.GetRTTI(), GetTypeIdClass<T>(), GetTypeNameT<T>(), &o, GetRefCounter(&o))) {
 			o.Visit(*this);
 			OnExit();
 		}
@@ -103,7 +103,7 @@ public:
 		if (clear_refs)
 			o.Clear();
 		else if (o)
-			OnRef(o->GetRTTI(), T::Type::TypeIdClass(), T::Type::GetTypeName(), &o, GetRefCounter(o.Get()));
+			OnRef(o->GetRTTI(), GetTypeIdClass<typename T::Type>(), GetTypeNameT<typename T::Type>(), &o, GetRefCounter(o.Get()));
 	}
 	
 	template <class T>

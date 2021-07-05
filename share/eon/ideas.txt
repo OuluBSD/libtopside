@@ -6,5 +6,6 @@
 	- internet video addr to mp3
 
 - funny
+	- fade between multiple audio files
 	- old tv effect video player
 

@@ -32,6 +32,7 @@ protected:
 	Vector<bool>				using_act;
 	TypeCompCls					cur_comp;
 	TypeExtCls					add_ext;
+	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
 public:
@@ -49,6 +50,7 @@ public:
 	void SetFalse(const String& key) {Set(key, false);}
 	void SetAs_AddExtension(TypeCompCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
 	void SetAs_AddComponent(TypeCompCls comp) {type = ADD_COMP; cur_comp = comp;}
+	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddComponent() const {return type == ADD_COMP;}
@@ -60,7 +62,9 @@ public:
 	TypeCompCls GetComponent() const {return cur_comp;}
 	TypeExtCls GetExtension() const {return add_ext;}
 	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}
+	const ValDevCls& GetSideCls() const {return side_vd;}
 	String ToString() const;
+	String GetFullString() const;
 	bool Contains(const WorldState& ws) const;
 	
 	WorldState& operator=(const WorldState& src);
@@ -79,8 +83,9 @@ protected:
 	friend class ActionPlannerWrapper;
 	friend class Factory;
 	
-	WorldState precond, postcond;
-	double cost;
+	WorldState				precond;
+	WorldState				postcond;
+	double					cost;
 	
 public:
 
@@ -98,13 +103,14 @@ public:
 };
 
 class ActionNode : RTTIBase {
-	WorldState* ws;
-	double cost;
-	int linked_count = 0;
+	WorldState*			ws;
+	double				cost;
+	int					linked_count = 0;
 	
-	ActionPlanner* ap;
-	ActionNode* goal;
-	int side_in = -1, side_out = -1;
+	ActionPlanner*		ap;
+	ActionNode*			goal;
+	int					side_in = -1;
+	int					side_out = -1;
 	
 public:
 	RTTI_DECL0(ActionNode)

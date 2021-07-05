@@ -1,0 +1,8 @@
+description "\377B207,172,0";
+
+uses
+	Local;
+
+file
+	MusicCore.h;
+

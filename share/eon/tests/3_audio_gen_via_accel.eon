@@ -1,18 +1,23 @@
 sidechain tester: {
 	
-	loop center.audio.sync: {
-		center.accel.order.side.out: true;
+	loop center.audio.input: {
+		customer.test.input: true;
+		center.midi.side.out.accel: true;
 	};
 	
 	loop accel.audio.output: {
-		accel.center.order.side.in: true;
-		accel.filename: "${FILE}";
-		accel.center.audio.side.out: true;
+		accel.midi.src: false;
+		accel.midi.side.in.center: true;
+		accel.midi.convert.audio: true;
+		accel.audio.side.out: true;
+		accel.audio.side.out.center: true;
 	};
 	
 	loop center.audio.output: {
-		center.accel.audio.side.in: true;
-		center.audio.sink.realtime: true;
+		customer.test.output: true;
+		accel.audio.src: false;
+		center.audio.side.in.accel: true;
+		center.audio.sink.test.realtime: true;
 	};
 	
 };

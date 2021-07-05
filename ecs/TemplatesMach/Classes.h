@@ -16,6 +16,7 @@ struct ValCls : Moveable<ValCls> {
 		INVALID,
 		AUDIO,
 		VIDEO,
+		MIDI,
 		EVENT,
 		DATA,
 		ORDER,
@@ -25,6 +26,7 @@ struct ValCls : Moveable<ValCls> {
 		
 		Audio = AUDIO,
 		Video = VIDEO,
+		Midi = MIDI,
 		Event = EVENT,
 		Data = DATA,
 		Order = ORDER,
@@ -39,6 +41,7 @@ struct ValCls : Moveable<ValCls> {
 	ValCls(const ValCls& v) : type(v.type) {}
 	void Clear() {type = INVALID;}
 	String GetName() const {return GetName(type);}
+	String GetActionName() const {return ToLower(GetName());}
 	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
 	void operator=(const Nuller& n) {type = INVALID;}
@@ -72,9 +75,11 @@ struct DevCls : Moveable<DevCls> {
 	DevCls(Type t) : type(t) {}
 	DevCls(const DevCls& v) : type(v.type) {}
 	String GetName() const {return GetName(type);}
+	String GetActionName() const {return ToLower(GetName());}
 	void Clear() {type = INVALID;}
 	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
+	static Type Get(String s);
 	void operator=(const Nuller& n) {type = INVALID;}
 	void operator=(const DevCls& n) {type = n.type;}
 	bool operator==(const DevCls& c) const {return type == c.type;}
@@ -128,6 +133,7 @@ struct EcsTypeCls : Moveable<EcsTypeCls> {
 		EXT_TEST_AUDIO_OUT,
 		EXT_TEST_SIDE_IN,
 		EXT_TEST_SIDE_OUT,
+		EXT_DBG_CONVERTER,
 		
 		TYPE_COUNT
 	} Type;
@@ -158,6 +164,7 @@ typedef enum : byte {
 	CUSTOMER,
 	INPUT,
 	OUTPUT,
+	CONVERTER,
 	PIPE,
 	SIDE_INPUT,
 	SIDE_OUTPUT,
@@ -215,6 +222,7 @@ struct TypeExtCls : Moveable<TypeExtCls> {
 				ext == c.ext;
 	}
 	bool operator!=(const TypeExtCls& c) const {return !(*this == c);}
+	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ")";}
 	
 };
 

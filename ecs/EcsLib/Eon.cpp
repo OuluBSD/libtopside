@@ -237,8 +237,8 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 				accepted_in_node->last->SetSideInId(conn_id);
 				accepted_out_node->last->SetSideOutId(conn_id);
 				
-				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out);
-				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in);
+				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out,	accepted_out_node);
+				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in,				accepted_in_node);
 			}
 			
 		}

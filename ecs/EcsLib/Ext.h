@@ -43,6 +43,9 @@ public:
 		else if (cls.sub == SubCompCls::SIDE_OUTPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".side.out")
 		}
+		else if (cls.sub == SubCompCls::CONVERTER) {
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".convert")
+		}
 		else {
 			//COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.GetActionName() + ".side")
 		}

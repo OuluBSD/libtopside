@@ -18,7 +18,7 @@ public:
 	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("test.customer.single")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.single")
 	COMP_MAKE_ACTION_END
 	
 	
@@ -38,7 +38,7 @@ public:
 	void Forward(FwdScope& fwd) override {LOG("TestInputCustomer::Forward");}
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("test.customer.input")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.input")
 	COMP_MAKE_ACTION_END
 	
 	
@@ -58,7 +58,7 @@ public:
 	void Forward(FwdScope& fwd) override {LOG("TestOutputCustomer::Forward");}
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("test.customer.output")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.output")
 	COMP_MAKE_ACTION_END
 	
 	
@@ -83,7 +83,7 @@ public:
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("test.class.test_rt_src")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")
 	COMP_MAKE_ACTION_END
 	
 	
@@ -110,7 +110,7 @@ public:
 	void IntervalSinkProcess();
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("test.center.audio.sink.realtime")
+		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.test.realtime")
 	COMP_MAKE_ACTION_END
 	
 	

@@ -5,12 +5,8 @@ NAMESPACE_UPP
 
 
 #ifdef flagSTDRTTI
+struct RTTI;
 
-struct RTTI {
-	const char* GetDynamicName() const {return "<unknown>";}
-	RTTI& GetRTTI() {return *this;}
-	const RTTI& GetRTTI() const {return *this;}
-};
 struct TypeCls : std::reference_wrapper<const std::type_info> {
 	using ti = std::reference_wrapper<const std::type_info>;
 	TypeCls() : ti(typeid(void)) {}
@@ -18,17 +14,28 @@ struct TypeCls : std::reference_wrapper<const std::type_info> {
 	TypeCls(const ti& t) : ti(t) {}
 	TypeCls(const std::type_info& t) : ti(t) {}
 	void operator=(const TypeCls& t) {ti::operator=(t);}
-	void operator=(const RTTI& t) {ti::operator=(typeid(t));}
+	void operator=(const RTTI& t);
 	hash_t GetHashValue() const {return ti::get().hash_code();}
 	bool operator==(const TypeCls& t) const {return GetHashValue() == t.GetHashValue();}
 };
+
+struct RTTI {
+	const char* GetDynamicName() const {return "<unknown>";}
+	RTTI& GetRTTI() {return *this;}
+	const RTTI& GetRTTI() const {return *this;}
+	TypeCls GetTypeId() const {TODO}
+};
+
+inline void TypeCls::operator=(const RTTI& t) {ti::operator=(typeid(t));}
+
 template <class T> TypeCls AsTypeCls() {return typeid(T);}
 template <class T> TypeCls AsTypeId(const T& o) {return typeid(T);}
 template <class T> const char* AsTypeName() {return typeid(T).name();}
 #define AsVoidTypeId() typeid(void)
 #define AsVoidTypeCls() typeid(void)
 
-
+template <class T> TypeCls GetTypeIdClass() {return typeid(T);}
+template <class T> const char* GetTypeNameT() {return typeid(T).name();}
 
 #endif
 

@@ -43,6 +43,7 @@
 #include "Hash.h"
 #include "Algo.h"
 #include "String_.h"
+#include <SharedCore/String.h>
 #include "Tuple.h"
 #include <SharedCore/Container.h>
 #include "Vector.h"
@@ -60,6 +61,7 @@
 #include "Ptr.h"
 #include "Value.h"
 #include <SharedCore/Object.h>
+#include <SharedCore/TokenParser.h>
 #include "Parser.h"
 #include "JSON.h"
 #include "System.h"

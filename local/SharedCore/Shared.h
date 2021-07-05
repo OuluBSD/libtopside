@@ -1,6 +1,7 @@
 #ifndef _CoreAlt_Shared_h_
 #define _CoreAlt_Shared_h_
 
+
 NAMESPACE_UPP
 
 

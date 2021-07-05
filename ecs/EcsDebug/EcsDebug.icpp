@@ -4,6 +4,20 @@ NAMESPACE_UPP
 
 
 
+#define FROM_VALDEV(fdev, fval) \
+	TO_DEV(fdev, fval, CENTER) \
+	TO_DEV(fdev, fval, ACCEL) \
+
+
+#define FROM_DEV(fdev) \
+	FROM_VALDEV(fdev, AUDIO) \
+	FROM_VALDEV(fdev, VIDEO) \
+	FROM_VALDEV(fdev, MIDI) \
+
+
+#define SIDE_DEV_LIST \
+	FROM_DEV(CENTER) \
+	FROM_DEV(ACCEL) \
 
 
 
@@ -11,8 +25,17 @@ INITBLOCK {
 	using namespace Ecs;
 	
 	REG_EXT(DebugAudioGeneratorExt,		INPUT,			CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
-	REG_EXT(DebugAudioSideInputExt,		SIDE_INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
-	REG_EXT(DebugAudioSideOutputExt,	SIDE_OUTPUT,	CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
+	
+	
+	#define TO_DEV(fdev, val, tdev) \
+		REG_EXT_(DebugSideOutputExt,	SIDE_OUTPUT,	fdev,val,		fdev,val,		fdev,RECEIPT,		tdev,val); \
+		REG_EXT_(DebugSideInputExt,		SIDE_INPUT,		fdev,ORDER,		fdev,val,		fdev,val,			tdev,val); \
+		
+		
+	SIDE_DEV_LIST
+	
+	
+	REG_EXT(DebugConverterExt,		CONVERTER,		ACCEL,MIDI,			ACCEL,AUDIO,	ACCEL,AUDIO);
 	
 	REG_EXT(TestCustomer,			CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
 	REG_EXT(TestInputCustomer,		CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);

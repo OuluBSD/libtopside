@@ -55,9 +55,23 @@ int64 WorldState::GetHashValue() const {
 	c.Put((int)type);
 	c.Put(cur_comp.GetHashValue());
 	c.Put(add_ext.GetHashValue());
-	for(int i = 0; i < values.GetCount(); i++) {
-		c.Put(using_act[i]);
-		c.Put(values[i].GetHashValue());
+	c.Put(side_vd.GetHashValue());
+	bool begun = false;
+	for(int i = values.GetCount()-1; i >= 0; i--) {
+		bool b = using_act[i];
+		if (begun) {
+			c.Put(b);
+			if (b) {
+				c.Put(values[i].GetHashValue());
+			}
+		}
+		else {
+			if (b) {
+				c.Put(b);
+				begun = true;
+				c.Put(values[i].GetHashValue());
+			}
+		}
 	}
 	return c;
 }
@@ -135,6 +149,18 @@ String WorldState::ToString() const {
 			s << ",";
 		s << k << "=" << v;
 	}
+	return s;
+}
+
+String WorldState::GetFullString() const {
+	String s;
+	if (IsAddComponent())
+		s << "add-comp " << cur_comp.ToString() << " ";
+	else if (IsAddExtension())
+		s << "add-ext " << cur_comp.ToString() << " " << add_ext.ToString() << " ";
+	if (side_vd.IsValid())
+		s << "side-vd=" << side_vd.ToString() << " ";
+	s << ToString();
 	return s;
 }
 
@@ -335,6 +361,10 @@ void ActionPlanner::AddSideOutput(const Searcher& as, ANode& n) {
 		side_outputs.Clear();
 	}
 	if (est <= side_out_max_est) {
+		/*hash_t h = n.GetWorldState().GetHashValue();
+		for (State& s : side_outputs)
+			if (s.last->GetWorldState().GetHashValue() == h)
+				return;*/
 		State& s = side_outputs.Add();
 		s.last = &n;
 		s.as = as;

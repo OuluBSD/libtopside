@@ -16,7 +16,7 @@ void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
 	
 	
 	// Do the action plan searching
-	s.as.SetLimit(1000);
+	s.as.SetLimit(10000);
 	
 }
 
@@ -27,12 +27,16 @@ bool EonLoopLoader::Forward() {
 	
 	
 	if (segments.GetCount() == 0) {
+		DevCls dev = DevCls::Get(def.id.parts.First());
+		if (!dev.IsValid())
+			dev = DevCls::CENTER;
+		
 		// Prepare action planner and world states
 		int CONNECTED = planner.GetAddAtom("loop.connected");
 		CompCls customer;
-		customer.sink = VD(DevCls::CENTER, ValCls::RECEIPT);
-		customer.side = VD(DevCls::CENTER, ValCls::ORDER);
-		customer.src  = VD(DevCls::CENTER, ValCls::ORDER);
+		customer.sink = ValDevCls(dev, ValCls::RECEIPT);
+		customer.side = ValDevCls(dev, ValCls::ORDER);
+		customer.src  = ValDevCls(dev, ValCls::ORDER);
 		
 		start = scope.current_state;
 		start.SetActionPlanner(planner);
@@ -111,6 +115,7 @@ bool EonLoopLoader::Forward() {
 			for(int i = 0; i < outputs.GetCount(); i++) {
 				auto& state = outputs[i];
 				const Eon::WorldState& ws = state.last->GetWorldState();
+				//LOG(i << ": " << state.last->GetEstimate() << ": " << ws.GetFullString());
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
 			status = WAITING_SIDE_OUTPUT;
@@ -369,7 +374,7 @@ bool EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*&
 	return true;
 }
 
-void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, EonLoopLoader* c) {
+void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, EonLoopLoader* c, Eon::ActionPlanner::State* side_state) {
 	EonLoopSegment& prev = segments.Top();
 	prev.stop_node = state->last;
 	prev.ep.plan = prev.as.ReconstructPath(*state->last);

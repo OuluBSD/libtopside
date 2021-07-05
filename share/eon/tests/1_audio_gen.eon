@@ -1,7 +1,6 @@
 loop tester.generator: {
-	test.customer.single: true;
-	test.class.test_rt_src: true;
-	test.center.audio.src: true;
-	test.center.audio.sink: true;
-	test.center.audio.sink.realtime: true;
+	customer.test.single: true;
+	center.audio.src.test: true;
+	center.audio.sink: true;
+	center.audio.sink.test.realtime: true;
 };

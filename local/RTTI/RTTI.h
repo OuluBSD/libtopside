@@ -53,6 +53,9 @@ public:
 	
 };
 
+template <class T> TypeCls GetTypeIdClass() {return T::TypeIdClass();}
+template <class T> const char* GetTypeNameT() {return T::GetTypeName();}
+
 
 
 class RTTIWrapper {
@@ -415,6 +418,7 @@ public:
 template <class> const RTTI& GetTypenameRTTI() {static DummyRTTI _; return _;}
 
 }
+
 
 
 #endif

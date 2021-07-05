@@ -7,6 +7,7 @@
 	IFACE(Receipt) \
 	IFACE(Audio) \
 	IFACE(Video) \
+	IFACE(Midi) \
 	IFACE(Event)
 
 #define IFACE_VAR_LIST \
@@ -14,11 +15,13 @@
 	IFACE(Receipt,	rcp) \
 	IFACE(Audio,	aud) \
 	IFACE(Video,	vid) \
+	IFACE(Midi,		mid) \
 	IFACE(Event,	ev)
 
 #define IFACE_CTX_ORDER_LIST \
 	IFACE_CTX(Audio,		TD1TimeSeries,			SoundSample) \
 	IFACE_CTX(Video,		TD2TimeSeries,			LightSampleFD) \
+	IFACE_CTX(Midi,			TD1SparseTimeSeries,	MidiSample) \
 	IFACE_CTX(Event,		TD1SparseTimeSeries,	EventSample) \
 
 	/*
@@ -26,7 +29,6 @@
 	IFACE_CTX(Static,		TD3Once,				MaterialSample) \
 	IFACE_CTX(Photo,		TD2Once,				LightSampleFD) \
 	IFACE_CTX(Display,		TD2TimeSeries,			LightSampleFD) \
-	IFACE_CTX(Midi,			TD1SparseTimeSeries,	MidiSample) \
 	IFACE_CTX(Human,		TD1SparseTimeSeries,	HumanSample)
 	IFACE_CTX(Media,		AVTimeSeries,			AVSample) \
 	IFACE_CTX(AudioFD,		T2DTimeSeries,			SoundSampleFD) \

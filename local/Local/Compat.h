@@ -198,8 +198,69 @@ public:
 template<> inline hash_t GetHashValue(const float& a)         { return memhash(&a, sizeof(a)); }
 
 
+
+
 END_UPP_NAMESPACE
 #endif
+
+
+NAMESPACE_UPP
+
+inline bool IsBinDigit(int c) { return c == '0' || c == '1'; }
+inline bool IsHexDigit(int c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }
+inline int GetHexDigit(int c) {
+	if (c >= '0' && c <= '9')
+		return c - '0';
+	if (c >= 'a' && c <= 'f')
+		return 10 + c - 'a';
+	if (c >= 'A' && c <= 'F')
+		return 10 + c - 'A';
+	return 0;
+}
+inline int GetBinDigit(int c) {
+	if (c == '0' || c == '1')
+		return c - '0';
+	return 0;
+}
+inline int64 BinInt64(const char *s) {
+	if (!s) return 0;
+	while (IsSpace(*s)) s++;
+	int64 n=0, neg=0;
+	switch (*s) {
+		case '-': neg=1;
+		case '+': s++;
+	}
+	if (s[0] == '0' && (s[1] == 'b' || s[1] == 'B'))
+		s += 2;
+	while (IsBinDigit(*s))
+		n = 2*n - GetBinDigit(*s++);
+	return neg ? n : -n;
+}
+inline int64 HexInt64(const char *s) {
+	if (!s) return 0;
+	while (IsSpace(*s)) s++;
+	int64 n=0, neg=0;
+	switch (*s) {
+		case '-': neg=1;
+		case '+': s++;
+	}
+	if (s[0] == '0' && (s[1] == 'x' || s[1] == 'X'))
+		s += 2;
+	while (IsHexDigit(*s))
+		n = 16*n - GetHexDigit(*s++);
+	return neg ? n : -n;
+}
+
+template <class T> ManagedStatic<T>::ManagedStatic(const char* f, int l) : file(f), line(l) {}
+template <class T> template <class Arg>
+ManagedStatic<T>::ManagedStatic(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {}
+
+template <class T> ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l) : file(f), line(l) {}
+template <class T> template <class Arg>
+ManagedStaticThreadLocal<T>::ManagedStaticThreadLocal(const char* f, int l, const Arg& value) : file(f), line(l), o(value) {}
+
+
+END_UPP_NAMESPACE
 
 #else
 

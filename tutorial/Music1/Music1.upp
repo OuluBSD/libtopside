@@ -1,0 +1,10 @@
+uses
+	MusicCtrl;
+
+file
+	Music1.h,
+	Music1.cpp;
+
+mainconfig
+	"" = "GUI STDEXC STDRTTI";
+

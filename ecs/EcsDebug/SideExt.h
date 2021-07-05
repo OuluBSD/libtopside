@@ -5,13 +5,13 @@ NAMESPACE_ECS_BEGIN
 
 
 
-class DebugAudioSideInputExt :
+class DebugSideInputExt :
 	public SideInputExt
 {
 	
 public:
-	RTTI_DECL1(DebugAudioSideInputExt, SideInputExt)
-	typedef DebugAudioSideInputExt CLASSNAME;
+	RTTI_DECL1(DebugSideInputExt, SideInputExt)
+	typedef DebugSideInputExt CLASSNAME;
 	
 	bool Initialize(const Eon::WorldState& ws) override;
 	void Uninitialize() override;
@@ -21,7 +21,9 @@ public:
 	
 	COMP_MAKE_ACTION_BEGIN
 		ASSERT(cls.sub == SubCompCls::SIDE_INPUT);
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.in.center")
+		ValDevCls side_vd = act.Post().GetSideCls();
+		ASSERT(side_vd.IsValid());
+		COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.vd.GetActionName() + ".side.in." + side_vd.dev.GetActionName())
 	COMP_MAKE_ACTION_END
 	
 	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
@@ -29,13 +31,13 @@ public:
 	
 };
 
-class DebugAudioSideOutputExt :
+class DebugSideOutputExt :
 	public SideOutputExt
 {
 	
 public:
-	RTTI_DECL1(DebugAudioSideOutputExt, SideOutputExt)
-	typedef DebugAudioSideOutputExt CLASSNAME;
+	RTTI_DECL1(DebugSideOutputExt, SideOutputExt)
+	typedef DebugSideOutputExt CLASSNAME;
 	
 	bool Initialize(const Eon::WorldState& ws) override;
 	void Uninitialize() override;
@@ -45,7 +47,9 @@ public:
 	
 	COMP_MAKE_ACTION_BEGIN
 		ASSERT(cls.sub == SubCompCls::SIDE_OUTPUT);
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.side.out.center")
+		ValDevCls side_vd = act.Post().GetSideCls();
+		ASSERT(side_vd.IsValid());
+		COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.vd.GetActionName() + ".side.out." + side_vd.dev.GetActionName())
 	COMP_MAKE_ACTION_END
 	
 	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);

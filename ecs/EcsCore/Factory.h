@@ -54,14 +54,15 @@ public:
 	typedef bool (*SideFn)(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
 	typedef ComponentExtBase* (*NewExt)();
 	struct ExtData : Moveable<ExtData> {
-		NewExt new_fn;
-		ActionFn action_fn;
-		SideFn side_fn;
-		String name;
-		TypeExtCls cls;
+		NewExt			new_fn;
+		ActionFn		action_fn;
+		SideFn			side_fn;
+		String			name;
+		TypeExtCls		cls;
+		ValDevCls		side_vd;
 		
-		Vector<Link> sink_links;
-		bool searched_sink_links = false;
+		Vector<Link>	sink_links;
+		bool			searched_sink_links = false;
 	};
 	template <class T> static ComponentExtBase* CreateExt() {return new T();}
 	
@@ -105,7 +106,7 @@ public:
 	
 	static LinkedList<TypeExtCls>& GetExtTypes() {static LinkedList<TypeExtCls> l; return l;}
 	
-	template <class T> static void RegisterExtension(TypeExtCls c) {
+	template <class T> static void RegisterExtension(TypeExtCls c, ValDevCls side_vd) {
 		c.ext = GetExtTypes().GetCount();
 		ASSERT(c.IsValid());
 		GetExtTypes().Add(c);
@@ -117,6 +118,7 @@ public:
 		e.new_fn = &CreateExt<T>;
 		e.action_fn = &MakeAction<T>;
 		e.side_fn = &MakeSide<T>;
+		e.side_vd = side_vd;
 	}
 	
 	static void Dump();
@@ -137,7 +139,20 @@ public:
 	c.src.dev = Ecs::DevCls::src_d; \
 	c.src.val = Ecs::ValCls::src_v; \
 	c.sub = Ecs::SubCompCls::subcomp; \
-	Ecs::Factory::RegisterExtension<type>(c); \
+	Ecs::Factory::RegisterExtension<type>(c, ValDevCls()); \
+}
+
+#define REG_EXT_(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v, sc_d,sc_v) {\
+	Ecs::TypeExtCls c; \
+	c.sink.dev = Ecs::DevCls::sink_d; \
+	c.sink.val = Ecs::ValCls::sink_v; \
+	c.side.dev = Ecs::DevCls::side_d; \
+	c.side.val = Ecs::ValCls::side_v; \
+	c.src.dev = Ecs::DevCls::src_d; \
+	c.src.val = Ecs::ValCls::src_v; \
+	c.sub = Ecs::SubCompCls::subcomp; \
+	ValDevCls side_vd(Ecs::DevCls::sc_d, Ecs::ValCls::sc_v); \
+	Ecs::Factory::RegisterExtension<type>(c, side_vd); \
 }
 
 

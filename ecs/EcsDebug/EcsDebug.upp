@@ -13,9 +13,11 @@ file
 	AudioGenerator.h,
 	AudioGenerator.cpp,
 	SoundCard.h,
+	SoundCard.cpp,
 	SideExt.h,
 	SideExt.cpp,
-	SoundCard.cpp,
+	ConvExt.h,
+	ConvExt.cpp,
 	Testers.h,
 	Testers.cpp;
 

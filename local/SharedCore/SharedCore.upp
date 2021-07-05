@@ -9,5 +9,9 @@ file
 	Object.cpp,
 	CtrlEvent.h,
 	Container.h,
-	Container.cpp;
+	Container.cpp,
+	TokenParser.h,
+	TokenParser.cpp,
+	String.h,
+	String.cpp;
 

@@ -1,0 +1,9 @@
+description "\377B226,138,0";
+
+uses
+	MusicCore,
+	CtrlLib;
+
+file
+	MusicCtrl.h;
+

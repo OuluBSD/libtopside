@@ -1,19 +1,19 @@
 sidechain tester: {
 	
 	loop output: {
-		customer.output: true;
-		class.test_rt_src: true;
+		customer.test.output: true;
 		center.audio.src: true;
+		center.audio.src.test: true;
 		center.audio.side.out: true;
 		center.audio.side.out.center: true;
 		return has.output: true;
 	};
 	
 	loop input: {
-		customer.input: true;
+		customer.test.input: true;
 		center.audio.side.in: true;
 		center.audio.side.in.center: true;
-		center.audio.sink.realtime: true;
+		center.audio.sink.test.realtime: true;
 		return has.input: true;
 	};
 	

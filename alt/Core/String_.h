@@ -398,7 +398,6 @@ inline String HexStr(int64 p, bool prefix=true, bool high_chr=true) {
 inline String HexStr(void* p, bool prefix=true, bool high_chr=true) {return HexStr((uint64)p, prefix, high_chr);}
 String HexString(const char* data, int len);
 
-String FromCString(const char *s, const char *lim);
 String AsCString(const char *s, const char *lim);
 String AsCString(const char *s);
 String AsCString(const String& s);

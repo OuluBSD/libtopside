@@ -131,37 +131,6 @@ void NextCStringLine(StringStream& t, const char *linepfx, int& pl)
 	pl = t.GetLength();
 }
 
-String FromCString(const char *s, const char *lim) {
-	StringStream t;
-	
-	if (*s == '\"') {
-		s++;
-		lim--;
-	}
-	int i, j;
-	int l = lim - s;
-	char esc_char[] = { '\a', '\b', '\f', '\n', '\r', '\t', '\v', '\\'};
-	char essc_str[] = {  'a', 'b', 'f', 'n', 'r', 't', 'v', '\\'};
-	for (i = 0;i < l;i++) {
-		if (s[i] == '\\') {
-			i++;
-			for (j = 0; j < 8 ;j++) {
-				if (s[i] == essc_str[j]) {
-					t.Cat(esc_char[j]);
-					break;
-				}
-			}
-			if (j == 8)
-				t.Cat(s[i]);
-		}
-		else {
-			t.Cat(s[i]);
-		}
-	}
-	
-	return t.GetResult();
-}
-
 String AsCString(const char *s, const char *lim) {
 	StringStream t;
 	t.Cat('\"');

@@ -3,6 +3,8 @@
 
 #include "Before.h"
 #include "Compat.h"
+#include <SharedCore/TokenParser.h>
+#include <SharedCore/String.h>
 #include "Types.h"
 #include "Chrono.h"
 #include "Recycler.h"

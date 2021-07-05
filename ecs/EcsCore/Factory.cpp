@@ -22,13 +22,22 @@ void Factory::Dump() {
 void Factory::RefreshLinks(CompData& d) {
 	auto& m = Factory::CompDataMap();
 	if (!d.searched_sink_links) {
+		bool dump = false;
+		/*if (d.cls.src.dev == DevCls::ACCEL && d.cls.src.val == ValCls::MIDI) {
+			LOG(d.cls.ToString());
+			dump = true;
+		}*/
 		for (const auto& comp_data : m.GetValues()) {
 			if (d.cls.src == comp_data.cls.sink) {
 				Link& l = d.sink_links.Add();
 				l.dst_comp = comp_data.cls;
 				l.iface = d.cls.src;
 				ASSERT(l.dst_comp.IsValid() && l.iface.IsValid());
+				if (dump) {LOG("\t" << comp_data.cls.ToString());}
 			}
+		}
+		if (dump) {
+			LOG("");
 		}
 		d.searched_sink_links = true;
 	}
@@ -55,6 +64,7 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 		for (const ExtData& e : d.ext.GetValues()) {
 			a.Post() = src;
 			a.Post().SetAs_AddExtension(comp, e.cls);
+			a.Post().SetSideCls(e.side_vd);
 			if (e.action_fn(comp, a)) {
 				MemSwap(acts.Add(), a);
 				a.Pre() = src;
@@ -67,7 +77,11 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 		ASSERT(dst.IsValid());
 		const CompData& dst_cd = m.Get(dst);
 		
+		/*if (dst.sub == SubCompCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
+			LOG(dst.ToString());
+		}*/
 		if (comp.sub != SubCompCls::CUSTOMER &&
+			dst.sub != SubCompCls::CONVERTER &&
 			dst.side.vd.val != comp.side.vd.val &&
 			dst.sink.val != ValCls::RECEIPT)
 			continue;

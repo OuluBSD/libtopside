@@ -87,7 +87,7 @@ public:
 	bool Load();
 	bool AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
 	void AddError(String msg);
-	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c);
+	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
 	
 	bool IsFailed() const {return status == FAILED;}
 	bool IsReady() const {return status == READY;}
@@ -165,6 +165,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::ActionNode>& n) {
+	if (&n == (void*)0x8026C63C0) {
+		LOG("");
+	}
+	
 	using namespace Ecs;
 	int est = n.GetEstimate();
 	if (est <= 0)

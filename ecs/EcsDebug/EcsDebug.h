@@ -6,6 +6,7 @@
 
 #include "AudioGenerator.h"
 #include "SideExt.h"
+#include "ConvExt.h"
 #include "SoundCard.h"
 #include "Verifier.h"
 #include "Testers.h"

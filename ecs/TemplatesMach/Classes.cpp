@@ -13,6 +13,7 @@ String ValCls::GetName(Type t) {
 	switch (t) {
 		case AUDIO:		return "audio";
 		case VIDEO:		return "video";
+		case MIDI:		return "midi";
 		case EVENT:		return "event";
 		case DATA:		return "data";
 		case ORDER:		return "order";
@@ -33,12 +34,26 @@ String DevCls::GetName(Type t) {
 	}
 }
 
+DevCls::Type DevCls::Get(String s) {
+	if (s == "center")
+		return CENTER;
+	if (s == "perma")
+		return PERMA;
+	if (s == "accel")
+		return ACCEL;
+	if (s == "net")
+		return NET;
+	
+	return INVALID;
+}
+
 String EcsTypeCls::GetTypeString(Type t) {
 	switch (t) {
 		case IFACE:					return "interface";
 		case COMP_EXT:				return "ext-component";
-		case EXT_TEST_CUSTOMER:	return "test-customer-component";
+		case EXT_TEST_CUSTOMER:		return "test-customer-component";
 		case EXT_TEST_AUDIO_OUT:	return "test-audio-out-component";
+		case EXT_DBG_CONVERTER:		return "dbg-conv-component";
 		default: return "invalid";
 	}
 }
@@ -48,6 +63,7 @@ String GetSubCompString(SubCompCls t) {
 		case CUSTOMER:		return "customer";
 		case INPUT:			return "input";
 		case OUTPUT:		return "output";
+		case CONVERTER:		return "converter";
 		case PIPE:			return "pipe";
 		case SIDE_INPUT:	return "side-input";
 		case SIDE_OUTPUT:	return "side-output";
