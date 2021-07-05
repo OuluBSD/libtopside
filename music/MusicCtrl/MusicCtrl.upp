@@ -4,6 +4,11 @@ uses
 	MusicCore,
 	CtrlLib;
 
+library
+	lomse;
+
 file
-	MusicCtrl.h;
+	MusicCtrl.h,
+	NotationCtrl.h,
+	NotationCtrl.cpp;
 
