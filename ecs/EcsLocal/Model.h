@@ -31,6 +31,7 @@ protected:
 	
 };*/
 
+#if 0
 
 class ModelComponent :
 	public Component<ModelComponent>,
@@ -65,7 +66,7 @@ protected:
 };
 
 
-
+#endif
 
 NAMESPACE_ECS_END
 

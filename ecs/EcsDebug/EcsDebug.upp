@@ -14,5 +14,6 @@ file
 	SoundCard.h,
 	SideExt.h,
 	SideExt.cpp,
-	SoundCard.cpp;
+	SoundCard.cpp,
+	DebugMain.cpp;
 

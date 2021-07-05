@@ -3,6 +3,7 @@
 
 NAMESPACE_ECS_BEGIN
 
+#if 0
 
 /*void PrimitiveShape::SetShape(ShapeId type, const vec2& ax_vec) {
 	shape.Create(type, ax_vec);
@@ -41,7 +42,7 @@ void ModelComponent::GetModels(VectorRendModel& models) {
 
 
 
-
+#endif
 
 NAMESPACE_ECS_END
 

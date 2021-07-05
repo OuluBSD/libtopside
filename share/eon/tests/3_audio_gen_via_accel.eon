@@ -1,0 +1,18 @@
+sidechain tester: {
+	
+	loop center.audio.sync: {
+		center.accel.order.side.out: true;
+	};
+	
+	loop accel.audio.output: {
+		accel.center.order.side.in: true;
+		accel.filename: "${FILE}";
+		accel.center.audio.side.out: true;
+	};
+	
+	loop center.audio.output: {
+		center.accel.audio.side.in: true;
+		center.audio.sink.realtime: true;
+	};
+	
+};

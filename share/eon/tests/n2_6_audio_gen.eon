@@ -1,0 +1,30 @@
+sidechain local_in: {
+	loop local_in: {
+		center.net.order.side.out: true;
+	};
+	loop link_out: {
+		net.center.order.side.in: true;
+		net.order.remote.src: true;
+	};
+	loop link_in: {
+		net.audio.remote.src: true;
+		net.center.audio.side.out: true;
+	};
+	loop local_out: {
+		center.net.audio.side.in: true;
+		center.audio.sink.realtime: true;
+	};
+};
+
+net_sidechain remote: {
+	loop remote_link_in: {
+		net.order.remote.sink: true;
+		net.audio.generator: true;
+		net.audio.side.out: true;
+	};
+	loop remote_link_out: {
+		net.audio.side.in: true;
+		net.audio.remote.src: true;
+	};
+};
+

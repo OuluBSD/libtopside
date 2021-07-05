@@ -1,0 +1,12 @@
+uses
+	CompleteDebug,
+	EcsAudioCore,
+	EcsMultimedia,
+	EcsLocal;
+
+file
+	EonShell.cpp;
+
+mainconfig
+	"" = "";
+

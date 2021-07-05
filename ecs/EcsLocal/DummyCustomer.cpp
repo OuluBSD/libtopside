@@ -1,8 +1,7 @@
-#include "CompleteDebug.h"
-
-
+#include "EcsLocal.h"
 
 NAMESPACE_ECS_BEGIN
+
 
 
 

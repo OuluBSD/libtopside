@@ -5,7 +5,7 @@
 NAMESPACE_LAYOUT_BEGIN
 
 String GetMasterCss() {
-	return LoadFile(ShareDirFile("master.css"));
+	return LoadFile(ShareDirFile(AppendFileName("master.css"), "html"));
 }
 
 void GetHttpCookie(HttpCookie& h, const Cookie& c) {

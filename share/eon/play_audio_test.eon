@@ -1,0 +1,7 @@
+loop player.audio.generator: {
+	center.customer.audio.player: true;
+	center.audio.src.dbg_generator: true;
+	center.audio.sink.realtime: true;
+	center.audio.sink.hw: true;
+};
+

@@ -1,0 +1,22 @@
+sidechain player.audio.generator: {
+	
+	loop output: {
+		center.customer.audio.player: true;
+		center.audio.src: true;
+		center.audio.src.dbg_generator: true;
+		center.audio.side.out: true;
+		center.audio.side.out.center: true;
+		return has.output: true;
+	};
+	
+	loop input: {
+		center.customer.audio.player: true;
+		center.audio.side.in: true;
+		center.audio.side.in.center: true;
+		center.audio.sink.realtime: true;
+		center.audio.sink.hw: true;
+		return has.input: true;
+	};
+	
+};
+

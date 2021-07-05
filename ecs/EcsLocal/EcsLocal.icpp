@@ -11,7 +11,11 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
-	Ecs::Factory::RegisterComponent<Easing>();
+	using namespace Ecs;
+	
+	REG_EXT(AudioPlayerCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
+	
+	/*Ecs::Factory::RegisterComponent<Easing>();
 	Ecs::Factory::RegisterComponent<Viewable>();
 	Ecs::Factory::RegisterComponent<Transform>();
 	Ecs::Factory::RegisterComponent<Transform2D>();
@@ -33,7 +37,7 @@ INITBLOCK {
 	Ecs::Factory::RegisterComponent<PaintComponent>();
 	Ecs::Factory::RegisterComponent<ToolComponent>();
 	
-	#endif
+	#endif*/
 	
 }
 

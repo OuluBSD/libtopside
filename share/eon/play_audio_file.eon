@@ -1,0 +1,7 @@
+loop player.audio.ffmpeg: {
+	center.customer.audio.player: true;
+	perma.audio.source.decoder: true {filepath: "${FILE}"; stop_machine: true;};
+	center.audio.sink.realtime: true;
+	center.audio.sink.hw: true;
+};
+

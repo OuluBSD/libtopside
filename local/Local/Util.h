@@ -497,9 +497,9 @@ class CommandLineArguments {
 	static const int max_inputs = 300;
 	static const int max_args = 100;
 	
-	Array<CmdArg> args;
-	Array<CmdInput> inputs;
-	
+	Array<CmdArg>				args;
+	Array<CmdInput>				inputs;
+	VectorMap<String,Object>	vars;
 	
 public:
 	CommandLineArguments() {}
@@ -508,6 +508,8 @@ public:
 	void PrintHelp();
 	int GetInputCount() const {return inputs.GetCount();}
 	const Array<CmdInput>& GetInputs() const {return inputs;}
+	
+	const VectorMap<String,Object>& GetVariables() const {return vars;}
 	
 };
 

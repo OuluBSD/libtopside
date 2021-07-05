@@ -33,178 +33,17 @@ Take any address and put to BreakRefAdd
 
 
 
-/*
- 1:
-    - customer
-    - AudioInputComponent
-    - AudioOutputComponent
-*/
-const char* center_str = R"EON_CODE(
-
-loop tester.generator: {
-	customer.single: true;
-	class.test_rt_src: true;
-	center.audio.src: true;
-	center.audio.sink: true;
-	center.audio.sink.realtime: true;
-};
-
-)EON_CODE";
-
-
-/*
-1:
-	- customer
-    - AudioInputComponent
-    - CenterSideOutput(Perma)
-2:
-	- customer
-	- PermaSideInput(Center)
-	- FileWriter
-*/
-const char* perma_str = R"EON_CODE(
-
-sidechain tester: {
-	
-	loop output: {
-		customer.output: true;
-		class.test_rt_src: true;
-		center.audio.src: true;
-		center.audio.side.out: true;
-		center.audio.side.out.center: true;
-		return has.output: true;
-	};
-	
-	loop input: {
-		customer.input: true;
-		center.audio.side.in: true;
-		center.audio.side.in.center: true;
-		center.audio.sink.realtime: true;
-		return has.input: true;
-	};
-	
-};
-
-)EON_CODE";
-
-/*
- 1:
-    - customer
-    - CenterAccelSideOutput
- 2:
-    - customer
-	- AccelCenterSideInput
-	- AccelAudioPipeComponent
-	- AccelCenterSideOutput
- 3:
-	- customer
-	- CenterAccelSideInput
-	- TestRealtimeSink
-
-*/
-
-const char* accel_str = R"EON_CODE(
-
-sidechain tester: {
-	
-	loop center.audio.sync: {
-		center.accel.order.side.out: true;
-	};
-	
-	loop accel.audio.output: {
-		accel.center.order.side.in: true;
-		accel.filename: "$FILEPATH";
-		accel.center.audio.side.out: true;
-	};
-	
-	loop center.audio.output: {
-		center.accel.audio.side.in: true;
-		center.audio.sink.realtime: true;
-	};
-	
-};
-
-)EON_CODE";
-
-
-/*
-1: local center
-	- customer
-    - CenterSideOutput(Net)
-2: local net
-	- customer
-	- NetSideInput(Center)
-	- NetSingleLinkOutput
-3: remote net
-	- customer
-	- NetSingleLinkInput
-	- NetSideOutput(Center)
-4: remote center
-	- customer
-	- CenterSideInput(Net)
-    - AudioInputComponent
-    - AudioOutputComponent
-	- CenterSideOutput(Net)
-5: local net
-	- customer
-	- NetSideInput(Center)
-	- NetSingleLinkOutput
-6: local net
-	- customer
-	- CenterSideInput(Net)
-	- TestRealtimeSink
-	
-*/
-const char* net_str = R"EON_CODE(
-
-sidechain local_in: {
-	loop local_in: {
-		center.net.order.side.out: true;
-	};
-	loop link_out: {
-		net.center.order.side.in: true;
-		net.order.remote.src: true;
-	};
-	loop link_in: {
-		net.audio.remote.src: true;
-		net.center.audio.side.out: true;
-	};
-	loop local_out: {
-		center.net.audio.side.in: true;
-		center.audio.sink.realtime: true;
-	};
-};
-
-net_sidechain remote: {
-	loop remote_link_in: {
-		net.order.remote.sink: true;
-		net.audio.generator: true;
-		net.audio.side.out: true;
-	};
-	loop remote_link_out: {
-		net.audio.side.in: true;
-		net.audio.remote.src: true;
-	};
-};
-
-
-)EON_CODE";
-
-
-bool TestParser() {
-	if (!TestParseEonCode(center_str)) return false;
-	if (!TestParseEonCode(perma_str)) return false;
-	if (!TestParseEonCode(accel_str)) return false;
-	if (!TestParseEonCode(net_str)) return false;
-	return true;
-}
 
 void Main() {
 	SetCoutLog();
-	Ecs::Factory::Dump();
-	
-	if (!TestParser())
+	const auto& cmd = CommandLine();
+	if (cmd.IsEmpty()) {
+		LOG("App requires eon arguments");
 		return;
+	}
+	String eon_file = cmd[0];
+	
+	Ecs::Factory::Dump();
 	
 	TypeExtCls t;
 	
@@ -221,7 +60,6 @@ void Main() {
 	if (!SimpleDebugInitializer())
 		Exit(1);
 	
-	MAKE_STATIC(Machine, mach);
 	MAKE_STATIC(MachineVerifier, verifier);
 	{
 		verifier.AddSystem<RegistrySystem>();
@@ -240,69 +78,10 @@ void Main() {
 		
 	}
 	
-	verifier.Attach(mach);
+	VectorMap<String,Object> args;
+	args.Add("MACHINE_TIME_LIMIT", 3);
 	
-	//SetDebugRefVisits();
-	RuntimeDiagnostics::Static().SetRoot(mach);
-	
-    #ifdef flagSTDEXC
-    try {
-    #endif
-		bool fail = false;
-		{
-			RegistrySystemRef reg		= mach.Add<RegistrySystem>();
-			EntityStoreRef es			= mach.Add<EntityStore>();
-			ComponentStoreRef compstore	= mach.Add<ComponentStore>();
-		    //ConnectorStoreRef connstore	= mach.Add<ConnectorStore>();
-		    ExtSystemRef cust			= mach.Add<ExtSystem>();
-		    EonLoaderRef eon			= mach.Add<EonLoader>();
-		    
-		    mach.Add<PacketTracker>();
-			
-			PoolRef root = es->GetRoot();
-			
-			String eon_code;
-			int test_i = 1;
-			if      (test_i == 0)	eon_code = center_str;
-			else if (test_i == 1)	eon_code = perma_str;
-			else if (test_i == 2)	eon_code = accel_str;
-			else if (test_i == 3)	eon_code = net_str;
-			else
-				Exit(1);
-			
-			LOG(GetLineNumStr(eon_code, 1));
-	        eon->PostLoadString(eon_code);
-	    }
-	    
-	    if (!fail && mach.Start()) {
-		    int iter = 0;
-		    TimeStop t, total;
-		    while (mach.IsRunning()) {
-		        double dt = ResetSeconds(t);
-		        mach.Update(dt);
-		        
-		        if (!iter++)
-		            mach.Get<EntityStore>()->GetRoot()->Dump();
-		        
-		        Sleep(1);
-		        
-		        if (total.Seconds() > 3)
-		            mach.SetNotRunning();
-		    }
-		    
-		    RuntimeDiagnostics::Static().CaptureSnapshot();
-	    }
-	#ifdef flagSTDEXC
-    }
-    catch (Exc e) {
-        LOG("error: " << e);
-        Exit(1);
-    }
-    #endif
-    
-    mach.Stop();
-	mach.Clear();
-    //RefDebugVisitor::Static().DumpUnvisited();
+	Ecs::DebugMain(eon_file, args, &verifier);
 }
 
 

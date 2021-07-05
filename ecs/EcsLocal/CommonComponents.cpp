@@ -2,6 +2,7 @@
 
 NAMESPACE_ECS_BEGIN
 
+#if 0
 
 /*void Transform::MoveTo(const OverlapSink& conn) {
 	TODO
@@ -18,7 +19,6 @@ void CopyTransformPos(EntityRef from, EntityRef to) {
 
 
 
-#if 0
 
 void StaticVolumeComponent::Initialize() {
 	sz = Size(0,0);

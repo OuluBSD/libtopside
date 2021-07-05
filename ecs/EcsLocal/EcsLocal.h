@@ -12,6 +12,8 @@
 #include "WorldLogic.h"
 #include "WindowSystem.h"
 
+#include "DummyCustomer.h"
+
 #include "PbrModelCache.h"
 #include "PaintStrokeSystem.h"
 #include "Prefabs.h"

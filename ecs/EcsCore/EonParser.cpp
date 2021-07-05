@@ -40,7 +40,7 @@ String Statement::GetTreeString(int indent) const {
 	s.Cat('\t', indent);
 	s << id.ToString();
 	if (value.IsEmpty())
-		s << ": <no value>";
+		s << ": <no value>\n";
 	else
 		s << ":\n" << value->GetTreeString(indent+1);
 	for (Statement& arg : args)
@@ -116,7 +116,7 @@ String Value::GetTreeString(int indent) const {
 	String s;
 	if (type == VAL_INVALID) {
 		s.Cat('\t', indent);
-		s << "invalid";
+		s << "invalid\n";
 	}
 	else if (type == VAL_CUSTOMER) {
 		return customer.GetTreeString(indent);
@@ -124,10 +124,12 @@ String Value::GetTreeString(int indent) const {
 	else if (type == VAL_STRING) {
 		s.Cat('\t', indent);
 		s << "\"" << str << "\"";
+		s << "\n";
 	}
 	else if (type == VAL_BOOLEAN) {
 		s.Cat('\t', indent);
 		s << (b ? "true" : "false");
+		s << "\n";
 	}
 	else if (type == VAL_ID) {
 		return id.GetTreeString(indent);
