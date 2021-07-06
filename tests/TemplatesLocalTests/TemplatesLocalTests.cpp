@@ -40,6 +40,8 @@ void Main() {
 		return;
 	}
 	String eon_file = cmd[0];
+	bool verify = cmd.GetCount() >= 2 && cmd[1] == "verify";
+	
 	
 	Ecs::Factory::Dump();
 	
@@ -53,7 +55,7 @@ void Main() {
 		Exit(1);
 	
 	MAKE_STATIC(MachineVerifier, verifier);
-	{
+	if (verify) {
 		verifier.AddSystem<RegistrySystem>();
 		verifier.AddSystem<EntityStore>();
 		verifier.AddSystem<ComponentStore>();
@@ -73,7 +75,7 @@ void Main() {
 	VectorMap<String,Object> args;
 	args.Add("MACHINE_TIME_LIMIT", 3);
 	
-	Ecs::DebugMain(eon_file, args, &verifier);
+	Ecs::DebugMain(eon_file, args, verify ? &verifier : 0);
 }
 
 

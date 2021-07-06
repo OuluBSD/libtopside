@@ -16,7 +16,7 @@ sidechain tester: {
 		accel.midi.src: false;
 		accel.midi.side.in.center: true;
 		accel.midi.convert.audio: true;
-		accel.midi.convert.audio.dbg: true;
+		accel.midi.convert.audio.test: true;
 		accel.audio.side.out: true;
 		accel.audio.side.out.center: true;
 	};

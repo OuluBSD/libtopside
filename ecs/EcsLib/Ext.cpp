@@ -89,6 +89,8 @@ void ExtComponent::Uninitialize() {
 	src_buf.Clear();*/
 	side_in_conn.Clear();
 	side_out_conn.Clear();
+	if (side_sink)		side_sink		->value.Clear();
+	if (side_sink_buf)	side_sink_buf	->value.Clear();
 	side_sink.Clear();
 	side_sink_buf.Clear();
 	
@@ -131,6 +133,8 @@ void ExtComponent::Forward(FwdScope& fwd) {
 		ForwardInput(fwd);
 	else if (type.sub == SubCompCls::OUTPUT)
 		ForwardOutput(fwd);
+	else if (type.sub == SubCompCls::CONVERTER)
+		ForwardInput(fwd);
 	else if (type.sub == SubCompCls::SIDE_INPUT)
 		ForwardSideInput(fwd);
 	else if (type.sub == SubCompCls::SIDE_OUTPUT)
@@ -257,6 +261,7 @@ void ExtComponent::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 		if (ext) {
 			WhenEnterStorePacket(*ext, to);
 			
+			ext->LoadPacket(in);
 			ext->StorePacket(to);
 			
 			WhenLeaveStorePacket(to);
@@ -365,6 +370,21 @@ void ExtComponent::ForwardConsumed(FwdScope& fwd) {
 	}
 	
 }
+
+/*void ExtComponent::ForwardConverter(FwdScope& fwd) {
+	POPO(Pol::Ecs::ExtComp::ConsumerFirst);
+	POPO(Pol::Ecs::ExtComp::SkipDulicateExtFwd);
+	if (fwd.GetPos() > 0) {
+		if (this->ext)
+			this->ext->Forward(fwd);
+	}
+	else {
+		RTLOG("ExtComponent::ForwardOutput: skip duplicate extension forward");
+	}
+	
+	
+	ForwardConsumed(fwd);
+}*/
 
 void ExtComponent::ForwardSideInput(FwdScope& fwd) {
 	POPO(Pol::Ecs::ExtComp::ConsumerFirst);
@@ -579,7 +599,7 @@ bool ExtComponent::ForwardMem(void* mem, size_t mem_size) {
 }
 
 bool ExtComponent::LinkSideIn(ComponentBaseRef in) {
-	side_out = -1; // SetSideOut(-1)
+	//side_out = -1; // SetSideOut(-1)
 	ExtComponentRef ein = in;
 	ASSERT(ein);
 	ASSERT(!side_in_conn);
@@ -600,7 +620,7 @@ bool ExtComponent::LinkSideIn(ComponentBaseRef in) {
 }
 
 bool ExtComponent::LinkSideOut(ComponentBaseRef out) {
-	side_in = -1; // SetSideIn(-1)
+	//side_in = -1; // SetSideIn(-1)
 	ExtComponentRef eout = out;
 	ASSERT(eout);
 	if (!eout)

@@ -21,6 +21,7 @@ public:
 	virtual void Uninitialize() {}
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void Forward(FwdScope& fwd) = 0;
+	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
 	virtual bool LinkSideIn(ComponentExtBase& in) {return true;}

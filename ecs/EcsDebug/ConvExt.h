@@ -17,6 +17,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
+	void LoadPacket(const Packet& p) override;
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN

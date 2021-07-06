@@ -170,6 +170,7 @@ protected:
 	void					ForwardCustomer(FwdScope& fwd);
 	void					ForwardInput(FwdScope& fwd);
 	void					ForwardOutput(FwdScope& fwd);
+	//void					ForwardConverter(FwdScope& fwd);
 	void					ForwardSideInput(FwdScope& fwd);
 	void					ForwardSideOutput(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);

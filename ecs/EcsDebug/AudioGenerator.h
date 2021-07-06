@@ -101,7 +101,15 @@ public:
 	void StorePacket(Packet& p) override;
 	
 	COMP_MAKE_ACTION_BEGIN
+	if (cls.sub == SubCompCls::INPUT) {
 		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.dbg_generator")
+	}
+	else if (cls.sub == SubCompCls::CONVERTER) {
+		TODO
+		/*ASSERT(cls.src.val.type == ValCls::AUDIO);
+		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName() + ".dbg";
+		COMP_MAKE_ACTION_FALSE_TO_TRUE(s)*/
+	}
 	COMP_MAKE_ACTION_END
 	
 	
