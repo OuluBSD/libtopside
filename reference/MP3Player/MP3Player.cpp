@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 MAKE_STATIC(String, file_path);
 bool run_sound_gen;
-bool use_splitted_loop;
+int loops;
 
 
 
@@ -14,17 +14,21 @@ bool MP3PlayerInitializer() {
 	CommandLineArguments cmd;
 	cmd.AddArg('g', "Test sound generator", false);
 	cmd.AddArg('f', "The path for the music file", true, "path");
-	cmd.AddArg('2', "Use secondary mode with splitted eon loops", false);
+	cmd.AddArg('2', "Use 2-loop mode with splitted eon loops", false);
+	//cmd.AddArg('3', "Use 3-loop mode with splitted eon loops", false);
 	if (!cmd.Parse()) {
 		cmd.PrintHelp();
 		return false;
 	}
 	
+	loops = 1;
+	
 	const auto& inputs = cmd.GetInputs();
 	for(const auto& in : inputs) {
 		if (in.key == 'f') file_path = in.value;
 		if (in.key == 'g') run_sound_gen = true;
-		if (in.key == '2') use_splitted_loop = true;
+		if (in.key == '2') loops = 2;
+		if (in.key == '3') loops = 3;
 	}
 	if (file_path.IsEmpty() && !run_sound_gen) {
 		cmd.PrintHelp();
@@ -73,16 +77,20 @@ void Main() {
 	
 	String eon_file;
 	if (run_sound_gen) {
-		if (!use_splitted_loop)
-			eon_file = "play_audio_test.eon";
-		else
+		/*if (loops == 3)
+			eon_file = "play_audio_test_3.eon";
+		else*/ if (loops == 2)
 			eon_file = "play_audio_test_2.eon";
+		else
+			eon_file = "play_audio_test.eon";
 	}
 	else {
-		if (!use_splitted_loop)
-			eon_file = "play_audio_file.eon";
-		else
+		/*if (loops == 3)
+			eon_file = "play_audio_file_3.eon";
+		else*/ if (loops == 2)
 			eon_file = "play_audio_file_2.eon";
+		else
+			eon_file = "play_audio_file.eon";
 	}
 	
 	VectorMap<String,Object> args;
