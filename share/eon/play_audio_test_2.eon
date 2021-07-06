@@ -1,4 +1,4 @@
-sidechain player.audio.generator: {
+chain player.audio.generator: {
 	
 	loop output: {
 		center.customer.audio.player: true;

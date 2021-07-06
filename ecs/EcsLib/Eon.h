@@ -26,7 +26,7 @@ protected:
 	friend class EonLoopLoader;
 	
 	Eon::WorldState current_state;
-	Eon::SidechainDefinition* def = 0;
+	Eon::ChainDefinition* def = 0;
 	
 public:
 	EonScope() {}
@@ -163,9 +163,9 @@ protected:
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
-	bool LoadSidechainDefinition(Eon::SidechainDefinition& def);
+	bool LoadChainDefinition(Eon::ChainDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
-	bool SolveLoops(Eon::SidechainDefinition& def);
+	bool SolveLoops(Eon::ChainDefinition& def);
 	bool ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
 	
 	

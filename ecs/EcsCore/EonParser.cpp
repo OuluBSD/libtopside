@@ -138,19 +138,19 @@ String Value::GetTreeString(int indent) const {
 	return s;
 }
 
-String SidechainDefinition::GetTypeString() const {
+String ChainDefinition::GetTypeString() const {
 	switch (type) {
-		case CENTER: return "sidechain";
-		case NET: return "net_sidechain";
+		case CENTER: return "chain";
+		case NET: return "netchain";
 		default: return "invalid";
 	}
 }
 
-String SidechainDefinition::GetTreeString(int indent) const {
+String ChainDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << GetTypeString() << " " << id.ToString() << ":\n";
-	for (SidechainDefinition& def : chains) {
+	for (ChainDefinition& def : chains) {
 		s << def.GetTreeString(indent+1) << "\n";
 	}
 	for (LoopDefinition& def : loops) {
@@ -185,8 +185,8 @@ bool Parser::Parse(String content, String filepath) {
 bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	
 	cunit.main.id.Set("main");
-	cunit.main.type = SidechainDefinition::CENTER;
-	if (!SidechainStmtList(cunit.main))
+	cunit.main.type = ChainDefinition::CENTER;
+	if (!ChainStmtList(cunit.main))
 		return false;
 	
 	return true;
@@ -206,12 +206,12 @@ bool Parser::ParseLoop(Eon::LoopDefinition& def) {
 	return true;
 }
 
-bool Parser::ParseSidechain(Eon::SidechainDefinition& def, Eon::SidechainDefinition::Type t) {
-	if (t == Eon::SidechainDefinition::CENTER) {
-		PASS_ID("sidechain")
+bool Parser::ParseChain(Eon::ChainDefinition& def, Eon::ChainDefinition::Type t) {
+	if (t == Eon::ChainDefinition::CENTER) {
+		PASS_ID("chain")
 	}
-	else if (t == Eon::SidechainDefinition::NET) {
-		PASS_ID("net_sidechain")
+	else if (t == Eon::ChainDefinition::NET) {
+		PASS_ID("netchain")
 	}
 	
 	def.type = t;
@@ -220,14 +220,14 @@ bool Parser::ParseSidechain(Eon::SidechainDefinition& def, Eon::SidechainDefinit
 		return false;
 	
 	PASS_CHAR(':')
-	if (!SidechainScope(def))
+	if (!ChainScope(def))
 		return false;
 	
 	PASS_CHAR(';')
 	return true;
 }
 
-bool Parser::SidechainStmtList(Eon::SidechainDefinition& def) {
+bool Parser::ChainStmtList(Eon::ChainDefinition& def) {
 	while (!IsEof() && !IsChar('}')) {
 		
 		if (EmptyStatement())
@@ -236,12 +236,12 @@ bool Parser::SidechainStmtList(Eon::SidechainDefinition& def) {
 			if (!ParseLoop(def.loops.Add()))
 				return false;
 		}
-		else if (IsId("sidechain")) {
-			if (!ParseSidechain(def.chains.Add(), Eon::SidechainDefinition::CENTER))
+		else if (IsId("chain")) {
+			if (!ParseChain(def.chains.Add(), Eon::ChainDefinition::CENTER))
 				return false;
 		}
-		else if (IsId("net_sidechain")) {
-			if (!ParseSidechain(def.chains.Add(), Eon::SidechainDefinition::NET))
+		else if (IsId("netchain")) {
+			if (!ParseChain(def.chains.Add(), Eon::ChainDefinition::NET))
 				return false;
 		}
 		else if (IsId("return")) {
@@ -257,10 +257,10 @@ bool Parser::SidechainStmtList(Eon::SidechainDefinition& def) {
 	
 	return true;
 }
-bool Parser::SidechainScope(Eon::SidechainDefinition& def) {
+bool Parser::ChainScope(Eon::ChainDefinition& def) {
 	PASS_CHAR('{')
 	
-	SidechainStmtList(def);
+	ChainStmtList(def);
 	
 	PASS_CHAR('}')
 	return true;

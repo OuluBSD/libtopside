@@ -2,7 +2,7 @@ machine local: {
 	at.host: "main";
 	at.host.audio.hw: true;
 	
-	sidechain process: {
+	chain process: {
 		loop midi_in: {
 		};
 		loop ch0: {

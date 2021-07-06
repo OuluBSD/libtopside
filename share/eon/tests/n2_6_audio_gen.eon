@@ -1,7 +1,7 @@
 machine local: {
 	at.host: "main";
 	
-	sidechain process: {
+	chain process: {
 		loop local_in: {
 			center.net.order.side.out: true;
 		};
@@ -23,7 +23,7 @@ machine local: {
 machine remote: {
 	at.host: "any";
 	
-	sidechain process: {
+	chain process: {
 		loop remote_link_in: {
 			net.order.remote.sink: true;
 			net.audio.generator: true;

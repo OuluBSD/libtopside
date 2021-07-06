@@ -93,10 +93,10 @@ bool EonLoader::Load(String content, String filepath) {
 }
 
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
-	return LoadSidechainDefinition(cunit.main);
+	return LoadChainDefinition(cunit.main);
 }
 
-bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
+bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
 	// Enter scope
 	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
 	EonScope& scope = scopes.Add();
@@ -108,8 +108,8 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 	}
 	
 	
-	for (Eon::SidechainDefinition& d : def.chains) {
-		if (!LoadSidechainDefinition(d)) {
+	for (Eon::ChainDefinition& d : def.chains) {
+		if (!LoadChainDefinition(d)) {
 			scopes.RemoveLast();
 			return false;
 		}
@@ -162,7 +162,7 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 	return true;
 }
 
-bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
+bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 	loops.Clear();
 	for (Eon::LoopDefinition& loop_def : def.loops)
 		loops.Add(new EonLoopLoader(loops.GetCount(), this, loop_def));

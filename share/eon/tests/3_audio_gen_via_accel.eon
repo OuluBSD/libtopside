@@ -1,4 +1,4 @@
-sidechain tester: {
+chain tester: {
 	
 	loop center.audio.input: {
 		has.converter: false;

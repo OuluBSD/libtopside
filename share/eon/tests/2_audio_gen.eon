@@ -1,4 +1,4 @@
-sidechain tester: {
+chain tester: {
 	
 	loop output: {
 		customer.test.output: true;

@@ -37,13 +37,13 @@ struct LoopDefinition {
 	String ToString() const;
 };
 
-struct SidechainDefinition {
+struct ChainDefinition {
 	typedef enum : byte {
 		CENTER,
 		NET
 	} Type;
 	
-	LinkedList<SidechainDefinition> chains;
+	LinkedList<ChainDefinition> chains;
 	LinkedList<LoopDefinition> loops;
 	LinkedList<Statement> ret_list;
 	Type type;
@@ -92,7 +92,7 @@ struct Value {
 };
 
 struct CompilationUnit {
-	SidechainDefinition					main;
+	ChainDefinition					main;
 	
 	String GetTreeString(int indent=0) const;
 	
@@ -109,13 +109,13 @@ class Parser : public CParser {
 	bool ParseStmt(Eon::Statement&);
 	bool ParseStmtArguments(Eon::Statement&);
 	bool ParseLoop(Eon::LoopDefinition&);
-	bool ParseSidechain(Eon::SidechainDefinition&, Eon::SidechainDefinition::Type);
+	bool ParseChain(Eon::ChainDefinition&, Eon::ChainDefinition::Type);
 	bool ParseId(Eon::Id&);
 	bool ParseValue(Eon::Value&);
 	bool ParseReturnStmt(Eon::Statement&);
 	bool EmptyStatement() {return Char(';');}
-	bool SidechainScope(Eon::SidechainDefinition&);
-	bool SidechainStmtList(Eon::SidechainDefinition&);
+	bool ChainScope(Eon::ChainDefinition&);
+	bool ChainStmtList(Eon::ChainDefinition&);
 	bool LoopScope(Eon::LoopDefinition&);
 	
 	void AddError(String msg);

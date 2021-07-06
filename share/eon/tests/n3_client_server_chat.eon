@@ -1,7 +1,7 @@
 machine client0: {
 	at.host: local.main;
 	
-	sidechain client_msg_app: {
+	chain client_msg_app: {
 		loop msg_proc: {
 		};
 		loop connection: {
@@ -12,7 +12,7 @@ machine client0: {
 machine client1: {
 	at.host: local.new;
 	
-	sidechain client_msg_app: {
+	chain client_msg_app: {
 		loop msg_proc: {
 		};
 		loop connection: {
@@ -23,11 +23,11 @@ machine client1: {
 machine server: {
 	at.host: any;
 	
-	sidechain host_listener: {
+	chain host_listener: {
 		loop process: {
 		};
 	};
-	sidechain host_msg_app: {
+	chain host_msg_app: {
 		loop process: {
 		};
 	};

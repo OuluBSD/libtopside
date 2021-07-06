@@ -2,7 +2,7 @@ machine local: {
 	at.host: "main";
 	at.host.opengl: true;
 	
-	sidechain process: {
+	chain process: {
 		loop local_in: {
 		};
 		loop local_out: {
