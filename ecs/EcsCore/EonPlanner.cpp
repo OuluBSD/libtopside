@@ -204,13 +204,27 @@ bool WorldState::Contains(const WorldState& ws) const {
 		if (ws.using_act[i] && !ws.IsFalse(i))
 			return false;
 	for(int i = 0; i < c_count; i++) {
-		if (using_act[i]) {
+		if (ws.using_act[i]) {
 			if (Compare(i, ws) != 0)
 				return false;
 		}
 	}
 	return true;
 }
+
+bool WorldState::Conflicts(const WorldState& ws) const {
+	int a_count = using_act.GetCount();
+	int b_count = ws.using_act.GetCount();
+	int c_count = min(a_count, b_count);
+	for(int i = 0; i < c_count; i++) {
+		if (using_act[i] && ws.using_act[i]) {
+			if (Compare(i, ws) != 0)
+				return true;
+		}
+	}
+	return false;
+}
+
 
 int WorldState::Compare(int idx, const WorldState& ws) const {
 	const String& a = values[idx];
@@ -395,8 +409,7 @@ void ActionPlanner::AddSideInput(const Searcher& as, ANode& n) {
 
 void ActionPlanner::AddSideOutput(const Searcher& as, ANode& n) {
 	int est = n.GetEstimate();
-	if (est > 1)
-		return;
+	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
 	if (est < side_out_max_est) {
 		side_out_max_est = est;
 		side_outputs.Clear();
@@ -570,6 +583,11 @@ bool ActionNode::Contains(const ActionNode& n) const {
 	return a.Contains(b);
 }
 
+bool ActionNode::Conflicts(const ActionNode& n) const {
+	const WorldState& a = *ws;
+	const WorldState& b = *n.ws;
+	return a.Conflicts(b);
+}
 
 }
 NAMESPACE_ECS_END

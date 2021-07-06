@@ -8,7 +8,8 @@ Format GetDefaultFormat(ValDevCls type) {
 	//DUMP(type)
 	Format fmt;
 	
-	if (type.dev == DevCls::CENTER) {
+	if (type.dev == DevCls::CENTER ||
+		type.dev == DevCls::ACCEL) {
 		if (type.val == ValCls::AUDIO) {
 			fmt.SetAudio(SoundSample::FLT_LE, 2, 44100, 1024);
 		}
@@ -17,6 +18,9 @@ Format GetDefaultFormat(ValDevCls type) {
 		}
 		else if (type.val == ValCls::RECEIPT) {
 			fmt.SetReceipt();
+		}
+		else if (type.val == ValCls::MIDI) {
+			fmt.SetMidi();
 		}
 		else {
 			TODO

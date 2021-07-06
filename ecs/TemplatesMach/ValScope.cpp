@@ -55,9 +55,29 @@ bool VideoFormat::IsSame(const VideoFormat& fmt) const {
 }
 
 
+
+int MidiFormat::GetFrameSize() const {
+	TODO
+}
+
+String MidiFormat::ToString() const {
+	TODO
+}
+
+bool MidiFormat::IsValid() const {
+	return true;
+}
+
+bool MidiFormat::IsSame(const MidiFormat& fmt) const {
+	return true;
+}
+
+
+
 #define PROXY(x,y) \
 	if (IsAudio()) return aud.x(y); \
 	if (IsVideo()) return vid.x(y); \
+	if (IsMidi())  return mid.x(y); \
 	PANIC("Invalid type");
 #define PROXY_CHK(x,y) ASSERT(IsValid()) PROXY(x,y)
 
@@ -143,6 +163,12 @@ void Format::SetOrder() {
 void Format::SetReceipt() {
 	vd = VD(CENTER, RECEIPT);
 	memset(data, 0, sizeof(data));
+}
+
+void Format::SetMidi() {
+	vd = VD(CENTER, MIDI);
+	memset(data, 0, sizeof(data));
+	mid.SetDefault();
 }
 
 void Format::operator=(const Format& f) {

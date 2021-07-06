@@ -55,6 +55,27 @@ struct VideoFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
+struct MidiFormat :
+	public SampleBase<MidiSample>,
+	public DimBase<1>,
+	public SparseTimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<MidiSample>) +
+		sizeof(DimBase<1>) +
+		sizeof(SparseTimeSeriesBase);
+	
+	void SetDefault() {SampleBase<MidiSample>::SetDefault(); DimBase<1>::SetDefault();}
+	int GetFrameSize() const;
+	int GetMinBufSamples() const {return 2;}
+	String ToString() const;
+	bool IsValid() const;
+	bool IsSame(const MidiFormat& fmt) const;
+	
+	
+	byte pad[STD_FMT_SIZE - base_size - 4];
+};
+
 struct DataFormat {
 	
 	
@@ -87,6 +108,7 @@ public:
 		byte				data[STD_FMT_SIZE];
 		AudioFormat			aud;
 		VideoFormat			vid;
+		MidiFormat			mid;
 		DataFormat			dat;
 		EventFormat			ev;
 	};
@@ -105,6 +127,7 @@ public:
 	
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
+	bool IsMidi()  const {return vd.val == ValCls::MIDI;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
@@ -118,11 +141,14 @@ public:
 	void SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate);
 	void SetOrder();
 	void SetReceipt();
+	void SetMidi();
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
 	operator const VideoFormat&() const {ASSERT(IsVideo()); return vid;}
 	operator       VideoFormat&()       {ASSERT(IsVideo()); return vid;}
+	operator const MidiFormat&()  const {ASSERT(IsMidi());  return mid;}
+	operator       MidiFormat&()        {ASSERT(IsMidi());  return mid;}
 	
 	
 };

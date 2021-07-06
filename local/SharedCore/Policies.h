@@ -5,6 +5,12 @@ struct Pol {
 	
 	struct Ecs {
 		struct Eon {
+			struct Loop {
+				
+				// If loop has both side-in and side-out, then side-out is always after side-in
+				static constexpr bool SideInIsBeforeSideOutAlways = true;
+				
+			};
 			struct Loader {
 				
 				// Corresponding "Add component" action is always before "add extension" action.

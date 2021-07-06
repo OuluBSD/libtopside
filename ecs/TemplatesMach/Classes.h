@@ -382,6 +382,35 @@ public:
 };*/
 
 
+class MidiSample : RTTIBase {
+	RTTI_DECL0(MidiSample)
+
+public:
+	static const int def_sample_rate = 1;
+
+	#define MIDI_SMPL_LIST \
+		MIDI_SMPL(MIDI_EVENT)
+
+	typedef enum : byte {
+		INVALID,
+		DEV_INTERNAL,
+		#define MIDI_SMPL(x) x ,
+		MIDI_SMPL_LIST
+		#undef MIDI_SMPL
+		TYPE_COUNT,
+		
+		DEFAULT = MIDI_EVENT
+	} Type;
+
+
+	static void Clear(Type& t) {t = INVALID;}
+	static bool IsCopyCompatible(Type a, Type b) {return a == b;}
+	static String ToString(Type t);
+	static int GetSize(Type t);
+	static bool IsValid(Type t) {return (int)t > (int)INVALID && (int)t < (int)TYPE_COUNT;}
+};
+
+
 class EventSample : RTTIBase {
 	RTTI_DECL0(EventSample)
 
@@ -652,6 +681,7 @@ public:
 	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
 	String ToString() const {return "SparseTimeSeriesBase";}
 	bool IsValid() const {return true;}
+	double GetFrameSeconds() const {return 0;}
 	
 };
 

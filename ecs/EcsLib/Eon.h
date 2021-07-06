@@ -8,7 +8,12 @@ class EonLoader;
 
 
 
-
+struct EonError : Moveable<EonError> {
+	EonLoopLoader* ll = 0;
+	String msg;
+	int status = -1;
+	
+};
 
 
 
@@ -52,6 +57,7 @@ public:
 		NOT_READY,
 		WAITING_SIDE_INPUT,
 		WAITING_SIDE_OUTPUT,
+		RETRY,
 		READY,
 		FAILED,
 	} Status;
@@ -61,6 +67,7 @@ protected:
 	
 	EonLoader&					loader;
 	Eon::LoopDefinition&		def;
+	int							id = -1;
 	
 	Eon::APlanNode				start_node;
 	Eon::APlanNode				goal_node;
@@ -78,7 +85,7 @@ protected:
 	void SetupSegment(EonLoopSegment& s);
 	
 public:
-	EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def);
+	EonLoopLoader(int id, EonLoader* loader, Eon::LoopDefinition& def);
 	
 	void Visit(RuntimeVisitor& vis) {vis && comps;}
 	
@@ -88,13 +95,17 @@ public:
 	bool AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
 	void AddError(String msg);
 	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
+	void SetStatus(int s) {status = (Status)s;}
+	void SetStatusRetry() {status = RETRY;}
 	
 	bool IsFailed() const {return status == FAILED;}
 	bool IsReady() const {return status == READY;}
 	bool IsWaitingSideInput() const {return status == WAITING_SIDE_INPUT;}
 	bool IsWaitingSideOutput() const {return status == WAITING_SIDE_OUTPUT;}
+	bool IsWaitingSide() const {return status == WAITING_SIDE_INPUT || status == WAITING_SIDE_OUTPUT;}
 	EonLoopSegment& GetCurrentSegment() {return segments.Top();}
-	
+	int GetId() const {return id;}
+	Status GetStatus() const {return status;}
 };
 
 
@@ -119,8 +130,15 @@ protected:
 	Eon::CompilationUnit root;
 	EntityStoreRef es;
 	
+	Vector<EonError> errs;
+	bool collect_errors = false;
+	
 	
 	void AddError(String msg);
+	void AddError(EonLoopLoader* ll, String msg);
+	void ReleaseErrorBuffer();
+	void ClearErrorBuffer();
+	void CollectErrorBuffer(bool b) {collect_errors = b;}
 	
 public:
 	SYS_RTTI(EonLoader)
@@ -174,8 +192,11 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 	if (est <= 0)
 		return true;
 	Eon::ActionNode& goal = n.GetGoal();
+	Eon::WorldState& goal_ws = goal.GetWorldState();
 	if (n.Contains(goal))
 		return true;
+	if (goal.Conflicts(n))
+		return false;
 	Eon::WorldState& ws = n.GetWorldState();
 	Eon::ActionPlanner& ap = n.GetActionPlanner();
 	EonLoopLoader& ll = ap.GetLoopLoader();
@@ -201,6 +222,11 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 				return false;
 			}
 			else if (ext.sub == SubCompCls::SIDE_OUTPUT) {
+				POPO(Pol::Ecs::Eon::Loop::SideInIsBeforeSideOutAlways)
+				if (goal_ws	.IsTrue	("has.side.in") &&
+					ws		.IsFalse("has.side.in"))
+					return false;
+				
 				ap.AddSideOutput(seg.as, n);
 				return false;
 			}

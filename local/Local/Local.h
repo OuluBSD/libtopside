@@ -39,6 +39,7 @@
 #include "Image.h"
 #include "Geom.h"
 #include "Audio.h"
+#include "Midi.h"
 #include "Html.h"
 #include "Url.h"
 #include "Debugging.h"

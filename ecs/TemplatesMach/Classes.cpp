@@ -289,6 +289,38 @@ bool BinarySample::IsBigEndian(Type t) {
 
 
 
+String MidiSample::ToString(Type t) {
+	switch (t) {
+		case MIDI_EVENT: return "MidiEvent";
+		default: break;
+	}
+	return "<invalid>";
+}
+
+int MidiSample::GetSize(Type t) {
+	switch (t) {
+		case MIDI_EVENT: return sizeof(MidiEvent);
+		default: break;
+	}
+	ASSERT_(0, "invalid type");
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 String EventSample::ToString(Type t) {
 	switch (t) {
 		case CTRL_EVENT: return "CtrlEvent";

@@ -3,13 +3,17 @@
 NAMESPACE_ECS_BEGIN
 
 
-EonLoopLoader::EonLoopLoader(EonLoader* loader, Eon::LoopDefinition& def) : loader(*loader), def(def) {
+EonLoopLoader::EonLoopLoader(int id, EonLoader* loader, Eon::LoopDefinition& def) :
+	loader(*loader),
+	def(def),
+	id(id)
+{
 	planner.SetLoopLoader(this);
 }
 
 void EonLoopLoader::AddError(String msg) {
+	loader.AddError(this, msg);
 	status = FAILED;
-	loader.AddError(msg);
 }
 
 void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
@@ -21,6 +25,9 @@ void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
 }
 
 bool EonLoopLoader::Forward() {
+	if (IsWaitingSide())
+		return false;
+	
 	planner.ClearForward();
 	
 	EonScope& scope = loader.scopes.Top();
@@ -41,7 +48,7 @@ bool EonLoopLoader::Forward() {
 		start = scope.current_state;
 		start.SetActionPlanner(planner);
 		start.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-		start.Set(CONNECTED, false);
+		//start.Set(CONNECTED, false);
 		
 		goal.SetActionPlanner(planner);
 		goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
@@ -105,7 +112,7 @@ bool EonLoopLoader::Forward() {
 		const auto& outputs = planner.GetSideOutputs();
 		bool is_input = planner.IsSideInput();
 		if (is_input && inputs.GetCount()) {
-			LOG("Side-inputs:");
+			LOG("Loop " << id << " side-inputs:");
 			for(int i = 0; i < inputs.GetCount(); i++) {
 				auto& state = inputs[i];
 				const Eon::WorldState& ws = state.last->GetWorldState();
@@ -115,7 +122,7 @@ bool EonLoopLoader::Forward() {
 			return false;
 		}
 		else if (!is_input && outputs.GetCount()) {
-			LOG("Side-outputs:");
+			LOG("Loop " << id << " side-outputs:");
 			for(int i = 0; i < outputs.GetCount(); i++) {
 				auto& state = outputs[i];
 				const Eon::WorldState& ws = state.last->GetWorldState();

@@ -579,6 +579,7 @@ bool ExtComponent::ForwardMem(void* mem, size_t mem_size) {
 }
 
 bool ExtComponent::LinkSideIn(ComponentBaseRef in) {
+	side_out = -1; // SetSideOut(-1)
 	ExtComponentRef ein = in;
 	ASSERT(ein);
 	ASSERT(!side_in_conn);
@@ -599,6 +600,7 @@ bool ExtComponent::LinkSideIn(ComponentBaseRef in) {
 }
 
 bool ExtComponent::LinkSideOut(ComponentBaseRef out) {
+	side_in = -1; // SetSideIn(-1)
 	ExtComponentRef eout = out;
 	ASSERT(eout);
 	if (!eout)

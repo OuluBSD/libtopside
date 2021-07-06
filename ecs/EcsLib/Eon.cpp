@@ -165,7 +165,7 @@ bool EonLoader::LoadSidechainDefinition(Eon::SidechainDefinition& def) {
 bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 	loops.Clear();
 	for (Eon::LoopDefinition& loop_def : def.loops)
-		loops.Add(new EonLoopLoader(this, loop_def));
+		loops.Add(new EonLoopLoader(loops.GetCount(), this, loop_def));
 	if (loops.IsEmpty())
 		return true;
 	
@@ -181,12 +181,16 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 			waiting_inputs.Clear();
 			waiting_outputs.Clear();
 			while (keep_going) {
+				int dbg_i = 0;
 				for (EonLoopLoader& loop : loops) {
-					keep_going = loop.Forward() && keep_going;
-					fail = fail || loop.IsFailed();
-					ready = ready && loop.IsReady();
+					if (!loop.IsReady()) {
+						keep_going = loop.Forward() && keep_going;
+						fail = fail || loop.IsFailed();
+						ready = ready && loop.IsReady();
+					}
 					if (loop.IsWaitingSideInput()) waiting_inputs.Add(&loop);
 					if (loop.IsWaitingSideOutput()) waiting_outputs.Add(&loop);
+					++dbg_i;
 				}
 			}
 			if (ready)
@@ -211,6 +215,9 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 				break;
 			}
 			
+			Vector<EonLoopLoader*> retry_list;
+			CollectErrorBuffer(true);
+			int accepted_count = 0;
 			for (EonLoopLoader* in : waiting_inputs) {
 				EonLoopLoader* accepted_out = 0;
 				Eon::ActionPlanner::State* accepted_in_node = 0;
@@ -224,12 +231,10 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 				}
 				if (accepted_out_count > 1) {
 					AddError("Input can accept multiple outputs");
-					fail = true;
 					break;
 				}
 				if (accepted_out_count == 0) {
 					AddError("Input cannot accept any output");
-					fail = true;
 					break;
 				}
 				
@@ -237,10 +242,30 @@ bool EonLoader::SolveLoops(Eon::SidechainDefinition& def) {
 				accepted_in_node->last->SetSideInId(conn_id);
 				accepted_out_node->last->SetSideOutId(conn_id);
 				
+				LOG("Loop " << in->GetId() << " accepted loop " << accepted_out->GetId() << " with id " << conn_id);
+				
 				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out,	accepted_out_node);
 				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in,				accepted_in_node);
+				
+				retry_list.Add(in);
+				retry_list.Add(accepted_out);
+				
+				++accepted_count;
 			}
 			
+			for (EonLoopLoader* ll : retry_list)
+				ll->SetStatusRetry();
+			
+			CollectErrorBuffer(false);
+			
+			if (!accepted_count) {
+				ReleaseErrorBuffer();
+				AddError("Could not connect any side-channels");
+				fail = true;
+			}
+			else {
+				ClearErrorBuffer();
+			}
 		}
 		else Panic("Invalid mode");
 		
@@ -270,16 +295,52 @@ EntityRef EonLoader::ResolveEntity(Eon::Id& id) {
 }
 
 void EonLoader::AddError(String msg) {
-	LOG("EonLoader: error: " + msg);
+	if (!collect_errors) {
+		LOG("EonLoader: error: " + msg);
+	}
+	else {
+		EonError& e = errs.Add();
+		e.msg = msg;
+	}
+}
+
+void EonLoader::AddError(EonLoopLoader* ll, String msg) {
+	if (!collect_errors) {
+		LOG("EonLoader: error: " + msg);
+	}
+	else {
+		EonError& e = errs.Add();
+		e.ll = ll;
+		e.status = ll->GetStatus();
+		e.msg = msg;
+	}
+}
+
+void EonLoader::ReleaseErrorBuffer() {
+	if (errs.GetCount()) {
+		EonError& e = errs.Top();
+		LOG("EonLoader: error: " + e.msg);
+		errs.Clear();
+	}
+}
+
+void EonLoader::ClearErrorBuffer() {
+	for (EonError& e : errs) {
+		if (e.ll && e.ll->IsFailed() && e.status >= 0)
+			e.ll->SetStatus(e.status);
+	}
+	errs.Clear();
 }
 
 bool EonLoader::ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1) {
 	
+	int dbg_i = 0;
 	for (ComponentBaseRef& in : loop0.comps) {
 		int in_conn = in->GetSideIn();
 		if (in_conn < 0)
 			continue;
 		
+		RTLOG("Trying to side-link id " << in_conn);
 		bool found = false;
 		for (ComponentBaseRef& out : loop1.comps) {
 			int out_conn = out->GetSideOut();
@@ -302,10 +363,12 @@ bool EonLoader::ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1) {
 			}
 		}
 		
-		if (!found) {
+		/*if (!found) {
 			AddError("Could not link connection id " + IntStr(in_conn));
 			return false;
-		}
+		}*/
+		
+		dbg_i++;
 	}
 	
 	
