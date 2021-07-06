@@ -59,6 +59,10 @@ bool EonLoopLoader::Forward() {
 				goal.Set(atom, stmt.value->id.ToString());
 			else if (stmt.value->type == Eon::Value::VAL_STRING)
 				goal.Set(atom, stmt.value->str);
+			else if (stmt.value->type == Eon::Value::VAL_INT)
+				goal.Set(atom, IntStr(stmt.value->i));
+			else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
+				goal.Set(atom, DblStr(stmt.value->f));
 			else
 				Panic("internal error");
 		}

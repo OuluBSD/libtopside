@@ -21,7 +21,7 @@ public:
 	
 	COMP_MAKE_ACTION_BEGIN
 		ASSERT(cls.sub == SubCompCls::CONVERTER);
-		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName();
+		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName() + ".dbg";
 		//DUMP(s)
 		COMP_MAKE_ACTION_FALSE_TO_TRUE(s)
 	COMP_MAKE_ACTION_END

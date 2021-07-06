@@ -59,6 +59,8 @@ struct Value {
 		VAL_INVALID,
 		VAL_CUSTOMER,
 		VAL_STRING,
+		VAL_INT,
+		VAL_DOUBLE,
 		VAL_BOOLEAN,
 		VAL_ID
 	} Type;
@@ -67,6 +69,8 @@ struct Value {
 	LoopDefinition customer;
 	String str;
 	bool b;
+	int i;
+	double f;
 	Id id;
 	
 	
@@ -77,6 +81,8 @@ struct Value {
 		customer = v.customer;
 		str = v.str;
 		b = v.b;
+		i = v.i;
+		f = v.f;
 		id = v.id;
 	}
 	void SetBool(bool b) {type = VAL_BOOLEAN; this->b = b;}

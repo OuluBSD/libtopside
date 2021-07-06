@@ -25,6 +25,8 @@ bool WorldState::Set(int index, bool value) {
 	}
 	using_act[index] = true;
 	values[index] = value ? "true" : "false";
+	if (use_debugging_order)
+		dbg_order.FindAdd(index);
 	return true;
 }
 
@@ -42,6 +44,7 @@ bool WorldState::Set(int index, String value) {
 WorldState& WorldState::operator=(const WorldState& src) {
 	values		<<= src.values;
 	using_act	<<= src.using_act;
+	dbg_order	<<= src.dbg_order;
 	cur_comp	= src.cur_comp;
 	add_ext		= src.add_ext;
 	type		= src.type;
@@ -128,6 +131,16 @@ bool WorldState::IsFalse(const String& key) const {
 	return true;
 }
 
+bool WorldState::IsFalse(int idx) const {
+	ASSERT(ap);
+	ASSERT(idx >= 0);
+	if (idx >= 0 && idx < values.GetCount()) {
+		const auto& s = values[idx];
+		return s.IsEmpty() || s == "false";
+	}
+	return true;
+}
+
 String WorldState::Get(const String& key) const {
 	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
@@ -139,15 +152,30 @@ String WorldState::Get(const String& key) const {
 String WorldState::ToString() const {
 	ASSERT(ap);
 	String s;
-	for(int i = 0; i < values.GetCount(); i++) {
-		if (!using_act[i])
-			continue;
-		String v = values[i];
-		if (v.IsEmpty()) v = "false";
-		String k = ap->GetAtom(i).ToString();
-		if (!s.IsEmpty())
-			s << ",";
-		s << k << "=" << v;
+	if (use_debugging_order && dbg_order.GetCount()) {
+		for(int i = 0; i < dbg_order.GetCount(); i++) {
+			int idx = dbg_order[i];
+			if (!using_act[idx])
+				continue;
+			String v = values[idx];
+			if (v.IsEmpty()) v = "false";
+			String k = ap->GetAtom(idx).ToString();
+			if (!s.IsEmpty())
+				s << ",";
+			s << k << "=" << v;
+		}
+	}
+	else {
+		for(int i = 0; i < values.GetCount(); i++) {
+			if (!using_act[i])
+				continue;
+			String v = values[i];
+			if (v.IsEmpty()) v = "false";
+			String k = ap->GetAtom(i).ToString();
+			if (!s.IsEmpty())
+				s << ",";
+			s << k << "=" << v;
+		}
 	}
 	return s;
 }
@@ -173,19 +201,32 @@ bool WorldState::Contains(const WorldState& ws) const {
 	int b_count = ws.using_act.GetCount();
 	int c_count = min(a_count, b_count);
 	for(int i = c_count; i < b_count; i++)
-		if (ws.using_act[i])
+		if (ws.using_act[i] && !ws.IsFalse(i))
 			return false;
 	for(int i = 0; i < c_count; i++) {
-		if (ws.using_act[i]) {
-			if (!using_act[i])
-				return false;
-			if (ws.values[i] != values[i])
+		if (using_act[i]) {
+			if (Compare(i, ws) != 0)
 				return false;
 		}
 	}
 	return true;
 }
 
+int WorldState::Compare(int idx, const WorldState& ws) const {
+	const String& a = values[idx];
+	const String& b = ws.values[idx];
+	// Compare false
+	if (a.IsEmpty() || a == "false") {
+		if (b.IsEmpty() || b == "false")
+			return 0;
+		return 1;
+	}
+	else {
+		if (b.IsEmpty() || b == "false")
+			return -1;
+		return a == b ? 0 : -2;
+	}
+}
 
 
 

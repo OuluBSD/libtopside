@@ -33,18 +33,23 @@ public:
 		}
 		else if (cls.sub == SubCompCls::INPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.src.GetActionName() + ".src")
+			COMP_MAKE_ACTION_TO_TRUE("has.input");
 		}
 		else if (cls.sub == SubCompCls::OUTPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".sink")
+			COMP_MAKE_ACTION_TO_TRUE("has.output");
 		}
 		else if (cls.sub == SubCompCls::SIDE_INPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.src.GetActionName() + ".side.in")
+			COMP_MAKE_ACTION_TO_TRUE("has.side.in");
 		}
 		else if (cls.sub == SubCompCls::SIDE_OUTPUT) {
 			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".side.out")
+			COMP_MAKE_ACTION_TO_TRUE("has.side.out");
 		}
 		else if (cls.sub == SubCompCls::CONVERTER) {
-			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".convert")
+			COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName())
+			COMP_MAKE_ACTION_TO_TRUE("has.converter");
 		}
 		else {
 			//COMP_MAKE_ACTION_FALSE_TO_TRUE(cls.side.GetActionName() + ".side")

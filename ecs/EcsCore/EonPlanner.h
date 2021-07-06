@@ -27,9 +27,11 @@ protected:
 	friend class ::TS::Ecs::EonLoader;
 	friend class ::TS::Ecs::EonLoopLoader;
 	
+	static const bool use_debugging_order = true;
 	
 	Vector<String>				values;
 	Vector<bool>				using_act;
+	Index<short>				dbg_order;
 	TypeCompCls					cur_comp;
 	TypeExtCls					add_ext;
 	ValDevCls					side_vd;
@@ -57,6 +59,7 @@ public:
 	bool IsAddExtension() const {return type == ADD_EXT;}
 	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
+	bool IsFalse(int idx) const;
 	String Get(const String& key) const;
 	int64 GetHashValue() const;
 	TypeCompCls GetComponent() const {return cur_comp;}
@@ -66,6 +69,7 @@ public:
 	String ToString() const;
 	String GetFullString() const;
 	bool Contains(const WorldState& ws) const;
+	int Compare(int idx, const WorldState& ws) const;
 	
 	WorldState& operator=(const WorldState& src);
 	

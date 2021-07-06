@@ -341,6 +341,16 @@ bool Parser::ParseValue(Eon::Value& v) {
 		v.str = ReadString();
 		return true;
 	}
+	else if (IsInt()) {
+		v.type = Eon::Value::VAL_INT;
+		v.i = ReadInt();
+		return true;
+	}
+	else if (IsNumber()) {
+		v.type = Eon::Value::VAL_DOUBLE;
+		v.f = ReadNumber();
+		return true;
+	}
 	else if (IsChar('{')) {
 		v.type = Eon::Value::VAL_CUSTOMER;
 		MemSwap(v.id, v.customer.id);
