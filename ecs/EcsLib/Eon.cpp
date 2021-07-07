@@ -93,27 +93,81 @@ bool EonLoader::Load(String content, String filepath) {
 }
 
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
-	return LoadChainDefinition(cunit.main);
+	return LoadMachineList(cunit.list);
 }
 
-bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
-	// Enter scope
+void EonLoader::EnterScope() {
 	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
 	EonScope& scope = scopes.Add();
-	scope.def = &def;
+	
 	scope.SetCurrentState(def_ws);
 	
 	if (parent) {
 		scope.current_state = parent->current_state;
 	}
+}
+
+bool EonLoader::LeaveScope() {
+	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
+	EonScope& scope = scopes.Top();
+	
+	if (scopes.GetCount() >= 2) {
+		EonScope& par = scopes.At(scopes.GetCount()-2);
+		const Eon::WorldState& src_ws = scope.current_state;
+		Eon::WorldState& dst_ws = par.current_state;
+		if (par.chain && !dst_ws.Append(src_ws, par.chain->ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+		if (par.loop && !dst_ws.Append(src_ws, par.loop->ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+	}
 	
 	
-	for (Eon::ChainDefinition& d : def.chains) {
+	// Add changes to parent state
+	if (parent && scope.chain) {
+		if (!parent->current_state.Append(scope.current_state, scope.chain->ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+	}
+	if (parent && scope.loop) {
+		if (!parent->current_state.Append(scope.current_state, scope.loop->ret_list)) {
+			AddError("Invalid type in return value");
+			return false;
+		}
+	}
+	
+	scopes.RemoveLast();
+	return true;
+}
+
+bool EonLoader::LoadMachineList(Eon::MachineList& list) {
+	for (Eon::Machine& mach : list.machs)
+		if (!LoadMachine(mach))
+			return false;
+	return true;
+}
+
+bool EonLoader::LoadMachine(Eon::Machine& mach) {
+	EnterScope();
+	scopes.Top().mach = &mach;
+	
+	for (Eon::ChainDefinition& d : mach.chains) {
 		if (!LoadChainDefinition(d)) {
 			scopes.RemoveLast();
 			return false;
 		}
 	}
+	
+	return LeaveScope();
+}
+
+bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
+	EnterScope();
+	scopes.Top().chain = &def;
 	
 	if (!SolveLoops(def))
 		return false;
@@ -139,27 +193,7 @@ bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
 	
 	loops.Clear();
 	
-	if (scopes.GetCount() >= 2) {
-		EonScope& par = scopes.At(scopes.GetCount()-2);
-		const Eon::WorldState& src_ws = scope.current_state;
-		Eon::WorldState& dst_ws = par.current_state;
-		if (!dst_ws.Append(src_ws, par.def->ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-	}
-	
-	
-	// Add changes to parent state
-	if (parent) {
-		if (!parent->current_state.Append(scope.current_state, def.ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-	}
-	
-	scopes.RemoveLast();
-	return true;
+	return LeaveScope();
 }
 
 bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {

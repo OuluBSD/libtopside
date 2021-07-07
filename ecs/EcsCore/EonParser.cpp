@@ -74,6 +74,23 @@ String LoopDefinition::GetTreeString(int indent) const {
 	return s;
 }
 
+String Machine::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << "machine:\n";
+	for (const Statement& stmt : stmts) {
+		s << stmt.GetTreeString(indent+1) << "\n";
+	}
+	for (ChainDefinition& def : chains) {
+		s << def.GetTreeString(indent+1) << "\n";
+	}
+	return s;
+}
+
+String Machine::ToString() const {
+	return "machine(" + IntStr(chains.GetCount()) + " chains)";
+}
+
 String Value::ToString() const {
 	String s;
 	if (type == VAL_INVALID) {
@@ -138,21 +155,10 @@ String Value::GetTreeString(int indent) const {
 	return s;
 }
 
-String ChainDefinition::GetTypeString() const {
-	switch (type) {
-		case CENTER: return "chain";
-		case NET: return "netchain";
-		default: return "invalid";
-	}
-}
-
 String ChainDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
-	s << GetTypeString() << " " << id.ToString() << ":\n";
-	for (ChainDefinition& def : chains) {
-		s << def.GetTreeString(indent+1) << "\n";
-	}
+	s << "chain " << id.ToString() << ":\n";
 	for (LoopDefinition& def : loops) {
 		s << def.GetTreeString(indent+1) << "\n";
 	}
@@ -163,8 +169,15 @@ String ChainDefinition::GetTreeString(int indent) const {
 	return s;
 }
 
+String MachineList::GetTreeString(int indent) const {
+	String s;
+	for (Machine& mach : machs)
+		s << mach.GetTreeString(indent+1);
+	return s;
+}
+
 String CompilationUnit::GetTreeString(int indent) const {
-	return main.GetTreeString(indent);
+	return list.GetTreeString(indent);
 }
 
 
@@ -184,11 +197,74 @@ bool Parser::Parse(String content, String filepath) {
 
 bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	
-	cunit.main.id.Set("main");
-	cunit.main.type = ChainDefinition::CENTER;
-	if (!ChainStmtList(cunit.main))
+	if (!ParseMachineList(cunit.list))
 		return false;
 	
+	if (!IsEof()) {
+		AddError("Expected end-of-file");
+		return false;
+	}
+	
+	return true;
+}
+
+bool Parser::ParseMachineList(Eon::MachineList& list) {
+	if (IsId("chain")) {
+		Machine& def_mach = list.machs.Add();
+		ParseChain(def_mach.chains.Add());
+	}
+	else if (IsId("loop")) {
+		Machine& def_mach = list.machs.Add();
+		ParseLoop(def_mach.chains.Add().loops.Add());
+	}
+	else {
+		while (!IsEof() && IsId("machine")) {
+			Machine& mach = list.machs.Add();
+			ParseMachine(mach);
+		}
+	}
+	return true;
+}
+
+bool Parser::ParseMachine(Eon::Machine& mach) {
+	PASS_ID("machine")
+	
+	if (!ParseId(mach.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseMachineScope(mach))
+			return false;
+	}
+	else {
+		AddError("Expected machine scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseMachineScope(Eon::Machine& mach) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		
+		if (IsId("chain")) {
+			if (!ParseChain(mach.chains.Add()))
+				return false;
+		}
+		else {
+			if (!ParseStmt(mach.stmts.Add()))
+				return false;
+		}
+	}
+	
+	PASS_CHAR('}')
 	return true;
 }
 
@@ -199,22 +275,15 @@ bool Parser::ParseLoop(Eon::LoopDefinition& def) {
 		return false;
 	
 	PASS_CHAR(':')
-	if (!LoopScope(def))
+	if (!ParseLoopScope(def))
 		return false;
 	
 	PASS_CHAR(';')
 	return true;
 }
 
-bool Parser::ParseChain(Eon::ChainDefinition& def, Eon::ChainDefinition::Type t) {
-	if (t == Eon::ChainDefinition::CENTER) {
-		PASS_ID("chain")
-	}
-	else if (t == Eon::ChainDefinition::NET) {
-		PASS_ID("netchain")
-	}
-	
-	def.type = t;
+bool Parser::ParseChain(Eon::ChainDefinition& def) {
+	PASS_ID("chain")
 	
 	if (!ParseId(def.id))
 		return false;
@@ -227,21 +296,15 @@ bool Parser::ParseChain(Eon::ChainDefinition& def, Eon::ChainDefinition::Type t)
 	return true;
 }
 
-bool Parser::ChainStmtList(Eon::ChainDefinition& def) {
+bool Parser::ChainScope(Eon::ChainDefinition& def) {
+	PASS_CHAR('{')
+	
 	while (!IsEof() && !IsChar('}')) {
-		
 		if (EmptyStatement())
 			continue;
-		else if (IsId("loop")) {
+		
+		if (IsId("loop")) {
 			if (!ParseLoop(def.loops.Add()))
-				return false;
-		}
-		else if (IsId("chain")) {
-			if (!ParseChain(def.chains.Add(), Eon::ChainDefinition::CENTER))
-				return false;
-		}
-		else if (IsId("netchain")) {
-			if (!ParseChain(def.chains.Add(), Eon::ChainDefinition::NET))
 				return false;
 		}
 		else if (IsId("return")) {
@@ -255,18 +318,11 @@ bool Parser::ChainStmtList(Eon::ChainDefinition& def) {
 		
 	}
 	
-	return true;
-}
-bool Parser::ChainScope(Eon::ChainDefinition& def) {
-	PASS_CHAR('{')
-	
-	ChainStmtList(def);
-	
 	PASS_CHAR('}')
 	return true;
 }
 
-bool Parser::LoopScope(Eon::LoopDefinition& def) {
+bool Parser::ParseLoopScope(Eon::LoopDefinition& def) {
 	PASS_CHAR('{')
 	
 	while (!IsChar('}')) {
@@ -354,7 +410,7 @@ bool Parser::ParseValue(Eon::Value& v) {
 	else if (IsChar('{')) {
 		v.type = Eon::Value::VAL_CUSTOMER;
 		MemSwap(v.id, v.customer.id);
-		return LoopScope(v.customer);
+		return ParseLoopScope(v.customer);
 	}
 	else {
 		AddError("Unexpected token");

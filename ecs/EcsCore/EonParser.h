@@ -38,20 +38,12 @@ struct LoopDefinition {
 };
 
 struct ChainDefinition {
-	typedef enum : byte {
-		CENTER,
-		NET
-	} Type;
-	
-	LinkedList<ChainDefinition> chains;
-	LinkedList<LoopDefinition> loops;
 	LinkedList<Statement> ret_list;
-	Type type;
+	LinkedList<LoopDefinition> loops;
 	Id id;
 	
-	String GetTypeString() const;
+	void operator=(const ChainDefinition& v) {ret_list <<= v.ret_list; loops <<= v.loops; id = v.id;}
 	String GetTreeString(int indent=0) const;
-	
 };
 
 struct Value {
@@ -91,8 +83,25 @@ struct Value {
 	String GetValue() const;
 };
 
+struct Machine {
+	LinkedList<ChainDefinition>		chains;
+	LinkedList<Statement>			stmts;
+	Id								id;
+	
+	void operator=(const Machine& v) {id = v.id; chains <<= v.chains;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
+struct MachineList {
+	Array<Machine>					machs;
+	
+	String GetTreeString(int indent=0) const;
+	
+};
+
 struct CompilationUnit {
-	ChainDefinition					main;
+	MachineList						list;
 	
 	String GetTreeString(int indent=0) const;
 	
@@ -109,14 +118,16 @@ class Parser : public CParser {
 	bool ParseStmt(Eon::Statement&);
 	bool ParseStmtArguments(Eon::Statement&);
 	bool ParseLoop(Eon::LoopDefinition&);
-	bool ParseChain(Eon::ChainDefinition&, Eon::ChainDefinition::Type);
+	bool ParseChain(Eon::ChainDefinition&);
 	bool ParseId(Eon::Id&);
 	bool ParseValue(Eon::Value&);
 	bool ParseReturnStmt(Eon::Statement&);
 	bool EmptyStatement() {return Char(';');}
 	bool ChainScope(Eon::ChainDefinition&);
-	bool ChainStmtList(Eon::ChainDefinition&);
-	bool LoopScope(Eon::LoopDefinition&);
+	bool ParseLoopScope(Eon::LoopDefinition&);
+	bool ParseMachineList(Eon::MachineList&);
+	bool ParseMachine(Eon::Machine&);
+	bool ParseMachineScope(Eon::Machine&);
 	
 	void AddError(String msg);
 	

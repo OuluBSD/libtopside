@@ -25,9 +25,10 @@ protected:
 	friend class EonLoader;
 	friend class EonLoopLoader;
 	
-	Eon::WorldState current_state;
-	Eon::ChainDefinition* def = 0;
-	
+	Eon::WorldState			current_state;
+	Eon::LoopDefinition*	loop = 0;
+	Eon::ChainDefinition*	chain = 0;
+	Eon::Machine*			mach = 0;
 public:
 	EonScope() {}
 	
@@ -139,6 +140,8 @@ protected:
 	void ReleaseErrorBuffer();
 	void ClearErrorBuffer();
 	void CollectErrorBuffer(bool b) {collect_errors = b;}
+	void EnterScope();
+	bool LeaveScope();
 	
 public:
 	SYS_RTTI(EonLoader)
@@ -163,6 +166,8 @@ protected:
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
+	bool LoadMachine(Eon::Machine& mach);
+	bool LoadMachineList(Eon::MachineList& list);
 	bool LoadChainDefinition(Eon::ChainDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	bool SolveLoops(Eon::ChainDefinition& def);

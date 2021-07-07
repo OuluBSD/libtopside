@@ -28,6 +28,12 @@ bool EonLoopLoader::Forward() {
 	if (IsWaitingSide())
 		return false;
 	
+	if (def.stmts.IsEmpty()) {
+		String id = def.id.ToString();
+		AddError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
+		return false;
+	}
+	
 	planner.ClearForward();
 	
 	EonScope& scope = loader.scopes.Top();
