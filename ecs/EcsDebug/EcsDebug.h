@@ -10,6 +10,7 @@
 #include "SoundCard.h"
 #include "Verifier.h"
 #include "Testers.h"
+#include "Mixer.h"
 
 
 

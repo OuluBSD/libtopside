@@ -19,5 +19,7 @@ file
 	ConvExt.h,
 	ConvExt.cpp,
 	Testers.h,
-	Testers.cpp;
+	Testers.cpp,
+	Mixer.h,
+	Mixer.cpp;
 

@@ -31,8 +31,9 @@ struct LoopDefinition {
 	Id id;
 	LinkedList<Statement> stmts;
 	LinkedList<Statement> ret_list;
+	LinkedList<Id> req;
 	
-	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts; ret_list <<= v.ret_list;}
+	void operator=(const LoopDefinition& v) {id = v.id; stmts <<= v.stmts; ret_list <<= v.ret_list; req <<= v.req;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 };
@@ -93,8 +94,19 @@ struct Machine {
 	String ToString() const;
 };
 
+struct State {
+	LinkedList<Statement>			stmts;
+	LinkedList<Statement>			ret_list;
+	Id								id;
+	
+	void operator=(const State& v) {stmts <<= v.stmts; ret_list <<= v.ret_list; id = v.id;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+};
+
 struct MachineList {
 	Array<Machine>					machs;
+	Array<State>					states;
 	
 	String GetTreeString(int indent=0) const;
 	
@@ -122,12 +134,15 @@ class Parser : public CParser {
 	bool ParseId(Eon::Id&);
 	bool ParseValue(Eon::Value&);
 	bool ParseReturnStmt(Eon::Statement&);
+	bool ParseRequirementStmt(Eon::Id&);
 	bool EmptyStatement() {return Char(';');}
 	bool ChainScope(Eon::ChainDefinition&);
 	bool ParseLoopScope(Eon::LoopDefinition&);
 	bool ParseMachineList(Eon::MachineList&);
 	bool ParseMachine(Eon::Machine&);
 	bool ParseMachineScope(Eon::Machine&);
+	bool ParseState(Eon::State&);
+	bool ParseStateScope(Eon::State&);
 	
 	void AddError(String msg);
 	

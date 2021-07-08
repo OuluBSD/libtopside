@@ -64,6 +64,9 @@ String LoopDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << "loop " << id.ToString() << ":\n";
+	for (const Id& r : req) {
+		s << r.GetTreeString(indent+1) << "\n";
+	}
 	for (const Statement& stmt : stmts) {
 		s << stmt.GetTreeString(indent+1) << "\n";
 	}
@@ -169,8 +172,34 @@ String ChainDefinition::GetTreeString(int indent) const {
 	return s;
 }
 
+
+
+String State::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << "state " << id.ToString() << ":\n";
+	for (const Statement& stmt : stmts) {
+		s << stmt.GetTreeString(indent+1) << "\n";
+	}
+	for (const Statement& stmt : ret_list) {
+		s.Cat('\t', indent+1);
+		s << "return " << stmt.ToString() << "\n";
+	}
+	return s;
+}
+
+String State::ToString() const {
+	return "state " + id.ToString();
+}
+
+
+
+
+
 String MachineList::GetTreeString(int indent) const {
 	String s;
+	for (State& state : states)
+		s << state.GetTreeString(indent+1);
 	for (Machine& mach : machs)
 		s << mach.GetTreeString(indent+1);
 	return s;
@@ -218,9 +247,19 @@ bool Parser::ParseMachineList(Eon::MachineList& list) {
 		ParseLoop(def_mach.chains.Add().loops.Add());
 	}
 	else {
-		while (!IsEof() && IsId("machine")) {
-			Machine& mach = list.machs.Add();
-			ParseMachine(mach);
+		while (!IsEof()) {
+			if (IsId("machine")) {
+				Machine& mach = list.machs.Add();
+				ParseMachine(mach);
+			}
+			else if (IsId("state")) {
+				State& state = list.states.Add();
+				ParseState(state);
+			}
+			else {
+				AddError("Unexpected input");
+				return false;
+			}
 		}
 	}
 	return true;
@@ -260,6 +299,47 @@ bool Parser::ParseMachineScope(Eon::Machine& mach) {
 		}
 		else {
 			if (!ParseStmt(mach.stmts.Add()))
+				return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseState(Eon::State& state) {
+	PASS_ID("state")
+	
+	if (!ParseId(state.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseStateScope(state))
+			return false;
+	}
+	else {
+		AddError("Expected machine scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseStateScope(Eon::State& state) {
+	PASS_CHAR('{')
+	
+	while (!IsEof() && !IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		else if (IsId("return")) {
+			if (!ParseReturnStmt(state.ret_list.Add()))
+				return false;
+		}
+		else {
+			if (!ParseStmt(state.stmts.Add()))
 				return false;
 		}
 	}
@@ -330,6 +410,10 @@ bool Parser::ParseLoopScope(Eon::LoopDefinition& def) {
 			continue;
 		else if (IsId("return")) {
 			if (!ParseReturnStmt(def.ret_list.Add()))
+				return false;
+		}
+		else if (IsId("req")) {
+			if (!ParseRequirementStmt(def.req.Add()))
 				return false;
 		}
 		else {
@@ -444,6 +528,14 @@ bool Parser::ParseReturnStmt(Eon::Statement& stmt) {
 		if (!ParseValue(*stmt.value))
 			return false;
 	}
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseRequirementStmt(Eon::Id& id) {
+	PASS_ID("req")
+	if (!ParseId(id))
+		return false;
 	PASS_CHAR(';')
 	return true;
 }

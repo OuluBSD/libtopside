@@ -1,7 +1,9 @@
 uses
-	TemplatesLocal,
 	EcsNonGUI,
-	CompleteDebug;
+	CompleteDebug,
+	TemplatesLocal;
+
+uses(NEVER) Music;
 
 file
 	Notes.txt,
