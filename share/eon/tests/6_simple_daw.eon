@@ -100,7 +100,7 @@ machine local: {
 				req daw.audio.ch.connected.sidechain.out;
 			};
 		};
-		chain ch2: {
+		chain ch2: {	
 			loop accel.ch_sidechain: {
 				req daw.audio.ch;
 				req daw.audio.ch.connected.sidechain.in;

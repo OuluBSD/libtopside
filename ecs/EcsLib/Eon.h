@@ -120,6 +120,7 @@ class EonLoader :
 {
 protected:
 	friend class EonLoopLoader;
+	static int loop_counter;
 	
 	LinkedList<EonScope> scopes;
 	Array<EonLoopLoader> loops;

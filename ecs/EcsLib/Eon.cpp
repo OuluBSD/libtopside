@@ -3,6 +3,7 @@
 NAMESPACE_ECS_BEGIN
 
 
+int EonLoader::loop_counter = 0;
 
 
 
@@ -173,6 +174,11 @@ bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
 	EnterScope();
 	scopes.Top().chain = &def;
 	
+	for (Eon::ChainDefinition& subdef : def.subchains) {
+		if (!LoadChainDefinition(subdef))
+			return false;
+	}
+	
 	if (!SolveLoops(def))
 		return false;
 	
@@ -203,7 +209,7 @@ bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
 bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 	loops.Clear();
 	for (Eon::LoopDefinition& loop_def : def.loops)
-		loops.Add(new EonLoopLoader(loops.GetCount(), this, loop_def));
+		loops.Add(new EonLoopLoader(loop_counter++, this, loop_def));
 	if (loops.IsEmpty())
 		return true;
 	
