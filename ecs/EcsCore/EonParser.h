@@ -13,6 +13,7 @@ struct Id {
 	void operator=(const Id& v) {parts <<= v.parts;}
 	String ToString() const;
 	String GetTreeString(int indent=0) const;
+	bool operator==(const Id& id) const;
 };
 
 struct Value;
@@ -41,9 +42,10 @@ struct LoopDefinition {
 struct ChainDefinition {
 	LinkedList<Statement> ret_list;
 	LinkedList<LoopDefinition> loops;
+	LinkedList<ChainDefinition> subchains;
 	Id id;
 	
-	void operator=(const ChainDefinition& v) {ret_list <<= v.ret_list; loops <<= v.loops; id = v.id;}
+	void operator=(const ChainDefinition& v) {ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
 	String GetTreeString(int indent=0) const;
 };
 
@@ -104,7 +106,7 @@ struct State {
 	String ToString() const;
 };
 
-struct MachineList {
+struct GlobalScope {
 	Array<Machine>					machs;
 	Array<State>					states;
 	
@@ -113,7 +115,7 @@ struct MachineList {
 };
 
 struct CompilationUnit {
-	MachineList						list;
+	GlobalScope						list;
 	
 	String GetTreeString(int indent=0) const;
 	
@@ -138,7 +140,7 @@ class Parser : public CParser {
 	bool EmptyStatement() {return Char(';');}
 	bool ChainScope(Eon::ChainDefinition&);
 	bool ParseLoopScope(Eon::LoopDefinition&);
-	bool ParseMachineList(Eon::MachineList&);
+	bool ParseGlobalScope(Eon::GlobalScope&);
 	bool ParseMachine(Eon::Machine&);
 	bool ParseMachineScope(Eon::Machine&);
 	bool ParseState(Eon::State&);

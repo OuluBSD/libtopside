@@ -29,7 +29,7 @@ public:
 	
 	Ref<ComponentExtBase> AsRefT() {return Ref<ComponentExtBase>(GetParent(), this);}
 	
-	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {Panic("The class have not implemented MakeSide"); return false;}
+	static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
 };
 

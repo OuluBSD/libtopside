@@ -35,6 +35,18 @@ String Id::GetTreeString(int indent) const {
 	return s;
 }
 
+bool Id::operator==(const Id& id) const {
+	if (parts.GetCount() != id.parts.GetCount())
+		return false;
+	auto a = parts.Begin();
+	auto a_end = parts.End();
+	auto b = id.parts.Begin();
+	for (; a != a_end; ++a, ++b)
+		if (*a != *b)
+			return false;
+	return true;
+}
+
 String Statement::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
@@ -162,6 +174,9 @@ String ChainDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << "chain " << id.ToString() << ":\n";
+	for (ChainDefinition& sc : subchains) {
+		s << sc.GetTreeString(indent+1) << "\n";
+	}
 	for (LoopDefinition& def : loops) {
 		s << def.GetTreeString(indent+1) << "\n";
 	}
@@ -196,7 +211,7 @@ String State::ToString() const {
 
 
 
-String MachineList::GetTreeString(int indent) const {
+String GlobalScope::GetTreeString(int indent) const {
 	String s;
 	for (State& state : states)
 		s << state.GetTreeString(indent+1);
@@ -226,7 +241,7 @@ bool Parser::Parse(String content, String filepath) {
 
 bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	
-	if (!ParseMachineList(cunit.list))
+	if (!ParseGlobalScope(cunit.list))
 		return false;
 	
 	if (!IsEof()) {
@@ -237,7 +252,7 @@ bool Parser::Parse(Eon::CompilationUnit& cunit) {
 	return true;
 }
 
-bool Parser::ParseMachineList(Eon::MachineList& list) {
+bool Parser::ParseGlobalScope(Eon::GlobalScope& list) {
 	if (IsId("chain")) {
 		Machine& def_mach = list.machs.Add();
 		ParseChain(def_mach.chains.Add());
@@ -385,6 +400,10 @@ bool Parser::ChainScope(Eon::ChainDefinition& def) {
 		
 		if (IsId("loop")) {
 			if (!ParseLoop(def.loops.Add()))
+				return false;
+		}
+		else if (IsId("chain")) {
+			if (!ParseChain(def.subchains.Add()))
 				return false;
 		}
 		else if (IsId("return")) {

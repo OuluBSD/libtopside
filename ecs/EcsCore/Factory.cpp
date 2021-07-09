@@ -65,7 +65,7 @@ void Factory::GetComponentActions(const Eon::WorldState& src, Vector<Eon::Action
 			a.Post() = src;
 			a.Post().SetAs_AddExtension(comp, e.cls);
 			a.Post().SetSideCls(e.side_vd);
-			if (e.action_fn(comp, a)) {
+			if (e.action_fn(e.cls, a)) {
 				MemSwap(acts.Add(), a);
 				a.Pre() = src;
 			}

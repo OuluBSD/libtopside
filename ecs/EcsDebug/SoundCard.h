@@ -67,7 +67,7 @@ public:
 	IFACE_GENERIC;
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.test")
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test")
 	COMP_MAKE_ACTION_END
 	
 	

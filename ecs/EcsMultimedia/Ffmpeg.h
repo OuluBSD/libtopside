@@ -44,10 +44,10 @@ public:
 	
 	COMP_MAKE_ACTION_BEGIN
 	if (vd.val.type == ValCls::AUDIO) {
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("perma.audio.source.decoder")
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
 	}
 	else if (vd.val.type == ValCls::VIDEO) {
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("perma.video.source.decoder")
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE("perma.video.source.decoder")
 	}
 	COMP_MAKE_ACTION_END
 	

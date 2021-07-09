@@ -29,6 +29,7 @@ protected:
 	Eon::LoopDefinition*	loop = 0;
 	Eon::ChainDefinition*	chain = 0;
 	Eon::Machine*			mach = 0;
+	Eon::GlobalScope*		glob = 0;
 public:
 	EonScope() {}
 	
@@ -84,6 +85,7 @@ protected:
 	
 	
 	void SetupSegment(EonLoopSegment& s);
+	bool SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt);
 	
 public:
 	EonLoopLoader(int id, EonLoader* loader, Eon::LoopDefinition& def);
@@ -93,7 +95,7 @@ public:
 	bool Parse();
 	bool Forward();
 	bool Load();
-	bool AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
+	SideStatus AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
 	void AddError(String msg);
 	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
 	void SetStatus(int s) {status = (Status)s;}
@@ -167,11 +169,13 @@ protected:
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
 	bool LoadMachine(Eon::Machine& mach);
-	bool LoadMachineList(Eon::MachineList& list);
+	bool LoadGlobalScope(Eon::GlobalScope& list);
 	bool LoadChainDefinition(Eon::ChainDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	bool SolveLoops(Eon::ChainDefinition& def);
 	bool ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
+	
+	Eon::State* FindState(const Eon::Id& id);
 	
 	
 	

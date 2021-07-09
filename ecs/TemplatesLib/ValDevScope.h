@@ -123,7 +123,7 @@ public:
 	IFACE_GENERIC
 	COMP_DEF_VISIT
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE(
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE(
 			ToLower(vd.dev.GetName()) + "." +
 			ToLower(vd.val.GetName()) + "." +
 			"src")
@@ -221,7 +221,7 @@ public:
 	IFACE_GENERIC
 	COMP_DEF_VISIT_(vis & cust_sys)
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE(
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE(
 			ToLower(vd.dev.GetName()) + "." +
 			ToLower(vd.val.GetName()) + "." +
 			"sink")

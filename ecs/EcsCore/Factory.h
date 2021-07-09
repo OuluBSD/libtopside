@@ -50,12 +50,13 @@ public:
 	
 	// Component Extensions
 	
-	typedef bool (*ActionFn)(const TypeCompCls& t, Eon::Action& act);
-	typedef bool (*SideFn)(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
+	typedef bool (*CompActionFn)(const TypeCompCls& t, Eon::Action& act);
+	typedef bool (*ExtActionFn)(const TypeExtCls& t, Eon::Action& act);
+	typedef SideStatus (*SideFn)(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
 	typedef ComponentExtBase* (*NewExt)();
 	struct ExtData : Moveable<ExtData> {
 		NewExt			new_fn;
-		ActionFn		action_fn;
+		ExtActionFn		action_fn;
 		SideFn			side_fn;
 		String			name;
 		TypeExtCls		cls;
@@ -74,7 +75,7 @@ public:
 	struct CompData : Moveable<CompData> {
 		VectorMap<TypeExtCls,ExtData> ext;
 		NewFn new_fn;
-		ActionFn action_fn;
+		CompActionFn action_fn;
 		String name;
 		TypeCompCls cls;
 		TypeCls rtti_cls;
@@ -86,8 +87,9 @@ public:
 	static CompMap& CompDataMap() {MAKE_STATIC(CompMap, m); return m;}
 	
 	template <class T> static ComponentBase* CreateComp() {return new T();}
-	template <class T> static bool MakeAction(const TypeCompCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
-	template <class T> static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
+	template <class T> static bool MakeCompAction(const TypeCompCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
+	template <class T> static bool MakeExtAction(const TypeExtCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
+	template <class T> static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
 	template <class T> static void RegisterComponent(SubCompCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
 		CompCls comp;
@@ -101,7 +103,7 @@ public:
 		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateComp<T>;
-		d.action_fn = &MakeAction<T>;
+		d.action_fn = &MakeCompAction<T>;
 	}
 	
 	static LinkedList<TypeExtCls>& GetExtTypes() {static LinkedList<TypeExtCls> l; return l;}
@@ -116,7 +118,7 @@ public:
 		e.cls = c;
 		e.name = T::GetTypeName();
 		e.new_fn = &CreateExt<T>;
-		e.action_fn = &MakeAction<T>;
+		e.action_fn = &MakeExtAction<T>;
 		e.side_fn = &MakeSide<T>;
 		e.side_vd = side_vd;
 	}
@@ -142,7 +144,7 @@ public:
 	Ecs::Factory::RegisterExtension<type>(c, ValDevCls()); \
 }
 
-#define REG_EXT_(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v, sc_d,sc_v) {\
+#define REG_EXT_(type, subcomp, sink_d,sink_v, side_d,side_v, src_d,src_v, sc_d,sc_v, is_multi_conn) {\
 	Ecs::TypeExtCls c; \
 	c.sink.dev = Ecs::DevCls::sink_d; \
 	c.sink.val = Ecs::ValCls::sink_v; \
@@ -151,6 +153,7 @@ public:
 	c.src.dev = Ecs::DevCls::src_d; \
 	c.src.val = Ecs::ValCls::src_v; \
 	c.sub = Ecs::SubCompCls::subcomp; \
+	c.multi_conn = is_multi_conn; \
 	ValDevCls side_vd(Ecs::DevCls::sc_d, Ecs::ValCls::sc_v); \
 	Ecs::Factory::RegisterExtension<type>(c, side_vd); \
 }

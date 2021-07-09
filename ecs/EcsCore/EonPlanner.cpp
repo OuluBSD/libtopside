@@ -38,6 +38,8 @@ bool WorldState::Set(int index, String value) {
 	}
 	using_act[index] = true;
 	values[index] = value;
+	if (use_debugging_order)
+		dbg_order.FindAdd(index);
 	return true;
 }
 
@@ -141,10 +143,30 @@ bool WorldState::IsFalse(int idx) const {
 	return true;
 }
 
+bool WorldState::IsUndefined(const String& key) const {
+	ASSERT(ap);
+	int idx = ap->GetAddAtom(key);
+	return IsUndefined(idx);
+}
+
+bool WorldState::IsUndefined(int idx) const {
+	ASSERT(ap);
+	ASSERT(idx >= 0);
+	if (idx >= 0 && idx < values.GetCount()) {
+		return !using_act[idx];
+	}
+	return true;
+}
+
 String WorldState::Get(const String& key) const {
 	ASSERT(ap);
 	int idx = ap->GetAddAtom(key);
-	if (idx < values.GetCount())
+	return Get(idx);
+}
+
+String WorldState::Get(int idx) const {
+	ASSERT(idx >= 0);
+	if (idx >= 0 && idx < values.GetCount())
 		return values[idx];
 	return String();
 }

@@ -60,7 +60,10 @@ public:
 	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	bool IsFalse(int idx) const;
+	bool IsUndefined(const String& key) const;
+	bool IsUndefined(int idx) const;
 	String Get(const String& key) const;
+	String Get(int idx) const;
 	int64 GetHashValue() const;
 	TypeCompCls GetComponent() const {return cur_comp;}
 	TypeExtCls GetExtension() const {return add_ext;}

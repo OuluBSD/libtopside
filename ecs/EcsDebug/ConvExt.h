@@ -24,10 +24,10 @@ public:
 		ASSERT(cls.sub == SubCompCls::CONVERTER);
 		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName() + ".dbg";
 		//DUMP(s)
-		COMP_MAKE_ACTION_FALSE_TO_TRUE(s)
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE(s)
 	COMP_MAKE_ACTION_END
 	
-	static bool MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
+	static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to);
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_DBG_CONVERTER;}
 	
 };

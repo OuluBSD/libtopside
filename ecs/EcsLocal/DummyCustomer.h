@@ -16,9 +16,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {RTLOG("AudioPlayerCustomer::Forward");}
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.customer.audio.player")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.customer.audio.player")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER;}

@@ -93,7 +93,7 @@ bool EonLoader::Load(String content, String filepath) {
 }
 
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
-	return LoadMachineList(cunit.list);
+	return LoadGlobalScope(cunit.list);
 }
 
 void EonLoader::EnterScope() {
@@ -144,11 +144,15 @@ bool EonLoader::LeaveScope() {
 	return true;
 }
 
-bool EonLoader::LoadMachineList(Eon::MachineList& list) {
-	for (Eon::Machine& mach : list.machs)
+bool EonLoader::LoadGlobalScope(Eon::GlobalScope& glob) {
+	EnterScope();
+	scopes.Top().glob = &glob;
+	
+	for (Eon::Machine& mach : glob.machs)
 		if (!LoadMachine(mach))
 			return false;
-	return true;
+	
+	return LeaveScope();
 }
 
 bool EonLoader::LoadMachine(Eon::Machine& mach) {
@@ -257,18 +261,25 @@ bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 				Eon::ActionPlanner::State* accepted_in_node = 0;
 				Eon::ActionPlanner::State* accepted_out_node = 0;
 				int accepted_out_count = 0;
+				bool accepted_all_multi = true;
 				for (EonLoopLoader* out : waiting_outputs) {
-					if (in->AcceptOutput(*out, accepted_in_node, accepted_out_node)) {
-						accepted_out_count++;
-						accepted_out = out;
+					if (!in->IsFailed() &&
+						!out->IsFailed()) {
+						SideStatus s = in->AcceptOutput(*out, accepted_in_node, accepted_out_node);
+						if (s == SIDE_ACCEPTED || s == SIDE_ACCEPTED_MULTI) {
+							accepted_out_count++;
+							accepted_out = out;
+							if (s != SIDE_ACCEPTED_MULTI)
+								accepted_all_multi = false;
+						}
 					}
 				}
-				if (accepted_out_count > 1) {
-					AddError("Input can accept multiple outputs");
+				if (!accepted_all_multi && accepted_out_count > 1) {
+					AddError("Input loop " + IntStr(in->GetId()) + " can accept multiple outputs");
 					break;
 				}
 				if (accepted_out_count == 0) {
-					AddError("Input cannot accept any output");
+					AddError("Input loop " + IntStr(in->GetId()) + " cannot accept any output");
 					break;
 				}
 				
@@ -407,6 +418,22 @@ bool EonLoader::ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1) {
 	
 	
 	return true;
+}
+
+Eon::State* EonLoader::FindState(const Eon::Id& id) {
+	auto iter = scopes.rbegin();
+	auto end = scopes.rend();
+	for(; iter != end; --iter) {
+		EonScope& scope = *iter;
+		if (scope.glob) {
+			for (Eon::State& state : scope.glob->states) {
+				if (state.id == id) {
+					return &state;
+				}
+			}
+		}
+	}
+	return NULL;
 }
 
 

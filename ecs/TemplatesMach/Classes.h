@@ -10,6 +10,12 @@ using ViewableRef			= Ref<Viewable,				RefParent1<Entity>>;
 using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 
 
+typedef enum {
+	SIDE_NOT_ACCEPTED,
+	SIDE_ACCEPTED,
+	SIDE_ACCEPTED_MULTI,
+} SideStatus;
+
 
 struct ValCls : Moveable<ValCls> {
 	typedef enum : byte {
@@ -209,20 +215,24 @@ struct TypeExtCls : Moveable<TypeExtCls> {
 	ValDevCls sink, side, src;
 	SubCompCls sub = SubCompCls::INVALID;
 	int16 ext = -1;
-	
+	bool multi_conn = false;
 	
 	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && sub != SubCompCls::INVALID && ext >= 0;}
+	bool IsMultiSideConnection() const {return multi_conn;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubCompCls::INVALID; ext = -1;}
+	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubCompCls::INVALID; ext = -1; multi_conn = false;}
+	//void operator=(const TypeExtCls& t);
 	bool operator==(const TypeExtCls& c) const {
 		return	sink == c.sink &&
 				side == c.side &&
 				src == c.src &&
 				sub == c.sub &&
-				ext == c.ext;
+				ext == c.ext &&
+				multi_conn == c.multi_conn
+				;
 	}
 	bool operator!=(const TypeExtCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ")";}
+	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ", multiconn=" << IntStr(multi_conn) << ")";}
 	
 };
 

@@ -28,7 +28,7 @@ bool EonLoopLoader::Forward() {
 	if (IsWaitingSide())
 		return false;
 	
-	if (def.stmts.IsEmpty()) {
+	if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
 		String id = def.id.ToString();
 		AddError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
 		return false;
@@ -54,31 +54,27 @@ bool EonLoopLoader::Forward() {
 		start = scope.current_state;
 		start.SetActionPlanner(planner);
 		start.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-		//start.Set(CONNECTED, false);
+		//int HAS_DEV = planner.GetAddAtom("has." + dev.GetActionName());
+		//start.Set(HAS_DEV, true);
 		
 		goal.SetActionPlanner(planner);
 		goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
 		goal.Set(CONNECTED, true);
 		
-		
-		for (Eon::Statement& stmt : def.stmts) {
-			if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
-				continue;
-			
-			int atom = planner.GetAddAtom(stmt.id);
-			if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
-				goal.Set(atom, stmt.value->b);
-			else if (stmt.value->type == Eon::Value::VAL_ID)
-				goal.Set(atom, stmt.value->id.ToString());
-			else if (stmt.value->type == Eon::Value::VAL_STRING)
-				goal.Set(atom, stmt.value->str);
-			else if (stmt.value->type == Eon::Value::VAL_INT)
-				goal.Set(atom, IntStr(stmt.value->i));
-			else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
-				goal.Set(atom, DblStr(stmt.value->f));
-			else
-				Panic("internal error");
+		for (Eon::Id& req : def.req) {
+			Eon::State* s = loader.FindState(req);
+			if (!s) {
+				AddError("Could not find required state '" + req.ToString() + "'");
+				return false;
+			}
+			for (Eon::Statement& stmt : s->stmts)
+				if (!SetWorldState(goal, stmt))
+					return false;
 		}
+		
+		for (Eon::Statement& stmt : def.stmts)
+			if (!SetWorldState(goal, stmt))
+				return false;
 		LOG("goal: " << goal.ToString());
 		
 		goal_node.SetWorldState(goal);
@@ -340,13 +336,14 @@ bool EonLoopLoader::Load() {
 	return true;
 }
 
-bool EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
+SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == WAITING_SIDE_INPUT);
 	ASSERT(out.status == WAITING_SIDE_OUTPUT);
 	auto& inputs = planner.GetSideInputs();
 	auto& outputs = out.planner.GetSideOutputs();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
 	
+	SideStatus ret = SIDE_NOT_ACCEPTED;
 	int accepted_count = 0;
 	accepted_in = 0;
 	accepted_out = 0;
@@ -369,11 +366,16 @@ bool EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*&
 			auto& out_d = Ecs::Factory::CompDataMap().Get(out_comp);
 			auto& out_e = out_d.ext.Get(out_type);
 			
-			if (in_e.side_fn(out_type, out_ws, in_type, in_ws)) {
-				if (out_e.side_fn(out_type, out_ws, in_type, in_ws)) {
+			SideStatus a, b;
+			if ((a = in_e.side_fn(out_type, out_ws, in_type, in_ws)) != SIDE_NOT_ACCEPTED) {
+				if ((b = out_e.side_fn(out_type, out_ws, in_type, in_ws)) != SIDE_NOT_ACCEPTED) {
 					accepted_in = &in_state;
 					accepted_out = &out_state;
 					accepted_count++;
+					if (a == SIDE_ACCEPTED_MULTI || b == SIDE_ACCEPTED_MULTI)
+						ret = SIDE_ACCEPTED_MULTI;
+					else
+						ret = SIDE_ACCEPTED;
 				}
 			}
 		}
@@ -381,14 +383,14 @@ bool EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*&
 	
 	if (accepted_count == 0) {
 		AddError("No inputs accepts any outputs");
-		return false;
+		return SIDE_NOT_ACCEPTED;
 	}
 	else if (accepted_count > 1) {
 		AddError("Too many accepting input/output combinations");
-		return false;
+		return SIDE_NOT_ACCEPTED;
 	}
 	
-	return true;
+	return ret;
 }
 
 void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, EonLoopLoader* c, Eon::ActionPlanner::State* side_state) {
@@ -400,6 +402,40 @@ void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, E
 	seg.start_node = state->last;
 	seg.side_conn = c;
 	seg.as = state->as;
+}
+
+bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt) {
+	if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
+		return true;;
+	
+	int atom = planner.GetAddAtom(stmt.id);
+	
+	String old_value = goal.Get(atom);
+	String new_value;
+	
+	if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
+		new_value = stmt.value->b ? "true" : "false";
+	else if (stmt.value->type == Eon::Value::VAL_ID)
+		new_value = stmt.value->id.ToString();
+	else if (stmt.value->type == Eon::Value::VAL_STRING)
+		new_value = stmt.value->str;
+	else if (stmt.value->type == Eon::Value::VAL_INT)
+		new_value = IntStr(stmt.value->i);
+	else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
+		new_value = DblStr(stmt.value->f);
+	else {
+		AddError("internal error");
+		return false;
+	}
+	
+	if (old_value != new_value && !old_value.IsEmpty()) {
+		AddError("Earlier value mismatch newer value for id '" + stmt.id.ToString() + "' (" +
+			old_value + " != " + new_value + ")");
+		return false;
+	}
+	
+	ws.Set(atom, new_value);
+	return true;
 }
 
 

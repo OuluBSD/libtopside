@@ -12,7 +12,7 @@ state daw.midi.ch.connected.instrument: {
 	center.midi.side.out.accel: true;
 };
 
-state daw.audio.ch: {
+state daw.instrument.ch: {
 	has.converter: true;
 	has.side.in: true;
 	has.side.out: true;
@@ -20,16 +20,33 @@ state daw.audio.ch: {
 	accel.midi.side.in.center: true;
 	accel.midi.convert.audio: true;
 	accel.midi.convert.audio.test: true;
-	accel.audio.side.out: true;
-	accel.audio.side.out.center: true;
 };
 
-state daw.audio.ch.connected.input: {
+state daw.instrument.ch.connected.input: {
 	accel.midi.src: false;
 	accel.midi.side.in.center: true;
 };
 
+state daw.audio.ch: {
+	has.converter: false;
+	has.side.in: true;
+	accel.audio.src: false;
+	accel.audio.side.in.accel: true;
+};
+
+state daw.audio.ch.connected.audio.out: {
+	has.side.out: true;
+	accel.audio.side.out: true;
+	accel.audio.side.out.accel: true;
+};
+
+state daw.audio.ch.connected.audio.in: {
+	accel.audio.side.in: true;
+	accel.audio.side.in.accel: true;
+};
+
 state daw.audio.ch.connected.sidechain.out: {
+	has.side.out: true;
 	accel.audio.side.out: true;
 	accel.audio.side.out.accel: true;
 };
@@ -59,30 +76,43 @@ machine local: {
 	at.host.audio.hw: true;
 	
 	chain process: {
-		loop ch0_midi: {
-			req daw.midi.ch;
-			req daw.midi.ch.connected.instrument;
+
+		chain ch0: {
+			loop midi: {
+				req daw.midi.ch;
+				req daw.midi.ch.connected.instrument;
+			};
+			loop accel.audio: {
+				req daw.instrument.ch;
+				req daw.instrument.ch.connected.input;
+				req daw.audio.ch.connected.audio.out;
+			};
 		};
-		loop ch1_midi: {
-			req daw.midi.ch;
-			req daw.midi.ch.connected.instrument;
+		chain ch1: {
+			loop midi: {
+				req daw.midi.ch;
+				req daw.midi.ch.connected.instrument;
+			};
+			loop accel.audio: {
+				req daw.instrument.ch;
+				req daw.instrument.ch.connected.input;
+				req daw.audio.ch.connected.audio.out;
+				req daw.audio.ch.connected.sidechain.out;
+			};
 		};
-		loop ch0_audio: {
-			req daw.audio.ch;
-			req daw.audio.ch.connected.input;
+		chain ch2: {
+			loop accel.ch_sidechain: {
+				req daw.audio.ch;
+				req daw.audio.ch.connected.sidechain.in;
+				req daw.audio.ch.connected.audio.out;
+			};
 		};
-		loop ch1_audio: {
-			req daw.audio.ch;
-			req daw.audio.ch.connected.input;
-			req daw.audio.ch.connected.sidechain.out;
-		};
-		loop ch_sidechain: {
-			req daw.audio.ch;
-			req daw.audio.ch.connected.sidechain.in;
-		};
-		loop master_out: {
-			req daw.audio.ch;
-			req daw.audio.ch.connected.hw;
+		chain ch3: {
+			loop accel.master_out: {
+				req daw.audio.ch;
+				req daw.audio.ch.connected.audio.in;
+				req daw.audio.ch.connected.hw;
+			};
 		};
 		loop audio_out: {
 			req daw.audio.hw.out;

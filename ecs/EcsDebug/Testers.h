@@ -17,9 +17,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.single")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.single")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER;}
@@ -37,9 +37,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {LOG("TestInputCustomer::Forward");}
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.input")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.input")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER_INPUT;}
@@ -57,9 +57,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override {LOG("TestOutputCustomer::Forward");}
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("customer.test.output")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.output")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_CUSTOMER_OUTPUT;}
@@ -82,16 +82,16 @@ public:
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	
-	COMP_MAKE_ACTION_BEGIN
+	EXT_MAKE_ACTION_BEGIN
 	if (cls.sub == SubCompCls::INPUT) {
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.src.test")
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
 	}
 	else if (cls.sub == SubCompCls::CONVERTER) {
 		ASSERT(cls.src.val.type == ValCls::AUDIO);
 		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName() + ".test";
-		COMP_MAKE_ACTION_FALSE_TO_TRUE(s)
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE(s)
 	}
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_AUDIO_IN;}
@@ -116,9 +116,9 @@ public:
 	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.test.realtime")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.realtime")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_TEST_AUDIO_OUT;}

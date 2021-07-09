@@ -55,8 +55,8 @@ public:
 	void SinkCallback(TS::Portaudio::StreamCallbackArgs& args);
 	
 	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.realtime")
-		COMP_MAKE_ACTION_FALSE_TO_TRUE("center.audio.sink.hw")
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.realtime")
+		COMP_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
 	COMP_MAKE_ACTION_END
 	
 	
