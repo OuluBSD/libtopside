@@ -169,15 +169,20 @@ protected:
 	bool LoadFile(String path);
 	bool Load(String content, String filepath="temp");
 	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
-	bool LoadMachine(Eon::Machine& mach);
+	//bool LoadMachine(Eon::Machine& mach);
 	bool LoadGlobalScope(Eon::GlobalScope& list);
-	bool LoadChainDefinition(Eon::ChainDefinition& def);
+	//bool LoadChainDefinition(Eon::ChainDefinition& def);
 	EntityRef ResolveEntity(Eon::Id& id);
 	bool SolveLoops(Eon::ChainDefinition& def);
 	bool ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
+	void SolveInsideLoops(Eon::ChainDefinition& chain);
+	void SolveInsideChain(Eon::ChainDefinition& chain);
+	void SolveBetweenChains(const Vector<Eon::ChainDefinition*>& chains);
+	void SolveBetweenMachines(const Vector<Vector<Eon::ChainDefinition*>>& machs);
+	void GetChainsDeepestFirst(Eon::Machine& mach, Vector<Eon::ChainDefinition*>& chains);
 	
 	Eon::State* FindState(const Eon::Id& id);
-	
+	bool IsNewConnections() const;
 	
 	
 	

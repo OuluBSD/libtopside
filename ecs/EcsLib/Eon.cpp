@@ -149,38 +149,50 @@ bool EonLoader::LoadGlobalScope(Eon::GlobalScope& glob) {
 	EnterScope();
 	scopes.Top().glob = &glob;
 	
+	Vector<Vector<Eon::ChainDefinition*>> mach_chains;
 	for (Eon::Machine& mach : glob.machs)
-		if (!LoadMachine(mach))
-			return false;
-	
-	return LeaveScope();
-}
-
-bool EonLoader::LoadMachine(Eon::Machine& mach) {
-	EnterScope();
-	scopes.Top().mach = &mach;
-	
-	for (Eon::ChainDefinition& d : mach.chains) {
-		if (!LoadChainDefinition(d)) {
-			scopes.RemoveLast();
-			return false;
-		}
+		GetChainsDeepestFirst(mach, mach_chains.Add());
+	while (1) {
+		bool found_connection = false;
+		
+		// Check if all connections are satisfied and break
+		TODO
+		
+		// Clear potential errors
+		TODO
+		
+		// Clear connection collection
+		TODO
+		
+		// Inside loops
+		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
+			for (Eon::ChainDefinition* chain : chains)
+				SolveInsideLoops(*chain);
+		if (IsNewConnections()) // start again, if this phase made new connections
+			continue;
+			
+		// Inside chains
+		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
+			for (Eon::ChainDefinition* chain : chains)
+			SolveInsideChain(*chain);
+		if (IsNewConnections())
+			continue;
+		
+		// Between chains
+		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
+			SolveBetweenChains(chains);
+		if (IsNewConnections())
+			continue;
+		
+		// Between machines
+		SolveBetweenMachines(mach_chains);
+		if (IsNewConnections())
+			continue;
+		
+		// Check for potential errors, and break if not any
+		TODO
 	}
 	
-	return LeaveScope();
-}
-
-bool EonLoader::LoadChainDefinition(Eon::ChainDefinition& def) {
-	EnterScope();
-	scopes.Top().chain = &def;
-	
-	for (Eon::ChainDefinition& subdef : def.subchains) {
-		if (!LoadChainDefinition(subdef))
-			return false;
-	}
-	
-	if (!SolveLoops(def))
-		return false;
 	
 	for (EonLoopLoader& loop : loops) {
 		if (!loop.Load()) {
@@ -440,6 +452,30 @@ Eon::State* EonLoader::FindState(const Eon::Id& id) {
 		}
 	}
 	return NULL;
+}
+
+void EonLoader::SolveInsideLoops(Eon::ChainDefinition& chain) {
+	TODO
+}
+
+void EonLoader::SolveInsideChain(Eon::ChainDefinition& chain) {
+	TODO
+}
+
+void EonLoader::SolveBetweenChains(const Vector<Eon::ChainDefinition*>& chains) {
+	TODO
+}
+
+void EonLoader::SolveBetweenMachines(const Vector<Vector<Eon::ChainDefinition*>>& machs) {
+	TODO
+}
+
+bool EonLoader::IsNewConnections() const {
+	TODO
+}
+
+void EonLoader::GetChainsDeepestFirst(Eon::Machine& mach, Vector<Eon::ChainDefinition*>& chains) {
+	TODO
 }
 
 
