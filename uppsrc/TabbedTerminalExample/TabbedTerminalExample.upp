@@ -1,0 +1,15 @@
+description "Demonstrates a simple tabbed terminal setup, using Terminal package.\377";
+
+uses
+	CtrlLib,
+	TabBar,
+	Terminal,
+	PtyProcess;
+
+file
+	main.cpp;
+
+mainconfig
+	"" = "GUI",
+	"" = "GUI WIN10";
+

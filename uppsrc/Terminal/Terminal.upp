@@ -1,0 +1,43 @@
+description "A flexible and powerful terminal emulation widget and library for Ultimate++\377";
+
+uses
+	CtrlLib,
+	plugin/jpg;
+
+file
+	Terminal.h,
+	Terminal.cpp,
+	Renderer.cpp,
+	Keys.cpp,
+	Tables.cpp,
+	Modes.cpp,
+	Charsets.cpp,
+	Colors.cpp,
+	Esc.cpp,
+	Csi.cpp,
+	Dcs.cpp,
+	Osc.cpp,
+	Sgr.cpp,
+	IO.cpp,
+	Cell readonly separator,
+	Cell.h,
+	Cell.cpp,
+	Page readonly separator,
+	Page.h,
+	Page.cpp,
+	Parser readonly separator,
+	Parser.h,
+	Parser.cpp,
+	Sixel readonly separator,
+	Sixel.h,
+	Sixel.cpp,
+	Meta readonly separator,
+	Terminal.usc,
+	Docs readonly separator,
+	src.tpp,
+	srcdoc.tpp,
+	Info readonly separator,
+	ReadMe.md,
+	Copying,
+	Version;
+

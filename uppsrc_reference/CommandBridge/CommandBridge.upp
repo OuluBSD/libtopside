@@ -1,0 +1,41 @@
+description "A custom drop-down console. Useful for management.\377";
+
+uses
+	CtrlLib,
+	CodeEditor,
+	TabBar,
+	Esc,
+	RichEdit,
+	PdfDraw,
+	plugin/jpg,
+	Ftp,
+	PtyProcess,
+	Terminal,
+	RichText;
+
+file
+	main.cpp,
+	CommandBridge.h,
+	CommandBridge.cpp,
+	X11.cpp,
+	CommandBridge.iml,
+	CommandBridge.key,
+	CommandBridge_.icpp,
+	CommandBridge.rc,
+	CommandBridge.t,
+	Images.h,
+	Console.h,
+	Console.cpp,
+	Word.h,
+	Word.cpp,
+	CommandPrompt.h,
+	CommandPrompt.cpp,
+	Terminal.h,
+	Terminal.cpp;
+
+mainconfig
+	"" = "GUI",
+	"" = "GUI X11",
+	"" = "GUI NOGTK",
+	"" = "GUI HAVE_FTP";
+

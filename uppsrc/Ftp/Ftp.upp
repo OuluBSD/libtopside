@@ -1,0 +1,14 @@
+description "\377B113,42,150";
+
+uses
+	Core;
+
+file
+	Ftp.h,
+	Ftp.cpp,
+	FtpClient.h,
+	FtpClient.cpp,
+	FtpClient.lay,
+	FtpServer.h,
+	FtpServer.cpp;
+
