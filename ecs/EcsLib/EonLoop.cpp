@@ -3,16 +3,78 @@
 NAMESPACE_ECS_BEGIN
 
 
-EonLoopLoader::EonLoopLoader(int id, EonLoader* loader, Eon::LoopDefinition& def) :
-	loader(*loader),
+EonLoopLoader::EonLoopLoader(int id, EonChainLoader* loader, Eon::LoopDefinition& def) :
+	parent(*loader),
 	def(def),
 	id(id)
 {
 	planner.SetLoopLoader(this);
 }
 
+EonLoader& EonLoopLoader::GetLoader() {return parent.GetLoader();}
+
+String EonLoopLoader::GetTreeString(int indent) {
+	String s;
+	s.Cat('\t', indent);
+	s << "Loop " << id;
+	s.Cat('\n');
+	
+	int id = 0;
+	for (EonLoopSegment& seg : segments) {
+		s << seg.GetTreeString(id++, indent+1);
+		if (id == segments.GetCount()) {
+			if (status == WAITING_SIDE_INPUT_LOOP) {
+				s.Cat('\t', indent+1);
+				s << "Waiting loop input\n";
+			}
+			if (status == WAITING_SIDE_OUTPUT_LOOP) {
+				s.Cat('\t', indent+1);
+				s << "Waiting loop output\n";
+			}
+			
+			if (status == WAITING_SIDE_INPUT_CHAIN) {
+				s.Cat('\t', indent+1);
+				s << "Waiting chain input\n";
+			}
+			if (status == WAITING_SIDE_OUTPUT_CHAIN) {
+				s.Cat('\t', indent+1);
+				s << "Waiting chain output\n";
+			}
+			
+			if (status == WAITING_SIDE_INPUT_MACHINE) {
+				s.Cat('\t', indent+1);
+				s << "Waiting machine input\n";
+			}
+			if (status == WAITING_SIDE_OUTPUT_MACHINE) {
+				s.Cat('\t', indent+1);
+				s << "Waiting machine output\n";
+			}
+		}
+	}
+	
+	return s;
+}
+
+String EonLoopSegment::GetTreeString(int id, int indent) {
+	String s;
+	s.Cat('\t', indent);
+	s << "Segment " << id;
+	s.Cat('\n');
+	if (!ep.plan.IsEmpty()) {
+		bool started = false;
+		for (Eon::ActionNode* n : ep.plan) {
+			started = started || n == start_node;
+			if (!started) continue;
+			s.Cat('\t', indent+1);
+			s << n->GetWorldState().ToString() << "\n";
+		}
+	}
+	return s;
+}
+
 void EonLoopLoader::AddError(String msg) {
-	loader.AddError(this, msg);
+	TODO
+	//loader.AddError(this, msg);
 	status = FAILED;
 }
 
@@ -24,74 +86,86 @@ void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
 	
 }
 
-bool EonLoopLoader::Forward() {
-	if (IsWaitingSide())
-		return false;
+void EonLoopLoader::Forward() {
+	ASSERT(!IsReady() && !IsFailed());
+	EonStatus prev_status = status;
 	
-	if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
-		String id = def.id.ToString();
-		AddError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
-		return false;
-	}
-	
-	planner.ClearForward();
-	
-	EonScope& scope = loader.scopes.Top();
-	
-	
-	if (segments.GetCount() == 0) {
-		DevCls dev = DevCls::Get(def.id.parts.First());
-		if (!dev.IsValid())
-			dev = DevCls::CENTER;
-		
-		// Prepare action planner and world states
-		int CONNECTED = planner.GetAddAtom("loop.connected");
-		CompCls customer;
-		customer.sink = ValDevCls(dev, ValCls::RECEIPT);
-		customer.side = ValDevCls(dev, ValCls::ORDER);
-		customer.src  = ValDevCls(dev, ValCls::ORDER);
-		
-		start = scope.current_state;
-		start.SetActionPlanner(planner);
-		start.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-		//int HAS_DEV = planner.GetAddAtom("has." + dev.GetActionName());
-		//start.Set(HAS_DEV, true);
-		
-		goal.SetActionPlanner(planner);
-		goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
-		goal.Set(CONNECTED, true);
-		
-		for (Eon::Id& req : def.req) {
-			Eon::State* s = loader.FindState(req);
-			if (!s) {
-				AddError("Could not find required state '" + req.ToString() + "'");
-				return false;
-			}
-			for (Eon::Statement& stmt : s->stmts)
-				if (!SetWorldState(goal, stmt))
-					return false;
+	if (status == EonStatus::IN_BEGINNING) {
+		if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
+			String id = def.id.ToString();
+			AddError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
+			return;
 		}
 		
-		for (Eon::Statement& stmt : def.stmts)
-			if (!SetWorldState(goal, stmt))
-				return false;
-		LOG("goal: " << goal.ToString());
+		InitSegments();
+		ForwardTopSegment();
+	}
+	else if (status == EonStatus::RETRY) {
+		ASSERT(segments.GetCount() >= 2);
+		planner.ClearForward();
 		
-		goal_node.SetWorldState(goal);
-		goal_node.SetGoal(goal_node);
-		
-		start_node.SetActionPlanner(planner);
-		start_node.SetGoal(goal_node);
-		start_node.SetWorldState(start);
-		
-		
-		EonLoopSegment& seg = segments.Add();
-		seg.start_node = &start_node;
+		ForwardTopSegment();
 	}
 	else {
-		ASSERT(segments.GetCount() >= 2);
+		
+		TODO
+		
 	}
 	
+	ASSERT(prev_status != status);
+}
+
+void EonLoopLoader::InitSegments() {
+	DevCls dev = DevCls::Get(def.id.parts.First());
+	if (!dev.IsValid())
+		dev = DevCls::CENTER;
+	
+	// Prepare action planner and world states
+	int CONNECTED = planner.GetAddAtom("loop.connected");
+	CompCls customer;
+	customer.sink = ValDevCls(dev, ValCls::RECEIPT);
+	customer.side = ValDevCls(dev, ValCls::ORDER);
+	customer.src  = ValDevCls(dev, ValCls::ORDER);
+	
+	//start = scope.current_state;
+	start.SetActionPlanner(planner);
+	start.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
+	//int HAS_DEV = planner.GetAddAtom("has." + dev.GetActionName());
+	//start.Set(HAS_DEV, true);
+	
+	goal.SetActionPlanner(planner);
+	goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
+	goal.Set(CONNECTED, true);
+	
+	for (Eon::Id& req : def.req) {
+		Eon::State* s = GetLoader().FindState(req);
+		if (!s) {
+			AddError("Could not find required state '" + req.ToString() + "'");
+			return;
+		}
+		for (Eon::Statement& stmt : s->stmts)
+			if (!SetWorldState(goal, stmt))
+				return;
+	}
+	
+	for (Eon::Statement& stmt : def.stmts)
+		if (!SetWorldState(goal, stmt))
+			return;
+	LOG("goal: " << goal.ToString());
+	
+	goal_node.SetWorldState(goal);
+	goal_node.SetGoal(goal_node);
+	
+	start_node.SetActionPlanner(planner);
+	start_node.SetGoal(goal_node);
+	start_node.SetWorldState(start);
+	
+	
+	EonLoopSegment& seg = segments.Add();
+	seg.start_node = &start_node;
+}
+
+void EonLoopLoader::ForwardTopSegment() {
 	EonLoopSegment& seg = segments.Top();
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
@@ -106,7 +180,7 @@ bool EonLoopLoader::Forward() {
 	if (seg.ep.plan.IsEmpty()) {
 		if (accepted_side_node) {
 			AddError("Plan implementation searching failed after side-connection");
-			return false;
+			return;
 		}
 		
 		// Check side-channel connections
@@ -120,8 +194,8 @@ bool EonLoopLoader::Forward() {
 				const Eon::WorldState& ws = state.last->GetWorldState();
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = WAITING_SIDE_INPUT;
-			return false;
+			status = WAITING_SIDE_INPUT_LOOP;
+			return;
 		}
 		else if (!is_input && outputs.GetCount()) {
 			LOG("Loop " << id << " side-outputs:");
@@ -131,18 +205,17 @@ bool EonLoopLoader::Forward() {
 				//LOG(i << ": " << state.last->GetEstimate() << ": " << ws.GetFullString());
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = WAITING_SIDE_OUTPUT;
-			return false;
+			status = WAITING_SIDE_OUTPUT_LOOP;
+			return;
 		}
 		else {
 			AddError("Plan implementation searching failed");
-			return false;
+			return;
 		}
 	}
 	
 	// Set last node
 	seg.stop_node = seg.ep.plan.Top();
-	
 	
 	// Debug print found loop
 	if (1) {
@@ -164,8 +237,49 @@ bool EonLoopLoader::Forward() {
 	}
 	
 	status = READY;
-	return false; // don't continue
 }
+
+bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt) {
+	if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
+		return true;;
+	
+	int atom = planner.GetAddAtom(stmt.id);
+	
+	String old_value = goal.Get(atom);
+	String new_value;
+	
+	if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
+		new_value = stmt.value->b ? "true" : "false";
+	else if (stmt.value->type == Eon::Value::VAL_ID)
+		new_value = stmt.value->id.ToString();
+	else if (stmt.value->type == Eon::Value::VAL_STRING)
+		new_value = stmt.value->str;
+	else if (stmt.value->type == Eon::Value::VAL_INT)
+		new_value = IntStr(stmt.value->i);
+	else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
+		new_value = DblStr(stmt.value->f);
+	else {
+		AddError("internal error");
+		return false;
+	}
+	
+	if (old_value != new_value && !old_value.IsEmpty()) {
+		AddError("Earlier value mismatch newer value for id '" + stmt.id.ToString() + "' (" +
+			old_value + " != " + new_value + ")");
+		return false;
+	}
+	
+	ws.Set(atom, new_value);
+	return true;
+}
+
+
+
+
+
+
+
+#if 0
 
 bool EonLoopLoader::Load() {
 	
@@ -336,9 +450,11 @@ bool EonLoopLoader::Load() {
 	return true;
 }
 
+#endif
+
 SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
-	ASSERT(status == WAITING_SIDE_INPUT);
-	ASSERT(out.status == WAITING_SIDE_OUTPUT);
+	ASSERT(status == WAITING_SIDE_INPUT_LOOP);
+	ASSERT(out.status == WAITING_SIDE_OUTPUT_LOOP);
 	auto& inputs = planner.GetSideInputs();
 	auto& outputs = out.planner.GetSideOutputs();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
@@ -356,7 +472,7 @@ SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::S
 		TypeExtCls in_type = in_ws.GetExtension();
 		auto& in_d = Ecs::Factory::CompDataMap().Get(in_comp);
 		auto& in_e = in_d.ext.Get(in_type);
-			
+		
 		for (auto& out_state : outputs) {
 			Eon::APlanNode* out = out_state.last;
 			Eon::WorldState& out_ws = out->GetWorldState();
@@ -402,40 +518,6 @@ void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, E
 	seg.start_node = state->last;
 	seg.side_conn = c;
 	seg.as = state->as;
-}
-
-bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt) {
-	if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
-		return true;;
-	
-	int atom = planner.GetAddAtom(stmt.id);
-	
-	String old_value = goal.Get(atom);
-	String new_value;
-	
-	if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
-		new_value = stmt.value->b ? "true" : "false";
-	else if (stmt.value->type == Eon::Value::VAL_ID)
-		new_value = stmt.value->id.ToString();
-	else if (stmt.value->type == Eon::Value::VAL_STRING)
-		new_value = stmt.value->str;
-	else if (stmt.value->type == Eon::Value::VAL_INT)
-		new_value = IntStr(stmt.value->i);
-	else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
-		new_value = DblStr(stmt.value->f);
-	else {
-		AddError("internal error");
-		return false;
-	}
-	
-	if (old_value != new_value && !old_value.IsEmpty()) {
-		AddError("Earlier value mismatch newer value for id '" + stmt.id.ToString() + "' (" +
-			old_value + " != " + new_value + ")");
-		return false;
-	}
-	
-	ws.Set(atom, new_value);
-	return true;
 }
 
 

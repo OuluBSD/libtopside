@@ -238,7 +238,14 @@ void CommandBridge::SetupMenu(Bar& menu)
 }
 
 bool CommandBridge::Key(dword key, int count) {
-	
+	if (key == K_LEFT|K_CTRL) {
+		PreviousTab();
+		return true;
+	}
+	if (key == K_RIGHT|K_CTRL) {
+		NextTab();
+		return true;
+	}
 	return false;
 }
 

@@ -187,6 +187,12 @@ String ChainDefinition::GetTreeString(int indent) const {
 	return s;
 }
 
+void ChainDefinition::GetSubChainPointers(LinkedList<Eon::ChainDefinition*>& ptrs) {
+	for (ChainDefinition& ch : subchains)
+		ptrs.Add(&ch);
+}
+
+
 
 
 String State::GetTreeString(int indent) const {

@@ -47,6 +47,7 @@ struct ChainDefinition {
 	
 	void operator=(const ChainDefinition& v) {ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
 	String GetTreeString(int indent=0) const;
+	void GetSubChainPointers(LinkedList<Eon::ChainDefinition*>& ptrs);
 };
 
 struct Value {

@@ -96,7 +96,7 @@ bool EonLoader::Load(String content, String filepath) {
 bool EonLoader::LoadCompilationUnit(Eon::CompilationUnit& cunit) {
 	return LoadGlobalScope(cunit.list);
 }
-
+/*
 void EonLoader::EnterScope() {
 	EonScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
 	EonScope& scope = scopes.Add();
@@ -144,25 +144,45 @@ bool EonLoader::LeaveScope() {
 	scopes.RemoveLast();
 	return true;
 }
-
+*/
 bool EonLoader::LoadGlobalScope(Eon::GlobalScope& glob) {
-	EnterScope();
-	scopes.Top().glob = &glob;
+	//EnterScope();
+	//scopes.Top().glob = &glob;
+	scopes.Add(&glob);
 	
-	Vector<Vector<Eon::ChainDefinition*>> mach_chains;
+	loader = new EonSystemLoader(*this, 0, glob);
+	
+	int dbg_i = 0;
+	while (!loader->IsFailed() && !loader->IsReady()) {
+		DUMP(dbg_i);
+		loader->Dump();
+		
+		loader->Forward();
+		++dbg_i;
+	}
+	
+	
+	scopes.Remove(scopes.GetCount()-1);
+	TODO // ret... chk err
+	
+	/*Vector<Vector<Eon::ChainDefinition*>> mach_chains;
 	for (Eon::Machine& mach : glob.machs)
 		GetChainsDeepestFirst(mach, mach_chains.Add());
+	int iter = -1;
 	while (1) {
+		++iter;
 		bool found_connection = false;
 		
 		// Check if all connections are satisfied and break
-		TODO
-		
-		// Clear potential errors
-		TODO
-		
-		// Clear connection collection
-		TODO
+		if (iter > 0) {
+			TODO
+			
+			// Clear potential errors
+			TODO
+			
+			// Clear connection collection
+			TODO
+		}
 		
 		// Inside loops
 		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
@@ -213,12 +233,12 @@ bool EonLoader::LoadGlobalScope(Eon::GlobalScope& glob) {
 		}
 	}
 	
-	loops.Clear();
+	loops.Clear();*/
 	
-	return LeaveScope();
+	//return LeaveScope();
 }
 
-bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
+/*bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 	loops.Clear();
 	for (Eon::LoopDefinition& loop_def : def.loops)
 		loops.Add(new EonLoopLoader(loop_counter++, this, loop_def));
@@ -253,82 +273,7 @@ bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 				break;
 		}
 		else if (mode == CONNECTING_SIDECHANNEL) {
-			if (waiting_inputs.IsEmpty() && waiting_outputs.IsEmpty()) {
-				AddError("Internal error. No waitin sidechannel io.");
-				fail = true;
-				break;
-			}
 			
-			if (waiting_inputs.IsEmpty()) {
-				AddError("No input side-ports");
-				fail = true;
-				break;
-			}
-			
-			if (waiting_outputs.IsEmpty()) {
-				AddError("No output side-ports");
-				fail = true;
-				break;
-			}
-			
-			Vector<EonLoopLoader*> retry_list;
-			CollectErrorBuffer(true);
-			int accepted_count = 0;
-			for (EonLoopLoader* in : waiting_inputs) {
-				EonLoopLoader* accepted_out = 0;
-				Eon::ActionPlanner::State* accepted_in_node = 0;
-				Eon::ActionPlanner::State* accepted_out_node = 0;
-				int accepted_out_count = 0;
-				bool accepted_all_multi = true;
-				for (EonLoopLoader* out : waiting_outputs) {
-					if (!in->IsFailed() &&
-						!out->IsFailed()) {
-						SideStatus s = in->AcceptOutput(*out, accepted_in_node, accepted_out_node);
-						if (s == SIDE_ACCEPTED || s == SIDE_ACCEPTED_MULTI) {
-							accepted_out_count++;
-							accepted_out = out;
-							if (s != SIDE_ACCEPTED_MULTI)
-								accepted_all_multi = false;
-						}
-					}
-				}
-				if (!accepted_all_multi && accepted_out_count > 1) {
-					AddError("Input loop " + IntStr(in->GetId()) + " can accept multiple outputs");
-					break;
-				}
-				if (accepted_out_count == 0) {
-					AddError("Input loop " + IntStr(in->GetId()) + " cannot accept any output");
-					break;
-				}
-				
-				int conn_id = tmp_side_id_counter++;
-				accepted_in_node->last->SetSideInId(conn_id);
-				accepted_out_node->last->SetSideOutId(conn_id);
-				
-				LOG("Loop " << in->GetId() << " accepted loop " << accepted_out->GetId() << " with id " << conn_id);
-				
-				in				->AddSideConnectionSegment(accepted_in_node,	accepted_out,	accepted_out_node);
-				accepted_out	->AddSideConnectionSegment(accepted_out_node,	in,				accepted_in_node);
-				
-				retry_list.Add(in);
-				retry_list.Add(accepted_out);
-				
-				++accepted_count;
-			}
-			
-			for (EonLoopLoader* ll : retry_list)
-				ll->SetStatusRetry();
-			
-			CollectErrorBuffer(false);
-			
-			if (!accepted_count) {
-				ReleaseErrorBuffer();
-				AddError("Could not connect any side-channels");
-				fail = true;
-			}
-			else {
-				ClearErrorBuffer();
-			}
 		}
 		else Panic("Invalid mode");
 		
@@ -339,7 +284,7 @@ bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
 	}
 	
 	return !fail;
-}
+}*/
 
 EntityRef EonLoader::ResolveEntity(Eon::Id& id) {
 	ASSERT(es);
@@ -442,19 +387,17 @@ Eon::State* EonLoader::FindState(const Eon::Id& id) {
 	auto iter = scopes.rbegin();
 	auto end = scopes.rend();
 	for(; iter != end; --iter) {
-		EonScope& scope = *iter;
-		if (scope.glob) {
-			for (Eon::State& state : scope.glob->states) {
-				if (state.id == id) {
-					return &state;
-				}
+		Eon::GlobalScope& glob = **iter;
+		for (Eon::State& state : glob.states) {
+			if (state.id == id) {
+				return &state;
 			}
 		}
 	}
 	return NULL;
 }
 
-void EonLoader::SolveInsideLoops(Eon::ChainDefinition& chain) {
+/*void EonLoader::SolveInsideLoops(Eon::ChainDefinition& chain) {
 	TODO
 }
 
@@ -475,8 +418,106 @@ bool EonLoader::IsNewConnections() const {
 }
 
 void EonLoader::GetChainsDeepestFirst(Eon::Machine& mach, Vector<Eon::ChainDefinition*>& chains) {
-	TODO
-}
+	LinkedList<Eon::ChainDefinition*> unvisited;
+	
+	for (Eon::ChainDefinition& ch : mach.chains)
+		unvisited.Add(&ch);
+	
+	while (unvisited.GetCount()) {
+		Eon::ChainDefinition* p = unvisited.First();
+		unvisited.RemoveFirst();
+		
+		chains.Add(p);
+		p->GetSubChainPointers(unvisited);
+	}
+	
+	Reverse(chains);
+}*/
 
+
+bool EonConnectionSolver::Process() {
+	Vector<EonLoopLoader*>	waiting_inputs;
+	Vector<EonLoopLoader*>	waiting_outputs;
+	
+	is_missing_input = false;
+	is_missing_output = false;
+	
+	for (EonLoopLoader* ll : loops) {
+		if (ll->IsStatus(EonStatus::WAITING_SIDE_INPUT_LOOP))
+			waiting_inputs.Add(ll);
+		if (ll->IsStatus(EonStatus::WAITING_SIDE_OUTPUT_LOOP))
+			waiting_outputs.Add(ll);
+	}
+	
+	if (waiting_inputs.IsEmpty() && waiting_outputs.IsEmpty()) {
+		SetError("Internal error. No waitin sidechannel io.");
+		return false;
+	}
+	
+	if (waiting_inputs.IsEmpty()) {
+		SetError("No input side-ports");
+		is_missing_input = true;
+		return false;
+	}
+	
+	if (waiting_outputs.IsEmpty()) {
+		SetError("No output side-ports");
+		is_missing_output = true;
+		return false;
+	}
+	
+	Vector<EonLoopLoader*> retry_list;
+	
+	int accepted_count = 0;
+	for (EonLoopLoader* in : waiting_inputs) {
+		EonLoopLoader* accepted_out = 0;
+		Eon::ActionPlanner::State* accepted_in_node = 0;
+		Eon::ActionPlanner::State* accepted_out_node = 0;
+		int accepted_out_count = 0;
+		bool accepted_all_multi = true;
+		for (EonLoopLoader* out : waiting_outputs) {
+			if (!in->IsFailed() &&
+				!out->IsFailed()) {
+				SideStatus s = in->AcceptOutput(*out, accepted_in_node, accepted_out_node);
+				if (s == SIDE_ACCEPTED || s == SIDE_ACCEPTED_MULTI) {
+					accepted_out_count++;
+					accepted_out = out;
+					if (s != SIDE_ACCEPTED_MULTI)
+						accepted_all_multi = false;
+				}
+			}
+		}
+		if (!accepted_all_multi && accepted_out_count > 1) {
+			SetError("Input loop " + IntStr(in->GetId()) + " can accept multiple outputs");
+			return false;
+		}
+		if (accepted_out_count == 0) {
+			SetError("Input loop " + IntStr(in->GetId()) + " cannot accept any output");
+			is_missing_input = true;
+			return false;
+		}
+		
+		int conn_id = tmp_side_id_counter++;
+		accepted_in_node->last->SetSideInId(conn_id);
+		accepted_out_node->last->SetSideOutId(conn_id);
+		
+		LOG("Loop " << in->GetId() << " accepted loop " << accepted_out->GetId() << " with id " << conn_id);
+		
+		in				->AddSideConnectionSegment(accepted_in_node,	accepted_out,	accepted_out_node);
+		accepted_out	->AddSideConnectionSegment(accepted_out_node,	in,				accepted_in_node);
+		
+		retry_list.Add(in);
+		retry_list.Add(accepted_out);
+		
+		++accepted_count;
+	}
+	
+	for (EonLoopLoader* ll : retry_list)
+		ll->SetStatusRetry();
+	
+	ASSERT(accepted_count > 0);
+	
+	return true;
+}
 
 NAMESPACE_ECS_END
