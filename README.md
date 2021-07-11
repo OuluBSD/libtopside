@@ -1,20 +1,6 @@
 ![Banner](https://raw.githubusercontent.com/OuluBSD/libtopside/main/doc/banner_210516.jpg)
 
-Libtopside is a unfinished collection of libraries that enable modern games and programs.
-
-The intention is to follow U++ conventions, but still make a standalone solution that works even without U++ and only with standard C libraries.
-This solution is certainly too radical compared to current industrial solutions, but the aim is to prove the usefulness of this solution in the long run.
-
-The best advantages of this solution:
-- you write less but understand more
-- easier and faster debugging
-- the most modern architectural choices of what can be
-
-The biggest challenges:
-- cannot use existing libraries if they have too many dependencies
-- no compatibility with native GUI libraries and experiences
-- no existing solutions that could be used as advice 
-
+Libtopside is alternative to a subset of Ultimate++ framework.
 
 
 ## How to compile
