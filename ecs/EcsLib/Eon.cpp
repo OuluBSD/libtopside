@@ -100,8 +100,42 @@ bool EonLoader::Load(String content, String filepath) {
 	p.Dump();
 	MemSwap(p.GetResult(), root);
 	
-	if (!LoadCompilationUnit(root))
+	if (!LoadCompilationUnit(root)) {
+		Cleanup();
 		return false;
+	}
+	
+	if (!ImplementPlan()) {
+		Cleanup();
+		return false;
+	}
+	
+	Cleanup();
+	return true;
+}
+
+void EonLoader::Cleanup() {
+	loader.Clear();
+}
+
+bool EonLoader::ImplementPlan() {
+	Vector<EonLoopLoader*> loops;
+	loader->GetLoops(loops);
+	for (EonLoopLoader* ll : loops) {
+		if (!ll->Load())
+			return false;
+	}
+	
+	for (EonLoopLoader* loop0 : loops) {
+		for (EonLoopLoader* loop1 : loops) {
+			if (loop0 != loop1) {
+				if (!ConnectSides(*loop0, *loop1)) {
+					AddError("Side connecting failed");
+					return false;
+				}
+			}
+		}
+	}
 	
 	return true;
 }

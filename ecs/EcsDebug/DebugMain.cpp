@@ -5,11 +5,12 @@ NAMESPACE_ECS_BEGIN
 
 
 
-void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier* ver) {
+void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	SetCoutLog();
 	//Ecs::Factory::Dump();
 	
-	//BreakRefAdd(0x80AE32468);
+	if (dbg_ref)
+		BreakRefAdd(0x80AE32468);
 	
 	double time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
 	
@@ -20,7 +21,8 @@ void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier*
 			ver->Attach(mach);
 		
 		
-		//SetDebugRefVisits();
+		if (dbg_ref_visits)
+			SetDebugRefVisits();
 		RuntimeDiagnostics::Static().SetRoot(mach);
 		
 	    #ifdef flagSTDEXC

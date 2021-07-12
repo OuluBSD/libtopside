@@ -68,8 +68,7 @@ String EonLoopSegment::GetTreeString(int id, int indent) {
 }
 
 void EonLoopLoader::AddError(String msg) {
-	TODO
-	//loader.AddError(this, msg);
+	//GetLoader().AddError(this, msg);
 	status = FAILED;
 }
 
@@ -96,7 +95,7 @@ void EonLoopLoader::Forward() {
 		ForwardTopSegment();
 	}
 	else if (status == EonStatus::RETRY) {
-		ASSERT(segments.GetCount() >= 2);
+		ASSERT(segments.GetCount() >= 1);
 		planner.ClearForward();
 		
 		ForwardTopSegment();
@@ -269,14 +268,8 @@ bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stm
 }
 
 
-
-
-
-
-
-#if 0
-
 bool EonLoopLoader::Load() {
+	EonLoader& loader = GetLoader();
 	
 	// Target entity for components
 	EntityRef e = loader.ResolveEntity(def.id);
@@ -284,7 +277,8 @@ bool EonLoopLoader::Load() {
 		AddError("Could not resolve entity with id: " + def.id.ToString());
 		return false;
 	}
-	EonScope& scope = loader.scopes.Top();
+	
+	//EonScope& scope = loader.scopes.Top();
 	
 	
 	// Implement found loop
@@ -435,17 +429,16 @@ bool EonLoopLoader::Load() {
 	
 	
 	// Add changes to parent state
-	const Eon::WorldState& ret_ws = last_seg.ep.plan.Top()->GetWorldState();
+	/*const Eon::WorldState& ret_ws = last_seg.ep.plan.Top()->GetWorldState();
 	if (!scope.current_state.Append(ret_ws, def.ret_list)) {
 		AddError("Invalid type in return value");
 		return false;
-	}
+	}*/
 	
 	
 	return true;
 }
 
-#endif
 
 SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == INPUT_IS_WAITING);
@@ -493,11 +486,11 @@ SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::S
 	}
 	
 	if (accepted_count == 0) {
-		AddError("No inputs accepts any outputs");
+		SetError("No inputs accepts any outputs");
 		return SIDE_NOT_ACCEPTED;
 	}
 	else if (accepted_count > 1) {
-		AddError("Too many accepting input/output combinations");
+		SetError("Too many accepting input/output combinations");
 		return SIDE_NOT_ACCEPTED;
 	}
 	

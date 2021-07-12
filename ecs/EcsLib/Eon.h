@@ -102,6 +102,7 @@ public:
 	LoaderParent&				parent;
 	ParserDef&					def;
 	EonStatus					status = IN_BEGINNING;
+	String						err_str;
 	int							id = -1;
 	bool						any_waiting = false;
 	bool						any_retrying = false;
@@ -114,6 +115,7 @@ public:
 	
 	void		SetStatus(int s) {status = (EonStatus)s;}
 	void		SetStatusRetry() {status = RETRY;}
+	void		SetError(String s) {err_str = s;}
 	
 	bool		IsFailed() const {return status == FAILED;}
 	bool		IsReady() const {return status == READY;}
@@ -121,7 +123,7 @@ public:
 	int			GetId() const {return id;}
 	EonStatus	GetStatus() const {return status;}
 	EonLoader&	GetLoader() {return parent.GetLoader();}
-	
+	String		GetErrorString() const {return err_str;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
@@ -166,11 +168,11 @@ public:
 	void		ForwardTopSegment();
 	
 	
-	bool Parse();
-	bool Load();
-	SideStatus AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
-	void AddError(String msg);
-	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
+	bool		Parse();
+	bool		Load();
+	SideStatus	AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
+	void		AddError(String msg);
+	void		AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
 	
 	EonLoopSegment& GetCurrentSegment() {return segments.Top();}
 	
@@ -326,31 +328,23 @@ public:
 	
 protected:
 	
-    bool Initialize() override;
-    void Start() override;
-    void Update(double dt) override;
-    void Stop() override;
-    void Uninitialize() override;
+    bool		Initialize() override;
+    void		Start() override;
+    void		Update(double dt) override;
+    void		Stop() override;
+    void		Uninitialize() override;
     
-    bool DoPostLoad();
-	bool LoadFile(String path);
-	bool Load(String content, String filepath="temp");
-	bool LoadCompilationUnit(Eon::CompilationUnit& cunit);
-	//bool LoadMachine(Eon::Machine& mach);
-	bool LoadGlobalScope(Eon::GlobalScope& list);
-	//bool LoadChainDefinition(Eon::ChainDefinition& def);
-	EntityRef ResolveEntity(Eon::Id& id);
-	//bool SolveLoops(Eon::ChainDefinition& def);
-	bool ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
-	/*void SolveInsideLoops(Eon::ChainDefinition& chain);
-	void SolveInsideChain(Eon::ChainDefinition& chain);
-	void SolveBetweenChains(const Vector<Eon::ChainDefinition*>& chains);
-	void SolveBetweenMachines(const Vector<Vector<Eon::ChainDefinition*>>& machs);
-	void GetChainsDeepestFirst(Eon::Machine& mach, Vector<Eon::ChainDefinition*>& chains);*/
+    void		Cleanup();
+    bool		DoPostLoad();
+	bool		LoadFile(String path);
+	bool		Load(String content, String filepath="temp");
+	bool		LoadCompilationUnit(Eon::CompilationUnit& cunit);
+	bool		LoadGlobalScope(Eon::GlobalScope& list);
+	EntityRef	ResolveEntity(Eon::Id& id);
+	bool		ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
+	bool		ImplementPlan();
 	
-	Eon::State* FindState(const Eon::Id& id);
-	
-	//bool IsNewConnections() const;
+	Eon::State*	FindState(const Eon::Id& id);
 	
 	
 	

@@ -75,7 +75,7 @@ void Main() {
 	VectorMap<String,Object> args;
 	args.Add("MACHINE_TIME_LIMIT", 3);
 	
-	Ecs::DebugMain(eon_file, args, verify ? &verifier : 0);
+	Ecs::DebugMain(eon_file, args, verify ? &verifier : 0, 0, 0);
 }
 
 
