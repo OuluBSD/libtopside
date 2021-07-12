@@ -87,12 +87,12 @@ struct Value {
 	String GetValue() const;
 };
 
-struct Machine {
+struct MachineDefinition {
 	LinkedList<ChainDefinition>		chains;
 	LinkedList<Statement>			stmts;
 	Id								id;
 	
-	void operator=(const Machine& v) {id = v.id; chains <<= v.chains;}
+	void operator=(const MachineDefinition& v) {id = v.id; chains <<= v.chains;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 };
@@ -108,7 +108,7 @@ struct State {
 };
 
 struct GlobalScope {
-	Array<Machine>					machs;
+	Array<MachineDefinition>		machs;
 	Array<State>					states;
 	
 	String GetTreeString(int indent=0) const;
@@ -142,8 +142,8 @@ class Parser : public CParser {
 	bool ChainScope(Eon::ChainDefinition&);
 	bool ParseLoopScope(Eon::LoopDefinition&);
 	bool ParseGlobalScope(Eon::GlobalScope&);
-	bool ParseMachine(Eon::Machine&);
-	bool ParseMachineScope(Eon::Machine&);
+	bool ParseMachine(Eon::MachineDefinition&);
+	bool ParseMachineScope(Eon::MachineDefinition&);
 	bool ParseState(Eon::State&);
 	bool ParseStateScope(Eon::State&);
 	

@@ -55,35 +55,92 @@ public:
 
 typedef enum {
 	IN_BEGINNING,
-	WAITING_SIDE_INPUT_LOOP,
-	WAITING_SIDE_OUTPUT_LOOP,
-	WAITING_SIDE_INPUT_CHAIN,
-	WAITING_SIDE_OUTPUT_CHAIN,
-	WAITING_SIDE_INPUT_MACHINE,
-	WAITING_SIDE_OUTPUT_MACHINE,
+	OUTPUT_IS_WAITING,
+	INPUT_IS_WAITING,
 	RETRY,
 	SOLVE_INTERNAL_CONNECTIONS,
 	READY,
 	FAILED,
 } EonStatus;
 
+inline const char* GetEonStatusString(EonStatus status) {
+	const char* t = "<invalid status>";
+	switch (status) {
+		case IN_BEGINNING:					t = "In beginning"; break;
+		case OUTPUT_IS_WAITING:				t = "Side output is waiting"; break;
+		case INPUT_IS_WAITING:				t = "Side input is waiting"; break;
+		case RETRY:							t = "Retry"; break;
+		case SOLVE_INTERNAL_CONNECTIONS:	t = "Solve internal connections"; break;
+		case READY:							t = "Ready"; break;
+		case FAILED:						t = "Failed"; break;
+		default: break;
+	}
+	return t;
+}
+
+String GetEonStatusLine(int indent, EonStatus status);
 
 class EonSystemLoader;
 class EonMachineLoader;
 class EonChainLoader;
+class EonTopChainLoader;
 class EonLoader;
 
-class EonLoopLoader : RTTIBase {
+template <class ParserDef, class LoaderParent>
+class EonLoaderBase : RTTIBase {
+	
+	
+protected:
+	void ResetFlags() {any_waiting = false; any_retrying = false; all_ready = true;}
+	void CheckFlags(bool allow_internal);
+	void CheckStatus(EonStatus s);
+	
 public:
-	RTTI_DECL0(EonLoopLoader)
+	RTTI_DECL0(EonLoaderBase)
+	virtual ~EonLoaderBase() {}
+	
+	LoaderParent&				parent;
+	ParserDef&					def;
+	EonStatus					status = IN_BEGINNING;
+	int							id = -1;
+	bool						any_waiting = false;
+	bool						any_retrying = false;
+	bool						all_ready = false;
+	
+	
+	EonLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
+	void		Forward();
+	void		SolveInternal();
+	
+	void		SetStatus(int s) {status = (EonStatus)s;}
+	void		SetStatusRetry() {status = RETRY;}
+	
+	bool		IsFailed() const {return status == FAILED;}
+	bool		IsReady() const {return status == READY;}
+	bool		IsStatus(EonStatus s) const {return status == s;}
+	int			GetId() const {return id;}
+	EonStatus	GetStatus() const {return status;}
+	EonLoader&	GetLoader() {return parent.GetLoader();}
+	
+	
+	virtual void		Visit(RuntimeVisitor& vis) = 0;
+	virtual String		GetTreeString(int indent) = 0;
+	virtual void		GetLoops(Vector<EonLoopLoader*>& v) = 0;
+	virtual void		ForwardLoops() = 0;
+	virtual void		LoopStatus() = 0;
+	virtual void		SetRetryDeep() = 0;
+	
+};
+
+class EonLoopLoader : public EonLoaderBase<Eon::LoopDefinition, EonChainLoader> {
+public:
+	using Base = EonLoaderBase<Eon::LoopDefinition, EonChainLoader>;
+	RTTI_DECL1(EonLoopLoader, Base)
 	
 	
 protected:
 	friend class EonLoader;
 	
-	EonChainLoader&				parent;
-	Eon::LoopDefinition&		def;
-	int							id = -1;
 	
 	Eon::APlanNode				start_node;
 	Eon::APlanNode				goal_node;
@@ -92,7 +149,6 @@ protected:
 	
 	Array<EonLoopSegment>		segments;
 	Eon::ActionPlanner			planner;
-	EonStatus					status = IN_BEGINNING;
 	const Eon::APlanNode*		accepted_side_node = 0;
 	
 	Array<ComponentBaseRef>		comps;
@@ -102,9 +158,9 @@ protected:
 	bool SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt);
 	
 public:
-	EonLoopLoader(int id, EonChainLoader* loader, Eon::LoopDefinition& def);
+	EonLoopLoader(EonChainLoader& parent, int id, Eon::LoopDefinition& def);
 	
-	void		Visit(RuntimeVisitor& vis) {vis && comps;}
+	
 	void		Forward();
 	void		InitSegments();
 	void		ForwardTopSegment();
@@ -115,97 +171,105 @@ public:
 	SideStatus AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
 	void AddError(String msg);
 	void AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
-	void SetStatus(int s) {status = (EonStatus)s;}
-	void SetStatusRetry() {status = RETRY;}
 	
-	bool IsFailed() const {return status == FAILED;}
-	bool IsReady() const {return status == READY;}
-	//bool IsWaitingSideInput() const {return status == WAITING_SIDE_INPUT;}
-	//bool IsWaitingSideOutput() const {return status == WAITING_SIDE_OUTPUT;}
-	//bool IsWaitingSide() const {return status == WAITING_SIDE_INPUT || status == WAITING_SIDE_OUTPUT;}
 	EonLoopSegment& GetCurrentSegment() {return segments.Top();}
-	int			GetId() const {return id;}
-	EonStatus	GetStatus() const {return status;}
-	bool		IsStatus(EonStatus s) const {return status == s;}
 	
-	EonLoader&	GetLoader();
-	String		GetTreeString(int indent);
+	void		Visit(RuntimeVisitor& vis) override {vis && comps;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
 };
 
 
-class EonChainLoader : RTTIBase {
+class EonChainLoader : public EonLoaderBase<Eon::ChainDefinition, EonTopChainLoader> {
+	
+	
 public:
-	RTTI_DECL0(EonChainLoader)
+	using Base = EonLoaderBase<Eon::ChainDefinition, EonTopChainLoader>;
+	RTTI_DECL1(EonChainLoader, Base)
 	
 public:
 	Array<EonLoopLoader>		loops;
-	Array<EonChainLoader>		chains;
-	EonMachineLoader&			mach_parent;
-	EonChainLoader*				chain_parent;
-	Eon::ChainDefinition&		chain;
-	EonStatus					status = EonStatus::IN_BEGINNING;
-	int							id = -1;
 	
 	
-	EonChainLoader(EonMachineLoader& mach_parent, EonChainLoader* chain_parent, int id, Eon::ChainDefinition& chain);
-	void		Visit(RuntimeVisitor& vis) {vis | loops | chains;}
-	void		Forward();
-	
-	bool		IsReady() const {return status == EonStatus::READY;}
-	bool		IsFailed() const {return status == EonStatus::FAILED;}
-	EonStatus	GetStatus() const {return status;}
-	EonLoader&	GetLoader();
-	String		GetTreeString(int indent);
-	void		GetLoops(Vector<EonLoopLoader*>& v);
+	EonChainLoader(EonTopChainLoader& parent, int id, Eon::ChainDefinition& def);
+	void		Visit(RuntimeVisitor& vis) override {vis | loops;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
 	
 };
 
-class EonMachineLoader : RTTIBase {
+
+class EonTopChainLoader : public EonLoaderBase<Eon::ChainDefinition, EonMachineLoader> {
 public:
-	RTTI_DECL0(EonMachineLoader)
+	using Base = EonLoaderBase<Eon::ChainDefinition, EonMachineLoader>;
+	RTTI_DECL1(EonTopChainLoader, Base)
 	
 public:
+	enum {NORMAL, SPLITTED_CHAIN, SPLITTED_LOOPS};
+	
 	Array<EonChainLoader>		chains;
-	EonSystemLoader&			parent;
-	Eon::Machine&				mach;
-	EonStatus					status = EonStatus::IN_BEGINNING;
-	int							id = -1;
+	Array<EonTopChainLoader>	subchains;
+	EonTopChainLoader*			chain_parent;
+	bool						use_subchains = false;
 	
 	
-	EonMachineLoader(EonSystemLoader& parent, int id, Eon::Machine& mach);
-	void		Visit(RuntimeVisitor& vis) {vis | chains;}
-	void		Forward();
+	EonTopChainLoader(int mode, EonMachineLoader& parent, EonTopChainLoader* chain_parent, int id, Eon::ChainDefinition& def);
+	void		ForwardSubchainLoops();
+	void		ForwardChainLoops();
 	
-	bool		IsReady() const {return status == EonStatus::READY;}
-	bool		IsFailed() const {return status == EonStatus::FAILED;}
-	EonStatus	GetStatus() const {return status;}
-	EonLoader&	GetLoader();
-	String		GetTreeString(int indent);
+	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
 	
 };
 
-class EonSystemLoader : RTTIBase {
+
+class EonMachineLoader : public EonLoaderBase<Eon::MachineDefinition, EonSystemLoader> {
 public:
-	RTTI_DECL0(EonSystemLoader)
+	using Base = EonLoaderBase<Eon::MachineDefinition, EonSystemLoader>;
+	RTTI_DECL1(EonMachineLoader, Base)
+	
+public:
+	Array<EonTopChainLoader>	chains;
+	
+	
+	EonMachineLoader(EonSystemLoader& parent, int id, Eon::MachineDefinition& def);
+	void		Visit(RuntimeVisitor& vis) override {vis | chains;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
+	
+};
+
+class EonSystemLoader : public EonLoaderBase<Eon::GlobalScope, EonLoader> {
+public:
+	using Base = EonLoaderBase<Eon::GlobalScope, EonLoader>;
+	RTTI_DECL1(EonSystemLoader, Base)
 	
 public:
 	Array<EonMachineLoader>		machs;
-	EonLoader&					parent;
-	Eon::GlobalScope&			glob;
-	EonStatus					status = EonStatus::IN_BEGINNING;
-	int							id = -1;
 	
 	
 	EonSystemLoader(EonLoader& parent, int id, Eon::GlobalScope& glob);
 	
-	void		Visit(RuntimeVisitor& vis) {vis | machs;}
-	void		Forward();
+	void		Visit(RuntimeVisitor& vis) override {vis | machs;}
+	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	String		GetTreeString(int indent=0) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
 	
-	bool		IsReady() const {return status == EonStatus::READY;}
-	bool		IsFailed() const {return status == EonStatus::FAILED;}
-	EonStatus	GetStatus() const {return status;}
-	EonLoader&	GetLoader();
-	String		GetTreeString(int indent=0);
 	void		Dump() {LOG(GetTreeString());}
 	
 };
@@ -218,6 +282,8 @@ class EonLoader :
 protected:
 	friend class EonLoopLoader;
 	friend class EonChainLoader;
+	friend class EonTopChainLoader;
+	friend class EonMachineLoader;
 	static int loop_counter;
 	
 	//LinkedList<EonScope> scopes;
@@ -253,6 +319,8 @@ public:
 	void PostLoadFile(String path) {post_load_file << path;}
 	void PostLoadString(String s) {post_load_string << s;}
 	
+	EonLoader&	GetLoader() {return *this;}
+	int&		GetSideIdCounter() {return tmp_side_id_counter;}
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EON;}
 	
@@ -441,5 +509,7 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 }
 
 NAMESPACE_TOPSIDE_END
+
+#include "EonLoaderBase.inl"
 
 #endif

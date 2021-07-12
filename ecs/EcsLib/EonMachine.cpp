@@ -3,45 +3,58 @@
 NAMESPACE_ECS_BEGIN
 
 
-EonMachineLoader::EonMachineLoader(EonSystemLoader& parent, int id, Eon::Machine& mach) :
-	parent(parent),
-	id(id),
-	mach(mach)
+EonMachineLoader::EonMachineLoader(EonSystemLoader& parent, int id, Eon::MachineDefinition& def) :
+	Base(parent, id, def)
 {
 	
-	for (Eon::ChainDefinition& chain : mach.chains) {
-		EonChainLoader& loader = chains.Add(new EonChainLoader(*this, 0, chains.GetCount(), chain));
+	for (Eon::ChainDefinition& chain : def.chains) {
+		EonTopChainLoader& loader = chains.Add(new EonTopChainLoader(0, *this, 0, chains.GetCount(), chain));
 	}
 	
 }
-
-EonLoader& EonMachineLoader::GetLoader() {return parent.GetLoader();}
 
 String EonMachineLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
 	s << "Machine " << id;
 	s.Cat('\n');
-	for (EonChainLoader& loader : chains) {
+	for (EonTopChainLoader& loader : chains) {
 		s << loader.GetTreeString(indent+1);
 	}
+	s << GetEonStatusLine(indent+1, status);
+	
 	return s;
 }
 
-void EonMachineLoader::Forward() {
-	ASSERT(!IsReady() && !IsFailed());
-	
-	if (status == EonStatus::IN_BEGINNING || status == EonStatus::RETRY) {
-		
-		for (EonChainLoader& loader : chains) {
+void EonMachineLoader::GetLoops(Vector<EonLoopLoader*>& v) {
+	for (EonTopChainLoader& loader : chains) {
+		loader.GetLoops(v);
+	}
+}
+
+void EonMachineLoader::ForwardLoops() {
+	for (EonTopChainLoader& loader : chains) {
+		EonStatus s = loader.GetStatus();
+		if (s != EonStatus::OUTPUT_IS_WAITING &&
+			s != EonStatus::INPUT_IS_WAITING &&
+			s != EonStatus::READY) {
 			loader.Forward();
 		}
-		
 	}
-	else {
-		TODO
+}
+
+void EonMachineLoader::LoopStatus() {
+	for (EonTopChainLoader& loader : chains) {
+		CheckStatus(loader.GetStatus());
 	}
-	
+}
+
+void EonMachineLoader::SetRetryDeep() {
+	if (status == EonStatus::READY)
+		return;
+	status = EonStatus::IN_BEGINNING;
+	for (EonTopChainLoader& loader : chains)
+		loader.SetRetryDeep();
 }
 
 

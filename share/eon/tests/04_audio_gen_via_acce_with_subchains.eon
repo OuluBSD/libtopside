@@ -1,0 +1,36 @@
+chain tester: {
+	chain subtest: {
+		loop center.audio.input: {
+			has.converter: false;
+			has.side.in: false;
+			has.side.out: true;
+			customer.test.input: true;
+			center.midi.src: true;
+			center.midi.side.out.accel: true;
+		};
+		
+		loop accel.audio.output: {
+			has.converter: true;
+			has.side.in: true;
+			has.side.out: true;
+			accel.midi.src: false;
+			accel.midi.side.in.center: true;
+			accel.midi.convert.audio: true;
+			accel.midi.convert.audio.test: true;
+			accel.audio.side.out: true;
+			accel.audio.side.out.center: true;
+		};
+	};
+
+	loop center.audio.output: {
+		has.converter: false;
+		has.side.in: true;
+		has.side.out: false;
+		customer.test.output: true;
+		center.audio.src: false;
+		center.audio.side.in.accel: true;
+		center.audio.sink.test.realtime: true;
+	};
+	
+};
+

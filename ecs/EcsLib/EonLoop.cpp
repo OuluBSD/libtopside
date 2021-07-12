@@ -3,15 +3,29 @@
 NAMESPACE_ECS_BEGIN
 
 
-EonLoopLoader::EonLoopLoader(int id, EonChainLoader* loader, Eon::LoopDefinition& def) :
-	parent(*loader),
-	def(def),
-	id(id)
+EonLoopLoader::EonLoopLoader(EonChainLoader& parent, int id, Eon::LoopDefinition& def) :
+	Base(parent, id, def)
 {
 	planner.SetLoopLoader(this);
 }
 
-EonLoader& EonLoopLoader::GetLoader() {return parent.GetLoader();}
+void EonLoopLoader::LoopStatus() {
+	Panic("internal error");
+}
+
+void EonLoopLoader::ForwardLoops() {
+	Panic("internal error");
+}
+
+void EonLoopLoader::GetLoops(Vector<EonLoopLoader*>& v) {
+	Panic("internal error");
+}
+
+void EonLoopLoader::SetRetryDeep() {
+	if (status == EonStatus::READY)
+		return;
+	status = EonStatus::RETRY;
+}
 
 String EonLoopLoader::GetTreeString(int indent) {
 	String s;
@@ -22,35 +36,9 @@ String EonLoopLoader::GetTreeString(int indent) {
 	int id = 0;
 	for (EonLoopSegment& seg : segments) {
 		s << seg.GetTreeString(id++, indent+1);
-		if (id == segments.GetCount()) {
-			if (status == WAITING_SIDE_INPUT_LOOP) {
-				s.Cat('\t', indent+1);
-				s << "Waiting loop input\n";
-			}
-			if (status == WAITING_SIDE_OUTPUT_LOOP) {
-				s.Cat('\t', indent+1);
-				s << "Waiting loop output\n";
-			}
-			
-			if (status == WAITING_SIDE_INPUT_CHAIN) {
-				s.Cat('\t', indent+1);
-				s << "Waiting chain input\n";
-			}
-			if (status == WAITING_SIDE_OUTPUT_CHAIN) {
-				s.Cat('\t', indent+1);
-				s << "Waiting chain output\n";
-			}
-			
-			if (status == WAITING_SIDE_INPUT_MACHINE) {
-				s.Cat('\t', indent+1);
-				s << "Waiting machine input\n";
-			}
-			if (status == WAITING_SIDE_OUTPUT_MACHINE) {
-				s.Cat('\t', indent+1);
-				s << "Waiting machine output\n";
-			}
-		}
 	}
+	
+	s << GetEonStatusLine(indent+1, status);
 	
 	return s;
 }
@@ -65,9 +53,16 @@ String EonLoopSegment::GetTreeString(int id, int indent) {
 		for (Eon::ActionNode* n : ep.plan) {
 			started = started || n == start_node;
 			if (!started) continue;
-			s.Cat('\t', indent+1);
-			s << n->GetWorldState().ToString() << "\n";
+			String state_str = n->GetWorldState().ToString();
+			if (state_str.GetCount()) {
+				s.Cat('\t', indent+1);
+				s << state_str << "\n";
+			}
 		}
+	}
+	else {
+		s.Cat('\t', indent+1);
+		s << "empty\n";
 	}
 	return s;
 }
@@ -194,7 +189,7 @@ void EonLoopLoader::ForwardTopSegment() {
 				const Eon::WorldState& ws = state.last->GetWorldState();
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = WAITING_SIDE_INPUT_LOOP;
+			status = INPUT_IS_WAITING;
 			return;
 		}
 		else if (!is_input && outputs.GetCount()) {
@@ -205,7 +200,7 @@ void EonLoopLoader::ForwardTopSegment() {
 				//LOG(i << ": " << state.last->GetEstimate() << ": " << ws.GetFullString());
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = WAITING_SIDE_OUTPUT_LOOP;
+			status = OUTPUT_IS_WAITING;
 			return;
 		}
 		else {
@@ -453,8 +448,8 @@ bool EonLoopLoader::Load() {
 #endif
 
 SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
-	ASSERT(status == WAITING_SIDE_INPUT_LOOP);
-	ASSERT(out.status == WAITING_SIDE_OUTPUT_LOOP);
+	ASSERT(status == INPUT_IS_WAITING);
+	ASSERT(out.status == OUTPUT_IS_WAITING);
 	auto& inputs = planner.GetSideInputs();
 	auto& outputs = out.planner.GetSideOutputs();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());

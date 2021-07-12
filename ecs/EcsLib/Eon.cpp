@@ -2,6 +2,18 @@
 
 NAMESPACE_ECS_BEGIN
 
+String GetEonStatusLine(int indent, EonStatus status) {
+	String s;
+	s.Cat('\t', indent);
+	const char* t = GetEonStatusString(status);
+	s << "-> " << t;
+	s.Cat('\n');
+	return s;
+}
+
+
+
+
 
 int EonLoader::loop_counter = 0;
 
@@ -20,6 +32,7 @@ bool EonLoader::Initialize() {
 	if (!DoPostLoad())
 		return false;
 	
+	RTLOG("EonLoader::Initialize success!");
 	return true;
 }
 
@@ -159,83 +172,14 @@ bool EonLoader::LoadGlobalScope(Eon::GlobalScope& glob) {
 		
 		loader->Forward();
 		++dbg_i;
+		
+		ASSERT_(dbg_i < 100, "Something probably broke");
 	}
 	
 	
 	scopes.Remove(scopes.GetCount()-1);
-	TODO // ret... chk err
 	
-	/*Vector<Vector<Eon::ChainDefinition*>> mach_chains;
-	for (Eon::Machine& mach : glob.machs)
-		GetChainsDeepestFirst(mach, mach_chains.Add());
-	int iter = -1;
-	while (1) {
-		++iter;
-		bool found_connection = false;
-		
-		// Check if all connections are satisfied and break
-		if (iter > 0) {
-			TODO
-			
-			// Clear potential errors
-			TODO
-			
-			// Clear connection collection
-			TODO
-		}
-		
-		// Inside loops
-		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
-			for (Eon::ChainDefinition* chain : chains)
-				SolveInsideLoops(*chain);
-		if (IsNewConnections()) // start again, if this phase made new connections
-			continue;
-			
-		// Inside chains
-		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
-			for (Eon::ChainDefinition* chain : chains)
-			SolveInsideChain(*chain);
-		if (IsNewConnections())
-			continue;
-		
-		// Between chains
-		for (Vector<Eon::ChainDefinition*>& chains : mach_chains)
-			SolveBetweenChains(chains);
-		if (IsNewConnections())
-			continue;
-		
-		// Between machines
-		SolveBetweenMachines(mach_chains);
-		if (IsNewConnections())
-			continue;
-		
-		// Check for potential errors, and break if not any
-		TODO
-	}
-	
-	
-	for (EonLoopLoader& loop : loops) {
-		if (!loop.Load()) {
-			scopes.RemoveLast();
-			return false;
-		}
-	}
-	
-	// Link side-connections
-	for (EonLoopLoader& loop0 : loops) {
-		for (EonLoopLoader& loop1 : loops) {
-			if (&loop0 != &loop1) {
-				if (!ConnectSides(loop0, loop1)) {
-					AddError("Side connecting failed");
-					return false;
-				}
-			}
-		}
-	}
-	
-	loops.Clear();*/
-	
-	//return LeaveScope();
+	return loader->IsReady();
 }
 
 /*bool EonLoader::SolveLoops(Eon::ChainDefinition& def) {
@@ -436,31 +380,31 @@ void EonLoader::GetChainsDeepestFirst(Eon::Machine& mach, Vector<Eon::ChainDefin
 
 
 bool EonConnectionSolver::Process() {
-	Vector<EonLoopLoader*>	waiting_inputs;
-	Vector<EonLoopLoader*>	waiting_outputs;
+	Vector<EonLoopLoader*>	inputs;
+	Vector<EonLoopLoader*>	outputs;
 	
 	is_missing_input = false;
 	is_missing_output = false;
 	
 	for (EonLoopLoader* ll : loops) {
-		if (ll->IsStatus(EonStatus::WAITING_SIDE_INPUT_LOOP))
-			waiting_inputs.Add(ll);
-		if (ll->IsStatus(EonStatus::WAITING_SIDE_OUTPUT_LOOP))
-			waiting_outputs.Add(ll);
+		if (ll->IsStatus(EonStatus::INPUT_IS_WAITING))
+			inputs.Add(ll);
+		if (ll->IsStatus(EonStatus::OUTPUT_IS_WAITING))
+			outputs.Add(ll);
 	}
 	
-	if (waiting_inputs.IsEmpty() && waiting_outputs.IsEmpty()) {
-		SetError("Internal error. No waitin sidechannel io.");
+	if (inputs.IsEmpty() && outputs.IsEmpty()) {
+		SetError("Internal error. No any waiting sidechannel io exists.");
 		return false;
 	}
 	
-	if (waiting_inputs.IsEmpty()) {
+	if (inputs.IsEmpty()) {
 		SetError("No input side-ports");
 		is_missing_input = true;
 		return false;
 	}
 	
-	if (waiting_outputs.IsEmpty()) {
+	if (outputs.IsEmpty()) {
 		SetError("No output side-ports");
 		is_missing_output = true;
 		return false;
@@ -469,13 +413,13 @@ bool EonConnectionSolver::Process() {
 	Vector<EonLoopLoader*> retry_list;
 	
 	int accepted_count = 0;
-	for (EonLoopLoader* in : waiting_inputs) {
+	for (EonLoopLoader* in : inputs) {
 		EonLoopLoader* accepted_out = 0;
 		Eon::ActionPlanner::State* accepted_in_node = 0;
 		Eon::ActionPlanner::State* accepted_out_node = 0;
 		int accepted_out_count = 0;
 		bool accepted_all_multi = true;
-		for (EonLoopLoader* out : waiting_outputs) {
+		for (EonLoopLoader* out : outputs) {
 			if (!in->IsFailed() &&
 				!out->IsFailed()) {
 				SideStatus s = in->AcceptOutput(*out, accepted_in_node, accepted_out_node);
@@ -493,8 +437,8 @@ bool EonConnectionSolver::Process() {
 		}
 		if (accepted_out_count == 0) {
 			SetError("Input loop " + IntStr(in->GetId()) + " cannot accept any output");
-			is_missing_input = true;
-			return false;
+			is_missing_output = true;
+			continue;
 		}
 		
 		int conn_id = tmp_side_id_counter++;
@@ -515,9 +459,7 @@ bool EonConnectionSolver::Process() {
 	for (EonLoopLoader* ll : retry_list)
 		ll->SetStatusRetry();
 	
-	ASSERT(accepted_count > 0);
-	
-	return true;
+	return accepted_count > 0;
 }
 
 NAMESPACE_ECS_END

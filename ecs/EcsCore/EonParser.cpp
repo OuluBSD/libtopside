@@ -89,7 +89,7 @@ String LoopDefinition::GetTreeString(int indent) const {
 	return s;
 }
 
-String Machine::GetTreeString(int indent) const {
+String MachineDefinition::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << "machine:\n";
@@ -102,7 +102,7 @@ String Machine::GetTreeString(int indent) const {
 	return s;
 }
 
-String Machine::ToString() const {
+String MachineDefinition::ToString() const {
 	return "machine(" + IntStr(chains.GetCount()) + " chains)";
 }
 
@@ -221,7 +221,7 @@ String GlobalScope::GetTreeString(int indent) const {
 	String s;
 	for (State& state : states)
 		s << state.GetTreeString(indent+1);
-	for (Machine& mach : machs)
+	for (MachineDefinition& mach : machs)
 		s << mach.GetTreeString(indent+1);
 	return s;
 }
@@ -260,17 +260,17 @@ bool Parser::Parse(Eon::CompilationUnit& cunit) {
 
 bool Parser::ParseGlobalScope(Eon::GlobalScope& list) {
 	if (IsId("chain")) {
-		Machine& def_mach = list.machs.Add();
+		MachineDefinition& def_mach = list.machs.Add();
 		ParseChain(def_mach.chains.Add());
 	}
 	else if (IsId("loop")) {
-		Machine& def_mach = list.machs.Add();
+		MachineDefinition& def_mach = list.machs.Add();
 		ParseLoop(def_mach.chains.Add().loops.Add());
 	}
 	else {
 		while (!IsEof()) {
 			if (IsId("machine")) {
-				Machine& mach = list.machs.Add();
+				MachineDefinition& mach = list.machs.Add();
 				ParseMachine(mach);
 			}
 			else if (IsId("state")) {
@@ -286,7 +286,7 @@ bool Parser::ParseGlobalScope(Eon::GlobalScope& list) {
 	return true;
 }
 
-bool Parser::ParseMachine(Eon::Machine& mach) {
+bool Parser::ParseMachine(Eon::MachineDefinition& mach) {
 	PASS_ID("machine")
 	
 	if (!ParseId(mach.id))
@@ -307,7 +307,7 @@ bool Parser::ParseMachine(Eon::Machine& mach) {
 	return true;
 }
 
-bool Parser::ParseMachineScope(Eon::Machine& mach) {
+bool Parser::ParseMachineScope(Eon::MachineDefinition& mach) {
 	PASS_CHAR('{')
 	
 	while (!IsEof() && !IsChar('}')) {
