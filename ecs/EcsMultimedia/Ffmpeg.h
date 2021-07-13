@@ -42,14 +42,14 @@ public:
 	void OnError();
 	void OnStop();
 	
-	COMP_MAKE_ACTION_BEGIN
+	EXT_MAKE_ACTION_BEGIN
 	if (vd.val.type == ValCls::AUDIO) {
-		COMP_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
 	}
 	else if (vd.val.type == ValCls::VIDEO) {
-		COMP_MAKE_ACTION_UNDEF_TO_TRUE("perma.video.source.decoder")
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("perma.video.source.decoder")
 	}
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_END
 	
 	
 	void SetError(String s);

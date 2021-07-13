@@ -1,0 +1,17 @@
+{
+	"topchains": {
+		"daw_instrument_channel": {
+			"chains": [
+				"daw_midi_instrument",
+				"daw_audio_channel",
+			],
+		},
+		"daw_master_channel": {
+			"chains": [
+				"daw_audio_channel",
+				"audio_hw_sink",
+			],
+		},
+	},
+	
+}

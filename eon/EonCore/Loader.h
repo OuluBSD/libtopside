@@ -1,15 +1,18 @@
-#ifndef _EcsLib_Eon_h_
-#define _EcsLib_Eon_h_
-
-NAMESPACE_ECS_BEGIN
+#ifndef _EonCore_Loader_h_
+#define _EonCore_Loader_h_
 
 
-class EonLoader;
+NAMESPACE_EON_BEGIN
 
 
 
-struct EonError : Moveable<EonError> {
-	EonLoopLoader* ll = 0;
+
+class Loader;
+
+
+
+struct Error : Moveable<Error> {
+	LoopLoader* ll = 0;
 	String msg;
 	int status = -1;
 	
@@ -20,33 +23,16 @@ struct EonError : Moveable<EonError> {
 
 
 
-/*class EonScope {
-protected:
-	friend class EonLoader;
-	friend class EonLoopLoader;
-	
-	Eon::WorldState			current_state;
-	Eon::LoopDefinition*	loop = 0;
-	Eon::ChainDefinition*	chain = 0;
-	Eon::Machine*			mach = 0;
-	Eon::GlobalScope*		glob = 0;
+
+
+
+class LoopSegment {
 public:
-	EonScope() {}
-	
-	void SetCurrentState(const Eon::WorldState& s) {current_state = s;}
-	
-	
-};*/
-
-
-
-class EonLoopSegment {
-public:
-	AStar<Eon::ActionNode>		as;
-	Eon::Plan					ep;
-	Eon::APlanNode*				start_node = 0;
-	const Eon::ActionNode*		stop_node = 0;
-	EonLoopLoader*				side_conn = 0;
+	AStar<ActionNode>		as;
+	Plan					ep;
+	APlanNode*				start_node = 0;
+	const ActionNode*		stop_node = 0;
+	LoopLoader*				side_conn = 0;
 	
 	
 	String GetTreeString(int id, int indent);
@@ -61,9 +47,9 @@ typedef enum {
 	SOLVE_INTERNAL_CONNECTIONS,
 	READY,
 	FAILED,
-} EonStatus;
+} Status;
 
-inline const char* GetEonStatusString(EonStatus status) {
+inline const char* GetStatusString(Status status) {
 	const char* t = "<invalid status>";
 	switch (status) {
 		case IN_BEGINNING:					t = "In beginning"; break;
@@ -78,30 +64,30 @@ inline const char* GetEonStatusString(EonStatus status) {
 	return t;
 }
 
-String GetEonStatusLine(int indent, EonStatus status, String extra_str=String());
+String GetStatusLine(int indent, Status status, String extra_str=String());
 
-class EonSystemLoader;
-class EonMachineLoader;
-class EonChainLoader;
-class EonTopChainLoader;
-class EonLoader;
+class SystemLoader;
+class MachineLoader;
+class ChainLoader;
+class TopChainLoader;
+class Loader;
 
 template <class ParserDef, class LoaderParent>
-class EonLoaderBase : RTTIBase {
+class LoaderBase : RTTIBase {
 	
 	
 protected:
 	void ResetFlags() {any_waiting = false; any_retrying = false; all_ready = true; any_failed = false;}
 	void CheckFlags(bool allow_internal);
-	void CheckStatus(EonStatus s);
+	void CheckStatus(Status s);
 	
 public:
-	RTTI_DECL0(EonLoaderBase)
-	virtual ~EonLoaderBase() {}
+	RTTI_DECL0(LoaderBase)
+	virtual ~LoaderBase() {}
 	
 	LoaderParent&				parent;
 	ParserDef&					def;
-	EonStatus					status = IN_BEGINNING;
+	Status					status = IN_BEGINNING;
 	String						err_str;
 	int							id = -1;
 	bool						any_waiting = false;
@@ -110,58 +96,58 @@ public:
 	bool						any_failed = false;
 	
 	
-	EonLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
+	LoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
 	void		Forward();
 	void		SolveInternal();
 	
-	void		SetStatus(int s) {status = (EonStatus)s;}
+	void		SetStatus(int s) {status = (Status)s;}
 	void		SetStatusRetry() {status = RETRY;}
 	void		SetError(String s) {err_str = s; status = FAILED;}
 	
 	bool		IsFailed() const {return status == FAILED;}
 	bool		IsReady() const {return status == READY;}
-	bool		IsStatus(EonStatus s) const {return status == s;}
+	bool		IsStatus(Status s) const {return status == s;}
 	int			GetId() const {return id;}
-	EonStatus	GetStatus() const {return status;}
-	EonLoader&	GetLoader() {return parent.GetLoader();}
+	Status	GetStatus() const {return status;}
+	Loader&	GetLoader() {return parent.GetLoader();}
 	String		GetErrorString() const {return err_str;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
-	virtual void		GetLoops(Vector<EonLoopLoader*>& v) = 0;
+	virtual void		GetLoops(Vector<LoopLoader*>& v) = 0;
 	virtual void		ForwardLoops() = 0;
 	virtual void		LoopStatus() = 0;
 	virtual void		SetRetryDeep() = 0;
 	
 };
 
-class EonLoopLoader : public EonLoaderBase<Eon::LoopDefinition, EonChainLoader> {
+class LoopLoader : public LoaderBase<LoopDefinition, ChainLoader> {
 public:
-	using Base = EonLoaderBase<Eon::LoopDefinition, EonChainLoader>;
-	RTTI_DECL1(EonLoopLoader, Base)
+	using Base = LoaderBase<LoopDefinition, ChainLoader>;
+	RTTI_DECL1(LoopLoader, Base)
 	
 	
 protected:
-	friend class EonLoader;
+	friend class Loader;
 	
 	
-	Eon::APlanNode				start_node;
-	Eon::APlanNode				goal_node;
-	Eon::WorldState				start;
-	Eon::WorldState				goal;
+	APlanNode				start_node;
+	APlanNode				goal_node;
+	WorldState				start;
+	WorldState				goal;
 	
-	Array<EonLoopSegment>		segments;
-	Eon::ActionPlanner			planner;
-	const Eon::APlanNode*		accepted_side_node = 0;
+	Array<LoopSegment>		segments;
+	ActionPlanner			planner;
+	const APlanNode*		accepted_side_node = 0;
 	
 	Array<ComponentBaseRef>		comps;
 	
 	
-	void SetupSegment(EonLoopSegment& s);
-	bool SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt);
+	void SetupSegment(LoopSegment& s);
+	bool SetWorldState(WorldState& ws, const Statement& stmt);
 	
 public:
-	EonLoopLoader(EonChainLoader& parent, int id, Eon::LoopDefinition& def);
+	LoopLoader(ChainLoader& parent, int id, LoopDefinition& def);
 	
 	
 	void		Forward();
@@ -171,35 +157,35 @@ public:
 	
 	bool		Parse();
 	bool		Load();
-	SideStatus	AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out);
-	void		AddSideConnectionSegment(Eon::ActionPlanner::State* n, EonLoopLoader* c, Eon::ActionPlanner::State* side_state);
+	SideStatus	AcceptOutput(LoopLoader& out, ActionPlanner::State*& accepted_in, ActionPlanner::State*& accepted_out);
+	void		AddSideConnectionSegment(ActionPlanner::State* n, LoopLoader* c, ActionPlanner::State* side_state);
 	
-	EonLoopSegment& GetCurrentSegment() {return segments.Top();}
+	LoopSegment& GetCurrentSegment() {return segments.Top();}
 	
 	void		Visit(RuntimeVisitor& vis) override {vis && comps;}
 	String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		GetLoops(Vector<LoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
 };
 
 
-class EonChainLoader : public EonLoaderBase<Eon::ChainDefinition, EonTopChainLoader> {
+class ChainLoader : public LoaderBase<ChainDefinition, TopChainLoader> {
 	
 	
 public:
-	using Base = EonLoaderBase<Eon::ChainDefinition, EonTopChainLoader>;
-	RTTI_DECL1(EonChainLoader, Base)
+	using Base = LoaderBase<ChainDefinition, TopChainLoader>;
+	RTTI_DECL1(ChainLoader, Base)
 	
 public:
-	Array<EonLoopLoader>		loops;
+	Array<LoopLoader>		loops;
 	
 	
-	EonChainLoader(EonTopChainLoader& parent, int id, Eon::ChainDefinition& def);
+	ChainLoader(TopChainLoader& parent, int id, ChainDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | loops;}
 	String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		GetLoops(Vector<LoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
@@ -207,27 +193,27 @@ public:
 };
 
 
-class EonTopChainLoader : public EonLoaderBase<Eon::ChainDefinition, EonMachineLoader> {
+class TopChainLoader : public LoaderBase<ChainDefinition, MachineLoader> {
 public:
-	using Base = EonLoaderBase<Eon::ChainDefinition, EonMachineLoader>;
-	RTTI_DECL1(EonTopChainLoader, Base)
+	using Base = LoaderBase<ChainDefinition, MachineLoader>;
+	RTTI_DECL1(TopChainLoader, Base)
 	
 public:
 	enum {NORMAL, SPLITTED_CHAIN, SPLITTED_LOOPS};
 	
-	Array<EonChainLoader>		chains;
-	Array<EonTopChainLoader>	subchains;
-	EonTopChainLoader*			chain_parent;
+	Array<ChainLoader>		chains;
+	Array<TopChainLoader>	subchains;
+	TopChainLoader*			chain_parent;
 	bool						use_subchains = false;
 	
 	
-	EonTopChainLoader(int mode, EonMachineLoader& parent, EonTopChainLoader* chain_parent, int id, Eon::ChainDefinition& def);
+	TopChainLoader(int mode, MachineLoader& parent, TopChainLoader* chain_parent, int id, ChainDefinition& def);
 	void		ForwardSubchainLoops();
 	void		ForwardChainLoops();
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
 	String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		GetLoops(Vector<LoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
@@ -235,38 +221,38 @@ public:
 };
 
 
-class EonMachineLoader : public EonLoaderBase<Eon::MachineDefinition, EonSystemLoader> {
+class MachineLoader : public LoaderBase<MachineDefinition, SystemLoader> {
 public:
-	using Base = EonLoaderBase<Eon::MachineDefinition, EonSystemLoader>;
-	RTTI_DECL1(EonMachineLoader, Base)
+	using Base = LoaderBase<MachineDefinition, SystemLoader>;
+	RTTI_DECL1(MachineLoader, Base)
 	
 public:
-	Array<EonTopChainLoader>	chains;
+	Array<TopChainLoader>	chains;
 	
 	
-	EonMachineLoader(EonSystemLoader& parent, int id, Eon::MachineDefinition& def);
+	MachineLoader(SystemLoader& parent, int id, MachineDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {vis | chains;}
 	String		GetTreeString(int indent) override;
-	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		GetLoops(Vector<LoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
 	
 };
 
-class EonSystemLoader : public EonLoaderBase<Eon::GlobalScope, EonLoader> {
+class SystemLoader : public LoaderBase<GlobalScope, Loader> {
 public:
-	using Base = EonLoaderBase<Eon::GlobalScope, EonLoader>;
-	RTTI_DECL1(EonSystemLoader, Base)
+	using Base = LoaderBase<GlobalScope, Loader>;
+	RTTI_DECL1(SystemLoader, Base)
 	
 public:
-	Array<EonMachineLoader>		machs;
+	Array<MachineLoader>		machs;
 	
 	
-	EonSystemLoader(EonLoader& parent, int id, Eon::GlobalScope& glob);
+	SystemLoader(Loader& parent, int id, GlobalScope& glob);
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | machs;}
-	void		GetLoops(Vector<EonLoopLoader*>& v) override;
+	void		GetLoops(Vector<LoopLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
@@ -278,35 +264,35 @@ public:
 
 bool TestParseEonCode(String code);
 
-class EonLoader :
-	public System<EonLoader>
+class Loader :
+	public System<Loader>
 {
 protected:
-	friend class EonLoopLoader;
-	friend class EonChainLoader;
-	friend class EonTopChainLoader;
-	friend class EonMachineLoader;
+	friend class LoopLoader;
+	friend class ChainLoader;
+	friend class TopChainLoader;
+	friend class MachineLoader;
 	static int loop_counter;
 	
 	//LinkedList<EonScope> scopes;
-	Vector<Eon::GlobalScope*> scopes;
-	One<EonSystemLoader> loader;
+	Vector<GlobalScope*> scopes;
+	One<SystemLoader> loader;
 	
-	Eon::WorldState def_ws;
-	Eon::ActionPlanner def_planner;
+	WorldState def_ws;
+	ActionPlanner def_planner;
 	int tmp_side_id_counter = 0;
 	
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
-	Eon::CompilationUnit root;
+	CompilationUnit root;
 	EntityStoreRef es;
 	
-	Vector<EonError> errs;
+	Vector<Error> errs;
 	bool collect_errors = false;
 	
 	
 	void AddError(String msg);
-	void AddError(EonLoopLoader* ll, String msg);
+	void AddError(LoopLoader* ll, String msg);
 	void ReleaseErrorBuffer();
 	void ClearErrorBuffer();
 	void CollectErrorBuffer(bool b) {collect_errors = b;}
@@ -314,14 +300,14 @@ protected:
 	//bool LeaveScope();
 	
 public:
-	SYS_RTTI(EonLoader)
-	SYS_CTOR(EonLoader);
+	SYS_RTTI(Loader)
+	SYS_CTOR(Loader);
 	SYS_DEF_VISIT_((vis & es); if (!loader.IsEmpty()) vis % *loader;)
 	
 	void PostLoadFile(String path) {post_load_file << path;}
 	void PostLoadString(String s) {post_load_string << s;}
 	
-	EonLoader&	GetLoader() {return *this;}
+	Loader&	GetLoader() {return *this;}
 	int&		GetSideIdCounter() {return tmp_side_id_counter;}
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_EON;}
@@ -339,24 +325,24 @@ protected:
     bool		DoPostLoad();
 	bool		LoadFile(String path);
 	bool		Load(String content, String filepath="temp");
-	bool		LoadCompilationUnit(Eon::CompilationUnit& cunit);
-	bool		LoadGlobalScope(Eon::GlobalScope& list);
-	EntityRef	ResolveEntity(Eon::Id& id);
-	bool		ConnectSides(EonLoopLoader& loop0, EonLoopLoader& loop1);
+	bool		LoadCompilationUnit(CompilationUnit& cunit);
+	bool		LoadGlobalScope(GlobalScope& list);
+	EntityRef	ResolveEntity(IdPath& id);
+	bool		ConnectSides(LoopLoader& loop0, LoopLoader& loop1);
 	bool		ImplementPlan();
 	
-	Eon::State*	FindState(const Eon::Id& id);
+	State*	FindState(const IdPath& id);
 	
 	
 	
 };
 
-using EonLoaderRef = Ref<EonLoader, RefParent1<Machine>>;
+using LoaderRef = Ref<Loader, RefParent1<Machine>>;
 
 
 
-class EonConnectionSolver {
-	Vector<EonLoopLoader*>		loops;
+class ConnectionSolver {
+	Vector<LoopLoader*>		loops;
 	String						err_str;
 	int&						tmp_side_id_counter;
 	bool						is_missing_input = false;
@@ -366,7 +352,7 @@ class EonConnectionSolver {
 	bool Process();
 public:
 	
-	EonConnectionSolver(int& side_id_counter) : tmp_side_id_counter(side_id_counter) {}
+	ConnectionSolver(int& side_id_counter) : tmp_side_id_counter(side_id_counter) {}
 	
 	template <class T>
 	bool Solve(T* o) {
@@ -391,7 +377,7 @@ NAMESPACE_ECS_END
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::ActionNode>& n) {
+template <>	inline bool TerminalTest<Eon::ActionNode>(Node<Eon::ActionNode>& n) {
 	if (&n == (void*)0x8026C63C0) {
 		LOG("");
 	}
@@ -400,16 +386,16 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 	int est = n.GetEstimate();
 	if (est <= 0)
 		return true;
-	Eon::ActionNode& goal = n.GetGoal();
-	Eon::WorldState& goal_ws = goal.GetWorldState();
+	ActionNode& goal = n.GetGoal();
+	WorldState& goal_ws = goal.GetWorldState();
 	if (n.Contains(goal))
 		return true;
 	if (goal.Conflicts(n))
 		return false;
-	Eon::WorldState& ws = n.GetWorldState();
-	Eon::ActionPlanner& ap = n.GetActionPlanner();
-	EonLoopLoader& ll = ap.GetLoopLoader();
-	EonLoopSegment& seg = ll.GetCurrentSegment();
+	WorldState& ws = n.GetWorldState();
+	ActionPlanner& ap = n.GetActionPlanner();
+	LoopLoader& ll = ap.GetLoopLoader();
+	LoopSegment& seg = ll.GetCurrentSegment();
 	
 	TypeCompCls comp = ws.GetComponent();
 	if (ws.IsAddComponent() && n.GetLinkedCount() && comp.side.vd.val == ValCls::ORDER)
@@ -431,7 +417,7 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 				return false;
 			}
 			else if (ext.sub == SubCompCls::SIDE_OUTPUT) {
-				POPO(Pol::Ecs::Eon::Loop::SideInIsBeforeSideOutAlways)
+				POPO(Pol::Eon::Loop::SideInIsBeforeSideOutAlways)
 				if (goal_ws	.IsTrue	("has.side.in") &&
 					ws		.IsFalse("has.side.in"))
 					return false;
@@ -441,7 +427,7 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 			}
 			/*}
 			else {
-				const Eon::APlanNode* accepted = ll.GetAcceptedSideNode();
+				const APlanNode* accepted = ll.GetAcceptedSideNode();
 				ASSERT(accepted);
 				//if (n.GetWorldState() != accepted->GetWorldState())
 				//	return false;
@@ -455,13 +441,13 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 		}
 	}
 	
-	Array<Ecs::Eon::WorldState*> to;
+	Array<Eon::WorldState*> to;
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
 	
 	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
-		Ecs::Eon::WorldState& ws_to = *to[i];
+		Eon::WorldState& ws_to = *to[i];
 		if (req_ext && ws_to.IsAddComponent())
 			continue;
 		/*if (req_ext) {
@@ -470,9 +456,9 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 		}*/
 		int64 hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
-		Ecs::Eon::APlanNode* an = 0;
+		Eon::APlanNode* an = 0;
 		if (j == -1) {
-			Ecs::Eon::APlanNode& sub = ap.tmp_sub.Add(hash);// n.Add();
+			Eon::APlanNode& sub = ap.tmp_sub.Add(hash);// n.Add();
 			sub.IncLinked();
 			sub.SetActionPlanner(n.GetActionPlanner());
 			sub.SetGoal(n.GetGoal());
@@ -503,8 +489,7 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 	return false;
 }
 
-NAMESPACE_TOPSIDE_END
 
-#include "EonLoaderBase.inl"
+NAMESPACE_EON_END
 
 #endif

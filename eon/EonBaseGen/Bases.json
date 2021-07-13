@@ -1,0 +1,20 @@
+{
+	"bases": {
+		"customer": {
+			"sink":			"center-receipt",
+			"side":			"src",
+			"src":			"center-order",
+		},
+		"audio_src": {
+			"sink":			"center-order",
+			"side":			"src",
+			"src":			"center-audio",
+		},
+		"audio_sink": {
+			"sink":			"center-audio",
+			"side":			"sink",
+			"src":			"center-receipt",
+		},
+	},
+	
+}

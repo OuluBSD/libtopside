@@ -1,60 +1,61 @@
-#include "EcsLib.h"
+#include "EonCore.h"
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_EON_BEGIN
 
 
-EonLoopLoader::EonLoopLoader(EonChainLoader& parent, int id, Eon::LoopDefinition& def) :
+
+LoopLoader::LoopLoader(ChainLoader& parent, int id, LoopDefinition& def) :
 	Base(parent, id, def)
 {
 	planner.SetLoopLoader(this);
 }
 
-void EonLoopLoader::LoopStatus() {
+void LoopLoader::LoopStatus() {
 	Panic("internal error");
 }
 
-void EonLoopLoader::ForwardLoops() {
+void LoopLoader::ForwardLoops() {
 	Panic("internal error");
 }
 
-void EonLoopLoader::GetLoops(Vector<EonLoopLoader*>& v) {
+void LoopLoader::GetLoops(Vector<LoopLoader*>& v) {
 	Panic("internal error");
 }
 
-void EonLoopLoader::SetRetryDeep() {
-	if (status == EonStatus::READY)
+void LoopLoader::SetRetryDeep() {
+	if (status == Status::READY)
 		return;
-	status = EonStatus::RETRY;
+	status = Status::RETRY;
 }
 
-String EonLoopLoader::GetTreeString(int indent) {
+String LoopLoader::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
 	s << "Loop " << id;
 	s.Cat('\n');
 	
 	int id = 0;
-	for (EonLoopSegment& seg : segments) {
+	for (LoopSegment& seg : segments) {
 		s << seg.GetTreeString(id++, indent+1);
 	}
 	
 	String extra;
-	if (status == EonStatus::FAILED)
+	if (status == Status::FAILED)
 		extra = err_str;
 	
-	s << GetEonStatusLine(indent+1, status, extra);
+	s << GetStatusLine(indent+1, status, extra);
 	
 	return s;
 }
 
-String EonLoopSegment::GetTreeString(int id, int indent) {
+String LoopSegment::GetTreeString(int id, int indent) {
 	String s;
 	s.Cat('\t', indent);
 	s << "Segment " << id;
 	s.Cat('\n');
 	if (!ep.plan.IsEmpty()) {
 		bool started = false;
-		for (Eon::ActionNode* n : ep.plan) {
+		for (ActionNode* n : ep.plan) {
 			started = started || n == start_node;
 			if (!started) continue;
 			String state_str = n->GetWorldState().ToString();
@@ -71,7 +72,7 @@ String EonLoopSegment::GetTreeString(int id, int indent) {
 	return s;
 }
 
-void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
+void LoopLoader::SetupSegment(LoopSegment& s) {
 	
 	
 	// Do the action plan searching
@@ -79,11 +80,11 @@ void EonLoopLoader::SetupSegment(EonLoopSegment& s) {
 	
 }
 
-void EonLoopLoader::Forward() {
+void LoopLoader::Forward() {
 	ASSERT(!IsReady() && !IsFailed());
-	EonStatus prev_status = status;
+	Status prev_status = status;
 	
-	if (status == EonStatus::IN_BEGINNING) {
+	if (status == Status::IN_BEGINNING) {
 		if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
 			String id = def.id.ToString();
 			SetError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
@@ -93,7 +94,7 @@ void EonLoopLoader::Forward() {
 		InitSegments();
 		ForwardTopSegment();
 	}
-	else if (status == EonStatus::RETRY) {
+	else if (status == Status::RETRY) {
 		ASSERT(segments.GetCount() >= 1);
 		planner.ClearForward();
 		
@@ -108,7 +109,7 @@ void EonLoopLoader::Forward() {
 	ASSERT(prev_status != status);
 }
 
-void EonLoopLoader::InitSegments() {
+void LoopLoader::InitSegments() {
 	DevCls dev = DevCls::Get(def.id.parts.First());
 	if (!dev.IsValid())
 		dev = DevCls::CENTER;
@@ -130,18 +131,18 @@ void EonLoopLoader::InitSegments() {
 	goal.SetAs_AddComponent(AsTypeCompCls<ExtComponent>(SubCompCls::CUSTOMER, customer));
 	goal.Set(CONNECTED, true);
 	
-	for (Eon::Id& req : def.req) {
-		Eon::State* s = GetLoader().FindState(req);
+	for (IdPath& req : def.req) {
+		State* s = GetLoader().FindState(req);
 		if (!s) {
 			SetError("Could not find required state '" + req.ToString() + "'");
 			return;
 		}
-		for (Eon::Statement& stmt : s->stmts)
+		for (Statement& stmt : s->stmts)
 			if (!SetWorldState(goal, stmt))
 				return;
 	}
 	
-	for (Eon::Statement& stmt : def.stmts)
+	for (Statement& stmt : def.stmts)
 		if (!SetWorldState(goal, stmt))
 			return;
 	LOG("goal: " << goal.ToString());
@@ -154,12 +155,12 @@ void EonLoopLoader::InitSegments() {
 	start_node.SetWorldState(start);
 	
 	
-	EonLoopSegment& seg = segments.Add();
+	LoopSegment& seg = segments.Add();
 	seg.start_node = &start_node;
 }
 
-void EonLoopLoader::ForwardTopSegment() {
-	EonLoopSegment& seg = segments.Top();
+void LoopLoader::ForwardTopSegment() {
+	LoopSegment& seg = segments.Top();
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
 	
@@ -184,7 +185,7 @@ void EonLoopLoader::ForwardTopSegment() {
 			LOG("Loop " << id << " side-inputs:");
 			for(int i = 0; i < inputs.GetCount(); i++) {
 				auto& state = inputs[i];
-				const Eon::WorldState& ws = state.last->GetWorldState();
+				const WorldState& ws = state.last->GetWorldState();
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
 			status = INPUT_IS_WAITING;
@@ -194,7 +195,7 @@ void EonLoopLoader::ForwardTopSegment() {
 			LOG("Loop " << id << " side-outputs:");
 			for(int i = 0; i < outputs.GetCount(); i++) {
 				auto& state = outputs[i];
-				const Eon::WorldState& ws = state.last->GetWorldState();
+				const WorldState& ws = state.last->GetWorldState();
 				//LOG(i << ": " << state.last->GetEstimate() << ": " << ws.GetFullString());
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
@@ -213,11 +214,11 @@ void EonLoopLoader::ForwardTopSegment() {
 	// Debug print found loop
 	if (1) {
 		int pos = 0;
-		EonLoopSegment& seg = segments.Top();
-		for (Eon::ActionNode* n : seg.ep.plan) {
-			const Eon::WorldState& ws = n->GetWorldState();
+		LoopSegment& seg = segments.Top();
+		for (ActionNode* n : seg.ep.plan) {
+			const WorldState& ws = n->GetWorldState();
 			TypeCompCls comp = ws.GetComponent();
-			const auto& d = Ecs::Factory::CompDataMap().Get(comp);
+			const auto& d = Eon::Factory::CompDataMap().Get(comp);
 			if (ws.IsAddComponent()) {
 				LOG(pos++ << ": add comp: " << d.name);
 			}
@@ -232,8 +233,8 @@ void EonLoopLoader::ForwardTopSegment() {
 	status = READY;
 }
 
-bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stmt) {
-	if (!stmt.value || stmt.value->type == Eon::Value::VAL_CUSTOMER)
+bool LoopLoader::SetWorldState(WorldState& ws, const Statement& stmt) {
+	if (!stmt.value || stmt.value->type == Value::VAL_CUSTOMER)
 		return true;;
 	
 	int atom = planner.GetAddAtom(stmt.id);
@@ -241,15 +242,15 @@ bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stm
 	String old_value = goal.Get(atom);
 	String new_value;
 	
-	if (stmt.value->type == Eon::Value::VAL_BOOLEAN)
+	if (stmt.value->type == Value::VAL_BOOLEAN)
 		new_value = stmt.value->b ? "true" : "false";
-	else if (stmt.value->type == Eon::Value::VAL_ID)
+	else if (stmt.value->type == Value::VAL_ID)
 		new_value = stmt.value->id.ToString();
-	else if (stmt.value->type == Eon::Value::VAL_STRING)
+	else if (stmt.value->type == Value::VAL_STRING)
 		new_value = stmt.value->str;
-	else if (stmt.value->type == Eon::Value::VAL_INT)
+	else if (stmt.value->type == Value::VAL_INT)
 		new_value = IntStr(stmt.value->i);
-	else if (stmt.value->type == Eon::Value::VAL_DOUBLE)
+	else if (stmt.value->type == Value::VAL_DOUBLE)
 		new_value = DblStr(stmt.value->f);
 	else {
 		SetError("internal error");
@@ -267,8 +268,8 @@ bool EonLoopLoader::SetWorldState(Eon::WorldState& ws, const Eon::Statement& stm
 }
 
 
-bool EonLoopLoader::Load() {
-	EonLoader& loader = GetLoader();
+bool LoopLoader::Load() {
+	Loader& loader = GetLoader();
 	
 	// Target entity for components
 	EntityRef e = loader.ResolveEntity(def.id);
@@ -291,12 +292,12 @@ bool EonLoopLoader::Load() {
 	Array<AddedComp> added_comps;
 	
 	int seg_i = segments.GetCount()-1;
-	EonLoopSegment& seg = segments.Top();
+	LoopSegment& seg = segments.Top();
 	int plan_i = 0;
-	for (Eon::ActionNode* n : seg.ep.plan) {
+	for (ActionNode* n : seg.ep.plan) {
 		
 		RTLOG("Loading plan node " << plan_i);
-		Eon::WorldState& ws = n->GetWorldState();
+		WorldState& ws = n->GetWorldState();
 		if (ws.IsAddComponent()) {
 			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
 			TypeCompCls comp = ws.GetComponent();
@@ -306,7 +307,7 @@ bool EonLoopLoader::Load() {
 					e->GetAddTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
-				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
+				String comp_name = Eon::Factory::CompDataMap().Get(comp).name;
 				SetError("Could not create component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
@@ -318,7 +319,7 @@ bool EonLoopLoader::Load() {
 			c.side_out = -1;
 		}
 		else if (ws.IsAddExtension()) {
-			POPO(Pol::Ecs::Eon::Loader::CorrespondingAddCompAndExt);
+			POPO(Pol::Eon::Loader::CorrespondingAddCompAndExt);
 			auto& c = added_comps.Top();
 			c.side_in = n->GetSideInId();
 			c.side_out = n->GetSideOutId();
@@ -329,14 +330,14 @@ bool EonLoopLoader::Load() {
 			ComponentBaseRef cb = e->GetTypeCls(comp);
 			ASSERT(cb);
 			if (!cb) {
-				String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
+				String comp_name = Eon::Factory::CompDataMap().Get(comp).name;
 				SetError("Could not fwsind component '" + comp_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			{
 				ComponentExtBaseRef existing_ext = cb->GetExtension();
 				if (existing_ext) {
-					const auto& c = Ecs::Factory::CompDataMap().Get(comp);
+					const auto& c = Eon::Factory::CompDataMap().Get(comp);
 					const auto& e = c.ext.Get(ext);
 					SetError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
 					return false;
@@ -347,17 +348,17 @@ bool EonLoopLoader::Load() {
 			// Add arguments to ws
 			for(int i = 0; i < ws.values.GetCount(); i++) {
 				String key = planner.atoms.GetKey(i);
-				for (const Eon::Statement& stmt : def.stmts) {
+				for (const Statement& stmt : def.stmts) {
 					String stmt_key = stmt.id.ToString();
 					if (stmt_key == key) {
 						//LOG(i << " " << key << " " << stmt_key);
-						for (const Eon::Statement& arg : stmt.args) {
+						for (const Statement& arg : stmt.args) {
 							//LOG("\t" << arg.id.ToString());
 							if (arg.value) {
 								String k = arg.id.ToString();
 								String v = arg.value->GetValue();
 								ws.Set("." + k, v);
-								//LOG("EonLoader::LoadLoopDefinition: add argument: " << k << " = " << v);
+								//LOG("Loader::LoadLoopDefinition: add argument: " << k << " = " << v);
 							}
 						}
 					}
@@ -368,7 +369,7 @@ bool EonLoopLoader::Load() {
 			ComponentExtBaseRef eb = cb->SetExtensionTypeCls(ext);
 			ASSERT(eb);
 			if (!eb || !eb->Initialize(ws)) {
-				const auto& c = Ecs::Factory::CompDataMap().Get(comp);
+				const auto& c = Eon::Factory::CompDataMap().Get(comp);
 				const auto& e = c.ext.Get(ext);
 				SetError("Could not " + String(!eb ? "create" : "initialize") + " extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
 				return false;
@@ -388,14 +389,14 @@ bool EonLoopLoader::Load() {
 		AddedComp& c1 = added_comps[i+1];
 		ComponentBaseRef src = c0.r;
 		ComponentBaseRef dst = c1.r;
-		EonLoopSegment& seg = segments[c1.seg_i];
-		Eon::ActionNode& n = *seg.ep.plan[c1.plan_i];
-		const Eon::WorldState& ws = n.GetWorldState();
+		LoopSegment& seg = segments[c1.seg_i];
+		ActionNode& n = *seg.ep.plan[c1.plan_i];
+		const WorldState& ws = n.GetWorldState();
 		ValDevCls iface = ws.GetInterface();
 		if (!pool->Link(src, dst, iface)) {
 			TypeCompCls comp = ws.GetComponent();
-			String comp_name = Ecs::Factory::CompDataMap().Get(comp).name;
-			String src_iface_name = Ecs::Factory::SourceDataMap().Get(iface).name;
+			String comp_name = Eon::Factory::CompDataMap().Get(comp).name;
+			String src_iface_name = Eon::Factory::SourceDataMap().Get(iface).name;
 			SetError("Could not link component '" + comp_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
@@ -409,8 +410,8 @@ bool EonLoopLoader::Load() {
 	
 	AddedComp& first = added_comps[0];
 	AddedComp& last  = added_comps.Top();
-	EonLoopSegment& first_seg = segments[first.seg_i];
-	EonLoopSegment& last_seg  = segments[last.seg_i];
+	LoopSegment& first_seg = segments[first.seg_i];
+	LoopSegment& last_seg  = segments[last.seg_i];
 	ExtComponentRef comp = first.r->AsRef<ExtComponent>();
 	if (comp) {
 		comp->AddPlan(first_seg.ep);
@@ -418,8 +419,8 @@ bool EonLoopLoader::Load() {
 	
 	
 	// Process sub-loops
-	for (Eon::Statement& stmt : def.stmts) {
-		if (!stmt.value || stmt.value->type != Eon::Value::VAL_CUSTOMER)
+	for (Statement& stmt : def.stmts) {
+		if (!stmt.value || stmt.value->type != Value::VAL_CUSTOMER)
 			continue;
 		//LoadLoopDefinition(stmt.value->customer);
 		SetError("Sub-loops not supported yet");
@@ -428,7 +429,7 @@ bool EonLoopLoader::Load() {
 	
 	
 	// Add changes to parent state
-	/*const Eon::WorldState& ret_ws = last_seg.ep.plan.Top()->GetWorldState();
+	/*const WorldState& ret_ws = last_seg.ep.plan.Top()->GetWorldState();
 	if (!scope.current_state.Append(ret_ws, def.ret_list)) {
 		SetError("Invalid type in return value");
 		return false;
@@ -439,7 +440,7 @@ bool EonLoopLoader::Load() {
 }
 
 
-SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::State*& accepted_in, Eon::ActionPlanner::State*& accepted_out) {
+SideStatus LoopLoader::AcceptOutput(LoopLoader& out, ActionPlanner::State*& accepted_in, ActionPlanner::State*& accepted_out) {
 	ASSERT(status == INPUT_IS_WAITING);
 	ASSERT(out.status == OUTPUT_IS_WAITING);
 	auto& inputs = planner.GetSideInputs();
@@ -452,21 +453,21 @@ SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::S
 	accepted_out = 0;
 	
 	for (auto& in_state : inputs) {
-		Eon::APlanNode* in = in_state.last;
-		Eon::WorldState& in_ws = in->GetWorldState();
+		APlanNode* in = in_state.last;
+		WorldState& in_ws = in->GetWorldState();
 		ASSERT(in_ws.IsAddExtension());
 		TypeCompCls in_comp = in_ws.GetComponent();
 		TypeExtCls in_type = in_ws.GetExtension();
-		auto& in_d = Ecs::Factory::CompDataMap().Get(in_comp);
+		auto& in_d = Eon::Factory::CompDataMap().Get(in_comp);
 		auto& in_e = in_d.ext.Get(in_type);
 		
 		for (auto& out_state : outputs) {
-			Eon::APlanNode* out = out_state.last;
-			Eon::WorldState& out_ws = out->GetWorldState();
+			APlanNode* out = out_state.last;
+			WorldState& out_ws = out->GetWorldState();
 			ASSERT(out_ws.IsAddExtension());
 			TypeCompCls out_comp = out_ws.GetComponent();
 			TypeExtCls out_type = out_ws.GetExtension();
-			auto& out_d = Ecs::Factory::CompDataMap().Get(out_comp);
+			auto& out_d = Eon::Factory::CompDataMap().Get(out_comp);
 			auto& out_e = out_d.ext.Get(out_type);
 			
 			SideStatus a, b;
@@ -496,16 +497,17 @@ SideStatus EonLoopLoader::AcceptOutput(EonLoopLoader& out, Eon::ActionPlanner::S
 	return ret;
 }
 
-void EonLoopLoader::AddSideConnectionSegment(Eon::ActionPlanner::State* state, EonLoopLoader* c, Eon::ActionPlanner::State* side_state) {
-	EonLoopSegment& prev = segments.Top();
+void LoopLoader::AddSideConnectionSegment(ActionPlanner::State* state, LoopLoader* c, ActionPlanner::State* side_state) {
+	LoopSegment& prev = segments.Top();
 	prev.stop_node = state->last;
 	prev.ep.plan = prev.as.ReconstructPath(*state->last);
 	ASSERT(prev.ep.plan.GetCount());
-	EonLoopSegment& seg = segments.Add();
+	LoopSegment& seg = segments.Add();
 	seg.start_node = state->last;
 	seg.side_conn = c;
 	seg.as = state->as;
 }
 
 
-NAMESPACE_ECS_END
+
+NAMESPACE_EON_END

@@ -2,11 +2,13 @@
 
 NAMESPACE_ECS_BEGIN
 
-String GetEonStatusLine(int indent, EonStatus status) {
+String GetEonStatusLine(int indent, EonStatus status, String extra_str) {
 	String s;
 	s.Cat('\t', indent);
 	const char* t = GetEonStatusString(status);
 	s << "-> " << t;
+	if (extra_str.GetCount())
+		s << " (" << extra_str << ")";
 	s.Cat('\n');
 	return s;
 }
@@ -101,11 +103,16 @@ bool EonLoader::Load(String content, String filepath) {
 	MemSwap(p.GetResult(), root);
 	
 	if (!LoadCompilationUnit(root)) {
+		LOG("error dump:"); loader->Dump();
+		DumpErrors();
+		
 		Cleanup();
 		return false;
 	}
 	
 	if (!ImplementPlan()) {
+		DumpErrors();
+		
 		Cleanup();
 		return false;
 	}
@@ -116,6 +123,16 @@ bool EonLoader::Load(String content, String filepath) {
 
 void EonLoader::Cleanup() {
 	loader.Clear();
+}
+
+void EonLoader::DumpErrors() {
+	Vector<EonLoopLoader*> loops;
+	loader->GetLoops(loops);
+	for (EonLoopLoader* ll : loops) {
+		if (ll->GetStatus() == EonStatus::FAILED) {
+			LOG("EonLoopLoader: error: " << ll->GetErrorString());
+		}
+	}
 }
 
 bool EonLoader::ImplementPlan() {

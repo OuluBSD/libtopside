@@ -3,6 +3,7 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
+namespace Agent {
 
 class ActionPlanner;
 class ActionNode;
@@ -142,8 +143,10 @@ public:
 
 typedef Node<ActionNode> APlanNode;
 
+}
 
-template <>	inline bool TerminalTest<ActionNode>(Node<ActionNode>& n) {
+template <>	inline bool TerminalTest<Agent::ActionNode>(Node<Agent::ActionNode>& n) {
+	using namespace Agent;
 	if (n.GetEstimate() <= 0)
 		return true;
 	WorldState& ws = n.GetWorldState();

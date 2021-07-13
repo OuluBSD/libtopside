@@ -1,0 +1,12 @@
+{
+	"loops": {
+		"audio_tester": {
+			"impls": [
+				"customer",
+				"simple_audio_generator",
+				"audio_hw_sink",
+			]
+		},
+	},
+	
+}

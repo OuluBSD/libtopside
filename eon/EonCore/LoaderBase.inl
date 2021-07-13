@@ -1,6 +1,6 @@
-#include "EcsLib.h"
 
-NAMESPACE_ECS_BEGIN
+NAMESPACE_EON_BEGIN
+
 
 
 template <class ParserDef, class LoaderParent>
@@ -90,4 +90,5 @@ void EonLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 }
 
 
-NAMESPACE_ECS_END
+
+NAMESPACE_EON_END

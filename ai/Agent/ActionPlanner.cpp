@@ -2,6 +2,7 @@
 
 
 NAMESPACE_TOPSIDE_BEGIN
+namespace Agent {
 
 WorldState::WorldState() {
 	
@@ -299,4 +300,5 @@ double ActionNode::GetEstimate() {
 	return GetDistance(*goal);
 }
 
+}
 NAMESPACE_TOPSIDE_END

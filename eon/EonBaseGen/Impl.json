@@ -1,0 +1,18 @@
+{
+	"implementations": {
+		"customer": {
+			"header": "customer",
+			
+		},
+		"debug_audio_generator": {
+			"header": "simple_audio_generator",
+			
+		},
+		"debug_audio_hw_sink": {
+			"header": "audio_hw_sink",
+			
+		},
+	},
+	
+	
+}

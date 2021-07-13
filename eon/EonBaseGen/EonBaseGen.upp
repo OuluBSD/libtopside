@@ -1,0 +1,33 @@
+uses
+	Local,
+	TemplatesMach;
+
+file
+	TODO.txt,
+	EonBaseGen.h,
+	EonBaseGen.cpp,
+	World.h,
+	World.cpp,
+	UnitNode.h,
+	UnitNode.cpp,
+	Unit.h,
+	Unit.cpp,
+	Chain.h,
+	Chain.cpp,
+	Loop.h,
+	Loop.cpp,
+	Link.h,
+	Link.cpp,
+	Bases.json,
+	Headers.json,
+	Loops.json,
+	Chains.json,
+	TopChains.json,
+	MultiChains.json,
+	Machines.json,
+	Systems.json,
+	Impl.json;
+
+mainconfig
+	"" = "";
+

@@ -54,10 +54,10 @@ public:
 	String GetLastError() const {return last_error;}
 	void SinkCallback(TS::Portaudio::StreamCallbackArgs& args);
 	
-	COMP_MAKE_ACTION_BEGIN
-		COMP_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.realtime")
-		COMP_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
-	COMP_MAKE_ACTION_END
+	EXT_MAKE_ACTION_BEGIN
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.realtime")
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
+	EXT_MAKE_ACTION_END
 	
 	
 	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::EXT_PORTAUDIO_AUDIO_OUT;}

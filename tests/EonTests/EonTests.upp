@@ -1,0 +1,10 @@
+uses
+	EonCore;
+
+file
+	EonTests.h,
+	EonTests.cpp;
+
+mainconfig
+	"" = "";
+

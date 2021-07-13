@@ -1,0 +1,21 @@
+description "\377B128,0,0";
+
+uses
+	Local,
+	Agent;
+
+file
+	EonCore.h,
+	Parser.h,
+	Parser.cpp,
+	Planner.h,
+	Planner.cpp,
+	Loader.h,
+	Loader.cpp,
+	LoaderBase.inl highlight cpp,
+	LoopLoader.cpp,
+	ChainLoader.cpp,
+	TopChainLoader.cpp,
+	MachineLoader.cpp,
+	SystemLoader.cpp;
+

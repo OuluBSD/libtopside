@@ -23,6 +23,25 @@ String ValCls::GetName(Type t) {
 	}
 }
 
+ValCls::Type ValCls::Get(String s) {
+	if (s == "audio")
+		return AUDIO;
+	if (s == "video")
+		return VIDEO;
+	if (s == "midi")
+		return MIDI;
+	if (s == "event")
+		return EVENT;
+	if (s == "data")
+		return DATA;
+	if (s == "order")
+		return ORDER;
+	if (s == "receipt")
+		return RECEIPT;
+	
+	return INVALID;
+}
+
 String DevCls::GetName(Type t) {
 	switch (t) {
 		case CENTER:	return "center";

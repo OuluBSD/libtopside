@@ -1,0 +1,21 @@
+{
+	"chains": {
+		"daw_midi_instrument": {
+			"loops": [
+				"daw_midi_src",
+				"daw_midi_instrument",
+				"daw_audio_sink",
+				"daw_audio_fx",
+				"daw_audio_src",
+			],
+		},
+		"daw_audio_channel": {
+			"loops": [
+				"daw_audio_sink",
+				"daw_audio_fx",
+				"daw_audio_src",
+			],
+		},
+	},
+	
+}

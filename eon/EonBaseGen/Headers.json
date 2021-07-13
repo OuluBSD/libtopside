@@ -1,0 +1,17 @@
+{
+	"headers": {
+		"customer": {
+			"base": "customer",
+			
+		},
+		"simple_audio_generator": {
+			"base": "audio_src",
+			
+		},
+		"audio_hw_sink": {
+			"base": "audio_sink",
+			
+		},
+	},
+	
+}

@@ -50,6 +50,7 @@ struct ValCls : Moveable<ValCls> {
 	String GetActionName() const {return ToLower(GetName());}
 	bool IsValid() const {return type > INVALID && type < TYPE_COUNT;}
 	static String GetName(Type t);
+	static Type Get(String s);
 	void operator=(const Nuller& n) {type = INVALID;}
 	void operator=(const ValCls& n) {type = n.type;}
 	bool operator==(const ValCls& c) const {return type == c.type;}
