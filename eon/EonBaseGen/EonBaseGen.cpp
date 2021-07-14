@@ -54,7 +54,7 @@ void GenerateEonBase() {
 			- dump link naming template
 			- name links
 		
-		UnitNode
+		Node
 			- test connections
 			- find special constraints for connections
 	
@@ -80,9 +80,9 @@ void GenerateEonBase() {
 	json_files.Add("Bases.json");
 	json_files.Add("Headers.json");
 	json_files.Add("Loops.json");
+	json_files.Add("Links.json");
 	json_files.Add("Chains.json");
 	json_files.Add("TopChains.json");
-	json_files.Add("MultiChains.json");
 	json_files.Add("Machines.json");
 	json_files.Add("Systems.json");
 	json_files.Add("Impl.json");
@@ -92,6 +92,7 @@ void GenerateEonBase() {
 	
 	String dir = GetDataFile("");
 	for (String file : json_files) {
+		LOG("Loading " << file);
 		String path = AppendFileName(dir, file);
 		String content = LoadFile(path);
 		if (content.IsEmpty()) {

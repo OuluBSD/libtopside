@@ -1,3 +1,6 @@
+- check duplicate bases / headers
+
+
 - generate eon confs
 - test that confs can be found
 	- without ambiguity

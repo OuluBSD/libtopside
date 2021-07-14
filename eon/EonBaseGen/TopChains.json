@@ -1,16 +1,28 @@
 {
 	"topchains": {
-		"daw_instrument_channel": {
-			"chains": [
-				"daw_midi_instrument",
-				"daw_audio_channel",
+		"test_midi_audio_topchain_part2": {
+			"nodes": [
+				"test_midi_audio_topchain_part1",
+				"test_midi_audio_part3",
 			],
+			"links": "01",
 		},
-		"daw_master_channel": {
-			"chains": [
-				"daw_audio_channel",
-				"audio_hw_sink",
+		
+		
+		
+		"daw_hw_out": {
+			"nodes": [
+				"daw_4",
+				"daw_hw_sink",
 			],
+			"links": "01s",
+		},
+		"daw_file_out": {
+			"nodes": [
+				"daw_4",
+				"daw_file_sink",
+			],
+			"links": "01s",
 		},
 	},
 	

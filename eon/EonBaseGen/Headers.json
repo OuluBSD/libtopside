@@ -1,10 +1,18 @@
 {
 	"headers": {
 		"customer": {
-			"base": "customer",
+			"base": "order_src",
 			
 		},
 		"simple_audio_generator": {
+			"base": "audio_src",
+			
+		},
+		"audio_side_sink": {
+			"base": "audio_sink",
+			
+		},
+		"audio_side_src": {
 			"base": "audio_src",
 			
 		},
@@ -12,6 +20,43 @@
 			"base": "audio_sink",
 			
 		},
+		"audio_file_sink": {
+			"base": "audio_sink",
+			
+		},
+		"test_center_accel_midi_sink": {
+			"base": "center_accel_midi_sink",
+		},
+		"test_center_accel_midi_src": {
+			"base": "center_accel_midi_src",
+		},
+		
+		
+		"daw_midi_src": {
+			"base": "center_accel_midi_sink",
+			
+		},
+		"daw_midi_audio_conv": {
+			"base": "accel_midi_audio_conv",
+			
+		},
+		"daw_audio_fx": {
+			"base": "accel_audio_pipe",
+			
+		},
+		"daw_audio_in": {
+			"base": "accel_audio_input_multi",
+			
+		},
+		"daw_audio_hw_out_src": {
+			"base": "accel_center_audio_src",
+			
+		},
+		"daw_audio_out_sink": {
+			"base": "accel_center_audio_sink",
+			
+		},
+		
 	},
 	
 }

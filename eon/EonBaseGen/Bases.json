@@ -1,6 +1,6 @@
 {
 	"bases": {
-		"customer": {
+		"order_src": {
 			"sink":			"center-receipt",
 			"side":			"src",
 			"src":			"center-order",
@@ -15,6 +15,42 @@
 			"side":			"sink",
 			"src":			"center-receipt",
 		},
+		"center_accel_midi_sink": {
+			"sink":			"center-midi",
+			"side":			"src",
+			"src":			"accel-midi",
+		},
+		"center_accel_midi_src": {
+			"sink":			"accel-order",
+			"side":			"center-src",
+			"src":			"accel-midi",
+		},
+		"accel_midi_audio_conv": {
+			"sink":			"accel-midi",
+			"side":			"src",
+			"src":			"accel-audio",
+		},
+		"accel_audio_pipe": {
+			"sink":			"accel-audio",
+			"side":			"src",
+			"src":			"accel-audio",
+		},
+		"accel_audio_input_multi": {
+			"sink":			"accel-audio-x",
+			"side":			"sink",
+			"src":			"accel-audio",
+		},
+		"accel_center_audio_src": {
+			"sink":			"accel-audio",
+			"side":			"center-sink",
+			"src":			"accel-receipt",
+		},
+		"accel_center_audio_sink": {
+			"sink":			"center-order",
+			"side":			"accel-src",
+			"src":			"center-audio",
+		},
+		
 	},
 	
 }

@@ -62,8 +62,11 @@ Object ParseMap(CParser& p) {
 		String key;
 		if (p.IsId())
 			key = p.ReadId();
-		else
+		else if (p.IsString())
 			key = p.ReadString();
+		else {
+			THROW(Exc("Unexpected token at " + IntStr(p.GetLine()) + ":" + IntStr(p.GetColumn())));
+		}
 		
 		if (p.IsChar(',') || p.IsChar('}')) {
 			p.Char(',');

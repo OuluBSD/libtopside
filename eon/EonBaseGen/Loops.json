@@ -1,12 +1,111 @@
 {
 	"loops": {
-		"audio_tester": {
-			"impls": [
+		"test_audio": {
+			"headers": [
 				"customer",
 				"simple_audio_generator",
 				"audio_hw_sink",
 			]
 		},
+		"test_audio_part1": {
+			"headers": [
+				"customer",
+				"simple_audio_generator",
+				"audio_side_sink",
+			]
+		},
+		"test_audio_part2": {
+			"headers": [
+				"customer",
+				"audio_side_src",
+				"audio_hw_sink",
+			]
+		},
+		"test_midi_audio_part1": {
+			"headers": [
+				"customer",
+				"test_midi_src",
+				"test_center_accel_midi_sink",
+			]
+		},
+		"test_midi_audio_part2": {
+			"headers": [
+				"customer",
+				"test_center_accel_midi_src",
+				"test_accel_midi_audio_conv",
+				"test_accel_center_audio_sink",
+			]
+		},
+		"test_midi_audio_part3": {
+			"headers": [
+				"customer",
+				"test_accel_center_audio_src",
+				"test_audio_sink_hw",
+			]
+		},
+		"test_center_net_order_src": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_center_audio_sink": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_audio_input": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_center_net_order_sink": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_center_audio_src": {
+			"headers": [
+				"customer",
+			]
+		},
+		
+		
+		"daw_midi_instrument": {
+			"headers": [
+				"customer",
+				"daw_midi_src",
+				"daw_midi_audio_conv",
+				"daw_audio_fx",
+			]
+		},
+		"daw_fx_channel": {
+			"headers": [
+				"customer",
+				"daw_audio_in",
+				"daw_audio_fx",
+			]
+		},
+		"daw_master_channel": {
+			"headers": [
+				"customer",
+				"daw_audio_in",
+				"daw_audio_fx",
+				"daw_audio_hw_out_src",
+			]
+		},
+		"daw_hw_sink": {
+			"headers": [
+				"daw_audio_out_sink",
+				"audio_hw_sink",
+			]
+		},
+		"daw_file_sink": {
+			"headers": [
+				"daw_audio_out_sink",
+				"audio_file_sink",
+			]
+		},
+		
 	},
 	
 }
