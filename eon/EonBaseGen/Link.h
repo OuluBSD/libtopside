@@ -24,6 +24,8 @@ public:
 		NODE_LINK,
 		CHAIN_LOOP,
 		VALID_NODE_LINK,
+		MACHINE_TOPCHAIN,
+		SYSTEM_MACHINE,
 		
 	} Type;
 	

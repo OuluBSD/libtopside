@@ -85,7 +85,7 @@ void GenerateEonBase() {
 	json_files.Add("TopChains.json");
 	json_files.Add("Machines.json");
 	json_files.Add("Systems.json");
-	json_files.Add("Impl.json");
+	//json_files.Add("Impl.json");
 	
 	
 	World world;

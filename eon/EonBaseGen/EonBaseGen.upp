@@ -26,7 +26,7 @@ file
 	Chains.json,
 	TopChains.json,
 	Machines.json,
-	Systems.json,
+	Systems.json charset "iso8859-15",
 	Impl.json;
 
 mainconfig

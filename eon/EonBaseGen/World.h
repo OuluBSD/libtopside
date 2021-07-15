@@ -32,12 +32,16 @@ public:
 	bool LoadNodeLinks(ObjectMap& m);
 	bool LoadChains(ObjectMap& m);
 	bool LoadTopChains(ObjectMap& m);
+	bool LoadMachines(ObjectMap& m);
+	bool LoadSystems(ObjectMap& m);
 	bool LoadBase(String key, ObjectMap& m);
 	bool LoadHeader(String key, ObjectMap& m);
 	bool LoadLoop(String key, ObjectMap& m);
 	bool LoadNodeLink(String key, ObjectMap& m);
 	bool LoadChain(String key, ObjectMap& m);
 	bool LoadTopChain(String key, ObjectMap& m);
+	bool LoadMachine(String key, ObjectMap& m);
+	bool LoadSystem(String key, ObjectMap& m);
 	
 };
 

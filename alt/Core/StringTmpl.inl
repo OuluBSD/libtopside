@@ -283,7 +283,7 @@ TMPL(bool) Insert(int begin, const T* str, int n) {
 TMPL(bool) operator==(const StringT& s) const {
 	if (s.GetCount() != GetCount())
 		return false;
-	return Compare(s.Begin(), Begin()) == 0;
+	return Compare(s.Begin(), Begin(), count) == 0;
 }
 
 TMPL(bool) operator!=(const StringT& s) const {

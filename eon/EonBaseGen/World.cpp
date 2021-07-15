@@ -78,6 +78,24 @@ bool World::LoadJSON(String json) {
 			if (!LoadTopChains(sub.GetMap()))
 				return false;
 		}
+		else if (key == "machines") {
+			if (!sub.IsMap()) {
+				OnError("Expected map");
+				return false;
+			}
+			
+			if (!LoadMachines(sub.GetMap()))
+				return false;
+		}
+		else if (key == "systems") {
+			if (!sub.IsMap()) {
+				OnError("Expected map");
+				return false;
+			}
+			
+			if (!LoadSystems(sub.GetMap()))
+				return false;
+		}
 		else TODO
 		
 	}
@@ -200,6 +218,44 @@ bool World::LoadTopChains(ObjectMap& m) {
 	return true;
 }
 
+bool World::LoadMachines(ObjectMap& m) {
+	//LOG(GetObjectTreeString(m));
+	
+	for(int i = 0; i < m.GetCount(); i++) {
+		Object& sub = m[i];
+		String key = m.GetKey(i);
+		
+		if (!sub.IsMap()) {
+			OnError("Expected map");
+			return false;
+		}
+		
+		if (!LoadMachine(key, sub.GetMap()))
+			return false;
+	}
+	
+	return true;
+}
+
+bool World::LoadSystems(ObjectMap& m) {
+	//LOG(GetObjectTreeString(m));
+	
+	for(int i = 0; i < m.GetCount(); i++) {
+		Object& sub = m[i];
+		String key = m.GetKey(i);
+		
+		if (!sub.IsMap()) {
+			OnError("Expected map");
+			return false;
+		}
+		
+		if (!LoadSystem(key, sub.GetMap()))
+			return false;
+	}
+	
+	return true;
+}
+
 bool World::LoadBase(String key, ObjectMap& m) {
 	//LOG(GetObjectTreeString(m));
 	
@@ -310,9 +366,8 @@ bool World::LoadHeader(String key, ObjectMap& m) {
 
 bool World::LoadLoop(String key, ObjectMap& m) {
 	
-	int i = nodes.Find(key);
-	if (i >= 0) {
-		OnError("Unit '" + key + "' already exists");
+	if (this->nodes.Find(key) >= 0) {
+		OnError("Node '" + key + "' already exists");
 		return false;
 	}
 	
@@ -363,6 +418,11 @@ bool World::LoadLoop(String key, ObjectMap& m) {
 bool World::LoadNodeLink(String key, ObjectMap& m) {
 	//LOG(GetObjectTreeString(m));
 	
+	if (this->nodes.Find(key) >= 0) {
+		OnError("Node '" + key + "' already exists");
+		return false;
+	}
+	
 	Object* from = m.TryFind("from");
 	Object* to   = m.TryFind("to");
 	if (!from || !from->IsString()) {OnError("Link '" + key + "' is missing from string");   return false;}
@@ -404,6 +464,11 @@ bool World::LoadNodeLink(String key, ObjectMap& m) {
 
 bool World::LoadChain(String key, ObjectMap& m) {
 	//LOG(GetObjectTreeString(m));
+	
+	if (this->nodes.Find(key) >= 0) {
+		OnError("Node '" + key + "' already exists");
+		return false;
+	}
 	
 	Object* m_loops = m.TryFind("loops");
 	Object* m_links = m.TryFind("links");
@@ -482,6 +547,11 @@ bool World::LoadChain(String key, ObjectMap& m) {
 bool World::LoadTopChain(String key, ObjectMap& m) {
 	//DUMP(key) LOG(GetObjectTreeString(m));
 	
+	if (this->nodes.Find(key) >= 0) {
+		OnError("Node '" + key + "' already exists");
+		return false;
+	}
+	
 	Object* m_nodes = m.TryFind("nodes");
 	Object* m_links = m.TryFind("links");
 	if (!m_nodes || !m_nodes->IsArray()) {OnError("Base '" + key + "' is missing nodes array"); return false;}
@@ -547,6 +617,162 @@ bool World::LoadTopChain(String key, ObjectMap& m) {
 	for (LinkItem& li : str_links) {
 		Link& link = links.Add();
 		link.type = Link::VALID_NODE_LINK;
+		link.from_node = loop_ptrs[li.from];
+		link.to_node = loop_ptrs[li.to];
+		
+		link.from_node->links.Add(&link);
+		link.to_node->links.Add(&link);
+	}
+	
+	return true;
+}
+
+bool World::LoadMachine(String key, ObjectMap& m) {
+	//DUMP(key) LOG(GetObjectTreeString(m));
+	
+	Object* m_topchains = m.TryFind("topchains");
+	Object* m_links = m.TryFind("links");
+	if (!m_topchains || !m_topchains->IsArray()) {OnError("Base '" + key + "' is missing topchains array"); return false;}
+	if (!m_links || !m_links->IsString()) {OnError("Base '" + key + "' is missing links string"); return false;}
+	ObjectArray& topchains = m_topchains->GetArray();
+	String links_str = m_links->Get<String>();
+	
+	Vector<Node*> loop_ptrs;
+	for(int i = 0; i < topchains.GetCount(); i++) {
+		Object& a_loop = topchains[i];
+		if (!a_loop.IsString()) {
+			OnError("Expected string in topchains array");
+			return false;
+		}
+		
+		String loop_key = a_loop.Get<String>();
+		int j = this->nodes.Find(loop_key);
+		if (j < 0) {
+			OnError("Header unit '" + loop_key + "' does not exist");
+			return false;
+		}
+		
+		Node& loop_node = this->nodes[j];
+		if (loop_node.type != Node::TOPCHAIN &&
+			loop_node.type != Node::CHAIN) {
+			OnError("Type of the node '" + loop_key + "' is not TOPCHAIN or CHAIN");
+			return false;
+		}
+		
+		loop_ptrs.Add(&loop_node);
+	}
+	
+	Vector<LinkItem> str_links;
+	if (!SolveLinks(links_str, str_links))
+		return false;
+	
+	for (LinkItem& li : str_links) {
+		if (li.from >= loop_ptrs.GetCount()) {
+			OnError("Too large 'from' array position " + IntStr(li.from));
+			return false;
+		}
+		
+		if (li.to >= loop_ptrs.GetCount()) {
+			OnError("Too large 'to' array position " + IntStr(li.to));
+			return false;
+		}
+	}
+	
+	
+	Node& node = this->nodes.Add(key);
+	node.type = Node::MACHINE;
+	
+	for (Node* loop : loop_ptrs) {
+		Link& link = links.Add();
+		link.type = Link::MACHINE_TOPCHAIN;
+		link.from_node = &node;
+		link.to_node = loop;
+		
+		node.links.Add(&link);
+		loop->links.Add(&link);
+	}
+	
+	for (LinkItem& li : str_links) {
+		Link& link = links.Add();
+		link.type = Link::MACHINE_TOPCHAIN;
+		link.from_node = loop_ptrs[li.from];
+		link.to_node = loop_ptrs[li.to];
+		
+		link.from_node->links.Add(&link);
+		link.to_node->links.Add(&link);
+	}
+	
+	return true;
+}
+
+bool World::LoadSystem(String key, ObjectMap& m) {
+	//DUMP(key) LOG(GetObjectTreeString(m));
+	
+	String cmp = "machines";
+	Object* m_machines = m.TryFind(cmp);
+	Object* m_links = m.TryFind("links");
+	if (!m_machines || !m_machines->IsArray()) {OnError("Base '" + key + "' is missing machines array"); return false;}
+	if (!m_links || !m_links->IsString()) {OnError("Base '" + key + "' is missing links string"); return false;}
+	ObjectArray& machines = m_machines->GetArray();
+	String links_str = m_links->Get<String>();
+	
+	Vector<Node*> loop_ptrs;
+	for(int i = 0; i < machines.GetCount(); i++) {
+		Object& a_loop = machines[i];
+		if (!a_loop.IsString()) {
+			OnError("Expected string in machines array");
+			return false;
+		}
+		
+		String loop_key = a_loop.Get<String>();
+		int j = this->nodes.Find(loop_key);
+		if (j < 0) {
+			OnError("Header unit '" + loop_key + "' does not exist");
+			return false;
+		}
+		
+		Node& loop_node = this->nodes[j];
+		if (loop_node.type != Node::MACHINE) {
+			OnError("Type of the node '" + loop_key + "' is not MACHINE");
+			return false;
+		}
+		
+		loop_ptrs.Add(&loop_node);
+	}
+	
+	Vector<LinkItem> str_links;
+	if (!SolveLinks(links_str, str_links))
+		return false;
+	
+	for (LinkItem& li : str_links) {
+		if (li.from >= loop_ptrs.GetCount()) {
+			OnError("Too large 'from' array position " + IntStr(li.from));
+			return false;
+		}
+		
+		if (li.to >= loop_ptrs.GetCount()) {
+			OnError("Too large 'to' array position " + IntStr(li.to));
+			return false;
+		}
+	}
+	
+	
+	Node& node = this->nodes.Add(key);
+	node.type = Node::MACHINE;
+	
+	for (Node* loop : loop_ptrs) {
+		Link& link = links.Add();
+		link.type = Link::SYSTEM_MACHINE;
+		link.from_node = &node;
+		link.to_node = loop;
+		
+		node.links.Add(&link);
+		loop->links.Add(&link);
+	}
+	
+	for (LinkItem& li : str_links) {
+		Link& link = links.Add();
+		link.type = Link::MACHINE_TOPCHAIN;
 		link.from_node = loop_ptrs[li.from];
 		link.to_node = loop_ptrs[li.to];
 		

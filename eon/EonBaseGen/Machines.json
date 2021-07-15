@@ -6,7 +6,21 @@
 				"test_remote_audio_gen_local_part2",
 				"test_remote_audio_gen_remote",
 			],
+			"links": "0221",
 		},
+		"test_client_server_chat_machine_part1": {
+			"topchains": [
+				"test_client_server_chat_part1",
+			],
+			"links": "",
+		},
+		"test_client_server_chat_machine_part2": {
+			"topchains": [
+				"test_client_server_chat_part2",
+			],
+			"links": "",
+		},
+		
 	},
 	
 }

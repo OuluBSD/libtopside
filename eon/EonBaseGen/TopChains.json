@@ -7,6 +7,17 @@
 			],
 			"links": "01",
 		},
+		"test_client_server_chat_part1": {
+			"nodes": [
+			],
+			"links": "",
+		},
+		"test_client_server_chat_part2": {
+			"nodes": [
+			],
+			"links": "",
+		},
+		
 		
 		
 		

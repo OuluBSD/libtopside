@@ -13,6 +13,7 @@ public:
 		LOOP,
 		CHAIN,
 		TOPCHAIN,
+		MACHINE,
 		VALID_NODE_LINK,
 	} Type;
 	
