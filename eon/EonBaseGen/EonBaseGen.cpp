@@ -106,6 +106,27 @@ void GenerateEonBase() {
 		
 	}
 	
+	LOG("Json load success!");
+	
+	
+	
+	/*
+	
+	Traverse (& dump)
+	- base connections (check integrity and that all are connected)
+	- loops
+	- valid links
+	- chains
+	- top chains
+	- machines
+	- systems
+	
+	*/
+	
+	if (!world.TraverseBases())
+		return;
+	
+	
 	LOG("success!");
 }
 

@@ -25,6 +25,8 @@ protected:
 	Type				type = INVALID;
 	byte				sink_count;
 	byte				src_count;
+	uint16				id;
+	uint16				smallest_link_id = 0xffff;
 	
 };
 

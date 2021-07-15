@@ -11,14 +11,15 @@ class World {
 		bool side;
 	};
 	
-	ArrayMap<String, Unit>				units;
+	ArrayMap<String, Unit>			units;
 	ArrayMap<String, Node>			nodes;
-	Array<Link>							links;
+	Array<Link>						links;
 	
 	void OnError(String msg);
 	
 	bool ParseValDev(String s, ValDevCls& vd, byte& count);
 	bool SolveLinks(String s, Vector<LinkItem>& v);
+	bool IsConnectedToId0(Unit& u);
 	
 public:
 	typedef World CLASSNAME;
@@ -42,6 +43,8 @@ public:
 	bool LoadTopChain(String key, ObjectMap& m);
 	bool LoadMachine(String key, ObjectMap& m);
 	bool LoadSystem(String key, ObjectMap& m);
+	
+	bool TraverseBases();
 	
 };
 

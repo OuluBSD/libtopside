@@ -272,7 +272,10 @@ bool World::LoadBase(String key, ObjectMap& m) {
 	if (!src  || !src->IsString())  {OnError("Base '" + key + "' is missing source string"); return false;}
 	if (!side || !side->IsString()) {OnError("Base '" + key + "' is missing side string");   return false;}
 	
+	uint16 id = units.GetCount();
 	Unit& unit = units.Add(key);
+	unit.id = id;
+	unit.smallest_link_id = id;
 	unit.type = Unit::BASE;
 	unit.key = key;
 	
@@ -341,7 +344,10 @@ bool World::LoadHeader(String key, ObjectMap& m) {
 	Object* base = m.TryFind("base");
 	if (!base || !base->IsString()) {OnError("Base '" + key + "' is missing base string");   return false;}
 	
+	uint16 id = units.GetCount();
 	Unit& unit = units.Add(key);
+	unit.id = id;
+	unit.smallest_link_id = id;
 	unit.type = Unit::HEADER;
 	
 	String base_str = base->Get<String>();
@@ -919,5 +925,115 @@ bool World::SolveLinks(String s, Vector<LinkItem>& v) {
 	return true;
 }
 
+bool 1() {
+	
+	for (Unit& unit0 : units.GetValues()) {
+		if (unit0.type != Unit::BASE)
+			continue;
+		
+		ValDevCls side0;
+		side0.dev = unit0.side_dev;
+		side0.val = unit0.side_src ? unit0.src.val : unit0.sink.val;
+		
+		bool any_connected = false;
+		
+		for (Unit& unit1 : units.GetValues()) {
+			if (&unit0 == &unit1)
+				continue;
+			
+			ValDevCls side1;
+			side1.dev = unit1.side_dev;
+			side1.val = unit1.side_src ? unit1.src.val : unit1.sink.val;
+			
+			bool less = unit0.id < unit1.id;
+			bool a = unit0.src == unit1.sink && (unit0.src != unit0.sink || less);
+			bool b = side0 == side1 && unit0.side_src != unit1.side_src && less;
+			if (a || b) {
+				Link& link = links.Add();
+				link.from_unit = &unit0;
+				link.to_unit = &unit1;
+				if (a)
+					link.type = Link::BASE_SRC_TO_SINK;
+				else
+					link.type = Link::BASE_SIDE_TO_SIDE;
+				
+				unit0.links.Add(&link);
+				unit1.links.Add(&link);
+				
+				unit0.smallest_link_id = min(unit0.smallest_link_id, unit1.id);
+				
+				any_connected = true;
+			}
+		}
+		
+		if (!any_connected) {
+			for (Link* l : unit0.links) {
+				if (l->type == Link::BASE_SRC_TO_SINK ||
+					l->type == Link::BASE_SIDE_TO_SIDE) {
+					any_connected = true;
+					break;
+				}
+			}
+			
+			if (!any_connected) {
+				OnError("Unit '" + unit0.key + "' cannot connect any other unit");
+				return false;
+			}
+		}
+		
+		LOG("Unit '" + unit0.key + "' is ok");
+	}
+	
+	for (Unit& unit0 : units.GetValues()) {
+		if (unit0.type != Unit::BASE)
+			continue;
+		
+		if (!IsConnectedToId0(unit0)) {
+			LOG("Unit '" + unit0.key + "' is not connected to first unit");
+		}
+	}
+	
+	int dbg_i = 0;
+	for (Unit& unit0 : units.GetValues()) {
+		if (unit0.type != Unit::BASE)
+			continue;
+		
+		LOG(dbg_i++ << ": " << unit0.key);
+		int dbg_j = 0;
+		for (Link* link : unit0.links) {
+			if (link->type == Link::BASE_SRC_TO_SINK) {
+				Unit* linked = link->from_unit == &unit0 ? link->to_unit : link->from_unit;
+				LOG("\t" << dbg_j++ << ": serial " << linked->key);
+			}
+			else if (link->type == Link::BASE_SIDE_TO_SIDE) {
+				Unit* linked = link->from_unit == &unit0 ? link->to_unit : link->from_unit;
+				LOG("\t" << dbg_j++ << ": parallel " << linked->key);
+			}
+		}
+	}
+	
+	return true;
+}
+
+bool World::IsConnectedToId0(Unit& u) {
+	uint16 id = u.id;
+	Unit* cur = &u;
+	while (cur) {
+		Unit* next = 0;
+		for (Link* link : cur->links) {
+			if (link->type == Link::BASE_SRC_TO_SINK) {
+				Unit* linked = link->from_unit == cur ? link->to_unit : link->from_unit;
+				if (linked->smallest_link_id < id) {
+					next = linked;
+					id = linked->smallest_link_id;
+				}
+			}
+		}
+		if (!next)
+			break;
+		cur = next;
+	}
+	return id == 0;
+}
 
 NAMESPACE_EONGEN_END

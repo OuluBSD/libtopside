@@ -26,9 +26,11 @@
 		},
 		"test_center_accel_midi_sink": {
 			"base": "center_accel_midi_sink",
+			
 		},
 		"test_center_accel_midi_src": {
 			"base": "center_accel_midi_src",
+			
 		},
 		
 		

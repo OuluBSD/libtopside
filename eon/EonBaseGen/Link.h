@@ -16,6 +16,8 @@ public:
 		
 		// Unit to Unit
 		BASE_UNIT,
+		BASE_SRC_TO_SINK,
+		BASE_SIDE_TO_SIDE,
 		
 		// Node to Unit
 		LOOP_UNIT,
@@ -33,11 +35,11 @@ public:
 	Type		type = INVALID;
 	union {
 		Unit*		from_unit;
-		Node*	from_node;
+		Node*		from_node;
 	};
 	union {
 		Unit*		to_unit;
-		Node*	to_node;
+		Node*		to_node;
 	};
 	
 	
