@@ -4,6 +4,15 @@
 			"base": "order_src",
 			
 		},
+		"accel_customer_handler": {
+			"base": "center_accel_order_side",
+			
+		},
+		"accel_customer": {
+			"base": "accel_order_src",
+			
+		},
+		
 		"simple_audio_generator": {
 			"base": "audio_src",
 			
@@ -24,12 +33,32 @@
 			"base": "audio_sink",
 			
 		},
+		"test_midi_src": {
+			"base": "accel_order_src",
+			
+		},
 		"test_center_accel_midi_sink": {
 			"base": "center_accel_midi_sink",
 			
 		},
 		"test_center_accel_midi_src": {
 			"base": "center_accel_midi_src",
+			
+		},
+		"test_accel_midi_audio_conv": {
+			"base": "accel_midi_audio_conv",
+			
+		},
+		"test_accel_center_audio_sink": {
+			"base": "accel_center_audio_src",
+			
+		},
+		"test_accel_center_audio_src": {
+			"base": "accel_center_audio_sink",
+			
+		},
+		"test_audio_sink_hw": {
+			"base": "audio_sink",
 			
 		},
 		

@@ -18,16 +18,30 @@ protected:
 	friend class World;
 	Vector<Link*>		links;
 	String				key;
-	ValDevCls			sink;
-	ValDevCls			src;
-	DevCls				side_dev;
-	bool				side_src;
 	Type				type = INVALID;
-	byte				sink_count;
-	byte				src_count;
 	uint16				id;
 	uint16				smallest_link_id = 0xffff;
 	
+	ValDevCls			sink;
+	ValDevCls			src;
+	ValDevCls			side;
+	bool				side_src;
+	bool				accept_side;
+	byte				sink_count;
+	byte				src_count;
+	byte				side_count;
+	
+	
+	void CopyType(const Unit& u) {
+		sink = u.sink;
+		src = u.src;
+		side = u.side;
+		side_src = u.side_src;
+		accept_side = u.accept_side;
+		sink_count = u.sink_count;
+		src_count = u.src_count;
+		side_count = u.side_count;
+	}
 };
 
 

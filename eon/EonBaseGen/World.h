@@ -18,6 +18,7 @@ class World {
 	void OnError(String msg);
 	
 	bool ParseValDev(String s, ValDevCls& vd, byte& count);
+	bool ParseValDevSide(String s, Unit& u);
 	bool SolveLinks(String s, Vector<LinkItem>& v);
 	bool IsConnectedToId0(Unit& u);
 	
@@ -44,7 +45,8 @@ public:
 	bool LoadMachine(String key, ObjectMap& m);
 	bool LoadSystem(String key, ObjectMap& m);
 	
-	bool TraverseBases();
+	bool TraverseUnits(Unit::Type type);
+	bool TraverseLoops();
 	
 };
 

@@ -22,7 +22,7 @@ protected:
 	
 	Vector<Link*>		links;
 	Type				type = INVALID;
-	
+	String				key;
 	
 };
 

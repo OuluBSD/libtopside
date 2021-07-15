@@ -123,7 +123,11 @@ void GenerateEonBase() {
 	
 	*/
 	
-	if (!world.TraverseBases())
+	if (!world.TraverseUnits(Unit::BASE))
+		return;
+	if (!world.TraverseUnits(Unit::HEADER))
+		return;
+	if (!world.TraverseLoops())
 		return;
 	
 	

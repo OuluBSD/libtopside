@@ -281,52 +281,7 @@ bool World::LoadBase(String key, ObjectMap& m) {
 	
 	if (!ParseValDev(sink->Get<String>(), unit.sink, unit.sink_count)) return false;
 	if (!ParseValDev(src->Get<String>(),  unit.src, unit.src_count)) return false;
-	
-	
-	String side_str = side->Get<String>();
-	if (side_str == "src") {
-		unit.side_src = true;
-		unit.side_dev = unit.src.dev;
-	}
-	else if (side_str == "sink") {
-		unit.side_src = false;
-		unit.side_dev = unit.sink.dev;
-	}
-	else {
-		CParser p(side_str);
-		if (!p.IsId()) {
-			OnError("Expected id in '" + side_str + "'");
-			return false;
-		}
-		String dev_str = p.ReadId();
-		unit.side_dev =  DevCls::Get(dev_str);
-		if (unit.side_dev == DevCls::INVALID) {
-			OnError("Invalid device class in '" + side_str + "'");
-			return false;
-		}
-		
-		if (!p.Char('-')) {
-			OnError("Expected '-' in '" + side_str + "'");
-			return false;
-		}
-		
-		if (!p.IsId()) {
-			OnError("Expected id in '" + side_str + "'");
-			return false;
-		}
-		String side_str_part = p.ReadId();
-		
-		if (side_str_part == "src") {
-			unit.side_src = true;
-		}
-		else if (side_str_part == "sink") {
-			unit.side_src = false;
-		}
-		else {
-			OnError("Unexpected side id '" + side_str_part + "'");
-			return false;
-		}
-	}
+	if (!ParseValDevSide(side->Get<String>(), unit)) return false;
 	
 	
 	return true;
@@ -348,6 +303,7 @@ bool World::LoadHeader(String key, ObjectMap& m) {
 	Unit& unit = units.Add(key);
 	unit.id = id;
 	unit.smallest_link_id = id;
+	unit.key = key;
 	unit.type = Unit::HEADER;
 	
 	String base_str = base->Get<String>();
@@ -359,6 +315,9 @@ bool World::LoadHeader(String key, ObjectMap& m) {
 	}
 	
 	Unit& base_unit = units[i];
+	
+	unit.CopyType(base_unit);
+	
 	Link& link = links.Add();
 	link.type = Link::BASE_UNIT;
 	link.from_unit = &unit;
@@ -390,13 +349,13 @@ bool World::LoadLoop(String key, ObjectMap& m) {
 		}
 		
 		String header_key = a_header.Get<String>();
-		i = units.Find(header_key);
-		if (i < 0) {
+		int j = units.Find(header_key);
+		if (j < 0) {
 			OnError("Header unit '" + header_key + "' does not exist");
 			return false;
 		}
 		
-		Unit& header_unit = units[i];
+		Unit& header_unit = units[j];
 		if (header_unit.type != Unit::HEADER) {
 			OnError("Type of the unit '" + header_key + "' is not HEADER");
 			return false;
@@ -406,6 +365,7 @@ bool World::LoadLoop(String key, ObjectMap& m) {
 	}
 	
 	Node& node = nodes.Add(key);
+	node.key = key;
 	node.type = Node::LOOP;
 	
 	for (Unit* header : header_ptrs) {
@@ -453,6 +413,7 @@ bool World::LoadNodeLink(String key, ObjectMap& m) {
 	
 	
 	Node& node = nodes.Add(key);
+	node.key = key;
 	node.type = Node::VALID_NODE_LINK;
 	
 	
@@ -525,6 +486,7 @@ bool World::LoadChain(String key, ObjectMap& m) {
 	
 	
 	Node& node = nodes.Add(key);
+	node.key = key;
 	node.type = Node::CHAIN;
 	
 	for (Node* loop : loop_ptrs) {
@@ -608,6 +570,7 @@ bool World::LoadTopChain(String key, ObjectMap& m) {
 	
 	
 	Node& node = this->nodes.Add(key);
+	node.key = key;
 	node.type = Node::TOPCHAIN;
 	
 	for (Node* loop : loop_ptrs) {
@@ -686,6 +649,7 @@ bool World::LoadMachine(String key, ObjectMap& m) {
 	
 	
 	Node& node = this->nodes.Add(key);
+	node.key = key;
 	node.type = Node::MACHINE;
 	
 	for (Node* loop : loop_ptrs) {
@@ -764,6 +728,7 @@ bool World::LoadSystem(String key, ObjectMap& m) {
 	
 	
 	Node& node = this->nodes.Add(key);
+	node.key = key;
 	node.type = Node::MACHINE;
 	
 	for (Node* loop : loop_ptrs) {
@@ -853,6 +818,35 @@ bool World::ParseValDev(String s, ValDevCls& vd, byte& count) {
 	return true;
 }
 
+bool World::ParseValDevSide(String s, Unit& u) {
+	if (s.IsEmpty()) {
+		u.accept_side = false;
+		return true;
+	}
+	
+	CParser p(s);
+	if (p.Id("src")) {
+		u.accept_side = true;
+		u.side_src = true;
+	}
+	else if (p.Id("sink")) {
+		u.accept_side = true;
+		u.side_src = false;
+	}
+	else {
+		OnError("Unexpected side string '" + s + "'");
+		return false;
+	}
+	
+	if (!p.Char('-')) {
+		OnError("Expected '-' in side string '" + s + "'");
+		return false;
+	}
+	
+	int col = p.GetCharPos();
+	return ParseValDev(s.Mid(col), u.side, u.side_count);
+}
+
 bool World::SolveLinks(String s, Vector<LinkItem>& v) {
 	String err;
 	enum {BEGINNING, FROM, TO, SIDE, FINISH};
@@ -925,34 +919,41 @@ bool World::SolveLinks(String s, Vector<LinkItem>& v) {
 	return true;
 }
 
-bool 1() {
+bool World::TraverseUnits(Unit::Type type) {
 	
 	for (Unit& unit0 : units.GetValues()) {
-		if (unit0.type != Unit::BASE)
+		if (unit0.type != type)
 			continue;
-		
-		ValDevCls side0;
-		side0.dev = unit0.side_dev;
-		side0.val = unit0.side_src ? unit0.src.val : unit0.sink.val;
 		
 		bool any_connected = false;
 		
 		for (Unit& unit1 : units.GetValues()) {
-			if (&unit0 == &unit1)
+			if (&unit0 == &unit1 || unit1.type != type)
 				continue;
 			
-			ValDevCls side1;
-			side1.dev = unit1.side_dev;
-			side1.val = unit1.side_src ? unit1.src.val : unit1.sink.val;
+			DevCls match_dev0 = unit1.side_src ? unit0.sink.dev : unit0.src.dev;
+			DevCls match_dev1 = unit0.side_src ? unit1.sink.dev : unit1.src.dev;
+			
+			/*if (unit0.key == "center_accel_order_side" &&
+				unit1.key == "accel_order_src") {
+				LOG("");
+			}*/
 			
 			bool less = unit0.id < unit1.id;
-			bool a = unit0.src == unit1.sink && (unit0.src != unit0.sink || less);
-			bool b = side0 == side1 && unit0.side_src != unit1.side_src && less;
-			if (a || b) {
+			bool is_series = unit0.src == unit1.sink && (unit0.src != unit0.sink || less);
+			bool is_parallel =
+				unit0.accept_side &&
+				unit1.accept_side &&
+				unit0.side.val == unit1.side.val &&
+				match_dev0 == unit1.side.dev &&
+				match_dev1 == unit0.side.dev &&
+				unit0.side_src != unit1.side_src &&
+				less;
+			if (is_series || is_parallel) {
 				Link& link = links.Add();
 				link.from_unit = &unit0;
 				link.to_unit = &unit1;
-				if (a)
+				if (is_series)
 					link.type = Link::BASE_SRC_TO_SINK;
 				else
 					link.type = Link::BASE_SIDE_TO_SIDE;
@@ -961,6 +962,7 @@ bool 1() {
 				unit1.links.Add(&link);
 				
 				unit0.smallest_link_id = min(unit0.smallest_link_id, unit1.id);
+				unit1.smallest_link_id = min(unit1.smallest_link_id, unit0.id);
 				
 				any_connected = true;
 			}
@@ -985,7 +987,7 @@ bool 1() {
 	}
 	
 	for (Unit& unit0 : units.GetValues()) {
-		if (unit0.type != Unit::BASE)
+		if (unit0.type != type)
 			continue;
 		
 		if (!IsConnectedToId0(unit0)) {
@@ -995,7 +997,7 @@ bool 1() {
 	
 	int dbg_i = 0;
 	for (Unit& unit0 : units.GetValues()) {
-		if (unit0.type != Unit::BASE)
+		if (unit0.type != type)
 			continue;
 		
 		LOG(dbg_i++ << ": " << unit0.key);
@@ -1016,13 +1018,17 @@ bool 1() {
 }
 
 bool World::IsConnectedToId0(Unit& u) {
+	Unit::Type type = u.type;
+	
 	uint16 id = u.id;
 	Unit* cur = &u;
 	while (cur) {
 		Unit* next = 0;
 		for (Link* link : cur->links) {
-			if (link->type == Link::BASE_SRC_TO_SINK) {
+			if (link->type == Link::BASE_SRC_TO_SINK ||
+				link->type == Link::BASE_SIDE_TO_SIDE) {
 				Unit* linked = link->from_unit == cur ? link->to_unit : link->from_unit;
+				ASSERT(linked->type == type);
 				if (linked->smallest_link_id < id) {
 					next = linked;
 					id = linked->smallest_link_id;
@@ -1033,7 +1039,41 @@ bool World::IsConnectedToId0(Unit& u) {
 			break;
 		cur = next;
 	}
-	return id == 0;
+	
+	uint16 first_id = 0xffff;
+	for (Unit& unit0 : units.GetValues()) {
+		if (unit0.type != type)
+			continue;
+		first_id = unit0.id;
+		break;
+	}
+	ASSERT(first_id != 0xffff);
+	
+	return id == first_id;
+}
+
+bool World::TraverseLoops() {
+	
+	int dbg_i = 0;
+	for (Node& node0 : nodes.GetValues()) {
+		if (node0.type != Node::LOOP)
+			continue;
+		
+		LOG(dbg_i++ << ": " << node0.key);
+		
+		int dbg_j = 0;
+		for (Link* link : node0.links) {
+			if (link->type != Link::LOOP_UNIT)
+				continue;
+			
+			Unit* linked = link->to_unit;
+			
+			LOG("\t" << dbg_j++ << ": " << linked->key);
+			
+		}
+	}
+	
+	return true;
 }
 
 NAMESPACE_EONGEN_END
