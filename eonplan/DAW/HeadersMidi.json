@@ -1,0 +1,14 @@
+{
+	"headers": {
+		
+		
+		"daw_midi_src": {
+			"base": "center_accel_midi_sink",
+			
+		},
+		"daw_midi_audio_conv": {
+			"base": "accel_midi_audio_conv",
+			
+		},
+	},
+}

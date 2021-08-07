@@ -1,0 +1,11 @@
+{
+	"chains": {
+		"test_audio_chain": {
+			"loops": [
+				"test_audio_part1",
+				"test_audio_part2",
+			],
+			"links": "01",
+		},
+	},
+}

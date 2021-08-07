@@ -79,7 +79,7 @@ bool MidiFormat::IsSame(const MidiFormat& fmt) const {
 	if (IsVideo()) return vid.x(y); \
 	if (IsMidi())  return mid.x(y); \
 	PANIC("Invalid type");
-#define PROXY_CHK(x,y) ASSERT(IsValid()) PROXY(x,y)
+#define PROXY_CHK(x,y) ASSERT(IsValid()); PROXY(x,y)
 
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";

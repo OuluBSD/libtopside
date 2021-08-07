@@ -1,0 +1,17 @@
+{
+	"chains": {
+		"daw_4": {
+			"loops": [
+				"daw_midi_instrument",
+				"daw_midi_instrument",
+				"daw_midi_instrument",
+				"daw_midi_instrument",
+				"daw_fx_channel",
+				"daw_master_channel",
+				"daw_hw_sink",
+			],
+			"links": "04s 142434 0515253545 56",
+		},
+	},
+	
+}

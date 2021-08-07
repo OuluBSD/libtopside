@@ -166,7 +166,7 @@ class PacketValue :
 	off32				offset;
 	double				time;
 	PacketId			id = 0;
-	TypeCls				custom_data = 0;
+	TypeCls				custom_data;
 	
 public:
 	using Pool = RecyclerPool<PacketValue>;
@@ -175,7 +175,7 @@ public:
 	
 	
 	RTTI_DECL0(PacketValue);
-	PacketValue(off32 offset) : offset(offset) {}
+	PacketValue(off32 offset) : offset(offset) {custom_data = AsVoidTypeCls();}
 	~PacketValue() {data.Clear(); StopTracking(this);}
 	
 	Vector<byte>&			Data() {return data;}
@@ -183,7 +183,7 @@ public:
 	void					SetFormat(Format fmt) {this->fmt = fmt;}
 	void					SetTime(double seconds) {time = seconds;}
 	void					SetTrackingId(PacketId i) {id = i;}
-	void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = 0;}
+	void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = AsVoidTypeCls();}
 	void					SetOffset(off32 o) {offset = o;}
 	
 	const Vector<byte>&		GetData() const {return data;}
@@ -211,7 +211,7 @@ public:
 	}
 	
 	template <class T> bool IsData() {return custom_data == AsTypeCls<T>();}
-	bool IsCustomData() const {return custom_data != 0;}
+	bool IsCustomData() const {return custom_data != AsVoidTypeCls();}
 	
 	template <class T> T& GetData() {
 		ASSERT(custom_data == AsTypeCls<T>());

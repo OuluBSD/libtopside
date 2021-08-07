@@ -33,13 +33,13 @@
 			"src":			"center-audio",
 		},
 		"center_accel_midi_src": {
-			"sink":			"accel-order",
-			"side":			"sink-center-midi",
-			"src":			"accel-midi",
+			"sink":			"center-midi",
+			"side":			"src-accel-midi",
+			"src":			"center-receipt",
 		},
 		"center_accel_midi_sink": {
 			"sink":			"accel-order",
-			"side":			"",
+			"side":			"sink-center-midi",
 			"src":			"accel-midi",
 		},
 		

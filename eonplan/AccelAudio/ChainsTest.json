@@ -1,0 +1,19 @@
+{
+	"chains": {
+		"test_midi_audio_chain": {
+			"loops": [
+				"test_midi_audio_part1",
+				"test_midi_audio_part2",
+				"test_midi_audio_part3",
+			],
+			"links": "0112",
+		},
+		"test_midi_audio_topchain_part1": {
+			"loops": [
+				"test_midi_audio_part1",
+				"test_midi_audio_part2",
+			],
+			"links": "01",
+		},
+	},
+}

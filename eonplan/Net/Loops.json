@@ -1,0 +1,29 @@
+{
+	"loops": {
+		"test_center_net_order_src": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_center_audio_sink": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_audio_input": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_center_net_order_sink": {
+			"headers": [
+				"customer",
+			]
+		},
+		"test_net_center_audio_src": {
+			"headers": [
+				"customer",
+			]
+		},
+	},
+}

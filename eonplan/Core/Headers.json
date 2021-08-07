@@ -1,0 +1,16 @@
+{
+	"headers": {
+		"customer": {
+			"base": "order_src",
+			
+		},
+		"accel_customer_handler": {
+			"base": "center_accel_order_side",
+			
+		},
+		"accel_customer": {
+			"base": "accel_order_src",
+			
+		},
+	},
+}

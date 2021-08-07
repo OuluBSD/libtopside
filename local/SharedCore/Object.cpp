@@ -272,5 +272,41 @@ String GetObjectTreeString(const Object& v, String key, int indent) {
 
 
 
+
+
+#ifdef UPP_VERSION
+Object ObjectFromValue(const Value& v) {
+	#define SIMPLE(x) else if (type == GetValueTypeNo<x>()) return v.Get<x>();
+	dword type = v.GetType();
+	if (type == VALUEMAP_V) {
+		Object o;
+		ObjectMap& om = o.CreateMap();
+		const ValueMap& m = v;
+		for(int i = 0; i < m.GetCount(); i++)
+			om.Add(m.GetKey(i), ObjectFromValue(m.GetValue(i)));
+		return o;
+	}
+	else if (type == VALUEARRAY_V) {
+		Object o;
+		ObjectArray& oa = o.CreateArray();
+		const ValueArray& a = v;
+		for(int i = 0; i < a.GetCount(); i++)
+			oa.Add(ObjectFromValue(a[i]));
+		return o;
+	}
+	SIMPLE(Time)
+	SIMPLE(Date)
+	SIMPLE(WString)
+	SIMPLE(String)
+	SIMPLE(double)
+	SIMPLE(int64)
+	SIMPLE(int)
+	SIMPLE(bool)
+	
+	return Object();
+}
+
+#endif
+
 END_UPP_NAMESPACE
 

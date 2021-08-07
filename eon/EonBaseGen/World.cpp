@@ -825,6 +825,7 @@ bool World::ParseValDevSide(String s, Unit& u) {
 	}
 	
 	CParser p(s);
+	const char* begin = p.GetPtr();
 	if (p.Id("src")) {
 		u.accept_side = true;
 		u.side_src = true;
@@ -843,7 +844,8 @@ bool World::ParseValDevSide(String s, Unit& u) {
 		return false;
 	}
 	
-	int col = p.GetCharPos();
+	const char* cur = p.GetPtr();
+	int col = cur - begin;
 	return ParseValDev(s.Mid(col), u.side, u.side_count);
 }
 
@@ -1053,7 +1055,6 @@ bool World::IsConnectedToId0(Unit& u) {
 }
 
 bool World::TraverseLoops() {
-	
 	int dbg_i = 0;
 	for (Node& node0 : nodes.GetValues()) {
 		if (node0.type != Node::LOOP)
@@ -1061,15 +1062,38 @@ bool World::TraverseLoops() {
 		
 		LOG(dbg_i++ << ": " << node0.key);
 		
+		Unit* first = 0;
+		Unit* prev = 0;
 		int dbg_j = 0;
 		for (Link* link : node0.links) {
 			if (link->type != Link::LOOP_UNIT)
 				continue;
 			
-			Unit* linked = link->to_unit;
 			
+			Unit* linked = link->to_unit;
 			LOG("\t" << dbg_j++ << ": " << linked->key);
 			
+			if (prev) {
+				if (prev->src != linked->sink) {
+					OnError("Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + linked->key + "' (" + prev->src.ToString() + " vs " + linked->sink.ToString() + ")");
+					return false;
+				}
+				prev = linked;
+			}
+			else {
+				first = linked;
+				prev = linked;
+			}
+		}
+		
+		if (!first) {
+			OnError("internal error: empty loop");
+			return false;
+		}
+		
+		if (prev->src != first->sink) {
+			OnError("Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + first->key + "' (" + prev->src.ToString() + " vs " + first->sink.ToString() + ")");
+			return false;
 		}
 	}
 	

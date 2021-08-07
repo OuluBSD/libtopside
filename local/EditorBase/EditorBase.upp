@@ -1,0 +1,17 @@
+description "\377B0,0,128";
+
+uses
+	LocalCtrl;
+
+file
+	EditorBase.h,
+	EditorBase.cpp,
+	EditorBottom.cpp,
+	FindInFiles.cpp,
+	Bottom.h,
+	Layouts.lay,
+	Calculator.cpp,
+	RightTabs.cpp,
+	ProjectEditor.h,
+	ProjectEditor.cpp;
+

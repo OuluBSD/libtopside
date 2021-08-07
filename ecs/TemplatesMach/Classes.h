@@ -766,12 +766,14 @@ static_assert(std::is_trivially_constructible<SampleBase<SoundSample>>::value ==
 
 
 struct DevBase : RTTIBase {
-	TypeCls dev_spec = 0;
+	TypeCls dev_spec;
 	
 public:
 	RTTI_DECL0(DevBase)
 	
-	void Clear() {dev_spec = 0;}
+	DevBase() {dev_spec = AsVoidTypeCls();}
+	
+	void Clear() {dev_spec = AsVoidTypeCls();}
 	void SetDevSpec(TypeCls t) {dev_spec = t;}
 	void operator=(const DevBase& b) {dev_spec = b.dev_spec;}
 	
@@ -781,9 +783,9 @@ public:
 	}
 	
 	TypeCls GetDevSpec() const {return dev_spec;}
-	bool IsDeviceSpecific() const {return dev_spec != 0;}
+	bool IsDeviceSpecific() const {return dev_spec != AsVoidTypeCls();}
 	bool IsSame(const DevBase& f) const {return dev_spec == f.dev_spec;}
-	bool IsValid() const {return dev_spec != 0;}
+	bool IsValid() const {return dev_spec != AsVoidTypeCls();}
 	
 	String ToString() const;
 };

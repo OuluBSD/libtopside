@@ -1,0 +1,41 @@
+{
+	"loops": {
+		"daw_midi_instrument": {
+			"headers": [
+				"customer",
+				"daw_midi_src",
+				"daw_midi_audio_conv",
+				"daw_audio_fx",
+			]
+		},
+		"daw_fx_channel": {
+			"headers": [
+				"customer",
+				"daw_audio_in",
+				"daw_audio_fx",
+			]
+		},
+		"daw_master_channel": {
+			"headers": [
+				"customer",
+				"daw_audio_in",
+				"daw_audio_fx",
+				"daw_audio_hw_out_src",
+			]
+		},
+		"daw_hw_sink": {
+			"headers": [
+				"daw_audio_out_sink",
+				"audio_hw_sink",
+			]
+		},
+		"daw_file_sink": {
+			"headers": [
+				"daw_audio_out_sink",
+				"audio_file_sink",
+			]
+		},
+		
+	},
+	
+}

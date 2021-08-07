@@ -17,6 +17,7 @@ struct TypeCls : std::reference_wrapper<const std::type_info> {
 	void operator=(const RTTI& t);
 	hash_t GetHashValue() const {return ti::get().hash_code();}
 	bool operator==(const TypeCls& t) const {return GetHashValue() == t.GetHashValue();}
+	bool operator!=(const TypeCls& t) const {return GetHashValue() != t.GetHashValue();}
 };
 
 struct RTTI {

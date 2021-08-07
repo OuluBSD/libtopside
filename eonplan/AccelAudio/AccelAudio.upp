@@ -1,0 +1,12 @@
+description "\377B0,0,226";
+
+uses
+	Core;
+
+file
+	Headers.json,
+	HeadersTest.json,
+	LoopsMidiAudioTest.json,
+	ChainsTest.json,
+	TopChainsTest.json;
+

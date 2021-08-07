@@ -1,0 +1,25 @@
+{
+	"loops": {
+		"test_audio": {
+			"headers": [
+				"customer",
+				"simple_audio_generator",
+				"audio_hw_sink",
+			]
+		},
+		"test_audio_part1": {
+			"headers": [
+				"customer",
+				"simple_audio_generator",
+				"audio_side_sink",
+			]
+		},
+		"test_audio_part2": {
+			"headers": [
+				"customer",
+				"audio_side_src",
+				"audio_hw_sink",
+			]
+		},
+	},
+}

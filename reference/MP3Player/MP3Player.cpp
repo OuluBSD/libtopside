@@ -8,7 +8,7 @@ int loops;
 
 
 
-bool MP3PlayerInitializer() {
+bool AppInitializer() {
 	SetCoutLog();
 	
 	CommandLineArguments cmd;
@@ -72,7 +72,7 @@ void Main() {
 	
 	//BreakRefAdd(0x80AE32468);
 	
-	if (!MP3PlayerInitializer())
+	if (!AppInitializer())
 		Exit(1);
 	
 	String eon_file;

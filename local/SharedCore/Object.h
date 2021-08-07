@@ -11,6 +11,10 @@ const dword VALUE_ARRAY_AND_MAP_V   = 13;
 class Object;
 
 
+#ifdef UPP_VERSION
+Object ObjectFromValue(const Value& v);
+#endif
+
 template <class T>
 dword ObjectTypeNo(const T *)                 { return StaticTypeNo<T>() + 0x8000000; }
 
@@ -23,7 +27,7 @@ template<> inline dword ObjectTypeNo(const String*)  { return STRING_V; }
 template<> inline dword ObjectTypeNo(const WString*) { return WSTRING_V; }
 template<> inline dword ObjectTypeNo(const Date*)    { return DATE_V; }
 template<> inline dword ObjectTypeNo(const Time*)    { return TIME_V; }
-template<> inline dword ObjectTypeNo(const Object*)   { return VALUE_V; }
+template<> inline dword ObjectTypeNo(const Object*)  { return VALUE_V; }
 
 
 template <class T, dword type = UNKNOWN_V, class B = EmptyClass>
@@ -93,6 +97,10 @@ public:
 	Object(const char* str) {String& s = Create<String>(); s = str;}
 	Object(const Nuller&) {}
 	template <class T> Object(const T& o) {obj.WrapObject(new ObjectTemplate<T>(o));}
+	
+	#ifdef UPP_VERSION
+	Object(const Value& v) {*this = ObjectFromValue(v);}
+	#endif
 	
 	//void Visit(RuntimeVisitor& vis) {if (obj) obj->Visit(vis);}
 	void Clear() {obj.Clear();}

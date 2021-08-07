@@ -301,9 +301,9 @@ void SimpleBufferedValue::DropBuffer() {
 	
 	// Find sink with lowest read position
 	auto sink_iter = sink_offsets.GetValues().begin();
-	off32 end_offset_min = sink_iter();
+	off32 end_offset_min = *sink_iter;
 	for(++sink_iter; sink_iter; ++sink_iter)
-		end_offset_min = std::min(end_offset_min, sink_iter());
+		end_offset_min = std::min(end_offset_min, *sink_iter);
 	
 	int rem_count = 0;
 	auto pkt_iter = buf.begin();

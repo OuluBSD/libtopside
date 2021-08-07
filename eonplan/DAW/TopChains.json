@@ -1,0 +1,19 @@
+{
+	"topchains": {
+		"daw_hw_out": {
+			"nodes": [
+				"daw_4",
+				"daw_hw_sink",
+			],
+			"links": "01s",
+		},
+		"daw_file_out": {
+			"nodes": [
+				"daw_4",
+				"daw_file_sink",
+			],
+			"links": "01s",
+		},
+	},
+	
+}

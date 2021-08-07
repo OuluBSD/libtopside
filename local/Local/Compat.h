@@ -9,6 +9,14 @@ extern char **environ;
 
 #ifdef UPP_VERSION
 
+#if __GNUC__
+	#define UNREACHABLE __builtin_unreachable()
+#endif
+
+#ifdef _MSC_VER
+	#define UNREACHABLE __assume(0)
+#endif
+
 #define MemoryCompare memcmp
 #define MemoryCopy    memcpy
 #define MemoryMove    memmove
@@ -22,6 +30,7 @@ extern char **environ;
 #define COUTLOG(x) {::UPP::String ____s; ____s << x; LOG(____s); Cout() << ____s << "\n";}
 #define TODO {Panic("TODO " __FILE__ ":" + UPP::IntStr(__LINE__)); throw UPP::Exc("TODO");}
 #define SYNON_UNION_2(type, name0, name1) union {type name0; type name1;};
+#define PANIC(msg) Panic(msg); UNREACHABLE
 
 
 NAMESPACE_UPP_BEGIN
@@ -99,6 +108,8 @@ template<> inline int64 ToInt(const double& o) {return (int64)o;}
 template<> inline int64 ToInt(const String& o) {return StrInt(o);}
 template<> inline int64 ToInt(const WString& o) {return StrInt(o.ToString());}
 template<> inline int64 ToInt(const Value& o) {return (int64)o;}
+template<> inline int64 ToInt(const Date& o) {return (int64)o.Get();}
+template<> inline int64 ToInt(const Time& o) {return (int64)o.Get();}
 
 template <class T> inline double ToDouble(const T& o) {return o.ToDouble();}
 template<> inline double ToDouble(const bool& o) {return (double)o;}
@@ -110,7 +121,8 @@ template<> inline double ToDouble(const float& o) {return (double)o;}
 template<> inline double ToDouble(const double& o) {return (double)o;}
 template<> inline double ToDouble(const String& o) {return StrDbl(o);}
 template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));}
-template<> inline double ToDouble(const Value& o) {return o;}
+template<> inline double ToDouble(const Date& o) {return o.Get();}
+template<> inline double ToDouble(const Time& o) {return o.Get();}
 
 
 using NullOpt = std::nullopt_t;

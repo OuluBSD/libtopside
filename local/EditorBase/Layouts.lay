@@ -1,0 +1,33 @@
+LAYOUT(FindInFilesLayout, 568, 104)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("&Find")).LeftPosZ(4, 48).TopPosZ(4, 19))
+	ITEM(Upp::WithDropChoice<Upp::EditString>, find, HSizePosZ(52, 4).TopPosZ(4, 19))
+	ITEM(Upp::Label, dv___2, SetLabel(t_("In fil&es")).LeftPosZ(4, 48).TopPosZ(28, 19))
+	ITEM(Upp::DropList, files, HSizePosZ(52, 4).TopPosZ(28, 19))
+	ITEM(Upp::Label, replace_lbl, SetLabel(t_("&Replace")).LeftPosZ(4, 48).TopPosZ(52, 22))
+	ITEM(Upp::WithDropChoice<Upp::EditString>, replace, HSizePosZ(248, 4).TopPosZ(54, 19))
+	ITEM(Upp::Switch, style, SetLabel(t_("&None\n&Auto")).LeftPosZ(52, 164).TopPosZ(56, 15))
+	ITEM(Upp::Label, replace_lbl2, SetLabel(t_("with:")).LeftPosZ(220, 28).TopPosZ(54, 19))
+	ITEM(Upp::Button, ok, SetLabel(t_("OK")).RightPosZ(72, 64).BottomPosZ(6, 22))
+	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).RightPosZ(4, 64).BottomPosZ(6, 22))
+END_LAYOUT
+
+LAYOUT(OpenDialogLayout, 460, 288)
+	ITEM(Upp::ArrayCtrl, categories, LeftPosZ(4, 148).TopPosZ(8, 244))
+	ITEM(Upp::ArrayCtrl, projects, LeftPosZ(156, 300).TopPosZ(8, 244))
+	ITEM(Upp::Button, new_project, SetLabel(t_("New Project")).LeftPosZ(208, 80).TopPosZ(256, 27))
+	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).LeftPosZ(292, 80).TopPosZ(256, 27))
+	ITEM(Upp::Button, ok, SetLabel(t_("OK")).LeftPosZ(376, 80).TopPosZ(256, 27))
+	ITEM(Upp::EditString, search, Tip(t_("Filter project names")).LeftPosZ(4, 200).TopPosZ(256, 28))
+END_LAYOUT
+
+LAYOUT(EditProjectLayout, 396, 116)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).LeftPosZ(4, 60).TopPosZ(4, 19))
+	ITEM(Upp::EditString, category, HSizePosZ(68, 220).TopPosZ(32, 19))
+	ITEM(Upp::EditString, description, HSizePosZ(68, 4).TopPosZ(60, 19))
+	ITEM(Upp::Button, cancel, SetLabel(t_("Cancel")).LeftPosZ(212, 88).TopPosZ(88, 24))
+	ITEM(Upp::Button, ok, SetLabel(t_("OK")).LeftPosZ(304, 88).TopPosZ(88, 24))
+	ITEM(Upp::EditString, title, HSizePosZ(68, 220).TopPosZ(4, 19))
+	ITEM(Upp::Label, dv___6, SetLabel(t_("Description:")).LeftPosZ(4, 60).TopPosZ(60, 19))
+	ITEM(Upp::Label, dv___7, SetLabel(t_("Category:")).LeftPosZ(4, 60).TopPosZ(32, 19))
+END_LAYOUT
+

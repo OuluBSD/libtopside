@@ -1,0 +1,8 @@
+{
+	"headers": {
+		"test_audio_sink_hw": {
+			"base": "audio_sink",
+			
+		},
+	},
+}

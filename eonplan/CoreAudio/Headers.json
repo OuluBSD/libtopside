@@ -1,0 +1,24 @@
+{
+	"headers": {
+		"simple_audio_generator": {
+			"base": "audio_src",
+			
+		},
+		"audio_side_sink": {
+			"base": "audio_sink",
+			
+		},
+		"audio_side_src": {
+			"base": "audio_src",
+			
+		},
+		"audio_hw_sink": {
+			"base": "audio_sink",
+			
+		},
+		"audio_file_sink": {
+			"base": "audio_sink",
+			
+		},
+	},
+}

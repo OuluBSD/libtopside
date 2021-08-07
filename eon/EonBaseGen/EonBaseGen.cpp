@@ -136,6 +136,10 @@ void GenerateEonBase() {
 
 NAMESPACE_EONGEN_END
 
+#ifdef flagMAIN
+
 CONSOLE_APP_MAIN {
 	TS::ECS::Eon::Gen::GenerateEonBase();
 }
+
+#endif

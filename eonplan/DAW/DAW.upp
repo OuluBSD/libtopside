@@ -1,0 +1,15 @@
+description "\377B76,76,76";
+
+uses
+	CoreAudio,
+	AccelMidi,
+	AccelAudio;
+
+file
+	HeadersMidi.json,
+	HeadersAudio.json,
+	Loops.json,
+	Links.json,
+	Chains.json,
+	TopChains.json;
+
