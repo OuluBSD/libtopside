@@ -246,6 +246,7 @@ void CommandLineArguments::AddArg(char key, const char* desc, bool has_value, St
 
 bool CommandLineArguments::Parse() {
 	const Vector<String>& args = CommandLine();
+	//DUMPC(args);
 	
 	for(int i = 0; i < args.GetCount(); i++) {
 		String arg = args[i];
@@ -351,11 +352,16 @@ String FindShareDir() {
 	if (DirectoryExists(config_share))
 		return config_share;
 	
+	#if defined flagWIN32
+	String home_upphub_share = "C:\\git\\libtopside\\share";
+	#else
 	String home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
+	#endif
+	
 	if (DirectoryExists(home_upphub_share))
 		return home_upphub_share;
 	
-	#ifdef flagLINUX
+	#if defined flagLINUX
 	return "/usr/share";
 	#elif defined flagFREEBSD
 	return "/usr/local/share";

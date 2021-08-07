@@ -9,9 +9,9 @@ uses(POSIX) ports/libv4l2;
 
 library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
 
-library(POSIX) "swscale avcodec avformat avutil swresample avdevice avfilter";
+library(POSIX | (WIN32 & (MSC&FFMPEG) | !MSC)) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
-library(WIN32 & FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
+library(WIN32 & !MSC) "z iconv aom gsm mp3lame opencore-amrnb opencore-amrwb openjpeg openjp2";
 
 file
 	Multimedia.h,

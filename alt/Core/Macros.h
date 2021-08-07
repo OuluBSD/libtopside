@@ -91,17 +91,32 @@ LOG("}"); \
 
 
 #ifndef flagGUI
-	#define CONSOLE_APP_MAIN \
-	void AppMain(); \
-	\
-	extern "C" int main(int argc, const char** argv) {\
-		UPP::AppInit__(argc, (const char **)argv); \
-		AppMain(); \
-		::UPP::AppExit__(); \
-		return 0; \
-	} \
-	\
-	void AppMain()
+	#if defined(flagWIN32)
+		#define CONSOLE_APP_MAIN \
+			void AppMain(); \
+			\
+			int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
+				::UPP::SetWin32Instances(hinst, hprev, show); \
+				::UPP::AppInit__(0, (const char **)cmdline); \
+				AppMain(); \
+				::UPP::AppExit__(); \
+				return ::UPP::GetExitCode(); \
+			} \
+			\
+			void AppMain()
+	#else
+		#define CONSOLE_APP_MAIN \
+		void AppMain(); \
+		\
+		extern "C" int main(int argc, const char** argv) {\
+			UPP::AppInit__(argc, (const char **)argv); \
+			AppMain(); \
+			::UPP::AppExit__(); \
+			return 0; \
+		} \
+		\
+		void AppMain()
+	#endif
 #endif
 
 

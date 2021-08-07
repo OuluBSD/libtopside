@@ -36,14 +36,42 @@ void StringParser::Parse() {
 		int chr = input[cursor];
 		if (chr == delim) {
 			cursor++;
-			bool skip_check = false;
+			bool special = false;
 			while (cursor < input.GetCount()) {
 				int chr = input[cursor++];
-				if (skip_check) {
-					skip_check = false;
+				if (special) {
+					std::cout << chr << EOL;
+					if (chr == 'a')
+						chr = 0x7;
+					else if (chr == 'b')
+						chr = 0x8;
+					else if (chr == 'e')
+						chr = 0x1b;
+					else if (chr == 'f')
+						chr = 0x0c;
+					else if (chr == 'n')
+						chr = 0x0a;
+					else if (chr == 'r')
+						chr = 0x0d;
+					else if (chr == 't')
+						chr = 0x09;
+					else if (chr == 'v')
+						chr = 0x0b;
+					else if (chr == '\\')
+						chr = 0x5c;
+					else if (chr == '\'')
+						chr = 0x27;
+					else if (chr == '\"')
+						chr = 0x22;
+					else if (chr == '\?')
+						chr = 0x3f;
+					else
+						str.Cat('\\');
+					special = false;
 				}
 				else if (chr == '\\') {
-					skip_check = true;
+					special = true;
+					continue;
 				}
 				else if (chr == delim) {
 					is_valid = true;
@@ -53,9 +81,11 @@ void StringParser::Parse() {
 			}
 		}
 	}
+	/*
+	Already done:
 	if (is_valid || !checkend) {
 		str = FromCString(str.Begin(), str.End());
-	}
+	}*/
 }
 
 

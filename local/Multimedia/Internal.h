@@ -2,7 +2,7 @@
 #define _Multimedia_Internal_h_
 
 // http://dranger.com/ffmpeg/tutorial01.html
-#ifdef flagPOSIX
+#if defined flagPOSIX || defined HAVE_MINGW
 	#define HAVE_FFMPEG 1
 	
 	#if defined flagFREEBSD && defined flagGCC

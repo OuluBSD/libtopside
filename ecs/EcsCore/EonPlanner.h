@@ -64,7 +64,7 @@ public:
 	bool IsUndefined(int idx) const;
 	String Get(const String& key) const;
 	String Get(int idx) const;
-	int64 GetHashValue() const;
+	hash_t GetHashValue() const;
 	TypeCompCls GetComponent() const {return cur_comp;}
 	TypeExtCls GetExtension() const {return add_ext;}
 	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}

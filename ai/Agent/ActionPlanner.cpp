@@ -32,7 +32,7 @@ WorldState& WorldState::operator = (const WorldState& src) {
 }
 
 
-int64 WorldState::GetHashValue() {
+hash_t WorldState::GetHashValue() {
 	CombineHash c;
 	for(int i = 0; i < values.GetCount(); i++) {
 		c.Put(using_act[i]);

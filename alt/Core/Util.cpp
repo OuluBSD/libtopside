@@ -76,7 +76,25 @@ String Uuid::ToString() const {
 
 Vector<String> __cmdline;
 void ParseCommandLine(const char* cmdline) {
-	__cmdline = Split(String(cmdline), " ");
+	//std::cout << cmdline << EOL;
+	CParser p(cmdline);
+	while (!p.IsEof()) {
+		if (p.IsString())
+			__cmdline << p.ReadString();
+		else {
+			String tmp;
+			while (!p.IsEof()) {
+				int chr = p.PeekChar();
+				if (IsSpace(chr))
+					break;
+				tmp.Cat(chr);
+				p.SkipChar();
+			}
+			if (!tmp.IsEmpty())
+				__cmdline << tmp;
+			p.DoSpaces();
+		}
+	}
 }
 
 void ParseCommandLine(int argc, const char** argv) {
@@ -248,7 +266,7 @@ void SetVerbose(bool b) {__is_verbose = b;}
 
 
 
-#if defined flagWIN32 && defined flagGUI
+#if defined flagWIN32
 HINSTANCE __hinst_cur, __hinst_prev;
 bool __nCmdShow;
 void SetWin32Instances(HINSTANCE inst, HINSTANCE prev, bool nCmdShow) {

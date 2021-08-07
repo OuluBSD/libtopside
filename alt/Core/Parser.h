@@ -54,6 +54,7 @@ public:
 	void PassNewline();
 	void PassChar(char chr);
 	void SkipTerm();
+	void SkipChar();
 	void DoSpaces() {if (pass_whitespace) SkipSpaces();}
 	void Spaces() {DoSpaces();}
 	

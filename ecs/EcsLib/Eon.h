@@ -468,7 +468,7 @@ template <>	inline bool TerminalTest<Ecs::Eon::ActionNode>(Node<Ecs::Eon::Action
 			TypeCompCls to_comp = ws_to.GetComponent();
 			ASSERT(to_comp.sink.val != ValCls::RECEIPT);
 		}*/
-		int64 hash = ws_to.GetHashValue();
+		hash_t hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		Ecs::Eon::APlanNode* an = 0;
 		if (j == -1) {

@@ -67,7 +67,7 @@ void AddLocalFileDirectory(String dir);
 bool IsVerbose();
 void SetVerbose(bool b=true);
 
-#if defined flagWIN32 && defined flagGUI
+#if defined flagWIN32
 void SetWin32Instances(HINSTANCE inst, HINSTANCE prev, bool nCmdShow);
 HINSTANCE GetWin32Instance();
 HINSTANCE GetWin32PrevInstance();

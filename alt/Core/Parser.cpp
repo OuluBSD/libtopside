@@ -163,6 +163,13 @@ void CParser::PassChar(char chr) {
 	}
 }
 
+void CParser::SkipChar() {
+	int chr = input[pos.cursor];
+	ChkNewline(chr);
+	pos.cursor++;
+	pos.col++;
+}
+
 void CParser::PassId(String id) {
 	if (IsId(id))
 		ReadId();

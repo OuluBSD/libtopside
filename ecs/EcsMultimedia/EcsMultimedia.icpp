@@ -7,8 +7,10 @@ NAMESPACE_UPP
 INITBLOCK {
 	using namespace Ecs;
 	
+	#if HAVE_FFMPEG
 	REG_EXT(FfmpegExt,			INPUT,		CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
 	REG_EXT(FfmpegExt,			INPUT,		CENTER,ORDER,		CENTER,VIDEO,	CENTER,VIDEO);
+	#endif
 	
 	/*#if HAVE_OPENCV
 	Ecs::Factory::RegisterComponent<OpenCVComponent>();

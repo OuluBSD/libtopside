@@ -55,7 +55,7 @@ WorldState& WorldState::operator=(const WorldState& src) {
 }
 
 
-int64 WorldState::GetHashValue() const {
+hash_t WorldState::GetHashValue() const {
 	CombineHash c;
 	c.Put((int)type);
 	c.Put(cur_comp.GetHashValue());

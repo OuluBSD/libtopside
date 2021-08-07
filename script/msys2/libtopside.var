@@ -1,0 +1,3 @@
+UPP = "C:\\git\\libtopside\\examples;C:\\git\\libtopside\\reference;C:\\git\\libtopside\\tutorial;C:\\git\\libtopside\\tests;C:\\git\\libtopside\\ai;C:\\git\\libtopside\\eon;C:\\git\\libtopside\\ecs;C:\\git\\libtopside\\fusion;C:\\git\\libtopside\\video;C:\\git\\libtopside\\audio;C:\\git\\libtopside\\compiler;C:\\git\\libtopside\\local;C:\\git\\libtopside\\alt;C:\\git\\libtopside\\accel;C:\\git\\libtopside\\lib";
+OUTPUT = "C:\\upp\\out";
+UPPHUB = "";

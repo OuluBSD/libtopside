@@ -2,6 +2,11 @@
 #define _CoreAlt_config_h_
 
 
+#if __MINGW32__
+	#define HAVE_MINGW 1
+#endif
+
+
 #if __GNUC__
 
 	#define GCC_VERSION (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)

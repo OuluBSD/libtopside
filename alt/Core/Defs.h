@@ -122,11 +122,11 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 
 
 #if PLATFORM_WIN32
-	#define __BREAK__		__debugbreak()
+	#define __BREAK__		__debugbreak();
 #elif PLATFORM_POSIX
 	#define __BREAK__        raise(SIGTRAP);
 #else
-	#define __BREAK__        (*(volatile int *)0 = 0) // kill(getpid(), SIGTRAP)
+	#define __BREAK__        (*(volatile int *)0 = 0); // kill(getpid(), SIGTRAP);
 #endif
 
 #undef ASSERT
@@ -209,8 +209,8 @@ NAMESPACE_UPP_END
 
 
 
-#if defined flagWIN32 && ( defined flagCLANG || defined flagGCC )
-
+#if !defined HAVE_MINGW && defined flagWIN32 && ( defined flagCLANG || defined flagGCC )
+	
 #include <sec_api/stdlib_s.h> /* errno_t, size_t */
 extern "C" {
 errno_t getenv_s(
@@ -220,6 +220,7 @@ errno_t getenv_s(
     const char *name
 );
 }
+
 #endif
 
 

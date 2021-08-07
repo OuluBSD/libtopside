@@ -26,7 +26,7 @@ public:
 	
 	WorldState& operator = (const WorldState& src);
 	
-	int64 GetHashValue();
+	hash_t GetHashValue();
 	
 };
 
@@ -157,7 +157,7 @@ template <>	inline bool TerminalTest<Agent::ActionNode>(Node<Agent::ActionNode>&
 	ap.GetPossibleStateTransition(ws, to, act_ids, action_costs);
 	for(int i = 0; i < to.GetCount(); i++) {
 		WorldState& ws_to = *to[i];
-		int64 hash = ws_to.GetHashValue();
+		hash_t hash = ws_to.GetHashValue();
 		int j = ActionNode::tmp_sub.Find(hash);
 		if (j == -1) {
 			APlanNode& sub = ActionNode::tmp_sub.Add(hash);// n.Add();
