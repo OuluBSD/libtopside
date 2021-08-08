@@ -268,6 +268,10 @@ void SetSemiTransparent0(double alpha, XDisplay* display, unsigned long win);
 void CommandBridge::SetSemiTransparent() {
 	#if defined flagPOSIX && defined flagX11
 	SetSemiTransparent0(alpha, Xdisplay, GetWindow());
+	#elif defined flagWIN32
+	HWND h = GetTopWindow()->GetHWND();
+	SetWindowLongA(h, GWL_EXSTYLE, WS_EX_LAYERED);
+	SetLayeredWindowAttributes(h, 0, alpha * 255, LWA_ALPHA);
 	#endif
 }
 
