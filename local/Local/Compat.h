@@ -124,6 +124,11 @@ template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));
 template<> inline double ToDouble(const Date& o) {return o.Get();}
 template<> inline double ToDouble(const Time& o) {return o.Get();}
 
+#if __MINGW32__
+template<> inline int64 ToInt(const long& o) {return (int64)o;}
+template<> inline double ToDouble(const long& o) {return (double)o;}
+#endif
+
 
 using NullOpt = std::nullopt_t;
 

@@ -4,7 +4,7 @@ NAMESPACE_UPP_BEGIN
 
 #if defined flagWIN32
 
-#ifdef flagCLANG
+#if defined flagCLANG || defined flagGCC
 const char *inet_ntop(int af, const void *src, char *dst, socklen_t size)
 {
 	struct sockaddr_storage ss;

@@ -40,7 +40,6 @@ void StringParser::Parse() {
 			while (cursor < input.GetCount()) {
 				int chr = input[cursor++];
 				if (special) {
-					std::cout << chr << EOL;
 					if (chr == 'a')
 						chr = 0x7;
 					else if (chr == 'b')
