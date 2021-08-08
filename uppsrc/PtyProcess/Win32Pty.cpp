@@ -1,5 +1,15 @@
 #include "PtyProcess.h"
 
+struct winpty_error_s {
+    winpty_result_t code;
+    const wchar_t *msgStatic;
+    // Use a pointer to a std::shared_ptr so that the struct remains simple
+    // enough to statically initialize, for the benefit of static error
+    // objects like kOutOfMemory.
+    std::shared_ptr<std::wstring> *msgDynamic;
+};
+
+
 namespace Upp {
 
 #define LLOG(x)	// RLOG("PtyProcess [WIN32]: " << x);
@@ -309,9 +319,14 @@ bool PtyProcess::DoStart(const char *cmd, const Vector<String> *args, const char
 
 	winpty_config_set_initial_size(hAgentConfig, 80, 24);
 		
-	hConsole = winpty_open(hAgentConfig, nullptr);
+	winpty_error_ptr_t err = 0;
+	hConsole = winpty_open(hAgentConfig, &err);
 	winpty_config_free(hAgentConfig);
 	if(!hConsole) {
+		WString ws0 = err->msgStatic;
+		WString ws1 = **err->msgDynamic;
+		LOG("winpty_open error: " << IntStr(err->code) << ": " << ws0.ToString() << ": " << ws1.ToString());
+		
 		LLOG("winpty_open() failed.");
 		Free();
 		return false;

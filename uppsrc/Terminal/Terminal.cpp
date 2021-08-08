@@ -896,6 +896,8 @@ void TerminalCtrl::StdBar(Bar& menu)
 	menu.Add(t_("Read only"), [=] { SetEditable(IsReadOnly()); })
 		.Key(K_SHIFT_CTRL_L)
 		.Check(IsReadOnly());
+	if (!IsVisible())
+		return;
 	if(IsMouseOverImage()) {
 		menu.Separator();
 		ImagesBar(menu);

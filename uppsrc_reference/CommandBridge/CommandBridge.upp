@@ -35,6 +35,7 @@ file
 
 mainconfig
 	"" = "GUI",
+	"" = "GUI WIN10",
 	"" = "GUI X11",
 	"" = "GUI NOGTK",
 	"" = "GUI HAVE_FTP";
