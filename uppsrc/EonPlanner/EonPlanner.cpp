@@ -74,6 +74,7 @@ GUI_APP_MAIN {
 	
 	EonPlanEditor e;
 	e.SetProject(main_prj, ass, ass_data);
+	e.PostCompile();
 	e.Run();
 	
 }

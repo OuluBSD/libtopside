@@ -6,6 +6,12 @@ uses
 	AccelAudio;
 
 file
+	DAW.h,
+	Headers.h,
+	Loops.h,
+	Links.h,
+	Chains.h,
+	TopChains.h,
 	HeadersMidi.json,
 	HeadersAudio.json,
 	Loops.json,

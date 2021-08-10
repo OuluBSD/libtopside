@@ -389,5 +389,11 @@ WString EditorBase::FormatErrorLineEP(String text, const char *ep, int& linecy)
 	return txt;
 }
 
+void EditorBase::WriteConsole(String s) {
+	GuiLock __;
+	console.Append(s);
+	console.ScrollEnd();
+}
+
 
 NAMESPACE_TOPSIDE_END

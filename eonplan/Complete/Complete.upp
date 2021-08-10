@@ -4,6 +4,8 @@ uses
 	NetAudio;
 
 file
+	Complete.h,
+	main.cpp,
 	Complete.json;
 
 mainconfig

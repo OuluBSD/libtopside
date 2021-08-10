@@ -160,6 +160,9 @@ public:
 	
 	// Project
 	void SetProject(UppProject& p, const UppAssembly& as, UppAssemblyData& asd);
+	UppProject& GetProject() {ASSERT(prj); return *prj;}
+	UppAssemblyData& GetAssemblyData() {ASSERT(asd); return *asd;}
+	const UppAssembly& GetAssembly() const {ASSERT(as); return *as;}
 	
 	// Debugger
 	void FocusLine(ArrayCtrl* list);
@@ -184,7 +187,8 @@ public:
 	void IdeRemoveBottom(Ctrl& ctrl);
 	void IdeActivateBottom();
 	void ClearConsole() {GuiLock __; console.Clear();}
-	
+	void WriteConsole(String s);
+	void WriteConsoleLine(String s) {WriteConsole(s + "\n");}
 };
 
 

@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ProjectEditorExt : public EditorExtension {
 	Splitter vsplit;
-	ColumnList projects;
+	FileList projects;
 	FileList files;
 	CodeEditor left, right;
 	
@@ -14,7 +14,7 @@ class ProjectEditorExt : public EditorExtension {
 	int hilite_ifdef, barline, hilite_if_endif, thousands_separator, hline, line_numbers, auto_enclose;
 	int mark_lines, bordercolumn, bordercolor, persistent_find_replace, find_replace_restore_pos;
 	int font_height;
-	
+	Image prj_icon;
 	
 	// Debugging GUI
 	DocEdit left_object_tree;

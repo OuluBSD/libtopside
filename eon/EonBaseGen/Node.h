@@ -24,6 +24,8 @@ protected:
 	Type				type = INVALID;
 	String				key;
 	
+	String				dbg_file;
+	
 };
 
 

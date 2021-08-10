@@ -45,6 +45,7 @@ ProjectEditorExt::ProjectEditorExt() {
 	left_node_tree.SetFont(Monospace(12));
 	
 	
+	prj_icon = RescaleBicubic(StreamRaster::LoadFileAny(ShareDirFile("imgs/icons/package.png")), Size(16,16));
 	
 }
 
@@ -75,11 +76,12 @@ bool ProjectEditorExt::HotKey(dword key) {
 void ProjectEditorExt::Data() {
 	const auto& rec_uses = base->rec_uses;
 	
+	
 	int i = 0;
 	if (projects.IsCursor()) i = projects.GetCursor();
 	projects.Clear();
 	for(int i = 0; i < rec_uses.GetCount(); i++)
-		projects.Add(rec_uses[i]);
+		projects.Add(rec_uses[i], prj_icon);
 	if (i >= 0) projects.SetCursor(i);
 	
 	DataProjectFiles();

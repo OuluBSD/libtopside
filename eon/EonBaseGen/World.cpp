@@ -8,11 +8,22 @@ World::World() {
 }
 
 void World::OnError(String msg) {
-	LOG("World: error: " << msg);
+	last_error.line = 0;
+	last_error.col = 0;
+	last_error.severity = PROCMSG_ERROR;
+	last_error.msg = msg;
 }
 
-bool World::LoadJSON(String json) {
+bool World::LoadJSON(String path, String json, String match_key) {
+	last_error.file = path;
+	
+	#if 0
 	Object o = ParseJSON(json);
+	#else
+	CParser p(json);
+	Object o = ParseJSON(p);
+	#endif
+	
 	//LOG(GetObjectTreeString(o));
 	
 	if (!o.IsMap())
@@ -23,6 +34,9 @@ bool World::LoadJSON(String json) {
 	for(int i = 0; i < m.GetCount(); i++) {
 		Object& sub = m[i];
 		String key = m.GetKey(i);
+		
+		if (!match_key.IsEmpty() && key != match_key)
+			continue;
 		
 		if (key == "bases") {
 			if (!sub.IsMap()) {
@@ -278,6 +292,7 @@ bool World::LoadBase(String key, ObjectMap& m) {
 	unit.smallest_link_id = id;
 	unit.type = Unit::BASE;
 	unit.key = key;
+	unit.dbg_file = last_error.file;
 	
 	if (!ParseValDev(sink->Get<String>(), unit.sink, unit.sink_count)) return false;
 	if (!ParseValDev(src->Get<String>(),  unit.src, unit.src_count)) return false;
@@ -305,12 +320,13 @@ bool World::LoadHeader(String key, ObjectMap& m) {
 	unit.smallest_link_id = id;
 	unit.key = key;
 	unit.type = Unit::HEADER;
+	unit.dbg_file = last_error.file;
 	
 	String base_str = base->Get<String>();
 	
 	i = units.Find(base_str);
 	if (i < 0) {
-		OnError("Base unit '" + key + "' does not exist");
+		OnError("Base unit '" + base_str + "' does not exist");
 		return false;
 	}
 	
@@ -367,6 +383,7 @@ bool World::LoadLoop(String key, ObjectMap& m) {
 	Node& node = nodes.Add(key);
 	node.key = key;
 	node.type = Node::LOOP;
+	node.dbg_file = last_error.file;
 	
 	for (Unit* header : header_ptrs) {
 		Link& link = links.Add();
@@ -415,6 +432,7 @@ bool World::LoadNodeLink(String key, ObjectMap& m) {
 	Node& node = nodes.Add(key);
 	node.key = key;
 	node.type = Node::VALID_NODE_LINK;
+	node.dbg_file = last_error.file;
 	
 	
 	Link& link = links.Add();
@@ -488,6 +506,7 @@ bool World::LoadChain(String key, ObjectMap& m) {
 	Node& node = nodes.Add(key);
 	node.key = key;
 	node.type = Node::CHAIN;
+	node.dbg_file = last_error.file;
 	
 	for (Node* loop : loop_ptrs) {
 		Link& link = links.Add();
@@ -572,6 +591,7 @@ bool World::LoadTopChain(String key, ObjectMap& m) {
 	Node& node = this->nodes.Add(key);
 	node.key = key;
 	node.type = Node::TOPCHAIN;
+	node.dbg_file = last_error.file;
 	
 	for (Node* loop : loop_ptrs) {
 		Link& link = links.Add();
@@ -651,6 +671,7 @@ bool World::LoadMachine(String key, ObjectMap& m) {
 	Node& node = this->nodes.Add(key);
 	node.key = key;
 	node.type = Node::MACHINE;
+	node.dbg_file = last_error.file;
 	
 	for (Node* loop : loop_ptrs) {
 		Link& link = links.Add();
@@ -730,6 +751,7 @@ bool World::LoadSystem(String key, ObjectMap& m) {
 	Node& node = this->nodes.Add(key);
 	node.key = key;
 	node.type = Node::MACHINE;
+	node.dbg_file = last_error.file;
 	
 	for (Node* loop : loop_ptrs) {
 		Link& link = links.Add();
@@ -980,7 +1002,7 @@ bool World::TraverseUnits(Unit::Type type) {
 			}
 			
 			if (!any_connected) {
-				OnError("Unit '" + unit0.key + "' cannot connect any other unit");
+				OnError(unit0.dbg_file, "Unit '" + unit0.key + "' cannot connect any other unit");
 				return false;
 			}
 		}
@@ -1075,7 +1097,7 @@ bool World::TraverseLoops() {
 			
 			if (prev) {
 				if (prev->src != linked->sink) {
-					OnError("Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + linked->key + "' (" + prev->src.ToString() + " vs " + linked->sink.ToString() + ")");
+					OnError(node0.dbg_file, "Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + linked->key + "' (" + prev->src.ToString() + " vs " + linked->sink.ToString() + ")");
 					return false;
 				}
 				prev = linked;
@@ -1087,12 +1109,12 @@ bool World::TraverseLoops() {
 		}
 		
 		if (!first) {
-			OnError("internal error: empty loop");
+			OnError(node0.dbg_file,"internal error: empty loop");
 			return false;
 		}
 		
 		if (prev->src != first->sink) {
-			OnError("Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + first->key + "' (" + prev->src.ToString() + " vs " + first->sink.ToString() + ")");
+			OnError(node0.dbg_file,"Source/sink type mismatch in '" + node0.key + "' between '" + prev->key + "' and '" + first->key + "' (" + prev->src.ToString() + " vs " + first->sink.ToString() + ")");
 			return false;
 		}
 	}

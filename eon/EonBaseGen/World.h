@@ -14,8 +14,10 @@ class World {
 	ArrayMap<String, Unit>			units;
 	ArrayMap<String, Node>			nodes;
 	Array<Link>						links;
+	ProcMsg							last_error;
 	
 	void OnError(String msg);
+	void OnError(String file, String msg) {last_error.file = file; OnError(msg);}
 	
 	bool ParseValDev(String s, ValDevCls& vd, byte& count);
 	bool ParseValDevSide(String s, Unit& u);
@@ -27,7 +29,7 @@ public:
 	World();
 	
 	
-	bool LoadJSON(String json);
+	bool LoadJSON(String path, String json, String match_key="");
 	bool LoadBases(ObjectMap& m);
 	bool LoadHeaders(ObjectMap& m);
 	bool LoadLoops(ObjectMap& m);
@@ -47,6 +49,8 @@ public:
 	
 	bool TraverseUnits(Unit::Type type);
 	bool TraverseLoops();
+	
+	ProcMsg GetError() const {return last_error;}
 	
 };
 

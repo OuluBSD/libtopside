@@ -1,6 +1,14 @@
 description "\377B0,186,0";
 
+uses
+	ChainLib;
+
 file
+	NetAudio.h,
+	Headers.h,
+	TestChains.h,
+	TestMachines.h,
+	Headers.json,
 	ChainsTest.json,
 	MachinesTest.json;
 

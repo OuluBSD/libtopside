@@ -15,9 +15,7 @@
 		},
 		"test_remote_audio_gen_remote": {
 			"loops": [
-				"test_center_net_order_sink",
-				"test_net_audio_input",
-				"test_net_center_audio_src",
+				"test_net_audio_src",
 			],
 			"links": "",
 		},

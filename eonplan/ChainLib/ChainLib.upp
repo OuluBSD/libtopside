@@ -1,6 +1,12 @@
 description "\377B128,0,0";
 
+uses
+	ChainCore;
+
 file
+	ChainLib.h,
+	Bases.h,
+	Headers.h,
 	Bases.json,
 	Headers.json;
 

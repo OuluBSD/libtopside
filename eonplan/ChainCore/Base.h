@@ -1,0 +1,38 @@
+#ifndef _ChainCore_Base_h_
+#define _ChainCore_Base_h_
+
+
+class Base : public Unit {
+	
+	
+};
+
+
+template <class Sink_, class Src_>
+class Base2 : public Base {
+	
+public:
+	using Sink = Sink_;
+	using Src = Src_;
+	
+	
+};
+
+
+template <class Sink_, class Side_, class Src_>
+class Base3 : public Base {
+	
+public:
+	using Sink = Sink_;
+	using Side = Side_;
+	using Src = Src_;
+	
+	
+};
+
+
+#define BASE2(x, sink, src)			using x = Base2<sink, src>;
+#define BASE3(x, sink, side, src)	using x = Base3<sink, side, src>;
+
+
+#endif

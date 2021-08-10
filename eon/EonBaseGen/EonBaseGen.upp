@@ -6,8 +6,11 @@ uses
 
 file
 	TODO.txt,
+	Trash readonly separator,
 	EonBaseGen.h,
 	EonBaseGen.cpp,
+	Compiler.h,
+	Compiler.cpp,
 	World.h,
 	World.cpp,
 	Node.h,

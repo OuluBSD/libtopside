@@ -1,0 +1,24 @@
+description "\377B128,0,0";
+
+uses
+	Local;
+
+file
+	ChainCore.h,
+	EonStream.h,
+	EonStream.cpp,
+	Unit.h,
+	Val.h,
+	Dev.h,
+	ValDev.h,
+	Node.h,
+	Node.cpp,
+	Base.h,
+	Header.h,
+	Loop.h,
+	Chain.h,
+	Machine.h,
+	Machine.cpp,
+	System.h,
+	_ readonly separator;
+

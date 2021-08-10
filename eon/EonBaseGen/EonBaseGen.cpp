@@ -99,7 +99,7 @@ void GenerateEonBase() {
 			LOG("Empty file: " + path);
 			return;
 		}
-		if (!world.LoadJSON(content)) {
+		if (!world.LoadJSON(path, content)) {
 			LOG("Loading json failed: " + path);
 			return;
 		}

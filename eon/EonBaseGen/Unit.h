@@ -31,6 +31,7 @@ protected:
 	byte				src_count;
 	byte				side_count;
 	
+	String				dbg_file;
 	
 	void CopyType(const Unit& u) {
 		sink = u.sink;
@@ -41,6 +42,7 @@ protected:
 		sink_count = u.sink_count;
 		src_count = u.src_count;
 		side_count = u.side_count;
+		dbg_file = u.dbg_file;
 	}
 };
 

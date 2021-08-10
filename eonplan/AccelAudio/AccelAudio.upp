@@ -1,9 +1,14 @@
 description "\377B0,0,226";
 
 uses
-	Core;
+	ChainLib;
 
 file
+	AccelAudio.h,
+	TestHeaders.h,
+	TestLoops.h,
+	TestChains.h,
+	TestTopChains.h,
 	Headers.json,
 	HeadersTest.json,
 	LoopsMidiAudioTest.json,

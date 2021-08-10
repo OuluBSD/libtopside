@@ -1,9 +1,16 @@
 description "\377B0,128,0";
 
 uses
-	Core;
+	ChainLib;
 
 file
+	Net.h,
+	Headers.h,
+	Loops.h,
+	TopChains.h,
+	TestMachines.h,
+	TestSystems.h,
+	Headers.json,
 	Loops.json,
 	TopChainsTest.json,
 	MachinesTest.json,

@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 EditorBase::EditorBase() {
 	Title("Editor");
-	Sizeable().MaximizeBox();
+	Sizeable().MaximizeBox().MinimizeBox();
 	//Maximize();
 	
 	AddFrame(main_menu);
