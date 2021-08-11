@@ -7,9 +7,9 @@ CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
 	
-	Machine1<TestAudioChain>			mach;
+	/*Machine1<TestAudioChain>			mach;
 	mach.Init();
-	mach.Dump();
+	mach.Dump();*/
 	
 	
 }

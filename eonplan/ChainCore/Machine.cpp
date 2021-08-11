@@ -1,5 +1,5 @@
 #include "ChainCore.h"
-
+/*
 Machine::Machine() {
 	
 }
@@ -12,9 +12,9 @@ void Machine::Init() {
 	
 }
 
-void Machine::OnChain(Chain& c) {
+void Machine::OnChain(ChainBase& c) {
 	
 	LOG("TODO Machine::OnChain");
 	
-}
+}*/
 

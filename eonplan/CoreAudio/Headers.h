@@ -4,7 +4,7 @@
 
 HEADER(DefAudioGenerator,		OrderAudio)
 HEADER(DefAudioHardwareSink,	AudioReceipt)
-HEADER(DefAudioSideSrc,			OrderAudioWithAccel)
+HEADER(DefAudioSideSrc,			AccelCenterAudioSink)
 HEADER(DefAudioSideSink,		AudioReceiptWithAccel)
 HEADER(DefAudioFileSink,		AudioReceipt)
 

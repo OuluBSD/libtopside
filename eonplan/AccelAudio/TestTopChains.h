@@ -2,7 +2,7 @@
 #define _AccelAudio_TestTopChains_h_
 
 
-TOPCHAIN2(TestMidiAudioTopChainPart2, TestMidiAudioTopChainPart1, TestMidiAudioPart3, "01")
+SCOPE2(TestMidiAudioTopChainPart2, TestMidiAudioTopChainPart1, TestMidiAudioPart3, "01")
 
 
 #endif

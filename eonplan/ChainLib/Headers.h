@@ -2,7 +2,9 @@
 #define _ChainLib_Headers_h_
 
 
-HEADER(Customer, ReceiptOrder)
+HEADER(Customer,		ReceiptOrder)
+HEADER(AccelCustomer,	AccelReceiptOrder)
+HEADER(NetCustomer,		NetReceiptOrder)
 
 
 #endif

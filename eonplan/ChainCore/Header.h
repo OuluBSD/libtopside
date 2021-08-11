@@ -9,6 +9,7 @@ class Header : public T {
 public:
 	static_assert(std::is_convertible<T&, Base&>::value, "T must inherit Base");
 	
+	
 };
 
 

@@ -14,7 +14,9 @@ using namespace TS;
 #include "Base.h"
 #include "Header.h"
 #include "Loop.h"
+#include "Link.h"
 #include "Chain.h"
+#include "Scope.h"
 #include "Machine.h"
 #include "System.h"
 

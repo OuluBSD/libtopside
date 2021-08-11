@@ -1,7 +1,7 @@
 #ifndef _ChainCore_EonStream_h_
 #define _ChainCore_EonStream_h_
 
-class Chain;
+class ChainBase;
 class LoopBase;
 
 class EonStream {
@@ -10,7 +10,7 @@ class EonStream {
 public:
 	
 	
-	virtual void Serialize(Chain& c) {TODO}
+	virtual void Serialize(ChainBase& c) {TODO}
 	virtual void Serialize(LoopBase& c) {TODO}
 	
 	void Link(const char* c);

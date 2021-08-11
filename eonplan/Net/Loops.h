@@ -3,8 +3,8 @@
 
 
 LOOP2(TestCenterNetOrderSrc, Customer, NetCustomerHandler)
-LOOP3(TestNetCenterAudioSink, Customer, NetCenterAudioSink, AudioSideSink)
-LOOP3(TestNetAudioSrc, NetCustomer, CenterNetMidiSink, NetCenterAudioSink)
+LOOP3(TestNetCenterAudioSink, Customer, DefNetCenterAudioSink, DefAudioHardwareSink)
+LOOP3(TestNetAudioSrc, NetCustomer, DefCenterNetMidiSink, DefNetCenterAudioSink)
 
 
 #endif

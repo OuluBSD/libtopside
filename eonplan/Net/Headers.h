@@ -2,9 +2,9 @@
 #define _Net_Headers_h_
 
 
-HEADER(NetCustomerHandler, CenterNetOrderSide)
-HEADER(NetCenterAudioSink, NetCenterAudioSink)
-HEADER(CenterNetMidiSink, CenterNetMidiSink)
+HEADER(NetCustomerHandler,		CenterNetOrderSide)
+HEADER(DefNetCenterAudioSink,	NetCenterAudioSink)
+HEADER(DefCenterNetMidiSink,	CenterNetMidiSink)
 
 
 #endif

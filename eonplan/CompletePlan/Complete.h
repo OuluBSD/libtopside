@@ -1,5 +1,5 @@
-#ifndef _Complete_Complete_h_
-#define _Complete_Complete_h_
+#ifndef _CompletePlan_Complete_h_
+#define _CompletePlan_Complete_h_
 
 #include <DAW/DAW.h>
 #include <Net/Net.h>

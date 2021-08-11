@@ -13,7 +13,10 @@ class Base2 : public Base {
 	
 public:
 	using Sink = Sink_;
+	using Side = void;
 	using Src = Src_;
+	
+	template <class T> static constexpr bool HasSide() {return false;}
 	
 	
 };
@@ -26,6 +29,8 @@ public:
 	using Sink = Sink_;
 	using Side = Side_;
 	using Src = Src_;
+	
+	template <class T> static constexpr bool HasSide() {return std::is_same<T, Side>::value;}
 	
 	
 };
