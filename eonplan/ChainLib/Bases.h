@@ -1,8 +1,3 @@
-#ifndef _ChainLib_Bases_h_
-#define _ChainLib_Bases_h_
-
-NAMESPACE_PLAN_BEGIN
-
 
 BASE2(ReceiptOrder,				CenterReceipt,	CenterOrder)
 BASE2(OrderAudio,				CenterOrder,	CenterAudio)
@@ -24,8 +19,3 @@ BASE3(AccelAudioInputMulti,		AccelOrder,		AccelAudio,			AccelAudio)
 
 BASE2(NetReceiptOrder,			NetReceipt,		NetOrder)
 BASE3(CenterNetMidiSink,		NetOrder,		SinkNetMidi,		NetMidi)
-
-
-NAMESPACE_PLAN_END
-
-#endif

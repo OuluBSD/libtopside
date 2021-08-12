@@ -15,9 +15,78 @@ public:
 	struct Val {
 		const char* name;
 		
+		
+		String ToString() const;
 	};
 	
-	static Array<Val>& Vals() {static Array<Val> a; return a;}
+	static ArrayMap<String,Val>& Vals() {static ArrayMap<String,Val> a; return a;}
+	
+	
+public:
+	struct Dev {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Dev>& Devs() {static ArrayMap<String,Dev> a; return a;}
+	
+	
+public:
+	struct ValDev {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,ValDev>& ValDevs() {static ArrayMap<String,ValDev> a; return a;}
+	
+	
+public:
+	struct Base {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Base>& Bases() {static ArrayMap<String,Base> a; return a;}
+	
+	
+public:
+	struct Header {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Header>& Headers() {static ArrayMap<String,Header> a; return a;}
+	
+	
+public:
+	struct Loop {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Loop>& Loops() {static ArrayMap<String,Loop> a; return a;}
+	
+	
+public:
+	struct Link {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Link>& Links() {static ArrayMap<String,Link> a; return a;}
+	
 	
 public:
 	typedef Factory CLASSNAME;
@@ -26,7 +95,49 @@ public:
 	
 	template <class T> static
 	void RegVal(const char* name) {
-		Val& v = Vals().Add();
+		Val& v = Vals().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegDev(const char* name) {
+		Dev& v = Devs().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegValDev(const char* name) {
+		ValDev& v = ValDevs().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegBase(const char* name, const char* sink, const char* side, const char* src) {
+		Base& v = Bases().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegHeader(const char* name, const char* base) {
+		Header& v = Headers().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegLoop(const char* name, const char* headers) {
+		Loop& v = Loops().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class F, class T> static
+	void RegLink(const char* name, const char* from, const char* to) {
+		Link& v = Links().Add(name);
 		v.name = name;
 		
 	}

@@ -5,6 +5,8 @@ uses
 
 file
 	ChainCore.h,
+	DefHeader.h,
+	DefImpl.h,
 	Factory.h,
 	Factory.cpp,
 	Factory.icpp,

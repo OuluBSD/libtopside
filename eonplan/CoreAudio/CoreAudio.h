@@ -3,9 +3,13 @@
 
 #include <ChainLib/ChainLib.h>
 
-#include "Headers.h"
 
+NAMESPACE_PLAN_BEGIN
+
+#include "Headers.h"
 #include "TestLoops.h"
 #include "TestChains.h"
+
+NAMESPACE_PLAN_END
 
 #endif

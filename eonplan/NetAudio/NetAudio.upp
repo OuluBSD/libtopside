@@ -5,6 +5,7 @@ uses
 
 file
 	NetAudio.h,
+	NetAudio.icpp,
 	Headers.h,
 	TestChains.h,
 	TestMachines.h,

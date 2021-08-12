@@ -15,9 +15,6 @@ public:
 };
 
 
-#define HEADER(x, base) class x : public Header<base> {};
-
-
 NAMESPACE_PLAN_END
 
 #endif

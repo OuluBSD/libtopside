@@ -1,0 +1,12 @@
+#include "NetAudio.h"
+#include <ChainCore/DefImpl.h>
+
+NAMESPACE_PLAN_BEGIN
+
+INITBLOCK {
+	#include "Headers.h"
+	#include "TestChains.h"
+	#include "TestMachines.h"
+}
+
+NAMESPACE_PLAN_END

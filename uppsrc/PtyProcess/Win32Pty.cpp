@@ -1,5 +1,7 @@
 #include "PtyProcess.h"
 
+#ifdef flagWIN32
+
 struct winpty_error_s {
     winpty_result_t code;
     const wchar_t *msgStatic;
@@ -8,6 +10,8 @@ struct winpty_error_s {
     // objects like kOutOfMemory.
     std::shared_ptr<std::wstring> *msgDynamic;
 };
+
+#endif
 
 
 namespace Upp {

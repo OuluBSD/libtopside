@@ -5,6 +5,7 @@ uses
 
 file
 	ChainLib.h,
+	ChainLib.icpp,
 	Bases.h,
 	Headers.h,
 	Bases.json,

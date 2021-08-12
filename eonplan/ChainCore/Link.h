@@ -4,7 +4,6 @@
 NAMESPACE_PLAN_BEGIN
 
 
-#define LINK(name, from, to)
 
 
 NAMESPACE_PLAN_END

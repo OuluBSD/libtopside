@@ -3,8 +3,13 @@
 
 #include <ChainCore/ChainCore.h>
 
+
+NAMESPACE_PLAN_BEGIN
+
 #include "Bases.h"
 #include "Headers.h"
+
+NAMESPACE_PLAN_END
 
 
 #endif

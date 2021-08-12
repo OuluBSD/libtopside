@@ -38,8 +38,6 @@ public:
 };
 
 
-#define BASE2(x, sink, src)			using x = Base2<sink, src>;
-#define BASE3(x, sink, side, src)	using x = Base3<sink, side, src>;
 
 
 NAMESPACE_PLAN_END

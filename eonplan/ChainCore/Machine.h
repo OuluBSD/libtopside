@@ -89,38 +89,6 @@ public:
 };
 
 
-#define MACHINE1(x, a, links) \
-	char x##_link[] = links; \
-	using x = Machine<Machine0<a>,x##_link>;
-
-#define MACHINE2(x, a, b, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,Machine0<b>>,x##_link>;
-
-#define MACHINE3(x, a, b, c, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,Machine0<c>>>,x##_link>;
-
-#define MACHINE4(x, a, b, c, d, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,Machine0<d>>>>,x##_link>;
-
-#define MACHINE5(x, a, b, c, d, e, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,Machine0<e>>>>>,x##_link>;
-
-#define MACHINE6(x, a, b, c, d, e, f, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,Machine0<f>>>>>>,x##_link>;
-
-#define MACHINE7(x, a, b, c, d, e, f, g, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,Machine0<g>>>>>>>,x##_link>;
-
-#define MACHINE8(x, a, b, c, d, e, f, g, h, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,MachineN<g,Machine0<h>>>>>>>>,x##_link>;
-
 
 NAMESPACE_PLAN_END
 

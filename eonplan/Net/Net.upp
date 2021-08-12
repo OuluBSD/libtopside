@@ -5,6 +5,7 @@ uses
 
 file
 	Net.h,
+	Net.icpp,
 	Headers.h,
 	Loops.h,
 	TopChains.h,

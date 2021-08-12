@@ -6,7 +6,7 @@
 #define NAMESPACE_PLAN_BEGIN	namespace TS { namespace Plan {
 #define NAMESPACE_PLAN_END		}}
 
-
+#include "DefHeader.h"
 #include "Factory.h"
 #include "EonStream.h"
 #include "Unit.h"

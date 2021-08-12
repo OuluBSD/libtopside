@@ -1,0 +1,13 @@
+#include "AccelAudio.h"
+#include <ChainCore/DefImpl.h>
+
+NAMESPACE_PLAN_BEGIN
+
+INITBLOCK {
+	#include "TestHeaders.h"
+	#include "TestLoops.h"
+	#include "TestChains.h"
+	#include "TestTopChains.h"
+}
+
+NAMESPACE_PLAN_END

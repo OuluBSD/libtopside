@@ -11,12 +11,6 @@ public:
 	
 };
 
-#define DEV(x) \
-	class x : public DevSpec { \
-		 \
-	public: \
-		 \
-	};
 
 #define DEV_LIST \
 	DEV(Center) \
@@ -24,8 +18,14 @@ public:
 	DEV(Net) \
 	DEV(Perma)
 
-DEV_LIST
 
+#define DEV(x) \
+	class x : public DevSpec { \
+		 \
+	public: \
+		 \
+	};
+DEV_LIST
 #undef DEV
 
 

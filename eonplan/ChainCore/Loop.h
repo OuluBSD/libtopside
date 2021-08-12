@@ -63,15 +63,6 @@ public:
 
 
 
-#define LOOP2(x, a, b) \
-	using x = Loop<LoopN<a, Loop0<b>>>;
-#define LOOP3(x, a, b, c) \
-	using x = Loop<LoopN<a, LoopN<b, Loop0<c>>>>;
-#define LOOP4(x, a, b, c, d) \
-	using x = Loop<LoopN<a, LoopN<b, LoopN<c, Loop0<d>>>>>;
-#define LOOP5(x, a, b, c, d, e) \
-	using x = Loop<LoopN<a, LoopN<b, LoopN<c, LoopN<e, Loop0<d>>>>>>;
-
 
 NAMESPACE_PLAN_END
 

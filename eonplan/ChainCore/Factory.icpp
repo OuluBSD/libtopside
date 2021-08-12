@@ -7,4 +7,17 @@ INITBLOCK {
 	#define VAL(x) Factory::RegVal<x>(#x);
 	VAL_LIST
 	#undef VAL
+	
+	#define DEV(x) Factory::RegDev<x>(#x);
+	DEV_LIST
+	#undef DEV
+	
+	#define VAL2(x, val) Factory::RegValDev<x##val>(#x #val);
+	#define DEV(x) VAL2_LIST(x)
+	DEV_LIST
+	#undef DEV
+	#undef VAL2
+	
+	
+	
 }

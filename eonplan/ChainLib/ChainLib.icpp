@@ -1,0 +1,11 @@
+#include "ChainLib.h"
+#include <ChainCore/DefImpl.h>
+
+NAMESPACE_PLAN_BEGIN
+
+INITBLOCK {
+	#include "Bases.h"
+	#include "Headers.h"
+}
+
+NAMESPACE_PLAN_END

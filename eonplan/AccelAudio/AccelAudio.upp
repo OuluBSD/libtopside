@@ -5,6 +5,7 @@ uses
 
 file
 	AccelAudio.h,
+	AccelAudio.icpp,
 	TestHeaders.h,
 	TestLoops.h,
 	TestChains.h,

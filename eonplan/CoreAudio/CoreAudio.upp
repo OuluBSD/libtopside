@@ -5,6 +5,7 @@ uses
 
 file
 	CoreAudio.h,
+	CoreAudio.icpp,
 	Headers.h,
 	TestLoops.h,
 	TestChains.h,

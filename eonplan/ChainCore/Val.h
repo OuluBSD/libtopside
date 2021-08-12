@@ -12,13 +12,6 @@ public:
 };
 
 
-#define VAL(x) \
-	class x : public ValSpec { \
-		 \
-	public: \
-		 \
-	};
-
 
 #define VAL_LIST \
 	VAL(Order) \
@@ -36,8 +29,14 @@ public:
 	VAL2(x, Midi) \
 	VAL2(x, Event)
 
-VAL_LIST
 
+#define VAL(x) \
+	class x : public ValSpec { \
+		 \
+	public: \
+		 \
+	};
+VAL_LIST
 #undef VAL
 
 

@@ -1,0 +1,14 @@
+#include "Net.h"
+#include <ChainCore/DefImpl.h>
+
+NAMESPACE_PLAN_BEGIN
+
+INITBLOCK {
+	#include "Headers.h"
+	#include "Loops.h"
+	#include "TopChains.h"
+	#include "TestMachines.h"
+	#include "TestSystems.h"
+}
+
+NAMESPACE_PLAN_END

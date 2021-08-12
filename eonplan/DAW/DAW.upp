@@ -7,11 +7,12 @@ uses
 
 file
 	DAW.h,
+	DAW.icpp,
 	Headers.h,
 	Loops.h,
 	Links.h,
 	Chains.h,
-	TopChains.h,
+	Scopes.h,
 	HeadersMidi.json,
 	HeadersAudio.json,
 	Loops.json,
