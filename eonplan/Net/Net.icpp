@@ -5,6 +5,9 @@ NAMESPACE_PLAN_BEGIN
 
 
 INITBLOCK_(Net) {
+	Factory::SetActiveProject("Net");
+	Factory::AddDep("ChainLib");
+	
 	#include "Headers.h"
 	#include "Loops.h"
 	#include "Scopes.h"

@@ -3,6 +3,8 @@
 
 INITBLOCK {
 	using namespace TS::Plan;
+	Factory::SetActiveProject("ChainCore");
+	
 	
 	#define VAL(x) Factory::RegVal<x>(#x);
 	VAL_LIST

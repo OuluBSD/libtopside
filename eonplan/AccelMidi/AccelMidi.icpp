@@ -4,6 +4,8 @@
 NAMESPACE_PLAN_BEGIN
 
 INITBLOCK_(AccelMidi) {
+	Factory::SetActiveProject("AccelMidi");
+	
 	#include "Headers.h"
 }
 

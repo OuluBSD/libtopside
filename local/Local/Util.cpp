@@ -219,6 +219,7 @@ void GetDirectoryFiles(String dir, Index<String>& files) {
 }
 
 
+
 void RunningFlagSingle::Stop() {running = false; while (!stopped) Sleep(100);}
 
 void RunningFlag::Stop() {running = false; while (workers_running > 0) Sleep(sleep_time);}

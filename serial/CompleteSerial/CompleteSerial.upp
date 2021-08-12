@@ -1,0 +1,15 @@
+description "\377B113,42,150";
+
+uses
+	DAW,
+	Net,
+	NetAudio,
+	CoreAudio,
+	AccelMidi,
+	AccelAudio,
+	ChainLib,
+	ChainCore;
+
+mainconfig
+	"" = "";
+

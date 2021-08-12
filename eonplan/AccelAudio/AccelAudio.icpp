@@ -4,6 +4,11 @@
 NAMESPACE_PLAN_BEGIN
 
 INITBLOCK_(AccelAudio) {
+	Factory::SetActiveProject("AccelAudio");
+	Factory::AddDep("ChainLib");
+	Factory::AddDep("AccelMidi");
+	Factory::AddDep("CoreAudio");
+	
 	#include "TestHeaders.h"
 	#include "TestLoops.h"
 	#include "TestChains.h"

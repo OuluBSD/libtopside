@@ -4,6 +4,9 @@
 NAMESPACE_PLAN_BEGIN
 
 INITBLOCK_(CoreAudio) {
+	Factory::SetActiveProject("CoreAudio");
+	Factory::AddDep("ChainLib");
+	
 	#include "Headers.h"
 	
 	#include "TestLoops.h"

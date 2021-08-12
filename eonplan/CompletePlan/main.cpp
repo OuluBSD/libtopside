@@ -7,11 +7,6 @@ CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
 	Plan::Factory::Dump();
-	
-	
-	/*Machine1<TestAudioChain>			mach;
-	mach.Init();
-	mach.Dump();*/
-	
+	Plan::Factory::ExportAll();
 	
 }
