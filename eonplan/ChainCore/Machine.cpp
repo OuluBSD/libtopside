@@ -1,4 +1,7 @@
 #include "ChainCore.h"
+
+NAMESPACE_PLAN_BEGIN
+
 /*
 Machine::Machine() {
 	
@@ -18,3 +21,4 @@ void Machine::OnChain(ChainBase& c) {
 	
 }*/
 
+NAMESPACE_PLAN_END

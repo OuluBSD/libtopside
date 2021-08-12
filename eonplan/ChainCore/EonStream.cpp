@@ -1,6 +1,6 @@
 #include "ChainCore.h"
 
-
+NAMESPACE_PLAN_BEGIN
 
 
 void EonStream::Link(const char* c) {
@@ -24,3 +24,6 @@ void EonStream::Link(const char* c) {
 	
 	//DUMPC(tmp_links);
 }
+
+
+NAMESPACE_PLAN_END

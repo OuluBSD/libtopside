@@ -1,6 +1,9 @@
 #ifndef _NetAudio_TestChains_h_
 #define _NetAudio_TestChains_h_
 
+NAMESPACE_PLAN_BEGIN
+
+
 CHAIN1(TestRemoteAudioGenLocalPart1,
 	TestCenterNetOrderSrc,
 	"")
@@ -14,5 +17,7 @@ CHAIN1(TestRemoteAudioGenRemote,
 	TestNetAudioSrc,
 	"")
 
+
+NAMESPACE_PLAN_END
 
 #endif

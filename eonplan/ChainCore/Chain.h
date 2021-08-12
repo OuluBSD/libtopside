@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Chain_h_
 #define _ChainCore_Chain_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class ChainBase : public Node {
 	
@@ -85,5 +87,7 @@ public:
 	char x##_link[] = links; \
 	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,ChainN<f,ChainN<g,Chain0<h>>>>>>>>,x##_link>;
 
+
+NAMESPACE_PLAN_END
 
 #endif

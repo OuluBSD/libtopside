@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Loop_h_
 #define _ChainCore_Loop_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class LoopBase : public Node {
 	
@@ -71,5 +73,6 @@ public:
 	using x = Loop<LoopN<a, LoopN<b, LoopN<c, LoopN<e, Loop0<d>>>>>>;
 
 
+NAMESPACE_PLAN_END
 
 #endif

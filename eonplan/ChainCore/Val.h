@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Val_h_
 #define _ChainCore_Val_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class ValSpec {
 	
@@ -38,5 +40,7 @@ VAL_LIST
 
 #undef VAL
 
+
+NAMESPACE_PLAN_END
 
 #endif

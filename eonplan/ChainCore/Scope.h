@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Scope_h_
 #define _ChainCore_Scope_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class ScopeBase : public Node {
 	
@@ -85,5 +87,7 @@ public:
 	char x##_link[] = links; \
 	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,ScopeN<f,ScopeN<g,Scope0<h>>>>>>>>,x##_link>;
 
+
+NAMESPACE_PLAN_END
 
 #endif

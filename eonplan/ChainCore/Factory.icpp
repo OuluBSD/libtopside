@@ -1,0 +1,10 @@
+#include "ChainCore.h"
+
+
+INITBLOCK {
+	using namespace TS::Plan;
+	
+	#define VAL(x) Factory::RegVal<x>(#x);
+	VAL_LIST
+	#undef VAL
+}

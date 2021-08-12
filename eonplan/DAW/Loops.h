@@ -1,6 +1,8 @@
 #ifndef _DAW_Loops_h_
 #define _DAW_Loops_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 LOOP4(DawMidiInstrument,
 	Customer,
@@ -29,5 +31,7 @@ LOOP3(DawFileSink,
 	DawAudioOutSink,
 	DefAudioFileSink)
 
+
+NAMESPACE_PLAN_END
 
 #endif

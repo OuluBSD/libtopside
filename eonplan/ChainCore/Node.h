@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Node_h_
 #define _ChainCore_Node_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class Node {
 	Node*		parent = 0;
@@ -17,5 +19,7 @@ public:
 	
 };
 
+
+NAMESPACE_PLAN_END
 
 #endif

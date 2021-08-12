@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Dev_h_
 #define _ChainCore_Dev_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class DevSpec {
 	
@@ -26,5 +28,7 @@ DEV_LIST
 
 #undef DEV
 
+
+NAMESPACE_PLAN_END
 
 #endif

@@ -1,6 +1,8 @@
 #ifndef _ChainCore_ValDev_h_
 #define _ChainCore_ValDev_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 class SrcBase : public Unit {
 	
@@ -63,5 +65,7 @@ VAL_LIST
 
 #undef VAL
 
+
+NAMESPACE_PLAN_END
 
 #endif

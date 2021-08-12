@@ -1,6 +1,8 @@
 #ifndef _ChainCore_EonStream_h_
 #define _ChainCore_EonStream_h_
 
+NAMESPACE_PLAN_BEGIN
+
 class ChainBase;
 class LoopBase;
 
@@ -18,4 +20,7 @@ public:
 	template <class T> EonStream& operator% (T& o) {Serialize(o); return *this;}
 	
 };
+
+NAMESPACE_PLAN_END
+
 #endif

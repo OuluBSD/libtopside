@@ -1,6 +1,8 @@
 #ifndef _AccelAudio_TestLoops_h_
 #define _AccelAudio_TestLoops_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 LOOP3(TestMidiAudioPart1,
 	Customer,
@@ -18,5 +20,7 @@ LOOP3(TestMidiAudioPart3,
 	TestAccelCenterAudioSrc,
 	DefAudioHardwareSink)
 
+
+NAMESPACE_PLAN_END
 
 #endif

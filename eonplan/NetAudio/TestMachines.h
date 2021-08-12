@@ -1,6 +1,8 @@
 #ifndef _NetAudio_TestMachines_h_
 #define _NetAudio_TestMachines_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 MACHINE3(
 	TestRemoteAudio,
@@ -9,5 +11,7 @@ MACHINE3(
 	TestRemoteAudioGenRemote,
 	"0221")
 
+
+NAMESPACE_PLAN_END
 
 #endif

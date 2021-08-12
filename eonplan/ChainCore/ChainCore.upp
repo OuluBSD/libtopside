@@ -5,6 +5,9 @@ uses
 
 file
 	ChainCore.h,
+	Factory.h,
+	Factory.cpp,
+	Factory.icpp,
 	EonStream.h,
 	EonStream.cpp,
 	Unit.h,

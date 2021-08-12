@@ -1,6 +1,8 @@
 #ifndef _ChainCore_Machine_h_
 #define _ChainCore_Machine_h_
 
+NAMESPACE_PLAN_BEGIN
+
 
 /*
 class Machine : public Node {
@@ -119,5 +121,7 @@ public:
 	char x##_link[] = links; \
 	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,MachineN<g,Machine0<h>>>>>>>>,x##_link>;
 
+
+NAMESPACE_PLAN_END
 
 #endif
