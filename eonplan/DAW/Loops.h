@@ -1,22 +1,19 @@
-#ifndef _DAW_Loops_h_
-#define _DAW_Loops_h_
 
-NAMESPACE_PLAN_BEGIN
-
-
-LOOP4(DawMidiInstrument,
-	Customer,
+LOOP5(DawMidiInstrument,
+	AccelCustomer,
 	DawMidiSrc,
 	DawMidiAudioConv,
-	DawAudioFx)
+	DawAudioFx,
+	DawAudioOut)
 	
-LOOP3(DawFxChannel,
-	Customer,
+LOOP4(DawFxChannel,
+	AccelCustomer,
 	DawAudioIn,
-	DawAudioFx)
+	DawAudioFx,
+	DawAudioOut)
 
 LOOP4(DawMasterChannel,
-	Customer,
+	AccelCustomer,
 	DawAudioIn,
 	DawAudioFx,
 	DawAudioHwOutSrc)
@@ -30,8 +27,3 @@ LOOP3(DawFileSink,
 	Customer,
 	DawAudioOutSink,
 	DefAudioFileSink)
-
-
-NAMESPACE_PLAN_END
-
-#endif

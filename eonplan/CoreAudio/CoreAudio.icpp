@@ -3,7 +3,7 @@
 
 NAMESPACE_PLAN_BEGIN
 
-INITBLOCK {
+INITBLOCK_(CoreAudio) {
 	#include "Headers.h"
 	
 	#include "TestLoops.h"

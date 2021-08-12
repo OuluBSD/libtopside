@@ -87,6 +87,36 @@ public:
 	
 	static ArrayMap<String,Link>& Links() {static ArrayMap<String,Link> a; return a;}
 	
+public:
+	struct Chain {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Chain>& Chains() {static ArrayMap<String,Chain> a; return a;}
+	
+public:
+	struct Scope {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Scope>& Scopes() {static ArrayMap<String,Scope> a; return a;}
+	
+public:
+	struct Machine {
+		const char* name;
+		
+		
+		String ToString() const;
+	};
+	
+	static ArrayMap<String,Machine>& Machines() {static ArrayMap<String,Machine> a; return a;}
+	
 	
 public:
 	typedef Factory CLASSNAME;
@@ -138,6 +168,30 @@ public:
 	template <class F, class T> static
 	void RegLink(const char* name, const char* from, const char* to) {
 		Link& v = Links().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegChain(const char* name, const char* loops, const char* links) {
+		T::LinkString() = links;
+		Chain& v = Chains().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegScope(const char* name, const char* chains, const char* links) {
+		T::LinkString() = links;
+		Scope& v = Scopes().Add(name);
+		v.name = name;
+		
+	}
+	
+	template <class T> static
+	void RegMachine(const char* name, const char* scopes, const char* links) {
+		T::LinkString() = links;
+		Machine& v = Machines().Add(name);
 		v.name = name;
 		
 	}

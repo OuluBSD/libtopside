@@ -44,6 +44,24 @@ String Factory::Link::ToString() const {
 	return s;
 }
 
+String Factory::Chain::ToString() const {
+	String s;
+	s << name;
+	return s;
+}
+
+String Factory::Scope::ToString() const {
+	String s;
+	s << name;
+	return s;
+}
+
+String Factory::Machine::ToString() const {
+	String s;
+	s << name;
+	return s;
+}
+
 void Factory::Dump() {
 	
 	auto& vals = Vals();
@@ -66,6 +84,15 @@ void Factory::Dump() {
 	
 	auto& links = Links();
 	DUMPC(links);
+	
+	auto& chains = Chains();
+	DUMPC(chains);
+	
+	auto& scopes = Scopes();
+	DUMPC(scopes);
+	
+	auto& machines = Machines();
+	DUMPC(machines);
 	
 }
 

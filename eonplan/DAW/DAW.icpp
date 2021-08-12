@@ -3,7 +3,7 @@
 
 NAMESPACE_PLAN_BEGIN
 
-INITBLOCK {
+INITBLOCK_(DAW) {
 	#include "Headers.h"
 	#include "Loops.h"
 	#include "Links.h"

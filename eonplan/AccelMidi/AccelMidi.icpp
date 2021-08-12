@@ -3,7 +3,7 @@
 
 NAMESPACE_PLAN_BEGIN
 
-INITBLOCK {
+INITBLOCK_(AccelMidi) {
 	#include "Headers.h"
 }
 

@@ -1,7 +1,9 @@
 description "\377B0,0,226";
 
 uses
-	ChainLib;
+	ChainLib,
+	AccelMidi,
+	CoreAudio;
 
 file
 	AccelAudio.h,

@@ -13,111 +13,111 @@
 #define LOOP4(x, a, b, c, d) \
 	using x = Loop<LoopN<a, LoopN<b, LoopN<c, Loop0<d>>>>>;
 #define LOOP5(x, a, b, c, d, e) \
-	using x = Loop<LoopN<a, LoopN<b, LoopN<c, LoopN<e, Loop0<d>>>>>>;
+	using x = Loop<LoopN<a, LoopN<b, LoopN<c, LoopN<d, Loop0<e>>>>>>;
 
 #define LINK(name, from, to)
 
 
 
 #define CHAIN1(x, a, links) \
-	char x##_link[] = links; \
-	using x = Chain<Chain0<a>,x##_link>;
+	\
+	using x = Chain<Chain0<a>>;
 
 #define CHAIN2(x, a, b, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,Chain0<b>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,Chain0<b>>>;
 
 #define CHAIN3(x, a, b, c, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,Chain0<c>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,Chain0<c>>>>;
 
 #define CHAIN4(x, a, b, c, d, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,ChainN<c,Chain0<d>>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,ChainN<c,Chain0<d>>>>>;
 
 #define CHAIN5(x, a, b, c, d, e, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,Chain0<e>>>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,Chain0<e>>>>>>;
 
 #define CHAIN6(x, a, b, c, d, e, f, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,Chain0<f>>>>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,Chain0<f>>>>>>>;
 
 #define CHAIN7(x, a, b, c, d, e, f, g, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,ChainN<f,Chain0<g>>>>>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,ChainN<f,Chain0<g>>>>>>>>;
 
 #define CHAIN8(x, a, b, c, d, e, f, g, h, links) \
-	char x##_link[] = links; \
-	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,ChainN<f,ChainN<g,Chain0<h>>>>>>>>,x##_link>;
+	\
+	using x = Chain<ChainN<a,ChainN<b,ChainN<c,ChainN<d,ChainN<e,ChainN<f,ChainN<g,Chain0<h>>>>>>>>>;
 
 
 
 #define SCOPE1(x, a, links) \
-	char x##_link[] = links; \
-	using x = Scope<Scope0<a>,x##_link>;
+	\
+	using x = Scope<Scope0<a>>;
 
 #define SCOPE2(x, a, b, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,Scope0<b>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,Scope0<b>>>;
 
 #define SCOPE3(x, a, b, c, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,Scope0<c>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,Scope0<c>>>>;
 
 #define SCOPE4(x, a, b, c, d, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,Scope0<d>>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,Scope0<d>>>>>;
 
 #define SCOPE5(x, a, b, c, d, e, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,Scope0<e>>>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,Scope0<e>>>>>>;
 
 #define SCOPE6(x, a, b, c, d, e, f, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,Scope0<f>>>>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,Scope0<f>>>>>>>;
 
 #define SCOPE7(x, a, b, c, d, e, f, g, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,ScopeN<f,Scope0<g>>>>>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,ScopeN<f,Scope0<g>>>>>>>>;
 
 #define SCOPE8(x, a, b, c, d, e, f, g, h, links) \
-	char x##_link[] = links; \
-	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,ScopeN<f,ScopeN<g,Scope0<h>>>>>>>>,x##_link>;
+	\
+	using x = Scope<ScopeN<a,ScopeN<b,ScopeN<c,ScopeN<d,ScopeN<e,ScopeN<f,ScopeN<g,Scope0<h>>>>>>>>>;
 
 
 
 #define MACHINE1(x, a, links) \
-	char x##_link[] = links; \
-	using x = Machine<Machine0<a>,x##_link>;
+	\
+	using x = Machine<Machine0<a>>;
 
 #define MACHINE2(x, a, b, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,Machine0<b>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,Machine0<b>>>;
 
 #define MACHINE3(x, a, b, c, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,Machine0<c>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,Machine0<c>>>>;
 
 #define MACHINE4(x, a, b, c, d, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,Machine0<d>>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,MachineN<c,Machine0<d>>>>>;
 
 #define MACHINE5(x, a, b, c, d, e, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,Machine0<e>>>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,Machine0<e>>>>>>;
 
 #define MACHINE6(x, a, b, c, d, e, f, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,Machine0<f>>>>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,Machine0<f>>>>>>>;
 
 #define MACHINE7(x, a, b, c, d, e, f, g, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,Machine0<g>>>>>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,Machine0<g>>>>>>>>;
 
 #define MACHINE8(x, a, b, c, d, e, f, g, h, links) \
-	char x##_link[] = links; \
-	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,MachineN<g,Machine0<h>>>>>>>>,x##_link>;
+	\
+	using x = Machine<MachineN<a,MachineN<b,MachineN<c,MachineN<d,MachineN<e,MachineN<f,MachineN<g,Machine0<h>>>>>>>>>;
 
 
 

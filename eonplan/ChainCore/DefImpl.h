@@ -53,32 +53,32 @@
 
 #define LINK(name, from, to) Factory::RegLink<from, to>(#name, #from, #to);
 
-#define CHAIN1(x, a, links) Factory::RegChain<x>(#x, #a);
-#define CHAIN2(x, a, b, links) Factory::RegChain<x>(#x, #a "\n" #b);
-#define CHAIN3(x, a, b, c, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c);
-#define CHAIN4(x, a, b, c, d, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d);
-#define CHAIN5(x, a, b, c, d, e, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e);
-#define CHAIN6(x, a, b, c, d, e, f, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f);
-#define CHAIN7(x, a, b, c, d, e, f, g, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g);
-#define CHAIN8(x, a, b, c, d, e, f, g, h, links)Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h);
+#define CHAIN1(x, a, links) Factory::RegChain<x>(#x, #a, links);
+#define CHAIN2(x, a, b, links) Factory::RegChain<x>(#x, #a "\n" #b, links);
+#define CHAIN3(x, a, b, c, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c, links);
+#define CHAIN4(x, a, b, c, d, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d, links);
+#define CHAIN5(x, a, b, c, d, e, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e, links);
+#define CHAIN6(x, a, b, c, d, e, f, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f, links);
+#define CHAIN7(x, a, b, c, d, e, f, g, links) Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g, links);
+#define CHAIN8(x, a, b, c, d, e, f, g, h, links)Factory::RegChain<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h, links);
 
-#define SCOPE1(x, a, links) Factory::RegScope<x>(#x, #a);
-#define SCOPE2(x, a, b, links) Factory::RegScope<x>(#x, #a "\n" #b);
-#define SCOPE3(x, a, b, c, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c);
-#define SCOPE4(x, a, b, c, d, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d);
-#define SCOPE5(x, a, b, c, d, e, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e);
-#define SCOPE6(x, a, b, c, d, e, f, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f);
-#define SCOPE7(x, a, b, c, d, e, f, g, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g);
-#define SCOPE8(x, a, b, c, d, e, f, g, h, links)Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h);
+#define SCOPE1(x, a, links) Factory::RegScope<x>(#x, #a, links);
+#define SCOPE2(x, a, b, links) Factory::RegScope<x>(#x, #a "\n" #b, links);
+#define SCOPE3(x, a, b, c, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c, links);
+#define SCOPE4(x, a, b, c, d, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d, links);
+#define SCOPE5(x, a, b, c, d, e, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e, links);
+#define SCOPE6(x, a, b, c, d, e, f, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f, links);
+#define SCOPE7(x, a, b, c, d, e, f, g, links) Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g, links);
+#define SCOPE8(x, a, b, c, d, e, f, g, h, links)Factory::RegScope<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h, links);
 
-#define MACHINE1(x, a, links) Factory::RegMachine<x>(#x, #a);
-#define MACHINE2(x, a, b, links) Factory::RegMachine<x>(#x, #a "\n" #b);
-#define MACHINE3(x, a, b, c, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c);
-#define MACHINE4(x, a, b, c, d, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d);
-#define MACHINE5(x, a, b, c, d, e, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e);
-#define MACHINE6(x, a, b, c, d, e, f, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f);
-#define MACHINE7(x, a, b, c, d, e, f, g, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g);
-#define MACHINE8(x, a, b, c, d, e, f, g, h, links)Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h);
+#define MACHINE1(x, a, links) Factory::RegMachine<x>(#x, #a, links);
+#define MACHINE2(x, a, b, links) Factory::RegMachine<x>(#x, #a "\n" #b, links);
+#define MACHINE3(x, a, b, c, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c, links);
+#define MACHINE4(x, a, b, c, d, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d, links);
+#define MACHINE5(x, a, b, c, d, e, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e, links);
+#define MACHINE6(x, a, b, c, d, e, f, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f, links);
+#define MACHINE7(x, a, b, c, d, e, f, g, links) Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g, links);
+#define MACHINE8(x, a, b, c, d, e, f, g, h, links)Factory::RegMachine<x>(#x, #a "\n" #b "\n" #c "\n" #d "\n" #e "\n" #f "\n" #g "\n" #h, links);
 
 
 

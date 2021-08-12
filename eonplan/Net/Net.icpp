@@ -3,10 +3,11 @@
 
 NAMESPACE_PLAN_BEGIN
 
-INITBLOCK {
+
+INITBLOCK_(Net) {
 	#include "Headers.h"
 	#include "Loops.h"
-	#include "TopChains.h"
+	#include "Scopes.h"
 	#include "TestMachines.h"
 	#include "TestSystems.h"
 }

@@ -3,7 +3,7 @@
 
 NAMESPACE_PLAN_BEGIN
 
-INITBLOCK {
+INITBLOCK_(AccelAudio) {
 	#include "TestHeaders.h"
 	#include "TestLoops.h"
 	#include "TestChains.h"

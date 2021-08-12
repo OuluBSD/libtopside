@@ -75,7 +75,7 @@ public:
 
 
 
-template <class T, char const* link>
+template <class T>
 class Machine : public MachineBase {
 	T			parts;
 	

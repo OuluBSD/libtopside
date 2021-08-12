@@ -41,7 +41,7 @@ public:
 
 
 
-template <class T, char const* link>
+template <class T>
 class Scope : public ScopeBase {
 	T			parts;
 	
