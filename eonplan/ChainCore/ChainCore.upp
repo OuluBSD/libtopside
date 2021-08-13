@@ -1,7 +1,7 @@
 description "\377B128,0,0";
 
 uses
-	Local;
+	Backend;
 
 file
 	ChainCore.h,

@@ -1,0 +1,16 @@
+description "\377B128,0,0";
+
+uses
+	SerialMach;
+
+file
+	TODO.txt,
+	SerialCore.h,
+	PacketTracker.h,
+	Atom.h,
+	AtomStore.h,
+	LoopStore.h,
+	Factory.h,
+	Factory.cpp,
+	Loop.h;
+

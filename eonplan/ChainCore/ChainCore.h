@@ -1,7 +1,7 @@
 #ifndef _ChainCore_ChainCore_h_
 #define _ChainCore_ChainCore_h_
 
-#include <Local/Local.h>
+#include <Backend/Backend.h>
 
 #define NAMESPACE_PLAN_BEGIN	namespace TS { namespace Plan {
 #define NAMESPACE_PLAN_END		}}

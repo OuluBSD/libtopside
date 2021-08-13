@@ -1,0 +1,8 @@
+- generate
+	- val/dev/valdev ids
+	- similar to
+		- EcsTypeCls / TypeExtCls
+	- samples (except binary)
+	- formats
+	- Format union (whole Format?)
+

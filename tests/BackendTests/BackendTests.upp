@@ -1,0 +1,10 @@
+uses
+	Backend;
+
+file
+	BackendTests.h,
+	main.cpp;
+
+mainconfig
+	"" = "";
+

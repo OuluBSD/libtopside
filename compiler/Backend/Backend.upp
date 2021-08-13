@@ -1,0 +1,27 @@
+description "\377B128,0,255";
+
+uses
+	Local;
+
+file
+	Backend.h,
+	Exporter.h,
+	Exporter.cpp,
+	CompilationUnit.h,
+	CompilationUnit.cpp,
+	Namespace.h,
+	Namespace.cpp,
+	Class.h,
+	Class.cpp,
+	Field.h,
+	Field.cpp,
+	Function.h,
+	Function.cpp,
+	Statement.h,
+	Statement.cpp,
+	Expression.h,
+	Expression.cpp,
+	Node.h,
+	Node.cpp,
+	_ readonly separator;
+

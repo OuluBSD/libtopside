@@ -1,0 +1,10 @@
+uses
+	CompleteSerial;
+
+file
+	SerialPlanner.h,
+	main.cpp,
+	SerialPlanner.cpp,
+	Planner.h,
+	Planner.cpp;
+

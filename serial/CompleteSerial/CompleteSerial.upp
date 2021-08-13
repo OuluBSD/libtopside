@@ -1,14 +1,14 @@
 description "\377B113,42,150";
 
 uses
-	DAW,
-	Net,
-	NetAudio,
-	CoreAudio,
-	AccelMidi,
-	AccelAudio,
+	ChainCore,
 	ChainLib,
-	ChainCore;
+	AccelAudio,
+	AccelMidi,
+	CoreAudio,
+	NetAudio,
+	Net,
+	DAW;
 
 mainconfig
 	"" = "";
