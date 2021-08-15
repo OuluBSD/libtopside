@@ -5,14 +5,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class CompilationUnit : public CompilerNode<CompilationUnit,void> {
-	
+	ArrayMap<String,Namespace>		namespaces;
 	
 public:
 	typedef CompilationUnit CLASSNAME;
-	CompilationUnit() {}
+	CompilationUnit();
 	
 	
-	Namespace&	FindAddNamespace(String name);
+	Namespace&	GetAddNamespace(String name);
 	
 };
 

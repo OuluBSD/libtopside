@@ -6,11 +6,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Class : public CompilerNode<Class,Namespace> {
-	
+public:
+	Vector<Class*>	inherited;
+	String			name;
+	bool			is_template = false;
 	
 public:
 	typedef Class CLASSNAME;
-	Class() {}
+	Class();
 	
 	
 	bool Inherit(Class& cls);

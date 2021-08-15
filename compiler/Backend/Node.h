@@ -15,15 +15,17 @@ class CompilationUnit;
 
 template <class T, class Parent>
 class CompilerNode {
-	Parent* parent = 0;
-	T*		subparent = 0;
-	
+	Parent*		parent = 0;
+	T*			subparent = 0;
+	VectorMap<String,String>	hints;
 public:
 	typedef CompilerNode CLASSNAME;
 	CompilerNode() {}
 	
 	
-	CompilerNode& Hint(String key, String value);
+	CompilerNode& SetParent(Parent* p) {parent = p; return *this;}
+	CompilerNode& SetParent(T* p) {subparent = p; return *this;}
+	CompilerNode& Hint(String key, String value) {hints.GetAdd(key) = value; return *this;}
 	
 	
 };

@@ -4,9 +4,9 @@
 CONSOLE_APP_MAIN {
 	using namespace TS;
 	CompilationUnit	cu;
-	Namespace&		ns = cu.FindAddNamespace("TS");
-	Class&			atom_base = ns.FindAddClass("AtomBase");
-	Class&			eg_atom = ns.FindAddTemplateClass("AtomExample");
+	Namespace&		ns = cu.GetAddNamespace("TS");
+	Class&			atom_base = ns.GetAddClass("AtomBase");
+	Class&			eg_atom = ns.GetAddTemplateClass("AtomExample");
 	bool r = true;
 	
 	atom_base.Hint("prj", "SerialCore");
