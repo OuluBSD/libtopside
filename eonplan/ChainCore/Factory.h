@@ -12,7 +12,7 @@ class ValDevSpec;
 class Factory {
 public:
 	
-	struct Project {
+	struct Package {
 		String name;
 		Index<String> deps;
 		
@@ -22,7 +22,7 @@ public:
 	
 public:
 	struct Generic {
-		Project* prj = 0;
+		Package* pkg = 0;
 		const char* name;
 		
 	};
@@ -121,7 +121,7 @@ public:
 	template <class T> static
 	void RegVal(const char* name) {
 		Val& v = Vals().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -129,7 +129,7 @@ public:
 	template <class T> static
 	void RegDev(const char* name) {
 		Dev& v = Devs().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -137,7 +137,7 @@ public:
 	template <class T> static
 	void RegValDev(const char* name) {
 		ValDev& v = ValDevs().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -145,7 +145,7 @@ public:
 	template <class T> static
 	void RegBase(const char* name, const char* sink, const char* side, const char* src) {
 		Base& v = Bases().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -153,7 +153,7 @@ public:
 	template <class T> static
 	void RegHeader(const char* name, const char* base) {
 		Header& v = Headers().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -161,7 +161,7 @@ public:
 	template <class T> static
 	void RegLoop(const char* name, const char* headers) {
 		Loop& v = Loops().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -169,7 +169,7 @@ public:
 	template <class F, class T> static
 	void RegLink(const char* name, const char* from, const char* to) {
 		Link& v = Links().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -178,7 +178,7 @@ public:
 	void RegChain(const char* name, const char* loops, const char* links) {
 		T::LinkString() = links;
 		Chain& v = Chains().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -187,7 +187,7 @@ public:
 	void RegScope(const char* name, const char* chains, const char* links) {
 		T::LinkString() = links;
 		Scope& v = Scopes().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
@@ -196,19 +196,18 @@ public:
 	void RegMachine(const char* name, const char* scopes, const char* links) {
 		T::LinkString() = links;
 		Machine& v = Machines().Add(name);
-		v.prj = ActiveProject();
+		v.pkg = ActivePackage();
 		v.name = name;
 		
 	}
 	
-	static ArrayMap<String,Project>& Projects() {static ArrayMap<String,Project> a; return a;}
-	static Project*& ActiveProject() {static Project* p; return p;}
-	static void SetActiveProject(String prj) {auto p = &Projects().Add(prj); p->name = prj; ActiveProject() = p;}
-	static void AddDep(String prj) {ActiveProject()->deps.FindAdd(prj);}
+	static ArrayMap<String,Package>& Packages() {static ArrayMap<String,Package> a; return a;}
+	static Package*& ActivePackage() {static Package* p; return p;}
+	static void SetActivePackage(String pkg) {auto p = &Packages().Add(pkg); p->name = pkg; ActivePackage() = p;}
+	static void AddDep(String pkg) {ActivePackage()->deps.FindAdd(pkg);}
 	static void Dump();
-	static bool ExportAll();
-	static bool Export(String dir, String prj);
-	static bool ExportComplete(String dir);
+	static bool Export(CompilationUnit& cu);
+	static bool Export(CompilationUnit& cu, Package& pkg);
 	
 };
 

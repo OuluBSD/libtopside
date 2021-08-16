@@ -272,6 +272,7 @@ void SetSharedDirectory(String d);
 String GetSharedDirectory();
 String SharedFile(String file);
 void RenameFile(String oldpath, String newpath);
+void TouchFile(String path);
 
 inline String AppendPosixFilename(const String& a, const String& b) {
 	if (a.Right(1) == "/") return a + b;

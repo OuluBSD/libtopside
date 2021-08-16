@@ -33,6 +33,7 @@ private:
 	ArrayMap<String,Package>	pkgs;
 	Vector<NodeBase*>			scopes;
 	CompilationUnit&			cu;
+	String						export_dir;
 	
 	bool Visit(CompilationUnit& cu);
 	bool Visit(Namespace& ns);
@@ -45,13 +46,17 @@ private:
 	void Pop();
 	
 	
+	bool ExportComplete(String dir);
+	bool ExportPackage(Package& pkg);
+	bool ExportHeader(Package& pkg, PackageFile& file, String path);
+	bool ExportImplementation(Package& pkg, PackageFile& file, String path);
+	
 public:
 	typedef AssemblyExporter CLASSNAME;
 	AssemblyExporter(CompilationUnit& cu);
 	
 	bool Export(String dir);
-	bool ExportComplete(String dir);
-	bool ExportPackage(String dir, String prj_name);
+	void Dump();
 	
 };
 	

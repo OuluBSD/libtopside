@@ -25,6 +25,13 @@ void RenameFile(String oldpath, String newpath) {
 	rename(oldpath.Begin(), newpath.Begin());
 }
 
+void TouchFile(String path) {
+	if (!FileExists(path)) {
+		FileOut fout(path);
+		fout.Close();
+	}
+}
+
 
 
 

@@ -15,6 +15,9 @@ public:
 	
 	
 	Namespace&	GetAddNamespace(String name);
+	String		GetTreeString(int indent=0) const override;
+	String		GetCodeString(const CodeArgs& args) const override;
+	String		ToString() const override;
 	
 };
 

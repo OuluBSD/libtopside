@@ -19,6 +19,9 @@ CONSOLE_APP_MAIN {
 	RealizeDirectory(dir_out);
 	
 	
+	cu.SetPackage("BackendTest");
+	cu.SetFile("BackendTest");
+	
 	AssemblyExporter ae(cu);
 	r = ae.Export(dir_out);
 	ASSERT(r);

@@ -16,6 +16,23 @@ class Namespace;
 class CompilationUnit;
 
 
+struct CodeArgs {
+	bool have_header = false;
+	bool have_impl = false;
+	bool have_inline = false;
+	int indent = 0;
+	
+};
+
+typedef enum {
+	ACC_PRIVATE,
+	ACC_PROTECTED,
+	ACC_PUBLIC,
+} CodeAccess;
+
+String GetAccessString(CodeAccess acc);
+
+
 class NodeBase {
 	
 public:
@@ -29,6 +46,14 @@ public:
 	
 	String		GetHint(String key) const {return hints.Get(key, String());}
 	
+	
+	void		SetPackage(String s) {Hint(HINT_PKG, s);}
+	void		SetFile(String s) {Hint(HINT_FILE, s);}
+	
+	
+	virtual String	GetTreeString(int indent=0) const = 0;
+	virtual String	GetCodeString(const CodeArgs& args) const = 0;
+	virtual String	ToString() const = 0;
 	
 };
 
