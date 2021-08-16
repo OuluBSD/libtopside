@@ -6,6 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Expression : public CompilerNode<Expression,Statement> {
+public:
+	Array<Expression>	exprs;
 	
 	
 public:

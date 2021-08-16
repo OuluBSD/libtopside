@@ -5,6 +5,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class CompilationUnit : public CompilerNode<CompilationUnit,void> {
+	
+public:
 	ArrayMap<String,Namespace>		namespaces;
 	
 public:

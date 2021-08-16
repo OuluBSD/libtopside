@@ -19,7 +19,7 @@ CONSOLE_APP_MAIN {
 	RealizeDirectory(dir_out);
 	
 	
-	AssemblyExporter ae;
+	AssemblyExporter ae(cu);
 	r = ae.Export(dir_out);
 	ASSERT(r);
 	

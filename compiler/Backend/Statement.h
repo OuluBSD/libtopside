@@ -6,7 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Statement : public CompilerNode<Statement,Function> {
-	
+public:
+	Array<Statement>	stmts;
+	One<Expression>		expr;
 	
 public:
 	typedef Statement CLASSNAME;

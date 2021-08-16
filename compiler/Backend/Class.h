@@ -7,9 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class Class : public CompilerNode<Class,Namespace> {
 public:
-	Vector<Class*>	inherited;
-	String			name;
-	bool			is_template = false;
+	Vector<Class*>			inherited;
+	ArrayMap<String,Field>	fields;
+	String					name;
+	bool					is_template = false;
 	
 public:
 	typedef Class CLASSNAME;

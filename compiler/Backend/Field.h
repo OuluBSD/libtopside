@@ -6,7 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Field : public CompilerNode<Field,Class> {
-	
+public:
+	One<Expression>		ctor;
 	
 public:
 	typedef Field CLASSNAME;

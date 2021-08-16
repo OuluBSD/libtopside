@@ -7,24 +7,51 @@ NAMESPACE_TOPSIDE_BEGIN
 class AssemblyExporter {
 public:
 	
-	struct Project {
-		String name;
-		Index<String> deps;
+	struct PackageFile {
+		Vector<NodeBase*>				refs;
+		String							name;
+		
+	};
+	
+	struct Package {
+		ArrayMap<String,PackageFile>	files;
+		Index<String>					deps;
+		String							name;
 		
 		void Set(String s) {name = s; deps.Clear();}
 		String ToString() const {return name;}
 	};
 	
+	
 private:
-	ArrayMap<String,Project> prjs;
+	struct ScopeHolder {
+		AssemblyExporter& e;
+		ScopeHolder(AssemblyExporter* ae, NodeBase& n) : e(*ae) {e.Push(n);}
+		~ScopeHolder() {e.Pop();}
+	};
+	
+	ArrayMap<String,Package>	pkgs;
+	Vector<NodeBase*>			scopes;
+	CompilationUnit&			cu;
+	
+	bool Visit(CompilationUnit& cu);
+	bool Visit(Namespace& ns);
+	bool Visit(Class& c);
+	bool Visit(Field& f);
+	bool Visit(Function& fn);
+	bool Visit(Statement& s);
+	bool Visit(Expression& e);
+	void Push(NodeBase& n);
+	void Pop();
+	
 	
 public:
 	typedef AssemblyExporter CLASSNAME;
-	AssemblyExporter();
+	AssemblyExporter(CompilationUnit& cu);
 	
 	bool Export(String dir);
 	bool ExportComplete(String dir);
-	bool ExportProject(String dir, String prj_name);
+	bool ExportPackage(String dir, String prj_name);
 	
 };
 	

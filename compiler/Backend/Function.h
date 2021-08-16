@@ -6,7 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Function : public CompilerNode<Function,Class> {
-	
+public:
+	One<Statement>		impl;
 	
 public:
 	typedef Function CLASSNAME;

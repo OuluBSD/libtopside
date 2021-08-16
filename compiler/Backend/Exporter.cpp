@@ -2,7 +2,10 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-AssemblyExporter::AssemblyExporter() {
+AssemblyExporter::AssemblyExporter(CompilationUnit& cu) : cu(cu) {
+	
+	cu.WeakHint(HINT_PKG, "Default");
+	cu.WeakHint(HINT_FILE, "Default");
 	
 }
 
@@ -11,14 +14,17 @@ bool AssemblyExporter::Export(String dir) {
 	RealizeDirectory(dir);
 	if (!DirectoryExists(dir)) {LOG("error: could not create directory " << dir); return false;}
 	
-	prjs.Clear();
+	pkgs.Clear();
 	
+	if (!Visit(cu))
+		return false;
+	
+	Dump();
 	TODO
-	DUMPC(prjs);
 	
-	for(String prj: prjs.GetKeys()) {
-		LOG("Exporting project: " << prj);
-		if (!ExportProject(dir, prj))
+	for(String pkg: pkgs.GetKeys()) {
+		LOG("Exporting project: " << pkg);
+		if (!ExportPackage(dir, pkg))
 			return false;
 	}
 	if (!ExportComplete(dir))
@@ -28,30 +34,30 @@ bool AssemblyExporter::Export(String dir) {
 	return true;
 }
 
-bool AssemblyExporter::ExportProject(String dir, String prj_name) {
-	String prj_dir = AppendFileName(dir, prj_name);
-	RealizeDirectory(prj_dir);
-	if (!DirectoryExists(prj_dir)) {
-		LOG("error: could not realize directory: " << prj_dir);
+bool AssemblyExporter::ExportPackage(String dir, String pkg_name) {
+	String pkg_dir = AppendFileName(dir, pkg_name);
+	RealizeDirectory(pkg_dir);
+	if (!DirectoryExists(pkg_dir)) {
+		LOG("error: could not realize directory: " << pkg_dir);
 		return false;
 	}
 	
-	String prj_path = AppendFileName(prj_dir, prj_name + ".upp");
-	FileOut fout(prj_path);
+	String pkg_path = AppendFileName(pkg_dir, pkg_name + ".upp");
+	FileOut fout(pkg_path);
 	if (!fout.IsOpen()) {
-		LOG("error: could not open file: " + prj_path);
+		LOG("error: could not open file: " + pkg_path);
 		return false;
 	}
 	
-	Vector<Project*> deps;
-	auto& prj = prjs.Get(prj_name);
-	for (String dep : prj.deps) {
-		int i = prjs.Find(dep);
+	Vector<Package*> deps;
+	auto& pkg = pkgs.Get(pkg_name);
+	for (String dep : pkg.deps) {
+		int i = pkgs.Find(dep);
 		if (i < 0) {
 			LOG("error: could not find dep project: " + dep);
 			return false;
 		}
-		deps.Add(&prjs[i]);
+		deps.Add(&pkgs[i]);
 	}
 	
 	
@@ -61,7 +67,7 @@ bool AssemblyExporter::ExportProject(String dir, String prj_name) {
 		fout << "uses\n";
 		fout << "\tSerialCore" << (deps.IsEmpty() ? ";\n\n" : ",\n");
 		
-		for (Project* dep : deps) {
+		for (Package* dep : deps) {
 			fout << "\t" << dep->name;
 			
 			fout << (dep == deps.Top() ? ";\n\n" : ",\n");
@@ -74,25 +80,25 @@ bool AssemblyExporter::ExportProject(String dir, String prj_name) {
 }
 
 bool AssemblyExporter::ExportComplete(String dir) {
-	String prj_name = "CompleteSerial";
-	String prj_dir = AppendFileName(dir, prj_name);
-	RealizeDirectory(prj_dir);
-	if (!DirectoryExists(prj_dir)) {
-		LOG("error: could not realize directory: " << prj_dir);
+	String pkg_name = "CompleteSerial";
+	String pkg_dir = AppendFileName(dir, pkg_name);
+	RealizeDirectory(pkg_dir);
+	if (!DirectoryExists(pkg_dir)) {
+		LOG("error: could not realize directory: " << pkg_dir);
 		return false;
 	}
 	
-	String prj_path = AppendFileName(prj_dir, prj_name + ".upp");
-	FileOut fout(prj_path);
+	String pkg_path = AppendFileName(pkg_dir, pkg_name + ".upp");
+	FileOut fout(pkg_path);
 	if (!fout.IsOpen()) {
-		LOG("error: could not open file: " + prj_path);
+		LOG("error: could not open file: " + pkg_path);
 		return false;
 	}
 	
 	fout << "description \"\\377B113,42,150\";\n\n";
 
 	fout << "uses\n";
-	const auto& deps = prjs.GetKeys();
+	const auto& deps = pkgs.GetKeys();
 	for(int i = 0; i < deps.GetCount(); i++) {
 		String dep = deps[i];
 		fout << "\t" << dep;
@@ -105,5 +111,117 @@ bool AssemblyExporter::ExportComplete(String dir) {
 	
 	return true;
 }
+
+void AssemblyExporter::Push(NodeBase& n) {
+	String pkg = n.GetHint(HINT_PKG);
+	String file = n.GetHint(HINT_FILE);
+	if (!pkg.IsEmpty()) {
+		Package& p = pkgs.GetAdd(pkg);
+		if (p.name.IsEmpty()) p.name = pkg;
+		
+		if (!file.IsEmpty()) {
+			PackageFile& f = p.files.GetAdd(file);
+			if (f.name.IsEmpty()) f.name = file;
+			VectorFindAdd(f.refs, &n);
+		}
+	}
+	
+	scopes.Add(&n);
+}
+
+void AssemblyExporter::Pop() {
+	scopes.SetCount(scopes.GetCount()-1);
+}
+
+bool AssemblyExporter::Visit(CompilationUnit& o) {
+	ScopeHolder __h(this, o);
+	
+	for (Namespace& ns : o.namespaces.GetValues()) {
+		if (!Visit(ns))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Namespace& o) {
+	ScopeHolder __h(this, o);
+	
+	o.DefaultHintsFromParent();
+	
+	for (Class& o : o.classes.GetValues()) {
+		if (!Visit(o))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Class& o) {
+	ScopeHolder __h(this, o);
+	
+	o.DefaultHintsFromParent();
+	
+	for (Field& o0 : o.fields.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Field& o) {
+	ScopeHolder __h(this, o);
+	
+	o.DefaultHintsFromParent();
+	
+	if (o.ctor) {
+		if (!Visit(*o.ctor))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Function& o) {
+	ScopeHolder __h(this, o);
+	
+	o.DefaultHintsFromParent();
+	
+	if (o.impl) {
+		if (!Visit(*o.impl))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Statement& o) {
+	ScopeHolder __h(this, o);
+	
+	if (o.expr) {
+		if (!Visit(*o.expr))
+			return false;
+	}
+	
+	for (Statement& s0 : o.stmts) {
+		if (!Visit(s0))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(Expression& o) {
+	ScopeHolder __h(this, o);
+	
+	for (Expression& e0 : o.exprs) {
+		if (!Visit(e0))
+			return false;
+	}
+	
+	return true;
+}
+
 
 NAMESPACE_TOPSIDE_END

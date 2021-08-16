@@ -15,7 +15,6 @@ public:
 	typedef Namespace CLASSNAME;
 	Namespace();
 	
-	
 	Class&		GetAddClass(String name);
 	Class&		GetAddTemplateClass(String name);
 	
