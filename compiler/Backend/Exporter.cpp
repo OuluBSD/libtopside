@@ -58,46 +58,55 @@ bool AssemblyExporter::ExportPackage(Package& pkg) {
 	}
 	
 	String pkg_path = AppendFileName(pkg_dir, pkg.name + ".upp");
-	FileOut fout(pkg_path);
-	if (!fout.IsOpen()) {
-		LOG("error: could not open file: " + pkg_path);
+	/*if (protect_pkg && FileExists(pkg_path)) {
+		LOG("error: existing .upp file is protected");
 		return false;
+	}*/
+	if (protect_pkg && FileExists(pkg_path)) {
+		LOG("warning: skipping protected " + pkg_path);
 	}
-	
-	Vector<Package*> deps;
-	for (String dep : pkg.deps) {
-		int i = pkgs.Find(dep);
-		if (i < 0) {
-			LOG("error: could not find dep project: " + dep);
+	else {
+		FileOut fout(pkg_path);
+		if (!fout.IsOpen()) {
+			LOG("error: could not open file: " + pkg_path);
 			return false;
 		}
-		deps.Add(&pkgs[i]);
-	}
-	
-	
-	fout << "description \"\\377B113,42,150\";\n\n";
-
-	if (!deps.IsEmpty()) {
-		fout << "uses\n";
-		fout << "\tSerialCore" << (deps.IsEmpty() ? ";\n\n" : ",\n");
 		
-		for (Package* dep : deps) {
-			fout << "\t" << dep->name;
-			
-			fout << (dep == deps.Top() ? ";\n\n" : ",\n");
+		Vector<Package*> deps;
+		for (String dep : pkg.deps) {
+			int i = pkgs.Find(dep);
+			if (i < 0) {
+				LOG("error: could not find dep project: " + dep);
+				return false;
+			}
+			deps.Add(&pkgs[i]);
 		}
-	}
+		
+		
+		fout << "description \"\\377B113,42,150\";\n\n";
 	
-	if (!pkg.files.IsEmpty()) {
-		fout << "file\n";
-		int i = 0, c = pkg.files.GetCount();
-		for (PackageFile& f : pkg.files.GetValues()) {
-			fout << "\t" << f.name << ".h,\n";
-			fout << "\t" << f.name << ".cpp";
-			fout <<  (++i == c ? ";\n\n" : ",\n");
+		if (!deps.IsEmpty()) {
+			fout << "uses\n";
+			fout << "\tSerialCore" << (deps.IsEmpty() ? ";\n\n" : ",\n");
+			
+			for (Package* dep : deps) {
+				fout << "\t" << dep->name;
+				
+				fout << (dep == deps.Top() ? ";\n\n" : ",\n");
+			}
 		}
+		
+		if (!pkg.files.IsEmpty()) {
+			fout << "file\n";
+			int i = 0, c = pkg.files.GetCount();
+			for (PackageFile& f : pkg.files.GetValues()) {
+				fout << "\t" << f.name << ".h,\n";
+				fout << "\t" << f.name << ".cpp";
+				fout <<  (++i == c ? ";\n\n" : ",\n");
+			}
+		}
+		fout.Close();
 	}
-	fout.Close();
 	
 	if (!pkg.files.IsEmpty()) {
 		for (PackageFile& f : pkg.files.GetValues()) {
@@ -106,9 +115,11 @@ bool AssemblyExporter::ExportPackage(Package& pkg) {
 			TouchFile(h_path);
 			TouchFile(cpp_path);
 			
+			LOG("Exporting " << h_path);
 			if (!ExportHeader(pkg, f, h_path))
 				return false;
 			
+			LOG("Exporting " << cpp_path);
 			if (!ExportImplementation(pkg, f, cpp_path))
 				return false;
 		}
@@ -175,6 +186,8 @@ bool AssemblyExporter::ExportHeader(Package& pkg, PackageFile& file, String path
 	}
 	
 	CodeArgs args;
+	args.pkg = &pkg;
+	args.file = &file;
 	args.have_header = true;
 	fout << cu.GetCodeString(args);
 	
@@ -200,16 +213,26 @@ bool AssemblyExporter::ExportImplementation(Package& pkg, PackageFile& file, Str
 }
 
 void AssemblyExporter::Push(NodeBase& n) {
-	String pkg = n.GetHint(HINT_PKG);
-	String file = n.GetHint(HINT_FILE);
-	if (!pkg.IsEmpty()) {
-		Package& p = pkgs.GetAdd(pkg);
-		if (p.name.IsEmpty()) p.name = pkg;
+	for(int i = 0; i < 2; i++) {
+		String pkg, file;
+		if (i == 0) {
+			pkg = n.GetHint(HINT_PKG);
+			file = n.GetHint(HINT_FILE);
+		}
+		else if (i == 1) {
+			pkg = n.GetHint(HINT_FWD_DECL_PKG);
+			file = n.GetHint(HINT_FWD_DECL_FILE);
+		}
 		
-		if (!file.IsEmpty()) {
-			PackageFile& f = p.files.GetAdd(file);
-			if (f.name.IsEmpty()) f.name = file;
-			VectorFindAdd(f.refs, &n);
+		if (!pkg.IsEmpty()) {
+			Package& p = pkgs.GetAdd(pkg);
+			if (p.name.IsEmpty()) p.name = pkg;
+			
+			if (!file.IsEmpty()) {
+				PackageFile& f = p.files.GetAdd(file);
+				if (f.name.IsEmpty()) f.name = file;
+				VectorFindAdd(f.refs, &n);
+			}
 		}
 	}
 	

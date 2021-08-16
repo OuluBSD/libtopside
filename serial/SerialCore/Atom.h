@@ -32,26 +32,24 @@ public:
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const;
-	virtual bool SetExtension(AtomExtBase* ext) {return false;}
 	virtual void ClearExtension() {}
-	virtual AtomExtBaseRef GetExtension() {return AtomExtBaseRef();}
 	virtual int GetSideIn() {return -1;}
 	virtual int GetSideOut() {return -1;}
 	virtual void SetSideIn(int i) {Panic("Unimplemented");}
 	virtual void SetSideOut(int i) {Panic("Unimplemented");}
-	virtual bool LinkSideIn(AtomBaseRef in) {Panic("Unimplemented"); return false;}
-	virtual bool LinkSideOut(AtomBaseRef out) {Panic("Unimplemented"); return false;}
+	//virtual bool LinkSideIn(AtomBaseRef in) {Panic("Unimplemented"); return false;}
+	//virtual bool LinkSideOut(AtomBaseRef out) {Panic("Unimplemented"); return false;}
 	virtual void Forward(FwdScope& fwd) = 0;
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
 	
-	static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
+	//static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
 	ValCls GetValSpec() const {return GetType().side.vd.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().side.vd.val;}
 	
-	AtomExtBaseRef SetExtensionTypeCls(TypeExtCls ext);
+	//AtomExtBaseRef SetExtensionTypeCls(TypeExtCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -64,7 +62,7 @@ public:
 	AtomBase();
 	virtual ~AtomBase();
 	
-	LoopRef GetLoop();
+	//LoopRef GetLoop();
 	
 	//InterfaceSourceRef FindSource(ValDevCls t);
 	//InterfaceSinkRef FindSink(ValDevCls t);
@@ -76,8 +74,8 @@ public:
 	RefT_Loop<x##Sink>   As##x##Sink()   {return As<x##Sink>();}
 	IFACE_LIST
 	#undef IFACE*/
-	RefT_Loop<ValSource>	AsSource();
-	RefT_Loop<ValSink>	AsSink();
+	//RefT_Loop<ValSource>	AsSource();
+	//RefT_Loop<ValSink>	AsSink();
 	
 	
 	template <class S, class R>

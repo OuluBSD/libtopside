@@ -3,7 +3,9 @@
 
 #include <SerialMach/SerialMach.h>
 
+#include "Types.h"
 #include "PacketTracker.h"
+#include "Interface.h"
 #include "Atom.h"
 #include "AtomStore.h"
 #include "LoopStore.h"

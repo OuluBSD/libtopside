@@ -3,24 +3,25 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+struct PackageFile {
+	Vector<NodeBase*>				refs;
+	String							name;
+	
+};
+
+struct Package {
+	ArrayMap<String,PackageFile>	files;
+	Index<String>					deps;
+	String							name;
+	
+	void Set(String s) {name = s; deps.Clear();}
+	String ToString() const {return name;}
+};
+
 
 class AssemblyExporter {
 public:
 	
-	struct PackageFile {
-		Vector<NodeBase*>				refs;
-		String							name;
-		
-	};
-	
-	struct Package {
-		ArrayMap<String,PackageFile>	files;
-		Index<String>					deps;
-		String							name;
-		
-		void Set(String s) {name = s; deps.Clear();}
-		String ToString() const {return name;}
-	};
 	
 	
 private:
@@ -34,6 +35,7 @@ private:
 	Vector<NodeBase*>			scopes;
 	CompilationUnit&			cu;
 	String						export_dir;
+	bool						protect_pkg = false;
 	
 	bool Visit(CompilationUnit& cu);
 	bool Visit(Namespace& ns);
@@ -57,6 +59,7 @@ public:
 	
 	bool Export(String dir);
 	void Dump();
+	void ProtectPackageFile(bool b=true) {protect_pkg = b;}
 	
 };
 	

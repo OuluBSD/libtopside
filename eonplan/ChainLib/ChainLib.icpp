@@ -4,7 +4,7 @@
 NAMESPACE_PLAN_BEGIN
 
 INITBLOCK {
-	Factory::SetActiveProject("ChainLib");
+	Factory::SetActivePackage("ChainLib");
 	
 	#include "Bases.h"
 	#include "Headers.h"

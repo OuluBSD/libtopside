@@ -6,13 +6,15 @@
 #define NAMESPACE_SERIAL_BEGIN	namespace TS { namespace Serial {
 #define NAMESPACE_SERIAL_END	}}
 
-#include "GenDefs.h"
+#include "Generated.h"
+#include "Types.h"
+#include "SampleBase.h"
 #include "Samples.h"
-#include "GenSamples.h"
+#include "Formats.h"
 #include "PacketBuffer.h"
-#include "GenFormats.h"
 #include "ValDevScope.h"
 #include "Defs.h"
+#include "Machine.h"
 
 
 #endif

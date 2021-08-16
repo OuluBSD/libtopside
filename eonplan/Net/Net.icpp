@@ -5,7 +5,7 @@ NAMESPACE_PLAN_BEGIN
 
 
 INITBLOCK_(Net) {
-	Factory::SetActiveProject("Net");
+	Factory::SetActivePackage("Net");
 	Factory::AddDep("ChainLib");
 	
 	#include "Headers.h"

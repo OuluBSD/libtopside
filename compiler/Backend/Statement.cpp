@@ -24,6 +24,9 @@ String Statement::ToString() const {
 }
 
 String Statement::GetCodeString(const CodeArgs& args) const {
+	if (!IsContained(args))
+		return String();
+	
 	String s;
 	
 	if (args.have_header) {

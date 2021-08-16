@@ -32,7 +32,18 @@ String Class::ToString() const {
 }
 
 String Class::GetCodeString(const CodeArgs& args) const {
+	if (GetHint(HINT_HIDDEN) == "true")
+		return String();
+	
 	String s;
+	
+	if (IsFwdContained(args)) {
+		s.Cat('\t', args.indent);
+		s << "class " << name << ";\n\n";
+	}
+	
+	if (!IsContained(args))
+		return s;
 	
 	if (args.have_header) {
 		s.Cat('\t', args.indent);
@@ -74,8 +85,7 @@ String Class::GetCodeString(const CodeArgs& args) const {
 		s.Cat('\t', args.indent);
 		s << "};\n\n";
 	}
-	
-	if (args.have_impl) {
+	else if (args.have_impl) {
 		
 		
 		

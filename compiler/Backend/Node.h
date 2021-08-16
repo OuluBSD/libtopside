@@ -4,8 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#define HINT_PKG	"pkg"
-#define HINT_FILE	"file"
+#define HINT_PKG				"pkg"
+#define HINT_FILE				"file"
+#define HINT_FILE				"file"
+#define HINT_HIDDEN				"hidden"
+#define HINT_FWD_DECL_PKG		"fdpkg"
+#define HINT_FWD_DECL_FILE		"fdfile"
 
 class Expression;
 class Statement;
@@ -14,6 +18,8 @@ class Field;
 class Class;
 class Namespace;
 class CompilationUnit;
+struct PackageFile;
+struct Package;
 
 
 struct CodeArgs {
@@ -21,7 +27,8 @@ struct CodeArgs {
 	bool have_impl = false;
 	bool have_inline = false;
 	int indent = 0;
-	
+	Package* pkg = 0;
+	PackageFile* file = 0;
 };
 
 typedef enum {
@@ -45,7 +52,8 @@ public:
 	NodeBase&	WeakHint(String key, String value) {if (hints.Find(key) < 0) hints.Add(key, value); return *this;}
 	
 	String		GetHint(String key) const {return hints.Get(key, String());}
-	
+	bool		IsContained(const CodeArgs& args) const;
+	bool		IsFwdContained(const CodeArgs& args) const;
 	
 	void		SetPackage(String s) {Hint(HINT_PKG, s);}
 	void		SetFile(String s) {Hint(HINT_FILE, s);}

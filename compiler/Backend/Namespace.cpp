@@ -61,23 +61,26 @@ String Namespace::GetCodeString(const CodeArgs& args) const {
 	String s;
 	
 	if (args.have_header) {
-		s << "namespace " << name << " {\n\n";
-		
+		String content;
 		CodeArgs subargs = args;
 		
 		for (const Namespace& ns : namespaces.GetValues()) {
-			s << ns.GetCodeString(subargs);
+			content << ns.GetCodeString(subargs);
 		}
 		for (const Class& c : classes.GetValues()) {
-			s << c.GetCodeString(subargs);
+			content << c.GetCodeString(subargs);
 		}
 		
-		s << "}\n\n";
+		if (!content.IsEmpty()) {
+			s	<< "namespace " << name << " {\n\n"
+				<< content
+				<< "}\n\n";
+		}
 	}
 	
 	if (args.have_impl) {
 		
-		
+		LOG("TODO have impl");
 		
 	}
 	

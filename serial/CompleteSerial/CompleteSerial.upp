@@ -1,14 +1,8 @@
 description "\377B113,42,150";
 
 uses
-	ChainCore,
-	ChainLib,
-	AccelAudio,
-	AccelMidi,
-	CoreAudio,
-	NetAudio,
-	Net,
-	DAW;
+	Default,
+	SerialMach;
 
 mainconfig
 	"" = "";

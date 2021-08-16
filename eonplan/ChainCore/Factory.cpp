@@ -110,8 +110,43 @@ bool Factory::Export(CompilationUnit& cu) {
 }
 
 bool Factory::Export(CompilationUnit& cu, Package& pkg) {
+	auto& vals = Vals();
+	auto& devs = Devs();
+	auto& valdevs = ValDevs();
+	auto& bases = Bases();
+	auto& headers = Headers();
 	
-
+	Namespace& ns_ts = cu.GetAddNamespace("TS");
+	Namespace& ns_serial = ns_ts.GetAddNamespace("Serial");
+	
+	/*
+	Class& cls_binary_sample = ns_serial.GetAddClass("BinarySample");
+	cls_binary_sample.Hint(HINT_HIDDEN, "true");
+	
+	{
+		String sample_name = "SoundSample";
+		
+		Class& sample_type = ns_serial.GetAddClass(sample_name);
+		sample_type.Hint(HINT_PKG, "SerialMach");
+		sample_type.Hint(HINT_FILE, "GenSamples");
+		sample_type.Hint(HINT_FWD_DECL_PKG, "SerialMach");
+		sample_type.Hint(HINT_FWD_DECL_FILE, "GenDefs");
+		sample_type.Inherit(cls_binary_sample);
+		
+		
+	}
+	
+	
+	{
+		Class& cls_format = ns_serial.GetAddClass("Format");
+		cls_format.Hint(HINT_PKG, "SerialMach");
+		cls_format.Hint(HINT_FILE, "GenFormats");
+		
+		
+	}
+	*/
+	
+	
 	return true;
 }
 

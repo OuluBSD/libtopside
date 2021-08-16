@@ -4,7 +4,7 @@
 NAMESPACE_PLAN_BEGIN
 
 INITBLOCK_(AccelAudio) {
-	Factory::SetActiveProject("AccelAudio");
+	Factory::SetActivePackage("AccelAudio");
 	Factory::AddDep("ChainLib");
 	Factory::AddDep("AccelMidi");
 	Factory::AddDep("CoreAudio");

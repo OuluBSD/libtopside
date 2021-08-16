@@ -6,7 +6,9 @@ uses
 file
 	TODO.txt,
 	SerialCore.h,
+	Types.h,
 	PacketTracker.h,
+	Interface.h,
 	Atom.h,
 	AtomStore.h,
 	LoopStore.h,

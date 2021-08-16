@@ -17,6 +17,8 @@ bool Export(CompilationUnit& cu) {
 	dir = GetParentDirectory(dir);
 	
 	String serial_dir = AppendFileName(dir, "serial");
+	//String serial_dir = ConfigFile("serial");
+	
 	LOG("Realizing directory: " << serial_dir);
 	RealizeDirectory(serial_dir);
 	if (!DirectoryExists(serial_dir)) {LOG("error: could not create directory " << serial_dir); return false;}
@@ -25,6 +27,7 @@ bool Export(CompilationUnit& cu) {
 	//cu.SetFile("BackendTest");
 	
 	AssemblyExporter ae(cu);
+	ae.ProtectPackageFile();
 	if (!ae.Export(serial_dir))
 		return false;
 	

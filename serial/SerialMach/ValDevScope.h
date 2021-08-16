@@ -32,7 +32,7 @@ public:
 class ValExchangePoint :
 	public ExchangePoint
 {
-	Pool* pool = 0;
+	Loop* loop = 0;
 	bool use_consumer = true;
 	
 public:
@@ -48,7 +48,7 @@ public:
 	void ForwardExchange(FwdScope& fwd) override;
 	
 	void UseConsumer(bool b=true) {use_consumer = b;}
-	void Destroy() {pool = 0;}
+	void Destroy() {loop = 0;}
 	
 	
 	static ValExchangePoint* Create(TypeCls t);
