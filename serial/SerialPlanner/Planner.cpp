@@ -204,7 +204,7 @@ String WorldState::ToString() const {
 
 String WorldState::GetFullString() const {
 	String s;
-	if (IsAddComponent())
+	if (IsAddAtom())
 		s << "add-comp " << cur_comp.ToString() << " ";
 	else if (IsAddExtension())
 		s << "add-ext " << cur_comp.ToString() << " " << add_ext.ToString() << " ";
@@ -325,25 +325,25 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
 {
 	auto& src = n.GetWorldState();
-	TypeCompCls comp_type = src.GetComponent();
+	TypeAtomCls atom_type = src.GetAtom();
 	
 	/*bool dbg =
 		src.IsTrue("customer.id.ABCD")
 		&& src.IsTrue("center.audio.src")
 		&& src.IsTrue("center.audio.sink")
-		&& src.IsAddComponent()
-		&& src.GetComponent() == AsTypeCls<AudioOutputComponent>()
+		&& src.IsAddAtom()
+		&& src.GetAtom() == AsTypeCls<AudioOutputAtom>()
 		;
 	if (dbg) {
 		LOG("");
 	}*/
 	
 	acts.SetCount(0);
-	Ecs::Factory::GetComponentActions(src, acts);
+	Serial::Factory::GetAtomActions(src, acts);
 	
 	/*if (!(!dbg || acts.GetCount())) {
 		LOG(n.GetWorldState().ToString());
-		Ecs::Factory::GetComponentActions(src, acts);
+		Serial::Factory::GetAtomActions(src, acts);
 	}
 	ASSERT(!dbg || acts.GetCount());*/
 	
@@ -351,16 +351,16 @@ void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Arra
 		// Check precondition
 		Action& act = acts[i];
 		
-		if (act.precond.GetComponent() != comp_type) {
-			DUMP(act.precond.GetComponent());
-			DUMP(comp_type);
+		if (act.precond.GetAtom() != atom_type) {
+			DUMP(act.precond.GetAtom());
+			DUMP(atom_type);
 		}
-		ASSERT(act.precond.GetComponent() == comp_type);
-		if      (act.IsAddComponent()) {
-			//if (act.postcond.GetComponent() == comp_type) {DUMP(comp_type);}
-			//ASSERT(act.postcond.GetComponent() != comp_type);
+		ASSERT(act.precond.GetAtom() == atom_type);
+		if      (act.IsAddAtom()) {
+			//if (act.postcond.GetAtom() == atom_type) {DUMP(atom_type);}
+			//ASSERT(act.postcond.GetAtom() != atom_type);
 		}
-		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetComponent() == comp_type);}
+		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetAtom() == atom_type);}
 		else Panic("Invalid type");
 		
 		const WorldState& pre = act.precond;

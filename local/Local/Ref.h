@@ -334,6 +334,8 @@ public:
 	
 	RefLinkedList() {}
 	~RefLinkedList() {Clear();}
+	T& GetFirst() {ASSERT(first); return first->value;}
+	T& GetLast() {ASSERT(last); return last->value;}
 	Item* AddItem() {
 		Item* it = GetRecyclerPool().New();
 		if (!first) {

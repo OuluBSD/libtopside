@@ -8,6 +8,8 @@
 #include "Interface.h"
 #include "Atom.h"
 #include "AtomStore.h"
+#include "AtomSystem.h"
+#include "Loop.h"
 #include "LoopStore.h"
 #include "Factory.h"
 

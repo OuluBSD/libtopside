@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class RealtimeStream :
 	RTTIBase,
-	public RefScopeEnabler<RealtimeStream, Ecs::ComponentBase>
+	public RefScopeEnabler<RealtimeStream, Serial::AtomBase>
 {
 	
 public:

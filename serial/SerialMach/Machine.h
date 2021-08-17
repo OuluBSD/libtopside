@@ -4,7 +4,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class Machine;
 
 
 class SystemBase : public RefScopeEnabler<SystemBase,Machine> {

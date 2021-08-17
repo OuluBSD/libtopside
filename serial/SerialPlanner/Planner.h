@@ -25,15 +25,15 @@ protected:
 	friend class ActionPlanner;
 	friend class ActionPlannerWrapper;
 	friend class ActionNode;
-	friend class ::TS::Ecs::SerialLoader;
-	friend class ::TS::Ecs::SerialLoopLoader;
+	friend class ::TS::Serial::SerialLoader;
+	friend class ::TS::Serial::SerialLoopLoader;
 	
 	static const bool use_debugging_order = true;
 	
 	Vector<String>				values;
 	Vector<bool>				using_act;
 	Index<short>				dbg_order;
-	TypeCompCls					cur_comp;
+	TypeAtomCls					cur_comp;
 	TypeExtCls					add_ext;
 	ValDevCls					side_vd;
 	Type						type = INVALID;
@@ -51,12 +51,12 @@ public:
 	bool Set(const String& key, String value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
-	void SetAs_AddExtension(TypeCompCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
-	void SetAs_AddComponent(TypeCompCls comp) {type = ADD_COMP; cur_comp = comp;}
+	void SetAs_AddExtension(TypeAtomCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
+	void SetAs_AddAtom(TypeAtomCls comp) {type = ADD_COMP; cur_comp = comp;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
-	bool IsAddComponent() const {return type == ADD_COMP;}
+	bool IsAddAtom() const {return type == ADD_COMP;}
 	bool IsAddExtension() const {return type == ADD_EXT;}
 	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
@@ -66,7 +66,7 @@ public:
 	String Get(const String& key) const;
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
-	TypeCompCls GetComponent() const {return cur_comp;}
+	TypeAtomCls GetAtom() const {return cur_comp;}
 	TypeExtCls GetExtension() const {return add_ext;}
 	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}
 	const ValDevCls& GetSideCls() const {return side_vd;}
@@ -106,7 +106,7 @@ public:
 	WorldState& Pre() {return precond;}
 	WorldState& Post() {return postcond;}
 	
-	bool IsAddComponent() const {return postcond.IsAddComponent();}
+	bool IsAddAtom() const {return postcond.IsAddAtom();}
 	bool IsAddExtension() const {return postcond.IsAddExtension();}
 	
 };
@@ -183,8 +183,8 @@ public:
 protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
-	friend class ::TS::Ecs::SerialLoader;
-	friend class ::TS::Ecs::SerialLoopLoader;
+	friend class ::TS::Serial::SerialLoader;
+	friend class ::TS::Serial::SerialLoopLoader;
 	
 	
 	struct Atom : Moveable<Atom> {

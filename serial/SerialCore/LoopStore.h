@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class Loop : public System<Loop> {
+class LoopStore : public System<LoopStore> {
 	LoopVec							root;
 	
 	Mutex							lock;
@@ -16,11 +16,16 @@ class Loop : public System<Loop> {
 	
 	void InitRoot();
 public:
-	SYS_RTTI(Loop)
-	SYS_CTOR_(Loop) {InitRoot();}
+	SYS_RTTI(LoopStore)
+	SYS_CTOR_(LoopStore) {InitRoot();}
 	SYS_DEF_VISIT_(vis || root)
 	
-	LoopRef GetRoot()		{return *root.begin();}
+	LoopRef GetRoot() {
+		if (root.IsEmpty())
+			return LoopRef();
+		Loop& l = root.GetFirst();
+		return l.AsRefT();
+	}
 	LoopVec& GetRootVec()	{return root;}
 	
 	

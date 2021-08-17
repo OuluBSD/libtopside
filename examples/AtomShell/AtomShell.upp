@@ -1,0 +1,10 @@
+uses
+	AtomCompleteDebug,
+	AtomLocal;
+
+file
+	AtomShell.cpp;
+
+mainconfig
+	"" = "";
+

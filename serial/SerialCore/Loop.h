@@ -11,10 +11,13 @@ class Loop :
 	Machine*			machine = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
+	String				prefab;
 	LoopId				id;
+	int64				created = 0;
+	int64				changed = 0;
 	
 protected:
-	friend class EntityStore;
+	friend class LoopStore;
 	
 	void SetId(LoopId i) {id = i;}
 	
@@ -47,8 +50,8 @@ public:
 	void				UnlinkExchangePoints();
 	void				ClearInterfacesDeep();
 	void				UnrefDeep();
-	void				UninitializeComponentsDeep();
-	void				ClearComponentsDeep();
+	void				UninitializeAtomsDeep();
+	void				ClearAtomsDeep();
 	void				ClearDeep();
 	void				PruneFromContainer();
 	void				Dump();
@@ -57,65 +60,70 @@ public:
 	Loop*				GetParent() const;
 	Machine&			GetMachine();
 	String				GetName() const {return name;}
-	bool				HasEntities() const {return !objects.IsEmpty();}
-	bool				HasLoops() const {return !pools.IsEmpty();}
+	bool				HasEntities() const {return !atoms.IsEmpty();}
+	bool				HasLoops() const {return !loops.IsEmpty();}
 	
-	void				Initialize(Entity& e, String prefab="Custom");
-	EntityRef			CreateEmpty();
-	EntityRef			GetAddEmpty(String name);
-	EntityRef			Clone(const Entity& e);
+	void				Initialize(Loop& e, String prefab="Custom");
+	LoopRef				CreateEmpty();
+	LoopRef				GetAddEmpty(String name);
+	LoopRef				Clone(const Loop& e);
 	
-	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface);
+	bool Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
-	template<typename PrefabT>
-	EntityRef Create() {
-		static_assert(RTupleAllComponents<typename PrefabT::Components>::value, "Prefab should have a list of Components");
+	void OnChange();
+	AtomBaseRef GetTypeCls(TypeAtomCls atom_type);
+	AtomBaseRef GetAddTypeCls(TypeAtomCls cls);
+	AtomBaseRef FindTypeCls(TypeAtomCls atom_type);
+	
+	/*template<typename PrefabT>
+	LoopRef Create() {
+		static_assert(RTupleAllAtoms<typename PrefabT::Atoms>::value, "Prefab should have a list of Atoms");
 		
-		Entity& e = objects.Add();
+		Loop& e = atoms.Add();
 		e.SetParent(this);
 		e.SetId(GetNextId());
 		PrefabT::Make(e);
 		Initialize(e, AsTypeName<PrefabT>());
 		
 		return e.AsRefT();
-	}
+	}*/
 	
-	template<typename... ComponentTs>
-	Vector<RTuple<EntityRef,RefT_Entity<ComponentTs>...>> GetComponentsWithEntity() {
-		static_assert(sizeof...(ComponentTs) > 0, "Need at least one component");
-		static_assert(AllComponents<ComponentTs...>::value, "Ts should all derive from Component");
+	/*template<typename... AtomTs>
+	Vector<RTuple<LoopRef,RefT_Loop<AtomTs>...>> GetAtomsWithLoop() {
+		static_assert(sizeof...(AtomTs) > 0, "Need at least one atom");
+		static_assert(AllAtoms<AtomTs...>::value, "Ts should all derive from Atom");
 		
-		Vector<RTuple<EntityRef,RefT_Entity<ComponentTs>...>> components;
+		Vector<RTuple<LoopRef,RefT_Loop<AtomTs>...>> atoms;
 		
-		for (EntityRef object : objects) {
-			auto requested_components = object->TryGetComponents<ComponentTs...>();
+		for (LoopRef object : atoms) {
+			auto requested_atoms = object->TryGetAtoms<AtomTs...>();
 			
-			if (AllValidComponents(requested_components)) {
-				RTuple<EntityRef, RefT_Entity<ComponentTs>...> t(object.Get(), requested_components);
-				components.Add(t);
+			if (AllValidAtoms(requested_atoms)) {
+				RTuple<LoopRef, RefT_Loop<AtomTs>...> t(object.Get(), requested_atoms);
+				atoms.Add(t);
 			}
 		}
 		
-		return components;
-	}
+		return atoms;
+	}*/
 	
-	template<typename... ComponentTs>
-	Vector<RTuple<RefT_Entity<ComponentTs>...>> GetComponents() {
-		static_assert(sizeof...(ComponentTs) > 0, "Need at least one component");
-		static_assert(AllComponents<ComponentTs...>::value, "Ts should all derive from Component");
+	/*template<typename... AtomTs>
+	Vector<RTuple<RefT_Loop<AtomTs>...>> GetAtoms() {
+		static_assert(sizeof...(AtomTs) > 0, "Need at least one atom");
+		static_assert(AllAtoms<AtomTs...>::value, "Ts should all derive from Atom");
 		
-		Vector<RTuple<RefT_Entity<ComponentTs>...>> components;
+		Vector<RTuple<RefT_Loop<AtomTs>...>> atoms;
 		
-		for (EntityRef object : objects) {
-			auto requested_components = object->TryGetComponents<ComponentTs...>();
+		for (LoopRef object : atoms) {
+			auto requested_atoms = object->TryGetAtoms<AtomTs...>();
 			
-			if (AllValidComponents(requested_components)) {
-				components.Add(requested_components);
+			if (AllValidAtoms(requested_atoms)) {
+				atoms.Add(requested_atoms);
 			}
 		}
 		
-		return components;
-	}
+		return atoms;
+	}*/
 	
 	/*template<typename T>
 	RefT_Loop<T> GetAdd() {
@@ -124,45 +132,45 @@ public:
 			return c;
 		return Add<T>();
 	}
-	
-	template<typename T>
+	*/
+	/*template<typename T>
 	RefT_Loop<T> Find() {
 		return comps.Find<T>();
 	}*/
 	
-	template <class T>
-	EntityRef FindEntity(T* component) {
-		if (!component)
-			return EntityRef();
-		for (EntityRef object : objects) {
-			RefT_Entity<T> t = object->Find<T>();
-			if (t == component)
+	/*template <class T>
+	LoopRef FindLoop(T* atom) {
+		if (!atom)
+			return LoopRef();
+		for (LoopRef object : atoms) {
+			RefT_Loop<T> t = object->Find<T>();
+			if (t == atom)
 				return object;
 		}
-		return EntityRef();
+		return LoopRef();
 	}
 	
-	EntityRef FindEntityByName(String name) {
-		for (EntityRef object : objects)
+	LoopRef FindLoopByName(String name) {
+		for (LoopRef object : atoms)
 			if (object->GetName() == name)
 				return object;
-		return EntityRef();
+		return LoopRef();
 	}
 	
 	template<typename Tuple>
-	bool AllValidComponents(const Tuple& components) {
-		bool all_valid_components = true;
-		components.ForEach([&](auto& component) {
-			all_valid_components &= component && !component->IsDestroyed() && component->IsEnabled();
+	bool AllValidAtoms(const Tuple& atoms) {
+		bool all_valid_atoms = true;
+		atoms.ForEach([&](auto& atom) {
+			all_valid_atoms &= atom && !atom->IsDestroyed() && atom->IsEnabled();
 		});
-		return all_valid_components;
-	}
+		return all_valid_atoms;
+	}*/
 	
-	EntityVec& GetEntities() {return objects;}
-	LoopVec& GetLoops() {return pools;}
+	AtomMap& GetAtoms() {return atoms;}
+	LoopVec& GetLoops() {return loops;}
 	
 	LoopRef AddLoop(String name="") {
-		Loop& p = pools.Add();
+		Loop& p = loops.Add();
 		p.SetParent(LoopParent(0, this));
 		p.SetName(name);
 		p.SetId(GetNextId());
@@ -170,15 +178,15 @@ public:
 	}
 	
 	LoopRef GetAddLoop(String name) {
-		for (LoopRef& pool : pools)
+		for (LoopRef& pool : loops)
 			if (pool->GetName() == name)
 				return pool;
 		return AddLoop(name);
 	}
 	
-	EntityVec::Iterator			begin()			{return objects.begin();}
-	EntityVec::Iterator			end()			{return objects.end();}
-	LoopVec::Iterator			BeginLoop()		{return pools.begin();}
+	AtomMap::Iterator			begin()			{return atoms.begin();}
+	AtomMap::Iterator			end()			{return atoms.end();}
+	LoopVec::Iterator			BeginLoop()		{return loops.begin();}
 	
 	
 	
@@ -190,25 +198,25 @@ public:
 	
 	template<typename T>
 	RefT_Loop<T> Add() {
-		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
+		T* comp = GetMachine().Get<ConnectorStore>()->CreateAtom<T>();
 		ASSERT(comp);
 		RefScopeParent<RefParent1<Loop>>* rp = comp;
 		rp->SetParent(this);
 		comps.Add(comp);
-		InitializeComponent(*comp);
+		InitializeAtom(*comp);
 		return RefT_Loop<T>(this, comp);
 	}*/
 	
 	void Visit(RuntimeVisitor& vis) {
-		vis || objects || pools;
+		vis || atoms || loops;
 	}
 private:
-	EntityVec				objects;
-	LoopVec					pools;
+	AtomMap					atoms;
+	LoopVec					loops;
 	
 	/*ConnectorMap			comps;
 	
-	void InitializeComponent(ConnectorBase& comp);*/
+	void InitializeAtom(ConnectorBase& comp);*/
 	
 };
 
@@ -227,13 +235,14 @@ public:
 
 
 
+/*
 template<typename T>
-RefT_Entity<T> Entity::FindNearestEntityWith() {
-	RefT_Entity<T> c = Find<T>();
+RefT_Loop<T> Loop::FindNearestLoopWith() {
+	RefT_Loop<T> c = Find<T>();
 	if (!c) {
 		Loop* p = &GetLoop();
 		while (p && !c) {
-			for (EntityRef& e : *p) {
+			for (LoopRef& e : *p) {
 				c = e->Find<T>();
 				if (c) break;
 			}
@@ -242,6 +251,7 @@ RefT_Entity<T> Entity::FindNearestEntityWith() {
 	}
 	return c;
 }
+*/
 
 NAMESPACE_SERIAL_END
 

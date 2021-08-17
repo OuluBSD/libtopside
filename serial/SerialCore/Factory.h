@@ -52,24 +52,24 @@ public:
 	// Atoms
 	
 	typedef AtomBase* (*NewFn)();
+	//typedef bool (*AtomActionFn)(const TypeAtomCls& t, Eon::Action& act);
 	struct AtomData : Moveable<AtomData> {
-		VectorMap<TypeExtCls,ExtData> ext;
-		NewFn new_fn;
-		AtomActionFn action_fn;
-		String name;
-		TypeAtomCls cls;
-		TypeCls rtti_cls;
+		NewFn			new_fn;
+		//AtomActionFn	action_fn;
+		String			name;
+		TypeAtomCls		cls;
+		TypeCls			rtti_cls;
 		
-		Vector<Link> sink_links;
-		bool searched_sink_links = false;
+		Vector<Link>	sink_links;
+		bool			searched_sink_links = false;
 	};
 	typedef VectorMap<TypeAtomCls,AtomData> AtomMap;
 	static AtomMap& AtomDataMap() {MAKE_STATIC(AtomMap, m); return m;}
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
-	template <class T> static bool MakeAtomAction(const TypeAtomCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
-	template <class T> static bool MakeExtAction(const TypeExtCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
-	template <class T> static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
+	//template <class T> static bool MakeAtomAction(const TypeAtomCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static bool MakeExtAction(const TypeExtCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
 	template <class T> static void RegisterAtom(SubAtomCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
 		AtomCls atom;
@@ -83,14 +83,14 @@ public:
 		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateAtom<T>;
-		d.action_fn = &MakeAtomAction<T>;
+		//d.action_fn = &MakeAtomAction<T>;
 	}
 	
-	static LinkedList<TypeExtCls>& GetExtTypes() {static LinkedList<TypeExtCls> l; return l;}
+	static LinkedList<TypeAtomCls>& GetAtomTypes() {static LinkedList<TypeAtomCls> l; return l;}
 	
 	static void Dump();
 	static const Vector<Link>& GetSinkAtoms(TypeAtomCls src_atom);
-	static void GetAtomActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
+	//static void GetAtomActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
 	static void RefreshLinks(AtomData& d);
 	
 	

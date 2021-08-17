@@ -20,9 +20,9 @@ protected:
 	friend class Loop;
 	
 public:
-	virtual TypeCompCls GetType() const = 0;
-	virtual void SetType(const TypeCompCls& cls) = 0;
-	virtual void CopyTo(AtomBase* component) const = 0;
+	virtual TypeAtomCls GetType() const = 0;
+	virtual void SetType(const TypeAtomCls& cls) = 0;
+	virtual void CopyTo(AtomBase* atom) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
@@ -95,6 +95,15 @@ public:
 	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	
+	
+	
+	
+	Callback2<AtomBase&, Packet&>	WhenEnterStorePacket;
+	Callback1<Packet&>						WhenEnterCreatedEmptyPacket;
+	
+	Callback1<Packet&>						WhenLeaveStorePacket;
+	Callback								WhenLeaveCreatedEmptyPacket;
+	
 };
 
 
@@ -119,8 +128,8 @@ public:
 
 #define ATOM_RTTI(x)  RTTI_DECL1(x, Atom<x>)
 
-using AtomMapBase	= RefEcsTypeMapIndirect<AtomBase>;
-using AtomRefMap	= ArrayMap<TypeCompCls,Ref<AtomBase>>;
+using AtomMapBase	= RefSerialTypeMapIndirect<AtomBase>;
+using AtomRefMap	= ArrayMap<TypeAtomCls,Ref<AtomBase>>;
 
 class AtomMap : public AtomMapBase {
 	
@@ -138,10 +147,10 @@ public:
 	RefT_Loop<AtomT> Get() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator it = AtomMapBase::Find(AsEcsTypeCls<AtomT>());
+		AtomMapBase::Iterator it = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
-			THROW(Exc("Could not find component " + AsTypeString<AtomT>()));
+			THROW(Exc("Could not find atom " + AsTypeString<AtomT>()));
 		
 		return it->AsRef<AtomT>();
 	}
@@ -150,7 +159,7 @@ public:
 	RefT_Loop<AtomT> Find() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator it = AtomMapBase::Find(AsEcsTypeCls<AtomT>());
+		AtomMapBase::Iterator it = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		if (IS_EMPTY_SHAREDPTR(it))
 			return Null;
 		else
@@ -158,22 +167,22 @@ public:
 	}
 	
 	template<typename AtomT>
-	void Add(AtomT* component) {
+	void Add(AtomT* atom) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		TypeCompCls type = component->GetType();
+		TypeAtomCls type = atom->GetType();
 		ASSERT(type.IsValid());
 		AtomMapBase::Iterator it = AtomMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || AtomT::AllowDuplicates(), "Cannot have duplicate componnets");
-		AtomMapBase::Add(type, component);
+		AtomMapBase::Add(type, atom);
 	}
 	
 	template<typename AtomT>
 	void Remove(AtomStoreRef s) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator iter = AtomMapBase::Find(AsEcsTypeCls<AtomT>());
-		ASSERT_(iter, "Tried to remove non-existent component");
+		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
+		ASSERT_(iter, "Tried to remove non-existent atom");
 		
 		iter.value().UninitializeWithExt();
 		iter.value().Destroy();
@@ -182,11 +191,11 @@ public:
 		AtomMapBase::Remove(iter);
 	}
 	
-	void AddBase(AtomBase* component) {
+	void AddBase(AtomBase* atom) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
-		TypeCompCls type = component->GetType();
+		TypeAtomCls type = atom->GetType();
 		AtomMapBase::Iterator it = AtomMapBase::Find(type);
-		AtomMapBase::Add(type, component);
+		AtomMapBase::Add(type, atom);
 	}
 	
 	#undef IS_EMPTY_SHAREDPTR

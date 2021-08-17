@@ -3,11 +3,53 @@
 
 NAMESPACE_SERIAL_BEGIN
 
+typedef dword PacketId;
+typedef dword LoopId;
+typedef dword AtomId;
 
+
+class AtomBase;
+class AtomStore;
+class AtomSystem;
 class SoundSample;
 class Loop;
+class LoopStore;
+class Machine;
+struct TypeAtomCls;
 
-typedef dword PacketId;
+
+
+template <class T>
+using RefT_Loop				= Ref<T,					RefParent1<Loop>>;
+
+template <class T>
+using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
+
+template<class T, class Parent = RefParent1<typename T::Parent>>
+using RefSerialTypeMapIndirect	= RefLinkedMapIndirect<TypeAtomCls, T, Parent>;
+
+
+using LoopParent			= RefParent2<LoopStore,		Loop>;
+using AtomParent			= RefParent1<Loop>;
+using LoopRef				= Ref<Loop,					LoopParent>;
+using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
+using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
+using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
+using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
+
+using LoopVec				= RefLinkedList<Loop,		LoopParent>;
+
+
+
+typedef enum : byte {
+	INVALID,
+	
+	#define SERIAL_TYPE(x) x,
+	SERIAL_TYPE_LIST
+	#undef SERIAL_TYPE
+	
+	SUBCOMP_COUNT
+} SubAtomCls;
 
 
 
@@ -116,6 +158,16 @@ struct ValDevCls : Moveable<ValDevCls> {
 
 
 
+struct AtomCls : Moveable<AtomCls> {
+	ValDevCls sink, side, src;
+	
+	
+	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid();}
+	
+};
+
+
+
 
 struct SerialTypeCls : Moveable<SerialTypeCls> {
 	typedef enum : byte {
@@ -149,17 +201,8 @@ struct SerialTypeCls : Moveable<SerialTypeCls> {
 	String GetActionName() const {return ToLower(vd.dev.GetName()) + "." + ToLower(vd.val.GetName());}
 };
 
-typedef enum : byte {
-	INVALID,
-	
-	#define SERIAL_BASE(x) x,
-	SERIAL_BASE_LIST
-	#undef SERIAL_BASE
-	
-	SUBCOMP_COUNT
-} SubCompCls;
 
-String GetSubCompString(SubCompCls t);
+String GetSubCompString(SubAtomCls t);
 
 
 struct CompCls : Moveable<CompCls> {
@@ -170,19 +213,19 @@ struct CompCls : Moveable<CompCls> {
 	
 };
 
-struct TypeCompCls : Moveable<TypeCompCls> {
+struct TypeAtomCls : Moveable<TypeAtomCls> {
 	ValDevCls sink, src;
 	SerialTypeCls side;
-	SubCompCls sub = SubCompCls::INVALID;
+	SubAtomCls sub = SubAtomCls::INVALID;
 	int16 ext = -1;
 	bool multi_conn = false;
 	
-	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && sub != SubCompCls::INVALID && ext >= 0;}
+	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && sub != SubAtomCls::INVALID && ext >= 0;}
 	bool IsMultiSideConnection() const {return multi_conn;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubCompCls::INVALID; ext = -1; multi_conn = false;}
+	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubAtomCls::INVALID; ext = -1; multi_conn = false;}
 	
-	bool operator==(const TypeCompCls& c) const {
+	bool operator==(const TypeAtomCls& c) const {
 		return	sink == c.sink &&
 				side == c.side &&
 				src == c.src &&
@@ -191,14 +234,11 @@ struct TypeCompCls : Moveable<TypeCompCls> {
 				multi_conn == c.multi_conn
 				;
 	}
-	bool operator!=(const TypeCompCls& c) const {return !(*this == c);}
+	bool operator!=(const TypeAtomCls& c) const {return !(*this == c);}
 	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ", multiconn=" << IntStr(multi_conn) << ")";}
 	
 };
 
-
-template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefSerialTypeMapIndirect	= RefLinkedMapIndirect<TypeCompCls, T, Parent>;
 
 
 template <class T> SerialTypeCls AsSerialTypeCls(ValDevCls vd) {
@@ -208,8 +248,8 @@ template <class T> SerialTypeCls AsSerialTypeCls(ValDevCls vd) {
 	return c;
 }
 
-template <class T> TypeCompCls AsTypeCompCls(SubCompCls sub_type, CompCls vd) {
-	TypeCompCls c;
+template <class T> TypeAtomCls AsTypeAtomCls(SubAtomCls sub_type, CompCls vd) {
+	TypeAtomCls c;
 	c.sub = sub_type;
 	c.side.vd.dev = vd.side.dev;
 	c.side.vd.val = vd.side.val;

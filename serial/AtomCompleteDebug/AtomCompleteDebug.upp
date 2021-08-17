@@ -1,0 +1,10 @@
+description "\377B0,128,128";
+
+uses
+	AtomDebug,
+	AtomLocal;
+
+file
+	AtomCompleteDebug.h,
+	AtomCompleteDebug.cpp;
+

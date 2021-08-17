@@ -1,0 +1,12 @@
+description "Components\377B0,87,128";
+
+uses
+	SerialCore;
+
+uses(STDEXC) Esc;
+
+file
+	SerialLib.h,
+	Types.h,
+	RegistrySystem.h;
+

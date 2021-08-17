@@ -15,5 +15,6 @@ file
 	PacketBuffer.cpp,
 	ValDevScope.h,
 	Defs.h,
-	Machine.h;
+	Machine.h,
+	Machine.cpp;
 

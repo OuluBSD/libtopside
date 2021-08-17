@@ -50,10 +50,10 @@ struct x : \
 #define LOOP_PREFAB_END \
 > { \
 	 \
-    static Atoms Make(Entity& e) \
+    static Atoms Make(Loop& e) \
     { \
-        auto components = LoopPrefab::Make(e); \
-		return components; \
+        auto atoms = LoopPrefab::Make(e); \
+		return atoms; \
     } \
 };
 

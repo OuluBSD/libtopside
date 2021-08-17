@@ -11,8 +11,11 @@ file
 	Interface.h,
 	Atom.h,
 	AtomStore.h,
+	AtomSystem.h,
 	LoopStore.h,
+	LoopStore.cpp,
 	Factory.h,
 	Factory.cpp,
-	Loop.h;
+	Loop.h,
+	Loop.cpp;
 

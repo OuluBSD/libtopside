@@ -10,7 +10,7 @@ public:
 	RTTI_DECL0(InterfaceBase)
 	
 	virtual AtomBase* AsAtomBase() = 0;
-	virtual TypeCompCls GetType() const = 0;
+	virtual TypeAtomCls GetType() const = 0;
 	virtual ValDevCls GetSinkCls() const {return ValDevCls();}
 	virtual ValDevCls GetSourceCls() const {return ValDevCls();}
 	void Visit(RuntimeVisitor& vis) {}

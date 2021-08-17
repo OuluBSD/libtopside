@@ -5,12 +5,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace Ecs {
+namespace Serial {
 
-class Entity;
-class Pool;
-class EntityStore;
-class ComponentBase;
+class Loop;
+class LoopStore;
+class AtomBase;
+class AtomStore;
 
 }
 
@@ -22,11 +22,11 @@ class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
 using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Ecs::Entity>>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Ecs::Entity>>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Ecs::Entity>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Serial::AtomBase>>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Serial::AtomBase>>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Serial::AtomBase>>;
 using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
-using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Ecs::Pool>>;
+using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Serial::Loop>>;
 using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
 
 
@@ -231,7 +231,7 @@ public:
 
 
 class ExchangeProviderBase :
-	public RefScopeEnabler<ExchangeProviderBase,Ecs::Entity>
+	public RefScopeEnabler<ExchangeProviderBase,Serial::AtomBase>
 {
 	
 public:
@@ -409,7 +409,7 @@ public:
 
 
 class MetaExchangePoint :
-	public RefScopeEnabler<MetaExchangePoint,Ecs::EntityStore,RefParent2<Ecs::EntityStore, Ecs::Pool>>
+	public RefScopeEnabler<MetaExchangePoint,Serial::LoopStore,RefParent2<Serial::LoopStore, Serial::Loop>>
 {
 	
 protected:
