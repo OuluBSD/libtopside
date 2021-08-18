@@ -20,7 +20,7 @@ void LoopStore::Uninitialize() {
 }
 
 void LoopStore::Update(double dt) {
-	GetRoot()->PruneFromContainer();
+	//GetRoot()->PruneFromContainer();
 	
 	
 	/*if (refresh_poolcomps[WRITE]) {
@@ -32,6 +32,12 @@ void LoopStore::Update(double dt) {
 		for (ConnectorBase* comp : refresh_poolcomps[READ])
 			comp->Update(dt);
 	}*/
+	
+}
+
+void LoopStore::Clone(Loop& dst, const Loop& src) {
+	
+	TODO
 	
 }
 

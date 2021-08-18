@@ -8,5 +8,6 @@ uses(STDEXC) Esc;
 file
 	SerialLib.h,
 	Types.h,
-	RegistrySystem.h;
+	RegistrySystem.h,
+	RegistrySystem.cpp;
 

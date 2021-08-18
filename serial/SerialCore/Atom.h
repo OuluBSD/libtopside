@@ -184,8 +184,8 @@ public:
 		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
-		iter.value().UninitializeWithExt();
-		iter.value().Destroy();
+		iter.value().Uninitialize();
+		//iter.value().Destroy();
 		
 		ReturnAtom(*s, iter.value.GetItem()->value.Detach());
 		AtomMapBase::Remove(iter);

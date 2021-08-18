@@ -16,6 +16,10 @@ LoopId Loop::GetNextId() {
 	return ++next_id;
 }
 
+Loop* Loop::GetParent() const {
+	return RefScopeParent<LoopParent>::GetParent().b;
+}
+
 String Loop::GetTreeString(int indent) {
 	String s;
 	
@@ -30,6 +34,24 @@ String Loop::GetTreeString(int indent) {
 	}
 	
 	return s;
+}
+
+Machine& Loop::GetMachine() const {
+	if (machine)
+		return *machine;
+	const Loop* l = this;
+	int levels = 0;
+	while (l && levels++ < 1000) {
+		const LoopParent& par = l->RefScopeParent<LoopParent>::GetParent();
+		if (par.a) {
+			machine = &par.a->GetMachine();
+			ASSERT(machine);
+			return *machine;
+		}
+		ASSERT(l != par.b);
+		l = par.b;
+	}
+	THROW(Exc("Machine ptr not found"));
 }
 
 void Loop::OnChange() {
@@ -81,7 +103,7 @@ void Loop::UninitializeAtoms() {
 	auto& atoms = this->atoms.GetValues();
 	int dbg_i = 0;
 	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		it().UninitializeWithExt();
+		it().Uninitialize();
 		dbg_i++;
 	}
 }
@@ -99,40 +121,31 @@ void Loop::ClearInterfaces() {
 }
 
 LoopRef Loop::Clone() const {
-	LoopRef ent = GetPool().Clone(*this);
-	ent->InitializeAtoms();
-	return ent;
+	LoopRef l = CreateEmpty();
+	l->AppendCopy(*this);
+	GetMachine().Get<LoopStore>()->Clone(*l, *this);
+	return l;
 }
 
-void Loop::Destroy() {
+void Loop::AppendCopy(const Loop& l) {
+	TODO
+}
+
+/*void Loop::Destroy() {
 	Destroyable::Destroy();
 	
 	for (auto& component : atoms.GetValues()) {
 		component->Destroy();
 	}
-}
+}*/
 
-void Loop::SetEnabled(bool enable) {
+/*void Loop::SetEnabled(bool enable) {
 	Enableable::SetEnabled(enable);
 	
 	for (auto& component : atoms.GetValues()) {
 		component->SetEnabled(enable);
 	}
-}
-
-Machine& Loop::GetMachine() {
-	return GetPool().GetMachine();
-}
-
-const Machine& Loop::GetMachine() const {
-	return GetPool().GetMachine();
-}
-
-Pool& Loop::GetPool() const {
-	Pool* p = RefScopeParent<LoopParent>::GetParent().o;
-	ASSERT(p);
-	return *p;
-}
+}*/
 
 void Loop::VisitSinks(RuntimeVisitor& vis) {
 	for(AtomBaseRef& c : atoms)
@@ -144,9 +157,9 @@ void Loop::VisitSources(RuntimeVisitor& vis){
 		c->VisitSource(vis);
 }
 
-int Loop::GetPoolDepth() const {
+int Loop::GetLoopDepth() const {
 	int d = 0;
-	Pool* p = &GetPool();
+	const Loop* p = this;
 	while (1) {
 		p = p->GetParent();
 		if (!p) break;
@@ -155,14 +168,33 @@ int Loop::GetPoolDepth() const {
 	return d;
 }
 
-bool Loop::HasPoolParent(PoolRef pool) const {
-	Pool* p = &GetPool();
+bool Loop::HasLoopParent(LoopRef pool) const {
+	const Loop* p = this;
 	while (p) {
 		if (p == &*pool)
 			return true;
 		p = p->GetParent();
 	}
 	return false;
+}
+
+LoopRef Loop::CreateEmpty() const {
+	TODO
+	/*Entity& e = objects.Add();
+	e.SetParent(this);
+	e.SetId(GetNextId());
+	Initialize(e);
+	return e;*/
+}
+
+void Loop::Clear() {
+	// useless ClearInterfacesDeep();
+	/*UnrefDeep();
+	UnlinkDeep();
+	UninitializeComponentsDeep();
+	ClearComponentsDeep();
+	ClearDeep();*/
+	TODO
 }
 
 
@@ -176,8 +208,8 @@ bool LoopHashVisitor::OnEntry(const RTTI& type, TypeCls derived, const char* der
 		ch.Put(1);
 		ch.Put(e.GetId());
 	}
-	else if (derived == AsTypeCls<Pool>()) {
-		Pool& p = *(Pool*)mem;
+	else if (derived == AsTypeCls<Loop>()) {
+		Loop& p = *(Loop*)mem;
 		ch.Put(2);
 		ch.Put(p.GetId());
 	}

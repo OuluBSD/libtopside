@@ -8,7 +8,7 @@ class Loop :
 	public MetaExchangePoint,
 	RTTIBase
 {
-	Machine*			machine = 0;
+	mutable Machine*	machine = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
 	String				prefab;
@@ -58,13 +58,13 @@ public:
 	String				GetTreeString(int indent=0);
 	
 	Loop*				GetParent() const;
-	Machine&			GetMachine();
+	Machine&			GetMachine() const;
 	String				GetName() const {return name;}
 	bool				HasEntities() const {return !atoms.IsEmpty();}
 	bool				HasLoops() const {return !loops.IsEmpty();}
 	
 	void				Initialize(Loop& e, String prefab="Custom");
-	LoopRef				CreateEmpty();
+	LoopRef				CreateEmpty() const;
 	LoopRef				GetAddEmpty(String name);
 	LoopRef				Clone(const Loop& e);
 	
@@ -74,6 +74,21 @@ public:
 	AtomBaseRef GetTypeCls(TypeAtomCls atom_type);
 	AtomBaseRef GetAddTypeCls(TypeAtomCls cls);
 	AtomBaseRef FindTypeCls(TypeAtomCls atom_type);
+	
+	
+	
+	AtomBaseRef AddPtr(AtomBase* atom);
+	LoopRef Clone() const;
+	void InitializeAtoms();
+	void InitializeAtom(AtomBase& atom);
+	void InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}
+	void UninitializeAtoms();
+	void ClearAtoms();
+	void ClearInterfaces();
+	void AppendCopy(const Loop& l);
+	
+	int GetLoopDepth() const;
+	bool HasLoopParent(LoopRef pool) const;
 	
 	/*template<typename PrefabT>
 	LoopRef Create() {
@@ -168,6 +183,8 @@ public:
 	
 	AtomMap& GetAtoms() {return atoms;}
 	LoopVec& GetLoops() {return loops;}
+	const AtomMap& GetAtoms() const {return atoms;}
+	const LoopVec& GetLoops() const {return loops;}
 	
 	LoopRef AddLoop(String name="") {
 		Loop& p = loops.Add();
@@ -207,9 +224,10 @@ public:
 		return RefT_Loop<T>(this, comp);
 	}*/
 	
-	void Visit(RuntimeVisitor& vis) {
-		vis || atoms || loops;
-	}
+	void Visit(RuntimeVisitor& vis) {vis || atoms || loops;}
+	void VisitSinks(RuntimeVisitor& vis);
+	void VisitSources(RuntimeVisitor& vis);
+	
 private:
 	AtomMap					atoms;
 	LoopVec					loops;

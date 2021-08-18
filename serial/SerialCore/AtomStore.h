@@ -4,7 +4,39 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class AtomStore : public System<AtomStore> {
+template<class T> using SerialTypeMap = LinkedMap<SerialTypeCls, T>;
+
+
+template<typename T, typename ProducerT, typename RefurbisherT>
+class SerialFactory
+{
+public:
+    using Type = T;
+    using Producer = ProducerT;
+    using Refurbisher = RefurbisherT;
+	
+    void RegisterProducer(const SerialTypeCls& typeId, Producer producer, Refurbisher refurbisher)
+    {
+        auto p = producers.find(typeId);
+        AssertFalse(p != producers.end(), "multiple registrations for the same type is not allowed");
+        producers.insert(p, { typeId, pick<Producer>(producer) });
+        
+        auto r = refurbishers.find(typeId);
+        AssertFalse(r != refurbishers.end(), "multiple registrations for the same type is not allowed");
+        refurbishers.insert(r, { typeId, pick<Refurbisher>(refurbisher) });
+    }
+	
+protected:
+    SerialTypeMap<ProducerT> producers;
+    SerialTypeMap<RefurbisherT> refurbishers;
+    
+};
+
+
+class AtomStore :
+	public System<AtomStore>,
+	public SerialFactory<AtomBase*, std::function<AtomBase*()>, std::function<void(AtomBase*)>>
+{
 	
 	
 public:
@@ -24,13 +56,13 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	AtomBase* CreateAtomTypeCls(TypeCompCls cls);
+	AtomBase* CreateAtomTypeCls(TypeAtomCls cls);
 	
 	template<typename T>
 	T* CreateAtom(CompCls cls) {
 		static_assert(IsAtom<T>::value, "T should be a atom");
 		
-		TypeCompCls t;
+		TypeAtomCls t;
 		t.side  = AsSerialTypeCls<T>(cls.side);
 		auto it = SerialFactory::producers.Find(t.side);
 		if (!it) {
@@ -46,11 +78,10 @@ public:
 	void Clone(Main& dst, const Main& src);
 	void ReturnAtom(Base* c);
 	
-	static SerialTypeCls::Type		GetSerialType() {return SerialTypeCls::SYS_COMPONENTSTORE;}
 	
 private:
 	
-	Base* CreateAtom(TypeCompCls cls);
+	Base* CreateAtom(TypeAtomCls cls);
 	
 };
 

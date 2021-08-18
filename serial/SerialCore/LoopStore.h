@@ -29,6 +29,8 @@ public:
 	LoopVec& GetRootVec()	{return root;}
 	
 	
+	void Clone(Loop& dst, const Loop& src);
+	
 protected:
 	void Update(double) override;
 	bool Initialize() override;
