@@ -135,10 +135,10 @@ struct ValStreamState : RTTIBase {
 };
 
 
-class AtomExtBase;
+class AtomBase;
 
 class PacketBufferParent :
-	public RefScopeEnabler<PacketBufferParent, AtomExtBase>,
+	public RefScopeEnabler<PacketBufferParent, AtomBase>,
 	RTTIBase
 {
 public:

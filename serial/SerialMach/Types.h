@@ -40,6 +40,11 @@ using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
 
+typedef enum {
+	SIDE_NOT_ACCEPTED,
+	SIDE_ACCEPTED,
+	SIDE_ACCEPTED_MULTI,
+} SideStatus;
 
 typedef enum : byte {
 	INVALID,
@@ -202,7 +207,7 @@ struct SerialTypeCls : Moveable<SerialTypeCls> {
 };
 
 
-String GetSubCompString(SubAtomCls t);
+String GetSubAtomString(SubAtomCls t);
 
 
 struct CompCls : Moveable<CompCls> {
@@ -235,7 +240,7 @@ struct TypeAtomCls : Moveable<TypeAtomCls> {
 				;
 	}
 	bool operator!=(const TypeAtomCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubCompString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ", multiconn=" << IntStr(multi_conn) << ")";}
+	String ToString() const {return GetSubAtomString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ", multiconn=" << IntStr(multi_conn) << ")";}
 	
 };
 

@@ -52,7 +52,7 @@ public:
 	// Atoms
 	
 	typedef AtomBase* (*NewFn)();
-	//typedef bool (*AtomActionFn)(const TypeAtomCls& t, Eon::Action& act);
+	//typedef bool (*AtomActionFn)(const TypeAtomCls& t, Script::Action& act);
 	struct AtomData : Moveable<AtomData> {
 		NewFn			new_fn;
 		//AtomActionFn	action_fn;
@@ -67,9 +67,9 @@ public:
 	static AtomMap& AtomDataMap() {MAKE_STATIC(AtomMap, m); return m;}
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
-	//template <class T> static bool MakeAtomAction(const TypeAtomCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static bool MakeExtAction(const TypeExtCls& t, Eon::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
+	//template <class T> static bool MakeAtomAction(const TypeAtomCls& t, Script::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static bool MakeExtAction(const TypeAtomCls& t, Script::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static SideStatus MakeSide(const TypeAtomCls& from_type, const Script::WorldState& from, const TypeAtomCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
 	template <class T> static void RegisterAtom(SubAtomCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
 		AtomCls atom;
@@ -90,7 +90,6 @@ public:
 	
 	static void Dump();
 	static const Vector<Link>& GetSinkAtoms(TypeAtomCls src_atom);
-	//static void GetAtomActions(const Eon::WorldState& src, Vector<Eon::Action>& acts);
 	static void RefreshLinks(AtomData& d);
 	
 	

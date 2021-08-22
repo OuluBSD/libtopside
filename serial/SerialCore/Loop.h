@@ -74,7 +74,7 @@ public:
 	AtomBaseRef GetTypeCls(TypeAtomCls atom_type);
 	AtomBaseRef GetAddTypeCls(TypeAtomCls cls);
 	AtomBaseRef FindTypeCls(TypeAtomCls atom_type);
-	
+	LoopRef FindLoopByName(String name);
 	
 	
 	AtomBaseRef AddPtr(AtomBase* atom);

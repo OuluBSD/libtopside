@@ -15,6 +15,23 @@ DevCls GetCenterDevCls() {
 }
 
 
+String GetSubAtomString(SubAtomCls t) {
+	TODO
+	#if 0
+	switch (t) {
+		case CUSTOMER:		return "customer";
+		case INPUT:			return "input";
+		case OUTPUT:		return "output";
+		case CONVERTER:		return "converter";
+		case PIPE:			return "pipe";
+		case SIDE_INPUT:	return "side-input";
+		case SIDE_OUTPUT:	return "side-output";
+		default: return "invalid";
+	}
+	#endif
+}
+
+
 
 String ValCls::GetName(Type t) {
 	switch (t) {
@@ -88,6 +105,26 @@ hash_t TypeAtomCls::GetHashValue() const {
 	c.Put(sub);
 	c.Put(ext);
 	return c;
+}
+
+
+
+
+
+
+
+String SerialTypeCls::GetTypeString(Type t) {
+	TODO
+	#if 0
+	switch (t) {
+		case IFACE:					return "interface";
+		case COMP_EXT:				return "ext-component";
+		case ATOM_TEST_CUSTOMER:		return "test-customer-component";
+		case ATOM_TEST_AUDIO_OUT:	return "test-audio-out-component";
+		case ATOM_DBG_CONVERTER:		return "dbg-conv-component";
+		default: return "invalid";
+	}
+	#endif
 }
 
 

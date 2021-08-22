@@ -3,6 +3,7 @@
 
 #include <SerialMach/SerialMach.h>
 
+#include "Defs.h"
 #include "Types.h"
 #include "PacketTracker.h"
 #include "Interface.h"
@@ -12,6 +13,7 @@
 #include "Loop.h"
 #include "LoopStore.h"
 #include "Factory.h"
+#include "Customer.h"
 
 
 #endif

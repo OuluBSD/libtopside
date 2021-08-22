@@ -1,10 +1,22 @@
+description "\377B0,0,128";
+
 uses
-	CompleteSerial;
+	CompleteSerial,
+	Agent;
 
 file
 	SerialPlanner.h,
-	main.cpp,
-	SerialPlanner.cpp,
+	Parser.h,
+	Parser.cpp,
 	Planner.h,
-	Planner.cpp;
+	Planner.cpp,
+	Script.h,
+	Script.cpp,
+	Chain.cpp,
+	LoaderBase.inl highlight cpp,
+	Loop.cpp,
+	Machine.cpp,
+	System.cpp,
+	TopChain.cpp,
+	_ readonly separator;
 

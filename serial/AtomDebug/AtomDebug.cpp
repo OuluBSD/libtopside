@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 
 void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	SetCoutLog();
-	//Ecs::Factory::Dump();
+	//Serial::Factory::Dump();
 	
 	if (dbg_ref)
 		BreakRefAdd(0x80AE32468);

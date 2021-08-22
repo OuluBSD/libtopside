@@ -6,11 +6,13 @@ uses
 file
 	TODO.txt,
 	SerialCore.h,
+	Defs.h,
 	Types.h,
 	PacketTracker.h,
 	PacketTracker.cpp,
 	Interface.h,
 	Atom.h,
+	Atom.cpp,
 	AtomStore.h,
 	AtomStore.cpp,
 	AtomSystem.h,
@@ -19,5 +21,6 @@ file
 	Factory.h,
 	Factory.cpp,
 	Loop.h,
-	Loop.cpp;
+	Loop.cpp,
+	Customer.h;
 

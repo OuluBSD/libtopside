@@ -1,8 +1,7 @@
 #include "SerialPlanner.h"
 
 NAMESPACE_SERIAL_BEGIN
-
-namespace Planner {
+namespace Script {
 
 WorldState::WorldState() {
 	
@@ -12,8 +11,7 @@ WorldState::WorldState() {
 void WorldState::Clear() {
 	values.Clear();
 	using_act.Clear();
-	cur_comp = Null;
-	add_ext = Null;
+	cur_atom = Null;
 	type = INVALID;
 }
 
@@ -47,8 +45,7 @@ WorldState& WorldState::operator=(const WorldState& src) {
 	values		<<= src.values;
 	using_act	<<= src.using_act;
 	dbg_order	<<= src.dbg_order;
-	cur_comp	= src.cur_comp;
-	add_ext		= src.add_ext;
+	cur_atom	= src.cur_atom;
 	type		= src.type;
 	ap			= src.ap;
 	return *this;
@@ -58,8 +55,7 @@ WorldState& WorldState::operator=(const WorldState& src) {
 hash_t WorldState::GetHashValue() const {
 	CombineHash c;
 	c.Put((int)type);
-	c.Put(cur_comp.GetHashValue());
-	c.Put(add_ext.GetHashValue());
+	c.Put(cur_atom.GetHashValue());
 	c.Put(side_vd.GetHashValue());
 	bool begun = false;
 	for(int i = values.GetCount()-1; i >= 0; i--) {
@@ -82,15 +78,15 @@ hash_t WorldState::GetHashValue() const {
 }
 
 bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
-	for (const Serial::Statement& ret : ret_list) {
+	for (const Script::Statement& ret : ret_list) {
 		String atom = ret.id.ToString();
 		if (!ret.value.IsEmpty()) {
-			const Serial::Value& v = *ret.value;
-			if (v.type == Serial::Value::VAL_STRING)
+			const Script::Value& v = *ret.value;
+			if (v.type == Script::Value::VAL_STRING)
 				Set(atom, v.str);
-			else if (v.type == Serial::Value::VAL_BOOLEAN)
+			else if (v.type == Script::Value::VAL_BOOLEAN)
 				Set(atom, v.b ? "true" : "false");
-			else if (v.type == Serial::Value::VAL_ID)
+			else if (v.type == Script::Value::VAL_ID)
 				Set(atom, v.id.ToString());
 			else
 				return false;
@@ -205,9 +201,7 @@ String WorldState::ToString() const {
 String WorldState::GetFullString() const {
 	String s;
 	if (IsAddAtom())
-		s << "add-comp " << cur_comp.ToString() << " ";
-	else if (IsAddExtension())
-		s << "add-ext " << cur_comp.ToString() << " " << add_ext.ToString() << " ";
+		s << "add-atom " << cur_atom.ToString() << " ";
 	if (side_vd.IsValid())
 		s << "side-vd=" << side_vd.ToString() << " ";
 	s << ToString();
@@ -227,7 +221,7 @@ bool WorldState::Contains(const WorldState& ws) const {
 			return false;
 	for(int i = 0; i < c_count; i++) {
 		if (ws.using_act[i]) {
-			if (Compare(i, ws) != 0)
+			if (Atomare(i, ws) != 0)
 				return false;
 		}
 	}
@@ -240,7 +234,7 @@ bool WorldState::Conflicts(const WorldState& ws) const {
 	int c_count = min(a_count, b_count);
 	for(int i = 0; i < c_count; i++) {
 		if (using_act[i] && ws.using_act[i]) {
-			if (Compare(i, ws) != 0)
+			if (Atomare(i, ws) != 0)
 				return true;
 		}
 	}
@@ -248,10 +242,10 @@ bool WorldState::Conflicts(const WorldState& ws) const {
 }
 
 
-int WorldState::Compare(int idx, const WorldState& ws) const {
+int WorldState::Atomare(int idx, const WorldState& ws) const {
 	const String& a = values[idx];
 	const String& b = ws.values[idx];
-	// Compare false
+	// Atomare false
 	if (a.IsEmpty() || a == "false") {
 		if (b.IsEmpty() || b == "false")
 			return 0;
@@ -322,7 +316,7 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 	else return i;
 }
 
-void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
+void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
 {
 	auto& src = n.GetWorldState();
 	TypeAtomCls atom_type = src.GetAtom();
@@ -339,7 +333,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Arra
 	}*/
 	
 	acts.SetCount(0);
-	Serial::Factory::GetAtomActions(src, acts);
+	Serial::GetAtomActions(src, acts);
 	
 	/*if (!(!dbg || acts.GetCount())) {
 		LOG(n.GetWorldState().ToString());
@@ -347,6 +341,8 @@ void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Arra
 	}
 	ASSERT(!dbg || acts.GetCount());*/
 	
+	TODO
+	#if 0
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
 		Action& act = acts[i];
@@ -390,6 +386,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Serial::ActionNode>& n, Arra
 			//if (dbg) {LOG("\tDEBUG: " << tmp.ToString());}
 		}
 	}
+	#endif
 }
 
 bool ActionPlanner::SetPreCondition(int act_idx, int atm_idx, bool value)
@@ -611,6 +608,61 @@ bool ActionNode::Conflicts(const ActionNode& n) const {
 	return a.Conflicts(b);
 }
 
+
+}
+
+
+
+void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts) {
+	auto& m = Factory::AtomDataMap();
+	
+	TypeAtomCls atom = src.GetAtom();
+	Factory::AtomData& d = m.Get(atom);
+	Factory::RefreshLinks(d);
+	
+	Script::Action a;
+	a.Pre() = src;
+	
+	TODO
+	#if 0
+	
+	if (src.IsAddAtom()) {
+		for (const Factory::ExtData& e : d.ext.GetValues()) {
+			a.Post() = src;
+			a.Post().SetAs_AddExtension(atom, e.cls);
+			a.Post().SetSideCls(e.side_vd);
+			if (e.action_fn(e.cls, a)) {
+				MemSwap(acts.Add(), a);
+				a.Pre() = src;
+			}
+		}
+	}
+	
+	for (const Factory::Link& link : d.sink_links) {
+		TypeAtomCls dst = link.dst_atom;
+		ASSERT(dst.IsValid());
+		const Factory::AtomData& dst_cd = m.Get(dst);
+		
+		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
+			LOG(dst.ToString());
+		}*/
+		if (atom.sub != SubAtomCls::CUSTOMER &&
+			dst.sub != SubAtomCls::CONVERTER &&
+			dst.side.vd.val != atom.side.vd.val &&
+			dst.sink.val != ValCls::RECEIPT)
+			continue;
+		//ASSERT(src.GetAtom() != link.dst_atom);
+		
+		a.Post() = src;
+		a.Post().SetAs_AddAtom(dst);
+		if (dst_cd.action_fn(dst_cd.cls, a)) {
+			MemSwap(acts.Add(), a);
+			a.Pre() = src;
+		}
+	}
+	
+	#endif
+	
 }
 
 NAMESPACE_SERIAL_END

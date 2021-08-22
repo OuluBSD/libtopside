@@ -197,7 +197,21 @@ void Loop::Clear() {
 	TODO
 }
 
+LoopRef Loop::GetAddEmpty(String name) {
+	LoopRef l = FindLoopByName(name);
+	if (l)
+		return l;
+	l = CreateEmpty();
+	l->SetName(name);
+	return l;
+}
 
+LoopRef Loop::FindLoopByName(String name) {
+	for (LoopRef object : loops)
+		if (object->GetName() == name)
+			return object;
+	return LoopRef();
+}
 
 
 

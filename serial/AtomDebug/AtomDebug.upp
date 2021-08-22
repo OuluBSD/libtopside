@@ -8,5 +8,7 @@ file
 	AtomDebug.h,
 	AtomDebug.cpp,
 	Verifier.h,
-	Verifier.cpp;
+	Verifier.cpp,
+	Testers.h,
+	Testers.cpp;
 

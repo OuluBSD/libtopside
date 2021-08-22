@@ -4,10 +4,18 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class SerialLoader;
-class SerialLoopLoader;
+namespace Script {
+class WorldState;
+class Action;
+}
 
-namespace Planner {
+class ScriptLoader;
+class ScriptLoopLoader;
+
+void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
+
+
+namespace Script {
 
 class ActionPlanner;
 class ActionNode;
@@ -18,23 +26,21 @@ public:
 	typedef enum : byte {
 		INVALID,
 		ADD_COMP,
-		ADD_EXT
 	} Type;
 	
 protected:
 	friend class ActionPlanner;
 	friend class ActionPlannerWrapper;
 	friend class ActionNode;
-	friend class ::TS::Serial::SerialLoader;
-	friend class ::TS::Serial::SerialLoopLoader;
+	friend class ::TS::Serial::ScriptLoader;
+	friend class ::TS::Serial::ScriptLoopLoader;
 	
 	static const bool use_debugging_order = true;
 	
 	Vector<String>				values;
 	Vector<bool>				using_act;
 	Index<short>				dbg_order;
-	TypeAtomCls					cur_comp;
-	TypeExtCls					add_ext;
+	TypeAtomCls					cur_atom;
 	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
@@ -51,13 +57,11 @@ public:
 	bool Set(const String& key, String value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
-	void SetAs_AddExtension(TypeAtomCls comp, TypeExtCls ext) {type = ADD_EXT; cur_comp = comp; add_ext = ext;}
-	void SetAs_AddAtom(TypeAtomCls comp) {type = ADD_COMP; cur_comp = comp;}
+	void SetAs_AddAtom(TypeAtomCls atom) {type = ADD_COMP; cur_atom = atom;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddAtom() const {return type == ADD_COMP;}
-	bool IsAddExtension() const {return type == ADD_EXT;}
 	bool IsTrue(const String& key) const;
 	bool IsFalse(const String& key) const;
 	bool IsFalse(int idx) const;
@@ -66,15 +70,14 @@ public:
 	String Get(const String& key) const;
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
-	TypeAtomCls GetAtom() const {return cur_comp;}
-	TypeExtCls GetExtension() const {return add_ext;}
-	ValDevCls GetInterface() const {ASSERT(cur_comp.IsValid()); return cur_comp.side.vd;}
+	TypeAtomCls GetAtom() const {return cur_atom;}
+	ValDevCls GetInterface() const {ASSERT(cur_atom.IsValid()); return cur_atom.side.vd;}
 	const ValDevCls& GetSideCls() const {return side_vd;}
 	String ToString() const;
 	String GetFullString() const;
 	bool Contains(const WorldState& ws) const;
 	bool Conflicts(const WorldState& ws) const;
-	int Compare(int idx, const WorldState& ws) const;
+	int Atomare(int idx, const WorldState& ws) const;
 	
 	WorldState& operator=(const WorldState& src);
 	
@@ -107,7 +110,6 @@ public:
 	WorldState& Post() {return postcond;}
 	
 	bool IsAddAtom() const {return postcond.IsAddAtom();}
-	bool IsAddExtension() const {return postcond.IsAddExtension();}
 	
 };
 
@@ -157,7 +159,7 @@ typedef Node<ActionNode> APlanNode;
 
 
 struct Plan : Moveable<Plan> {
-	Vector<Serial::ActionNode*> plan;
+	Vector<Script::ActionNode*> plan;
 	
 	Plan() {}
 	Plan(const Plan& ep) {*this = ep;}
@@ -172,8 +174,8 @@ class ActionPlannerWrapper;
 class ActionPlanner {
 	
 public:
-	using ANode = Node<Serial::ActionNode>;
-	using Searcher = AStar<Serial::ActionNode>;
+	using ANode = Node<Script::ActionNode>;
+	using Searcher = AStar<Script::ActionNode>;
 	
 	struct State : Moveable<State> {
 		ANode*					last;
@@ -183,8 +185,8 @@ public:
 protected:
 	friend class ActionNode;
 	friend class ActionPlannerWrapper;
-	friend class ::TS::Serial::SerialLoader;
-	friend class ::TS::Serial::SerialLoopLoader;
+	friend class ::TS::Serial::ScriptLoader;
+	friend class ::TS::Serial::ScriptLoopLoader;
 	
 	
 	struct Atom : Moveable<Atom> {
@@ -196,7 +198,7 @@ protected:
 	VectorMap<String, Atom>		atoms;
 	Vector<Action>				acts;
 	ActionPlannerWrapper*		wrapper = 0;
-	SerialLoopLoader*				loop_loader = 0;
+	ScriptLoopLoader*				loop_loader = 0;
 	Array<WorldState>			search_cache;
 	Vector<State>				side_inputs, side_outputs;
 	int							side_in_max_est, side_out_max_est;
@@ -223,12 +225,12 @@ public:
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
-	void SetLoopLoader(SerialLoopLoader* l) {loop_loader = l;}
+	void SetLoopLoader(ScriptLoopLoader* l) {loop_loader = l;}
 	void AddSideInput(const Searcher& as, ANode& n);
 	void AddSideOutput(const Searcher& as, ANode& n);
 	
-	void GetPossibleStateTransition(Node<Serial::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
-	SerialLoopLoader& GetLoopLoader() const {return *loop_loader;}
+	void GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
+	ScriptLoopLoader& GetLoopLoader() const {return *loop_loader;}
 	
 };
 

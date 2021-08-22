@@ -44,12 +44,12 @@ public:
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
 	
-	//static SideStatus MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
+	//static SideStatus MakeSide(const TypeAtomCls& from_type, const Script::WorldState& from, const TypeAtomCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
 	ValCls GetValSpec() const {return GetType().side.vd.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().side.vd.val;}
 	
-	//AtomExtBaseRef SetExtensionTypeCls(TypeExtCls ext);
+	AtomBaseRef SetAtomTypeCls(TypeAtomCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -62,7 +62,7 @@ public:
 	AtomBase();
 	virtual ~AtomBase();
 	
-	//LoopRef GetLoop();
+	LoopRef GetLoop();
 	
 	//InterfaceSourceRef FindSource(ValDevCls t);
 	//InterfaceSinkRef FindSink(ValDevCls t);
