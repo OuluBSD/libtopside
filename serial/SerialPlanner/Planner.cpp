@@ -319,7 +319,7 @@ int ActionPlanner::GetAddAtom(const Id& id) {
 void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs)
 {
 	auto& src = n.GetWorldState();
-	TypeAtomCls atom_type = src.GetAtom();
+	AtomTypeCls atom_type = src.GetAtom();
 	
 	/*bool dbg =
 		src.IsTrue("customer.id.ABCD")
@@ -341,8 +341,6 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 	}
 	ASSERT(!dbg || acts.GetCount());*/
 	
-	TODO
-	#if 0
 	for (int i = 0; i < acts.GetCount(); ++i) {
 		// Check precondition
 		Action& act = acts[i];
@@ -356,7 +354,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 			//if (act.postcond.GetAtom() == atom_type) {DUMP(atom_type);}
 			//ASSERT(act.postcond.GetAtom() != atom_type);
 		}
-		else if (act.IsAddExtension()) {ASSERT(act.postcond.GetAtom() == atom_type);}
+		//else if (act.IsAddExtension()) {ASSERT(act.postcond.GetAtom() == atom_type);}
 		else Panic("Invalid type");
 		
 		const WorldState& pre = act.precond;
@@ -386,7 +384,6 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 			//if (dbg) {LOG("\tDEBUG: " << tmp.ToString());}
 		}
 	}
-	#endif
 }
 
 bool ActionPlanner::SetPreCondition(int act_idx, int atm_idx, bool value)
@@ -616,40 +613,38 @@ bool ActionNode::Conflicts(const ActionNode& n) const {
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts) {
 	auto& m = Factory::AtomDataMap();
 	
-	TypeAtomCls atom = src.GetAtom();
+	AtomTypeCls atom = src.GetAtom();
 	Factory::AtomData& d = m.Get(atom);
 	Factory::RefreshLinks(d);
 	
 	Script::Action a;
 	a.Pre() = src;
 	
-	TODO
-	#if 0
 	
-	if (src.IsAddAtom()) {
-		for (const Factory::ExtData& e : d.ext.GetValues()) {
+	/*if (src.IsAddAtom()) {
+		for (const Factory::IfaceData& e : d.ext.GetValues()) {
 			a.Post() = src;
-			a.Post().SetAs_AddExtension(atom, e.cls);
+			a.Post().SetAs_AddAtom(atom, e.cls);
 			a.Post().SetSideCls(e.side_vd);
 			if (e.action_fn(e.cls, a)) {
 				MemSwap(acts.Add(), a);
 				a.Pre() = src;
 			}
 		}
-	}
+	}*/
 	
 	for (const Factory::Link& link : d.sink_links) {
-		TypeAtomCls dst = link.dst_atom;
+		AtomTypeCls dst = link.dst_atom;
 		ASSERT(dst.IsValid());
 		const Factory::AtomData& dst_cd = m.Get(dst);
 		
 		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
 			LOG(dst.ToString());
 		}*/
-		if (atom.sub != SubAtomCls::CUSTOMER &&
-			dst.sub != SubAtomCls::CONVERTER &&
-			dst.side.vd.val != atom.side.vd.val &&
-			dst.sink.val != ValCls::RECEIPT)
+		if (atom.sub != SubAtomCls::CENTER_CUSTOMER &&
+			//dst.sub != SubAtomCls::CONVERTER &&
+			dst.iface.side.val != atom.iface.side.val &&
+			dst.iface.sink.val != ValCls::RECEIPT)
 			continue;
 		//ASSERT(src.GetAtom() != link.dst_atom);
 		
@@ -660,8 +655,6 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 			a.Pre() = src;
 		}
 	}
-	
-	#endif
 	
 }
 

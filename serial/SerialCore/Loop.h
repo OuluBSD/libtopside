@@ -71,9 +71,9 @@ public:
 	bool Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
 	void OnChange();
-	AtomBaseRef GetTypeCls(TypeAtomCls atom_type);
-	AtomBaseRef GetAddTypeCls(TypeAtomCls cls);
-	AtomBaseRef FindTypeCls(TypeAtomCls atom_type);
+	AtomBaseRef GetTypeCls(AtomTypeCls atom_type);
+	AtomBaseRef GetAddTypeCls(AtomTypeCls cls);
+	AtomBaseRef FindTypeCls(AtomTypeCls atom_type);
 	LoopRef FindLoopByName(String name);
 	
 	

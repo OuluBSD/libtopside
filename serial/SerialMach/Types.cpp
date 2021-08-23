@@ -97,13 +97,20 @@ DevCls::Type DevCls::Get(String s) {
 
 
 
-hash_t TypeAtomCls::GetHashValue() const {
+hash_t AtomIfaceTypeCls::GetHashValue() const {
 	CombineHash c;
 	c.Put(sink.GetHashValue());
 	c.Put(src.GetHashValue());
 	c.Put(side.GetHashValue());
+	c.Put(side_src);
+	c.Put(side_multi);
+	return c;
+}
+
+hash_t AtomTypeCls::GetHashValue() const {
+	CombineHash c;
+	c.Put(iface.GetHashValue());
 	c.Put(sub);
-	c.Put(ext);
 	return c;
 }
 

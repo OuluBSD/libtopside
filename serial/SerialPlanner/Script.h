@@ -410,38 +410,29 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	ScriptLoopLoader& ll = ap.GetLoopLoader();
 	ScriptLoopSegment& seg = ll.GetCurrentSegment();
 	
-	TypeAtomCls atom = ws.GetAtom();
-	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.side.vd.val == ValCls::ORDER)
+	AtomTypeCls atom = ws.GetAtom();
+	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.side.val == ValCls::ORDER)
 		return false;
 	
-	TODO
-	#if 0
-	bool req_ext = false;
 	if (ws.IsAddAtom()) {
-		if (atom.sub == SubAtomCls::SIDE_INPUT || atom.sub == SubAtomCls::SIDE_OUTPUT)
-			req_ext = true;
-	}
-	
-	
-	if (ws.IsAddExtension()) {
 		if (n.GetLinkedCount() > 0) {
-			TypeAtomCls ext = ws.GetExtension();
-			//if (!seg.side_conn) {
-			if (ext.sub == SubAtomCls::SIDE_INPUT) {
-				ap.AddSideInput(seg.as, n);
-				return false;
-			}
-			else if (ext.sub == SubAtomCls::SIDE_OUTPUT) {
-				POPO(Pol::Serial::Script::Loop::SideInIsBeforeSideOutAlways)
-				if (goal_ws	.IsTrue	("has.side.in") &&
-					ws		.IsFalse("has.side.in"))
+			AtomTypeCls a = ws.GetAtom();
+			if (a.iface.side.IsValid()) {
+				if (!a.iface.side_src) {
+					ap.AddSideInput(seg.as, n);
 					return false;
-				
-				ap.AddSideOutput(seg.as, n);
-				return false;
+				}
+				else {
+					POPO(Pol::Serial::Script::Loop::SideInIsBeforeSideOutAlways)
+					if (goal_ws	.IsTrue	("has.side.in") &&
+						ws		.IsFalse("has.side.in"))
+						return false;
+					
+					ap.AddSideOutput(seg.as, n);
+					return false;
+				}
 			}
-			/*}
-			else {
+			/*else {
 				const Script::APlanNode* accepted = ll.GetAcceptedSideNode();
 				ASSERT(accepted);
 				//if (n.GetWorldState() != accepted->GetWorldState())
@@ -455,6 +446,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 			}*/
 		}
 	}
+	else {
+		LOG("Unexpected action");
+		return false;
+	}
 	
 	Array<Serial::Script::WorldState*> to;
 	Vector<double> action_costs;
@@ -463,12 +458,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Serial::Script::WorldState& ws_to = *to[i];
-		if (req_ext && ws_to.IsAddAtom())
-			continue;
-		/*if (req_ext) {
-			TypeAtomCls to_atom = ws_to.GetAtom();
-			ASSERT(to_atom.sink.val != ValCls::RECEIPT);
-		}*/
+		
 		hash_t hash = ws_to.GetHashValue();
 		int j = ap.tmp_sub.Find(hash);
 		Serial::Script::APlanNode* an = 0;
@@ -489,7 +479,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 		//LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 		
 		/*if (ws_to.IsAddAtom()) {
-			TypeAtomCls t = ws_to.GetAtom();
+			AtomTypeCls t = ws_to.GetAtom();
 			if (t.sub == SubAtomCls::SIDE_INPUT) {
 				ap.AddSideInput(*an);
 			}
@@ -500,7 +490,6 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	}
 	//if (n.GetTotalCount())
 	//	return false;
-	#endif
 	
 	return false;
 }

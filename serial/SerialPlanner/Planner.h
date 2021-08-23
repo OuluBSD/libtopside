@@ -40,7 +40,7 @@ protected:
 	Vector<String>				values;
 	Vector<bool>				using_act;
 	Index<short>				dbg_order;
-	TypeAtomCls					cur_atom;
+	AtomTypeCls					cur_atom;
 	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
@@ -57,7 +57,7 @@ public:
 	bool Set(const String& key, String value);
 	void SetTrue(const String& key) {Set(key, true);}
 	void SetFalse(const String& key) {Set(key, false);}
-	void SetAs_AddAtom(TypeAtomCls atom) {type = ADD_COMP; cur_atom = atom;}
+	void SetAs_AddAtom(AtomTypeCls atom) {type = ADD_COMP; cur_atom = atom;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
@@ -70,8 +70,8 @@ public:
 	String Get(const String& key) const;
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
-	TypeAtomCls GetAtom() const {return cur_atom;}
-	ValDevCls GetInterface() const {ASSERT(cur_atom.IsValid()); return cur_atom.side.vd;}
+	AtomTypeCls GetAtom() const {return cur_atom;}
+	ValDevCls GetInterface() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.side;}
 	const ValDevCls& GetSideCls() const {return side_vd;}
 	String ToString() const;
 	String GetFullString() const;

@@ -15,7 +15,7 @@ class SoundSample;
 class Loop;
 class LoopStore;
 class Machine;
-struct TypeAtomCls;
+struct AtomTypeCls;
 
 
 
@@ -26,7 +26,7 @@ template <class T>
 using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefSerialTypeMapIndirect	= RefLinkedMapIndirect<TypeAtomCls, T, Parent>;
+using RefSerialTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 
 
 using LoopParent			= RefParent2<LoopStore,		Loop>;
@@ -48,6 +48,8 @@ typedef enum {
 
 typedef enum : byte {
 	INVALID,
+	
+	CENTER_CUSTOMER,
 	
 	#define SERIAL_TYPE(x) x,
 	SERIAL_TYPE_LIST
@@ -161,6 +163,11 @@ struct ValDevCls : Moveable<ValDevCls> {
 
 #define VD(dev, val) Serial::ValDevCls(Serial::DevCls::dev, Serial::ValCls::val)
 
+#define ATOM0(atom, sink_dev, sink_val, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, VD(sink_dev, sink_val), VD(src_dev, src_val))
+
+#define ATOM1(atom, sink_dev, sink_val, side_dev, side_val, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, VD(sink_dev, sink_val), VD(side_dev, side_val), VD(src_dev, src_val))
 
 
 struct AtomCls : Moveable<AtomCls> {
@@ -210,37 +217,61 @@ struct SerialTypeCls : Moveable<SerialTypeCls> {
 String GetSubAtomString(SubAtomCls t);
 
 
-struct CompCls : Moveable<CompCls> {
-	ValDevCls sink, side, src;
+struct AtomIfaceTypeCls : Moveable<AtomIfaceTypeCls> {
+	ValDevCls	sink;
+	ValDevCls	src;
+	ValDevCls	side;
+	bool		side_src		= 0;
+	bool		side_multi		= 0;
 	
 	
-	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid();}
+	bool IsValid() const {return sink.IsValid() && src.IsValid() /*&& side.IsValid()*/;}
+	bool IsMultiSideConnection() const {return side_multi;}
+	void operator=(const Nuller& n) {sink = n; src = n; side = n; side_src = 0; side_multi = 0;}
+	hash_t GetHashValue() const;
+	
+	bool operator==(const AtomIfaceTypeCls& c) const {
+		return	sink		== c.sink &&
+				src			== c.src &&
+				side		== c.side &&
+				side_src	== c.side_src &&
+				side_multi	== c.side_multi
+				;
+	}
+	bool operator!=(const AtomIfaceTypeCls& c) const {return !(*this == c);}
+	String ToString() const {return "(sink(" + sink.ToString() + "), side(" + side.ToString() + ", src(" + src.ToString() + "), src=" + IntStr(side_src) + ", multi=" + IntStr(side_multi) + ")";}
+	
+	
+	AtomIfaceTypeCls() {}
+	AtomIfaceTypeCls(const AtomIfaceTypeCls& c) {*this = c;}
+	AtomIfaceTypeCls(ValDevCls sink, ValDevCls src) : sink(sink), src(src) {}
+	AtomIfaceTypeCls(ValDevCls sink, ValDevCls side, ValDevCls src) : sink(sink), side(side), src(src) {}
+	
 	
 };
 
-struct TypeAtomCls : Moveable<TypeAtomCls> {
-	ValDevCls sink, src;
-	SerialTypeCls side;
+struct AtomTypeCls : Moveable<AtomTypeCls> {
+	AtomIfaceTypeCls iface;
 	SubAtomCls sub = SubAtomCls::INVALID;
-	int16 ext = -1;
-	bool multi_conn = false;
 	
-	bool IsValid() const {return sink.IsValid() && src.IsValid() && side.IsValid() && sub != SubAtomCls::INVALID && ext >= 0;}
-	bool IsMultiSideConnection() const {return multi_conn;}
+	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {sink = n; src = n; side = n; sub = SubAtomCls::INVALID; ext = -1; multi_conn = false;}
+	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID;}
 	
-	bool operator==(const TypeAtomCls& c) const {
-		return	sink == c.sink &&
-				side == c.side &&
-				src == c.src &&
-				sub == c.sub &&
-				ext == c.ext &&
-				multi_conn == c.multi_conn
+	bool operator==(const AtomTypeCls& c) const {
+		return	iface == c.iface &&
+				sub == c.sub
 				;
 	}
-	bool operator!=(const TypeAtomCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubAtomString(sub) + "-" + side.ToString() + "(sink(" + sink.ToString() + "), src(" + src.ToString() + "), ext=" << IntStr(ext) << ", multiconn=" << IntStr(multi_conn) << ")";}
+	bool operator!=(const AtomTypeCls& c) const {return !(*this == c);}
+	String ToString() const {return GetSubAtomString(sub) + "-" + iface.ToString();}
+	
+	
+	AtomTypeCls() {}
+	AtomTypeCls(const AtomTypeCls& c) {*this = c;}
+	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls src) : iface(sink,src), sub(cls) {}
+	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls side, ValDevCls src) : iface(sink,side,src), sub(cls) {}
+	
 	
 };
 
@@ -253,8 +284,9 @@ template <class T> SerialTypeCls AsSerialTypeCls(ValDevCls vd) {
 	return c;
 }
 
-template <class T> TypeAtomCls AsTypeAtomCls(SubAtomCls sub_type, CompCls vd) {
-	TypeAtomCls c;
+/*
+template <class T> AtomTypeCls AsAtomTypeCls(SubAtomCls sub_type, CompCls vd) {
+	AtomTypeCls c;
 	c.sub = sub_type;
 	c.side.vd.dev = vd.side.dev;
 	c.side.vd.val = vd.side.val;
@@ -263,7 +295,9 @@ template <class T> TypeAtomCls AsTypeAtomCls(SubAtomCls sub_type, CompCls vd) {
 	c.src  = vd.src;
 	return c;
 }
+*/
 
+template <class T> AtomTypeCls AsAtomTypeCls() {return T::GetAtomType();}
 
 DevCls GetCenterDevCls();
 

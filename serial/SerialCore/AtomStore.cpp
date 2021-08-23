@@ -9,8 +9,8 @@ void AtomStore::Clone(Main& dst, const Main& src) {
 	
 	AtomMap::Iterator iter = const_cast<AtomMap&>(src_comps).begin();
 	for (; iter; ++iter) {
-		TypeAtomCls comp_type = iter.key();
-		TypeAtomCls cls; TODO
+		AtomTypeCls comp_type = iter.key();
+		AtomTypeCls cls; TODO
 		
 		Base* new_atom = CreateAtom(cls);
 		dst.InitializeAtom(*new_atom);
@@ -21,30 +21,30 @@ void AtomStore::Clone(Main& dst, const Main& src) {
 
 void AtomStore::ReturnAtom(Base* c) {
 	ASSERT(c);
-	TypeAtomCls type = c->GetType();
+	AtomTypeCls type = c->GetType();
 	
-	auto iter = SerialFactory::refurbishers.Find(type.side);
+	auto iter = AtomFactory::refurbishers.Find(type);
 	if (iter)
 		iter.Get()(c);
 }
 
-AtomBase* AtomStore::CreateAtom(TypeAtomCls cls) {
-	auto iter = SerialFactory::producers.Find(cls.side);
+AtomBase* AtomStore::CreateAtom(AtomTypeCls cls) {
+	auto iter = AtomFactory::producers.Find(cls);
 	ASSERT_(iter, "Invalid to create non-existant atom");
 	
 	AtomBase* obj = iter.value()();
-	obj->SetType(cls);
+	//obj->SetType(cls);
 	return obj;
 }
 
-AtomBase* AtomStore::CreateAtomTypeCls(TypeAtomCls cls) {
-	auto it = Factory::producers.Find(cls.side);
+AtomBase* AtomStore::CreateAtomTypeCls(AtomTypeCls cls) {
+	auto it = Factory::producers.Find(cls);
 	if (!it) {
 		auto new_fn = Serial::Factory::AtomDataMap().Get(cls).new_fn;
 		std::function<AtomBase*()> p([new_fn] { return new_fn();});
 		std::function<void(AtomBase*)> r([] (Base* b){ delete b;});
-		Factory::producers.Add(cls.side) = p;
-		Factory::refurbishers.Add(cls.side) = r;
+		Factory::producers.Add(cls) = p;
+		Factory::refurbishers.Add(cls) = r;
 	}
 	
 	return CreateAtom(cls);

@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
+void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	SetCoutLog();
 	//Serial::Factory::Dump();
 	
@@ -33,32 +33,31 @@ void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier*
 				LoopStoreRef ls			= mach.Add<LoopStore>();
 				AtomStoreRef as			= mach.Add<AtomStore>();
 			    AtomSystemRef asys		= mach.Add<AtomSystem>();
-			    //EonLoaderRef eon		= mach.Add<EonLoader>();
+			    ScriptLoaderRef script	= mach.Add<ScriptLoader>();
 			    
 			    mach.Add<PacketTracker>();
 				
 				LoopRef root = ls->GetRoot();
 				
 				String path;
-				if (FileExists(eon_file))
-					path = eon_file;
+				if (FileExists(script_file))
+					path = script_file;
 				else
-					path = ShareDirFile(AppendFileName("eon", eon_file));
+					path = ShareDirFile(AppendFileName("script", script_file));
 				DUMP(path);
-				String eon_str = LoadFile(path);
-				if (eon_str.IsEmpty()) {
-					LOG("No eon file in " << path);
+				String script_str = LoadFile(path);
+				if (script_str.IsEmpty()) {
+					LOG("No script file in " << path);
 					return;
 				}
 				for(int i = 0; i < args.GetCount(); i++) {
 					String key = "${" + args.GetKey(i) + "}";
 					String value = args[i];
-					eon_str.Replace(key, value);
+					script_str.Replace(key, value);
 				}
-				LOG(eon_str);
+				LOG(script_str);
 				
-				TODO
-		        //eon->PostLoadString(eon_str);
+		        script->PostLoadString(script_str);
 		    }
 		        
 		    if (!fail) {
@@ -71,8 +70,8 @@ void DebugMain(String eon_file, VectorMap<String,Object>& args, MachineVerifier*
 			        mach.Update(dt);
 			        
 			        if (!iter++)
-			            mach.Get<LoopStore>()->GetRoot()->Dump();
-			        
+						mach.Get<LoopStore>()->GetRoot()->Dump();
+					
 			        Sleep(1);
 			        
 			        if (time_limit > 0 && total.Seconds() >= time_limit)

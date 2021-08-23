@@ -20,8 +20,7 @@ protected:
 	friend class Loop;
 	
 public:
-	virtual TypeAtomCls GetType() const = 0;
-	virtual void SetType(const TypeAtomCls& cls) = 0;
+	virtual AtomTypeCls GetType() const = 0;
 	virtual void CopyTo(AtomBase* atom) const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
@@ -29,6 +28,7 @@ public:
 	virtual void ClearSinkSource() = 0;
 	virtual InterfaceSourceRef GetSource() = 0;
 	virtual InterfaceSinkRef GetSink() = 0;
+	virtual void Forward(FwdScope& fwd) = 0;
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const;
@@ -39,17 +39,16 @@ public:
 	virtual void SetSideOut(int i) {Panic("Unimplemented");}
 	//virtual bool LinkSideIn(AtomBaseRef in) {Panic("Unimplemented"); return false;}
 	//virtual bool LinkSideOut(AtomBaseRef out) {Panic("Unimplemented"); return false;}
-	virtual void Forward(FwdScope& fwd) = 0;
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
 	
-	//static SideStatus MakeSide(const TypeAtomCls& from_type, const Script::WorldState& from, const TypeAtomCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
+	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
-	ValCls GetValSpec() const {return GetType().side.vd.val;}
-	bool IsValSpec(ValCls t) const {return t == GetType().side.vd.val;}
+	ValCls GetValSpec() const {return GetType().iface.side.val;}
+	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
-	AtomBaseRef SetAtomTypeCls(TypeAtomCls ext);
+	AtomBaseRef SetAtomTypeCls(AtomTypeCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -129,7 +128,7 @@ public:
 #define ATOM_RTTI(x)  RTTI_DECL1(x, Atom<x>)
 
 using AtomMapBase	= RefSerialTypeMapIndirect<AtomBase>;
-using AtomRefMap	= ArrayMap<TypeAtomCls,Ref<AtomBase>>;
+using AtomRefMap	= ArrayMap<AtomTypeCls,Ref<AtomBase>>;
 
 class AtomMap : public AtomMapBase {
 	
@@ -170,7 +169,7 @@ public:
 	void Add(AtomT* atom) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		TypeAtomCls type = atom->GetType();
+		AtomTypeCls type = atom->GetType();
 		ASSERT(type.IsValid());
 		AtomMapBase::Iterator it = AtomMapBase::Find(type);
 		ASSERT_(IS_EMPTY_SHAREDPTR(it) || AtomT::AllowDuplicates(), "Cannot have duplicate componnets");
@@ -193,7 +192,7 @@ public:
 	
 	void AddBase(AtomBase* atom) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
-		TypeAtomCls type = atom->GetType();
+		AtomTypeCls type = atom->GetType();
 		AtomMapBase::Iterator it = AtomMapBase::Find(type);
 		AtomMapBase::Add(type, atom);
 	}

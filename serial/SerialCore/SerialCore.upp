@@ -6,6 +6,7 @@ uses
 file
 	TODO.txt,
 	SerialCore.h,
+	Init.icpp,
 	Defs.h,
 	Types.h,
 	PacketTracker.h,

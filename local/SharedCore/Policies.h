@@ -3,8 +3,8 @@
 
 struct Pol {
 	
-	struct Ecs {
-		struct Eon {
+	struct Serial {
+		struct Script {
 			struct Loop {
 				
 				// If loop has both side-in and side-out, then side-out is always after side-in
@@ -20,7 +20,7 @@ struct Pol {
 			};
 		};
 		
-		struct ExtComp {
+		struct Atom {
 			
 			// FwdScope loop starts always with a consumer. Not e.g. input, side-input, output...
 			static constexpr bool ConsumerFirst = true;

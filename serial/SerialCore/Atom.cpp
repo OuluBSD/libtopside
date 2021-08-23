@@ -29,8 +29,8 @@ String AtomBase::ToString() const {
 	return GetDynamicName();
 }
 
-AtomBaseRef AtomBase::SetAtomTypeCls(TypeAtomCls ext) {
-	TypeAtomCls atom = GetType();
+AtomBaseRef AtomBase::SetAtomTypeCls(AtomTypeCls ext) {
+	AtomTypeCls atom = GetType();
 	const auto& cd = Serial::Factory::AtomDataMap().Get(atom);
 	TODO
 	#if 0

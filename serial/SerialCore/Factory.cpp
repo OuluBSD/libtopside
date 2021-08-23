@@ -29,10 +29,10 @@ void Factory::RefreshLinks(AtomData& d) {
 			dump = true;
 		}*/
 		for (const auto& atom_data : m.GetValues()) {
-			if (d.cls.src == atom_data.cls.sink) {
+			if (d.cls.iface.src == atom_data.cls.iface.sink) {
 				Link& l = d.sink_links.Add();
 				l.dst_atom = atom_data.cls;
-				l.iface = d.cls.src;
+				l.iface = d.cls.iface.src;
 				ASSERT(l.dst_atom.IsValid() && l.iface.IsValid());
 				if (dump) {LOG("\t" << atom_data.cls.ToString());}
 			}
@@ -44,7 +44,7 @@ void Factory::RefreshLinks(AtomData& d) {
 	}
 }
 
-const Vector<Factory::Link>& Factory::GetSinkAtoms(TypeAtomCls src_atom) {
+const Vector<Factory::Link>& Factory::GetSinkAtoms(AtomTypeCls src_atom) {
 	auto& m = Factory::AtomDataMap();
 	AtomData& d = m.Get(src_atom);
 	RefreshLinks(d);

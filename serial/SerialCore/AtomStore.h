@@ -4,11 +4,12 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-template<class T> using SerialTypeMap = LinkedMap<SerialTypeCls, T>;
+template<class T> using SerialTypeMap	= LinkedMap<SerialTypeCls, T>;
+template<class T> using AtomTypeMap		= LinkedMap<AtomTypeCls, T>;
 
 
 template<typename T, typename ProducerT, typename RefurbisherT>
-class SerialFactory
+class AtomFactory
 {
 public:
     using Type = T;
@@ -27,15 +28,15 @@ public:
     }
 	
 protected:
-    SerialTypeMap<ProducerT> producers;
-    SerialTypeMap<RefurbisherT> refurbishers;
+    AtomTypeMap<ProducerT> producers;
+    AtomTypeMap<RefurbisherT> refurbishers;
     
 };
 
 
 class AtomStore :
 	public System<AtomStore>,
-	public SerialFactory<AtomBase*, std::function<AtomBase*()>, std::function<void(AtomBase*)>>
+	public AtomFactory<AtomBase*, std::function<AtomBase*()>, std::function<void(AtomBase*)>>
 {
 	
 	
@@ -48,7 +49,7 @@ public:
 	
 	
 	using Parent = Machine;
-	using Factory = SerialFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
+	using Factory = AtomFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsAtom = std::is_base_of<Base, T>;
 	template<typename T> using IsConnector = std::is_base_of<Base, T>;
 	
@@ -56,20 +57,20 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	AtomBase* CreateAtomTypeCls(TypeAtomCls cls);
+	AtomBase* CreateAtomTypeCls(AtomTypeCls cls);
 	
 	template<typename T>
-	T* CreateAtom(CompCls cls) {
+	T* CreateAtom(AtomTypeCls t) {
 		static_assert(IsAtom<T>::value, "T should be a atom");
 		
-		TypeAtomCls t;
-		t.side  = AsSerialTypeCls<T>(cls.side);
-		auto it = SerialFactory::producers.Find(t.side);
+		//t.iface.side  = AsSerialTypeCls<T>(cls.side);
+		
+		auto it = AtomFactory::producers.Find(t);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
 			std::function<void(Base*)> r([] (Base* b){ GetPool<T>().Return(CastPtr<T>(b));});
-			SerialFactory::producers.Add(t.side) = p;
-			SerialFactory::refurbishers.Add(t.side) = r;
+			AtomFactory::producers.Add(t) = p;
+			AtomFactory::refurbishers.Add(t) = r;
 		}
 		
 		return CastPtr<T>(CreateAtom(t));
@@ -81,7 +82,7 @@ public:
 	
 private:
 	
-	Base* CreateAtom(TypeAtomCls cls);
+	Base* CreateAtom(AtomTypeCls cls);
 	
 };
 

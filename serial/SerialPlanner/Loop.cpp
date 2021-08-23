@@ -123,14 +123,13 @@ void ScriptLoopLoader::InitSegments() {
 	//start = scope.current_state;
 	start.SetActionPlanner(planner);
 	
-	TODO
-	#if 0
-	start.SetAs_AddAtom(AsTypeAtomCls<ExtAtom>(SubAtomCls::CUSTOMER, customer));
+	
+	start.SetAs_AddAtom(AsAtomTypeCls<CustomerAtom>());
 	//int HAS_DEV = planner.GetAddAtom("has." + dev.GetActionName());
 	//start.Set(HAS_DEV, true);
 	
 	goal.SetActionPlanner(planner);
-	goal.SetAs_AddAtom(AsTypeAtomCls<ExtAtom>(SubAtomCls::CUSTOMER, customer));
+	goal.SetAs_AddAtom(AsAtomTypeCls<CustomerAtom>());
 	goal.Set(CONNECTED, true);
 	
 	for (Script::Id& req : def.req) {
@@ -159,7 +158,6 @@ void ScriptLoopLoader::InitSegments() {
 	
 	ScriptLoopSegment& seg = segments.Add();
 	seg.start_node = &start_node;
-	#endif
 }
 
 void ScriptLoopLoader::ForwardTopSegment() {
@@ -220,7 +218,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		ScriptLoopSegment& seg = segments.Top();
 		for (Script::ActionNode* n : seg.ep.plan) {
 			const Script::WorldState& ws = n->GetWorldState();
-			TypeAtomCls atom = ws.GetAtom();
+			AtomTypeCls atom = ws.GetAtom();
 			const auto& d = Serial::Factory::AtomDataMap().Get(atom);
 			if (ws.IsAddAtom()) {
 				LOG(pos++ << ": add atom: " << d.name);
@@ -299,7 +297,7 @@ bool ScriptLoopLoader::Load() {
 		Script::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddAtom()) {
 			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
-			TypeAtomCls atom = ws.GetAtom();
+			AtomTypeCls atom = ws.GetAtom();
 			AtomBaseRef cb =
 				is_last ?
 					e->FindTypeCls(atom) :
@@ -326,8 +324,8 @@ bool ScriptLoopLoader::Load() {
 			c.side_out = n->GetSideOutId();
 			
 			
-			TypeAtomCls atom = ws.GetAtom();
-			TypeAtomCls ext = ws.GetExtension();
+			AtomTypeCls atom = ws.GetAtom();
+			AtomTypeCls ext = ws.GetExtension();
 			AtomBaseRef cb = e->GetTypeCls(atom);
 			ASSERT(cb);
 			if (!cb) {
@@ -398,7 +396,7 @@ bool ScriptLoopLoader::Load() {
 		const Script::WorldState& ws = n.GetWorldState();
 		ValDevCls iface = ws.GetInterface();
 		if (!pool->Link(src, dst, iface)) {
-			TypeAtomCls atom = ws.GetAtom();
+			AtomTypeCls atom = ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
 			String src_iface_name = Serial::Factory::SourceDataMap().Get(iface).name;
 			SetError("Could not link atomonent '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
@@ -463,8 +461,8 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 		Script::APlanNode* in = in_state.last;
 		Script::WorldState& in_ws = in->GetWorldState();
 		ASSERT(in_ws.IsAddExtension());
-		TypeAtomCls in_atom = in_ws.GetAtom();
-		TypeAtomCls in_type = in_ws.GetExtension();
+		AtomTypeCls in_atom = in_ws.GetAtom();
+		AtomTypeCls in_type = in_ws.GetExtension();
 		auto& in_d = Serial::Factory::AtomDataMap().Get(in_atom);
 		auto& in_e = in_d.ext.Get(in_type);
 		
@@ -472,8 +470,8 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 			Script::APlanNode* out = out_state.last;
 			Script::WorldState& out_ws = out->GetWorldState();
 			ASSERT(out_ws.IsAddExtension());
-			TypeAtomCls out_atom = out_ws.GetAtom();
-			TypeAtomCls out_type = out_ws.GetExtension();
+			AtomTypeCls out_atom = out_ws.GetAtom();
+			AtomTypeCls out_type = out_ws.GetExtension();
 			auto& out_d = Serial::Factory::AtomDataMap().Get(out_atom);
 			auto& out_e = out_d.ext.Get(out_type);
 			

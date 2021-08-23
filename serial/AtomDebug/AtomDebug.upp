@@ -7,6 +7,7 @@ uses
 file
 	AtomDebug.h,
 	AtomDebug.cpp,
+	Init.icpp,
 	Verifier.h,
 	Verifier.cpp,
 	Testers.h,

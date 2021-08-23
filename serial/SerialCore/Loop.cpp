@@ -20,22 +20,6 @@ Loop* Loop::GetParent() const {
 	return RefScopeParent<LoopParent>::GetParent().b;
 }
 
-String Loop::GetTreeString(int indent) {
-	String s;
-	
-	s.Cat('\t', indent);
-	
-	s << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << ": " << prefab << "\n";
-	
-	for (AtomBaseRef& c : atoms) {
-		s.Cat('\t', indent+1);
-		s << c->ToString();
-		s.Cat('\n');
-	}
-	
-	return s;
-}
-
 Machine& Loop::GetMachine() const {
 	if (machine)
 		return *machine;
@@ -58,9 +42,9 @@ void Loop::OnChange() {
 	changed = GetMachine().GetTicks();
 }
 
-AtomBaseRef Loop::GetTypeCls(TypeAtomCls atom_type) {
+AtomBaseRef Loop::GetTypeCls(AtomTypeCls atom_type) {
 	for (AtomBaseRef& comp : atoms) {
-		TypeAtomCls type = comp->GetType();
+		AtomTypeCls type = comp->GetType();
 		ASSERT(type.IsValid());
 		if (type == atom_type)
 			return comp;
@@ -68,14 +52,14 @@ AtomBaseRef Loop::GetTypeCls(TypeAtomCls atom_type) {
 	return AtomBaseRef();
 }
 
-AtomBaseRef Loop::GetAddTypeCls(TypeAtomCls cls) {
+AtomBaseRef Loop::GetAddTypeCls(AtomTypeCls cls) {
 	AtomBaseRef cb = FindTypeCls(cls);
 	return cb ? cb : AddPtr(GetMachine().Get<AtomStore>()->CreateAtomTypeCls(cls));
 }
 
-AtomBaseRef Loop::FindTypeCls(TypeAtomCls atom_type) {
+AtomBaseRef Loop::FindTypeCls(AtomTypeCls atom_type) {
 	for (AtomBaseRef& comp : atoms) {
-		TypeAtomCls type = comp->GetType();
+		AtomTypeCls type = comp->GetType();
 		if (type == atom_type)
 			return comp;
 	}
@@ -211,6 +195,27 @@ LoopRef Loop::FindLoopByName(String name) {
 		if (object->GetName() == name)
 			return object;
 	return LoopRef();
+}
+
+void Loop::Dump() {
+	LOG(GetTreeString());
+}
+
+String Loop::GetTreeString(int indent) {
+	String s;
+	
+	String pre;
+	pre.Cat('\t', indent);
+	
+	s << ".." << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << "[" << id << "]\n";
+	
+	for (AtomBaseRef& a : atoms)
+		s << a->ToString();
+	
+	for (LoopRef& l : loops)
+		s << l->GetTreeString(indent+1);
+	
+	return s;
 }
 
 

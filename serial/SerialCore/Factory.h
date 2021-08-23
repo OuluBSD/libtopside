@@ -1,8 +1,36 @@
 #ifndef _SerialCore_Factory_h_
 #define _SerialCore_Factory_h_
 
+
+#define REG_ATOM0(type, subatom, sink_d,sink_v, src_d,src_v) {\
+	Serial::AtomTypeCls c; \
+	c.iface.sink.dev = Serial::DevCls::sink_d; \
+	c.iface.sink.val = Serial::ValCls::sink_v; \
+	c.iface.src.dev = Serial::DevCls::src_d; \
+	c.iface.src.val = Serial::ValCls::src_v; \
+	c.sub = Serial::SubAtomCls::subatom; \
+	Serial::Factory::RegisterAtom<type>(c); \
+}
+
+#define REG_ATOM1(type, subatom, sink_d,sink_v, side_d,side_v, src_d,src_v) {\
+	Serial::AtomTypeCls c; \
+	c.iface.sink.dev = Serial::DevCls::sink_d; \
+	c.iface.sink.val = Serial::ValCls::sink_v; \
+	c.iface.side.dev = Serial::DevCls::side_d; \
+	c.iface.side.val = Serial::ValCls::side_v; \
+	c.iface.src.dev = Serial::DevCls::src_d; \
+	c.iface.src.val = Serial::ValCls::src_v; \
+	c.sub = Serial::SubAtomCls::subatom; \
+	Serial::Factory::RegisterAtom<type>(c); \
+}
+
+
+
 NAMESPACE_SERIAL_BEGIN
 
+namespace Script {
+class Action;
+}
 
 class Factory {
 	
@@ -10,7 +38,7 @@ public:
 	
 	// Interfaces
 	struct Link : Moveable<Link> {
-		TypeAtomCls dst_atom;
+		AtomTypeCls dst_atom;
 		ValDevCls iface;
 	};
 	
@@ -52,31 +80,26 @@ public:
 	// Atoms
 	
 	typedef AtomBase* (*NewFn)();
-	//typedef bool (*AtomActionFn)(const TypeAtomCls& t, Script::Action& act);
+	typedef bool (*AtomActionFn)(const AtomTypeCls& t, Script::Action& act);
 	struct AtomData : Moveable<AtomData> {
 		NewFn			new_fn;
-		//AtomActionFn	action_fn;
+		AtomActionFn	action_fn;
 		String			name;
-		TypeAtomCls		cls;
+		AtomTypeCls		cls;
 		TypeCls			rtti_cls;
 		
 		Vector<Link>	sink_links;
 		bool			searched_sink_links = false;
 	};
-	typedef VectorMap<TypeAtomCls,AtomData> AtomMap;
+	typedef VectorMap<AtomTypeCls,AtomData> AtomMap;
 	static AtomMap& AtomDataMap() {MAKE_STATIC(AtomMap, m); return m;}
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
-	//template <class T> static bool MakeAtomAction(const TypeAtomCls& t, Script::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static bool MakeExtAction(const TypeAtomCls& t, Script::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static SideStatus MakeSide(const TypeAtomCls& from_type, const Script::WorldState& from, const TypeAtomCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
+	//template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static bool MakeExtAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
+	//template <class T> static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
-	template <class T> static void RegisterAtom(SubAtomCls sub, ValDevCls sink, ValDevCls side, ValDevCls src) {
-		AtomCls atom;
-		atom.sink = sink;
-		atom.side = side;
-		atom.src  = src;
-		TypeAtomCls cls = AsTypeAtomCls<T>(sub, atom);
+	template <class T> static void RegisterAtom(AtomTypeCls cls) {
 		ASSERT(cls.IsValid());
 		AtomData& d = AtomDataMap().GetAdd(cls);
 		d.rtti_cls = AsTypeCls<T>();
@@ -86,10 +109,10 @@ public:
 		//d.action_fn = &MakeAtomAction<T>;
 	}
 	
-	static LinkedList<TypeAtomCls>& GetAtomTypes() {static LinkedList<TypeAtomCls> l; return l;}
+	static LinkedList<AtomTypeCls>& GetAtomTypes() {static LinkedList<AtomTypeCls> l; return l;}
 	
 	static void Dump();
-	static const Vector<Link>& GetSinkAtoms(TypeAtomCls src_atom);
+	static const Vector<Link>& GetSinkAtoms(AtomTypeCls src_atom);
 	static void RefreshLinks(AtomData& d);
 	
 	
