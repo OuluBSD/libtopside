@@ -1,4 +1,4 @@
-#include "SerialCore.h"
+#include "Internal.h"
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -35,11 +35,7 @@ void LoopStore::Update(double dt) {
 	
 }
 
-void LoopStore::Clone(Loop& dst, const Loop& src) {
-	
-	TODO
-	
-}
+
 
 
 NAMESPACE_SERIAL_END

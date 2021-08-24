@@ -1,0 +1,12 @@
+#include "AtomLocal.h"
+
+NAMESPACE_UPP
+
+INITBLOCK {
+	using namespace Serial;
+	
+	Serial::Factory::RegisterAtom<CustomerAtom>();
+	
+}
+
+END_UPP_NAMESPACE

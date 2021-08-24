@@ -1,8 +1,8 @@
-#include "SerialCore.h"
+#include "Internal.h"
 
 NAMESPACE_SERIAL_BEGIN
 
-
+#if 0
 void AtomStore::Clone(Main& dst, const Main& src) {
 	const AtomMap& src_comps = src.GetAtoms();
 	AtomMap& dst_comps = dst.GetAtoms();
@@ -18,6 +18,7 @@ void AtomStore::Clone(Main& dst, const Main& src) {
 		dst_comps.AtomMapBase::Add(comp_type, new_atom);
 	}
 }
+#endif
 
 void AtomStore::ReturnAtom(Base* c) {
 	ASSERT(c);

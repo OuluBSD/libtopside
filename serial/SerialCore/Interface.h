@@ -77,8 +77,8 @@ protected:
 };
 
 
-using InterfaceSinkRef		= Ref<InterfaceSink,	RefParent1<AtomBase>>;
-using InterfaceSourceRef	= Ref<InterfaceSource,	RefParent1<AtomBase>>;
+using InterfaceSinkRef		= Ref<InterfaceSink,	RefParent1<Loop>>;
+using InterfaceSourceRef	= Ref<InterfaceSource,	RefParent1<Loop>>;
 
 
 NAMESPACE_SERIAL_END

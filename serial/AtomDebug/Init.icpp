@@ -26,19 +26,20 @@ INITBLOCK {
 	
 	//REG_EXT(DebugAudioGeneratorExt,		INPUT,			CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
 	
-	/*
-	#define TO_DEV(fdev, val, tdev) \
+	
+	/*#define TO_DEV(fdev, val, tdev) \
 		REG_EXT_(DebugSideOutputExt,	SIDE_OUTPUT,	fdev,val,		fdev,val,		fdev,RECEIPT,		tdev,val, false); \
 		REG_EXT_(DebugSideInputExt,		SIDE_INPUT,		fdev,ORDER,		fdev,val,		fdev,val,			tdev,val, true); \
 		
 		
-	SIDE_DEV_LIST
+	SIDE_DEV_LIST*/
 	
 	
-	REG_EXT(TestCustomer,			CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
-	REG_EXT(TestRealtimeSrc,		INPUT,			CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
-	REG_EXT(TestRealtimeSink,		OUTPUT,			CENTER,AUDIO,		CENTER,AUDIO,	CENTER,RECEIPT);
-	*/
+	//REG_ATOM0(TestCustomer,			CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER);
+	
+	Serial::Factory::RegisterAtom<TestRealtimeSrc>();
+	Serial::Factory::RegisterAtom<TestRealtimeSink>();
+	
 	
 	//Serial::Factory::RegisterComponent<DebugAudioGeneratorExt>();
 	//Serial::Factory::RegisterComponent<DebugAudioSinkComponent>();

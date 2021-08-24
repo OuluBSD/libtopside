@@ -1,7 +1,7 @@
 description "Components\377B0,87,128";
 
 uses
-	SerialCore;
+	SerialPlanner;
 
 uses(STDEXC) Esc;
 

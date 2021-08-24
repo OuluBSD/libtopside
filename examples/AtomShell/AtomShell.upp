@@ -1,7 +1,6 @@
 uses
 	AtomCompleteDebug,
-	AtomLocal,
-	SerialPlanner;
+	AtomLocal;
 
 file
 	AtomShell.cpp;

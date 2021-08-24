@@ -391,9 +391,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Script::ActionNode>& n) {
-	if (&n == (void*)0x8026C63C0) {
+	/*if (&n == (void*)0x8026C63C0) {
 		LOG("");
-	}
+	}*/
 	
 	using namespace Serial;
 	int est = n.GetEstimate();
@@ -409,6 +409,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	Script::ActionPlanner& ap = n.GetActionPlanner();
 	ScriptLoopLoader& ll = ap.GetLoopLoader();
 	ScriptLoopSegment& seg = ll.GetCurrentSegment();
+	
+	/*if (est == 1) {
+		LOG(ws.ToString());
+	}*/
 	
 	AtomTypeCls atom = ws.GetAtom();
 	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.side.val == ValCls::ORDER)

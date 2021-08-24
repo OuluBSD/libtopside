@@ -1,4 +1,5 @@
 #include "SerialCore.h"
+#include <SerialPlanner/SerialPlanner.h>
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -29,22 +30,19 @@ String AtomBase::ToString() const {
 	return GetDynamicName();
 }
 
-AtomBaseRef AtomBase::SetAtomTypeCls(AtomTypeCls ext) {
-	AtomTypeCls atom = GetType();
-	const auto& cd = Serial::Factory::AtomDataMap().Get(atom);
-	TODO
-	#if 0
-	for (const auto& e : cd.ext.GetValues()) {
-		if (e.cls == ext) {
-			AtomBase* b = e.new_fn();
-			if (SetExtension(b))
-				return GetExtension();
-			break;
-		}
-	}
-	#endif
-	return AtomBaseRef();
+void AtomBase::AddPlan(Script::Plan& sp) {
+	ASSERT(!customer.IsEmpty());
+	customer->plans.Add(sp);
 }
+
+InterfaceSourceRef AtomBase::GetSource() {
+	return InterfaceSourceRef(GetParentUnsafe(), (InterfaceSource*)this);
+}
+
+InterfaceSinkRef AtomBase::GetSink() {
+	return InterfaceSinkRef(GetParentUnsafe(), (InterfaceSink*)this);
+}
+
 
 
 

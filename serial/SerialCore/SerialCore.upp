@@ -6,6 +6,7 @@ uses
 file
 	TODO.txt,
 	SerialCore.h,
+	Internal.h,
 	Init.icpp,
 	Defs.h,
 	Types.h,
@@ -17,11 +18,10 @@ file
 	AtomStore.h,
 	AtomStore.cpp,
 	AtomSystem.h,
-	LoopStore.h,
-	LoopStore.cpp,
 	Factory.h,
 	Factory.cpp,
 	Loop.h,
 	Loop.cpp,
-	Customer.h;
+	LoopStore.h,
+	LoopStore.cpp;
 

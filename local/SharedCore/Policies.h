@@ -13,9 +13,6 @@ struct Pol {
 			};
 			struct Loader {
 				
-				// Corresponding "Add component" action is always before "add extension" action.
-				// Note: "add extension" might be out-of-order later
-				static constexpr bool CorrespondingAddCompAndExt = true;
 				
 			};
 		};

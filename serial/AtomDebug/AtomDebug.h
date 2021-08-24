@@ -3,7 +3,6 @@
 
 #include <AtomNonGUI/AtomNonGUI.h>
 #include <AtomLocal/AtomLocal.h>
-#include <SerialPlanner/SerialPlanner.h>
 
 #include "Verifier.h"
 #include "Testers.h"

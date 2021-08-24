@@ -39,6 +39,9 @@ public:
 	LoopId GetId() const {return id;}
 	
 	void SetName(String s)			{name = s;}
+	void SetPrefab(String s)		{prefab = s;}
+	void SetCreated(int64 i)		{created = i;}
+	void SetChanged(int64 i)		{changed = i;}
 	void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
 	void FreezeOverlap()			{freeze_bits.Set(BIT_OVERLAP, true);}
 	bool IsFrozenTransform() const	{return freeze_bits.Is(BIT_TRANSFORM);}
@@ -63,10 +66,11 @@ public:
 	bool				HasEntities() const {return !atoms.IsEmpty();}
 	bool				HasLoops() const {return !loops.IsEmpty();}
 	
-	void				Initialize(Loop& e, String prefab="Custom");
-	LoopRef				CreateEmpty() const;
+	void				Initialize(Loop& l, String prefab="Custom");
+	
+	LoopRef				CreateEmpty();
 	LoopRef				GetAddEmpty(String name);
-	LoopRef				Clone(const Loop& e);
+	void				CopyTo(Loop& l) const;
 	
 	bool Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
@@ -77,8 +81,8 @@ public:
 	LoopRef FindLoopByName(String name);
 	
 	
+	
 	AtomBaseRef AddPtr(AtomBase* atom);
-	LoopRef Clone() const;
 	void InitializeAtoms();
 	void InitializeAtom(AtomBase& atom);
 	void InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}

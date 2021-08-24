@@ -1,4 +1,4 @@
-#include "SerialCore.h"
+#include "Internal.h"
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -80,7 +80,7 @@ void Loop::InitializeAtoms() {
 
 void Loop::InitializeAtom(AtomBase& comp) {
 	comp.SetParent(this);
-	comp.Initialize();
+	//comp.Initialize();
 }
 
 void Loop::UninitializeAtoms() {
@@ -104,11 +104,8 @@ void Loop::ClearInterfaces() {
 		iter().ClearSinkSource();
 }
 
-LoopRef Loop::Clone() const {
-	LoopRef l = CreateEmpty();
-	l->AppendCopy(*this);
-	GetMachine().Get<LoopStore>()->Clone(*l, *this);
-	return l;
+void Loop::CopyTo(Loop& l) const {
+	l.AppendCopy(*this);
 }
 
 void Loop::AppendCopy(const Loop& l) {
@@ -162,13 +159,20 @@ bool Loop::HasLoopParent(LoopRef pool) const {
 	return false;
 }
 
-LoopRef Loop::CreateEmpty() const {
-	TODO
-	/*Entity& e = objects.Add();
-	e.SetParent(this);
-	e.SetId(GetNextId());
-	Initialize(e);
-	return e;*/
+void Loop::Initialize(Loop& l, String prefab) {
+	uint64 ticks = GetMachine().GetTicks();
+	l.SetPrefab(prefab);
+	l.SetCreated(ticks);
+	l.SetChanged(ticks);
+	
+}
+
+LoopRef Loop::CreateEmpty() {
+	Loop& l = loops.Add();
+	l.SetParent(this);
+	l.SetId(GetNextId());
+	Initialize(l);
+	return l;
 }
 
 void Loop::Clear() {
@@ -216,6 +220,35 @@ String Loop::GetTreeString(int indent) {
 		s << l->GetTreeString(indent+1);
 	
 	return s;
+}
+
+bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
+	InterfaceSourceRef src = src_atom->GetSource();
+	InterfaceSinkRef sink = dst_atom->GetSink();
+	ASSERT(src && sink);
+	if (!src || !sink)
+		return false;
+	ASSERT(src	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
+	ASSERT(sink	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
+	CookieRef src_cookie, sink_cookie;
+	if (src->Accept(sink, src_cookie, sink_cookie)) {
+		const auto& src_d = Serial::Factory::SourceDataMap().Get(iface);
+		/*if (src_d.sink_cls != iface) {
+			ASSERT(0);
+			LOG("internal error: unexpected sink class type");
+			return false;
+		}*/
+		
+		TypeCls expt_type = src_d.expt_type;
+		ASSERT(expt_type);
+		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
+		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
+		src->Link(ep, sink, src_cookie, sink_cookie);
+		ep->Init(this);
+		ep->Set(src, sink, src_cookie, sink_cookie);
+		return true;
+	}
+	return false;
 }
 
 

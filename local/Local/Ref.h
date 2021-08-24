@@ -43,6 +43,8 @@ struct RefParent2 {
 	B* b = 0;
 	
 	RefParent2() {}
+	RefParent2(A* a) : a(a) {}
+	RefParent2(B* b) : b(b) {}
 	RefParent2(A* a, B* b) : a(a), b(b) {}
 	
 	void Clear() {a = 0; b = 0;}

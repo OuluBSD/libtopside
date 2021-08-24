@@ -9,7 +9,7 @@
 #define ATOM_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this); x;}
 #define ATOM_DEF_MAKE_ACTION static bool MakeAction(Script::Action& act) {return false;}
 
-#define ATOM_MAKE_ACTION_BEGIN static bool MakeAction(const AtomTypeCls& cls, Script::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.side.vd;
+#define ATOM_MAKE_ACTION_BEGIN static bool MakeAction(const AtomTypeCls& cls, Script::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.iface.side;
 #define ATOM_MAKE_ACTION_END return !fail && any_changes;}
 #define ATOM_MAKE_ACTION_UNDEF_TO_TRUE(x) if (act.Pre().IsUndefined(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
 #define ATOM_MAKE_ACTION_TO_TRUE(x) act.Post().SetTrue(x); any_changes = true;

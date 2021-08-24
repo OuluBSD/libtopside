@@ -3,5 +3,6 @@
 
 #include <SerialLib/SerialLib.h>
 
+#include "Customer.h"
 
 #endif

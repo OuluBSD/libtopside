@@ -32,22 +32,25 @@ class TestRealtimeSrc :
 public:
 	RTTI_DECL1(TestRealtimeSrc, AtomBase)
 	
+	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_ORDER_AUDIO, CENTER, ORDER, CENTER, AUDIO);}
+	
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	
-	/*ATOM_MAKE_ACTION_BEGIN
-	if (cls.sub == SubCompCls::INPUT) {
+	
+	AtomTypeCls GetType() const override {return GetAtomType();}
+	void CopyTo(AtomBase* atom) const override {TODO}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	void ClearSinkSource() override {TODO}
+	
+	
+	ATOM_MAKE_ACTION_BEGIN
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
-	}
-	else if (cls.sub == SubCompCls::CONVERTER) {
-		ASSERT(cls.src.val.type == ValCls::AUDIO);
-		String s = cls.sink.GetActionName() + ".convert." + cls.src.val.GetActionName() + ".test";
-		ATOM_MAKE_ACTION_UNDEF_TO_TRUE(s)
-	}
-	ATOM_MAKE_ACTION_END*/
+	ATOM_MAKE_ACTION_END
 	
 	
 };
@@ -63,6 +66,8 @@ public:
 	RTTI_DECL1(TestRealtimeSink, AtomBase)
 	typedef TestRealtimeSink CLASSNAME;
 	
+	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, CENTER, AUDIO, CENTER, RECEIPT);}
+	
 	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
@@ -71,9 +76,16 @@ public:
 	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
 	
-	/*ATOM_MAKE_ACTION_BEGIN
+	AtomTypeCls GetType() const override {return GetAtomType();}
+	void CopyTo(AtomBase* atom) const override {TODO}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	void ClearSinkSource() override {TODO}
+	
+	ATOM_MAKE_ACTION_BEGIN
+		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.realtime")
-	ATOM_MAKE_ACTION_END*/
+	ATOM_MAKE_ACTION_END
 	
 	
 };

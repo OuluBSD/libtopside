@@ -76,7 +76,7 @@ public:
 		return CastPtr<T>(CreateAtom(t));
 	}
 	
-	void Clone(Main& dst, const Main& src);
+	//void Clone(Main& dst, const Main& src);
 	void ReturnAtom(Base* c);
 	
 	

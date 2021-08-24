@@ -1,4 +1,5 @@
 #include "SerialPlanner.h"
+#include <AtomLocal/Customer.h>
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -269,8 +270,8 @@ bool ScriptLoopLoader::Load() {
 	ScriptLoader& loader = GetLoader();
 	
 	// Target entity for atomonents
-	LoopRef e = loader.ResolveLoop(def.id);
-	if (!e) {
+	LoopRef l = loader.ResolveLoop(def.id);
+	if (!l) {
 		SetError("Could not resolve entity with id: " + def.id.ToString());
 		return false;
 	}
@@ -292,56 +293,30 @@ bool ScriptLoopLoader::Load() {
 	ScriptLoopSegment& seg = segments.Top();
 	int plan_i = 0;
 	for (Script::ActionNode* n : seg.ep.plan) {
-		
 		RTLOG("Loading plan node " << plan_i);
 		Script::WorldState& ws = n->GetWorldState();
 		if (ws.IsAddAtom()) {
 			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
 			AtomTypeCls atom = ws.GetAtom();
-			AtomBaseRef cb =
+			AtomBaseRef ab =
 				is_last ?
-					e->FindTypeCls(atom) :
-					e->GetAddTypeCls(atom);
-			ASSERT(cb);
-			if (!cb) {
+					l->FindTypeCls(atom) :
+					l->GetAddTypeCls(atom);
+			ASSERT(ab);
+			if (!ab) {
 				String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
 				SetError("Could not create atomonent '" + atom_name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 			auto& c = added_atoms.Add();
-			c.r = cb;
+			c.r = ab;
 			c.plan_i = plan_i;
 			c.seg_i = seg_i;
-			c.side_in  = -1;
-			c.side_out = -1;
-		}
-		TODO
-		#if 0
-		else if (ws.IsAddExtension()) {
-			POPO(Pol::Serial::Script::Loader::CorrespondingAddAtomAndExt);
-			auto& c = added_atoms.Top();
 			c.side_in = n->GetSideInId();
 			c.side_out = n->GetSideOutId();
 			
 			
-			AtomTypeCls atom = ws.GetAtom();
-			AtomTypeCls ext = ws.GetExtension();
-			AtomBaseRef cb = e->GetTypeCls(atom);
-			ASSERT(cb);
-			if (!cb) {
-				String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-				SetError("Could not fwsind atomonent '" + atom_name + "' at '" + def.id.ToString() + "'");
-				return false;
-			}
-			{
-				AtomBaseRef existing_ext = cb->GetExtension();
-				if (existing_ext) {
-					const auto& c = Serial::Factory::AtomDataMap().Get(atom);
-					const auto& e = c.ext.Get(ext);
-					SetError("Could not create extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "' because existing extension '" + existing_ext->GetDynamicName() + "'");
-					return false;
-				}
-			}
+			AtomTypeCls type = ws.GetAtom();
 			
 			
 			// Add arguments to ws
@@ -365,26 +340,19 @@ bool ScriptLoopLoader::Load() {
 			}
 			
 			
-			AtomBaseRef eb = cb->SetAtomTypeCls(ext);
-			ASSERT(eb);
-			if (!eb || !eb->Initialize(ws)) {
-				const auto& c = Serial::Factory::AtomDataMap().Get(atom);
-				const auto& e = c.ext.Get(ext);
-				SetError("Could not " + String(!eb ? "create" : "initialize") + " extension '" + e.name + "' to '" + c.name + "' at '" + def.id.ToString() + "'");
+			if (!ab->Initialize(ws)) {
+				const auto& a = Serial::Factory::AtomDataMap().Get(type);
+				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
 		}
 		else {
 			Panic("Invalid world state type");
 		}
-		#endif
+		
 		++plan_i;
 	}
 	
-	
-	TODO
-	#if 0
-	LoopRef pool = e->GetLoop();
 	
 	for(int i = 0; i < added_atoms.GetCount()-1; i++) {
 		AddedAtom& c0 = added_atoms[i];
@@ -395,7 +363,7 @@ bool ScriptLoopLoader::Load() {
 		Script::ActionNode& n = *seg.ep.plan[c1.plan_i];
 		const Script::WorldState& ws = n.GetWorldState();
 		ValDevCls iface = ws.GetInterface();
-		if (!pool->Link(src, dst, iface)) {
+		if (!l->Link(src, dst, iface)) {
 			AtomTypeCls atom = ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
 			String src_iface_name = Serial::Factory::SourceDataMap().Get(iface).name;
@@ -414,9 +382,9 @@ bool ScriptLoopLoader::Load() {
 	AddedAtom& last  = added_atoms.Top();
 	ScriptLoopSegment& first_seg = segments[first.seg_i];
 	ScriptLoopSegment& last_seg  = segments[last.seg_i];
-	ExtAtomRef atom = first.r->AsRef<ExtAtom>();
+	AtomBaseRef atom = first.r;
 	if (atom) {
-		atom->AddScript(first_seg.ep);
+		atom->AddPlan(first_seg.ep);
 	}
 	
 	
@@ -437,7 +405,6 @@ bool ScriptLoopLoader::Load() {
 		return false;
 	}*/
 	
-	#endif
 	
 	return true;
 }

@@ -2,29 +2,6 @@
 #define _SerialCore_Factory_h_
 
 
-#define REG_ATOM0(type, subatom, sink_d,sink_v, src_d,src_v) {\
-	Serial::AtomTypeCls c; \
-	c.iface.sink.dev = Serial::DevCls::sink_d; \
-	c.iface.sink.val = Serial::ValCls::sink_v; \
-	c.iface.src.dev = Serial::DevCls::src_d; \
-	c.iface.src.val = Serial::ValCls::src_v; \
-	c.sub = Serial::SubAtomCls::subatom; \
-	Serial::Factory::RegisterAtom<type>(c); \
-}
-
-#define REG_ATOM1(type, subatom, sink_d,sink_v, side_d,side_v, src_d,src_v) {\
-	Serial::AtomTypeCls c; \
-	c.iface.sink.dev = Serial::DevCls::sink_d; \
-	c.iface.sink.val = Serial::ValCls::sink_v; \
-	c.iface.side.dev = Serial::DevCls::side_d; \
-	c.iface.side.val = Serial::ValCls::side_v; \
-	c.iface.src.dev = Serial::DevCls::src_d; \
-	c.iface.src.val = Serial::ValCls::src_v; \
-	c.sub = Serial::SubAtomCls::subatom; \
-	Serial::Factory::RegisterAtom<type>(c); \
-}
-
-
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -95,18 +72,19 @@ public:
 	static AtomMap& AtomDataMap() {MAKE_STATIC(AtomMap, m); return m;}
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
-	//template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
+	template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
 	//template <class T> static bool MakeExtAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
 	//template <class T> static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
-	template <class T> static void RegisterAtom(AtomTypeCls cls) {
+	template <class T> static void RegisterAtom() {
+		AtomTypeCls cls = T::GetAtomType();
 		ASSERT(cls.IsValid());
 		AtomData& d = AtomDataMap().GetAdd(cls);
 		d.rtti_cls = AsTypeCls<T>();
 		d.cls = cls;
 		d.name = T::GetTypeName();
 		d.new_fn = &CreateAtom<T>;
-		//d.action_fn = &MakeAtomAction<T>;
+		d.action_fn = &MakeAtomAction<T>;
 	}
 	
 	static LinkedList<AtomTypeCls>& GetAtomTypes() {static LinkedList<AtomTypeCls> l; return l;}

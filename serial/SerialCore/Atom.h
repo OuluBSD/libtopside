@@ -5,7 +5,10 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class AtomBase;
-namespace Eon {class WorldState;}
+namespace Script {
+class WorldState;
+class Plan;
+}
 
 
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
@@ -19,6 +22,19 @@ class AtomBase :
 protected:
 	friend class Loop;
 	
+	
+	struct CustomerData {
+		RealtimeSourceConfig	cfg;
+		off32_gen				gen;
+		Array<Script::Plan>		plans;
+		Index<dword>			unfulfilled_offsets;
+		int						max_unfulfilled = 5;
+		
+		CustomerData() : cfg(gen) {}
+	};
+	One<CustomerData>		customer;
+	
+	
 public:
 	virtual AtomTypeCls GetType() const = 0;
 	virtual void CopyTo(AtomBase* atom) const = 0;
@@ -26,11 +42,10 @@ public:
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
-	virtual InterfaceSourceRef GetSource() = 0;
-	virtual InterfaceSinkRef GetSink() = 0;
 	virtual void Forward(FwdScope& fwd) = 0;
-	virtual void Initialize() {};
-	virtual void Uninitialize() {};
+	
+	virtual bool Initialize(const Script::WorldState& ws) {return true;}
+	virtual void Uninitialize() {}
 	virtual String ToString() const;
 	virtual void ClearExtension() {}
 	virtual int GetSideIn() {return -1;}
@@ -45,15 +60,16 @@ public:
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
+	InterfaceSourceRef GetSource();
+	InterfaceSinkRef GetSink();
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
-	
-	AtomBaseRef SetAtomTypeCls(AtomTypeCls ext);
 	
 	static bool AllowDuplicates() {return false;}
 	
 	Machine& GetMachine();
 	void UninitializeWithExt();
+	void AddPlan(Script::Plan& sp);
 	
 	
 public:

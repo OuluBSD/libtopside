@@ -22,9 +22,9 @@ class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
 using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Serial::AtomBase>>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Serial::AtomBase>>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Serial::AtomBase>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Serial::Loop>>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Serial::Loop>>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Serial::Loop>>;
 using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
 using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Serial::Loop>>;
 using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
@@ -231,7 +231,7 @@ public:
 
 
 class ExchangeProviderBase :
-	public RefScopeEnabler<ExchangeProviderBase,Serial::AtomBase>
+	public RefScopeEnabler<ExchangeProviderBase,Serial::Loop>
 {
 	
 public:

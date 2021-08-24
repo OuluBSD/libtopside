@@ -3,6 +3,7 @@
 
 
 #include <SerialCore/SerialCore.h>
+#include <SerialPlanner/SerialPlanner.h>
 
 #include "Types.h"
 #include "RegistrySystem.h"
