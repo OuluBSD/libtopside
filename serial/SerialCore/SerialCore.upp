@@ -10,6 +10,7 @@ file
 	Init.icpp,
 	Defs.h,
 	Types.h,
+	Types.cpp,
 	PacketTracker.h,
 	PacketTracker.cpp,
 	Interface.h,
@@ -23,5 +24,7 @@ file
 	Loop.h,
 	Loop.cpp,
 	LoopStore.h,
-	LoopStore.cpp;
+	LoopStore.cpp,
+	Exchange.h,
+	Exchange.cpp;
 

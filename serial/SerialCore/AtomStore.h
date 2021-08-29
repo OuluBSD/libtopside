@@ -80,6 +80,9 @@ public:
 	void ReturnAtom(Base* c);
 	
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ATOM_STORE;}
+	
+	
 private:
 	
 	Base* CreateAtom(AtomTypeCls cls);

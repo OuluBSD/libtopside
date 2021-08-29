@@ -1,6 +1,9 @@
 #ifndef _SerialMach_Types_h_
 #define _SerialMach_Types_h_
 
+#define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
+
+
 NAMESPACE_SERIAL_BEGIN
 
 typedef dword PacketId;
@@ -26,7 +29,7 @@ template <class T>
 using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
-using RefSerialTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
+using RefAtomTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 
 
 using LoopParent			= RefParent2<LoopStore,		Loop>;
@@ -65,13 +68,9 @@ typedef enum : byte {
 struct ValCls : Moveable<ValCls> {
 	typedef enum : byte {
 		INVALID,
-		AUDIO,
-		VIDEO,
-		MIDI,
-		EVENT,
-		DATA,
-		ORDER,
-		RECEIPT,
+		#define IFACE(x) x,
+		IFACE_LIST
+		#undef IFACE
 		
 		TYPE_COUNT,
 		

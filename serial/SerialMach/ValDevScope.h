@@ -29,17 +29,17 @@ public:
 };
 
 
-class ValExchangePoint :
+class DefaultExchangePoint :
 	public ExchangePoint
 {
 	Loop* loop = 0;
 	bool use_consumer = true;
 	
 public:
-	RTTI_DECL1(ValExchangePoint, ExchangePoint)
-	typedef ValExchangePoint CLASSNAME;
-	ValExchangePoint() {}
-	~ValExchangePoint() {Deinit();}
+	RTTI_DECL1(DefaultExchangePoint, ExchangePoint)
+	typedef DefaultExchangePoint CLASSNAME;
+	DefaultExchangePoint() {}
+	~DefaultExchangePoint() {Deinit();}
 	
 	void Init(MetaExchangePoint* conn) override;
 	void Deinit();
@@ -51,35 +51,35 @@ public:
 	void Destroy() {loop = 0;}
 	
 	
-	static ValExchangePoint* Create(TypeCls t);
+	static DefaultExchangePoint* Create(TypeCls t);
 	
-	Callback1<ValExchangePoint&> WhenEnterValExPtForward;
+	Callback1<DefaultExchangePoint&> WhenEnterValExPtForward;
 	
 	Callback WhenLeaveValExPtForward;
 	
 };
 
-using ValExchangePointRef = Ref<ValExchangePoint>;
+using DefaultExchangePointRef	= Ref<DefaultExchangePoint,	RefParent1<MetaExchangePoint>>;
 
 
 class Ex :
 	public ExchangeBase
 {
 	bool storing = false;
-	ValExchangePoint* expt = 0;
+	DefaultExchangePoint* expt = 0;
 	Value* src = 0;
 	Value* sink = 0;
 	const RealtimeSourceConfig* src_conf = 0;
 	
 public:
 	RTTI_DECL1(Ex, ExchangeBase)
-	Ex(ValExchangePoint* expt) : expt(expt) {}
-	Ex(ValExchangePoint& expt) : expt(&expt) {}
+	Ex(DefaultExchangePoint* expt) : expt(expt) {}
+	Ex(DefaultExchangePoint& expt) : expt(&expt) {}
 	
 	Value&						Sink() const {return *sink;}
 	Value&						Source() const {return *src;}
 	const RealtimeSourceConfig&	SourceConfig() const {ASSERT(src_conf); return *src_conf;}
-	ValExchangePoint&			GetExchangePoint() {return *expt;}
+	DefaultExchangePoint&			GetExchangePoint() {return *expt;}
 	virtual bool				IsLoading() override {return !storing;}
 	virtual bool				IsStoring() override {return storing;}
 	

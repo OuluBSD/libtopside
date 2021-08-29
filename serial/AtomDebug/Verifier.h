@@ -94,7 +94,7 @@ protected:
 	Vector<Scope> stack;
 	PacketData cur_pk;
 	AtomBase* c;
-	ValExchangePoint* vep;
+	DefaultExchangePoint* vep;
 	
 	void SetDefaultExpected();
 	void Enter(Type t);
@@ -116,7 +116,7 @@ public:
 	void OnEnterFwdScopeForward(FwdScope& c);
 	void OnEnterStorePacket(AtomBase&, Packet& p);
 	void OnEnterCreatedEmptyPacket(Packet& p);
-	void OnEnterValExPtForward(ValExchangePoint& p);
+	void OnEnterValExPtForward(DefaultExchangePoint& p);
 	
 	void OnLeaveUpdate();
 	void OnLeaveSystemUpdate();

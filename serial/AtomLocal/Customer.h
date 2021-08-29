@@ -4,10 +4,14 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class CustomerAtom : public AtomBase {
+class CustomerAtom :
+	public Atom<CustomerAtom>
+{
 	
 public:
-	RTTI_DECL1(CustomerAtom, AtomBase);
+	using AtomT = Atom<CustomerAtom>;
+	RTTI_DECL1(CustomerAtom, AtomT);
+	COPY_PANIC(CustomerAtom)
 	using Atom = CustomerAtom;
 	
 	
@@ -16,7 +20,7 @@ public:
 	AtomTypeCls GetType() const override {return GetAtomType();}
 	
 	void CopyTo(AtomBase* atom) const override {TODO}
-	void Visit(RuntimeVisitor& vis) override {TODO}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	void ClearSinkSource() override {TODO}
@@ -26,6 +30,9 @@ public:
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.single")
 	ATOM_MAKE_ACTION_END
+	
+	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::CUSTOMER_ATOM;}
 	
 };
 

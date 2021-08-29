@@ -21,12 +21,13 @@ class ExchangeSourceProvider;
 class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
+using AtomParent = RefParent1<Serial::Loop>;
 using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		RefParent1<Serial::Loop>>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		RefParent1<Serial::Loop>>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	RefParent1<Serial::Loop>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		AtomParent>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		AtomParent>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	AtomParent>;
 using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
-using MetaExchangePointRef			= Ref<MetaExchangePoint,		RefParent1<Serial::Loop>>;
+using MetaExchangePointRef			= Ref<MetaExchangePoint,		AtomParent>;
 using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
 
 

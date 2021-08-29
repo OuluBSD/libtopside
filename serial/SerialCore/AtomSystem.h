@@ -23,6 +23,9 @@ public:
 	
 	
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ATOM_SYSTEM;}
+	
+	
 };
 
 

@@ -13,6 +13,7 @@
 #include "Loop.h"
 #include "LoopStore.h"
 #include "Factory.h"
+#include "Exchange.h"
 
 
 #endif

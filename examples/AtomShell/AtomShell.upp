@@ -6,5 +6,6 @@ file
 	AtomShell.cpp;
 
 mainconfig
-	"" = "";
+	"" = "",
+	"" = "DEBUG_RT";
 

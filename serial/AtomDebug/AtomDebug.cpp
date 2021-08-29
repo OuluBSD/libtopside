@@ -9,7 +9,7 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 	//Serial::Factory::Dump();
 	
 	if (dbg_ref)
-		BreakRefAdd(0x80AE32468);
+		BreakRefAdd(dbg_ref);
 	
 	double time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
 	

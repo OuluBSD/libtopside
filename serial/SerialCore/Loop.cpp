@@ -223,23 +223,33 @@ String Loop::GetTreeString(int indent) {
 }
 
 bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
+	ASSERT(iface.IsValid());
 	InterfaceSourceRef src = src_atom->GetSource();
 	InterfaceSinkRef sink = dst_atom->GetSink();
 	ASSERT(src && sink);
 	if (!src || !sink)
 		return false;
+	
 	ASSERT(src	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
 	ASSERT(sink	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
 	CookieRef src_cookie, sink_cookie;
+	
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		const auto& src_d = Serial::Factory::SourceDataMap().Get(iface);
-		/*if (src_d.sink_cls != iface) {
+		auto& sdmap = Serial::Factory::IfaceLinkDataMap();
+		int i = sdmap.Find(iface);
+		if (i < 0) {
+			LOG("error: no exchange-point class set for type " + iface.ToString());
+			ASSERT(0);
+			return false;
+		}
+		const auto& src_d = sdmap[i];
+		if (src_d.vd != iface) {
 			ASSERT(0);
 			LOG("internal error: unexpected sink class type");
 			return false;
-		}*/
+		}
 		
-		TypeCls expt_type = src_d.expt_type;
+		TypeCls expt_type = src_d.cls;
 		ASSERT(expt_type);
 		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));

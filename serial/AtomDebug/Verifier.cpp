@@ -147,7 +147,7 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 			c->WhenLeaveCreatedEmptyPacket << THISBACK(OnLeaveCreatedEmptyPacket);
 		}
 	}
-	else if ((vep = CastPtr<ValExchangePoint>(f.GetCurrent()))) {
+	else if ((vep = CastPtr<DefaultExchangePoint>(f.GetCurrent()))) {
 		if (!vep->WhenEnterValExPtForward) {
 			vep->WhenEnterValExPtForward << THISBACK(OnEnterValExPtForward);
 			
@@ -171,7 +171,7 @@ void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
 	MayLeaveTop();
 }
 
-void MachineVerifier::OnEnterValExPtForward(ValExchangePoint& p) {
+void MachineVerifier::OnEnterValExPtForward(DefaultExchangePoint& p) {
 	RTLOG("MachineVerifier::OnEnterValExPtForward");
 	Enter(VALEXPT_FWD);
 	

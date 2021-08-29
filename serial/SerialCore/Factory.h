@@ -21,33 +21,20 @@ public:
 	
 	struct IfaceData : Moveable<IfaceData> {
 		TypeCls cls;
-		TypeCls expt_type;
 		ValDevCls vd;
 		String name;
 	};
 	typedef VectorMap<ValDevCls,IfaceData> IfaceMap;
-	static IfaceMap& SourceDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
-	static IfaceMap& SinkDataMap()   {MAKE_STATIC(IfaceMap, m); return m;}
+	static IfaceMap& IfaceLinkDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
 	
-	template <class T> static void RegisterInterfaceSource(DevCls dev, ValCls val) {
+	template <class T> static void RegisterInterfaceLink(DevCls dev, ValCls val) {
 		ValDevCls vd(dev,val);
-		IfaceData& d = SourceDataMap().GetAdd(vd);
+		IfaceData& d = IfaceLinkDataMap().GetAdd(vd);
 		d.cls = AsTypeCls<T>();
 		d.name = T::GetTypeName();
-		d.expt_type = AsTypeCls<typename T::ExPt>();
 		d.vd.dev = dev;
 		d.vd.val = val;
-		MetaExchangePoint::RegisterExchangePoint<typename T::ExPt>();
-	}
-	
-	template <class T> static void RegisterInterfaceSink(DevCls dev, ValCls val) {
-		ValDevCls vd(dev,val);
-		IfaceData& d = SinkDataMap().GetAdd(vd);
-		d.cls = AsTypeCls<T>();
-		d.name = T::GetTypeName();
-		d.expt_type = 0;
-		d.vd.dev = dev;
-		d.vd.val = val;
+		MetaExchangePoint::RegisterExchangePoint<T>();
 	}
 	
 	

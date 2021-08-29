@@ -4,39 +4,24 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class TestCustomer :
-	public CustomerAtom
-{
-	
-public:
-	RTTI_DECL1(TestCustomer, CustomerAtom)
-	
-	void Visit(RuntimeVisitor& vis) override {}
-	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
-	
-	/*ATOM_MAKE_ACTION_BEGIN
-		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.single")
-	ATOM_MAKE_ACTION_END*/
-	
-	
-};
 
 
 class TestRealtimeSrc :
-	public AtomBase
+	public Atom<TestRealtimeSrc>
 {
 	Serial::Format		internal_fmt;
 	double			time = 0;
 	byte			rolling_value = 0;
 	
 public:
-	RTTI_DECL1(TestRealtimeSrc, AtomBase)
-	
+	using AtomT = Atom<TestRealtimeSrc>;
+	RTTI_DECL1(TestRealtimeSrc, AtomT)
+	COPY_PANIC(TestRealtimeSrc)
 	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_ORDER_AUDIO, CENTER, ORDER, CENTER, AUDIO);}
 	
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	
@@ -53,17 +38,21 @@ public:
 	ATOM_MAKE_ACTION_END
 	
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::TEST_RT_SRC;}
+	
 };
 
 
 class TestRealtimeSink :
-	public AtomBase
+	public Atom<TestRealtimeSink>
 {
 	RunningFlag		flag;
 	byte			rolling_value = 0;
 	
 public:
-	RTTI_DECL1(TestRealtimeSink, AtomBase)
+	using AtomT = Atom<TestRealtimeSink>;
+	RTTI_DECL1(TestRealtimeSink, AtomT)
+	COPY_PANIC(TestRealtimeSink)
 	typedef TestRealtimeSink CLASSNAME;
 	
 	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, CENTER, AUDIO, CENTER, RECEIPT);}
@@ -71,7 +60,7 @@ public:
 	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
@@ -87,6 +76,7 @@ public:
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.realtime")
 	ATOM_MAKE_ACTION_END
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::TEST_RT_SINK;}
 	
 };
 

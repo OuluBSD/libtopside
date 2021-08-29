@@ -13,7 +13,7 @@ void Factory::Dump() {
 	for(int i = 0; i < fns.GetCount(); i++) {
 		const auto& d = fns[i];
 		LOG("\t\t" << i << ": " << d.name << "(" << d.cls.ToString() << ")");
-		/*IfaceData& src = SourceDataMap().Get(d.cls.src);
+		/*IfaceData& src = IfaceLinkDataMap().Get(d.cls.src);
 		LOG("\t\t\tsrc:  " << d.src.ToString());
 		IfaceData& sink = SinkDataMap().Get(d.cls.sink);
 		LOG("\t\t\tsink: " << d.sink.ToString());*/

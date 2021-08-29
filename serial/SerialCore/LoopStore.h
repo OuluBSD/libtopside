@@ -29,6 +29,7 @@ public:
 	LoopVec& GetRootVec()	{return root;}
 	
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::LOOP_STORE;}
 	
 protected:
 	void Update(double) override;

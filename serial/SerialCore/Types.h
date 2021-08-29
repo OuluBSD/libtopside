@@ -8,6 +8,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
+Format GetDefaultFormat(ValDevCls type);
 
 
 

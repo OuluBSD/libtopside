@@ -22,7 +22,7 @@ class AtomBase :
 protected:
 	friend class Loop;
 	
-	
+	/*
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
 		off32_gen				gen;
@@ -33,7 +33,7 @@ protected:
 		CustomerData() : cfg(gen) {}
 	};
 	One<CustomerData>		customer;
-	
+	*/ 
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -43,6 +43,8 @@ public:
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
 	virtual void Forward(FwdScope& fwd) = 0;
+	virtual InterfaceSourceRef GetSource() = 0;
+	virtual InterfaceSinkRef GetSink() = 0;
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
@@ -60,8 +62,6 @@ public:
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
-	InterfaceSourceRef GetSource();
-	InterfaceSinkRef GetSink();
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
@@ -113,7 +113,7 @@ public:
 	
 	
 	
-	Callback2<AtomBase&, Packet&>	WhenEnterStorePacket;
+	Callback2<AtomBase&, Packet&>			WhenEnterStorePacket;
 	Callback1<Packet&>						WhenEnterCreatedEmptyPacket;
 	
 	Callback1<Packet&>						WhenLeaveStorePacket;
@@ -124,26 +124,51 @@ public:
 
 
 
-template<typename T>
+template<typename T, class SinkT=DefaultInterfaceSink, class SourceT=DefaultInterfaceSource>
 struct Atom :
-	public AtomBase
+	public AtomBase,
+	public SinkT,
+	public SourceT
 {
 public:
-	RTTI_DECL1(Atom<T>, AtomBase)
-	using AtomT = Atom<T>;
-
+	RTTI_DECL3(Atom<T>, AtomBase, SinkT, SourceT)
+	using AtomT = Atom<T, SinkT, SourceT>;
+	
+	void Visit(RuntimeVisitor& vis) override {
+		//vis.VisitThis<AtomBase>(this);
+		vis.VisitThis<SinkT>(this);
+		vis.VisitThis<SourceT>(this);
+	}
+	
 	void CopyTo(AtomBase* target) const override {
 		ASSERT(target->GetType() == GetType());
 	    
 		*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
 	
+	
+	InterfaceSourceRef GetSource() override {
+		InterfaceSource* src = static_cast<InterfaceSource*>(this);
+		ASSERT(src);
+		return InterfaceSourceRef(GetParentUnsafe(), src);
+	}
+	
+	InterfaceSinkRef GetSink() override {
+		InterfaceSink* sink = static_cast<InterfaceSink*>(this);
+		ASSERT(sink);
+		return InterfaceSinkRef(GetParentUnsafe(), sink);
+	}
+	
+	AtomBase* AsAtomBase() override {return static_cast<AtomBase*>(this);}
+	void ClearSink() override {TODO}
+	void ClearSource() override {TODO}
+	
 };
 
 
 #define ATOM_RTTI(x)  RTTI_DECL1(x, Atom<x>)
 
-using AtomMapBase	= RefSerialTypeMapIndirect<AtomBase>;
+using AtomMapBase	= RefAtomTypeMapIndirect<AtomBase>;
 using AtomRefMap	= ArrayMap<AtomTypeCls,Ref<AtomBase>>;
 
 class AtomMap : public AtomMapBase {
@@ -209,7 +234,8 @@ public:
 	void AddBase(AtomBase* atom) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		AtomTypeCls type = atom->GetType();
-		AtomMapBase::Iterator it = AtomMapBase::Find(type);
+		ASSERT(type.IsValid());
+		//AtomMapBase::Iterator it = AtomMapBase::Find(type);
 		AtomMapBase::Add(type, atom);
 	}
 	

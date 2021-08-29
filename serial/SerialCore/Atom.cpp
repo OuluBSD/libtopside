@@ -31,17 +31,10 @@ String AtomBase::ToString() const {
 }
 
 void AtomBase::AddPlan(Script::Plan& sp) {
-	ASSERT(!customer.IsEmpty());
-	customer->plans.Add(sp);
+	/*ASSERT(!customer.IsEmpty());
+	customer->plans.Add(sp);*/
 }
 
-InterfaceSourceRef AtomBase::GetSource() {
-	return InterfaceSourceRef(GetParentUnsafe(), (InterfaceSource*)this);
-}
-
-InterfaceSinkRef AtomBase::GetSink() {
-	return InterfaceSinkRef(GetParentUnsafe(), (InterfaceSink*)this);
-}
 
 
 

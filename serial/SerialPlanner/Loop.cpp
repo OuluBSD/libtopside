@@ -269,7 +269,7 @@ bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::State
 bool ScriptLoopLoader::Load() {
 	ScriptLoader& loader = GetLoader();
 	
-	// Target entity for atomonents
+	// Target entity for atoms
 	LoopRef l = loader.ResolveLoop(def.id);
 	if (!l) {
 		SetError("Could not resolve entity with id: " + def.id.ToString());
@@ -362,11 +362,12 @@ bool ScriptLoopLoader::Load() {
 		ScriptLoopSegment& seg = segments[c1.seg_i];
 		Script::ActionNode& n = *seg.ep.plan[c1.plan_i];
 		const Script::WorldState& ws = n.GetWorldState();
-		ValDevCls iface = ws.GetInterface();
+		ValDevCls iface = ws.GetInterfaceSink();
+		ASSERT(iface.IsValid());
 		if (!l->Link(src, dst, iface)) {
 			AtomTypeCls atom = ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-			String src_iface_name = Serial::Factory::SourceDataMap().Get(iface).name;
+			String src_iface_name = Serial::Factory::IfaceLinkDataMap().Get(iface).name;
 			SetError("Could not link atomonent '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}

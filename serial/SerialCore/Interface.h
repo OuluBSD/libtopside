@@ -11,8 +11,8 @@ public:
 	
 	virtual AtomBase* AsAtomBase() = 0;
 	virtual AtomTypeCls GetType() const = 0;
-	virtual ValDevCls GetSinkCls() const {return ValDevCls();}
-	virtual ValDevCls GetSourceCls() const {return ValDevCls();}
+	ValDevCls GetSinkCls() const {return GetType().iface.sink;}
+	ValDevCls GetSourceCls() const {return GetType().iface.src;}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };
@@ -23,15 +23,11 @@ class InterfaceSink :
 	public ExchangeSinkProvider
 {
 protected:
-	ValDevCls iface;
 	
 public:
 	RTTI_DECL2(InterfaceSink, InterfaceBase, ExchangeSinkProvider)
 	InterfaceSink() {}
 	
-	void SetSinkType(ValDevCls iface) {this->iface = iface;}
-	
-	ValDevCls	GetSinkCls() const override {return iface;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {
@@ -53,16 +49,11 @@ class InterfaceSource :
 	public ExchangeSourceProvider
 {
 	
-protected:
-	ValDevCls iface;
 	
 public:
 	RTTI_DECL2(InterfaceSource, InterfaceBase, ExchangeSourceProvider)
 	InterfaceSource() {}
 	
-	void SetSourceType(ValDevCls iface) {this->iface = iface;}
-	
-	ValDevCls	GetSourceCls() const override {return iface;}
 	
 	// Catches the type for CollectInterfacesVisitor
 	void Visit(RuntimeVisitor& vis) {
@@ -80,6 +71,28 @@ protected:
 using InterfaceSinkRef		= Ref<InterfaceSink,	RefParent1<Loop>>;
 using InterfaceSourceRef	= Ref<InterfaceSource,	RefParent1<Loop>>;
 
+
+
+
+class DefaultInterfaceSink : public InterfaceSink {
+	
+public:
+	RTTI_DECL1(DefaultInterfaceSink, InterfaceSink)
+	DefaultInterfaceSink() {}
+	
+	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSink>(this);}
+	
+};
+
+class DefaultInterfaceSource : public InterfaceSource {
+	
+public:
+	RTTI_DECL1(DefaultInterfaceSource, InterfaceSource)
+	DefaultInterfaceSource() {}
+	
+	void Visit(RuntimeVisitor& vis) {vis.VisitThis<InterfaceSource>(this);}
+	
+};
 
 NAMESPACE_SERIAL_END
 

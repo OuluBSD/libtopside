@@ -71,7 +71,9 @@ public:
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
 	AtomTypeCls GetAtom() const {return cur_atom;}
-	ValDevCls GetInterface() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.side;}
+	ValDevCls GetInterfaceSink() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.sink;}
+	ValDevCls GetInterfaceSide() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.side;}
+	ValDevCls GetInterfaceSource() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.src;}
 	const ValDevCls& GetSideCls() const {return side_vd;}
 	String ToString() const;
 	String GetFullString() const;

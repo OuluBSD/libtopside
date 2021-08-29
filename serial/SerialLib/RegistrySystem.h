@@ -29,6 +29,7 @@ public:
 	String GetAppName() {return Get("app.name");}
 	
 	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::REGISTRY_SYSTEM;}
 	
 };
 
