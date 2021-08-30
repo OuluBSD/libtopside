@@ -21,5 +21,6 @@ file
 	ValDevScope.cpp,
 	Defs.h,
 	Machine.h,
-	Machine.cpp;
+	Machine.cpp,
+	Audio.cpp;
 

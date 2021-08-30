@@ -4,17 +4,27 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class AtomSystem : public System<AtomSystem> {
-	
+class AtomSystem :
+	public System<AtomSystem>
+{
+	struct Once {
+		PacketForwarder*		fwd;
+		RealtimeSourceConfig*	cfg;
+	};
+	LinkedList<Once> once_cbs;
+	LinkedList<CustomerAtomRef> customers;
+	Mutex lock;
 	
 public:
 	SYS_RTTI(AtomSystem)
-    SYS_CTOR(AtomSystem)
-	SYS_DEF_VISIT
+	SYS_CTOR(AtomSystem);
+	SYS_DEF_VISIT_H
+	
+	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	
 	
 	Callback1<PacketForwarder*>				WhenEnterOnceForward;
-	Callback1<AtomSystem*>					WhenEnterAtomForward;
+	Callback1<AtomBase*>					WhenEnterAtomForward;
 	Callback1<FwdScope&>					WhenEnterFwdScopeForward;
 	
 	Callback								WhenLeaveOnceForward;
@@ -22,8 +32,22 @@ public:
 	Callback								WhenLeaveFwdScopeForward;
 	
 	
-	
+	static inline Callback& WhenUninit() {static Callback cb; return cb;}
 	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ATOM_SYSTEM;}
+	
+protected:
+	
+    bool Initialize() override;
+    void Start() override;
+    void Update(double dt) override;
+    void Stop() override;
+    void Uninitialize() override;
+    
+protected:
+	friend class CustomerAtom;
+	
+    void Add(CustomerAtomRef p);
+    void Remove(CustomerAtomRef p);
 	
 	
 };

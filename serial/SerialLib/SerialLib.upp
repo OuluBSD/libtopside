@@ -7,6 +7,7 @@ uses(STDEXC) Esc;
 
 file
 	SerialLib.h,
+	Internal.h,
 	Init.icpp,
 	Types.h,
 	RegistrySystem.h,

@@ -1,5 +1,5 @@
-#include "SerialPlanner.h"
-#include <AtomLocal/Customer.h>
+#include "Internal.h"
+
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -383,7 +383,7 @@ bool ScriptLoopLoader::Load() {
 	AddedAtom& last  = added_atoms.Top();
 	ScriptLoopSegment& first_seg = segments[first.seg_i];
 	ScriptLoopSegment& last_seg  = segments[last.seg_i];
-	AtomBaseRef atom = first.r;
+	CustomerAtomRef atom = first.r;
 	if (atom) {
 		atom->AddPlan(first_seg.ep);
 	}

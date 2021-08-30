@@ -55,6 +55,8 @@ public:
 	x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
 #define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
+#define SYS_DEF_VISIT_H void Visit(RuntimeVisitor& vis) override;
+#define SYS_DEF_VISIT_I(cls, x) void cls::Visit(RuntimeVisitor& vis) {x; vis.VisitThis<System<CLASSNAME>>(this);}
 
 class Machine :
 	public RefScopeEnabler<Machine,RefRoot>

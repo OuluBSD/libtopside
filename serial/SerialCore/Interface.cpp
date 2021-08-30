@@ -1,10 +1,11 @@
 #include "Internal.h"
 
+
 NAMESPACE_SERIAL_BEGIN
 
 
 void DefaultExchangePoint::ForwardExchange(FwdScope& fwd) {
-	Ref<DefaultSink> sink = this->sink;
+	Ref<DefaultInterfaceSink> sink = this->sink;
 	fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
 }
 
@@ -41,8 +42,8 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	using DevComponent			= typename DevLib::DevComponent;
 	using StageComponent		= typename DevLib::StageComponent;
 	using Value					= typename Mach::Value;
-	using SourceRef				= typename Core::DefaultSourceRef;
-	using SinkRef				= typename Core::DefaultSinkRef;*/
+	using SourceRef				= typename Core::DefaultInterfaceSourceRef;
+	using SinkRef				= typename Core::DefaultInterfaceSinkRef;*/
 	//using DevContextConnectorBaseRef	= typename DevMach::DevContextConnectorBaseRef;
 	//using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
 	
@@ -50,7 +51,7 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	
 	
 	
-	DefaultSinkRef sink = this->Sink();
+	DefaultInterfaceSinkRef sink = this->Sink();
 	ASSERT(sink);
 	
 	Value& to_val = sink->GetValue();
@@ -76,12 +77,12 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	}
 }
 
-void DefaultExchangePoint::Forward(FwdScope& fwd) {
+void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 	WhenEnterValExPtForward(*this);
 	
 	RTLOG("DefaultExchangePoint::Forward: " << GetDynamicName() << "(" << HexStr(this) << ") begin");
-	Ref<DefaultSource>	src			= this->src;
-	Ref<DefaultSink>	sink		= this->sink;
+	Ref<DefaultInterfaceSource>	src			= this->src;
+	Ref<DefaultInterfaceSink>	sink		= this->sink;
 	
 	
 	Stream& src_stream = src->GetStream();
@@ -170,6 +171,44 @@ void DefaultExchangePoint::Deinit() {
 		conn = 0;
 	}
 	#endif
+}
+
+
+
+bool DefaultInterfaceSink::Initialize() {
+	AtomBase* ab = AsAtomBase();
+	AtomTypeCls type = ab->GetType();
+	ASSERT(type.IsValid());
+	
+	Format sink_fmt = GetDefaultFormat(type.iface.sink);
+	ASSERT(sink_fmt.IsValid());
+	
+	if (type.iface.sink.val == ValCls::AUDIO)
+		sink_buf.Create(this);
+	else
+		sink.Create(this);
+	
+	GetSinkValue().SetFormat(sink_fmt);
+	
+	return true;
+}
+
+bool DefaultInterfaceSource::Initialize() {
+	AtomBase* ab = AsAtomBase();
+	AtomTypeCls type = ab->GetType();
+	ASSERT(type.IsValid());
+	
+	Format src_fmt = GetDefaultFormat(type.iface.src);
+	ASSERT(src_fmt.IsValid());
+	
+	if (type.iface.src.val == ValCls::AUDIO)
+		src_buf.Create(this);
+	else
+		src.Create(this);
+	
+	GetSourceValue().SetFormat(src_fmt);
+	
+	return true;
 }
 
 

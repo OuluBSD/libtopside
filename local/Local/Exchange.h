@@ -367,7 +367,7 @@ class PacketForwarder :
 public:
 	RTTI_DECL0(PacketForwarder)
 	virtual void ForwardSetup(FwdScope& fwd) {}
-	virtual void Forward(FwdScope& fwd) {Panic("not implemented in " + String(GetDynamicName()));}
+	virtual void ForwardAtom(FwdScope& fwd) {Panic("not implemented in " + String(GetDynamicName()));}
 	virtual void ForwardExchange(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName()));}
 	
 	PacketForwarder& GetPacketForwarder() {return *this;}

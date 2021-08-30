@@ -1,4 +1,5 @@
-#include "AtomNonGUI.h"
+#include "Internal.h"
+
 
 NAMESPACE_SERIAL_BEGIN
 

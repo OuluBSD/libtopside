@@ -2,5 +2,6 @@ description "\3770,128,128";
 
 file
 	AtomNonGUI.h,
+	Internal.h,
 	AtomNonGUI.cpp;
 

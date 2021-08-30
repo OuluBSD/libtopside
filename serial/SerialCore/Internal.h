@@ -3,5 +3,6 @@
 
 #include "SerialCore.h"
 #include <SerialPlanner/SerialPlanner.h>
+#include <AtomLocal/AtomLocal.h>
 
 #endif

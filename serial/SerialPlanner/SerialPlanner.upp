@@ -7,6 +7,7 @@ uses
 
 file
 	SerialPlanner.h,
+	Internal.h,
 	Parser.h,
 	Parser.cpp,
 	Planner.h,

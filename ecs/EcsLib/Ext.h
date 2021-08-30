@@ -72,12 +72,6 @@ private:
 		LocalBufferedValue(ExtComponent* par) : par(*par) {}
 	};
 	
-	struct LocalValue : public SimpleValue {
-		ExtComponent& par;
-		
-		LocalValue(ExtComponent* par) : par(*par) {}
-	};
-	
 	struct LocalBufferedStream : public SimpleBufferedStream {
 		ExtComponent& par;
 		

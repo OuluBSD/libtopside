@@ -18,6 +18,7 @@ class SoundSample;
 class Loop;
 class LoopStore;
 class Machine;
+class CustomerAtom;
 struct AtomTypeCls;
 
 
@@ -39,6 +40,7 @@ using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
 using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
 using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
 using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
+using CustomerAtomRef		= Ref<CustomerAtom,			AtomParent>;
 
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
@@ -273,6 +275,8 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls src) : iface(sink,src), sub(cls) {}
 	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls side, ValDevCls src) : iface(sink,side,src), sub(cls) {}
 	
+	bool IsSideSource() const {return iface.side.IsValid() && iface.side_src;}
+	bool IsSideSink() const {return iface.side.IsValid() && !iface.side_src;}
 	
 };
 
@@ -301,6 +305,21 @@ template <class T> AtomTypeCls AsAtomTypeCls(SubAtomCls sub_type, CompCls vd) {
 template <class T> AtomTypeCls AsAtomTypeCls() {return T::GetAtomType();}
 
 DevCls GetCenterDevCls();
+
+
+
+
+
+struct InternalPacketData : RTTIBase {
+	RTTI_DECL0(InternalPacketData)
+	
+	int pos;
+	int count;
+	void* dev_comp;
+	
+	void ClearLinks() {dev_comp = 0;}
+};
+
 
 NAMESPACE_SERIAL_END
 

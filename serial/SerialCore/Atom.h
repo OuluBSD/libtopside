@@ -19,21 +19,13 @@ class AtomBase :
 	virtual public PacketForwarder,
 	public RefScopeEnabler<AtomBase,Loop>
 {
-protected:
-	friend class Loop;
 	
-	/*
-	struct CustomerData {
-		RealtimeSourceConfig	cfg;
-		off32_gen				gen;
-		Array<Script::Plan>		plans;
-		Index<dword>			unfulfilled_offsets;
-		int						max_unfulfilled = 5;
-		
-		CustomerData() : cfg(gen) {}
-	};
-	One<CustomerData>		customer;
-	*/ 
+protected:
+	Mutex					lock;
+	LinkedList<Packet>		consumed_packets;
+	PacketConsumer			consumer;
+	int						packets_forwarded = 0;
+	
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -62,6 +54,9 @@ public:
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
+	void ForwardAtom(FwdScope& fwd);
+	void ForwardExchange(FwdScope& fwd);
+	void ForwardConsumed(FwdScope& fwd);
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
@@ -69,7 +64,6 @@ public:
 	
 	Machine& GetMachine();
 	void UninitializeWithExt();
-	void AddPlan(Script::Plan& sp);
 	
 	
 public:
@@ -134,6 +128,10 @@ public:
 	RTTI_DECL3(Atom<T>, AtomBase, SinkT, SourceT)
 	using AtomT = Atom<T, SinkT, SourceT>;
 	
+	bool Initialize(const Script::WorldState& ws) override {
+		return SinkT::Initialize() && SourceT::Initialize();
+	}
+	
 	void Visit(RuntimeVisitor& vis) override {
 		//vis.VisitThis<AtomBase>(this);
 		vis.VisitThis<SinkT>(this);
@@ -162,6 +160,7 @@ public:
 	AtomBase* AsAtomBase() override {return static_cast<AtomBase*>(this);}
 	void ClearSink() override {TODO}
 	void ClearSource() override {TODO}
+	
 	
 };
 

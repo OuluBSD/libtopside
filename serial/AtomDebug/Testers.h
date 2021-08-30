@@ -10,8 +10,8 @@ class TestRealtimeSrc :
 	public Atom<TestRealtimeSrc>
 {
 	Serial::Format		internal_fmt;
-	double			time = 0;
-	byte			rolling_value = 0;
+	double				time = 0;
+	byte				rolling_value = 0;
 	
 public:
 	using AtomT = Atom<TestRealtimeSrc>;
@@ -22,8 +22,8 @@ public:
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
-	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
+	void Forward(FwdScope& fwd) override;
 	
 	
 	AtomTypeCls GetType() const override {return GetAtomType();}
@@ -61,7 +61,6 @@ public:
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
-	void Forward(FwdScope& fwd) override;
 	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
 	
@@ -70,6 +69,7 @@ public:
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	void ClearSinkSource() override {TODO}
+	void Forward(FwdScope& fwd) override;
 	
 	ATOM_MAKE_ACTION_BEGIN
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")

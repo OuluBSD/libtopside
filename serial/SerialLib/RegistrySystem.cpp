@@ -1,4 +1,4 @@
-#include "SerialLib.h"
+#include "Internal.h"
 
 NAMESPACE_SERIAL_BEGIN
 

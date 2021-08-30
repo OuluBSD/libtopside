@@ -44,7 +44,7 @@ public:
 	void Init(MetaExchangePoint* conn) override;
 	void Deinit();
 	void ForwardSetup(FwdScope& fwd) override;
-	void Forward(FwdScope& fwd) override;
+	void ForwardAtom(FwdScope& fwd) override;
 	void ForwardExchange(FwdScope& fwd) override;
 	
 	void UseConsumer(bool b=true) {use_consumer = b;}
