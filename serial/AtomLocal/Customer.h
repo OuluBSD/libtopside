@@ -11,17 +11,10 @@ class CustomerAtom :
 protected:
 	friend class Loop;
 	
-	struct CustomerData {
-		RealtimeSourceConfig	cfg;
-		off32_gen				gen;
-		Array<Script::Plan>		plans;
-		Index<dword>			unfulfilled_offsets;
-		int						max_unfulfilled = 5;
-		
-		CustomerData() : cfg(gen) {}
-	};
 	One<CustomerData>		customer;
 	
+	
+	CustomerData* GetCustomerData() override {return customer.IsEmpty() ? 0 : &*customer;}
 	
 public:
 	using AtomT = Atom<CustomerAtom>;
@@ -30,7 +23,7 @@ public:
 	using Atom = CustomerAtom;
 	
 	
-	static AtomTypeCls GetAtomType() {return ATOM0(CENTER_CUSTOMER, CENTER, RECEIPT, CENTER, ORDER);}
+	static AtomTypeCls GetAtomType() {return ATOM0(CENTER_CUSTOMER, CUSTOMER, CENTER, RECEIPT, CENTER, ORDER);}
 	
 	void AddPlan(Script::Plan& sp);
 	void UpdateConfig(double dt);
@@ -45,8 +38,8 @@ public:
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	void ClearSinkSource() override {TODO}
 	void Forward(FwdScope& fwd) override {}
-	void ForwardAtom(FwdScope& fwd) override;
-	void ForwardExchange(FwdScope& fwd) override;
+	/*void ForwardAtom(FwdScope& fwd) override;
+	void ForwardExchange(FwdScope& fwd) override;*/
 	
 	
 	ATOM_MAKE_ACTION_BEGIN

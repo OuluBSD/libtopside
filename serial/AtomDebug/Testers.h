@@ -17,7 +17,7 @@ public:
 	using AtomT = Atom<TestRealtimeSrc>;
 	RTTI_DECL1(TestRealtimeSrc, AtomT)
 	COPY_PANIC(TestRealtimeSrc)
-	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_ORDER_AUDIO, CENTER, ORDER, CENTER, AUDIO);}
+	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_ORDER_AUDIO, SOURCE, CENTER, ORDER, CENTER, AUDIO);}
 	
 	//bool Initialize(const Script::WorldState& ws) override;
 	//void Uninitialize() override;
@@ -55,7 +55,7 @@ public:
 	COPY_PANIC(TestRealtimeSink)
 	typedef TestRealtimeSink CLASSNAME;
 	
-	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, CENTER, AUDIO, CENTER, RECEIPT);}
+	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, SINK, CENTER, AUDIO, CENTER, RECEIPT);}
 	
 	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
 	//bool Initialize(const Script::WorldState& ws) override;

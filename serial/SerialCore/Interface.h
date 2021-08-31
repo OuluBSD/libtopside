@@ -40,6 +40,7 @@ public:
 	
 };
 
+
 #ifdef flagDEBUG
 void InterfaceDebugPrint(TypeId type, String s);
 #endif
@@ -70,9 +71,58 @@ protected:
 	
 };
 
+class InterfaceSideSink :
+	public InterfaceBase,
+	public ExchangeSideSinkProvider
+{
+protected:
+	
+public:
+	RTTI_DECL2(InterfaceSideSink, InterfaceBase, ExchangeSideSinkProvider)
+	InterfaceSideSink() {}
+	
+	
+	// Catches the type for CollectInterfacesVisitor
+	void Visit(RuntimeVisitor& vis) {
+		vis.VisitThis<InterfaceBase>(this);
+		vis.VisitThis<ExchangeSideSinkProvider>(this);
+	}
+	
+	virtual Value*				GetSideValue() = 0;
+	virtual void				ClearSideSink() = 0;
+	
+};
 
-using InterfaceSinkRef		= Ref<InterfaceSink,	RefParent1<Loop>>;
-using InterfaceSourceRef	= Ref<InterfaceSource,	RefParent1<Loop>>;
+class InterfaceSideSource :
+	public InterfaceBase,
+	public ExchangeSideSourceProvider
+{
+	
+	
+public:
+	RTTI_DECL2(InterfaceSideSource, InterfaceBase, ExchangeSideSourceProvider)
+	InterfaceSideSource() {}
+	
+	
+	// Catches the type for CollectInterfacesVisitor
+	void Visit(RuntimeVisitor& vis) {
+		vis.VisitThis<InterfaceBase>(this);
+		vis.VisitThis<ExchangeSideSourceProvider>(this);
+	}
+	
+	virtual void				ClearSideSource() = 0;
+	virtual Stream*				GetSideStream() = 0;
+	virtual Value*				GetSideSourceValue() = 0;
+	
+protected:
+	
+};
+
+
+using InterfaceSinkRef			= Ref<InterfaceSink,		RefParent1<Loop>>;
+using InterfaceSourceRef		= Ref<InterfaceSource,		RefParent1<Loop>>;
+using InterfaceSideSinkRef		= Ref<InterfaceSideSink,	RefParent1<Loop>>;
+using InterfaceSideSourceRef	= Ref<InterfaceSideSource,	RefParent1<Loop>>;
 
 
 
@@ -253,8 +303,29 @@ public:
 	
 };
 
+
+class VoidSideInterfaceSink :
+	public InterfaceSideSink,
+	RTTIBase
+{
+	
+public:
+	RTTI_DECL1(VoidSideInterfaceSink, InterfaceSideSink)
+	
+	VoidSideInterfaceSink() {}
+	
+	bool Initialize() {return true;}
+	
+	
+	Value*				GetSideValue() override {return 0;}
+	void				ClearSideSink() override {}
+	
+};
+
+
 using DefaultInterfaceSourceRef			= Ref<DefaultInterfaceSource,		RefParent1<Loop>>;
 using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			RefParent1<Loop>>;
+using VoidSideInterfaceSinkRef			= Ref<VoidSideInterfaceSink,			RefParent1<Loop>>;
 
 
 NAMESPACE_SERIAL_END

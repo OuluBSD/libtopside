@@ -52,7 +52,7 @@ typedef enum {
 } SideStatus;
 
 typedef enum : byte {
-	INVALID,
+	INVALID_ATOM,
 	
 	CENTER_CUSTOMER,
 	TEST_CENTER_ORDER_AUDIO,
@@ -65,6 +65,19 @@ typedef enum : byte {
 	SUBCOMP_COUNT
 } SubAtomCls;
 
+typedef enum : byte {
+	INVALID_ROLE,
+	
+	CUSTOMER,
+	SOURCE,
+	SINK,
+	CONVERTER,
+	PIPE,
+	SIDE_SOURCE,
+	SIDE_SINK,
+	
+	ROLE_COUNT
+} AtomRole;
 
 
 struct ValCls : Moveable<ValCls> {
@@ -166,11 +179,11 @@ struct ValDevCls : Moveable<ValDevCls> {
 
 #define VD(dev, val) Serial::ValDevCls(Serial::DevCls::dev, Serial::ValCls::val)
 
-#define ATOM0(atom, sink_dev, sink_val, src_dev, src_val) \
-	AtomTypeCls(SubAtomCls::atom, VD(sink_dev, sink_val), VD(src_dev, src_val))
+#define ATOM0(atom, role, sink_dev, sink_val, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(src_dev, src_val))
 
-#define ATOM1(atom, sink_dev, sink_val, side_dev, side_val, src_dev, src_val) \
-	AtomTypeCls(SubAtomCls::atom, VD(sink_dev, sink_val), VD(side_dev, side_val), VD(src_dev, src_val))
+#define ATOM1(atom, role, sink_dev, sink_val, side_dev, side_val, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(side_dev, side_val), VD(src_dev, src_val))
 
 
 struct AtomCls : Moveable<AtomCls> {
@@ -218,6 +231,7 @@ struct SerialTypeCls : Moveable<SerialTypeCls> {
 
 
 String GetSubAtomString(SubAtomCls t);
+String GetAtomRoleString(AtomRole t);
 
 
 struct AtomIfaceTypeCls : Moveable<AtomIfaceTypeCls> {
@@ -255,28 +269,35 @@ struct AtomIfaceTypeCls : Moveable<AtomIfaceTypeCls> {
 
 struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomIfaceTypeCls iface;
-	SubAtomCls sub = SubAtomCls::INVALID;
+	SubAtomCls sub = SubAtomCls::INVALID_ATOM;
+	AtomRole role = AtomRole::INVALID_ROLE;
 	
-	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID;}
+	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID_ATOM && role != AtomRole::INVALID_ROLE;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID;}
+	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE;}
 	
 	bool operator==(const AtomTypeCls& c) const {
 		return	iface == c.iface &&
-				sub == c.sub
+				sub == c.sub &&
+				role == c.role
 				;
 	}
 	bool operator!=(const AtomTypeCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubAtomString(sub) + "-" + iface.ToString();}
+	String ToString() const {return GetSubAtomString(sub) + "-" + GetAtomRoleString(role) + "-" + iface.ToString();}
 	
 	
 	AtomTypeCls() {}
 	AtomTypeCls(const AtomTypeCls& c) {*this = c;}
-	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls src) : iface(sink,src), sub(cls) {}
-	AtomTypeCls(SubAtomCls cls, ValDevCls sink, ValDevCls side, ValDevCls src) : iface(sink,side,src), sub(cls) {}
+	AtomTypeCls(SubAtomCls cls, AtomRole role, ValDevCls sink, ValDevCls src) : iface(sink,src), sub(cls), role(role) {}
+	AtomTypeCls(SubAtomCls cls, AtomRole role, ValDevCls sink, ValDevCls side, ValDevCls src) : iface(sink,side,src), sub(cls), role(role) {}
 	
-	bool IsSideSource() const {return iface.side.IsValid() && iface.side_src;}
-	bool IsSideSink() const {return iface.side.IsValid() && !iface.side_src;}
+	bool IsRoleCustomer() const {return AtomRole::CUSTOMER;}
+	bool IsRoleSource() const {return AtomRole::SOURCE;}
+	bool IsRoleSink() const {return AtomRole::SINK;}
+	bool IsRoleConverter() const {return AtomRole::CONVERTER;}
+	bool IsRolePipe() const {return AtomRole::PIPE;}
+	bool IsRoleSideSource() const {return AtomRole::SIDE_SOURCE/*iface.side.IsValid() && iface.side_src*/;}
+	bool IsRoleSideSink() const {return AtomRole::SIDE_SINK/*iface.side.IsValid() && !iface.side_src*/;}
 	
 };
 

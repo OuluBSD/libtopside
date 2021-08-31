@@ -17,6 +17,7 @@ file
 	Interface.cpp,
 	Atom.h,
 	Atom.cpp,
+	AtomForward.cpp,
 	AtomStore.h,
 	AtomStore.cpp,
 	AtomSystem.h,

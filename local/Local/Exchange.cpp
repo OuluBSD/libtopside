@@ -114,6 +114,35 @@ ExchangeSourceProvider::~ExchangeSourceProvider() {
 
 
 
+ExchangeSideSinkProvider::ExchangeSideSinkProvider() {
+	DBG_CONSTRUCT
+}
+
+ExchangeSideSinkProvider::~ExchangeSideSinkProvider() {
+	DBG_DESTRUCT
+}
+
+
+
+
+
+
+
+ExchangeSideSourceProvider::ExchangeSideSourceProvider() {
+	DBG_CONSTRUCT
+}
+
+ExchangeSideSourceProvider::~ExchangeSideSourceProvider() {
+	DBG_DESTRUCT
+}
+
+
+
+
+
+
+
+
 void FwdScope::Clear() {
 	cur = 0;
 	for(int i = 0; i < QUEUE_SIZE; i++)

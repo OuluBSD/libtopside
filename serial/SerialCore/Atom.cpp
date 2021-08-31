@@ -30,21 +30,6 @@ String AtomBase::ToString() const {
 	return GetDynamicName();
 }
 
-void AtomBase::ForwardAtom(FwdScope& fwd) {
-	RTLOG("AtomBase::ForwardAtom");
-	POPO(Pol::Serial::Atom::ConsumerFirst);
-	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
-	
-	if (fwd.GetPos() > 0) {
-		Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardAtom: skip duplicate extension forward");
-	}
-	
-	ForwardConsumed(fwd);
-}
-
 void AtomBase::ForwardExchange(FwdScope& fwd) {
 	Value& src_val = GetSource()->GetSourceValue();
 	SimpleBufferedValue* src_buf = CastPtr<SimpleBufferedValue>(&src_val);
@@ -90,7 +75,7 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 		data.pos = 0;
 		data.count = 1;
 		
-		if (type.IsSideSource()) {
+		if (type.IsRoleSideSource()) {
 			WhenEnterCreatedEmptyPacket(to);
 			
 			RTLOG("AtomBase::ForwardOutput: sending packet in format: " << src_fmt.ToString());

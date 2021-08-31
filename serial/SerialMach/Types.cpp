@@ -31,17 +31,29 @@ String GetSubAtomString(SubAtomCls t) {
 	#endif
 }
 
+String GetAtomRoleString(AtomRole t) {
+	switch (t) {
+		case CUSTOMER:		return "customer";
+		case SOURCE:		return "source";
+		case SINK:			return "sink";
+		case CONVERTER:		return "converter";
+		case PIPE:			return "pipe";
+		case SIDE_SOURCE:	return "source";
+		case SIDE_SINK:		return "sink";
+		default:			return "invalid";
+	}
+}
 
 
 String ValCls::GetName(Type t) {
 	switch (t) {
-		case AUDIO:		return "audio";
-		case VIDEO:		return "video";
-		case MIDI:		return "midi";
-		case EVENT:		return "event";
-		case DATA:		return "data";
-		case ORDER:		return "order";
-		case RECEIPT:	return "receipt";
+		case AUDIO:			return "audio";
+		case VIDEO:			return "video";
+		case MIDI:			return "midi";
+		case EVENT:			return "event";
+		case DATA:			return "data";
+		case ORDER:			return "order";
+		case RECEIPT:		return "receipt";
 		case INVALID:
 		default: return "invalid";
 	}
@@ -111,6 +123,7 @@ hash_t AtomTypeCls::GetHashValue() const {
 	CombineHash c;
 	c.Put(iface.GetHashValue());
 	c.Put(sub);
+	c.Put(role);
 	return c;
 }
 

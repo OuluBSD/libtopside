@@ -21,11 +21,34 @@ class AtomBase :
 {
 	
 protected:
+	struct CustomerData {
+		RealtimeSourceConfig	cfg;
+		off32_gen				gen;
+		Array<Script::Plan>		plans;
+		Index<dword>			unfulfilled_offsets;
+		int						max_unfulfilled = 5;
+		
+		CustomerData() : cfg(gen) {}
+	};
+	
+	
 	Mutex					lock;
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
 	
+	
+	
+	void					ForwardAtom(FwdScope& fwd) override;
+	void					ForwardExchange(FwdScope& fwd) override;
+	void					ForwardCustomer(FwdScope& fwd);
+	void					ForwardInput(FwdScope& fwd);
+	void					ForwardOutput(FwdScope& fwd);
+	void					ForwardConverter(FwdScope& fwd);
+	void					ForwardSideInput(FwdScope& fwd);
+	void					ForwardSideOutput(FwdScope& fwd);
+	void					ForwardConsumed(FwdScope& fwd);
+	void					ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -37,6 +60,8 @@ public:
 	virtual void Forward(FwdScope& fwd) = 0;
 	virtual InterfaceSourceRef GetSource() = 0;
 	virtual InterfaceSinkRef GetSink() = 0;
+	virtual InterfaceSideSourceRef GetSideSource() = 0;
+	virtual InterfaceSideSinkRef GetSideSink() = 0;
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
@@ -51,12 +76,11 @@ public:
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
+	virtual CustomerData* GetCustomerData() {return 0;}
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
-	void ForwardAtom(FwdScope& fwd);
-	void ForwardExchange(FwdScope& fwd);
-	void ForwardConsumed(FwdScope& fwd);
+	
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
@@ -118,24 +142,31 @@ public:
 
 
 
-template<typename T, class SinkT=DefaultInterfaceSink, class SourceT=DefaultInterfaceSource>
+template<
+	typename T,
+	class SinkT=DefaultInterfaceSink,
+	class SourceT=DefaultInterfaceSource,
+	class SideT=VoidSideInterfaceSink
+>
 struct Atom :
 	public AtomBase,
 	public SinkT,
-	public SourceT
+	public SourceT,
+	public SideT
 {
 public:
-	RTTI_DECL3(Atom<T>, AtomBase, SinkT, SourceT)
-	using AtomT = Atom<T, SinkT, SourceT>;
+	RTTI_DECL4(Atom<T>, AtomBase, SinkT, SourceT, SideT)
+	using AtomT = Atom<T, SinkT, SourceT, SideT>;
 	
 	bool Initialize(const Script::WorldState& ws) override {
-		return SinkT::Initialize() && SourceT::Initialize();
+		return SinkT::Initialize() && SourceT::Initialize() && SideT::Initialize();
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {
 		//vis.VisitThis<AtomBase>(this);
 		vis.VisitThis<SinkT>(this);
 		vis.VisitThis<SourceT>(this);
+		vis.VisitThis<SideT>(this);
 	}
 	
 	void CopyTo(AtomBase* target) const override {
@@ -155,6 +186,16 @@ public:
 		InterfaceSink* sink = static_cast<InterfaceSink*>(this);
 		ASSERT(sink);
 		return InterfaceSinkRef(GetParentUnsafe(), sink);
+	}
+	
+	InterfaceSideSourceRef GetSideSource() override {
+		InterfaceSideSource* src = CastPtr<InterfaceSideSource>(this);
+		return src ? InterfaceSideSourceRef(GetParentUnsafe(), src) : InterfaceSideSourceRef();
+	}
+	
+	InterfaceSideSinkRef GetSideSink() override {
+		InterfaceSideSink* sink = CastPtr<InterfaceSideSink>(this);
+		return sink ? InterfaceSideSinkRef(GetParentUnsafe(), sink) : InterfaceSideSinkRef();
 	}
 	
 	AtomBase* AsAtomBase() override {return static_cast<AtomBase*>(this);}

@@ -38,6 +38,8 @@ void CustomerAtom::UpdateConfig(double dt) {
 	}
 }
 
+#if 0
+
 void CustomerAtom::ForwardAtom(FwdScope& fwd) {
 	ASSERT(this->customer);
 	CustomerData& c = *this->customer;
@@ -114,6 +116,7 @@ void CustomerAtom::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+#endif
 
 
 NAMESPACE_SERIAL_END

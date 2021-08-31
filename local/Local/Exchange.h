@@ -18,17 +18,21 @@ class ExchangeBase;
 class ExchangeProviderBase;
 class ExchangeSinkProvider;
 class ExchangeSourceProvider;
+class ExchangeSideSinkProvider;
+class ExchangeSideSourceProvider;
 class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaExchangePoint;
 using AtomParent = RefParent1<Serial::Loop>;
-using ExchangeBaseRef				= Ref<ExchangeBase,				RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,		AtomParent>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,		AtomParent>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,	AtomParent>;
-using ExchangePointRef				= Ref<ExchangePoint,			RefParent1<MetaExchangePoint>>;
-using MetaExchangePointRef			= Ref<MetaExchangePoint,		AtomParent>;
-using CookieRef						= Ref<ExchangeProviderCookie,	RefParent1<ExchangePoint>>;
+using ExchangeBaseRef				= Ref<ExchangeBase,					RefParent1<ExchangeProviderBase>>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,			AtomParent>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,			AtomParent>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,		AtomParent>;
+using ExchangeSideSinkProviderRef	= Ref<ExchangeSideSinkProvider,		AtomParent>;
+using ExchangeSideSourceProviderRef	= Ref<ExchangeSideSourceProvider,	AtomParent>;
+using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaExchangePoint>>;
+using MetaExchangePointRef			= Ref<MetaExchangePoint,			AtomParent>;
+using CookieRef						= Ref<ExchangeProviderCookie,		RefParent1<ExchangePoint>>;
 
 
 template<class T> struct OffsetGen;
@@ -199,6 +203,8 @@ private:
 protected:
 	friend class ExchangeSinkProvider;
 	friend class ExchangeSourceProvider;
+	friend class ExchangeSideSinkProvider;
+	friend class ExchangeSideSourceProvider;
 	
 	int IsLink(R r) const {return r == dst;}
 	
@@ -320,6 +326,89 @@ public:
 };
 
 typedef ExchangeSourceProviderRef ExchangeSourceProviderRef;
+
+
+
+
+
+
+
+
+class ExchangeSideSinkProvider :
+	public ExchangeProviderBase
+{
+	
+protected:
+	friend class ExchangeSideSourceProvider;
+	
+	using ExProv = ExchangeProviderT<ExchangeSideSourceProviderRef>;
+	
+	ExProv base;
+	
+public:
+	using SideSinkProv = ExchangeSideSinkProviderRef;
+	using SideSourceProv = ExchangeSideSourceProviderRef;
+	using Cookie = CookieRef;
+	RTTI_DECL1(ExchangeSideSinkProvider, ExchangeProviderBase)
+	
+protected:
+	friend class ExchangePoint;
+	
+	void SetSideSource(ExchangePointRef expt, ExchangeSideSourceProviderRef src) {base.SetLink(expt, src);}
+	int IsSideSource(ExchangeSideSourceProviderRef src) {return base.IsLink(src);}
+	
+	virtual void OnLink(SideSourceProv src, Cookie src_c, Cookie sink_c) {}
+	
+public:
+	ExchangeSideSinkProvider();
+	virtual ~ExchangeSideSinkProvider();
+	
+	void							ClearLink() {base.ClearLink();}
+	void							Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef				GetExPt() const {return base.GetExPt();}
+	ExchangeSideSourceProviderRef	GetSideSinkLink() const {return base.GetLink();}
+	
+};
+
+class ExchangeSideSourceProvider :
+	public ExchangeProviderBase
+{
+public:
+	using ExProv = ExchangeProviderT<ExchangeSideSinkProviderRef>;
+	
+private:
+	ExProv base;
+	
+	static bool print_debug;
+	
+public:
+	using SideSinkProv = ExchangeSideSinkProviderRef;
+	using SideSourceProv = ExchangeSideSourceProviderRef;
+	using Cookie = CookieRef;
+	RTTI_DECL1(ExchangeSideSourceProvider, ExchangeProviderBase)
+	
+protected:
+	friend class ExchangePoint;
+	
+	void SetSideSink(ExchangePointRef expt, ExchangeSideSinkProviderRef sink) {base.SetLink(expt, sink);}
+	int IsSideSink(ExchangeSideSinkProviderRef sink) {return base.IsLink(sink);}
+	virtual void OnLink(SideSinkProv sink, Cookie src_c, Cookie sink_c) {}
+	
+public:
+	ExchangeSideSourceProvider();
+	virtual ~ExchangeSideSourceProvider();
+	
+	virtual bool					Accept(SideSinkProv sink, Cookie& src_c, Cookie& sink_c) {return true;}
+	void							Link(ExchangePointRef expt, SideSinkProv sink, Cookie& src_c, Cookie& sink_c);
+	void							ClearLink() {base.ClearLink();}
+	void							Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	ExchangePointRef				GetExPt() const {return base.GetExPt();}
+	ExchangeSideSinkProviderRef		GetSideSourceLink() const {return base.GetLink();}
+	
+};
+
+typedef ExchangeSideSourceProviderRef ExchangeSideSourceProviderRef;
+
 
 
 
