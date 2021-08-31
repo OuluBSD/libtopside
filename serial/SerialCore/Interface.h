@@ -89,7 +89,7 @@ public:
 	}
 	
 	virtual Value*				GetSideValue() = 0;
-	virtual void				ClearSideSink() = 0;
+	virtual void				ClearSide() = 0;
 	
 };
 
@@ -110,7 +110,7 @@ public:
 		vis.VisitThis<ExchangeSideSourceProvider>(this);
 	}
 	
-	virtual void				ClearSideSource() = 0;
+	virtual void				ClearSide() = 0;
 	virtual Stream*				GetSideStream() = 0;
 	virtual Value*				GetSideSourceValue() = 0;
 	
@@ -318,7 +318,7 @@ public:
 	
 	
 	Value*				GetSideValue() override {return 0;}
-	void				ClearSideSink() override {}
+	void				ClearSide() override {}
 	
 };
 

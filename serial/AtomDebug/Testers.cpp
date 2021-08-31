@@ -3,7 +3,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-/*bool TestRealtimeSrc::Initialize(const Script::WorldState& ws)  {
+bool TestRealtimeSrc::Initialize(const Script::WorldState& ws)  {
 	internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
 	time = 0;
 	return true;
@@ -11,13 +11,16 @@ NAMESPACE_SERIAL_BEGIN
 
 void TestRealtimeSrc::Uninitialize()  {
 	
-}*/
+}
 
 void TestRealtimeSrc::Forward(FwdScope& fwd) {
 	RTLOG("TestRealtimeSrc::Forward");
+	
 }
 
 void TestRealtimeSrc::StorePacket(Packet& p) {
+	ASSERT(internal_fmt.IsValid());
+	
 	RTLOG("TestRealtimeSrc::StorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
 	ASSERT_(!p->GetFormat().IsValid(), "Packed shouldn't be initialized before this");
 	PacketValue& pv = *p;
@@ -34,8 +37,7 @@ void TestRealtimeSrc::StorePacket(Packet& p) {
 
 
 
-/*bool TestRealtimeSink::Initialize(const Script::WorldState& ws) {
-	
+bool TestRealtimeSink::Initialize(const Script::WorldState& ws) {
 	flag.Start(1);
 	Thread::Start(THISBACK(IntervalSinkProcess));
 	return true;
@@ -43,14 +45,14 @@ void TestRealtimeSrc::StorePacket(Packet& p) {
 
 void TestRealtimeSink::Uninitialize() {
 	flag.Stop();
-}*/
+}
 
 void TestRealtimeSink::IntervalSinkProcess() {
 	RTLOG("TestRealtimeSink::IntervalSinkProcess: starts");
-	TODO
-	#if 0
-	ExtComponent& base = GetParent();
-	Serial::Format fmt =  base.GetValue().GetFormat();
+	
+	InterfaceSinkRef sink = GetSink();
+	Value& sink_value = sink->GetValue();
+	Serial::Format fmt = sink_value.GetFormat();
 	Serial::AudioFormat& afmt = fmt;
 	Vector<byte> data;
 	data.SetCount(fmt.GetFrameSize());
@@ -76,8 +78,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		RTLOG("TestRealtimeSink::IntervalSinkProcess: trying to consume " << data.GetCount());
 		
 		if (do_log) {
-			Serial::Value& sink = base.GetSinkValue();
-			Serial::PacketBuffer& sink_buf = sink.GetBuffer();
+			Serial::PacketBuffer& sink_buf = sink_value.GetBuffer();
 			int total_bytes = 0;
 			int total_ch_samples = 0;
 			for(Packet& p : sink_buf) {
@@ -92,7 +93,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 			RTLOG(s);
 		}
 		
-		if (!base.ForwardMem(data.Begin(), data.GetCount())) {
+		if (!ForwardMem(data.Begin(), data.GetCount())) {
 			RTLOG("TestRealtimeSink::IntervalSinkProcess: error: could not get consumable data");
 			fail = true;
 			break;
@@ -118,18 +119,16 @@ void TestRealtimeSink::IntervalSinkProcess() {
 	else       {LOG("TestRealtimeSink::IntervalSinkProcess: fail :(");}
 	
 	flag.DecreaseRunning();
-	
-	#endif
 }
 
 void TestRealtimeSink::Forward(FwdScope& fwd) {
 	RTLOG("TestRealtimeSink::Forward");
-	
+	ForwardVoidSink(fwd);
 }
 
 void TestRealtimeSink::StorePacket(Packet& p) {
 	RTLOG("TestRealtimeSink::StorePacket");
-	TODO
+	//TODO
 	//p->SetFormat(GetParent()->GetSourceValue().GetFormat());
 }
 

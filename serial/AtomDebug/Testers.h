@@ -19,8 +19,8 @@ public:
 	COPY_PANIC(TestRealtimeSrc)
 	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_ORDER_AUDIO, SOURCE, CENTER, ORDER, CENTER, AUDIO);}
 	
-	//bool Initialize(const Script::WorldState& ws) override;
-	//void Uninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void StorePacket(Packet& p) override;
 	void Forward(FwdScope& fwd) override;
@@ -30,7 +30,6 @@ public:
 	void CopyTo(AtomBase* atom) const override {TODO}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	void ClearSinkSource() override {TODO}
 	
 	
 	ATOM_MAKE_ACTION_BEGIN
@@ -58,8 +57,8 @@ public:
 	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, SINK, CENTER, AUDIO, CENTER, RECEIPT);}
 	
 	~TestRealtimeSink() {ASSERT(!flag.IsRunning());}
-	//bool Initialize(const Script::WorldState& ws) override;
-	//void Uninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void StorePacket(Packet& p) override;
 	void IntervalSinkProcess();
@@ -68,7 +67,6 @@ public:
 	void CopyTo(AtomBase* atom) const override {TODO}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	void ClearSinkSource() override {TODO}
 	void Forward(FwdScope& fwd) override;
 	
 	ATOM_MAKE_ACTION_BEGIN

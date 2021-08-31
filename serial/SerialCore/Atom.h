@@ -50,6 +50,9 @@ protected:
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
+	void					ForwardVoidSink(FwdScope& fwd);
+	bool					ForwardMem(void* mem, size_t mem_size);
+	
 public:
 	virtual AtomTypeCls GetType() const = 0;
 	virtual void CopyTo(AtomBase* atom) const = 0;
@@ -62,11 +65,11 @@ public:
 	virtual InterfaceSinkRef GetSink() = 0;
 	virtual InterfaceSideSourceRef GetSideSource() = 0;
 	virtual InterfaceSideSinkRef GetSideSink() = 0;
+	virtual bool InitializeAtom(const Script::WorldState& ws) = 0;
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
 	virtual String ToString() const;
-	virtual void ClearExtension() {}
 	virtual int GetSideIn() {return -1;}
 	virtual int GetSideOut() {return -1;}
 	virtual void SetSideIn(int i) {Panic("Unimplemented");}
@@ -80,14 +83,13 @@ public:
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
-	
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
 	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
 	static bool AllowDuplicates() {return false;}
 	
 	Machine& GetMachine();
-	void UninitializeWithExt();
+	void UninitializeDeep();
 	
 	
 public:
@@ -158,8 +160,14 @@ public:
 	RTTI_DECL4(Atom<T>, AtomBase, SinkT, SourceT, SideT)
 	using AtomT = Atom<T, SinkT, SourceT, SideT>;
 	
-	bool Initialize(const Script::WorldState& ws) override {
+	bool InitializeAtom(const Script::WorldState& ws) override {
 		return SinkT::Initialize() && SourceT::Initialize() && SideT::Initialize();
+	}
+	
+	void ClearSinkSource() override {
+		SinkT::ClearSink();
+		SourceT::ClearSource();
+		SideT::ClearSide();
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {

@@ -17,14 +17,12 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	ForwardConsumed(fwd);*/
 	
-	Forward(fwd);
-	
 	
 	AtomTypeCls type = GetType();
 	switch (type.role) {
 		case CUSTOMER:		ForwardCustomer(fwd);	return;
-		case SOURCE:		ForwardOutput(fwd);		return;
-		case SINK:			ForwardInput(fwd);		return;
+		case SOURCE:		ForwardInput(fwd);		return;
+		case SINK:			ForwardOutput(fwd);		return;
 		case CONVERTER:		ForwardInput(fwd);		return;
 		case SIDE_SOURCE:	ForwardSideOutput(fwd);	return;
 		case SIDE_SINK:		ForwardSideInput(fwd);	return;
@@ -135,7 +133,7 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	Format fmt = iface_src->GetSourceValue().GetFormat();
 	
 	while (sink_buf.GetCount() && !val.IsQueueFull()) {
-		if (IsReady(fmt.vd))
+		if (!IsReady(fmt.vd))
 			break;
 		Packet in = sink_buf.First();
 		sink_buf.RemoveFirst();
@@ -325,6 +323,114 @@ void AtomBase::ForwardSideOutput(FwdScope& fwd) {
 	
 	
 	ForwardConsumed(fwd);
+}
+
+void AtomBase::ForwardVoidSink(FwdScope& fwd) {
+	Value& src_value = GetSource()->GetSourceValue();
+	Stream& src_stream = GetSource()->GetStream();
+	Value& sink_value = GetSink()->GetValue();
+	auto& sink_buf = sink_value.GetBuffer();
+	auto& src_buf = src_value.GetBuffer();
+	RealtimeSourceConfig& cfg = fwd.Cfg();
+	AtomTypeCls type = GetType();
+	
+	lock.Enter();
+	
+	Index<dword> offs;
+	for (auto& in : consumed_packets) {
+		off32 o = in->GetOffset();
+		if (offs.Find(o.value) >= 0)
+			continue;
+		offs.Add(o.value);
+		
+		Packet to = CreatePacket(o);
+	
+		Format fmt = GetDefaultFormat(type.iface.src);
+		RTLOG("AtomBase::ForwardVoidSink: sending packet in format: " << fmt.ToString());
+		to->SetFormat(fmt);
+		
+		InternalPacketData& data = to->template SetData<InternalPacketData>();
+		data.pos = 0;
+		data.count = 1;
+		
+		StorePacket(to);
+		
+		PacketTracker::Track(TrackerInfo("AtomBase::ForwardVoidSink", __FILE__, __LINE__), *to);
+		src_buf.Add(to);
+	}
+	
+	lock.Leave();
+}
+
+bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
+	Value& sink_value = GetSink()->GetValue();
+	Value& src_value = GetSource()->GetSourceValue();
+	
+	if (consumer.IsEmptySource())
+		consumer.SetSource(sink_value.GetBuffer());
+	
+	if (mem) {
+		Format fmt = sink_value.GetFormat();
+		
+		int size = fmt.GetFrameSize();
+		if (size != mem_size) {
+			RTLOG("AtomBase::ForwardMem: error: memsize mismatch (" << size << " != " << mem_size << ")");
+			return false;
+		}
+		
+		int qsize = sink_value.GetQueueSize();
+		if (qsize > 0 || consumer.HasLeftover()) {
+			
+			/*off32 begin_offset = buf.GetOffset();
+			if (0) {
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: trying to consume " << begin_offset.ToString());
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: dumping");
+				buf.Dump();
+			}*/
+			
+			consumer.SetDestination(fmt, mem, size);
+			consumer.ConsumeAll(false);
+			consumer.ClearDestination();
+			int csize = consumer.GetLastMemoryBytes();
+			int consumed_count = consumer.GetCount();
+			if (csize != size) {
+				RTLOG("AtomBase::ForwardMem: error: consumed " << csize << " (expected " << size << "), packets=" << consumed_count);
+			}
+			else {
+				RTLOG("AtomBase::ForwardMem:  consumed " << csize << ", packets=" << consumed_count);
+			}
+			
+			lock.Enter();
+			consumed_packets.Append(consumer.consumed_packets);
+			lock.Leave();
+			
+			CustomerData* cust_data = GetCustomerData();
+			if (cust_data)
+				GetMachine().Get<AtomSystem>()->AddOnce(*this, cust_data->cfg);
+			
+			/*off32 end_offset = consumer.GetOffset();
+			off32 diff = off32::GetDifference(begin_offset, end_offset);
+			if (diff) {
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed count=" << diff.ToString());
+				buf.RemoveFirst(diff.value);
+			}
+			else if (consumer.HasLeftover()) {
+				RTLOG("BufferedAudioDeviceStream::SinkCallback: device consumed packet partially");
+			}
+			else if (!consumer.HasLeftover()) {
+				RTLOG("error: BufferedAudioDeviceStream::SinkCallback: device error");
+			}*/
+			return true;
+		}
+		else {
+			#if DEBUG_RT_PIPE
+			RTLOG("error: AtomBase::ForwardMem: got empty data");
+			#endif
+			
+			memset(mem, 0, size);
+		}
+	}
+	return false;
 }
 
 

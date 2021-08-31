@@ -16,8 +16,7 @@ Machine& AtomBase::GetMachine() {
 	return GetParent()->GetMachine();
 }
 
-void AtomBase::UninitializeWithExt() {
-	ClearExtension();
+void AtomBase::UninitializeDeep() {
 	Uninitialize();
 	ClearSinkSource();
 }
@@ -32,8 +31,9 @@ String AtomBase::ToString() const {
 
 void AtomBase::ForwardExchange(FwdScope& fwd) {
 	Value& src_val = GetSource()->GetSourceValue();
-	SimpleBufferedValue* src_buf = CastPtr<SimpleBufferedValue>(&src_val);
-	if (src_buf && !src_buf->IsEmpty()) {
+	//SimpleBufferedValue* src_buf = CastPtr<SimpleBufferedValue>(&src_val);
+	//if (src_buf && !src_buf->IsEmpty()) {
+	if (src_val.GetQueueSize()) {
 		ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(this);
 		ASSERT(src);
 		ExchangePointRef expt = src->GetExPt();

@@ -36,7 +36,6 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	void ClearSinkSource() override {TODO}
 	void Forward(FwdScope& fwd) override {}
 	/*void ForwardAtom(FwdScope& fwd) override;
 	void ForwardExchange(FwdScope& fwd) override;*/

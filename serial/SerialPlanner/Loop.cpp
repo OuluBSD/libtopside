@@ -340,7 +340,7 @@ bool ScriptLoopLoader::Load() {
 			}
 			
 			
-			if (!ab->Initialize(ws)) {
+			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 				const auto& a = Serial::Factory::AtomDataMap().Get(type);
 				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;

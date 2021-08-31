@@ -178,12 +178,69 @@ LoopRef Loop::CreateEmpty() {
 
 void Loop::Clear() {
 	// useless ClearInterfacesDeep();
-	/*UnrefDeep();
+	UnrefDeep();
 	UnlinkDeep();
-	UninitializeComponentsDeep();
-	ClearComponentsDeep();
-	ClearDeep();*/
-	TODO
+	UninitializeAtomsDeep();
+	ClearAtomsDeep();
+	ClearDeep();
+}
+
+void Loop::UnrefDeep() {
+	RefClearVisitor vis;
+	vis.Visit(*this);
+}
+
+void Loop::UnlinkDeep() {
+	for (auto it = loops.rbegin(); it != loops.rend(); --it) {
+		it().UnlinkDeep();
+	}
+	
+	UnlinkExchangePoints();
+	
+	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().UnlinkAll();
+	}*/
+}
+
+void Loop::UnlinkExchangePoints() {
+	for (ExchangePointRef& pt : pts) {
+		pt->Source()	->ClearLink();
+		pt->Sink()		->ClearLink();
+		pt->Clear();
+	}
+	pts.Clear();
+}
+
+void Loop::UninitializeAtomsDeep() {
+	for (LoopRef& p : loops)
+		p->UninitializeAtomsDeep();
+	
+	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+		it().UninitializeDeep();
+	}
+	
+	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().UninitializeWithExt();
+	}*/
+}
+
+void Loop::ClearAtomsDeep() {
+	for (LoopRef& p : loops)
+		p->ClearAtomsDeep();
+	
+	AtomStoreRef sys = GetMachine().Get<AtomStore>();
+	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+		sys->ReturnAtom(atoms.Detach(it));
+	}
+	
+}
+
+void Loop::ClearDeep() {
+	for (LoopRef& p : loops)
+		p->ClearDeep();
+	loops.Clear();
+	
+	atoms.Clear();
 }
 
 LoopRef Loop::GetAddEmpty(String name) {

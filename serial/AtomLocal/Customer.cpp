@@ -4,7 +4,6 @@ NAMESPACE_SERIAL_BEGIN
 
 
 bool CustomerAtom::Initialize(const Script::WorldState& ws) {
-	AtomT::Initialize(ws);
 	packets_forwarded = 0;
 	customer.Create();
 	GetMachine().Get<AtomSystem>()->Add(AsRef<CustomerAtom>());
