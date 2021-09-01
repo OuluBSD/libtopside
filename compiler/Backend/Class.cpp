@@ -3,6 +3,24 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+String TemplateClass::GetTreeString(int indent) const {
+	
+	return "TemplateClass";
+}
+
+String TemplateClass::GetCodeString(const CodeArgs& args) const {
+	
+	return "TemplateClass";
+}
+
+String TemplateClass::ToString() const {
+	
+	return "TemplateClass";
+}
+
+
+
+
 Class::Class() {
 	
 }

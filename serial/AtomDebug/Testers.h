@@ -1,6 +1,8 @@
 #ifndef _AtomDebug_Testers_h_
 #define _AtomDebug_Testers_h_
 
+#if HAVE_MANUAL_DBG_CLASSES
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -81,4 +83,5 @@ public:
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

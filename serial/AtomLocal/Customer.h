@@ -1,6 +1,8 @@
 #ifndef _AtomLocal_Customer_h_
 #define _AtomLocal_Customer_h_
 
+#if HAVE_MANUAL_DBG_CLASSES
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -56,4 +58,5 @@ using CustomerAtomRef = Ref<CustomerAtom, RefParent1<Loop>>;
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

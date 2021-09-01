@@ -209,6 +209,8 @@ public:
 	static bool Export(CompilationUnit& cu);
 	static bool Export(CompilationUnit& cu, Package& pkg);
 	
+	static void OnError(String msg);
+	
 };
 
 

@@ -8,5 +8,7 @@ file
 	AtomLocal.h,
 	Init.icpp,
 	Customer.h,
-	Customer.cpp;
+	Customer.cpp,
+	Generated.h,
+	Generated.cpp;
 

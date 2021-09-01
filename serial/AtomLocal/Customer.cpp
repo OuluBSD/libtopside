@@ -1,5 +1,7 @@
 #include "AtomLocal.h"
 
+#if HAVE_MANUAL_DBG_CLASSES
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -119,3 +121,5 @@ void CustomerAtom::ForwardExchange(FwdScope& fwd) {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

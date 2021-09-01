@@ -1,5 +1,7 @@
 #include "AtomDebug.h"
 
+#if HAVE_MANUAL_DBG_CLASSES
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -134,3 +136,5 @@ void TestRealtimeSink::StorePacket(Packet& p) {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

@@ -171,6 +171,8 @@ bool AssemblyExporter::ExportHeader(Package& pkg, PackageFile& file, String path
 	fout << "#ifndef _" << pkg.name << "_" << file.name << "_h_\n";
 	fout << "#define _" << pkg.name << "_" << file.name << "_h_\n\n";
 	
+	fout << "// This file is generated. Do not modify this file.\n\n";
+	
 	String path_name = GetFileTitle(path);
 	if (pkg.name == file.name) {
 		for (String dep : pkg.deps) {
@@ -274,6 +276,9 @@ bool AssemblyExporter::Visit(Namespace& o) {
 }
 
 bool AssemblyExporter::Visit(Class& o) {
+	if (o.tmpl.is)
+		return true;
+	
 	o.DefaultHintsFromParent();
 	
 	ScopeHolder __h(this, o);

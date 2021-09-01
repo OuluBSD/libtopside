@@ -109,6 +109,10 @@ bool Factory::Export(CompilationUnit& cu) {
 	return true;
 }
 
+void Factory::OnError(String msg) {
+	LOG("Factory: error: " << msg);
+}
+
 bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	auto& vals = Vals();
 	auto& devs = Devs();
@@ -118,6 +122,27 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	
 	Namespace& ns_ts = cu.GetAddNamespace("TS");
 	Namespace& ns_serial = ns_ts.GetAddNamespace("Serial");
+	
+	
+	for (Header& h : Headers().GetValues()) {
+		if (h.pkg == &pkg)
+			continue;
+		
+		String h_name = h.name;
+		LOG("\tExporting " << h_name);
+		
+		Class& cls_h = ns_serial.GetAddClass(h_name);
+		
+		String tmpl_name = "Atom<" + h_name + ">";
+		Class& cls_atombase = ns_serial.GetAddClass(tmpl_name);
+		cls_atombase.tmpl.is = true;
+		
+		if (!cls_h.Inherit(cls_atombase)) {
+			OnError("class " + h_name + " could not inherit " + tmpl_name);
+			return false;
+		}
+		
+	}
 	
 	/*
 	Class& cls_binary_sample = ns_serial.GetAddClass("BinarySample");

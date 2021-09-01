@@ -1,8 +1,7 @@
 description "\377B113,42,150";
 
 uses
-	Default,
-	SerialMach;
+	AtomLocal;
 
 mainconfig
 	"" = "";
