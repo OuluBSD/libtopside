@@ -18,7 +18,7 @@ class SoundSample;
 class Loop;
 class LoopStore;
 class Machine;
-class CustomerAtom;
+//class CustomerAtom;
 struct AtomTypeCls;
 
 
@@ -40,7 +40,7 @@ using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
 using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
 using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
 using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
-using CustomerAtomRef		= Ref<CustomerAtom,			AtomParent>;
+//using CustomerAtomRef		= Ref<CustomerAtom,			AtomParent>;
 
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
@@ -50,6 +50,8 @@ typedef enum {
 	SIDE_ACCEPTED,
 	SIDE_ACCEPTED_MULTI,
 } SideStatus;
+
+#undef INVALID_ATOM
 
 typedef enum : byte {
 	INVALID_ATOM,

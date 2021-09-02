@@ -12,7 +12,7 @@ class AtomSystem :
 		RealtimeSourceConfig*	cfg;
 	};
 	LinkedList<Once> once_cbs;
-	LinkedList<CustomerAtomRef> customers;
+	LinkedList<AtomBaseRef> customers;
 	Mutex lock;
 	
 public:
@@ -43,11 +43,10 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-protected:
-	friend class CustomerAtom;
+public:
 	
-    void Add(CustomerAtomRef p);
-    void Remove(CustomerAtomRef p);
+    void Add(AtomBaseRef p);
+    void Remove(AtomBaseRef p);
 	
 	
 };

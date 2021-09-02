@@ -3,7 +3,15 @@
 
 #include <SerialLib/SerialLib.h>
 
+#define HAVE_MANUAL_DBG_CLASSES 1
+
 #include "Customer.h"
-#include "Generated.h"
+
+
+#if HAVE_MANUAL_DBG_CLASSES
+
+#else
+	#include "Generated.h"
+#endif
 
 #endif

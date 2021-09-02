@@ -37,7 +37,7 @@ void AtomSystem::Update(double dt) {
 	}
 	
 	int dbg_i = 0;
-	for (CustomerAtomRef& c : customers) {
+	for (AtomBaseRef& c : customers) {
 		RTLOG("AtomSystem::Update: customer #" << dbg_i);
 		c->UpdateConfig(dt);
 		WhenEnterAtomForward(&*c);
@@ -69,12 +69,12 @@ void AtomSystem::Uninitialize() {
 	WhenUninit()();
 }
 
-void AtomSystem::Add(CustomerAtomRef p) {
+void AtomSystem::Add(AtomBaseRef p) {
 	if (p)
 		customers.FindAdd(p);
 }
 
-void AtomSystem::Remove(CustomerAtomRef p) {
+void AtomSystem::Remove(AtomBaseRef p) {
 	customers.RemoveKey(p);
 }
 

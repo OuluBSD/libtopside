@@ -5,21 +5,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool TestRealtimeSrc::Initialize(const Script::WorldState& ws)  {
-	internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
-	time = 0;
-	return true;
-}
-
-void TestRealtimeSrc::Uninitialize()  {
-	
-}
-
-void TestRealtimeSrc::Forward(FwdScope& fwd) {
-	RTLOG("TestRealtimeSrc::Forward");
-	
-}
-
 void TestRealtimeSrc::StorePacket(Packet& p) {
 	ASSERT(internal_fmt.IsValid());
 	
@@ -39,15 +24,6 @@ void TestRealtimeSrc::StorePacket(Packet& p) {
 
 
 
-bool TestRealtimeSink::Initialize(const Script::WorldState& ws) {
-	flag.Start(1);
-	Thread::Start(THISBACK(IntervalSinkProcess));
-	return true;
-}
-
-void TestRealtimeSink::Uninitialize() {
-	flag.Stop();
-}
 
 void TestRealtimeSink::IntervalSinkProcess() {
 	RTLOG("TestRealtimeSink::IntervalSinkProcess: starts");
@@ -121,17 +97,6 @@ void TestRealtimeSink::IntervalSinkProcess() {
 	else       {LOG("TestRealtimeSink::IntervalSinkProcess: fail :(");}
 	
 	flag.DecreaseRunning();
-}
-
-void TestRealtimeSink::Forward(FwdScope& fwd) {
-	RTLOG("TestRealtimeSink::Forward");
-	ForwardVoidSink(fwd);
-}
-
-void TestRealtimeSink::StorePacket(Packet& p) {
-	RTLOG("TestRealtimeSink::StorePacket");
-	//TODO
-	//p->SetFormat(GetParent()->GetSourceValue().GetFormat());
 }
 
 

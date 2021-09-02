@@ -11,5 +11,6 @@ file
 	Init.icpp,
 	Types.h,
 	RegistrySystem.h,
-	RegistrySystem.cpp;
+	RegistrySystem.cpp,
+	CustomAtom.h;
 

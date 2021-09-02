@@ -374,7 +374,7 @@ bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 		
 		int size = fmt.GetFrameSize();
 		if (size != mem_size) {
-			RTLOG("AtomBase::ForwardMem: error: memsize mismatch (" << size << " != " << mem_size << ")");
+			RTLOG("AtomBase::ForwardMem: error: memsize mismatch (" << size << " != " << (int)mem_size << ")");
 			return false;
 		}
 		

@@ -80,6 +80,8 @@ public:
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return true;}
 	virtual CustomerData* GetCustomerData() {return 0;}
+	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
+	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
@@ -129,7 +131,6 @@ public:
 	
 	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
-	
 	
 	
 	
@@ -209,6 +210,9 @@ public:
 	AtomBase* AsAtomBase() override {return static_cast<AtomBase*>(this);}
 	void ClearSink() override {TODO}
 	void ClearSource() override {TODO}
+	
+	
+	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::CUSTOM_ATOM;}
 	
 	
 };

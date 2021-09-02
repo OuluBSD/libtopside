@@ -7,6 +7,7 @@
 
 #include "Types.h"
 #include "RegistrySystem.h"
+#include "CustomAtom.h"
 
 
 #endif
