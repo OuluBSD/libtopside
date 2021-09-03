@@ -9,13 +9,25 @@ namespace Serial {
 
 class CustomerAtom : public Atom<CustomerAtom> {
 
+public:
+	RTTI_DECL1(CustomerAtom, BaseT);
+	COPY_PANIC(CustomerAtom);
+
 };
 
 class TestRealtimeSrc : public Atom<TestRealtimeSrc> {
 
+public:
+	RTTI_DECL1(TestRealtimeSrc, BaseT);
+	COPY_PANIC(TestRealtimeSrc);
+
 };
 
 class TestRealtimeSink : public Atom<TestRealtimeSink> {
+
+public:
+	RTTI_DECL1(TestRealtimeSink, BaseT);
+	COPY_PANIC(TestRealtimeSink);
 
 };
 

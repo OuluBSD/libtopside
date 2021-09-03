@@ -4,10 +4,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CompilationUnit : public CompilerNode<CompilationUnit,void> {
+class CompilationUnit : public CompilerNode<CompilationUnit,NodeBase> {
 	
 public:
 	ArrayMap<String,Namespace>		namespaces;
+	ArrayMap<String,TypeExpr>		gtypes;
 	
 public:
 	typedef CompilationUnit CLASSNAME;
@@ -15,6 +16,8 @@ public:
 	
 	
 	Namespace&	GetAddNamespace(String name);
+	bool		Activate(TypeExpr& te);
+	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;
 	String		ToString() const override;

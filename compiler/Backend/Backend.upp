@@ -21,6 +21,10 @@ file
 	Statement.cpp,
 	Expression.h,
 	Expression.cpp,
+	MetaExpression.h,
+	MetaExpression.cpp,
+	TypeExpr.h,
+	TypeExpr.cpp,
 	Node.h,
 	Node.cpp,
 	_ readonly separator;

@@ -123,6 +123,12 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	Namespace& ns_ts = cu.GetAddNamespace("TS");
 	Namespace& ns_serial = ns_ts.GetAddNamespace("Serial");
 	
+	ClassDecl& fcls_atomtype = ns_serial.GetAddClassDecl("AtomTypeCls");
+	
+	TypeExpr te_atombase;
+	te_atombase.SetMove(fcls_atomtype);
+	cu.Activate(te_atombase);
+	
 	
 	for (Header& h : Headers().GetValues()) {
 		if (h.pkg == &pkg)
@@ -137,9 +143,36 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		Class& cls_atombase = ns_serial.GetAddClass(tmpl_name);
 		cls_atombase.tmpl.is = true;
 		
+		
+		
 		if (!cls_h.Inherit(cls_atombase)) {
 			OnError("class " + h_name + " could not inherit " + tmpl_name);
 			return false;
+		}
+		
+		{
+			MStmt& ms_rtti = cls_h.AddMetaStatement();
+			ms_rtti.SetPublic();
+			MExpr& ms_rtti_expr = ms_rtti;
+			ms_rtti_expr.SetCall("RTTI_DECL1");
+			ms_rtti_expr.AddSub().SetId(h_name);
+			ms_rtti_expr.AddSub().SetId("BaseT");
+		}
+		
+		{
+			MStmt& ms_copypanic = cls_h.AddMetaStatement();
+			ms_copypanic.SetPublic();
+			MExpr& ms_copypanic_expr = ms_copypanic;
+			ms_copypanic_expr.SetCall("COPY_PANIC");
+			ms_copypanic_expr.AddSub().SetId(h_name);
+		}
+		
+		{
+			FunctionIdScope& fis_atype = cls_h.GetAddFunctionIdScope("GetAtomType");
+			Function& fn_atype = fis_atype.AddFunction();
+			fn_atype.SetStatic();
+			fn_atype.SetReturn(te_atombase);
+			
 		}
 		
 	}

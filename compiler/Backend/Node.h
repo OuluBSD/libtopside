@@ -59,6 +59,8 @@ public:
 	void		SetFile(String s) {Hint(HINT_FILE, s);}
 	
 	
+	virtual String	GetPath() const {return String();}
+	
 	virtual String	GetTreeString(int indent=0) const = 0;
 	virtual String	GetCodeString(const CodeArgs& args) const = 0;
 	virtual String	ToString() const = 0;
@@ -76,6 +78,9 @@ public:
 	CompilerNode& SetParent(Parent* p) {parent = p; return *this;}
 	CompilerNode& SetParent(T* p) {subparent = p; return *this;}
 	
+	Parent*	GetParent() const {return parent;}
+	T*		GetSubParent() const {return subparent;}
+	
 	void DefaultHintFromParent(String key) {
 		NodeBase* pn = parent;
 		NodeBase* sn = subparent;
@@ -90,6 +95,22 @@ public:
 	
 };
 
+
+class AccessControl {
+	CodeAccess				access = ACC_PUBLIC;
+	
+public:
+	void		SetAccess(CodeAccess a) {access = a;}
+	void		SetPublic() {access = ACC_PUBLIC;}
+	void		SetPrivate() {access = ACC_PRIVATE;}
+	void		SetProtected() {access = ACC_PROTECTED;}
+	
+	CodeAccess	GetAccess() const {return access;}
+	bool		IsPublic() const {return access == ACC_PUBLIC;}
+	bool		IsPrivate() const {return access == ACC_PRIVATE;}
+	bool		IsProtected() const {return access == ACC_PROTECTED;}
+	
+};
 
 NAMESPACE_TOPSIDE_END
 

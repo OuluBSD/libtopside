@@ -17,6 +17,18 @@ Namespace& CompilationUnit::GetAddNamespace(String name) {
 	return o;
 }
 
+bool CompilationUnit::Activate(TypeExpr& te) {
+	String id = te.ToString();
+	int i = gtypes.Find(id);
+	if (i >= 0) {
+		te.global_ptr = &gtypes[i];
+		return true;
+	}
+	
+	te.global_ptr = &gtypes.Add(id, te);
+	return true;
+}
+
 String CompilationUnit::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);

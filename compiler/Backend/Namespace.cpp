@@ -7,6 +7,14 @@ Namespace::Namespace() {
 	
 }
 
+String Namespace::GetPath() const {
+	NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
+	if (par)
+		return par->GetPath() + "::" + name;
+	else
+		return "::" + name;
+}
+
 Class& Namespace::GetAddClass(String name) {
 	int i = classes.Find(name);
 	if (i >= 0)
