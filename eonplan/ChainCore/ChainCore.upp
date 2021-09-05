@@ -5,6 +5,8 @@ uses
 
 file
 	ChainCore.h,
+	DefHeader.h,
+	DefImpl.h,
 	Factory.h,
 	Factory.cpp,
 	Factory.icpp,
@@ -12,6 +14,7 @@ file
 	EonStream.cpp,
 	Unit.h,
 	Val.h,
+	Val.cpp,
 	Dev.h,
 	ValDev.h,
 	Node.h,

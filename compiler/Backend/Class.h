@@ -21,7 +21,7 @@ public:
 	void		SetName(String name) {this->name = name;}
 	
 	Class*		GetClass() const {return cls;}
-	String		GetName() const {return name;}
+	String		GetName() const override {return name;}
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;
 	String		ToString() const override;
@@ -62,7 +62,7 @@ public:
 	ArrayMap<String, Class>	classes;
 	ArrayMap<String,Field>	fields;
 	ArrayMap<String,FunctionIdScope>	funcids;
-	Array<MetaStatement>	mstmts;
+	ArrayMap<String, MetaStatement>		mstmts;
 	String					name;
 	bool					is_template = false;
 	
@@ -74,17 +74,15 @@ public:
 	bool				Inherit(Class& cls);
 	String				GetTypeString() const {return name;}
 	Field&				GetAddField(String name);
-	MStmt&				AddMetaStatement();
+	MStmt&				GetAddMetaStatement(String name);
 	FunctionIdScope&	GetAddFunctionIdScope(String name);
-	String				GetName() const {return name;}
+	String				GetName() const override {return name;}
 	String				GetClassKey() const {return "class";}
 	
-	String				GetPath() const override;
 	String				GetTreeString(int indent=0) const override;
 	String				GetCodeString(const CodeArgs& args) const override;
 	String				ToString() const override;
-	
-	
+	String				GetClassPath() const override;
 	
 };
 

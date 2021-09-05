@@ -7,8 +7,9 @@ uses
 file
 	AtomLocal.h,
 	Init.icpp,
-	Customer.h,
-	Customer.cpp,
 	Generated.h,
-	Generated.cpp;
+	Generated.cpp,
+	Trash readonly separator,
+	Customer.h,
+	Customer.cpp;
 

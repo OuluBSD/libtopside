@@ -642,7 +642,7 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
 			LOG(dst.ToString());
 		}*/
-		if (atom.sub != SubAtomCls::CENTER_CUSTOMER &&
+		if (atom.sub != SubAtomCls::CUSTOMER_ATOM &&
 			//dst.sub != SubAtomCls::CONVERTER &&
 			dst.iface.side.val != atom.iface.side.val &&
 			dst.iface.sink.val != ValCls::RECEIPT)

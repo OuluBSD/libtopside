@@ -24,7 +24,10 @@ bool CompilationUnit::Activate(TypeExpr& te) {
 		te.global_ptr = &gtypes[i];
 		return true;
 	}
-	
+	for (TypeExpr& sub : te.sub) {
+		if (!Activate(sub))
+			return false;
+	}
 	te.global_ptr = &gtypes.Add(id, te);
 	return true;
 }

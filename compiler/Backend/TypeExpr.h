@@ -10,6 +10,7 @@ class TypeExpr {
 public:
 	typedef enum {
 		EMPTY,
+		VOID,
 		MOVE,
 		REFERENCE,
 		PTR,
@@ -30,9 +31,12 @@ public:
 	
 	void		Clear();
 	TypeExpr&	SetMove(ClassDecl& cdecl);
+	TypeExpr&	SetReference(ClassDecl& cdecl);
+	TypeExpr&	SetVoid();
 	
 	String		ToString() const;
 	bool		IsEmpty() const {return type == EMPTY;}
+	bool		IsActivated() const {return global_ptr != 0;}
 	
 	TypeExpr&	operator=(const TypeExpr& o);
 	

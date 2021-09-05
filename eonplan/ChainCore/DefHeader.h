@@ -1,10 +1,13 @@
 #ifndef _ChainCore_DefHeader_h_
 #define _ChainCore_DefHeader_h_
 
-#define BASE2(x, sink, src)			using x = Base2<sink, src>;
-#define BASE3(x, sink, side, src)	using x = Base3<sink, side, src>;
+#define BASE(x)									class x : public BaseT<x> {};
+#define HEADER2(x, base, role, sink, src)				using x = Header2<base, sink, src>;
+#define HEADER3(x, base, role, sink, side, src)		using x = Header3<base, sink, side, src>;
+#define BASE_FLAG(x, flag)
+#define BASE_ACTION(x, act)
+#define HEADER_ACTION(x, act)
 
-#define HEADER(x, base) class x : public Header<base> {};
 
 #define LOOP2(x, a, b) \
 	using x = Loop<LoopN<a, Loop0<b>>>;

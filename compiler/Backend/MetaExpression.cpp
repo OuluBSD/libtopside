@@ -34,13 +34,36 @@ String MetaStatement::GetCodeString(const CodeArgs& args) const {
 		return String();
 	
 	String s;
-	s.Cat('\t', args.indent);
 	
-	if (mexpr.IsEmpty()) {
-		s << "// <empty MetaStatement>\n";
+	if (!IsContained(args))
+		return s;
+	
+	if (args.have_header) {
+		s.Cat('\t', args.indent);
+		
+		if (!is_inline) {
+			if (mexpr.IsEmpty()) {
+				s << "// <empty MetaStatement>\n";
+			}
+			else {
+				s << mexpr->GetCodeString(args);
+				if (!hide_stmt)
+					s << ";";
+				s << "\n";
+			}
+		}
+		else {
+			if (mexpr.IsEmpty()) {
+				s << "/*<empty MetaStatement>*/";
+			}
+			else {
+				s << mexpr->GetCodeString(args);
+			}
+		}
 	}
-	else {
-		s << mexpr->GetCodeString(args) << ";\n";
+	
+	if (args.have_impl) {
+		
 	}
 	
 	return s;
@@ -75,6 +98,8 @@ String MetaExpression::ToString() const {
 	
 	if (type == CALL)
 		s << "(Call)";
+	else if (type == ID)
+		s << "(Id: " << str << ")";
 	else if (type == STRING)
 		s << "(String: " << str << ")";
 	
@@ -99,11 +124,25 @@ String MetaExpression::GetCodeString(const CodeArgs& args) const {
 		}
 		s << ")";
 	}
+	else if (type == ID) {
+		if (str.IsEmpty())
+			s << "/*<invalid empty id>*/";
+		else
+			s << str;
+	}
 	else if (type == STRING) {
 		if (str.IsEmpty())
 			s << "/*<invalid empty string>*/";
 		else
-			s << str;
+			s << "\"" << str << "\"";
+	}
+	else if (type == DEFINE) {
+		s << "#define " << str << " \\\n";
+		for (MetaExpression& me : mexprs) {
+			s.Cat('\t', args.indent+1);
+			s << me.GetCodeString(args) << " \\\n";
+		}
+		s << "\n";
 	}
 	else {
 		TODO

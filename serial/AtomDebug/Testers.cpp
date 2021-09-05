@@ -1,6 +1,5 @@
 #include "AtomDebug.h"
 
-#if HAVE_MANUAL_DBG_CLASSES
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -102,4 +101,4 @@ void TestRealtimeSink::IntervalSinkProcess() {
 
 NAMESPACE_SERIAL_END
 
-#endif
+

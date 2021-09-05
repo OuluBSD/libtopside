@@ -8,6 +8,7 @@ TypeExpr& TypeExpr::operator=(const TypeExpr& o) {
 	sub <<= o.sub;
 	global_ptr = o.global_ptr;
 	clsdecl = o.clsdecl;
+	type = o.type;
 	return *this;
 }
 
@@ -25,13 +26,29 @@ TypeExpr& TypeExpr::SetMove(ClassDecl& clsdecl) {
 	return *this;
 }
 
+TypeExpr& TypeExpr::SetReference(ClassDecl& clsdecl) {
+	Clear();
+	this->clsdecl = &clsdecl;
+	type = REFERENCE;
+	return *this;
+}
+
+TypeExpr& TypeExpr::SetVoid() {
+	Clear();
+	type = VOID;
+	return *this;
+}
+
 String TypeExpr::ToString() const {
 	String s;
 	
 	if (global_ptr && global_ptr != this)
 		return global_ptr->ToString();
 	
-	if (type == EMPTY || !clsdecl)
+	if (type == VOID) {
+		s = "void";
+	}
+	else if (type == EMPTY || !clsdecl)
 		;
 	else if (type == MOVE) {
 		s = clsdecl->GetName();

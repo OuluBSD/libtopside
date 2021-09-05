@@ -86,13 +86,6 @@ Class::Class() {
 	
 }
 
-String Class::GetPath() const {
-	NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
-	if (par)
-		return par->GetPath() + "::" + name;
-	else
-		return "::" + name;
-}
 
 bool Class::Inherit(Class& cls) {
 	VectorFindAdd(inherited, &cls);
@@ -108,10 +101,16 @@ Field& Class::GetAddField(String name) {
 	return f;
 }
 
-MStmt& Class::AddMetaStatement() {
-	MStmt& ms = mstmts.Add();
+MStmt& Class::GetAddMetaStatement(String name) {
+	int i = mstmts.Find(name);
+	if (i >= 0) return mstmts[i];
+	MStmt& f = mstmts.Add(name);
+	//f.SetName(name);
+	f.SetParent(this);
+	return f;
+	/*MStmt& ms = mstmts.Add();
 	ms.SetParent(this);
-	return ms;
+	return ms;*/
 }
 
 FunctionIdScope& Class::GetAddFunctionIdScope(String name) {
@@ -127,7 +126,7 @@ String Class::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << ToString() << "\n";
-	for (const MetaStatement& o : mstmts) {
+	for (const MetaStatement& o : mstmts.GetValues()) {
 		s << o.GetTreeString(indent+1);
 	}
 	for (const Class& o : classes.GetValues()) {
@@ -180,17 +179,7 @@ String Class::GetCodeString(const CodeArgs& args) const {
 		CodeArgs subargs = args;
 		subargs.indent++;
 		
-		#define CHK_ACCESS \
-			auto access = o.GetAccess(); \
-			if (access != acc) { \
-				s.Cat('\t', args.indent); \
-				s.Cat('\n'); \
-				s.Cat('\t', args.indent); \
-				s << GetAccessString(access) << ":\n"; \
-				acc = access; \
-			}
-		
-		for (const MetaStatement& o : mstmts) {
+		for (const MetaStatement& o : mstmts.GetValues()) {
 			CHK_ACCESS
 			s << o.GetCodeString(subargs);
 		}
@@ -203,7 +192,7 @@ String Class::GetCodeString(const CodeArgs& args) const {
 			s << o.GetCodeString(subargs);
 		}
 		for (const FunctionIdScope& o : funcids.GetValues()) {
-			s << o.GetCodeString(subargs);
+			s << o.GetCodeString(subargs, acc);
 		}
 		
 		s.Cat('\t', args.indent);
@@ -211,13 +200,36 @@ String Class::GetCodeString(const CodeArgs& args) const {
 		s.Cat('\t', args.indent);
 		s << "};\n\n";
 	}
-	else if (args.have_impl) {
+	
+	if (args.have_impl) {
+		CodeArgs subargs = args;
 		
-		
+		for (const MetaStatement& o : mstmts.GetValues()) {
+			s << o.GetCodeString(subargs);
+		}
+		for (const Class& o : classes.GetValues()) {
+			s << o.GetCodeString(subargs);
+		}
+		for (const Field& o : fields.GetValues()) {
+			s << o.GetCodeString(subargs);
+		}
+		for (const FunctionIdScope& o : funcids.GetValues()) {
+			s << o.GetCodeString(subargs);
+		}
 		
 	}
 	
 	return s;
 }
+
+String Class::GetClassPath() const {
+	Class* par = GetSubParent();
+	String name = GetName();
+	if (par)
+		return par->GetClassPath() + "::" + name;
+	else
+		return name;
+}
+
 
 NAMESPACE_TOPSIDE_END

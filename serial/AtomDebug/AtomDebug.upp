@@ -10,6 +10,7 @@ file
 	Init.icpp,
 	Verifier.h,
 	Verifier.cpp,
-	Testers.h,
-	Testers.cpp;
+	Testers.cpp,
+	Trash readonly separator,
+	Testers.h;
 

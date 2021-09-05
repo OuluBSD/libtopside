@@ -3,9 +3,12 @@
 
 
 
-#undef BASE2
-#undef BASE3
-#undef HEADER
+#undef BASE
+#undef BASE_FLAG
+#undef BASE_ACTION
+#undef HEADER2
+#undef HEADER3
+#undef HEADER_ACTION
 #undef LOOP2
 #undef LOOP3
 #undef LOOP4
@@ -41,10 +44,13 @@
 
 
 
-#define BASE2(x, sink, src)			Factory::RegBase<x>(#x, #sink, 0, #src);
-#define BASE3(x, sink, side, src)	Factory::RegBase<x>(#x, #sink, #side, #src);
+#define BASE(x)									Factory::RegBase<x>(#x);
+#define BASE_FLAG(x, flag)						Factory::BaseFlag<x>(#x, #flag);
+#define BASE_ACTION(x, act)						Factory::BaseAction<x>(#x, #act);
+#define HEADER2(x, base, role, sink, src)		Factory::RegHeader<x>(#x, #base, #role, #sink, 0, #src);
+#define HEADER3(x, base, role, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #sink, #side, #src);
+#define HEADER_ACTION(x, act)					Factory::HeaderAction<x>(#x, #act);
 
-#define HEADER(x, base)				Factory::RegHeader<x>(#x, #base);
 
 #define LOOP2(x, a, b) Factory::RegLoop<x>(#x, #a "\n" #b);
 #define LOOP3(x, a, b, c) Factory::RegLoop<x>(#x, #a "\n" #b "\n" #c);

@@ -59,10 +59,12 @@ public:
 	void		SetFile(String s) {Hint(HINT_FILE, s);}
 	
 	
+	virtual String	GetName() const {return "<no-name>";}
 	virtual String	GetPath() const {return String();}
 	
 	virtual String	GetTreeString(int indent=0) const = 0;
 	virtual String	GetCodeString(const CodeArgs& args) const = 0;
+	virtual String	GetClassPath() const = 0;
 	virtual String	ToString() const = 0;
 	
 };
@@ -80,6 +82,24 @@ public:
 	
 	Parent*	GetParent() const {return parent;}
 	T*		GetSubParent() const {return subparent;}
+	
+	String GetClassPath() const override {
+		NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
+		String name = GetName();
+		if (par)
+			return par->GetClassPath() + "::" + name;
+		else
+			return "::" + name;
+	}
+	
+	String GetPath() const override {
+		NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
+		String name = GetName();
+		if (par)
+			return par->GetClassPath() + "::" + name;
+		else
+			return "::" + name;
+	}
 	
 	void DefaultHintFromParent(String key) {
 		NodeBase* pn = parent;
@@ -111,6 +131,16 @@ public:
 	bool		IsProtected() const {return access == ACC_PROTECTED;}
 	
 };
+
+#define CHK_ACCESS \
+	auto access = o.GetAccess(); \
+	if (access != acc) { \
+		s.Cat('\t', args.indent); \
+		s.Cat('\n'); \
+		s.Cat('\t', args.indent); \
+		s << GetAccessString(access) << ":\n"; \
+		acc = access; \
+	}
 
 NAMESPACE_TOPSIDE_END
 

@@ -7,14 +7,6 @@ Namespace::Namespace() {
 	
 }
 
-String Namespace::GetPath() const {
-	NodeBase* par = GetParent() ? (NodeBase*)GetParent() : (NodeBase*)GetSubParent();
-	if (par)
-		return par->GetPath() + "::" + name;
-	else
-		return "::" + name;
-}
-
 Class& Namespace::GetAddClass(String name) {
 	int i = classes.Find(name);
 	if (i >= 0)
@@ -46,15 +38,44 @@ Namespace& Namespace::GetAddNamespace(String name) {
 	return o;
 }
 
+UsingStatement& Namespace::GetAddUsing(String name) {
+	int i = using_stmts.Find(name);
+	if (i >= 0)
+		return using_stmts[i];
+	UsingStatement& o = using_stmts.Add(name);
+	o.SetParent(this);
+	o.name = name;
+	return o;
+}
+
+MetaStatement& Namespace::GetAddMetaStatement(String name) {
+	int i = mstmts.Find(name);
+	if (i >= 0)
+		return mstmts[i];
+	MetaStatement& o = mstmts.Add(name);
+	o.SetParent(this);
+	//o.name = name;
+	return o;
+	/*MetaStatement& ms = mstmts.Add();
+	ms.SetParent(this);
+	return ms;*/
+}
+
 String Namespace::GetTreeString(int indent) const {
 	String s;
 	s.Cat('\t', indent);
 	s << ToString() << "\n";
-	for (const Namespace& ns : namespaces.GetValues()) {
-		s << ns.GetTreeString(indent+1);
+	for (const Namespace& o : namespaces.GetValues()) {
+		s << o.GetTreeString(indent+1);
 	}
-	for (const Class& c : classes.GetValues()) {
-		s << c.GetTreeString(indent+1);
+	for (const Class& o : classes.GetValues()) {
+		s << o.GetTreeString(indent+1);
+	}
+	for (const UsingStatement& o : using_stmts.GetValues()) {
+		s << o.GetTreeString(indent+1);
+	}
+	for (const MetaStatement& o : mstmts.GetValues()) {
+		s << o.GetTreeString(indent+1);
 	}
 	return s;
 }
@@ -72,11 +93,17 @@ String Namespace::GetCodeString(const CodeArgs& args) const {
 		String content;
 		CodeArgs subargs = args;
 		
-		for (const Namespace& ns : namespaces.GetValues()) {
-			content << ns.GetCodeString(subargs);
+		for (const Namespace& o : namespaces.GetValues()) {
+			content << o.GetCodeString(subargs);
 		}
-		for (const Class& c : classes.GetValues()) {
-			content << c.GetCodeString(subargs);
+		for (const Class& o : classes.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
+		for (const UsingStatement& o : using_stmts.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
+		for (const MetaStatement& o : mstmts.GetValues()) {
+			content << o.GetCodeString(subargs);
 		}
 		
 		if (!content.IsEmpty()) {
@@ -87,9 +114,27 @@ String Namespace::GetCodeString(const CodeArgs& args) const {
 	}
 	
 	if (args.have_impl) {
+		String content;
+		CodeArgs subargs = args;
 		
-		LOG("TODO have impl");
+		for (const Namespace& o : namespaces.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
+		for (const Class& o : classes.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
+		for (const UsingStatement& o : using_stmts.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
+		for (const MetaStatement& o : mstmts.GetValues()) {
+			content << o.GetCodeString(subargs);
+		}
 		
+		if (!content.IsEmpty()) {
+			s	<< "namespace " << name << " {\n\n"
+				<< content
+				<< "}\n\n";
+		}
 	}
 	
 	return s;

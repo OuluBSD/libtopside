@@ -39,7 +39,7 @@ public:
 	static AtomTypeCls GetAtomType() {return ATOM0(TEST_CENTER_AUDIO_RECEIPT, SINK, CENTER, AUDIO, CENTER, RECEIPT);}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BaseT>(this);}
 	AtomTypeCls GetType() const override {return GetAtomType();}
-	void IntervalSinkProcess();
+	void IntervalSinkProcess() override;
 	
 	ATOM_MAKE_ACTION_BEGIN
 		ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")

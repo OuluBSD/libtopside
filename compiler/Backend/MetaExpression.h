@@ -16,11 +16,15 @@ public:
 		INVALID,
 		CALL,
 		REFERENCE,
+		ID,
 		STRING,
+		DEFINE,
 		
 	} Type;
 	
 protected:
+	friend class AssemblyExporter;
+	
 	Array<MetaExpression>	mexprs;
 	Type		type = INVALID;
 	String		str;
@@ -32,9 +36,11 @@ protected:
 	
 public:
 	
-	void			SetType(Type t) {type = t;}
-	void			SetId(String s) {ASSERT(s.GetCount()); type = STRING; str = s;}
-	void			SetCall(String s) {ASSERT(s.GetCount()); type = CALL; str = s;}
+	MetaExpression&	SetType(Type t) {type = t; return *this;}
+	MetaExpression&	SetId(String s) {ASSERT(s.GetCount()); type = ID; str = s; return *this;}
+	MetaExpression&	SetString(String s) {ASSERT(s.GetCount()); type = STRING; str = s; return *this;}
+	MetaExpression&	SetCall(String s) {ASSERT(s.GetCount()); type = CALL; str = s; return *this;}
+	MetaExpression&	SetDefine(String s) {ASSERT(s.GetCount()); type = DEFINE; str = s; return *this;}
 	MetaExpression&	AddSub();
 	
 	String		GetTreeString(int indent=0) const override;
@@ -48,16 +54,20 @@ using MExpr = MetaExpression;
 
 
 class MetaStatement :
-	public CompilerNode<MetaStatement,MetaScope>,
+	public CompilerNode<MetaStatement,NodeBase>,
 	public AccessControl
 {
-	
+public:
 	One<MetaExpression>		mexpr;
+	bool					is_inline = false;
+	bool					hide_stmt = false;
 	
 public:
 	
 	MetaStatement();
 	
+	MetaStatement&		SetInline(bool b=true) {is_inline = b; return *this;}
+	MetaStatement&		HideStatement(bool b=true) {hide_stmt = b; return *this;}
 	
 	String		GetTreeString(int indent=0) const override;
 	String		GetCodeString(const CodeArgs& args) const override;

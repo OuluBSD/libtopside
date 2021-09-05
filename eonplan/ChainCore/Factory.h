@@ -55,6 +55,8 @@ public:
 	
 public:
 	struct Base : Generic {
+		Index<String>	flags;
+		Index<String>	actions;
 		
 		String ToString() const;
 	};
@@ -64,6 +66,12 @@ public:
 	
 public:
 	struct Header : Generic {
+		const char*		base = 0;
+		const char*		sink = 0;
+		const char*		side = 0;
+		const char*		src = 0;
+		String			role, key;
+		Index<String>	actions;
 		
 		String ToString() const;
 	};
@@ -143,7 +151,7 @@ public:
 	}
 	
 	template <class T> static
-	void RegBase(const char* name, const char* sink, const char* side, const char* src) {
+	void RegBase(const char* name) {
 		Base& v = Bases().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
@@ -151,11 +159,34 @@ public:
 	}
 	
 	template <class T> static
-	void RegHeader(const char* name, const char* base) {
+	void BaseFlag(const char* name, const char* flag) {
+		Base& v = Bases().GetAdd(name);
+		v.flags.FindAdd(flag);
+	}
+	
+	template <class T> static
+	void BaseAction(const char* name, const char* action) {
+		Base& v = Bases().GetAdd(name);
+		v.actions.FindAdd(action);
+	}
+	
+	template <class T> static
+	void HeaderAction(const char* name, const char* action) {
+		Header& v = Headers().GetAdd(name);
+		v.actions.FindAdd(action);
+	}
+	
+	template <class T> static
+	void RegHeader(const char* name, const char* base, const char* role, const char* sink, const char* side, const char* src) {
 		Header& v = Headers().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
-		
+		v.base = base;
+		v.sink = sink;
+		v.side = side;
+		v.src = src;
+		v.key = ToCaps(name);
+		v.role = ToUpper(role);
 	}
 	
 	template <class T> static

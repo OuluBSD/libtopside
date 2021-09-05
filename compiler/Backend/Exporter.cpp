@@ -208,6 +208,8 @@ bool AssemblyExporter::ExportImplementation(Package& pkg, PackageFile& file, Str
 	fout << "#include \"" << pkg.name << ".h\"\n\n";
 	
 	CodeArgs args;
+	args.pkg = &pkg;
+	args.file = &file;
 	args.have_impl = true;
 	fout << cu.GetCodeString(args);
 	
@@ -272,6 +274,16 @@ bool AssemblyExporter::Visit(Namespace& o) {
 			return false;
 	}
 	
+	for (MetaStatement& o0 : o.mstmts.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
+	for (UsingStatement& o0 : o.using_stmts.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
 	return true;
 }
 
@@ -283,7 +295,22 @@ bool AssemblyExporter::Visit(Class& o) {
 	
 	ScopeHolder __h(this, o);
 	
+	for (Class& o0 : o.classes.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
 	for (Field& o0 : o.fields.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
+	for (FunctionIdScope& o0 : o.funcids.GetValues()) {
+		if (!Visit(o0))
+			return false;
+	}
+	
+	for (MetaStatement& o0 : o.mstmts.GetValues()) {
 		if (!Visit(o0))
 			return false;
 	}
@@ -304,6 +331,19 @@ bool AssemblyExporter::Visit(Field& o) {
 	return true;
 }
 
+bool AssemblyExporter::Visit(FunctionIdScope& o) {
+	o.DefaultHintsFromParent();
+	
+	ScopeHolder __h(this, o);
+	
+	for (Function& f : o.funcs) {
+		if (!Visit(f))
+			return false;
+	}
+	
+	return true;
+}
+
 bool AssemblyExporter::Visit(Function& o) {
 	o.DefaultHintsFromParent();
 	
@@ -318,6 +358,8 @@ bool AssemblyExporter::Visit(Function& o) {
 }
 
 bool AssemblyExporter::Visit(Statement& o) {
+	o.DefaultHintsFromParent();
+	
 	ScopeHolder __h(this, o);
 	
 	if (o.expr) {
@@ -343,6 +385,46 @@ bool AssemblyExporter::Visit(Expression& o) {
 	
 	return true;
 }
+
+bool AssemblyExporter::Visit(MetaStatement& o) {
+	o.DefaultHintsFromParent();
+	
+	ScopeHolder __h(this, o);
+	
+	if (o.mexpr) {
+		if (!Visit(*o.mexpr))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(MetaExpression& o) {
+	o.DefaultHintsFromParent();
+	
+	ScopeHolder __h(this, o);
+	
+	for (MetaExpression& o0 : o.mexprs) {
+		if (!Visit(o0))
+			return false;
+	}
+	
+	return true;
+}
+
+bool AssemblyExporter::Visit(UsingStatement& o) {
+	o.DefaultHintsFromParent();
+	
+	ScopeHolder __h(this, o);
+	
+	if (o.expr) {
+		if (!Visit(*o.expr))
+			return false;
+	}
+	
+	return true;
+}
+
 
 
 NAMESPACE_TOPSIDE_END

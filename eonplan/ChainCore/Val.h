@@ -4,6 +4,9 @@
 NAMESPACE_PLAN_BEGIN
 
 
+void GetKeyValDevUpper(String key, String& dev, String& val);
+
+
 class ValSpec {
 	
 public:

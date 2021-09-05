@@ -23,19 +23,19 @@ public:
 	using BaseT = AtomReceiptSink<T>;
 	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
 	
-	bool Initialize(const Script::WorldState& ws) {
+	bool Initialize(const Script::WorldState& ws) override {
 		AtomBase::packets_forwarded = 0;
 		customer.Create();
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().Get<AtomSystem>()->Add(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->Add(r);
 		return true;
 	}
 	
-	void Uninitialize() {
+	void Uninitialize() override {
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().Get<AtomSystem>()->Remove(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
 	}
 	
 	void AddPlan(Script::Plan& sp) {
@@ -84,17 +84,17 @@ public:
 	using BaseT = CenterSourceAsync<T>;
 	RTTI_DECL1(CenterSourceAsync, AtomT)
 	
-	bool Initialize(const Script::WorldState& ws)  {
+	bool Initialize(const Script::WorldState& ws) override {
 		internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
 		time = 0;
 		return true;
 	}
 	
-	void Uninitialize()  {
+	void Uninitialize() override {
 		
 	}
 	
-	void Forward(FwdScope& fwd) {
+	void Forward(FwdScope& fwd) override {
 		RTLOG("CenterSourceAsync<T>::Forward");
 		
 	}

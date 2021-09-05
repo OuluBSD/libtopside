@@ -1,4 +1,14 @@
 
+BASE(AtomReceiptSink)
+BASE(CenterSourceAsync)
+BASE(CenterSinkSync)
+
+BASE_FLAG(CenterSourceAsync,		store_packet)
+BASE_FLAG(CenterSinkSync,			ival_sink_proc)
+BASE_ACTION(AtomReceiptSink,		loop.connected)
+BASE_ACTION(CenterSinkSync,			center.audio.sink)
+
+/*
 BASE2(ReceiptOrder,				CenterReceipt,	CenterOrder)
 BASE2(OrderAudio,				CenterOrder,	CenterAudio)
 BASE2(OrderMidi,				CenterOrder,	CenterMidi)
@@ -21,3 +31,4 @@ BASE3(AccelAudioOutput,			AccelAudio,		SrcAccelAudio,		AccelReceipt)
 BASE2(NetReceiptOrder,			NetReceipt,		NetOrder)
 BASE3(CenterNetMidiSink,		NetOrder,		SinkNetMidi,		NetMidi)
 BASE3(NetCenterAudioSrc,		NetAudio,		SrcCenterAudio,		NetReceipt)
+*/

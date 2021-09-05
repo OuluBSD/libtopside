@@ -11,9 +11,11 @@ class Namespace :
 {
 	
 public:
-	ArrayMap<String, Namespace>	namespaces;
-	ArrayMap<String, Class>		classes;
-	String						name;
+	ArrayMap<String, UsingStatement>	using_stmts;
+	ArrayMap<String, Namespace>			namespaces;
+	ArrayMap<String, Class>				classes;
+	ArrayMap<String, MetaStatement>		mstmts;
+	String								name;
 	
 public:
 	typedef Namespace CLASSNAME;
@@ -22,7 +24,9 @@ public:
 	Class&				GetAddClass(String name);
 	Class&				GetAddTemplateClass(String name);
 	Namespace&			GetAddNamespace(String name);
-	String				GetPath() const override;
+	UsingStatement&		GetAddUsing(String name);
+	MetaStatement&		GetAddMetaStatement(String key);
+	String				GetName() const override {return name;}
 	String				GetTreeString(int indent=0) const override;
 	String				GetCodeString(const CodeArgs& args) const override;
 	String				ToString() const override;
