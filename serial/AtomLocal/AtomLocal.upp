@@ -4,9 +4,29 @@ uses
 	SerialLib,
 	SerialPlanner;
 
+library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
+
+library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
+
 file
 	AtomLocal.h,
+	Internal.h,
 	Init.icpp,
+	Audio.h,
+	Record.h,
+	Video.h,
+	Media.h,
+	Media.cpp,
+	Ffmpeg.h,
+	Ffmpeg.cpp,
+	FfmpegFileIn.h,
+	FfmpegFileInput.cpp,
+	PortaudioCore.h,
+	PortaudioCore.cpp,
+	PortaudioStream.cpp,
+	PortaudioSystem.cpp,
+	Portaudio.h,
+	Portaudio.cpp,
 	Generated.h,
 	Generated.cpp,
 	Trash readonly separator,

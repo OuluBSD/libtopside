@@ -3,9 +3,13 @@
 NAMESPACE_UPP
 
 INITBLOCK {
-	using namespace Serial;
+	using namespace TS;
+	using namespace TS::Serial;
 	
 	Serial::Factory::RegisterAtom<CustomerAtom>();
+	
+	Serial::Factory::RegisterAtom<AudioDecoderSrc>();
+	Serial::Factory::RegisterAtom<AudioHardwareSink>();
 	
 }
 

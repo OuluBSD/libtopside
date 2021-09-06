@@ -24,6 +24,7 @@ public:
 	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
 		AtomBase::packets_forwarded = 0;
 		customer.Create();
 		AtomBaseRef r = AtomBase::AsRefT();
@@ -33,6 +34,7 @@ public:
 	}
 	
 	void Uninitialize() override {
+		this->AltUninitialize();
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
 		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
@@ -85,18 +87,19 @@ public:
 	RTTI_DECL1(CenterSourceAsync, AtomT)
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
 		internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
 		time = 0;
 		return true;
 	}
 	
 	void Uninitialize() override {
+		this->AltUninitialize();
 		
 	}
 	
 	void Forward(FwdScope& fwd) override {
 		RTLOG("CenterSourceAsync<T>::Forward");
-		
 	}
 
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
@@ -130,12 +133,14 @@ public:
 	virtual void IntervalSinkProcess() = 0;
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
 		flag.Start(1);
 		Thread::Start(THISBACK(IntervalSinkProcess0));
 		return true;
 	}
 	
 	void Uninitialize() override {
+		this->AltUninitialize();
 		flag.Stop();
 	}
 
@@ -150,6 +155,35 @@ public:
 		//p->SetFormat(GetParent()->GetSourceValue().GetFormat());
 	}
 	
+	
+};
+
+template <class T>
+class CenterSinkPolling : public Atom<T> {
+	
+protected:
+	
+	using AtomT = Atom<T>;
+	
+public:
+	typedef CenterSinkPolling CLASSNAME;
+	using BaseT = CenterSinkPolling<T>;
+	RTTI_DECL1(CenterSinkPolling, AtomT)
+	
+	
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
+		return true;
+	}
+	
+	void Uninitialize() override {
+		this->AltUninitialize();
+	}
+	
+	void Forward(FwdScope& fwd) override {this->AltForward(fwd);}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	
 };
 

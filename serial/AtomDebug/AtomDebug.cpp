@@ -43,7 +43,7 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 				if (FileExists(script_file))
 					path = script_file;
 				else
-					path = ShareDirFile(AppendFileName("script", script_file));
+					path = ShareDirFile(AppendFileName("eon", script_file));
 				DUMP(path);
 				String script_str = LoadFile(path);
 				if (script_str.IsEmpty()) {

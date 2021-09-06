@@ -7,6 +7,8 @@
 #define BASE_FLAG(x, flag)
 #define BASE_ACTION(x, act)
 #define HEADER_ACTION(x, act)
+#define HEADER_INHERITS(x, cls)
+#define HEADER_ARG(x, key, value)
 
 
 #define LOOP2(x, a, b) \

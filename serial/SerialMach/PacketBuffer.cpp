@@ -52,4 +52,23 @@ void ValStreamState::Step() {
 }
 
 
+
+
+
+
+
+
+
+
+void PacketBufferBase::StorePacket(Packet& p) {
+	if (buf.GetCount()) {
+		Packet n = buf.First();
+		buf.RemoveFirst();
+		
+		n->SetOffset(p->GetOffset());
+		p = n;
+	}
+}
+
+
 NAMESPACE_SERIAL_END

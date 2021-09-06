@@ -71,7 +71,8 @@ public:
 		const char*		side = 0;
 		const char*		src = 0;
 		String			role, key;
-		Index<String>	actions;
+		Index<String>				actions, inherits;
+		VectorMap<String,String>	args;
 		
 		String ToString() const;
 	};
@@ -174,6 +175,18 @@ public:
 	void HeaderAction(const char* name, const char* action) {
 		Header& v = Headers().GetAdd(name);
 		v.actions.FindAdd(action);
+	}
+	
+	template <class T> static
+	void HeaderInherits(const char* name, const char* cls) {
+		Header& v = Headers().GetAdd(name);
+		v.inherits.FindAdd(cls);
+	}
+	
+	template <class T> static
+	void HeaderArg(const char* name, const char* key, const char* value) {
+		Header& v = Headers().GetAdd(name);
+		v.args.GetAdd(key) = value;
 	}
 	
 	template <class T> static

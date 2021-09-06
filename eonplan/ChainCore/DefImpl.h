@@ -9,6 +9,7 @@
 #undef HEADER2
 #undef HEADER3
 #undef HEADER_ACTION
+#undef HEADER_INHERITS
 #undef LOOP2
 #undef LOOP3
 #undef LOOP4
@@ -50,6 +51,8 @@
 #define HEADER2(x, base, role, sink, src)		Factory::RegHeader<x>(#x, #base, #role, #sink, 0, #src);
 #define HEADER3(x, base, role, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #sink, #side, #src);
 #define HEADER_ACTION(x, act)					Factory::HeaderAction<x>(#x, #act);
+#define HEADER_INHERITS(x, cls)					Factory::HeaderInherits<x>(#x, #cls);
+#define HEADER_ARG(x, key, value)				Factory::HeaderArg<x>(#x, #key, #value);
 
 
 #define LOOP2(x, a, b) Factory::RegLoop<x>(#x, #a "\n" #b);

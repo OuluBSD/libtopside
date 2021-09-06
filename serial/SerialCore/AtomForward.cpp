@@ -17,6 +17,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	ForwardConsumed(fwd);*/
 	
+	this->AltForward(fwd);
 	
 	AtomTypeCls type = GetType();
 	switch (type.role) {

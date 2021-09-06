@@ -1,12 +1,22 @@
 
-HEADER2(CustomerAtom,		AtomReceiptSink,	customer,	CenterReceipt,	CenterOrder)
-HEADER2(TestRealtimeSrc,	CenterSourceAsync,	source,		CenterOrder,	CenterAudio)
-HEADER2(TestRealtimeSink,	CenterSinkSync,		sink,		CenterAudio,	CenterReceipt)
-
+HEADER2(CustomerAtom,			AtomReceiptSink,	customer,	CenterReceipt,	CenterOrder)
 HEADER_ACTION(CustomerAtom,		customer.test.single)
+
+HEADER2(TestRealtimeSrc,		CenterSourceAsync,	source,		CenterOrder,	CenterAudio)
+HEADER2(TestRealtimeSink,		CenterSinkSync,		sink,		CenterAudio,	CenterReceipt)
 HEADER_ACTION(TestRealtimeSrc,	center.audio.src.test)
 HEADER_ACTION(TestRealtimeSink,	center.audio.sink.test.realtime)
 
+HEADER2(			AudioHardwareSink,	CenterSinkPolling,		sink,		CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)
+HEADER_INHERITS(	AudioHardwareSink,	PortaudioSink)
+HEADER_ARG(			AudioHardwareSink,	ALT_LINK,	1)
 
-//HEADER(AccelCustomer,		AccelReceiptOrder)
+HEADER2(			AudioDecoderSrc,	CenterSourceAsync,		source,		CenterOrder,	CenterAudio)
+HEADER_ACTION(		AudioDecoderSrc,	perma.audio.source.decoder)
+HEADER_INHERITS(	AudioDecoderSrc,	FfmpegAtomBase)
+HEADER_ARG(			AudioDecoderSrc,	ALT_LINK,	1)
+HEADER_ARG(			AudioDecoderSrc,	ALT_FWD,	1)
+
+//HEADER(AccelCustomer,		AccelReceiptOrder)s
 //HEADER(NetCustomer,		NetReceiptOrder)

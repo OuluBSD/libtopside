@@ -67,6 +67,12 @@ public:
 	virtual InterfaceSideSinkRef GetSideSink() = 0;
 	virtual bool InitializeAtom(const Script::WorldState& ws) = 0;
 	
+	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
+	virtual void AltUninitialize() {}
+	virtual void AltForward(FwdScope& fwd) {}
+	virtual void AltStorePacket(Packet& p) {}
+	virtual bool AltIsReady(ValDevCls vd) {return true;}
+	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
 	virtual String ToString() const;
@@ -78,7 +84,7 @@ public:
 	//virtual bool LinkSideOut(AtomBaseRef out) {Panic("Unimplemented"); return false;}
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
-	virtual bool IsReady(ValDevCls vd) {return true;}
+	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}
 	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
@@ -152,7 +158,7 @@ template<
 	class SideT=VoidSideInterfaceSink
 >
 struct Atom :
-	public AtomBase,
+	virtual public AtomBase,
 	public SinkT,
 	public SourceT,
 	public SideT
@@ -181,7 +187,8 @@ public:
 	void CopyTo(AtomBase* target) const override {
 		ASSERT(target->GetType() == GetType());
 	    
-		*static_cast<T*>(target) = *static_cast<const T*>(this);
+	    TODO
+		//*static_cast<T*>(target) = *static_cast<const T*>(this);
 	}
 	
 	

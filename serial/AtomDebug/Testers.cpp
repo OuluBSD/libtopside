@@ -77,7 +77,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		}
 		
 		// Verify data
-		if (afmt.type == ts::Serial::BinarySample::FLT_LE) {
+		if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
 			float* it = (float*)(void*)data.begin();
 			float* end = (float*)(void*)data.end();
 			int dbg_i = 0;

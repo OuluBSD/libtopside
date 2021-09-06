@@ -17,6 +17,7 @@ public:
 	bool				is_const = false;
 	bool				is_override_anon = false;
 	bool				is_ext_impl = false;
+	bool				is_alt_impl = false;
 	TypeExpr			ret;
 	ArrayMap<String, TypeExpr>	params;
 	
@@ -30,6 +31,7 @@ public:
 	Function&	SetOverrideAnonymous();
 	Function&	SetConst();
 	Function&	SetExternalImpl();
+	Function&	SetAltImpl();
 	Function&	AddParam(String key, const TypeExpr& te);
 	Statement&	RealizeStatement();
 	operator Statement&() {return RealizeStatement();}

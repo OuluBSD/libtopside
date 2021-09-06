@@ -2,11 +2,13 @@
 BASE(AtomReceiptSink)
 BASE(CenterSourceAsync)
 BASE(CenterSinkSync)
+BASE(CenterSinkPolling)
 
 BASE_FLAG(CenterSourceAsync,		store_packet)
 BASE_FLAG(CenterSinkSync,			ival_sink_proc)
 BASE_ACTION(AtomReceiptSink,		loop.connected)
 BASE_ACTION(CenterSinkSync,			center.audio.sink)
+BASE_ACTION(CenterSinkPolling,		center.audio.sink)
 
 /*
 BASE2(ReceiptOrder,				CenterReceipt,	CenterOrder)

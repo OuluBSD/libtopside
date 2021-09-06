@@ -22,7 +22,8 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
-	using namespace Serial;
+	using namespace TS::Serial;
+	using namespace TS;
 	
 	//REG_EXT(DebugAudioGeneratorExt,		INPUT,			CENTER,ORDER,		CENTER,AUDIO,	CENTER,AUDIO);
 	

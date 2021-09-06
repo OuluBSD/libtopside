@@ -32,6 +32,11 @@ Function& Function::SetExternalImpl() {
 	return *this;
 }
 
+Function& Function::SetAltImpl() {
+	is_alt_impl = true;
+	return *this;
+}
+
 Function& Function::AddParam(String key, const TypeExpr& te) {
 	ASSERT(te.IsActivated());
 	ASSERT(params.Find(key) < 0);
@@ -108,6 +113,16 @@ String Function::GetCodeString(const CodeArgs& args) const {
 		s << "\n";
 		if (impl)
 			s << impl->GetCodeString(subargs) << "\n";
+		else if (is_alt_impl) {
+			s <<	"{\n"
+					"\tAlt" << scope->GetName() << "(";
+			for(int i = 0; i < params.GetCount(); i++) {
+				if (i) s << ", ";
+				s << params.GetKey(i);
+			}
+			s <<	");\n"
+					"}\n\n";
+		}
 		else {
 			s.Cat('\t', args.indent); s << "{\n";
 			s.Cat('\t', args.indent+1); s << "\n";

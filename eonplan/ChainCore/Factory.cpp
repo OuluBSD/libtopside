@@ -174,13 +174,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		}
 		Base& base = bases[i];
 		
-		
 		Class& cls_h = ns_serial.GetAddClass(h_name);
 		
-		String tmpl_name = base_name + "<" + h_name + ">";
-		Class& cls_atombase = ns_serial.GetAddClass(tmpl_name);
-		cls_atombase.tmpl.is = true;
-		
+		Index<String> inherits;
+		inherits.Add(base_name + "<" + h_name + ">");
+		inherits.Append(h.inherits);
 		
 		{
 			MetaExpression& e = ms_deflist_expr.AddSub();
@@ -188,9 +186,18 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			e.AddSub().SetId(h.key);
 		}
 		
-		if (!cls_h.Inherit(cls_atombase)) {
-			OnError("class " + h_name + " could not inherit " + tmpl_name);
-			return false;
+		for(int i = 0; i < inherits.GetCount(); i++) {
+			String cls_name = inherits[i];
+			Class& cls = ns_serial.GetAddClass(cls_name);
+			if (cls_name.Find("<") >= 0)
+				cls.tmpl.is = true;
+			else
+				cls.Hint(HINT_HIDDEN, "true");
+			
+			if (!cls_h.Inherit(cls)) {
+				OnError("class " + h_name + " could not inherit " + cls_name);
+				return false;
+			}
 		}
 		
 		{
@@ -314,7 +321,10 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			Function& fn = fis.AddFunction();
 			fn.SetReturn(te_void).SetOverrideAnonymous();
 			fn.AddParam("p", te_packet);
-			fn.SetExternalImpl();
+			if (h.args.Find("ALT_LINK") >= 0)
+				fn.SetAltImpl();
+			else
+				fn.SetExternalImpl();
 		}
 		
 		// void IntervalSinkProcess() override;
@@ -322,7 +332,10 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("IntervalSinkProcess");
 			Function& fn = fis.AddFunction();
 			fn.SetReturn(te_void).SetOverrideAnonymous();
-			fn.SetExternalImpl();
+			if (h.args.Find("ALT_LINK") >= 0)
+				fn.SetAltImpl();
+			else
+				fn.SetExternalImpl();
 		}
 	}
 	
