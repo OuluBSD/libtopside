@@ -108,6 +108,7 @@ typedef enum : byte {
 	PIPE,
 	SIDE_SOURCE,
 	SIDE_SINK,
+	SIDE_PIPE,
 	
 	ROLE_COUNT
 } AtomRole;

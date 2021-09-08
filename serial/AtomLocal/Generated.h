@@ -83,11 +83,53 @@ public:
 
 };
 
+class VideoHardwareSink : public DummySideAsync<VideoHardwareSink> {
+
+public:
+	RTTI_DECL1(VideoHardwareSink, BaseT)
+	COPY_PANIC(VideoHardwareSink)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class VideoShaderSrc : public DummySideAsync<VideoShaderSrc> {
+
+public:
+	RTTI_DECL1(VideoShaderSrc, BaseT)
+	COPY_PANIC(VideoShaderSrc)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class VideoShaderBuffer : public DummySideAsync<VideoShaderBuffer> {
+
+public:
+	RTTI_DECL1(VideoShaderBuffer, BaseT)
+	COPY_PANIC(VideoShaderBuffer)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 using CustomerAtomRef = Ref<CustomerAtom, RefParent1<Loop>>;
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
+using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
+using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
+using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
 }
 
 }

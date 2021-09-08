@@ -3,6 +3,8 @@ BASE(AtomReceiptSink)
 BASE(CenterSourceAsync)
 BASE(CenterSinkSync)
 BASE(CenterSinkPolling)
+BASE(DummySideAsync)
+BASE(AccelSideAsync)
 
 BASE_FLAG(CenterSourceAsync,		store_packet)
 BASE_FLAG(CenterSinkSync,			ival_sink_proc)

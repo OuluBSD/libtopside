@@ -84,6 +84,51 @@ void AudioDecoderSrc::StorePacket(Packet& p)
 	AltStorePacket(p);
 }
 
+AtomTypeCls VideoHardwareSink::GetAtomType()
+{
+	return ATOM0(VIDEO_HARDWARE_SINK, SINK, ACCEL, VIDEO, ACCEL, RECEIPT);
+}
+
+void VideoHardwareSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls VideoHardwareSink::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls VideoShaderSrc::GetAtomType()
+{
+	return ATOM0(VIDEO_SHADER_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
+}
+
+void VideoShaderSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls VideoShaderSrc::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls VideoShaderBuffer::GetAtomType()
+{
+	return ATOM0(VIDEO_SHADER_BUFFER, SIDE_PIPE, ACCEL, ORDER, ACCEL, RECEIPT);
+}
+
+void VideoShaderBuffer::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls VideoShaderBuffer::GetType() const
+{
+	return GetAtomType();
+}
+
 }
 
 }
