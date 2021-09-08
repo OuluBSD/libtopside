@@ -18,7 +18,7 @@ public:
 	void Forward(FwdScope& fwd) override {LOG("TestCustomer::Forward");}
 	
 	EXT_MAKE_ACTION_BEGIN
-		EXT_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.single")
+		EXT_MAKE_ACTION_UNDEF_TO_TRUE("center.customer")
 	EXT_MAKE_ACTION_END
 	
 	

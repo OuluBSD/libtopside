@@ -7,14 +7,14 @@ namespace TS {
 
 namespace Serial {
 
-class CustomerAtom : public AtomReceiptSink<CustomerAtom> {
+class CenterCustomer : public CustomerBaseT<CenterCustomer> {
 
 public:
-	RTTI_DECL1(CustomerAtom, BaseT)
-	COPY_PANIC(CustomerAtom)
+	RTTI_DECL1(CenterCustomer, BaseT)
+	COPY_PANIC(CenterCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("customer.test.single")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.customer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -56,7 +56,7 @@ public:
 class AudioHardwareSink : public CenterSinkPolling<AudioHardwareSink>, public PortaudioSink {
 
 public:
-	RTTI_DECL1(AudioHardwareSink, BaseT)
+	RTTI_DECL2(AudioHardwareSink, BaseT, PortaudioSink)
 	COPY_PANIC(AudioHardwareSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -71,7 +71,7 @@ public:
 class AudioDecoderSrc : public CenterSourceAsync<AudioDecoderSrc>, public FfmpegAtomBase {
 
 public:
-	RTTI_DECL1(AudioDecoderSrc, BaseT)
+	RTTI_DECL2(AudioDecoderSrc, BaseT, FfmpegAtomBase)
 	COPY_PANIC(AudioDecoderSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
@@ -83,53 +83,139 @@ public:
 
 };
 
-class VideoHardwareSink : public DummySideAsync<VideoHardwareSink> {
+class AccelCustomer : public CustomerBaseT<AccelCustomer> {
 
 public:
-	RTTI_DECL1(VideoHardwareSink, BaseT)
+	RTTI_DECL1(AccelCustomer, BaseT)
+	COPY_PANIC(AccelCustomer)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.customer")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class VideoHardwareSink : public AccelSideAsync<VideoHardwareSink>, public DummyAlt {
+
+public:
+	RTTI_DECL2(VideoHardwareSink, BaseT, DummyAlt)
 	COPY_PANIC(VideoHardwareSink)
 	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.sink.hw")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
 
 };
 
-class VideoShaderSrc : public DummySideAsync<VideoShaderSrc> {
+class VideoShaderSrc : public AccelSideAsync<VideoShaderSrc>, public DummyAlt {
 
 public:
-	RTTI_DECL1(VideoShaderSrc, BaseT)
+	RTTI_DECL2(VideoShaderSrc, BaseT, DummyAlt)
 	COPY_PANIC(VideoShaderSrc)
 	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
 
 };
 
-class VideoShaderBuffer : public DummySideAsync<VideoShaderBuffer> {
+class VideoShaderBuffer : public AccelSideAsync<VideoShaderBuffer>, public DummyAlt {
 
 public:
-	RTTI_DECL1(VideoShaderBuffer, BaseT)
+	RTTI_DECL2(VideoShaderBuffer, BaseT, DummyAlt)
 	COPY_PANIC(VideoShaderBuffer)
 	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.buffer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
 
 };
 
-using CustomerAtomRef = Ref<CustomerAtom, RefParent1<Loop>>;
+class SdlContextAtom : public CenterSideAsync<SdlContextAtom> {
+
+public:
+	RTTI_DECL1(SdlContextAtom, BaseT)
+	COPY_PANIC(SdlContextAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
+class SdlEventAtom : public CenterSideAsync<SdlEventAtom> {
+
+public:
+	RTTI_DECL1(SdlEventAtom, BaseT)
+	COPY_PANIC(SdlEventAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
+class SdlVideoAtom : public CenterSideAsync<SdlVideoAtom> {
+
+public:
+	RTTI_DECL1(SdlVideoAtom, BaseT)
+	COPY_PANIC(SdlVideoAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
+class SdlAudioAtom : public CenterSideAsync<SdlAudioAtom> {
+
+public:
+	RTTI_DECL1(SdlAudioAtom, BaseT)
+	COPY_PANIC(SdlAudioAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.audio")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
+using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
+using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
 using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
+using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
+using SdlEventAtomRef = Ref<SdlEventAtom, RefParent1<Loop>>;
+using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
+using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
 }
 
 }

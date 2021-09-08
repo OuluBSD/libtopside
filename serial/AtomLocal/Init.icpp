@@ -6,10 +6,10 @@ INITBLOCK {
 	using namespace TS;
 	using namespace TS::Serial;
 	
-	Serial::Factory::RegisterAtom<CustomerAtom>();
+	#define ATOM_CLASS(x) Serial::Factory::RegisterAtom<x>();
+	ATOM_CLASS_LIST
+	#undef ATOM_CLASS
 	
-	Serial::Factory::RegisterAtom<AudioDecoderSrc>();
-	Serial::Factory::RegisterAtom<AudioHardwareSink>();
 	
 }
 

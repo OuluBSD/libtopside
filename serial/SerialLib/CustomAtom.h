@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 template <class T>
-class AtomReceiptSink : public Atom<T> {
+class CustomerBaseT : public Atom<T> {
 	using AtomT = Atom<T>;
 	
 protected:
@@ -18,9 +18,9 @@ protected:
 	
 	
 public:
-	COPY_PANIC(AtomReceiptSink)
+	COPY_PANIC(CustomerBaseT)
 	
-	using BaseT = AtomReceiptSink<T>;
+	using BaseT = CustomerBaseT<T>;
 	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +40,7 @@ public:
 		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
 	}
 	
-	void AddPlan(Script::Plan& sp) {
+	void AddPlan(Script::Plan& sp) override {
 		ASSERT(!customer.IsEmpty());
 		customer->plans.Add(sp);
 	}
@@ -88,7 +88,7 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!this->AltInitialize(ws)) return false;
-		internal_fmt.SetAudio(SoundSample::U8_LE, 2, 44100, 777);
+		internal_fmt.SetAudio(DevCls::CENTER, SoundSample::U8_LE, 2, 44100, 777);
 		time = 0;
 		return true;
 	}
@@ -186,6 +186,41 @@ public:
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	
 };
+
+
+template <class T>
+class CenterSideAsync : public Atom<T> {
+	
+protected:
+	
+	using AtomT = Atom<T>;
+	
+public:
+	using BaseT = CenterSideAsync<T>;
+	RTTI_DECL1(CenterSideAsync, AtomT)
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
+		
+		return true;
+	}
+	
+	void Uninitialize() override {
+		this->AltUninitialize();
+		
+	}
+	
+	void Forward(FwdScope& fwd) override {
+		RTLOG("CenterSideAsync<T>::Forward");
+	}
+
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
+	
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+};
+
 
 NAMESPACE_SERIAL_END
 

@@ -5,16 +5,20 @@ NAMESPACE_SERIAL_BEGIN
 
 void AudioFormat::Set(SoundSample::Type type, int channels, int freq, int sample_rate) {
 	SampleBase<SoundSample>::SetType(type);
-	DimBase<1>::SetSize(2);
+	DimBase<1>::SetSize(channels);
 	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
 }
 
 String AudioFormat::ToString() const {
-	return SampleBase<SoundSample>::ToString() + ", " + DimBase<1>::ToString() + ", " + TimeSeriesBase::ToString() + ", " + SampleBase<SoundSample>::ToString();
+	return		SampleBase<SoundSample>::ToString() + ", " +
+				DimBase<1>::ToString() + ", " +
+				TimeSeriesBase::ToString();
 }
 
 int AudioFormat::GetFrameSize() const {
-	return DimBase<1>::GetArea() * TimeSeriesBase::GetSampleRate() * SampleBase<SoundSample>::GetSampleSize();
+	return		DimBase<1>::GetArea() *
+				TimeSeriesBase::GetSampleRate() *
+				SampleBase<SoundSample>::GetSampleSize();
 }
 
 bool AudioFormat::IsValid() const {
@@ -37,20 +41,32 @@ bool AudioFormat::IsSame(const AudioFormat& b) const {
 
 
 
+void VideoFormat::Set(LightSampleFD::Type type, int w, int h, int freq, int sample_rate) {
+	SampleBase<LightSampleFD>::SetType(type);
+	DimBase<2>::SetSize(Size(w,h));
+	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
+}
+
 int VideoFormat::GetFrameSize() const {
 	TODO
 }
 
 String VideoFormat::ToString() const {
-	TODO
+	return		SampleBase<LightSampleFD>::ToString() + ", " +
+				DimBase<2>::ToString() + ", " +
+				TimeSeriesBase::ToString();
 }
 
 bool VideoFormat::IsValid() const {
-	TODO
+	return		TimeSeriesBase::IsValid() && \
+				SampleBase<LightSampleFD>::IsValid() && \
+				DimBase<2>::IsValid();
 }
 
-bool VideoFormat::IsSame(const VideoFormat& fmt) const {
-	TODO
+bool VideoFormat::IsSame(const VideoFormat& b) const {
+	return		TimeSeriesBase::IsSame(b) &&
+				SampleBase<LightSampleFD>::IsCopyCompatible(b) &&
+				DimBase<2 >::IsSame(b);
 }
 
 
@@ -88,7 +104,7 @@ bool MidiFormat::IsSame(const MidiFormat& fmt) const {
 
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
-	if (IsVideo()) return "VideoFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
+	if (IsVideo()) return "VideoFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
 	if (vd.val.type == ValCls::ORDER) return "OrderFormat";
 	if (vd.val.type == ValCls::RECEIPT) return "ReceiptFormat";
 	return "Invalid Format";
@@ -155,25 +171,37 @@ void Format::Clear() {
 }
 
 
-void Format::SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate) {
-	vd = VD(CENTER, AUDIO);
+void Format::SetAudio(DevCls dev, SoundSample::Type t, int channels, int freq, int sample_rate) {
+	vd.dev = dev;
+	vd.val = ValCls::AUDIO;
+	memset(data, 0, sizeof(data));
 	aud.Set(t, channels, freq, sample_rate);
 }
 
-void Format::SetOrder() {
-	vd = VD(CENTER, ORDER);
+void Format::SetOrder(DevCls dev) {
+	vd.dev = dev;
+	vd.val = ValCls::ORDER;
 	memset(data, 0, sizeof(data));
 }
 
-void Format::SetReceipt() {
-	vd = VD(CENTER, RECEIPT);
+void Format::SetReceipt(DevCls dev) {
+	vd.dev = dev;
+	vd.val = ValCls::RECEIPT;
 	memset(data, 0, sizeof(data));
 }
 
-void Format::SetMidi() {
-	vd = VD(CENTER, MIDI);
+void Format::SetMidi(DevCls dev) {
+	vd.dev = dev;
+	vd.val = ValCls::MIDI;
 	memset(data, 0, sizeof(data));
 	mid.SetDefault();
+}
+
+void Format::SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate) {
+	vd.dev = dev;
+	vd.val = ValCls::VIDEO;
+	memset(data, 0, sizeof(data));
+	vid.Set(t, w, h, freq, sample_rate);
 }
 
 void Format::operator=(const Format& f) {

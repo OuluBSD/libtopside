@@ -10,6 +10,7 @@
 #undef HEADER3
 #undef HEADER_ACTION
 #undef HEADER_INHERITS
+#undef HEADER_ARG
 #undef LOOP2
 #undef LOOP3
 #undef LOOP4

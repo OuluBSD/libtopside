@@ -16,19 +16,12 @@ DevCls GetCenterDevCls() {
 
 
 String GetSubAtomString(SubAtomCls t) {
-	TODO
-	#if 0
 	switch (t) {
-		case CUSTOMER:		return "customer";
-		case INPUT:			return "input";
-		case OUTPUT:		return "output";
-		case CONVERTER:		return "converter";
-		case PIPE:			return "pipe";
-		case SIDE_INPUT:	return "side-input";
-		case SIDE_OUTPUT:	return "side-output";
+		#define ATOM_TYPE(x) case x:	return #x;
+		ATOM_TYPE_LIST
+		#undef ATOM_TYPE
 		default: return "invalid";
 	}
-	#endif
 }
 
 String GetAtomRoleString(AtomRole t) {

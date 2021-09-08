@@ -238,8 +238,9 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 
 void MachineVerifier::OnLeaveStorePacket(Packet& p) {
 	RTLOG("MachineVerifier::OnLeaveStorePacket");
+	auto fmt = p->GetFormat();
 	if (p->Data().GetCount() &&
-		p->GetFormat().IsValid()) {
+		fmt.IsValid()) {
 		MayLeaveTop();
 	}
 	

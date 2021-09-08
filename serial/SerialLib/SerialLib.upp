@@ -13,5 +13,6 @@ file
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	CustomAtom.h,
-	DummyAtom.h;
+	DummyAtom.h,
+	DummyAtom.cpp;
 

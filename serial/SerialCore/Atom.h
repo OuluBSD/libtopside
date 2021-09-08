@@ -70,7 +70,7 @@ public:
 	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
 	virtual void AltUninitialize() {}
 	virtual void AltForward(FwdScope& fwd) {}
-	virtual void AltStorePacket(Packet& p) {}
+	virtual void AltStorePacket(Packet& p) {Panic("Unimplemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
@@ -88,6 +88,7 @@ public:
 	virtual CustomerData* GetCustomerData() {return 0;}
 	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
+	virtual void AddPlan(Script::Plan& sp) {}
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	

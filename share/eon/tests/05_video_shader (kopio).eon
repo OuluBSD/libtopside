@@ -1,0 +1,6 @@
+loop accel.shader.test04: {
+	accel.customer: true;
+	accel.video.src: true {filepath: "${FILE}"; stop_machine: true;};
+	accel.video.sink.hw: true;
+};
+

@@ -49,7 +49,7 @@ class SoundSample;
 class Loop;
 class LoopStore;
 class Machine;
-//class CustomerAtom;
+//class CenterCustomer;
 struct AtomTypeCls;
 
 
@@ -71,7 +71,7 @@ using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
 using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
 using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
 using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
-//using CustomerAtomRef		= Ref<CustomerAtom,			AtomParent>;
+//using CenterCustomerRef		= Ref<CenterCustomer,			AtomParent>;
 
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 

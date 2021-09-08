@@ -38,6 +38,8 @@ struct VideoFormat :
 		sizeof(DimBase<2>) +
 		sizeof(TimeSeriesBase);
 	
+	void Set(LightSampleFD::Type t, int w, int , int freq, int sample_rate);
+	
 	int GetFrameSize() const;
 	int GetMinBufSamples() const {return 2;}
 	String ToString() const;
@@ -131,10 +133,11 @@ public:
 	void Clear();
 	bool HasData() const;
 	
-	void SetAudio(SoundSample::Type t, int channels, int freq, int sample_rate);
-	void SetOrder();
-	void SetReceipt();
-	void SetMidi();
+	void SetAudio(DevCls dev, SoundSample::Type t, int channels, int freq, int sample_rate);
+	void SetOrder(DevCls dev);
+	void SetReceipt(DevCls dev);
+	void SetMidi(DevCls dev);
+	void SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}

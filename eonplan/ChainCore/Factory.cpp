@@ -151,12 +151,19 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	te_packet.SetReference(fcls_packet);
 	cu.Activate(te_packet);
 	
-	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$ATOML_TYPE_LIST");
+	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$ATOM_TYPE_LIST");
 	MExpr& ms_deflist_expr = ms_deflist;
 	ms_deflist.Hint(HINT_PKG, "SerialMach");
 	ms_deflist.Hint(HINT_FILE, "Generated");
 	ms_deflist.HideStatement();
 	ms_deflist_expr.SetDefine("ATOM_TYPE_LIST");
+	
+	MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$ATOM_CLASS_LIST");
+	MExpr& ms_clslist_expr = ms_clslist;
+	ms_clslist.Hint(HINT_PKG, "SerialMach");
+	ms_clslist.Hint(HINT_FILE, "Generated");
+	ms_clslist.HideStatement();
+	ms_clslist_expr.SetDefine("ATOM_CLASS_LIST");
 	
 	for (Header& h : Headers().GetValues()) {
 		if (h.pkg == &pkg)
@@ -186,6 +193,12 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			e.AddSub().SetId(h.key);
 		}
 		
+		{
+			MetaExpression& e = ms_clslist_expr.AddSub();
+			e.SetCall("ATOM_CLASS");
+			e.AddSub().SetId(h_name);
+		}
+		
 		for(int i = 0; i < inherits.GetCount(); i++) {
 			String cls_name = inherits[i];
 			Class& cls = ns_serial.GetAddClass(cls_name);
@@ -204,9 +217,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			MStmt& ms_rtti = cls_h.GetAddMetaStatement("$RTTI_DECL");
 			ms_rtti.HideStatement().SetPublic();
 			MExpr& ms_rtti_expr = ms_rtti;
-			ms_rtti_expr.SetCall("RTTI_DECL1");
+			ms_rtti_expr.SetCall("RTTI_DECL" + IntStr(inherits.GetCount()));
 			ms_rtti_expr.AddSub().SetId(h_name);
 			ms_rtti_expr.AddSub().SetId("BaseT");
+			for(int i = 1; i < inherits.GetCount(); i++)
+				ms_rtti_expr.AddSub().SetId(inherits[i]);
 		}
 		
 		{
@@ -306,7 +321,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			ms_end_expr.SetId("ATOM_MAKE_ACTION_END");
 		}
 		
-		// using CustomerAtomRef = Ref<CustomerAtom, RefParent1<Loop>>;
+		// using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
 		{
 			UsingStatement& using_ref = ns_serial.GetAddUsing(h_name + "Ref");
 			Expression& using_expr = using_ref;

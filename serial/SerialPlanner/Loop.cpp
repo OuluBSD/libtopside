@@ -114,6 +114,16 @@ void ScriptLoopLoader::InitSegments() {
 	if (!dev.IsValid())
 		dev = DevCls::CENTER;
 	
+	AtomTypeCls consumer;
+	if (dev == DevCls::CENTER)
+		consumer = AsAtomTypeCls<CenterCustomer>();
+	else if (dev == DevCls::ACCEL)
+		consumer = AsAtomTypeCls<AccelCustomer>();
+	else {
+		TODO
+		return;
+	}
+	
 	// Prepare action planner and world states
 	int CONNECTED = planner.GetAddAtom("loop.connected");
 	AtomCls customer;
@@ -125,12 +135,12 @@ void ScriptLoopLoader::InitSegments() {
 	start.SetActionPlanner(planner);
 	
 	
-	start.SetAs_AddAtom(AsAtomTypeCls<CustomerAtom>());
+	start.SetAs_AddAtom(consumer);
 	//int HAS_DEV = planner.GetAddAtom("has." + dev.GetActionName());
 	//start.Set(HAS_DEV, true);
 	
 	goal.SetActionPlanner(planner);
-	goal.SetAs_AddAtom(AsAtomTypeCls<CustomerAtom>());
+	goal.SetAs_AddAtom(consumer);
 	goal.Set(CONNECTED, true);
 	
 	for (Script::Id& req : def.req) {
@@ -166,7 +176,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
 	
-	LOG("start-node: " << seg.start_node->GetWorldState().ToString());
+	LOG("start-node: " << seg.start_node->GetWorldState().GetAtom().ToString());
 	seg.start_node->ResetLinked();
 	if (segments.GetCount() == 1)
 		seg.ep.plan = seg.as.Search(*seg.start_node);
@@ -383,7 +393,7 @@ bool ScriptLoopLoader::Load() {
 	AddedAtom& last  = added_atoms.Top();
 	ScriptLoopSegment& first_seg = segments[first.seg_i];
 	ScriptLoopSegment& last_seg  = segments[last.seg_i];
-	CustomerAtomRef atom = first.r;
+	AtomBaseRef atom = first.r;
 	if (atom) {
 		atom->AddPlan(first_seg.ep);
 	}

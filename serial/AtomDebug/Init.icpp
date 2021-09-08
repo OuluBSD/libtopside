@@ -38,8 +38,8 @@ INITBLOCK {
 	
 	//REG_ATOM0(TestCustomer,			CUSTOMER,		CENTER,RECEIPT,		CENTER,ORDER);
 	
-	Serial::Factory::RegisterAtom<TestRealtimeSrc>();
-	Serial::Factory::RegisterAtom<TestRealtimeSink>();
+	//Serial::Factory::RegisterAtom<TestRealtimeSrc>();
+	//Serial::Factory::RegisterAtom<TestRealtimeSink>();
 	
 	
 	//Serial::Factory::RegisterComponent<DebugAudioGeneratorExt>();

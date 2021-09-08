@@ -1,14 +1,17 @@
 
-BASE(AtomReceiptSink)
+BASE(CustomerBaseT)
 BASE(CenterSourceAsync)
 BASE(CenterSinkSync)
 BASE(CenterSinkPolling)
+BASE(CenterSideAsync)
 BASE(DummySideAsync)
 BASE(AccelSideAsync)
 
 BASE_FLAG(CenterSourceAsync,		store_packet)
 BASE_FLAG(CenterSinkSync,			ival_sink_proc)
-BASE_ACTION(AtomReceiptSink,		loop.connected)
+BASE_FLAG(CenterSideAsync,			store_packet)
+BASE_FLAG(AccelSideAsync,			store_packet)
+BASE_ACTION(CustomerBaseT,			loop.connected)
 BASE_ACTION(CenterSinkSync,			center.audio.sink)
 BASE_ACTION(CenterSinkPolling,		center.audio.sink)
 
@@ -28,7 +31,7 @@ BASE2(AccelReceiptOrder,		AccelReceipt,	AccelOrder)
 BASE3(CenterAccelMidiSink,		AccelOrder,		SinkCenterMidi,		AccelMidi)
 BASE2(AccelMidiAudioConv,		AccelMidi,		AccelAudio)
 BASE2(AccelAudioPipe,			AccelAudio,		AccelAudio)
-BASE3(AccelCenterAudioSrc,		AccelAudio,		SrcCenterAudio,		AccelReceipt)
+BASE3(AccelCenterAudioSrc,		AccelAudio,		SrcCenterAudiof,		AccelReceipt)
 BASE3(AccelAudioInputMulti,		AccelOrder,		AccelAudio,			AccelAudio)
 BASE3(AccelAudioOutput,			AccelAudio,		SrcAccelAudio,		AccelReceipt)
 

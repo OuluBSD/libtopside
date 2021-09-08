@@ -1,5 +1,5 @@
 loop player.audio.ffmpeg: {
-	customer.test.single: true;
+	center.customer: true;
 	perma.audio.source.decoder: true {filepath: "${FILE}"; stop_machine: true;};
 	center.audio.sink: true;
 	center.audio.sink.hw: true;

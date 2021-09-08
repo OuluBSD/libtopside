@@ -1,0 +1,7 @@
+loop center.shader.test04: {
+	sdl.context: true;
+	sdl.event: true;
+	sdl.video: true;
+	sdl.audio: true;
+};
+
