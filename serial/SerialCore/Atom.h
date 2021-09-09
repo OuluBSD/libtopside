@@ -11,6 +11,7 @@ class Plan;
 }
 
 
+template <class T> inline SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
 
 class AtomBase :
@@ -89,6 +90,7 @@ public:
 	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual void AddPlan(Script::Plan& sp) {}
+	
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	

@@ -98,6 +98,34 @@ public:
 
 };
 
+class AudioSideOut : public CenterSideAsync<AudioSideOut> {
+
+public:
+	RTTI_DECL1(AudioSideOut, BaseT)
+	COPY_PANIC(AudioSideOut)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.out")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioSideIn : public CenterSideAsync<AudioSideIn> {
+
+public:
+	RTTI_DECL1(AudioSideIn, BaseT)
+	COPY_PANIC(AudioSideIn)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.in")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class AccelCustomer : public CustomerBaseT<AccelCustomer> {
 
 public:
@@ -169,7 +197,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -184,7 +211,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -199,7 +225,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -214,7 +239,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -224,6 +248,8 @@ using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
+using AudioSideOutRef = Ref<AudioSideOut, RefParent1<Loop>>;
+using AudioSideInRef = Ref<AudioSideIn, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;

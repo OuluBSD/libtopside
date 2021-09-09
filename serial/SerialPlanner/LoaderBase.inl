@@ -18,7 +18,7 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		CheckFlags(false);
 	}
 	else if (status == ScriptStatus::INPUT_IS_WAITING) {
-		TODO
+		SetError("no compatible side-source was found for side-sink");
 	}
 	else {
 		TODO

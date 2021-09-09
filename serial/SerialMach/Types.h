@@ -272,25 +272,25 @@ struct AtomIfaceTypeCls : Moveable<AtomIfaceTypeCls> {
 	ValDevCls	sink;
 	ValDevCls	src;
 	ValDevCls	side;
-	bool		side_src		= 0;
-	bool		side_multi		= 0;
 	
 	
 	bool IsValid() const {return sink.IsValid() && src.IsValid() /*&& side.IsValid()*/;}
-	bool IsMultiSideConnection() const {return side_multi;}
-	void operator=(const Nuller& n) {sink = n; src = n; side = n; side_src = 0; side_multi = 0;}
+	void operator=(const Nuller& n) {sink = n; src = n; side = n;}
+	void operator=(const AtomIfaceTypeCls& o) {
+		sink = o.sink;
+		src = o.src;
+		side = o.side;
+	}
 	hash_t GetHashValue() const;
 	
 	bool operator==(const AtomIfaceTypeCls& c) const {
 		return	sink		== c.sink &&
 				src			== c.src &&
-				side		== c.side &&
-				side_src	== c.side_src &&
-				side_multi	== c.side_multi
+				side		== c.side
 				;
 	}
 	bool operator!=(const AtomIfaceTypeCls& c) const {return !(*this == c);}
-	String ToString() const {return "(sink(" + sink.ToString() + "), side(" + side.ToString() + ", src(" + src.ToString() + "), src=" + IntStr(side_src) + ", multi=" + IntStr(side_multi) + ")";}
+	String ToString() const {return "(sink(" + sink.ToString() + "), side(" + side.ToString() + ", src(" + src.ToString() + ")";}
 	
 	
 	AtomIfaceTypeCls() {}
@@ -309,6 +309,11 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID_ATOM && role != AtomRole::INVALID_ROLE;}
 	hash_t GetHashValue() const;
 	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE;}
+	void operator=(const AtomTypeCls& o) {
+		iface = o.iface;
+		sub = o.sub;
+		role = o.role;
+	}
 	
 	bool operator==(const AtomTypeCls& c) const {
 		return	iface == c.iface &&
@@ -325,13 +330,16 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomTypeCls(SubAtomCls cls, AtomRole role, ValDevCls sink, ValDevCls src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, ValDevCls sink, ValDevCls side, ValDevCls src) : iface(sink,side,src), sub(cls), role(role) {}
 	
-	bool IsRoleCustomer() const {return AtomRole::CUSTOMER;}
-	bool IsRoleSource() const {return AtomRole::SOURCE;}
-	bool IsRoleSink() const {return AtomRole::SINK;}
-	bool IsRoleConverter() const {return AtomRole::CONVERTER;}
-	bool IsRolePipe() const {return AtomRole::PIPE;}
-	bool IsRoleSideSource() const {return AtomRole::SIDE_SOURCE/*iface.side.IsValid() && iface.side_src*/;}
-	bool IsRoleSideSink() const {return AtomRole::SIDE_SINK/*iface.side.IsValid() && !iface.side_src*/;}
+	bool IsRoleCustomer()	const {return role == AtomRole::CUSTOMER;}
+	bool IsRoleSource()		const {return role == AtomRole::SOURCE;}
+	bool IsRoleSink()		const {return role == AtomRole::SINK;}
+	bool IsRoleConverter()	const {return role == AtomRole::CONVERTER;}
+	bool IsRolePipe()		const {return role == AtomRole::PIPE;}
+	bool IsRoleSideSource()	const {return role == AtomRole::SIDE_SOURCE/*iface.side.IsValid() && iface.side_src*/;}
+	bool IsRoleSideSink()	const {return role == AtomRole::SIDE_SINK/*iface.side.IsValid() && !iface.side_src*/;}
+	bool IsRoleSide()		const {return role == AtomRole::SIDE_SINK || role == AtomRole::SIDE_SOURCE/*iface.side.IsValid() && !iface.side_src*/;}
+	
+	bool IsMultiSideConnection() const {return false;}
 	
 };
 

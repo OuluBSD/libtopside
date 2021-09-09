@@ -2,7 +2,7 @@
 
 NAMESPACE_SERIAL_BEGIN
 
-
+/*
 void SdlContextAtom::StorePacket(Packet& p) {
 	TODO
 }
@@ -18,6 +18,6 @@ void SdlVideoAtom::StorePacket(Packet& p) {
 void SdlAudioAtom::StorePacket(Packet& p) {
 	TODO
 }
-
+*/
 
 NAMESPACE_SERIAL_END

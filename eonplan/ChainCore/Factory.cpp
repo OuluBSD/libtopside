@@ -258,7 +258,19 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 				ret_val.Add().SetId(src_val);
 			}
 			else {
-				TODO
+				ret_val.SetMetaCall("ATOM1");
+				ret_val.Add().SetId(h.key);
+				ret_val.Add().SetId(h.role);
+				String src_dev, src_val, side_dev, side_val, sink_dev, sink_val;
+				GetKeyValDevUpper(h.src, src_dev, src_val);
+				GetKeyValDevUpper(h.side, side_dev, side_val);
+				GetKeyValDevUpper(h.sink, sink_dev, sink_val);
+				ret_val.Add().SetId(sink_dev);
+				ret_val.Add().SetId(sink_val);
+				ret_val.Add().SetId(side_dev);
+				ret_val.Add().SetId(side_val);
+				ret_val.Add().SetId(src_dev);
+				ret_val.Add().SetId(src_val);
 			}
 		}
 		

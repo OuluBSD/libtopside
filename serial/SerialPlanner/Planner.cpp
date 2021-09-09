@@ -323,9 +323,8 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 	AtomTypeCls atom_type = src.GetAtom();
 	
 	/*bool dbg =
-		src.IsTrue("customer.id.ABCD")
-		&& src.IsTrue("center.audio.src")
-		&& src.IsTrue("center.audio.sink")
+		src.IsTrue("center.audio.side.out")
+		&& src.IsTrue("center.audio.src.dbg_generator")
 		&& src.IsAddAtom()
 		&& src.GetAtom() == AsTypeCls<AudioOutputAtom>()
 		;
@@ -333,6 +332,10 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 		LOG("");
 	}*/
 	
+	if (atom_type.role == AtomRole::CUSTOMER &&
+		n.GetLinkedCount())
+		return;
+		
 	acts.SetCount(0);
 	Serial::GetAtomActions(src, acts);
 	
@@ -642,11 +645,17 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
 			LOG(dst.ToString());
 		}*/
-		if (atom.role != AtomRole::CUSTOMER &&
+		/*if (atom.role != AtomRole::CUSTOMER &&
 			//dst.sub != SubAtomCls::CONVERTER &&
 			dst.iface.side.val != atom.iface.side.val &&
 			dst.iface.sink.val != ValCls::RECEIPT)
+			continue;*/
+			
+		if ((atom.role == AtomRole::SIDE_SOURCE || atom.role == AtomRole::SIDE_SINK) &&
+			dst.iface.side.val != atom.iface.side.val &&
+			dst.iface.sink.val != ValCls::RECEIPT)
 			continue;
+		
 		//ASSERT(src.GetAtom() != link.dst_atom);
 		
 		a.Post() = src;

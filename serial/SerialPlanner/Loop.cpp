@@ -312,10 +312,11 @@ bool ScriptLoopLoader::Load() {
 				is_last ?
 					l->FindTypeCls(atom) :
 					l->GetAddTypeCls(atom);
-			ASSERT(ab);
 			if (!ab) {
 				String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-				SetError("Could not create atomonent '" + atom_name + "' at '" + def.id.ToString() + "'");
+				SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+				DUMP(atom);
+				ASSERT(0);
 				return false;
 			}
 			auto& c = added_atoms.Add();
@@ -378,7 +379,7 @@ bool ScriptLoopLoader::Load() {
 			AtomTypeCls atom = ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
 			String src_iface_name = Serial::Factory::IfaceLinkDataMap().Get(iface).name;
-			SetError("Could not link atomonent '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
+			SetError("Could not link atom '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
 		if (c0.side_in >= 0)
@@ -433,29 +434,23 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 	accepted_in = 0;
 	accepted_out = 0;
 	
-	TODO
-	#if 0
 	for (auto& in_state : inputs) {
 		Script::APlanNode* in = in_state.last;
 		Script::WorldState& in_ws = in->GetWorldState();
-		ASSERT(in_ws.IsAddExtension());
+		ASSERT(in_ws.IsAddAtom());
 		AtomTypeCls in_atom = in_ws.GetAtom();
-		AtomTypeCls in_type = in_ws.GetExtension();
 		auto& in_d = Serial::Factory::AtomDataMap().Get(in_atom);
-		auto& in_e = in_d.ext.Get(in_type);
 		
 		for (auto& out_state : outputs) {
 			Script::APlanNode* out = out_state.last;
 			Script::WorldState& out_ws = out->GetWorldState();
-			ASSERT(out_ws.IsAddExtension());
+			ASSERT(out_ws.IsAddAtom());
 			AtomTypeCls out_atom = out_ws.GetAtom();
-			AtomTypeCls out_type = out_ws.GetExtension();
 			auto& out_d = Serial::Factory::AtomDataMap().Get(out_atom);
-			auto& out_e = out_d.ext.Get(out_type);
 			
 			SideStatus a, b;
-			if ((a = in_e.side_fn(out_type, out_ws, in_type, in_ws)) != SIDE_NOT_ACCEPTED) {
-				if ((b = out_e.side_fn(out_type, out_ws, in_type, in_ws)) != SIDE_NOT_ACCEPTED) {
+			if ((a = in_d.side_fn(out_atom, out_ws, in_atom, in_ws)) != SIDE_NOT_ACCEPTED) {
+				if ((b = out_d.side_fn(out_atom, out_ws, in_atom, in_ws)) != SIDE_NOT_ACCEPTED) {
 					accepted_in = &in_state;
 					accepted_out = &out_state;
 					accepted_count++;
@@ -477,7 +472,6 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 		return SIDE_NOT_ACCEPTED;
 	}
 	
-	#endif
 	
 	return ret;
 }

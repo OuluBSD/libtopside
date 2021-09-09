@@ -104,6 +104,36 @@ void AudioDbgSrc::StorePacket(Packet& p)
 	AltStorePacket(p);
 }
 
+AtomTypeCls AudioSideOut::GetAtomType()
+{
+	return ATOM1(AUDIO_SIDE_OUT, SIDE_SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+}
+
+void AudioSideOut::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls AudioSideOut::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioSideIn::GetAtomType()
+{
+	return ATOM1(AUDIO_SIDE_IN, SIDE_SINK, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+void AudioSideIn::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls AudioSideIn::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls AccelCustomer::GetAtomType()
 {
 	return ATOM0(ACCEL_CUSTOMER, CUSTOMER, ACCEL, RECEIPT, ACCEL, ORDER);

@@ -107,8 +107,6 @@ hash_t AtomIfaceTypeCls::GetHashValue() const {
 	c.Put(sink.GetHashValue());
 	c.Put(src.GetHashValue());
 	c.Put(side.GetHashValue());
-	c.Put(side_src);
-	c.Put(side_multi);
 	return c;
 }
 

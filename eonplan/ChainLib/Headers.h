@@ -27,6 +27,12 @@ HEADER_INHERITS(	AudioDbgSrc,		AudioGenBase)
 HEADER_ARG(			AudioDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			AudioDbgSrc,		ALT_FWD,	1)
 
+HEADER3(			AudioSideOut,		CenterSideAsync,		side_source,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioSideOut,		center.audio.side.out)
+HEADER3(			AudioSideIn,		CenterSideAsync,		side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		AudioSideIn,		center.audio.side.in)
+
+
 
 
 HEADER2(			AccelCustomer,		CustomerBaseT,			customer,	AccelReceipt,	AccelOrder)

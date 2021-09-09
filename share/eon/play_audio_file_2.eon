@@ -12,7 +12,7 @@ chain player.audio.generator: {
 		center.customer: true;
 		center.audio.side.in: true;
 		center.audio.side.in.center: true;
-		center.audio.sink.realtime: true;
+		center.audio.sink: true;
 		center.audio.sink.hw: true;
 		return has.input: true;
 	};

@@ -391,7 +391,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Script::ActionNode>& n) {
-	/*if (&n == (void*)0x8026C63C0) {
+	/*if (&n == (void*)0x806A107A0) {
 		LOG("");
 	}*/
 	
@@ -415,14 +415,15 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	}*/
 	
 	AtomTypeCls atom = ws.GetAtom();
-	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.side.val == ValCls::ORDER)
+	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src.val == ValCls::ORDER)
 		return false;
 	
 	if (ws.IsAddAtom()) {
 		if (n.GetLinkedCount() > 0) {
 			AtomTypeCls a = ws.GetAtom();
 			if (a.iface.side.IsValid()) {
-				if (!a.iface.side_src) {
+				ASSERT(a.IsRoleSide());
+				if (!a.IsRoleSideSource()) {
 					ap.AddSideInput(seg.as, n);
 					return false;
 				}
@@ -459,7 +460,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
 	
-	//LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
+	LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Serial::Script::WorldState& ws_to = *to[i];
 		
@@ -480,7 +481,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 			an->IncLinked();
 			n.AddLink(*an);
 		}
-		//LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
+		LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 		
 		/*if (ws_to.IsAddAtom()) {
 			AtomTypeCls t = ws_to.GetAtom();
