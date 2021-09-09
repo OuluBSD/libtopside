@@ -13,6 +13,7 @@ namespace Serial {
 	ATOM_TYPE(TEST_REALTIME_SINK) \
 	ATOM_TYPE(AUDIO_HARDWARE_SINK) \
 	ATOM_TYPE(AUDIO_DECODER_SRC) \
+	ATOM_TYPE(AUDIO_DBG_SRC) \
 	ATOM_TYPE(ACCEL_CUSTOMER) \
 	ATOM_TYPE(VIDEO_HARDWARE_SINK) \
 	ATOM_TYPE(VIDEO_SHADER_SRC) \
@@ -29,6 +30,7 @@ namespace Serial {
 	ATOM_CLASS(TestRealtimeSink) \
 	ATOM_CLASS(AudioHardwareSink) \
 	ATOM_CLASS(AudioDecoderSrc) \
+	ATOM_CLASS(AudioDbgSrc) \
 	ATOM_CLASS(AccelCustomer) \
 	ATOM_CLASS(VideoHardwareSink) \
 	ATOM_CLASS(VideoShaderSrc) \

@@ -83,6 +83,21 @@ public:
 
 };
 
+class AudioDbgSrc : public CenterSourceAsync<AudioDbgSrc>, public AudioGenBase {
+
+public:
+	RTTI_DECL2(AudioDbgSrc, BaseT, AudioGenBase)
+	COPY_PANIC(AudioDbgSrc)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.dbg_generator")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
 class AccelCustomer : public CustomerBaseT<AccelCustomer> {
 
 public:
@@ -208,6 +223,7 @@ using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
+using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;

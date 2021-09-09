@@ -17,6 +17,7 @@
 #include "Ffmpeg.h"
 #include "PortaudioCore.h"
 #include "Portaudio.h"
+#include "Sdl.h"
 
 
 

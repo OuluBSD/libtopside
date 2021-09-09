@@ -21,6 +21,12 @@ HEADER_INHERITS(	AudioDecoderSrc,	FfmpegAtomBase)
 HEADER_ARG(			AudioDecoderSrc,	ALT_LINK,	1)
 HEADER_ARG(			AudioDecoderSrc,	ALT_FWD,	1)
 
+HEADER2(			AudioDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterAudio)
+HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
+HEADER_INHERITS(	AudioDbgSrc,		AudioGenBase)
+HEADER_ARG(			AudioDbgSrc,		ALT_LINK,	1)
+HEADER_ARG(			AudioDbgSrc,		ALT_FWD,	1)
+
 
 
 HEADER2(			AccelCustomer,		CustomerBaseT,			customer,	AccelReceipt,	AccelOrder)

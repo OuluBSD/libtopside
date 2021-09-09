@@ -1,7 +1,7 @@
 chain player.audio.generator: {
 	
 	loop output: {
-		center.customer.audio.player: true;
+		center.customer: true;
 		perma.audio.source.decoder: true {filepath: "${FILE}"; stop_machine: true;};
 		center.audio.side.out: true;
 		center.audio.side.out.center: true;
@@ -9,7 +9,7 @@ chain player.audio.generator: {
 	};
 	
 	loop input: {
-		center.customer.audio.player: true;
+		center.customer: true;
 		center.audio.side.in: true;
 		center.audio.side.in.center: true;
 		center.audio.sink.realtime: true;

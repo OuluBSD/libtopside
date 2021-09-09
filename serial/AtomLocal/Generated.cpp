@@ -84,6 +84,26 @@ void AudioDecoderSrc::StorePacket(Packet& p)
 	AltStorePacket(p);
 }
 
+AtomTypeCls AudioDbgSrc::GetAtomType()
+{
+	return ATOM0(AUDIO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, AUDIO);
+}
+
+void AudioDbgSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<BaseT>(this);
+}
+
+AtomTypeCls AudioDbgSrc::GetType() const
+{
+	return GetAtomType();
+}
+
+void AudioDbgSrc::StorePacket(Packet& p)
+{
+	AltStorePacket(p);
+}
+
 AtomTypeCls AccelCustomer::GetAtomType()
 {
 	return ATOM0(ACCEL_CUSTOMER, CUSTOMER, ACCEL, RECEIPT, ACCEL, ORDER);
