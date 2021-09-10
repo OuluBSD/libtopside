@@ -250,6 +250,7 @@ class SimpleValue :
 public:
 	RTTI_DECL1(SimpleValue, Value)
 	~SimpleValue() {/*LOG("dtor SimpleValue " << HexStr((void*)this));*/ ASSERT(buf.IsEmpty());}
+	void			Visit(RuntimeVisitor& vis) {}
 	void			Clear() override {/*LOG("clear SimpleValue " << HexStr((void*)this));*/ fmt.Clear(); time = 0; buf.Clear(); packet_limit = 2;}
 	void			Exchange(Ex& e) override;
 	int				GetQueueSize() const override;

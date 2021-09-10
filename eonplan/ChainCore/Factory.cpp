@@ -281,17 +281,19 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			fn_visit.SetReturn(te_void).SetOverrideAnonymous();
 			fn_visit.AddParam("vis", te_ref_rtvis);
 			
-			// vis.VisitThis<BaseT>(this);
-			Statement& stmt = fn_visit;
-			Statement& ret = stmt.Add();
-			Expression& ret_expr = ret;
-			ret_expr.SetParentExpr();
-			ret_expr.Add().SetId("vis");
-			Expression& call = ret_expr.Add().SetObjMethodTemplate("VisitThis");
-			Expression& tmpl_args = call.First();
-			Expression& call_params = call.Second();
-			tmpl_args.Add().SetId("BaseT");
-			call_params.Add().SetId("this");
+			// vis.VisitThis<...>(this);
+			for (String s : inherits) {
+				Statement& stmt = fn_visit;
+				Statement& ret = stmt.Add();
+				Expression& ret_expr = ret;
+				ret_expr.SetParentExpr();
+				ret_expr.Add().SetId("vis");
+				Expression& call = ret_expr.Add().SetObjMethodTemplate("VisitThis");
+				Expression& tmpl_args = call.First();
+				Expression& call_params = call.Second();
+				tmpl_args.Add().SetId(s);
+				call_params.Add().SetId("this");
+			}
 		}
 		
 		// AtomTypeCls GetType() const override

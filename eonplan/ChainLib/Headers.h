@@ -27,10 +27,10 @@ HEADER_INHERITS(	AudioDbgSrc,		AudioGenBase)
 HEADER_ARG(			AudioDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			AudioDbgSrc,		ALT_FWD,	1)
 
-HEADER3(			AudioSideOut,		CenterSideAsync,		side_source,	CenterAudio,	CenterAudio,	CenterReceipt)
-HEADER_ACTION(		AudioSideOut,		center.audio.side.out)
-HEADER3(			AudioSideIn,		CenterSideAsync,		side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
-HEADER_ACTION(		AudioSideIn,		center.audio.side.in)
+HEADER3(			AudioSideSrc,		CenterSideSourceAsync,	side_source,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioSideSrc,		center.audio.side.src)
+HEADER3(			AudioSideSink,		CenterSideSinkAsync,	side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		AudioSideSink,		center.audio.side.sink)
 
 
 
@@ -63,10 +63,10 @@ HEADER_INHERITS(	VideoShaderBuffer,	SystemVideoSink)
 #endif
 
 
-HEADER2(			SdlContextAtom,		CenterSideAsync,		side_pipe,	CenterReceipt,	CenterOrder)
-HEADER2(			SdlEventAtom,		CenterSideAsync,		side_pipe,	CenterReceipt,	CenterOrder)
-HEADER2(			SdlVideoAtom,		CenterSideAsync,		side_pipe,	CenterReceipt,	CenterOrder)
-HEADER2(			SdlAudioAtom,		CenterSideAsync,		side_pipe,	CenterReceipt,	CenterOrder)
+HEADER2(			SdlContextAtom,		CenterSideSourceAsync,	side_source,	CenterReceipt,	CenterOrder)
+HEADER2(			SdlEventAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
+HEADER2(			SdlVideoAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
+HEADER2(			SdlAudioAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)

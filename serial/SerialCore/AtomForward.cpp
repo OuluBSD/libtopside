@@ -25,8 +25,8 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		case SOURCE:		ForwardInput(fwd);		return;
 		case SINK:			ForwardOutput(fwd);		return;
 		case CONVERTER:		ForwardInput(fwd);		return;
-		case SIDE_SOURCE:	ForwardSideOutput(fwd);	return;
-		case SIDE_SINK:		ForwardSideInput(fwd);	return;
+		case SIDE_SOURCE:	ForwardSideSource(fwd);	return;
+		case SIDE_SINK:		ForwardSideSink(fwd);	return;
 		default: break;
 	}
 	
@@ -222,14 +222,14 @@ void AtomBase::ForwardOutput(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }*/
 
-void AtomBase::ForwardSideInput(FwdScope& fwd) {
+void AtomBase::ForwardSideSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	if (fwd.GetPos() > 0) {
 		Forward(fwd);
 	}
 	else {
-		RTLOG("AtomBase::ForwardSideInput: skip duplicate extension forward");
+		RTLOG("AtomBase::ForwardSideSink: skip duplicate extension forward");
 	}
 	
 	Value& sink_value = GetSink()->GetValue();
@@ -239,7 +239,7 @@ void AtomBase::ForwardSideInput(FwdScope& fwd) {
 	InterfaceSideSinkRef side_sink = GetSideSink();
 	ASSERT(side_sink);
 	if (!side_sink) return;
-	
+
 	Value* side_sink_value = side_sink->GetSideValue();
 	ASSERT(side_sink_value);
 	if (!side_sink_value) return;
@@ -256,11 +256,11 @@ void AtomBase::ForwardSideInput(FwdScope& fwd) {
 		side_sink_buf.RemoveFirst();
 		sink_buf.RemoveFirst();
 		
-		PacketTracker::StopTracking(TrackerInfo("AtomBase::ForwardSideInput", __FILE__, __LINE__), sink_p);
+		PacketTracker::StopTracking(TrackerInfo("AtomBase::ForwardSideSink", __FILE__, __LINE__), sink_p);
 		off32 off = sink_p->GetOffset();
 		sink_p.Clear();
 		
-		RTLOG("AtomBase::ForwardSideInput: forwarding side packet in format: " << side_p->GetFormat().ToString());
+		RTLOG("AtomBase::ForwardSideSink: forwarding side packet in format: " << side_p->GetFormat().ToString());
 		
 		if (side_p->GetFormat() == src_fmt) {
 			side_p->SetOffset(off);
@@ -271,13 +271,13 @@ void AtomBase::ForwardSideInput(FwdScope& fwd) {
 			if (Convert(side_p, dst))
 				src_buf.Add(dst);
 			else {
-				RTLOG("AtomBase::ForwardSideInput: error: packet conversion failed");
+				RTLOG("AtomBase::ForwardSideSink: error: packet conversion failed");
 			}
 		}
 	}
 }
 
-void AtomBase::ForwardSideOutput(FwdScope& fwd) {
+void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	if (fwd.GetPos() > 0) {
@@ -290,14 +290,13 @@ void AtomBase::ForwardSideOutput(FwdScope& fwd) {
 	Value& sink_value = GetSink()->GetValue();
 	auto& sink_buf = sink_value.GetBuffer();
 	
-	InterfaceSideSourceRef side_out = GetSideSource();
-	ExchangeSideSinkProviderRef side_link_in = side_out->GetSideSourceLink();
-	ASSERT(side_link_in);
-	InterfaceSideSinkRef side_in = side_link_in;
-	ASSERT(side_in);
-	//LOG(HexStr((void*)this) << " side_in = " << HexStr(side_in.Get()));
+	InterfaceSideSourceRef side_src = GetSideSource();
+	ASSERT(side_sink_conn);
+	InterfaceSideSinkRef side_sink = side_sink_conn->GetSideSink();
+	ASSERT(side_sink);
+	//LOG(HexStr((void*)this) << " side_sink = " << HexStr(side_sink.Get()));
 	
-	Value* side_sink_value = side_in->GetSideValue();
+	Value* side_sink_value = side_sink->GetSideValue();
 	ASSERT(side_sink_value);
 	auto& side_sink_buf = side_sink_value->GetBuffer();
 	Format side_sink_fmt = side_sink_value->GetFormat();
@@ -308,7 +307,7 @@ void AtomBase::ForwardSideOutput(FwdScope& fwd) {
 		
 		off32 o = in->GetOffset();
 		
-		RTLOG("AtomBase::ForwardSideOutput: sending side-out packet(" << o.ToString() << ")");
+		RTLOG("AtomBase::ForwardSideSource: sending side-out packet(" << o.ToString() << ")");
 		
 		consumed_packets.Add(in);
 		

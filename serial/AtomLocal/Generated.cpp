@@ -11,7 +11,7 @@ AtomTypeCls CenterCustomer::GetAtomType()
 
 void CenterCustomer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CustomerBaseT<CenterCustomer>>(this);
 }
 
 AtomTypeCls CenterCustomer::GetType() const
@@ -26,7 +26,7 @@ AtomTypeCls TestRealtimeSrc::GetAtomType()
 
 void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSourceAsync<TestRealtimeSrc>>(this);
 }
 
 AtomTypeCls TestRealtimeSrc::GetType() const
@@ -41,7 +41,7 @@ AtomTypeCls TestRealtimeSink::GetAtomType()
 
 void TestRealtimeSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSinkSync<TestRealtimeSink>>(this);
 }
 
 AtomTypeCls TestRealtimeSink::GetType() const
@@ -56,7 +56,8 @@ AtomTypeCls AudioHardwareSink::GetAtomType()
 
 void AudioHardwareSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSinkPolling<AudioHardwareSink>>(this);
+	vis.VisitThis<PortaudioSink>(this);
 }
 
 AtomTypeCls AudioHardwareSink::GetType() const
@@ -71,7 +72,8 @@ AtomTypeCls AudioDecoderSrc::GetAtomType()
 
 void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSourceAsync<AudioDecoderSrc>>(this);
+	vis.VisitThis<FfmpegAtomBase>(this);
 }
 
 AtomTypeCls AudioDecoderSrc::GetType() const
@@ -91,7 +93,8 @@ AtomTypeCls AudioDbgSrc::GetAtomType()
 
 void AudioDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSourceAsync<AudioDbgSrc>>(this);
+	vis.VisitThis<AudioGenBase>(this);
 }
 
 AtomTypeCls AudioDbgSrc::GetType() const
@@ -104,32 +107,32 @@ void AudioDbgSrc::StorePacket(Packet& p)
 	AltStorePacket(p);
 }
 
-AtomTypeCls AudioSideOut::GetAtomType()
+AtomTypeCls AudioSideSrc::GetAtomType()
 {
-	return ATOM1(AUDIO_SIDE_OUT, SIDE_SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+	return ATOM1(AUDIO_SIDE_SRC, SIDE_SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
-void AudioSideOut::Visit(RuntimeVisitor& vis)
+void AudioSideSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSourceAsync<AudioSideSrc>>(this);
 }
 
-AtomTypeCls AudioSideOut::GetType() const
+AtomTypeCls AudioSideSrc::GetType() const
 {
 	return GetAtomType();
 }
 
-AtomTypeCls AudioSideIn::GetAtomType()
+AtomTypeCls AudioSideSink::GetAtomType()
 {
-	return ATOM1(AUDIO_SIDE_IN, SIDE_SINK, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+	return ATOM1(AUDIO_SIDE_SINK, SIDE_SINK, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
 }
 
-void AudioSideIn::Visit(RuntimeVisitor& vis)
+void AudioSideSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSinkAsync<AudioSideSink>>(this);
 }
 
-AtomTypeCls AudioSideIn::GetType() const
+AtomTypeCls AudioSideSink::GetType() const
 {
 	return GetAtomType();
 }
@@ -141,7 +144,7 @@ AtomTypeCls AccelCustomer::GetAtomType()
 
 void AccelCustomer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CustomerBaseT<AccelCustomer>>(this);
 }
 
 AtomTypeCls AccelCustomer::GetType() const
@@ -156,7 +159,8 @@ AtomTypeCls VideoHardwareSink::GetAtomType()
 
 void VideoHardwareSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<AccelSideAsync<VideoHardwareSink>>(this);
+	vis.VisitThis<DummyAlt>(this);
 }
 
 AtomTypeCls VideoHardwareSink::GetType() const
@@ -176,7 +180,8 @@ AtomTypeCls VideoShaderSrc::GetAtomType()
 
 void VideoShaderSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<AccelSideAsync<VideoShaderSrc>>(this);
+	vis.VisitThis<DummyAlt>(this);
 }
 
 AtomTypeCls VideoShaderSrc::GetType() const
@@ -196,7 +201,8 @@ AtomTypeCls VideoShaderBuffer::GetAtomType()
 
 void VideoShaderBuffer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<AccelSideAsync<VideoShaderBuffer>>(this);
+	vis.VisitThis<DummyAlt>(this);
 }
 
 AtomTypeCls VideoShaderBuffer::GetType() const
@@ -211,12 +217,12 @@ void VideoShaderBuffer::StorePacket(Packet& p)
 
 AtomTypeCls SdlContextAtom::GetAtomType()
 {
-	return ATOM0(SDL_CONTEXT_ATOM, SIDE_PIPE, CENTER, RECEIPT, CENTER, ORDER);
+	return ATOM0(SDL_CONTEXT_ATOM, SIDE_SOURCE, CENTER, RECEIPT, CENTER, ORDER);
 }
 
 void SdlContextAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSourceAsync<SdlContextAtom>>(this);
 }
 
 AtomTypeCls SdlContextAtom::GetType() const
@@ -226,12 +232,12 @@ AtomTypeCls SdlContextAtom::GetType() const
 
 AtomTypeCls SdlEventAtom::GetAtomType()
 {
-	return ATOM0(SDL_EVENT_ATOM, SIDE_PIPE, CENTER, RECEIPT, CENTER, ORDER);
+	return ATOM0(SDL_EVENT_ATOM, SIDE_SINK, CENTER, RECEIPT, CENTER, ORDER);
 }
 
 void SdlEventAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSinkAsync<SdlEventAtom>>(this);
 }
 
 AtomTypeCls SdlEventAtom::GetType() const
@@ -241,12 +247,12 @@ AtomTypeCls SdlEventAtom::GetType() const
 
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
-	return ATOM0(SDL_VIDEO_ATOM, SIDE_PIPE, CENTER, RECEIPT, CENTER, ORDER);
+	return ATOM0(SDL_VIDEO_ATOM, SIDE_SINK, CENTER, RECEIPT, CENTER, ORDER);
 }
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSinkAsync<SdlVideoAtom>>(this);
 }
 
 AtomTypeCls SdlVideoAtom::GetType() const
@@ -256,12 +262,12 @@ AtomTypeCls SdlVideoAtom::GetType() const
 
 AtomTypeCls SdlAudioAtom::GetAtomType()
 {
-	return ATOM0(SDL_AUDIO_ATOM, SIDE_PIPE, CENTER, RECEIPT, CENTER, ORDER);
+	return ATOM0(SDL_AUDIO_ATOM, SIDE_SINK, CENTER, RECEIPT, CENTER, ORDER);
 }
 
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<BaseT>(this);
+	vis.VisitThis<CenterSideSinkAsync<SdlAudioAtom>>(this);
 }
 
 AtomTypeCls SdlAudioAtom::GetType() const

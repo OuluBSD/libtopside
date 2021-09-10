@@ -8,7 +8,7 @@ struct Pol {
 			struct Loop {
 				
 				// If loop has both side-in and side-out, then side-out is always after side-in
-				static constexpr bool SideInIsBeforeSideOutAlways = true;
+				static constexpr bool SideSinkIsBeforeSideSourceAlways = true;
 				
 			};
 			struct Loader {

@@ -287,10 +287,10 @@ void ActionPlanner::Clear() {
 }
 
 void ActionPlanner::ClearForward() {
-	side_inputs.Clear();
-	side_outputs.Clear();
-	side_in_max_est = INT_MAX;
-	side_out_max_est = INT_MAX;
+	side_sinkputs.Clear();
+	side_srcputs.Clear();
+	side_sink_max_est = INT_MAX;
+	side_src_max_est = INT_MAX;
 }
 
 int ActionPlanner::GetAddAtom(String id) {
@@ -323,7 +323,7 @@ void ActionPlanner::GetPossibleStateTransition(Node<Script::ActionNode>& n, Arra
 	AtomTypeCls atom_type = src.GetAtom();
 	
 	/*bool dbg =
-		src.IsTrue("center.audio.side.out")
+		src.IsTrue("center.audio.side.src")
 		&& src.IsTrue("center.audio.src.dbg_generator")
 		&& src.IsAddAtom()
 		&& src.GetAtom() == AsTypeCls<AudioOutputAtom>()
@@ -414,32 +414,32 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
-void ActionPlanner::AddSideInput(const Searcher& as, ANode& n) {
+void ActionPlanner::AddSideSink(const Searcher& as, ANode& n) {
 	int est = n.GetEstimate();
-	if (est < side_in_max_est) {
-		side_in_max_est = est;
-		side_inputs.Clear();
+	if (est < side_sink_max_est) {
+		side_sink_max_est = est;
+		side_sinkputs.Clear();
 	}
-	if (est <= side_in_max_est) {
-		State& s = side_inputs.Add();
+	if (est <= side_sink_max_est) {
+		State& s = side_sinkputs.Add();
 		s.last = &n;
 		s.as = as;
 	}
 }
 
-void ActionPlanner::AddSideOutput(const Searcher& as, ANode& n) {
+void ActionPlanner::AddSideSource(const Searcher& as, ANode& n) {
 	int est = n.GetEstimate();
 	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
-	if (est < side_out_max_est) {
-		side_out_max_est = est;
-		side_outputs.Clear();
+	if (est < side_src_max_est) {
+		side_src_max_est = est;
+		side_srcputs.Clear();
 	}
-	if (est <= side_out_max_est) {
+	if (est <= side_src_max_est) {
 		/*hash_t h = n.GetWorldState().GetHashValue();
-		for (State& s : side_outputs)
+		for (State& s : side_srcputs)
 			if (s.last->GetWorldState().GetHashValue() == h)
 				return;*/
-		State& s = side_outputs.Add();
+		State& s = side_srcputs.Add();
 		s.last = &n;
 		s.as = as;
 	}
@@ -645,19 +645,20 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
 			LOG(dst.ToString());
 		}*/
-		/*if (atom.role != AtomRole::CUSTOMER &&
+		/*FAIL if (atom.role != AtomRole::CUSTOMER &&
 			//dst.sub != SubAtomCls::CONVERTER &&
 			dst.iface.side.val != atom.iface.side.val &&
 			dst.iface.sink.val != ValCls::RECEIPT)
 			continue;*/
 			
-		if ((atom.role == AtomRole::SIDE_SOURCE || atom.role == AtomRole::SIDE_SINK) &&
+		/*FAIL if ((atom.role == AtomRole::SIDE_SOURCE || atom.role == AtomRole::SIDE_SINK) &&
 			dst.iface.side.val != atom.iface.side.val &&
 			dst.iface.sink.val != ValCls::RECEIPT)
-			continue;
+			continue;*/
 		
 		//ASSERT(src.GetAtom() != link.dst_atom);
 		
+
 		a.Post() = src;
 		a.Post().SetAs_AddAtom(dst);
 		if (dst_cd.action_fn(dst_cd.cls, a)) {

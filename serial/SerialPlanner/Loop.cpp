@@ -157,7 +157,6 @@ void ScriptLoopLoader::InitSegments() {
 	for (Script::Statement& stmt : def.stmts)
 		if (!SetWorldState(goal, stmt))
 			return;
-	LOG("goal: " << goal.ToString());
 	
 	goal_node.SetWorldState(goal);
 	goal_node.SetGoal(goal_node);
@@ -176,6 +175,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
 	
+	LOG("goal: " << goal.ToString());
 	LOG("start-node: " << seg.start_node->GetWorldState().GetAtom().ToString());
 	seg.start_node->ResetLinked();
 	if (segments.GetCount() == 1)
@@ -190,9 +190,9 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		}
 		
 		// Check side-channel connections
-		const auto& inputs = planner.GetSideInputs();
-		const auto& outputs = planner.GetSideOutputs();
-		bool is_input = planner.IsSideInput();
+		const auto& inputs = planner.GetSideSinks();
+		const auto& outputs = planner.GetSideSources();
+		bool is_input = planner.IsSideSink();
 		if (is_input && inputs.GetCount()) {
 			LOG("Loop " << id << " side-inputs:");
 			for(int i = 0; i < inputs.GetCount(); i++) {
@@ -294,8 +294,8 @@ bool ScriptLoopLoader::Load() {
 		AtomBaseRef r;
 		int plan_i;
 		int seg_i;
-		int side_in;
-		int side_out;
+		int side_sink;
+		int side_src;
 	};
 	Array<AddedAtom> added_atoms;
 	
@@ -323,8 +323,8 @@ bool ScriptLoopLoader::Load() {
 			c.r = ab;
 			c.plan_i = plan_i;
 			c.seg_i = seg_i;
-			c.side_in = n->GetSideInId();
-			c.side_out = n->GetSideOutId();
+			c.side_sink = n->GetSideSinkId();
+			c.side_src = n->GetSideSrcId();
 			
 			
 			AtomTypeCls type = ws.GetAtom();
@@ -382,10 +382,10 @@ bool ScriptLoopLoader::Load() {
 			SetError("Could not link atom '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
-		if (c0.side_in >= 0)
-			src->SetSideIn(c0.side_in);
-		if (c0.side_out >= 0)
-			src->SetSideOut(c0.side_out);
+		if (c0.side_sink >= 0)
+			src->SetSideSinkId(c0.side_sink);
+		if (c0.side_src >= 0)
+			src->SetSideSrcId(c0.side_src);
 		
 		atoms.Add(src);
 	}
@@ -425,8 +425,8 @@ bool ScriptLoopLoader::Load() {
 SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == INPUT_IS_WAITING);
 	ASSERT(out.status == OUTPUT_IS_WAITING);
-	auto& inputs = planner.GetSideInputs();
-	auto& outputs = out.planner.GetSideOutputs();
+	auto& inputs = planner.GetSideSinks();
+	auto& outputs = out.planner.GetSideSources();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
 	
 	SideStatus ret = SIDE_NOT_ACCEPTED;

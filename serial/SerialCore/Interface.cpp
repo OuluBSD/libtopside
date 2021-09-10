@@ -180,15 +180,7 @@ bool DefaultInterfaceSink::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	Format sink_fmt = GetDefaultFormat(type.iface.sink);
-	ASSERT(sink_fmt.IsValid());
-	
-	if (type.iface.sink.val == ValCls::AUDIO)
-		sink_buf.Create(this);
-	else
-		sink.Create(this);
-	
-	GetSinkValue().SetFormat(sink_fmt);
+	InitializeContainer(this, type.iface.sink);
 	
 	return true;
 }
@@ -198,15 +190,27 @@ bool DefaultInterfaceSource::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	Format src_fmt = GetDefaultFormat(type.iface.src);
-	ASSERT(src_fmt.IsValid());
+	InitializeContainer(this, type.iface.src);
 	
-	if (type.iface.src.val == ValCls::AUDIO)
-		src_buf.Create(this);
-	else
-		src.Create(this);
+	return true;
+}
+
+bool DefaultInterfaceSideSink::Initialize() {
+	AtomBase* ab = AsAtomBase();
+	AtomTypeCls type = ab->GetType();
+	ASSERT(type.IsValid());
 	
-	GetSourceValue().SetFormat(src_fmt);
+	InitializeContainer(this, type.iface.side);
+	
+	return true;
+}
+
+bool DefaultInterfaceSideSource::Initialize() {
+	AtomBase* ab = AsAtomBase();
+	AtomTypeCls type = ab->GetType();
+	ASSERT(type.IsValid());
+	
+	InitializeContainer(this, type.iface.side);
 	
 	return true;
 }

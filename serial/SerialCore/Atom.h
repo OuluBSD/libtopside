@@ -21,6 +21,9 @@ class AtomBase :
 	public RefScopeEnabler<AtomBase,Loop>
 {
 	
+public:
+	using AtomBaseRef = Ref<AtomBase, RefParent1<Loop>>;
+	
 protected:
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
@@ -37,6 +40,8 @@ protected:
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
+	int						side_sink = -1, side_src = -1;
+	AtomBaseRef				side_sink_conn, side_src_conn;
 	
 	
 	
@@ -46,13 +51,15 @@ protected:
 	void					ForwardInput(FwdScope& fwd);
 	void					ForwardOutput(FwdScope& fwd);
 	void					ForwardConverter(FwdScope& fwd);
-	void					ForwardSideInput(FwdScope& fwd);
-	void					ForwardSideOutput(FwdScope& fwd);
+	void					ForwardSideSink(FwdScope& fwd);
+	void					ForwardSideSource(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
 	void					ForwardVoidSink(FwdScope& fwd);
 	bool					ForwardMem(void* mem, size_t mem_size);
+	
+	void					BaseVisit(RuntimeVisitor& vis) {vis & side_sink_conn & side_src_conn;}
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -67,6 +74,7 @@ public:
 	virtual InterfaceSideSourceRef GetSideSource() = 0;
 	virtual InterfaceSideSinkRef GetSideSink() = 0;
 	virtual bool InitializeAtom(const Script::WorldState& ws) = 0;
+	virtual void UninitializeAtom() = 0;
 	
 	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
 	virtual void AltUninitialize() {}
@@ -77,12 +85,6 @@ public:
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
 	virtual String ToString() const;
-	virtual int GetSideIn() {return -1;}
-	virtual int GetSideOut() {return -1;}
-	virtual void SetSideIn(int i) {Panic("Unimplemented");}
-	virtual void SetSideOut(int i) {Panic("Unimplemented");}
-	//virtual bool LinkSideIn(AtomBaseRef in) {Panic("Unimplemented"); return false;}
-	//virtual bool LinkSideOut(AtomBaseRef out) {Panic("Unimplemented"); return false;}
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
@@ -90,7 +92,16 @@ public:
 	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual void AddPlan(Script::Plan& sp) {}
+	virtual bool PassLinkSideSink(AtomBaseRef sink) {return true;}
+	virtual bool PassLinkSideSource(AtomBaseRef src) {return true;}
 	
+	int						GetSideSinkId() {return side_sink;}
+	int						GetSideSrcId() {return side_src;}
+	//AtomBaseRef				GetLinkedSideSink() {return side_sink_conn;}
+	void					SetSideSinkId(int i) {ASSERT(side_sink < 0); side_sink = i;}
+	void					SetSideSrcId(int i) {ASSERT(side_src < 0); side_src = i;}
+	bool					LinkSideSink(AtomBaseRef sink);
+	bool					LinkSideSource(AtomBaseRef src);
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
@@ -158,7 +169,7 @@ template<
 	typename T,
 	class SinkT=DefaultInterfaceSink,
 	class SourceT=DefaultInterfaceSource,
-	class SideT=VoidSideInterfaceSink
+	class SideT=VoidSideSinkInterface
 >
 struct Atom :
 	virtual public AtomBase,
@@ -167,11 +178,17 @@ struct Atom :
 	public SideT
 {
 public:
-	RTTI_DECL4(Atom<T>, AtomBase, SinkT, SourceT, SideT)
 	using AtomT = Atom<T, SinkT, SourceT, SideT>;
+	RTTI_DECL4(AtomT, AtomBase, SinkT, SourceT, SideT)
 	
 	bool InitializeAtom(const Script::WorldState& ws) override {
 		return SinkT::Initialize() && SourceT::Initialize() && SideT::Initialize();
+	}
+	
+	void UninitializeAtom() override {
+		SinkT::Uninitialize();
+		SourceT::Uninitialize();
+		SideT::Uninitialize();
 	}
 	
 	void ClearSinkSource() override {
@@ -182,6 +199,7 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {
 		//vis.VisitThis<AtomBase>(this);
+		BaseVisit(vis);
 		vis.VisitThis<SinkT>(this);
 		vis.VisitThis<SourceT>(this);
 		vis.VisitThis<SideT>(this);

@@ -29,8 +29,8 @@ INITBLOCK {
 	
 	
 	/*#define TO_DEV(fdev, val, tdev) \
-		REG_EXT_(DebugSideOutputExt,	SIDE_OUTPUT,	fdev,val,		fdev,val,		fdev,RECEIPT,		tdev,val, false); \
-		REG_EXT_(DebugSideInputExt,		SIDE_INPUT,		fdev,ORDER,		fdev,val,		fdev,val,			tdev,val, true); \
+		REG_EXT_(DebugSideSourceExt,	SIDE_OUTPUT,	fdev,val,		fdev,val,		fdev,RECEIPT,		tdev,val, false); \
+		REG_EXT_(DebugSideSinkExt,		SIDE_INPUT,		fdev,ORDER,		fdev,val,		fdev,val,			tdev,val, true); \
 		
 		
 	SIDE_DEV_LIST*/

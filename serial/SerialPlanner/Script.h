@@ -391,7 +391,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Script::ActionNode>& n) {
-	/*if (&n == (void*)0x806A107A0) {
+	/*if (&n == (void*)0x806A117C0) {
 		LOG("");
 	}*/
 	
@@ -424,16 +424,16 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 			if (a.iface.side.IsValid()) {
 				ASSERT(a.IsRoleSide());
 				if (!a.IsRoleSideSource()) {
-					ap.AddSideInput(seg.as, n);
+					ap.AddSideSink(seg.as, n);
 					return false;
 				}
 				else {
-					POPO(Pol::Serial::Script::Loop::SideInIsBeforeSideOutAlways)
-					if (goal_ws	.IsTrue	("has.side.in") &&
-						ws		.IsFalse("has.side.in"))
+					POPO(Pol::Serial::Script::Loop::SideSinkIsBeforeSideSourceAlways)
+					if (goal_ws	.IsTrue	("has.side.sink") &&
+						ws		.IsFalse("has.side.sink"))
 						return false;
 					
-					ap.AddSideOutput(seg.as, n);
+					ap.AddSideSource(seg.as, n);
 					return false;
 				}
 			}
@@ -486,10 +486,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 		/*if (ws_to.IsAddAtom()) {
 			AtomTypeCls t = ws_to.GetAtom();
 			if (t.sub == SubAtomCls::SIDE_INPUT) {
-				ap.AddSideInput(*an);
+				ap.AddSideSink(*an);
 			}
 			else if (t.sub == SubAtomCls::SIDE_OUTPUT) {
-				ap.AddSideOutput(*an);
+				ap.AddSideSource(*an);
 			}
 		}*/
 	}

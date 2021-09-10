@@ -19,6 +19,7 @@ Machine& AtomBase::GetMachine() {
 void AtomBase::UninitializeDeep() {
 	Uninitialize();
 	ClearSinkSource();
+	UninitializeAtom();
 }
 
 LoopRef AtomBase::GetLoop() {
@@ -99,6 +100,41 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 		packets_forwarded++;
 	}
 	
+}
+
+bool AtomBase::LinkSideSink(AtomBaseRef sink) {
+	//side_src = -1; // SetSideSrc(-1)
+	ASSERT(sink);
+	ASSERT(!side_sink_conn);
+	if (!sink)
+		return false;
+	
+	AtomTypeCls type = sink->GetType();
+	//DUMP(type);
+	ASSERT(type.role == AtomRole::SIDE_SINK);
+	if (PassLinkSideSink(sink)) {
+		side_sink_conn = sink;
+		RTLOG(HexStr((void*)this) << " side_sink_conn = " << HexStr(&*side_sink_conn));
+		return true;
+	}
+	return false;
+}
+
+bool AtomBase::LinkSideSource(AtomBaseRef src) {
+	//side_sink = -1; // SetSideSink(-1)
+	ASSERT(src);
+	if (!src)
+		return false;
+	
+	AtomTypeCls type = src->GetType();
+	//DUMP(type);
+	ASSERT(type.role == AtomRole::SIDE_SOURCE);
+	if (PassLinkSideSource(src)) {
+		side_src_conn = src;
+		RTLOG(HexStr((void*)this) << " side_src_conn = " << HexStr(&*side_src_conn));
+		return true;
+	}
+	return false;
 }
 
 

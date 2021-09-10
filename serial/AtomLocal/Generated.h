@@ -98,13 +98,13 @@ public:
 
 };
 
-class AudioSideOut : public CenterSideAsync<AudioSideOut> {
+class AudioSideSrc : public CenterSideSourceAsync<AudioSideSrc> {
 
 public:
-	RTTI_DECL1(AudioSideOut, BaseT)
-	COPY_PANIC(AudioSideOut)
+	RTTI_DECL1(AudioSideSrc, BaseT)
+	COPY_PANIC(AudioSideSrc)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.out")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -112,13 +112,13 @@ public:
 
 };
 
-class AudioSideIn : public CenterSideAsync<AudioSideIn> {
+class AudioSideSink : public CenterSideSinkAsync<AudioSideSink> {
 
 public:
-	RTTI_DECL1(AudioSideIn, BaseT)
-	COPY_PANIC(AudioSideIn)
+	RTTI_DECL1(AudioSideSink, BaseT)
+	COPY_PANIC(AudioSideSink)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.in")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -186,7 +186,7 @@ public:
 
 };
 
-class SdlContextAtom : public CenterSideAsync<SdlContextAtom> {
+class SdlContextAtom : public CenterSideSourceAsync<SdlContextAtom> {
 
 public:
 	RTTI_DECL1(SdlContextAtom, BaseT)
@@ -200,7 +200,7 @@ public:
 
 };
 
-class SdlEventAtom : public CenterSideAsync<SdlEventAtom> {
+class SdlEventAtom : public CenterSideSinkAsync<SdlEventAtom> {
 
 public:
 	RTTI_DECL1(SdlEventAtom, BaseT)
@@ -214,7 +214,7 @@ public:
 
 };
 
-class SdlVideoAtom : public CenterSideAsync<SdlVideoAtom> {
+class SdlVideoAtom : public CenterSideSinkAsync<SdlVideoAtom> {
 
 public:
 	RTTI_DECL1(SdlVideoAtom, BaseT)
@@ -228,7 +228,7 @@ public:
 
 };
 
-class SdlAudioAtom : public CenterSideAsync<SdlAudioAtom> {
+class SdlAudioAtom : public CenterSideSinkAsync<SdlAudioAtom> {
 
 public:
 	RTTI_DECL1(SdlAudioAtom, BaseT)
@@ -248,8 +248,8 @@ using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
-using AudioSideOutRef = Ref<AudioSideOut, RefParent1<Loop>>;
-using AudioSideInRef = Ref<AudioSideIn, RefParent1<Loop>>;
+using AudioSideSrcRef = Ref<AudioSideSrc, RefParent1<Loop>>;
+using AudioSideSinkRef = Ref<AudioSideSink, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;

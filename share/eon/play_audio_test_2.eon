@@ -3,13 +3,13 @@ chain player.audio.generator: {
 	loop output: {
 		center.customer: true;
 		center.audio.src.dbg_generator: true;
-		center.audio.side.out: true;
+		center.audio.side.src: true;
 		return has.output: true;
 	};
 	
 	loop input: {
 		center.customer: true;
-		center.audio.side.in: true;
+		center.audio.side.sink: true;
 		center.audio.sink: true;
 		center.audio.sink.hw: true;
 		return has.input: true;

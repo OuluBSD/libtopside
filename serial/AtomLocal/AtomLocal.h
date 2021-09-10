@@ -32,7 +32,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 template <> inline
-SideStatus MakeSide<AudioSideIn>(
+SideStatus MakeSide<AudioSideSink>(
 	const AtomTypeCls& from_type,
 	const Script::WorldState& from,
 	const AtomTypeCls& to_type,
@@ -46,7 +46,7 @@ SideStatus MakeSide<AudioSideIn>(
 }
 
 template <> inline
-SideStatus MakeSide<AudioSideOut>(
+SideStatus MakeSide<AudioSideSrc>(
 	const AtomTypeCls& from_type,
 	const Script::WorldState& from,
 	const AtomTypeCls& to_type,

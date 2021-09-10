@@ -98,17 +98,24 @@ typedef enum : byte {
 	SUBCOMP_COUNT
 } SubAtomCls;
 
-typedef enum : byte {
-	INVALID_ROLE,
+
+#define ATOM_ROLE_LIST \
+	ATOM_ROLE(CUSTOMER) \
+	ATOM_ROLE(SOURCE) \
+	ATOM_ROLE(SINK) \
+	ATOM_ROLE(CONVERTER) \
+	ATOM_ROLE(PIPE) \
+	ATOM_ROLE(SIDE_SOURCE) \
+	ATOM_ROLE(SIDE_SINK) \
+	ATOM_ROLE(SIDE_PIPE) \
+
+
+typedef enum : int8 {
+	INVALID_ROLE=-1,
 	
-	CUSTOMER,
-	SOURCE,
-	SINK,
-	CONVERTER,
-	PIPE,
-	SIDE_SOURCE,
-	SIDE_SINK,
-	SIDE_PIPE,
+	#define ATOM_ROLE(x) x,
+	ATOM_ROLE_LIST
+	#undef ATOM_ROLE
 	
 	ROLE_COUNT
 } AtomRole;

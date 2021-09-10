@@ -122,8 +122,8 @@ class ActionNode : RTTIBase {
 	
 	ActionPlanner*		ap;
 	ActionNode*			goal;
-	int					side_in = -1;
-	int					side_out = -1;
+	int					side_sink = -1;
+	int					side_src = -1;
 	
 public:
 	RTTI_DECL0(ActionNode)
@@ -136,8 +136,8 @@ public:
 	void SetGoal(ActionNode& ws) {goal = &ws;}
 	void SetWorldState(WorldState& ws) {this->ws = &ws;}
 	void SetCost(double d) {cost = d;}
-	void SetSideInId(int i) {side_in = i;}
-	void SetSideOutId(int i) {side_out = i;}
+	void SetSideSinkId(int i) {side_sink = i;}
+	void SetSideSrcId(int i) {side_src = i;}
 	void IncLinked() {linked_count++;}
 	void ResetLinked() {linked_count=0;}
 	
@@ -149,8 +149,8 @@ public:
 	double GetEstimate();
 	double GetCost() const {return cost;}
 	int GetLinkedCount() const {return linked_count;}
-	int GetSideInId() const {return side_in;}
-	int GetSideOutId() const {return side_out;}
+	int GetSideSinkId() const {return side_sink;}
+	int GetSideSrcId() const {return side_src;}
 	
 	bool Contains(const ActionNode& n) const;
 	bool Conflicts(const ActionNode& n) const;
@@ -202,8 +202,8 @@ protected:
 	ActionPlannerWrapper*		wrapper = 0;
 	ScriptLoopLoader*				loop_loader = 0;
 	Array<WorldState>			search_cache;
-	Vector<State>				side_inputs, side_outputs;
-	int							side_in_max_est, side_out_max_est;
+	Vector<State>				side_sinkputs, side_srcputs;
+	int							side_sink_max_est, side_src_max_est;
 	
 public:
 	ArrayMap<hash_t, Node<ActionNode> > tmp_sub;
@@ -220,16 +220,16 @@ public:
 	int GetAddAtom(String id);
 	int GetAddAtom(const Id& id);
 	const Atom& GetAtom(int i) const {return atoms[i];}
-	bool IsSideInput() const {return side_in_max_est <= side_out_max_est;}
-	Vector<State>& GetSideInputs() {return side_inputs;}
-	Vector<State>& GetSideOutputs() {return side_outputs;}
+	bool IsSideSink() const {return side_sink_max_est <= side_src_max_est;}
+	Vector<State>& GetSideSinks() {return side_sinkputs;}
+	Vector<State>& GetSideSources() {return side_srcputs;}
 	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	void SetLoopLoader(ScriptLoopLoader* l) {loop_loader = l;}
-	void AddSideInput(const Searcher& as, ANode& n);
-	void AddSideOutput(const Searcher& as, ANode& n);
+	void AddSideSink(const Searcher& as, ANode& n);
+	void AddSideSource(const Searcher& as, ANode& n);
 	
 	void GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	ScriptLoopLoader& GetLoopLoader() const {return *loop_loader;}

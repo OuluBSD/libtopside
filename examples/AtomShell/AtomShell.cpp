@@ -45,10 +45,15 @@ void Main() {
 	SetCoutLog();
 	//Serial::Factory::Dump();
 	
+	size_t break_addr = 0;;
+	bool verify = false;
 	
-	//BreakRefAdd(0x80AE32468);
+	if (1)
+		verify = true;
 	
-	bool verify = true;
+	if (0)
+		break_addr = 0x806A81E68;
+	
 	
 	if (!Initializer())
 		return;
@@ -73,10 +78,10 @@ void Main() {
 	
 	DUMP(eon_file);
 	DUMPC(args);
-	if (1)
+	if (!break_addr)
 		Serial::DebugMain(eon_file, args, verify ? &verifier : 0);
 	else
-		Serial::DebugMain(eon_file, args, verify ? &verifier : 0, 1, 0x801020218);
+		Serial::DebugMain(eon_file, args, verify ? &verifier : 0, 1, break_addr);
 }
 
 

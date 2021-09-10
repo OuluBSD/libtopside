@@ -4,15 +4,15 @@ chain tester: {
 		customer.test.output: true;
 		center.audio.src: true;
 		center.audio.src.test: true;
-		center.audio.side.out: true;
-		center.audio.side.out.center: true;
+		center.audio.side.src: true;
+		center.audio.side.src.center: true;
 		return has.output: true;
 	};
 	
 	loop input: {
 		customer.test.input: true;
-		center.audio.side.in: true;
-		center.audio.side.in.center: true;
+		center.audio.side.sink: true;
+		center.audio.side.sink.center: true;
 		center.audio.sink.test.realtime: true;
 		return has.input: true;
 	};

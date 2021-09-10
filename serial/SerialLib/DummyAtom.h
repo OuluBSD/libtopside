@@ -20,6 +20,7 @@ public:
 	void AltStorePacket(Packet& p) override;
 	bool AltIsReady(ValDevCls vd) override;
 	
+	void Visit(RuntimeVisitor& vis) override {}
 	
 };
 

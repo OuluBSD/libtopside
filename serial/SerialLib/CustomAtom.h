@@ -189,15 +189,22 @@ public:
 
 
 template <class T>
-class CenterSideAsync : public Atom<T> {
+class CenterSideSinkAsync :
+	public Atom<
+		T,
+		DefaultInterfaceSink,
+		DefaultInterfaceSource,
+		DefaultInterfaceSideSink
+	>
+{
 	
 protected:
 	
-	using AtomT = Atom<T>;
+	using AtomT = Atom<T, DefaultInterfaceSink, DefaultInterfaceSource, DefaultInterfaceSideSink>;
 	
 public:
-	using BaseT = CenterSideAsync<T>;
-	RTTI_DECL1(CenterSideAsync, AtomT)
+	using BaseT = CenterSideSinkAsync<T>;
+	RTTI_DECL1(CenterSideSinkAsync, AtomT)
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!this->AltInitialize(ws)) return false;
@@ -211,7 +218,48 @@ public:
 	}
 	
 	void Forward(FwdScope& fwd) override {
-		RTLOG("CenterSideAsync<T>::Forward");
+		RTLOG("CenterSideSinkAsync<T>::Forward");
+	}
+
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
+	
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+};
+
+
+template <class T>
+class CenterSideSourceAsync :
+	public Atom<
+		T,
+		DefaultInterfaceSink,
+		DefaultInterfaceSource,
+		DefaultInterfaceSideSource
+	>
+{
+	
+protected:
+	
+	using AtomT = Atom<T, DefaultInterfaceSink, DefaultInterfaceSource, DefaultInterfaceSideSource>;
+	
+public:
+	using BaseT = CenterSideSourceAsync<T>;
+	RTTI_DECL1(CenterSideSourceAsync, AtomT)
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
+		
+		return true;
+	}
+	
+	void Uninitialize() override {
+		this->AltUninitialize();
+		
+	}
+	
+	void Forward(FwdScope& fwd) override {
+		RTLOG("CenterSideSourceAsync<T>::Forward");
 	}
 
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}

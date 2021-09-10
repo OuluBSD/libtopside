@@ -260,8 +260,8 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 						fail = fail || loop.IsFailed();
 						ready = ready && loop.IsReady();
 					}
-					if (loop.IsWaitingSideInput()) waiting_inputs.Add(&loop);
-					if (loop.IsWaitingSideOutput()) waiting_outputs.Add(&loop);
+					if (loop.IsWaitingSideSink()) waiting_inputs.Add(&loop);
+					if (loop.IsWaitingSideSource()) waiting_outputs.Add(&loop);
 					++dbg_i;
 				}
 			}
@@ -340,31 +340,29 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& in : loop0.atoms) {
-		int in_conn = in->GetSideIn();
+		int in_conn = in->GetSideSinkId();
 		if (in_conn < 0)
 			continue;
 		
 		RTLOG("Trying to side-link id " << in_conn);
 		bool found = false;
 		for (AtomBaseRef& out : loop1.atoms) {
-			int out_conn = out->GetSideOut();
+			int out_conn = out->GetSideSrcId();
 			if (out_conn < 0)
 				continue;
 			
 			if (in_conn == out_conn) {
 				found = true;
 				
-				TODO
-				#if 0
-				if (!out->LinkSideIn(in)) {
-					AddError("Side-output refused linking to side-input");
+				if (!out->LinkSideSink(in)) {
+					AddError("Side-source refused linking to side-sink");
 					return false;
 				}
-				if (!in->LinkSideOut(out)) {
-					AddError("Side-input refused linking to side-output");
+				if (!in->LinkSideSource(out)) {
+					AddError("Side-sink refused linking to side-source");
 					return false;
 				}
-				#endif
+				
 				LOG(out->ToString() + "<> side-linked to " + in->ToString() + "<>");
 				break;
 			}
@@ -497,8 +495,8 @@ bool ScriptConnectionSolver::Process() {
 		}
 		
 		int conn_id = tmp_side_id_counter++;
-		accepted_in_node->last->SetSideInId(conn_id);
-		accepted_out_node->last->SetSideOutId(conn_id);
+		accepted_in_node->last->SetSideSinkId(conn_id);
+		accepted_out_node->last->SetSideSrcId(conn_id);
 		
 		LOG("Loop " << in->GetId() << " accepted loop " << accepted_out->GetId() << " with id " << conn_id);
 		

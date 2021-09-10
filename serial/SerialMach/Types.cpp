@@ -26,13 +26,9 @@ String GetSubAtomString(SubAtomCls t) {
 
 String GetAtomRoleString(AtomRole t) {
 	switch (t) {
-		case CUSTOMER:		return "customer";
-		case SOURCE:		return "source";
-		case SINK:			return "sink";
-		case CONVERTER:		return "converter";
-		case PIPE:			return "pipe";
-		case SIDE_SOURCE:	return "source";
-		case SIDE_SINK:		return "sink";
+		#define ATOM_ROLE(x) case x: return #x;
+		ATOM_ROLE_LIST
+		#undef ATOM_ROLE
 		default:			return "invalid";
 	}
 }

@@ -138,6 +138,8 @@ public:
 	void AltForward(FwdScope& fwd) override;
 	void AltStorePacket(Packet& p) override;
 	
+	void Visit(RuntimeVisitor& vis) override {}
+	
 	void SetPreset(int i) {preset_i = i;}
 	String GetLastError() const {return last_error;}
 	
