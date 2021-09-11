@@ -101,6 +101,7 @@ public:
 	}
 	
 	void InitializeContainer(Class* c, ValDevCls vd) {
+		ASSERT(vd.IsValid());
 		Format val_fmt = GetDefaultFormat(vd);
 		ASSERT(val_fmt.IsValid());
 		

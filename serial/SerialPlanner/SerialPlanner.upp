@@ -18,6 +18,7 @@ file
 	LoaderBase.inl highlight cpp,
 	Loop.cpp,
 	Machine.cpp,
+	Drivers.cpp,
 	System.cpp,
 	TopChain.cpp,
 	_ readonly separator;

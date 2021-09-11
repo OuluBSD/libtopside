@@ -234,6 +234,24 @@ public:
 	
 };
 
+class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader> {
+public:
+	using Base = ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader>;
+	RTTI_DECL1(ScriptDriverLoader, Base)
+	
+public:
+	//Array<ScriptTopChainLoader>	chains;
+	
+	
+	ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def);
+	void		Visit(RuntimeVisitor& vis) override {} //vis | chains;}
+	String		GetTreeString(int indent) override;
+	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		ForwardLoops() override;
+	void		LoopStatus() override;
+	void		SetRetryDeep() override;
+	
+};
 
 class ScriptMachineLoader : public ScriptLoaderBase<Script::MachineDefinition, ScriptSystemLoader> {
 public:
@@ -241,7 +259,8 @@ public:
 	RTTI_DECL1(ScriptMachineLoader, Base)
 	
 public:
-	Array<ScriptTopChainLoader>	chains;
+	Array<ScriptTopChainLoader>		chains;
+	Array<ScriptDriverLoader>		drivers;
 	
 	
 	ScriptMachineLoader(ScriptSystemLoader& parent, int id, Script::MachineDefinition& def);

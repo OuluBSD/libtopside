@@ -100,6 +100,7 @@ typedef enum : byte {
 
 
 #define ATOM_ROLE_LIST \
+	ATOM_ROLE(DRIVER) \
 	ATOM_ROLE(CUSTOMER) \
 	ATOM_ROLE(SOURCE) \
 	ATOM_ROLE(SINK) \

@@ -60,6 +60,7 @@ public:
 };
 
 
+
 NAMESPACE_SERIAL_END
 
 #endif

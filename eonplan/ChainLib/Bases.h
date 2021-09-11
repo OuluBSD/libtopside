@@ -1,4 +1,5 @@
 
+BASE(CenterDriver)
 BASE(CustomerBaseT)
 BASE(CenterSourceAsync)
 BASE(CenterSinkSync)
@@ -7,6 +8,7 @@ BASE(CenterSideSourceAsync)
 BASE(CenterSideSinkAsync)
 BASE(CenterSide)
 BASE(DummySideAsync)
+BASE(AccelSinkPolling)
 BASE(AccelSideAsync)
 
 BASE_FLAG(CenterSourceAsync,		store_packet)

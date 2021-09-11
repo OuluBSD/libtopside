@@ -67,7 +67,7 @@ void Main() {
 		//verifier.AddSystem<EonLoader>();
 		
 		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
-		auto& customer	= ent.AddAtomWith<CenterCustomer>		(VD(CENTER,ORDER));
+		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));
 		auto& src		= ent.AddAtomWith<TestRealtimeSrc>	(VD(CENTER,AUDIO));
 		auto& sink		= ent.AddAtomWith<TestRealtimeSink>	(VD(CENTER,RECEIPT));
 		customer << src << sink << customer;

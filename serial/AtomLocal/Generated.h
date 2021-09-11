@@ -186,7 +186,7 @@ public:
 
 };
 
-class SdlContextAtom : public CenterSideSourceAsync<SdlContextAtom> {
+class SdlContextAtom : public CenterDriver<SdlContextAtom> {
 
 public:
 	RTTI_DECL1(SdlContextAtom, BaseT)
@@ -200,7 +200,7 @@ public:
 
 };
 
-class SdlEventAtom : public CenterSideSinkAsync<SdlEventAtom> {
+class SdlEventAtom : public CenterSideSourceAsync<SdlEventAtom> {
 
 public:
 	RTTI_DECL1(SdlEventAtom, BaseT)
@@ -214,7 +214,7 @@ public:
 
 };
 
-class SdlVideoAtom : public CenterSideSinkAsync<SdlVideoAtom> {
+class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom> {
 
 public:
 	RTTI_DECL1(SdlVideoAtom, BaseT)
@@ -228,12 +228,13 @@ public:
 
 };
 
-class SdlAudioAtom : public CenterSideSinkAsync<SdlAudioAtom> {
+class SdlAudioAtom : public CenterSinkPolling<SdlAudioAtom> {
 
 public:
 	RTTI_DECL1(SdlAudioAtom, BaseT)
 	COPY_PANIC(SdlAudioAtom)
 	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();

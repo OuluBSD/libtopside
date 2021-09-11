@@ -63,10 +63,10 @@ HEADER_INHERITS(	VideoShaderBuffer,	SystemVideoSink)
 #endif
 
 
-HEADER2(			SdlContextAtom,		CenterSideSourceAsync,	side_source,	CenterReceipt,	CenterOrder)
-HEADER2(			SdlEventAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
-HEADER2(			SdlVideoAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
-HEADER2(			SdlAudioAtom,		CenterSideSinkAsync,	side_sink,		CenterReceipt,	CenterOrder)
+HEADER2(			SdlContextAtom,		CenterDriver,			driver,		CenterReceipt,	CenterReceipt)
+HEADER2(			SdlEventAtom,		CenterSideSourceAsync,	source,		CenterOrder,	CenterEvent)
+HEADER2(			SdlVideoAtom,		AccelSinkPolling,		sink,		AccelVideo,		AccelReceipt)
+HEADER2 (			SdlAudioAtom,		CenterSinkPolling,		sink,		CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)

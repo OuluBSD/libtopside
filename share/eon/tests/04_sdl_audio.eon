@@ -1,0 +1,18 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop audio: {
+			center.customer: true;
+			center.audio.src.dbg_generator: true;
+			sdl.audio: true;
+		};
+		
+	};
+
+};
+

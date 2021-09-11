@@ -99,6 +99,19 @@ String MachineDefinition::GetTreeString(int indent) const {
 	for (ChainDefinition& def : chains) {
 		s << def.GetTreeString(indent+1) << "\n";
 	}
+	for (DriverDefinition& def : drivers) {
+		s << def.GetTreeString(indent+1) << "\n";
+	}
+	return s;
+}
+
+String DriverDefinition::GetTreeString(int indent) const {
+	String s;
+	s.Cat('\t', indent);
+	s << "driver " << id.ToString() << ":\n";
+	for (const Statement& stmt : stmts) {
+		s << stmt.GetTreeString(indent+1) << "\n";
+	}
 	return s;
 }
 
@@ -318,8 +331,49 @@ bool Parser::ParseMachineScope(Script::MachineDefinition& mach) {
 			if (!ParseChain(mach.chains.Add()))
 				return false;
 		}
+		else if (IsId("driver")) {
+			if (!ParseDriverDefinition(mach.drivers.Add()))
+				return false;
+		}
 		else {
 			if (!ParseStmt(mach.stmts.Add()))
+				return false;
+		}
+	}
+	
+	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseDriverDefinition(Script::DriverDefinition& def) {
+	PASS_ID("driver")
+	
+	if (!ParseId(def.id))
+		return false;
+	
+	PASS_CHAR(':')
+	
+	if (IsChar('{')) {
+		if (!ParseDriverDefinitionScope(def))
+			return false;
+	}
+	else {
+		AddError("Expected driver scope");
+		return false;
+	}
+	
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseDriverDefinitionScope(Script::DriverDefinition& def) {
+	PASS_CHAR('{')
+	
+	while (!IsChar('}')) {
+		if (EmptyStatement())
+			continue;
+		else {
+			if (!ParseStmt(def.stmts.Add()))
 				return false;
 		}
 	}

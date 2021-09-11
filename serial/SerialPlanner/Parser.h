@@ -51,6 +51,16 @@ struct ChainDefinition {
 	void GetSubChainPointers(LinkedList<Script::ChainDefinition*>& ptrs);
 };
 
+struct DriverDefinition {
+	LinkedList<Statement> stmts;
+	Id id;
+	
+	void operator=(const DriverDefinition& v) {id = v.id; stmts <<= v.stmts;}
+	String GetTreeString(int indent=0) const;
+	String ToString() const;
+	
+};
+
 struct Value {
 	typedef enum : byte {
 		VAL_INVALID,
@@ -91,6 +101,7 @@ struct Value {
 struct MachineDefinition {
 	LinkedList<ChainDefinition>		chains;
 	LinkedList<Statement>			stmts;
+	LinkedList<DriverDefinition>	drivers;
 	Id								id;
 	
 	void operator=(const MachineDefinition& v) {id = v.id; chains <<= v.chains;}
@@ -147,6 +158,8 @@ class Parser : public CParser {
 	bool ParseMachineScope(Script::MachineDefinition&);
 	bool ParseState(Script::State&);
 	bool ParseStateScope(Script::State&);
+	bool ParseDriverDefinition(Script::DriverDefinition&);
+	bool ParseDriverDefinitionScope(Script::DriverDefinition&);
 	
 	void AddError(String msg);
 	
