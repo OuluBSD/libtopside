@@ -11,6 +11,7 @@ class Action;
 
 class ScriptLoader;
 class ScriptLoopLoader;
+class ScriptDriverLoader;
 
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
 
@@ -34,6 +35,7 @@ protected:
 	friend class ActionNode;
 	friend class ::TS::Serial::ScriptLoader;
 	friend class ::TS::Serial::ScriptLoopLoader;
+	friend class ::TS::Serial::ScriptDriverLoader;
 	
 	static const bool use_debugging_order = true;
 	
@@ -189,6 +191,7 @@ protected:
 	friend class ActionPlannerWrapper;
 	friend class ::TS::Serial::ScriptLoader;
 	friend class ::TS::Serial::ScriptLoopLoader;
+	friend class ::TS::Serial::ScriptDriverLoader;
 	
 	
 	struct Atom : Moveable<Atom> {

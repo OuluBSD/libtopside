@@ -1,14 +1,20 @@
 #include "NonCtrlSDL2.h"
 #include <OOSDL2/OOSDL2.h>
-#include <EcsLib/EcsLib.h>
-#include <Physics/Physics.h>
+#include <SerialLib/SerialLib.h>
+//#include <Physics/Physics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 bool SingleMachine::Open(bool gui) {
+	using namespace Serial;
+	
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
+	
+	TODO
+	
+	#if 0
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef ents = mach.Add<EntityStore>();
@@ -59,9 +65,11 @@ bool SingleMachine::Open(bool gui) {
     pool->ConnectEverything();
     
 	return true;
+	#endif
 }
 
 void SingleMachine::Close() {
+	using namespace Serial;
 	Machine& mach = GetActiveMachine();
 	mach.Stop();
 }

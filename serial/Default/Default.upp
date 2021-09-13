@@ -1,5 +1,9 @@
 description "\377B113,42,150";
 
+uses(GUI & !CTRL) NonCtrlSDL2;
+
+uses(GUI) Graphics;
+
 file
 	Default.h,
 	Default.cpp;

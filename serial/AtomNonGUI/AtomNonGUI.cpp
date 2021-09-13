@@ -1,10 +1,12 @@
 #include "Internal.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
 
 
 bool SingleMachine::Open(bool gui) {
+	using namespace Serial;
+	
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
@@ -22,9 +24,11 @@ bool SingleMachine::Open(bool gui) {
 }
 
 void SingleMachine::Close() {
+	using namespace Serial;
+	
 	Machine& mach = GetActiveMachine();
 	mach.Stop();
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_TOPSIDE_END

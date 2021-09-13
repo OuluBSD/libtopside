@@ -230,6 +230,11 @@ AtomTypeCls SdlContextAtom::GetType() const
 	return GetAtomType();
 }
 
+void SdlContextAtom::Forward(FwdScope& fwd)
+{
+	AltForward(fwd);
+}
+
 AtomTypeCls SdlEventAtom::GetAtomType()
 {
 	return ATOM0(SDL_EVENT_ATOM, SOURCE, CENTER, ORDER, CENTER, EVENT);

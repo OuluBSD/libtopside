@@ -24,13 +24,13 @@ Size GetSysFontTextSize(RawSysFont* fnt, String s) {
 }
 
 void SysFont::Clear() {
-	if (raw && TS::OOSDL2::IsSDL2Open())
+	if (raw && TS::SERIAL::OOSDL2::IsSDL2Open())
 		TTF_CloseFont(raw);
 	raw = 0;
 }
 
 void SysImage::Clear() {
-	if (raw && TS::OOSDL2::IsSDL2Open()) {
+	if (raw && TS::SERIAL::OOSDL2::IsSDL2Open()) {
 		if (--raw->refcount == 0)
 			SDL_FreeSurface(raw);
 	}

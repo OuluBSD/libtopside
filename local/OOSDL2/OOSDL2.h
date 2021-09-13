@@ -10,12 +10,12 @@
 	#include <Geometry/Geometry.h>
 #endif
 
-#include <TemplatesMach/TemplatesMach.h>
+#include <SerialMach/SerialMach.h>
 
 
 #define NAMESPACE_SDL2_NAME		OOSDL2
-#define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SDL2_NAME {
-#define NAMESPACE_SDL2_END		}}
+#define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SERIAL_NAME { namespace NAMESPACE_SDL2_NAME {
+#define NAMESPACE_SDL2_END		}}}
 
 NAMESPACE_SDL2_BEGIN
 
@@ -101,8 +101,8 @@ class AudioOutput :
 private:
 	SDL_AudioSpec audio_fmt, audio_desired;
 	SDL_AudioDeviceID audio_dev = 0;
-	AudioPacketConsumer consumer;
-	AudioVolatileBuffer buf;
+	Serial::PacketConsumer consumer;
+	Serial::PacketBuffer buf;
 	dword frames = 0;
 	
 	bool Open0() override;
@@ -121,7 +121,7 @@ public:
 	dword			GetFrameCount() const {return frames;}
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
-	Audio&			GetAudio() {return buf;}
+	//Value&			GetValue() {return buf;}
 	
 };
 

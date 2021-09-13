@@ -47,13 +47,13 @@ public:
 	
 	void UpdateConfig(double dt) override {
 		ASSERT(customer);
-		{
+		/*{
 			InterfaceSourceRef ss = AtomT::GetSource();
 			InterfaceSource* o = ss.Get();
 			TypeCls cls = AsTypeCls<DefaultInterfaceSource>();
 			void* p = o->GetBasePtr(cls);
 			DefaultInterfaceSource* pp = (DefaultInterfaceSource*)p;
-		}
+		}*/
 		DefaultInterfaceSourceRef src = AtomT::GetSource();
 		ASSERT(src);
 		if (src) {
@@ -274,8 +274,15 @@ template <class T>
 class CenterDriver : public Atom<T> {
 	
 protected:
+	using CustomerData = AtomBase::CustomerData;
+	
+	One<CustomerData>		customer;
+	
+	
+protected:
 	
 	using AtomT = Atom<T>;
+	
 	
 public:
 	using BaseT = CenterDriver<T>;
@@ -283,23 +290,36 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!this->AltInitialize(ws)) return false;
-		
+		customer.Create();
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->Add(r);
 		return true;
 	}
 	
 	void Uninitialize() override {
 		this->AltUninitialize();
-		
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
 	}
 	
 	void Forward(FwdScope& fwd) override {
 		RTLOG("CenterDriver<T>::Forward");
+		Panic("not implemented");
 	}
 
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+	void UpdateConfig(double dt) override {
+		ASSERT(customer);
+		customer->cfg.Update(dt, true);
+	}
+	
+	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
 	
 };
 

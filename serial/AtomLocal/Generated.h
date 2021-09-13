@@ -197,6 +197,7 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
+	void Forward(FwdScope& fwd) override;
 
 };
 

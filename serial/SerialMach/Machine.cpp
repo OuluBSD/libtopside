@@ -163,6 +163,14 @@ void ClearActiveMachine() {
 	__active_machine = 0;
 }
 
+
+NAMESPACE_SERIAL_END
+
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+
 void SingleMachine::Run(bool gui, void(*fn)()) {
 	if (Open(gui)) {
 		fn();
@@ -170,10 +178,13 @@ void SingleMachine::Run(bool gui, void(*fn)()) {
 	}
 }
 
+
+#if 0
 #if UPP_VERSION
 bool SingleMachine::Open(bool gui) {TODO return false;}
 void SingleMachine::Close() {TODO}
 #endif
+#endif
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_TOPSIDE_END

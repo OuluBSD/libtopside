@@ -150,21 +150,28 @@ void SetActiveMachine(Machine& m);
 void ClearActiveMachine();
 
 
+NAMESPACE_SERIAL_END
+
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+
 class SingleMachine {
-	Machine mach;
+	Serial::Machine mach;
 	
 	bool Open(bool gui);
 	void Close();
 	
 public:
-	SingleMachine() {SetActiveMachine(mach);}
-	~SingleMachine() {ClearActiveMachine();}
+	SingleMachine()		{Serial::SetActiveMachine(mach);}
+	~SingleMachine()	{Serial::ClearActiveMachine();}
 	
 	void Run(bool gui, void(*fn)());
 	
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_TOPSIDE_END
 
 #endif

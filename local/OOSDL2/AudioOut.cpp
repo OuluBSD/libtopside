@@ -38,6 +38,11 @@ bool AudioOutput::IsSampleSigned() const {
 }
 
 void AudioOutput::SinkCallback(Uint8* output, int size) {
+	
+	TODO
+	
+	#if 0
+	
 	if (buf.IsEmpty() || !output) {
 		if (0) {
 			RTLOG("AudioOutput::SinkCallback: empty buffer");
@@ -88,9 +93,16 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	}
 	
 	frames++;
+	
+	#endif
+	
 }
 
 bool AudioOutput::Open0() {
+	TODO
+	
+	#if 0
+	
 	SDL_zero(audio_fmt);
 	audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_desired, &audio_fmt, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 	if (audio_dev == 0) {
@@ -146,6 +158,7 @@ bool AudioOutput::Open0() {
 	    
 	    return true;
 	}
+	#endif
 }
 
 void AudioOutput::Close0() {

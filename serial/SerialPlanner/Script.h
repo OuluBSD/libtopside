@@ -101,7 +101,7 @@ public:
 	
 	LoaderParent&				parent;
 	ParserDef&					def;
-	ScriptStatus					status = IN_BEGINNING;
+	ScriptStatus				status = IN_BEGINNING;
 	String						err_str;
 	int							id = -1;
 	bool						any_waiting = false;
@@ -132,6 +132,7 @@ public:
 	virtual void		ForwardLoops() = 0;
 	virtual void		LoopStatus() = 0;
 	virtual void		SetRetryDeep() = 0;
+	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
 	
 };
 
@@ -216,9 +217,9 @@ public:
 	enum {NORMAL, SPLITTED_CHAIN, SPLITTED_LOOPS};
 	
 	Array<ScriptChainLoader>		chains;
-	Array<ScriptTopChainLoader>	subchains;
+	Array<ScriptTopChainLoader>		subchains;
 	ScriptTopChainLoader*			chain_parent;
-	bool						use_subchains = false;
+	bool							use_subchains = false;
 	
 	
 	ScriptTopChainLoader(int mode, ScriptMachineLoader& parent, ScriptTopChainLoader* chain_parent, int id, Script::ChainDefinition& def);
@@ -235,21 +236,30 @@ public:
 };
 
 class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader> {
+	
+protected:
+	Vector<Script::WorldState>	atoms;
+	Script::ActionPlanner		planner;  // required for Script::Action -> Script:WorldState -> key-index
+	
+	void		FindAtoms();
+	
 public:
 	using Base = ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader>;
 	RTTI_DECL1(ScriptDriverLoader, Base)
 	
 public:
-	//Array<ScriptTopChainLoader>	chains;
 	
 	
 	ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def);
 	void		Visit(RuntimeVisitor& vis) override {} //vis | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
+	void		Forward();
+	bool		Load();
 	
 };
 
@@ -267,6 +277,7 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
@@ -286,6 +297,7 @@ public:
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | machs;}
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
@@ -359,12 +371,16 @@ protected:
 	bool		Load(String content, String filepath="temp");
 	bool		LoadAtomilationUnit(Script::AtomilationUnit& cunit);
 	bool		LoadGlobalScope(Script::GlobalScope& list);
-	LoopRef	ResolveLoop(Script::Id& id);
 	bool		ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1);
 	bool		ImplementScript();
 	
 	Script::State*	FindState(const Script::Id& id);
 	
+	
+protected:
+	friend class ScriptDriverLoader;
+	
+	LoopRef		ResolveLoop(Script::Id& id);
 	
 	
 };

@@ -21,6 +21,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	AtomTypeCls type = GetType();
 	switch (type.role) {
+		case DRIVER:		ForwardDriver(fwd);		return;
 		case CUSTOMER:		ForwardCustomer(fwd);	return;
 		case SOURCE:		ForwardInput(fwd);		return;
 		case SINK:			ForwardOutput(fwd);		return;
@@ -31,6 +32,10 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	}
 	
 	TODO
+}
+
+void AtomBase::ForwardDriver(FwdScope& fwd) {
+	Forward(fwd);
 }
 
 void AtomBase::ForwardCustomer(FwdScope& fwd) {

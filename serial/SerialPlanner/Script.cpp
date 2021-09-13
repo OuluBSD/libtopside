@@ -137,6 +137,13 @@ void ScriptLoader::DumpErrors() {
 }
 
 bool ScriptLoader::ImplementScript() {
+	Vector<ScriptDriverLoader*> drivers;
+	loader->GetDrivers(drivers);
+	for (ScriptDriverLoader* dl: drivers) {
+		if (!dl->Load())
+			return false;
+	}
+	
 	Vector<ScriptLoopLoader*> loops;
 	loader->GetLoops(loops);
 	for (ScriptLoopLoader* ll : loops) {

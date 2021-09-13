@@ -3,7 +3,9 @@
 
 #include <Local/Local.h>
 
-#define NAMESPACE_SERIAL_BEGIN	namespace TS { namespace Serial {
+#define NAMESPACE_SERIAL_NAME	Serial
+#define SERIAL					Serial
+#define NAMESPACE_SERIAL_BEGIN	namespace TS { namespace NAMESPACE_SERIAL_NAME {
 #define NAMESPACE_SERIAL_END	}}
 
 #include "Generated.h"

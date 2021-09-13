@@ -134,6 +134,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	ClassDecl& fcls_atomtype = ns_serial.GetAddClassDecl("AtomTypeCls");
 	ClassDecl& fcls_rtvis = ns_serial.GetAddClassDecl("RuntimeVisitor");
 	ClassDecl& fcls_packet = ns_serial.GetAddClassDecl("Packet");
+	ClassDecl& fcls_fwdscope = ns_serial.GetAddClassDecl("FwdScope");
 	
 	TypeExpr te_atomtype;
 	te_atomtype.SetMove(fcls_atomtype);
@@ -150,6 +151,10 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	TypeExpr te_packet;
 	te_packet.SetReference(fcls_packet);
 	cu.Activate(te_packet);
+	
+	TypeExpr te_fwdscope;
+	te_fwdscope.SetReference(fcls_fwdscope);
+	cu.Activate(te_fwdscope);
 	
 	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$ATOM_TYPE_LIST");
 	MExpr& ms_deflist_expr = ms_deflist;
@@ -342,6 +347,18 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			using_expr.SetIdTemplate("Ref");
 			using_expr.Add().SetId(h_name);
 			using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
+		}
+		
+		// void Forward(FwdScope& fwd) override;
+		if (base.flags.Find("forward") >= 0) {
+			FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("Forward");
+			Function& fn = fis.AddFunction();
+			fn.SetReturn(te_void).SetOverrideAnonymous();
+			fn.AddParam("fwd", te_fwdscope);
+			if (h.args.Find("ALT_LINK") >= 0)
+				fn.SetAltImpl();
+			else
+				fn.SetExternalImpl();
 		}
 		
 		// void StorePacket(Packet& p) override;

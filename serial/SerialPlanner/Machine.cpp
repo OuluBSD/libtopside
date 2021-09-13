@@ -43,8 +43,22 @@ void ScriptMachineLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	}
 }
 
+void ScriptMachineLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
+	for (ScriptDriverLoader& loader : drivers) {
+		loader.GetDrivers(v);
+	}
+}
+
 void ScriptMachineLoader::ForwardLoops() {
-	TODO
+	
+	for (ScriptDriverLoader& loader : drivers) {
+		ScriptStatus s = loader.GetStatus();
+		if (s != ScriptStatus::OUTPUT_IS_WAITING &&
+			s != ScriptStatus::INPUT_IS_WAITING &&
+			s != ScriptStatus::READY) {
+			loader.Forward();
+		}
+	}
 	
 	for (ScriptTopChainLoader& loader : chains) {
 		ScriptStatus s = loader.GetStatus();
@@ -54,10 +68,14 @@ void ScriptMachineLoader::ForwardLoops() {
 			loader.Forward();
 		}
 	}
+	
 }
 
 void ScriptMachineLoader::LoopStatus() {
-	TODO
+	
+	for (ScriptDriverLoader& loader : drivers) {
+		CheckStatus(loader.GetStatus());
+	}
 	
 	for (ScriptTopChainLoader& loader : chains) {
 		CheckStatus(loader.GetStatus());

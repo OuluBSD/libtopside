@@ -7,5 +7,7 @@ file
 
 mainconfig
 	"" = "",
-	"" = "DEBUG_RT";
+	"" = "DEBUG_RT",
+	"" = "GUI",
+	"" = "GUI DEBUG_RT";
 

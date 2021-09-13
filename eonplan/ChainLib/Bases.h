@@ -11,6 +11,7 @@ BASE(DummySideAsync)
 BASE(AccelSinkPolling)
 BASE(AccelSideAsync)
 
+BASE_FLAG(CenterDriver,				forward)
 BASE_FLAG(CenterSourceAsync,		store_packet)
 BASE_FLAG(CenterSinkSync,			ival_sink_proc)
 //BASE_FLAG(CenterSideAsync,			store_packet)

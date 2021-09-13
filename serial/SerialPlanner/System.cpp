@@ -51,6 +51,12 @@ void ScriptSystemLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	}
 }
 
+void ScriptSystemLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
+	for (ScriptMachineLoader& loader : machs) {
+		loader.GetDrivers(v);
+	}
+}
+
 void ScriptSystemLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;

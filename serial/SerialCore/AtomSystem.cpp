@@ -38,7 +38,7 @@ void AtomSystem::Update(double dt) {
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& c : customers) {
-		RTLOG("AtomSystem::Update: customer #" << dbg_i);
+		RTLOG("AtomSystem::Update: customer #" << dbg_i << " (" << c->ToString() << ")");
 		c->UpdateConfig(dt);
 		WhenEnterAtomForward(&*c);
 		

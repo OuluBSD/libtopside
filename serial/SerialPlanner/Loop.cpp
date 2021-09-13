@@ -286,8 +286,6 @@ bool ScriptLoopLoader::Load() {
 		return false;
 	}
 	
-	//ScriptScope& scope = loader.scopes.Top();
-	
 	
 	// Implement found loop
 	struct AddedAtom {

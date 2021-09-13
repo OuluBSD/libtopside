@@ -47,6 +47,7 @@ protected:
 	
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
+	void					ForwardDriver(FwdScope& fwd);
 	void					ForwardCustomer(FwdScope& fwd);
 	void					ForwardInput(FwdScope& fwd);
 	void					ForwardOutput(FwdScope& fwd);
