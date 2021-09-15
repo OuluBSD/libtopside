@@ -1,4 +1,4 @@
-#include <AtomCompleteDebug/AtomCompleteDebug.h>
+#include <Complete/Complete.h>
 //#include <SerialAudioCore/SerialAudioCore.h>
 //#include <SerialMultimedia/SerialMultimedia.h>
 
@@ -38,15 +38,17 @@ bool Initializer() {
 }
 
 
+size_t break_addr = 0;
+bool verify = false;
+MAKE_STATIC(Serial::MachineVerifier, verifier);
 
-void Main() {
+
+void SerialInitializer() {
 	using namespace Serial;
 	
 	SetCoutLog();
 	//Serial::Factory::Dump();
 	
-	size_t break_addr = 0;;
-	bool verify = false;
 	
 	if (1)
 		verify = true;
@@ -58,7 +60,6 @@ void Main() {
 	if (!Initializer())
 		return;
 	
-	MAKE_STATIC(MachineVerifier, verifier);
 	if (verify) {
 		verifier.AddSystem<RegistrySystem>();
 		verifier.AddSystem<LoopStore>();
@@ -75,7 +76,10 @@ void Main() {
 		sink.SetSinkFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
 		
 	}
-	
+}
+
+
+void Runner(String app_name) {
 	DUMP(eon_file);
 	DUMPC(args);
 	if (!break_addr)
@@ -84,12 +88,21 @@ void Main() {
 		Serial::DebugMain(eon_file, args, verify ? &verifier : 0, 1, break_addr);
 }
 
+void Startup() {
+	LOG("<-- Startup -->");
+}
 
 NAMESPACE_TOPSIDE_END
 
 
+
+APP_INITIALIZE_(TS::SerialInitializer)
+APP_STARTUP_(TS::Startup)
+
+
 #ifdef flagGUI
-GUI_APP_MAIN {TS::Main();}
+//RENDER_APP_MAIN {TS::Serial::SimpleSerialMain("AtomShell");}
+RENDER_APP_MAIN {TS::Runner("AtomShell");}
 #else
-CONSOLE_APP_MAIN {TS::Main();}
+CONSOLE_APP_MAIN {TS::Runner("AtomShell");}
 #endif

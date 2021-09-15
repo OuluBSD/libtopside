@@ -287,15 +287,7 @@ bool ScriptLoopLoader::Load() {
 	}
 	
 	
-	// Implement found loop
-	struct AddedAtom {
-		AtomBaseRef r;
-		int plan_i;
-		int seg_i;
-		int side_sink;
-		int side_src;
-	};
-	Array<AddedAtom> added_atoms;
+	added_atoms.Clear();
 	
 	int seg_i = segments.GetCount()-1;
 	ScriptLoopSegment& seg = segments.Top();
@@ -419,6 +411,14 @@ bool ScriptLoopLoader::Load() {
 	return true;
 }
 
+bool ScriptLoopLoader::PostInitialize() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		AddedAtom& a = added_atoms[i];
+		if (!a.r->PostInitialize())
+			return false;
+	}
+	return true;
+}
 
 SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == INPUT_IS_WAITING);

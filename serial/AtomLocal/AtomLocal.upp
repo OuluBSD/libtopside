@@ -4,6 +4,8 @@ uses
 	SerialLib,
 	SerialPlanner;
 
+uses(GUI) AtomSDL2;
+
 library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
 library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;

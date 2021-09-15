@@ -11,6 +11,7 @@ AudioOutput::AudioOutput(Context* ctx) : Component(ctx) {
 		2,
 		1024
 	);
+	fmt.SetAudio(DevCls::CENTER, SoundSample::FLT_LE, 2, 44100, 1024);
 }
 
 int AudioOutput::GetSampleSize() {
@@ -39,10 +40,6 @@ bool AudioOutput::IsSampleSigned() const {
 
 void AudioOutput::SinkCallback(Uint8* output, int size) {
 	
-	TODO
-	
-	#if 0
-	
 	if (buf.IsEmpty() || !output) {
 		if (0) {
 			RTLOG("AudioOutput::SinkCallback: empty buffer");
@@ -53,35 +50,19 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	if (consumer.IsEmptySource())
 		consumer.SetSource(buf);
 
-	AudioFormat fmt = buf.GetFormat();
 	ASSERT(size == fmt.GetFrameSize());
 	
-	if (buf.GetQueueSize() > 0 || consumer.HasLeftover()) {
-		
-		off32 begin_offset = buf.GetOffset();
-		if (0) {
-			RTLOG("AudioOutput::SinkCallback: trying to consume " << begin_offset.ToString());
-			RTLOG("AudioOutput::SinkCallback: dumping");
-			buf.Dump();
-		}
-		
-		//consumer.TestSetOffset(begin_offset);
-		
+	if (buf.GetCount() > 0 || consumer.HasLeftover()) {
 		consumer.SetDestination(fmt, output, size);
 		consumer.ConsumeAll(false);
 		consumer.ClearDestination();
+		if (consumer.GetLastMemoryBytes() != size) {
+			RTLOG("OOSDL2::AudioOutput::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
+		}
 		
-		off32 end_offset = consumer.GetOffset();
-		off32 diff = off32::GetDifference(begin_offset, end_offset);
-		if (diff) {
-			RTLOG("AudioOutput::SinkCallback: device consumed count=" << diff.ToString());
-			buf.RemoveFirst(diff.value);
-		}
-		else if (consumer.HasLeftover()) {
-			RTLOG("AudioOutput::SinkCallback: device consumed packet partially");
-		}
-		else if (!consumer.HasLeftover()) {
-			RTLOG("error: AudioOutput::SinkCallback: device error");
+		int consumed_count = consumer.GetCount();
+		if (consumed_count) {
+			RTLOG("OOSDL2::AudioOutput::SinkCallback: device consumed count=" << consumed_count);
 		}
 	}
 	else {
@@ -94,15 +75,10 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	
 	frames++;
 	
-	#endif
-	
 }
 
 bool AudioOutput::Open0() {
-	TODO
-	
-	#if 0
-	
+	auto& fmt = this->fmt.aud;
 	SDL_zero(audio_fmt);
 	audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_desired, &audio_fmt, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 	if (audio_dev == 0) {
@@ -115,7 +91,6 @@ bool AudioOutput::Open0() {
 	        LOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
 	    }
 	    
-	    AudioFormat fmt;
 	    #if CPU_LITTLE_ENDIAN
 	    if (IsSampleFloating()) {
 	        fmt.type = GetSampleSize() == 4 ? SoundSample::FLT_LE : SoundSample::DBL_LE;
@@ -150,7 +125,7 @@ bool AudioOutput::Open0() {
 	    fmt.sample_rate = audio_fmt.samples;
 	    fmt.channels = audio_fmt.channels;
 		
-	    buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
+	    //buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    
@@ -158,7 +133,6 @@ bool AudioOutput::Open0() {
 	    
 	    return true;
 	}
-	#endif
 }
 
 void AudioOutput::Close0() {

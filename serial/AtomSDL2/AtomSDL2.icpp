@@ -1,0 +1,25 @@
+#include "AtomSDL2.h"
+
+
+NAMESPACE_UPP
+
+
+
+INITBLOCK {
+	using namespace TS::Serial;
+	
+	/*Serial::Factory::RegisterAtom<SDL2GameControllerBase>();
+	Serial::Factory::RegisterAtom<SDL2EventsBase>();
+	Serial::Factory::RegisterAtom<SDL2JoystickBase>();
+	Serial::Factory::RegisterAtom<SDL2AudioInputBase>();
+	Serial::Factory::RegisterAtom<SDL2FontBase>();
+	Serial::Factory::RegisterAtom<SDL2SensorBase>();
+	Serial::Factory::RegisterAtom<SDL2ImageBase>();
+	Serial::Factory::RegisterAtom<SDL2ScreenBase>();
+	Serial::Factory::RegisterAtom<SDL2TimerBase>();
+	Serial::Factory::RegisterAtom<SDL2AudioOutputBase>();*/
+	
+}
+
+END_UPP_NAMESPACE
+

@@ -1,6 +1,6 @@
 uses
-	AtomCompleteDebug,
-	AtomLocal;
+	AtomLocal,
+	Complete;
 
 file
 	AtomShell.cpp;
@@ -9,5 +9,6 @@ mainconfig
 	"" = "",
 	"" = "DEBUG_RT",
 	"" = "GUI",
-	"" = "GUI DEBUG_RT";
+	"" = "GUI DEBUG_RT",
+	"" = "GUI DEBUG_RT DEBUG_ATOM";
 

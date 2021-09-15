@@ -18,7 +18,7 @@ LoopId Loop::GetNextId() {
 }
 
 Loop* Loop::GetParent() const {
-	return RefScopeParent<LoopParent>::GetParent().b;
+	return RefScopeParent<LoopParent>::GetParentUnsafe().b;
 }
 
 Machine& Loop::GetMachine() const {

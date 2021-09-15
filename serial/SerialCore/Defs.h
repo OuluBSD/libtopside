@@ -5,8 +5,8 @@
 
 #define VIS_THIS(t) vis.VisitThis<t>(this);
 
-#define ATOM_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
-#define ATOM_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this); x;}
+#define ATOM_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this);}
+#define ATOM_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); x;}
 #define ATOM_DEF_MAKE_ACTION static bool MakeAction(Script::Action& act) {return false;}
 
 #define ATOM_MAKE_ACTION_BEGIN static bool MakeAction(const AtomTypeCls& cls, Script::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.iface.side;

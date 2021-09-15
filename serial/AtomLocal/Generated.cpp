@@ -223,6 +223,7 @@ AtomTypeCls SdlContextAtom::GetAtomType()
 void SdlContextAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<CenterDriver<SdlContextAtom>>(this);
+	vis.VisitThis<SDL2ContextBase>(this);
 }
 
 AtomTypeCls SdlContextAtom::GetType() const
@@ -235,36 +236,6 @@ void SdlContextAtom::Forward(FwdScope& fwd)
 	AltForward(fwd);
 }
 
-AtomTypeCls SdlEventAtom::GetAtomType()
-{
-	return ATOM0(SDL_EVENT_ATOM, SOURCE, CENTER, ORDER, CENTER, EVENT);
-}
-
-void SdlEventAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<CenterSideSourceAsync<SdlEventAtom>>(this);
-}
-
-AtomTypeCls SdlEventAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-AtomTypeCls SdlVideoAtom::GetAtomType()
-{
-	return ATOM0(SDL_VIDEO_ATOM, SINK, ACCEL, VIDEO, ACCEL, RECEIPT);
-}
-
-void SdlVideoAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<AccelSinkPolling<SdlVideoAtom>>(this);
-}
-
-AtomTypeCls SdlVideoAtom::GetType() const
-{
-	return GetAtomType();
-}
-
 AtomTypeCls SdlAudioAtom::GetAtomType()
 {
 	return ATOM0(SDL_AUDIO_ATOM, SINK, CENTER, AUDIO, CENTER, RECEIPT);
@@ -273,6 +244,7 @@ AtomTypeCls SdlAudioAtom::GetAtomType()
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<CenterSinkPolling<SdlAudioAtom>>(this);
+	vis.VisitThis<SDL2AudioOutputBase>(this);
 }
 
 AtomTypeCls SdlAudioAtom::GetType() const

@@ -72,13 +72,13 @@ public:
 	LoopRef				GetAddEmpty(String name);
 	void				CopyTo(Loop& l) const;
 	
-	bool Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
+	bool				Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
-	void OnChange();
-	AtomBaseRef GetTypeCls(AtomTypeCls atom_type);
-	AtomBaseRef GetAddTypeCls(AtomTypeCls cls);
-	AtomBaseRef FindTypeCls(AtomTypeCls atom_type);
-	LoopRef FindLoopByName(String name);
+	void				OnChange();
+	AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);
+	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
+	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type);
+	LoopRef				FindLoopByName(String name);
 	
 	
 	
@@ -152,6 +152,17 @@ public:
 		return Add<T>();
 	}
 	*/
+	
+	template<typename T>
+	RefT_Loop<T> FindCast() {
+		for (Ref<AtomBase>& a : atoms.GetValues()) {
+			T* o = CastPtr<T>(&*a);
+			if (o)
+				return o->template AsRef<T>();
+		}
+		return RefT_Loop<T>();
+	}
+	
 	/*template<typename T>
 	RefT_Loop<T> Find() {
 		return comps.Find<T>();
@@ -185,6 +196,10 @@ public:
 		return all_valid_atoms;
 	}*/
 	
+	template<typename T> RefT_Loop<T> FindNearestAtomCast(int nearest_loop_depth);
+	
+	
+
 	AtomMap& GetAtoms() {return atoms;}
 	LoopVec& GetLoops() {return loops;}
 	const AtomMap& GetAtoms() const {return atoms;}
@@ -257,23 +272,23 @@ public:
 
 
 
-/*
+
 template<typename T>
-RefT_Loop<T> Loop::FindNearestLoopWith() {
-	RefT_Loop<T> c = Find<T>();
-	if (!c) {
-		Loop* p = &GetLoop();
-		while (p && !c) {
-			for (LoopRef& e : *p) {
-				c = e->Find<T>();
-				if (c) break;
-			}
-			p = p->GetParent();
-		}
-	}
-	return c;
+RefT_Loop<T> Loop::FindNearestAtomCast(int nearest_loop_depth) {
+	if (auto r = FindCast<T>())
+		return r;
+	
+	if (nearest_loop_depth > 0)
+		for (auto& loop : loops)
+			if (auto ret = loop->FindNearestAtomCast<T>(nearest_loop_depth-1))
+				return ret;
+	
+	if (Loop* p = GetParent())
+		return p->FindNearestAtomCast<T>(nearest_loop_depth);
+	
+	return RefT_Loop<T>();
 }
-*/
+
 
 NAMESPACE_SERIAL_END
 

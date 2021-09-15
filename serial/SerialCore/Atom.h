@@ -11,6 +11,7 @@ class Plan;
 }
 
 
+
 template <class T> inline SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
 
@@ -82,9 +83,11 @@ public:
 	virtual void AltForward(FwdScope& fwd) {}
 	virtual void AltStorePacket(Packet& p) {Panic("Unimplemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
+	virtual bool AltPostInitialize() {return true;}
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
+	virtual bool PostInitialize() {return AltPostInitialize();}
 	virtual String ToString() const;
 	virtual void LoadPacket(const Packet& p) {}
 	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}

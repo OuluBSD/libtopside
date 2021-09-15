@@ -1,0 +1,35 @@
+description "\3770,128,128";
+
+uses
+	OOSDL2;
+
+file
+	AtomSDL2.h,
+	AtomSDL2.icpp,
+	Base.h,
+	Timer.h,
+	Timer.cpp,
+	AudioIn.h,
+	AudioIn.cpp,
+	AudioOut.h,
+	AudioOut.cpp,
+	Screen.h,
+	Screen.cpp,
+	Events.h,
+	Events.cpp,
+	Joystick.h,
+	Joystick.cpp,
+	GameController.h,
+	GameController.cpp,
+	Sensor.h,
+	Sensor.cpp,
+	Image.h,
+	Image.cpp,
+	Font.h,
+	Font.cpp,
+	Context.h,
+	Context.cpp,
+	Trash readonly separator,
+	System.h,
+	System.cpp;
+

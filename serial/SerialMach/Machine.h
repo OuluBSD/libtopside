@@ -70,13 +70,13 @@ public:
 	
     template<typename SystemT>
     Ref<SystemT> Get() {
-        auto system = TryGet<SystemT>();
+        auto system = Find<SystemT>();
         ASSERT(system);
         return system;
     }
 
     template<typename SystemT>
-    Ref<SystemT> TryGet()
+    Ref<SystemT> Find()
     {
         CXX2A_STATIC_ASSERT(IsSystem<SystemT>::value, "T should derive from System");
         
@@ -93,7 +93,18 @@ public:
         Add(AsTypeCls<SystemT>(), syst);
         return syst->template AsRef<SystemT>();
     }
+    
 
+    template<typename SystemT, typename... Args>
+    Ref<SystemT> FindAdd(Args&&... args)
+    {
+		Ref<SystemT> ret = Find<SystemT>();
+		if (ret)
+			return ret;
+		
+		return Add<SystemT>(args...);
+    }
+    
     template<typename SystemT>
     void Remove()
     {
@@ -116,6 +127,7 @@ public:
     void DieFast() {Start(); Update(0); Stop();}
 	void Clear() {ticks=0; is_started=0; is_initialized=0; is_suspended=0; is_running=0; systems.Clear();}
 	
+    bool IsStarted() const {return is_started;}
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}
 	void Visit(RuntimeVisitor& vis);

@@ -3,7 +3,13 @@
 
 #include <SerialLib/SerialLib.h>
 
-//#define HAVE_MANUAL_DBG_CLASSES 1
+#ifdef flagGUI
+	#include <AtomSDL2/AtomSDL2.h>
+#endif
+
+#ifdef flagDEBUG_ATOM
+	#define HAVE_MANUAL_DBG_CLASSES 1
+#endif
 
 #include "Internal.h"
 

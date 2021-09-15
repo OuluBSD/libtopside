@@ -1,6 +1,6 @@
 #include "NonCtrlSDL2.h"
-#include <OOSDL2/OOSDL2.h>
 #include <SerialLib/SerialLib.h>
+#include <AtomSDL2/AtomSDL2.h>
 //#include <Physics/Physics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -12,31 +12,15 @@ bool SingleMachine::Open(bool gui) {
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
-	TODO
 	
-	#if 0
-	
-	RegistrySystemRef reg = mach.Add<RegistrySystem>();
-	EntityStoreRef ents = mach.Add<EntityStore>();
-    mach.Add<ComponentStore>();
-    mach.Add<ConnectorStore>();
-    mach.Add<SDL2System>();
+	RegistrySystemRef reg	= mach.Add<RegistrySystem>();
+	LoopStoreRef ents		= mach.Add<LoopStore>();
     
-    #define DEV(x) mach.Add<x##System>();
-    DEV_LIST
-    #undef DEV
+    mach.Add<AtomStore>();
+    mach.Add<AtomSystem>();
+    mach.Add<ScriptLoader>();
+    mach.Add<PacketTracker>();
     
-    /*
-    #define IFACE_CTX_CLS(dev, value, prefix) mach.Add<prefix##System>();
-    #define IFACE(x) DEV_IFACE(x)
-    IFACE_LIST
-    #undef IFACE
-    #undef IFACE_CTX_CLS
-    */
-    
-    #define IFACE(x) mach.Add<ScopeValLibT<x##Spec>::PacketTracker>();
-    IFACE_LIST
-    #undef IFACE
     
     //if (gui)
 	//	mach.Add<WindowSystem>();
@@ -59,13 +43,7 @@ bool SingleMachine::Open(bool gui) {
     if (!mach.Start())
 		return false;
     
-    PoolRef pool = ents->GetRoot()->GetAddPool("system");
-    pool->AddConnectEverything();
-    EntityRef app = pool->Create<SDL2StandaloneWindow>();
-    pool->ConnectEverything();
-    
 	return true;
-	#endif
 }
 
 void SingleMachine::Close() {

@@ -21,8 +21,6 @@ namespace Serial {
 	ATOM_TYPE(VIDEO_SHADER_SRC) \
 	ATOM_TYPE(VIDEO_SHADER_BUFFER) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
-	ATOM_TYPE(SDL_EVENT_ATOM) \
-	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
 
 
@@ -40,8 +38,6 @@ namespace Serial {
 	ATOM_CLASS(VideoShaderSrc) \
 	ATOM_CLASS(VideoShaderBuffer) \
 	ATOM_CLASS(SdlContextAtom) \
-	ATOM_CLASS(SdlEventAtom) \
-	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
 
 

@@ -186,10 +186,10 @@ public:
 
 };
 
-class SdlContextAtom : public CenterDriver<SdlContextAtom> {
+class SdlContextAtom : public CenterDriver<SdlContextAtom>, public SDL2ContextBase {
 
 public:
-	RTTI_DECL1(SdlContextAtom, BaseT)
+	RTTI_DECL2(SdlContextAtom, BaseT, SDL2ContextBase)
 	COPY_PANIC(SdlContextAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
@@ -201,38 +201,10 @@ public:
 
 };
 
-class SdlEventAtom : public CenterSideSourceAsync<SdlEventAtom> {
+class SdlAudioAtom : public CenterSinkPolling<SdlAudioAtom>, public SDL2AudioOutputBase {
 
 public:
-	RTTI_DECL1(SdlEventAtom, BaseT)
-	COPY_PANIC(SdlEventAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom> {
-
-public:
-	RTTI_DECL1(SdlVideoAtom, BaseT)
-	COPY_PANIC(SdlVideoAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class SdlAudioAtom : public CenterSinkPolling<SdlAudioAtom> {
-
-public:
-	RTTI_DECL1(SdlAudioAtom, BaseT)
+	RTTI_DECL2(SdlAudioAtom, BaseT, SDL2AudioOutputBase)
 	COPY_PANIC(SdlAudioAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -257,8 +229,6 @@ using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
 using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
-using SdlEventAtomRef = Ref<SdlEventAtom, RefParent1<Loop>>;
-using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
 using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
 }
 

@@ -111,8 +111,18 @@ bool ScriptDriverLoader::Load() {
 			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
+		
+		added_atoms.Add(ab);
 	}
 	
+	return true;
+}
+
+bool ScriptDriverLoader::PostInitialize() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		if (!added_atoms[i]->PostInitialize())
+			return false;
+	}
 	return true;
 }
 

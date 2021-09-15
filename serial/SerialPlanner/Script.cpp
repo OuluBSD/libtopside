@@ -26,7 +26,7 @@ int ScriptLoader::loop_counter = 0;
 bool ScriptLoader::Initialize() {
 	def_ws.SetActionPlanner(def_planner);
 	
-	es = GetMachine().TryGet<LoopStore>();
+	es = GetMachine().Find<LoopStore>();
 	if (!es) {
 		LOG("ScriptLoader requires LoopStore present in machine");
 		return false;
@@ -160,6 +160,16 @@ bool ScriptLoader::ImplementScript() {
 				}
 			}
 		}
+	}
+	
+	for (ScriptLoopLoader* ll : loops) {
+		if (!ll->PostInitialize())
+			return false;
+	}
+	
+	for (ScriptDriverLoader* dl: drivers) {
+		if (!dl->PostInitialize())
+			return false;
 	}
 	
 	return true;

@@ -145,13 +145,6 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 			int sample_rate = afmt.GetSampleRate();
 			ASSERT(args.fpb == afmt.sample_rate);
 			
-			/*off32 begin_offset = sink_buf.GetOffset();
-			if (0) {
-				RTLOG("PortaudioSink::SinkCallback: trying to consume " << begin_offset.ToString());
-				RTLOG("PortaudioSink::SinkCallback: dumping");
-				sink_buf.Dump();
-			}*/
-			
 			consumer.SetDestination(fmt, args.output, size);
 			consumer.ConsumeAll(false);
 			consumer.ClearDestination();
@@ -163,19 +156,6 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 			if (consumed_count) {
 				RTLOG("PortaudioSink::SinkCallback: device consumed count=" << consumed_count);
 			}
-			
-			/*off32 end_offset = consumer.GetOffset();
-			off32 diff = off32::GetDifference(begin_offset, end_offset);
-			if (diff) {
-				RTLOG("PortaudioSink::SinkCallback: device consumed count=" << diff.ToString());
-				sink_buf.RemoveFirst(diff.value);
-			}
-			else if (consumer.HasLeftover()) {
-				RTLOG("PortaudioSink::SinkCallback: device consumed packet partially");
-			}
-			else if (!consumer.HasLeftover()) {
-				RTLOG("error: PortaudioSink::SinkCallback: device error");
-			}*/
 		}
 		else {
 			#if DEBUG_RT_PIPE

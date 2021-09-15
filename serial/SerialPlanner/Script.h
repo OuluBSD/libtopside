@@ -137,6 +137,20 @@ public:
 };
 
 class ScriptLoopLoader : public ScriptLoaderBase<Script::LoopDefinition, ScriptChainLoader> {
+	
+protected:
+	
+	// Implement found loop
+	struct AddedAtom {
+		AtomBaseRef r;
+		int plan_i;
+		int seg_i;
+		int side_sink;
+		int side_src;
+	};
+	
+	Array<AddedAtom>		added_atoms;
+	
 public:
 	using Base = ScriptLoaderBase<Script::LoopDefinition, ScriptChainLoader>;
 	RTTI_DECL1(ScriptLoopLoader, Base)
@@ -157,7 +171,6 @@ protected:
 	
 	Array<AtomBaseRef>		atoms;
 	
-	
 	void SetupSegment(ScriptLoopSegment& s);
 	bool SetWorldState(Script::WorldState& ws, const Script::Statement& stmt);
 	
@@ -172,6 +185,7 @@ public:
 	
 	bool		Parse();
 	bool		Load();
+	bool		PostInitialize();
 	SideStatus	AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out);
 	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
 	
@@ -240,6 +254,7 @@ class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, Scr
 protected:
 	Vector<Script::WorldState>	atoms;
 	Script::ActionPlanner		planner;  // required for Script::Action -> Script:WorldState -> key-index
+	Array<AtomBaseRef>			added_atoms;
 	
 	void		FindAtoms();
 	
@@ -260,6 +275,7 @@ public:
 	void		SetRetryDeep() override;
 	void		Forward();
 	bool		Load();
+	bool		PostInitialize();
 	
 };
 

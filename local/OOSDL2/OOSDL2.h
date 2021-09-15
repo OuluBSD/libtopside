@@ -36,7 +36,7 @@ protected:
 	
 public:
 	Stateful() = default;
-	virtual ~Stateful() {Close(); }
+	virtual ~Stateful() {/*deleted inheritance crash: Close();*/ ASSERT(!is_open); }
 	
 	bool Open() {if (!is_open && Open0()) is_open = true; return is_open;}
 	void Close() {if (is_open) Close0(); is_open = false;}
@@ -99,11 +99,13 @@ class AudioOutput :
 	RTTI_DECL1(AudioOutput, Component)
 	
 private:
-	SDL_AudioSpec audio_fmt, audio_desired;
-	SDL_AudioDeviceID audio_dev = 0;
-	Serial::PacketConsumer consumer;
-	Serial::PacketBuffer buf;
-	dword frames = 0;
+	SDL_AudioSpec			audio_fmt;
+	SDL_AudioSpec			audio_desired;
+	SDL_AudioDeviceID		audio_dev = 0;
+	Serial::PacketConsumer	consumer;
+	Serial::PacketBuffer	buf;
+	Serial::Format			fmt;
+	dword					frames = 0;
 	
 	bool Open0() override;
 	void Close0() override;

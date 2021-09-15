@@ -8,13 +8,18 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 	SetCoutLog();
 	//Serial::Factory::Dump();
 	
+	if (script_file.IsEmpty()) {
+		LOG("No script file given");
+		return;
+	}
+	
 	if (dbg_ref)
 		BreakRefAdd(dbg_ref);
 	
 	double time_limit = args.Get("MACHINE_TIME_LIMIT", 0).ToDouble();
 	
 	{
-		MAKE_STATIC(Machine, mach);
+		Machine& mach = GetActiveMachine();
 		
 		if (ver)
 			ver->Attach(mach);
@@ -29,13 +34,27 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 	    #endif
 			bool fail = false;
 			{
-				RegistrySystemRef reg	= mach.Add<RegistrySystem>();
-				LoopStoreRef ls			= mach.Add<LoopStore>();
-				AtomStoreRef as			= mach.Add<AtomStore>();
-			    AtomSystemRef asys		= mach.Add<AtomSystem>();
-			    ScriptLoaderRef script	= mach.Add<ScriptLoader>();
-			    
-			    mach.Add<PacketTracker>();
+				if (mach.IsStarted()) {
+					RegistrySystemRef reg	= mach.FindAdd<RegistrySystem>();
+					LoopStoreRef ls			= mach.FindAdd<LoopStore>();
+					AtomStoreRef as			= mach.FindAdd<AtomStore>();
+				    AtomSystemRef asys		= mach.FindAdd<AtomSystem>();
+				    ScriptLoaderRef script	= mach.FindAdd<ScriptLoader>();
+				    
+				    mach.FindAdd<PacketTracker>();
+				}
+				
+				LoopStoreRef ls			= mach.Find<LoopStore>();
+				if (!ls) {
+					LOG("No LoopStore added to machine and the machine is already started");
+					return;
+				}
+				
+				ScriptLoaderRef script	= mach.Find<ScriptLoader>();
+				if (!script) {
+					LOG("No ScriptLoader added to machine and the machine is already started");
+					return;
+				}
 				
 				LoopRef root = ls->GetRoot();
 				
@@ -61,8 +80,11 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 		    }
 		        
 		    if (!fail) {
-			    mach.Start();
-			    
+		        if (!mach.IsStarted())
+					fail = !mach.Start();
+		    }
+		    
+		    if (!fail) {
 			    int iter = 0;
 			    TimeStop t, total;
 			    while (mach.IsRunning()) {
@@ -89,7 +111,7 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 	    #endif
 	    
 	    mach.Stop();
-		mach.Clear();
+	    mach.Clear();
 	}
     
     //RefDebugVisitor::Static().DumpUnvisited();

@@ -34,6 +34,8 @@ bool Machine::Start() {
 	
 	WhenInitialize();
 	
+	is_started = true;
+	
 	for (auto system : systems) {
 		if (!system->Initialize()) {
 			LOG("Could not initialize system " << system->GetDynamicName());
@@ -47,7 +49,6 @@ bool Machine::Start() {
 		system->Start();
 	}
 	
-	is_started = true;
 	is_running = true;
 	return true;
 }
@@ -87,16 +88,17 @@ void Machine::Update(double dt) {
 }
 
 void Machine::Stop() {
-	if (!is_started)
-		return;
+	bool was_started = is_started;
 	
 	is_running = false;
 	is_started = false;
 	
 	DBG_BEGIN_UNREF_CHECK
 	
-	for (auto it = systems.rbegin(); it != systems.rend(); --it) {
-		(*it)->Stop();
+	if (was_started) {
+		for (auto it = systems.rbegin(); it != systems.rend(); --it) {
+			(*it)->Stop();
+		}
 	}
 	
 	is_initialized = false;
