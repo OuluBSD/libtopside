@@ -79,10 +79,27 @@ String PacketValue::ToString() const {
 	s.Cat('{');
 	s << "size: " << data.GetCount();
 	s << ", id: " << IntStr64(id);
-	s<< ", format: {" << fmt.ToString() << "}";
+	s << ", format: {" << fmt.ToString() << "}";
 	
 	s.Cat('}');
 	return s;
+}
+
+String PacketValue::ToStringWithHash() const {
+	String s;
+	s.Cat('{');
+	s << "offset: " << offset.ToString();
+	s << ", size: " << data.GetCount();
+	s << ", id: " << IntStr64(id);
+	s << ", format: {" << fmt.ToString() << "}";
+	s << ", hash: " << IntStr64(GetDataHash());
+	
+	s.Cat('}');
+	return s;
+}
+
+hash_t PacketValue::GetDataHash() const {
+	return data.GetHashValue();
 }
 
 #if HAVE_OPENGL

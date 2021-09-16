@@ -35,6 +35,7 @@ template <> inline hash_t GetHashValue(const bool& k) { return k; }
 template <> inline hash_t GetHashValue(const char& k) { return k; }
 template <> inline hash_t GetHashValue(const short& k) { return k; }
 template <> inline hash_t GetHashValue(const int& k) { return k; }
+template <> inline hash_t GetHashValue(const unsigned char& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned short& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned int& k) { return k; }
 template <> inline hash_t GetHashValue(const unsigned long long& k) {union {uint64 u64; dword dw[2];}; u64 = k; return dw[0] ^ dw[1];}

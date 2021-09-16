@@ -52,13 +52,16 @@ class Component :
 protected:
 	friend class Context;
 	Context* ctx = 0;
+	AtomBase* ab = 0;
 	
 	virtual uint32 GetInitFlag() const = 0;
 	
 public:
-	Component(Context* ctx) : ctx(ctx) {}
+	Component(Context* ctx, AtomBase* ab) : ctx(ctx), ab(ab) {}
 	
-	Context* GetContext() const {return ctx;}
+	Context*		GetContext() const {return ctx;}
+	AtomBase*		GetAtomBase() const {return ab;}
+	PacketBuffer&	GetSinkBuffer();
 	
 };
 
@@ -72,7 +75,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_TIMER;}
 	
 public:
-	Timer(Context* ctx) : Component(ctx) {}
+	Timer(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 };
 
@@ -86,7 +89,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_AUDIO;}
 	
 public:
-	AudioInput(Context* ctx) : Component(ctx) {}
+	AudioInput(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	
 };
@@ -103,7 +106,6 @@ private:
 	SDL_AudioSpec			audio_desired;
 	SDL_AudioDeviceID		audio_dev = 0;
 	Serial::PacketConsumer	consumer;
-	Serial::PacketBuffer	buf;
 	Serial::Format			fmt;
 	dword					frames = 0;
 	
@@ -112,7 +114,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_AUDIO;}
 	
 public:
-	AudioOutput(Context* ctx);
+	AudioOutput(Context* ctx, AtomBase* ab);
 	
 	void			SinkCallback(Uint8* stream, int len);
 	void			SetDesiredAudioFmt(int sample_freq, int sample_bytes, bool is_var_floating, int channels, int sample_rate);
@@ -163,7 +165,7 @@ protected:
 	void SetWindowRect(Rect r);
 	
 public:
-	Screen(Context* ctx) : Component(ctx) {desired_rect = RectC(0,0,1280,720);}
+	Screen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
 	
 	void			Maximize(bool b=true);
 	Screen&			Sizeable(bool b=true) {is_sizeable = b; return *this;}
@@ -203,7 +205,7 @@ private:
 	static unsigned int WakeCb(Uint32 interval, void* param);
 	
 public:
-	Events(Context* ctx) : Component(ctx) {}
+	Events(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	void			PutKeyFlags(dword& key);
 	bool            Poll(UPP::CtrlEvent& e);
@@ -224,7 +226,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_JOYSTICK;}
 	
 public:
-	Joystick(Context* ctx) : Component(ctx) {}
+	Joystick(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	
 };
@@ -239,7 +241,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_GAMECONTROLLER;}
 	
 public:
-	GameController(Context* ctx) : Component(ctx) {}
+	GameController(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	
 };
@@ -254,7 +256,7 @@ private:
 	uint32 GetInitFlag() const override {return SDL_INIT_SENSOR;}
 	
 public:
-	Sensor(Context* ctx) : Component(ctx) {}
+	Sensor(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	
 };
@@ -351,11 +353,12 @@ public:
 				return o;
 		return 0;
 	}
+	
 	template <class T>
 	T& GetAddComponent() {
 		T* o = FindComponent<T>();
 		if (o) return *o;
-		o = new T(this);
+		o = new T(this, 0);
 		comps.Add(o);
 		return *o;
 	}

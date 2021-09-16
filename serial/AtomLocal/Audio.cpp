@@ -35,6 +35,7 @@ void AudioGenBase::AltStorePacket(Packet& p) {
 	p->Set(fmt, time);
 	p->Data().SetCount(frame, 0);
 	gen.Play((int)offset, p);
+	RTLOG("AudioGenBase::AltStorePacket: " << p->ToStringWithHash());
 }
 
 NAMESPACE_SERIAL_END

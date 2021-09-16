@@ -73,8 +73,10 @@ public:
 	PacketId				GetTrackingId() const {return id;}
 	bool					HasTrackingId() const {return id != 0;}
 	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
+	hash_t					GetDataHash() const;
 	
 	String					ToString() const;
+	String					ToStringWithHash() const;
 	
 	template <class T> T& SetData() {
 		custom_data = AsTypeCls<T>();

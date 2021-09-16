@@ -12,7 +12,7 @@
 	SDL2ContextBaseRef ev_ctx = GetLoop()->FindNearestAtomCast<SDL2ContextBase>(1); \
 	/*ASSERT(ev_ctx);*/ \
 	if (!ev_ctx) {RTLOG("error: could not find SDL2Context"); return false;} \
-	obj.Create(ev_ctx->GetOOSDL2()); \
+	obj.Create(ev_ctx->GetOOSDL2(), this); \
 	ev_ctx->Add(AsRefT());
 
 

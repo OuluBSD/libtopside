@@ -31,5 +31,9 @@ void SDL2AudioOutputBase::AltForward(FwdScope& fwd) {
 	TODO
 }*/
 
+void SDL2AudioOutputBase::AltStorePacket(Packet& p) {
+	TODO
+}
+
 
 NAMESPACE_SERIAL_END

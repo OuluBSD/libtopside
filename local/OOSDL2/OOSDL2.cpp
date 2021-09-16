@@ -1,4 +1,5 @@
 #include "OOSDL2.h"
+#include <SerialCore/SerialCore.h>
 
 NAMESPACE_SDL2_BEGIN
 
@@ -33,5 +34,12 @@ void Bundle::Close() {
 	return Context::Close();
 }
 
+
+
+PacketBuffer& Component::GetSinkBuffer() {
+	ASSERT(ab);
+	Value& sink_val = ab->GetSink()->GetValue();
+	return sink_val.GetBuffer();
+}
 
 NAMESPACE_SDL2_END

@@ -465,6 +465,17 @@ public:
 		data = NULL;
 		alloc = 0;
 	}
+	
+	hash_t GetHashValue() const {
+		if (!data) return 0;
+		CombineHash h;
+		K* it = data;
+		K* end = data + count;
+		while (it != end)
+			h.Put(UPP::GetHashValue(*it++));
+		return h;
+	}
+	
 };
 
 template <class K>
@@ -620,6 +631,7 @@ public:
 		for (int i = 0; i < a.GetCount(); i++)
 			l[i] = new K(*a.l[i]);
 	}
+	
 };
 
 template <class K>

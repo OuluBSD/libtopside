@@ -3,7 +3,7 @@
 NAMESPACE_SDL2_BEGIN
 
 
-AudioOutput::AudioOutput(Context* ctx) : Component(ctx) {
+AudioOutput::AudioOutput(Context* ctx, AtomBase* ab) : Component(ctx, ab) {
 	SDL_zero(audio_fmt);
 	SetDesiredAudioFmt(
 		44100,
@@ -39,8 +39,9 @@ bool AudioOutput::IsSampleSigned() const {
 }
 
 void AudioOutput::SinkCallback(Uint8* output, int size) {
+	PacketBuffer& sink_buf = GetSinkBuffer();
 	
-	if (buf.IsEmpty() || !output) {
+	if (sink_buf.IsEmpty() || !output) {
 		if (0) {
 			RTLOG("AudioOutput::SinkCallback: empty buffer");
 		}
@@ -48,14 +49,21 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	}
 	
 	if (consumer.IsEmptySource())
-		consumer.SetSource(buf);
+		consumer.SetSource(sink_buf);
 
 	ASSERT(size == fmt.GetFrameSize());
 	
-	if (buf.GetCount() > 0 || consumer.HasLeftover()) {
+	if (sink_buf.GetCount() > 0 || consumer.HasLeftover()) {
 		consumer.SetDestination(fmt, output, size);
 		consumer.ConsumeAll(false);
 		consumer.ClearDestination();
+		
+		if (1) {
+			for (const Packet& p : consumer.consumed_packets) {
+				RTLOG("AudioOutput::SinkCallback: consumed: " << p->ToStringWithHash());
+			}
+		}
+		
 		if (consumer.GetLastMemoryBytes() != size) {
 			RTLOG("OOSDL2::AudioOutput::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
 		}
@@ -66,9 +74,7 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 		}
 	}
 	else {
-		#if DEBUG_RT_PIPE
-		RTLOG("error: AudioOutput::SinkCallback: got empty data");
-		#endif
+		RTLOG("AudioOutput::SinkCallback: error: got empty data");
 		
 		memset(output, 0, size);
 	}
@@ -136,10 +142,12 @@ bool AudioOutput::Open0() {
 }
 
 void AudioOutput::Close0() {
+	PacketBuffer& sink_buf = GetSinkBuffer();
+	
 	if (audio_dev) {
 		SDL_PauseAudioDevice(audio_dev, 1);
 		SDL_CloseAudioDevice(audio_dev);
-		buf.Clear();
+		sink_buf.Clear();
 		audio_dev = 0;
 	}
 }

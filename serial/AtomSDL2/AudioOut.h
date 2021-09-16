@@ -21,14 +21,11 @@ public:
 	
 	SDL2AudioOutputBase() : aconfig(gen) {}
 	
-	bool			AltInitialize(const Script::WorldState& ws) override;
-	void			AltUninitialize() override;
-	
-	void			AltForward(FwdScope& fwd) override;
-	//void			AltForwardExchange(FwdScope& fwd) override;
-	
-	/*AudioFormat		GetFormat(AudCtx) override;
-	Audio&			GetValue(AudCtx) override;*/
+	bool	AltInitialize(const Script::WorldState& ws) override;
+	void	AltUninitialize() override;
+	void	AltForward(FwdScope& fwd) override;
+	void	AltStorePacket(Packet& p) override;
+	void	AltIntervalSinkProcess() {}
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}
