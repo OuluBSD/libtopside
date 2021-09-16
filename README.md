@@ -13,8 +13,11 @@ You might want to test other packages in examples and reference directories. How
 Instead of these commands, you should use U++ TheIDE editor and create new assembly with the same directories that are in the following umk command. Packages with the description string should compile.
 
 ```
-pkg install upp git
+sudo pkg install upp git
+cd ~
 git clone https://github.com/OuluBSD/libtopside.git
 cd libtopside
-umk examples,reference,tutorial,ai,ecs,accel,video,audio,compiler,local,alt,lib MP3Player CLANG -budsH4 ~/
+umk examples,reference,tutorial,ai,serial,video,audio,compiler,local,alt,lib AtomShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +GUI,SHARED ~/
+
+Test run e.g:   ~/AtomShell -e tests/04_sdl_audio.eon -MACHINE_TIME_LIMIT=3
 ```
