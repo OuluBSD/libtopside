@@ -69,7 +69,7 @@ void DebugVideoGenerator::GenerateRandom(const VideoFormat& fmt) {
 				if (fast_dw) {
 					int mod = i % 2;
 					if (mod == 0)
-						u64 = rng.Get();
+						u64 = rng.Get64();
 					*(dword*)f = dw[mod];
 					f += pack_size;
 					i += pack_size - 1;
@@ -78,7 +78,7 @@ void DebugVideoGenerator::GenerateRandom(const VideoFormat& fmt) {
 				else if (fast_byte) {
 					int mod = i % 8;
 					if (mod == 0)
-						u64 = rng.Get();
+						u64 = rng.Get64();
 					*f++ = b[mod];
 					dbg_wrote++;
 				}
@@ -156,6 +156,8 @@ void VideoGenBase::AltStorePacket(Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
+	int64 max_offset = gen.GetMaxOffset();
+	offset = offset % max_offset;
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
 	p->Set(fmt, time);

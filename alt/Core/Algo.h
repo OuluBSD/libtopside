@@ -58,10 +58,14 @@ public:
 	RNG() {Seed();}
 	float  Randomf() {return (sNext(state) >> 11) * (1.f / (UINT64_C(1) << 53));}
 	double Randomd() {return (sNext(state) >> 11) * (1.  / (UINT64_C(1) << 53));}
-	uint64 Random(uint64 max) {return Get() % max;}
-	uint64 Get() {return sNext(state);}
-	void GetN(uint64* t, int n) {for(int i = 0; i < n; i++) t[i] = sNext(state);}
-	operator uint64 () {return Get();}
+	uint32 Random(uint32 max) {return Get32() % max;}
+	uint64 Random64(uint64 max) {return Get64() % max;}
+	uint32 Get32() {return (uint32)sNext(state);}
+	uint64 Get64() {return (sNext(state) & 0xFFFFFFFF) | (sNext(state) << 32ULL);}
+	void GetN(uint64* t, int n) {for(int i = 0; i < n; i++) t[i] = Get64();}
+	void GetN(uint32* t, int n) {for(int i = 0; i < n; i++) t[i] = Get32();}
+	operator uint32 () {return Get32();}
+	operator uint64 () {return Get64();}
 	void Seed() {sSeed(state);}
 	void Seed(uint32 seed) {
 		for(int i = 0; i < 4; i++)
@@ -77,7 +81,7 @@ public:
 inline dword Random() {return (dword)RNG::Local().Random(UINT32_MAX);}
 inline void Random64(uint64* t, int n) {return RNG::Local().GetN(t, n);}
 inline dword Random(dword n) {return (dword)RNG::Local().Random(n);}
-inline uint64 Random64() {return RNG::Local().Get();}
+inline uint64 Random64() {return RNG::Local().Get64();}
 inline uint64 Random64(uint64 n) {return RNG::Local().Random(n);}
 inline double Randomf() {return RNG::Local().Randomf();}
 inline void SeedRandom() {return RNG::Local().Seed();}

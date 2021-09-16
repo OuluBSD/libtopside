@@ -14,7 +14,7 @@ void RNG::WriteMemory(void* mem_, int bytes) {
 	byte* dst = (byte*)mem_;
 	byte* block_end = dst + blocks * 8;
 	while (dst != block_end) {
-		*(uint64*)dst = Get();
+		*(uint64*)dst = Get64();
 		dst += 8;
 	}
 	
@@ -22,7 +22,7 @@ void RNG::WriteMemory(void* mem_, int bytes) {
 		byte b[8];
 		uint64 u64;
 	};
-	u64 = Get();
+	u64 = Get64();
 	for(int i = 0; i < mod; i++)
 		*dst++ = b[i];
 	

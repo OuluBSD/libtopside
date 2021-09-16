@@ -98,7 +98,8 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 					if (dt < sleep_dt_limit)
 						Sleep(1);
 			        
-			        if (time_limit > 0 && total.Seconds() >= time_limit)
+			        double total_seconds = total.Seconds();
+			        if (time_limit > 0 && total_seconds >= time_limit)
 			            mach.SetNotRunning();
 			    }
 			    
