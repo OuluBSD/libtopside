@@ -174,15 +174,7 @@ SystemDraw& Screen::BeginDraw() {
 		TODO
 	}
 	else {
-		sw_rend.screen_sz = screen_sz;
-	    sw_rend.win = win;
-	    sw_rend.rend = this->rend;
-	    sw_rend.PreFrame();
-	    sw_draw.rend = &sw_rend;
-	    sw_draw.fb = &sw_rend.GetOutputCpuFramebuffer();
-	    sysdraw.ptr = &sw_draw;
-	    
-	    sw_draw.fb->Enter();
+		Panic("Screen internal error");
 	}
 	
 	return sysdraw;
@@ -190,14 +182,9 @@ SystemDraw& Screen::BeginDraw() {
 
 void Screen::CommitDraw() {
 	AppFlags& flags = GetAppFlags();
-	if (flags.IsSoftwareRenderer()) {
-		sw_draw.fb->Leave();
-		sw_rend.PostFrame();
-	}
-	else if (flags.IsOpenGL()) {
-		hw_draw.fb->Leave();
-		hw_rend.PostFrame();
-	}
+	
+	hw_draw.fb->Leave();
+	hw_rend.PostFrame();
 }
 
 

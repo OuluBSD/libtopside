@@ -61,6 +61,7 @@ public:
 	
 	template <class T> static Type GetSampleType();
 	template <class T> static bool IsSampleType(Type t) {return t == GetSampleType<T>();}
+	template <class T> static bool GetPackedSingleSize() {return GetPackedSingleSize(GetSampleType<T>());}
 	
 	
 	static void Clear(Type& t) {t = INVALID;}
@@ -87,12 +88,7 @@ template <int> struct DimBase;
 template<> class DimBase<1> {
 public:
 	static const int n = 1;
-	union {
-		int res[1];
-		int channels;
-		int width;
-		int length;
-	};
+	int res[1];
 	
 	using DimArg = int;
 	
@@ -100,7 +96,7 @@ public:
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	
-	String ToString() const {return "len(" + IntStr(channels) + ")";}
+	String ToString() const {return "len(" + IntStr(res[0]) + ")";}
 	bool IsSame(const DimBase& b) const {return res[0] == b.res[0];}
 	int GetArea() const {return res[0];}
 	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
@@ -114,28 +110,20 @@ static_assert(std::is_trivially_constructible<DimBase<1>>::value == true, "DimBa
 
 template<> struct DimBase<2> {
 	static const int n = 2;
-	union {
-		int res[2];
-		union {
-			int channels;
-			int sources;
-		};
-		union {
-			int width;
-			int height;
-		};
-	};
-	int width_pad;
+	FixedArray<int,2>	res;
+	int					width_pad;
 	
-	using DimArg = Size;
+	using DimArg = FixedArray<int,2>;
 	
 	
-	void SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy;}
+	void SetSize(DimArg a) {res[0] = a[0]; res[1] = a[1];}
+	void SetSize(Size a) {res[0] = a.cx; res[1] = a.cy;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {
 		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
 	}
+	DimBase& operator=(const Size& b) {res[0] = b.cx; res[1] = b.cy; width_pad = 0; return *this;}
 	DimBase& operator=(const DimBase& b) {
 		for(int i = 0; i < n; i++) res[i] = b.res[i];
 		width_pad = b.width_pad;
@@ -154,19 +142,8 @@ template<> struct DimBase<2> {
 
 template<> struct DimBase<3> {
 	static const int n = 3;
-	union {
-		int res[3];
-		union {
-			int channels;
-			int sources;
-			int variants;
-		};
-		union {
-			int width;
-			int height;
-			int depth;
-		};
-	};
+	FixedArray<int,3>	res;
+	//int					width_pad, height_pad;
 	
 	using DimArg = Size3;
 	
@@ -176,6 +153,7 @@ template<> struct DimBase<3> {
 	void SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy; res[2] = a.cz;}
 	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
 	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
+	DimBase& operator=(const Size3& b) {res[0] = b.cx; res[1] = b.cy; res[2] = b.cz; return *this;}
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 	
 	String ToString() const {return Size3(res[0], res[1], res[2]).ToString();}

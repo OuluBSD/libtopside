@@ -8,16 +8,16 @@ template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_EN
 static void AudioTypeConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst) {
 	int limit = std::min(src_ch_samples, src_fmt.sample_rate);
 	const SRC* src_it = (const SRC*)src;
-	const SRC* src_end = src_it + limit * src_fmt.channels;
+	const SRC* src_end = src_it + limit * src_fmt.res[0];
 	DST* dst_it = (DST*)dst;
-	DST* dst_end = dst_it + limit * dst_fmt.channels;
+	DST* dst_end = dst_it + limit * dst_fmt.res[0];
 	for(int i = 0; i < limit; i++) {
-		for(int j = 0; j < dst_fmt.channels; j++) {
-			SRC src_v = src_it[j % src_fmt.channels];
+		for(int j = 0; j < dst_fmt.res[0]; j++) {
+			SRC src_v = src_it[j % src_fmt.res[0]];
 			DST dst_v = ConvertAudioSample<SRC, DST, SRC_NATIVE_ENDIAN, DST_NATIVE_ENDIAN>(src_v);
 			*dst_it++ = dst_v;
 		}
-		src_it += src_fmt.channels;
+		src_it += src_fmt.res[0];
 	}
 	ASSERT(src_it == src_end);
 	ASSERT(dst_it == dst_end);

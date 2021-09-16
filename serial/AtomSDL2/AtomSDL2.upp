@@ -13,6 +13,8 @@ file
 	AudioIn.cpp,
 	AudioOut.h,
 	AudioOut.cpp,
+	SwScreen.h,
+	SwScreen.cpp,
 	Screen.h,
 	Screen.cpp,
 	Events.h,

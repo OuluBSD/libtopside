@@ -29,6 +29,7 @@ public:
 	int GetHeight() const override {return sz.cy;}
 	int GetStride() const override {return channels;}
 	int GetPitch() const override {return sz.cx * channels;}
+	void DrawFill(const byte* mem, int sz) override {TODO}
 	
 	void Bind();
 	void Clear();

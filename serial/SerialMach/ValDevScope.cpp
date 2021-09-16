@@ -601,9 +601,9 @@ bool Convert(const Packet& src, Packet& dst) {
 		AudioFormat& srcf = src_fmt;
 		AudioFormat& dstf = dst_fmt;
 		int src_sample = srcf.GetSampleSize();
-		int src_channels = srcf.channels;
+		int src_channels = srcf.res[0];
 		int dst_sample = dstf.GetSampleSize();
-		int dst_channels = dstf.channels;
+		int dst_channels = dstf.res[0];
 		const Vector<byte>& src_data = src->GetData();
 		int src_ch_samples = src_data.GetCount() / (src_sample * src_channels);
 		Vector<byte>& dst_data = dst->Data();

@@ -81,7 +81,7 @@ public:
 	String GetFullString() const;
 	bool Contains(const WorldState& ws) const;
 	bool Conflicts(const WorldState& ws) const;
-	int Atomare(int idx, const WorldState& ws) const;
+	int Compare(int idx, const WorldState& ws) const;
 	
 	WorldState& operator=(const WorldState& src);
 	

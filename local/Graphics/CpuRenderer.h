@@ -34,6 +34,7 @@ public:
 	int GetHeight() const override {return h;}
 	int GetStride() const override {return stride;}
 	int GetPitch() const override {return pitch;}
+	void DrawFill(const byte* mem, int sz) override {TODO}
 	
 	RawSysTexture* GetRawSysTexture() {return 0;}
 	
@@ -80,6 +81,24 @@ public:
 	int GetHeight() const override {return h;}
 	int GetStride() const override {return stride;}
 	int GetPitch() const override {return pitch;}
+	void DrawFill(const byte* mem, int sz) override {
+		if (sz == h * pitch) {
+			memcpy(pixels, mem, sz);
+		}
+		else if (sz == w * h * stride) {
+			int row = w * stride;
+			byte* dst = pixels;
+			for(int y = 0; y < h; y++) {
+				memcpy(dst, mem, row);
+				mem += row;
+				dst += pitch;
+			}
+		}
+		else {
+			sz = min(sz, h * pitch);
+			memcpy(pixels, mem, sz);
+		}
+	}
 	
 	RawSysTexture* GetRawSysTexture() {return fb;}
 	
@@ -125,6 +144,8 @@ public:
 	                        int width, Color color, Color doxor) override;
 	bool ClipOp(const Rect& r) override;
 	void EndOp() override;
+	
+	void DrawImageMemory(const  byte* mem, int sz, int x, int y, int w, int h, int ch_var_size, int channels);
 	
 };
 

@@ -126,6 +126,21 @@ public:
 
 };
 
+class VideoDbgSrc : public CenterSourceAsync<VideoDbgSrc>, public VideoGenBase {
+
+public:
+	RTTI_DECL2(VideoDbgSrc, BaseT, VideoGenBase)
+	COPY_PANIC(VideoDbgSrc)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
 class AccelCustomer : public CustomerBaseT<AccelCustomer> {
 
 public:
@@ -201,6 +216,20 @@ public:
 
 };
 
+class SdlVideoAtom : public CenterSinkPolling<SdlVideoAtom>, public SDL2SwScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoAtom, BaseT, SDL2SwScreenBase)
+	COPY_PANIC(SdlVideoAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.swvideo")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class SdlAudioAtom : public CenterSinkPolling<SdlAudioAtom>, public SDL2AudioOutputBase {
 
 public:
@@ -224,11 +253,13 @@ using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
 using AudioSideSrcRef = Ref<AudioSideSrc, RefParent1<Loop>>;
 using AudioSideSinkRef = Ref<AudioSideSink, RefParent1<Loop>>;
+using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
 using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
+using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
 using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
 }
 

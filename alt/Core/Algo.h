@@ -68,6 +68,8 @@ public:
 			state[i] = 12345678 + seed + i; // xoshiro does not work well if all is zero
 	}
 	
+	void WriteMemory(void* mem, int bytes);
+	
 	static RNG& Local() {static thread_local RNG r; return r;}
 };
 

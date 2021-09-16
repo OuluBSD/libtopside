@@ -8,11 +8,21 @@ NAMESPACE_SERIAL_BEGIN
 
 AudioGenBase::AudioGenBase() {
 	fmt.SetAudio(DevCls::CENTER, SoundSample::U8_LE, 2, 44100, 777);
-	gen.GenerateStereoSine(fmt);
+	if (1)
+		gen.GenerateNoise(fmt);
+	else
+		gen.GenerateStereoSine(fmt);
 	
 }
 
 bool AudioGenBase::AltInitialize(const Script::WorldState& ws) {
+	String waveform = ws.Get(".waveform");
+	
+	if (waveform == "noise")
+		gen.GenerateNoise(fmt);
+	else
+		gen.GenerateStereoSine(fmt);
+	
 	Value& src_val = GetSource()->GetSourceValue();
 	src_val.SetFormat(fmt);
 	return true;

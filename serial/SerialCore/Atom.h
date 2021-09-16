@@ -33,7 +33,8 @@ protected:
 		Index<dword>			unfulfilled_offsets;
 		int						max_unfulfilled = 5;
 		
-		CustomerData() : cfg(gen) {}
+		CustomerData();
+		~CustomerData();
 	};
 	
 	

@@ -3,6 +3,10 @@
 
 NAMESPACE_SERIAL_BEGIN
 
+// incomplete Script::Plan dtor in header
+AtomBase::CustomerData::CustomerData() : cfg(gen) {}
+AtomBase::CustomerData::~CustomerData() {}
+
 
 AtomBase::AtomBase() {
 	DBG_CONSTRUCT

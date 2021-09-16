@@ -21,6 +21,7 @@
 #include "Timer.h"
 #include "AudioIn.h"
 #include "AudioOut.h"
+#include "SwScreen.h"
 #include "Screen.h"
 #include "Events.h"
 #include "Joystick.h"

@@ -115,6 +115,11 @@ struct Size_ : Moveable<Size_<T>> {
 	bool IsPositive() const {return cx > 0 && cy > 0;}
 	bool IsEqual(const Size_& sz) const {return cx == sz.cx && cy == sz.cy;}
 	
+	T	GetArea() const {return cx * cy;}
+	
+	T&       operator[](int i)       {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
+	const T& operator[](int i) const {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
+	
 	bool operator==(const Size_& sz) {return IsEqual(sz);}
 	bool operator!=(const Size_& sz) {return !IsEqual(sz);}
 	void operator=(const Size_& sz) {

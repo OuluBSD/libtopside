@@ -43,12 +43,14 @@ bool AudioFormat::IsSame(const AudioFormat& b) const {
 
 void VideoFormat::Set(LightSampleFD::Type type, int w, int h, int freq, int sample_rate) {
 	SampleBase<LightSampleFD>::SetType(type);
-	DimBase<2>::SetSize(Size(w,h));
+	DimBase<2>::operator=(Size(w,h));
 	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
 }
 
 int VideoFormat::GetFrameSize() const {
-	TODO
+	return		SampleBase<LightSampleFD>::GetSampleSize() *
+				DimBase<2>::GetArea() *
+				TimeSeriesBase::GetSampleRate();
 }
 
 String VideoFormat::ToString() const {

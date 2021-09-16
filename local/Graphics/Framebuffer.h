@@ -21,6 +21,7 @@ public:
 	virtual int GetHeight() const = 0;
 	virtual int GetStride() const = 0;
 	virtual int GetPitch() const = 0;
+	virtual void DrawFill(const byte* mem, int sz) = 0;
 	
 	
 };

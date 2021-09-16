@@ -129,7 +129,7 @@ bool AudioOutput::Open0() {
 	    #endif
 	    fmt.freq = audio_fmt.freq;
 	    fmt.sample_rate = audio_fmt.samples;
-	    fmt.channels = audio_fmt.channels;
+	    fmt.res[0] = audio_fmt.channels;
 		
 	    //buf.SetFormat(fmt, 4*MIN_AUDIO_BUFFER_SAMPLES);
 		

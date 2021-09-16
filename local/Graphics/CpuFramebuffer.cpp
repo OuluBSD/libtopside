@@ -162,6 +162,20 @@ void CpuFramebuffer::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 
 
 
+void DrawFramebufferCpu::DrawImageMemory(const byte* mem, int sz, int x, int y, int w, int h, int ch_var_size, int channels) {
+	int w0 = fb->GetWidth();
+	int h0 = fb->GetHeight();
+	int stride0 = fb->GetStride();
+	
+	if (x == 0 && y == 0 &&
+		w == w0 && h == h0 &&
+		stride0 == ch_var_size * channels)
+		fb->DrawFill(mem, sz);
+	else {
+		TODO
+	}
+}
+
 void DrawFramebufferCpu::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
 	ASSERT(fb);
 	if (!fb) return;

@@ -18,6 +18,7 @@ file
 	Audio.cpp,
 	Record.h,
 	Video.h,
+	Video.cpp,
 	Media.h,
 	Media.cpp,
 	Ffmpeg.h,

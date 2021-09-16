@@ -21,7 +21,7 @@ Format GetDefaultFormat(ValDevCls type) {
 		fmt.SetMidi(type.dev);
 	}
 	else if (type.val == ValCls::VIDEO) {
-		fmt.SetVideo(type.dev, LightSampleFD::RGBA_U8_LE, 800, 600, 60, 1);
+		fmt.SetVideo(type.dev, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	}
 	else {
 		TODO

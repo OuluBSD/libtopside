@@ -87,6 +87,7 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 		    if (!fail) {
 			    int iter = 0;
 			    TimeStop t, total;
+			    double sleep_dt_limit = 1.0 / 300.0;
 			    while (mach.IsRunning()) {
 			        double dt = ResetSeconds(t);
 			        mach.Update(dt);
@@ -94,7 +95,8 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 			        if (!iter++)
 						mach.Get<LoopStore>()->GetRoot()->Dump();
 					
-			        Sleep(1);
+					if (dt < sleep_dt_limit)
+						Sleep(1);
 			        
 			        if (time_limit > 0 && total.Seconds() >= time_limit)
 			            mach.SetNotRunning();

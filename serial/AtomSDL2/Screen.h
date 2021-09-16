@@ -1,8 +1,6 @@
 #ifndef _AtomSDL2_Screen_h_
 #define _AtomSDL2_Screen_h_
 
-#if HAVE_MANUAL_SDL_CLASSES
-
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -43,5 +41,4 @@ public:
 
 NAMESPACE_SERIAL_END
 
-#endif
 #endif

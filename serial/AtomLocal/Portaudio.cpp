@@ -7,7 +7,7 @@ Format ConvertPortaudioFormat(Portaudio::AudioFormat pa_fmt) {
 	Format fmt;
 	fmt.vd = VD(CENTER,AUDIO);
 	AudioFormat& r = fmt;
-	r.channels = pa_fmt.channels;
+	r.res[0] = pa_fmt.channels;
 	r.freq = pa_fmt.freq;
 	r.sample_rate = pa_fmt.sample_rate;
 	switch (pa_fmt.fmt) {

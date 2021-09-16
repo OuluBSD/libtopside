@@ -222,7 +222,7 @@ bool WorldState::Contains(const WorldState& ws) const {
 			return false;
 	for(int i = 0; i < c_count; i++) {
 		if (ws.using_act[i]) {
-			if (Atomare(i, ws) != 0)
+			if (Compare(i, ws) != 0)
 				return false;
 		}
 	}
@@ -235,7 +235,7 @@ bool WorldState::Conflicts(const WorldState& ws) const {
 	int c_count = min(a_count, b_count);
 	for(int i = 0; i < c_count; i++) {
 		if (using_act[i] && ws.using_act[i]) {
-			if (Atomare(i, ws) != 0)
+			if (Compare(i, ws) != 0)
 				return true;
 		}
 	}
@@ -243,10 +243,10 @@ bool WorldState::Conflicts(const WorldState& ws) const {
 }
 
 
-int WorldState::Atomare(int idx, const WorldState& ws) const {
+int WorldState::Compare(int idx, const WorldState& ws) const {
 	const String& a = values[idx];
 	const String& b = ws.values[idx];
-	// Atomare false
+	// Compare false
 	if (a.IsEmpty() || a == "false") {
 		if (b.IsEmpty() || b == "false")
 			return 0;

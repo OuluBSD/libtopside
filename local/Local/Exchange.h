@@ -120,7 +120,8 @@ using off32_gen = OffsetGen<dword>;
 
 
 struct RealtimeSourceConfig {
-	double dt = 0;
+	double time_delta = 0;
+	double time_total = 0;
 	double sync_dt = 3.0;
 	double sync_age = 0;
     dword last_sync_src_frame = 0;

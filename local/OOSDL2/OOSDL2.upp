@@ -12,6 +12,7 @@ file
 	Timer.cpp,
 	AudioIn.cpp,
 	AudioOut.cpp,
+	SwScreen.cpp,
 	Screen.cpp,
 	Events.cpp,
 	Joystick.cpp,

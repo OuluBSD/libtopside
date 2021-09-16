@@ -430,7 +430,7 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	AVStream* astream = file_fmt_ctx->streams[stream_i];
 	AVCodecParameters* acodec = astream->codecpar;
 	
-	afmt.channels = acodec->channels;
+	afmt.res[0] = acodec->channels;
 	afmt.freq = acodec->sample_rate;
 	afmt.sample_rate = acodec->frame_size;
 	
@@ -562,7 +562,7 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		frame->format == AV_SAMPLE_FMT_DBLP;
 	ASSERT(fmt.IsValid());
 	ASSERT(frame->sample_rate == afmt.freq);
-	ASSERT(frame->channels == afmt.channels);
+	ASSERT(frame->channels == afmt.res[0]);
 	ASSERT(var_size == afmt.GetSampleSize());
 	#endif
 	

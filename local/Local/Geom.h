@@ -17,6 +17,9 @@ struct Size3_ : Moveable<Size3_<T>> {
 	bool IsPositive() const {return cx > 0 && cy > 0 && cz > 0;}
 	bool IsEqual(const Size3_& sz) const {return cx == sz.cx && cy == sz.cy && cz == sz.cz;}
 	
+	T&       operator[](int i)       {ASSERT(i == 0 || i == 1 || i == 2); if (i == 0) return &cx; if (i == 1) return &cy; if (i == 2) return &cz; Panic("invalid Size3_<T> subscript pos"); NEVER();}
+	const T& operator[](int i) const {ASSERT(i == 0 || i == 1 || i == 2); if (i == 0) return &cx; if (i == 1) return &cy; if (i == 2) return &cz; Panic("invalid Size3_<T> subscript pos"); NEVER();}
+	
 	bool operator==(const Size3_& sz) {return IsEqual(sz);}
 	bool operator!=(const Size3_& sz) {return !IsEqual(sz);}
 	void operator=(const Size3_& sz) {

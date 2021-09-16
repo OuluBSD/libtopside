@@ -6,8 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 void RealtimeSourceConfig::Update(double dt, bool buffer_full) {
 	sync_age += dt;
+	time_total += dt;
+	time_delta = dt;
 	
-	this->dt += dt;
 	++src_frame;
 	
 	if (enable_sync && sync_age >= sync_dt) {

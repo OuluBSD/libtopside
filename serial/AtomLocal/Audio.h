@@ -80,6 +80,28 @@ public:
 		}
 	}
 	
+	void GenerateNoise(const AudioFormat& fmt) {
+		ASSERT(fmt.IsSampleType<T>());
+		double pan_loop_seconds = 2.0;
+		int tone_mul = 4;
+		int pan_frames = (int)(fmt.freq * pan_loop_seconds / fmt.sample_rate);
+		int pan_samples = pan_frames * fmt.sample_rate;
+		frame_part_size = fmt.sample_rate * fmt.res[0];
+		int size = frame_part_size * pan_frames;
+		frame.SetCount(size);
+		T* f = frame.Begin();
+		auto& rng = RNG::Local();
+		for (int p = 0; p < pan_frames; p++) {
+			for(int i = 0; i < fmt.sample_rate; i++) {
+				for(int j = 0; j < fmt.res[0]; j++) {
+					*f = ConvertAudioSample<double, T>(rng.Randomf());
+					f++;
+				}
+			}
+		}
+		ASSERT(f == frame.End());
+	}
+	
 	void GenerateStereoSine(const AudioFormat& fmt) {
 		ASSERT(fmt.IsSampleType<T>());
 		double pan_loop_seconds = 2.0;
@@ -87,7 +109,7 @@ public:
 		int pan_frames = (int)(fmt.freq * pan_loop_seconds / fmt.sample_rate);
 		int pan_samples = pan_frames * fmt.sample_rate;
 		int pan_i = 0;
-		frame_part_size = fmt.sample_rate * fmt.channels;
+		frame_part_size = fmt.sample_rate * fmt.res[0];
 		int size = frame_part_size * pan_frames;
 		frame.SetCount(size);
 		T* f = frame.Begin();
@@ -99,7 +121,7 @@ public:
 				double panrad = M_2PI * (double)pan_i / (double)pan_samples;
 				double pansin = FastSin(panrad);
 				double panvol = (pansin + 1.0) * 0.5;
-				for(int j = 0; j < fmt.channels; j++) {
+				for(int j = 0; j < fmt.res[0]; j++) {
 					double pan = (j % 2 == 0) ? panvol : (1.0 - panvol);
 					//pan = j == 0  ? 1.0 : 0.0;
 					double value = pan * tonesin;
@@ -128,6 +150,7 @@ class AudioGenBase :
 		MODE_TRACK_NUM,
 	};
 	
+	void GenerateNoise(const AudioFormat& fmt);
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:

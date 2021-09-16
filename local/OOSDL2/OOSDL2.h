@@ -146,8 +146,6 @@ protected:
 	Size					screen_sz;
 	String					title;
 	SDL_GLContext			glcontext = 0;
-	CpuRenderer				sw_rend;
-	DrawFramebufferCpu		sw_draw;
 	OpenGLRenderer			hw_rend;
 	DrawFramebufferOpenGL	hw_draw;
 	SystemDraw				sysdraw;
@@ -171,6 +169,50 @@ public:
 	Screen&			Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
+	SystemDraw&     BeginDraw();
+	void            CommitDraw();
+	
+	Size            GetSize();
+	bool			IsCaptured() const {return mouse_captured;}
+	
+};
+
+class SwScreen : public Component {
+	RTTI_DECL1(SwScreen, Component)
+	
+protected:
+	friend class Events;
+	
+    SDL_Window*				win = NULL;
+    SDL_Renderer*			rend = NULL;
+    SDL_Texture*			fb = NULL;
+    SDL_RendererInfo		rend_info;
+    Rect					desired_rect;
+	Size					screen_sz;
+	int						fb_stride;
+	String					title;
+	CpuRenderer				sw_rend;
+	DrawFramebufferCpu		sw_draw;
+	SystemDraw				sysdraw;
+	bool full_screen = false;
+	bool is_maximized = false;
+	bool is_sizeable = false;
+	bool mouse_captured = false;
+	
+	bool Open0() override;
+	void Close0() override;
+	uint32 GetInitFlag() const override {return SDL_INIT_VIDEO;}
+	
+	void SetWindowRect(Rect r);
+	
+public:
+	SwScreen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
+	
+	void			Maximize(bool b=true);
+	SwScreen&		Sizeable(bool b=true) {is_sizeable = b; return *this;}
+	void            SetTitle(String title);
+	void			SetRect(Rect r);
+	void            Render();
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	
