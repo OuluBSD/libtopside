@@ -36,17 +36,17 @@ HEADER_ACTION(		AudioSideSrc,		center.audio.side.src)
 HEADER3(			AudioSideSink,		CenterSideSinkAsync,	side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioSideSink,		center.audio.side.sink)
 
-HEADER2(			SwVideoDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterVideo)
-HEADER_ACTION(		SwVideoDbgSrc,		center.video.src.dbg_generator)
-HEADER_INHERITS(	SwVideoDbgSrc,		VideoGenBase)
-HEADER_ARG(			SwVideoDbgSrc,		ALT_LINK,	1)
-HEADER_ARG(			SwVideoDbgSrc,		ALT_FWD,	1)
-
-HEADER2(			VideoDbgSrc,		AccelSourceAsync,		source,		AccelOrder,		AccelVideo)
-HEADER_ACTION(		VideoDbgSrc,		accel.video.src.dbg_generator)
+HEADER2(			VideoDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterVideo)
+HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
 HEADER_INHERITS(	VideoDbgSrc,		VideoGenBase)
 HEADER_ARG(			VideoDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			VideoDbgSrc,		ALT_FWD,	1)
+
+HEADER2(			AccelVideoDbgSrc,	AccelSourceAsync,		source,		AccelOrder,		AccelVideo)
+HEADER_ACTION(		AccelVideoDbgSrc,	accel.video.src.dbg_generator)
+HEADER_INHERITS(	AccelVideoDbgSrc,	AccelVideoGenBase)
+HEADER_ARG(			AccelVideoDbgSrc,	ALT_LINK,	1)
+HEADER_ARG(			AccelVideoDbgSrc,	ALT_FWD,	1)
 
 
 

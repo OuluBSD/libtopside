@@ -6,11 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void OpenGLRenderer::PreFrame() {
-	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
 	
 	
 	// Enable smooth shading
@@ -44,8 +42,8 @@ void OpenGLRenderer::PreFrame() {
 }
 
 void OpenGLRenderer::PostFrame() {
-	//if (win)
-	//	SDL_GL_SwapWindow(win);
+	if (win)
+		SDL_GL_SwapWindow(win);
 }
 
 

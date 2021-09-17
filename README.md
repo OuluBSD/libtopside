@@ -19,5 +19,5 @@ git clone https://github.com/OuluBSD/libtopside.git
 cd libtopside
 umk examples,reference,tutorial,ai,serial,video,audio,compiler,local,alt,lib AtomShell ~/libtopside/script/CLANG_FreeBSD.bm -budsH4 +GUI,SHARED ~/
 
-Test run e.g:   ~/AtomShell -e tests/04_sdl_audio.eon -MACHINE_TIME_LIMIT=3
+Test run e.g:   ~/AtomShell -e tests/04a_sdl_audio.eon -MACHINE_TIME_LIMIT=3
 ```

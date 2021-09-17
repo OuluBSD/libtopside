@@ -24,15 +24,12 @@ public:
 	
 	bool			AltInitialize(const Script::WorldState& ws) override;
 	void			AltUninitialize() override;
-	//void			SetTitle(String s) override;
-	
-	/*DisplayFormat	GetFormat(DisCtx) override;
-	Display&		GetValue(DisCtx) override;*/
+	void			AltForward(FwdScope& fwd) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
 	
-	void SetFPS(int fps) {fmt.vid.SetFPS(fps);}
+	void SetFPS(int fps) {fmt.vid.SetFPS(fps); dt = 1.0 / (double)fps;}
 	
 };
 

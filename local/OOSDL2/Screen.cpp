@@ -40,9 +40,10 @@ Size Screen::GetSize() {
 
 bool Screen::Open0() {
 	AppFlags& app_flags = GetAppFlags();
-	is_opengl = app_flags.IsOpenGL();
+	is_opengl = true;
 	is_dx11 = false;
 	
+	is_test_image = true;
 	
 	// Window
 	screen_sz = desired_rect.GetSize();
@@ -91,23 +92,17 @@ bool Screen::Open0() {
 		
 	}
 	
-	// Software framebuffer
-	/*if (app_flags.IsSoftwareRenderer()) {
-		int fb_stride = 3;
-		SDL_Texture* fb = SDL_CreateTexture(rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
-		if (!fb) {
-			LOG("error: couldn't create framebuffer texture");
-		}
-		
-		data->sw_rend.GetOutputSoftFramebuffer().Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
-	}*/
-	
     // Fullscreen
 	#if defined flagDX12_PBR || defined flagOPENGL_PBR
 	if (full_screen)
 		SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
 	#endif
 	
+	
+	if (is_test_image) {
+		if (!TestImageInitialize())
+			return false;
+	}
 	
 	return true;
 }
@@ -157,6 +152,33 @@ void Screen::SetRect(Rect r) {
 	}
 }
 
+void Screen::Render() {
+	PacketBuffer& sink_buf = GetSinkBuffer();
+	
+	if (sink_buf.IsEmpty()) {
+		RTLOG("Screen::Render: error: empty buffer");
+		return;
+	}
+	
+	Packet& p = sink_buf.First();
+	Format fmt = p->GetFormat();
+	if (fmt.IsVideo()) {
+		const VideoFormat& vfmt = fmt.vid;
+		
+		BeginDraw();
+		
+		TestImageRender();
+		
+		CommitDraw();
+	}
+	
+	sink_buf.RemoveFirst();
+	
+	
+	// wrong solution: sink_buf.Clear();
+	
+}
+
 SystemDraw& Screen::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	if (is_opengl) {
@@ -186,7 +208,6 @@ void Screen::CommitDraw() {
 	hw_draw.fb->Leave();
 	hw_rend.PostFrame();
 }
-
 
 
 NAMESPACE_SDL2_END

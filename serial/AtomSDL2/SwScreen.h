@@ -14,7 +14,6 @@ class SDL2SwScreenBase :
 	OOSDL2::Events*			ev = 0;
 	double					dt = 0;
 	double					frame_age = 0;
-	int						fps;
 	
 public:
 	RTTI_DECL1(SDL2SwScreenBase, AltBaseT)
@@ -30,7 +29,7 @@ public:
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::SwScreen* GetOOSDL2() {return &*obj;}
 	
-	void SetFPS(int fps) {fmt.vid.SetFPS(fps);}
+	void SetFPS(int fps) {fmt.vid.SetFPS(fps); dt = 1.0 / (double)fps;}
 	
 };
 

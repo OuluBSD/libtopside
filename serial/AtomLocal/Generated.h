@@ -126,11 +126,11 @@ public:
 
 };
 
-class SwVideoDbgSrc : public CenterSourceAsync<SwVideoDbgSrc>, public VideoGenBase {
+class VideoDbgSrc : public CenterSourceAsync<VideoDbgSrc>, public VideoGenBase {
 
 public:
-	RTTI_DECL2(SwVideoDbgSrc, BaseT, VideoGenBase)
-	COPY_PANIC(SwVideoDbgSrc)
+	RTTI_DECL2(VideoDbgSrc, BaseT, VideoGenBase)
+	COPY_PANIC(VideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
 	ATOM_MAKE_ACTION_END
@@ -141,11 +141,11 @@ public:
 
 };
 
-class VideoDbgSrc : public AccelSourceAsync<VideoDbgSrc>, public VideoGenBase {
+class AccelVideoDbgSrc : public AccelSourceAsync<AccelVideoDbgSrc>, public AccelVideoGenBase {
 
 public:
-	RTTI_DECL2(VideoDbgSrc, BaseT, VideoGenBase)
-	COPY_PANIC(VideoDbgSrc)
+	RTTI_DECL2(AccelVideoDbgSrc, BaseT, AccelVideoGenBase)
+	COPY_PANIC(AccelVideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src.dbg_generator")
 	ATOM_MAKE_ACTION_END
@@ -282,8 +282,8 @@ using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
 using AudioSideSrcRef = Ref<AudioSideSrc, RefParent1<Loop>>;
 using AudioSideSinkRef = Ref<AudioSideSink, RefParent1<Loop>>;
-using SwVideoDbgSrcRef = Ref<SwVideoDbgSrc, RefParent1<Loop>>;
 using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
+using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
 using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;

@@ -16,8 +16,8 @@ namespace Serial {
 	ATOM_TYPE(AUDIO_DBG_SRC) \
 	ATOM_TYPE(AUDIO_SIDE_SRC) \
 	ATOM_TYPE(AUDIO_SIDE_SINK) \
-	ATOM_TYPE(SW_VIDEO_DBG_SRC) \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
+	ATOM_TYPE(ACCEL_VIDEO_DBG_SRC) \
 	ATOM_TYPE(ACCEL_CUSTOMER) \
 	ATOM_TYPE(VIDEO_HARDWARE_SINK) \
 	ATOM_TYPE(VIDEO_SHADER_SRC) \
@@ -37,8 +37,8 @@ namespace Serial {
 	ATOM_CLASS(AudioDbgSrc) \
 	ATOM_CLASS(AudioSideSrc) \
 	ATOM_CLASS(AudioSideSink) \
-	ATOM_CLASS(SwVideoDbgSrc) \
 	ATOM_CLASS(VideoDbgSrc) \
+	ATOM_CLASS(AccelVideoDbgSrc) \
 	ATOM_CLASS(AccelCustomer) \
 	ATOM_CLASS(VideoHardwareSink) \
 	ATOM_CLASS(VideoShaderSrc) \

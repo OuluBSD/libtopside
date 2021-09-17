@@ -135,6 +135,54 @@ public:
 class Screen : public Component {
 	RTTI_DECL1(Screen, Component)
 	
+	enum {
+		VAR_RESOLUTION,
+		VAR_FRAMES,
+		
+		VAR_COUNT
+	};
+	static const char** VarNames() {
+		static const char* names[VAR_COUNT+1] = {
+			"iResolution",
+			"iFrame",
+			0
+		};
+		return names;
+	}
+	
+	struct OpenGL_TestImage {
+		int			frames = 0;
+		GLint		frag = -1;
+		GLint		prog = -1;
+		uint32		stage = 0;
+		GLuint		color_buf = 0;
+		String		glsl;
+		GLint		var_idx[VAR_COUNT];
+		bool		is_vars_searched = 0;
+	} gltest;
+	
+	
+	bool TestImageInitialize();
+	void TestImageRender();
+	bool Ogl_Initialize();
+	void Ogl_Render();
+	void Ogl_FindVariables();
+	void Ogl_SetVars();
+	void Ogl_ClearPipeline();
+	void Ogl_CreatePipeline();
+	void Ogl_ClearTex();
+	void Ogl_ClearProg();
+	void Ogl_CreateTex(Size sz);
+	bool Ogl_CompilePrograms();
+	bool Ogl_CompileFragmentShader();
+	bool Ogl_CompileProgram(String shader_source);
+	GLint Ogl_CompileShader(String shader_source);
+	bool Ogl_LinkStages();
+	bool Ogl_LinkProgram();
+	void Ogl_TexFlags(int type);
+	void Ogl_SetVar(int var);
+	void Ogl_RefreshPipeline();
+	
 protected:
 	friend class Events;
 	
@@ -155,6 +203,7 @@ protected:
 	bool is_maximized = false;
 	bool is_sizeable = false;
 	bool mouse_captured = false;
+	bool is_test_image = false;
 	
 	bool Open0() override;
 	void Close0() override;
@@ -169,6 +218,7 @@ public:
 	Screen&			Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
+	void            Render();
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	

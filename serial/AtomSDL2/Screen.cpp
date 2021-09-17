@@ -7,7 +7,6 @@ NAMESPACE_SERIAL_BEGIN
 #ifdef flagGUI
 
 bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
-	dt = 0;
 	SetFPS(60);
 	OBJ_CREATE
 	return true;
@@ -18,41 +17,21 @@ void SDL2ScreenBase::AltUninitialize() {
 	obj.Clear();
 }
 
-#if 0
-
-DisplayFormat SDL2ScreenBase::GetFormat(DisCtx) {
-	TODO
-}
-
-Display& SDL2ScreenBase::GetValue(DisCtx) {
-	TODO
-}
-
-void SDL2ScreenBase::SetTitle(String s) {
-	if (obj)
-		obj->SetTitle(s);
-}
-	
-void SDL2ScreenBase::RecvDisplay(DisplaySource& src, double dt) {
-	frame_age += dt;
-	this->dt += dt;
-	
-	if (frame_age >= config.fps_dt) {
-		if (frame_age > 2 * config.fps_dt)
-			frame_age = config.fps_dt;
+void SDL2ScreenBase::AltForward(FwdScope& fwd) {
+	double time_delta = fwd.Cfg().time_delta;
+	frame_age += time_delta;
+	RTLOG("SDL2ScreenBase::AltForward: time_delta: " << time_delta << ", frame_age: " << frame_age);
+	if (frame_age >= dt) {
+		RTLOG("SDL2KopScreenBase::AltForward: render");
+		if (frame_age >= 2 * dt)
+			frame_age = 0;
 		else
-			frame_age = Modulus(frame_age, config.fps_dt);
-		
-		
-		SystemDraw& draw = obj->BeginDraw();
-		
-		if (!src.Render(config, draw))
-			frame_age = config.fps_dt; // force redraw
-		
-		obj->CommitDraw();
+			frame_age -= dt;
+		obj->Render();
 	}
 }
-#endif
+
+
 
 #endif
 

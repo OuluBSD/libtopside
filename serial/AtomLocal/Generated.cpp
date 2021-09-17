@@ -137,35 +137,14 @@ AtomTypeCls AudioSideSink::GetType() const
 	return GetAtomType();
 }
 
-AtomTypeCls SwVideoDbgSrc::GetAtomType()
-{
-	return ATOM0(SW_VIDEO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, VIDEO);
-}
-
-void SwVideoDbgSrc::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<CenterSourceAsync<SwVideoDbgSrc>>(this);
-	vis.VisitThis<VideoGenBase>(this);
-}
-
-AtomTypeCls SwVideoDbgSrc::GetType() const
-{
-	return GetAtomType();
-}
-
-void SwVideoDbgSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
-}
-
 AtomTypeCls VideoDbgSrc::GetAtomType()
 {
-	return ATOM0(VIDEO_DBG_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
+	return ATOM0(VIDEO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, VIDEO);
 }
 
 void VideoDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSourceAsync<VideoDbgSrc>>(this);
+	vis.VisitThis<CenterSourceAsync<VideoDbgSrc>>(this);
 	vis.VisitThis<VideoGenBase>(this);
 }
 
@@ -175,6 +154,27 @@ AtomTypeCls VideoDbgSrc::GetType() const
 }
 
 void VideoDbgSrc::StorePacket(Packet& p)
+{
+	AltStorePacket(p);
+}
+
+AtomTypeCls AccelVideoDbgSrc::GetAtomType()
+{
+	return ATOM0(ACCEL_VIDEO_DBG_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
+}
+
+void AccelVideoDbgSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<AccelSourceAsync<AccelVideoDbgSrc>>(this);
+	vis.VisitThis<AccelVideoGenBase>(this);
+}
+
+AtomTypeCls AccelVideoDbgSrc::GetType() const
+{
+	return GetAtomType();
+}
+
+void AccelVideoDbgSrc::StorePacket(Packet& p)
 {
 	AltStorePacket(p);
 }

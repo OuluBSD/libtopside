@@ -133,6 +133,15 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 }
 
 
+
+
+
+
+
+
+
+
+
 VideoGenBase::VideoGenBase() {
 	fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	
@@ -171,6 +180,60 @@ void VideoGenBase::AltStorePacket(Packet& p) {
 	p->Data().SetCount(frame, 0);
 	gen.Play((int)offset, p);
 	RTLOG("VideoGenBase::AltStorePacket: " << p->ToStringWithHash());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AccelVideoGenBase::AccelVideoGenBase() {
+	fmt.SetVideo(DevCls::ACCEL, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+	
+}
+
+bool AccelVideoGenBase::AltInitialize(const Script::WorldState& ws) {
+	String mode = ws.Get(".mode");
+	
+	if (mode == "sine")
+		gen.GenerateSine(fmt);
+	else
+		gen.GenerateNoise(fmt);
+	
+	Value& src_val = GetSource()->GetSourceValue();
+	src_val.SetFormat(fmt);
+	return true;
+}
+
+void AccelVideoGenBase::AltUninitialize() {
+	
+}
+
+void AccelVideoGenBase::AltForward(FwdScope& fwd) {
+	
+}
+
+void AccelVideoGenBase::AltStorePacket(Packet& p) {
+	int frame = fmt.GetFrameSize();
+	dword off = p->GetOffset().value;
+	int64 offset = (int64)off * (int64)frame;
+	int64 max_offset = gen.GetMaxOffset();
+	offset = offset % max_offset;
+	ASSERT(offset < (int64)std::numeric_limits<int>::max());
+	double time = off * fmt.GetFrameSeconds();
+	p->Set(fmt, time);
+	p->Data().SetCount(frame, 0);
+	gen.Play((int)offset, p);
+	RTLOG("AccelVideoGenBase::AltStorePacket: " << p->ToStringWithHash());
 }
 
 

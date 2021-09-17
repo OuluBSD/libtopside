@@ -90,9 +90,7 @@ void SwScreen::Render() {
 		return;
 	}
 	
-	
 	Packet& p = sink_buf.First();
-	
 	Format fmt = p->GetFormat();
 	if (fmt.IsVideo()) {
 		const VideoFormat& vfmt = fmt.vid;
@@ -110,7 +108,6 @@ void SwScreen::Render() {
 			RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
 		}
 	}
-	
 	
 	sink_buf.RemoveFirst();
 	
