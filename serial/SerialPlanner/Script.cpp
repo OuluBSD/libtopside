@@ -40,19 +40,25 @@ bool ScriptLoader::Initialize() {
 }
 
 bool ScriptLoader::DoPostLoad() {
-	for(String path : post_load_file) {
+	bool success = true;
+	
+	while (!post_load_file.IsEmpty()) {
+		String path = post_load_file[0];
+		post_load_file.Remove(0);
+		
 		if (!LoadFile(path))
-			return false;
+			success = false;
 	}
-	post_load_file.Clear();
 	
-	for(String s : post_load_string) {
+	while (!post_load_string.IsEmpty()) {
+		String s = post_load_string[0];
+		post_load_string.Remove(0);
+		
 		if (!Load(s, "input"))
-			return false;
+			success = false;
 	}
-	post_load_string.Clear();
 	
-	return true;
+	return success;
 }
 
 void ScriptLoader::Start() {
@@ -61,7 +67,9 @@ void ScriptLoader::Start() {
 
 void ScriptLoader::Update(double dt) {
 	
-	DoPostLoad();
+	if (!DoPostLoad()) {
+		GetMachine().SetNotRunning();
+	}
 	
 }
 

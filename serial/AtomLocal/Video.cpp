@@ -32,7 +32,7 @@ void DebugVideoGenerator::Play(int frame_offset, const Packet& p) {
 	}
 }
 
-void DebugVideoGenerator::GenerateRandom(const VideoFormat& fmt) {
+void DebugVideoGenerator::GenerateNoise(const VideoFormat& fmt) {
 	ASSERT(BinarySample::GetPackedSingleSize<T>() == sizeof(T));
 	double pan_loop_seconds = 0.5;
 	int tone_mul = 4;
@@ -102,7 +102,6 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 	int pan_frames = (int)(fmt.freq * pan_loop_seconds / fmt.sample_rate);
 	int frame_samples = fmt.res[0] * fmt.res[1] * pack_size;
 	int frame_size = frame_samples * fmt.GetSampleSize();
-	int wavelen = 17;
 	int pan_i = 0;
 	int pan_samples = fmt.res[0] / 4;
 	frame_part_size = frame_size;
@@ -110,6 +109,8 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 	frame.SetCount(size);
 	T* f = frame.Begin();
 	for (int p = 0; p < pan_frames; p++) {
+		int pmod = p % 16 - 8;
+		int wavelen = 300 + pmod;
 		for(int i = 0; i < frame_samples; i++) {
 			double tonerad = tone_mul * M_2PI * (double)i / (double)wavelen;
 			double tonesin = FastSin(tonerad);
@@ -134,11 +135,17 @@ void DebugVideoGenerator::GenerateSine(const VideoFormat& fmt) {
 
 VideoGenBase::VideoGenBase() {
 	fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
-	gen.GenerateRandom(fmt);
 	
 }
 
 bool VideoGenBase::AltInitialize(const Script::WorldState& ws) {
+	String mode = ws.Get(".mode");
+	
+	if (mode == "sine")
+		gen.GenerateSine(fmt);
+	else
+		gen.GenerateNoise(fmt);
+	
 	Value& src_val = GetSource()->GetSourceValue();
 	src_val.SetFormat(fmt);
 	return true;

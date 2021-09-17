@@ -6,10 +6,10 @@ machine sdl.app: {
 		
 	chain program: {
 		
-		loop video: {
-			center.customer: true;
-			center.video.src.dbg_generator: true;
-			sdl.swvideo: true;
+		loop accel.video: {
+			accel.customer: true;
+			accel.video.src.dbg_generator: true;
+			sdl.video: true;
 		};
 		
 		loop audio: {

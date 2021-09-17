@@ -36,8 +36,14 @@ HEADER_ACTION(		AudioSideSrc,		center.audio.side.src)
 HEADER3(			AudioSideSink,		CenterSideSinkAsync,	side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioSideSink,		center.audio.side.sink)
 
-HEADER2(			VideoDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterVideo)
-HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
+HEADER2(			SwVideoDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterVideo)
+HEADER_ACTION(		SwVideoDbgSrc,		center.video.src.dbg_generator)
+HEADER_INHERITS(	SwVideoDbgSrc,		VideoGenBase)
+HEADER_ARG(			SwVideoDbgSrc,		ALT_LINK,	1)
+HEADER_ARG(			SwVideoDbgSrc,		ALT_FWD,	1)
+
+HEADER2(			VideoDbgSrc,		AccelSourceAsync,		source,		AccelOrder,		AccelVideo)
+HEADER_ACTION(		VideoDbgSrc,		accel.video.src.dbg_generator)
 HEADER_INHERITS(	VideoDbgSrc,		VideoGenBase)
 HEADER_ARG(			VideoDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			VideoDbgSrc,		ALT_FWD,	1)
@@ -81,15 +87,15 @@ HEADER_ARG(			SdlContextAtom,		ALT_FWD,	1)
 
 /*HEADER2(			SdlEventAtom,		CenterSideSourceAsync,	source,		CenterOrder,	CenterEvent)
 HEADER_INHERITS(	SdlEventAtom,		SDL2EventsBase)
-HEADER_ACTION(		SdlEventAtom,		sdl.event)
+HEADER_ACTION(		SdlEventAtom,		sdl.event)*/
 
 HEADER2(			SdlVideoAtom,		AccelSinkPolling,		sink,		AccelVideo,		AccelReceipt)
 HEADER_INHERITS(	SdlVideoAtom,		SDL2ScreenBase)
-HEADER_ACTION(		SdlVideoAtom,		sdl.video)*/
+HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 
-HEADER2(			SdlVideoAtom,		CenterSinkPolling,		sink,		CenterVideo,	CenterReceipt)
-HEADER_INHERITS(	SdlVideoAtom,		SDL2SwScreenBase)
-HEADER_ACTION(		SdlVideoAtom,		sdl.swvideo)
+HEADER2(			SdlSwVideoAtom,		CenterSinkPolling,		sink,		CenterVideo,	CenterReceipt)
+HEADER_INHERITS(	SdlSwVideoAtom,		SDL2SwScreenBase)
+HEADER_ACTION(		SdlSwVideoAtom,		sdl.swvideo)
 
 HEADER2 (			SdlAudioAtom,		CenterSinkPolling,		sink,		CenterAudio,	CenterReceipt)
 HEADER_INHERITS(	SdlAudioAtom,		SDL2AudioOutputBase)

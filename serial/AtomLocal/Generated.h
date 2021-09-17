@@ -126,13 +126,28 @@ public:
 
 };
 
-class VideoDbgSrc : public CenterSourceAsync<VideoDbgSrc>, public VideoGenBase {
+class SwVideoDbgSrc : public CenterSourceAsync<SwVideoDbgSrc>, public VideoGenBase {
+
+public:
+	RTTI_DECL2(SwVideoDbgSrc, BaseT, VideoGenBase)
+	COPY_PANIC(SwVideoDbgSrc)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+	void StorePacket(Packet& p) override;
+
+};
+
+class VideoDbgSrc : public AccelSourceAsync<VideoDbgSrc>, public VideoGenBase {
 
 public:
 	RTTI_DECL2(VideoDbgSrc, BaseT, VideoGenBase)
 	COPY_PANIC(VideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src.dbg_generator")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -216,11 +231,25 @@ public:
 
 };
 
-class SdlVideoAtom : public CenterSinkPolling<SdlVideoAtom>, public SDL2SwScreenBase {
+class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, BaseT, SDL2SwScreenBase)
+	RTTI_DECL2(SdlVideoAtom, BaseT, SDL2ScreenBase)
 	COPY_PANIC(SdlVideoAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class SdlSwVideoAtom : public CenterSinkPolling<SdlSwVideoAtom>, public SDL2SwScreenBase {
+
+public:
+	RTTI_DECL2(SdlSwVideoAtom, BaseT, SDL2SwScreenBase)
+	COPY_PANIC(SdlSwVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.swvideo")
 	ATOM_MAKE_ACTION_END
@@ -253,6 +282,7 @@ using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
 using AudioSideSrcRef = Ref<AudioSideSrc, RefParent1<Loop>>;
 using AudioSideSinkRef = Ref<AudioSideSink, RefParent1<Loop>>;
+using SwVideoDbgSrcRef = Ref<SwVideoDbgSrc, RefParent1<Loop>>;
 using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
@@ -260,6 +290,7 @@ using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
 using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
 using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
+using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, RefParent1<Loop>>;
 using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
 }
 

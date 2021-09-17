@@ -137,14 +137,35 @@ AtomTypeCls AudioSideSink::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls SwVideoDbgSrc::GetAtomType()
+{
+	return ATOM0(SW_VIDEO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, VIDEO);
+}
+
+void SwVideoDbgSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<CenterSourceAsync<SwVideoDbgSrc>>(this);
+	vis.VisitThis<VideoGenBase>(this);
+}
+
+AtomTypeCls SwVideoDbgSrc::GetType() const
+{
+	return GetAtomType();
+}
+
+void SwVideoDbgSrc::StorePacket(Packet& p)
+{
+	AltStorePacket(p);
+}
+
 AtomTypeCls VideoDbgSrc::GetAtomType()
 {
-	return ATOM0(VIDEO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, VIDEO);
+	return ATOM0(VIDEO_DBG_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
 }
 
 void VideoDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<VideoDbgSrc>>(this);
+	vis.VisitThis<AccelSourceAsync<VideoDbgSrc>>(this);
 	vis.VisitThis<VideoGenBase>(this);
 }
 
@@ -259,16 +280,32 @@ void SdlContextAtom::Forward(FwdScope& fwd)
 
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
-	return ATOM0(SDL_VIDEO_ATOM, SINK, CENTER, VIDEO, CENTER, RECEIPT);
+	return ATOM0(SDL_VIDEO_ATOM, SINK, ACCEL, VIDEO, ACCEL, RECEIPT);
 }
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkPolling<SdlVideoAtom>>(this);
-	vis.VisitThis<SDL2SwScreenBase>(this);
+	vis.VisitThis<AccelSinkPolling<SdlVideoAtom>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
 }
 
 AtomTypeCls SdlVideoAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls SdlSwVideoAtom::GetAtomType()
+{
+	return ATOM0(SDL_SW_VIDEO_ATOM, SINK, CENTER, VIDEO, CENTER, RECEIPT);
+}
+
+void SdlSwVideoAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<CenterSinkPolling<SdlSwVideoAtom>>(this);
+	vis.VisitThis<SDL2SwScreenBase>(this);
+}
+
+AtomTypeCls SdlSwVideoAtom::GetType() const
 {
 	return GetAtomType();
 }

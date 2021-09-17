@@ -10,6 +10,7 @@ BASE(CenterSide)
 BASE(DummySideAsync)
 BASE(AccelSinkPolling)
 BASE(AccelSideAsync)
+BASE(AccelSourceAsync)
 
 BASE_FLAG(CenterDriver,				forward)
 BASE_FLAG(CenterSourceAsync,		store_packet)
@@ -19,6 +20,7 @@ BASE_FLAG(AccelSideAsync,			store_packet)
 BASE_ACTION(CustomerBaseT,			loop.connected)
 //BASE_ACTION(CenterSinkSync,			center.audio.sink)
 //BASE_ACTION(CenterSinkPolling,		center.audio.sink)
+BASE_FLAG(AccelSourceAsync,			store_packet)
 
 /*
 BASE2(ReceiptOrder,				CenterReceipt,	CenterOrder)

@@ -8,6 +8,7 @@
 #include "Types.h"
 #include "RegistrySystem.h"
 #include "CustomAtom.h"
+#include "AccelAtom.h"
 #include "DummyAtom.h"
 
 

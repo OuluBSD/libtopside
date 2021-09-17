@@ -66,7 +66,7 @@ public:
 	
 	
 	void Play(int frame_offset, const Packet& p);
-	void GenerateRandom(const VideoFormat& fmt);
+	void GenerateNoise(const VideoFormat& fmt);
 	void GenerateSine(const VideoFormat& fmt);
 	uint64 GetMaxOffset() const {return frame.GetCount();}
 	
