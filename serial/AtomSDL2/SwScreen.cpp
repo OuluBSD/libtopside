@@ -10,26 +10,29 @@ NAMESPACE_SERIAL_BEGIN
 bool SDL2SwScreenBase::AltInitialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
+	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
 	return true;
 }
 
 void SDL2SwScreenBase::AltUninitialize() {
 	ev = 0;
 	obj.Clear();
+	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+}
+
+void SDL2SwScreenBase::AltUpdate(double dt) {
+	frame_age += dt;
+	RTLOG("SDL2ScreenBase::AltUpdate: dt: " << dt << ", frame_age: " << frame_age);
 }
 
 void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
 	PacketBuffer& sink_buf = this->GetSink()->GetValue().GetBuffer();
-	ASSERT(!sink_buf.IsEmpty());
 	if (sink_buf.IsEmpty()) return;
 	
-	double time_delta = fwd.Cfg().time_delta;
-	frame_age += time_delta;
-	
-	RTLOG("SDL2SwScreenBase::AltForward: time_delta: " << time_delta << ", frame_age: " << frame_age);
+	RTLOG("SDL2SwScreenBase::AltForward: frame_age: " << frame_age);
 	
 	if (frame_age >= dt) {
-		RTLOG("SDL2SwScreenBase::AltStorePacket: render");
+		RTLOG("SDL2SwScreenBase::AltForward: render");
 		if (frame_age >= 2 * dt)
 			frame_age = 0;
 		else
@@ -45,9 +48,13 @@ void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
 		
 		PostContinueForward();
 	}
+	else {
+		RTLOG("SDL2SwScreenBase::AltForward: wait");
+	}
 }
 
 void SDL2SwScreenBase::AltStorePacket(Packet& p) {
+	RTLOG("SDLSw2ScreenBase::AltStorePacket");
 	obj->Render();
 }
 

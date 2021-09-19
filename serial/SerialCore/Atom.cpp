@@ -150,6 +150,13 @@ bool AtomBase::LinkSideSource(AtomBaseRef src) {
 	return false;
 }
 
+
+void AtomBase::PacketConsumed(const Packet& p) {
+	lock.Enter();
+	consumed_packets.Add(p);
+	lock.Leave();
+}
+
 void AtomBase::PacketsConsumed(const LinkedList<Packet>& v) {
 	lock.Enter();
 	consumed_packets.Append(v);

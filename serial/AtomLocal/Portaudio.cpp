@@ -137,6 +137,10 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 	if (consumer.IsEmptySource())
 		consumer.SetSource(sink_buf);
 	
+	#ifdef flagDEBUG
+	this->dbg_async_race = true;
+	#endif
+	
 	if (args.output) {
 		Serial::AudioFormat& afmt = fmt;
 		
@@ -168,6 +172,11 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 			memset(args.output, 0, size);
 		}
 	}
+	
+	
+	#ifdef flagDEBUG
+	this->dbg_async_race = false;
+	#endif
 }
 
 namespace Portaudio {bool IsPortaudioUninitialized() {return Serial::__is_portaudio_uninit;}}

@@ -58,7 +58,7 @@ AtomTypeCls AudioHardwareSink::GetAtomType()
 
 void AudioHardwareSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkPolling<AudioHardwareSink>>(this);
+	vis.VisitThis<CenterSinkAsync<AudioHardwareSink>>(this);
 	vis.VisitThis<PortaudioSink>(this);
 }
 
@@ -279,7 +279,7 @@ AtomTypeCls SdlAudioAtom::GetAtomType()
 
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkPolling<SdlAudioAtom>>(this);
+	vis.VisitThis<CenterSinkAsync<SdlAudioAtom>>(this);
 	vis.VisitThis<SDL2AudioOutputBase>(this);
 }
 

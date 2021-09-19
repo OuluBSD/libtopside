@@ -43,8 +43,17 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		  post_sink_packet_count
 		+ post_src_packet_count
 		+ (post_consumed - post_consumed_partial);
+	bool consumed_only_partial =
+		pre_sink_packet_count == post_sink_packet_count &&
+		pre_src_packet_count == post_src_packet_count &&
+		pre_consumed == 0 && post_consumed == 0 &&
+		pre_consumed_partial == 1 && post_consumed_partial == 0;
 	if (type.role != CUSTOMER) {
-		ASSERT_(pre_total == post_total, "Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
+		ASSERT_(
+			dbg_async_race ||
+			pre_total == post_total ||
+			consumed_only_partial,
+			"Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
 		/*
 		On fail:
 			- have you implemented "IsConsumedPartialPacket() override" while using PacketConsumer?
@@ -229,12 +238,7 @@ void AtomBase::ForwardSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	
-	if (fwd.GetPos() > 0) {
-		Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
-	}
+	Forward(fwd);
 	
 	ForwardConsumed(fwd);
 }
@@ -242,13 +246,9 @@ void AtomBase::ForwardSink(FwdScope& fwd) {
 /*void AtomBase::ForwardConverter(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
-	if (fwd.GetPos() > 0) {
+	
 		if (this->ext)
 			this->ext->Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
-	}
 	
 	
 	ForwardConsumed(fwd);
@@ -257,12 +257,8 @@ void AtomBase::ForwardSink(FwdScope& fwd) {
 void AtomBase::ForwardSideSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
-	if (fwd.GetPos() > 0) {
-		Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardSideSink: skip duplicate extension forward");
-	}
+	
+	Forward(fwd);
 	
 	Value& sink_value = GetSink()->GetValue();
 	auto& sink_buf = sink_value.GetBuffer();
@@ -312,12 +308,8 @@ void AtomBase::ForwardSideSink(FwdScope& fwd) {
 void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
-	if (fwd.GetPos() > 0) {
-		Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
-	}
+	
+	Forward(fwd);
 	
 	Value& sink_value = GetSink()->GetValue();
 	auto& sink_buf = sink_value.GetBuffer();

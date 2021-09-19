@@ -28,14 +28,14 @@ public:
 		customer.Create();
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->Add(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddCustomer(r);
 		return true;
 	}
 	
 	void Uninitialize() override {
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemoveCustomer(r);
 	}
 	
 	void AddPlan(Script::Plan& sp) override {
@@ -114,6 +114,29 @@ public:
 };
 
 template <class T>
+class CenterSinkAsync : public Atom<T> {
+	
+protected:
+	using AtomT = Atom<T>;
+	
+	
+public:
+	typedef CenterSinkAsync CLASSNAME;
+	using BaseT = CenterSinkAsync<T>;
+	RTTI_DECL1(CenterSinkAsync, AtomT)
+	
+	~CenterSinkAsync() {}
+	void CopyTo(AtomBase* atom) const override {TODO}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+	bool Initialize(const Script::WorldState& ws) override {return true;}
+	void Uninitialize() override {}
+
+	
+};
+
+template <class T>
 class CenterSinkPolling : public Atom<T> {
 	
 protected:
@@ -125,7 +148,17 @@ public:
 	using BaseT = CenterSinkPolling<T>;
 	RTTI_DECL1(CenterSinkPolling, AtomT)
 	
-	void Uninitialize() override {}
+	bool Initialize(const Script::WorldState& ws) override {
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(r);
+		return true;
+	}
+	void Uninitialize() override {
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(r);
+	}
 	void Forward(FwdScope& fwd) override {this->AltForward(fwd);}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
@@ -217,14 +250,14 @@ public:
 		customer.Create();
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->Add(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddDriver(r);
 		return true;
 	}
 	
 	void Uninitialize() override {
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->Remove(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}

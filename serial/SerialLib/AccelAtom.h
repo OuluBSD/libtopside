@@ -15,7 +15,13 @@ public:
 	using BaseT = AccelSinkPolling<T>;
 	RTTI_DECL1(AccelSinkPolling, AtomT)
 	
-	void Uninitialize() override {}
+	bool Initialize(const Script::WorldState& ws) override {
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
+		return true;
+	}
+	void Uninitialize() override {
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(AtomBase::AsRefT());
+	}
 	void Forward(FwdScope& fwd) override {this->AltForward(fwd);}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}

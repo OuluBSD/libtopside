@@ -12,7 +12,7 @@ class AtomSystem :
 		RealtimeSourceConfig*	cfg;
 	};
 	LinkedList<Once> once_cbs;
-	LinkedList<AtomBaseRef> customers;
+	LinkedList<AtomBaseRef> customers, drivers, pollers, updated;
 	Mutex lock;
 	
 public:
@@ -43,10 +43,18 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
+    void ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
+    
 public:
 	
-    void Add(AtomBaseRef p);
-    void Remove(AtomBaseRef p);
+    void AddCustomer(AtomBaseRef p);
+    void AddDriver(AtomBaseRef p);
+    void AddPolling(AtomBaseRef p);
+    void AddUpdated(AtomBaseRef p);
+    void RemoveCustomer(AtomBaseRef p);
+    void RemoveDriver(AtomBaseRef p);
+    void RemovePolling(AtomBaseRef p);
+    void RemoveUpdated(AtomBaseRef p);
 	
 	
 };

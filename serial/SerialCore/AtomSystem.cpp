@@ -16,11 +16,41 @@ void AtomSystem::Start() {
 	
 }
 
+void AtomSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms) {
+	int dbg_i = 0;
+	for (AtomBaseRef& c : atoms) {
+		RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " (" << c->ToString() << ")");
+		
+		WhenEnterAtomForward(&*c);
+		
+		int dbg_j = 0;
+		for (FwdScope scope(*c, c->GetConfig()); scope; scope++) {
+			RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
+			WhenEnterFwdScopeForward(scope);
+			
+			scope.Forward();
+			
+			WhenLeaveFwdScopeForward();
+		}
+		
+		WhenLeaveAtomForward();
+		dbg_i++;
+	}
+}
+
 void AtomSystem::Update(double dt) {
 	LinkedList<Once> cbs;
 	lock.Enter();
 	MemSwap(cbs, once_cbs);
 	lock.Leave();
+	
+	for (AtomBaseRef& c : updated) {
+		c->Update(dt);
+	}
+	
+	for (AtomBaseRef& c : customers) {
+		c->UpdateConfig(dt);
+	}
 	
 	for (Once& o : cbs) {
 		WhenEnterOnceForward(o.fwd);
@@ -36,25 +66,10 @@ void AtomSystem::Update(double dt) {
 		WhenLeaveOnceForward();
 	}
 	
-	int dbg_i = 0;
-	for (AtomBaseRef& c : customers) {
-		RTLOG("AtomSystem::Update: customer #" << dbg_i << " (" << c->ToString() << ")");
-		c->UpdateConfig(dt);
-		WhenEnterAtomForward(&*c);
-		
-		int dbg_j = 0;
-		for (FwdScope scope(*c, c->GetConfig()); scope; scope++) {
-			RTLOG("AtomSystem::Update: customer #" << dbg_i << " fwd #" << dbg_j++);
-			WhenEnterFwdScopeForward(scope);
-			
-			scope.Forward();
-			
-			WhenLeaveFwdScopeForward();
-		}
-		
-		WhenLeaveAtomForward();
-		dbg_i++;
-	}
+	
+	ForwardAtoms(dt, "customer", customers);
+	ForwardAtoms(dt, "driver", drivers);
+	ForwardAtoms(dt, "poller", pollers);
 	
 }
 
@@ -69,14 +84,42 @@ void AtomSystem::Uninitialize() {
 	WhenUninit()();
 }
 
-void AtomSystem::Add(AtomBaseRef p) {
+void AtomSystem::AddCustomer(AtomBaseRef p) {
 	if (p)
 		customers.FindAdd(p);
 }
 
-void AtomSystem::Remove(AtomBaseRef p) {
+void AtomSystem::AddDriver(AtomBaseRef p) {
+	if (p)
+		drivers.FindAdd(p);
+}
+
+void AtomSystem::AddPolling(AtomBaseRef p) {
+	if (p)
+		pollers.FindAdd(p);
+}
+
+void AtomSystem::AddUpdated(AtomBaseRef p) {
+	if (p)
+		updated.FindAdd(p);
+}
+
+void AtomSystem::RemoveCustomer(AtomBaseRef p) {
 	customers.RemoveKey(p);
 }
+
+void AtomSystem::RemoveDriver(AtomBaseRef p) {
+	drivers.RemoveKey(p);
+}
+
+void AtomSystem::RemovePolling(AtomBaseRef p) {
+	pollers.RemoveKey(p);
+}
+
+void AtomSystem::RemoveUpdated(AtomBaseRef p) {
+	updated.RemoveKey(p);
+}
+
 
 void AtomSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 	lock.Enter();

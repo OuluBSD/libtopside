@@ -12,7 +12,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 res = iResolution;
     float t = float(iFrame) / 60.0;
     bool mode = mod(t, 6.0) > 3.0;
-    t = t * 504;
+    //t = t * 504;
     //t = t * 0.2;
     vec3 shift = vec3(
         sin(t),

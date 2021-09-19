@@ -14,7 +14,7 @@ HEADER_INHERITS(	TestRealtimeSink,	VoidSinkBase)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
 
-HEADER2(			AudioHardwareSink,	CenterSinkPolling,		sink,		CenterAudio,	CenterReceipt)
+HEADER2(			AudioHardwareSink,	CenterSinkAsync,		sink,		CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)
 HEADER_INHERITS(	AudioHardwareSink,	PortaudioSink)
@@ -99,7 +99,7 @@ HEADER2(			SdlSwVideoAtom,		CenterSinkPolling,		sink,		CenterVideo,	CenterReceip
 HEADER_INHERITS(	SdlSwVideoAtom,		SDL2SwScreenBase)
 HEADER_ACTION(		SdlSwVideoAtom,		sdl.swvideo)
 
-HEADER2 (			SdlAudioAtom,		CenterSinkPolling,		sink,		CenterAudio,	CenterReceipt)
+HEADER2 (			SdlAudioAtom,		CenterSinkAsync,		sink,		CenterAudio,	CenterReceipt)
 HEADER_INHERITS(	SdlAudioAtom,		SDL2AudioOutputBase)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)

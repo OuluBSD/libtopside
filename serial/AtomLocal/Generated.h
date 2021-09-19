@@ -51,7 +51,7 @@ public:
 
 };
 
-class AudioHardwareSink : public CenterSinkPolling<AudioHardwareSink>, public PortaudioSink {
+class AudioHardwareSink : public CenterSinkAsync<AudioHardwareSink>, public PortaudioSink {
 
 public:
 	RTTI_DECL2(AudioHardwareSink, BaseT, PortaudioSink)
@@ -249,7 +249,7 @@ public:
 
 };
 
-class SdlAudioAtom : public CenterSinkPolling<SdlAudioAtom>, public SDL2AudioOutputBase {
+class SdlAudioAtom : public CenterSinkAsync<SdlAudioAtom>, public SDL2AudioOutputBase {
 
 public:
 	RTTI_DECL2(SdlAudioAtom, BaseT, SDL2AudioOutputBase)

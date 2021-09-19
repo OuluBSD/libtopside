@@ -49,6 +49,10 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 		return;
 	}
 	
+	#ifdef flagDEBUG
+	ab->dbg_async_race = true;
+	#endif
+	
 	if (consumer.IsEmptySource())
 		consumer.SetSource(sink_buf);
 
@@ -82,6 +86,11 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 		
 		memset(output, 0, size);
 	}
+	
+	
+	#ifdef flagDEBUG
+	ab->dbg_async_race = false;
+	#endif
 	
 	frames++;
 }

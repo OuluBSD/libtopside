@@ -26,6 +26,11 @@ class AtomBase :
 public:
 	using AtomBaseRef = Ref<AtomBase, RefParent1<Loop>>;
 	
+	
+	#ifdef flagDEBUG
+	bool dbg_async_race = false;
+	#endif
+	
 protected:
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
@@ -81,6 +86,7 @@ public:
 	
 	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
 	virtual void AltUninitialize() {}
+	virtual void AltUpdate(double dt) {}
 	virtual void AltForward(FwdScope& fwd) {Panic("AltForward not implemented");}
 	virtual void AltStorePacket(Packet& p) {Panic("AltStorePacket not implemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
@@ -93,6 +99,7 @@ public:
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
+	virtual void Update(double dt) {AltUpdate(dt);}
 	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
 	virtual bool PostInitialize() {return AltPostInitialize();}
 	virtual String ToString() const;
@@ -100,7 +107,7 @@ public:
 	virtual void StorePacket(Packet& p) {AltStorePacket(p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}
-	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
+	virtual RealtimeSourceConfig& GetConfig() {if (last_cfg) return *last_cfg; Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual void AddPlan(Script::Plan& sp) {}
 	virtual bool PassLinkSideSink(AtomBaseRef sink) {return true;}
@@ -114,7 +121,7 @@ public:
 	bool					LinkSideSink(AtomBaseRef sink);
 	bool					LinkSideSource(AtomBaseRef src);
 	
-	void					PacketConsumed(const Packet& p) {consumed_packets.Add(p);}
+	void					PacketConsumed(const Packet& p);
 	void					PacketsConsumed(const LinkedList<Packet>& v);
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}

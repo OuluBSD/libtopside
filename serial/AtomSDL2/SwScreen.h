@@ -26,6 +26,7 @@ public:
 	void			AltUninitialize() override;
 	void			AltForward(FwdScope& fwd) override;
 	void			AltStorePacket(Packet& p) override;
+	void			AltUpdate(double dt) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::SwScreen* GetOOSDL2() {return &*obj;}
