@@ -125,6 +125,7 @@ public:
 	dword			GetFrameCount() const {return frames;}
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
+	bool			IsConsumedPartialPacket() {return consumer.HasLeftover();}
 	//Value&			GetValue() {return buf;}
 	
 };
@@ -152,7 +153,6 @@ class Screen : public Component {
 	
 	struct OpenGL_TestImage {
 		int			frames = 0;
-		GLint		frag = -1;
 		GLint		prog = -1;
 		uint32		stage = 0;
 		GLuint		color_buf = 0;
@@ -197,6 +197,7 @@ protected:
 	OpenGLRenderer			hw_rend;
 	DrawFramebufferOpenGL	hw_draw;
 	SystemDraw				sysdraw;
+	Packet					last_packet;
 	bool is_opengl = false;
 	bool is_dx11 = false;
 	bool full_screen = false;
@@ -219,6 +220,7 @@ public:
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
 	void            Render();
+	bool            Recv(Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	
@@ -244,6 +246,7 @@ protected:
 	CpuRenderer				sw_rend;
 	DrawFramebufferCpu		sw_draw;
 	SystemDraw				sysdraw;
+	Packet					last_packet;
 	bool full_screen = false;
 	bool is_maximized = false;
 	bool is_sizeable = false;
@@ -263,6 +266,7 @@ public:
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
 	void            Render();
+	bool            Recv(Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	

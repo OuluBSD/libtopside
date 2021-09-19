@@ -252,7 +252,7 @@ String AtomilationUnit::GetTreeString(int indent) const {
 #define PASS_ID(x) if (!Id(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 #define PASS_CHAR(x) if (!Char(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 
-bool Parser::Parse(String content, String filepath) {
+bool Parser::Parse(const String& content, const String& filepath) {
 	Set(content, filepath);
 	DoSpaces();
 	return Parse(cunit);

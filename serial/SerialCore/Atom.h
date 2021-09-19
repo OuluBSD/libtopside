@@ -89,6 +89,7 @@ public:
 	virtual bool AltDriverLeave() {Panic("AltDriverLeave not implemented"); return true;}
 	
 	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
+	virtual bool IsConsumedPartialPacket() {return 0;}
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}

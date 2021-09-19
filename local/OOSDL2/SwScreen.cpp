@@ -83,15 +83,14 @@ void SwScreen::SetRect(Rect r) {
 	}
 }
 
+bool SwScreen::Recv(Packet& p) {
+	last_packet = p;
+	// TODO: check if 'do render' packet, otherwise return false
+	return true; // assuming 'do render' packet
+}
+
 void SwScreen::Render() {
-	PacketBuffer& sink_buf = GetSinkBuffer();
-	
-	if (sink_buf.IsEmpty()) {
-		RTLOG("SwScreen::Render: error: empty buffer");
-		return;
-	}
-	
-	Packet& p = sink_buf.First();
+	Packet& p = last_packet;
 	Format fmt = p->GetFormat();
 	if (fmt.IsVideo()) {
 		const VideoFormat& vfmt = fmt.vid;
@@ -109,14 +108,6 @@ void SwScreen::Render() {
 			RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
 		}
 	}
-	
-	ab->PacketConsumed(p);
-	ab->PostContinueForward();
-	
-	sink_buf.RemoveFirst();
-	
-	
-	// wrong solution: sink_buf.Clear();
 	
 }
 

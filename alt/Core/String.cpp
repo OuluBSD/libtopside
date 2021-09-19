@@ -8,6 +8,9 @@ template<> StringT<char>	StringT<wchar_t>::ToString() const {return ToUtf8(Begin
 template<> StringT<wchar_t>	StringT<wchar_t>::ToWString() const {return *this;}
 
 
+void DebugStringLog(void* addr, const char* msg, int refs, int event) {
+	LOG("String0: " << HexStr(addr) << ": debug(" << event << "): " << (String)msg << ": " << refs);
+}
 
 double ScanDouble(const char* c) {
 	double a;

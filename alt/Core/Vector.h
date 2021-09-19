@@ -351,6 +351,7 @@ public:
 
 	void Remove(int i) {
 		ASSERT(i >= 0 && i < count);
+		data[i].~K();
 		int tail = count - (i + 1);
 		if (tail > 0)
 			MemoryMove(data + i, data + i + 1, tail * sizeof(K));
@@ -359,6 +360,7 @@ public:
 	void Remove(int i, int count) {
 		if (count <= 0) return;
 		ASSERT(i >= 0 && i + count <= this->count);
+		data[i].~K();
 		int tail = this->count - (i + count);
 		if (tail > 0)
 			MemoryMove(data + i, data + i + count, tail * sizeof(K));

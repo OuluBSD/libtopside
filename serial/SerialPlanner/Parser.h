@@ -166,7 +166,7 @@ class Parser : public CParser {
 public:
 	Parser() {}
 	
-	bool Parse(String content, String filepath);
+	bool Parse(const String& content, const String& filepath);
 	
 	Script::AtomilationUnit& GetResult() {return cunit;}
 	const Script::AtomilationUnit& GetResult() const {return cunit;}

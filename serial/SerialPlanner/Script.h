@@ -365,8 +365,8 @@ public:
 	SYS_CTOR(ScriptLoader);
 	SYS_DEF_VISIT_((vis & es); if (!loader.IsEmpty()) vis % *loader;)
 	
-	void PostLoadFile(String path) {post_load_file << path;}
-	void PostLoadString(String s) {post_load_string << s;}
+	void PostLoadFile(const String& path) {post_load_file << path;}
+	void PostLoadString(const String& s) {post_load_string << s;}
 	
 	ScriptLoader&	GetLoader() {return *this;}
 	int&		GetSideIdCounter() {return tmp_side_id_counter;}
@@ -374,6 +374,7 @@ public:
 	
 protected:
 	
+	~ScriptLoader();
     bool		Initialize() override;
     void		Start() override;
     void		Update(double dt) override;
@@ -384,7 +385,7 @@ protected:
     void		DumpErrors();
     bool		DoPostLoad();
 	bool		LoadFile(String path);
-	bool		Load(String content, String filepath="temp");
+	bool		Load(const String& content, const String& filepath="temp");
 	bool		LoadAtomilationUnit(Script::AtomilationUnit& cunit);
 	bool		LoadGlobalScope(Script::GlobalScope& list);
 	bool		ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1);

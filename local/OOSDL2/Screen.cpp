@@ -153,16 +153,14 @@ void Screen::SetRect(Rect r) {
 	}
 }
 
+bool Screen::Recv(Packet& p) {
+	last_packet = p;
+	return true; // assuming 'do render' packet
+}
+
 void Screen::Render() {
-	PacketBuffer& sink_buf = GetSinkBuffer();
-	
-	if (sink_buf.IsEmpty()) {
-		RTLOG("Screen::Render: error: empty buffer");
-		return;
-	}
-	
-	Packet& p = sink_buf.First();
-	Format fmt = p->GetFormat();
+	RTLOG("Screen::Render");
+	Format fmt = last_packet->GetFormat();
 	if (fmt.IsVideo()) {
 		const VideoFormat& vfmt = fmt.vid;
 		
@@ -175,15 +173,7 @@ void Screen::Render() {
 		
 		CommitDraw();
 	}
-	
-	ab->PacketConsumed(p);
-	ab->PostContinueForward();
-	
-	sink_buf.RemoveFirst();
-	
-	
-	// wrong solution: sink_buf.Clear();
-	
+	last_packet.Clear();
 }
 
 SystemDraw& Screen::BeginDraw() {

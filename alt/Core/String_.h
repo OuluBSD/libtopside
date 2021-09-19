@@ -59,19 +59,37 @@ inline void MemorySet(void* dst, int value, int len) {
 
 void MemoryMoveSlow(void* dst, const void* src, int len);
 
-
+void DebugStringLog(void* addr, const char* msg, int refs, int event);
 
 template <class T>
 class String0 {
 	T* data = NULL;
 	AtomicInt refs;
 	int alloc = 0;
-
+	
+	#ifdef flagDEBUG
+	bool do_debug_track = false;
+	int dbg_event = 0;
+	#endif
+	
 public:
 	String0(T* str, int alloc) : data(str), refs(1), alloc(alloc) {}
 	String0(String0&& s) = delete;
 	~String0() {Clear();}
 
+	#ifdef flagDEBUG
+	void DebugFollow() {
+		do_debug_track = true;
+		
+		#ifdef flagDEBUG
+		if (do_debug_track)
+			DebugStringLog(this, "begin follow", refs, dbg_event++);
+		#endif
+	}
+	#else
+	void DebugFollow() {}
+	#endif
+	
 	void Clear() {if (data) {free(data); data = 0; refs = 0; alloc = 0;}}
 	
 	void IncreaseReserved() {
@@ -109,8 +127,26 @@ public:
 
 	int GetAlloc() const { return alloc; }
 	int GetRefs() const { return refs; }
-	void Inc() { refs++; }
-	void Dec() { refs--; if (refs <= 0) delete this; }
+	void Inc() {
+		refs++;
+		
+		#ifdef flagDEBUG
+		if (do_debug_track)
+			DebugStringLog(this, "Inc", refs, dbg_event++);
+		#endif
+	}
+	void Dec() {
+		refs--;
+		
+		#ifdef flagDEBUG
+		if (do_debug_track)
+			DebugStringLog(this, "Dec", refs, dbg_event++);
+		#endif
+		
+		if (refs <= 0)
+			delete this;
+	}
+
 };
 
 
@@ -150,7 +186,9 @@ public:
 	StringT(StringT&& s) {Zero(); Swap(*this, s);}
 	StringT(Nuller n) {Zero();}
 	~StringT() {Clear();}
-
+	
+	void DebugFollow() {if (is_big) BIG->DebugFollow();}
+	
 	void Clear();
 	bool IsNullInstance() const;
 	

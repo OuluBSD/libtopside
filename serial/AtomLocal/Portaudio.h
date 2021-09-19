@@ -50,6 +50,7 @@ public:
 	void AltForward(FwdScope& fwd) override;
 	void AltStorePacket(Packet& p) override;
 	void AltIntervalSinkProcess() {}
+	bool IsConsumedPartialPacket() override {return consumer.HasLeftover();}
 	
 	String GetLastError() const {return last_error;}
 	void SinkCallback(Portaudio::StreamCallbackArgs& args);

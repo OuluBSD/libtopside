@@ -12,7 +12,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     vec3 res = iResolution;
     float t = float(iFrame) / 60.0;
     bool mode = mod(t, 6.0) > 3.0;
-    t = t * 0.2;
+    t = t * 504;
+    //t = t * 0.2;
     vec3 shift = vec3(
         sin(t),
         sin(t + M_PI/3.0),
@@ -40,7 +41,6 @@ void Screen::TestImageRender() {
 }
 
 bool Screen::Ogl_Initialize() {
-	
 	gltest.glsl = def_shader;
 
 	if (!Ogl_CompilePrograms())
@@ -178,16 +178,16 @@ bool Screen::Ogl_CompileFragmentShader() {
 bool Screen::Ogl_CompileProgram(String shader_source) {
 	OOSDL2::EnableOpenGLDebugMessages(1);
 	
-	gltest.frag = Ogl_CompileShader(shader_source);
-	if (gltest.frag < 0)
+	GLint frag = Ogl_CompileShader(shader_source);
+	if (frag < 0)
 		return false;
 		
 	gltest.prog = glCreateProgram();
 	glProgramParameteri(gltest.prog, GL_PROGRAM_SEPARABLE, GL_TRUE);
 	
-	glAttachShader(gltest.prog, gltest.frag);
-	glDeleteShader(gltest.frag);
-	gltest.frag = 0;
+	glAttachShader(gltest.prog, frag);
+	glDeleteShader(frag);
+	frag = 0;
 	
 	OOSDL2::EnableOpenGLDebugMessages(0);
 	
@@ -301,6 +301,7 @@ void Screen::Ogl_SetVar(int var) {
 		glUniform3f(uindex, (float)screen_sz.cx, (float)screen_sz.cy, 1.0f);
 	}
 	else if (var == VAR_FRAMES) {
+		RTLOG("iFrame = " << gltest.frames);
 		glUniform1i(uindex, gltest.frames);
 	}
 	

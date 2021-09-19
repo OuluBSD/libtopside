@@ -8,12 +8,18 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	last_cfg = &fwd.Cfg();
 	
+	
 	#ifdef flagDEBUG
 	int pre_sink_packet_count = GetSink()->GetValue().GetQueueSize();
 	int pre_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
 	int pre_consumed = consumed_packets.GetCount();
-	int pre_total = pre_sink_packet_count + pre_src_packet_count + pre_consumed;
+	int pre_consumed_partial = IsConsumedPartialPacket();
+	int pre_total =
+		  pre_sink_packet_count
+		  + pre_src_packet_count
+		  + (pre_consumed - pre_consumed_partial); // partial packet stays in sink while fraction is consumed
 	#endif
+	
 	
 	AtomTypeCls type = GetType();
 	switch (type.role) {
@@ -27,13 +33,22 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
 	}
 	
+	
 	#ifdef flagDEBUG
 	int post_sink_packet_count = GetSink()->GetValue().GetQueueSize();
 	int post_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
 	int post_consumed = consumed_packets.GetCount();
-	int post_total = post_sink_packet_count + post_src_packet_count + post_consumed;
+	int post_consumed_partial = IsConsumedPartialPacket();
+	int post_total =
+		  post_sink_packet_count
+		+ post_src_packet_count
+		+ (post_consumed - post_consumed_partial);
 	if (type.role != CUSTOMER) {
 		ASSERT_(pre_total == post_total, "Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
+		/*
+		On fail:
+			- have you implemented "IsConsumedPartialPacket() override" while using PacketConsumer?
+		*/
 	}
 	#endif
 }

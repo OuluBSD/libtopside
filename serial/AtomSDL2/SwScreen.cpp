@@ -19,21 +19,36 @@ void SDL2SwScreenBase::AltUninitialize() {
 }
 
 void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
+	PacketBuffer& sink_buf = this->GetSink()->GetValue().GetBuffer();
+	ASSERT(!sink_buf.IsEmpty());
+	if (sink_buf.IsEmpty()) return;
+	
 	double time_delta = fwd.Cfg().time_delta;
 	frame_age += time_delta;
 	
 	RTLOG("SDL2SwScreenBase::AltForward: time_delta: " << time_delta << ", frame_age: " << frame_age);
-}
-
-void SDL2SwScreenBase::AltStorePacket(Packet& p) {
+	
 	if (frame_age >= dt) {
 		RTLOG("SDL2SwScreenBase::AltStorePacket: render");
 		if (frame_age >= 2 * dt)
 			frame_age = 0;
 		else
 			frame_age -= dt;
-		obj->Render();
+		
+		while (sink_buf.GetCount()) {
+			Packet p = sink_buf.First();
+			sink_buf.RemoveFirst();
+			PacketConsumed(p);
+			if (obj->Recv(p))
+				break;
+		}
+		
+		PostContinueForward();
 	}
+}
+
+void SDL2SwScreenBase::AltStorePacket(Packet& p) {
+	obj->Render();
 }
 
 

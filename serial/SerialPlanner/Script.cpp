@@ -22,6 +22,9 @@ int ScriptLoader::loop_counter = 0;
 
 
 
+ScriptLoader::~ScriptLoader() {
+	//LOG("~ScriptLoader");
+}
 
 bool ScriptLoader::Initialize() {
 	def_ws.SetActionPlanner(def_planner);
@@ -100,7 +103,7 @@ bool TestParseScriptCode(String content) {
 	return true;
 }
 
-bool ScriptLoader::Load(String content, String filepath) {
+bool ScriptLoader::Load(const String& content, const String& filepath) {
 	RTLOG("ScriptLoader::Load: Loading \"" << filepath << "\"");
 	
 	Script::Parser p;

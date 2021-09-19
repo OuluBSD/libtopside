@@ -25,6 +25,7 @@ public:
 	void	AltUninitialize() override;
 	void	AltForward(FwdScope& fwd) override;
 	void	AltStorePacket(Packet& p) override;
+	bool	IsConsumedPartialPacket() override {return obj->IsConsumedPartialPacket();}
 	void	AltIntervalSinkProcess() {}
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
