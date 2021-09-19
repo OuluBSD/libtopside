@@ -25,6 +25,7 @@ public:
 	bool			AltInitialize(const Script::WorldState& ws) override;
 	void			AltUninitialize() override;
 	void			AltForward(FwdScope& fwd) override;
+	void			AltStorePacket(Packet& p) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}

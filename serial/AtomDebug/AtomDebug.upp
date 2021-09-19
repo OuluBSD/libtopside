@@ -10,8 +10,5 @@ file
 	AtomDebug.cpp,
 	Init.icpp,
 	Verifier.h,
-	Verifier.cpp,
-	Testers.cpp,
-	Trash readonly separator,
-	Testers.h;
+	Verifier.cpp;
 

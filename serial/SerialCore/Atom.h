@@ -22,6 +22,7 @@ class AtomBase :
 	public RefScopeEnabler<AtomBase,Loop>
 {
 	
+	
 public:
 	using AtomBaseRef = Ref<AtomBase, RefParent1<Loop>>;
 	
@@ -43,26 +44,26 @@ protected:
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
 	int						side_sink = -1, side_src = -1;
-	AtomBaseRef				side_sink_conn, side_src_conn;
-	
+	AtomBaseRef				side_sink_conn, side_src_conn, driver_conn;
+	RealtimeSourceConfig*	last_cfg = 0;
 	
 	
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
 	void					ForwardDriver(FwdScope& fwd);
 	void					ForwardCustomer(FwdScope& fwd);
-	void					ForwardInput(FwdScope& fwd);
-	void					ForwardOutput(FwdScope& fwd);
+	void					ForwardSource(FwdScope& fwd);
+	void					ForwardSink(FwdScope& fwd);
 	void					ForwardConverter(FwdScope& fwd);
 	void					ForwardSideSink(FwdScope& fwd);
 	void					ForwardSideSource(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
-	void					ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
+	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
 	void					ForwardVoidSink(FwdScope& fwd);
 	bool					ForwardMem(void* mem, size_t mem_size);
 	
-	void					BaseVisit(RuntimeVisitor& vis) {vis & side_sink_conn & side_src_conn;}
+	void					BaseVisit(RuntimeVisitor& vis) {vis & side_sink_conn & side_src_conn & driver_conn;}
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -71,7 +72,6 @@ public:
 	virtual void VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void ClearSinkSource() = 0;
-	virtual void Forward(FwdScope& fwd) = 0;
 	virtual InterfaceSourceRef GetSource() = 0;
 	virtual InterfaceSinkRef GetSink() = 0;
 	virtual InterfaceSideSourceRef GetSideSource() = 0;
@@ -81,17 +81,22 @@ public:
 	
 	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
 	virtual void AltUninitialize() {}
-	virtual void AltForward(FwdScope& fwd) {}
-	virtual void AltStorePacket(Packet& p) {Panic("Unimplemented");}
+	virtual void AltForward(FwdScope& fwd) {Panic("AltForward not implemented");}
+	virtual void AltStorePacket(Packet& p) {Panic("AltStorePacket not implemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	virtual bool AltPostInitialize() {return true;}
+	virtual bool AltDriverEnter() {Panic("AltDriverEnter not implemented"); return true;}
+	virtual bool AltDriverLeave() {Panic("AltDriverLeave not implemented"); return true;}
+	
+	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
 	
 	virtual bool Initialize(const Script::WorldState& ws) {return true;}
 	virtual void Uninitialize() {}
+	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
 	virtual bool PostInitialize() {return AltPostInitialize();}
 	virtual String ToString() const;
 	virtual void LoadPacket(const Packet& p) {}
-	virtual void StorePacket(Packet& p) {Panic("StorePacket not implemented");}
+	virtual void StorePacket(Packet& p) {AltStorePacket(p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}
 	virtual RealtimeSourceConfig& GetConfig() {Panic("Unimplemented"); NEVER();}
@@ -108,6 +113,9 @@ public:
 	bool					LinkSideSink(AtomBaseRef sink);
 	bool					LinkSideSource(AtomBaseRef src);
 	
+	void					PacketConsumed(const Packet& p) {consumed_packets.Add(p);}
+	void					PacketsConsumed(const LinkedList<Packet>& v);
+	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
 	ValCls GetValSpec() const {return GetType().iface.side.val;}
@@ -117,6 +125,7 @@ public:
 	
 	Machine& GetMachine();
 	void UninitializeDeep();
+	void PostContinueForward();
 	
 	
 public:
@@ -309,6 +318,7 @@ public:
 		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
+		iter.value().AltUninitialize();
 		iter.value().Uninitialize();
 		//iter.value().Destroy();
 		

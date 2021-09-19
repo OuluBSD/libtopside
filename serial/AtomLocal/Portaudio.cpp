@@ -123,11 +123,11 @@ void PortaudioSink::AltUninitialize() {
 }
 
 void PortaudioSink::AltForward(FwdScope& fwd) {
-	
+	// pass
 }
 
 void PortaudioSink::AltStorePacket(Packet& p) {
-	TODO
+	// pass
 }
 
 void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
@@ -156,6 +156,9 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 			if (consumed_count) {
 				RTLOG("PortaudioSink::SinkCallback: device consumed count=" << consumed_count);
 			}
+			
+			PacketsConsumed(consumer.consumed_packets);
+			PostContinueForward();
 		}
 		else {
 			#if DEBUG_RT_PIPE

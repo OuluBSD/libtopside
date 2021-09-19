@@ -49,12 +49,20 @@ bool Machine::Start() {
 		system->Start();
 	}
 	
+	warning_age = 0;
+	
 	is_running = true;
 	return true;
 }
 
 void Machine::Update(double dt) {
 	ASSERT_(is_started, "Shouldn't call Update if we haven't been started");
+	
+	warning_age += dt;
+	if (warning_age > 3.0) {
+		warning_age = 0;
+		last_warnings.Clear();
+	}
 	
 	if (!ticks)
 		WhenPreFirstUpdate();
@@ -142,6 +150,16 @@ void Machine::Remove(TypeCls type_id) {
 void Machine::Visit(RuntimeVisitor& vis) {
 	for (auto iter = systems.begin(); iter; ++iter)
 		vis.Visit(iter());
+}
+
+void Machine::WarnDeveloper(String msg) {
+	if (last_warnings.Find(msg) < 0) {
+		last_warnings.Add(msg);
+		
+		#if !defined flagDEBUG_RT && defined flagDEBUG
+		LOG("Machine: developer warning: " << msg);
+		#endif
+	}
 }
 
 

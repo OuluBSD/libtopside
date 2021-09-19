@@ -37,16 +37,7 @@ public:
 	using BaseT = AccelSideAsync<T>;
 	RTTI_DECL1(AccelSideAsync, AtomT)
 	
-	bool Initialize(const Script::WorldState& ws) override {
-		if (!this->AltInitialize(ws)) return false;
-		
-		return true;
-	}
-	
-	void Uninitialize() override {
-		this->AltUninitialize();
-		
-	}
+	void Uninitialize() override {}
 	
 	void Forward(FwdScope& fwd) override {
 		RTLOG("AccelSideAsync<T>::Forward");
@@ -71,16 +62,8 @@ public:
 	using BaseT = DummyAtom<T>;
 	RTTI_DECL1(DummyAtom, AtomT)
 	
-	bool Initialize(const Script::WorldState& ws) override {
-		if (!this->AltInitialize(ws)) return false;
-		
-		return true;
-	}
 	
-	void Uninitialize() override {
-		this->AltUninitialize();
-		
-	}
+	void Uninitialize() override {}
 	
 	void Forward(FwdScope& fwd) override {
 		RTLOG("DummyAtom<T>::Forward");

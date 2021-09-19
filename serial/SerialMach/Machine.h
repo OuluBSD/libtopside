@@ -62,6 +62,8 @@ class Machine :
 	public RefScopeEnabler<Machine,RefRoot>
 {
 	int64 ticks = 0;
+	Index<String> last_warnings;
+	double warning_age;
 	
 public:
 	RTTI_DECL_R0(Machine)
@@ -131,7 +133,7 @@ public:
     bool IsRunning() const {return is_running;}
 	void SetNotRunning() {is_running = false;}
 	void Visit(RuntimeVisitor& vis);
-	
+	void WarnDeveloper(String msg);
 	
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;

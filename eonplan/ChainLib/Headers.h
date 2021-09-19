@@ -7,8 +7,10 @@ HEADER_ACTION(		CenterCustomer,		center.customer)
 
 HEADER2(			TestRealtimeSrc,	CenterSourceAsync,	source,			CenterOrder,	CenterAudio)
 HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
+HEADER_INHERITS(	TestRealtimeSrc,	RollingValueBase)
 
 HEADER2(			TestRealtimeSink,	CenterSinkSync,		sink,			CenterAudio,	CenterReceipt)
+HEADER_INHERITS(	TestRealtimeSink,	VoidSinkBase)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
 

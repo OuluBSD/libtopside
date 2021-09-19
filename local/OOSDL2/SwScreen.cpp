@@ -1,4 +1,5 @@
 #include "OOSDL2.h"
+#include <SerialCore/SerialCore.h>
 
 #ifdef flagGUI
 
@@ -108,6 +109,9 @@ void SwScreen::Render() {
 			RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
 		}
 	}
+	
+	ab->PacketConsumed(p);
+	ab->PostContinueForward();
 	
 	sink_buf.RemoveFirst();
 	

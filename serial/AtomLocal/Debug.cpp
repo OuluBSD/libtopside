@@ -1,13 +1,25 @@
-#include "AtomDebug.h"
-
+#include "AtomLocal.h"
 
 NAMESPACE_SERIAL_BEGIN
 
 
-void TestRealtimeSrc::StorePacket(Packet& p) {
+bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
+	AtomTypeCls type = ((AtomBase*)this)->GetType();
+	if (type.iface.src.val == ValCls::AUDIO)
+		internal_fmt.SetAudio(DevCls::ACCEL, SoundSample::U8_LE, 2, 44100, 777);
+	else if (type.iface.src.val == ValCls::VIDEO)
+		internal_fmt.SetVideo(DevCls::ACCEL, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+	else
+		TODO;
+	
+	time = 0;
+	return true;
+}
+
+void RollingValueBase::AltStorePacket(Packet& p) {
 	ASSERT(internal_fmt.IsValid());
 	
-	RTLOG("TestRealtimeSrc::StorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
+	RTLOG("RollingValueBase::AltStorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
 	ASSERT_(!p->GetFormat().IsValid(), "Packed shouldn't be initialized before this");
 	PacketValue& pv = *p;
 	pv.SetFormat(internal_fmt);
@@ -22,10 +34,14 @@ void TestRealtimeSrc::StorePacket(Packet& p) {
 
 
 
+bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
+	flag.Start(1);
+	Thread::Start(THISBACK(IntervalSinkProcess0));
+	return true;
+}
 
-
-void TestRealtimeSink::IntervalSinkProcess() {
-	RTLOG("TestRealtimeSink::IntervalSinkProcess: starts");
+void VoidSinkBase::IntervalSinkProcess() {
+	RTLOG("VoidSinkBase::IntervalSinkProcess: starts");
 	
 	InterfaceSinkRef sink = GetSink();
 	Value& sink_value = sink->GetValue();
@@ -52,7 +68,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		}
 		ts.Reset();
 		
-		RTLOG("TestRealtimeSink::IntervalSinkProcess: trying to consume " << data.GetCount());
+		RTLOG("VoidSinkBase::IntervalSinkProcess: trying to consume " << data.GetCount());
 		
 		if (do_log) {
 			Serial::PacketBuffer& sink_buf = sink_value.GetBuffer();
@@ -63,7 +79,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 				total_ch_samples += p->GetSizeChannelSamples();
 			}
 			String s;
-			s   << "TestRealtimeSink::IntervalSinkProcess: sink has "
+			s   << "VoidSinkBase::IntervalSinkProcess: sink has "
 				<< sink_buf.GetCount() << " packets, "
 				<< total_bytes << " total bytes, "
 				<< total_ch_samples << " total ch samples";
@@ -71,7 +87,7 @@ void TestRealtimeSink::IntervalSinkProcess() {
 		}
 		
 		if (!ForwardMem(data.Begin(), data.GetCount())) {
-			RTLOG("TestRealtimeSink::IntervalSinkProcess: error: could not get consumable data");
+			RTLOG("VoidSinkBase::IntervalSinkProcess: error: could not get consumable data");
 			fail = true;
 			break;
 		}
@@ -91,14 +107,12 @@ void TestRealtimeSink::IntervalSinkProcess() {
 			dbg_total_bytes += dbg_count * 4;
 		}
 	}
-	RTLOG("TestRealtimeSink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
-	if (!fail) {LOG("TestRealtimeSink::IntervalSinkProcess: success!");}
-	else       {LOG("TestRealtimeSink::IntervalSinkProcess: fail :(");}
+	RTLOG("VoidSinkBase::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+	if (!fail) {LOG("VoidSinkBase::IntervalSinkProcess: success!");}
+	else       {LOG("VoidSinkBase::IntervalSinkProcess: fail :(");}
 	
 	flag.DecreaseRunning();
 }
 
 
 NAMESPACE_SERIAL_END
-
-

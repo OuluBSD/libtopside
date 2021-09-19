@@ -349,39 +349,42 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
 		}
 		
-		// void Forward(FwdScope& fwd) override;
-		if (base.flags.Find("forward") >= 0) {
-			FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("Forward");
-			Function& fn = fis.AddFunction();
-			fn.SetReturn(te_void).SetOverrideAnonymous();
-			fn.AddParam("fwd", te_fwdscope);
-			if (h.args.Find("ALT_LINK") >= 0)
-				fn.SetAltImpl();
-			else
-				fn.SetExternalImpl();
-		}
 		
-		// void StorePacket(Packet& p) override;
-		if (base.flags.Find("store_packet") >= 0) {
-			FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("StorePacket");
-			Function& fn = fis.AddFunction();
-			fn.SetReturn(te_void).SetOverrideAnonymous();
-			fn.AddParam("p", te_packet);
-			if (h.args.Find("ALT_LINK") >= 0)
-				fn.SetAltImpl();
-			else
-				fn.SetExternalImpl();
-		}
-		
-		// void IntervalSinkProcess() override;
-		if (base.flags.Find("ival_sink_proc") >= 0) {
-			FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("IntervalSinkProcess");
-			Function& fn = fis.AddFunction();
-			fn.SetReturn(te_void).SetOverrideAnonymous();
-			if (h.args.Find("ALT_LINK") >= 0)
-				fn.SetAltImpl();
-			else
-				fn.SetExternalImpl();
+		if (0) {
+			// void Forward(FwdScope& fwd) override;
+			if (base.flags.Find("forward") >= 0) {
+				FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("Forward");
+				Function& fn = fis.AddFunction();
+				fn.SetReturn(te_void).SetOverrideAnonymous();
+				fn.AddParam("fwd", te_fwdscope);
+				if (h.args.Find("ALT_LINK") >= 0)
+					fn.SetAltImpl();
+				else
+					fn.SetExternalImpl();
+			}
+			
+			// void StorePacket(Packet& p) override;
+			if (base.flags.Find("store_packet") >= 0) {
+				FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("StorePacket");
+				Function& fn = fis.AddFunction();
+				fn.SetReturn(te_void).SetOverrideAnonymous();
+				fn.AddParam("p", te_packet);
+				if (h.args.Find("ALT_LINK") >= 0)
+					fn.SetAltImpl();
+				else
+					fn.SetExternalImpl();
+			}
+			
+			// void IntervalSinkProcess() override;
+			if (base.flags.Find("ival_sink_proc") >= 0) {
+				FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("IntervalSinkProcess");
+				Function& fn = fis.AddFunction();
+				fn.SetReturn(te_void).SetOverrideAnonymous();
+				if (h.args.Find("ALT_LINK") >= 0)
+					fn.SetAltImpl();
+				else
+					fn.SetExternalImpl();
+			}
 		}
 	}
 	

@@ -5,7 +5,6 @@
 #include <AtomLocal/AtomLocal.h>
 
 #include "Verifier.h"
-#include "Testers.h"
 
 
 NAMESPACE_SERIAL_BEGIN

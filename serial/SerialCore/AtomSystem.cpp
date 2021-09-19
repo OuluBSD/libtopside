@@ -80,9 +80,18 @@ void AtomSystem::Remove(AtomBaseRef p) {
 
 void AtomSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 	lock.Enter();
-	Once& o = once_cbs.Add();
-	o.fwd = &fwd;
-	o.cfg = &cfg;
+	bool found = false;
+	for (Once& o : once_cbs) {
+		if (o.fwd == &fwd && o.cfg == &cfg) {
+			found = true;
+			break;
+		}
+	}
+	if (!found) {
+		Once& o = once_cbs.Add();
+		o.fwd = &fwd;
+		o.cfg = &cfg;
+	}
 	lock.Leave();
 }
 

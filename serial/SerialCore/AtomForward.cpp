@@ -5,33 +5,37 @@ NAMESPACE_SERIAL_BEGIN
 
 void AtomBase::ForwardAtom(FwdScope& fwd) {
 	RTLOG("AtomBase::ForwardAtom");
-	/*POPO(Pol::Serial::Atom::ConsumerFirst);
-	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	
-	if (fwd.GetPos() > 0) {
-		Forward(fwd);
-	}
-	else {
-		RTLOG("AtomBase::ForwardAtom: skip duplicate extension forward");
-	}
+	last_cfg = &fwd.Cfg();
 	
-	ForwardConsumed(fwd);*/
-	
-	this->AltForward(fwd);
+	#ifdef flagDEBUG
+	int pre_sink_packet_count = GetSink()->GetValue().GetQueueSize();
+	int pre_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
+	int pre_consumed = consumed_packets.GetCount();
+	int pre_total = pre_sink_packet_count + pre_src_packet_count + pre_consumed;
+	#endif
 	
 	AtomTypeCls type = GetType();
 	switch (type.role) {
-		case DRIVER:		ForwardDriver(fwd);		return;
-		case CUSTOMER:		ForwardCustomer(fwd);	return;
-		case SOURCE:		ForwardInput(fwd);		return;
-		case SINK:			ForwardOutput(fwd);		return;
-		case CONVERTER:		ForwardInput(fwd);		return;
-		case SIDE_SOURCE:	ForwardSideSource(fwd);	return;
-		case SIDE_SINK:		ForwardSideSink(fwd);	return;
-		default: break;
+		case DRIVER:		ForwardDriver(fwd);		break;
+		case CUSTOMER:		ForwardCustomer(fwd);	break;
+		case SOURCE:		ForwardSource(fwd);		break;
+		case SINK:			ForwardSink(fwd);		break;
+		case CONVERTER:		ForwardSource(fwd);		break;
+		case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
+		case SIDE_SINK:		ForwardSideSink(fwd);	break;
+		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
 	}
 	
-	TODO
+	#ifdef flagDEBUG
+	int post_sink_packet_count = GetSink()->GetValue().GetQueueSize();
+	int post_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
+	int post_consumed = consumed_packets.GetCount();
+	int post_total = post_sink_packet_count + post_src_packet_count + post_consumed;
+	if (type.role != CUSTOMER) {
+		ASSERT_(pre_total == post_total, "Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
+	}
+	#endif
 }
 
 void AtomBase::ForwardDriver(FwdScope& fwd) {
@@ -50,18 +54,26 @@ void AtomBase::ForwardCustomer(FwdScope& fwd) {
 		Value& src_value = GetSource()->GetSourceValue();
 		
 		if (src_value.IsQueueFull()) {
-			RTLOG("AtomBase::ForwardCustomer: customer: skipping order, because queue is full");
+			RTLOG("AtomBase::ForwardCustomer: skipping order, because queue is full");
 			return;
 		}
+		
+		if (c.unfulfilled_offsets.GetCount() >= c.max_unfulfilled) {
+			RTLOG("AtomBase::ForwardCustomer: warning: receipt packets are not getting through or unfulfilled limit is too low");
+			GetMachine().WarnDeveloper("receipt packets are not getting through or unfulfilled limit is too low");
+			return;
+		}
+		
 		
 		off32 off = c.gen.Create();
 		Packet p = CreatePacket(off);
 		
+		ASSERT(c.unfulfilled_offsets.GetCount() < c.max_unfulfilled);
 		c.unfulfilled_offsets.Add(off.value);
 		
 		Format fmt = src_value.GetFormat();
 		ASSERT(fmt.IsValid());
-		RTLOG("AtomBase::ForwardCustomer: customer: sending order " << off.ToString() << " in format: " << fmt.ToString());
+		RTLOG("AtomBase::ForwardCustomer: sending order " << off.ToString() << " in format: " << fmt.ToString());
 		p->SetFormat(fmt);
 		
 		//DUMP(c.plans.GetCount());
@@ -99,7 +111,7 @@ void AtomBase::ForwardCustomer(FwdScope& fwd) {
 	}
 }
 
-void AtomBase::ForwardInput(FwdScope& fwd) {
+void AtomBase::ForwardSource(FwdScope& fwd) {
 	
 	// From source
 	InterfaceSinkRef iface_sink = GetSink();
@@ -115,11 +127,11 @@ void AtomBase::ForwardInput(FwdScope& fwd) {
 	}
 	else TODO
 	
-	ForwardInputBuffer(fwd, *sink_buf);
+	ForwardSourceBuffer(fwd, *sink_buf);
 }
 
 
-void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
+void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	
 	// To sink
 	InterfaceSourceRef iface_src = GetSource();
@@ -135,7 +147,7 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	}
 	else TODO
 	
-	RTLOG("AtomBase::ForwardInput: pre sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount());
+	RTLOG("AtomBase::ForwardSource: pre sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount());
 	Format fmt = iface_src->GetSourceValue().GetFormat();
 	
 	while (sink_buf.GetCount() && !val.IsQueueFull()) {
@@ -148,7 +160,7 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 		
 		//for(int i = 0; i < c && !val.IsQueueFull(); i++) {
 		off32 off = in->GetOffset();
-		RTLOG("AtomBase::ForwardInput: play packet " << off.ToString());
+		RTLOG("AtomBase::ForwardSource: play packet " << off.ToString());
 		
 		Packet to = CreatePacket(off);
 		
@@ -167,13 +179,13 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 		else {
 			WhenEnterCreatedEmptyPacket(to);
 			
-			RTLOG("AtomBase::ForwardInput: sending packet in format: " << fmt.ToString());
+			RTLOG("AtomBase::ForwardSource: sending packet in format: " << fmt.ToString());
 			to->SetFormat(fmt);
 			
 			WhenLeaveCreatedEmptyPacket();
 		}
 		
-		PacketTracker::Track(TrackerInfo("AtomBase::ForwardInput", __FILE__, __LINE__), *to);
+		PacketTracker::Track(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
 		pbuf->Add(to);
 		packets_forwarded++;
 		//}
@@ -183,7 +195,7 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	/* BREAKS OFFSET CHECKING!
 	if (InterfaceSink::iface.val.type == ValCls::ORDER) {
 		sink_buf->Clear();
-		RTLOG("AtomBase::ForwardInput: cleared order-sink buffer");
+		RTLOG("AtomBase::ForwardSource: cleared order-sink buffer");
 	}*/
 	
 	{
@@ -193,21 +205,21 @@ void AtomBase::ForwardInputBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 			src_total += p->GetSizeBytes();
 			src_ch_samples += p->GetSizeChannelSamples();
 		}
-		RTLOG("AtomBase::ForwardInput: post sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << " bytes, " << src_ch_samples << " ch-samples)");
+		RTLOG("AtomBase::ForwardSource: post sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount() << " (total " << src_total << " bytes, " << src_ch_samples << " ch-samples)");
 	}
 	
 }
 
-void AtomBase::ForwardOutput(FwdScope& fwd) {
+void AtomBase::ForwardSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
+	
 	if (fwd.GetPos() > 0) {
 		Forward(fwd);
 	}
 	else {
-		RTLOG("AtomBase::ForwardOutput: skip duplicate extension forward");
+		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
 	}
-	
 	
 	ForwardConsumed(fwd);
 }
@@ -220,7 +232,7 @@ void AtomBase::ForwardOutput(FwdScope& fwd) {
 			this->ext->Forward(fwd);
 	}
 	else {
-		RTLOG("AtomBase::ForwardOutput: skip duplicate extension forward");
+		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
 	}
 	
 	
@@ -289,7 +301,7 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 		Forward(fwd);
 	}
 	else {
-		RTLOG("AtomBase::ForwardOutput: skip duplicate extension forward");
+		RTLOG("AtomBase::ForwardSink: skip duplicate extension forward");
 	}
 	
 	Value& sink_value = GetSink()->GetValue();
@@ -405,13 +417,8 @@ bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 				RTLOG("AtomBase::ForwardMem:  consumed " << csize << ", packets=" << consumed_count);
 			}
 			
-			lock.Enter();
-			consumed_packets.Append(consumer.consumed_packets);
-			lock.Leave();
-			
-			CustomerData* cust_data = GetCustomerData();
-			if (cust_data)
-				GetMachine().Get<AtomSystem>()->AddOnce(*this, cust_data->cfg);
+			PacketsConsumed(consumer.consumed_packets);
+			PostContinueForward();
 			
 			/*off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);

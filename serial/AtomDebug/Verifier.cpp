@@ -95,6 +95,7 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	Scope& cur = stack.Top();
 	cur.MayLeave(true);
 	cur.AddEnter(EXTCOMP_FORWARD);
+	cur.AddEnter(ONCE_FORWARD);
 		
 	if (!ext_sys && (ext_sys = CastPtr<AtomSystem>(&base))) {
 		ext_sys->WhenEnterOnceForward << THISBACK(OnEnterOnceForward);
@@ -112,6 +113,10 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 	RTLOG("MachineVerifier::OnEnterOnceForward " << HexStr((void*)fwd));
 	Enter(ONCE_FORWARD);
+	
+	Scope& cur = stack.Top();
+	//cur.MayLeave(true);
+	cur.AddEnter(FWDSCOPE_FORWARD);
 	
 }
 

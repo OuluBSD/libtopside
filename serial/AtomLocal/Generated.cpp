@@ -27,6 +27,7 @@ AtomTypeCls TestRealtimeSrc::GetAtomType()
 void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<CenterSourceAsync<TestRealtimeSrc>>(this);
+	vis.VisitThis<RollingValueBase>(this);
 }
 
 AtomTypeCls TestRealtimeSrc::GetType() const
@@ -42,6 +43,7 @@ AtomTypeCls TestRealtimeSink::GetAtomType()
 void TestRealtimeSink::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<CenterSinkSync<TestRealtimeSink>>(this);
+	vis.VisitThis<VoidSinkBase>(this);
 }
 
 AtomTypeCls TestRealtimeSink::GetType() const
@@ -81,11 +83,6 @@ AtomTypeCls AudioDecoderSrc::GetType() const
 	return GetAtomType();
 }
 
-void AudioDecoderSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
-}
-
 AtomTypeCls AudioDbgSrc::GetAtomType()
 {
 	return ATOM0(AUDIO_DBG_SRC, SOURCE, CENTER, ORDER, CENTER, AUDIO);
@@ -100,11 +97,6 @@ void AudioDbgSrc::Visit(RuntimeVisitor& vis)
 AtomTypeCls AudioDbgSrc::GetType() const
 {
 	return GetAtomType();
-}
-
-void AudioDbgSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
 }
 
 AtomTypeCls AudioSideSrc::GetAtomType()
@@ -153,11 +145,6 @@ AtomTypeCls VideoDbgSrc::GetType() const
 	return GetAtomType();
 }
 
-void VideoDbgSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
-}
-
 AtomTypeCls AccelVideoDbgSrc::GetAtomType()
 {
 	return ATOM0(ACCEL_VIDEO_DBG_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
@@ -172,11 +159,6 @@ void AccelVideoDbgSrc::Visit(RuntimeVisitor& vis)
 AtomTypeCls AccelVideoDbgSrc::GetType() const
 {
 	return GetAtomType();
-}
-
-void AccelVideoDbgSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
 }
 
 AtomTypeCls AccelCustomer::GetAtomType()
@@ -210,11 +192,6 @@ AtomTypeCls VideoHardwareSink::GetType() const
 	return GetAtomType();
 }
 
-void VideoHardwareSink::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
-}
-
 AtomTypeCls VideoShaderSrc::GetAtomType()
 {
 	return ATOM0(VIDEO_SHADER_SRC, SOURCE, ACCEL, ORDER, ACCEL, VIDEO);
@@ -229,11 +206,6 @@ void VideoShaderSrc::Visit(RuntimeVisitor& vis)
 AtomTypeCls VideoShaderSrc::GetType() const
 {
 	return GetAtomType();
-}
-
-void VideoShaderSrc::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
 }
 
 AtomTypeCls VideoShaderBuffer::GetAtomType()
@@ -252,11 +224,6 @@ AtomTypeCls VideoShaderBuffer::GetType() const
 	return GetAtomType();
 }
 
-void VideoShaderBuffer::StorePacket(Packet& p)
-{
-	AltStorePacket(p);
-}
-
 AtomTypeCls SdlContextAtom::GetAtomType()
 {
 	return ATOM0(SDL_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT);
@@ -271,11 +238,6 @@ void SdlContextAtom::Visit(RuntimeVisitor& vis)
 AtomTypeCls SdlContextAtom::GetType() const
 {
 	return GetAtomType();
-}
-
-void SdlContextAtom::Forward(FwdScope& fwd)
-{
-	AltForward(fwd);
 }
 
 AtomTypeCls SdlVideoAtom::GetAtomType()

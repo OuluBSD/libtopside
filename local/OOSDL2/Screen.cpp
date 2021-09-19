@@ -1,4 +1,5 @@
 #include "OOSDL2.h"
+#include <SerialCore/SerialCore.h>
 
 #ifdef flagGUI
 
@@ -167,10 +168,16 @@ void Screen::Render() {
 		
 		BeginDraw();
 		
-		TestImageRender();
+		if (is_test_image)
+			TestImageRender();
+		else
+			;
 		
 		CommitDraw();
 	}
+	
+	ab->PacketConsumed(p);
+	ab->PostContinueForward();
 	
 	sink_buf.RemoveFirst();
 	

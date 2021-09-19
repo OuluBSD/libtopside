@@ -22,10 +22,10 @@ public:
 
 };
 
-class TestRealtimeSrc : public CenterSourceAsync<TestRealtimeSrc> {
+class TestRealtimeSrc : public CenterSourceAsync<TestRealtimeSrc>, public RollingValueBase {
 
 public:
-	RTTI_DECL1(TestRealtimeSrc, BaseT)
+	RTTI_DECL2(TestRealtimeSrc, BaseT, RollingValueBase)
 	COPY_PANIC(TestRealtimeSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
@@ -33,14 +33,13 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
-class TestRealtimeSink : public CenterSinkSync<TestRealtimeSink> {
+class TestRealtimeSink : public CenterSinkSync<TestRealtimeSink>, public VoidSinkBase {
 
 public:
-	RTTI_DECL1(TestRealtimeSink, BaseT)
+	RTTI_DECL2(TestRealtimeSink, BaseT, VoidSinkBase)
 	COPY_PANIC(TestRealtimeSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -49,7 +48,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void IntervalSinkProcess() override;
 
 };
 
@@ -79,7 +77,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -94,7 +91,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -137,7 +133,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -152,7 +147,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -182,7 +176,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -197,7 +190,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -212,7 +204,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void StorePacket(Packet& p) override;
 
 };
 
@@ -227,7 +218,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void Forward(FwdScope& fwd) override;
 
 };
 

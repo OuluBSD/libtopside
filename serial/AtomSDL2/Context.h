@@ -24,6 +24,8 @@ public:
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	bool AltPostInitialize() override;
+	bool AltDriverEnter() override;
+	bool AltDriverLeave() override;
 	
 	OOSDL2::Context* GetOOSDL2() {return &*obj;}
 	OOSDL2::Component& GetObj() override {Panic("never"); NEVER();}

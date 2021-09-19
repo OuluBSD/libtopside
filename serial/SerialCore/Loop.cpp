@@ -88,6 +88,7 @@ void Loop::UninitializeAtoms() {
 	auto& atoms = this->atoms.GetValues();
 	int dbg_i = 0;
 	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+		it().AltUninitialize();
 		it().Uninitialize();
 		dbg_i++;
 	}

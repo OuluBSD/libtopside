@@ -1,4 +1,5 @@
 #include "OOSDL2.h"
+#include <SerialCore/SerialCore.h>
 
 NAMESPACE_SDL2_BEGIN
 
@@ -72,6 +73,9 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 		if (consumed_count) {
 			RTLOG("OOSDL2::AudioOutput::SinkCallback: device consumed count=" << consumed_count);
 		}
+		
+		ab->PacketsConsumed(consumer.consumed_packets);
+		ab->PostContinueForward();
 	}
 	else {
 		RTLOG("AudioOutput::SinkCallback: error: got empty data");
@@ -80,7 +84,6 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 	}
 	
 	frames++;
-	
 }
 
 bool AudioOutput::Open0() {

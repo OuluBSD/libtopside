@@ -15,6 +15,7 @@
 
 #include "Customer.h"
 
+#include "Debug.h"
 #include "Audio.h"
 #include "Record.h"
 #include "Video.h"

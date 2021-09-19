@@ -31,11 +31,11 @@ struct StreamCallbackArgs;
 class PortaudioSink :
 	virtual public AtomBase
 {
-	String last_error;
 	One<Portaudio::BufferedAudioDeviceStream> obj;
-	Vector<float> tmp;
-	Format fmt;
-	PacketConsumer consumer;
+	String			last_error;
+	Vector<float>	tmp;
+	Format			fmt;
+	PacketConsumer	consumer;
 	
 public:
 	typedef PortaudioSink CLASSNAME;

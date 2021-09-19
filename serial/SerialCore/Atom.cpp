@@ -21,9 +21,16 @@ Machine& AtomBase::GetMachine() {
 }
 
 void AtomBase::UninitializeDeep() {
+	AltUninitialize();
 	Uninitialize();
 	ClearSinkSource();
 	UninitializeAtom();
+}
+
+void AtomBase::PostContinueForward() {
+	ASSERT(last_cfg);
+	if (last_cfg)
+		GetMachine().Get<AtomSystem>()->AddOnce(*this, *last_cfg);
 }
 
 LoopRef AtomBase::GetLoop() {
@@ -73,8 +80,10 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 		}
 		offs.Add(o.value);
 		
-		RTLOG("AtomBase::ForwardOutput: sending receipt for packet(" << o.ToString() << ")");
+		RTLOG("AtomBase::ForwardSink: sending receipt for packet(" << o.ToString() << ")");
 		Packet to = CreatePacket(o);
+		to->SetOffset(o);
+		to->SetFormat(src_fmt);
 		
 		InternalPacketData& data = to->template SetData<InternalPacketData>();
 		data.pos = 0;
@@ -83,8 +92,8 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 		if (type.IsRoleSideSource()) {
 			WhenEnterCreatedEmptyPacket(to);
 			
-			RTLOG("AtomBase::ForwardOutput: sending packet in format: " << src_fmt.ToString());
-			to->SetFormat(src_fmt);
+			RTLOG("AtomBase::ForwardSink: sending empty packet in format: " << src_fmt.ToString());
+			//to->SetFormat(src_fmt);
 			
 			WhenLeaveCreatedEmptyPacket();
 		}
@@ -99,7 +108,7 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 			WhenLeaveStorePacket(to);
 		}
 		
-		PacketTracker::Track(TrackerInfo("AtomBase::ForwardOutput", __FILE__, __LINE__), *to);
+		PacketTracker::Track(TrackerInfo("AtomBase::ForwardSink", __FILE__, __LINE__), *to);
 		src_buf.Add(to);
 		packets_forwarded++;
 	}
@@ -139,6 +148,12 @@ bool AtomBase::LinkSideSource(AtomBaseRef src) {
 		return true;
 	}
 	return false;
+}
+
+void AtomBase::PacketsConsumed(const LinkedList<Packet>& v) {
+	lock.Enter();
+	consumed_packets.Append(v);
+	lock.Leave();
 }
 
 
