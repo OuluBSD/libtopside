@@ -165,7 +165,6 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		BeginDraw();
 		
 		if (is_test_image) {
-			test_image.frames = cfg.src_frame;
 			test_image.ProcessStage(cfg);
 		}
 		else

@@ -136,6 +136,7 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	
 	
 	time_total = cfg.time_total;
+	frames++;
 	
 	
 	GLint prog = fg_prog;
