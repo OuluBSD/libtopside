@@ -68,17 +68,7 @@ void SDL2ContextBase::AltForward(FwdScope& fwd) {
 	RTLOG("SDL2ContextBase::AltForward");
 }
 
-bool SDL2ContextBase::AltDriverEnter() {
-	
-	TODO
-	
-}
 
-bool SDL2ContextBase::AltDriverLeave() {
-	
-	TODO
-	
-}
 
 
 

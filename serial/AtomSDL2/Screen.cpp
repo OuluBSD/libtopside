@@ -55,7 +55,7 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 
 void SDL2ScreenBase::AltStorePacket(Packet& p) {
 	RTLOG("SDL2ScreenBase::AltStorePacket");
-	obj->Render();
+	obj->Render(*last_cfg);
 }
 
 

@@ -396,6 +396,9 @@ void SetCoutLog() {StdLogSetup(LOG_COUT|LOG_FILE);}
 
 
 
+bool __enable_opengl_debug;
+bool IsGfxAccelDebugMessages() {return __enable_opengl_debug;}
+void EnableGfxAccelDebugMessages(bool b) {__enable_opengl_debug = b;}
 
 
 

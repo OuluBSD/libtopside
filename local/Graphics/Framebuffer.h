@@ -1,5 +1,5 @@
-#ifndef _GL_Framebuffer_h_
-#define _GL_Framebuffer_h_
+#ifndef _GRAPHICS_Framebuffer_h_
+#define _GRAPHICS_Framebuffer_h_
 
 
 NAMESPACE_TOPSIDE_BEGIN

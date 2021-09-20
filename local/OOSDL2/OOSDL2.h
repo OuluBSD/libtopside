@@ -4,7 +4,7 @@
 
 #if !defined UPP_VERSION && defined flagGUI
 	#include <Draw/Draw.h>
-	#include <Graphics/GL.h>
+	#include <Graphics/Graphics.h>
 #else
 	#include <Draw/Draw.h>
 	#include <Geometry/Geometry.h>
@@ -136,6 +136,11 @@ public:
 class Screen : public Component {
 	RTTI_DECL1(Screen, Component)
 	
+	
+	OglBuffer		test_image;
+	
+	
+	
 	enum {
 		VAR_RESOLUTION,
 		VAR_FRAMES,
@@ -163,7 +168,7 @@ class Screen : public Component {
 	
 	
 	bool TestImageInitialize();
-	void TestImageRender();
+	void TestImageRender(const RealtimeSourceConfig& cfg);
 	bool Ogl_Initialize();
 	void Ogl_Render();
 	void Ogl_FindVariables();
@@ -219,7 +224,7 @@ public:
 	Screen&			Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
-	void            Render();
+	void            Render(const RealtimeSourceConfig& cfg);
 	bool            Recv(Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
@@ -277,7 +282,6 @@ public:
 
 #endif
 
-void EnableOpenGLDebugMessages(bool b);
 
 
 class Events : public Component {

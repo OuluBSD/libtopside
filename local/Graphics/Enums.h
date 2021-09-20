@@ -2,7 +2,7 @@
 #define _ManyCore_Enums_h_
 
 
-NAMESPACE_GL_BEGIN
+NAMESPACE_GRAPHICS_BEGIN
 
 typedef enum : unsigned short {
 	DBGSRC_WINDOW_SYSTEM	= 0x8247,
@@ -687,6 +687,6 @@ typedef enum : unsigned short {
 	MINF_LINEAR_MIPMAP_LINEAR,
 } MinFilter;
 
-NAMESPACE_GL_END
+NAMESPACE_GRAPHICS_END
 
 #endif

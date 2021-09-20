@@ -1,7 +1,7 @@
 #ifndef _ManyCore_GlobalApi_h_
 #define _ManyCore_GlobalApi_h_
 
-NAMESPACE_GL_BEGIN
+NAMESPACE_GRAPHICS_BEGIN
 
 
 inline void Begin(PrimType type) {}
@@ -51,6 +51,6 @@ inline void DepthRange(Float near, Float far) {}
 
 inline void MultiTexCoord(TexArb target, Gxf s, Gxf t, Gxf r, Gxf q) {}
 
-NAMESPACE_GL_END
+NAMESPACE_GRAPHICS_END
 
 #endif

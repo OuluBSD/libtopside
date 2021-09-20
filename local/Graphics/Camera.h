@@ -1,5 +1,5 @@
-#ifndef _GL_Camera_h_
-#define _GL_Camera_h_
+#ifndef _GRAPHICS_Camera_h_
+#define _GRAPHICS_Camera_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 

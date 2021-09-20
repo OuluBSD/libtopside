@@ -1,5 +1,5 @@
-#ifndef _GL_Shader_h_
-#define _GL_Shader_h_
+#ifndef _GRAPHICS_Shader_h_
+#define _GRAPHICS_Shader_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 

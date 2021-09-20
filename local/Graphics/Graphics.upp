@@ -9,7 +9,7 @@ uses(MSC & NEVER) ports/glew;
 uses(MSC & NEVER) ports/glext;
 
 file
-	GL.h,
+	Graphics.h,
 	Enums.h,
 	GlobalApi.h,
 	OpenGL.h,
@@ -31,5 +31,7 @@ file
 	OpenGLRenderer.cpp,
 	OpenGLFramebuffer.cpp,
 	OpenGLShader.h,
-	OpenGLShader.cpp;
+	OpenGLShader.cpp,
+	OpenGLBuffer.h,
+	OpenGLBuffer.cpp;
 

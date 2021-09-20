@@ -1,5 +1,5 @@
-#ifndef _GL_CpuRenderer_h_
-#define _GL_CpuRenderer_h_
+#ifndef _GRAPHICS_CpuRenderer_h_
+#define _GRAPHICS_CpuRenderer_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 

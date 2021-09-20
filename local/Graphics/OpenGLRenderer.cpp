@@ -1,4 +1,4 @@
-#include "GL.h"
+#include "Graphics.h"
 
 #ifdef flagGUI
 

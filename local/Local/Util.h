@@ -556,6 +556,8 @@ struct AppFlags {
 inline AppFlags& GetAppFlags() {return Single<AppFlags>();}
 inline bool IsOpenGL() {return GetAppFlags().IsOpenGL();}
 inline bool IsOpenGLContextOpen() {return GetAppFlags().IsOpenGLContextOpen();}
+void EnableGfxAccelDebugMessages(bool b);
+bool IsGfxAccelDebugMessages();
 
 
 
@@ -571,6 +573,10 @@ public:
 	String GetError() const {return last_error;}
 	
 };
+
+
+
+
 
 NAMESPACE_TOPSIDE_END
 

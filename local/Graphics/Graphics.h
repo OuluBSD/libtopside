@@ -1,5 +1,5 @@
-#ifndef _GL_GL_h_
-#define _GL_GL_h_
+#ifndef _GRAPHICS_GRAPHICS_h_
+#define _GRAPHICS_GRAPHICS_h_
 
 
 #include <Geometry/Geometry.h>
@@ -12,8 +12,8 @@ typedef unsigned int	Gxu;
 typedef unsigned int	Gxbf;
 
 
-#define NAMESPACE_GL_BEGIN namespace  TS { namespace  GL {
-#define NAMESPACE_GL_END }}
+#define NAMESPACE_GRAPHICS_BEGIN namespace  TS { namespace  GL {
+#define NAMESPACE_GRAPHICS_END }}
 
 
 #include "Enums.h"
@@ -43,6 +43,7 @@ typedef unsigned int	Gxbf;
 #if defined(flagGUI)
 #include "OpenGLShader.h"
 #include "OpenGLRenderer.h"
+#include "OpenGLBuffer.h"
 #endif
 
 

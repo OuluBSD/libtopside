@@ -23,7 +23,7 @@
 
 
 
-NAMESPACE_GL_BEGIN
+NAMESPACE_GRAPHICS_BEGIN
 
 
 inline void Begin(PrimType type) {glBegin(type);}
@@ -76,6 +76,6 @@ inline void DepthRange(Float near, Float far);// winclang error {glDepthRangef(n
 
 inline void MultiTexCoord(TexArb target, Gxf s, Gxf t, Gxf r, Gxf q);// winclang error {glMultiTexCoord4fARB(target, s, t, r, q);}
 
-NAMESPACE_GL_END
+NAMESPACE_GRAPHICS_END
 
 #endif

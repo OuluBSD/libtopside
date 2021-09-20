@@ -28,16 +28,24 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 }
 )SH4D3R";
 
-bool Screen::TestImageInitialize() {
-	if (is_opengl)
-		return Ogl_Initialize();
-	
-	return false;
-}
 
-void Screen::TestImageRender() {
-	if (is_opengl)
-		Ogl_Render();
+
+
+
+
+
+
+
+
+
+
+bool Screen::TestImageInitialize() {
+	test_image.is_win_fbo = true;
+	test_image.fb_size = screen_sz;
+	
+	test_image.SetFragmentShaderSource(def_shader);
+	
+	return test_image.Initialize();
 }
 
 bool Screen::Ogl_Initialize() {
@@ -125,7 +133,7 @@ void Screen::Ogl_ClearProg() {
 }
 
 void Screen::Ogl_CreateTex(Size sz) {
-	OOSDL2::EnableOpenGLDebugMessages(1);
+	EnableGfxAccelDebugMessages(1);
 	
 	{
 		// color buffer
@@ -136,7 +144,7 @@ void Screen::Ogl_CreateTex(Size sz) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 	
-	OOSDL2::EnableOpenGLDebugMessages(0);
+	EnableGfxAccelDebugMessages(0);
 }
 
 bool Screen::Ogl_CompilePrograms() {
@@ -176,7 +184,7 @@ bool Screen::Ogl_CompileFragmentShader() {
 }
 
 bool Screen::Ogl_CompileProgram(String shader_source) {
-	OOSDL2::EnableOpenGLDebugMessages(1);
+	EnableGfxAccelDebugMessages(1);
 	
 	GLint frag = Ogl_CompileShader(shader_source);
 	if (frag < 0)
@@ -189,7 +197,7 @@ bool Screen::Ogl_CompileProgram(String shader_source) {
 	glDeleteShader(frag);
 	frag = 0;
 	
-	OOSDL2::EnableOpenGLDebugMessages(0);
+	EnableGfxAccelDebugMessages(0);
 	
 	return true;
 }

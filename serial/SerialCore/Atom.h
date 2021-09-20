@@ -91,8 +91,6 @@ public:
 	virtual void AltStorePacket(Packet& p) {Panic("AltStorePacket not implemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	virtual bool AltPostInitialize() {return true;}
-	virtual bool AltDriverEnter() {Panic("AltDriverEnter not implemented"); return true;}
-	virtual bool AltDriverLeave() {Panic("AltDriverLeave not implemented"); return true;}
 	
 	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
 	virtual bool IsConsumedPartialPacket() {return 0;}

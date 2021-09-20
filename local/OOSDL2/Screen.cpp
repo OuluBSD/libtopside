@@ -6,7 +6,6 @@
 NAMESPACE_SDL2_BEGIN
 
 
-bool __enable_opengl_debug;
 
 void GLAPIENTRY
 OpenGLMessageCallback( GLenum source,
@@ -17,7 +16,7 @@ OpenGLMessageCallback( GLenum source,
                  const GLchar* message,
                  const void* userParam )
 {
-	if (!__enable_opengl_debug)
+	if (!IsGfxAccelDebugMessages())
 		return;
 	String s;
 	s << "OpenGL debug: ";
@@ -29,7 +28,6 @@ OpenGLMessageCallback( GLenum source,
 	LOG(s);
 }
 
-void EnableOpenGLDebugMessages(bool b) {__enable_opengl_debug = b;}
 
 
 
@@ -158,7 +156,7 @@ bool Screen::Recv(Packet& p) {
 	return true; // assuming 'do render' packet
 }
 
-void Screen::Render() {
+void Screen::Render(const RealtimeSourceConfig& cfg) {
 	RTLOG("Screen::Render");
 	Format fmt = last_packet->GetFormat();
 	if (fmt.IsVideo()) {
@@ -166,8 +164,10 @@ void Screen::Render() {
 		
 		BeginDraw();
 		
-		if (is_test_image)
-			TestImageRender();
+		if (is_test_image) {
+			test_image.frames = cfg.src_frame;
+			test_image.ProcessStage(cfg);
+		}
 		else
 			;
 		
