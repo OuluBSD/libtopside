@@ -30,10 +30,12 @@ void Factory::RefreshLinks(AtomData& d) {
 			dump = true;
 		}*/
 		for (const auto& atom_data : m.GetValues()) {
-			if (d.cls.iface.src == atom_data.cls.iface.sink) {
+			ValDevCls common_vd = d.cls.iface.src.GetCommon(atom_data.cls.iface.sink);
+			if (common_vd.IsValid()) {
 				Link& l = d.sink_links.Add();
 				l.dst_atom = atom_data.cls;
 				l.iface = d.cls.iface.src;
+				l.common_vd = common_vd;
 				ASSERT(l.dst_atom.IsValid() && l.iface.IsValid());
 				if (dump) {LOG("\t" << atom_data.cls.ToString());}
 			}

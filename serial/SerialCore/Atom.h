@@ -48,9 +48,10 @@ protected:
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
-	int						side_sink = -1, side_src = -1;
-	AtomBaseRef				side_sink_conn, side_src_conn, driver_conn;
+	AtomBaseRef				driver_conn;
 	RealtimeSourceConfig*	last_cfg = 0;
+	Vector<int>				side_sink, side_src;
+	LinkedList<AtomBaseRef>	side_sink_conn, side_src_conn;
 	
 	
 	void					ForwardAtom(FwdScope& fwd) override;
@@ -60,15 +61,15 @@ protected:
 	void					ForwardSource(FwdScope& fwd);
 	void					ForwardSink(FwdScope& fwd);
 	void					ForwardConverter(FwdScope& fwd);
-	void					ForwardSideSink(FwdScope& fwd);
-	void					ForwardSideSource(FwdScope& fwd);
+	//void					ForwardSideSink(FwdScope& fwd);
+	//void					ForwardSideSource(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
 	void					ForwardVoidSink(FwdScope& fwd);
 	bool					ForwardMem(void* mem, size_t mem_size);
 	
-	void					BaseVisit(RuntimeVisitor& vis) {vis & side_sink_conn & side_src_conn & driver_conn;}
+	void					BaseVisit(RuntimeVisitor& vis) {vis && side_sink_conn && side_src_conn; vis & driver_conn;}
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -79,8 +80,6 @@ public:
 	virtual void ClearSinkSource() = 0;
 	virtual InterfaceSourceRef GetSource() = 0;
 	virtual InterfaceSinkRef GetSink() = 0;
-	virtual InterfaceSideSourceRef GetSideSource() = 0;
-	virtual InterfaceSideSinkRef GetSideSink() = 0;
 	virtual bool InitializeAtom(const Script::WorldState& ws) = 0;
 	virtual void UninitializeAtom() = 0;
 	
@@ -108,14 +107,17 @@ public:
 	virtual RealtimeSourceConfig& GetConfig() {if (last_cfg) return *last_cfg; Panic("Unimplemented"); NEVER();}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual void AddPlan(Script::Plan& sp) {}
+	
 	virtual bool PassLinkSideSink(AtomBaseRef sink) {return true;}
 	virtual bool PassLinkSideSource(AtomBaseRef src) {return true;}
 	
-	int						GetSideSinkId() {return side_sink;}
-	int						GetSideSrcId() {return side_src;}
+	const Vector<int>&		GetSideSinks() const {return side_sink;}
+	const Vector<int>&		GetSideSources() const {return side_src;}
+	//int						GetSideSinkId(int i) {return side_sink[i];}
+	//int						GetSideSrcId(int i) {return side_src[i];}
 	//AtomBaseRef				GetLinkedSideSink() {return side_sink_conn;}
-	void					SetSideSinkId(int i) {ASSERT(side_sink < 0); side_sink = i;}
-	void					SetSideSrcId(int i) {ASSERT(side_src < 0); side_src = i;}
+	void					AddSideSinkId(int i) {side_sink.Add(i);}
+	void					AddSideSrcId(int i) {side_src.Add(i);}
 	bool					LinkSideSink(AtomBaseRef sink);
 	bool					LinkSideSource(AtomBaseRef src);
 	
@@ -124,8 +126,8 @@ public:
 	
 	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
 	
-	ValCls GetValSpec() const {return GetType().iface.side.val;}
-	bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
+	//ValCls GetValSpec() const {return GetType().iface.side.val;}
+	//bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
 	
 	static bool AllowDuplicates() {return false;}
 	
@@ -188,33 +190,29 @@ public:
 template<
 	typename T,
 	class SinkT=DefaultInterfaceSink,
-	class SourceT=DefaultInterfaceSource,
-	class SideT=VoidSideSinkInterface
+	class SourceT=DefaultInterfaceSource
 >
 struct Atom :
 	virtual public AtomBase,
 	public SinkT,
-	public SourceT,
-	public SideT
+	public SourceT
 {
 public:
-	using AtomT = Atom<T, SinkT, SourceT, SideT>;
-	RTTI_DECL4(AtomT, AtomBase, SinkT, SourceT, SideT)
+	using AtomT = Atom<T, SinkT, SourceT>;
+	RTTI_DECL3(AtomT, AtomBase, SinkT, SourceT)
 	
 	bool InitializeAtom(const Script::WorldState& ws) override {
-		return SinkT::Initialize() && SourceT::Initialize() && SideT::Initialize();
+		return SinkT::Initialize() && SourceT::Initialize();
 	}
 	
 	void UninitializeAtom() override {
 		SinkT::Uninitialize();
 		SourceT::Uninitialize();
-		SideT::Uninitialize();
 	}
 	
 	void ClearSinkSource() override {
 		SinkT::ClearSink();
 		SourceT::ClearSource();
-		SideT::ClearSide();
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {
@@ -222,7 +220,6 @@ public:
 		BaseVisit(vis);
 		vis.VisitThis<SinkT>(this);
 		vis.VisitThis<SourceT>(this);
-		vis.VisitThis<SideT>(this);
 	}
 	
 	void CopyTo(AtomBase* target) const override {
@@ -243,16 +240,6 @@ public:
 		InterfaceSink* sink = static_cast<InterfaceSink*>(this);
 		ASSERT(sink);
 		return InterfaceSinkRef(GetParentUnsafe(), sink);
-	}
-	
-	InterfaceSideSourceRef GetSideSource() override {
-		InterfaceSideSource* src = CastPtr<InterfaceSideSource>(this);
-		return src ? InterfaceSideSourceRef(GetParentUnsafe(), src) : InterfaceSideSourceRef();
-	}
-	
-	InterfaceSideSinkRef GetSideSink() override {
-		InterfaceSideSink* sink = CastPtr<InterfaceSideSink>(this);
-		return sink ? InterfaceSideSinkRef(GetParentUnsafe(), sink) : InterfaceSideSinkRef();
 	}
 	
 	AtomBase* AsAtomBase() override {return static_cast<AtomBase*>(this);}

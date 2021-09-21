@@ -15,16 +15,17 @@ public:
 	
 	// Interfaces
 	struct Link : Moveable<Link> {
-		AtomTypeCls dst_atom;
-		ValDevCls iface;
+		AtomTypeCls		dst_atom;
+		ValDevTuple		iface;
+		ValDevCls		common_vd;
 	};
 	
 	struct IfaceData : Moveable<IfaceData> {
-		TypeCls cls;
-		ValDevCls vd;
-		String name;
+		TypeCls			cls;
+		ValDevCls		vd;
+		String			name;
 	};
-	typedef VectorMap<ValDevCls,IfaceData> IfaceMap;
+	typedef VectorMap<ValDevTuple,IfaceData> IfaceMap;
 	static IfaceMap& IfaceLinkDataMap() {MAKE_STATIC(IfaceMap, m); return m;}
 	
 	template <class T> static void RegisterInterfaceLink(DevCls dev, ValCls val) {

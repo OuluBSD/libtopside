@@ -8,6 +8,9 @@
 #define NAMESPACE_SERIAL_BEGIN	namespace TS { namespace NAMESPACE_SERIAL_NAME {
 #define NAMESPACE_SERIAL_END	}}
 
+
+#define MAX_VDTUPLE_SIZE		8
+
 #include "Generated.h"
 #include "Types.h"
 #include "SampleBase.h"

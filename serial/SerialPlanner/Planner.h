@@ -43,6 +43,7 @@ protected:
 	Vector<bool>				using_act;
 	Index<short>				dbg_order;
 	AtomTypeCls					cur_atom;
+	ValDevCls					sink_vd;
 	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
@@ -61,6 +62,7 @@ public:
 	void SetFalse(const String& key) {Set(key, false);}
 	void SetAs_AddAtom(AtomTypeCls atom) {type = ADD_COMP; cur_atom = atom;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
+	void SetSinkCls(ValDevCls vd) {sink_vd = vd;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddAtom() const {return type == ADD_COMP;}
@@ -73,10 +75,11 @@ public:
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
 	AtomTypeCls GetAtom() const {return cur_atom;}
-	ValDevCls GetInterfaceSink() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.sink;}
-	ValDevCls GetInterfaceSide() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.side;}
-	ValDevCls GetInterfaceSource() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.src;}
+	ValDevCls GetCommonSink() const {return sink_vd;}
+	ValDevTuple GetInterfaceSink() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.sink;}
+	ValDevTuple GetInterfaceSource() const {ASSERT(cur_atom.IsValid()); return cur_atom.iface.src;}
 	const ValDevCls& GetSideCls() const {return side_vd;}
+	const ValDevCls& GetSinkCls() const {return sink_vd;}
 	String ToString() const;
 	String GetFullString() const;
 	bool Contains(const WorldState& ws) const;

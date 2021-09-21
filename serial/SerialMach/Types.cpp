@@ -102,7 +102,7 @@ hash_t AtomIfaceTypeCls::GetHashValue() const {
 	CombineHash c;
 	c.Put(sink.GetHashValue());
 	c.Put(src.GetHashValue());
-	c.Put(side.GetHashValue());
+	c.Put(content.GetHashValue());
 	return c;
 }
 

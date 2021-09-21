@@ -356,26 +356,29 @@ bool ScriptLoopLoader::Load() {
 	
 	
 	for(int i = 0; i < added_atoms.GetCount()-1; i++) {
-		AddedAtom& c0 = added_atoms[i];
-		AddedAtom& c1 = added_atoms[i+1];
-		AtomBaseRef src = c0.r;
-		AtomBaseRef dst = c1.r;
-		ScriptLoopSegment& seg = segments[c1.seg_i];
-		Script::ActionNode& n = *seg.ep.plan[c1.plan_i];
-		const Script::WorldState& ws = n.GetWorldState();
-		ValDevCls iface = ws.GetInterfaceSink();
-		ASSERT(iface.IsValid());
-		if (!l->Link(src, dst, iface)) {
-			AtomTypeCls atom = ws.GetAtom();
+		AddedAtom& src_info = added_atoms[i];
+		AtomBaseRef src = src_info.r;
+		
+		AddedAtom& sink_info = added_atoms[i+1];
+		AtomBaseRef sink = sink_info.r;
+		ScriptLoopSegment& sink_seg = segments[sink_info.seg_i];
+		Script::ActionNode& sink_an = *sink_seg.ep.plan[sink_info.plan_i];
+		const Script::WorldState& sink_ws = sink_an.GetWorldState();
+		
+		ValDevCls common_vd = sink_ws.GetCommonSink();
+		ASSERT(common_vd.IsValid());
+		
+		if (!l->Link(src, sink, common_vd)) {
+			AtomTypeCls atom = sink_ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-			String src_iface_name = Serial::Factory::IfaceLinkDataMap().Get(iface).name;
-			SetError("Could not link atom '" + atom_name + "' source '" + src_iface_name + "' at '" + def.id.ToString() + "'");
+			String src_sink_name = Serial::Factory::IfaceLinkDataMap().Get(common_vd).name;
+			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
-		if (c0.side_sink >= 0)
-			src->SetSideSinkId(c0.side_sink);
-		if (c0.side_src >= 0)
-			src->SetSideSrcId(c0.side_src);
+		if (src_info.side_sink >= 0)
+			src->AddSideSinkId(src_info.side_sink);
+		if (src_info.side_src >= 0)
+			src->AddSideSrcId(src_info.side_src);
 		
 		atoms.Add(src);
 	}

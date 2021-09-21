@@ -100,7 +100,8 @@ public:
 		return val.IsEmpty() ? (Stream&)val_buf->stream : (Stream&)val->stream;
 	}
 	
-	void InitializeContainer(Class* c, ValDevCls vd) {
+	void InitializeContainer(Class* c, ValDevTuple vt) {
+		ValDevCls vd = vt();
 		ASSERT(vd.IsValid());
 		Format val_fmt = GetDefaultFormat(vd);
 		ASSERT(val_fmt.IsValid());
@@ -131,8 +132,8 @@ public:
 	
 	virtual AtomBase* AsAtomBase() = 0;
 	virtual AtomTypeCls GetType() const = 0;
-	ValDevCls GetSinkCls() const {return GetType().iface.sink;}
-	ValDevCls GetSourceCls() const {return GetType().iface.src;}
+	ValDevTuple GetSinkCls() const {return GetType().iface.sink;}
+	ValDevTuple GetSourceCls() const {return GetType().iface.src;}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };
@@ -191,58 +192,8 @@ protected:
 	
 };
 
-class InterfaceSideSink :
-	public InterfaceBase,
-	public ExchangeSideSinkProvider
-{
-protected:
-	
-public:
-	RTTI_DECL2(InterfaceSideSink, InterfaceBase, ExchangeSideSinkProvider)
-	InterfaceSideSink() {}
-	
-	
-	// Catches the type for CollectInterfacesVisitor
-	void Visit(RuntimeVisitor& vis) {
-		vis.VisitThis<InterfaceBase>(this);
-		vis.VisitThis<ExchangeSideSinkProvider>(this);
-	}
-	
-	virtual Value*				GetSideValue() = 0;
-	virtual void				ClearSide() = 0;
-	
-};
-
-class InterfaceSideSource :
-	public InterfaceBase,
-	public ExchangeSideSourceProvider
-{
-	
-	
-public:
-	RTTI_DECL2(InterfaceSideSource, InterfaceBase, ExchangeSideSourceProvider)
-	InterfaceSideSource() {}
-	
-	
-	// Catches the type for CollectInterfacesVisitor
-	void Visit(RuntimeVisitor& vis) {
-		vis.VisitThis<InterfaceBase>(this);
-		vis.VisitThis<ExchangeSideSourceProvider>(this);
-	}
-	
-	virtual void				ClearSide() = 0;
-	virtual Stream*				GetSideStream() = 0;
-	virtual Value*				GetSideSourceValue() = 0;
-	
-protected:
-	
-};
-
-
 using InterfaceSinkRef			= Ref<InterfaceSink,		RefParent1<Loop>>;
 using InterfaceSourceRef		= Ref<InterfaceSource,		RefParent1<Loop>>;
-using InterfaceSideSinkRef		= Ref<InterfaceSideSink,	RefParent1<Loop>>;
-using InterfaceSideSourceRef	= Ref<InterfaceSideSource,	RefParent1<Loop>>;
 
 
 
@@ -326,85 +277,8 @@ public:
 	
 };
 
-
-class VoidSideSinkInterface :
-	public InterfaceSideSink,
-	RTTIBase
-{
-	
-public:
-	RTTI_DECL1(VoidSideSinkInterface, InterfaceSideSink)
-	
-	VoidSideSinkInterface() {}
-	
-	bool Initialize() {return true;}
-	void Uninitialize() {}
-	
-	void Visit(RuntimeVisitor& vis) {
-		vis.VisitThis<InterfaceSideSink>(this);
-	}
-	
-	
-	Value*				GetSideValue() override {return 0;}
-	void				ClearSide() override {}
-	
-};
-
-class DefaultInterfaceSideSink :
-	public InterfaceSideSink,
-	public InterfaceContainer<DefaultInterfaceSideSink>,
-	RTTIBase
-{
-	
-public:
-	using Container = InterfaceContainer<DefaultInterfaceSideSink>;
-	RTTI_DECL2(DefaultInterfaceSideSink, InterfaceSideSink, Container)
-	
-	DefaultInterfaceSideSink() {}
-	
-	bool Initialize();
-	void Uninitialize() {UninitializeContainer();}
-	
-	void Visit(RuntimeVisitor& vis) {
-		vis.VisitThis<InterfaceSideSink>(this);
-		vis.VisitThis<Container>(this);
-	}
-	
-	Value*				GetSideValue() override {return &GetContainerValue();}
-	void				ClearSide() override {ClearContainer();}
-	
-};
-
-class DefaultInterfaceSideSource :
-	public InterfaceSideSource,
-	public InterfaceContainer<DefaultInterfaceSideSource>,
-	RTTIBase
-{
-	
-public:
-	using Container = InterfaceContainer<DefaultInterfaceSideSource>;
-	RTTI_DECL2(DefaultInterfaceSideSource, InterfaceSideSource, Container)
-	 
-	DefaultInterfaceSideSource() {}
-	
-	bool Initialize();
-	void Uninitialize() {UninitializeContainer();}
-	
-	void Visit(RuntimeVisitor& vis) {
-		vis.VisitThis<InterfaceSideSource>(this);
-		vis.VisitThis<Container>(this);
-	}
-	
-	Stream*				GetSideStream() override {return &GetContainerStream();}
-	Value*				GetSideSourceValue() override {return &GetContainerValue();}
-	void				ClearSide() override {ClearContainer();}
-	
-};
-
-
 using DefaultInterfaceSourceRef			= Ref<DefaultInterfaceSource,		RefParent1<Loop>>;
 using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			RefParent1<Loop>>;
-using VoidSideSinkInterfaceRef			= Ref<VoidSideSinkInterface,		RefParent1<Loop>>;
 
 
 NAMESPACE_SERIAL_END

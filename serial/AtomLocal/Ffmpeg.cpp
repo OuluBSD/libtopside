@@ -26,11 +26,11 @@ bool FfmpegAtomBase::AltInitialize(const Script::WorldState& ws) {
 	//DUMP(ws);
 	
 	
-	if (type.iface.src.val.type == ValCls::AUDIO) {
+	if (type.iface.src().val.type == ValCls::AUDIO) {
 		if (ws.IsTrue(".stop_machine"))
 			stops_machine = true;
 	}
-	else if (type.iface.src.val.type == ValCls::VIDEO) {
+	else if (type.iface.src().val.type == ValCls::VIDEO) {
 		if (ws.IsTrue(".stop_machine"))
 			stops_machine = true;
 	}

@@ -12,8 +12,8 @@ public:
 	
 	virtual ComponentBase* AsComponentBase() = 0;
 	virtual TypeCompCls GetType() const = 0;
-	virtual ValDevCls GetSinkCls() const {return ValDevCls();}
-	virtual ValDevCls GetSourceCls() const {return ValDevCls();}
+	virtual ValDevTuple GetSinkCls() const {return ValDevTuple();}
+	virtual ValDevTuple GetSourceCls() const {return ValDevTuple();}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };

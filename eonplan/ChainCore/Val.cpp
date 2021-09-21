@@ -4,6 +4,8 @@ NAMESPACE_PLAN_BEGIN
 
 
 void GetKeyValDevUpper(String key, String& dev, String& val) {
+	dev.Clear();
+	val.Clear();
 	String tmp;
 	int j = 0;
 	for(int i = 0; i < key.GetCount(); i++) {

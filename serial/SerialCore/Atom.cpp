@@ -118,7 +118,7 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 bool AtomBase::LinkSideSink(AtomBaseRef sink) {
 	//side_src = -1; // SetSideSrc(-1)
 	ASSERT(sink);
-	ASSERT(!side_sink_conn);
+	//ASSERT(!side_sink_conn);
 	if (!sink)
 		return false;
 	
@@ -126,8 +126,8 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink) {
 	//DUMP(type);
 	ASSERT(type.role == AtomRole::SIDE_SINK);
 	if (PassLinkSideSink(sink)) {
-		side_sink_conn = sink;
-		RTLOG(HexStr((void*)this) << " side_sink_conn = " << HexStr(&*side_sink_conn));
+		side_sink_conn.Add(sink);
+		RTLOG(HexStr((void*)this) << " side_sink_conn << " << HexStr(&*side_sink_conn));
 		return true;
 	}
 	return false;
@@ -143,8 +143,8 @@ bool AtomBase::LinkSideSource(AtomBaseRef src) {
 	//DUMP(type);
 	ASSERT(type.role == AtomRole::SIDE_SOURCE);
 	if (PassLinkSideSource(src)) {
-		side_src_conn = src;
-		RTLOG(HexStr((void*)this) << " side_src_conn = " << HexStr(&*side_src_conn));
+		side_src_conn.Add(src);
+		RTLOG(HexStr((void*)this) << " side_src_conn << " << HexStr(&*side_src_conn));
 		return true;
 	}
 	return false;

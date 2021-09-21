@@ -66,10 +66,13 @@ public:
 	
 public:
 	struct Header : Generic {
+		static const int MAX_VDS = MAX_VDTUPLE_SIZE;
 		const char*		base = 0;
-		const char*		sink = 0;
-		const char*		side = 0;
-		const char*		src = 0;
+		const char*		content = 0;
+		const char*		sink[MAX_VDS] = {0};
+		const char*		src[MAX_VDS] = {0};
+		int				sink_count = 0;
+		int				src_count = 0;
 		String			role, key;
 		Index<String>				actions, inherits;
 		VectorMap<String,String>	args;
@@ -190,14 +193,20 @@ public:
 	}
 	
 	template <class T> static
-	void RegHeader(const char* name, const char* base, const char* role, const char* sink, const char* side, const char* src) {
+	void RegHeader(const char* name, const char* base, const char* role, const char* content, const char* sink0, const char* sink1, const char* sink2, const char* src0, const char* src1, const char* src2) {
 		Header& v = Headers().Add(name);
 		v.pkg = ActivePackage();
 		v.name = name;
 		v.base = base;
-		v.sink = sink;
-		v.side = side;
-		v.src = src;
+		v.content = content;
+		v.sink_count = (sink0 != 0) + (sink1 != 0) + (sink2 != 0);
+		v.sink[0] = sink0;
+		v.sink[1] = sink1;
+		v.sink[2] = sink2;
+		v.src_count = (src0 != 0) + (src1 != 0) + (src2 != 0);
+		v.src[0] = src0;
+		v.src[1] = src1;
+		v.src[2] = src2;
 		v.key = ToCaps(name);
 		v.role = ToUpper(role);
 	}

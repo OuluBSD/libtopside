@@ -28,8 +28,8 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		case SOURCE:		ForwardSource(fwd);		break;
 		case SINK:			ForwardSink(fwd);		break;
 		case CONVERTER:		ForwardSource(fwd);		break;
-		case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
-		case SIDE_SINK:		ForwardSideSink(fwd);	break;
+		//case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
+		//case SIDE_SINK:		ForwardSideSink(fwd);	break;
 		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
 	}
 	
@@ -254,6 +254,7 @@ void AtomBase::ForwardSink(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }*/
 
+#if 0
 void AtomBase::ForwardSideSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
@@ -349,6 +350,8 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }
 
+#endif
+
 void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 	Value& src_value = GetSource()->GetSourceValue();
 	Stream& src_stream = GetSource()->GetStream();
@@ -369,7 +372,7 @@ void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 		
 		Packet to = CreatePacket(o);
 	
-		Format fmt = GetDefaultFormat(type.iface.src);
+		Format fmt = GetDefaultFormat(type.iface.src());
 		RTLOG("AtomBase::ForwardVoidSink: sending packet in format: " << fmt.ToString());
 		to->SetFormat(fmt);
 		

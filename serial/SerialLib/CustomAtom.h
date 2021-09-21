@@ -167,68 +167,6 @@ public:
 
 
 template <class T>
-class CenterSideSinkAsync :
-	public Atom<
-		T,
-		DefaultInterfaceSink,
-		DefaultInterfaceSource,
-		DefaultInterfaceSideSink
-	>
-{
-	
-protected:
-	
-	using AtomT = Atom<T, DefaultInterfaceSink, DefaultInterfaceSource, DefaultInterfaceSideSink>;
-	
-public:
-	using BaseT = CenterSideSinkAsync<T>;
-	RTTI_DECL1(CenterSideSinkAsync, AtomT)
-	
-	void Uninitialize() override {}
-	void Forward(FwdScope& fwd) override {
-		RTLOG("CenterSideSinkAsync<T>::Forward");
-	}
-
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
-	
-	void VisitSource(RuntimeVisitor& vis) override {TODO}
-	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	
-};
-
-
-template <class T>
-class CenterSideSourceAsync :
-	public Atom<
-		T,
-		DefaultInterfaceSink,
-		DefaultInterfaceSource,
-		DefaultInterfaceSideSource
-	>
-{
-	
-protected:
-	
-	using AtomT = Atom<T, DefaultInterfaceSink, DefaultInterfaceSource, DefaultInterfaceSideSource>;
-	
-public:
-	using BaseT = CenterSideSourceAsync<T>;
-	RTTI_DECL1(CenterSideSourceAsync, AtomT)
-	
-	void Uninitialize() override {}
-	void Forward(FwdScope& fwd) override {
-		RTLOG("CenterSideSourceAsync<T>::Forward");
-	}
-
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
-	
-	void VisitSource(RuntimeVisitor& vis) override {TODO}
-	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	
-};
-
-
-template <class T>
 class CenterDriver : public Atom<T> {
 	
 protected:

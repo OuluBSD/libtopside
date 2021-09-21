@@ -467,10 +467,13 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	}*/
 	
 	AtomTypeCls atom = ws.GetAtom();
-	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src.val == ValCls::ORDER)
+	
+	//TODO check for conflicting loop
+	
+	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src().val == ValCls::ORDER)
 		return false;
 	
-	if (ws.IsAddAtom()) {
+	/*if (ws.IsAddAtom()) {
 		if (n.GetLinkedCount() > 0) {
 			AtomTypeCls a = ws.GetAtom();
 			if (a.iface.side.IsValid()) {
@@ -488,7 +491,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 					ap.AddSideSource(seg.as, n);
 					return false;
 				}
-			}
+			}*/
 			/*else {
 				const Script::APlanNode* accepted = ll.GetAcceptedSideNode();
 				ASSERT(accepted);
@@ -501,12 +504,12 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 				LOG("Found side-ch path: " << accepted->GetWorldState().ToString());
 				
 			}*/
-		}
+	/*	}
 	}
 	else {
 		LOG("Unexpected action");
 		return false;
-	}
+	}*/
 	
 	Array<Serial::Script::WorldState*> to;
 	Vector<double> action_costs;

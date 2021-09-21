@@ -658,9 +658,11 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		
 		//ASSERT(src.GetAtom() != link.dst_atom);
 		
-
-		a.Post() = src;
-		a.Post().SetAs_AddAtom(dst);
+		auto& post = a.Post();
+		post = src;
+		post.SetAs_AddAtom(dst);
+		post.SetSinkCls(link.common_vd);
+		ASSERT(post.GetSinkCls().IsValid());
 		if (dst_cd.action_fn(dst_cd.cls, a)) {
 			MemSwap(acts.Add(), a);
 			a.Pre() = src;

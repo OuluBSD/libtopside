@@ -249,33 +249,28 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			Statement& ret = stmt.Add();
 			Expression& ret_expr = ret;
 			Expression& ret_val = ret_expr.SetReturn().First();
-			ASSERT(h.src && h.sink);
-			if (!h.side) {
-				ret_val.SetMetaCall("ATOM0");
-				ret_val.Add().SetId(h.key);
-				ret_val.Add().SetId(h.role);
-				String src_dev, src_val, sink_dev, sink_val;
-				GetKeyValDevUpper(h.src, src_dev, src_val);
-				GetKeyValDevUpper(h.sink, sink_dev, sink_val);
-				ret_val.Add().SetId(sink_dev);
-				ret_val.Add().SetId(sink_val);
-				ret_val.Add().SetId(src_dev);
-				ret_val.Add().SetId(src_val);
+			ASSERT(h.src_count > 0 && h.sink_count > 0);
+			
+			String call = "ATOM" + IntStr(h.sink_count) + IntStr(h.src_count);
+			ret_val.SetMetaCall(call);
+			ret_val.Add().SetId(h.key);
+			ret_val.Add().SetId(h.role);
+			String dev, val;
+			
+			GetKeyValDevUpper(h.content, dev, val);
+			ret_val.Add().SetId(dev);
+			ret_val.Add().SetId(val);
+			
+			for(int i = 0; i < h.sink_count; i++) {
+				GetKeyValDevUpper(h.sink[i], dev, val);
+				ret_val.Add().SetId(dev);
+				ret_val.Add().SetId(val);
 			}
-			else {
-				ret_val.SetMetaCall("ATOM1");
-				ret_val.Add().SetId(h.key);
-				ret_val.Add().SetId(h.role);
-				String src_dev, src_val, side_dev, side_val, sink_dev, sink_val;
-				GetKeyValDevUpper(h.src, src_dev, src_val);
-				GetKeyValDevUpper(h.side, side_dev, side_val);
-				GetKeyValDevUpper(h.sink, sink_dev, sink_val);
-				ret_val.Add().SetId(sink_dev);
-				ret_val.Add().SetId(sink_val);
-				ret_val.Add().SetId(side_dev);
-				ret_val.Add().SetId(side_val);
-				ret_val.Add().SetId(src_dev);
-				ret_val.Add().SetId(src_val);
+			
+			for(int i = 0; i < h.src_count; i++) {
+				GetKeyValDevUpper(h.src[i], dev, val);
+				ret_val.Add().SetId(dev);
+				ret_val.Add().SetId(val);
 			}
 		}
 		

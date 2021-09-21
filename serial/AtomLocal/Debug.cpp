@@ -5,9 +5,9 @@ NAMESPACE_SERIAL_BEGIN
 
 bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
 	AtomTypeCls type = ((AtomBase*)this)->GetType();
-	if (type.iface.src.val == ValCls::AUDIO)
+	if (type.iface.src().val == ValCls::AUDIO)
 		internal_fmt.SetAudio(DevCls::ACCEL, SoundSample::U8_LE, 2, 44100, 777);
-	else if (type.iface.src.val == ValCls::VIDEO)
+	else if (type.iface.src().val == ValCls::VIDEO)
 		internal_fmt.SetVideo(DevCls::ACCEL, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	else
 		TODO;

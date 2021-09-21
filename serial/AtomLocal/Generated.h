@@ -94,11 +94,11 @@ public:
 
 };
 
-class AudioSideSrc : public CenterSideSourceAsync<AudioSideSrc> {
+class AudioSplitter : public CenterSourceAsync<AudioSplitter> {
 
 public:
-	RTTI_DECL1(AudioSideSrc, BaseT)
-	COPY_PANIC(AudioSideSrc)
+	RTTI_DECL1(AudioSplitter, BaseT)
+	COPY_PANIC(AudioSplitter)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
 	ATOM_MAKE_ACTION_END
@@ -108,11 +108,11 @@ public:
 
 };
 
-class AudioSideSink : public CenterSideSinkAsync<AudioSideSink> {
+class AudioJoiner : public CenterSinkAsync<AudioJoiner> {
 
 public:
-	RTTI_DECL1(AudioSideSink, BaseT)
-	COPY_PANIC(AudioSideSink)
+	RTTI_DECL1(AudioJoiner, BaseT)
+	COPY_PANIC(AudioJoiner)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
 	ATOM_MAKE_ACTION_END
@@ -158,48 +158,6 @@ public:
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.customer")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class VideoHardwareSink : public AccelSideAsync<VideoHardwareSink>, public DummyAlt {
-
-public:
-	RTTI_DECL2(VideoHardwareSink, BaseT, DummyAlt)
-	COPY_PANIC(VideoHardwareSink)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.sink.hw")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class VideoShaderSrc : public AccelSideAsync<VideoShaderSrc>, public DummyAlt {
-
-public:
-	RTTI_DECL2(VideoShaderSrc, BaseT, DummyAlt)
-	COPY_PANIC(VideoShaderSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class VideoShaderBuffer : public AccelSideAsync<VideoShaderBuffer>, public DummyAlt {
-
-public:
-	RTTI_DECL2(VideoShaderBuffer, BaseT, DummyAlt)
-	COPY_PANIC(VideoShaderBuffer)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.buffer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -270,14 +228,11 @@ using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
-using AudioSideSrcRef = Ref<AudioSideSrc, RefParent1<Loop>>;
-using AudioSideSinkRef = Ref<AudioSideSink, RefParent1<Loop>>;
+using AudioSplitterRef = Ref<AudioSplitter, RefParent1<Loop>>;
+using AudioJoinerRef = Ref<AudioJoiner, RefParent1<Loop>>;
 using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
 using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
-using VideoHardwareSinkRef = Ref<VideoHardwareSink, RefParent1<Loop>>;
-using VideoShaderSrcRef = Ref<VideoShaderSrc, RefParent1<Loop>>;
-using VideoShaderBufferRef = Ref<VideoShaderBuffer, RefParent1<Loop>>;
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
 using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
 using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, RefParent1<Loop>>;

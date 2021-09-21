@@ -7,7 +7,5 @@ file
 	ChainLib.h,
 	ChainLib.icpp,
 	Bases.h,
-	Headers.h,
-	Bases.json,
-	Headers.json;
+	Headers.h;
 

@@ -368,40 +368,36 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& in : loop0.atoms) {
-		int in_conn = in->GetSideSinkId();
-		if (in_conn < 0)
-			continue;
-		
-		RTLOG("Trying to side-link id " << in_conn);
-		bool found = false;
-		for (AtomBaseRef& out : loop1.atoms) {
-			int out_conn = out->GetSideSrcId();
-			if (out_conn < 0)
-				continue;
-			
-			if (in_conn == out_conn) {
-				found = true;
-				
-				if (!out->LinkSideSink(in)) {
-					AddError("Side-source refused linking to side-sink");
-					return false;
+		for (int in_conn : in->GetSideSinks()) {
+			RTLOG("Trying to side-link id " << in_conn);
+			bool found = false;
+			for (AtomBaseRef& out : loop1.atoms) {
+				for (int out_conn : out->GetSideSources()) {
+					if (in_conn == out_conn) {
+						found = true;
+						
+						if (!out->LinkSideSink(in)) {
+							AddError("Side-source refused linking to side-sink");
+							return false;
+						}
+						if (!in->LinkSideSource(out)) {
+							AddError("Side-sink refused linking to side-source");
+							return false;
+						}
+						
+						LOG(out->ToString() + " side-linked to " + in->ToString());
+						break;
+					}
 				}
-				if (!in->LinkSideSource(out)) {
-					AddError("Side-sink refused linking to side-source");
-					return false;
-				}
-				
-				LOG(out->ToString() + "<> side-linked to " + in->ToString() + "<>");
-				break;
 			}
+			
+			/*if (!found) {
+				AddError("Could not link connection id " + IntStr(in_conn));
+				return false;
+			}*/
+			
+			dbg_i++;
 		}
-		
-		/*if (!found) {
-			AddError("Could not link connection id " + IntStr(in_conn));
-			return false;
-		}*/
-		
-		dbg_i++;
 	}
 	
 	

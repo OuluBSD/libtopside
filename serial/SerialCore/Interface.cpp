@@ -57,9 +57,9 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	Value& to_val = sink->GetValue();
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
-		ValDevCls vd = sink->GetSinkCls();
+		ValDevTuple vd = sink->GetSinkCls();
 		ASSERT(vd.IsValid());
-		to_fmt = GetDefaultFormat(vd);
+		to_fmt = GetDefaultFormat(vd());
 		SimpleBufferedValue* sbbuf;
 		SimpleValue* sbuf;
 		if ((sbbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
@@ -195,25 +195,6 @@ bool DefaultInterfaceSource::Initialize() {
 	return true;
 }
 
-bool DefaultInterfaceSideSink::Initialize() {
-	AtomBase* ab = AsAtomBase();
-	AtomTypeCls type = ab->GetType();
-	ASSERT(type.IsValid());
-	
-	InitializeContainer(this, type.iface.side);
-	
-	return true;
-}
-
-bool DefaultInterfaceSideSource::Initialize() {
-	AtomBase* ab = AsAtomBase();
-	AtomTypeCls type = ab->GetType();
-	ASSERT(type.IsValid());
-	
-	InitializeContainer(this, type.iface.side);
-	
-	return true;
-}
 
 
 NAMESPACE_SERIAL_END

@@ -1,50 +1,50 @@
 
 #define USE_DUMMY 1
 
-HEADER2(			CenterCustomer,		CustomerBaseT,		customer,		CenterReceipt,	CenterOrder)
+HEADER11(			CenterCustomer,		CustomerBaseT,			customer,	CenterOrder,	CenterReceipt,	CenterOrder)
 HEADER_ACTION(		CenterCustomer,		center.customer)
 //HEADER_INHERITS(	CenterCustomer,		CustomerBase)
 
-HEADER2(			TestRealtimeSrc,	CenterSourceAsync,	source,			CenterOrder,	CenterAudio)
+HEADER11(			TestRealtimeSrc,	CenterSourceAsync,		source,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
 HEADER_INHERITS(	TestRealtimeSrc,	RollingValueBase)
 
-HEADER2(			TestRealtimeSink,	CenterSinkSync,		sink,			CenterAudio,	CenterReceipt)
+HEADER11(			TestRealtimeSink,	CenterSinkSync,			sink,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_INHERITS(	TestRealtimeSink,	VoidSinkBase)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
 
-HEADER2(			AudioHardwareSink,	CenterSinkAsync,		sink,		CenterAudio,	CenterReceipt)
+HEADER11(			AudioHardwareSink,	CenterSinkAsync,		sink,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)
 HEADER_INHERITS(	AudioHardwareSink,	PortaudioSink)
 HEADER_ARG(			AudioHardwareSink,	ALT_LINK,	1)
 
-HEADER2(			AudioDecoderSrc,	CenterSourceAsync,		source,		CenterOrder,	CenterAudio)
+HEADER11(			AudioDecoderSrc,	CenterSourceAsync,		source,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDecoderSrc,	perma.audio.source.decoder)
 HEADER_INHERITS(	AudioDecoderSrc,	FfmpegAtomBase)
 HEADER_ARG(			AudioDecoderSrc,	ALT_LINK,	1)
 HEADER_ARG(			AudioDecoderSrc,	ALT_FWD,	1)
 
-HEADER2(			AudioDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterAudio)
+HEADER11(			AudioDbgSrc,		CenterSourceAsync,		source,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
 HEADER_INHERITS(	AudioDbgSrc,		AudioGenBase)
 HEADER_ARG(			AudioDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			AudioDbgSrc,		ALT_FWD,	1)
 
-HEADER3(			AudioSideSrc,		CenterSideSourceAsync,	side_source,	CenterAudio,	CenterAudio,	CenterReceipt)
-HEADER_ACTION(		AudioSideSrc,		center.audio.side.src)
+HEADER12(			AudioSplitter,		CenterSourceAsync,		source,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioSplitter,		center.audio.side.src)
 
-HEADER3(			AudioSideSink,		CenterSideSinkAsync,	side_sink,		CenterOrder,	CenterAudio,	CenterAudio)
-HEADER_ACTION(		AudioSideSink,		center.audio.side.sink)
+HEADER21(			AudioJoiner,		CenterSinkAsync,		sink,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		AudioJoiner,		center.audio.side.sink)
 
-HEADER2(			VideoDbgSrc,		CenterSourceAsync,		source,		CenterOrder,	CenterVideo)
+HEADER11(			VideoDbgSrc,		CenterSourceAsync,		source,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
 HEADER_INHERITS(	VideoDbgSrc,		VideoGenBase)
 HEADER_ARG(			VideoDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			VideoDbgSrc,		ALT_FWD,	1)
 
-HEADER2(			AccelVideoDbgSrc,	AccelSourceAsync,		source,		AccelOrder,		AccelVideo)
+HEADER11(			AccelVideoDbgSrc,	AccelSourceAsync,		source,		AccelVideo,		AccelOrder,		AccelVideo)
 HEADER_ACTION(		AccelVideoDbgSrc,	accel.video.src.dbg_generator)
 HEADER_INHERITS(	AccelVideoDbgSrc,	AccelVideoGenBase)
 HEADER_ARG(			AccelVideoDbgSrc,	ALT_LINK,	1)
@@ -53,20 +53,20 @@ HEADER_ARG(			AccelVideoDbgSrc,	ALT_FWD,	1)
 
 
 
-HEADER2(			AccelCustomer,		CustomerBaseT,			customer,	AccelReceipt,	AccelOrder)
+HEADER11(			AccelCustomer,		CustomerBaseT,			customer,	AccelOrder,		AccelReceipt,	AccelOrder)
 HEADER_ACTION(		AccelCustomer,		accel.customer)
 //HEADER_INHERITS(	AccelCustomer,		CustomerBase)
 
-HEADER2(			VideoHardwareSink,	AccelSideAsync,			sink,		AccelVideo,		AccelReceipt)
+/*HEADER11(			VideoHardwareSink,	AccelSinkPolling,				sink,		AccelVideo,		AccelReceipt)
 HEADER_ACTION(		VideoHardwareSink,	accel.video.sink.hw)
-HEADER_ARG(			VideoHardwareSink,	ALT_LINK,	1)
+HEADER_ARG(			VideoHardwareSink,	ALT_LINK,	1)*/
 
-HEADER2(			VideoShaderSrc,		AccelSideAsync,			source,		AccelOrder,		AccelVideo)
+/*HEADER11(			VideoShaderSrc,		AccelAsync,				source,		AccelOrder,		AccelVideo)
 HEADER_ACTION(		VideoShaderSrc,		accel.video.src)
 HEADER_ARG(			VideoShaderSrc,		ALT_LINK,	1)
 HEADER_ARG(			VideoShaderSrc,		ALT_FWD,	1)
 
-HEADER2(			VideoShaderBuffer,	AccelSideAsync,			side_pipe,	AccelOrder,		AccelReceipt)
+HEADER11(			VideoShaderBuffer,	AccelAsync,				side_pipe,	AccelOrder,		AccelReceipt)
 HEADER_ACTION(		VideoShaderBuffer,	accel.video.buffer)
 HEADER_ARG(			VideoShaderBuffer,	ALT_LINK,	1)
 
@@ -79,27 +79,27 @@ HEADER_INHERITS(	VideoHardwareSink,	SystemVideoSink)
 HEADER_INHERITS(	VideoShaderSrc,		SystemVideoSink)
 HEADER_INHERITS(	VideoShaderBuffer,	SystemVideoSink)
 #endif
+*/
 
-
-HEADER2(			SdlContextAtom,		CenterDriver,			driver,		CenterReceipt,	CenterReceipt)
+HEADER11(			SdlContextAtom,		CenterDriver,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
 HEADER_INHERITS(	SdlContextAtom,		SDL2ContextBase)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
 HEADER_ARG(			SdlContextAtom,		ALT_LINK,	1)
 HEADER_ARG(			SdlContextAtom,		ALT_FWD,	1)
 
-/*HEADER2(			SdlEventAtom,		CenterSideSourceAsync,	source,		CenterOrder,	CenterEvent)
+/*HEADER11(			SdlEventAtom,		CenterSourceAsync,		source,		CenterOrder,	CenterEvent)
 HEADER_INHERITS(	SdlEventAtom,		SDL2EventsBase)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)*/
 
-HEADER2(			SdlVideoAtom,		AccelSinkPolling,		sink,		AccelVideo,		AccelReceipt)
+HEADER11(			SdlVideoAtom,		AccelSinkPolling,		sink,		AccelVideo,		AccelVideo,		AccelReceipt)
 HEADER_INHERITS(	SdlVideoAtom,		SDL2ScreenBase)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 
-HEADER2(			SdlSwVideoAtom,		CenterSinkPolling,		sink,		CenterVideo,	CenterReceipt)
+HEADER11(			SdlSwVideoAtom,		CenterSinkPolling,		sink,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_INHERITS(	SdlSwVideoAtom,		SDL2SwScreenBase)
 HEADER_ACTION(		SdlSwVideoAtom,		sdl.swvideo)
 
-HEADER2 (			SdlAudioAtom,		CenterSinkAsync,		sink,		CenterAudio,	CenterReceipt)
+HEADER11 (			SdlAudioAtom,		CenterSinkAsync,		sink,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_INHERITS(	SdlAudioAtom,		SDL2AudioOutputBase)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
