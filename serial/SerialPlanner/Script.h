@@ -473,25 +473,25 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src().val == ValCls::ORDER)
 		return false;
 	
-	/*if (ws.IsAddAtom()) {
+	if (ws.IsAddAtom()) {
 		if (n.GetLinkedCount() > 0) {
 			AtomTypeCls a = ws.GetAtom();
-			if (a.iface.side.IsValid()) {
+			if (a.iface.sink.GetCount() >= 2) {
 				ASSERT(a.IsRoleSide());
-				if (!a.IsRoleSideSource()) {
-					ap.AddSideSink(seg.as, n);
+				ap.AddSideSink(seg.as, n);
+				return false;
+			}
+			if (a.iface.src.GetCount() >= 2) {
+				ASSERT(a.IsRoleSide());
+				POPO(Pol::Serial::Script::Loop::SideSinkIsBeforeSideSourceAlways)
+				if (goal_ws	.IsTrue	("has.side.sink") &&
+					ws		.IsFalse("has.side.sink"))
 					return false;
-				}
-				else {
-					POPO(Pol::Serial::Script::Loop::SideSinkIsBeforeSideSourceAlways)
-					if (goal_ws	.IsTrue	("has.side.sink") &&
-						ws		.IsFalse("has.side.sink"))
-						return false;
-					
-					ap.AddSideSource(seg.as, n);
-					return false;
-				}
-			}*/
+				
+				ap.AddSideSource(seg.as, n);
+				return false;
+			}
+			
 			/*else {
 				const Script::APlanNode* accepted = ll.GetAcceptedSideNode();
 				ASSERT(accepted);
@@ -504,12 +504,12 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 				LOG("Found side-ch path: " << accepted->GetWorldState().ToString());
 				
 			}*/
-	/*	}
+		}
 	}
 	else {
 		LOG("Unexpected action");
 		return false;
-	}*/
+	}
 	
 	Array<Serial::Script::WorldState*> to;
 	Vector<double> action_costs;

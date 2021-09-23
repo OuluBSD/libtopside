@@ -42,7 +42,9 @@ String AtomBase::ToString() const {
 }
 
 void AtomBase::ForwardExchange(FwdScope& fwd) {
-	Value& src_val = GetSource()->GetSourceValue();
+	int ch_i = 0;
+	
+	Value& src_val = GetSource()->GetSourceValue(ch_i);
 	//SimpleBufferedValue* src_buf = CastPtr<SimpleBufferedValue>(&src_val);
 	//if (src_buf && !src_buf->IsEmpty()) {
 	if (src_val.GetQueueSize()) {
@@ -57,8 +59,11 @@ void AtomBase::ForwardExchange(FwdScope& fwd) {
 }
 
 void AtomBase::ForwardConsumed(FwdScope& fwd) {
-	Value& src_value = GetSource()->GetSourceValue();
-	Value& sink_value = GetSink()->GetValue();
+	int src_ch_i = 0;
+	int sink_ch_i = 0;
+	
+	Value& src_value = GetSource()->GetSourceValue(src_ch_i);
+	Value& sink_value = GetSink()->GetValue(sink_ch_i);
 	auto& sink_buf = sink_value.GetBuffer();
 	auto& src_buf = src_value.GetBuffer();
 	Format src_fmt = src_value.GetFormat();
@@ -115,6 +120,24 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 	
 }
 
+String AtomBase::GetInlineConnectionsString() const {
+	String s;
+	s << "sink(";
+	int i = 0;
+	for (AtomBaseRef& iface : side_sink_conn) {
+		if (i++ > 0) s << ", ";
+		s << HexStr(&*iface);
+	}
+	s << "), src(";
+	i = 0;
+	for (AtomBaseRef& iface : side_src_conn) {
+		if (i++ > 0) s << ", ";
+		s << HexStr(&*iface);
+	}
+	s << ")";
+	return s;
+}
+
 bool AtomBase::LinkSideSink(AtomBaseRef sink) {
 	//side_src = -1; // SetSideSrc(-1)
 	ASSERT(sink);
@@ -127,7 +150,7 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink) {
 	ASSERT(type.role == AtomRole::SIDE_SINK);
 	if (PassLinkSideSink(sink)) {
 		side_sink_conn.Add(sink);
-		RTLOG(HexStr((void*)this) << " side_sink_conn << " << HexStr(&*side_sink_conn));
+		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
 		return true;
 	}
 	return false;
@@ -144,7 +167,7 @@ bool AtomBase::LinkSideSource(AtomBaseRef src) {
 	ASSERT(type.role == AtomRole::SIDE_SOURCE);
 	if (PassLinkSideSource(src)) {
 		side_src_conn.Add(src);
-		RTLOG(HexStr((void*)this) << " side_src_conn << " << HexStr(&*side_src_conn));
+		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
 		return true;
 	}
 	return false;

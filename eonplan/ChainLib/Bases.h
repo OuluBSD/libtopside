@@ -2,6 +2,7 @@
 BASE(CenterDriver)
 BASE(CustomerBaseT)
 BASE(CenterSourceAsync)
+BASE(CenterSourcePolling)
 BASE(CenterSinkSync)
 BASE(CenterSinkAsync)
 BASE(CenterSinkPolling)

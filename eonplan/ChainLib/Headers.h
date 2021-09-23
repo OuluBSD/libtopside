@@ -9,12 +9,12 @@ HEADER11(			TestRealtimeSrc,	CenterSourceAsync,		source,		CenterAudio,	CenterOrd
 HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
 HEADER_INHERITS(	TestRealtimeSrc,	RollingValueBase)
 
-HEADER11(			TestRealtimeSink,	CenterSinkSync,			sink,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER11(			TestRealtimeSink,	CenterSinkPolling,		sink,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_INHERITS(	TestRealtimeSink,	VoidSinkBase)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
 
-HEADER11(			AudioHardwareSink,	CenterSinkAsync,		sink,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER11(			AudioHardwareSink,	CenterSinkPolling,		sink,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)
 HEADER_INHERITS(	AudioHardwareSink,	PortaudioSink)
@@ -32,11 +32,15 @@ HEADER_INHERITS(	AudioDbgSrc,		AudioGenBase)
 HEADER_ARG(			AudioDbgSrc,		ALT_LINK,	1)
 HEADER_ARG(			AudioDbgSrc,		ALT_FWD,	1)
 
-HEADER12(			AudioSplitter,		CenterSourceAsync,		source,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER12(			AudioSplitter,		CenterSourcePolling,		side_source,	CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_INHERITS(	AudioSplitter,		SplitterBase)
 HEADER_ACTION(		AudioSplitter,		center.audio.side.src)
+HEADER_ACTION(		AudioSplitter,		center.audio.side.src.center)
 
-HEADER21(			AudioJoiner,		CenterSinkAsync,		sink,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER21(			AudioJoiner,		CenterSinkPolling,		side_sink,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_INHERITS(	AudioJoiner,		JoinerBase)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink)
+HEADER_ACTION(		AudioJoiner,		center.audio.side.sink.center)
 
 HEADER11(			VideoDbgSrc,		CenterSourceAsync,		source,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)

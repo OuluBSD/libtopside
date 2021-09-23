@@ -36,7 +36,7 @@ public:
 
 };
 
-class TestRealtimeSink : public CenterSinkSync<TestRealtimeSink>, public VoidSinkBase {
+class TestRealtimeSink : public CenterSinkPolling<TestRealtimeSink>, public VoidSinkBase {
 
 public:
 	RTTI_DECL2(TestRealtimeSink, BaseT, VoidSinkBase)
@@ -51,7 +51,7 @@ public:
 
 };
 
-class AudioHardwareSink : public CenterSinkAsync<AudioHardwareSink>, public PortaudioSink {
+class AudioHardwareSink : public CenterSinkPolling<AudioHardwareSink>, public PortaudioSink {
 
 public:
 	RTTI_DECL2(AudioHardwareSink, BaseT, PortaudioSink)
@@ -94,13 +94,14 @@ public:
 
 };
 
-class AudioSplitter : public CenterSourceAsync<AudioSplitter> {
+class AudioSplitter : public CenterSourcePolling<AudioSplitter>, public SplitterBase {
 
 public:
-	RTTI_DECL1(AudioSplitter, BaseT)
+	RTTI_DECL2(AudioSplitter, BaseT, SplitterBase)
 	COPY_PANIC(AudioSplitter)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -108,13 +109,14 @@ public:
 
 };
 
-class AudioJoiner : public CenterSinkAsync<AudioJoiner> {
+class AudioJoiner : public CenterSinkPolling<AudioJoiner>, public JoinerBase {
 
 public:
-	RTTI_DECL1(AudioJoiner, BaseT)
+	RTTI_DECL2(AudioJoiner, BaseT, JoinerBase)
 	COPY_PANIC(AudioJoiner)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;

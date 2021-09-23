@@ -92,6 +92,7 @@ PortaudioSink::~PortaudioSink() {
 }
 
 bool PortaudioSink::AltInitialize(const Script::WorldState& ws) {
+	const int sink_ch_i = 0;
 	
 	//sys = GetMachine().TryGet<PortaudioSystem>();
 	//if (sys)
@@ -101,7 +102,7 @@ bool PortaudioSink::AltInitialize(const Script::WorldState& ws) {
 	obj->WhenAction << THISBACK(SinkCallback);
 	obj->OpenDefault();
 	
-	Value& sink_val = GetSink()->GetValue();
+	Value& sink_val = GetSink()->GetValue(sink_ch_i);
 	fmt = ConvertPortaudioFormat(obj->GetFormat());
 	ASSERT(fmt.IsValid());
 	sink_val.SetFormat(fmt);
@@ -131,7 +132,9 @@ void PortaudioSink::AltStorePacket(Packet& p) {
 }
 
 void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
-	Value& sink_val = GetSink()->GetValue();
+	const int sink_ch_i = 0;
+	
+	Value& sink_val = GetSink()->GetValue(sink_ch_i);
 	PacketBuffer& sink_buf = sink_val.GetBuffer();
 	
 	if (consumer.IsEmptySource())
@@ -162,7 +165,7 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 			}
 			
 			PacketsConsumed(consumer.consumed_packets);
-			PostContinueForward();
+			//PostContinueForward();
 		}
 		else {
 			#if DEBUG_RT_PIPE

@@ -38,7 +38,8 @@ void Bundle::Close() {
 
 PacketBuffer& Component::GetSinkBuffer() {
 	ASSERT(ab);
-	Value& sink_val = ab->GetSink()->GetValue();
+	const int sink_ch_i = 0;
+	Value& sink_val = ab->GetSink()->GetValue(sink_ch_i);
 	return sink_val.GetBuffer();
 }
 

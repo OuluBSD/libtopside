@@ -49,6 +49,9 @@
 #endif
 
 
+#define MAX_VDTUPLE_SIZE		8
+
+
 NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;
 NAMESPACE_TOPSIDE_END

@@ -18,7 +18,7 @@ void DummyAlt::AltForward(FwdScope& fwd) {
 
 void DummyAlt::AltStorePacket(Packet& p) {
 	InterfaceSourceRef iface_src = GetSource();
-	Format fmt = iface_src->GetSourceValue().GetFormat();
+	Format fmt = iface_src->GetSourceValue(0).GetFormat();
 	ASSERT(fmt.IsValid());
 	
 	off32 off = gen.Create();

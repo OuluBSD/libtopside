@@ -5,10 +5,15 @@ NAMESPACE_SERIAL_BEGIN
 
 bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
 	AtomTypeCls type = ((AtomBase*)this)->GetType();
-	if (type.iface.src().val == ValCls::AUDIO)
-		internal_fmt.SetAudio(DevCls::ACCEL, SoundSample::U8_LE, 2, 44100, 777);
-	else if (type.iface.src().val == ValCls::VIDEO)
-		internal_fmt.SetVideo(DevCls::ACCEL, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+	ValDevCls main_vd = type.iface.src();
+	if (main_vd.dev != DevCls::CENTER) {
+		RTLOG("RollingValueBase::AltInitialize: error: invalid device");
+		return false;
+	}
+	if (main_vd.val == ValCls::AUDIO)
+		internal_fmt.SetAudio(DevCls::CENTER, SoundSample::U8_LE, 2, 44100, 777);
+	else if (main_vd.val == ValCls::VIDEO)
+		internal_fmt.SetVideo(DevCls::CENTER, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	else
 		TODO;
 	
@@ -24,12 +29,21 @@ void RollingValueBase::AltStorePacket(Packet& p) {
 	PacketValue& pv = *p;
 	pv.SetFormat(internal_fmt);
 	
-	Vector<byte>& data = pv.Data();
-	data.SetCount(internal_fmt.GetFrameSize());
-	for(byte& dst : data)
-		dst = rolling_value++;
-	
-	time += internal_fmt.GetFrameSeconds();
+	if (internal_fmt.IsAudio()) {
+		int sz = internal_fmt.GetFrameSize();
+		Vector<byte>& data = pv.Data();
+		data.SetCount(sz);
+		for(byte& dst : data)
+			dst = rolling_value++;
+		
+		time += internal_fmt.GetFrameSeconds();
+	}
+	else if (internal_fmt.IsVideo()) {
+		TODO
+	}
+	else {
+		Panic("invalid internal format");
+	}
 }
 
 
@@ -40,11 +54,17 @@ bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
+void VoidSinkBase::AltUninitialize() {
+	flag.Stop();
+}
+
 void VoidSinkBase::IntervalSinkProcess() {
 	RTLOG("VoidSinkBase::IntervalSinkProcess: starts");
 	
+	const int sink_ch_i = 0;
+	
 	InterfaceSinkRef sink = GetSink();
-	Value& sink_value = sink->GetValue();
+	Value& sink_value = sink->GetValue(sink_ch_i);
 	Serial::Format fmt = sink_value.GetFormat();
 	Serial::AudioFormat& afmt = fmt;
 	Vector<byte> data;

@@ -9,7 +9,6 @@
 #define NAMESPACE_SERIAL_END	}}
 
 
-#define MAX_VDTUPLE_SIZE		8
 
 #include "Generated.h"
 #include "Types.h"

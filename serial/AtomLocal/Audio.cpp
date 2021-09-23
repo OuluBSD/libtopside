@@ -23,7 +23,9 @@ bool AudioGenBase::AltInitialize(const Script::WorldState& ws) {
 	else
 		gen.GenerateStereoSine(fmt);
 	
-	Value& src_val = GetSource()->GetSourceValue();
+	const int src_ch_i = 0;
+	
+	Value& src_val = GetSource()->GetSourceValue(src_ch_i);
 	src_val.SetFormat(fmt);
 	return true;
 }

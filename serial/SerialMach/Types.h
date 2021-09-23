@@ -290,6 +290,10 @@ struct ValDevTuple : Moveable<ValDevTuple> {
 	ValDevTuple(const ValDevTuple& v) : count(0) {*this = v;}
 	
 	
+	
+	int GetCount() const {return count;}
+	
+	
 	ValDevCls&       operator[](int i)       {ASSERT(i >= 0 && i < count && count <= MAX_VDS); return vd[i];}
 	const ValDevCls& operator[](int i) const {ASSERT(i >= 0 && i < count && count <= MAX_VDS); return vd[i];}
 	ValDevCls&       operator()()            {ASSERT(count >= 1); return vd[0];}

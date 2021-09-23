@@ -155,7 +155,9 @@ bool VideoGenBase::AltInitialize(const Script::WorldState& ws) {
 	else
 		gen.GenerateNoise(fmt);
 	
-	Value& src_val = GetSource()->GetSourceValue();
+	const int src_ch_i = 0;
+	
+	Value& src_val = GetSource()->GetSourceValue(src_ch_i);
 	src_val.SetFormat(fmt);
 	return true;
 }
@@ -209,7 +211,9 @@ bool AccelVideoGenBase::AltInitialize(const Script::WorldState& ws) {
 	else
 		gen.GenerateNoise(fmt);
 	
-	Value& src_val = GetSource()->GetSourceValue();
+	const int src_ch_i = 0;
+	
+	Value& src_val = GetSource()->GetSourceValue(src_ch_i);
 	src_val.SetFormat(fmt);
 	return true;
 }

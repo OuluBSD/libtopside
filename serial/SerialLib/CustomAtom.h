@@ -21,7 +21,7 @@ public:
 	COPY_PANIC(CustomerBaseT)
 	
 	using BaseT = CustomerBaseT<T>;
-	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
+	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		AtomBase::packets_forwarded = 0;
@@ -55,9 +55,12 @@ public:
 		DefaultInterfaceSourceRef src = AtomT::GetSource();
 		ASSERT(src);
 		if (src) {
-			Stream& str = src->GetStream();
-			Value& val = str.Get();
-			customer->cfg.Update(dt, val.IsQueueFull());
+			int count = src->GetSourceCount();
+			for(int i = 0; i < count; i++) {
+				Stream& str = src->GetStream(i);
+				Value& val = str.Get();
+				customer->cfg.Update(dt, val.IsQueueFull());
+			}
 		}
 	}
 	
@@ -83,7 +86,7 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override {return true;}
 	void Uninitialize() override {}
-	void Forward(FwdScope& fwd) override {}
+	//void Forward(FwdScope& fwd) override {}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
@@ -133,6 +136,35 @@ public:
 	bool Initialize(const Script::WorldState& ws) override {return true;}
 	void Uninitialize() override {}
 
+	
+};
+
+template <class T>
+class CenterSourcePolling : public Atom<T> {
+	
+protected:
+	
+	using AtomT = Atom<T>;
+	
+public:
+	typedef CenterSourcePolling CLASSNAME;
+	using BaseT = CenterSourcePolling<T>;
+	RTTI_DECL1(CenterSourcePolling, AtomT)
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(r);
+		return true;
+	}
+	void Uninitialize() override {
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(r);
+	}
+	void Forward(FwdScope& fwd) override {this->AltForward(fwd);}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	
 };
 
@@ -208,7 +240,7 @@ public:
 		customer->cfg.Update(dt, true);
 	}
 	
-	RealtimeSourceConfig& GetConfig() override {ASSERT(customer); return customer->cfg;}
+	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	
 };
 

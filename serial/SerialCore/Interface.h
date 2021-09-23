@@ -11,114 +11,153 @@ class InterfaceContainer : RTTIBase {
 public:
 	using Class = T;
 	
-	
-	struct LocalValue : public SimpleValue {
-		Class& par;
+	struct Item {
+		struct LocalValue : public SimpleValue {
+			Class& par;
+			
+			RTTI_DECL1(LocalValue, SimpleValue)
+			LocalValue(Class* par) : par(*par) {}
+			void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleValue>(this);}
+		};
 		
-		RTTI_DECL1(LocalValue, SimpleValue)
-		LocalValue(Class* par) : par(*par) {}
-		void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleValue>(this);}
+		struct LocalBufferedValue : public SimpleBufferedValue {
+			Class& par;
+			
+			RTTI_DECL1(LocalBufferedValue, SimpleBufferedValue)
+			LocalBufferedValue(Class* par) : par(*par) {}
+			void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleBufferedValue>(this);}
+		};
+		
+		struct LocalBufferedStream : public SimpleBufferedStream {
+			Class& par;
+			
+			RTTI_DECL1(LocalBufferedStream, SimpleBufferedStream)
+			LocalBufferedStream(Class* par, SimpleBufferedValue& value) :
+				par(*par),
+				SimpleBufferedStream(value) {}
+			
+			void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleBufferedStream>(this);}
+			bool	IsOpen() const override {TODO}
+			bool	Open(int fmt_idx) override {TODO}
+			void	Close() override {TODO}
+			bool	IsEof() override {TODO}
+			bool	ReadFrame() override {TODO}
+			bool	ProcessFrame() override {TODO}
+			bool	ProcessOtherFrame() override {TODO}
+			void	ClearPacketData() override {TODO}
+		};
+		
+		struct LocalStream : public SimpleStream {
+			Class& par;
+			
+			RTTI_DECL1(LocalStream, SimpleStream)
+			LocalStream(Class* par, SimpleValue& value) :
+				par(*par),
+				SimpleStream(value) {}
+			void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleStream>(this);}
+			
+		};
+		
+		struct BufferedOutput : RTTIBase {
+			LocalBufferedValue value;
+			LocalBufferedStream stream;
+			
+			RTTI_DECL0(BufferedOutput)
+			BufferedOutput(Class* par) : value(par), stream(par, value) {}
+			~BufferedOutput() {value.ClearBuffer();}
+			void Clear() {value.Clear(); stream.Clear();}
+			void Visit(RuntimeVisitor& vis) {vis % value % stream;}
+		};
+		
+		struct Output : RTTIBase {
+			LocalValue value;
+			LocalStream stream;
+			
+			RTTI_DECL0(Output)
+			Output(Class* par) : value(par), stream(par, value) {}
+			void Clear() {value.Clear(); stream.Clear();}
+			void Visit(RuntimeVisitor& vis) {vis % value % stream;}
+		};
+		
+		
+		void ClearContainer() {
+			GetContainerStream().Clear();
+		}
+		
+		Value& GetContainerValue() {
+			return val.IsEmpty() ? (Value&)val_buf->value : (Value&)val->value;
+		}
+		
+		Stream& GetContainerStream() {
+			return val.IsEmpty() ? (Stream&)val_buf->stream : (Stream&)val->stream;
+		}
+		
+		void InitializeContainer(Class* c, ValDevTuple vt) {
+			ValDevCls vd = vt();
+			ASSERT(vd.IsValid());
+			Format val_fmt = GetDefaultFormat(vd);
+			ASSERT(val_fmt.IsValid());
+			
+			if (vd.val == ValCls::AUDIO)
+				val_buf.Create(c);
+			else
+				val.Create(c);
+			
+			GetContainerValue().SetFormat(val_fmt);
+		}
+		
+		void UninitializeContainer() {
+			if (val) val->Clear();
+			if (val_buf) val_buf->Clear();
+			val.Clear();
+			val_buf.Clear();
+		}
+		
+		One<Output>				val;
+		One<BufferedOutput>		val_buf;
 	};
 	
-	struct LocalBufferedValue : public SimpleBufferedValue {
-		Class& par;
-		
-		RTTI_DECL1(LocalBufferedValue, SimpleBufferedValue)
-		LocalBufferedValue(Class* par) : par(*par) {}
-		void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleBufferedValue>(this);}
-	};
 	
-	struct LocalBufferedStream : public SimpleBufferedStream {
-		Class& par;
-		
-		RTTI_DECL1(LocalBufferedStream, SimpleBufferedStream)
-		LocalBufferedStream(Class* par, SimpleBufferedValue& value) :
-			par(*par),
-			SimpleBufferedStream(value) {}
-		
-		void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleBufferedStream>(this);}
-		bool	IsOpen() const override {TODO}
-		bool	Open(int fmt_idx) override {TODO}
-		void	Close() override {TODO}
-		bool	IsEof() override {TODO}
-		bool	ReadFrame() override {TODO}
-		bool	ProcessFrame() override {TODO}
-		bool	ProcessOtherFrame() override {TODO}
-		void	ClearPacketData() override {TODO}
-	};
-	
-	struct LocalStream : public SimpleStream {
-		Class& par;
-		
-		RTTI_DECL1(LocalStream, SimpleStream)
-		LocalStream(Class* par, SimpleValue& value) :
-			par(*par),
-			SimpleStream(value) {}
-		void Visit(RuntimeVisitor& vis) {vis.VisitThis<SimpleStream>(this);}
-		
-	};
-	
-	struct BufferedOutput : RTTIBase {
-		LocalBufferedValue value;
-		LocalBufferedStream stream;
-		
-		RTTI_DECL0(BufferedOutput)
-		BufferedOutput(Class* par) : value(par), stream(par, value) {}
-		~BufferedOutput() {value.ClearBuffer();}
-		void Clear() {value.Clear(); stream.Clear();}
-		void Visit(RuntimeVisitor& vis) {vis % value % stream;}
-	};
-	
-	struct Output : RTTIBase {
-		LocalValue value;
-		LocalStream stream;
-		
-		RTTI_DECL0(Output)
-		Output(Class* par) : value(par), stream(par, value) {}
-		void Clear() {value.Clear(); stream.Clear();}
-		void Visit(RuntimeVisitor& vis) {vis % value % stream;}
-	};
-	
-	One<Output>				val;
-	One<BufferedOutput>		val_buf;
-	
+	Array<Item>	items;
 	
 	
 public:
 	RTTI_DECL0(InterfaceContainer<T>)
 	void Visit(RuntimeVisitor& vis) {}
 	
-	void ClearContainer() {
-		GetContainerStream().Clear();
+	
+	int GetContainerCount() const {return items.GetCount();}
+	
+	void ClearContainer(int i) {
+		GetContainerStream(i).Clear();
 	}
 	
-	Value& GetContainerValue() {
-		return val.IsEmpty() ? (Value&)val_buf->value : (Value&)val->value;
+	Value& GetContainerValue(int i) {
+		return items[i].GetContainerValue();
 	}
 	
-	Stream& GetContainerStream() {
-		return val.IsEmpty() ? (Stream&)val_buf->stream : (Stream&)val->stream;
+	Stream& GetContainerStream(int i) {
+		return items[i].GetContainerStream();
 	}
 	
-	void InitializeContainer(Class* c, ValDevTuple vt) {
-		ValDevCls vd = vt();
-		ASSERT(vd.IsValid());
-		Format val_fmt = GetDefaultFormat(vd);
-		ASSERT(val_fmt.IsValid());
-		
-		if (vd.val == ValCls::AUDIO)
-			val_buf.Create(c);
-		else
-			val.Create(c);
-		
-		GetContainerValue().SetFormat(val_fmt);
+	void SetContainerCount(int c) {items.SetCount(c);}
+	
+	void InitializeContainer(int i, Class* c, ValDevTuple vt) {
+		items[i].InitializeContainer(c, vt);
 	}
 	
-	void UninitializeContainer() {
-		if (val) val->Clear();
-		if (val_buf) val_buf->Clear();
-		val.Clear();
-		val_buf.Clear();
+	void UninitializeContainer(int i) {
+		items[i].UninitializeContainer();
+	}
+	
+	void ClearContainers() {
+		for (Item& it : items)
+			it.ClearContainer();
+	}
+	
+	void UninitializeContainers() {
+		for (Item& it : items)
+			it.UninitializeContainer();
 	}
 	
 };
@@ -156,8 +195,9 @@ public:
 		vis.VisitThis<ExchangeSinkProvider>(this);
 	}
 	
-	virtual Value&				GetValue() = 0;
+	virtual Value&				GetValue(int i) = 0;
 	virtual void				ClearSink() = 0;
+	virtual int					GetSinkCount() const = 0;
 	
 };
 
@@ -185,8 +225,9 @@ public:
 	}
 	
 	virtual void				ClearSource() = 0;
-	virtual Stream&				GetStream() = 0;
-	virtual Value&				GetSourceValue() = 0;
+	virtual Stream&				GetStream(int i) = 0;
+	virtual Value&				GetSourceValue(int i) = 0;
+	virtual int					GetSourceCount() const = 0;
 	
 protected:
 	
@@ -216,7 +257,7 @@ public:
 	DefaultInterfaceSink() {}
 	
 	bool Initialize();
-	void Uninitialize() {UninitializeContainer();}
+	void Uninitialize() {UninitializeContainers();}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSink>(this);
@@ -225,10 +266,11 @@ public:
 	
 	//TypeCls GetTypeCls() override {return TypeId(AsTypeCls<ValDevSpec>());}
 	
-	Value&						GetSinkValue()       {return GetContainerValue();}
+	Value&						GetSinkValue(int i)       {return GetContainerValue(i);}
 	
-	virtual void				ClearSink() override {ClearContainer();}
-	virtual Value&				GetValue() override {return GetContainerValue();}
+	virtual void				ClearSink() override {ClearContainers();}
+	virtual Value&				GetValue(int i) override {return GetContainerValue(i);}
+	virtual int					GetSinkCount() const override {return GetSinkCount();}
 	
 };
 
@@ -253,7 +295,7 @@ public:
 	DefaultInterfaceSource() {}
 	
 	bool Initialize();
-	void Uninitialize() {UninitializeContainer();}
+	void Uninitialize() {UninitializeContainers();}
 	
 	void Visit(RuntimeVisitor& vis) {
 		vis.VisitThis<InterfaceSource>(this);
@@ -271,9 +313,10 @@ public:
 	void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}*/
 	
 	//DevCls						GetDevSpec() const override;// {return AsTypeCls<DevSpec>();}
-	virtual void				ClearSource() override {ClearContainer();}
-	virtual Stream&				GetStream() override {return GetContainerStream();}
-	Value&						GetSourceValue() override {return GetContainerValue();}
+	virtual void				ClearSource() override {ClearContainers();}
+	virtual Stream&				GetStream(int i) override {return GetContainerStream(i);}
+	virtual int					GetSourceCount() const override {return GetContainerCount();}
+	Value&						GetSourceValue(int i) override {return GetContainerValue(i);}
 	
 };
 

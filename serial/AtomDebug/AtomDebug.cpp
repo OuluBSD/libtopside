@@ -65,7 +65,7 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 					path = ShareDirFile(AppendFileName("eon", script_file));
 				DUMP(path);
 				String script_str = LoadFile(path);
-				script_str.DebugFollow();
+				//script_str.DebugFollow();
 				if (script_str.IsEmpty()) {
 					LOG("No script file in " << path);
 					return;

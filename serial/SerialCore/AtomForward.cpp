@@ -10,8 +10,9 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	
 	#ifdef flagDEBUG
-	int pre_sink_packet_count = GetSink()->GetValue().GetQueueSize();
-	int pre_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
+	int ch_i = 0;
+	int pre_sink_packet_count = GetSink()->GetValue(ch_i).GetQueueSize();
+	int pre_src_packet_count = GetSource()->GetStream(ch_i).Get().GetQueueSize();
 	int pre_consumed = consumed_packets.GetCount();
 	int pre_consumed_partial = IsConsumedPartialPacket();
 	int pre_total =
@@ -28,15 +29,15 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		case SOURCE:		ForwardSource(fwd);		break;
 		case SINK:			ForwardSink(fwd);		break;
 		case CONVERTER:		ForwardSource(fwd);		break;
-		//case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
-		//case SIDE_SINK:		ForwardSideSink(fwd);	break;
+		case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
+		case SIDE_SINK:		ForwardSideSink(fwd);	break;
 		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
 	}
 	
 	
 	#ifdef flagDEBUG
-	int post_sink_packet_count = GetSink()->GetValue().GetQueueSize();
-	int post_src_packet_count = GetSource()->GetStream().Get().GetQueueSize();
+	int post_sink_packet_count = GetSink()->GetValue(ch_i).GetQueueSize();
+	int post_src_packet_count = GetSource()->GetStream(ch_i).Get().GetQueueSize();
 	int post_consumed = consumed_packets.GetCount();
 	int post_consumed_partial = IsConsumedPartialPacket();
 	int post_total =
@@ -49,10 +50,12 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		pre_consumed == 0 && post_consumed == 0 &&
 		pre_consumed_partial == 1 && post_consumed_partial == 0;
 	if (type.role != CUSTOMER) {
+		bool is_buffered_consumer = type.iface.content.val == ValCls::AUDIO; // todo: other value formats
 		ASSERT_(
 			dbg_async_race ||
 			pre_total == post_total ||
-			consumed_only_partial,
+			consumed_only_partial ||
+			is_buffered_consumer,
 			"Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
 		/*
 		On fail:
@@ -71,11 +74,14 @@ void AtomBase::ForwardCustomer(FwdScope& fwd) {
 	ASSERT(p);
 	if (!p) return;
 	
+	const int src_ch_i = 0;
+	const int sink_ch_i = 0;
+	
 	CustomerData& c = *p;
 	
 	int read_i = fwd.GetPos();
 	if (read_i == 0) {
-		Value& src_value = GetSource()->GetSourceValue();
+		Value& src_value = GetSource()->GetSourceValue(src_ch_i);
 		
 		if (src_value.IsQueueFull()) {
 			RTLOG("AtomBase::ForwardCustomer: skipping order, because queue is full");
@@ -115,7 +121,7 @@ void AtomBase::ForwardCustomer(FwdScope& fwd) {
 		packets_forwarded++;
 	}
 	else {
-		Value& sink_value = GetSink()->GetValue();
+		Value& sink_value = GetSink()->GetValue(sink_ch_i);
 		
 		PacketBuffer& buf = sink_value.GetBuffer();
 		for (Packet& p : buf) {
@@ -136,10 +142,13 @@ void AtomBase::ForwardCustomer(FwdScope& fwd) {
 }
 
 void AtomBase::ForwardSource(FwdScope& fwd) {
+	const int sink_ch_i = 0;
+	
+	Forward(fwd);
 	
 	// From source
 	InterfaceSinkRef iface_sink = GetSink();
-	Value& sink_val = iface_sink->GetValue();
+	Value& sink_val = iface_sink->GetValue(sink_ch_i);
 	SimpleBufferedValue* sink_buf_val;
 	SimpleValue* sink_sval;
 	PacketBuffer* sink_buf;
@@ -156,10 +165,11 @@ void AtomBase::ForwardSource(FwdScope& fwd) {
 
 
 void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
+	const int src_ch_i = 0;
 	
 	// To sink
 	InterfaceSourceRef iface_src = GetSource();
-	Value& val = iface_src->GetStream().Get();
+	Value& val = iface_src->GetStream(src_ch_i).Get();
 	SimpleValue* sval;
 	SimpleBufferedValue* sbcal;
 	PacketBuffer* pbuf;
@@ -172,7 +182,7 @@ void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	else TODO
 	
 	RTLOG("AtomBase::ForwardSource: pre sink=" << sink_buf.GetCount() << ", src=" << val.GetBuffer().GetCount());
-	Format fmt = iface_src->GetSourceValue().GetFormat();
+	Format fmt = val.GetFormat();
 	
 	while (sink_buf.GetCount() && !val.IsQueueFull()) {
 		if (!IsReady(fmt.vd))
@@ -254,28 +264,26 @@ void AtomBase::ForwardSink(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }*/
 
-#if 0
+
 void AtomBase::ForwardSideSink(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	
-	Forward(fwd);
+	const int sink_ch_i = 0;
+	const int src_ch_i = 0;
+	const int side_sink_ch_i = 1;
 	
-	Value& sink_value = GetSink()->GetValue();
+	Forward(fwd);
+
+	Value& sink_value = GetSink()->GetValue(sink_ch_i);
 	auto& sink_buf = sink_value.GetBuffer();
 	Format sink_fmt = sink_value.GetFormat();
 	
-	InterfaceSideSinkRef side_sink = GetSideSink();
-	ASSERT(side_sink);
-	if (!side_sink) return;
-
-	Value* side_sink_value = side_sink->GetSideValue();
-	ASSERT(side_sink_value);
-	if (!side_sink_value) return;
-	auto& side_sink_buf = side_sink_value->GetBuffer();
-	Format side_sink_fmt = side_sink_value->GetFormat();
+	Value& side_sink_value = GetSink()->GetValue(side_sink_ch_i);
+	auto& side_sink_buf = side_sink_value.GetBuffer();
+	Format side_sink_fmt = side_sink_value.GetFormat();
 	
-	Value& src_value = GetSource()->GetSourceValue();
+	Value& src_value = GetSource()->GetSourceValue(src_ch_i);
 	auto& src_buf = src_value.GetBuffer();
 	Format src_fmt = src_value.GetFormat();
 	
@@ -310,23 +318,21 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
 	
+	const int sink_ch_i = 0;
+	const int side_src_ch_i = 1;
+	const int side_sink_ch_i = 1;
+	
 	Forward(fwd);
 	
-	Value& sink_value = GetSink()->GetValue();
+	Value& sink_value = GetSink()->GetValue(sink_ch_i);
 	auto& sink_buf = sink_value.GetBuffer();
 	
-	InterfaceSideSourceRef side_src = GetSideSource();
-	ASSERT(side_sink_conn);
-	InterfaceSideSinkRef side_sink = side_sink_conn->GetSideSink();
-	ASSERT(side_sink);
-	//LOG(HexStr((void*)this) << " side_sink = " << HexStr(side_sink.Get()));
+	InterfaceSinkRef side_sink_iface = side_sink_conn.First()->GetSink();
+	Value& side_sink_value = side_sink_iface->GetValue(side_sink_ch_i);
+	auto& side_sink_buf = side_sink_value.GetBuffer();
+	Format side_sink_fmt = side_sink_value.GetFormat();
 	
-	Value* side_sink_value = side_sink->GetSideValue();
-	ASSERT(side_sink_value);
-	auto& side_sink_buf = side_sink_value->GetBuffer();
-	Format side_sink_fmt = side_sink_value->GetFormat();
-	
-	while (sink_buf.GetCount() && !side_sink_value->IsQueueFull()) {
+	while (sink_buf.GetCount() && !side_sink_value.IsQueueFull()) {
 		Packet in = sink_buf.First();
 		sink_buf.RemoveFirst();
 		
@@ -350,12 +356,14 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }
 
-#endif
 
 void AtomBase::ForwardVoidSink(FwdScope& fwd) {
-	Value& src_value = GetSource()->GetSourceValue();
-	Stream& src_stream = GetSource()->GetStream();
-	Value& sink_value = GetSink()->GetValue();
+	const int src_ch_i = 0;
+	const int sink_ch_i = 0;
+	
+	Value& src_value = GetSource()->GetSourceValue(src_ch_i);
+	Stream& src_stream = GetSource()->GetStream(src_ch_i);
+	Value& sink_value = GetSink()->GetValue(sink_ch_i);
 	auto& sink_buf = sink_value.GetBuffer();
 	auto& src_buf = src_value.GetBuffer();
 	RealtimeSourceConfig& cfg = fwd.Cfg();
@@ -390,8 +398,11 @@ void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 }
 
 bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
-	Value& sink_value = GetSink()->GetValue();
-	Value& src_value = GetSource()->GetSourceValue();
+	const int src_ch_i = 0;
+	const int sink_ch_i = 0;
+	
+	Value& sink_value = GetSink()->GetValue(sink_ch_i);
+	Value& src_value = GetSource()->GetSourceValue(src_ch_i);
 	
 	if (consumer.IsEmptySource())
 		consumer.SetSource(sink_value.GetBuffer());
@@ -428,7 +439,8 @@ bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 			}
 			
 			PacketsConsumed(consumer.consumed_packets);
-			PostContinueForward();
+			//PostContinueForward();
+			
 			
 			/*off32 end_offset = consumer.GetOffset();
 			off32 diff = off32::GetDifference(begin_offset, end_offset);

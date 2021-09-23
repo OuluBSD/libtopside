@@ -54,7 +54,9 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	DefaultInterfaceSinkRef sink = this->Sink();
 	ASSERT(sink);
 	
-	Value& to_val = sink->GetValue();
+	int ch_i = 0;
+	
+	Value& to_val = sink->GetValue(ch_i );
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
 		ValDevTuple vd = sink->GetSinkCls();
@@ -78,6 +80,9 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 }
 
 void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
+	const int src_ch_i = 0;
+	const int sink_ch_i = 0;
+	
 	WhenEnterValExPtForward(*this);
 	
 	RTLOG("DefaultExchangePoint::Forward: " << GetDynamicName() << "(" << HexStr(this) << ") begin");
@@ -85,7 +90,7 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 	Ref<DefaultInterfaceSink>	sink		= this->sink;
 	
 	
-	Stream& src_stream = src->GetStream();
+	Stream& src_stream = src->GetStream(src_ch_i);
 	//src->BeginStream();
 	
 	Ex ex(this);
@@ -94,7 +99,7 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 	int src_sz = src_value.GetQueueSize();
 	
 	if (src_sz) {
-		Value& sink_value = sink->GetValue();
+		Value& sink_value = sink->GetValue(sink_ch_i);
 		bool sink_full = sink_value.IsQueueFull();
 		
 		if (!sink_full) {RTLOG("ExchangePoint::Forward: exchanging");}
@@ -180,7 +185,9 @@ bool DefaultInterfaceSink::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	InitializeContainer(this, type.iface.sink);
+	SetContainerCount(type.iface.sink.count);
+	for(int i = 0; i < type.iface.sink.count; i++)
+		InitializeContainer(i, this, type.iface.sink.vd[i]);
 	
 	return true;
 }
@@ -190,7 +197,9 @@ bool DefaultInterfaceSource::Initialize() {
 	AtomTypeCls type = ab->GetType();
 	ASSERT(type.IsValid());
 	
-	InitializeContainer(this, type.iface.src);
+	SetContainerCount(type.iface.src.count);
+	for(int i = 0; i < type.iface.src.count; i++)
+		InitializeContainer(i, this, type.iface.src.vd[i]);
 	
 	return true;
 }

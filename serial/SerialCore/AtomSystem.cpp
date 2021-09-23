@@ -19,12 +19,16 @@ void AtomSystem::Start() {
 void AtomSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms) {
 	int dbg_i = 0;
 	for (AtomBaseRef& c : atoms) {
+		RealtimeSourceConfig* cfg = c->GetConfig();
+		if (!cfg)
+			continue;
+		
 		RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " (" << c->ToString() << ")");
 		
 		WhenEnterAtomForward(&*c);
 		
 		int dbg_j = 0;
-		for (FwdScope scope(*c, c->GetConfig()); scope; scope++) {
+		for (FwdScope scope(*c, *cfg); scope; scope++) {
 			RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
 			WhenEnterFwdScopeForward(scope);
 			

@@ -26,7 +26,9 @@ void SDL2SwScreenBase::AltUpdate(double dt) {
 }
 
 void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
-	PacketBuffer& sink_buf = this->GetSink()->GetValue().GetBuffer();
+	const int sink_ch_i = 0;
+	
+	PacketBuffer& sink_buf = this->GetSink()->GetValue(sink_ch_i).GetBuffer();
 	if (sink_buf.IsEmpty()) return;
 	
 	RTLOG("SDL2SwScreenBase::AltForward: frame_age: " << frame_age);
@@ -46,7 +48,7 @@ void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
 				break;
 		}
 		
-		PostContinueForward();
+		//PostContinueForward();
 	}
 	else {
 		RTLOG("SDL2SwScreenBase::AltForward: wait");

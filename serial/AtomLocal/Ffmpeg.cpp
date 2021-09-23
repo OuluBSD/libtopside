@@ -77,7 +77,9 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 	
 	mode = INVALID_MODE;
 	
-	file_in.SetFormat(GetSource()->GetSourceValue().GetFormat());
+	const int src_ch_i = 0;
+	
+	file_in.SetFormat(GetSource()->GetSourceValue(src_ch_i).GetFormat());
 	// TODO side-connection format
 	
 	if (file_in.OpenFile(path)) {

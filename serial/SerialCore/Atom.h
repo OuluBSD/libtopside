@@ -61,8 +61,8 @@ protected:
 	void					ForwardSource(FwdScope& fwd);
 	void					ForwardSink(FwdScope& fwd);
 	void					ForwardConverter(FwdScope& fwd);
-	//void					ForwardSideSink(FwdScope& fwd);
-	//void					ForwardSideSource(FwdScope& fwd);
+	void					ForwardSideSink(FwdScope& fwd);
+	void					ForwardSideSource(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	
@@ -104,7 +104,7 @@ public:
 	virtual void StorePacket(Packet& p) {AltStorePacket(p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}
-	virtual RealtimeSourceConfig& GetConfig() {if (last_cfg) return *last_cfg; Panic("Unimplemented"); NEVER();}
+	virtual RealtimeSourceConfig* GetConfig() {return last_cfg;}
 	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual void AddPlan(Script::Plan& sp) {}
 	
@@ -115,7 +115,8 @@ public:
 	const Vector<int>&		GetSideSources() const {return side_src;}
 	//int						GetSideSinkId(int i) {return side_sink[i];}
 	//int						GetSideSrcId(int i) {return side_src[i];}
-	//AtomBaseRef				GetLinkedSideSink() {return side_sink_conn;}
+	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First();}
+	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First();}
 	void					AddSideSinkId(int i) {side_sink.Add(i);}
 	void					AddSideSrcId(int i) {side_src.Add(i);}
 	bool					LinkSideSink(AtomBaseRef sink);
@@ -124,7 +125,13 @@ public:
 	void					PacketConsumed(const Packet& p);
 	void					PacketsConsumed(const LinkedList<Packet>& v);
 	
-	//static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("The class have not implemented MakeSide"); return SIDE_NOT_ACCEPTED;}
+	static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {
+		ValDevCls common_vd = from_type.iface.src.GetCommon(to_type.iface.sink);
+		if (common_vd.IsValid())
+			return SIDE_ACCEPTED;
+		else
+			return SIDE_NOT_ACCEPTED;
+	}
 	
 	//ValCls GetValSpec() const {return GetType().iface.side.val;}
 	//bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
@@ -134,7 +141,7 @@ public:
 	Machine& GetMachine();
 	void UninitializeDeep();
 	void PostContinueForward();
-	
+	String GetInlineConnectionsString() const;
 	
 public:
 	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarder)

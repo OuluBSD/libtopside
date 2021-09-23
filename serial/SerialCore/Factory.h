@@ -64,7 +64,7 @@ public:
 	template <class T> static AtomBase* CreateAtom() {return new T();}
 	template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
 	//template <class T> static bool MakeExtAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
-	//template <class T> static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
+	template <class T> static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {return T::MakeSide(from_type, from, to_type, to);}
 	
 	template <class T> static void RegisterAtom() {
 		AtomTypeCls cls = T::GetAtomType();

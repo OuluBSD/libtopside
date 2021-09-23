@@ -7,7 +7,7 @@ NAMESPACE_SERIAL_BEGIN
 class RollingValueBase :
 	virtual public AtomBase
 {
-	int					rolling_value = 0;
+	byte				rolling_value = 0;
 	double				time = 0;
 	Serial::Format		internal_fmt;
 	
@@ -24,7 +24,7 @@ public:
 class VoidSinkBase :
 	virtual public AtomBase
 {
-	int					rolling_value = 0;
+	byte				rolling_value = 0;
 	Serial::Format		internal_fmt;
 	RunningFlag			flag;
 	
@@ -33,7 +33,9 @@ public:
 	typedef VoidSinkBase CLASSNAME;
 	~VoidSinkBase() {ASSERT(!flag.IsRunning());}
 	bool AltInitialize(const Script::WorldState& ws) override;
+	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
+	void AltStorePacket(Packet& p) override {} // required pass
 	void IntervalSinkProcess() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	

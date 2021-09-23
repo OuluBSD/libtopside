@@ -1,8 +1,7 @@
 chain tester: {
 	
 	loop output: {
-		customer.test.output: true;
-		center.audio.src: true;
+		center.customer: true;
 		center.audio.src.test: true;
 		center.audio.side.src: true;
 		center.audio.side.src.center: true;
@@ -10,7 +9,7 @@ chain tester: {
 	};
 	
 	loop input: {
-		customer.test.input: true;
+		center.customer: true;
 		center.audio.side.sink: true;
 		center.audio.side.sink.center: true;
 		center.audio.sink.test.realtime: true;

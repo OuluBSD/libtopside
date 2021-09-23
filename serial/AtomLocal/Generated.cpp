@@ -42,7 +42,7 @@ AtomTypeCls TestRealtimeSink::GetAtomType()
 
 void TestRealtimeSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkSync<TestRealtimeSink>>(this);
+	vis.VisitThis<CenterSinkPolling<TestRealtimeSink>>(this);
 	vis.VisitThis<VoidSinkBase>(this);
 }
 
@@ -58,7 +58,7 @@ AtomTypeCls AudioHardwareSink::GetAtomType()
 
 void AudioHardwareSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkAsync<AudioHardwareSink>>(this);
+	vis.VisitThis<CenterSinkPolling<AudioHardwareSink>>(this);
 	vis.VisitThis<PortaudioSink>(this);
 }
 
@@ -101,12 +101,13 @@ AtomTypeCls AudioDbgSrc::GetType() const
 
 AtomTypeCls AudioSplitter::GetAtomType()
 {
-	return ATOM12(AUDIO_SPLITTER, SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+	return ATOM12(AUDIO_SPLITTER, SIDE_SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
 }
 
 void AudioSplitter::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<AudioSplitter>>(this);
+	vis.VisitThis<CenterSourcePolling<AudioSplitter>>(this);
+	vis.VisitThis<SplitterBase>(this);
 }
 
 AtomTypeCls AudioSplitter::GetType() const
@@ -116,12 +117,13 @@ AtomTypeCls AudioSplitter::GetType() const
 
 AtomTypeCls AudioJoiner::GetAtomType()
 {
-	return ATOM21(AUDIO_JOINER, SINK, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+	return ATOM21(AUDIO_JOINER, SIDE_SINK, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
 }
 
 void AudioJoiner::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkAsync<AudioJoiner>>(this);
+	vis.VisitThis<CenterSinkPolling<AudioJoiner>>(this);
+	vis.VisitThis<JoinerBase>(this);
 }
 
 AtomTypeCls AudioJoiner::GetType() const
