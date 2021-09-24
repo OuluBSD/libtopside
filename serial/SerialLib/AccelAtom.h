@@ -30,6 +30,31 @@ public:
 };
 
 template <class T>
+class AccelSourcePolling : public Atom<T> {
+	
+protected:
+	
+	using AtomT = Atom<T>;
+	
+public:
+	using BaseT = AccelSourcePolling<T>;
+	RTTI_DECL1(AccelSourcePolling, AtomT)
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
+		return true;
+	}
+	void Uninitialize() override {
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(AtomBase::AsRefT());
+	}
+	void Forward(FwdScope& fwd) override {this->AltForward(fwd);}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+};
+
+template <class T>
 class AccelSourceAsync : public Atom<T> {
 	
 protected:

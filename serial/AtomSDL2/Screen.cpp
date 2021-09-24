@@ -10,6 +10,10 @@ NAMESPACE_SERIAL_BEGIN
 bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
+	
+	obj->SetShaderFile(ws.Get(".filepath"));
+	obj->SetTestImage(ws.Get(".testimage") == "true");
+	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
 	return true;
 }

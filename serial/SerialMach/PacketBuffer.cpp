@@ -71,4 +71,21 @@ void PacketBufferBase::StorePacket(Packet& p) {
 }
 
 
+
+
+
+
+
+
+
+
+
+int PacketValue::GetSizeChannelSamples() const {
+	int div = fmt.GetArea() * fmt.GetSampleSize();
+	ASSERT(div > 0);
+	return data.GetCount() / div;
+}
+
+
+
 NAMESPACE_SERIAL_END

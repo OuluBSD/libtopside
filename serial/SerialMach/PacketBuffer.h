@@ -67,7 +67,7 @@ public:
 	bool					IsOffset(const off32& o) const {return offset.value == o.value;}
 	int						GetSizeBytes() const {return data.GetCount();}
 	int						GetSizeTotalSamples() const {return data.GetCount() / fmt.GetSampleSize();}
-	int						GetSizeChannelSamples() const {return data.GetCount() / (fmt.GetArea() * fmt.GetSampleSize());}
+	int						GetSizeChannelSamples() const;
 	void					CheckTracking(TrackerInfo info);
 	void					StopTracking(TrackerInfo info);
 	PacketId				GetTrackingId() const {return id;}

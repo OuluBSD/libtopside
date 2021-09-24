@@ -78,16 +78,16 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 	
 	Index<dword> offs;
 	for (auto& in : consumed_packets) {
-		off32 o = in->GetOffset();
-		if (offs.Find(o.value) >= 0) {
+		off32 off = in->GetOffset();
+		if (offs.Find(off.value) >= 0) {
 			// receipt is already sent
 			continue;
 		}
-		offs.Add(o.value);
+		offs.Add(off.value);
 		
-		RTLOG("AtomBase::ForwardSink: sending receipt for packet(" << o.ToString() << ")");
-		Packet to = CreatePacket(o);
-		to->SetOffset(o);
+		RTLOG("AtomBase::ForwardSink: sending receipt for packet(" << off.ToString() << ")");
+		Packet to = CreatePacket(off);
+		ASSERT(to->GetOffset() == off);
 		to->SetFormat(src_fmt);
 		
 		InternalPacketData& data = to->template SetData<InternalPacketData>();

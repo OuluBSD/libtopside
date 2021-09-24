@@ -36,6 +36,27 @@ public:
 };
 
 
+class OglShaderBase :
+	virtual public AtomBase
+{
+	OglBuffer	buf;
+	Packet		last_packet;
+	
+public:
+	OglShaderBase();
+	bool AltInitialize(const Script::WorldState& ws) override;
+	bool AltPostInitialize() override;
+	void AltUninitialize() override;
+	void AltForward(FwdScope& fwd) override;
+	bool AltIsReady(ValDevCls vd) override;
+	void LoadPacket(const Packet& p) override;
+	void AltStorePacket(Packet& p) override;
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	
+};
+
+
 NAMESPACE_SERIAL_END
 
 #endif

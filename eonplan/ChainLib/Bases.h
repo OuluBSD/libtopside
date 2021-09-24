@@ -13,6 +13,7 @@ BASE(CenterSinkPolling)
 BASE(AccelSinkPolling)
 BASE(AccelSinkAsync)
 BASE(AccelSourceAsync)
+BASE(AccelSourcePolling)
 
 BASE_FLAG(CenterDriver,				forward)
 //BASE_FLAG(CenterSourceAsync,		store_packet)

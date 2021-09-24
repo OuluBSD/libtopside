@@ -173,6 +173,8 @@ void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 	SimpleValue* sval;
 	SimpleBufferedValue* sbcal;
 	PacketBuffer* pbuf;
+	Format src_fmt = val.GetFormat();
+	
 	if ((sval = CastPtr<SimpleValue>(&val))) {
 		pbuf = &sval->GetBuffer();
 	}
@@ -197,17 +199,18 @@ void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 		RTLOG("AtomBase::ForwardSource: play packet " << off.ToString());
 		
 		Packet to = CreatePacket(off);
+		ASSERT(to->GetOffset() == off);
+		to->SetFormat(src_fmt);
 		
 		InternalPacketData& data = to->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = 1;
 		
 		if (1) {
-			WhenEnterStorePacket(*this, to);
-			
 			LoadPacket(in);
-			StorePacket(to);
 			
+			WhenEnterStorePacket(*this, to);
+			StorePacket(to);
 			WhenLeaveStorePacket(to);
 		}
 		else {

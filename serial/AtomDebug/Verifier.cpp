@@ -167,6 +167,7 @@ void MachineVerifier::OnEnterStorePacket(AtomBase& b, Packet& p) {
 	RTLOG("MachineVerifier::OnEnterStorePacket " << HexStr((void*)&b) << ", " << HexStr((void*)&*p));
 	Enter(STORE_PACKET);
 	
+	// don't add this you dumb fuck: MayLeaveTop();
 }
 
 void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
@@ -247,6 +248,9 @@ void MachineVerifier::OnLeaveStorePacket(Packet& p) {
 	if (p->Data().GetCount() &&
 		fmt.IsValid()) {
 		MayLeaveTop();
+	}
+	else {
+		ASSERT_(0, "Packet is not valid");
 	}
 	
 	Leave(STORE_PACKET);

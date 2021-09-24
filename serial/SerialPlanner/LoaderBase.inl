@@ -17,7 +17,8 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		SolveInternal();
 		CheckFlags(false);
 	}
-	else if (status == ScriptStatus::INPUT_IS_WAITING) {
+	else if (status == ScriptStatus::INPUT_IS_WAITING ||
+			 status == ScriptStatus::OUTPUT_IS_WAITING) {
 		SetError("no compatible side-source was found for side-sink");
 	}
 	else {

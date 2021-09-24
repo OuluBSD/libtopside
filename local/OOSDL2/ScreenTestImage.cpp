@@ -34,7 +34,13 @@ bool Screen::TestImageInitialize() {
 	test_image.is_win_fbo = true;
 	test_image.fb_size = screen_sz;
 	
-	test_image.SetFragmentShaderSource(def_shader);
+	if (filepath.GetCount()) {
+		if (!test_image.LoadFragmentShaderFile(filepath))
+			return false;
+	}
+	else {
+		test_image.SetFragmentShaderSource(def_shader);
+	}
 	
 	return test_image.Initialize();
 }

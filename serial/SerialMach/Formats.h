@@ -120,6 +120,7 @@ public:
 	double GetFrameSeconds() const;
 	int GetMinBufSamples() const;
 	
+	bool IsOrder() const {return vd.val == ValCls::ORDER;}
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
 	bool IsMidi()  const {return vd.val == ValCls::MIDI;}

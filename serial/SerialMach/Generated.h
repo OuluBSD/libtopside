@@ -20,9 +20,11 @@ namespace Serial {
 	ATOM_TYPE(ACCEL_VIDEO_DBG_SRC) \
 	ATOM_TYPE(ACCEL_CUSTOMER) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
+	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_SW_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
+	ATOM_TYPE(OGL_SHADER_SOURCE) \
 
 
 #define ATOM_CLASS_LIST \
@@ -38,9 +40,11 @@ namespace Serial {
 	ATOM_CLASS(AccelVideoDbgSrc) \
 	ATOM_CLASS(AccelCustomer) \
 	ATOM_CLASS(SdlContextAtom) \
+	ATOM_CLASS(SdlVideoAtomSA) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlSwVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
+	ATOM_CLASS(OglShaderSource) \
 
 
 }

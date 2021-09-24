@@ -210,6 +210,7 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_test_image = false;
+	String filepath;
 	
 	bool Open0() override;
 	void Close0() override;
@@ -231,6 +232,9 @@ public:
 	
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
+	
+	void			SetShaderFile(String filepath) {this->filepath = filepath;}
+	void			SetTestImage(bool b) {is_test_image = b;}
 	
 };
 

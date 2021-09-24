@@ -173,13 +173,13 @@ bool ScriptLoader::ImplementScript() {
 		}
 	}
 	
-	for (ScriptLoopLoader* ll : loops) {
-		if (!ll->PostInitialize())
+	for (ScriptDriverLoader* dl: drivers) {
+		if (!dl->PostInitialize())
 			return false;
 	}
 	
-	for (ScriptDriverLoader* dl: drivers) {
-		if (!dl->PostInitialize())
+	for (ScriptLoopLoader* ll : loops) {
+		if (!ll->PostInitialize())
 			return false;
 	}
 	

@@ -181,6 +181,20 @@ public:
 
 };
 
+class SdlVideoAtomSA : public AccelSinkPolling<SdlVideoAtomSA>, public SDL2ScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoAtomSA, BaseT, SDL2ScreenBase)
+	COPY_PANIC(SdlVideoAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom>, public SDL2ScreenBase {
 
 public:
@@ -224,6 +238,20 @@ public:
 
 };
 
+class OglShaderSource : public AccelSourcePolling<OglShaderSource>, public OglShaderBase {
+
+public:
+	RTTI_DECL2(OglShaderSource, BaseT, OglShaderBase)
+	COPY_PANIC(OglShaderSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.source")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
@@ -236,9 +264,11 @@ using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
 using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, RefParent1<Loop>>;
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
+using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, RefParent1<Loop>>;
 using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
 using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, RefParent1<Loop>>;
 using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
+using OglShaderSourceRef = Ref<OglShaderSource, RefParent1<Loop>>;
 }
 
 }

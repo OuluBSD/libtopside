@@ -180,13 +180,29 @@ protected:
 	
 	
 public:
+	typedef enum {
+		SAMPLE_BYTE,
+		SAMPLE_FLOAT,
+	} SampleType;
 	
+	
+	// set by user
 	bool						is_win_fbo = false;
+	bool						is_read_fb_output = false;
+	int							fb_channels = 4;
+	Size						fb_size;
+	SampleType					fb_sampletype = SAMPLE_BYTE;
+	SampleType					fb_accel_sampletype = SAMPLE_FLOAT;
+	
 	GLint						fb_type = -1;
 	GLint						fb_fmt = -1;
-	Size						fb_size;
 	int							fb_depth = 0;
 	int							fb_size_bytes = 0;
+	int							fb_sample_size = 0;
+	GLint						fb_accel_type = -1;
+	GLint						fb_accel_fmt = -1;
+	int							fb_accel_size_bytes = 0;
+	int							fb_accel_sample_size = 0;
 	Vector<byte>				fb_out;
 	
 	double						time_total = 0;
@@ -199,8 +215,11 @@ public:
 	dword						time_us = 0;
 	Time						time;
 	
+	
+	
 public:
 	
+	bool				LoadFragmentShaderFile(String filepath);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
 	
 	bool				Initialize();
@@ -217,7 +236,7 @@ public:
 	void				SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg);
 	void				ClearTex();
 	void				ClearProg();
-	void				CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat);
+	void				CreateTex(bool create_depth, bool create_fbo, int filter, int repeat);
 	GLint				GetInputTex(int input_i) const;
 	int					GetTexType(int input_i) const;
 	bool				CompilePrograms();
@@ -233,7 +252,6 @@ public:
 	const OglBuffer*	GetComponentById(int id) const;
 	
 	void				OnError(const char* fn, String s);
-	
 	
 };
 

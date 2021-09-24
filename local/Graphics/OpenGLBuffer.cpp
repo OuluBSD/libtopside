@@ -28,6 +28,28 @@ int GetOglChCode(int channels, bool is_float) {
 
 
 
+bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
+	DLOG("OglBuffer::LoadFragmentShaderFile");
+	
+	if (!FileExists(shader_path))
+		shader_path = ShareDirFile(shader_path);
+	
+	if (!FileExists(shader_path)) {
+		LOG("OglBuffer::LoadFragmentShaderFile: error: file does not exist: " << shader_path);
+		return false;
+	}
+	
+	String content = LoadFile(shader_path);
+	if (content.IsEmpty()) {
+		LOG("OglBuffer::LoadFragmentShaderFile: error: got empty shader file from: " << shader_path);
+		return false;
+	}
+	
+	DUMP(content);
+	SetFragmentShaderSource(content);
+	
+	return true;
+}
 
 bool OglBuffer::Initialize() {
 	DLOG("OglBuffer::Initialize: load new program");
@@ -111,14 +133,31 @@ const OglBuffer* OglBuffer::GetComponentById(int id) const {
 
 void OglBuffer::UpdateTexBuffers() {
 	if (!is_win_fbo) {
+		ASSERT(fb_channels > 0);
 		ASSERT(fb_size.cx > 0 && fb_size.cy > 0);
+		
+		fb_sample_size			= fb_sampletype == SAMPLE_BYTE ? 1 : 4;
+		fb_type					= fb_sampletype == SAMPLE_BYTE ? GL_UNSIGNED_BYTE : GL_FLOAT;
+		fb_accel_sample_size	= fb_accel_sampletype == SAMPLE_BYTE ? 1 : 4;
+		fb_accel_type			= fb_accel_sampletype == SAMPLE_BYTE ? GL_UNSIGNED_BYTE : GL_FLOAT;
+		
+		fb_size_bytes			= fb_size.cx * fb_size.cy * fb_sample_size;
+		fb_accel_size_bytes		= fb_size.cx * fb_size.cy * fb_accel_sample_size;
+		fb_fmt					= GetOglChCode(fb_channels, fb_type == GL_FLOAT);
+		fb_accel_fmt			= GetOglChCode(fb_channels, fb_accel_type == GL_FLOAT);
+		
+		ASSERT(fb_size_bytes > 0);
+		ASSERT(fb_accel_size_bytes > 0);
+		ASSERT(fb_fmt >= 0);
+		ASSERT(fb_accel_fmt >= 0);
+		ASSERT(fb_type >= 0);
 		ClearTex();
 		
 		CreateTex(
-			fb_size, 4,
-			1, 1,
+			true, true,
 			OglBufferInput::FILTER_LINEAR,
 			OglBufferInput::WRAP_CLAMP);
+		
 	}
 }
 
@@ -178,7 +217,8 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	    //glDrawBuffer(GL_FRONT);
 	    
 	    // Some components (e.g. audio) needs to read the framebuffer
-		UseRenderedFramebuffer();
+	    if (is_read_fb_output)
+			UseRenderedFramebuffer();
 		
 	    // reset FBO
 	    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -199,6 +239,8 @@ void OglBuffer::UseRenderedFramebuffer() {
 	
 	ASSERT(color_buf[buf_i] > 0);
 	glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	
+	TODO // glReadPixels will crash mysteriously
 	glReadPixels(0, 0, fb_size.cx, fb_size.cy, fb_fmt, fb_type, fb_out.Begin());
 }
 
@@ -400,10 +442,13 @@ void OglBuffer::ClearProg() {
 	}
 }
 
-void OglBuffer::CreateTex(Size sz, int channels, bool create_depth, bool create_fbo, int filter, int repeat) {
+void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int repeat) {
 	int buf_count = 1;
 	if (is_doublebuf)
 		buf_count++;
+	
+	Size sz = fb_size;
+	int channels = fb_channels;
 	
 	EnableGfxAccelDebugMessages(1);
 	
@@ -413,10 +458,14 @@ void OglBuffer::CreateTex(Size sz, int channels, bool create_depth, bool create_
 		GLuint& frame_buf = this->frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
+		ASSERT(fb_accel_fmt == GetOglChCode(4, true));
+		ASSERT(fb_fmt == GetOglChCode(4, false));
+		ASSERT(fb_type == GL_UNSIGNED_BYTE);
+		
 		// color buffer
 		glGenTextures(1, &color_buf);
 		glBindTexture(GL_TEXTURE_2D, color_buf);
-		glTexImage2D(GL_TEXTURE_2D, 0, GetOglChCode(channels, true), sz.cx, sz.cy, 0, GetOglChCode(channels), GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, fb_accel_fmt, sz.cx, sz.cy, 0, fb_fmt, fb_type, 0);
 		TexFlags(GL_TEXTURE_2D, filter, repeat);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		

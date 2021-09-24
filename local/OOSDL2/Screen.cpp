@@ -42,7 +42,6 @@ bool Screen::Open0() {
 	is_opengl = true;
 	is_dx11 = false;
 	
-	is_test_image = true;
 	
 	// Window
 	screen_sz = desired_rect.GetSize();
@@ -98,6 +97,9 @@ bool Screen::Open0() {
 	#endif
 	
 	
+	if (filepath.GetCount())
+		is_test_image = true;
+	
 	if (is_test_image) {
 		if (!TestImageInitialize())
 			return false;
@@ -107,6 +109,8 @@ bool Screen::Open0() {
 }
 
 void Screen::Close0() {
+	last_packet.Clear();
+	
 	if (glcontext) {
 		SDL_GL_DeleteContext(glcontext);
 		glcontext = 0;
@@ -172,6 +176,12 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		
 		CommitDraw();
 	}
+	else if (fmt.IsOrder() && is_test_image) {
+		BeginDraw();
+		test_image.ProcessStage(cfg);
+		CommitDraw();
+	}
+	
 	last_packet.Clear();
 }
 
