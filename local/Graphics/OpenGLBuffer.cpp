@@ -29,7 +29,7 @@ int GetOglChCode(int channels, bool is_float) {
 
 
 bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
-	DLOG("OglBuffer::LoadFragmentShaderFile");
+	DLOG("OglBuffer::LoadFragmentShaderFile: " << shader_path);
 	
 	if (!FileExists(shader_path))
 		shader_path = ShareDirFile(shader_path);

@@ -78,6 +78,66 @@ hash_t WorldState::GetHashValue() const {
 	return c;
 }
 
+const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts) {
+	for (const Statement& stmt : stmts) {
+		String key = stmt.id.ToString();
+		if (key == find_key)
+			return &stmt;
+	}
+	return 0;
+}
+
+const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) {
+	if (!ws) {
+		Index<String> cur_ws_keys;
+		for(int i = 0; i < values.GetCount(); i++) {
+			if (values[i].GetCount()) {
+				String key = ap->GetAtom(i).ToString();
+				cur_ws_keys.Add(key);
+			}
+		}
+		//DUMPC(cur_ws_keys);
+		
+		for (const String& cur : cur_ws_keys) {
+			const Script::Statement* s = FindStatement(cur, stmts);
+			if (s)
+				return s;
+		}
+	}
+	else {
+		Index<String> prev_ws_keys;
+		for(int i = 0; i < ws->values.GetCount(); i++) {
+			if (ws->values[i].GetCount()) {
+				String key = ap->GetAtom(i).ToString();
+				prev_ws_keys.Add(key);
+			}
+		}
+		
+		Index<String> cur_ws_keys;
+		for(int i = 0; i < values.GetCount(); i++) {
+			if (values[i].GetCount()) {
+				String key = ap->GetAtom(i).ToString();
+				cur_ws_keys.Add(key);
+			}
+		}
+		
+		Index<String> new_ws_keys;
+		for (const String& cur : cur_ws_keys) {
+			bool is_new = prev_ws_keys.Find(cur) < 0;
+			if (is_new)
+				new_ws_keys.Add(cur);
+		}
+		//DUMPC(new_ws_keys);
+		
+		for (const String& new_ : new_ws_keys) {
+			const Script::Statement* s = FindStatement(new_, stmts);
+			if (s)
+				return s;
+		}
+	}
+	return 0;
+}
+
 bool WorldState::Append(const WorldState& ws, LinkedList<Statement>& ret_list) {
 	for (const Script::Statement& ret : ret_list) {
 		String atom = ret.id.ToString();

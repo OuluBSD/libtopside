@@ -86,22 +86,14 @@ bool ScriptDriverLoader::Load() {
 		}
 		
 		// Add arguments to ws
-		for(int i = 0; i < ws.values.GetCount(); i++) {
-			String key = planner.atoms.GetKey(i);
-			for (const Script::Statement& stmt : def.stmts) {
-				String stmt_key = stmt.id.ToString();
-				if (stmt_key == key) {
-					//LOG(i << " " << key << " " << stmt_key);
-					for (const Script::Statement& arg : stmt.args) {
-						//LOG("\t" << arg.id.ToString());
-						if (arg.value) {
-							String k = arg.id.ToString();
-							String v = arg.value->GetValue();
-							ws.Set("." + k, v);
-							//LOG("ScriptLoader::LoadLoopDefinition: add argument: " << k << " = " << v);
-						}
-					}
-				}
+		const Script::Statement* stmt = ws.FindStatement(0, def.stmts);
+		if (stmt) {
+			for (const Script::Statement& arg : stmt->args) {
+				//LOG("\t" << arg.id.ToString());
+				String k = arg.id.ToString();
+				String v = arg.value ? arg.value->GetValue() : String();
+				ws.Set("." + k, v);
+				LOG("ScriptDriverLoader::Load: add argument: " << k << " = " << v);
 			}
 		}
 		

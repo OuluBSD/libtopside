@@ -47,10 +47,15 @@ protected:
 	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
+	const Script::Statement*	stmt = 0;
+	
 public:
 	
 	WorldState();
 	void Clear();
+	
+	const        Script::Statement* FindStatement(const WorldState* ws, LinkedList<Statement>& stmts);
+	static const Script::Statement* FindStatement(const String& find_key, LinkedList<Statement>& stmts);
 	
 	bool Append(const WorldState& ws, LinkedList<Statement>& ret_list);
 	void SetActionPlanner(ActionPlanner& ap) {this->ap = &ap;}
@@ -63,6 +68,7 @@ public:
 	void SetAs_AddAtom(AtomTypeCls atom) {type = ADD_COMP; cur_atom = atom;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	void SetSinkCls(ValDevCls vd) {sink_vd = vd;}
+	void SetStatement(const Script::Statement* s) {stmt = s;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddAtom() const {return type == ADD_COMP;}
@@ -82,6 +88,7 @@ public:
 	const ValDevCls& GetSinkCls() const {return sink_vd;}
 	String ToString() const;
 	String GetFullString() const;
+	const Script::Statement* GetStatement() const {return stmt;}
 	bool Contains(const WorldState& ws) const;
 	bool Conflicts(const WorldState& ws) const;
 	int Compare(int idx, const WorldState& ws) const;
@@ -129,6 +136,7 @@ class ActionNode : RTTIBase {
 	ActionNode*			goal;
 	int					side_sink = -1;
 	int					side_src = -1;
+	
 	
 public:
 	RTTI_DECL0(ActionNode)
