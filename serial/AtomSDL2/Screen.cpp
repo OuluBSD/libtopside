@@ -11,8 +11,11 @@ bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
 	
+	OglBuffer& buf = GetBuffer();
+	buf.SetBufferId(ws.Get(".name"));
 	obj->SetShaderFile(ws.Get(".filepath"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
+	obj->SetBuffer(buf);
 	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
 	return true;
@@ -48,6 +51,8 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 			Packet p = sink_buf.First();
 			sink_buf.RemoveFirst();
 			PacketConsumed(p);
+			
+			LoadPacket(p);
 			if (obj->Recv(p))
 				break;
 		}
@@ -59,9 +64,25 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 	}
 }
 
+void SDL2ScreenBase::LoadPacket(const Packet& p) {
+	Format fmt = p->GetFormat();
+	if (fmt.vd.dev == DevCls::ACCEL) {
+		PacketValue& val = *p;
+		InternalPacketData& data = val.GetData<InternalPacketData>();
+		GetBuffer().LoadOutputLink(data);
+	}
+}
+
 void SDL2ScreenBase::AltStorePacket(Packet& p) {
 	RTLOG("SDL2ScreenBase::AltStorePacket");
 	obj->Render(*last_cfg);
+	
+	// TODO win fbo copy? wtf
+	if (0) {
+		PacketValue& val = *p;
+		InternalPacketData& data = val.GetData<InternalPacketData>();
+		GetBuffer().StoreOutputLink(data);
+	}
 }
 
 

@@ -7,7 +7,8 @@ NAMESPACE_SERIAL_BEGIN
 #ifdef flagGUI
 
 class SDL2ScreenBase :
-	public SDL2BaseT<SDL2ScreenBase>
+	public SDL2BaseT<SDL2ScreenBase>,
+	public OglBufferBase
 {
 	One<OOSDL2::Screen>	obj;
     Serial::Format		fmt;
@@ -16,9 +17,9 @@ class SDL2ScreenBase :
 	double				frame_age = 0;
 	
 public:
-	RTTI_DECL1(SDL2ScreenBase, AltBaseT)
+	RTTI_DECL2(SDL2ScreenBase, AltBaseT, OglBufferBase)
 	COPY_PANIC(SDL2ScreenBase)
-	ATOM_DEF_VISIT
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<OglBufferBase>(this);}
 	
 	SDL2ScreenBase() = default;
 	
@@ -27,6 +28,7 @@ public:
 	void			AltForward(FwdScope& fwd) override;
 	void			AltStorePacket(Packet& p) override;
 	void			AltUpdate(double dt) override;
+	void			LoadPacket(const Packet& p) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}

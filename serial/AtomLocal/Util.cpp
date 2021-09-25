@@ -50,6 +50,8 @@ bool OglShaderBase::AltInitialize(const Script::WorldState& ws) {
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
 	
+	buf.SetBufferId(ws.Get(".name"));
+	
 	return true;
 }
 
@@ -111,9 +113,13 @@ void OglShaderBase::AltStorePacket(Packet& p) {
 	}
 	
 	last_packet.Clear();
-	
-	
 	ASSERT(p->GetFormat().IsValid());
+	
+	if (1) {
+		PacketValue& val = *p;
+		InternalPacketData& data = val.GetData<InternalPacketData>();
+		GetBuffer().StoreOutputLink(data);
+	}
 }
 
 

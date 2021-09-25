@@ -13,6 +13,8 @@ file
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	CustomAtom.h,
+	AccelUtil.h,
+	AccelUtil.cpp,
 	AccelAtom.h,
 	DummyAtom.h,
 	DummyAtom.cpp;

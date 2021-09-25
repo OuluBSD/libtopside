@@ -578,6 +578,32 @@ public:
 
 
 
+struct InternalPacketData : RTTIBase {
+	RTTI_DECL0(InternalPacketData)
+	
+	void*	ptr;
+	
+	union {
+		double	dbl;
+		int64	i64;
+		int64	pos;
+		char	txt[8];
+	};
+	
+	union {
+		int32	i32;
+		uint32	u32;
+		uint32	count;
+	};
+	
+	
+	int GetTextLength()		{return strnlen(txt, 8);}
+	String GetText()		{return String(txt, GetTextLength());}
+	
+	//void ClearLinks() {dev_comp = 0;}
+};
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

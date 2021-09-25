@@ -72,6 +72,18 @@ bool OglBuffer::Initialize() {
 	Load(to_load);
 	Reset();*/
 	
+	
+	// If user connects buffers manually to sinks
+	if (1) {
+		
+	}
+	// Otherwise link sinks
+	else {
+		
+	}
+	
+	
+	
 	if (!CompilePrograms())
 		return false;
 	
@@ -173,8 +185,11 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	if (fg_prog < 0)
 		return;
 	
+	RTLOG("OglBuffer::ProcessStage " << HexStr(this));
 	
 	time_total = cfg.time_total;
+	//RTLOG("OglBuffer::ProcessStage: " << time_total);
+	
 	frames++;
 	
 	
@@ -309,6 +324,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	}
 	
 	else if (var == VAR_COMPAT_TIME) {
+		//RTLOG("OglBuffer::SetVar: " << time_total);
 		glUniform1f(uindex, time_total);
 	}
 	
@@ -821,6 +837,48 @@ void OglBuffer::TexFlags(int type, int filter, int repeat) {
 
 void OglBuffer::OnError(const char* fn, String s) {
 	LOG("OglBuffer: error: " << (String)fn << ": " << s);
+}
+
+void OglBuffer::SetBufferId(String name) {
+	buffer_id = name.Left(8);
+}
+
+void OglBuffer::StoreOutputLink(InternalPacketData& v) {
+	static_assert(sizeof(v.u32) == sizeof(GLuint), "Unexpected GLuint size");
+	
+	const char* str = buffer_id.Begin();
+	int str_len = min(buffer_id.GetCount(), 8);
+	ASSERT(str_len > 0 && str_len <= 8);
+	
+	for(int i = 0; i < 8; i++)
+		v.txt[i] = (i < str_len ? str[i] : 0);
+	
+	//v.u32 = frame_buf[buf_i];
+	//ASSERT(v.u32 > 0);
+	v.ptr = this;
+	
+}
+
+void OglBuffer::LoadOutputLink(InternalPacketData& v) {
+	String buf_id = v.GetText();
+	
+	int in_id = -1;
+	if (buf_id.GetCount() == 4) {
+		if (buf_id.Left(3) == "buf") {
+			int id_chr = buf_id[3];
+			if (id_chr >= '0' && id_chr <= '3')
+				in_id = id_chr - '0';
+		}
+	}
+	if (in_id >= 0) {
+		if (in_id <= in.GetCount())
+			in.SetCount(in_id+1);
+		
+		ASSERT(v.ptr);
+		OglBufferInput& in = this->in[in_id];
+		in.id = in_id;
+		in.in_buf = (OglBuffer*)v.ptr;
+	}
 }
 
 

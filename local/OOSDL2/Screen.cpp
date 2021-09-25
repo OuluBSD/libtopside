@@ -98,9 +98,9 @@ bool Screen::Open0() {
 	
 	
 	if (filepath.GetCount())
-		is_test_image = true;
+		is_ogl_buf = true;
 	
-	if (is_test_image) {
+	if (is_ogl_buf) {
 		if (!TestImageInitialize())
 			return false;
 	}
@@ -168,17 +168,19 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		
 		BeginDraw();
 		
-		if (is_test_image) {
-			test_image.ProcessStage(cfg);
+		if (is_ogl_buf) {
+			ASSERT(ogl_buf);
+			if (ogl_buf)
+				ogl_buf->ProcessStage(cfg);
 		}
 		else
 			;
 		
 		CommitDraw();
 	}
-	else if (fmt.IsOrder() && is_test_image) {
+	else if (fmt.IsOrder() && is_ogl_buf) {
 		BeginDraw();
-		test_image.ProcessStage(cfg);
+		ogl_buf->ProcessStage(cfg);
 		CommitDraw();
 	}
 	

@@ -2,7 +2,7 @@
 #define _EcsCore_EcsCore_h_
 
 
-#include <Graphics/GL.h>
+#include <Graphics/Graphics.h>
 #include <Geometry/Geometry.h>
 #include <TemplatesCore/TemplatesCore.h>
 #include <Agent/Agent.h>

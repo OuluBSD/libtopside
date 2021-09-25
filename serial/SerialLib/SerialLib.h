@@ -4,10 +4,12 @@
 
 #include <SerialCore/SerialCore.h>
 #include <SerialPlanner/SerialPlanner.h>
+#include <Graphics/Graphics.h>
 
 #include "Types.h"
 #include "RegistrySystem.h"
 #include "CustomAtom.h"
+#include "AccelUtil.h"
 #include "AccelAtom.h"
 #include "DummyAtom.h"
 

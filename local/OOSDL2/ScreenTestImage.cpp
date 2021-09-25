@@ -31,18 +31,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 
 bool Screen::TestImageInitialize() {
-	test_image.is_win_fbo = true;
-	test_image.fb_size = screen_sz;
+	ASSERT(ogl_buf)
+	if (!ogl_buf) return false;
+	
+	OglBuffer& buf = *ogl_buf;
+	buf.is_win_fbo = true;
+	buf.fb_size = screen_sz;
 	
 	if (filepath.GetCount()) {
-		if (!test_image.LoadFragmentShaderFile(filepath))
+		if (!buf.LoadFragmentShaderFile(filepath))
 			return false;
 	}
 	else {
-		test_image.SetFragmentShaderSource(def_shader);
+		buf.SetFragmentShaderSource(def_shader);
 	}
 	
-	return test_image.Initialize();
+	return buf.Initialize();
 }
 
 

@@ -474,15 +474,6 @@ DevCls GetCenterDevCls();
 
 
 
-struct InternalPacketData : RTTIBase {
-	RTTI_DECL0(InternalPacketData)
-	
-	int pos;
-	int count;
-	void* dev_comp;
-	
-	void ClearLinks() {dev_comp = 0;}
-};
 
 
 NAMESPACE_SERIAL_END

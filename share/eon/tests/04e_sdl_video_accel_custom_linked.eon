@@ -8,8 +8,8 @@ machine sdl.app: {
 		
 		loop accel.video: {
 			accel.customer: true;
-			accel.video.source: true {filepath: "shaders/toys/simple_double/stage1.glsl";};
-			sdl.video: true {filepath: "shaders/toys/simple_double/stage0.glsl";};
+			accel.video.source:	true {name: "buf0"; filepath: "shaders/toys/simple_double/stage1.glsl";};
+			sdl.video: true {name: "buf1"; in0: "buf0"; filepath: "shaders/toys/simple_double/stage0.glsl";};
 		};
 		
 		loop audio: {

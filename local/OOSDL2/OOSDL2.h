@@ -137,7 +137,7 @@ class Screen : public Component {
 	RTTI_DECL1(Screen, Component)
 	
 	
-	OglBuffer		test_image;
+	OglBuffer*		ogl_buf = 0;
 	
 	
 	
@@ -209,7 +209,7 @@ protected:
 	bool is_maximized = false;
 	bool is_sizeable = false;
 	bool mouse_captured = false;
-	bool is_test_image = false;
+	bool is_ogl_buf = false;
 	String filepath;
 	
 	bool Open0() override;
@@ -229,12 +229,13 @@ public:
 	bool            Recv(Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
+	void            SetBuffer(OglBuffer& buf) {ogl_buf = &buf;}
 	
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
 	
 	void			SetShaderFile(String filepath) {this->filepath = filepath;}
-	void			SetTestImage(bool b) {is_test_image = b;}
+	void			SetTestImage(bool b) {is_ogl_buf = b;}
 	
 };
 
