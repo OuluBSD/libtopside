@@ -155,13 +155,20 @@ void Screen::SetRect(Rect r) {
 	}
 }
 
-bool Screen::Recv(Packet& p) {
-	last_packet = p;
+bool Screen::Recv(int ch_i, const Packet& p) {
+	if (ch_i == 0)
+		last_packet = p;
 	return true; // assuming 'do render' packet
 }
 
 void Screen::Render(const RealtimeSourceConfig& cfg) {
+	if (!last_packet) {
+		RTLOG("Screen::Render: warning: cannot render without packet");
+		return;
+	}
+	
 	RTLOG("Screen::Render");
+	ASSERT(last_packet);
 	Format fmt = last_packet->GetFormat();
 	if (fmt.IsVideo()) {
 		const VideoFormat& vfmt = fmt.vid;

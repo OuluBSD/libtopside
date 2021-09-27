@@ -98,7 +98,7 @@ public:
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Forward(FwdScope& fwd) override;
-	void StorePacket(Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	EXT_MAKE_ACTION_BEGIN
 	if (cls.sub == SubCompCls::INPUT) {

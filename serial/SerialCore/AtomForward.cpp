@@ -3,6 +3,24 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+int AtomBase::GetSinkPacketCount() {
+	InterfaceSinkRef sink_iface = GetSink();
+	int sink_count = sink_iface->GetSinkCount();
+	int c = 0;
+	for(int i = 0; i < sink_count; i++)
+		c += sink_iface->GetValue(i).GetQueueSize();
+	return c;
+}
+
+int AtomBase::GetSourcePacketCount() {
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	int c = 0;
+	for(int i = 0; i < src_count; i++)
+		c += src_iface->GetSourceValue(i).GetQueueSize();
+	return c;
+}
+
 void AtomBase::ForwardAtom(FwdScope& fwd) {
 	RTLOG("AtomBase::ForwardAtom");
 	
@@ -11,8 +29,8 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	#ifdef flagDEBUG
 	int ch_i = 0;
-	int pre_sink_packet_count = GetSink()->GetValue(ch_i).GetQueueSize();
-	int pre_src_packet_count = GetSource()->GetStream(ch_i).Get().GetQueueSize();
+	int pre_sink_packet_count = GetSinkPacketCount();
+	int pre_src_packet_count = GetSourcePacketCount();
 	int pre_consumed = consumed_packets.GetCount();
 	int pre_consumed_partial = IsConsumedPartialPacket();
 	int pre_total =
@@ -31,13 +49,16 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		case CONVERTER:		ForwardSource(fwd);		break;
 		case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
 		case SIDE_SINK:		ForwardSideSink(fwd);	break;
+		case PIPE:			ForwardPipe(fwd);	break;
 		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
 	}
 	
+	ForwardSideConnections();
+	
 	
 	#ifdef flagDEBUG
-	int post_sink_packet_count = GetSink()->GetValue(ch_i).GetQueueSize();
-	int post_src_packet_count = GetSource()->GetStream(ch_i).Get().GetQueueSize();
+	int post_sink_packet_count = GetSinkPacketCount();
+	int post_src_packet_count = GetSourcePacketCount();
 	int post_consumed = consumed_packets.GetCount();
 	int post_consumed_partial = IsConsumedPartialPacket();
 	int post_total =
@@ -52,8 +73,8 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	if (type.role != CUSTOMER) {
 		bool is_buffered_consumer = type.iface.content.val == ValCls::AUDIO; // todo: other value formats
 		ASSERT_(
-			dbg_async_race ||
 			pre_total == post_total ||
+			dbg_async_race ||
 			consumed_only_partial ||
 			is_buffered_consumer,
 			"Atom lost packets. Maybe alt class did not call PacketConsumed(...) for the packet?");
@@ -165,6 +186,7 @@ void AtomBase::ForwardSource(FwdScope& fwd) {
 
 
 void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
+	const int sink_ch_i = 0;
 	const int src_ch_i = 0;
 	
 	// To sink
@@ -203,14 +225,12 @@ void AtomBase::ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf) {
 		to->SetFormat(src_fmt);
 		
 		InternalPacketData& data = to->template SetData<InternalPacketData>();
-		data.pos = 0;
-		data.count = 1;
 		
 		if (1) {
-			LoadPacket(in);
+			LoadPacket(src_ch_i, in);
 			
 			WhenEnterStorePacket(*this, to);
-			StorePacket(to);
+			StorePacket(sink_ch_i, src_ch_i, to);
 			WhenLeaveStorePacket(to);
 		}
 		else {
@@ -330,7 +350,7 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	Value& sink_value = GetSink()->GetValue(sink_ch_i);
 	auto& sink_buf = sink_value.GetBuffer();
 	
-	InterfaceSinkRef side_sink_iface = side_sink_conn.First()->GetSink();
+	InterfaceSinkRef side_sink_iface = side_sink_conn.First().other->GetSink();
 	Value& side_sink_value = side_sink_iface->GetValue(side_sink_ch_i);
 	auto& side_sink_buf = side_sink_value.GetBuffer();
 	Format side_sink_fmt = side_sink_value.GetFormat();
@@ -359,6 +379,118 @@ void AtomBase::ForwardSideSource(FwdScope& fwd) {
 	ForwardConsumed(fwd);
 }
 
+void AtomBase::ForwardPipe(FwdScope& fwd) {
+	POPO(Pol::Serial::Atom::ConsumerFirst);
+	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
+	
+	/*const int sink_ch_i = 0;
+	const int side_src_ch_i = 1;
+	const int side_sink_ch_i = 1;*/
+	
+	AtomTypeCls type = GetType();
+	
+	Forward(fwd);
+	
+	InterfaceSinkRef sink_iface = GetSink();
+	InterfaceSourceRef src_iface = GetSource();
+	int sink_ch_count = sink_iface->GetSinkCount();
+	int src_ch_count = src_iface->GetSourceCount();
+	ASSERT(src_ch_count);
+	if (!src_ch_count) return;
+	
+	/*Value& sink_value = sink_iface->GetValue(sink_ch_i);
+	auto& sink_buf = sink_value.GetBuffer();*/
+	
+	//Value& main_src_value = src_iface->GetSourceValue(0);
+	
+	/*InterfaceSinkRef side_sink_iface = side_sink_conn.First()->GetSink();
+	Value& side_sink_value = side_sink_iface->GetValue(side_sink_ch_i);
+	auto& side_sink_buf = side_sink_value.GetBuffer();
+	Format side_sink_fmt = side_sink_value.GetFormat();*/
+	
+	//while (sink_buf.GetCount()) {
+	while (1) {
+		if (!IsReady(type.iface.content))
+			break;
+		
+		bool sink_all = true;
+		for(int i = 0; i < sink_ch_count; i++) {
+			Value& sink_value = sink_iface->GetValue(i);
+			int sz = sink_value.GetQueueSize();
+			if (!sz)
+				sink_all = false;
+		}
+		if (!sink_all)
+			break;
+		
+		bool src_full = false;
+		for(int i = 0; i < src_ch_count; i++) {
+			Value& src_value = src_iface->GetSourceValue(i);
+			if (src_value.IsQueueFull())
+				src_full = true;
+		}
+		if (src_full)
+			break;
+		for (Exchange& ex : side_sink_conn) {
+			Value& sink_val = ex.other->GetSink()->GetValue(ex.other_ch_i);
+			if (sink_val.IsQueueFull()) {
+				src_full = true;
+				break;
+			}
+		}
+		if (src_full)
+			break;
+		
+		for(int i = 0; i < sink_ch_count; i++) {
+			Value& sink_value = sink_iface->GetValue(i);
+			PacketBuffer& sink_buf = sink_value.GetBuffer();
+			Packet in = sink_buf.First();
+			sink_buf.RemoveFirst();
+			off32 off = in->GetOffset();
+			
+			LoadPacket(i, in);
+			//consumed_packets.Add(in);
+			packets_forwarded++;
+			
+			for(int j = 0; j < src_ch_count; j++) {
+				Value& src_val = src_iface->GetSourceValue(j);
+				PacketBuffer& src_buf = src_val.GetBuffer();
+				Format src_fmt = src_val.GetFormat();
+				
+				RTLOG("AtomBase::ForwardPipe: sending sink #" << i << ", src #" << j << " packet(" << off.ToString() << "), " << src_fmt.ToString());
+				
+				
+				if (1) {
+					Packet to = CreatePacket(off);
+					to->SetFormat(src_fmt);
+					
+					InternalPacketData& data = to->template SetData<InternalPacketData>();
+					
+					WhenEnterStorePacket(*this, to);
+					StorePacket(i, j, to);
+					WhenLeaveStorePacket(to);
+					
+					PacketTracker::Track(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+					src_buf.Add(to);
+				}
+				else {
+					TODO
+					/*if (in->GetFormat() != side_sink_fmt) {
+						Packet dst = CreatePacket(off);
+						dst->SetFormat(side_sink_fmt);
+						Convert(in, dst);
+						in = dst;
+					}*/
+				}
+				
+				//side_sink_buf.Add(in);
+			}
+		}
+	}
+	
+	
+	//ForwardConsumed(fwd);
+}
 
 void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 	const int src_ch_i = 0;
@@ -391,7 +523,7 @@ void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 		data.pos = 0;
 		data.count = 1;
 		
-		StorePacket(to);
+		StorePacket(sink_ch_i, src_ch_i, to);
 		
 		PacketTracker::Track(TrackerInfo("AtomBase::ForwardVoidSink", __FILE__, __LINE__), *to);
 		src_buf.Add(to);
@@ -470,5 +602,21 @@ bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 	return false;
 }
 
+void AtomBase::ForwardSideConnections() {
+	InterfaceSourceRef src_iface = GetSource();
+	
+	for (Exchange& ex : side_sink_conn) {
+		Value& src_val = src_iface->GetSourceValue(ex.local_ch_i);
+		PacketBuffer& src_buf = src_val.GetBuffer();
+		if (src_buf.GetCount()) {
+			InterfaceSinkRef sink_iface = ex.other->GetSink();
+			Value& sink_val = sink_iface->GetValue(ex.other_ch_i);
+			ASSERT(!sink_val.IsQueueFull());
+			PacketBuffer& sink_buf = sink_val.GetBuffer();
+			sink_buf.PickAppend(src_buf);
+			ASSERT(src_buf.IsEmpty());
+		}
+	}
+}
 
 NAMESPACE_SERIAL_END

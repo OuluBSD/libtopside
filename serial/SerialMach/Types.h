@@ -438,7 +438,7 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	bool IsRolePipe()		const {return role == AtomRole::PIPE;}
 	bool IsRoleSideSource()	const {return role == AtomRole::SIDE_SOURCE/*iface.side.IsValid() && iface.side_src*/;}
 	bool IsRoleSideSink()	const {return role == AtomRole::SIDE_SINK/*iface.side.IsValid() && !iface.side_src*/;}
-	bool IsRoleSide()		const {return role == AtomRole::SIDE_SINK || role == AtomRole::SIDE_SOURCE/*iface.side.IsValid() && !iface.side_src*/;}
+	bool IsRoleSide()		const {return role == AtomRole::SIDE_SINK || role == AtomRole::SIDE_SOURCE || role == AtomRole::PIPE/*iface.side.IsValid() && !iface.side_src*/;}
 	
 	bool IsMultiSideConnection() const {return false;}
 	

@@ -133,9 +133,9 @@ bool FfmpegAtomBase::AltIsReady(ValDevCls vd) {
 		TODO
 }
 
-void FfmpegAtomBase::AltStorePacket(Packet& p) {
+void FfmpegAtomBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	if (mode == AUDIO_ONLY)
-		file_in.GetAudio().StorePacket(p);
+		file_in.GetAudio().StorePacket(sink_ch, src_ch, p);
 	else
 		TODO
 }

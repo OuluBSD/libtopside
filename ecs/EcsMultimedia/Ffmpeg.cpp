@@ -135,7 +135,7 @@ bool FfmpegExt::IsReady(ValDevCls vd) {
 		TODO
 }
 
-void FfmpegExt::StorePacket(Packet& p) {
+void FfmpegExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	if (mode == AUDIO_ONLY)
 		file_in.GetAudio().StorePacket(p);
 	else

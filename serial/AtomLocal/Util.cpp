@@ -91,8 +91,9 @@ void OglShaderBase::AltForward(FwdScope& fwd) {
 	}*/
 }
 
-void OglShaderBase::LoadPacket(const Packet& p) {
-	last_packet = p;
+void OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
+	if (ch_i == 0)
+		last_packet = p;
 }
 
 bool OglShaderBase::AltIsReady(ValDevCls vd) {
@@ -102,20 +103,20 @@ bool OglShaderBase::AltIsReady(ValDevCls vd) {
 	return src_val.GetQueueSize() == 0;
 }
 
-void OglShaderBase::AltStorePacket(Packet& p) {
-	ASSERT(last_packet);
-	Format fmt = last_packet->GetFormat();
-	
-	if (fmt.IsOrder()) {
+void OglShaderBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+	if (sink_ch == 0 && src_ch == 0) {
+		ASSERT(last_packet);
+		
 		//BeginDraw();
 		buf.ProcessStage(*last_cfg);
 		//CommitDraw();
+		
+		last_packet.Clear();
+		ASSERT(p->GetFormat().IsValid());
 	}
 	
-	last_packet.Clear();
-	ASSERT(p->GetFormat().IsValid());
-	
-	if (1) {
+	Format fmt = p->GetFormat();
+	if (fmt.vd == VD(ACCEL,VIDEO)) {
 		PacketValue& val = *p;
 		InternalPacketData& data = val.GetData<InternalPacketData>();
 		GetBuffer().StoreOutputLink(data);

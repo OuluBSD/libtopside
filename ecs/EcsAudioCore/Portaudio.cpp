@@ -128,7 +128,7 @@ void PortaudioOutExt::Forward(FwdScope& fwd) {
 	
 }
 
-void PortaudioOutExt::StorePacket(Packet& p) {
+void PortaudioOutExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 

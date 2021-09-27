@@ -1,0 +1,27 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop accel.video.buffer: {
+			accel.customer: true;
+			accel.video.source.pipe: true {name: "buf0"; filepath: "shaders/toys/simple_double/stage1.glsl";};
+		};
+		
+		loop accel.video.screen: {
+			accel.customer: true;
+			sdl.video.pipe: true {name: "buf1"; in0: "buf0"; filepath: "shaders/toys/simple_double/stage0.glsl";};
+		};
+		
+		loop audio: {
+			center.customer: true;
+			center.audio.src.dbg_generator: true {waveform: "noise";};
+			sdl.audio: true;
+		};
+	};
+
+};
+

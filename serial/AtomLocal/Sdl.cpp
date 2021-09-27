@@ -3,19 +3,19 @@
 NAMESPACE_SERIAL_BEGIN
 
 /*
-void SdlContextAtom::StorePacket(Packet& p) {
+void SdlContextAtom::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 
-void SdlEventAtom::StorePacket(Packet& p) {
+void SdlEventAtom::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 
-void SdlVideoAtom::StorePacket(Packet& p) {
+void SdlVideoAtom::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 
-void SdlAudioAtom::StorePacket(Packet& p) {
+void SdlAudioAtom::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 */

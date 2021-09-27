@@ -83,13 +83,19 @@ void SwScreen::SetRect(Rect r) {
 	}
 }
 
-bool SwScreen::Recv(Packet& p) {
-	last_packet = p;
+bool SwScreen::Recv(int ch_i, const Packet& p) {
+	if (ch_i == 0)
+		last_packet = p;
 	// TODO: check if 'do render' packet, otherwise return false
 	return true; // assuming 'do render' packet
 }
 
 void SwScreen::Render() {
+	if (!last_packet) {
+		RTLOG("SwScreen::Render: warning: cannot render without packet");
+		return;
+	}
+	
 	Packet& p = last_packet;
 	Format fmt = p->GetFormat();
 	if (fmt.IsVideo()) {

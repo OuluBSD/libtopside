@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 bool DebugSideInputExt::Initialize(const Eon::WorldState& ws) {return true;}
 void DebugSideInputExt::Uninitialize() {}
 void DebugSideInputExt::Forward(FwdScope& fwd) {}
-void DebugSideInputExt::StorePacket(Packet& p) {}
+void DebugSideInputExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {}
 SideStatus DebugSideInputExt::MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {
 	ValDevCls f = from.GetSideCls();
 	ValDevCls t = to.GetSideCls();
@@ -20,7 +20,7 @@ SideStatus DebugSideInputExt::MakeSide(const TypeExtCls& from_type, const Eon::W
 bool DebugSideOutputExt::Initialize(const Eon::WorldState& ws) {return true;}
 void DebugSideOutputExt::Uninitialize() {}
 void DebugSideOutputExt::Forward(FwdScope& fwd) {}
-void DebugSideOutputExt::StorePacket(Packet& p) {}
+void DebugSideOutputExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {}
 SideStatus DebugSideOutputExt::MakeSide(const TypeExtCls& from_type, const Eon::WorldState& from, const TypeExtCls& to_type, const Eon::WorldState& to) {
 	ValDevCls f = from.GetSideCls();
 	ValDevCls t = to.GetSideCls();

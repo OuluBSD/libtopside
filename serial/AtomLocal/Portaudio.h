@@ -48,7 +48,7 @@ public:
 	bool AltInitialize(const Script::WorldState& ws) override;
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
-	void AltStorePacket(Packet& p) override;
+	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void AltIntervalSinkProcess() {}
 	bool IsConsumedPartialPacket() override {return consumer.HasLeftover();}
 	

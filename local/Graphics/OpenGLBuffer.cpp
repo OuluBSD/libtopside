@@ -515,7 +515,7 @@ void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int re
 
 GLint OglBuffer::GetInputTex(int input_i) const {
 	const char* fn_name = "GetInputTex";
-	DLOG("OglBuffer::GetInputTex");
+	//DLOG("OglBuffer::GetInputTex");
 	if (input_i < 0 || input_i >= in.GetCount())
 		return -1;
 	

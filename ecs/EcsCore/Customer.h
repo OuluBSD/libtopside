@@ -54,7 +54,7 @@ protected:
 	};
 	
 	struct LocalSourceValue : public SimpleValue {
-		void StorePacket(Packet& p) override {TODO}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {TODO}
 		
 	};
 	

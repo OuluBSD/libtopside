@@ -16,7 +16,7 @@ void DummyAlt::AltForward(FwdScope& fwd) {
 	
 }
 
-void DummyAlt::AltStorePacket(Packet& p) {
+void DummyAlt::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	InterfaceSourceRef iface_src = GetSource();
 	Format fmt = iface_src->GetSourceValue(0).GetFormat();
 	ASSERT(fmt.IsValid());

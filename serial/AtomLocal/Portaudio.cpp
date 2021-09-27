@@ -127,7 +127,7 @@ void PortaudioSink::AltForward(FwdScope& fwd) {
 	// pass
 }
 
-void PortaudioSink::AltStorePacket(Packet& p) {
+void PortaudioSink::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	// pass
 }
 

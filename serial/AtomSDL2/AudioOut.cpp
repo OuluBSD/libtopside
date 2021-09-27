@@ -18,7 +18,7 @@ void SDL2AudioOutputBase::AltForward(FwdScope& fwd) {
 	// pass
 }
 
-void SDL2AudioOutputBase::AltStorePacket(Packet& p) {
+void SDL2AudioOutputBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	// pass
 }
 

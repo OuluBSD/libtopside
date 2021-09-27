@@ -15,11 +15,11 @@ void DebugConverterExt::Forward(FwdScope& fwd) {
 	
 }
 
-void DebugConverterExt::LoadPacket(const Packet& p) {
+void DebugConverterExt::LoadPacket(int ch_i, const Packet& p) {
 	
 }
 
-void DebugConverterExt::StorePacket(Packet& p) {
+void DebugConverterExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 

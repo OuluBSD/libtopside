@@ -226,7 +226,7 @@ public:
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
 	void            Render(const RealtimeSourceConfig& cfg);
-	bool            Recv(Packet& p);
+	bool            Recv(int ch_i, const Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	void            SetBuffer(OglBuffer& buf) {ogl_buf = &buf;}
@@ -276,7 +276,7 @@ public:
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
 	void            Render();
-	bool            Recv(Packet& p);
+	bool            Recv(int ch_i, const Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
 	

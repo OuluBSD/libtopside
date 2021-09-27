@@ -33,10 +33,24 @@ void SDL2ScreenBase::AltUpdate(double dt) {
 }
 
 void SDL2ScreenBase::AltForward(FwdScope& fwd) {
+	AtomTypeCls type = GetType();
+	if (type.IsRoleSide())
+		return;
+	
 	const int sink_ch_i = 0;
 	
-	PacketBuffer& sink_buf = this->GetSink()->GetValue(sink_ch_i).GetBuffer();
-	if (sink_buf.IsEmpty()) return;
+	InterfaceSinkRef sink_iface = GetSink();
+	int sink_ch_count = sink_iface->GetSinkCount();
+	bool all_sink_filled = true;
+	for(int i = 0; i < sink_ch_count; i++) {
+		Value& sink_val = sink_iface->GetValue(i);
+		if (sink_val.GetQueueSize() == 0) {
+			all_sink_filled = false;
+			break;
+		}
+	}
+	if (!all_sink_filled)
+		return;
 	
 	RTLOG("SDL2ScreenBase::AltForward: frame_age: " << frame_age);
 	
@@ -47,42 +61,69 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 		else
 			frame_age -= dt;
 		
-		while (sink_buf.GetCount()) {
+		bool fail = false;
+		for(int i = 0; i < sink_ch_count; i++) {
+			Value& sink_val = sink_iface->GetValue(i);
+			PacketBuffer& sink_buf = sink_val.GetBuffer();
+			
 			Packet p = sink_buf.First();
 			sink_buf.RemoveFirst();
-			PacketConsumed(p);
+			if (!i)
+				PacketConsumed(p);
 			
-			LoadPacket(p);
-			if (obj->Recv(p))
-				break;
+			LoadPacket(i, p);
+			//if (!obj->Recv(i, p))
+			//	fail = true;
 		}
 		
-		//PostContinueForward();
+		if (fail) {
+			RTLOG("SDL2ScreenBase::AltForward: error: some packet(s) failed to load");
+		}
 	}
 	else {
 		RTLOG("SDL2ScreenBase::AltForward: wait");
 	}
+	
 }
 
-void SDL2ScreenBase::LoadPacket(const Packet& p) {
+bool SDL2ScreenBase::IsReady(ValDevCls vd) {
+	if (frame_age >= dt) {
+		RTLOG("SDL2ScreenBase::AltForward: render");
+		if (frame_age >= 2 * dt)
+			frame_age = 0;
+		else
+			frame_age -= dt;
+		return true;
+	}
+	return false;
+}
+
+void SDL2ScreenBase::LoadPacket(int ch_i, const Packet& p) {
 	Format fmt = p->GetFormat();
-	if (fmt.vd.dev == DevCls::ACCEL) {
+	if (fmt.vd == VD(ACCEL,VIDEO)) {
 		PacketValue& val = *p;
 		InternalPacketData& data = val.GetData<InternalPacketData>();
 		GetBuffer().LoadOutputLink(data);
 	}
+	
+	obj->Recv(ch_i, p);
 }
 
-void SDL2ScreenBase::AltStorePacket(Packet& p) {
+void SDL2ScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	RTLOG("SDL2ScreenBase::AltStorePacket");
-	obj->Render(*last_cfg);
+	if (sink_ch == 0 && src_ch == 0) {
+		obj->Render(*last_cfg);
+		
+	}
 	
-	// TODO win fbo copy? wtf
-	if (0) {
+	#if 0
+	Format fmt = p->GetFormat();
+	if (fmt.vd == VD(ACCEL,VIDEO)) {
 		PacketValue& val = *p;
 		InternalPacketData& data = val.GetData<InternalPacketData>();
 		GetBuffer().StoreOutputLink(data);
 	}
+	#endif
 }
 
 

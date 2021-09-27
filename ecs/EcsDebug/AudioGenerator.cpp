@@ -24,7 +24,7 @@ void DebugAudioGeneratorExt::Forward(FwdScope& fwd) {
 	
 }
 
-void DebugAudioGeneratorExt::StorePacket(Packet& p) {
+void DebugAudioGeneratorExt::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;

@@ -170,7 +170,7 @@ void VideoGenBase::AltForward(FwdScope& fwd) {
 	
 }
 
-void VideoGenBase::AltStorePacket(Packet& p) {
+void VideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -226,7 +226,7 @@ void AccelVideoGenBase::AltForward(FwdScope& fwd) {
 	
 }
 
-void AccelVideoGenBase::AltStorePacket(Packet& p) {
+void AccelVideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;

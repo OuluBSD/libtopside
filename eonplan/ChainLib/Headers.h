@@ -103,6 +103,10 @@ HEADER11(			SdlVideoAtom,		AccelSinkPolling,		sink,		AccelVideo,		AccelVideo,		A
 HEADER_INHERITS(	SdlVideoAtom,		SDL2ScreenBase)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 
+HEADER21(			SdlVideoPipe,		AccelSinkPolling,		pipe,		AccelVideo,		AccelOrder,		AccelVideo,		AccelReceipt)
+HEADER_INHERITS(	SdlVideoPipe,		SDL2ScreenBase)
+HEADER_ACTION(		SdlVideoPipe,		sdl.video.pipe)
+
 /*HEADER11(			SideSdlVideoAtom,	AccelSinkPolling,		sink,		AccelVideo,		AccelVideo,		AccelReceipt)
 HEADER_INHERITS(	SideSdlVideoAtom,	SDL2ScreenBase)
 HEADER_ACTION(		SideSdlVideoAtom,	sdl.video.with.buf0)*/
@@ -120,6 +124,11 @@ HEADER11(			OglShaderSource,	AccelSourcePolling,		source,		AccelVideo,		AccelOrd
 HEADER_INHERITS(	OglShaderSource,	OglShaderBase)
 HEADER_ACTION(		OglShaderSource,	accel.video.source)
 HEADER_ARG(			OglShaderSource,	ALT_LINK,	1)
+
+HEADER12(			OglShaderPipe,		AccelSourcePolling,		pipe,		AccelVideo,		AccelOrder,		AccelVideo,		AccelReceipt)
+HEADER_INHERITS(	OglShaderPipe,		OglShaderBase)
+HEADER_ACTION(		OglShaderPipe,		accel.video.source.pipe)
+HEADER_ARG(			OglShaderPipe,		ALT_LINK,	1)
 
 /*HEADER12(			OglShaderBuffer,	AccelSourcePolling,		side_source,	AccelVideo,		AccelOrder,		AccelVideo,		AccelReceipt)
 HEADER_INHERITS(	OglShaderBuffer,	OglShaderBase)

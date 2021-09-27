@@ -105,7 +105,7 @@ void AtomBase::ForwardConsumed(FwdScope& fwd) {
 		else {
 			WhenEnterStorePacket(*this, to);
 			
-			StorePacket(to);
+			StorePacket(sink_ch_i, src_ch_i, to);
 			
 			if (!to->GetFormat().IsValid()) {DUMP(src_fmt); DUMP(to->GetFormat());}
 			ASSERT(to->GetFormat().IsValid());
@@ -124,21 +124,21 @@ String AtomBase::GetInlineConnectionsString() const {
 	String s;
 	s << "sink(";
 	int i = 0;
-	for (AtomBaseRef& iface : side_sink_conn) {
+	for (Exchange& ex : side_sink_conn) {
 		if (i++ > 0) s << ", ";
-		s << HexStr(&*iface);
+		s << HexStr(&*ex.other);
 	}
 	s << "), src(";
 	i = 0;
-	for (AtomBaseRef& iface : side_src_conn) {
+	for (Exchange& ex : side_src_conn) {
 		if (i++ > 0) s << ", ";
-		s << HexStr(&*iface);
+		s << HexStr(&*ex.other);
 	}
 	s << ")";
 	return s;
 }
 
-bool AtomBase::LinkSideSink(AtomBaseRef sink) {
+bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 	//side_src = -1; // SetSideSrc(-1)
 	ASSERT(sink);
 	//ASSERT(!side_sink_conn);
@@ -147,16 +147,19 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink) {
 	
 	AtomTypeCls type = sink->GetType();
 	//DUMP(type);
-	ASSERT(type.role == AtomRole::SIDE_SINK);
+	ASSERT(type.IsRoleSideSink() || type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
-		side_sink_conn.Add(sink);
+		Exchange& ex = side_sink_conn.Add();
+		ex.other = sink;
+		ex.local_ch_i = local_ch_i;
+		ex.other_ch_i = other_ch_i;
 		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
 		return true;
 	}
 	return false;
 }
 
-bool AtomBase::LinkSideSource(AtomBaseRef src) {
+bool AtomBase::LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i) {
 	//side_sink = -1; // SetSideSink(-1)
 	ASSERT(src);
 	if (!src)
@@ -164,9 +167,12 @@ bool AtomBase::LinkSideSource(AtomBaseRef src) {
 	
 	AtomTypeCls type = src->GetType();
 	//DUMP(type);
-	ASSERT(type.role == AtomRole::SIDE_SOURCE);
+	ASSERT(type.IsRoleSideSource() || type.IsRolePipe());
 	if (PassLinkSideSource(src)) {
-		side_src_conn.Add(src);
+		Exchange& ex = side_src_conn.Add();
+		ex.other = src;
+		ex.local_ch_i = local_ch_i;
+		ex.other_ch_i = other_ch_i;
 		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
 		return true;
 	}

@@ -21,7 +21,7 @@ bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void RollingValueBase::AltStorePacket(Packet& p) {
+void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	ASSERT(internal_fmt.IsValid());
 	
 	RTLOG("RollingValueBase::AltStorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());

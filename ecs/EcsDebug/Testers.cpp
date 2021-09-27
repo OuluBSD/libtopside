@@ -18,7 +18,7 @@ void TestRealtimeSrc::Forward(FwdScope& fwd) {
 	RTLOG("TestRealtimeSrc::Forward");
 }
 
-void TestRealtimeSrc::StorePacket(Packet& p) {
+void TestRealtimeSrc::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	RTLOG("TestRealtimeSrc::StorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
 	ASSERT_(!p->GetFormat().IsValid(), "Packed shouldn't be initialized before this");
 	PacketValue& pv = *p;
@@ -129,7 +129,7 @@ void TestRealtimeSink::Forward(FwdScope& fwd) {
 	
 }
 
-void TestRealtimeSink::StorePacket(Packet& p) {
+void TestRealtimeSink::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	RTLOG("TestRealtimeSink::StorePacket");
 	p->SetFormat(GetParent()->GetSourceValue().GetFormat());
 }

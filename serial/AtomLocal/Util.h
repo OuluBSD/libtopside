@@ -50,8 +50,8 @@ public:
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	bool AltIsReady(ValDevCls vd) override;
-	void LoadPacket(const Packet& p) override;
-	void AltStorePacket(Packet& p) override;
+	void LoadPacket(int ch_i, const Packet& p) override;
+	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	
 	

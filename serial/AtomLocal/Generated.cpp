@@ -226,6 +226,22 @@ AtomTypeCls SdlVideoAtom::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls SdlVideoPipe::GetAtomType()
+{
+	return ATOM21(SDL_VIDEO_PIPE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO, ACCEL, RECEIPT);
+}
+
+void SdlVideoPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<AccelSinkPolling<SdlVideoPipe>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
+}
+
+AtomTypeCls SdlVideoPipe::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls SdlSwVideoAtom::GetAtomType()
 {
 	return ATOM11(SDL_SW_VIDEO_ATOM, SINK, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
@@ -270,6 +286,22 @@ void OglShaderSource::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglShaderSource::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls OglShaderPipe::GetAtomType()
+{
+	return ATOM12(OGL_SHADER_PIPE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, RECEIPT, ACCEL, VIDEO);
+}
+
+void OglShaderPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<AccelSourcePolling<OglShaderPipe>>(this);
+	vis.VisitThis<OglShaderBase>(this);
+}
+
+AtomTypeCls OglShaderPipe::GetType() const
 {
 	return GetAtomType();
 }

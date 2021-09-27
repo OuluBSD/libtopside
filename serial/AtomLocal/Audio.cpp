@@ -38,7 +38,7 @@ void AudioGenBase::AltForward(FwdScope& fwd) {
 	
 }
 
-void AudioGenBase::AltStorePacket(Packet& p) {
+void AudioGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;

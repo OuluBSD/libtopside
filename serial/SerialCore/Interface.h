@@ -270,7 +270,7 @@ public:
 	
 	virtual void				ClearSink() override {ClearContainers();}
 	virtual Value&				GetValue(int i) override {return GetContainerValue(i);}
-	virtual int					GetSinkCount() const override {return GetSinkCount();}
+	virtual int					GetSinkCount() const override {return GetContainerCount();}
 	
 };
 

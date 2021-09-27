@@ -42,7 +42,7 @@
 
 #ifdef flagDEBUG_RT
 	#define DEBUG_RT_PIPE 1
-	#define RTLOG(x) LOG("REALTIME DEBUG: " << x)
+	#define RTLOG(x) LOG("RTDBG: " << x)
 #else
 	#define DEBUG_RT_PIPE 0
 	#define RTLOG(x)

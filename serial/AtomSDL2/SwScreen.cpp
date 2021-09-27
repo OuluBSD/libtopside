@@ -44,7 +44,7 @@ void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
 			Packet p = sink_buf.First();
 			sink_buf.RemoveFirst();
 			PacketConsumed(p);
-			if (obj->Recv(p))
+			if (obj->Recv(sink_ch_i, p))
 				break;
 		}
 		
@@ -55,7 +55,7 @@ void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
 	}
 }
 
-void SDL2SwScreenBase::AltStorePacket(Packet& p) {
+void SDL2SwScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	RTLOG("SDLSw2ScreenBase::AltStorePacket");
 	obj->Render();
 }

@@ -134,11 +134,11 @@ private:
 		InputComponent& par;
 		
 		LocalSinkValue(InputComponent* par) : par(*par) {}
-		void StorePacket(Packet& p) override {TODO}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {TODO}
 	};
 	
 	struct LocalSourceValue : public SimpleValue {
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceStream : public SimpleStream {
@@ -235,7 +235,7 @@ private:
 	};
 	
 	struct LocalSourceValue : public SimpleValue {
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceStream : public SimpleStream {
@@ -416,11 +416,11 @@ private:
 	class LocalSinkValue : public SimpleValue {
 	public:
 		RTTI_DECL1(LocalSinkValue, SimpleValue)
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceValue : public SimpleValue {
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceStream : public SimpleStream {
@@ -494,11 +494,11 @@ private:
 	class LocalSinkValue : public SimpleValue {
 	public:
 		RTTI_DECL1(LocalSinkValue, SimpleValue)
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceValue : public SimpleValue {
-		void StorePacket(Packet& p) override {}
+		void StorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 	};
 	
 	struct LocalSourceStream : public SimpleStream {

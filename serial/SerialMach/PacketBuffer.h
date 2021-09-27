@@ -163,7 +163,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	void StorePacket(Packet& p);
+	void StorePacket(int sink_ch,  int src_ch, Packet& p);
 	
 };
 

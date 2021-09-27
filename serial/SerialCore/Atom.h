@@ -43,6 +43,16 @@ protected:
 		~CustomerData();
 	};
 	
+	struct Exchange : RTTIBase {
+		AtomBaseRef				other;
+		int						local_ch_i = -1;
+		int						other_ch_i = -1;
+		
+		RTTI_DECL0(Exchange);
+		void Clear() {other.Clear(); local_ch_i = -1; other_ch_i = -1;}
+		void Visit(RuntimeVisitor& vis) {vis & other;}
+	};
+	
 	
 	Mutex					lock;
 	LinkedList<Packet>		consumed_packets;
@@ -51,7 +61,7 @@ protected:
 	AtomBaseRef				driver_conn;
 	RealtimeSourceConfig*	last_cfg = 0;
 	Vector<int>				side_sink, side_src;
-	LinkedList<AtomBaseRef>	side_sink_conn, side_src_conn;
+	LinkedList<Exchange>	side_sink_conn, side_src_conn;
 	
 	
 	void					ForwardAtom(FwdScope& fwd) override;
@@ -63,13 +73,15 @@ protected:
 	void					ForwardConverter(FwdScope& fwd);
 	void					ForwardSideSink(FwdScope& fwd);
 	void					ForwardSideSource(FwdScope& fwd);
+	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
+	void					ForwardSideConnections();
 	
 	void					ForwardVoidSink(FwdScope& fwd);
 	bool					ForwardMem(void* mem, size_t mem_size);
 	
-	void					BaseVisit(RuntimeVisitor& vis) {vis && side_sink_conn && side_src_conn; vis & driver_conn;}
+	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
 	
 public:
 	virtual AtomTypeCls GetType() const = 0;
@@ -87,7 +99,7 @@ public:
 	virtual void AltUninitialize() {}
 	virtual void AltUpdate(double dt) {}
 	virtual void AltForward(FwdScope& fwd) {Panic("AltForward not implemented");}
-	virtual void AltStorePacket(Packet& p) {Panic("AltStorePacket not implemented");}
+	virtual void AltStorePacket(int sink_ch,  int src_ch, Packet& p) {Panic("AltStorePacket not implemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	virtual bool AltPostInitialize() {return true;}
 	
@@ -100,8 +112,8 @@ public:
 	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
 	virtual bool PostInitialize() {return AltPostInitialize();}
 	virtual String ToString() const;
-	virtual void LoadPacket(const Packet& p) {}
-	virtual void StorePacket(Packet& p) {AltStorePacket(p);}
+	virtual void LoadPacket(int ch_i, const Packet& p) {}
+	virtual void StorePacket(int sink_ch,  int src_ch, Packet& p) {AltStorePacket(sink_ch, src_ch, p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}
 	virtual RealtimeSourceConfig* GetConfig() {return last_cfg;}
@@ -113,17 +125,19 @@ public:
 	
 	const Vector<int>&		GetSideSinks() const {return side_sink;}
 	const Vector<int>&		GetSideSources() const {return side_src;}
-	//int						GetSideSinkId(int i) {return side_sink[i];}
-	//int						GetSideSrcId(int i) {return side_src[i];}
-	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First();}
-	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First();}
+	int						GetSideSinkCount() const {return side_sink.GetCount();}
+	int						GetSideSourceCount() const {return side_src.GetCount();}
+	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
+	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
 	void					AddSideSinkId(int i) {side_sink.Add(i);}
 	void					AddSideSrcId(int i) {side_src.Add(i);}
-	bool					LinkSideSink(AtomBaseRef sink);
-	bool					LinkSideSource(AtomBaseRef src);
+	bool					LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i);
+	bool					LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i);
 	
 	void					PacketConsumed(const Packet& p);
 	void					PacketsConsumed(const LinkedList<Packet>& v);
+	int						GetSinkPacketCount();
+	int						GetSourcePacketCount();
 	
 	static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {
 		ValDevCls common_vd = from_type.iface.src.GetCommon(to_type.iface.sink);

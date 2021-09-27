@@ -92,6 +92,7 @@ public:
 	LinkedList(LinkedList&& l) {Swap(first,l.first); Swap(last,l.last); Swap(count,l.count);}
 	~LinkedList() {Clear();}
 	
+	
 	T& At(int i) {
 		int j = 0;
 		for(Iterator it = begin(); it; ++it, ++j)
@@ -268,6 +269,23 @@ public:
 	void Append(const LinkedList& l) {
 		for (Iterator it = l.begin(); it; ++it)
 			Add(it());
+	}
+	void PickAppend(LinkedList& l) {
+		if (!l.first) return;
+		if (!first) {
+			first = l.first;
+			last = l.last;
+			count = l.count;
+		}
+		else {
+			last->next = l.first;
+			l.first->prev = last;
+			last = l.last;
+			count += l.count;
+		}
+		l.first = 0;
+		l.last = 0;
+		l.count = 0;
 	}
 	
 	void operator<<=(const LinkedList& l) {Clear(); Append(l);}

@@ -367,25 +367,28 @@ void ScriptLoader::ClearErrorBuffer() {
 bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1) {
 	
 	int dbg_i = 0;
-	for (AtomBaseRef& in : loop0.atoms) {
-		for (int in_conn : in->GetSideSinks()) {
-			RTLOG("Trying to side-link id " << in_conn);
+	for (AtomBaseRef& sink : loop0.atoms) {
+		for (int sink_conn : sink->GetSideSinks()) {
+			RTLOG("Trying to side-link id " << sink_conn);
 			bool found = false;
-			for (AtomBaseRef& out : loop1.atoms) {
-				for (int out_conn : out->GetSideSources()) {
-					if (in_conn == out_conn) {
+			for (AtomBaseRef& src : loop1.atoms) {
+				for (int src_conn : src->GetSideSources()) {
+					if (sink_conn == src_conn) {
 						found = true;
 						
-						if (!out->LinkSideSink(in)) {
-							AddError("Side-source refused linking to side-sink");
+						int src_ch_i = 1 + src->GetSideSinkCount();
+						int sink_ch_i = 1 + sink->GetSideSourceCount();
+						
+						if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
+							AddError("Side-source refused linking to side-src");
 							return false;
 						}
-						if (!in->LinkSideSource(out)) {
-							AddError("Side-sink refused linking to side-source");
+						if (!sink->LinkSideSource(src, sink_ch_i, src_ch_i)) {
+							AddError("Side-src refused linking to side-source");
 							return false;
 						}
 						
-						LOG(out->ToString() + " side-linked to " + in->ToString());
+						LOG(src->ToString() + "(" << src_ch_i << ") side-linked to " + sink->ToString() + "(" << sink_ch_i << ")");
 						break;
 					}
 				}

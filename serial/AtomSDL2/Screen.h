@@ -26,9 +26,10 @@ public:
 	bool			AltInitialize(const Script::WorldState& ws) override;
 	void			AltUninitialize() override;
 	void			AltForward(FwdScope& fwd) override;
-	void			AltStorePacket(Packet& p) override;
+	void			AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void			AltUpdate(double dt) override;
-	void			LoadPacket(const Packet& p) override;
+	void			LoadPacket(int ch_i, const Packet& p) override;
+	bool			IsReady(ValDevCls vd) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
