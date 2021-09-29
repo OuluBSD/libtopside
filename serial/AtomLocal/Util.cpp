@@ -3,6 +3,68 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
+	RTLOG("CustomerBase::AltInitialize");
+	
+	AtomTypeCls type = GetType();
+	
+	if (type.iface.content.val == ValCls::AUDIO)
+		packet_thrds = 5;
+	
+	return true;
+}
+
+void CustomerBase::AltForward(FwdScope& fwd) {
+	//RTLOG("CustomerBase::AltForward");
+	
+	if (!packet_count) {
+		RTLOG("CustomerBase::AltForward: create packet");
+		InterfaceSinkRef sink_iface = GetSink();
+		
+		int sink_count = sink_iface->GetSinkCount();
+		ASSERT(sink_count == 1);
+		
+		Value&			sink_val = sink_iface->GetValue(0);
+		PacketBuffer&	sink_buf = sink_val.GetBuffer();
+		Format			fmt = sink_val.GetFormat();
+		
+		Packet p = CreatePacket(off_gen);
+		p->SetFormat(fmt);
+		p->seq = -1;
+		
+		InternalPacketData& data = p->template SetData<InternalPacketData>();
+		data.pos = 0;
+		data.count = 1;
+		
+		WhenEnterCreatedEmptyPacket(p);
+		WhenLeaveCreatedEmptyPacket();
+		
+		//PacketTracker::Track(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+		sink_val.GetBuffer().Add(p);
+		
+		packet_count++;
+	}
+	
+}
+
+void CustomerBase::LoadPacket(int ch_i, const Packet& p) {
+	RTLOG("CustomerBase::LoadPacket");
+	
+	//if (p->seq >= 0) {
+	PacketTracker::StopTracking(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+	//}
+}
+
+void CustomerBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("CustomerBase::AltStorePacket");
+	
+	p->SetOffset(off_gen.Create());
+	PacketTracker::Track(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+	
+}
+
+
+
 JoinerBase::JoinerBase() {
 	
 }
@@ -40,6 +102,8 @@ void SplitterBase::AltForward(FwdScope& fwd) {
 }
 
 
+
+#ifdef flagGUI
 
 OglShaderBase::OglShaderBase() {
 	
@@ -123,5 +187,6 @@ void OglShaderBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	}
 }
 
+#endif
 
 NAMESPACE_SERIAL_END

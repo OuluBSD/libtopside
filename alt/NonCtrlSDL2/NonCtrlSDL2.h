@@ -5,6 +5,9 @@
 // Not here: #include <OOSDL2/OOSDL2.h>
 
 
+#ifndef flagGUI
+	#error NonCtrlSDL2 requires GUI flag
+#endif
 
 
 NAMESPACE_UPP

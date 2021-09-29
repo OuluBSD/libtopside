@@ -2,10 +2,7 @@
 #define _AtomLocal_AtomLocal_h_
 
 #include <SerialLib/SerialLib.h>
-
-#ifdef flagGUI
-	#include <AtomSDL2/AtomSDL2.h>
-#endif
+#include <AtomSDL2/AtomSDL2.h>
 
 #ifdef flagDEBUG_ATOM
 	#define HAVE_MANUAL_DBG_CLASSES 1

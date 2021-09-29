@@ -156,19 +156,29 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	te_fwdscope.SetReference(fcls_fwdscope);
 	cu.Activate(te_fwdscope);
 	
-	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$ATOM_TYPE_LIST");
-	MExpr& ms_deflist_expr = ms_deflist;
-	ms_deflist.Hint(HINT_PKG, "SerialMach");
-	ms_deflist.Hint(HINT_FILE, "Generated");
-	ms_deflist.HideStatement();
-	ms_deflist_expr.SetDefine("ATOM_TYPE_LIST");
+	Index<String> atom_types;
+	atom_types.Add("");
+	atom_types.Add("GUI_");
 	
-	MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$ATOM_CLASS_LIST");
-	MExpr& ms_clslist_expr = ms_clslist;
-	ms_clslist.Hint(HINT_PKG, "SerialMach");
-	ms_clslist.Hint(HINT_FILE, "Generated");
-	ms_clslist.HideStatement();
-	ms_clslist_expr.SetDefine("ATOM_CLASS_LIST");
+	Vector<MExpr*> deflists, clslists;
+	for (String atom_type : atom_types) {
+		MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$" + atom_type + "ATOM_TYPE_LIST");
+		MExpr& ms_deflist_expr = ms_deflist;
+		ms_deflist.Hint(HINT_PKG, "SerialMach");
+		ms_deflist.Hint(HINT_FILE, "Generated");
+		ms_deflist.HideStatement();
+		ms_deflist_expr.SetDefine(atom_type + "ATOM_TYPE_LIST");
+		deflists.Add(&ms_deflist_expr);
+		
+		MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$" + atom_type + "ATOM_CLASS_LIST");
+		MExpr& ms_clslist_expr = ms_clslist;
+		ms_clslist.Hint(HINT_PKG, "SerialMach");
+		ms_clslist.Hint(HINT_FILE, "Generated");
+		ms_clslist.HideStatement();
+		ms_clslist_expr.SetDefine(atom_type + "ATOM_CLASS_LIST");
+		clslists.Add(&ms_clslist_expr);
+	}
+	
 	
 	for (Header& h : Headers().GetValues()) {
 		if (h.pkg == &pkg)
@@ -188,18 +198,25 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		
 		Class& cls_h = ns_serial.GetAddClass(h_name);
 		
+		int list_i = 0;
+		bool req_gui = h.args.Find("GUI") >= 0;
+		if (req_gui) {
+			list_i = 1;
+			cls_h.RequireMetaDefinition("flagGUI");
+		}
+		
 		Index<String> inherits;
 		inherits.Add(base_name + "<" + h_name + ">");
 		inherits.Append(h.inherits);
 		
 		{
-			MetaExpression& e = ms_deflist_expr.AddSub();
+			MetaExpression& e = deflists[list_i]->AddSub();
 			e.SetCall("ATOM_TYPE");
 			e.AddSub().SetId(h.key);
 		}
 		
 		{
-			MetaExpression& e = ms_clslist_expr.AddSub();
+			MetaExpression& e = clslists[list_i]->AddSub();
 			e.SetCall("ATOM_CLASS");
 			e.AddSub().SetId(h_name);
 		}
@@ -342,6 +359,9 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			using_expr.SetIdTemplate("Ref");
 			using_expr.Add().SetId(h_name);
 			using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
+			
+			if (req_gui)
+				using_ref.RequireMetaDefinition("flagGUI");
 		}
 		
 		

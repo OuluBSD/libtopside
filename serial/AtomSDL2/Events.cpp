@@ -28,6 +28,26 @@ void SDL2EventsBase::AltUninitialize() {
 	
 }
 
+void SDL2EventsBase::AltForward(FwdScope& fwd) {
+	TODO
+}
+
+void SDL2EventsBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+	TODO
+}
+
+void SDL2EventsBase::AltUpdate(double dt) {
+	TODO
+}
+
+void SDL2EventsBase::LoadPacket(int ch_i, const Packet& p) {
+	TODO
+}
+
+bool SDL2EventsBase::IsReady(ValDevCls vd) {
+	TODO
+}
+
 CtrlEvent& SDL2EventsBase::AddTmpEvent() {
 	static const int ev_sz = sizeof(CtrlEvent);
 	int off = tmp_events.GetCount();

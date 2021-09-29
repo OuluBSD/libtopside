@@ -25,6 +25,8 @@ file
 	MetaExpression.cpp,
 	TypeExpr.h,
 	TypeExpr.cpp,
+	Util.h,
+	Util.cpp,
 	Node.h,
 	Node.cpp,
 	_ readonly separator;

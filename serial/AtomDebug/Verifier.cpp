@@ -55,6 +55,7 @@ bool MachineVerifier::Scope::CanEnter(Type t) const {
 }
 
 void MachineVerifier::Enter(Type t) {
+	if (!Thread::IsMain()) return;
 	ASSERT(!stack.IsEmpty());
 	Scope& scope = stack.Top();
 	if (!scope.CanEnter(t))
@@ -65,6 +66,7 @@ void MachineVerifier::Enter(Type t) {
 }
 
 void MachineVerifier::Leave(Type t) {
+	if (!Thread::IsMain()) return;
 	ASSERT(!stack.IsEmpty());
 	Scope& scope = stack.Top();
 	if (!scope.may_leave)
@@ -79,6 +81,8 @@ void MachineVerifier::Leave(Type t) {
 }
 
 void MachineVerifier::OnEnterUpdate() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterUpdate");
 	Enter(UPDATE);
 	
@@ -89,6 +93,8 @@ void MachineVerifier::OnEnterUpdate() {
 }
 
 void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterSystemUpdate " << HexStr((void*)&base));
 	Enter(SYSTEM_UPDATE);
 	
@@ -111,6 +117,8 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 }
 
 void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterOnceForward " << HexStr((void*)fwd));
 	Enter(ONCE_FORWARD);
 	
@@ -121,6 +129,8 @@ void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 }
 
 void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterAtomForward " << HexStr((void*)c));
 	Enter(EXTCOMP_FORWARD);
 	
@@ -131,6 +141,8 @@ void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
 }
 
 void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterFwdScopeForward " << HexStr((void*)&f));
 	Enter(FWDSCOPE_FORWARD);
 	
@@ -164,6 +176,8 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 }
 
 void MachineVerifier::OnEnterStorePacket(AtomBase& b, Packet& p) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterStorePacket " << HexStr((void*)&b) << ", " << HexStr((void*)&*p));
 	Enter(STORE_PACKET);
 	
@@ -171,6 +185,8 @@ void MachineVerifier::OnEnterStorePacket(AtomBase& b, Packet& p) {
 }
 
 void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterCreatedEmptyPacket " << HexStr((void*)&*p));
 	Enter(CREATE_EMPTY_PACKET);
 	
@@ -178,6 +194,8 @@ void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
 }
 
 void MachineVerifier::OnEnterValExPtForward(DefaultExchangePoint& p) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnEnterValExPtForward");
 	Enter(VALEXPT_FWD);
 	
@@ -187,30 +205,40 @@ void MachineVerifier::OnEnterValExPtForward(DefaultExchangePoint& p) {
 
 
 void MachineVerifier::OnLeaveUpdate() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveUpdate");
 	Leave(UPDATE);
 	
 }
 
 void MachineVerifier::OnLeaveSystemUpdate() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveSystemUpdate");
 	Leave(SYSTEM_UPDATE);
 	
 }
 
 void MachineVerifier::OnLeaveOnceForward() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveOnceForward");
 	Leave(ONCE_FORWARD);
 	
 }
 
 void MachineVerifier::OnLeaveAtomForward() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveAtomForward");
 	Leave(EXTCOMP_FORWARD);
 	
 }
 
 void MachineVerifier::OnLeaveFwdScopeForward() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveFwdScopeForward");
 	
 	if (cur_pk.bytes) {
@@ -243,6 +271,8 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 }
 
 void MachineVerifier::OnLeaveStorePacket(Packet& p) {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveStorePacket");
 	auto fmt = p->GetFormat();
 	if (p->Data().GetCount() &&
@@ -268,6 +298,8 @@ void MachineVerifier::PacketData::Add(Packet& p) {
 }
 
 void MachineVerifier::OnLeaveCreatedEmptyPacket() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveCreatedEmptyPacket");
 	Leave(CREATE_EMPTY_PACKET);
 	
@@ -275,6 +307,8 @@ void MachineVerifier::OnLeaveCreatedEmptyPacket() {
 }
 
 void MachineVerifier::OnLeaveValExPtForward() {
+	if (!Thread::IsMain()) return;
+	
 	RTLOG("MachineVerifier::OnLeaveValExPtForward");
 	Leave(VALEXPT_FWD);
 	

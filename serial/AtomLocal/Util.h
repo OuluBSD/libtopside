@@ -4,6 +4,23 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+class CustomerBase :
+	virtual public AtomBase
+{
+	int			packet_count = 0;
+	int			packet_thrds = 0;
+	off32_gen	off_gen;
+	
+public:
+	RTTI_DECL0(CustomerBase);
+	bool AltInitialize(const Script::WorldState& ws) override;
+	void AltForward(FwdScope& fwd) override;
+	void Visit(RuntimeVisitor& vis) override {}
+	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void LoadPacket(int ch_i, const Packet& p) override;
+};
+
+
 class JoinerBase :
 	virtual public AtomBase
 {
@@ -35,6 +52,7 @@ public:
 	
 };
 
+#ifdef flagGUI
 
 class OglShaderBase :
 	public OglBufferBase
@@ -57,6 +75,7 @@ public:
 	
 };
 
+#endif
 
 NAMESPACE_SERIAL_END
 

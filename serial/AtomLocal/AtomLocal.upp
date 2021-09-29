@@ -2,9 +2,8 @@ description "\377B51,138,51";
 
 uses
 	SerialLib,
-	SerialPlanner;
-
-uses(GUI) AtomSDL2;
+	SerialPlanner,
+	AtomSDL2;
 
 library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 

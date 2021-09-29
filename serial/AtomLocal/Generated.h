@@ -7,10 +7,10 @@ namespace TS {
 
 namespace Serial {
 
-class CenterCustomer : public CustomerBaseT<CenterCustomer> {
+class CenterCustomer : public CustomerBaseT<CenterCustomer>, public CustomerBase {
 
 public:
-	RTTI_DECL1(CenterCustomer, BaseT)
+	RTTI_DECL2(CenterCustomer, BaseT, CustomerBase)
 	COPY_PANIC(CenterCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
@@ -124,6 +124,7 @@ public:
 
 };
 
+#if defined flagGUI
 class VideoDbgSrc : public CenterSourceAsync<VideoDbgSrc>, public VideoGenBase {
 
 public:
@@ -137,7 +138,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class AccelVideoDbgSrc : public AccelSourceAsync<AccelVideoDbgSrc>, public AccelVideoGenBase {
 
 public:
@@ -151,7 +154,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class AccelCustomer : public CustomerBaseT<AccelCustomer> {
 
 public:
@@ -166,6 +171,7 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 class SdlContextAtom : public CenterDriver<SdlContextAtom>, public SDL2ContextBase {
 
@@ -181,6 +187,21 @@ public:
 
 };
 
+class SdlEventAtomSA : public CenterSinkPolling<SdlEventAtomSA>, public SDL2EventsBase {
+
+public:
+	RTTI_DECL2(SdlEventAtomSA, BaseT, SDL2EventsBase)
+	COPY_PANIC(SdlEventAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+#if defined flagGUI
 class SdlVideoAtomSA : public AccelSinkPolling<SdlVideoAtomSA>, public SDL2ScreenBase {
 
 public:
@@ -194,7 +215,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom>, public SDL2ScreenBase {
 
 public:
@@ -208,7 +231,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class SdlVideoPipe : public AccelSinkPolling<SdlVideoPipe>, public SDL2ScreenBase {
 
 public:
@@ -222,7 +247,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class SdlSwVideoAtom : public CenterSinkPolling<SdlSwVideoAtom>, public SDL2SwScreenBase {
 
 public:
@@ -236,6 +263,7 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 class SdlAudioAtom : public CenterSinkAsync<SdlAudioAtom>, public SDL2AudioOutputBase {
 
@@ -252,6 +280,7 @@ public:
 
 };
 
+#if defined flagGUI
 class OglShaderSource : public AccelSourcePolling<OglShaderSource>, public OglShaderBase {
 
 public:
@@ -265,7 +294,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagGUI
 class OglShaderPipe : public AccelSourcePolling<OglShaderPipe>, public OglShaderBase {
 
 public:
@@ -279,26 +310,66 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
+
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
+
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
+
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
+
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
+
 using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
+
 using AudioSplitterRef = Ref<AudioSplitter, RefParent1<Loop>>;
+
 using AudioJoinerRef = Ref<AudioJoiner, RefParent1<Loop>>;
+
+#if defined flagGUI
 using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
+#endif
+
 using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
+
+using SdlEventAtomSARef = Ref<SdlEventAtomSA, RefParent1<Loop>>;
+
+#if defined flagGUI
 using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using SdlVideoPipeRef = Ref<SdlVideoPipe, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, RefParent1<Loop>>;
+#endif
+
 using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
+
+#if defined flagGUI
 using OglShaderSourceRef = Ref<OglShaderSource, RefParent1<Loop>>;
+#endif
+
+#if defined flagGUI
 using OglShaderPipeRef = Ref<OglShaderPipe, RefParent1<Loop>>;
+#endif
+
 }
 
 }

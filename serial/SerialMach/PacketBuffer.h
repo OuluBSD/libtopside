@@ -38,9 +38,14 @@ class PacketValue :
 	Vector<byte>		data;
 	Format				fmt;
 	off32				offset;
-	double				time;
 	PacketId			id = 0;
 	TypeCls				custom_data;
+	
+public:
+	union {
+		double				time;
+		int64				seq;
+	};
 	
 public:
 	using Pool = RecyclerPool<PacketValue>;
@@ -74,6 +79,7 @@ public:
 	bool					HasTrackingId() const {return id != 0;}
 	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
 	hash_t					GetDataHash() const;
+	
 	
 	String					ToString() const;
 	String					ToStringWithHash() const;

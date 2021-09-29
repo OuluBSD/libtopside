@@ -117,8 +117,13 @@ void ScriptLoopLoader::InitSegments() {
 	AtomTypeCls consumer;
 	if (dev == DevCls::CENTER)
 		consumer = AsAtomTypeCls<CenterCustomer>();
-	else if (dev == DevCls::ACCEL)
+	else if (dev == DevCls::ACCEL) {
+		#ifdef flagGUI
 		consumer = AsAtomTypeCls<AccelCustomer>();
+		#else
+		SetError("ACCEL device not supported without this program compiled with GUI compilation flag");
+		#endif
+	}
 	else {
 		TODO
 		return;

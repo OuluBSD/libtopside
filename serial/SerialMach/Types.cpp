@@ -19,6 +19,11 @@ String GetSubAtomString(SubAtomCls t) {
 	switch (t) {
 		#define ATOM_TYPE(x) case x:	return #x;
 		ATOM_TYPE_LIST
+		
+		#ifdef flagGUI
+		GUI_ATOM_TYPE_LIST
+		#endif
+		
 		#undef ATOM_TYPE
 		default: return "invalid";
 	}

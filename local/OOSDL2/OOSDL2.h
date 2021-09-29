@@ -2,6 +2,7 @@
 #define _SDL2_SDL2_h_
 
 
+
 #if !defined UPP_VERSION && defined flagGUI
 	#include <Draw/Draw.h>
 	#include <Graphics/Graphics.h>

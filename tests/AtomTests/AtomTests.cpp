@@ -1,5 +1,6 @@
 #include "AtomTests.h"
 
+
 NAMESPACE_TOPSIDE_BEGIN
 using namespace TS::Serial;
 
@@ -33,6 +34,8 @@ Take any address and put to BreakRefAdd
 
 
 void Main() {
+	using namespace Serial;
+	
 	SetCoutLog();
 	const auto& cmd = CommandLine();
 	if (cmd.IsEmpty()) {
@@ -44,8 +47,6 @@ void Main() {
 	
 	
 	Serial::Factory::Dump();
-	
-	TypeAtomCls t;
 	
 	
 	//BreakRefAdd(0x802859038);
@@ -63,7 +64,7 @@ void Main() {
 		//verifier.AddSystem<EonLoader>();
 		
 		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
-		auto& customer	= ent.AddAtomWith<TestCustomer>		(VD(CENTER,ORDER));
+		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));
 		auto& src		= ent.AddAtomWith<TestRealtimeSrc>	(VD(CENTER,AUDIO));
 		auto& sink		= ent.AddAtomWith<TestRealtimeSink>	(VD(CENTER,RECEIPT));
 		customer << src << sink << customer;
@@ -79,7 +80,7 @@ void Main() {
 }
 
 
-	
+
 NAMESPACE_TOPSIDE_END
 
 

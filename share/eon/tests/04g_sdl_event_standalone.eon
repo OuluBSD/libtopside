@@ -1,0 +1,17 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop event: {
+			center.customer: true;
+			sdl.event.standalone: true;
+		};
+		
+	};
+
+};
+

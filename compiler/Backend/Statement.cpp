@@ -115,15 +115,21 @@ String UsingStatement::GetCodeString(const CodeArgs& args) const {
 		return s;
 	
 	if (args.have_header) {
+		s << MetaConditional::PreCodeString(args);
+		
 		s.Cat('\t', args.indent);
 		s << "using " << name << " = ";
 		if (expr)
 			s << expr->GetCodeString(args);
 		s << ";\n";
+		s << MetaConditional::PostCodeString(args);
+		s << "\n";
 	}
 	
 	if (args.have_impl) {
+		/*s << MetaConditional::PreCodeString(args);
 		
+		s << MetaConditional::PostCodeString(args);*/
 	}
 	
 	return s;

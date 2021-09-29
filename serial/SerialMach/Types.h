@@ -89,6 +89,11 @@ typedef enum : byte {
 	
 	#define ATOM_TYPE(x) x,
 	ATOM_TYPE_LIST
+	
+	#ifdef flagGUI
+	GUI_ATOM_TYPE_LIST
+	#endif
+	
 	#undef ATOM_TYPE
 	
 	#define SERIAL_TYPE(x) x,

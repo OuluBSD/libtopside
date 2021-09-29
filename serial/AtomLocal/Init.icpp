@@ -8,6 +8,11 @@ INITBLOCK {
 	
 	#define ATOM_CLASS(x) Serial::Factory::RegisterAtom<x>();
 	ATOM_CLASS_LIST
+	
+	#ifdef flagGUI
+	GUI_ATOM_CLASS_LIST
+	#endif
+	
 	#undef ATOM_CLASS
 	
 	

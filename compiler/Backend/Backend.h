@@ -4,6 +4,7 @@
 #include <Local/Local.h>
 
 #include "Node.h"
+#include "Util.h"
 #include "TypeExpr.h"
 #include "MetaExpression.h"
 #include "Expression.h"

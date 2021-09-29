@@ -1,6 +1,7 @@
 #ifndef _SerialLib_AccelUtil_h_
 #define _SerialLib_AccelUtil_h_
 
+#ifdef flagGUI
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -26,4 +27,5 @@ public:
 NAMESPACE_SERIAL_END
 
 
+#endif
 #endif

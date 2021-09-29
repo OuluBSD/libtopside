@@ -4,6 +4,25 @@
 #undef STB_TRUETYPE_IMPLEMENTATION
 #include <ports/stb/stb_truetype.h>
 
+
+#if 0 //def flagWIN32
+	#include <SDL.h>
+	#include <SDL_ttf.h>
+	#include <SDL_image.h>
+	#include <SDL_syswm.h>
+	#ifdef flagGUI
+		#include <SDL_opengl.h>
+	#endif
+#else
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_ttf.h>
+	#include <SDL2/SDL_image.h>
+	#ifdef flagGUI
+		#include <SDL2/SDL_opengl.h>
+	#endif
+#endif
+
+
 NAMESPACE_UPP
 
 typedef stbtt_fontinfo		RawSysFont;

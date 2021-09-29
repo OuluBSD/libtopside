@@ -40,7 +40,11 @@ bool SDL2ImageBase::LoadFileAny(String path) {
 				return false;
 			}
 			
+			#ifdef flagGUI
 			img << Image(surf);
+			#else
+			TODO
+			#endif
 		}
 		sstream.SetSkipDrop();
 		return true;
@@ -51,7 +55,13 @@ bool SDL2ImageBase::LoadFileAny(String path) {
 			last_error = IMG_GetError();
 			return false;
 		}
+		
+		#ifdef flagGUI
 		img << Image(surf);
+		#else
+		TODO
+		#endif
+		
 		sstream.SetSkipDrop();
 		return true;
 	}

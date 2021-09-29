@@ -55,6 +55,7 @@ protected:
 	
 	
 	Mutex					lock;
+	Mutex					fwd_lock;
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
@@ -103,6 +104,7 @@ public:
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	virtual bool AltPostInitialize() {return true;}
 	
+	virtual void ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented");}
 	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
 	virtual bool IsConsumedPartialPacket() {return 0;}
 	
@@ -122,6 +124,8 @@ public:
 	
 	virtual bool PassLinkSideSink(AtomBaseRef sink) {return true;}
 	virtual bool PassLinkSideSource(AtomBaseRef src) {return true;}
+	
+	void					ForwardAsync();
 	
 	const Vector<int>&		GetSideSinks() const {return side_sink;}
 	const Vector<int>&		GetSideSources() const {return side_src;}

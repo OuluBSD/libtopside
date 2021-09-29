@@ -46,12 +46,13 @@ public:
 	
 	SDL2EventsBase() : stream(this) {}
 	
-	bool				AltInitialize(const Script::WorldState& ws) override;
-	void				AltUninitialize() override;
-	
-	/*EventStream&		GetStream(EvCtx) override {return stream;}
-	void				BeginStream(EvCtx) override {stream.FillBuffer();}
-	void				EndStream(EvCtx) override {stream.DropBuffer();}*/
+	bool			AltInitialize(const Script::WorldState& ws) override;
+	void			AltUninitialize() override;
+	void			AltForward(FwdScope& fwd) override;
+	void			AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void			AltUpdate(double dt) override;
+	void			LoadPacket(int ch_i, const Packet& p) override;
+	bool			IsReady(ValDevCls vd) override;
 	
 	bool				ReadFrame();
 	bool				ProcessFrame();

@@ -24,6 +24,7 @@ public:
 	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		if (!this->AltInitialize(ws)) return false;
 		AtomBase::packets_forwarded = 0;
 		customer.Create();
 		AtomBaseRef r = AtomBase::AsRefT();
@@ -33,6 +34,7 @@ public:
 	}
 	
 	void Uninitialize() override {
+		this->AltUninitialize();
 		AtomBaseRef r = AtomBase::AsRefT();
 		ASSERT(r);
 		AtomBase::GetMachine().template Get<AtomSystem>()->RemoveCustomer(r);
@@ -66,7 +68,7 @@ public:
 	
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
-	void Forward(FwdScope& fwd) override {}
+	//void Forward(FwdScope& fwd) override {}
 	
 	
 	

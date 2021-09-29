@@ -56,7 +56,9 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 		e.Clear();
 		
 	switch (event.type) {
-		
+			
+#ifdef flagGUI
+			
 		case SDL_WINDOWEVENT:
 			
 			/*if (event.window.event == SDL_WINDOWEVENT_LEAVE) {
@@ -73,10 +75,8 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 			else if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
 				screen_sz.cx = event.window.data1;
 				screen_sz.cy = event.window.data2;
-#ifdef flagGUI
 				if (scr)
 					scr->screen_sz = screen_sz;
-#endif
 				/*SetFrameRect0(RectC(0, 0, screen_sz.cx, screen_sz.cy));
 				SetContentRect(RectC(0, 0, screen_sz.cx, screen_sz.cyh));
 				SetPendingLayout();
@@ -229,6 +229,8 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 				prev_mouse_pt = mouse_pt;
 				return true;
 			}
+			
+#endif
 			
 		default:
 			break;

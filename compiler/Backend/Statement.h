@@ -39,7 +39,8 @@ public:
 
 class UsingStatement :
 	public CompilerNode<UsingStatement,NodeBase>,
-	public AccessControl
+	public AccessControl,
+	public MetaConditional
 {
 	
 	

@@ -24,8 +24,9 @@ int AtomBase::GetSourcePacketCount() {
 void AtomBase::ForwardAtom(FwdScope& fwd) {
 	RTLOG("AtomBase::ForwardAtom");
 	
-	last_cfg = &fwd.Cfg();
+	fwd_lock.Enter();
 	
+	last_cfg = &fwd.Cfg();
 	
 	#ifdef flagDEBUG
 	int ch_i = 0;
@@ -40,7 +41,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	#endif
 	
 	
-	AtomTypeCls type = GetType();
+	/*AtomTypeCls type = GetType();
 	switch (type.role) {
 		case DRIVER:		ForwardDriver(fwd);		break;
 		case CUSTOMER:		ForwardCustomer(fwd);	break;
@@ -51,12 +52,13 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		case SIDE_SINK:		ForwardSideSink(fwd);	break;
 		case PIPE:			ForwardPipe(fwd);	break;
 		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
-	}
-	
+	}*/
+	ForwardPipe(fwd);
 	ForwardSideConnections();
 	
 	
 	#ifdef flagDEBUG
+	AtomTypeCls type = GetType();
 	int post_sink_packet_count = GetSinkPacketCount();
 	int post_src_packet_count = GetSourcePacketCount();
 	int post_consumed = consumed_packets.GetCount();
@@ -84,6 +86,8 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 		*/
 	}
 	#endif
+	
+	fwd_lock.Leave();
 }
 
 void AtomBase::ForwardDriver(FwdScope& fwd) {
@@ -470,7 +474,7 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 					StorePacket(i, j, to);
 					WhenLeaveStorePacket(to);
 					
-					PacketTracker::Track(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+					PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
 					src_buf.Add(to);
 				}
 				else {
@@ -617,6 +621,15 @@ void AtomBase::ForwardSideConnections() {
 			ASSERT(src_buf.IsEmpty());
 		}
 	}
+}
+
+void AtomBase::ForwardAsync() {
+	if (!last_cfg)
+		return;
+	
+	FwdScope fwd(this, *last_cfg);
+	fwd.Forward();
+	
 }
 
 NAMESPACE_SERIAL_END

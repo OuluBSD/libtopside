@@ -54,7 +54,8 @@ public:
 class Class :
 	public CompilerNode<Class,Namespace>,
 	public MetaScope,
-	public AccessControl
+	public AccessControl,
+	public MetaConditional
 {
 public:
 	TemplateClass			tmpl;
@@ -69,7 +70,6 @@ public:
 public:
 	typedef Class CLASSNAME;
 	Class();
-	
 	
 	bool				Inherit(Class& cls);
 	String				GetTypeString() const {return name;}
