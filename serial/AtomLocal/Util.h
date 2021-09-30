@@ -14,6 +14,7 @@ class CustomerBase :
 public:
 	RTTI_DECL0(CustomerBase);
 	bool AltInitialize(const Script::WorldState& ws) override;
+	bool AltPostInitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;

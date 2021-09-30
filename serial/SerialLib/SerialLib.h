@@ -8,6 +8,7 @@
 
 #include "Types.h"
 #include "RegistrySystem.h"
+#include "AtomUtil.h"
 #include "CustomAtom.h"
 #include "AccelUtil.h"
 #include "AccelAtom.h"

@@ -68,13 +68,31 @@ void SimpleValue::Exchange(Ex& e) {
 				Packet p = src_buf.First();
 				src_buf.RemoveFirst();
 				Format pk_fmt = p->GetFormat();
-				if (pk_fmt != sink_fmt) {
+				/*if (pk_fmt != sink_fmt) {
 					DUMP(pk_fmt);
 					DUMP(src_fmt);
 					DUMP(sink_fmt);
 				}
-				ASSERT(pk_fmt == sink_fmt);
-				sink_buf.Add(p);
+				ASSERT(pk_fmt == sink_fmt);*/
+				
+				/*if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
+					DUMP(pk_fmt);
+					DUMP(src_fmt);
+					DUMP(sink_fmt);
+				}
+				ASSERT(pk_fmt.IsCopyCompatible(sink_fmt));*/
+				
+				if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
+					Packet dst = CreatePacket(p->GetOffset());
+					dst->SetFormat(sink_fmt);
+					if (Convert(p, dst))
+						sink_buf.Add(dst);
+					else
+						break;
+				}
+				else {
+					sink_buf.Add(p);
+				}
 			}
 		}
 		else TODO

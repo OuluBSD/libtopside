@@ -6,28 +6,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class AsyncMemForwarderBase :
-	virtual public AtomBase
-{
-	Packet		partial_packet;
-	byte*		write_mem = 0;
-	int			write_size = 0;
-	int			write_pos = 0;
-	int			partial_pos = 0;
-	
-	
-	void	Consume(int data_begin, Packet p);
-	
-public:
-	
-	bool	IsReady(ValDevCls vd) override;
-	void	ForwardAsyncMem(byte* mem, int size) override;
-	void	LoadPacket(int ch_i, const Packet& p) override;
-	void	AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	
-	
-};
-
 class SDL2AudioOutputBase :
 	public SDL2BaseT<SDL2AudioOutputBase>,
 	public AsyncMemForwarderBase
@@ -58,7 +36,6 @@ public:
 	void SetAudioSyncInterval(double seconds) {aconfig.sync_dt = seconds;}
 	
 };
-
 
 
 NAMESPACE_SERIAL_END

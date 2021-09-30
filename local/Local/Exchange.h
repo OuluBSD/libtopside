@@ -423,6 +423,7 @@ class FwdScope {
 	int read_i, write_i;
 	RealtimeSourceConfig* cfg;
 	bool is_failed = false;
+	bool is_break = false;
 	
 public:
 	
@@ -436,11 +437,12 @@ public:
 	
 	void SetCfg(RealtimeSourceConfig& cfg) {this->cfg = &cfg;}
 	void SetFailed(bool b=true) {is_failed = b;}
+	void Break(bool b=true) {is_break = b;}
 	void AddNext(PacketForwarder& cb) {AddNext(&cb);}
 	void AddNext(PacketForwarder* cb);
 	void ActivateNext();
 	
-	bool HasCurrent() const {return !is_failed && cur != 0;}
+	bool HasCurrent() const {return !is_failed && cur != 0 && !is_break;}
 	RealtimeSourceConfig& Cfg() {ASSERT(cfg); return *cfg;}
 	bool IsFailed() const {return is_failed;}
 	int GetPos() const {return read_i-1;}

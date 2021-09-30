@@ -22,7 +22,7 @@ public:
 
 
 class VoidSinkBase :
-	virtual public AtomBase
+	public AsyncMemForwarderBase
 {
 	byte				rolling_value = 0;
 	Serial::Format		internal_fmt;

@@ -8,16 +8,22 @@ bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
 	
 	AtomTypeCls type = GetType();
 	
-	if (type.iface.content.val == ValCls::AUDIO)
-		packet_thrds = 5;
+	//if (type.iface.content.val == ValCls::AUDIO)
+	//	packet_thrds = 10;
 	
+	
+	return true;
+}
+
+bool CustomerBase::AltPostInitialize() {
+	packet_thrds = GetSink()->GetValue(0).GetMaxPackets();
 	return true;
 }
 
 void CustomerBase::AltForward(FwdScope& fwd) {
 	//RTLOG("CustomerBase::AltForward");
 	
-	if (!packet_count) {
+	while (packet_count < packet_thrds) {
 		RTLOG("CustomerBase::AltForward: create packet");
 		InterfaceSinkRef sink_iface = GetSink();
 		
@@ -45,6 +51,9 @@ void CustomerBase::AltForward(FwdScope& fwd) {
 		packet_count++;
 	}
 	
+	int pos = fwd.GetPos();
+	if (pos > 0)
+		fwd.Break();
 }
 
 void CustomerBase::LoadPacket(int ch_i, const Packet& p) {

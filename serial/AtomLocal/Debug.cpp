@@ -25,7 +25,6 @@ void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	ASSERT(internal_fmt.IsValid());
 	
 	RTLOG("RollingValueBase::AltStorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
-	ASSERT_(!p->GetFormat().IsValid(), "Packed shouldn't be initialized before this");
 	PacketValue& pv = *p;
 	pv.SetFormat(internal_fmt);
 	
@@ -50,6 +49,7 @@ void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 
 bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
 	flag.Start(1);
+	GetSink()->GetValue(0).SetMaxPackets(5);
 	Thread::Start(THISBACK(IntervalSinkProcess0));
 	return true;
 }
@@ -67,14 +67,12 @@ void VoidSinkBase::IntervalSinkProcess() {
 	Value& sink_value = sink->GetValue(sink_ch_i);
 	Serial::Format fmt = sink_value.GetFormat();
 	Serial::AudioFormat& afmt = fmt;
+	
 	Vector<byte> data;
 	data.SetCount(fmt.GetFrameSize());
 	double step_s = fmt.GetFrameSeconds();
 	TimeStop ts;
-	bool do_log = false;
-	#ifdef DEBUG_RT_PIPE
-	do_log = true;
-	#endif
+	
 	int dbg_total_samples = 0;
 	int dbg_total_bytes = 0;
 	bool fail = false;
@@ -90,23 +88,7 @@ void VoidSinkBase::IntervalSinkProcess() {
 		
 		RTLOG("VoidSinkBase::IntervalSinkProcess: trying to consume " << data.GetCount());
 		
-		if (do_log) {
-			Serial::PacketBuffer& sink_buf = sink_value.GetBuffer();
-			int total_bytes = 0;
-			int total_ch_samples = 0;
-			for(Packet& p : sink_buf) {
-				total_bytes += p->GetSizeBytes();
-				total_ch_samples += p->GetSizeChannelSamples();
-			}
-			String s;
-			s   << "VoidSinkBase::IntervalSinkProcess: sink has "
-				<< sink_buf.GetCount() << " packets, "
-				<< total_bytes << " total bytes, "
-				<< total_ch_samples << " total ch samples";
-			RTLOG(s);
-		}
-		
-		if (!ForwardMem(data.Begin(), data.GetCount())) {
+		if (!ForwardAsyncMem(data.Begin(), data.GetCount())) {
 			RTLOG("VoidSinkBase::IntervalSinkProcess: error: could not get consumable data");
 			fail = true;
 			break;

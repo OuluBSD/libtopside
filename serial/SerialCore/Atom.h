@@ -64,23 +64,25 @@ protected:
 	Vector<int>				side_sink, side_src;
 	LinkedList<Exchange>	side_sink_conn, side_src_conn;
 	
-	
-	void					ForwardAtom(FwdScope& fwd) override;
-	void					ForwardExchange(FwdScope& fwd) override;
-	void					ForwardDriver(FwdScope& fwd);
+	// Trash
 	void					ForwardCustomer(FwdScope& fwd);
 	void					ForwardSource(FwdScope& fwd);
 	void					ForwardSink(FwdScope& fwd);
 	void					ForwardConverter(FwdScope& fwd);
 	void					ForwardSideSink(FwdScope& fwd);
 	void					ForwardSideSource(FwdScope& fwd);
-	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
+	bool					ForwardMem(void* mem, size_t mem_size);
+	
+	void					ForwardAtom(FwdScope& fwd) override;
+	void					ForwardExchange(FwdScope& fwd) override;
+	void					ForwardDriver(FwdScope& fwd);
+	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();
 	
 	void					ForwardVoidSink(FwdScope& fwd);
-	bool					ForwardMem(void* mem, size_t mem_size);
+	
 	
 	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
 	
@@ -99,12 +101,12 @@ public:
 	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
 	virtual void AltUninitialize() {}
 	virtual void AltUpdate(double dt) {}
-	virtual void AltForward(FwdScope& fwd) {Panic("AltForward not implemented");}
+	virtual void AltForward(FwdScope& fwd) {}
 	virtual void AltStorePacket(int sink_ch,  int src_ch, Packet& p) {Panic("AltStorePacket not implemented");}
 	virtual bool AltIsReady(ValDevCls vd) {return true;}
 	virtual bool AltPostInitialize() {return true;}
 	
-	virtual void ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented");}
+	virtual bool ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
 	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
 	virtual bool IsConsumedPartialPacket() {return 0;}
 	

@@ -98,10 +98,10 @@ public:
 			Format val_fmt = GetDefaultFormat(vd);
 			ASSERT(val_fmt.IsValid());
 			
-			if (vd.val == ValCls::AUDIO)
+			/*if (vd.val == ValCls::AUDIO)
 				val_buf.Create(c);
-			else
-				val.Create(c);
+			else*/
+			val.Create(c);
 			
 			GetContainerValue().SetFormat(val_fmt);
 		}

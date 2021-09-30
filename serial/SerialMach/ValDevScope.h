@@ -18,7 +18,9 @@ public:
 	
 	virtual void Exchange(Ex& e) = 0;
 	virtual void SetFormat(Format f) = 0;
+	virtual void SetMaxPackets(int i) = 0;
 	virtual int GetQueueSize() const = 0;
+	virtual int GetMaxPackets() const = 0;
 	virtual Format GetFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	virtual PacketBuffer& GetBuffer() = 0;
@@ -258,8 +260,9 @@ public:
 	bool			IsQueueFull() const override;
 	PacketBuffer&	GetBuffer() override {return buf;}
 	void			SetFormat(Format fmt) override {this->fmt = fmt;}
+	void			SetMaxPackets(int i) override {packet_limit = i;}
+	int				GetMaxPackets() const override {return packet_limit;}
 	Packet			Pick();
-	void			SetLimit(int i) {packet_limit = i;}
 	void			AddPacket(Packet& p) {GetBuffer().Add(p);}
 };
 
@@ -288,6 +291,8 @@ public:
 	bool			IsQueueFull() const override;
 	void			SetFormat(Format f) override {fmt = f;}
 	PacketBuffer&	GetBuffer() override {return buf;}
+	void			SetMaxPackets(int i) override {TODO}
+	int				GetMaxPackets() const override {TODO}
 	int				GetQueueTotalSamples() const;
 	int				GetQueueChannelSamples() const;
 	void			ClearBuffer() {buf.Clear();}
