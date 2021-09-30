@@ -56,12 +56,13 @@ void CustomerBase::AltForward(FwdScope& fwd) {
 		fwd.Break();
 }
 
-void CustomerBase::LoadPacket(int ch_i, const Packet& p) {
+bool CustomerBase::LoadPacket(int ch_i, const Packet& p) {
 	RTLOG("CustomerBase::LoadPacket");
 	
 	//if (p->seq >= 0) {
 	PacketTracker::StopTracking(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
 	//}
+	return ch_i == 0;
 }
 
 void CustomerBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
@@ -88,7 +89,30 @@ void JoinerBase::AltUninitialize() {
 }
 
 void JoinerBase::AltForward(FwdScope& fwd) {
-	
+	RTLOG("JoinerBase::AltForward");
+	cur_side.Clear();
+}
+
+bool JoinerBase::LoadPacket(int ch_i, const Packet& p) {
+	if (ch_i == 1) {
+		RTLOG("JoinerBase::LoadPacket: active ch-1 packet" << p->ToString());
+		cur_side = p;
+	}
+	else {
+		RTLOG("JoinerBase::LoadPacket: skipping ch-" << ch_i << " packet");
+	}
+	return ch_i == 1;
+}
+
+void JoinerBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
+	if (sink_ch == 1) {
+		RTLOG("JoinerBase::AltStorePacket: (" << sink_ch << "," << src_ch << "): " << p->ToString());
+		p = cur_side;
+	}
+	else {
+		RTLOG("JoinerBase::AltStorePacket: (" << sink_ch << "," << src_ch << "): skipping packet");
+		p.Clear();
+	}
 }
 
 
@@ -107,9 +131,48 @@ void SplitterBase::AltUninitialize() {
 }
 
 void SplitterBase::AltForward(FwdScope& fwd) {
-	
+	cur_side.Clear();
 }
 
+bool SplitterBase::LoadPacket(int ch_i, const Packet& p) {
+	cur_side.Clear();
+	
+	Format p_fmt = p->GetFormat();
+	Format sink_fmt = GetSink()->GetValue(0).GetFormat();
+	if (p_fmt.IsCopyCompatible(sink_fmt)) {
+		cur_side = p;
+		RTLOG("SplitterBase::LoadPacket: active copy-compatible packet: " << cur_side->ToString());
+	}
+	else {
+		cur_side = CreatePacket(p->GetOffset());
+		cur_side->SetFormat(sink_fmt);
+		if (Convert(p, cur_side)) {
+			RTLOG("SplitterBase::LoadPacket: active converted packet: " << cur_side->ToString());
+		}
+		else {
+			RTLOG("SplitterBase::LoadPacket: packet conversion failed from " << p->ToString());
+			cur_side.Clear();
+		}
+			
+	}
+	
+	return ch_i == 0;
+}
+
+void SplitterBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
+	if (src_ch > 0) {
+		if (cur_side) {
+			p = cur_side;
+			RTLOG("SplitterBase::AltStorePacket: forwarded packet (" << sink_ch << ", " << src_ch << "): " << p->ToString());
+		}
+		else {
+			RTLOG("SplitterBase::AltStorePacket: store packet failed");
+		}
+	}
+	else {
+		RTLOG("SplitterBase::AltStorePacket: skipping src 0");
+	}
+}
 
 
 #ifdef flagGUI
@@ -164,9 +227,10 @@ void OglShaderBase::AltForward(FwdScope& fwd) {
 	}*/
 }
 
-void OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
+bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
 	if (ch_i == 0)
 		last_packet = p;
+	return ch_i == 0;
 }
 
 bool OglShaderBase::AltIsReady(ValDevCls vd) {

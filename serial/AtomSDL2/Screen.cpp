@@ -98,7 +98,7 @@ bool SDL2ScreenBase::IsReady(ValDevCls vd) {
 	return false;
 }
 
-void SDL2ScreenBase::LoadPacket(int ch_i, const Packet& p) {
+bool SDL2ScreenBase::LoadPacket(int ch_i, const Packet& p) {
 	Format fmt = p->GetFormat();
 	if (fmt.vd == VD(ACCEL,VIDEO)) {
 		PacketValue& val = *p;
@@ -107,6 +107,7 @@ void SDL2ScreenBase::LoadPacket(int ch_i, const Packet& p) {
 	}
 	
 	obj->Recv(ch_i, p);
+	return true;
 }
 
 void SDL2ScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {

@@ -107,6 +107,11 @@ void VoidSinkBase::IntervalSinkProcess() {
 			}
 			dbg_total_samples += dbg_count;
 			dbg_total_bytes += dbg_count * 4;
+			
+			LOG("VoidSinkBase::IntervalSinkProcess: successfully verified frame");
+		}
+		else {
+			LOG("VoidSinkBase::IntervalSinkProcess: error: invalid audio format");
 		}
 	}
 	RTLOG("VoidSinkBase::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);

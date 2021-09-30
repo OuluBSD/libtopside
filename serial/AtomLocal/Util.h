@@ -18,14 +18,14 @@ public:
 	void AltForward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	void LoadPacket(int ch_i, const Packet& p) override;
+	bool LoadPacket(int ch_i, const Packet& p) override;
 };
 
 
 class JoinerBase :
 	virtual public AtomBase
 {
-	
+	Packet	cur_side;
 	
 public:
 	JoinerBase();
@@ -33,6 +33,8 @@ public:
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
+	bool LoadPacket(int ch_i, const Packet& p) override;
+	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	
 };
@@ -41,7 +43,7 @@ public:
 class SplitterBase :
 	virtual public AtomBase
 {
-	
+	Packet	cur_side;
 	
 public:
 	SplitterBase();
@@ -49,6 +51,8 @@ public:
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
+	bool LoadPacket(int ch_i, const Packet& p) override;
+	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	
 };
@@ -69,7 +73,7 @@ public:
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;
 	bool AltIsReady(ValDevCls vd) override;
-	void LoadPacket(int ch_i, const Packet& p) override;
+	bool LoadPacket(int ch_i, const Packet& p) override;
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	

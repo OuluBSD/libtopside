@@ -274,19 +274,23 @@ void MachineVerifier::OnLeaveStorePacket(Packet& p) {
 	if (!Thread::IsMain()) return;
 	
 	RTLOG("MachineVerifier::OnLeaveStorePacket");
-	auto fmt = p->GetFormat();
-	if (p->Data().GetCount() &&
-		fmt.IsValid()) {
+	if (p) {
+		auto fmt = p->GetFormat();
+		if (p->Data().GetCount() &&
+			fmt.IsValid()) {
+			MayLeaveTop();
+		}
+		else {
+			ASSERT_(0, "Packet is not valid");
+		}
+	}
+	else
 		MayLeaveTop();
-	}
-	else {
-		ASSERT_(0, "Packet is not valid");
-	}
 	
 	Leave(STORE_PACKET);
 	
-	
-	cur_pk.Add(p);
+	if (p)
+		cur_pk.Add(p);
 }
 
 void MachineVerifier::PacketData::Add(Packet& p) {

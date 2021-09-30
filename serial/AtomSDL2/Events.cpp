@@ -40,8 +40,9 @@ void SDL2EventsBase::AltUpdate(double dt) {
 	TODO
 }
 
-void SDL2EventsBase::LoadPacket(int ch_i, const Packet& p) {
+bool SDL2EventsBase::LoadPacket(int ch_i, const Packet& p) {
 	TODO
+	return ch_i == 0;
 }
 
 bool SDL2EventsBase::IsReady(ValDevCls vd) {

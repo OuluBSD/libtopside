@@ -450,9 +450,11 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			PacketBuffer& sink_buf = sink_value.GetBuffer();
 			Packet in = sink_buf.First();
 			sink_buf.RemoveFirst();
-			off32 off = in->GetOffset();
 			
-			LoadPacket(i, in);
+			if (!LoadPacket(i, in))
+				continue;
+			
+			off32 off = in->GetOffset();
 			//consumed_packets.Add(in);
 			packets_forwarded++;
 			
@@ -474,8 +476,14 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 					StorePacket(i, j, to);
 					WhenLeaveStorePacket(to);
 					
-					PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
-					src_buf.Add(to);
+					if (to) {
+						PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+						src_buf.Add(to);
+					}
+					else {
+						RTLOG("AtomBase::ForwardPipe: error: StorePacket returned empty package");
+						ASSERT(0);
+					}
 				}
 				else {
 					TODO
@@ -497,6 +505,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 }
 
 void AtomBase::ForwardVoidSink(FwdScope& fwd) {
+	TODO // don't use
+	
 	const int src_ch_i = 0;
 	const int sink_ch_i = 0;
 	

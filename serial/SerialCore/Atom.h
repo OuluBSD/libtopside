@@ -74,6 +74,7 @@ protected:
 	void					ForwardConsumed(FwdScope& fwd);
 	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
 	bool					ForwardMem(void* mem, size_t mem_size);
+	void					ForwardVoidSink(FwdScope& fwd);
 	
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
@@ -81,7 +82,6 @@ protected:
 	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();
 	
-	void					ForwardVoidSink(FwdScope& fwd);
 	
 	
 	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
@@ -116,7 +116,7 @@ public:
 	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
 	virtual bool PostInitialize() {return AltPostInitialize();}
 	virtual String ToString() const;
-	virtual void LoadPacket(int ch_i, const Packet& p) {}
+	virtual bool LoadPacket(int ch_i, const Packet& p) {return true;}
 	virtual void StorePacket(int sink_ch,  int src_ch, Packet& p) {AltStorePacket(sink_ch, src_ch, p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
 	virtual CustomerData* GetCustomerData() {return 0;}

@@ -29,8 +29,10 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	return succ;
 }
 
-void AsyncMemForwarderBase::LoadPacket(int ch_i, const Packet& p) {
-	Consume(0, p);
+bool AsyncMemForwarderBase::LoadPacket(int ch_i, const Packet& p) {
+	if (PassLoadPacket(ch_i, p))
+		Consume(ch_i, p);
+	return ch_i == 0;
 }
 
 void AsyncMemForwarderBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
@@ -48,6 +50,8 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 	const Vector<byte>& data = p->GetData();
 	int sz = data.GetCount() - data_begin;
 	int remaining = write_size - write_pos;
+	
+	Format fmt = p->GetFormat();
 	
 	if (sz > 0 && remaining > 0) {
 		int cp_sz = min(sz, remaining);

@@ -34,7 +34,7 @@ public:
 	~VoidSinkBase() {ASSERT(!flag.IsRunning());}
 	bool AltInitialize(const Script::WorldState& ws) override;
 	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
+	//void AltForward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override {} // required pass
 	void IntervalSinkProcess() override;
 	void Visit(RuntimeVisitor& vis) override {}

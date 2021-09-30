@@ -106,7 +106,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 
 };
 
@@ -122,7 +121,6 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override {}
 
 };
 

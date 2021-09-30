@@ -28,7 +28,7 @@ public:
 	void			AltForward(FwdScope& fwd) override;
 	void			AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void			AltUpdate(double dt) override;
-	void			LoadPacket(int ch_i, const Packet& p) override;
+	bool			LoadPacket(int ch_i, const Packet& p) override;
 	bool			IsReady(ValDevCls vd) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
