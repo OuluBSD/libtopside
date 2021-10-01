@@ -156,9 +156,21 @@ void Screen::SetRect(Rect r) {
 }
 
 bool Screen::Recv(int ch_i, const Packet& p) {
+	bool succ = true;
+	Format fmt = p->GetFormat();
+	if (fmt.IsVideo()) {
+		if (p->IsData<InternalPacketData>()) {
+			succ = ogl_buf->LoadOutputLink(p->GetData<InternalPacketData>());
+		}
+		else {
+			RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());
+		}
+	}
+	
 	if (ch_i == 0)
 		last_packet = p;
-	return true; // assuming 'do render' packet
+	
+	return succ;
 }
 
 void Screen::Render(const RealtimeSourceConfig& cfg) {
@@ -167,28 +179,34 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		return;
 	}
 	
-	RTLOG("Screen::Render");
+	
 	ASSERT(last_packet);
 	Format fmt = last_packet->GetFormat();
 	if (fmt.IsVideo()) {
+		RTLOG("Screen::Render: from video packet: " << last_packet->ToString());
 		const VideoFormat& vfmt = fmt.vid;
 		
 		BeginDraw();
 		
-		if (is_ogl_buf) {
-			ASSERT(ogl_buf);
-			if (ogl_buf)
-				ogl_buf->ProcessStage(cfg);
+		ASSERT(!is_ogl_buf || ogl_buf);
+		if (is_ogl_buf && ogl_buf) {
+			ogl_buf->ProcessStage(cfg);
 		}
-		else
-			;
+		else {
+			RTLOG("Screen::Render: error: no ogl buf");
+		}
 		
 		CommitDraw();
 	}
 	else if (fmt.IsOrder() && is_ogl_buf) {
+		RTLOG("Screen::Render: from order packet: " << last_packet->ToString());
 		BeginDraw();
 		ogl_buf->ProcessStage(cfg);
 		CommitDraw();
+	}
+	else {
+		RTLOG("Screen::Render: error: unexpected packet: " << last_packet->ToString());
+		
 	}
 	
 	last_packet.Clear();

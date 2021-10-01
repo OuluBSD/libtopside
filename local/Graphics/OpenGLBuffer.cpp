@@ -185,7 +185,7 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	if (fg_prog < 0)
 		return;
 	
-	RTLOG("OglBuffer::ProcessStage " << HexStr(this));
+	RTLOG("OglBuffer::ProcessStage " << HexStr(this) << " time: " << cfg.time_total);
 	
 	time_total = cfg.time_total;
 	//RTLOG("OglBuffer::ProcessStage: " << time_total);
@@ -859,7 +859,7 @@ void OglBuffer::StoreOutputLink(InternalPacketData& v) {
 	
 }
 
-void OglBuffer::LoadOutputLink(InternalPacketData& v) {
+bool OglBuffer::LoadOutputLink(InternalPacketData& v) {
 	String buf_id = v.GetText();
 	
 	int in_id = -1;
@@ -878,7 +878,12 @@ void OglBuffer::LoadOutputLink(InternalPacketData& v) {
 		OglBufferInput& in = this->in[in_id];
 		in.id = in_id;
 		in.in_buf = (OglBuffer*)v.ptr;
+		
+		return true;
 	}
+	
+	RTLOG("OglBuffer::LoadOutputLink: error: unexpected data");
+	return false;
 }
 
 

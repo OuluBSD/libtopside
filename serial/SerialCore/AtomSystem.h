@@ -45,6 +45,8 @@ protected:
     
     void ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
     
+    String GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cfg);
+    
 public:
 	
     void AddCustomer(AtomBaseRef p);

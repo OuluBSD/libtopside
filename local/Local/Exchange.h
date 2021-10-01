@@ -424,6 +424,8 @@ class FwdScope {
 	RealtimeSourceConfig* cfg;
 	bool is_failed = false;
 	bool is_break = false;
+	bool is_once = false;
+	bool is_looped = false;
 	
 public:
 	
@@ -433,20 +435,28 @@ public:
 	FwdScope(PacketForwarder& cb, RealtimeSourceConfig& cfg) {Clear(); SetCfg(cfg); AddNext(cb); ActivateNext();}
 	
 	void Clear();
+	void ForwardWeak();
 	void Forward();
+	void ForwardAddNext();
 	
 	void SetCfg(RealtimeSourceConfig& cfg) {this->cfg = &cfg;}
 	void SetFailed(bool b=true) {is_failed = b;}
+	void SetOnce(bool b=true) {is_once = b;}
 	void Break(bool b=true) {is_break = b;}
+	void LoopComplete(bool b=true) {is_looped = b;}
 	void AddNext(PacketForwarder& cb) {AddNext(&cb);}
 	void AddNext(PacketForwarder* cb);
 	void ActivateNext();
 	
-	bool HasCurrent() const {return !is_failed && cur != 0 && !is_break;}
+	bool HasCurrent() const {return !is_failed && cur != 0 && !is_looped && !is_once;}
 	RealtimeSourceConfig& Cfg() {ASSERT(cfg); return *cfg;}
 	bool IsFailed() const {return is_failed;}
+	bool IsBreak() const {return is_break;}
+	bool IsOnce() const {return is_once;}
+	bool IsLoopComplete() const {return is_looped;}
 	int GetPos() const {return read_i-1;}
 	PacketForwarder* GetCurrent() const {return cur;}
+	String GetFlagString() const;
 	
 	void operator++(int) {ActivateNext();}
 	operator bool() const {return HasCurrent();}
@@ -461,7 +471,8 @@ public:
 	virtual void ForwardSetup(FwdScope& fwd) {}
 	virtual void ForwardAtom(FwdScope& fwd) {Panic("not implemented in " + String(GetDynamicName()));}
 	virtual void ForwardExchange(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName()));}
-	
+	virtual bool IsPacketStuck() {Panic("not implemented " + String(GetDynamicName())); return true;}
+	virtual bool IsLoopComplete(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName())); return true;}
 	PacketForwarder& GetPacketForwarder() {return *this;}
 	
 };
@@ -486,10 +497,12 @@ public:
 	virtual ~ExchangePoint();
 	
 	virtual void Init(MetaExchangePoint* mexpt) = 0;
+	
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink, CookieRef sink_cookie, CookieRef src_cookie);
 	void Visit(RuntimeVisitor& vis) {vis & src & sink & src_cookie & sink_cookie;}
+	bool IsLoopComplete(FwdScope& fwd) override {return false;}
 	
 	ExchangeSourceProviderRef Source() {return src;}
 	ExchangeSinkProviderRef Sink() {return sink;}

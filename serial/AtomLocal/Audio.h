@@ -145,6 +145,8 @@ class AudioGenBase :
 	int mode = 0;
 	int preset_i = -1;
 	
+	byte val = 0;
+	
 	enum {
 		MODE_NONE,
 		MODE_TRACK_NUM,

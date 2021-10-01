@@ -225,6 +225,16 @@ void GetDirectoryFiles(String dir, Index<String>& files) {
 	}
 }
 
+String Join(const Vector<int>& v, String join_str) {
+	String s;
+	int i = 0;
+	for (int val : v) {
+		if (i++ > 0)
+			s << join_str;
+		s << IntStr(val);
+	}
+	return s;
+}
 
 
 void RunningFlagSingle::Stop() {running = false; while (!stopped) Sleep(100);}

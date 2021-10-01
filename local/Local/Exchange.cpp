@@ -153,15 +153,56 @@ void FwdScope::Clear() {
 	cfg = 0;
 	first = 0;
 	is_failed = false;
+	is_break = false;
+	is_once = false;
+	is_looped = false;
+}
+
+String FwdScope::GetFlagString() const {
+	String s;
+	s << "fail=" << AsString(is_failed);
+	s << ", break=" << AsString(is_break);
+	s << ", once=" << AsString(is_once);
+	return s;
+}
+
+void FwdScope::ForwardWeak() {
+	if (cur) {
+		int pos = read_i-1;
+		if (!cur->IsPacketStuck()) {
+			RTLOG("FwdScope::ForwardWeak: fwd " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
+			cur->ForwardSetup(*this);
+			cur->ForwardAtom(*this);
+		}
+		else {
+			RTLOG("FwdScope::ForwardWeak: skip " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
+		}
+		cur->ForwardExchange(*this);
+		
+		if (cur->IsLoopComplete(*this))
+			LoopComplete();
+	}
 }
 
 void FwdScope::Forward() {
 	if (cur) {
 		int pos = read_i-1;
-		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << ")");
+		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
 		cur->ForwardSetup(*this);
 		cur->ForwardAtom(*this);
 		cur->ForwardExchange(*this);
+		
+		if (cur->IsLoopComplete(*this))
+			LoopComplete();
+	}
+}
+
+void FwdScope::ForwardAddNext() {
+	if (cur) {
+		cur->ForwardExchange(*this);
+		
+		if (cur->IsLoopComplete(*this))
+			LoopComplete();
 	}
 }
 

@@ -18,6 +18,7 @@ bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
 	obj->SetBuffer(buf);
 	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	GetSink()->GetValue(0).SetMaxQueueSize(1);
 	return true;
 }
 
@@ -26,6 +27,8 @@ void SDL2ScreenBase::AltUninitialize() {
 	obj.Clear();
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 }
+
+#if 0
 
 void SDL2ScreenBase::AltUpdate(double dt) {
 	frame_age += dt;
@@ -98,23 +101,22 @@ bool SDL2ScreenBase::IsReady(ValDevCls vd) {
 	return false;
 }
 
-bool SDL2ScreenBase::LoadPacket(int ch_i, const Packet& p) {
+#endif
+
+/*bool SDL2ScreenBase::PassLoadPacket(int sink_ch, const Packet& p) {
 	Format fmt = p->GetFormat();
-	if (fmt.vd == VD(ACCEL,VIDEO)) {
-		PacketValue& val = *p;
-		InternalPacketData& data = val.GetData<InternalPacketData>();
-		GetBuffer().LoadOutputLink(data);
-	}
-	
-	obj->Recv(ch_i, p);
-	return true;
+	return fmt.vd.val == ValCls::VIDEO;
+}*/
+
+bool SDL2ScreenBase::LoadPacket(int sink_ch, const Packet& p) {
+	RTLOG("SDL2ScreenBase::LoadPacket: sink #" << sink_ch << " " << p->ToString());
+	return obj->Recv(sink_ch, p);
 }
 
 void SDL2ScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDL2ScreenBase::AltStorePacket");
+	RTLOG("SDL2ScreenBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
 	if (sink_ch == 0 && src_ch == 0) {
 		obj->Render(*last_cfg);
-		
 	}
 	
 	#if 0

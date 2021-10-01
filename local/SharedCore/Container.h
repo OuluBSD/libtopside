@@ -49,7 +49,7 @@ struct ManagedStaticThreadLocal {
 	typedef ManagedStaticThreadLocal CLASSNAME;
 	ManagedStaticThreadLocal(const char* f, int l);
 	template <class Arg> ManagedStaticThreadLocal(const char* f, int l, const Arg& value);
-	~ManagedStaticThreadLocal() {ASSERT(destructed); Destruct();}
+	~ManagedStaticThreadLocal() {if (!destructed) Destruct();}
 	void Destruct() {if (!destructed) {Clear(); destructed = true;}}
 	void Clear() {o.Clear();}
 };

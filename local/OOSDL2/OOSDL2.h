@@ -97,8 +97,7 @@ public:
 
 
 class AudioOutput :
-	public Component,
-	virtual public PacketForwarder
+	public Component
 {
 	RTTI_DECL1(AudioOutput, Component)
 	
@@ -109,6 +108,11 @@ private:
 	Serial::PacketConsumer	consumer;
 	Serial::Format			fmt;
 	dword					frames = 0;
+	
+	#ifdef flagDEBUG
+	byte val = 0;
+	float flt = 0;
+	#endif
 	
 	bool Open0() override;
 	void Close0() override;
@@ -127,6 +131,7 @@ public:
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
 	bool			IsConsumedPartialPacket() {return consumer.HasLeftover();}
+	void			UpdateSinkFormat();
 	//Value&			GetValue() {return buf;}
 	
 };

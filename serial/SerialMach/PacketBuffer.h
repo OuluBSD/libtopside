@@ -41,6 +41,7 @@ class PacketValue :
 	PacketId			id = 0;
 	TypeCls				custom_data;
 	
+	
 public:
 	union {
 		double				time;
@@ -170,7 +171,7 @@ public:
 	virtual void Clear() {buf.Clear();}
 	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
 	void StorePacket(int sink_ch,  int src_ch, Packet& p);
-	void SetMaxPackets(int i) {max_packets = i;}
+	void SetMinQueueSize(int i) {max_packets = i;}
 	
 };
 

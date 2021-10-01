@@ -24,7 +24,6 @@ bool AudioGenBase::AltInitialize(const Script::WorldState& ws) {
 		gen.GenerateStereoSine(fmt);
 	
 	const int src_ch_i = 0;
-	
 	Value& src_val = GetSource()->GetSourceValue(src_ch_i);
 	src_val.SetFormat(fmt);
 	return true;
@@ -46,8 +45,15 @@ void AudioGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	double time = off * fmt.GetFrameSeconds();
 	p->Set(fmt, time);
 	p->Data().SetCount(frame, 0);
+	
+	#if 0
+	Vector<byte>& v = p->Data();
+	for (byte& b : v) b = val++;
+	#else
 	gen.Play((int)offset, p);
-	RTLOG("AudioGenBase::AltStorePacket: " << p->ToStringWithHash());
+	#endif
+	
+	RTLOG("AudioGenBase::AltStorePacket: offset " << (int)off << " " << p->ToStringWithHash());
 }
 
 NAMESPACE_SERIAL_END

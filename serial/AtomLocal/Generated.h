@@ -36,7 +36,7 @@ public:
 
 };
 
-class TestRealtimeSink : public CenterSinkPolling<TestRealtimeSink>, public VoidSinkBase {
+class TestRealtimeSink : public CenterSink<TestRealtimeSink>, public VoidSinkBase {
 
 public:
 	RTTI_DECL2(TestRealtimeSink, BaseT, VoidSinkBase)
@@ -51,7 +51,7 @@ public:
 
 };
 
-class AudioHardwareSink : public CenterSinkPolling<AudioHardwareSink>, public PortaudioSink {
+class AudioHardwareSink : public CenterSink<AudioHardwareSink>, public PortaudioSink {
 
 public:
 	RTTI_DECL2(AudioHardwareSink, BaseT, PortaudioSink)
@@ -94,7 +94,7 @@ public:
 
 };
 
-class AudioSplitter : public CenterSourcePolling<AudioSplitter>, public SplitterBase {
+class AudioSplitter : public CenterSource<AudioSplitter>, public SplitterBase {
 
 public:
 	RTTI_DECL2(AudioSplitter, BaseT, SplitterBase)
@@ -109,7 +109,7 @@ public:
 
 };
 
-class AudioJoiner : public CenterSinkPolling<AudioJoiner>, public JoinerBase {
+class AudioJoiner : public CenterSink<AudioJoiner>, public JoinerBase {
 
 public:
 	RTTI_DECL2(AudioJoiner, BaseT, JoinerBase)
@@ -157,10 +157,10 @@ public:
 #endif
 
 #if defined flagGUI
-class AccelCustomer : public CustomerBaseT<AccelCustomer> {
+class AccelCustomer : public CustomerBaseT<AccelCustomer>, public CustomerBase {
 
 public:
-	RTTI_DECL1(AccelCustomer, BaseT)
+	RTTI_DECL2(AccelCustomer, BaseT, CustomerBase)
 	COPY_PANIC(AccelCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
@@ -187,7 +187,7 @@ public:
 
 };
 
-class SdlEventAtomSA : public CenterSinkPolling<SdlEventAtomSA>, public SDL2EventsBase {
+class SdlEventAtomSA : public CenterSink<SdlEventAtomSA>, public SDL2EventsBase {
 
 public:
 	RTTI_DECL2(SdlEventAtomSA, BaseT, SDL2EventsBase)
@@ -202,7 +202,7 @@ public:
 };
 
 #if defined flagGUI
-class SdlVideoAtomSA : public AccelSinkPolling<SdlVideoAtomSA>, public SDL2ScreenBase {
+class SdlVideoAtomSA : public AccelSink<SdlVideoAtomSA>, public SDL2ScreenBase {
 
 public:
 	RTTI_DECL2(SdlVideoAtomSA, BaseT, SDL2ScreenBase)
@@ -218,7 +218,7 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlVideoAtom : public AccelSinkPolling<SdlVideoAtom>, public SDL2ScreenBase {
+class SdlVideoAtom : public AccelSink<SdlVideoAtom>, public SDL2ScreenBase {
 
 public:
 	RTTI_DECL2(SdlVideoAtom, BaseT, SDL2ScreenBase)
@@ -234,7 +234,7 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlVideoPipe : public AccelSinkPolling<SdlVideoPipe>, public SDL2ScreenBase {
+class SdlVideoPipe : public AccelSink<SdlVideoPipe>, public SDL2ScreenBase {
 
 public:
 	RTTI_DECL2(SdlVideoPipe, BaseT, SDL2ScreenBase)
@@ -250,7 +250,7 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlSwVideoAtom : public CenterSinkPolling<SdlSwVideoAtom>, public SDL2SwScreenBase {
+class SdlSwVideoAtom : public CenterSink<SdlSwVideoAtom>, public SDL2SwScreenBase {
 
 public:
 	RTTI_DECL2(SdlSwVideoAtom, BaseT, SDL2SwScreenBase)
@@ -281,7 +281,7 @@ public:
 };
 
 #if defined flagGUI
-class OglShaderSource : public AccelSourcePolling<OglShaderSource>, public OglShaderBase {
+class OglShaderSource : public AccelSource<OglShaderSource>, public OglShaderBase {
 
 public:
 	RTTI_DECL2(OglShaderSource, BaseT, OglShaderBase)
@@ -297,7 +297,7 @@ public:
 #endif
 
 #if defined flagGUI
-class OglShaderPipe : public AccelSourcePolling<OglShaderPipe>, public OglShaderBase {
+class OglShaderPipe : public AccelSource<OglShaderPipe>, public OglShaderBase {
 
 public:
 	RTTI_DECL2(OglShaderPipe, BaseT, OglShaderBase)

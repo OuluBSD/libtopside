@@ -1,26 +1,35 @@
 
 BASE(CenterDriver)
 BASE(CustomerBaseT)
-BASE(CenterSourceAsync)
-BASE(CenterSourcePolling)
-BASE(CenterSinkSync)
+
+BASE(CenterSink)
 BASE(CenterSinkAsync)
-BASE(CenterSinkPolling)
+BASE(CenterSource)
+BASE(CenterSourceAsync)
+
+BASE(AccelSink)
+BASE(AccelSinkAsync)
+BASE(AccelSource)
+BASE(AccelSourceAsync)
+
+//BASE(CenterSourcePolling)
+//BASE(CenterSinkPolling)
 //BASE(CenterSideSourceAsync)
 //BASE(CenterSideSinkAsync)
 //BASE(CenterSide)
 //BASE(DummySideAsync)
-BASE(AccelSinkPolling)
-BASE(AccelSinkAsync)
-BASE(AccelSourceAsync)
-BASE(AccelSourcePolling)
+//BASE(AccelSinkPolling)
+
+
+//BASE(AccelSourcePolling)
 
 BASE_FLAG(CenterDriver,				forward)
+BASE_FLAG(CenterSink,				ival_sink_proc)
+BASE_ACTION(CustomerBaseT,			loop.connected)
+
 //BASE_FLAG(CenterSourceAsync,		store_packet)
-BASE_FLAG(CenterSinkSync,			ival_sink_proc)
 //BASE_FLAG(CenterSideAsync,			store_packet)
 //BASE_FLAG(AccelSideAsync,			store_packet)
-BASE_ACTION(CustomerBaseT,			loop.connected)
 //BASE_ACTION(CenterSinkSync,			center.audio.sink)
 //BASE_ACTION(CenterSinkPolling,		center.audio.sink)
 //BASE_FLAG(AccelSourceAsync,			store_packet)

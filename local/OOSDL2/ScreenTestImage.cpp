@@ -10,7 +10,7 @@ const char* def_shader = R"SH4D3R(
 void mainImage( out vec4 fragColor, in vec2 fragCoord )
 {
     vec3 res = iResolution;
-    float t = float(iFrame) / 60.0;
+    float t = iTime;
     bool mode = mod(t, 6.0) > 3.0;
     //t = t * 504;
     //t = t * 0.2;

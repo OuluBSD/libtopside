@@ -256,7 +256,7 @@ public:
 	
 	void				SetBufferId(String name);
 	void				StoreOutputLink(InternalPacketData& v);
-	void				LoadOutputLink(InternalPacketData& v);
+	bool				LoadOutputLink(InternalPacketData& v);
 	
 };
 

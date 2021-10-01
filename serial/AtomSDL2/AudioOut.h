@@ -24,9 +24,11 @@ public:
 	SDL2AudioOutputBase() : aconfig(gen) {}
 	
 	bool	AltInitialize(const Script::WorldState& ws) override;
+	bool	AltPostInitialize() override;
 	void	AltUninitialize() override;
 	void	AltForward(FwdScope& fwd) override;
 	bool	IsConsumedPartialPacket() override {return obj->IsConsumedPartialPacket();}
+	bool	PassLoadPacket(int ch_i, const Packet& p) override;
 	
 	void	AltIntervalSinkProcess() {}
 	

@@ -384,52 +384,8 @@ bool ScriptLoopLoader::Load() {
 	}
 	
 	
-	// Extend maximum packet count for the whole loop
+	UpdateLoopLimits();
 	
-	for(int iter = 0;; iter++) {
-		//DUMP(iter);
-		bool changes = false;
-		int c = added_atoms.GetCount()-1;
-		//DUMP(c);
-		for(int i = 0; i < c; i++) {
-			//DUMP(i);
-			AddedAtom& src_info = added_atoms[i];
-			InterfaceSourceRef src = src_info.r->GetSource();
-			
-			for(int j = 0; j < 2; j++) {
-				AddedAtom& sink_info = j == 0 ? added_atoms[(i+1) % c] : src_info;
-				InterfaceSinkRef sink = sink_info.r->GetSink();
-				
-				int sink_max_packets = sink->GetValue(0).GetMaxPackets();
-				int src_max_packets = src->GetSourceValue(0).GetMaxPackets();
-				int max_packets = max(sink_max_packets, src_max_packets);
-				
-				bool link_changes = 0;
-				if (sink_max_packets < max_packets) {
-					link_changes = true;
-					int sink_c = sink->GetSinkCount();
-					for(int k = 0; k < sink_c; k++)
-						sink->GetValue(k).SetMaxPackets(max_packets);
-				}
-				
-				if (src_max_packets < max_packets) {
-					link_changes = true;
-					int src_c = src->GetSourceCount();
-					for(int k = 0; k < src_c; k++)
-						src->GetSourceValue(k).SetMaxPackets(max_packets);
-				}
-				
-				if (link_changes) {
-					changes = true;
-					/*DUMP(max_packets);
-					DUMP(sink_max_packets);
-					DUMP(src_max_packets);*/
-				}
-			}
-		}
-		if (!changes)
-			break;
-	}
 	
 	AddedAtom& first = added_atoms[0];
 	AddedAtom& last  = added_atoms.Top();
@@ -461,6 +417,68 @@ bool ScriptLoopLoader::Load() {
 	
 	return true;
 }
+
+void ScriptLoopLoader::UpdateLoopLimits() {
+	
+	// as in AtomBase::LinkSideSink
+	
+	bool changes = false;
+	int c = added_atoms.GetCount()-1;
+	int total_max = 1000000;
+	int total_min = 0;
+	for(int i = 0; i < c; i++) {
+		AddedAtom& info = added_atoms[i];
+		InterfaceSourceRef src = info.r->GetSource();
+		int src_c = src->GetSourceCount();
+		for(int j = 0; j < src_c; j++) {
+			int src_min_packets = src->GetSourceValue(j).GetMinPackets();
+			int src_max_packets = src->GetSourceValue(j).GetMaxPackets();
+			total_min = max(total_min, src_min_packets);
+			total_max = min(total_max, src_max_packets);
+		}
+		
+		InterfaceSinkRef sink = info.r->GetSink();
+		int sink_c = sink->GetSinkCount();
+		for(int j = 0; j < sink_c; j++) {
+			int sink_min_packets = sink->GetValue(j).GetMinPackets();
+			int sink_max_packets = sink->GetValue(j).GetMaxPackets();
+			total_min = max(total_min, sink_min_packets);
+			total_max = min(total_max, sink_max_packets);
+		}
+	}
+	if (total_min > total_max) {
+		total_max = total_min;
+	}
+	
+	LOG("ScriptLoopLoader::Load: set loop limits: min=" << total_min << ", max=" << total_max);
+	
+	for(int i = 0; i < c; i++) {
+		AddedAtom& info = added_atoms[i];
+		InterfaceSourceRef src = info.r->GetSource();
+		InterfaceSinkRef sink = info.r->GetSink();
+			
+		int sink_c = sink->GetSinkCount();
+		for(int k = 0; k < sink_c; k++) {
+			Value& v = sink->GetValue(k);
+			v.SetMinQueueSize(total_min);
+			v.SetMaxQueueSize(total_max);
+		}
+		
+		int src_c = src->GetSourceCount();
+		for(int k = 0; k < src_c; k++) {
+			Value& v = src->GetSourceValue(k);
+			v.SetMinQueueSize(total_min);
+			v.SetMaxQueueSize(total_max);
+		}
+			
+		/*if (link_changes) {
+			DUMP(min_packets);
+			DUMP(sink_min_packets);
+			DUMP(src_min_packets);
+		}*/
+	}
+}
+
 
 bool ScriptLoopLoader::PostInitialize() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {

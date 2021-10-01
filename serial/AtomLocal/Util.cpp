@@ -11,12 +11,11 @@ bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
 	//if (type.iface.content.val == ValCls::AUDIO)
 	//	packet_thrds = 10;
 	
-	
 	return true;
 }
 
 bool CustomerBase::AltPostInitialize() {
-	packet_thrds = GetSink()->GetValue(0).GetMaxPackets();
+	packet_thrds = GetSink()->GetValue(0).GetMinPackets();
 	return true;
 }
 
@@ -51,9 +50,6 @@ void CustomerBase::AltForward(FwdScope& fwd) {
 		packet_count++;
 	}
 	
-	int pos = fwd.GetPos();
-	if (pos > 0)
-		fwd.Break();
 }
 
 bool CustomerBase::LoadPacket(int ch_i, const Packet& p) {
@@ -101,11 +97,11 @@ bool JoinerBase::LoadPacket(int ch_i, const Packet& p) {
 	else {
 		RTLOG("JoinerBase::LoadPacket: skipping ch-" << ch_i << " packet");
 	}
-	return ch_i == 1;
+	return true;
 }
 
 void JoinerBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
-	if (sink_ch == 1) {
+	if (sink_ch == 0) {
 		RTLOG("JoinerBase::AltStorePacket: (" << sink_ch << "," << src_ch << "): " << p->ToString());
 		p = cur_side;
 	}
@@ -156,7 +152,7 @@ bool SplitterBase::LoadPacket(int ch_i, const Packet& p) {
 			
 	}
 	
-	return ch_i == 0;
+	return true;
 }
 
 void SplitterBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
@@ -188,6 +184,16 @@ bool OglShaderBase::AltInitialize(const Script::WorldState& ws) {
 	
 	buf.SetBufferId(ws.Get(".name"));
 	
+	InterfaceSinkRef sink_iface = GetSink();
+	int c = sink_iface->GetSinkCount();
+	for(int i = 0; i < c; i++)
+		sink_iface->GetValue(i).SetMaxQueueSize(1);
+	
+	InterfaceSourceRef src_iface = GetSource();
+	c = src_iface->GetSourceCount();
+	for(int i = 0; i < c; i++)
+		src_iface->GetSourceValue(i).SetMaxQueueSize(1);
+	
 	return true;
 }
 
@@ -197,7 +203,6 @@ bool OglShaderBase::AltPostInitialize() {
 	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
 	if (!buf.Initialize())
 		return false;
-	
 	
 	return true;
 }
@@ -228,19 +233,34 @@ void OglShaderBase::AltForward(FwdScope& fwd) {
 }
 
 bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
+	bool succ = true;
+	Format fmt = p->GetFormat();
+	if (fmt.IsVideo()) {
+		if (p->IsData<InternalPacketData>()) {
+			succ = buf.LoadOutputLink(p->GetData<InternalPacketData>());
+		}
+		else {
+			RTLOG("OglShaderBase::LoadPacket: cannot handle packet: " << p->ToString());
+		}
+	}
+	
 	if (ch_i == 0)
 		last_packet = p;
-	return ch_i == 0;
+	
+	return succ;
 }
 
 bool OglShaderBase::AltIsReady(ValDevCls vd) {
-	const int src_ch_i = 0;
+	/*const int src_ch_i = 0;
 	
 	Value& src_val = this->GetSource()->GetSourceValue(src_ch_i);
-	return src_val.GetQueueSize() == 0;
+	return src_val.GetQueueSize() == 0;*/
+	return true;
 }
 
 void OglShaderBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("OglShaderBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
+	
 	if (sink_ch == 0 && src_ch == 0) {
 		ASSERT(last_packet);
 		

@@ -49,7 +49,7 @@ void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 
 bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
 	flag.Start(1);
-	GetSink()->GetValue(0).SetMaxPackets(5);
+	GetSink()->GetValue(0).SetMinQueueSize(5);
 	Thread::Start(THISBACK(IntervalSinkProcess0));
 	return true;
 }
@@ -89,7 +89,7 @@ void VoidSinkBase::IntervalSinkProcess() {
 		RTLOG("VoidSinkBase::IntervalSinkProcess: trying to consume " << data.GetCount());
 		
 		if (!ForwardAsyncMem(data.Begin(), data.GetCount())) {
-			RTLOG("VoidSinkBase::IntervalSinkProcess: error: could not get consumable data");
+			LOG("VoidSinkBase::IntervalSinkProcess: error: could not get consumable data");
 			fail = true;
 			break;
 		}

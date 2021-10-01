@@ -42,19 +42,12 @@ String AtomBase::ToString() const {
 }
 
 void AtomBase::ForwardExchange(FwdScope& fwd) {
-	int ch_i = 0;
-	
-	Value& src_val = GetSource()->GetSourceValue(ch_i);
-	//SimpleBufferedValue* src_buf = CastPtr<SimpleBufferedValue>(&src_val);
-	//if (src_buf && !src_buf->IsEmpty()) {
-	if (src_val.GetQueueSize()) {
-		ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(this);
-		ASSERT(src);
-		ExchangePointRef expt = src->GetExPt();
-		ASSERT(expt);
-		if (expt) {
-			fwd.AddNext(*expt);
-		}
+	ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(this);
+	ASSERT(src);
+	ExchangePointRef expt = src->GetExPt();
+	ASSERT(expt || GetType().role == AtomRole::DRIVER);
+	if (expt) {
+		fwd.AddNext(*expt);
 	}
 }
 
@@ -154,6 +147,32 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 		ex.local_ch_i = local_ch_i;
 		ex.other_ch_i = other_ch_i;
 		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
+		
+		
+		// as in AtomBase::LinkSideSink
+		
+		InterfaceSourceRef src_iface = GetSource();
+		InterfaceSinkRef sink_iface = sink->GetSink();
+		Value& src_val = src_iface->GetSourceValue(local_ch_i);
+		Value& sink_val = sink_iface->GetValue(other_ch_i);
+		int src_max_packets = src_val.GetMaxPackets();
+		int src_min_packets = src_val.GetMinPackets();
+		int sink_max_packets = sink_val.GetMaxPackets();
+		int sink_min_packets = sink_val.GetMinPackets();
+		int max_packets = min(sink_max_packets, src_max_packets);
+		int min_packets = max(sink_min_packets, src_min_packets);
+		
+		if (min_packets > max_packets) {
+			max_packets = min_packets;
+		}
+		
+		LOG("AtomBase::LinkSideSink: min=" << min_packets << ", max=" << max_packets);
+		
+		src_val.SetMinQueueSize(min_packets);
+		src_val.SetMaxQueueSize(max_packets);
+		sink_val.SetMinQueueSize(min_packets);
+		sink_val.SetMaxQueueSize(max_packets);
+		
 		return true;
 	}
 	return false;
@@ -190,6 +209,30 @@ void AtomBase::PacketsConsumed(const LinkedList<Packet>& v) {
 	lock.Enter();
 	consumed_packets.Append(v);
 	lock.Leave();
+}
+
+bool AtomBase::IsPacketStuck() {
+	InterfaceSinkRef sink_iface = GetSink();
+	int sink_c = sink_iface->GetSinkCount();
+	for(int i = 0; i < sink_c; i++) {
+		Value& val = sink_iface->GetValue(i);
+		if (val.GetQueueSize() == 0) {
+			RTLOG("AtomBase::IsPacketStuck: sink #" << i << " empty");
+			return true;
+		}
+	}
+	
+	InterfaceSourceRef src_iface = GetSource();
+	int src_c = src_iface->GetSourceCount();
+	for(int i = 0; i < src_c; i++) {
+		Value& val = src_iface->GetSourceValue(i);
+		if (val.IsQueueFull()) {
+			RTLOG("AtomBase::IsPacketStuck: src #" << i << " full");
+			return true;
+		}
+	}
+	
+	return false;
 }
 
 

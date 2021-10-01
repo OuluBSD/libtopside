@@ -188,6 +188,7 @@ public:
 	bool		PostInitialize();
 	SideStatus	AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out);
 	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
+	void		UpdateLoopLimits();
 	
 	ScriptLoopSegment& GetCurrentSegment() {return segments.Top();}
 	

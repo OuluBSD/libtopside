@@ -27,6 +27,23 @@ public:
 };
 
 
+class FramePollerBase :
+	virtual public AtomBase
+{
+	double		dt = 0;
+	double		frame_age = 0;
+	
+	
+public:
+	
+	void	AltUpdate(double dt) override;
+	bool	IsReady(ValDevCls vd) override;
+	
+	void SetFPS(int fps) {dt = 1.0 / (double)fps;}
+	
+};
+
+
 NAMESPACE_SERIAL_END
 
 #endif

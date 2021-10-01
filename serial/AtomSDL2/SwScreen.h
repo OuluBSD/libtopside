@@ -7,13 +7,12 @@ NAMESPACE_SERIAL_BEGIN
 #ifdef flagGUI
 
 class SDL2SwScreenBase :
-	public SDL2BaseT<SDL2SwScreenBase>
+	public SDL2BaseT<SDL2SwScreenBase>,
+	public FramePollerBase
 {
 	One<OOSDL2::SwScreen>	obj;
     Serial::Format			fmt;
 	OOSDL2::Events*			ev = 0;
-	double					dt = 0;
-	double					frame_age = 0;
 	
 public:
 	RTTI_DECL1(SDL2SwScreenBase, AltBaseT)
@@ -25,13 +24,14 @@ public:
 	bool			AltInitialize(const Script::WorldState& ws) override;
 	void			AltUninitialize() override;
 	void			AltForward(FwdScope& fwd) override;
+	bool			LoadPacket(int ch_i, const Packet& p) override;
 	void			AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	void			AltUpdate(double dt) override;
+	//bool			PassLoadPacket(int ch_i, const Packet& p) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::SwScreen* GetOOSDL2() {return &*obj;}
 	
-	void SetFPS(int fps) {fmt.vid.SetFPS(fps); dt = 1.0 / (double)fps;}
+	void SetFPS(int fps) {fmt.vid.SetFPS(fps); FramePollerBase::SetFPS(fps);}
 	
 };
 

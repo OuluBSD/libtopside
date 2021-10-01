@@ -59,6 +59,7 @@ protected:
 	LinkedList<Packet>		consumed_packets;
 	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
+	int						skipped_fwd_count = 0;
 	AtomBaseRef				driver_conn;
 	RealtimeSourceConfig*	last_cfg = 0;
 	Vector<int>				side_sink, side_src;
@@ -82,8 +83,8 @@ protected:
 	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();
 	
-	
-	
+	bool					IsPacketStuck() override;
+	bool					IsLoopComplete(FwdScope& fwd) override {return false;}
 	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
 	
 public:

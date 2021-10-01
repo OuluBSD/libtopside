@@ -16,6 +16,7 @@ public:
 	bool AltInitialize(const Script::WorldState& ws) override;
 	bool AltPostInitialize() override;
 	void AltForward(FwdScope& fwd) override;
+	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}
 	void Visit(RuntimeVisitor& vis) override {}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	bool LoadPacket(int ch_i, const Packet& p) override;

@@ -76,6 +76,30 @@ public:
 
 
 template <class T>
+class CenterSource : public Atom<T> {
+	
+protected:
+	using AtomT = Atom<T>;
+	
+	
+public:
+	typedef CenterSource CLASSNAME;
+	using BaseT = CenterSource<T>;
+	RTTI_DECL1(CenterSource, AtomT)
+	
+	~CenterSource() {}
+	void CopyTo(AtomBase* atom) const override {TODO}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+	bool Initialize(const Script::WorldState& ws) override {return true;}
+	void Uninitialize() override {}
+
+	
+};
+
+
+template <class T>
 class CenterSourceAsync : public Atom<T> {
 	
 protected:
@@ -96,18 +120,18 @@ public:
 };
 
 template <class T>
-class CenterSinkSync : public Atom<T> {
+class CenterSink : public Atom<T> {
 	
 protected:
 	using AtomT = Atom<T>;
 	
 	
 public:
-	typedef CenterSinkSync CLASSNAME;
-	using BaseT = CenterSinkSync<T>;
-	RTTI_DECL1(CenterSinkSync, AtomT)
+	typedef CenterSink CLASSNAME;
+	using BaseT = CenterSink<T>;
+	RTTI_DECL1(CenterSink, AtomT)
 	
-	~CenterSinkSync() {}
+	~CenterSink() {}
 	void CopyTo(AtomBase* atom) const override {TODO}
 	void VisitSource(RuntimeVisitor& vis) override {TODO}
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
@@ -118,6 +142,30 @@ public:
 	
 };
 
+
+template <class T>
+class CenterSinkAsync : public Atom<T> {
+	
+protected:
+	
+	using AtomT = Atom<T>;
+	
+public:
+	using BaseT = CenterSinkAsync<T>;
+	RTTI_DECL1(CenterSinkAsync, AtomT)
+	
+	bool Initialize(const Script::WorldState& ws) override {return true;}
+	void Uninitialize() override {}
+	//void Forward(FwdScope& fwd) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AtomT>(this);}
+	void VisitSource(RuntimeVisitor& vis) override {TODO}
+	void VisitSink(RuntimeVisitor& vis) override {TODO}
+	
+};
+
+
+
+#if 0
 template <class T>
 class CenterSinkAsync : public Atom<T> {
 	
@@ -199,6 +247,7 @@ public:
 	
 };
 
+#endif
 
 template <class T>
 class CenterDriver : public Atom<T> {

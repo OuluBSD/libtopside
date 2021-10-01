@@ -12,7 +12,10 @@ AudioOutput::AudioOutput(Context* ctx, AtomBase* ab) : Component(ctx, ab) {
 		2,
 		1024
 	);
+	
+	
 	fmt.SetAudio(DevCls::CENTER, SoundSample::FLT_LE, 2, 44100, 1024);
+	
 }
 
 int AudioOutput::GetSampleSize() {
@@ -40,22 +43,66 @@ bool AudioOutput::IsSampleSigned() const {
 }
 
 void AudioOutput::SinkCallback(Uint8* output, int size) {
-	PacketBuffer& sink_buf = GetSinkBuffer();
+	RTLOG("AudioOutput::SinkCallback");
+	
+	/*PacketBuffer& sink_buf = GetSinkBuffer();
 	
 	if (sink_buf.IsEmpty() || !output) {
 		if (0) {
 			RTLOG("AudioOutput::SinkCallback: empty buffer");
 		}
 		return;
-	}
+	}*/
 	
 	#ifdef flagDEBUG
 	ab->dbg_async_race = true;
 	#endif
 	
 	
-	ab->ForwardAsyncMem(output, size);
+	if (!ab->ForwardAsyncMem(output, size)) {
+		RTLOG("AudioOutput::SinkCallback: reading memory failed");
+		memset(output, 0, size);
+	}
 	
+	
+	#if 0
+	int dbg_i = 0;
+	for (float* b = (float*)output, *end = (float*)output+size/sizeof(float); b != end; b++) {
+		float f = *b;
+		int got = ((f + 1.0001) * 0.5) * 255;
+		if (got != val) {DUMP(f); DUMP(dbg_i); DUMP((int)got); DUMP((int)val);}
+		ASSERT(got == val++);
+		dbg_i++;
+	}
+	LOG("Check successful");
+	memset(output,0,size);
+	#elif 0
+	int dbg_i = 0;
+	for (float* b = (float*)output, *end = (float*)output+size/sizeof(float); b != end; b++) {
+		float f = *b;
+		LOG(dbg_i << ": " << f);
+		dbg_i++;
+	}
+	LOG("");
+	#elif 0
+	int dbg_i = 0;
+	for (float* b = (float*)output, *end = (float*)output+size/sizeof(float); b != end; b++) {
+		float f = *b;
+		if (f == 0.0) {
+			LOG(dbg_i << ": " << f);
+		}
+		dbg_i++;
+	}
+	#elif 0
+	for (float* b = (float*)output, *end = (float*)output+size/sizeof(float); b != end; b++) {
+		float f = sin(flt);
+		flt += M_2PI / 1000.0;
+		if (flt > M_2PI)
+			flt -= M_2PI;
+	}
+	
+	
+	#endif
 	
 	#if 0
 	if (consumer.IsEmptySource())
@@ -102,17 +149,18 @@ void AudioOutput::SinkCallback(Uint8* output, int size) {
 }
 
 bool AudioOutput::Open0() {
+	RTLOG("AudioOutput::Open0");
 	auto& fmt = this->fmt.aud;
 	SDL_zero(audio_fmt);
 	audio_dev = SDL_OpenAudioDevice(NULL, 0, &audio_desired, &audio_fmt, SDL_AUDIO_ALLOW_FORMAT_CHANGE);
 	if (audio_dev == 0) {
-	    LOG("OOSDL2::AudioOutput::Open0: error: failed to open audio: " << SDL_GetError());
+	    RTLOG("OOSDL2::AudioOutput::Open0: error: failed to open audio: " << SDL_GetError());
 	    return false;
 	}
 	else {
 	    if (audio_fmt.format != audio_desired.format) {
 			// we let this one thing change.
-	        LOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
+	        RTLOG("OOSDL2::AudioOutput::Open0: warning: couldn't get desired audio format.");
 	    }
 	    
 	    #if CPU_LITTLE_ENDIAN
@@ -153,9 +201,24 @@ bool AudioOutput::Open0() {
 		
 	    SDL_PauseAudioDevice(audio_dev, 0); // start audio playing.
 	    
-	    LOG("OOSDL2::AudioOutput::Open0: opened format: " << fmt.ToString());
+	    RTLOG("OOSDL2::AudioOutput::Open0: opened format: " << fmt.ToString());
+	    
+	    UpdateSinkFormat();
 	    
 	    return true;
+	}
+}
+
+void AudioOutput::UpdateSinkFormat() {
+	InterfaceSinkRef sink_iface = ab->GetSink();
+	int sink_count = sink_iface->GetSinkCount();
+	for(int i = 0; i < sink_count; i++) {
+		Value& val = sink_iface->GetValue(i);
+		Format val_fmt = val.GetFormat();
+		if (val_fmt.vd.val == ValCls::AUDIO && val_fmt != fmt) {
+			RTLOG("AudioOutput::UpdateSinkFormat: updating sink #" << i << " format to " << fmt.ToString());
+			val.SetFormat(fmt);
+		}
 	}
 }
 

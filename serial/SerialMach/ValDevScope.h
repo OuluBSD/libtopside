@@ -18,8 +18,10 @@ public:
 	
 	virtual void Exchange(Ex& e) = 0;
 	virtual void SetFormat(Format f) = 0;
-	virtual void SetMaxPackets(int i) = 0;
+	virtual void SetMinQueueSize(int i) = 0;
+	virtual void SetMaxQueueSize(int i) = 0;
 	virtual int GetQueueSize() const = 0;
+	virtual int GetMinPackets() const = 0;
 	virtual int GetMaxPackets() const = 0;
 	virtual Format GetFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
@@ -48,6 +50,7 @@ public:
 	void ForwardSetup(FwdScope& fwd) override;
 	void ForwardAtom(FwdScope& fwd) override;
 	void ForwardExchange(FwdScope& fwd) override;
+	bool IsPacketStuck() override;
 	
 	void UseConsumer(bool b=true) {use_consumer = b;}
 	void Destroy() {loop = 0;}
@@ -247,21 +250,24 @@ class SimpleValue :
 	Format			fmt;
 	double			time = 0;
 	PacketBuffer	buf;
-	int				packet_limit = 2;
+	int				min_packets = 1;
+	int				max_packets = 2;
 	
 public:
 	RTTI_DECL1(SimpleValue, Value)
 	~SimpleValue() {/*LOG("dtor SimpleValue " << HexStr((void*)this));*/ ASSERT(buf.IsEmpty());}
 	void			Visit(RuntimeVisitor& vis) {}
-	void			Clear() override {/*LOG("clear SimpleValue " << HexStr((void*)this));*/ fmt.Clear(); time = 0; buf.Clear(); packet_limit = 2;}
+	void			Clear() override {/*LOG("clear SimpleValue " << HexStr((void*)this));*/ fmt.Clear(); time = 0; buf.Clear(); min_packets = 1; max_packets = 2;}
 	void			Exchange(Ex& e) override;
 	int				GetQueueSize() const override;
 	Format			GetFormat() const override;
 	bool			IsQueueFull() const override;
 	PacketBuffer&	GetBuffer() override {return buf;}
 	void			SetFormat(Format fmt) override {this->fmt = fmt;}
-	void			SetMaxPackets(int i) override {packet_limit = i;}
-	int				GetMaxPackets() const override {return packet_limit;}
+	void			SetMinQueueSize(int i) override {min_packets = i; max_packets = max(i, max_packets);}
+	void			SetMaxQueueSize(int i) override {max_packets = i; min_packets = min(i, min_packets);}
+	int				GetMinPackets() const override {return min_packets;}
+	int				GetMaxPackets() const override {return max_packets;}
 	Packet			Pick();
 	void			AddPacket(Packet& p) {GetBuffer().Add(p);}
 };
@@ -291,7 +297,9 @@ public:
 	bool			IsQueueFull() const override;
 	void			SetFormat(Format f) override {fmt = f;}
 	PacketBuffer&	GetBuffer() override {return buf;}
-	void			SetMaxPackets(int i) override {TODO}
+	void			SetMinQueueSize(int i) override {TODO}
+	void			SetMaxQueueSize(int i) override {TODO}
+	int				GetMinPackets() const override {TODO}
 	int				GetMaxPackets() const override {TODO}
 	int				GetQueueTotalSamples() const;
 	int				GetQueueChannelSamples() const;

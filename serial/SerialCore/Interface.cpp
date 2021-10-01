@@ -4,12 +4,14 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+bool DefaultExchangePoint::IsPacketStuck() {
+	return false;
+}
+
 void DefaultExchangePoint::ForwardExchange(FwdScope& fwd) {
 	Ref<DefaultInterfaceSink> sink = this->sink;
 	fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
 }
-
-
 
 DefaultExchangePoint* DefaultExchangePoint::Create(TypeCls t) {
 	TODO
@@ -23,9 +25,6 @@ DefaultExchangePoint* DefaultExchangePoint::Create(TypeCls t) {
 	ASSERT_(false, "Invalid TypeCls arg in DefaultExchangePoint::Create");
 	return 0;
 }
-
-
-
 
 void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	/*USING_VALDEVMACH(ValSpec)
@@ -62,6 +61,7 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 		ValDevTuple vd = sink->GetSinkCls();
 		ASSERT(vd.IsValid());
 		to_fmt = GetDefaultFormat(vd());
+		RTLOG("DefaultExchangePoint::ForwardSetup: fixing sink fmt to: " << to_fmt.ToString());
 		SimpleBufferedValue* sbbuf;
 		SimpleValue* sbuf;
 		if ((sbbuf = CastPtr<SimpleBufferedValue>(&to_val))) {

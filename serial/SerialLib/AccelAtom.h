@@ -4,6 +4,8 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+#if 0
+
 template <class T>
 class AccelSinkPolling : public Atom<T> {
 	
@@ -54,6 +56,7 @@ public:
 	
 };
 
+
 template <class T>
 class AccelSourceAsync : public Atom<T> {
 	
@@ -78,6 +81,14 @@ public:
 	void VisitSink(RuntimeVisitor& vis) override {TODO}
 	
 };
+
+#endif
+
+
+template <class T> using AccelSink			= CenterSink<T>;
+template <class T> using AccelSinkAsync		= CenterSinkAsync<T>;
+template <class T> using AccelSource		= CenterSource<T>;
+template <class T> using AccelSourceAsync	= CenterSourceAsync<T>;
 
 
 NAMESPACE_SERIAL_END

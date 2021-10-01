@@ -16,25 +16,79 @@ void AtomSystem::Start() {
 	
 }
 
+String AtomSystem::GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cfg) {
+	int dbg_j = 0;
+	String line;
+	for (FwdScope scope(*c, *cfg); scope; scope++) {
+		scope.ForwardAddNext();
+		AtomBase* ab = CastPtr<AtomBase>(scope.GetCurrent());
+		if (ab) {
+			int sink_pk = 0;
+			int src_pk = 0;
+			
+			line << " | ";
+			
+			InterfaceSinkRef sink_iface = ab->GetSink();
+			int c = sink_iface->GetSinkCount();
+			for(int i = 0; i < c; i++) {
+				if (i) line << "+";
+				line << sink_iface->GetValue(i).GetQueueSize();
+			}
+			
+			line << "__";
+			
+			InterfaceSourceRef src_iface = ab->GetSource();
+			c = src_iface->GetSourceCount();
+			for(int i = 0; i < c; i++) {
+				if (i) line << "+";
+				line << src_iface->GetSourceValue(i).GetQueueSize();
+			}
+			
+		}
+	}
+	return line;
+}
+
 void AtomSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms) {
 	int dbg_i = 0;
 	for (AtomBaseRef& c : atoms) {
 		RealtimeSourceConfig* cfg = c->GetConfig();
-		if (!cfg)
+		if (!cfg) {
+			RTLOG("AtomSystem::ForwardAtoms: warning: GetConfig returns NULL");
 			continue;
+		}
 		
-		RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " (" << c->ToString() << ")");
+		RTLOG("AtomSystem::ForwardAtoms: begin " << (String)id << " #" << dbg_i << " (" << c->ToString() << " " << HexStr(&*c) << ")");
 		
 		WhenEnterAtomForward(&*c);
 		
 		int dbg_j = 0;
 		for (FwdScope scope(*c, *cfg); scope; scope++) {
-			RTLOG("AtomSystem::Update: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
-			WhenEnterFwdScopeForward(scope);
+			RTLOG("AtomSystem::ForwardAtoms: loop " << HexStr(&*c) << " packets: " << GetDebugPacketString(c, cfg));
 			
-			scope.Forward();
+			if (!scope.IsBreak()) {
+				RTLOG("AtomSystem::ForwardAtoms: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
+				WhenEnterFwdScopeForward(scope);
+				
+				scope.Forward();
+				
+				WhenLeaveFwdScopeForward();
+			}
+			else {
+				RTLOG("AtomSystem::ForwardAtoms: weak try fwd " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
+				WhenEnterFwdScopeForward(scope);
+				
+				scope.ForwardWeak();
+				
+				WhenLeaveFwdScopeForward();
+			}
 			
-			WhenLeaveFwdScopeForward();
+			if (scope.IsLoopComplete()) {
+				RTLOG("AtomSystem::ForwardAtoms: loop complete");
+			}
+			else if (!scope) {
+				RTLOG("AtomSystem::ForwardAtoms: scope flag dump: " << scope.GetFlagString());
+			}
 		}
 		
 		WhenLeaveAtomForward();

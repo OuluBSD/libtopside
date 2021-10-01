@@ -10,7 +10,9 @@ NAMESPACE_SERIAL_BEGIN
 bool SDL2SwScreenBase::AltInitialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
+	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	GetSink()->GetValue(0).SetMaxQueueSize(1);
 	return true;
 }
 
@@ -20,43 +22,23 @@ void SDL2SwScreenBase::AltUninitialize() {
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 }
 
-void SDL2SwScreenBase::AltUpdate(double dt) {
-	frame_age += dt;
-	RTLOG("SDL2ScreenBase::AltUpdate: dt: " << dt << ", frame_age: " << frame_age);
+void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
+	
 }
 
-void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
-	const int sink_ch_i = 0;
-	
-	PacketBuffer& sink_buf = this->GetSink()->GetValue(sink_ch_i).GetBuffer();
-	if (sink_buf.IsEmpty()) return;
-	
-	RTLOG("SDL2SwScreenBase::AltForward: frame_age: " << frame_age);
-	
-	if (frame_age >= dt) {
-		RTLOG("SDL2SwScreenBase::AltForward: render");
-		if (frame_age >= 2 * dt)
-			frame_age = 0;
-		else
-			frame_age -= dt;
-		
-		while (sink_buf.GetCount()) {
-			Packet p = sink_buf.First();
-			sink_buf.RemoveFirst();
-			PacketConsumed(p);
-			if (obj->Recv(sink_ch_i, p))
-				break;
-		}
-		
-		//PostContinueForward();
-	}
-	else {
-		RTLOG("SDL2SwScreenBase::AltForward: wait");
-	}
+
+/*bool SDL2SwScreenBase::PassLoadPacket(int ch_i, const Packet& p) {
+	Format fmt = p->GetFormat();
+	return fmt.vd.val == ValCls::VIDEO;
+}*/
+
+bool SDL2SwScreenBase::LoadPacket(int sink_ch_i, const Packet& p) {
+	RTLOG("SDL2SwScreenBase::LoadPacket: sink #" << sink_ch_i << " " << p->ToString());
+	return obj->Recv(sink_ch_i, p);
 }
 
 void SDL2SwScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDLSw2ScreenBase::AltStorePacket");
+	RTLOG("SDL2SwScreenBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
 	obj->Render();
 }
 

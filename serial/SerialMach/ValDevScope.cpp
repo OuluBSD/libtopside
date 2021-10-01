@@ -22,6 +22,7 @@ void SimpleValue::Exchange(Ex& e) {
 			while (this->GetQueueSize() > 0 && !sink_val->IsQueueFull()) {
 				Packet p = src_buf.First();
 				src_buf.RemoveFirst();
+				RTLOG("SimpleValue::Exchange: " << p->ToString());
 				ASSERT(p->GetFormat() == fmt);
 				sink_buf.Add(p);
 			}
@@ -67,6 +68,7 @@ void SimpleValue::Exchange(Ex& e) {
 			while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
 				Packet p = src_buf.First();
 				src_buf.RemoveFirst();
+				RTLOG("SimpleValue::Exchange: " << p->ToString());
 				Format pk_fmt = p->GetFormat();
 				/*if (pk_fmt != sink_fmt) {
 					DUMP(pk_fmt);
@@ -85,8 +87,12 @@ void SimpleValue::Exchange(Ex& e) {
 				if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
 					Packet dst = CreatePacket(p->GetOffset());
 					dst->SetFormat(sink_fmt);
-					if (Convert(p, dst))
+					if (Convert(p, dst)) {
+						RTLOG("SimpleValue::Exchange: converted packet");
+						RTLOG("                       from: " << p->ToString());
+						RTLOG("                       to:   " << dst->ToString());
 						sink_buf.Add(dst);
+					}
 					else
 						break;
 				}
@@ -109,7 +115,7 @@ Format SimpleValue::GetFormat() const {
 }
 
 bool SimpleValue::IsQueueFull() const {
-	return buf.GetCount() >= packet_limit;
+	return buf.GetCount() >= max_packets;
 }
 
 
@@ -613,11 +619,32 @@ bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte
 bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
 
 bool Convert(const Packet& src, Packet& dst) {
+	RTLOG("Convert(src,dst)");
 	Format src_fmt = src->GetFormat();
 	Format dst_fmt = dst->GetFormat();
 	if (src_fmt.IsAudio() && dst_fmt.IsAudio()) {
 		AudioFormat& srcf = src_fmt;
 		AudioFormat& dstf = dst_fmt;
+		int src_sr = srcf.GetSampleRate();
+		int dst_sr = dstf.GetSampleRate();
+		if (src_sr != dst_sr) {
+			dst_sr = src_sr;
+			dstf.sample_rate = src_sr;
+			dst->SetFormat(dst_fmt);
+		}
+		
+		#if 1
+		
+		int src_frame_sz = src_fmt.GetFrameSize();
+		int dst_frame_sz = dst_fmt.GetFrameSize();
+		int src_ch_samples = src_sr;
+		const Vector<byte>& src_data = src->GetData();
+		Vector<byte>& dst_data = dst->Data();
+		dst_data.SetCount(dst_frame_sz, 0);
+		ASSERT(src_data.GetCount() == src_frame_sz);
+		
+		#else
+		
 		int src_sample = srcf.GetSampleSize();
 		int src_channels = srcf.res[0];
 		int dst_sample = dstf.GetSampleSize();
@@ -636,6 +663,9 @@ bool Convert(const Packet& src, Packet& dst) {
 			LOG("dst-sample:   " << dst_sample);
 			LOG("dst-channels: " << dst_channels);
 		}
+		
+		#endif
+		
 		return AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
 	}
 	//else if (src_fmt.vd.val.type == ValCls::ORDER) {

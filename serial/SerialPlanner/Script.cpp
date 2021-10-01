@@ -389,6 +389,10 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 						}
 						
 						LOG(src->ToString() + "(" << src_ch_i << ") side-linked to " + sink->ToString() + "(" << sink_ch_i << ")");
+						
+						
+						loop0.UpdateLoopLimits();
+						loop1.UpdateLoopLimits();
 						break;
 					}
 				}
