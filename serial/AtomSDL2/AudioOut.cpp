@@ -4,8 +4,6 @@ NAMESPACE_SERIAL_BEGIN
 
 
 bool SDL2AudioOutputBase::Initialize(const Script::WorldState& ws) {
-	aconfig.frames_after_sync = 0;
-	SetAudioSyncInterval(15);
 	OBJ_CREATE
 	GetSink()->GetValue(0).SetMinQueueSize(10);
 	return true;

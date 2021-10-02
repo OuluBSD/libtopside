@@ -11,9 +11,6 @@ class SDL2AudioOutputBase :
 	public AsyncMemForwarderBase
 {
 	One<OOSDL2::AudioOutput>	obj;
-	//Serial::Proxy				empty_aud;
-    RealtimeSourceConfig		aconfig;
-	off32_gen					gen;
 	
 	
 public:
@@ -21,7 +18,7 @@ public:
 	COPY_PANIC(SDL2AudioOutputBase)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<AsyncMemForwarderBase>(this);}
 	
-	SDL2AudioOutputBase() : aconfig(gen) {}
+	SDL2AudioOutputBase() {}
 	
 	bool	Initialize(const Script::WorldState& ws) override;
 	bool	PostInitialize() override;
@@ -31,7 +28,6 @@ public:
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}
 	
-	void SetAudioSyncInterval(double seconds) {aconfig.sync_dt = seconds;}
 	
 };
 

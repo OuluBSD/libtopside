@@ -147,60 +147,6 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 	#ifdef flagDEBUG
 	this->dbg_async_race = false;
 	#endif
-	
-	
-	
-	#if 0
-	const int sink_ch_i = 0;
-	
-	Value& sink_val = GetSink()->GetValue(sink_ch_i);
-	PacketBuffer& sink_buf = sink_val.GetBuffer();
-	
-	if (consumer.IsEmptySource())
-		consumer.SetSource(sink_buf);
-	
-	#ifdef flagDEBUG
-	this->dbg_async_race = true;
-	#endif
-	
-	if (args.output) {
-		Serial::AudioFormat& afmt = fmt;
-		
-		int size = fmt.GetFrameSize();
-		if (sink_buf.GetCount() > 0 || consumer.HasLeftover()) {
-			int sample_rate = afmt.GetSampleRate();
-			ASSERT(args.fpb == afmt.sample_rate);
-			
-			consumer.SetDestination(fmt, args.output, size);
-			consumer.ConsumeAll(false);
-			consumer.ClearDestination();
-			if (consumer.GetLastMemoryBytes() != size) {
-				RTLOG("PortaudioSink::SinkCallback: error: consumed " << consumer.GetLastMemoryBytes() << " (expected " << size << ")");
-			}
-			
-			int consumed_count = consumer.GetCount();
-			if (consumed_count) {
-				RTLOG("PortaudioSink::SinkCallback: device consumed count=" << consumed_count);
-			}
-			
-			PacketsConsumed(consumer.consumed_packets);
-			//PostContinueForward();
-		}
-		else {
-			#if DEBUG_RT_PIPE
-			RTLOG("error: PortaudioSink::SinkCallback: got empty data");
-			#endif
-			
-			memset(args.output, 0, size);
-		}
-	}
-	
-	
-	#ifdef flagDEBUG
-	this->dbg_async_race = false;
-	#endif
-	
-	#endif
 }
 
 namespace Portaudio {bool IsPortaudioUninitialized() {return Serial::__is_portaudio_uninit;}}

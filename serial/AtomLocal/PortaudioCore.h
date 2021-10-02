@@ -137,11 +137,6 @@ public:
 	AudioBase();
 	AudioBase(const AudioBase& s) : err(s.err), pa_fmt(s.pa_fmt), flags(s.flags) {stream = s.stream;}
 	
-	/*void			Exchange(AudioEx& e) override;
-	int				GetQueueSize() const override {return 0;}
-	AudioFormat		GetFormat() const override {return fmt;}
-	bool			IsQueueFull() const override {return false;}*/
-	
 	dword			GetFrameCount() const {return total_frames;}
 	
 protected:

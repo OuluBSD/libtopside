@@ -114,22 +114,6 @@ void Loop::AppendCopy(const Loop& l) {
 	TODO
 }
 
-/*void Loop::Destroy() {
-	Destroyable::Destroy();
-	
-	for (auto& component : atoms.GetValues()) {
-		component->Destroy();
-	}
-}*/
-
-/*void Loop::SetEnabled(bool enable) {
-	Enableable::SetEnabled(enable);
-	
-	for (auto& component : atoms.GetValues()) {
-		component->SetEnabled(enable);
-	}
-}*/
-
 void Loop::VisitSinks(RuntimeVisitor& vis) {
 	for(AtomBaseRef& c : atoms)
 		c->VisitSink(vis);

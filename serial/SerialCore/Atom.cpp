@@ -70,9 +70,7 @@ String AtomBase::GetInlineConnectionsString() const {
 }
 
 bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
-	//side_src = -1; // SetSideSrc(-1)
 	ASSERT(sink);
-	//ASSERT(!side_sink_conn);
 	if (!sink)
 		return false;
 	

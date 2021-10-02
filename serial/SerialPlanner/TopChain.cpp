@@ -127,7 +127,6 @@ void ScriptTopChainLoader::ForwardSubchainLoops() {
 	}
 }
 
-
 void ScriptTopChainLoader::ForwardChainLoops() {
 	for (ScriptChainLoader& loader : chains) {
 		ScriptStatus s = loader.GetStatus();
@@ -138,90 +137,6 @@ void ScriptTopChainLoader::ForwardChainLoops() {
 		}
 	}
 }
-/*
-void ScriptTopChainLoader::ForwardSubchain() {
-	
-	if (status == ScriptStatus::IN_BEGINNING || status == ScriptStatus::RETRY) {
-		bool any_waiting = false;
-		bool any_retrying = false;
-		
-		for (ScriptTopChainLoader& loader : subchains) {
-			ScriptStatus s = loader.GetStatus();
-			if (s != ScriptStatus::CHAIN_OUTPUT_IS_WAITING &&
-				s != ScriptStatus::CHAIN_INPUT_IS_WAITING) {
-				loader.Forward();
-			}
-			
-			s = loader.GetStatus();
-			if (s == ScriptStatus::CHAIN_OUTPUT_IS_WAITING ||
-				s == ScriptStatus::CHAIN_INPUT_IS_WAITING) {
-				any_waiting = true;
-			}
-			else if (s == ScriptStatus::IN_BEGINNING || s == ScriptStatus::RETRY) {
-				any_retrying = true;
-			}
-		}
-		
-		if (any_retrying) {
-			status = ScriptStatus::IN_BEGINNING;
-			return;
-		}
-		else if (any_waiting) {
-			status = ScriptStatus::SOLVE_INTERNAL_CONNECTIONS;
-		}
-		
-		SolveInternal();
-	}
-	else {
-		TODO
-	}
-}
-
-void ScriptTopChainLoader::ForwardChain() {
-	
-	if (status == ScriptStatus::IN_BEGINNING || status == ScriptStatus::RETRY) {
-		bool any_waiting = false;
-		bool any_retrying = false;
-		
-		for (ScriptChainLoader& loader : chains) {
-			ScriptStatus s = loader.GetStatus();
-			if (s != ScriptStatus::CHAIN_OUTPUT_IS_WAITING &&
-				s != ScriptStatus::CHAIN_INPUT_IS_WAITING) {
-				loader.Forward();
-			}
-			
-			s = loader.GetStatus();
-			if (s == ScriptStatus::CHAIN_OUTPUT_IS_WAITING ||
-				s == ScriptStatus::CHAIN_INPUT_IS_WAITING) {
-				any_waiting = true;
-			}
-			else if (s == ScriptStatus::IN_BEGINNING || s == ScriptStatus::RETRY) {
-				any_retrying = true;
-			}
-		}
-		
-		if (any_retrying) {
-			status = ScriptStatus::IN_BEGINNING;
-			return;
-		}
-		else if (any_waiting) {
-			status = ScriptStatus::SOLVE_INTERNAL_CONNECTIONS;
-		}
-		
-		SolveInternal();
-	}
-	else if (status == ScriptStatus::CHAIN_INPUT_IS_WAITING) {
-		
-		TODO
-		
-	}
-	else {
-		TODO
-	}
-	
-}*/
-
-
 
 
 NAMESPACE_SERIAL_END

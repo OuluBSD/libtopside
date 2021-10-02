@@ -3,7 +3,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-
 #ifdef flagGUI
 
 
@@ -26,12 +25,6 @@ void SDL2SwScreenBase::Forward(FwdScope& fwd) {
 	
 }
 
-
-/*bool SDL2SwScreenBase::PassLoadPacket(int ch_i, const Packet& p) {
-	Format fmt = p->GetFormat();
-	return fmt.vd.val == ValCls::VIDEO;
-}*/
-
 bool SDL2SwScreenBase::LoadPacket(int sink_ch_i, const Packet& p) {
 	RTLOG("SDL2SwScreenBase::LoadPacket: sink #" << sink_ch_i << " " << p->ToString());
 	return obj->Recv(sink_ch_i, p);
@@ -44,7 +37,6 @@ void SDL2SwScreenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 
 
 #endif
-
 
 
 NAMESPACE_SERIAL_END

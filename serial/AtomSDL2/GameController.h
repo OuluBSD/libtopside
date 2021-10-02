@@ -21,10 +21,6 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	//bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
-	/*HumanStream&		GetStream(HumCtx) override {TODO}
-	void				BeginStream(HumCtx) override {TODO}
-	void				EndStream(HumCtx) override {TODO}*/
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::GameController* GetOOSDL2() {return &*obj;}

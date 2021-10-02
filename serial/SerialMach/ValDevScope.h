@@ -54,8 +54,6 @@ public:
 	void Destroy() {loop = 0;}
 	
 	
-	static DefaultExchangePoint* Create(TypeCls t);
-	
 	Callback1<DefaultExchangePoint&> WhenEnterValExPtForward;
 	
 	Callback WhenLeaveValExPtForward;

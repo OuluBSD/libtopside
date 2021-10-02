@@ -76,18 +76,6 @@ Size SDL2ImageBase::GetResolution() const {
 	return Size(0,0);
 }
 
-/*StaticStream& SDL2ImageBase::GetStream(StcCtx) {
-	return sstream;
-}
-
-void SDL2ImageBase::BeginStream(StcCtx) {
-	TODO
-}
-
-void SDL2ImageBase::EndStream(StcCtx) {
-	TODO
-}*/
-
 #if 0
 void SDL2ImageBase::EmitStatic() {
 	int id = 0;

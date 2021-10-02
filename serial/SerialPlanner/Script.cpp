@@ -189,55 +189,7 @@ bool ScriptLoader::ImplementScript() {
 bool ScriptLoader::LoadAtomilationUnit(Script::AtomilationUnit& cunit) {
 	return LoadGlobalScope(cunit.list);
 }
-/*
-void ScriptLoader::EnterScope() {
-	ScriptScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
-	ScriptScope& scope = scopes.Add();
-	
-	scope.SetCurrentState(def_ws);
-	
-	if (parent) {
-		scope.current_state = parent->current_state;
-	}
-}
 
-bool ScriptLoader::LeaveScope() {
-	ScriptScope* parent = scopes.IsFilled() ? &scopes.Top() : 0;
-	ScriptScope& scope = scopes.Top();
-	
-	if (scopes.GetCount() >= 2) {
-		ScriptScope& par = scopes.At(scopes.GetCount()-2);
-		const Script::WorldState& src_ws = scope.current_state;
-		Script::WorldState& dst_ws = par.current_state;
-		if (par.chain && !dst_ws.Append(src_ws, par.chain->ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-		if (par.loop && !dst_ws.Append(src_ws, par.loop->ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-	}
-	
-	
-	// Add changes to parent state
-	if (parent && scope.chain) {
-		if (!parent->current_state.Append(scope.current_state, scope.chain->ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-	}
-	if (parent && scope.loop) {
-		if (!parent->current_state.Append(scope.current_state, scope.loop->ret_list)) {
-			AddError("Invalid type in return value");
-			return false;
-		}
-	}
-	
-	scopes.RemoveLast();
-	return true;
-}
-*/
 bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 	//EnterScope();
 	//scopes.Top().glob = &glob;
@@ -261,54 +213,6 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 	
 	return loader->IsReady();
 }
-
-/*bool ScriptLoader::SolveLoops(Script::ChainDefinition& def) {
-	loops.Clear();
-	for (Script::LoopDefinition& loop_def : def.loops)
-		loops.Add(new ScriptLoopLoader(loop_counter++, this, loop_def));
-	if (loops.IsEmpty())
-		return true;
-	
-	bool fail = false;
-	enum {FORWARDING, CONNECTING_SIDECHANNEL};
-	int mode = FORWARDING;
-	int mode_count = 0;
-	Vector<ScriptLoopLoader*> waiting_inputs, waiting_outputs;
-	while(!fail) {
-		if (mode == FORWARDING) {
-			bool ready = true;
-			bool keep_going = true;
-			waiting_inputs.Clear();
-			waiting_outputs.Clear();
-			while (keep_going) {
-				int dbg_i = 0;
-				for (ScriptLoopLoader& loop : loops) {
-					if (!loop.IsReady()) {
-						keep_going = loop.Forward() && keep_going;
-						fail = fail || loop.IsFailed();
-						ready = ready && loop.IsReady();
-					}
-					if (loop.IsWaitingSideSink()) waiting_inputs.Add(&loop);
-					if (loop.IsWaitingSideSource()) waiting_outputs.Add(&loop);
-					++dbg_i;
-				}
-			}
-			if (ready)
-				break;
-		}
-		else if (mode == CONNECTING_SIDECHANNEL) {
-			
-		}
-		else Panic("Invalid mode");
-		
-		
-		mode = (mode + 1) % 2;
-		if (mode_count++ >= 10)
-			break;
-	}
-	
-	return !fail;
-}*/
 
 LoopRef ScriptLoader::ResolveLoop(Script::Id& id) {
 	ASSERT(es);
@@ -424,44 +328,6 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 	}
 	return NULL;
 }
-
-/*void ScriptLoader::SolveInsideLoops(Script::ChainDefinition& chain) {
-	TODO
-}
-
-void ScriptLoader::SolveInsideChain(Script::ChainDefinition& chain) {
-	TODO
-}
-
-void ScriptLoader::SolveBetweenChains(const Vector<Script::ChainDefinition*>& chains) {
-	TODO
-}
-
-void ScriptLoader::SolveBetweenMachines(const Vector<Vector<Script::ChainDefinition*>>& machs) {
-	TODO
-}
-
-bool ScriptLoader::IsNewConnections() const {
-	TODO
-}
-
-void ScriptLoader::GetChainsDeepestFirst(Script::Machine& mach, Vector<Script::ChainDefinition*>& chains) {
-	LinkedList<Script::ChainDefinition*> unvisited;
-	
-	for (Script::ChainDefinition& ch : mach.chains)
-		unvisited.Add(&ch);
-	
-	while (unvisited.GetCount()) {
-		Script::ChainDefinition* p = unvisited.First();
-		unvisited.RemoveFirst();
-		
-		chains.Add(p);
-		p->GetSubChainPointers(unvisited);
-	}
-	
-	Reverse(chains);
-}*/
-
 
 bool ScriptConnectionSolver::Process() {
 	Vector<ScriptLoopLoader*>	inputs;

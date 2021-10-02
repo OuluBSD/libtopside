@@ -13,43 +13,7 @@ void DefaultExchangePoint::ForwardExchange(FwdScope& fwd) {
 	fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
 }
 
-DefaultExchangePoint* DefaultExchangePoint::Create(TypeCls t) {
-	TODO
-	/*#define IFACE_CTX_CLS(dev, val, prefix) \
-		if (t == AsTypeCls<VD<dev##Spec, val##Spec>>()) \
-			return new ScopeValDevMachT<VD<dev##Spec, val##Spec>>::DefaultExchangePoint();
-	#define IFACE(x) DEV_IFACE(x)
-	IFACE_LIST
-	#undef IFACE
-	#undef IFACE_CTX_CLS*/
-	ASSERT_(false, "Invalid TypeCls arg in DefaultExchangePoint::Create");
-	return 0;
-}
-
 void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
-	/*USING_VALDEVMACH(ValSpec)
-	using ValSpec				= typename ValDevSpec::Val;
-	using DevSpec				= typename ValDevSpec::Dev;
-	using ValMach				= ScopeValMachT<ValSpec>;
-	using Mach					= ScopeValDevMachT<ValDevSpec>;
-	using DevMach				= ScopeDevMachT<DevSpec>;
-	using DevCore				= ScopeDevCoreT<DevSpec>;
-	using DevLib				= ScopeDevLibT<DevSpec>;
-	using Core					= ScopeValDevCoreT<ValDevSpec>;
-	using ValStreamState		= typename ValMach::ValStreamState;
-	using DevStreamState		= typename DevMach::DevStreamState;
-	using DevComponent			= typename DevLib::DevComponent;
-	using StageComponent		= typename DevLib::StageComponent;
-	using Value					= typename Mach::Value;
-	using SourceRef				= typename Core::DefaultInterfaceSourceRef;
-	using SinkRef				= typename Core::DefaultInterfaceSinkRef;*/
-	//using DevContextConnectorBaseRef	= typename DevMach::DevContextConnectorBaseRef;
-	//using DevContextConnectorRef		= typename DevLib::DevContextConnectorRef;
-	
-	//ASSERT(!dbg_offset_is_set);
-	
-	
-	
 	DefaultInterfaceSinkRef sink = this->Sink();
 	ASSERT(sink);
 	
@@ -113,8 +77,6 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 		RTLOG("ExchangePoint::Forward: empty source");
 	}
 	
-	//src->EndStream(CTX);
-	
 	fwd.AddNext(sink->AsAtomBase());
 	
 	WhenLeaveValExPtForward();
@@ -122,8 +84,6 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 
 void DefaultExchangePoint::Init(MetaExchangePoint* mexpt) {
 	ASSERT(mexpt);
-	/*ConnectorBase* conn = CastPtr<ConnectorBase>(mexpt);
-	ASSERT(conn);*/
 	
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)

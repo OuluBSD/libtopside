@@ -9,9 +9,6 @@
 #endif
 
 #include "Internal.h"
-
-#include "Customer.h"
-
 #include "Debug.h"
 #include "Util.h"
 #include "Audio.h"
@@ -22,7 +19,6 @@
 #include "Ffmpeg.h"
 #include "PortaudioCore.h"
 #include "Portaudio.h"
-#include "Sdl.h"
 
 
 

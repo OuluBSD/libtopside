@@ -22,19 +22,6 @@ void SimpleValue::Exchange(Ex& e) {
 			src_buf.RemoveFirst();
 			RTLOG("SimpleValue::Exchange: " << p->ToString());
 			Format pk_fmt = p->GetFormat();
-			/*if (pk_fmt != sink_fmt) {
-				DUMP(pk_fmt);
-				DUMP(src_fmt);
-				DUMP(sink_fmt);
-			}
-			ASSERT(pk_fmt == sink_fmt);*/
-			
-			/*if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
-				DUMP(pk_fmt);
-				DUMP(src_fmt);
-				DUMP(sink_fmt);
-			}
-			ASSERT(pk_fmt.IsCopyCompatible(sink_fmt));*/
 			
 			if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
 				Packet dst = CreatePacket(p->GetOffset());
@@ -84,14 +71,6 @@ Packet SimpleValue::Pick() {
 
 
 
-
-
-
-
-/*void Ex::SetOffset(off32 packet_count) {
-	//RTLOG("AudioEx::SetOffset: offset " << packet_count.ToString());
-	this->offset = packet_count;
-}*/
 
 bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte* dst) {
 	TODO

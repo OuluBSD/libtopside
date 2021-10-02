@@ -204,8 +204,6 @@ class DefaultInterfaceSource :
 	public InterfaceContainer<DefaultInterfaceSource>,
 	RTTIBase
 {
-	/*ValDevCls src_vd;
-	ValDevCls sink_vd;*/
 	
 protected:
 	using Class = DefaultInterfaceSource;
@@ -226,17 +224,9 @@ public:
 		vis.VisitThis<Container>(this);
 	}
 	
-	//ValDevCls GetTypeCls() override;// {return TypeId(AsTypeCls<ValDevSpec>());}
-	
 	using ExPt = DefaultExchangePoint;
 	using Sink = DefaultInterfaceSink;
 	
-	
-	/*void						Update(double dt, bool buffer_full) {cfg.Update(dt, buffer_full);}
-	const RealtimeSourceConfig&	Cfg() const {return cfg;}
-	void						SetOffset(off32 begin, off32 end) {cfg.SetOffset(begin, end);}*/
-	
-	//DevCls						GetDevSpec() const override;// {return AsTypeCls<DevSpec>();}
 	virtual void				ClearSource() override {ClearContainers();}
 	virtual int					GetSourceCount() const override {return GetContainerCount();}
 	Value&						GetSourceValue(int i) override {return GetContainerValue(i);}

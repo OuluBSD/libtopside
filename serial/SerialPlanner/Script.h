@@ -17,29 +17,6 @@ struct ScriptError : Moveable<ScriptError> {
 
 
 
-
-
-
-/*class ScriptScope {
-protected:
-	friend class ScriptLoader;
-	friend class ScriptLoopLoader;
-	
-	Script::WorldState			current_state;
-	Script::LoopDefinition*	loop = 0;
-	Script::ChainDefinition*	chain = 0;
-	Script::Machine*			mach = 0;
-	Script::GlobalScope*		glob = 0;
-public:
-	ScriptScope() {}
-	
-	void SetCurrentState(const Script::WorldState& s) {current_state = s;}
-	
-	
-};*/
-
-
-
 class ScriptLoopSegment {
 public:
 	AStar<Script::ActionNode>		as;
@@ -493,18 +470,6 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 				return false;
 			}
 			
-			/*else {
-				const Script::APlanNode* accepted = ll.GetAcceptedSideNode();
-				ASSERT(accepted);
-				//if (n.GetWorldState() != accepted->GetWorldState())
-				//	return false;
-				if (&n != accepted) {
-					LOG("Skipped terminal: " << IntStr64(n.GetWorldState().GetHashValue()) << ": " << n.GetWorldState().ToString());
-					return false;
-				}
-				LOG("Found side-ch path: " << accepted->GetWorldState().ToString());
-				
-			}*/
 		}
 	}
 	else {
@@ -537,20 +502,9 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 			an->IncLinked();
 			n.AddLink(*an);
 		}
-		LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 		
-		/*if (ws_to.IsAddAtom()) {
-			AtomTypeCls t = ws_to.GetAtom();
-			if (t.sub == SubAtomCls::SIDE_INPUT) {
-				ap.AddSideSink(*an);
-			}
-			else if (t.sub == SubAtomCls::SIDE_OUTPUT) {
-				ap.AddSideSource(*an);
-			}
-		}*/
+		LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 	}
-	//if (n.GetTotalCount())
-	//	return false;
 	
 	return false;
 }

@@ -31,7 +31,5 @@ file
 	Font.cpp,
 	Context.h,
 	Context.cpp,
-	Trash readonly separator,
-	System.h,
-	System.cpp;
+	Trash readonly separator;
 

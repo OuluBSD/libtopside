@@ -34,11 +34,7 @@ file
 	PortaudioSystem.cpp,
 	Portaudio.h,
 	Portaudio.cpp,
-	Sdl.h,
-	Sdl.cpp,
 	Generated.h,
 	Generated.cpp,
-	Trash readonly separator,
-	Customer.h,
-	Customer.cpp;
+	Trash readonly separator;
 

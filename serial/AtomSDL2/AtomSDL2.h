@@ -30,53 +30,11 @@
 #include "Image.h"
 #include "Font.h"
 #include "Context.h"
-#include "System.h"
 
 
 NAMESPACE_SERIAL_BEGIN
 
 
-
-#if 0
-
-#if defined flagGUI
-
-PREFAB_BEGIN(SDL2StandaloneWindow)
-	SDL2TimerAtom,
-	SDL2EventsAtom,
-	//SDL2AudioInputAtom,
-	SDL2AudioOutputAtom,
-	//SDL2DummyAudioOutputAtom,
-	SDL2ScreenAtom,
-	SDL2JoystickAtom,
-	SDL2GameControllerAtom,
-	SDL2SensorAtom,
-	SDL2ImageAtom,
-	SDL2FontAtom
-PREFAB_END
-
-#endif
-
-PREFAB_BEGIN(SDL2StandaloneConsole)
-	SDL2TimerAtom,
-	SDL2EventsAtom,
-	//SDL2AudioInputAtom,
-	SDL2AudioOutputAtom,
-	// Never: SDL2ScreenAtom,
-	SDL2JoystickAtom,
-	SDL2GameControllerAtom,
-	SDL2SensorAtom,
-	SDL2ImageAtom,
-	SDL2FontAtom
-PREFAB_END
-
-
-
-PREFAB_BEGIN(StandaloneLineIn)
-	SDL2AudioInputAtom
-PREFAB_END
-
-#endif
 
 
 NAMESPACE_SERIAL_END

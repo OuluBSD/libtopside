@@ -25,10 +25,6 @@ public:
 	bool LoadFileAny(String path);
 	Size GetResolution() const;
 	
-	/*StaticStream&		GetStream(StcCtx) override;
-	void				BeginStream(StcCtx) override;
-	void				EndStream(StcCtx) override;*/
-	
 	bool				IsOpen() const {return !img.IsEmpty();}
 	bool				Open(int) {return !img.IsEmpty();}
 	void				Close() {img.Clear();}

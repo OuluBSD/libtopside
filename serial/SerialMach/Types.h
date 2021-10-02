@@ -71,7 +71,6 @@ using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
 using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
 using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
 using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
-//using CenterCustomerRef		= Ref<CenterCustomer,			AtomParent>;
 
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
@@ -446,18 +445,7 @@ template <class T> SerialTypeCls AsSerialTypeCls(ValDevCls vd) {
 	return c;
 }
 
-/*
-template <class T> AtomTypeCls AsAtomTypeCls(SubAtomCls sub_type, CompCls vd) {
-	AtomTypeCls c;
-	c.sub = sub_type;
-	c.side.vd.dev = vd.side.dev;
-	c.side.vd.val = vd.side.val;
-	c.side.type = T::GetSerialType();
-	c.sink = vd.sink;
-	c.src  = vd.src;
-	return c;
-}
-*/
+
 
 template <class T> AtomTypeCls AsAtomTypeCls() {return T::GetAtomType();}
 

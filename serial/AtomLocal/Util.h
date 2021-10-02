@@ -83,7 +83,6 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
 	bool IsReady(ValDevCls vd) override;
 	bool LoadPacket(int ch_i, const Packet& p) override;
 	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;

@@ -35,13 +35,7 @@ public:
 };
 
 
-/*class EventSample : public BinarySample
-{
-public:
-	
-	static const DefaultType = U32_LE_ABCD;
-	
-};*/
+
 
 
 class MidiSample : RTTIBase {

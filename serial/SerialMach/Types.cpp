@@ -126,17 +126,13 @@ hash_t AtomTypeCls::GetHashValue() const {
 
 
 String SerialTypeCls::GetTypeString(Type t) {
-	TODO
-	#if 0
 	switch (t) {
-		case IFACE:					return "interface";
-		case COMP_EXT:				return "ext-component";
-		case ATOM_TEST_CUSTOMER:		return "test-customer-component";
-		case ATOM_TEST_AUDIO_OUT:	return "test-audio-out-component";
-		case ATOM_DBG_CONVERTER:		return "dbg-conv-component";
+		case INVALID:				return "invalid";
+		#define SERIAL_TYPE(x) case x: return #x;
+		SERIAL_TYPE_LIST
+		#undef SERIAL_TYPE
 		default: return "invalid";
 	}
-	#endif
 }
 
 

@@ -238,27 +238,6 @@ void OglShaderBase::Uninitialize() {
 	last_packet.Clear();
 }
 
-void OglShaderBase::Forward(FwdScope& fwd) {
-	/*const int sink_ch_i = 0;
-	const int src_ch_i = 0;
-	
-	Value& src_val = this->GetSource()->GetSourceValue(src_ch_i);
-	Value& sink_val = this->GetSink()->GetValue(sink_ch_i);
-	PacketBuffer& sink_buf = sink_val.GetBuffer();
-	
-	if (src_val.GetQueueSize() == 0 && sink_buf.GetCount()){
-		RTLOG("OglShaderBase::Forward: render");
-		
-		Packet p = sink_buf.First();
-		sink_buf.RemoveFirst();
-		PacketConsumed(p);
-		last_packet = p;
-	}
-	else {
-		RTLOG("OglShaderBase::Forward: wait");
-	}*/
-}
-
 bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
 	bool succ = true;
 	Format fmt = p->GetFormat();
@@ -278,10 +257,6 @@ bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
 }
 
 bool OglShaderBase::IsReady(ValDevCls vd) {
-	/*const int src_ch_i = 0;
-	
-	Value& src_val = this->GetSource()->GetSourceValue(src_ch_i);
-	return src_val.GetQueueSize() == 0;*/
 	return true;
 }
 

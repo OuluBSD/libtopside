@@ -3,11 +3,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-
-
-
-
-
 bool SDL2EventsBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	
@@ -79,7 +74,6 @@ bool SDL2EventsBase::ProcessFrame() {
 	}
 	return false;
 }
-
 
 
 NAMESPACE_SERIAL_END

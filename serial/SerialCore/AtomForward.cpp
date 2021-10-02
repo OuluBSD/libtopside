@@ -86,10 +86,6 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	
 	this->skipped_fwd_count = 0;
 	
-	/*const int sink_ch_i = 0;
-	const int side_src_ch_i = 1;
-	const int side_sink_ch_i = 1;*/
-	
 	AtomTypeCls type = GetType();
 	
 	Forward(fwd);
@@ -101,19 +97,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	ASSERT(src_ch_count);
 	if (!src_ch_count) return;
 	
-	/*Value& sink_value = sink_iface->GetValue(sink_ch_i);
-	auto& sink_buf = sink_value.GetBuffer();*/
-	
-	//Value& main_src_value = src_iface->GetSourceValue(0);
-	
-	/*InterfaceSinkRef side_sink_iface = side_sink_conn.First()->GetSink();
-	Value& side_sink_value = side_sink_iface->GetValue(side_sink_ch_i);
-	auto& side_sink_buf = side_sink_value.GetBuffer();
-	Format side_sink_fmt = side_sink_value.GetFormat();*/
-	
 	bool is_forwarded = false;
 	
-	//while (sink_buf.GetCount()) {
 	while (1) {
 		if (!IsReady(type.iface.content))
 			break;
@@ -175,7 +160,6 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				RTLOG("AtomBase::ForwardPipe: receiving sink #" << i << " packet(" << off.ToString() << "), " << sink_fmt.ToString());
 			}
 			
-			//consumed_packets.Add(in);
 			packets_forwarded++;
 			
 			for(int j = src_ch_count-1; j >= 0; j--) {
@@ -191,37 +175,24 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				
 				RTLOG("AtomBase::ForwardPipe: sending sink #" << i << ", src #" << j << " packet(" << off.ToString() << "), " << src_fmt.ToString());
 				
-				if (1) {
-					Packet to = CreatePacket(off);
-					to->SetFormat(src_fmt);
-					
-					InternalPacketData& data = to->template SetData<InternalPacketData>();
-					
-					WhenEnterStorePacket(*this, to);
-					StorePacket(i, j, to);
-					WhenLeaveStorePacket(to);
-					
-					if (to) {
-						PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
-						src_buf.Add(to);
-						is_forwarded = true;
-					}
-					else {
-						RTLOG("AtomBase::ForwardPipe: error: StorePacket returned empty package");
-						ASSERT(0);
-					}
+				Packet to = CreatePacket(off);
+				to->SetFormat(src_fmt);
+				
+				InternalPacketData& data = to->template SetData<InternalPacketData>();
+				
+				WhenEnterStorePacket(*this, to);
+				StorePacket(i, j, to);
+				WhenLeaveStorePacket(to);
+				
+				if (to) {
+					PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+					src_buf.Add(to);
+					is_forwarded = true;
 				}
 				else {
-					TODO
-					/*if (in->GetFormat() != side_sink_fmt) {
-						Packet dst = CreatePacket(off);
-						dst->SetFormat(side_sink_fmt);
-						Convert(in, dst);
-						in = dst;
-					}*/
+					RTLOG("AtomBase::ForwardPipe: error: StorePacket returned empty package");
+					ASSERT(0);
 				}
-				
-				//side_sink_buf.Add(in);
 			}
 		}
 	}
@@ -234,7 +205,6 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	else
 		fwd.Break();
 	
-	//ForwardConsumed(fwd);
 }
 
 void AtomBase::ForwardSideConnections() {

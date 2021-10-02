@@ -21,9 +21,6 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	/*StaticStream&		GetStream(StcCtx) override {TODO}
-	void				BeginStream(StcCtx) override {TODO}
-	void				EndStream(StcCtx) override {TODO}*/
 	
 	
 };

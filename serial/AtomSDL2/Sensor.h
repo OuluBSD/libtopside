@@ -21,10 +21,6 @@ public:
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	//bool IsSupported(CtrlType type) override {return type == CTRL_SENSOR;}
-	/*HumanStream&		GetStream(HumCtx) override {TODO}
-	void				BeginStream(HumCtx) override {TODO}
-	void				EndStream(HumCtx) override {TODO}*/
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Sensor* GetOOSDL2() {return &*obj;}

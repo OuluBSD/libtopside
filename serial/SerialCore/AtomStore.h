@@ -63,8 +63,6 @@ public:
 	T* CreateAtom(AtomTypeCls t) {
 		static_assert(IsAtom<T>::value, "T should be a atom");
 		
-		//t.iface.side  = AsSerialTypeCls<T>(cls.side);
-		
 		auto it = AtomFactory::producers.Find(t);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
@@ -76,7 +74,6 @@ public:
 		return CastPtr<T>(CreateAtom(t));
 	}
 	
-	//void Clone(Main& dst, const Main& src);
 	void ReturnAtom(Base* c);
 	
 	
