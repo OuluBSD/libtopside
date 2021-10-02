@@ -37,7 +37,6 @@ class DefaultExchangePoint :
 	public ExchangePoint
 {
 	Loop* loop = 0;
-	bool use_consumer = true;
 	
 public:
 	RTTI_DECL1(DefaultExchangePoint, ExchangePoint)
@@ -52,7 +51,6 @@ public:
 	void ForwardExchange(FwdScope& fwd) override;
 	bool IsPacketStuck() override;
 	
-	void UseConsumer(bool b=true) {use_consumer = b;}
 	void Destroy() {loop = 0;}
 	
 	
@@ -70,10 +68,8 @@ using DefaultExchangePointRef	= Ref<DefaultExchangePoint,	RefParent1<MetaExchang
 class Ex :
 	public ExchangeBase
 {
-	bool storing = false;
 	DefaultExchangePoint* expt = 0;
 	Value* src = 0;
-	Value* sink = 0;
 	const RealtimeSourceConfig* src_conf = 0;
 	
 public:
@@ -81,15 +77,11 @@ public:
 	Ex(DefaultExchangePoint* expt) : expt(expt) {}
 	Ex(DefaultExchangePoint& expt) : expt(&expt) {}
 	
-	Value&						Sink() const {return *sink;}
 	Value&						Source() const {return *src;}
 	const RealtimeSourceConfig&	SourceConfig() const {ASSERT(src_conf); return *src_conf;}
-	DefaultExchangePoint&			GetExchangePoint() {return *expt;}
-	virtual bool				IsLoading() override {return !storing;}
-	virtual bool				IsStoring() override {return storing;}
+	DefaultExchangePoint&		GetExchangePoint() {return *expt;}
 	
-	void	SetLoading(Value& src, const RealtimeSourceConfig& conf) {storing = false; this->src = &src; this->sink = 0; src_conf = &conf;}
-	void	SetStoring(Value& sink, const RealtimeSourceConfig& conf) {storing = true; this->src = 0; this->sink = &sink; src_conf = &conf;}
+	void	Set(Value& src, const RealtimeSourceConfig& conf) {this->src = &src; src_conf = &conf;}
 	
 };
 

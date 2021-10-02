@@ -158,10 +158,6 @@ public:
 	ExchangeBase();
 	virtual ~ExchangeBase();
 	
-	
-	virtual bool IsLoading() {return false;}
-	virtual bool IsStoring() {return false;}
-	
 	bool IsFail() const {return fail;}
 	void SetFail() {fail = true;}
 	void ClearFail() {fail = false;}

@@ -14,6 +14,7 @@ public:
 	struct Item {
 		
 		void ClearContainer() {
+			if (val) val->Clear();
 			val.Clear();
 		}
 		
@@ -33,8 +34,7 @@ public:
 		}
 		
 		void UninitializeContainer() {
-			if (val) val->Clear();
-			val.Clear();
+			ClearContainer();
 		}
 		
 		One<SimpleValue>	val;

@@ -4,106 +4,56 @@ NAMESPACE_SERIAL_BEGIN
 
 
 void SimpleValue::Exchange(Ex& e) {
-	if (e.IsStoring()) {
-		Value& sink = e.Sink();
-		ASSERT((Value*)&e.Source() == 0);
-		auto& src_buf = GetBuffer();
+	Value& src = e.Source();
+	auto& sink_buf = GetBuffer();
+	
+	// Arguments for this individual SimpleValue::Exchange event
+	const RealtimeSourceConfig& conf = e.SourceConfig();
+	
+	SimpleValue* src_val;
+	Format src_fmt = src.GetFormat();
+	Format& sink_fmt = fmt;
+	
+	if ((src_val = CastPtr<SimpleValue>(&src))) {
+		auto& src_buf = src_val->GetBuffer();
 		
-		// Arguments for this individual SimpleValue::Exchange event
-		const RealtimeSourceConfig& conf = e.SourceConfig();
-		
-		// Consumer model
-		/*if (use_consumer) {*/
-		SimpleValue* sink_val;
-		
-		if ((sink_val = CastPtr<SimpleValue>(&sink))) {
-			auto& sink_buf = sink_val->GetBuffer();
+		while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
+			Packet p = src_buf.First();
+			src_buf.RemoveFirst();
+			RTLOG("SimpleValue::Exchange: " << p->ToString());
+			Format pk_fmt = p->GetFormat();
+			/*if (pk_fmt != sink_fmt) {
+				DUMP(pk_fmt);
+				DUMP(src_fmt);
+				DUMP(sink_fmt);
+			}
+			ASSERT(pk_fmt == sink_fmt);*/
 			
-			while (this->GetQueueSize() > 0 && !sink_val->IsQueueFull()) {
-				Packet p = src_buf.First();
-				src_buf.RemoveFirst();
-				RTLOG("SimpleValue::Exchange: " << p->ToString());
-				ASSERT(p->GetFormat() == fmt);
+			/*if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
+				DUMP(pk_fmt);
+				DUMP(src_fmt);
+				DUMP(sink_fmt);
+			}
+			ASSERT(pk_fmt.IsCopyCompatible(sink_fmt));*/
+			
+			if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
+				Packet dst = CreatePacket(p->GetOffset());
+				dst->SetFormat(sink_fmt);
+				if (Convert(p, dst)) {
+					RTLOG("SimpleValue::Exchange: converted packet");
+					RTLOG("                       from: " << p->ToString());
+					RTLOG("                       to:   " << dst->ToString());
+					sink_buf.Add(dst);
+				}
+				else
+					break;
+			}
+			else {
 				sink_buf.Add(p);
 			}
 		}
-		else TODO
-		
-		// Producer model
-		/*} else {
-			SimpleValue* sink_vol;
-			
-			if ((src_vol = CastPtr<SimpleValue>(&src))) {
-				if ((sink_vol = CastPtr<SimpleValue>(&sink))) {
-					while (src_vol->GetQueueSize() > 0 && !sink_vol->IsQueueFull()) {
-						Packet src_p = src_vol->Get(offset);
-						Packet sink_p = ValMach::CreatePacket(src_p->GetOffset());
-						sink_p->Set(fmt, time);
-						//p->Data().SetCount(fmt.GetFrameBytes(), 0);
-						StorePacket(sink_p);
-						vol->Put(sink_p, false);
-						time += fmt.GetFrameSeconds();
-					}
-				}
-				else TODO
-			}
-			else TODO
-		}*/
 	}
-	else if (e.IsLoading()) {
-		Value& src = e.Source();
-		ASSERT((Value*)&e.Sink() == 0);
-		auto& sink_buf = GetBuffer();
-		
-		// Arguments for this individual SimpleValue::Exchange event
-		const RealtimeSourceConfig& conf = e.SourceConfig();
-		
-		SimpleValue* src_val;
-		Format src_fmt = src.GetFormat();
-		Format& sink_fmt = fmt;
-		
-		if ((src_val = CastPtr<SimpleValue>(&src))) {
-			auto& src_buf = src_val->GetBuffer();
-			
-			while (src.GetQueueSize() > 0 && !this->IsQueueFull()) {
-				Packet p = src_buf.First();
-				src_buf.RemoveFirst();
-				RTLOG("SimpleValue::Exchange: " << p->ToString());
-				Format pk_fmt = p->GetFormat();
-				/*if (pk_fmt != sink_fmt) {
-					DUMP(pk_fmt);
-					DUMP(src_fmt);
-					DUMP(sink_fmt);
-				}
-				ASSERT(pk_fmt == sink_fmt);*/
-				
-				/*if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
-					DUMP(pk_fmt);
-					DUMP(src_fmt);
-					DUMP(sink_fmt);
-				}
-				ASSERT(pk_fmt.IsCopyCompatible(sink_fmt));*/
-				
-				if (!pk_fmt.IsCopyCompatible(sink_fmt)) {
-					Packet dst = CreatePacket(p->GetOffset());
-					dst->SetFormat(sink_fmt);
-					if (Convert(p, dst)) {
-						RTLOG("SimpleValue::Exchange: converted packet");
-						RTLOG("                       from: " << p->ToString());
-						RTLOG("                       to:   " << dst->ToString());
-						sink_buf.Add(dst);
-					}
-					else
-						break;
-				}
-				else {
-					sink_buf.Add(p);
-				}
-			}
-		}
-		else TODO
-	}
-	else Panic("SimpleValue::Exchange: Internal error. Ex not storing nor loading.");
+	else TODO
 }
 
 int SimpleValue::GetQueueSize() const {
