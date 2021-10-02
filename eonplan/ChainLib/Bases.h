@@ -1,4 +1,32 @@
 
+BASE(CustomerBase)
+BASE_ACTION(CustomerBase,			loop.connected)
+
+BASE(RollingValueBase)
+BASE(VoidSinkBase)
+BASE(PortaudioSink)
+BASE(FfmpegAtomBase)
+BASE(AudioGenBase)
+BASE(SplitterBase)
+BASE(JoinerBase)
+BASE(VideoGenBase)
+BASE(AccelVideoGenBase)
+BASE(SDL2ContextBase)
+BASE(SDL2EventsBase)
+BASE(SDL2ScreenBase)
+BASE(SDL2SwScreenBase)
+BASE(SDL2AudioOutputBase)
+BASE(OglShaderBase)
+
+//BASE_FLAG(SDL2ContextBase,			forward)
+//BASE_FLAG(CenterSink,				ival_sink_proc)
+
+
+
+
+
+
+/*
 BASE(CenterDriver)
 BASE(CustomerBaseT)
 
@@ -11,7 +39,7 @@ BASE(AccelSink)
 BASE(AccelSinkAsync)
 BASE(AccelSource)
 BASE(AccelSourceAsync)
-
+*/
 //BASE(CenterSourcePolling)
 //BASE(CenterSinkPolling)
 //BASE(CenterSideSourceAsync)
@@ -22,11 +50,11 @@ BASE(AccelSourceAsync)
 
 
 //BASE(AccelSourcePolling)
-
+/*
 BASE_FLAG(CenterDriver,				forward)
 BASE_FLAG(CenterSink,				ival_sink_proc)
 BASE_ACTION(CustomerBaseT,			loop.connected)
-
+*/
 //BASE_FLAG(CenterSourceAsync,		store_packet)
 //BASE_FLAG(CenterSideAsync,			store_packet)
 //BASE_FLAG(AccelSideAsync,			store_packet)

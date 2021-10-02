@@ -50,7 +50,7 @@ void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
 	flag.Start(1);
 	GetSink()->GetValue(0).SetMinQueueSize(5);
-	Thread::Start(THISBACK(IntervalSinkProcess0));
+	Thread::Start(THISBACK(IntervalSinkProcess));
 	return true;
 }
 

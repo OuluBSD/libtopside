@@ -18,6 +18,7 @@ class AsyncMemForwarderBase :
 	
 public:
 	
+	void	Visit(RuntimeVisitor& vis) override {}
 	bool	IsReady(ValDevCls vd) override;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
 	bool	LoadPacket(int ch_i, const Packet& p) override;
@@ -39,11 +40,50 @@ public:
 	
 	void	AltUpdate(double dt) override;
 	bool	IsReady(ValDevCls vd) override;
+	void	Visit(RuntimeVisitor& vis) override {}
 	
-	void SetFPS(int fps) {dt = 1.0 / (double)fps;}
+	void	SetFPS(int fps) {dt = 1.0 / (double)fps;}
 	
 };
 
+
+class CenterDriver :
+	virtual public AtomBase
+{
+	
+protected:
+	using CustomerData = AtomBase::CustomerData;
+	
+	One<CustomerData>		customer;
+	
+	
+public:
+	RTTI_DECL0(CenterDriver)
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		customer.Create();
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->AddDriver(r);
+		return true;
+	}
+	
+	void Uninitialize() override {
+		AtomBaseRef r = AtomBase::AsRefT();
+		ASSERT(r);
+		AtomBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
+	}
+	
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	void UpdateConfig(double dt) override {
+		ASSERT(customer);
+		customer->cfg.Update(dt, true);
+	}
+	
+	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
+	
+};
 
 NAMESPACE_SERIAL_END
 

@@ -7,10 +7,10 @@ namespace TS {
 
 namespace Serial {
 
-class CenterCustomer : public CustomerBaseT<CenterCustomer>, public CustomerBase {
+class CenterCustomer : public Atom<CenterCustomer>, public CustomerBase {
 
 public:
-	RTTI_DECL2(CenterCustomer, BaseT, CustomerBase)
+	RTTI_DECL2(CenterCustomer, AtomT, CustomerBase)
 	COPY_PANIC(CenterCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
@@ -22,10 +22,10 @@ public:
 
 };
 
-class TestRealtimeSrc : public CenterSourceAsync<TestRealtimeSrc>, public RollingValueBase {
+class TestRealtimeSrc : public Atom<TestRealtimeSrc>, public RollingValueBase {
 
 public:
-	RTTI_DECL2(TestRealtimeSrc, BaseT, RollingValueBase)
+	RTTI_DECL2(TestRealtimeSrc, AtomT, RollingValueBase)
 	COPY_PANIC(TestRealtimeSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
@@ -36,10 +36,10 @@ public:
 
 };
 
-class TestRealtimeSink : public CenterSink<TestRealtimeSink>, public VoidSinkBase {
+class TestRealtimeSink : public Atom<TestRealtimeSink>, public VoidSinkBase {
 
 public:
-	RTTI_DECL2(TestRealtimeSink, BaseT, VoidSinkBase)
+	RTTI_DECL2(TestRealtimeSink, AtomT, VoidSinkBase)
 	COPY_PANIC(TestRealtimeSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -51,10 +51,10 @@ public:
 
 };
 
-class AudioHardwareSink : public CenterSink<AudioHardwareSink>, public PortaudioSink {
+class AudioHardwareSink : public Atom<AudioHardwareSink>, public PortaudioSink {
 
 public:
-	RTTI_DECL2(AudioHardwareSink, BaseT, PortaudioSink)
+	RTTI_DECL2(AudioHardwareSink, AtomT, PortaudioSink)
 	COPY_PANIC(AudioHardwareSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -66,10 +66,10 @@ public:
 
 };
 
-class AudioDecoderSrc : public CenterSourceAsync<AudioDecoderSrc>, public FfmpegAtomBase {
+class AudioDecoderSrc : public Atom<AudioDecoderSrc>, public FfmpegAtomBase {
 
 public:
-	RTTI_DECL2(AudioDecoderSrc, BaseT, FfmpegAtomBase)
+	RTTI_DECL2(AudioDecoderSrc, AtomT, FfmpegAtomBase)
 	COPY_PANIC(AudioDecoderSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
@@ -80,10 +80,10 @@ public:
 
 };
 
-class AudioDbgSrc : public CenterSourceAsync<AudioDbgSrc>, public AudioGenBase {
+class AudioDbgSrc : public Atom<AudioDbgSrc>, public AudioGenBase {
 
 public:
-	RTTI_DECL2(AudioDbgSrc, BaseT, AudioGenBase)
+	RTTI_DECL2(AudioDbgSrc, AtomT, AudioGenBase)
 	COPY_PANIC(AudioDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.dbg_generator")
@@ -94,10 +94,10 @@ public:
 
 };
 
-class AudioSplitter : public CenterSource<AudioSplitter>, public SplitterBase {
+class AudioSplitter : public Atom<AudioSplitter>, public SplitterBase {
 
 public:
-	RTTI_DECL2(AudioSplitter, BaseT, SplitterBase)
+	RTTI_DECL2(AudioSplitter, AtomT, SplitterBase)
 	COPY_PANIC(AudioSplitter)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
@@ -109,10 +109,10 @@ public:
 
 };
 
-class AudioJoiner : public CenterSink<AudioJoiner>, public JoinerBase {
+class AudioJoiner : public Atom<AudioJoiner>, public JoinerBase {
 
 public:
-	RTTI_DECL2(AudioJoiner, BaseT, JoinerBase)
+	RTTI_DECL2(AudioJoiner, AtomT, JoinerBase)
 	COPY_PANIC(AudioJoiner)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
@@ -125,10 +125,10 @@ public:
 };
 
 #if defined flagGUI
-class VideoDbgSrc : public CenterSourceAsync<VideoDbgSrc>, public VideoGenBase {
+class VideoDbgSrc : public Atom<VideoDbgSrc>, public VideoGenBase {
 
 public:
-	RTTI_DECL2(VideoDbgSrc, BaseT, VideoGenBase)
+	RTTI_DECL2(VideoDbgSrc, AtomT, VideoGenBase)
 	COPY_PANIC(VideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
@@ -141,10 +141,10 @@ public:
 #endif
 
 #if defined flagGUI
-class AccelVideoDbgSrc : public AccelSourceAsync<AccelVideoDbgSrc>, public AccelVideoGenBase {
+class AccelVideoDbgSrc : public Atom<AccelVideoDbgSrc>, public AccelVideoGenBase {
 
 public:
-	RTTI_DECL2(AccelVideoDbgSrc, BaseT, AccelVideoGenBase)
+	RTTI_DECL2(AccelVideoDbgSrc, AtomT, AccelVideoGenBase)
 	COPY_PANIC(AccelVideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src.dbg_generator")
@@ -157,10 +157,10 @@ public:
 #endif
 
 #if defined flagGUI
-class AccelCustomer : public CustomerBaseT<AccelCustomer>, public CustomerBase {
+class AccelCustomer : public Atom<AccelCustomer>, public CustomerBase {
 
 public:
-	RTTI_DECL2(AccelCustomer, BaseT, CustomerBase)
+	RTTI_DECL2(AccelCustomer, AtomT, CustomerBase)
 	COPY_PANIC(AccelCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
@@ -173,10 +173,10 @@ public:
 };
 #endif
 
-class SdlContextAtom : public CenterDriver<SdlContextAtom>, public SDL2ContextBase {
+class SdlContextAtom : public Atom<SdlContextAtom>, public SDL2ContextBase {
 
 public:
-	RTTI_DECL2(SdlContextAtom, BaseT, SDL2ContextBase)
+	RTTI_DECL2(SdlContextAtom, AtomT, SDL2ContextBase)
 	COPY_PANIC(SdlContextAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
@@ -187,10 +187,10 @@ public:
 
 };
 
-class SdlEventAtomSA : public CenterSink<SdlEventAtomSA>, public SDL2EventsBase {
+class SdlEventAtomSA : public Atom<SdlEventAtomSA>, public SDL2EventsBase {
 
 public:
-	RTTI_DECL2(SdlEventAtomSA, BaseT, SDL2EventsBase)
+	RTTI_DECL2(SdlEventAtomSA, AtomT, SDL2EventsBase)
 	COPY_PANIC(SdlEventAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.standalone")
@@ -202,10 +202,10 @@ public:
 };
 
 #if defined flagGUI
-class SdlVideoAtomSA : public AccelSink<SdlVideoAtomSA>, public SDL2ScreenBase {
+class SdlVideoAtomSA : public Atom<SdlVideoAtomSA>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtomSA, BaseT, SDL2ScreenBase)
+	RTTI_DECL2(SdlVideoAtomSA, AtomT, SDL2ScreenBase)
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
@@ -218,10 +218,10 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlVideoAtom : public AccelSink<SdlVideoAtom>, public SDL2ScreenBase {
+class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, BaseT, SDL2ScreenBase)
+	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2ScreenBase)
 	COPY_PANIC(SdlVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
@@ -234,10 +234,10 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlVideoPipe : public AccelSink<SdlVideoPipe>, public SDL2ScreenBase {
+class SdlVideoPipe : public Atom<SdlVideoPipe>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoPipe, BaseT, SDL2ScreenBase)
+	RTTI_DECL2(SdlVideoPipe, AtomT, SDL2ScreenBase)
 	COPY_PANIC(SdlVideoPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
@@ -250,10 +250,10 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlSwVideoAtom : public CenterSink<SdlSwVideoAtom>, public SDL2SwScreenBase {
+class SdlSwVideoAtom : public Atom<SdlSwVideoAtom>, public SDL2SwScreenBase {
 
 public:
-	RTTI_DECL2(SdlSwVideoAtom, BaseT, SDL2SwScreenBase)
+	RTTI_DECL2(SdlSwVideoAtom, AtomT, SDL2SwScreenBase)
 	COPY_PANIC(SdlSwVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.swvideo")
@@ -265,10 +265,10 @@ public:
 };
 #endif
 
-class SdlAudioAtom : public CenterSinkAsync<SdlAudioAtom>, public SDL2AudioOutputBase {
+class SdlAudioAtom : public Atom<SdlAudioAtom>, public SDL2AudioOutputBase {
 
 public:
-	RTTI_DECL2(SdlAudioAtom, BaseT, SDL2AudioOutputBase)
+	RTTI_DECL2(SdlAudioAtom, AtomT, SDL2AudioOutputBase)
 	COPY_PANIC(SdlAudioAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -281,10 +281,10 @@ public:
 };
 
 #if defined flagGUI
-class OglShaderSource : public AccelSource<OglShaderSource>, public OglShaderBase {
+class OglShaderSource : public Atom<OglShaderSource>, public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderSource, BaseT, OglShaderBase)
+	RTTI_DECL2(OglShaderSource, AtomT, OglShaderBase)
 	COPY_PANIC(OglShaderSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.source")
@@ -297,10 +297,10 @@ public:
 #endif
 
 #if defined flagGUI
-class OglShaderPipe : public AccelSource<OglShaderPipe>, public OglShaderBase {
+class OglShaderPipe : public Atom<OglShaderPipe>, public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderPipe, BaseT, OglShaderBase)
+	RTTI_DECL2(OglShaderPipe, AtomT, OglShaderBase)
 	COPY_PANIC(OglShaderPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.source.pipe")

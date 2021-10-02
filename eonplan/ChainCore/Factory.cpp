@@ -206,7 +206,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		}
 		
 		Index<String> inherits;
-		inherits.Add(base_name + "<" + h_name + ">");
+		inherits.Add("Atom<" + h_name + ">");
+		if (0)
+			inherits.Add(base_name + "<" + h_name + ">");
+		else
+			inherits.Add(base_name);
 		inherits.Append(h.inherits);
 		
 		{
@@ -235,13 +239,13 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			}
 		}
 		
-		{
+		if (1) {
 			MStmt& ms_rtti = cls_h.GetAddMetaStatement("$RTTI_DECL");
 			ms_rtti.HideStatement().SetPublic();
 			MExpr& ms_rtti_expr = ms_rtti;
 			ms_rtti_expr.SetCall("RTTI_DECL" + IntStr(inherits.GetCount()));
 			ms_rtti_expr.AddSub().SetId(h_name);
-			ms_rtti_expr.AddSub().SetId("BaseT");
+			ms_rtti_expr.AddSub().SetId("AtomT");
 			for(int i = 1; i < inherits.GetCount(); i++)
 				ms_rtti_expr.AddSub().SetId(inherits[i]);
 		}

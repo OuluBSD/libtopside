@@ -37,7 +37,6 @@ public:
 	void				ClearPacketData() {}
 	String GetLastError() const {return last_error;}
 	
-	static bool AllowDuplicates() {return true;}
 	
 };
 

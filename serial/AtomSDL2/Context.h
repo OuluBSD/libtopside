@@ -8,18 +8,19 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class SDL2ContextBase :
-	public SDL2BaseT<SDL2ContextBase>
+	public SDL2BaseT<SDL2ContextBase>,
+	public CenterDriver
 {
 	One<OOSDL2::Context>		obj;
 	LinkedList<AtomBaseRef>		atoms;
 	
 public:
-	RTTI_DECL1(SDL2ContextBase, AltBaseT)
+	RTTI_DECL2(SDL2ContextBase, AltBaseT, CenterDriver)
 	COPY_PANIC(SDL2ContextBase);
-	ATOM_DEF_VISIT
 	
 	SDL2ContextBase();
 	
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<CenterDriver>(this);}
 	bool AltInitialize(const Script::WorldState& ws) override;
 	void AltUninitialize() override;
 	void AltForward(FwdScope& fwd) override;

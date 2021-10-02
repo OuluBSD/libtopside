@@ -11,12 +11,39 @@ bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
 	//if (type.iface.content.val == ValCls::AUDIO)
 	//	packet_thrds = 10;
 	
+	AtomBase::packets_forwarded = 0;
+	customer.Create();
+	AtomBaseRef r = AtomBase::AsRefT();
+	ASSERT(r);
+	AtomSystemRef as = AtomBase::GetMachine().template Get<AtomSystem>();
+	as->AddCustomer(r);
+	
 	return true;
 }
 
 bool CustomerBase::AltPostInitialize() {
 	packet_thrds = GetSink()->GetValue(0).GetMinPackets();
+	
 	return true;
+}
+
+void CustomerBase::AltUninitialize() {
+	AtomBaseRef r = AtomBase::AsRefT();
+	ASSERT(r);
+	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveCustomer(r);
+}
+
+void CustomerBase::UpdateConfig(double dt) {
+	ASSERT(customer);
+	DefaultInterfaceSourceRef src = this->GetSource();
+	ASSERT(src);
+	if (src) {
+		int count = src->GetSourceCount();
+		for(int i = 0; i < count; i++) {
+			Value& val = src->GetSourceValue(i);
+			customer->cfg.Update(dt, val.IsQueueFull());
+		}
+	}
 }
 
 void CustomerBase::AltForward(FwdScope& fwd) {

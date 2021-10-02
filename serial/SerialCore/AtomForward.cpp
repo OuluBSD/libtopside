@@ -32,12 +32,11 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	int ch_i = 0;
 	int pre_sink_packet_count = GetSinkPacketCount();
 	int pre_src_packet_count = GetSourcePacketCount();
-	int pre_consumed = consumed_packets.GetCount();
 	int pre_consumed_partial = IsConsumedPartialPacket();
 	int pre_total =
 		  pre_sink_packet_count
 		  + pre_src_packet_count
-		  + (pre_consumed - pre_consumed_partial); // partial packet stays in sink while fraction is consumed
+		  - pre_consumed_partial; // partial packet stays in sink while fraction is consumed
 	#endif
 	
 	
@@ -49,17 +48,15 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	AtomTypeCls type = GetType();
 	int post_sink_packet_count = GetSinkPacketCount();
 	int post_src_packet_count = GetSourcePacketCount();
-	int post_consumed = consumed_packets.GetCount();
 	int post_consumed_partial = IsConsumedPartialPacket();
 	int post_total =
 		  post_sink_packet_count
 		+ post_src_packet_count
 		+ skipped_fwd_count
-		+ (post_consumed - post_consumed_partial);
+		- post_consumed_partial;
 	bool consumed_only_partial =
 		pre_sink_packet_count == post_sink_packet_count &&
 		pre_src_packet_count == post_src_packet_count &&
-		pre_consumed == 0 && post_consumed == 0 &&
 		pre_consumed_partial == 1 && post_consumed_partial == 0;
 	if (type.role != CUSTOMER) {
 		bool is_buffered_consumer = type.iface.content.val == ValCls::AUDIO; // todo: other value formats

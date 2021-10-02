@@ -25,7 +25,6 @@ public:
 	void				BeginStream(StcCtx) override {TODO}
 	void				EndStream(StcCtx) override {TODO}*/
 	
-	static bool AllowDuplicates() {return true;}
 	
 };
 

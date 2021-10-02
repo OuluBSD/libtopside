@@ -11,7 +11,7 @@ AtomTypeCls CenterCustomer::GetAtomType()
 
 void CenterCustomer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CustomerBaseT<CenterCustomer>>(this);
+	vis.VisitThis<Atom<CenterCustomer>>(this);
 	vis.VisitThis<CustomerBase>(this);
 }
 
@@ -27,7 +27,7 @@ AtomTypeCls TestRealtimeSrc::GetAtomType()
 
 void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<TestRealtimeSrc>>(this);
+	vis.VisitThis<Atom<TestRealtimeSrc>>(this);
 	vis.VisitThis<RollingValueBase>(this);
 }
 
@@ -43,7 +43,7 @@ AtomTypeCls TestRealtimeSink::GetAtomType()
 
 void TestRealtimeSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSink<TestRealtimeSink>>(this);
+	vis.VisitThis<Atom<TestRealtimeSink>>(this);
 	vis.VisitThis<VoidSinkBase>(this);
 }
 
@@ -59,7 +59,7 @@ AtomTypeCls AudioHardwareSink::GetAtomType()
 
 void AudioHardwareSink::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSink<AudioHardwareSink>>(this);
+	vis.VisitThis<Atom<AudioHardwareSink>>(this);
 	vis.VisitThis<PortaudioSink>(this);
 }
 
@@ -75,7 +75,7 @@ AtomTypeCls AudioDecoderSrc::GetAtomType()
 
 void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<AudioDecoderSrc>>(this);
+	vis.VisitThis<Atom<AudioDecoderSrc>>(this);
 	vis.VisitThis<FfmpegAtomBase>(this);
 }
 
@@ -91,7 +91,7 @@ AtomTypeCls AudioDbgSrc::GetAtomType()
 
 void AudioDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<AudioDbgSrc>>(this);
+	vis.VisitThis<Atom<AudioDbgSrc>>(this);
 	vis.VisitThis<AudioGenBase>(this);
 }
 
@@ -107,7 +107,7 @@ AtomTypeCls AudioSplitter::GetAtomType()
 
 void AudioSplitter::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSource<AudioSplitter>>(this);
+	vis.VisitThis<Atom<AudioSplitter>>(this);
 	vis.VisitThis<SplitterBase>(this);
 }
 
@@ -123,7 +123,7 @@ AtomTypeCls AudioJoiner::GetAtomType()
 
 void AudioJoiner::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSink<AudioJoiner>>(this);
+	vis.VisitThis<Atom<AudioJoiner>>(this);
 	vis.VisitThis<JoinerBase>(this);
 }
 
@@ -140,7 +140,7 @@ AtomTypeCls VideoDbgSrc::GetAtomType()
 
 void VideoDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSourceAsync<VideoDbgSrc>>(this);
+	vis.VisitThis<Atom<VideoDbgSrc>>(this);
 	vis.VisitThis<VideoGenBase>(this);
 }
 
@@ -158,7 +158,7 @@ AtomTypeCls AccelVideoDbgSrc::GetAtomType()
 
 void AccelVideoDbgSrc::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSourceAsync<AccelVideoDbgSrc>>(this);
+	vis.VisitThis<Atom<AccelVideoDbgSrc>>(this);
 	vis.VisitThis<AccelVideoGenBase>(this);
 }
 
@@ -176,7 +176,7 @@ AtomTypeCls AccelCustomer::GetAtomType()
 
 void AccelCustomer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CustomerBaseT<AccelCustomer>>(this);
+	vis.VisitThis<Atom<AccelCustomer>>(this);
 	vis.VisitThis<CustomerBase>(this);
 }
 
@@ -193,7 +193,7 @@ AtomTypeCls SdlContextAtom::GetAtomType()
 
 void SdlContextAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterDriver<SdlContextAtom>>(this);
+	vis.VisitThis<Atom<SdlContextAtom>>(this);
 	vis.VisitThis<SDL2ContextBase>(this);
 }
 
@@ -209,7 +209,7 @@ AtomTypeCls SdlEventAtomSA::GetAtomType()
 
 void SdlEventAtomSA::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSink<SdlEventAtomSA>>(this);
+	vis.VisitThis<Atom<SdlEventAtomSA>>(this);
 	vis.VisitThis<SDL2EventsBase>(this);
 }
 
@@ -226,7 +226,7 @@ AtomTypeCls SdlVideoAtomSA::GetAtomType()
 
 void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSink<SdlVideoAtomSA>>(this);
+	vis.VisitThis<Atom<SdlVideoAtomSA>>(this);
 	vis.VisitThis<SDL2ScreenBase>(this);
 }
 
@@ -244,7 +244,7 @@ AtomTypeCls SdlVideoAtom::GetAtomType()
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSink<SdlVideoAtom>>(this);
+	vis.VisitThis<Atom<SdlVideoAtom>>(this);
 	vis.VisitThis<SDL2ScreenBase>(this);
 }
 
@@ -262,7 +262,7 @@ AtomTypeCls SdlVideoPipe::GetAtomType()
 
 void SdlVideoPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSink<SdlVideoPipe>>(this);
+	vis.VisitThis<Atom<SdlVideoPipe>>(this);
 	vis.VisitThis<SDL2ScreenBase>(this);
 }
 
@@ -280,7 +280,7 @@ AtomTypeCls SdlSwVideoAtom::GetAtomType()
 
 void SdlSwVideoAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSink<SdlSwVideoAtom>>(this);
+	vis.VisitThis<Atom<SdlSwVideoAtom>>(this);
 	vis.VisitThis<SDL2SwScreenBase>(this);
 }
 
@@ -297,7 +297,7 @@ AtomTypeCls SdlAudioAtom::GetAtomType()
 
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<CenterSinkAsync<SdlAudioAtom>>(this);
+	vis.VisitThis<Atom<SdlAudioAtom>>(this);
 	vis.VisitThis<SDL2AudioOutputBase>(this);
 }
 
@@ -314,7 +314,7 @@ AtomTypeCls OglShaderSource::GetAtomType()
 
 void OglShaderSource::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSource<OglShaderSource>>(this);
+	vis.VisitThis<Atom<OglShaderSource>>(this);
 	vis.VisitThis<OglShaderBase>(this);
 }
 
@@ -332,7 +332,7 @@ AtomTypeCls OglShaderPipe::GetAtomType()
 
 void OglShaderPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<AccelSource<OglShaderPipe>>(this);
+	vis.VisitThis<Atom<OglShaderPipe>>(this);
 	vis.VisitThis<OglShaderBase>(this);
 }
 

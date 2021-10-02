@@ -16,9 +16,9 @@ class SDL2ScreenBase :
 	OOSDL2::Events*		ev = 0;
 	
 public:
-	RTTI_DECL2(SDL2ScreenBase, AltBaseT, OglBufferBase)
+	RTTI_DECL3(SDL2ScreenBase, AltBaseT, OglBufferBase, FramePollerBase)
 	COPY_PANIC(SDL2ScreenBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<OglBufferBase>(this);}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<OglBufferBase>(this); vis.VisitThis<FramePollerBase>(this);}
 	
 	SDL2ScreenBase() = default;
 	

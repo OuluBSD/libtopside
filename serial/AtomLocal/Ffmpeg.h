@@ -51,7 +51,6 @@ public:
 	
 	Callback WhenStopped;
 	
-	static bool AllowDuplicates() {return true;}
 	
 };
 

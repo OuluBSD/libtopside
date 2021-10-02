@@ -35,9 +35,6 @@ protected:
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
 		off32_gen				gen;
-		Array<Script::Plan>		plans;
-		Index<dword>			unfulfilled_offsets;
-		int						max_unfulfilled = 5;
 		
 		CustomerData();
 		~CustomerData();
@@ -54,9 +51,7 @@ protected:
 	};
 	
 	
-	Mutex					lock;
 	Mutex					fwd_lock;
-	LinkedList<Packet>		consumed_packets;
 	int						packets_forwarded = 0;
 	int						skipped_fwd_count = 0;
 	AtomBaseRef				driver_conn;
@@ -95,11 +90,10 @@ public:
 	virtual bool AltPostInitialize() {return true;}
 	
 	virtual bool ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
-	virtual void IntervalSinkProcess() {Panic("IntervalSinkProcess not implemented");}
 	virtual bool IsConsumedPartialPacket() {return 0;}
 	
-	virtual bool Initialize(const Script::WorldState& ws) {return true;}
-	virtual void Uninitialize() {}
+	virtual bool Initialize(const Script::WorldState& ws) {return AltInitialize(ws);}
+	virtual void Uninitialize() {AltUninitialize();}
 	virtual void Update(double dt) {AltUpdate(dt);}
 	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
 	virtual bool PostInitialize() {return AltPostInitialize();}
@@ -107,13 +101,11 @@ public:
 	virtual bool LoadPacket(int ch_i, const Packet& p) {return true;}
 	virtual void StorePacket(int sink_ch,  int src_ch, Packet& p) {AltStorePacket(sink_ch, src_ch, p);}
 	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
-	virtual CustomerData* GetCustomerData() {return 0;}
-	virtual RealtimeSourceConfig* GetConfig() {return last_cfg;}
-	virtual void UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
-	virtual void AddPlan(Script::Plan& sp) {}
+	virtual RealtimeSourceConfig*	GetConfig() {return last_cfg;}
+	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	
-	virtual bool PassLinkSideSink(AtomBaseRef sink) {return true;}
-	virtual bool PassLinkSideSource(AtomBaseRef src) {return true;}
+	virtual bool			PassLinkSideSink(AtomBaseRef sink) {return true;}
+	virtual bool			PassLinkSideSource(AtomBaseRef src) {return true;}
 	
 	void					ForwardAsync();
 	
@@ -128,8 +120,6 @@ public:
 	bool					LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i);
 	bool					LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i);
 	
-	void					PacketConsumed(const Packet& p);
-	void					PacketsConsumed(const LinkedList<Packet>& v);
 	int						GetSinkPacketCount();
 	int						GetSourcePacketCount();
 	
@@ -141,10 +131,6 @@ public:
 			return SIDE_NOT_ACCEPTED;
 	}
 	
-	//ValCls GetValSpec() const {return GetType().iface.side.val;}
-	//bool IsValSpec(ValCls t) const {return t == GetType().iface.side.val;}
-	
-	static bool AllowDuplicates() {return false;}
 	
 	Machine& GetMachine();
 	void UninitializeDeep();
@@ -237,6 +223,14 @@ public:
 		vis.VisitThis<SourceT>(this);
 	}
 	
+	void VisitSource(RuntimeVisitor& vis) override {
+		vis.VisitThis<SourceT>(this);
+	}
+	
+	void VisitSink(RuntimeVisitor& vis) override {
+		vis.VisitThis<SinkT>(this);
+	}
+
 	void CopyTo(AtomBase* target) const override {
 		ASSERT(target->GetType() == GetType());
 	    
@@ -314,8 +308,6 @@ public:
 		
 		AtomTypeCls type = atom->GetType();
 		ASSERT(type.IsValid());
-		AtomMapBase::Iterator it = AtomMapBase::Find(type);
-		ASSERT_(IS_EMPTY_SHAREDPTR(it) || AtomT::AllowDuplicates(), "Cannot have duplicate componnets");
 		AtomMapBase::Add(type, atom);
 	}
 	

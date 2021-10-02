@@ -15,9 +15,9 @@ class SDL2SwScreenBase :
 	OOSDL2::Events*			ev = 0;
 	
 public:
-	RTTI_DECL1(SDL2SwScreenBase, AltBaseT)
+	RTTI_DECL2(SDL2SwScreenBase, AltBaseT, FramePollerBase)
 	COPY_PANIC(SDL2SwScreenBase)
-	ATOM_DEF_VISIT
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<FramePollerBase>(this);}
 	
 	SDL2SwScreenBase() = default;
 	

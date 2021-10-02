@@ -36,10 +36,9 @@ public:
 	void AltUninitialize() override;
 	//void AltForward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override {} // required pass
-	void IntervalSinkProcess() override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	void IntervalSinkProcess0() {this->IntervalSinkProcess();}
+	void IntervalSinkProcess();
 	
 	
 };

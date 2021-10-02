@@ -391,10 +391,6 @@ bool ScriptLoopLoader::Load() {
 	AddedAtom& last  = added_atoms.Top();
 	ScriptLoopSegment& first_seg = segments[first.seg_i];
 	ScriptLoopSegment& last_seg  = segments[last.seg_i];
-	AtomBaseRef atom = first.r;
-	if (atom) {
-		atom->AddPlan(first_seg.ep);
-	}
 	
 	
 	// Process sub-loops

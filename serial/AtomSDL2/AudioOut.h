@@ -17,9 +17,9 @@ class SDL2AudioOutputBase :
 	
 	
 public:
-	RTTI_DECL1(SDL2AudioOutputBase, AltBaseT)
+	RTTI_DECL2(SDL2AudioOutputBase, AltBaseT, AsyncMemForwarderBase)
 	COPY_PANIC(SDL2AudioOutputBase)
-	ATOM_DEF_VISIT
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<AsyncMemForwarderBase>(this);}
 	
 	SDL2AudioOutputBase() : aconfig(gen) {}
 	
@@ -27,8 +27,6 @@ public:
 	bool	AltPostInitialize() override;
 	void	AltUninitialize() override;
 	bool	PassLoadPacket(int ch_i, const Packet& p) override;
-	
-	void	AltIntervalSinkProcess() {}
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}
