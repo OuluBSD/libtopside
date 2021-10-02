@@ -41,18 +41,6 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	#endif
 	
 	
-	/*AtomTypeCls type = GetType();
-	switch (type.role) {
-		case DRIVER:		ForwardDriver(fwd);		break;
-		case CUSTOMER:		ForwardCustomer(fwd);	break;
-		case SOURCE:		ForwardSource(fwd);		break;
-		case SINK:			ForwardSink(fwd);		break;
-		case CONVERTER:		ForwardSource(fwd);		break;
-		case SIDE_SOURCE:	ForwardSideSource(fwd);	break;
-		case SIDE_SINK:		ForwardSideSink(fwd);	break;
-		case PIPE:			ForwardPipe(fwd);	break;
-		default: ASSERT_(0, "Invalid AtomTypeCls role"); break;
-	}*/
 	ForwardPipe(fwd);
 	ForwardSideConnections();
 	

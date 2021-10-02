@@ -22,7 +22,7 @@ AtomTypeCls CenterCustomer::GetType() const
 
 AtomTypeCls TestRealtimeSrc::GetAtomType()
 {
-	return ATOM11(TEST_REALTIME_SRC, SOURCE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+	return ATOM11(TEST_REALTIME_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
 }
 
 void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
@@ -38,7 +38,7 @@ AtomTypeCls TestRealtimeSrc::GetType() const
 
 AtomTypeCls TestRealtimeSink::GetAtomType()
 {
-	return ATOM11(TEST_REALTIME_SINK, SINK, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+	return ATOM11(TEST_REALTIME_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
 void TestRealtimeSink::Visit(RuntimeVisitor& vis)
@@ -54,7 +54,7 @@ AtomTypeCls TestRealtimeSink::GetType() const
 
 AtomTypeCls AudioHardwareSink::GetAtomType()
 {
-	return ATOM11(AUDIO_HARDWARE_SINK, SINK, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+	return ATOM11(AUDIO_HARDWARE_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
 void AudioHardwareSink::Visit(RuntimeVisitor& vis)
@@ -70,7 +70,7 @@ AtomTypeCls AudioHardwareSink::GetType() const
 
 AtomTypeCls AudioDecoderSrc::GetAtomType()
 {
-	return ATOM11(AUDIO_DECODER_SRC, SOURCE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+	return ATOM11(AUDIO_DECODER_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
 }
 
 void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
@@ -86,7 +86,7 @@ AtomTypeCls AudioDecoderSrc::GetType() const
 
 AtomTypeCls AudioDbgSrc::GetAtomType()
 {
-	return ATOM11(AUDIO_DBG_SRC, SOURCE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+	return ATOM11(AUDIO_DBG_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
 }
 
 void AudioDbgSrc::Visit(RuntimeVisitor& vis)
@@ -102,7 +102,7 @@ AtomTypeCls AudioDbgSrc::GetType() const
 
 AtomTypeCls AudioSplitter::GetAtomType()
 {
-	return ATOM12(AUDIO_SPLITTER, SIDE_SOURCE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+	return ATOM12(AUDIO_SPLITTER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
 }
 
 void AudioSplitter::Visit(RuntimeVisitor& vis)
@@ -118,7 +118,7 @@ AtomTypeCls AudioSplitter::GetType() const
 
 AtomTypeCls AudioJoiner::GetAtomType()
 {
-	return ATOM21(AUDIO_JOINER, SIDE_SINK, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
 }
 
 void AudioJoiner::Visit(RuntimeVisitor& vis)
@@ -135,7 +135,7 @@ AtomTypeCls AudioJoiner::GetType() const
 #if defined flagGUI
 AtomTypeCls VideoDbgSrc::GetAtomType()
 {
-	return ATOM11(VIDEO_DBG_SRC, SOURCE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+	return ATOM11(VIDEO_DBG_SRC, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
 }
 
 void VideoDbgSrc::Visit(RuntimeVisitor& vis)
@@ -153,7 +153,7 @@ AtomTypeCls VideoDbgSrc::GetType() const
 #if defined flagGUI
 AtomTypeCls AccelVideoDbgSrc::GetAtomType()
 {
-	return ATOM11(ACCEL_VIDEO_DBG_SRC, SOURCE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
+	return ATOM11(ACCEL_VIDEO_DBG_SRC, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
 }
 
 void AccelVideoDbgSrc::Visit(RuntimeVisitor& vis)
@@ -204,7 +204,7 @@ AtomTypeCls SdlContextAtom::GetType() const
 
 AtomTypeCls SdlEventAtomSA::GetAtomType()
 {
-	return ATOM11(SDL_EVENT_ATOM_S_A, SINK, CENTER, EVENT, CENTER, ORDER, CENTER, RECEIPT);
+	return ATOM11(SDL_EVENT_ATOM_S_A, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, RECEIPT);
 }
 
 void SdlEventAtomSA::Visit(RuntimeVisitor& vis)
@@ -221,7 +221,7 @@ AtomTypeCls SdlEventAtomSA::GetType() const
 #if defined flagGUI
 AtomTypeCls SdlVideoAtomSA::GetAtomType()
 {
-	return ATOM11(SDL_VIDEO_ATOM_S_A, SINK, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, RECEIPT);
+	return ATOM11(SDL_VIDEO_ATOM_S_A, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, RECEIPT);
 }
 
 void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
@@ -239,7 +239,7 @@ AtomTypeCls SdlVideoAtomSA::GetType() const
 #if defined flagGUI
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
-	return ATOM11(SDL_VIDEO_ATOM, SINK, ACCEL, VIDEO, ACCEL, VIDEO, ACCEL, RECEIPT);
+	return ATOM11(SDL_VIDEO_ATOM, PIPE, ACCEL, VIDEO, ACCEL, VIDEO, ACCEL, RECEIPT);
 }
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
@@ -275,7 +275,7 @@ AtomTypeCls SdlVideoPipe::GetType() const
 #if defined flagGUI
 AtomTypeCls SdlSwVideoAtom::GetAtomType()
 {
-	return ATOM11(SDL_SW_VIDEO_ATOM, SINK, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+	return ATOM11(SDL_SW_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
 }
 
 void SdlSwVideoAtom::Visit(RuntimeVisitor& vis)
@@ -292,7 +292,7 @@ AtomTypeCls SdlSwVideoAtom::GetType() const
 #endif
 AtomTypeCls SdlAudioAtom::GetAtomType()
 {
-	return ATOM11(SDL_AUDIO_ATOM, SINK, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+	return ATOM11(SDL_AUDIO_ATOM, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
 void SdlAudioAtom::Visit(RuntimeVisitor& vis)
@@ -309,7 +309,7 @@ AtomTypeCls SdlAudioAtom::GetType() const
 #if defined flagGUI
 AtomTypeCls OglShaderSource::GetAtomType()
 {
-	return ATOM11(OGL_SHADER_SOURCE, SOURCE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
+	return ATOM11(OGL_SHADER_SOURCE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
 }
 
 void OglShaderSource::Visit(RuntimeVisitor& vis)

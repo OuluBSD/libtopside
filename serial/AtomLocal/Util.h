@@ -20,6 +20,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {}
 	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	bool LoadPacket(int ch_i, const Packet& p) override;
+	
 };
 
 

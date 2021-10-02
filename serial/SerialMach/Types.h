@@ -107,13 +107,7 @@ typedef enum : byte {
 #define ATOM_ROLE_LIST \
 	ATOM_ROLE(DRIVER) \
 	ATOM_ROLE(CUSTOMER) \
-	ATOM_ROLE(SOURCE) \
-	ATOM_ROLE(SINK) \
-	ATOM_ROLE(CONVERTER) \
 	ATOM_ROLE(PIPE) \
-	ATOM_ROLE(SIDE_SOURCE) \
-	ATOM_ROLE(SIDE_SINK) \
-	ATOM_ROLE(SIDE_PIPE) \
 
 
 typedef enum : int8 {
@@ -436,16 +430,10 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src) : iface(sink,content,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src, bool is_xtra_sink, const ValDevCls& xtra) : iface(sink,content,src), sub(cls), role(role) {if (is_xtra_sink) iface.AddSink(xtra); else iface.AddSource(xtra);}
 	
+	bool IsRoleDriver()		const {return role == AtomRole::DRIVER;}
 	bool IsRoleCustomer()	const {return role == AtomRole::CUSTOMER;}
-	bool IsRoleSource()		const {return role == AtomRole::SOURCE;}
-	bool IsRoleSink()		const {return role == AtomRole::SINK;}
-	bool IsRoleConverter()	const {return role == AtomRole::CONVERTER;}
 	bool IsRolePipe()		const {return role == AtomRole::PIPE;}
-	bool IsRoleSideSource()	const {return role == AtomRole::SIDE_SOURCE/*iface.side.IsValid() && iface.side_src*/;}
-	bool IsRoleSideSink()	const {return role == AtomRole::SIDE_SINK/*iface.side.IsValid() && !iface.side_src*/;}
-	bool IsRoleSide()		const {return role == AtomRole::SIDE_SINK || role == AtomRole::SIDE_SOURCE || role == AtomRole::PIPE/*iface.side.IsValid() && !iface.side_src*/;}
-	
-	bool IsMultiSideConnection() const {return false;}
+	bool HasSideChannels()	const {return iface.sink.count > 1 || iface.src.count > 1;}
 	
 };
 

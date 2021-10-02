@@ -78,7 +78,7 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 	
 	AtomTypeCls type = sink->GetType();
 	//DUMP(type);
-	ASSERT(type.IsRoleSideSink() || type.IsRolePipe());
+	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
 		Exchange& ex = side_sink_conn.Add();
 		ex.other = sink;
@@ -124,7 +124,7 @@ bool AtomBase::LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i) {
 	
 	AtomTypeCls type = src->GetType();
 	//DUMP(type);
-	ASSERT(type.IsRoleSideSource() || type.IsRolePipe());
+	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSource(src)) {
 		Exchange& ex = side_src_conn.Add();
 		ex.other = src;

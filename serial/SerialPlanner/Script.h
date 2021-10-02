@@ -478,12 +478,12 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 		if (n.GetLinkedCount() > 0) {
 			AtomTypeCls a = ws.GetAtom();
 			if (a.iface.sink.GetCount() >= 2) {
-				ASSERT(a.IsRoleSide());
+				ASSERT(a.HasSideChannels());
 				ap.AddSideSink(seg.as, n);
 				return false;
 			}
 			if (a.iface.src.GetCount() >= 2) {
-				ASSERT(a.IsRoleSide());
+				ASSERT(a.HasSideChannels());
 				POPO(Pol::Serial::Script::Loop::SideSinkIsBeforeSideSourceAlways)
 				if (goal_ws	.IsTrue	("has.side.sink") &&
 					ws		.IsFalse("has.side.sink"))
