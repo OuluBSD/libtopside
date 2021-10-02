@@ -4,8 +4,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-SDL2ImageBase::SDL2ImageBase() :
-	svalue(this), sstream(this)
+SDL2ImageBase::SDL2ImageBase()
 {
 	
 }
@@ -21,6 +20,9 @@ void SDL2ImageBase::AltUninitialize() {
 
 bool SDL2ImageBase::LoadFileAny(String path) {
 	img.Clear();
+	
+	TODO
+	#if 0
 	sstream.SetSkipDrop(false);
 	
 	if (path.Left(9) == "<cubemap>") {
@@ -65,6 +67,7 @@ bool SDL2ImageBase::LoadFileAny(String path) {
 		sstream.SetSkipDrop();
 		return true;
 	}
+	#endif
 }
 
 Size SDL2ImageBase::GetResolution() const {

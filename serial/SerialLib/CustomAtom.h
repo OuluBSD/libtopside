@@ -59,8 +59,7 @@ public:
 		if (src) {
 			int count = src->GetSourceCount();
 			for(int i = 0; i < count; i++) {
-				Stream& str = src->GetStream(i);
-				Value& val = str.Get();
+				Value& val = src->GetSourceValue(i);
 				customer->cfg.Update(dt, val.IsQueueFull());
 			}
 		}

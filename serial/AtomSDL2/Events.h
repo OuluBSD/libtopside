@@ -9,33 +9,8 @@ NAMESPACE_SERIAL_BEGIN
 class SDL2EventsBase :
 	public SDL2BaseT<SDL2EventsBase>
 {
-	
-	struct Local : public SimpleBufferedValue {
-		
-	};
-	
-	struct LocalStream : public SimpleBufferedStream {
-		RTTI_DECL1(LocalStream, SimpleBufferedStream)
-		SDL2EventsBase& par;
-		LocalStream(SDL2EventsBase* par) :
-			par(*par),
-			SimpleBufferedStream(par->value) {}
-		bool			IsOpen() const override;
-		bool			Open(int fmt_idx) override;
-		void			Close() override {par.obj->Close();}
-		bool			IsEof() override {return par.obj.IsEmpty();}
-		bool			ReadFrame() override {return par.ReadFrame();}
-		bool			ProcessFrame() override {return par.ProcessFrame();}
-		bool			ProcessOtherFrame() override {return false;}
-		void			ClearPacketData() override {}
-	};
-	
-	
-	
 	One<OOSDL2::Events>	obj;
 	Vector<byte>		tmp_events;
-	Local				value;
-	LocalStream			stream;
 	
 	CtrlEvent& AddTmpEvent();
 	
@@ -44,7 +19,7 @@ public:
 	COPY_PANIC(SDL2EventsBase)
 	ATOM_DEF_VISIT
 	
-	SDL2EventsBase() : stream(this) {}
+	SDL2EventsBase() {}
 	
 	bool			AltInitialize(const Script::WorldState& ws) override;
 	void			AltUninitialize() override;

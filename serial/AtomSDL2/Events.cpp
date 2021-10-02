@@ -3,15 +3,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool SDL2EventsBase::LocalStream::IsOpen() const {
-	TODO
-}
-
-bool SDL2EventsBase::LocalStream::Open(int fmt_idx) {
-	TODO
-}
-
-
 
 
 

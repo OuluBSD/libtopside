@@ -55,27 +55,15 @@ void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
 	
 	int ch_i = 0;
 	
-	Value& to_val = sink->GetValue(ch_i );
+	Value& to_val = sink->GetValue(ch_i);
 	Format to_fmt = to_val.GetFormat();
 	if (!to_fmt.IsValid()) {
 		ValDevTuple vd = sink->GetSinkCls();
 		ASSERT(vd.IsValid());
 		to_fmt = GetDefaultFormat(vd());
+		ASSERT(to_fmt.IsValid());
 		RTLOG("DefaultExchangePoint::ForwardSetup: fixing sink fmt to: " << to_fmt.ToString());
-		SimpleBufferedValue* sbbuf;
-		SimpleValue* sbuf;
-		if ((sbbuf = CastPtr<SimpleBufferedValue>(&to_val))) {
-			sbbuf->SetFormat(to_fmt);
-		}
-		else if ((sbuf = CastPtr<SimpleValue>(&to_val))) {
-			sbuf->SetFormat(to_fmt);
-		}
-		else {
-			LOG("Unexpected value type: " << to_val.GetDynamicName());
-			TODO
-		}
-		auto fmt = to_val.GetFormat();
-		ASSERT(fmt.IsValid());
+		to_val.SetFormat(to_fmt);
 	}
 }
 
@@ -90,12 +78,8 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 	Ref<DefaultInterfaceSink>	sink		= this->sink;
 	
 	
-	Stream& src_stream = src->GetStream(src_ch_i);
-	//src->BeginStream();
-	
 	Ex ex(this);
-	
-	Value& src_value = src_stream.Get();
+	Value& src_value = src->GetSourceValue(src_ch_i);
 	int src_sz = src_value.GetQueueSize();
 	
 	if (src_sz) {
@@ -187,7 +171,7 @@ bool DefaultInterfaceSink::Initialize() {
 	
 	SetContainerCount(type.iface.sink.count);
 	for(int i = 0; i < type.iface.sink.count; i++)
-		InitializeContainer(i, this, type.iface.sink.vd[i]);
+		InitializeContainer(i, type.iface.sink.vd[i]);
 	
 	return true;
 }
@@ -199,7 +183,7 @@ bool DefaultInterfaceSource::Initialize() {
 	
 	SetContainerCount(type.iface.src.count);
 	for(int i = 0; i < type.iface.src.count; i++)
-		InitializeContainer(i, this, type.iface.src.vd[i]);
+		InitializeContainer(i, type.iface.src.vd[i]);
 	
 	return true;
 }

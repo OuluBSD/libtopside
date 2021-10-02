@@ -51,69 +51,6 @@ void AtomBase::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
-void AtomBase::ForwardConsumed(FwdScope& fwd) {
-	
-	int src_ch_i = 0;
-	int sink_ch_i = 0;
-	
-	Value& src_value = GetSource()->GetSourceValue(src_ch_i);
-	Value& sink_value = GetSink()->GetValue(sink_ch_i);
-	auto& sink_buf = sink_value.GetBuffer();
-	auto& src_buf = src_value.GetBuffer();
-	Format src_fmt = src_value.GetFormat();
-	AtomTypeCls type = GetType();
-	
-	RealtimeSourceConfig& cfg = fwd.Cfg();
-	
-	lock.Enter();
-	LinkedList<Packet> consumed_packets;
-	MemSwap(this->consumed_packets, consumed_packets);
-	lock.Leave();
-	
-	Index<dword> offs;
-	for (auto& in : consumed_packets) {
-		off32 off = in->GetOffset();
-		if (offs.Find(off.value) >= 0) {
-			// receipt is already sent
-			continue;
-		}
-		offs.Add(off.value);
-		
-		RTLOG("AtomBase::ForwardSink: sending receipt for packet(" << off.ToString() << ")");
-		Packet to = CreatePacket(off);
-		ASSERT(to->GetOffset() == off);
-		to->SetFormat(src_fmt);
-		
-		InternalPacketData& data = to->template SetData<InternalPacketData>();
-		data.pos = 0;
-		data.count = 1;
-		
-		if (type.IsRoleSideSource()) {
-			WhenEnterCreatedEmptyPacket(to);
-			
-			RTLOG("AtomBase::ForwardSink: sending empty packet in format: " << src_fmt.ToString());
-			//to->SetFormat(src_fmt);
-			
-			WhenLeaveCreatedEmptyPacket();
-		}
-		else {
-			WhenEnterStorePacket(*this, to);
-			
-			StorePacket(sink_ch_i, src_ch_i, to);
-			
-			if (!to->GetFormat().IsValid()) {DUMP(src_fmt); DUMP(to->GetFormat());}
-			ASSERT(to->GetFormat().IsValid());
-			
-			WhenLeaveStorePacket(to);
-		}
-		
-		PacketTracker::Track(TrackerInfo("AtomBase::ForwardSink", __FILE__, __LINE__), *to);
-		src_buf.Add(to);
-		packets_forwarded++;
-	}
-	
-}
-
 String AtomBase::GetInlineConnectionsString() const {
 	String s;
 	s << "sink(";

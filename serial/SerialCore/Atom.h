@@ -64,18 +64,6 @@ protected:
 	Vector<int>				side_sink, side_src;
 	LinkedList<Exchange>	side_sink_conn, side_src_conn;
 	
-	// Trash
-	void					ForwardCustomer(FwdScope& fwd);
-	void					ForwardSource(FwdScope& fwd);
-	void					ForwardSink(FwdScope& fwd);
-	void					ForwardConverter(FwdScope& fwd);
-	void					ForwardSideSink(FwdScope& fwd);
-	void					ForwardSideSource(FwdScope& fwd);
-	void					ForwardConsumed(FwdScope& fwd);
-	void					ForwardSourceBuffer(FwdScope& fwd, PacketBuffer& sink_buf);
-	bool					ForwardMem(void* mem, size_t mem_size);
-	void					ForwardVoidSink(FwdScope& fwd);
-	
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
 	void					ForwardDriver(FwdScope& fwd);
