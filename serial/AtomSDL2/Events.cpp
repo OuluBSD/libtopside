@@ -8,26 +8,26 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2EventsBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2EventsBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	
 	return true;
 }
 
-void SDL2EventsBase::AltUninitialize() {
+void SDL2EventsBase::Uninitialize() {
 	obj.Clear();
 	
 }
 
-void SDL2EventsBase::AltForward(FwdScope& fwd) {
+void SDL2EventsBase::Forward(FwdScope& fwd) {
 	TODO
 }
 
-void SDL2EventsBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void SDL2EventsBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	TODO
 }
 
-void SDL2EventsBase::AltUpdate(double dt) {
+void SDL2EventsBase::Update(double dt) {
 	TODO
 }
 

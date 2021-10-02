@@ -7,7 +7,7 @@ NAMESPACE_SERIAL_BEGIN
 #ifdef flagGUI
 
 
-bool SDL2SwScreenBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2SwScreenBase::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
 	
@@ -16,13 +16,13 @@ bool SDL2SwScreenBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void SDL2SwScreenBase::AltUninitialize() {
+void SDL2SwScreenBase::Uninitialize() {
 	ev = 0;
 	obj.Clear();
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 }
 
-void SDL2SwScreenBase::AltForward(FwdScope& fwd) {
+void SDL2SwScreenBase::Forward(FwdScope& fwd) {
 	
 }
 
@@ -37,8 +37,8 @@ bool SDL2SwScreenBase::LoadPacket(int sink_ch_i, const Packet& p) {
 	return obj->Recv(sink_ch_i, p);
 }
 
-void SDL2SwScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDL2SwScreenBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
+void SDL2SwScreenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("SDL2SwScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
 	obj->Render();
 }
 

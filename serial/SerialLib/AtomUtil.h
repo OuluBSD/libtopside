@@ -22,7 +22,7 @@ public:
 	bool	IsReady(ValDevCls vd) override;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
 	bool	LoadPacket(int ch_i, const Packet& p) override;
-	void	AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void	StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	bool	IsConsumedPartialPacket() override {return partial_packet;}
 	virtual bool PassLoadPacket(int ch_i, const Packet& p) {return ch_i == GetSink()->GetSinkCount()-1;}
 	
@@ -38,7 +38,7 @@ class FramePollerBase :
 	
 public:
 	
-	void	AltUpdate(double dt) override;
+	void	Update(double dt) override;
 	bool	IsReady(ValDevCls vd) override;
 	void	Visit(RuntimeVisitor& vis) override {}
 	

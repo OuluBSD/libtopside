@@ -23,9 +23,9 @@ public:
 	
 	SDL2AudioOutputBase() : aconfig(gen) {}
 	
-	bool	AltInitialize(const Script::WorldState& ws) override;
-	bool	AltPostInitialize() override;
-	void	AltUninitialize() override;
+	bool	Initialize(const Script::WorldState& ws) override;
+	bool	PostInitialize() override;
+	void	Uninitialize() override;
 	bool	PassLoadPacket(int ch_i, const Packet& p) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}

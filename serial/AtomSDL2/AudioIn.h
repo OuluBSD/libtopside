@@ -19,8 +19,8 @@ public:
 	
 	SDL2AudioInputBase() = default;
 	
-	bool				AltInitialize(const Script::WorldState& ws) override;
-	void				AltUninitialize() override;
+	bool				Initialize(const Script::WorldState& ws) override;
+	void				Uninitialize() override;
 	/*AudioStream&		GetStream(AudCtx) override;
 	void				BeginStream(AudCtx) override;
 	void				EndStream(AudCtx) override;*/

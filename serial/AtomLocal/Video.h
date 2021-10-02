@@ -92,10 +92,10 @@ class VideoGenBase :
 public:
 	VideoGenBase();
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -125,10 +125,10 @@ class AccelVideoGenBase :
 public:
 	AccelVideoGenBase();
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	

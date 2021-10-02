@@ -44,8 +44,8 @@ bool AsyncMemForwarderBase::LoadPacket(int ch_i, const Packet& p) {
 	return ch_i == 0;
 }
 
-void AsyncMemForwarderBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
-	RTLOG("AsyncMemForwarderBase::AltStorePacket");
+void AsyncMemForwarderBase::StorePacket(int sink_ch, int src_ch, Packet& p) {
+	RTLOG("AsyncMemForwarderBase::StorePacket");
 }
 
 bool AsyncMemForwarderBase::IsReady(ValDevCls vd) {
@@ -98,10 +98,10 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 
 
 
-void FramePollerBase::AltUpdate(double dt) {
+void FramePollerBase::Update(double dt) {
 	ASSERT(dt > 0.0);
 	frame_age += dt;
-	RTLOG("FramePollerBase::AltUpdate: dt: " << dt << ", frame_age: " << frame_age);
+	RTLOG("FramePollerBase::Update: dt: " << dt << ", frame_age: " << frame_age);
 }
 
 bool FramePollerBase::IsReady(ValDevCls vd) {

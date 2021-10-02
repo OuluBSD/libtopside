@@ -31,11 +31,11 @@ public:
 	typedef FfmpegAtomBase CLASSNAME;
 	FfmpegAtomBase();
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	bool AltIsReady(ValDevCls vd) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool IsReady(ValDevCls vd) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
 	bool LoadFileAny(String path);

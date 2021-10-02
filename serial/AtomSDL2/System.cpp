@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2System::AltInitialize(const Script::WorldState& ws) {
+bool SDL2System::Initialize(const Script::WorldState& ws) {
 	return img.Open() && fnt.Open();
 }
 
@@ -22,7 +22,7 @@ void SDL2System::Stop() {
 	
 }
 
-void SDL2System::AltUninitialize() {
+void SDL2System::Uninitialize() {
 	img.Close();
 	fnt.Close();
 }

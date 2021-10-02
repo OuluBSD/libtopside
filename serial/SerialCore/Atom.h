@@ -70,38 +70,29 @@ protected:
 	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
 	
 public:
-	virtual AtomTypeCls GetType() const = 0;
-	virtual void CopyTo(AtomBase* atom) const = 0;
-	virtual void Visit(RuntimeVisitor& vis) = 0;
-	virtual void VisitSource(RuntimeVisitor& vis) = 0;
-	virtual void VisitSink(RuntimeVisitor& vis) = 0;
-	virtual void ClearSinkSource() = 0;
-	virtual InterfaceSourceRef GetSource() = 0;
-	virtual InterfaceSinkRef GetSink() = 0;
-	virtual bool InitializeAtom(const Script::WorldState& ws) = 0;
-	virtual void UninitializeAtom() = 0;
+	virtual AtomTypeCls		GetType() const = 0;
+	virtual void			CopyTo(AtomBase* atom) const = 0;
+	virtual void			Visit(RuntimeVisitor& vis) = 0;
+	virtual void			VisitSource(RuntimeVisitor& vis) = 0;
+	virtual void			VisitSink(RuntimeVisitor& vis) = 0;
+	virtual void			ClearSinkSource() = 0;
+	virtual ISourceRef		GetSource() = 0;
+	virtual ISinkRef		GetSink() = 0;
+	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
+	virtual void			UninitializeAtom() = 0;
 	
-	virtual bool AltInitialize(const Script::WorldState& ws) {return true;}
-	virtual void AltUninitialize() {}
-	virtual void AltUpdate(double dt) {}
-	virtual void AltForward(FwdScope& fwd) {}
-	virtual void AltStorePacket(int sink_ch,  int src_ch, Packet& p) {Panic("AltStorePacket not implemented");}
-	virtual bool AltIsReady(ValDevCls vd) {return true;}
-	virtual bool AltPostInitialize() {return true;}
-	
-	virtual bool ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
-	virtual bool IsConsumedPartialPacket() {return 0;}
-	
-	virtual bool Initialize(const Script::WorldState& ws) {return AltInitialize(ws);}
-	virtual void Uninitialize() {AltUninitialize();}
-	virtual void Update(double dt) {AltUpdate(dt);}
-	virtual void Forward(FwdScope& fwd) {AltForward(fwd);}
-	virtual bool PostInitialize() {return AltPostInitialize();}
-	virtual String ToString() const;
-	virtual bool LoadPacket(int ch_i, const Packet& p) {return true;}
-	virtual void StorePacket(int sink_ch,  int src_ch, Packet& p) {AltStorePacket(sink_ch, src_ch, p);}
-	virtual bool IsReady(ValDevCls vd) {return AltIsReady(vd);}
-	virtual RealtimeSourceConfig*	GetConfig() {return last_cfg;}
+	virtual bool			ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
+	virtual bool			IsConsumedPartialPacket() {return 0;}
+	virtual bool			Initialize(const Script::WorldState& ws) {return true;}
+	virtual void			Uninitialize() {}
+	virtual void			Update(double dt) {}
+	virtual void			Forward(FwdScope& fwd) {}
+	virtual bool			PostInitialize() {return true;}
+	virtual String			ToString() const;
+	virtual bool			LoadPacket(int ch_i, const Packet& p) {return true;}
+	virtual void			StorePacket(int sink_ch,  int src_ch, Packet& p) {Panic("StorePacket not implemented");}
+	virtual bool			IsReady(ValDevCls vd) {return true;}
+	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	
 	virtual bool			PassLinkSideSink(AtomBaseRef sink) {return true;}
@@ -132,10 +123,10 @@ public:
 	}
 	
 	
-	Machine& GetMachine();
-	void UninitializeDeep();
-	void PostContinueForward();
-	String GetInlineConnectionsString() const;
+	Machine&				GetMachine();
+	void					UninitializeDeep();
+	void					PostContinueForward();
+	String					GetInlineConnectionsString() const;
 	
 public:
 	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarder)
@@ -144,19 +135,7 @@ public:
 	
 	LoopRef GetLoop();
 	
-	//InterfaceSourceRef FindSource(ValDevCls t);
-	//InterfaceSinkRef FindSink(ValDevCls t);
-	
 	template <class T> RefT_Loop<T> As() {return AtomBase_Static_As<T>(this);}
-	
-	/*#define IFACE(x) \
-	RefT_Loop<x##Source> As##x##Source() {return As<x##Source>();} \
-	RefT_Loop<x##Sink>   As##x##Sink()   {return As<x##Sink>();}
-	IFACE_LIST
-	#undef IFACE*/
-	//RefT_Loop<ValSource>	AsSource();
-	//RefT_Loop<ValSink>	AsSink();
-	
 	
 	template <class S, class R>
 	void AddToSystem(R ref) {
@@ -172,9 +151,7 @@ public:
 			sys->Remove(ref);
 	}
 	
-	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
-	
 	
 	
 	Callback2<AtomBase&, Packet&>			WhenEnterStorePacket;
@@ -318,7 +295,7 @@ public:
 		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
-		iter.value().AltUninitialize();
+		iter.value().Uninitialize();
 		iter.value().Uninitialize();
 		//iter.value().Destroy();
 		

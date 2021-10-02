@@ -21,11 +21,11 @@ public:
 	
 	SDL2EventsBase() {}
 	
-	bool			AltInitialize(const Script::WorldState& ws) override;
-	void			AltUninitialize() override;
-	void			AltForward(FwdScope& fwd) override;
-	void			AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	void			AltUpdate(double dt) override;
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	void			Forward(FwdScope& fwd) override;
+	void			StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void			Update(double dt) override;
 	bool			LoadPacket(int ch_i, const Packet& p) override;
 	bool			IsReady(ValDevCls vd) override;
 	

@@ -4,12 +4,12 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2JoystickBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2JoystickBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	return true;
 }
 
-void SDL2JoystickBase::AltUninitialize() {
+void SDL2JoystickBase::Uninitialize() {
 	obj.Clear();
 }
 

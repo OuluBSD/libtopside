@@ -3,8 +3,8 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
-	RTLOG("CustomerBase::AltInitialize");
+bool CustomerBase::Initialize(const Script::WorldState& ws) {
+	RTLOG("CustomerBase::Initialize");
 	
 	AtomTypeCls type = GetType();
 	
@@ -21,13 +21,13 @@ bool CustomerBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool CustomerBase::AltPostInitialize() {
+bool CustomerBase::PostInitialize() {
 	packet_thrds = GetSink()->GetValue(0).GetMinPackets();
 	
 	return true;
 }
 
-void CustomerBase::AltUninitialize() {
+void CustomerBase::Uninitialize() {
 	AtomBaseRef r = AtomBase::AsRefT();
 	ASSERT(r);
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveCustomer(r);
@@ -46,11 +46,11 @@ void CustomerBase::UpdateConfig(double dt) {
 	}
 }
 
-void CustomerBase::AltForward(FwdScope& fwd) {
-	//RTLOG("CustomerBase::AltForward");
+void CustomerBase::Forward(FwdScope& fwd) {
+	//RTLOG("CustomerBase::Forward");
 	
 	while (packet_count < packet_thrds) {
-		RTLOG("CustomerBase::AltForward: create packet");
+		RTLOG("CustomerBase::Forward: create packet");
 		InterfaceSinkRef sink_iface = GetSink();
 		
 		int sink_count = sink_iface->GetSinkCount();
@@ -71,7 +71,7 @@ void CustomerBase::AltForward(FwdScope& fwd) {
 		WhenEnterCreatedEmptyPacket(p);
 		WhenLeaveCreatedEmptyPacket();
 		
-		//PacketTracker::Track(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+		//PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *p);
 		sink_val.GetBuffer().Add(p);
 		
 		packet_count++;
@@ -83,16 +83,16 @@ bool CustomerBase::LoadPacket(int ch_i, const Packet& p) {
 	RTLOG("CustomerBase::LoadPacket");
 	
 	//if (p->seq >= 0) {
-	PacketTracker::StopTracking(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *p);
 	//}
 	return ch_i == 0;
 }
 
-void CustomerBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("CustomerBase::AltStorePacket");
+void CustomerBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("CustomerBase::StorePacket");
 	
 	p->SetOffset(off_gen.Create());
-	PacketTracker::Track(TrackerInfo("CustomerBase::AltForward", __FILE__, __LINE__), *p);
+	PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *p);
 	
 }
 
@@ -102,17 +102,17 @@ JoinerBase::JoinerBase() {
 	
 }
 
-bool JoinerBase::AltInitialize(const Script::WorldState& ws) {
+bool JoinerBase::Initialize(const Script::WorldState& ws) {
 	
 	return true;
 }
 
-void JoinerBase::AltUninitialize() {
+void JoinerBase::Uninitialize() {
 	
 }
 
-void JoinerBase::AltForward(FwdScope& fwd) {
-	RTLOG("JoinerBase::AltForward");
+void JoinerBase::Forward(FwdScope& fwd) {
+	RTLOG("JoinerBase::Forward");
 	cur_side.Clear();
 }
 
@@ -127,13 +127,13 @@ bool JoinerBase::LoadPacket(int ch_i, const Packet& p) {
 	return true;
 }
 
-void JoinerBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
+void JoinerBase::StorePacket(int sink_ch, int src_ch, Packet& p) {
 	if (sink_ch == 0) {
-		RTLOG("JoinerBase::AltStorePacket: (" << sink_ch << "," << src_ch << "): " << p->ToString());
+		RTLOG("JoinerBase::StorePacket: (" << sink_ch << "," << src_ch << "): " << p->ToString());
 		p = cur_side;
 	}
 	else {
-		RTLOG("JoinerBase::AltStorePacket: (" << sink_ch << "," << src_ch << "): skipping packet");
+		RTLOG("JoinerBase::StorePacket: (" << sink_ch << "," << src_ch << "): skipping packet");
 		p.Clear();
 	}
 }
@@ -144,16 +144,16 @@ SplitterBase::SplitterBase() {
 	
 }
 
-bool SplitterBase::AltInitialize(const Script::WorldState& ws) {
+bool SplitterBase::Initialize(const Script::WorldState& ws) {
 	
 	return true;
 }
 
-void SplitterBase::AltUninitialize() {
+void SplitterBase::Uninitialize() {
 	
 }
 
-void SplitterBase::AltForward(FwdScope& fwd) {
+void SplitterBase::Forward(FwdScope& fwd) {
 	cur_side.Clear();
 }
 
@@ -182,18 +182,18 @@ bool SplitterBase::LoadPacket(int ch_i, const Packet& p) {
 	return true;
 }
 
-void SplitterBase::AltStorePacket(int sink_ch, int src_ch, Packet& p) {
+void SplitterBase::StorePacket(int sink_ch, int src_ch, Packet& p) {
 	if (src_ch > 0) {
 		if (cur_side) {
 			p = cur_side;
-			RTLOG("SplitterBase::AltStorePacket: forwarded packet (" << sink_ch << ", " << src_ch << "): " << p->ToString());
+			RTLOG("SplitterBase::StorePacket: forwarded packet (" << sink_ch << ", " << src_ch << "): " << p->ToString());
 		}
 		else {
-			RTLOG("SplitterBase::AltStorePacket: store packet failed");
+			RTLOG("SplitterBase::StorePacket: store packet failed");
 		}
 	}
 	else {
-		RTLOG("SplitterBase::AltStorePacket: skipping src 0");
+		RTLOG("SplitterBase::StorePacket: skipping src 0");
 	}
 }
 
@@ -204,7 +204,7 @@ OglShaderBase::OglShaderBase() {
 	
 }
 
-bool OglShaderBase::AltInitialize(const Script::WorldState& ws) {
+bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	String shader_path = ws.Get(".filepath");
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
@@ -224,7 +224,7 @@ bool OglShaderBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool OglShaderBase::AltPostInitialize() {
+bool OglShaderBase::PostInitialize() {
 	buf.is_win_fbo = false;
 	buf.fb_size = Size(1280,720);
 	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
@@ -234,11 +234,11 @@ bool OglShaderBase::AltPostInitialize() {
 	return true;
 }
 
-void OglShaderBase::AltUninitialize() {
+void OglShaderBase::Uninitialize() {
 	last_packet.Clear();
 }
 
-void OglShaderBase::AltForward(FwdScope& fwd) {
+void OglShaderBase::Forward(FwdScope& fwd) {
 	/*const int sink_ch_i = 0;
 	const int src_ch_i = 0;
 	
@@ -247,7 +247,7 @@ void OglShaderBase::AltForward(FwdScope& fwd) {
 	PacketBuffer& sink_buf = sink_val.GetBuffer();
 	
 	if (src_val.GetQueueSize() == 0 && sink_buf.GetCount()){
-		RTLOG("OglShaderBase::AltForward: render");
+		RTLOG("OglShaderBase::Forward: render");
 		
 		Packet p = sink_buf.First();
 		sink_buf.RemoveFirst();
@@ -255,7 +255,7 @@ void OglShaderBase::AltForward(FwdScope& fwd) {
 		last_packet = p;
 	}
 	else {
-		RTLOG("OglShaderBase::AltForward: wait");
+		RTLOG("OglShaderBase::Forward: wait");
 	}*/
 }
 
@@ -277,7 +277,7 @@ bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
 	return succ;
 }
 
-bool OglShaderBase::AltIsReady(ValDevCls vd) {
+bool OglShaderBase::IsReady(ValDevCls vd) {
 	/*const int src_ch_i = 0;
 	
 	Value& src_val = this->GetSource()->GetSourceValue(src_ch_i);
@@ -285,8 +285,8 @@ bool OglShaderBase::AltIsReady(ValDevCls vd) {
 	return true;
 }
 
-void OglShaderBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("OglShaderBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
+void OglShaderBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("OglShaderBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
 	
 	if (sink_ch == 0 && src_ch == 0) {
 		ASSERT(last_packet);

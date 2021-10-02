@@ -4,12 +4,12 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2SensorBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2SensorBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	return true;
 }
 
-void SDL2SensorBase::AltUninitialize() {
+void SDL2SensorBase::Uninitialize() {
 	obj.Clear();
 }
 

@@ -13,8 +13,8 @@ class RollingValueBase :
 	
 public:
 	RTTI_DECL0(RollingValueBase)
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -32,10 +32,10 @@ public:
 	RTTI_DECL0(VoidSinkBase)
 	typedef VoidSinkBase CLASSNAME;
 	~VoidSinkBase() {ASSERT(!flag.IsRunning());}
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	//void AltForward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override {} // required pass
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	//void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override {} // required pass
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	void IntervalSinkProcess();

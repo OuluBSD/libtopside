@@ -157,6 +157,8 @@ protected:
 
 using InterfaceSinkRef			= Ref<InterfaceSink,		RefParent1<Loop>>;
 using InterfaceSourceRef		= Ref<InterfaceSource,		RefParent1<Loop>>;
+using ISinkRef					= Ref<InterfaceSink,		RefParent1<Loop>>;
+using ISourceRef				= Ref<InterfaceSource,		RefParent1<Loop>>;
 
 
 

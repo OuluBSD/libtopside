@@ -3,11 +3,11 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
+bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	AtomTypeCls type = ((AtomBase*)this)->GetType();
 	ValDevCls main_vd = type.iface.src();
 	if (main_vd.dev != DevCls::CENTER) {
-		RTLOG("RollingValueBase::AltInitialize: error: invalid device");
+		RTLOG("RollingValueBase::Initialize: error: invalid device");
 		return false;
 	}
 	if (main_vd.val == ValCls::AUDIO)
@@ -21,10 +21,10 @@ bool RollingValueBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void RollingValueBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	ASSERT(internal_fmt.IsValid());
 	
-	RTLOG("RollingValueBase::AltStorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
+	RTLOG("RollingValueBase::StorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
 	PacketValue& pv = *p;
 	pv.SetFormat(internal_fmt);
 	
@@ -47,14 +47,14 @@ void RollingValueBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 
 
 
-bool VoidSinkBase::AltInitialize(const Script::WorldState& ws) {
+bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
 	flag.Start(1);
 	GetSink()->GetValue(0).SetMinQueueSize(5);
 	Thread::Start(THISBACK(IntervalSinkProcess));
 	return true;
 }
 
-void VoidSinkBase::AltUninitialize() {
+void VoidSinkBase::Uninitialize() {
 	flag.Stop();
 }
 

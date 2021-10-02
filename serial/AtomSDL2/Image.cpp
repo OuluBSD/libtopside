@@ -9,12 +9,12 @@ SDL2ImageBase::SDL2ImageBase()
 	
 }
 
-bool SDL2ImageBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2ImageBase::Initialize(const Script::WorldState& ws) {
 	
 	return true;
 }
 
-void SDL2ImageBase::AltUninitialize() {
+void SDL2ImageBase::Uninitialize() {
 	img.Clear();
 }
 

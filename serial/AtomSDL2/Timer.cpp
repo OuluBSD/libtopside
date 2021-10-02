@@ -3,12 +3,12 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool SDL2TimerBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2TimerBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	return true;
 }
 
-void SDL2TimerBase::AltUninitialize() {
+void SDL2TimerBase::Uninitialize() {
 	obj.Clear();
 }
 

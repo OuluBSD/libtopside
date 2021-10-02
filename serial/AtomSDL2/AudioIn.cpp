@@ -4,12 +4,12 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2AudioInputBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2AudioInputBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	return true;
 }
 
-void SDL2AudioInputBase::AltUninitialize() {
+void SDL2AudioInputBase::Uninitialize() {
 	obj.Clear();
 }
 

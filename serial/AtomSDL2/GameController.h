@@ -19,8 +19,8 @@ public:
 	
 	SDL2GameControllerBase() = default;
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	//bool IsSupported(CtrlType type) override {return type == CTRL_GAMEPAD;}
 	/*HumanStream&		GetStream(HumCtx) override {TODO}
 	void				BeginStream(HumCtx) override {TODO}

@@ -139,6 +139,8 @@ struct RealtimeSourceConfig {
 	//void SetOffset(off32 begin, off32 end) {begin_offset = begin; end_offset = end;}
 };
 
+using RTSrcConfig = RealtimeSourceConfig;
+
 #define MIN_AUDIO_BUFFER_SAMPLES 1024
 
 

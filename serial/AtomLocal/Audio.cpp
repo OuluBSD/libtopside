@@ -15,7 +15,7 @@ AudioGenBase::AudioGenBase() {
 	
 }
 
-bool AudioGenBase::AltInitialize(const Script::WorldState& ws) {
+bool AudioGenBase::Initialize(const Script::WorldState& ws) {
 	String waveform = ws.Get(".waveform");
 	
 	if (waveform == "noise")
@@ -29,15 +29,15 @@ bool AudioGenBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void AudioGenBase::AltUninitialize() {
+void AudioGenBase::Uninitialize() {
 	
 }
 
-void AudioGenBase::AltForward(FwdScope& fwd) {
+void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void AudioGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void AudioGenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -53,7 +53,7 @@ void AudioGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	gen.Play((int)offset, p);
 	#endif
 	
-	RTLOG("AudioGenBase::AltStorePacket: offset " << (int)off << " " << p->ToStringWithHash());
+	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << p->ToStringWithHash());
 }
 
 NAMESPACE_SERIAL_END

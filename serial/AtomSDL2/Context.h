@@ -21,10 +21,10 @@ public:
 	SDL2ContextBase();
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<CenterDriver>(this);}
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	bool AltPostInitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	bool PostInitialize() override;
 	
 	OOSDL2::Context* GetOOSDL2() {return &*obj;}
 	OOSDL2::Component& GetObj() override {Panic("never"); NEVER();}

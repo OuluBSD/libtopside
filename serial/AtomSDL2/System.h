@@ -27,11 +27,11 @@ protected:
 	friend class Font;
 	friend class CoreWindow;
 	
-    bool AltInitialize(const Script::WorldState& ws) override;
+    bool Initialize(const Script::WorldState& ws) override;
     void Start() override;
     void Update(double dt) override;
     void Stop() override;
-    void AltUninitialize() override;
+    void Uninitialize() override;
     
 protected:
 	friend class SDL2Context;

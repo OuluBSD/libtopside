@@ -19,8 +19,8 @@ public:
 	
 	SDL2FontBase() = default;
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	/*StaticStream&		GetStream(StcCtx) override {TODO}
 	void				BeginStream(StcCtx) override {TODO}
 	void				EndStream(StcCtx) override {TODO}*/

@@ -91,7 +91,7 @@ PortaudioSink::~PortaudioSink() {
 	obj.Clear();
 }
 
-bool PortaudioSink::AltInitialize(const Script::WorldState& ws) {
+bool PortaudioSink::Initialize(const Script::WorldState& ws) {
 	const int sink_ch_i = 0;
 	
 	//sys = GetMachine().TryGet<PortaudioSystem>();
@@ -115,7 +115,7 @@ bool PortaudioSink::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void PortaudioSink::AltUninitialize() {
+void PortaudioSink::Uninitialize() {
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSink>());
 	

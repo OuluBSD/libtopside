@@ -7,7 +7,7 @@ NAMESPACE_SERIAL_BEGIN
 #ifdef flagGUI
 
 
-bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
 	
@@ -22,7 +22,7 @@ bool SDL2ScreenBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void SDL2ScreenBase::AltUninitialize() {
+void SDL2ScreenBase::Uninitialize() {
 	ev = 0;
 	obj.Clear();
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
@@ -30,12 +30,12 @@ void SDL2ScreenBase::AltUninitialize() {
 
 #if 0
 
-void SDL2ScreenBase::AltUpdate(double dt) {
+void SDL2ScreenBase::Update(double dt) {
 	frame_age += dt;
-	RTLOG("SDL2ScreenBase::AltUpdate: dt: " << dt << ", frame_age: " << frame_age);
+	RTLOG("SDL2ScreenBase::Update: dt: " << dt << ", frame_age: " << frame_age);
 }
 
-void SDL2ScreenBase::AltForward(FwdScope& fwd) {
+void SDL2ScreenBase::Forward(FwdScope& fwd) {
 	AtomTypeCls type = GetType();
 	if (type.IsRoleSide())
 		return;
@@ -55,10 +55,10 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 	if (!all_sink_filled)
 		return;
 	
-	RTLOG("SDL2ScreenBase::AltForward: frame_age: " << frame_age);
+	RTLOG("SDL2ScreenBase::Forward: frame_age: " << frame_age);
 	
 	if (frame_age >= dt) {
-		RTLOG("SDL2ScreenBase::AltForward: render");
+		RTLOG("SDL2ScreenBase::Forward: render");
 		if (frame_age >= 2 * dt)
 			frame_age = 0;
 		else
@@ -80,18 +80,18 @@ void SDL2ScreenBase::AltForward(FwdScope& fwd) {
 		}
 		
 		if (fail) {
-			RTLOG("SDL2ScreenBase::AltForward: error: some packet(s) failed to load");
+			RTLOG("SDL2ScreenBase::Forward: error: some packet(s) failed to load");
 		}
 	}
 	else {
-		RTLOG("SDL2ScreenBase::AltForward: wait");
+		RTLOG("SDL2ScreenBase::Forward: wait");
 	}
 	
 }
 
 bool SDL2ScreenBase::IsReady(ValDevCls vd) {
 	if (frame_age >= dt) {
-		RTLOG("SDL2ScreenBase::AltForward: render");
+		RTLOG("SDL2ScreenBase::Forward: render");
 		if (frame_age >= 2 * dt)
 			frame_age = 0;
 		else
@@ -113,8 +113,8 @@ bool SDL2ScreenBase::LoadPacket(int sink_ch, const Packet& p) {
 	return obj->Recv(sink_ch, p);
 }
 
-void SDL2ScreenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDL2ScreenBase::AltStorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
+void SDL2ScreenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("SDL2ScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
 	if (sink_ch == 0 && src_ch == 0) {
 		obj->Render(*last_cfg);
 	}

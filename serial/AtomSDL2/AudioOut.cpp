@@ -3,7 +3,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-bool SDL2AudioOutputBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2AudioOutputBase::Initialize(const Script::WorldState& ws) {
 	aconfig.frames_after_sync = 0;
 	SetAudioSyncInterval(15);
 	OBJ_CREATE
@@ -11,12 +11,12 @@ bool SDL2AudioOutputBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool SDL2AudioOutputBase::AltPostInitialize() {
-	DLOG("SDL2AudioOutputBase::AltPostInitialize");
+bool SDL2AudioOutputBase::PostInitialize() {
+	DLOG("SDL2AudioOutputBase::PostInitialize");
 	return true;
 }
 
-void SDL2AudioOutputBase::AltUninitialize() {
+void SDL2AudioOutputBase::Uninitialize() {
 	obj.Clear();
 }
 

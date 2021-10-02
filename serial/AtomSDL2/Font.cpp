@@ -4,12 +4,12 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2FontBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2FontBase::Initialize(const Script::WorldState& ws) {
 	
 	return true;
 }
 
-void SDL2FontBase::AltUninitialize() {
+void SDL2FontBase::Uninitialize() {
 	fnt.Clear();
 }
 

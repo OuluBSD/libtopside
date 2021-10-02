@@ -45,8 +45,8 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	bool	AltInitialize(const Script::WorldState& ws) override;
-	void	AltUninitialize() override;
+	bool	Initialize(const Script::WorldState& ws) override;
+	void	Uninitialize() override;
 	bool	PassLoadPacket(int ch_i, const Packet& p) override;
 	
 	String GetLastError() const {return last_error;}

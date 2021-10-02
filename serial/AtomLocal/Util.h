@@ -20,14 +20,14 @@ protected:
 public:
 	RTTI_DECL0(CustomerBase);
 	
-	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
-	bool AltInitialize(const Script::WorldState& ws) override;
-	bool AltPostInitialize() override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
+	RTSrcConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
 	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}
 	void Visit(RuntimeVisitor& vis) override {}
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	bool LoadPacket(int ch_i, const Packet& p) override;
 	void UpdateConfig(double dt) override;
 	
@@ -41,12 +41,12 @@ class JoinerBase :
 	
 public:
 	JoinerBase();
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	bool LoadPacket(int ch_i, const Packet& p) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	
 };
@@ -59,12 +59,12 @@ class SplitterBase :
 	
 public:
 	SplitterBase();
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	bool LoadPacket(int ch_i, const Packet& p) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	
 	
 };
@@ -80,13 +80,13 @@ public:
 	RTTI_DECL1(OglShaderBase, OglBufferBase);
 	
 	OglShaderBase();
-	bool AltInitialize(const Script::WorldState& ws) override;
-	bool AltPostInitialize() override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	bool AltIsReady(ValDevCls vd) override;
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	void Forward(FwdScope& fwd) override;
+	bool IsReady(ValDevCls vd) override;
 	bool LoadPacket(int ch_i, const Packet& p) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	
 	

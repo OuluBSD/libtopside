@@ -4,12 +4,12 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-bool SDL2GameControllerBase::AltInitialize(const Script::WorldState& ws) {
+bool SDL2GameControllerBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	return true;
 }
 
-void SDL2GameControllerBase::AltUninitialize() {
+void SDL2GameControllerBase::Uninitialize() {
 	obj.Clear();
 }
 

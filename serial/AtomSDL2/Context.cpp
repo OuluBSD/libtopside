@@ -17,13 +17,13 @@ void SDL2ContextBase::Add(AtomBaseRef sdlbase) {
 	atoms.Add(sdlbase);
 }
 
-bool SDL2ContextBase::AltInitialize(const Script::WorldState& ws) {
-	DLOG("SDL2ContextBase::AltInitialize");
+bool SDL2ContextBase::Initialize(const Script::WorldState& ws) {
+	DLOG("SDL2ContextBase::Initialize");
 	return true;
 }
 
-bool SDL2ContextBase::AltPostInitialize() {
-	DLOG("SDL2ContextBase::AltPostInitialize");
+bool SDL2ContextBase::PostInitialize() {
+	DLOG("SDL2ContextBase::PostInitialize");
 	LoopRef l = GetLoop();
 	
 	#if 0
@@ -40,7 +40,7 @@ bool SDL2ContextBase::AltPostInitialize() {
 	#endif
 	
 	if (atoms.IsEmpty()) {
-		LOG("SDL2ContextBase::AltInitialize: error: no sdl2 components added to SDL2ContextBase");
+		LOG("SDL2ContextBase::Initialize: error: no sdl2 components added to SDL2ContextBase");
 		return false;
 	}
 	
@@ -52,7 +52,7 @@ bool SDL2ContextBase::AltPostInitialize() {
 	
 	
 	if (!obj->Open()) {
-		LOG("SDL2ContextBase::AltInitialize: error: " << obj->GetLastError());
+		LOG("SDL2ContextBase::Initialize: error: " << obj->GetLastError());
 		GetMachine().SetNotRunning();
 	}
 	
@@ -60,12 +60,12 @@ bool SDL2ContextBase::AltPostInitialize() {
 	return true;
 }
 
-void SDL2ContextBase::AltUninitialize() {
+void SDL2ContextBase::Uninitialize() {
 	obj->Close();
 }
 
-void SDL2ContextBase::AltForward(FwdScope& fwd) {
-	RTLOG("SDL2ContextBase::AltForward");
+void SDL2ContextBase::Forward(FwdScope& fwd) {
+	RTLOG("SDL2ContextBase::Forward");
 }
 
 

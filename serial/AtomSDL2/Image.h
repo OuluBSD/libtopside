@@ -20,8 +20,8 @@ public:
 	
 	SDL2ImageBase();
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	bool LoadFileAny(String path);
 	Size GetResolution() const;
 	

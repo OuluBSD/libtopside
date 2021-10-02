@@ -18,8 +18,8 @@ public:
 	
 	SDL2TimerBase() = default;
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Timer* GetOOSDL2() {return &*obj;}

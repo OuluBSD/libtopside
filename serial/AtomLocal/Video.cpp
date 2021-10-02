@@ -147,7 +147,7 @@ VideoGenBase::VideoGenBase() {
 	
 }
 
-bool VideoGenBase::AltInitialize(const Script::WorldState& ws) {
+bool VideoGenBase::Initialize(const Script::WorldState& ws) {
 	String mode = ws.Get(".mode");
 	
 	if (mode == "sine")
@@ -162,15 +162,15 @@ bool VideoGenBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void VideoGenBase::AltUninitialize() {
+void VideoGenBase::Uninitialize() {
 	
 }
 
-void VideoGenBase::AltForward(FwdScope& fwd) {
+void VideoGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void VideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void VideoGenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -181,7 +181,7 @@ void VideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	p->Set(fmt, time);
 	p->Data().SetCount(frame, 0);
 	gen.Play((int)offset, p);
-	RTLOG("VideoGenBase::AltStorePacket: " << p->ToStringWithHash());
+	RTLOG("VideoGenBase::StorePacket: " << p->ToStringWithHash());
 }
 
 
@@ -203,7 +203,7 @@ AccelVideoGenBase::AccelVideoGenBase() {
 	
 }
 
-bool AccelVideoGenBase::AltInitialize(const Script::WorldState& ws) {
+bool AccelVideoGenBase::Initialize(const Script::WorldState& ws) {
 	String mode = ws.Get(".mode");
 	
 	if (mode == "sine")
@@ -218,15 +218,15 @@ bool AccelVideoGenBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void AccelVideoGenBase::AltUninitialize() {
+void AccelVideoGenBase::Uninitialize() {
 	
 }
 
-void AccelVideoGenBase::AltForward(FwdScope& fwd) {
+void AccelVideoGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void AccelVideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void AccelVideoGenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	int frame = fmt.GetFrameSize();
 	dword off = p->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -237,7 +237,7 @@ void AccelVideoGenBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
 	p->Set(fmt, time);
 	p->Data().SetCount(frame, 0);
 	gen.Play((int)offset, p);
-	RTLOG("AccelVideoGenBase::AltStorePacket: " << p->ToStringWithHash());
+	RTLOG("AccelVideoGenBase::StorePacket: " << p->ToStringWithHash());
 }
 
 

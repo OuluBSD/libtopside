@@ -19,7 +19,7 @@ void FfmpegAtomBase::SetError(String s) {
 	OnError();
 }
 
-bool FfmpegAtomBase::AltInitialize(const Script::WorldState& ws) {
+bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 	//TODO // DevComponent::Initialize
 	AtomTypeCls type = GetType();
 	
@@ -55,7 +55,7 @@ bool FfmpegAtomBase::AltInitialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void FfmpegAtomBase::AltUninitialize() {
+void FfmpegAtomBase::Uninitialize() {
 	file_in.Clear();
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
@@ -119,21 +119,21 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 	return false;
 }
 
-void FfmpegAtomBase::AltForward(FwdScope& fwd) {
+void FfmpegAtomBase::Forward(FwdScope& fwd) {
 	if (mode == AUDIO_ONLY)
 		file_in.FillAudioBuffer();
 	else
 		TODO
 }
 
-bool FfmpegAtomBase::AltIsReady(ValDevCls vd) {
+bool FfmpegAtomBase::IsReady(ValDevCls vd) {
 	if (mode == AUDIO_ONLY)
 		return file_in.GetAudio().buf.GetCount();
 	else
 		TODO
 }
 
-void FfmpegAtomBase::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
+void FfmpegAtomBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	if (mode == AUDIO_ONLY)
 		file_in.GetAudio().StorePacket(sink_ch, src_ch, p);
 	else
