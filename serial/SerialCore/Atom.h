@@ -57,7 +57,6 @@ protected:
 	Mutex					lock;
 	Mutex					fwd_lock;
 	LinkedList<Packet>		consumed_packets;
-	PacketConsumer			consumer;
 	int						packets_forwarded = 0;
 	int						skipped_fwd_count = 0;
 	AtomBaseRef				driver_conn;

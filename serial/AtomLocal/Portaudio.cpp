@@ -109,7 +109,7 @@ bool PortaudioSink::AltInitialize(const Script::WorldState& ws) {
 	
 	obj->Start();
 	
-	GetSink()->GetValue(0).SetMinQueueSize(5);
+	GetSink()->GetValue(0).SetMinQueueSize(10);
 	
 	//AddToContext<CenterSpec>(AsRef<CenterSink>());
 	return true;
@@ -125,15 +125,32 @@ void PortaudioSink::AltUninitialize() {
 	obj.Clear();
 }
 
-void PortaudioSink::AltForward(FwdScope& fwd) {
-	// pass
-}
-
-void PortaudioSink::AltStorePacket(int sink_ch,  int src_ch, Packet& p) {
-	// pass
+bool PortaudioSink::PassLoadPacket(int ch_i, const Packet& p) {
+	return p->GetFormat().IsCopyCompatible(fmt);
 }
 
 void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
+	if (!args.output) return;
+	
+	#ifdef flagDEBUG
+	this->dbg_async_race = true;
+	#endif
+	
+	Serial::AudioFormat& afmt = fmt;
+	int size = fmt.GetFrameSize();
+	if (!this->ForwardAsyncMem((byte*)args.output, size)) {
+		RTLOG("PortaudioSink::SinkCallback: reading memory failed");
+		memset(args.output, 0, size);
+	}
+	
+	
+	#ifdef flagDEBUG
+	this->dbg_async_race = false;
+	#endif
+	
+	
+	
+	#if 0
 	const int sink_ch_i = 0;
 	
 	Value& sink_val = GetSink()->GetValue(sink_ch_i);
@@ -181,6 +198,8 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 	
 	#ifdef flagDEBUG
 	this->dbg_async_race = false;
+	#endif
+	
 	#endif
 }
 

@@ -585,6 +585,8 @@ void AtomBase::ForwardVoidSink(FwdScope& fwd) {
 
 bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 	TODO // remove usage
+	
+	#if 0
 	const int src_ch_i = 0;
 	const int sink_ch_i = 0;
 	
@@ -651,6 +653,7 @@ bool AtomBase::ForwardMem(void* mem, size_t mem_size) {
 			memset(mem, 0, size);
 		}
 	}
+	#endif
 	return false;
 }
 

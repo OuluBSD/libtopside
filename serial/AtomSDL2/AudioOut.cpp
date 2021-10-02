@@ -20,10 +20,6 @@ void SDL2AudioOutputBase::AltUninitialize() {
 	obj.Clear();
 }
 
-void SDL2AudioOutputBase::AltForward(FwdScope& fwd) {
-	// pass
-}
-
 bool SDL2AudioOutputBase::PassLoadPacket(int ch_i, const Packet& p) {
 	Format fmt = p->GetFormat();
 	return fmt.vd.val == ValCls::AUDIO;

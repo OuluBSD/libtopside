@@ -26,7 +26,7 @@ String AtomSystem::GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cf
 			int sink_pk = 0;
 			int src_pk = 0;
 			
-			line << " | ";
+			line << (line.IsEmpty() ? "| " : " | ");
 			
 			InterfaceSinkRef sink_iface = ab->GetSink();
 			int c = sink_iface->GetSinkCount();
@@ -46,6 +46,7 @@ String AtomSystem::GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cf
 			
 		}
 	}
+	line << " |";
 	return line;
 }
 

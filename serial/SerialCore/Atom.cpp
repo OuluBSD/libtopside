@@ -52,6 +52,7 @@ void AtomBase::ForwardExchange(FwdScope& fwd) {
 }
 
 void AtomBase::ForwardConsumed(FwdScope& fwd) {
+	
 	int src_ch_i = 0;
 	int sink_ch_i = 0;
 	

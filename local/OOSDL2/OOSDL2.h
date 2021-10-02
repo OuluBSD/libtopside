@@ -105,7 +105,6 @@ private:
 	SDL_AudioSpec			audio_fmt;
 	SDL_AudioSpec			audio_desired;
 	SDL_AudioDeviceID		audio_dev = 0;
-	Serial::PacketConsumer	consumer;
 	Serial::Format			fmt;
 	dword					frames = 0;
 	
@@ -130,7 +129,6 @@ public:
 	dword			GetFrameCount() const {return frames;}
 	bool			IsSampleFloating() const;
 	bool			IsSampleSigned() const;
-	bool			IsConsumedPartialPacket() {return consumer.HasLeftover();}
 	void			UpdateSinkFormat();
 	//Value&			GetValue() {return buf;}
 	

@@ -29,13 +29,13 @@ struct StreamCallbackArgs;
 
 
 class PortaudioSink :
-	virtual public AtomBase
+	virtual public AtomBase,
+	public AsyncMemForwarderBase
 {
 	One<Portaudio::BufferedAudioDeviceStream> obj;
 	String			last_error;
 	Vector<float>	tmp;
 	Format			fmt;
-	PacketConsumer	consumer;
 	
 public:
 	typedef PortaudioSink CLASSNAME;
@@ -45,12 +45,9 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	bool AltInitialize(const Script::WorldState& ws) override;
-	void AltUninitialize() override;
-	void AltForward(FwdScope& fwd) override;
-	void AltStorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	void AltIntervalSinkProcess() {}
-	bool IsConsumedPartialPacket() override {return consumer.HasLeftover();}
+	bool	AltInitialize(const Script::WorldState& ws) override;
+	void	AltUninitialize() override;
+	bool	PassLoadPacket(int ch_i, const Packet& p) override;
 	
 	String GetLastError() const {return last_error;}
 	void SinkCallback(Portaudio::StreamCallbackArgs& args);
