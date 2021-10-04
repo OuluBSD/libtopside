@@ -35,7 +35,7 @@ public:
 		d.name = T::GetTypeName();
 		d.vd.dev = dev;
 		d.vd.val = val;
-		MetaExchangePoint::RegisterExchangePoint<T>();
+		MetaDirectoryBase::RegisterExchangePoint<T>();
 	}
 	
 	

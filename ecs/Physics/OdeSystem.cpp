@@ -132,8 +132,8 @@ void OdeSystem::NearCallback(void *, dGeomID o1, dGeomID o2) {
 	}
 }
 
-void AddMachineOdeSystem() {
-	GetActiveMachine().Add<OdeSystem>();
+void AddEngineOdeSystem() {
+	GetActiveEngine().Add<OdeSystem>();
 }
 
 
@@ -146,7 +146,7 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_UPP
 
 INITBLOCK(OdeSystem) {
-	TS::Machine::WhenInitialize << callback(TS::AddMachineOdeSystem);
+	TS::Engine::WhenInitialize << callback(TS::AddEngineOdeSystem);
 }
 
 END_UPP_NAMESPACE

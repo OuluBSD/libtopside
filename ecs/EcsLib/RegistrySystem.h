@@ -17,7 +17,7 @@ protected:
     
 public:
 	SYS_RTTI(RegistrySystem)
-    SYS_CTOR(RegistrySystem)
+    ECS_SYS_CTOR(RegistrySystem)
 	SYS_DEF_VISIT
 	
 	void Set(String key, Object value) {reg.GetAdd(key) = value;}
@@ -28,8 +28,6 @@ public:
 	
 	String GetAppName() {return Get("app.name");}
 	
-	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_REGISTRY;}
 	
 };
 

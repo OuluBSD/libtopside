@@ -6,7 +6,7 @@ namespace Portaudio {
 	
 
 
-void AudioStream::Open(const StreamParameters& inparam, const StreamParameters& outparam){
+void AudioStream::Open(const StreamParameters& inparam, const StreamParameters& outparam) {
 	OpenStream(NULL, NULL, inparam, outparam);
 }
 

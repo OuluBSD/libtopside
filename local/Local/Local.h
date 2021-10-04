@@ -43,6 +43,7 @@
 #include "Html.h"
 #include "Url.h"
 #include "Debugging.h"
+#include "VR.h"
 
 
 

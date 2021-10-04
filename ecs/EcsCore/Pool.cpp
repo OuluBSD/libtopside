@@ -6,7 +6,7 @@ NAMESPACE_ECS_BEGIN
 
 //PoolRef GetConnectorBasePool(ConnectorBase* conn) {return conn->GetPool();}
 
-Machine& GetPoolMachine(PoolRef pool) {return pool->GetMachine();}
+Engine& GetPoolEngine(PoolRef pool) {return pool->GetEngine();}
 
 
 
@@ -27,7 +27,7 @@ Pool* Pool::GetParent() const {
 	return RefScopeParent<PoolParent>::GetParent().b;
 }
 
-Machine& Pool::GetMachine() {
+Engine& Pool::GetEngine() {
 	if (machine)
 		return *machine;
 	Pool* p = this;
@@ -35,18 +35,18 @@ Machine& Pool::GetMachine() {
 	while (p && levels++ < 1000) {
 		const PoolParent& par = p->RefScopeParent<PoolParent>::GetParent();
 		if (par.a) {
-			machine = &par.a->GetMachine();
+			machine = &par.a->GetEngine();
 			ASSERT(machine);
 			return *machine;
 		}
 		ASSERT(p != par.b);
 		p = par.b;
 	}
-	THROW(Exc("Machine ptr not found"));
+	THROW(Exc("Engine ptr not found"));
 }
 
 void Pool::Initialize(Entity& e, String prefab) {
-	uint64 ticks = GetMachine().GetTicks();
+	uint64 ticks = GetEngine().GetTicks();
 	e.SetPrefab(prefab);
 	e.SetCreated(ticks);
 	e.SetChanged(ticks);
@@ -73,46 +73,8 @@ EntityRef Pool::GetAddEmpty(String name) {
 EntityRef Pool::Clone(const Entity& c) {
 	EntityRef e = CreateEmpty();
 	e->CopyHeader(c);
-	GetMachine().Get<ComponentStore>()->Clone(*e, c);
+	GetEngine().Get<ComponentStore>()->Clone(*e, c);
 	return e;
-}
-
-bool Pool::Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface) {
-	InterfaceSourceRef src = src_comp->GetSource();
-	InterfaceSinkRef sink = dst_comp->GetSink();
-	ASSERT(src && sink);
-	if (!src || !sink)
-		return false;
-	ASSERT(src	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
-	ASSERT(sink	->AsComponentBase()->GetEntity()->HasPoolParent(AsRefT()));
-	CookieRef src_cookie, sink_cookie;
-	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		const auto& src_d = Ecs::Factory::SourceDataMap().Get(iface);
-		/*if (src_d.sink_cls != iface) {
-			ASSERT(0);
-			LOG("internal error: unexpected sink class type");
-			return false;
-		}*/
-		
-		TypeCls expt_type = src_d.expt_type;
-		ASSERT(expt_type);
-		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
-		RTLOG("ManualConnector::LinkManually(TypeCls...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
-		src->Link(ep, sink, src_cookie, sink_cookie);
-		ep->Init(this);
-		ep->Set(src, sink, src_cookie, sink_cookie);
-		return true;
-	}
-	return false;
-}
-
-void Pool::UnlinkExchangePoints() {
-	for (ExchangePointRef& pt : pts) {
-		pt->Source()	->ClearLink();
-		pt->Sink()		->ClearLink();
-		pt->Clear();
-	}
-	pts.Clear();
 }
 
 void Pool::UnlinkDeep() {
@@ -120,20 +82,9 @@ void Pool::UnlinkDeep() {
 		it().UnlinkDeep();
 	}
 	
-	UnlinkExchangePoints();
-	
 	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UnlinkAll();
 	}*/
-}
-
-void Pool::ClearInterfacesDeep() {
-	for (PoolRef& p : pools)
-		p->ClearInterfacesDeep();
-	
-	for (auto it = objects.rbegin(); it != objects.rend(); --it) {
-		it().ClearInterfaces();
-	}
 }
 
 void Pool::UnrefDeep() {
@@ -163,7 +114,7 @@ void Pool::ClearComponentsDeep() {
 	}
 	
 	/*if (!comps.IsEmpty()) {
-		ConnectorStoreRef sys = GetMachine().Get<ConnectorStore>();
+		ConnectorStoreRef sys = GetEngine().Get<ConnectorStore>();
 		for (auto iter = comps.rbegin(); iter; --iter)
 			sys->ReturnComponent(comps.Detach(iter));
 		ASSERT(comps.IsEmpty());

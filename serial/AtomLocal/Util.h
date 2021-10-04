@@ -93,6 +93,46 @@ public:
 
 #endif
 
+
+class TestEventSrcBase :
+	virtual public AtomBase
+{
+	
+public:
+	RTTI_DECL0(TestEventSrcBase);
+	
+	TestEventSrcBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	bool IsReady(ValDevCls vd) override;
+	bool LoadPacket(int ch_i, const Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	
+};
+
+
+class EventStateBase :
+	virtual public AtomBase
+{
+	
+public:
+	RTTI_DECL0(EventStateBase);
+	
+	EventStateBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	bool IsReady(ValDevCls vd) override;
+	bool LoadPacket(int ch_i, const Packet& p) override;
+	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void Visit(RuntimeVisitor& vis) override {}
+	
+	
+};
+
+
 NAMESPACE_SERIAL_END
 
 #endif

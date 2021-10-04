@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 
 void EasingSystem::Update(double dt)
 {
-	EntityComponentVisitor<Transform, Easing> visitor(GetMachine());
+	EntityComponentVisitor<Transform, Easing> visitor(GetEngine());
 	visitor.Skip(Pool::BIT_TRANSFORM);
 	for (; visitor; visitor++) {
         auto transform = visitor.Get<Transform>();

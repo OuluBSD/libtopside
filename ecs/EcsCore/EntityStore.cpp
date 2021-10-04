@@ -36,7 +36,7 @@ void EntityStore::Update(double dt) {
 }
 
 /*int64 EntityStore::PostRefresh(int64 last_refresh, ConnectorBase* comp) {
-	Machine& mach = GetMachine();
+	Engine& mach = GetEngine();
 	
 	// Don't add refresh if EntityStore haven't called previous refresh yet
 	int64 cur_ticks = mach.GetTicks();

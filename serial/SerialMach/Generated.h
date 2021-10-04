@@ -17,7 +17,11 @@ namespace Serial {
 	ATOM_TYPE(AUDIO_SPLITTER) \
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
-	ATOM_TYPE(SDL_EVENT_ATOM_S_A) \
+	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
+	ATOM_TYPE(EVENT_STATE_PIPE) \
+	ATOM_TYPE(SDL_EVENT_ATOM) \
+	ATOM_TYPE(EVENT_STATE) \
+	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
 
 
@@ -31,7 +35,11 @@ namespace Serial {
 	ATOM_CLASS(AudioSplitter) \
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(SdlContextAtom) \
-	ATOM_CLASS(SdlEventAtomSA) \
+	ATOM_CLASS(SdlEventAtomPipe) \
+	ATOM_CLASS(EventStatePipe) \
+	ATOM_CLASS(SdlEventAtom) \
+	ATOM_CLASS(EventState) \
+	ATOM_CLASS(TestEventSrcPipe) \
 	ATOM_CLASS(SdlAudioAtom) \
 
 

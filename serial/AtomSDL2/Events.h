@@ -11,6 +11,8 @@ class SDL2EventsBase :
 {
 	One<OOSDL2::Events>	obj;
 	Vector<byte>		tmp_events;
+	UPP::CtrlEvent		ev;
+	bool				ev_sendable = false;
 	
 	CtrlEvent& AddTmpEvent();
 	
@@ -23,7 +25,6 @@ public:
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
-	void			Forward(FwdScope& fwd) override;
 	void			StorePacket(int sink_ch,  int src_ch, Packet& p) override;
 	void			Update(double dt) override;
 	bool			LoadPacket(int ch_i, const Packet& p) override;

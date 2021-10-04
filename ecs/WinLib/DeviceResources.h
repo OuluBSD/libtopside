@@ -104,7 +104,7 @@ RetType DX::DeviceResources::UseHolographicCameraResources(LCallback const& call
 {
     std::lock_guard<std::mutex> guard(m_cameraResourcesLock);
     return callback(m_cameraResources);
-}
+} 
 
 
 

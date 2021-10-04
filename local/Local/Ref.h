@@ -26,6 +26,9 @@ struct RefParent1 {
 	RefParent1() {}
 	RefParent1(T& o) : o(&o) {}
 	RefParent1(T* o) : o(o) {}
+	template <class C>
+	RefParent1(C* c) {static_assert(std::is_convertible<C*, T*>::value, "C must inherit T trivially"); o = static_cast<T*>(c);}
+	
 	void Clear() {o = 0;}
 	
 	operator bool() const {return o;}
@@ -35,7 +38,36 @@ struct RefParent1 {
 	T* Get() const {ASSERT(o); return o;}
 	String ToString() const {return "RefParent1(" + HexStr(o) + ")";}
 	
+	template <class C>
+	C* AsStatic() const {
+		static_assert(std::is_convertible<C*, T*>::value, "C must inherit T trivially");
+		if (!o) return 0;
+		C* c = static_cast<C*>(o);
+		return c;
+	}
 };
+
+#if 0
+template <class A, class B>
+struct RefParent1b {
+	A* o = 0;
+	
+	RefParent1b() {}
+	RefParent1b(A& o) : o(&o) {}
+	RefParent1b(A* o) : o(o) {}
+	void Clear() {o = 0;}
+	
+	operator bool() const {return o;}
+	operator A&() const {ASSERT(o); return *o;}
+	operator A*() const {ASSERT(o); return o;}
+	operator B&() const;
+	operator B*() const;
+	A* operator->() const {ASSERT(o); return o;}
+	A* Get() const {ASSERT(o); return o;}
+	String ToString() const {return "RefParent1b(" + HexStr(o) + ")";}
+	
+};
+#endif
 
 template <class A, class B>
 struct RefParent2 {
@@ -53,6 +85,28 @@ struct RefParent2 {
 	String ToString() const {return "RefParent2(" + HexStr(a) + ", " + HexStr(b) + ")";}
 	
 };
+
+#if 0
+template <class A, class B, class Ab, class Bb>
+struct RefParent2b {
+	static_assert(std::is_convertible<A*, Ab*>::value, "A must inhert Ab trivially");
+	static_assert(std::is_convertible<B*, Bb*>::value, "B must inhert Bb trivially");
+	
+	A* a = 0;
+	B* b = 0;
+	
+	RefParent2b() {}
+	RefParent2b(A* a) : a(a) {}
+	RefParent2b(B* b) : b(b) {}
+	RefParent2b(A* a, B* b) : a(a), b(b) {}
+	
+	void Clear() {a = 0; b = 0;}
+	
+	operator bool() const {return a || b;}
+	String ToString() const {return "RefParent2b(" + HexStr(a) + ", " + HexStr(b) + ")";}
+	
+};
+#endif
 
 struct RefCommon {
 	
@@ -199,6 +253,8 @@ class RefScopeParent :
 public:
 	RefScopeParent() {}
 	RefScopeParent(RParent p) : parent(p) {}
+	template <class T> RefScopeParent(T* p) : parent(p) {}
+	template <class T> RefScopeParent(T& p) : parent(&p) {}
 	virtual ~RefScopeParent() {}
 	
 	virtual void SetParent(RParent p) {parent = p;}
@@ -224,6 +280,7 @@ public:
 	}
 	
 	template <class V> operator Ref<V,RParent>() {return AsRef<V>();}
+	template <class V, class P> operator Ref<V,P>();// {return AsRef<V>();}
 	
 };
 
@@ -311,7 +368,7 @@ public:
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.AsRefT();}
+		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.template AsRefT();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}

@@ -284,4 +284,104 @@ void OglShaderBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
+TestEventSrcBase::TestEventSrcBase() {
+	
+}
+
+bool TestEventSrcBase::Initialize(const Script::WorldState& ws) {
+	RTLOG("TestEventSrcBase::Initialize");
+	return true;
+}
+
+void TestEventSrcBase::Uninitialize() {
+	RTLOG("TestEventSrcBase::Uninitialize");
+	
+}
+
+bool TestEventSrcBase::IsReady(ValDevCls vd) {
+	return true;
+}
+
+bool TestEventSrcBase::LoadPacket(int ch_i, const Packet& p) {
+	RTLOG("TestEventSrcBase::LoadPacket");
+	return true;
+}
+
+void TestEventSrcBase::StorePacket(int sink_ch, int src_ch, Packet& p) {
+	RTLOG("TestEventSrcBase::StorePacket");
+	
+	Format fmt = p->GetFormat();
+	ASSERT(fmt.vd.val == ValCls::EVENT);
+	if (fmt.vd.val == ValCls::EVENT) {
+		CtrlEvent& ev = p->SetData<CtrlEvent>();
+		RandomizeEvent(ev);
+	}
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+EventStateBase::EventStateBase() {
+	
+}
+
+bool EventStateBase::Initialize(const Script::WorldState& ws) {
+	RTLOG("EventStateBase::Initialize");
+	
+	return true;
+}
+
+bool EventStateBase::PostInitialize() {
+	RTLOG("EventStateBase::PostInitialize");
+	
+	return true;
+}
+
+void EventStateBase::Uninitialize() {
+	RTLOG("EventStateBase::Uninitialize");
+	
+}
+
+bool EventStateBase::IsReady(ValDevCls vd) {
+	return true;
+}
+
+bool EventStateBase::LoadPacket(int ch_i, const Packet& p) {
+	RTLOG("EventStateBase::LoadPacket: sink #" << ch_i << ": " << p->ToString());
+	
+	TODO
+	
+	return true;
+}
+
+void EventStateBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("EventStateBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << p->ToString());
+	
+	TODO
+	
+}
+
+
+
+
 NAMESPACE_SERIAL_END

@@ -137,11 +137,6 @@ public:
 	AudioBase();
 	AudioBase(const AudioBase& s) : err(s.err), pa_fmt(s.pa_fmt), flags(s.flags) {stream = s.stream;}
 	
-	/*void			Exchange(AudioEx& e) override;
-	int				GetQueueSize() const override {return 0;}
-	AudioFormat		GetFormat() const override {return fmt;}
-	bool			IsQueueFull() const override {return false;}*/
-	
 	dword			GetFrameCount() const {return total_frames;}
 	
 protected:
@@ -159,7 +154,7 @@ public:
 	StreamFlags		GetFlags() const                {return flags;}
 
 	void			Start()               {if (!IsPortaudioUninitialized()) {err = Pa_StartStream(stream); CHECK_ERR;}}
-	void			Stop()                {if (!IsPortaudioUninitialized()) {err = Pa_StopStream(stream); CHECK_ERR;}}
+	void			Stop()                {if (!IsPortaudioUninitialized()) {err = Pa_StopStream(stream);  CHECK_ERR;}}
 	void			Abort()               {if (!IsPortaudioUninitialized()) {err = Pa_AbortStream(stream); CHECK_ERR;}}
 	void			Close();
 
@@ -187,7 +182,7 @@ public:
 
 	AudioDeviceStream() {}
 
-	void			Open(void* data,const StreamParameters& inparam,const StreamParameters& outparam);
+	void			Open(void* data, const StreamParameters& inparam, const StreamParameters& outparam);
 	void			Open(const StreamParameters& inparam,const StreamParameters& outparam);
 	void			OpenDefault(void* data, int inchannels=0,int outchannels=2,SampleFormat format=SND_FLOAT32);
 	void			OpenDefault(int inchannels=0, int outchannels=2,SampleFormat format=SND_FLOAT32);

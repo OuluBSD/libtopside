@@ -5,15 +5,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace Serial {
-
-class Loop;
-class LoopStore;
-class AtomBase;
-class AtomStore;
-
-}
-
 class ExchangeBase;
 class ExchangeProviderBase;
 class ExchangeSinkProvider;
@@ -22,16 +13,22 @@ class ExchangeSideSinkProvider;
 class ExchangeSideSourceProvider;
 class ExchangeProviderCookie;
 class ExchangePoint;
-class MetaExchangePoint;
-using AtomParent = RefParent1<Serial::Loop>;
-using ExchangeBaseRef				= Ref<ExchangeBase,					RefParent1<ExchangeProviderBase>>;
-using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,			AtomParent>;
-using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,			AtomParent>;
-using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,		AtomParent>;
-using ExchangeSideSinkProviderRef	= Ref<ExchangeSideSinkProvider,		AtomParent>;
-using ExchangeSideSourceProviderRef	= Ref<ExchangeSideSourceProvider,	AtomParent>;
-using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaExchangePoint>>;
-using MetaExchangePointRef			= Ref<MetaExchangePoint,			AtomParent>;
+class MetaDirectoryBase;
+class MetaSystemBase;
+class MetaMachineBase;
+
+using MetaSystemParent				= RefParent1<MetaMachineBase>;
+using ExBaseParent					= RefParent1<MetaDirectoryBase>;
+using HierExBaseParent				= RefParent2<MetaSystemBase, MetaDirectoryBase>;
+using ExchangeBaseParent			= RefParent1<MetaDirectoryBase>;
+
+using ExchangeBaseRef				= Ref<ExchangeBase,					ExchangeBaseParent>;
+using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,			ExBaseParent>;
+using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,			ExBaseParent>;
+using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,		ExBaseParent>;
+using ExchangeSideSinkProviderRef	= Ref<ExchangeSideSinkProvider,		ExBaseParent>;
+using ExchangeSideSourceProviderRef	= Ref<ExchangeSideSourceProvider,	ExBaseParent>;
+using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaDirectoryBase>>;
 using CookieRef						= Ref<ExchangeProviderCookie,		RefParent1<ExchangePoint>>;
 
 
@@ -237,7 +234,7 @@ public:
 
 
 class ExchangeProviderBase :
-	public RefScopeEnabler<ExchangeProviderBase,Serial::Loop>
+	public RefScopeEnabler<ExchangeProviderBase, MetaDirectoryBase>
 {
 	
 public:
@@ -477,11 +474,11 @@ public:
 
 class ExchangePoint :
 	virtual public PacketForwarder,
-	public RefScopeEnabler<ExchangePoint,MetaExchangePoint>
+	public RefScopeEnabler<ExchangePoint,MetaDirectoryBase>
 {
 	
 protected:
-	friend class MetaExchangePoint;
+	friend class MetaDirectoryBase;
 	
 	ExchangeSourceProviderRef	src;
 	ExchangeSinkProviderRef		sink;
@@ -494,7 +491,7 @@ public:
 	ExchangePoint();
 	virtual ~ExchangePoint();
 	
-	virtual void Init(MetaExchangePoint* mexpt) = 0;
+	virtual void Init(MetaDirectoryBase* mdir) = 0;
 	
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
@@ -510,20 +507,36 @@ public:
 };
 
 
+class MetaMachineBase :
+	public RefScopeEnabler<MetaMachineBase,RefRoot>
+{
+	
+public:
+	
+};
 
+class MetaSystemBase :
+	public RefScopeEnabler<MetaSystemBase, MetaMachineBase>
+{
+	
+public:
+	virtual ~MetaSystemBase() {}
+	using RScope = RefScopeEnabler<MetaSystemBase, MetaMachineBase>;
+	
+};
 
-class MetaExchangePoint :
-	public RefScopeEnabler<MetaExchangePoint,Serial::LoopStore,RefParent2<Serial::LoopStore, Serial::Loop>>
+class MetaDirectoryBase :
+	public RefScopeEnabler<MetaDirectoryBase, MetaSystemBase, RefParent2<MetaSystemBase, MetaDirectoryBase>>
 {
 	
 protected:
 	RefLinkedListIndirect<ExchangePoint> pts;
 	
 public:
-	RTTI_DECL_R0(MetaExchangePoint)
-	typedef MetaExchangePoint CLASSNAME;
-	MetaExchangePoint();
-	virtual ~MetaExchangePoint();
+	RTTI_DECL_R0(MetaDirectoryBase)
+	typedef MetaDirectoryBase CLASSNAME;
+	MetaDirectoryBase();
+	virtual ~MetaDirectoryBase();
 	
 	virtual void UnlinkAll();
 	

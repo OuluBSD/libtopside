@@ -18,7 +18,7 @@ LoopId Loop::GetNextId() {
 }
 
 Loop* Loop::GetParent() const {
-	return RefScopeParent<LoopParent>::GetParentUnsafe().b;
+	return static_cast<Loop*>(RefScopeParent<LoopParent>::GetParentUnsafe().b);
 }
 
 Machine& Loop::GetMachine() const {
@@ -29,12 +29,12 @@ Machine& Loop::GetMachine() const {
 	while (l && levels++ < 1000) {
 		const LoopParent& par = l->RefScopeParent<LoopParent>::GetParent();
 		if (par.a) {
-			machine = &par.a->GetMachine();
+			machine = &static_cast<LoopStore*>(par.a)->GetMachine();
 			ASSERT(machine);
 			return *machine;
 		}
 		ASSERT(l != par.b);
-		l = par.b;
+		l = static_cast<Loop*>(par.b);
 	}
 	THROW(Exc("Machine ptr not found"));
 }
@@ -294,7 +294,7 @@ bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 		
 		TypeCls expt_type = src_d.cls;
 		ASSERT(expt_type);
-		ExchangePointRef ep = MetaExchangePoint::Add(expt_type);
+		ExchangePointRef ep = MetaDirectoryBase::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 		src->Link(ep, sink, src_cookie, sink_cookie);
 		ep->Init(this);

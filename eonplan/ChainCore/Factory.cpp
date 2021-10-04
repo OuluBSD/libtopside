@@ -356,13 +356,14 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			ms_end_expr.SetId("ATOM_MAKE_ACTION_END");
 		}
 		
-		// using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
+		// using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 		{
 			UsingStatement& using_ref = ns_serial.GetAddUsing(h_name + "Ref");
 			Expression& using_expr = using_ref;
 			using_expr.SetIdTemplate("Ref");
 			using_expr.Add().SetId(h_name);
-			using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
+			//using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
+			using_expr.Add().SetId("AtomParent");
 			
 			if (req_gui)
 				using_ref.RequireMetaDefinition("flagGUI");

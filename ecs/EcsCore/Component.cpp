@@ -17,14 +17,8 @@ ComponentBase::~ComponentBase() {
 	DBG_DESTRUCT
 }
 
-Machine& ComponentBase::GetMachine() {
-	return GetParent()->GetMachine();
-}
-
-void ComponentBase::UninitializeWithExt() {
-	ClearExtension();
-	Uninitialize();
-	ClearSinkSource();
+Engine& ComponentBase::GetEngine() {
+	return GetParent()->GetEngine();
 }
 
 EntityRef ComponentBase::GetEntity() {
@@ -34,42 +28,6 @@ EntityRef ComponentBase::GetEntity() {
 String ComponentBase::ToString() const {
 	return GetDynamicName();
 }
-
-/*InterfaceSourceRef ComponentBase::FindSource(ValDevCls t) {
-	CollectInterfacesVisitor vis;
-	vis.Visit(*this);
-	for (InterfaceSourceRef& r : vis.src_ifaces) {
-		if (r->GetSourceCls() == t)
-			return r;
-	}
-	return InterfaceSourceBaseRef();
-}
-
-InterfaceSinkRef ComponentBase::FindSink(ValDevCls t) {
-	ASSERT(t != AsTypeCls<InterfaceSinkBase>());
-	CollectInterfacesVisitor vis;
-	vis.Visit(*this);
-	for (InterfaceSinkBaseRef& r : vis.sink_ifaces) {
-		if (r->GetSinkCls() == t)
-			return r;
-	}
-	return InterfaceSinkBaseRef();
-}*/
-
-ComponentExtBaseRef ComponentBase::SetExtensionTypeCls(TypeExtCls ext) {
-	TypeCompCls comp = GetType();
-	const auto& cd = Ecs::Factory::CompDataMap().Get(comp);
-	for (const auto& e : cd.ext.GetValues()) {
-		if (e.cls == ext) {
-			ComponentExtBase* b = e.new_fn();
-			if (SetExtension(b))
-				return GetExtension();
-			break;
-		}
-	}
-	return ComponentExtBaseRef();
-}
-
 
 
 

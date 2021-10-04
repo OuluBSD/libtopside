@@ -8,7 +8,8 @@ machine sdl.app: {
 		
 		loop event: {
 			center.customer: true;
-			sdl.event.standalone: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true;
 		};
 		
 	};

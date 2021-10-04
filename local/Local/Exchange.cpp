@@ -285,35 +285,35 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 
 
 
-MetaExchangePoint::MetaExchangePoint() {
+MetaDirectoryBase::MetaDirectoryBase() {
 	DBG_CONSTRUCT
 }
 
-MetaExchangePoint::~MetaExchangePoint() {
+MetaDirectoryBase::~MetaDirectoryBase() {
 	DBG_DESTRUCT
 }
 
-String MetaExchangePoint::ToString() const {
+String MetaDirectoryBase::ToString() const {
 	String s = GetDynamicName();
 	s << " [expts: " << pts.GetCount() << "]";
 	return s;
 }
 
-void MetaExchangePoint::Remove(ExchangePoint* expt) {
+void MetaDirectoryBase::Remove(ExchangePoint* expt) {
 	for (auto iter = pts.begin(); iter; ++iter) {
 		if (*iter == expt) {
 			pts.Remove(iter);
 			return;
 		}
 	}
-	THROW(Exc("MetaExchangePoint::Remove: internal error"));
+	THROW(Exc("MetaDirectoryBase::Remove: internal error"));
 }
 
-void MetaExchangePoint::UnlinkAll() {
+void MetaDirectoryBase::UnlinkAll() {
 	pts.Clear();
 }
 
-ExchangePointRef MetaExchangePoint::Add(TypeCls expt) {
+ExchangePointRef MetaDirectoryBase::Add(TypeCls expt) {
 	const auto& m = ExptDataMap();
 	const auto& d = m.Get(expt);
 	ExchangePoint* o = d.new_fn();

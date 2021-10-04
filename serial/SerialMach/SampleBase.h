@@ -165,8 +165,7 @@ template<> struct DimBase<3> {
 };
 
 
-class OnceBase : RTTIBase {
-	RTTI_DECL0(OnceBase)
+class OnceBase {
 public:
 	
 	static const int def_sample_rate = 1;
@@ -182,8 +181,7 @@ public:
 	
 };
 
-class SparseTimeSeriesBase : RTTIBase {
-	RTTI_DECL0(SparseTimeSeriesBase)
+class SparseTimeSeriesBase {
 public:
 	static const int def_sample_rate = 1;
 	

@@ -3,19 +3,16 @@
 
 NAMESPACE_ECS_BEGIN
 
-#if 0
+
 class Viewable :
-	public Component<Viewable>,
-	public HumanSink
+	public Component<Viewable>
 {
 	vec3 target = zero<vec3>();
 	
 public:
-	RTTI_COMP1(Viewable, HumanSink)
-	VIS_COMP_0_1(Human)
-	IFACE_GENERIC;
+	RTTI_COMP0(Viewable)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	vec3 GetTarget() const {return target;}
 	void SetTraget(const vec3& v) {target = v;}
@@ -25,11 +22,8 @@ public:
 	//ViewableRef GetViewable() override {return ComponentBase::AsRef<Viewable>();}
 	//TransformRef GetTransform();
 	
-	HumanFormat		GetFormat(HumCtx) override {TODO}
-	Human&			GetValue(HumCtx) override {TODO}
-	
 };
-#endif
+
 
 NAMESPACE_ECS_END
 

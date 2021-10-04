@@ -3,7 +3,7 @@ description "ECS and base classes for machin abstraction\377B0,0,128";
 uses
 	Graphics,
 	Agent,
-	TemplatesCore;
+	EcsMach;
 
 file
 	TODO.txt,
@@ -13,10 +13,6 @@ file
 	EntityStore.cpp,
 	Component.h,
 	Component.cpp,
-	EonParser.h,
-	EonParser.cpp,
-	EonPlanner.h,
-	EonPlanner.cpp,
 	Factory.h,
 	Factory.cpp,
 	Entity.h,
@@ -27,12 +23,5 @@ file
 	Pool.cpp,
 	EntityVisitor.h,
 	EntityVisitor.cpp,
-	Customer.h,
-	Trash readonly separator,
-	Customer.cpp,
-	Connector.h,
-	Connector.cpp,
-	ConnManual.h,
-	ConnManual.cpp,
-	ConnAny.h;
+	Trash readonly separator;
 

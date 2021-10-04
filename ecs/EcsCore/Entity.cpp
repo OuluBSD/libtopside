@@ -34,27 +34,26 @@ String Entity::GetTreeString(int indent) {
 }
 
 void Entity::OnChange() {
-	changed = GetMachine().GetTicks();
+	changed = GetEngine().GetTicks();
 }
 
-ComponentBaseRef Entity::GetTypeCls(TypeCompCls comp_type) {
+ComponentBaseRef Entity::GetTypeCls(TypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		TypeCompCls type = comp->GetType();
-		ASSERT(type.IsValid());
+		TypeCls type = comp->GetTypeId();
 		if (type == comp_type)
 			return comp;
 	}
 	return ComponentBaseRef();
 }
 
-ComponentBaseRef Entity::GetAddTypeCls(TypeCompCls cls) {
+ComponentBaseRef Entity::GetAddTypeCls(TypeCls cls) {
 	ComponentBaseRef cb = FindTypeCls(cls);
-	return cb ? cb : AddPtr(GetMachine().Get<ComponentStore>()->CreateComponentTypeCls(cls));
+	return cb ? cb : AddPtr(GetEngine().Get<ComponentStore>()->CreateComponentTypeCls(cls));
 }
 
-ComponentBaseRef Entity::FindTypeCls(TypeCompCls comp_type) {
+ComponentBaseRef Entity::FindTypeCls(TypeCls comp_type) {
 	for (ComponentBaseRef& comp : comps) {
-		TypeCompCls type = comp->GetType();
+		TypeCls type = comp->GetTypeId();
 		if (type == comp_type)
 			return comp;
 	}
@@ -82,21 +81,16 @@ void Entity::UninitializeComponents() {
 	auto& comps = this->comps.GetValues();
 	int dbg_i = 0;
 	for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UninitializeWithExt();
+		it().Uninitialize();
 		dbg_i++;
 	}
 }
 
 void Entity::ClearComponents() {
-	ComponentStoreRef sys = GetMachine().Get<ComponentStore>();
+	ComponentStoreRef sys = GetEngine().Get<ComponentStore>();
 	for (auto iter = comps.rbegin(); iter; --iter)
 		sys->ReturnComponent(comps.Detach(iter));
 	ASSERT(comps.IsEmpty());
-}
-
-void Entity::ClearInterfaces() {
-	for (auto iter = comps.rbegin(); iter; --iter)
-		iter().ClearSinkSource();
 }
 
 EntityRef Entity::Clone() const {
@@ -121,28 +115,18 @@ void Entity::SetEnabled(bool enable) {
 	}
 }
 
-Machine& Entity::GetMachine() {
-	return GetPool().GetMachine();
+Engine& Entity::GetEngine() {
+	return GetPool().GetEngine();
 }
 
-const Machine& Entity::GetMachine() const {
-	return GetPool().GetMachine();
+const Engine& Entity::GetEngine() const {
+	return GetPool().GetEngine();
 }
 
 Pool& Entity::GetPool() const {
 	Pool* p = RefScopeParent<EntityParent>::GetParent().o;
 	ASSERT(p);
 	return *p;
-}
-
-void Entity::VisitSinks(RuntimeVisitor& vis) {
-	for(ComponentBaseRef& c : comps)
-		c->VisitSink(vis);
-}
-
-void Entity::VisitSources(RuntimeVisitor& vis){
-	for(ComponentBaseRef& c : comps)
-		c->VisitSource(vis);
 }
 
 int Entity::GetPoolDepth() const {

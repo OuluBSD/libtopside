@@ -1,7 +1,7 @@
 description "\377B51,138,51";
 
 uses
-	TemplatesLocal;
+	EcsLib;
 
 file
 	EcsLocal.h,
@@ -19,24 +19,7 @@ file
 	WorldLogic.h,
 	WindowSystem.h,
 	WindowSystem.cpp,
-	Customers readonly separator,
-	DummyCustomer.h,
-	DummyCustomer.cpp,
-	VR readonly separator,
-	PbrModelCache.h,
-	PbrModelCache.cpp,
-	PaintStrokeSystem.h,
-	PaintStrokeSystem.cpp,
-	Prefabs.h,
-	ToolboxSystem.h,
-	ToolboxSystem.cpp,
-	ToolSystem.h,
-	ToolSystem.cpp,
-	PaintingSystem.h,
-	PaintingSystem.cpp,
-	ShootingSystem.h,
-	ShootingSystem.cpp,
-	ThrowingSystem.h,
-	ThrowingSystem.cpp,
+	PhysicsSystem.h,
+	PhysicsSystem.cpp,
 	_ readonly separator;
 

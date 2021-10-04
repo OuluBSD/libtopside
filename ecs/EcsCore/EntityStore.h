@@ -19,7 +19,7 @@ class EntityStore : public System<EntityStore> {
 	void InitRoot();
 public:
 	SYS_RTTI(EntityStore)
-	SYS_CTOR_(EntityStore) {InitRoot();}
+	ECS_SYS_CTOR_(EntityStore) {InitRoot();}
 	SYS_DEF_VISIT_(vis || root)
 	
 	PoolRef GetRoot()	{return *root.begin();}
@@ -28,7 +28,6 @@ public:
 	
 	//int64 PostRefresh(int64 last_refresh, ConnectorBase* comp);
 	
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_ENTITYSTORE;}
 	
 protected:
 	void Update(double) override;

@@ -8,6 +8,8 @@ Format ConvertPortaudioFormat(Portaudio::AudioFormat fmt);
 
 
 namespace Portaudio {
+using namespace ::TS::Portaudio;
+
 
 class BufferedAudioDeviceStream :
 	public AudioDeviceStream

@@ -7,7 +7,7 @@ NAMESPACE_ECS_BEGIN
 struct Viewport : public Component<Viewport> {
 	RTTI_COMP0(Viewport)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	vec3 target = zero<vec3>();
 	

@@ -35,7 +35,7 @@ public:
 	};
 	
 	EntityVisitor(PoolVec& pool, int mode=POOL_CURRENT_AND_CHILDREN);
-	EntityVisitor(Machine& m, int mode=POOL_CURRENT_AND_CHILDREN);
+	EntityVisitor(Engine& m, int mode=POOL_CURRENT_AND_CHILDREN);
 	EntityVisitor(Entity& e, int mode=POOL_CURRENT_AND_CHILDREN);
 	
 	void Reset();
@@ -92,7 +92,7 @@ public:
 	RTTI_DECL1(EntityChildrenVisitor, EntityVisitor)
 	
 	EntityChildrenVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CHILDREN_ONLY) {}
-	EntityChildrenVisitor(Machine& m)			: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
+	EntityChildrenVisitor(Engine& m)			: EntityVisitor(m, POOL_CHILDREN_ONLY) {}
 	EntityChildrenVisitor(Entity& e)			: EntityVisitor(e, POOL_CHILDREN_ONLY) {}
 	
 };
@@ -103,7 +103,7 @@ public:
 	RTTI_DECL1(EntityCurrentVisitor, EntityVisitor)
 	
 	EntityCurrentVisitor(PoolVec& pool)	: EntityVisitor(pool, POOL_CURRENT_ONLY) {}
-	EntityCurrentVisitor(Machine& m)			: EntityVisitor(m, POOL_CURRENT_ONLY) {}
+	EntityCurrentVisitor(Engine& m)			: EntityVisitor(m, POOL_CURRENT_ONLY) {}
 	EntityCurrentVisitor(Entity& e)				: EntityVisitor(e, POOL_CURRENT_ONLY) {}
 	
 };
@@ -136,7 +136,7 @@ public:
 	RTTI_DECL1(EntityComponentVisitor, EntityVisitor)
 	
 	EntityComponentVisitor(PoolVec& pool) : EntityVisitor(pool) {Init();}
-	EntityComponentVisitor(Machine& m) : EntityVisitor(m) {Init();}
+	EntityComponentVisitor(Engine& m) : EntityVisitor(m) {Init();}
 	
 	
 	template<typename ComponentT> RefT_Entity<ComponentT> Get() {return cur_comps.template Get<RefT_Entity<ComponentT>>();}

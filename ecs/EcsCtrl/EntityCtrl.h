@@ -28,7 +28,7 @@ class EntityCtrl : public ParentCtrl {
 	
 	EntityRef							sel_ent;
 	ComponentCtrl*						active_ctrl = 0;
-	Machine*							mach = 0;
+	Engine*							mach = 0;
 	
 	void ClearActiveCtrl();
 	void UpdateEntityData();
@@ -39,7 +39,7 @@ public:
 	typedef EntityCtrl CLASSNAME;
 	EntityCtrl();
 	
-	void SetMachine(Machine& m) {mach = &m; ent_browser.SetMachine(m);}
+	void SetEngine(Engine& m) {mach = &m; ent_browser.SetEngine(m);}
 	void Updated() override;
 	void OnEntityCursorChanged();
 	void OnContentCursorChanged();

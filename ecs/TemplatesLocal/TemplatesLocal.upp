@@ -1,8 +1,0 @@
-description "\377B37,114,101";
-
-uses
-	EcsLib;
-
-file
-	TemplatesLocal.h;
-

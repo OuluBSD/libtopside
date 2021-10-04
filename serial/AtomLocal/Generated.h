@@ -187,13 +187,69 @@ public:
 
 };
 
-class SdlEventAtomSA : public Atom<SdlEventAtomSA>, public SDL2EventsBase {
+class SdlEventAtomPipe : public Atom<SdlEventAtomPipe>, public SDL2EventsBase {
 
 public:
-	RTTI_DECL2(SdlEventAtomSA, AtomT, SDL2EventsBase)
-	COPY_PANIC(SdlEventAtomSA)
+	RTTI_DECL2(SdlEventAtomPipe, AtomT, SDL2EventsBase)
+	COPY_PANIC(SdlEventAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.standalone")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class EventStatePipe : public Atom<EventStatePipe>, public EventStateBase {
+
+public:
+	RTTI_DECL2(EventStatePipe, AtomT, EventStateBase)
+	COPY_PANIC(EventStatePipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class SdlEventAtom : public Atom<SdlEventAtom>, public SDL2EventsBase {
+
+public:
+	RTTI_DECL2(SdlEventAtom, AtomT, SDL2EventsBase)
+	COPY_PANIC(SdlEventAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class EventState : public Atom<EventState>, public EventStateBase {
+
+public:
+	RTTI_DECL2(EventState, AtomT, EventStateBase)
+	COPY_PANIC(EventState)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class TestEventSrcPipe : public Atom<TestEventSrcPipe>, public TestEventSrcBase {
+
+public:
+	RTTI_DECL2(TestEventSrcPipe, AtomT, TestEventSrcBase)
+	COPY_PANIC(TestEventSrcPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("event.src.test.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -312,62 +368,70 @@ public:
 };
 #endif
 
-using CenterCustomerRef = Ref<CenterCustomer, RefParent1<Loop>>;
+using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 
-using TestRealtimeSrcRef = Ref<TestRealtimeSrc, RefParent1<Loop>>;
+using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
 
-using TestRealtimeSinkRef = Ref<TestRealtimeSink, RefParent1<Loop>>;
+using TestRealtimeSinkRef = Ref<TestRealtimeSink, AtomParent>;
 
-using AudioHardwareSinkRef = Ref<AudioHardwareSink, RefParent1<Loop>>;
+using AudioHardwareSinkRef = Ref<AudioHardwareSink, AtomParent>;
 
-using AudioDecoderSrcRef = Ref<AudioDecoderSrc, RefParent1<Loop>>;
+using AudioDecoderSrcRef = Ref<AudioDecoderSrc, AtomParent>;
 
-using AudioDbgSrcRef = Ref<AudioDbgSrc, RefParent1<Loop>>;
+using AudioDbgSrcRef = Ref<AudioDbgSrc, AtomParent>;
 
-using AudioSplitterRef = Ref<AudioSplitter, RefParent1<Loop>>;
+using AudioSplitterRef = Ref<AudioSplitter, AtomParent>;
 
-using AudioJoinerRef = Ref<AudioJoiner, RefParent1<Loop>>;
+using AudioJoinerRef = Ref<AudioJoiner, AtomParent>;
 
 #if defined flagGUI
-using VideoDbgSrcRef = Ref<VideoDbgSrc, RefParent1<Loop>>;
+using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
 #endif
 
 #if defined flagGUI
-using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, RefParent1<Loop>>;
+using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, AtomParent>;
 #endif
 
 #if defined flagGUI
-using AccelCustomerRef = Ref<AccelCustomer, RefParent1<Loop>>;
+using AccelCustomerRef = Ref<AccelCustomer, AtomParent>;
 #endif
 
-using SdlContextAtomRef = Ref<SdlContextAtom, RefParent1<Loop>>;
+using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
 
-using SdlEventAtomSARef = Ref<SdlEventAtomSA, RefParent1<Loop>>;
+using SdlEventAtomPipeRef = Ref<SdlEventAtomPipe, AtomParent>;
 
-#if defined flagGUI
-using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, RefParent1<Loop>>;
-#endif
+using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
 
-#if defined flagGUI
-using SdlVideoAtomRef = Ref<SdlVideoAtom, RefParent1<Loop>>;
-#endif
+using SdlEventAtomRef = Ref<SdlEventAtom, AtomParent>;
 
-#if defined flagGUI
-using SdlVideoPipeRef = Ref<SdlVideoPipe, RefParent1<Loop>>;
-#endif
+using EventStateRef = Ref<EventState, AtomParent>;
+
+using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 
 #if defined flagGUI
-using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, RefParent1<Loop>>;
-#endif
-
-using SdlAudioAtomRef = Ref<SdlAudioAtom, RefParent1<Loop>>;
-
-#if defined flagGUI
-using OglShaderSourceRef = Ref<OglShaderSource, RefParent1<Loop>>;
+using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, AtomParent>;
 #endif
 
 #if defined flagGUI
-using OglShaderPipeRef = Ref<OglShaderPipe, RefParent1<Loop>>;
+using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
+#endif
+
+#if defined flagGUI
+using SdlVideoPipeRef = Ref<SdlVideoPipe, AtomParent>;
+#endif
+
+#if defined flagGUI
+using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, AtomParent>;
+#endif
+
+using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
+
+#if defined flagGUI
+using OglShaderSourceRef = Ref<OglShaderSource, AtomParent>;
+#endif
+
+#if defined flagGUI
+using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
 #endif
 
 }

@@ -82,7 +82,7 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 	WhenLeaveValExPtForward();
 }
 
-void DefaultExchangePoint::Init(MetaExchangePoint* mexpt) {
+void DefaultExchangePoint::Init(MetaDirectoryBase* mexpt) {
 	ASSERT(mexpt);
 	
 	#if HAVE_VALSYSTEM

@@ -49,9 +49,9 @@ public:
 	String GetTreeString(int indent=0);
 	void SetName(String s) {name = s;}
 	void OnChange();
-	ComponentBaseRef GetTypeCls(TypeCompCls comp_type);
-	ComponentBaseRef GetAddTypeCls(TypeCompCls cls);
-	ComponentBaseRef FindTypeCls(TypeCompCls comp_type);
+	ComponentBaseRef GetTypeCls(TypeCls comp_type);
+	ComponentBaseRef GetAddTypeCls(TypeCls cls);
+	ComponentBaseRef FindTypeCls(TypeCls comp_type);
 	
 	template<typename T>
 	RefT_Entity<T> Get() {
@@ -121,42 +121,30 @@ public:
 	}
 	
 	
-	EntityRef Clone() const;
-	void InitializeComponents();
-	void InitializeComponent(ComponentBase& comp);
-	void InitializeComponentRef(ComponentBaseRef comp) {return InitializeComponent(*comp);}
-	void UninitializeComponents();
-	void ClearComponents();
-	void ClearInterfaces();
+	EntityRef			Clone() const;
+	void				InitializeComponents();
+	void				InitializeComponent(ComponentBase& comp);
+	void				InitializeComponentRef(ComponentBaseRef comp) {return InitializeComponent(*comp);}
+	void				UninitializeComponents();
+	void				ClearComponents();
 	
-	EntityId Id() const {
-		return m_id;
-	}
+	EntityId			Id() const {return m_id;}
 	
-	void Destroy() override;
-	void SetEnabled(bool) override;
+	void				Destroy() override;
+	void				SetEnabled(bool) override;
 	
-	Machine&			GetMachine();
-	const Machine&		GetMachine() const;
+	Engine&			GetEngine();
+	const Engine&		GetEngine() const;
 	Pool&				GetPool() const;
 	
-	/*#define IFACE_(x, post) RefT_Entity<x##post> Find##x##post();
-	#define IFACE(x) IFACE_(x, Source) IFACE_(x, Sink)
-	IFACE_LIST
-	#undef IFACE
-	#undef IFACE_*/
-	RefT_Entity<ValSink>		FindSink(ValDevCls vd);
-	RefT_Entity<ValSource>		FindSource(ValDevCls vd);
-	
-	
-	ComponentMap& GetComponents() {return comps;}
-	const ComponentMap& GetComponents() const {return comps;}
+	ComponentMap&		GetComponents() {return comps;}
+	const ComponentMap&	GetComponents() const {return comps;}
 	
 	template<typename... ComponentTs>
 	RTuple<RefT_Entity<ComponentTs>...> CreateComponents() {
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
-		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>(ComponentTs::GetDefaultCompCls()) }... };
+		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>(ComponentTs::GetDefaultTypeCls()) }... };
 		//Callback1<Ref<ComponentBase>> cb = THISBACK(InitializeComponentRef);
 		//tuple.ForEach(cb);
 		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
@@ -166,8 +154,6 @@ public:
 	//void CloneComponents(const Entity& e);
 	
 	void Visit(RuntimeVisitor& vis) {vis || comps;}
-	void VisitSinks(RuntimeVisitor& vis);
-	void VisitSources(RuntimeVisitor& vis);
 	
 private:
 	ComponentMap comps;
@@ -176,7 +162,7 @@ private:
 	
 	
 	template<typename T> void Remove0();
-	template<typename T> RefT_Entity<T> Add0(CompCls cls);
+	template<typename T> RefT_Entity<T> Add0(TypeCls cls);
 	
 	ComponentBaseRef AddPtr(ComponentBase* comp);
 	

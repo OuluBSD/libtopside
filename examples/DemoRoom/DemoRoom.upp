@@ -1,9 +1,10 @@
 uses
-	EcsLib;
+	EcsComplete,
+	AtomComplete;
 
-uses(UWP) Pbr;
+uses(WIN32) ports/Pbr;
 
-uses(UWP) DirectXTK;
+uses(WIN32) ports/DirectXTK;
 
 file
 	DemoRoom.h,
@@ -11,7 +12,8 @@ file
 	DemoRoomMain.cpp;
 
 mainconfig
-	"" = "ALTCORE",
-	"" = "ALTCORE UWP",
-	"" = "ALTCORE STEAM";
+	"" = "GUI",
+	"" = "GUI UWP",
+	"" = "GUI STEAM",
+	"" = "GUI VR";
 

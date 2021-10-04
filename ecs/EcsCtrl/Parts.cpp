@@ -9,7 +9,7 @@ PoolTreeCtrl::PoolTreeCtrl() {
 	tree.WhenCursor << THISBACK(OnCursor);
 }
 
-void PoolTreeCtrl::SetMachine(Machine& m) {
+void PoolTreeCtrl::SetEngine(Engine& m) {
 	mach = &m;
 	es = m.TryGet<EntityStore>();
 }
@@ -108,7 +108,7 @@ EntityListCtrl::EntityListCtrl() {
 
 void EntityListCtrl::SetPool(PoolRef pool) {
 	this->pool = pool;
-	es = pool->GetMachine().TryGet<EntityStore>();
+	es = pool->GetEngine().TryGet<EntityStore>();
 }
 
 hash_t EntityListCtrl::GetEntityListHash() const {

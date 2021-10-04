@@ -4,7 +4,7 @@
 NAMESPACE_ECS_BEGIN
 
 
-template<class T> using EcsTypeMap = LinkedMap<EcsTypeCls, T>;
+template<class T> using EcsTypeMap = LinkedMap<TypeCls, T>;
 
 
 
@@ -17,7 +17,7 @@ public:
     using Producer = ProducerT;
     using Refurbisher = RefurbisherT;
 
-    void RegisterProducer(const EcsTypeCls& typeId, Producer producer, Refurbisher refurbisher)
+    void RegisterProducer(const TypeCls& typeId, Producer producer, Refurbisher refurbisher)
     {
         auto p = producers.find(typeId);
         AssertFalse(p != producers.end(), "multiple registrations for the same type is not allowed");
@@ -46,10 +46,10 @@ public:
 	using Main = Entity;
 	using Base = ComponentBase;
 	RTTI_DECL1(ComponentStore, System<ComponentStore>)
-	SYS_CTOR(ComponentStore);
+	ECS_SYS_CTOR(ComponentStore);
 	SYS_DEF_VISIT
 	
-	using Parent = Machine;
+	using Parent = Engine;
 	using Factory = EcsFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsComponent = std::is_base_of<Base, T>;
 	template<typename T> using IsConnector = std::is_base_of<Base, T>;
@@ -58,33 +58,29 @@ public:
 	static inline RecyclerPool<T>& GetPool() {static RecyclerPool<T> p; return p;}
 	
 	
-	ComponentBase* CreateComponentTypeCls(TypeCompCls cls);
+	ComponentBase* CreateComponentTypeCls(TypeCls cls);
 	
 	template<typename T>
-	T* CreateComponent(CompCls cls) {
+	T* CreateComponent(TypeCls cls) {
 		static_assert(IsComponent<T>::value, "T should be a component");
 		
-		TypeCompCls t;
-		t.side  = AsEcsTypeCls<T>(cls.side);
-		auto it = EcsFactory::producers.Find(t.side);
+		auto it = EcsFactory::producers.Find(cls);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
 			std::function<void(Base*)> r([] (Base* b){ GetPool<T>().Return(CastPtr<T>(b));});
-			EcsFactory::producers.Add(t.side) = p;
-			EcsFactory::refurbishers.Add(t.side) = r;
+			EcsFactory::producers.Add(cls) = p;
+			EcsFactory::refurbishers.Add(cls) = r;
 		}
 		
-		return CastPtr<T>(CreateComponent(t));
+		return CastPtr<T>(CreateComponent(cls));
 	}
 	
 	void Clone(Main& dst, const Main& src);
 	void ReturnComponent(Base* c);
 
-	static EcsTypeCls::Type		GetEcsType() {return EcsTypeCls::SYS_COMPONENTSTORE;}
-	
 private:
 	
-	Base* CreateComponent(TypeCompCls cls);
+	Base* CreateComponent(TypeCls cls);
 	
 };
 
@@ -94,12 +90,12 @@ private:
 
 template<typename T>
 void Entity::Remove0() {
-	comps.Remove<T>(GetMachine().Get<ComponentStore>());
+	comps.Remove<T>(GetEngine().Get<ComponentStore>());
 }
 
 template<typename T>
-RefT_Entity<T> Entity::Add0(CompCls cls) {
-	auto comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>(cls);
+RefT_Entity<T> Entity::Add0(TypeCls cls) {
+	auto comp = GetEngine().Get<ComponentStore>()->CreateComponent<T>(cls);
 	ASSERT(comp);
 	comp->SetParent(this);
 	comps.Add(comp);

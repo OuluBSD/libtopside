@@ -3,7 +3,8 @@ description "\377B51,138,51";
 uses
 	SerialLib,
 	SerialPlanner,
-	AtomSDL2;
+	AtomSDL2,
+	AudioCore;
 
 library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
 
@@ -19,7 +20,6 @@ file
 	Util.cpp,
 	Audio.h,
 	Audio.cpp,
-	Record.h,
 	Video.h,
 	Video.cpp,
 	Media.h,
@@ -28,12 +28,18 @@ file
 	Ffmpeg.cpp,
 	FfmpegFileIn.h,
 	FfmpegFileInput.cpp,
-	PortaudioCore.h,
-	PortaudioCore.cpp,
-	PortaudioStream.cpp,
-	PortaudioSystem.cpp,
+	OpenCV.h,
+	OpenCV.cpp,
+	Capture_OpenCV.h,
+	Capture_OpenCV.cpp,
+	Capture_V4L2.h,
+	Capture_V4L2.cpp,
 	Portaudio.h,
 	Portaudio.cpp,
+	Fluidsynth.h,
+	Fluidsynth.cpp,
+	Midi.h,
+	Midi.cpp,
 	Generated.h,
 	Generated.cpp,
 	Trash readonly separator;

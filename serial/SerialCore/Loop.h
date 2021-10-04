@@ -5,8 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class Loop :
-	public MetaExchangePoint,
-	RTTIBase
+	public MetaDirectoryBase
 {
 	mutable Machine*	machine = 0;
 	BitField<dword>		freeze_bits;
@@ -26,7 +25,7 @@ public:
 	
 	static LoopId GetNextId();
 	
-	RTTI_DECL_R1(Loop, MetaExchangePoint)
+	RTTI_DECL1(Loop, MetaDirectoryBase)
 	Loop();
 	~Loop();
 	
@@ -113,7 +112,7 @@ public:
 	
 	LoopRef AddLoop(String name="") {
 		Loop& p = loops.Add();
-		p.SetParent(LoopParent(0, this));
+		p.SetParent(HierExBaseParent(0, this));
 		p.SetName(name);
 		p.SetId(GetNextId());
 		return p;

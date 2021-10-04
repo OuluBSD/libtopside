@@ -49,7 +49,7 @@ struct SpatialInteractionSourceEventArgs {
 class ISpatialInteractionListener {
 	
 public:
-	using Parent = Machine;
+	using Parent = Engine;
 	
     virtual void OnSourceDetected(const SpatialInteractionSourceEventArgs& args) {};
     virtual void OnSourceLost(const SpatialInteractionSourceEventArgs& args) {};
@@ -65,7 +65,7 @@ class SpatialInteractionSystem : public System<SpatialInteractionSystem>
 	LinkedList<ISpatialInteractionListenerRef> listeners;
 	
 public:
-	using Parent = Machine;
+	using Parent = Engine;
 	
 	
     void AddListener(ISpatialInteractionListenerRef listener) {

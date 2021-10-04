@@ -72,5 +72,6 @@ file
 	Url.h,
 	Url.cpp,
 	Debugging.h,
-	Debugging.cpp;
+	Debugging.cpp,
+	VR.h;
 

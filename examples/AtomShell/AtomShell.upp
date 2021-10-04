@@ -1,6 +1,5 @@
 uses
-	AtomLocal,
-	Complete;
+	AtomComplete;
 
 file
 	AtomShell.cpp;

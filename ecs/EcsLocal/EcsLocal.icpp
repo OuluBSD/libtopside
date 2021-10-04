@@ -13,31 +13,6 @@ NAMESPACE_UPP
 INITBLOCK {
 	using namespace Ecs;
 	
-	REG_EXT(AudioPlayerCustomer,		CUSTOMER,	CENTER,RECEIPT,		CENTER,ORDER,	CENTER,ORDER);
-	
-	/*Ecs::Factory::RegisterComponent<Easing>();
-	Ecs::Factory::RegisterComponent<Viewable>();
-	Ecs::Factory::RegisterComponent<Transform>();
-	Ecs::Factory::RegisterComponent<Transform2D>();
-	Ecs::Factory::RegisterComponent<RigidBody>();
-	Ecs::Factory::RegisterComponent<Renderable>();
-	Ecs::Factory::RegisterComponent<StaticVolumeComponent>();
-	//Ecs::Factory::RegisterComponent<PbrRenderable>();
-	Ecs::Factory::RegisterComponent<TextRenderable>();
-	Ecs::Factory::RegisterComponent<Viewport>();
-	//Ecs::Factory::RegisterComponent<PrimitiveShape>();
-	Ecs::Factory::RegisterComponent<ModelComponent>();
-	
-	#ifdef flagVR
-	
-	Ecs::Factory::RegisterComponent<ToolSelectorKey>();
-	Ecs::Factory::RegisterComponent<ShootingComponent>();
-	Ecs::Factory::RegisterComponent<ThrowingComponent>();
-	Ecs::Factory::RegisterComponent<PaintStrokeComponent>();
-	Ecs::Factory::RegisterComponent<PaintComponent>();
-	Ecs::Factory::RegisterComponent<ToolComponent>();
-	
-	#endif*/
 	
 }
 

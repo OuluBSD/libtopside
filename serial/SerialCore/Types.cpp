@@ -23,6 +23,9 @@ Format GetDefaultFormat(ValDevCls type) {
 	else if (type.val == ValCls::VIDEO) {
 		fmt.SetVideo(type.dev, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	}
+	else if (type.val == ValCls::EVENT) {
+		fmt.SetEvent(type.dev);
+	}
 	else {
 		TODO
 	}

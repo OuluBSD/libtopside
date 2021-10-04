@@ -1,6 +1,10 @@
 #ifndef _System_CommonComponents_h_
 #define _System_CommonComponents_h_
 
+NAMESPACE_PBR_BEGIN
+    struct Model;
+NAMESPACE_PBR_END
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -9,7 +13,7 @@ class Transform : public Component<Transform> {
 public:
 	RTTI_COMP0(Transform)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	vec3 position = zero<vec3>();
 	vec3 size = one<vec3>();
@@ -47,7 +51,7 @@ class Transform2D : public Component<Transform2D> {
 public:
 	RTTI_COMP0(Transform2D)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	vec2 position = zero<vec2>();
 	vec2 size = one<vec2>();
@@ -65,7 +69,7 @@ class RigidBody : public Component<RigidBody> {
 public:
 	RTTI_COMP0(RigidBody)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	vec3 velocity = zero<vec3>();
 	vec3 acceleration = zero<vec3>();
@@ -91,7 +95,7 @@ class Renderable : public Component<Renderable> {
 public:
 	RTTI_COMP0(Renderable)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
@@ -150,12 +154,10 @@ protected:
 	VolumeStream stream;
 	
 public:
-	VIS_COMP_1_0(Static)
 	RTTI_COMP1(StaticVolumeComponent, StaticSource)
 	COPY_PANIC(StaticVolumeComponent);
-	IFACE_GENERIC;
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
 	StaticVolumeComponent() : stream(this) {}
 	
@@ -182,36 +184,10 @@ public:
 
 
 
-namespace Pbr {
-    struct Model;
-}
 
 
 
 
-
-/*class PbrRenderable :
-	public Component<PbrRenderable>
-{
-	
-	
-public:
-	RTTI_COMP0(PbrRenderable)
-	COPY_PANIC(PbrRenderable)
-	COMP_DEF_VISIT
-	
-    void ResetModel(String name, Optional<mat4> offset = null_opt) {
-        model_name = name;
-        offset = offset;
-    }
-
-    String				model_name;
-    One<Pbr::Model>		model;
-    Optional<vec4>		color;
-    Optional<mat4>		offset;
-    Optional<double>	alpha_multiplier;
-    
-};*/
 
 
 class TextRenderable :
@@ -222,7 +198,7 @@ public:
 	RTTI_COMP0(TextRenderable)
 	COPY_PANIC(TextRenderable);
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
     String				text = "";
     double				font_size = 60.0;

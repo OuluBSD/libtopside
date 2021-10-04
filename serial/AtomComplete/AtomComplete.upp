@@ -1,0 +1,14 @@
+description "\377B0,131,159";
+
+uses
+	AtomDebug,
+	AtomLocal,
+	AtomMusic,
+	AtomEssential,
+	Shadertoy;
+
+file
+	AtomComplete.h,
+	Prefabs.h,
+	Prefabs.cpp;
+

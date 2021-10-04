@@ -1,7 +1,7 @@
 #ifndef _EcsLib_EcsLib_h_
 #define _EcsLib_EcsLib_h_
 
-#include <TemplatesLib/TemplatesLib.h>
+#include <EcsCore/EcsCore.h>
 
 #if defined UPP_VERSION || (defined flagSTDEXC)
 	#include <Esc/Esc.h>
@@ -13,7 +13,7 @@
 	#elif defined flagSTEAM
 		#include <SteamLib/SteamLib.h>
 	#else
-		#include <OpenLib/OpenLib.h>
+		#include <FreeLib/FreeLib.h>
 	#endif
 #endif
 
@@ -26,11 +26,7 @@
 #define BIG_NUMBER 100000000
 
 #include "Defs.h"
-#include "Component.h"
-#include "Component.inl"
 #include "RegistrySystem.h"
-#include "Ext.h"
-#include "Eon.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
@@ -38,12 +34,8 @@
 
 #endif
 
-#if HAVE_SDL2
-	#include <EcsSDL2/EcsSDL2.h>
-#endif
-
-#if defined flagGUI && defined flagCTRL
+/*#if defined flagGUI && defined flagCTRL
 	#include <SDL2GUI3D/System.h>
-#endif
+#endif*/
 
 

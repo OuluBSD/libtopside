@@ -74,10 +74,8 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.UI.Core.h>
-  
-#include <Pbr/Pbr.h>
 
-#include <ports/DirectXTK/DirectXTK.h>
+
 
 
 using namespace DirectX;

@@ -4,9 +4,9 @@
 NAMESPACE_ECS_BEGIN
 
 
-bool SingleMachine::Open(bool gui) {
+bool SingleEngine::Open(bool gui) {
 	const AppFlags& flags = GetAppFlags();
-	Machine& mach = GetActiveMachine();
+	Engine& mach = GetActiveEngine();
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	EntityStoreRef ents = mach.Add<EntityStore>();
@@ -21,8 +21,8 @@ bool SingleMachine::Open(bool gui) {
 	return true;
 }
 
-void SingleMachine::Close() {
-	Machine& mach = GetActiveMachine();
+void SingleEngine::Close() {
+	Engine& mach = GetActiveEngine();
 	mach.Stop();
 }
 

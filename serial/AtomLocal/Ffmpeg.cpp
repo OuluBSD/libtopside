@@ -63,12 +63,12 @@ void FfmpegAtomBase::Uninitialize() {
 
 void FfmpegAtomBase::OnError() {
 	if (stops_machine)
-		GetParent()->  GetMachine().SetNotRunning();
+		GetParent().GetMachine().SetNotRunning();
 }
 
 void FfmpegAtomBase::OnStop() {
 	if (stops_machine)
-		GetParent()->GetMachine().SetNotRunning();
+		GetParent().GetMachine().SetNotRunning();
 	WhenStopped();
 }
 

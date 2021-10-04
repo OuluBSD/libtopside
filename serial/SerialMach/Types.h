@@ -53,24 +53,28 @@ class Machine;
 struct AtomTypeCls;
 
 
+using SerialSystemParent	= MetaSystemParent;
+using LoopParent			= HierExBaseParent;
+using AtomParent			= ExchangeBaseParent;
+
 
 template <class T>
-using RefT_Loop				= Ref<T,					RefParent1<Loop>>;
+using RefT_Loop				= Ref<T,					AtomParent>;
 
 template <class T>
-using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
+using RefT_Machine			= Ref<T,					SerialSystemParent>;
 
 template<class T, class Parent = RefParent1<typename T::Parent>>
 using RefAtomTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 
 
-using LoopParent			= RefParent2<LoopStore,		Loop>;
-using AtomParent			= RefParent1<Loop>;
+//using LoopParent			= RefParent2<LoopStore, Loop>;
+//using AtomParent			= AtomParent;
 using LoopRef				= Ref<Loop,					LoopParent>;
-using LoopStoreRef			= Ref<LoopStore,			RefParent1<Machine>>;
-using AtomBaseRef			= Ref<AtomBase,				RefParent1<Loop>>;
-using AtomStoreRef			= Ref<AtomStore,			RefParent1<Machine>>;
-using AtomSystemRef			= Ref<AtomSystem,			RefParent1<Machine>>;
+using AtomBaseRef			= Ref<AtomBase,				AtomParent>;
+using LoopStoreRef			= Ref<LoopStore,			SerialSystemParent>;
+using AtomStoreRef			= Ref<AtomStore,			SerialSystemParent>;
+using AtomSystemRef			= Ref<AtomSystem,			SerialSystemParent>;
 
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
@@ -107,6 +111,7 @@ typedef enum : byte {
 	ATOM_ROLE(DRIVER) \
 	ATOM_ROLE(CUSTOMER) \
 	ATOM_ROLE(PIPE) \
+	ATOM_ROLE(DRIVER_PIPE) \
 
 
 typedef enum : int8 {

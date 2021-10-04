@@ -380,7 +380,7 @@ protected:
 	
 };
 
-using ScriptLoaderRef = Ref<ScriptLoader, RefParent1<Machine>>;
+using ScriptLoaderRef = Ref<ScriptLoader, SerialSystemParent>;
 
 
 

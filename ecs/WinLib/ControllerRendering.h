@@ -1,10 +1,10 @@
 #pragma once
 
 
-namespace Pbr {
+NAMESPACE_PBR_BEGIN
 struct Model;
 struct Resources;
-}
+NAMESPACE_PBR_END
 
 // Helper functionality related to controller rendering.
 namespace ControllerRendering {

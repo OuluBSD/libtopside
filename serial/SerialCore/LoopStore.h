@@ -24,7 +24,7 @@ public:
 		if (root.IsEmpty())
 			return LoopRef();
 		Loop& l = root.GetFirst();
-		return l.AsRefT();
+		return l;
 	}
 	LoopVec& GetRootVec()	{return root;}
 	

@@ -1,0 +1,10 @@
+machine sdl.app: {
+	chain program: {
+		loop event: {
+			center.customer: true;
+			event.src.test.pipe: true;
+			state.event.pipe: true;
+		};
+	};
+};
+

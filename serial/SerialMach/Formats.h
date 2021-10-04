@@ -19,7 +19,6 @@ struct AudioFormat :
 	void Set(SoundSample::Type t, int channels, int freq, int sample_rate);
 	
 	int GetFrameSize() const;
-	int GetMinBufSamples() const {return TimeSeriesBase::GetSampleRate() * 2;}
 	String ToString() const;
 	bool IsValid() const;
 	bool IsSame(const AudioFormat& fmt) const;
@@ -41,7 +40,6 @@ struct VideoFormat :
 	void Set(LightSampleFD::Type t, int w, int , int freq, int sample_rate);
 	
 	int GetFrameSize() const;
-	int GetMinBufSamples() const {return 2;}
 	String ToString() const;
 	bool IsValid() const;
 	bool IsSame(const VideoFormat& fmt) const;
@@ -62,7 +60,6 @@ struct MidiFormat :
 	
 	void SetDefault() {SampleBase<MidiSample>::SetDefault(); DimBase<1>::SetDefault();}
 	int GetFrameSize() const;
-	int GetMinBufSamples() const {return 2;}
 	String ToString() const;
 	bool IsValid() const;
 	bool IsSame(const MidiFormat& fmt) const;
@@ -71,18 +68,31 @@ struct MidiFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
-struct DataFormat {
+struct DataFormat
+{
 	
 	
 	
 	byte pad[STD_FMT_SIZE - 0];
 };
 
-struct EventFormat {
+struct EventFormat :
+	public SampleBase<EventSample>,
+	public DimBase<1>,
+	public SparseTimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<EventSample>) +
+		sizeof(DimBase<1>) +
+		sizeof(SparseTimeSeriesBase);
+	
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const EventFormat& fmt) const;
+	int		GetFrameSize() const;
 	
 	
-	
-	byte pad[STD_FMT_SIZE - 0];
+	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
 #define TEST_FORMAT(x) \
@@ -112,18 +122,18 @@ public:
 	Format() {memset(data, 0, sizeof(data));}
 	Format(const Format& f) : vd(f.vd) {memcpy(data, f.data, sizeof(data));}
 	
-	String ToString() const;
-	DevCls GetDevSpec() const {return vd.dev;}
-	int GetSampleSize() const;
-	int GetArea() const;
-	int GetFrameSize() const;
-	double GetFrameSeconds() const;
-	int GetMinBufSamples() const;
+	String	ToString() const;
+	DevCls	GetDevSpec() const {return vd.dev;}
+	int		GetSampleSize() const;
+	int		GetArea() const;
+	int		GetFrameSize() const;
+	double	GetFrameSeconds() const;
 	
 	bool IsOrder() const {return vd.val == ValCls::ORDER;}
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
 	bool IsMidi()  const {return vd.val == ValCls::MIDI;}
+	bool IsEvent() const {return vd.val == ValCls::EVENT;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
@@ -139,6 +149,7 @@ public:
 	void SetReceipt(DevCls dev);
 	void SetMidi(DevCls dev);
 	void SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
+	void SetEvent(DevCls dev);
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
@@ -146,6 +157,8 @@ public:
 	operator       VideoFormat&()       {ASSERT(IsVideo()); return vid;}
 	operator const MidiFormat&()  const {ASSERT(IsMidi());  return mid;}
 	operator       MidiFormat&()        {ASSERT(IsMidi());  return mid;}
+	operator const EventFormat&() const {ASSERT(IsEvent()); return ev;}
+	operator       EventFormat&()       {ASSERT(IsEvent()); return ev;}
 	
 	
 };

@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 
 class RegistrySystem;
 
-using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
+using RegistrySystemRef		= Ref<RegistrySystem,		SerialSystemParent>;
 
 NAMESPACE_SERIAL_END
 

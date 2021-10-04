@@ -17,7 +17,7 @@ AtomBase::~AtomBase() {
 }
 
 Machine& AtomBase::GetMachine() {
-	return GetParent()->GetMachine();
+	return GetParent().GetMachine();
 }
 
 void AtomBase::UninitializeDeep() {
@@ -34,7 +34,7 @@ void AtomBase::PostContinueForward() {
 }
 
 LoopRef AtomBase::GetLoop() {
-	return GetParent()->AsRefT();
+	return GetParent().AsRefT();
 }
 
 String AtomBase::ToString() const {

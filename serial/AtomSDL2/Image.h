@@ -36,7 +36,7 @@ public:
 	
 };
 
-using SDL2ImageBaseRef			= Ref<SDL2ImageBase,			RefParent1<Loop>>;
+using SDL2ImageBaseRef			= Ref<SDL2ImageBase,			AtomParent>;
 
 
 NAMESPACE_SERIAL_END

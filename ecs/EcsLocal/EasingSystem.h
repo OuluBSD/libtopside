@@ -11,7 +11,7 @@ class Easing :
 public:
 	RTTI_COMP0(Easing)
 	COMP_DEF_VISIT
-	COMP_DEF_MAKE_ACTION
+	
 	
     vec3 target_position = { 0,0,0 };
     quat target_orientation = identity<quat>();
@@ -33,7 +33,7 @@ class EasingSystem : public System<EasingSystem>
 	
 public:
 	SYS_RTTI(EasingSystem)
-    SYS_CTOR(EasingSystem)
+    ECS_SYS_CTOR(EasingSystem)
 	SYS_DEF_VISIT
 	
 protected:

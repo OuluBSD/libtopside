@@ -11,15 +11,15 @@ bool SDL2EventsBase::Initialize(const Script::WorldState& ws) {
 
 void SDL2EventsBase::Uninitialize() {
 	obj.Clear();
-	
-}
-
-void SDL2EventsBase::Forward(FwdScope& fwd) {
-	TODO
 }
 
 void SDL2EventsBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+	RTLOG("SDL2EventsBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << p->ToString());
+	
+	ASSERT(ev_sendable);
+	
 	TODO
+	
 }
 
 void SDL2EventsBase::Update(double dt) {
@@ -27,12 +27,18 @@ void SDL2EventsBase::Update(double dt) {
 }
 
 bool SDL2EventsBase::LoadPacket(int ch_i, const Packet& p) {
-	TODO
-	return ch_i == 0;
+	return true;
 }
 
 bool SDL2EventsBase::IsReady(ValDevCls vd) {
-	TODO
+	if (obj->Poll(ev)) {
+		ev_sendable = true;
+		return true;
+	}
+	else {
+		ev_sendable = false;
+	}
+	return false;
 }
 
 CtrlEvent& SDL2EventsBase::AddTmpEvent() {

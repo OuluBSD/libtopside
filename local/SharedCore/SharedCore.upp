@@ -8,6 +8,7 @@ file
 	Object.h,
 	Object.cpp,
 	CtrlEvent.h,
+	CtrlEvent.cpp,
 	Container.h,
 	Container.cpp,
 	TokenParser.h,

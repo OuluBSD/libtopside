@@ -169,12 +169,12 @@ public:
 	typedef OdeSystem CLASSNAME;
 	
 	COMP_DEF_VISIT
-	using Parent = Machine;
+	using Parent = Engine;
 	
 	static vec3 EarthGravity;
 	
 	SYS_RTTI(OdeSystem)
-	SYS_CTOR_(OdeSystem) {
+	ECS_SYS_CTOR_(OdeSystem) {
 		// create world
 		dInitODE2(0);
 		world = dWorldCreate();
@@ -249,7 +249,7 @@ using OdeSystemRef = Ref<OdeSystem>;
 
 
 
-void AddMachineOdeSystem();
+void AddEngineOdeSystem();
 
 
 

@@ -48,7 +48,6 @@ public:
 	SYS_DEF_VISIT
 	
 	
-	using Parent = Machine;
 	using Factory = AtomFactory<Base*, std::function<Base*()>, std::function<void(Base*)> >;
 	template<typename T> using IsAtom = std::is_base_of<Base, T>;
 	template<typename T> using IsConnector = std::is_base_of<Base, T>;

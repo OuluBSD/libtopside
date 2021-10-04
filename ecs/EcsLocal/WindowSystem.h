@@ -22,11 +22,11 @@ class WindowSystem :
 	
 public:
 	SYS_RTTI(WindowSystem)
-	SYS_CTOR(WindowSystem);
+	ECS_SYS_CTOR(WindowSystem);
 	
 	static constexpr const char* POOL_NAME = "windows";
 	
-	PoolRef GetPool() const {return GetMachine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
+	PoolRef GetPool() const {return GetEngine().Get<EntityStore>()->GetRoot()->GetAddPool(POOL_NAME);}
 	
 	
 	void Invalidate();

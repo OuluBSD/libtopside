@@ -19,7 +19,7 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
     if (!holospace) {
         return;
     }
-
+	
     
 	#ifdef flagUWP
     LoadDefaultResources(
@@ -31,7 +31,7 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 		"ms-appx:///PBR/brdf_lut.png");
 	#endif
 	
-
+	
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
     machine.Create();

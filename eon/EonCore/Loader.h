@@ -337,7 +337,7 @@ protected:
 	
 };
 
-using LoaderRef = Ref<Loader, RefParent1<Machine>>;
+using LoaderRef = Ref<Loader, SerialSystemBase>;
 
 
 

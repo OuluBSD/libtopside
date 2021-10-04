@@ -33,7 +33,7 @@ public:
 	
 };
 
-using SDL2ContextBaseRef		= Ref<SDL2ContextBase,			RefParent1<Loop>>;
+using SDL2ContextBaseRef		= Ref<SDL2ContextBase,			AtomParent>;
 
 
 NAMESPACE_SERIAL_END

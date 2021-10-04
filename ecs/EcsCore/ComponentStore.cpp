@@ -10,8 +10,8 @@ void ComponentStore::Clone(Main& dst, const Main& src) {
 	
 	ComponentMap::Iterator iter = const_cast<ComponentMap&>(src_comps).begin();
 	for (; iter; ++iter) {
-		TypeCompCls comp_type = iter.key();
-		TypeCompCls cls; TODO
+		TypeCls comp_type = iter.key();
+		TypeCls cls; TODO
 		
 		Base* new_component = CreateComponent(cls);
 		dst.InitializeComponent(*new_component);
@@ -22,30 +22,29 @@ void ComponentStore::Clone(Main& dst, const Main& src) {
 
 void ComponentStore::ReturnComponent(Base* c) {
 	ASSERT(c);
-	TypeCompCls type = c->GetType();
+	TypeCls type = c->GetTypeId();
 	
-	auto iter = EcsFactory::refurbishers.Find(type.side);
+	auto iter = EcsFactory::refurbishers.Find(type);
 	if (iter)
 		iter.Get()(c);
 }
 
-ComponentBase* ComponentStore::CreateComponent(TypeCompCls cls) {
-	auto iter = EcsFactory::producers.Find(cls.side);
+ComponentBase* ComponentStore::CreateComponent(TypeCls cls) {
+	auto iter = EcsFactory::producers.Find(cls);
 	ASSERT_(iter, "Invalid to create non-existant component");
 	
 	ComponentBase* obj = iter.value()();
-	obj->SetType(cls);
 	return obj;
 }
 
-ComponentBase* ComponentStore::CreateComponentTypeCls(TypeCompCls cls) {
-	auto it = Factory::producers.Find(cls.side);
+ComponentBase* ComponentStore::CreateComponentTypeCls(TypeCls cls) {
+	auto it = Factory::producers.Find(cls);
 	if (!it) {
 		auto new_fn = Ecs::Factory::CompDataMap().Get(cls).new_fn;
 		std::function<ComponentBase*()> p([new_fn] { return new_fn();});
 		std::function<void(ComponentBase*)> r([] (Base* b){ delete b;});
-		Factory::producers.Add(cls.side) = p;
-		Factory::refurbishers.Add(cls.side) = r;
+		Factory::producers.Add(cls) = p;
+		Factory::refurbishers.Add(cls) = r;
 	}
 	
 	return CreateComponent(cls);

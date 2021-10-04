@@ -149,6 +149,14 @@ void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {
 	#endif
 }
 
-namespace Portaudio {bool IsPortaudioUninitialized() {return Serial::__is_portaudio_uninit;}}
 
 NAMESPACE_SERIAL_END
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+
+namespace Portaudio {bool IsPortaudioUninitialized() {return Serial::__is_portaudio_uninit;}}
+
+
+NAMESPACE_TOPSIDE_END

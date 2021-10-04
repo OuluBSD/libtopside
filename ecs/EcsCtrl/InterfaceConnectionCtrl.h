@@ -61,7 +61,7 @@ public:
 	InterfaceConnectionCtrl();
 	
 	void Updated() override;
-	void SetMachine(Machine& m) {ent_browser.SetMachine(m);}
+	void SetEngine(Engine& m) {ent_browser.SetEngine(m);}
 	
 };
 

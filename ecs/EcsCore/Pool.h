@@ -9,10 +9,10 @@ class Pool;
 
 
 class Pool :
-	public MetaExchangePoint,
+	public RefScopeEnabler<Pool, EntityStore, PoolParent>,
 	RTTIBase
 {
-	Machine*			machine = 0;
+	Engine*			machine = 0;
 	BitField<dword>		freeze_bits;
 	String				name;
 	PoolId				id;
@@ -25,9 +25,11 @@ protected:
 public:
 	typedef Pool CLASSNAME;
 	
+	using RScope		= RefScopeEnabler<Pool, EntityStore, PoolParent>;
+	
 	static PoolId GetNextId();
 	
-	RTTI_DECL_R1(Pool, MetaExchangePoint)
+	RTTI_DECL_R1(Pool, RScope)
 	Pool();
 	~Pool();
 	
@@ -48,8 +50,6 @@ public:
 	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
-	void				UnlinkExchangePoints();
-	void				ClearInterfacesDeep();
 	void				UnrefDeep();
 	void				UninitializeComponentsDeep();
 	void				ClearComponentsDeep();
@@ -59,7 +59,7 @@ public:
 	String				GetTreeString(int indent=0);
 	
 	Pool*				GetParent() const;
-	Machine&			GetMachine();
+	Engine&				GetEngine();
 	String				GetName() const {return name;}
 	bool				HasEntities() const {return !objects.IsEmpty();}
 	bool				HasPools() const {return !pools.IsEmpty();}
@@ -68,8 +68,6 @@ public:
 	EntityRef			CreateEmpty();
 	EntityRef			GetAddEmpty(String name);
 	EntityRef			Clone(const Entity& e);
-	
-	bool Link(ComponentBaseRef src_comp, ComponentBaseRef dst_comp, ValDevCls iface);
 	
 	template<typename PrefabT>
 	EntityRef Create() {
@@ -189,12 +187,12 @@ public:
 	
 	/*template<typename T>
 	void Remove() {
-		comps.Remove<T>(GetMachine().Get<ConnectorStore>());
+		comps.Remove<T>(GetEngine().Get<ConnectorStore>());
 	}
 	
 	template<typename T>
 	RefT_Pool<T> Add() {
-		T* comp = GetMachine().Get<ConnectorStore>()->CreateComponent<T>();
+		T* comp = GetEngine().Get<ConnectorStore>()->CreateComponent<T>();
 		ASSERT(comp);
 		RefScopeParent<RefParent1<Pool>>* rp = comp;
 		rp->SetParent(this);

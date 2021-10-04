@@ -1,5 +1,9 @@
 description "\377B255,0,255";
 
+uses
+	Structural,
+	Multimedia;
+
 file
 	Shadertoy.h,
 	Shadertoy.icpp,

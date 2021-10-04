@@ -6,10 +6,9 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-class SystemBase : public RefScopeEnabler<SystemBase,Machine> {
+class SystemBase : public MetaSystemBase {
 public:
-	RTTI_DECL_R0(SystemBase)
-	using RScope = RefScopeEnabler<SystemBase,Machine>;
+	RTTI_DECL1(SystemBase, MetaSystemBase)
 	
     SystemBase();
     virtual ~SystemBase();
@@ -17,7 +16,7 @@ public:
     virtual TypeCls GetType() const = 0;
 	virtual void Visit(RuntimeVisitor& vis) = 0;
 	
-	Machine& GetMachine() const {return RScope::GetParent();}
+	Machine& GetMachine() const {return *GetParent().AsStatic<Machine>();}
 protected:
     friend Machine;
 
@@ -46,27 +45,28 @@ public:
     
 };
 
+
 #define SYS_RTTI(x)  RTTI_DECL1(x, System<x>)
 #define SYS_CTOR(x) \
 	typedef x CLASSNAME; \
-	x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m) {}
+	x(Machine& m) : SP(m) {}
 #define SYS_CTOR_(x) \
 	typedef x CLASSNAME; \
-	x(Machine& m) : RefScopeParent<RefParent1<Machine>>(m)
+	x(Machine& m) : SP(m)
 #define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_H void Visit(RuntimeVisitor& vis) override;
 #define SYS_DEF_VISIT_I(cls, x) void cls::Visit(RuntimeVisitor& vis) {x; vis.VisitThis<System<CLASSNAME>>(this);}
 
 class Machine :
-	public RefScopeEnabler<Machine,RefRoot>
+	public MetaMachineBase
 {
 	int64 ticks = 0;
 	Index<String> last_warnings;
 	double warning_age;
 	
 public:
-	RTTI_DECL_R0(Machine)
+	RTTI_DECL1(Machine, MetaMachineBase)
 	int64 GetTicks() const {return ticks;}
 	
 	
@@ -93,7 +93,7 @@ public:
 		
 		SystemT* syst = new SystemT(*this, args...);
         Add(AsTypeCls<SystemT>(), syst);
-        return syst->template AsRef<SystemT>();
+        return syst->AsRefT();
     }
     
 

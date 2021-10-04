@@ -8,7 +8,7 @@ EntityVisitor::EntityVisitor(PoolVec& pool, int mode) : base(pool), mode(mode) {
 	Reset();
 }
 
-EntityVisitor::EntityVisitor(Machine& m, int mode) :
+EntityVisitor::EntityVisitor(Engine& m, int mode) :
 	base(m.Get<EntityStore>()->GetRootVec()),
 	mode(mode)
 {

@@ -4,7 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN;
 namespace Portaudio {
 
-
 AudioDevice::AudioDevice(int n): index(n){
 	if (n == paNoDevice) {
 		index = 0;
@@ -24,7 +23,11 @@ AudioDevice::AudioDevice(int n): index(n){
 }
 
 String AudioDevice::ToString() const {
-	return Format("%s (index= %d, in/out= %d/%d, API= %d", name, index, input_channels, output_channels, api);
+	String s;
+	s	<< name << " (index=" << index
+		<< ", in/out=" << input_channels << "/" << output_channels
+		<< ", API=" << api << ")";
+	return s;
 }
 
 AudioAPI::AudioAPI(int n): index(n) {

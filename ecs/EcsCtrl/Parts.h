@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class PoolTreeCtrl : public ParentCtrl {
-	Machine*		mach = 0;
+	Engine*		mach = 0;
 	TreeCtrl		tree;
 	EntityStoreRef	es;
 	PoolRef			selected;
@@ -20,7 +20,7 @@ public:
 	typedef PoolTreeCtrl CLASSNAME;
 	PoolTreeCtrl();
 	
-	void SetMachine(Machine& m);
+	void SetEngine(Engine& m);
 	void Updated() override;
 	void Data();
 	
@@ -68,7 +68,7 @@ public:
 	typedef EntityBrowserCtrl CLASSNAME;
 	EntityBrowserCtrl();
 	
-	void SetMachine(Machine& m) {pool_tree.SetMachine(m);}
+	void SetEngine(Engine& m) {pool_tree.SetEngine(m);}
 	//void SetPool(PoolRef pool) {ent_list.SetPool(pool);}
 	void Updated() override;
 	void Data();

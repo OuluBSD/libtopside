@@ -19,12 +19,12 @@ class AtomBase :
 	public Destroyable,
 	public Enableable,
 	virtual public PacketForwarder,
-	public RefScopeEnabler<AtomBase,Loop>
+	public RefScopeEnabler<AtomBase, MetaDirectoryBase>
 {
 	
 	
 public:
-	using AtomBaseRef = Ref<AtomBase, RefParent1<Loop>>;
+	using AtomBaseRef = Ref<AtomBase, AtomParent>;
 	
 	
 	#ifdef flagDEBUG
@@ -133,7 +133,9 @@ public:
 	AtomBase();
 	virtual ~AtomBase();
 	
-	LoopRef GetLoop();
+	
+	LoopRef		GetLoop();
+	Loop&		GetParent() {return *((SP*)this)->GetParent().AsStatic<Loop>();}
 	
 	template <class T> RefT_Loop<T> As() {return AtomBase_Static_As<T>(this);}
 	

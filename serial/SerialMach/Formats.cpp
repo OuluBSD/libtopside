@@ -95,12 +95,36 @@ bool MidiFormat::IsSame(const MidiFormat& fmt) const {
 
 
 
+String EventFormat::ToString() const{
+	TODO
+}
+
+bool EventFormat::IsValid() const {
+	return true;
+}
+
+bool EventFormat::IsSame(const EventFormat& fmt) const {
+	return true;
+}
+
+int EventFormat::GetFrameSize() const {
+	return		DimBase<1>::GetArea() *
+				SparseTimeSeriesBase::GetSampleRate() *
+				SampleBase<EventSample>::GetSampleSize();
+}
+
+
+
+
+
+
 
 
 #define PROXY(x,y) \
 	if (IsAudio()) return aud.x(y); \
 	if (IsVideo()) return vid.x(y); \
 	if (IsMidi())  return mid.x(y); \
+	if (IsEvent()) return ev.x(y); \
 	PANIC("Invalid type");
 #define PROXY_CHK(x,y) ASSERT(IsValid()); PROXY(x,y)
 
@@ -126,10 +150,6 @@ int Format::GetFrameSize() const {
 
 double Format::GetFrameSeconds() const {
 	PROXY_CHK(GetFrameSeconds,)
-}
-
-int Format::GetMinBufSamples() const {
-	PROXY_CHK(GetMinBufSamples,)
 }
 
 bool Format::HasData() const {
@@ -204,6 +224,12 @@ void Format::SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq,
 	vd.val = ValCls::VIDEO;
 	memset(data, 0, sizeof(data));
 	vid.Set(t, w, h, freq, sample_rate);
+}
+
+void Format::SetEvent(DevCls dev) {
+	vd.dev = dev;
+	vd.val = ValCls::EVENT;
+	memset(data, 0, sizeof(data));
 }
 
 void Format::operator=(const Format& f) {

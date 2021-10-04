@@ -1,5 +1,9 @@
 #pragma once
 
+#ifndef flagWIN32
+	#error DirectXTK compiles on windows only
+#endif
+
 #define NOMINMAX
 
 #if defined(_XBOX_ONE) && defined(_TITLE)

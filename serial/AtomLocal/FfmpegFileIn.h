@@ -21,7 +21,7 @@ protected:
 	
 	
 public:
-	using Parent = FfmpegFileInput;
+	//using Parent = FfmpegFileInput;
 	RTTI_DECL1(FfmpegAudioFrameQueue, AudioInputFrame)
 	
 	FfmpegAudioFrameQueue() : offset(gen) {}
@@ -74,7 +74,7 @@ protected:
 	
 public:
 	RTTI_DECL1(FfmpegVideoFrameQueue, VideoInputFrame)
-	using Parent = FfmpegFileInput;
+	//using Parent = FfmpegFileInput;
 	~FfmpegVideoFrameQueue() {Clear();}
 	
 	void				Visit(RuntimeVisitor& vis) {}

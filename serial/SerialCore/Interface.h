@@ -155,10 +155,10 @@ protected:
 	
 };
 
-using InterfaceSinkRef			= Ref<InterfaceSink,		RefParent1<Loop>>;
-using InterfaceSourceRef		= Ref<InterfaceSource,		RefParent1<Loop>>;
-using ISinkRef					= Ref<InterfaceSink,		RefParent1<Loop>>;
-using ISourceRef				= Ref<InterfaceSource,		RefParent1<Loop>>;
+using InterfaceSinkRef			= Ref<InterfaceSink,		AtomParent>;
+using InterfaceSourceRef		= Ref<InterfaceSource,		AtomParent>;
+using ISinkRef					= Ref<InterfaceSink,		AtomParent>;
+using ISourceRef				= Ref<InterfaceSource,		AtomParent>;
 
 
 
@@ -233,8 +233,8 @@ public:
 	
 };
 
-using DefaultInterfaceSourceRef			= Ref<DefaultInterfaceSource,		RefParent1<Loop>>;
-using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			RefParent1<Loop>>;
+using DefaultInterfaceSourceRef			= Ref<DefaultInterfaceSource,		AtomParent>;
+using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			AtomParent>;
 
 
 NAMESPACE_SERIAL_END

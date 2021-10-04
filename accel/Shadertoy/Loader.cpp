@@ -9,11 +9,9 @@ ShadertoyContextLoader::ShadertoyContextLoader() {
 
 void ShadertoyContextLoader::Clear() {
 	id_counter = 0;
-	TypeContextLoader::Clear();
 }
 
 void ShadertoyContextLoader::OnError(TypeCls type, String fn, String msg) {
-	LOG(AccelComponent::GetStringFromType(type) << ":" << fn << ": error: " << msg);
 	last_error = msg;
 	WhenError();
 }
@@ -24,8 +22,8 @@ void ShadertoyContextLoader::OnError(String fn, String msg) {
 	WhenError();
 }
 
-bool ShadertoyContextLoader::Load(String path, Object& o, ContextConnectorBase* b) {
-	LOG("ShadertoyContextLoader::Load: " << path << " to " << HexStr(b));
+bool ShadertoyContextLoader::Load(String path, Object& o) {
+	LOG("ShadertoyContextLoader::Load: " << path);
 	
 	String ext = GetFileExt(path);
 	if (ext == ".toy")

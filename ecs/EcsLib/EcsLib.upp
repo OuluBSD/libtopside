@@ -1,31 +1,16 @@
 description "Components\377B0,87,128";
 
 uses
-	TemplatesLib;
+	EcsCore;
 
 uses(STDEXC) Esc;
 
 file
 	TODO.txt,
 	EcsLib.h,
-	EcsLib.icpp,
 	NonGui.cpp,
 	Defs.h,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
-	Eon.h,
-	Eon.cpp,
-	EonLoaderBase.inl highlight cpp,
-	EonLoop.cpp,
-	EonChain.cpp,
-	EonTopChain.cpp,
-	EonMachine.cpp,
-	EonSystem.cpp,
-	Ext.h,
-	Ext.cpp,
-	Trash readonly separator,
-	Router.h,
-	Router.cpp,
-	Component.h,
-	Component.inl highlight cpp;
+	Trash readonly separator;
 

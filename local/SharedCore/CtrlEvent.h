@@ -14,6 +14,8 @@ enum {
 	//EVENT_MOUSEDRAG,
 	EVENT_MOUSEWHEEL,
 	EVENT_MOUSE_EVENT,
+	
+	EVENT_TYPE_COUNT
 };
 
 inline String GetEventTypeString(int event) {
@@ -27,11 +29,14 @@ inline String GetEventTypeString(int event) {
 		case EVENT_MOUSEWHEEL:		return "Mouse Wheel";
 		case EVENT_MOUSE_EVENT:		return "Mouse Event";
 		case EVENT_INVALID:
+		case EVENT_TYPE_COUNT:
 		default:					return "<invalid>";
 	}
 }
 
-struct CtrlEvent : Moveable<CtrlEvent> {
+struct CtrlEvent : Moveable<CtrlEvent>, RTTIBase {
+	RTTI_DECL0(CtrlEvent)
+	
 	int type = 0;
 	dword value = 0;
 	int n = 0;
@@ -53,6 +58,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	}
 };
 
+void RandomizeEvent(CtrlEvent& ev);
 
 class EventFrame {
 	

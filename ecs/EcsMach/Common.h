@@ -2,6 +2,17 @@
 #define _EcsMech_Common_h_
 
 
+NAMESPACE_TOPSIDE_BEGIN
+
+
+class ISpatialInteractionListener;
+
+
+
+NAMESPACE_TOPSIDE_END
+
+
+
 NAMESPACE_ECS_BEGIN
 
 
@@ -14,12 +25,11 @@ class ComponentMap;
 class Renderable;
 class Transform2D;
 class Renderable;
-class Machine;
+class Engine;
 class EntityStore;
 class RegistrySystem;
 class Overlap;
 class ToolSystemBase;
-class ISpatialInteractionListener;
 class ToolComponent;
 class MotionControllerComponent;
 class PbrRenderable;
@@ -34,6 +44,8 @@ class ExtComponent;
 struct PaintComponent;
 class ComponentStore;
 //template <class Main, class Base> class ComponentStoreT;
+
+using EcsSystemParent		= RefParent1<Engine>;
 
 using EntityParent			= RefParent1<Pool>;
 using PoolParent			= RefParent2<EntityStore,Pool>;
@@ -54,18 +66,18 @@ using TransformRef			= Ref<Transform,			RefParent1<Entity>>;
 //using ConnectorRef			= Ref<ConnectorBase,		EntityParent>;
 using EntityRef				= Ref<Entity,				EntityParent>;
 using PoolRef				= Ref<Pool,					PoolParent>;
-using EntityStoreRef		= Ref<EntityStore,			RefParent1<Machine>>;
-using RegistrySystemRef		= Ref<RegistrySystem,		RefParent1<Machine>>;
-using ComponentStoreRef		= Ref<ComponentStore,		RefParent1<Machine>>;
-//using ConnectorStoreRef		= Ref<ConnectorStore,		RefParent1<Machine>>;
-using ToolSystemBaseRef		= Ref<ToolSystemBase,		RefParent1<Machine>>;
+using EntityStoreRef		= Ref<EntityStore,			EcsSystemParent>;
+using RegistrySystemRef		= Ref<RegistrySystem,		EcsSystemParent>;
+using ComponentStoreRef		= Ref<ComponentStore,		EcsSystemParent>;
+//using ConnectorStoreRef		= Ref<ConnectorStore,		EcsSystemParent>;
+using ToolSystemBaseRef		= Ref<ToolSystemBase,		EcsSystemParent>;
 using ExtComponentRef		= Ref<ExtComponent,			RefParent1<Entity>>;
 
 using DebugAudioGeneratorExtRef	= Ref<DebugAudioGeneratorExt,		RefParent1<Entity>>;
 using PortaudioSinkComponentRef			= Ref<PortaudioSinkComponent,			RefParent1<Entity>>;
 using StaticVolumeComponentRef			= Ref<StaticVolumeComponent,			RefParent1<Entity>>;
 using MotionControllerComponentRef		= Ref<MotionControllerComponent,		RefParent1<Entity>>;
-using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		RefParent1<Machine>>;
+using ISpatialInteractionListenerRef	= Ref<ISpatialInteractionListener,		EcsSystemParent>;
 
 //using ConnectorMapBase		= RefTypeMapIndirect<	ConnectorBase,	EntityParent>;
 using EntityVec				= RefLinkedList<		Entity,			EntityParent>;
@@ -82,63 +94,13 @@ template <class T>
 using RefT_Pool				= Ref<T,					RefParent1<Pool>>;
 
 template <class T>
-using RefT_Machine			= Ref<T,					RefParent1<Machine>>;
+using RefT_Engine			= Ref<T,					EcsSystemParent>;
 
 
 
 
 
 
-
-struct PerceptionTimestamp {
-	double ts = 0;
-	
-	PerceptionTimestamp() {}
-	PerceptionTimestamp(double ts) : ts(ts) {}
-	PerceptionTimestamp(const PerceptionTimestamp& t) : ts(t.ts) {}
-	
-	
-};
-
-struct HolographicFramePrediction {
-	PerceptionTimestamp ts;
-	
-	
-	PerceptionTimestamp Timestamp() const {
-		return ts;
-	}
-};
-
-struct HolographicFrame {
-	HolographicFramePrediction pred;
-	
-	HolographicFramePrediction CurrentPrediction() const {
-		return pred;
-	}
-	
-	
-};
-
-class IPredictionUpdateListener {
-
-public:
-	enum PredictionUpdateReason {
-		HolographicSpaceCreateNextFrame,
-		HolographicFrameUpdatePrediction,
-	};
-	
-	virtual void OnPredictionUpdated(
-		PredictionUpdateReason reason,
-		const HolographicFramePrediction& prediction) const = 0;
-};
-
-struct HolographicSpace {
-	
-	
-	
-	operator bool() const;
-	
-};
 
 
 
@@ -178,31 +140,9 @@ struct x : \
 
 #define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this);}
 #define COMP_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); x;}
-#define COMP_DEF_MAKE_ACTION static bool MakeAction(Eon::Action& act) {return false;}
-
-#define COMP_MAKE_ACTION_BEGIN static bool MakeAction(const TypeCompCls& cls, Eon::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.side.vd;
-#define COMP_MAKE_ACTION_END return !fail && any_changes;}
-#define COMP_MAKE_ACTION_UNDEF_TO_TRUE(x) if (act.Pre().IsUndefined(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
-#define COMP_MAKE_ACTION_TO_TRUE(x) act.Post().SetTrue(x); any_changes = true;
-#define COMP_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
-//#define COMP_MAKE_ACTION_REQ_TRUE_TO_TRUE(x, y) if (act.Pre().IsTrue(x)) {act.Post().SetTrue(y); any_changes = true;} else fail = true;
-
-#define EXT_MAKE_ACTION_BEGIN static bool MakeAction(const TypeExtCls& cls, Eon::Action& act) {bool fail = false, any_changes = false; const ValDevCls& vd = cls.side;
-#define EXT_MAKE_ACTION_END return !fail && any_changes;}
-#define EXT_MAKE_ACTION_UNDEF_TO_TRUE(x) if (act.Pre().IsUndefined(x)) {act.Post().SetTrue(x); any_changes = true;} else fail = true;
-#define EXT_MAKE_ACTION_UNDEF_TO_FALSE(x) if (act.Pre().IsUndefined(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
-#define EXT_MAKE_ACTION_TO_TRUE(x) act.Post().SetTrue(x); any_changes = true;
-#define EXT_MAKE_ACTION_TRUE_TO_FALSE(x) if (act.Pre().IsTrue(x)) {act.Post().SetFalse(x); any_changes = true;} else fail = true;
-//#define EXT_MAKE_ACTION_REQ_TRUE_TO_TRUE(x, y) if (act.Pre().IsTrue(x)) {act.Post().SetTrue(y); any_changes = true;} else fail = true;
-
-
-
-
-
 
 #define COPY_PANIC(T) void operator=(const T& t) {Panic("Can't copy " #T);}
 
-#define IFACE_GENERIC	ComponentBase* AsComponentBase() override {return this;}
 
 
 

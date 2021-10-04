@@ -202,18 +202,82 @@ AtomTypeCls SdlContextAtom::GetType() const
 	return GetAtomType();
 }
 
-AtomTypeCls SdlEventAtomSA::GetAtomType()
+AtomTypeCls SdlEventAtomPipe::GetAtomType()
 {
-	return ATOM11(SDL_EVENT_ATOM_S_A, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, RECEIPT);
+	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
 }
 
-void SdlEventAtomSA::Visit(RuntimeVisitor& vis)
+void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Atom<SdlEventAtomSA>>(this);
+	vis.VisitThis<Atom<SdlEventAtomPipe>>(this);
 	vis.VisitThis<SDL2EventsBase>(this);
 }
 
-AtomTypeCls SdlEventAtomSA::GetType() const
+AtomTypeCls SdlEventAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls EventStatePipe::GetAtomType()
+{
+	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
+}
+
+void EventStatePipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EventStatePipe>>(this);
+	vis.VisitThis<EventStateBase>(this);
+}
+
+AtomTypeCls EventStatePipe::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls SdlEventAtom::GetAtomType()
+{
+	return ATOM12(SDL_EVENT_ATOM, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT, CENTER, EVENT);
+}
+
+void SdlEventAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlEventAtom>>(this);
+	vis.VisitThis<SDL2EventsBase>(this);
+}
+
+AtomTypeCls SdlEventAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls EventState::GetAtomType()
+{
+	return ATOM21(EVENT_STATE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
+}
+
+void EventState::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EventState>>(this);
+	vis.VisitThis<EventStateBase>(this);
+}
+
+AtomTypeCls EventState::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls TestEventSrcPipe::GetAtomType()
+{
+	return ATOM11(TEST_EVENT_SRC_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+}
+
+void TestEventSrcPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<TestEventSrcPipe>>(this);
+	vis.VisitThis<TestEventSrcBase>(this);
+}
+
+AtomTypeCls TestEventSrcPipe::GetType() const
 {
 	return GetAtomType();
 }

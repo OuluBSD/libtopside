@@ -1,3 +1,5 @@
+#pragma once
+
 /* porttime.h -- portable interface to millisecond timer */
 
 /* CHANGE LOG FOR PORTTIME

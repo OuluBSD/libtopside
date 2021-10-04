@@ -1,9 +1,9 @@
 #pragma once
 
 
-namespace Pbr {
+NAMESPACE_PBR_BEGIN
 struct Resources;
-}
+NAMESPACE_PBR_END
 
 NAMESPACE_TOPSIDE_BEGIN
 
