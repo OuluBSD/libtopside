@@ -144,7 +144,12 @@ public:
 	RTuple<RefT_Entity<ComponentTs>...> CreateComponents() {
 		static_assert(AllComponents<ComponentTs...>::value, "Ts should all be a component");
 		
-		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> { { Add0<ComponentTs>(ComponentTs::GetDefaultTypeCls()) }... };
+		auto tuple =  RTuple<RefT_Entity<ComponentTs>...> {{
+				Add0<ComponentTs>()
+			}
+			...
+		};
+
 		//Callback1<Ref<ComponentBase>> cb = THISBACK(InitializeComponentRef);
 		//tuple.ForEach(cb);
 		tuple.ForEach([this](auto& comp) {InitializeComponent(comp.GetMutable());});
@@ -162,7 +167,7 @@ private:
 	
 	
 	template<typename T> void Remove0();
-	template<typename T> RefT_Entity<T> Add0(TypeCls cls);
+	template<typename T> RefT_Entity<T> Add0();
 	
 	ComponentBaseRef AddPtr(ComponentBase* comp);
 	
@@ -178,6 +183,14 @@ struct EntityPrefab {
 	
 	using Components = RTuple<RefT_Entity<ComponentTs>...>;
 	
+	static String GetComponentNames() {
+		return RTuple<ComponentTs...>::GetTypeNames();
+	}
+	
+    static String GetTypeName() {
+        static auto s = "EntityPrefab<" + GetComponentNames() + ">" ; return s;
+    }
+    
 	static Components Make(Entity& e) {
 		return e.CreateComponents<ComponentTs...>();
 	}

@@ -2,7 +2,7 @@
 
 #ifdef flagODE
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 void StaticBox::OnAttach() {
 	OdeObject::OnAttach();
@@ -15,6 +15,6 @@ void StaticBox::OnAttach() {
 	model = mb;
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

@@ -3,7 +3,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-class Engine;
 
 
 
@@ -27,7 +26,7 @@ public:
     void LoadAppState();
 
 private:
-    One<Machine>				machine;
+    One<Ecs::Engine>			engine;
 
     // Cached pointer to device resources.
     DeviceResources				dev_res;

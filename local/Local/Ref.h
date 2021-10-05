@@ -143,8 +143,8 @@ public:
 	using Type = T;
 	using ParentT = Parent;
 	
-    //static const char* GetTypeName() {static auto s = "Ref<" + String(T::GetTypeName()) + ">" ; return s;}
-    //static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+    static const char* GetTypeName() {static auto s = "Ref<" + String(T::GetTypeName()) + ">" ; return s;}
+    static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
 	
 	
 	Ref() {Dump("empty-ctor"); DBG_REF_CTOR}

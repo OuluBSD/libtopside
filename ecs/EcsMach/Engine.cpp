@@ -153,19 +153,19 @@ void Engine::Visit(RuntimeVisitor& vis) {
 
 
 
-Engine* __active_machine;
+Engine* __active_engine;
 
 Engine& GetActiveEngine() {
-	ASSERT(__active_machine);
-	return *__active_machine;
+	ASSERT(__active_engine);
+	return *__active_engine;
 }
 
-void SetActiveEngine(Engine& m) {
-	__active_machine = &m;
+void SetActiveEngine(Engine& e) {
+	__active_engine = &e;
 }
 
 void ClearActiveEngine() {
-	__active_machine = 0;
+	__active_engine = 0;
 }
 
 void SingleEngine::Run(bool gui, void(*fn)()) {
@@ -175,10 +175,10 @@ void SingleEngine::Run(bool gui, void(*fn)()) {
 	}
 }
 
-#if UPP_VERSION
-bool SingleEngine::Open(bool gui) {TODO return false;}
-void SingleEngine::Close() {TODO}
-#endif
+//#if UPP_VERSION
+bool SingleEngine::Open(bool gui) {return true;}
+void SingleEngine::Close() {eng.Stop();}
+//#endif
 
 NAMESPACE_ECS_END
 

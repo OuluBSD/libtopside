@@ -145,7 +145,8 @@ struct SpatialInteractionSourceEventArgs {
 	
 };
 
-class ISpatialInteractionListener
+class ISpatialInteractionListener :
+	virtual public LockedScopeRefCounter
 {
 	
 public:

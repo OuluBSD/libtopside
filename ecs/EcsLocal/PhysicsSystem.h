@@ -15,7 +15,7 @@ protected:
 public:
     vec3	gravity;
     
-    PhysicsSystem();
+    PhysicsSystem(Engine& e);
 
     
 };

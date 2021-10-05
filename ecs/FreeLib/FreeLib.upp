@@ -23,5 +23,6 @@ file
 	DeviceResources.h,
 	DeviceResources.cpp,
 	ECS readonly separator,
-	System.h;
+	System.h,
+	System.cpp;
 

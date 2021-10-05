@@ -50,8 +50,9 @@ public:
 struct HolographicSpace {
 	
 	
+	bool IsValid() const {return true;}
 	
-	operator bool() const;
+	operator bool() const {return IsValid();}
 	
 };
 

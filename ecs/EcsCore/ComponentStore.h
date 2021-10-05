@@ -61,9 +61,9 @@ public:
 	ComponentBase* CreateComponentTypeCls(TypeCls cls);
 	
 	template<typename T>
-	T* CreateComponent(TypeCls cls) {
+	T* CreateComponent() {
 		static_assert(IsComponent<T>::value, "T should be a component");
-		
+		TypeCls cls = T::TypeIdClass();
 		auto it = EcsFactory::producers.Find(cls);
 		if (!it) {
 			std::function<Base*()> p([] { return GetPool<T>().New();});
@@ -94,11 +94,11 @@ void Entity::Remove0() {
 }
 
 template<typename T>
-RefT_Entity<T> Entity::Add0(TypeCls cls) {
-	auto comp = GetEngine().Get<ComponentStore>()->CreateComponent<T>(cls);
+RefT_Entity<T> Entity::Add0() {
+	T* comp = GetEngine().Get<ComponentStore>()->CreateComponent<T>();
 	ASSERT(comp);
 	comp->SetParent(this);
-	comps.Add(comp);
+	comps.Add<T>(comp);
 	return RefT_Entity<T>(this, comp);
 }
 

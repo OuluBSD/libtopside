@@ -22,7 +22,7 @@ protected:
 	
 public:
 	virtual void CopyTo(ComponentBase* component) const = 0;
-	virtual void Visit(RuntimeVisitor& vis) = 0;
+	virtual void Visit(RuntimeVisitor& vis) = 0; // linking errors here means invalid derived visit
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
 	virtual String ToString() const;
@@ -72,6 +72,8 @@ public:
 	RTTI_DECL1(Component<T>, ComponentBase)
 	using ComponentT = Component<T>;
 
+	void Visit(RuntimeVisitor& v) override {} // don't visit ComponentBase (for error detection reasons)
+	
 	void CopyTo(ComponentBase* target) const override {
 		ASSERT(target->GetTypeId() == GetTypeId());
 	    
@@ -125,10 +127,10 @@ public:
 	void Add(ComponentT* component) {
 		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		
-		TypeCls type = component->GetTypeId();
+		TypeCls type = ComponentT::TypeIdClass();
 		ASSERT(type != 0);
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
-		ASSERT_(IS_EMPTY_SHAREDPTR(it) || ComponentT::AllowDuplicates(), "Cannot have duplicate componnets");
+		ASSERT_(IS_EMPTY_SHAREDPTR(it), "Cannot have duplicate componnets");
 		ComponentMapBase::Add(type, component);
 	}
 	

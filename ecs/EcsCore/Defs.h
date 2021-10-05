@@ -21,4 +21,9 @@
 #define RTTI_CONN4(comp, iface0, iface1, iface2, iface3) RTTI_DECL5(comp, TS::Connector<comp>, iface0, iface1, iface2, iface3)
 
 
+#define NAMESPACE_PBR_NAME Pbr
+#define NAMESPACE_PBR_BEGIN namespace  NAMESPACE_TOPSIDE_NAME { namespace  NAMESPACE_PBR_NAME {
+#define NAMESPACE_PBR_END }}
+
+
 #endif

@@ -1,8 +1,6 @@
 #ifndef _System_WorldLogic_h_
 #define _System_WorldLogic_h_
 
-#if 0
-
 NAMESPACE_ECS_BEGIN
 	
 class WorldLogicSystem : public System<WorldLogicSystem>
@@ -34,5 +32,4 @@ protected:
 
 NAMESPACE_ECS_END
 
-#endif
 #endif

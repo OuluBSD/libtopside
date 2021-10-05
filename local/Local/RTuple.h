@@ -44,6 +44,13 @@ struct RTuple : Moveable<RTuple<First, Rest...>> {
 		if (!ptr) THROW(Exc("Could not find type from tuple"))
 		return *ptr;
 	}
+	
+	static String GetTypeNames() {
+		String s;
+		s << First::GetTypeName() << ", ";
+		s << RTuple<Rest...>::GetTypeNames();
+		return s;
+	}
 };
 
 template<typename First>
@@ -71,6 +78,13 @@ struct RTuple<First> : Moveable<RTuple<First>> {
 		if (!ptr) THROW(Exc("Could not find type from tuple"))
 		return *ptr;
 	}
+	
+	static String GetTypeNames() {
+		String s;
+		s << First::GetTypeName() << ", ";
+		return s;
+	}
+	
 };
 
 template<int index, typename First, typename... Rest>

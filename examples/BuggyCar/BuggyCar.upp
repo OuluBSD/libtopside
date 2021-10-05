@@ -1,12 +1,12 @@
 uses
 	Physics,
-	Complete;
+	EcsComplete;
 
 file
 	BuggyCar.h,
 	BuggyCar.cpp;
 
 mainconfig
-	"" = "GUI",
-	"" = "GUI VR";
+	"" = "GUI ODE",
+	"" = "GUI ODE VR";
 

@@ -22,8 +22,11 @@ EntityRef ThrowingInteractionSystem::CreateToolSelector() const {
 }
 
 void ThrowingInteractionSystem::Update(double dt) {
-	for (auto& enabled_entity : GetEnabledEntities()) {
-		auto[entity, throwing] = enabled_entity;
+	Vector<RTuple<EntityRef, ToolComponentRef>> enabled_ents = GetEnabledEntities();
+	
+	for (RTuple<EntityRef, ToolComponentRef>& enabled_entity : enabled_ents) {
+		EntityRef& entity = enabled_entity.a;
+		ToolComponentRef& throwing = enabled_entity.b.a;
 		
 		if (throwing->ball_object) {
 			if (const SpatialInteractionSourceLocation location = entity->Get<MotionControllerComponent>()->location) {

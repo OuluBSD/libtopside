@@ -46,7 +46,8 @@ struct SpatialInteractionSourceEventArgs {
 	
 };
 
-class ISpatialInteractionListener {
+class ISpatialInteractionListener
+{
 	
 public:
 	using Parent = Engine;

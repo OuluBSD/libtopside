@@ -76,8 +76,11 @@ void ShootingInteractionSystem::OnSourcePressed(const SpatialInteractionSourceEv
 }
 
 void ShootingInteractionSystem::OnSourceUpdated(const SpatialInteractionSourceEventArgs& args) {
-	if (auto enabled_entity = TryGetEntityFromSource(args.State().Source())) {
-		auto[entity, shooting] = *enabled_entity;
+	Optional<RTuple<EntityRef, ToolComponentRef>> enabled_entity = TryGetEntityFromSource(args.State().Source());
+	if (enabled_entity) {
+		EntityRef& entity = enabled_entity->a;
+		ToolComponentRef& shooting = enabled_entity->b.a;
+		
 		// Show the controllers while we're holding grasp, to help show how the model relates to the real world object
 		const bool should_render_controller = args.State().IsGrasped();
 		entity->Get<PbrRenderable>()->SetEnabled(should_render_controller);

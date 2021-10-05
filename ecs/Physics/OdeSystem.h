@@ -3,19 +3,28 @@
 
 #ifdef flagODE
 
+
+NAMESPACE_ECS_BEGIN
+
+class OdeSystem;
+
+NAMESPACE_ECS_END
+
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class OdeSystem;
 class OdeSpace;
 
-class OdeNode {
+class OdeNode : RTTIBase {
 	
 protected:
 	OdeNode* portal = NULL;
 	Vector<OdeNode*> nodes;
 	
 public:
+	RTTI_DECL0(OdeNode)
+	
 	OdeNode() {}
 	virtual ~OdeNode() {}
 	
@@ -40,7 +49,7 @@ public:
 	virtual void OnDetach() {}
 	virtual String ToString() {return "OdeNode";}
 	
-	OdeSystem* GetWorld();
+	Ecs::OdeSystem* GetWorld();
 	OdeSpace* GetSpace();
 	dWorldID GetWorldId();
 	dSpaceID GetWorldSpaceId();
@@ -61,12 +70,13 @@ public:
 	mat4 model_geom = identity<mat4>();
 	
 public:
+	RTTI_DECL1(OdeObject, OdeNode)
 	typedef OdeObject CLASSNAME;
 	OdeObject();
 	virtual ~OdeObject() {if (geom) dGeomDestroy(geom); if (body) dBodyDestroy(body);}
 	
-	virtual void OnAttach() {body = dBodyCreate(GetWorldId());} // Create ID for physics body
-	virtual void OnDetach() {DetachContent();}
+	void OnAttach() override {body = dBodyCreate(GetWorldId());} // Create ID for physics body
+	void OnDetach() override {DetachContent();}
 	virtual void Paint(Shader& s);
 	
 	void AttachContent();
@@ -88,11 +98,12 @@ protected:
 	int stress = 0;
 	
 public:
+	RTTI_DECL1(OdeJoint, OdeNode)
 	OdeJoint() {
 		
 	}
 	
-	virtual void OnAttach() {
+	void OnAttach() override {
 		joint = dJointCreateHinge2(GetWorldId(), 0);	// Create ID for physics joint
 		dJointSetFeedback(joint, &feedback);
 	}
@@ -140,9 +151,10 @@ protected:
 	bool is_portal = false;
 	
 public:
+	RTTI_DECL1(OdeSpace, OdeNode)
 	
 	
-	virtual void OnAttach() {
+	void OnAttach() override {
 		if (is_portal) {
 			space = dHashSpaceCreate(0);
 		} else {
@@ -156,6 +168,12 @@ public:
 	
 };
 
+NAMESPACE_TOPSIDE_END
+
+
+NAMESPACE_ECS_BEGIN
+
+
 class OdeSystem : public OdeSpace, public System<OdeSystem> {
 	
 protected:
@@ -166,14 +184,11 @@ protected:
 	
 	
 public:
-	typedef OdeSystem CLASSNAME;
-	
-	COMP_DEF_VISIT
+	RTTI_DECL2(OdeSystem, OdeSpace, System<OdeSystem>)
 	using Parent = Engine;
 	
 	static vec3 EarthGravity;
 	
-	SYS_RTTI(OdeSystem)
 	ECS_SYS_CTOR_(OdeSystem) {
 		// create world
 		dInitODE2(0);
@@ -253,7 +268,11 @@ void AddEngineOdeSystem();
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
+
+
+
+
 
 #endif
 #endif

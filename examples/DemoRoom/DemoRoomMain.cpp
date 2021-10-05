@@ -11,9 +11,11 @@ DemoRoomMain::DemoRoomMain() {
 
 void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 {
-    if (machine && machine->HasStarted()) {
-        machine->Stop();
-        machine.Clear();
+	using namespace Ecs;
+	
+    if (engine && engine->HasStarted()) {
+        engine->Stop();
+        engine.Clear();
     }
 
     if (!holospace) {
@@ -34,31 +36,31 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 	
     // System::Update is called in the order they were added to the Engine
     // Which is why we put the factories at the start, and the rendering at the end.
-    machine.Create();
+    engine.Create();
 
-    machine->Add<EntityStore>();
-    machine->Add<ComponentStore>();
-    machine->Add<HolographicScene>();//->SetResources(holospace);
-    machine->Add<EasingSystem>();
-    machine->Add<PhysicsSystem>();
-    machine->Add<PbrModelCache>();//->SetResources(pbr_res);
+    engine->Add<EntityStore>();
+    engine->Add<ComponentStore>();
+    engine->Add<HolographicScene>();//->SetResources(holospace);
+    engine->Add<EasingSystem>();
+    engine->Add<PhysicsSystem>();
+    engine->Add<PbrModelCache>();//->SetResources(pbr_res);
 
-    machine->Add<SpatialInteractionSystem>();
-    machine->Add<MotionControllerSystem>();
-    machine->Add<WorldLogicSystem>();
+    engine->Add<SpatialInteractionSystem>();
+    engine->Add<MotionControllerSystem>();
+    engine->Add<WorldLogicSystem>();
 
-    machine->Add<ToolboxSystem>();
-    machine->Add<ShootingInteractionSystem>();
-    machine->Add<PaintingInteractionSystem>();
-    machine->Add<ThrowingInteractionSystem>();
+    engine->Add<ToolboxSystem>();
+    engine->Add<ShootingInteractionSystem>();
+    engine->Add<PaintingInteractionSystem>();
+    engine->Add<ThrowingInteractionSystem>();
 
-    machine->Add<PaintStrokeSystem>();//->SetResources(pbr_res);
-    machine->Add<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
+    engine->Add<PaintStrokeSystem>();//->SetResources(pbr_res);
+    engine->Add<HolographicRenderer>();//->SetResources(dev_res, pbr_res, skyboxTexture.Get());
 
-    machine->Start();
+    engine->Start();
 
     // Seed model cache
-    auto pbr_model_cache = machine->Get<PbrModelCache>();
+    auto pbr_model_cache = engine->Get<PbrModelCache>();
 
 	TODO
 	#if 0
@@ -96,8 +98,8 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
         std::optional<DirectX::XMFLOAT4X4> transform = std::nullopt,
         std::optional<DirectX::XMFLOAT4> color = std::nullopt) -> std::future<void>
     {
-        auto pbr_model_cache = machine->Get<PbrModelCache>();
-        auto pbr_res = machine->Get<HolographicRenderer>()->GetPbrResources();
+        auto pbr_model_cache = engine->Get<PbrModelCache>();
+        auto pbr_res = engine->Get<HolographicRenderer>()->GetPbrResources();
 
         std::vector<byte> fileData = co_await DX::ReadDataAsync(std::wstring(path));
 
@@ -137,7 +139,7 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 	
 	
     // We don't store the returned Floor Entity locally, so it lives foreeevvverrr
-    machine->Get<EntityStore>()->GetRoot()->GetAddPool("models")->Create<FloorPrefab>();
+    engine->Get<EntityStore>()->GetRoot()->GetAddPool("models")->Create<FloorPrefab>();
 
     // Reset timer on startup so the first update's delta time is sensible (albeit still small)
     timer.ResetElapsedTime();
@@ -145,10 +147,10 @@ void DemoRoomMain::SetHolographicSpace(const HolographicSpace& holospace)
 
 DemoRoomMain::~DemoRoomMain()
 {
-    if (machine)
+    if (engine)
     {
-        machine->Stop();
-        machine.Clear();
+        engine->Stop();
+        engine.Clear();
     }
 }
 
@@ -159,24 +161,139 @@ void DemoRoomMain::Update()
 }
 
 void DemoRoomMain::ProcessUpdate() {
-	machine->Update(static_cast<float>(timer.GetElapsedSeconds()));
+	engine->Update(static_cast<float>(timer.GetElapsedSeconds()));
 }
 
 void DemoRoomMain::SaveAppState()
 {
     dev_res.Trim();
 
-    if (machine) {
-        machine->Suspend();
+    if (engine) {
+        engine->Suspend();
     }
 }
 
 void DemoRoomMain::LoadAppState()
 {
-    if (machine) {
-        machine->Resume();
+    if (engine) {
+        engine->Resume();
     }
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+//		DUPLICATE FROM AtomShell PACKAGE
+
+
+using ObjMap = VectorMap<String,Object>;
+MAKE_STATIC(ObjMap, args)
+MAKE_STATIC(String, eon_file)
+
+
+bool Initializer() {
+	SetCoutLog();
+	
+	CommandLineArguments cmd;
+	cmd.AddArg('e', "The path for the eon file", true, "path");
+	if (!cmd.Parse()) {
+		cmd.PrintHelp();
+		return false;
+	}
+	
+	const auto& inputs = cmd.GetInputs();
+	for(const auto& in : inputs) {
+		if (in.key == 'e') eon_file = in.value;
+	}
+	if (eon_file.IsEmpty()) {
+		cmd.PrintHelp();
+		LOG("");
+		LOG("\te.g. -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3");
+		return false;
+	}
+	
+	args <<= cmd.GetVariables();
+	
+	return true;
+}
+
+
+size_t break_addr = 0;
+bool verify = false;
+MAKE_STATIC(Serial::MachineVerifier, verifier);
+
+
+void SerialInitializer() {
+	using namespace Serial;
+	
+	SetCoutLog();
+	//Serial::Factory::Dump();
+	
+	
+	if (1)
+		verify = true;
+	
+	if (0)
+		break_addr = 0x806A81E68;
+	
+	
+	if (!Initializer())
+		return;
+	
+	if (verify) {
+		verifier.AddSystem<RegistrySystem>();
+		verifier.AddSystem<LoopStore>();
+		verifier.AddSystem<AtomStore>();
+		verifier.AddSystem<AtomSystem>();
+		verifier.AddSystem<ScriptLoader>();
+		
+		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
+		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));
+		auto& src		= ent.AddAtomWith<TestRealtimeSrc>	(VD(CENTER,AUDIO));
+		auto& sink		= ent.AddAtomWith<TestRealtimeSink>	(VD(CENTER,RECEIPT));
+		customer << src << sink << customer;
+		src.SetSourceFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
+		sink.SetSinkFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
+		
+	}
+}
+
+
+void Runner(String app_name) {
+	DUMP(eon_file);
+	DUMPC(args);
+	if (!break_addr)
+		Serial::DebugMain(eon_file, args, verify ? &verifier : 0);
+	else
+		Serial::DebugMain(eon_file, args, verify ? &verifier : 0, 1, break_addr);
+}
+
+void Startup() {
+	LOG("<-- Startup -->");
+}
+
 NAMESPACE_TOPSIDE_END
+
+
+
+APP_INITIALIZE_(TS::SerialInitializer)
+APP_STARTUP_(TS::Startup)
+
+
+#ifdef flagGUI
+//RENDER_APP_MAIN {TS::Serial::SimpleSerialMain("AtomShell");}
+RENDER_APP_MAIN {TS::Runner("AtomShell");}
+#else
+CONSOLE_APP_MAIN {TS::Runner("AtomShell");}
+#endif

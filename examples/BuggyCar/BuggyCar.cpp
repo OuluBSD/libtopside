@@ -22,27 +22,51 @@ void BuggyWheel::OnAttach() {
 }
 
 
+NAMESPACE_TOPSIDE_END
+
+
+
+NAMESPACE_ECS_BEGIN
+
+
 void BuggyCarInitializer() {
-	Machine& mach = GetActiveMachine();
-	//mach.Add<EntityStore>();
-	mach.Add<PhysicsSystem>();
+	Engine& eng = GetActiveEngine();
+	//eng.Add<EntityStore>();
+	eng.Add<PhysicsSystem>();
 }
 
 void BuggyCarStartup() {
-	Machine& mach = GetActiveMachine();
-	EntityStoreRef ents = mach.Get<EntityStore>();
+	Engine& eng = GetActiveEngine();
+	EntityStoreRef ents = eng.Get<EntityStore>();
 	PoolRef pool = ents->GetRoot()->GetAddPool("models");
 	pool->Create<StaticGroundPlanePrefab>();
 	pool->Create<BuggyCarPrefab>();
 }
 
 
+NAMESPACE_ECS_END
+
+
+NAMESPACE_TOPSIDE_BEGIN
+
+using ObjMap = VectorMap<String,Object>;
+MAKE_STATIC(ObjMap, args)
+
+void Runner(String app_name) {
+	TODO
+	String eon_file;
+	DUMP(eon_file);
+	DUMPC(args);
+	Serial::DebugMain(eon_file, args, 0);
+}
+
+
 NAMESPACE_TOPSIDE_END
 
 
-GUI_APP_(TS::DefaultRenderApp)
-APP_INITIALIZE_(TS::BuggyCarInitializer);
-APP_STARTUP_(TS::BuggyCarStartup);
+RENDER_APP_MAIN {TS::Runner("AtomShell");}
+APP_INITIALIZE_(TS::Ecs::BuggyCarInitializer);
+APP_STARTUP_(TS::Ecs::BuggyCarStartup);
 
 NAMESPACE_UPP
 INITBLOCK {

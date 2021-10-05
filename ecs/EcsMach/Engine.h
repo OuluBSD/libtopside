@@ -37,8 +37,8 @@ template<typename T>
 class System :
 	public SystemBase
 {
-	using SystemT = System<T>;
 public:
+	using SystemT = System<T>;
 	RTTI_DECL1(SystemT, SystemBase)
     using SystemBase::SystemBase;
 	
@@ -146,18 +146,18 @@ private:
 
 
 Engine& GetActiveEngine();
-void SetActiveEngine(Engine& m);
+void SetActiveEngine(Engine& e);
 void ClearActiveEngine();
 
 
 class SingleEngine {
-	Engine mach;
+	Engine eng;
 	
 	bool Open(bool gui);
 	void Close();
 	
 public:
-	SingleEngine() {SetActiveEngine(mach);}
+	SingleEngine() {SetActiveEngine(eng);}
 	~SingleEngine() {ClearActiveEngine();}
 	
 	void Run(bool gui, void(*fn)());

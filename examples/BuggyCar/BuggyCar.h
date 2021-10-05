@@ -1,8 +1,9 @@
 #ifndef _BuggyCar_BuggyCar_h_
 #define _BuggyCar_BuggyCar_h_
 
-#include <Complete/Complete.h>
+#include <EcsComplete/EcsComplete.h>
 #include <Physics/Physics.h>
+
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -48,6 +49,14 @@ struct BuggyChassis : public OdeObject {
 	
 };
 
+
+NAMESPACE_TOPSIDE_END
+
+
+
+NAMESPACE_ECS_BEGIN
+
+
 struct BuggyCar :
 	public OdeSpace,
 	public Component<BuggyCar>
@@ -60,6 +69,8 @@ struct BuggyCar :
 	
 	using Parent = Entity;
 	
+public:
+	RTTI_DECL2(BuggyCar, OdeSpace, Component<BuggyCar>)
 	typedef BuggyCar CLASSNAME;
 	BuggyCar() {}
 	
@@ -151,7 +162,7 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
 		components.Get<TransformRef>()->position[1] = 3.0;
 		components.Get<RenderableRef>()->cb << components.Get<Ref<BuggyCar>>()->GetPaintCallback();
 		
-		OdeSystemRef w = e.GetMachine().Get<OdeSystem>();
+		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
 		w->Attach(*components.Get<Ref<BuggyCar>>());
 		
         return components;
@@ -159,6 +170,10 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
 };
 
 
-NAMESPACE_TOPSIDE_END
+
+NAMESPACE_ECS_END
+
+
+
 
 #endif

@@ -77,7 +77,7 @@ public:
 		e.SetParent(this);
 		e.SetId(GetNextId());
 		PrefabT::Make(e);
-		Initialize(e, AsTypeName<PrefabT>());
+		Initialize(e, PrefabT::GetComponentNames());
 		
 		return e.AsRefT();
 	}

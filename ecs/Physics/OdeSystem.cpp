@@ -9,11 +9,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-OdeSystem* OdeNode::GetWorld() {
+Ecs::OdeSystem* OdeNode::GetWorld() {
 	OdeNode* n = this;
 	while (n->portal)
 		n = n->portal;
-	return CastPtr<OdeSystem>(n);
+	return CastPtr<Ecs::OdeSystem>(n);
 }
 
 OdeSpace* OdeNode::GetSpace() {
@@ -95,13 +95,14 @@ void OdeObject::Paint(Shader& s) {
 }
 
 
+NAMESPACE_TOPSIDE_END
 
 
 
 
 
 
-
+NAMESPACE_ECS_BEGIN
 
 
 vec3 OdeSystem::EarthGravity = {0, -9.81, 0};
@@ -138,8 +139,14 @@ void AddEngineOdeSystem() {
 
 
 
+NAMESPACE_ECS_END
 
-NAMESPACE_TOPSIDE_END
+
+
+
+
+
+
 
 
 #ifdef flagAUTOSTART_SYSTEMS
