@@ -1,7 +1,7 @@
 uses
 	AtomNonGUI,
 	AtomLocal,
-	Complete;
+	AtomComplete;
 
 file
 	AtomTests.h,

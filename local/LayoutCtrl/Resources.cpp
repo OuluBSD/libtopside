@@ -5,7 +5,7 @@
 NAMESPACE_LAYOUT_BEGIN
 
 String GetMasterCss() {
-	return LoadFile(ShareDirFile(AppendFileName("master.css"), "html"));
+	return LoadFile(ShareDirFile(AppendFileName("html", "master.css")));
 }
 
 void GetHttpCookie(HttpCookie& h, const Cookie& c) {
@@ -88,11 +88,11 @@ void ResourceQuery::StartProcess() {
 		else {
 			HttpRequest h;
 			#ifdef flagPOSIX
-			h.UserAgent("Mozilla/5.0 (OS X11) Overlay");
+			h.UserAgent("Mozilla/5.0 (OS X11) libtopside");
 			#elif defined(flagWIN32)
-			h.UserAgent("Mozilla/5.0 (Windows) Overlay");
+			h.UserAgent("Mozilla/5.0 (Windows) libtopside");
 			#else
-			h.UserAgent("Mozilla/5.0 (Unknown) Overlay");
+			h.UserAgent("Mozilla/5.0 (Unknown) libtopside");
 			#endif
 			
 			for(int i = 0; i < header.cookies.GetCount(); i++) {

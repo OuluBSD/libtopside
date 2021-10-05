@@ -5,8 +5,7 @@ uses
 
 file
 	Complete.h,
-	main.cpp,
-	Complete.json;
+	main.cpp;
 
 mainconfig
 	"" = "";

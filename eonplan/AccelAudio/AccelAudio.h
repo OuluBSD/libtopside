@@ -7,10 +7,7 @@
 
 NAMESPACE_PLAN_BEGIN
 
-#include "TestHeaders.h"
-#include "TestLoops.h"
-#include "TestChains.h"
-#include "TestTopChains.h"
+#include "Headers.h"
 
 NAMESPACE_PLAN_END
 

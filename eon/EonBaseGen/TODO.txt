@@ -1,9 +1,0 @@
-- check duplicate bases / headers
-
-
-- generate eon confs
-- test that confs can be found
-	- without ambiguity
-- generate ecs component templates
-- optionally, generate ecs component impl frames
-- generate ecs confs, that must be loaded successfully

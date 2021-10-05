@@ -1,7 +1,7 @@
 description "Triangle rasterization and back face culling\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial2.cpp;

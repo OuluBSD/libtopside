@@ -6,6 +6,5 @@ uses
 file
 	AccelMidi.h,
 	AccelMidi.icpp,
-	Headers.h,
-	Headers.json;
+	Headers.h;
 

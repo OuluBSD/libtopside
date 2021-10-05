@@ -1,7 +1,7 @@
 description "Just the frame for rendering stuff. Nothing is rendered yet.\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial0.cpp;

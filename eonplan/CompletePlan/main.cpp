@@ -27,6 +27,7 @@ bool Export(CompilationUnit& cu) {
 	//cu.SetFile("BackendTest");
 	
 	AssemblyExporter ae(cu);
+	
 	ae.ProtectPackageFile();
 	if (!ae.Export(serial_dir))
 		return false;
@@ -75,7 +76,12 @@ CONSOLE_APP_MAIN {
 	Plan::Factory::Dump();
 	
 	CompilationUnit	cu;
+	
+	cu.WeakHint(HINT_PKG, "AtomLocal");
+	cu.WeakHint(HINT_FILE, "Generated");
+	
 	Plan::Factory::Export(cu);
+	
 	
 	if (!Export(cu)) {
 		LOG("Plan export failed.");

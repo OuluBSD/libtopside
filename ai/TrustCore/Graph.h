@@ -51,6 +51,7 @@ public:
 	
 	Graph() {}
 	
+	void Clear() {graph.Clear(); tmp.Clear();}
 	void Reset(int node_count);
 	void Init(int node_count);
 	void Init(int node_count, const Array<TrustEdge>& edges);

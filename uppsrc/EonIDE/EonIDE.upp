@@ -1,0 +1,17 @@
+uses
+	LocalCtrl,
+	CodeEditor,
+	Esc,
+	EditorBase;
+
+file
+	EonIDE.h,
+	EonIDE.cpp,
+	Editor.h,
+	Editor.cpp,
+	EonBaseExt.h,
+	EonBaseExt.cpp;
+
+mainconfig
+	"" = "GUI";
+

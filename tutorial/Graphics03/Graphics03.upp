@@ -1,7 +1,7 @@
 description "Hidden faces removal (z buffer)\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial3.cpp;

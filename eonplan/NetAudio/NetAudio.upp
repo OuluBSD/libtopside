@@ -6,11 +6,5 @@ uses
 file
 	NetAudio.h,
 	NetAudio.icpp,
-	Headers.h,
-	Loops.h,
-	TestChains.h,
-	TestMachines.h,
-	Headers.json,
-	ChainsTest.json,
-	MachinesTest.json;
+	Headers.h;
 

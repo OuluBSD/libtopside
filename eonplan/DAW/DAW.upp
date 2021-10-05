@@ -8,15 +8,5 @@ uses
 file
 	DAW.h,
 	DAW.icpp,
-	Headers.h,
-	Loops.h,
-	Links.h,
-	Chains.h,
-	Scopes.h,
-	HeadersMidi.json,
-	HeadersAudio.json,
-	Loops.json,
-	Links.json,
-	Chains.json,
-	TopChains.json;
+	Headers.h;
 

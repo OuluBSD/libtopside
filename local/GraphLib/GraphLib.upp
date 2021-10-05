@@ -1,7 +1,8 @@
 description "GraphLib is a set of tools to display and layout interactive graphs, along with various related algorithms.\377B0,0,255";
 
 uses
-	CtrlLib;
+	CtrlLib,
+	LocalCtrl;
 
 file
 	Copying,
@@ -28,5 +29,5 @@ file
 	BinaryHeapMap.cpp;
 
 mainconfig
-	"" = "GUI";
+	"" = "GUI CTRL STDRTTI STDEXC";
 

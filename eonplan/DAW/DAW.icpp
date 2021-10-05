@@ -10,10 +10,6 @@ INITBLOCK_(DAW) {
 	Factory::AddDep("AccelAudio");
 	
 	#include "Headers.h"
-	#include "Loops.h"
-	#include "Links.h"
-	#include "Chains.h"
-	#include "Scopes.h"
 }
 
 NAMESPACE_PLAN_END

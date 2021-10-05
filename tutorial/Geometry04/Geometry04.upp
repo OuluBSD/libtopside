@@ -1,7 +1,7 @@
 description "2D collision optimization\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	TODO.txt,

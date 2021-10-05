@@ -1,9 +1,0 @@
-#include "EonBaseGen.h"
-
-NAMESPACE_EONGEN_BEGIN
-
-
-
-
-
-NAMESPACE_EONGEN_END

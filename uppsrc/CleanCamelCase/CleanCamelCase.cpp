@@ -3,19 +3,19 @@
 using namespace TS;
 using namespace UPP;
 
-struct IdParser {
+struct IdParser0 {
 	bool is_valid = false;
 	const String& input;
 	int pos;
 	String id;
 	
-	IdParser(const String& input, int pos) : input(input), pos(pos) {Parse();}
+	IdParser0(const String& input, int pos) : input(input), pos(pos) {Parse();}
 	
 	void Parse();
 	
 };
 
-void IdParser::Parse() {
+void IdParser0::Parse() {
 	const String& n = input;
 	int& cursor = pos;
 	
@@ -108,7 +108,7 @@ String CleanCamelCase(bool is_header, String src) {
 			}
 		}
 		
-		IdParser ip(src, i);
+		IdParser0 ip(src, i);
 		if (ip.is_valid) {
 			if (CamelCase(ip.id, new_id)) {
 				if (ip.id.Left(2) == "m_") {
@@ -130,6 +130,11 @@ String CleanCamelCase(bool is_header, String src) {
 
 CONSOLE_APP_MAIN {
 	SetCoutLog();
+	
+	if (CommandLine().IsEmpty()) {
+		LOG(".upp file required as program argument");
+		return;
+	}
 	
 	String upp_file = CommandLine()[0];
 	String prj_dir = GetFileDirectory(upp_file);
@@ -162,8 +167,5 @@ CONSOLE_APP_MAIN {
 			fout.Flush();
 		}
 	}
-	
-	
-	
 	
 }

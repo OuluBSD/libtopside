@@ -6,11 +6,5 @@ uses
 file
 	CoreAudio.h,
 	CoreAudio.icpp,
-	Headers.h,
-	TestLoops.h,
-	TestChains.h,
-	Headers.json,
-	HeadersTest.json,
-	LoopsTest.json,
-	ChainsTest.json;
+	Headers.h;
 

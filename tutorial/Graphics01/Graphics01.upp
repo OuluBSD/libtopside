@@ -1,7 +1,7 @@
 description "Bresenham’s Line Drawing Algorithm\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial1.cpp;

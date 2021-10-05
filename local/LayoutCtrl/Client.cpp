@@ -6,7 +6,7 @@ NAMESPACE_LAYOUT_BEGIN
 
 Client::Client()
 {
-	Title("Overlay client");
+	Title("libtopside client");
 	Sizeable().MaximizeBox().MinimizeBox();
 	
 	AddFrame(menu);

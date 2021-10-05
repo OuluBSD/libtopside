@@ -4,7 +4,7 @@
 #include <Draw/Draw.h>
 
 #ifndef GUIPLATFORM_INCLUDE
-	#error Build flags prevents CtrlCore usage. Probably GUI flag is not set and CtrlCore.h is included indirectly.
+	#error Build flags prevents CtrlCore usage. Probably CTRL flag is not set and CtrlCore.h is included indirectly.
 #else
 	#include GUIPLATFORM_INCLUDE
 #endif
@@ -13,6 +13,8 @@
 
 NAMESPACE_UPP
 
+
+#if 0
 
 enum {
 	K_DELTA        = 0x010000,
@@ -40,6 +42,8 @@ enum {
 	K_MOUSE_FORWARD = 0x80000001,
 	K_MOUSE_BACKWARD = 0x80000002,
 };
+
+#endif
 
 #include "MKeys.h"
 

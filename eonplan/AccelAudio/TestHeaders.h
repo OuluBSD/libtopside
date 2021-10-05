@@ -1,3 +1,0 @@
-
-HEADER(TestAccelCenterAudioSink, AccelCenterAudioSrc)
-HEADER(TestAccelCenterAudioSrc, AccelCenterAudioSink)

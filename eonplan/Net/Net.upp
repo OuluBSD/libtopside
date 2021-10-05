@@ -6,14 +6,5 @@ uses
 file
 	Net.h,
 	Net.icpp,
-	Headers.h,
-	Loops.h,
-	Scopes.h,
-	TestMachines.h,
-	TestSystems.h,
-	Headers.json,
-	Loops.json,
-	TopChainsTest.json,
-	MachinesTest.json,
-	SystemsTest.json;
+	Headers.h;
 

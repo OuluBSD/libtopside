@@ -1,7 +1,7 @@
 description "Simple shader with the ECS\377";
 
 uses
-	Complete,
+	AtomComplete,
 	FusionCore;
 
 file

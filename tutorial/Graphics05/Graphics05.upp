@@ -1,7 +1,7 @@
 description "Moving the camera\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial5.h,

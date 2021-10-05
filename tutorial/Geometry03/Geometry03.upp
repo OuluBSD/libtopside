@@ -1,7 +1,7 @@
 description "2D shapes and collisions\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Geometry3.h,

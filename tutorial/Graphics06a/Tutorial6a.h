@@ -1,7 +1,7 @@
 #ifndef _Graphics06a_Tutorial6a_h_
 #define _Graphics06a_Tutorial6a_h_
 
-#include <Complete/Complete.h>
+#include <AtomComplete/AtomComplete.h>
 #include <AccelCore/AccelCore.h>
 using namespace TS;
 

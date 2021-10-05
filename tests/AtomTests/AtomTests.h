@@ -2,7 +2,7 @@
 #define _AtomTests_AtomTests_h_
 
 #include <AtomLocal/AtomLocal.h>
-#include <Complete/Complete.h>
+#include <AtomComplete/AtomComplete.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 using namespace TS::Serial;

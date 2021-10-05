@@ -50,7 +50,7 @@ int Graph::Traverse(int root, int node) const {
     
     MAKE_STATIC_LOCAL(Vector<int>, queue);
     MAKE_STATIC_LOCAL(Vector<int>, layer);
-    MAKE_STATIC_LOCAL(Index<int>, traversed=;
+    MAKE_STATIC_LOCAL(Index<int>, traversed);
     queue.SetCount(0);
     queue.Add(root);
     

@@ -1,15 +1,13 @@
 #ifndef _Geometry1_Geometry1_h_
 #define _Geometry1_Geometry1_h_
 
-#include <Complete/Complete.h>
+#include <AtomComplete/AtomComplete.h>
 using namespace TS;
 
 
-
-
-
-
-struct Geometry1 : public Component<Geometry1>, public DisplaySink {
+struct Geometry1 :
+	public Component<Geometry1>
+{
 	TimeStop ts;
 	int phase = 0;
 	int phases = 6;

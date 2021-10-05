@@ -1,7 +1,7 @@
 #ifndef _Geometry2_Geometry2_h_
 #define _Geometry2_Geometry2_h_
 
-#include <Complete/Complete.h>
+#include <AtomComplete/AtomComplete.h>
 using namespace TS;
 
 

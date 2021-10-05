@@ -1,7 +1,7 @@
 description "Octree\377";
 
 uses
-	Complete;
+	AtomComplete;
 
 file
 	Tutorial7.h,

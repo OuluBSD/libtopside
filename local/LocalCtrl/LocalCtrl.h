@@ -1,11 +1,13 @@
 #ifndef _LocalCtrl_LocalCtrl_h_
 #define _LocalCtrl_LocalCtrl_h_
 
-#ifndef flagGUI
-	#error "LocalCtrl library requires GUI flag to be set"
-#endif
 
 #include "Defs.h"
+
+#ifndef flagCTRL
+	#error "LocalCtrl library requires CTRL flag to be set"
+#endif
+
 #include "Compat.h"
 #include "Image.h"
 #include "BlueBar.h"

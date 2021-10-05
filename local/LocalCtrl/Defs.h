@@ -21,9 +21,14 @@
 #include <Local/Local.h>
 
 #include <CtrlLib/CtrlLib.h>
-#if defined flagGUI && defined flagCTRL
-	#include <SDL2GUI3D/SDL2GUI3D.h>
+
+#ifdef UPP_VERSION
+	#define flagCTRL
 #endif
+
+/*#if defined flagGUI && defined flagCTRL
+	#include <SDL2GUI3D/SDL2GUI3D.h>
+#endif*/
 
 
 #endif

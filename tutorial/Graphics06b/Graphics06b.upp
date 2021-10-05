@@ -1,7 +1,7 @@
 description "Shaders for the software renderer\377";
 
 uses
-	Complete,
+	AtomComplete,
 	Physics;
 
 file

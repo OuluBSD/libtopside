@@ -49,6 +49,9 @@ template <class T> const char* GetTypeNameT() {return typeid(T).name();}
 	#define TYPE_WRAPPER		std::reference_wrapper<const std::type_info>
 	#define TYPE_WRAPPER_CTOR	reference_wrapper::reference_wrapper
 #else
+	#ifdef flagSTDRTTI
+		#error STDEXC flag must be set with STDRTTI flag
+	#endif
 	template <class T> void Throw(const T& o) {const char* name = AsTypeName<T>(); __BREAK__;}
 	#define THROW_SPECIFIER
 	#define THROW(x)			{Throw(x); UNREACHABLE;}

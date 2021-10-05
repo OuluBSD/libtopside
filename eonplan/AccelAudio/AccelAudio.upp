@@ -8,13 +8,5 @@ uses
 file
 	AccelAudio.h,
 	AccelAudio.icpp,
-	TestHeaders.h,
-	TestLoops.h,
-	TestChains.h,
-	TestTopChains.h,
-	Headers.json,
-	HeadersTest.json,
-	LoopsMidiAudioTest.json,
-	ChainsTest.json,
-	TopChainsTest.json;
+	Headers.h;
 

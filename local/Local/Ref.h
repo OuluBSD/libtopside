@@ -144,8 +144,12 @@ public:
 	using ParentT = Parent;
 	
     static const char* GetTypeName() {static auto s = "Ref<" + String(T::GetTypeName()) + ">" ; return s;}
+    
+    #ifdef UPP_VERSION
+    static TypeCls TypeIdClass() {return typeid(Ref);}
+    #else
     static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
-	
+	#endif
 	
 	Ref() {Dump("empty-ctor"); DBG_REF_CTOR}
 	Ref(Nuller) {Dump("null-ctor"); DBG_REF_CTOR}
