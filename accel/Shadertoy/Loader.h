@@ -9,6 +9,7 @@ class ShadertoyContextLoader
 	int			id_counter = 0;
 	String		last_error;
 	
+	
 	bool		LoadFileToy(String path, Object& dst);
 	void		OnError(TypeCls type, String fn, String msg);
 	void		OnError(String fn, String msg);

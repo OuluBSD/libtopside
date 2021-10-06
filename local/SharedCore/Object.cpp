@@ -215,6 +215,8 @@ String GetObjectTreeString(const Object& v, String key, int indent) {
 	String s;
 	for(int i = 0; i < indent; i++)
 		s.Cat('\t');
+	if (key.IsEmpty())
+		key = "<empty>";
 	s << key;
 	
 	void* obj = v.GetObject();

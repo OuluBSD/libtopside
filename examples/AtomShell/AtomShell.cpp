@@ -6,6 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 using ObjMap = VectorMap<String,Object>;
 MAKE_STATIC(ObjMap, args)
+MAKE_STATIC(String, eon_script)
 MAKE_STATIC(String, eon_file)
 
 
@@ -31,6 +32,34 @@ bool Initializer() {
 	}
 	
 	args <<= cmd.GetVariables();
+	
+	
+	if (DirectoryExists(eon_file)) {
+		if (eon_file.Right(1) == DIR_SEPS)
+			eon_file = eon_file.Left(eon_file.GetCount()-1);
+		String title = GetFileName(eon_file);
+		String toy_file = AppendFileName(eon_file, title + ".toy");
+		if (FileExists(toy_file))
+			eon_file = toy_file;
+	}
+	
+	if (GetFileExt(eon_file) == ".toy") {
+		ShadertoyContextLoader toy_loader;
+		Object o;
+		if (!toy_loader.Load(eon_file, o)) {
+			LOG("Toy file loading failed: " << eon_file);
+			return false;
+		}
+		
+		Serial::ToyLoader ser_loader;
+		if (!ser_loader.Load(o)) {
+			LOG("Toy object loading failed");
+			return false;
+		}
+		
+		eon_script = ser_loader.GetResult();
+		//DUMP(eon_script);
+	}
 	
 	return true;
 }
@@ -78,12 +107,13 @@ void SerialInitializer() {
 
 
 void Runner(String app_name) {
-	DUMP(eon_file);
-	DUMPC(args);
+	//DUMP(eon_script);
+	//DUMP(eon_file);
+	//DUMPC(args);
 	if (!break_addr)
-		Serial::DebugMain(eon_file, args, verify ? &verifier : 0);
+		Serial::DebugMain(eon_script, eon_file, args, verify ? &verifier : 0);
 	else
-		Serial::DebugMain(eon_file, args, verify ? &verifier : 0, 1, break_addr);
+		Serial::DebugMain(eon_script, eon_file, args, verify ? &verifier : 0, 1, break_addr);
 }
 
 void Startup() {

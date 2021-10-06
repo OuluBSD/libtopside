@@ -36,13 +36,18 @@ bool ShadertoyContextLoader::LoadFileToy(String path, Object& dst) {
 	const char* fn_name = "LoadFileToy";
 	Clear();
 	
-	String file_dir = GetFileDirectory(path);
+	if (!FileExists(path)) {
+		String share_path = ShareDirFile(path);
+		if (FileExists(share_path))
+			path = share_path;
+	}
 	
 	if (!FileExists(path)) {
-		OnError(fn_name, "file doesn't exist");
+		OnError(fn_name, "file doesn't exist: " + path);
 		return false;
 	}
 	
+	String file_dir = GetFileDirectory(path);
 	bool fail = false;
 	dst = ParseJSON(LoadFile(path));
 	
@@ -50,7 +55,7 @@ bool ShadertoyContextLoader::LoadFileToy(String path, Object& dst) {
 	ObjectMap& map = dst.GetMap();
 	for(int i = 0; i < 100; i++) {
 		String stage = "stage" + IntStr(i);
-		String stage_file = AppendFileName(file_dir, "stage" + IntStr(i) + ".glsl");
+		String stage_file = AppendFileName(file_dir, stage + ".glsl");
 		if (!FileExists(stage_file))
 			break;
 		String glsl = LoadFile(stage_file);
@@ -59,7 +64,8 @@ bool ShadertoyContextLoader::LoadFileToy(String path, Object& dst) {
 			last_error = "empty shader for stage " + IntStr(i);
 		}
 		else {
-			map.Add(IntStr(i), glsl);
+			map.Add(stage + "_path", stage_file);
+			map.Add(stage + "_content", glsl);
 		}
 	}
 	
@@ -133,26 +139,31 @@ void ShadertoyContextLoader::MakeUniqueIds(Object& v) {
 		stage_ids.Add(stage_id);
 	}
 	
-	for(int i = 0; i < stage_ids.GetCount(); i++) {
-		int st_pos = map.Find(IntStr(i));
-		ASSERT(st_pos >= 0);
-		if (st_pos >= 0) {
-			stage_ids[i] = map.GetObject(st_pos);
-			map.Remove(st_pos);
+	if (0) {
+		for(int i = 0; i < stage_ids.GetCount(); i++) {
+			int st_pos = map.Find("stage" + IntStr(i) + "_content");
+			ASSERT(st_pos >= 0);
+			if (st_pos >= 0) {
+				stage_ids[i] = map.GetObject(st_pos);
+				map.Remove(st_pos);
+			}
 		}
 	}
 	
-	DLOG("ShadertoyContextLoader::MakeUniqueIds: result");
-	DLOG(GetObjectTreeString(v));
-	for(int i = 0; i < stage_ids.GetCount(); i++) {
-		DLOG("\t" << stage_ids.GetKey(i) << ": <source>");
+	if (0) {
+		DLOG("ShadertoyContextLoader::MakeUniqueIds: result");
+		DLOG(GetObjectTreeString(v));
+		for(int i = 0; i < stage_ids.GetCount(); i++) {
+			DLOG("\t" << stage_ids.GetKey(i) << ": <source>");
+		}
 	}
 	
-	for(int i = 0; i < stage_ids.GetCount(); i++) {
-		int id = stage_ids.GetKey(i);
-		map.Add(IntStr(id), stage_ids[i]);
+	if (0) {
+		for(int i = 0; i < stage_ids.GetCount(); i++) {
+			int id = stage_ids.GetKey(i);
+			map.Add(IntStr(id), stage_ids[i]);
+		}
 	}
-	
 }
 
 int ShadertoyContextLoader::MakeUniqueId(VectorMap<int,int>& ids, int orig_id) {

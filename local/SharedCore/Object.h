@@ -224,44 +224,44 @@ public:
 
 
 class ObjectMap {
-	Vector<String> keys;
-	Array<Object> values;
+	Vector<String>	keys;
+	Array<Object>	values;
 	
 public:
-	
-	//void Visit(RuntimeVisitor& vis) override {vis | values;}
-	
-	
 	ObjectMap() {}
 	ObjectMap(const ObjectMap& m) {*this = m;}
-	void operator=(const ObjectMap& m) {keys <<= m.keys; values <<= m.values;}
 	
-	Object& Add(String key, Object v) {keys.Add(key); return values.Add(v);}
-	Object& Add(String key) {keys.Add(key); return values.Add();}
-	Object& GetAdd(String key) {int i = Find(key); if (i >= 0) return values[i]; return Add(key);}
-	Object& GetAdd(String key, const Object& def) {int i = Find(key); if (i >= 0) return values[i]; return Add(key, def);}
-	Object TryGet(String key, Object def=Object()) {int i = Find(key); if (i >= 0) return GetObject(i); else return def;}
-	Object* TryFind(String key) {int i = Find(key); if (i >= 0) return &GetObject(i); return NULL;}
-	int Find(String key) const {for(int i = 0; i < keys.GetCount(); i++) if (keys[i] == key) return i; return -1;}
-	Object& Get(String key) {int i = Find(key); if (i == -1) THROW(Exc("Unexpected key")); return values[i];}
-	int GetIterPos(Object* v) const {for(int i = 0; i < values.GetCount(); i++) if (&values[i] == v) return i; return -1;}
-	void SetAt(int i, const Object& v) {values[i] = v;}
-	void Remove(int i) {keys.Remove(i); values.Remove(i);}
+	void			operator=(const ObjectMap& m) {keys <<= m.keys; values <<= m.values;}
 	
-	void Clear() {keys.Clear(); values.Clear();}
-	int GetCount() const {return values.GetCount();}
-	bool IsEmpty() const {return values.IsEmpty();}
-	Object& operator[](int i) {return values[i];}
-	Object& GetObject(int i) {return values[i];}
-	const Object& operator[](int i) const {return values[i];}
-	const Object& GetObject(int i) const {return values[i];}
-	String GetKey(int i) const {return keys[i];}
-	void DeepCopyArrayMap(ObjectMap& map);
-	hash_t GetHashValue() const;
+	Object&			Add(String key, Object v) {keys.Add(key); return values.Add(v);}
+	Object&			Add(String key) {keys.Add(key); return values.Add();}
+	Object&			GetAdd(String key) {int i = Find(key); if (i >= 0) return values[i]; return Add(key);}
+	Object&			GetAdd(String key, const Object& def) {int i = Find(key); if (i >= 0) return values[i]; return Add(key, def);}
+	Object			TryGet(String key, Object def=Object()) {int i = Find(key); if (i >= 0) return GetObject(i); else return def;}
+	Object*			TryFind(String key) {int i = Find(key); if (i >= 0) return &GetObject(i); return NULL;}
+	int				Find(String key) const {for(int i = 0; i < keys.GetCount(); i++) if (keys[i] == key) return i; return -1;}
+	Object&			Get(String key) {int i = Find(key); if (i == -1) THROW(Exc("Unexpected key")); return values[i];}
+	const Object&	Get(String key) const {int i = Find(key); if (i == -1) THROW(Exc("Unexpected key")); return values[i];}
+	int				GetIterPos(Object* v) const {for(int i = 0; i < values.GetCount(); i++) if (&values[i] == v) return i; return -1;}
+	void			SetAt(int i, const Object& v) {values[i] = v;}
+	void			SetKey(int i, const String& key) {keys[i] = key;}
+	void			Remove(int i) {keys.Remove(i); values.Remove(i);}
 	
-	String ToString() const {String s; s << "ObjectMap(" << keys.GetCount() << ")"; return s;}
-	int64 ToInt() const {return keys.GetCount();}
-	double ToDouble() const {return keys.GetCount();}
+	void			Clear() {keys.Clear(); values.Clear();}
+	int				GetCount() const {return values.GetCount();}
+	bool			IsEmpty() const {return values.IsEmpty();}
+	Object&			operator[](int i) {return values[i];}
+	Object&			GetObject(int i) {return values[i];}
+	String			GetKey(int i) const {return keys[i];}
+	void			DeepCopyArrayMap(ObjectMap& map);
+	hash_t			GetHashValue() const;
+	
+	const Object&	operator[](int i) const {return values[i];}
+	const Object&	GetObject(int i) const {return values[i];}
+	
+	String			ToString() const {String s; s << "ObjectMap(" << keys.GetCount() << ")"; return s;}
+	int64			ToInt() const {return keys.GetCount();}
+	double			ToDouble() const {return keys.GetCount();}
 };
 
 struct ObjectArrayMapComb {

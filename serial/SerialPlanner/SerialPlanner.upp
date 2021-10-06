@@ -21,5 +21,7 @@ file
 	Drivers.cpp,
 	System.cpp,
 	TopChain.cpp,
+	ToyLoader.h,
+	ToyLoader.cpp,
 	_ readonly separator;
 

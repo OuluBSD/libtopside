@@ -4,11 +4,11 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
+void DebugMain(String script_content, String script_file, VectorMap<String,Object>& args, MachineVerifier* ver, bool dbg_ref_visits, uint64 dbg_ref) {
 	SetCoutLog();
 	//Serial::Factory::Dump();
 	
-	if (script_file.IsEmpty()) {
+	if (script_content.IsEmpty() && script_file.IsEmpty()) {
 		LOG("No script file given");
 		return;
 	}
@@ -59,13 +59,21 @@ void DebugMain(String script_file, VectorMap<String,Object>& args, MachineVerifi
 				LoopRef root = ls->GetRoot();
 				
 				String path;
-				if (FileExists(script_file))
-					path = script_file;
+				if (script_file.GetCount()) {
+					if (FileExists(script_file))
+						path = script_file;
+					else
+						path = ShareDirFile(AppendFileName("eon", script_file));
+					DUMP(path);
+				}
+				
+				String script_str;
+				if (script_content.GetCount())
+					script_str = script_content;
 				else
-					path = ShareDirFile(AppendFileName("eon", script_file));
-				DUMP(path);
-				String script_str = LoadFile(path);
+					script_str = LoadFile(path);
 				//script_str.DebugFollow();
+				
 				if (script_str.IsEmpty()) {
 					LOG("No script file in " << path);
 					return;

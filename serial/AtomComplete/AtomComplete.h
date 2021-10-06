@@ -8,6 +8,10 @@
 #include <AtomDebug/AtomDebug.h>
 //#include <AtomAudioCore/AtomAudioCore.h>
 
+#ifdef flagGUI
+	#include <Shadertoy/Shadertoy.h>
+#endif
+
 #ifdef flagCTRL
 	#error TODO
 	//#include <AtomCtrl/AtomCtrl.h>
