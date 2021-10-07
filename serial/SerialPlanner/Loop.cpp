@@ -117,11 +117,11 @@ void ScriptLoopLoader::InitSegments() {
 	AtomTypeCls consumer;
 	if (dev == DevCls::CENTER)
 		consumer = AsAtomTypeCls<CenterCustomer>();
-	else if (dev == DevCls::ACCEL) {
+	else if (dev == DevCls::OGL) {
 		#ifdef flagGUI
-		consumer = AsAtomTypeCls<AccelCustomer>();
+		consumer = AsAtomTypeCls<OglCustomer>();
 		#else
-		SetError("ACCEL device not supported without this program compiled with GUI compilation flag");
+		SetError("OGL device not supported without this program compiled with GUI compilation flag");
 		#endif
 	}
 	else {
@@ -160,7 +160,7 @@ void ScriptLoopLoader::InitSegments() {
 	}
 	
 	for (Script::Statement& stmt : def.stmts)
-		if (!SetWorldState(goal, stmt))
+		if (stmt.IsRouting() && !SetWorldState(goal, stmt))
 			return;
 	
 	goal_node.SetWorldState(goal);
@@ -485,11 +485,11 @@ bool ScriptLoopLoader::PostInitialize() {
 	return true;
 }
 
-SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out) {
+SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& outl, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out) {
 	ASSERT(status == INPUT_IS_WAITING);
-	ASSERT(out.status == OUTPUT_IS_WAITING);
-	auto& inputs = planner.GetSideSinks();
-	auto& outputs = out.planner.GetSideSources();
+	ASSERT(outl.status == OUTPUT_IS_WAITING);
+	Vector<Script::ActionPlanner::State>& inputs = planner.GetSideSinks();
+	Vector<Script::ActionPlanner::State>& outputs = outl.planner.GetSideSources();
 	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
 	
 	SideStatus ret = SIDE_NOT_ACCEPTED;
@@ -497,16 +497,24 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 	accepted_in = 0;
 	accepted_out = 0;
 	
-	for (auto& in_state : inputs) {
+	int in_side_id = src_side_conns.GetCount();
+	int out_side_id = outl.sink_side_conns.GetCount();
+	const Script::Statement* in_stmt = 0;
+	const Script::Statement* out_stmt = 0;
+	RTLOG("ScriptLoopLoader::AcceptOutput: in loop '" << def.id.ToString() << "' against '" << outl.def.id.ToString() << "': " << in_side_id << " --> " << out_side_id);
+	
+	for (Script::ActionPlanner::State& in_state : inputs) {
 		Script::APlanNode* in = in_state.last;
 		Script::WorldState& in_ws = in->GetWorldState();
+		Script::WorldState* in_prev_ws = in_state.second_last ? &in_state.second_last->GetWorldState() : 0;
 		ASSERT(in_ws.IsAddAtom());
 		AtomTypeCls in_atom = in_ws.GetAtom();
 		auto& in_d = Serial::Factory::AtomDataMap().Get(in_atom);
 		
-		for (auto& out_state : outputs) {
+		for (Script::ActionPlanner::State& out_state : outputs) {
 			Script::APlanNode* out = out_state.last;
 			Script::WorldState& out_ws = out->GetWorldState();
+			Script::WorldState* out_prev_ws = out_state.second_last ? &out_state.second_last->GetWorldState() : 0;
 			ASSERT(out_ws.IsAddAtom());
 			AtomTypeCls out_atom = out_ws.GetAtom();
 			auto& out_d = Serial::Factory::AtomDataMap().Get(out_atom);
@@ -517,6 +525,12 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 					accepted_in = &in_state;
 					accepted_out = &out_state;
 					accepted_count++;
+					
+					
+					in_stmt = in_ws.FindStatement(in_prev_ws, def.stmts);
+					out_stmt = out_ws.FindStatement(out_prev_ws, outl.def.stmts);
+					ASSERT(in_stmt && out_stmt);
+					
 					if (a == SIDE_ACCEPTED_MULTI || b == SIDE_ACCEPTED_MULTI)
 						ret = SIDE_ACCEPTED_MULTI;
 					else
@@ -528,13 +542,43 @@ SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& out, Script::ActionP
 	
 	if (accepted_count == 0) {
 		SetError("No inputs accepts any outputs");
-		return SIDE_NOT_ACCEPTED;
+		ret = SIDE_NOT_ACCEPTED;
 	}
 	else if (accepted_count > 1) {
 		SetError("Too many accepting input/output combinations");
-		return SIDE_NOT_ACCEPTED;
+		ret = SIDE_NOT_ACCEPTED;
 	}
 	
+	if (ret != SIDE_NOT_ACCEPTED && in_stmt && in_stmt->side_conds.GetCount()) {
+		if (in_side_id >= in_stmt->side_conds.GetCount()) {
+			SetError("side connection id-number is higher than the count of given side-connection conditionals");
+			ret = SIDE_NOT_ACCEPTED;
+		}
+		else {
+			RTLOG("ScriptLoopLoader::AcceptOutput: testing source conditionals in sink");
+			const Script::Statement& cond_stmt = in_stmt->side_conds[in_side_id];
+			if (!outl.PassSideConditionals(cond_stmt))
+				ret = SIDE_NOT_ACCEPTED;
+		}
+	}
+	
+	if (ret != SIDE_NOT_ACCEPTED && out_stmt && out_stmt->side_conds.GetCount()) {
+		if (out_side_id >= out_stmt->side_conds.GetCount()) {
+			SetError("side connection id-number is higher than the count of given side-connection conditionals");
+			ret = SIDE_NOT_ACCEPTED;
+		}
+		else {
+			RTLOG("ScriptLoopLoader::AcceptOutput: testing sink conditionals in source");
+			const Script::Statement& cond_stmt = out_stmt->side_conds[out_side_id];
+			if (!PassSideConditionals(cond_stmt))
+				ret = SIDE_NOT_ACCEPTED;
+		}
+	}
+	
+	if (ret != SIDE_NOT_ACCEPTED) {
+		this->src_side_conns.Add(&outl);
+		outl.sink_side_conns.Add(this);
+	}
 	
 	return ret;
 }
@@ -549,6 +593,40 @@ void ScriptLoopLoader::AddSideConnectionSegment(Script::ActionPlanner::State* st
 	seg.side_conn = c;
 	seg.as = state->as;
 }
+
+bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_stmt) {
+	if (src_side_stmt.value.IsEmpty()) {
+		SetError("statement '" + src_side_stmt.id.ToString() + "' has no value");
+		return false;
+	}
+	
+	for (const Script::Statement& stmt : def.stmts) {
+		if (stmt.value.IsEmpty()) {
+			RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop empty value stmt: " << stmt.id.ToString());
+			continue;
+		}
+		if (stmt.value->IsBoolean()) {
+			RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop boolean value stmt: " << stmt.id.ToString());
+			continue;
+		}
+		if (stmt.id == src_side_stmt.id) {
+			bool b = *stmt.value == *src_side_stmt.value;
+			if (b) {
+				RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': matching '" << stmt.value->ToString() << "'");
+			}
+			else {
+				RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': no match: '" << stmt.value->ToString() << "' vs '" << src_side_stmt.value->ToString() << "'");
+			}
+			return b;
+		}
+		else {
+			RTLOG("ScriptLoopLoader::PassSideConditionals: no id match: " << stmt.id.ToString() << " != " << src_side_stmt.id.ToString());
+		}
+	}
+	return false;
+}
+
+
 
 
 NAMESPACE_SERIAL_END

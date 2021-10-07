@@ -12,7 +12,7 @@ machine local: {
 				req daw.midi.ch;
 				req daw.midi.ch.connected.instrument;
 			};
-			loop accel.audio: {
+			loop ogl.audio: {
 				req daw.instrument.ch;
 				req daw.instrument.ch.connected.input;
 				req daw.audio.ch.connected.audio.out;
@@ -23,7 +23,7 @@ machine local: {
 				req daw.midi.ch;
 				req daw.midi.ch.connected.instrument;
 			};
-			loop accel.audio: {
+			loop ogl.audio: {
 				req daw.instrument.ch;
 				req daw.instrument.ch.connected.input;
 				req daw.audio.ch.connected.audio.out;
@@ -31,14 +31,14 @@ machine local: {
 			};
 		};
 		chain ch2: {	
-			loop accel.ch_sidechain: {
+			loop ogl.ch_sidechain: {
 				req daw.audio.ch;
 				req daw.audio.ch.connected.sidechain.in;
 				req daw.audio.ch.connected.audio.out;
 			};
 		};
 		chain ch3: {
-			loop accel.master_out: {
+			loop ogl.master_out: {
 				req daw.audio.ch;
 				req daw.audio.ch.connected.audio.in;
 				req daw.audio.ch.connected.hw;

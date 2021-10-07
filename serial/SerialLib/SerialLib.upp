@@ -15,9 +15,9 @@ file
 	AtomUtil.h,
 	AtomUtil.cpp,
 	CustomAtom.h,
-	AccelUtil.h,
-	AccelUtil.cpp,
-	AccelAtom.h,
+	OglUtil.h,
+	OglUtil.cpp,
+	OglAtom.h,
 	DummyAtom.h,
 	DummyAtom.cpp;
 

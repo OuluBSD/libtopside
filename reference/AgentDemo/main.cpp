@@ -27,7 +27,7 @@ struct SimpleGeneratorNode : RTTIBase {
 };
 
 // Use TerminalTest to generate sub nodes
-template <>	inline bool TerminalTest<SimpleGeneratorNode>(Node<SimpleGeneratorNode>& n) {
+template <>	inline bool TerminalTest<SimpleGeneratorNode>(Node<SimpleGeneratorNode>& n, Node<SimpleGeneratorNode>* prev) {
 	int depth = n.GetDepth();
 	if (depth >= 3 || n.GetCount()) return !n.GetCount();
 	int sub_node_count = 1 + Random(2);
@@ -55,7 +55,7 @@ struct RouteGeneratorNode : RTTIBase {
 };
 
 // Use TerminalTest to generate sub nodes
-template <>	inline bool TerminalTest<RouteGeneratorNode>(Node<RouteGeneratorNode>& n) {
+template <>	inline bool TerminalTest<RouteGeneratorNode>(Node<RouteGeneratorNode>& n, Node<RouteGeneratorNode>* prev) {
 	if (n.GetCount()) return !n.GetCount();
 	int goal = 0;
 	if (n.estimate_to_goal <= goal) return true;

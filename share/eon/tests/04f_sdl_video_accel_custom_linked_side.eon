@@ -6,14 +6,14 @@ machine sdl.app: {
 		
 	chain program: {
 		
-		loop accel.video.buffer: {
-			accel.customer: true;
-			accel.video.source.pipe: true {name: "buf0"; filepath: "shaders/toys/simple_double/stage1.glsl";};
+		loop ogl.fbo.buffer: {
+			ogl.customer: true;
+			ogl.fbo.source: true {name: "buf0"; filepath: "shaders/toys/simple_double/stage1.glsl";};
 		};
 		
-		loop accel.video.screen: {
-			accel.customer: true;
-			sdl.video.pipe: true {name: "buf1"; in0: "buf0"; filepath: "shaders/toys/simple_double/stage0.glsl";};
+		loop ogl.fbo.screen: {
+			ogl.customer: true;
+			sdl.fbo: true {name: "buf1"; in0: "buf0"; filepath: "shaders/toys/simple_double/stage0.glsl";};
 		};
 		
 		loop audio: {

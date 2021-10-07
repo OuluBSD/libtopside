@@ -22,7 +22,9 @@ public:
 	VAL(Audio) \
 	VAL(Video) \
 	VAL(Midi) \
-	VAL(Event)
+	VAL(Event) \
+	VAL(Fbo) \
+	
 
 #define VAL2_LIST(x) \
 	VAL2(x, Order) \
@@ -30,8 +32,9 @@ public:
 	VAL2(x, Audio) \
 	VAL2(x, Video) \
 	VAL2(x, Midi) \
-	VAL2(x, Event)
-
+	VAL2(x, Event) \
+	VAL2(x, Fbo) \
+	
 
 #define VAL(x) \
 	class x : public ValSpec { \

@@ -106,39 +106,6 @@ public:
 };
 
 
-class AccelVideoGenBase :
-	public virtual AtomBase
-{
-	DebugVideoGenerator		gen;
-	Format					fmt;
-	String					last_error;
-	int						mode = 0;
-	int						preset_i = -1;
-	
-	enum {
-		MODE_NONE,
-		MODE_TRACK_NUM,
-	};
-	
-	void GenerateStereoSine(const VideoFormat& fmt);
-	
-public:
-	AccelVideoGenBase();
-	
-	bool Initialize(const Script::WorldState& ws) override;
-	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	
-	void Visit(RuntimeVisitor& vis) override {}
-	
-	void SetPreset(int i) {preset_i = i;}
-	String GetLastError() const {return last_error;}
-	
-	
-};
-
-
 NAMESPACE_SERIAL_END
 
 #endif

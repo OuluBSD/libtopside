@@ -15,7 +15,7 @@ template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 }
 template <class T>	inline double GetSearcherEstimate(Node<T>& n) {return n.T::GetEstimate();}
 template <class T>	inline double GetSearcherDistance(Node<T>& n, Node<T>& dest) {return n.T::GetDistance(dest);}
-template <class T>	inline bool TerminalTest(Node<T>& n) {return n.GetTotalCount() == 0;}
+template <class T>	inline bool TerminalTest(Node<T>& n, Node<T>* prev) {return n.GetTotalCount() == 0;}
 
 
 
@@ -27,7 +27,7 @@ public:
 	
 	Searcher() {}
 	
-	inline bool TerminalTest(NodeT& n) {return TS::TerminalTest(n);}
+	inline bool TerminalTest(NodeT& n, NodeT* prev=NULL) {return TS::TerminalTest(n, prev);}
 	inline double Utility(NodeT& n) {return TS::GetSearcherUtility(n);}
 	inline double Estimate(NodeT& n) {return TS::GetSearcherEstimate(n);}
 	inline double Distance(NodeT& n, NodeT& dest) {return TS::GetSearcherDistance(n, dest);}
@@ -586,9 +586,10 @@ public:
 			
 			const NodePtr& t_ptr = open_set[smallest_id];
 			NodeT& t = *t_ptr.ptr;
+			NodeT* prev = t_ptr.came_from;
 			double current_g_score = t_ptr.g_score;
 			
-			if (TerminalTest(t))
+			if (TerminalTest(t, prev))
 				return ReconstructPath(t, closed_set, open_set);
 			
 			if (!do_search)

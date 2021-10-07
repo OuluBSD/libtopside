@@ -16,7 +16,9 @@ public:
 	DEV(Center) \
 	DEV(Accel) \
 	DEV(Net) \
-	DEV(Perma)
+	DEV(Perma) \
+	DEV(Ogl) \
+	
 
 
 #define DEV(x) \

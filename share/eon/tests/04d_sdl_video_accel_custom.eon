@@ -6,9 +6,9 @@ machine sdl.app: {
 		
 	chain program: {
 		
-		loop accel.video: {
-			accel.customer: true;
-			sdl.video.standalone: true {filepath: "shaders/toys/simple_single/stage0.glsl";};
+		loop ogl.fbo: {
+			ogl.customer: true;
+			sdl.fbo.standalone: true {filepath: "shaders/toys/simple_single/stage0.glsl";};
 		};
 		
 		loop audio: {

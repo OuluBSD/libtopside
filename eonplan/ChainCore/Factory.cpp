@@ -282,13 +282,15 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			ret_val.Add().SetId(dev);
 			ret_val.Add().SetId(val);
 			
-			for(int i = 0; i < h.sink_count; i++) {
+			int sink_count = min(2, h.sink_count);
+			for(int i = 0; i < sink_count; i++) {
 				GetKeyValDevUpper(h.sink[i], dev, val);
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
 			}
 			
-			for(int i = 0; i < h.src_count; i++) {
+			int src_count = min(2, h.src_count);
+			for(int i = 0; i < src_count; i++) {
 				GetKeyValDevUpper(h.src[i], dev, val);
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);

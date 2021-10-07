@@ -26,6 +26,9 @@ Format GetDefaultFormat(ValDevCls type) {
 	else if (type.val == ValCls::EVENT) {
 		fmt.SetEvent(type.dev);
 	}
+	else if (type.val == ValCls::FBO) {
+		fmt.SetFbo(type.dev, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+	}
 	else {
 		TODO
 	}

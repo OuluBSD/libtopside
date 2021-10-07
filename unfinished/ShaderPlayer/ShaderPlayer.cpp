@@ -36,7 +36,7 @@ void ShaderPlayer::Initialize() {
 void ShaderPlayer::Uninitialize() {
 	ASSERT(!accel)
 	//accel->Destroy();
-	//accel.Clear();
+	//ogl.Clear();
 }
 
 void ShaderPlayerInitializer() {

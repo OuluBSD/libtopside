@@ -25,7 +25,7 @@ void Factory::RefreshLinks(AtomData& d) {
 	auto& m = Factory::AtomDataMap();
 	if (!d.searched_sink_links) {
 		bool dump = false;
-		/*if (d.cls.src.dev == DevCls::ACCEL && d.cls.src.val == ValCls::MIDI) {
+		/*if (d.cls.src.dev == DevCls::OGL && d.cls.src.val == ValCls::MIDI) {
 			LOG(d.cls.ToString());
 			dump = true;
 		}*/

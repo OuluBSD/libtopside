@@ -209,8 +209,6 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
 	
-	buf.SetBufferId(ws.Get(".name"));
-	
 	InterfaceSinkRef sink_iface = GetSink();
 	int c = sink_iface->GetSinkCount();
 	for(int i = 0; i < c; i++)
@@ -241,9 +239,10 @@ void OglShaderBase::Uninitialize() {
 bool OglShaderBase::LoadPacket(int ch_i, const Packet& p) {
 	bool succ = true;
 	Format fmt = p->GetFormat();
-	if (fmt.IsVideo()) {
+	if (fmt.IsFbo()) {
+		int base = GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (p->IsData<InternalPacketData>()) {
-			succ = buf.LoadOutputLink(p->GetData<InternalPacketData>());
+			succ = buf.LoadOutputLink(ch_i - base, p->GetData<InternalPacketData>());
 		}
 		else {
 			RTLOG("OglShaderBase::LoadPacket: cannot handle packet: " << p->ToString());
@@ -275,7 +274,7 @@ void OglShaderBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	}
 	
 	Format fmt = p->GetFormat();
-	if (fmt.vd == VD(ACCEL,VIDEO)) {
+	if (fmt.vd == VD(OGL,FBO)) {
 		PacketValue& val = *p;
 		InternalPacketData& data = val.GetData<InternalPacketData>();
 		GetBuffer().StoreOutputLink(data);

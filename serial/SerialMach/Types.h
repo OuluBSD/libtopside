@@ -27,13 +27,14 @@
 	IFACE(DATA) \
 	IFACE(ORDER) \
 	IFACE(RECEIPT) \
+	IFACE(FBO) \
 
 
 #define DEV_IFACE(val) \
 	IFACE_CTX_CLS(CENTER, val, ) \
 	IFACE_CTX_CLS(PERMA, val, Perma) \
-	IFACE_CTX_CLS(ACCEL, val, Accel) \
 	IFACE_CTX_CLS(NET, val, Net) \
+	IFACE_CTX_CLS(OGL, val, Ogl) \
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -142,6 +143,7 @@ struct ValCls : Moveable<ValCls> {
 		Data = DATA,
 		Order = ORDER,
 		Receipt = RECEIPT,
+		Fbo = FBO,
 	} Type;
 	
 	Type type = INVALID;
@@ -169,15 +171,15 @@ struct DevCls : Moveable<DevCls> {
 		INVALID,
 		CENTER,
 		PERMA,
-		ACCEL,
 		NET,
+		OGL,
 		
 		TYPE_COUNT,
 		
 		Center = CENTER,
 		Perma = PERMA,
-		Accel = ACCEL,
 		Net = NET,
+		Ogl = OGL,
 	} Type;
 	
 	Type type = INVALID;
@@ -229,10 +231,13 @@ struct ValDevCls : Moveable<ValDevCls> {
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev, src_val))
 
 #define ATOM12(atom, role, content_dev, content_val, sink_dev, sink_val, src_dev0, src_val0, src_dev1, src_val1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev0, src_val0), false, VD(src_dev1, src_val1))
- 
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev0, src_val0), 0,1, ValDevCls(), VD(src_dev1, src_val1))
+
 #define ATOM21(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), true, VD(sink_dev1, sink_val1))
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 1,0, VD(sink_dev1, sink_val1), ValDevCls())
+
+#define ATOM55(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val, src_dev1, src_val1) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 4,4, VD(sink_dev1, sink_val1), VD(src_dev1, src_val1))
 
 
 struct AtomCls : Moveable<AtomCls> {
@@ -433,7 +438,15 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevCls& sink, const ValDevCls& src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevTuple& src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src) : iface(sink,content,src), sub(cls), role(role) {}
-	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src, bool is_xtra_sink, const ValDevCls& xtra) : iface(sink,content,src), sub(cls), role(role) {if (is_xtra_sink) iface.AddSink(xtra); else iface.AddSource(xtra);}
+	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src, int xtra_sinks, int xtra_srcs, const ValDevCls& xtra_sink, const ValDevCls& xtra_src) : iface(sink,content,src), sub(cls), role(role) {
+		ASSERT(xtra_sinks > 0 || xtra_srcs > 0);
+		ASSERT(xtra_sinks == 0 || xtra_sink.IsValid());
+		ASSERT(xtra_srcs == 0 || xtra_src.IsValid());
+		for(int i = 0; i < xtra_sinks; i++)
+			iface.AddSink(xtra_sink);
+		for(int i = 0; i < xtra_srcs; i++)
+			iface.AddSource(xtra_src);
+	}
 	
 	bool IsRoleDriver()		const {return role == AtomRole::DRIVER;}
 	bool IsRoleCustomer()	const {return role == AtomRole::CUSTOMER;}

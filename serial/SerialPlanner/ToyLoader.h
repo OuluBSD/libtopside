@@ -19,7 +19,12 @@ public:
 	
 	String GetResult();
 	
+	
+	static const ObjectMap* GetStageMap(int i, Object& o);
+	static String GetStageType(int i, Object& o);
+	static String GetStagePath(int i, Object& o);
 	static String GetSingleBufferVideo(String glsl_path);
+	static String GetDoubleBufferVideo(String glsl_path0, String glsl_path1);
 	
 };
 

@@ -47,7 +47,6 @@ protected:
 	ValDevCls					side_vd;
 	Type						type = INVALID;
 	ActionPlanner*				ap = 0;
-	const Script::Statement*	stmt = 0;
 	
 public:
 	
@@ -68,7 +67,6 @@ public:
 	void SetAs_AddAtom(AtomTypeCls atom) {type = ADD_COMP; cur_atom = atom;}
 	void SetSideCls(ValDevCls vd) {side_vd = vd;}
 	void SetSinkCls(ValDevCls vd) {sink_vd = vd;}
-	void SetStatement(const Script::Statement* s) {stmt = s;}
 	
 	ActionPlanner& GetActionPlanner() const {return *ap;}
 	bool IsAddAtom() const {return type == ADD_COMP;}
@@ -88,7 +86,6 @@ public:
 	const ValDevCls& GetSinkCls() const {return sink_vd;}
 	String ToString() const;
 	String GetFullString() const;
-	const Script::Statement* GetStatement() const {return stmt;}
 	bool Contains(const WorldState& ws) const;
 	bool Conflicts(const WorldState& ws) const;
 	int Compare(int idx, const WorldState& ws) const;
@@ -193,6 +190,7 @@ public:
 	using Searcher = AStar<Script::ActionNode>;
 	
 	struct State : Moveable<State> {
+		ANode*					second_last;
 		ANode*					last;
 		Searcher				as;
 	};
@@ -216,7 +214,7 @@ protected:
 	ActionPlannerWrapper*		wrapper = 0;
 	ScriptLoopLoader*				loop_loader = 0;
 	Array<WorldState>			search_cache;
-	Vector<State>				side_sinkputs, side_srcputs;
+	Vector<State>				side_sinks, side_srcs;
 	int							side_sink_max_est, side_src_max_est;
 	
 public:
@@ -235,15 +233,15 @@ public:
 	int GetAddAtom(const Id& id);
 	const Atom& GetAtom(int i) const {return atoms[i];}
 	bool IsSideSink() const {return side_sink_max_est <= side_src_max_est;}
-	Vector<State>& GetSideSinks() {return side_sinkputs;}
-	Vector<State>& GetSideSources() {return side_srcputs;}
+	Vector<State>& GetSideSinks() {return side_sinks;}
+	Vector<State>& GetSideSources() {return side_srcs;}
 	
 	bool SetPreCondition(int action_id, int atom_id, bool value);
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	void SetLoopLoader(ScriptLoopLoader* l) {loop_loader = l;}
-	void AddSideSink(const Searcher& as, ANode& n);
-	void AddSideSource(const Searcher& as, ANode& n);
+	void AddSideSink(const Searcher& as, ANode& n, ANode* prev);
+	void AddSideSource(const Searcher& as, ANode& n, ANode* prev);
 	
 	void GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	ScriptLoopLoader& GetLoopLoader() const {return *loop_loader;}

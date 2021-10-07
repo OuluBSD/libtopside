@@ -158,9 +158,10 @@ void Screen::SetRect(Rect r) {
 bool Screen::Recv(int ch_i, const Packet& p) {
 	bool succ = true;
 	Format fmt = p->GetFormat();
-	if (fmt.IsVideo()) {
+	if (fmt.IsFbo()) {
+		int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (p->IsData<InternalPacketData>()) {
-			succ = ogl_buf->LoadOutputLink(p->GetData<InternalPacketData>());
+			succ = ogl_buf->LoadOutputLink(ch_i - base, p->GetData<InternalPacketData>());
 		}
 		else {
 			RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());
@@ -182,7 +183,7 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 	
 	ASSERT(last_packet);
 	Format fmt = last_packet->GetFormat();
-	if (fmt.IsVideo()) {
+	if (fmt.IsFbo()) {
 		RTLOG("Screen::Render: from video packet: " << last_packet->ToString());
 		const VideoFormat& vfmt = fmt.vid;
 		

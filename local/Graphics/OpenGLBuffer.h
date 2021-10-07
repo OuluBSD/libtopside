@@ -166,7 +166,6 @@ protected:
 	GLuint						frame_buf[2] = {0,0};
 	GLint						var_idx[VAR_COUNT];
 	
-	String						buffer_id;
 	String						name;
 	String						description;
 	String						code[PROG_COUNT];
@@ -254,9 +253,8 @@ public:
 	
 	void				OnError(const char* fn, String s);
 	
-	void				SetBufferId(String name);
 	void				StoreOutputLink(InternalPacketData& v);
-	bool				LoadOutputLink(InternalPacketData& v);
+	bool				LoadOutputLink(int in_id, InternalPacketData& v);
 	
 };
 

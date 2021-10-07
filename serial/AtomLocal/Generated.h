@@ -141,30 +141,14 @@ public:
 #endif
 
 #if defined flagGUI
-class AccelVideoDbgSrc : public Atom<AccelVideoDbgSrc>, public AccelVideoGenBase {
+class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
 public:
-	RTTI_DECL2(AccelVideoDbgSrc, AtomT, AccelVideoGenBase)
-	COPY_PANIC(AccelVideoDbgSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.src.dbg_generator")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagGUI
-class AccelCustomer : public Atom<AccelCustomer>, public CustomerBase {
-
-public:
-	RTTI_DECL2(AccelCustomer, AtomT, CustomerBase)
-	COPY_PANIC(AccelCustomer)
+	RTTI_DECL2(OglCustomer, AtomT, CustomerBase)
+	COPY_PANIC(OglCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.customer")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.customer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -258,13 +242,13 @@ public:
 };
 
 #if defined flagGUI
-class SdlVideoAtomSA : public Atom<SdlVideoAtomSA>, public SDL2ScreenBase {
+class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtomSA, AtomT, SDL2ScreenBase)
-	COPY_PANIC(SdlVideoAtomSA)
+	RTTI_DECL2(SdlFboAtomSA, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -274,45 +258,45 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2ScreenBase {
+class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2ScreenBase)
+	RTTI_DECL2(SdlFboAtom, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2ScreenBase {
+
+public:
+	RTTI_DECL2(SdlFboPipe, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2SwScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2SwScreenBase)
 	COPY_PANIC(SdlVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagGUI
-class SdlVideoPipe : public Atom<SdlVideoPipe>, public SDL2ScreenBase {
-
-public:
-	RTTI_DECL2(SdlVideoPipe, AtomT, SDL2ScreenBase)
-	COPY_PANIC(SdlVideoPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagGUI
-class SdlSwVideoAtom : public Atom<SdlSwVideoAtom>, public SDL2SwScreenBase {
-
-public:
-	RTTI_DECL2(SdlSwVideoAtom, AtomT, SDL2SwScreenBase)
-	COPY_PANIC(SdlSwVideoAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.swvideo")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -343,7 +327,7 @@ public:
 	RTTI_DECL2(OglShaderSource, AtomT, OglShaderBase)
 	COPY_PANIC(OglShaderSource)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.source")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -359,7 +343,7 @@ public:
 	RTTI_DECL2(OglShaderPipe, AtomT, OglShaderBase)
 	COPY_PANIC(OglShaderPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("accel.video.source.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -389,11 +373,7 @@ using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
 #endif
 
 #if defined flagGUI
-using AccelVideoDbgSrcRef = Ref<AccelVideoDbgSrc, AtomParent>;
-#endif
-
-#if defined flagGUI
-using AccelCustomerRef = Ref<AccelCustomer, AtomParent>;
+using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 #endif
 
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
@@ -409,19 +389,19 @@ using EventStateRef = Ref<EventState, AtomParent>;
 using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 
 #if defined flagGUI
-using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, AtomParent>;
+using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
+#endif
+
+#if defined flagGUI
+using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
+#endif
+
+#if defined flagGUI
+using SdlFboPipeRef = Ref<SdlFboPipe, AtomParent>;
 #endif
 
 #if defined flagGUI
 using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
-#endif
-
-#if defined flagGUI
-using SdlVideoPipeRef = Ref<SdlVideoPipe, AtomParent>;
-#endif
-
-#if defined flagGUI
-using SdlSwVideoAtomRef = Ref<SdlSwVideoAtom, AtomParent>;
 #endif
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;

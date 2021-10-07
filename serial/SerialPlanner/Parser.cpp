@@ -68,6 +68,10 @@ String Statement::ToString() const {
 	return s;
 }
 
+bool Statement::IsRouting() const {
+	return value && value->IsBoolean();
+}
+
 String LoopDefinition::ToString() const {
 	return "loop " + id.ToString();
 }
@@ -505,7 +509,7 @@ bool Parser::ParseLoopScope(Script::LoopDefinition& def) {
 	return true;
 }
 
-bool Parser::ParseStmt(Script::Statement& stmt) {
+bool Parser::ParseStmt(Script::Statement& stmt, bool allow_square_end) {
 	if (!ParseId(stmt.id))
 		return false;
 	
@@ -514,12 +518,20 @@ bool Parser::ParseStmt(Script::Statement& stmt) {
 	if (!ParseValue(*stmt.value))
 		return false;
 	
+	if (IsChar('[')) {
+		if (!ParseStmtSideConditionals(stmt))
+			return false;
+	}
 	if (IsChar('{')) {
 		if (!ParseStmtArguments(stmt))
 			return false;
 	}
 	
-	PASS_CHAR(';')
+	if (allow_square_end && IsChar(']'))
+		; // pass
+	else
+		PASS_CHAR(';')
+	
 	return true;
 }
 
@@ -535,6 +547,23 @@ bool Parser::ParseStmtArguments(Script::Statement& stmt) {
 	}
 	
 	PASS_CHAR('}')
+	return true;
+}
+
+bool Parser::ParseStmtSideConditionals(Script::Statement& stmt) {
+	PASS_CHAR('[')
+	
+	while (!IsChar(']')) {
+		if (EmptyStatement()) {
+			AddError("empty statement in side-connection qualifier");
+			return false;
+		}
+		
+		if (!ParseStmt(stmt.side_conds.Add(), true))
+			return false;
+	}
+	
+	PASS_CHAR(']')
 	return true;
 }
 

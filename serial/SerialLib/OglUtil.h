@@ -1,5 +1,5 @@
-#ifndef _SerialLib_AccelUtil_h_
-#define _SerialLib_AccelUtil_h_
+#ifndef _SerialLib_OglUtil_h_
+#define _SerialLib_OglUtil_h_
 
 
 #ifdef flagGUI

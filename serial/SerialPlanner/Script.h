@@ -146,7 +146,10 @@ protected:
 	Script::ActionPlanner			planner;
 	const Script::APlanNode*		accepted_side_node = 0;
 	
-	Array<AtomBaseRef>		atoms;
+	Array<AtomBaseRef>				atoms;
+	
+	Vector<ScriptLoopLoader*>		src_side_conns;
+	Vector<ScriptLoopLoader*>		sink_side_conns;
 	
 	void SetupSegment(ScriptLoopSegment& s);
 	bool SetWorldState(Script::WorldState& ws, const Script::Statement& stmt);
@@ -158,6 +161,7 @@ public:
 	void		Forward();
 	void		InitSegments();
 	void		ForwardTopSegment();
+	bool		PassSideConditionals(const Script::Statement& side_stmt);
 	
 	
 	bool		Parse();
@@ -423,7 +427,10 @@ NAMESPACE_SERIAL_END
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Script::ActionNode>& n) {
+template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
+	Node<Serial::Script::ActionNode>& n,
+	Node<Serial::Script::ActionNode>* prev)
+{
 	/*if (&n == (void*)0x806A117C0) {
 		LOG("");
 	}*/
@@ -457,9 +464,21 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 	if (ws.IsAddAtom()) {
 		if (n.GetLinkedCount() > 0) {
 			AtomTypeCls a = ws.GetAtom();
+			
+			if (a.iface.sink.GetCount() >= 2 || a.iface.src.GetCount() >= 2) {
+				for(int i = 1; i < a.iface.sink.GetCount(); i++) {
+					ap.AddSideSink(seg.as, n, prev);
+				}
+				for(int i = 1; i < a.iface.src.GetCount(); i++) {
+					ap.AddSideSource(seg.as, n, prev);
+				}
+				return false;
+			}
+			
+			#if 0
 			if (a.iface.sink.GetCount() >= 2) {
 				ASSERT(a.HasSideChannels());
-				ap.AddSideSink(seg.as, n);
+				ap.AddSideSink(seg.as, n, prev);
 				return false;
 			}
 			if (a.iface.src.GetCount() >= 2) {
@@ -469,10 +488,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(Node<Serial::Sc
 					ws		.IsFalse("has.side.sink"))
 					return false;
 				
-				ap.AddSideSource(seg.as, n);
+				ap.AddSideSource(seg.as, n, prev);
 				return false;
 			}
-			
+			#endif
 		}
 	}
 	else {

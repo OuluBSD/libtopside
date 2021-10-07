@@ -6,9 +6,9 @@ machine sdl.app: {
 		
 	chain program: {
 		
-		loop accel.video: {
-			accel.customer: true;
-			sdl.video.standalone: true {testimage: true;};
+		loop ogl.fbo: {
+			ogl.customer: true;
+			sdl.fbo.standalone: true {testimage: true;};
 		};
 		
 		loop audio: {

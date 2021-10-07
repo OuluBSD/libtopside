@@ -16,49 +16,49 @@ state daw.instrument.ch: {
 	has.converter: true;
 	has.side.sink: true;
 	has.side.src: true;
-	accel.midi.src: false;
-	accel.midi.side.sink.center: true;
-	accel.midi.convert.audio: true;
-	accel.midi.convert.audio.test: true;
+	ogl.midi.src: false;
+	ogl.midi.side.sink.center: true;
+	ogl.midi.convert.audio: true;
+	ogl.midi.convert.audio.test: true;
 };
 
 state daw.instrument.ch.connected.input: {
-	accel.midi.src: false;
-	accel.midi.side.sink.center: true;
+	ogl.midi.src: false;
+	ogl.midi.side.sink.center: true;
 };
 
 state daw.audio.ch: {
 	has.converter: false;
 	has.side.sink: true;
-	accel.audio.src: false;
-	accel.audio.side.sink.accel: true;
+	ogl.audio.src: false;
+	ogl.audio.side.sink.accel: true;
 };
 
 state daw.audio.ch.connected.audio.out: {
 	has.side.src: true;
-	accel.audio.side.src: true;
-	accel.audio.side.src.accel: true;
+	ogl.audio.side.src: true;
+	ogl.audio.side.src.accel: true;
 };
 
 state daw.audio.ch.connected.audio.in: {
-	accel.audio.side.sink: true;
-	accel.audio.side.sink.accel: true;
+	ogl.audio.side.sink: true;
+	ogl.audio.side.sink.accel: true;
 };
 
 state daw.audio.ch.connected.sidechain.out: {
 	has.side.src: true;
-	accel.audio.side.src: true;
-	accel.audio.side.src.accel: true;
+	ogl.audio.side.src: true;
+	ogl.audio.side.src.accel: true;
 };
 
 state daw.audio.ch.connected.sidechain.in: {
-	accel.audio.side.sink: true;
-	accel.audio.side.sink.accel: true;
+	ogl.audio.side.sink: true;
+	ogl.audio.side.sink.accel: true;
 };
 
 state daw.audio.ch.connected.hw: {
-	accel.audio.side.src: true;
-	accel.audio.side.src.center: true;
+	ogl.audio.side.src: true;
+	ogl.audio.side.src.center: true;
 };
 
 state daw.audio.hw.out: {

@@ -839,37 +839,15 @@ void OglBuffer::OnError(const char* fn, String s) {
 	LOG("OglBuffer: error: " << (String)fn << ": " << s);
 }
 
-void OglBuffer::SetBufferId(String name) {
-	buffer_id = name.Left(8);
-}
-
 void OglBuffer::StoreOutputLink(InternalPacketData& v) {
 	static_assert(sizeof(v.u32) == sizeof(GLuint), "Unexpected GLuint size");
 	
-	const char* str = buffer_id.Begin();
-	int str_len = min(buffer_id.GetCount(), 8);
-	ASSERT(str_len > 0 && str_len <= 8);
-	
-	for(int i = 0; i < 8; i++)
-		v.txt[i] = (i < str_len ? str[i] : 0);
-	
-	//v.u32 = frame_buf[buf_i];
-	//ASSERT(v.u32 > 0);
 	v.ptr = this;
-	
 }
 
-bool OglBuffer::LoadOutputLink(InternalPacketData& v) {
+bool OglBuffer::LoadOutputLink(int in_id, InternalPacketData& v) {
 	String buf_id = v.GetText();
 	
-	int in_id = -1;
-	if (buf_id.GetCount() == 4) {
-		if (buf_id.Left(3) == "buf") {
-			int id_chr = buf_id[3];
-			if (id_chr >= '0' && id_chr <= '3')
-				in_id = id_chr - '0';
-		}
-	}
 	if (in_id >= 0) {
 		if (in_id <= in.GetCount())
 			in.SetCount(in_id+1);

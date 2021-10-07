@@ -48,6 +48,7 @@ String ValCls::GetName(Type t) {
 		case DATA:			return "data";
 		case ORDER:			return "order";
 		case RECEIPT:		return "receipt";
+		case FBO:			return "fbo";
 		case INVALID:
 		default: return "invalid";
 	}
@@ -68,6 +69,8 @@ ValCls::Type ValCls::Get(String s) {
 		return ORDER;
 	if (s == "receipt")
 		return RECEIPT;
+	if (s == "fbo")
+		return FBO;
 	
 	return INVALID;
 }
@@ -78,8 +81,8 @@ String DevCls::GetName(Type t) {
 	switch (t) {
 		case CENTER:	return "center";
 		case PERMA:		return "perma";
-		case ACCEL:		return "accel";
 		case NET:		return "net";
+		case OGL:		return "ogl";
 		case INVALID:
 		default: return "invalid";
 	}
@@ -90,10 +93,12 @@ DevCls::Type DevCls::Get(String s) {
 		return CENTER;
 	if (s == "perma")
 		return PERMA;
-	if (s == "accel")
-		return ACCEL;
+	if (s == "ogl")
+		return OGL;
 	if (s == "net")
 		return NET;
+	if (s == "ogl")
+		return OGL;
 	
 	return INVALID;
 }

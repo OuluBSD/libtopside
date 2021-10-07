@@ -5,6 +5,7 @@
 #define HEADER11(x, base, role, content, sink, src)			using x = HeaderT<base, sink, src>;
 #define HEADER12(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define HEADER21(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER44_O44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define BASE_FLAG(x, flag)
 #define BASE_ACTION(x, act)
 #define HEADER_ACTION(x, act)

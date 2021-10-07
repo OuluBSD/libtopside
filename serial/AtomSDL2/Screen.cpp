@@ -12,7 +12,6 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	
 	OglBuffer& buf = GetBuffer();
-	buf.SetBufferId(ws.Get(".name"));
 	obj->SetShaderFile(ws.Get(".filepath"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);
@@ -41,7 +40,7 @@ void SDL2ScreenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 	
 	#if 0
 	Format fmt = p->GetFormat();
-	if (fmt.vd == VD(ACCEL,VIDEO)) {
+	if (fmt.vd == VD(OGL,FBO)) {
 		PacketValue& val = *p;
 		InternalPacketData& data = val.GetData<InternalPacketData>();
 		GetBuffer().StoreOutputLink(data);

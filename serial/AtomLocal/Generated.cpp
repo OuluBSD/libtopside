@@ -151,36 +151,18 @@ AtomTypeCls VideoDbgSrc::GetType() const
 
 #endif
 #if defined flagGUI
-AtomTypeCls AccelVideoDbgSrc::GetAtomType()
+AtomTypeCls OglCustomer::GetAtomType()
 {
-	return ATOM11(ACCEL_VIDEO_DBG_SRC, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
+	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);
 }
 
-void AccelVideoDbgSrc::Visit(RuntimeVisitor& vis)
+void OglCustomer::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Atom<AccelVideoDbgSrc>>(this);
-	vis.VisitThis<AccelVideoGenBase>(this);
-}
-
-AtomTypeCls AccelVideoDbgSrc::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagGUI
-AtomTypeCls AccelCustomer::GetAtomType()
-{
-	return ATOM11(ACCEL_CUSTOMER, CUSTOMER, ACCEL, ORDER, ACCEL, RECEIPT, ACCEL, ORDER);
-}
-
-void AccelCustomer::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<AccelCustomer>>(this);
+	vis.VisitThis<Atom<OglCustomer>>(this);
 	vis.VisitThis<CustomerBase>(this);
 }
 
-AtomTypeCls AccelCustomer::GetType() const
+AtomTypeCls OglCustomer::GetType() const
 {
 	return GetAtomType();
 }
@@ -283,18 +265,54 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 }
 
 #if defined flagGUI
-AtomTypeCls SdlVideoAtomSA::GetAtomType()
+AtomTypeCls SdlFboAtomSA::GetAtomType()
 {
-	return ATOM11(SDL_VIDEO_ATOM_S_A, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, RECEIPT);
+	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
 }
 
-void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
+void SdlFboAtomSA::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Atom<SdlVideoAtomSA>>(this);
+	vis.VisitThis<Atom<SdlFboAtomSA>>(this);
 	vis.VisitThis<SDL2ScreenBase>(this);
 }
 
-AtomTypeCls SdlVideoAtomSA::GetType() const
+AtomTypeCls SdlFboAtomSA::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls SdlFboAtom::GetAtomType()
+{
+	return ATOM11(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+}
+
+void SdlFboAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlFboAtom>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
+}
+
+AtomTypeCls SdlFboAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls SdlFboPipe::GetAtomType()
+{
+	return ATOM21(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
+}
+
+void SdlFboPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlFboPipe>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
+}
+
+AtomTypeCls SdlFboPipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -303,52 +321,16 @@ AtomTypeCls SdlVideoAtomSA::GetType() const
 #if defined flagGUI
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
-	return ATOM11(SDL_VIDEO_ATOM, PIPE, ACCEL, VIDEO, ACCEL, VIDEO, ACCEL, RECEIPT);
+	return ATOM11(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
 }
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlVideoAtom>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
-}
-
-AtomTypeCls SdlVideoAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagGUI
-AtomTypeCls SdlVideoPipe::GetAtomType()
-{
-	return ATOM21(SDL_VIDEO_PIPE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO, ACCEL, RECEIPT);
-}
-
-void SdlVideoPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<SdlVideoPipe>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
-}
-
-AtomTypeCls SdlVideoPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagGUI
-AtomTypeCls SdlSwVideoAtom::GetAtomType()
-{
-	return ATOM11(SDL_SW_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
-}
-
-void SdlSwVideoAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<SdlSwVideoAtom>>(this);
 	vis.VisitThis<SDL2SwScreenBase>(this);
 }
 
-AtomTypeCls SdlSwVideoAtom::GetType() const
+AtomTypeCls SdlVideoAtom::GetType() const
 {
 	return GetAtomType();
 }
@@ -373,7 +355,7 @@ AtomTypeCls SdlAudioAtom::GetType() const
 #if defined flagGUI
 AtomTypeCls OglShaderSource::GetAtomType()
 {
-	return ATOM11(OGL_SHADER_SOURCE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, VIDEO);
+	return ATOM11(OGL_SHADER_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
 }
 
 void OglShaderSource::Visit(RuntimeVisitor& vis)
@@ -391,7 +373,7 @@ AtomTypeCls OglShaderSource::GetType() const
 #if defined flagGUI
 AtomTypeCls OglShaderPipe::GetAtomType()
 {
-	return ATOM12(OGL_SHADER_PIPE, PIPE, ACCEL, VIDEO, ACCEL, ORDER, ACCEL, RECEIPT, ACCEL, VIDEO);
+	return ATOM55(OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
 }
 
 void OglShaderPipe::Visit(RuntimeVisitor& vis)

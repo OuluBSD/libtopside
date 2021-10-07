@@ -23,10 +23,13 @@ struct Statement {
 	Id id;
 	One<Value> value;
 	Array<Statement> args;
+	Array<Statement> side_conds;
 	
 	void operator=(const Statement& v);
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
+	bool IsRouting() const;
+	
 };
 
 struct LoopDefinition {
@@ -72,13 +75,13 @@ struct Value {
 		VAL_ID
 	} Type;
 	
-	Type type = VAL_INVALID;
-	LoopDefinition customer;
-	String str;
-	bool b;
-	int i;
-	double f;
-	Id id;
+	Type			type = VAL_INVALID;
+	LoopDefinition	customer;
+	String			str;
+	bool			b = 0;
+	int				i = 0;
+	double			f = 0;
+	Id				id;
 	
 	
 	Value() {}
@@ -92,10 +95,24 @@ struct Value {
 		f = v.f;
 		id = v.id;
 	}
+	bool operator==(const Value& v) const {
+		switch (type) {
+			case VAL_INVALID:	return v.type == VAL_INVALID;
+			case VAL_CUSTOMER:	return false;
+			case VAL_STRING:	return str == v.str;
+			case VAL_INT:		return i == v.i;
+			case VAL_DOUBLE:	return f == v.f;
+			case VAL_BOOLEAN:	return b == v.b;
+			case VAL_ID:		return id == v.id;
+			default: return false;
+		}
+	}
 	void SetBool(bool b) {type = VAL_BOOLEAN; this->b = b;}
 	String GetTreeString(int indent=0) const;
 	String ToString() const;
 	String GetValue() const;
+	bool IsBoolean() const {return type == VAL_BOOLEAN;}
+	
 };
 
 struct MachineDefinition {
@@ -142,8 +159,9 @@ class Parser : public CParser {
 	
 	
 	bool Parse(Script::AtomilationUnit&);
-	bool ParseStmt(Script::Statement&);
+	bool ParseStmt(Script::Statement&, bool allow_square_end=false);
 	bool ParseStmtArguments(Script::Statement&);
+	bool ParseStmtSideConditionals(Script::Statement&);
 	bool ParseLoop(Script::LoopDefinition&);
 	bool ParseChain(Script::ChainDefinition&);
 	bool ParseId(Script::Id&);

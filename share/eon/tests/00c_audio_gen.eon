@@ -1,0 +1,31 @@
+chain tester: {
+
+	loop output0: {
+		id: "out0";
+		center.customer: true;
+		center.audio.src.test: true;
+		center.audio.side.src.center: true;
+	};
+	
+	loop output1: {
+		id: "out1";
+		center.customer: true;
+		center.audio.src.test: true;
+		center.audio.side.src.center: true;
+	};
+	
+	loop pipe: {
+		id: "pipe";
+		center.customer: true;
+		center.audio.side.sink.center: true [id:"out0"];
+		center.audio.side.src.center: true;
+	};
+	
+	loop input: {
+		id: "in";
+		center.customer: true;
+		center.audio.side.sink.center: true [id:"pipe"; id:"out1"];
+		center.audio.sink.test.realtime: true;
+	};
+	
+};

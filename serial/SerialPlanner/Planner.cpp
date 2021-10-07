@@ -347,8 +347,8 @@ void ActionPlanner::Clear() {
 }
 
 void ActionPlanner::ClearForward() {
-	side_sinkputs.Clear();
-	side_srcputs.Clear();
+	side_sinks.Clear();
+	side_srcs.Clear();
 	side_sink_max_est = INT_MAX;
 	side_src_max_est = INT_MAX;
 }
@@ -474,33 +474,35 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
-void ActionPlanner::AddSideSink(const Searcher& as, ANode& n) {
+void ActionPlanner::AddSideSink(const Searcher& as, ANode& n, ANode* prev) {
 	int est = n.GetEstimate();
 	if (est < side_sink_max_est) {
 		side_sink_max_est = est;
-		side_sinkputs.Clear();
+		side_sinks.Clear();
 	}
 	if (est <= side_sink_max_est) {
-		State& s = side_sinkputs.Add();
+		State& s = side_sinks.Add();
 		s.last = &n;
+		s.second_last = prev;
 		s.as = as;
 	}
 }
 
-void ActionPlanner::AddSideSource(const Searcher& as, ANode& n) {
+void ActionPlanner::AddSideSource(const Searcher& as, ANode& n, ANode* prev) {
 	int est = n.GetEstimate();
 	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
 	if (est < side_src_max_est) {
 		side_src_max_est = est;
-		side_srcputs.Clear();
+		side_srcs.Clear();
 	}
 	if (est <= side_src_max_est) {
 		/*hash_t h = n.GetWorldState().GetHashValue();
-		for (State& s : side_srcputs)
+		for (State& s : side_srcs)
 			if (s.last->GetWorldState().GetHashValue() == h)
 				return;*/
-		State& s = side_srcputs.Add();
+		State& s = side_srcs.Add();
 		s.last = &n;
+		s.second_last = prev;
 		s.as = as;
 	}
 }
@@ -702,7 +704,7 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		ASSERT(dst.IsValid());
 		const Factory::AtomData& dst_cd = m.Get(dst);
 		
-		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(ACCEL,AUDIO)) {
+		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(OGL,AUDIO)) {
 			LOG(dst.ToString());
 		}*/
 		/*FAIL if (atom.role != AtomRole::CUSTOMER &&
