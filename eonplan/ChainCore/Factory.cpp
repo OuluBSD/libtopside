@@ -272,7 +272,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			Expression& ret_val = ret_expr.SetReturn().First();
 			ASSERT(h.src_count > 0 && h.sink_count > 0);
 			
-			String call = "ATOM" + IntStr(h.sink_count) + IntStr(h.src_count);
+			String call = "ATOM"
+				+ IntStr(h.sink_count - h.sink_user_side_count)
+				+ IntStr(h.src_count - h.src_user_side_count);
+			if (h.sink_user_side_count > 0 || h.src_user_side_count > 0)
+				call << "_U" << h.sink_user_side_count << h.src_user_side_count;
 			ret_val.SetMetaCall(call);
 			ret_val.Add().SetId(h.key);
 			ret_val.Add().SetId(h.role);
@@ -288,12 +292,18 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
 			}
+			for(int i = 2; i < h.sink_count; i++) {
+				ASSERT_(h.sink[i] == h.sink[1], "Currently only one same type is allowed in all side ifaces");
+			}
 			
 			int src_count = min(2, h.src_count);
 			for(int i = 0; i < src_count; i++) {
 				GetKeyValDevUpper(h.src[i], dev, val);
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
+			}
+			for(int i = 2; i < h.src_count; i++) {
+				ASSERT_(h.src[i] == h.src[1], "Currently only one same type is allowed in all side ifaces");
 			}
 		}
 		

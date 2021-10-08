@@ -169,6 +169,7 @@ class Parser : public CParser {
 	bool ParseReturnStmt(Script::Statement&);
 	bool ParseRequirementStmt(Script::Id&);
 	bool EmptyStatement() {return Char(';');}
+	bool TrueStatement(Script::Statement&);
 	bool ChainScope(Script::ChainDefinition&);
 	bool ParseLoopScope(Script::LoopDefinition&);
 	bool ParseGlobalScope(Script::GlobalScope&);

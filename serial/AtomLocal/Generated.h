@@ -109,6 +109,21 @@ public:
 
 };
 
+class AudioSplitterUser : public Atom<AudioSplitterUser>, public SplitterBase {
+
+public:
+	RTTI_DECL2(AudioSplitterUser, AtomT, SplitterBase)
+	COPY_PANIC(AudioSplitterUser)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center.user")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class AudioJoiner : public Atom<AudioJoiner>, public JoinerBase {
 
 public:
@@ -117,6 +132,36 @@ public:
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioJoinerUser : public Atom<AudioJoinerUser>, public JoinerBase {
+
+public:
+	RTTI_DECL2(AudioJoinerUser, AtomT, JoinerBase)
+	COPY_PANIC(AudioJoinerUser)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center.user")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioJoiner2User : public Atom<AudioJoiner2User>, public JoinerBase {
+
+public:
+	RTTI_DECL2(AudioJoiner2User, AtomT, JoinerBase)
+	COPY_PANIC(AudioJoiner2User)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink2.center.user")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -321,11 +366,11 @@ public:
 };
 
 #if defined flagGUI
-class OglShaderSource : public Atom<OglShaderSource>, public OglShaderBase {
+class OglShaderPipe : public Atom<OglShaderPipe>, public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderSource, AtomT, OglShaderBase)
-	COPY_PANIC(OglShaderSource)
+	RTTI_DECL2(OglShaderPipe, AtomT, OglShaderBase)
+	COPY_PANIC(OglShaderPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.pipe")
 	ATOM_MAKE_ACTION_END
@@ -337,11 +382,11 @@ public:
 #endif
 
 #if defined flagGUI
-class OglShaderPipe : public Atom<OglShaderPipe>, public OglShaderBase {
+class OglShaderAtom : public Atom<OglShaderAtom>, public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderPipe, AtomT, OglShaderBase)
-	COPY_PANIC(OglShaderPipe)
+	RTTI_DECL2(OglShaderAtom, AtomT, OglShaderBase)
+	COPY_PANIC(OglShaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
 	ATOM_MAKE_ACTION_END
@@ -366,7 +411,13 @@ using AudioDbgSrcRef = Ref<AudioDbgSrc, AtomParent>;
 
 using AudioSplitterRef = Ref<AudioSplitter, AtomParent>;
 
+using AudioSplitterUserRef = Ref<AudioSplitterUser, AtomParent>;
+
 using AudioJoinerRef = Ref<AudioJoiner, AtomParent>;
+
+using AudioJoinerUserRef = Ref<AudioJoinerUser, AtomParent>;
+
+using AudioJoiner2UserRef = Ref<AudioJoiner2User, AtomParent>;
 
 #if defined flagGUI
 using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
@@ -407,11 +458,11 @@ using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 
 #if defined flagGUI
-using OglShaderSourceRef = Ref<OglShaderSource, AtomParent>;
+using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
 #endif
 
 #if defined flagGUI
-using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
+using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
 #endif
 
 }

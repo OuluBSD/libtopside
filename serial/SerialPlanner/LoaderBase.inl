@@ -17,8 +17,8 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		SolveInternal();
 		CheckFlags(false);
 	}
-	else if (status == ScriptStatus::INPUT_IS_WAITING ||
-			 status == ScriptStatus::OUTPUT_IS_WAITING) {
+	else if (status == ScriptStatus::SOURCE_IS_WAITING ||
+			 status == ScriptStatus::SINK_IS_WAITING) {
 		SetError("no compatible side-source was found for side-sink");
 	}
 	else {
@@ -29,8 +29,8 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 
 template <class ParserDef, class LoaderParent>
 void ScriptLoaderBase<ParserDef,LoaderParent>::CheckStatus(ScriptStatus s) {
-	if (s == ScriptStatus::OUTPUT_IS_WAITING ||
-		s == ScriptStatus::INPUT_IS_WAITING) {
+	if (s == ScriptStatus::SINK_IS_WAITING ||
+		s == ScriptStatus::SOURCE_IS_WAITING) {
 		any_waiting = true;
 	}
 	else if (s == ScriptStatus::IN_BEGINNING || s == ScriptStatus::RETRY) {
@@ -75,11 +75,11 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 			SetRetryDeep();
 		}
 		else {
-			if (conn.IsMissingInput()) {
-				status = ScriptStatus::OUTPUT_IS_WAITING;
+			if (conn.IsWaitingSource()) {
+				status = ScriptStatus::SOURCE_IS_WAITING;
 			}
-			else if (conn.IsMissingOutput()) {
-				status = ScriptStatus::INPUT_IS_WAITING;
+			else if (conn.IsWaitingSink()) {
+				status = ScriptStatus::SINK_IS_WAITING;
 			}
 			else {
 				LOG(conn.GetError());

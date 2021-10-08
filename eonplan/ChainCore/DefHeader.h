@@ -1,11 +1,14 @@
 #ifndef _ChainCore_DefHeader_h_
 #define _ChainCore_DefHeader_h_
 
-#define BASE(x)												class x : public BaseT<x> {};
-#define HEADER11(x, base, role, content, sink, src)			using x = HeaderT<base, sink, src>;
-#define HEADER12(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
-#define HEADER21(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
-#define HEADER44_O44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define BASE(x)													class x : public BaseT<x> {};
+#define HEADER11(x, base, role, content, sink, src)				using x = HeaderT<base, sink, src>;
+#define HEADER12(x, base, role, content, sink, side, src)		using x = HeaderT<base, sink, src>;
+#define HEADER12_U01(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER21(x, base, role, content, sink, side, src)		using x = HeaderT<base, sink, src>;
+#define HEADER21_U10(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER31_U20(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER44_U44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define BASE_FLAG(x, flag)
 #define BASE_ACTION(x, act)
 #define HEADER_ACTION(x, act)

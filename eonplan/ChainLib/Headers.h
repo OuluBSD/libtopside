@@ -25,9 +25,21 @@ HEADER12(			AudioSplitter,		SplitterBase,				pipe,		CenterAudio,	CenterAudio,	Ce
 HEADER_ACTION(		AudioSplitter,		center.audio.side.src)
 HEADER_ACTION(		AudioSplitter,		center.audio.side.src.center)
 
+HEADER12_U01(		AudioSplitterUser,	SplitterBase,				pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src)
+HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src.center.user)
+
 HEADER21(			AudioJoiner,		JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink.center)
+
+HEADER21_U10(		AudioJoinerUser,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink)
+HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink.center.user)
+
+HEADER31_U20(		AudioJoiner2User,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink)
+HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink2.center.user)
 
 HEADER11(			VideoDbgSrc,		VideoGenBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
@@ -80,10 +92,10 @@ HEADER11 (			SdlAudioAtom,		SDL2AudioOutputBase,		pipe,		CenterAudio,	CenterAudi
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
 
-HEADER11(			OglShaderSource,	OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
-HEADER_ACTION(		OglShaderSource,	ogl.fbo.source.pipe)
-HEADER_ARG(			OglShaderSource,	GUI,		1)
-
-HEADER44_O44(		OglShaderPipe,		OglShaderBase,				pipe,		OglFbo	,		OglOrder,		OglFbo,		OglReceipt)
-HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source)
+HEADER11(			OglShaderPipe,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source.pipe)
 HEADER_ARG(			OglShaderPipe,		GUI,		1)
+
+HEADER44_U44(		OglShaderAtom,		OglShaderBase,				pipe,		OglFbo	,		OglOrder,		OglFbo,		OglReceipt)
+HEADER_ACTION(		OglShaderAtom,		ogl.fbo.source)
+HEADER_ARG(			OglShaderAtom,		GUI,		1)

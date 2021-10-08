@@ -36,8 +36,8 @@ void ScriptChainLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 void ScriptChainLoader::ForwardLoops() {
 	for (ScriptLoopLoader& loader : loops) {
 		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::OUTPUT_IS_WAITING &&
-			s != ScriptStatus::INPUT_IS_WAITING &&
+		if (s != ScriptStatus::SINK_IS_WAITING &&
+			s != ScriptStatus::SOURCE_IS_WAITING &&
 			s != ScriptStatus::READY) {
 			loader.Forward();
 		}

@@ -53,7 +53,7 @@ public:
 	WorldState();
 	void Clear();
 	
-	const        Script::Statement* FindStatement(const WorldState* ws, LinkedList<Statement>& stmts);
+	const        Script::Statement* FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) const;
 	static const Script::Statement* FindStatement(const String& find_key, LinkedList<Statement>& stmts);
 	
 	bool Append(const WorldState& ws, LinkedList<Statement>& ret_list);
@@ -193,6 +193,7 @@ public:
 		ANode*					second_last;
 		ANode*					last;
 		Searcher				as;
+		int						ch_i;
 	};
 	
 protected:
@@ -212,7 +213,7 @@ protected:
 	VectorMap<String, Atom>		atoms;
 	Vector<Action>				acts;
 	ActionPlannerWrapper*		wrapper = 0;
-	ScriptLoopLoader*				loop_loader = 0;
+	ScriptLoopLoader*			loop_loader = 0;
 	Array<WorldState>			search_cache;
 	Vector<State>				side_sinks, side_srcs;
 	int							side_sink_max_est, side_src_max_est;
@@ -240,8 +241,8 @@ public:
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	void SetLoopLoader(ScriptLoopLoader* l) {loop_loader = l;}
-	void AddSideSink(const Searcher& as, ANode& n, ANode* prev);
-	void AddSideSource(const Searcher& as, ANode& n, ANode* prev);
+	void AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* prev);
+	void AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode* prev);
 	
 	void GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	ScriptLoopLoader& GetLoopLoader() const {return *loop_loader;}

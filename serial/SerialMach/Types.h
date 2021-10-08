@@ -231,13 +231,22 @@ struct ValDevCls : Moveable<ValDevCls> {
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev, src_val))
 
 #define ATOM12(atom, role, content_dev, content_val, sink_dev, sink_val, src_dev0, src_val0, src_dev1, src_val1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev0, src_val0), 0,1, ValDevCls(), VD(src_dev1, src_val1))
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev, sink_val), VD(content_dev, content_val), VD(src_dev0, src_val0), 0,1,0,0, ValDevCls(), VD(src_dev1, src_val1))
 
 #define ATOM21(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 1,0, VD(sink_dev1, sink_val1), ValDevCls())
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 1,0,0,0, VD(sink_dev1, sink_val1), ValDevCls())
 
-#define ATOM55(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val, src_dev1, src_val1) \
-	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 4,4, VD(sink_dev1, sink_val1), VD(src_dev1, src_val1))
+#define ATOM11_U10(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 1,0,1,0, VD(sink_dev1, sink_val1), ValDevCls())
+
+#define ATOM11_U20(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 2,0,2,0, VD(sink_dev1, sink_val1), ValDevCls())
+
+#define ATOM11_U01(atom, role, content_dev, content_val, sink_dev0, sink_val0, src_dev, src_val, src_dev1, src_val1) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 0,1,0,1, ValDevCls(), VD(src_dev1, src_val1))
+
+#define ATOM11_U44(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val, src_dev1, src_val1) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 4,4,4,4, VD(sink_dev1, sink_val1), VD(src_dev1, src_val1))
 
 
 struct AtomCls : Moveable<AtomCls> {
@@ -413,24 +422,30 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomIfaceTypeCls iface;
 	SubAtomCls sub = SubAtomCls::INVALID_ATOM;
 	AtomRole role = AtomRole::INVALID_ROLE;
+	byte user_sink_count = 0;
+	byte user_src_count = 0;
 	
 	bool IsValid() const {return iface.IsValid() && sub != SubAtomCls::INVALID_ATOM && role != AtomRole::INVALID_ROLE;}
 	hash_t GetHashValue() const;
-	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE;}
+	void operator=(const Nuller& n) {iface = n; sub = SubAtomCls::INVALID_ATOM; role = AtomRole::INVALID_ROLE; user_sink_count = 0; user_src_count = 0;}
 	void operator=(const AtomTypeCls& o) {
 		iface = o.iface;
 		sub = o.sub;
 		role = o.role;
+		user_sink_count = o.user_sink_count;
+		user_src_count = o.user_src_count;
 	}
 	
 	bool operator==(const AtomTypeCls& c) const {
 		return	iface == c.iface &&
 				sub == c.sub &&
-				role == c.role
+				role == c.role &&
+				user_sink_count == c.user_sink_count &&
+				user_src_count == c.user_src_count
 				;
 	}
 	bool operator!=(const AtomTypeCls& c) const {return !(*this == c);}
-	String ToString() const {return GetSubAtomString(sub) + "-" + GetAtomRoleString(role) + "-" + iface.ToString();}
+	String ToString() const {return GetSubAtomString(sub) + "-" + GetAtomRoleString(role) + "-" + iface.ToString() + "-(" + IntStr(user_sink_count) + "," + IntStr(user_src_count) + ")";}
 	
 	
 	AtomTypeCls() {}
@@ -438,14 +453,16 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevCls& sink, const ValDevCls& src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevTuple& src) : iface(sink,src), sub(cls), role(role) {}
 	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src) : iface(sink,content,src), sub(cls), role(role) {}
-	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src, int xtra_sinks, int xtra_srcs, const ValDevCls& xtra_sink, const ValDevCls& xtra_src) : iface(sink,content,src), sub(cls), role(role) {
-		ASSERT(xtra_sinks > 0 || xtra_srcs > 0);
-		ASSERT(xtra_sinks == 0 || xtra_sink.IsValid());
-		ASSERT(xtra_srcs == 0 || xtra_src.IsValid());
-		for(int i = 0; i < xtra_sinks; i++)
-			iface.AddSink(xtra_sink);
-		for(int i = 0; i < xtra_srcs; i++)
-			iface.AddSource(xtra_src);
+	AtomTypeCls(SubAtomCls cls, AtomRole role, const ValDevTuple& sink, const ValDevCls& content, const ValDevTuple& src, int side_sinks, int side_srcs, int user_sinks, int user_srcs, const ValDevCls& side_sink, const ValDevCls& side_src) : iface(sink,content,src), sub(cls), role(role) {
+		ASSERT(side_sinks > 0 || side_srcs > 0);
+		ASSERT(side_sinks == 0 || side_sink.IsValid());
+		ASSERT(side_srcs == 0 || side_src.IsValid());
+		for(int i = 0; i < side_sinks; i++)
+			iface.AddSink(side_sink);
+		for(int i = 0; i < side_srcs; i++)
+			iface.AddSource(side_src);
+		user_sink_count = user_sinks;
+		user_src_count = user_srcs;
 	}
 	
 	bool IsRoleDriver()		const {return role == AtomRole::DRIVER;}

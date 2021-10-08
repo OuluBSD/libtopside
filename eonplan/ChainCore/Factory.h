@@ -73,8 +73,8 @@ public:
 		const char*		src[MAX_VDS] = {0};
 		int				sink_count = 0;
 		int				src_count = 0;
-		int				sink_opt_side_count = 0;
-		int				src_opt_side_count = 0;
+		int				sink_user_side_count = 0;
+		int				src_user_side_count = 0;
 		String			role, key;
 		Index<String>				actions, inherits;
 		VectorMap<String,String>	args;
@@ -200,8 +200,8 @@ public:
 		const char* base,
 		const char* role,
 		const char* content,
-		int sink_opt_count,
-		int src_opt_count,
+		int sink_user_count,
+		int src_user_count,
 		const char* sink0,
 		const char* sink1,
 		const char* sink2,
@@ -218,7 +218,7 @@ public:
 		v.base = base;
 		v.content = content;
 		
-		v.sink_opt_side_count = sink_opt_count;
+		v.sink_user_side_count = sink_user_count;
 		v.sink_count = (sink0 != 0) + (sink1 != 0) + (sink2 != 0) + (sink3 != 0) + (sink4 != 0);
 		v.sink[0] = sink0;
 		v.sink[1] = sink1;
@@ -226,7 +226,7 @@ public:
 		v.sink[3] = sink3;
 		v.sink[4] = sink4;
 		
-		v.src_opt_side_count = src_opt_count;
+		v.src_user_side_count = src_user_count;
 		v.src_count = (src0 != 0) + (src1 != 0) + (src2 != 0) + (src3 != 0) + (src4 != 0);
 		v.src[0] = src0;
 		v.src[1] = src1;

@@ -87,7 +87,7 @@ const Script::Statement* WorldState::FindStatement(const String& find_key, Linke
 	return 0;
 }
 
-const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) {
+const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) const {
 	if (!ws) {
 		Index<String> cur_ws_keys;
 		for(int i = 0; i < values.GetCount(); i++) {
@@ -474,7 +474,7 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
-void ActionPlanner::AddSideSink(const Searcher& as, ANode& n, ANode* prev) {
+void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* prev) {
 	int est = n.GetEstimate();
 	if (est < side_sink_max_est) {
 		side_sink_max_est = est;
@@ -485,10 +485,11 @@ void ActionPlanner::AddSideSink(const Searcher& as, ANode& n, ANode* prev) {
 		s.last = &n;
 		s.second_last = prev;
 		s.as = as;
+		s.ch_i = ch_i;
 	}
 }
 
-void ActionPlanner::AddSideSource(const Searcher& as, ANode& n, ANode* prev) {
+void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode* prev) {
 	int est = n.GetEstimate();
 	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
 	if (est < side_src_max_est) {
@@ -504,6 +505,7 @@ void ActionPlanner::AddSideSource(const Searcher& as, ANode& n, ANode* prev) {
 		s.last = &n;
 		s.second_last = prev;
 		s.as = as;
+		s.ch_i = ch_i;
 	}
 }
 

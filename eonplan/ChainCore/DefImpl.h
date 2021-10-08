@@ -8,8 +8,11 @@
 #undef BASE_ACTION
 #undef HEADER11
 #undef HEADER12
+#undef HEADER12_U01
 #undef HEADER21
-#undef HEADER44_O44
+#undef HEADER21_U10
+#undef HEADER31_U20
+#undef HEADER44_U44
 #undef HEADER_ACTION
 #undef HEADER_INHERITS
 #undef HEADER_ARG
@@ -53,8 +56,11 @@
 #define BASE_ACTION(x, act)										Factory::BaseAction<x>(#x, #act);
 #define HEADER11(x, base, role, content, sink, src)				Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, 0, 0, 0, 0,		#src, 0, 0, 0, 0);
 #define HEADER12(x, base, role, content, sink, side, src)		Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, 0, 0, 0, 0,		#src, #side, 0, 0, 0);
+#define HEADER12_U01(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	0,1,	#sink, 0, 0, 0, 0,		#src, #side, 0, 0, 0);
 #define HEADER21(x, base, role, content, sink, side, src)		Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, #side, 0, 0, 0,	#src, 0, 0, 0, 0);
-#define HEADER44_O44(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	4,4,	#sink, #side, #side, #side, #side,		#src, #side, #side, #side, #side);
+#define HEADER21_U10(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	1,0,	#sink, #side, 0, 0, 0,	#src, 0, 0, 0, 0);
+#define HEADER31_U20(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	2,0,	#sink, #side, #side, 0, 0,	#src, 0, 0, 0, 0);
+#define HEADER44_U44(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	4,4,	#sink, #side, #side, #side, #side,		#src, #side, #side, #side, #side);
 #define HEADER_ACTION(x, act)									Factory::HeaderAction<x>(#x, #act);
 #define HEADER_INHERITS(x, cls)									Factory::HeaderInherits<x>(#x, #cls);
 #define HEADER_ARG(x, key, value)								Factory::HeaderArg<x>(#x, #key, #value);

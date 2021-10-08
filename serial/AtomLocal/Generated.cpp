@@ -116,6 +116,22 @@ AtomTypeCls AudioSplitter::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls AudioSplitterUser::GetAtomType()
+{
+	return ATOM11_U01(AUDIO_SPLITTER_USER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+}
+
+void AudioSplitterUser::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<AudioSplitterUser>>(this);
+	vis.VisitThis<SplitterBase>(this);
+}
+
+AtomTypeCls AudioSplitterUser::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls AudioJoiner::GetAtomType()
 {
 	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
@@ -128,6 +144,38 @@ void AudioJoiner::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls AudioJoiner::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioJoinerUser::GetAtomType()
+{
+	return ATOM11_U10(AUDIO_JOINER_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+void AudioJoinerUser::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<AudioJoinerUser>>(this);
+	vis.VisitThis<JoinerBase>(this);
+}
+
+AtomTypeCls AudioJoinerUser::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioJoiner2User::GetAtomType()
+{
+	return ATOM11_U20(AUDIO_JOINER2_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+void AudioJoiner2User::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<AudioJoiner2User>>(this);
+	vis.VisitThis<JoinerBase>(this);
+}
+
+AtomTypeCls AudioJoiner2User::GetType() const
 {
 	return GetAtomType();
 }
@@ -353,27 +401,9 @@ AtomTypeCls SdlAudioAtom::GetType() const
 }
 
 #if defined flagGUI
-AtomTypeCls OglShaderSource::GetAtomType()
-{
-	return ATOM11(OGL_SHADER_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
-}
-
-void OglShaderSource::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<OglShaderSource>>(this);
-	vis.VisitThis<OglShaderBase>(this);
-}
-
-AtomTypeCls OglShaderSource::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagGUI
 AtomTypeCls OglShaderPipe::GetAtomType()
 {
-	return ATOM55(OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
+	return ATOM11(OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
 }
 
 void OglShaderPipe::Visit(RuntimeVisitor& vis)
@@ -383,6 +413,24 @@ void OglShaderPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglShaderPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls OglShaderAtom::GetAtomType()
+{
+	return ATOM11_U44(OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
+}
+
+void OglShaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglShaderAtom>>(this);
+	vis.VisitThis<OglShaderBase>(this);
+}
+
+AtomTypeCls OglShaderAtom::GetType() const
 {
 	return GetAtomType();
 }

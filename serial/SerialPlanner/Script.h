@@ -32,8 +32,8 @@ public:
 
 typedef enum {
 	IN_BEGINNING,
-	OUTPUT_IS_WAITING,
-	INPUT_IS_WAITING,
+	SINK_IS_WAITING,
+	SOURCE_IS_WAITING,
 	RETRY,
 	SOLVE_INTERNAL_CONNECTIONS,
 	READY,
@@ -44,8 +44,8 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 	const char* t = "<invalid status>";
 	switch (status) {
 		case IN_BEGINNING:					t = "In beginning"; break;
-		case OUTPUT_IS_WAITING:				t = "Side output is waiting"; break;
-		case INPUT_IS_WAITING:				t = "Side input is waiting"; break;
+		case SINK_IS_WAITING:				t = "Side-sink is waiting"; break;
+		case SOURCE_IS_WAITING:				t = "Side-source is waiting"; break;
 		case RETRY:							t = "Retry"; break;
 		case SOLVE_INTERNAL_CONNECTIONS:	t = "Solve internal connections"; break;
 		case READY:							t = "Ready"; break;
@@ -88,20 +88,20 @@ public:
 	
 	
 	ScriptLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
-	void		Forward();
-	void		SolveInternal();
+	void				Forward();
+	void				SolveInternal();
 	
-	void		SetStatus(int s) {status = (ScriptStatus)s;}
-	void		SetStatusRetry() {status = RETRY;}
-	void		SetError(String s) {err_str = s; status = FAILED;}
+	void				SetStatus(int s) {status = (ScriptStatus)s;}
+	void				SetStatusRetry() {status = RETRY;}
+	void				SetError(String s) {err_str = s; status = FAILED; RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this)); }
 	
-	bool		IsFailed() const {return status == FAILED;}
-	bool		IsReady() const {return status == READY;}
-	bool		IsStatus(ScriptStatus s) const {return status == s;}
-	int			GetId() const {return id;}
-	ScriptStatus	GetStatus() const {return status;}
-	ScriptLoader&	GetLoader() {return parent.GetLoader();}
-	String		GetErrorString() const {return err_str;}
+	bool				IsFailed() const {return status == FAILED;}
+	bool				IsReady() const {return status == READY;}
+	bool				IsStatus(ScriptStatus s) const {return status == s;}
+	int					GetId() const {return id;}
+	ScriptStatus		GetStatus() const {return status;}
+	ScriptLoader&		GetLoader() {return parent.GetLoader();}
+	String				GetErrorString() const {return err_str;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
@@ -135,6 +135,7 @@ public:
 	
 protected:
 	friend class ScriptLoader;
+	friend class ScriptConnectionSolver;
 	
 	
 	Script::APlanNode				start_node;
@@ -151,6 +152,10 @@ protected:
 	Vector<ScriptLoopLoader*>		src_side_conns;
 	Vector<ScriptLoopLoader*>		sink_side_conns;
 	
+	void SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink);
+	void SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src);
+	bool IsAllSidesConnected() const;
+	void ClearSides() {src_side_conns.Clear(); sink_side_conns.Clear();}
 	void SetupSegment(ScriptLoopSegment& s);
 	bool SetWorldState(Script::WorldState& ws, const Script::Statement& stmt);
 	
@@ -167,7 +172,7 @@ public:
 	bool		Parse();
 	bool		Load();
 	bool		PostInitialize();
-	SideStatus	AcceptOutput(ScriptLoopLoader& out, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out);
+	SideStatus	AcceptSink(ScriptLoopLoader& sink, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink);
 	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
 	void		UpdateLoopLimits();
 	
@@ -395,8 +400,8 @@ class ScriptConnectionSolver {
 	Vector<ScriptLoopLoader*>		loops;
 	String						err_str;
 	int&						tmp_side_id_counter;
-	bool						is_missing_input = false;
-	bool						is_missing_output = false;
+	bool						is_waiting_source = false;
+	bool						is_waiting_sink = false;
 	
 	void SetError(String s) {err_str = s;}
 	bool Process();
@@ -417,8 +422,8 @@ public:
 	}
 	
 	String	GetError() const {return err_str;}
-	bool	IsMissingInput() const {return is_missing_input;}
-	bool	IsMissingOutput() const {return is_missing_output;}
+	bool	IsWaitingSource() const {return is_waiting_source;}
+	bool	IsWaitingSink() const {return is_waiting_sink;}
 	
 };
 
@@ -467,10 +472,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 			
 			if (a.iface.sink.GetCount() >= 2 || a.iface.src.GetCount() >= 2) {
 				for(int i = 1; i < a.iface.sink.GetCount(); i++) {
-					ap.AddSideSink(seg.as, n, prev);
+					ap.AddSideSink(i, seg.as, n, prev);
 				}
 				for(int i = 1; i < a.iface.src.GetCount(); i++) {
-					ap.AddSideSource(seg.as, n, prev);
+					ap.AddSideSource(i, seg.as, n, prev);
 				}
 				return false;
 			}

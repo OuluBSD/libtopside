@@ -121,6 +121,8 @@ hash_t AtomTypeCls::GetHashValue() const {
 	c.Put(iface.GetHashValue());
 	c.Put(sub);
 	c.Put(role);
+	c.Put(user_sink_count);
+	c.Put(user_src_count);
 	return c;
 }
 

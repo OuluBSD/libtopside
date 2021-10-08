@@ -554,12 +554,13 @@ bool Parser::ParseStmtSideConditionals(Script::Statement& stmt) {
 	PASS_CHAR('[')
 	
 	while (!IsChar(']')) {
-		if (EmptyStatement()) {
-			AddError("empty statement in side-connection qualifier");
-			return false;
-		}
+		Statement& s = stmt.side_conds.Add();
 		
-		if (!ParseStmt(stmt.side_conds.Add(), true))
+		if (EmptyStatement())
+			;
+		else if (TrueStatement(s))
+			;
+		else if (!ParseStmt(s, true))
 			return false;
 	}
 	
@@ -567,13 +568,29 @@ bool Parser::ParseStmtSideConditionals(Script::Statement& stmt) {
 	return true;
 }
 
+bool Parser::TrueStatement(Script::Statement& s) {
+	if (this->Id("true")) {
+		Value& v = s.value.Create();
+		v.SetBool(1);
+		
+		PASS_CHAR(';');
+		return true;
+	}
+	else if (this->Char2('1', ';')) {
+		Value& v = s.value.Create();
+		v.SetBool(1);
+		return true;
+	}
+	return false;
+}
+
 bool Parser::ParseValue(Script::Value& v) {
-	if (Id("true")) {
+	if (this->Id("true")) {
 		v.type = Script::Value::VAL_BOOLEAN;
 		v.b = true;
 		return true;
 	}
-	else if (Id("false")) {
+	else if (this->Id("false")) {
 		v.type = Script::Value::VAL_BOOLEAN;
 		v.b = false;
 		return true;

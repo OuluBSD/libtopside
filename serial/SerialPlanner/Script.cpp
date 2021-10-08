@@ -330,78 +330,99 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 }
 
 bool ScriptConnectionSolver::Process() {
-	Vector<ScriptLoopLoader*>	inputs;
-	Vector<ScriptLoopLoader*>	outputs;
+	Vector<ScriptLoopLoader*>	waiting_sources;
+	Vector<ScriptLoopLoader*>	waiting_sinks;
 	
-	is_missing_input = false;
-	is_missing_output = false;
+	is_waiting_source = false;
+	is_waiting_sink = false;
 	
 	for (ScriptLoopLoader* ll : loops) {
-		if (ll->IsStatus(ScriptStatus::INPUT_IS_WAITING))
-			inputs.Add(ll);
-		if (ll->IsStatus(ScriptStatus::OUTPUT_IS_WAITING))
-			outputs.Add(ll);
+		if (ll->IsStatus(ScriptStatus::SOURCE_IS_WAITING))
+			waiting_sources.Add(ll);
+		if (ll->IsStatus(ScriptStatus::SINK_IS_WAITING))
+			waiting_sinks.Add(ll);
 	}
 	
-	if (inputs.IsEmpty() && outputs.IsEmpty()) {
+	if (waiting_sources.IsEmpty() && waiting_sinks.IsEmpty()) {
 		SetError("Internal error. No any waiting sidechannel io exists.");
 		return false;
 	}
 	
-	if (inputs.IsEmpty()) {
-		SetError("No input side-ports");
-		is_missing_input = true;
+	if (waiting_sources.IsEmpty()) {
+		SetError("No side-sources");
+		is_waiting_sink = true; // because waiting_sinks.count > 0
 		return false;
 	}
 	
-	if (outputs.IsEmpty()) {
-		SetError("No output side-ports");
-		is_missing_output = true;
+	if (waiting_sinks.IsEmpty()) {
+		SetError("No side-sinks");
+		is_waiting_source = true; // because waiting_sources.count > 0
 		return false;
 	}
 	
 	Vector<ScriptLoopLoader*> retry_list;
 	
 	int accepted_count = 0;
-	for (ScriptLoopLoader* in : inputs) {
-		ScriptLoopLoader* accepted_out = 0;
-		Script::ActionPlanner::State* accepted_in_node = 0;
-		Script::ActionPlanner::State* accepted_out_node = 0;
-		int accepted_out_count = 0;
+	for (ScriptLoopLoader* src : waiting_sources) {
+		ScriptLoopLoader* accepted_sink = 0;
+		Script::ActionPlanner::State* accepted_src_node = 0;
+		Script::ActionPlanner::State* accepted_sink_node = 0;
+		int accepted_sink_count = 0;
 		bool accepted_all_multi = true;
-		for (ScriptLoopLoader* out : outputs) {
-			if (!in->IsFailed() &&
-				!out->IsFailed()) {
-				SideStatus s = in->AcceptOutput(*out, accepted_in_node, accepted_out_node);
+		int dbg_i = 0;
+		for (ScriptLoopLoader* sink : waiting_sinks) {
+			if (!src->IsFailed() &&
+				!sink->IsFailed()) {
+				RTLOG("ScriptConnectionSolver::Process: #" << dbg_i << " check fail state: src " << HexStr(src) << " against sink " << HexStr(sink) << ": passed");
+				SideStatus s = src->AcceptSink(*sink, accepted_src_node, accepted_sink_node);
 				if (s == SIDE_ACCEPTED || s == SIDE_ACCEPTED_MULTI) {
-					accepted_out_count++;
-					accepted_out = out;
+					ASSERT(accepted_src_node && accepted_sink_node);
+					accepted_sink_count++;
+					accepted_sink = sink;
 					if (s != SIDE_ACCEPTED_MULTI)
 						accepted_all_multi = false;
 				}
 			}
+			else {
+				RTLOG("ScriptConnectionSolver::Process: #" << dbg_i << " check fail state: src " << HexStr(src) << " against sink " << HexStr(sink) << ": failed");
+			}
+			dbg_i++;
 		}
-		if (!accepted_all_multi && accepted_out_count > 1) {
-			SetError("Input loop " + IntStr(in->GetId()) + " can accept multiple outputs");
+		if (!accepted_all_multi && accepted_sink_count > 1) {
+			SetError("source loop " + IntStr(src->GetId()) + " can accept multiple sinks");
 			return false;
 		}
-		if (accepted_out_count == 0) {
-			SetError("Input loop " + IntStr(in->GetId()) + " cannot accept any output");
-			is_missing_output = true;
+		if (accepted_sink_count == 0) {
+			SetError("source loop " + IntStr(src->GetId()) + " cannot accept any sink");
+			is_waiting_sink = true;
 			continue;
 		}
 		
+		ASSERT(accepted_sink);
+		AtomTypeCls src_type = accepted_src_node->last->GetWorldState().GetAtom();
+		AtomTypeCls sink_type = accepted_sink_node->last->GetWorldState().GetAtom();
+		src->SetSideSourceConnected(src_type, accepted_src_node->ch_i, accepted_sink);
+		accepted_sink->SetSideSinkConnected(sink_type, accepted_sink_node->ch_i, src);
+		
 		int conn_id = tmp_side_id_counter++;
-		accepted_in_node->last->SetSideSinkId(conn_id);
-		accepted_out_node->last->SetSideSrcId(conn_id);
+		accepted_src_node->last->SetSideSinkId(conn_id);
+		accepted_sink_node->last->SetSideSrcId(conn_id);
 		
-		LOG("Loop " << in->GetId() << " accepted loop " << accepted_out->GetId() << " with id " << conn_id);
+		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
+			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
 		
-		in				->AddSideConnectionSegment(accepted_in_node,	accepted_out,	accepted_out_node);
-		accepted_out	->AddSideConnectionSegment(accepted_out_node,	in,				accepted_in_node);
+		src				->AddSideConnectionSegment(accepted_src_node,	accepted_sink,	accepted_sink_node);
+		accepted_sink	->AddSideConnectionSegment(accepted_sink_node,	src,			accepted_src_node);
 		
-		retry_list.Add(in);
-		retry_list.Add(accepted_out);
+		if (src->IsAllSidesConnected()) {
+			src->ClearSides();
+			retry_list.Add(src);
+		}
+		
+		if (accepted_sink->IsAllSidesConnected()) {
+			accepted_sink->ClearSides();
+			retry_list.Add(accepted_sink);
+		}
 		
 		++accepted_count;
 	}

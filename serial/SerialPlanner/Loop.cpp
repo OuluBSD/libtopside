@@ -48,6 +48,42 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 	return s;
 }
 
+void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink) {
+	ASSERT(type.IsValid());
+	ASSERT(ch_i > 0);
+	ASSERT(type.iface.src.count > 1 && ch_i < type.iface.src.count);
+	int side_ch_i = ch_i - 1;
+	if (src_side_conns.IsEmpty()) {
+		int side_conn_count = type.iface.src.count - 1;
+		src_side_conns.SetCount(side_conn_count, 0);
+	}
+	src_side_conns[side_ch_i] = sink;
+}
+
+void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src) {
+	ASSERT(type.IsValid());
+	ASSERT(ch_i > 0);
+	ASSERT(type.iface.sink.count > 1 && ch_i < type.iface.sink.count);
+	int side_ch_i = ch_i - 1;
+	if (sink_side_conns.IsEmpty()) {
+		int side_conn_count = type.iface.sink.count - 1;
+		sink_side_conns.SetCount(side_conn_count, 0);
+	}
+	sink_side_conns[side_ch_i] = src;
+}
+
+bool ScriptLoopLoader::IsAllSidesConnected() const {
+	ASSERT(src_side_conns.GetCount() || sink_side_conns.GetCount());
+	for (ScriptLoopLoader* l : src_side_conns)
+		if (!l)
+			return false;
+	for (ScriptLoopLoader* l : sink_side_conns)
+		if (!l)
+			return false;
+	return true;
+}
+
+	
 String ScriptLoopSegment::GetTreeString(int id, int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -195,28 +231,53 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		}
 		
 		// Check side-channel connections
-		const auto& inputs = planner.GetSideSinks();
-		const auto& outputs = planner.GetSideSources();
-		bool is_input = planner.IsSideSink();
-		if (is_input && inputs.GetCount()) {
-			LOG("Loop " << id << " side-inputs:");
-			for(int i = 0; i < inputs.GetCount(); i++) {
-				auto& state = inputs[i];
+		const Vector<Script::ActionPlanner::State>& sinks = planner.GetSideSinks();
+		const Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
+		
+		bool is_sink = planner.IsSideSink();
+		if (!is_sink && sources.GetCount()) {
+			LOG("Loop " << id << " side-sources:");
+			for(int i = 0; i < sources.GetCount(); i++) {
+				const Script::ActionPlanner::State& state = sources[i];
 				const Script::WorldState& ws = state.last->GetWorldState();
+				const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+				ASSERT(stmt);
+				if (!stmt) {SetError("internal error: no statement found"); return;}
+				AtomTypeCls type = ws.GetAtom();
+				ASSERT(type.IsValid());
+				int atom_user_count = type.user_sink_count + type.user_src_count;
+				int user_defined_count = stmt->side_conds.GetCount();
+				if (atom_user_count != user_defined_count) {
+					SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(atom_user_count));
+					return;
+				}
+				
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = INPUT_IS_WAITING;
+			status = SOURCE_IS_WAITING;
 			return;
 		}
-		else if (!is_input && outputs.GetCount()) {
-			LOG("Loop " << id << " side-outputs:");
-			for(int i = 0; i < outputs.GetCount(); i++) {
-				auto& state = outputs[i];
+		else if (is_sink && sinks.GetCount()) {
+			LOG("Loop " << id << " side-sinks:");
+			for(int i = 0; i < sinks.GetCount(); i++) {
+				const Script::ActionPlanner::State& state = sinks[i];
 				const Script::WorldState& ws = state.last->GetWorldState();
-				//LOG(i << ": " << state.last->GetEstimate() << ": " << ws.GetFullString());
+				const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+				ASSERT(stmt);
+				if (!stmt) {SetError("internal error: no statement found"); return;}
+				AtomTypeCls type = ws.GetAtom();
+				ASSERT(type.IsValid());
+				int atom_user_count = type.user_sink_count + type.user_src_count;
+				int user_defined_count = stmt->side_conds.GetCount();
+				if (atom_user_count != user_defined_count) {
+					SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(atom_user_count));
+					return;
+				}
 				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			status = OUTPUT_IS_WAITING;
+			status = SINK_IS_WAITING;
 			return;
 		}
 		else {
@@ -485,99 +546,114 @@ bool ScriptLoopLoader::PostInitialize() {
 	return true;
 }
 
-SideStatus ScriptLoopLoader::AcceptOutput(ScriptLoopLoader& outl, Script::ActionPlanner::State*& accepted_in, Script::ActionPlanner::State*& accepted_out) {
-	ASSERT(status == INPUT_IS_WAITING);
-	ASSERT(outl.status == OUTPUT_IS_WAITING);
-	Vector<Script::ActionPlanner::State>& inputs = planner.GetSideSinks();
-	Vector<Script::ActionPlanner::State>& outputs = outl.planner.GetSideSources();
-	ASSERT(!inputs.IsEmpty() && !outputs.IsEmpty());
+SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink) {
+	ASSERT(status == SOURCE_IS_WAITING);
+	ASSERT(sink_loader.status == SINK_IS_WAITING);
+	Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
+	Vector<Script::ActionPlanner::State>& sinks = sink_loader.planner.GetSideSinks();
+	ASSERT(!sources.IsEmpty() && !sinks.IsEmpty());
 	
 	SideStatus ret = SIDE_NOT_ACCEPTED;
 	int accepted_count = 0;
-	accepted_in = 0;
-	accepted_out = 0;
 	
-	int in_side_id = src_side_conns.GetCount();
-	int out_side_id = outl.sink_side_conns.GetCount();
-	const Script::Statement* in_stmt = 0;
-	const Script::Statement* out_stmt = 0;
-	RTLOG("ScriptLoopLoader::AcceptOutput: in loop '" << def.id.ToString() << "' against '" << outl.def.id.ToString() << "': " << in_side_id << " --> " << out_side_id);
+	// Don't clear, just overwrite:
+	//accepted_src = 0;
+	//accepted_sink = 0;
 	
-	for (Script::ActionPlanner::State& in_state : inputs) {
-		Script::APlanNode* in = in_state.last;
-		Script::WorldState& in_ws = in->GetWorldState();
-		Script::WorldState* in_prev_ws = in_state.second_last ? &in_state.second_last->GetWorldState() : 0;
-		ASSERT(in_ws.IsAddAtom());
-		AtomTypeCls in_atom = in_ws.GetAtom();
-		auto& in_d = Serial::Factory::AtomDataMap().Get(in_atom);
+	//int src_side_id = src_side_conns.GetCount();
+	//int sink_side_id = sink_loader.sink_side_conns.GetCount();
+	
+	/*if (def.id.ToString() == "source" && sink_loader.def.id.ToString() == "sink1") {
+		LOG("");
+	}*/
+	
+	for (Script::ActionPlanner::State& src_state : sources) {
+		Script::APlanNode* src = src_state.last;
+		Script::WorldState& src_ws = src->GetWorldState();
+		Script::WorldState* src_prev_ws = src_state.second_last ? &src_state.second_last->GetWorldState() : 0;
+		int src_side_id = src_state.ch_i - 1;
+		ASSERT(src_ws.IsAddAtom());
+		AtomTypeCls src_atom = src_ws.GetAtom();
+		auto& src_d = Serial::Factory::AtomDataMap().Get(src_atom);
 		
-		for (Script::ActionPlanner::State& out_state : outputs) {
-			Script::APlanNode* out = out_state.last;
-			Script::WorldState& out_ws = out->GetWorldState();
-			Script::WorldState* out_prev_ws = out_state.second_last ? &out_state.second_last->GetWorldState() : 0;
-			ASSERT(out_ws.IsAddAtom());
-			AtomTypeCls out_atom = out_ws.GetAtom();
-			auto& out_d = Serial::Factory::AtomDataMap().Get(out_atom);
+		
+		const Script::Statement* src_stmt = src_ws.FindStatement(src_prev_ws, def.stmts);
+		ASSERT(src_stmt);
+		if (src_stmt && src_stmt->side_conds.GetCount()) {
+			if (src_side_id >= src_stmt->side_conds.GetCount()) {
+				SetError("side connection id-number is higher than the count of given side-connection conditionals");
+				continue;
+			}
+			RTLOG("ScriptLoopLoader::AcceptSink: testing source conditionals in sink");
+			const Script::Statement& cond_stmt = src_stmt->side_conds[src_side_id];
+			if (!sink_loader.PassSideConditionals(cond_stmt)) {
+				RTLOG("ScriptLoopLoader::AcceptSink: source side conditionals did not pass");
+				continue;
+			}
+		}
+		
+		
+		for (Script::ActionPlanner::State& sink_state : sinks) {
+			Script::APlanNode* sink = sink_state.last;
+			Script::WorldState& sink_ws = sink->GetWorldState();
+			Script::WorldState* sink_prev_ws = sink_state.second_last ? &sink_state.second_last->GetWorldState() : 0;
+			int sink_side_id = sink_state.ch_i - 1;
+			ASSERT(sink_ws.IsAddAtom());
+			AtomTypeCls sink_atom = sink_ws.GetAtom();
+			auto& sink_d = Serial::Factory::AtomDataMap().Get(sink_atom);
+			
+			RTLOG("ScriptLoopLoader::AcceptSink: src loop '" << def.id.ToString() << "' (" << HexStr(&src_state) << ") against sink '" << sink_loader.def.id.ToString() << "'(" << HexStr(&sink_state) << "): " << src_side_id << " --> " << sink_side_id);
+			
+			
+			const Script::Statement* sink_stmt = sink_ws.FindStatement(sink_prev_ws, sink_loader.def.stmts);
+			ASSERT(sink_stmt);
+			if (sink_stmt && sink_stmt->side_conds.GetCount()) {
+				if (sink_side_id >= sink_stmt->side_conds.GetCount()) {
+					SetError("side connection id-number is higher than the count of given side-connection conditionals");
+					continue;
+				}
+				else {
+					RTLOG("ScriptLoopLoader::AcceptSink: testing sink conditionals in source");
+					const Script::Statement& cond_stmt = sink_stmt->side_conds[sink_side_id];
+					if (!PassSideConditionals(cond_stmt)) {
+						RTLOG("ScriptLoopLoader::AcceptSink: sink side conditionals did not pass");
+						continue;
+					}
+				}
+			}
+			
 			
 			SideStatus a, b;
-			if ((a = in_d.side_fn(out_atom, out_ws, in_atom, in_ws)) != SIDE_NOT_ACCEPTED) {
-				if ((b = out_d.side_fn(out_atom, out_ws, in_atom, in_ws)) != SIDE_NOT_ACCEPTED) {
-					accepted_in = &in_state;
-					accepted_out = &out_state;
+			if ((a = src_d.side_fn(sink_atom, sink_ws, src_atom, src_ws)) != SIDE_NOT_ACCEPTED) {
+				if ((b = sink_d.side_fn(sink_atom, sink_ws, src_atom, src_ws)) != SIDE_NOT_ACCEPTED) {
+					RTLOG("ScriptLoopLoader::AcceptSink: pass");
+					
+					accepted_src = &src_state;
+					accepted_sink = &sink_state;
 					accepted_count++;
-					
-					
-					in_stmt = in_ws.FindStatement(in_prev_ws, def.stmts);
-					out_stmt = out_ws.FindStatement(out_prev_ws, outl.def.stmts);
-					ASSERT(in_stmt && out_stmt);
 					
 					if (a == SIDE_ACCEPTED_MULTI || b == SIDE_ACCEPTED_MULTI)
 						ret = SIDE_ACCEPTED_MULTI;
 					else
 						ret = SIDE_ACCEPTED;
 				}
+				else {
+					RTLOG("ScriptLoopLoader::AcceptSink: sink side function did not pass");
+				}
+			}
+			else {
+				RTLOG("ScriptLoopLoader::AcceptSink: source side function did not pass");
 			}
 		}
 	}
 	
 	if (accepted_count == 0) {
-		SetError("No inputs accepts any outputs");
+		// not error here, but in caller: SetError("No sources accepts any sinks");
 		ret = SIDE_NOT_ACCEPTED;
 	}
 	else if (accepted_count > 1) {
-		SetError("Too many accepting input/output combinations");
+		SetError("Too many accepting source/sink combinations");
 		ret = SIDE_NOT_ACCEPTED;
-	}
-	
-	if (ret != SIDE_NOT_ACCEPTED && in_stmt && in_stmt->side_conds.GetCount()) {
-		if (in_side_id >= in_stmt->side_conds.GetCount()) {
-			SetError("side connection id-number is higher than the count of given side-connection conditionals");
-			ret = SIDE_NOT_ACCEPTED;
-		}
-		else {
-			RTLOG("ScriptLoopLoader::AcceptOutput: testing source conditionals in sink");
-			const Script::Statement& cond_stmt = in_stmt->side_conds[in_side_id];
-			if (!outl.PassSideConditionals(cond_stmt))
-				ret = SIDE_NOT_ACCEPTED;
-		}
-	}
-	
-	if (ret != SIDE_NOT_ACCEPTED && out_stmt && out_stmt->side_conds.GetCount()) {
-		if (out_side_id >= out_stmt->side_conds.GetCount()) {
-			SetError("side connection id-number is higher than the count of given side-connection conditionals");
-			ret = SIDE_NOT_ACCEPTED;
-		}
-		else {
-			RTLOG("ScriptLoopLoader::AcceptOutput: testing sink conditionals in source");
-			const Script::Statement& cond_stmt = out_stmt->side_conds[out_side_id];
-			if (!PassSideConditionals(cond_stmt))
-				ret = SIDE_NOT_ACCEPTED;
-		}
-	}
-	
-	if (ret != SIDE_NOT_ACCEPTED) {
-		this->src_side_conns.Add(&outl);
-		outl.sink_side_conns.Add(this);
 	}
 	
 	return ret;
