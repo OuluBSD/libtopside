@@ -411,15 +411,17 @@ bool ScriptConnectionSolver::Process() {
 		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
 			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
 		
-		src				->AddSideConnectionSegment(accepted_src_node,	accepted_sink,	accepted_sink_node);
-		accepted_sink	->AddSideConnectionSegment(accepted_sink_node,	src,			accepted_src_node);
 		
 		if (src->IsAllSidesConnected()) {
+			LOG("Loop " << src->GetId() << " all sides connected");
+			src->AddSideConnectionSegment(accepted_src_node, accepted_sink, accepted_sink_node);
 			src->ClearSides();
 			retry_list.Add(src);
 		}
 		
 		if (accepted_sink->IsAllSidesConnected()) {
+			LOG("Loop " << accepted_sink->GetId() << " all sides connected");
+			accepted_sink->AddSideConnectionSegment(accepted_sink_node,	src, accepted_src_node);
 			accepted_sink->ClearSides();
 			retry_list.Add(accepted_sink);
 		}
