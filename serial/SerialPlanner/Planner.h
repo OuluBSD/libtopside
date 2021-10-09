@@ -131,8 +131,7 @@ class ActionNode : RTTIBase {
 	
 	ActionPlanner*		ap;
 	ActionNode*			goal;
-	int					side_sink = -1;
-	int					side_src = -1;
+	IfaceConnTuple		iface;
 	
 	
 public:
@@ -146,8 +145,6 @@ public:
 	void SetGoal(ActionNode& ws) {goal = &ws;}
 	void SetWorldState(WorldState& ws) {this->ws = &ws;}
 	void SetCost(double d) {cost = d;}
-	void SetSideSinkId(int i) {side_sink = i;}
-	void SetSideSrcId(int i) {side_src = i;}
 	void IncLinked() {linked_count++;}
 	void ResetLinked() {linked_count=0;}
 	
@@ -159,9 +156,8 @@ public:
 	double GetEstimate();
 	double GetCost() const {return cost;}
 	int GetLinkedCount() const {return linked_count;}
-	int GetSideSinkId() const {return side_sink;}
-	int GetSideSrcId() const {return side_src;}
-	
+	IfaceConnTuple&			GetInterface() {return iface;}
+	const IfaceConnTuple&	GetInterface() const {return iface;}
 	bool Contains(const ActionNode& n) const;
 	bool Conflicts(const ActionNode& n) const;
 	

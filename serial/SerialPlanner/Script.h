@@ -119,11 +119,10 @@ protected:
 	
 	// Implement found loop
 	struct AddedAtom {
-		AtomBaseRef r;
-		int plan_i;
-		int seg_i;
-		int side_sink;
-		int side_src;
+		AtomBaseRef		r;
+		int				plan_i;
+		int				seg_i;
+		IfaceConnTuple	iface;
 	};
 	
 	Array<AddedAtom>		added_atoms;
@@ -397,7 +396,7 @@ using ScriptLoaderRef = Ref<ScriptLoader, SerialSystemParent>;
 
 
 class ScriptConnectionSolver {
-	Vector<ScriptLoopLoader*>		loops;
+	Vector<ScriptLoopLoader*>	loops;
 	String						err_str;
 	int&						tmp_side_id_counter;
 	bool						is_waiting_source = false;

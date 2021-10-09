@@ -343,6 +343,7 @@ bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::State
 
 
 bool ScriptLoopLoader::Load() {
+	RTLOG("ScriptLoopLoader::Load: " << def.id.ToString());
 	ScriptLoader& loader = GetLoader();
 	
 	// Target entity for atoms
@@ -377,15 +378,15 @@ bool ScriptLoopLoader::Load() {
 				return false;
 			}
 			auto& c = added_atoms.Add();
-			c.r = ab;
-			c.plan_i = plan_i;
-			c.seg_i = seg_i;
-			c.side_sink = n->GetSideSinkId();
-			c.side_src = n->GetSideSrcId();
-			
+			c.r					= ab;
+			c.plan_i			= plan_i;
+			c.seg_i				= seg_i;
+			c.iface				= n->GetInterface();
+			ASSERT(/*!c.iface.type.IsValid() ||*/ c.iface.IsComplete());
 			
 			AtomTypeCls type = ws.GetAtom();
-			
+			ASSERT(!c.iface.type.IsValid() || type == c.iface.type);
+			ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
 			
 			// Add arguments to ws
 			const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
@@ -436,10 +437,8 @@ bool ScriptLoopLoader::Load() {
 			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");
 			return false;
 		}
-		if (src_info.side_sink >= 0)
-			src->AddSideSinkId(src_info.side_sink);
-		if (src_info.side_src >= 0)
-			src->AddSideSrcId(src_info.side_src);
+		
+		src->SetInterface(src_info.iface);
 		
 		atoms.Add(src);
 	}
@@ -507,7 +506,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 		total_max = total_min;
 	}
 	
-	LOG("ScriptLoopLoader::Load: set loop limits: min=" << total_min << ", max=" << total_max);
+	LOG("ScriptLoopLoader::UpdateLoopLimits: set loop limits: min=" << total_min << ", max=" << total_max);
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];

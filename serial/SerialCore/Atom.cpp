@@ -69,6 +69,10 @@ String AtomBase::GetInlineConnectionsString() const {
 	return s;
 }
 
+void AtomBase::SetInterface(const IfaceConnTuple& iface) {
+	this->iface = iface;
+}
+
 bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 	ASSERT(sink);
 	if (!sink)
@@ -78,6 +82,8 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 	DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
+		RTLOG("AtomBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetType().ToString());
+		
 		Exchange& ex = side_sink_conn.Add();
 		ex.other = sink;
 		ex.local_ch_i = local_ch_i;

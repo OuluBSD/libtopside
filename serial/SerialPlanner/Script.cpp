@@ -148,6 +148,8 @@ void ScriptLoader::DumpErrors() {
 }
 
 bool ScriptLoader::ImplementScript() {
+	
+	RTLOG("ScriptLoader::ImplementScript: load drivers");
 	Vector<ScriptDriverLoader*> drivers;
 	loader->GetDrivers(drivers);
 	for (ScriptDriverLoader* dl: drivers) {
@@ -155,6 +157,7 @@ bool ScriptLoader::ImplementScript() {
 			return false;
 	}
 	
+	RTLOG("ScriptLoader::ImplementScript: load loops");
 	Vector<ScriptLoopLoader*> loops;
 	loader->GetLoops(loops);
 	for (ScriptLoopLoader* ll : loops) {
@@ -162,6 +165,7 @@ bool ScriptLoader::ImplementScript() {
 			return false;
 	}
 	
+	RTLOG("ScriptLoader::ImplementScript: connect sides");
 	for (ScriptLoopLoader* loop0 : loops) {
 		for (ScriptLoopLoader* loop1 : loops) {
 			if (loop0 != loop1) {
@@ -173,11 +177,13 @@ bool ScriptLoader::ImplementScript() {
 		}
 	}
 	
+	RTLOG("ScriptLoader::ImplementScript: driver post initialize");
 	for (ScriptDriverLoader* dl: drivers) {
 		if (!dl->PostInitialize())
 			return false;
 	}
 	
+	RTLOG("ScriptLoader::ImplementScript: loop post initialize");
 	for (ScriptLoopLoader* ll : loops) {
 		if (!ll->PostInitialize())
 			return false;
@@ -272,16 +278,30 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& sink : loop0.atoms) {
-		for (int sink_conn : sink->GetSideSinks()) {
-			RTLOG("Trying to side-link id " << sink_conn);
+		const IfaceConnTuple& sink_iface = sink->GetInterface();
+		for (int sink_ch = 1; sink_ch < sink_iface.type.iface.sink.count; sink_ch++) {
+			const IfaceConnLink& sink_conn = sink_iface.sink[sink_ch];
+			RTLOG("ScriptLoader::ConnectSides:	sink ch #" << sink_ch << " " << sink_conn.ToString());
+			ASSERT(sink_conn.conn >= 0 || sink_iface.type.IsSinkChannelOptional(sink_ch));
+			if (sink_conn.conn < 0 && sink_iface.type.IsSinkChannelOptional(sink_ch))
+				continue;
 			bool found = false;
 			for (AtomBaseRef& src : loop1.atoms) {
-				for (int src_conn : src->GetSideSources()) {
-					if (sink_conn == src_conn) {
+				const IfaceConnTuple& src_iface = src->GetInterface();
+				for (int src_ch = 1; src_ch < src_iface.type.iface.src.count; src_ch++) {
+					const IfaceConnLink& src_conn = src_iface.src[src_ch];
+					RTLOG("ScriptLoader::ConnectSides:		src ch #" << src_ch << " " << src_conn.ToString());
+					ASSERT(src_conn.conn >= 0 || src_iface.type.IsSourceChannelOptional(src_ch));
+					if (src_conn.conn < 0 && src_iface.type.IsSourceChannelOptional(src_ch))
+						continue;
+					if (sink_conn.conn == src_conn.conn) {
+						RTLOG("ScriptLoader::ConnectSides:			linking side-link src ch #" << src_ch << " " << src_conn.ToString() << " to sink ch #" << sink_ch << " " << sink_conn.ToString());
 						found = true;
 						
-						int src_ch_i = 1 + src->GetSideSinkCount();
-						int sink_ch_i = 1 + sink->GetSideSourceCount();
+						int src_ch_i = src_conn.local;
+						int sink_ch_i = sink_conn.local;
+						ASSERT(src_conn.other == sink_conn.local);
+						ASSERT(sink_conn.other == src_conn.local);
 						
 						if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
 							AddError("Side-source refused linking to side-src");
@@ -302,7 +322,9 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 				}
 			}
 			
-			/*if (!found) {
+			/* Not error anymore:
+			if (!found) {
+				RTLOG("ScriptLoader::ConnectSides:		error: could not link side-link: " << sink_conn.ToString());
 				AddError("Could not link connection id " + IntStr(in_conn));
 				return false;
 			}*/
@@ -405,8 +427,12 @@ bool ScriptConnectionSolver::Process() {
 		accepted_sink->SetSideSinkConnected(sink_type, accepted_sink_node->ch_i, src);
 		
 		int conn_id = tmp_side_id_counter++;
-		accepted_src_node->last->SetSideSinkId(conn_id);
-		accepted_sink_node->last->SetSideSrcId(conn_id);
+		
+		accepted_src_node->last->GetInterface().Realize(src_type);
+		accepted_src_node->last->GetInterface().SetSource(conn_id,		accepted_src_node->ch_i,	accepted_sink_node->ch_i);
+		
+		accepted_sink_node->last->GetInterface().Realize(sink_type);
+		accepted_sink_node->last->GetInterface().SetSink(conn_id,		accepted_sink_node->ch_i,	accepted_src_node->ch_i);
 		
 		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
 			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);

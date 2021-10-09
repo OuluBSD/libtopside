@@ -470,6 +470,9 @@ struct AtomTypeCls : Moveable<AtomTypeCls> {
 	bool IsRolePipe()		const {return role == AtomRole::PIPE;}
 	bool HasSideChannels()	const {return iface.sink.count > 1 || iface.src.count > 1;}
 	
+	bool IsSourceChannelOptional(int ch_i) const;
+	bool IsSinkChannelOptional(int ch_i) const;
+	
 };
 
 
@@ -487,6 +490,29 @@ template <class T> AtomTypeCls AsAtomTypeCls() {return T::GetAtomType();}
 
 DevCls GetCenterDevCls();
 
+
+
+
+
+
+struct IfaceConnLink {
+	int conn = -1;
+	int local = -1;
+	int other = -1;
+	
+	String ToString() const {String s; s << "conn:" << conn << ", local:" << local << ", other:" << other; return s;}
+};
+
+struct IfaceConnTuple {
+	IfaceConnLink		sink	[MAX_VDTUPLE_SIZE];
+	IfaceConnLink		src		[MAX_VDTUPLE_SIZE];
+	AtomTypeCls			type;
+	
+	void Realize(const AtomTypeCls& type);
+	void SetSource(int conn, int src_ch, int sink_ch);
+	void SetSink(int conn, int sink_ch, int src_ch);
+	bool IsComplete() const;
+};
 
 
 

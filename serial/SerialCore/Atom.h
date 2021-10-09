@@ -50,13 +50,12 @@ protected:
 		void Visit(RuntimeVisitor& vis) {vis & other;}
 	};
 	
-	
 	Mutex					fwd_lock;
 	int						packets_forwarded = 0;
 	int						skipped_fwd_count = 0;
 	AtomBaseRef				driver_conn;
 	RealtimeSourceConfig*	last_cfg = 0;
-	Vector<int>				side_sink, side_src;
+	IfaceConnTuple			iface;
 	LinkedList<Exchange>	side_sink_conn, side_src_conn;
 	
 	void					ForwardAtom(FwdScope& fwd) override;
@@ -100,14 +99,10 @@ public:
 	
 	void					ForwardAsync();
 	
-	const Vector<int>&		GetSideSinks() const {return side_sink;}
-	const Vector<int>&		GetSideSources() const {return side_src;}
-	int						GetSideSinkCount() const {return side_sink.GetCount();}
-	int						GetSideSourceCount() const {return side_src.GetCount();}
 	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
 	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
-	void					AddSideSinkId(int i) {side_sink.Add(i);}
-	void					AddSideSrcId(int i) {side_src.Add(i);}
+	void					SetInterface(const IfaceConnTuple& iface);
+	const IfaceConnTuple&	GetInterface() const {return iface;}
 	bool					LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i);
 	bool					LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i);
 	

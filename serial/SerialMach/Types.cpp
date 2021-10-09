@@ -126,6 +126,17 @@ hash_t AtomTypeCls::GetHashValue() const {
 	return c;
 }
 
+bool AtomTypeCls::IsSinkChannelOptional(int ch_i) const {
+	int sink_begin = iface.sink.count - user_sink_count;
+	int sink_end = iface.sink.count;
+	return ch_i >= sink_begin && ch_i < sink_end;
+}
+
+bool AtomTypeCls::IsSourceChannelOptional(int ch_i) const {
+	int src_begin = iface.src.count - user_src_count;
+	int src_end = iface.src.count;
+	return ch_i >= src_begin && ch_i < src_end;
+}
 
 
 
@@ -143,4 +154,43 @@ String SerialTypeCls::GetTypeString(Type t) {
 }
 
 
+
+
+void IfaceConnTuple::Realize(const AtomTypeCls& type) {
+	if (!this->type.IsValid()) {
+		this->type = type;
+	}
+	else {
+		ASSERT(this->type == type);
+	}
+}
+
+void IfaceConnTuple::SetSource(int conn, int src_ch, int sink_ch) {
+	ASSERT(src_ch >= 0 && src_ch < type.iface.src.count);
+	ASSERT(src_ch < MAX_VDTUPLE_SIZE);
+	src[src_ch].conn = conn;
+	src[src_ch].local = src_ch;
+	src[src_ch].other = sink_ch;
+}
+
+void IfaceConnTuple::SetSink(int conn, int sink_ch, int src_ch) {
+	ASSERT(sink_ch >= 0 && sink_ch < type.iface.sink.count);
+	ASSERT(sink_ch < MAX_VDTUPLE_SIZE);
+	sink[sink_ch].conn = conn;
+	sink[sink_ch].local = sink_ch;
+	sink[sink_ch].other = src_ch;
+}
+
+bool IfaceConnTuple::IsComplete() const {
+	for(int i = 1; i < type.iface.sink.count; i++)
+		if (sink[i].conn < 0 /*&& !type.IsSinkChannelOptional(i)*/)
+			return false;
+	for(int i = 1; i < type.iface.src.count; i++)
+		if (src[i].conn < 0 /*&& !type.IsSourceChannelOptional(i)*/)
+			return false;
+	return true;
+}
+	
+	
+	
 NAMESPACE_SERIAL_END
