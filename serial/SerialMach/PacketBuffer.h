@@ -159,6 +159,15 @@ public:
 };
 
 
+struct PacketIO {
+	Packet			sink[MAX_VDTUPLE_SIZE];
+	Packet			src[MAX_VDTUPLE_SIZE];
+	int				sink_count = 0;
+	int				src_count = 0;
+	
+};
+
+
 struct PacketBufferBase :
 	public RefScopeEnabler<PacketBufferBase, PacketBufferParent>,
 	RTTIBase
@@ -173,7 +182,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out);
+	bool ProcessPackets(PacketIO& io);
 	void SetMinQueueSize(int i) {max_packets = i;}
 	
 };

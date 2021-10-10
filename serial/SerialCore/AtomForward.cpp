@@ -139,7 +139,6 @@ bool AtomBase::IsPrimarySourceFull() {
 void AtomBase::ForwardPipe(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
-	thread_local static Vector<int> src_chs;
 	
 	this->skipped_fwd_count = 0;
 	
@@ -179,6 +178,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			break;
 		}
 		
+		TODO
+		#if 0
 		if (src_ch_count > 1) {
 			src_chs.SetCount(0);
 			for(int i = 1; i < src_ch_count; i++)
@@ -189,10 +190,23 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				break;
 			}
 		}
+		#endif
 		
 		if (!IsReady(active_iface_mask))
 			break;
 		
+		
+		PacketIO io;
+		TODO
+		
+		if (!ProcessPackets(io)) {
+			RTLOG("AtomBase::ForwardPipe: failed to process packets");
+			
+		}
+		
+		TODO
+		
+		#if 0
 		RTLOG("AtomBase::ForwardPipe: packet iteration begin");
 		bool iter_forwarded = false;
 		int primary_fwd_count = 0;
@@ -209,8 +223,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			bool is_primary = sink_ch == 0;
 			
 			bool may_remove = false;
-			src_chs.SetCount(0);
-			if (!LoadPacket(sink_ch, in, src_chs)) {
+			
+			if (!ProcessPackets(io)) {
 				RTLOG("AtomBase::ForwardPipe: failed to load sink #" << sink_ch << " packet(" << off.ToString() << "), " << in_fmt.ToString());
 				may_remove = !is_primary;
 			}
@@ -286,6 +300,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 		
 		if (iter_forwarded)
 			ForwardSideConnections();
+		
+		#endif
 	}
 	
 	

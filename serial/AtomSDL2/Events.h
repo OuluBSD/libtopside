@@ -25,9 +25,8 @@ public:
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
-	void			StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool			ProcessPackets(PacketIO& io) override;
 	void			Update(double dt) override;
-	bool			LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
 	bool			IsReady(dword active_iface_mask) override;
 	
 	bool				ReadFrame();

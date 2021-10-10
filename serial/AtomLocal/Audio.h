@@ -161,7 +161,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	void Forward(FwdScope& fwd) override;
-	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool ProcessPackets(PacketIO& io) override;
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	

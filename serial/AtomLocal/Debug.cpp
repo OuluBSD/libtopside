@@ -27,11 +27,13 @@ bool RollingValueBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void RollingValueBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool RollingValueBase::ProcessPackets(PacketIO& io) {
 	ASSERT(internal_fmt.IsValid());
 	
-	RTLOG("RollingValueBase::StorePacket: time=" << time << ", fmt=" << internal_fmt.ToString());
+	RTLOG("RollingValueBase::ProcessPackets: time=" << time << ", fmt=" << internal_fmt.ToString());
 	
+	TODO
+	#if 0
 	out = ReplyPacket(src_ch, in);
 	PacketValue& v = *out;
 	v.SetFormat(internal_fmt);
@@ -51,6 +53,7 @@ void RollingValueBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Pa
 	else {
 		Panic("invalid internal format");
 	}
+	#endif
 }
 
 
@@ -161,9 +164,12 @@ void VoidPollerSinkBase::Update(double dt) {
 		PostContinueForward();
 }
 
-void VoidPollerSinkBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	RTLOG("VoidPollerSinkBase::StorePacket: sink_ch #" << sink_ch << " src_ch #" << src_ch << ": " << out->ToString());
-	out = ReplyPacket(src_ch, in);
+	//out = ReplyPacket(src_ch, in);
+	#endif
 }
 
 bool VoidPollerSinkBase::IsReady(dword active_iface_mask) {
@@ -176,7 +182,9 @@ bool VoidPollerSinkBase::IsReady(dword active_iface_mask) {
 	return b;
 }
 
-bool VoidPollerSinkBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+#if 0
+
+bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
 	uint64 route_desc = in->GetRouteDescriptor();
 	
 	Serial::Format fmt = in->GetFormat();
@@ -226,5 +234,7 @@ bool VoidPollerSinkBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& 
 	
 	return true;
 }
+
+#endif
 
 NAMESPACE_SERIAL_END

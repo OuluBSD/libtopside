@@ -10,8 +10,6 @@ class WorldState;
 class Plan;
 }
 
-
-
 template <class T> inline SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
 
@@ -91,8 +89,7 @@ public:
 	virtual void			Forward(FwdScope& fwd) {}
 	virtual bool			PostInitialize() {return true;}
 	virtual String			ToString() const;
-	virtual bool			LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {return true;}
-	virtual void			StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {out = ReplyPacket(src_ch, in);}
+	virtual bool			ProcessPackets(PacketIO& io) {io.src[0] = ReplyPacket(0, io.sink[0]); return true;}
 	virtual bool			IsReady(dword active_iface_mask) {return true;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}

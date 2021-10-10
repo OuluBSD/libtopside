@@ -37,17 +37,22 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	return succ;
 }
 
-bool AsyncMemForwarderBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	RTLOG("AsyncMemForwarderBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
 	if (PassLoadPacket(sink_ch, in, fwd_src_chs))
 		Consume(sink_ch, in);
+	#endif
 	return true;
 }
 
-void AsyncMemForwarderBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+void AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 	RTLOG("AsyncMemForwarderBase::StorePacket");
 	out = this->ReplyPacket(src_ch, in);
 }
+#endif
 
 bool AsyncMemForwarderBase::IsReady(dword active_iface_mask) {
 	bool b = write_mem != 0 && write_pos < write_size;

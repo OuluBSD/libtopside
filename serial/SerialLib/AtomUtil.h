@@ -21,10 +21,9 @@ public:
 	void	Visit(RuntimeVisitor& vis) override {}
 	bool	IsReady(dword active_iface_mask) override;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
-	bool	LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
-	void	StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool	ProcessPackets(PacketIO& io) override;
 	bool	IsConsumedPartialPacket() override {return partial_packet;}
-	virtual bool PassLoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {return sink_ch == GetSink()->GetSinkCount()-1;}
+	virtual bool PassProcessPackets(PacketIO& io) {return true;}
 	
 };
 

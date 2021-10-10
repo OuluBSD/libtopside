@@ -60,7 +60,7 @@ void ValStreamState::Step() {
 
 
 
-void PacketBufferBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool PacketBufferBase::ProcessPackets(PacketIO& io) {
 	TODO
 	#if 0
 	if (buf.GetCount()) {

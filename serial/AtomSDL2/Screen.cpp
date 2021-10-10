@@ -27,12 +27,16 @@ void SDL2ScreenBase::Uninitialize() {
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 }
 
-bool SDL2ScreenBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool SDL2ScreenBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	RTLOG("SDL2ScreenBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
 	return obj->Recv(sink_ch, in);
+	#endif
 }
 
-void SDL2ScreenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+void SDL2ScreenBase::ProcessPackets(PacketIO& io) {
 	RTLOG("SDL2ScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << out->ToString());
 	if (sink_ch == 0 && src_ch == 0) {
 		obj->Render(*last_cfg);
@@ -47,7 +51,7 @@ void SDL2ScreenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Pack
 	}
 	#endif
 }
-
+#endif
 
 #endif
 

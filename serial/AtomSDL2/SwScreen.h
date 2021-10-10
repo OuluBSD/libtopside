@@ -23,9 +23,8 @@ public:
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
-	bool			LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
-	void			StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
-	//bool			PassLoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	bool			ProcessPackets(PacketIO& io) override;
+	//bool			PassProcessPackets(PacketIO& io) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::SwScreen* GetOOSDL2() {return &*obj;}

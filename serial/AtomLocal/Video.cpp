@@ -170,7 +170,9 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void VideoGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool VideoGenBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	int frame = fmt.GetFrameSize();
 	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -182,6 +184,7 @@ void VideoGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet
 	out->Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	RTLOG("VideoGenBase::StorePacket: " << out->ToStringWithHash());
+	#endif
 }
 
 

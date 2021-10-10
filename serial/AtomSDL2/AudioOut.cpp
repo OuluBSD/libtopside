@@ -18,9 +18,12 @@ void SDL2AudioOutputBase::Uninitialize() {
 	obj.Clear();
 }
 
-bool SDL2AudioOutputBase::PassLoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool SDL2AudioOutputBase::PassProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	Format fmt = in->GetFormat();
 	return fmt.vd.val == ValCls::AUDIO;
+	#endif
 }
 
 

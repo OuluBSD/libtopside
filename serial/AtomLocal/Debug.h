@@ -14,7 +14,7 @@ class RollingValueBase :
 public:
 	RTTI_DECL0(RollingValueBase)
 	bool Initialize(const Script::WorldState& ws) override;
-	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -62,10 +62,9 @@ public:
 	RTTI_DECL0(VoidPollerSinkBase);
 	bool	Initialize(const Script::WorldState& ws) override;
 	void	Uninitialize() override;
-	void	StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool	ProcessPackets(PacketIO& io) override;
 	void	Update(double dt) override;
 	bool	IsReady(dword active_iface_mask) override;
-	bool	LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
 	void	Visit(RuntimeVisitor& vis) override {}
 	
 	

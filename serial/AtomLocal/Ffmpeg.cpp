@@ -133,11 +133,14 @@ bool FfmpegAtomBase::IsReady(dword active_iface_mask) {
 		TODO
 }
 
-void FfmpegAtomBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	if (mode == AUDIO_ONLY)
 		file_in.GetAudio().StorePacket(sink_ch, src_ch, in, out);
 	else
 		TODO
+	#endif
 }
 
 

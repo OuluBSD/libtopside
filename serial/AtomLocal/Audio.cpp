@@ -37,7 +37,9 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void AudioGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+bool AudioGenBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	int frame = fmt.GetFrameSize();
 	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -54,6 +56,7 @@ void AudioGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet
 	#endif
 	
 	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << out->ToStringWithHash());
+	#endif
 }
 
 NAMESPACE_SERIAL_END

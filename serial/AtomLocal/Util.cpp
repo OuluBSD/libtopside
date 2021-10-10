@@ -79,16 +79,20 @@ void CustomerBase::Forward(FwdScope& fwd) {
 	
 }
 
-bool CustomerBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool CustomerBase::ProcessPackets(PacketIO& io) {
 	RTLOG("CustomerBase::LoadPacket");
 	
-	//if (p->seq >= 0) {
+	TODO
+	#if 0
 	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *in);
-	//}
-	return sink_ch == 0;
+	
+	return true;//sink_ch == 0;
+	#endif
 }
 
-void CustomerBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+
+void CustomerBase::ProcessPackets(PacketIO& io) {
 	RTLOG("CustomerBase::StorePacket");
 	
 	out = InitialPacket(src_ch, off_gen.Create());
@@ -96,7 +100,7 @@ void CustomerBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet
 	PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *out);
 	
 }
-
+#endif
 
 
 JoinerBase::JoinerBase() {
@@ -124,7 +128,10 @@ bool JoinerBase::IsReady(dword active_iface_mask) {
 	return false;
 }
 
-bool JoinerBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool JoinerBase::ProcessPackets(PacketIO& io) {
+	
+	TODO
+	#if 0
 	if (sink_ch > 0) {
 		RTLOG("JoinerBase::LoadPacket: active ch-1 packet" << in->ToString());
 		fwd_src_chs.Add(0);
@@ -132,10 +139,13 @@ bool JoinerBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_
 	else {
 		RTLOG("JoinerBase::LoadPacket: skipping ch-" << sink_ch << " packet");
 	}
+	#endif
+	
 	return true;
 }
 
-void JoinerBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+void JoinerBase::ProcessPackets(PacketIO& io) {
 	if (!sink_ch && !src_ch) {
 		RTLOG("JoinerBase::StorePacket: (" << sink_ch << "," << src_ch << "): default reply to " << in->ToString());
 		out = ReplyPacket(src_ch, in);
@@ -145,7 +155,7 @@ void JoinerBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& 
 		out = in;
 	}
 }
-
+#endif
 
 
 SplitterBase::SplitterBase() {
@@ -161,14 +171,18 @@ void SplitterBase::Uninitialize() {
 	
 }
 
-bool SplitterBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool SplitterBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	int src_count = GetSource()->GetSourceCount();
 	for(int i = 1; i < src_count; i++) {
 		fwd_src_chs.Add(i);
 	}
+	#endif
 	return true;
 }
 
+#if 0
 void SplitterBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packet& out) {
 	if (src_ch > 0) {
 		Format in_fmt = in->GetFormat();
@@ -196,7 +210,7 @@ void SplitterBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packe
 		out = ReplyPacket(src_ch, in);
 	}
 }
-
+#endif
 
 #ifdef flagGUI
 
@@ -236,8 +250,9 @@ void OglShaderBase::Uninitialize() {
 	last_packet.Clear();
 }
 
-bool OglShaderBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool OglShaderBase::ProcessPackets(PacketIO& io) {
 	TODO
+	#if 0
 	
 	bool succ = true;
 	Format fmt = in->GetFormat();
@@ -255,13 +270,15 @@ bool OglShaderBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_s
 		last_packet = in;
 	
 	return succ;
+	#endif
 }
 
 bool OglShaderBase::IsReady(dword active_iface_mask) {
 	return true;
 }
 
-void OglShaderBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+void OglShaderBase::ProcessPackets(PacketIO& io) {
 	RTLOG("OglShaderBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << in->ToString());
 	
 	if (sink_ch == 0 && src_ch == 0) {
@@ -282,6 +299,7 @@ void OglShaderBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packe
 		GetBuffer().StoreOutputLink(data);
 	}
 }
+#endif
 
 #endif
 
@@ -315,11 +333,15 @@ bool TestEventSrcBase::IsReady(dword active_iface_mask) {
 	return true;
 }
 
-bool TestEventSrcBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool TestEventSrcBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	RTLOG("TestEventSrcBase::LoadPacket");
 	return true;
+	#endif
 }
 
+#if 0
 void TestEventSrcBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packet& out) {
 	RTLOG("TestEventSrcBase::StorePacket");
 	
@@ -333,7 +355,7 @@ void TestEventSrcBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, P
 	}
 	
 }
-
+#endif
 
 
 
@@ -369,21 +391,24 @@ bool EventStateBase::IsReady(dword active_iface_mask) {
 	return true;
 }
 
-bool EventStateBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+bool EventStateBase::ProcessPackets(PacketIO& io) {
+	TODO
+	#if 0
 	RTLOG("EventStateBase::LoadPacket: sink #" << sink_ch << ": " << in->ToString());
 	
 	TODO
-	
+	#endif
 	return true;
 }
 
-void EventStateBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+#if 0
+void EventStateBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EventStateBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << out->ToString());
 	
 	TODO
 	
 }
-
+#endif
 
 
 
