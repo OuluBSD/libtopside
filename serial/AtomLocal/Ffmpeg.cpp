@@ -126,7 +126,7 @@ void FfmpegAtomBase::Forward(FwdScope& fwd) {
 		TODO
 }
 
-bool FfmpegAtomBase::IsReady(dword active_iface_mask) {
+bool FfmpegAtomBase::IsReady(PacketIO& io) {
 	if (mode == AUDIO_ONLY)
 		return file_in.GetAudio().buf.GetCount();
 	else

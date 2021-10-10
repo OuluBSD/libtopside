@@ -89,8 +89,8 @@ public:
 	virtual void			Forward(FwdScope& fwd) {}
 	virtual bool			PostInitialize() {return true;}
 	virtual String			ToString() const;
-	virtual bool			ProcessPackets(PacketIO& io) {io.src[0] = ReplyPacket(0, io.sink[0]); return true;}
-	virtual bool			IsReady(dword active_iface_mask) {return true;}
+	virtual bool			ProcessPackets(PacketIO& io);
+	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	

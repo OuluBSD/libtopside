@@ -14,16 +14,16 @@ class AsyncMemForwarderBase :
 	int			partial_pos = 0;
 	
 	
-	void	Consume(int data_begin, Packet p);
+	void	Consume(int data_begin, Packet p); // "const Packet&"" is invalid here
 	
 public:
 	
 	void	Visit(RuntimeVisitor& vis) override {}
-	bool	IsReady(dword active_iface_mask) override;
+	bool	IsReady(PacketIO& io) override;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
 	bool	ProcessPackets(PacketIO& io) override;
 	bool	IsConsumedPartialPacket() override {return partial_packet;}
-	virtual bool PassProcessPackets(PacketIO& io) {return true;}
+	virtual bool PassConsumePacket(int sink_ch, const Packet& in) {return true;}
 	
 };
 
@@ -38,7 +38,7 @@ class FramePollerBase :
 public:
 	
 	void	Update(double dt) override;
-	bool	IsReady(dword active_iface_mask) override;
+	bool	IsReady(PacketIO& io) override;
 	void	Visit(RuntimeVisitor& vis) override {}
 	
 	void	SetFPS(int fps) {dt = 1.0 / (double)fps;}

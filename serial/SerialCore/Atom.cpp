@@ -16,6 +16,16 @@ AtomBase::~AtomBase() {
 	DBG_DESTRUCT
 }
 
+bool AtomBase::ProcessPackets(PacketIO& io) {
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(0, sink.p);
+	src.p->AddRouteData(src.from_sink_ch);
+	return true;
+}
+
 Machine& AtomBase::GetMachine() {
 	return GetParent().GetMachine();
 }

@@ -27,7 +27,7 @@ public:
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
 	void			Update(double dt) override;
-	bool			IsReady(dword active_iface_mask) override;
+	bool			IsReady(PacketIO& io) override;
 	
 	bool				ReadFrame();
 	bool				ProcessFrame();

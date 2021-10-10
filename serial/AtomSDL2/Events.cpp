@@ -34,7 +34,7 @@ bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
 }
 #endif
 
-bool SDL2EventsBase::IsReady(dword active_iface_mask) {
+bool SDL2EventsBase::IsReady(PacketIO& io) {
 	if (obj->Poll(ev)) {
 		ev_sendable = true;
 		return true;

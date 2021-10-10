@@ -49,7 +49,7 @@ public:
 	
 	bool	Initialize(const Script::WorldState& ws) override;
 	void	Uninitialize() override;
-	bool	PassProcessPackets(PacketIO& io) override;
+	bool	PassConsumePacket(int sink_ch, const Packet& in) override;
 	
 	String GetLastError() const {return last_error;}
 	void SinkCallback(Portaudio::StreamCallbackArgs& args);

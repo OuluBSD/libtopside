@@ -80,27 +80,21 @@ void CustomerBase::Forward(FwdScope& fwd) {
 }
 
 bool CustomerBase::ProcessPackets(PacketIO& io) {
-	RTLOG("CustomerBase::LoadPacket");
+	RTLOG("CustomerBase::ProcessPackets");
 	
-	TODO
-	#if 0
-	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *in);
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	ASSERT(sink.p);
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = InitialPacket(0, off_gen.Create());
 	
-	return true;//sink_ch == 0;
-	#endif
+	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *sink.p);
+	
+	return true;
 }
 
-#if 0
 
-void CustomerBase::ProcessPackets(PacketIO& io) {
-	RTLOG("CustomerBase::StorePacket");
-	
-	out = InitialPacket(src_ch, off_gen.Create());
-	
-	PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *out);
-	
-}
-#endif
 
 
 JoinerBase::JoinerBase() {
@@ -116,14 +110,14 @@ void JoinerBase::Uninitialize() {
 	
 }
 
-bool JoinerBase::IsReady(dword active_iface_mask) {
-	RTLOG("JoinerBase::IsReady: " << BinStr(active_iface_mask));
+bool JoinerBase::IsReady(PacketIO& io) {
+	RTLOG("JoinerBase::IsReady: " << BinStr(io.active_sink_mask));
 	// require primary and single side channel
 	int src_ch_count = GetSink()->GetSinkCount();
-	if (!(active_iface_mask & 1))
+	if (!(io.active_sink_mask & 1))
 		return false;
 	for(int i = 1; i < src_ch_count; i++)
-		if (active_iface_mask & (1 << i))
+		if (io.active_sink_mask & (1 << i))
 			return true;
 	return false;
 }
@@ -273,7 +267,7 @@ bool OglShaderBase::ProcessPackets(PacketIO& io) {
 	#endif
 }
 
-bool OglShaderBase::IsReady(dword active_iface_mask) {
+bool OglShaderBase::IsReady(PacketIO& io) {
 	return true;
 }
 
@@ -329,14 +323,14 @@ void TestEventSrcBase::Uninitialize() {
 	
 }
 
-bool TestEventSrcBase::IsReady(dword active_iface_mask) {
+bool TestEventSrcBase::IsReady(PacketIO& io) {
 	return true;
 }
 
 bool TestEventSrcBase::ProcessPackets(PacketIO& io) {
 	TODO
 	#if 0
-	RTLOG("TestEventSrcBase::LoadPacket");
+	RTLOG("TestEventSrcBase::ProcessPackets");
 	return true;
 	#endif
 }
@@ -387,7 +381,7 @@ void EventStateBase::Uninitialize() {
 	
 }
 
-bool EventStateBase::IsReady(dword active_iface_mask) {
+bool EventStateBase::IsReady(PacketIO& io) {
 	return true;
 }
 

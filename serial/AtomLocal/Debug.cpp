@@ -32,10 +32,15 @@ bool RollingValueBase::ProcessPackets(PacketIO& io) {
 	
 	RTLOG("RollingValueBase::ProcessPackets: time=" << time << ", fmt=" << internal_fmt.ToString());
 	
-	TODO
-	#if 0
-	out = ReplyPacket(src_ch, in);
-	PacketValue& v = *out;
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	ASSERT(sink.p);
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(0, sink.p);
+	src.p->AddRouteData(src.from_sink_ch);
+	
+	PacketValue& v = *src.p;
 	v.SetFormat(internal_fmt);
 	
 	if (internal_fmt.IsAudio()) {
@@ -52,8 +57,9 @@ bool RollingValueBase::ProcessPackets(PacketIO& io) {
 	}
 	else {
 		Panic("invalid internal format");
+		return false;
 	}
-	#endif
+	return true;
 }
 
 
@@ -172,13 +178,13 @@ bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
 	#endif
 }
 
-bool VoidPollerSinkBase::IsReady(dword active_iface_mask) {
+bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 	bool b = false;
 	if (ts >= dt) {
 		ts = 0;
 		b = true;
 	}
-	RTLOG("VoidPollerSinkBase::IsReady: " << BinStr(active_iface_mask) << ": " << (b ? "true" : "false"));
+	RTLOG("VoidPollerSinkBase::IsReady: " << BinStr(io.active_sink_mask) << ": " << (b ? "true" : "false"));
 	return b;
 }
 

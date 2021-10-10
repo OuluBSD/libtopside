@@ -151,24 +151,32 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	int sink_ch_count = sink_iface->GetSinkCount();
 	int src_ch_count = src_iface->GetSourceCount();
 	ASSERT(src_ch_count);
+	ASSERT(sink_ch_count <= MAX_VDTUPLE_SIZE);
+	ASSERT(src_ch_count <= MAX_VDTUPLE_SIZE);
 	if (!src_ch_count) return;
 	
 	bool is_forwarded = false;
 	
 	while (1) {
-		
-		dword active_iface_mask = 0;
+		PacketIO io;
+		io.sink_count = sink_ch_count;
+		io.src_count = src_ch_count;
+		io.nonempty_sinks = 0;
+		io.active_sink_mask = 0;
 		for(int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
-			if (sink_iface->GetValue(sink_ch).GetQueueSize() > 0)
-				active_iface_mask |= 1 << sink_ch;
+			if (sink_iface->GetValue(sink_ch).GetQueueSize() > 0) {
+				io.sink[sink_ch].filled = true;
+				io.active_sink_mask |= 1 << sink_ch;
+				io.nonempty_sinks++;
+			}
 		}
 		
-		if (active_iface_mask == 0) {
+		if (io.active_sink_mask == 0) {
 			RTLOG("AtomBase::ForwardPipe: skipping, all sinks are empty");
 			break;
 		}
 		
-		if (!(active_iface_mask & 1)) {
+		if (!(io.active_sink_mask & 1)) {
 			RTLOG("AtomBase::ForwardPipe: skipping, primary sink is empty");
 			break;
 		}
@@ -178,9 +186,9 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			break;
 		}
 		
-		TODO
-		#if 0
 		if (src_ch_count > 1) {
+			TODO
+			#if 0
 			src_chs.SetCount(0);
 			for(int i = 1; i < src_ch_count; i++)
 				src_chs.Add(i);
@@ -189,34 +197,68 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				RTLOG("AtomBase::ForwardPipe: skipping, at least one side source is full");
 				break;
 			}
+			#endif
 		}
-		#endif
 		
-		if (!IsReady(active_iface_mask))
+		if (!IsReady(io))
 			break;
 		
 		
-		PacketIO io;
-		TODO
+		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
+			Value& sink_value = sink_iface->GetValue(sink_ch);
+			PacketBuffer& sink_buf = sink_value.GetBuffer();
+			PacketIO::Sink& iface = io.sink[sink_ch];
+			iface.val = &sink_value;
+			iface.buf = &sink_buf;
+			iface.p = sink_buf.First();
+			iface.may_remove = false;
+		}
 		
 		if (!ProcessPackets(io)) {
 			RTLOG("AtomBase::ForwardPipe: failed to process packets");
-			
 		}
 		
-		TODO
+		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
+			PacketIO::Sink& iface = io.sink[sink_ch];
+			if (iface.may_remove)
+				iface.buf->RemoveFirst();
+		}
+		
+		
+		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
+			PacketIO::Source& iface = io.src[src_ch];
+			Packet& to = iface.p;
+			if (to) {
+				ASSERT(iface.from_sink_ch >= 0);
+				Value& src_val = src_iface->GetSourceValue(src_ch);
+				
+				#ifdef flagDEBUG
+				Format src_fmt = src_val.GetFormat();
+				Format to_fmt = to->GetFormat();
+				if (!src_fmt.IsCopyCompatible(to_fmt)) {DUMP(to_fmt); DUMP(src_fmt);}
+				ASSERT(src_fmt.IsCopyCompatible(to_fmt));
+				#endif
+				
+				PacketBuffer& src_buf = src_val.GetBuffer();
+				PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+				to->AddRouteData(iface.from_sink_ch);
+				src_buf.Add(to);
+				is_forwarded = true;
+			}
+		}
+		
+		
 		
 		#if 0
 		RTLOG("AtomBase::ForwardPipe: packet iteration begin");
 		bool iter_forwarded = false;
 		int primary_fwd_count = 0;
 		for (int sink_ch = sink_ch_count-1; sink_ch >= 0; sink_ch--) {
-			if (!(active_iface_mask & (1 << sink_ch)))
+			if (!(io.active_sink_mask & (1 << sink_ch)))
 				continue;
 			Value& sink_value = sink_iface->GetValue(sink_ch);
 			PacketBuffer& sink_buf = sink_value.GetBuffer();
 			Packet in = sink_buf.First();
-			
 			off32 off = in->GetOffset();
 			Format in_fmt = in->GetFormat();
 			
@@ -308,9 +350,13 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	if (is_forwarded) {
 		if (fwd.IsOnce())
 			PostContinueForward();
+		
+		ForwardSideConnections();
 	}
 	else
 		fwd.Break();
+	
+	
 	
 }
 

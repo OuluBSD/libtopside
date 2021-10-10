@@ -23,7 +23,7 @@ public:
 	bool	Initialize(const Script::WorldState& ws) override;
 	bool	PostInitialize() override;
 	void	Uninitialize() override;
-	bool	PassProcessPackets(PacketIO& io) override;
+	bool	PassConsumePacket(int sink_ch, const Packet& in) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::AudioOutput* GetOOSDL2() {return &*obj;}

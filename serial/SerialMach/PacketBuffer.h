@@ -159,11 +159,30 @@ public:
 };
 
 
+class Value;
+
+
 struct PacketIO {
-	Packet			sink[MAX_VDTUPLE_SIZE];
-	Packet			src[MAX_VDTUPLE_SIZE];
+	
+	struct Sink {
+		Value*			val = 0;
+		PacketBuffer*	buf = 0;
+		Packet			p;
+		bool			filled = false;
+		bool			may_remove = false;
+	};
+	
+	struct Source {
+		Packet			p;
+		int				from_sink_ch = -1;
+	};
+	
+	dword			active_sink_mask = 0;
+	int				nonempty_sinks = 0;
 	int				sink_count = 0;
 	int				src_count = 0;
+	Sink			sink[MAX_VDTUPLE_SIZE];
+	Source			src[MAX_VDTUPLE_SIZE];
 	
 };
 

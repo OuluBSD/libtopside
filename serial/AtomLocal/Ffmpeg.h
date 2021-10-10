@@ -35,7 +35,7 @@ public:
 	void Uninitialize() override;
 	void Forward(FwdScope& fwd) override;
 	bool ProcessPackets(PacketIO& io) override;
-	bool IsReady(dword active_iface_mask) override;
+	bool IsReady(PacketIO& io) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
 	bool LoadFileAny(String path);

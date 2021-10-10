@@ -18,7 +18,7 @@ void SDL2AudioOutputBase::Uninitialize() {
 	obj.Clear();
 }
 
-bool SDL2AudioOutputBase::PassProcessPackets(PacketIO& io) {
+bool SDL2AudioOutputBase::PassConsumePacket(int sink_ch, const Packet& in) {
 	TODO
 	#if 0
 	Format fmt = in->GetFormat();

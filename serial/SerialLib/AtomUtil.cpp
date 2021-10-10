@@ -37,13 +37,48 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	return succ;
 }
 
+bool AsyncMemForwarderBase::IsReady(PacketIO& io) {
+	bool b = false;
+	
+	if (!write_mem || write_pos >= write_size)
+		return false;
+	
+	if (io.sink_count == 1) {
+		b = io.sink[0].filled;
+	}
+	else if (io.sink_count > 1) {
+		b = io.sink[0].filled && io.sink[1].filled;
+	}
+	
+	return b;
+}
+
 bool AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	RTLOG("AsyncMemForwarderBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
-	if (PassLoadPacket(sink_ch, in, fwd_src_chs))
-		Consume(sink_ch, in);
-	#endif
+	PacketIO::Sink& sink0 = io.sink[0];
+	PacketIO::Sink& sink1 = io.sink[1];
+	PacketIO::Source& src = io.src[0];
+	
+	if (io.sink_count == 1) {
+		sink0.may_remove = true;
+		src.from_sink_ch = 0;
+		src.p = ReplyPacket(0, sink0.p);
+		RTLOG("AsyncMemForwarderBase::ProcessPackets: sink #0 " << sink0.p->ToString());
+		if (PassConsumePacket(src.from_sink_ch, sink0.p))
+			Consume(src.from_sink_ch, sink0.p);
+	}
+	else if (io.sink_count > 1) {
+		sink0.may_remove = true;
+		sink1.may_remove = true;
+		src.from_sink_ch = 1;
+		src.p = ReplyPacket(0, sink1.p);
+		RTLOG("AsyncMemForwarderBase::ProcessPackets: sink #1 " << sink1.p->ToString());
+		if (PassConsumePacket(src.from_sink_ch, sink1.p))
+			Consume(src.from_sink_ch, sink1.p);
+	}
+	else return false;
+	
+	src.p->AddRouteData(src.from_sink_ch);
+	
 	return true;
 }
 
@@ -54,13 +89,8 @@ void AsyncMemForwarderBase::ProcessPackets(PacketIO& io) {
 }
 #endif
 
-bool AsyncMemForwarderBase::IsReady(dword active_iface_mask) {
-	bool b = write_mem != 0 && write_pos < write_size;
-	RTLOG("AsyncMemForwarderBase::IsReady: " << (b ? "true" : "false"));
-	return b;
-}
-
 void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
+	ASSERT(p);
 	RTLOG("AsyncMemForwarderBase::Consume: " << p->ToString());
 	partial_packet.Clear();
 	partial_pos = 0;
@@ -111,7 +141,7 @@ void FramePollerBase::Update(double dt) {
 	RTLOG("FramePollerBase::Update: dt: " << dt << ", frame_age: " << frame_age);
 }
 
-bool FramePollerBase::IsReady(dword active_iface_mask) {
+bool FramePollerBase::IsReady(PacketIO& io) {
 	bool b = frame_age >= dt;
 	RTLOG("FramePollerBase::IsReady: " << (b ? "true" : "false"));
 	return b;

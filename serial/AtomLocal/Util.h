@@ -42,7 +42,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
-	bool IsReady(dword active_iface_mask) override;
+	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	
 	
@@ -77,7 +77,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	bool IsReady(dword active_iface_mask) override;
+	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	
@@ -97,7 +97,7 @@ public:
 	TestEventSrcBase();
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	bool IsReady(dword active_iface_mask) override;
+	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -116,7 +116,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	bool IsReady(dword active_iface_mask) override;
+	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
