@@ -11,6 +11,7 @@ namespace Serial {
 	ATOM_TYPE(CENTER_CUSTOMER) \
 	ATOM_TYPE(TEST_REALTIME_SRC) \
 	ATOM_TYPE(TEST_REALTIME_SINK) \
+	ATOM_TYPE(TEST_POLLER_SINK) \
 	ATOM_TYPE(AUDIO_HARDWARE_SINK) \
 	ATOM_TYPE(AUDIO_DECODER_SRC) \
 	ATOM_TYPE(AUDIO_DBG_SRC) \
@@ -32,6 +33,7 @@ namespace Serial {
 	ATOM_CLASS(CenterCustomer) \
 	ATOM_CLASS(TestRealtimeSrc) \
 	ATOM_CLASS(TestRealtimeSink) \
+	ATOM_CLASS(TestPollerSink) \
 	ATOM_CLASS(AudioHardwareSink) \
 	ATOM_CLASS(AudioDecoderSrc) \
 	ATOM_CLASS(AudioDbgSrc) \

@@ -395,7 +395,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 					fn.SetExternalImpl();
 			}
 			
-			// void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+			// void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 			if (base.flags.Find("store_packet") >= 0) {
 				FunctionIdScope& fis = cls_h.GetAddFunctionIdScope("StorePacket");
 				Function& fn = fis.AddFunction();

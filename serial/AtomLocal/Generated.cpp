@@ -52,6 +52,22 @@ AtomTypeCls TestRealtimeSink::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls TestPollerSink::GetAtomType()
+{
+	return ATOM11(TEST_POLLER_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+}
+
+void TestPollerSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<TestPollerSink>>(this);
+	vis.VisitThis<VoidPollerSinkBase>(this);
+}
+
+AtomTypeCls TestPollerSink::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls AudioHardwareSink::GetAtomType()
 {
 	return ATOM11(AUDIO_HARDWARE_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);

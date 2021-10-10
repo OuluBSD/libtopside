@@ -51,6 +51,21 @@ public:
 
 };
 
+class TestPollerSink : public Atom<TestPollerSink>, public VoidPollerSinkBase {
+
+public:
+	RTTI_DECL2(TestPollerSink, AtomT, VoidPollerSinkBase)
+	COPY_PANIC(TestPollerSink)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
 class AudioHardwareSink : public Atom<AudioHardwareSink>, public PortaudioSink {
 
 public:
@@ -402,6 +417,8 @@ using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
 
 using TestRealtimeSinkRef = Ref<TestRealtimeSink, AtomParent>;
+
+using TestPollerSinkRef = Ref<TestPollerSink, AtomParent>;
 
 using AudioHardwareSinkRef = Ref<AudioHardwareSink, AtomParent>;
 

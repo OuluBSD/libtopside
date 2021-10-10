@@ -30,6 +30,7 @@ void SimpleValue::Exchange(Ex& e) {
 					RTLOG("SimpleValue::Exchange: converted packet");
 					RTLOG("                       from: " << p->ToString());
 					RTLOG("                       to:   " << dst->ToString());
+					dst->CopyRouteData(*p);
 					sink_buf.Add(dst);
 				}
 				else

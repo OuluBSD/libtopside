@@ -4,6 +4,7 @@ BASE_ACTION(CustomerBase,			loop.connected)
 
 BASE(RollingValueBase)
 BASE(VoidSinkBase)
+BASE(VoidPollerSinkBase)
 BASE(PortaudioSink)
 BASE(FfmpegAtomBase)
 BASE(AudioGenBase)

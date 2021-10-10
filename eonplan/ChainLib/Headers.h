@@ -11,6 +11,10 @@ HEADER11(			TestRealtimeSink,	VoidSinkBase,				pipe,		CenterAudio,	CenterAudio,	
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
 
+HEADER11(			TestPollerSink,		VoidPollerSinkBase,			pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		TestPollerSink,		center.audio.sink)
+HEADER_ACTION(		TestPollerSink,		center.audio.sink.test.poller)
+
 HEADER11(			AudioHardwareSink,	PortaudioSink,				pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink)
 HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)

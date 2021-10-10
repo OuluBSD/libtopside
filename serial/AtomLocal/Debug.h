@@ -14,7 +14,7 @@ class RollingValueBase :
 public:
 	RTTI_DECL0(RollingValueBase)
 	bool Initialize(const Script::WorldState& ws) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -35,10 +35,38 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	//void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override {} // required pass
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	void IntervalSinkProcess();
+	
+	
+};
+
+
+class VoidPollerSinkBase :
+	virtual public AtomBase
+{
+	struct Thread {
+		byte				rolling_value = 0;
+		double				time = 0;
+	};
+	ArrayMap<uint64, Thread> thrds;
+	Serial::Format		internal_fmt;
+	double				dt = 0;
+	double				ts = 0;
+	bool				fail = false;
+	int					dbg_total_samples = 0;
+	int					dbg_total_bytes = 0;
+	
+public:
+	RTTI_DECL0(VoidPollerSinkBase);
+	bool	Initialize(const Script::WorldState& ws) override;
+	void	Uninitialize() override;
+	void	StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	void	Update(double dt) override;
+	bool	IsReady(dword active_iface_mask) override;
+	bool	LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void	Visit(RuntimeVisitor& vis) override {}
 	
 	
 };

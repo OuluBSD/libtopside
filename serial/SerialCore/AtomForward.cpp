@@ -41,7 +41,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	
 	ForwardPipe(fwd);
-	ForwardSideConnections();
+	
 	
 	
 	#ifdef flagDEBUG
@@ -80,9 +80,66 @@ void AtomBase::ForwardDriver(FwdScope& fwd) {
 	Forward(fwd);
 }
 
+bool AtomBase::IsAllSideSourcesFull(const Vector<int>& src_chs) {
+	auto it = src_chs.Begin();
+	auto end = src_chs.End();
+	while (it != end) {
+		for (Exchange& ex : side_sink_conn) {
+			int src_ch = *it;
+			if (src_ch == 0) {
+				if (!IsPrimarySourceFull())
+					return false;
+				if (++it == end)
+					break;
+			}
+			if (src_ch == ex.local_ch_i) {
+				InterfaceSinkRef sink_iface = ex.other->GetSink();
+				Value& sink_val = sink_iface->GetValue(ex.other_ch_i);
+				if (!sink_val.IsQueueFull())
+					return false;
+				if (++it == end)
+					break;
+			}
+		}
+	}
+	return true;
+}
+
+bool AtomBase::IsAnySideSourceFull(const Vector<int>& src_chs) {
+	auto it = src_chs.Begin();
+	auto end = src_chs.End();
+	while (it != end) {
+		for (Exchange& ex : side_sink_conn) {
+			int src_ch = *it;
+			if (src_ch == 0) {
+				if (IsPrimarySourceFull())
+					return true;
+				if (++it == end)
+					break;
+			}
+			if (src_ch == ex.local_ch_i) {
+				InterfaceSinkRef sink_iface = ex.other->GetSink();
+				Value& sink_val = sink_iface->GetValue(ex.other_ch_i);
+				if (sink_val.IsQueueFull())
+					return true;
+				if (++it == end)
+					break;
+			}
+		}
+	}
+	return false;
+}
+
+bool AtomBase::IsPrimarySourceFull() {
+	InterfaceSourceRef src_iface = GetSource();
+	Value& src_val = src_iface->GetSourceValue(0);
+	return src_val.IsQueueFull();
+}
+
 void AtomBase::ForwardPipe(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
 	POPO(Pol::Serial::Atom::SkipDulicateExtFwd);
+	thread_local static Vector<int> src_chs;
 	
 	this->skipped_fwd_count = 0;
 	
@@ -100,101 +157,135 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	bool is_forwarded = false;
 	
 	while (1) {
-		if (!IsReady(type.iface.content))
-			break;
 		
-		Vector<int> problem_chs;
-		bool sink_all = true;
-		for(int i = 0; i < sink_ch_count; i++) {
-			Value& sink_value = sink_iface->GetValue(i);
-			int sz = sink_value.GetQueueSize();
-			if (!sz) {
-				problem_chs << i;
-				sink_all = false;
-			}
+		dword active_iface_mask = 0;
+		for(int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
+			if (sink_iface->GetValue(sink_ch).GetQueueSize() > 0)
+				active_iface_mask |= 1 << sink_ch;
 		}
-		if (!sink_all) {
-			RTLOG("AtomBase::ForwardPipe: skipping, some sinks are empty: " << Join(problem_chs, ", "));
+		
+		if (active_iface_mask == 0) {
+			RTLOG("AtomBase::ForwardPipe: skipping, all sinks are empty");
 			break;
 		}
 		
-		bool src_full = false;
-		for(int i = 0; i < src_ch_count; i++) {
-			Value& src_value = src_iface->GetSourceValue(i);
-			if (src_value.IsQueueFull()) {
-				problem_chs << i;
-				src_full = true;
-			}
-		}
-		if (src_full) {
-			RTLOG("AtomBase::ForwardPipe: skipping, some sources are full: " << Join(problem_chs, ", "));
+		if (!(active_iface_mask & 1)) {
+			RTLOG("AtomBase::ForwardPipe: skipping, primary sink is empty");
 			break;
 		}
 		
-		for (Exchange& ex : side_sink_conn) {
-			Value& sink_val = ex.other->GetSink()->GetValue(ex.other_ch_i);
-			if (sink_val.IsQueueFull()) {
-				problem_chs << ex.local_ch_i;
-				src_full = true;
+		if (IsPrimarySourceFull()) {
+			RTLOG("AtomBase::ForwardPipe: skipping, primary source is full");
+			break;
+		}
+		
+		if (src_ch_count > 1) {
+			src_chs.SetCount(0);
+			for(int i = 1; i < src_ch_count; i++)
+				src_chs.Add(i);
+			
+			if (IsAnySideSourceFull(src_chs)) {
+				RTLOG("AtomBase::ForwardPipe: skipping, at least one side source is full");
 				break;
 			}
 		}
-		if (src_full) {
-			RTLOG("AtomBase::ForwardPipe: skipping, some side sources are full: " << Join(problem_chs, ", "));
-			break;
-		}
 		
-		for(int i = sink_ch_count-1; i >= 0; i--) {
-			Value& sink_value = sink_iface->GetValue(i);
+		if (!IsReady(active_iface_mask))
+			break;
+		
+		RTLOG("AtomBase::ForwardPipe: packet iteration begin");
+		bool iter_forwarded = false;
+		int primary_fwd_count = 0;
+		for (int sink_ch = sink_ch_count-1; sink_ch >= 0; sink_ch--) {
+			if (!(active_iface_mask & (1 << sink_ch)))
+				continue;
+			Value& sink_value = sink_iface->GetValue(sink_ch);
 			PacketBuffer& sink_buf = sink_value.GetBuffer();
 			Packet in = sink_buf.First();
-			sink_buf.RemoveFirst();
-			off32 off = in->GetOffset();
-			Format sink_fmt = in->GetFormat();
 			
-			if (!LoadPacket(i, in)) {
-				RTLOG("AtomBase::ForwardPipe: skipping sink #" << i << " packet(" << off.ToString() << "), " << sink_fmt.ToString());
-				continue;
+			off32 off = in->GetOffset();
+			Format in_fmt = in->GetFormat();
+			
+			bool is_primary = sink_ch == 0;
+			
+			bool may_remove = false;
+			src_chs.SetCount(0);
+			if (!LoadPacket(sink_ch, in, src_chs)) {
+				RTLOG("AtomBase::ForwardPipe: failed to load sink #" << sink_ch << " packet(" << off.ToString() << "), " << in_fmt.ToString());
+				may_remove = !is_primary;
 			}
 			else {
-				RTLOG("AtomBase::ForwardPipe: receiving sink #" << i << " packet(" << off.ToString() << "), " << sink_fmt.ToString());
-			}
-			
-			packets_forwarded++;
-			
-			for(int j = src_ch_count-1; j >= 0; j--) {
-				Value& src_val = src_iface->GetSourceValue(j);
-				PacketBuffer& src_buf = src_val.GetBuffer();
-				Format src_fmt = src_val.GetFormat();
-				
-				if (i > 0 && j == 0 /*&& src_fmt.vd.val == ValCls::RECEIPT*/) {
-					skipped_fwd_count++;
-					RTLOG("AtomBase::ForwardPipe: skipping side sink #" << i << ", src #" << j);
-					continue;
+				// Force sink-0 to src-0 forward because of loop completion
+				if (is_primary) {
+					bool have_prim_fwd = false;
+					for (int src_ch : src_chs)
+						have_prim_fwd = have_prim_fwd || src_ch == 0;
+					if (!have_prim_fwd)
+						src_chs.Add(0);
 				}
 				
-				RTLOG("AtomBase::ForwardPipe: sending sink #" << i << ", src #" << j << " packet(" << off.ToString() << "), " << src_fmt.ToString());
+				bool any_src_full = false;
+				for(int src_ch : src_chs) {
+					Value& src_val = src_iface->GetSourceValue(src_ch);
+					if (src_val.IsQueueFull()) {
+						any_src_full = true;
+						break;
+					}
+				}
 				
-				Packet to = CreatePacket(off);
-				to->SetFormat(src_fmt);
-				
-				InternalPacketData& data = to->template SetData<InternalPacketData>();
-				
-				WhenEnterStorePacket(*this, to);
-				StorePacket(i, j, to);
-				WhenLeaveStorePacket(to);
-				
-				if (to) {
-					PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
-					src_buf.Add(to);
-					is_forwarded = true;
+				if (any_src_full) {
+					RTLOG("AtomBase::ForwardPipe: skipping send after load because of at least one full source");
 				}
 				else {
-					RTLOG("AtomBase::ForwardPipe: error: StorePacket returned empty package");
-					ASSERT(0);
+					for(int src_ch : src_chs) {
+						Value& src_val = src_iface->GetSourceValue(src_ch);
+						PacketBuffer& src_buf = src_val.GetBuffer();
+						Format src_fmt = src_val.GetFormat();
+						
+						RTLOG("AtomBase::ForwardPipe: sending sink #" << sink_ch << ", src #" << src_ch << " packet(" << off.ToString() << "), " << src_fmt.ToString());
+						
+						Packet to;
+						
+						WhenEnterStorePacket(*this, to);
+						StorePacket(sink_ch, src_ch, in, to);
+						WhenLeaveStorePacket(to);
+						
+						if (to) {
+							Format to_fmt = to->GetFormat();
+							if (!src_fmt.IsCopyCompatible(to_fmt)) {DUMP(to_fmt); DUMP(src_fmt);}
+							ASSERT(src_fmt.IsCopyCompatible(to_fmt));
+							PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
+							to->AddRouteData(sink_ch);
+							//to->AddRouteData(src_ch); // not needed while single conn per iface
+							src_buf.Add(to);
+							is_forwarded = true;
+							iter_forwarded = true;
+						}
+						else {
+							RTLOG("AtomBase::ForwardPipe: error: StorePacket returned empty package");
+							//StorePacket(sink_ch, src_ch, in, to);
+							ASSERT(0);
+						}
+						
+						if (src_ch == 0 && sink_ch == 0)
+							primary_fwd_count++;
+					}
+					
+					may_remove = true;
+					packets_forwarded++;
 				}
 			}
+			
+			if (may_remove)
+				sink_buf.RemoveFirst();
 		}
+		
+		ASSERT(primary_fwd_count == 1);
+		if (primary_fwd_count != 1)
+			Panic("internal error: forwarded primary packets per iteration: " + IntStr(primary_fwd_count));
+		
+		if (iter_forwarded)
+			ForwardSideConnections();
 	}
 	
 	
@@ -234,6 +325,36 @@ void AtomBase::ForwardAsync() {
 	fwd.SetOnce();
 	fwd.Forward();
 	
+}
+
+Packet AtomBase::InitialPacket(int src_ch, off32 off) {
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	Packet to = CreatePacket(off);
+	to->SetFormat(src_fmt);
+	InternalPacketData& data = to->template SetData<InternalPacketData>();
+	return to;
+}
+
+Packet AtomBase::ReplyPacket(int src_ch, const Packet& in) {
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	off32 off = in->GetOffset();
+	Packet to = CreatePacket(off);
+	to->SetFormat(src_fmt);
+	to->CopyRouteData(*in);
+	InternalPacketData& data = to->template SetData<InternalPacketData>();
+	return to;
+}
+
+int AtomBase::FindSourceWithValDev(ValDevCls vd) {
+	InterfaceSourceRef src = GetSource();
+	int c = src->GetSourceCount();
+	for(int i = 0; i < c; i++) {
+		Value& v = src->GetSourceValue(i);
+		Format f = v.GetFormat();
+		if (f.vd == vd)
+			return i;
+	}
+	return -1;
 }
 
 NAMESPACE_SERIAL_END

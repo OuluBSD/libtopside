@@ -37,23 +37,23 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void AudioGenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+void AudioGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
 	int frame = fmt.GetFrameSize();
-	dword off = p->GetOffset().value;
+	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
-	p->Set(fmt, time);
-	p->Data().SetCount(frame, 0);
+	out->Set(fmt, time);
+	out->Data().SetCount(frame, 0);
 	
 	#if 0
-	Vector<byte>& v = p->Data();
+	Vector<byte>& v = out->Data();
 	for (byte& b : v) b = val++;
 	#else
-	gen.Play((int)offset, p);
+	gen.Play((int)offset, out);
 	#endif
 	
-	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << p->ToStringWithHash());
+	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << out->ToStringWithHash());
 }
 
 NAMESPACE_SERIAL_END

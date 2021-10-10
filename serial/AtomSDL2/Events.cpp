@@ -13,8 +13,8 @@ void SDL2EventsBase::Uninitialize() {
 	obj.Clear();
 }
 
-void SDL2EventsBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDL2EventsBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << p->ToString());
+void SDL2EventsBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+	RTLOG("SDL2EventsBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << in->ToString());
 	
 	ASSERT(ev_sendable);
 	
@@ -26,11 +26,11 @@ void SDL2EventsBase::Update(double dt) {
 	TODO
 }
 
-bool SDL2EventsBase::LoadPacket(int ch_i, const Packet& p) {
+bool SDL2EventsBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
 	return true;
 }
 
-bool SDL2EventsBase::IsReady(ValDevCls vd) {
+bool SDL2EventsBase::IsReady(dword active_iface_mask) {
 	if (obj->Poll(ev)) {
 		ev_sendable = true;
 		return true;

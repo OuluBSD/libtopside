@@ -67,6 +67,9 @@ protected:
 	bool					IsPacketStuck() override;
 	bool					IsLoopComplete(FwdScope& fwd) override {return false;}
 	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
+	bool					IsAllSideSourcesFull(const Vector<int>& src_chs);
+	bool					IsAnySideSourceFull(const Vector<int>& src_chs);
+	bool					IsPrimarySourceFull();
 	
 public:
 	virtual AtomTypeCls		GetType() const = 0;
@@ -88,9 +91,9 @@ public:
 	virtual void			Forward(FwdScope& fwd) {}
 	virtual bool			PostInitialize() {return true;}
 	virtual String			ToString() const;
-	virtual bool			LoadPacket(int ch_i, const Packet& p) {return true;}
-	virtual void			StorePacket(int sink_ch,  int src_ch, Packet& p) {Panic("StorePacket not implemented");}
-	virtual bool			IsReady(ValDevCls vd) {return true;}
+	virtual bool			LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {return true;}
+	virtual void			StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {out = ReplyPacket(src_ch, in);}
+	virtual bool			IsReady(dword active_iface_mask) {return true;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	
@@ -98,6 +101,9 @@ public:
 	virtual bool			PassLinkSideSource(AtomBaseRef src) {return true;}
 	
 	void					ForwardAsync();
+	Packet					InitialPacket(int src_ch, off32 off);
+	Packet					ReplyPacket(int src_ch, const Packet& in);
+	int						FindSourceWithValDev(ValDevCls vd);
 	
 	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
 	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
@@ -292,7 +298,6 @@ public:
 		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
-		iter.value().Uninitialize();
 		iter.value().Uninitialize();
 		//iter.value().Destroy();
 		

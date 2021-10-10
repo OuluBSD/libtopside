@@ -170,18 +170,18 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 	
 }
 
-void VideoGenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+void VideoGenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
 	int frame = fmt.GetFrameSize();
-	dword off = p->GetOffset().value;
+	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
 	int64 max_offset = gen.GetMaxOffset();
 	offset = offset % max_offset;
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
-	p->Set(fmt, time);
-	p->Data().SetCount(frame, 0);
-	gen.Play((int)offset, p);
-	RTLOG("VideoGenBase::StorePacket: " << p->ToStringWithHash());
+	out->Set(fmt, time);
+	out->Data().SetCount(frame, 0);
+	gen.Play((int)offset, out);
+	RTLOG("VideoGenBase::StorePacket: " << out->ToStringWithHash());
 }
 
 

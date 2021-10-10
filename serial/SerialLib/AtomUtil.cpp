@@ -37,18 +37,19 @@ bool AsyncMemForwarderBase::ForwardAsyncMem(byte* mem, int size)  {
 	return succ;
 }
 
-bool AsyncMemForwarderBase::LoadPacket(int ch_i, const Packet& p) {
-	RTLOG("AsyncMemForwarderBase::LoadPacket: sink #" << ch_i << " " << p->ToString());
-	if (PassLoadPacket(ch_i, p))
-		Consume(ch_i, p);
-	return ch_i == 0;
+bool AsyncMemForwarderBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+	RTLOG("AsyncMemForwarderBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
+	if (PassLoadPacket(sink_ch, in, fwd_src_chs))
+		Consume(sink_ch, in);
+	return true;
 }
 
-void AsyncMemForwarderBase::StorePacket(int sink_ch, int src_ch, Packet& p) {
+void AsyncMemForwarderBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
 	RTLOG("AsyncMemForwarderBase::StorePacket");
+	out = this->ReplyPacket(src_ch, in);
 }
 
-bool AsyncMemForwarderBase::IsReady(ValDevCls vd) {
+bool AsyncMemForwarderBase::IsReady(dword active_iface_mask) {
 	bool b = write_mem != 0 && write_pos < write_size;
 	RTLOG("AsyncMemForwarderBase::IsReady: " << (b ? "true" : "false"));
 	return b;
@@ -74,6 +75,7 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 		write_pos += cp_sz;
 		int p_remaining = data_sz - data_begin - cp_sz;
 		ASSERT(p_remaining >= 0);
+		RTLOG("AsyncMemForwarderBase::Consume: got " << write_pos << "/" << write_size);
 		if (p_remaining > 0) {
 			partial_packet = p;
 			partial_pos = data_begin + cp_sz;
@@ -104,7 +106,7 @@ void FramePollerBase::Update(double dt) {
 	RTLOG("FramePollerBase::Update: dt: " << dt << ", frame_age: " << frame_age);
 }
 
-bool FramePollerBase::IsReady(ValDevCls vd) {
+bool FramePollerBase::IsReady(dword active_iface_mask) {
 	bool b = frame_age >= dt;
 	RTLOG("FramePollerBase::IsReady: " << (b ? "true" : "false"));
 	return b;

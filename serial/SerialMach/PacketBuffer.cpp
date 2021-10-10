@@ -60,7 +60,9 @@ void ValStreamState::Step() {
 
 
 
-void PacketBufferBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+void PacketBufferBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+	TODO
+	#if 0
 	if (buf.GetCount()) {
 		Packet n = buf.First();
 		buf.RemoveFirst();
@@ -68,6 +70,7 @@ void PacketBufferBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
 		n->SetOffset(p->GetOffset());
 		p = n;
 	}
+	#endif
 }
 
 

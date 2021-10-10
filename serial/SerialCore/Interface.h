@@ -24,6 +24,8 @@ public:
 		}
 		
 		void InitializeContainer(ValDevTuple vt) {
+			ClearContainer();
+			
 			ValDevCls vd = vt();
 			ASSERT(vd.IsValid());
 			Format val_fmt = GetDefaultFormat(vd);

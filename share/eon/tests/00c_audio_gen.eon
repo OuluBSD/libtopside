@@ -25,7 +25,7 @@ chain tester: {
 		id: "in";
 		center.customer: true;
 		center.audio.side.sink2.center.user: true [id:"pipe"; id:"out1"];
-		center.audio.sink.test.realtime: true;
+		center.audio.sink.test.poller: true;
 	};
 	
 };

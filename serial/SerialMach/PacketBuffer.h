@@ -40,7 +40,7 @@ class PacketValue :
 	off32				offset;
 	PacketId			id = 0;
 	TypeCls				custom_data;
-	
+	uint64				route_descriptor = 0;
 	
 public:
 	union {
@@ -65,6 +65,8 @@ public:
 	void					SetTrackingId(PacketId i) {id = i;}
 	void					Clear() {data.SetCount(0); fmt.Clear(); offset.Clear(); time = 0; id = 0; custom_data = AsVoidTypeCls();}
 	void					SetOffset(off32 o) {offset = o;}
+	void					AddRouteData(byte b) {route_descriptor <<= 8ULL; route_descriptor |= (uint64)b;}
+	void					CopyRouteData(const PacketValue& v) {route_descriptor = v.route_descriptor;}
 	
 	const Vector<byte>&		GetData() const {return data;}
 	Format					GetFormat() const {return fmt;}
@@ -80,6 +82,7 @@ public:
 	bool					HasTrackingId() const {return id != 0;}
 	bool					IsBuffered() const {return fmt.vd.val.type == ValCls::AUDIO;}
 	hash_t					GetDataHash() const;
+	uint64					GetRouteDescriptor() const {return route_descriptor;}
 	
 	
 	String					ToString() const;
@@ -170,7 +173,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	void StorePacket(int sink_ch,  int src_ch, Packet& p);
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out);
 	void SetMinQueueSize(int i) {max_packets = i;}
 	
 };

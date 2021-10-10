@@ -125,8 +125,8 @@ void PortaudioSink::Uninitialize() {
 	obj.Clear();
 }
 
-bool PortaudioSink::PassLoadPacket(int ch_i, const Packet& p) {
-	return p->GetFormat().IsCopyCompatible(fmt);
+bool PortaudioSink::PassLoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+	return in->GetFormat().IsCopyCompatible(fmt);
 }
 
 void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {

@@ -98,7 +98,7 @@ bool ScriptDriverLoader::Load() {
 		}
 		
 		
-		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws) || !ab->Initialize(ws)) {
+		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 			const auto& a = Serial::Factory::AtomDataMap().Get(type);
 			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 			return false;

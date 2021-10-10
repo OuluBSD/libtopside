@@ -25,10 +25,10 @@ public:
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
-	void			StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	void			StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	void			Update(double dt) override;
-	bool			LoadPacket(int ch_i, const Packet& p) override;
-	bool			IsReady(ValDevCls vd) override;
+	bool			LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	bool			IsReady(dword active_iface_mask) override;
 	
 	bool				ReadFrame();
 	bool				ProcessFrame();

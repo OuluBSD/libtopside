@@ -21,17 +21,13 @@ void SDL2SwScreenBase::Uninitialize() {
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 }
 
-void SDL2SwScreenBase::Forward(FwdScope& fwd) {
-	
+bool SDL2SwScreenBase::LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {
+	RTLOG("SDL2SwScreenBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
+	return obj->Recv(sink_ch, in);
 }
 
-bool SDL2SwScreenBase::LoadPacket(int sink_ch_i, const Packet& p) {
-	RTLOG("SDL2SwScreenBase::LoadPacket: sink #" << sink_ch_i << " " << p->ToString());
-	return obj->Recv(sink_ch_i, p);
-}
-
-void SDL2SwScreenBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
-	RTLOG("SDL2SwScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << p->ToString());
+void SDL2SwScreenBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
+	RTLOG("SDL2SwScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": in=" << in->ToString());
 	obj->Render();
 }
 

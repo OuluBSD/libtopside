@@ -28,7 +28,6 @@ void AtomBase::UninitializeDeep() {
 }
 
 void AtomBase::PostContinueForward() {
-	ASSERT(last_cfg);
 	if (last_cfg)
 		GetMachine().Get<AtomSystem>()->AddOnce(*this, *last_cfg);
 }

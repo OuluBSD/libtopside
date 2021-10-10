@@ -27,8 +27,8 @@ public:
 	void Forward(FwdScope& fwd) override;
 	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}
 	void Visit(RuntimeVisitor& vis) override {}
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
-	bool LoadPacket(int ch_i, const Packet& p) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
 	void UpdateConfig(double dt) override;
 	
 };
@@ -37,16 +37,15 @@ public:
 class JoinerBase :
 	virtual public AtomBase
 {
-	Packet	cur_side;
 	
 public:
 	JoinerBase();
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
-	bool LoadPacket(int ch_i, const Packet& p) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool IsReady(dword active_iface_mask) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	
 	
 };
@@ -55,16 +54,14 @@ public:
 class SplitterBase :
 	virtual public AtomBase
 {
-	Packet	cur_side;
 	
 public:
 	SplitterBase();
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
 	void Visit(RuntimeVisitor& vis) override {}
-	bool LoadPacket(int ch_i, const Packet& p) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	
 	
 };
@@ -83,9 +80,9 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	bool IsReady(ValDevCls vd) override;
-	bool LoadPacket(int ch_i, const Packet& p) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool IsReady(dword active_iface_mask) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	
 	
@@ -104,9 +101,9 @@ public:
 	TestEventSrcBase();
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	bool IsReady(ValDevCls vd) override;
-	bool LoadPacket(int ch_i, const Packet& p) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool IsReady(dword active_iface_mask) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	
@@ -124,9 +121,9 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	bool PostInitialize() override;
 	void Uninitialize() override;
-	bool IsReady(ValDevCls vd) override;
-	bool LoadPacket(int ch_i, const Packet& p) override;
-	void StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool IsReady(dword active_iface_mask) override;
+	bool LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	

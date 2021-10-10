@@ -69,6 +69,7 @@ public:
 	void Clear() { if (r) { r->Dec(); r = NULL; o = NULL;} }
 	void operator=(const Shared& s) {if (r == s.r) return; SetPtr(s.o, s.r);}
 	bool IsEmpty() const { return r == NULL; }
+	int GetRefCount() const {return r ? r->GetRefCount() : 0;}
 	T* operator->() {if (r) return o; return NULL;}
 	T* operator->() const {if (r) return o; return NULL;}
 	T* Get() const {if (r) return o; return NULL;}

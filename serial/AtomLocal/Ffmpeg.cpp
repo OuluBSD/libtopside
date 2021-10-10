@@ -126,16 +126,16 @@ void FfmpegAtomBase::Forward(FwdScope& fwd) {
 		TODO
 }
 
-bool FfmpegAtomBase::IsReady(ValDevCls vd) {
+bool FfmpegAtomBase::IsReady(dword active_iface_mask) {
 	if (mode == AUDIO_ONLY)
 		return file_in.GetAudio().buf.GetCount();
 	else
 		TODO
 }
 
-void FfmpegAtomBase::StorePacket(int sink_ch,  int src_ch, Packet& p) {
+void FfmpegAtomBase::StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) {
 	if (mode == AUDIO_ONLY)
-		file_in.GetAudio().StorePacket(sink_ch, src_ch, p);
+		file_in.GetAudio().StorePacket(sink_ch, src_ch, in, out);
 	else
 		TODO
 }

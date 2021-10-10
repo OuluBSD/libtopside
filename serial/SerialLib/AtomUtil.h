@@ -19,12 +19,12 @@ class AsyncMemForwarderBase :
 public:
 	
 	void	Visit(RuntimeVisitor& vis) override {}
-	bool	IsReady(ValDevCls vd) override;
+	bool	IsReady(dword active_iface_mask) override;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
-	bool	LoadPacket(int ch_i, const Packet& p) override;
-	void	StorePacket(int sink_ch,  int src_ch, Packet& p) override;
+	bool	LoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) override;
+	void	StorePacket(int sink_ch, int src_ch, const Packet& in, Packet& out) override;
 	bool	IsConsumedPartialPacket() override {return partial_packet;}
-	virtual bool PassLoadPacket(int ch_i, const Packet& p) {return ch_i == GetSink()->GetSinkCount()-1;}
+	virtual bool PassLoadPacket(int sink_ch, const Packet& in, Vector<int>& fwd_src_chs) {return sink_ch == GetSink()->GetSinkCount()-1;}
 	
 };
 
@@ -39,7 +39,7 @@ class FramePollerBase :
 public:
 	
 	void	Update(double dt) override;
-	bool	IsReady(ValDevCls vd) override;
+	bool	IsReady(dword active_iface_mask) override;
 	void	Visit(RuntimeVisitor& vis) override {}
 	
 	void	SetFPS(int fps) {dt = 1.0 / (double)fps;}
