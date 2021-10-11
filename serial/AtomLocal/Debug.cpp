@@ -164,7 +164,7 @@ bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 }
 
 void VoidPollerSinkBase::Uninitialize() {
-	RTLOG("VoidPollerSinkBase::Uninitialize: total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+	LOG("VoidPollerSinkBase::Uninitialize: total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
 	if (!fail) {LOG("VoidPollerSinkBase::Uninitialize: success!");}
 	else       {LOG("VoidPollerSinkBase::Uninitialize: fail :(");}
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
@@ -177,28 +177,23 @@ void VoidPollerSinkBase::Update(double dt) {
 		PostContinueForward();
 }
 
-bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	RTLOG("VoidPollerSinkBase::StorePacket: sink_ch #" << sink_ch << " src_ch #" << src_ch << ": " << out->ToString());
-	//out = ReplyPacket(src_ch, in);
-	#endif
-}
-
 bool VoidPollerSinkBase::IsReady(PacketIO& io) {
 	bool b = false;
 	if (ts >= dt) {
 		ts = 0;
 		b = true;
 	}
-	RTLOG("VoidPollerSinkBase::IsReady: " << BinStr(io.active_sink_mask) << ": " << (b ? "true" : "false"));
+	RTLOG("VoidPollerSinkBase::IsReady: " << (b ? "true " : "false ") << BinStr(io.active_sink_mask));
 	return b;
 }
 
-#if 0
-
 bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
+	PacketIO::Sink& prim_sink = io.sink[0];
+	Packet& in = prim_sink.p;
+	
 	uint64 route_desc = in->GetRouteDescriptor();
+	
+	RTLOG("VoidPollerSinkBase::ProcessPackets: sink #0: " << io.sink[0].p->ToString() << ", descriptor " << HexStr(route_desc));
 	
 	Serial::Format fmt = in->GetFormat();
 	if (fmt.IsAudio()) {
@@ -208,13 +203,13 @@ bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
 		if (i < 0) {
 			i = thrds.GetCount();
 			thrds.Add(route_desc);
-			RTLOG("VoidPollerSinkBase::LoadPacket: creating new thread for route " + IntStr64(route_desc));
+			RTLOG("VoidPollerSinkBase::ProcessPackets: creating new thread for route " + IntStr64(route_desc));
 		}
 		
 		Thread& t = thrds[i];
 		const Vector<byte>& data = in->GetData();
 		if (data.IsEmpty()) {
-			LOG("VoidPollerSinkBase::LoadPacket: error: thrd #" << i << " empty data");
+			LOG("VoidPollerSinkBase::ProcessPackets: error: thrd #" << i << " empty data");
 			fail = true;
 		}
 		else if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
@@ -234,20 +229,24 @@ bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
 			dbg_total_samples += dbg_count;
 			dbg_total_bytes += dbg_count * 4;
 			
-			LOG("VoidPollerSinkBase::LoadPacket: thrd #" << i << " successfully verified frame size " << data.GetCount());
+			RTLOG("VoidPollerSinkBase::ProcessPackets: thrd #" << i << " successfully verified frame size " << data.GetCount());
 		}
 		else {
-			LOG("VoidPollerSinkBase::LoadPacket: error: thrd #" << i << " invalid audio format");
+			LOG("VoidPollerSinkBase::ProcessPackets: error: thrd #" << i << " invalid audio format");
 			fail = true;
 		}
 	}
 	else {
-		RTLOG("VoidPollerSinkBase::LoadPacket: error: unexpected packet " << in->ToString());
+		RTLOG("VoidPollerSinkBase::ProcessPackets: error: unexpected packet " << in->ToString());
 	}
 	
+	prim_sink.may_remove = true;
+	
+	PacketIO::Source& prim_src = io.src[0];
+	prim_src.from_sink_ch = 0;
+	prim_src.p = ReplyPacket(0, in);
 	return true;
 }
 
-#endif
 
 NAMESPACE_SERIAL_END

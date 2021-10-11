@@ -216,9 +216,11 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 		
 		
 		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
+			PacketIO::Sink& iface = io.sink[sink_ch];
+			if (!iface.filled)
+				continue;
 			Value& sink_value = sink_iface->GetValue(sink_ch);
 			PacketBuffer& sink_buf = sink_value.GetBuffer();
-			PacketIO::Sink& iface = io.sink[sink_ch];
 			iface.val = &sink_value;
 			iface.buf = &sink_buf;
 			iface.p = sink_buf.First();
@@ -235,11 +237,12 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 		
 		for (int sink_ch = 0; sink_ch < sink_ch_count; sink_ch++) {
 			PacketIO::Sink& iface = io.sink[sink_ch];
-			if (iface.may_remove) {
+			if (iface.filled && iface.may_remove) {
 				iface.buf->RemoveFirst();
 			}
 			else {
-				RTLOG("AtomBase::ForwardPipe: warning: NOT removing first in " << HexStr(iface.buf));
+				RTLOG("AtomBase::ForwardPipe: warning: NOT removing first in sink #" << sink_ch << " " << HexStr(iface.buf));
+				ASSERT_(sink_ch > 0, "AtomBase::ForwardPipe: NOT removing first in primary sink");
 			}
 		}
 		
