@@ -154,11 +154,8 @@ public:
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	
 	
-	Callback2<AtomBase&, Packet&>			WhenEnterStorePacket;
-	Callback1<Packet&>						WhenEnterCreatedEmptyPacket;
-	
-	Callback1<Packet&>						WhenLeaveStorePacket;
-	Callback								WhenLeaveCreatedEmptyPacket;
+	Callback2<AtomBase&, PacketIO&>			WhenEnterProcessPackets;
+	Callback2<AtomBase&, PacketIO&>			WhenLeaveProcessPackets;
 	
 };
 

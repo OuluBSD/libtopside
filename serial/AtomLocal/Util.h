@@ -36,6 +36,7 @@ public:
 class JoinerBase :
 	virtual public AtomBase
 {
+	byte scheduler_iter = 1;
 	
 public:
 	JoinerBase();
@@ -58,6 +59,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	void Visit(RuntimeVisitor& vis) override {}
+	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	
 	

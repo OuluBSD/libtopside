@@ -149,25 +149,21 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	Scope& cur = stack.Top();
 	//cur.MayLeave(true);
 	cur.AddEnter(CREATE_EMPTY_PACKET);
-	cur.AddEnter(STORE_PACKET);
+	cur.AddEnter(PROCESS_PACKETS);
 	cur.AddEnter(VALEXPT_FWD);
 	
 	cur_pk.Clear();
 	c = 0;
 	vep = 0;
 	if ((c = CastPtr<AtomBase>(f.GetCurrent()))) {
-		if (!c->WhenEnterStorePacket) {
-			c->WhenEnterStorePacket << THISBACK(OnEnterStorePacket);
-			c->WhenEnterCreatedEmptyPacket << THISBACK(OnEnterCreatedEmptyPacket);
-			
-			c->WhenLeaveStorePacket << THISBACK(OnLeaveStorePacket);
-			c->WhenLeaveCreatedEmptyPacket << THISBACK(OnLeaveCreatedEmptyPacket);
+		if (!c->WhenEnterProcessPackets) {
+			c->WhenEnterProcessPackets << THISBACK(OnEnterProcessPackets);
+			c->WhenLeaveProcessPackets << THISBACK(OnLeaveProcessPackets);
 		}
 	}
 	else if ((vep = CastPtr<DefaultExchangePoint>(f.GetCurrent()))) {
 		if (!vep->WhenEnterValExPtForward) {
 			vep->WhenEnterValExPtForward << THISBACK(OnEnterValExPtForward);
-			
 			vep->WhenLeaveValExPtForward << THISBACK(OnLeaveValExPtForward);
 		}
 	}
@@ -175,11 +171,11 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	
 }
 
-void MachineVerifier::OnEnterStorePacket(AtomBase& b, Packet& p) {
+void MachineVerifier::OnEnterProcessPackets(AtomBase& b, PacketIO& p) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterStorePacket " << HexStr((void*)&b) << ", " << HexStr((void*)&*p));
-	Enter(STORE_PACKET);
+	RTLOG("MachineVerifier::OnEnterProcessPackets " << HexStr((void*)&b) << ", " << HexStr((void*)&*p.sink[0].p));
+	Enter(PROCESS_PACKETS);
 	
 	// don't add this you dumb fuck: MayLeaveTop();
 }
@@ -270,27 +266,28 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 	MayLeaveTop();
 }
 
-void MachineVerifier::OnLeaveStorePacket(Packet& p) {
+void MachineVerifier::OnLeaveProcessPackets(AtomBase& b, PacketIO& io) {
 	if (!Thread::IsMain()) return;
 	
 	RTLOG("MachineVerifier::OnLeaveStorePacket");
-	if (p) {
-		auto fmt = p->GetFormat();
-		if (p->Data().GetCount() &&
-			fmt.IsValid()) {
-			MayLeaveTop();
-		}
-		else {
-			ASSERT_(0, "Packet is not valid");
-		}
-	}
-	else
+
+	PacketIO::Source& prim_src = io.src[0];
+	ASSERT_(prim_src.p, "primary packet must be forwarded always");
+	
+	Packet& prim_p = prim_src.p;
+	auto fmt = prim_p->GetFormat();
+	if (prim_p->Data().GetCount() &&
+		fmt.IsValid()) {
 		MayLeaveTop();
+	}
+	else {
+		ASSERT_(0, "Packet is not valid");
+	}
 	
-	Leave(STORE_PACKET);
+	Leave(PROCESS_PACKETS);
 	
-	if (p)
-		cur_pk.Add(p);
+	if (prim_p)
+		cur_pk.Add(prim_p);
 }
 
 void MachineVerifier::PacketData::Add(Packet& p) {

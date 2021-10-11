@@ -81,8 +81,12 @@ bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte
 
 bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* src, const AudioFormat& dst_fmt, byte* dst);
 
-bool Convert(const Packet& src, Packet& dst) {
-	RTLOG("Convert(src,dst)");
+bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
+	RTLOG("Convert(src " << HexStr(&*src) << ", dst " << HexStr(&*dst) << ")");
+	
+	bool track = keep_tracking && src->GetTrackingId() != 0;
+	bool ret = false;
+	
 	Format src_fmt = src->GetFormat();
 	Format dst_fmt = dst->GetFormat();
 	if (src_fmt.IsAudio() && dst_fmt.IsAudio()) {
@@ -129,10 +133,16 @@ bool Convert(const Packet& src, Packet& dst) {
 		
 		#endif
 		
-		return AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
+		ret = AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
 	}
+	else TODO
 	//else if (src_fmt.vd.val.type == ValCls::ORDER) {
-	TODO
+	
+	if (track) {
+		PacketTracker_Track("Convert", __FILE__, __LINE__, *dst);
+	}
+	
+	return ret;
 }
 
 

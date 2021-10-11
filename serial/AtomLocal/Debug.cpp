@@ -64,6 +64,13 @@ bool RollingValueBase::ProcessPackets(PacketIO& io) {
 
 
 
+
+
+
+
+
+
+
 bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
 	flag.Start(1);
 	GetSink()->GetValue(0).SetMinQueueSize(5);
@@ -124,13 +131,13 @@ void VoidSinkBase::IntervalSinkProcess() {
 			dbg_total_samples += dbg_count;
 			dbg_total_bytes += dbg_count * 4;
 			
-			LOG("VoidSinkBase::IntervalSinkProcess: successfully verified frame");
+			RTLOG("VoidSinkBase::IntervalSinkProcess: successfully verified frame");
 		}
 		else {
 			LOG("VoidSinkBase::IntervalSinkProcess: error: invalid audio format");
 		}
 	}
-	RTLOG("VoidSinkBase::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+	LOG("VoidSinkBase::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
 	if (!fail) {LOG("VoidSinkBase::IntervalSinkProcess: success!");}
 	else       {LOG("VoidSinkBase::IntervalSinkProcess: fail :(");}
 	

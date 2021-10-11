@@ -60,16 +60,14 @@ void CustomerBase::Forward(FwdScope& fwd) {
 		PacketBuffer&	sink_buf = sink_val.GetBuffer();
 		Format			fmt = sink_val.GetFormat();
 		
-		Packet p = CreatePacket(off_gen);
+		off32 init_off(&off_gen, 0);
+		Packet p = CreatePacket(init_off);
 		p->SetFormat(fmt);
 		p->seq = -1;
 		
 		InternalPacketData& data = p->template SetData<InternalPacketData>();
 		data.pos = 0;
 		data.count = 1;
-		
-		WhenEnterCreatedEmptyPacket(p);
-		WhenLeaveCreatedEmptyPacket();
 		
 		//PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *p);
 		sink_val.GetBuffer().Add(p);
@@ -84,12 +82,18 @@ bool CustomerBase::ProcessPackets(PacketIO& io) {
 	
 	PacketIO::Sink& sink = io.sink[0];
 	PacketIO::Source& src = io.src[0];
+	
 	ASSERT(sink.p);
+	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *sink.p);
+	
 	sink.may_remove = true;
 	src.from_sink_ch = 0;
-	src.p = InitialPacket(0, off_gen.Create());
+	src.p = sink.p;
+	src.p->SetFormat(src.val->GetFormat());
+	src.p->SetOffset(off_gen.Create());
 	
-	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *sink.p);
+	
+	PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *src.p);
 	
 	return true;
 }
@@ -123,33 +127,44 @@ bool JoinerBase::IsReady(PacketIO& io) {
 }
 
 bool JoinerBase::ProcessPackets(PacketIO& io) {
+	ASSERT(io.active_sink_mask & 0x0001);
+	ASSERT(io.nonempty_sinks >= 2);
+	ASSERT(io.src_count == 1);
+	PacketIO::Sink& prim_sink = io.sink[0];
 	
-	TODO
-	#if 0
-	if (sink_ch > 0) {
-		RTLOG("JoinerBase::LoadPacket: active ch-1 packet" << in->ToString());
-		fwd_src_chs.Add(0);
+	int side_sink_ch = -1;
+	for (int tries = 0; tries < 3; tries++) {
+		int sink_ch = scheduler_iter;
+		
+		scheduler_iter++;
+		if (scheduler_iter >= io.sink_count)
+			scheduler_iter = 1;
+		
+		if (io.sink[sink_ch].p) {
+			side_sink_ch = sink_ch;
+			break;
+		}
 	}
-	else {
-		RTLOG("JoinerBase::LoadPacket: skipping ch-" << sink_ch << " packet");
-	}
-	#endif
+	
+	ASSERT(side_sink_ch >= 0);
+	if (side_sink_ch < 0) return false;
+	
+	PacketIO::Sink& sink = io.sink[side_sink_ch];
+	
+	RTLOG("JoinerBase::ProcessPackets: forward packet from sink #" << side_sink_ch << " to src #0: " << sink.p->ToString());
+	prim_sink.may_remove = true;
+	sink.may_remove = true;
+	PacketIO::Source& src = io.src[0];
+	
+	src.from_sink_ch = side_sink_ch;
+	src.p = sink.p;
+	
+	src.p->SetOffset(prim_sink.p->GetOffset());
 	
 	return true;
 }
 
-#if 0
-void JoinerBase::ProcessPackets(PacketIO& io) {
-	if (!sink_ch && !src_ch) {
-		RTLOG("JoinerBase::StorePacket: (" << sink_ch << "," << src_ch << "): default reply to " << in->ToString());
-		out = ReplyPacket(src_ch, in);
-	}
-	else {
-		RTLOG("JoinerBase::StorePacket: (" << sink_ch << "," << src_ch << "): in " << in->ToString());
-		out = in;
-	}
-}
-#endif
+
 
 
 SplitterBase::SplitterBase() {
@@ -165,14 +180,49 @@ void SplitterBase::Uninitialize() {
 	
 }
 
+bool SplitterBase::IsReady(PacketIO& io) {
+	bool b = io.full_src_mask == 0;
+	
+	RTLOG("JoinerBase::IsReady: " << (b ? "true " : "false ") << BinStr(io.full_src_mask));
+	
+	return b;
+}
+
 bool SplitterBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	int src_count = GetSource()->GetSourceCount();
-	for(int i = 1; i < src_count; i++) {
-		fwd_src_chs.Add(i);
+	ASSERT(io.src_count > 1 && io.sink_count == 1);
+	ASSERT(io.active_sink_mask == 0x0001);
+	PacketIO::Sink& sink = io.sink[0];
+	sink.may_remove = true;
+	
+	PacketIO::Source& prim_src = io.src[0];
+	prim_src.from_sink_ch = 0;
+	prim_src.p = ReplyPacket(0, sink.p);
+	
+	Format in_fmt = sink.p->GetFormat();
+	
+	InterfaceSourceRef src_iface = GetSource();
+	for(int i = 1; i < io.src_count; i++) {
+		PacketIO::Source& src = io.src[i];
+		Format src_fmt = src_iface->GetSourceValue(i).GetFormat();
+		if (src_fmt.IsCopyCompatible(in_fmt)) {
+			src.from_sink_ch = 0;
+			src.p = sink.p;
+		}
+		else {
+			src.p = CreatePacket(sink.p->GetOffset());
+			src.p->SetFormat(src_fmt);
+			src.p->CopyRouteData(*sink.p);
+			if (Convert(sink.p, src.p)) {
+				RTLOG("SplitterBase::ProcessPackets: converted packet: " << src.p->ToString());
+			}
+			else {
+				RTLOG("SplitterBase::ProcessPackets: packet conversion failed from " << sink.p->ToString());
+				src.p.Clear();
+				return false;
+			}
+		}
 	}
-	#endif
+	
 	return true;
 }
 

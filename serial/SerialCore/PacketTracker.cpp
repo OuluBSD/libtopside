@@ -41,7 +41,7 @@ void PacketTracker::Checkpoint0(TrackerInfo info, PacketValue& p) {
 
 void PacketTracker::StopTracking0(TrackerInfo info, PacketValue& p) {
 	RTLOG("PacketTracker: packet(" + p.GetOffset().ToString() + "," + IntStr(p.GetTrackingId()) + ") tracking ends (" + info.ToString() + ") " + p.ToString());
-	
+	p.SetTrackingId(0);
 }
 
 
@@ -77,7 +77,8 @@ void PacketValue::StopTracking(TrackerInfo info) {
 String PacketValue::ToString() const {
 	String s;
 	s.Cat('{');
-	s << "size: " << data.GetCount();
+	s << "offset: " << offset.ToString();
+	s << ", size: " << data.GetCount();
 	s << ", id: " << IntStr64(id);
 	s << ", format: {" << fmt.ToString() << "}";
 	

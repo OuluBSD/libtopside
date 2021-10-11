@@ -63,7 +63,7 @@ protected:
 		ONCE_FORWARD,
 		EXTCOMP_FORWARD,
 		FWDSCOPE_FORWARD,
-		STORE_PACKET,
+		PROCESS_PACKETS,
 		CREATE_EMPTY_PACKET,
 		VALEXPT_FWD,
 	} Type;
@@ -114,7 +114,7 @@ public:
 	void OnEnterOnceForward(PacketForwarder*);
 	void OnEnterAtomForward(AtomBase* c);
 	void OnEnterFwdScopeForward(FwdScope& c);
-	void OnEnterStorePacket(AtomBase&, Packet& p);
+	void OnEnterProcessPackets(AtomBase&, PacketIO& p);
 	void OnEnterCreatedEmptyPacket(Packet& p);
 	void OnEnterValExPtForward(DefaultExchangePoint& p);
 	
@@ -123,7 +123,7 @@ public:
 	void OnLeaveOnceForward();
 	void OnLeaveAtomForward();
 	void OnLeaveFwdScopeForward();
-	void OnLeaveStorePacket(Packet& p);
+	void OnLeaveProcessPackets(AtomBase&, PacketIO& p);
 	void OnLeaveCreatedEmptyPacket();
 	void OnLeaveValExPtForward();
 	

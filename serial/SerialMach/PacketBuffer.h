@@ -121,6 +121,7 @@ static Packet CreatePacket(off32 off) {
 	PacketValue* obj = PacketValue::Pool::StaticPool().New(off);
 	RecRefBase* base = RecRefBase::Pool::StaticPool().New();
 	base->SetObj(obj);
+	obj->SetOffset(off);
 	return Packet(obj, base);
 }
 
@@ -173,11 +174,14 @@ struct PacketIO {
 	};
 	
 	struct Source {
+		Value*			val = 0;
 		Packet			p;
 		int				from_sink_ch = -1;
+		bool			is_full = false;
 	};
 	
 	dword			active_sink_mask = 0;
+	dword			full_src_mask = 0;
 	int				nonempty_sinks = 0;
 	int				sink_count = 0;
 	int				src_count = 0;
