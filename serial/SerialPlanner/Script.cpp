@@ -111,7 +111,7 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 		RTLOG(GetLineNumStr(content, 1));
 		return false;
 	}
-	p.Dump();
+	//p.Dump();
 	MemSwap(p.GetResult(), root);
 	
 	if (!LoadAtomilationUnit(root)) {
@@ -205,8 +205,8 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 	
 	int dbg_i = 0;
 	while (!loader->IsFailed() && !loader->IsReady()) {
-		DUMP(dbg_i);
-		loader->Dump();
+		//DUMP(dbg_i);
+		//loader->Dump();
 		
 		loader->Forward();
 		++dbg_i;

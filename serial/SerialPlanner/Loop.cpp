@@ -506,7 +506,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 		total_max = total_min;
 	}
 	
-	LOG("ScriptLoopLoader::UpdateLoopLimits: set loop limits: min=" << total_min << ", max=" << total_max);
+	RTLOG("ScriptLoopLoader::UpdateLoopLimits: set loop limits: min=" << total_min << ", max=" << total_max);
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];

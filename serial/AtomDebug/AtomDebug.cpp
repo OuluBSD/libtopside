@@ -101,8 +101,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 			        double dt = ResetSeconds(t);
 			        mach.Update(dt);
 			        
-			        if (!iter++)
-						mach.Get<LoopStore>()->GetRoot()->Dump();
+			        //if (!iter++) mach.Get<LoopStore>()->GetRoot()->Dump();
 					
 					if (dt < sleep_dt_limit)
 						Sleep(1);

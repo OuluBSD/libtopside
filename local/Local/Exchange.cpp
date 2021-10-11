@@ -66,10 +66,17 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& 
 	sink->base.SetLink(expt, AsRefT());
 	if (print_debug) {
 		String s;
+		
+		String cfg0 = GetConfigString();
+		if (!cfg0.IsEmpty()) cfg0 = "<" + cfg0 + ">";
+		
+		String cfg1 = sink->GetConfigString();
+		if (!cfg1.IsEmpty()) cfg1 = "<" + cfg1 + ">";
+		
 		s << GetRTTI().GetDynamicName() <<
-			"<" << GetConfigString() << "> linked to " <<
+			cfg0 << " linked to " <<
 			sink->GetRTTI().GetDynamicName() <<
-			"<" << sink->GetConfigString() << ">";
+			cfg1;
 		LOG(s);
 	}
 	OnLink(sink, src_c, sink_c);

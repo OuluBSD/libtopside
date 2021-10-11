@@ -88,7 +88,7 @@ bool AtomBase::LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i) {
 		return false;
 	
 	AtomTypeCls type = sink->GetType();
-	DUMP(type);
+	//DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
 		RTLOG("AtomBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetType().ToString());

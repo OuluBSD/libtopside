@@ -507,7 +507,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	Vector<double> action_costs;
 	ap.GetPossibleStateTransition(n, to, action_costs);
 	
-	LOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
+	RTLOG("TerminalTest: " << HexStr(&n) << " -> " << to.GetCount() << " (estimate " << n.GetEstimate() << ")");
 	for(int i = 0; i < to.GetCount(); i++) {
 		Serial::Script::WorldState& ws_to = *to[i];
 		
@@ -529,7 +529,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 			n.AddLink(*an);
 		}
 		
-		LOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
+		RTLOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 	}
 	
 	return false;
