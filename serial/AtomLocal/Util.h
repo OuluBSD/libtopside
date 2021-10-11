@@ -70,7 +70,6 @@ public:
 class OglShaderBase :
 	public OglBufferBase
 {
-	Packet		last_packet;
 	
 public:
 	RTTI_DECL1(OglShaderBase, OglBufferBase);

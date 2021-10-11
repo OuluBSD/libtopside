@@ -32,7 +32,6 @@ Machine& AtomBase::GetMachine() {
 
 void AtomBase::UninitializeDeep() {
 	Uninitialize();
-	Uninitialize();
 	ClearSinkSource();
 	UninitializeAtom();
 }
@@ -54,7 +53,7 @@ void AtomBase::ForwardExchange(FwdScope& fwd) {
 	ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(this);
 	ASSERT(src);
 	ExchangePointRef expt = src->GetExPt();
-	ASSERT(expt || GetType().role == AtomRole::DRIVER);
+	//ASSERT(expt || GetType().role == AtomRole::DRIVER);
 	if (expt) {
 		fwd.AddNext(*expt);
 	}
@@ -150,22 +149,23 @@ bool AtomBase::LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i) {
 }
 
 bool AtomBase::IsPacketStuck() {
+	AtomTypeCls type = GetType();
 	InterfaceSinkRef sink_iface = GetSink();
-	int sink_c = sink_iface->GetSinkCount();
+	int sink_c = sink_iface->GetSinkCount() - type.user_sink_count;
 	for(int i = 0; i < sink_c; i++) {
 		Value& val = sink_iface->GetValue(i);
 		if (val.GetQueueSize() == 0) {
-			RTLOG("AtomBase::IsPacketStuck: sink #" << i << " empty");
+			RTLOG("AtomBase::IsPacketStuck: true: sink #" << i << " empty");
 			return true;
 		}
 	}
 	
 	InterfaceSourceRef src_iface = GetSource();
-	int src_c = src_iface->GetSourceCount();
+	int src_c = src_iface->GetSourceCount() - type.user_src_count;
 	for(int i = 0; i < src_c; i++) {
 		Value& val = src_iface->GetSourceValue(i);
 		if (val.IsQueueFull()) {
-			RTLOG("AtomBase::IsPacketStuck: src #" << i << " full");
+			RTLOG("AtomBase::IsPacketStuck: true: src #" << i << " full");
 			return true;
 		}
 	}

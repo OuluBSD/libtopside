@@ -519,8 +519,14 @@ bool Parser::ParseStmt(Script::Statement& stmt, bool allow_square_end) {
 		return false;
 	
 	if (IsChar('[')) {
-		if (!ParseStmtSideConditionals(stmt))
-			return false;
+		if (!Char2('[',']')) {
+			if (!ParseStmtSideConditionals(stmt, false))
+				return false;
+		}
+		if (IsChar('[')) {
+			if (!ParseStmtSideConditionals(stmt, true))
+				return false;
+		}
 	}
 	if (IsChar('{')) {
 		if (!ParseStmtArguments(stmt))
@@ -550,11 +556,11 @@ bool Parser::ParseStmtArguments(Script::Statement& stmt) {
 	return true;
 }
 
-bool Parser::ParseStmtSideConditionals(Script::Statement& stmt) {
+bool Parser::ParseStmtSideConditionals(Script::Statement& stmt, bool src) {
 	PASS_CHAR('[')
 	
 	while (!IsChar(']')) {
-		Statement& s = stmt.side_conds.Add();
+		Statement& s = (src ? stmt.src_side_conds : stmt.sink_side_conds).Add();
 		
 		if (EmptyStatement())
 			;

@@ -119,7 +119,7 @@ public:
 		else
 			return SIDE_NOT_ACCEPTED;
 	}
-	
+
 	
 	Machine&				GetMachine();
 	void					UninitializeDeep();

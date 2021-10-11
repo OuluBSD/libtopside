@@ -164,6 +164,7 @@ bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 }
 
 void VoidPollerSinkBase::Uninitialize() {
+	LOG("VoidPollerSinkBase::Uninitialize: " << HexStr(this));
 	LOG("VoidPollerSinkBase::Uninitialize: total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
 	if (!fail) {LOG("VoidPollerSinkBase::Uninitialize: success!");}
 	else       {LOG("VoidPollerSinkBase::Uninitialize: fail :(");}

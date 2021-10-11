@@ -19,11 +19,8 @@ void SDL2AudioOutputBase::Uninitialize() {
 }
 
 bool SDL2AudioOutputBase::PassConsumePacket(int sink_ch, const Packet& in) {
-	TODO
-	#if 0
 	Format fmt = in->GetFormat();
 	return fmt.vd.val == ValCls::AUDIO;
-	#endif
 }
 
 

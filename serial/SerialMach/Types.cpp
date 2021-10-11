@@ -182,10 +182,12 @@ void IfaceConnTuple::SetSink(int conn, int sink_ch, int src_ch) {
 }
 
 bool IfaceConnTuple::IsComplete() const {
-	for(int i = 1; i < type.iface.sink.count; i++)
+	int c0 = type.iface.sink.count - type.user_sink_count;
+	for(int i = 1; i < c0; i++)
 		if (sink[i].conn < 0 /*&& !type.IsSinkChannelOptional(i)*/)
 			return false;
-	for(int i = 1; i < type.iface.src.count; i++)
+	int c1 = type.iface.src.count - type.user_src_count;
+	for(int i = 1; i < c1; i++)
 		if (src[i].conn < 0 /*&& !type.IsSourceChannelOptional(i)*/)
 			return false;
 	return true;

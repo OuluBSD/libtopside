@@ -25,6 +25,7 @@ public:
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
+	bool			IsReady(PacketIO& io) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::Screen* GetOOSDL2() {return &*obj;}

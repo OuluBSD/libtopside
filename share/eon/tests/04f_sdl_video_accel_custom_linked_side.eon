@@ -7,13 +7,15 @@ machine sdl.app: {
 	chain program: {
 		
 		loop ogl.fbo.buffer: {
+			id: "buffer";
 			ogl.customer: true;
-			ogl.fbo.source: true {name: "buf0"; filepath: "shaders/toys/simple_double/stage1.glsl";};
+			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple_double/stage1.glsl";};
 		};
 		
 		loop ogl.fbo.screen: {
+			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true {name: "buf1"; in0: "buf0"; filepath: "shaders/toys/simple_double/stage0.glsl";};
+			sdl.fbo: true {filepath: "shaders/toys/simple_double/stage0.glsl";};
 		};
 		
 		loop audio: {

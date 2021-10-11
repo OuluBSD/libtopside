@@ -481,6 +481,13 @@ void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* p
 		side_sinks.Clear();
 	}
 	if (est <= side_sink_max_est) {
+		/*for (State& s : side_sinks) {
+			if (s.last == &n &&
+				s.second_last == prev &&
+				//s.as == as &&
+				s.ch_i == ch_i)
+				return;
+		}*/
 		State& s = side_sinks.Add();
 		s.last = &n;
 		s.second_last = prev;
@@ -497,6 +504,13 @@ void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode*
 		side_srcs.Clear();
 	}
 	if (est <= side_src_max_est) {
+		/*for (State& s : side_sinks) {
+			if (s.last == &n &&
+				s.second_last == prev &&
+				//s.as == as &&
+				s.ch_i == ch_i)
+				return;
+		}*/
 		/*hash_t h = n.GetWorldState().GetHashValue();
 		for (State& s : side_srcs)
 			if (s.last->GetWorldState().GetHashValue() == h)

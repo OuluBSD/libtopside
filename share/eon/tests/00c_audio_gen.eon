@@ -4,21 +4,21 @@ chain tester: {
 		id: "out0";
 		center.customer: true;
 		center.audio.src.test: true;
-		center.audio.side.src.center: true;
+		center.audio.side.src.center.user: true [][id:"pipe"];
 	};
 	
 	loop output1: {
 		id: "out1";
 		center.customer: true;
 		center.audio.src.test: true;
-		center.audio.side.src.center: true;
+		center.audio.side.src.center.user: true [][id:"in"];
 	};
 	
 	loop pipe: {
 		id: "pipe";
 		center.customer: true;
 		center.audio.side.sink.center.user: true [id:"out0"];
-		center.audio.side.src.center: true;
+		center.audio.side.src.center.user: true [][id:"in"];
 	};
 	
 	loop input: {

@@ -291,59 +291,87 @@ bool OglShaderBase::PostInitialize() {
 }
 
 void OglShaderBase::Uninitialize() {
-	last_packet.Clear();
-}
-
-bool OglShaderBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
 	
-	bool succ = true;
-	Format fmt = in->GetFormat();
-	if (fmt.IsFbo()) {
-		int base = GetSink()->GetSinkCount() > 1 ? 1 : 0;
-		if (in->IsData<InternalPacketData>()) {
-			succ = buf.LoadOutputLink(sink_ch - base, in->GetData<InternalPacketData>());
-		}
-		else {
-			RTLOG("OglShaderBase::LoadPacket: cannot handle packet: " << in->ToString());
-		}
-	}
-	
-	if (sink_ch == 0)
-		last_packet = in;
-	
-	return succ;
-	#endif
 }
 
 bool OglShaderBase::IsReady(PacketIO& io) {
-	return true;
+	bool b = io.full_src_mask == 0;
+	RTLOG("OglShaderBase::IsReady: " << (b ? "true" : "false"));
+	return b;
 }
 
-#if 0
-void OglShaderBase::ProcessPackets(PacketIO& io) {
-	RTLOG("OglShaderBase::StorePacket: " << sink_ch << ", " << src_ch << ": " << in->ToString());
+bool OglShaderBase::ProcessPackets(PacketIO& io) {
+	int src_ch = 0;
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& src = io.src[src_ch];
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(src_ch, prim_sink.p);
 	
-	if (sink_ch == 0 && src_ch == 0) {
-		ASSERT(last_packet);
+	
+	bool succ = true;
+	
+	
+	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sink[sink_ch];
+		Packet& in = sink.p;
+		if (!in) {
+			ASSERT(!sink.filled);
+			continue;
+		}
+		sink.may_remove = true;
 		
-		//BeginDraw();
-		buf.ProcessStage(*last_cfg);
-		//CommitDraw();
+		RTLOG("OglShaderBase::ProcessPackets: " << sink_ch << ", " << src_ch << ": " << in->ToString());
 		
-		last_packet.Clear();
-		ASSERT(in->GetFormat().IsValid());
+		
+		Format in_fmt = in->GetFormat();
+		if (in_fmt.vd == VD(OGL,FBO)) {
+			int base = GetSink()->GetSinkCount() > 1 ? 1 : 0;
+			if (in->IsData<InternalPacketData>()) {
+				succ = buf.LoadOutputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			}
+			else {
+				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
+			}
+		}
+		
+		
+		if (sink_ch == 0) {
+			
+			
+			//BeginDraw();
+			buf.ProcessStage(*last_cfg);
+			//CommitDraw();
+			
+			ASSERT(in->GetFormat().IsValid());
+			
+			
+		}
 	}
 	
-	Format fmt = in->GetFormat();
-	if (fmt.vd == VD(OGL,FBO)) {
-		PacketValue& val = *in;
-		InternalPacketData& data = val.GetData<InternalPacketData>();
-		GetBuffer().StoreOutputLink(data);
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 0; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 0;
+				out = ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			GetBuffer().StoreOutputLink(data);
+			RTLOG("OglShaderBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
 	}
+	
+	return succ;
 }
-#endif
+
+
 
 #endif
 

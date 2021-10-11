@@ -22,19 +22,23 @@ void SDL2SwScreenBase::Uninitialize() {
 }
 
 bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	RTLOG("SDL2SwScreenBase::LoadPacket: sink #" << sink_ch << " " << in->ToString());
-	return obj->Recv(sink_ch, in);
-	#endif
-}
-
-#if 0
-void SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
-	RTLOG("SDL2SwScreenBase::StorePacket: " << sink_ch << ", " << src_ch << ": in=" << in->ToString());
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	Packet& in = sink.p;
+	Packet& out = src.p;
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(0, sink.p);
+	
+	RTLOG("SDL2SwScreenBase::ProcessPackets: sink #0 " << in->ToString());
+	
+	if (!obj->Recv(0, in))
+		return false;
+	
 	obj->Render();
+	
+	return true;
 }
-#endif
 
 
 #endif

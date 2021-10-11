@@ -171,8 +171,13 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 }
 
 bool VideoGenBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	Packet& out = src.p;
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(0, sink.p);
+	
 	int frame = fmt.GetFrameSize();
 	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -183,8 +188,9 @@ bool VideoGenBase::ProcessPackets(PacketIO& io) {
 	out->Set(fmt, time);
 	out->Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
+	
 	RTLOG("VideoGenBase::StorePacket: " << out->ToStringWithHash());
-	#endif
+	return true;
 }
 
 

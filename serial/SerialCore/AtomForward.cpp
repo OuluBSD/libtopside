@@ -28,7 +28,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	last_cfg = &fwd.Cfg();
 	
-	#ifdef flagDEBUG
+	#if 0
 	int ch_i = 0;
 	int pre_sink_packet_count = GetSinkPacketCount();
 	int pre_src_packet_count = GetSourcePacketCount();
@@ -44,7 +44,7 @@ void AtomBase::ForwardAtom(FwdScope& fwd) {
 	
 	
 	
-	#ifdef flagDEBUG
+	#if 0
 	AtomTypeCls type = GetType();
 	int post_sink_packet_count = GetSinkPacketCount();
 	int post_src_packet_count = GetSourcePacketCount();
@@ -150,6 +150,8 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 	InterfaceSourceRef src_iface = GetSource();
 	int sink_ch_count = sink_iface->GetSinkCount();
 	int src_ch_count = src_iface->GetSourceCount();
+	int req_sink_ch_count = sink_ch_count - type.user_sink_count;
+	int req_src_ch_count = src_ch_count - type.user_src_count;
 	ASSERT(src_ch_count);
 	ASSERT(sink_ch_count <= MAX_VDTUPLE_SIZE);
 	ASSERT(src_ch_count <= MAX_VDTUPLE_SIZE);
@@ -203,7 +205,10 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 		io.full_src_mask = 0;
 		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
 			PacketIO::Source& iface = io.src[src_ch];
-			ASSERT(iface.val);
+			if (!iface.val) {
+				ASSERT(src_ch >= req_sink_ch_count);
+				continue;
+			}
 			if (iface.val->IsQueueFull()) {
 				iface.is_full = true;
 				io.full_src_mask |= (1 << src_ch);
@@ -240,7 +245,7 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			if (iface.filled && iface.may_remove) {
 				iface.buf->RemoveFirst();
 			}
-			else {
+			else if (iface.filled) {
 				RTLOG("AtomBase::ForwardPipe: warning: NOT removing first in sink #" << sink_ch << " " << HexStr(iface.buf));
 				ASSERT_(sink_ch > 0, "AtomBase::ForwardPipe: NOT removing first in primary sink");
 			}

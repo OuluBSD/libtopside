@@ -38,8 +38,13 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 }
 
 bool AudioGenBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	Packet& out = src.p;
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(0, sink.p);
+	
 	int frame = fmt.GetFrameSize();
 	dword off = out->GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
@@ -47,16 +52,10 @@ bool AudioGenBase::ProcessPackets(PacketIO& io) {
 	double time = off * fmt.GetFrameSeconds();
 	out->Set(fmt, time);
 	out->Data().SetCount(frame, 0);
-	
-	#if 0
-	Vector<byte>& v = out->Data();
-	for (byte& b : v) b = val++;
-	#else
 	gen.Play((int)offset, out);
-	#endif
 	
 	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << out->ToStringWithHash());
-	#endif
+	return true;
 }
 
 NAMESPACE_SERIAL_END

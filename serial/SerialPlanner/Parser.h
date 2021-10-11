@@ -23,7 +23,8 @@ struct Statement {
 	Id id;
 	One<Value> value;
 	Array<Statement> args;
-	Array<Statement> side_conds;
+	Array<Statement> sink_side_conds;
+	Array<Statement> src_side_conds;
 	
 	void operator=(const Statement& v);
 	String GetTreeString(int indent=0) const;
@@ -161,7 +162,7 @@ class Parser : public CParser {
 	bool Parse(Script::AtomilationUnit&);
 	bool ParseStmt(Script::Statement&, bool allow_square_end=false);
 	bool ParseStmtArguments(Script::Statement&);
-	bool ParseStmtSideConditionals(Script::Statement&);
+	bool ParseStmtSideConditionals(Script::Statement&, bool src);
 	bool ParseLoop(Script::LoopDefinition&);
 	bool ParseChain(Script::ChainDefinition&);
 	bool ParseId(Script::Id&);
