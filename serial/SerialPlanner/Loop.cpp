@@ -250,70 +250,82 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		const Vector<Script::ActionPlanner::State>& sinks = planner.GetSideSinks();
 		const Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
 		
-		//bool is_sink = planner.IsSideSink();
-		if (/*!is_sink &&*/ sources.GetCount()) {
-			LOG("Loop " << id << " side-sources:");
-			int actually_waiting = 0;
-			for(int i = 0; i < sources.GetCount(); i++) {
-				const Script::ActionPlanner::State& state = sources[i];
-				const Script::WorldState& ws = state.last->GetWorldState();
-				const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
-				if (!stmt) continue;
-				ASSERT(stmt);
-				if (!stmt) {SetError("internal error: no statement found"); return;}
-				AtomTypeCls type = ws.GetAtom();
-				ASSERT(type.IsValid());
-				int user_defined_count = stmt->src_side_conds.GetCount();
-				if (type.user_src_count != user_defined_count) {
-					SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_src_count));
+		bool is_sink = planner.IsSideSink();
+		
+		// Use preferred sink/src search, but try the other if first fails
+		for (int tries = 0; tries < 2; tries++) {
+			if (!is_sink && sources.GetCount()) {
+				LOG("Loop " << id << " side-sources:");
+				int actually_waiting = 0;
+				for(int i = 0; i < sources.GetCount(); i++) {
+					const Script::ActionPlanner::State& state = sources[i];
+					const Script::WorldState& ws = state.last->GetWorldState();
+					const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+					if (!stmt) continue;
+					ASSERT(stmt);
+					if (!stmt) {SetError("internal error: no statement found"); return;}
+					AtomTypeCls type = ws.GetAtom();
+					ASSERT(type.IsValid());
+					int user_defined_count = stmt->src_side_conds.GetCount();
+					if (user_defined_count == 0 && type.iface.src.count - type.user_src_count == 1) {
+						continue; // no given user conditionals here means that skip all sources
+					}
+					if (type.user_src_count != user_defined_count) {
+						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_src_count));
+						return;
+					}
+					if (i < user_defined_count) {
+						const Script::Statement& src_stmt = stmt->src_side_conds[i];
+						if (src_stmt.value.IsEmpty())
+							continue; // src is skipped
+					}
+					
+					actually_waiting++;
+					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
+				}
+				if (actually_waiting > 0) {
+					status = SOURCE_IS_WAITING;
 					return;
 				}
-				if (i < user_defined_count) {
-					const Script::Statement& src_stmt = stmt->src_side_conds[i];
-					if (src_stmt.value.IsEmpty())
-						continue; // src is skipped
+			}
+			if (is_sink && sinks.GetCount()) {
+				LOG("Loop " << id << " side-sinks:");
+				int actually_waiting = 0;
+				for(int i = 0; i < sinks.GetCount(); i++) {
+					const Script::ActionPlanner::State& state = sinks[i];
+					const Script::WorldState& ws = state.last->GetWorldState();
+					const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+					if (!stmt) continue;
+					ASSERT(stmt);
+					if (!stmt) {SetError("internal error: no statement found"); return;}
+					AtomTypeCls type = ws.GetAtom();
+					ASSERT(type.IsValid());
+					int user_defined_count = stmt->sink_side_conds.GetCount();
+					if (user_defined_count == 0 && type.iface.sink.count - type.user_sink_count == 1) {
+						continue; // no given user conditionals means here that skip all sinks
+					}
+					if (type.user_sink_count != user_defined_count) {
+						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_sink_count));
+						return;
+					}
+					if (i < user_defined_count) {
+						const Script::Statement& sink_stmt = stmt->sink_side_conds[i];
+						if (sink_stmt.value.IsEmpty())
+							continue; // sink is skipped
+					}
+					
+					actually_waiting++;
+					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 				}
-				
-				actually_waiting++;
-				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
-			}
-			if (actually_waiting > 0) {
-				status = SOURCE_IS_WAITING;
-				return;
-			}
-		}
-		if (/*is_sink && */sinks.GetCount()) {
-			LOG("Loop " << id << " side-sinks:");
-			int actually_waiting = 0;
-			for(int i = 0; i < sinks.GetCount(); i++) {
-				const Script::ActionPlanner::State& state = sinks[i];
-				const Script::WorldState& ws = state.last->GetWorldState();
-				const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
-				if (!stmt) continue;
-				ASSERT(stmt);
-				if (!stmt) {SetError("internal error: no statement found"); return;}
-				AtomTypeCls type = ws.GetAtom();
-				ASSERT(type.IsValid());
-				int user_defined_count = stmt->sink_side_conds.GetCount();
-				if (type.user_sink_count != user_defined_count) {
-					SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_sink_count));
+				if (actually_waiting > 0) {
+					status = SINK_IS_WAITING;
 					return;
 				}
-				if (i < user_defined_count) {
-					const Script::Statement& sink_stmt = stmt->sink_side_conds[i];
-					if (sink_stmt.value.IsEmpty())
-						continue; // sink is skipped
-				}
-				
-				actually_waiting++;
-				LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 			}
-			if (actually_waiting > 0) {
-				status = SINK_IS_WAITING;
-				return;
-			}
+			
+			is_sink = !is_sink;
 		}
 		
 		SetError("Script implementation searching failed");
@@ -674,8 +686,8 @@ SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::A
 			
 			
 			SideStatus a, b;
-			if ((a = src_d.side_fn(sink_atom, sink_ws, src_atom, src_ws)) != SIDE_NOT_ACCEPTED) {
-				if ((b = sink_d.side_fn(sink_atom, sink_ws, src_atom, src_ws)) != SIDE_NOT_ACCEPTED) {
+			if ((a = src_d.side_fn(src_atom, src_ws, sink_atom, sink_ws)) != SIDE_NOT_ACCEPTED) {
+				if ((b = sink_d.side_fn(src_atom, src_ws, sink_atom, sink_ws)) != SIDE_NOT_ACCEPTED) {
 					
 					CombineHash ch;
 					ch.Put(def.id.ToString().GetHashValue());

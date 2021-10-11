@@ -10,7 +10,7 @@ class WorldState;
 class Plan;
 }
 
-template <class T> inline SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
+template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
 
 class AtomBase :
@@ -112,8 +112,8 @@ public:
 	int						GetSinkPacketCount();
 	int						GetSourcePacketCount();
 	
-	static SideStatus MakeSide(const AtomTypeCls& from_type, const Script::WorldState& from, const AtomTypeCls& to_type, const Script::WorldState& to) {
-		ValDevCls common_vd = from_type.iface.src.GetCommon(to_type.iface.sink);
+	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
+		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);
 		if (common_vd.IsValid())
 			return SIDE_ACCEPTED;
 		else
