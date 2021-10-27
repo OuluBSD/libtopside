@@ -12,6 +12,7 @@
 
 #include "Generated.h"
 #include "Types.h"
+#include "Util.h"
 #include "SampleBase.h"
 #include "Samples.h"
 #include "Formats.h"

@@ -215,14 +215,18 @@ public:
 	dword						time_us = 0;
 	Time						time;
 	
+	bool						initialized = false;
+	
 	
 	
 public:
 	
 	bool				LoadFragmentShaderFile(String filepath);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
+	bool				IsInitialized() const {return initialized;}
 	
 	bool				Initialize();
+	bool				InitializeTextureRGBA(Size sz, const Vector<byte>& data);
 	void				RefreshPipeline();
 	void				UpdateTexBuffers();
 	void				Reset();
@@ -250,6 +254,7 @@ public:
 	void				TexFlags(int type, int filter, int repeat);
 	void				UseRenderedFramebuffer();
 	const OglBuffer*	GetComponentById(int id) const;
+	void				ReadTexture(Size sz, const Vector<byte>& data);
 	
 	void				OnError(const char* fn, String s);
 	

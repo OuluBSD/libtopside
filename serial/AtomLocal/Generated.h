@@ -302,6 +302,22 @@ public:
 };
 
 #if defined flagGUI
+class SdlImageLoader : public Atom<SdlImageLoader>, public SDL2ImageBase {
+
+public:
+	RTTI_DECL2(SdlImageLoader, AtomT, SDL2ImageBase)
+	COPY_PANIC(SdlImageLoader)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
 class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2ScreenBase {
 
 public:
@@ -318,11 +334,11 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2ScreenBase {
+class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtom, AtomT, SDL2ScreenBase)
-	COPY_PANIC(SdlFboAtom)
+	RTTI_DECL2(SdlFboPipe, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
 	ATOM_MAKE_ACTION_END
@@ -334,11 +350,27 @@ public:
 #endif
 
 #if defined flagGUI
-class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2ScreenBase {
+class SdlFboPipeSide : public Atom<SdlFboPipeSide>, public SDL2ScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboPipe, AtomT, SDL2ScreenBase)
-	COPY_PANIC(SdlFboPipe)
+	RTTI_DECL2(SdlFboPipeSide, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboPipeSide)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2ScreenBase {
+
+public:
+	RTTI_DECL2(SdlFboAtom, AtomT, SDL2ScreenBase)
+	COPY_PANIC(SdlFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
 	ATOM_MAKE_ACTION_END
@@ -412,6 +444,22 @@ public:
 };
 #endif
 
+#if defined flagGUI
+class OglTextureSource : public Atom<OglTextureSource>, public OglTextureBase {
+
+public:
+	RTTI_DECL2(OglTextureSource, AtomT, OglTextureBase)
+	COPY_PANIC(OglTextureSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.image")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
@@ -457,15 +505,23 @@ using EventStateRef = Ref<EventState, AtomParent>;
 using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 
 #if defined flagGUI
+using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
+#endif
+
+#if defined flagGUI
 using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
 #endif
 
 #if defined flagGUI
-using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
+using SdlFboPipeRef = Ref<SdlFboPipe, AtomParent>;
 #endif
 
 #if defined flagGUI
-using SdlFboPipeRef = Ref<SdlFboPipe, AtomParent>;
+using SdlFboPipeSideRef = Ref<SdlFboPipeSide, AtomParent>;
+#endif
+
+#if defined flagGUI
+using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
 #endif
 
 #if defined flagGUI
@@ -480,6 +536,10 @@ using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
 
 #if defined flagGUI
 using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
+#endif
+
+#if defined flagGUI
+using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
 #endif
 
 }

@@ -137,4 +137,64 @@ void ByteImage::Randomize() {
 		*it++ = (byte)Random(256);
 }
 
+
+
+
+
+
+
+
+
+void DataFromImage(const Image& img, Vector<byte>& out) {
+	Image::ImageDataRef* data = img.GetData();
+	if (!data)
+		return;
+	
+	SysImage& simg = data->img;
+	
+	const byte* it = simg.GetData();
+	int pitch = simg.GetPitch();
+	int stride = simg.GetStride();
+	int width = simg.GetWidth();
+	int height = simg.GetHeight();
+	
+	int line = stride * width;
+	int sz = line * height;
+	ASSERT(pitch >= line);
+	
+	if (stride == 4) {
+		out.SetCount(sz);
+		
+		if (line == pitch)
+			memcpy(out.Begin(), it, sz);
+		else {
+			TODO
+		}
+	}
+	else {
+		ASSERT(stride < 4);
+		int dst_stride = 4;
+		int dst_size = dst_stride * width * height;
+		out.SetCount(dst_size);
+		
+		byte* out_it = out.Begin();
+		int line_pad = pitch - line;
+		ASSERT(line_pad >= 0);
+		
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < width; x++) {
+				for (int i = 0; i < dst_stride; i++) {
+					byte val = i < stride ? *it++ : 0;
+					*out_it++ = val;
+				}
+			}
+			it += line_pad;
+		}
+		
+		ASSERT(out_it == out.End());
+	}
+	
+	
+}
+
 NAMESPACE_TOPSIDE_END

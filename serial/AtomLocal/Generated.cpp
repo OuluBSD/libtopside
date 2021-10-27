@@ -329,6 +329,24 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 }
 
 #if defined flagGUI
+AtomTypeCls SdlImageLoader::GetAtomType()
+{
+	return ATOM11_U01(SDL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+}
+
+void SdlImageLoader::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlImageLoader>>(this);
+	vis.VisitThis<SDL2ImageBase>(this);
+}
+
+AtomTypeCls SdlImageLoader::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
 AtomTypeCls SdlFboAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -347,27 +365,9 @@ AtomTypeCls SdlFboAtomSA::GetType() const
 
 #endif
 #if defined flagGUI
-AtomTypeCls SdlFboAtom::GetAtomType()
-{
-	return ATOM11(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
-}
-
-void SdlFboAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<SdlFboAtom>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
-}
-
-AtomTypeCls SdlFboAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagGUI
 AtomTypeCls SdlFboPipe::GetAtomType()
 {
-	return ATOM21(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
+	return ATOM11(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
 }
 
 void SdlFboPipe::Visit(RuntimeVisitor& vis)
@@ -377,6 +377,42 @@ void SdlFboPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlFboPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls SdlFboPipeSide::GetAtomType()
+{
+	return ATOM21(SDL_FBO_PIPE_SIDE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
+}
+
+void SdlFboPipeSide::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlFboPipeSide>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
+}
+
+AtomTypeCls SdlFboPipeSide::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls SdlFboAtom::GetAtomType()
+{
+	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
+}
+
+void SdlFboAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlFboAtom>>(this);
+	vis.VisitThis<SDL2ScreenBase>(this);
+}
+
+AtomTypeCls SdlFboAtom::GetType() const
 {
 	return GetAtomType();
 }
@@ -447,6 +483,24 @@ void OglShaderAtom::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglShaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls OglTextureSource::GetAtomType()
+{
+	return ATOM11_U11(OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);
+}
+
+void OglTextureSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglTextureSource>>(this);
+	vis.VisitThis<OglTextureBase>(this);
+}
+
+AtomTypeCls OglTextureSource::GetType() const
 {
 	return GetAtomType();
 }

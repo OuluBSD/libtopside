@@ -245,6 +245,9 @@ struct ValDevCls : Moveable<ValDevCls> {
 #define ATOM11_U01(atom, role, content_dev, content_val, sink_dev0, sink_val0, src_dev, src_val, src_dev1, src_val1) \
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 0,1,0,1, ValDevCls(), VD(src_dev1, src_val1))
 
+#define ATOM11_U11(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val, src_dev1, src_val1) \
+	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 1,1,1,1, VD(sink_dev1, sink_val1), VD(src_dev1, src_val1))
+
 #define ATOM11_U44(atom, role, content_dev, content_val, sink_dev0, sink_val0, sink_dev1, sink_val1, src_dev, src_val, src_dev1, src_val1) \
 	AtomTypeCls(SubAtomCls::atom, AtomRole::role, VD(sink_dev0, sink_val0), VD(content_dev, content_val), VD(src_dev, src_val), 4,4,4,4, VD(sink_dev1, sink_val1), VD(src_dev1, src_val1))
 

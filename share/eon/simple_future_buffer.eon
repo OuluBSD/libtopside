@@ -1,0 +1,47 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop center.image: {
+			id: "image";
+			center.customer: true;
+			center.image.loader: true [][id: "texture"] {filepath: "uk_street.jpg";};
+		};
+		
+		loop ogl.fbo.tex: {
+			id: "texture";
+			ogl.customer: true;
+			ogl.fbo.image: true [id: "image"][id: "screen"];
+		};
+		
+		loop ogl.fbo.buffer2: {
+			id: "buffer2";
+			ogl.customer: true;
+			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple_future_buffer/stage2.glsl";};
+		};
+		
+		loop ogl.fbo.buffer1: {
+			id: "buffer1";
+			ogl.customer: true;
+			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple_future_buffer/stage1.glsl";};
+		};
+		
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo: true [id: "buffer2"; id: "buffer1"; id: "texture";;] {filepath: "shaders/toys/simple_future_buffer/stage0.glsl";};
+		};
+		
+		loop audio: {
+			center.customer: true;
+			center.audio.src.dbg_generator: true {waveform: "noise";};
+			sdl.audio: true;
+		};
+	};
+
+};
+

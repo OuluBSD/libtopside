@@ -7,8 +7,9 @@
 #define HEADER12_U01(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define HEADER21(x, base, role, content, sink, side, src)		using x = HeaderT<base, sink, src>;
 #define HEADER21_U10(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER22_U11(x, base, role, content, sink, ssink, ssrc, src)	using x = HeaderT<base, sink, src>;
 #define HEADER31_U20(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
-#define HEADER44_U44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
+#define HEADER55_U44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define BASE_FLAG(x, flag)
 #define BASE_ACTION(x, act)
 #define HEADER_ACTION(x, act)

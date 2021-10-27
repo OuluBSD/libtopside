@@ -392,6 +392,26 @@ String ShareDirFile(String file) {
 	return AppendFileName(FindShareDir(), file);
 }
 
+String RealizeShareFile(String rel_path) {
+	if (rel_path.IsEmpty())
+		return String();
+	
+	
+	for (int tries = 0; tries < 3; tries++) {
+		String path;
+		switch (tries) {
+			case 0: path = rel_path; break;
+			case 1: path = ShareDirFile(rel_path); break;
+			case 2: path = ShareDirFile(AppendFileName("imgs", rel_path)); break;
+		}
+		
+		if (FileExists(path))
+			return path;
+	}
+	
+	return rel_path;
+}
+
 String TrimTrailingDirSep(String file) {
 	while (file.GetCount() && file[file.GetCount()-1] == DIR_SEP)
 		file = file.Left(file.GetCount()-1);

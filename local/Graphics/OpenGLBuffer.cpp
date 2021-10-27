@@ -51,6 +51,32 @@ bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
 	return true;
 }
 
+bool OglBuffer::InitializeTextureRGBA(Size sz, const Vector<byte>& data) {
+	DLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << data.GetCount());
+	
+	UpdateTexBuffers();
+	
+	ReadTexture(sz, data);
+	
+	return true;
+}
+
+void OglBuffer::ReadTexture(Size sz, const Vector<byte>& data) {
+	GLuint& color_buf = this->color_buf[0];
+	ASSERT(color_buf > 0);
+	ASSERT(sz == fb_size);
+	glBindTexture (GL_TEXTURE_2D, color_buf);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
+		sz.cx,
+		sz.cy,
+		0, GL_RGBA, GL_UNSIGNED_BYTE,
+		data.Begin());
+}
+
 bool OglBuffer::Initialize() {
 	DLOG("OglBuffer::Initialize: load new program");
 	
@@ -113,6 +139,9 @@ bool OglBuffer::Initialize() {
 	}*/
 	
 	RefreshPipeline();
+	
+	initialized = true;
+	
 	return true;
 }
 

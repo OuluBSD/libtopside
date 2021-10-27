@@ -690,6 +690,8 @@ SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::A
 				if ((b = sink_d.side_fn(src_atom, src_ws, sink_atom, sink_ws)) != SIDE_NOT_ACCEPTED) {
 					
 					CombineHash ch;
+					
+					
 					ch.Put(def.id.ToString().GetHashValue());
 					ch.Put(sink_loader.def.id.ToString().GetHashValue());
 					ch.Put(src_side_id);

@@ -27,8 +27,8 @@ public:
 	bool			ProcessPackets(PacketIO& io) override;
 	bool			IsReady(PacketIO& io) override;
 	
-	OOSDL2::Component& GetObj() override {return *obj;}
-	OOSDL2::Screen* GetOOSDL2() {return &*obj;}
+	OOSDL2::Component&	GetObj() override {return *obj;}
+	OOSDL2::Screen*		GetOOSDL2() {return &*obj;}
 	
 	void SetFPS(int fps) {fmt.vid.SetFPS(fps); FramePollerBase::SetFPS(fps);}
 	

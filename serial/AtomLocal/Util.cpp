@@ -254,7 +254,10 @@ void SplitterBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packe
 		out = ReplyPacket(src_ch, in);
 	}
 }
+
 #endif
+
+
 
 #ifdef flagGUI
 
@@ -372,6 +375,98 @@ bool OglShaderBase::ProcessPackets(PacketIO& io) {
 }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+OglTextureBase::OglTextureBase() {
+	
+}
+
+bool OglTextureBase::Initialize(const Script::WorldState& ws) {
+	
+	return true;
+}
+
+bool OglTextureBase::PostInitialize() {
+	
+	return true;
+}
+
+void OglTextureBase::Uninitialize() {
+	
+}
+
+bool OglTextureBase::IsReady(PacketIO& io) {
+	return io.full_src_mask == 0 && io.active_sink_mask == 0b11;
+}
+
+bool OglTextureBase::ProcessPackets(PacketIO& io) {
+	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& prim_src = io.src[0];
+	PacketIO::Sink& sink = io.sink[1];
+	
+	ASSERT(prim_sink.p && sink.p);
+	prim_sink.may_remove = true;
+	sink.may_remove = true;
+	prim_src.from_sink_ch = 0;
+	prim_src.p = ReplyPacket(0, prim_sink.p);
+	
+	PacketValue& from = *sink.p;
+	
+	Format from_fmt = from.GetFormat();
+	ASSERT(from_fmt.IsVideo());
+	Size sz = from_fmt.vid.GetSize();
+	
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		buf.is_win_fbo = false;
+		buf.fb_size = sz;
+		buf.fb_channels = 4;
+		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
+		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
+		
+		if (!buf.InitializeTextureRGBA(sz, from.GetData()))
+			return false;
+	}
+	else {
+		buf.ReadTexture(sz, from.GetData());
+	}
+	
+	
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 1;
+				out = ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			GetBuffer().StoreOutputLink(data);
+			RTLOG("OglTextureBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
+	}
+	
+	return true;
+}
 
 #endif
 

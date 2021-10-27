@@ -69,8 +69,10 @@ bool ToyLoader::Load(Object& o) {
 			TODO
 	}
 	else {
-		TODO
-		
+		if (GetStageType(0, o) == "image" && GetStageType(1, o) == "imagebuffer" && GetStageType(2, o) == "imagebuffer")
+			eon_script = GetTripleBufferVideo(GetStagePath(0, o), GetStagePath(1, o), GetStagePath(2, o));
+		else
+			TODO
 	}
 	
 	#if 0
@@ -158,6 +160,23 @@ machine sdl.app: {
 
 )30N";
 
+static const char* __triple_buf_tmpl = R"30N(
+machine sdl.app: {
+	driver context: {
+		sdl.context: true;
+	};
+	chain program: {
+		loop ogl.fbo: {
+			ogl.customer: true;
+			ogl.fbo.source.pipe:	true {name: "buf0"; filepath: "${PATH1}";};
+			sdl.fbo.pipe: true {name: "buf1"; in0: "buf0"; filepath: "${PATH0}";};
+		};
+	};
+};
+)30N";
+
+
+
 String ToyLoader::GetSingleBufferVideo(String glsl_path) {
 	ASSERT(!glsl_path.IsEmpty())
 	String out = __single_buf_tmpl;
@@ -172,6 +191,19 @@ String ToyLoader::GetDoubleBufferVideo(String glsl_path0, String glsl_path1) {
 	String out = __double_buf_tmpl;
 	out.Replace("${PATH0}", glsl_path0);
 	out.Replace("${PATH1}", glsl_path1);
+	//DUMP(out);
+	return out;
+}
+
+String ToyLoader::GetTripleBufferVideo(String glsl_path0, String glsl_path1, String glsl_path2) {
+	ASSERT(!glsl_path0.IsEmpty())
+	ASSERT(!glsl_path1.IsEmpty())
+	ASSERT(!glsl_path2.IsEmpty())
+	String out = __triple_buf_tmpl;
+	TODO
+	out.Replace("${PATH0}", glsl_path0);
+	out.Replace("${PATH1}", glsl_path1);
+	out.Replace("${PATH2}", glsl_path2);
 	//DUMP(out);
 	return out;
 }

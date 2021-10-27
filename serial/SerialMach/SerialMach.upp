@@ -9,6 +9,8 @@ file
 	Generated.h,
 	Types.h,
 	Types.cpp,
+	Util.h,
+	Util.cpp,
 	SampleBase.h,
 	SampleBase.cpp,
 	Samples.h,

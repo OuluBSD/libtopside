@@ -45,6 +45,7 @@ TMPL_THIS Set(const T* c, int len) {
 TMPL_THIS SetData(const T* c, int len) {
 	Clear();
 	if (!c) return *this;
+	if (len == 0) return *this;
 	ASSERT(len > 0);
 	count = len;
 	if (count < buf_size) {

@@ -520,6 +520,7 @@ public:
 String FindShareDir();
 String ShareDirFile(String file);
 String TrimTrailingDirSep(String file);
+String RealizeShareFile(String rel_path);
 
 
 

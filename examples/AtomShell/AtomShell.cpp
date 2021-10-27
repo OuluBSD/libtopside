@@ -34,14 +34,8 @@ bool Initializer() {
 	args <<= cmd.GetVariables();
 	
 	
-	if (DirectoryExists(eon_file)) {
-		if (eon_file.Right(1) == DIR_SEPS)
-			eon_file = eon_file.Left(eon_file.GetCount()-1);
-		String title = GetFileName(eon_file);
-		String toy_file = AppendFileName(eon_file, title + ".toy");
-		if (FileExists(toy_file))
-			eon_file = toy_file;
-	}
+	eon_file = Serial::RealizeEonFile(eon_file);
+	
 	
 	if (GetFileExt(eon_file) == ".toy") {
 		ShadertoyContextLoader toy_loader;

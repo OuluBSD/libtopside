@@ -74,23 +74,32 @@ HEADER_ACTION(		EventState,			state.event)
 HEADER11(			TestEventSrcPipe,	TestEventSrcBase,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		TestEventSrcPipe,	event.src.test.pipe)
 
+HEADER12_U01(		SdlImageLoader,		SDL2ImageBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
+HEADER_ACTION(		SdlImageLoader,		center.image.loader)
+HEADER_ARG(			SdlImageLoader,		GUI,		1)
+
 
 
 HEADER11(			SdlFboAtomSA,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlFboAtomSA,		sdl.fbo.standalone)
 HEADER_ARG(			SdlFboAtomSA,		GUI,		1)
 
-HEADER11(			SdlFboAtom,			SDL2ScreenBase,				pipe,		OglFbo,			OglFbo,			OglReceipt)
-HEADER_ACTION(		SdlFboAtom,			sdl.fbo.pipe)
-HEADER_ARG(			SdlFboAtom,			GUI,		1)
-
-HEADER21(			SdlFboPipe,			SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
-HEADER_ACTION(		SdlFboPipe,			sdl.fbo)
+HEADER11(			SdlFboPipe,			SDL2ScreenBase,				pipe,		OglFbo,			OglFbo,			OglReceipt)
+HEADER_ACTION(		SdlFboPipe,			sdl.fbo.pipe)
 HEADER_ARG(			SdlFboPipe,			GUI,		1)
+
+HEADER21(			SdlFboPipeSide,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
+HEADER_ACTION(		SdlFboPipeSide,		sdl.fbo.pipe.side)
+HEADER_ARG(			SdlFboPipeSide,		GUI,		1)
+
+HEADER55_U44(		SdlFboAtom,			SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
+HEADER_ACTION(		SdlFboAtom,			sdl.fbo)
+HEADER_ARG(			SdlFboAtom,			GUI,		1)
 
 HEADER11(			SdlVideoAtom,		SDL2SwScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		GUI,		1)
+
 
 HEADER11 (			SdlAudioAtom,		SDL2AudioOutputBase,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
@@ -100,6 +109,10 @@ HEADER11(			OglShaderPipe,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo
 HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source.pipe)
 HEADER_ARG(			OglShaderPipe,		GUI,		1)
 
-HEADER44_U44(		OglShaderAtom,		OglShaderBase,				pipe,		OglFbo	,		OglOrder,		OglFbo,		OglReceipt)
+HEADER55_U44(		OglShaderAtom,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		OglShaderAtom,		ogl.fbo.source)
 HEADER_ARG(			OglShaderAtom,		GUI,		1)
+
+HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,		OglReceipt)
+HEADER_ACTION(		OglTextureSource,	ogl.fbo.image)
+HEADER_ARG(			OglTextureSource,	GUI,		1)

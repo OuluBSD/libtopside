@@ -58,14 +58,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 				
 				LoopRef root = ls->GetRoot();
 				
-				String path;
-				if (script_file.GetCount()) {
-					if (FileExists(script_file))
-						path = script_file;
-					else
-						path = ShareDirFile(AppendFileName("eon", script_file));
-					DUMP(path);
-				}
+				String path = RealizeEonFile(script_file);
 				
 				String script_str;
 				if (script_content.GetCount())

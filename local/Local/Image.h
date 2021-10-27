@@ -82,6 +82,10 @@ public:
 };
 
 
+void DataFromImage(const Image& img, Vector<byte>& data);
+
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

@@ -371,15 +371,16 @@ public:
 };
 
 
-class Image : public Stateful {
+class Image : public Component {
 	RTTI_DECL1(Image, Stateful)
 	
 private:
 	bool Open0() override;
 	void Close0() override;
+	uint32 GetInitFlag() const override {return 0;}
 	
 public:
-	Image() {}
+	Image(Context* ctx, AtomBase* ab) : Component(ctx, ab) {}
 	
 	
 };

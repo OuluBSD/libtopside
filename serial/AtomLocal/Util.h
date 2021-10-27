@@ -85,6 +85,24 @@ public:
 	
 };
 
+class OglTextureBase :
+	public OglBufferBase
+{
+	
+public:
+	RTTI_DECL1(OglTextureBase, OglBufferBase);
+	
+	OglTextureBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPackets(PacketIO& io) override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
+	
+	
+};
+
 #endif
 
 
