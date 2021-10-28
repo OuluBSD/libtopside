@@ -66,6 +66,11 @@ protected:
 		PROCESS_PACKETS,
 		CREATE_EMPTY_PACKET,
 		VALEXPT_FWD,
+		SCRIPT_LOAD,
+		TERMINAL_TEST,
+		LOOPLOADER_FORWARD_BEGINNING,
+		LOOPLOADER_FORWARD_RETRY,
+		LOOPLOADER_FORWARD_TOPSEGMENT,
 	} Type;
 	
 	struct ExpectedAction : Moveable<ExpectedAction> {
@@ -101,12 +106,21 @@ protected:
 	void Leave(Type t);
 	void MayLeaveTop();
 	
+protected:
+	
+	struct LoopLoaderData {
+		ScriptLoopLoader*	ll;
+		ScriptStatus		status;
+	};
+	ArrayMap<size_t, LoopLoaderData>		loop_loaders;
+	
 public:
 	typedef MachineVerifier CLASSNAME;
 	MachineVerifier();
 	
 	
 	void Attach(Machine& mach);
+	void Attach(ScriptLoader& sl);
 	void Clear();
 	
 	void OnEnterUpdate();
@@ -117,6 +131,11 @@ public:
 	void OnEnterProcessPackets(AtomBase&, PacketIO& p);
 	void OnEnterCreatedEmptyPacket(Packet& p);
 	void OnEnterValExPtForward(DefaultExchangePoint& p);
+	void OnEnterScriptLoad(SystemBase& base);
+	void OnEnterTerminalTest(size_t call_id);
+	void OnEnterForwardTopSegment(size_t call_id);
+	void OnEnterScriptLoopLoaderForwardBeginning(size_t call_id);
+	void OnEnterScriptLoopLoaderForwardRetry(size_t call_id);
 	
 	void OnLeaveUpdate();
 	void OnLeaveSystemUpdate();
@@ -126,6 +145,13 @@ public:
 	void OnLeaveProcessPackets(AtomBase&, PacketIO& p);
 	void OnLeaveCreatedEmptyPacket();
 	void OnLeaveValExPtForward();
+	void OnLeaveScriptLoad();
+	void OnLeaveTerminalTest(size_t call_id);
+	void OnLeaveForwardTopSegment(size_t call_id);
+	void OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id);
+	void OnLeaveScriptLoopLoaderForwardRetry(size_t call_id);
+	
+	void OnLoopLoader_Status(ScriptLoopLoader* ll);
 	
 	VerifierLoop& GetRoot() {return root;}
 	

@@ -136,6 +136,20 @@ protected:
 	friend class ScriptLoader;
 	friend class ScriptConnectionSolver;
 	
+	struct SideLink : Moveable<SideLink> {
+		ScriptLoopLoader*	link = 0;
+		ValDevCls			vd;
+		bool				is_user_conditional = false;
+		bool				is_user_stmt = false;
+		bool				is_required = false;
+	};
+	
+	struct AtomSideLinks : Moveable<AtomSideLinks> {
+		Vector<SideLink>	src_side_conns;
+		Vector<SideLink>	sink_side_conns;
+		AtomTypeCls			type;
+		
+	};
 	
 	Script::APlanNode				start_node;
 	Script::APlanNode				goal_node;
@@ -147,14 +161,13 @@ protected:
 	const Script::APlanNode*		accepted_side_node = 0;
 	
 	Array<AtomBaseRef>				atoms;
+	Vector<AtomSideLinks>			atom_links;
 	
-	Vector<ScriptLoopLoader*>		src_side_conns;
-	Vector<ScriptLoopLoader*>		sink_side_conns;
 	
 	void SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink);
 	void SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src);
 	bool IsAllSidesConnected() const;
-	void ClearSides() {src_side_conns.Clear(); sink_side_conns.Clear();}
+	bool IsTopSidesConnected() const;
 	void SetupSegment(ScriptLoopSegment& s);
 	bool SetWorldState(Script::WorldState& ws, const Script::Statement& stmt);
 	
@@ -174,6 +187,7 @@ public:
 	SideStatus	AcceptSink(ScriptLoopLoader& sink, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink);
 	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
 	void		UpdateLoopLimits();
+	void		RealizeConnections(Script::ActionPlanner::State* last_state);
 	
 	ScriptLoopSegment& GetCurrentSegment() {return segments.Top();}
 	
@@ -331,7 +345,7 @@ protected:
 	
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
-	Script::AtomilationUnit root;
+	Script::CompilationUnit root;
 	LoopStoreRef es;
 	
 	Vector<ScriptError> errs;
@@ -374,7 +388,7 @@ protected:
     bool		DoPostLoad();
 	bool		LoadFile(String path);
 	bool		Load(const String& content, const String& filepath="temp");
-	bool		LoadAtomilationUnit(Script::AtomilationUnit& cunit);
+	bool		LoadCompilationUnit(Script::CompilationUnit& cunit);
 	bool		LoadGlobalScope(Script::GlobalScope& list);
 	bool		ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1);
 	bool		ImplementScript();
@@ -388,6 +402,12 @@ protected:
 	
 	LoopRef		ResolveLoop(Script::Id& id);
 	
+	
+public:
+	
+	
+	Callback1<SystemBase&>	WhenEnterScriptLoad;
+	Callback				WhenLeaveScriptLoad;
 	
 };
 
@@ -438,17 +458,24 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	/*if (&n == (void*)0x806A117C0) {
 		LOG("");
 	}*/
+	MACHVER_ENTER(TerminalTest)
 	
 	using namespace Serial;
 	int est = n.GetEstimate();
-	if (est <= 0)
+	if (est <= 0) {
+		MACHVER_LEAVE(TerminalTest)
 		return true;
+	}
 	Script::ActionNode& goal = n.GetGoal();
 	Script::WorldState& goal_ws = goal.GetWorldState();
-	if (n.Contains(goal))
+	if (n.Contains(goal)) {
+		MACHVER_LEAVE(TerminalTest)
 		return true;
-	if (goal.Conflicts(n))
+	}
+	if (goal.Conflicts(n)) {
+		MACHVER_LEAVE(TerminalTest)
 		return false;
+	}
 	Script::WorldState& ws = n.GetWorldState();
 	Script::ActionPlanner& ap = n.GetActionPlanner();
 	ScriptLoopLoader& ll = ap.GetLoopLoader();
@@ -462,8 +489,10 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	
 	//TODO check for conflicting loop
 	
-	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src().val == ValCls::ORDER)
+	if (ws.IsAddAtom() && n.GetLinkedCount() && atom.iface.src().val == ValCls::ORDER) {
+		MACHVER_LEAVE(TerminalTest)
 		return false;
+	}
 	
 	if (ws.IsAddAtom()) {
 		if (n.GetLinkedCount() > 0) {
@@ -476,6 +505,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 				for(int i = 1; i < a.iface.src.GetCount(); i++) {
 					ap.AddSideSource(i, seg.as, n, prev);
 				}
+				MACHVER_LEAVE(TerminalTest)
 				return false;
 			}
 			
@@ -483,16 +513,21 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 			if (a.iface.sink.GetCount() >= 2) {
 				ASSERT(a.HasSideChannels());
 				ap.AddSideSink(seg.as, n, prev);
+				MACHVER_LEAVE(TerminalTest)
 				return false;
 			}
 			if (a.iface.src.GetCount() >= 2) {
 				ASSERT(a.HasSideChannels());
 				POPO(Pol::Serial::Script::Loop::SideSinkIsBeforeSideSourceAlways)
 				if (goal_ws	.IsTrue	("has.side.sink") &&
-					ws		.IsFalse("has.side.sink"))
+					ws		.IsFalse("has.side.sink")) {
+					MACHVER_LEAVE(TerminalTest)
 					return false;
+				}
 				
 				ap.AddSideSource(seg.as, n, prev);
+				
+				MACHVER_LEAVE(TerminalTest)
 				return false;
 			}
 			#endif
@@ -500,6 +535,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	}
 	else {
 		LOG("Unexpected action");
+		MACHVER_LEAVE(TerminalTest)
 		return false;
 	}
 	
@@ -532,6 +568,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 		RTLOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 	}
 	
+	MACHVER_LEAVE(TerminalTest)
 	return false;
 }
 

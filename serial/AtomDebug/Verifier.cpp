@@ -2,13 +2,40 @@
 
 NAMESPACE_SERIAL_BEGIN
 
+MachineVerifier* __latest_mver;
+
+
+#define MACHVER_FWD_FN(x) \
+	void MachineVerifier_OnEnter##x(size_t call_id) { \
+		if (__latest_mver) \
+			__latest_mver->OnEnter##x(call_id); \
+	} \
+	 \
+	void MachineVerifier_OnLeave##x(size_t call_id) { \
+		if (__latest_mver) \
+			__latest_mver->OnLeave##x(call_id); \
+	} \
+
+MACHVER_FWDFN_LIST
+#undef MACHVER_FWD_FN
+
+void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll) {
+	if (__latest_mver)
+		__latest_mver->OnLoopLoader_Status(ll);
+}
+
+
 
 MachineVerifier::MachineVerifier() {
+	ASSERT(!__latest_mver);
+	__latest_mver = this;
+	
 	Clear();
 }
 
 void MachineVerifier::Attach(Machine& mach) {
 	this->mach = &mach;
+	mach.mver = this;
 	
 	mach.WhenEnterUpdate << THISBACK(OnEnterUpdate);
 	mach.WhenEnterSystemUpdate << THISBACK(OnEnterSystemUpdate);
@@ -16,6 +43,11 @@ void MachineVerifier::Attach(Machine& mach) {
 	mach.WhenLeaveUpdate << THISBACK(OnLeaveUpdate);
 	mach.WhenLeaveSystemUpdate << THISBACK(OnLeaveSystemUpdate);
 	
+}
+
+void MachineVerifier::Attach(ScriptLoader& sl) {
+	sl.WhenEnterScriptLoad << THISBACK(OnEnterScriptLoad);
+	sl.WhenLeaveScriptLoad << THISBACK(OnLeaveScriptLoad);
 }
 
 void MachineVerifier::Clear() {
@@ -102,6 +134,7 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	cur.MayLeave(true);
 	cur.AddEnter(EXTCOMP_FORWARD);
 	cur.AddEnter(ONCE_FORWARD);
+	cur.AddEnter(SCRIPT_LOAD);
 		
 	if (!ext_sys && (ext_sys = CastPtr<AtomSystem>(&base))) {
 		ext_sys->WhenEnterOnceForward << THISBACK(OnEnterOnceForward);
@@ -114,6 +147,53 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	}
 	
 	
+}
+
+void MachineVerifier::OnEnterScriptLoad(SystemBase& base) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnEnterScriptLoad");
+	
+	Enter(SCRIPT_LOAD);
+	
+	Scope& cur = stack.Top();
+	cur.AddEnter(LOOPLOADER_FORWARD_BEGINNING);
+}
+
+void MachineVerifier::OnEnterTerminalTest(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnEnterTerminalTest " << HexStr(call_id));
+	Enter(TERMINAL_TEST);
+	
+	Scope& cur = stack.Top();
+	cur.MayLeave(true);
+}
+
+void MachineVerifier::OnEnterForwardTopSegment(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnEnterForwardTopSegment " << HexStr(call_id));
+	Enter(LOOPLOADER_FORWARD_TOPSEGMENT);
+	
+	Scope& cur = stack.Top();
+	cur.AddEnter(TERMINAL_TEST);
+}
+
+void MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning " << HexStr(call_id));
+	Enter(LOOPLOADER_FORWARD_BEGINNING);
+	
+	Scope& cur = stack.Top();
+	cur.AddEnter(LOOPLOADER_FORWARD_TOPSEGMENT);
+}
+
+void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
+	
+	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardRetry " << HexStr(call_id));
+	Enter(LOOPLOADER_FORWARD_RETRY);
 }
 
 void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
@@ -316,6 +396,65 @@ void MachineVerifier::OnLeaveValExPtForward() {
 	MayLeaveTop();
 }
 
+void MachineVerifier::OnLeaveScriptLoad() {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveScriptLoad");
+	Leave(SCRIPT_LOAD);
+}
+
+void MachineVerifier::OnLeaveTerminalTest(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveTerminalTest");
+	Leave(TERMINAL_TEST);
+}
+
+void MachineVerifier::OnLeaveForwardTopSegment(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveForwardTopSegment");
+	Leave(LOOPLOADER_FORWARD_TOPSEGMENT);
+	
+	Scope& cur = stack.Top();
+	cur.may_leave = true;
+}
+
+void MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning");
+	Leave(LOOPLOADER_FORWARD_BEGINNING);
+}
+
+void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry");
+	Leave(LOOPLOADER_FORWARD_RETRY);
+}
+
+
+
+
+
+
+
+
+
+void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
+	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
+	data.ll = ll;
+	data.status = ll->GetStatus();
+	
+	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << HexStr(ll) << " status to: " << GetScriptStatusString(data.status));
+	
+	Scope& cur = stack.Top();
+	if (cur.type == LOOPLOADER_FORWARD_TOPSEGMENT)
+		cur.may_leave = true;
+	else
+		TODO
+}
 
 
 

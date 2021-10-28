@@ -27,9 +27,11 @@ ScriptLoader::~ScriptLoader() {
 }
 
 bool ScriptLoader::Initialize() {
+	Machine& mach = GetMachine();
+	
 	def_ws.SetActionPlanner(def_planner);
 	
-	es = GetMachine().Find<LoopStore>();
+	es = mach.Find<LoopStore>();
 	if (!es) {
 		LOG("ScriptLoader requires LoopStore present in machine");
 		return false;
@@ -106,6 +108,15 @@ bool TestParseScriptCode(String content) {
 bool ScriptLoader::Load(const String& content, const String& filepath) {
 	RTLOG("ScriptLoader::Load: Loading \"" << filepath << "\"");
 	
+	if (HAVE_SCRIPTLOADER_MACHVER) {
+		Machine& mach = GetMachine();
+		MachineVerifier* mver = mach.GetMachineVerifier();
+		if (mver)
+			mver->Attach(*this);
+	}
+	
+	WhenEnterScriptLoad(*this);
+	
 	Script::Parser p;
 	if (!p.Parse(content, filepath)) {
 		RTLOG(GetLineNumStr(content, 1));
@@ -114,11 +125,12 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 	//p.Dump();
 	MemSwap(p.GetResult(), root);
 	
-	if (!LoadAtomilationUnit(root)) {
+	if (!LoadCompilationUnit(root)) {
 		LOG("error dump:"); loader->Dump();
 		DumpErrors();
 		
 		Cleanup();
+		WhenLeaveScriptLoad();
 		return false;
 	}
 	
@@ -126,10 +138,13 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 		DumpErrors();
 		
 		Cleanup();
+		WhenLeaveScriptLoad();
 		return false;
 	}
 	
 	Cleanup();
+	WhenLeaveScriptLoad();
+	
 	return true;
 }
 
@@ -192,7 +207,7 @@ bool ScriptLoader::ImplementScript() {
 	return true;
 }
 
-bool ScriptLoader::LoadAtomilationUnit(Script::AtomilationUnit& cunit) {
+bool ScriptLoader::LoadCompilationUnit(Script::CompilationUnit& cunit) {
 	return LoadGlobalScope(cunit.list);
 }
 
@@ -411,7 +426,7 @@ bool ScriptConnectionSolver::Process() {
 			dbg_i++;
 		}
 		if (!accepted_all_multi && accepted_sink_count > 1) {
-			SetError("source loop " + IntStr(src->GetId()) + " can accept multiple sinks");
+			SetError("source loop " + IntStr(src->GetId()) + " cannot accept multiple sinks");
 			return false;
 		}
 		if (accepted_sink_count == 0) {
@@ -419,6 +434,9 @@ bool ScriptConnectionSolver::Process() {
 			is_waiting_sink = true;
 			continue;
 		}
+		
+		src->RealizeConnections(accepted_src_node);
+		accepted_sink->RealizeConnections(accepted_sink_node);
 		
 		ASSERT(accepted_sink);
 		AtomTypeCls src_type = accepted_src_node->last->GetWorldState().GetAtom();
@@ -438,17 +456,15 @@ bool ScriptConnectionSolver::Process() {
 			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
 		
 		
-		if (src->IsAllSidesConnected()) {
+		if (src->IsTopSidesConnected()) {
 			LOG("Loop " << src->GetId() << " all sides connected");
 			src->AddSideConnectionSegment(accepted_src_node, accepted_sink, accepted_sink_node);
-			src->ClearSides();
 			retry_list.Add(src);
 		}
 		
-		if (accepted_sink->IsAllSidesConnected()) {
+		if (accepted_sink->IsTopSidesConnected()) {
 			LOG("Loop " << accepted_sink->GetId() << " all sides connected");
 			accepted_sink->AddSideConnectionSegment(accepted_sink_node,	src, accepted_src_node);
-			accepted_sink->ClearSides();
 			retry_list.Add(accepted_sink);
 		}
 		

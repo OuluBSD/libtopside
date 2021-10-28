@@ -15,6 +15,8 @@ struct Id {
 	String ToString() const;
 	String GetTreeString(int indent=0) const;
 	bool operator==(const Id& id) const;
+	bool IsEmpty() const {return parts.IsEmpty();}
+	
 };
 
 struct Value;
@@ -145,7 +147,7 @@ struct GlobalScope {
 	
 };
 
-struct AtomilationUnit {
+struct CompilationUnit {
 	GlobalScope						list;
 	
 	String GetTreeString(int indent=0) const;
@@ -156,10 +158,10 @@ struct AtomilationUnit {
 
 
 class Parser : public CParser {
-	Script::AtomilationUnit cunit;
+	Script::CompilationUnit cunit;
 	
 	
-	bool Parse(Script::AtomilationUnit&);
+	bool Parse(Script::CompilationUnit&);
 	bool ParseStmt(Script::Statement&, bool allow_square_end=false);
 	bool ParseStmtArguments(Script::Statement&);
 	bool ParseStmtSideConditionals(Script::Statement&, bool src);
@@ -188,8 +190,8 @@ public:
 	
 	bool Parse(const String& content, const String& filepath);
 	
-	Script::AtomilationUnit& GetResult() {return cunit;}
-	const Script::AtomilationUnit& GetResult() const {return cunit;}
+	Script::CompilationUnit& GetResult() {return cunit;}
+	const Script::CompilationUnit& GetResult() const {return cunit;}
 	
 	void Dump() {LOG(cunit.GetTreeString());}
 };

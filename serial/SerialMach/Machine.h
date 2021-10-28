@@ -4,6 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+class MachineVerifier;
 
 
 class SystemBase : public MetaSystemBase {
@@ -135,6 +136,8 @@ public:
 	void Visit(RuntimeVisitor& vis);
 	void WarnDeveloper(String msg);
 	
+	MachineVerifier*	GetMachineVerifier() const {return mver;}
+	
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;
 	
@@ -156,6 +159,14 @@ private:
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
     void Add(TypeCls type_id, SystemBase* system);
     void Remove(TypeCls typeId);
+    
+    
+protected:
+	friend class MachineVerifier;
+	
+    MachineVerifier* mver = 0;
+    
+    
 };
 
 

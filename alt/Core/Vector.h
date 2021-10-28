@@ -439,9 +439,10 @@ public:
 			new (&data[i+j]) K();
 		count+=n;
 	}
-
-	K& Top() { ASSERT(GetCount() > 0); return data[count - 1]; }
-
+	
+	K&       Top()       { ASSERT(GetCount() > 0); return data[count - 1]; }
+	const K& Top() const { ASSERT(GetCount() > 0); return data[count - 1]; }
+	
 	K Pop() {
 		ASSERT(GetCount() > 0);
 		int i = count - 1;

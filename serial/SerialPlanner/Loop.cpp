@@ -48,11 +48,81 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 	return s;
 }
 
+void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_state) {
+	RTLOG("ScriptLoopLoader::RealizeConnections: begin");
+	ASSERT(segments.GetCount());
+	
+	ScriptLoopSegment& top_seg = segments.Top();
+	if (top_seg.ep.plan.IsEmpty()) {
+		top_seg.ep.plan = top_seg.as.ReconstructPath(*last_state->last);
+		ASSERT(!top_seg.ep.plan.IsEmpty());
+	}
+	
+	int atom_i = 0;
+	int added = 0;
+	const Script::WorldState* prev_ws = 0;
+	for (ScriptLoopSegment& seg : segments) {
+		ASSERT(!seg.ep.plan.IsEmpty());
+		for (Script::ActionNode* an : seg.ep.plan) {
+			Script::WorldState& ws = an->GetWorldState();
+			ASSERT(ws.IsAddAtom());
+			
+			if (atom_i >= atom_links.GetCount()) {
+				atom_links.SetCount(atom_i+1);
+				
+				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+				
+				AtomSideLinks& atom = atom_links[atom_i];
+				AtomTypeCls& type = atom.type;
+				type = ws.GetAtom();
+				ASSERT(type.IsValid());
+				
+				atom.src_side_conns.SetCount(type.iface.src.count - 1);
+				atom.sink_side_conns.SetCount(type.iface.sink.count - 1);
+				
+				int req_src_sides = type.iface.src.count - type.user_src_count;
+				for(int i = 0; i < atom.src_side_conns.GetCount(); i++) {
+					SideLink& link = atom.src_side_conns[i];
+					link.vd = type.iface.src[1 + i];
+					link.is_user_conditional = i >= req_src_sides;
+					link.is_user_stmt =		stmt &&
+											i < stmt->src_side_conds.GetCount() &&
+											!stmt->src_side_conds[i].id.IsEmpty();
+					link.is_required = !link.is_user_conditional || link.is_user_stmt;
+				}
+				
+				int req_sink_sides = type.iface.sink.count - type.user_sink_count;
+				for(int i = 0; i < atom.sink_side_conns.GetCount(); i++) {
+					SideLink& link = atom.sink_side_conns[i];
+					link.vd = type.iface.sink[1 + i];
+					link.is_user_conditional = i >= req_sink_sides;
+					link.is_user_stmt =		stmt &&
+											i < stmt->sink_side_conds.GetCount() &&
+											!stmt->sink_side_conds[i].id.IsEmpty();
+					link.is_required = !link.is_user_conditional || link.is_user_stmt;
+				}
+				
+				added++;
+				
+				RTLOG("ScriptLoopLoader::RealizeConnections: realized atom #" << atom_i << " placeholder: " << atom.type.ToString());
+			}
+			
+			atom_i++;
+			prev_ws = &ws;
+		}
+	}
+	
+	RTLOG("ScriptLoopLoader::RealizeConnections: end count=" << atom_i << ", added=" << added);
+	ASSERT(atom_i > 0);
+}
+
 void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink) {
 	ASSERT(type.IsValid());
 	ASSERT(ch_i > 0);
 	ASSERT(type.iface.src.count > 1 && ch_i < type.iface.src.count);
 	int side_ch_i = ch_i - 1;
+	
+	#if 0
 	if (src_side_conns.IsEmpty()) {
 		int side_conn_count = type.iface.src.count - 1 - type.user_src_count;
 		src_side_conns.SetCount(side_conn_count, 0);
@@ -65,7 +135,13 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 			return;
 		}
 	}
-	src_side_conns[side_ch_i] = sink;
+	#endif
+	
+	AtomSideLinks& atom = atom_links.Top();
+	
+	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
+	SideLink& l = atom.src_side_conns[side_ch_i];
+	l.link = sink;
 }
 
 void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src) {
@@ -73,6 +149,8 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 	ASSERT(ch_i > 0);
 	ASSERT(type.iface.sink.count > 1 && ch_i < type.iface.sink.count);
 	int side_ch_i = ch_i - 1;
+	
+	#if 0
 	if (sink_side_conns.IsEmpty()) {
 		int side_conn_count = type.iface.sink.count - 1 - type.user_sink_count;
 		sink_side_conns.SetCount(side_conn_count, 0);
@@ -85,21 +163,40 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 			return;
 		}
 	}
-	sink_side_conns[side_ch_i] = src;
+	#endif
+	
+	AtomSideLinks& atom = atom_links.Top();
+	
+	ASSERT(side_ch_i >= 0 && side_ch_i < atom.sink_side_conns.GetCount());
+	SideLink& l = atom.sink_side_conns[side_ch_i];
+	l.link = src;
 }
 
 bool ScriptLoopLoader::IsAllSidesConnected() const {
-	ASSERT(src_side_conns.GetCount() || sink_side_conns.GetCount());
-	for (ScriptLoopLoader* l : src_side_conns)
-		if (!l)
+	ASSERT(atom_links.GetCount());
+	for (const auto& atom : atom_links) {
+		for (const SideLink& l : atom.src_side_conns)
+			if (l.is_required && !l.link)
+				return false;
+		for (const SideLink& l : atom.sink_side_conns)
+			if (l.is_required && !l.link)
+				return false;
+	}
+	return true;
+}
+
+bool ScriptLoopLoader::IsTopSidesConnected() const {
+	ASSERT(atom_links.GetCount());
+	const auto& atom = atom_links.Top();
+	for (const SideLink& l : atom.src_side_conns)
+		if (l.is_required && !l.link)
 			return false;
-	for (ScriptLoopLoader* l : sink_side_conns)
-		if (!l)
+	for (const SideLink& l : atom.sink_side_conns)
+		if (l.is_required && !l.link)
 			return false;
 	return true;
 }
 
-	
 String ScriptLoopSegment::GetTreeString(int id, int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -137,20 +234,31 @@ void ScriptLoopLoader::Forward() {
 	ScriptStatus prev_status = status;
 	
 	if (status == ScriptStatus::IN_BEGINNING) {
+		MACHVER_ENTER(ScriptLoopLoaderForwardBeginning)
+		
 		if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
 			String id = def.id.ToString();
 			SetError("Loop " + IntStr(GetId()) + " '" + id + "' has no statements");
+			MACHVER_LEAVE(ScriptLoopLoaderForwardBeginning)
 			return;
 		}
 		
 		InitSegments();
 		ForwardTopSegment();
+		
+		MACHVER_LEAVE(ScriptLoopLoaderForwardBeginning)
 	}
 	else if (status == ScriptStatus::RETRY) {
+		MACHVER_ENTER(ScriptLoopLoaderForwardRetry)
+		
+		TODO // require opposite src/sink with both src&sink ifaces
+		
 		ASSERT(segments.GetCount() >= 1);
 		planner.ClearForward();
 		
 		ForwardTopSegment();
+		
+		MACHVER_LEAVE(ScriptLoopLoaderForwardRetry)
 	}
 	else {
 		
@@ -228,6 +336,8 @@ void ScriptLoopLoader::InitSegments() {
 }
 
 void ScriptLoopLoader::ForwardTopSegment() {
+	MACHVER_ENTER(ForwardTopSegment)
+	
 	ScriptLoopSegment& seg = segments.Top();
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
@@ -243,6 +353,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 	if (seg.ep.plan.IsEmpty()) {
 		if (accepted_side_node) {
 			SetError("Script implementation searching failed after side-connection");
+			MACHVER_LEAVE(ForwardTopSegment)
 			return;
 		}
 		
@@ -264,7 +375,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
 					if (!stmt) continue;
 					ASSERT(stmt);
-					if (!stmt) {SetError("internal error: no statement found"); return;}
+					if (!stmt) {SetError("internal error: no statement found"); MACHVER_LEAVE(ForwardTopSegment) return;}
 					AtomTypeCls type = ws.GetAtom();
 					ASSERT(type.IsValid());
 					int user_defined_count = stmt->src_side_conds.GetCount();
@@ -273,6 +384,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					}
 					if (type.user_src_count != user_defined_count) {
 						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_src_count));
+						MACHVER_LEAVE(ForwardTopSegment)
 						return;
 					}
 					if (i < user_defined_count) {
@@ -286,6 +398,8 @@ void ScriptLoopLoader::ForwardTopSegment() {
 				}
 				if (actually_waiting > 0) {
 					status = SOURCE_IS_WAITING;
+					MACHVER_STATUS(LoopLoader_Status, this)
+					MACHVER_LEAVE(ForwardTopSegment)
 					return;
 				}
 			}
@@ -299,7 +413,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
 					if (!stmt) continue;
 					ASSERT(stmt);
-					if (!stmt) {SetError("internal error: no statement found"); return;}
+					if (!stmt) {SetError("internal error: no statement found"); MACHVER_LEAVE(ForwardTopSegment) return;}
 					AtomTypeCls type = ws.GetAtom();
 					ASSERT(type.IsValid());
 					int user_defined_count = stmt->sink_side_conds.GetCount();
@@ -308,6 +422,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					}
 					if (type.user_sink_count != user_defined_count) {
 						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_sink_count));
+						MACHVER_LEAVE(ForwardTopSegment)
 						return;
 					}
 					if (i < user_defined_count) {
@@ -321,6 +436,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 				}
 				if (actually_waiting > 0) {
 					status = SINK_IS_WAITING;
+					MACHVER_LEAVE(ForwardTopSegment)
 					return;
 				}
 			}
@@ -329,6 +445,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		}
 		
 		SetError("Script implementation searching failed");
+		MACHVER_LEAVE(ForwardTopSegment)
 		return;
 	}
 	
@@ -351,6 +468,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 	}
 	
 	status = READY;
+	MACHVER_LEAVE(ForwardTopSegment)
 }
 
 bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::Statement& stmt) {
@@ -592,6 +710,9 @@ bool ScriptLoopLoader::PostInitialize() {
 }
 
 SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink) {
+	if (&sink_loader == this)
+		return SIDE_NOT_ACCEPTED;
+	
 	ASSERT(status == SOURCE_IS_WAITING);
 	ASSERT(sink_loader.status == SINK_IS_WAITING);
 	Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();

@@ -243,7 +243,7 @@ String GlobalScope::GetTreeString(int indent) const {
 	return s;
 }
 
-String AtomilationUnit::GetTreeString(int indent) const {
+String CompilationUnit::GetTreeString(int indent) const {
 	return list.GetTreeString(indent);
 }
 
@@ -262,7 +262,7 @@ bool Parser::Parse(const String& content, const String& filepath) {
 	return Parse(cunit);
 }
 
-bool Parser::Parse(Script::AtomilationUnit& cunit) {
+bool Parser::Parse(Script::CompilationUnit& cunit) {
 	
 	if (!ParseGlobalScope(cunit.list))
 		return false;
