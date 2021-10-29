@@ -5,8 +5,11 @@ NAMESPACE_SERIAL_BEGIN
 
 String RealizeEonFile(String path);
 
-
-#define HAVE_SCRIPTLOADER_MACHVER	1
+#if defined flagDEBUG && defined flagDEBUG_RT
+	#define HAVE_SCRIPTLOADER_MACHVER	1
+#else
+	#define HAVE_SCRIPTLOADER_MACHVER	0
+#endif
 
 
 #if HAVE_SCRIPTLOADER_MACHVER
@@ -16,6 +19,7 @@ String RealizeEonFile(String path);
 	MACHVER_FWD_FN(ForwardTopSegment) \
 	MACHVER_FWD_FN(ScriptLoopLoaderForwardBeginning) \
 	MACHVER_FWD_FN(ScriptLoopLoaderForwardRetry) \
+	MACHVER_FWD_FN(ScriptLoopLoaderForwardSides) \
 
 
 #define MACHVER_FWD_FN(x) \
@@ -31,6 +35,9 @@ MACHVER_FWDFN_LIST
 class ScriptLoopLoader;
 
 void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll);
+void MachineVerifier_OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll);
+void MachineVerifier_OnLoopLoader_AtomLinked(ScriptLoopLoader* ll);
+void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll);
 
 #else
 

@@ -25,8 +25,14 @@ void ScriptLoopLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 void ScriptLoopLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;
-	status = ScriptStatus::RETRY;
+	
+	SetStatus(ScriptStatus::RETRY);
 }
+
+void ScriptLoopLoader::SetStatus(ScriptStatus status) {
+	MACHVER_STATUS(LoopLoader_Status, this)
+	Base::SetStatus(status);
+};
 
 String ScriptLoopLoader::GetTreeString(int indent) {
 	String s;
@@ -114,6 +120,8 @@ void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_sta
 	
 	RTLOG("ScriptLoopLoader::RealizeConnections: end count=" << atom_i << ", added=" << added);
 	ASSERT(atom_i > 0);
+	
+	MACHVER_STATUS(LoopLoader_RealizeAtoms, this);
 }
 
 void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink) {
@@ -141,7 +149,10 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
 	SideLink& l = atom.src_side_conns[side_ch_i];
+	ASSERT(!l.link);
 	l.link = sink;
+	
+	MACHVER_STATUS(LoopLoader_AtomLinked, this);
 }
 
 void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src) {
@@ -169,7 +180,10 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 	
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.sink_side_conns.GetCount());
 	SideLink& l = atom.sink_side_conns[side_ch_i];
+	ASSERT(!l.link);
 	l.link = src;
+	
+	MACHVER_STATUS(LoopLoader_AtomLinked, this);
 }
 
 bool ScriptLoopLoader::IsAllSidesConnected() const {
@@ -251,12 +265,15 @@ void ScriptLoopLoader::Forward() {
 	else if (status == ScriptStatus::RETRY) {
 		MACHVER_ENTER(ScriptLoopLoaderForwardRetry)
 		
-		TODO // require opposite src/sink with both src&sink ifaces
-		
-		ASSERT(segments.GetCount() >= 1);
-		planner.ClearForward();
-		
-		ForwardTopSegment();
+		if (!atom_links.IsEmpty() && !IsTopSidesConnected()) {
+			ForwardSides();
+		}
+		else {
+			ASSERT(segments.GetCount() >= 1);
+			planner.ClearForward();
+			
+			ForwardTopSegment();
+		}
 		
 		MACHVER_LEAVE(ScriptLoopLoaderForwardRetry)
 	}
@@ -342,6 +359,8 @@ void ScriptLoopLoader::ForwardTopSegment() {
 	ASSERT(seg.start_node);
 	SetupSegment(seg);
 	
+	MACHVER_STATUS(LoopLoader_SearchNewSegment, this);
+	
 	LOG("goal: " << goal.ToString());
 	LOG("start-node: " << seg.start_node->GetWorldState().GetAtom().ToString());
 	seg.start_node->ResetLinked();
@@ -397,8 +416,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 				}
 				if (actually_waiting > 0) {
-					status = SOURCE_IS_WAITING;
-					MACHVER_STATUS(LoopLoader_Status, this)
+					SetStatus(SOURCE_IS_WAITING);
 					MACHVER_LEAVE(ForwardTopSegment)
 					return;
 				}
@@ -435,7 +453,7 @@ void ScriptLoopLoader::ForwardTopSegment() {
 					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
 				}
 				if (actually_waiting > 0) {
-					status = SINK_IS_WAITING;
+					SetStatus(SINK_IS_WAITING);
 					MACHVER_LEAVE(ForwardTopSegment)
 					return;
 				}
@@ -467,8 +485,38 @@ void ScriptLoopLoader::ForwardTopSegment() {
 		}
 	}
 	
-	status = READY;
+	SetStatus(READY);
 	MACHVER_LEAVE(ForwardTopSegment)
+}
+
+void ScriptLoopLoader::ForwardSides() {
+	MACHVER_ENTER(ScriptLoopLoaderForwardSides)
+	
+	TODO
+	
+	/*Vector<Script::ActionPlanner::State>& sinks = planner.GetSideSinks();
+	Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
+	
+	AtomSideLinks& atom = atom_links.Top();
+	
+	for(int i = 0; i < sinks.GetCount(); i++) {
+		Script::ActionPlanner::State& state = sinks[i];
+		SideLink& side = atom.sink_side_conns[state.ch_i - 1];
+		if (side.link)
+			sinks.Remove(i--);
+	}
+	
+	for(int i = 0; i < sources.GetCount(); i++) {
+		Script::ActionPlanner::State& state = sources[i];
+		SideLink& side = atom.src_side_conns[state.ch_i - 1];
+		if (side.link)
+			sources.Remove(i--);
+	}
+	
+	ASSERT(sinks.GetCount() && sources.GetCount());*/
+	
+	
+	MACHVER_LEAVE(ScriptLoopLoaderForwardSides)
 }
 
 bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::Statement& stmt) {

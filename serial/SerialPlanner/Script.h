@@ -38,6 +38,7 @@ typedef enum {
 	SOLVE_INTERNAL_CONNECTIONS,
 	READY,
 	FAILED,
+	UNASSIGNED,
 } ScriptStatus;
 
 inline const char* GetScriptStatusString(ScriptStatus status) {
@@ -50,6 +51,7 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 		case SOLVE_INTERNAL_CONNECTIONS:	t = "Solve internal connections"; break;
 		case READY:							t = "Ready"; break;
 		case FAILED:						t = "Failed"; break;
+		case UNASSIGNED:					t = "Unassigned"; break;
 		default: break;
 	}
 	return t;
@@ -91,9 +93,8 @@ public:
 	void				Forward();
 	void				SolveInternal();
 	
-	void				SetStatus(int s) {status = (ScriptStatus)s;}
-	void				SetStatusRetry() {status = RETRY;}
-	void				SetError(String s) {err_str = s; status = FAILED; RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this)); }
+	void				SetStatusRetry() {SetStatus(RETRY);}
+	void				SetError(String s) {err_str = s; SetStatus(status); RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
 	bool				IsFailed() const {return status == FAILED;}
 	bool				IsReady() const {return status == READY;}
@@ -102,6 +103,8 @@ public:
 	ScriptStatus		GetStatus() const {return status;}
 	ScriptLoader&		GetLoader() {return parent.GetLoader();}
 	String				GetErrorString() const {return err_str;}
+	
+	virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
 	virtual String		GetTreeString(int indent) = 0;
@@ -135,6 +138,7 @@ public:
 protected:
 	friend class ScriptLoader;
 	friend class ScriptConnectionSolver;
+	friend class MachineVerifier;
 	
 	struct SideLink : Moveable<SideLink> {
 		ScriptLoopLoader*	link = 0;
@@ -171,6 +175,7 @@ protected:
 	void SetupSegment(ScriptLoopSegment& s);
 	bool SetWorldState(Script::WorldState& ws, const Script::Statement& stmt);
 	
+	
 public:
 	ScriptLoopLoader(ScriptChainLoader& parent, int id, Script::LoopDefinition& def);
 	
@@ -178,6 +183,7 @@ public:
 	void		Forward();
 	void		InitSegments();
 	void		ForwardTopSegment();
+	void		ForwardSides();
 	bool		PassSideConditionals(const Script::Statement& side_stmt);
 	
 	
@@ -197,6 +203,7 @@ public:
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		SetRetryDeep() override;
+	void		SetStatus(ScriptStatus status) override;
 };
 
 
@@ -565,7 +572,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 			n.AddLink(*an);
 		}
 		
-		RTLOG("\t" << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
+		RTLOG("   " << n.GetEstimate() << ": " << HexStr(an) << " -> " << ws_to.ToString());
 	}
 	
 	MACHVER_LEAVE(TerminalTest)

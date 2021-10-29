@@ -44,7 +44,7 @@
 
 #ifdef flagDEBUG_RT
 	#define DEBUG_RT_PIPE 1
-	#define RTLOG(x) {StringStream s; s << "RTDBG: " << x << "\n"; UPP::VppLog() << s.GetResult(); UPP::VppLog().Flush();}
+	#define RTLOG(x) {StringStream ____; ____ << "RTDBG: " << x << "\n"; UPP::VppLog() << ____.GetResult(); UPP::VppLog().Flush();}
 #else
 	#define DEBUG_RT_PIPE 0
 	#define RTLOG(x)

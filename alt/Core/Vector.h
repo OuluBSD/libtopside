@@ -624,10 +624,9 @@ public:
 		l.Clear();
 	}
 
-	K& Top() {
-		ASSERT(GetCount() > 0);
-		return **(l.GetData() + l.GetCount() - 1);
-	}
+	K&       Top()       {ASSERT(GetCount() > 0); return **(l.GetData() + l.GetCount() - 1);}
+	const K& Top() const {ASSERT(GetCount() > 0); return **(l.GetData() + l.GetCount() - 1);}
+	
 	void operator <<=(const Array& a) {
 		Clear();
 		l.SetCount(a.GetCount(), 0);

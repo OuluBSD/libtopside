@@ -71,6 +71,7 @@ protected:
 		LOOPLOADER_FORWARD_BEGINNING,
 		LOOPLOADER_FORWARD_RETRY,
 		LOOPLOADER_FORWARD_TOPSEGMENT,
+		LOOPLOADER_FORWARD_SIDES,
 	} Type;
 	
 	struct ExpectedAction : Moveable<ExpectedAction> {
@@ -108,9 +109,25 @@ protected:
 	
 protected:
 	
+	struct LoopAtomSideData {
+		ValDevCls			vd;
+		bool				has_link = false;
+		bool				is_required = false;
+	};
+	
+	struct LoopAtomData {
+		AtomTypeCls			type;
+		Array<LoopAtomSideData>	src_sides, sink_sides;
+		
+	};
+	
 	struct LoopLoaderData {
 		ScriptLoopLoader*	ll;
-		ScriptStatus		status;
+		ScriptStatus		status0 = UNASSIGNED;
+		ScriptStatus		status1 = UNASSIGNED;
+		Array<LoopAtomData>	atoms;
+		
+		bool MayCreateAtoms() const;
 	};
 	ArrayMap<size_t, LoopLoaderData>		loop_loaders;
 	
@@ -136,6 +153,7 @@ public:
 	void OnEnterForwardTopSegment(size_t call_id);
 	void OnEnterScriptLoopLoaderForwardBeginning(size_t call_id);
 	void OnEnterScriptLoopLoaderForwardRetry(size_t call_id);
+	void OnEnterScriptLoopLoaderForwardSides(size_t call_id);
 	
 	void OnLeaveUpdate();
 	void OnLeaveSystemUpdate();
@@ -150,8 +168,14 @@ public:
 	void OnLeaveForwardTopSegment(size_t call_id);
 	void OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id);
 	void OnLeaveScriptLoopLoaderForwardRetry(size_t call_id);
+	void OnLeaveScriptLoopLoaderForwardSides(size_t call_id);
 	
 	void OnLoopLoader_Status(ScriptLoopLoader* ll);
+	void OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll);
+	void OnLoopLoader_AtomLinked(ScriptLoopLoader* ll);
+	void OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll);
+	
+	void UpdateLoopData(ScriptLoopLoader* ll);
 	
 	VerifierLoop& GetRoot() {return root;}
 	

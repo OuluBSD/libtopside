@@ -284,7 +284,7 @@ void ScriptLoader::ReleaseErrorBuffer() {
 void ScriptLoader::ClearErrorBuffer() {
 	for (ScriptError& e : errs) {
 		if (e.ll && e.ll->IsFailed() && e.status >= 0)
-			e.ll->SetStatus(e.status);
+			e.ll->SetStatus((ScriptStatus)e.status);
 	}
 	errs.Clear();
 }

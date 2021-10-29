@@ -53,7 +53,9 @@ void ScriptChainLoader::LoopStatus() {
 void ScriptChainLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;
-	status = ScriptStatus::IN_BEGINNING;
+	
+	SetStatus(ScriptStatus::IN_BEGINNING);
+	
 	for (ScriptLoopLoader& loader : loops)
 		loader.SetRetryDeep();
 }

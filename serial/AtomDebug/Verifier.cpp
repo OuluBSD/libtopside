@@ -24,6 +24,22 @@ void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll) {
 		__latest_mver->OnLoopLoader_Status(ll);
 }
 
+void MachineVerifier_OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
+	if (__latest_mver)
+		__latest_mver->OnLoopLoader_RealizeAtoms(ll);
+}
+
+void MachineVerifier_OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {
+	if (__latest_mver)
+		__latest_mver->OnLoopLoader_AtomLinked(ll);
+}
+
+void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll) {
+	if (__latest_mver)
+		__latest_mver->OnLoopLoader_SearchNewSegment(ll);
+}
+
+
 
 
 MachineVerifier::MachineVerifier() {
@@ -194,6 +210,16 @@ void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
 	
 	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardRetry " << HexStr(call_id));
 	Enter(LOOPLOADER_FORWARD_RETRY);
+	
+	Scope& cur = stack.Top();
+	cur.AddEnter(LOOPLOADER_FORWARD_TOPSEGMENT);
+	cur.AddEnter(LOOPLOADER_FORWARD_SIDES);
+}
+
+void MachineVerifier::OnEnterScriptLoopLoaderForwardSides(size_t call_id) {
+	
+	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardSides " << HexStr(call_id));
+	Enter(LOOPLOADER_FORWARD_SIDES);
 }
 
 void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
@@ -425,6 +451,9 @@ void MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id) {
 	
 	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning");
 	Leave(LOOPLOADER_FORWARD_BEGINNING);
+	
+	Scope& cur = stack.Top();
+	cur.AddEnter(LOOPLOADER_FORWARD_RETRY);
 }
 
 void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
@@ -432,6 +461,13 @@ void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
 	
 	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry");
 	Leave(LOOPLOADER_FORWARD_RETRY);
+}
+
+void MachineVerifier::OnLeaveScriptLoopLoaderForwardSides(size_t call_id) {
+	if (!Thread::IsMain()) return;
+	
+	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardSides");
+	Leave(LOOPLOADER_FORWARD_SIDES);
 }
 
 
@@ -445,18 +481,121 @@ void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
 void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
 	data.ll = ll;
-	data.status = ll->GetStatus();
+	auto new_status = ll->GetStatus();
+	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
 	
-	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << HexStr(ll) << " status to: " << GetScriptStatusString(data.status));
+	if (data.status0 == ScriptStatus::RETRY &&
+		!data.MayCreateAtoms() &&
+		new_status != ScriptStatus::SOURCE_IS_WAITING &&
+		new_status != ScriptStatus::SINK_IS_WAITING) {
+		Panic("Invalid new status for ScriptLoopLoader");
+	}
+	if ((new_status == ScriptStatus::SOURCE_IS_WAITING || new_status == ScriptStatus::SINK_IS_WAITING) &&
+		new_status == data.status0) {
+		Panic("Re-setting same side-waiting status");
+	}
+	
+	data.status1 = data.status0;
+	data.status0 = new_status;
+	
+	
 	
 	Scope& cur = stack.Top();
 	if (cur.type == LOOPLOADER_FORWARD_TOPSEGMENT)
 		cur.may_leave = true;
-	else
-		TODO
+	
 }
 
+void MachineVerifier::UpdateLoopData(ScriptLoopLoader* ll) {
+	int atom_count = ll->atom_links.GetCount();
+	
+	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
+	int atoms_added = atom_count - data.atoms.GetCount();
+	ASSERT(atom_count >= data.atoms.GetCount());
+	data.atoms.SetCount(atom_count);
+	
+	RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+	
+	if (atoms_added > 0 && !data.MayCreateAtoms())
+		Panic("Loop may not create atoms");
+	
+	for(int i = 0; i < atom_count; i++) {
+		const ScriptLoopLoader::AtomSideLinks& ll_atom = ll->atom_links[i];
+		LoopAtomData& atom = data.atoms[i];
+		
+		atom.type = ll_atom.type;
+		
+		int src_side_count = ll_atom.src_side_conns.GetCount();
+		int sink_side_count = ll_atom.sink_side_conns.GetCount();
+		
+		atom.src_sides.SetCount(src_side_count);
+		atom.sink_sides.SetCount(sink_side_count);
+		
+		for(int j = 0; j < src_side_count; j++) {
+			const ScriptLoopLoader::SideLink& ll_side = ll_atom.src_side_conns[j];
+			LoopAtomSideData& side = atom.src_sides[j];
+			
+			ASSERT_(!(side.has_link && ll_side.link == NULL), "link disappeared");
+			side.has_link = ll_side.link != NULL;
+			side.is_required = ll_side.is_required;
+			side.vd = ll_side.vd;
+		}
+		
+		for(int j = 0; j < sink_side_count; j++) {
+			const ScriptLoopLoader::SideLink& ll_side = ll_atom.sink_side_conns[j];
+			LoopAtomSideData& side = atom.sink_sides[j];
+			
+			ASSERT_(!(side.has_link && ll_side.link == NULL), "link disappeared");
+			side.has_link = ll_side.link != NULL;
+			side.is_required = ll_side.is_required;
+			side.vd = ll_side.vd;
+		}
+	}
+}
 
+void MachineVerifier::OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
+	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
+	int prev_count = data.atoms.GetCount();
+	
+	UpdateLoopData(ll);
+	
+	int atoms_added = data.atoms.GetCount() - prev_count;
+	RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+}
+
+void MachineVerifier::OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {
+	
+	UpdateLoopData(ll);
+	
+	RTLOG("MachineVerifier::OnLoopLoader_AtomLinked: linked interface in loop " << HexStr(ll));
+}
+
+void MachineVerifier::OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll) {
+	RTLOG("MachineVerifier::OnLoopLoader_SearchNewSegment");
+	
+	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
+	if (!data.atoms.IsEmpty() && !data.MayCreateAtoms())
+		Panic("Searching new segment is not allowed before last atom is fully-connected");
+	
+	
+}
+
+bool MachineVerifier::LoopLoaderData::MayCreateAtoms() const {
+	if (atoms.IsEmpty())
+		return true;
+	
+	const LoopAtomData& last_atom = atoms.Top();
+	
+	for (LoopAtomSideData& side : last_atom.sink_sides)
+		if (!side.has_link && side.is_required)
+			return false;
+	
+	for (LoopAtomSideData& side : last_atom.src_sides)
+		if (!side.has_link && side.is_required)
+			return false;
+	
+	return true;
+}
 
 
 

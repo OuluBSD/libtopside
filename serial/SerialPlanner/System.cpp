@@ -60,7 +60,9 @@ void ScriptSystemLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 void ScriptSystemLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;
-	status = ScriptStatus::IN_BEGINNING;
+	
+	SetStatus(ScriptStatus::IN_BEGINNING);
+	
 	for (ScriptMachineLoader& loader : machs)
 		loader.SetRetryDeep();
 }

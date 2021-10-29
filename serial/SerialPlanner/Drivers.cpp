@@ -47,7 +47,7 @@ void ScriptDriverLoader::Forward() {
 		FindAtoms();
 	}
 	else {
-		status = ScriptStatus::FAILED;
+		SetStatus(ScriptStatus::FAILED);
 	}
 	
 	ASSERT(prev_status != status);
@@ -171,7 +171,7 @@ void ScriptDriverLoader::FindAtoms() {
 		return;
 	}
 	
-	status = ScriptStatus::READY;
+	SetStatus(ScriptStatus::READY);
 }
 
 

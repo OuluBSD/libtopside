@@ -105,7 +105,9 @@ void ScriptTopChainLoader::LoopStatus() {
 void ScriptTopChainLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;
-	status = ScriptStatus::IN_BEGINNING;
+	
+	SetStatus(ScriptStatus::IN_BEGINNING);
+	
 	if (use_subchains) {
 		for (ScriptTopChainLoader& loader : subchains)
 			loader.SetRetryDeep();

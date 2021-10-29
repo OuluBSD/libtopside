@@ -85,7 +85,8 @@ void ScriptMachineLoader::LoopStatus() {
 void ScriptMachineLoader::SetRetryDeep() {
 	if (status == ScriptStatus::READY)
 		return;
-	status = ScriptStatus::IN_BEGINNING;
+	
+	SetStatus(ScriptStatus::IN_BEGINNING);
 	
 	TODO
 	

@@ -51,18 +51,18 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::CheckFlags(bool allow_internal) {
 	LoopStatus();
 	
 	if (any_failed) {
-		status = ScriptStatus::FAILED;
+		SetStatus(ScriptStatus::FAILED);
 	}
 	else if (any_retrying) {
-		status = ScriptStatus::IN_BEGINNING;
+		SetStatus(ScriptStatus::IN_BEGINNING);
 	}
 	else if (any_waiting) {
 		if (allow_internal) {
-			status = ScriptStatus::SOLVE_INTERNAL_CONNECTIONS;
+			SetStatus(ScriptStatus::SOLVE_INTERNAL_CONNECTIONS);
 		}
 	}
 	else if (all_ready) {
-		status = ScriptStatus::READY;
+		SetStatus(ScriptStatus::READY);
 	}
 }
 
@@ -76,10 +76,10 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 		}
 		else {
 			if (conn.IsWaitingSource()) {
-				status = ScriptStatus::SOURCE_IS_WAITING;
+				SetStatus(ScriptStatus::SOURCE_IS_WAITING);
 			}
 			else if (conn.IsWaitingSink()) {
-				status = ScriptStatus::SINK_IS_WAITING;
+				SetStatus(ScriptStatus::SINK_IS_WAITING);
 			}
 			else {
 				LOG(conn.GetError());
