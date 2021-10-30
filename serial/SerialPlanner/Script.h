@@ -31,24 +31,34 @@ public:
 };
 
 typedef enum {
+	UNASSIGNED,
+	
 	IN_BEGINNING,
-	SINK_IS_WAITING,
-	SOURCE_IS_WAITING,
-	RETRY,
-	SOLVE_INTERNAL_CONNECTIONS,
+	WAITING_CHILDREN,
+	
+	SEARCH_SEGMENT,
+	PRUNE_SEGMENT_GOALS,
+	WAITING_PARENT_SIDE_LINKS,
+	
+	MAKE_OPTION_LINK_VECTOR,
+	PRUNE_OPTION_LINKS,
+	LINK_PLANNER,
+	
 	READY,
 	FAILED,
-	UNASSIGNED,
 } ScriptStatus;
 
 inline const char* GetScriptStatusString(ScriptStatus status) {
 	const char* t = "<invalid status>";
 	switch (status) {
 		case IN_BEGINNING:					t = "In beginning"; break;
-		case SINK_IS_WAITING:				t = "Side-sink is waiting"; break;
-		case SOURCE_IS_WAITING:				t = "Side-source is waiting"; break;
-		case RETRY:							t = "Retry"; break;
-		case SOLVE_INTERNAL_CONNECTIONS:	t = "Solve internal connections"; break;
+		case WAITING_PARENT_SIDE_LINKS:		t = "Waiting parent side links"; break;
+		case WAITING_CHILDREN:				t = "Waiting children"; break;
+		case SEARCH_SEGMENT:				t = "Search segment"; break;
+		case PRUNE_SEGMENT_GOALS:			t = "Prune segment goals"; break;
+		case MAKE_OPTION_LINK_VECTOR:		t = "Make option link vector"; break;
+		case PRUNE_OPTION_LINKS:			t = "Prune option links"; break;
+		case LINK_PLANNER:					t = "Link planner"; break;
 		case READY:							t = "Ready"; break;
 		case FAILED:						t = "Failed"; break;
 		case UNASSIGNED:					t = "Unassigned"; break;
@@ -70,8 +80,8 @@ class ScriptLoaderBase : RTTIBase {
 	
 	
 protected:
-	void ResetFlags() {any_waiting = false; any_retrying = false; all_ready = true; any_failed = false;}
-	void CheckFlags(bool allow_internal);
+	void ResetFlags() {any_waiting_parent = false; any_waiting_children = false; any_linking = false; any_routing = false; all_ready = true; any_failed = false;}
+	void CheckFlags();
 	void CheckStatus(ScriptStatus s);
 	
 public:
@@ -83,8 +93,10 @@ public:
 	ScriptStatus				status = IN_BEGINNING;
 	String						err_str;
 	int							id = -1;
-	bool						any_waiting = false;
-	bool						any_retrying = false;
+	bool						any_waiting_parent = false;
+	bool						any_waiting_children = false;
+	bool						any_linking = false;
+	bool						any_routing = false;
 	bool						all_ready = false;
 	bool						any_failed = false;
 	
@@ -93,7 +105,7 @@ public:
 	void				Forward();
 	void				SolveInternal();
 	
-	void				SetStatusRetry() {SetStatus(RETRY);}
+	//void				SetStatusRetry() {SetStatus(RETRY);}
 	void				SetError(String s) {err_str = s; SetStatus(status); RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
 	bool				IsFailed() const {return status == FAILED;}
@@ -182,7 +194,9 @@ public:
 	
 	void		Forward();
 	void		InitSegments();
-	void		ForwardTopSegment();
+	void		SearchNewSegment();
+	void		PruneSegmentGoals();
+	void		DumpLoop();
 	void		ForwardSides();
 	bool		PassSideConditionals(const Script::Statement& side_stmt);
 	

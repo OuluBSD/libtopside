@@ -32,7 +32,10 @@ void ScriptDriverLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 }
 
 void ScriptDriverLoader::Forward() {
-	ASSERT(!IsReady() && !IsFailed());
+	if (IsReady())
+		return;
+	
+	ASSERT(!IsFailed());
 	ScriptStatus prev_status = status;
 	
 	ASSERT(status != ScriptStatus::READY);

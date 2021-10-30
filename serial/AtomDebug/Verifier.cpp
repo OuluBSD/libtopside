@@ -186,11 +186,11 @@ void MachineVerifier::OnEnterTerminalTest(size_t call_id) {
 	cur.MayLeave(true);
 }
 
-void MachineVerifier::OnEnterForwardTopSegment(size_t call_id) {
+void MachineVerifier::OnEnterSearchNewSegment(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterForwardTopSegment " << HexStr(call_id));
-	Enter(LOOPLOADER_FORWARD_TOPSEGMENT);
+	RTLOG("MachineVerifier::OnEnterSearchNewSegment " << HexStr(call_id));
+	Enter(LOOPLOADER_SEARCH_NEW_SEGMENT);
 	
 	Scope& cur = stack.Top();
 	cur.AddEnter(TERMINAL_TEST);
@@ -203,7 +203,7 @@ void MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning(size_t call_id) {
 	Enter(LOOPLOADER_FORWARD_BEGINNING);
 	
 	Scope& cur = stack.Top();
-	cur.AddEnter(LOOPLOADER_FORWARD_TOPSEGMENT);
+	cur.AddEnter(LOOPLOADER_SEARCH_NEW_SEGMENT);
 }
 
 void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
@@ -212,7 +212,7 @@ void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
 	Enter(LOOPLOADER_FORWARD_RETRY);
 	
 	Scope& cur = stack.Top();
-	cur.AddEnter(LOOPLOADER_FORWARD_TOPSEGMENT);
+	cur.AddEnter(LOOPLOADER_SEARCH_NEW_SEGMENT);
 	cur.AddEnter(LOOPLOADER_FORWARD_SIDES);
 }
 
@@ -436,11 +436,11 @@ void MachineVerifier::OnLeaveTerminalTest(size_t call_id) {
 	Leave(TERMINAL_TEST);
 }
 
-void MachineVerifier::OnLeaveForwardTopSegment(size_t call_id) {
+void MachineVerifier::OnLeaveSearchNewSegment(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveForwardTopSegment");
-	Leave(LOOPLOADER_FORWARD_TOPSEGMENT);
+	RTLOG("MachineVerifier::OnLeaveSearchNewSegment");
+	Leave(LOOPLOADER_SEARCH_NEW_SEGMENT);
 	
 	Scope& cur = stack.Top();
 	cur.may_leave = true;
@@ -484,6 +484,8 @@ void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 	auto new_status = ll->GetStatus();
 	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
 	
+	
+	#if 0
 	if (data.status0 == ScriptStatus::RETRY &&
 		!data.MayCreateAtoms() &&
 		new_status != ScriptStatus::SOURCE_IS_WAITING &&
@@ -494,14 +496,15 @@ void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 		new_status == data.status0) {
 		Panic("Re-setting same side-waiting status");
 	}
+	#endif
+	
 	
 	data.status1 = data.status0;
 	data.status0 = new_status;
 	
 	
-	
 	Scope& cur = stack.Top();
-	if (cur.type == LOOPLOADER_FORWARD_TOPSEGMENT)
+	if (cur.type == LOOPLOADER_SEARCH_NEW_SEGMENT)
 		cur.may_leave = true;
 	
 }

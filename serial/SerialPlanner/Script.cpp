@@ -220,8 +220,7 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 	
 	int dbg_i = 0;
 	while (!loader->IsFailed() && !loader->IsReady()) {
-		//DUMP(dbg_i);
-		//loader->Dump();
+		DUMP(dbg_i); loader->Dump();
 		
 		loader->Forward();
 		++dbg_i;
@@ -367,6 +366,10 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 }
 
 bool ScriptConnectionSolver::Process() {
+	
+	TODO
+	
+	#if 0
 	Vector<ScriptLoopLoader*>	waiting_sources;
 	Vector<ScriptLoopLoader*>	waiting_sinks;
 	
@@ -475,6 +478,7 @@ bool ScriptConnectionSolver::Process() {
 		ll->SetStatusRetry();
 	
 	return accepted_count > 0;
+	#endif
 }
 
 NAMESPACE_SERIAL_END

@@ -34,14 +34,12 @@ void ScriptChainLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 }
 
 void ScriptChainLoader::ForwardLoops() {
-	for (ScriptLoopLoader& loader : loops) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
+	if (status == WAITING_CHILDREN) {
+		for (ScriptLoopLoader& loader : loops) {
 			loader.Forward();
 		}
 	}
+	else TODO
 }
 
 void ScriptChainLoader::LoopStatus() {

@@ -51,23 +51,16 @@ void ScriptMachineLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 
 void ScriptMachineLoader::ForwardLoops() {
 	
-	for (ScriptDriverLoader& loader : drivers) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
+	if (status == WAITING_CHILDREN) {
+		for (ScriptDriverLoader& loader : drivers) {
+			loader.Forward();
+		}
+		
+		for (ScriptTopChainLoader& loader : chains) {
 			loader.Forward();
 		}
 	}
-	
-	for (ScriptTopChainLoader& loader : chains) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
-			loader.Forward();
-		}
-	}
+	else TODO
 	
 }
 

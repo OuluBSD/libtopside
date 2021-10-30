@@ -16,7 +16,7 @@ String RealizeEonFile(String path);
 
 #define MACHVER_FWDFN_LIST \
 	MACHVER_FWD_FN(TerminalTest) \
-	MACHVER_FWD_FN(ForwardTopSegment) \
+	MACHVER_FWD_FN(SearchNewSegment) \
 	MACHVER_FWD_FN(ScriptLoopLoaderForwardBeginning) \
 	MACHVER_FWD_FN(ScriptLoopLoaderForwardRetry) \
 	MACHVER_FWD_FN(ScriptLoopLoaderForwardSides) \

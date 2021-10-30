@@ -119,25 +119,21 @@ void ScriptTopChainLoader::SetRetryDeep() {
 }
 
 void ScriptTopChainLoader::ForwardSubchainLoops() {
-	for (ScriptTopChainLoader& loader : subchains) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
+	if (status == WAITING_CHILDREN) {
+		for (ScriptTopChainLoader& loader : subchains) {
 			loader.Forward();
 		}
 	}
+	else TODO
 }
 
 void ScriptTopChainLoader::ForwardChainLoops() {
-	for (ScriptChainLoader& loader : chains) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
+	if (status == WAITING_CHILDREN) {
+		for (ScriptChainLoader& loader : chains) {
 			loader.Forward();
 		}
 	}
+	else TODO
 }
 
 

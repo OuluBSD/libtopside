@@ -84,7 +84,6 @@ using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 typedef enum {
 	SIDE_NOT_ACCEPTED,
 	SIDE_ACCEPTED,
-	SIDE_ACCEPTED_MULTI,
 } SideStatus;
 
 #undef INVALID_ATOM

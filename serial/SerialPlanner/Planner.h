@@ -190,6 +190,9 @@ public:
 		ANode*					last;
 		Searcher				as;
 		int						ch_i;
+		
+		
+		String ToString() const;
 	};
 	
 protected:

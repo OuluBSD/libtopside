@@ -523,6 +523,14 @@ void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode*
 	}
 }
 
+String ActionPlanner::State::ToString() const {
+	String s;
+	s << "ch_i(" << ch_i << ")";
+	s << ", last(" << HexStr(second_last) << ")";
+	s << ", second_last(" << HexStr(second_last) << ")";
+	return s;
+}
+
 
 
 
@@ -688,6 +696,8 @@ bool ActionNode::Conflicts(const ActionNode& n) const {
 }
 
 
+
+
 }
 
 
@@ -748,5 +758,6 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 	}
 	
 }
+
 
 NAMESPACE_SERIAL_END

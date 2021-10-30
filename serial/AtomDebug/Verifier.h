@@ -70,7 +70,7 @@ protected:
 		TERMINAL_TEST,
 		LOOPLOADER_FORWARD_BEGINNING,
 		LOOPLOADER_FORWARD_RETRY,
-		LOOPLOADER_FORWARD_TOPSEGMENT,
+		LOOPLOADER_SEARCH_NEW_SEGMENT,
 		LOOPLOADER_FORWARD_SIDES,
 	} Type;
 	
@@ -150,7 +150,7 @@ public:
 	void OnEnterValExPtForward(DefaultExchangePoint& p);
 	void OnEnterScriptLoad(SystemBase& base);
 	void OnEnterTerminalTest(size_t call_id);
-	void OnEnterForwardTopSegment(size_t call_id);
+	void OnEnterSearchNewSegment(size_t call_id);
 	void OnEnterScriptLoopLoaderForwardBeginning(size_t call_id);
 	void OnEnterScriptLoopLoaderForwardRetry(size_t call_id);
 	void OnEnterScriptLoopLoaderForwardSides(size_t call_id);
@@ -165,7 +165,7 @@ public:
 	void OnLeaveValExPtForward();
 	void OnLeaveScriptLoad();
 	void OnLeaveTerminalTest(size_t call_id);
-	void OnLeaveForwardTopSegment(size_t call_id);
+	void OnLeaveSearchNewSegment(size_t call_id);
 	void OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id);
 	void OnLeaveScriptLoopLoaderForwardRetry(size_t call_id);
 	void OnLeaveScriptLoopLoaderForwardSides(size_t call_id);

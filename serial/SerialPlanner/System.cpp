@@ -28,15 +28,12 @@ String ScriptSystemLoader::GetTreeString(int indent) {
 }
 
 void ScriptSystemLoader::ForwardLoops() {
-	ASSERT(!IsReady() && !IsFailed());
-	for (ScriptMachineLoader& loader : machs) {
-		ScriptStatus s = loader.GetStatus();
-		if (s != ScriptStatus::SINK_IS_WAITING &&
-			s != ScriptStatus::SOURCE_IS_WAITING &&
-			s != ScriptStatus::READY) {
+	if (status == WAITING_CHILDREN) {
+		for (ScriptMachineLoader& loader : machs) {
 			loader.Forward();
 		}
 	}
+	else TODO
 }
 
 void ScriptSystemLoader::LoopStatus() {
