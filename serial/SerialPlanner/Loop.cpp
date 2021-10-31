@@ -926,11 +926,11 @@ bool ScriptLoopLoader::PostInitialize() {
 	return true;
 }
 
+#if 0
 SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink) {
 	
 	TODO
 	
-	#if 0
 	
 	if (&sink_loader == this)
 		return SIDE_NOT_ACCEPTED;
@@ -1077,8 +1077,8 @@ SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::A
 	}
 	
 	return ret;
-	#endif
 }
+#endif
 
 void ScriptLoopLoader::AddSideConnectionSegment(Script::ActionPlanner::State* state, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state) {
 	ScriptLoopSegment& prev = segments.Top();
@@ -1097,27 +1097,29 @@ bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_st
 		return false;
 	}
 	
+	static const bool print = false;
+	
 	for (const Script::Statement& stmt : def.stmts) {
 		if (stmt.value.IsEmpty()) {
-			RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop empty value stmt: " << stmt.id.ToString());
+			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop empty value stmt: " << stmt.id.ToString());
 			continue;
 		}
 		if (stmt.value->IsBoolean()) {
-			RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop boolean value stmt: " << stmt.id.ToString());
+			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop boolean value stmt: " << stmt.id.ToString());
 			continue;
 		}
 		if (stmt.id == src_side_stmt.id) {
 			bool b = *stmt.value == *src_side_stmt.value;
 			if (b) {
-				RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': matching '" << stmt.value->ToString() << "'");
+				if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': matching '" << stmt.value->ToString() << "'");
 			}
 			else {
-				RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': no match: '" << stmt.value->ToString() << "' vs '" << src_side_stmt.value->ToString() << "'");
+				if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: conditional '" << stmt.id.ToString() << "': no match: '" << stmt.value->ToString() << "' vs '" << src_side_stmt.value->ToString() << "'");
 			}
 			return b;
 		}
 		else {
-			RTLOG("ScriptLoopLoader::PassSideConditionals: no id match: " << stmt.id.ToString() << " != " << src_side_stmt.id.ToString());
+			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: no id match: " << stmt.id.ToString() << " != " << src_side_stmt.id.ToString());
 		}
 	}
 	return false;

@@ -1,4 +1,5 @@
 #include "AtomSDL2.h"
+#ifdef flagGUI
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -174,3 +175,5 @@ void SDL2ImageBase::EmitStatic() {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

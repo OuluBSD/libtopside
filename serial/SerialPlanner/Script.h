@@ -43,6 +43,7 @@ typedef enum {
 	MAKE_OPTION_LINK_VECTOR,
 	PRUNE_OPTION_LINKS,
 	LINK_PLANNER,
+	LINKER,
 	
 	READY,
 	FAILED,
@@ -59,6 +60,7 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 		case MAKE_OPTION_LINK_VECTOR:		t = "Make option link vector"; break;
 		case PRUNE_OPTION_LINKS:			t = "Prune option links"; break;
 		case LINK_PLANNER:					t = "Link planner"; break;
+		case LINKER:						t = "Linker"; break;
 		case READY:							t = "Ready"; break;
 		case FAILED:						t = "Failed"; break;
 		case UNASSIGNED:					t = "Unassigned"; break;
@@ -203,7 +205,6 @@ public:
 	bool		Parse();
 	bool		Load();
 	bool		PostInitialize();
-	SideStatus	AcceptSink(ScriptLoopLoader& sink, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink);
 	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
 	void		UpdateLoopLimits();
 	void		RealizeConnections(Script::ActionPlanner::State* last_state);
@@ -222,13 +223,38 @@ public:
 
 
 
+struct ScriptIfaceReservation {
+	ScriptLoopLoader*	loop = 0;
+	int					ch_id = 0;
+	bool				is_src = false;
+	AtomTypeCls			type;
+	
+	bool Conflicts(const ScriptIfaceReservation& o) const {
+		if (loop == o.loop) {
+			// This is not an issue, don't enable
+			#if 0
+			if (is_src != o.is_src) // can't connect same loop's source to it's own sink
+				return true;
+			else
+			#endif
+			
+			if (type == o.type)
+				return ch_id == o.ch_id; // with the same type just don't use same channel
+			else
+				return true; // these are completely different nodes, which compete which each others about the same next atom's position
+		}
+		else return false; // different loops does not conflict
+	}
+};
 
 struct ScriptIfaceOption {
-	double pre_node_dist = 0;
-	double post_node_dist = 0;
-	double total_distance = 0;
-	bool is_src = false;
-	Script::ActionPlanner::State state;
+	double							pre_node_dist = 0;
+	double							post_node_dist = 0;
+	double							total_distance = 0;
+	bool							is_src = false;
+	Script::ActionPlanner::State	state;
+	const Script::Statement*		stmt = 0;
+	int								id = -1;
 	
 	bool IsSource() const {return is_src;}
 	bool IsSink() const {return !is_src;}
@@ -242,10 +268,13 @@ struct ScriptIfaceOption {
 struct ScriptLoopOptions {
 	Array<ScriptIfaceOption>	link_opts;
 	ScriptLoopLoader*			ll = 0;
+	int							id = -1;
 	
 };
 
 struct ScriptLinkOption : Moveable<ScriptLinkOption> {
+	ScriptLoopOptions*			src_loop = 0;
+	ScriptLoopOptions*			sink_loop = 0;
 	ScriptIfaceOption*			src = 0;
 	ScriptIfaceOption*			sink = 0;
 	double						src_total_distance;
@@ -282,10 +311,16 @@ public:
 		return true;
 	}
 	
-	bool MakeOptionLinkVector();
-	bool FindAcceptedLinks();
+	bool		MakeOptionLinkVector();
+	bool		FindAcceptedLinks();
+	bool		LinkPlanner();
 	
-	String	GetError() const {return err_str;}
+	String		GetError() const {return err_str;}
+	
+	
+	
+	
+	Vector<ScriptLinkOption*>	result;
 	
 };
 
@@ -307,6 +342,7 @@ public:
 	void		MakeOptionLinkVector();
 	void		FindAcceptedLinks();
 	void		LinkPlanner();
+	void		Linker();
 	
 	void		Visit(RuntimeVisitor& vis) override {vis | loops;}
 	String		GetTreeString(int indent) override;

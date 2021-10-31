@@ -713,7 +713,8 @@ public:
 		return values[i];
 	}
 
-	int GetCount() const { return values.GetCount(); }
+	int GetCount() const {return values.GetCount();}
+	bool IsEmpty() const {return values.IsEmpty();}
 	void Append(const Index& idx) {
 		hashes.Append(idx.hashes);
 		values.Append(idx.values);

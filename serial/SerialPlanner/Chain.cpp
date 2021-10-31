@@ -44,6 +44,9 @@ void ScriptChainLoader::Forward() {
 	else if (status == LINK_PLANNER) {
 		LinkPlanner();
 	}
+	else if (status == LINKER) {
+		Linker();
+	}
 	else
 		Base::Forward();
 	
@@ -102,9 +105,45 @@ void ScriptChainLoader::FindAcceptedLinks() {
 
 void ScriptChainLoader::LinkPlanner() {
 	
+	if (!solver->LinkPlanner()) {
+		SetError("Could find linking plan: " + solver->GetError());
+		return;
+	}
+	
+	SetStatus(LINKER);
+}
+
+void ScriptChainLoader::Linker() {
+	Vector<ScriptLinkOption*>& result = solver->result;
+	
+	for (ScriptLinkOption* link : result) {
+		src->RealizeConnections(accepted_src_node);
+		accepted_sink->RealizeConnections(accepted_sink_node);
+		
+		ASSERT(accepted_sink);
+		AtomTypeCls src_type = accepted_src_node->last->GetWorldState().GetAtom();
+		AtomTypeCls sink_type = accepted_sink_node->last->GetWorldState().GetAtom();
+		src->SetSideSourceConnected(src_type, accepted_src_node->ch_i, accepted_sink);
+		accepted_sink->SetSideSinkConnected(sink_type, accepted_sink_node->ch_i, src);
+		
+		int conn_id = tmp_side_id_counter++;
+		
+		accepted_src_node->last->GetInterface().Realize(src_type);
+		accepted_src_node->last->GetInterface().SetSource(conn_id,		accepted_src_node->ch_i,	accepted_sink_node->ch_i);
+		
+		accepted_sink_node->last->GetInterface().Realize(sink_type);
+		accepted_sink_node->last->GetInterface().SetSink(conn_id,		accepted_sink_node->ch_i,	accepted_src_node->ch_i);
+		
+		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
+			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
+		
+	}
+	
+	// loops with incomplete iface links will be tried again until complete failure
+	
 	TODO
 	
-	// SetRetryDeep();
+	SetStatus(WAITING_PARENT_SIDE_LINKS);
 }
 
 

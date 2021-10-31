@@ -251,6 +251,7 @@ public:
 	StringT& operator += (const StringT& s) { Cat(s); return *this; }
 	StringT& operator << (const StringT& s) { Cat(s); return *this; }
 	StringT& operator << (int i) { Cat(IntStr(i)); return *this; }
+	StringT& operator << (double d) { Cat(DblStr(d)); return *this; }
 	StringT operator + (const StringT& s) { StringT out(*this); out.Cat(s); return out; }
 	StringT operator + (T chr) { StringT out(*this); out.Cat(chr); return out; }
 
