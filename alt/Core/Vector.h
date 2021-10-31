@@ -354,7 +354,7 @@ public:
 		data[i].~K();
 		int tail = count - (i + 1);
 		if (tail > 0)
-			MemoryMove(data + i, data + i + 1, tail * sizeof(K));
+			MemoryMove((void*)(data + i), (void*)(data + i + 1), tail * sizeof(K));
 		count--;
 	}
 	void Remove(int i, int count) {
@@ -363,7 +363,7 @@ public:
 		data[i].~K();
 		int tail = this->count - (i + count);
 		if (tail > 0)
-			MemoryMove(data + i, data + i + count, tail * sizeof(K));
+			MemoryMove((void*)(data + i), (void*)(data + i + count), tail * sizeof(K));
 		this->count -= count;
 	}
 	void Remove(const Iterator& it) {

@@ -18,12 +18,14 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		ForwardLoops();
 		CheckFlags();
 	}
-	else if (status == MAKE_OPTION_LINK_VECTOR) {
-		TODO
-	}
 	#if 0
-	else if (status == WAITING_PARENT) {
+	else if (status == MAKE_OPTION_LINK_VECTOR ||
+			 status == PRUNE_OPTION_LINKS ||
+			 status == LINK_PLANNER) {
 		SolveInternal();
+		CheckFlags();
+	}
+	else if (status == WAITING_PARENT) {
 		CheckFlags();
 	}
 	else if (status == ScriptStatus::SOURCE_IS_WAITING ||
@@ -109,6 +111,7 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::CheckFlags() {
 	
 }
 
+#if 0
 template <class ParserDef, class LoaderParent>
 void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 	if (status == MAKE_OPTION_LINK_VECTOR ||
@@ -144,6 +147,6 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 		TODO
 	}
 }
-
+#endif
 
 NAMESPACE_SERIAL_END

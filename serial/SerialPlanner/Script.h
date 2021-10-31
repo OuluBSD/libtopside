@@ -103,10 +103,9 @@ public:
 	
 	ScriptLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
 	void				Forward();
-	void				SolveInternal();
 	
 	//void				SetStatusRetry() {SetStatus(RETRY);}
-	void				SetError(String s) {err_str = s; SetStatus(status); RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
+	void				SetError(String s) {err_str = s; SetStatus(FAILED); RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
 	bool				IsFailed() const {return status == FAILED;}
 	bool				IsReady() const {return status == READY;}
@@ -221,8 +220,78 @@ public:
 };
 
 
-class ScriptChainLoader : public ScriptLoaderBase<Script::ChainDefinition, ScriptTopChainLoader> {
+
+
+
+struct ScriptIfaceOption {
+	double pre_node_dist = 0;
+	double post_node_dist = 0;
+	double total_distance = 0;
+	bool is_src = false;
+	Script::ActionPlanner::State state;
 	
+	bool IsSource() const {return is_src;}
+	bool IsSink() const {return !is_src;}
+	String ToString() const;
+	
+	bool operator()(const ScriptIfaceOption& a, const ScriptIfaceOption& b) const {
+		return a.total_distance < b.total_distance;
+	}
+};
+
+struct ScriptLoopOptions {
+	Array<ScriptIfaceOption>	link_opts;
+	ScriptLoopLoader*			ll = 0;
+	
+};
+
+struct ScriptLinkOption : Moveable<ScriptLinkOption> {
+	ScriptIfaceOption*			src = 0;
+	ScriptIfaceOption*			sink = 0;
+	double						src_total_distance;
+	double						sink_total_distance;
+	double						total_distance;
+	
+	bool operator()(const ScriptLinkOption& a, const ScriptLinkOption& b) const {
+		return a.total_distance < b.total_distance;
+	}
+	String ToString() const;
+};
+
+class ScriptConnectionSolver {
+	Array<ScriptLoopOptions>	loops;
+	Array<ScriptLinkOption>		links;
+	String						err_str;
+	int&						tmp_side_id_counter;
+	
+	void SetError(String s) {err_str = s;}
+	void InitializeLoops(const Vector<ScriptLoopLoader*>& loops);
+public:
+	
+	ScriptConnectionSolver(int& side_id_counter) : tmp_side_id_counter(side_id_counter) {}
+	
+	template <class T>
+	bool Initialize(T* o) {
+		Vector<ScriptLoopLoader*> loops;
+		o->GetLoops(loops);
+		if (loops.IsEmpty()) {
+			SetError("Internal error: no loops");
+			return false;
+		}
+		InitializeLoops(loops);
+		return true;
+	}
+	
+	bool MakeOptionLinkVector();
+	bool FindAcceptedLinks();
+	
+	String	GetError() const {return err_str;}
+	
+};
+
+
+class ScriptChainLoader : public ScriptLoaderBase<Script::ChainDefinition, ScriptTopChainLoader> {
+	One<ScriptConnectionSolver>	solver;
 	
 public:
 	using Base = ScriptLoaderBase<Script::ChainDefinition, ScriptTopChainLoader>;
@@ -233,6 +302,12 @@ public:
 	
 	
 	ScriptChainLoader(ScriptTopChainLoader& parent, int id, Script::ChainDefinition& def);
+	
+	void		Forward();
+	void		MakeOptionLinkVector();
+	void		FindAcceptedLinks();
+	void		LinkPlanner();
+	
 	void		Visit(RuntimeVisitor& vis) override {vis | loops;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
@@ -435,37 +510,6 @@ public:
 using ScriptLoaderRef = Ref<ScriptLoader, SerialSystemParent>;
 
 
-
-class ScriptConnectionSolver {
-	Vector<ScriptLoopLoader*>	loops;
-	String						err_str;
-	int&						tmp_side_id_counter;
-	bool						is_waiting_source = false;
-	bool						is_waiting_sink = false;
-	
-	void SetError(String s) {err_str = s;}
-	bool Process();
-public:
-	
-	ScriptConnectionSolver(int& side_id_counter) : tmp_side_id_counter(side_id_counter) {}
-	
-	template <class T>
-	bool Solve(T* o) {
-		loops.SetCount(0);
-		o->GetLoops(loops);
-		if (loops.IsEmpty()) {
-			SetError("Internal error: no loops");
-			return false;
-		}
-		
-		return Process();
-	}
-	
-	String	GetError() const {return err_str;}
-	bool	IsWaitingSource() const {return is_waiting_source;}
-	bool	IsWaitingSink() const {return is_waiting_sink;}
-	
-};
 
 NAMESPACE_SERIAL_END
 

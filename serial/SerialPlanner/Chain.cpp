@@ -33,6 +33,22 @@ void ScriptChainLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	}
 }
 
+void ScriptChainLoader::Forward() {
+	
+	if (status == MAKE_OPTION_LINK_VECTOR) {
+		MakeOptionLinkVector();
+	}
+	else if (status == PRUNE_OPTION_LINKS) {
+		FindAcceptedLinks();
+	}
+	else if (status == LINK_PLANNER) {
+		LinkPlanner();
+	}
+	else
+		Base::Forward();
+	
+}
+
 void ScriptChainLoader::ForwardLoops() {
 	if (status == WAITING_CHILDREN) {
 		for (ScriptLoopLoader& loader : loops) {
@@ -56,6 +72,39 @@ void ScriptChainLoader::SetRetryDeep() {
 	
 	for (ScriptLoopLoader& loader : loops)
 		loader.SetRetryDeep();
+}
+
+void ScriptChainLoader::MakeOptionLinkVector() {
+	solver = new ScriptConnectionSolver(GetLoader().GetSideIdCounter());
+	
+	if (!solver->Initialize(this)) {
+		SetError("Could not initialize ScriptConnectionSolver: " + solver->GetError());
+		return;
+	}
+	
+	if (!solver->MakeOptionLinkVector()) {
+		SetError("Could not make option link vector: " + solver->GetError());
+		return;
+	}
+	
+	SetStatus(PRUNE_OPTION_LINKS);
+}
+
+void ScriptChainLoader::FindAcceptedLinks() {
+	
+	if (!solver->FindAcceptedLinks()) {
+		SetError("Could not prune option links: " + solver->GetError());
+		return;
+	}
+	
+	SetStatus(LINK_PLANNER);
+}
+
+void ScriptChainLoader::LinkPlanner() {
+	
+	TODO
+	
+	// SetRetryDeep();
 }
 
 

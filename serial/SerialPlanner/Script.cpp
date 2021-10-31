@@ -365,11 +365,10 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 	return NULL;
 }
 
-bool ScriptConnectionSolver::Process() {
-	
-	TODO
-	
-	#if 0
+
+
+#if 0
+{
 	Vector<ScriptLoopLoader*>	waiting_sources;
 	Vector<ScriptLoopLoader*>	waiting_sinks;
 	
@@ -478,7 +477,8 @@ bool ScriptConnectionSolver::Process() {
 		ll->SetStatusRetry();
 	
 	return accepted_count > 0;
-	#endif
 }
+#endif
+
 
 NAMESPACE_SERIAL_END

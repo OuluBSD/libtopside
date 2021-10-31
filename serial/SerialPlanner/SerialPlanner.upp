@@ -14,6 +14,7 @@ file
 	Planner.cpp,
 	Script.h,
 	Script.cpp,
+	ConnectionSolver.cpp,
 	Chain.cpp,
 	LoaderBase.inl highlight cpp,
 	Loop.cpp,
