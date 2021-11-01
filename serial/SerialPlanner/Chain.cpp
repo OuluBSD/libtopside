@@ -67,18 +67,15 @@ void ScriptChainLoader::LoopStatus() {
 	}
 }
 
-void ScriptChainLoader::SetRetryDeep() {
-	if (status == ScriptStatus::READY)
-		return;
-	
-	SetStatus(ScriptStatus::IN_BEGINNING);
-	
+void ScriptChainLoader::CheckStatusDeep() {
 	for (ScriptLoopLoader& loader : loops)
-		loader.SetRetryDeep();
+		loader.CheckStatusDeep();
+	
+	CheckFlags();
 }
 
 void ScriptChainLoader::MakeOptionLinkVector() {
-	solver = new ScriptConnectionSolver(GetLoader().GetSideIdCounter());
+	solver.Create();
 	
 	if (!solver->Initialize(this)) {
 		SetError("Could not initialize ScriptConnectionSolver: " + solver->GetError());
@@ -114,36 +111,74 @@ void ScriptChainLoader::LinkPlanner() {
 }
 
 void ScriptChainLoader::Linker() {
-	Vector<ScriptLinkOption*>& result = solver->result;
+	const Vector<ScriptLinkOption*>& result = solver->result;
+	const Array<ScriptLoopOptions>& options = solver->loops;
+	
+	int& side_id_counter = GetLoader().GetSideIdCounter();
 	
 	for (ScriptLinkOption* link : result) {
-		src->RealizeConnections(accepted_src_node);
-		accepted_sink->RealizeConnections(accepted_sink_node);
+		ScriptLoopLoader& src = *link->src_loop->ll;
+		ScriptLoopLoader& sink = *link->sink_loop->ll;
+		Script::ActionPlanner::State& src_node = link->src->state;
+		Script::ActionPlanner::State& sink_node = link->sink->state;
 		
-		ASSERT(accepted_sink);
-		AtomTypeCls src_type = accepted_src_node->last->GetWorldState().GetAtom();
-		AtomTypeCls sink_type = accepted_sink_node->last->GetWorldState().GetAtom();
-		src->SetSideSourceConnected(src_type, accepted_src_node->ch_i, accepted_sink);
-		accepted_sink->SetSideSinkConnected(sink_type, accepted_sink_node->ch_i, src);
+		src.RealizeConnections(src_node);
+		sink.RealizeConnections(sink_node);
 		
-		int conn_id = tmp_side_id_counter++;
+		AtomTypeCls src_type = src_node.last->GetWorldState().GetAtom();
+		AtomTypeCls sink_type = sink_node.last->GetWorldState().GetAtom();
+		src.SetSideSourceConnected(src_type, src_node.ch_i, sink);
+		sink.SetSideSinkConnected(sink_type, sink_node.ch_i, src);
 		
-		accepted_src_node->last->GetInterface().Realize(src_type);
-		accepted_src_node->last->GetInterface().SetSource(conn_id,		accepted_src_node->ch_i,	accepted_sink_node->ch_i);
 		
-		accepted_sink_node->last->GetInterface().Realize(sink_type);
-		accepted_sink_node->last->GetInterface().SetSink(conn_id,		accepted_sink_node->ch_i,	accepted_src_node->ch_i);
+		int conn_id = side_id_counter++;
 		
-		LOG("Loop src " << src->GetId() << " ch " << accepted_src_node->ch_i << " accepted loop sink "
-			<< accepted_sink->GetId() << " ch " << accepted_sink_node->ch_i << " with id " << conn_id);
+		src_node.last->GetInterface().Realize(src_type);
+		src_node.last->GetInterface().SetSource(conn_id,		src_node.ch_i,	sink_node.ch_i);
+		
+		sink_node.last->GetInterface().Realize(sink_type);
+		sink_node.last->GetInterface().SetSink(conn_id,		sink_node.ch_i,	src_node.ch_i);
+		
+		LOG("Loop src " << src.GetId() << " ch " << src_node.ch_i << " accepted loop sink "
+			<< sink.GetId() << " ch " << sink_node.ch_i << " with id " << conn_id);
 		
 	}
 	
 	// loops with incomplete iface links will be tried again until complete failure
+	bool has_failures = false;
+	for (ScriptLoopOptions& loop : options) {
+		ScriptLoopLoader& ll = *loop.ll;
+		if (ll.GetStatus() == WAITING_PARENT_SIDE_LINKS) {
+			if (ll.GetAtomLinkCount() > 0 && ll.IsTopSidesConnected()) {
+				LOG("Loop " << ll.GetId() << " all sides connected");
+				bool found = false;
+				for (ScriptLinkOption* link : result) {
+					if (link->src_loop->ll == &ll) {
+						ll.AddSideConnectionSegment(link->src->state);
+						found = true;
+						break;
+					}
+					if (link->sink_loop->ll == &ll) {
+						ll.AddSideConnectionSegment(link->sink->state);
+						found = true;
+						break;
+					}
+				}
+				ASSERT(found);
+				ll.SetStatus(WAITING_CHILDREN);
+			}
+			else
+				has_failures = true;
+		}
+	}
 	
-	TODO
+	CheckStatusDeep();
 	
-	SetStatus(WAITING_PARENT_SIDE_LINKS);
+	if (has_failures)
+		SetStatus(WAITING_PARENT_SIDE_LINKS);
+	else
+		SetStatus(WAITING_CHILDREN);
+	
 }
 
 

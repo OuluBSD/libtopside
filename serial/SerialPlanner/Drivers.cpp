@@ -129,8 +129,8 @@ void ScriptDriverLoader::LoopStatus() {
 	Panic("internal error");
 }
 
-void ScriptDriverLoader::SetRetryDeep() {
-	TODO
+void ScriptDriverLoader::CheckStatusDeep() {
+	CheckFlags();
 }
 
 void ScriptDriverLoader::FindAtoms() {

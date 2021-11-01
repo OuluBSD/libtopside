@@ -18,6 +18,10 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		ForwardLoops();
 		CheckFlags();
 	}
+	else if (status == MAKE_OPTION_LINK_VECTOR) {
+		SetError("linking side connections failed");
+		SetStatus(FAILED);
+	}
 	#if 0
 	else if (status == MAKE_OPTION_LINK_VECTOR ||
 			 status == PRUNE_OPTION_LINKS ||
@@ -65,7 +69,8 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::CheckStatus(ScriptStatus s) {
 	else if (
 		s == ScriptStatus::MAKE_OPTION_LINK_VECTOR ||
 		s == ScriptStatus::PRUNE_OPTION_LINKS ||
-		s == ScriptStatus::LINK_PLANNER
+		s == ScriptStatus::LINK_PLANNER ||
+		s == ScriptStatus::LINKER
 	) {
 		any_linking = true;
 	}
@@ -121,7 +126,7 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::SolveInternal() {
 		//LOG(GetTreeString(0));
 		ScriptConnectionSolver conn(GetLoader().GetSideIdCounter());
 		if (conn.Solve(this)) {
-			SetRetryDeep();
+			CheckStatusDeep();
 		}
 		else {
 			TODO

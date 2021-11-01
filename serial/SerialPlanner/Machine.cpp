@@ -75,16 +75,11 @@ void ScriptMachineLoader::LoopStatus() {
 	}
 }
 
-void ScriptMachineLoader::SetRetryDeep() {
-	if (status == ScriptStatus::READY)
-		return;
-	
-	SetStatus(ScriptStatus::IN_BEGINNING);
-	
-	TODO
-	
+void ScriptMachineLoader::CheckStatusDeep() {
 	for (ScriptTopChainLoader& loader : chains)
-		loader.SetRetryDeep();
+		loader.CheckStatusDeep();
+	
+	CheckFlags();
 }
 
 

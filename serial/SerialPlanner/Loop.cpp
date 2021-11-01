@@ -22,14 +22,8 @@ void ScriptLoopLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	Panic("internal error");
 }
 
-void ScriptLoopLoader::SetRetryDeep() {
-	TODO
-	#if 0
-	if (status == ScriptStatus::READY)
-		return;
-	
-	SetStatus(ScriptStatus::RETRY);
-	#endif
+void ScriptLoopLoader::CheckStatusDeep() {
+	// pass
 }
 
 void ScriptLoopLoader::SetStatus(ScriptStatus status) {
@@ -57,13 +51,14 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 	return s;
 }
 
-void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_state) {
-	RTLOG("ScriptLoopLoader::RealizeConnections: begin");
+void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& last_state) {
+	static const bool print = false;
+	if (print) RTLOG("ScriptLoopLoader::RealizeConnections: begin");
 	ASSERT(segments.GetCount());
 	
 	ScriptLoopSegment& top_seg = segments.Top();
 	if (top_seg.ep.plan.IsEmpty()) {
-		top_seg.ep.plan = top_seg.as.ReconstructPath(*last_state->last);
+		top_seg.ep.plan = top_seg.as.ReconstructPath(*last_state.last);
 		ASSERT(!top_seg.ep.plan.IsEmpty());
 	}
 	
@@ -72,23 +67,42 @@ void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_sta
 	const Script::WorldState* prev_ws = 0;
 	for (ScriptLoopSegment& seg : segments) {
 		ASSERT(!seg.ep.plan.IsEmpty());
+		
+		bool skip_first = atom_i > 0;
 		for (Script::ActionNode* an : seg.ep.plan) {
 			Script::WorldState& ws = an->GetWorldState();
 			ASSERT(ws.IsAddAtom());
 			
-			if (atom_i >= atom_links.GetCount()) {
+			if (skip_first) {
+				skip_first = false;
+				continue;
+			}
+			else if (atom_i < atom_links.GetCount()) {
+				if (1) {
+					AtomSideLinks& atom = atom_links[atom_i];
+					if (print) RTLOG("ScriptLoopLoader::RealizeConnections: atom #" << atom_i << " " << atom.type.ToString());
+				}
+			}
+			else {
+				AtomTypeCls type = ws.GetAtom();
+				
 				atom_links.SetCount(atom_i+1);
 				
 				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+				bool skip_all_src_conds = stmt && stmt->src_side_conds.IsEmpty();
+				bool skip_all_sink_conds = stmt && stmt->sink_side_conds.IsEmpty();
+				
+				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: atom #" << atom_i << ", " << (stmt ? "has stmt" : "NO stmt") << ", skip_all_src_conds: " << (int)skip_all_src_conds << ", skip_all_sink_conds: " << (int)skip_all_sink_conds);
+				ASSERT(stmt || type.IsRoleCustomer());
 				
 				AtomSideLinks& atom = atom_links[atom_i];
-				AtomTypeCls& type = atom.type;
-				type = ws.GetAtom();
+				atom.type = type;
 				ASSERT(type.IsValid());
 				
 				atom.src_side_conns.SetCount(type.iface.src.count - 1);
 				atom.sink_side_conns.SetCount(type.iface.sink.count - 1);
 				
+				int required_srcs = 0;
 				int req_src_sides = type.iface.src.count - type.user_src_count;
 				for(int i = 0; i < atom.src_side_conns.GetCount(); i++) {
 					SideLink& link = atom.src_side_conns[i];
@@ -97,9 +111,13 @@ void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_sta
 					link.is_user_stmt =		stmt &&
 											i < stmt->src_side_conds.GetCount() &&
 											!stmt->src_side_conds[i].id.IsEmpty();
-					link.is_required = !link.is_user_conditional || link.is_user_stmt;
+					link.is_required = !skip_all_src_conds && (!link.is_user_conditional || link.is_user_stmt);
+					ASSERT((link.is_required && skip_all_src_conds) == false);
+					if (link.is_required)
+						required_srcs++;
 				}
 				
+				int required_sinks = 0;
 				int req_sink_sides = type.iface.sink.count - type.user_sink_count;
 				for(int i = 0; i < atom.sink_side_conns.GetCount(); i++) {
 					SideLink& link = atom.sink_side_conns[i];
@@ -108,12 +126,15 @@ void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_sta
 					link.is_user_stmt =		stmt &&
 											i < stmt->sink_side_conds.GetCount() &&
 											!stmt->sink_side_conds[i].id.IsEmpty();
-					link.is_required = !link.is_user_conditional || link.is_user_stmt;
+					link.is_required = !skip_all_sink_conds && (!link.is_user_conditional || link.is_user_stmt);
+					ASSERT((link.is_required && skip_all_sink_conds) == false);
+					if (link.is_required)
+						required_sinks++;
 				}
 				
 				added++;
 				
-				RTLOG("ScriptLoopLoader::RealizeConnections: realized atom #" << atom_i << " placeholder: " << atom.type.ToString());
+				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: realized atom #" << atom_i << ", required_srcs: " << required_srcs << ", required_sinks: " << required_sinks << ", placeholder: " << atom.type.ToString());
 			}
 			
 			atom_i++;
@@ -121,13 +142,13 @@ void ScriptLoopLoader::RealizeConnections(Script::ActionPlanner::State* last_sta
 		}
 	}
 	
-	RTLOG("ScriptLoopLoader::RealizeConnections: end count=" << atom_i << ", added=" << added);
+	if (print) RTLOG("ScriptLoopLoader::RealizeConnections: end count=" << atom_i << ", added=" << added);
 	ASSERT(atom_i > 0);
 	
 	MACHVER_STATUS(LoopLoader_RealizeAtoms, this);
 }
 
-void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink) {
+void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& sink) {
 	ASSERT(type.IsValid());
 	ASSERT(ch_i > 0);
 	ASSERT(type.iface.src.count > 1 && ch_i < type.iface.src.count);
@@ -150,15 +171,16 @@ void ScriptLoopLoader::SetSideSourceConnected(const AtomTypeCls& type, int ch_i,
 	
 	AtomSideLinks& atom = atom_links.Top();
 	
+	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " src ch #" << ch_i << " set " << HexStr(&sink));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.src_side_conns.GetCount());
 	SideLink& l = atom.src_side_conns[side_ch_i];
 	ASSERT(!l.link);
-	l.link = sink;
+	l.link = &sink;
 	
 	MACHVER_STATUS(LoopLoader_AtomLinked, this);
 }
 
-void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src) {
+void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& src) {
 	ASSERT(type.IsValid());
 	ASSERT(ch_i > 0);
 	ASSERT(type.iface.sink.count > 1 && ch_i < type.iface.sink.count);
@@ -181,10 +203,11 @@ void ScriptLoopLoader::SetSideSinkConnected(const AtomTypeCls& type, int ch_i, S
 	
 	AtomSideLinks& atom = atom_links.Top();
 	
+	RTLOG("ScriptLoopLoader::SetSideSourceConnected: loop " << HexStr(this) << " sink ch #" << ch_i << " set " << HexStr(&src));
 	ASSERT(side_ch_i >= 0 && side_ch_i < atom.sink_side_conns.GetCount());
 	SideLink& l = atom.sink_side_conns[side_ch_i];
 	ASSERT(!l.link);
-	l.link = src;
+	l.link = &src;
 	
 	MACHVER_STATUS(LoopLoader_AtomLinked, this);
 }
@@ -255,6 +278,16 @@ void ScriptLoopLoader::Forward() {
 	
 	
 	if (status == ScriptStatus::IN_BEGINNING) {
+		InitSegments();
+		
+		SetStatus(WAITING_CHILDREN);
+	}
+	
+	if (status == ScriptStatus::WAITING_CHILDREN) {
+		SetStatus(SEARCH_SEGMENT);
+	}
+	
+	if (status == ScriptStatus::SEARCH_SEGMENT) {
 		MACHVER_ENTER(ScriptLoopLoaderForwardBeginning)
 		
 		if (def.stmts.IsEmpty() && def.req.IsEmpty()) {
@@ -264,7 +297,6 @@ void ScriptLoopLoader::Forward() {
 			return;
 		}
 		
-		InitSegments();
 		SearchNewSegment();
 		
 		MACHVER_LEAVE(ScriptLoopLoaderForwardBeginning)
@@ -299,6 +331,8 @@ void ScriptLoopLoader::Forward() {
 }
 
 void ScriptLoopLoader::InitSegments() {
+	ASSERT(segments.IsEmpty());
+	
 	DevCls dev = DevCls::Get(def.id.parts.First());
 	if (!dev.IsValid())
 		dev = DevCls::CENTER;
@@ -1080,15 +1114,14 @@ SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::A
 }
 #endif
 
-void ScriptLoopLoader::AddSideConnectionSegment(Script::ActionPlanner::State* state, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state) {
+void ScriptLoopLoader::AddSideConnectionSegment(Script::ActionPlanner::State& state) {
 	ScriptLoopSegment& prev = segments.Top();
-	prev.stop_node = state->last;
-	prev.ep.plan = prev.as.ReconstructPath(*state->last);
+	prev.stop_node = state.last;
+	prev.ep.plan = prev.as.ReconstructPath(*state.last);
 	ASSERT(prev.ep.plan.GetCount());
 	ScriptLoopSegment& seg = segments.Add();
-	seg.start_node = state->last;
-	seg.side_conn = c;
-	seg.as = state->as;
+	seg.start_node = state.last;
+	seg.as = state.as;
 }
 
 bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_stmt) {

@@ -23,7 +23,7 @@ public:
 	Script::Plan					ep;
 	Script::APlanNode*				start_node = 0;
 	const Script::ActionNode*		stop_node = 0;
-	ScriptLoopLoader*				side_conn = 0;
+	//ScriptLoopLoader*				side_conn = 0;
 	
 	
 	String GetTreeString(int id, int indent);
@@ -124,7 +124,7 @@ public:
 	virtual void		GetLoops(Vector<ScriptLoopLoader*>& v) = 0;
 	virtual void		ForwardLoops() = 0;
 	virtual void		LoopStatus() = 0;
-	virtual void		SetRetryDeep() = 0;
+	virtual void		CheckStatusDeep() = 0;
 	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
 	
 };
@@ -151,6 +151,7 @@ public:
 protected:
 	friend class ScriptLoader;
 	friend class ScriptConnectionSolver;
+	friend class ScriptChainLoader;
 	friend class MachineVerifier;
 	
 	struct SideLink : Moveable<SideLink> {
@@ -181,8 +182,8 @@ protected:
 	Vector<AtomSideLinks>			atom_links;
 	
 	
-	void SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* sink);
-	void SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader* src);
+	void SetSideSourceConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& sink);
+	void SetSideSinkConnected(const AtomTypeCls& type, int ch_i, ScriptLoopLoader& src);
 	bool IsAllSidesConnected() const;
 	bool IsTopSidesConnected() const;
 	void SetupSegment(ScriptLoopSegment& s);
@@ -205,9 +206,10 @@ public:
 	bool		Parse();
 	bool		Load();
 	bool		PostInitialize();
-	void		AddSideConnectionSegment(Script::ActionPlanner::State* n, ScriptLoopLoader* c, Script::ActionPlanner::State* side_state);
+	void		AddSideConnectionSegment(Script::ActionPlanner::State& n);
 	void		UpdateLoopLimits();
-	void		RealizeConnections(Script::ActionPlanner::State* last_state);
+	void		RealizeConnections(const Script::ActionPlanner::State& last_state);
+	int			GetAtomLinkCount() const {return atom_links.GetCount();}
 	
 	ScriptLoopSegment& GetCurrentSegment() {return segments.Top();}
 	
@@ -216,7 +218,7 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	void		SetStatus(ScriptStatus status) override;
 };
 
@@ -288,16 +290,13 @@ struct ScriptLinkOption : Moveable<ScriptLinkOption> {
 };
 
 class ScriptConnectionSolver {
-	Array<ScriptLoopOptions>	loops;
 	Array<ScriptLinkOption>		links;
 	String						err_str;
-	int&						tmp_side_id_counter;
 	
 	void SetError(String s) {err_str = s;}
 	void InitializeLoops(const Vector<ScriptLoopLoader*>& loops);
 public:
 	
-	ScriptConnectionSolver(int& side_id_counter) : tmp_side_id_counter(side_id_counter) {}
 	
 	template <class T>
 	bool Initialize(T* o) {
@@ -320,6 +319,7 @@ public:
 	
 	
 	
+	Array<ScriptLoopOptions>	loops;
 	Vector<ScriptLinkOption*>	result;
 	
 };
@@ -349,7 +349,7 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	
 };
 
@@ -377,7 +377,7 @@ public:
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	
 };
 
@@ -404,7 +404,7 @@ public:
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	void		Forward();
 	bool		Load();
 	bool		PostInitialize();
@@ -428,7 +428,7 @@ public:
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	
 };
 
@@ -449,7 +449,7 @@ public:
 	String		GetTreeString(int indent=0) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
-	void		SetRetryDeep() override;
+	void		CheckStatusDeep() override;
 	
 	void		Dump() {LOG(GetTreeString());}
 	

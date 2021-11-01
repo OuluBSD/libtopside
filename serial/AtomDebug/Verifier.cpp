@@ -454,6 +454,9 @@ void MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id) {
 	
 	Scope& cur = stack.Top();
 	cur.AddEnter(LOOPLOADER_FORWARD_RETRY);
+	
+	if (cur.type == SCRIPT_LOAD)
+		cur.MayLeave(true);
 }
 
 void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
@@ -517,7 +520,7 @@ void MachineVerifier::UpdateLoopData(ScriptLoopLoader* ll) {
 	ASSERT(atom_count >= data.atoms.GetCount());
 	data.atoms.SetCount(atom_count);
 	
-	RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+	//RTLOG("MachineVerifier::UpdateLoopData: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 	
 	if (atoms_added > 0 && !data.MayCreateAtoms())
 		Panic("Loop may not create atoms");
@@ -563,7 +566,7 @@ void MachineVerifier::OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
 	UpdateLoopData(ll);
 	
 	int atoms_added = data.atoms.GetCount() - prev_count;
-	RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+	//RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 }
 
 void MachineVerifier::OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {

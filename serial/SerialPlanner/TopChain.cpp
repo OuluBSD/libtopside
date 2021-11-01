@@ -102,20 +102,17 @@ void ScriptTopChainLoader::LoopStatus() {
 	}
 }
 
-void ScriptTopChainLoader::SetRetryDeep() {
-	if (status == ScriptStatus::READY)
-		return;
-	
-	SetStatus(ScriptStatus::IN_BEGINNING);
-	
+void ScriptTopChainLoader::CheckStatusDeep() {
 	if (use_subchains) {
 		for (ScriptTopChainLoader& loader : subchains)
-			loader.SetRetryDeep();
+			loader.CheckStatusDeep();
 	}
 	else {
 		for (ScriptChainLoader& loader : chains)
-			loader.SetRetryDeep();
+			loader.CheckStatusDeep();
 	}
+	
+	CheckFlags();
 }
 
 void ScriptTopChainLoader::ForwardSubchainLoops() {
