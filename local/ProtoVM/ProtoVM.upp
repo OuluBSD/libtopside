@@ -1,0 +1,13 @@
+uses
+	Local;
+
+file
+	ProtoVM.h,
+	ProtoVM.cpp,
+	Machine.h,
+	Machine.cpp,
+	test_prog0.txt;
+
+mainconfig
+	"" = "";
+
