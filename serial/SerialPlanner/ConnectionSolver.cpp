@@ -44,6 +44,8 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 		ASSERT(l.ll);
 		ASSERT(l.link_opts.IsEmpty());
 		ScriptLoopLoader& ll = *l.ll;
+		if (ll.GetStatus() != WAITING_PARENT_SIDE_LINKS)
+			continue;
 		
 		Vector<Script::ActionPlanner::State>& sources = ll.planner.GetSideSources();
 		Vector<Script::ActionPlanner::State>& sinks = ll.planner.GetSideSinks();
@@ -357,7 +359,7 @@ bool ScriptConnectionSolver::LinkPlanner() {
 			}
 			
 			ScriptLinkOption& opt = *(*prev_available)[n->last_selection];
-			LOG("Return link: " << opt.ToString());
+			LOG("solved link: " << opt.ToString());
 			
 			result.Add(&opt);
 			

@@ -52,7 +52,7 @@ String ScriptLoopLoader::GetTreeString(int indent) {
 }
 
 void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& last_state) {
-	static const bool print = false;
+	static const bool print = true;
 	if (print) RTLOG("ScriptLoopLoader::RealizeConnections: begin");
 	ASSERT(segments.GetCount());
 	
@@ -64,12 +64,19 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 	
 	int atom_i = 0;
 	int added = 0;
+	int dbg_i = -1;
 	const Script::WorldState* prev_ws = 0;
-	for (ScriptLoopSegment& seg : segments) {
+	//for (ScriptLoopSegment& seg : segments) {
+	{
+		ScriptLoopSegment& seg = top_seg;
+		dbg_i++;
 		ASSERT(!seg.ep.plan.IsEmpty());
 		
 		bool skip_first = atom_i > 0;
+		int dbg_j = -1;
 		for (Script::ActionNode* an : seg.ep.plan) {
+			dbg_j++;
+			
 			Script::WorldState& ws = an->GetWorldState();
 			ASSERT(ws.IsAddAtom());
 			
@@ -93,6 +100,10 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 				bool skip_all_sink_conds = stmt && stmt->sink_side_conds.IsEmpty();
 				
 				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: atom #" << atom_i << ", " << (stmt ? "has stmt" : "NO stmt") << ", skip_all_src_conds: " << (int)skip_all_src_conds << ", skip_all_sink_conds: " << (int)skip_all_sink_conds);
+				if (!stmt && prev_ws) {
+					DUMP(ws.ToString());
+					DUMP(prev_ws->ToString());
+				}
 				ASSERT(stmt || type.IsRoleCustomer());
 				
 				AtomSideLinks& atom = atom_links[atom_i];
@@ -304,23 +315,13 @@ void ScriptLoopLoader::Forward() {
 	else if (status == ScriptStatus::PRUNE_SEGMENT_GOALS) {
 		PruneSegmentGoals();
 	}
-	#if 0
-	else if (status == ScriptStatus::RETRY) {
-		MACHVER_ENTER(ScriptLoopLoaderForwardRetry)
-		
-		if (!atom_links.IsEmpty() && !IsTopSidesConnected()) {
-			ForwardSides();
-		}
-		else {
-			ASSERT(segments.GetCount() >= 1);
-			planner.ClearForward();
-			
-			ForwardTopSegment();
-		}
-		
-		MACHVER_LEAVE(ScriptLoopLoaderForwardRetry)
+	else  if (status == ScriptStatus::WAITING_OTHER_LOOPS) {
+		SetStatus(WAITING_PARENT_SIDE_LINKS);
 	}
-	#endif
+	else  if (status == ScriptStatus::WAITING_PARENT_SIDE_LINKS) {
+		// pass
+		return;
+	}
 	else {
 		
 		TODO

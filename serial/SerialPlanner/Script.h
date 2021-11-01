@@ -39,6 +39,7 @@ typedef enum {
 	SEARCH_SEGMENT,
 	PRUNE_SEGMENT_GOALS,
 	WAITING_PARENT_SIDE_LINKS,
+	WAITING_OTHER_LOOPS,
 	
 	MAKE_OPTION_LINK_VECTOR,
 	PRUNE_OPTION_LINKS,
@@ -54,6 +55,7 @@ inline const char* GetScriptStatusString(ScriptStatus status) {
 	switch (status) {
 		case IN_BEGINNING:					t = "In beginning"; break;
 		case WAITING_PARENT_SIDE_LINKS:		t = "Waiting parent side links"; break;
+		case WAITING_OTHER_LOOPS:				t = "Waiting other loops"; break;
 		case WAITING_CHILDREN:				t = "Waiting children"; break;
 		case SEARCH_SEGMENT:				t = "Search segment"; break;
 		case PRUNE_SEGMENT_GOALS:			t = "Prune segment goals"; break;
@@ -76,6 +78,10 @@ class ScriptMachineLoader;
 class ScriptChainLoader;
 class ScriptTopChainLoader;
 class ScriptLoader;
+
+
+int GetTotalSegmentCount(Vector<ScriptLoopLoader*>& v);
+
 
 template <class ParserDef, class LoaderParent>
 class ScriptLoaderBase : RTTIBase {
@@ -101,7 +107,7 @@ public:
 	bool						any_routing = false;
 	bool						all_ready = false;
 	bool						any_failed = false;
-	
+	int							prev_segment_count = 0;
 	
 	ScriptLoaderBase(LoaderParent& parent, int id, ParserDef& def) : parent(parent), id(id), def(def){}
 	void				Forward();
@@ -116,7 +122,6 @@ public:
 	ScriptStatus		GetStatus() const {return status;}
 	ScriptLoader&		GetLoader() {return parent.GetLoader();}
 	String				GetErrorString() const {return err_str;}
-	
 	virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
@@ -210,6 +215,7 @@ public:
 	void		UpdateLoopLimits();
 	void		RealizeConnections(const Script::ActionPlanner::State& last_state);
 	int			GetAtomLinkCount() const {return atom_links.GetCount();}
+	int			GetSegmentCount() const {return segments.GetCount();}
 	
 	ScriptLoopSegment& GetCurrentSegment() {return segments.Top();}
 	

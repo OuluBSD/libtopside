@@ -14,6 +14,13 @@ String GetScriptStatusLine(int indent, ScriptStatus status, String extra_str) {
 	return s;
 }
 
+int GetTotalSegmentCount(Vector<ScriptLoopLoader*>& v) {
+	int count = 0;
+	for (ScriptLoopLoader* l : v)
+		count += l->GetSegmentCount();
+	return count;
+}
+
 
 
 

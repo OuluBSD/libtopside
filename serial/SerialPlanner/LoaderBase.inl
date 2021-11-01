@@ -19,8 +19,21 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::Forward() {
 		CheckFlags();
 	}
 	else if (status == MAKE_OPTION_LINK_VECTOR) {
-		SetError("linking side connections failed");
-		SetStatus(FAILED);
+		Vector<ScriptLoopLoader*> loops;
+		GetLoops(loops);
+		int segment_count = GetTotalSegmentCount(loops);
+		if (segment_count == prev_segment_count) {
+			SetError("linking side connections failed");
+			SetStatus(FAILED);
+		}
+		else {
+			prev_segment_count = segment_count;
+			for (ScriptLoopLoader* l : loops)
+				if (l->GetStatus() == WAITING_PARENT_SIDE_LINKS)
+					l->SetStatus(WAITING_OTHER_LOOPS);
+			CheckStatusDeep();
+			SetStatus(WAITING_CHILDREN);
+		}
 	}
 	#if 0
 	else if (status == MAKE_OPTION_LINK_VECTOR ||
@@ -51,7 +64,8 @@ void ScriptLoaderBase<ParserDef,LoaderParent>::CheckStatus(ScriptStatus s) {
 		TODO
 	}
 	else if (
-		s == ScriptStatus::WAITING_CHILDREN
+		s == ScriptStatus::WAITING_CHILDREN ||
+		s == ScriptStatus::WAITING_OTHER_LOOPS
 	) {
 		any_waiting_children = true;
 	}

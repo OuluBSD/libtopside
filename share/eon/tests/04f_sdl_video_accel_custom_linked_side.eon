@@ -15,7 +15,7 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true {filepath: "shaders/toys/simple_double/stage0.glsl";};
+			sdl.fbo: true [id: "buffer";;;;][] {filepath: "shaders/toys/simple_double/stage0.glsl";};
 		};
 		
 		loop audio: {
