@@ -157,7 +157,7 @@ protected:
 		PROG_COUNT
 	};
 	
-	Array<OglBufferInput>		in;
+	Array<OglBufferInput>		in_buf;
 	Vector<String>				common_source;
 	
 	GLint						prog[PROG_COUNT] = {-1,-1,-1,-1,-1};
@@ -226,7 +226,8 @@ public:
 	bool				IsInitialized() const {return initialized;}
 	
 	bool				Initialize();
-	bool				InitializeTextureRGBA(Size sz, const Vector<byte>& data);
+	bool				InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data);
+	bool				InitializeVolume(Size3 sz, int channels, const Vector<byte>& data);
 	void				RefreshPipeline();
 	void				UpdateTexBuffers();
 	void				Reset();
@@ -238,6 +239,7 @@ public:
 	void				FindVariables(GLint prog);
 	void				SetVars(GLint prog, const RealtimeSourceConfig& cfg);
 	void				SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg);
+	void				SetInputVolume(int input_i);
 	void				ClearTex();
 	void				ClearProg();
 	void				CreateTex(bool create_depth, bool create_fbo, int filter, int repeat);
@@ -254,12 +256,13 @@ public:
 	void				TexFlags(int type, int filter, int repeat);
 	void				UseRenderedFramebuffer();
 	const OglBuffer*	GetComponentById(int id) const;
-	void				ReadTexture(Size sz, const Vector<byte>& data);
+	void				ReadTexture(Size sz, int channels, const Vector<byte>& data);
+	void				ReadTexture(Size3 sz, int channels, const Vector<byte>& data);
 	
 	void				OnError(const char* fn, String s);
 	
 	void				StoreOutputLink(InternalPacketData& v);
-	bool				LoadOutputLink(int in_id, InternalPacketData& v);
+	bool				LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v);
 	
 };
 

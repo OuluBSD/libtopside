@@ -44,6 +44,10 @@ struct Volume : Moveable<Volume> {
 	Vector<double> d, g;
 	
 	
+	Volume() {}
+	Volume(int w, int h, int d) : W(w), H(h), D(d) {}
+	Volume(const Volume& v) {*this = v;}
+	
 	void operator=(const Volume& s) {
 		W = s.W;
 		H = s.H;

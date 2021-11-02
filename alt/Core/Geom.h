@@ -145,7 +145,7 @@ struct Size_ : Moveable<Size_<T>> {
 	operator Size_<int>() const {return Size_<int>(cx,cy);}
 	operator Size_<double>() const {return Size_<double>(cx,cy);}
 	
-	bool	IsNull() const {return IsNull(cx) || IsNull(cy);}
+	bool	IsNull() const {return UPP::IsNull(cx) || UPP::IsNull(cy);}
 	void	SetNull() const {SetNull(cx); SetNull(cy);}
 	
 };

@@ -15,6 +15,7 @@
 #include "Audio.h"
 #include "Video.h"
 #include "Media.h"
+#include "Volume.h"
 #include "FfmpegFileIn.h"
 #include "Ffmpeg.h"
 #include "OpenCV.h"

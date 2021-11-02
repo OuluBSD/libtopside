@@ -793,6 +793,9 @@ bool ScriptLoopLoader::Load() {
 				ASSERT(0);
 				return false;
 			}
+			
+			ab->SetId(id);
+			
 			auto& c = added_atoms.Add();
 			c.r					= ab;
 			c.plan_i			= plan_i;

@@ -22,6 +22,7 @@ BASE(OglShaderBase)
 BASE(EventStateBase)
 BASE(TestEventSrcBase)
 BASE(OglTextureBase)
+BASE(VolumeLoaderBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)
 //BASE_ACTION(CenterSinkSync,			center.audio.sink)

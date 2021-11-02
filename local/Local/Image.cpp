@@ -197,4 +197,62 @@ void DataFromImage(const Image& img, Vector<byte>& out) {
 	
 }
 
+Image MirrorVertical(const Image& img) {
+	Image::ImageDataRef* data = img.GetData();
+	if (img.GetSize().IsNull() || !data)
+		return img;
+	
+	SysImage& simg = data->img;
+	
+	const byte* it = simg.GetData();
+	int pitch = simg.GetPitch();
+	int stride = simg.GetStride();
+	int width = simg.GetWidth();
+	int height = simg.GetHeight();
+	
+	ImageBuffer ib(width, height);
+	RGBA* dst = ib.End();
+	
+	int line = stride * width;
+	int sz = line * height;
+	ASSERT(pitch >= line);
+	
+	if (stride == 4) {
+		
+		if (line == pitch) {
+			for (int y = height-1; y >= 0; y--) {
+				dst -= width;
+				memcpy(dst, it, line);
+				it += line;
+			}
+		}
+		else {
+			TODO
+		}
+	}
+	else {
+		ASSERT(stride < 4);
+		const int dst_stride = 4;
+		int dst_size = dst_stride * width * height;
+		
+		int line_pad = pitch - line;
+		ASSERT(line_pad >= 0);
+		
+		for (int y = height-1; y >= 0; y--) {
+			dst -= width;
+			byte* out_it = (byte*)dst;
+			for (int x = 0; x < width; x++) {
+				for (int i = 0; i < dst_stride; i++) {
+					byte val = i < stride ? *it++ : 0;
+					*out_it++ = val;
+				}
+			}
+			it += line_pad;
+		}
+	}
+	
+	return ib;
+}
+
+
 NAMESPACE_TOPSIDE_END

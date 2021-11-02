@@ -29,6 +29,7 @@ public:
 			ValDevCls vd = vt();
 			ASSERT(vd.IsValid());
 			Format val_fmt = GetDefaultFormat(vd);
+			if (!val_fmt.IsValid()) {DUMP(val_fmt);}
 			ASSERT(val_fmt.IsValid());
 			
 			val.Create();

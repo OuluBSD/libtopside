@@ -347,6 +347,24 @@ AtomTypeCls SdlImageLoader::GetType() const
 
 #endif
 #if defined flagGUI
+AtomTypeCls VolumeLoaderAtom::GetAtomType()
+{
+	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
+}
+
+void VolumeLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<VolumeLoaderAtom>>(this);
+	vis.VisitThis<VolumeLoaderBase>(this);
+}
+
+AtomTypeCls VolumeLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
 AtomTypeCls SdlFboAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -501,6 +519,24 @@ void OglTextureSource::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglTextureSource::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls OglVolumeSource::GetAtomType()
+{
+	return ATOM11_U11(OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
+}
+
+void OglVolumeSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglVolumeSource>>(this);
+	vis.VisitThis<OglTextureBase>(this);
+}
+
+AtomTypeCls OglVolumeSource::GetType() const
 {
 	return GetAtomType();
 }

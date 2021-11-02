@@ -11,8 +11,10 @@ struct Size3_ : Moveable<Size3_<T>> {
 
 	Size3_() {}
 	Size3_(const Size3_& sz) { *this = sz; }
+	Size3_(const Size_<T>& sz) : cx(sz.cx), cy(sz.cy), cz(0) {}
 	Size3_(T cx, T cy, T cz) : cx(cx), cy(cy), cz(cz) {}
 	
+	T GetVolume() const {return cx * cy * cz;}
 	bool IsEmpty() const {return cx == 0 && cy == 0 && cz == 0;}
 	bool IsPositive() const {return cx > 0 && cy > 0 && cz > 0;}
 	bool IsEqual(const Size3_& sz) const {return cx == sz.cx && cy == sz.cy && cz == sz.cz;}
@@ -22,6 +24,11 @@ struct Size3_ : Moveable<Size3_<T>> {
 	
 	bool operator==(const Size3_& sz) {return IsEqual(sz);}
 	bool operator!=(const Size3_& sz) {return !IsEqual(sz);}
+	void operator=(const Size_<T>& sz) {
+		cx = sz.cx;
+		cy = sz.cy;
+		cz = 0;
+	}
 	void operator=(const Size3_& sz) {
 		cx = sz.cx;
 		cy = sz.cy;
@@ -40,6 +47,9 @@ struct Size3_ : Moveable<Size3_<T>> {
 	Size3_& operator>>=(int sh)  { cx >>= sh;  cy >>= sh;  cz >>= sh;  return *this; }
 	
 	String ToString() const {return "Size3(" + IntStr(cx) + ", " + IntStr(cy) + ", " + IntStr(cz) + ")";}
+	
+	operator Size_<T>() const {return Size_<T>(cx, cy);}
+		
 };
 
 template <class T>

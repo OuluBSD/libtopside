@@ -25,16 +25,21 @@ const byte* Image::GetIter(int x, int y) const {
 
 
 void ImageBuffer::Create(Size sz) {
-	TODO
+	ASSERT(sz.cx > 0 && sz.cy > 0);
+	this->sz = sz;
+	int area = sz.GetArea();
+	buf.SetCount(area);
 }
 
 void ImageBuffer::Clear() {
-	TODO
+	buf.SetCount(0);
 }
 
+#ifndef flagGUI
 Image ImageBuffer::GetImage() {
 	TODO
 }
+#endif
 
 
 

@@ -81,4 +81,5 @@ Draw& ImageDraw::Alpha() {
 
 
 
+
 NAMESPACE_UPP_END

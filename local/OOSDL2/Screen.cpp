@@ -159,9 +159,10 @@ bool Screen::Recv(int ch_i, const Packet& p) {
 	bool succ = true;
 	Format fmt = p->GetFormat();
 	if (fmt.IsFbo()) {
+		Size3 sz = fmt.fbo.GetSize();
 		int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
 		if (p->IsData<InternalPacketData>()) {
-			succ = ogl_buf->LoadOutputLink(ch_i - base, p->GetData<InternalPacketData>());
+			succ = ogl_buf->LoadOutputLink(sz, ch_i - base, p->GetData<InternalPacketData>());
 		}
 		else {
 			RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());

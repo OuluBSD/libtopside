@@ -16,7 +16,7 @@ String AudioFormat::ToString() const {
 }
 
 int AudioFormat::GetFrameSize() const {
-	return		DimBase<1>::GetArea() *
+	return		DimBase<1>::GetScalar() *
 				TimeSeriesBase::GetSampleRate() *
 				SampleBase<SoundSample>::GetSampleSize();
 }
@@ -49,7 +49,7 @@ void VideoFormat::Set(LightSampleFD::Type type, int w, int h, int freq, int samp
 
 int VideoFormat::GetFrameSize() const {
 	return		SampleBase<LightSampleFD>::GetSampleSize() *
-				DimBase<2>::GetArea() *
+				DimBase<2>::GetScalar() *
 				TimeSeriesBase::GetSampleRate();
 }
 
@@ -74,34 +74,67 @@ bool VideoFormat::IsSame(const VideoFormat& b) const {
 
 
 
-void FboFormat::Set(LightSampleFD::Type type, int w, int h, int freq, int sample_rate) {
-	SampleBase<LightSampleFD>::SetType(type);
-	DimBase<2>::operator=(Size(w,h));
+void VolumeFormat::Set(BinarySample::Type type, int w, int h, int d, int freq, int sample_rate) {
+	SampleBase<BinarySample>::SetType(type);
+	DimBase<3>::operator=(Size3(w,h,d));
+	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
+}
+
+int VolumeFormat::GetFrameSize() const {
+	return		SampleBase<BinarySample>::GetSampleSize() *
+				DimBase<3>::GetVolume() *
+				TimeSeriesBase::GetSampleRate();
+}
+
+String VolumeFormat::ToString() const {
+	return		SampleBase<BinarySample>::ToString() + ", " +
+				DimBase<3>::ToString() + ", " +
+				TimeSeriesBase::ToString();
+}
+
+bool VolumeFormat::IsValid() const {
+	return		TimeSeriesBase::IsValid() && \
+				SampleBase<BinarySample>::IsValid() && \
+				DimBase<3>::IsValid();
+}
+
+bool VolumeFormat::IsSame(const VolumeFormat& b) const {
+	return		TimeSeriesBase::IsSame(b) &&
+				SampleBase<BinarySample>::IsCopyCompatible(b) &&
+				DimBase<3>::IsSame(b);
+}
+
+
+
+
+void FboFormat::Set(BinarySample::Type t, int w, int h, int d, int freq, int sample_rate) {
+	SampleBase<BinarySample>::SetType(t);
+	DimBase<3>::operator=(Size3(w,h,d));
 	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
 }
 
 int FboFormat::GetFrameSize() const {
-	return		SampleBase<LightSampleFD>::GetSampleSize() *
-				DimBase<2>::GetArea() *
+	return		SampleBase<BinarySample>::GetSampleSize() *
+				DimBase<3>::GetScalar() *
 				TimeSeriesBase::GetSampleRate();
 }
 
 String FboFormat::ToString() const {
-	return		SampleBase<LightSampleFD>::ToString() + ", " +
-				DimBase<2>::ToString() + ", " +
+	return		SampleBase<BinarySample>::ToString() + ", " +
+				DimBase<3>::ToString() + ", " +
 				TimeSeriesBase::ToString();
 }
 
 bool FboFormat::IsValid() const {
 	return		TimeSeriesBase::IsValid() && \
-				SampleBase<LightSampleFD>::IsValid() && \
-				DimBase<2>::IsValid();
+				SampleBase<BinarySample>::IsValid() && \
+				DimBase<3>::IsValid2D();
 }
 
 bool FboFormat::IsSame(const FboFormat& b) const {
 	return		TimeSeriesBase::IsSame(b) &&
-				SampleBase<LightSampleFD>::IsCopyCompatible(b) &&
-				DimBase<2 >::IsSame(b);
+				SampleBase<BinarySample>::IsCopyCompatible(b) &&
+				DimBase<3>::IsSame(b);
 }
 
 
@@ -142,7 +175,7 @@ bool EventFormat::IsSame(const EventFormat& fmt) const {
 }
 
 int EventFormat::GetFrameSize() const {
-	return		DimBase<1>::GetArea() *
+	return		DimBase<1>::GetScalar() *
 				SparseTimeSeriesBase::GetSampleRate() *
 				SampleBase<EventSample>::GetSampleSize();
 }
@@ -157,6 +190,7 @@ int EventFormat::GetFrameSize() const {
 #define PROXY(x) \
 	if (IsAudio()) return aud.x(); \
 	if (IsVideo()) return vid.x(); \
+	if (IsVolume()) return vol.x(); \
 	if (IsMidi())  return mid.x(); \
 	if (IsEvent()) return ev.x(); \
 	if (IsFbo())   return fbo.x(); \
@@ -165,6 +199,7 @@ int EventFormat::GetFrameSize() const {
 #define PROXY_(x,y) \
 	if (IsAudio()) return aud.x((const AudioFormat&)y); \
 	if (IsVideo()) return vid.x((const VideoFormat&)y); \
+	if (IsVolume()) return vol.x((const VolumeFormat&)y); \
 	if (IsMidi())  return mid.x((const MidiFormat&)y); \
 	if (IsEvent()) return ev.x((const EventFormat&)y); \
 	if (IsFbo())   return fbo.x((const FboFormat&)y); \
@@ -177,6 +212,7 @@ int EventFormat::GetFrameSize() const {
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
 	if (IsVideo()) return "VideoFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
+	if (IsVolume()) return "VolumeFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
 	if (IsMidi())  return "MidiFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
 	if (IsEvent()) return "EventFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
 	if (IsFbo())   return "FboFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
@@ -189,8 +225,8 @@ int Format::GetSampleSize() const {
 	PROXY_CHK(GetSampleSize)
 }
 
-int Format::GetArea() const {
-	PROXY_CHK(GetArea)
+int Format::GetScalar() const {
+	PROXY_CHK(GetScalar)
 }
 
 int Format::GetFrameSize() const {
@@ -268,6 +304,14 @@ void Format::SetMidi(DevCls dev) {
 	mid.SetDefault();
 }
 
+void Format::SetVolume(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate) {
+	vd.dev = dev;
+	vd.val = ValCls::VOLUME;
+	memset(data, 0, sizeof(data));
+	vol.Set(t, w, h, d, freq, sample_rate);
+	ASSERT(IsValid());
+}
+
 void Format::SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate) {
 	vd.dev = dev;
 	vd.val = ValCls::VIDEO;
@@ -275,11 +319,12 @@ void Format::SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq,
 	vid.Set(t, w, h, freq, sample_rate);
 }
 
-void Format::SetFbo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate) {
+void Format::SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate) {
 	vd.dev = dev;
 	vd.val = ValCls::FBO;
 	memset(data, 0, sizeof(data));
-	fbo.Set(t, w, h, freq, sample_rate);
+	fbo.Set(t, w, h, d, freq, sample_rate);
+	ASSERT(IsValid());
 }
 
 void Format::SetEvent(DevCls dev) {

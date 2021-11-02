@@ -18,10 +18,10 @@ struct AudioFormat :
 	
 	void Set(SoundSample::Type t, int channels, int freq, int sample_rate);
 	
-	int GetFrameSize() const;
-	String ToString() const;
-	bool IsValid() const;
-	bool IsSame(const AudioFormat& fmt) const;
+	int		GetFrameSize() const;
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const AudioFormat& fmt) const;
 	
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
@@ -37,34 +37,57 @@ struct VideoFormat :
 		sizeof(DimBase<2>) +
 		sizeof(TimeSeriesBase);
 	
-	void Set(LightSampleFD::Type t, int w, int , int freq, int sample_rate);
+	void	Set(LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
 	
-	int GetFrameSize() const;
-	String ToString() const;
-	bool IsValid() const;
-	bool IsSame(const VideoFormat& fmt) const;
+	int		GetFrameSize() const;
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const VideoFormat& fmt) const;
+	int		GetChannels() const {return SampleBase<LightSampleFD>::GetPackedCount();}
 	
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
+struct VolumeFormat :
+	public SampleBase<BinarySample>,
+	public DimBase<3>,
+	public TimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<BinarySample>) +
+		sizeof(DimBase<3>) +
+		sizeof(TimeSeriesBase);
+	
+	void	SetDefault() {SampleBase<BinarySample>::SetDefault(); DimBase<3>::SetDefault(); TimeSeriesBase::SetDefault();}
+	void	Set(BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
+	
+	int		GetFrameSize() const;
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const VolumeFormat& fmt) const;
+	int		GetScalar() const {return DimBase<3>::GetVolume();} // TODO fix unit semantics
+	
+	byte pad[STD_FMT_SIZE - base_size - 4];
+};
+
 struct FboFormat :
-	public SampleBase<LightSampleFD>,
-	public DimBase<2>,
+	public SampleBase<BinarySample>,
+	public DimBase<3>,
 	public TimeSeriesBase
 {
 	static constexpr int base_size =
 		sizeof(SampleBase<LightSampleFD>) +
-		sizeof(DimBase<2>) +
+		sizeof(DimBase<3>) +
 		sizeof(TimeSeriesBase);
 	
-	void Set(LightSampleFD::Type t, int w, int , int freq, int sample_rate);
+	void Set(BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	
-	int GetFrameSize() const;
-	String ToString() const;
-	bool IsValid() const;
-	bool IsSame(const FboFormat& fmt) const;
-	
+	int		GetFrameSize() const;
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const FboFormat& fmt) const;
+	int		GetChannels() const {return SampleBase<BinarySample>::GetPackedCount();}
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
@@ -79,11 +102,11 @@ struct MidiFormat :
 		sizeof(DimBase<1>) +
 		sizeof(SparseTimeSeriesBase);
 	
-	void SetDefault() {SampleBase<MidiSample>::SetDefault(); DimBase<1>::SetDefault();}
-	int GetFrameSize() const;
-	String ToString() const;
-	bool IsValid() const;
-	bool IsSame(const MidiFormat& fmt) const;
+	void	SetDefault() {SampleBase<MidiSample>::SetDefault(); DimBase<1>::SetDefault();}
+	int		GetFrameSize() const;
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const MidiFormat& fmt) const;
 	
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
@@ -134,6 +157,7 @@ public:
 		byte				data[STD_FMT_SIZE];
 		AudioFormat			aud;
 		VideoFormat			vid;
+		VolumeFormat		vol;
 		MidiFormat			mid;
 		DataFormat			dat;
 		EventFormat			ev;
@@ -147,13 +171,14 @@ public:
 	String	ToString() const;
 	DevCls	GetDevSpec() const {return vd.dev;}
 	int		GetSampleSize() const;
-	int		GetArea() const;
+	int		GetScalar() const;
 	int		GetFrameSize() const;
 	double	GetFrameSeconds() const;
 	
 	bool IsOrder() const {return vd.val == ValCls::ORDER;}
 	bool IsAudio() const {return vd.val == ValCls::AUDIO;}
 	bool IsVideo() const {return vd.val == ValCls::VIDEO;}
+	bool IsVolume() const {return vd.val == ValCls::VOLUME;}
 	bool IsMidi()  const {return vd.val == ValCls::MIDI;}
 	bool IsEvent() const {return vd.val == ValCls::EVENT;}
 	bool IsFbo()   const {return vd.val == ValCls::FBO;}
@@ -171,8 +196,9 @@ public:
 	void SetOrder(DevCls dev);
 	void SetReceipt(DevCls dev);
 	void SetMidi(DevCls dev);
+	void SetVolume(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	void SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
-	void SetFbo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
+	void SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	void SetEvent(DevCls dev);
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}

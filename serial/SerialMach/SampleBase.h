@@ -92,15 +92,15 @@ public:
 	
 	using DimArg = int;
 	
-	void SetSize(DimArg a) {res[0] = a;}
-	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
-	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
+	void	SetSize(DimArg a) {res[0] = a;}
+	void	SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void	Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	
-	String ToString() const {return "len(" + IntStr(res[0]) + ")";}
-	bool IsSame(const DimBase& b) const {return res[0] == b.res[0];}
-	int GetArea() const {return res[0];}
-	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
-	int GetSize() const {return res[0];}
+	String	ToString() const {return "len(" + IntStr(res[0]) + ")";}
+	bool	IsSame(const DimBase& b) const {return res[0] == b.res[0];}
+	int		GetScalar() const {return res[0];}
+	bool	IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	int		GetSize() const {return res[0];}
 	
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 };
@@ -116,10 +116,10 @@ template<> struct DimBase<2> {
 	using DimArg = FixedArray<int,2>;
 	
 	
-	void SetSize(DimArg a) {res[0] = a[0]; res[1] = a[1];}
-	void SetSize(Size a) {res[0] = a.cx; res[1] = a.cy;}
-	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
-	void Clear() {
+	void	SetSize(DimArg a) {res[0] = a[0]; res[1] = a[1];}
+	void	SetSize(Size a) {res[0] = a.cx; res[1] = a.cy;}
+	void	SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void	Clear() {
 		for(int i = 0; i < n; i++) res[i] = 0;
 		width_pad = 0;
 	}
@@ -130,13 +130,14 @@ template<> struct DimBase<2> {
 		return *this;
 	}
 	
-	String ToString() const {return Size(res[0], res[1]).ToString();}
-	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
-	int GetArea() const {return res[0] * res[1];}
-	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
-	Size GetSize() const {return Size(res[0], res[1]);}
+	String	ToString() const {return Size(res[0], res[1]).ToString();}
+	bool	IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1];}
+	int		GetArea() const {return res[0] * res[1];}
+	int		GetScalar() const {return res[0] * res[1];}
+	bool	IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	Size	GetSize() const {return Size(res[0], res[1]);}
 	
-	void SetLinePadding(int bytes) {ASSERT(bytes >= 0); width_pad = bytes;}
+	void	SetLinePadding(int bytes) {ASSERT(bytes >= 0); width_pad = bytes;}
 	
 };
 
@@ -150,17 +151,19 @@ template<> struct DimBase<3> {
 	DimBase() {Clear();}
 	DimBase(const DimBase& b) {*this = b;}
 	
-	void SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy; res[2] = a.cz;}
-	void SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
-	void Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
+	void	SetSize(DimArg a) {res[0] = a.cx; res[1] = a.cy; res[2] = a.cz;}
+	void	SetDefault() {for(int i = 0; i < n; i++) res[i] = 1;}
+	void	Clear() {for(int i = 0; i < n; i++) res[i] = 0;}
 	DimBase& operator=(const Size3& b) {res[0] = b.cx; res[1] = b.cy; res[2] = b.cz; return *this;}
 	DimBase& operator=(const DimBase& b) {for(int i = 0; i < n; i++) res[i] = b.res[i]; return *this;}
 	
-	String ToString() const {return Size3(res[0], res[1], res[2]).ToString();}
-	bool IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
-	int GetArea() const {return res[0] * res[1] * res[2];}
-	bool IsValid() const {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
-	Size3 GetSize() const {return Size3(res[0], res[1], res[2]);}
+	String	ToString() const {return Size3(res[0], res[1], res[2]).ToString();}
+	bool	IsSame(const DimBase& b) const {return res[0] == b.res[0] && res[1] == b.res[1] && res[2] == b.res[2];}
+	int		GetVolume() const {return res[0] * res[1] * res[2];}
+	int		GetScalar() const {return res[0] * res[1] * res[2];}
+	bool	IsValid() const   {for(int i = 0; i < n; i++) if (res[i] <= 0) return false; return true;}
+	bool	IsValid2D() const {for(int i = 0; i < n; i++) if ((i < 2 && res[i] <= 0) || (i >= 2 && res[i] < 0)) return false; return true;}
+	Size3	GetSize() const {return Size3(res[0], res[1], res[2]);}
 	
 };
 
@@ -170,14 +173,14 @@ public:
 	
 	static const int def_sample_rate = 1;
 	
-	void Clear() {}
-	void SetTimeSeries(int,int) {Panic("never");}
+	void	Clear() {}
+	void	SetTimeSeries(int,int) {Panic("never");}
 	//void SetDeviceInternal() {}
 	
-	int GetSampleRate() const {return 1;}
-	bool IsSame(const OnceBase& b) const {return true;}
-	String ToString() const {return "OnceBase";}
-	bool IsValid() const {return true;}
+	int		GetSampleRate() const {return 1;}
+	bool	IsSame(const OnceBase& b) const {return true;}
+	String	ToString() const {return "OnceBase";}
+	bool	IsValid() const {return true;}
 	
 };
 
@@ -185,15 +188,15 @@ class SparseTimeSeriesBase {
 public:
 	static const int def_sample_rate = 1;
 	
-	void Clear() {}
-	void SetTimeSeries(int,int) {Panic("never");}
+	void	Clear() {}
+	void	SetTimeSeries(int,int) {Panic("never");}
 	//void SetDeviceInternal() {}
 	
-	int GetSampleRate() const {return 1;}
-	bool IsSame(const SparseTimeSeriesBase& b) const {return true;}
-	String ToString() const {return "SparseTimeSeriesBase";}
-	bool IsValid() const {return true;}
-	double GetFrameSeconds() const {return 0;}
+	int		GetSampleRate() const {return 1;}
+	bool	IsSame(const SparseTimeSeriesBase& b) const {return true;}
+	String	ToString() const {return "SparseTimeSeriesBase";}
+	bool	IsValid() const {return true;}
+	double	GetFrameSeconds() const {return 0;}
 	
 };
 
@@ -202,22 +205,22 @@ struct TimeSeriesBase {
 	int sample_rate;
 	
 	
-	void Clear() {freq = 0; sample_rate = 0;}
-	void SetTimeSeries(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
-	void SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
-	//void SetDeviceInternal() {freq = 1; sample_rate = 1;}
+	void	Clear() {freq = 0; sample_rate = 0;}
+	void	SetTimeSeries(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
+	void	SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
+	void	SetDefault() {freq = 1; sample_rate = 1;}
 	
-	String ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
-	bool IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}
-	bool IsSame(const TimeSeriesBase& b) const {
+	String	ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
+	bool	IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}
+	bool	IsSame(const TimeSeriesBase& b) const {
 		return	b.freq == freq &&
 				b.sample_rate == sample_rate;
 	}
-	bool IsValid() const {return freq > 0 && sample_rate > 0;}
-	double GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
-	int GetSampleRate() const {return sample_rate;}
-	int GetFrequency() const {return freq;}
-	double GetFPS() const {return freq / sample_rate;}
+	bool	IsValid() const {return freq > 0 && sample_rate > 0;}
+	double	GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
+	int		GetSampleRate() const {return sample_rate;}
+	int		GetFrequency() const {return freq;}
+	double	GetFPS() const {return freq / sample_rate;}
 	
 	void operator=(const TimeSeriesBase& c) {
 		freq = c.freq;
@@ -240,21 +243,21 @@ public:
 	SampleType type;
 	
 	
-	void Clear() {Sample::Clear(type);}
-	void SetType(SampleType t) {type = t;}
-	void SetDefault() {type = Sample::DEFAULT;}
+	void	Clear() {Sample::Clear(type);}
+	void	SetType(SampleType t) {type = t;}
+	void	SetDefault() {type = Sample::DEFAULT;}
 	
-	String ToString() const {return Sample::ToString(type);}
-	int GetSampleSize() const {return Sample::GetSize(type);}
-	bool IsSampleFloat() const {return Sample::IsFloating(type);}
-	bool IsSampleSigned() const {return Sample::IsSigned(type);}
-	bool IsSampleBigEndian() const {return Sample::IsBigEndian(type);}
-	bool IsCopyCompatible(const SampleBase& b) const {return Sample::IsCopyCompatible(type, b.type);}
-	bool IsValid() const {return Sample::IsValid(type);}
-	bool IsDeviceInternal() const {return type == SampleType::DEV_INTERNAL;}
+	String	ToString() const {return Sample::ToString(type);}
+	int		GetSampleSize() const {return Sample::GetSize(type);}
+	bool	IsSampleFloat() const {return Sample::IsFloating(type);}
+	bool	IsSampleSigned() const {return Sample::IsSigned(type);}
+	bool	IsSampleBigEndian() const {return Sample::IsBigEndian(type);}
+	bool	IsCopyCompatible(const SampleBase& b) const {return Sample::IsCopyCompatible(type, b.type);}
+	bool	IsValid() const {return Sample::IsValid(type);}
+	bool	IsDeviceInternal() const {return type == SampleType::DEV_INTERNAL;}
 	template <class K> bool IsSampleType() const {return Sample::template IsSampleType<K>(type);}
-	int GetPackedSingleSize() const {return Sample::GetPackedSingleSize(type);}
-	int GetPackedCount() const {return Sample::GetPackedCount(type);}
+	int		GetPackedSingleSize() const {return Sample::GetPackedSingleSize(type);}
+	int		GetPackedCount() const {return Sample::GetPackedCount(type);}
 	SampleType GetType() const {return type;}
 	
 	void operator=(const SampleBase& c) {
@@ -274,8 +277,8 @@ public:
 	
 	DevBase() {dev_spec = AsVoidTypeCls();}
 	
-	void Clear() {dev_spec = AsVoidTypeCls();}
-	void SetDevSpec(TypeCls t) {dev_spec = t;}
+	void	Clear() {dev_spec = AsVoidTypeCls();}
+	void	SetDevSpec(TypeCls t) {dev_spec = t;}
 	void operator=(const DevBase& b) {dev_spec = b.dev_spec;}
 	
 	template <class DevSpec>
@@ -283,12 +286,12 @@ public:
 		dev_spec = AsTypeCls<DevSpec>();
 	}
 	
-	TypeCls GetDevSpec() const {return dev_spec;}
-	bool IsDeviceSpecific() const {return dev_spec != AsVoidTypeCls();}
-	bool IsSame(const DevBase& f) const {return dev_spec == f.dev_spec;}
-	bool IsValid() const {return dev_spec != AsVoidTypeCls();}
+	TypeCls	GetDevSpec() const {return dev_spec;}
+	bool	IsDeviceSpecific() const {return dev_spec != AsVoidTypeCls();}
+	bool	IsSame(const DevBase& f) const {return dev_spec == f.dev_spec;}
+	bool	IsValid() const {return dev_spec != AsVoidTypeCls();}
 	
-	String ToString() const;
+	String	ToString() const;
 };
 
 

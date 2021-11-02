@@ -61,6 +61,7 @@ bool SDL2ContextBase::PostInitialize() {
 }
 
 void SDL2ContextBase::Uninitialize() {
+	obj->CloseComponents();
 	obj->Close();
 }
 

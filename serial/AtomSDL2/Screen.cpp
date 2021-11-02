@@ -16,6 +16,14 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);
 	
+	// OglShaderBase duplicate
+	for(int i = 0; i < 4; i++) {
+		String key = ".buf" + IntStr(i);
+		String value = ws.Get(key);
+		if (value == "volume")
+			buf.SetInputVolume(i);
+	}
+	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
 	//AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
 	GetSink()->GetValue(0).SetMaxQueueSize(1);
@@ -30,8 +38,9 @@ void SDL2ScreenBase::Uninitialize() {
 }
 
 bool SDL2ScreenBase::IsReady(PacketIO& io) {
-	bool b = io.nonempty_sinks == io.sink_count;
-	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask;
+	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
 	return b;
 }
 

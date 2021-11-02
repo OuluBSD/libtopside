@@ -270,6 +270,14 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
 	
+	// SDL2ScreenBase duplicate
+	for(int i = 0; i < 4; i++) {
+		String key = ".buf" + IntStr(i);
+		String value = ws.Get(key);
+		if (value == "volume")
+			buf.SetInputVolume(i);
+	}
+	
 	InterfaceSinkRef sink_iface = GetSink();
 	int c = sink_iface->GetSinkCount();
 	for(int i = 0; i < c; i++)
@@ -287,6 +295,7 @@ bool OglShaderBase::PostInitialize() {
 	buf.is_win_fbo = false;
 	buf.fb_size = Size(1280,720);
 	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
+	
 	if (!buf.Initialize())
 		return false;
 	
@@ -328,9 +337,12 @@ bool OglShaderBase::ProcessPackets(PacketIO& io) {
 		
 		Format in_fmt = in->GetFormat();
 		if (in_fmt.vd == VD(OGL,FBO)) {
+			Size3 sz = in_fmt.fbo.GetSize();
+			int channels = in_fmt.fbo.GetChannels();
+			
 			int base = GetSink()->GetSinkCount() > 1 ? 1 : 0;
 			if (in->IsData<InternalPacketData>()) {
-				succ = buf.LoadOutputLink(sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+				succ = buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
 			}
 			else {
 				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
@@ -427,21 +439,38 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	
 	Format from_fmt = from.GetFormat();
 	ASSERT(from_fmt.IsVideo());
-	Size sz = from_fmt.vid.GetSize();
+	Size3 sz;
+	int channels;
+	if (from_fmt.IsVideo()) {
+		sz			= from_fmt.vid.GetSize();
+		channels	= from_fmt.vid.GetChannels();
+	}
+	else if (from_fmt.IsVolume()) {
+		sz			= from_fmt.vol.GetSize();
+		channels	= from_fmt.vid.GetChannels();
+	}
+	else
+		TODO
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		buf.is_win_fbo = false;
 		buf.fb_size = sz;
-		buf.fb_channels = 4;
+		buf.fb_channels = channels;
 		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
 		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
 		
-		if (!buf.InitializeTextureRGBA(sz, from.GetData()))
-			return false;
+		if (sz.cz == 0) {
+			if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, from.GetData()))
+				return false;
+		}
+		else {
+			if (!buf.InitializeVolume(sz, channels, from.GetData()))
+				return false;
+		}
 	}
 	else {
-		buf.ReadTexture(sz, from.GetData());
+		buf.ReadTexture(sz, channels, from.GetData());
 	}
 	
 	

@@ -84,7 +84,7 @@ bool PacketBufferBase::ProcessPackets(PacketIO& io) {
 
 
 int PacketValue::GetSizeChannelSamples() const {
-	int div = fmt.GetArea() * fmt.GetSampleSize();
+	int div = fmt.GetScalar() * fmt.GetSampleSize();
 	ASSERT(div > 0);
 	return data.GetCount() / div;
 }

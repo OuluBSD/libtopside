@@ -55,6 +55,7 @@ namespace Serial {
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
+	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
 	ATOM_TYPE(SDL_FBO_PIPE) \
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
@@ -63,12 +64,14 @@ namespace Serial {
 	ATOM_TYPE(OGL_SHADER_PIPE) \
 	ATOM_TYPE(OGL_SHADER_ATOM) \
 	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
+	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 
 
 #define GUI_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
+	ATOM_CLASS(VolumeLoaderAtom) \
 	ATOM_CLASS(SdlFboAtomSA) \
 	ATOM_CLASS(SdlFboPipe) \
 	ATOM_CLASS(SdlFboPipeSide) \
@@ -77,6 +80,7 @@ namespace Serial {
 	ATOM_CLASS(OglShaderPipe) \
 	ATOM_CLASS(OglShaderAtom) \
 	ATOM_CLASS(OglTextureSource) \
+	ATOM_CLASS(OglVolumeSource) \
 
 
 }

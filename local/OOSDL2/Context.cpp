@@ -29,9 +29,13 @@ bool Context::Open0() {
 	return true;
 }
 
-void Context::Close0() {
+void Context::CloseComponents() {
 	for(Component* c : comps)
 		c->Close();
+}
+
+void Context::Close0() {
+	CloseComponents();
 	
 	if (--count == 0) {
 	    is_sdl2_quit = true;

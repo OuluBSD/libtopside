@@ -1,0 +1,11 @@
+machine sdl.app: {
+	driver context: {
+		sdl.context: true;
+	};
+	chain program: {
+		loop ogl.fbo: {
+			ogl.customer: true;
+			sdl.fbo.standalone: true {filepath: "shaders/toys/simple_single/stage0.glsl";};
+		};
+	};
+};

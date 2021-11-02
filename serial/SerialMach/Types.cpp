@@ -192,6 +192,15 @@ bool IfaceConnTuple::IsComplete() const {
 			return false;
 	return true;
 }
+
+dword IfaceConnTuple::GetSinkMask() const {
+	// primary link is not usually written to this class,
+	// but it's always required so set it true
+	dword m = 0;
+	for(int i = 0; i < MAX_VDTUPLE_SIZE; i++)
+		m |= (i == 0 || sink[i].conn >= 0) ? 1 << i : 0;
+	return m;
+}
 	
 	
 	

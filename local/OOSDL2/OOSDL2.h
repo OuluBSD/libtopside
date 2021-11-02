@@ -419,6 +419,7 @@ public:
 	Context() = default;
 	
 	void Add(Component& c) {comps.Add(&c);}
+	void CloseComponents();
 	
 	String GetLastError() const {return last_error;}
 	

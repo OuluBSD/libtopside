@@ -1,0 +1,29 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop center.image: {
+			id: "image";
+			center.customer: true;
+			center.image.loader: true [][id: "texture"] {vflip: true; filepath: "bg5.png";};
+		};
+		
+		loop ogl.fbo.tex: {
+			id: "texture";
+			ogl.customer: true;
+			ogl.fbo.image: true [id: "image"][id: "screen"];
+		};
+		
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo: true [id: "texture";;;;] {filepath: "shaders/toys/simple_texture/stage0.glsl";};
+		};
+	};
+
+};
+

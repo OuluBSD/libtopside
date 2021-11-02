@@ -51,20 +51,32 @@ bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
 	return true;
 }
 
-bool OglBuffer::InitializeTextureRGBA(Size sz, const Vector<byte>& data) {
+bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data) {
 	DLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << data.GetCount());
 	
 	UpdateTexBuffers();
 	
-	ReadTexture(sz, data);
+	ReadTexture(sz, channels, data);
 	
 	return true;
 }
 
-void OglBuffer::ReadTexture(Size sz, const Vector<byte>& data) {
+bool OglBuffer::InitializeVolume(Size3 sz, int channels, const Vector<byte>& data) {
+	DLOG("OglBuffer::InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
+	
+	UpdateTexBuffers();
+	
+	ReadTexture(sz, channels, data);
+	
+	return true;
+}
+
+void OglBuffer::ReadTexture(Size sz, int channels, const Vector<byte>& data) {
 	GLuint& color_buf = this->color_buf[0];
 	ASSERT(color_buf > 0);
 	ASSERT(sz == fb_size);
+	int intl_fmt = GetOglChCode(channels);
+	
 	glBindTexture (GL_TEXTURE_2D, color_buf);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -73,7 +85,24 @@ void OglBuffer::ReadTexture(Size sz, const Vector<byte>& data) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
 		sz.cx,
 		sz.cy,
-		0, GL_RGBA, GL_UNSIGNED_BYTE,
+		0, intl_fmt, GL_UNSIGNED_BYTE,
+		data.Begin());
+}
+
+void OglBuffer::ReadTexture(Size3 sz, int channels, const Vector<byte>& data) {
+	GLuint& color_buf = this->color_buf[0];
+	ASSERT(color_buf > 0);
+	int intl_fmt = GetOglChCode(channels);
+	
+	glBindTexture (GL_TEXTURE_3D, color_buf);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F,
+		sz.cx,
+		sz.cy,
+		sz.cz,
+		0, intl_fmt, GL_UNSIGNED_BYTE,
 		data.Begin());
 }
 
@@ -152,8 +181,8 @@ void OglBuffer::RefreshPipeline() {
 	
 	UpdateTexBuffers();
 	
-	if (!CheckInputTextures())
-		return;
+	//if (!CheckInputTextures())
+	//	return;
 	
 	Reset();
 	
@@ -166,7 +195,7 @@ void OglBuffer::Reset() {
 
 const OglBuffer* OglBuffer::GetComponentById(int id) const {
 	ASSERT(id >= 0);
-	for (const OglBufferInput& s : in)
+	for (const OglBufferInput& s : in_buf)
 		if (s.id == id)
 			return s.GetBuffer();
 	return 0;
@@ -397,7 +426,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
 		int ch = var - VAR_COMPAT_CHANNEL0;
-		if (in.GetCount() >= ch+1) {
+		if (in_buf.GetCount() >= ch+1) {
 			int tex = GetInputTex(ch);
 			ASSERT(tex != 0);
 			glActiveTexture(GL_TEXTURE0 + ch);
@@ -414,8 +443,8 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	else if (var == VAR_COMPAT_CHANNELTIME) {
 		double values[4];
 		for(int j = 0; j < 4; j++) {
-			if (j < in.GetCount()) {
-				OglBufferInput& in = this->in[j];
+			if (j < in_buf.GetCount()) {
+				OglBufferInput& in = in_buf[j];
 				const OglBuffer* in_buf = in.GetBuffer();
 				values[j] = in_buf->time_total;
 			}
@@ -428,8 +457,8 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
 		int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 		GLfloat values[3] = {0,0,0};
-		if (ch < in.GetCount()) {
-			OglBufferInput& in = this->in[ch];
+		if (ch < in_buf.GetCount()) {
+			OglBufferInput& in = in_buf[ch];
 			const OglBuffer* in_buf = in.GetBuffer();
 			if (in.stream) {
 				values[0] = in_buf->fb_size.cx;
@@ -545,10 +574,10 @@ void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int re
 GLint OglBuffer::GetInputTex(int input_i) const {
 	const char* fn_name = "GetInputTex";
 	//DLOG("OglBuffer::GetInputTex");
-	if (input_i < 0 || input_i >= in.GetCount())
+	if (input_i < 0 || input_i >= in_buf.GetCount())
 		return -1;
 	
-	const OglBufferInput& in = this->in[input_i];
+	const OglBufferInput& in = in_buf[input_i];
 	const OglBuffer* in_comp = GetComponentById(in.id);
 	if (!in_comp)
 		return -1;
@@ -560,7 +589,7 @@ GLint OglBuffer::GetInputTex(int input_i) const {
 }
 
 int OglBuffer::GetTexType(int input_i) const {
-	const OglBufferInput& in = this->in[input_i];
+	const OglBufferInput& in = in_buf[input_i];
 	
 	if (in.type == OglBufferInput::VOLUME)
 		return GL_TEXTURE_3D;
@@ -615,7 +644,7 @@ bool OglBuffer::CompileFragmentShader() {
 				"uniform float     iTime;                 // shader playback time (in seconds)\n"
 				"uniform float     iTimeDelta;            // duration since the previous frame (in seconds)\n"
 				"uniform int       iFrame;                // frames since the shader (re)started\n"
-				"uniform vec2      iOffset;               \n"
+				"uniform vec2      iOffset;\n"
 				"uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click\n"
 				"uniform vec4      iDate;                 // (year, month, day, time in secs)\n"
 				"uniform float     iFrameRate;\n"
@@ -625,8 +654,8 @@ bool OglBuffer::CompileFragmentShader() {
 				;
 	
 	for(int j = 0; j < 4; j++) {
-		if (j < in.GetCount()) {
-			OglBufferInput& in = this->in[j];
+		if (j < in_buf.GetCount()) {
+			OglBufferInput& in = in_buf[j];
 			if (in.type == OglBufferInput::CUBEMAP)
 				code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
 			else if (in.type == OglBufferInput::VOLUME)
@@ -808,7 +837,7 @@ bool OglBuffer::CheckInputTextures() {
 			for(int j = 0; j < CHANNEL_COUNT; j++) {
 				GLint uindex = glGetUniformLocation(prog, "iChannel" + IntStr(j));
 				if (uindex >= 0) {
-					if (in.GetCount() > j) {
+					if (in_buf.GetCount() > j) {
 						int tex = GetInputTex(j);
 						if (tex == 0) {
 							OnError(fn_name,
@@ -874,23 +903,38 @@ void OglBuffer::StoreOutputLink(InternalPacketData& v) {
 	v.ptr = this;
 }
 
-bool OglBuffer::LoadOutputLink(int in_id, InternalPacketData& v) {
+bool OglBuffer::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
 	String buf_id = v.GetText();
 	
 	if (in_id >= 0) {
-		if (in_id <= in.GetCount())
-			in.SetCount(in_id+1);
+		if (in_id >= in_buf.GetCount())
+			in_buf.SetCount(in_id+1);
 		
 		ASSERT(v.ptr);
-		OglBufferInput& in = this->in[in_id];
+		OglBufferInput& in = in_buf[in_id];
 		in.id = in_id;
 		in.in_buf = (OglBuffer*)v.ptr;
+		
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		
+		if (sz.cz > 0)
+			in.type = OglBufferInput::VOLUME;
+		else
+			in.type = OglBufferInput::TEXTURE;
 		
 		return true;
 	}
 	
 	RTLOG("OglBuffer::LoadOutputLink: error: unexpected data");
 	return false;
+}
+
+void OglBuffer::SetInputVolume(int in_id) {
+	if (in_id >= in_buf.GetCount())
+		in_buf.SetCount(in_id+1);
+	
+	OglBufferInput& in = in_buf[in_id];
+	in.type = OglBufferInput::VOLUME;
 }
 
 

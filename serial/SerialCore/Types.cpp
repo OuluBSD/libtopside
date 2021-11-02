@@ -20,6 +20,9 @@ Format GetDefaultFormat(ValDevCls type) {
 	else if (type.val == ValCls::MIDI) {
 		fmt.SetMidi(type.dev);
 	}
+	else if (type.val == ValCls::VOLUME) {
+		fmt.SetVolume(type.dev, BinarySample::U8_LE_A, 512, 512, 512, 1, 1);
+	}
 	else if (type.val == ValCls::VIDEO) {
 		fmt.SetVideo(type.dev, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
 	}
@@ -27,7 +30,7 @@ Format GetDefaultFormat(ValDevCls type) {
 		fmt.SetEvent(type.dev);
 	}
 	else if (type.val == ValCls::FBO) {
-		fmt.SetFbo(type.dev, LightSampleFD::U8_LE_ABC, 1280, 720, 60, 1);
+		fmt.SetFbo(type.dev, BinarySample::U8_LE_ABC, 1280, 720, 0, 60, 1);
 	}
 	else {
 		TODO

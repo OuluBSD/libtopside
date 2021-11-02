@@ -13,6 +13,7 @@ class SDL2ImageBase :
 	One<OOSDL2::Image>			obj;
 	Vector<Image>				imgs;
 	String						last_error;
+	bool						vflip = false;
 	
 public:
 	RTTI_DECL1(SDL2ImageBase, AltBaseT)

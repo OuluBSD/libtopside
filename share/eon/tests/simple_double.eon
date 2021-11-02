@@ -1,0 +1,13 @@
+machine sdl.app: {
+	driver context: {
+		sdl.context: true;
+	};
+	chain program: {
+		loop ogl.fbo: {
+			ogl.customer: true;
+			ogl.fbo.source.pipe: true {filepath: "shaders/toys/simple_double/stage1.glsl";};
+			sdl.fbo.pipe: true {filepath: "shaders/toys/simple_double/stage0.glsl";};
+		};
+	};
+};
+

@@ -65,7 +65,7 @@ void AtomSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>
 		
 		int dbg_j = 0;
 		for (FwdScope scope(*c, *cfg); scope; scope++) {
-			RTLOG("AtomSystem::ForwardAtoms: loop " << HexStr(&*c) << " packets: " << GetDebugPacketString(c, cfg));
+			RTLOG("AtomSystem::ForwardAtoms: loop id=" << c->GetId() << " " << HexStr(&*c) << " packets: " << GetDebugPacketString(c, cfg));
 			
 			if (!scope.IsBreak()) {
 				RTLOG("AtomSystem::ForwardAtoms: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);

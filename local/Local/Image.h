@@ -82,7 +82,8 @@ public:
 };
 
 
-void DataFromImage(const Image& img, Vector<byte>& data);
+void	DataFromImage(const Image& img, Vector<byte>& data);
+Image	MirrorVertical(const Image& img);
 
 
 

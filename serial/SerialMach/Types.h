@@ -22,6 +22,7 @@
 #define IFACE_LIST \
 	IFACE(AUDIO) \
 	IFACE(VIDEO) \
+	IFACE(VOLUME) \
 	IFACE(MIDI) \
 	IFACE(EVENT) \
 	IFACE(DATA) \
@@ -137,6 +138,7 @@ struct ValCls : Moveable<ValCls> {
 		
 		Audio = AUDIO,
 		Video = VIDEO,
+		Volume = VOLUME,
 		Midi = MIDI,
 		Event = EVENT,
 		Data = DATA,
@@ -514,6 +516,7 @@ struct IfaceConnTuple {
 	void SetSource(int conn, int src_ch, int sink_ch);
 	void SetSink(int conn, int sink_ch, int src_ch);
 	bool IsComplete() const;
+	dword GetSinkMask() const;
 };
 
 

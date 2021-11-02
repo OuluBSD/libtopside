@@ -30,6 +30,9 @@ public:
 };
 
 
+ArrayMap<String,String>& ToyShaderHashToName();
+
+
 NAMESPACE_SERIAL_END
 
 #endif

@@ -318,6 +318,22 @@ public:
 #endif
 
 #if defined flagGUI
+class VolumeLoaderAtom : public Atom<VolumeLoaderAtom>, public VolumeLoaderBase {
+
+public:
+	RTTI_DECL2(VolumeLoaderAtom, AtomT, VolumeLoaderBase)
+	COPY_PANIC(VolumeLoaderAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.volume.loader")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
 class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2ScreenBase {
 
 public:
@@ -460,6 +476,22 @@ public:
 };
 #endif
 
+#if defined flagGUI
+class OglVolumeSource : public Atom<OglVolumeSource>, public OglTextureBase {
+
+public:
+	RTTI_DECL2(OglVolumeSource, AtomT, OglTextureBase)
+	COPY_PANIC(OglVolumeSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
@@ -509,6 +541,10 @@ using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
 #endif
 
 #if defined flagGUI
+using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
+#endif
+
+#if defined flagGUI
 using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
 #endif
 
@@ -540,6 +576,10 @@ using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
 
 #if defined flagGUI
 using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
+#endif
+
+#if defined flagGUI
+using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
 #endif
 
 }

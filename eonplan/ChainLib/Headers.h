@@ -78,6 +78,10 @@ HEADER12_U01(		SdlImageLoader,		SDL2ImageBase,				pipe,		CenterVideo,	CenterOrde
 HEADER_ACTION(		SdlImageLoader,		center.image.loader)
 HEADER_ARG(			SdlImageLoader,		GUI,		1)
 
+HEADER12_U01(		VolumeLoaderAtom,	VolumeLoaderBase,			pipe,		CenterVolume,	CenterOrder,	CenterVolume,	CenterReceipt)
+HEADER_ACTION(		VolumeLoaderAtom,	center.volume.loader)
+HEADER_ARG(			VolumeLoaderAtom,	GUI,		1)
+
 
 
 HEADER11(			SdlFboAtomSA,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
@@ -116,3 +120,7 @@ HEADER_ARG(			OglShaderAtom,		GUI,		1)
 HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,		OglReceipt)
 HEADER_ACTION(		OglTextureSource,	ogl.fbo.image)
 HEADER_ARG(			OglTextureSource,	GUI,		1)
+
+HEADER22_U11(		OglVolumeSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,		OglReceipt)
+HEADER_ACTION(		OglVolumeSource,	ogl.fbo.volume)
+HEADER_ARG(			OglVolumeSource,	GUI,		1)

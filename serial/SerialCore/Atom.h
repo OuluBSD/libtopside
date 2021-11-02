@@ -30,6 +30,13 @@ public:
 	#endif
 	
 protected:
+	friend class ScriptLoopLoader;
+	
+	int						id = -1;
+	
+	void SetId(int i) {id = i;}
+	
+protected:
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
 		off32_gen				gen;
@@ -134,6 +141,7 @@ public:
 	
 	LoopRef		GetLoop();
 	Loop&		GetParent() {return *((SP*)this)->GetParent().AsStatic<Loop>();}
+	int			GetId() const {return id;}
 	
 	template <class T> RefT_Loop<T> As() {return AtomBase_Static_As<T>(this);}
 	

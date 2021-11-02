@@ -9,7 +9,7 @@ machine sdl.app: {
 		loop center.image: {
 			id: "image";
 			center.customer: true;
-			center.image.loader: true [][id: "texture"] {filepath: "uk_street.jpg";};
+			center.image.loader: true [][id: "texture"] {vflip: true; filepath: "uk_street.jpg";};
 		};
 		
 		loop ogl.fbo.tex: {

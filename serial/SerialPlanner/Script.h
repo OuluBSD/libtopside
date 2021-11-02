@@ -113,7 +113,7 @@ public:
 	void				Forward();
 	
 	//void				SetStatusRetry() {SetStatus(RETRY);}
-	void				SetError(String s) {err_str = s; SetStatus(FAILED); RTLOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
+	void				SetError(String s) {err_str = s; SetStatus(FAILED); LOG("ScriptLoaderBase::SetError: this=" << HexStr(this) << ": " << s); }
 	
 	bool				IsFailed() const {return status == FAILED;}
 	bool				IsReady() const {return status == READY;}

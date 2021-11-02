@@ -1,3 +1,16 @@
+- .toy files
+	- simple_single
+	- simple_double
+	- simple_future_buffer
+	- simple_texture
+	- simple_volume
+	- simple_webcam
+	- simple_video
+	- simple_sound_out_dbg
+	- simple_sound_out
+	- simple_music
+
+
 - client/server
 	- internet radio
 

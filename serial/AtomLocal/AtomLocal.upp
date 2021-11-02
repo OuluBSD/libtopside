@@ -24,6 +24,8 @@ file
 	Video.cpp,
 	Media.h,
 	Media.cpp,
+	Volume.h,
+	Volume.cpp,
 	Ffmpeg.h,
 	Ffmpeg.cpp,
 	FfmpegFileIn.h,
