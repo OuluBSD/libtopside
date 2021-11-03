@@ -1,5 +1,5 @@
 #include "ProtoVM.h"
-
+#if 0
 
 void InterfaceBus::Attach(Board* b) {
 	for (int i = 0; i < IFACE_SLOTS; i++) {
@@ -39,3 +39,4 @@ void Machine::Tick() {
 	computer.Tick();
 }
 
+#endif

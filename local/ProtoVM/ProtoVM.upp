@@ -4,6 +4,8 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
+	Generic.h,
+	Generic.cpp,
 	Machine.h,
 	Machine.cpp,
 	test_prog0.txt;

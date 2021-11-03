@@ -209,7 +209,7 @@ NAMESPACE_UPP_END
 
 
 
-#if !defined HAVE_MINGW && defined flagWIN32 && ( defined flagCLANG || defined flagGCC )
+#if /*!defined HAVE_MINGW &&*/ defined flagWIN32 && ( defined flagCLANG || defined flagGCC )
 	
 #include <sec_api/stdlib_s.h> /* errno_t, size_t */
 extern "C" {
