@@ -21,7 +21,11 @@ String GetSubAtomString(SubAtomCls t) {
 		ATOM_TYPE_LIST
 		
 		#ifdef flagGUI
-		GUI_ATOM_TYPE_LIST
+		flagGUI_ATOM_TYPE_LIST
+		#endif
+		
+		#ifdef HAVE_OPENCV
+		HAVE_OPENCV_ATOM_TYPE_LIST
 		#endif
 		
 		#undef ATOM_TYPE
@@ -43,6 +47,7 @@ String ValCls::GetName(Type t) {
 	switch (t) {
 		case AUDIO:			return "audio";
 		case VIDEO:			return "video";
+		case VOLUME:		return "volume";
 		case MIDI:			return "midi";
 		case EVENT:			return "event";
 		case DATA:			return "data";

@@ -105,7 +105,8 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	v.SetFormat(fmt);
 	
 	// shadertoy compatibility
-	img = MirrorVertical(img);
+	if (vflip)
+		img = MirrorVertical(img);
 	
 	DataFromImage(img, v.Data());
 	ASSERT(v.GetData().GetCount());
@@ -116,7 +117,9 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 }
 
 bool SDL2ImageBase::IsReady(PacketIO& io) {
-	return !imgs.IsEmpty();
+	bool b = io.full_src_mask == 0 && !imgs.IsEmpty();
+	RTLOG("SDL2ImageBase::IsReady: " << (b ? "true" : "false"));
+	return b;
 }
 
 bool SDL2ImageBase::LoadFileAny(String path) {

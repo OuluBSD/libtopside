@@ -1,0 +1,27 @@
+machine sdl.app: {
+	
+	driver context: {
+		sdl.context: true;
+	};
+	
+	chain program: {
+		loop center.webcam: {
+			id: "cam";
+			center.customer: true;
+			center.image.webcam: true [][id: "texture"] {vflip: "true";};
+		};
+		
+		loop ogl.fbo.tex: {
+			id: "texture";
+			ogl.customer: true;
+			ogl.fbo.image: true [id: "cam"][id: "screen"];
+		};
+		
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo: true [id: "texture";;;;] {filepath: "shaders/toys/simple_webcam/stage0.glsl";};
+		};
+	};
+};
+

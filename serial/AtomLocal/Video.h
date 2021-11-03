@@ -4,6 +4,58 @@
 NAMESPACE_SERIAL_BEGIN
 
 
+struct VideoCodecFormat {
+	uint32			pix_fmt = 0;
+	
+};
+
+class VideoSourceFormatResolution {
+	
+protected:
+	friend class V4L2_DeviceManager;
+	
+	VideoFormat		fmt;
+	
+public:
+	
+	VideoFormat		GetFormat() const {return fmt;}
+	
+	void			SetFormat(VideoFormat fmt) {this->fmt = fmt;}
+	
+};
+
+class VideoSourceFormat {
+	
+protected:
+	friend class V4L2_DeviceManager;
+	
+	String								desc;
+	VideoCodecFormat					codec;
+	Array<VideoSourceFormatResolution>	res;
+	
+	VideoSourceFormatResolution&		GetResolution(int i) {return res[i];}
+	
+	
+public:
+	
+	VideoSourceFormatResolution&		Add() {return res.Add();}
+	void								SetDescription(String s) {desc = s;}
+	
+	String								GetDescription() const {return desc;}
+	int									GetResolutionCount() const {return res.GetCount();}
+	const VideoSourceFormatResolution&	GetResolution(int i) const {return res[i];}
+	VideoCodecFormat					GetCodecFormat() const {return codec;}
+	
+	VideoSourceFormatResolution&		operator[](int i) {return res[i];}
+	const VideoSourceFormatResolution&	operator[](int i) const {return res[i];}
+	
+	// IsMJPEG(): is src v4l2 and pix_fmt V4L2_PIX_FMT_MJPEG
+	
+};
+
+
+
+
 class VideoInputFrame : public PacketBufferBase {
 	
 protected:
@@ -31,22 +83,7 @@ public:
 	
 };
 
-struct DataPtrVideoBuffer : public PacketBufferBasePtr {
-	RTTI_DECL1(DataPtrVideoBuffer, PacketBufferBasePtr)
-	
-	
-	void* data = 0;
-	Format fmt;
-	int type = 0;
-	
-	enum {
-		UNKNOWN,
-		OPENCV
-	};
-	
-	void SetOpenCVFormat(Format fmt) {this->fmt = fmt; type = OPENCV;}
-	
-};
+
 
 
 
@@ -71,7 +108,6 @@ public:
 	uint64 GetMaxOffset() const {return frame.GetCount();}
 	
 };
-
 
 class VideoGenBase :
 	public virtual AtomBase

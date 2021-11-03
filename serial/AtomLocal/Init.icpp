@@ -3,6 +3,10 @@
 NAMESPACE_UPP
 
 INITBLOCK {
+	avdevice_register_all();
+	//avcodec_register_all();
+	//av_register_all();
+	
 	using namespace TS;
 	using namespace TS::Serial;
 	
@@ -10,11 +14,19 @@ INITBLOCK {
 	ATOM_CLASS_LIST
 	
 	#ifdef flagGUI
-	GUI_ATOM_CLASS_LIST
+	flagGUI_ATOM_CLASS_LIST
+	#endif
+	
+	#ifdef HAVE_FFMPEG
+	HAVE_OPENCV_ATOM_CLASS_LIST
 	#endif
 	
 	#undef ATOM_CLASS
 	
+	
+}
+
+EXITBLOCK {
 	
 }
 

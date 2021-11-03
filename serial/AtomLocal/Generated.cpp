@@ -214,6 +214,41 @@ AtomTypeCls VideoDbgSrc::GetType() const
 }
 
 #endif
+#if defined HAVE_OPENCV
+AtomTypeCls WebcamPipe::GetAtomType()
+{
+	return ATOM11(WEBCAM_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+}
+
+void WebcamPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<WebcamPipe>>(this);
+	vis.VisitThis<OpenCVBase>(this);
+}
+
+AtomTypeCls WebcamPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined HAVE_OPENCV
+AtomTypeCls WebcamAtom::GetAtomType()
+{
+	return ATOM11_U01(WEBCAM_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+}
+
+void WebcamAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<WebcamAtom>>(this);
+	vis.VisitThis<OpenCVBase>(this);
+}
+
+AtomTypeCls WebcamAtom::GetType() const
+{
+	return GetAtomType();
+}
+#endif
 #if defined flagGUI
 AtomTypeCls OglCustomer::GetAtomType()
 {

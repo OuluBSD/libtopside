@@ -8,9 +8,9 @@ class VolumeLoaderBase:
 	public virtual AtomBase
 {
 	Vector<byte>	values;
+	Format			fmt;
 	String			filepath;
-	Size			sz;
-	int				depth;
+	Size3			sz;
 	int				stride;
 	bool			vflip = false;
 	

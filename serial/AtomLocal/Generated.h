@@ -200,6 +200,38 @@ public:
 };
 #endif
 
+#if defined HAVE_OPENCV
+class WebcamPipe : public Atom<WebcamPipe>, public OpenCVBase {
+
+public:
+	RTTI_DECL2(WebcamPipe, AtomT, OpenCVBase)
+	COPY_PANIC(WebcamPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.webcam.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined HAVE_OPENCV
+class WebcamAtom : public Atom<WebcamAtom>, public OpenCVBase {
+
+public:
+	RTTI_DECL2(WebcamAtom, AtomT, OpenCVBase)
+	COPY_PANIC(WebcamAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.webcam")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 #if defined flagGUI
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
@@ -520,9 +552,13 @@ using AudioJoiner2UserRef = Ref<AudioJoiner2User, AtomParent>;
 using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
 #endif
 
-#if defined flagGUI
-using OglCustomerRef = Ref<OglCustomer, AtomParent>;
+#if defined HAVE_OPENCV
+using WebcamPipeRef = Ref<WebcamPipe, AtomParent>;
 #endif
+
+using WebcamAtomRef = Ref<WebcamAtom, AtomParent>;
+
+using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
 
@@ -536,51 +572,29 @@ using EventStateRef = Ref<EventState, AtomParent>;
 
 using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 
-#if defined flagGUI
 using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
-#endif
 
-#if defined flagGUI
 using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
-#endif
 
-#if defined flagGUI
 using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
-#endif
 
-#if defined flagGUI
 using SdlFboPipeRef = Ref<SdlFboPipe, AtomParent>;
-#endif
 
-#if defined flagGUI
 using SdlFboPipeSideRef = Ref<SdlFboPipeSide, AtomParent>;
-#endif
 
-#if defined flagGUI
 using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
-#endif
 
-#if defined flagGUI
 using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
-#endif
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 
-#if defined flagGUI
 using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
-#endif
 
-#if defined flagGUI
 using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
-#endif
 
-#if defined flagGUI
 using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
-#endif
 
-#if defined flagGUI
 using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
-#endif
 
 }
 

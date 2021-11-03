@@ -522,7 +522,6 @@ void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int re
 		buf_count++;
 	
 	Size sz = fb_size;
-	int channels = fb_channels;
 	
 	EnableGfxAccelDebugMessages(1);
 	
@@ -532,8 +531,8 @@ void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int re
 		GLuint& frame_buf = this->frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
-		ASSERT(fb_accel_fmt == GetOglChCode(4, true));
-		ASSERT(fb_fmt == GetOglChCode(4, false));
+		ASSERT(fb_accel_fmt == GetOglChCode(fb_channels, true));
+		ASSERT(fb_fmt == GetOglChCode(fb_channels, false));
 		ASSERT(fb_type == GL_UNSIGNED_BYTE);
 		
 		// color buffer

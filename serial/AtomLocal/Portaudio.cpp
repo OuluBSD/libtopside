@@ -126,10 +126,9 @@ void PortaudioSink::Uninitialize() {
 }
 
 bool PortaudioSink::PassConsumePacket(int sink_ch, const Packet& in) {
-	TODO
-	#if 0
-	return in->GetFormat().IsCopyCompatible(fmt);
-	#endif
+	Format fmt = in->GetFormat();
+	return fmt.vd.val == ValCls::AUDIO;
+	
 }
 
 void PortaudioSink::SinkCallback(Portaudio::StreamCallbackArgs& args) {

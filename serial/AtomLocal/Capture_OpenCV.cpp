@@ -1,6 +1,3 @@
-#include "AtomLocal.h"
-
-#if 0
 
 // problematic hal/interface.h usage fix
 // clang and gcc behaves in a different way
@@ -15,9 +12,9 @@
 		#include <opencv2/videoio.hpp>
 	#endif
 	
-	#include "EcsMultimedia.h"
+	#include "AtomLocal.h"
 #else
-	#include "EcsMultimedia.h"
+	#include "AtomLocal.h"
 	
 	#if HAVE_OPENCV
 		#undef CPU_SSE2
@@ -34,6 +31,13 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class OpenCVCaptureDevice::Data {
+	off32_gen	gen;
+	
+	Size prev_sz;
+	double prev_fps;
+	Format prev_fmt;
+	bool prev_vflip;
+	
 public:
 	OpenCVCaptureDevice& dev;
 	
@@ -42,7 +46,12 @@ public:
 	
 	Data(OpenCVCaptureDevice* dev) : dev(*dev) {}
 	
-	bool OpenDevice0(Size sz, double fps, VideoFormat vid_fmt) {
+	bool OpenDevice0(Size sz, double fps, const Format& fmt, bool vflip) {
+		prev_sz = sz;
+		prev_fps = fps;
+		prev_fmt = fmt;
+		prev_vflip = vflip;
+		
 		camera.set(cv::CAP_PROP_FRAME_WIDTH, sz.cx);
 		camera.set(cv::CAP_PROP_FRAME_HEIGHT, sz.cy);
 		camera.set(cv::CAP_PROP_FPS, fps);
@@ -52,8 +61,6 @@ public:
 			camera.set(cv::CAP_PROP_FRAME_HEIGHT, sz.cy);
 			camera.set(cv::CAP_PROP_FPS, fps);
 			
-			dev.vbuffer.SetOpenCVFormat(vid_fmt);
-			dev.abuffer.Clear();
 			return true;
 		}
 		return false;
@@ -61,30 +68,31 @@ public:
 	
 	void Close() {camera.release();}
 	
-	#if HAVE_OPENGL
-	bool PaintOpenGLTexture(int texture) {
-		TODO
-		/*if (type == OPENCV && data != NULL) {
-			glBindTexture (GL_TEXTURE_2D, texture);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-			
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fmt.res.cx, fmt.res.cy, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
-			return true;
-		}*/
-		return false;
-	}
-	#endif
+	bool ReopenDevice() {Close(); return OpenDevice0(prev_sz, prev_fps, prev_fmt, prev_vflip);}
 	
 	bool Read() {
 		if (camera.isOpened()) {
 			camera >> frame;
 			if (frame.data == NULL)
 				return false;
-			cv::flip(frame, frame_flipped, 0);
+			if (prev_vflip)
+				cv::flip(frame, frame_flipped, 0);
+			else
+				frame_flipped = frame;
+			
+			cv::cvtColor(frame_flipped, frame, cv::COLOR_BGR2RGB);
+			
 			int sz = frame.cols * frame.rows * frame.channels();
-			dev.vbuffer.data = frame_flipped.data;
+			
+			Packet p = CreatePacket(gen.Create());
+			PacketValue& v = *p;
+			v.SetFormat(prev_fmt);
+			auto& data = v.Data();
+			ASSERT(sz > 0);
+			data.SetCount(sz);
+			memcpy(data.Begin(), frame.data, sz);
+			dev.last_p = p;
+			
 			return true;
 		}
 		return false;
@@ -104,9 +112,6 @@ public:
 
 
 OpenCVCaptureDevice::OpenCVCaptureDevice() {
-	avproxy.Set(abuffer, vbuffer);
-	astream.Set(abuffer);
-	vstream.Set(vbuffer);
 	ocv = new Data(this);
 }
 
@@ -114,13 +119,7 @@ OpenCVCaptureDevice::~OpenCVCaptureDevice() {
 	Close();
 }
 
-#if 0
-
-bool OpenCVCaptureDevice::Open0(String path) {
-	return path.IsEmpty() || path == this->path;
-}
-
-bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
+bool OpenCVCaptureDevice::Open(int fmt_i, int res_i, bool vflip) {
 	Close();
 	
 	cur_time.Reset();
@@ -132,10 +131,14 @@ bool OpenCVCaptureDevice::OpenDevice0(int fmt_i, int res_i) {
 	const VideoSourceFormatResolution& res = fmt.GetResolution(res_i);
 	
 	VideoFormat vid_fmt = res.GetFormat();
-	Size sz = vid_fmt.size;
-	const double fps = vid_fmt.fps;
+	Size sz = vid_fmt.GetSize();
+	const double fps = vid_fmt.GetFPS();
+	if (fps <= 0.0) return false;
+	time_step = 1.0 / fps;
 	
-	if (ocv && ocv->OpenDevice0(sz, fps, vid_fmt))
+	Format f;
+	f.SetVideo(DevCls::CENTER, vid_fmt);
+	if (ocv && ocv->OpenDevice0(sz, fps, f, vflip))
 		return true;
 	
 	return false;
@@ -146,6 +149,85 @@ void OpenCVCaptureDevice::Close() {
 		ocv->Close();
 }
 
+void OpenCVCaptureDevice::Start() {
+	Stop();
+	flag.Start(1);
+	Thread::Start(THISBACK(Process));
+}
+
+void OpenCVCaptureDevice::Stop() {
+	flag.Stop();
+}
+
+void OpenCVCaptureDevice::Process() {
+	if (ocv) {
+		TimeStop ts;
+		while (ocv && ocv->IsDeviceOpen() && flag.IsRunning()) {
+			if (ts.Seconds() >= time_step) {
+				ts.Reset();
+				
+				if (ocv->Read()) {
+					// got new video frame
+					frame_counter++;
+				}
+				else
+					Sleep(1);
+			}
+			
+			if (!ocv->IsDeviceOpen())
+				ocv->ReopenDevice();
+			
+		}
+	}
+	flag.DecreaseRunning();
+}
+
+bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res) {
+	double tgt_bw = (double)cap_sz.cx * (double)cap_sz.cy * (double)fps;
+	double bw_low = bw_min * tgt_bw;
+	double bw_high = bw_max * tgt_bw;
+	if (bw_low > bw_high)
+		return false;
+	
+	struct Result : Moveable<Result> {
+		double diff;
+		int fmt, res;
+		bool operator()(const Result& a, const Result& b) const {return a.diff < b.diff;}
+	};
+	Vector<Result> results;
+	
+	for(int i = 0; i < fmts.GetCount(); i++) {
+		const VideoSourceFormat& fmt = fmts[i];
+		for(int j = 0; j < fmt.GetResolutionCount(); j++) {
+			const VideoSourceFormatResolution& fmt_res = fmt.GetResolution(j);
+			VideoFormat vid_fmt = fmt_res.GetFormat();
+			Size fmt_sz = vid_fmt.GetSize();
+			double fmt_fps = vid_fmt.GetFPS();
+			double fmt_bw = (double)fmt_sz.cx * (double)fmt_sz.cy * fmt_fps;
+			if (fmt_bw >= bw_low && fmt_bw <= bw_high) {
+				Result& r = results.Add();
+				r.diff = fabs(tgt_bw - fmt_bw);
+				r.fmt = i;
+				r.res = j;
+			}
+		}
+	}
+	if (results.GetCount()) {
+		Sort(results, Result());
+		if (0) {
+			for(int i = 0; i < results.GetCount(); i++) {
+				const Result& r = results[i];
+				LOG(i << ": " << r.diff << ": " << r.fmt << ", " << r.res);
+			}
+		}
+		const Result& res = results[0];
+		ret_fmt = res.fmt;
+		ret_res = res.res;
+		return true;
+	}
+	return false;
+}
+
 bool OpenCVCaptureDevice::IsOpen() const {
 	if (ocv && ocv->IsDeviceOpen())
 		return true;
@@ -154,35 +236,6 @@ bool OpenCVCaptureDevice::IsOpen() const {
 }
 
 
-
-void OpenCVCaptureDevice::FillVideoBuffer() {
-	if (ocv)
-		ocv->Read();
-}
-
-void OpenCVCaptureDevice::DropVideoFrames(int frames) {
-	TODO
-}
-
-int OpenCVCaptureDevice::GetActiveVideoFormatIdx() const {
-	TODO
-}
-
-int OpenCVCaptureDevice::GetFormatCount() const {
-	TODO
-}
-
-const VideoSourceFormat& OpenCVCaptureDevice::GetFormat(int i) const {
-	TODO
-}
-
-bool OpenCVCaptureDevice::FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) {
-	TODO
-}
-
-#endif
-
 NAMESPACE_SERIAL_END
 
-#endif
 #endif

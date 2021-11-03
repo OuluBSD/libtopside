@@ -104,6 +104,11 @@ bool VolumeFormat::IsSame(const VolumeFormat& b) const {
 				DimBase<3>::IsSame(b);
 }
 
+bool VolumeFormat::IsCopyCompatible(const VolumeFormat& b) const {
+	return		SampleBase<BinarySample>::IsCopyCompatible(b);
+}
+
+
 
 
 
@@ -212,10 +217,10 @@ int EventFormat::GetFrameSize() const {
 String Format::ToString() const {
 	if (IsAudio()) return "AudioFormat(" + vd.ToString() + ", " + aud.ToString() + ")";
 	if (IsVideo()) return "VideoFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
-	if (IsVolume()) return "VolumeFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
-	if (IsMidi())  return "MidiFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
-	if (IsEvent()) return "EventFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
-	if (IsFbo())   return "FboFormat(" + vd.ToString() + ", " + vid.ToString() + ")";
+	if (IsVolume()) return "VolumeFormat(" + vd.ToString() + ", " + vol.ToString() + ")";
+	if (IsMidi())  return "MidiFormat(" + vd.ToString() + ", " + mid.ToString() + ")";
+	if (IsEvent()) return "EventFormat(" + vd.ToString() + ", " + ev.ToString() + ")";
+	if (IsFbo())   return "FboFormat(" + vd.ToString() + ", " + fbo.ToString() + ")";
 	if (vd.val.type == ValCls::ORDER) return "OrderFormat";
 	if (vd.val.type == ValCls::RECEIPT) return "ReceiptFormat";
 	return "Invalid Format";
@@ -317,6 +322,13 @@ void Format::SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq,
 	vd.val = ValCls::VIDEO;
 	memset(data, 0, sizeof(data));
 	vid.Set(t, w, h, freq, sample_rate);
+}
+
+void Format::SetVideo(DevCls dev, const VideoFormat& vid) {
+	vd.dev = dev;
+	vd.val = ValCls::VIDEO;
+	memset(data, 0, sizeof(data));
+	this->vid = vid;
 }
 
 void Format::SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate) {

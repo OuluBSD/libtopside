@@ -96,7 +96,11 @@ typedef enum : byte {
 	ATOM_TYPE_LIST
 	
 	#ifdef flagGUI
-	GUI_ATOM_TYPE_LIST
+	flagGUI_ATOM_TYPE_LIST
+	#endif
+	
+	#ifdef HAVE_OPENCV
+	HAVE_OPENCV_ATOM_TYPE_LIST
 	#endif
 	
 	#undef ATOM_TYPE

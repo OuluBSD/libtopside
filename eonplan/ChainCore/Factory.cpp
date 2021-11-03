@@ -121,6 +121,24 @@ void Factory::OnError(String msg) {
 	LOG("Factory: error: " << msg);
 }
 
+void InitPre(Namespace& ns_serial, String pre, Vector<MExpr*>& deflists, Vector<MExpr*>& clslists) {
+	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_TYPE_LIST");
+	MExpr& ms_deflist_expr = ms_deflist;
+	ms_deflist.Hint(HINT_PKG, "SerialMach");
+	ms_deflist.Hint(HINT_FILE, "Generated");
+	ms_deflist.HideStatement();
+	ms_deflist_expr.SetDefine(pre + "ATOM_TYPE_LIST");
+	deflists.Add(&ms_deflist_expr);
+	
+	MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_CLASS_LIST");
+	MExpr& ms_clslist_expr = ms_clslist;
+	ms_clslist.Hint(HINT_PKG, "SerialMach");
+	ms_clslist.Hint(HINT_FILE, "Generated");
+	ms_clslist.HideStatement();
+	ms_clslist_expr.SetDefine(pre + "ATOM_CLASS_LIST");
+	clslists.Add(&ms_clslist_expr);
+}
+
 bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	auto& vals = Vals();
 	auto& devs = Devs();
@@ -157,27 +175,11 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	cu.Activate(te_fwdscope);
 	
 	Index<String> atom_types;
-	atom_types.Add("");
-	atom_types.Add("GUI_");
-	
 	Vector<MExpr*> deflists, clslists;
-	for (String atom_type : atom_types) {
-		MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$" + atom_type + "ATOM_TYPE_LIST");
-		MExpr& ms_deflist_expr = ms_deflist;
-		ms_deflist.Hint(HINT_PKG, "SerialMach");
-		ms_deflist.Hint(HINT_FILE, "Generated");
-		ms_deflist.HideStatement();
-		ms_deflist_expr.SetDefine(atom_type + "ATOM_TYPE_LIST");
-		deflists.Add(&ms_deflist_expr);
-		
-		MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$" + atom_type + "ATOM_CLASS_LIST");
-		MExpr& ms_clslist_expr = ms_clslist;
-		ms_clslist.Hint(HINT_PKG, "SerialMach");
-		ms_clslist.Hint(HINT_FILE, "Generated");
-		ms_clslist.HideStatement();
-		ms_clslist_expr.SetDefine(atom_type + "ATOM_CLASS_LIST");
-		clslists.Add(&ms_clslist_expr);
-	}
+	
+	atom_types.Add("");
+	InitPre(ns_serial, "", deflists, clslists);
+	
 	
 	
 	for (Header& h : Headers().GetValues()) {
@@ -198,11 +200,22 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		
 		Class& cls_h = ns_serial.GetAddClass(h_name);
 		
+		String req_def;
 		int list_i = 0;
-		bool req_gui = h.args.Find("GUI") >= 0;
-		if (req_gui) {
-			list_i = 1;
-			cls_h.RequireMetaDefinition("flagGUI");
+		for(int i = 0; i < h.args.GetCount(); i++) {
+			String key = h.args.GetKey(i);
+			if (key.Left(7) == "reqdef_") {
+				String def = key.Mid(7);
+				String pre = def + "_";
+				cls_h.RequireMetaDefinition(def);
+				list_i = atom_types.Find(pre);
+				if (list_i < 0) {
+					req_def = def;
+					InitPre(ns_serial, pre, deflists, clslists);
+					list_i = atom_types.GetCount();
+					atom_types.Add(pre);
+				}
+			}
 		}
 		
 		Index<String> inherits;
@@ -377,8 +390,8 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			//using_expr.Add().SetIdTemplate("RefParent1").Add().SetId("Loop");
 			using_expr.Add().SetId("AtomParent");
 			
-			if (req_gui)
-				using_ref.RequireMetaDefinition("flagGUI");
+			if (!req_def.IsEmpty())
+				using_ref.RequireMetaDefinition(req_def);
 		}
 		
 		

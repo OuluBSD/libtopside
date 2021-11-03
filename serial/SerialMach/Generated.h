@@ -51,7 +51,7 @@ namespace Serial {
 	ATOM_CLASS(SdlAudioAtom) \
 
 
-#define GUI_ATOM_TYPE_LIST \
+#define flagGUI_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
@@ -67,7 +67,7 @@ namespace Serial {
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 
 
-#define GUI_ATOM_CLASS_LIST \
+#define flagGUI_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
@@ -81,6 +81,16 @@ namespace Serial {
 	ATOM_CLASS(OglShaderAtom) \
 	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
+
+
+#define HAVE_OPENCV_ATOM_TYPE_LIST \
+	ATOM_TYPE(WEBCAM_PIPE) \
+	ATOM_TYPE(WEBCAM_ATOM) \
+
+
+#define HAVE_OPENCV_ATOM_CLASS_LIST \
+	ATOM_CLASS(WebcamPipe) \
+	ATOM_CLASS(WebcamAtom) \
 
 
 }

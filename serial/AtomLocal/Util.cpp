@@ -438,7 +438,7 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	PacketValue& from = *sink.p;
 	
 	Format from_fmt = from.GetFormat();
-	ASSERT(from_fmt.IsVideo());
+	ASSERT(from_fmt.IsVideo() || from_fmt.IsVolume());
 	Size3 sz;
 	int channels;
 	if (from_fmt.IsVideo()) {

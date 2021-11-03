@@ -26,6 +26,16 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 	//DUMP(ws);
 	
 	
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for(int i = 0; i < src_count; i++) {
+		Format fmt = src_iface->GetSourceValue(i).GetFormat();
+		if (fmt.IsAudio())
+			audio_ch = i;
+		else if (fmt.IsVideo())
+			video_ch = i;
+	}
+	
 	if (type.iface.src().val.type == ValCls::AUDIO) {
 		if (ws.IsTrue(".stop_machine"))
 			stops_machine = true;
@@ -134,13 +144,25 @@ bool FfmpegAtomBase::IsReady(PacketIO& io) {
 }
 
 bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	if (mode == AUDIO_ONLY)
-		file_in.GetAudio().StorePacket(sink_ch, src_ch, in, out);
-	else
+	PacketIO::Sink& sink = io.sink[0];
+	
+	bool succ = true;
+	
+	if ((mode == AUDIO_ONLY || mode == AUDIOVIDEO) && audio_ch >= 0) {
+		PacketIO::Source& src = io.src[audio_ch];
+		Packet& out = src.p;
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		out = ReplyPacket(0, sink.p);
+		
+		succ = file_in.GetAudio().StorePacket(out);
+		ASSERT(succ);
+	}
+	if ((mode == VIDEO_ONLY || mode == AUDIOVIDEO) && video_ch >= 0) {
 		TODO
-	#endif
+	}
+	
+	return succ;
 }
 
 

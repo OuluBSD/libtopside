@@ -1,9 +1,9 @@
-#ifndef _Multimedia_V4L2_DeviceManager_h_
-#define _Multimedia_V4L2_DeviceManager_h_
+#ifndef _AtomLocal_V4L2_DeviceManager_h_
+#define _AtomLocal_V4L2_DeviceManager_h_
 
 #if HAVE_V4L2_DEVMGR
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_SERIAL_BEGIN
 
 class V4L2_Device {
 	
@@ -26,7 +26,7 @@ public:
 	
 	int GetCaptureCount() const {return caps.GetCount();}
 	OpenCVCaptureDevice& GetCapture(int i) {return caps[i];}
-	MediaStream* FindOpenDevice();
+	//MediaStream* FindOpenDevice();
 	
 	String GetPath() const {return path;}
 	String GetDescription() const {return desc;}
@@ -57,7 +57,7 @@ public:
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_SERIAL_END
 
 #endif
 #endif

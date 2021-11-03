@@ -3,7 +3,6 @@
 
 #include <Local/Local.h>
 #include <Geometry/Geometry.h>
-#include <Multimedia/Multimedia.h>
 
 
 #include "Struct.h"

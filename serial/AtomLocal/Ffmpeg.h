@@ -22,6 +22,7 @@ class FfmpegAtomBase :
 	String last_error;
 	MediaStreamThread vi;
 	Size def_cap_sz;
+	int audio_ch = -1, video_ch = -1;
 	int def_cap_fps;
 	bool stops_machine = false;
 	String file_path;

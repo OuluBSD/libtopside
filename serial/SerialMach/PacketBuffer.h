@@ -205,7 +205,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	bool ProcessPackets(PacketIO& io);
+	bool StorePacket(Packet& p);
 	void SetMinQueueSize(int i) {max_packets = i;}
 	
 };

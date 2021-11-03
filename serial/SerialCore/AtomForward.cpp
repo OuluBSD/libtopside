@@ -207,12 +207,13 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 			PacketIO::Source& iface = io.src[src_ch];
 			if (!iface.val) {
 				ASSERT(src_ch >= req_sink_ch_count);
-				continue;
 			}
-			if (iface.val->IsQueueFull()) {
+			else if (iface.val->IsQueueFull()) {
 				iface.is_full = true;
 				io.full_src_mask |= (1 << src_ch);
 			}
+			
+			RTLOG("AtomBase::ForwardPipe: " << (iface.val ? "has val" : "no val") << (iface.is_full ? ", is full" : ", not full"));
 		}
 		
 		
@@ -256,25 +257,26 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 		
 		for (int src_ch = 0; src_ch < src_ch_count; src_ch++) {
 			PacketIO::Source& iface = io.src[src_ch];
-			Packet& to = iface.p;
-			if (to) {
-				RTLOG("AtomBase::ForwardPipe: packet from sink #" << iface.from_sink_ch << " to #" << src_ch);
+			Packet& sent = iface.p;
+			if (sent) {
 				iter_forwarded = true;
 				
 				ASSERT(iface.from_sink_ch >= 0);
 				Value& src_val = src_iface->GetSourceValue(src_ch);
+				RTLOG("AtomBase::ForwardPipe: packet from sink #" << iface.from_sink_ch << " to #" << src_ch << " src_val=" << HexStr(&src_val) << " sink_val=" << HexStr(iface.val));
+				ASSERT(!iface.val->IsQueueFull());
 				
 				#ifdef flagDEBUG
 				Format src_fmt = src_val.GetFormat();
-				Format to_fmt = to->GetFormat();
-				if (!src_fmt.IsCopyCompatible(to_fmt)) {DUMP(to_fmt); DUMP(src_fmt);}
-				ASSERT(src_fmt.IsCopyCompatible(to_fmt));
+				Format sent_fmt = sent->GetFormat();
+				if (!src_fmt.IsCopyCompatible(sent_fmt)) {DUMP(sent_fmt); DUMP(src_fmt);}
+				ASSERT(src_fmt.IsCopyCompatible(sent_fmt));
 				#endif
 				
 				PacketBuffer& src_buf = src_val.GetBuffer();
-				PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *to);
-				to->AddRouteData(iface.from_sink_ch);
-				src_buf.Add(to);
+				PacketTracker::Checkpoint(TrackerInfo("AtomBase::ForwardSource", __FILE__, __LINE__), *sent);
+				sent->AddRouteData(iface.from_sink_ch);
+				src_buf.Add(sent);
 				is_forwarded = true;
 			}
 			else if (src_ch == 0) {
@@ -395,12 +397,15 @@ void AtomBase::ForwardSideConnections() {
 	InterfaceSourceRef src_iface = GetSource();
 	
 	for (Exchange& ex : side_sink_conn) {
+		ASSERT(ex.local_ch_i > 0 && ex.other_ch_i > 0);
 		Value& src_val = src_iface->GetSourceValue(ex.local_ch_i);
 		PacketBuffer& src_buf = src_val.GetBuffer();
 		if (src_buf.GetCount()) {
 			InterfaceSinkRef sink_iface = ex.other->GetSink();
 			Value& sink_val = sink_iface->GetValue(ex.other_ch_i);
-			ASSERT(!sink_val.IsQueueFull());
+			RTLOG("AtomBase::ForwardSideConnections: #" << ex.local_ch_i << " src_val=" << HexStr(&src_val) << " sink_val=" << HexStr(&sink_val));
+			if (sink_val.IsQueueFull())
+				Panic("internal error: Atom sent packet to already full source interface. Improve custom atom IsReady function to prevent this.");
 			PacketBuffer& sink_buf = sink_val.GetBuffer();
 			sink_buf.PickAppend(src_buf);
 			ASSERT(src_buf.IsEmpty());
@@ -435,6 +440,25 @@ Packet AtomBase::ReplyPacket(int src_ch, const Packet& in) {
 	to->SetFormat(src_fmt);
 	to->CopyRouteData(*in);
 	InternalPacketData& data = to->template SetData<InternalPacketData>();
+	PacketTracker::Track(TrackerInfo("AtomBase::ReplyPacket", __FILE__, __LINE__), *to);
+	return to;
+}
+
+Packet AtomBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
+	Format content_fmt = content->GetFormat();
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	off32 off = in->GetOffset();
+	Packet to;
+	if (content_fmt.IsCopyCompatible(src_fmt)) {
+		to = content;
+		to->SetOffset(off);
+	}
+	else {
+		Packet to = CreatePacket(off);
+		to->SetFormat(src_fmt);
+		Convert(content, to);
+	}
+	to->CopyRouteData(*in);
 	PacketTracker::Track(TrackerInfo("AtomBase::ReplyPacket", __FILE__, __LINE__), *to);
 	return to;
 }

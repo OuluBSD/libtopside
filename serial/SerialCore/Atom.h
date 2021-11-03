@@ -107,6 +107,7 @@ public:
 	void					ForwardAsync();
 	Packet					InitialPacket(int src_ch, off32 off);
 	Packet					ReplyPacket(int src_ch, const Packet& in);
+	Packet					ReplyPacket(int src_ch, const Packet& in, Packet content);
 	int						FindSourceWithValDev(ValDevCls vd);
 	
 	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}

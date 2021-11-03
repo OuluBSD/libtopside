@@ -10,6 +10,10 @@ library(!NO_FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilte
 
 library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 
+library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio";
+
+library(POSIX) v4l2;
+
 file
 	AtomLocal.h,
 	Internal.h,
@@ -30,12 +34,16 @@ file
 	Ffmpeg.cpp,
 	FfmpegFileIn.h,
 	FfmpegFileInput.cpp,
-	OpenCV.h,
-	OpenCV.cpp,
 	Capture_OpenCV.h,
 	Capture_OpenCV.cpp,
+	DeviceManager_V4L2.h,
+	DeviceManager_V4L2.cpp,
+	OpenCV.h,
+	OpenCV.cpp,
 	Capture_V4L2.h,
 	Capture_V4L2.cpp,
+	Capture_DShow.h,
+	Capture_DShow.cpp,
 	Portaudio.h,
 	Portaudio.cpp,
 	Fluidsynth.h,

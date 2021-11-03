@@ -1,70 +1,78 @@
 #ifndef _Multimedia_OpenCV_Capture_h_
 #define _Multimedia_OpenCV_Capture_h_
 
-#if 0
 #if HAVE_OPENCV
 
 NAMESPACE_SERIAL_BEGIN
 
 
 
-class OpenCVCaptureDevice : public MediaStream {
+class OpenCVCaptureDevice :
+	RTTIBase
+{
 	
 protected:
 	friend class V4L2_DeviceManager;
 	
-	String path;
+	Array<VideoSourceFormat>	fmts;
 	
-	//Vector<char> buffer;
-	DataPtrVideoBuffer vbuffer;
-	AudioVolatileBuffer abuffer;
-	SimpleAudioStream astream;
-	SimpleVideoStream vstream;
-	AVMediaProxy avproxy;
-	Image sw_frame;
-	uint32 open_pix_fmt = 0;
-	Size open_frame_sz;
-	TimeStop cur_time;
-	
+	String				path;
+	Packet				last_p;
+	Image				sw_frame;
+	uint32				open_pix_fmt = 0;
+	Size				open_frame_sz;
+	TimeStop			cur_time;
+	RunningFlag			flag;
+	double				time_step = 0;
+	int					frame_counter = 0;
 	
 	class Data;
 	
 	#if V4L2_SLOW
-	JPGRaster jpg_raster;
+	JPGRaster			jpg_raster;
 	#endif
 	
-	One<Data> ocv;
+	One<Data>			ocv;
 
 	
 	
 public:
-	RTTI_DECL1(OpenCVCaptureDevice, MediaStream)
+	typedef OpenCVCaptureDevice CLASSNAME;
+	RTTI_DECL0(OpenCVCaptureDevice);
 	OpenCVCaptureDevice();
 	~OpenCVCaptureDevice();
 	
 	void						Visit(RuntimeVisitor& vis) {}
 	
+	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& ret_fmt, int& ret_res);
+	bool						Open(int fmt_idx, int res_i, bool vflip);
+	void						Close();
+	void						Start();
+	void						Stop();
+	void						Process();
 	
+	String						GetPath() const {return path;}
+	bool						IsOpen() const;
+	int							GetFrameCount() const {return frame_counter;}
+	Packet						GetPacket() {return last_p;}
+	
+	/*
 	Media&						Get() override {return avproxy;}
 	void						FillBuffer() override {}
 	void						DropBuffer() override {}
 	int							GetActiveFormatIdx() const override;
 	int							GetFormatCount() const override;
 	MediaFormat					GetFormat(int i) const override;
-	bool						FindClosestFormat(const MediaFormat&, int& idx) override;
+	
 	//void						FillAudioBuffer() override {}
 	//void						FillVideoBuffer() override;
-	bool						IsOpen() const override;
 	//Audio&						GetAudio() override {return abuffer;}
 	//Video&						GetVideo() override {return vbuffer;}
 	AudioStream&				GetAudioStream() override {return astream;}
 	VideoStream&				GetVideoStream() override {return vstream;}
-	bool						Open(int fmt_idx) override;
-	void						Close() override;
 	
-	String						GetPath() const {return path;}
 	double						GetSeconds() const {return cur_time.Seconds();}
-	
+	*/
 	
 	/*
 	// RealtimeStream
@@ -78,7 +86,6 @@ public:
 	int							GetActiveVideoFormatIdx() const override;
 	int							GetFormatCount() const override;
 	const VideoSourceFormat&	GetFormat(int i) const override;
-	bool						FindClosestFormat(Size cap_sz, double fps, double bw_min, double bw_max, int& fmt, int& res) override;
 	
 	// MediaStream
 	bool						Open0(String path) override;
@@ -92,6 +99,5 @@ public:
 
 NAMESPACE_SERIAL_END
 
-#endif
 #endif
 #endif

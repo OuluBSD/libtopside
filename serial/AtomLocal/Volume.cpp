@@ -69,28 +69,28 @@ bool VolumeLoaderBase::LoadFile() {
 	}
 	
 	MemReadStream data(s.Begin(), s.GetCount());
-	int magic, w, h, d, channels, sz;
+	int magic, w, h, d, channels, len;
 	data.Get(&magic, 4); // "BIN "
 	if (magic == 0x004e4942) {
 		data.Get(&w, 4);
 		data.Get(&h, 4);
 		data.Get(&d, 4);
 		data.Get(&channels, 4);
-		sz = w * h * d * channels;
-		if (sz <= 0) {
+		len = w * h * d * channels;
+		if (len <= 0) {
 			LOG("VolumeLoaderBase::LoadFile: error: invalid size");
 			return false;
 		}
-		values.SetCount(sz);
-		data.Get(values.Begin(), sz);
+		values.SetCount(len);
+		data.Get(values.Begin(), len);
 	}
 	else {
 		int len = 0;
 		for(int i = 1; i <= 4; i++) {
 			int per_ch = s.GetCount() / i;
 			int root = (int)pow(per_ch, 1.0/3.0);
-			int test_sz = root * root * root * i;
-			if (test_sz == s.GetCount()) {
+			int test_len = root * root * root * i;
+			if (test_len == s.GetCount()) {
 				channels = i;
 				len = root;
 				break;
@@ -101,19 +101,32 @@ bool VolumeLoaderBase::LoadFile() {
 			return false;
 		}
 		w = h = d = len;
-		sz = w * h * d * channels;
-		if (sz <= 0) {
+		len = w * h * d * channels;
+		if (len <= 0) {
 			LOG("VolumeLoaderBase::LoadFile: error: invalid size");
 			return false;
 		}
-		values.SetCount(sz);
-		MemoryCopy(values.Begin(), s.Begin(), sz);
+		values.SetCount(len);
+		MemoryCopy(values.Begin(), s.Begin(), len);
 	}
 	
-	this->sz.cx = w;
-	this->sz.cy = h;
-	this->depth = d;
+	sz = Size3(w, h, d);
 	this->stride = channels;
+	
+	BinarySample::Type type;
+	switch (stride) {
+		case 4:		type = BinarySample::U8_LE_ABCD; break;
+		case 3:		type = BinarySample::U8_LE_ABC; break;
+		case 2:		type = BinarySample::U8_LE_AB; break;
+		case 1:		type = BinarySample::U8_LE_A; break;
+		default: return false;
+	}
+	fmt.SetVolume(DevCls::CENTER, type, sz.cx, sz.cy, sz.cz, 1, 1);
+	
+	InterfaceSourceRef iface = GetSource();
+	int src_count = iface->GetSourceCount();
+	for(int i = 1; i < src_count; i++)
+		iface->GetSourceValue(i).SetFormat(fmt);
 	
 	return true;
 }
@@ -147,16 +160,6 @@ bool VolumeLoaderBase::ProcessPackets(PacketIO& io) {
 	
 	PacketValue& v = *out;
 	
-	Format fmt = v.GetFormat();
-	ASSERT(fmt.IsVolume());
-	fmt.vol.SetSize(Size3(sz.cx, sz.cy, depth));
-	switch (stride) {
-		case 4:		fmt.vol.SetType(BinarySample::U8_LE_ABCD); break;
-		case 3:		fmt.vol.SetType(BinarySample::U8_LE_ABC); break;
-		case 2:		fmt.vol.SetType(BinarySample::U8_LE_AB); break;
-		case 1:		fmt.vol.SetType(BinarySample::U8_LE_A); break;
-		default: return false;
-	}
 	v.SetFormat(fmt);
 	
 	Swap(v.Data(), values);
@@ -165,7 +168,7 @@ bool VolumeLoaderBase::ProcessPackets(PacketIO& io) {
 }
 
 bool VolumeLoaderBase::IsReady(PacketIO& io) {
-	return !values.IsEmpty();
+	return io.full_src_mask == 0 && !values.IsEmpty();
 }
 
 

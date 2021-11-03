@@ -1,4 +1,4 @@
-#include "Multimedia.h"
+#include "AtomLocal.h"
 
 #if HAVE_V4L2_DEVMGR
 
@@ -8,8 +8,9 @@
 #include <sys/ioctl.h>
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_SERIAL_BEGIN
 
+#if 0
 MediaStream* V4L2_Device::FindOpenDevice() {
 	for (OpenCVCaptureDevice& m : caps)
 		if (m.IsOpen())
@@ -21,7 +22,7 @@ MediaStream* V4L2_Device::FindOpenDevice() {
 	
 	return 0;
 }
-
+#endif
 
 
 
@@ -44,8 +45,6 @@ V4L2_DeviceManager::V4L2_DeviceManager() {
 void V4L2_DeviceManager::Refresh() {
 	devs.Clear();
 	
-	TODO
-	#if 0
 	for (int i = 0; i < 10; i++) {
 		String path = "/dev/video" + IntStr(i);
 		int fd = v4l2_open(path, O_RDWR);
@@ -73,7 +72,7 @@ void V4L2_DeviceManager::Refresh() {
 				VideoSourceFormat& capfmt = cap->fmts.Add();
 				capfmt.SetDescription((const char*)fmtdesc.description);
 				
-				capfmt.pix_fmt = fmtdesc.pixelformat;
+				capfmt.codec.pix_fmt = fmtdesc.pixelformat;
 				
 				struct v4l2_frmsizeenum frmsize;
 				memset(&frmsize, 0, sizeof(frmsize));
@@ -92,23 +91,19 @@ void V4L2_DeviceManager::Refresh() {
 						double fps = 1.0 / frame_time;
 						if (frmsize.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
 							VideoSourceFormatResolution& res = capfmt.res.Add();
-							res.fmt.res.cx = frmsize.discrete.width;
-							res.fmt.res.cy = frmsize.discrete.height;
-							res.fmt.fps = fps;
-							res.fmt.var_size = 1;
-							res.fmt.channels = 3;
-							res.fmt.SetLinePadding(0);
-							//LOG("\t" << res.sz.ToString() << ", " << res.fps << "fps");
+							res.fmt.Set(
+								LightSampleFD::U8_LE_ABC,
+								frmsize.discrete.width, frmsize.discrete.height,
+								fps, 1);
+							//LOG("\t" << res.fmt.ToString());
 						}
 						else if (frmsize.type == V4L2_FRMSIZE_TYPE_STEPWISE) {
 							VideoSourceFormatResolution& res = capfmt.res.Add();
-							res.fmt.res.cx = frmsize.stepwise.max_width;
-							res.fmt.res.cy = frmsize.stepwise.max_height;
-							res.fmt.fps = fps;
-							res.fmt.var_size = 1;
-							res.fmt.channels = 3;
-							res.fmt.SetLinePadding(0);
-							//LOG("\t" << res.sz.ToString() << ", " << res.fps << "fps");
+							res.fmt.Set(
+								LightSampleFD::U8_LE_ABC,
+								frmsize.stepwise.max_width, frmsize.stepwise.max_height,
+								fps, 1);
+							//LOG("\t" << res.fmt.ToString());
 						}
 						ival.index++;
 					}
@@ -120,11 +115,8 @@ void V4L2_DeviceManager::Refresh() {
 			v4l2_close(fd);
 		}
 	}
-	#endif
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_SERIAL_END
 
 #endif
-
-

@@ -1,62 +1,40 @@
 #ifndef _AtomLocal_OpenCV_h_
 #define _AtomLocal_OpenCV_h_
 
+#if HAVE_OPENCV
+
 NAMESPACE_SERIAL_BEGIN
 
-#if 0
 
-class OpenCVComponent :
-	public Component<OpenCVComponent>,
-	public AudioSource,
-	public VideoSource
+class OpenCVBase :
+	public virtual AtomBase
 {
-	OpenCVCaptureDevice cap;
-	
-	String last_error;
-	V4L2_DeviceManager devmgr;
-	MediaStreamThread vi;
-	VideoProxy video_buf;
-	AudioProxy audio_buf;
-	Size def_cap_sz;
-	int def_cap_fps;
+	Format					fmt;
+	String					last_error;
+	OpenCVCaptureDevice*	cap = 0;
+	V4L2_DeviceManager		devmgr;
+	Size					def_cap_sz;
+	int						def_cap_fps;
+	int						prev_frame_i = -1;
+	bool					vflip = false;
 	
 	
 public:
-	RTTI_COMP2(OpenCVComponent, AudioSource, VideoSource)
-	COPY_PANIC(OpenCVComponent);
+	OpenCVBase();
 	
-	OpenCVComponent();
-	
-	void Initialize() override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {COMP_DEF_VISIT_; vis % cap;}
-	
-	//bool LoadFileAny(String path) override;
-	
-	bool LoadInput(int id);
-	
-	String GetLastError() const {return last_error;}
-	
-	MediaStreamThread& GetInput() {return vi;}
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	bool			ProcessPackets(PacketIO& io) override;
+	bool			IsReady(PacketIO& io) override;
+	void			Visit(RuntimeVisitor& vis) override {/*vis % devmgr;*/}
+	String			GetLastError() const {return last_error;}
 	
 	
-	static bool AllowDuplicates() {return true;}
-	
-	
-	// Audio
-	AudioStream&	GetStream(AudCtx) override {TODO}
-	void			BeginStream(AudCtx) override {TODO}
-	void			EndStream(AudCtx) override {TODO}
-	
-	// Video
-	VideoStream&	GetStream(VidCtx) override {TODO}
-	void			BeginStream(VidCtx) override {TODO}
-	void			EndStream(VidCtx) override {TODO}
 	
 };
 
-#endif
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

@@ -1,4 +1,5 @@
-#include "Multimedia.h"
+#include "AtomLocal.h"
+
 
 #if HAVE_DIRECTSHOW
 

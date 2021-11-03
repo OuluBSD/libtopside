@@ -54,6 +54,27 @@
 #define MAX_VDTUPLE_SIZE		8
 
 
+
+// http://dranger.com/ffmpeg/tutorial01.html
+#if defined flagPOSIX || defined HAVE_MINGW
+	#define HAVE_FFMPEG 1
+	
+	#if defined flagFREEBSD && defined flagGCC
+		// skip v4l2 because of weird VideoDevice::open
+	#else
+		#define HAVE_V4L2_DEVMGR	1
+		#define HAVE_OPENCV			1
+		
+		//#define HAVE_V4L2_CAP		1
+		
+		#ifdef UPP_VERSION
+			//#define V4L2_SLOW		1
+		#endif
+	#endif
+#endif
+
+
+
 NAMESPACE_TOPSIDE_BEGIN
 using namespace UPP;
 NAMESPACE_TOPSIDE_END

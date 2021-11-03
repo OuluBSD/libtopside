@@ -67,6 +67,7 @@ struct VolumeFormat :
 	bool	IsValid() const;
 	bool	IsSame(const VolumeFormat& fmt) const;
 	int		GetScalar() const {return DimBase<3>::GetVolume();} // TODO fix unit semantics
+	bool	IsCopyCompatible(const VolumeFormat& b) const;
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
@@ -198,6 +199,7 @@ public:
 	void SetMidi(DevCls dev);
 	void SetVolume(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	void SetVideo(DevCls dev, LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
+	void SetVideo(DevCls dev, const VideoFormat& vid);
 	void SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	void SetEvent(DevCls dev);
 	
@@ -205,6 +207,8 @@ public:
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
 	operator const VideoFormat&() const {ASSERT(IsVideo()); return vid;}
 	operator       VideoFormat&()       {ASSERT(IsVideo()); return vid;}
+	operator const VolumeFormat&() const {ASSERT(IsVolume()); return vol;}
+	operator       VolumeFormat&()       {ASSERT(IsVolume()); return vol;}
 	operator const MidiFormat&()  const {ASSERT(IsMidi());  return mid;}
 	operator       MidiFormat&()        {ASSERT(IsMidi());  return mid;}
 	operator const EventFormat&() const {ASSERT(IsEvent()); return ev;}

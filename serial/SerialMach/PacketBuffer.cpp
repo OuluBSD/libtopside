@@ -60,17 +60,17 @@ void ValStreamState::Step() {
 
 
 
-bool PacketBufferBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
+bool PacketBufferBase::StorePacket(Packet& p) {
 	if (buf.GetCount()) {
 		Packet n = buf.First();
 		buf.RemoveFirst();
 		
 		n->SetOffset(p->GetOffset());
 		p = n;
+		return true;
 	}
-	#endif
+	
+	return false;
 }
 
 
