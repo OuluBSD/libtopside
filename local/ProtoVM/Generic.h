@@ -2,32 +2,138 @@
 #define _ProtoVM_Generic_h_
 
 
-struct BusClient {
+typedef enum {
+	FN_NULL,
 	
+	MEM_WRITE_LEVEL0,
+	MEM_WRITE_LEVEL1,
+	MEM_WRITE_LEVEL2,
+	MEM_WRITE_LEVEL_MAX = MEM_WRITE_LEVEL2,
+	
+} BusFunction;
+
+
+struct Bus;
+class BusClient;
+class BusData;
+
+struct IfaceFlags {
+	bool		interrupt = false;
+	bool		write = false;
+	
+	BusClient*	client = 0;
+	
+	
+	void		ClearTick();
+};
+
+
+class BusClient {
+	
+public:
+	
+	
+	typedef enum {
+		IDLE,
+		WAITING_HOST,
+		USER_FN0,
+		USER_FN1,
+		USER_FN2,
+		USER_FN3,
+		
+	} Status;
+	
+	Bus*		bus = 0;
+	Status		bus_status = IDLE;
+	int			iface = -1;
+	String		name;
+	
+	
+	virtual			~BusClient() {}
+	
+	virtual void	Tick() {}
+	
+	void			RequestWrite();
+	IfaceFlags&		GetIface();
+	
+protected:
+	friend class Bus;
 	
 	
 };
 
-
+class BusData {
+	union {
+		uint64	a64;
+		uint32	a32;
+		uint16	a16;
+		uint8	a8;
+	};
+	
+	union {
+		uint64	v64;
+		uint32	v32;
+		uint16	v16;
+		uint8	v8;
+	};
+	BusFunction fn_code = FN_NULL;
+	
+	
+	byte bw = 16;
+public:
+	
+	void Set8(uint8 addr, uint8 value) {ASSERT(bw == 8); a8 = addr; v8 = value;}
+	void Set16(uint16 addr, uint16 value) {ASSERT(bw == 16); a16 = addr; v16 = value;}
+	void SetFunction(BusFunction fn) {fn_code = fn;}
+	
+	void Get16(uint16& addr, uint16& value) {ASSERT(bw == 16); addr = a16; value = v16;}
+	BusFunction GetFunction() const {return fn_code;}
+	
+};
 
 struct Bus {
+	typedef enum {
+		IDLE,
+		WAITING_HOST,
+		WAITING_USER,
+		WAITING_USER_BUS_FN,
+		
+	} Status;
+	
+	
 	Array<Bus>			sub;
 	Array<BusClient>	clients;
 	
-	struct BusIface {
-		bool	interrupt = false;
-		bool	write_lock = false;
-	};
 	
 	static const int MAX_COUNT = 16;
 	
-	BusIface	ifaces[MAX_COUNT];
+	IfaceFlags	ifaces[MAX_COUNT];
+	String		name;
+	BusData		data;
+	Status		bus_status = IDLE;
+	int			write_iface = -1;
 	bool		interrupt = false;
 	
 	
+	void		ClearTick();
+	void		Tick();
 	Bus&		Add(String name);
+	int			FindInterruptIface() const;
 	
-	template <class T> T& AddClient(String name);
+	template <class T> T& AddClient(String name) {
+		for(int i = 0; i < MAX_COUNT; i++) {
+			IfaceFlags& f = ifaces[i];
+			if (!f.client) {
+				T* o = new T();
+				o->iface = i;
+				o->bus = this;
+				clients.Add(o);
+				return *o;
+			}
+		}
+		Panic("all interfaces full");
+		TODO
+	}
 	
 };
 
@@ -66,74 +172,23 @@ struct VideoOutput : public BusClient {
 	
 };
 
+struct TestSender : public BusClient {
+	
+	void Tick() override;
+	
+};
+
+struct TestReceiver : public BusClient {
+	
+	void Tick() override;
+	
+};
+
 struct Machine {
 	Bus bus;
 	
 	
-	void Init() {
-		Bus& iface_bus = bus;
-		
-		{
-			Bus& bios_board = iface_bus.Add("bios board");
-			{
-				Rom& rom = bios_board.AddClient<Rom>("bios memory");
-				
-			}
-			
-			Bus& comp_board = iface_bus.Add("computer board");
-			{
-				Memory& cache1 = comp_board.AddClient<Memory>("cache1");
-				
-				Bus& proc_bus = comp_board.Add("processing bus");
-				{
-					RegisterVec& regs = proc_bus.AddClient<RegisterVec>("register vector");
-					BitShifter& bshift = proc_bus.AddClient<BitShifter>("bit shifter");
-					BinaryMath& bmath = proc_bus.AddClient<BinaryMath>("binary math");
-					FloatMath& fmath = proc_bus.AddClient<FloatMath>("float math");
-					
-				}
-			}
-			
-			Bus& mem_board = iface_bus.Add("memory board");
-			{
-				int chip_count = 10;
-				
-				for(int i = 0; i < chip_count; i++) {
-					Memory& mem = mem_board.AddClient<Memory>("memory chip #" + IntStr(i));
-					
-					
-				}
-				
-				
-			}
-			
-			Bus& diskctl_board = iface_bus.Add("disk controller board");
-			{
-				Bus& disk_bus = diskctl_board.Add("disk bus");
-				{
-					
-					
-				}
-				
-			}
-			
-			Bus& video_board = iface_bus.Add("video board");
-			{
-				Bus& memory_bus = video_board.Add("memory bus");
-				{
-					VideoOutput& vout = memory_bus.AddClient<VideoOutput>("video output");
-					Memory& mem = memory_bus.AddClient<Memory>("memory");
-					
-				}
-				
-				
-			}
-			
-		}
-		
-	}
-	
-	
+	void Init();
 	void Tick();
 	
 };
