@@ -59,6 +59,17 @@ void ValStreamState::Step() {
 
 
 
+bool PacketBufferBase::HasPacketOverTime(double time) const {
+	//int dbg_i = 0;
+	for (Packet& p : buf) {
+		if (p->time <= time) {
+			//LOG("PacketBufferBase::HasPacketOverTime: #" << dbg_i << ": " << p->time << " <= " << time);
+			return true;
+		}
+		//dbg_i++;
+	}
+	return false;
+}
 
 bool PacketBufferBase::StorePacket(Packet& p) {
 	if (buf.GetCount()) {
@@ -73,6 +84,21 @@ bool PacketBufferBase::StorePacket(Packet& p) {
 	return false;
 }
 
+bool PacketBufferBase::StorePacket(Packet& p, double min_time) {
+	int rem_count = 0;
+	bool found = false;
+	for (Packet& n : buf) {
+		rem_count++;
+		if (n->GetTime() >= min_time) {
+			n->SetOffset(p->GetOffset());
+			p = n;
+			found = true;
+			break;
+		}
+	}
+	buf.RemoveFirst(rem_count);
+	return found;
+}
 
 
 

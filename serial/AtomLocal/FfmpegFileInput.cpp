@@ -37,6 +37,10 @@ FfmpegFileInput::FfmpegFileInput()
 void FfmpegFileInput::Clear() {
 	ClearDevice();
 	
+	if (file_fmt_ctx)
+		avformat_close_input(&file_fmt_ctx);
+	file_fmt_ctx = NULL;
+	
 	has_audio = false;
 	has_video = false;
 	is_dev_open = false;
@@ -83,13 +87,18 @@ void FfmpegFileInput::ClearPacket() {
 	}
 }
 
+#if 0
 void FfmpegFileInput::SetFormat(Format fmt) {
 	ASSERT(fmt.IsValid());
 	if (fmt.IsAudio()) {
 		aframe.fmt = fmt;
 	}
+	else if (fmt.IsVideo()) {
+		vframe.fmt = fmt;
+	}
 	else TODO;
 }
+#endif
 
 bool FfmpegFileInput::IsOpen() const {
 	return is_dev_open;
@@ -116,6 +125,7 @@ bool FfmpegFileInput::OpenFile(String path) {
 	av_dump_format(file_fmt_ctx, 0, path.Begin(), 0);
 	
 	// Find the first video stream
+	ASSERT(!aframe.fmt.IsValid() && !vframe.fmt.IsValid());
 	has_audio = a.OpenAudio(file_fmt_ctx, aframe.fmt);
 	has_video = v.OpenVideo(file_fmt_ctx, vframe.fmt);
 	
@@ -123,7 +133,7 @@ bool FfmpegFileInput::OpenFile(String path) {
 		aframe.Clear();
 	}
 	if (has_video) {
-		vframe.Init(*v.codec_ctx);
+		vframe.Clear();
 	}
 	
 	return HasMediaOpen();
@@ -135,8 +145,17 @@ bool FfmpegFileInput::Open() {
 	if (!HasMediaOpen())
 		return false;
 	
-	bool audio_open = has_audio ? a.OpenDevice() : false;
-	bool video_open = has_video ? v.OpenDevice() : false;
+	bool audio_open = false;
+	if (has_audio) {
+		audio_open = a.OpenDevice();
+	}
+	
+	bool video_open = false;
+	if (has_video) {
+		video_open = v.OpenDevice();
+		if (video_open)
+			vframe.Init(*v.codec_ctx);
+	}
 	
 	InitPacket();
     
@@ -317,6 +336,7 @@ int FfmpegFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
 		if (codec_ctx->time_base.num == 0)
 			frame_time = 1.0 / 1000.0;
 		frame_pos_time = frame->pts * frame_time;
+		//frame_pos_time = av_frame_get_best_effort_timestamp(frame); // deprecated
     }
     
     return decoded;
@@ -335,8 +355,6 @@ void FfmpegFileChannel::Clear() {
 		avcodec_free_context(&codec_ctx);
 	codec_ctx = NULL;
 	
-	if (file_fmt_ctx)
-		avformat_close_input(&file_fmt_ctx);
 	file_fmt_ctx = NULL;
 	
 	stream_i = -1;
@@ -351,15 +369,10 @@ void FfmpegFileChannel::ClearDevice() {
 }
 
 bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
-	if (!fmt.IsValid()) {
-		errstr = "invalid video format";
-		return false;
-	}
-	
-	VideoFormat& vfmt = fmt;
 	Clear();
 	fmt.Clear();
 	fmt.vd = VD(CENTER,VIDEO);
+	VideoFormat& vfmt = fmt;
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
@@ -409,11 +422,11 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
 }
 
 bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
-	AudioFormat& afmt = fmt;
-	
 	Clear();
 	fmt.Clear();
 	fmt.vd = VD(CENTER,AUDIO);
+	AudioFormat& afmt = fmt;
+	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
 	stream_i = -1;
@@ -740,12 +753,18 @@ void FfmpegVideoFrameQueue::Process(double time_pos, AVFrame* frame, bool vflip)
 	f->Init(fmt);
 	f->time_pos = time_pos;
 	f->Process(time_pos, frame, vflip, fmt, img_convert_ctx);
+	
+	Packet p = CreatePacket(gen.Create());
+	p->SetFormat(fmt);
+	f->MakePacket(p);
+	buf.Add(p);
 }
 
-
 void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
-	TODO // Look FfmpegAudioFrameQueue::Process
 	Size size = vid_fmt.GetSize();
+	
+	this->time_pos = time_pos;
+	
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
 	if (vflip) {
 		for(int i = 0; i < 4; i++) {
@@ -768,6 +787,14 @@ void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool
 	#else
 	#error Unimplemented
 	#endif
+}
+
+void FfmpegVideoFrameQueue::Frame::MakePacket(Packet& p) {
+	PacketValue& v = *p;
+	v.SetTime(time_pos);
+	Vector<byte>& data = v.Data();
+	data.SetCount(video_dst_bufsize);
+	memcpy(data.Begin(), video_dst_data[0], video_dst_bufsize); // TODO optimize memcpy away
 }
 
 #if HAVE_OPENGL

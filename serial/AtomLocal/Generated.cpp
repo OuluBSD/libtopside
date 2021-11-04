@@ -182,7 +182,7 @@ AtomTypeCls AudioJoinerUser::GetType() const
 
 AtomTypeCls AudioJoiner2User::GetAtomType()
 {
-	return ATOM11_U20(AUDIO_JOINER2_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+	return ATOM11_U20(AUDIO_JOINER2_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO, CENTER, AUDIO);
 }
 
 void AudioJoiner2User::Visit(RuntimeVisitor& vis)
@@ -248,6 +248,25 @@ AtomTypeCls WebcamAtom::GetType() const
 {
 	return GetAtomType();
 }
+
+#endif
+#if defined flagGUI
+AtomTypeCls VideoLoaderAtom::GetAtomType()
+{
+	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
+}
+
+void VideoLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<VideoLoaderAtom>>(this);
+	vis.VisitThis<FfmpegAtomBase>(this);
+}
+
+AtomTypeCls VideoLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
 #endif
 #if defined flagGUI
 AtomTypeCls OglCustomer::GetAtomType()
@@ -456,7 +475,7 @@ AtomTypeCls SdlFboPipeSide::GetType() const
 #if defined flagGUI
 AtomTypeCls SdlFboAtom::GetAtomType()
 {
-	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
+	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
 }
 
 void SdlFboAtom::Visit(RuntimeVisitor& vis)
@@ -526,7 +545,7 @@ AtomTypeCls OglShaderPipe::GetType() const
 #if defined flagGUI
 AtomTypeCls OglShaderAtom::GetAtomType()
 {
-	return ATOM11_U44(OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, OGL, FBO);
+	return ATOM11_U44(OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
 }
 
 void OglShaderAtom::Visit(RuntimeVisitor& vis)

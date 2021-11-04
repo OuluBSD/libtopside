@@ -36,30 +36,39 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 			video_ch = i;
 	}
 	
-	if (type.iface.src().val.type == ValCls::AUDIO) {
-		if (ws.IsTrue(".stop_machine"))
-			stops_machine = true;
-	}
-	else if (type.iface.src().val.type == ValCls::VIDEO) {
+	if (audio_ch >= 0 || video_ch >= 0) {
 		if (ws.IsTrue(".stop_machine"))
 			stops_machine = true;
 	}
 	else {
-		SetError("Invalid ExtComponent type");
+		SetError("invalid atom: no audio nor video interface output");
 		return false;
 	}
 	
 	
-	file_path = ws.Get(".filepath");
-	if (file_path.IsEmpty()) {
+	String arg_filepath = ws.Get(".filepath");
+	
+	filepath = RealizeFilepathArgument(arg_filepath);
+	RTLOG("FfmpegAtomBase: filepath=\"" << filepath << "\"");
+	
+	if (ws.Get(".vflip") == "true")
+		vflip = true;
+	
+	if (filepath.IsEmpty()) {
 		SetError("no file path given");
 		return false;
 	}
-	//DUMP(file_path);
+	//DUMP(filepath);
 	
-	if (!LoadFileAny(file_path))
+	
+	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	
+	return true;
+}
+
+bool FfmpegAtomBase::PostInitialize() {
+	if (!LoadFileAny(filepath))
 		return false;
-	
 	
 	//AddToContext<CenterSpec>(AsRef<CenterSource>());
 	return true;
@@ -67,6 +76,8 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 
 void FfmpegAtomBase::Uninitialize() {
 	file_in.Clear();
+	
+	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
@@ -83,64 +94,112 @@ void FfmpegAtomBase::OnStop() {
 }
 
 bool FfmpegAtomBase::LoadFileAny(String path) {
+	ASSERT(!side_sink_conn.IsEmpty());
+	
 	vi.Stop();
-	
 	mode = INVALID_MODE;
+	time = 0;
 	
-	const int src_ch_i = 0;
+	if (!file_in.OpenFile(path) || !file_in.Open()) {
+		SetError("couldn't open file " + path + ": " + file_in.GetLastError());
+		return false;
+	}
 	
-	file_in.SetFormat(GetSource()->GetSourceValue(src_ch_i).GetFormat());
-	// TODO side-connection format
-	
-	if (file_in.OpenFile(path)) {
-		if (file_in.Open()) {
-			if (file_in.IsOpenAudio() && file_in.IsOpenVideo()) {
-				mode = AUDIOVIDEO;
-				vi.SetCap(
-					file_in.GetAudio().AsRefT(),
-					file_in.GetVideo().AsRefT());
-			}
-			else if (file_in.IsOpenAudio()) {
-				mode = AUDIO_ONLY;
-				vi.SetCap(
-					file_in.GetAudio().AsRefT(),
-					VideoInputFrameRef());
-			}
-			else {
-				mode = VIDEO_ONLY;
-				vi.SetCap(
-					AudioInputFrameRef(),
-					file_in.GetVideo().AsRefT());
-			}
-
-			vi.Start(false);
-			
-			return true;
-		}
-		else {
-			SetError("couldn't open file " + path);
-		}
+	if (file_in.IsOpenAudio() && file_in.IsOpenVideo()) {
+		mode = AUDIOVIDEO;
+		vi.SetCap(
+			file_in.GetAudio().AsRefT(),
+			file_in.GetVideo().AsRefT());
+	}
+	else if (file_in.IsOpenAudio()) {
+		mode = AUDIO_ONLY;
+		vi.SetCap(
+			file_in.GetAudio().AsRefT(),
+			VideoInputFrameRef());
 	}
 	else {
-		SetError("couldn't open file " + path);
+		mode = VIDEO_ONLY;
+		vi.SetCap(
+			AudioInputFrameRef(),
+			file_in.GetVideo().AsRefT());
+	}
+
+	vi.Start(false);
+	
+	if (audio_ch >= 0) {
+		Format fmt = file_in.GetAudio().GetFormat();
+		ASSERT(fmt.IsValid());
+		Value& audio_src = GetSource()->GetSourceValue(audio_ch);
+		if (fmt != audio_src.GetFormat()) {
+			Exchange* e = 0;
+			for (Exchange& ex : side_sink_conn)
+				if (ex.local_ch_i == audio_ch)
+					e = &ex;
+			if (!e) {
+				SetError("internal error: exchange not found");
+				return false;
+			}
+			
+			if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
+				SetError("audio format negotiation failed");
+				return false;
+			}
+			
+			audio_src.SetFormat(fmt);
+		}
+	}
+	
+	if (video_ch >= 0) {
+		Format fmt = file_in.GetVideo().GetFormat();
+		ASSERT(fmt.IsValid());
+		Value& video_src = GetSource()->GetSourceValue(video_ch);
+		if (fmt != video_src.GetFormat()) {
+			Exchange* e = 0;
+			for (Exchange& ex : side_sink_conn)
+				if (ex.local_ch_i == video_ch)
+					e = &ex;
+			if (!e) {
+				SetError("internal error: exchange not found");
+				return false;
+			}
+			
+			if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
+				SetError("video format negotiation failed");
+				return false;
+			}
+			
+			video_src.SetFormat(fmt);
+		}
 	}
 	
 	
-	return false;
+	return true;
 }
 
 void FfmpegAtomBase::Forward(FwdScope& fwd) {
-	if (mode == AUDIO_ONLY)
+	if (mode == AUDIO_ONLY || mode == AUDIOVIDEO)
 		file_in.FillAudioBuffer();
-	else
-		TODO
+	
+	if (mode == VIDEO_ONLY || mode == AUDIOVIDEO)
+		file_in.FillVideoBuffer();
+}
+
+void FfmpegAtomBase::Update(double dt) {
+	time += dt;
 }
 
 bool FfmpegAtomBase::IsReady(PacketIO& io) {
 	if (mode == AUDIO_ONLY)
-		return file_in.GetAudio().buf.GetCount();
-	else
-		TODO
+		return file_in.GetAudio().HasPacketOverTime(time);
+	
+	if (mode == VIDEO_ONLY)
+		return file_in.GetVideo().HasPacketOverTime(time);
+	
+	if (mode == AUDIOVIDEO)
+		return file_in.GetAudio().HasPacketOverTime(time) ||
+			   file_in.GetVideo().HasPacketOverTime(time);
+		
+	return false;
 }
 
 bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
@@ -155,11 +214,28 @@ bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
 		src.from_sink_ch = 0;
 		out = ReplyPacket(0, sink.p);
 		
-		succ = file_in.GetAudio().StorePacket(out);
+		succ = file_in.GetAudio().StorePacket(out, time);
 		ASSERT(succ);
 	}
+	
 	if ((mode == VIDEO_ONLY || mode == AUDIOVIDEO) && video_ch >= 0) {
-		TODO
+		PacketIO::Source& src = io.src[video_ch];
+		Packet& out = src.p;
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		out = ReplyPacket(0, sink.p);
+		
+		succ = file_in.GetVideo().StorePacket(out, time);
+		ASSERT(succ);
+	}
+	
+	// Send primary output packet when audio & video are side interfaces
+	if (audio_ch != 0 && video_ch != 0) {
+		PacketIO::Source& src = io.src[0];
+		Packet& out = src.p;
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		out = ReplyPacket(0, sink.p);
 	}
 	
 	return succ;

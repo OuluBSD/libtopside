@@ -99,6 +99,7 @@ public:
 	bool IsReady(PacketIO& io) override;
 	bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
+	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
 	
 	
 };

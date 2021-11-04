@@ -8,7 +8,7 @@ VolumeLoaderBase::VolumeLoaderBase() {
 }
 
 bool VolumeLoaderBase::Initialize(const Script::WorldState& ws) {
-	LOG(ws.ToString());
+	//LOG(ws.ToString());
 	
 	String arg_filepath = ws.Get(".filepath");
 	if (arg_filepath.IsEmpty()) {
@@ -16,39 +16,8 @@ bool VolumeLoaderBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	filepath = RealizeShareFile(arg_filepath);
+	filepath = RealizeFilepathArgument(arg_filepath);
 	RTLOG("VolumeLoaderBase: filepath=\"" << filepath << "\"");
-	
-	if (!FileExists(filepath)) {
-		bool found = false;
-		String title = GetFileTitle(filepath);
-		String other_name = ToyShaderHashToName().Get(title, "");
-		String ext = GetFileExt(filepath);
-		if (!other_name.IsEmpty()) {
-			LOG("VolumeLoaderBase: found real name from hash: " << other_name);
-			String toypath =
-				AppendFileName(
-					GetFileDirectory(arg_filepath),
-					other_name + ext);
-			if (!FileExists(toypath)) {
-				toypath = RealizeShareFile(toypath);
-				LOG("VolumeLoaderBase: trying to find sharefile: " << toypath);
-			}
-			if (FileExists(toypath)) {
-				filepath = toypath;
-				found = true;
-				LOG("VolumeLoaderBase: changed hash to file " << filepath);
-			}
-			else {
-				LOG("VolumeLoaderBase: internal error: file not found: " << filepath);
-			}
-		}
-		
-		if (!found) {
-			LOG("VolumeLoaderBase: error: file does not exist: " << filepath);
-			return false;
-		}
-	}
 	
 	if (ws.Get(".vflip") == "true")
 		vflip = true;

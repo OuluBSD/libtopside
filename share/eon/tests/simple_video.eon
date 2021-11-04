@@ -5,10 +5,10 @@ machine sdl.app: {
 	};
 	
 	chain program: {
-		loop center.webcam: {
+		loop center.video: {
 			id: "cam";
 			center.customer: true;
-			center.video.webcam: true [][id: "texture"] {vflip: "true";};
+			center.video.loader: true [][id: "texture"] {vflip: "true"; filepath: "videos/35c87bcb8d7af24c54d41122dadb619dd920646a0bd0e477e7bdc6d12876df17.webm";};
 		};
 		
 		loop ogl.fbo.tex: {
@@ -20,8 +20,9 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true [id: "texture";;;;] {filepath: "shaders/toys/simple_webcam/stage0.glsl";};
+			sdl.fbo: true [id: "texture";;;;] {filepath: "shaders/toys/simple_video/stage0.glsl";};
 		};
 	};
+	
 };
 

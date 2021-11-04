@@ -88,6 +88,7 @@ public:
 	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
 	virtual void			UninitializeAtom() = 0;
 	
+	virtual bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {return false;}
 	virtual bool			ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
 	virtual bool			IsConsumedPartialPacket() {return 0;}
 	virtual bool			Initialize(const Script::WorldState& ws) {return true;}

@@ -23,6 +23,7 @@ BASE(OglShaderBase)
 BASE(EventStateBase)
 BASE(TestEventSrcBase)
 BASE(OglTextureBase)
+BASE(VideoLoaderBase)
 BASE(VolumeLoaderBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

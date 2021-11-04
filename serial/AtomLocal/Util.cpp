@@ -418,6 +418,17 @@ void OglTextureBase::Uninitialize() {
 	
 }
 
+bool OglTextureBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
+		ISinkRef sink = GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
 bool OglTextureBase::IsReady(PacketIO& io) {
 	return io.full_src_mask == 0 && io.active_sink_mask == 0b11;
 }

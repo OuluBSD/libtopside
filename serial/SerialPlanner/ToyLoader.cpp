@@ -51,6 +51,41 @@ ArrayMap<String,String>& ToyShaderHashToName() {
 	return map;
 }
 
+String RealizeFilepathArgument(String arg_filepath) {
+	String filepath = RealizeShareFile(arg_filepath);
+	
+	if (!FileExists(filepath)) {
+		bool found = false;
+		String title = GetFileTitle(filepath);
+		String other_name = ToyShaderHashToName().Get(title, "");
+		String ext = GetFileExt(filepath);
+		if (!other_name.IsEmpty()) {
+			LOG("RealizeFilepathArgument: found real name from hash: " << other_name);
+			String toypath =
+				AppendFileName(
+					GetFileDirectory(arg_filepath),
+					other_name + ext);
+			if (!FileExists(toypath)) {
+				toypath = RealizeShareFile(toypath);
+				LOG("RealizeFilepathArgument: trying to find sharefile: " << toypath);
+			}
+			if (FileExists(toypath)) {
+				filepath = toypath;
+				found = true;
+				LOG("RealizeFilepathArgument: changed hash to file " << filepath);
+			}
+			else {
+				LOG("RealizeFilepathArgument: internal error: file not found: " << filepath);
+			}
+		}
+		
+		if (!found) {
+			LOG("RealizeFilepathArgument: error: file does not exist: " << filepath);
+			filepath = arg_filepath;
+		}
+	}
+	return filepath;
+}
 
 
 

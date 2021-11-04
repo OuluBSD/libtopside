@@ -12,8 +12,8 @@ class FfmpegFileInput;
 class FfmpegAudioFrameQueue :
 	public AudioInputFrame
 {
-	off32_gen	gen;
 	off32		offset;
+	off32_gen	gen;
 	
 protected:
 	friend class FfmpegFileInput;
@@ -50,27 +50,27 @@ class FfmpegVideoFrameQueue :
 		int      video_dst_linesize[4];
 		int      video_dst_linesize_vflip[4];
 		int      video_dst_bufsize = 0;
-		double	time_pos;
+		double	time_pos = 0;
 		
 		~Frame() {Clear();}
-		void Init(const VideoFormat& vid_fmt);
-		void Clear();
-		void Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
-		bool PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
+		void	Init(const VideoFormat& vid_fmt);
+		void	Clear();
+		void	Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
+		bool	PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
+		void	MakePacket(Packet& p);
 	};
 	using Recycler = TS::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
-	struct SwsContext* img_convert_ctx = 0;
-	Pool pool;
-	LinkedList<Recycler> frames;
-	int min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
-	
+	struct SwsContext*		img_convert_ctx = 0;
+	LinkedList<Recycler>	frames;
+	Pool					pool;
+	int						min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
+	off32_gen				gen;
 	
 protected:
 	friend class FfmpegFileInput;
 	
-	Format fmt;
 	
 public:
 	RTTI_DECL1(FfmpegVideoFrameQueue, VideoInputFrame)
@@ -185,7 +185,7 @@ public:
 	bool						Open();
 	void						Close();
 	bool						OpenFile(String path);
-	void						SetFormat(Format fmt);
+	//void						SetFormat(Format fmt);
 	
 	String	GetLastError() const;
 	

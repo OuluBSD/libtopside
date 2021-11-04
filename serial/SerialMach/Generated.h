@@ -53,6 +53,7 @@ namespace Serial {
 
 #define flagGUI_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
+	ATOM_TYPE(VIDEO_LOADER_ATOM) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
@@ -69,6 +70,7 @@ namespace Serial {
 
 #define flagGUI_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
+	ATOM_CLASS(VideoLoaderAtom) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \

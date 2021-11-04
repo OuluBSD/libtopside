@@ -19,39 +19,8 @@ bool SDL2ImageBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	String filepath = RealizeShareFile(arg_filepath);
+	String filepath = RealizeFilepathArgument(arg_filepath);
 	RTLOG("SDL2ImageBase: filepath=\"" << filepath << "\"");
-	
-	if (!FileExists(filepath)) {
-		bool found = false;
-		String title = GetFileTitle(filepath);
-		String other_name = ToyShaderHashToName().Get(title, "");
-		String ext = GetFileExt(filepath);
-		if (!other_name.IsEmpty()) {
-			LOG("SDL2ImageBase: found real name from hash: " << other_name);
-			String toypath =
-				AppendFileName(
-					GetFileDirectory(arg_filepath),
-					other_name + ext);
-			if (!FileExists(toypath)) {
-				toypath = RealizeShareFile(toypath);
-				LOG("SDL2ImageBase: trying to find sharefile: " << toypath);
-			}
-			if (FileExists(toypath)) {
-				filepath = toypath;
-				found = true;
-				LOG("SDL2ImageBase: changed hash to file " << filepath);
-			}
-			else {
-				LOG("SDL2ImageBase: internal error: file not found: " << filepath);
-			}
-		}
-		
-		if (!found) {
-			LOG("SDL2ImageBase: error: file does not exist: " << filepath);
-			return false;
-		}
-	}
 	
 	if (ws.Get(".vflip") == "true")
 		vflip = true;

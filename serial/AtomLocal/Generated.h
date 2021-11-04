@@ -207,7 +207,7 @@ public:
 	RTTI_DECL2(WebcamPipe, AtomT, OpenCVBase)
 	COPY_PANIC(WebcamPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.webcam.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -223,7 +223,23 @@ public:
 	RTTI_DECL2(WebcamAtom, AtomT, OpenCVBase)
 	COPY_PANIC(WebcamAtom)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.webcam")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class VideoLoaderAtom : public Atom<VideoLoaderAtom>, public FfmpegAtomBase {
+
+public:
+	RTTI_DECL2(VideoLoaderAtom, AtomT, FfmpegAtomBase)
+	COPY_PANIC(VideoLoaderAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -504,7 +520,7 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-
+	
 };
 #endif
 
@@ -557,6 +573,8 @@ using WebcamPipeRef = Ref<WebcamPipe, AtomParent>;
 #endif
 
 using WebcamAtomRef = Ref<WebcamAtom, AtomParent>;
+
+using VideoLoaderAtomRef = Ref<VideoLoaderAtom, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 

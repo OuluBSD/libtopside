@@ -14,6 +14,8 @@ public:
 	
 	Format fmt;
 	
+	
+	const Format&		GetFormat() const {return fmt;}
 };
 
 

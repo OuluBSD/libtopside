@@ -299,24 +299,16 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			ret_val.Add().SetId(dev);
 			ret_val.Add().SetId(val);
 			
-			int sink_count = min(2, h.sink_count);
-			for(int i = 0; i < sink_count; i++) {
+			for(int i = 0; i < h.sink_count; i++) {
 				GetKeyValDevUpper(h.sink[i], dev, val);
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
 			}
-			for(int i = 2; i < h.sink_count; i++) {
-				ASSERT_(h.sink[i] == h.sink[1], "Currently only one same type is allowed in all side ifaces");
-			}
 			
-			int src_count = min(2, h.src_count);
-			for(int i = 0; i < src_count; i++) {
+			for(int i = 0; i < h.src_count; i++) {
 				GetKeyValDevUpper(h.src[i], dev, val);
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
-			}
-			for(int i = 2; i < h.src_count; i++) {
-				ASSERT_(h.src[i] == h.src[1], "Currently only one same type is allowed in all side ifaces");
 			}
 		}
 		

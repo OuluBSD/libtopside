@@ -41,7 +41,7 @@ HEADER21_U10(		AudioJoinerUser,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink.center.user)
 
-HEADER31_U20(		AudioJoiner2User,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER31_U20(		AudioJoiner2User,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink2.center.user)
 
@@ -50,12 +50,16 @@ HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
 HEADER_ARG(			VideoDbgSrc,		reqdef_flagGUI,		1)
 
 HEADER11(			WebcamPipe,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	CenterVideo)
-HEADER_ACTION(		WebcamPipe,			center.image.webcam.pipe)
+HEADER_ACTION(		WebcamPipe,			center.video.webcam.pipe)
 HEADER_ARG(			WebcamPipe,			reqdef_HAVE_OPENCV,	1)
 
 HEADER12_U01(		WebcamAtom,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
-HEADER_ACTION(		WebcamAtom,			center.image.webcam)
+HEADER_ACTION(		WebcamAtom,			center.video.webcam)
 HEADER_ARG(			WebcamAtom,			reqdef_HAVE_OPENCV,	1)
+
+HEADER13_U02(		VideoLoaderAtom,	FfmpegAtomBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
+HEADER_ARG(			VideoLoaderAtom,	reqdef_flagGUI,	1)
 
 
 

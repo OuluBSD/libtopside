@@ -9,6 +9,7 @@
 #undef HEADER11
 #undef HEADER12
 #undef HEADER12_U01
+#undef HEADER13_U02
 #undef HEADER21
 #undef HEADER21_U10
 #undef HEADER22_U11
@@ -58,10 +59,11 @@
 #define HEADER11(x, base, role, content, sink, src)				Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, 0, 0, 0, 0,		#src, 0, 0, 0, 0);
 #define HEADER12(x, base, role, content, sink, side, src)		Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, 0, 0, 0, 0,		#src, #side, 0, 0, 0);
 #define HEADER12_U01(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	0,1,	#sink, 0, 0, 0, 0,		#src, #side, 0, 0, 0);
+#define HEADER13_U02(x, base, role, content, sink, s0, s1, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	0,2,	#sink, 0, 0, 0, 0,		#src, #s0, #s1, 0, 0);
 #define HEADER21(x, base, role, content, sink, side, src)		Factory::RegHeader<x>(#x, #base, #role, #content,	0,0,	#sink, #side, 0, 0, 0,	#src, 0, 0, 0, 0);
 #define HEADER21_U10(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	1,0,	#sink, #side, 0, 0, 0,	#src, 0, 0, 0, 0);
-#define HEADER22_U11(x, base, role, content, sink, ssink, ssrc, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	1,1,	#sink, #ssink, 0, 0, 0,		#src, #ssrc, 0, 0, 0);
-#define HEADER31_U20(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	2,0,	#sink, #side, #side, 0, 0,	#src, 0, 0, 0, 0);
+#define HEADER22_U11(x, base, role, content, sink, s0, s1, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	1,1,	#sink, #s0, 0, 0, 0,	#src, #s1, 0, 0, 0);
+#define HEADER31_U20(x, base, role, content, sink, s0, s1, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	2,0,	#sink, #s0, #s1, 0, 0,	#src, 0, 0, 0, 0);
 #define HEADER55_U44(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	4,4,	#sink, #side, #side, #side, #side,		#src, #side, #side, #side, #side);
 #define HEADER_ACTION(x, act)									Factory::HeaderAction<x>(#x, #act);
 #define HEADER_INHERITS(x, cls)									Factory::HeaderInherits<x>(#x, #cls);

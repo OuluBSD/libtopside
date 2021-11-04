@@ -204,9 +204,11 @@ public:
 	virtual void FillBuffer() = 0;
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
-	bool IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	bool StorePacket(Packet& p);
-	void SetMinQueueSize(int i) {max_packets = i;}
+	bool	IsQueueFull() const {return buf.GetCount() >= max_packets;}
+	bool	StorePacket(Packet& p);
+	bool	StorePacket(Packet& p, double min_time);
+	bool	HasPacketOverTime(double time) const;
+	void	SetMinQueueSize(int i) {max_packets = i;}
 	
 };
 

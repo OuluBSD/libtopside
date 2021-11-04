@@ -22,10 +22,12 @@ class FfmpegAtomBase :
 	String last_error;
 	MediaStreamThread vi;
 	Size def_cap_sz;
+	double time = 0;
 	int audio_ch = -1, video_ch = -1;
-	int def_cap_fps;
+	int def_cap_fps = 25;
 	bool stops_machine = false;
-	String file_path;
+	bool vflip = false;
+	String filepath;
 	
 	
 public:
@@ -37,6 +39,8 @@ public:
 	void Forward(FwdScope& fwd) override;
 	bool ProcessPackets(PacketIO& io) override;
 	bool IsReady(PacketIO& io) override;
+	bool PostInitialize() override;
+	void Update(double dt) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis % file_in;}
 	bool LoadFileAny(String path);
