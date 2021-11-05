@@ -117,6 +117,7 @@ public:
 	const IfaceConnTuple&	GetInterface() const {return iface;}
 	bool					LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i);
 	bool					LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i);
+	bool					NegotiateSourceFormat(int src_ch, const Format& fmt);
 	
 	int						GetSinkPacketCount();
 	int						GetSourcePacketCount();

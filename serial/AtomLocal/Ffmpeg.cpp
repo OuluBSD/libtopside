@@ -130,46 +130,16 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 		Format fmt = file_in.GetAudio().GetFormat();
 		ASSERT(fmt.IsValid());
 		Value& audio_src = GetSource()->GetSourceValue(audio_ch);
-		if (fmt != audio_src.GetFormat()) {
-			Exchange* e = 0;
-			for (Exchange& ex : side_sink_conn)
-				if (ex.local_ch_i == audio_ch)
-					e = &ex;
-			if (!e) {
-				SetError("internal error: exchange not found");
-				return false;
-			}
-			
-			if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
-				SetError("audio format negotiation failed");
-				return false;
-			}
-			
-			audio_src.SetFormat(fmt);
-		}
+		if (fmt != audio_src.GetFormat() && !NegotiateSourceFormat(audio_ch, fmt))
+			return false;
 	}
 	
 	if (video_ch >= 0) {
 		Format fmt = file_in.GetVideo().GetFormat();
 		ASSERT(fmt.IsValid());
 		Value& video_src = GetSource()->GetSourceValue(video_ch);
-		if (fmt != video_src.GetFormat()) {
-			Exchange* e = 0;
-			for (Exchange& ex : side_sink_conn)
-				if (ex.local_ch_i == video_ch)
-					e = &ex;
-			if (!e) {
-				SetError("internal error: exchange not found");
-				return false;
-			}
-			
-			if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
-				SetError("video format negotiation failed");
-				return false;
-			}
-			
-			video_src.SetFormat(fmt);
-		}
+		if (fmt != video_src.GetFormat() && !NegotiateSourceFormat(video_ch, fmt))
+			return false;
 	}
 	
 	

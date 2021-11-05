@@ -173,6 +173,26 @@ bool AtomBase::IsPacketStuck() {
 	return false;
 }
 
+bool AtomBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
+	Exchange* e = 0;
+	for (Exchange& ex : side_sink_conn)
+		if (ex.local_ch_i == src_ch)
+			e = &ex;
+	if (!e) {
+		RTLOG("AtomBase::NegotiateSourceFormat: exchange not found");
+		return false;
+	}
+	
+	if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
+		RTLOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
+		return false;
+	}
+	
+	Value& src = GetSource()->GetSourceValue(src_ch);
+	src.SetFormat(fmt);
+	return true;
+}
+
 
 
 

@@ -25,10 +25,9 @@ bool OpenCVBase::Initialize(const Script::WorldState& ws) {
 		for(int l = 0; l < dev.GetCaptureCount(); l++) {
 			OpenCVCaptureDevice& cap = dev.GetCapture(l);
 			int fmt_i = -1, res_i = -1;
-			VideoFormat desired_format;
 			
 			if (cap.FindClosestFormat(def_cap_sz, def_cap_fps, 0.5, 1.5, fmt_i, res_i)) {
-				if (cap.Open(fmt_i, res_i, vflip)) {
+				if (cap.Open(fmt_i, res_i, vflip, fmt)) {
 					cap.Start();
 					succ = true;
 					this->cap = &cap;
@@ -55,6 +54,21 @@ bool OpenCVBase::Initialize(const Script::WorldState& ws) {
 	}
 	
 	return succ;
+}
+
+bool OpenCVBase::PostInitialize() {
+	ISourceRef src = GetSource();
+	int src_count = src->GetSourceCount();
+	for(int i = 0; i < src_count; i++) {
+		Value& val = src->GetSourceValue(i);
+		Format val_fmt = val.GetFormat();
+		if (val_fmt.vd == VD(Center, Video)) {
+			if (val_fmt != fmt && !NegotiateSourceFormat(i, fmt))
+				return false;
+		}
+	}
+	
+	return true;
 }
 
 void OpenCVBase::Uninitialize() {

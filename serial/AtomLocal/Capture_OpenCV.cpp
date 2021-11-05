@@ -119,7 +119,7 @@ OpenCVCaptureDevice::~OpenCVCaptureDevice() {
 	Close();
 }
 
-bool OpenCVCaptureDevice::Open(int fmt_i, int res_i, bool vflip) {
+bool OpenCVCaptureDevice::Open(int fmt_i, int res_i, bool vflip, Format& f) {
 	Close();
 	
 	cur_time.Reset();
@@ -136,7 +136,6 @@ bool OpenCVCaptureDevice::Open(int fmt_i, int res_i, bool vflip) {
 	if (fps <= 0.0) return false;
 	time_step = 1.0 / fps;
 	
-	Format f;
 	f.SetVideo(DevCls::CENTER, vid_fmt);
 	if (ocv && ocv->OpenDevice0(sz, fps, f, vflip))
 		return true;

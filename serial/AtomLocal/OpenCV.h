@@ -23,6 +23,7 @@ public:
 	OpenCVBase();
 	
 	bool			Initialize(const Script::WorldState& ws) override;
+	bool			PostInitialize() override;
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
 	bool			IsReady(PacketIO& io) override;

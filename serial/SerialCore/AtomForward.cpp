@@ -454,6 +454,7 @@ Packet AtomBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
 		to->SetOffset(off);
 	}
 	else {
+		//DUMP(content_fmt); DUMP(src_fmt);
 		Packet to = CreatePacket(off);
 		to->SetFormat(src_fmt);
 		Convert(content, to);

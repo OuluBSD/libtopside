@@ -62,7 +62,7 @@ bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const Vector<byte>&
 }
 
 bool OglBuffer::InitializeCubemapRGBA(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
-	RTLOG("OglBuffer::InitializeCubemapRGBA: " << sz.ToString() << ", " << data.GetCount());
+	RTLOG("OglBuffer::InitializeCubemapRGBA: " << sz.ToString());
 	
 	is_cubemap = true;
 	
