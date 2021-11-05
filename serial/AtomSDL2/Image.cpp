@@ -22,17 +22,54 @@ bool SDL2ImageBase::Initialize(const Script::WorldState& ws) {
 	String filepath = RealizeFilepathArgument(arg_filepath);
 	RTLOG("SDL2ImageBase: filepath=\"" << filepath << "\"");
 	
+	if (ws.Get(".cubemap") == "true")
+		cubemap = true;
+	
 	if (ws.Get(".vflip") == "true")
 		vflip = true;
 	
 	OBJ_CREATE
 	
-	Image img = Image(IMG_Load(filepath.Begin()));
-	if (img.IsEmpty()) {
-		LOG("SDL2ImageBase: error: empty image: " << filepath);
-		return false;
+	
+	seq = 0;
+	imgs.Clear();
+	if (cubemap) {
+		String dir = GetFileDirectory(filepath);
+		String ext = GetFileExt(filepath);
+		String title = GetFileTitle(filepath);
+		for(int i = 0; i < 6; i++) {
+			String side_path;
+			if (i == 0)
+				side_path = filepath;
+			else
+				side_path = AppendFileName(dir, title + "_" + IntStr(i) + ext);
+			
+			Image img = Image(IMG_Load(side_path.Begin()));
+			if (img.IsEmpty()) {
+				LOG("SDL2ImageBase: error: empty image: " << side_path);
+				return false;
+			}
+			
+			// shadertoy compatibility
+			if (vflip)
+				img = MirrorVertical(img);
+			
+			imgs.Add(img);
+		}
 	}
-	imgs.Add(img);
+	else {
+		Image img = Image(IMG_Load(filepath.Begin()));
+		if (img.IsEmpty()) {
+			LOG("SDL2ImageBase: error: empty image: " << filepath);
+			return false;
+		}
+		
+		// shadertoy compatibility
+		if (vflip)
+			img = MirrorVertical(img);
+		
+		imgs.Add(img);
+	}
 	
 	return true;
 }
@@ -66,17 +103,17 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	out = ReplyPacket(1, prim_sink.p);
 	
 	PacketValue& v = *out;
+	v.seq = seq++;
 	Image& img = imgs[0];
 	
 	Format fmt = v.GetFormat();
 	ASSERT(fmt.IsVideo());
 	fmt.vid.SetSize(img.GetSize());
+	fmt.vid.SetCubemap();
 	v.SetFormat(fmt);
 	
-	// shadertoy compatibility
-	if (vflip)
-		img = MirrorVertical(img);
-	
+	int pack = fmt.vid.GetPackedCount();
+	ASSERT(pack == 4);
 	DataFromImage(img, v.Data());
 	ASSERT(v.GetData().GetCount());
 	
@@ -91,91 +128,11 @@ bool SDL2ImageBase::IsReady(PacketIO& io) {
 	return b;
 }
 
-bool SDL2ImageBase::LoadFileAny(String path) {
-	imgs.Clear();
-	
-	TODO
-	#if 0
-	sstream.SetSkipDrop(false);
-	
-	if (path.Left(9) == "<cubemap>") {
-		path = path.Mid(9);
-		
-		String dir = GetFileDirectory(path);
-		String title = GetFileTitle(path);
-		String ext = GetFileExt(path);
-		
-		for(int i = 0; i < 6; i++) {
-			if (i)
-				path = AppendFileName(dir, title + "_" + IntStr(i) + ext);
-			
-			SDL_Surface* surf = IMG_Load(path);
-			if (!surf) {
-				last_error = IMG_GetError();
-				return false;
-			}
-			
-			#ifdef flagGUI
-			img << Image(surf);
-			#else
-			TODO
-			#endif
-		}
-		sstream.SetSkipDrop();
-		return true;
-	}
-	else {
-		SDL_Surface* surf = IMG_Load(path);
-		if (!surf) {
-			last_error = IMG_GetError();
-			return false;
-		}
-		
-		#ifdef flagGUI
-		img << Image(surf);
-		#else
-		TODO
-		#endif
-		
-		sstream.SetSkipDrop();
-		return true;
-	}
-	#endif
-}
-
 Size SDL2ImageBase::GetResolution() const {
 	if (imgs.GetCount())
 		return imgs[0].GetSize();
 	return Size(0,0);
 }
-
-#if 0
-void SDL2ImageBase::EmitStatic() {
-	int id = 0;
-	for(Image& img : this->img) {
-		int w = img.GetWidth();
-		int h = img.GetHeight();
-		int d = 1;
-		int stride = img.GetStride();
-		int pitch = img.GetPitch();
-		const byte* img_data = img.Begin();
-		
-		StaticValueData data;
-		data.obj_i = id;
-		data.w = w;
-		data.h = h;
-		data.d = d;
-		data.stride = stride;
-		data.pitch = pitch;
-		data.data = img_data;
-		
-		for(StaticSinkRef sink : StaticSource::GetConnections())
-			sink->RecvStatic(data);
-		id++;
-	}
-}
-#endif
-
 
 
 NAMESPACE_SERIAL_END

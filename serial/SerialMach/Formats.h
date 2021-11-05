@@ -38,15 +38,18 @@ struct VideoFormat :
 		sizeof(TimeSeriesBase);
 	
 	void	Set(LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
+	void	SetCubemap() {cubemap = true;}
 	
 	int		GetFrameSize() const;
 	String	ToString() const;
 	bool	IsValid() const;
+	bool	IsCubemap() const {return cubemap;}
 	bool	IsSame(const VideoFormat& fmt) const;
 	int		GetChannels() const {return SampleBase<LightSampleFD>::GetPackedCount();}
 	
 	
-	byte pad[STD_FMT_SIZE - base_size - 4];
+	bool	cubemap;
+	byte	pad[STD_FMT_SIZE - base_size - 5];
 };
 
 struct VolumeFormat :

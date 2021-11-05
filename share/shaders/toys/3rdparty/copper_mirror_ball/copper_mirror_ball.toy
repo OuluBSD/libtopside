@@ -1,0 +1,29 @@
+{
+	name: "Copper Mirror Ball",
+	description: "A reflective copper ball. Put this together to try using a cubemap. Think it looks pretty good, and the reflect() built-in makes it really simple.",
+	owner: "geoff",
+	likes: 4,
+	date: 20160725,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: cubemap,
+					filter: mipmap,
+					wrap: clamp,
+					vflip: true,
+					filename: "488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg",
+				},
+			],
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

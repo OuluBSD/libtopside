@@ -1,0 +1,29 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop center.image: {
+			id: "image";
+			center.customer: true;
+			center.image.loader: true [][id: "texture"] {vflip: true; cubemap: true; filepath: "imgs/488bd40303a2e2b9a71987e48c66ef41f5e937174bf316d3ed0e86410784b919.jpg";};
+		};
+		
+		loop ogl.fbo.tex: {
+			id: "texture";
+			ogl.customer: true;
+			ogl.fbo.image: true [id: "image"][id: "screen"];
+		};
+		
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo: true [id: "texture";;;;] {buf0: "cubemap"; filepath: "shaders/toys/3rdparty/copper_mirror_ball/stage0.glsl";};
+		};
+	};
+
+};
+

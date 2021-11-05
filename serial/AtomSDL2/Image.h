@@ -13,6 +13,8 @@ class SDL2ImageBase :
 	One<OOSDL2::Image>			obj;
 	Vector<Image>				imgs;
 	String						last_error;
+	dword						seq = 0;
+	bool						cubemap = false;
 	bool						vflip = false;
 	
 public:
@@ -30,7 +32,6 @@ public:
 	OOSDL2::Component&	GetObj() override {return *obj;}
 	OOSDL2::Image*		GetOOSDL2() {return &*obj;}
 	
-	bool			LoadFileAny(String path);
 	Size			GetResolution() const;
 	
 	bool			IsOpen() const {return !imgs.IsEmpty();}

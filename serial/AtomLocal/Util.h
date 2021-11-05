@@ -88,6 +88,8 @@ public:
 class OglTextureBase :
 	public OglBufferBase
 {
+	bool			loading_cubemap = false;
+	Array<Packet>	cubemap;
 	
 public:
 	RTTI_DECL1(OglTextureBase, OglBufferBase);

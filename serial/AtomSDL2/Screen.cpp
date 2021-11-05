@@ -20,8 +20,14 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	for(int i = 0; i < 4; i++) {
 		String key = ".buf" + IntStr(i);
 		String value = ws.Get(key);
-		if (value == "volume")
+		if (value.IsEmpty())
+			;
+		else if (value == "volume")
 			buf.SetInputVolume(i);
+		else if (value == "cubemap")
+			buf.SetInputCubemap(i);
+		else
+			TODO
 	}
 	
 	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());

@@ -214,6 +214,7 @@ public:
 	Point						fb_offset;
 	dword						time_us = 0;
 	Time						time;
+	bool						is_cubemap = false;
 	
 	bool						initialized = false;
 	
@@ -224,9 +225,11 @@ public:
 	bool				LoadFragmentShaderFile(String filepath);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
 	bool				IsInitialized() const {return initialized;}
+	bool				IsCubemap() const {return is_cubemap;}
 	
 	bool				Initialize();
 	bool				InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data);
+	bool				InitializeCubemapRGBA(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool				InitializeVolume(Size3 sz, int channels, const Vector<byte>& data);
 	void				RefreshPipeline();
 	void				UpdateTexBuffers();
@@ -240,6 +243,7 @@ public:
 	void				SetVars(GLint prog, const RealtimeSourceConfig& cfg);
 	void				SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg);
 	void				SetInputVolume(int input_i);
+	void				SetInputCubemap(int input_i);
 	void				ClearTex();
 	void				ClearProg();
 	void				CreateTex(bool create_depth, bool create_fbo, int filter, int repeat);
@@ -258,6 +262,7 @@ public:
 	const OglBuffer*	GetComponentById(int id) const;
 	void				ReadTexture(Size sz, int channels, const Vector<byte>& data);
 	void				ReadTexture(Size3 sz, int channels, const Vector<byte>& data);
+	void				ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	
 	void				OnError(const char* fn, String s);
 	

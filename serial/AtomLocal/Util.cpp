@@ -274,8 +274,14 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	for(int i = 0; i < 4; i++) {
 		String key = ".buf" + IntStr(i);
 		String value = ws.Get(key);
-		if (value == "volume")
+		if (value.IsEmpty())
+			;
+		else if (value == "volume")
 			buf.SetInputVolume(i);
+		else if (value == "cubemap")
+			buf.SetInputCubemap(i);
+		else
+			TODO
 	}
 	
 	InterfaceSinkRef sink_iface = GetSink();
@@ -455,6 +461,21 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	if (from_fmt.IsVideo()) {
 		sz			= from_fmt.vid.GetSize();
 		channels	= from_fmt.vid.GetChannels();
+		
+		if (from_fmt.vid.IsCubemap()) {
+			if (from.seq == 0) {
+				loading_cubemap = true;
+				cubemap.Clear();
+			}
+			
+			if (loading_cubemap) {
+				if (from.seq == cubemap.GetCount())
+					cubemap.Add(sink.p);
+				
+				if (cubemap.GetCount() < 6)
+					return true;
+			}
+		}
 	}
 	else if (from_fmt.IsVolume()) {
 		sz			= from_fmt.vol.GetSize();
@@ -471,7 +492,20 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
 		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
 		
-		if (sz.cz == 0) {
+		if (loading_cubemap) {
+			ASSERT(cubemap.GetCount() == 6);
+			if (!buf.InitializeCubemapRGBA(
+					Size(sz.cx, sz.cy), channels,
+					cubemap[0]->GetData(),
+					cubemap[1]->GetData(),
+					cubemap[2]->GetData(),
+					cubemap[3]->GetData(),
+					cubemap[4]->GetData(),
+					cubemap[5]->GetData()
+				))
+				return false;
+		}
+		else if (sz.cz == 0) {
 			if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, from.GetData()))
 				return false;
 		}

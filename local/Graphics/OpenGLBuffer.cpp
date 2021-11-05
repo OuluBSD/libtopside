@@ -52,7 +52,7 @@ bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
 }
 
 bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data) {
-	DLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << data.GetCount());
+	RTLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << data.GetCount());
 	
 	UpdateTexBuffers();
 	
@@ -61,8 +61,21 @@ bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const Vector<byte>&
 	return true;
 }
 
+bool OglBuffer::InitializeCubemapRGBA(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
+	RTLOG("OglBuffer::InitializeCubemapRGBA: " << sz.ToString() << ", " << data.GetCount());
+	
+	is_cubemap = true;
+	
+	UpdateTexBuffers();
+	
+	ReadCubemap(sz, channels, d0, d1, d2, d3, d4, d5);
+	
+	return true;
+}
+
+
 bool OglBuffer::InitializeVolume(Size3 sz, int channels, const Vector<byte>& data) {
-	DLOG("OglBuffer::InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
+	RTLOG("OglBuffer::InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
 	
 	UpdateTexBuffers();
 	
@@ -104,6 +117,40 @@ void OglBuffer::ReadTexture(Size3 sz, int channels, const Vector<byte>& data) {
 		sz.cz,
 		0, intl_fmt, GL_UNSIGNED_BYTE,
 		data.Begin());
+}
+
+void OglBuffer::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
+	GLenum type		= GL_TEXTURE_CUBE_MAP;
+	GLuint& tex		= color_buf[0];
+	int ch_code		= GetOglChCode(channels);
+	
+	ASSERT(tex > 0);
+	
+	for(int i = 0; i < 6; i++) {
+		GLenum tex_type	= GL_TEXTURE_CUBE_MAP_POSITIVE_X + i;
+		const Vector<byte>* data = 0;
+		switch (i) {
+			case 0: data = &d0; break;
+			case 1: data = &d1; break;
+			case 3: data = &d2; break; // swap 2 & 3
+			case 2: data = &d3; break;
+			case 4: data = &d4; break;
+			case 5: data = &d5; break;
+		}
+		glTexImage2D(tex_type, 0, GL_RGBA,
+					 sz.cx, sz.cy,
+					 0, ch_code,
+					 GL_UNSIGNED_BYTE,
+					 data->Begin());
+	}
+	
+	TexFlags(type, OglBufferInput::FILTER_LINEAR, OglBufferInput::WRAP_REPEAT);
+	
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+		OnError("OglBuffer::ReadCubemap", "gl error " + HexStr(err));
+	
+	glBindTexture(type, 0);
 }
 
 bool OglBuffer::Initialize() {
@@ -916,7 +963,9 @@ bool OglBuffer::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
 		
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		
-		if (sz.cz > 0)
+		if (in.in_buf->IsCubemap())
+			in.type = OglBufferInput::CUBEMAP;
+		else if (sz.cz > 0)
 			in.type = OglBufferInput::VOLUME;
 		else
 			in.type = OglBufferInput::TEXTURE;
@@ -934,6 +983,14 @@ void OglBuffer::SetInputVolume(int in_id) {
 	
 	OglBufferInput& in = in_buf[in_id];
 	in.type = OglBufferInput::VOLUME;
+}
+
+void OglBuffer::SetInputCubemap(int in_id) {
+	if (in_id >= in_buf.GetCount())
+		in_buf.SetCount(in_id+1);
+	
+	OglBufferInput& in = in_buf[in_id];
+	in.type = OglBufferInput::CUBEMAP;
 }
 
 

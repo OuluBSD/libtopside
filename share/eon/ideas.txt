@@ -5,12 +5,21 @@
 	- simple_texture
 	- simple_volume
 	- simple_webcam
-
 	- simple_video
+
 	- simple_sound_out_dbg
 	- simple_sound_out
 	- simple_music
-
+	- simple_sound_in
+	- simple_events
+	- simple_midi
+	- simple_opl3
+	- simple_fluidsynth
+	- simple_overlay
+	- simple_machine_reloader
+	- simple_network
+	- simple_script_esc
+	- simple_walktrough_tutorial
 
 - client/server
 	- internet radio

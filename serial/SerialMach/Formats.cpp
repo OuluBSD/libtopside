@@ -45,6 +45,7 @@ void VideoFormat::Set(LightSampleFD::Type type, int w, int h, int freq, int samp
 	SampleBase<LightSampleFD>::SetType(type);
 	DimBase<2>::operator=(Size(w,h));
 	TimeSeriesBase::SetTimeSeries(freq, sample_rate);
+	cubemap = false;
 }
 
 int VideoFormat::GetFrameSize() const {
