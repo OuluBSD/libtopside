@@ -520,7 +520,7 @@ public:
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	
+
 };
 #endif
 
@@ -532,6 +532,22 @@ public:
 	COPY_PANIC(OglVolumeSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class OglAudioSink : public Atom<OglAudioSink>, public OglFboReaderBase {
+
+public:
+	RTTI_DECL2(OglAudioSink, AtomT, OglFboReaderBase)
+	COPY_PANIC(OglAudioSink)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.center.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -613,6 +629,8 @@ using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
 using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
 
 using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
+
+using OglAudioSinkRef = Ref<OglAudioSink, AtomParent>;
 
 }
 

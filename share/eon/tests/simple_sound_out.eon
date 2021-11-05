@@ -1,0 +1,36 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop ogl.fbo.audio.buffer: {
+			id: "audio_gen";
+			ogl.customer: true;
+			ogl.fbo.source: true [][id: "audio_conv";;;;] {type: "audio"; filepath: "shaders/toys/simple/simple_sound_out/stage1.glsl";};
+		};
+				
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo.standalone: true {filepath: "shaders/toys/simple/simple_sound_out/stage0.glsl";};
+		};
+		
+		loop ogl.fbo.audio.conv: {
+			id: "audio_conv";
+			ogl.customer: true;
+			ogl.fbo.center.audio: true [id: "audio_gen"][id: "audio_out"];
+		};
+		
+		loop audio: {
+			id: "audio_out";
+			center.customer: true;
+			center.audio.side.sink.center.user: true [id: "audio_conv"];
+			sdl.audio: true;
+		};
+	};
+	
+};
+

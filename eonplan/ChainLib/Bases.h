@@ -23,6 +23,7 @@ BASE(OglShaderBase)
 BASE(EventStateBase)
 BASE(TestEventSrcBase)
 BASE(OglTextureBase)
+BASE(OglFboReaderBase)
 BASE(VideoLoaderBase)
 BASE(VolumeLoaderBase)
 

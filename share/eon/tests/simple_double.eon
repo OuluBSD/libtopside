@@ -5,8 +5,8 @@ machine sdl.app: {
 	chain program: {
 		loop ogl.fbo: {
 			ogl.customer: true;
-			ogl.fbo.source.pipe: true {filepath: "shaders/toys/simple_double/stage1.glsl";};
-			sdl.fbo.pipe: true {filepath: "shaders/toys/simple_double/stage0.glsl";};
+			ogl.fbo.source.pipe: true {filepath: "shaders/toys/simple/simple_double/stage1.glsl";};
+			sdl.fbo.pipe: true {filepath: "shaders/toys/simple/simple_double/stage0.glsl";};
 		};
 	};
 };

@@ -70,6 +70,7 @@ public:
 class OglShaderBase :
 	public OglBufferBase
 {
+	bool is_audio = false;
 	
 public:
 	RTTI_DECL1(OglShaderBase, OglBufferBase);
@@ -103,6 +104,24 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
 	
+	
+};
+
+class OglFboReaderBase :
+	public OglBufferBase
+{
+public:
+	RTTI_DECL1(OglFboReaderBase, OglBufferBase);
+	
+	OglFboReaderBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPackets(PacketIO& io) override;
+	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
+	
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
 	
 };
 

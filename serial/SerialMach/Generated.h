@@ -66,6 +66,7 @@ namespace Serial {
 	ATOM_TYPE(OGL_SHADER_ATOM) \
 	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
+	ATOM_TYPE(OGL_AUDIO_SINK) \
 
 
 #define flagGUI_ATOM_CLASS_LIST \
@@ -83,6 +84,7 @@ namespace Serial {
 	ATOM_CLASS(OglShaderAtom) \
 	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
+	ATOM_CLASS(OglAudioSink) \
 
 
 #define HAVE_OPENCV_ATOM_TYPE_LIST \

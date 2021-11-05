@@ -1,0 +1,50 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		
+		loop audio: {
+			id: "audio_gen";
+			center.customer: true;
+			center.audio.src.dbg_generator: true;
+			center.audio.side.src.center.user: true [][id: "audio_conv_in"];
+		};
+
+		loop ogl.fbo.audio.conv.in: {
+			id: "audio_conv_in";
+			ogl.customer: true;
+			ogl.center.fbo.audio: true [id: "audio_gen"][id: "audio_fx"];
+		};
+		
+		loop ogl.fbo.audio.buffer: {
+			id: "audio_fx";
+			ogl.customer: true;
+			ogl.fbo.source: true [id: "audio_conv_in";;;;][id: "audio_conv_out";;;;] {type: "audio"; filepath: "shaders/toys/simple/simple_sound_out/stage1.glsl";};
+		};
+		
+		loop ogl.fbo.audio.conv.out: {
+			id: "audio_conv_out";
+			ogl.customer: true;
+			ogl.fbo.center.audio: true [id: "audio_fx"][id: "audio_out"];
+		};
+		
+		loop audio: {
+			id: "audio_out";
+			center.customer: true;
+			center.audio.side.sink.center.user: true [id: "audio_conv"];
+			sdl.audio: true;
+		};
+		
+		loop ogl.fbo.screen: {
+			id: "screen";
+			ogl.customer: true;
+			sdl.fbo.standalone: true {filepath: "shaders/toys/simple/simple_sound_pipe/stage0.glsl";};
+		};
+		
+	};
+	
+};
+

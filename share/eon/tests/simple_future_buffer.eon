@@ -21,19 +21,19 @@ machine sdl.app: {
 		loop ogl.fbo.buffer2: {
 			id: "buffer2";
 			ogl.customer: true;
-			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple_future_buffer/stage2.glsl";};
+			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple/simple_future_buffer/stage2.glsl";};
 		};
 		
 		loop ogl.fbo.buffer1: {
 			id: "buffer1";
 			ogl.customer: true;
-			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple_future_buffer/stage1.glsl";};
+			ogl.fbo.source: true [][id: "screen";;;;] {filepath: "shaders/toys/simple/simple_future_buffer/stage1.glsl";};
 		};
 		
 		loop ogl.fbo.screen: {
 			id: "screen";
 			ogl.customer: true;
-			sdl.fbo: true [id: "buffer2"; id: "buffer1"; id: "texture";;] {filepath: "shaders/toys/simple_future_buffer/stage0.glsl";};
+			sdl.fbo: true [id: "buffer2"; id: "buffer1"; id: "texture";;] {filepath: "shaders/toys/simple/simple_future_buffer/stage0.glsl";};
 		};
 		
 		loop audio: {

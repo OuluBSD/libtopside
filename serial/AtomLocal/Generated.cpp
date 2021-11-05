@@ -596,6 +596,24 @@ AtomTypeCls OglVolumeSource::GetType() const
 }
 
 #endif
+#if defined flagGUI
+AtomTypeCls OglAudioSink::GetAtomType()
+{
+	return ATOM11_U11(OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
+}
+
+void OglAudioSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglAudioSink>>(this);
+	vis.VisitThis<OglFboReaderBase>(this);
+}
+
+AtomTypeCls OglAudioSink::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
 }
 
 }

@@ -44,9 +44,10 @@ void SDL2ScreenBase::Uninitialize() {
 }
 
 bool SDL2ScreenBase::IsReady(PacketIO& io) {
-	dword iface_sink_mask = iface.GetSinkMask();
-	bool b = io.active_sink_mask == iface_sink_mask;
-	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	//dword iface_sink_mask = iface.GetSinkMask();
+	//bool b = io.active_sink_mask == iface_sink_mask; // wrong here: only primary is required
+	bool b = io.sink[0].filled;
+	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
 	return b;
 }
 

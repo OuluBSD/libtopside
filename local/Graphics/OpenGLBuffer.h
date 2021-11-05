@@ -173,7 +173,6 @@ protected:
 	int							buf_i = 0;
 	bool						is_doublebuf = false;
 	bool						is_searched_vars = false;
-	bool						is_shader_audio_main = false;
 	
 	GLuint						gl_stage = 0;
 	
@@ -189,6 +188,7 @@ public:
 	// set by user
 	bool						is_win_fbo = false;
 	bool						is_read_fb_output = false;
+	bool						is_shader_audio_main = false;
 	int							fb_channels = 4;
 	Size						fb_size;
 	SampleType					fb_sampletype = SAMPLE_BYTE;
@@ -263,6 +263,9 @@ public:
 	void				ReadTexture(Size sz, int channels, const Vector<byte>& data);
 	void				ReadTexture(Size3 sz, int channels, const Vector<byte>& data);
 	void				ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
+	Size				GetFramebufferSize() const {return fb_size;}
+	int					GetFramebufferChannels() const {return fb_channels;}
+	GLuint				GetReadFramebuffer() const {return frame_buf[buf_i];}
 	
 	void				OnError(const char* fn, String s);
 	

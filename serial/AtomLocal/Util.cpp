@@ -270,6 +270,10 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
 	
+	if (ws.Get(".type") == "audio") {
+		is_audio = true;
+	}
+	
 	// SDL2ScreenBase duplicate
 	for(int i = 0; i < 4; i++) {
 		String key = ".buf" + IntStr(i);
@@ -298,8 +302,14 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 }
 
 bool OglShaderBase::PostInitialize() {
+	buf.is_shader_audio_main = is_audio;
 	buf.is_win_fbo = false;
-	buf.fb_size = Size(1280,720);
+	if (!is_audio)
+		buf.fb_size = Size(1280,720);
+	else {
+		buf.fb_size = Size(1024,1);
+		buf.fb_channels = 2;
+	}
 	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
 	
 	if (!buf.Initialize())
@@ -541,6 +551,99 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+OglFboReaderBase::OglFboReaderBase() {
+	
+}
+
+bool OglFboReaderBase::Initialize(const Script::WorldState& ws) {
+	return true;
+}
+
+bool OglFboReaderBase::PostInitialize() {
+	return true;
+}
+
+void OglFboReaderBase::Uninitialize() {
+	
+}
+
+bool OglFboReaderBase::IsReady(PacketIO& io) {
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("OglFboReaderBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
+	ASSERT(io.nonempty_sinks == 2);
+	
+	{
+		PacketIO::Sink& sink = io.sink[0];
+		PacketIO::Source& src = io.src[0];
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		src.p = ReplyPacket(0, sink.p);
+		src.p->AddRouteData(src.from_sink_ch);
+	}
+	
+	{
+		PacketIO::Sink& sink = io.sink[1];
+		PacketIO::Source& src = io.src[1];
+		ASSERT(sink.p && src.val && !src.is_full);
+		Packet& in = sink.p;
+		sink.may_remove = true;
+		src.from_sink_ch = 1;
+		src.p = ReplyPacket(1, sink.p);
+		src.p->AddRouteData(src.from_sink_ch);
+		
+		Format fmt = src.p->GetFormat();
+		
+		if (fmt.IsAudio()) {
+			//DUMP(fmt);
+			AudioFormat& afmt = fmt;
+			InternalPacketData& v = in->GetData<InternalPacketData>();
+			OglBuffer* src_buf = (OglBuffer*)v.ptr;
+			ASSERT(src_buf);
+			
+			Size sz = src_buf->GetFramebufferSize();
+			int channels = src_buf->GetFramebufferChannels();
+			int afmt_size = afmt.GetSize();
+			ASSERT(sz.cx == afmt.sample_rate && sz.cy == 1 && channels == afmt_size);
+			int len = afmt.sample_rate * channels * sizeof(float);
+			ASSERT(len > 0);
+			Vector<byte>& out_data = src.p->Data();
+			out_data.SetCount(len);
+			
+			GLuint frame_buf = src_buf->GetReadFramebuffer();
+			ASSERT(frame_buf > 0);
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
+			glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(channels), GL_FLOAT, out_data.Begin());
+			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+			
+		}
+		else TODO
+	}
+	
+	return true;
+}
+
+bool OglFboReaderBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	
+	TODO
+	
+}
+
 
 #endif
 

@@ -624,6 +624,11 @@ GLint OglBuffer::GetInputTex(int input_i) const {
 		return -1;
 	
 	const OglBufferInput& in = in_buf[input_i];
+	if (in.id < 0) {
+		RTLOG("OglBuffer::GetInputTex: warning: no input texture");
+		return -1;
+	}
+	
 	const OglBuffer* in_comp = GetComponentById(in.id);
 	if (!in_comp)
 		return -1;

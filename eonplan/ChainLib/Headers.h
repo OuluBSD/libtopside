@@ -129,10 +129,14 @@ HEADER55_U44(		OglShaderAtom,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		Ogl
 HEADER_ACTION(		OglShaderAtom,		ogl.fbo.source)
 HEADER_ARG(			OglShaderAtom,		reqdef_flagGUI,		1)
 
-HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,		OglReceipt)
+HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,			OglReceipt)
 HEADER_ACTION(		OglTextureSource,	ogl.fbo.image)
 HEADER_ARG(			OglTextureSource,	reqdef_flagGUI,		1)
 
-HEADER22_U11(		OglVolumeSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,		OglReceipt)
+HEADER22_U11(		OglVolumeSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVolume,	OglFbo,			OglReceipt)
 HEADER_ACTION(		OglVolumeSource,	ogl.fbo.volume)
 HEADER_ARG(			OglVolumeSource,	reqdef_flagGUI,		1)
+
+HEADER22_U11(		OglAudioSink,		OglFboReaderBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			CenterAudio,	OglReceipt)
+HEADER_ACTION(		OglAudioSink,		ogl.fbo.center.audio)
+HEADER_ARG(			OglAudioSink,		reqdef_flagGUI,		1)
