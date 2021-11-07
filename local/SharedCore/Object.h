@@ -75,6 +75,7 @@ public:
 	ObjectTemplate(T* ptr) : ptr(ptr) {type = ObjectTypeNo<T>(0);}
 	ObjectTemplate(const T& obj) {ptr = new T(obj); is_owned = true; type = ObjectTypeNo<T>(0);}
 	~ObjectTemplate() {if (is_owned && ptr) {delete ptr; ptr = 0; is_owned = false; type = VOID_V;}}
+	T* GetT() const {return ptr;}
 	void* Get() override {return ptr;}
 	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
 	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
@@ -118,8 +119,8 @@ public:
 	template <class T> Object&	operator=(T* o) {Set<T>(o); return *this;}
 	template <class T> Object&	operator=(const T& o) {Set<T>(o); return *this;}
 	
-	template <class T> void     Set(T* o) {obj = new ObjectTemplate<T>(o);}
-	template <class T> void     Set(const T& o) {obj.WrapObject(new ObjectTemplate<T>(o));}
+	template <class T> T&       Set(T* o) {ObjectTemplate<T>* p = new ObjectTemplate<T>(o); obj = p; return *p->GetT();}
+	template <class T> T&       Set(const T& o) {if (Is<T>()) {T& p = Get<T>(); p = o; return p;} else return Create<T>(o);}
 	template <class T> bool		Is() const {if (obj) return obj->GetType() == ObjectTypeNo<T>(0); return false;}
 	template <class T> T*		Try() const;
 	

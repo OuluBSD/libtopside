@@ -30,7 +30,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 			TODO
 	}
 	
-	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	AddAtomToUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
 	GetSink()->GetValue(0).SetMaxQueueSize(1);
 	return true;
@@ -39,7 +39,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 void SDL2ScreenBase::Uninitialize() {
 	ev = 0;
 	obj.Clear();
-	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+	RemoveAtomFromUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(AtomBase::AsRefT());
 }
 

@@ -12,6 +12,7 @@ class Action;
 class ScriptLoader;
 class ScriptLoopLoader;
 class ScriptDriverLoader;
+class ScriptStateLoader;
 
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
 

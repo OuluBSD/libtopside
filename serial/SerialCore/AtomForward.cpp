@@ -21,6 +21,14 @@ int AtomBase::GetSourcePacketCount() {
 	return c;
 }
 
+void AtomBase::AddAtomToUpdateList() {
+	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+}
+
+void AtomBase::RemoveAtomFromUpdateList() {
+	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+}
+
 void AtomBase::ForwardAtom(FwdScope& fwd) {
 	RTLOG("AtomBase::ForwardAtom");
 	
@@ -213,7 +221,7 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				io.full_src_mask |= (1 << src_ch);
 			}
 			
-			RTLOG("AtomBase::ForwardPipe: " << (iface.val ? "has val" : "no val") << (iface.is_full ? ", is full" : ", not full"));
+			//RTLOG("AtomBase::ForwardPipe: " << (iface.val ? "has val" : "no val") << (iface.is_full ? ", is full" : ", not full"));
 		}
 		
 		

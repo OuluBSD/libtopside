@@ -62,6 +62,7 @@ public:
 	Loop*				GetParent() const;
 	Machine&			GetMachine() const;
 	String				GetName() const {return name;}
+	String				GetDeepName() const;
 	bool				HasEntities() const {return !atoms.IsEmpty();}
 	bool				HasLoops() const {return !loops.IsEmpty();}
 	
@@ -104,9 +105,12 @@ public:
 	}
 	
 	template<typename T> RefT_Loop<T> FindNearestAtomCast(int nearest_loop_depth);
+	EnvStateRef FindNearestState(String name);
 	
+	StateVec& GetStates() {return states;}
 	AtomMap& GetAtoms() {return atoms;}
 	LoopVec& GetLoops() {return loops;}
+	const StateVec& GetStates() const {return states;}
 	const AtomMap& GetAtoms() const {return atoms;}
 	const LoopVec& GetLoops() const {return loops;}
 	
@@ -125,6 +129,26 @@ public:
 		return AddLoop(name);
 	}
 	
+	EnvStateRef AddState(String name="") {
+		EnvState& p = states.Add();
+		p.SetParent(this);
+		p.SetName(name);
+		return p;
+	}
+	
+	EnvStateRef GetAddEnv(String name) {
+		if (EnvStateRef e = FindState(name))
+			return e;
+		return AddState(name);
+	}
+	
+	EnvStateRef FindState(String name) {
+		for (EnvStateRef& s : states)
+			if (s->GetName() == name)
+				return s;
+		return EnvStateRef();
+	}
+	
 	AtomMap::Iterator			begin()			{return atoms.begin();}
 	AtomMap::Iterator			end()			{return atoms.end();}
 	LoopVec::Iterator			BeginLoop()		{return loops.begin();}
@@ -134,9 +158,9 @@ public:
 	void VisitSources(RuntimeVisitor& vis);
 	
 private:
+	StateVec				states;
 	AtomMap					atoms;
 	LoopVec					loops;
-	
 };
 
 

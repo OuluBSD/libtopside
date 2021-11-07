@@ -13,13 +13,13 @@ struct Point_ : Moveable<Point_<T>> {
 
 	Point_(T x, T y) : x(x), y(y) {}
 
-	Point_(const Point_& pt) {
-		*this = pt;
-	}
+	Point_(const Point_& pt) : x(pt.x), y(pt.y) {}
 
 
 
-
+	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	static const char* GetTypeName() {return "Point_<T>";}
+	
 	double Length() { return sqrt(x * x + y * y); }
 	double Slope() { return y / x; }
 
@@ -75,7 +75,10 @@ struct Point_ : Moveable<Point_<T>> {
 		return Point(x * b.x, y * b.y);
 	}
 	
-	String ToString() const {return "Point(" + IntStr(x) + ", " + IntStr(y) + ")";}
+	String	ToString() const {return "Point(" + IntStr(x) + ", " + IntStr(y) + ")";}
+	int		ToInt() const {return x * y;}
+	double	ToDouble() const {return x * y;}
+	hash_t	GetHashValue() const {return x * y;}
 	
 	operator Point_<int>() const {return Point_<int>(x,y);}
 	operator Point_<double>() const {return Point_<double>(x,y);}
@@ -110,12 +113,18 @@ struct Size_ : Moveable<Size_<T>> {
 	Size_(const Size_& sz) { *this = sz; }
 	Size_(T cx, T cy) : cx(cx), cy(cy) {}
 	
+	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	static const char* GetTypeName() {return "Size_<T>";}
+	
 	void Clear() {cx = 0; cy = 0;}
 	bool IsEmpty() const {return cx == 0 && cy == 0;}
 	bool IsPositive() const {return cx > 0 && cy > 0;}
 	bool IsEqual(const Size_& sz) const {return cx == sz.cx && cy == sz.cy;}
 	
-	T	GetArea() const {return cx * cy;}
+	T		GetArea() const {return cx * cy;}
+	int		ToInt() const {return cx * cy;}
+	double	ToDouble() const {return cx * cy;}
+	hash_t	GetHashValue() const {return cx * cy;}
 	
 	T&       operator[](int i)       {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
 	const T& operator[](int i) const {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
@@ -167,7 +176,10 @@ struct Rect_ : Moveable<Rect_<T>> {
 
 	typedef Point_<T>  Pt;
 	typedef Size_<T>   Sz;
-
+	
+	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	static const char* GetTypeName() {return "Rect_<T>";}
+	
 	Rect_() {}
 	Rect_(const Rect_& r) { *this = r; }
 	Rect_(const Size_<T>& sz) { right = sz.cx; bottom = sz.cy; }
@@ -202,6 +214,7 @@ struct Rect_ : Moveable<Rect_<T>> {
 		return r.right >= left && r.bottom >= top && r.left <= right && r.top <= bottom;
 	}
 	Point_<T> CenterPoint() const {return Point_<T>((right+left)/(T)2, (top+bottom)/(T)2);}
+	int ToInt() const {return top * left * bottom * right;}
 	
 	void   InflateHorz(T dx) { left -= dx; right += dx; }
 	void   InflateVert(T dy) { top -= dy; bottom += dy; }
@@ -251,7 +264,10 @@ struct Tri_ : Moveable<Tri_<T>> {
 	typedef Point_<T> Pt;
 
 	Pt a, b, c;
-
+	
+	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	static const char* GetTypeName() {return "Tri_<T>";}
+	
 	Tri_() {}
 	Tri_(const Tri_& t) { *this = t; }
 	void operator=(const Tri_& t) {

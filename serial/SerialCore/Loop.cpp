@@ -303,6 +303,27 @@ bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 	return false;
 }
 
+EnvStateRef Loop::FindNearestState(String name) {
+	Loop* l = this;
+	while (l) {
+		EnvStateRef e = l->FindState(name);
+		if (e)
+			return e;
+		l = l->GetParent();
+	}
+	return EnvStateRef();
+}
+
+String Loop::GetDeepName() const {
+	String s = name;
+	Loop* l = GetParent();
+	while (l) {
+		s = l->name + "." + s;
+		l = l->GetParent();
+	}
+	return s;
+}
+
 
 
 

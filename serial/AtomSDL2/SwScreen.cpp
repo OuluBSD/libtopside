@@ -10,7 +10,7 @@ bool SDL2SwScreenBase::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	OBJ_CREATE
 	
-	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	AddAtomToUpdateList();
 	GetSink()->GetValue(0).SetMaxQueueSize(1);
 	return true;
 }
@@ -18,7 +18,7 @@ bool SDL2SwScreenBase::Initialize(const Script::WorldState& ws) {
 void SDL2SwScreenBase::Uninitialize() {
 	ev = 0;
 	obj.Clear();
-	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+	RemoveAtomFromUpdateList();
 }
 
 bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {

@@ -34,14 +34,25 @@ inline String GetEventTypeString(int event) {
 	}
 }
 
-struct CtrlEvent : Moveable<CtrlEvent>, RTTIBase {
-	RTTI_DECL0(CtrlEvent)
-	
+struct CtrlEvent : Moveable<CtrlEvent> {
 	int type = 0;
 	dword value = 0;
 	int n = 0;
 	Point pt;
 	Size sz;
+	
+	
+	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	
+	void operator=(const CtrlEvent& e) {
+		type = e.type;
+		value = e.value;
+		n = e.n;
+		pt.x = e.pt.x;
+		pt.y = e.pt.y;
+		sz.cx = e.sz.cx;
+		sz.cy = e.sz.cy;
+	}
 	
 	void Clear() {
 		type = 0;

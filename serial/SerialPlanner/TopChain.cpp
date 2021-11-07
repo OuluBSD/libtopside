@@ -80,6 +80,19 @@ void ScriptTopChainLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	}
 }
 
+void ScriptTopChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
+	if (use_subchains) {
+		for (ScriptTopChainLoader& loader : subchains) {
+			loader.GetStates(v);
+		}
+	}
+	else {
+		for (ScriptChainLoader& loader : chains) {
+			loader.GetStates(v);
+		}
+	}
+}
+
 void ScriptTopChainLoader::ForwardLoops() {
 	ASSERT(!IsReady() && !IsFailed());
 	

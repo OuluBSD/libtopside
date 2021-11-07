@@ -79,6 +79,12 @@ void SDL2ImageBase::Uninitialize() {
 	obj.Clear();
 }
 
+bool SDL2ImageBase::IsReady(PacketIO& io) {
+	bool b = io.full_src_mask == 0 && !imgs.IsEmpty();
+	RTLOG("SDL2ImageBase::IsReady: " << (b ? "true" : "false"));
+	return b;
+}
+
 bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	if (imgs.IsEmpty()) return false;
 	
@@ -87,7 +93,7 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	ASSERT(in); if (!in) return false;
 	sink.may_remove = true;
 	
-	RTLOG("SDL2ScreenBase::ProcessPackets: sink #0: " << in->ToString());
+	RTLOG("SDL2ImageBase::ProcessPackets: sink #0: " << in->ToString());
 	
 	PacketIO::Sink& prim_sink = io.sink[0];
 	PacketIO::Source& prim_src = io.src[0];
@@ -109,7 +115,8 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	Format fmt = v.GetFormat();
 	ASSERT(fmt.IsVideo());
 	fmt.vid.SetSize(img.GetSize());
-	fmt.vid.SetCubemap();
+	if (cubemap)
+		fmt.vid.SetCubemap();
 	v.SetFormat(fmt);
 	
 	int pack = fmt.vid.GetPackedCount();
@@ -120,12 +127,6 @@ bool SDL2ImageBase::ProcessPackets(PacketIO& io) {
 	imgs.Remove(0);
 	
 	return true;
-}
-
-bool SDL2ImageBase::IsReady(PacketIO& io) {
-	bool b = io.full_src_mask == 0 && !imgs.IsEmpty();
-	RTLOG("SDL2ImageBase::IsReady: " << (b ? "true" : "false"));
-	return b;
 }
 
 Size SDL2ImageBase::GetResolution() const {

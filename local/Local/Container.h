@@ -26,7 +26,9 @@ T Slice(const T& vec, int begin, int end) {
 
 
 template <class T, int I>
-struct FixedArray {
+struct FixedArray : RTTIBase {
+	RTTI_DECL0(FixedArray)
+	
 	static const int size = I;
 	
 	struct Iterator {
@@ -52,6 +54,14 @@ struct FixedArray {
 	
 	Iterator begin() {return Iterator(&vector[0]);}
 	Iterator end() {return Iterator(&vector[0] + I);}
+	
+	bool IsEmpty() const {return false;}
+	void SetAll(const T& o) {for(int i = 0; i < I; i++) vector[i] = o;}
+	String ToString() const {return "FixedArray";}
+	int ToInt() const {return I;}
+	double ToDouble() const {return I;}
+	hash_t GetHashValue() const {CombineHash c; for(int i = 0; i < I; i++) c.Put(UPP::GetHashValue<T>(vector[i])); return c;}
+	
 };
 
 template <class T, int I>

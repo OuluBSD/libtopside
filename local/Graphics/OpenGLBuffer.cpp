@@ -103,6 +103,7 @@ void OglBuffer::ReadTexture(Size sz, int channels, const Vector<byte>& data) {
 }
 
 void OglBuffer::ReadTexture(Size3 sz, int channels, const Vector<byte>& data) {
+	ASSERT(fb_size.cx == sz.cx && fb_size.cy == sz.cy);
 	GLuint& color_buf = this->color_buf[0];
 	ASSERT(color_buf > 0);
 	int intl_fmt = GetOglChCode(channels);
@@ -156,63 +157,14 @@ void OglBuffer::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const
 bool OglBuffer::Initialize() {
 	DLOG("OglBuffer::Initialize: load new program");
 	
-	/*Object to_load;
-	Swap(post_load, to_load);
-	
-	for(int i = 0; i < comps.GetCount(); i++) {
-		FusionComponent& comp = *comps[i];
-		if (comp.IsTypeTemporary()) {
-			comp.Close();
-			comp.GetECS().Destroy();
-		}
-	}
-	
-	Clear();
-	FindComponents();
-	DumpEntityComponents();
-	
-	Load(to_load);
-	Reset();*/
-	
-	
-	// If user connects buffers manually to sinks
-	if (1) {
-		
-	}
-	// Otherwise link sinks
-	else {
-		
-	}
-	
-	
+	ASSERT(fps > 0);
+	frame_time = 1.0 / fps;
 	
 	if (!CompilePrograms())
 		return false;
 	
 	if (!LinkStages())
 		return false;
-	
-	
-	/*
-	//  Reload stage pointers
-	RefreshStageQueue();
-	
-	
-	
-	DumpEntityComponents();
-	
-	is_open = true;
-	for(Ref<FusionComponent>& comp : comps) {
-		if (!comp->IsOpen() && !comp->Open()) {
-			DLOG("OglBuffer::Initialize: error: a component did not open properly");
-			is_open = false;
-		}
-	}
-	
-	if (!is_open) {
-		DLOG("OglBuffer::Initialize: error: did not open properly");
-		return false;
-	}*/
 	
 	RefreshPipeline();
 	
@@ -955,7 +907,6 @@ void OglBuffer::StoreOutputLink(InternalPacketData& v) {
 }
 
 bool OglBuffer::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
-	String buf_id = v.GetText();
 	
 	if (in_id >= 0) {
 		if (in_id >= in_buf.GetCount())

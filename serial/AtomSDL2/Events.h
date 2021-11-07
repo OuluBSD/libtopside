@@ -12,7 +12,9 @@ class SDL2EventsBase :
 	One<OOSDL2::Events>	obj;
 	Vector<byte>		tmp_events;
 	UPP::CtrlEvent		ev;
+	double				time = 0;
 	bool				ev_sendable = false;
+	dword				seq = 0;
 	
 	CtrlEvent& AddTmpEvent();
 	

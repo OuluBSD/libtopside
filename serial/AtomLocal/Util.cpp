@@ -304,11 +304,14 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 bool OglShaderBase::PostInitialize() {
 	buf.is_shader_audio_main = is_audio;
 	buf.is_win_fbo = false;
-	if (!is_audio)
+	if (!is_audio) {
 		buf.fb_size = Size(1280,720);
+		buf.fps = 60;
+	}
 	else {
 		buf.fb_size = Size(1024,1);
 		buf.fb_channels = 2;
+		buf.fps = 44100.0 / 1024;;
 	}
 	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
 	
@@ -446,7 +449,9 @@ bool OglTextureBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
 }
 
 bool OglTextureBase::IsReady(PacketIO& io) {
-	return io.full_src_mask == 0 && io.active_sink_mask == 0b11;
+	bool b = io.full_src_mask == 0 && io.active_sink_mask == 0b11;
+	RTLOG("OglTextureBase::IsReady: " << (b ? "true" : "false"));
+	return b;
 }
 
 bool OglTextureBase::ProcessPackets(PacketIO& io) {
@@ -501,6 +506,7 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		buf.fb_channels = channels;
 		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
 		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
+		buf.fps = 0;
 		
 		if (loading_cubemap) {
 			ASSERT(cubemap.GetCount() == 6);
@@ -714,8 +720,31 @@ EventStateBase::EventStateBase() {
 	
 }
 
+EnvState& EventStateBase::GetState() const {
+	EnvState* s = state.Get();
+	ASSERT(s);
+	return *s;
+}
+
+
 bool EventStateBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("EventStateBase::Initialize");
+	
+	target = ws.Get(".target");
+	if (target.IsEmpty()) {
+		LOG("EventStateBase::Initialize: error: target state argument is required");
+		return false;
+	}
+	
+	Loop& loop = GetParent();
+	state = loop.FindNearestState(target);
+	if (!state) {
+		LOG("EventStateBase::Initialize: error: state '" << target << "' not found in parent loop: " << loop.GetDeepName());
+		return false;
+	}
+	
+	KeyVec& data = state->Set<KeyVec>(KEYBOARD_PRESSED);
+	data.SetAll(false);
 	
 	return true;
 }
@@ -732,28 +761,143 @@ void EventStateBase::Uninitialize() {
 }
 
 bool EventStateBase::IsReady(PacketIO& io) {
-	return true;
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("EventStateBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
 }
 
 bool EventStateBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	RTLOG("EventStateBase::LoadPacket: sink #" << sink_ch << ": " << in->ToString());
+	RTLOG("EventStateBase::ProcessPackets");
 	
-	TODO
-	#endif
+	if (io.sink_count == 1) {
+		Event(io.sink[0].p->GetData<CtrlEvent>());
+	}
+	else {
+		TODO
+	}
+	
 	return true;
 }
 
-#if 0
-void EventStateBase::ProcessPackets(PacketIO& io) {
-	RTLOG("EventStateBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << out->ToString());
-	
-	TODO
-	
+void EventStateBase::Event(const CtrlEvent& e) {
+	if (e.type == EVENT_MOUSEMOVE) {
+		MouseMove(e.pt, e.value);
+	}
+	else if (e.type == EVENT_KEYDOWN || e.type == EVENT_KEYUP) {
+		Key(e.value, e.n);
+	}
+	else if (e.type == EVENT_MOUSE_EVENT) {
+		switch (e.n) {
+			case Ctrl::LEFTDOWN:		LeftDown(e.pt, e.value);break;
+			case Ctrl::MIDDLEDOWN:		break;
+			case Ctrl::RIGHTDOWN:		break;
+			
+			case Ctrl::LEFTDOUBLE:		break;
+			case Ctrl::MIDDLEDOUBLE:	break;
+			case Ctrl::RIGHTDOUBLE:	break;
+			
+			case Ctrl::LEFTTRIPLE:		break;
+			case Ctrl::MIDDLETRIPLE:	break;
+			case Ctrl::RIGHTTRIPLE:		break;
+			
+			case Ctrl::LEFTUP:			LeftUp(e.pt, e.value); break;
+			case Ctrl::MIDDLEUP:		break;
+			case Ctrl::RIGHTUP:			break;
+		}
+	}
 }
-#endif
 
+void EventStateBase::LeftDown(Point pt, dword keyflags) {
+	EnvState& s = GetState();
+	
+	SetBool(MOUSE_LEFTDOWN, true);
+	
+	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
+	Point& click = s.Set<Point>(MOUSE_TOUCOMPAT_CLICK);
+	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
+	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
+	if (video_size.cx > 0 && video_size.cy > 0) {
+		drag.x =                 video_offset.x + pt.x;
+		drag.y = video_size.cy - video_offset.y - pt.y;
+		click.x = +drag.x;
+		click.y = -drag.y;
+	} else {
+		drag.x = 0;
+		drag.y = video_size.cy;
+		click.x = 0;
+		click.y = -drag.y;
+	}
+}
+
+void EventStateBase::LeftUp(Point pt, dword keyflags) {
+	EnvState& s = GetState();
+	
+	SetBool(MOUSE_LEFTDOWN, false);
+	
+	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
+	drag.y = -drag.y; // observed behaviour
+}
+
+void EventStateBase::MouseMove(Point pt, dword keyflags) {
+	EnvState& s = GetState();
+	
+	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
+	Point& click = s.Set<Point>(MOUSE_TOUCOMPAT_CLICK);
+	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
+	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
+	if (s.GetBool(MOUSE_LEFTDOWN)) {
+		if (video_size.cx > 0 && video_size.cy > 0) {
+			drag.x =                 video_offset.x + pt.x;
+			drag.y = video_size.cy - video_offset.y - pt.y;
+		}
+		else {
+			drag.x = 0;
+			drag.y = video_size.cy;
+		}
+	}
+}
+
+bool EventStateBase::Key(dword key, int count) {
+	EnvState& s = GetState();
+	
+	KeyVec& data = s.Set<KeyVec>(KEYBOARD_PRESSED);
+	int& keyboard_iter = s.GetInt(KEYBOARD_STATE_ITER);
+	
+	bool is_key_down = true;
+	bool is_lalt = false;
+	bool is_lshift = false;
+	bool is_lctrl = false;
+	if (key & K_KEYUP) {
+		key &= ~K_KEYUP;
+		is_key_down = false;
+	}
+	if (key & K_ALT) {
+		key &= ~K_ALT;
+		is_lalt = true;
+	}
+	if (key & K_SHIFT) {
+		key &= ~K_SHIFT;
+		is_lshift = true;
+	}
+	if (key & K_CTRL) {
+		key &= ~K_CTRL;
+		is_lctrl = true;
+	}
+	
+	key = ToUpper(key);
+	
+	if (key >= 0 && key < key_tex_w) {
+		if (key > 0)
+			data[key] = is_key_down;
+		data[16] = is_lshift;
+		data[17] = is_lctrl;
+		data[18] = is_lalt;
+		keyboard_iter++;
+	}
+	
+	return true;
+}
 
 
 NAMESPACE_SERIAL_END

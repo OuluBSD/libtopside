@@ -159,7 +159,7 @@ bool VoidPollerSinkBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("VoidPollerSinkBase::Initialize");
 	dt = 1.0/60.0;
 	GetSink()->GetValue(0).SetMinQueueSize(5);
-	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	AddAtomToUpdateList();
 	return true;
 }
 
@@ -168,7 +168,7 @@ void VoidPollerSinkBase::Uninitialize() {
 	LOG("VoidPollerSinkBase::Uninitialize: total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
 	if (!fail) {LOG("VoidPollerSinkBase::Uninitialize: success!");}
 	else       {LOG("VoidPollerSinkBase::Uninitialize: fail :(");}
-	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+	RemoveAtomFromUpdateList();
 }
 
 void VoidPollerSinkBase::Update(double dt) {

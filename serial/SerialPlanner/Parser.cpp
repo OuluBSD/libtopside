@@ -201,6 +201,10 @@ String ChainDefinition::GetTreeString(int indent) const {
 		s.Cat('\t', indent+1);
 		s << "return " << stmt.ToString() << "\n";
 	}
+	for (const StateDeclaration& state : states) {
+		s.Cat('\t', indent+1);
+		s << "state " << state.id.ToString() << "\n";
+	}
 	return s;
 }
 
@@ -474,6 +478,10 @@ bool Parser::ChainScope(Script::ChainDefinition& def) {
 			if (!ParseReturnStmt(def.ret_list.Add()))
 				return false;
 		}
+		else if (IsId("state")) {
+			if (!ParseStateStmt(def.states.Add()))
+				return false;
+		}
 		else {
 			AddError("Expected scope specifier");
 			return false;
@@ -659,6 +667,14 @@ bool Parser::ParseReturnStmt(Script::Statement& stmt) {
 		if (!ParseValue(*stmt.value))
 			return false;
 	}
+	PASS_CHAR(';')
+	return true;
+}
+
+bool Parser::ParseStateStmt(Script::StateDeclaration& decl) {
+	PASS_ID("state")
+	if (!ParseId(decl.id))
+		return false;
 	PASS_CHAR(';')
 	return true;
 }

@@ -110,7 +110,7 @@ static_assert(std::is_trivially_constructible<DimBase<1>>::value == true, "DimBa
 
 template<> struct DimBase<2> {
 	static const int n = 2;
-	FixedArray<int,2>	res;
+	int					res[2];
 	int					width_pad;
 	
 	using DimArg = FixedArray<int,2>;
@@ -143,7 +143,7 @@ template<> struct DimBase<2> {
 
 template<> struct DimBase<3> {
 	static const int n = 3;
-	FixedArray<int,3>	res;
+	int					res[3];
 	//int					width_pad, height_pad;
 	
 	using DimArg = Size3;

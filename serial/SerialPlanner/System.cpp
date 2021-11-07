@@ -54,6 +54,12 @@ void ScriptSystemLoader::GetDrivers(Vector<ScriptDriverLoader*>& v) {
 	}
 }
 
+void ScriptSystemLoader::GetStates(Vector<ScriptStateLoader*>& v) {
+	for (ScriptMachineLoader& loader : machs) {
+		loader.GetStates(v);
+	}
+}
+
 void ScriptSystemLoader::CheckStatusDeep() {
 	for (ScriptMachineLoader& loader : machs)
 		loader.CheckStatusDeep();

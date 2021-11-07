@@ -1,0 +1,35 @@
+machine sdl.app: {
+	
+	driver context: {
+		sdl.context: true;
+	};
+	
+	chain program: {
+		
+		state event.register;
+		
+		loop events: {
+			center.customer: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
+		loop center.font.image: {
+			center.customer: true;
+			center.image.loader: true [][loop: ogl.fbo.tex] {vflip: true; filepath: "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png";};
+		};
+		
+		loop ogl.fbo.tex: {
+			ogl.customer: true;
+			ogl.fbo.image: true [loop: center.font.image][loop: ogl.fbo.screen];
+		};
+		
+		loop ogl.fbo.screen: {
+			ogl.customer: true;
+			sdl.fbo: true [loop: ogl.fbo.tex;;;;] {env: event.register; filepath: "shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl";};
+		};
+		
+	};
+	
+};
+

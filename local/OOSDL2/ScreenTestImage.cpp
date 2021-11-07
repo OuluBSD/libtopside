@@ -37,6 +37,7 @@ bool Screen::TestImageInitialize() {
 	OglBuffer& buf = *ogl_buf;
 	buf.is_win_fbo = true;
 	buf.fb_size = screen_sz;
+	buf.fps = 60;
 	
 	if (filepath.GetCount()) {
 		if (!buf.LoadFragmentShaderFile(filepath))

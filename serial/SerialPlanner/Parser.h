@@ -10,12 +10,17 @@ struct Id {
 	LinkedList<String> parts;
 	
 	
+	Id() {}
+	Id(const Id& o) {*this = o;}
+	Id(Id&& o) {Swap(parts, o.parts);}
+	
 	void Set(String s) {parts.Clear(); parts.Add(s);}
 	void operator=(const Id& v) {parts <<= v.parts;}
 	String ToString() const;
 	String GetTreeString(int indent=0) const;
 	bool operator==(const Id& id) const;
 	bool IsEmpty() const {return parts.IsEmpty();}
+	void Append(const Id& id) {parts.Append(id.parts);}
 	
 };
 
@@ -46,13 +51,21 @@ struct LoopDefinition {
 	String ToString() const;
 };
 
+struct StateDeclaration {
+	Id id;
+	
+	void operator=(const StateDeclaration& v) {id = v.id;}
+	
+};
+
 struct ChainDefinition {
+	LinkedList<StateDeclaration> states;
 	LinkedList<Statement> ret_list;
 	LinkedList<LoopDefinition> loops;
 	LinkedList<ChainDefinition> subchains;
 	Id id;
 	
-	void operator=(const ChainDefinition& v) {ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
+	void operator=(const ChainDefinition& v) {states <<= v.states; ret_list <<= v.ret_list; loops <<= v.loops; subchains <<= v.subchains; id = v.id;}
 	String GetTreeString(int indent=0) const;
 	void GetSubChainPointers(LinkedList<Script::ChainDefinition*>& ptrs);
 };
@@ -115,6 +128,8 @@ struct Value {
 	String ToString() const;
 	String GetValue() const;
 	bool IsBoolean() const {return type == VAL_BOOLEAN;}
+	bool IsString() const {return type == VAL_STRING;}
+	bool IsId() const {return type == VAL_ID;}
 	
 };
 
@@ -142,6 +157,7 @@ struct State {
 struct GlobalScope {
 	Array<MachineDefinition>		machs;
 	Array<State>					states;
+	Script::Id						id;
 	
 	String GetTreeString(int indent=0) const;
 	
@@ -170,6 +186,7 @@ class Parser : public CParser {
 	bool ParseId(Script::Id&);
 	bool ParseValue(Script::Value&);
 	bool ParseReturnStmt(Script::Statement&);
+	bool ParseStateStmt(Script::StateDeclaration&);
 	bool ParseRequirementStmt(Script::Id&);
 	bool EmptyStatement() {return Char(';');}
 	bool TrueStatement(Script::Statement&);

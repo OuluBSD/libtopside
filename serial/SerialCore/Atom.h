@@ -122,6 +122,9 @@ public:
 	int						GetSinkPacketCount();
 	int						GetSourcePacketCount();
 	
+	void					AddAtomToUpdateList();
+	void					RemoveAtomFromUpdateList();
+	
 	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
 		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);
 		if (common_vd.IsValid())

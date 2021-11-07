@@ -6,25 +6,92 @@ NAMESPACE_SERIAL_BEGIN
 bool SDL2EventsBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
 	
+	AddAtomToUpdateList();
 	return true;
 }
 
 void SDL2EventsBase::Uninitialize() {
+	RemoveAtomFromUpdateList();
 	obj.Clear();
 }
 
-bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
-	TODO
-	#if 0
-	RTLOG("SDL2EventsBase::StorePacket: sink #" << sink_ch << ", src #" << src_ch << ": " << in->ToString());
-	
-	ASSERT(ev_sendable);
-	
-	#endif
+void SDL2EventsBase::Update(double dt) {
+	time += dt;
 }
 
-void SDL2EventsBase::Update(double dt) {
-	TODO
+bool SDL2EventsBase::IsReady(PacketIO& io) {
+	bool b = io.full_src_mask == 0;
+	if (b) {
+		if (obj->Poll(ev)) {
+			ev_sendable = true;
+		}
+		else {
+			ev_sendable = false;
+			b = false;
+		}
+	}
+	RTLOG("SDL2EventsBase::IsReady: " << (b ? "true" : "false"));
+	return b;
+}
+
+bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
+	ASSERT(ev_sendable);
+	if (!ev_sendable) return false;
+	
+	PacketIO::Sink& sink = io.sink[0];
+	Packet& in = sink.p;
+	ASSERT(in); if (!in) return false;
+	sink.may_remove = true;
+	
+	RTLOG("SDL2ImageBase::ProcessPackets: sink #0: " << in->ToString());
+	
+	if (io.src_count == 1) {
+		PacketIO::Source& src = io.src[0];
+		Packet& out = src.p;
+		src.from_sink_ch = 0;
+		
+		out = ReplyPacket(0, sink.p);
+		
+		PacketValue& v = *out;
+		v.seq = seq++;
+		
+		/*Format fmt = v.GetFormat();
+		ASSERT(fmt.IsEvent());
+		
+		v.SetFormat(fmt);*/
+		
+		UPP::CtrlEvent& dst = v.SetData<UPP::CtrlEvent>();
+		dst = ev;
+	}
+	else {
+		ASSERT(io.src_count >= 2);
+		PacketIO::Source& prim_src = io.src[0];
+		Packet& prim_out = prim_src.p;
+		prim_src.from_sink_ch = 0;
+		prim_out = ReplyPacket(0, sink.p);
+		
+		ASSERT(io.src_count >= 2);
+		PacketIO::Source& src = io.src[1];
+		Packet& out = src.p;
+		src.from_sink_ch = 0;
+		
+		out = ReplyPacket(1, sink.p);
+		
+		PacketValue& v = *out;
+		v.seq = seq++;
+		
+		/*Format fmt = v.GetFormat();
+		ASSERT(fmt.IsEvent());
+		
+		v.SetFormat(fmt);*/
+		
+		UPP::CtrlEvent& dst = v.SetData<UPP::CtrlEvent>();
+		dst = ev;
+	}
+	
+	ev_sendable = false;
+	
+	return true;
 }
 
 
@@ -33,17 +100,6 @@ bool SDL2EventsBase::ProcessPackets(PacketIO& io) {
 	return true;
 }
 #endif
-
-bool SDL2EventsBase::IsReady(PacketIO& io) {
-	if (obj->Poll(ev)) {
-		ev_sendable = true;
-		return true;
-	}
-	else {
-		ev_sendable = false;
-	}
-	return false;
-}
 
 CtrlEvent& SDL2EventsBase::AddTmpEvent() {
 	static const int ev_sz = sizeof(CtrlEvent);

@@ -1,0 +1,40 @@
+name = iResolution, iMouse, iDate, etc
+description = Utils:  (more here: [url]https://shadertoyunofficial.wordpress.com/[/url]) \n - see current values ( resolution of screen & texture, mouse, keyboard, time, sound ) \n - ready-to-use code + comments ( keyboard, printing... ) \n - draw & blend antialiased lines/disc
+date = 1482751515
+likes = 76
+owner = FabriceNeyret2
+
+pass-0-name = Image
+pass-0-description = 
+pass-0-type = image
+pass-0-channel = 
+
+pass-0-input-1-id = 0
+pass-0-input-1-type = video
+pass-0-input-1-filter = mipmap
+pass-0-input-1-wrap = clamp
+pass-0-input-1-vflip = true
+pass-0-input-1-filename = e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm
+
+pass-0-input-2-id = 1
+pass-0-input-2-type = music
+pass-0-input-2-filter = linear
+pass-0-input-2-wrap = clamp
+pass-0-input-2-vflip = true
+pass-0-input-2-filename = 3c33c415862bb7964d256f4749408247da6596f2167dca2c86cc38f83c244aa6.mp3
+
+pass-0-input-3-id = 2
+pass-0-input-3-type = keyboard
+pass-0-input-3-filter = linear
+pass-0-input-3-wrap = clamp
+pass-0-input-3-vflip = true
+
+pass-0-input-0-id = 3
+pass-0-input-0-type = texture
+pass-0-input-0-filter = mipmap
+pass-0-input-0-wrap = clamp
+pass-0-input-0-vflip = true
+pass-0-input-0-filename = 08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png
+
+pass-0-output-0-id = 4
+

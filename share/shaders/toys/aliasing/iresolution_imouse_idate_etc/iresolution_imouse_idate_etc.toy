@@ -1,0 +1,52 @@
+{
+	name: "iResolution, iMouse, iDate, etc",
+	description: "Utils:  (more here: [url]https://shadertoyunofficial.wordpress.com/[/url]) \n- see current values ( resolution of screen & texture, mouse, keyboard, time, sound ) \n- ready-to-use code + comments ( keyboard, printing... ) \n- draw & blend antialiased lines/disc",
+	owner: "FabriceNeyret2",
+	likes: 76,
+	date: 20161226,
+	
+	stages: [
+		{
+			type: image,
+			
+			inputs: [
+				{
+					id: 0,
+					type: texture,
+					filter: mipmap,
+					wrap: clamp,
+					vflip: true,
+					filename: "08b42b43ae9d3c0605da11d0eac86618ea888e62cdd9518ee8b9097488b31560.png",
+				},
+				{
+					id: 1,
+					type: video,
+					filter: mipmap,
+					wrap: clamp,
+					vflip: true,
+					filename: "e81e818ac76a8983d746784b423178ee9f6cdcdf7f8e8d719341a6fe2d2ab303.webm",
+				},
+				{
+					id: 2,
+					type: music,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+					filename: "3c33c415862bb7964d256f4749408247da6596f2167dca2c86cc38f83c244aa6.mp3",
+				},
+				{
+					id: 3,
+					type: keyboard,
+					filter: linear,
+					wrap: clamp,
+					vflip: true,
+				},
+			],
+			outputs: [
+				{
+					id: 4,
+				},
+			],
+		},
+	]
+}

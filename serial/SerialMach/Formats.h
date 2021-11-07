@@ -27,6 +27,9 @@ struct AudioFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
+#define TEST_TRIVIAL(x) \
+	static_assert(std::is_trivially_constructible<x>::value == true, #x " must be trivial to construct");
+
 struct VideoFormat :
 	public SampleBase<LightSampleFD>,
 	public DimBase<2>,
@@ -36,6 +39,10 @@ struct VideoFormat :
 		sizeof(SampleBase<LightSampleFD>) +
 		sizeof(DimBase<2>) +
 		sizeof(TimeSeriesBase);
+		
+	TEST_TRIVIAL(SampleBase<LightSampleFD>)
+	TEST_TRIVIAL(DimBase<2>)
+	TEST_TRIVIAL(TimeSeriesBase)
 	
 	void	Set(LightSampleFD::Type t, int w, int h, int freq, int sample_rate);
 	void	SetCubemap() {cubemap = true;}

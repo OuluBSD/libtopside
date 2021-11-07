@@ -122,6 +122,8 @@ public:
 	ScriptStatus		GetStatus() const {return status;}
 	ScriptLoader&		GetLoader() {return parent.GetLoader();}
 	String				GetErrorString() const {return err_str;}
+	
+	virtual Script::Id	GetDeepId() const {Script::Id id = parent.GetDeepId(); id.Append(def.id); return id;}
 	virtual void		SetStatus(ScriptStatus s) {status = s;}
 	
 	virtual void		Visit(RuntimeVisitor& vis) = 0;
@@ -131,6 +133,7 @@ public:
 	virtual void		LoopStatus() = 0;
 	virtual void		CheckStatusDeep() = 0;
 	virtual void		GetDrivers(Vector<ScriptDriverLoader*>& v) {Panic("not implemented");}
+	virtual void		GetStates(Vector<ScriptStateLoader*>& v) {Panic("not implemented");}
 	
 };
 
@@ -339,7 +342,8 @@ public:
 	RTTI_DECL1(ScriptChainLoader, Base)
 	
 public:
-	Array<ScriptLoopLoader>		loops;
+	Array<ScriptLoopLoader>			loops;
+	Array<ScriptStateLoader>		states;
 	
 	
 	ScriptChainLoader(ScriptTopChainLoader& parent, int id, Script::ChainDefinition& def);
@@ -350,12 +354,14 @@ public:
 	void		LinkPlanner();
 	void		Linker();
 	
-	void		Visit(RuntimeVisitor& vis) override {vis | loops;}
+	void		Visit(RuntimeVisitor& vis) override {vis | loops | states;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
+	Script::Id	GetDeepId() const override;
 	
 };
 
@@ -381,9 +387,37 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis | subchains | chains;}
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
+	
+};
+
+class ScriptStateLoader : public ScriptLoaderBase<Script::StateDeclaration, ScriptChainLoader> {
+	
+protected:
+	Script::Id		id;
+	
+public:
+	using Base = ScriptLoaderBase<Script::StateDeclaration, ScriptChainLoader>;
+	RTTI_DECL1(ScriptStateLoader, Base)
+	
+public:
+	
+	
+	ScriptStateLoader(ScriptChainLoader& parent, int id, Script::StateDeclaration& def);
+	void		Visit(RuntimeVisitor& vis) override {}
+	void		GetLoops(Vector<ScriptLoopLoader*>& v) override {}
+	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override {}
+	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
+	void		ForwardLoops() override {}
+	void		LoopStatus() override {}
+	void		CheckStatusDeep() override {}
+	String		GetTreeString(int indent) override;
+	void		Forward() {}
+	bool		Load();
+	bool		PostInitialize();
 	
 };
 
@@ -408,6 +442,7 @@ public:
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override {}
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
@@ -432,6 +467,7 @@ public:
 	String		GetTreeString(int indent) override;
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
 	void		CheckStatusDeep() override;
@@ -452,6 +488,7 @@ public:
 	void		Visit(RuntimeVisitor& vis) override {vis | machs;}
 	void		GetLoops(Vector<ScriptLoopLoader*>& v) override;
 	void		GetDrivers(Vector<ScriptDriverLoader*>& v) override;
+	void		GetStates(Vector<ScriptStateLoader*>& v) override;
 	String		GetTreeString(int indent=0) override;
 	void		ForwardLoops() override;
 	void		LoopStatus() override;
@@ -537,6 +574,7 @@ protected:
 	
 protected:
 	friend class ScriptDriverLoader;
+	friend class ScriptStateLoader;
 	
 	LoopRef		ResolveLoop(Script::Id& id);
 	
@@ -546,6 +584,8 @@ public:
 	
 	Callback1<SystemBase&>	WhenEnterScriptLoad;
 	Callback				WhenLeaveScriptLoad;
+	
+	Script::Id	GetDeepId() const {return Script::Id();}
 	
 };
 

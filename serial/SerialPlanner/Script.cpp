@@ -179,6 +179,14 @@ bool ScriptLoader::ImplementScript() {
 			return false;
 	}
 	
+	RTLOG("ScriptLoader::ImplementScript: load states");
+	Vector<ScriptStateLoader*> states;
+	loader->GetStates(states);
+	for (ScriptStateLoader* dl: states) {
+		if (!dl->Load())
+			return false;
+	}
+	
 	RTLOG("ScriptLoader::ImplementScript: load loops");
 	Vector<ScriptLoopLoader*> loops;
 	loader->GetLoops(loops);

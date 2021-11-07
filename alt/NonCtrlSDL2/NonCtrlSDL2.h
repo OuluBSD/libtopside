@@ -60,30 +60,66 @@ enum {
 class Ctrl : public Pte<Ctrl> {
 	
 public:
-	enum {
-		UNKNOWN,
-		LEFT_DOWN,
-		LEFT_DOUBLE,
-		LEFT_TRIPLE,
-		LEFT_DRAG,
-		LEFT_HOLD,
-		LEFT_REPEAT,
-		LEFT_UP,
-		RIGHT_DOWN,
-		RIGHT_DOUBLE,
-		RIGHT_TRIPLE,
-		RIGHT_DRAG,
-		RIGHT_HOLD,
-		RIGHT_REPEAT,
-		RIGHT_UP,
-		MIDDLE_DOWN,
-		MIDDLE_DOUBLE,
-		MIDDLE_TRIPLE,
-		MIDDLE_DRAG,
-		MIDDLE_HOLD,
-		MIDDLE_REPEAT,
-		MIDDLE_UP,
+	
+	enum PlacementConstants {
+		CENTER   = 0,
+		MIDDLE   = 0,
+		LEFT     = 1,
+		RIGHT    = 2,
+		TOP      = 1,
+		BOTTOM   = 2,
+		SIZE     = 3,
+
+		MINSIZE  = -16380,
+		MAXSIZE  = -16381,
+		STDSIZE  = -16382,
 	};
+	
+	enum MouseEvents {
+		BUTTON        = 0x0F,
+		ACTION        = 0xFF0,
+
+		MOUSEENTER    = 0x10,
+		MOUSEMOVE     = 0x20,
+		MOUSELEAVE    = 0x30,
+		CURSORIMAGE   = 0x40,
+		MOUSEWHEEL    = 0x50,
+
+		DOWN          = 0x80,
+		UP            = 0x90,
+		DOUBLE        = 0xa0,
+		REPEAT        = 0xb0,
+		DRAG          = 0xc0,
+		HOLD          = 0xd0,
+		TRIPLE        = 0xe0,
+		PEN           = 0xf0,
+		PENLEAVE      = 0x100,
+
+		LEFTDOWN      = LEFT|DOWN,
+		LEFTDOUBLE    = LEFT|DOUBLE,
+		LEFTREPEAT    = LEFT|REPEAT,
+		LEFTUP        = LEFT|UP,
+		LEFTDRAG      = LEFT|DRAG,
+		LEFTHOLD      = LEFT|HOLD,
+		LEFTTRIPLE    = LEFT|TRIPLE,
+
+		MIDDLEDOWN     = MIDDLE|DOWN,
+		MIDDLEDOUBLE   = MIDDLE|DOUBLE,
+		MIDDLEREPEAT   = MIDDLE|REPEAT,
+		MIDDLEUP       = MIDDLE|UP,
+		MIDDLEDRAG     = MIDDLE|DRAG,
+		MIDDLEHOLD     = MIDDLE|HOLD,
+		MIDDLETRIPLE   = MIDDLE|TRIPLE,
+		
+		RIGHTDOWN     = RIGHT|DOWN,
+		RIGHTDOUBLE   = RIGHT|DOUBLE,
+		RIGHTREPEAT   = RIGHT|REPEAT,
+		RIGHTUP       = RIGHT|UP,
+		RIGHTDRAG     = RIGHT|DRAG,
+		RIGHTHOLD     = RIGHT|HOLD,
+		RIGHTTRIPLE   = RIGHT|TRIPLE
+	};
+	
 };
 
 

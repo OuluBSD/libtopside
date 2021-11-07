@@ -180,27 +180,27 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 			if (event.button.state == SDL_PRESSED) {
 				if (event.button.clicks == 1) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFT_DOWN;
+						mouse_code = Ctrl::LEFTDOWN;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLE_DOWN;
+						mouse_code = Ctrl::MIDDLEDOWN;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHT_DOWN;
+						mouse_code = Ctrl::RIGHTDOWN;
 				}
 				else if (event.button.clicks == 2) {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFT_DOUBLE;
+						mouse_code = Ctrl::LEFTDOUBLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLE_DOUBLE;
+						mouse_code = Ctrl::MIDDLEDOUBLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHT_DOUBLE;
+						mouse_code = Ctrl::RIGHTDOUBLE;
 				}
 				else {
 					if (event.button.button == SDL_BUTTON_LEFT)
-						mouse_code = Ctrl::LEFT_TRIPLE;
+						mouse_code = Ctrl::LEFTTRIPLE;
 					else if (event.button.button == SDL_BUTTON_MIDDLE)
-						mouse_code = Ctrl::MIDDLE_TRIPLE;
+						mouse_code = Ctrl::MIDDLETRIPLE;
 					else if (event.button.button == SDL_BUTTON_RIGHT)
-						mouse_code = Ctrl::RIGHT_TRIPLE;
+						mouse_code = Ctrl::RIGHTTRIPLE;
 				}
 				/*else if (event.button.button == SDL_BUTTON_WHEELUP)
 					mouse_zdelta = 120;
@@ -209,11 +209,11 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 			}
 			else if (event.button.state == SDL_RELEASED) {
 				if (event.button.button == SDL_BUTTON_LEFT)
-					mouse_code = Ctrl::LEFT_UP;
+					mouse_code = Ctrl::LEFTUP;
 				else if (event.button.button == SDL_BUTTON_MIDDLE)
-					mouse_code = Ctrl::MIDDLE_UP;
+					mouse_code = Ctrl::MIDDLEUP;
 				else if (event.button.button == SDL_BUTTON_RIGHT)
-					mouse_code = Ctrl::RIGHT_UP;
+					mouse_code = Ctrl::RIGHTUP;
 			}
 			
 			if (mouse_code) {

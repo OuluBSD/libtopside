@@ -33,7 +33,20 @@ void ScriptChainLoader::GetLoops(Vector<ScriptLoopLoader*>& v) {
 	}
 }
 
+void ScriptChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
+	for (ScriptStateLoader& state : states) {
+		v.Add(&state);
+	}
+}
+
 void ScriptChainLoader::Forward() {
+	if (def.states.IsFilled() && states.IsEmpty()) {
+		int id = 0;
+		for (Script::StateDeclaration& decl : def.states) {
+			ScriptStateLoader& loader = states.Add(new ScriptStateLoader(*this, id++, decl));
+			loader.Forward();
+		}
+	}
 	
 	if (status == MAKE_OPTION_LINK_VECTOR) {
 		MakeOptionLinkVector();
@@ -73,6 +86,11 @@ void ScriptChainLoader::CheckStatusDeep() {
 	
 	CheckFlags();
 }
+
+Script::Id ScriptChainLoader::GetDeepId() const {
+	return parent.GetDeepId(); // chain & topchain has same id
+}
+
 
 void ScriptChainLoader::MakeOptionLinkVector() {
 	solver.Create();

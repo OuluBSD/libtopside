@@ -7,6 +7,7 @@
 #include "Types.h"
 #include "PacketTracker.h"
 #include "Interface.h"
+#include "State.h"
 #include "Atom.h"
 #include "AtomStore.h"
 #include "AtomSystem.h"

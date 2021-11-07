@@ -763,9 +763,11 @@ bool ScriptLoopLoader::Load() {
 	ScriptLoader& loader = GetLoader();
 	
 	// Target entity for atoms
-	LoopRef l = loader.ResolveLoop(def.id);
+	Script::Id deep_id = GetDeepId();
+	//DUMP(deep_id);
+	LoopRef l = loader.ResolveLoop(deep_id);
 	if (!l) {
-		SetError("Could not resolve entity with id: " + def.id.ToString());
+		SetError("Could not resolve entity with deep id: " + deep_id.ToString());
 		return false;
 	}
 	
@@ -1136,6 +1138,28 @@ bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_st
 	
 	static const bool print = false;
 	
+	// 'loop' keyword compares loops name
+	if (src_side_stmt.id.parts.GetCount() == 1 && src_side_stmt.id.parts.First() == "loop") {
+		if (src_side_stmt.value) {
+			bool b;
+			if (src_side_stmt.value->IsId()) {
+				b = src_side_stmt.value->id == this->def.id;
+			}
+			else if (src_side_stmt.value->IsString()) {
+				b = src_side_stmt.value->str == this->def.id.ToString();
+			}
+			else {
+				if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: invalid loop id value in stmt: " << src_side_stmt.id.ToString());
+				return false;
+			}
+			if (print &&  b) RTLOG("ScriptLoopLoader::PassSideConditionals: conditional loop id '" << src_side_stmt.id.ToString() << "': matching");
+			if (print && !b) RTLOG("ScriptLoopLoader::PassSideConditionals: conditional loop id '" << src_side_stmt.id.ToString() << "': no match");
+			return b;
+		}
+		if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: empty loop id value in stmt: " << src_side_stmt.id.ToString());
+		return false;
+	}
+
 	for (const Script::Statement& stmt : def.stmts) {
 		if (stmt.value.IsEmpty()) {
 			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop empty value stmt: " << stmt.id.ToString());
@@ -1145,6 +1169,7 @@ bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_st
 			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: skip loop boolean value stmt: " << stmt.id.ToString());
 			continue;
 		}
+		
 		if (stmt.id == src_side_stmt.id) {
 			bool b = *stmt.value == *src_side_stmt.value;
 			if (b) {

@@ -22,7 +22,7 @@ void PrepareRequest(HttpRequest& h) {
 	h.Url("https://www.shadertoy.com/shadertoy");
 	h.POST();
 	h.Header("Referer", "https://www.shadertoy.com/");
-	h.UserAgent("Mozilla/5.0 (X11; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0");
+	h.UserAgent("Mozilla/5.0 (X11; Linux x86_64; rv:94.0) Gecko/20100101 Firefox/94.0");
 }
 
 bool IsAlphaNum(String s) {

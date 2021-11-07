@@ -61,7 +61,7 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 	//DUMP(filepath);
 	
 	
-	AtomBase::GetMachine().template Get<AtomSystem>()->AddUpdated(AtomBase::AsRefT());
+	AddAtomToUpdateList();
 	
 	return true;
 }
@@ -77,7 +77,7 @@ bool FfmpegAtomBase::PostInitialize() {
 void FfmpegAtomBase::Uninitialize() {
 	file_in.Clear();
 	
-	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+	RemoveAtomFromUpdateList();
 	
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
