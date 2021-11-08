@@ -20,9 +20,9 @@ namespace Serial {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
+	ATOM_TYPE(EVENT_STATE_PIPE) \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
 	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
-	ATOM_TYPE(EVENT_STATE_PIPE) \
 	ATOM_TYPE(SDL_EVENT_ATOM) \
 	ATOM_TYPE(EVENT_STATE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
@@ -42,9 +42,9 @@ namespace Serial {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
+	ATOM_CLASS(EventStatePipe) \
 	ATOM_CLASS(SdlContextAtom) \
 	ATOM_CLASS(SdlEventAtomPipe) \
-	ATOM_CLASS(EventStatePipe) \
 	ATOM_CLASS(SdlEventAtom) \
 	ATOM_CLASS(EventState) \
 	ATOM_CLASS(TestEventSrcPipe) \
@@ -53,6 +53,7 @@ namespace Serial {
 
 #define flagGUI_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
+	ATOM_TYPE(AUDIO_LOADER_ATOM) \
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
@@ -67,10 +68,13 @@ namespace Serial {
 	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 	ATOM_TYPE(OGL_AUDIO_SINK) \
+	ATOM_TYPE(OGL_KEYBOARD_SOURCE) \
+	ATOM_TYPE(OGL_AUDIO_SOURCE) \
 
 
 #define flagGUI_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
+	ATOM_CLASS(AudioLoaderAtom) \
 	ATOM_CLASS(VideoLoaderAtom) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
@@ -85,6 +89,8 @@ namespace Serial {
 	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
 	ATOM_CLASS(OglAudioSink) \
+	ATOM_CLASS(OglKeyboardSource) \
+	ATOM_CLASS(OglAudioSource) \
 
 
 #define HAVE_OPENCV_ATOM_TYPE_LIST \

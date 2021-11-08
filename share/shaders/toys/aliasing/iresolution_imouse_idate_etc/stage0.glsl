@@ -245,4 +245,15 @@ void mainImage( out vec4 O,  vec2 uv )
     O = pow(O, vec4(1./2.2) ); // shader result must be in sRGB colorspace -> gamma correction
                                // note that it is very close to sqrt(O).
     // similarly, color operations must be done in flat space, while textures are sRGB-encoded: pow(texture(),vec4(2.2)) or ~square.
+
+	float xoff = 0.0;
+	float w = 0.1333;
+	float yoff = 0.0;
+	float h = 0.1;
+
+	if ((uv.x >= xoff && uv.x <= (xoff+w)) && (uv.y >= yoff && uv.y <= yoff +h)) {
+		vec2 coord = vec2((uv.x - xoff) / w, (uv.y + yoff) / h);
+		vec4 col = vec4(texture(iChannel1, coord).xyz, 1);
+		O = col;
+	}
 }

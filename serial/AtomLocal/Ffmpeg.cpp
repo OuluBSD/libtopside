@@ -159,17 +159,23 @@ void FfmpegAtomBase::Update(double dt) {
 }
 
 bool FfmpegAtomBase::IsReady(PacketIO& io) {
+	video_packet_ready = false;
+	audio_packet_ready = false;
+	
 	if (mode == AUDIO_ONLY)
-		return file_in.GetAudio().HasPacketOverTime(time);
+		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
 	
 	if (mode == VIDEO_ONLY)
-		return file_in.GetVideo().HasPacketOverTime(time);
+		video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
 	
-	if (mode == AUDIOVIDEO)
-		return file_in.GetAudio().HasPacketOverTime(time) ||
-			   file_in.GetVideo().HasPacketOverTime(time);
-		
-	return false;
+	if (mode == AUDIOVIDEO) {
+		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+		video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+	}
+	
+	ASSERT(!audio_packet_ready || audio_ch >= 0);
+	ASSERT(!video_packet_ready || video_ch >= 0);
+	return audio_packet_ready || video_packet_ready;
 }
 
 bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
@@ -177,7 +183,7 @@ bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
 	
 	bool succ = true;
 	
-	if ((mode == AUDIO_ONLY || mode == AUDIOVIDEO) && audio_ch >= 0) {
+	if (audio_packet_ready) {
 		PacketIO::Source& src = io.src[audio_ch];
 		Packet& out = src.p;
 		sink.may_remove = true;
@@ -188,7 +194,7 @@ bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
 		ASSERT(succ);
 	}
 	
-	if ((mode == VIDEO_ONLY || mode == AUDIOVIDEO) && video_ch >= 0) {
+	if (video_packet_ready) {
 		PacketIO::Source& src = io.src[video_ch];
 		Packet& out = src.p;
 		sink.may_remove = true;

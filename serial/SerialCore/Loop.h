@@ -153,7 +153,7 @@ public:
 	AtomMap::Iterator			end()			{return atoms.end();}
 	LoopVec::Iterator			BeginLoop()		{return loops.begin();}
 	
-	void Visit(RuntimeVisitor& vis) {vis || atoms || loops;}
+	void Visit(RuntimeVisitor& vis) {vis || atoms || loops || states;}
 	void VisitSinks(RuntimeVisitor& vis);
 	void VisitSources(RuntimeVisitor& vis);
 	

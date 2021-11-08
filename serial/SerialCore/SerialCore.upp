@@ -15,8 +15,6 @@ file
 	PacketTracker.cpp,
 	Interface.h,
 	Interface.cpp,
-	State.h,
-	State.cpp,
 	Atom.h,
 	Atom.cpp,
 	AtomForward.cpp,

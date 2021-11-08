@@ -425,6 +425,32 @@ OglTextureBase::OglTextureBase() {
 
 bool OglTextureBase::Initialize(const Script::WorldState& ws) {
 	
+	String f = ws.Get(".filter");
+	if (!f.IsEmpty()) {
+		if (f == "nearest")
+			filter = OglBufferInput::FILTER_NEAREST;
+		else if (f == "linear")
+			filter = OglBufferInput::FILTER_LINEAR;
+		else if (f == "mipmap")
+			filter = OglBufferInput::FILTER_MIPMAP;
+		else {
+			LOG("OglTextureBase::Initialize: error: invalid filter string '" << f << "'");
+			return false;
+		}
+	}
+	
+	String w = ws.Get(".wrap");
+	if (!w.IsEmpty()) {
+		if (w == "clamp")
+			wrap = OglBufferInput::WRAP_CLAMP;
+		else if (w == "repeat")
+			wrap = OglBufferInput::WRAP_REPEAT;
+		else {
+			LOG("OglTextureBase::Initialize: error: invalid wrap string '" << w << "'");
+			return false;
+		}
+	}
+	
 	return true;
 }
 
@@ -468,6 +494,7 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	prim_src.p = ReplyPacket(0, prim_sink.p);
 	
 	PacketValue& from = *sink.p;
+	const Vector<byte> from_data = from.GetData();
 	
 	Format from_fmt = from.GetFormat();
 	ASSERT(from_fmt.IsVideo() || from_fmt.IsVolume());
@@ -506,6 +533,8 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		buf.fb_channels = channels;
 		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
 		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
+		buf.fb_filter = this->filter;
+		buf.fb_wrap = this->wrap;
 		buf.fps = 0;
 		
 		if (loading_cubemap) {
@@ -522,11 +551,11 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 				return false;
 		}
 		else if (sz.cz == 0) {
-			if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, from.GetData()))
+			if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, &*from_data.Begin(), from_data.GetCount()))
 				return false;
 		}
 		else {
-			if (!buf.InitializeVolume(sz, channels, from.GetData()))
+			if (!buf.InitializeVolume(sz, channels, from_data))
 				return false;
 		}
 	}
@@ -726,7 +755,6 @@ EnvState& EventStateBase::GetState() const {
 	return *s;
 }
 
-
 bool EventStateBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("EventStateBase::Initialize");
 	
@@ -743,7 +771,7 @@ bool EventStateBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	}
 	
-	KeyVec& data = state->Set<KeyVec>(KEYBOARD_PRESSED);
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
 	data.SetAll(false);
 	
 	return true;
@@ -772,6 +800,14 @@ bool EventStateBase::ProcessPackets(PacketIO& io) {
 	
 	if (io.sink_count == 1) {
 		Event(io.sink[0].p->GetData<CtrlEvent>());
+		
+		PacketIO::Sink& sink = io.sink[0];
+		PacketIO::Source& src = io.src[0];
+		
+		ASSERT(sink.p);
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		src.p = ReplyPacket(0, sink.p);
 	}
 	else {
 		TODO
@@ -806,6 +842,11 @@ void EventStateBase::Event(const CtrlEvent& e) {
 			case Ctrl::RIGHTUP:			break;
 		}
 	}
+	else if (e.type == EVENT_WINDOW_RESIZE) {
+		Size& video_size = GetState().Set<Size>(SCREEN0_SIZE);
+		video_size = e.sz;
+	}
+	else TODO
 }
 
 void EventStateBase::LeftDown(Point pt, dword keyflags) {
@@ -813,8 +854,8 @@ void EventStateBase::LeftDown(Point pt, dword keyflags) {
 	
 	SetBool(MOUSE_LEFTDOWN, true);
 	
-	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
-	Point& click = s.Set<Point>(MOUSE_TOUCOMPAT_CLICK);
+	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
+	Point& click = s.Set<Point>(MOUSE_TOYCOMPAT_CLICK);
 	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
 	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
 	if (video_size.cx > 0 && video_size.cy > 0) {
@@ -835,15 +876,15 @@ void EventStateBase::LeftUp(Point pt, dword keyflags) {
 	
 	SetBool(MOUSE_LEFTDOWN, false);
 	
-	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
+	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 	drag.y = -drag.y; // observed behaviour
 }
 
 void EventStateBase::MouseMove(Point pt, dword keyflags) {
 	EnvState& s = GetState();
 	
-	Point& drag = s.Set<Point>(MOUSE_TOUCOMPAT_DRAG);
-	Point& click = s.Set<Point>(MOUSE_TOUCOMPAT_CLICK);
+	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
+	Point& click = s.Set<Point>(MOUSE_TOYCOMPAT_CLICK);
 	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
 	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
 	if (s.GetBool(MOUSE_LEFTDOWN)) {
@@ -861,7 +902,7 @@ void EventStateBase::MouseMove(Point pt, dword keyflags) {
 bool EventStateBase::Key(dword key, int count) {
 	EnvState& s = GetState();
 	
-	KeyVec& data = s.Set<KeyVec>(KEYBOARD_PRESSED);
+	FboKbd::KeyVec& data = s.Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
 	int& keyboard_iter = s.GetInt(KEYBOARD_STATE_ITER);
 	
 	bool is_key_down = true;
@@ -887,7 +928,7 @@ bool EventStateBase::Key(dword key, int count) {
 	
 	key = ToUpper(key);
 	
-	if (key >= 0 && key < key_tex_w) {
+	if (key >= 0 && key < FboKbd::key_tex_w) {
 		if (key > 0)
 			data[key] = is_key_down;
 		data[16] = is_lshift;
@@ -898,6 +939,230 @@ bool EventStateBase::Key(dword key, int count) {
 	
 	return true;
 }
+
+
+
+
+
+
+
+OglKeyboardBase::OglKeyboardBase() {
+	
+}
+
+bool OglKeyboardBase::Initialize(const Script::WorldState& ws) {
+	
+	target = ws.Get(".target");
+	if (target.IsEmpty()) {
+		LOG("EventStateBase::Initialize: error: target state argument is required");
+		return false;
+	}
+	
+	Loop& loop = GetParent();
+	state = loop.FindNearestState(target);
+	if (!state) {
+		LOG("EventStateBase::Initialize: error: state '" << target << "' not found in parent loop: " << loop.GetDeepName());
+		return false;
+	}
+	
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	data.SetAll(false);
+	
+	return true;
+}
+
+bool OglKeyboardBase::PostInitialize() {
+	
+	return true;
+}
+
+void OglKeyboardBase::Uninitialize() {
+	
+}
+
+bool OglKeyboardBase::IsReady(PacketIO& io) {
+	if (!state) return false;
+	ASSERT(io.src_count == 2);
+	if (io.src_count != 2) return false;
+	
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("OglKeyboardBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+bool OglKeyboardBase::ProcessPackets(PacketIO& io) {
+	RTLOG("OglKeyboardBase::ProcessPackets");
+	
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	
+	ASSERT(prim_sink.p);
+	prim_sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(0, prim_sink.p);
+	
+	Packet& from = src.p;
+	Size sz(FboKbd::key_tex_w, FboKbd::key_tex_h);
+	int channels = 1;
+	FboKbd::KeyVec& data = state->Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		buf.is_win_fbo = false;
+		buf.fb_size = sz;
+		buf.fb_channels = channels;
+		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
+		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
+		buf.fps = 0;
+		
+		if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, data.Get(), data.GetCount() * sizeof(byte)))
+			return false;
+	}
+	else {
+		buf.ReadTexture(sz, channels, data.Get(), data.GetCount() * sizeof(byte));
+	}
+	
+	
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 1;
+				out = ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			GetBuffer().StoreOutputLink(data);
+			RTLOG("OglKeyboardBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
+	}
+	
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+OglAudioBase::OglAudioBase() {
+	
+}
+
+bool OglAudioBase::Initialize(const Script::WorldState& ws) {
+	return true;
+}
+
+bool OglAudioBase::PostInitialize() {
+	return true;
+}
+
+void OglAudioBase::Uninitialize() {
+	
+}
+
+bool OglAudioBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
+		ISinkRef sink = GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
+bool OglAudioBase::IsReady(PacketIO& io) {
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b = io.active_sink_mask == iface_sink_mask && io.full_src_mask == 0;
+	RTLOG("OglAudioBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+bool OglAudioBase::ProcessPackets(PacketIO& io) {
+	RTLOG("OglAudioBase::ProcessPackets");
+	ASSERT(io.src_count == 2 && io.sink_count == 2);
+	
+	PacketIO::Sink&		prim_sink	= io.sink[0];
+	PacketIO::Source&	prim_src	= io.src[0];
+	PacketIO::Sink&		sink		= io.sink[1];
+	PacketIO::Source&	src			= io.src[1];
+	
+	ASSERT(prim_sink.p);
+	prim_sink.may_remove = true;
+	prim_src.from_sink_ch = 0;
+	prim_src.p = ReplyPacket(0, prim_sink.p);
+	
+	ASSERT(sink.p);
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(1, sink.p);
+	
+	Packet& from = sink.p;
+	Format from_fmt = from->GetFormat();
+	ASSERT(from_fmt.IsAudio());
+	AudioFormat& afmt = from_fmt;
+	Size sz(afmt.sample_rate, 1);
+	int channels = afmt.GetSize();
+	const Vector<byte>& data = from->GetData();
+	
+	if (!buf.IsInitialized()) {
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		buf.is_win_fbo = false;
+		buf.fb_size = sz;
+		buf.fb_channels = channels;
+		ASSERT(afmt.IsSampleFloat());
+		buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
+		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
+		buf.fps = 0;
+		
+		if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, &*data.Begin(), data.GetCount() * sizeof(byte)))
+			return false;
+	}
+	else {
+		buf.ReadTexture(sz, channels, &*data.Begin(), data.GetCount() * sizeof(byte));
+	}
+	
+	
+	InterfaceSourceRef src_iface = GetSource();
+	int src_count = src_iface->GetSourceCount();
+	for (int src_ch = 1; src_ch < src_count; src_ch++) {
+		PacketIO::Source& src = io.src[src_ch];
+		if (!src.val)
+			continue;
+		Format src_fmt = src_iface->GetSourceValue(src_ch).GetFormat();
+		if (src_fmt.vd == VD(OGL,FBO)) {
+			Packet& out = src.p;
+			if (!out) {
+				src.from_sink_ch = 1;
+				out = ReplyPacket(src_ch, prim_sink.p);
+			}
+			PacketValue& val = *out;
+			InternalPacketData& data = val.GetData<InternalPacketData>();
+			GetBuffer().StoreOutputLink(data);
+			RTLOG("OglKeyboardBase::ProcessPackets: 0, " << src_ch << ": " << out->ToString());
+		}
+	}
+	
+	return true;
+}
+
 
 
 NAMESPACE_SERIAL_END

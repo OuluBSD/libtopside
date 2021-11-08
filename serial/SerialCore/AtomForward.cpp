@@ -277,7 +277,7 @@ void AtomBase::ForwardPipe(FwdScope& fwd) {
 				#ifdef flagDEBUG
 				Format src_fmt = src_val.GetFormat();
 				Format sent_fmt = sent->GetFormat();
-				if (!src_fmt.IsCopyCompatible(sent_fmt)) {DUMP(sent_fmt); DUMP(src_fmt);}
+				if (!src_fmt.IsCopyCompatible(sent_fmt)) {DUMP(sent_fmt); DUMP(src_fmt); DUMP(GetType());}
 				ASSERT(src_fmt.IsCopyCompatible(sent_fmt));
 				#endif
 				

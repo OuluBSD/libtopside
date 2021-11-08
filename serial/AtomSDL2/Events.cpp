@@ -22,7 +22,20 @@ void SDL2EventsBase::Update(double dt) {
 bool SDL2EventsBase::IsReady(PacketIO& io) {
 	bool b = io.full_src_mask == 0;
 	if (b) {
-		if (obj->Poll(ev)) {
+		if (seq == 0) {
+			ev.type = EVENT_WINDOW_RESIZE;
+			OOSDL2::Screen* screen = obj->GetContext()->FindContextConnector<OOSDL2::Screen>();
+			if (screen) {
+				ev.sz = screen->GetSize();
+				ev_sendable = true;
+			}
+			else {
+				RTLOG("SDL2EventsBase::IsReady: skipping windows resize, because no screen is in context");
+				seq++;
+				b = false;
+			}
+		}
+		else if (obj->Poll(ev)) {
 			ev_sendable = true;
 		}
 		else {

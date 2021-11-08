@@ -96,6 +96,12 @@ bool PacketBufferBase::StorePacket(Packet& p, double min_time) {
 			break;
 		}
 	}
+	if (!found && !buf.IsEmpty()) {
+		Packet& n = buf.Top();
+		n->SetOffset(p->GetOffset());
+		p = n;
+		found = true;
+	}
 	buf.RemoveFirst(rem_count);
 	return found;
 }

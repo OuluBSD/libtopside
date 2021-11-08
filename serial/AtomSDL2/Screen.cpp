@@ -9,9 +9,22 @@ NAMESPACE_SERIAL_BEGIN
 
 bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
+	
+	String env_name = ws.Get(".env");
+	if (!env_name.IsEmpty()) {
+		LoopRef l = GetLoop();
+		env = l->FindNearestState(env_name);
+		if (!env) {
+			LOG("SDL2ScreenBase::Initialize: error: environment state with name '" << env_name << "' not found");
+			return false;
+		}
+	}
+	
+	
 	OBJ_CREATE
 	
 	OglBuffer& buf = GetBuffer();
+	buf.SetEnvState(env);
 	obj->SetShaderFile(ws.Get(".filepath"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);

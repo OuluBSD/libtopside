@@ -28,6 +28,17 @@ int GetOglChCode(int channels, bool is_float) {
 
 
 
+void OglBuffer::Update(double dt) {
+	if (var_idx[VAR_COMPAT_DATE] >= 0) {
+		time_us += dt;
+		if (time_us >= 1.0) {
+			time_us = fmod(time_us, 1.0);
+			time = GetSysTime();
+			RTLOG("OglBuffer::Update: " << dt << ", time=" << time.ToString());
+		}
+	}
+}
+
 bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
 	DLOG("OglBuffer::LoadFragmentShaderFile: " << shader_path);
 	
@@ -51,12 +62,12 @@ bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
 	return true;
 }
 
-bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data) {
-	RTLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << data.GetCount());
+bool OglBuffer::InitializeTextureRGBA(Size sz, int channels, const byte* data, int len) {
+	RTLOG("OglBuffer::InitializeTextureRGBA: " << sz.ToString() << ", " << HexStr((void*)data) << ", " << len);
 	
 	UpdateTexBuffers();
 	
-	ReadTexture(sz, channels, data);
+	ReadTexture(sz, channels, data, len);
 	
 	return true;
 }
@@ -73,7 +84,6 @@ bool OglBuffer::InitializeCubemapRGBA(Size sz, int channels, const Vector<byte>&
 	return true;
 }
 
-
 bool OglBuffer::InitializeVolume(Size3 sz, int channels, const Vector<byte>& data) {
 	RTLOG("OglBuffer::InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
 	
@@ -84,46 +94,58 @@ bool OglBuffer::InitializeVolume(Size3 sz, int channels, const Vector<byte>& dat
 	return true;
 }
 
-void OglBuffer::ReadTexture(Size sz, int channels, const Vector<byte>& data) {
+void OglBuffer::ReadTexture(Size sz, int channels, const byte* data, int len) {
+	GLenum type		= GL_TEXTURE_2D;
+	
 	GLuint& color_buf = this->color_buf[0];
 	ASSERT(color_buf > 0);
 	ASSERT(sz == fb_size);
+	ASSERT(fb_size_bytes == len);
 	int intl_fmt = GetOglChCode(channels);
 	
-	glBindTexture (GL_TEXTURE_2D, color_buf);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture (type, color_buf);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
+	glTexImage2D(type, 0, GL_RGBA32F,
 		sz.cx,
 		sz.cy,
 		0, intl_fmt, GL_UNSIGNED_BYTE,
-		data.Begin());
+		data);
+	
+	TexFlags(type, fb_filter, fb_wrap);
 }
 
 void OglBuffer::ReadTexture(Size3 sz, int channels, const Vector<byte>& data) {
+	GLenum type		= GL_TEXTURE_3D;
+	
 	ASSERT(fb_size.cx == sz.cx && fb_size.cy == sz.cy);
 	GLuint& color_buf = this->color_buf[0];
 	ASSERT(color_buf > 0);
-	int intl_fmt = GetOglChCode(channels);
+	//int intl_fmt = GetOglChCode(channels);
 	
-	glBindTexture (GL_TEXTURE_3D, color_buf);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture (type, color_buf);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA32F,
+	glTexImage3D(type, 0, GL_RGBA32F,
 		sz.cx,
 		sz.cy,
 		sz.cz,
-		0, intl_fmt, GL_UNSIGNED_BYTE,
+		//0, intl_fmt, GL_UNSIGNED_BYTE,
+		0, fb_fmt, fb_type,
 		data.Begin());
+	
+	TexFlags(type, fb_filter, fb_wrap);
 }
 
 void OglBuffer::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
 	GLenum type		= GL_TEXTURE_CUBE_MAP;
 	GLuint& tex		= color_buf[0];
 	int ch_code		= GetOglChCode(channels);
+	
+	glBindTexture (type, tex);
 	
 	ASSERT(tex > 0);
 	
@@ -145,7 +167,7 @@ void OglBuffer::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const
 					 data->Begin());
 	}
 	
-	TexFlags(type, OglBufferInput::FILTER_LINEAR, OglBufferInput::WRAP_REPEAT);
+	TexFlags(type, fb_filter, fb_wrap);
 	
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR)
@@ -159,6 +181,7 @@ bool OglBuffer::Initialize() {
 	
 	ASSERT(fps > 0);
 	frame_time = 1.0 / fps;
+	time = GetSysTime();
 	
 	if (!CompilePrograms())
 		return false;
@@ -203,6 +226,7 @@ const OglBuffer* OglBuffer::GetComponentById(int id) const {
 void OglBuffer::UpdateTexBuffers() {
 	if (!is_win_fbo) {
 		ASSERT(fb_channels > 0);
+		ASSERT(fb_accel_channels > 0);
 		ASSERT(fb_size.cx > 0 && fb_size.cy > 0);
 		
 		fb_sample_size			= fb_sampletype == SAMPLE_BYTE ? 1 : 4;
@@ -210,10 +234,10 @@ void OglBuffer::UpdateTexBuffers() {
 		fb_accel_sample_size	= fb_accel_sampletype == SAMPLE_BYTE ? 1 : 4;
 		fb_accel_type			= fb_accel_sampletype == SAMPLE_BYTE ? GL_UNSIGNED_BYTE : GL_FLOAT;
 		
-		fb_size_bytes			= fb_size.cx * fb_size.cy * fb_sample_size;
-		fb_accel_size_bytes		= fb_size.cx * fb_size.cy * fb_accel_sample_size;
+		fb_size_bytes			= fb_size.cx * fb_size.cy * fb_sample_size * fb_channels;
+		fb_accel_size_bytes		= fb_size.cx * fb_size.cy * fb_accel_sample_size* fb_accel_channels;
 		fb_fmt					= GetOglChCode(fb_channels, fb_type == GL_FLOAT);
-		fb_accel_fmt			= GetOglChCode(fb_channels, fb_accel_type == GL_FLOAT);
+		fb_accel_fmt			= GetOglChCode(fb_accel_channels, fb_accel_type == GL_FLOAT);
 		
 		ASSERT(fb_size_bytes > 0);
 		ASSERT(fb_accel_size_bytes > 0);
@@ -224,8 +248,8 @@ void OglBuffer::UpdateTexBuffers() {
 		
 		CreateTex(
 			true, true,
-			OglBufferInput::FILTER_LINEAR,
-			OglBufferInput::WRAP_CLAMP);
+			fb_filter,
+			fb_wrap);
 		
 	}
 }
@@ -248,6 +272,16 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	//RTLOG("OglBuffer::ProcessStage: " << time_total);
 	
 	frames++;
+	
+	if (env) {
+		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+		if (video_size.cx == 0 && video_size.cy == 0)
+			video_size = fb_size;
+		else if (video_size != fb_size) {
+			fb_size = video_size;
+			UpdateTexBuffers();
+		}
+	}
 	
 	
 	GLint prog = fg_prog;
@@ -396,16 +430,20 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	}
 	
 	else if (var == VAR_COMPAT_MOUSE) {
-		glUniform4f(uindex,
-			mouse_click.x,
-			mouse_click.y,
-			mouse_drag.x,
-			mouse_drag.y);
+		if (env) {
+			Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
+			Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
+			glUniform4f(uindex,
+				mouse_click.x,
+				mouse_click.y,
+				mouse_drag.x,
+				mouse_drag.y);
+		}
 	}
 	
 	else if (var == VAR_COMPAT_DATE) {
 		double sec = ((int)time.hour * 60 + (int)time.minute) * 60 + (int)time.second;
-		sec += 0.000001 * time_us;
+		sec += time_us;
 		glUniform4f(uindex, time.year, time.month, time.day, sec);
 	}
 	
@@ -445,7 +483,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 			if (j < in_buf.GetCount()) {
 				OglBufferInput& in = in_buf[j];
 				const OglBuffer* in_buf = in.GetBuffer();
-				values[j] = in_buf->time_total;
+				values[j] = in_buf ? in_buf->time_total : 0;
 			}
 			else
 				values[j] = time_total;
@@ -459,7 +497,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 		if (ch < in_buf.GetCount()) {
 			OglBufferInput& in = in_buf[ch];
 			const OglBuffer* in_buf = in.GetBuffer();
-			if (in.stream) {
+			if (in_buf) {
 				values[0] = in_buf->fb_size.cx;
 				values[1] = in_buf->fb_size.cy;
 				values[2] = in_buf->fb_depth;
@@ -530,14 +568,15 @@ void OglBuffer::CreateTex(bool create_depth, bool create_fbo, int filter, int re
 		GLuint& frame_buf = this->frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
-		ASSERT(fb_accel_fmt == GetOglChCode(fb_channels, true));
-		ASSERT(fb_fmt == GetOglChCode(fb_channels, false));
-		ASSERT(fb_type == GL_UNSIGNED_BYTE);
+		ASSERT(fb_accel_fmt == GetOglChCode(fb_accel_channels, true));
+		ASSERT(fb_fmt == GetOglChCode(fb_channels, fb_type == GL_FLOAT));
+		ASSERT(fb_type == GL_UNSIGNED_BYTE || fb_type == GL_FLOAT);
 		
 		// color buffer
 		glGenTextures(1, &color_buf);
 		glBindTexture(GL_TEXTURE_2D, color_buf);
-		glTexImage2D(GL_TEXTURE_2D, 0, fb_accel_fmt, sz.cx, sz.cy, 0, fb_fmt, fb_type, 0);
+		//glTexImage2D(GL_TEXTURE_2D, 0, fb_accel_fmt, sz.cx, sz.cy, 0, fb_fmt, fb_type, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, fb_accel_fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 		TexFlags(GL_TEXTURE_2D, filter, repeat);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
@@ -909,6 +948,8 @@ void OglBuffer::StoreOutputLink(InternalPacketData& v) {
 bool OglBuffer::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
 	
 	if (in_id >= 0) {
+		//LOG("OglBuffer::LoadOutputLink: " << name << " #" << in_id);
+		
 		if (in_id >= in_buf.GetCount())
 			in_buf.SetCount(in_id+1);
 		

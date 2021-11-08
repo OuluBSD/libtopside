@@ -233,6 +233,22 @@ public:
 #endif
 
 #if defined flagGUI
+class AudioLoaderAtom : public Atom<AudioLoaderAtom>, public FfmpegAtomBase {
+
+public:
+	RTTI_DECL2(AudioLoaderAtom, AtomT, FfmpegAtomBase)
+	COPY_PANIC(AudioLoaderAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
 class VideoLoaderAtom : public Atom<VideoLoaderAtom>, public FfmpegAtomBase {
 
 public:
@@ -247,6 +263,20 @@ public:
 
 };
 #endif
+
+class EventStatePipe : public Atom<EventStatePipe>, public EventStateBase {
+
+public:
+	RTTI_DECL2(EventStatePipe, AtomT, EventStateBase)
+	COPY_PANIC(EventStatePipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
 
 #if defined flagGUI
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
@@ -286,20 +316,6 @@ public:
 	COPY_PANIC(SdlEventAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class EventStatePipe : public Atom<EventStatePipe>, public EventStateBase {
-
-public:
-	RTTI_DECL2(EventStatePipe, AtomT, EventStateBase)
-	COPY_PANIC(EventStatePipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -556,6 +572,38 @@ public:
 };
 #endif
 
+#if defined flagGUI
+class OglKeyboardSource : public Atom<OglKeyboardSource>, public OglKeyboardBase {
+
+public:
+	RTTI_DECL2(OglKeyboardSource, AtomT, OglKeyboardBase)
+	COPY_PANIC(OglKeyboardSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.keyboard")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
+class OglAudioSource : public Atom<OglAudioSource>, public OglAudioBase {
+
+public:
+	RTTI_DECL2(OglAudioSource, AtomT, OglAudioBase)
+	COPY_PANIC(OglAudioSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.audio")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
@@ -590,15 +638,17 @@ using WebcamPipeRef = Ref<WebcamPipe, AtomParent>;
 
 using WebcamAtomRef = Ref<WebcamAtom, AtomParent>;
 
+using AudioLoaderAtomRef = Ref<AudioLoaderAtom, AtomParent>;
+
 using VideoLoaderAtomRef = Ref<VideoLoaderAtom, AtomParent>;
+
+using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
 
 using SdlEventAtomPipeRef = Ref<SdlEventAtomPipe, AtomParent>;
-
-using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
 
 using SdlEventAtomRef = Ref<SdlEventAtom, AtomParent>;
 
@@ -631,6 +681,10 @@ using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
 using OglVolumeSourceRef = Ref<OglVolumeSource, AtomParent>;
 
 using OglAudioSinkRef = Ref<OglAudioSink, AtomParent>;
+
+using OglKeyboardSourceRef = Ref<OglKeyboardSource, AtomParent>;
+
+using OglAudioSourceRef = Ref<OglAudioSource, AtomParent>;
 
 }
 

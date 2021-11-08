@@ -52,7 +52,6 @@ class SoundSample;
 class Loop;
 class LoopStore;
 class Machine;
-class EnvState;
 //class CenterCustomer;
 struct AtomTypeCls;
 
@@ -60,7 +59,6 @@ struct AtomTypeCls;
 using SerialSystemParent	= MetaSystemParent;
 using LoopParent			= HierExBaseParent;
 using AtomParent			= ExchangeBaseParent;
-using EnvStateParent		= ExchangeBaseParent;
 
 
 template <class T>
@@ -77,7 +75,6 @@ using RefAtomTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 //using AtomParent			= AtomParent;
 using LoopRef				= Ref<Loop,					LoopParent>;
 using AtomBaseRef			= Ref<AtomBase,				AtomParent>;
-using EnvStateRef			= Ref<EnvState,				EnvStateParent>;
 using LoopStoreRef			= Ref<LoopStore,			SerialSystemParent>;
 using AtomStoreRef			= Ref<AtomStore,			SerialSystemParent>;
 using AtomSystemRef			= Ref<AtomSystem,			SerialSystemParent>;

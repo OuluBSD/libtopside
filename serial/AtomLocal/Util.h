@@ -90,6 +90,8 @@ class OglTextureBase :
 	public OglBufferBase
 {
 	bool			loading_cubemap = false;
+	int				filter = OglBufferInput::FILTER_LINEAR;
+	int				wrap = OglBufferInput::WRAP_REPEAT;
 	Array<Packet>	cubemap;
 	
 public:
@@ -145,80 +147,18 @@ public:
 	
 };
 
+namespace FboKbd {
 
-enum EventStateKey {
-	KEYBOARD_PRESSED,
-	KEYBOARD_STATE_ITER,
-	
-	SCREEN0_SIZE,
-	SCREEN0_OFFSET,
-	
-	
-	MOUSE_EVENT_BASE = 0x1000,
-	
-	#define MOUSE_EVENT(x) MOUSE_##x = MOUSE_EVENT_BASE + Ctrl::x,
-	
-	MOUSE_EVENT(BUTTON)
-	MOUSE_EVENT(ACTION)
+static const int key_tex_w = 256;
+static const int key_tex_h = 1;//256;
+typedef FixedArray<byte, 256> KeyVec;
 
-	MOUSE_EVENT(MOUSEENTER)
-	MOUSE_EVENT(MOUSEMOVE)
-	MOUSE_EVENT(MOUSELEAVE)
-	MOUSE_EVENT(CURSORIMAGE)
-	MOUSE_EVENT(MOUSEWHEEL)
-
-	MOUSE_EVENT(DOWN)
-	MOUSE_EVENT(UP)
-	MOUSE_EVENT(DOUBLE)
-	MOUSE_EVENT(REPEAT)
-	MOUSE_EVENT(DRAG)
-	MOUSE_EVENT(HOLD)
-	MOUSE_EVENT(TRIPLE)
-	MOUSE_EVENT(PEN)
-	MOUSE_EVENT(PENLEAVE)
-
-	MOUSE_EVENT(LEFTDOWN)
-	MOUSE_EVENT(LEFTDOUBLE)
-	MOUSE_EVENT(LEFTREPEAT)
-	MOUSE_EVENT(LEFTUP)
-	MOUSE_EVENT(LEFTDRAG)
-	MOUSE_EVENT(LEFTHOLD)
-	MOUSE_EVENT(LEFTTRIPLE)
-
-	MOUSE_EVENT(MIDDLEDOWN)
-	MOUSE_EVENT(MIDDLEDOUBLE)
-	MOUSE_EVENT(MIDDLEREPEAT)
-	MOUSE_EVENT(MIDDLEUP)
-	MOUSE_EVENT(MIDDLEDRAG)
-	MOUSE_EVENT(MIDDLEHOLD)
-	MOUSE_EVENT(MIDDLETRIPLE)
-	
-	MOUSE_EVENT(RIGHTDOWN)
-	MOUSE_EVENT(RIGHTDOUBLE)
-	MOUSE_EVENT(RIGHTREPEAT)
-	MOUSE_EVENT(RIGHTUP)
-	MOUSE_EVENT(RIGHTDRAG)
-	MOUSE_EVENT(RIGHTHOLD)
-	MOUSE_EVENT(RIGHTTRIPLE)
-	
-	#undef MOUSE_EVENT
-	
-	MOUSE_EVENT_END = 0x1FFF,
-	
-	MOUSE_TOUCOMPAT_DRAG,
-	MOUSE_TOUCOMPAT_CLICK,
-	
-};
+}
 
 
 class EventStateBase :
 	virtual public AtomBase
 {
-	static const int key_tex_w = 256;
-	static const int key_tex_h = 256;
-	
-	typedef FixedArray<bool, 256> KeyVec;
-	
 	String			target;
 	EnvStateRef		state;
 	
@@ -243,6 +183,46 @@ public:
 	
 	bool			GetBool(dword key) {return state->GetBool(key);}
 	EnvState&		GetState() const;
+	
+};
+
+
+class OglKeyboardBase :
+	public OglBufferBase
+{
+	String			target;
+	EnvStateRef		state;
+	
+	
+public:
+	RTTI_DECL1(OglKeyboardBase, OglBufferBase);
+	OglKeyboardBase();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	bool			PostInitialize() override;
+	void			Uninitialize() override;
+	bool			IsReady(PacketIO& io) override;
+	bool			ProcessPackets(PacketIO& io) override;
+	void			Visit(RuntimeVisitor& vis) override {}
+	
+};
+
+
+class OglAudioBase :
+	public OglBufferBase
+{
+	
+public:
+	RTTI_DECL1(OglAudioBase, OglBufferBase);
+	OglAudioBase();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	bool			PostInitialize() override;
+	void			Uninitialize() override;
+	bool			IsReady(PacketIO& io) override;
+	bool			ProcessPackets(PacketIO& io) override;
+	bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
+	void			Visit(RuntimeVisitor& vis) override {}
 	
 };
 

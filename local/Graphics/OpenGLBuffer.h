@@ -75,7 +75,6 @@ protected:
 	friend class FusionContextComponent;
 	friend struct OglBufferInputVector;
 	
-	const Serial::Stream*	stream = 0;
 	const OglBuffer*		in_buf = 0;
 	String					filepath;
 	int						id = -1;
@@ -88,7 +87,8 @@ protected:
 };
 
 
-class OglBuffer {
+class OglBuffer : RTTIBase {
+	RTTI_DECL0(OglBuffer)
 	
 protected:
 	
@@ -190,9 +190,13 @@ public:
 	bool						is_read_fb_output = false;
 	bool						is_shader_audio_main = false;
 	int							fb_channels = 4;
+	int							fb_accel_channels = 4;
 	Size						fb_size;
 	SampleType					fb_sampletype = SAMPLE_BYTE;
 	SampleType					fb_accel_sampletype = SAMPLE_FLOAT;
+	int							fb_wrap = OglBufferInput::WRAP_REPEAT;
+	int							fb_filter = OglBufferInput::FILTER_LINEAR;
+	int							sample_rate = 44100;
 	
 	GLint						fb_type = -1;
 	GLint						fb_fmt = -1;
@@ -208,13 +212,12 @@ public:
 	double						time_total = 0;
 	double						frame_time = 0;
 	int							frames = -1;
-	int							sample_rate = 1;
 	int							fps = 0;
-	Point						mouse_click, mouse_drag;
 	Point						fb_offset;
-	dword						time_us = 0;
+	double						time_us = 0;
 	Time						time;
 	bool						is_cubemap = false;
+	EnvStateRef					env;
 	
 	bool						initialized = false;
 	
@@ -222,19 +225,23 @@ public:
 	
 public:
 	
+	void Visit(RuntimeVisitor& vis) {vis & env;}
+	
+	
 	bool				LoadFragmentShaderFile(String filepath);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
 	bool				IsInitialized() const {return initialized;}
 	bool				IsCubemap() const {return is_cubemap;}
 	
 	bool				Initialize();
-	bool				InitializeTextureRGBA(Size sz, int channels, const Vector<byte>& data);
+	bool				InitializeTextureRGBA(Size sz, int channels, const byte* data, int len);
 	bool				InitializeCubemapRGBA(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool				InitializeVolume(Size3 sz, int channels, const Vector<byte>& data);
 	void				RefreshPipeline();
 	void				UpdateTexBuffers();
 	void				Reset();
 	int					NewWriteBuffer();
+	void				Update(double dt);
 	
 	void				ProcessStage(const RealtimeSourceConfig& cfg);
 	void				ClearPipeline();
@@ -260,12 +267,13 @@ public:
 	void				TexFlags(int type, int filter, int repeat);
 	void				UseRenderedFramebuffer();
 	const OglBuffer*	GetComponentById(int id) const;
-	void				ReadTexture(Size sz, int channels, const Vector<byte>& data);
+	void				ReadTexture(Size sz, int channels, const byte* data, int len);
 	void				ReadTexture(Size3 sz, int channels, const Vector<byte>& data);
 	void				ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	Size				GetFramebufferSize() const {return fb_size;}
 	int					GetFramebufferChannels() const {return fb_channels;}
 	GLuint				GetReadFramebuffer() const {return frame_buf[buf_i];}
+	void				SetEnvState(EnvStateRef env) {this->env = env;}
 	
 	void				OnError(const char* fn, String s);
 	

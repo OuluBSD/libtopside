@@ -168,8 +168,10 @@ bool MidiFormat::IsSame(const MidiFormat& fmt) const {
 
 
 
-String EventFormat::ToString() const{
-	TODO
+String EventFormat::ToString() const {
+	return		SampleBase<EventSample>::ToString() + ", " +
+				DimBase<1>::ToString() + ", " +
+				SparseTimeSeriesBase::ToString();
 }
 
 bool EventFormat::IsValid() const {

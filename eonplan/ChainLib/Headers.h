@@ -57,9 +57,16 @@ HEADER12_U01(		WebcamAtom,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	Ce
 HEADER_ACTION(		WebcamAtom,			center.video.webcam)
 HEADER_ARG(			WebcamAtom,			reqdef_HAVE_OPENCV,	1)
 
+HEADER12_U01(		AudioLoaderAtom,	FfmpegAtomBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		AudioLoaderAtom,	center.audio.loader)
+HEADER_ARG(			AudioLoaderAtom,	reqdef_flagGUI,	1)
+
 HEADER13_U02(		VideoLoaderAtom,	FfmpegAtomBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagGUI,	1)
+
+HEADER11(			EventStatePipe,		EventStateBase,			driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
+HEADER_ACTION(		EventStatePipe,		state.event.pipe)
 
 
 
@@ -73,9 +80,6 @@ HEADER_ACTION(		SdlContextAtom,		sdl.context)
 
 HEADER11(			SdlEventAtomPipe,	SDL2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
-
-HEADER11(			EventStatePipe,		EventStateBase,			driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
-HEADER_ACTION(		EventStatePipe,		state.event.pipe)
 
 HEADER12(			SdlEventAtom,		SDL2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent,	CenterEvent)
 HEADER_ACTION(		SdlEventAtom,		sdl.event)
@@ -117,6 +121,7 @@ HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagGUI,		1)
 
 
+
 HEADER11 (			SdlAudioAtom,		SDL2AudioOutputBase,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
@@ -140,3 +145,11 @@ HEADER_ARG(			OglVolumeSource,	reqdef_flagGUI,		1)
 HEADER22_U11(		OglAudioSink,		OglFboReaderBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			CenterAudio,	OglReceipt)
 HEADER_ACTION(		OglAudioSink,		ogl.fbo.center.audio)
 HEADER_ARG(			OglAudioSink,		reqdef_flagGUI,		1)
+
+HEADER12_U01(		OglKeyboardSource,	OglKeyboardBase,			pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
+HEADER_ACTION(		OglKeyboardSource,	ogl.fbo.keyboard)
+HEADER_ARG(			OglKeyboardSource,	reqdef_flagGUI,		1)
+
+HEADER22_U11(		OglAudioSource,		OglAudioBase,				pipe,		OglFbo,			OglOrder,		CenterAudio,	OglFbo,			OglReceipt)
+HEADER_ACTION(		OglAudioSource,		ogl.fbo.audio)
+HEADER_ARG(			OglAudioSource,		reqdef_flagGUI,		1)

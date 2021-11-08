@@ -14,11 +14,12 @@ class SDL2ScreenBase :
 	One<OOSDL2::Screen>	obj;
     Serial::Format		fmt;
 	OOSDL2::Events*		ev = 0;
+	EnvStateRef			env;
 	
 public:
 	RTTI_DECL3(SDL2ScreenBase, AltBaseT, OglBufferBase, FramePollerBase)
 	COPY_PANIC(SDL2ScreenBase)
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AltBaseT>(this); vis.VisitThis<OglBufferBase>(this); vis.VisitThis<FramePollerBase>(this);}
+	void Visit(RuntimeVisitor& vis) override {vis & env; vis.VisitThis<AltBaseT>(this); vis.VisitThis<OglBufferBase>(this); vis.VisitThis<FramePollerBase>(this);}
 	
 	SDL2ScreenBase() = default;
 	
@@ -26,6 +27,7 @@ public:
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
 	bool			IsReady(PacketIO& io) override;
+	void			Update(double dt) final {OglBufferBase::Update(dt); FramePollerBase::Update(dt);}
 	
 	OOSDL2::Component&	GetObj() override {return *obj;}
 	OOSDL2::Screen*		GetOOSDL2() {return &*obj;}

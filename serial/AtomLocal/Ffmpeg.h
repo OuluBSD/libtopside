@@ -27,6 +27,7 @@ class FfmpegAtomBase :
 	int def_cap_fps = 25;
 	bool stops_machine = false;
 	bool vflip = false;
+	bool video_packet_ready = false, audio_packet_ready = false;
 	String filepath;
 	
 	

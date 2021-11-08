@@ -251,6 +251,24 @@ AtomTypeCls WebcamAtom::GetType() const
 
 #endif
 #if defined flagGUI
+AtomTypeCls AudioLoaderAtom::GetAtomType()
+{
+	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
+}
+
+void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<AudioLoaderAtom>>(this);
+	vis.VisitThis<FfmpegAtomBase>(this);
+}
+
+AtomTypeCls AudioLoaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
 AtomTypeCls VideoLoaderAtom::GetAtomType()
 {
 	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
@@ -268,6 +286,22 @@ AtomTypeCls VideoLoaderAtom::GetType() const
 }
 
 #endif
+AtomTypeCls EventStatePipe::GetAtomType()
+{
+	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
+}
+
+void EventStatePipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EventStatePipe>>(this);
+	vis.VisitThis<EventStateBase>(this);
+}
+
+AtomTypeCls EventStatePipe::GetType() const
+{
+	return GetAtomType();
+}
+
 #if defined flagGUI
 AtomTypeCls OglCustomer::GetAtomType()
 {
@@ -314,22 +348,6 @@ void SdlEventAtomPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlEventAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-AtomTypeCls EventStatePipe::GetAtomType()
-{
-	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
-}
-
-void EventStatePipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Atom<EventStatePipe>>(this);
-	vis.VisitThis<EventStateBase>(this);
-}
-
-AtomTypeCls EventStatePipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -609,6 +627,42 @@ void OglAudioSink::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglAudioSink::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls OglKeyboardSource::GetAtomType()
+{
+	return ATOM11_U01(OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT, OGL, FBO);
+}
+
+void OglKeyboardSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglKeyboardSource>>(this);
+	vis.VisitThis<OglKeyboardBase>(this);
+}
+
+AtomTypeCls OglKeyboardSource::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
+AtomTypeCls OglAudioSource::GetAtomType()
+{
+	return ATOM11_U11(OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);
+}
+
+void OglAudioSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglAudioSource>>(this);
+	vis.VisitThis<OglAudioBase>(this);
+}
+
+AtomTypeCls OglAudioSource::GetType() const
 {
 	return GetAtomType();
 }

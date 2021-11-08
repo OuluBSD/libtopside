@@ -73,5 +73,6 @@ file
 	Url.cpp,
 	Debugging.h,
 	Debugging.cpp,
-	VR.h;
+	VR.h,
+	Ctrl.h;
 

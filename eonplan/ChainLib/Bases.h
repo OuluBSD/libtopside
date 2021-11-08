@@ -26,6 +26,8 @@ BASE(OglTextureBase)
 BASE(OglFboReaderBase)
 BASE(VideoLoaderBase)
 BASE(VolumeLoaderBase)
+BASE(OglKeyboardBase)
+BASE(OglAudioBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)
 //BASE_ACTION(CenterSinkSync,			center.audio.sink)
