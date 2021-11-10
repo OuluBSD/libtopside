@@ -145,7 +145,7 @@ typedef Node<ActionNode> APlanNode;
 
 }
 
-template <>	inline bool TerminalTest<Agent::ActionNode>(Node<Agent::ActionNode>& n, Node<Agent::ActionNode>* prev) {
+template <>	inline bool TerminalTest<Agent::ActionNode>(Node<Agent::ActionNode>& n, Node<Agent::ActionNode>** prev) {
 	using namespace Agent;
 	if (n.GetEstimate() <= 0)
 		return true;

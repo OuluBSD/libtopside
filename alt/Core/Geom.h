@@ -129,23 +129,23 @@ struct Size_ : Moveable<Size_<T>> {
 	T&       operator[](int i)       {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
 	const T& operator[](int i) const {ASSERT(i == 0 || i == 1); if (i == 0) return &cx; if (i == 1) return &cy; Panic("invalid Size_<T> subscript pos"); NEVER();}
 	
-	bool operator==(const Size_& sz) {return IsEqual(sz);}
-	bool operator!=(const Size_& sz) {return !IsEqual(sz);}
+	bool operator==(const Size_& sz) const {return IsEqual(sz);}
+	bool operator!=(const Size_& sz) const {return !IsEqual(sz);}
 	void operator=(const Size_& sz) {
 		cx = sz.cx;
 		cy = sz.cy;
 	}
 
-	Size_& operator+=(Size_ p) { cx += p.cx; cy += p.cy; return *this; }
-	Size_& operator+=(double t) { cx += t;    cy += t;    return *this; }
-	Size_& operator-=(Size_ p) { cx -= p.cx; cy -= p.cy; return *this; }
-	Size_& operator-=(double t) { cx -= t;    cy -= t;    return *this; }
-	Size_& operator*=(Size_ p) { cx *= p.cx; cy *= p.cy; return *this; }
-	Size_& operator*=(double t) { cx *= t;    cy *= t;    return *this; }
-	Size_& operator/=(Size_ p) { cx /= p.cx; cy /= p.cy; return *this; }
-	Size_& operator/=(double t) { cx /= t;    cy /= t;    return *this; }
-	Size_& operator<<=(int sh) { cx <<= sh;   cy <<= sh;   return *this; }
-	Size_& operator>>=(int sh) { cx >>= sh;   cy >>= sh;   return *this; }
+	Size_& operator+=(Size_ p)  { cx +=  p.cx; cy +=  p.cy; return *this; }
+	Size_& operator+=(double t) { cx +=  t;    cy +=  t;    return *this; }
+	Size_& operator-=(Size_ p)  { cx -=  p.cx; cy -=  p.cy; return *this; }
+	Size_& operator-=(double t) { cx -=  t;    cy -=  t;    return *this; }
+	Size_& operator*=(Size_ p)  { cx *=  p.cx; cy *=  p.cy; return *this; }
+	Size_& operator*=(double t) { cx *=  t;    cy *=  t;    return *this; }
+	Size_& operator/=(Size_ p)  { cx /=  p.cx; cy /=  p.cy; return *this; }
+	Size_& operator/=(double t) { cx /=  t;    cy /=  t;    return *this; }
+	Size_& operator<<=(int sh)  { cx <<= sh;   cy <<= sh;   return *this; }
+	Size_& operator>>=(int sh)  { cx >>= sh;   cy >>= sh;   return *this; }
 	
 	Size_ operator*(double v) {return Size_(cx * v, cy * v);}
 	Size_ operator/(double v) {return Size_(cx * v, cy * v);}
@@ -187,8 +187,8 @@ struct Rect_ : Moveable<Rect_<T>> {
 
 	bool IsEqual(const Rect_& r) const {return top == r.top && left == r.left && bottom == r.bottom && right == r.right;}
 	
-	bool operator==(const Rect_& r) {return IsEqual(r);}
-	bool operator!=(const Rect_& r) {return !IsEqual(r);}
+	bool operator==(const Rect_& r) const {return IsEqual(r);}
+	bool operator!=(const Rect_& r) const {return !IsEqual(r);}
 	void operator=(const Rect_& src) {
 		top = src.top;
 		left = src.left;

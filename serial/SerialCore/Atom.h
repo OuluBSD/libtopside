@@ -137,6 +137,7 @@ public:
 	Machine&				GetMachine();
 	void					UninitializeDeep();
 	void					PostContinueForward();
+	void					SetPrimarySinkQueueSize(int i);
 	String					GetInlineConnectionsString() const;
 	
 public:

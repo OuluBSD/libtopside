@@ -76,7 +76,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 					String value = args[i];
 					script_str.Replace(key, value);
 				}
-				LOG(script_str);
+				//LOG(script_str);
 				
 		        script->PostLoadString(script_str);
 		    }

@@ -15,6 +15,7 @@ class SDL2ScreenBase :
     Serial::Format		fmt;
 	OOSDL2::Events*		ev = 0;
 	EnvStateRef			env;
+	bool				close_machine = false;
 	
 public:
 	RTTI_DECL3(SDL2ScreenBase, AltBaseT, OglBufferBase, FramePollerBase)
@@ -27,7 +28,7 @@ public:
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
 	bool			IsReady(PacketIO& io) override;
-	void			Update(double dt) final {OglBufferBase::Update(dt); FramePollerBase::Update(dt);}
+	void			Update(double dt) final;
 	
 	OOSDL2::Component&	GetObj() override {return *obj;}
 	OOSDL2::Screen*		GetOOSDL2() {return &*obj;}

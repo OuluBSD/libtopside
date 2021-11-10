@@ -223,6 +223,12 @@ const OglBuffer* OglBuffer::GetComponentById(int id) const {
 	return 0;
 }
 
+void OglBuffer::SetFramebufferSize(Size sz) {
+	ASSERT(sz.cx > 0 && sz.cy > 0);
+	fb_size = sz;
+	UpdateTexBuffers();
+}
+
 void OglBuffer::UpdateTexBuffers() {
 	if (!is_win_fbo) {
 		ASSERT(fb_channels > 0);

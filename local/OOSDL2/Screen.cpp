@@ -129,6 +129,18 @@ void Screen::Close0() {
     }
 }
 
+void Screen::Fullscreen(bool b) {
+	if (b == full_screen)
+		return;
+	full_screen = b;
+	if (IsOpen() && win) {
+		if (b)
+			SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
+		else
+			SDL_SetWindowFullscreen(win, 0);
+	}
+}
+
 void Screen::Maximize(bool b) {
 	if (b == is_maximized)
 		return;

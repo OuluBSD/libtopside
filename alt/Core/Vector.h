@@ -634,6 +634,14 @@ public:
 			l[i] = new K(*a.l[i]);
 	}
 	
+	void Append(const Array& a) {
+		int prev_count = l.GetCount();
+		int new_count = prev_count + a.GetCount();
+		l.SetCount(new_count, 0);
+		for (int i = prev_count, j = 0; i < new_count; i++, j++)
+			l[i] = new K(*a.l[j]);
+	}
+	
 };
 
 template <class K>

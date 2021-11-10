@@ -207,7 +207,6 @@ public:
 	void		SearchNewSegment();
 	void		PruneSegmentGoals();
 	void		DumpLoop();
-	void		ForwardSides();
 	bool		PassSideConditionals(const Script::Statement& side_stmt);
 	
 	
@@ -281,6 +280,9 @@ struct ScriptLoopOptions {
 	ScriptLoopLoader*			ll = 0;
 	int							id = -1;
 	
+	int GetCount() const {return link_opts.GetCount();}
+	const ScriptIfaceOption& operator[](int i) const {return link_opts[i];}
+	String ToString() const;
 };
 
 struct ScriptLinkOption : Moveable<ScriptLinkOption> {
@@ -295,6 +297,7 @@ struct ScriptLinkOption : Moveable<ScriptLinkOption> {
 	bool operator()(const ScriptLinkOption& a, const ScriptLinkOption& b) const {
 		return a.total_distance < b.total_distance;
 	}
+	
 	String ToString() const;
 };
 
@@ -600,7 +603,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	Node<Serial::Script::ActionNode>& n,
-	Node<Serial::Script::ActionNode>* prev)
+	Node<Serial::Script::ActionNode>** prev)
 {
 	/*if (&n == (void*)0x806A117C0) {
 		LOG("");

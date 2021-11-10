@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 bool SDL2AudioOutputBase::Initialize(const Script::WorldState& ws) {
 	OBJ_CREATE
-	GetSink()->GetValue(0).SetMinQueueSize(10);
+	SetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	return true;
 }
 

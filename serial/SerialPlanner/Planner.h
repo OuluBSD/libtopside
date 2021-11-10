@@ -54,8 +54,8 @@ public:
 	WorldState();
 	void Clear();
 	
-	const        Script::Statement* FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) const;
-	static const Script::Statement* FindStatement(const String& find_key, LinkedList<Statement>& stmts);
+	const        Script::Statement* FindStatement(const WorldState* ws, LinkedList<Statement>& stmts, bool dbg_print=false) const;
+	static const Script::Statement* FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print=false);
 	
 	bool Append(const WorldState& ws, LinkedList<Statement>& ret_list);
 	void SetActionPlanner(ActionPlanner& ap) {this->ap = &ap;}
@@ -76,6 +76,7 @@ public:
 	bool IsFalse(int idx) const;
 	bool IsUndefined(const String& key) const;
 	bool IsUndefined(int idx) const;
+	bool IsEmpty() const {return values.IsEmpty();}
 	String Get(const String& key) const;
 	String Get(int idx) const;
 	hash_t GetHashValue() const;
@@ -187,8 +188,9 @@ public:
 	using Searcher = AStar<Script::ActionNode>;
 	
 	struct State : Moveable<State> {
-		ANode*					second_last;
-		ANode*					last;
+		static const int MAX_PREV = 5;
+		ANode*					previous[MAX_PREV];
+		ANode*					last = 0;
 		Searcher				as;
 		int						ch_i;
 		
@@ -241,8 +243,8 @@ public:
 	bool SetPostCondition(int action_id, int atom_id, bool value);
 	bool SetCost(int action_id, int cost );
 	void SetLoopLoader(ScriptLoopLoader* l) {loop_loader = l;}
-	void AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* prev);
-	void AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode* prev);
+	void AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode** prev);
+	void AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode** prev);
 	
 	void GetPossibleStateTransition(Node<Script::ActionNode>& n, Array<WorldState*>& dest, Vector<double>& action_costs);
 	ScriptLoopLoader& GetLoopLoader() const {return *loop_loader;}

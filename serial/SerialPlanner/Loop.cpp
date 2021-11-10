@@ -65,7 +65,8 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 	int atom_i = 0;
 	int added = 0;
 	int dbg_i = -1;
-	const Script::WorldState* prev_ws = 0;
+	const Script::WorldState* prev_ws0 = 0;
+	const Script::WorldState* prev_ws1 = 0;
 	//for (ScriptLoopSegment& seg : segments) {
 	{
 		ScriptLoopSegment& seg = top_seg;
@@ -95,14 +96,17 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 				
 				atom_links.SetCount(atom_i+1);
 				
-				const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+				const Script::Statement* stmt = ws.FindStatement(prev_ws0, def.stmts);
+				if (!stmt) stmt = ws.FindStatement(prev_ws1, def.stmts);
 				bool skip_all_src_conds = stmt && stmt->src_side_conds.IsEmpty();
 				bool skip_all_sink_conds = stmt && stmt->sink_side_conds.IsEmpty();
 				
 				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: atom #" << atom_i << ", " << (stmt ? "has stmt" : "NO stmt") << ", skip_all_src_conds: " << (int)skip_all_src_conds << ", skip_all_sink_conds: " << (int)skip_all_sink_conds);
-				if (!stmt && prev_ws) {
+				if (!stmt && prev_ws0) {
 					DUMP(ws.ToString());
-					DUMP(prev_ws->ToString());
+					DUMP(prev_ws0->ToString());
+					if (prev_ws1) DUMP(prev_ws1->ToString());
+					DUMPC(def.stmts);
 				}
 				ASSERT(stmt || type.IsRoleCustomer());
 				
@@ -149,7 +153,8 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 			}
 			
 			atom_i++;
-			prev_ws = &ws;
+			prev_ws1 = prev_ws0;
+			prev_ws0 = &ws;
 		}
 	}
 	
@@ -316,6 +321,10 @@ void ScriptLoopLoader::Forward() {
 		PruneSegmentGoals();
 	}
 	else  if (status == ScriptStatus::WAITING_OTHER_LOOPS) {
+		int si = planner.GetSideSinks().GetCount();
+		int sr = planner.GetSideSources().GetCount();
+		ASSERT_(si || sr, "planner side links have been cleared for retry");
+		RTLOG("ScriptLoopLoader::Forward: WAITING_OTHER_LOOPS -> WAITING_PARENT_SIDE_LINKS: " << def.id.ToString() << " sinks=" << si << " srcs=" << sr);
 		SetStatus(WAITING_PARENT_SIDE_LINKS);
 	}
 	else  if (status == ScriptStatus::WAITING_PARENT_SIDE_LINKS) {
@@ -462,7 +471,7 @@ void ScriptLoopLoader::PruneSegmentGoals() {
 	for(int i = 0; i < sources.GetCount(); i++) {
 		const Script::ActionPlanner::State& state = sources[i];
 		const Script::WorldState& ws = state.last->GetWorldState();
-		const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+		const Script::WorldState* prev_ws = state.previous[0] ? &state.previous[0]->GetWorldState() : 0;
 		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
 		int ch_i = state.ch_i;
 		
@@ -504,7 +513,7 @@ void ScriptLoopLoader::PruneSegmentGoals() {
 	for(int i = 0; i < sinks.GetCount(); i++) {
 		const Script::ActionPlanner::State& state = sinks[i];
 		const Script::WorldState& ws = state.last->GetWorldState();
-		const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
+		const Script::WorldState* prev_ws = state.previous[0] ? &state.previous[0]->GetWorldState() : 0;
 		const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
 		int ch_i = state.ch_i;
 		
@@ -552,175 +561,6 @@ void ScriptLoopLoader::PruneSegmentGoals() {
 	else {
 		SetStatus(ScriptStatus::WAITING_PARENT_SIDE_LINKS);
 	}
-}
-
-#if 0
-void ScriptLoopLoader::ForwardTopSegment() {
-	MACHVER_ENTER(ForwardTopSegment)
-	
-	ScriptLoopSegment& seg = segments.Top();
-	ASSERT(seg.start_node);
-	SetupSegment(seg);
-	
-	MACHVER_STATUS(LoopLoader_SearchNewSegment, this);
-	
-	LOG("goal: " << goal.ToString());
-	LOG("start-node: " << seg.start_node->GetWorldState().GetAtom().ToString());
-	seg.start_node->ResetLinked();
-	if (segments.GetCount() == 1)
-		seg.ep.plan = seg.as.Search(*seg.start_node);
-	else
-		seg.ep.plan = seg.as.ContinueSearch(*seg.start_node);
-	
-	if (seg.ep.plan.IsEmpty()) {
-		if (accepted_side_node) {
-			SetError("Script implementation searching failed after side-connection");
-			MACHVER_LEAVE(ForwardTopSegment)
-			return;
-		}
-		
-		// Check side-channel connections
-		const Vector<Script::ActionPlanner::State>& sinks = planner.GetSideSinks();
-		const Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
-		
-		bool is_sink = planner.IsSideSink();
-		
-		// Use preferred sink/src search, but try the other if first fails
-		for (int tries = 0; tries < 2; tries++) {
-			if (!is_sink && sources.GetCount()) {
-				LOG("Loop " << id << " side-sources:");
-				int actually_waiting = 0;
-				for(int i = 0; i < sources.GetCount(); i++) {
-					const Script::ActionPlanner::State& state = sources[i];
-					const Script::WorldState& ws = state.last->GetWorldState();
-					const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
-					if (!stmt) continue;
-					ASSERT(stmt);
-					if (!stmt) {SetError("internal error: no statement found"); MACHVER_LEAVE(ForwardTopSegment) return;}
-					AtomTypeCls type = ws.GetAtom();
-					ASSERT(type.IsValid());
-					int user_defined_count = stmt->src_side_conds.GetCount();
-					if (user_defined_count == 0 && type.iface.src.count - type.user_src_count == 1) {
-						continue; // no given user conditionals here means that skip all sources
-					}
-					if (type.user_src_count != user_defined_count) {
-						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_src_count));
-						MACHVER_LEAVE(ForwardTopSegment)
-						return;
-					}
-					if (i < user_defined_count) {
-						const Script::Statement& src_stmt = stmt->src_side_conds[i];
-						if (src_stmt.value.IsEmpty())
-							continue; // src is skipped
-					}
-					
-					actually_waiting++;
-					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
-				}
-				if (actually_waiting > 0) {
-					SetStatus(SOURCE_IS_WAITING);
-					MACHVER_LEAVE(ForwardTopSegment)
-					return;
-				}
-			}
-			if (is_sink && sinks.GetCount()) {
-				LOG("Loop " << id << " side-sinks:");
-				int actually_waiting = 0;
-				for(int i = 0; i < sinks.GetCount(); i++) {
-					const Script::ActionPlanner::State& state = sinks[i];
-					const Script::WorldState& ws = state.last->GetWorldState();
-					const Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-					const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
-					if (!stmt) continue;
-					ASSERT(stmt);
-					if (!stmt) {SetError("internal error: no statement found"); MACHVER_LEAVE(ForwardTopSegment) return;}
-					AtomTypeCls type = ws.GetAtom();
-					ASSERT(type.IsValid());
-					int user_defined_count = stmt->sink_side_conds.GetCount();
-					if (user_defined_count == 0 && type.iface.sink.count - type.user_sink_count == 1) {
-						continue; // no given user conditionals means here that skip all sinks
-					}
-					if (type.user_sink_count != user_defined_count) {
-						SetError("user conditional count differs to atom requirements: user gives " + IntStr(user_defined_count) + ", atom requires " + IntStr(type.user_sink_count));
-						MACHVER_LEAVE(ForwardTopSegment)
-						return;
-					}
-					if (i < user_defined_count) {
-						const Script::Statement& sink_stmt = stmt->sink_side_conds[i];
-						if (sink_stmt.value.IsEmpty())
-							continue; // sink is skipped
-					}
-					
-					actually_waiting++;
-					LOG(i << ": " << state.last->GetEstimate() << ": " << ws.ToString());
-				}
-				if (actually_waiting > 0) {
-					SetStatus(SINK_IS_WAITING);
-					MACHVER_LEAVE(ForwardTopSegment)
-					return;
-				}
-			}
-			
-			is_sink = !is_sink;
-		}
-		
-		SetError("Script implementation searching failed");
-		MACHVER_LEAVE(ForwardTopSegment)
-		return;
-	}
-	
-	// Set last node
-	seg.stop_node = seg.ep.plan.Top();
-	
-	// Debug print found loop
-	if (1) {
-		int pos = 0;
-		ScriptLoopSegment& seg = segments.Top();
-		for (Script::ActionNode* n : seg.ep.plan) {
-			const Script::WorldState& ws = n->GetWorldState();
-			AtomTypeCls atom = ws.GetAtom();
-			const auto& d = Serial::Factory::AtomDataMap().Get(atom);
-			if (ws.IsAddAtom()) {
-				LOG(pos++ << ": add atom: " << d.name);
-			}
-			LOG("\t" << ws.ToString());
-		}
-	}
-	
-	SetStatus(READY);
-	MACHVER_LEAVE(ForwardTopSegment)
-}
-#endif
-
-void ScriptLoopLoader::ForwardSides() {
-	MACHVER_ENTER(ScriptLoopLoaderForwardSides)
-	
-	TODO
-	
-	/*Vector<Script::ActionPlanner::State>& sinks = planner.GetSideSinks();
-	Vector<Script::ActionPlanner::State>& sources = planner.GetSideSources();
-	
-	AtomSideLinks& atom = atom_links.Top();
-	
-	for(int i = 0; i < sinks.GetCount(); i++) {
-		Script::ActionPlanner::State& state = sinks[i];
-		SideLink& side = atom.sink_side_conns[state.ch_i - 1];
-		if (side.link)
-			sinks.Remove(i--);
-	}
-	
-	for(int i = 0; i < sources.GetCount(); i++) {
-		Script::ActionPlanner::State& state = sources[i];
-		SideLink& side = atom.src_side_conns[state.ch_i - 1];
-		if (side.link)
-			sources.Remove(i--);
-	}
-	
-	ASSERT(sinks.GetCount() && sources.GetCount());*/
-	
-	
-	MACHVER_LEAVE(ScriptLoopLoaderForwardSides)
 }
 
 bool ScriptLoopLoader::SetWorldState(Script::WorldState& ws, const Script::Statement& stmt) {
@@ -777,7 +617,8 @@ bool ScriptLoopLoader::Load() {
 	int seg_i = segments.GetCount()-1;
 	ScriptLoopSegment& seg = segments.Top();
 	int plan_i = 0;
-	const Script::WorldState* prev_ws = 0;
+	const Script::WorldState* prev_ws0 = 0;
+	const Script::WorldState* prev_ws1 = 0;
 	for (Script::ActionNode* n : seg.ep.plan) {
 		RTLOG("Loading plan node " << plan_i);
 		Script::WorldState& ws = n->GetWorldState();
@@ -810,8 +651,10 @@ bool ScriptLoopLoader::Load() {
 			ASSERT((type.iface.src.count == 1 && type.iface.sink.count == 1) || c.iface.type.IsValid());
 			
 			// Add arguments to ws
-			const Script::Statement* stmt = ws.FindStatement(prev_ws, def.stmts);
+			const Script::Statement* stmt = ws.FindStatement(prev_ws0, def.stmts);
+			if (!stmt) stmt = ws.FindStatement(prev_ws1, def.stmts);
 			if (stmt) {
+				RTLOG("ScriptLoopLoader::Load: stmt found: " << stmt->ToString());
 				for (const Script::Statement& arg : stmt->args) {
 					//LOG("\t" << arg.id.ToString());
 					String k = arg.id.ToString();
@@ -820,7 +663,16 @@ bool ScriptLoopLoader::Load() {
 					LOG("ScriptLoopLoader::Load: set argument: " << k << " = " << v);
 				}
 			}
-			
+			else {
+				RTLOG("ScriptLoopLoader::Load: stmt not found:       ws: " << ws.ToString());
+				if (prev_ws0)
+					RTLOG("                                        prev_ws0: " << prev_ws0->ToString());
+				if (prev_ws0)
+					RTLOG("                                        prev_ws1: " << prev_ws1->ToString());
+				DUMPC(def.stmts);
+				if (!ws.IsEmpty())
+					stmt = ws.FindStatement(prev_ws0, def.stmts, true);
+			}
 			
 			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 				const auto& a = Serial::Factory::AtomDataMap().Get(type);
@@ -832,8 +684,9 @@ bool ScriptLoopLoader::Load() {
 		else {
 			Panic("Invalid world state type");
 		}
-				
-		prev_ws = &ws;
+		
+		prev_ws1 = prev_ws0;
+		prev_ws0 = &ws;
 		++plan_i;
 	}
 	
@@ -927,7 +780,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 		total_max = total_min;
 	}
 	
-	RTLOG("ScriptLoopLoader::UpdateLoopLimits: set loop limits: min=" << total_min << ", max=" << total_max);
+	LOG("ScriptLoopLoader::UpdateLoopLimits: set loop limits: min=" << total_min << ", max=" << total_max);
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
@@ -1181,7 +1034,7 @@ bool ScriptLoopLoader::PassSideConditionals(const Script::Statement& src_side_st
 			return b;
 		}
 		else {
-			if (print) RTLOG("ScriptLoopLoader::PassSideConditionals: no id match: " << stmt.id.ToString() << " != " << src_side_stmt.id.ToString());
+			if (print) LOG("ScriptLoopLoader::PassSideConditionals: no id match: " << stmt.id.ToString() << " != " << src_side_stmt.id.ToString());
 		}
 	}
 	return false;

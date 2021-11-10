@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 String ScriptIfaceOption::ToString() const {
 	String s;
-	s << (is_src ? "src, " : "sink, ") << HexStr(state.last) << ", " << total_distance << ", " << pre_node_dist << ", " << post_node_dist;
+	s << HexStr(state.last) << ", " << (is_src ? "src, " : "sink, ") << total_distance << ", " << pre_node_dist << ", " << post_node_dist;
 	return s;
 }
 
@@ -16,6 +16,17 @@ String ScriptLinkOption::ToString() const {
 	String src_str  = IntStr(src_loop ->id) + "," + IntStr(src ->id) + ": " + GetSubAtomString(src_type .sub) + "[" << src ->state.ch_i << "]";
 	String sink_str = IntStr(sink_loop->id) + "," + IntStr(sink->id) + ": " + GetSubAtomString(sink_type.sub) + "[" << sink->state.ch_i << "]";
 	s << total_distance << ": " << src_str << " " << HexStr(src->state.last) << " (" << src_total_distance << ") -> " << sink_str << " " << HexStr(sink->state.last) << " (" << sink_total_distance << ")";
+	return s;
+}
+
+String ScriptLoopOptions::ToString() const {
+	String s;
+	s << "ScriptIfaceOption(" << id << ", " << (ll ? ll->def.id.ToString() : String("<invalid>")) << ")\n";
+	
+	for(int i = 0; i < link_opts.GetCount(); i++) {
+		s << "\t" << i << ": " << link_opts[i].ToString() << "\n";
+	}
+	
 	return s;
 }
 	
@@ -35,6 +46,8 @@ void ScriptConnectionSolver::InitializeLoops(const Vector<ScriptLoopLoader*>& lo
 }
 
 bool ScriptConnectionSolver::MakeOptionLinkVector() {
+	static const bool print = true;
+	
 	if (loops.IsEmpty()) {
 		SetError("no loops");
 		return false;
@@ -44,21 +57,39 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 		ASSERT(l.ll);
 		ASSERT(l.link_opts.IsEmpty());
 		ScriptLoopLoader& ll = *l.ll;
-		if (ll.GetStatus() != WAITING_PARENT_SIDE_LINKS)
-			continue;
+		auto s = ll.GetStatus();
+		if (s != WAITING_PARENT_SIDE_LINKS) {
+			if (s != READY) {
+				RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: warning: skipping from status " << l.ll->def.id.ToString() << " " << HexStr(l.ll));
+				continue;
+			}
+			else
+				continue;
+		}
 		
 		Vector<Script::ActionPlanner::State>& sources = ll.planner.GetSideSources();
 		Vector<Script::ActionPlanner::State>& sinks = ll.planner.GetSideSinks();
 		
 		int total_count = sources.GetCount() + sinks.GetCount();
 		l.link_opts.Reserve(total_count);
-		
+		int dbg_i = -1;
 		for (Script::ActionPlanner::State& state : sources) {
+			dbg_i++;
 			Script::WorldState& ws = state.last->GetWorldState();
-			Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-			const Script::Statement* stmt = ws.FindStatement(prev_ws, ll.def.stmts);
+			const Script::Statement* stmt = 0;
+			Script::WorldState* prev_ws = 0;
+			for(int i = 0; i < Script::ActionPlanner::State::MAX_PREV; i++) {
+				if (!state.previous[i]) break;
+				prev_ws = &state.previous[i]->GetWorldState();
+				stmt = ws.FindStatement(prev_ws, ll.def.stmts);
+				if (stmt) break;
+			}
 			if (!stmt)
+				stmt = ws.FindStatement(0, ll.def.stmts);
+			if (!stmt) {
+				if (print) RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: src #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
 				continue;
+			}
 			
 			ScriptIfaceOption& link_opt = l.link_opts.Add();
 			link_opt.id = l.link_opts.GetCount() - 1;
@@ -71,12 +102,24 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 			link_opt.total_distance = link_opt.pre_node_dist + link_opt.post_node_dist + additional_side_ch_dist;
 		}
 		
+		dbg_i = -1;
 		for (Script::ActionPlanner::State& state : sinks) {
+			dbg_i++;
 			Script::WorldState& ws = state.last->GetWorldState();
-			Script::WorldState* prev_ws = state.second_last ? &state.second_last->GetWorldState() : 0;
-			const Script::Statement* stmt = ws.FindStatement(prev_ws, ll.def.stmts);
+			const Script::Statement* stmt = 0;
+			Script::WorldState* prev_ws = 0;
+			for(int i = 0; i < Script::ActionPlanner::State::MAX_PREV; i++) {
+				if (!state.previous[i]) break;
+				prev_ws = &state.previous[i]->GetWorldState();
+				stmt = ws.FindStatement(prev_ws, ll.def.stmts);
+				if (stmt) break;
+			}
 			if (!stmt)
+				stmt = ws.FindStatement(0, ll.def.stmts);
+			if (!stmt) {
+				if (print) RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: sink #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
 				continue;
+			}
 			
 			ScriptIfaceOption& link_opt = l.link_opts.Add();
 			link_opt.id = l.link_opts.GetCount() - 1;
@@ -89,6 +132,12 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 			link_opt.total_distance = link_opt.pre_node_dist + link_opt.post_node_dist + additional_side_ch_dist;
 		}
 		
+		if (!(l.link_opts.GetCount() || total_count == 0))  {
+			LOG("ScriptConnectionSolver::MakeOptionLinkVector: error: dead end in a loop. Probably one of your atom keys is wrong");
+			DUMPC(ll.def.stmts);
+			return false;
+		}
+		ASSERT_(l.link_opts.GetCount() || total_count == 0, "all side links failed in " + l.ll->def.id.ToString());
 		
 		Sort(l.link_opts, ScriptIfaceOption());
 		DUMPC(l.link_opts);
@@ -111,7 +160,7 @@ bool ScriptConnectionSolver::FindAcceptedLinks() {
 				Script::ActionPlanner::State& b_state = b_opt.state;
 				Script::APlanNode* b = b_state.last;
 				Script::WorldState& b_ws = b->GetWorldState();
-				Script::WorldState* b_prev_ws = b_state.second_last ? &b_state.second_last->GetWorldState() : 0;
+				Script::WorldState* b_prev_ws = b_state.previous[0] ? &b_state.previous[0]->GetWorldState() : 0;
 				int b_side_id = b_state.ch_i - 1;
 				ASSERT(b_side_id >= 0);
 				ASSERT(b_ws.IsAddAtom());
@@ -127,7 +176,7 @@ bool ScriptConnectionSolver::FindAcceptedLinks() {
 					Script::ActionPlanner::State& a_state = a_opt.state;
 					Script::APlanNode* a = a_state.last;
 					Script::WorldState& a_ws = a->GetWorldState();
-					Script::WorldState* a_prev_ws = a_state.second_last ? &a_state.second_last->GetWorldState() : 0;
+					Script::WorldState* a_prev_ws = a_state.previous[0] ? &a_state.previous[0]->GetWorldState() : 0;
 					int a_side_id = a_state.ch_i - 1;
 					ASSERT(a_side_id >= 0);
 					ASSERT(a_ws.IsAddAtom());
@@ -187,6 +236,10 @@ bool ScriptConnectionSolver::FindAcceptedLinks() {
 	
 	
 	if (links.IsEmpty()) {
+		String s;
+		for (ScriptLoopOptions& loop : loops)
+			s << loop.ToString();
+		LOG(s);
 		SetError("No link was accepted");
 		return false;
 	}
@@ -226,7 +279,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 using LGN = Serial::LinkGeneratorNode;
 
-template <>	inline bool TerminalTest<LGN>(Node<LGN>& n, Node<LGN>* prev) {
+template <>	inline bool TerminalTest<LGN>(Node<LGN>& n, Node<LGN>** prev) {
 	using namespace Serial;
 	
 	if (n.unfinished_loops.IsEmpty())

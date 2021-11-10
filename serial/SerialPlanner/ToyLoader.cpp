@@ -142,6 +142,8 @@ bool ToyLoader::Load(Object& o) {
 	const ObjectArray& stages = stages_o.Get<ObjectArray>();
 	LOG(GetObjectTreeString(stages_o));
 	int stage_count = stages.GetCount();
+	
+	#if 0
 	if (stage_count == 1) {
 		if (GetStageType(0, o) == "image")
 			eon_script = GetSingleBufferVideo(GetStagePath(0, o));
@@ -160,15 +162,28 @@ bool ToyLoader::Load(Object& o) {
 		else
 			TODO
 	}
+	#endif
 	
-	#if 0
+	this->stages.SetCount(stage_count);
 	for(int i = 0; i < stage_count; i++) {
 		LOG("Loading stage " << i+1 << "/" << stage_count);
+		ToyStage& to = this->stages[i];
 		const Object& stage = stages[i];
 		TOY_ASSERT(stage.IsMap());
+		
 		const ObjectMap& stage_map = stage.Get<ObjectMap>();
 		TOY_ASSERT(stage_map.Find("type") >= 0);
 		const Object& type_o = stage_map.Get("type");
+		
+		const Object& outputs = stage_map.Get("outputs");
+		TOY_ASSERT(outputs.IsArray());
+		const ObjectArray& output_arr = outputs.Get<ObjectArray>();
+		TOY_ASSERT(!output_arr.IsEmpty());
+		
+		const Object& inputs = stage_map.Get("inputs");
+		TOY_ASSERT(inputs.IsArray());
+		const ObjectArray& input_arr = inputs.Get<ObjectArray>();
+		
 		String type_str = type_o.ToString();
 		String stage_str = "stage" + IntStr(i);
 		TOY_ASSERT(map.Find(stage_str + "_path") >= 0);
@@ -177,26 +192,295 @@ bool ToyLoader::Load(Object& o) {
 		String stage_content = map.Get(stage_str + "_path");
 		//DUMP(stage_path);
 		//DUMP(type_str);
-		if (type_str == "image") {
-			//LOG(GetObjectTreeString(stage));
-			if (stage_count == 1) {
-				eon_script = GetSingleBufferVideo(stage_path);
-			}
-			if (stage_count == 2) {
-				eon_script = GetDoubleBufferVideo(stage_path);
-			}
-			else TODO
+		
+		const Object& output = output_arr[0];
+		ASSERT(output.IsMap());
+		const ObjectMap& output_map = output.Get<ObjectMap>();
+		TOY_ASSERT(output_map.Find("id") >= 0);
+		String output_id_str = output_map.Get("id");
+		
+		to.name = stage_str;
+		to.type = type_str;
+		to.output_id = output_id_str;
+		to.script_path = stage_path;
+		to.script = stage_content;
+		
+		to.inputs.SetCount(input_arr.GetCount());
+		for(int j = 0; j < input_arr.GetCount(); j++) {
+			ToyInput& to_in = to.inputs[j];
+			const Object& in = input_arr[j];
+			TOY_ASSERT(in.IsMap());
+			const ObjectMap& in_map = in.Get<ObjectMap>();
+			
+			if (in_map.Find("id") < 0)
+				continue;
+			
+			TOY_ASSERT(in_map.Find("type") >= 0);
+			to_in.id		= in_map.Get("id");
+			to_in.type		= in_map.Get("type");
+			if (in_map.Find("filter") >= 0)		to_in.filter	= in_map.Get("filter");
+			if (in_map.Find("wrap") >= 0)		to_in.wrap		= in_map.Get("wrap");
+			if (in_map.Find("vflip") >= 0)		to_in.vflip		= in_map.Get("vflip");
+			if (in_map.Find("filename") >= 0)	to_in.filename	= in_map.Get("filename");
 		}
-		else TODO
+		
 	}
-	#endif
 	#undef TOY_ASSERT
+	
+	if (!FindStageNames())
+		return false;
+	
+	if (!MakeScript())
+		return false;
+	
+	return true;
+}
+
+bool ToyLoader::FindStageNames() {
+	
+	for (ToyStage& stage : stages)
+		stage.user_stages.Clear();
+	
+	for (ToyStage& stage : stages) {
+		
+		for (ToyInput& input : stage.inputs) {
+			
+			if (input.type == "buffer" ||
+				input.type == "image" ||
+				input.type == "sound") {
+				
+				bool found = false;
+				input.stage_name.Clear();
+				
+				for (ToyStage& s0 : stages) {
+					if (input.id == s0.output_id) {
+						input.stage_name = "ogl." + s0.name + "." + s0.type;
+						stage.user_stages.Add(s0.name);
+						if (stage.user_stages.GetCount() > 4) {
+							LOG("ToyLoader::FindStageNames: error: more than 4 users for stage '" << s0.name << "'");
+							return false;
+						}
+						found = true;
+					}
+				}
+				
+				if (!found) {
+					LOG("ToyLoader::FindStageNames: error: did not find input stage with id '" << input.id << "'");
+					return false;
+				}
+			}
+			
+		}
+		
+	}
+	
+	return true;
+}
+static const char* __eon_script_begin = R"30N(
+machine sdl.app: {
+	
+	driver context: {
+		sdl.context: true;
+	};
+	
+	chain program: {
+		
+		state event.register;
+		
+)30N";
+
+static const char* __eon_script_end = R"30N(
+		
+	};
+	
+};
+
+)30N";
+
+bool ToyLoader::MakeScript() {
+	String& s = eon_script;
+	s.Clear();
+	s << __eon_script_begin;
+	
+	for (ToyStage& stage : stages) {
+		String l;
+		l << "ogl." << stage.name << "." << stage.type;
+		
+		s << "		loop center.events: {\n"
+		  << "			center.customer: true;\n"
+		  << "			sdl.event.pipe: true;\n"
+		  << "			state.event.pipe: true {target: event.register;};\n"
+		  << "		};\n"
+		  << "		\n";
+		  
+		for (ToyInput& input : stage.inputs) {
+			String a, b;
+			
+			if (input.id.IsEmpty())
+				continue;
+			
+			if (input.type == "texture") {
+				if (input.filename.IsEmpty()) {
+					LOG("ToyLoader::MakeScript: error: empty input filename in stage " << stage.name);
+					return false;
+				}
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.image.loader: true [][loop: " << b << "] {vflip: true; filepath: \"" << input.filename << "\";};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
+			}
+			else if (input.type == "cubemap") {
+				TODO
+			}
+			else if (input.type == "webcam") {
+				TODO
+			}
+			else if (input.type == "music") {
+				if (input.filename.IsEmpty()) {
+					LOG("ToyLoader::MakeScript: error: empty input filename in stage " << stage.name);
+					return false;
+				}
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.audio.loader: true [][loop: " << b << "] {filepath: \"" << input.filename << "\";};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.audio: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
+			}
+			else if (input.type == "musicstream") {
+				TODO
+			}
+			else if (input.type == "keyboard") {
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.keyboard: true [][loop: " << l << "] {target: event.register;};\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
+			}
+			else if (input.type == "volume") {
+				TODO
+			}
+			else if (input.type == "video") {
+				if (input.filename.IsEmpty()) {
+					LOG("ToyLoader::MakeScript: error: empty input filename in stage " << stage.name);
+					return false;
+				}
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.video.loader: true [][loop: " << b << "] {";
+				if (input.vflip == "true")
+					s << "vflip: \"true\"; ";
+				s << "filepath: \"" << input.filename << "\";};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "] {filter: mipmap;};\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
+			}
+			else if (input.type == "buffer") {
+				ASSERT(input.stage_name.GetCount());
+				// pass
+			}
+			else if (input.type == "empty") {
+				// pass
+			}
+			else {
+				LOG("ToyLoader::MakeScript: error: invalid input type '" << input.type << "'");
+				return false;
+			}
+		}
+		
+		s << "		loop " << l << ": {\n"
+		  << "			ogl.customer: true;\n";
+		  
+		
+		bool has_input = false;
+		for (const ToyInput& input : stage.inputs)
+			if (!input.stage_name.IsEmpty())
+				has_input = true;
+		
+		bool is_screen = stage.type == "image";
+		bool is_audio = stage.type == "sound";
+		bool has_no_sides = stage.inputs.IsEmpty() && stage.user_stages.IsEmpty();
+		
+		
+		if (is_screen && has_no_sides)
+			s << "			sdl.fbo.standalone: true";
+		else if (is_screen)
+			s << "			sdl.fbo: true";
+		else
+			s << "			ogl.fbo.source: true";
+		
+
+		if (!has_no_sides) {
+			s << " [";
+			for(int i = 0; i < 4; i++) {
+				if (i < stage.inputs.GetCount()) {
+					ToyInput& input = stage.inputs[i];
+					if (!input.stage_name.IsEmpty())
+						s << (i > 0 ? " loop: " : "loop: ") << input.stage_name;
+				}
+				s << ";";
+			}
+			s << "][";
+			for(int i = 0; i < 4; i++) {
+				if (i < stage.user_stages.GetCount())
+					s << (i > 0 ? " loop: " : "loop: ") << stage.user_stages[i];
+				s << ";";
+			}
+			s << "]";
+		}
+		s << " {\n";
+		
+		if (is_audio)	s << "				type: \"audio\";\n";
+		
+		if (is_screen) {
+			s << "				close_machine:	true;\n";
+			s << "				sizeable:		true;\n";
+		}
+		
+		s << "				env:			event.register;\n";
+		s << "				filepath:		\"" << stage.script_path << "\";\n";
+		s << "			};\n";
+		s << "		};\n";
+	}
+	
+	s << __eon_script_end;
+	
+	LOG(GetLineNumStr(s));
+	
 	return true;
 }
 
 String ToyLoader::GetResult() {
 	return eon_script;
 }
+
+
+#if 0
 
 static const char* __single_buf_tmpl = R"30N(
 machine sdl.app: {
@@ -293,6 +577,8 @@ String ToyLoader::GetTripleBufferVideo(String glsl_path0, String glsl_path1, Str
 	//DUMP(out);
 	return out;
 }
+
+#endif
 
 
 NAMESPACE_SERIAL_END

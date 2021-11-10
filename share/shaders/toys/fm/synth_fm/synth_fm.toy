@@ -1,0 +1,28 @@
+{
+	name: "Synth - FM",
+	description: "Not much. FM (well, PM) sound Synthesis",
+	owner: "iq",
+	likes: 20,
+	date: 20150207,
+	
+	stages: [
+		{
+			type: image,
+			
+			outputs: [
+				{
+					id: 0,
+				},
+			],
+		},
+		{
+			type: sound,
+			
+			outputs: [
+				{
+					id: 1,
+				},
+			],
+		},
+	]
+}

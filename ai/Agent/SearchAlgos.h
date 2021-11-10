@@ -15,7 +15,7 @@ template <>			inline double GetSearcherUtility<Object>(NodeValue& n) {
 }
 template <class T>	inline double GetSearcherEstimate(Node<T>& n) {return n.T::GetEstimate();}
 template <class T>	inline double GetSearcherDistance(Node<T>& n, Node<T>& dest) {return n.T::GetDistance(dest);}
-template <class T>	inline bool TerminalTest(Node<T>& n, Node<T>* prev) {return n.GetTotalCount() == 0;}
+template <class T>	inline bool TerminalTest(Node<T>& n, Node<T>** prev) {return n.GetTotalCount() == 0;}
 
 
 
@@ -27,7 +27,7 @@ public:
 	
 	Searcher() {}
 	
-	inline bool TerminalTest(NodeT& n, NodeT* prev=NULL) {return TS::TerminalTest(n, prev);}
+	inline bool TerminalTest(NodeT& n, NodeT** prev=NULL) {return TS::TerminalTest(n, prev);}
 	inline double Utility(NodeT& n) {return TS::GetSearcherUtility(n);}
 	inline double Estimate(NodeT& n) {return TS::GetSearcherEstimate(n);}
 	inline double Distance(NodeT& n, NodeT& dest) {return TS::GetSearcherDistance(n, dest);}
@@ -391,11 +391,12 @@ template <class T>
 class AStar : public Searcher<T> {
 	typedef Node<T> NodeT;
 	
-	struct NodePtr : public Moveable<NodePtr> {
+	struct NodePtr {
 		NodeT* ptr;
 		NodePtr() : ptr(0), g_score(0), f_score(0), came_from(0) {g_score = DBL_MAX; f_score = DBL_MAX;}
-		NodePtr(NodeT* ptr) : ptr(ptr), g_score(0), f_score(0), came_from(0) {g_score = DBL_MAX; f_score = DBL_MAX;}
-		NodePtr(const NodePtr& src) : ptr(src.ptr), g_score(src.g_score), f_score(src.f_score), came_from(src.came_from) {}
+		//NodePtr(NodeT* ptr) : ptr(ptr), g_score(0), f_score(0), came_from(0) {g_score = DBL_MAX; f_score = DBL_MAX;}
+		//NodePtr(const NodePtr& src) : ptr(src.ptr), g_score(src.g_score), f_score(src.f_score), came_from(src.came_from) {}
+		
 		hash_t GetHashValue() const {return UPP::GetHashValue((size_t)ptr);}
 		bool operator == (const NodePtr& np) const {return np.ptr == ptr;}
 		// For each node, the cost of getting from the start node to that node.
@@ -404,9 +405,9 @@ class AStar : public Searcher<T> {
 		// by passing by that node. That value is partly known, partly heuristic.
 		double f_score;
 		// For each node, which node it can most efficiently be reached from.
-		// If a node can be reached from many nodes, cameFrom will eventually contain the
+		// If a node can be reached from many nodes, came_from will eventually contain the
 		// most efficient previous step.
-		NodeT* came_from;
+		const NodePtr* came_from = 0;
 	};
 	
 	int max_worst;
@@ -414,11 +415,23 @@ class AStar : public Searcher<T> {
 	int limit;
 	
 	// The set of nodes already evaluated.
-	Index<NodePtr> closed_set;
+	Array<NodePtr> nodes;
+	Vector<NodePtr*> closed_set;
 	
 	// The set of currently discovered nodes still to be evaluated.
 	// Initially, only the start node is known.
-	Index<NodePtr> open_set;
+	Vector<NodePtr*> open_set;
+	
+	
+	static int FindNode(const Vector<NodePtr*>& vec, const NodeT* ptr) {
+		int i = 0;
+		for (const NodePtr* p : vec) {
+			if (p->ptr == ptr)
+				return i;
+			i++;
+		}
+		return -1;
+	}
 	
 public:
 	AStar() : max_worst(0), limit(0) {}
@@ -435,19 +448,21 @@ public:
 	
 	void TrimWorst(int count) {max_worst = count; ASSERT(count >= 0);}
 	
-	Vector<T*> ReconstructPath(NodeT& current, Index<NodePtr>& closed_set, Index<NodePtr>& open_set) {
+	Vector<T*> ReconstructPath(NodeT& current, Vector<NodePtr*>& closed_set, Vector<NodePtr*>& open_set) {
 		Vector<T*> path;
 		NodeT* ptr = &current;
 		while (1) {
 			path.Add(ptr);
-			NodePtr nptr(ptr);
-			int i = open_set.Find(nptr);
+			int i = FindNode(open_set, ptr);
 			if (i == -1) {
-				i = closed_set.Find(nptr);
+				i = FindNode(closed_set, ptr);
 				if (i == -1) break;
-				else ptr = closed_set[i].came_from;
+				else {
+					const NodePtr* cf = closed_set[i]->came_from;
+					ptr = cf ? cf->ptr : 0;
+				}
 			}
-			else ptr = open_set[i].came_from;
+			else ptr = open_set[i]->came_from->ptr;
 			if (!ptr) break;
 		}
 		Vector<T*> out;
@@ -485,10 +500,11 @@ public:
 		open_set.Clear();
 		
 		// For the first node, that value is completely heuristic.
-		NodePtr np(&src);
+		NodePtr& np = nodes.Add();
+		np.ptr = &src;
 		np.g_score = 0;
 		np.f_score = this->Estimate(src);
-		open_set.Add(np);
+		open_set.Add(&np);
 		
 		return SearchMain();
 	}
@@ -496,17 +512,17 @@ public:
 	Vector<T*> ContinueSearch(NodeT& src) {
 		do_search = true;
 		
-		NodePtr copy;
+		NodePtr* copy = 0;
 		int i = 0;
-		for (const NodePtr& np : open_set) {
-			if (np.ptr == &src) {
+		for (NodePtr* np : open_set) {
+			if (np->ptr == &src) {
 				copy = np;
 				open_set.Remove(i);
 				break;
 			}
 			++i;
 		}
-		if (!copy.ptr)
+		if (!copy || !copy->ptr)
 			return Vector<T*>();
 		
 		closed_set.Append(open_set);
@@ -545,7 +561,7 @@ public:
 			}
 			
 			for(int i = 0; i < open_set.GetCount(); i++) {
-				const NodePtr& nptr = open_set[i];
+				const NodePtr& nptr = *open_set[i];
 				double f_score = nptr.f_score;
 				if (f_score < smallest_f_score) {
 					smallest_f_score = f_score;
@@ -584,47 +600,59 @@ public:
 			}
 			
 			
-			const NodePtr& t_ptr = open_set[smallest_id];
-			NodeT& t = *t_ptr.ptr;
-			NodeT* prev = t_ptr.came_from;
-			double current_g_score = t_ptr.g_score;
+			NodeT* prevs[5];
+			NodePtr* t_ptr = open_set[smallest_id];
+			NodeT& t = *t_ptr->ptr;
+			const NodePtr* prev = t_ptr->came_from;
+			for(int i = 0; i < 4; i++) {
+				if (prev) {
+					prevs[i] = prev->ptr;
+					prev = prev->came_from;
+				}
+				else prevs[i] = 0;
+			}
+			prevs[4] = 0;
+			double current_g_score = t_ptr->g_score;
 			
-			if (TerminalTest(t, prev))
+			if (TerminalTest(t, prevs))
 				return ReconstructPath(t, closed_set, open_set);
 			
 			if (!do_search)
 				break;
 			
-			closed_set.Add(t_ptr);
 			open_set.Remove(smallest_id);
+			closed_set.Add(t_ptr);
 			
 			
 			for(int j = 0; j < t.GetTotalCount(); j++) {
 				NodeT& sub = t.AtTotal(j);
-				NodePtr subptr(&sub);
-				if (closed_set.Find(subptr) != -1)
+				if (FindNode(closed_set, &sub) != -1)
 					continue; // Ignore the neighbor which is already evaluated.
 				// The distance from start to a neighbor
 				double sub_g_score = current_g_score + this->Distance(t, sub);
 				double sub_f_score = sub_g_score + this->Estimate(sub);
-				int k = open_set.Find(subptr);
+				int k = FindNode(open_set, &sub);
 				if (k == -1) {
 					// Discover a new node
 					k = open_set.GetCount();
-					subptr.came_from = &t;
+					NodePtr& subptr = nodes.Add();
+					subptr.ptr = &sub;
+					subptr.came_from = t_ptr;
 					subptr.f_score = sub_f_score;
 					subptr.g_score = sub_g_score;
 					ASSERT(subptr.ptr);
-					open_set.Add(subptr);
+					open_set.Add(&subptr);
 				}
 				else if (sub_g_score >= current_g_score)
 					continue; // This is not a better path.
 				else {
-					subptr.came_from = &t;
+					NodePtr& subptr = *open_set[k];
+					ASSERT(subptr.ptr == &sub);
+					ASSERT(subptr.came_from == t_ptr);
+					ASSERT(subptr.ptr);
 					subptr.f_score = sub_f_score;
 					subptr.g_score = sub_g_score;
 					open_set.Remove(k);
-					ASSERT(subptr.ptr);
 				}
 			}
 		}

@@ -109,7 +109,7 @@ bool PortaudioSink::Initialize(const Script::WorldState& ws) {
 	
 	obj->Start();
 	
-	GetSink()->GetValue(0).SetMinQueueSize(10);
+	SetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	
 	//AddToContext<CenterSpec>(AsRef<CenterSink>());
 	return true;

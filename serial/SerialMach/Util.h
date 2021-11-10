@@ -12,6 +12,13 @@ String RealizeEonFile(String path);
 #endif
 
 
+#ifdef flagDEBUG
+	#define DEFAULT_AUDIO_QUEUE_SIZE	10
+#else
+	#define DEFAULT_AUDIO_QUEUE_SIZE	4
+#endif
+
+
 #if HAVE_SCRIPTLOADER_MACHVER
 
 #define MACHVER_FWDFN_LIST \

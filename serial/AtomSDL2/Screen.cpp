@@ -20,6 +20,8 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 		}
 	}
 	
+	close_machine = ws.Get(".close_machine") == "true";
+		
 	
 	OBJ_CREATE
 	
@@ -28,6 +30,9 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	obj->SetShaderFile(ws.Get(".filepath"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);
+	obj->Sizeable(ws.Get(".sizeable") == "true");
+	obj->Maximize(ws.Get(".maximize") == "true");
+	obj->Fullscreen(ws.Get(".fullscreen") == "true");
 	
 	// OglShaderBase duplicate
 	for(int i = 0; i < 4; i++) {
@@ -46,6 +51,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	AddAtomToUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
 	GetSink()->GetValue(0).SetMaxQueueSize(1);
+	
 	return true;
 }
 
@@ -54,6 +60,31 @@ void SDL2ScreenBase::Uninitialize() {
 	obj.Clear();
 	RemoveAtomFromUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(AtomBase::AsRefT());
+}
+
+void SDL2ScreenBase::Update(double dt) {
+	OglBufferBase::Update(dt);
+	FramePollerBase::Update(dt);
+	
+	if (env) {
+		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
+		OglBuffer& buf = GetBuffer();
+		
+		if (close_window) {
+			if (close_machine)
+				GetMachine().SetNotRunning();
+			else
+				Destroy();
+		}
+		else if (video_size != buf.fb_size) {
+			if (video_size.IsEmpty())
+				video_size = buf.fb_size;
+			else
+				buf.SetFramebufferSize(video_size);
+		}
+		
+	}
 }
 
 bool SDL2ScreenBase::IsReady(PacketIO& io) {

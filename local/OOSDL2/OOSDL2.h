@@ -226,6 +226,7 @@ public:
 	Screen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
 	
 	void			Maximize(bool b=true);
+	void			Fullscreen(bool b=true);
 	Screen&			Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
@@ -276,6 +277,7 @@ public:
 	SwScreen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
 	
 	void			Maximize(bool b=true);
+	void			Fullscreen(bool b=true);
 	SwScreen&		Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);

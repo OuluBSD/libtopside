@@ -274,6 +274,7 @@ public:
 	int					GetFramebufferChannels() const {return fb_channels;}
 	GLuint				GetReadFramebuffer() const {return frame_buf[buf_i];}
 	void				SetEnvState(EnvStateRef env) {this->env = env;}
+	void				SetFramebufferSize(Size sz);
 	
 	void				OnError(const char* fn, String s);
 	

@@ -397,12 +397,14 @@ String RealizeShareFile(String rel_path) {
 		return String();
 	
 	
-	for (int tries = 0; tries < 3; tries++) {
+	for (int tries = 0; tries < 5; tries++) {
 		String path;
 		switch (tries) {
 			case 0: path = rel_path; break;
 			case 1: path = ShareDirFile(rel_path); break;
 			case 2: path = ShareDirFile(AppendFileName("imgs", rel_path)); break;
+			case 3: path = ShareDirFile(AppendFileName("videos", rel_path)); break;
+			case 4: path = ShareDirFile(AppendFileName("sounds", rel_path)); break;
 		}
 		
 		if (FileExists(path))

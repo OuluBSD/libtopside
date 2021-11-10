@@ -485,7 +485,7 @@ void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
 	data.ll = ll;
 	auto new_status = ll->GetStatus();
-	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
+	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << ll->def.id.ToString() << " " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
 	
 	
 	#if 0

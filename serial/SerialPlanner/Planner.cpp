@@ -78,61 +78,84 @@ hash_t WorldState::GetHashValue() const {
 	return c;
 }
 
-const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts) {
+const Script::Statement* WorldState::FindStatement(const String& find_key, LinkedList<Statement>& stmts, bool dbg_print) {
 	for (const Statement& stmt : stmts) {
 		String key = stmt.id.ToString();
-		if (key == find_key)
+		if (key == find_key) {
+			if (dbg_print) RTLOG("WorldState::FindStatement: cmp '" << key << "' == '" << find_key << "': true");
 			return &stmt;
+		}
+		else {
+			if (dbg_print) RTLOG("WorldState::FindStatement: cmp '" << key << "' == '" << find_key << "': false");
+		}
 	}
 	return 0;
 }
 
-const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts) const {
+const Script::Statement* WorldState::FindStatement(const WorldState* ws, LinkedList<Statement>& stmts, bool dbg_print) const {
 	if (!ws) {
-		Index<String> cur_ws_keys;
-		for(int i = 0; i < values.GetCount(); i++) {
-			if (values[i].GetCount()) {
+		static thread_local Index<String> cur_ws_keys;
+		cur_ws_keys.Clear();
+		int i = 0;
+		for(const String& s : values) {
+			if (s.GetCount()) {
 				String key = ap->GetAtom(i).ToString();
 				cur_ws_keys.Add(key);
 			}
+			i++;
 		}
-		//DUMPC(cur_ws_keys);
+		if (dbg_print) DUMPC(cur_ws_keys);
 		
 		for (const String& cur : cur_ws_keys) {
-			const Script::Statement* s = FindStatement(cur, stmts);
-			if (s)
+			if (dbg_print) RTLOG("WorldState::FindStatement: searching key '" << cur << "' in statements");
+			const Script::Statement* s = FindStatement(cur, stmts, dbg_print);
+			if (s) {
+				if (dbg_print) RTLOG("WorldState::FindStatement: found statement: " << s->ToString());
 				return s;
+			}
 		}
 	}
 	else {
-		Index<String> prev_ws_keys;
-		for(int i = 0; i < ws->values.GetCount(); i++) {
-			if (ws->values[i].GetCount()) {
+		static thread_local Index<String> prev_ws_keys;
+		prev_ws_keys.Clear();
+		int i = 0;
+		for(const String& s : ws->values) {
+			if (s.GetCount()) {
 				String key = ap->GetAtom(i).ToString();
 				prev_ws_keys.Add(key);
 			}
+			i++;
 		}
+		if (dbg_print) DUMPC(prev_ws_keys);
 		
-		Index<String> cur_ws_keys;
-		for(int i = 0; i < values.GetCount(); i++) {
-			if (values[i].GetCount()) {
+		static thread_local Index<String> cur_ws_keys;
+		cur_ws_keys.Clear();
+		i = 0;
+		for(const String& s : values) {
+			if (s.GetCount()) {
 				String key = ap->GetAtom(i).ToString();
 				cur_ws_keys.Add(key);
 			}
+			i++;
 		}
+		if (dbg_print) DUMPC(cur_ws_keys);
 		
-		Index<String> new_ws_keys;
+		static thread_local Index<String> new_ws_keys;
+		new_ws_keys.Clear();
 		for (const String& cur : cur_ws_keys) {
 			bool is_new = prev_ws_keys.Find(cur) < 0;
 			if (is_new)
 				new_ws_keys.Add(cur);
 		}
-		//DUMPC(new_ws_keys);
+		if (dbg_print) DUMPC(new_ws_keys);
 		
 		for (const String& new_ : new_ws_keys) {
-			const Script::Statement* s = FindStatement(new_, stmts);
-			if (s)
+			if (dbg_print) RTLOG("WorldState::FindStatement: searching key '" << new_ << "' in statements");
+			const Script::Statement* s = FindStatement(new_, stmts, dbg_print);
+			if (s) {
+				if (dbg_print) RTLOG("WorldState::FindStatement: found statement: " << s->ToString());
 				return s;
+			}
 		}
 	}
 	return 0;
@@ -474,7 +497,7 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 }
 
 
-void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* prev) {
+void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode** prev) {
 	int est = n.GetEstimate();
 	if (est < side_sink_max_est) {
 		side_sink_max_est = est;
@@ -490,13 +513,23 @@ void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode* p
 		}*/
 		State& s = side_sinks.Add();
 		s.last = &n;
-		s.second_last = prev;
 		s.as = as;
 		s.ch_i = ch_i;
+		
+		int i = 0;
+		if (prev) {
+			for(; i < State::MAX_PREV-1; i++)
+				if (prev[i])
+					s.previous[i] = prev[i];
+				else
+					break;
+		}
+		for(; i < State::MAX_PREV; i++)
+			s.previous[i] = 0;
 	}
 }
 
-void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode* prev) {
+void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode** prev) {
 	int est = n.GetEstimate();
 	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
 	if (est < side_src_max_est) {
@@ -517,17 +550,31 @@ void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode*
 				return;*/
 		State& s = side_srcs.Add();
 		s.last = &n;
-		s.second_last = prev;
 		s.as = as;
 		s.ch_i = ch_i;
+		
+		int i = 0;
+		if (prev) {
+			for(; i < State::MAX_PREV-1; i++)
+				if (prev[i])
+					s.previous[i] = prev[i];
+				else
+					break;
+		}
+		for(; i < State::MAX_PREV; i++)
+			s.previous[i] = 0;
 	}
 }
 
 String ActionPlanner::State::ToString() const {
 	String s;
 	s << "ch_i(" << ch_i << ")";
-	s << ", last(" << HexStr(second_last) << ")";
-	s << ", second_last(" << HexStr(second_last) << ")";
+	s << ", last(" << HexStr(last) << ")";
+	for(int i = 0; i < MAX_PREV; i++) {
+		if (!previous[i])
+			break;
+		s << ", prev" << i << "(" << HexStr(previous[i]) << ")";
+	}
 	return s;
 }
 

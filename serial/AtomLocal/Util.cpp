@@ -270,7 +270,10 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	if (!buf.LoadFragmentShaderFile(shader_path))
 		return false;
 	
+	int queue_size = 1;
+	
 	if (ws.Get(".type") == "audio") {
+		queue_size = DEFAULT_AUDIO_QUEUE_SIZE;
 		is_audio = true;
 	}
 	
@@ -289,14 +292,25 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	}
 	
 	InterfaceSinkRef sink_iface = GetSink();
-	int c = sink_iface->GetSinkCount();
-	for(int i = 0; i < c; i++)
-		sink_iface->GetValue(i).SetMaxQueueSize(1);
-	
 	InterfaceSourceRef src_iface = GetSource();
-	c = src_iface->GetSourceCount();
-	for(int i = 0; i < c; i++)
-		src_iface->GetSourceValue(i).SetMaxQueueSize(1);
+	if (queue_size == 1) {
+		int c = sink_iface->GetSinkCount();
+		for(int i = 0; i < c; i++)
+			sink_iface->GetValue(i).SetMaxQueueSize(queue_size);
+		
+		c = src_iface->GetSourceCount();
+		for(int i = 0; i < c; i++)
+			src_iface->GetSourceValue(i).SetMaxQueueSize(queue_size);
+	}
+	else {
+		int c = sink_iface->GetSinkCount();
+		for(int i = 0; i < c; i++)
+			sink_iface->GetValue(i).SetMinQueueSize(queue_size);
+		
+		c = src_iface->GetSourceCount();
+		for(int i = 0; i < c; i++)
+			src_iface->GetSourceValue(i).SetMinQueueSize(queue_size);
+	}
 	
 	return true;
 }
@@ -601,6 +615,10 @@ OglFboReaderBase::OglFboReaderBase() {
 }
 
 bool OglFboReaderBase::Initialize(const Script::WorldState& ws) {
+	ISourceRef src = GetSource();
+	Format out_fmt = src->GetSourceValue(src->GetSourceCount()-1).GetFormat();
+	if (out_fmt.IsAudio())
+		SetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
 	return true;
 }
 
@@ -644,6 +662,11 @@ bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
 		Format fmt = src.p->GetFormat();
 		
 		if (fmt.IsAudio()) {
+			int src_queue = src.val->GetMinPackets();
+			int sink_queue = sink.val->GetMinPackets();
+			ASSERT(src_queue > 1);
+			ASSERT(sink_queue > 1);
+			
 			//DUMP(fmt);
 			AudioFormat& afmt = fmt;
 			InternalPacketData& v = in->GetData<InternalPacketData>();
@@ -845,6 +868,10 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	else if (e.type == EVENT_WINDOW_RESIZE) {
 		Size& video_size = GetState().Set<Size>(SCREEN0_SIZE);
 		video_size = e.sz;
+	}
+	else if (e.type == EVENT_SHUTDOWN) {
+		bool& close_window = GetState().Set<bool>(SCREEN0_CLOSE);
+		close_window = true;
 	}
 	else TODO
 }

@@ -41,6 +41,10 @@ void AtomBase::PostContinueForward() {
 		GetMachine().Get<AtomSystem>()->AddOnce(*this, *last_cfg);
 }
 
+void AtomBase::SetPrimarySinkQueueSize(int i) {
+	GetSink()->GetValue(0).SetMinQueueSize(i);
+}
+
 LoopRef AtomBase::GetLoop() {
 	return GetParent().AsRefT();
 }

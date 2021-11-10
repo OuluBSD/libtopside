@@ -58,8 +58,10 @@ machine sdl.app: {
 		loop ogl.fbo.screen: {
 			ogl.customer: true;
 			sdl.fbo: true [loop: ogl.fbo.font; loop: ogl.fbo.video; loop: ogl.fbo.audio; loop: ogl.fbo.keyboard;] {
-				env: event.register;
-				filepath: "shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl";
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				filepath:		"shaders/toys/aliasing/iresolution_imouse_idate_etc/stage0.glsl";
 			};
 		};
 		
