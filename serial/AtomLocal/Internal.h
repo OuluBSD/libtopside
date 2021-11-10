@@ -2,6 +2,15 @@
 #define _AtomLocal_Internal_h_
 
 
+#include <SerialLib/SerialLib.h>
+#include <AtomSDL2/AtomSDL2.h>
+#include <AudioCore/AudioCore.h>
+
+#ifdef flagDEBUG_ATOM
+	#define HAVE_MANUAL_DBG_CLASSES 1
+#endif
+
+
 #if HAVE_FFMPEG
 extern "C" {
 	#include <libavdevice/avdevice.h>

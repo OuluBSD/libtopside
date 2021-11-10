@@ -1,14 +1,6 @@
 #ifndef _AtomLocal_AtomLocal_h_
 #define _AtomLocal_AtomLocal_h_
 
-#include <SerialLib/SerialLib.h>
-#include <AtomSDL2/AtomSDL2.h>
-#include <AudioCore/AudioCore.h>
-
-#ifdef flagDEBUG_ATOM
-	#define HAVE_MANUAL_DBG_CLASSES 1
-#endif
-
 #include "Internal.h"
 #include "Debug.h"
 #include "Util.h"

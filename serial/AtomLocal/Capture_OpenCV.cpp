@@ -2,7 +2,7 @@
 // problematic hal/interface.h usage fix
 // clang and gcc behaves in a different way
 #if defined flagGCC && defined flagFREEBSD
-	#include <Multimedia/Internal.h>
+	#include "Internal.h"
 	
 	#if HAVE_OPENCV
 		#undef CPU_SSE2
@@ -26,6 +26,19 @@
 #endif
 
 #if HAVE_OPENCV
+
+
+
+#ifdef flagGCC
+bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const& a, int b) {
+	static thread_local bool dbg_flag;
+	ASSERT(dbg_flag == false);
+	dbg_flag = true;
+	bool r = cv::VideoCapture::open(std::string(a), b);
+	dbg_flag = false;
+	return r;
+}
+#endif
 
 NAMESPACE_SERIAL_BEGIN
 

@@ -59,7 +59,8 @@
 #if defined flagPOSIX || defined HAVE_MINGW
 	#define HAVE_FFMPEG 1
 	
-	#if defined flagFREEBSD && defined flagGCC
+	#if 0
+	//#if defined flagFREEBSD && defined flagGCC
 		// skip v4l2 because of weird VideoDevice::open
 	#else
 		#define HAVE_V4L2_DEVMGR	1
