@@ -267,7 +267,8 @@ OglShaderBase::OglShaderBase() {
 
 bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 	String shader_path = ws.Get(".filepath");
-	if (!buf.LoadFragmentShaderFile(shader_path))
+	String library_path = ws.Get(".library");
+	if (!buf.LoadFragmentShaderFile(shader_path, library_path))
 		return false;
 	
 	int queue_size = 1;

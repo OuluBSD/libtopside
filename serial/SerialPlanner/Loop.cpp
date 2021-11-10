@@ -106,7 +106,7 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 					DUMP(ws.ToString());
 					DUMP(prev_ws0->ToString());
 					if (prev_ws1) DUMP(prev_ws1->ToString());
-					DUMPC(def.stmts);
+					DUMPI(def.stmts);
 				}
 				ASSERT(stmt || type.IsRoleCustomer());
 				
@@ -117,8 +117,15 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 				atom.src_side_conns.SetCount(type.iface.src.count - 1);
 				atom.sink_side_conns.SetCount(type.iface.sink.count - 1);
 				
+				#ifdef flagDEBUG
+				static int dbg_counter = 0;
+				if (dbg_counter == 3) {
+					int i = 0; // line breakpoint placeholder
+				}
+				#endif
+				
 				int required_srcs = 0;
-				int req_src_sides = type.iface.src.count - type.user_src_count;
+				int req_src_sides = type.iface.src.count - type.user_src_count - 1; // -1 bc of primary src
 				for(int i = 0; i < atom.src_side_conns.GetCount(); i++) {
 					SideLink& link = atom.src_side_conns[i];
 					link.vd = type.iface.src[1 + i];
@@ -133,7 +140,7 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 				}
 				
 				int required_sinks = 0;
-				int req_sink_sides = type.iface.sink.count - type.user_sink_count;
+				int req_sink_sides = type.iface.sink.count - type.user_sink_count - 1; // -1 bc of primary sink
 				for(int i = 0; i < atom.sink_side_conns.GetCount(); i++) {
 					SideLink& link = atom.sink_side_conns[i];
 					link.vd = type.iface.sink[1 + i];
@@ -149,7 +156,10 @@ void ScriptLoopLoader::RealizeConnections(const Script::ActionPlanner::State& la
 				
 				added++;
 				
-				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: realized atom #" << atom_i << ", required_srcs: " << required_srcs << ", required_sinks: " << required_sinks << ", placeholder: " << atom.type.ToString());
+				#ifdef flagDEBUG
+				if (print) RTLOG("ScriptLoopLoader::RealizeConnections: chkpt #" << dbg_counter << " realized atom #" << atom_i << ", required_srcs: " << required_srcs << ", required_sinks: " << required_sinks << ", placeholder: " << atom.type.ToString());
+				dbg_counter++;
+				#endif
 			}
 			
 			atom_i++;
@@ -244,12 +254,22 @@ bool ScriptLoopLoader::IsAllSidesConnected() const {
 bool ScriptLoopLoader::IsTopSidesConnected() const {
 	ASSERT(atom_links.GetCount());
 	const auto& atom = atom_links.Top();
-	for (const SideLink& l : atom.src_side_conns)
-		if (l.is_required && !l.link)
+	int dbg_i = 0;
+	for (const SideLink& l : atom.src_side_conns) {
+		if (l.is_required && !l.link) {
+			ASSERT(!l.is_user_stmt);
 			return false;
-	for (const SideLink& l : atom.sink_side_conns)
-		if (l.is_required && !l.link)
+		}
+		dbg_i++;
+	}
+	dbg_i = 0;
+	for (const SideLink& l : atom.sink_side_conns) {
+		if (l.is_required && !l.link) {
+			ASSERT(!l.is_user_stmt);
 			return false;
+		}
+		dbg_i++;
+	}
 	return true;
 }
 
@@ -669,7 +689,7 @@ bool ScriptLoopLoader::Load() {
 					RTLOG("                                        prev_ws0: " << prev_ws0->ToString());
 				if (prev_ws0)
 					RTLOG("                                        prev_ws1: " << prev_ws1->ToString());
-				DUMPC(def.stmts);
+				DUMPI(def.stmts);
 				if (!ws.IsEmpty())
 					stmt = ws.FindStatement(prev_ws0, def.stmts, true);
 			}

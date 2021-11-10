@@ -525,6 +525,22 @@ public:
 #endif
 
 #if defined flagGUI
+class OglShaderAtomSA : public Atom<OglShaderAtomSA>, public OglShaderBase {
+
+public:
+	RTTI_DECL2(OglShaderAtomSA, AtomT, OglShaderBase)
+	COPY_PANIC(OglShaderAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagGUI
 class OglTextureSource : public Atom<OglTextureSource>, public OglTextureBase {
 
 public:
@@ -675,6 +691,8 @@ using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
 
 using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
+
+using OglShaderAtomSARef = Ref<OglShaderAtomSA, AtomParent>;
 
 using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
 

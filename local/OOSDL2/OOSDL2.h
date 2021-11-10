@@ -215,6 +215,7 @@ protected:
 	bool mouse_captured = false;
 	bool is_ogl_buf = false;
 	String filepath;
+	String library_paths;
 	
 	bool Open0() override;
 	void Close0() override;
@@ -239,7 +240,7 @@ public:
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
 	
-	void			SetShaderFile(String filepath) {this->filepath = filepath;}
+	void			SetShaderFile(String filepath, String library_paths) {this->filepath = filepath; this->library_paths = library_paths;}
 	void			SetTestImage(bool b) {is_ogl_buf = b;}
 	
 };

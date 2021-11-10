@@ -65,6 +65,7 @@ namespace Serial {
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(OGL_SHADER_PIPE) \
 	ATOM_TYPE(OGL_SHADER_ATOM) \
+	ATOM_TYPE(OGL_SHADER_ATOM_S_A) \
 	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 	ATOM_TYPE(OGL_AUDIO_SINK) \
@@ -86,6 +87,7 @@ namespace Serial {
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(OglShaderPipe) \
 	ATOM_CLASS(OglShaderAtom) \
+	ATOM_CLASS(OglShaderAtomSA) \
 	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
 	ATOM_CLASS(OglAudioSink) \

@@ -579,6 +579,24 @@ AtomTypeCls OglShaderAtom::GetType() const
 
 #endif
 #if defined flagGUI
+AtomTypeCls OglShaderAtomSA::GetAtomType()
+{
+	return ATOM11(OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+}
+
+void OglShaderAtomSA::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<OglShaderAtomSA>>(this);
+	vis.VisitThis<OglShaderBase>(this);
+}
+
+AtomTypeCls OglShaderAtomSA::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagGUI
 AtomTypeCls OglTextureSource::GetAtomType()
 {
 	return ATOM11_U11(OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);

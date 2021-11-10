@@ -69,8 +69,15 @@ NAMESPACE_UPP_BEGIN
 
 #define DUMPC(c) {\
 LOG(#c << " {"); \
+for (int i = 0; i < c.GetCount(); i++) \
+	LOG("\t[" << i << "]: " << ::UPP::AsString(c[i])); \
+LOG("}"); \
+}
+
+#define DUMPI(c) {\
+LOG(#c << " {"); \
 int i = 0; \
-for (auto& o : c) \
+for (const auto& o : c) \
 	LOG("\t[" << i++ << "]: " << ::UPP::AsString(o)); \
 LOG("}"); \
 }

@@ -40,6 +40,19 @@ void ScriptChainLoader::GetStates(Vector<ScriptStateLoader*>& v) {
 }
 
 void ScriptChainLoader::Forward() {
+	if (iter == 0) {
+		Index<String> loop_names;
+		for (const ScriptLoopLoader& ll : loops) {
+			String name = ll.def.id.ToString();
+			if (loop_names.Find(name) >= 0) {
+				SetError("duplicate loop with name '" + name + "'");
+				return;
+			}
+			loop_names.Add(name);
+		}
+		RTLOG("ScriptChainLoader::Forward: chain '" << def.id.ToString() << "' duplicate loop check passed");
+	}
+	
 	if (def.states.IsFilled() && states.IsEmpty()) {
 		int id = 0;
 		for (Script::StateDeclaration& decl : def.states) {
@@ -63,6 +76,7 @@ void ScriptChainLoader::Forward() {
 	else
 		Base::Forward();
 	
+	iter++;
 }
 
 void ScriptChainLoader::ForwardLoops() {
@@ -167,6 +181,20 @@ void ScriptChainLoader::Linker() {
 	for (ScriptLoopOptions& loop : options) {
 		ScriptLoopLoader& ll = *loop.ll;
 		if (ll.GetStatus() == WAITING_PARENT_SIDE_LINKS) {
+			
+			// for difficult debugging
+			#if 0
+			if (ll.GetAtomLinkCount() > 0) {
+				static int counter = 0;
+				RTLOG("ScriptChainLoader::Linker: ll.IsTopSidesConnected(): " << ll.def.id.ToString() << " counter=" << counter << ": " << (ll.IsTopSidesConnected() ? "true" : "false"));
+				if (counter == 4) {
+					ll.IsTopSidesConnected();
+					TODO
+				}
+				counter++;
+			}
+			#endif
+			
 			if (ll.GetAtomLinkCount() > 0 && ll.IsTopSidesConnected()) {
 				LOG("Loop " << ll.GetId() << " all sides connected");
 				bool found = false;

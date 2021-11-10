@@ -62,8 +62,6 @@ bool ExchangeSourceProvider::print_debug = false;
 void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& src_c, Cookie& sink_c) {
 	ASSERT(expt);
 	ASSERT_(CastPtr<LockedScopeRefCounter>(this) != CastPtr<LockedScopeRefCounter>(&*sink), "Linking to itself is not allowed");
-	base.SetLink(expt, sink);
-	sink->base.SetLink(expt, AsRefT());
 	if (print_debug) {
 		String s;
 		
@@ -74,11 +72,13 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& 
 		if (!cfg1.IsEmpty()) cfg1 = "<" + cfg1 + ">";
 		
 		s << GetRTTI().GetDynamicName() <<
-			cfg0 << " linked to " <<
+			cfg0 << "(" << HexStr(this) << ") linked to " <<
 			sink->GetRTTI().GetDynamicName() <<
-			cfg1;
+			cfg1 << "(" << HexStr(&*expt) << ")";
 		LOG(s);
 	}
+	base.SetLink(expt, sink);
+	sink->base.SetLink(expt, AsRefT());
 	OnLink(sink, src_c, sink_c);
 	sink->OnLink(AsRefT(), src_c, sink_c);
 }

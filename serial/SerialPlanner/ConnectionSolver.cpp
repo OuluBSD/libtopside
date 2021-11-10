@@ -134,7 +134,7 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 		
 		if (!(l.link_opts.GetCount() || total_count == 0))  {
 			LOG("ScriptConnectionSolver::MakeOptionLinkVector: error: dead end in a loop. Probably one of your atom keys is wrong");
-			DUMPC(ll.def.stmts);
+			DUMPI(ll.def.stmts);
 			return false;
 		}
 		ASSERT_(l.link_opts.GetCount() || total_count == 0, "all side links failed in " + l.ll->def.id.ToString());

@@ -27,7 +27,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	
 	OglBuffer& buf = GetBuffer();
 	buf.SetEnvState(env);
-	obj->SetShaderFile(ws.Get(".filepath"));
+	obj->SetShaderFile(ws.Get(".filepath"), ws.Get(".library"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);
 	obj->Sizeable(ws.Get(".sizeable") == "true");

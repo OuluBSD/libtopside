@@ -39,8 +39,16 @@ void OglBuffer::Update(double dt) {
 	}
 }
 
-bool OglBuffer::LoadFragmentShaderFile(String shader_path) {
+bool OglBuffer::LoadFragmentShaderFile(String shader_path, String library_paths) {
 	DLOG("OglBuffer::LoadFragmentShaderFile: " << shader_path);
+	
+	common_source.Clear();
+	Vector<String> libraries = Split(library_paths, ";");
+	for (String& lib : libraries) {
+		String path = RealizeShareFile(lib);
+		if (FileExists(path))
+			common_source << LoadFile(path);
+	}
 	
 	if (!FileExists(shader_path))
 		shader_path = ShareDirFile(shader_path);
@@ -182,6 +190,7 @@ bool OglBuffer::Initialize() {
 	ASSERT(fps > 0);
 	frame_time = 1.0 / fps;
 	time = GetSysTime();
+	block_offset = 0;
 	
 	if (!CompilePrograms())
 		return false;
@@ -339,6 +348,13 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	EnableGfxAccelDebugMessages(0);
 	
 	glBindProgramPipeline(0);
+	
+	if (is_shader_audio_main) {
+		block_offset += fb_size.cx;
+	}
+	else {
+		block_offset += 1.0;
+	}
 }
 
 void OglBuffer::UseRenderedFramebuffer() {
@@ -523,6 +539,10 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 		}
 		glUniform3f(uindex, values[0], values[1], values[2]);
 	}
+	
+	else if (var == VAR_COMPAT_BLOCKOFFSET) {
+		glUniform1f(uindex, block_offset);
+	}
 	else {
 		ASSERT_(false, "Invalid variable");
 	}
@@ -699,6 +719,7 @@ bool OglBuffer::CompileFragmentShader() {
 				"uniform float     iSampleRate;           // sound sample rate (i.e., 44100)\n"
 				"uniform float     iChannelTime[4];       // channel playback time (in seconds)\n"
 				"uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)\n"
+				"uniform float     iBlockOffset;          // total consumed samples (mostly for audio, for video it's same as iFrame)\n"
 				;
 	
 	for(int j = 0; j < 4; j++) {
@@ -716,6 +737,7 @@ bool OglBuffer::CompileFragmentShader() {
 	}
 	code << "\n";
 	
+	ASSERT(common_source.GetCount());
 	for(int j = 0; j < common_source.GetCount(); j++) {
 		code += common_source[j] + "\n";
 	}

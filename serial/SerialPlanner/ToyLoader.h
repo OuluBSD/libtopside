@@ -34,11 +34,13 @@ struct ToyStage : Moveable<ToyStage> {
 
 class ToyLoader {
 	Vector<ToyStage>	stages;
+	Vector<String>		libraries;
 	String				eon_script;
 	
 	
 	bool FindStageNames();
 	bool MakeScript();
+	void PruneLibraries();
 	
 public:
 	typedef ToyLoader CLASSNAME;

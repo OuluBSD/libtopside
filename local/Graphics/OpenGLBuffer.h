@@ -114,6 +114,7 @@ protected:
 		VAR_COMPAT_CHANNELRESOLUTION1,
 		VAR_COMPAT_CHANNELRESOLUTION2,
 		VAR_COMPAT_CHANNELRESOLUTION3,
+		VAR_COMPAT_BLOCKOFFSET,
 		
 		VAR_COUNT,
 	};
@@ -139,6 +140,7 @@ protected:
 			"iChannelResolution[1]",
 			"iChannelResolution[2]",
 			"iChannelResolution[3]",
+			"iBlockOffset",
 			0
 		};
 		return names;
@@ -211,6 +213,7 @@ public:
 	
 	double						time_total = 0;
 	double						frame_time = 0;
+	double						block_offset = 0;
 	int							frames = -1;
 	int							fps = 0;
 	Point						fb_offset;
@@ -228,7 +231,7 @@ public:
 	void Visit(RuntimeVisitor& vis) {vis & env;}
 	
 	
-	bool				LoadFragmentShaderFile(String filepath);
+	bool				LoadFragmentShaderFile(String filepath, String library_paths);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
 	bool				IsInitialized() const {return initialized;}
 	bool				IsCubemap() const {return is_cubemap;}

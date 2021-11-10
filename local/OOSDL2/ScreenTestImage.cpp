@@ -40,7 +40,7 @@ bool Screen::TestImageInitialize() {
 	buf.fps = 60;
 	
 	if (filepath.GetCount()) {
-		if (!buf.LoadFragmentShaderFile(filepath))
+		if (!buf.LoadFragmentShaderFile(filepath, library_paths))
 			return false;
 	}
 	else {

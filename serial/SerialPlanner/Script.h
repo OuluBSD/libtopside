@@ -92,6 +92,9 @@ protected:
 	void CheckFlags();
 	void CheckStatus(ScriptStatus s);
 	
+	int							iter = 0;
+	
+	
 public:
 	RTTI_DECL0(ScriptLoaderBase)
 	virtual ~ScriptLoaderBase() {}

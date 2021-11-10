@@ -134,6 +134,10 @@ HEADER55_U44(		OglShaderAtom,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		Ogl
 HEADER_ACTION(		OglShaderAtom,		ogl.fbo.source)
 HEADER_ARG(			OglShaderAtom,		reqdef_flagGUI,		1)
 
+HEADER11(			OglShaderAtomSA,	OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER_ACTION(		OglShaderAtomSA,	ogl.fbo.source.standalone)
+HEADER_ARG(			OglShaderAtomSA,	reqdef_flagGUI,		1)
+
 HEADER22_U11(		OglTextureSource,	OglTextureBase,				pipe,		OglFbo,			OglOrder,		CenterVideo,	OglFbo,			OglReceipt)
 HEADER_ACTION(		OglTextureSource,	ogl.fbo.image)
 HEADER_ARG(			OglTextureSource,	reqdef_flagGUI,		1)

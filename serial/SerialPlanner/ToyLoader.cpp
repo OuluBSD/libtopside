@@ -230,6 +230,8 @@ bool ToyLoader::Load(Object& o) {
 	if (!FindStageNames())
 		return false;
 	
+	PruneLibraries();
+	
 	if (!MakeScript())
 		return false;
 	
@@ -276,6 +278,25 @@ bool ToyLoader::FindStageNames() {
 	
 	return true;
 }
+
+void ToyLoader::PruneLibraries() {
+	libraries.Clear();
+	
+	Vector<int> rm_list;
+	int i = 0;
+	for (ToyStage& stage : stages) {
+		if (stage.type == "library") {
+			if (stage.script_path.GetCount())
+				libraries << stage.script_path;
+			rm_list << i;
+		}
+		i++;
+	}
+	
+	stages.Remove(rm_list);
+}
+
+
 static const char* __eon_script_begin = R"30N(
 machine sdl.app: {
 	
@@ -298,20 +319,25 @@ static const char* __eon_script_end = R"30N(
 )30N";
 
 bool ToyLoader::MakeScript() {
+	bool has_audio_output = false;
+	
 	String& s = eon_script;
 	s.Clear();
 	s << __eon_script_begin;
 	
+	String library_str = Join(libraries, ";");
+	
+	s << "		loop center.events: {\n"
+	  << "			center.customer: true;\n"
+	  << "			sdl.event.pipe: true;\n"
+	  << "			state.event.pipe: true {target: event.register;};\n"
+	  << "		};\n"
+	  << "		\n";
+	 
 	for (ToyStage& stage : stages) {
 		String l;
 		l << "ogl." << stage.name << "." << stage.type;
 		
-		s << "		loop center.events: {\n"
-		  << "			center.customer: true;\n"
-		  << "			sdl.event.pipe: true;\n"
-		  << "			state.event.pipe: true {target: event.register;};\n"
-		  << "		};\n"
-		  << "		\n";
 		  
 		for (ToyInput& input : stage.inputs) {
 			String a, b;
@@ -424,15 +450,24 @@ bool ToyLoader::MakeScript() {
 		
 		bool is_screen = stage.type == "image";
 		bool is_audio = stage.type == "sound";
+		
+		if (is_audio)
+			stage.user_stages.Add("ogl.fbo.audio.conv"); // audio shader requires separate output, which is added later
+		
 		bool has_no_sides = stage.inputs.IsEmpty() && stage.user_stages.IsEmpty();
 		
-		
-		if (is_screen && has_no_sides)
-			s << "			sdl.fbo.standalone: true";
-		else if (is_screen)
-			s << "			sdl.fbo: true";
-		else
-			s << "			ogl.fbo.source: true";
+		if (has_no_sides) {
+			if (is_screen)
+				s << "			sdl.fbo.standalone: true";
+			else
+				s << "			ogl.fbo.source.standalone: true";
+		}
+		else {
+			if (is_screen)
+				s << "			sdl.fbo: true";
+			else
+				s << "			ogl.fbo.source: true";
+		}
 		
 
 		if (!has_no_sides) {
@@ -464,8 +499,33 @@ bool ToyLoader::MakeScript() {
 		
 		s << "				env:			event.register;\n";
 		s << "				filepath:		\"" << stage.script_path << "\";\n";
+		if (library_str.GetCount())
+			s << "				library:		\"" << library_str << "\";\n";
 		s << "			};\n";
 		s << "		};\n";
+		
+		
+		// Add output for audio
+		if (is_audio) {
+			if (has_audio_output) {
+				LOG("ToyLoader::MakeScript: error: requiring new audio output while one exists already in stage " << stage.name);
+					return false;
+			}
+			
+			s << "		loop ogl.fbo.audio.conv: {\n";
+			s << "			ogl.customer: true;\n";
+			s << "			ogl.fbo.center.audio: true [loop: " << l << "][loop: center.audio.sink];\n";
+			s << "		};\n";
+			s << "		\n";
+			s << "		loop center.audio.sink: {\n";
+			s << "			center.customer: true;\n";
+			s << "			center.audio.side.sink.center.user: true [loop: ogl.fbo.audio.conv];\n";
+			s << "			sdl.audio: true;\n";
+			s << "		};\n";
+			s << "		\n";
+			
+			has_audio_output = true;
+		}
 	}
 	
 	s << __eon_script_end;
