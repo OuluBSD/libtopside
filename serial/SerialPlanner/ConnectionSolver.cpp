@@ -390,6 +390,7 @@ bool ScriptConnectionSolver::LinkPlanner() {
 	AStar<LinkGeneratorNode> as;
 	as.TrimWorst(0);
 	
+	as.SetLimit(10000);
 	Vector<LinkGeneratorNode*> ans = as.Search(n);
 	
 	
@@ -422,9 +423,7 @@ bool ScriptConnectionSolver::LinkPlanner() {
 		return true;
 	}
 	else {
-		
-		TODO
-		
+		LOG("ScriptConnectionSolver::LinkPlanner: error: could not find plan");
 		return false;
 	}
 }

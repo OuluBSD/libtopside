@@ -94,8 +94,6 @@ void FfmpegAtomBase::OnStop() {
 }
 
 bool FfmpegAtomBase::LoadFileAny(String path) {
-	ASSERT(!side_sink_conn.IsEmpty());
-	
 	vi.Stop();
 	mode = INVALID_MODE;
 	time = 0;
