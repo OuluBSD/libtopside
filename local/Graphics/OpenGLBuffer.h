@@ -170,6 +170,7 @@ protected:
 	
 	String						name;
 	String						description;
+	String						last_error;
 	String						code[PROG_COUNT];
 	int							id = -1;
 	int							buf_i = 0;
@@ -221,6 +222,7 @@ public:
 	Time						time;
 	bool						is_cubemap = false;
 	EnvStateRef					env;
+	int							loopback = -1;
 	
 	bool						initialized = false;
 	
@@ -245,6 +247,7 @@ public:
 	void				Reset();
 	int					NewWriteBuffer();
 	void				Update(double dt);
+	bool				SetLoopback(String loopback_str);
 	
 	void				ProcessStage(const RealtimeSourceConfig& cfg);
 	void				ClearPipeline();
@@ -259,6 +262,7 @@ public:
 	void				CreateTex(bool create_depth, bool create_fbo, int filter, int repeat);
 	GLint				GetInputTex(int input_i) const;
 	int					GetTexType(int input_i) const;
+	bool				SetupLoopback();
 	bool				CompilePrograms();
 	bool				CompileFragmentShader();
 	bool				CompileProgram(int prog_i, String shader_source);
@@ -280,6 +284,7 @@ public:
 	void				SetFramebufferSize(Size sz);
 	
 	void				OnError(const char* fn, String s);
+	String				GetError() const {return last_error;}
 	
 	void				StoreOutputLink(InternalPacketData& v);
 	bool				LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v);

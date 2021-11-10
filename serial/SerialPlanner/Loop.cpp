@@ -257,7 +257,7 @@ bool ScriptLoopLoader::IsTopSidesConnected() const {
 	int dbg_i = 0;
 	for (const SideLink& l : atom.src_side_conns) {
 		if (l.is_required && !l.link) {
-			ASSERT(!l.is_user_stmt);
+			//ASSERT(!l.is_user_stmt);
 			return false;
 		}
 		dbg_i++;
@@ -265,7 +265,7 @@ bool ScriptLoopLoader::IsTopSidesConnected() const {
 	dbg_i = 0;
 	for (const SideLink& l : atom.sink_side_conns) {
 		if (l.is_required && !l.link) {
-			ASSERT(!l.is_user_stmt);
+			//ASSERT(!l.is_user_stmt);
 			return false;
 		}
 		dbg_i++;

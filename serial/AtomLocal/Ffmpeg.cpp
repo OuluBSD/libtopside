@@ -162,19 +162,20 @@ bool FfmpegAtomBase::IsReady(PacketIO& io) {
 	video_packet_ready = false;
 	audio_packet_ready = false;
 	
-	if (mode == AUDIO_ONLY)
+	if (mode == AUDIO_ONLY && audio_ch >= 0)
 		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
 	
-	if (mode == VIDEO_ONLY)
+	if (mode == VIDEO_ONLY && video_ch >= 0)
 		video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
 	
 	if (mode == AUDIOVIDEO) {
-		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
-		video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+		if (audio_ch >= 0)
+			audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+		
+		if (video_ch >= 0)
+			video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
 	}
 	
-	ASSERT(!audio_packet_ready || audio_ch >= 0);
-	ASSERT(!video_packet_ready || video_ch >= 0);
 	return audio_packet_ready || video_packet_ready;
 }
 

@@ -232,6 +232,9 @@ bool ToyLoader::Load(Object& o) {
 	
 	PruneLibraries();
 	
+	if (!SolveLoopbacks())
+		return false;
+	
 	if (!MakeScript())
 		return false;
 	
@@ -242,6 +245,11 @@ bool ToyLoader::FindStageNames() {
 	
 	for (ToyStage& stage : stages)
 		stage.user_stages.Clear();
+	
+	for (ToyStage& stage : stages) {
+		stage.stage_name = "ogl." + stage.name + "." + stage.type;
+	}
+	
 	
 	for (ToyStage& stage : stages) {
 		
@@ -256,13 +264,19 @@ bool ToyLoader::FindStageNames() {
 				
 				for (ToyStage& s0 : stages) {
 					if (input.id == s0.output_id) {
-						input.stage_name = "ogl." + s0.name + "." + s0.type;
-						stage.user_stages.Add(s0.name);
-						if (stage.user_stages.GetCount() > 4) {
+						found = true;
+						input.stage_name = s0.stage_name;
+						if (&s0 == &stage)
+							continue; // skip loopbacks
+						
+						LOG("stage " << stage.stage_name << " uses stage " << input.stage_name);
+						//stage.user_stages.Add(input.stage_name);
+						//if (stage.user_stages.GetCount() > 4) {
+						s0.user_stages.Add(stage.stage_name);
+						if (s0.user_stages.GetCount() > 4) {
 							LOG("ToyLoader::FindStageNames: error: more than 4 users for stage '" << s0.name << "'");
 							return false;
 						}
-						found = true;
 					}
 				}
 				
@@ -295,6 +309,43 @@ void ToyLoader::PruneLibraries() {
 	
 	stages.Remove(rm_list);
 }
+
+bool ToyLoader::SolveLoopbacks() {
+	bool succ = true;
+	
+	for (ToyStage& stage : stages) {
+		stage.loopback_stage = -1;
+		
+		int loopback_count = 0;
+		int i = 0;
+		for (ToyInput& input : stage.inputs) {
+			if (input.stage_name == stage.stage_name) {
+				input.Clear();
+				loopback_count++;
+				stage.loopback_stage = i;
+			}
+			i++;
+		}
+		
+		if (loopback_count > 1) {
+			LOG("ToyLoader::SolveLoopbacks: error: only one loopback is allowed, but stage has " << loopback_count);
+			succ = false;
+		}
+	}
+	
+	return succ;
+}
+
+void ToyInput::Clear() {
+	stage_name.Clear();
+	id.Clear();
+	type.Clear();
+	filter.Clear();
+	wrap.Clear();
+	vflip.Clear();
+	filename.Clear();
+}
+
 
 
 static const char* __eon_script_begin = R"30N(
@@ -338,8 +389,11 @@ bool ToyLoader::MakeScript() {
 		String l;
 		l << "ogl." << stage.name << "." << stage.type;
 		
-		  
-		for (ToyInput& input : stage.inputs) {
+		Vector<int> cubemaps;
+		
+		for(int i = 0; i < stage.inputs.GetCount(); i++) {
+			ToyInput& input = stage.inputs[i];
+			
 			String a, b;
 			
 			if (input.id.IsEmpty())
@@ -354,7 +408,10 @@ bool ToyLoader::MakeScript() {
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << a << ": {\n";
 				s << "			center.customer: true;\n";
-				s << "			center.image.loader: true [][loop: " << b << "] {vflip: true; filepath: \"" << input.filename << "\";};\n";
+				s << "			center.image.loader: true [][loop: " << b << "] {";
+				if (input.vflip == "true")
+					s << "vflip: \"true\"; ";
+				s << "filepath: \"" << input.filename << "\";};\n";
 				s << "		};\n";
 				s << "		\n";
 				s << "		loop " << b << ": {\n";
@@ -365,12 +422,43 @@ bool ToyLoader::MakeScript() {
 				input.stage_name = b;
 			}
 			else if (input.type == "cubemap") {
-				TODO
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.image.loader: true [][loop: " << b << "] {";
+				if (input.vflip == "true")
+					s << "vflip: \"true\"; ";
+				s << "cubemap: true; filepath: \"" << input.filename << "\";};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
+				cubemaps << i;
 			}
 			else if (input.type == "webcam") {
-				TODO
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.video.webcam: true [][loop: " << b << "] {";
+				if (input.vflip == "true")
+					s << "vflip: \"true\"; ";
+				s << "};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.image: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "		};\n";
+				input.stage_name = b;
 			}
-			else if (input.type == "music") {
+			else if (input.type == "musicstream" ||
+					 input.type == "music") {
 				if (input.filename.IsEmpty()) {
 					LOG("ToyLoader::MakeScript: error: empty input filename in stage " << stage.name);
 					return false;
@@ -389,9 +477,6 @@ bool ToyLoader::MakeScript() {
 				s << "		\n";
 				input.stage_name = b;
 			}
-			else if (input.type == "musicstream") {
-				TODO
-			}
 			else if (input.type == "keyboard") {
 				b << "ogl." << stage.name << ".fbo" << input.id;
 				s << "		loop " << b << ": {\n";
@@ -402,7 +487,22 @@ bool ToyLoader::MakeScript() {
 				input.stage_name = b;
 			}
 			else if (input.type == "volume") {
-				TODO
+				a << "center." << stage.name << ".ct" << input.id;
+				b << "ogl." << stage.name << ".fbo" << input.id;
+				s << "		loop " << a << ": {\n";
+				s << "			center.customer: true;\n";
+				s << "			center.volume.loader: true [][loop: " << b << "] {";
+				if (input.vflip == "true")
+					s << "vflip: \"true\"; ";
+				s << "filepath: \"" << input.filename << "\";};\n";
+				s << "		};\n";
+				s << "		\n";
+				s << "		loop " << b << ": {\n";
+				s << "			ogl.customer: true;\n";
+				s << "			ogl.fbo.volume: true [loop: " << a << "][loop: " << l << "];\n";
+				s << "		};\n";
+				s << "		\n";
+				input.stage_name = b;
 			}
 			else if (input.type == "video") {
 				if (input.filename.IsEmpty()) {
@@ -469,7 +569,7 @@ bool ToyLoader::MakeScript() {
 				s << "			ogl.fbo.source: true";
 		}
 		
-
+		
 		if (!has_no_sides) {
 			s << " [";
 			for(int i = 0; i < 4; i++) {
@@ -490,6 +590,9 @@ bool ToyLoader::MakeScript() {
 		}
 		s << " {\n";
 		
+		for (int cubemap : cubemaps)
+			s << "				buf" << cubemap << ": \"cubemap\";\n";
+		
 		if (is_audio)	s << "				type: \"audio\";\n";
 		
 		if (is_screen) {
@@ -499,6 +602,10 @@ bool ToyLoader::MakeScript() {
 		
 		s << "				env:			event.register;\n";
 		s << "				filepath:		\"" << stage.script_path << "\";\n";
+		
+		if (stage.loopback_stage >= 0)
+			s << "				loopback:			\"" << stage.loopback_stage << "\";\n";
+		
 		if (library_str.GetCount())
 			s << "				library:		\"" << library_str << "\";\n";
 		s << "			};\n";

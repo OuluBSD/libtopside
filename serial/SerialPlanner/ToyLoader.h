@@ -17,6 +17,8 @@ struct ToyInput : Moveable<ToyInput> {
 	String				vflip;
 	String				filename;
 	
+	void Clear();
+	
 };
 
 struct ToyStage : Moveable<ToyStage> {
@@ -27,7 +29,8 @@ struct ToyStage : Moveable<ToyStage> {
 	String				output_id;
 	String				script;
 	String				script_path;
-	
+	String				stage_name;
+	int					loopback_stage = -1;
 	
 };
 
@@ -41,6 +44,7 @@ class ToyLoader {
 	bool FindStageNames();
 	bool MakeScript();
 	void PruneLibraries();
+	bool SolveLoopbacks();
 	
 public:
 	typedef ToyLoader CLASSNAME;

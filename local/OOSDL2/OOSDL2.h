@@ -417,6 +417,11 @@ private:
 	
 	static int count;
 	
+protected:
+	friend class Screen;
+	
+	void SetError(String s) {last_error = s;}
+	
 public:
 	typedef Context CLASSNAME;
 	Context() = default;

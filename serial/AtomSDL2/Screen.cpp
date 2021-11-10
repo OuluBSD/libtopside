@@ -27,6 +27,11 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	
 	OglBuffer& buf = GetBuffer();
 	buf.SetEnvState(env);
+	
+	String loopback = ws.Get(".loopback");
+	if (loopback.GetCount() && !buf.SetLoopback(loopback))
+		return false;
+	
 	obj->SetShaderFile(ws.Get(".filepath"), ws.Get(".library"));
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);

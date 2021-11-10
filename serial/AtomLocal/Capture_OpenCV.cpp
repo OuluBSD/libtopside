@@ -29,16 +29,12 @@
 
 
 
-#ifdef flagGCC
+#if defined flagGCC && flagFREEBSD
 bool cv::VideoCapture::open(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const& a, int b) {
-	static thread_local bool dbg_flag;
-	ASSERT(dbg_flag == false);
-	dbg_flag = true;
-	bool r = cv::VideoCapture::open(std::string(a), b);
-	dbg_flag = false;
-	return r;
+	return false
 }
 #endif
+
 
 NAMESPACE_SERIAL_BEGIN
 

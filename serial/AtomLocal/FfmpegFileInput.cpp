@@ -105,6 +105,7 @@ bool FfmpegFileInput::IsOpen() const {
 }
 
 bool FfmpegFileInput::OpenFile(String path) {
+	LOG("FfmpegFileInput::OpenFile: opening file '" << path << "'");
 	Clear();
 	
 	this->path = path;
@@ -390,7 +391,14 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	AVStream* vstream = file_fmt_ctx->streams[stream_i];
 	AVCodecParameters* vcodec = vstream->codecpar;
 	
-	double fps = (double)vstream->avg_frame_rate.num / (double)vstream->avg_frame_rate.den;
+	double fps;
+	if (vstream->avg_frame_rate.den > 0)
+		fps = (double)vstream->avg_frame_rate.num / (double)vstream->avg_frame_rate.den;
+	else if (vstream->r_frame_rate.den > 0)
+		fps = (double)vstream->r_frame_rate.num / (double)vstream->r_frame_rate.den;
+	else
+		fps = 25;
+	
 	Size frame_sz(vcodec->width, vcodec->height);
 	
 	vfmt.SetSize(frame_sz);

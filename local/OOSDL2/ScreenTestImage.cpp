@@ -47,7 +47,12 @@ bool Screen::TestImageInitialize() {
 		buf.SetFragmentShaderSource(def_shader);
 	}
 	
-	return buf.Initialize();
+	if (!buf.Initialize()) {
+		ctx->SetError(buf.GetError());
+		return false;
+	}
+	
+	return true;
 }
 
 

@@ -39,6 +39,28 @@ void OglBuffer::Update(double dt) {
 	}
 }
 
+bool OglBuffer::SetLoopback(String loopback_str) {
+	if (loopback_str.IsEmpty()) {
+		loopback = -1;
+		return false;
+	}
+	
+	if (!IsAllDigit(loopback_str)) {
+		LOG("OglBuffer::SetLoopback: error: expected digit string, got '" << loopback_str << "'");
+		return false;
+	}
+	
+	loopback = StrInt(loopback_str);
+	if (loopback < -1 || loopback >= 4) {
+		LOG("OglBuffer::SetLoopback: error: invalid loopback #" << loopback << ", expected between -1 and +3");
+		return false;
+	}
+	
+	is_doublebuf = loopback >= 0;
+	
+	return true;
+}
+
 bool OglBuffer::LoadFragmentShaderFile(String shader_path, String library_paths) {
 	DLOG("OglBuffer::LoadFragmentShaderFile: " << shader_path);
 	
@@ -163,8 +185,8 @@ void OglBuffer::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const
 		switch (i) {
 			case 0: data = &d0; break;
 			case 1: data = &d1; break;
-			case 3: data = &d2; break; // swap 2 & 3
-			case 2: data = &d3; break;
+			case 2: data = &d2; break;
+			case 3: data = &d3; break;
 			case 4: data = &d4; break;
 			case 5: data = &d5; break;
 		}
@@ -191,6 +213,9 @@ bool OglBuffer::Initialize() {
 	frame_time = 1.0 / fps;
 	time = GetSysTime();
 	block_offset = 0;
+	
+	if (!SetupLoopback())
+		return false;
 	
 	if (!CompilePrograms())
 		return false;
@@ -641,12 +666,12 @@ GLint OglBuffer::GetInputTex(int input_i) const {
 		return -1;
 	
 	const OglBufferInput& in = in_buf[input_i];
-	if (in.id < 0) {
-		RTLOG("OglBuffer::GetInputTex: warning: no input texture");
+	if (in.in_buf == 0) {
+		RTLOG("OglBuffer::GetInputTex: warning: no input fbo buffer");
 		return -1;
 	}
 	
-	const OglBuffer* in_comp = GetComponentById(in.id);
+	const OglBuffer* in_comp = in.in_buf;
 	if (!in_comp)
 		return -1;
 	
@@ -677,6 +702,28 @@ int OglBuffer::GetTexType(int input_i) const {
 
 
 
+
+bool OglBuffer::SetupLoopback() {
+	if (loopback < 0)
+		return true;
+	
+	if (loopback >= 4) {
+		LOG("OglBuffer::SetupLoopback: error: too large loopback id #" << loopback);
+		return false;
+	}
+	
+	if (loopback >= in_buf.GetCount())
+		in_buf.SetCount(loopback+1);
+	
+	OglBufferInput& in = in_buf[loopback];
+	in.in_buf = this;
+	in.type = OglBufferInput::BUFFER;
+	in.wrap = OglBufferInput::WRAP_REPEAT;
+	in.filter = OglBufferInput::FILTER_LINEAR;
+	in.vflip = false;
+	
+	return true;
+}
 
 bool OglBuffer::CompilePrograms() {
 	const char* fn_name = "CompilePrograms";
@@ -737,7 +784,6 @@ bool OglBuffer::CompileFragmentShader() {
 	}
 	code << "\n";
 	
-	ASSERT(common_source.GetCount());
 	for(int j = 0; j < common_source.GetCount(); j++) {
 		code += common_source[j] + "\n";
 	}
@@ -965,6 +1011,8 @@ void OglBuffer::TexFlags(int type, int filter, int repeat) {
 
 void OglBuffer::OnError(const char* fn, String s) {
 	LOG("OglBuffer: error: " << (String)fn << ": " << s);
+	last_error.Clear();
+	last_error << fn << ": " << s;
 }
 
 void OglBuffer::StoreOutputLink(InternalPacketData& v) {

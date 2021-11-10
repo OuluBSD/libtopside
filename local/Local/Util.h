@@ -181,6 +181,7 @@ inline String CharStr(char c) {String s; s.Cat(c); return s;}
 inline bool IsUpper(char c) {return c >= 'A' && c <= 'Z';}
 inline bool IsLower(char c) {return !IsUpper(c);}
 bool IsAllSpace(const String& a);
+bool IsAllDigit(const String& a);
 String CamelToName(String s);
 String ToVarName(String s);
 String ToCaps(String s);

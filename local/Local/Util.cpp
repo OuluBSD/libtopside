@@ -144,6 +144,15 @@ bool IsAllSpace(const String& a) {
 	return is_space;
 }
 
+bool IsAllDigit(const String& a) {
+	if (a.IsEmpty())
+		return false;
+	for (char chr : a)
+		if (!IsDigit(chr))
+			return false;
+	return true;
+}
+
 String CamelToName(String s) {
 	String o;
 	bool is_cap = true;
