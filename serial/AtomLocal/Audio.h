@@ -160,10 +160,10 @@ class AudioGenBase :
 public:
 	AudioGenBase();
 	
-	bool Initialize(const Script::WorldState& ws) override;
-	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
-	bool ProcessPackets(PacketIO& io) override;
+	bool Initialize(const Script::WorldState& ws) final;
+	void Uninitialize() final;
+	void Forward(FwdScope& fwd) final;
+	bool ProcessPackets(PacketIO& io) final;
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	

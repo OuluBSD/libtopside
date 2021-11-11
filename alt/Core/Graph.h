@@ -126,7 +126,7 @@ Color SpecialColor(int code);
 
 inline Color GrayColor(byte gray = 128) {return Color(gray, gray, gray);}
 
-inline Color Blend(Color a_, Color b_, float blend) {
+inline Color Blend(Color a_, Color b_, double blend) {
 	RGBA a = a_;
 	RGBA b = b_;
 	RGBA out;

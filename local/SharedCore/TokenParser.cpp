@@ -216,36 +216,36 @@ void NumberParser::Parse() {
 			i32 = (neg_value ? -1 : +1) * OctInt(n);
 			u32 = i32;
 			i64 = i32;
-			f = i32;
-			d = i32;
+			f = (float)i32;
+			d = (double)i32;
 		}
 		else if (upcoming_type == NumberParser::BIN) {
 			i64 = (neg_value ? -1 : +1) * BinInt64(n);
-			u32 = i64;
-			i32 = i64;
-			f = i64;
-			d = i64;
+			u32 = (uint32)i64;
+			i32 = (int32)i64;
+			f = (float)i64;
+			d = (double)i64;
 		}
 		else if (upcoming_type == NumberParser::HEX) {
 			i64 = (neg_value ? -1 : +1) * HexInt64(n);
-			u32 = i64;
-			i32 = i64;
-			f = i64;
-			d = i64;
+			u32 = (uint32)i64;
+			i32 = (int32)i64;
+			f = (float)i64;
+			d = (double)i64;
 		}
 		else if (upcoming_type == NumberParser::INT) {
 			i64 = (neg_value ? -1 : +1) * StrInt64(n);
-			u32 = i64;
-			i32 = i64;
-			f = i64;
-			d = i64;
+			u32 = (uint32)i64;
+			i32 = (int32)i64;
+			f = (float)i64;
+			d = (double)i64;
 		}
 		else if (upcoming_type == NumberParser::FLOAT || upcoming_type == NumberParser::DOUBLE) {
 			d = (neg_value ? -1 : +1) * StrDbl(n);
-			i32 = d;
-			u32 = d;
-			i64 = d;
-			f = d;
+			i32 = (int32)d;
+			u32 = (uint32)d;
+			i64 = (int64)d;
+			f = (float)d;
 		}
 	}
 }

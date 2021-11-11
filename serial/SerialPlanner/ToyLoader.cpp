@@ -197,12 +197,12 @@ bool ToyLoader::Load(Object& o) {
 		ASSERT(output.IsMap());
 		const ObjectMap& output_map = output.Get<ObjectMap>();
 		TOY_ASSERT(output_map.Find("id") >= 0);
-		String output_id_str = output_map.Get("id");
+		String output_id_str = output_map.Get("id").ToString();
 		
 		to.name = stage_str;
 		to.type = type_str;
 		to.output_id = output_id_str;
-		to.script_path = stage_path;
+		to.script_path = EscapeString(stage_path);
 		to.script = stage_content;
 		
 		to.inputs.SetCount(input_arr.GetCount());
@@ -650,107 +650,6 @@ bool ToyLoader::MakeScript() {
 String ToyLoader::GetResult() {
 	return eon_script;
 }
-
-
-#if 0
-
-static const char* __single_buf_tmpl = R"30N(
-machine sdl.app: {
-	driver context: {
-		sdl.context: true;
-	};
-	chain program: {
-		loop ogl.fbo: {
-			ogl.customer: true;
-			sdl.fbo.standalone: true {filepath: "${PATH0}";};
-		};
-	};
-};
-)30N";
-
-static const char* __double_buf_tmpl = R"30N(
-machine sdl.app: {
-	driver context: {
-		sdl.context: true;
-	};
-	chain program: {
-		loop ogl.fbo: {
-			ogl.customer: true;
-			ogl.fbo.source.pipe:	true {name: "buf0"; filepath: "${PATH1}";};
-			sdl.fbo.pipe: true {name: "buf1"; in0: "buf0"; filepath: "${PATH0}";};
-		};
-	};
-};
-)30N";
-
-static const char* __double_side_buf_tmpl = R"30N(
-machine sdl.app: {
-	driver context: {
-		sdl.context: true;
-	};
-	chain program: {
-		loop ogl.fbo.buffer: {
-			ogl.customer: true;
-			ogl.fbo.source: true {name: "buf0"; filepath: "${PATH1}";};
-		};
-		loop ogl.fbo.screen: {
-			ogl.customer: true;
-			sdl.fbo: true {name: "buf1"; in0: "buf0"; filepath: "${PATH0}";};
-		};
-	};
-};
-
-)30N";
-
-static const char* __triple_buf_tmpl = R"30N(
-machine sdl.app: {
-	driver context: {
-		sdl.context: true;
-	};
-	chain program: {
-		loop ogl.fbo: {
-			ogl.customer: true;
-			ogl.fbo.source.pipe:	true {name: "buf0"; filepath: "${PATH1}";};
-			sdl.fbo.pipe: true {name: "buf1"; in0: "buf0"; filepath: "${PATH0}";};
-		};
-	};
-};
-)30N";
-
-
-
-String ToyLoader::GetSingleBufferVideo(String glsl_path) {
-	ASSERT(!glsl_path.IsEmpty())
-	String out = __single_buf_tmpl;
-	out.Replace("${PATH0}", glsl_path);
-	//DUMP(out);
-	return out;
-}
-
-String ToyLoader::GetDoubleBufferVideo(String glsl_path0, String glsl_path1) {
-	ASSERT(!glsl_path0.IsEmpty())
-	ASSERT(!glsl_path1.IsEmpty())
-	String out = __double_buf_tmpl;
-	out.Replace("${PATH0}", glsl_path0);
-	out.Replace("${PATH1}", glsl_path1);
-	//DUMP(out);
-	return out;
-}
-
-String ToyLoader::GetTripleBufferVideo(String glsl_path0, String glsl_path1, String glsl_path2) {
-	ASSERT(!glsl_path0.IsEmpty())
-	ASSERT(!glsl_path1.IsEmpty())
-	ASSERT(!glsl_path2.IsEmpty())
-	String out = __triple_buf_tmpl;
-	TODO
-	out.Replace("${PATH0}", glsl_path0);
-	out.Replace("${PATH1}", glsl_path1);
-	out.Replace("${PATH2}", glsl_path2);
-	//DUMP(out);
-	return out;
-}
-
-#endif
 
 
 NAMESPACE_SERIAL_END

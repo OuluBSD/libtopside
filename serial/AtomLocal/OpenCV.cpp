@@ -20,7 +20,7 @@ bool OpenCVBase::Initialize(const Script::WorldState& ws) {
 	
 	bool succ = false;
 	for(int i = 0; i < devmgr.GetNativeCount(); i++) {
-		V4L2_Device& dev = devmgr.GetNative(i);
+		auto& dev = devmgr.GetNative(i);
 		
 		for(int l = 0; l < dev.GetCaptureCount(); l++) {
 			OpenCVCaptureDevice& cap = dev.GetCapture(l);

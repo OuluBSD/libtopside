@@ -600,7 +600,7 @@ struct InternalPacketData : RTTIBase {
 	};
 	
 	
-	int GetTextLength()		{return strnlen(txt, 8);}
+	int GetTextLength()		{return (int)strnlen(txt, 8);}
 	String GetText()		{return String(txt, GetTextLength());}
 	
 	//void ClearLinks() {dev_comp = 0;}

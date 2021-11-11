@@ -122,10 +122,10 @@ void VoidSinkBase::IntervalSinkProcess() {
 			float* it = (float*)(void*)data.begin();
 			float* end = (float*)(void*)data.end();
 			int dbg_i = 0;
-			int dbg_count = end - it;
+			int dbg_count = (int)(end - it);
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
-				float f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
+				double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
 				ASSERT(IsClose(f0, f1));
 			}
 			dbg_total_samples += dbg_count;
@@ -217,10 +217,10 @@ bool VoidPollerSinkBase::ProcessPackets(PacketIO& io) {
 			float* it = (float*)(void*)data.begin();
 			float* end = (float*)(void*)data.end();
 			int dbg_i = 0;
-			int dbg_count = end - it;
+			int dbg_count = (int)(end - it);
 			for (; it != end; ++it, ++dbg_i) {
 				float f0 = *it;
-				float f1 = t.rolling_value++ / 255.0 * 2.0 - 1.0;
+				double f1 = t.rolling_value++ / 255.0 * 2.0 - 1.0;
 				ASSERT(IsClose(f0, f1));
 				if (!IsClose(f0, f1)) {
 					fail = true;

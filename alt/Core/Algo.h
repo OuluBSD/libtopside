@@ -82,7 +82,7 @@ inline dword Random() {return (dword)RNG::Local().Random(UINT32_MAX);}
 inline void Random64(uint64* t, int n) {return RNG::Local().GetN(t, n);}
 inline dword Random(dword n) {return (dword)RNG::Local().Random(n);}
 inline uint64 Random64() {return RNG::Local().Get64();}
-inline uint64 Random64(uint64 n) {return RNG::Local().Random(n);}
+inline uint64 Random64(uint64 n) {return RNG::Local().Random64(n);}
 inline double Randomf() {return RNG::Local().Randomf();}
 inline void SeedRandom() {return RNG::Local().Seed();}
 inline void SeedRandom(dword seed) {return RNG::Local().Seed(seed);}

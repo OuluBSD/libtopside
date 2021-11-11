@@ -372,7 +372,7 @@ public:
 	class Iterator {
 		Item* it = 0;
 		mutable R ref;
-		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.template AsRefT();}
+		void ChkRef() const {if (ref.IsEmpty() && it) ref = it->value.template AsRefT<T>();}
 		void ClearRef() {ref.Clear();}
 	public:
 		Iterator() {}

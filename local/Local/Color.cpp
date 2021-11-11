@@ -21,9 +21,9 @@ void FindColors(RgbaRange i, RGBA& fg, RGBA& bg) {
 		it0++;
 		it1++;
 	}
-	int r = r_sum / edge_count;
-	int g = g_sum / edge_count;
-	int b = b_sum / edge_count;
+	int64 r = r_sum / edge_count;
+	int64 g = g_sum / edge_count;
+	int64 b = b_sum / edge_count;
 	it0 = begin + sz.cx;
 	it1 = begin + (sz.cx - 1) + sz.cx;
 	for(int y = 1; y < sz.cy-1; y++) {
@@ -37,17 +37,17 @@ void FindColors(RgbaRange i, RGBA& fg, RGBA& bg) {
 		it0 += sz.cx;
 		it1 += sz.cx;
 	}
-	bg.r = r_sum / edge_count;
-	bg.g = g_sum / edge_count;
-	bg.b = b_sum / edge_count;
+	bg.r = (byte)(r_sum / edge_count);
+	bg.g = (byte)(g_sum / edge_count);
+	bg.b = (byte)(b_sum / edge_count);
 	bg.a = 255;
 	
 	double opp_r_sum = 0, opp_g_sum = 0, opp_b_sum = 0, opp_sum = 0;
 	const RGBA *it = begin;
 	while (it != end) {
-		double r_diff = (int)it->r - r;
-		double g_diff = (int)it->g - g;
-		double b_diff = (int)it->b - b;
+		double r_diff = (double)it->r - (double)r;
+		double g_diff = (double)it->g - (double)g;
+		double b_diff = (double)it->b - (double)b;
 		double dist = sqrt(r_diff * r_diff + g_diff * g_diff + b_diff * b_diff);
 		opp_r_sum += it->r * dist;
 		opp_g_sum += it->g * dist;
@@ -55,9 +55,9 @@ void FindColors(RgbaRange i, RGBA& fg, RGBA& bg) {
 		opp_sum += dist;
 		it++;
 	}
-	fg.r = opp_r_sum / opp_sum;
-	fg.g = opp_g_sum / opp_sum;
-	fg.b = opp_b_sum / opp_sum;
+	fg.r = (byte)(opp_r_sum / opp_sum);
+	fg.g = (byte)(opp_g_sum / opp_sum);
+	fg.b = (byte)(opp_b_sum / opp_sum);
 	fg.a = 255;
 }
 
@@ -84,7 +84,9 @@ Point FindWeightCenter(RgbaRange i, RGBA fg, RGBA bg) {
 	}
 	if (!weight_sum)
 		return Point(sz.cx/2, sz.cy/2);
-	Point pt(x_sum / weight_sum, y_sum / weight_sum);
+	Point pt(
+		(byte)(x_sum / weight_sum),
+		(byte)(y_sum / weight_sum));
 	return pt;
 }
 
@@ -123,10 +125,10 @@ RGBA BlendRGBA(RGBA a, RGBA b, double blend) {
 	double amul = blend;
 	double bmul = 1.0 - blend;
 	RGBA out;
-	out.r = a.r * amul + b.r * bmul;
-	out.g = a.g * amul + b.g * bmul;
-	out.b = a.b * amul + b.b * bmul;
-	out.a = a.a * amul + b.a * bmul;
+	out.r = (byte)(a.r * amul + b.r * bmul);
+	out.g = (byte)(a.g * amul + b.g * bmul);
+	out.b = (byte)(a.b * amul + b.b * bmul);
+	out.a = (byte)(a.a * amul + b.a * bmul);
 	return out;
 }
 
@@ -185,9 +187,9 @@ double JetPaletteBlue(double gray) {
 
 Color JetPalette(double gray) {
 	return Color(
-		JetPaletteRed(gray),
-		JetPaletteGreen(gray),
-		JetPaletteBlue(gray));
+		(byte)JetPaletteRed(gray),
+		(byte)JetPaletteGreen(gray),
+		(byte)JetPaletteBlue(gray));
 }
 
 

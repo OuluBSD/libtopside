@@ -11,7 +11,7 @@ String FromCString(const char *s, const char *lim) {
 		lim--;
 	}
 	int i, j;
-	int l = lim - s;
+	int l = (int)(lim - s);
 	char esc_char[] = { '\a', '\b', '\f', '\n', '\r', '\t', '\v', '\\'};
 	char essc_str[] = {  'a', 'b', 'f', 'n', 'r', 't', 'v', '\\'};
 	for (i = 0;i < l;i++) {

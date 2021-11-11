@@ -87,7 +87,8 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 			if (!stmt)
 				stmt = ws.FindStatement(0, ll.def.stmts);
 			if (!stmt) {
-				if (print) RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: src #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
+				if (print)
+					RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: src #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
 				continue;
 			}
 			
@@ -117,7 +118,8 @@ bool ScriptConnectionSolver::MakeOptionLinkVector() {
 			if (!stmt)
 				stmt = ws.FindStatement(0, ll.def.stmts);
 			if (!stmt) {
-				if (print) RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: sink #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
+				if (print)
+					RTLOG("ScriptConnectionSolver::MakeOptionLinkVector: sink #" << dbg_i << " prev=" << HexStr(prev_ws) << " no statement");
 				continue;
 			}
 			

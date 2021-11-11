@@ -1,6 +1,12 @@
 #ifndef _Local_Local_h_
 #define _Local_Local_h_
 
+
+#ifdef flagMSC
+	#pragma warning( disable : 4250 ) // C4250: useless Inheritance via dominance warning
+#endif
+
+
 #include "Before.h"
 #include "Compat.h"
 #include <SharedCore/TokenParser.h>

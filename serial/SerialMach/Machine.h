@@ -30,6 +30,9 @@ protected:
 	
 };
 
+template<typename T>
+using IsSystem = std::is_base_of<SystemBase, T>;
+
 
 template<typename T>
 class System :

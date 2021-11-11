@@ -614,7 +614,7 @@ template <>	inline bool TerminalTest<Serial::Script::ActionNode>(
 	MACHVER_ENTER(TerminalTest)
 	
 	using namespace Serial;
-	int est = n.GetEstimate();
+	double est = n.GetEstimate();
 	if (est <= 0) {
 		MACHVER_LEAVE(TerminalTest)
 		return true;

@@ -6,7 +6,7 @@
 	void GuiMainFn_(); \
 	\
 	int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
-		::SetWin32Instances(hinst, hprev, show); \
+		::UPP::SetWin32Instances(hinst, hprev, show); \
 		char chr[512]; GetModuleFileNameA(NULL, chr, 512); \
 		::UPP::AppInit__(0, (const char **)cmdline); \
 		TS::SingleMachine().Run(gui, GuiMainFn_); \

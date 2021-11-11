@@ -1,4 +1,4 @@
-#ifdef flagWIN32
+#if 0 && defined flagWIN32
 	#define GLEW_STATIC 1
 	#include <ports/glew/glew.h>
 #else
@@ -6,7 +6,7 @@
 #endif
 
 
-#if 0 //def flagWIN32
+#if defined flagWIN32 && defined flagMSC
 	#include <SDL.h>
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>

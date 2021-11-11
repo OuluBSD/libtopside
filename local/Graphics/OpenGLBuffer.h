@@ -216,7 +216,7 @@ public:
 	double						frame_time = 0;
 	double						block_offset = 0;
 	int							frames = -1;
-	int							fps = 0;
+	double						fps = 0;
 	Point						fb_offset;
 	double						time_us = 0;
 	Time						time;

@@ -221,7 +221,7 @@ public:
 	}
 
 	void CopyTo(AtomBase* target) const override {
-		ASSERT(target->GetType() == GetType());
+		ASSERT(target->GetType() == ((AtomBase*)this)->GetType());
 	    
 	    TODO
 		//*static_cast<T*>(target) = *static_cast<const T*>(this);
@@ -315,7 +315,6 @@ public:
 	}
 	
 	void AddBase(AtomBase* atom) {
-		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		AtomTypeCls type = atom->GetType();
 		ASSERT(type.IsValid());
 		//AtomMapBase::Iterator it = AtomMapBase::Find(type);

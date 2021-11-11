@@ -201,16 +201,16 @@ public:
 };
 
 struct TimeSeriesBase {
-	int freq;
+	double freq;
 	int sample_rate;
 	
 	
 	void	Clear() {freq = 0; sample_rate = 0;}
-	void	SetTimeSeries(int freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
-	void	SetFPS(int fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
+	void	SetTimeSeries(double freq, int sample_rate) {this->freq = freq; this->sample_rate = sample_rate;}
+	void	SetFPS(double fps, int sample_rate=1) {freq = fps * sample_rate; this->sample_rate = sample_rate;}
 	void	SetDefault() {freq = 1; sample_rate = 1;}
 	
-	String	ToString() const {return "freq: " + IntStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
+	String	ToString() const {return "freq: " + DblStr(freq) + ", sample-rate: " + IntStr(sample_rate);}
 	bool	IsPlaybackCompatible(const TimeSeriesBase& b) const {return b.freq == freq;}
 	bool	IsSame(const TimeSeriesBase& b) const {
 		return	b.freq == freq &&
@@ -219,7 +219,7 @@ struct TimeSeriesBase {
 	bool	IsValid() const {return freq > 0 && sample_rate > 0;}
 	double	GetFrameSeconds() const {return (double)sample_rate / (double)freq;}
 	int		GetSampleRate() const {return sample_rate;}
-	int		GetFrequency() const {return freq;}
+	double	GetFrequency() const {return freq;}
 	double	GetFPS() const {return freq / sample_rate;}
 	
 	void operator=(const TimeSeriesBase& c) {

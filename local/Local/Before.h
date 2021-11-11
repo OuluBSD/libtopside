@@ -47,7 +47,7 @@
 	#define RTLOG(x) {StringStream ____; ____ << "RTDBG: " << x << "\n"; UPP::VppLog() << ____.GetResult(); UPP::VppLog().Flush();}
 #else
 	#define DEBUG_RT_PIPE 0
-	#define RTLOG(x)
+	#define RTLOG(x) {}
 #endif
 
 
@@ -57,21 +57,17 @@
 
 // http://dranger.com/ffmpeg/tutorial01.html
 #if defined flagPOSIX || defined HAVE_MINGW
-	#define HAVE_FFMPEG 1
-	
-	#if 0
-	//#if defined flagFREEBSD && defined flagGCC
-		// skip v4l2 because of weird VideoDevice::open
-	#else
-		#define HAVE_V4L2_DEVMGR	1
-		#define HAVE_OPENCV			1
-		
-		//#define HAVE_V4L2_CAP		1
-		
-		#ifdef UPP_VERSION
-			//#define V4L2_SLOW		1
-		#endif
+	#define HAVE_FFMPEG			1
+	#define HAVE_V4L2_DEVMGR	1
+	#define HAVE_OPENCV			1
+	//#define HAVE_V4L2_CAP		1
+	#ifdef UPP_VERSION
+		//#define V4L2_SLOW		1
 	#endif
+#elif defined flagWIN32 && defined flagMSC
+	#define HAVE_FFMPEG			1
+	#define HAVE_OPENCV			1
+	#define HAVE_WIN32_DEVMGR	1
 #endif
 
 

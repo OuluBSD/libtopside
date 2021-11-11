@@ -14,6 +14,10 @@ library(POSIX) "opencv_core opencv_imgproc opencv_highgui opencv_videoio opencv_
 
 library(POSIX) v4l2;
 
+library(WIN32 & DEBUG) opencv_world454d;
+
+library(WIN32 & !DEBUG) opencv_world454;
+
 file
 	AtomLocal.h,
 	Internal.h,
@@ -38,6 +42,8 @@ file
 	Capture_OpenCV.cpp,
 	DeviceManager_V4L2.h,
 	DeviceManager_V4L2.cpp,
+	DeviceManager_Win32.h,
+	DeviceManager_Win32.cpp,
 	OpenCV.h,
 	OpenCV.cpp,
 	Capture_V4L2.h,

@@ -32,7 +32,7 @@ using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaDirectoryBase>>
 using CookieRef						= Ref<ExchangeProviderCookie,		RefParent1<ExchangePoint>>;
 
 
-template<class T> struct OffsetGen;
+template<class T> class OffsetGen;
 
 
 template<class T>

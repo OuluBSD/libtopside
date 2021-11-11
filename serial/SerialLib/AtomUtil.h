@@ -19,10 +19,12 @@ class AsyncMemForwarderBase :
 public:
 	
 	void	Visit(RuntimeVisitor& vis) override {}
-	bool	IsReady(PacketIO& io) override;
-	bool	ForwardAsyncMem(byte* mem, int size) override;
-	bool	ProcessPackets(PacketIO& io) override;
-	bool	IsConsumedPartialPacket() override {return partial_packet;}
+	
+	bool	IsReady(PacketIO& io) final;
+	bool	ForwardAsyncMem(byte* mem, int size);
+	bool	ProcessPackets(PacketIO& io) final;
+	bool	IsConsumedPartialPacket() final {return partial_packet;}
+	
 	virtual bool PassConsumePacket(int sink_ch, const Packet& in) {return true;}
 	
 };
@@ -39,6 +41,7 @@ public:
 	
 	void	Update(double dt) override;
 	bool	IsReady(PacketIO& io) override;
+	
 	void	Visit(RuntimeVisitor& vis) override {}
 	
 	void	SetFPS(int fps) {dt = 1.0 / (double)fps;}
@@ -75,12 +78,12 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	void UpdateConfig(double dt) override {
+	void UpdateConfig(double dt) final {
 		ASSERT(customer);
 		customer->cfg.Update(dt, true);
 	}
 	
-	RealtimeSourceConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
+	RealtimeSourceConfig* GetConfig() final {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	
 };
 

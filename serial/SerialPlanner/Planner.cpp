@@ -498,7 +498,7 @@ bool ActionPlanner::SetCost(int act_idx, int cost )
 
 
 void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode** prev) {
-	int est = n.GetEstimate();
+	double est = n.GetEstimate();
 	if (est < side_sink_max_est) {
 		side_sink_max_est = est;
 		side_sinks.Clear();
@@ -530,7 +530,7 @@ void ActionPlanner::AddSideSink(int ch_i, const Searcher& as, ANode& n, ANode** 
 }
 
 void ActionPlanner::AddSideSource(int ch_i, const Searcher& as, ANode& n, ANode** prev) {
-	int est = n.GetEstimate();
+	double est = n.GetEstimate();
 	//if (est > 1) return; // this is wrong, because some "false" constraints give longer estimate
 	if (est < side_src_max_est) {
 		side_src_max_est = est;

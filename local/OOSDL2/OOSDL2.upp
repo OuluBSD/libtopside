@@ -1,9 +1,15 @@
 description "\3770,128,128";
 
 library
-	"SDL2 SDL2main SDL2_ttf SDL2_image",
-	"GL GLU",
-	GLEW;
+	"SDL2 SDL2main SDL2_ttf SDL2_image";
+
+library(POSIX) GLEW;
+
+library(POSIX) "GL GLU";
+
+library(WIN32) "Opengl32 glu32";
+
+library(WIN32) glew32;
 
 file
 	OOSDL2.h,

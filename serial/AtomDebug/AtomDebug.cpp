@@ -73,7 +73,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 				}
 				for(int i = 0; i < args.GetCount(); i++) {
 					String key = "${" + args.GetKey(i) + "}";
-					String value = args[i];
+					String value = args[i].ToString();
 					script_str.Replace(key, value);
 				}
 				//LOG(script_str);

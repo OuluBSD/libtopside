@@ -18,6 +18,7 @@ enum EventStateKey {
 	
 	MOUSE_EVENT_BASE = 0x1000,
 	
+	#undef MOUSE_EVENT // win32 wincontypes.h
 	#define MOUSE_EVENT(x) MOUSE_##x = MOUSE_EVENT_BASE + Ctrl::x,
 	
 	MOUSE_EVENT(BUTTON)

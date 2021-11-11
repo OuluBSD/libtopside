@@ -378,7 +378,7 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	this->file_fmt_ctx = file_fmt_ctx;
 	
 	stream_i = -1;
-	for (int i = 0; i < file_fmt_ctx->nb_streams; i++) {
+	for (int i = 0; i < (int)file_fmt_ctx->nb_streams; i++) {
 		if (file_fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && stream_i < 0) {
 			stream_i = i;
 		}
@@ -438,7 +438,7 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	this->file_fmt_ctx = file_fmt_ctx;
 	
 	stream_i = -1;
-	for (int i = 0; i < file_fmt_ctx->nb_streams; i++) {
+	for (int i = 0; i < (int)file_fmt_ctx->nb_streams; i++) {
 		if (file_fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && stream_i < 0) {
 			stream_i = i;
 		}

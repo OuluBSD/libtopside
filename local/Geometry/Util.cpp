@@ -42,16 +42,16 @@ mat4 GetViewport(float x, float y, float w, float h, float depth) {
 }
 
 void ColorCopy(const RGBA& src, vec3& dst) {
-	dst[0] = src.r / 255.0;
-	dst[1] = src.g / 255.0;
-	dst[2] = src.b / 255.0;
+	dst[0] = src.r / 255.0f;
+	dst[1] = src.g / 255.0f;
+	dst[2] = src.b / 255.0f;
 }
 
 void ColorCopy(const RGBA& src, vec4& dst) {
-	dst[0] = src.r / 255.0;
-	dst[1] = src.g / 255.0;
-	dst[2] = src.b / 255.0;
-	dst[3] = src.a / 255.0;
+	dst[0] = src.r / 255.0f;
+	dst[1] = src.g / 255.0f;
+	dst[2] = src.b / 255.0f;
+	dst[3] = src.a / 255.0f;
 }
 
 

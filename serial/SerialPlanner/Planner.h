@@ -168,7 +168,8 @@ public:
 typedef Node<ActionNode> APlanNode;
 
 
-struct Plan : Moveable<Plan> {
+class Plan : Moveable<Plan> {
+public:
 	Vector<Script::ActionNode*> plan;
 	
 	Plan() {}
@@ -218,7 +219,7 @@ protected:
 	ScriptLoopLoader*			loop_loader = 0;
 	Array<WorldState>			search_cache;
 	Vector<State>				side_sinks, side_srcs;
-	int							side_sink_max_est, side_src_max_est;
+	double						side_sink_max_est, side_src_max_est;
 	
 public:
 	ArrayMap<hash_t, Node<ActionNode> > tmp_sub;

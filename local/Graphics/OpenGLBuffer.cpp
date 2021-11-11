@@ -325,7 +325,6 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	
 	
 	GLint prog = fg_prog;
-	GLint uindex;
 	
     glBindProgramPipeline(gl_stage);
 	glUseProgram(prog);
@@ -453,22 +452,22 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	}
 	
 	else if (var == VAR_AUDIOTIME) {
-		glUniform1f(uindex, time_total);
+		glUniform1f(uindex, (GLfloat)time_total);
 	}
 	
 	else if (var == VAR_COMPAT_RESOLUTION) {
 		ASSERT(fb_size.cx > 0 && fb_size.cy > 0);
-		glUniform3f(uindex, fb_size.cx, fb_size.cy, 1.0);
+		glUniform3f(uindex, (GLfloat)fb_size.cx, (GLfloat)fb_size.cy, 1.0f);
 	}
 	
 	else if (var == VAR_COMPAT_TIME) {
 		//RTLOG("OglBuffer::SetVar: " << time_total);
-		glUniform1f(uindex, time_total);
+		glUniform1f(uindex, (GLfloat)time_total);
 	}
 	
 	else if (var == VAR_COMPAT_TIMEDELTA) {
 		ASSERT(frame_time != 0.0);
-		glUniform1f(uindex, frame_time);
+		glUniform1f(uindex, (GLfloat)frame_time);
 	}
 	
 	else if (var == VAR_COMPAT_FRAME) {
@@ -481,30 +480,30 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 			Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 			Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
 			glUniform4f(uindex,
-				mouse_click.x,
-				mouse_click.y,
-				mouse_drag.x,
-				mouse_drag.y);
+				(GLfloat)mouse_click.x,
+				(GLfloat)mouse_click.y,
+				(GLfloat)mouse_drag.x,
+				(GLfloat)mouse_drag.y);
 		}
 	}
 	
 	else if (var == VAR_COMPAT_DATE) {
 		double sec = ((int)time.hour * 60 + (int)time.minute) * 60 + (int)time.second;
 		sec += time_us;
-		glUniform4f(uindex, time.year, time.month, time.day, sec);
+		glUniform4f(uindex, (GLfloat)time.year, (GLfloat)time.month, (GLfloat)time.day, (GLfloat)sec);
 	}
 	
 	else if (var == VAR_COMPAT_SAMPLERATE) {
-		glUniform1f(uindex, sample_rate);
+		glUniform1f(uindex, (GLfloat)sample_rate);
 	}
 	
 	else if (var == VAR_COMPAT_OFFSET) {
 		if (fb_size.cx > 0 && fb_size.cy > 0) {
 			float x = fb_offset.x;
 			float y = fb_size.cy - fb_size.cy - fb_offset.y; // -y_offset
-			glUniform2f(uindex, x, y);
+			glUniform2f(uindex, (GLfloat)x, (GLfloat)y);
 		} else {
-			glUniform2f(uindex, 0.0, 0.0);
+			glUniform2f(uindex, 0.0f, 0.0f);
 		}
 	}
 	
@@ -521,7 +520,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	
 	else if (var == VAR_COMPAT_FRAMERATE) {
 		ASSERT(fps > 0);
-		glUniform1f(uindex, fps);
+		glUniform1f(uindex, (GLfloat)fps);
 	}
 	
 	else if (var == VAR_COMPAT_CHANNELTIME) {
@@ -535,7 +534,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 			else
 				values[j] = time_total;
 		}
-		glUniform4f(uindex, values[0], values[1], values[2], values[3]);
+		glUniform4f(uindex, (GLfloat)values[0], (GLfloat)values[1], (GLfloat)values[2], (GLfloat)values[3]);
 	}
 	
 	else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
@@ -545,9 +544,9 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 			OglBufferInput& in = in_buf[ch];
 			const OglBuffer* in_buf = in.GetBuffer();
 			if (in_buf) {
-				values[0] = in_buf->fb_size.cx;
-				values[1] = in_buf->fb_size.cy;
-				values[2] = in_buf->fb_depth;
+				values[0] = (GLfloat)in_buf->fb_size.cx;
+				values[1] = (GLfloat)in_buf->fb_size.cy;
+				values[2] = (GLfloat)in_buf->fb_depth;
 			}
 			/*else if (
 				in.type == OglBufferInput::TEXTURE ||
@@ -566,7 +565,7 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	}
 	
 	else if (var == VAR_COMPAT_BLOCKOFFSET) {
-		glUniform1f(uindex, block_offset);
+		glUniform1f(uindex, (GLfloat)block_offset);
 	}
 	else {
 		ASSERT_(false, "Invalid variable");
@@ -859,7 +858,6 @@ GLint OglBuffer::CompileShader(int prog_i, String shader_source) {
 	GLuint shader = glCreateShader(shader_type);
 	GLint status = GL_FALSE;
 	GLint loglen;
-	GLchar *error_message;
 	if (shader == 0) {
 		OnError(fn_name, "glCreateShader failed unexpectedly");
 		return -1;

@@ -22,9 +22,9 @@ bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometr
 	if (!f_shader_file.Open(fragment_path)) {SetError("fragment shader file could not been loaded"); return false;}
 	
 	// convert stream into string
-	int v_size = v_shader_file.GetSize();
+	int v_size = (int)v_shader_file.GetSize();
 	vertex_code = v_shader_file.Get(v_size);
-	int f_size = f_shader_file.GetSize();
+	int f_size = (int)f_shader_file.GetSize();
 	fragment_code = f_shader_file.Get(f_size);
 	
 	// close file handlers
@@ -34,7 +34,7 @@ bool OpenGLShader::Load(String vertex_path, String fragment_path, String geometr
 	// if geometry shader path is present, also load a geometry shader
 	if (geometry_path.GetCount()) {
 		if (!g_shader_file.Open(geometry_path))  {SetError("geometry shader file could not been loaded"); return false;}
-		geometry_code = g_shader_file.Get(g_shader_file.GetSize());
+		geometry_code = g_shader_file.Get((int)g_shader_file.GetSize());
 		g_shader_file.Close();
 	}
 	

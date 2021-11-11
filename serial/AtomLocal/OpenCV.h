@@ -12,12 +12,16 @@ class OpenCVBase :
 	Format					fmt;
 	String					last_error;
 	OpenCVCaptureDevice*	cap = 0;
-	V4L2_DeviceManager		devmgr;
 	Size					def_cap_sz;
 	int						def_cap_fps;
 	int						prev_frame_i = -1;
 	bool					vflip = false;
 	
+	#ifdef flagWIN32
+	WIN32_DeviceManager		devmgr;
+	#else
+	V4L2_DeviceManager		devmgr;
+	#endif
 	
 public:
 	OpenCVBase();
