@@ -383,6 +383,8 @@ String FindShareDir() {
 	
 	#if defined flagWIN32
 	String home_upphub_share = "C:\\git\\libtopside\\share";
+	if (!DirectoryExists(home_upphub_share))
+		home_upphub_share = "C:\\libtopside\\share";
 	#else
 	String home_upphub_share = AppendFileName(GetHomeDirFile("libtopside"), "share");
 	#endif
@@ -407,7 +409,6 @@ String RealizeShareFile(String rel_path) {
 	if (rel_path.IsEmpty())
 		return String();
 	
-	
 	for (int tries = 0; tries < 5; tries++) {
 		String path;
 		switch (tries) {
@@ -417,6 +418,8 @@ String RealizeShareFile(String rel_path) {
 			case 3: path = ShareDirFile(AppendFileName("videos", rel_path)); break;
 			case 4: path = ShareDirFile(AppendFileName("sounds", rel_path)); break;
 		}
+		
+		//LOG("RealizeShareFile: testing path: " << path);
 		
 		if (FileExists(path))
 			return path;
