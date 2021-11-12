@@ -1,7 +1,7 @@
 #ifndef _ManyCore_OpenGL_h_
 #define _ManyCore_OpenGL_h_
 
-#ifndef flagGUI
+#ifndef flagSCREEN
 	#error <Graphics/OpenGL.h> should only be included, when GUI flag is set.
 #endif
 

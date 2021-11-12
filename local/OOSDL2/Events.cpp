@@ -45,7 +45,7 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 	SDL_Event event;
 	Size screen_sz;
 	Point mouse_pt;
-#ifdef flagGUI
+#ifdef flagSCREEN
 	Screen* scr = ctx->FindContextConnector<Screen>();
 #endif
 	dword key;
@@ -57,7 +57,7 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 		
 	switch (event.type) {
 			
-#ifdef flagGUI
+#ifdef flagSCREEN
 			
 		case SDL_WINDOWEVENT:
 			

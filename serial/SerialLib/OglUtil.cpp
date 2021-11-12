@@ -1,5 +1,5 @@
 #include "SerialLib.h"
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 NAMESPACE_SERIAL_BEGIN
 

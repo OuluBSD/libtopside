@@ -1,8 +1,8 @@
 description "\377B113,42,150";
 
-uses(GUI & !CTRL) NonCtrlSDL2;
+uses(SCREEN & !GUI) NonCtrlSDL2;
 
-uses(GUI) Graphics;
+uses(SCREEN) Graphics;
 
 file
 	Default.h,

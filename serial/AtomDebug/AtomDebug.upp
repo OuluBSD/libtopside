@@ -3,7 +3,7 @@ description "\3770,128,128";
 uses
 	AtomLocal;
 
-uses(!GUI) AtomNonGUI;
+uses(!SCREEN) AtomNonScreen;
 
 file
 	AtomDebug.h,

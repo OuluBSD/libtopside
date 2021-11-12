@@ -259,7 +259,7 @@ void SplitterBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packe
 
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 OglShaderBase::OglShaderBase() {
 	

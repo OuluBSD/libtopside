@@ -30,7 +30,7 @@ bool SDL2ContextBase::PostInitialize() {
 	auto tim		= l->FindCast<SDL2TimerBase>();
 	auto ain		= l->FindCast<SDL2AudioInputBase>();
 	auto aout		= l->FindCast<SDL2AudioOutputBase>();
-	#ifdef flagGUI
+	#ifdef flagSCREEN
 	auto scr		= l->FindCast<SDL2ScreenBase>();
 	#endif
 	auto ev			= l->FindCast<SDL2EventsBase>();

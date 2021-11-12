@@ -7,7 +7,7 @@ uses
 	RTTI,
 	SharedCore;
 
-uses(!GUI) NonGUI;
+uses(!SCREEN) NonScreen;
 
 library(WIN32) "shlwapi comdlg32";
 

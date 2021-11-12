@@ -8,7 +8,7 @@ void Bundle::AddDefaultComponents() {
 	GetAddComponent<Timer>();
 	if (IsEnabled(AUDIO_IN))	GetAddComponent<AudioInput>();
 	if (IsEnabled(AUDIO_OUT))	GetAddComponent<AudioOutput>();
-#ifdef flagGUI
+#ifdef flagSCREEN
 	if (IsEnabled(SCREEN))		GetAddComponent<Screen>();
 #endif
 	if (IsEnabled(EVENTS))		GetAddComponent<Events>();

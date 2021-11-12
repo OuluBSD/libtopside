@@ -184,7 +184,7 @@ public:
 
 };
 
-#if defined flagGUI
+#if defined flagSCREEN
 class VideoDbgSrc : public Atom<VideoDbgSrc>, public VideoGenBase {
 
 public:
@@ -232,7 +232,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class AudioLoaderAtom : public Atom<AudioLoaderAtom>, public FfmpegAtomBase {
 
 public:
@@ -248,7 +248,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class VideoLoaderAtom : public Atom<VideoLoaderAtom>, public FfmpegAtomBase {
 
 public:
@@ -278,7 +278,7 @@ public:
 
 };
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
 public:
@@ -365,7 +365,7 @@ public:
 
 };
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlImageLoader : public Atom<SdlImageLoader>, public SDL2ImageBase {
 
 public:
@@ -381,7 +381,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class VolumeLoaderAtom : public Atom<VolumeLoaderAtom>, public VolumeLoaderBase {
 
 public:
@@ -397,7 +397,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2ScreenBase {
 
 public:
@@ -413,7 +413,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2ScreenBase {
 
 public:
@@ -429,7 +429,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlFboPipeSide : public Atom<SdlFboPipeSide>, public SDL2ScreenBase {
 
 public:
@@ -445,7 +445,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2ScreenBase {
 
 public:
@@ -461,7 +461,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2SwScreenBase {
 
 public:
@@ -492,7 +492,7 @@ public:
 
 };
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglShaderPipe : public Atom<OglShaderPipe>, public OglShaderBase {
 
 public:
@@ -508,7 +508,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglShaderAtom : public Atom<OglShaderAtom>, public OglShaderBase {
 
 public:
@@ -524,7 +524,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglShaderAtomSA : public Atom<OglShaderAtomSA>, public OglShaderBase {
 
 public:
@@ -540,7 +540,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglTextureSource : public Atom<OglTextureSource>, public OglTextureBase {
 
 public:
@@ -556,7 +556,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglVolumeSource : public Atom<OglVolumeSource>, public OglTextureBase {
 
 public:
@@ -572,7 +572,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglAudioSink : public Atom<OglAudioSink>, public OglFboReaderBase {
 
 public:
@@ -588,7 +588,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglKeyboardSource : public Atom<OglKeyboardSource>, public OglKeyboardBase {
 
 public:
@@ -604,7 +604,7 @@ public:
 };
 #endif
 
-#if defined flagGUI
+#if defined flagSCREEN
 class OglAudioSource : public Atom<OglAudioSource>, public OglAudioBase {
 
 public:
@@ -644,7 +644,7 @@ using AudioJoinerUserRef = Ref<AudioJoinerUser, AtomParent>;
 
 using AudioJoiner2UserRef = Ref<AudioJoiner2User, AtomParent>;
 
-#if defined flagGUI
+#if defined flagSCREEN
 using VideoDbgSrcRef = Ref<VideoDbgSrc, AtomParent>;
 #endif
 

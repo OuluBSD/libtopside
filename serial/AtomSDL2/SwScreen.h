@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 class SDL2SwScreenBase :
 	public SDL2BaseT<SDL2SwScreenBase>,

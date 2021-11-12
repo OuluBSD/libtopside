@@ -1,5 +1,5 @@
 #include "AtomSDL2.h"
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 NAMESPACE_SERIAL_BEGIN
 

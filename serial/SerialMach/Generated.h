@@ -51,7 +51,7 @@ namespace Serial {
 	ATOM_CLASS(SdlAudioAtom) \
 
 
-#define flagGUI_ATOM_TYPE_LIST \
+#define flagSCREEN_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(AUDIO_LOADER_ATOM) \
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
@@ -73,7 +73,7 @@ namespace Serial {
 	ATOM_TYPE(OGL_AUDIO_SOURCE) \
 
 
-#define flagGUI_ATOM_CLASS_LIST \
+#define flagSCREEN_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(AudioLoaderAtom) \
 	ATOM_CLASS(VideoLoaderAtom) \

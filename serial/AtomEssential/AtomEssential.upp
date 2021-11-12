@@ -1,14 +1,14 @@
 description "\377B128,0,255";
 
-uses(!GUI) NonGUI;
+uses(!SCREEN) NonScreen;
 
-uses(GUI & !CTRL) NonCtrlSDL2;
+uses(SCREEN & !GUI) NonCtrlSDL2;
 
-uses(GUI & CTRL) SDL2GUI3D;
+uses(SCREEN & GUI) SDL2GUI3D;
 
-uses(GUI & CTRL) VirtualGui3D;
+uses(SCREEN & GUI) VirtualGui3D;
 
-uses(GUI) AtomSDL2;
+uses(SCREEN) AtomSDL2;
 
-uses(!GUI) AtomNonGUI;
+uses(!SCREEN) AtomNonScreen;
 

@@ -20,8 +20,8 @@ String GetSubAtomString(SubAtomCls t) {
 		#define ATOM_TYPE(x) case x:	return #x;
 		ATOM_TYPE_LIST
 		
-		#ifdef flagGUI
-		flagGUI_ATOM_TYPE_LIST
+		#ifdef flagSCREEN
+		flagSCREEN_ATOM_TYPE_LIST
 		#endif
 		
 		#ifdef HAVE_OPENCV

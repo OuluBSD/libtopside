@@ -10,6 +10,7 @@ class TypeExpr {
 public:
 	typedef enum {
 		EMPTY,
+		#undef VOID
 		VOID,
 		MOVE,
 		REFERENCE,

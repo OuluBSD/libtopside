@@ -25,7 +25,7 @@ Shader* Shader::NewDefault() {
 	
 	switch (f.gfx) {
 		case AppFlags::GFX_SW:		return new CpuShader();
-#ifdef flagGUI
+#ifdef flagSCREEN
 		case AppFlags::GFX_OPENGL:	return new OpenGLShader();
 		case AppFlags::GFX_DX12:
 		case AppFlags::GFX_VULKAN:

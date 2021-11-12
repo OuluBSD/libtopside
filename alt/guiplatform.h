@@ -1,5 +1,5 @@
-#if defined(flagGUI)
-	#if defined(flagCTRL)
+#if defined(flagSCREEN)
+	#if defined(flagGUI)
 		#define GUIPLATFORM_KEYCODES_INCLUDE       <VirtualGui3D/Keys.h>
 		#define GUIPLATFORM_INCLUDE                <VirtualGui3D/VirtualGui3D.h>
 		#define VIRTUALGUI 1
@@ -13,6 +13,6 @@
 		#define HAVE_SDL2 1
 	#endif
 #else
-	#define NONCTRLPLATFORM_BACKEND_INCLUDE         <NonGUI/DrawBackend.h>
-	#define NONCTRLPLATFORM_INCLUDE                 <NonGUI/NonGUI.h>
+	#define NONCTRLPLATFORM_BACKEND_INCLUDE         <NonScreen/DrawBackend.h>
+	#define NONCTRLPLATFORM_INCLUDE                 <NonScreen/NonScreen.h>
 #endif

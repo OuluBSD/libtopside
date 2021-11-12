@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 enum EventStateKey {
 	KEYBOARD_PRESSED,

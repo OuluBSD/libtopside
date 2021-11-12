@@ -2,7 +2,7 @@
 	#define GLEW_STATIC 1
 #endif
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 	#include <GL/glew.h>
 	#include <GL/gl.h>
 #endif
@@ -12,22 +12,23 @@
 #endif
 
 
-#if 0 //def flagWIN32
+#if defined flagWIN32 && defined flagMSC
 	#include <SDL.h>
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>
 	#include <SDL_syswm.h>
-	#ifdef flagGUI
+	#ifdef flagSCREEN
 		#include <SDL_opengl.h>
 	#endif
 #else
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_ttf.h>
 	#include <SDL2/SDL_image.h>
-	#ifdef flagGUI
+	#ifdef flagSCREEN
 		#include <SDL2/SDL_opengl.h>
 	#endif
 #endif
+
 #undef main
 
 

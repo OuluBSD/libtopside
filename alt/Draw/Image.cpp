@@ -35,7 +35,7 @@ void ImageBuffer::Clear() {
 	buf.SetCount(0);
 }
 
-#ifndef flagGUI
+#ifndef flagSCREEN
 Image ImageBuffer::GetImage() {
 	TODO
 }

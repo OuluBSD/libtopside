@@ -1,7 +1,7 @@
 #ifndef _AtomDebug_AtomDebug_h_
 #define _AtomDebug_AtomDebug_h_
 
-#include <AtomNonGUI/AtomNonGUI.h>
+#include <AtomNonScreen/AtomNonScreen.h>
 #include <AtomLocal/AtomLocal.h>
 
 #include "Verifier.h"

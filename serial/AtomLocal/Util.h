@@ -65,7 +65,7 @@ public:
 	
 };
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 class OglShaderBase :
 	public OglBufferBase

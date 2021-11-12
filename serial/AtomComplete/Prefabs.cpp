@@ -55,7 +55,7 @@ void SimpleSerialMain(String title, bool start_machine) {
 		#if 0
 		
 		#if HAVE_SDL2
-			#ifdef flagGUI
+			#ifdef flagSCREEN
 				LoopRef app = root->Create<StandaloneWindow>();
 			#else
 				LoopRef app = root->Create<StandaloneConsole>

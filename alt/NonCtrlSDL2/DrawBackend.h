@@ -11,17 +11,18 @@
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>
 	#include <SDL_syswm.h>
-	#ifdef flagGUI
+	#ifdef flagSCREEN
 		#include <SDL_opengl.h>
 	#endif
 #else
 	#include <SDL2/SDL.h>
 	#include <SDL2/SDL_ttf.h>
 	#include <SDL2/SDL_image.h>
-	#ifdef flagGUI
+	#ifdef flagSCREEN
 		#include <SDL2/SDL_opengl.h>
 	#endif
 #endif
+
 #undef main
 
 

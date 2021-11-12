@@ -1,5 +1,5 @@
-#ifndef _NonGUI_NonGUI_h_
-#define _NonGUI_NonGUI_h_
+#ifndef _NonScreen_NonScreen_h_
+#define _NonScreen_NonScreen_h_
 
 #include <Draw/Draw.h>
 

@@ -13,8 +13,8 @@ INITBLOCK {
 	#define ATOM_CLASS(x) Serial::Factory::RegisterAtom<x>();
 	ATOM_CLASS_LIST
 	
-	#ifdef flagGUI
-	flagGUI_ATOM_CLASS_LIST
+	#ifdef flagSCREEN
+	flagSCREEN_ATOM_CLASS_LIST
 	#endif
 	
 	#ifdef HAVE_FFMPEG

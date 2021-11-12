@@ -8,7 +8,7 @@
 #include <AtomDebug/AtomDebug.h>
 //#include <AtomAudioCore/AtomAudioCore.h>
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 	#include <Shadertoy/Shadertoy.h>
 #endif
 
@@ -18,6 +18,7 @@
 #endif
 
 #include "Prefabs.h"
+#include "AtomShell.h"
 
 
 #endif

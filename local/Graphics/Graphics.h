@@ -20,7 +20,7 @@ typedef unsigned int	Gxbf;
 
 #if defined flagSWRENDER
 	#error todo
-#elif defined(flagGUI)
+#elif defined(flagSCREEN)
 	#include "OpenGL.h"
 #endif
 
@@ -40,7 +40,7 @@ typedef unsigned int	Gxbf;
 #include "CpuShader.h"
 #include "CpuRenderer.h"
 
-#if defined(flagGUI)
+#if defined(flagSCREEN)
 #include "OpenGLShader.h"
 #include "OpenGLRenderer.h"
 #include "OpenGLBuffer.h"

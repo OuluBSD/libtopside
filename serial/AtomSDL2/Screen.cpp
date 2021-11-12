@@ -4,7 +4,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 
 bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {

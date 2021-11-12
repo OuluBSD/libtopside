@@ -536,10 +536,17 @@ void AppInit__(int argc, const char** argv) {
 	::UPP::__ForceSetThreadId(MAIN_THREAD_ID);
 	::UPP::SeedRandom();
 	
-	#ifdef flagWIN32
+	#if defined flagWIN32 && defined flagGUI
 	char chr[512]; GetModuleFileNameA(NULL, chr, 512);
 	::UPP::SetExeFilePath(chr);
 	::UPP::ParseCommandLine((LPSTR)argv);
+	#elif 0 && defined flagWIN32 && defined flagSCREEN
+	if (argc > 0)
+		::UPP::SetExeFilePath(argv[0]);
+	Vector<const char*> args;
+	for(int i = 0; i < argc; i++)
+		args.Add(argv[i*2]);
+	::UPP::ParseCommandLine(argc, args.Begin());
 	#else
 	if (argc > 0)
 		::UPP::SetExeFilePath(argv[0]);
@@ -550,9 +557,6 @@ void AppInit__(int argc, const char** argv) {
 	::UPP::ReadCoreCmdlineArgs();
 	::UPP::RunInitBlocks();
 	
-	#if defined flagDEBUG && defined flagPOSIX
-	AddLocalFileDirectory(GetHomeDirectory() + "/upphub/UppCommon/share");
-	#endif
 }
 
 void AppExit__() {

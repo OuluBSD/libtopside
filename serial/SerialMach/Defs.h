@@ -1,8 +1,8 @@
 #ifndef _SerialMach_Defs_h_
 #define _SerialMach_Defs_h_
 
-#if defined(flagWIN32)
-	#define GUI_APP_MAIN_(gui) \
+#if defined(flagWIN32) && defined(flagGUI)
+	#define SERIAL_APP_MAIN_(gui) \
 	void GuiMainFn_(); \
 	\
 	int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
@@ -16,7 +16,7 @@
 	\
 	void GuiMainFn_()
 #else
-	#define GUI_APP_MAIN_(gui) \
+	#define SERIAL_APP_MAIN_(gui) \
 	void GuiMainFn_(); \
 	\
 	extern "C" int main(int argc, char *argv[]) {\
@@ -29,8 +29,8 @@
 	void GuiMainFn_()
 #endif
 
-#define GUI_APP_MAIN			GUI_APP_MAIN_(true)
-#define RENDER_APP_MAIN			GUI_APP_MAIN_(false)
+#define SERIAL_APP_MAIN			SERIAL_APP_MAIN_(true)
+#define RENDER_APP_MAIN			SERIAL_APP_MAIN_(false)
 
 
 #ifdef flagMSC

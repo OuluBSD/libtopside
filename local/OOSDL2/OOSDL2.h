@@ -3,7 +3,7 @@
 
 
 
-#if !defined UPP_VERSION && defined flagGUI
+#if !defined UPP_VERSION && defined flagSCREEN
 	#include <Draw/Draw.h>
 	#include <Graphics/Graphics.h>
 #else
@@ -135,7 +135,7 @@ public:
 };
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 class Screen : public Component {
 	RTTI_DECL1(Screen, Component)

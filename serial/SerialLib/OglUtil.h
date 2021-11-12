@@ -2,7 +2,7 @@
 #define _SerialLib_OglUtil_h_
 
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 NAMESPACE_SERIAL_BEGIN
 

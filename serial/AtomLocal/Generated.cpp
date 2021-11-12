@@ -196,7 +196,7 @@ AtomTypeCls AudioJoiner2User::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls VideoDbgSrc::GetAtomType()
 {
 	return ATOM11(VIDEO_DBG_SRC, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
@@ -250,7 +250,7 @@ AtomTypeCls WebcamAtom::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls AudioLoaderAtom::GetAtomType()
 {
 	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
@@ -268,7 +268,7 @@ AtomTypeCls AudioLoaderAtom::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls VideoLoaderAtom::GetAtomType()
 {
 	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);
@@ -302,7 +302,7 @@ AtomTypeCls EventStatePipe::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
 	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);
@@ -400,7 +400,7 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlImageLoader::GetAtomType()
 {
 	return ATOM11_U01(SDL_IMAGE_LOADER, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
@@ -418,7 +418,7 @@ AtomTypeCls SdlImageLoader::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls VolumeLoaderAtom::GetAtomType()
 {
 	return ATOM11_U01(VOLUME_LOADER_ATOM, PIPE, CENTER, VOLUME, CENTER, ORDER, CENTER, RECEIPT, CENTER, VOLUME);
@@ -436,7 +436,7 @@ AtomTypeCls VolumeLoaderAtom::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlFboAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -454,7 +454,7 @@ AtomTypeCls SdlFboAtomSA::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlFboPipe::GetAtomType()
 {
 	return ATOM11(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
@@ -472,7 +472,7 @@ AtomTypeCls SdlFboPipe::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlFboPipeSide::GetAtomType()
 {
 	return ATOM21(SDL_FBO_PIPE_SIDE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT);
@@ -490,7 +490,7 @@ AtomTypeCls SdlFboPipeSide::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlFboAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
@@ -508,7 +508,7 @@ AtomTypeCls SdlFboAtom::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
 	return ATOM11(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
@@ -542,7 +542,7 @@ AtomTypeCls SdlAudioAtom::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglShaderPipe::GetAtomType()
 {
 	return ATOM11(OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
@@ -560,7 +560,7 @@ AtomTypeCls OglShaderPipe::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglShaderAtom::GetAtomType()
 {
 	return ATOM11_U44(OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
@@ -578,7 +578,7 @@ AtomTypeCls OglShaderAtom::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglShaderAtomSA::GetAtomType()
 {
 	return ATOM11(OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -596,7 +596,7 @@ AtomTypeCls OglShaderAtomSA::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglTextureSource::GetAtomType()
 {
 	return ATOM11_U11(OGL_TEXTURE_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VIDEO, OGL, RECEIPT, OGL, FBO);
@@ -614,7 +614,7 @@ AtomTypeCls OglTextureSource::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglVolumeSource::GetAtomType()
 {
 	return ATOM11_U11(OGL_VOLUME_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, VOLUME, OGL, RECEIPT, OGL, FBO);
@@ -632,7 +632,7 @@ AtomTypeCls OglVolumeSource::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglAudioSink::GetAtomType()
 {
 	return ATOM11_U11(OGL_AUDIO_SINK, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, RECEIPT, CENTER, AUDIO);
@@ -650,7 +650,7 @@ AtomTypeCls OglAudioSink::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglKeyboardSource::GetAtomType()
 {
 	return ATOM11_U01(OGL_KEYBOARD_SOURCE, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT, OGL, FBO);
@@ -668,7 +668,7 @@ AtomTypeCls OglKeyboardSource::GetType() const
 }
 
 #endif
-#if defined flagGUI
+#if defined flagSCREEN
 AtomTypeCls OglAudioSource::GetAtomType()
 {
 	return ATOM11_U11(OGL_AUDIO_SOURCE, PIPE, OGL, FBO, OGL, ORDER, CENTER, AUDIO, OGL, RECEIPT, OGL, FBO);

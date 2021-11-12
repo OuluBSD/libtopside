@@ -1,6 +1,6 @@
 #include "OOSDL2.h"
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 NAMESPACE_SDL2_BEGIN
 

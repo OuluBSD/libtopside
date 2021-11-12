@@ -1,6 +1,6 @@
 #include "Graphics.h"
 
-#ifdef flagGUI
+#ifdef flagSCREEN
 
 NAMESPACE_TOPSIDE_BEGIN
 
