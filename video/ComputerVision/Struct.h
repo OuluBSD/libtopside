@@ -52,11 +52,6 @@ global.S32C1_t = S32_t | C1_t;
 global.S32C2_t = S32_t | C2_t;
 
 
-*/
-
-/*const int _data_type_size[] = {-1, 1, 4, -1, 4, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, 8};
-
-
 int get_data_type() {
     return type & 0xFF00;
 }
@@ -69,71 +64,78 @@ int get_data_type_size() {
     return _data_type_size[(type & 0xFF00) >> 8];
 }
 
+*/
+
+
 
 template <class T>
-struct data_t {
+class data_t {
+	
+public:
 	Vector<T> data;
 
 	data_t() {}
 };
 
 template <class T>
-struct matrix_t {
+class matrix_t {
+	
+public:
+	typedef T type;
+	Vector<T> data;
+	int cols;
+	int rows;
+	int channels;
+	
     // columns, rows, channel
-    matrix_t(int c, int r, int ch, data_buffer) {
-        this->type = get_data_type(data_type);
-        this->channel = get_channel(data_type);
+    matrix_t(int c, int r, int ch) {
+        ASSERT(c > 0 && r > 0 && ch > 0);
         this->cols = c;
         this->rows = r;
-        if (typeof data_buffer === "undefined") {
-            this->allocate();
-        } else {
-            this->buffer = data_buffer;
-            // data user asked for
-            this->data = this->type&U8_t ? this->buffer.u8 : (this->type&S32_t ? this->buffer.i32 : (this->type&F32_t ? this->buffer.f32 : this->buffer.f64));
-        }
+        this->channels = ch;
     }
-    matrix_t.prototype.allocate() {
-        // clear references
-        delete this->data;
-        delete this->buffer;
-        //
-        this->buffer = new data_t((this->cols * get_data_type_size(this->type) * this->channel) * this->rows);
-        this->data = this->type&U8_t ? this->buffer.u8 : (this->type&S32_t ? this->buffer.i32 : (this->type&F32_t ? this->buffer.f32 : this->buffer.f64));
+    matrix_t(int c, int r, int ch, const Vector<T>& data) {
+        ASSERT(c > 0 && r > 0 && ch > 0);
+        this->cols = c;
+        this->rows = r;
+        this->channels = ch;
+        this.data <<= data;
     }
-    matrix_t.prototype.copy_to(other) {
-        var od = other.data, td = this->data;
-        var i = 0, n = (this->cols*this->rows*this->channel);
-        for(; i < n-4; i+=4) {
-            od[i] = td[i];
-            od[i+1] = td[i+1];
-            od[i+2] = td[i+2];
-            od[i+3] = td[i+3];
-        }
-        for(; i < n; ++i) {
-            od[i] = td[i];
-        }
+    
+    void allocate() {
+        data.SetCount(cols * rows * channels);
     }
-    matrix_t.prototype.resize(c, r, ch) {
-        if (typeof ch === "undefined") { ch = this->channel; }
-        // relocate buffer only if new size doesnt fit
-        var new_size = (c * get_data_type_size(this->type) * ch) * r;
-        if(new_size > this->buffer.size) {
-            this->cols = c;
-            this->rows = r;
-            this->channel = ch;
-            this->allocate();
-        } else {
-            this->cols = c;
-            this->rows = r;
-            this->channel = ch;
-        }
+    
+    void copy_to(matrix_t& other) const {
+        ASSERT(other.cols == cols);
+        ASSERT(other.rows == rows);
+        ASSERT(other.channels == channels);
+        other.data <<= data;
     }
+    
+    void resize(int c, int r, int ch) {
+        this->cols = c;
+        this->rows = r;
+        this->channels = ch;
+        allocate();
+    }
+	
+};
 
-    return matrix_t;
-})();
-*/
+using ByteMat = matrix_t<byte>;
+using FloatMat = matrix_t<double>;
 
+
+
+
+struct BBox : Moveable<BBox> {
+	double x;
+	double y;
+	double width;
+	double height;
+	
+};
+	
 
 
 
@@ -158,7 +160,9 @@ enum {
 };
 
 
-struct keypoint_t {
+class keypoint_t : Moveable<keypoint_t> {
+	
+public:
 	int x = 0;
 	int y = 0;
 	int score = 0;

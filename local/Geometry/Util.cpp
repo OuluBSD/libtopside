@@ -58,7 +58,7 @@ void ColorCopy(const RGBA& src, vec4& dst) {
 Size ToSize(const vec2& v) {return Size((int)v[0], (int)v[1]);}
 Point ToPoint(const vec2& v) {return Point((int)v[0], (int)v[1]);}
 vec3 MakeVec3(float v[4]) {vec3 o; for(int i = 0; i < 3; i++) o[i] = v[i]; return o;}
-vec3 MakeVec3(double v[4]) {vec3 o; for(int i = 0; i < 3; i++) o[i] = v[i]; return o;}
+vec3 MakeVec3(double v[4]) {vec3 o; for(int i = 0; i < 3; i++) o[i] = (float)v[i]; return o;}
 vec4 MakeVec4(const vec3& v, float v4) {vec4 o; for(int i = 0; i < 3; i++) o[i] = v[i]; o[3] = v4; return o;}
 
 double GetRadians(double degrees) {return degrees / 360.0 * M_2PI;}

@@ -35,5 +35,15 @@ file
 	YAPE06.h,
 	YAPE06.cpp,
 	Cascades readonly separator,
+	Cascade.h,
+	Cascade.cpp,
+	CascadeBbfFace.cpp,
+	CascadeEye.cpp,
+	CascadeFrontalFace.cpp,
+	CascadeHandFist.cpp,
+	CascadeHandOpen.cpp,
+	CascadeMouth.cpp,
+	CascadeProfileFace.cpp,
+	CascadeUpperBody.cpp,
 	_ readonly separator;
 

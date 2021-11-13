@@ -12,7 +12,7 @@ class haar {
 public:
 
 	double _group_func(const BBox& r1, const BBox& r2) {
-		var distance = (r1.width * 0.25 + 0.5);
+		double distance = (r1.width * 0.25 + 0.5);
 		
 		return r2.x <= r1.x + distance &&
 			   r2.x >= r1.x - distance &&
@@ -26,17 +26,18 @@ public:
 	const Vector<BBox>& detect_single_scale(int_sum, int_sqsum, int_tilted, int_canny_sum, width, height, scale, classifier) {
 		rects.SetCount(0);
 		
-		double win_w = (classifier.size[0] * scale),
-					   win_h = (classifier.size[1] * scale),
-							   step_x = (0.5 * scale + 1.5),
-										step_y = step_x;
+		double win_w = (classifier.size[0] * scale);
+		double win_h = (classifier.size[1] * scale);
+		double step_x = (0.5 * scale + 1.5);
+		double step_y = step_x;
+		
 		//var i,j,k,x,y,
 		int ex = (width - win_w);
 		int ey = (height - win_h);
 		int w1 = (width + 1);
 		double inv_area = 1.0 / (win_w * win_h);
-		var stages, stage, trees, tree, stage_thresh, stage_sum, tree_sum, feature, features;
-		var fi_a, fi_b, fi_c, fi_d, fw, fh;
+		//var stages, stage, trees, tree, stage_thresh, stage_sum, tree_sum, feature, features;
+		//var fi_a, fi_b, fi_c, fi_d, fw, fh;
 		
 		int ii_b = win_w;
 		int ii_c = win_h * w1;
@@ -69,7 +70,7 @@ public:
 				}
 				
 				mean *= inv_area;
-				double variance = (int_sqsum[ii_a]
+				double variance =   (int_sqsum[ii_a]
 								   - int_sqsum[ii_a+ii_b]
 								   - int_sqsum[ii_a+ii_c]
 								   + int_sqsum[ii_a+ii_d]) * inv_area - mean * mean;
@@ -77,19 +78,19 @@ public:
 				double std = variance > 0. ? pow_fast(variance, 0.5) : 1;
 				
 				stages = classifier.complexClassifiers;
-				int sn = stages.length;
+				int sn = stages.GetCount();
 				bool found = true;
 				for (int i = 0; i < sn; ++i) {
 					stage = stages[i];
 					stage_thresh = stage.threshold;
 					trees = stage.simpleClassifiers;
-					int tn = trees.length;
+					int tn = trees.GetCount();
 					stage_sum = 0;
 					for (int j = 0; j < tn; ++j) {
 						tree = trees[j];
 						tree_sum = 0;
 						features = tree.features;
-						int fn = features.length;
+						int fn = features.GetCount();
 						if (tree.tilted == = 1) {
 							for (int k = 0; k < fn; ++k) {
 								feature = features[k];

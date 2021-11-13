@@ -568,26 +568,39 @@ struct DynamicMatrix : Moveable<DynamicMatrix<T>> {
 
 template <class T>
 struct DynamicTensor : Moveable<DynamicTensor<T>> {
-	
+	int cols = 0;
+	int rows = 0;
+	int channels = 0;
+	Vector<T> data;
 	
 	
 	void SetSize(int w, int h, int channels);
+	
+	void operator=(const DynamicTensor& s);
 	
 };
 
 
 template <class T>
 struct Pyramid : Moveable<Pyramid<T>> {
-	typedef DynamicTensor<T> DTen;
+	using DTen = DynamicTensor<T>;
 	
 	Vector<DTen> data;
-	
+		
 	Pyramid() {}
 	Pyramid(int w, int h, int levels) {SetSize(w, h, levels);}
 	Pyramid(const Pyramid& p) {*this = p;}
 	
 	
+	int GetLevels() const {return data.GetCount();}
+	DTen& operator[](int i) {return data[i];}
+	
+	void SetLevels(int i) {data.SetCount(i);}
+	
 	void SetSize(int w, int h, int channels, int levels) {
+		this->cols = w;
+		this->rows = h;
+		this->levels = levels;
 		data.SetCount(levels);
 		int i = levels;
         while(--i >= 0) {
@@ -651,6 +664,7 @@ struct Pyramid : Moveable<Pyramid<T>> {
 };
 
 typedef Pyramid<uint8> pyra8;
+typedef Pyramid<float> pyraf;
 
 
 

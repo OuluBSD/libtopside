@@ -8,54 +8,54 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-#if 0
-
-void _resample_u8(src, dst, int nw, int nh) {
+void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
+	Cache& cache = Cache::Local();
 	int xofs_count = 0;
-	int ch = src.channel;
+	int ch = src.channels;
 	int w = src.cols;
-	v h = src.rows;
-	var src_d = src.data;
-	dst_d = dst.data;
+	int h = src.rows;
+	const auto& src_d = src.data;
+	auto& dst_d = dst.data;
 	double scale_x = (double)w / nw;
 	double scale_y = (double)h / nh;
-	int inv_scale_256 = (scale_x * scale_y * 0x10000);
+	double inv_scale_256 = (scale_x * scale_y * 0x10000);
 	//var dx = 0, dy = 0, sx = 0, sy = 0, sx1 = 0, sx2 = 0, i = 0, k = 0, fsx1 = 0.0, fsx2 = 0.0;
 	//var a = 0, b = 0, dxn = 0, alpha = 0, beta = 0, beta1 = 0;
 	
-	var buf_node = cache.get_buffer((nw * ch) << 2);
-	var sum_node = cache.get_buffer((nw * ch) << 2);
-	var xofs_node = cache.get_buffer((w * 2 * 3) << 2);
+	Cache::_pool_node_t* buf_node = cache.get_buffer((nw * ch) << 2);
+	Cache::_pool_node_t* sum_node = cache.get_buffer((nw * ch) << 2);
+	Cache::_pool_node_t* xofs_node = cache.get_buffer((w * 2 * 3) << 2);
 	
-	var buf = buf_node.i32;
-	var sum = sum_node.i32;
-	var xofs = xofs_node.i32;
+	Vector<int>& buf = buf_node->i32;
+	Vector<int>& sum = sum_node->i32;
+	Vector<int>& xofs = xofs_node->i32;
 	
+	int k = 0;
 	for (int dx = 0; dx < nw; dx++) {
 		double fsx1 = dx * scale_x;
 		double fsx2 = fsx1 + scale_x;
 		double sx1 = (fsx1 + 1.0 - 1e-6);
 		double sx2 = fsx2;
-		double sx1 = min(sx1, w - 1.0);
-		double sx2 = min(sx2, w - 1.0);
+		sx1 = min(sx1, w - 1.0);
+		sx2 = min(sx2, w - 1.0);
 		
 		if (sx1 > fsx1) {
-			xofs[k++] = (dx * ch);
-			xofs[k++] = ((sx1 - 1) * ch);
-			xofs[k++] = ((sx1 - fsx1) * 0x100);
+			xofs[k++] = (int)(dx * ch);
+			xofs[k++] = (int)((sx1 - 1) * ch);
+			xofs[k++] = (int)((sx1 - fsx1) * 0x100);
 			xofs_count++;
 		}
-		for (int sx = sx1; sx < sx2; sx++) {
+		for (double sx = sx1; sx < sx2; sx += 1.0) {
 			xofs_count++;
-			xofs[k++] = (dx * ch);
-			xofs[k++] = (sx * ch);
+			xofs[k++] = (int)(dx * ch);
+			xofs[k++] = (int)(sx * ch);
 			xofs[k++] = 256;
 		}
 		if (fsx2 - sx2 > 1e-3) {
 			xofs_count++;
-			xofs[k++] = (dx * ch);
-			xofs[k++] = (sx2 * ch);
-			xofs[k++] = ((fsx2 - sx2) * 256);
+			xofs[k++] = (int)(dx * ch);
+			xofs[k++] = (int)(sx2 * ch);
+			xofs[k++] = (int)((fsx2 - sx2) * 256);
 		}
 	}
 	
@@ -71,7 +71,7 @@ void _resample_u8(src, dst, int nw, int nh) {
 			int sx1 = xofs[k*3+1];
 			double alpha = xofs[k*3+2];
 			for (int i = 0; i < ch; i++) {
-				buf[dxn + i] += src_d[a+sx1+i] * alpha;
+				buf[dxn + i] += (int)(src_d[a+sx1+i] * alpha);
 			}
 		}
 		if ((dy + 1) * scale_y <= sy + 1 || sy == h - 1) {
@@ -81,14 +81,14 @@ void _resample_u8(src, dst, int nw, int nh) {
 			int c = nw * ch;
 			if (beta <= 0) {
 				for (int dx = 0; dx < c; dx++) {
-					dst_d[b+dx] = min(max((sum[dx] + buf[dx] * 256) / inv_scale_256, 0), 255);
+					dst_d[b+dx] = (int)min(max((sum[dx] + buf[dx] * 256) / inv_scale_256, 0.0), 255.0);
 					sum[dx] = buf[dx] = 0;
 				}
 			}
 			else {
 				for (int dx = 0; dx < c; dx++) {
-					dst_d[b+dx] = min(max((sum[dx] + buf[dx] * beta1) / inv_scale_256, 0), 255);
-					sum[dx] = buf[dx] * beta;
+					dst_d[b+dx] = (int)min(max((sum[dx] + buf[dx] * beta1) / inv_scale_256, 0.0), 255.0);
+					sum[dx] = (int)(buf[dx] * beta);
 					buf[dx] = 0;
 				}
 			}
@@ -107,52 +107,54 @@ void _resample_u8(src, dst, int nw, int nh) {
 	cache.put_buffer(xofs_node);
 }
 
-void _resample(src, dst, int nw, int nh) {
+void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
+	Cache& cache = Cache::Local();
 	int xofs_count = 0;
-	int ch = src.channel;
+	int ch = src.channels;
 	int w = src.cols;
 	int h = src.rows;
-	var src_d = src.data;
-	var dst_d = dst.data;
+	const auto& src_d = src.data;
+	auto& dst_d = dst.data;
 	double scale_x = (double)w / nw;
 	double scale_y = (double)h / nh;
 	double scale = 1.0 / (scale_x * scale_y);
 	//var dx = 0, dy = 0, sx = 0, sy = 0, sx1 = 0, sx2 = 0, i = 0, k = 0, fsx1 = 0.0, fsx2 = 0.0;
 	//var a = 0, b = 0, dxn = 0, alpha = 0.0, beta = 0.0, beta1 = 0.0;
 	
-	var buf_node = cache.get_buffer((nw * ch) << 2);
-	var sum_node = cache.get_buffer((nw * ch) << 2);
-	var xofs_node = cache.get_buffer((w * 2 * 3) << 2);
+	Cache::_pool_node_t* buf_node = cache.get_buffer((nw * ch) << 2);
+	Cache::_pool_node_t* sum_node = cache.get_buffer((nw * ch) << 2);
+	Cache::_pool_node_t* xofs_node = cache.get_buffer((w * 2 * 3) << 2);
 	
-	var buf = buf_node.f32;
-	var sum = sum_node.f32;
-	var xofs = xofs_node.f32;
+	Vector<float>& buf = buf_node->f32;
+	Vector<float>& sum = sum_node->f32;
+	Vector<float>& xofs = xofs_node->f32;
 	
+	int k = 0;
 	for (int dx = 0; dx < nw; dx++) {
 		double fsx1 = dx * scale_x;
 		double fsx2 = fsx1 + scale_x;
 		double sx1 = (fsx1 + 1.0 - 1e-6);
 		double sx2 = fsx2;
-		double sx1 = min(sx1, w - 1);
-		double sx2 = min(sx2, w - 1);
+		sx1 = min(sx1, w - 1.0);
+		sx2 = min(sx2, w - 1.0);
 		
 		if (sx1 > fsx1) {
 			xofs_count++;
-			xofs[k++] = ((sx1 - 1) * ch);
-			xofs[k++] = (dx * ch);
-			xofs[k++] = (sx1 - fsx1) * scale;
+			xofs[k++] = (float)((sx1 - 1) * ch);
+			xofs[k++] = (float)(dx * ch);
+			xofs[k++] = (float)((sx1 - fsx1) * scale);
 		}
-		for (int sx = sx1; sx < sx2; sx++) {
+		for (double sx = sx1; sx < sx2; sx += 1.0) {
 			xofs_count++;
-			xofs[k++] = (sx * ch);
-			xofs[k++] = (dx * ch);
-			xofs[k++] = scale;
+			xofs[k++] = (float)(sx * ch);
+			xofs[k++] = (float)(dx * ch);
+			xofs[k++] = (float)scale;
 		}
 		if (fsx2 - sx2 > 1e-3) {
 			xofs_count++;
-			xofs[k++] = (sx2 * ch);
-			xofs[k++] = (dx * ch);
-			xofs[k++] = (fsx2 - sx2) * scale;
+			xofs[k++] = (float)(sx2 * ch);
+			xofs[k++] = (float)(dx * ch);
+			xofs[k++] = (float)((fsx2 - sx2) * scale);
 		}
 	}
 	
@@ -164,11 +166,13 @@ void _resample(src, dst, int nw, int nh) {
 	for (int sy = 0, dy = 0; sy < h; sy++) {
 		int a = w * sy;
 		for (int k = 0; k < xofs_count; k++) {
-			int sx1 = xofs[k*3];
-			int dxn = xofs[k*3+1];
+			float sx1 = xofs[k*3];
+			float dxn = xofs[k*3+1];
 			double alpha = xofs[k*3+2];
 			for (int i = 0; i < ch; i++) {
-				buf[dxn + i] += src_d[a+sx1+i] * alpha;
+				int j = (int)(a+sx1+i);
+				int k = (int)(dxn + i);
+				buf[k] += (float)(src_d[j] * alpha);
 			}
 		}
 		if ((dy + 1) * scale_y <= sy + 1 || sy == h - 1) {
@@ -177,14 +181,14 @@ void _resample(src, dst, int nw, int nh) {
 			int b = nw * dy;
 			if (abs(beta) < 1e-3) {
 				for (int dx = 0; dx < nw * ch; dx++) {
-					dst_d[b+dx] = sum[dx] + buf[dx];
+					dst_d[b+dx] = (byte)(sum[dx] + buf[dx]);
 					sum[dx] = buf[dx] = 0;
 				}
 			}
 			else {
 				for (int dx = 0; dx < nw * ch; dx++) {
-					dst_d[b+dx] = sum[dx] + buf[dx] * beta1;
-					sum[dx] = buf[dx] * beta;
+					dst_d[b+dx] = (byte)(sum[dx] + buf[dx] * beta1);
+					sum[dx] = (float)(buf[dx] * beta);
 					buf[dx] = 0;
 				}
 			}
@@ -202,6 +206,8 @@ void _resample(src, dst, int nw, int nh) {
 	cache.put_buffer(buf_node);
 	cache.put_buffer(xofs_node);
 }
+
+#if 0
 
 void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, f0 = filter[0], fk = 0;
@@ -422,22 +428,27 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 	}
 }
 
+#endif
 
-void resample(src, dst, nw, nh) {
+void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
 	int h = src.rows;
 	int w = src.cols;
 	if (h > nh && w > nw) {
-		dst.Resize(nw, nh, src.channel);
-		
-		// using the fast alternative (fix point scale, 0x100 to avoid overflow)
-		if (src.type&U8_t && dst.type&U8_t && h * w / (nh * nw) < 0x100) {
-			_resample_u8(src, dst, nw, nh);
-		}
-		else {
-			_resample(src, dst, nw, nh);
-		}
+		dst.SetSize(nw, nh, src.channels);
+		_resample_u8(src, dst, nw, nh);
 	}
-},
+}
+
+void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
+	int h = src.rows;
+	int w = src.cols;
+	if (h > nh && w > nw) {
+		dst.SetSize(nw, nh, src.channels);
+		_resample(src, dst, nw, nh);
+	}
+}
+
+#if 0
 
 void box_blur_gray(src, dst, radius, dword options = 0) {
 	if (typeof options == = "undefined") {
@@ -1271,39 +1282,59 @@ void warp_perspective(src, dst, transform, int fill_value = 0) {
 	}
 }
 
+#endif
+
 // transform is 3x3 or 2x3 matrix_t only first 6 values referenced
-void warp_affine(src, dst, transform, int fill_value = 0) {
-	var src_width = src.cols, src_height = src.rows, dst_width = dst.cols, dst_height = dst.rows;
-	var src_d = src.data, dst_d = dst.data;
-	//var x = 0, y = 0, off = 0, ixs = 0, iys = 0;
-	//xs = 0.0, ys = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
-	var td = transform.data;
-	var m00 = td[0], m01 = td[1], m02 = td[2],
-			  m10 = td[3], m11 = td[4], m12 = td[5];
-	          
-	for (int dptr = 0; y < dst_height; ++y) {
-		xs = m01 * y + m02;
-		ys = m11 * y + m12;
-		for (int x = 0; x < dst_width; ++x, ++dptr, xs += m00, ys += m10) {
-			ixs = xs;
-			iys = ys;
+template <class T>
+void warp_affine(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& transform, int fill_value = 0) {
+	int src_width = src.cols;
+	int src_height = src.rows;
+	int dst_width = dst.cols;
+	int dst_height = dst.rows;
+	const auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	
+	const Vector<double>& td = transform.data;
+	double m00 = td[0];
+	double m01 = td[1];
+	double m02 = td[2];
+	double m10 = td[3];
+	double m11 = td[4];
+	double m12 = td[5];
+	
+	Vector<T>::Iterator dst_iter = dst_d.Begin();
+	ASSERT(dst_d.GetCount() == dst_height * dst_width);
+	
+	for (int y = 0; y < dst_height; ++y) {
+		double xs = m01 * y + m02;
+		double ys = m11 * y + m12;
+		
+		for (int x = 0; x < dst_width; ++x, xs += m00, ys += m10) {
+			double ixs = xs;
+			double iys = ys;
 			
 			if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) && iys < (src_height - 1)) {
-				a = xs - ixs;
-				b = ys - iys;
-				off = src_width * iys + ixs;
+				double a = xs - ixs;
+				double b = ys - iys;
+				int off = (int)(src_width * iys + ixs);
 				
-				p0 = src_d[off] +  a * (src_d[off+1] - src_d[off]);
-				p1 = src_d[off+src_width] + a * (src_d[off+src_width+1] - src_d[off+src_width]);
+				double p0 =		src_d[off]
+								+  a * (src_d[off+1] - src_d[off]);
+				double p1 =		src_d[off+src_width]
+								+ a * (src_d[off+src_width+1] - src_d[off+src_width]);
 				
-				dst_d[dptr] = p0 + b * (p1 - p0);
+				T v = p0 + b * (p1 - p0);
+				*dst_iter = v;
 			}
 			else
-				dst_d[dptr] = fill_value;
+				*dst_iter = fill_value;
+			
+			dst_iter++;
 		}
 	}
 }
 
+#if 0
 // Basic RGB Skin detection filter
 // from http://popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html
 void skindetector(src, dst) {

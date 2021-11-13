@@ -9,7 +9,7 @@ class BrightnessBinaryFeature {
 	int interval = 4;
 	double scale = 1.1486;
 	int next = 5;
-	int scale_to = 1;
+	double scale_to = 1;
 	
 	
 public:
@@ -34,105 +34,97 @@ public:
 	// make features local copy
 	// to avoid array allocation with each scale
 	// this is strange but array works faster than Int32 version???
-	void prepare_cascade(cascade) {
-		int sn = cascade.stage_classifier.length;
-		for (int j = 0; j < sn; j++) {
-			const auto& orig_feature = cascade.stage_classifier[j].feature;
-			int f_cnt = cascade.stage_classifier[j].count;
-			auto& feature = cascade.stage_classifier[j]._feature = new Array(f_cnt);
-			for (var k = 0; k < f_cnt; k++) {
-			feature[k] = {"size" :
-							  orig_feature[k].size,
-						  "px" :
-							  new Array(orig_feature[k].size),
-						  "pz" :
-							  new Array(orig_feature[k].size),
-						  "nx" :
-							  new Array(orig_feature[k].size),
-						  "nz" :
-							  new Array(orig_feature[k].size)
-							 };
+	void prepare_cascade(Cascade& cascade) {
+		for (CascadeStageClassifier& cs : cascade.stage_classifiers) {
+			ASSERT(cs.features.GetCount() == cs.count);
+			cs._features.SetCount(cs.count);
+			auto iter = cs._features.Begin();
+			for (const CascadeFeature& f : cs.features) {
+				CascadeFeature& t = *iter++;
+				t.Init2D(f.size);
 			}
 		}
 	}
 	
-	const pyra8& build_pyramid(const pyra8& src, min_width, min_height, int interval = 4) {
+	const pyra8& build_pyramid(const pyra8::DTen& src, int min_width, int min_height, int interval = 4) {
 		int sw = src.cols;
 		int sh = src.rows;
+		int channels = src.channels;
+		ASSERT(sw > 0 && sh > 0 && channels > 0);
 		int nw = 0, nh = 0;
 		bool new_pyr = false;
-		const pyra8* src0 = src;
-		const pyra8* src1 = src;
+		pyra8::DTen* src0 = 0;
+		pyra8::DTen* src1 = 0;
 		int channel = 0; // red
 		
 		this->interval = interval;
-		this->scale = powerof2(1 / (this->interval + 1));
+		this->scale = pow_fast(2.0, 1 / (this->interval + 1));
 		this->next = (this->interval + 1);
 		this->scale_to = (log_fast(min<double>(sw / min_width, sh / min_height)) / log_fast(this->scale));
 		
-		int pyr_l = ((this->scale_to + this->next * 2) * 4);
-		if (img_pyr.levels != pyr_l) {
-			img_pyr.levels = pyr_l;
-			img_pyr.data = new Array(pyr_l);
+		int pyr_l = (int)((this->scale_to + this->next * 2) * 4);
+		ASSERT(pyr_l > 0 && pyr_l < 64);
+		if (img_pyr.GetLevels() != pyr_l) {
+			img_pyr.SetLevels(pyr_l);
 			new_pyr = true;
 			img_pyr.data[0] = src; // first is src
 		}
 		
 		for (int i = 1; i <= this->interval; ++i) {
-			nw = (sw / pow_fast(this->scale, i));
-			nh = (sh / pow_fast(this->scale, i));
-			src0 = img_pyr.data[i<<2];
-			if (new_pyr || nw != src0.cols || nh != src0.rows) {
-				img_pyr.data[i<<2] = new matrix_t(nw, nh, data_type);
-				src0 = img_pyr.data[i<<2];
+			nw = (int)(sw / pow_fast(this->scale, i));
+			nh = (int)(sh / pow_fast(this->scale, i));
+			src0 = &img_pyr.data[i<<2];
+			if (new_pyr || nw != src0->cols || nh != src0->rows) {
+				img_pyr.data[i<<2].SetSize(nw, nh, channels);
+				src0 = &img_pyr.data[i<<2];
 			}
-			Resample(src, src0, nw, nh);
+			resample(src, *src0, nw, nh);
 		}
 		for (int i = this->next; i < this->scale_to + this->next * 2; ++i) {
-			src1 = img_pyr.data[(i << 2) - (this->next << 2)];
-			src0 = img_pyr.data[i<<2];
-			nw = src1.cols >> 1;
-			nh = src1.rows >> 1;
-			if (new_pyr || nw != src0.cols || nh != src0.rows) {
-				img_pyr.data[i<<2] = new matrix_t(nw, nh, data_type);
-				src0 = img_pyr.data[i<<2];
+			src1 = &img_pyr.data[(i << 2) - (this->next << 2)];
+			src0 = &img_pyr.data[i<<2];
+			nw = src1->cols >> 1;
+			nh = src1->rows >> 1;
+			if (new_pyr || nw != src0->cols || nh != src0->rows) {
+				img_pyr.data[i<<2].SetSize(nw, nh, channels);
+				src0 = &img_pyr.data[i<<2];
 			}
-			Pyramid::Downsample(src1, src0);
+			pyra8::Downsample(*src1, *src0);
 		}
 		for (int i = this->next * 2; i < this->scale_to + this->next * 2; ++i) {
-			src1 = img_pyr.data[(i << 2) - (this->next << 2)];
-			nw = src1.cols >> 1;
-			nh = src1.rows >> 1;
-			src0 = img_pyr.data[(i<<2)+1];
-			if (new_pyr || nw != src0.cols || nh != src0.rows) {
-				img_pyr.data[(i<<2)+1] = new matrix_t(nw, nh, data_type);
-				src0 = img_pyr.data[(i<<2)+1];
+			src1 = &img_pyr.data[(i << 2) - (this->next << 2)];
+			nw = src1->cols >> 1;
+			nh = src1->rows >> 1;
+			src0 = &img_pyr.data[(i<<2)+1];
+			if (new_pyr || nw != src0->cols || nh != src0->rows) {
+				img_pyr.data[(i<<2)+1].SetSize(nw, nh, channels);
+				src0 = &img_pyr.data[(i<<2)+1];
 			}
-			imgproc.pyrdown(src1, src0, 1, 0);
+			pyra8::Downsample(*src1, *src0, 1, 0);
 			
-			src0 = img_pyr.data[(i<<2)+2];
-			if (new_pyr || nw != src0.cols || nh != src0.rows) {
-				img_pyr.data[(i<<2)+2] = new matrix_t(nw, nh, data_type);
-				src0 = img_pyr.data[(i<<2)+2];
+			src0 = &img_pyr.data[(i<<2)+2];
+			if (new_pyr || nw != src0->cols || nh != src0->rows) {
+				img_pyr.data[(i<<2)+2].SetSize(nw, nh, channels);
+				src0 = &img_pyr.data[(i<<2)+2];
 			}
-			imgproc.pyrdown(src1, src0, 0, 1);
+			pyra8::Downsample(*src1, *src0, 0, 1);
 			
-			src0 = img_pyr.data[(i<<2)+3];
-			if (new_pyr || nw != src0.cols || nh != src0.rows) {
-				img_pyr.data[(i<<2)+3] = new matrix_t(nw, nh, data_type);
-				src0 = img_pyr.data[(i<<2)+3];
+			src0 = &img_pyr.data[(i<<2)+3];
+			if (new_pyr || nw != src0->cols || nh != src0->rows) {
+				img_pyr.data[(i<<2)+3].SetSize(nw, nh, channels);
+				src0 = &img_pyr.data[(i<<2)+3];
 			}
-			imgproc.pyrdown(src1, src0, 1, 1);
+			pyra8::Downsample(*src1, *src0, 1, 1);
 		}
 		return img_pyr;
 	}
 	
-	detect(const pyra8& pyramid, cascade) {
+	Vector<BBox> detect(const pyra8& pyramid, Cascade& cascade) {
 		int interval = this->interval;
 		double scale = this->scale;
 		int next = this->next;
 		int scale_upto = this->scale_to;
-		double sum = 0.0, alpha, feature, orig_feature, feature_k, feature_o;
+		double sum = 0.0, alpha;
 		bool flag = true, shortcut = true;
 		double scale_x = 1.0, scale_y = 1.0;
 		int dx[] = {0, 1, 0, 1};
@@ -141,7 +133,7 @@ public:
 		const auto& pyr = pyramid.data;
 		int bpp = 1, bpp2 = 2, bpp4 = 4;
 		
-		pyra8* u8[3] = {0, 0, 0};
+		const Vector<byte>* u8[3] = {0, 0, 0};
 		int u8o[] = {0, 0, 0};
 		int step[] = {0, 0, 0};
 		int paddings[] = {0, 0, 0};
@@ -156,14 +148,14 @@ public:
 			paddings[0] = (pyr[i4].cols * bpp4) - (qw * bpp4);
 			paddings[1] = (pyr[i4 + (next << 2)].cols * bpp2) - (qw * bpp2);
 			paddings[2] = (pyr[i4 + (next << 3)].cols * bpp) - (qw * bpp);
-			int sn = cascade.stage_classifier.length;
+			int sn = cascade.stage_classifiers.GetCount();
 			for (int j = 0; j < sn; j++) {
-				orig_feature = cascade.stage_classifier[j].feature;
-				feature = cascade.stage_classifier[j]._feature;
-				int f_cnt = cascade.stage_classifier[j].count;
+				Vector<CascadeFeature>& orig_feature = cascade.stage_classifiers[j].features;
+				Vector<CascadeFeature>& feature = cascade.stage_classifiers[j]._features;
+				int f_cnt = cascade.stage_classifiers[j].count;
 				for (int k = 0; k < f_cnt; k++) {
-					feature_k = feature[k];
-					feature_o = orig_feature[k];
+					CascadeFeature& feature_k = feature[k];
+					CascadeFeature& feature_o = orig_feature[k];
 					int q_cnt = feature_o.size;
 					for (int q = 0; q < q_cnt; q++) {
 						feature_k.px[q] = (feature_o.px[q] * bpp) + feature_o.py[q] * step[feature_o.pz[q]];
@@ -173,8 +165,8 @@ public:
 					}
 				}
 			}
-			u8[0] = pyr[i4].data;
-			u8[1] = pyr[i4 + (next<<2)].data;
+			u8[0] = &pyr[i4].data;
+			u8[1] = &pyr[i4 + (next<<2)].data;
 			for (int q = 0; q < 4; q++) {
 				u8[2] = pyr[i4 + (next<<3) + q].data;
 				u8o[0] = (dx[q] * bpp2) + dy[q] * (pyr[i4].cols * bpp2);
@@ -184,12 +176,12 @@ public:
 					for (int x = 0; x < qw; x++) {
 						sum = 0;
 						flag = true;
-						sn = cascade.stage_classifier.length;
+						sn = cascade.stage_classifiers.GetCount();
 						for (int j = 0; j < sn; j++) {
 							sum = 0;
-							alpha = cascade.stage_classifier[j].alpha;
-							feature = cascade.stage_classifier[j]._feature;
-							int f_cnt = cascade.stage_classifier[j].count;
+							alpha = cascade.stage_classifiers[j].alpha;
+							feature = cascade.stage_classifiers[j]._feature;
+							int f_cnt = cascade.stage_classifiers[j].count;
 							for (int k = 0; k < f_cnt; k++) {
 								feature_k = feature[k];
 								int pmin = u8[feature_k.pz[0]][u8o[feature_k.pz[0]] + feature_k.px[0]];
@@ -225,7 +217,7 @@ public:
 									sum += (shortcut) ? alpha[(k << 1) + 1] : alpha[k << 1];
 								}
 							}
-							if (sum < cascade.stage_classifier[j].threshold) {
+							if (sum < cascade.stage_classifiers[j].threshold) {
 								flag = false;
 								break;
 							}
@@ -376,7 +368,7 @@ public:
 		}
 		
 		Vector<BBox> result_seq;
-		n = seq2.length;
+		n = seq2.GetCount();
 		// filter out small face rectangles inside large face rectangles
 		for (int i = 0; i < n; ++i) {
 			const BBox& r1 = seq2[i];
