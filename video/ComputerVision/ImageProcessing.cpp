@@ -209,13 +209,184 @@ void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
 	}
 }
 
-#if 0
+
+void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
+	int w = src.cols;
+	int h = src.rows;
+	int h2 = h << 1;
+	int w2 = w << 1;
+	//var i = 0, x = 0, y = 0, end = 0;
+	int windowSize = ((radius << 1) + 1);
+	int radiusPlusOne = (radius + 1);
+	int radiusPlus2 = (radiusPlusOne + 1);
+	double scale = options & BOX_BLUR_NOSCALE ? 1.0 : (1.0 / (windowSize * windowSize));
+	
+	int sum = 0, srcIndex = 0, nextPixelIndex = 0, previousPixelIndex = 0;
+	static thread_local Vector<int> data_i32;
+	auto& data_u8 = src.data;
+	int hold = 0;
+	
+	data_i32.SetCount((w * h) << 2);
+	
+	dst.resize(w, h, src.channels);
+	
+	// first pass
+	// no need to scale
+	//data_u8 = src.data;
+	//data_i32 = tmp;
+	for (int y = 0; y < h; ++y) {
+		int dstIndex = y;
+		int sum = radiusPlusOne * data_u8[srcIndex];
+		
+		for (int i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
+			sum += data_u8[i];
+		}
+		
+		nextPixelIndex = (srcIndex + radiusPlusOne);
+		previousPixelIndex = srcIndex;
+		hold = data_u8[previousPixelIndex];
+		
+		int x;
+		for (x = 0; x < radius; ++x, dstIndex += h) {
+			data_i32[dstIndex] = sum;
+			sum += data_u8[nextPixelIndex] - hold;
+			nextPixelIndex ++;
+		}
+		for (; x < w - radiusPlus2; x += 2, dstIndex += h2) {
+			data_i32[dstIndex] = sum;
+			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
+			
+			data_i32[dstIndex+h] = sum;
+			sum += data_u8[nextPixelIndex+1] - data_u8[previousPixelIndex+1];
+			
+			nextPixelIndex += 2;
+			previousPixelIndex += 2;
+		}
+		for (; x < w - radiusPlusOne; ++x, dstIndex += h) {
+			data_i32[dstIndex] = sum;
+			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
+			
+			nextPixelIndex ++;
+			previousPixelIndex ++;
+		}
+		
+		hold = data_u8[nextPixelIndex-1];
+		for (; x < w; ++x, dstIndex += h) {
+			data_i32[dstIndex] = sum;
+			
+			sum += hold - data_u8[previousPixelIndex];
+			previousPixelIndex ++;
+		}
+		
+		srcIndex += w;
+	}
+	
+	// second pass
+	srcIndex = 0;
+	//data_i32 = tmp; // this is a transpose
+	data_u8 <<= dst.data;
+	
+	// dont scale result
+	if (scale == 1) {
+		for (int y = 0; y < w; ++y) {
+			int dstIndex = y;
+			int sum = radiusPlusOne * data_i32[srcIndex];
+			
+			for (int i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
+				sum += data_i32[i];
+			}
+			
+			nextPixelIndex = srcIndex + radiusPlusOne;
+			previousPixelIndex = srcIndex;
+			hold = data_i32[previousPixelIndex];
+			
+			int x;
+			for (x = 0; x < radius; ++x, dstIndex += w) {
+				data_u8[dstIndex] = sum;
+				sum += data_i32[nextPixelIndex] - hold;
+				nextPixelIndex ++;
+			}
+			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
+				data_u8[dstIndex] = sum;
+				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
+				
+				data_u8[dstIndex+w] = sum;
+				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
+				
+				nextPixelIndex += 2;
+				previousPixelIndex += 2;
+			}
+			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
+				data_u8[dstIndex] = sum;
+				
+				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
+				nextPixelIndex ++;
+				previousPixelIndex ++;
+			}
+			hold = data_i32[nextPixelIndex-1];
+			for (; x < h; ++x, dstIndex += w) {
+				data_u8[dstIndex] = sum;
+				
+				sum += hold - data_i32[previousPixelIndex];
+				previousPixelIndex ++;
+			}
+			
+			srcIndex += h;
+		}
+	}
+	else {
+		for (int y = 0; y < w; ++y) {
+			int dstIndex = y;
+			int sum = radiusPlusOne * data_i32[srcIndex];
+			
+			for (int i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
+				sum += data_i32[i];
+			}
+			
+			nextPixelIndex = srcIndex + radiusPlusOne;
+			previousPixelIndex = srcIndex;
+			hold = data_i32[previousPixelIndex];
+			
+			int x;
+			for (x = 0; x < radius; ++x, dstIndex += w) {
+				data_u8[dstIndex] = (byte)(sum * scale);
+				sum += data_i32[nextPixelIndex] - hold;
+				nextPixelIndex ++;
+			}
+			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
+				data_u8[dstIndex] = (byte)(sum * scale);
+				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
+				
+				data_u8[dstIndex+w] = (byte)(sum * scale);
+				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
+				
+				nextPixelIndex += 2;
+				previousPixelIndex += 2;
+			}
+			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
+				data_u8[dstIndex] = (byte)(sum * scale);
+				
+				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
+				nextPixelIndex ++;
+				previousPixelIndex ++;
+			}
+			hold = data_i32[nextPixelIndex-1];
+			for (; x < h; ++x, dstIndex += w) {
+				data_u8[dstIndex] = (byte)(sum * scale);
+				
+				sum += hold - data_i32[previousPixelIndex];
+				previousPixelIndex ++;
+			}
+			
+			srcIndex += h;
+		}
+	}
+}
+
 
 // TODO: add support for RGB/BGR order
 // for raw arrays
-void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, int code) {
-	TODO
-	#if 0
+void Grayscale(const Vector<byte>& src, int w, int h, matrix_t<byte>& dst, int code) {
 	//var x = 0, y = 0, i = 0, j = 0, ir = 0, jr = 0;
 	int coeff_r = 4899, coeff_g = 9617, coeff_b = 1868, cn = 4;
 	
@@ -229,10 +400,10 @@ void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, 
 	int cn2 = cn << 1;
 	int cn3 = cn * 3;
 	
-	dst.Resize(w, h, 1);
-	var dst_u8 = dst.data;
+	dst.resize(w, h, 1);
+	auto& dst_u8 = dst.data;
 	
-	for (int y = 0, i = 0; y < h; ++y, j += w, i += w * cn) {
+	for (int y = 0, i = 0, j = 0; y < h; ++y, j += w, i += w * cn) {
 		int x = 0, ir = i, jr = j;
 		for (; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
 			dst_u8[jr]     = (src[ir] * coeff_r + src[ir+1] * coeff_g + src[ir+2] * coeff_b + 8192) >> 14;
@@ -244,9 +415,7 @@ void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, 
 			dst_u8[jr] = (src[ir] * coeff_r + src[ir+1] * coeff_g + src[ir+2] * coeff_b + 8192) >> 14;
 		}
 	}
-	#endif
 }
-#endif
 
 
 NAMESPACE_TOPSIDE_END

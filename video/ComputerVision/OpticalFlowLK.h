@@ -5,8 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class optical_flow_lk {
-
-
+	
 public:
 	
 	void track(const pyra8& prev_pyr, pyra8& curr_pyr,

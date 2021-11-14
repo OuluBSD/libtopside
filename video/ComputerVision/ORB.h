@@ -6,8 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class Orb {
-
-
+	
 public:
 	static const int bit_pattern_31_[];
 	

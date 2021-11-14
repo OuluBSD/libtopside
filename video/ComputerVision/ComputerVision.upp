@@ -35,7 +35,5 @@ file
 	YAPE.h,
 	YAPE.cpp,
 	YAPE06.h,
-	YAPE06.cpp,
-	Trash readonly separator,
-	CachePool.h;
+	YAPE06.cpp;
 

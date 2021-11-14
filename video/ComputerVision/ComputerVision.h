@@ -7,7 +7,6 @@
 
 #include "Cascade.h"
 #include "Struct.h"
-#include "CachePool.h"
 #include "ImageProcessing.h"
 #include "ORB.h"
 #include "BrightnessBinaryFeature.h"

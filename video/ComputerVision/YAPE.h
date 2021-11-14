@@ -20,8 +20,8 @@ struct lev_table_t : Moveable<lev_table_t> {
 class yape {
 	Vector<lev_table_t> level_tables;
 	float tau = 7;
-
-
+	
+	
 public:
 	
 	static int precompute_directions(int step, Vector<int>& dirs, int R);

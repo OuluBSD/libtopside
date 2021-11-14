@@ -4,8 +4,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-//void Grayscale(const VideoInputFrame& src, int w, int h, VideoOutputFrame& dst, int code = COLOR_RGBA2GRAY);
 
+void Grayscale(const Vector<byte>& src, int w, int h, matrix_t<byte>& dst, int code = COLOR_RGBA2GRAY);
 
 
 void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
@@ -13,15 +13,16 @@ void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
 
 
 
-#if 0
-
-void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kernel) {
-	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, f0 = filter[0], fk = 0;
-	//var w2 = w << 1, w3 = w * 3, w4 = w << 2;
+template <class T>
+void _convol_u8(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
+	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, fk = 0;
+	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
+	
+	int f0 = filter[0];
 	
 	// hor pass
 	for (int i = 0, dp = 0, sp = 0; i < h; ++i) {
-		sum = src_d[sp];
+		int sum = src_d[sp];
 		for (int j = 0; j < half_kernel; ++j) {
 			buf[j] = sum;
 		}
@@ -44,25 +45,26 @@ void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kerne
 		{
 			int j;
 			for (j = 0; j <= w - 4; j += 4) {
-				sum = buf[j] * f0,
-					  sum1 = buf[j+1] * f0,
-							 sum2 = buf[j+2] * f0,
-									sum3 = buf[j+3] * f0;
-				for (k = 1; k < kernel_size; ++k) {
-					fk = filter[k];
-					sum += buf[k + j] * fk;
+				int sum  = buf[j]   * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
+				
+				for (int k = 1; k < kernel_size; ++k) {
+					int fk = filter[k];
+					sum  += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
 					sum3 += buf[k + j+3] * fk;
 				}
-				dst_d[dp+j] = min(sum >> 8, 255);
+				dst_d[dp+j]   = min(sum >> 8, 255);
 				dst_d[dp+j+1] = min(sum1 >> 8, 255);
 				dst_d[dp+j+2] = min(sum2 >> 8, 255);
 				dst_d[dp+j+3] = min(sum3 >> 8, 255);
 			}
 			for (; j < w; ++j) {
-				sum = buf[j] * f0;
-				for (k = 1; k < kernel_size; ++k) {
+				int sum = buf[j] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
 				dst_d[dp+j] = min(sum >> 8, 255);
@@ -75,7 +77,7 @@ void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kerne
 	
 	// vert pass
 	for (int i = 0; i < w; ++i) {
-		sum = dst_d[i];
+		int sum = dst_d[i];
 		for (int j = 0; j < half_kernel; ++j) {
 			buf[j] = sum;
 		}
@@ -99,12 +101,12 @@ void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kerne
 			int dp = i;
 			int j;
 			for (j = 0; j <= h - 4; j += 4, dp += w4) {
-				sum = buf[j] * f0;
-				sum1 = buf[j+1] * f0;
-				sum2 = buf[j+2] * f0;
-				sum3 = buf[j+3] * f0;
+				int sum  = buf[j]   * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
-					fk = filter[k];
+					int fk = filter[k];
 					sum += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
@@ -117,7 +119,7 @@ void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kerne
 			}
 			for (; j < h; ++j, dp += w) {
 				sum = buf[j] * f0;
-				for (k = 1; k < kernel_size; ++k) {
+				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
 				dst_d[dp] = min(sum >> 8, 255);
@@ -126,13 +128,17 @@ void _convol_u8(buf, src_d, dst_d, int w, int h, filter, kernel_size, half_kerne
 	}
 }
 
-void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
+
+template <class T>
+void _convol(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0
 	//double sum = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0, f0 = filter[0], fk = 0.0;
-	//var w2 = w << 1, w3 = w * 3, w4 = w << 2;
+	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
+	int f0 = filter[0];
+	
 	// hor pass
 	for (int i = 0, sp = 0, dp = 0; i < h; ++i) {
-		sum = src_d[sp];
+		int sum = src_d[sp];
 		for (int j = 0; j < half_kernel; ++j) {
 			buf[j] = sum;
 		}
@@ -147,20 +153,20 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 			}
 		}
 		sum = src_d[sp+w-1];
-		for (j = w; j < half_kernel + w; ++j) {
+		for (int j = w; j < half_kernel + w; ++j) {
 			buf[j + half_kernel] = sum;
 		}
 		
 		{
 			int j;
 			for (j = 0; j <= w - 4; j += 4) {
-				sum = buf[j] * f0;
-				sum1 = buf[j+1] * f0;
-				sum2 = buf[j+2] * f0;
-				sum3 = buf[j+3] * f0;
-				for (k = 1; k < kernel_size; ++k) {
-					fk = filter[k];
-					sum += buf[k + j] * fk;
+				int sum  = buf[j]   * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
+					int fk = filter[k];
+					sum  += buf[k + j]   * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
 					sum3 += buf[k + j+3] * fk;
@@ -171,8 +177,8 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 				dst_d[dp+j+3] = sum3;
 			}
 			for (; j < w; ++j) {
-				sum = buf[j] * f0;
-				for (k = 1; k < kernel_size; ++k) {
+				int sum = buf[j] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
 				dst_d[dp+j] = sum;
@@ -184,7 +190,7 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 	
 	// vert pass
 	for (int i = 0; i < w; ++i) {
-		sum = dst_d[i];
+		int sum = dst_d[i];
 		for (int j = 0; j < half_kernel; ++j) {
 			buf[j] = sum;
 		}
@@ -207,12 +213,12 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 			int dp = i;
 			int j;
 			for (j = 0; j <= h - 4; j += 4, dp += w4) {
-				sum = buf[j] * f0,
-					  sum1 = buf[j+1] * f0,
-							 sum2 = buf[j+2] * f0,
-									sum3 = buf[j+3] * f0;
-				for (k = 1; k < kernel_size; ++k) {
-					fk = filter[k];
+				sum = buf[j] * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
+					int fk = filter[k];
 					sum += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
@@ -225,7 +231,7 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 			}
 			for (; j < h; ++j, dp += w) {
 				sum = buf[j] * f0;
-				for (k = 1; k < kernel_size; ++k) {
+				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
 				dst_d[dp] = sum;
@@ -234,239 +240,47 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 	}
 }
 
-#endif
 
 void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
 void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
 
-#if 0
 
-void box_blur_gray(src, dst, radius, dword options = 0) {
-	if (typeof options == = "undefined") {
-		options = 0;
-	}
-	int w = src.cols;
-	int h = src.rows;
-	int h2 = h << 1;
-	int w2 = w << 1;
-	//var i = 0, x = 0, y = 0, end = 0;
-	int windowSize = ((radius << 1) + 1);
-	int radiusPlusOne = (radius + 1);
-	int radiusPlus2 = (radiusPlusOne + 1);
-	double scale = options & BOX_BLUR_NOSCALE ? 1.0 : (1.0 / (windowSize * windowSize));
-	
-	var tmp_buff = cache.get_buffer((w * h) << 2);
-	
-	int sum = 0, srcIndex = 0, nextPixelIndex = 0, previousPixelIndex = 0;
-	var data_i32 = tmp_buff.i32; // to prevent overflow
-	var data_u8 = src.data;
-	var hold = 0;
-	
-	dst.resize(w, h, src.channel);
-	
-	// first pass
-	// no need to scale
-	//data_u8 = src.data;
-	//data_i32 = tmp;
-	for (int y = 0; y < h; ++y) {
-		int dstIndex = y;
-		int sum = radiusPlusOne * data_u8[srcIndex];
-		
-		for (int i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
-			sum += data_u8[i];
-		}
-		
-		nextPixelIndex = (srcIndex + radiusPlusOne);
-		previousPixelIndex = srcIndex;
-		hold = data_u8[previousPixelIndex];
-		
-		int x;
-		for (x = 0; x < radius; ++x, dstIndex += h) {
-			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - hold;
-			nextPixelIndex ++;
-		}
-		for (; x < w - radiusPlus2; x += 2, dstIndex += h2) {
-			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
-			
-			data_i32[dstIndex+h] = sum;
-			sum += data_u8[nextPixelIndex+1] - data_u8[previousPixelIndex+1];
-			
-			nextPixelIndex += 2;
-			previousPixelIndex += 2;
-		}
-		for (; x < w - radiusPlusOne; ++x, dstIndex += h) {
-			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
-			
-			nextPixelIndex ++;
-			previousPixelIndex ++;
-		}
-		
-		hold = data_u8[nextPixelIndex-1];
-		for (; x < w; ++x, dstIndex += h) {
-			data_i32[dstIndex] = sum;
-			
-			sum += hold - data_u8[previousPixelIndex];
-			previousPixelIndex ++;
-		}
-		
-		srcIndex += w;
-	}
-	
-	// second pass
-	srcIndex = 0;
-	//data_i32 = tmp; // this is a transpose
-	data_u8 = dst.data;
-	
-	// dont scale result
-	if (scale == 1) {
-		for (int y = 0; y < w; ++y) {
-			int dstIndex = y;
-			int sum = radiusPlusOne * data_i32[srcIndex];
-			
-			for (i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
-				sum += data_i32[i];
-			}
-			
-			nextPixelIndex = srcIndex + radiusPlusOne;
-			previousPixelIndex = srcIndex;
-			hold = data_i32[previousPixelIndex];
-			
-			for (x = 0; x < radius; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
-				sum += data_i32[nextPixelIndex] - hold;
-				nextPixelIndex ++;
-			}
-			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
-				data_u8[dstIndex] = sum;
-				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
-				
-				data_u8[dstIndex+w] = sum;
-				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
-				
-				nextPixelIndex += 2;
-				previousPixelIndex += 2;
-			}
-			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
-				
-				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
-				nextPixelIndex ++;
-				previousPixelIndex ++;
-			}
-			hold = data_i32[nextPixelIndex-1];
-			for (; x < h; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
-				
-				sum += hold - data_i32[previousPixelIndex];
-				previousPixelIndex ++;
-			}
-			
-			srcIndex += h;
-		}
-	}
-	else {
-		for (y = 0; y < w; ++y) {
-			int dstIndex = y;
-			int sum = radiusPlusOne * data_i32[srcIndex];
-			
-			for (i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
-				sum += data_i32[i];
-			}
-			
-			nextPixelIndex = srcIndex + radiusPlusOne;
-			previousPixelIndex = srcIndex;
-			hold = data_i32[previousPixelIndex];
-			
-			int x;
-			for (x = 0; x < radius; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum * scale;
-				sum += data_i32[nextPixelIndex] - hold;
-				nextPixelIndex ++;
-			}
-			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
-				data_u8[dstIndex] = sum * scale;
-				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
-				
-				data_u8[dstIndex+w] = sum * scale;
-				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
-				
-				nextPixelIndex += 2;
-				previousPixelIndex += 2;
-			}
-			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum * scale;
-				
-				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
-				nextPixelIndex ++;
-				previousPixelIndex ++;
-			}
-			hold = data_i32[nextPixelIndex-1];
-			for (; x < h; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum * scale;
-				
-				sum += hold - data_i32[previousPixelIndex];
-				previousPixelIndex ++;
-			}
-			
-			srcIndex += h;
-		}
-	}
-	
-	cache.put_buffer(tmp_buff);
-},
+void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options = 0);
 
-gaussian_blur(src, dst, int kernel_size = 0, double sigma = 0.0) {
+template <class T, class Temp> // <byte, int>, <float, float>
+void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0, double sigma = 0.0) {
 	if (kernel_size == 0)
 		kernel_size = max(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1;
 		
 	int half_kernel = kernel_size >> 1;
 	int w = src.cols;
 	int h = src.rows;
-	var data_type = src.type;
-	is_u8 = data_type & U8_t;
 	
 	dst.Resize(w, h, src.channel);
 	
-	var src_d = src.data;
-	dst_d = dst.data;
-	var buf, filter;
+	auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	
 	int buf_sz = (kernel_size + max(h, w));
+	Vector<Temp> buf;
+	Vector<Temp> filter;
 	
-	var buf_node = cache.get_buffer(buf_sz << 2);
-	var filt_node = cache.get_buffer(kernel_size << 2);
+	buf.SetCount(buf_sz << 2);
+	buf.SetCount(kernel_size << 2);
 	
-	if (is_u8) {
-		buf = buf_node.i32;
-		filter = filt_node.i32;
-	}
-	else
-		if (data_type&S32_t) {
-			buf = buf_node.i32;
-			filter = filt_node.f32;
-		}
-		else {
-			buf = buf_node.f32;
-			filter = filt_node.f32;
-		}
-		
-	get_gaussian_kernel(kernel_size, sigma, filter, data_type);
+	get_gaussian_kernel(kernel_size, sigma, filter);
 	
-	if (is_u8) {
+	if (std::is_same<T, byte>::value) {
 		_convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
 	else {
 		_convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
-	
-	cache.put_buffer(buf_node);
-	cache.put_buffer(filt_node);
 }
 
-Vector<Pointf> hough_transform(img, double rho_res, double theta_res, threshold) {
-	var image = img.data;
+template <class T>
+Vector<Pointf> hough_transform(matrix_t<T>& img, double rho_res, double theta_res, double threshold) {
+	auto& image = img.data;
 	
 	int width = img.cols;
 	int height = img.rows;
@@ -546,7 +360,6 @@ Vector<Pointf> hough_transform(img, double rho_res, double theta_res, threshold)
 	return lines;
 }
 
-#endif
 
 template <class T, class P>
 void scharr_derivatives(const P& src, matrix_t<T>& dst) {
@@ -622,32 +435,24 @@ void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 	
 }
 
-#if 0
-
 // compute gradient using Sobel kernel [1 2 1] * [-1 0 1]^T
 // dst: [gx,gy,...]
-void sobel_derivatives(src, dst) {
-	int w = src.cols, h = src.rows;
+template <class T, class Temp>
+void sobel_derivatives(const matrix_t<T>& src, matrix_t<T>& dst) {
+	int w = src.cols;
+	h = src.rows;
 	int dstep = w << 1;
 	//a, b, c, d, e, f;
-	var srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
-	var trow0, trow1;
+	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
+	Vector<Temp> trow0;
+	Vector<Temp> trow1;
 	
 	dst.Resize(w, h, 2); // 2 channel output gx, gy
+	trow0.SetCount((w + 2) << 2);
+	trow1.SetCount((w + 2) << 2);
 	
-	var img = src.data, gxgy = dst.data;
-	
-	var buf0_node = cache.get_buffer((w + 2) << 2);
-	var buf1_node = cache.get_buffer((w + 2) << 2);
-	
-	if (src.type&U8_t || src.type&S32_t) {
-		trow0 = buf0_node.i32;
-		trow1 = buf1_node.i32;
-	}
-	else {
-		trow0 = buf0_node.f32;
-		trow1 = buf1_node.f32;
-	}
+	auto& img = src.data;
+	auto& gxgy = dst.data;
 	
 	for (int y = 0; y < h; ++y, srow1 += w) {
 		srow0 = ((y > 0 ? y - 1 : 1) * w);
@@ -694,15 +499,15 @@ void sobel_derivatives(src, dst) {
 			gxgy[drow++] = (trow1[x+2] + trow1[x] + trow1[x+1] * 2);
 		}
 	}
-	cache.put_buffer(buf0_node);
-	cache.put_buffer(buf1_node);
-},
+}
 
 // please note:
 // dst_(type) size should be cols = src.cols+1, rows = src.rows+1
-void compute_integral_image(src, dst_sum, dst_sqsum, dst_tilted) {
-	var w0 = src.cols, h0 = src.rows, src_d = src.data;
-	var w1 = (w0 + 1);
+template <class T>
+void compute_integral_image(const matrix_t<T>& src, matrix_t<T>& dst_sum, Vector<float>& dst_sqsum, Vector<float>& dst_tilted) {
+	int w0 = src.cols, h0 = src.rows;
+	auto& src_d = src.data;
+	int w1 = (w0 + 1);
 	//var s = 0, s2 = 0, p = 0, pup = 0, i = 0, j = 0, v = 0, k = 0;
 	
 	if (dst_sum && dst_sqsum) {
@@ -733,54 +538,52 @@ void compute_integral_image(src, dst_sum, dst_sqsum, dst_tilted) {
 			}
 		}
 	}
-	else
-		if (dst_sum) {
-			// fill first row with zeros
-			for (int i = 0; i < w1; ++i) {
-				dst_sum[i] = 0;
+	else if (dst_sum) {
+		// fill first row with zeros
+		for (int i = 0; i < w1; ++i) {
+			dst_sum[i] = 0;
+		}
+		int p = (w1 + 1);
+		int pup = 1;
+		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
+			s = 0;
+			int j;
+			for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
+				s += src_d[k];
+				dst_sum[p] = dst_sum[pup] + s;
+				s += src_d[k+1];
+				dst_sum[p+1] = dst_sum[pup+1] + s;
 			}
-			int p = (w1 + 1);
-			int pup = 1;
-			for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
-				s = 0;
-				int j;
-				for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
-					s += src_d[k];
-					dst_sum[p] = dst_sum[pup] + s;
-					s += src_d[k+1];
-					dst_sum[p+1] = dst_sum[pup+1] + s;
-				}
-				for (; j < w0; ++j, ++k, ++p, ++pup) {
-					s += src_d[k];
-					dst_sum[p] = dst_sum[pup] + s;
-				}
+			for (; j < w0; ++j, ++k, ++p, ++pup) {
+				s += src_d[k];
+				dst_sum[p] = dst_sum[pup] + s;
 			}
 		}
-		else
-			if (dst_sqsum) {
-				// fill first row with zeros
-				for (int i = 0; i < w1; ++i) {
-					dst_sqsum[i] = 0;
-				}
-				int p = (w1 + 1), pup = 1;
-				for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
-					int j;
-					int s2 = 0;
-					for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
-						v = src_d[k];
-						s2 += v * v;
-						dst_sqsum[p] = dst_sqsum[pup] + s2;
-						v = src_d[k+1];
-						s2 += v * v;
-						dst_sqsum[p+1] = dst_sqsum[pup+1] + s2;
-					}
-					for (; j < w0; ++j, ++k, ++p, ++pup) {
-						v = src_d[k];
-						s2 += v * v;
-						dst_sqsum[p] = dst_sqsum[pup] + s2;
-					}
-				}
+	}
+	else if (dst_sqsum) {
+		// fill first row with zeros
+		for (int i = 0; i < w1; ++i) {
+			dst_sqsum[i] = 0;
+		}
+		int p = (w1 + 1), pup = 1;
+		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
+			int j;
+			int s2 = 0;
+			for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
+				v = src_d[k];
+				s2 += v * v;
+				dst_sqsum[p] = dst_sqsum[pup] + s2;
+				v = src_d[k+1];
+				s2 += v * v;
+				dst_sqsum[p+1] = dst_sqsum[pup+1] + s2;
 			}
+			for (; j < w0; ++j, ++k, ++p, ++pup) {
+				v = src_d[k];
+				s2 += v * v;
+				dst_sqsum[p] = dst_sqsum[pup] + s2;
+			}
+		}
+	}
 			
 	if (dst_tilted) {
 		// fill first row with zeros
@@ -813,19 +616,21 @@ void compute_integral_image(src, dst_sum, dst_sqsum, dst_tilted) {
 	}
 }
 
-void equalize_histogram(src, dst) {
+template <class T>
+void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
 	int w = src.cols;
 	int h = src.rows;
 	int src_d = src.data;
 	
 	dst.Resize(w, h, src.channel);
 	
-	var dst_d = dst.data;
+	auto& dst_d = dst.data;
 	int size = w * h;
 	//var i = 0, prev = 0, hist0, norm;
 	
-	var hist0_node = cache.get_buffer(256 << 2);
-	int hist0 = hist0_node.i32;
+	static thread_local Vector<int> hist0;
+	hist0.SetCount(256 << 2);
+	
 	for (int i = 0; i < 256; ++i)
 		hist0[i] = 0;
 	for (int i = 0; i < size; ++i) {
@@ -841,32 +646,32 @@ void equalize_histogram(src, dst) {
 	for (int i = 0; i < size; ++i) {
 		dst_d[i] = (hist0[src_d[i]] * norm + 0.5);
 	}
-	cache.put_buffer(hist0_node);
-},
+}
 
-void canny(src, dst, low_thresh, high_thresh) {
+template <class T>
+void canny(const matrix_t<T>& src, matrix_t<T>& dst, double low_thresh, double high_thresh) {
 	int w = src.cols;
-	int h = src.rows
-			src_d = src.data;
+	int h = src.rows;
+	auto& src_d = src.data;
 	        
 	dst.Resize(w, h, src.channel);
 	
-	var dst_d = dst.data;
+	auto& dst_d = dst.data;
 	//var i = 0, j = 0, grad = 0, w2 = w << 1, _grad = 0, suppress = 0, f = 0, x = 0, y = 0, s = 0;
 	//var tg22x = 0, tg67x = 0;
 	
 	// cache buffers
-	var dxdy_node = cache.get_buffer((h * w2) << 2);
-	var buf_node = cache.get_buffer((3 * (w + 2)) << 2);
-	var map_node = cache.get_buffer(((h + 2) * (w + 2)) << 2);
-	var stack_node = cache.get_buffer((h * w) << 2);
+	static thread_local Vector<int> buf;
+	static thread_local Vector<int> map;
+	static thread_local Vector<int> stack;
+	static thread_local Vector<int> dxdy;
 	
+	buf.SetCount((h * w2) << 2);
+	map.SetCount((3 * (w + 2)) << 2);
+	stack.SetCount(((h + 2) * (w + 2)) << 2);
+	dxdy.SetCount((h * w) << 2);
 	
-	var buf = buf_node.i32;
-	var map = map_node.i32;
-	var stack = stack_node.i32;
-	var dxdy = dxdy_node.i32;
-	matrix_t dxdy_m(w, h, S32C2_t, dxdy_node.data);
+	matrix_t<T> dxdy_m(w, h, 2);
 	int row0 = 1;
 	int row1 = (w + 2 + 1);
 	int row2 = (2 * (w + 2) + 1);
@@ -940,34 +745,33 @@ void canny(src, dst, low_thresh, high_thresh) {
 						continue;
 					}
 				}
-				else
-					if (y > tg67x) {
-						if (f > buf[row0+j] && f >= buf[row2+j]) {
-							if (f > high_thresh && !suppress && map[map_i+j-map_w] != 2) {
-								map[map_i+j] = 2;
-								suppress = 1;
-								stack[stack_i++] = map_i + j;
-							}
-							else {
-								map[map_i+j] = 1;
-							}
-							continue;
+				else if (y > tg67x) {
+					if (f > buf[row0+j] && f >= buf[row2+j]) {
+						if (f > high_thresh && !suppress && map[map_i+j-map_w] != 2) {
+							map[map_i+j] = 2;
+							suppress = 1;
+							stack[stack_i++] = map_i + j;
 						}
-					}
-					else {
-						s = s < 0 ? -1 : 1;
-						if (f > buf[row0+j-s] && f > buf[row2+j+s]) {
-							if (f > high_thresh && !suppress && map[map_i+j-map_w] != 2) {
-								map[map_i+j] = 2;
-								suppress = 1;
-								stack[stack_i++] = map_i + j;
-							}
-							else {
-								map[map_i+j] = 1;
-							}
-							continue;
+						else {
+							map[map_i+j] = 1;
 						}
+						continue;
 					}
+				}
+				else {
+					s = s < 0 ? -1 : 1;
+					if (f > buf[row0+j-s] && f > buf[row2+j+s]) {
+						if (f > high_thresh && !suppress && map[map_i+j-map_w] != 2) {
+							map[map_i+j] = 2;
+							suppress = 1;
+							stack[stack_i++] = map_i + j;
+						}
+						else {
+							map[map_i+j] = 1;
+						}
+						continue;
+					}
+				}
 			}
 			map[map_i+j] = 0;
 			suppress = 0;
@@ -1029,23 +833,29 @@ void canny(src, dst, low_thresh, high_thresh) {
 	cache.put_buffer(buf_node);
 	cache.put_buffer(map_node);
 	cache.put_buffer(stack_node);
-},
+}
 
 // transform is 3x3 matrix_t
-void warp_perspective(src, dst, transform, int fill_value = 0) {
-	var src_width = src.cols, src_height = src.rows, dst_width = dst.cols, dst_height = dst.rows;
-	var src_d = src.data, dst_d = dst.data;
-	var x = 0, y = 0, off = 0, ixs = 0, iys = 0, xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
-	var td = transform.data;
-	var m00 = td[0];
-	m01 = td[1];
-	m02 = td[2];
-	m10 = td[3];
-	m11 = td[4];
-	m12 = td[5];
-	m20 = td[6];
-	m21 = td[7];
-	m22 = td[8];
+template <class T>
+void warp_perspective(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& transform, int fill_value = 0) {
+	int src_width = src.cols;
+	int src_height = src.rows;
+	int dst_width = dst.cols;
+	int dst_height = dst.rows;
+	
+	auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	//var x = 0, y = 0, off = 0, ixs = 0, iys = 0, xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
+	auto& td = transform.data;
+	auto m00 = td[0];
+	auto m01 = td[1];
+	auto m02 = td[2];
+	auto m10 = td[3];
+	auto m11 = td[4];
+	auto m12 = td[5];
+	auto m20 = td[6];
+	auto m21 = td[7];
+	auto m22 = td[8];
 	
 	for (int dptr = 0; y < dst_height; ++y) {
 		xs0 = m01 * y + m02;
@@ -1072,7 +882,6 @@ void warp_perspective(src, dst, transform, int fill_value = 0) {
 	}
 }
 
-#endif
 
 // transform is 3x3 or 2x3 matrix_t only first 6 values referenced
 template <class T>
@@ -1124,10 +933,10 @@ void warp_affine(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& trans
 	}
 }
 
-#if 0
 // Basic RGB Skin detection filter
 // from http://popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html
-void skindetector(src, dst) {
+template <class T>
+void skindetector(const matrix_t<T>& src, matrix_t<T>& dst) {
 	int i = src.width * src.height;
 	while (i--) {
 		int j = i * 4;
@@ -1149,8 +958,6 @@ void skindetector(src, dst) {
 	}
 }
 
-
-#endif
 
 
 NAMESPACE_TOPSIDE_END
