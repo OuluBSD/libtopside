@@ -1,33 +1,64 @@
 #ifndef _ComputerVision_CachePool_h_
 #define _ComputerVision_CachePool_h_
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
+
+
+struct _pool_node_t {
+	_pool_node_t* next;
+	
+	#ifdef flagDEBUG
+	// safe, but memory hungry
+	
+	Vector<int> i32;
+	Vector<float> f32;
+	Vector<double> f64;
+	Vector<byte> u8;
+	int size;
+	
+	_pool_node_t(int size) {
+	    next = 0;
+	    resize(size);
+	}
+	void resize(int size) {
+	    f64.SetCount(size / 8);
+	    i32.SetCount(size / 4);
+	    f32.SetCount(size / 4);
+	    u8.SetCount(size);
+	    this->size = size;
+	}
+	
+	#else
+	// memory efficient, but no memory-range checks
+	Vector<byte> data;
+	union {
+		byte* u8;
+		int* i32;
+		float* f32;
+		double* f64;
+	};
+	int size;
+	
+	_pool_node_t(int size) {
+	    next = 0;
+	    resize(size);
+	}
+	void resize(int size) {
+		data.SetCount(size);
+	    u8 = data.Begin();
+	    this->size = size;
+	}
+	
+	#endif
+	
+};
 
 
 class Cache {
 	
 public:
-	
-	struct _pool_node_t {
-		_pool_node_t* next;
-		Vector<int> i32;
-		Vector<float> f32;
-		int size;
-		
-		_pool_node_t(int size) {
-		    next = 0;
-		    i32.SetCount(size);
-		    f32.SetCount(size);
-		    this->size = size;
-		}
-		void resize(int size) {
-		    i32.SetCount(size);
-		    f32.SetCount(size);
-		    this->size = size;
-		}
-		
-	};
 	
 	
 private:
@@ -91,4 +122,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

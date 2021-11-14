@@ -186,6 +186,7 @@ struct Rect_ : Moveable<Rect_<T>> {
 	Rect_(T l, T t, T r, T b) : top(t), left(l), bottom(b), right(r) {}
 
 	bool IsEqual(const Rect_& r) const {return top == r.top && left == r.left && bottom == r.bottom && right == r.right;}
+	bool IsEmpty() const {return left == right && top == bottom;}
 	
 	bool operator==(const Rect_& r) const {return IsEqual(r);}
 	bool operator!=(const Rect_& r) const {return !IsEqual(r);}

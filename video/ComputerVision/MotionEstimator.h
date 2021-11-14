@@ -5,15 +5,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-double sqr(x) {
-	return x*x;
-}
+inline double sqr(double x) {return x*x;}
+
 
 // does isotropic normalization
-void iso_normalize_points(from, to, T0, T1, int count) {
+template <class T>
+void iso_normalize_points(const Vector<Point>& from, Vector<Point>& to, Vector<T>& T0, Vector<T>& T1, int count) {
 	double cx0 = 0.0, cy0 = 0.0, d0 = 0.0, s0 = 0.0;
 	double cx1 = 0.0, cy1 = 0.0, d1 = 0.0, s1 = 0.0;
-	double dx = 0.0, dy = 0.0;
+	double  dx = 0.0,  dy = 0.0;
 	
 	for (int i = 0; i < count; ++i) {
 		cx0 += from[i].x;
@@ -30,10 +30,10 @@ void iso_normalize_points(from, to, T0, T1, int count) {
 	for (int i = 0; i < count; ++i) {
 		dx = from[i].x - cx0;
 		dy = from[i].y - cy0;
-		d0 += sqrt_fast(dx * dx + dy * dy);
+		d0 += FastSqrt(dx * dx + dy * dy);
 		dx = to[i].x - cx1;
 		dy = to[i].y - cy1;
-		d1 += sqrt_fast(dx * dx + dy * dy);
+		d1 += FastSqrt(dx * dx + dy * dy);
 	}
 	
 	d0 /= count;
@@ -42,51 +42,41 @@ void iso_normalize_points(from, to, T0, T1, int count) {
 	s0 = M_SQRT2 / d0;
 	s1 = M_SQRT2 / d1;
 	
-	T0[0] = T0[4] = s0;
-	T0[2] = -cx0 * s0;
-	T0[5] = -cy0 * s0;
-	T0[1] = T0[3] = T0[6] = T0[7] = 0.0;
-	T0[8] = 1.0;
+	T0[0] = T0[4] = (T)s0;
+	T0[2] = (T)(-cx0 * s0);
+	T0[5] = (T)(-cy0 * s0);
+	T0[1] = T0[3] = T0[6] = T0[7] = (T)0.0;
+	T0[8] = (T)1.0;
 	
-	T1[0] = T1[4] = s1;
-	T1[2] = -cx1 * s1;
-	T1[5] = -cy1 * s1;
-	T1[1] = T1[3] = T1[6] = T1[7] = 0.0;
-	T1[8] = 1.0;
+	T1[0] = T1[4] = (T)s1;
+	T1[2] = (T)(-cx1 * s1);
+	T1[5] = (T)(-cy1 * s1);
+	T1[1] = T1[3] = T1[6] = T1[7] = (T)0.0;
+	T1[8] = (T)1.0;
 }
 
-bool have_collinear_points(points, int count) {
-	int i = (count - 1);
-	double dx1 = 0.0, dy1 = 0.0, dx2 = 0.0, dy2 = 0.0;
-	
-	// check that the i-th selected point does not belong
-	// to a line connecting some previously selected points
-	for (int j = 0; j < i; ++j) {
-		dx1 = points[j].x - points[i].x;
-		dy1 = points[j].y - points[i].y;
-		for (int k = 0; k < j; ++k) {
-			dx2 = points[k].x - points[i].x;
-			dy2 = points[k].y - points[i].y;
-			if (abs(dx2*dy1 - dy2*dx1) <= EPSILON*(abs(dx1) + abs(dy1) + abs(dx2) + abs(dy2)))
-				return true;
-		}
-	}
-	return false;
-}
 
-var T0 = new matrix_t(3, 3, F32_t | C1_t);
-var T1 = new matrix_t(3, 3, F32_t | C1_t);
-var AtA = new matrix_t(6, 6, F32_t | C1_t);
-var AtB = new matrix_t(6, 1, F32_t | C1_t);
+bool have_collinear_points(Vector<Point>& points, int count);
+
 
 class affine2d {
+	matrix_t<float> T0;
+	matrix_t<float> T1;
+	matrix_t<float> AtA;
+	matrix_t<float> AtB;
 
 public:
-	affine2d() {
+	affine2d() :
+		T0(3, 3, 1),
+		T1(3, 3, 1),
+		AtA(6, 6, 1),
+		AtB(6, 1, 1)
+	{
 		// empty constructor
 	}
 	
-	bool run(from, to, model, int count) {
+	template<class T>
+	bool run(const Vector<Point>& from, Vector<Point>& to, matrix_t<T> model, int count) {
 		var dt = model.type | C1_t;
 		var md = model.data, t0d = T0.data, t1d = T1.data;
 		var pt0, pt1;
@@ -138,33 +128,50 @@ public:
 		return true;
 	}
 	
-	error(from, to, model, Vector<double>& err, int count) {
-		var pt0, pt1;
-		var m = model.data;
+	template<class T>
+	void error(const Vector<Point>& from, const Vector<Point>& to, const matrix_t<T>& model, Vector<double>& err, int count) {
+		const auto& m = model.data;
 		
-		for (int i = 0; i < count; ++i) {
-			pt0 = from[i];
-			pt1 = to[i];
+		auto f = from.Begin();
+		auto t = to.Begin();
+		for (auto& e : err) {
+			const Point& pt0 = *f;
+			const Point& pt1 = *t;
+			
+			e = sqr(pt1.x - m[0] * pt0.x - m[1] * pt0.y - m[2]) +
+			    sqr(pt1.y - m[3] * pt0.x - m[4] * pt0.y - m[5]);
+			
+			f++;
+			t++;
+		}
+		
+		/*for (int i = 0; i < count; ++i) {
+			const Point& pt0 = from[i];
+			const Point& pt1 = to[i];
 			
 			err[i] = sqr(pt1.x - m[0] * pt0.x - m[1] * pt0.y - m[2]) +
 					 sqr(pt1.y - m[3] * pt0.x - m[4] * pt0.y - m[5]);
-		}
+		}*/
 	}
 	
-	check_subset(from, to, int count) {
+	bool check_subset(const Vector<Point>& from, const Vector<Point>& to, int count) {
 		return true; // all good
 	}
 	
 };
 
-var mLtL = new matrix_t(9, 9, F32_t | C1_t);
-var Evec = new matrix_t(9, 9, F32_t | C1_t);
 
 class homography2d {
+	matrix_t<float> mLtL;
+	matrix_t<float> Evec;
 
 
 public:
-	function homography2d() {
+	
+	homography2d() :
+		mLtL(9, 9, 1),
+		Evec(9, 9, 1)
+	{
 		// empty constructor
 		//this->T0 = new matrix_t(3, 3, F32_t|C1_t);
 		//this->T1 = new matrix_t(3, 3, F32_t|C1_t);
@@ -172,13 +179,17 @@ public:
 		//this->Evec = new matrix_t(9, 9, F32_t|C1_t);
 	}
 	
-	bool run(from, to, model, int count) {
-		var md = model.data, t0d = T0.data, t1d = T1.data;
-		var LtL = mLtL.data, evd = Evec.data;
-		var x = 0.0, y = 0.0, X = 0.0, Y = 0.0;
+	template<class T>
+	bool run(const Vector<T>& from, Vector<T>& to, const matrix_t<T>& model, int count) {
+		const auto& md = model.data;
+		auto& t0d = T0.data;
+		auto& t1d = T1.data;
+		auto& LtL = mLtL.data;
+		auto& = Evec.data;
+		double x = 0.0, y = 0.0, X = 0.0, Y = 0.0;
 		
 		// norm
-		var smx = 0.0, smy = 0.0, cmx = 0.0, cmy = 0.0, sMx = 0.0, sMy = 0.0, cMx = 0.0, cMy = 0.0;
+		double smx = 0.0, smy = 0.0, cmx = 0.0, cmy = 0.0, sMx = 0.0, sMy = 0.0, cMx = 0.0, cMy = 0.0;
 		
 		for (int i = 0; i < count; ++i) {
 			cmx += to[i].x;
@@ -199,7 +210,7 @@ public:
 			sMy += abs(from[i].y - cMy);
 		}
 		
-		if (abs(smx) < EPSILON
+		if (   abs(smx) < EPSILON
 			|| abs(smy) < EPSILON
 			|| abs(sMx) < EPSILON
 			|| abs(sMy) < EPSILON)
@@ -317,27 +328,34 @@ public:
 		return true;
 	}
 	
-	void error(from, to, model, err, count) {
-		var m = model.data;
+	template <class T>
+	void error(const Vector<T>& from, Vector<T>& to, const matrix_t<T>& model, Vector<double>& err, int count) {
+		const auto& m = model.data;
 		
-		for (int i = 0; i < count; ++i) {
-			double pt0 = from[i];
-			double pt1 = to[i];
+		auto f = from.Begin();
+		auto t = to.Begin();
+		for (auto& e : err) {
+			const Point& pt0 = *f;
+			const Point& pt1 = *t;
 			
 			double ww = 1.0 / (m[6] * pt0.x + m[7] * pt0.y + 1.0);
 			double dx = (m[0] * pt0.x + m[1] * pt0.y + m[2]) * ww - pt1.x;
 			double dy = (m[3] * pt0.x + m[4] * pt0.y + m[5]) * ww - pt1.y;
-			err[i] = (dx * dx + dy * dy);
+			e = (dx * dx + dy * dy);
+			
+			f++;
+			t++;
 		}
 	}
 	
-	void check_subset(from, to, int count) {
+	template <class T>
+	void check_subset(const Vector<T>& from, Vector<T>& to, int count) {
 		// seems to reject good subsets actually
 		//if( have_collinear_points(from, count) || have_collinear_points(to, count) ) {
 		//return false;
 		//}
 		if (count == 4) {
-			var negative = 0;
+			int negative = 0;
 			
 			var fp0 = from[0], fp1 = from[1], fp2 = from[2], fp3 = from[3];
 			var tp0 = to[0], tp1 = to[1], tp2 = to[2], tp3 = to[3];
@@ -356,7 +374,7 @@ public:
 			
 			if (detA*detB < 0)
 				negative++;
-				
+			
 			// set2
 			A11 = fp1.x, A12 = fp1.y;
 			A21 = fp2.x, A22 = fp2.y;
@@ -413,7 +431,7 @@ public:
 
 class ransac_params_t {
 	int size;
-	double tresh, eps, prob;
+	double thresh, eps, prob;
 	
 public:
 	ransac_params_t(int size = 0, double thresh = 0.5, double eps = 0.5, double prob = 0.99) {
@@ -423,20 +441,22 @@ public:
 		this->prob = prob;
 	}
 	
-	bool update_iters(_eps, max_iters) {
-		var num = log_fast(1 - this->prob);
-		var denom = log_fast(1 - pow_fast(1 - _eps, this->size));
-		return (denom >= 0 || -num >= max_iters*(-denom) ? max_iters : round(num / denom));
+	int update_iters(double _eps, int max_iters) {
+		double num = FastLn(1 - this->prob);
+		double denom = FastLn(1 - pow_fast(1 - _eps, this->size));
+		return (denom >= 0 || -num >= max_iters*(-denom)) ? max_iters : (int)round(num / denom);
 	}
 };
 
 
+template <class Kernel>
 class motion_estimator {
 
 
 public:
-
-	bool get_subset(kernel, from, to, need_cnt, max_cnt, from_sub, to_sub) {
+	
+	template <class T>
+	bool get_subset(Kernel& kernel, const Vector<T>& from, const Vector<T>& to, int need_cnt, int max_cnt, Vector<T>& from_sub, Vector<T>& to_sub) {
 		int max_try = 1000;
 		var indices = [];
 		//var i = 0, j = 0, ssiter = 0, idx_i = 0, ok = false;
@@ -470,7 +490,8 @@ public:
 		return (i == need_cnt && ssiter < max_try);
 	}
 	
-	int find_inliers(kernel, model, from, to, count, double thresh, err, Vector<bool>& mask) {
+	template <class T>
+	int find_inliers(Kernel& kernel, const matrix_t<T>& model, const Vector<T>& from, const Vector<T>& to, int count, double thresh, const Vector<double>& err, Vector<bool>& mask) {
 		int numinliers = 0;
 		double t = thresh * thresh;
 		
@@ -484,7 +505,8 @@ public:
 		return numinliers;
 	}
 	
-	bool ransac(params, kernel, from, to, int count, model, mask, int max_iters = 1000) {
+	template <class T>
+	bool ransac(const ransac_params_t& params, Kernel& kernel, const Vector<T>& from, const Vector<T>& to, int count, const matrix_t<T>& model, Vector<bool>& mask, int max_iters = 1000) {
 	
 		if (count < params.size)
 			return false;
@@ -572,7 +594,8 @@ public:
 		return result;
 	}
 	
-	bool lmeds(params, kernel, from, to, int count, model, mask, int max_iters = 1000) {
+	template <class T>
+	bool lmeds(const ransac_params_t& params, Kernel& kernel, const Vector<T>& from, Vector<T>& to, int count, const matrix_t<T>& model, Vector<bool>& mask, int max_iters = 1000) {
 	
 		if (count < params.size)
 			return false;
@@ -657,7 +680,7 @@ public:
 		}
 		
 		if (result) {
-			sigma = 2.5 * 1.4826 * (1 + 5.0 / (count - model_points)) * sqrt_fast(min_median);
+			sigma = 2.5 * 1.4826 * (1 + 5.0 / (count - model_points)) * FastSqrt(min_median);
 			sigma = max(sigma, 0.001);
 			
 			numinliers = find_inliers(kernel, model, from, to, count, sigma, err, curr_mask.data);

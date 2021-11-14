@@ -120,8 +120,11 @@ public:
 
 
 
-class Value {
+class Value : RTTIBase {
+	RTTI_DECL0(Value)
+	
 public:
+	
 	class Void {
 	protected:
 		Atomic  refcount;

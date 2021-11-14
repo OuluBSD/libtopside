@@ -9,6 +9,7 @@ struct SimpleCascadeClassifier : Moveable<SimpleCascadeClassifier> {
 	double					threshold;
 	double					left_val;
 	double					right_val;
+	bool					tilted;
 	
 	void Jsonize(JsonIO& json);
 	
@@ -17,6 +18,7 @@ struct SimpleCascadeClassifier : Moveable<SimpleCascadeClassifier> {
 
 struct ComplexCascadeClassifier : Moveable<ComplexCascadeClassifier> {
 	Vector<SimpleCascadeClassifier>		classifiers;
+	double								threshold;
 	
 	void Jsonize(JsonIO& json);
 	
@@ -99,12 +101,25 @@ struct Cascade {
 	int count;
 	int width;
 	int height;
-	Vector<CascadeStageClassifier>	stage_classifiers;
+	Vector<CascadeStageClassifier>	classifiers;
 	
 	void	Jsonize(JsonIO& json);
 	String	GetCppLoader(String name) const;
 	
 };
+
+
+
+
+bool LoadCascadeJs(String path, String dst_title, String dst_dir);
+void LoadCascadeBbfFace(Cascade& c);
+void LoadCascadeEye(ComplexCascade& c);
+void LoadCascadeFrontalFace(ComplexCascade& c);
+void LoadCascadeHandFist(ComplexCascade& c);
+void LoadCascadeHandOpen(ComplexCascade& c);
+void LoadCascadeMouth(ComplexCascade& c);
+void LoadCascadeProfileFace(ComplexCascade& c);
+void LoadCascadeUpperBody(ComplexCascade& c);
 
 
 NAMESPACE_TOPSIDE_END

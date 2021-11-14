@@ -274,12 +274,12 @@ void Orb::rectify_patch(const ByteMat& src, ByteMat& dst, double angle, int px, 
 	double cosine = FastCos(angle);
 	double sine   = FastSin(angle);
 	
-	H.data[0] = cosine;
-	H.data[1] = -sine;
-	H.data[2] = (-cosine + sine) * psize * 0.5 + px;
-	H.data[3] = sine;
-	H.data[4] =  cosine;
-	H.data[5] = (-sine   - cosine) * psize * 0.5 + py;
+	H.data[0] = (float)cosine;
+	H.data[1] = (float)-sine;
+	H.data[2] = (float)((-cosine + sine) * psize * 0.5 + px);
+	H.data[3] = (float)sine;
+	H.data[4] = (float)cosine;
+	H.data[5] = (float)((-sine   - cosine) * psize * 0.5 + py);
 	            
 	warp_affine(src, dst, H, 128);
 }

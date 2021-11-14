@@ -55,6 +55,13 @@ Value& Value::operator=(const Value& v) {
 	TODO
 }
 
+dword Value::GetType() const {
+	TODO
+}
+
+bool Value::IsNull() const {
+	TODO
+}
 
 
 

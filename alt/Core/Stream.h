@@ -589,6 +589,12 @@ class XmlIO : public Stream {
 
 class JsonIO : public Stream {
 	
+	
+public:
+	
+	
+	template <class T> JsonIO& operator()(String key, T& o) {TODO}
+	
 };
 
 NAMESPACE_UPP_END

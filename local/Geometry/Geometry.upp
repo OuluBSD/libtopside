@@ -10,7 +10,6 @@ library(!BUILTIN_ASSIMP & POSIX) assimp;
 library(!BUILTIN_ASSIMP & WIN32 & (CLANG | GCC)) libassimp.dll.a;
 
 file
-	TODO.txt,
 	Geometry.h,
 	Common.h,
 	Matrix.h,

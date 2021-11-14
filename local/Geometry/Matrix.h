@@ -45,7 +45,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	//operator bool() const {return !IsNull();}
 	
 	void Clear() {memset(this, 0, sizeof(Vec));}
-	void ClearFrom(int i) {for(; i < I; i++) data[i] = 0.0;}
+	void ClearFrom(int i) {for(; i < I; i++) data[i] = 0;}
 	
 	hash_t GetHashValue() const {
 		CombineHash c;
@@ -562,7 +562,7 @@ struct DynamicMatrix : Moveable<DynamicMatrix<T>> {
 	int cols, rows;
 	
 	
-	void SetSize(int w, int h, int channels);
+	void SetSize(int w, int h, int channels) {TODO}
 	
 };
 
@@ -574,9 +574,9 @@ struct DynamicTensor : Moveable<DynamicTensor<T>> {
 	Vector<T> data;
 	
 	
-	void SetSize(int w, int h, int channels);
+	void SetSize(int w, int h, int channels) {TODO}
 	
-	void operator=(const DynamicTensor& s);
+	void operator=(const DynamicTensor& s) {TODO}
 	
 };
 
@@ -586,7 +586,7 @@ struct Pyramid : Moveable<Pyramid<T>> {
 	using DTen = DynamicTensor<T>;
 	
 	Vector<DTen> data;
-		
+	
 	Pyramid() {}
 	Pyramid(int w, int h, int levels) {SetSize(w, h, levels);}
 	Pyramid(const Pyramid& p) {*this = p;}
@@ -598,9 +598,6 @@ struct Pyramid : Moveable<Pyramid<T>> {
 	void SetLevels(int i) {data.SetCount(i);}
 	
 	void SetSize(int w, int h, int channels, int levels) {
-		this->cols = w;
-		this->rows = h;
-		this->levels = levels;
 		data.SetCount(levels);
 		int i = levels;
         while(--i >= 0) {
@@ -637,7 +634,7 @@ struct Pyramid : Moveable<Pyramid<T>> {
 		int sptr = sx + sy * w;
 		int dptr = 0;
 		
-		dst.Resize(w2, h2, src.channel);
+		dst.SetSize(w2, h2, src.channels);
 		
 		const auto& src_d = src.data;
 		auto& dst_d = dst.data;

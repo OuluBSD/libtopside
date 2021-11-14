@@ -4,68 +4,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-// implementation from CCV project
-// currently working only with u8,s32,f32
-/*enum {
-	U8_t = 0x0100,
-    S32_t = 0x0200,
-    F32_t = 0x0400,
-    S64_t = 0x0800,
-    F64_t = 0x1000
+struct ScorePoint : Moveable<ScorePoint> {
+	int x, y;
+	float score;
+	
 };
-
-enum {
-	C1_t = 0x01,
-    C2_t = 0x02,
-    C3_t = 0x03,
-    C4_t = 0x04
-};
-
-extern const int _data_type_size[];
-
-
-int get_data_type();
-int get_channel();
-int get_data_type_size();
-
-
-// data types
-global.U8_t = U8_t;
-global.S32_t = S32_t;
-global.F32_t = F32_t;
-global.S64_t = S64_t;
-global.F64_t = F64_t;
-// data channels
-global.C1_t = C1_t;
-global.C2_t = C2_t;
-global.C3_t = C3_t;
-global.C4_t = C4_t;
-
-// popular formats
-global.U8C1_t = U8_t | C1_t;
-global.U8C3_t = U8_t | C3_t;
-global.U8C4_t = U8_t | C4_t;
-
-global.F32C1_t = F32_t | C1_t;
-global.F32C2_t = F32_t | C2_t;
-global.S32C1_t = S32_t | C1_t;
-global.S32C2_t = S32_t | C2_t;
-
-
-int get_data_type() {
-    return type & 0xFF00;
-}
-
-int get_channel() {
-    return (type & 0xFF);
-}
-
-int get_data_type_size() {
-    return _data_type_size[(type & 0xFF00) >> 8];
-}
-
-*/
-
 
 
 template <class T>
@@ -123,18 +66,42 @@ public:
 };
 
 using ByteMat = matrix_t<byte>;
-using FloatMat = matrix_t<double>;
+using FloatMat = matrix_t<float>;
 
 
 
 
 struct BBox : Moveable<BBox> {
-	double x;
-	double y;
-	double width;
-	double height;
+	double	x;
+	double	y;
+	double	width;
+	double	height;
+	
+	int		neighbors;
+	double	confidence;
+	
+	
+	
+	BBox() {Clear();}
+	BBox(const BBox& c) {*this = c;}
+	
+	bool IsEmpty() const {return width <= 0 || height <= 0;}
+	void Clear() {x = 0; y = 0; width = 0; height = 0; neighbors = 0; confidence = 0;}
+	
+	void operator=(const BBox& c) {
+		x = c.x;
+		y = c.y;
+		width = c.width;
+		height = c.height;
+		neighbors = c.neighbors;
+		confidence = c.confidence;
+	}
 	
 };
+
+
+bool _group_func(const BBox& r1, const BBox& r2);
+Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors = 1);
 	
 
 

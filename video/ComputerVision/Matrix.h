@@ -5,8 +5,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void identity(M, int value = 1) {
-	var src = M.data;
+template <class T>
+void identity(matrix_t<T>& M, int value = 1) {
+	auto& src = M.data;
 	int rows = M.rows;
 	int cols = M.cols;
 	int cols_1 = (cols + 1);
@@ -22,11 +23,13 @@ void identity(M, int value = 1) {
 	}
 }
 
-void transpose(At, A) {
+template <class T>
+void transpose(matrix_t<T>& At, const matrix_t<T>& A) {
 	int nrows = A.rows;
 	int ncols = A.cols;
 	int Ai = 0, Ati = 0, pAt = 0;
-	var ad = A.data, atd = At.data;
+	const auto& ad = A.data
+	auto& = At.data;
 	
 	for (int i = 0; i < nrows; Ati += 1, Ai += ncols, i++) {
 		pAt = Ati;
@@ -36,13 +39,16 @@ void transpose(At, A) {
 }
 
 // C = A * B
-void multiply(C, A, B) {
+template <class T>
+void multiply(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 	int Ap = 0;
 	int Cp = 0;
 	int ncols = A.cols;
 	int nrows = A.rows;
 	int mcols = B.cols;
-	var ad = A.data, bd = B.data, cd = C.data;
+	const auto& ad = A.data;
+	const auto& bd = B.data;
+	auto& cd = C.data;
 	
 	for (int i = 0; i < nrows; Ap += ncols, i++) {
 		for (int p_B = 0, j = 0; j < mcols; Cp++, p_B++, j++) {
@@ -58,10 +64,13 @@ void multiply(C, A, B) {
 }
 
 // C = A * B'
-void multiply_ABt(C, A, B) {
+template <class T>
+void multiply_ABt(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 	int Ap = 0, Cp = 0;
 	int ncols = A.cols, nrows = A.rows, mrows = B.rows;
-	var ad = A.data, bd = B.data, cd = C.data;
+	const auto& ad = A.data;
+	const auto&bd = B.data;
+	auto& cd = C.data;
 	
 	for (int i = 0; i < nrows; Ap += ncols, i++) {
 		for (int pB = 0, j = 0; j < mrows; Cp++, j++) {
@@ -76,11 +85,14 @@ void multiply_ABt(C, A, B) {
 }
 
 // C = A' * B
-void multiply_AtB(C, A, B) {
+template <class T>
+void multiply_AtB(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 	int Ap = 0;
 	int Cp = 0;
 	int ncols = A.cols, nrows = A.rows, mcols = B.cols;
-	var ad = A.data, bd = B.data, cd = C.data;
+	const auto& ad = A.data;
+	const auto& bd = B.data;
+	auto& cd = C.data;
 	
 	for (int i = 0; i < ncols; Ap++, i++) {
 		for (int p_B = 0, j = 0; j < mcols; Cp++, p_B++, j++) {
@@ -96,10 +108,12 @@ void multiply_AtB(C, A, B) {
 }
 
 // C = A * A'
-void multiply_AAt(C, A) {
+template <class T>
+void multiply_AAt(matrix_t<T>& C, const matrix_t<T>& A) {
 	int pCdiag = 0, p_A = 0, pA = 0;
 	int ncols = A.cols, nrows = A.rows;
-	var ad = A.data, cd = C.data;
+	const auto& ad = A.data;
+	auto& cd = C.data;
 	double sum = 0.0;
 	
 	for (int i = 0; i < nrows; pCdiag += nrows + 1, p_A = pA, i++) {
@@ -116,14 +130,16 @@ void multiply_AAt(C, A) {
 					 cd[pCt] = sum;
 		}
 	}
-},
+}
 
 // C = A' * A
-void multiply_AtA(C, A) {
+template <class T>
+void multiply_AtA(matrix_t<T>& C, const matrix_t<T>& A) {
 	//var i = 0, j = 0, k = 0;
 	//var p_A = 0, pA = 0, pB = 0, p_C = 0, pC = 0, p_CC = 0;
 	int ncols = A.cols, nrows = A.rows;
-	var ad = A.data, cd = C.data;
+	const auto& ad = A.data;
+	auto& cd = C.data;
 	double sum = 0.0;
 	
 	for (int i = 0, p_C = 0; i < ncols; p_C += ncols, i++) {
@@ -144,8 +160,9 @@ void multiply_AtA(C, A) {
 }
 
 // various small matrix operations
-void identity_3x3(M, int value = 1) {
-	var dt = M.data;
+template <class T>
+void identity_3x3(matrix_t<T>& M, int value = 1) {
+	auto& dt = M.data;
 	dt[0] = value;
 	dt[4] = value;
 	dt[8] = value;
@@ -157,7 +174,8 @@ void identity_3x3(M, int value = 1) {
 	dt[7] = 0;
 }
 
-void invert_3x3(from, to) {
+template <class T>
+void invert_3x3(const matrix_t<T>&from, matrix_t<T>& to) {
 	double A = from.data, invA = to.data;
 	double t1 = A[4];
 	double t2 = A[8];
@@ -188,7 +206,8 @@ void invert_3x3(from, to) {
 }
 
 // C = A * B
-void multiply_3x3(C, A, B) {
+template <class T>
+void multiply_3x3(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 	double Cd = C.data, Ad = A.data, Bd = B.data;
 	double m1_0 = Ad[0], m1_1 = Ad[1], m1_2 = Ad[2];
 	double m1_3 = Ad[3], m1_4 = Ad[4], m1_5 = Ad[5];
@@ -209,8 +228,9 @@ void multiply_3x3(C, A, B) {
 	Cd[8] = m1_6 * m2_2 + m1_7 * m2_5 + m1_8 * m2_8;
 }
 
-double mat3x3_determinant(M) {
-	var md = M.data;
+template <class T>
+double mat3x3_determinant(const matrix_t<T>& M) {
+	const auto& md = M.data;
 	return  md[0] * md[4] * md[8] -
 			md[0] * md[5] * md[7] -
 			md[3] * md[1] * md[8] +
@@ -219,9 +239,10 @@ double mat3x3_determinant(M) {
 			md[6] * md[2] * md[4];
 }
 
-double determinant_3x3(M11, M12, M13,
-		M21, M22, M23,
-		M31, M32, M33) {
+template <class T>
+double determinant_3x3(	const matrix_t<T>& M11, const matrix_t<T>& M12, const matrix_t<T>& M13,
+						const matrix_t<T>& M21, const matrix_t<T>& M22, const matrix_t<T>& M23,
+						const matrix_t<T>& M31, const matrix_t<T>& M32, const matrix_t<T>& M33) {
 	return  M11 * M22 * M33 - M11 * M23 * M32 -
 			M21 * M12 * M33 + M21 * M13 * M32 +
 			M31 * M12 * M23 - M31 * M13 * M22;

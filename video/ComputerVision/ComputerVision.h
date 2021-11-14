@@ -11,16 +11,16 @@
 #include "ImageProcessing.h"
 #include "ORB.h"
 #include "BrightnessBinaryFeature.h"
-/*#include "FAST.h"
+#include "FAST.h"
 #include "HAAR.h"
+#include "Matrix.h"
 #include "LinearAlgebra.h"
 #include "Math.h"
-#include "Matrix.h"
 #include "MotionEstimator.h"
 #include "OpticalFlowLK.h"
 #include "Transform.h"
 #include "YAPE.h"
-#include "YAPE06.h"*/
+#include "YAPE06.h"
 
 
 #endif

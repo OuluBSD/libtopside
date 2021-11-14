@@ -4,11 +4,13 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-void get_gaussian_kernel(int size, double sigma, Vector<double>& kernel, data_type) {
+template <class T>
+void get_gaussian_kernel(int size, double sigma, Vector<T>& kernel) {
+	Cache& cache = Cache::Local();
 	//var i = 0, x = 0.0, t = 0.0, sigma_x = 0.0, scale_2x = 0.0;
 	double sum = 0.0;
-	var kern_node = cache.get_buffer(size << 2);
-	var _kernel = kern_node.f32;//new Float32Array(size);
+	_pool_node_t* kern_node = cache.get_buffer(size << 2);
+	auto& _kernel = kern_node.f32;//new Float32Array(size);
 	
 	if ((size&1) == 1 && size <= 7 && sigma <= 0) {
 		switch (size >> 1) {
@@ -45,7 +47,7 @@ void get_gaussian_kernel(int size, double sigma, Vector<double>& kernel, data_ty
 		}
 	}
 	
-	if (data_type & U8_t) {
+	if (std::is_same<byte, T>::value) {
 		// int based kernel
 		sum = 256.0 / sum;
 		for (int i = 0; i < size; ++i) {
@@ -65,8 +67,9 @@ void get_gaussian_kernel(int size, double sigma, Vector<double>& kernel, data_ty
 
 
 // model is 3x3 matrix_t
+template <class T>
 void perspective_4point_transform(
-	model,
+	matrix_t<T>& model,
 	double src_x0, double src_y0, double dst_x0, double dst_y0,
 	double src_x1, double src_y1, double dst_x1, double dst_y1,
 	double src_x2, double src_y2, double dst_x2, double dst_y2,
@@ -361,9 +364,10 @@ void qsort(Vector<T>& array, int low, int high, bool (*cmp)(const T*, const T*))
 	}
 }
 
-int median(const Vector<int>& array, int low, int high) {
-	int w;
-	int middle = 0, ll = 0, hh = 0, median = (low + high) >> 1;
+template <class T>
+int median(Vector<T>& array, T low, T high) {
+	T w;
+	T middle = 0, ll = 0, hh = 0, median = (low + high) >> 1;
 	for (;;) {
 		if (high <= low)
 			return array[median];

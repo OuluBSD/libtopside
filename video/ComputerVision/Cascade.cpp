@@ -8,13 +8,15 @@ void SimpleCascadeClassifier::Jsonize(JsonIO& json) {
 		("features", features),
 		("threshold", threshold),
 		("left_val", left_val),
-		("right_val", right_val)
+		("right_val", right_val),
+		("tilted", tilted) // haar::detect_single_scale
 	;
 }
 
 void ComplexCascadeClassifier::Jsonize(JsonIO& json) {
 	json
-		("simpleClassifiers", classifiers)
+		("simple_classifiers", classifiers)
+		("threshold", threshold) // haar::detect_single_scale
 	;
 }
 
@@ -22,7 +24,7 @@ void ComplexCascade::Jsonize(JsonIO& json) {
 	json
 		("size", size)
 		("tilted", tilted)
-		("complexClassifiers", classifiers)
+		("complex_classifiers", classifiers)
 	;
 }
 
@@ -91,7 +93,7 @@ void Cascade::Jsonize(JsonIO& json)
 		("count",				count)
 		("width",				width)
 		("height",				height)
-		("stage_classifier",	stage_classifiers)
+		("stage_classifier",	classifiers)
 	;
 }
 
@@ -103,10 +105,10 @@ String Cascade::GetCppLoader(String name) const {
 		<< "	c.count = " << count << ";\n"
 		<< "	c.width = " << width << ";\n"
 		<< "	c.height = " << height << ";\n"
-		<< "	c.stage_classifiers.SetCount(" << stage_classifiers.GetCount() << ");\n"
-		<< "	auto sc_iter = c.stage_classifiers.Begin();\n";
+		<< "	c.classifiers.SetCount(" << classifiers.GetCount() << ");\n"
+		<< "	auto sc_iter = c.classifiers.Begin();\n";
 	;
-	for(const CascadeStageClassifier& sc : stage_classifiers) {
+	for(const CascadeStageClassifier& sc : classifiers) {
 		
 		s	<< "	{\n"
 			<< "		CascadeStageClassifier& sc = *sc_iter++;\n"
@@ -144,7 +146,7 @@ String Cascade::GetCppLoader(String name) const {
 
 
 
-void LoadCascadeJs(String path, String dst_title, String dst_die) {
+bool LoadCascadeJs(String path, String dst_title, String dst_dir) {
 	String dst_path = AppendFileName(dst_dir, "Cascade" + dst_title + ".cpp");
 	LOG("\tExporting to " << dst_path);
 	
@@ -156,7 +158,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 			{line_i = i; break;}
 	if (line_i < 0) {
 		LOG("error: did not find right line in content");
-		continue;
+		return false;
 	}
 	
 	content = lines[line_i];
@@ -164,7 +166,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 	int b = content.ReverseFind("}");
 	if (a < 0 || b < 0) {
 		LOG("error:could not find json range");
-		continue;
+		return false;
 	}
 	content = content.Mid(a, b-a+1);
 	LOG("\tcontent range found with size " << b-a);
@@ -184,7 +186,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 		if (root.IsNull() || root.IsError()) {
 			LOG("error: parsing json failed");
 			LOG(content);
-			continue;
+			return false;
 		}
 		
 		//LOG(AsJSON(root, true));
@@ -200,7 +202,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 		FileOut fout(dst_path);
 		if (!fout.IsOpen()) {
 			LOG("error: could not open file " << dst_path);
-			continue;
+			return false;
 		}
 		
 		fout	<< "#include \"ComputerVision.h\"\n\n\n"
@@ -217,7 +219,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 		if (root.IsNull() || root.IsError()) {
 			LOG("error: parsing json failed");
 			LOG(content);
-			continue;
+			return false;
 		}
 		
 		//LOG(AsJSON(root, true));
@@ -233,7 +235,7 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 		FileOut fout(dst_path);
 		if (!fout.IsOpen()) {
 			LOG("error: could not open file " << dst_path);
-			continue;
+			return false;
 		}
 		
 		fout	<< "#include \"ComputerVision.h\"\n\n\n"
@@ -245,6 +247,8 @@ void LoadCascadeJs(String path, String dst_title, String dst_die) {
 		
 		LOG("\tsuccess");
 	}
+	
+	return true;
 }
 
 

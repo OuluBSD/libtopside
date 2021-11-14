@@ -5,31 +5,27 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-
-double hypot(double a, double b) {
-	a = abs(a);
-	b = abs(b);
-	if (a > b) {
-		b /= a;
-		return a * sqrt_fast(1.0 + b*b);
-	}
-	if (b > 0) {
-		a /= b;
-		return b * sqrt_fast(1.0 + a*a);
-	}
-	return 0.0;
+template <class T>
+void Swap(Vector<T>& A, int i0, int i1, T& t) {
+	t = A[i0];
+	A[i0] = A[i1];
+	A[i1] = t;
 }
 
-void JacobiImpl(A, astep, W, V, vstep, n) {
+double hypot(double a, double b);
+
+template <class T>
+void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, double vstep, int n) {
+	Cache& cache = Cache::Local();
 	double eps = EPSILON;
 	//var i = 0, j = 0, k = 0, m = 0, l = 0, idx = 0, _in = 0, _in2 = 0;
 	int max_iter = n * n * 30;
 	double mv = 0.0, val = 0.0, p = 0.0, y = 0.0, t = 0.0, s = 0.0, c = 0.0, a0 = 0.0, b0 = 0.0;
 	
-	var indR_buff = cache.get_buffer(n << 2);
-	var indC_buff = cache.get_buffer(n << 2);
-	var indR = indR_buff.i32;
-	var indC = indC_buff.i32;
+	_pool_node_t* indR_buff = cache.get_ buffer(n << 2);
+	_pool_node_t* indC_buff = cache.get_buffer(n << 2);
+	Vector<int>& indR = indR_buff.i32;
+	Vector<int>& indC = indC_buff.i32;
 	
 	if (V) {
 		for (int i = 0; i < n; i++) {
@@ -188,7 +184,9 @@ void JacobiImpl(A, astep, W, V, vstep, n) {
 	cache.put_buffer(indC_buff);
 }
 
-void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
+template <class T>
+void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, double vstep, int m, int n, int n1) {
+	Cache& cache = Cache::Local();
 	double eps = EPSILON * 2.0;
 	double minval = FLT_MIN;
 	//int i = 0, j = 0, k = 0, iter = 0, ;
@@ -196,35 +194,38 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 	//var Ai = 0, Aj = 0, Vi = 0, Vj = 0, changed = 0;
 	//var c = 0.0, s = 0.0, t = 0.0;
 	//var t0 = 0.0, t1 = 0.0, sd = 0.0, beta = 0.0, gamma = 0.0, delta = 0.0, a = 0.0, p = 0.0, b = 0.0;
-	var seed = 0x1234;
-	var val = 0.0, val0 = 0.0, asum = 0.0;
+	int seed = 0x1234;
+	double val = 0.0, val0 = 0.0, asum = 0.0;
 	
-	var W_buff = cache.get_buffer(n << 3);
-	var W = W_buff.f64;
+	_pool_node_t* W_buff = cache.get_buffer(n << 3);
+	auto& W = W_buff->f64;
 	
 	for (int i = 0; i < n; i++) {
-		double sd;
+		double sd = 0;
 		for (int k = 0; k < m; k++) {
-			double t = At[i*astep + k];
+			int j = (int)(i*astep + k);
+			double t = At[j];
 			sd += t * t;
 		}
 		W[i] = sd;
 		
 		if (Vt) {
 			for (int k = 0; k < n; k++) {
-				Vt[i*vstep + k] = 0;
+				int j = (int)(i*vstep + k);
+				(*Vt)[j] = 0;
 			}
-			Vt[i*vstep + i] = 1;
+			int j = (int)(i*vstep + i);
+			(*Vt)[j] = 1;
 		}
 	}
 	
 	for (int iter = 0; iter < max_iter; iter++) {
 		bool changed = false;
 		
-		for (i = 0; i < n - 1; i++) {
-			for (j = i + 1; j < n; j++) {
-				int Ai = (i * astep);
-				int Aj = (j * astep);
+		for (int i = 0; i < n - 1; i++) {
+			for (int j = i + 1; j < n; j++) {
+				int Ai = (int)(i * astep);
+				int Aj = (int)(j * astep);
 				double a = W[i];
 				double p = 0;
 				double b = W[j];
@@ -235,7 +236,7 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 				for (int k = 2; k < m; k++)
 					p += At[Ai+k] * At[Aj+k];
 					
-				if (abs(p) <= eps*sqrt_fast(a*b))
+				if (abs(p) <= eps*FastSqrt(a*b))
 					continue;
 					
 				p *= 2.0;
@@ -244,11 +245,11 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 				double s, c;
 				if (beta < 0) {
 					double delta = (gamma - beta) * 0.5;
-					s = sqrt_fast(delta / gamma);
+					s = FastSqrt(delta / gamma);
 					c = (p / (gamma * s * 2.0));
 				}
 				else {
-					c = sqrt_fast((gamma + beta) / (gamma * 2.0));
+					c = FastSqrt((gamma + beta) / (gamma * 2.0));
 					s = (p / (gamma * c * 2.0));
 				}
 				
@@ -285,24 +286,25 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 				changed = true;
 				
 				if (Vt) {
-					int Vi = (i * vstep);
-					int Vj = (j * vstep);
+					auto& v = *Vt;
+					int Vi = (int)(i * vstep);
+					int Vj = (int)(j * vstep);
 					
-					t0 = c * Vt[Vi] + s * Vt[Vj];
-					t1 = -s * Vt[Vi] + c * Vt[Vj];
-					Vt[Vi] = t0;
-					Vt[Vj] = t1;
+					t0 = c * v[Vi] + s * v[Vj];
+					t1 = -s * v[Vi] + c * v[Vj];
+					v[Vi] = t0;
+					v[Vj] = t1;
 					
-					t0 = c * Vt[Vi+1] + s * Vt[Vj+1];
-					t1 = -s * Vt[Vi+1] + c * Vt[Vj+1];
-					Vt[Vi+1] = t0;
-					Vt[Vj+1] = t1;
+					t0 = c * v[Vi+1] + s * v[Vj+1];
+					t1 = -s * v[Vi+1] + c * v[Vj+1];
+					v[Vi+1] = t0;
+					v[Vj+1] = t1;
 					
 					for (int k = 2; k < n; k++) {
-						t0 = c * Vt[Vi+k] + s * Vt[Vj+k];
-						t1 = -s * Vt[Vi+k] + c * Vt[Vj+k];
-						Vt[Vi+k] = t0;
-						Vt[Vj+k] = t1;
+						t0 = c * v[Vi+k] + s * v[Vj+k];
+						t1 = -s * v[Vi+k] + c * v[Vj+k];
+						v[Vi+k] = t0;
+						v[Vj+k] = t1;
 					}
 				}
 			}
@@ -311,13 +313,15 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 			break;
 	}
 	
+	double sd = 0;
 	for (int i = 0; i < n; i++) {
-		double sd = 0;
+		sd = 0;
 		for (int k = 0; k < m; k++) {
-			double t = At[i*astep + k];
+			int j = (int)(i*astep + k);
+			double t = At[j];
 			sd += t * t;
 		}
-		W[i] = sqrt_fast(sd);
+		W[i] = FastSqrt(sd);
 	}
 	
 	for (int i = 0; i < n - 1; i++) {
@@ -329,12 +333,17 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 		if (i != j) {
 			Swap(W, i, j, sd);
 			if (Vt) {
+				double t;
 				for (int k = 0; k < m; k++) {
-					swap(At, i*astep + k, j*astep + k, t);
+					int a = (int)(i*astep + k);
+					int b = (int)(j*astep + k);
+					Swap(At, a, b, t);
 				}
 				
 				for (int k = 0; k < n; k++) {
-					swap(Vt, i*vstep + k, j*vstep + k, t);
+					int a = (int)(i*vstep + k);
+					int b = (int)(j*vstep + k);
+					Swap(*Vt, a, b, t);
 				}
 			}
 		}
@@ -361,37 +370,45 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 			for (int k = 0; k < m; k++) {
 				seed = (seed * 214013 + 2531011);
 				val = (((seed >> 16) & 0x7fff) & 256) != 0 ? val0 : -val0;
-				At[i*astep + k] = val;
+				int a = (int)(i*astep + k);
+				At[a] = val;
 			}
 			for (int iter = 0; iter < 2; iter++) {
 				for (int j = 0; j < i; j++) {
 					sd = 0;
 					for (int k = 0; k < m; k++) {
-						sd += At[i*astep + k] * At[j*astep + k];
+						int a = (int)(i*astep + k);
+						int b = (int)(j*astep + k);
+						sd += At[a] * At[b];
 					}
 					double asum = 0.0;
 					for (int k = 0; k < m; k++) {
-						t = (At[i*astep + k] - sd * At[j*astep + k]);
-						At[i*astep + k] = t;
+						int a = (int)(i*astep + k);
+						int b = (int)(j*astep + k);
+						double t = (At[a] - sd * At[b]);
+						At[a] = t;
 						asum += abs(t);
 					}
 					asum = asum ? 1.0 / asum : 0;
 					for (int k = 0; k < m; k++) {
-						At[i*astep + k] *= asum;
+						int a = (int)(i*astep + k);
+						At[a] *= asum;
 					}
 				}
 			}
 			sd = 0;
 			for (int k = 0; k < m; k++) {
-				t = At[i*astep + k];
+				int a = (int)(i*astep + k);
+				double t = At[a];
 				sd += t * t;
 			}
-			sd = sqrt_fast(sd);
+			sd = FastSqrt(sd);
 		}
 		
-		s = (1.0 / sd);
+		double s = (1.0 / sd);
 		for (int k = 0; k < m; k++) {
-			At[i*astep + k] *= s;
+			int a = (int)(i*astep + k);
+			At[a] *= s;
 		}
 	}
 	
@@ -399,63 +416,14 @@ void JacobiSVDImpl(At, astep, _W, Vt, vstep, m, n, n1) {
 }
 
 
-bool lu_solve(A, B) {
-	//var i = 0, j = 0, k = 0, p = 1, astep = A.cols;
-	var ad = A.data, bd = B.data;
-	//var t, alpha, d, s;
-	
-	for (int i = 0; i < astep; i++) {
-		int k = i;
-		for (int j = i + 1; j < astep; j++) {
-			if (abs(ad[j*astep + i]) > abs(ad[k*astep+i])) {
-				k = j;
-			}
-		}
-		
-		if (abs(ad[k*astep+i]) < EPSILON) {
-			return false; // FAILED
-		}
-		
-		if (k != i) {
-			for (int j = i; j < astep; j++) {
-				swap(ad, i*astep + j, k*astep + j, t);
-			}
-			
-			swap(bd, i, k, t);
-			p = -p;
-		}
-		
-		double d = -1.0 / ad[i*astep+i];
-		
-		for (int j = i + 1; j < astep; j++) {
-			double alpha = ad[j*astep+i] * d;
-			
-			for (int k = i + 1; k < astep; k++) {
-				ad[j*astep+k] += alpha * ad[i*astep+k];
-			}
-			
-			bd[j] += alpha * bd[i];
-		}
-		
-		ad[i*astep+i] = -d;
-	}
-	
-	for (int i = astep - 1; i >= 0; i--) {
-		double s = bd[i];
-		for (int k = i + 1; k < astep; k++) {
-			s -= ad[i*astep+k] * bd[k];
-		}
-		bd[i] = s * ad[i*astep+i];
-	}
-	
-	return true; // OK
-}
+bool lu_solve(matrix_t<float>& A, matrix_t<float>& B);
 
-
-bool cholesky_solve(A, B) {
+template<class T>
+bool cholesky_solve(matrix_t<T>& A, matrix_t<T>& B) {
 	//var col = 0, row = 0, col2 = 0, cs = 0, rs = 0, i = 0, j = 0;
 	int size = A.cols;
-	var ad = A.data, bd = B.data;
+	Vector<T>& ad = A.data;
+	Vector<T>& bd = B.data;
 	//var val, inv_diag;
 	
 	for (int col = 0; col < size; col++) {
@@ -470,7 +438,7 @@ bool cholesky_solve(A, B) {
 			}
 			if (row == col) {
 				// this is the diagonal element so don't divide
-				ad[(rs+col)] = val;
+				ad[(rs+col)] = (T)val;
 				if (val == 0) {
 					return 0; // FAILED
 				}
@@ -478,9 +446,9 @@ bool cholesky_solve(A, B) {
 			}
 			else {
 				// cache the value without division in the upper half
-				ad[(cs+row)] = val;
+				ad[(cs+row)] = (T)val;
 				// divide my the diagonal element for all others
-				ad[(rs+col)] = val * inv_diag;
+				ad[(rs+col)] = (T)(val * inv_diag);
 			}
 			rs = (rs + size);
 		}
@@ -494,7 +462,7 @@ bool cholesky_solve(A, B) {
 			for (int j = 0; j < i; j++) {
 				val -= ad[(cs+j)] * bd[j];
 			}
-			bd[i] = val;
+			bd[i] = (T)val;
 			cs = (cs + size);
 		}
 	}
@@ -517,36 +485,37 @@ bool cholesky_solve(A, B) {
 			val -= ad[(cs + i)] * bd[j];
 			cs = (cs + size);
 		}
-		bd[i] = val;
+		bd[i] = (T)val;
 	}
 	
 	return 1;
 }
 
-
-void svd_decompose(A, W, U, V, int options = 0) {
-	//var at = 0, i = 0, j = 0, m = _m, n = _n;
+template <class T>
+void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_t<T>* V, int options = 0) {
+	matrix_t<T>& w = *W;
+	matrix_t<T>& u = *U;
+	matrix_t<T>& v = *V;
+	
+	//var at = 0, i = 0, j = 0,
 	int _m = A.rows;
-	int _n = A.cols
-			 var dt = A.type | C1_t; // we only work with single channel
-	         
+	int _n = A.cols;
+	int dt = 1; // we only work with single channel
+	
+	int m = _m, n = _n;
 	bool at = false;
 	if (m < n) {
 		at = true;
 		Swap(m, n);
 	}
 	
-	var a_buff = cache.get_buffer((m * m) << 3);
-	var w_buff = cache.get_buffer(n << 3);
-	var v_buff = cache.get_buffer((n * n) << 3);
+	matrix_t<T> a_mt(m, m, dt);
+	matrix_t<T> w_mt(1, n, dt);
+	matrix_t<T> v_mt(n, n, dt);
 	
-	matrix_t a_mt(m, m, dt, a_buff.data);
-	matrix_t w_mt(1, n, dt, w_buff.data);
-	matrix_t v_mt(n, n, dt, v_buff.data);
-	
-	if (!at {
-	// transpose
-	transpose(a_mt, A);
+	if (!at) {
+		// transpose
+		transpose(a_mt, A);
 	}
 	else {
 		int i;
@@ -558,72 +527,65 @@ void svd_decompose(A, W, U, V, int options = 0) {
 		}
 	}
 	
-	JacobiSVDImpl(a_mt.data, m, w_mt.data, v_mt.data, n, m, n, m);
+	JacobiSVDImpl(a_mt.data, m, w_mt.data, &v_mt.data, n, m, n, m);
 	
 	if (W) {
-	int i;
-	for (i = 0; i < n; i++) {
-			W.data[i] = w_mt.data[i];
+		int i;
+		for (i = 0; i < n; i++) {
+			w.data[i] = w_mt.data[i];
 		}
 		for (; i < _n; i++) {
-			W.data[i] = 0;
+			w.data[i] = 0;
 		}
 	}
 	
 	if (!at) {
-	if (U && (options & SVD_U_T)) {
+		if (U && (options & SVD_U_T)) {
 			int i = m * m;
 			while (--i >= 0) {
-				U.data[i] = a_mt.data[i];
+				u.data[i] = a_mt.data[i];
 			}
 		}
-		else
-			if (U) {
-				transpose(U, a_mt);
-			}
-			
+		else if (U) {
+			transpose(u, a_mt);
+		}
+		
 		if (V && (options & SVD_V_T)) {
 			int i = n * n;
 			while (--i >= 0) {
-				V.data[i] = v_mt.data[i];
+				v.data[i] = v_mt.data[i];
 			}
 		}
-		else
-			if (V) {
-				transpose(V, v_mt);
-			}
+		else if (V) {
+			transpose(v, v_mt);
+		}
 	}
 	else {
 		if (U && (options & SVD_U_T)) {
 			int i = n * n;
 			while (--i >= 0) {
-				U.data[i] = v_mt.data[i];
+				u.data[i] = v_mt.data[i];
 			}
 		}
-		else
-			if (U) {
-				transpose(U, v_mt);
-			}
+		else if (U) {
+			transpose(u, v_mt);
+		}
 			
 		if (V && (options & SVD_V_T)) {
 			int i = m * m;
 			while (--i >= 0) {
-				V.data[i] = a_mt.data[i];
+				v.data[i] = a_mt.data[i];
 			}
 		}
-		else
-			if (V) {
-				transpose(V, a_mt);
-			}
+		else if (V) {
+			transpose(v, a_mt);
+		}
 	}
-	
-	cache.put_buffer(a_buff);
-	cache.put_buffer(w_buff);
-	cache.put_buffer(v_buff);
 }
 
 
-void svd_solve(A, X, B) {
+template <class T>
+void svd_solve(const matrix_t<T>& A, matrix_t<T>& X, const matrix_t<T>& B) {
 	//var i = 0, j = 0, k = 0;
 	var pu = 0, pv = 0;
 	var nrows = A.rows, ncols = A.cols;
@@ -667,25 +629,23 @@ void svd_solve(A, X, B) {
 }
 
 
-void svd_invert(Ai, A) {
+template <class T>
+void svd_invert(const matrix_t<T>& Ai, const matrix_t<T>& A) {
 	//var i = 0, j = 0, k = 0;
 	//var pu = 0, pv = 0, pa = 0;
-	int nrows = A.rows, ncols = A.cols;
+	int nrows = A.rows;
+	int ncols = A.cols;
 	//var sum = 0.0, tol = 0.0;
 	var dt = A.type | C1_t;
 	
-	var u_buff = cache.get_buffer((nrows * nrows) << 3);
-	var w_buff = cache.get_buffer(ncols << 3);
-	var v_buff = cache.get_buffer((ncols * ncols) << 3);
+	matrix_t u_mt(nrows, nrows, dt);
+	matrix_t w_mt(1, ncols, dt);
+	matrix_t v_mt(ncols, ncols, dt);
 	
-	matrix_t u_mt(nrows, nrows, dt, u_buff.data);
-	matrix_t w_mt(1, ncols, dt, w_buff.data);
-	matrix_t v_mt(ncols, ncols, dt, v_buff.data);
-	
-	var id = Ai.data;
-	ud = u_mt.data;
-	wd = w_mt.data;
-	vd = v_mt.data;
+	auto& id = Ai.data;
+	auto& ud = u_mt.data;
+	auto& wd = w_mt.data;
+	auto& vd = v_mt.data;
 	
 	svd_decompose(A, w_mt, u_mt, v_mt, 0);
 	
@@ -701,21 +661,16 @@ void svd_invert(Ai, A) {
 			id[pa] = sum;
 		}
 	}
-	
-	cache.put_buffer(u_buff);
-	cache.put_buffer(w_buff);
-	cache.put_buffer(v_buff);
 }
 
 
-void eigenVV(A, vects, vals) {
+template <class T>
+void eigenVV(const matrix_t<T>& A, const matrix_t<T>* vects, const matrix_t<T>* vals) {
 	int n = A.cols;
-	var dt = A.type | C1_t;
+	int dt = 1;
 	
-	var a_buff = cache.get_buffer((n * n) << 3);
-	var w_buff = cache.get_buffer(n << 3);
-	matrix_t a_mt(n, n, dt, a_buff.data);
-	matrix_t w_mt(1, n, dt, w_buff.data);
+	matrix_t<T> a_mt(n, n, dt);
+	matrix_t<T> w_mt(1, n, dt);
 	
 	int i = n * n;
 	while (--i >= 0) {
@@ -729,12 +684,8 @@ void eigenVV(A, vects, vals) {
 			vals.data[n] = w_mt.data[n];
 		}
 	}
-	
-	cache.put_buffer(a_buff);
-	cache.put_buffer(w_buff);
 }
 
-}
 
 NAMESPACE_TOPSIDE_END
 

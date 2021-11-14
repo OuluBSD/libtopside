@@ -8,204 +8,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
-	Cache& cache = Cache::Local();
-	int xofs_count = 0;
-	int ch = src.channels;
-	int w = src.cols;
-	int h = src.rows;
-	const auto& src_d = src.data;
-	auto& dst_d = dst.data;
-	double scale_x = (double)w / nw;
-	double scale_y = (double)h / nh;
-	double inv_scale_256 = (scale_x * scale_y * 0x10000);
-	//var dx = 0, dy = 0, sx = 0, sy = 0, sx1 = 0, sx2 = 0, i = 0, k = 0, fsx1 = 0.0, fsx2 = 0.0;
-	//var a = 0, b = 0, dxn = 0, alpha = 0, beta = 0, beta1 = 0;
-	
-	Cache::_pool_node_t* buf_node = cache.get_buffer((nw * ch) << 2);
-	Cache::_pool_node_t* sum_node = cache.get_buffer((nw * ch) << 2);
-	Cache::_pool_node_t* xofs_node = cache.get_buffer((w * 2 * 3) << 2);
-	
-	Vector<int>& buf = buf_node->i32;
-	Vector<int>& sum = sum_node->i32;
-	Vector<int>& xofs = xofs_node->i32;
-	
-	int k = 0;
-	for (int dx = 0; dx < nw; dx++) {
-		double fsx1 = dx * scale_x;
-		double fsx2 = fsx1 + scale_x;
-		double sx1 = (fsx1 + 1.0 - 1e-6);
-		double sx2 = fsx2;
-		sx1 = min(sx1, w - 1.0);
-		sx2 = min(sx2, w - 1.0);
-		
-		if (sx1 > fsx1) {
-			xofs[k++] = (int)(dx * ch);
-			xofs[k++] = (int)((sx1 - 1) * ch);
-			xofs[k++] = (int)((sx1 - fsx1) * 0x100);
-			xofs_count++;
-		}
-		for (double sx = sx1; sx < sx2; sx += 1.0) {
-			xofs_count++;
-			xofs[k++] = (int)(dx * ch);
-			xofs[k++] = (int)(sx * ch);
-			xofs[k++] = 256;
-		}
-		if (fsx2 - sx2 > 1e-3) {
-			xofs_count++;
-			xofs[k++] = (int)(dx * ch);
-			xofs[k++] = (int)(sx2 * ch);
-			xofs[k++] = (int)((fsx2 - sx2) * 256);
-		}
-	}
-	
-	for (int dx = 0; dx < nw * ch; dx++) {
-		buf[dx] = 0;
-		sum[dx] = 0;
-	}
-	
-	for (int sy = 0, dy = 0; sy < h; sy++) {
-		int a = w * sy;
-		for (int k = 0; k < xofs_count; k++) {
-			int dxn = xofs[k*3];
-			int sx1 = xofs[k*3+1];
-			double alpha = xofs[k*3+2];
-			for (int i = 0; i < ch; i++) {
-				buf[dxn + i] += (int)(src_d[a+sx1+i] * alpha);
-			}
-		}
-		if ((dy + 1) * scale_y <= sy + 1 || sy == h - 1) {
-			double beta = (max(sy + 1 - (dy + 1) * scale_y, 0.0) * 256);
-			double beta1 = 256 - beta;
-			int b = nw * dy;
-			int c = nw * ch;
-			if (beta <= 0) {
-				for (int dx = 0; dx < c; dx++) {
-					dst_d[b+dx] = (int)min(max((sum[dx] + buf[dx] * 256) / inv_scale_256, 0.0), 255.0);
-					sum[dx] = buf[dx] = 0;
-				}
-			}
-			else {
-				for (int dx = 0; dx < c; dx++) {
-					dst_d[b+dx] = (int)min(max((sum[dx] + buf[dx] * beta1) / inv_scale_256, 0.0), 255.0);
-					sum[dx] = (int)(buf[dx] * beta);
-					buf[dx] = 0;
-				}
-			}
-			dy++;
-		}
-		else {
-			for (int dx = 0; dx < nw * ch; dx++) {
-				sum[dx] += buf[dx] * 256;
-				buf[dx] = 0;
-			}
-		}
-	}
-	
-	cache.put_buffer(sum_node);
-	cache.put_buffer(buf_node);
-	cache.put_buffer(xofs_node);
-}
+void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
+void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
 
-void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
-	Cache& cache = Cache::Local();
-	int xofs_count = 0;
-	int ch = src.channels;
-	int w = src.cols;
-	int h = src.rows;
-	const auto& src_d = src.data;
-	auto& dst_d = dst.data;
-	double scale_x = (double)w / nw;
-	double scale_y = (double)h / nh;
-	double scale = 1.0 / (scale_x * scale_y);
-	//var dx = 0, dy = 0, sx = 0, sy = 0, sx1 = 0, sx2 = 0, i = 0, k = 0, fsx1 = 0.0, fsx2 = 0.0;
-	//var a = 0, b = 0, dxn = 0, alpha = 0.0, beta = 0.0, beta1 = 0.0;
-	
-	Cache::_pool_node_t* buf_node = cache.get_buffer((nw * ch) << 2);
-	Cache::_pool_node_t* sum_node = cache.get_buffer((nw * ch) << 2);
-	Cache::_pool_node_t* xofs_node = cache.get_buffer((w * 2 * 3) << 2);
-	
-	Vector<float>& buf = buf_node->f32;
-	Vector<float>& sum = sum_node->f32;
-	Vector<float>& xofs = xofs_node->f32;
-	
-	int k = 0;
-	for (int dx = 0; dx < nw; dx++) {
-		double fsx1 = dx * scale_x;
-		double fsx2 = fsx1 + scale_x;
-		double sx1 = (fsx1 + 1.0 - 1e-6);
-		double sx2 = fsx2;
-		sx1 = min(sx1, w - 1.0);
-		sx2 = min(sx2, w - 1.0);
-		
-		if (sx1 > fsx1) {
-			xofs_count++;
-			xofs[k++] = (float)((sx1 - 1) * ch);
-			xofs[k++] = (float)(dx * ch);
-			xofs[k++] = (float)((sx1 - fsx1) * scale);
-		}
-		for (double sx = sx1; sx < sx2; sx += 1.0) {
-			xofs_count++;
-			xofs[k++] = (float)(sx * ch);
-			xofs[k++] = (float)(dx * ch);
-			xofs[k++] = (float)scale;
-		}
-		if (fsx2 - sx2 > 1e-3) {
-			xofs_count++;
-			xofs[k++] = (float)(sx2 * ch);
-			xofs[k++] = (float)(dx * ch);
-			xofs[k++] = (float)((fsx2 - sx2) * scale);
-		}
-	}
-	
-	for (int dx = 0; dx < nw * ch; dx++) {
-		buf[dx] = 0;
-		sum[dx] = 0;
-	}
-	
-	for (int sy = 0, dy = 0; sy < h; sy++) {
-		int a = w * sy;
-		for (int k = 0; k < xofs_count; k++) {
-			float sx1 = xofs[k*3];
-			float dxn = xofs[k*3+1];
-			double alpha = xofs[k*3+2];
-			for (int i = 0; i < ch; i++) {
-				int j = (int)(a+sx1+i);
-				int k = (int)(dxn + i);
-				buf[k] += (float)(src_d[j] * alpha);
-			}
-		}
-		if ((dy + 1) * scale_y <= sy + 1 || sy == h - 1) {
-			double beta = max(sy + 1 - (dy + 1) * scale_y, 0.0);
-			double beta1 = 1.0 - beta;
-			int b = nw * dy;
-			if (abs(beta) < 1e-3) {
-				for (int dx = 0; dx < nw * ch; dx++) {
-					dst_d[b+dx] = (byte)(sum[dx] + buf[dx]);
-					sum[dx] = buf[dx] = 0;
-				}
-			}
-			else {
-				for (int dx = 0; dx < nw * ch; dx++) {
-					dst_d[b+dx] = (byte)(sum[dx] + buf[dx] * beta1);
-					sum[dx] = (float)(buf[dx] * beta);
-					buf[dx] = 0;
-				}
-			}
-			dy++;
-		}
-		else {
-			for (int dx = 0; dx < nw * ch; dx++) {
-				sum[dx] += buf[dx];
-				buf[dx] = 0;
-			}
-		}
-	}
-	
-	cache.put_buffer(sum_node);
-	cache.put_buffer(buf_node);
-	cache.put_buffer(xofs_node);
-}
+
 
 #if 0
 
@@ -430,23 +236,8 @@ void _convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel) {
 
 #endif
 
-void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
-	int h = src.rows;
-	int w = src.cols;
-	if (h > nh && w > nw) {
-		dst.SetSize(nw, nh, src.channels);
-		_resample_u8(src, dst, nw, nh);
-	}
-}
-
-void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
-	int h = src.rows;
-	int w = src.cols;
-	if (h > nh && w > nw) {
-		dst.SetSize(nw, nh, src.channels);
-		_resample(src, dst, nw, nh);
-	}
-}
+void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
+void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
 
 #if 0
 
@@ -755,32 +546,21 @@ Vector<Pointf> hough_transform(img, double rho_res, double theta_res, threshold)
 	return lines;
 }
 
+#endif
 
-
-void scharr_derivatives(src, dst) {
+template <class T, class P>
+void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 	int w = src.cols;
 	int h = src.rows;
 	int dstep = w << 1;
 	//int a, b, c, d, e, f;
-	var srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
-	var trow0, trow1;
+	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
+	thread_local static Vector<T> trow0, trow1;
 	
-	dst.Resize(w, h, 2); // 2 channel output gx, gy
+	dst.resize(w, h, 2); // 2 channel output gx, gy
 	
-	var img = src.data;
-	gxgy = dst.data;
-	
-	var buf0_node = cache.get_buffer((w + 2) << 2);
-	var buf1_node = cache.get_buffer((w + 2) << 2);
-	
-	if (src.type&U8_t || src.type&S32_t) {
-		trow0 = buf0_node.i32;
-		trow1 = buf1_node.i32;
-	}
-	else {
-		trow0 = buf0_node.f32;
-		trow1 = buf1_node.f32;
-	}
+	const auto& img = src.data;
+	auto& gxgy = dst.data;
 	
 	for (int y = 0; y < h; ++y, srow1 += w) {
 		srow0 = ((y > 0 ? y - 1 : 1) * w);
@@ -790,30 +570,40 @@ void scharr_derivatives(src, dst) {
 		// do vertical convolution
 		int x, x1;
 		for (x = 0, x1 = 1; x <= w - 2; x += 2, x1 += 2) {
-			a = img[srow0+x], b = img[srow2+x];
-			trow0[x1] = ((a + b) * 3 + (img[srow1+x]) * 10);
-			trow1[x1] = (b - a);
-			//
-			a = img[srow0+x+1], b = img[srow2+x+1];
-			trow0[x1+1] = ((a + b) * 3 + (img[srow1+x+1]) * 10);
-			trow1[x1+1] = (b - a);
+			{
+				auto& a = img[srow0+x];
+				auto& b = img[srow2+x];
+				trow0[x1] = ((a + b) * 3 + (img[srow1+x]) * 10);
+				trow1[x1] = (b - a);
+			} {
+				auto& a = img[srow0+x+1];
+				auto& b = img[srow2+x+1];
+				trow0[x1+1] = ((a + b) * 3 + (img[srow1+x+1]) * 10);
+				trow1[x1+1] = (b - a);
+			}
 		}
 		for (; x < w; ++x, ++x1) {
-			a = img[srow0+x], b = img[srow2+x];
+			auto& a = img[srow0+x];
+			auto& b = img[srow2+x];
 			trow0[x1] = ((a + b) * 3 + (img[srow1+x]) * 10);
 			trow1[x1] = (b - a);
 		}
 		
 		// make border
-		int x = (w + 1);
+		x = (w + 1);
 		trow0[0] = trow0[1];
 		trow0[x] = trow0[w];
 		trow1[0] = trow1[1];
 		trow1[x] = trow1[w];
 		// do horizontal convolution, interleave the results and store them
 		for (x = 0; x <= w - 4; x += 4) {
-			a = trow1[x+2], b = trow1[x+1], c = trow1[x+3], d = trow1[x+4],
-								e = trow0[x+2], f = trow0[x+3];
+			auto& a = trow1[x+2];
+			auto& b = trow1[x+1];
+			auto& c = trow1[x+3];
+			auto& d = trow1[x+4];
+			auto& e = trow0[x+2];
+			auto& f = trow0[x+3];
+			
 			gxgy[drow++] = (e - trow0[x]);
 			gxgy[drow++] = ((a + trow1[x]) * 3 + b * 10);
 			gxgy[drow++] = (f - trow0[x+1]);
@@ -830,9 +620,9 @@ void scharr_derivatives(src, dst) {
 		}
 	}
 	
-	cache.put_buffer(buf0_node);
-	cache.put_buffer(buf1_node);
-},
+}
+
+#if 0
 
 // compute gradient using Sobel kernel [1 2 1] * [-1 0 1]^T
 // dst: [gx,gy,...]
@@ -1023,7 +813,7 @@ void compute_integral_image(src, dst_sum, dst_sqsum, dst_tilted) {
 	}
 }
 
-voidi equalize_histogram(src, dst) {
+void equalize_histogram(src, dst) {
 	int w = src.cols;
 	int h = src.rows;
 	int src_d = src.data;
@@ -1294,7 +1084,7 @@ void warp_affine(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& trans
 	const auto& src_d = src.data;
 	auto& dst_d = dst.data;
 	
-	const Vector<double>& td = transform.data;
+	const auto& td = transform.data;
 	double m00 = td[0];
 	double m01 = td[1];
 	double m02 = td[2];
@@ -1323,7 +1113,7 @@ void warp_affine(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& trans
 				double p1 =		src_d[off+src_width]
 								+ a * (src_d[off+src_width+1] - src_d[off+src_width]);
 				
-				T v = p0 + b * (p1 - p0);
+				T v = (T)(p0 + b * (p1 - p0));
 				*dst_iter = v;
 			}
 			else
