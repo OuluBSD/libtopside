@@ -1,79 +1,16 @@
 #include "WebcamCV.h"
 
-#if 0
+
+NAMESPACE_TOPSIDE_BEGIN
 
 
-// lets do some fun
-var video = document.getElementById('webcam');
-var canvas = document.getElementById('canvas');
-try {
-    var attempts = 0;
-    var readyListener = function(event) {
-        findVideoSize();
-    };
-    var findVideoSize = function() {
-        if(video.videoWidth > 0 && video.videoHeight > 0) {
-            video.removeEventListener('loadeddata', readyListener);
-            onDimensionsReady(video.videoWidth, video.videoHeight);
-        } else {
-            if(attempts < 10) {
-                attempts++;
-                setTimeout(findVideoSize, 200);
-            } else {
-                onDimensionsReady(640, 480);
-            }
-        }
-    };
-    var onDimensionsReady = function(width, height) {
-        demo_app(width, height);
-        compatibility.requestAnimationFrame(tick);
-    };
-
-    video.addEventListener('loadeddata', readyListener);
-
-    compatibility.getUserMedia({video: true}, function(stream) {
-        if(video.srcObject !== undefined){
-            video.srcObject = stream
-        } else {
-            try {
-                video.src = compatibility.URL.createObjectURL(stream);
-            } catch (error) {
-                video.src = stream;
-            }
-        }
-        setTimeout(function() {
-                video.play();
-            }, 500);
-    }, function (error) {
-        $('#canvas').hide();
-        $('#log').hide();
-        $('#no_rtc').html('<h4>WebRTC not available.</h4>');
-        $('#no_rtc').show();
-    });
-} catch (error) {
-    $('#canvas').hide();
-    $('#log').hide();
-    $('#no_rtc').html('<h4>Something goes wrong...</h4>');
-    $('#no_rtc').show();
+HaarFaceBase::HaarFaceBase() {
+	LoadCascadeFrontalFace(classifier);
 }
 
-var stat = new profiler();
-
-var gui,options,ctx,canvasWidth,canvasHeight;
-var img_u8,work_canvas,work_ctx,ii_sum,ii_sqsum,ii_tilted,edg,ii_canny;
-var classifier = jsfeat.haar.frontalface;
-
-var max_work_size = 160;
-
-var demo_opt = function(){
-    this.min_scale = 2;
-    this.scale_factor = 1.15;
-    this.use_canny = false;
-    this.edges_density = 0.13;
-    this.equalize_histogram = true;
-}
-
-function demo_app(videoWidth, videoHeight) {
+void HaarFaceBase::SetSize(Size sz) {
+	auto& videoWidth = sz.cx;
+	auto& videoHeight = sz.cy;
     canvasWidth  = canvas.width;
     canvasHeight = canvas.height;
     ctx = canvas.getContext('2d');
@@ -82,8 +19,8 @@ function demo_app(videoWidth, videoHeight) {
     ctx.strokeStyle = "rgb(0,255,0)";
 
     var scale = Math.min(max_work_size/videoWidth, max_work_size/videoHeight);
-    var w = (videoWidth*scale)|0;
-    var h = (videoHeight*scale)|0;
+    var w = (videoWidth*scale);
+    var h = (videoHeight*scale);
 
     img_u8 = new jsfeat.matrix_t(w, h, jsfeat.U8_t | jsfeat.C1_t);
     edg = new jsfeat.matrix_t(w, h, jsfeat.U8_t | jsfeat.C1_t);
@@ -104,11 +41,10 @@ function demo_app(videoWidth, videoHeight) {
     gui.add(options, 'equalize_histogram');
     gui.add(options, 'use_canny');
     gui.add(options, 'edges_density', 0.01, 1.).step(0.005);
-
-    stat.add("haar detector");
+    
 }
 
-function tick() {
+void HaarFaceBase::Process() {
     compatibility.requestAnimationFrame(tick);
     stat.new_frame();
     if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -117,38 +53,34 @@ function tick() {
 
         work_ctx.drawImage(video, 0, 0, work_canvas.width, work_canvas.height);
         var imageData = work_ctx.getImageData(0, 0, work_canvas.width, work_canvas.height);
-
-        stat.start("haar detector");
-
-        jsfeat.imgproc.grayscale(imageData.data, work_canvas.width, work_canvas.height, img_u8);
+        
+        Grayscale(input, work_canvas.width, work_canvas.height, img_u8);
 
         // possible options
-        if(options.equalize_histogram) {
-            jsfeat.imgproc.equalize_histogram(img_u8, img_u8);
+        if(equalize_histogram) {
+            equalize_histogram(img_u8, img_u8);
         }
-        //jsfeat.imgproc.gaussian_blur(img_u8, img_u8, 3);
+        //gaussian_blur(img_u8, img_u8, 3);
 
-        jsfeat.imgproc.compute_integral_image(img_u8, ii_sum, ii_sqsum, classifier.tilted ? ii_tilted : null);
+        compute_integral_image(img_u8, ii_sum, ii_sqsum, classifier.tilted ? ii_tilted : null);
 
-        if(options.use_canny) {
-            jsfeat.imgproc.canny(img_u8, edg, 10, 50);
-            jsfeat.imgproc.compute_integral_image(edg, ii_canny, null, null);
+        if(use_canny) {
+            canny(img_u8, edg, 10, 50);
+            compute_integral_image(edg, ii_canny, null, null);
         }
 
-        jsfeat.haar.edges_density = options.edges_density;
-        var rects = jsfeat.haar.detect_multi_scale(ii_sum, ii_sqsum, ii_tilted, options.use_canny? ii_canny : null, img_u8.cols, img_u8.rows, classifier, options.scale_factor, options.min_scale);
+        jsfeat.haar.edges_density = edges_density;
+        var rects = jsfeat.haar.detect_multi_scale(ii_sum, ii_sqsum, ii_tilted, use_canny? ii_canny : null, img_u8.cols, img_u8.rows, classifier, scale_factor, min_scale);
         rects = jsfeat.haar.group_rectangles(rects, 1);
-
-        stat.stop("haar detector");
-
+        
         // draw only most confident one
-        draw_faces(ctx, rects, canvasWidth/img_u8.cols, 1);
+        draw_faces(rects, canvasWidth/img_u8.cols, 1);
 
         $('#log').html(stat.log());
     }
 }
 
-function draw_faces(ctx, rects, sc, max) {
+void HaarFaceBase::draw_faces(Vector<BBox>& rects, double sc, bool max) {
     var on = rects.length;
     if(on && max) {
         jsfeat.math.qsort(rects, 0, on-1, function(a,b){return (b.confidence<a.confidence);})
@@ -158,13 +90,9 @@ function draw_faces(ctx, rects, sc, max) {
     var r;
     for(var i = 0; i < n; ++i) {
         r = rects[i];
-        ctx.strokeRect((r.x*sc)|0,(r.y*sc)|0,(r.width*sc)|0,(r.height*sc)|0);
+        ctx.strokeRect((r.x*sc),(r.y*sc),(r.width*sc),(r.height*sc));
     }
 }
 
-$(window).unload(function() {
-    video.pause();
-    video.src=null;
-});
 
-#endif
+NAMESPACE_TOPSIDE_END

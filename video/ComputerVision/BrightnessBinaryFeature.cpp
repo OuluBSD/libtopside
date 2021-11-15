@@ -21,15 +21,15 @@ void BrightnessBinaryFeature::prepare_cascade(Cascade& cascade) {
 	}
 }
 
-const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::DTen& src, int min_width, int min_height, int interval) {
+const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::Mat& src, int min_width, int min_height, int interval) {
 	int sw = src.cols;
 	int sh = src.rows;
 	int channels = src.channels;
 	ASSERT(sw > 0 && sh > 0 && channels > 0);
 	int nw = 0, nh = 0;
 	bool new_pyr = false;
-	pyra8::DTen* src0 = 0;
-	pyra8::DTen* src1 = 0;
+	pyra8::Mat* src0 = 0;
+	pyra8::Mat* src1 = 0;
 	int channel = 0; // red
 	
 	this->interval = interval;
@@ -64,7 +64,7 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::DTen& src, int 
 			img_pyr.data[i<<2].SetSize(nw, nh, channels);
 			src0 = &img_pyr.data[i<<2];
 		}
-		pyra8::Downsample(*src1, *src0);
+		DownsamplePyramid(*src1, *src0);
 	}
 	for (int i = this->next * 2; i < this->scale_to + this->next * 2; ++i) {
 		src1 = &img_pyr.data[(i << 2) - (this->next << 2)];
@@ -75,21 +75,21 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::DTen& src, int 
 			img_pyr.data[(i<<2)+1].SetSize(nw, nh, channels);
 			src0 = &img_pyr.data[(i<<2)+1];
 		}
-		pyra8::Downsample(*src1, *src0, 1, 0);
+		DownsamplePyramid(*src1, *src0, 1, 0);
 		
 		src0 = &img_pyr.data[(i<<2)+2];
 		if (new_pyr || nw != src0->cols || nh != src0->rows) {
 			img_pyr.data[(i<<2)+2].SetSize(nw, nh, channels);
 			src0 = &img_pyr.data[(i<<2)+2];
 		}
-		pyra8::Downsample(*src1, *src0, 0, 1);
+		DownsamplePyramid(*src1, *src0, 0, 1);
 		
 		src0 = &img_pyr.data[(i<<2)+3];
 		if (new_pyr || nw != src0->cols || nh != src0->rows) {
 			img_pyr.data[(i<<2)+3].SetSize(nw, nh, channels);
 			src0 = &img_pyr.data[(i<<2)+3];
 		}
-		pyra8::Downsample(*src1, *src0, 1, 1);
+		DownsamplePyramid(*src1, *src0, 1, 1);
 	}
 	return img_pyr;
 }

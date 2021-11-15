@@ -241,6 +241,12 @@ inline int PopCount32(dword i) {
 	#else
 	return (int)__builtin_popcountl(i);
 	#endif
+	
+	#if 0
+	i -= ((i >> 1) & 0x55555555);
+    i = (i & 0x33333333) + ((i >> 2) & 0x33333333);
+    return (((i + (i >> 4))& 0xF0F0F0F)* 0x1010101) >> 24;
+    #endif
 }
 
 typedef std::atomic<uint64> Atomic64;

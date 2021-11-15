@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void yape06::compute_laplacian(const Vector<float>& src, Vector<float>& dst, int w, int h, int Dxx, int Dyy, int sx, int sy, int ex, int ey) {
+void yape06::compute_laplacian(const Vector<byte>& src, Vector<int>& dst, int w, int h, int Dxx, int Dyy, int sx, int sy, int ex, int ey) {
 	int yrow = (sy * w + sx);
 	int row = yrow;
 	
@@ -19,7 +19,7 @@ void yape06::compute_laplacian(const Vector<float>& src, Vector<float>& dst, int
 	}
 }
 
-double yape06::hessian_min_eigen_value(const Vector<float>& src, int off, double tr, int Dxx, int Dyy, int Dxy, int Dyx) {
+double yape06::hessian_min_eigen_value(const Vector<byte>& src, int off, double tr, int Dxx, int Dyy, int Dxy, int Dyx) {
 	double Ixx = -2 * src[off] + src[off + Dxx] + src[off - Dxx];
 	double Iyy = -2 * src[off] + src[off + Dyy] + src[off - Dyy];
 	double Ixy = src[off + Dxy] + src[off - Dxy] - src[off + Dyx] - src[off - Dyx];
@@ -28,8 +28,8 @@ double yape06::hessian_min_eigen_value(const Vector<float>& src, int off, double
 	return min(abs(tr - sqrt_delta), abs(-(tr + sqrt_delta)));
 }
 
-int yape06::detect(const FloatMat& src, Vector<ScorePoint>& points, int border) {
-	using T = float;
+int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
+	using T = int;
 	
 	int w = src.cols;
 	int h = src.rows;
@@ -81,7 +81,7 @@ int yape06::detect(const FloatMat& src, Vector<ScorePoint>& points, int border) 
 			   
 				min_eigen_value = (T)hessian_min_eigen_value(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
 				if (min_eigen_value > eigen_thresh) {
-					ScorePoint& pt = points[number_of_points];
+					keypoint_t& pt = points[number_of_points];
 					pt.x = x;
 					pt.y = y;
 					pt.score = min_eigen_value;

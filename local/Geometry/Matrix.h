@@ -558,34 +558,69 @@ template<class T> inline void PartMatrix<T,4,4>::Adjoint(T& a, const T& m) {
 
 
 template <class T>
-struct DynamicMatrix : Moveable<DynamicMatrix<T>> {
-	int cols, rows;
+class matrix_t : Moveable<matrix_t<T>> {
 	
+public:
+	typedef T type;
+	Vector<T> data;
+	int cols;
+	int rows;
+	int channels;
 	
-	void SetSize(int w, int h, int channels) {TODO}
+    matrix_t() : cols(0), rows(0), channels(0) {}
+    
+    matrix_t(int c, int r, int ch) {
+        ASSERT(c > 0 && r > 0 && ch > 0);
+        this->cols = c;
+        this->rows = r;
+        this->channels = ch;
+    }
+    matrix_t(int c, int r, int ch, const Vector<T>& data) {
+        ASSERT(c > 0 && r > 0 && ch > 0);
+        this->cols = c;
+        this->rows = r;
+        this->channels = ch;
+        this->data <<= data;
+    }
+    
+    matrix_t(const matrix_t& s) {*this = s;}
+    
+    void operator=(const matrix_t& s) {
+        cols = s.cols;
+        rows = s.rows;
+        channels = s.channels;
+		data <<= s.data;
+    }
+    void allocate() {
+        data.SetCount(cols * rows * channels);
+    }
+    
+    void copy_to(matrix_t& other) const {
+        ASSERT(other.cols == cols);
+        ASSERT(other.rows == rows);
+        ASSERT(other.channels == channels);
+        other.data <<= data;
+    }
+    
+    void SetSize(int c, int r, int ch) {
+        this->cols = c;
+        this->rows = r;
+        this->channels = ch;
+        allocate();
+    }
 	
 };
 
-template <class T>
-struct DynamicTensor : Moveable<DynamicTensor<T>> {
-	int cols = 0;
-	int rows = 0;
-	int channels = 0;
-	Vector<T> data;
-	
-	
-	void SetSize(int w, int h, int channels) {TODO}
-	
-	void operator=(const DynamicTensor& s) {TODO}
-	
-};
+using ByteMat = matrix_t<byte>;
+using FloatMat = matrix_t<float>;
+
 
 
 template <class T>
 struct Pyramid : Moveable<Pyramid<T>> {
-	using DTen = DynamicTensor<T>;
+	using Mat = matrix_t<T>;
 	
-	Vector<DTen> data;
+	Vector<Mat> data;
 	
 	Pyramid() {}
 	Pyramid(int w, int h, int levels) {SetSize(w, h, levels);}
@@ -593,7 +628,7 @@ struct Pyramid : Moveable<Pyramid<T>> {
 	
 	
 	int GetLevels() const {return data.GetCount();}
-	DTen& operator[](int i) {return data[i];}
+	Mat& operator[](int i) {return data[i];}
 	
 	void SetLevels(int i) {data.SetCount(i);}
 	
@@ -605,13 +640,13 @@ struct Pyramid : Moveable<Pyramid<T>> {
         }
 	}
 	
-	void Build(const DTen& input, bool skip_first_level=false) {
+	void Build(const Mat& input, bool skip_first_level=false) {
 		ASSERT(data.GetCount());
 		if (data.IsEmpty())
 			return;
 		int i = 2;
-		const DTen* a = &input;
-		DTen* b = data[0];
+		const Mat* a = &input;
+		Mat* b = data[0];
         if (!skip_first_level) {
             *b = *a;
         }
@@ -624,39 +659,6 @@ struct Pyramid : Moveable<Pyramid<T>> {
         }
 	}
 	
-	static void Downsample(const DTen& src, DTen& dst, int sx=0, int sy=0) {
-		int w = src.cols;
-		int h = src.rows;
-		int w2 = w >> 1;
-		int h2 = h >> 1;
-		int _w2 = w2 - (sx << 1);
-		int _h2 = h2 - (sy << 1);
-		int sptr = sx + sy * w;
-		int dptr = 0;
-		
-		dst.SetSize(w2, h2, src.channels);
-		
-		const auto& src_d = src.data;
-		auto& dst_d = dst.data;
-		
-		for (int y = 0; y < _h2; ++y) {
-			int sline = sptr;
-			int dline = dptr;
-			int x;
-			for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
-				dst_d[dline] = (src_d[sline] + src_d[sline+1] +
-								src_d[sline+w] + src_d[sline+w+1] + 2) >> 2;
-				dst_d[dline+1] = (src_d[sline+2] + src_d[sline+3] +
-								  src_d[sline+w+2] + src_d[sline+w+3] + 2) >> 2;
-			}
-			for (; x < _w2; ++x, ++dline, sline += 2) {
-				dst_d[dline] = (src_d[sline] + src_d[sline+1] +
-								src_d[sline+w] + src_d[sline+w+1] + 2) >> 2;
-			}
-			sptr += w << 1;
-			dptr += w2;
-		}
-	}
 	
 };
 
@@ -664,6 +666,40 @@ typedef Pyramid<uint8> pyra8;
 typedef Pyramid<float> pyraf;
 
 
+template <class T>
+void DownsamplePyramid(const matrix_t<T>& src, matrix_t<T>& dst, int sx=0, int sy=0) {
+	int w = src.cols;
+	int h = src.rows;
+	int w2 = w >> 1;
+	int h2 = h >> 1;
+	int _w2 = w2 - (sx << 1);
+	int _h2 = h2 - (sy << 1);
+	int sptr = sx + sy * w;
+	int dptr = 0;
+	
+	dst.SetSize(w2, h2, src.channels);
+	
+	const auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	
+	for (int y = 0; y < _h2; ++y) {
+		int sline = sptr;
+		int dline = dptr;
+		int x;
+		for (x = 0; x <= _w2 - 2; x += 2, dline += 2, sline += 4) {
+			dst_d[dline] = (src_d[sline] + src_d[sline+1] +
+							src_d[sline+w] + src_d[sline+w+1] + 2) >> 2;
+			dst_d[dline+1] = (src_d[sline+2] + src_d[sline+3] +
+							  src_d[sline+w+2] + src_d[sline+w+3] + 2) >> 2;
+		}
+		for (; x < _w2; ++x, ++dline, sline += 2) {
+			dst_d[dline] = (src_d[sline] + src_d[sline+1] +
+							src_d[sline+w] + src_d[sline+w+1] + 2) >> 2;
+		}
+		sptr += w << 1;
+		dptr += w2;
+	}
+}
 
 
 

@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
+void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 	int xofs_count = 0;
 	int ch = src.channels;
 	int w = src.cols;
@@ -97,7 +97,7 @@ void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
 	
 }
 
-void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
+void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	int xofs_count = 0;
 	int ch = src.channels;
 	int w = src.cols;
@@ -191,7 +191,7 @@ void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
 	
 }
 
-void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
+void resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 	int h = src.rows;
 	int w = src.cols;
 	if (h > nh && w > nw) {
@@ -200,7 +200,7 @@ void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh) {
 	}
 }
 
-void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh) {
+void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	int h = src.rows;
 	int w = src.cols;
 	if (h > nh && w > nw) {
@@ -228,7 +228,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	
 	data_i32.SetCount((w * h) << 2);
 	
-	dst.resize(w, h, src.channels);
+	dst.SetSize(w, h, src.channels);
 	
 	// first pass
 	// no need to scale
@@ -386,8 +386,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 
 // TODO: add support for RGB/BGR order
 // for raw arrays
-void Grayscale(const Vector<byte>& src, int w, int h, matrix_t<byte>& dst, int code) {
-	//var x = 0, y = 0, i = 0, j = 0, ir = 0, jr = 0;
+void Grayscale(const ByteMat& src_, int w, int h, ByteMat& dst, int code) {
 	int coeff_r = 4899, coeff_g = 9617, coeff_b = 1868, cn = 4;
 	
 	if (code == COLOR_BGRA2GRAY || code == COLOR_BGR2GRAY) {
@@ -400,8 +399,10 @@ void Grayscale(const Vector<byte>& src, int w, int h, matrix_t<byte>& dst, int c
 	int cn2 = cn << 1;
 	int cn3 = cn * 3;
 	
-	dst.resize(w, h, 1);
-	auto& dst_u8 = dst.data;
+	dst.SetSize(w, h, 1);
+	byte* dst_u8 = dst.data.Begin();
+	const byte* src = src_.data.Begin();
+	ASSERT(src_.data.GetCount() == w * h * cn);
 	
 	for (int y = 0, i = 0, j = 0; y < h; ++y, j += w, i += w * cn) {
 		int x = 0, ir = i, jr = j;

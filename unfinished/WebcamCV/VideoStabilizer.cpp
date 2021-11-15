@@ -1,397 +1,306 @@
 #include "WebcamCV.h"
 
-#if 0
+
+NAMESPACE_TOPSIDE_BEGIN
 
 
-(function() {
-    function showError(error) {
-        $('#canvas').hide();
-        $('#log').hide();
-        $('#no_rtc').html('<h4>WebRTC not available.</h4>');
-        $('#no_rtc').show();
-    }
+VideoStabilizerBase::VideoStabilizerBase() {
+	
+}
 
-    var videoWidth=0, videoHeight=0;
-    var canvasWidth=0, canvasHeight=0;
-    var ctx;
-    var stabilizer, frame_grabber, motion_estimator;
-    var frameSize = new videostab.size_t(videoWidth, videoHeight);
+void VideoStabilizerBase::videOK(int videoWidth, int videoHeight) {
 
-    var render_gl, tex0, tex1;
+    canvas.width = canvasWidth  = 640;
+    canvas.height = canvasHeight = 480;
+    ctx = canvas.getContext('2d');
 
-    var video = document.getElementById('webcam');
-    var canvas = document.getElementById('canvas');
-    var canvas_gl = document.getElementById('webgl');
-    var stat_div = document.getElementById('log');
+    frameSize.width = canvasWidth;
+    frameSize.height = canvasHeight;
 
-    var stat = new profiler();
+    //motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_AFFINE, frameSize);
+    motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_HOMOGRAPHY, frameSize);
 
-    function videOK(videoWidth, videoHeight) {
+    stabilizer = new videostab.onepass_stabilizer();
+    stabilizer.motion_estimator = motion_estimator;
 
-        canvas.width = canvasWidth  = 640;
-        canvas.height = canvasHeight = 480;
-        ctx = canvas.getContext('2d');
+    if(haveWebGL()) {
+
+        // switch off image generation
+        stabilizer.doImage = false;
+
+        render_gl = new renderGL(sz.cx, sz.cy, canvas_gl);
+        tex0 = render_gl.createAndSetupTexture();
+        tex1 = render_gl.createAndSetupTexture();
+
+        processGL();
+
+    } else {
+
+        canvas_gl.style.display = "none";
+        video.style.display = canvas.style.display = "inline";
+        video.width = canvas.width = canvasWidth = 320;
+        video.height = canvas.height = canvasHeight = 240;
 
         frameSize.width = canvasWidth;
         frameSize.height = canvasHeight;
 
-        //motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_AFFINE, frameSize);
         motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_HOMOGRAPHY, frameSize);
-
-        stabilizer = new videostab.onepass_stabilizer();
         stabilizer.motion_estimator = motion_estimator;
 
-        if(haveWebGL()) {
+        stabilizer.doImage = true;
+        process();
+    }
+}
 
-            // switch off image generation
-            stabilizer.doImage = false;
+void VideoStabilizerBase::processGL() {
+    compatibility.requestAnimationFrame( processGL );
 
-            render_gl = new renderGL(640, 480, canvas_gl);
-            tex0 = render_gl.createAndSetupTexture();
-            tex1 = render_gl.createAndSetupTexture();
+    stat.new_frame();
 
-            processGL();
+    ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+    var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
-        } else {
+    var motion = stabilizer.next_stabilized_frame(imageData);
 
-            canvas_gl.style.display = "none";
-            video.style.display = canvas.style.display = "inline";
-            video.width = canvas.width = canvasWidth = 320;
-            video.height = canvas.height = canvasHeight = 240;
+    render_gl.render();
 
-            frameSize.width = canvasWidth;
-            frameSize.height = canvasHeight;
+    var corns = tCorners(motion.data, canvasWidth, canvasHeight);
 
-            motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_HOMOGRAPHY, frameSize);
-            stabilizer.motion_estimator = motion_estimator;
+    render_gl.render_images(tex1, tex0, stabilizer.preProcessedFrame, video, canvasWidth, canvasHeight, corns);
 
-            stabilizer.doImage = true;
-            process();
-        }
+    $('#log').html(stat.log());
+}
+
+Vector<Point> VideoStabilizerBase::tCorners(const Vector<float>& M, int w, int h) {
+    var pt = [ {'x':0,'y':0}, {'x':w,'y':0}, {'x':w,'y':h}, {'x':0,'y':h} ];
+    var z=0.0, i=0, px=0.0, py=0.0;
+
+    for (; i < 4; ++i) {
+        px = M[0]*pt[i].x + M[1]*pt[i].y + M[2];
+        py = M[3]*pt[i].x + M[4]*pt[i].y + M[5];
+        z = M[6]*pt[i].x + M[7]*pt[i].y + M[8];
+        pt[i].x = px/z;
+        pt[i].y = py/z;
     }
 
-    function haveWebGL() {
-        try { return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); } catch( e ) { return false; }
+    return pt;
+}
+
+void VideoStabilizerBase::Process() {
+
+    compatibility.requestAnimationFrame( process );
+
+    stat.new_frame();
+
+    ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
+    var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+
+    var img = stabilizer.next_stabilized_frame(imageData);
+
+    OutputFromGray(img);
+}
+
+
+
+
+
+#if 0
+
+void VideoStabilizerBase::OglRenderer::renderGL(int w, int h, view) {
+    width = w;
+    height = h;
+
+    worldMatrix	<< 2.0/width
+				<< -2.0/height
+				<< -1.0
+				<< 1.0;
+
+    gl.viewport(0, 0, width, height);
+
+    initShaders();
+
+    gl.disable(gl.DEPTH_TEST);
+    gl.disable(gl.BLEND);
+};
+
+void VideoStabilizerBase::OglRenderer::render() {
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.clearColor(0, 0, 0, 1.0);
+
+    gl.uniform4f(shaderProgram.transformUniform,
+                    worldMatrix[0],
+                    worldMatrix[1],
+                    worldMatrix[2],
+                    worldMatrix[3]);
+}
+
+void VideoStabilizerBase::OglRenderer::initShaders() {
+    var fragmentShader = getShader(gl, "shader-fs");
+    var vertexShader = getShader(gl, "shader-vs");
+     
+    // Create the shader program
+       
+    var shaderProgram = shaderProgram = gl.createProgram();
+    gl.attachShader(shaderProgram, vertexShader);
+    gl.attachShader(shaderProgram, fragmentShader);
+    gl.linkProgram(shaderProgram);
+       
+    // If creating the shader program failed, alert
+       
+    if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+        alert("Unable to initialize the shader program.");
+    }
+       
+    gl.useProgram(shaderProgram);
+     
+    shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+
+    shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+    shaderProgram.transformUniform = gl.getUniformLocation(shaderProgram, "transform");
+    shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
+}
+
+uint32 VideoStabilizerBase::OglRenderer::getShader(gl, id) {
+    var shaderScript, theSource, currentChild, shader;
+    shaderScript = document.getElementById(id);
+
+    if (!shaderScript) {
+        return null;
     }
 
-    function processGL(){
-        compatibility.requestAnimationFrame( processGL );
+    theSource = "";
+    currentChild = shaderScript.firstChild;
 
-        stat.new_frame();
-
-        ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
-        var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-
-        var motion = stabilizer.next_stabilized_frame(imageData);
-
-        render_gl.render();
-
-        var corns = tCorners(motion.data, canvasWidth, canvasHeight);
-
-        render_gl.render_images(tex1, tex0, stabilizer.preProcessedFrame, video, canvasWidth, canvasHeight, corns);
-
-        $('#log').html(stat.log());
+    while(currentChild) {
+        if (currentChild.nodeType == currentChild.TEXT_NODE) {
+            theSource += currentChild.textContent;
+        }
+        currentChild = currentChild.nextSibling;
     }
 
-    var tCorners = function(M, w, h) {
-        var pt = [ {'x':0,'y':0}, {'x':w,'y':0}, {'x':w,'y':h}, {'x':0,'y':h} ];
-        var z=0.0, i=0, px=0.0, py=0.0;
+    if (shaderScript.type == "x-shader/x-fragment") {
+        shader = gl.createShader(gl.FRAGMENT_SHADER);
+    } else if (shaderScript.type == "x-shader/x-vertex") {
+        shader = gl.createShader(gl.VERTEX_SHADER);
+    } else {
+        // Unknown shader type
+        return null;
+    }
+    gl.shaderSource(shader, theSource);
 
-        for (; i < 4; ++i) {
-            px = M[0]*pt[i].x + M[1]*pt[i].y + M[2];
-            py = M[3]*pt[i].x + M[4]*pt[i].y + M[5];
-            z = M[6]*pt[i].x + M[7]*pt[i].y + M[8];
-            pt[i].x = px/z;
-            pt[i].y = py/z;
-        }
+    // Compile the shader program
+    gl.compileShader(shader);
 
-        return pt;
+    // See if it compiled successfully
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
+        return null;
     }
 
-    function process() {
+    return shader;
+}
 
-        compatibility.requestAnimationFrame( process );
+uint32 VideoStabilizerBase::OglRenderer::createAndSetupTexture() {
+    var gl = gl;
+    var texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
 
-        stat.new_frame();
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
-        ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
-        var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
+    gl.bindTexture(gl.TEXTURE_2D, null);
 
-        var img = stabilizer.next_stabilized_frame(imageData);
+    return texture;
+};
 
-        // render result back to canvas
-        var data_u32 = new Uint32Array(imageData.data.buffer);
-        var alpha = (0xff << 24);
-        var i = img.cols*img.rows, pix = 0;
-        while(--i >= 0) {
-            pix = img.data[i];
-            data_u32[i] = alpha | (pix << 16) | (pix << 8) | pix;
-        }
+void VideoStabilizerBase::OglRenderer::setRectangle(x, y, width, height) {
+    var gl = gl;
+    var x2 = x + width;
+    var y2 = y + height;
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
+                                        [x, y,
+                                         x2, y,
+                                         x, y2,
+                                         x, y2,
+                                         x2, y,
+                                         x2, y2
+                                        ]), gl.STATIC_DRAW);
+}
 
-        ctx.putImageData(imageData, 0, 0);
-        //
+void VideoStabilizerBase::OglRenderer::setCorners(tlx, tly, trx, _try, brx, bry, blx, bly) {
+    var gl = gl;
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
+                                        [tlx, tly,
+                                         trx, _try,
+                                         blx, bly,
+                                         blx, bly,
+                                         trx, _try,
+                                         brx, bry
+                                        ]), gl.STATIC_DRAW);
+}
 
-        $('#log').html(stat.log());
-    }
+void VideoStabilizerBase::OglRenderer::render_images(tex_id0, tex_id1, image0, image1, w, h, p) {
+    var gl = gl;
+    var shaderProgram = shaderProgram;
 
-    try {
-        var attempts = 0;
-        var readyListener = function(event) {
-            findVideoSize();
-        };
-        var findVideoSize = function() {
-            if(video.videoWidth > 0 && video.videoHeight > 0) {
-                video.removeEventListener('loadeddata', readyListener);
-                onDimensionsReady(video.videoWidth, video.videoHeight);
-            } else {
-                if(attempts < 10) {
-                    attempts++;
-                    setTimeout(findVideoSize, 200);
-                } else {
-                    onDimensionsReady(640, 480);
-                }
-            }
-        };
-        var onDimensionsReady = function(width, height) {
-            videOK(width, height);
-        };
+    gl.bindTexture(gl.TEXTURE_2D, tex_id0);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image0);
 
-        video.addEventListener('loadeddata', readyListener);
+    // draw stabilized first
+    var texCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
 
-        compatibility.getUserMedia({video: true}, function(stream) {
-            if(video.srcObject !== undefined){
-                video.srcObject = stream
-            } else {
-                try {
-                    video.src = compatibility.URL.createObjectURL(stream);
-                } catch (error) {
-                    video.src = stream;
-                }
-            }
-            
-            setTimeout(function() {
-                    video.play();
-                }, 500);
-        }, function (error) {
-            showError();
-        });
-    } catch (error) {
-        showError();
-    }
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
+    setRectangle(0, 0, 1, 1);
 
-    ////////////////////////////////////// GL RENDER
-    var renderGL = (function () {
+    var buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
 
-        function renderGL(w, h, view) {
-            this.width = w || 640;
-            this.height = h || 480;
+    setCorners(p[0].x, p[0].y, p[1].x, p[1].y,
+                    p[2].x, p[2].y, p[3].x, p[3].y);
 
-            this.view = view || document.createElement( 'canvas' );
-            this.view.width = this.width;
-            this.view.height = this.height;
-            this.view.background = "#00FF00";
+    // draw
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    //
 
-            this.gl = this.view.getContext("experimental-webgl", { alpha: false });
+    // now half of original
 
-            this.worldMatrix = new Float32Array([
-                    2.0/this.width, -2.0/this.height, -1.0, 1.0
-                    ]);
+    gl.bindTexture(gl.TEXTURE_2D, tex_id1);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image1);
 
-            this.gl.viewport(0, 0, this.width, this.height);
+    texCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
 
-            this.initShaders();
+    gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+    gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
 
-            this.gl.disable(this.gl.DEPTH_TEST);
-            this.gl.disable(this.gl.BLEND);
-        };
+    setRectangle(0, 0, 0.5, 1);
 
-        renderGL.prototype.render = function() {
-            var gl = this.gl;
+    buffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+    gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
+    gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
 
-            gl.clear(gl.COLOR_BUFFER_BIT);
-            gl.clearColor(0, 0, 0, 1.0);
+    setRectangle(0, 0, w/2, h);
 
-            gl.uniform4f(this.shaderProgram.transformUniform,
-                            this.worldMatrix[0],
-                            this.worldMatrix[1],
-                            this.worldMatrix[2],
-                            this.worldMatrix[3]);
-        };
+    // draw
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-        renderGL.prototype.initShaders = function() {
-            var gl = this.gl;
-            var fragmentShader = this.getShader(gl, "shader-fs");
-            var vertexShader = this.getShader(gl, "shader-vs");
-             
-            // Create the shader program
-               
-            var shaderProgram = this.shaderProgram = gl.createProgram();
-            gl.attachShader(shaderProgram, vertexShader);
-            gl.attachShader(shaderProgram, fragmentShader);
-            gl.linkProgram(shaderProgram);
-               
-            // If creating the shader program failed, alert
-               
-            if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
-                alert("Unable to initialize the shader program.");
-            }
-               
-            gl.useProgram(shaderProgram);
-             
-            shaderProgram.vertexPositionAttribute = gl.getAttribLocation(shaderProgram, "aVertexPosition");
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-
-            shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-
-            shaderProgram.transformUniform = gl.getUniformLocation(shaderProgram, "transform");
-            shaderProgram.samplerUniform = gl.getUniformLocation(shaderProgram, "uSampler");
-        }
-
-        renderGL.prototype.getShader = function(gl, id) {
-            var shaderScript, theSource, currentChild, shader;
-            shaderScript = document.getElementById(id);
-
-            if (!shaderScript) {
-                return null;
-            }
-
-            theSource = "";
-            currentChild = shaderScript.firstChild;
-
-            while(currentChild) {
-                if (currentChild.nodeType == currentChild.TEXT_NODE) {
-                    theSource += currentChild.textContent;
-                }
-                currentChild = currentChild.nextSibling;
-            }
-
-            if (shaderScript.type == "x-shader/x-fragment") {
-                shader = gl.createShader(gl.FRAGMENT_SHADER);
-            } else if (shaderScript.type == "x-shader/x-vertex") {
-                shader = gl.createShader(gl.VERTEX_SHADER);
-            } else {
-                // Unknown shader type
-                return null;
-            }
-            gl.shaderSource(shader, theSource);
-
-            // Compile the shader program
-            gl.compileShader(shader);
-
-            // See if it compiled successfully
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                alert("An error occurred compiling the shaders: " + gl.getShaderInfoLog(shader));
-                return null;
-            }
-
-            return shader;
-        }
-
-        renderGL.prototype.createAndSetupTexture = function() {
-            var gl = this.gl;
-            var texture = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, texture);
-
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            return texture;
-        };
-
-        renderGL.prototype.setRectangle = function(x, y, width, height) {
-            var gl = this.gl;
-            var x2 = x + width;
-            var y2 = y + height;
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
-                                                [x, y,
-                                                 x2, y,
-                                                 x, y2,
-                                                 x, y2,
-                                                 x2, y,
-                                                 x2, y2
-                                                ]), gl.STATIC_DRAW);
-        }
-
-        renderGL.prototype.setCorners = function(tlx, tly, trx, _try, brx, bry, blx, bly) {
-            var gl = this.gl;
-            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(
-                                                [tlx, tly,
-                                                 trx, _try,
-                                                 blx, bly,
-                                                 blx, bly,
-                                                 trx, _try,
-                                                 brx, bry
-                                                ]), gl.STATIC_DRAW);
-        }
-
-        renderGL.prototype.render_images = function(tex_id0, tex_id1, image0, image1, w, h, p) {
-            var gl = this.gl;
-            var shaderProgram = this.shaderProgram;
-
-            gl.bindTexture(gl.TEXTURE_2D, tex_id0);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image0);
-
-            // draw stabilized first
-            var texCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-            gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-
-            this.setRectangle(0, 0, 1, 1);
-
-            var buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-
-            this.setCorners(p[0].x, p[0].y, p[1].x, p[1].y,
-                            p[2].x, p[2].y, p[3].x, p[3].y);
-
-            // draw
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-            //
-
-            // now half of original
-
-            gl.bindTexture(gl.TEXTURE_2D, tex_id1);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image1);
-
-            texCoordBuffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-
-            gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
-            gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
-
-            this.setRectangle(0, 0, 0.5, 1);
-
-            buffer = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-            gl.enableVertexAttribArray(shaderProgram.vertexPositionAttribute);
-            gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 2, gl.FLOAT, false, 0, 0);
-
-            this.setRectangle(0, 0, w/2, h);
-
-            // draw
-            gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-            gl.bindTexture(gl.TEXTURE_2D, null);
-        }
-
-        return renderGL;
-
-    })();
-
-
-})();
-
-
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
 
 #endif
+
+
+NAMESPACE_TOPSIDE_END
+

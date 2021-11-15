@@ -6,11 +6,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class T>
 void get_gaussian_kernel(int size, double sigma, Vector<T>& kernel) {
-	Cache& cache = Cache::Local();
-	//var i = 0, x = 0.0, t = 0.0, sigma_x = 0.0, scale_2x = 0.0;
 	double sum = 0.0;
-	_pool_node_t* kern_node = cache.get_buffer(size << 2);
-	auto& _kernel = kern_node.f32;//new Float32Array(size);
+	static thread_local Vector<double> _kernel;
+	_kernel.SetCount(size);
 	
 	if ((size&1) == 1 && size <= 7 && sigma <= 0) {
 		switch (size >> 1) {
@@ -51,18 +49,17 @@ void get_gaussian_kernel(int size, double sigma, Vector<T>& kernel) {
 		// int based kernel
 		sum = 256.0 / sum;
 		for (int i = 0; i < size; ++i) {
-			kernel[i] = (_kernel[i] * sum + 0.5);
+			kernel[i] = (T)(_kernel[i] * sum + 0.5);
 		}
 	}
 	else {
 		// classic kernel
 		sum = 1.0 / sum;
 		for (int i = 0; i < size; ++i) {
-			kernel[i] = _kernel[i] * sum;
+			kernel[i] = (T)(_kernel[i] * sum);
 		}
 	}
 	
-	cache.put_buffer(kern_node);
 }
 
 
@@ -175,7 +172,7 @@ void perspective_4point_transform(
 	double t49 = t28 * t15;
 	double t50 = t41 * t15;
 	
-	Vector<double>& mat = model.data;
+	auto& mat = model.data;
 	mat[0] = Hl0 * t48 + Hl1 * (t18 * t15) - Hl2 * (t23 * t15);
 	mat[1] = Hl0 * t49 + Hl1 * (t31 * t15) - Hl2 * (t35 * t15);
 	mat[2] = -Hl0 * t50 - Hl1 * (t44 * t15) + Hl2 * (t47 * t15);

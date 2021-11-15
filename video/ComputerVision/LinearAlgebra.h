@@ -664,27 +664,8 @@ void svd_invert(const matrix_t<T>& Ai, const matrix_t<T>& A) {
 }
 
 
-template <class T>
-void eigenVV(const matrix_t<T>& A, const matrix_t<T>* vects, const matrix_t<T>* vals) {
-	int n = A.cols;
-	int dt = 1;
-	
-	matrix_t<T> a_mt(n, n, dt);
-	matrix_t<T> w_mt(1, n, dt);
-	
-	int i = n * n;
-	while (--i >= 0) {
-		a_mt.data[i] = A.data[i];
-	}
-	
-	JacobiImpl(a_mt.data, n, w_mt.data, vects ? vects.data : NULL, n, n);
-	
-	if (vals) {
-		while (--n >= 0) {
-			vals.data[n] = w_mt.data[n];
-		}
-	}
-}
+
+void eigenVV(const FloatMat& A, const FloatMat* vects=0, const FloatMat* vals=0);
 
 
 NAMESPACE_TOPSIDE_END

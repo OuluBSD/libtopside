@@ -146,6 +146,11 @@ void ByteImage::Randomize() {
 
 
 void DataFromImage(const Image& img, Vector<byte>& out) {
+	#ifdef UPP_VERSION
+	
+	TODO
+	
+	#else
 	Image::ImageDataRef* data = img.GetData();
 	if (!data)
 		return;
@@ -193,11 +198,15 @@ void DataFromImage(const Image& img, Vector<byte>& out) {
 		
 		ASSERT(out_it == out.End());
 	}
-	
-	
+	#endif
 }
 
 Image MirrorVertical(const Image& img) {
+	#ifdef UPP_VERSION
+	
+	TODO
+	
+	#else
 	Image::ImageDataRef* data = img.GetData();
 	if (img.GetSize().IsNull() || !data)
 		return img;
@@ -252,6 +261,7 @@ Image MirrorVertical(const Image& img) {
 	}
 	
 	return ib;
+	#endif
 }
 
 

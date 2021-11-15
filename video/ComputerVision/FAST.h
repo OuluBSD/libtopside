@@ -18,11 +18,11 @@ public:
 	
 	fast_corners();
 	
+	int set_threshold(int threshold);
+	int detect(const ByteMat& src, Vector<keypoint_t>& corners, int border = 3);
 	
 private:
 	void _cmp_offsets(PixVec& pixel, int step, int pattern_size);
-	int set_threshold(int threshold);
-	int detect(const ByteMat& src, Vector<keypoint_t>& corners, int border = 3);
 	
 	static int _cmp_score_16(const Vector<byte>& src, int off, const PixVec& pixel, Vector<int>& d, int threshold);
 	

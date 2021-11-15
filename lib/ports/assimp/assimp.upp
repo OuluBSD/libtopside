@@ -11,7 +11,7 @@ uses
 	ports/irrxml,
 	ports/rapidjson,
 	ports/unzip,
-	ports/zlib;
+	plugin/z;
 
 file
 	config.h,

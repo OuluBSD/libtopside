@@ -26,6 +26,5 @@ file
 	HaarFace.cpp;
 
 mainconfig
-	"" = "GUI",
-	"" = "";
+	"" = "GUI";
 

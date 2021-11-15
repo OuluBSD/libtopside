@@ -22,8 +22,8 @@ WebcamCV::WebcamCV() {
 	list <<= THISBACK(SelectDemo);
 	SelectDemo();
 	
-	vidmgr.Refresh();
-	PostCallback(THISBACK4(OpenVideoCapture, 0, 0, 0, 0));
+	//vidmgr.Refresh();
+	//PostCallback(THISBACK4(OpenVideoCapture, 0, 0, 0, 0));
 	
 	tc.Set(-20, THISBACK(Data));
 }
@@ -37,6 +37,7 @@ void WebcamCV::MainBar(Bar& bar) {
 		bar.Add("Open file", THISBACK(OpenFile));
 		bar.Separator();
 		
+		/*
 		if (!open_dev)
 			vidmgr.Refresh(); // don't refresh while video input is open (buggy currently)
 		
@@ -61,7 +62,7 @@ void WebcamCV::MainBar(Bar& bar) {
 					}
 				});
 			}
-		}
+		}*/
 	});
 }
 
@@ -91,17 +92,17 @@ void WebcamCV::OpenFile() {
 }
 
 void WebcamCV::CloseInput() {
-	if (open_dev) {
+	/*if (open_dev) {
 		if (open_cap && stream)
 			open_cap->Close();
 		stream = 0;
 		open_cap = 0;
 		open_dev = 0;
-	}
+	}*/
 }
 
 void WebcamCV::OpenVideoCapture(int dev_i, int cap_i, int fmt_i, int res_i) {
-	if (dev_i < 0 || cap_i < 0 || fmt_i < 0 || res_i < 0) return;
+	/*if (dev_i < 0 || cap_i < 0 || fmt_i < 0 || res_i < 0) return;
 	
 	CloseInput();
 	
@@ -125,7 +126,7 @@ void WebcamCV::OpenVideoCapture(int dev_i, int cap_i, int fmt_i, int res_i) {
 	if (cap.Open(fmt_i, res_i)) {
 		stream = &cap.GetStream();
 	
-	}
+	}*/
 }
 
 void WebcamCV::SelectDemo() {
@@ -134,8 +135,8 @@ void WebcamCV::SelectDemo() {
 }
 
 void WebcamCV::Data() {
-	if (open_cap)
-		open_cap->Read();
+	/*if (open_cap)
+		open_cap->Read();*/
 	
 	lock.Enter();
 	
@@ -145,6 +146,7 @@ void WebcamCV::Data() {
 	lock.Leave();
 }
 
+/*
 bool WebcamCV::HaveEnoughVideoData() {
 	return true;
 }
@@ -157,9 +159,53 @@ const VideoInputFrame& WebcamCV::GetVideo() {
 VideoOutputFrame& WebcamCV::GetOutputFrame() {
 	static VideoOutputFrame f;
 	return f;
+}*/
+
+void WebcamCV::TickGrayscale() {
+	Tick(grayscale);
 }
 
-	
+Image WebcamCV::NewFrame() {
+	TODO
+}
+
+void WebcamCV::Tick(ImageProcBase& proc) {
+	proc.SetInput(NewFrame());
+	proc.Process();
+	current = proc.GetOutput();
+}
+
+void ImageProcBase::OutputFromGray(const ByteMat& gray) {
+    output.SetSize(sz.cx, sz.cy, 4);
+    byte* it = output.data.Begin();
+    for (byte g : gray.data) {
+        it[0] = g;
+        it[1] = g;
+        it[2] = g;
+        it[3] = 255;
+    }
+}
+
+void ImageProcBase::SetInput(Image i) {
+	sz = i.GetSize();
+	ImageBuffer ib(sz);
+	const RGBA* it = ib.Begin();
+	int len = sz.cx * sz.cy * 4;
+	input.SetSize(sz.cx, sz.cy, 4);
+	memcpy(input.data.Begin(), it, len);
+}
+
+Image ImageProcBase::GetOutput() const {
+	int len = sz.cx*sz.cy*4;
+	ASSERT(output.data.GetCount() == len);
+	if (sz.IsEmpty() || output.data.GetCount() != len)
+		return Image();
+	ImageBuffer ib(sz);
+	RGBA* it = ib.Begin();
+	memcpy(it, output.data.Begin(), len);
+	return ib;
+}
+
 
 NAMESPACE_TOPSIDE_END
 

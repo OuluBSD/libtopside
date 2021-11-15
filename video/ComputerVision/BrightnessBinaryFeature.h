@@ -16,7 +16,7 @@ public:
 	
 	BrightnessBinaryFeature();
 	
-	void prepare_cascade(Cascade& cascade);const pyra8& build_pyramid(const pyra8::DTen& src, int min_width, int min_height, int interval = 4);
+	void prepare_cascade(Cascade& cascade);const pyra8& build_pyramid(const pyra8::Mat& src, int min_width, int min_height, int interval = 4);
 	Vector<BBox> detect(const pyra8& pyramid, Cascade& cascade);
 	
 	

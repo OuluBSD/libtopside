@@ -294,7 +294,7 @@ void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMa
 	Vector<byte>& patch_d = patch_img.data;
 	int corner_count = corners.GetCount();
 	
-	descriptors.resize(DESCR_SIZE, corner_count, 1);
+	descriptors.SetSize(DESCR_SIZE, corner_count, 1);
 	
 	Vector<byte>& descr_d = descriptors.data;
 	int descr_off = 0;

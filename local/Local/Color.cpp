@@ -136,7 +136,7 @@ Color CoolBlue(double progress) {
 	double alpha = progress - (int)progress;
 	Color a = Color(28, 170, 255);
 	Color b = Color(28, 42, 200);
-	return Blend(a, b, alpha * 0x100);
+	return Blend(a, b, (int)(alpha * 0x100));
 }
 
 Color Rainbow(double progress) {

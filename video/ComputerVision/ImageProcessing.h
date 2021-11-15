@@ -5,16 +5,16 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void Grayscale(const Vector<byte>& src, int w, int h, matrix_t<byte>& dst, int code = COLOR_RGBA2GRAY);
+void Grayscale(const ByteMat& src, int w, int h, ByteMat& dst, int code = COLOR_RGBA2GRAY);
 
 
-void _resample_u8(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
-void _resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
+void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
+void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
 
 
 
-template <class T>
-void _convol_u8(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
+template <class T,class Temp>
+void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, fk = 0;
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
 	
@@ -129,8 +129,8 @@ void _convol_u8(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w,
 }
 
 
-template <class T>
-void _convol(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
+template <class T,class Temp>
+void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0
 	//double sum = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0, f0 = filter[0], fk = 0.0;
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
@@ -241,22 +241,22 @@ void _convol(Vector<T>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, in
 }
 
 
-void resample(const pyra8::DTen& src, pyra8::DTen& dst, int nw, int nh);
-void resample(const pyraf::DTen& src, pyraf::DTen& dst, int nw, int nh);
+void resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
+void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
 
 
 void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options = 0);
 
-template <class T, class Temp> // <byte, int>, <float, float>
+template <class T=byte, class Temp=int> // <byte, int>, <float, float>
 void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0, double sigma = 0.0) {
 	if (kernel_size == 0)
-		kernel_size = max(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1;
+		kernel_size = (int)(max<double>(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1);
 		
 	int half_kernel = kernel_size >> 1;
 	int w = src.cols;
 	int h = src.rows;
 	
-	dst.Resize(w, h, src.channel);
+	dst.SetSize(w, h, src.channels);
 	
 	auto& src_d = src.data;
 	auto& dst_d = dst.data;
@@ -271,10 +271,10 @@ void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0
 	get_gaussian_kernel(kernel_size, sigma, filter);
 	
 	if (std::is_same<T, byte>::value) {
-		_convol_u8(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+		_convol_u8<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
 	else {
-		_convol(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+		_convol<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
 }
 
@@ -370,7 +370,7 @@ void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
 	thread_local static Vector<T> trow0, trow1;
 	
-	dst.resize(w, h, 2); // 2 channel output gx, gy
+	dst.SetSize(w, h, 2); // 2 channel output gx, gy
 	
 	const auto& img = src.data;
 	auto& gxgy = dst.data;
@@ -437,17 +437,17 @@ void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 
 // compute gradient using Sobel kernel [1 2 1] * [-1 0 1]^T
 // dst: [gx,gy,...]
-template <class T, class Temp>
-void sobel_derivatives(const matrix_t<T>& src, matrix_t<T>& dst) {
+template <class T=byte, class Temp=int>
+void sobel_derivatives(const matrix_t<T>& src, matrix_t<Temp>& dst) {
 	int w = src.cols;
-	h = src.rows;
+	int h = src.rows;
 	int dstep = w << 1;
-	//a, b, c, d, e, f;
+	Temp a, b, c, d, e, f;
 	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
 	Vector<Temp> trow0;
 	Vector<Temp> trow1;
 	
-	dst.Resize(w, h, 2); // 2 channel output gx, gy
+	dst.SetSize(w, h, 2); // 2 channel output gx, gy
 	trow0.SetCount((w + 2) << 2);
 	trow1.SetCount((w + 2) << 2);
 	
@@ -620,9 +620,9 @@ template <class T>
 void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
 	int w = src.cols;
 	int h = src.rows;
-	int src_d = src.data;
+	auto& src_d = src.data;
 	
-	dst.Resize(w, h, src.channel);
+	dst.SetSize(w, h, src.channels);
 	
 	auto& dst_d = dst.data;
 	int size = w * h;
@@ -644,21 +644,22 @@ void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
 	
 	double norm = 255.0 / size;
 	for (int i = 0; i < size; ++i) {
-		dst_d[i] = (hist0[src_d[i]] * norm + 0.5);
+		dst_d[i] = (T)(hist0[src_d[i]] * norm + 0.5);
 	}
 }
 
 template <class T>
-void canny(const matrix_t<T>& src, matrix_t<T>& dst, double low_thresh, double high_thresh) {
+void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_thresh) {
 	int w = src.cols;
 	int h = src.rows;
 	auto& src_d = src.data;
 	        
-	dst.Resize(w, h, src.channel);
+	dst.SetSize(w, h, src.channels);
 	
 	auto& dst_d = dst.data;
-	//var i = 0, j = 0, grad = 0, w2 = w << 1, _grad = 0, suppress = 0, f = 0, x = 0, y = 0, s = 0;
-	//var tg22x = 0, tg67x = 0;
+	int i = 0, j = 0, grad = 0;
+	int w2 = w << 1, _grad = 0, suppress = 0, f = 0, x = 0, y = 0, s = 0;
+	int tg22x = 0, tg67x = 0;
 	
 	// cache buffers
 	static thread_local Vector<int> buf;
@@ -828,11 +829,6 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, double low_thresh, double h
 		}
 	}
 	
-	// free buffers
-	cache.put_buffer(dxdy_node);
-	cache.put_buffer(buf_node);
-	cache.put_buffer(map_node);
-	cache.put_buffer(stack_node);
 }
 
 // transform is 3x3 matrix_t
@@ -845,7 +841,8 @@ void warp_perspective(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& 
 	
 	auto& src_d = src.data;
 	auto& dst_d = dst.data;
-	//var x = 0, y = 0, off = 0, ixs = 0, iys = 0, xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
+	int x = 0, y = 0, off = 0, ixs = 0, iys = 0;
+	double xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
 	auto& td = transform.data;
 	auto m00 = td[0];
 	auto m01 = td[1];

@@ -42,7 +42,7 @@ struct CtrlEvent : Moveable<CtrlEvent> {
 	Size sz;
 	
 	
-	static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+	RTTI_TYPEIDCLS
 	
 	void operator=(const CtrlEvent& e) {
 		type = e.type;

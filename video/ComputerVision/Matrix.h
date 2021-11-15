@@ -161,7 +161,7 @@ void multiply_AtA(matrix_t<T>& C, const matrix_t<T>& A) {
 
 // various small matrix operations
 template <class T>
-void identity_3x3(matrix_t<T>& M, int value = 1) {
+void identity_3x3(matrix_t<T>& M, T value = 1) {
 	auto& dt = M.data;
 	dt[0] = value;
 	dt[4] = value;
@@ -176,7 +176,8 @@ void identity_3x3(matrix_t<T>& M, int value = 1) {
 
 template <class T>
 void invert_3x3(const matrix_t<T>&from, matrix_t<T>& to) {
-	double A = from.data, invA = to.data;
+	auto& A = from.data;
+	auto& invA = to.data;
 	double t1 = A[4];
 	double t2 = A[8];
 	double t4 = A[5];
@@ -208,7 +209,9 @@ void invert_3x3(const matrix_t<T>&from, matrix_t<T>& to) {
 // C = A * B
 template <class T>
 void multiply_3x3(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
-	double Cd = C.data, Ad = A.data, Bd = B.data;
+	auto& Cd = C.data;
+	auto& Ad = A.data;
+	auto& Bd = B.data;
 	double m1_0 = Ad[0], m1_1 = Ad[1], m1_2 = Ad[2];
 	double m1_3 = Ad[3], m1_4 = Ad[4], m1_5 = Ad[5];
 	double m1_6 = Ad[6], m1_7 = Ad[7], m1_8 = Ad[8];

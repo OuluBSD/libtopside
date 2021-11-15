@@ -97,6 +97,8 @@ public:
 		
 #define RTTI_STRING_FN(TypeString) const char* s = TypeString; return s;
 
+#define RTTI_TYPEIDCLS static TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;}
+
 #define RTTI_DECL_0(Type, TypeString) \
 	public: \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);} \

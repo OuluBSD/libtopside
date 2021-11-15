@@ -4,11 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct ScorePoint : Moveable<ScorePoint> {
-	int x, y;
-	float score;
-	
-};
 
 
 template <class T>
@@ -19,54 +14,6 @@ public:
 
 	data_t() {}
 };
-
-template <class T>
-class matrix_t {
-	
-public:
-	typedef T type;
-	Vector<T> data;
-	int cols;
-	int rows;
-	int channels;
-	
-    // columns, rows, channel
-    matrix_t(int c, int r, int ch) {
-        ASSERT(c > 0 && r > 0 && ch > 0);
-        this->cols = c;
-        this->rows = r;
-        this->channels = ch;
-    }
-    matrix_t(int c, int r, int ch, const Vector<T>& data) {
-        ASSERT(c > 0 && r > 0 && ch > 0);
-        this->cols = c;
-        this->rows = r;
-        this->channels = ch;
-        this.data <<= data;
-    }
-    
-    void allocate() {
-        data.SetCount(cols * rows * channels);
-    }
-    
-    void copy_to(matrix_t& other) const {
-        ASSERT(other.cols == cols);
-        ASSERT(other.rows == rows);
-        ASSERT(other.channels == channels);
-        other.data <<= data;
-    }
-    
-    void resize(int c, int r, int ch) {
-        this->cols = c;
-        this->rows = r;
-        this->channels = ch;
-        allocate();
-    }
-	
-};
-
-using ByteMat = matrix_t<byte>;
-using FloatMat = matrix_t<float>;
 
 
 
@@ -106,7 +53,6 @@ Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors = 1);
 
 
 
-
 // color conversion
 enum {
 	COLOR_RGBA2GRAY,
@@ -136,6 +82,8 @@ public:
 	int level = 0;
 	double angle = -1.0;
 	
+	keypoint_t() {}
+	keypoint_t(const keypoint_t& s) {*this = s;}
 	keypoint_t(int x, int y, int score, int level, double angle) {
 		this->x = x;
 		this->y = y;
@@ -144,12 +92,32 @@ public:
 		this->angle = angle;
 	}
 	
+	void Set(int x, int y, int score, int level, double angle) {
+		this->x = x;
+		this->y = y;
+		this->score = score;
+		this->level = level;
+		this->angle = angle;
+	}
+	
+	void operator=(const keypoint_t& s) {
+		x = s.x;
+		y = s.y;
+		score = s.score;
+		level = s.level;
+		angle = s.angle;
+	}
+	
 	void Clear() {
 		x = 0;
 		y = 0;
 		score = 0;
 		level = 0;
 		angle = -1.0f;
+	}
+	
+	bool operator()(const keypoint_t& a, const keypoint_t& b) const {
+		return a.score > b.score;
 	}
 	
 };

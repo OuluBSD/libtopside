@@ -32,6 +32,8 @@ extern char **environ;
 #define SYNON_UNION_2(type, name0, name1) union {type name0; type name1;};
 #define PANIC(msg) Panic(msg); UNREACHABLE
 
+#define RTTI_TYPEIDCLS
+
 
 NAMESPACE_UPP_BEGIN
 
@@ -100,6 +102,7 @@ typedef Image RawSysTexture;
 template <class T> inline int64 ToInt(const T& o) {return o.ToInt();}
 template<> inline int64 ToInt(const bool& o) {return (int64)o;}
 template<> inline int64 ToInt(const int& o) {return (int64)o;}
+template<> inline int64 ToInt(const int32& o) {return (int64)o;}
 template<> inline int64 ToInt(const int64& o) {return (int64)o;}
 template<> inline int64 ToInt(const byte& o) {return (int64)o;}
 template<> inline int64 ToInt(const char& o) {return (int64)o;}
@@ -114,6 +117,7 @@ template<> inline int64 ToInt(const Time& o) {return (int64)o.Get();}
 template <class T> inline double ToDouble(const T& o) {return o.ToDouble();}
 template<> inline double ToDouble(const bool& o) {return (double)o;}
 template<> inline double ToDouble(const int& o) {return (double)o;}
+template<> inline double ToDouble(const int32& o) {return (double)o;}
 template<> inline double ToDouble(const int64& o) {return (double)o;}
 template<> inline double ToDouble(const byte& o) {return (double)o;}
 template<> inline double ToDouble(const char& o) {return (double)o;}
@@ -121,8 +125,8 @@ template<> inline double ToDouble(const float& o) {return (double)o;}
 template<> inline double ToDouble(const double& o) {return (double)o;}
 template<> inline double ToDouble(const String& o) {return StrDbl(o);}
 template<> inline double ToDouble(const WString& o) {return StrDbl(ToString(o));}
-template<> inline double ToDouble(const Date& o) {return o.Get();}
-template<> inline double ToDouble(const Time& o) {return o.Get();}
+template<> inline double ToDouble(const Date& o) {return (double)o.Get();}
+template<> inline double ToDouble(const Time& o) {return (double)o.Get();}
 
 #if __MINGW32__
 template<> inline int64 ToInt(const long& o) {return (int64)o;}

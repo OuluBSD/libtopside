@@ -164,6 +164,8 @@ public:
 class homography2d {
 	matrix_t<float> mLtL;
 	matrix_t<float> Evec;
+	matrix_t<float> T0;
+	matrix_t<float> T1;
 
 
 public:
@@ -173,160 +175,13 @@ public:
 		Evec(9, 9, 1)
 	{
 		// empty constructor
-		//this->T0 = new matrix_t(3, 3, F32_t|C1_t);
-		//this->T1 = new matrix_t(3, 3, F32_t|C1_t);
-		//this->mLtL = new matrix_t(9, 9, F32_t|C1_t);
-		//this->Evec = new matrix_t(9, 9, F32_t|C1_t);
+		T0.SetSize(3, 3, 1);
+		T1.SetSize(3, 3, 1);
+		mLtL.SetSize(9, 9, 1);
+		Evec.SetSize(9, 9, 1);
 	}
 	
-	template<class T>
-	bool run(const Vector<T>& from, Vector<T>& to, const matrix_t<T>& model, int count) {
-		const auto& md = model.data;
-		auto& t0d = T0.data;
-		auto& t1d = T1.data;
-		auto& LtL = mLtL.data;
-		auto& = Evec.data;
-		double x = 0.0, y = 0.0, X = 0.0, Y = 0.0;
-		
-		// norm
-		double smx = 0.0, smy = 0.0, cmx = 0.0, cmy = 0.0, sMx = 0.0, sMy = 0.0, cMx = 0.0, cMy = 0.0;
-		
-		for (int i = 0; i < count; ++i) {
-			cmx += to[i].x;
-			cmy += to[i].y;
-			cMx += from[i].x;
-			cMy += from[i].y;
-		}
-		
-		cmx /= count;
-		cmy /= count;
-		cMx /= count;
-		cMy /= count;
-		
-		for (int i = 0; i < count; ++i) {
-			smx += abs(to[i].x - cmx);
-			smy += abs(to[i].y - cmy);
-			sMx += abs(from[i].x - cMx);
-			sMy += abs(from[i].y - cMy);
-		}
-		
-		if (   abs(smx) < EPSILON
-			|| abs(smy) < EPSILON
-			|| abs(sMx) < EPSILON
-			|| abs(sMy) < EPSILON)
-			return 0;
-			
-		smx = count / smx;
-		smy = count / smy;
-		sMx = count / sMx;
-		sMy = count / sMy;
-		
-		t0d[0] = sMx;
-		t0d[1] = 0;
-		t0d[2] = -cMx * sMx;
-		t0d[3] = 0;
-		t0d[4] = sMy;
-		t0d[5] = -cMy * sMy;
-		t0d[6] = 0;
-		t0d[7] = 0;
-		t0d[8] = 1;
-		
-		t1d[0] = 1.0 / smx;
-		t1d[1] = 0;
-		t1d[2] = cmx;
-		t1d[3] = 0;
-		t1d[4] = 1.0 / smy;
-		t1d[5] = cmy;
-		t1d[6] = 0;
-		t1d[7] = 0;
-		t1d[8] = 1;
-		//
-		
-		// construct system
-		{
-			int i = 81;
-			while (--i >= 0) {
-				LtL[i] = 0.0;
-			}
-		}
-		for (int i = 0; i < count; ++i) {
-			x = (to[i].x - cmx) * smx;
-			y = (to[i].y - cmy) * smy;
-			X = (from[i].x - cMx) * sMx;
-			Y = (from[i].y - cMy) * sMy;
-			
-			LtL[0] += X * X;
-			LtL[1] += X * Y;
-			LtL[2] += X;
-			
-			LtL[6] += X * -x * X;
-			LtL[7] += X * -x * Y;
-			LtL[8] += X * -x;
-			LtL[10] += Y * Y;
-			LtL[11] += Y;
-			
-			LtL[15] += Y * -x * X;
-			LtL[16] += Y * -x * Y;
-			LtL[17] += Y * -x;
-			LtL[20] += 1.0;
-			
-			LtL[24] += -x * X;
-			LtL[25] += -x * Y;
-			LtL[26] += -x;
-			LtL[30] += X * X;
-			LtL[31] += X * Y;
-			LtL[32] += X;
-			LtL[33] += X * -y * X;
-			LtL[34] += X * -y * Y;
-			LtL[35] += X * -y;
-			LtL[40] += Y * Y;
-			LtL[41] += Y;
-			LtL[42] += Y * -y * X;
-			LtL[43] += Y * -y * Y;
-			LtL[44] += Y * -y;
-			LtL[50] += 1.0;
-			LtL[51] += -y * X;
-			LtL[52] += -y * Y;
-			LtL[53] += -y;
-			LtL[60] += -x * X * -x * X + -y * X * -y * X;
-			LtL[61] += -x * X * -x * Y + -y * X * -y * Y;
-			LtL[62] += -x * X * -x + -y * X * -y;
-			LtL[70] += -x * Y * -x * Y + -y * Y * -y * Y;
-			LtL[71] += -x * Y * -x + -y * Y * -y;
-			LtL[80] += -x * -x + -y * -y;
-		}
-		//
-		
-		// symmetry
-		for (int i = 0; i < 9; ++i) {
-			for (int j = 0; j < i; ++j)
-				LtL[i*9+j] = LtL[j*9+i];
-		}
-		
-		linalg.eigenVV(mLtL, Evec);
-		
-		md[0] = evd[72], md[1] = evd[73], md[2] = evd[74];
-		md[3] = evd[75], md[4] = evd[76], md[5] = evd[77];
-		md[6] = evd[78], md[7] = evd[79], md[8] = evd[80];
-		
-		// denormalize
-		multiply_3x3(model, T1, model);
-		multiply_3x3(model, model, T0);
-		
-		// set bottom right to 1.0
-		x = 1.0 / md[8];
-		md[0] *= x;
-		md[1] *= x;
-		md[2] *= x;
-		md[3] *= x;
-		md[4] *= x;
-		md[5] *= x;
-		md[6] *= x;
-		md[7] *= x;
-		md[8] = 1.0;
-		
-		return true;
-	}
+	bool run(const Vector<Point>& from, Vector<Point>& to, FloatMat& model);
 	
 	template <class T>
 	void error(const Vector<T>& from, Vector<T>& to, const matrix_t<T>& model, Vector<double>& err, int count) {
@@ -430,11 +285,13 @@ public:
 
 
 class ransac_params_t {
+	
+public:
 	int size;
 	double thresh, eps, prob;
 	
 public:
-	ransac_params_t(int size = 0, double thresh = 0.5, double eps = 0.5, double prob = 0.99) {
+	void Init(int size = 0, double thresh = 0.5, double eps = 0.5, double prob = 0.99) {
 		this->size = size;
 		this->thresh = thresh;
 		this->eps = eps;
@@ -505,9 +362,8 @@ public:
 		return numinliers;
 	}
 	
-	template <class T>
-	bool ransac(const ransac_params_t& params, Kernel& kernel, const Vector<T>& from, const Vector<T>& to, int count, const matrix_t<T>& model, Vector<bool>& mask, int max_iters = 1000) {
-	
+	bool ransac(const ransac_params_t& params, Kernel& kernel, const Vector<Point>& from, Vector<Point>& to, FloatMat& model, ByteMat* mask, int max_iters = 1000) {
+		int count = from.GetCount();
 		if (count < params.size)
 			return false;
 			
@@ -515,44 +371,36 @@ public:
 		int niters = max_iters;
 		bool result = false;
 		
-		var subset0 = [];
-		var subset1 = [];
+		Vector<Point> subset0;
+		Vector<Point> subset1;
 		bool found = false;
 		
 		int mc = model.cols;
 		int mr = model.rows;
-		var dt = model.type | C1_t;
+		int dt = 1;
 		
-		var m_buff = cache.get_buffer((mc * mr) << 3);
-		var ms_buff = cache.get_buffer(count);
-		var err_buff = cache.get_buffer(count << 2);
-		var M = new matrix_t(mc, mr, dt, m_buff.data);
-		var curr_mask = new matrix_t(count, 1, U8C1_t, ms_buff.data);
+		FloatMat M (mc, mr, dt);
+		ByteMat curr_mask(count, 1, 1);
 		
 		int inliers_max = -1;
 		int numinliers = 0;
 		int nmodels = 0;
 		
-		var err = err_buff.f32;
+		Vector<float> err;
+		err.SetCount(count << 2);
 		
 		// special case
 		if (count == model_points) {
-			if (kernel.run(from, to, M, count) <= 0) {
-				cache.put_buffer(m_buff);
-				cache.put_buffer(ms_buff);
-				cache.put_buffer(err_buff);
+			if (kernel.run(from, to, M) == 0) {
 				return false;
 			}
 			
 			M.copy_to(model);
 			if (mask) {
 				while (--count >= 0) {
-					mask.data[count] = 1;
+					mask->data[count] = 1;
 				}
 			}
-			cache.put_buffer(m_buff);
-			cache.put_buffer(ms_buff);
-			cache.put_buffer(err_buff);
 			return true;
 		}
 		
@@ -561,15 +409,13 @@ public:
 			found = get_subset(kernel, from, to, model_points, count, subset0, subset1);
 			if (!found) {
 				if (iter == 0) {
-					cache.put_buffer(m_buff);
-					cache.put_buffer(ms_buff);
-					cache.put_buffer(err_buff);
 					return false;
 				}
 				break;
 			}
 			
-			nmodels = kernel.run(subset0, subset1, M, model_points);
+			ASSERT(subset0.GetCount() == model_points);
+			nmodels = kernel.run(subset0, subset1, M);
 			if (nmodels <= 0)
 				continue;
 				
@@ -586,10 +432,6 @@ public:
 				result = true;
 			}
 		}
-		
-		cache.put_buffer(m_buff);
-		cache.put_buffer(ms_buff);
-		cache.put_buffer(err_buff);
 		
 		return result;
 	}

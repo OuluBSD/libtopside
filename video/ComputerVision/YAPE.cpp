@@ -59,7 +59,7 @@ int yape::precompute_directions(int step, Vector<int>& dirs, int R) {
 	return i;
 }
 
-int yape::third_check(Vector<float>& Sb, int off, int step) {
+int yape::third_check(Vector<int>& Sb, int off, int step) {
 	int n = 0;
 	if (Sb[off+1]   != 0)
 		n++;
@@ -81,7 +81,7 @@ int yape::third_check(Vector<float>& Sb, int off, int step) {
 	return n;
 }
 
-bool yape::is_local_maxima(const Vector<float>& p, int off, float v, int step, int neighborhood) {
+bool yape::is_local_maxima(const Vector<int>& p, int off, int v, int step, int neighborhood) {
 
 	if (v > 0) {
 		off -= step * neighborhood;
@@ -106,11 +106,11 @@ bool yape::is_local_maxima(const Vector<float>& p, int off, float v, int step, i
 	return true;
 }
 
-void yape::perform_one_point(const Vector<float>& I, int x, Vector<float>& Scores, float Im, float Ip, const Vector<int>& dirs, int opposite, int dirs_nb) {
-	float score = 0;
+void yape::perform_one_point(const Vector<byte>& I, int x, Vector<int>& Scores, byte Im, byte Ip, const Vector<int>& dirs, int opposite, int dirs_nb) {
+	int score = 0;
 	int a = 0;
 	int b = (opposite - 1);
-	float A = 0, B0 = 0, B1 = 0, B2 = 0;
+	byte A = 0, B0 = 0, B1 = 0, B2 = 0;
 	int state = 0;
 	
 	// WE KNOW THAT NOT(A ~ I0 & B1 ~ I0):
@@ -669,7 +669,7 @@ void yape::init(int width, int height, int radius, int pyramid_levels) {
 	}
 }
 
-int yape::detect(const matrix_t<float>& src, Vector<ScorePoint>& points, int border) {
+int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 	lev_table_t& t = this->level_tables[0];
 	int R = t.radius;
 	int Rm1 = (R - 1);
@@ -680,9 +680,9 @@ int yape::detect(const matrix_t<float>& src, Vector<ScorePoint>& points, int bor
 	int w = src.cols;
 	int h = src.rows;
 	int hw = w >> 1;
-	Vector<float>& scores = t.scores;
+	Vector<int>& scores = t.scores;
 	//int x = 0, y = 0, row = 0, rowx = 0, ip = 0, im = 0, abs_score = 0, score = 0;
-	float tau = this->tau;
+	int tau = this->tau;
 	int number_of_points = 0;
 	
 	int sx = max(R + 1, border);
@@ -693,8 +693,8 @@ int yape::detect(const matrix_t<float>& src, Vector<ScorePoint>& points, int bor
 	int row = (sy * w + sx);
 	for (int y = sy; y < ey; ++y, row += w) {
 		for (int x = sx, rowx = row; x < ex; ++x, ++rowx) {
-			auto ip = img[rowx] + tau;
-			auto im = img[rowx] - tau;
+			auto ip = min(255, img[rowx] + tau);
+			auto im = max(0, img[rowx] - tau);
 			
 			if (im < img[rowx+R] && img[rowx+R] < ip && im < img[rowx-R] && img[rowx-R] < ip) {
 				scores[rowx] = 0;
@@ -716,7 +716,7 @@ int yape::detect(const matrix_t<float>& src, Vector<ScorePoint>& points, int bor
 				++x, ++rowx;
 			}
 			else if (third_check(scores, rowx, w) >= 3 && is_local_maxima(scores, rowx, score, hw, R)) {
-				ScorePoint& pt = points[number_of_points];
+				keypoint_t& pt = points[number_of_points];
 				pt.x = x;
 				pt.y = y;
 				pt.score = abs_score;
