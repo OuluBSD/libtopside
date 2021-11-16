@@ -18,7 +18,7 @@ bool _group_func(const BBox& r1, const BBox& r2) {
 }
 
 
-Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors) {
+void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors) {
 	struct Node : Moveable<Node> {
 		int			parent;
 		BBox		element;
@@ -141,8 +141,9 @@ Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors) {
 		}
 	}
 	
-	Vector<BBox> result_seq;
+	
 	int c2 = seq2.GetCount();
+	result_seq.SetCount(0);
 	result_seq.Reserve(c2);
 	// filter out small face rectangles inside large face rectangles
 	for (const BBox& r1 : seq2) {
@@ -164,7 +165,7 @@ Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors) {
 		if (flag)
 			result_seq.Add(r1);
 	}
-	return result_seq;
+	
 }
 
 

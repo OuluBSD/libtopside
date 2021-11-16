@@ -4,26 +4,22 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-VideoStabilizerBase::VideoStabilizerBase() {
+VideoStabilizerBase::VideoStabilizerBase() : stabilizer(MM_HOMOGRAPHY) {
 	
 }
 
 void VideoStabilizerBase::videOK(int videoWidth, int videoHeight) {
 
-    canvas.width = canvasWidth  = 640;
-    canvas.height = canvasHeight = 480;
-    ctx = canvas.getContext('2d');
+    sz.cx = videoWidth;
+    sz.cy = videoHeight;
 
-    frameSize.width = canvasWidth;
-    frameSize.height = canvasHeight;
+    //motion_estimator.Init(videostab.MM_AFFINE, frameSize);
+    stabilizer.Init(sz);
 
-    //motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_AFFINE, frameSize);
-    motion_estimator = new videostab.keypoint_motion_estimator(videostab.MM_HOMOGRAPHY, frameSize);
 
-    stabilizer = new videostab.onepass_stabilizer();
-    stabilizer.motion_estimator = motion_estimator;
-
-    if(haveWebGL()) {
+	TODO
+	
+    /*if(haveWebGL()) {
 
         // switch off image generation
         stabilizer.doImage = false;
@@ -49,10 +45,10 @@ void VideoStabilizerBase::videOK(int videoWidth, int videoHeight) {
 
         stabilizer.doImage = true;
         process();
-    }
+    }*/
 }
 
-void VideoStabilizerBase::processGL() {
+/*void VideoStabilizerBase::processGL() {
     compatibility.requestAnimationFrame( processGL );
 
     stat.new_frame();
@@ -69,35 +65,29 @@ void VideoStabilizerBase::processGL() {
     render_gl.render_images(tex1, tex0, stabilizer.preProcessedFrame, video, canvasWidth, canvasHeight, corns);
 
     $('#log').html(stat.log());
-}
+}*/
 
-Vector<Point> VideoStabilizerBase::tCorners(const Vector<float>& M, int w, int h) {
-    var pt = [ {'x':0,'y':0}, {'x':w,'y':0}, {'x':w,'y':h}, {'x':0,'y':h} ];
-    var z=0.0, i=0, px=0.0, py=0.0;
+void VideoStabilizerBase::tCorners(const Vector<float>& M, int w, int h) {
+	corners.SetCount(0);
+	corners.Reserve(4);
+    corners << keypoint_t(0,0) << keypoint_t(w,0) << keypoint_t(w,h) << keypoint_t(0,h);
+    double z=0.0;
+    double px=0.0, py=0.0;
 
-    for (; i < 4; ++i) {
-        px = M[0]*pt[i].x + M[1]*pt[i].y + M[2];
-        py = M[3]*pt[i].x + M[4]*pt[i].y + M[5];
-        z = M[6]*pt[i].x + M[7]*pt[i].y + M[8];
-        pt[i].x = px/z;
-        pt[i].y = py/z;
+    for (keypoint_t& p : corners) {
+        px = M[0]*p.x + M[1]*p.y + M[2];
+        py = M[3]*p.x + M[4]*p.y + M[5];
+        z = M[6]*p.x + M[7]*p.y + M[8];
+        p.x = px/z;
+        p.y = py/z;
     }
-
-    return pt;
 }
 
 void VideoStabilizerBase::Process() {
 
-    compatibility.requestAnimationFrame( process );
+    stabilizer.next_stabilized_frame(input);
 
-    stat.new_frame();
-
-    ctx.drawImage(video, 0, 0, canvasWidth, canvasHeight);
-    var imageData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
-
-    var img = stabilizer.next_stabilized_frame(imageData);
-
-    OutputFromGray(img);
+    OutputFromGray(input);
 }
 
 

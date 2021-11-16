@@ -312,7 +312,7 @@ Vector<Pointf> hough_transform(matrix_t<T>& img, double rho_res, double theta_re
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			if (image[i * step + j] != 0) {
-				//console.log(r, (n+1) * (numrho+2) + r+1, tabCos[n], tabSin[n]);
+				//LOG(r, (n+1) * (numrho+2) + r+1, tabCos[n], tabSin[n]);
 				for (int n = 0; n < numangle; n++) {
 					double r = round(j * tabCos[n] + i * tabSin[n]);
 					r += (numrho - 1) / 2;
@@ -504,16 +504,17 @@ void sobel_derivatives(const matrix_t<T>& src, matrix_t<Temp>& dst) {
 // please note:
 // dst_(type) size should be cols = src.cols+1, rows = src.rows+1
 template <class T>
-void compute_integral_image(const matrix_t<T>& src, matrix_t<T>& dst_sum, Vector<float>& dst_sqsum, Vector<float>& dst_tilted) {
+void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector<int>* dst_sqsum, Vector<int>* dst_tilted) {
 	int w0 = src.cols, h0 = src.rows;
 	auto& src_d = src.data;
 	int w1 = (w0 + 1);
-	//var s = 0, s2 = 0, p = 0, pup = 0, i = 0, j = 0, v = 0, k = 0;
+	int s = 0, s2 = 0, p = 0, pup = 0, i = 0, j = 0, v = 0, k = 0;
+	auto& sq = *dst_sqsum;
 	
 	if (dst_sum && dst_sqsum) {
 		// fill first row with zeros
 		for (int i = 0; i < w1; ++i) {
-			dst_sum[i] = 0, dst_sqsum[i] = 0;
+			dst_sum[i] = 0, sq[i] = 0;
 		}
 		int p = (w1 + 1), pup = 1;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
@@ -523,18 +524,18 @@ void compute_integral_image(const matrix_t<T>& src, matrix_t<T>& dst_sum, Vector
 				v = src_d[k];
 				s += v, s2 += v * v;
 				dst_sum[p] = dst_sum[pup] + s;
-				dst_sqsum[p] = dst_sqsum[pup] + s2;
+				sq[p] = sq[pup] + s2;
 				
 				v = src_d[k+1];
 				s += v, s2 += v * v;
 				dst_sum[p+1] = dst_sum[pup+1] + s;
-				dst_sqsum[p+1] = dst_sqsum[pup+1] + s2;
+				sq[p+1] = sq[pup+1] + s2;
 			}
 			for (; j < w0; ++j, ++k, ++p, ++pup) {
 				v = src_d[k];
 				s += v, s2 += v * v;
 				dst_sum[p] = dst_sum[pup] + s;
-				dst_sqsum[p] = dst_sqsum[pup] + s2;
+				sq[p] = sq[pup] + s2;
 			}
 		}
 	}
@@ -561,9 +562,11 @@ void compute_integral_image(const matrix_t<T>& src, matrix_t<T>& dst_sum, Vector
 		}
 	}
 	else if (dst_sqsum) {
+		auto& sq = *dst_sqsum;
+		
 		// fill first row with zeros
 		for (int i = 0; i < w1; ++i) {
-			dst_sqsum[i] = 0;
+			sq[i] = 0;
 		}
 		int p = (w1 + 1), pup = 1;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
@@ -572,45 +575,47 @@ void compute_integral_image(const matrix_t<T>& src, matrix_t<T>& dst_sum, Vector
 			for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
 				v = src_d[k];
 				s2 += v * v;
-				dst_sqsum[p] = dst_sqsum[pup] + s2;
+				sq[p] = sq[pup] + s2;
 				v = src_d[k+1];
 				s2 += v * v;
-				dst_sqsum[p+1] = dst_sqsum[pup+1] + s2;
+				sq[p+1] = sq[pup+1] + s2;
 			}
 			for (; j < w0; ++j, ++k, ++p, ++pup) {
 				v = src_d[k];
 				s2 += v * v;
-				dst_sqsum[p] = dst_sqsum[pup] + s2;
+				sq[p] = sq[pup] + s2;
 			}
 		}
 	}
 			
 	if (dst_tilted) {
+		auto& dt = *dst_tilted;
+		
 		// fill first row with zeros
 		for (i = 0; i < w1; ++i) {
-			dst_tilted[i] = 0;
+			dt[i] = 0;
 		}
 		// diagonal
 		int p = (w1 + 1), pup = 0;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
 			for (j = 0; j <= w0 - 2; j += 2, k += 2, p += 2, pup += 2) {
-				dst_tilted[p] = src_d[k] + dst_tilted[pup];
-				dst_tilted[p+1] = src_d[k+1] + dst_tilted[pup+1];
+				dt[p] = src_d[k] + dt[pup];
+				dt[p+1] = src_d[k+1] + dt[pup+1];
 			}
 			for (; j < w0; ++j, ++k, ++p, ++pup) {
-				dst_tilted[p] = src_d[k] + dst_tilted[pup];
+				dt[p] = src_d[k] + dt[pup];
 			}
 		}
 		// diagonal
 		p = (w1 + w0), pup = w0;
 		for (int i = 0; i < h0; ++i, p += w1, pup += w1) {
-			dst_tilted[p] += dst_tilted[pup];
+			dt[p] += dt[pup];
 		}
 		
 		for (int j = w0 - 1; j > 0; --j) {
 			p = j + h0 * w1, pup = p - w1;
 			for (int i = h0; i > 0; --i, p -= w1, pup -= w1) {
-				dst_tilted[p] += dst_tilted[pup] + dst_tilted[pup+1];
+				dt[p] += dt[pup] + dt[pup+1];
 			}
 		}
 	}

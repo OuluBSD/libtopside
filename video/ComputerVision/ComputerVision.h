@@ -20,6 +20,10 @@
 #include "Transform.h"
 #include "YAPE.h"
 #include "YAPE06.h"
+#include "VideoStabilizer.h"
+#include "GaussMotionFilter.h"
+#include "KeypointMotionEstimator.h"
+#include "OnepassStabilizer.h"
 
 
 #endif

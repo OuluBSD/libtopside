@@ -251,5 +251,14 @@ bool LoadCascadeJs(String path, String dst_title, String dst_dir) {
 	return true;
 }
 
+void LoadCascadeBbfFace(Cascade& c) {TODO}
+void LoadCascadeEye(ComplexCascade& c) {TODO}
+void LoadCascadeFrontalFace(ComplexCascade& c) {TODO}
+void LoadCascadeHandFist(ComplexCascade& c) {TODO}
+void LoadCascadeHandOpen(ComplexCascade& c) {TODO}
+void LoadCascadeMouth(ComplexCascade& c) {TODO}
+void LoadCascadeProfileFace(ComplexCascade& c) {TODO}
+void LoadCascadeUpperBody(ComplexCascade& c) {TODO}
+
 
 NAMESPACE_TOPSIDE_END

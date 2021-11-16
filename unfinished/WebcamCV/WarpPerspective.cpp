@@ -13,6 +13,9 @@ WarpPerspectiveBase::WarpPerspectiveBase() {
 }
 
 void WarpPerspectiveBase::Process() {
+	auto& img_u8 = tmp0;
+	auto& img_u8_warp = tmp1;
+	
     Grayscale(input, sz.cx, sz.cy, img_u8);
     
     warp_perspective(img_u8, img_u8_warp, transform, 0);

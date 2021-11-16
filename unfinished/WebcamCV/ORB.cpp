@@ -343,21 +343,20 @@ int OrbBase::match_pattern() {
 }
 
 // project/transform rectangle corners with 3x3 Matrix
-Vector<Point> OrbBase::tCorners(const Vector<float>& M, int w, int h) {
-    Vector<Point> pt;
-    pt << Point(0,0) << Point(w,0) << Point(w,h) << Point(0,h);
+void OrbBase::tCorners(const Vector<float>& M, int w, int h) {
+	corners.SetCount(0);
+	corners.Reserve(4);
+    corners << keypoint_t(0,0) << keypoint_t(w,0) << keypoint_t(w,h) << keypoint_t(0,h);
     double z=0.0;
     double px=0.0, py=0.0;
 
-    for (Point& p : pt) {
+    for (keypoint_t& p : corners) {
         px = M[0]*p.x + M[1]*p.y + M[2];
         py = M[3]*p.x + M[4]*p.y + M[5];
         z = M[6]*p.x + M[7]*p.y + M[8];
         p.x = px/z;
         p.y = py/z;
     }
-
-    return pt;
 }
 
 /*function render_matches(matches, count) {

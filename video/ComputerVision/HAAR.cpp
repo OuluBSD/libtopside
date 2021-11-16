@@ -5,8 +5,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-const Vector<BBox>& haar::detect_single_scale(const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, const Vector<int>& int_canny_sum, int width, int height, double scale, const ComplexCascade& classifier) {
-	rects.SetCount(0);
+void haar::detect_single_scale(Vector<BBox>& rects,const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, double scale, const ComplexCascade& classifier) {
+	// don't clear here: rects.SetCount(0);
 	
 	double win_w = (classifier.size[0] * scale);
 	double win_h = (classifier.size[1] * scale);
@@ -44,11 +44,12 @@ const Vector<BBox>& haar::detect_single_scale(const Vector<int>& int_sum, const 
 							  + int_sum[ad];
 			                  
 			// canny prune
-			if (!int_canny_sum.IsEmpty()) {
-				double edge_dens =   (int_canny_sum[a]
-									- int_canny_sum[ab]
-									- int_canny_sum[ac]
-									+ int_canny_sum[ad]);
+			if (int_canny_sum) {
+				auto& ic = *int_canny_sum;
+				double edge_dens =   (ic[a]
+									- ic[ab]
+									- ic[ac]
+									+ ic[ad]);
 				if (edge_dens < edges_thresh || mean < 20) {
 					x += step_x;
 					ii_a += step_x;
@@ -128,20 +129,21 @@ const Vector<BBox>& haar::detect_single_scale(const Vector<int>& int_sum, const 
 			}
 		}
 	}
-	return rects;
+	
 }
 
-const Vector<BBox>& haar::detect_multi_scale(const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, const Vector<int>& int_canny_sum, int width, int height, const ComplexCascade& classifier, double scale_factor, double scale_min) {
+void haar::detect_multi_scale(Vector<BBox>& rects, const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, const ComplexCascade& classifier, double scale_factor, double scale_min) {
 	rects.SetCount(0);
 	
 	int win_w = classifier.size[0];
 	int win_h = classifier.size[1];
 	
 	while (scale_min * win_w < width && scale_min * win_h < height) {
-		rects.Append(detect_single_scale(int_sum, int_sqsum, int_tilted, int_canny_sum, width, height, scale_min, classifier));
+		detect_single_scale(rects, int_sum, int_sqsum, int_tilted, int_canny_sum, width, height, scale_min, classifier);
+		
 		scale_min *= scale_factor;
 	}
-	return rects;
+	
 }
 
 NAMESPACE_TOPSIDE_END

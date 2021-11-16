@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 BrightnessBinaryFeature::BrightnessBinaryFeature() {
-	img_pyr.SetSize(0, 0, 0, 1);
+	
 }
 // make features local copy
 // to avoid array allocation with each scale
@@ -21,7 +21,7 @@ void BrightnessBinaryFeature::prepare_cascade(Cascade& cascade) {
 	}
 }
 
-const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::Mat& src, int min_width, int min_height, int interval) {
+const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8::Mat& src, int min_width, int min_height, int interval) {
 	int sw = src.cols;
 	int sh = src.rows;
 	int channels = src.channels;
@@ -94,7 +94,7 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(const pyra8::Mat& src, int m
 	return img_pyr;
 }
 
-Vector<BBox> BrightnessBinaryFeature::detect(const pyra8& pyramid, Cascade& cascade) {
+void BrightnessBinaryFeature::detect(Vector<BBox>& seq, const pyra8& pyramid, Cascade& cascade) {
 	int interval = this->interval;
 	double scale = this->scale;
 	int next = this->next;
@@ -104,7 +104,6 @@ Vector<BBox> BrightnessBinaryFeature::detect(const pyra8& pyramid, Cascade& casc
 	double scale_x = 1.0, scale_y = 1.0;
 	int dx[] = {0, 1, 0, 1};
 	int dy[] = {0, 0, 1, 1};
-	Vector<BBox> seq;
 	const auto& pyr = pyramid.data;
 	int bpp = 1, bpp2 = 2, bpp4 = 4;
 	
@@ -112,6 +111,8 @@ Vector<BBox> BrightnessBinaryFeature::detect(const pyra8& pyramid, Cascade& casc
 	int u8o[] = {0, 0, 0};
 	int step[] = {0, 0, 0};
 	int paddings[] = {0, 0, 0};
+	
+	seq.SetCount(0);
 	
 	for (int i = 0; i < scale_upto; i++) {
 		int i4 = (i << 2);
@@ -224,7 +225,6 @@ Vector<BBox> BrightnessBinaryFeature::detect(const pyra8& pyramid, Cascade& casc
 		scale_y *= scale;
 	}
 	
-	return seq;
 }
 
 

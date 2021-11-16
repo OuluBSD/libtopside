@@ -177,12 +177,12 @@ class VideoStabilizerBase : public ImageProcBase {
 	var pattern_corners, pattern_preview;
 	var matches, homo3x3, match_mask;
     */
-    
-    
+    onepass_stabilizer stabilizer;
+    Vector<keypoint_t> corners;
     
     void videOK(int videoWidth, int videoHeight);
     void processGL();
-    Vector<Point> tCorners(const Vector<float>& M, int w, int h);
+    void tCorners(const Vector<float>& M, int w, int h);
     
 public:
 	VideoStabilizerBase();
@@ -268,8 +268,8 @@ class OrbBase : public ImageProcBase {
     
     Vector<Vector<keypoint_t>> pattern_corners;
     Vector<matrix_t<byte>> pattern_descriptors;
-    Vector<Point> lev_corners, lev_descr;
-    Vector<Point> pattern_xy, screen_xy;
+    Vector<keypoint_t> lev_corners, lev_descr;
+    Vector<keypoint_t> corners, pattern_xy, screen_xy;
     Vector<match_t> matches;
 	int num_train_levels = 4;
 	Orb o;
@@ -292,7 +292,7 @@ public:
     double ic_angle(const ByteMat& img, int px, int py);
     int find_transform(Vector<match_t>& matches);
     int match_pattern();
-    Vector<Point> tCorners(const Vector<float>& M, int w, int h);
+    void tCorners(const Vector<float>& M, int w, int h);
     
 	void Process() override;
 	
@@ -301,8 +301,13 @@ public:
 class OpticalFlowLKBase : public ImageProcBase {
 	int win_size = 20;
 	int max_iterations = 30;
+	int point_count = 0;
 	double epsilon = 0.01;
 	double min_eigen = 0.001;
+	pyra8 curr_img_pyr, prev_img_pyr;
+	Vector<byte> point_status;
+	Vector<float> curr_xy, prev_xy;
+	optical_flow_lk of;
 	
 public:
 	
@@ -324,8 +329,14 @@ public:
 class BbfFaceBase : public ImageProcBase {
 	static const int max_work_size = 160;
 	
-public:
+	BrightnessBinaryFeature b;
+	pyra8 pyr;
+	Vector<BBox> rects, result_seq;
+	Cascade cascade;
 	
+public:
+	BbfFaceBase();
+	void SetSize(Size sz);
 	void draw_faces(Vector<BBox>& rects, double sc, bool max);
 	
 	void Process() override;
@@ -339,13 +350,18 @@ class HaarFaceBase : public ImageProcBase {
 	double scale_factor = 1.15;
 	bool use_canny = false;
 	double edges_density = 0.13;
-	bool equalize_histogram = true;
-	
+	bool is_equalize_histogram = true;
+	Vector<int> ii_sum;
+	Vector<int> ii_sqsum;
+	Vector<int> ii_tilted;
+	Vector<int> ii_canny;
+	Vector<BBox> rects, result_seq;
 	ComplexCascade classifier;
+	haar h;
 	
 public:
 	HaarFaceBase();
-	
+	void SetSize(Size sz);
 	void draw_faces(Vector<BBox>& rects, double sc, bool max);
 	
 	void Process() override;

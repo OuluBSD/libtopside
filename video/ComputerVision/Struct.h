@@ -48,7 +48,7 @@ struct BBox : Moveable<BBox> {
 
 
 bool _group_func(const BBox& r1, const BBox& r2);
-Vector<BBox> group_rectangles(const Vector<BBox>& rects, int min_neighbors = 1);
+void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors = 1);
 	
 
 
@@ -84,6 +84,7 @@ public:
 	
 	keypoint_t() {}
 	keypoint_t(const keypoint_t& s) {*this = s;}
+	keypoint_t(int x, int y) : x(x), y(y) {}
 	keypoint_t(int x, int y, int score, int level, double angle) {
 		this->x = x;
 		this->y = y;

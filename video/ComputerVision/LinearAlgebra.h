@@ -15,25 +15,26 @@ void Swap(Vector<T>& A, int i0, int i1, T& t) {
 double hypot(double a, double b);
 
 template <class T>
-void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, double vstep, int n) {
-	Cache& cache = Cache::Local();
+void JacobiImpl(Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, int vstep, int n) {
 	double eps = EPSILON;
-	//var i = 0, j = 0, k = 0, m = 0, l = 0, idx = 0, _in = 0, _in2 = 0;
+	int i = 0, j = 0, k = 0, m = 0, l = 0, idx = 0, _in = 0, _in2 = 0;
 	int max_iter = n * n * 30;
-	double mv = 0.0, val = 0.0, p = 0.0, y = 0.0, t = 0.0, s = 0.0, c = 0.0, a0 = 0.0, b0 = 0.0;
+	T mv = 0, val = 0, p = 0, y = 0, t = 0, s = 0, c = 0, a0 = 0, b0 = 0;
 	
-	_pool_node_t* indR_buff = cache.get_ buffer(n << 2);
-	_pool_node_t* indC_buff = cache.get_buffer(n << 2);
-	Vector<int>& indR = indR_buff.i32;
-	Vector<int>& indC = indC_buff.i32;
+	static thread_local Vector<int> indR;
+	static thread_local Vector<int> indC;
+	indR.SetCount(n << 2);
+	indC.SetCount(n << 2);
 	
+	Vector<T>& v = *V;
+		
 	if (V) {
 		for (int i = 0; i < n; i++) {
 			k = i * vstep;
 			for (j = 0; j < n; j++) {
-				V[k + j] = 0.0;
+				(*V)[k + j] = 0.0;
 			}
-			V[k + i] = 1.0;
+			v[k + i] = 1.0;
 		}
 	}
 	
@@ -41,8 +42,8 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 		W[k] = A[(astep + 1)*k];
 		if (k < n - 1) {
 			int m;
-			for (m = k + 1, mv = abs(A[astep*k + m]), i = k + 2; i < n; i++) {
-				val = abs(A[astep*k+i]);
+			for (m = k + 1, mv = Abs(A[astep*k + m]), i = k + 2; i < n; i++) {
+				val = Abs(A[astep*k+i]);
 				if (mv < val)
 					mv = val, m = i;
 			}
@@ -50,8 +51,8 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 		}
 		if (k > 0) {
 			int m;
-			for (m = 0, mv = abs(A[k]), i = 1; i < k; i++) {
-				val = abs(A[astep*i+k]);
+			for (m = 0, mv = Abs(A[k]), i = 1; i < k; i++) {
+				val = Abs(A[astep*i+k]);
 				if (mv < val)
 					mv = val, m = i;
 			}
@@ -63,26 +64,26 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 		for (int iters = 0; iters < max_iter; iters++) {
 			// find index (k,l) of pivot p
 			int k = 0;
-			int mv = abs(A[indR[0]]);
+			int mv = Abs(A[indR[0]]);
 			for (int i = 1; i < n - 1; i++) {
-				val = abs(A[astep*i + indR[i]]);
+				val = Abs(A[astep*i + indR[i]]);
 				if (mv < val)
 					mv = val, k = i;
 			}
 			l = indR[k];
 			for (int i = 1; i < n; i++) {
-				val = abs(A[astep*indC[i] + i]);
+				val = Abs(A[astep*indC[i] + i]);
 				if (mv < val)
 					mv = val, k = indC[i], l = i;
 			}
 			
 			p = A[astep*k + l];
 			
-			if (abs(p) <= eps)
+			if (Abs(p) <= eps)
 				break;
 				
 			y = (W[l] - W[k]) * 0.5;
-			t = abs(y) + hypot(p, y);
+			t = Abs(y) + hypot(p, y);
 			s = hypot(p, t);
 			c = t / s;
 			s = p / s;
@@ -129,10 +130,10 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 				_in = vstep * k;
 				_in2 = vstep * l;
 				for (int i = 0; i < n; i++, _in++, _in2++) {
-					a0 = V[_in];
-					b0 = V[_in2];
-					V[_in] = a0 * c - b0 * s;
-					V[_in2] = a0 * s + b0 * c;
+					a0 = v[_in];
+					b0 = v[_in2];
+					v[_in] = a0 * c - b0 * s;
+					v[_in2] = a0 * s + b0 * c;
 				}
 			}
 			
@@ -140,9 +141,9 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 				idx = j == 0 ? k : l;
 				if (idx < n - 1) {
 					int m = idx + 1;
-					int mv = abs(A[astep*idx + m]);
+					int mv = Abs(A[astep*idx + m]);
 					for (int i = idx + 2; i < n; i++) {
-						val = abs(A[astep*idx+i]);
+						val = Abs(A[astep*idx+i]);
 						if (mv < val)
 							mv = val, m = i;
 					}
@@ -150,9 +151,9 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 				}
 				if (idx > 0) {
 					int m = 0;
-					int mv = abs(A[idx])
+					int mv = Abs(A[idx]);
 					for (i = 1; i < idx; i++) {
-						val = abs(A[astep*i+idx]);
+						val = Abs(A[astep*i+idx]);
 						if (mv < val)
 							mv = val, m = i;
 					}
@@ -173,15 +174,12 @@ void JacobiImpl(const Vector<T>& A, int astep, Vector<T>& W, Vector<T>* V, doubl
 			Swap(W, m, k, mv);
 			if (V) {
 				for (int i = 0; i < n; i++) {
-					swap(V, vstep*m + i, vstep*k + i, mv);
+					Swap(v, vstep*m + i, vstep*k + i, mv);
 				}
 			}
 		}
 	}
 	
-	
-	cache.put_buffer(indR_buff);
-	cache.put_buffer(indC_buff);
 }
 
 template <class T>
@@ -236,7 +234,7 @@ void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, do
 				for (int k = 2; k < m; k++)
 					p += At[Ai+k] * At[Aj+k];
 					
-				if (abs(p) <= eps*FastSqrt(a*b))
+				if (Abs(p) <= eps*FastSqrt(a*b))
 					continue;
 					
 				p *= 2.0;
@@ -387,7 +385,7 @@ void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, do
 						int b = (int)(j*astep + k);
 						double t = (At[a] - sd * At[b]);
 						At[a] = t;
-						asum += abs(t);
+						asum += Abs(t);
 					}
 					asum = asum ? 1.0 / asum : 0;
 					for (int k = 0; k < m; k++) {
@@ -665,7 +663,7 @@ void svd_invert(const matrix_t<T>& Ai, const matrix_t<T>& A) {
 
 
 
-void eigenVV(const FloatMat& A, const FloatMat* vects=0, const FloatMat* vals=0);
+void eigenVV(const FloatMat& A, FloatMat* vects=0, FloatMat* vals=0);
 
 
 NAMESPACE_TOPSIDE_END

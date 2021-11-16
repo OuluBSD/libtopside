@@ -35,5 +35,13 @@ file
 	YAPE.h,
 	YAPE.cpp,
 	YAPE06.h,
-	YAPE06.cpp;
+	YAPE06.cpp,
+	VideoStabilizer.h,
+	VideoStabilizer.cpp,
+	GaussMotionFilter.h,
+	GaussMotionFilter.cpp,
+	KeypointMotionEstimator.h,
+	KeypointMotionEsimator.cpp,
+	OnepassStabilizer.h,
+	OnepassStabilizer.cpp;
 

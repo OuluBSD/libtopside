@@ -561,7 +561,7 @@ template <class T>
 class matrix_t : Moveable<matrix_t<T>> {
 	
 public:
-	typedef T type;
+	using type = T;
 	Vector<T> data;
 	int cols;
 	int rows;
@@ -646,16 +646,16 @@ struct Pyramid : Moveable<Pyramid<T>> {
 			return;
 		int i = 2;
 		const Mat* a = &input;
-		Mat* b = data[0];
+		Mat* b = &data[0];
         if (!skip_first_level) {
             *b = *a;
         }
         b = &data[1];
-        Downsample(*a, *b);
+        DownsamplePyramid(*a, *b);
         for(; i < data.GetCount(); ++i) {
             a = b;
-            b = data[i];
-            Downsample(*a, *b);
+            b = &data[i];
+            DownsamplePyramid(*a, *b);
         }
 	}
 	

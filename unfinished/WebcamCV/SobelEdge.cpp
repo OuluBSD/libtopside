@@ -5,10 +5,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void SobelEdgeBase::Process() {
+	auto& img_u8 = tmp1;
 
-    Grayscale(input, sz.cx, sz.cy, img_u8);
+    Grayscale(input, sz.cx, sz.cy, tmp0);
     
-    gaussian_blur(img_u8, img_u8, 3);
+    gaussian_blur(tmp0, img_u8, 3);
     
     sobel_derivatives(img_u8, img_gxgy);
     

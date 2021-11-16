@@ -362,7 +362,7 @@ void qsort(Vector<T>& array, int low, int high, bool (*cmp)(const T*, const T*))
 }
 
 template <class T>
-int median(Vector<T>& array, T low, T high) {
+T median(Vector<T>& array, int low, int high) {
 	T w;
 	T middle = 0, ll = 0, hh = 0, median = (low + high) >> 1;
 	for (;;) {

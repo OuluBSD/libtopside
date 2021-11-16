@@ -3,6 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 void SobelBase::Process() {
+	auto& img_u8 = tmp0;
+	
     Grayscale(input, sz.cx, sz.cy, img_u8);
     
     sobel_derivatives(img_u8, img_gxgy);

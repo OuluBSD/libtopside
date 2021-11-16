@@ -149,7 +149,7 @@ void multiply_AtA(matrix_t<T>& C, const matrix_t<T>& A) {
 		for (int j = i; j < ncols; pC++, p_CC += ncols, j++) {
 			int pA = p_A;
 			int pB = j;
-			doublesum = 0.0;
+			double sum = 0.0;
 			for (int k = 0; k < nrows; pA += ncols, pB += ncols, k++) {
 				sum += ad[pA] * ad[pB];
 			}
@@ -212,6 +212,7 @@ void multiply_3x3(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 	auto& Cd = C.data;
 	auto& Ad = A.data;
 	auto& Bd = B.data;
+	
 	double m1_0 = Ad[0], m1_1 = Ad[1], m1_2 = Ad[2];
 	double m1_3 = Ad[3], m1_4 = Ad[4], m1_5 = Ad[5];
 	double m1_6 = Ad[6], m1_7 = Ad[7], m1_8 = Ad[8];
@@ -243,9 +244,9 @@ double mat3x3_determinant(const matrix_t<T>& M) {
 }
 
 template <class T>
-double determinant_3x3(	const matrix_t<T>& M11, const matrix_t<T>& M12, const matrix_t<T>& M13,
-						const matrix_t<T>& M21, const matrix_t<T>& M22, const matrix_t<T>& M23,
-						const matrix_t<T>& M31, const matrix_t<T>& M32, const matrix_t<T>& M33) {
+double determinant_3x3(	T M11, T M12, T M13,
+						T M21, T M22, T M23,
+						T M31, T M32, T M33) {
 	return  M11 * M22 * M33 - M11 * M23 * M32 -
 			M21 * M12 * M33 + M21 * M13 * M32 +
 			M31 * M12 * M23 - M31 * M13 * M22;
