@@ -7,7 +7,7 @@ NAMESPACE_TOPSIDE_BEGIN
 void SobelEdgeBase::Process() {
 	auto& img_u8 = tmp1;
 
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     gaussian_blur(tmp0, img_u8, 3);
     
@@ -16,10 +16,12 @@ void SobelEdgeBase::Process() {
     int i = img_u8.cols*img_u8.rows, gx = 0, gy = 0;
     int x=0,y=0,dx=0,dy=0;
     int agx=0, agy=0;
+    
     auto& gd=img_gxgy.data;
     auto& mag=img_mag.data;
     auto& id=img_u8.data;
-
+	img_mag.SetSize(img_u8.cols, img_u8.rows, 1);
+	
     while(--i >= 0) {
         gx = gd[i<<1];
         gy = gd[(i<<1)+1];

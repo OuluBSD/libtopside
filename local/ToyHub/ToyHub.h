@@ -1,7 +1,7 @@
 #ifndef _ToyHub_ToyHub_h_
 #define _ToyHub_ToyHub_h_
 
-#ifndef UPP_VERSION
+#ifdef LIBTOPSIDE
 	#error ToyHub requires Skylark currently, which depends on U++ Core.
 #endif
 

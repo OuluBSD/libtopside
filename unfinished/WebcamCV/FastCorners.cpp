@@ -16,7 +16,7 @@ void FastCornersBase::SetSize(Size sz) {
 }
 
 void FastCornersBase::Process() {
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     c.set_threshold(threshold);
     

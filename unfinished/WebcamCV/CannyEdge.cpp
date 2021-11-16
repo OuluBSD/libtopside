@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void CannyEdgeBase::Process() {
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     int r = blur_radius;
     int kernel_size = (r+1) << 1;

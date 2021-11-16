@@ -5,7 +5,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 BbfFaceBase::BbfFaceBase() {
-	LoadCascadeBbfFace(cascade);
 	
 }
 
@@ -22,12 +21,13 @@ void BbfFaceBase::SetSize(Size sz) {
     
     b.prepare_cascade(cascade);
     
+	LoadCascadeBbfFace(cascade);
 }
 
 void BbfFaceBase::Process() {
 	auto& img_u8 = tmp0;
 	
-    Grayscale(input, sz.cx, sz.cy, img_u8);
+    Grayscale(input, img_u8);
 
     // possible options
     //equalize_histogram(img_u8, img_u8);

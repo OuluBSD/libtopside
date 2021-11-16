@@ -34,7 +34,7 @@ void FloatImage::FlipVert() {
 
 void FloatImage::Set(const Image& img) {
 	Size sz = img.GetSize();
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 	Set(sz.cx, sz.cy, img.GetStride(), img.GetPitch(), img.Begin());
 	#else
 	Set(sz.cx, sz.cy, 4, sz.cx, (const byte*)img.Begin());
@@ -91,7 +91,7 @@ void ByteImage::FlipVert() {
 
 void ByteImage::Set(const Image& img) {
 	Size sz = img.GetSize();
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 	Set(sz.cx, sz.cy, img.GetStride(), img.GetPitch(), img.Begin());
 	#else
 	Set(sz.cx, sz.cy, 4, sz.cx, (const byte*)img.Begin());

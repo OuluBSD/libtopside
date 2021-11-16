@@ -42,8 +42,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <Core/config.h>
+
 #ifndef _ZLIB_H
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 		#include <ports/zlib/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else

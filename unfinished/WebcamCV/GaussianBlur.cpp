@@ -3,10 +3,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 void GaussianBlurBase::Process() {
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     int r = radius;
-    int kernel_size = (r+1) << 1;
+    int kernel_size = r * 2 + 1;
     
     gaussian_blur<byte,int>(tmp0, tmp1, kernel_size, sigma);
     
@@ -14,4 +14,3 @@ void GaussianBlurBase::Process() {
 }
    
 NAMESPACE_TOPSIDE_END
-

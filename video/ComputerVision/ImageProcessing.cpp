@@ -223,7 +223,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	
 	int sum = 0, srcIndex = 0, nextPixelIndex = 0, previousPixelIndex = 0;
 	static thread_local Vector<int> data_i32;
-	auto& data_u8 = src.data;
+	auto& src_data = src.data;
 	int hold = 0;
 	
 	data_i32.SetCount((w * h) << 2);
@@ -232,49 +232,49 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	
 	// first pass
 	// no need to scale
-	//data_u8 = src.data;
+	//src_data = src.data;
 	//data_i32 = tmp;
 	for (int y = 0; y < h; ++y) {
 		int dstIndex = y;
-		int sum = radiusPlusOne * data_u8[srcIndex];
+		int sum = radiusPlusOne * src_data[srcIndex];
 		
 		for (int i = (srcIndex + 1), end = (srcIndex + radius); i <= end; ++i) {
-			sum += data_u8[i];
+			sum += src_data[i];
 		}
 		
 		nextPixelIndex = (srcIndex + radiusPlusOne);
 		previousPixelIndex = srcIndex;
-		hold = data_u8[previousPixelIndex];
+		hold = src_data[previousPixelIndex];
 		
 		int x;
 		for (x = 0; x < radius; ++x, dstIndex += h) {
 			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - hold;
+			sum += src_data[nextPixelIndex] - hold;
 			nextPixelIndex ++;
 		}
 		for (; x < w - radiusPlus2; x += 2, dstIndex += h2) {
 			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
+			sum += src_data[nextPixelIndex] - src_data[previousPixelIndex];
 			
 			data_i32[dstIndex+h] = sum;
-			sum += data_u8[nextPixelIndex+1] - data_u8[previousPixelIndex+1];
+			sum += src_data[nextPixelIndex+1] - src_data[previousPixelIndex+1];
 			
 			nextPixelIndex += 2;
 			previousPixelIndex += 2;
 		}
 		for (; x < w - radiusPlusOne; ++x, dstIndex += h) {
 			data_i32[dstIndex] = sum;
-			sum += data_u8[nextPixelIndex] - data_u8[previousPixelIndex];
+			sum += src_data[nextPixelIndex] - src_data[previousPixelIndex];
 			
 			nextPixelIndex ++;
 			previousPixelIndex ++;
 		}
 		
-		hold = data_u8[nextPixelIndex-1];
+		hold = src_data[nextPixelIndex-1];
 		for (; x < w; ++x, dstIndex += h) {
 			data_i32[dstIndex] = sum;
 			
-			sum += hold - data_u8[previousPixelIndex];
+			sum += hold - src_data[previousPixelIndex];
 			previousPixelIndex ++;
 		}
 		
@@ -284,7 +284,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	// second pass
 	srcIndex = 0;
 	//data_i32 = tmp; // this is a transpose
-	data_u8 <<= dst.data;
+	auto& dst_data = dst.data;
 	
 	// dont scale result
 	if (scale == 1) {
@@ -302,22 +302,22 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 			
 			int x;
 			for (x = 0; x < radius; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
+				dst_data[dstIndex] = sum;
 				sum += data_i32[nextPixelIndex] - hold;
 				nextPixelIndex ++;
 			}
 			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
-				data_u8[dstIndex] = sum;
+				dst_data[dstIndex] = sum;
 				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
 				
-				data_u8[dstIndex+w] = sum;
+				dst_data[dstIndex+w] = sum;
 				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
 				
 				nextPixelIndex += 2;
 				previousPixelIndex += 2;
 			}
 			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
+				dst_data[dstIndex] = sum;
 				
 				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
 				nextPixelIndex ++;
@@ -325,7 +325,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 			}
 			hold = data_i32[nextPixelIndex-1];
 			for (; x < h; ++x, dstIndex += w) {
-				data_u8[dstIndex] = sum;
+				dst_data[dstIndex] = sum;
 				
 				sum += hold - data_i32[previousPixelIndex];
 				previousPixelIndex ++;
@@ -349,22 +349,22 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 			
 			int x;
 			for (x = 0; x < radius; ++x, dstIndex += w) {
-				data_u8[dstIndex] = (byte)(sum * scale);
+				dst_data[dstIndex] = (byte)(sum * scale);
 				sum += data_i32[nextPixelIndex] - hold;
 				nextPixelIndex ++;
 			}
 			for (; x < h - radiusPlus2; x += 2, dstIndex += w2) {
-				data_u8[dstIndex] = (byte)(sum * scale);
+				dst_data[dstIndex] = (byte)(sum * scale);
 				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
 				
-				data_u8[dstIndex+w] = (byte)(sum * scale);
+				dst_data[dstIndex+w] = (byte)(sum * scale);
 				sum += data_i32[nextPixelIndex+1] - data_i32[previousPixelIndex+1];
 				
 				nextPixelIndex += 2;
 				previousPixelIndex += 2;
 			}
 			for (; x < h - radiusPlusOne; ++x, dstIndex += w) {
-				data_u8[dstIndex] = (byte)(sum * scale);
+				dst_data[dstIndex] = (byte)(sum * scale);
 				
 				sum += data_i32[nextPixelIndex] - data_i32[previousPixelIndex];
 				nextPixelIndex ++;
@@ -372,7 +372,7 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 			}
 			hold = data_i32[nextPixelIndex-1];
 			for (; x < h; ++x, dstIndex += w) {
-				data_u8[dstIndex] = (byte)(sum * scale);
+				dst_data[dstIndex] = (byte)(sum * scale);
 				
 				sum += hold - data_i32[previousPixelIndex];
 				previousPixelIndex ++;
@@ -384,36 +384,36 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 }
 
 
-// TODO: add support for RGB/BGR order
-// for raw arrays
-void Grayscale(const ByteMat& src_, int w, int h, ByteMat& dst, int code) {
-	int coeff_r = 4899, coeff_g = 9617, coeff_b = 1868, cn = 4;
-	
-	if (code == COLOR_BGRA2GRAY || code == COLOR_BGR2GRAY) {
-		coeff_r = 1868;
-		coeff_b = 4899;
-	}
-	if (code == COLOR_RGB2GRAY || code == COLOR_BGR2GRAY) {
-		cn = 3;
-	}
-	int cn2 = cn << 1;
-	int cn3 = cn * 3;
-	
+void Grayscale(const ByteMat& src, ByteMat& dst) {
+	int w = src.cols;
+	int h = src.rows;
 	dst.SetSize(w, h, 1);
-	byte* dst_u8 = dst.data.Begin();
-	const byte* src = src_.data.Begin();
-	ASSERT(src_.data.GetCount() == w * h * cn);
 	
-	for (int y = 0, i = 0, j = 0; y < h; ++y, j += w, i += w * cn) {
-		int x = 0, ir = i, jr = j;
-		for (; x <= w - 4; x += 4, ir += cn << 2, jr += 4) {
-			dst_u8[jr]     = (src[ir] * coeff_r + src[ir+1] * coeff_g + src[ir+2] * coeff_b + 8192) >> 14;
-			dst_u8[jr + 1] = (src[ir+cn] * coeff_r + src[ir+cn+1] * coeff_g + src[ir+cn+2] * coeff_b + 8192) >> 14;
-			dst_u8[jr + 2] = (src[ir+cn2] * coeff_r + src[ir+cn2+1] * coeff_g + src[ir+cn2+2] * coeff_b + 8192) >> 14;
-			dst_u8[jr + 3] = (src[ir+cn3] * coeff_r + src[ir+cn3+1] * coeff_g + src[ir+cn3+2] * coeff_b + 8192) >> 14;
+	const byte* from = src.data.Begin();
+	byte* to = dst.data.Begin();
+	byte* end = dst.data.End();
+	int cn = min(src.channels, 3);
+	int step = src.channels;
+	double mul = 1.0 / cn;
+	
+	if (cn == 3) {
+		while (to != end) {
+			int av = 0;
+			for(int i = 0; i < 3; i++)
+				av += from[i];
+			av *= mul;
+			*to++ = (byte)av;
+			from += step;
 		}
-		for (; x < w; ++x, ++jr, ir += cn) {
-			dst_u8[jr] = (src[ir] * coeff_r + src[ir+1] * coeff_g + src[ir+2] * coeff_b + 8192) >> 14;
+	}
+	else {
+		while (to != end) {
+			int av = 0;
+			for(int i = 0; i < cn; i++)
+				av += from[i];
+			av *= mul;
+			*to++ = (byte)av;
+			from += step;
 		}
 	}
 }

@@ -59,7 +59,7 @@ public:
 		// if (r) r->Inc(); // NO! assume already referenced:
 		ASSERT(r->GetRefCount() > 0);
 	}
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 	Shared(const Pick<Shared>& pick) {Swap(pick.Get(), *this);}
 	#endif
 	~Shared() { Clear(); }
@@ -143,7 +143,7 @@ public:
 	void SetDeleted() override {r = NULL;}
 	void Clear() {if (r) r->DecWeak(this); r = NULL; o = NULL;}
 	void operator=(const Shared<T>& s) { Clear(); r = s.r; o = s.o; if (r) r->IncWeak(this);}
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 	void operator=(Pick<Weak<T>>& p) { Clear(); r = p.Get().r; o = p.Get().o; if (r) r->IncWeak(this);}
 	#endif
 	void operator=(const Weak<T>& p) { Clear(); r = p.r; o = p.o; if (r) r->IncWeak(this);}

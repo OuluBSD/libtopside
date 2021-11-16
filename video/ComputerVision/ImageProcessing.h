@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void Grayscale(const ByteMat& src, int w, int h, ByteMat& dst, int code = COLOR_RGBA2GRAY);
+void Grayscale(const ByteMat& src, ByteMat& dst);
 
 
 void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
@@ -14,11 +14,11 @@ void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
 
 
 template <class T,class Temp>
-void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
+void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, fk = 0;
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
 	
-	int f0 = filter[0];
+	double f0 = filter[0];
 	
 	// hor pass
 	for (int i = 0, dp = 0, sp = 0; i < h; ++i) {
@@ -51,23 +51,23 @@ void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int
 				int sum3 = buf[j+3] * f0;
 				
 				for (int k = 1; k < kernel_size; ++k) {
-					int fk = filter[k];
+					double fk = filter[k];
 					sum  += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
 					sum3 += buf[k + j+3] * fk;
 				}
-				dst_d[dp+j]   = min(sum >> 8, 255);
-				dst_d[dp+j+1] = min(sum1 >> 8, 255);
-				dst_d[dp+j+2] = min(sum2 >> 8, 255);
-				dst_d[dp+j+3] = min(sum3 >> 8, 255);
+				dst_d[dp+j]   = min(sum,  255);
+				dst_d[dp+j+1] = min(sum1, 255);
+				dst_d[dp+j+2] = min(sum2, 255);
+				dst_d[dp+j+3] = min(sum3, 255);
 			}
 			for (; j < w; ++j) {
 				int sum = buf[j] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
-				dst_d[dp+j] = min(sum >> 8, 255);
+				dst_d[dp+j] = min(sum, 255);
 			}
 		}
 		
@@ -106,23 +106,23 @@ void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int
 				int sum2 = buf[j+2] * f0;
 				int sum3 = buf[j+3] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
-					int fk = filter[k];
+					double fk = filter[k];
 					sum += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
 					sum3 += buf[k + j+3] * fk;
 				}
-				dst_d[dp] = min(sum >> 8, 255);
-				dst_d[dp+w] = min(sum1 >> 8, 255);
-				dst_d[dp+w2] = min(sum2 >> 8, 255);
-				dst_d[dp+w3] = min(sum3 >> 8, 255);
+				dst_d[dp] = min(sum, 255);
+				dst_d[dp+w] = min(sum1, 255);
+				dst_d[dp+w2] = min(sum2, 255);
+				dst_d[dp+w3] = min(sum3, 255);
 			}
 			for (; j < h; ++j, dp += w) {
 				sum = buf[j] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
 					sum += buf[k + j] * filter[k];
 				}
-				dst_d[dp] = min(sum >> 8, 255);
+				dst_d[dp] = min(sum, 255);
 			}
 		}
 	}
@@ -130,11 +130,11 @@ void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int
 
 
 template <class T,class Temp>
-void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<int>& filter, int kernel_size, int half_kernel) {
+void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
 	//var i = 0, j = 0, k = 0, sp = 0, dp = 0
 	//double sum = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0, f0 = filter[0], fk = 0.0;
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
-	int f0 = filter[0];
+	double f0 = filter[0];
 	
 	// hor pass
 	for (int i = 0, sp = 0, dp = 0; i < h; ++i) {
@@ -165,7 +165,7 @@ void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w,
 				int sum2 = buf[j+2] * f0;
 				int sum3 = buf[j+3] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
-					int fk = filter[k];
+					double fk = filter[k];
 					sum  += buf[k + j]   * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
@@ -218,7 +218,7 @@ void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w,
 				int sum2 = buf[j+2] * f0;
 				int sum3 = buf[j+3] * f0;
 				for (int k = 1; k < kernel_size; ++k) {
-					int fk = filter[k];
+					double fk = filter[k];
 					sum += buf[k + j] * fk;
 					sum1 += buf[k + j+1] * fk;
 					sum2 += buf[k + j+2] * fk;
@@ -263,10 +263,10 @@ void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0
 	
 	int buf_sz = (kernel_size + max(h, w));
 	Vector<Temp> buf;
-	Vector<Temp> filter;
+	Vector<double> filter;
 	
 	buf.SetCount(buf_sz << 2);
-	buf.SetCount(kernel_size << 2);
+	filter.SetCount(kernel_size);
 	
 	get_gaussian_kernel(kernel_size, sigma, filter);
 	
@@ -369,7 +369,9 @@ void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 	//int a, b, c, d, e, f;
 	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
 	thread_local static Vector<T> trow0, trow1;
-	
+	trow0.SetCount((w + 2) << 2);
+	trow1.SetCount((w + 2) << 2);
+
 	dst.SetSize(w, h, 2); // 2 channel output gx, gy
 	
 	const auto& img = src.data;
@@ -670,14 +672,13 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 	static thread_local Vector<int> buf;
 	static thread_local Vector<int> map;
 	static thread_local Vector<int> stack;
-	static thread_local Vector<int> dxdy;
 	
-	buf.SetCount((h * w2) << 2);
-	map.SetCount((3 * (w + 2)) << 2);
-	stack.SetCount(((h + 2) * (w + 2)) << 2);
-	dxdy.SetCount((h * w) << 2);
+	buf.SetCount((3 * (w + 2)) << 2);
+	map.SetCount(((h + 2) * (w + 2)) << 2);
+	stack.SetCount((h * w) << 2);
 	
-	matrix_t<T> dxdy_m(w, h, 2);
+	matrix_t<int> dxdy_m(w, h, 2);
+	auto& dxdy = dxdy_m.data;
 	int row0 = 1;
 	int row1 = (w + 2 + 1);
 	int row2 = (2 * (w + 2) + 1);
@@ -693,13 +694,8 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 		high_thresh = i;
 	}
 	
-	for (int i = (3 * (w + 2)); --i >= 0;) {
-		buf[i] = 0;
-	}
-	
-	for (int i = ((h + 2) * (w + 2)); --i >= 0;) {
-		map[i] = 0;
-	}
+	memset(buf.Begin(), 0, buf.GetCount() * sizeof(int));
+	memset(map.Begin(), 0, map.GetCount() * sizeof(int));
 	
 	for (int j = 0; j < w; ++j, grad += 2) {
 		//buf[row1+j] = abs(dxdy[grad]) + abs(dxdy[grad+1]);
@@ -719,7 +715,8 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 				//buf[row2+j] =  abs(dxdy[grad+(j<<1)]) + abs(dxdy[grad+(j<<1)+1]);
 				x = dxdy[grad+(j<<1)], y = dxdy[grad+(j<<1)+1];
 				//buf[row2+j] = x*x + y*y;
-				buf[row2+j] = ((x ^(x >> 31)) - (x >> 31)) + ((y ^(y >> 31)) - (y >> 31));
+				uint32 u = ((x ^(x >> 31)) - (x >> 31)) + ((y ^(y >> 31)) - (y >> 31));
+				buf[row2+j] = u;
 			}
 		}
 		_grad = (grad - w2);

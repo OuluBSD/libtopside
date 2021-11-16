@@ -128,7 +128,7 @@ void OrbBase::Process() {
 	auto& img_u8_smooth = tmp1;
 	auto& pattern_preview = tmp2;
 	
-    Grayscale(input, sz.cx, sz.cy, img_u8);
+    Grayscale(input, img_u8);
     
     gaussian_blur(img_u8, img_u8_smooth, blur_size);
 

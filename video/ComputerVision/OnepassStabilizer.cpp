@@ -227,7 +227,7 @@ void onepass_stabilizer::setup(const ByteMat& rgbaImageData) {
     for (auto& m : stabilizedFrames) m.SetSize(w, h, 1);
 
     static thread_local ByteMat gray;
-    Grayscale(rgbaImageData, w, h, gray);
+    Grayscale(rgbaImageData, gray);
 
     for (i = -radius; i < 0; ++i) {
 		j = get_ring_ind(i, cache_size);
@@ -299,7 +299,8 @@ bool onepass_stabilizer::do_one_iteration(const ByteMat* frame_rgba) {
         if (curPos > 0) {
 
             ByteMat& gray_frame = get_at(curPos, frameBufferSize, frames);
-            Grayscale(*frame_rgba, gray_frame.cols, gray_frame.rows, gray_frame);
+            ASSERT(frame_rgba->cols == gray_frame.cols && frame_rgba->rows == gray_frame.rows);
+            Grayscale(*frame_rgba, gray_frame);
 
             rgba[get_ring_ind(curPos, frameBufferSize)] = *frame_rgba;
 

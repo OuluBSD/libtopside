@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void GrayscaleBase::Process() {
-	Grayscale(input, sz.cx, sz.cy, tmp0, COLOR_RGBA2GRAY);
+	Grayscale(input, tmp0);
 	OutputFromGray(tmp0);
 }
 

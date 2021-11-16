@@ -20,7 +20,7 @@ void OpticalFlowLKBase::Process() {
     MemSwap(prev_xy, curr_xy);
     MemSwap(prev_img_pyr, curr_img_pyr);
 
-    Grayscale(input, sz.cx, sz.cy, curr_img_pyr.data[0]);
+    Grayscale(input, curr_img_pyr.data[0]);
     
     curr_img_pyr.Build(curr_img_pyr.data[0], true);
     

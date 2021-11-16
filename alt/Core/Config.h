@@ -1,6 +1,7 @@
 #ifndef _CoreAlt_config_h_
 #define _CoreAlt_config_h_
 
+#define LIBTOPSIDE 1
 
 #if __MINGW32__
 	#define HAVE_MINGW 1

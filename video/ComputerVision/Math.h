@@ -56,7 +56,7 @@ void get_gaussian_kernel(int size, double sigma, Vector<T>& kernel) {
 		// classic kernel
 		sum = 1.0 / sum;
 		for (int i = 0; i < size; ++i) {
-			kernel[i] = (T)(_kernel[i] * sum);
+			kernel[i] = kernel[i] = (T)(_kernel[i] * sum);
 		}
 	}
 	
@@ -172,6 +172,7 @@ void perspective_4point_transform(
 	double t49 = t28 * t15;
 	double t50 = t41 * t15;
 	
+	model.SetSize(3,3,1);
 	auto& mat = model.data;
 	mat[0] = Hl0 * t48 + Hl1 * (t18 * t15) - Hl2 * (t23 * t15);
 	mat[1] = Hl0 * t49 + Hl1 * (t31 * t15) - Hl2 * (t35 * t15);

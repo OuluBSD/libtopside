@@ -17,7 +17,7 @@ void YapeBase::SetSize(Size sz) {
 }
 
 void YapeBase::Process() {
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     box_blur_gray(tmp0, tmp1, 2, 0);
     

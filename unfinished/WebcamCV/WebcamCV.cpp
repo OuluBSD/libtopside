@@ -11,6 +11,8 @@ WebcamCV::WebcamCV() {
 	hsplit.Horz() << list << demo_view;
 	hsplit.SetPos(2000);
 	
+	demo_view.Add(rend.SizePos());
+	
 	AddFrame(menu);
 	menu.Set(THISFN(MainBar));
 	
@@ -24,6 +26,8 @@ WebcamCV::WebcamCV() {
 	
 	//vidmgr.Refresh();
 	//PostCallback(THISBACK4(OpenVideoCapture, 0, 0, 0, 0));
+	
+	type = DEMO_GRAYSCALE;
 	
 	tc.Set(-20, THISBACK(Data));
 }
@@ -67,24 +71,61 @@ void WebcamCV::MainBar(Bar& bar) {
 }
 
 void WebcamCV::OpenDemo(int i) {
-	lock.Enter();
-	
-	if (i == DEMO_GRAYSCALE) {
-		
-		
-	}
-	else {
-		LOG("error: couldn't open demo id " << i);
-	}
-	
-	lock.Leave();
+	type = i;
 }
 
 String WebcamCV::GetDemoName(int i) {
 	switch (i) {
 		case DEMO_GRAYSCALE: return "Grayscale";
+		case DEMO_BOXBLUR: return "BoxBlur";
+		case DEMO_GAUSSIANBLUR: return "GaussianBlur";
+		case DEMO_PYRDOWN: return "PyramidDownsample";
+		case DEMO_SCHARR: return "Scharr";
+		case DEMO_SOBEL: return "Sobel";
+		case DEMO_SOBELEDGE: return "SobelEdge";
+		case DEMO_EQHIST: return "EqualizeHistogram";
+		case DEMO_CANNY: return "CannyEdge";
+		case DEMO_WARPAFF: return "WarpAffine";
+		case DEMO_WARPPERS: return "WarpPerspective";
+		case DEMO_VIDSTAB: return "VideoStabilizer";
+		case DEMO_FASTCOR: return "FastCorners";
+		case DEMO_YAPE06: return "Yape06";
+		case DEMO_YAPE: return "Yape";
+		case DEMO_ORB: return "Orb";
+		case DEMO_OPTFLOWLK: return "OpticalFlowLK";
+		case DEMO_BBF: return "Bbf";
+		case DEMO_HAAR: return "Haar";
 	}
 	return "Invalid id";
+}
+
+void WebcamCV::LoadImageSeries(String dir) {
+	new_imgs.Clear();
+	
+	LOG("WebcamCV::LoadImageSeries: loading images from directory: " << dir);
+	
+	for(int i = 0;; i++) {
+		String name = Format("Image %02d.bmp", i);
+		String path = AppendFileName(dir, name);
+		if (!FileExists(path))
+			break;
+		
+		Image img = StreamRaster::LoadFileAny(path);
+		if (img.IsEmpty()) {
+			LOG("WebcamCV::LoadImageSeries: error: could not open file: " << path);
+			break;
+		}
+		
+		new_imgs << img;
+		
+		#ifdef flagDEBUG
+		if (i == 5)
+			break;
+		#endif
+	}
+	
+	LOG("WebcamCV::LoadImageSeries: loaded " << new_imgs.GetCount() << " images");
+	
 }
 
 void WebcamCV::OpenFile() {
@@ -138,12 +179,54 @@ void WebcamCV::Data() {
 	/*if (open_cap)
 		open_cap->Read();*/
 	
-	lock.Enter();
+	if (new_imgs.GetCount())
+		Swap(new_imgs, imgs);
 	
-	if (type == DEMO_GRAYSCALE)
-		TickGrayscale();
 	
-	lock.Leave();
+	switch (type) {
+		case DEMO_GRAYSCALE:	Tick(grayscale); break;
+		case DEMO_BOXBLUR:		Tick(boxblur); break;
+		case DEMO_GAUSSIANBLUR:	Tick(gaussblur); break;
+		case DEMO_PYRDOWN:		Tick(pyrdown); break;
+		case DEMO_SCHARR:		Tick(scharr); break;
+		case DEMO_SOBEL:		Tick(sobel); break;
+		case DEMO_SOBELEDGE:	Tick(sobeledge); break;
+		case DEMO_EQHIST:		Tick(eqhist); break;
+		case DEMO_CANNY:		Tick(canny); break;
+		case DEMO_WARPAFF:		Tick(warpaff); break;
+		case DEMO_WARPPERS:		Tick(warppers); break;
+		case DEMO_VIDSTAB:		Tick(vidstab); break;
+		case DEMO_FASTCOR:		Tick(fastcor); break;
+		case DEMO_YAPE06:		Tick(yape06); break;
+		case DEMO_YAPE:			Tick(yape); break;
+		case DEMO_ORB:			Tick(orb); break;
+		case DEMO_OPTFLOWLK:	Tick(optflowlk); break;
+		case DEMO_BBF:			Tick(bbf); break;
+		case DEMO_HAAR:			Tick(haar); break;
+	};
+	
+	rend.Refresh();
+}
+
+void WebcamCV::Renderer::Paint(Draw& d) {
+	Size sz = GetSize();
+	ImageDraw id(sz);
+	id.DrawRect(sz, Color(227, 227, 227));
+	
+	if (!input.IsEmpty()) {
+		Size in_sz = input.GetSize();
+		double scale = (double)sz.cx * 0.5 / in_sz.cx;
+		Size rend_sz = in_sz * scale;
+		
+		Image in = CachedRescale(input, rend_sz, FILTER_NEAREST);
+		Image out = CachedRescale(output, rend_sz, FILTER_NEAREST);
+		
+		int y = (sz.cy - in_sz.cy) / 2;
+		id.DrawImage(0, y, in);
+		id.DrawImage(sz.cx / 2, y, out);
+	}
+	
+	d.DrawImage(0,0,id);
 }
 
 /*
@@ -161,35 +244,61 @@ VideoOutputFrame& WebcamCV::GetOutputFrame() {
 	return f;
 }*/
 
-void WebcamCV::TickGrayscale() {
-	Tick(grayscale);
-}
 
 Image WebcamCV::NewFrame() {
-	TODO
+	if (imgs.IsEmpty())
+		return Image();
+	
+	if (img_i >= imgs.GetCount())
+		img_i = 0;
+	
+	rend.input = imgs[img_i++];
+	return rend.input;
 }
 
 void WebcamCV::Tick(ImageProcBase& proc) {
 	proc.SetInput(NewFrame());
 	proc.Process();
-	current = proc.GetOutput();
+	rend.output = proc.GetOutput();
 }
 
 void ImageProcBase::OutputFromGray(const ByteMat& gray) {
     output.SetSize(sz.cx, sz.cy, 4);
+    ASSERT(output.data.GetCount() == gray.data.GetCount() * 4);
     byte* it = output.data.Begin();
     for (byte g : gray.data) {
         it[0] = g;
         it[1] = g;
         it[2] = g;
         it[3] = 255;
+        it+=4;
+    }
+}
+
+void ImageProcBase::OutputFromXY(const matrix_t<int>& img_gxgy) {
+    ASSERT(img_gxgy.cols == sz.cx && img_gxgy.rows == sz.cy);
+    output.SetSize(sz.cx, sz.cy, 4);
+    byte* out = output.data.Begin();
+    const int* in = img_gxgy.data.Begin();
+    const int* end = img_gxgy.data.End();
+    
+    while (in != end) {
+        byte gx = abs(in[0] >> 2)&0xff;
+        byte gy = abs(in[1] >> 2)&0xff;
+        byte pix = (((int)gx + (int)gy)>>2)&0xff;
+        out[0] = gy;
+        out[1] = 0;
+        out[2] = gx;
+        out[3] = pix;
+        
+        in += 2;
+        out += 4;
     }
 }
 
 void ImageProcBase::SetInput(Image i) {
 	sz = i.GetSize();
-	ImageBuffer ib(sz);
-	const RGBA* it = ib.Begin();
+	const RGBA* it = i.Begin();
 	int len = sz.cx * sz.cy * 4;
 	input.SetSize(sz.cx, sz.cy, 4);
 	memcpy(input.data.Begin(), it, len);
@@ -216,6 +325,11 @@ GUI_APP_MAIN {
 	
 	SetCoutLog();
 	
+	WebcamCV wc;
 	
-	WebcamCV().Run();
+	const auto& cmds = CommandLine();
+	if (!cmds.IsEmpty())
+		wc.LoadImageSeries(cmds[0]);
+	
+	wc.Run();
 }

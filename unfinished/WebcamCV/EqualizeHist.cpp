@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void EqualizeHistBase::Process() {
-    Grayscale(input, sz.cx, sz.cy, tmp0);
+    Grayscale(input, tmp0);
     
     equalize_histogram(tmp0, tmp1);
     

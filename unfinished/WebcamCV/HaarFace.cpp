@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 HaarFaceBase::HaarFaceBase() {
-	LoadCascadeFrontalFace(classifier);
+	
 }
 
 void HaarFaceBase::SetSize(Size sz) {
@@ -28,13 +28,15 @@ void HaarFaceBase::SetSize(Size sz) {
     ii_tilted.SetCount((w+1)*(h+1));
     ii_canny.SetCount((w+1)*(h+1));
 	
+	LoadCascadeFrontalFace(classifier);
+	
 }
 
 void HaarFaceBase::Process() {
 	auto& img_u8 = tmp0;
 	auto& edg = tmp1;
 	
-    Grayscale(input, sz.cx, sz.cy, img_u8);
+    Grayscale(input, img_u8);
 
     // possible options
     if(is_equalize_histogram) {

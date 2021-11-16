@@ -27,6 +27,7 @@ protected:
 	Size sz;
 	
 	void OutputFromGray(const ByteMat& gray);
+	void OutputFromXY(const matrix_t<int>& img_gxgy);
 	void render_corners(const Vector<keypoint_t>& corners, ByteMat& img);
 public:
 	
@@ -59,7 +60,7 @@ public:
 };
 
 class GaussianBlurBase : public ImageProcBase {
-	int radius = 2;
+	int radius = 3;
 	double sigma = 0;
 	
 public:
@@ -76,7 +77,7 @@ class PyramidDownsampleBase : public ImageProcBase {
 	
 public:
 	
-	void render_mono_image(const Vector<byte>& src, ByteMat& dst, int sw, int sh, int dw);
+	void render_mono_image(const Vector<byte>& src, ByteMat& dst, int sw, int sh, int xoff, int dw);
 	
 	void Process() override;
 	
@@ -370,20 +371,52 @@ public:
 };
 
 class WebcamCV : public TopWindow {
+	
+	struct Renderer : public Ctrl {
+		Image input, output;
+		
+		void Paint(Draw& d) override;
+		
+	};
+	
+	Vector<Image> imgs, new_imgs;
+	int img_i = 0;
+	Renderer rend;
+	
 	Splitter hsplit;
 	ArrayCtrl list;
 	ParentCtrl demo_view;
 	TimeCallback tc;
-	Mutex lock;
 	MenuBar menu;
 	int type = -1;
 	
-	Image current;
+
 	GrayscaleBase grayscale;
+	BoxBlurBase boxblur;
+	GaussianBlurBase gaussblur;
+    PyramidDownsampleBase pyrdown;
+	ScharrBase scharr;
+	SobelBase sobel;
+	SobelEdgeBase sobeledge;
+	EqualizeHistBase eqhist;
+	CannyEdgeBase canny;
+	WarpAffineBase warpaff;
+	WarpPerspectiveBase warppers;
+	VideoStabilizerBase vidstab;
+	FastCornersBase fastcor;
+	Yape06Base yape06;
+	YapeBase yape;
+	OrbBase orb;
+	OpticalFlowLKBase optflowlk;
+	BbfFaceBase bbf;
+	HaarFaceBase haar;
 	
 	Image NewFrame();
 	void Tick(ImageProcBase& proc);
-	void TickGrayscale();
+	void TickGrayscale() {;}
+	void TickBoxBlur() {;}
+	void TickGaussianBlur() {;}
+	void TickPyramidDown() {;}
 	
 	
 	void MainBar(Bar& bar);
@@ -395,6 +428,24 @@ public:
 	
 	enum {
 		DEMO_GRAYSCALE,
+		DEMO_BOXBLUR,
+		DEMO_GAUSSIANBLUR,
+		DEMO_PYRDOWN,
+		DEMO_SCHARR,
+		DEMO_SOBEL,
+		DEMO_SOBELEDGE,
+		DEMO_EQHIST,
+		DEMO_CANNY,
+		DEMO_WARPAFF,
+		DEMO_WARPPERS,
+		DEMO_VIDSTAB,
+		DEMO_FASTCOR,
+		DEMO_YAPE06,
+		DEMO_YAPE,
+		DEMO_ORB,
+		DEMO_OPTFLOWLK,
+		DEMO_BBF,
+		DEMO_HAAR,
 		
 		DEMO_COUNT
 	};
@@ -402,6 +453,7 @@ public:
 	void OpenDemo(int i);
 	String GetDemoName(int i);
 	
+	void LoadImageSeries(String dir);
 	void OpenFile();
 	void OpenVideoCapture(int dev, int cap, int fmt, int res);
 	void CloseInput();

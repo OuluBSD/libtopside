@@ -6,7 +6,7 @@ void PyramidDownsampleBase::Process() {
 	int levels = 4;
 	img_pyr.SetSize(sz.cx, sz.cy, 1, levels);
 	
-    Grayscale(input, sz.cx, sz.cy, img_pyr.data[0]);
+    Grayscale(input, img_pyr.data[0]);
     
     // you do the same by executing img_pyr.build(img_pyr.data[0], true);
     int i = 2;
@@ -20,20 +20,21 @@ void PyramidDownsampleBase::Process() {
     }
 
     // render result back to canvas
+    output.SetSize(sz.cx, sz.cy, 4);
+    int x = 0;
     for(i=0; i < levels; ++i){
         auto& l = img_pyr.data[i];
-        render_mono_image(l.data, output, l.cols, l.rows, sz.cx);
-        break;
+        render_mono_image(l.data, output, l.cols, l.rows, x, sz.cx);
+        x += l.cols;
     }
 }
 
-void PyramidDownsampleBase::render_mono_image(const Vector<byte>& src, ByteMat& dst, int sw, int sh, int dw) {
-	dst.SetSize(sh, sw, 4);
+void PyramidDownsampleBase::render_mono_image(const Vector<byte>& src, ByteMat& dst, int sw, int sh, int xoff, int dw) {
 	byte* d = dst.data.Begin();
     for(int i = 0; i < sh; ++i) {
         for(int j = 0; j < sw; ++j) {
             byte pix = src[i*sw+j];
-            int off = i*dw+j;
+            int off = (xoff + i*dw+j) * 4;
             d[off + 0] = pix;
             d[off + 1] = pix;
             d[off + 2] = pix;

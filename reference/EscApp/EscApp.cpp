@@ -1,4 +1,4 @@
-#ifndef UPP_VERSION
+#ifdef LIBTOPSIDE
 	#include <Esc/Esc.h>
 #else
 	#include <Esc/Esc.h>

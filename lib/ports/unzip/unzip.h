@@ -43,16 +43,18 @@
 #ifndef _unz64_H
 #define _unz64_H
 
+#include <Core/config.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #ifndef _ZLIB_H
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 		#include <ports/zlib/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else
-		#include <zlib.h>
+		#include <plugin/z/lib/zlib.h>
 		#include <plugin/bz2/lib/bzlib.h>
 	#endif
 #endif

@@ -184,7 +184,7 @@ template <class T> T& Object::Get() const {
 	THROW(Exc("Unexpected value type"));
 }
 
-#ifndef UPP_VERSION
+#ifdef LIBTOPSIDE
 template<class T> inline StringT<T>& StringT<T>::operator=(const Object& c) {return *this = c.ToString();}
 #endif
 

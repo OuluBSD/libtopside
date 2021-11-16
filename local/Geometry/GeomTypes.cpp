@@ -65,7 +65,7 @@ void Texture::Create(Size sz, byte channels) {
 void Texture::Set(Image i) {
 	Clear();
 	
-	#ifndef UPP_VERSION
+	#ifdef LIBTOPSIDE
 	Image::ImageDataRef* data = i.GetData();
 	if (data) {
 		auto& sysimg = data->img;
