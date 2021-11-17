@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void gauss_motion_filter::setup(int radius, double stdev) {
+void GaussMotionFilter::Setup(int radius, double stdev) {
     this->radius = radius;
     this->stdev = stdev > 0.0 ? stdev : sqrt(radius);
     
@@ -25,7 +25,7 @@ void gauss_motion_filter::setup(int radius, double stdev) {
 }
 
 
-FloatMat& gauss_motion_filter::stabilize(int idx, Vector<FloatMat>& motions, int from_idx, int to_idx) {
+FloatMat& GaussMotionFilter::Stabilize(int idx, Vector<FloatMat>& motions, int from_idx, int to_idx) {
     FloatMat cur;
     FloatMat& res = m33;
     Vector<float>& resd = res.data;
@@ -40,7 +40,7 @@ FloatMat& gauss_motion_filter::stabilize(int idx, Vector<FloatMat>& motions, int
 
     for (; i <= iMax; ++i) {
 		val = weight[radius + i - idx];
-		get_motion(cur, idx, i, motions);
+		GetMotion(cur, idx, i, motions);
 		auto& curd = cur.data;
         res0 += val * curd[0]; res1 += val * curd[1]; res2 += val * curd[2];
         res3 += val * curd[3]; res4 += val * curd[4]; res5 += val * curd[5];
@@ -55,7 +55,7 @@ FloatMat& gauss_motion_filter::stabilize(int idx, Vector<FloatMat>& motions, int
 		resd[6]=res6*sum; resd[7]=res7*sum; resd[8]=res8*sum;
     }
     else {
-		identity_3x3(res, 1.0f);
+		Identity3x3(res, 1.0f);
     }
     
     return res;

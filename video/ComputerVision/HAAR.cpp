@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void haar::detect_single_scale(Vector<BBox>& rects,const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, double scale, const ComplexCascade& classifier) {
+void Haar::DetectSingleScale(Vector<BBox>& rects,const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, double scale, const ComplexCascade& classifier) {
 	// don't clear here: rects.SetCount(0);
 	
 	double win_w = (classifier.size[0] * scale);
@@ -134,14 +134,14 @@ void haar::detect_single_scale(Vector<BBox>& rects,const Vector<int>& int_sum, c
 	
 }
 
-void haar::detect_multi_scale(Vector<BBox>& rects, const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, const ComplexCascade& classifier, double scale_factor, double scale_min) {
+void Haar::DetectMultiScale(Vector<BBox>& rects, const Vector<int>& int_sum, const Vector<int>& int_sqsum, const Vector<int>& int_tilted, Vector<int>* int_canny_sum, int width, int height, const ComplexCascade& classifier, double scale_factor, double scale_min) {
 	rects.SetCount(0);
 	
 	int win_w = classifier.size[0];
 	int win_h = classifier.size[1];
 	
 	while (scale_min * win_w < width && scale_min * win_h < height) {
-		detect_single_scale(rects, int_sum, int_sqsum, int_tilted, int_canny_sum, width, height, scale_min, classifier);
+		DetectSingleScale(rects, int_sum, int_sqsum, int_tilted, int_canny_sum, width, height, scale_min, classifier);
 		
 		scale_min *= scale_factor;
 	}

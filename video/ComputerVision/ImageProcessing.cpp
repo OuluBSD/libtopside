@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
+void ResampleByte(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 	int xofs_count = 0;
 	int ch = src.channels;
 	int w = src.cols;
@@ -97,7 +97,7 @@ void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 	
 }
 
-void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
+void ResampleFloat(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	int xofs_count = 0;
 	int ch = src.channels;
 	int w = src.cols;
@@ -191,24 +191,138 @@ void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	
 }
 
-void resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
+void ConvoluteByte(Vector<int>& buf, const Vector<byte>& src_d, Vector<byte>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
+	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
+	
+	double f0 = filter[0];
+	
+	// hor pass
+	for (int i = 0, dp = 0, sp = 0; i < h; ++i) {
+		int sum = src_d[sp];
+		for (int j = 0; j < half_kernel; ++j) {
+			buf[j] = sum;
+		}
+		{
+			int j;
+			for (j = 0; j <= w - 2; j += 2) {
+				buf[j + half_kernel] = src_d[sp+j];
+				buf[j + half_kernel+1] = src_d[sp+j+1];
+			}
+			for (; j < w; ++j) {
+				buf[j + half_kernel] = src_d[sp+j];
+			}
+		}
+		
+		sum = src_d[sp+w-1];
+		for (int j = w; j < half_kernel + w; ++j) {
+			buf[j + half_kernel] = sum;
+		}
+		
+		{
+			int j;
+			for (j = 0; j <= w - 4; j += 4) {
+				int sum  = buf[j]   * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
+				
+				for (int k = 1; k < kernel_size; ++k) {
+					double fk = filter[k];
+					sum  += buf[k + j] * fk;
+					sum1 += buf[k + j+1] * fk;
+					sum2 += buf[k + j+2] * fk;
+					sum3 += buf[k + j+3] * fk;
+				}
+				dst_d[dp+j]   = min(sum,  255);
+				dst_d[dp+j+1] = min(sum1, 255);
+				dst_d[dp+j+2] = min(sum2, 255);
+				dst_d[dp+j+3] = min(sum3, 255);
+			}
+			for (; j < w; ++j) {
+				int sum = buf[j] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
+					sum += buf[k + j] * filter[k];
+				}
+				dst_d[dp+j] = min(sum, 255);
+			}
+		}
+		
+		sp += w;
+		dp += w;
+	}
+	
+	// vert pass
+	for (int i = 0; i < w; ++i) {
+		int sum = dst_d[i];
+		for (int j = 0; j < half_kernel; ++j) {
+			buf[j] = sum;
+		}
+		
+		{
+			int k = i;
+			int j;
+			for (j = 0; j <= h - 2; j += 2, k += w2) {
+				buf[j+half_kernel] = dst_d[k];
+				buf[j+half_kernel+1] = dst_d[k+w];
+			}
+			for (; j < h; ++j, k += w) {
+				buf[j+half_kernel] = dst_d[k];
+			}
+		}
+		sum = dst_d[(h-1)*w + i];
+		for (int j = h; j < half_kernel + h; ++j) {
+			buf[j + half_kernel] = sum;
+		}
+		{
+			int dp = i;
+			int j;
+			for (j = 0; j <= h - 4; j += 4, dp += w4) {
+				int sum  = buf[j]   * f0;
+				int sum1 = buf[j+1] * f0;
+				int sum2 = buf[j+2] * f0;
+				int sum3 = buf[j+3] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
+					double fk = filter[k];
+					sum += buf[k + j] * fk;
+					sum1 += buf[k + j+1] * fk;
+					sum2 += buf[k + j+2] * fk;
+					sum3 += buf[k + j+3] * fk;
+				}
+				dst_d[dp] = min(sum, 255);
+				dst_d[dp+w] = min(sum1, 255);
+				dst_d[dp+w2] = min(sum2, 255);
+				dst_d[dp+w3] = min(sum3, 255);
+			}
+			for (; j < h; ++j, dp += w) {
+				sum = buf[j] * f0;
+				for (int k = 1; k < kernel_size; ++k) {
+					sum += buf[k + j] * filter[k];
+				}
+				dst_d[dp] = min(sum, 255);
+			}
+		}
+	}
+}
+
+
+void Resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 	int h = src.rows;
 	int w = src.cols;
 	if (h > nh && w > nw) {
 		dst.SetSize(nw, nh, src.channels);
-		_resample_u8(src, dst, nw, nh);
+		ResampleByte(src, dst, nw, nh);
 	}
 	else {
 		dst = src;
 	}
 }
 
-void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
+void Resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	int h = src.rows;
 	int w = src.cols;
 	if (h > nh && w > nw) {
 		dst.SetSize(nw, nh, src.channels);
-		_resample(src, dst, nw, nh);
+		ResampleFloat(src, dst, nw, nh);
 	}
 	else {
 		dst = src;
@@ -216,12 +330,11 @@ void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 }
 
 
-void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
+void BoxBlurGray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	int w = src.cols;
 	int h = src.rows;
 	int h2 = h << 1;
 	int w2 = w << 1;
-	//var i = 0, x = 0, y = 0, end = 0;
 	int windowSize = ((radius << 1) + 1);
 	int radiusPlusOne = (radius + 1);
 	int radiusPlus2 = (radiusPlusOne + 1);
@@ -238,8 +351,6 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	
 	// first pass
 	// no need to scale
-	//src_data = src.data;
-	//data_i32 = tmp;
 	for (int y = 0; y < h; ++y) {
 		int dstIndex = y;
 		int sum = radiusPlusOne * src_data[srcIndex];
@@ -289,7 +400,6 @@ void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options) {
 	
 	// second pass
 	srcIndex = 0;
-	//data_i32 = tmp; // this is a transpose
 	auto& dst_data = dst.data;
 	
 	// dont scale result
@@ -424,7 +534,7 @@ void Grayscale(const ByteMat& src, ByteMat& dst) {
 	}
 }
 
-void warp_perspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
+void WarpPerspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
 	if (dst.IsEmpty())
 		dst.SetSize(src.cols, src.rows, src.channels);
 	
@@ -486,7 +596,7 @@ void warp_perspective(const ByteMat& src, ByteMat& dst, const FloatMat& transfor
 	}
 }
 
-void warp_affine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
+void WarpAffine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
 	if (dst.IsEmpty())
 		dst.SetSize(src.cols, src.rows, src.channels);
 	

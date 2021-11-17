@@ -4,19 +4,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void lev_table_t::Set(int w, int h, int r) {
+void YapeTableLevel::Set(int w, int h, int r) {
 	width = w;
 	height = h;
 	radius = r;
 	dirs.SetCount(1024);
-	dirs_count = yape::precompute_directions(w, this->dirs, r);
+	dirs_count = Yape::PrecomputeDirections(w, this->dirs, r);
 	ASSERT(dirs_count > 0);
 	scores.SetCount(w*h, 0);
 }
 
 
 
-int yape::precompute_directions(int step, Vector<int>& dirs, int R) {
+int Yape::PrecomputeDirections(int step, Vector<int>& dirs, int R) {
 	int i = 0;
 	double x, y;
 	
@@ -59,7 +59,7 @@ int yape::precompute_directions(int step, Vector<int>& dirs, int R) {
 	return i;
 }
 
-int yape::third_check(Vector<int>& Sb, int off, int step) {
+int Yape::ThirdCheck(Vector<int>& Sb, int off, int step) {
 	int n = 0;
 	if (Sb[off+1]   != 0)
 		n++;
@@ -81,7 +81,7 @@ int yape::third_check(Vector<int>& Sb, int off, int step) {
 	return n;
 }
 
-bool yape::is_local_maxima(const Vector<int>& p, int off, int v, int step, int neighborhood) {
+bool Yape::IsLocalMaxima(const Vector<int>& p, int off, int v, int step, int neighborhood) {
 
 	if (v > 0) {
 		off -= step * neighborhood;
@@ -106,7 +106,7 @@ bool yape::is_local_maxima(const Vector<int>& p, int off, int v, int step, int n
 	return true;
 }
 
-void yape::perform_one_point(const Vector<byte>& I, int x, Vector<int>& Scores, byte Im, byte Ip, const Vector<int>& dirs, int opposite, int dirs_nb) {
+void Yape::PerformOnePoint(const Vector<byte>& I, int x, Vector<int>& Scores, byte Im, byte Ip, const Vector<int>& dirs, int opposite, int dirs_nb) {
 	ASSERT(opposite > 0);
 	int score = 0;
 	int a = 0;
@@ -660,20 +660,20 @@ void yape::perform_one_point(const Vector<byte>& I, int x, Vector<int>& Scores, 
 
 
 	
-void yape::init(int width, int height, int radius, int pyramid_levels) {
+void Yape::Init(int width, int height, int radius, int pyramid_levels) {
 	radius = min(radius, 7);
 	radius = max(radius, 3);
 	level_tables.SetCount(pyramid_levels);
 	int i = 0;
-	for (lev_table_t& l : level_tables) {
+	for (YapeTableLevel& l : level_tables) {
 		l.Set(width >> i, height >> i, radius);
 		ASSERT(l.dirs_count > 0);
 		i++;
 	}
 }
 
-int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
-	lev_table_t& t = this->level_tables[0];
+int Yape::Detect(const ByteMat& src, Vector<Keypoint>& points, int border) {
+	YapeTableLevel& t = this->level_tables[0];
 	int R = t.radius;
 	int Rm1 = (R - 1);
 	auto& dirs = t.dirs;
@@ -685,7 +685,6 @@ int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 	int h = src.rows;
 	int hw = w >> 1;
 	Vector<int>& scores = t.scores;
-	//int x = 0, y = 0, row = 0, rowx = 0, ip = 0, im = 0, abs_score = 0, score = 0;
 	int tau = this->tau;
 	int number_of_points = 0;
 	
@@ -704,7 +703,7 @@ int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 				scores[rowx] = 0;
 			}
 			else {
-				perform_one_point(img, rowx, scores, im, ip, dirs, opposite, dirs_count);
+				PerformOnePoint(img, rowx, scores, im, ip, dirs, opposite, dirs_count);
 			}
 		}
 	}
@@ -719,8 +718,8 @@ int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 				// if this pixel is 0, the next one will not be good enough. Skip it.
 				++x, ++rowx;
 			}
-			else if (third_check(scores, rowx, w) >= 3 && is_local_maxima(scores, rowx, score, hw, R)) {
-				keypoint_t& pt = points[number_of_points];
+			else if (ThirdCheck(scores, rowx, w) >= 3 && IsLocalMaxima(scores, rowx, score, hw, R)) {
+				Keypoint& pt = points[number_of_points];
 				pt.x = x;
 				pt.y = y;
 				pt.score = abs_score;

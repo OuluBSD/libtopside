@@ -7,7 +7,7 @@ void ScharrBase::Process() {
 	
     Grayscale(input, img_u8);
     
-    scharr_derivatives(img_u8, img_gxgy);
+    ScharrDerivatives(img_u8, img_gxgy);
     
     OutputFromXY(img_gxgy);
 }

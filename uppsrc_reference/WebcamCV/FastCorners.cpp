@@ -10,7 +10,7 @@ void FastCornersBase::SetSize(Size sz) {
 	this->sz = sz;
 	
 	corners.SetCount(sz.cx * sz.cy);
-	for (keypoint_t& k : corners)
+	for (Keypoint& k : corners)
 		k.Clear();
 	
 }
@@ -20,10 +20,10 @@ void FastCornersBase::Process() {
     
     c.set_threshold(threshold);
     
-    int count = c.detect(tmp0, corners, 5);
+    int count = c.Detect(tmp0, corners, 5);
     
     // render result back to canvas
-    render_corners(corners, output);
+    RenderCorners(corners, output);
 }
 
 

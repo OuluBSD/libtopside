@@ -4,16 +4,9 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void match_t::Set(int screen_idx, int pattern_lev, int pattern_idx, int distance) {
-    this->screen_idx = screen_idx;
-    this->pattern_lev = pattern_lev;
-    this->pattern_idx = pattern_idx;
-    this->distance = distance;
-}
 
 
-
-void OrbBase::train_pattern() {
+void OrbBase::TrainPattern() {
 	const auto& img_u8 = input;
 	auto& lev0_img = tmp0;
 	auto& lev_img = tmp1;
@@ -31,7 +24,7 @@ void OrbBase::train_pattern() {
     new_width = (img_u8.cols*sc0);
     new_height = (img_u8.rows*sc0);
 
-    resample(img_u8, lev0_img, new_width, new_height);
+    Resample(img_u8, lev0_img, new_width, new_height);
 
     // prepare preview
     pattern_preview.SetSize(new_width>>1, new_height>>1, 1);
@@ -40,7 +33,7 @@ void OrbBase::train_pattern() {
 	pattern_corners.SetCount(num_train_levels);
 	pattern_descriptors.SetCount(num_train_levels);
     for(int lev=0; lev < num_train_levels; ++lev) {
-        Vector<keypoint_t>& lev_corners = pattern_corners[lev];
+        Vector<Keypoint>& lev_corners = pattern_corners[lev];
 
         // preallocate corners array
         int i = (new_width*new_height) >> lev;
@@ -54,13 +47,13 @@ void OrbBase::train_pattern() {
 
     // do the first level
     {
-	    Vector<keypoint_t>& lev_corners = pattern_corners[0];
+	    Vector<Keypoint>& lev_corners = pattern_corners[0];
 	    Vector<BinDescriptor>& lev_descr = pattern_descriptors[0];
 	
-	    gaussian_blur(lev0_img, lev_img, blur_size); // this is more robust
-	    corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
+	    GaussianBlur(lev0_img, lev_img, blur_size); // this is more robust
+	    corners_num = DetectKeypoints(lev_img, lev_corners, max_per_level);
 	    ASSERT(lev_corners.GetCount() == corners_num);
-	    o.describe(lev_img, lev_corners, lev_descr);
+	    o.Describe(lev_img, lev_corners, lev_descr);
 	
 	    LOG("train " << lev_img.cols << "x" << lev_img.rows << " points: " << corners_num);
 	
@@ -71,20 +64,20 @@ void OrbBase::train_pattern() {
     // we can use Canvas context draw method for faster SetSize
     // but its nice to demonstrate that you can do everything with jsfeat
     for(int lev = 1; lev < num_train_levels; ++lev) {
-        Vector<keypoint_t>& lev_corners = pattern_corners[lev];
+        Vector<Keypoint>& lev_corners = pattern_corners[lev];
         Vector<BinDescriptor>& lev_descr = pattern_descriptors[lev];
 
         int new_width = (int)(lev0_img.cols*sc);
         int new_height = (int)(lev0_img.rows*sc);
 
-        resample(lev0_img, lev_img, new_width, new_height);
-        gaussian_blur(lev_img, lev_img, blur_size);
-        corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
+        Resample(lev0_img, lev_img, new_width, new_height);
+        GaussianBlur(lev_img, lev_img, blur_size);
+        corners_num = DetectKeypoints(lev_img, lev_corners, max_per_level);
         ASSERT(lev_corners.GetCount() == corners_num);
-        o.describe(lev_img, lev_corners, lev_descr);
+        o.Describe(lev_img, lev_corners, lev_descr);
 
         // fix the coordinates due to scale level
-        for (keypoint_t& corner : lev_corners) {
+        for (Keypoint& corner : lev_corners) {
             corner.x = (int)(corner.x * 1./sc);
             corner.y = (int)(corner.y * 1./sc);
         }
@@ -99,11 +92,11 @@ void OrbBase::InitDefault() {
 	auto& videoWidth = sz.cx;
 	auto& videoHeight = sz.cy;
 
-	match_threshold = 24;
+	KeypointMatchhreshold = 24;
 	
-    /*img_u8 = new jsfeat.matrix_t(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);
+    /*img_u8 = new jsfeat.DMatrix(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);
     // after blur
-    img_u8_smooth = new jsfeat.matrix_t(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);*/
+    img_u8_smooth = new jsfeat.DMatrix(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);*/
     
     // we wll limit to 500 strongest points
     screen_descriptors.Reserve(500);
@@ -115,7 +108,7 @@ void OrbBase::InitDefault() {
     int i = 640*480;
     matches.SetCount(i);
     screen_corners.SetCount(i);
-    for (keypoint_t& k : screen_corners)
+    for (Keypoint& k : screen_corners)
         k.Set(0,0,0,0,-1);
 
     // transform matrix
@@ -123,9 +116,9 @@ void OrbBase::InitDefault() {
     match_mask.SetSize(500,1,1);
     
     Grayscale(input, tmp0);
-    resample(tmp0, train_img, sz.cx * 0.25, sz.cy * 0.25);
+    Resample(tmp0, train_img, sz.cx * 0.25, sz.cy * 0.25);
     
-    train_pattern();
+    TrainPattern();
     
 }
 
@@ -136,21 +129,21 @@ void OrbBase::Process() {
 	
     Grayscale(input, img_u8);
     
-    gaussian_blur(img_u8, img_u8_smooth, blur_size);
+    GaussianBlur(img_u8, img_u8_smooth, blur_size);
 
     y.laplacian_threshold = lap_thres;
     y.min_eigen_value_threshold = eigen_thres;
 
-    int num_corners = detect_keypoints(img_u8_smooth, screen_corners, 500);
+    int num_corners = DetectKeypoints(img_u8_smooth, screen_corners, 500);
     ASSERT(num_corners == screen_corners.GetCount());
-    o.describe(img_u8_smooth, screen_corners, screen_descriptors);
+    o.Describe(img_u8_smooth, screen_corners, screen_descriptors);
 
-    render_corners(img_u8, &train_img, screen_corners, output);
+    RenderCorners(img_u8, &train_img, screen_corners, output);
 
     // render pattern and matches
-    int num_matches = match_pattern();
+    int num_matches = MatchPattern();
     ASSERT(matches.GetCount() == num_matches);
-    int good_matches = find_transform(matches);
+    int good_matches = FindTransform(matches);
     
     if(num_matches) {
         render_matches(matches);
@@ -160,20 +153,20 @@ void OrbBase::Process() {
 }
 
 
-int OrbBase::detect_keypoints(const ByteMat& img, Vector<keypoint_t>& corners, int max_allowed) {
+int OrbBase::DetectKeypoints(const ByteMat& img, Vector<Keypoint>& corners, int max_allowed) {
     // detect features
-    int count = y.detect(img, corners, 17);
+    int count = y.Detect(img, corners, 17);
 
     // sort by score and reduce the count if needed
     if(count > max_allowed) {
-        Sort(corners, keypoint_t());
+        Sort(corners, Keypoint());
         count = max_allowed;
         corners.SetCount(count);
     }
 
     // calculate dominant orientation for each keypoint
-    for (keypoint_t& c : corners) {
-        c.angle = ic_angle(img, c.x, c.y);
+    for (Keypoint& c : corners) {
+        c.angle = IcAngle(img, c.x, c.y);
     }
 
     return count;
@@ -182,7 +175,7 @@ int OrbBase::detect_keypoints(const ByteMat& img, Vector<keypoint_t>& corners, i
 // central difference using image moments to find dominant orientation
 const int OrbBase::u_max[] = {15,15,15,15,14,14,14,13,13,12,11,10,9,8,6,3,0};
 
-double OrbBase::ic_angle(const ByteMat& img, int px, int py) {
+double OrbBase::IcAngle(const ByteMat& img, int px, int py) {
     int half_k = 15; // half patch size
     int m_01 = 0, m_10 = 0;
     auto& src=img.data;
@@ -212,7 +205,7 @@ double OrbBase::ic_angle(const ByteMat& img, int px, int py) {
 }
 
 // estimate homography transform between matched points
-int OrbBase::find_transform(Vector<match_t>& matches) {
+int OrbBase::FindTransform(Vector<KeypointMatch>& matches) {
     
     // ransac params
     int num_model_points = 4;
@@ -227,11 +220,11 @@ int OrbBase::find_transform(Vector<match_t>& matches) {
     // construct correspondences
     auto pattern_it = pattern_xy.Begin();
     auto screen_it = screen_xy.Begin();
-    for (const match_t& m : matches) {
+    for (const KeypointMatch& m : matches) {
         auto& pat = *pattern_it; pattern_it++;
         auto& scr = *screen_it; screen_it++;
-        const keypoint_t& s_kp = screen_corners[m.screen_idx];
-        const keypoint_t& p_kp = pattern_corners[m.pattern_lev][m.pattern_idx];
+        const Keypoint& s_kp = screen_corners[m.screen_idx];
+        const Keypoint& p_kp = pattern_corners[m.pattern_lev][m.pattern_idx];
         pat.x = p_kp.x;
         pat.y = p_kp.y;
         scr.x = s_kp.x;
@@ -240,7 +233,7 @@ int OrbBase::find_transform(Vector<match_t>& matches) {
 
     // estimate motion
     bool ok = false;
-    ok = mot.ransac(ransac_param, mm_kernel, pattern_xy, screen_xy, homo3x3, &match_mask, 1000);
+    ok = mot.Ransac(ransac_param, mm_kernel, pattern_xy, screen_xy, homo3x3, &match_mask, 1000);
 
     // extract good matches and re-estimate
     int good_cnt = 0;
@@ -256,10 +249,10 @@ int OrbBase::find_transform(Vector<match_t>& matches) {
         screen_xy.SetCount(good_cnt);
         
         // run kernel directly with inliers only
-        mm_kernel.run(pattern_xy, screen_xy, homo3x3);
+        mm_kernel.Run(pattern_xy, screen_xy, homo3x3);
     }
     else {
-        identity_3x3(homo3x3, 1.0f);
+        Identity3x3(homo3x3, 1.0f);
     }
 
     return good_cnt;
@@ -269,7 +262,7 @@ int OrbBase::find_transform(Vector<match_t>& matches) {
 // naive brute-force matching.
 // each on screen point is compared to all pattern points
 // to find the closest match
-int OrbBase::match_pattern() {
+int OrbBase::MatchPattern() {
     int q_cnt = screen_descriptors.GetCount();
     int qidx=0,lev=0,pidx=0,k=0;
     int num_matches = 0;
@@ -308,7 +301,7 @@ int OrbBase::match_pattern() {
         }
 
         // filter out by some threshold
-        if(best_dist < match_threshold) {
+        if(best_dist < KeypointMatchhreshold) {
             auto& m = matches.Add();
             m.screen_idx = qidx;
             m.pattern_lev = best_lev;
@@ -332,14 +325,14 @@ int OrbBase::match_pattern() {
 }
 
 // project/transform rectangle corners with 3x3 Matrix
-void OrbBase::tCorners(const Vector<float>& M, int w, int h) {
+void OrbBase::TCorners(const Vector<float>& M, int w, int h) {
 	corners.SetCount(0);
 	corners.Reserve(4);
-    corners << keypoint_t(0,0) << keypoint_t(w,0) << keypoint_t(w,h) << keypoint_t(0,h);
+    corners << Keypoint(0,0) << Keypoint(w,0) << Keypoint(w,h) << Keypoint(0,h);
     double z=0.0;
     double px=0.0, py=0.0;
 
-    for (keypoint_t& p : corners) {
+    for (Keypoint& p : corners) {
         px = M[0]*p.x + M[1]*p.y + M[2];
         py = M[3]*p.x + M[4]*p.y + M[5];
         z = M[6]*p.x + M[7]*p.y + M[8];
@@ -348,11 +341,11 @@ void OrbBase::tCorners(const Vector<float>& M, int w, int h) {
     }
 }
 
-void OrbBase::render_matches(const Vector<match_t>& matches) {
+void OrbBase::render_matches(const Vector<KeypointMatch>& matches) {
 	ASSERT(match_mask.data.GetCount() >= matches.GetCount());
 	byte* mask = match_mask.data.Begin();
 	lines.SetCount(0);
-    for(const match_t& m : matches) {
+    for(const KeypointMatch& m : matches) {
         const auto& s_kp = screen_corners[m.screen_idx];
         const auto& p_kp = pattern_corners[m.pattern_lev][m.pattern_idx];
         
@@ -376,11 +369,11 @@ void OrbBase::render_matches(const Vector<match_t>& matches) {
 
 void OrbBase::render_pattern_shape() {
     // get the projected pattern corners
-    tCorners(homo3x3.data, pattern_preview.cols*2, pattern_preview.rows*2);
+    TCorners(homo3x3.data, pattern_preview.cols*2, pattern_preview.rows*2);
 	
 	for(int i = 0; i < corners.GetCount(); i++) {
-		const keypoint_t& a = corners[i];
-		const keypoint_t& b = corners[(i + 1) % corners.GetCount()];
+		const Keypoint& a = corners[i];
+		const Keypoint& b = corners[(i + 1) % corners.GetCount()];
 		
 		ColorLine& l = lines.Add();
         l.a.x = a.x;
@@ -390,31 +383,6 @@ void OrbBase::render_pattern_shape() {
         l.clr = Color(0,255,0);
 	}
 }
-
-/*function render_corners(corners, count, img, step) {
-    var pix = (0xff << 24) | (0x00 << 16) | (0xff << 8) | 0x00;
-    for(var i=0; i < count; ++i)
-    {
-        var x = corners[i].x;
-        var y = corners[i].y;
-        var off = (x + y * step);
-        img[off] = pix;
-        img[off-1] = pix;
-        img[off+1] = pix;
-        img[off-step] = pix;
-        img[off+step] = pix;
-    }
-}*/
-
-/*function render_mono_image(src, dst, sw, sh, dw) {
-    var alpha = (0xff << 24);
-    for(var i = 0; i < sh; ++i) {
-        for(var j = 0; j < sw; ++j) {
-            var pix = src[i*sw+j];
-            dst[i*dw+j] = alpha | (pix << 16) | (pix << 8) | pix;
-        }
-    }
-}*/
 
 
 NAMESPACE_TOPSIDE_END

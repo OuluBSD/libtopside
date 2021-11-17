@@ -13,14 +13,14 @@ enum {
 
 
 template <class T>
-T& get_at(int idx, int len, Vector<T>& items) {
+T& GetAt(int idx, int len, Vector<T>& items) {
 	if( idx < 0 ) idx -= (((idx-len+1)/len)*len);
 	if( idx >= len ) idx %= len;
     return items[idx];
 }
 
-int get_ring_ind(int idx, int len);
-void get_motion(FloatMat& M, int from, int to, Vector<FloatMat>& motions);
+int GetRingIndex(int idx, int len);
+void GetMotion(FloatMat& M, int from, int to, Vector<FloatMat>& motions);
 
 
 NAMESPACE_TOPSIDE_END

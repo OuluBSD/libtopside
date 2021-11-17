@@ -9,7 +9,7 @@ BrightnessBinaryFeature::BrightnessBinaryFeature() {
 // make features local copy
 // to avoid array allocation with each scale
 // this is strange but array works faster than Int32 version???
-void BrightnessBinaryFeature::prepare_cascade(Cascade& cascade) {
+void BrightnessBinaryFeature::PrepareCascade(Cascade& cascade) {
 	for (CascadeStageClassifier& cs : cascade.classifiers) {
 		ASSERT(cs.features.GetCount() == cs.count);
 		cs._features.SetCount(cs.count);
@@ -21,7 +21,7 @@ void BrightnessBinaryFeature::prepare_cascade(Cascade& cascade) {
 	}
 }
 
-const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8::Mat& src, int min_width, int min_height, int interval) {
+const pyra8& BrightnessBinaryFeature::BuildPyramid(pyra8& img_pyr, const pyra8::Mat& src, int min_width, int min_height, int interval) {
 	int sw = src.cols;
 	int sh = src.rows;
 	int channels = src.channels;
@@ -54,7 +54,7 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8:
 			img_pyr.data[i<<2].SetSize(nw, nh, channels);
 			src0 = &img_pyr.data[i<<2];
 		}
-		resample(src, *src0, nw, nh);
+		Resample(src, *src0, nw, nh);
 	}
 	for (int i = this->next; i < this->scale_to + this->next * 2; ++i) {
 		src1 = &img_pyr.data[(i << 2) - (this->next << 2)];
@@ -98,7 +98,7 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8:
 	return img_pyr;
 }
 
-void BrightnessBinaryFeature::detect(Vector<BBox>& seq, const pyra8& pyramid, Cascade& cascade) {
+void BrightnessBinaryFeature::Detect(Vector<BBox>& seq, const pyra8& pyramid, Cascade& cascade) {
 	int interval = this->interval;
 	double scale = this->scale;
 	int next = this->next;

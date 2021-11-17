@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-int areaSign(const keypoint_t& a, const keypoint_t& b, const keypoint_t& c) {
+int GetAreaSign(const Keypoint& a, const Keypoint& b, const Keypoint& c) {
 	int bax = b.x-a.x, bay = b.y-a.y;
 	int cax = c.x-a.x, cay = c.y-a.y;
     int area = bax*cay - bay*cax;
@@ -13,31 +13,31 @@ int areaSign(const keypoint_t& a, const keypoint_t& b, const keypoint_t& c) {
 }
 
 
-bool segmentsIntersect(const keypoint_t& a, const keypoint_t& b, const keypoint_t& c, const keypoint_t& d) {
-    return areaSign(a, b, c) * areaSign(a, b, d) < 0 &&
-           areaSign(c, d, a) * areaSign(c, d, b) < 0;
+bool IsSegmentIntersect(const Keypoint& a, const Keypoint& b, const Keypoint& c, const Keypoint& d) {
+    return GetAreaSign(a, b, c) * GetAreaSign(a, b, d) < 0 &&
+           GetAreaSign(c, d, a) * GetAreaSign(c, d, b) < 0;
 }
 
 
 // Checks if rect a (with sides parallel to axis) is inside rect b (arbitrary).
 // Rects must be passed in the [(0,0), (w,0), (w,h), (0,h)] order.
-int isRectInside(const Vector<keypoint_t>& a, const Vector<keypoint_t>& b) {
+int IsRectInside(const Vector<Keypoint>& a, const Vector<Keypoint>& b) {
 	int i=0,j=0;
     for (i = 0; i < 4; ++i)
         if (b[i].x > a[0].x && b[i].x < a[2].x && b[i].y > a[0].y && b[i].y < a[2].y)
             return false;
     for (i = 0; i < 4; ++i)
     for (j = 0; j < 4; ++j)
-        if (segmentsIntersect(a[i], a[(i+1)&3], b[j], b[(j+1)&3]))
+        if (IsSegmentIntersect(a[i], a[(i+1)&3], b[j], b[(j+1)&3]))
             return false;
     return true;
 }
 
 
-bool isGoodMotion(const FloatMat& M, int w, int h, int dx, int dy) {
-	static thread_local Vector<keypoint_t> pt, Mpt;
-	pt  << keypoint_t(0,0) << keypoint_t(w,0) << keypoint_t(w,h) << keypoint_t(0,h);
-	Mpt << keypoint_t(0,0) << keypoint_t(0,0) << keypoint_t(0,0) << keypoint_t(0,0);
+bool IsGoodMotion(const FloatMat& M, int w, int h, int dx, int dy) {
+	static thread_local Vector<Keypoint> pt, Mpt;
+	pt  << Keypoint(0,0) << Keypoint(w,0) << Keypoint(w,h) << Keypoint(0,h);
+	Mpt << Keypoint(0,0) << Keypoint(0,0) << Keypoint(0,0) << Keypoint(0,0);
 	
     const auto& md = M.data;
     double z = 0.0;
@@ -58,11 +58,11 @@ bool isGoodMotion(const FloatMat& M, int w, int h, int dx, int dy) {
     pt[2].x = w - dx, pt[2].y = h - dy;
     pt[3].x = dx, pt[3].y = h - dy;
 
-    return isRectInside(pt, Mpt);
+    return IsRectInside(pt, Mpt);
 }
 
 
-void relaxMotion(const Vector<float>& M, double t, Vector<float>& res) {
+void RelaxMotion(const Vector<float>& M, double t, Vector<float>& res) {
     res[0] = M[0]*(1.0-t) + t;
     res[1] = M[1]*(1.0-t);
     res[2] = M[2]*(1.0-t);
@@ -75,7 +75,7 @@ void relaxMotion(const Vector<float>& M, double t, Vector<float>& res) {
 }
 
 
-void ensureInclusionConstraint(FloatMat& M, Size size, double trimRatio) {
+void EnsureInclusionConstraint(FloatMat& M, Size size, double trimRatio) {
     int w = size.cx;
     int h = size.cy;
     int dx = floor(w * trimRatio);
@@ -89,16 +89,16 @@ void ensureInclusionConstraint(FloatMat& M, Size size, double trimRatio) {
     FloatMat curM;
     double t = 0.0;
     
-    relaxMotion(srcM.data, t, curM.data);
-    if (isGoodMotion(curM, w, h, dx, dy))
+    RelaxMotion(srcM.data, t, curM.data);
+    if (IsGoodMotion(curM, w, h, dx, dy))
         return;
 
     double l = 0.0, r = 1.0;
     while (r - l > 1e-3)
     {
         t = (l + r) * 0.5;
-        relaxMotion(srcM.data, t, curM.data);
-        if (isGoodMotion(curM, w, h, dx, dy))
+        RelaxMotion(srcM.data, t, curM.data);
+        if (IsGoodMotion(curM, w, h, dx, dy))
             r = t;
         else
             l = t;
@@ -111,14 +111,14 @@ void ensureInclusionConstraint(FloatMat& M, Size size, double trimRatio) {
 }
 
 
-double estimateOptimalTrimRatio(const FloatMat& M, const Size& size) {
+double EstimateOptimalTrimRatio(const FloatMat& M, const Size& size) {
     int w = size.cx;
     int h = size.cy;
     const auto& md = M.data;
 	
-	static thread_local Vector<keypoint_t> pt, Mpt;
-	pt  << keypoint_t(0,0) << keypoint_t(w,0) << keypoint_t(w,h) << keypoint_t(0,h);
-	Mpt << keypoint_t(0,0) << keypoint_t(0,0) << keypoint_t(0,0) << keypoint_t(0,0);
+	static thread_local Vector<Keypoint> pt, Mpt;
+	pt  << Keypoint(0,0) << Keypoint(w,0) << Keypoint(w,h) << Keypoint(0,h);
+	Mpt << Keypoint(0,0) << Keypoint(0,0) << Keypoint(0,0) << Keypoint(0,0);
 	
     double z = 0.0;
     int i = 0;
@@ -144,7 +144,7 @@ double estimateOptimalTrimRatio(const FloatMat& M, const Size& size) {
         pt[1].x = w - dx, pt[1].y = dy;
         pt[2].x = w - dx, pt[2].y = h - dy;
         pt[3].x = dx, pt[3].y = h - dy;
-        if (isRectInside(pt, Mpt))
+        if (IsRectInside(pt, Mpt))
             r = t;
         else
             l = t;
@@ -167,11 +167,11 @@ double estimateOptimalTrimRatio(const FloatMat& M, const Size& size) {
 
 
 
-onepass_stabilizer::onepass_stabilizer(int motionModel) : motion_estimator(motionModel) {
+OnepassStabilizer::OnepassStabilizer(int motionModel) : MotionEstimator(motionModel) {
     
 }
 
-void onepass_stabilizer::Init(Size sz, int radius) {
+void OnepassStabilizer::Init(Size sz, int radius) {
     reset();
     
     this->radius = radius;
@@ -183,21 +183,21 @@ void onepass_stabilizer::Init(Size sz, int radius) {
     curPos = -1;
     curStabilizedPos = -1;
     
-    motion_filter.setup(radius);
+    motion_filter.Setup(radius);
 
 	eye3x3.SetSize(3,3,1);
-	identity_3x3(eye3x3, 1.0f);
+	Identity3x3(eye3x3, 1.0f);
 	
 	im33.SetSize(3,3,1);
 	
     
     
-    motion_estimator.Init(sz);
+    MotionEstimator.Init(sz);
     
     
 }
 
-void onepass_stabilizer::reset() {
+void OnepassStabilizer::reset() {
 	frameSize.cx = frameSize.cy = 0;
     curPos = -1;
     curStabilizedPos = -1;
@@ -208,7 +208,7 @@ void onepass_stabilizer::reset() {
     stabilizedFrames.SetCount(0);
 }
 
-void onepass_stabilizer::setup(const ByteMat& rgbaImageData) {
+void OnepassStabilizer::Setup(const ByteMat& rgbaImageData) {
     int w = frameSize.cx = rgbaImageData.cols;
     int h = frameSize.cy = rgbaImageData.rows;
 
@@ -233,7 +233,7 @@ void onepass_stabilizer::setup(const ByteMat& rgbaImageData) {
     Grayscale(rgbaImageData, gray);
 
     for (i = -radius; i < 0; ++i) {
-		j = get_ring_ind(i, cache_size);
+		j = GetRingIndex(i, cache_size);
 		eye3x3.copy_to( motions[j] );
 		gray.copy_to( frames[j] );
 		rgba[-i] = rgbaImageData;
@@ -247,26 +247,26 @@ void onepass_stabilizer::setup(const ByteMat& rgbaImageData) {
     }
 }
 
-const FloatMat& onepass_stabilizer::estimate_motion()
+const FloatMat& OnepassStabilizer::EstimateMotion()
 {
-	int id0 = get_ring_ind(curPos - 1, frameBufferSize)|0;
-	int id1 = get_ring_ind(curPos, frameBufferSize)|0;
-    return motion_estimator.estimate( frames[id0], frames[id1] );
+	int id0 = GetRingIndex(curPos - 1, frameBufferSize)|0;
+	int id1 = GetRingIndex(curPos, frameBufferSize)|0;
+    return MotionEstimator.Estimate( frames[id0], frames[id1] );
 }
 
 
-FloatMat& onepass_stabilizer::estimate_stabilization_motion()
+FloatMat& OnepassStabilizer::EstimateStabilizationMotion()
 {
-    return motion_filter.stabilize(curStabilizedPos, motions, 0, curPos);
+    return motion_filter.Stabilize(curStabilizedPos, motions, 0, curPos);
 }
 
 
-const ByteMat* onepass_stabilizer::postprocess_frame(const ByteMat& frame)
+const ByteMat* OnepassStabilizer::PostprocessFrame(const ByteMat& frame)
 {
     return &frame;
 }
 
-const ByteMat* onepass_stabilizer::next_stabilized_frame(const ByteMat& frame_rgba) {
+const ByteMat* OnepassStabilizer::NextStabilizedFrame(const ByteMat& frame_rgba) {
 
     // check if we've processed all frames already
     if (curStabilizedPos == curPos && curStabilizedPos != -1)
@@ -277,7 +277,7 @@ const ByteMat* onepass_stabilizer::next_stabilized_frame(const ByteMat& frame_rg
 
     bool processed = true;
     do {
-		processed = do_one_iteration(&frame_rgba);
+		processed = DoOneIteration(&frame_rgba);
     }
     while (processed && curStabilizedPos == -1);
 
@@ -289,35 +289,35 @@ const ByteMat* onepass_stabilizer::next_stabilized_frame(const ByteMat& frame_rg
 	
 	ASSERT(doImage); // type conflict
     /*if(!doImage) {
-		return &get_at(curStabilizedPos, frameBufferSize, stabilizationMotions);
+		return &GetAt(curStabilizedPos, frameBufferSize, stabilizationMotions);
     }*/
 
-    return postprocess_frame( get_at(curStabilizedPos, frameBufferSize, stabilizedFrames) );
+    return PostprocessFrame( GetAt(curStabilizedPos, frameBufferSize, stabilizedFrames) );
 }
 
-bool onepass_stabilizer::do_one_iteration(const ByteMat* frame_rgba) {
+bool OnepassStabilizer::DoOneIteration(const ByteMat* frame_rgba) {
     if (frame_rgba) {
         curPos++;
 
         if (curPos > 0) {
 
-            ByteMat& gray_frame = get_at(curPos, frameBufferSize, frames);
+            ByteMat& gray_frame = GetAt(curPos, frameBufferSize, frames);
             ASSERT(frame_rgba->cols == gray_frame.cols && frame_rgba->rows == gray_frame.rows);
             Grayscale(*frame_rgba, gray_frame);
 			
-			int i = get_ring_ind(curPos, frameBufferSize);
+			int i = GetRingIndex(curPos, frameBufferSize);
 			rgba[i] = *frame_rgba;
 
-            const FloatMat& m33 = estimate_motion();
-            m33.copy_to( get_at(curPos-1, frameBufferSize, motions) );
+            const FloatMat& m33 = EstimateMotion();
+            m33.copy_to( GetAt(curPos-1, frameBufferSize, motions) );
 
             if (curPos >= radius) {
                 curStabilizedPos = curPos - radius;
-                stabilize_frame();
+                StabilizeFrame();
             }
         }
         else
-            setup(*frame_rgba);
+            Setup(*frame_rgba);
 
         return true;
     }
@@ -325,13 +325,13 @@ bool onepass_stabilizer::do_one_iteration(const ByteMat* frame_rgba) {
     if (curStabilizedPos < curPos) {
         curStabilizedPos++;
 
-        get_at(curPos, frameBufferSize, frames).copy_to( get_at(curStabilizedPos + radius, frameBufferSize, frames) );
+        GetAt(curPos, frameBufferSize, frames).copy_to( GetAt(curStabilizedPos + radius, frameBufferSize, frames) );
 
-        eye3x3.copy_to( get_at(curStabilizedPos+radius-1, frameBufferSize, motions) );
+        eye3x3.copy_to( GetAt(curStabilizedPos+radius-1, frameBufferSize, motions) );
 
-        rgba[get_ring_ind(curStabilizedPos + radius, frameBufferSize)] = rgba[ get_ring_ind(curPos, frameBufferSize) ];
+        rgba[GetRingIndex(curStabilizedPos + radius, frameBufferSize)] = rgba[ GetRingIndex(curPos, frameBufferSize) ];
 
-        stabilize_frame();
+        StabilizeFrame();
 
         return true;
     }
@@ -340,34 +340,34 @@ bool onepass_stabilizer::do_one_iteration(const ByteMat* frame_rgba) {
 }
 
 
-void onepass_stabilizer::stabilize_frame() {
-    FloatMat& stabilizationMotion = estimate_stabilization_motion();
+void OnepassStabilizer::StabilizeFrame() {
+    FloatMat& stabilizationMotion = EstimateStabilizationMotion();
     
     if (doCorrectionForInclusion) {
-		ensureInclusionConstraint(stabilizationMotion, frameSize, trimRatio);
+		EnsureInclusionConstraint(stabilizationMotion, frameSize, trimRatio);
     }
     
-    stabilizationMotion.copy_to( get_at(curStabilizedPos, frameBufferSize, stabilizationMotions) );
+    stabilizationMotion.copy_to( GetAt(curStabilizedPos, frameBufferSize, stabilizationMotions) );
 
     // apply stabilization transformation
 
     if (doImage) {
 
-		get_at(curStabilizedPos, frameBufferSize, frames).copy_to( preProcessedFrame );
+		GetAt(curStabilizedPos, frameBufferSize, frames).copy_to( preProcessedFrame );
 
-	    invert_3x3(stabilizationMotion, im33);
+	    Invert3x3(stabilizationMotion, im33);
 
-	    if(motion_estimator.GetMotionModel() == MM_AFFINE) {
-			warp_affine(preProcessedFrame,
-								get_at(curStabilizedPos, frameBufferSize, stabilizedFrames),
+	    if(MotionEstimator.GetMotionModel() == MM_AFFINE) {
+			WarpAffine(preProcessedFrame,
+								GetAt(curStabilizedPos, frameBufferSize, stabilizedFrames),
 								im33, 0);
 		} else {
-			warp_perspective(preProcessedFrame,
-							get_at(curStabilizedPos, frameBufferSize, stabilizedFrames),
+			WarpPerspective(preProcessedFrame,
+							GetAt(curStabilizedPos, frameBufferSize, stabilizedFrames),
 							im33, 0);
 		}
 	} else {
-		preProcessedFrame = rgba[ get_ring_ind(curStabilizedPos, frameBufferSize) ];
+		preProcessedFrame = rgba[ GetRingIndex(curStabilizedPos, frameBufferSize) ];
 	}
 }
 

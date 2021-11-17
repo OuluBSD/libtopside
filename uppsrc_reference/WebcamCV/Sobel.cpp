@@ -7,7 +7,7 @@ void SobelBase::Process() {
 	
     Grayscale(input, img_u8);
     
-    sobel_derivatives(img_u8, img_gxgy);
+    SobelDerivatives(img_u8, img_gxgy);
     
     OutputFromXY(img_gxgy);
 }

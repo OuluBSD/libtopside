@@ -9,9 +9,9 @@ void SobelEdgeBase::Process() {
 
     Grayscale(input, tmp0);
     
-    gaussian_blur(tmp0, img_u8, 3);
+    GaussianBlur(tmp0, img_u8, 3);
     
-    sobel_derivatives(img_u8, img_gxgy);
+    SobelDerivatives(img_u8, img_gxgy);
     
     int i = img_u8.cols*img_u8.rows, gx = 0, gy = 0;
     int x=0,y=0,dx=0,dy=0;

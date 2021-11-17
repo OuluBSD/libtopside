@@ -4,6 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+void KeypointMatch::Set(int screen_idx, int pattern_lev, int pattern_idx, int distance) {
+    this->screen_idx = screen_idx;
+    this->pattern_lev = pattern_lev;
+    this->pattern_idx = pattern_idx;
+    this->distance = distance;
+}
+
+
+
 const int Orb::bit_pattern_31_[] = {
 	8, -3, 9, 5/*mean (0), correlation (0)*/,
 	4, 2, 7, -12/*mean (1.12461e-05), correlation (0.0437584)*/,
@@ -270,7 +279,7 @@ Orb::Orb() :
 	
 }
 
-void Orb::rectify_patch(const ByteMat& src, ByteMat& dst, double angle, int px, int py, int psize) {
+void Orb::RectifyPatch(const ByteMat& src, ByteMat& dst, double angle, int px, int py, int psize) {
 	double cosine = FastCos(angle);
 	double sine   = FastSin(angle);
 	
@@ -281,10 +290,10 @@ void Orb::rectify_patch(const ByteMat& src, ByteMat& dst, double angle, int px, 
 	H.data[4] = (float)cosine;
 	H.data[5] = (float)((-sine   - cosine) * psize * 0.5 + py);
 	            
-	warp_affine(src, dst, H, 128);
+	WarpAffine(src, dst, H, 128);
 }
 
-void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, Vector<BinDescriptor>& descriptors) {
+void Orb::Describe(const ByteMat& src, const Vector<Keypoint>& corners, Vector<BinDescriptor>& descriptors) {
 	int DESCR_SIZE = 32; // bytes;
 	int t0 = 0, t1 = 0, val = 0;
 	int w = src.cols, h = src.rows;
@@ -299,12 +308,12 @@ void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, Vector
 	auto descr_iter = descriptors.Begin();
 	int descr_off = 0;
 	
-	for (const keypoint_t& crn : corners) {
+	for (const Keypoint& crn : corners) {
 		int px = crn.x;
 		int py = crn.y;
 		double angle = crn.angle;
 		
-		rectify_patch(src, patch_img, angle, px, py, 32);
+		RectifyPatch(src, patch_img, angle, px, py, 32);
 		
 		// describe the patch
 		patt = 0;

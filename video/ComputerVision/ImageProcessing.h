@@ -8,14 +8,13 @@ NAMESPACE_TOPSIDE_BEGIN
 void Grayscale(const ByteMat& src, ByteMat& dst);
 
 
-void _resample_u8(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
-void _resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
+void ResampleByte(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
+void ResampleFloat(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
 
 
 
 template <class T,class Temp>
-void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
-	//var i = 0, j = 0, k = 0, sp = 0, dp = 0, sum = 0, sum1 = 0, sum2 = 0, sum3 = 0, fk = 0;
+void ConvoluteByte(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
 	
 	double f0 = filter[0];
@@ -130,9 +129,7 @@ void _convol_u8(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int
 
 
 template <class T,class Temp>
-void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
-	//var i = 0, j = 0, k = 0, sp = 0, dp = 0
-	//double sum = 0.0, sum1 = 0.0, sum2 = 0.0, sum3 = 0.0, f0 = filter[0], fk = 0.0;
+void Convolute(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w, int h, Vector<double>& filter, int kernel_size, int half_kernel) {
 	int  w2 = w << 1, w3 = w * 3, w4 = w << 2;
 	double f0 = filter[0];
 	
@@ -241,14 +238,14 @@ void _convol(Vector<Temp>& buf, const Vector<T>& src_d, Vector<T>& dst_d, int w,
 }
 
 
-void resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
-void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
+void Resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh);
+void Resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh);
 
 
-void box_blur_gray(ByteMat& src, ByteMat& dst, int radius, dword options = 0);
+void BoxBlurGray(ByteMat& src, ByteMat& dst, int radius, dword options = 0);
 
 template <class T=byte, class Temp=int> // <byte, int>, <float, float>
-void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0, double sigma = 0.0) {
+void GaussianBlur(const DMatrix<T>& src, DMatrix<T>& dst, int kernel_size = 0, double sigma = 0.0) {
 	if (kernel_size == 0)
 		kernel_size = (int)(max<double>(1, (4.0 * sigma + 1.0 - 1e-8)) * 2 + 1);
 		
@@ -268,18 +265,18 @@ void gaussian_blur(const matrix_t<T>& src, matrix_t<T>& dst, int kernel_size = 0
 	buf.SetCount(buf_sz << 2);
 	filter.SetCount(kernel_size);
 	
-	get_gaussian_kernel(kernel_size, sigma, filter);
+	GetGaussianKernel(kernel_size, sigma, filter);
 	
 	if (std::is_same<T, byte>::value) {
-		_convol_u8<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+		ConvoluteByte<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
 	else {
-		_convol<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
+		Convolute<T,Temp>(buf, src_d, dst_d, w, h, filter, kernel_size, half_kernel);
 	}
 }
 
 template <class T>
-Vector<Pointf> hough_transform(matrix_t<T>& img, double rho_res, double theta_res, double threshold) {
+Vector<Pointf> HoughTransform(DMatrix<T>& img, double rho_res, double theta_res, double threshold) {
 	auto& image = img.data;
 	
 	int width = img.cols;
@@ -306,9 +303,9 @@ Vector<Pointf> hough_transform(matrix_t<T>& img, double rho_res, double theta_re
 		tabSin[n] = FastSin(ang) * irho;
 		tabCos[n] = FastCos(ang) * irho;
 		ang += theta_res
-		   }
+	}
 	       
-		   // stage 1. fill accumulator
+	// stage 1. fill accumulator
 	for (int i = 0; i < height; i++) {
 		for (int j = 0; j < width; j++) {
 			if (image[i * step + j] != 0) {
@@ -362,11 +359,10 @@ Vector<Pointf> hough_transform(matrix_t<T>& img, double rho_res, double theta_re
 
 
 template <class T, class P>
-void scharr_derivatives(const P& src, matrix_t<T>& dst) {
+void ScharrDerivatives(const P& src, DMatrix<T>& dst) {
 	int w = src.cols;
 	int h = src.rows;
 	int dstep = w << 1;
-	//int a, b, c, d, e, f;
 	int srow0 = 0, srow1 = 0, srow2 = 0, drow = 0;
 	thread_local static Vector<T> trow0, trow1;
 	trow0.SetCount((w + 2) << 2);
@@ -440,7 +436,7 @@ void scharr_derivatives(const P& src, matrix_t<T>& dst) {
 // compute gradient using Sobel kernel [1 2 1] * [-1 0 1]^T
 // dst: [gx,gy,...]
 template <class T=byte, class Temp=int>
-void sobel_derivatives(const matrix_t<T>& src, matrix_t<Temp>& dst) {
+void SobelDerivatives(const DMatrix<T>& src, DMatrix<Temp>& dst) {
 	int w = src.cols;
 	int h = src.rows;
 	int dstep = w << 1;
@@ -506,7 +502,7 @@ void sobel_derivatives(const matrix_t<T>& src, matrix_t<Temp>& dst) {
 // please note:
 // dst_(type) size should be cols = src.cols+1, rows = src.rows+1
 template <class T>
-void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector<int>* dst_sqsum, Vector<int>* dst_tilted) {
+void ComputeIntegralImage(const DMatrix<T>& src, Vector<int>& dst_sum, Vector<int>* dst_sqsum, Vector<int>* dst_tilted) {
 	int w0 = src.cols, h0 = src.rows;
 	auto& src_d = src.data;
 	int w1 = (w0 + 1);
@@ -627,7 +623,7 @@ void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector
 }
 
 template <class T>
-void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
+void EqualizeHistogram(const DMatrix<T>& src, DMatrix<T>& dst) {
 	int w = src.cols;
 	int h = src.rows;
 	auto& src_d = src.data;
@@ -636,7 +632,6 @@ void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
 	
 	auto& dst_d = dst.data;
 	int size = w * h;
-	//var i = 0, prev = 0, hist0, norm;
 	
 	static thread_local Vector<int> hist0;
 	hist0.SetCount(256 << 2);
@@ -659,7 +654,7 @@ void equalize_histogram(const matrix_t<T>& src, matrix_t<T>& dst) {
 }
 
 template <class T>
-void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_thresh) {
+void Canny(const DMatrix<T>& src, DMatrix<T>& dst, int low_thresh, int high_thresh) {
 	int w = src.cols;
 	int h = src.rows;
 	auto& src_d = src.data;
@@ -680,7 +675,7 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 	map.SetCount(((h + 2) * (w + 2)) << 2);
 	stack.SetCount((h * w) << 2);
 	
-	matrix_t<int> dxdy_m(w, h, 2);
+	DMatrix<int> dxdy_m(w, h, 2);
 	auto& dxdy = dxdy_m.data;
 	int row0 = 1;
 	int row1 = (w + 2 + 1);
@@ -689,7 +684,7 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 	int map_i = (map_w + 1);
 	int stack_i = 0;
 	
-	sobel_derivatives(src, dxdy_m);
+	SobelDerivatives(src, dxdy_m);
 	
 	if (low_thresh > high_thresh) {
 		i = low_thresh;
@@ -836,17 +831,17 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 	
 }
 
-// transform is 3x3 matrix_t
-void warp_perspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
+// transform is 3x3 DMatrix
+void WarpPerspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
 
 
-// transform is 3x3 or 2x3 matrix_t only first 6 values referenced
-void warp_affine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
+// transform is 3x3 or 2x3 DMatrix only first 6 values referenced
+void WarpAffine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
 
 // Basic RGB Skin detection filter
 // from http://popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html
 template <class T>
-void skindetector(const matrix_t<T>& src, matrix_t<T>& dst) {
+void SkinDetector(const DMatrix<T>& src, DMatrix<T>& dst) {
 	int i = src.width * src.height;
 	while (i--) {
 		int j = i * 4;

@@ -8,7 +8,7 @@ void GaussianBlurBase::Process() {
     int r = radius;
     int kernel_size = r * 2 + 1;
     
-    gaussian_blur<byte,int>(tmp0, tmp1, kernel_size, sigma);
+    GaussianBlur<byte,int>(tmp0, tmp1, kernel_size, sigma);
     
     OutputFromGray(tmp1);
 }

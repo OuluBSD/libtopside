@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class T>
-void identity(matrix_t<T>& M, int value = 1) {
+void Identity(DMatrix<T>& M, int value = 1) {
 	auto& src = M.data;
 	int rows = M.rows;
 	int cols = M.cols;
@@ -24,7 +24,7 @@ void identity(matrix_t<T>& M, int value = 1) {
 }
 
 template <class T>
-void transpose(matrix_t<T>& At, const matrix_t<T>& A) {
+void Transpose(DMatrix<T>& At, const DMatrix<T>& A) {
 	int nrows = A.rows;
 	int ncols = A.cols;
 	int Ai = 0, Ati = 0, pAt = 0;
@@ -40,7 +40,7 @@ void transpose(matrix_t<T>& At, const matrix_t<T>& A) {
 
 // C = A * B
 template <class T>
-void multiply(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
+void Multiply(DMatrix<T>& C, const DMatrix<T>& A, const DMatrix<T>& B) {
 	int Ap = 0;
 	int Cp = 0;
 	int ncols = A.cols;
@@ -65,7 +65,7 @@ void multiply(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 
 // C = A * B'
 template <class T>
-void multiply_ABt(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
+void MultiplyABt(DMatrix<T>& C, const DMatrix<T>& A, const DMatrix<T>& B) {
 	int Ap = 0, Cp = 0;
 	int ncols = A.cols, nrows = A.rows, mrows = B.rows;
 	const auto& ad = A.data;
@@ -86,7 +86,7 @@ void multiply_ABt(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 
 // C = A' * B
 template <class T>
-void multiply_AtB(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
+void MultiplyAtB(DMatrix<T>& C, const DMatrix<T>& A, const DMatrix<T>& B) {
 	int Ap = 0;
 	int Cp = 0;
 	int ncols = A.cols, nrows = A.rows, mcols = B.cols;
@@ -109,7 +109,7 @@ void multiply_AtB(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 
 // C = A * A'
 template <class T>
-void multiply_AAt(matrix_t<T>& C, const matrix_t<T>& A) {
+void MultiplyAAt(DMatrix<T>& C, const DMatrix<T>& A) {
 	int pCdiag = 0, p_A = 0, pA = 0;
 	int ncols = A.cols, nrows = A.rows;
 	const auto& ad = A.data;
@@ -134,9 +134,7 @@ void multiply_AAt(matrix_t<T>& C, const matrix_t<T>& A) {
 
 // C = A' * A
 template <class T>
-void multiply_AtA(matrix_t<T>& C, const matrix_t<T>& A) {
-	//var i = 0, j = 0, k = 0;
-	//var p_A = 0, pA = 0, pB = 0, p_C = 0, pC = 0, p_CC = 0;
+void MultiplyAtA(DMatrix<T>& C, const DMatrix<T>& A) {
 	int ncols = A.cols, nrows = A.rows;
 	const auto& ad = A.data;
 	auto& cd = C.data;
@@ -161,7 +159,7 @@ void multiply_AtA(matrix_t<T>& C, const matrix_t<T>& A) {
 
 // various small matrix operations
 template <class T>
-void identity_3x3(matrix_t<T>& M, T value = 1) {
+void Identity3x3(DMatrix<T>& M, T value = 1) {
 	auto& dt = M.data;
 	dt[0] = value;
 	dt[4] = value;
@@ -175,7 +173,7 @@ void identity_3x3(matrix_t<T>& M, T value = 1) {
 }
 
 template <class T>
-void invert_3x3(const matrix_t<T>&from, matrix_t<T>& to) {
+void Invert3x3(const DMatrix<T>&from, DMatrix<T>& to) {
 	auto& A = from.data;
 	auto& invA = to.data;
 	double t1 = A[4];
@@ -208,7 +206,7 @@ void invert_3x3(const matrix_t<T>&from, matrix_t<T>& to) {
 
 // C = A * B
 template <class T>
-void multiply_3x3(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
+void Multiply3x3(DMatrix<T>& C, const DMatrix<T>& A, const DMatrix<T>& B) {
 	auto& Cd = C.data;
 	auto& Ad = A.data;
 	auto& Bd = B.data;
@@ -233,7 +231,7 @@ void multiply_3x3(matrix_t<T>& C, const matrix_t<T>& A, const matrix_t<T>& B) {
 }
 
 template <class T>
-double mat3x3_determinant(const matrix_t<T>& M) {
+double DeterminantMat3x3(const DMatrix<T>& M) {
 	const auto& md = M.data;
 	return  md[0] * md[4] * md[8] -
 			md[0] * md[5] * md[7] -
@@ -244,7 +242,7 @@ double mat3x3_determinant(const matrix_t<T>& M) {
 }
 
 template <class T>
-double determinant_3x3(	T M11, T M12, T M13,
+double Determinant3x3(	T M11, T M12, T M13,
 						T M21, T M22, T M23,
 						T M31, T M32, T M33) {
 	return  M11 * M22 * M33 - M11 * M23 * M32 -

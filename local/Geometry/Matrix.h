@@ -558,7 +558,7 @@ template<class T> inline void PartMatrix<T,4,4>::Adjoint(T& a, const T& m) {
 
 
 template <class T>
-class matrix_t : Moveable<matrix_t<T>> {
+class DMatrix : Moveable<DMatrix<T>> {
 	
 public:
 	using type = T;
@@ -567,16 +567,16 @@ public:
 	int rows;
 	int channels;
 	
-    matrix_t() : cols(0), rows(0), channels(0) {}
+    DMatrix() : cols(0), rows(0), channels(0) {}
     
-    matrix_t(int c, int r, int ch) {
+    DMatrix(int c, int r, int ch) {
         ASSERT(c > 0 && r > 0 && ch > 0);
         this->cols = c;
         this->rows = r;
         this->channels = ch;
         allocate();
     }
-    matrix_t(int c, int r, int ch, const Vector<T>& data) {
+    DMatrix(int c, int r, int ch, const Vector<T>& data) {
         ASSERT(c > 0 && r > 0 && ch > 0);
         this->cols = c;
         this->rows = r;
@@ -584,9 +584,9 @@ public:
         this->data <<= data;
     }
     
-    matrix_t(const matrix_t& s) {*this = s;}
+    DMatrix(const DMatrix& s) {*this = s;}
     
-    void operator=(const matrix_t& s) {
+    void operator=(const DMatrix& s) {
         cols = s.cols;
         rows = s.rows;
         channels = s.channels;
@@ -596,7 +596,7 @@ public:
         data.SetCount(cols * rows * channels, 0);
     }
     
-    void copy_to(matrix_t& other) const {
+    void copy_to(DMatrix& other) const {
         ASSERT(other.cols == cols);
         ASSERT(other.rows == rows);
         ASSERT(other.channels == channels);
@@ -616,14 +616,14 @@ public:
 	
 };
 
-using ByteMat = matrix_t<byte>;
-using FloatMat = matrix_t<float>;
+using ByteMat = DMatrix<byte>;
+using FloatMat = DMatrix<float>;
 
 
 
 template <class T>
 struct Pyramid : Moveable<Pyramid<T>> {
-	using Mat = matrix_t<T>;
+	using Mat = DMatrix<T>;
 	
 	Vector<Mat> data;
 	
@@ -674,7 +674,7 @@ typedef Pyramid<float> pyraf;
 
 
 template <class T>
-void DownsamplePyramid(const matrix_t<T>& src, matrix_t<T>& dst, int sx=0, int sy=0) {
+void DownsamplePyramid(const DMatrix<T>& src, DMatrix<T>& dst, int sx=0, int sy=0) {
 	int w = src.cols;
 	int h = src.rows;
 	int w2 = w >> 1;

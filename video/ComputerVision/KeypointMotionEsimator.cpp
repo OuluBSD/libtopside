@@ -4,14 +4,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-keypoint_motion_estimator::keypoint_motion_estimator(int motionModel) :
+KeypointMotionEstimator::KeypointMotionEstimator(int motionModel) :
 	mm_kernel(motionModel == MM_AFFINE ? (TransformationKernel&)aff : (TransformationKernel&)homo),
 	motionModel(motionModel)
 {
 	
 }
 
-void keypoint_motion_estimator::Init(Size size) {
+void KeypointMotionEstimator::Init(Size size) {
 	// ransac params
 	ransac_param.Init(4, 2, 0.5, 0.99);
 	
@@ -41,20 +41,20 @@ void keypoint_motion_estimator::Init(Size size) {
     for (auto& c: corners1) c.Clear();
 };
 
-const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& frame1) {
+const FloatMat& KeypointMotionEstimator::Estimate(ByteMat& frame0, ByteMat& frame1) {
 	ASSERT(!prev_img_pyr.IsEmpty());
 	ASSERT(!curr_img_pyr.IsEmpty());
 	
 	// update pyramids
     //frame0.copy_to(prev_img_pyr.data[0]);
     //frame1.copy_to(curr_img_pyr.data[0]);
-    box_blur_gray(frame0, prev_img_pyr.data[0], 2, 0);
-    box_blur_gray(frame1, curr_img_pyr.data[0], 2, 0);
+    BoxBlurGray(frame0, prev_img_pyr.data[0], 2, 0);
+    BoxBlurGray(frame1, curr_img_pyr.data[0], 2, 0);
 
 	// find keypoints
-    int count = y.detect(prev_img_pyr.data[0], corners0);
+    int count = y.Detect(prev_img_pyr.data[0], corners0);
     if(count > max_points) {
-		Sort(corners0, keypoint_t());
+		Sort(corners0, Keypoint());
 		count = max_points;
     }
 
@@ -75,7 +75,7 @@ const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& fr
 	int lk_iters = 30;
     double lk_epsilon = 0.01;
     double lk_min_eigen = 0.001;
-	of.track(prev_img_pyr, curr_img_pyr, prev_xy, curr_xy, count,
+	of.Track(prev_img_pyr, curr_img_pyr, prev_xy, curr_xy, count,
 		  lk_win|0, lk_iters|0, point_status, lk_epsilon, lk_min_eigen);
 
     // leave good correspondences only
@@ -108,10 +108,10 @@ const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& fr
     // estimate motion
     bool ok = false;
     if (motionModel == MM_AFFINE) {
-		ok = aff_me.ransac(ransac_param, aff,
+		ok = aff_me.Ransac(ransac_param, aff,
 						   corners0, corners1, mm3x3, &match_mask, 1000);
     } else {
-		ok = homo_me.lmeds(ransac_param, homo,
+		ok = homo_me.Lmeds(ransac_param, homo,
 						   corners0, corners1, mm3x3, &match_mask, 1000);
     }
 
@@ -131,10 +131,10 @@ const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& fr
 		corners0.SetCount(good_cnt);
 		corners1.SetCount(good_cnt);
 		//LOG("mask: " + good_cnt);
-		mm_kernel.run(corners0, corners1, mm3x3);
+		mm_kernel.Run(corners0, corners1, mm3x3);
 	}
 	else {
-		identity_3x3(mm3x3, 1.0f);
+		Identity3x3(mm3x3, 1.0f);
 	}
 	
 	return mm3x3;

@@ -49,30 +49,14 @@ void OpticalFlowLKBase::Process() {
     
     curr_img_pyr.Build(d0, true);
     
-    of.track(prev_img_pyr, curr_img_pyr, prev_xy, curr_xy, point_count, win_size, max_iterations, point_status, epsilon, min_eigen);
+    of.Track(prev_img_pyr, curr_img_pyr, prev_xy, curr_xy, point_count, win_size, max_iterations, point_status, epsilon, min_eigen);
     
     OutputFromGray(d0);
     
-    prune_oflow_points();
+    PruneOverflowPoints();
 }
 
-/*void OpticalFlowLKBase::on_canvas_click() {
-    var coords = canvas.relMouseCoords(e);
-    if(coords.x > 0 & coords.y > 0 & coords.x < canvasWidth & coords.y < canvasHeight) {
-        curr_xy[point_count<<1] = coords.x;
-        curr_xy[(point_count<<1)+1] = coords.y;
-        point_count++;
-    }
-}*/
-
-/*void OpticalFlowLKBase::draw_circle(int x, int y) {
-    ctx.beginPath();
-    ctx.arc(x, y, 4, 0, Math.PI*2, true);
-    ctx.closePath();
-    ctx.fill();
-}*/
-
-void OpticalFlowLKBase::prune_oflow_points() {
+void OpticalFlowLKBase::PruneOverflowPoints() {
     int n = point_count;
     int i=0,j=0;
 	
@@ -91,21 +75,6 @@ void OpticalFlowLKBase::prune_oflow_points() {
     }
     point_count = j;
 }
-
-/*Point OpticalFlowLKBase::relMouseCoords(event) {
-    var totalOffsetX=0,totalOffsetY=0,canvasX=0,canvasY=0;
-    var currentElement = this;
-
-    do {
-        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
-        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
-    } while(currentElement = currentElement.offsetParent)
-
-    canvasX = event.pageX - totalOffsetX;
-    canvasY = event.pageY - totalOffsetY;
-
-    return keypoint_t(canvasX, canvasY);
-}*/
 
 
 NAMESPACE_TOPSIDE_END

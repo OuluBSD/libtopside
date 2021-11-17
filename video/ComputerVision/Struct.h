@@ -4,20 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-
-
-template <class T>
-class data_t {
-	
-public:
-	Vector<T> data;
-
-	data_t() {}
-};
-
-
-
-
 struct BBox : Moveable<BBox> {
 	double	x;
 	double	y;
@@ -49,8 +35,8 @@ struct BBox : Moveable<BBox> {
 };
 
 
-bool _group_func(const BBox& r1, const BBox& r2);
-void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors = 1);
+bool IsBBoxCollision(const BBox& r1, const BBox& r2);
+void GroupRectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors = 1);
 	
 
 
@@ -83,7 +69,7 @@ public:
 	};
 };
 
-class keypoint_t : Moveable<keypoint_t> {
+class Keypoint : Moveable<Keypoint> {
 	
 public:
 	int x = 0;
@@ -92,10 +78,10 @@ public:
 	int level = 0;
 	double angle = -1.0;
 	
-	keypoint_t() {}
-	keypoint_t(const keypoint_t& s) {*this = s;}
-	keypoint_t(int x, int y) : x(x), y(y) {}
-	keypoint_t(int x, int y, int score, int level, double angle) {
+	Keypoint() {}
+	Keypoint(const Keypoint& s) {*this = s;}
+	Keypoint(int x, int y) : x(x), y(y) {}
+	Keypoint(int x, int y, int score, int level, double angle) {
 		this->x = x;
 		this->y = y;
 		this->score = score;
@@ -111,7 +97,7 @@ public:
 		this->angle = angle;
 	}
 	
-	void operator=(const keypoint_t& s) {
+	void operator=(const Keypoint& s) {
 		x = s.x;
 		y = s.y;
 		score = s.score;
@@ -127,7 +113,7 @@ public:
 		angle = -1.0f;
 	}
 	
-	bool operator()(const keypoint_t& a, const keypoint_t& b) const {
+	bool operator()(const Keypoint& a, const Keypoint& b) const {
 		return a.score > b.score;
 	}
 	

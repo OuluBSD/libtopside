@@ -17,7 +17,7 @@ void BbfFaceBase::InitDefault() {
     img_u8.SetSize(w, h, 1);
     
 	LoadCascadeBbfFace(cascade);
-    b.prepare_cascade(cascade);
+    b.PrepareCascade(cascade);
     
 }
 
@@ -29,10 +29,10 @@ void BbfFaceBase::Process() {
     Grayscale(input, img_u8);
 
     // possible options
-    //equalize_histogram(img_u8, img_u8);
+    //EqualizeHistogram(img_u8, img_u8);
 
-    b.build_pyramid(pyr, img_u8, 24*2, 24*2, 4);
-	b.detect(detected_rects, pyr, cascade);
+    b.BuildPyramid(pyr, img_u8, 24*2, 24*2, 4);
+	b.Detect(detected_rects, pyr, cascade);
 	
 	int limit = 10;
 	if (detected_rects.GetCount() > limit) {
@@ -40,7 +40,7 @@ void BbfFaceBase::Process() {
 		detected_rects.SetCount(limit);
 	}
 	
-    group_rectangles(detected_rects, rects, 1);
+    GroupRectangles(detected_rects, rects, 1);
     
     OutputFromGray(img_u8);
 }

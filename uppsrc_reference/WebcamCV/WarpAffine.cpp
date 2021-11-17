@@ -18,7 +18,7 @@ WarpAffineBase::WarpAffineBase() {
 void WarpAffineBase::Process() {
     Grayscale(input, tmp0);
     
-    warp_affine(tmp0, tmp1, mat_affine, 0);
+    WarpAffine(tmp0, tmp1, mat_affine, 0);
     
     OutputFromGray(tmp1);
 }

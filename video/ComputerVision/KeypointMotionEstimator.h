@@ -5,13 +5,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class keypoint_motion_estimator {
+class KeypointMotionEstimator {
 	FloatMat mm3x3;
-	homography2d homo;
-	affine2d aff;
+	Homography2D homo;
+	Affine2D aff;
 	TransformationKernel& mm_kernel;
 	int motionModel = MM_AFFINE;
-	ransac_params_t ransac_param;
+	RansacParams ransac_param;
 	pyra8 curr_img_pyr;
 	pyra8 prev_img_pyr;
 	ByteMat match_mask;
@@ -19,17 +19,17 @@ class keypoint_motion_estimator {
 	int point_count;
 	Vector<byte> point_status;
 	Vector<float> prev_xy, curr_xy;
-	Vector<keypoint_t> corners0, corners1;
-	yape06 y;
-	optical_flow_lk of;
-	motion_estimator<affine2d> aff_me;
-	motion_estimator<homography2d> homo_me;
+	Vector<Keypoint> corners0, corners1;
+	Yape06 y;
+	OpticalFlowLK of;
+	MotionEstimator<Affine2D> aff_me;
+	MotionEstimator<Homography2D> homo_me;
 	
 public:
 	
-	keypoint_motion_estimator(int motionModel);
+	KeypointMotionEstimator(int motionModel);
 	void Init(Size size);
-    const FloatMat& estimate(ByteMat& frame0, ByteMat& frame1);
+    const FloatMat& Estimate(ByteMat& frame0, ByteMat& frame1);
     
     int GetMotionModel() const {return motionModel;}
     

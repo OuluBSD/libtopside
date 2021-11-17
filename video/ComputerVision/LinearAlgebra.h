@@ -187,11 +187,7 @@ void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, do
 	Cache& cache = Cache::Local();
 	double eps = EPSILON * 2.0;
 	double minval = FLT_MIN;
-	//int i = 0, j = 0, k = 0, iter = 0, ;
 	int max_iter = max(m, 30);
-	//var Ai = 0, Aj = 0, Vi = 0, Vj = 0, changed = 0;
-	//var c = 0.0, s = 0.0, t = 0.0;
-	//var t0 = 0.0, t1 = 0.0, sd = 0.0, beta = 0.0, gamma = 0.0, delta = 0.0, a = 0.0, p = 0.0, b = 0.0;
 	int seed = 0x1234;
 	double val = 0.0, val0 = 0.0, asum = 0.0;
 	
@@ -414,15 +410,13 @@ void JacobiSVDImpl(Vector<T>& At, double astep, Vector<T>& _W, Vector<T>* Vt, do
 }
 
 
-bool lu_solve(matrix_t<float>& A, matrix_t<float>& B);
+bool LUSolve(DMatrix<float>& A, DMatrix<float>& B);
 
 template<class T>
-bool cholesky_solve(matrix_t<T>& A, matrix_t<T>& B) {
-	//var col = 0, row = 0, col2 = 0, cs = 0, rs = 0, i = 0, j = 0;
+bool CholeskySolve(DMatrix<T>& A, DMatrix<T>& B) {
 	int size = A.cols;
 	Vector<T>& ad = A.data;
 	Vector<T>& bd = B.data;
-	//var val, inv_diag;
 	
 	for (int col = 0; col < size; col++) {
 		double inv_diag = 1.0;
@@ -490,12 +484,11 @@ bool cholesky_solve(matrix_t<T>& A, matrix_t<T>& B) {
 }
 
 template <class T>
-void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_t<T>* V, int options = 0) {
-	matrix_t<T>& w = *W;
-	matrix_t<T>& u = *U;
-	matrix_t<T>& v = *V;
+void SVDDecompose(const DMatrix<T>& A, DMatrix<T>* W, DMatrix<T>* U, DMatrix<T>* V, int options = 0) {
+	DMatrix<T>& w = *W;
+	DMatrix<T>& u = *U;
+	DMatrix<T>& v = *V;
 	
-	//var at = 0, i = 0, j = 0,
 	int _m = A.rows;
 	int _n = A.cols;
 	int dt = 1; // we only work with single channel
@@ -507,13 +500,13 @@ void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_
 		Swap(m, n);
 	}
 	
-	matrix_t<T> a_mt(m, m, dt);
-	matrix_t<T> w_mt(1, n, dt);
-	matrix_t<T> v_mt(n, n, dt);
+	DMatrix<T> a_mt(m, m, dt);
+	DMatrix<T> w_mt(1, n, dt);
+	DMatrix<T> v_mt(n, n, dt);
 	
 	if (!at) {
 		// transpose
-		transpose(a_mt, A);
+		Transpose(a_mt, A);
 	}
 	else {
 		int i;
@@ -545,7 +538,7 @@ void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_
 			}
 		}
 		else if (U) {
-			transpose(u, a_mt);
+			Transpose(u, a_mt);
 		}
 		
 		if (V && (options & SVD_V_T)) {
@@ -555,7 +548,7 @@ void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_
 			}
 		}
 		else if (V) {
-			transpose(v, v_mt);
+			Transpose(v, v_mt);
 		}
 	}
 	else {
@@ -566,7 +559,7 @@ void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_
 			}
 		}
 		else if (U) {
-			transpose(u, v_mt);
+			Transpose(u, v_mt);
 		}
 			
 		if (V && (options & SVD_V_T)) {
@@ -576,34 +569,28 @@ void svd_decompose(const matrix_t<T>& A, matrix_t<T>* W, matrix_t<T>* U, matrix_
 			}
 		}
 		else if (V) {
-			transpose(v, a_mt);
+			Transpose(v, a_mt);
 		}
 	}
 }
 
 
 template <class T>
-void svd_solve(const matrix_t<T>& A, matrix_t<T>& X, const matrix_t<T>& B) {
-	//var i = 0, j = 0, k = 0;
-	var pu = 0, pv = 0;
-	var nrows = A.rows, ncols = A.cols;
-	//double sum = 0.0, xsum = 0.0, tol = 0.0;
-	var dt = A.type | C1_t;
+void SVDSolve(const DMatrix<T>& A, DMatrix<T>& X, const DMatrix<T>& B) {
+	int pu = 0, pv = 0;
+	int nrows = A.rows, ncols = A.cols;
+	int dt = 1;
 	
-	var u_buff = cache.get_buffer((nrows * nrows) << 3);
-	var w_buff = cache.get_buffer(ncols << 3);
-	var v_buff = cache.get_buffer((ncols * ncols) << 3);
+	DMatrix u_mt(nrows, nrows, dt, u_buff.data);
+	DMatrix w_mt(1, ncols, dt, w_buff.data);
+	DMatrix v_mt(ncols, ncols, dt, v_buff.data);
 	
-	matrix_t u_mt(nrows, nrows, dt, u_buff.data);
-	matrix_t w_mt(1, ncols, dt, w_buff.data);
-	matrix_t v_mt(ncols, ncols, dt, v_buff.data);
-	
-	var bd = B.data;
+	auto& bd = B.data;
 	ud = u_mt.data;
 	wd = w_mt.data;
 	vd = v_mt.data;
 	
-	svd_decompose(A, w_mt, u_mt, v_mt, 0);
+	SVDDecompose(A, w_mt, u_mt, v_mt, 0);
 	
 	double tol = EPSILON * wd[0] * ncols;
 	
@@ -621,31 +608,25 @@ void svd_solve(const matrix_t<T>& A, matrix_t<T>& X, const matrix_t<T>& B) {
 		X.data[i] = xsum;
 	}
 	
-	cache.put_buffer(u_buff);
-	cache.put_buffer(w_buff);
-	cache.put_buffer(v_buff);
 }
 
 
 template <class T>
-void svd_invert(const matrix_t<T>& Ai, const matrix_t<T>& A) {
-	//var i = 0, j = 0, k = 0;
-	//var pu = 0, pv = 0, pa = 0;
+void SVDInvert(const DMatrix<T>& Ai, const DMatrix<T>& A) {
 	int nrows = A.rows;
 	int ncols = A.cols;
-	//var sum = 0.0, tol = 0.0;
 	var dt = A.type | C1_t;
 	
-	matrix_t u_mt(nrows, nrows, dt);
-	matrix_t w_mt(1, ncols, dt);
-	matrix_t v_mt(ncols, ncols, dt);
+	DMatrix u_mt(nrows, nrows, dt);
+	DMatrix w_mt(1, ncols, dt);
+	DMatrix v_mt(ncols, ncols, dt);
 	
 	auto& id = Ai.data;
 	auto& ud = u_mt.data;
 	auto& wd = w_mt.data;
 	auto& vd = v_mt.data;
 	
-	svd_decompose(A, w_mt, u_mt, v_mt, 0);
+	SVDDecompose(A, w_mt, u_mt, v_mt, 0);
 	
 	double tol = EPSILON * wd[0] * ncols;
 	
@@ -663,7 +644,7 @@ void svd_invert(const matrix_t<T>& Ai, const matrix_t<T>& A) {
 
 
 
-void eigenVV(const FloatMat& A, FloatMat* vects=0, FloatMat* vals=0);
+void EigenVV(const FloatMat& A, FloatMat* vects=0, FloatMat* vals=0);
 
 
 NAMESPACE_TOPSIDE_END

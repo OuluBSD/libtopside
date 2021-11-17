@@ -15,9 +15,9 @@ public:
 	
 	BrightnessBinaryFeature();
 	
-	void prepare_cascade(Cascade& cascade);
-	const pyra8& build_pyramid(pyra8& img_pyr, const pyra8::Mat& src, int min_width, int min_height, int interval = 4);
-	void detect(Vector<BBox>& rects, const pyra8& pyramid, Cascade& cascade);
+	void PrepareCascade(Cascade& cascade);
+	const pyra8& BuildPyramid(pyra8& img_pyr, const pyra8::Mat& src, int min_width, int min_height, int interval = 4);
+	void Detect(Vector<BBox>& rects, const pyra8& pyramid, Cascade& cascade);
 	
 	
 };

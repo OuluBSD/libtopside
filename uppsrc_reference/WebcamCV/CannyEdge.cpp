@@ -9,9 +9,9 @@ void CannyEdgeBase::Process() {
     int r = blur_radius;
     int kernel_size = (r+1) << 1;
     
-    gaussian_blur(tmp0, tmp1, kernel_size, 0);
+    GaussianBlur(tmp0, tmp1, kernel_size, 0);
     
-    canny(tmp1, tmp0, low_threshold, high_threshold);
+    Canny(tmp1, tmp0, low_threshold, high_threshold);
     
     OutputFromGray(tmp0);
 }

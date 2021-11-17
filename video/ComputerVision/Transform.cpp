@@ -3,7 +3,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-void transform::perspective_4point_transform(
+void transform::Perspective4PointTransform(
 		Vector<float>& mat,
 		double src_x0, double src_y0, double dst_x0, double dst_y0,
 		double src_x1, double src_y1, double dst_x1, double dst_y1,
@@ -123,7 +123,7 @@ void transform::perspective_4point_transform(
 	mat[8] = (T)(-Hl6 * t50 - Hl7 * (t44 * t15) + t47 * t15);
 }
 
-void transform::invert_affine_transform(const Vector<double>& src, Vector<double>& dst) {
+void transform::InvertAffineTransform(const Vector<double>& src, Vector<double>& dst) {
 	double m11 = src[0], m12 = src[1], m13 = src[2];
 	double m21 = src[3], m22 = src[4], m23 = src[5];
 	
@@ -138,7 +138,7 @@ void transform::invert_affine_transform(const Vector<double>& src, Vector<double
 	dst[5] = det * (m13 * m21 - m11 * m23);
 }
 
-void transform::invert_perspective_transform(const Vector<double>& src, Vector<double>& dst) {
+void transform::InvertPerspectiveTransform(const Vector<double>& src, Vector<double>& dst) {
 	double m11 = src[0], m12 = src[1], m13 = src[2];
 	double m21 = src[3], m22 = src[4], m23 = src[5];
 	double m31 = src[6], m32 = src[7], m33 = src[8];

@@ -5,12 +5,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-inline double sqr(double x) {return x*x;}
+inline double Square(double x) {return x*x;}
 
 
 // does isotropic normalization
 template <class T>
-void iso_normalize_points(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, Vector<T>& T0, Vector<T>& T1, int count) {
+void IsoNormalizePoints(const Vector<Keypoint>& from, Vector<Keypoint>& to, Vector<T>& T0, Vector<T>& T1, int count) {
 	double cx0 = 0.0, cy0 = 0.0, d0 = 0.0, s0 = 0.0;
 	double cx1 = 0.0, cy1 = 0.0, d1 = 0.0, s1 = 0.0;
 	double  dx = 0.0,  dy = 0.0;
@@ -56,157 +56,53 @@ void iso_normalize_points(const Vector<keypoint_t>& from, Vector<keypoint_t>& to
 }
 
 
-bool have_collinear_points(Vector<keypoint_t>& points, int count);
+bool HaveCollinearPoints(Vector<Keypoint>& points, int count);
 
 
 class TransformationKernel {
 	
 	
 public:
-	virtual bool run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model) = 0;
-	virtual void error(const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, const FloatMat& model, Vector<double>& err) = 0;
+	virtual bool Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) = 0;
+	virtual void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err) = 0;
 	
 };
 
-class affine2d : public TransformationKernel {
-	matrix_t<float> T0;
-	matrix_t<float> T1;
-	matrix_t<float> AtA;
-	matrix_t<float> AtB;
-	matrix_t<float> a_mt;
-	matrix_t<float> b_mt;
+class Affine2D : public TransformationKernel {
+	DMatrix<float> T0;
+	DMatrix<float> T1;
+	DMatrix<float> AtA;
+	DMatrix<float> AtB;
+	DMatrix<float> a_mt;
+	DMatrix<float> b_mt;
 
 public:
-	affine2d() :
-		T0(3, 3, 1),
-		T1(3, 3, 1),
-		AtA(6, 6, 1),
-		AtB(6, 1, 1)
-	{
-		// empty constructor
-	}
-	
-	bool run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model) override {
-		int count = from.GetCount();
-		
-		int dt = 1;
-		auto& md = model.data;
-		auto&t0d = T0.data;
-		auto&t1d = T1.data;
-		
-		iso_normalize_points(from, to, t0d, t1d, count);
-		
-		a_mt.SetSize(6, 2*count, 1);
-		b_mt.SetSize(1, 2*count, 1);
-		
-		auto& ad = a_mt.data;
-		auto&bd = b_mt.data;
-		
-		for (int i = 0; i < count; ++i) {
-			const keypoint_t& pt0 = from[i];
-			const keypoint_t& pt1 = to[i];
-			
-			double px = t0d[0] * pt0.x + t0d[1] * pt0.y + t0d[2];
-			double py = t0d[3] * pt0.x + t0d[4] * pt0.y + t0d[5];
-			
-			int j = i * 2 * 6;
-			ad[j] = px;
-			ad[j+1] = py;
-			ad[j+2] = 1.0;
-			ad[j+3] = 0.0;
-			ad[j+4] = 0.0;
-			ad[j+5] = 0.0;
-			
-			j += 6;
-			ad[j] = 0.0;
-			ad[j+1] = 0.0;
-			ad[j+2] = 0.0;
-			ad[j+3] = px;
-			ad[j+4] = py;
-			ad[j+5] = 1.0;
-			
-			bd[i<<1] = t1d[0] * pt1.x + t1d[1] * pt1.y + t1d[2];
-			bd[(i<<1)+1] = t1d[3] * pt1.x + t1d[4] * pt1.y + t1d[5];
-		}
-		
-		multiply_AtA(AtA, a_mt);
-		multiply_AtB(AtB, a_mt, b_mt);
-		
-		lu_solve(AtA, AtB);
-		
-		md[0] = AtB.data[0], md[1] = AtB.data[1], md[2] = AtB.data[2];
-		md[3] = AtB.data[3], md[4] = AtB.data[4], md[5] = AtB.data[5];
-		md[6] = 0.0, md[7] = 0.0, md[8] = 1.0; // fill last row
-		
-		// denormalize
-		invert_3x3(T1, T1);
-		multiply_3x3(model, T1, model);
-		multiply_3x3(model, model, T0);
-		
-		return true;
-	}
-	
-	void error(const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, const FloatMat& model, Vector<double>& err) {
-		int count = from.GetCount();
-		const auto& m = model.data;
-		
-		auto f = from.Begin();
-		auto t = to.Begin();
-		for (auto& e : err) {
-			const keypoint_t& pt0 = *f;
-			const keypoint_t& pt1 = *t;
-			
-			e = sqr(pt1.x - m[0] * pt0.x - m[1] * pt0.y - m[2]) +
-			    sqr(pt1.y - m[3] * pt0.x - m[4] * pt0.y - m[5]);
-			
-			f++;
-			t++;
-		}
-		
-		/*for (int i = 0; i < count; ++i) {
-			const keypoint_t& pt0 = from[i];
-			const keypoint_t& pt1 = to[i];
-			
-			err[i] = sqr(pt1.x - m[0] * pt0.x - m[1] * pt0.y - m[2]) +
-					 sqr(pt1.y - m[3] * pt0.x - m[4] * pt0.y - m[5]);
-		}*/
-	}
-	
-	bool check_subset(const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, int count) {
-		return true; // all good
-	}
+	Affine2D();
+	bool Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) override;
+	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err);
+	bool CheckSubset(const Vector<Keypoint>& from, const Vector<Keypoint>& to, int count);
 	
 };
 
 
-class homography2d : public TransformationKernel {
-	matrix_t<float> mLtL;
-	matrix_t<float> Evec;
-	matrix_t<float> T0;
-	matrix_t<float> T1;
+class Homography2D : public TransformationKernel {
+	DMatrix<float> mLtL;
+	DMatrix<float> Evec;
+	DMatrix<float> T0;
+	DMatrix<float> T1;
 
 
 public:
 	
-	homography2d() :
-		mLtL(9, 9, 1),
-		Evec(9, 9, 1)
-	{
-		// empty constructor
-		T0.SetSize(3, 3, 1);
-		T1.SetSize(3, 3, 1);
-		mLtL.SetSize(9, 9, 1);
-		Evec.SetSize(9, 9, 1);
-	}
-	
-	bool run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model) override;
-	void error(const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, const FloatMat& model, Vector<double>& err);
-	bool check_subset(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, int count);
+	Homography2D();
+	bool Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) override;
+	void Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err);
+	bool CheckSubset(const Vector<Keypoint>& from, Vector<Keypoint>& to, int count);
 	
 };
 
 
-class ransac_params_t {
+class RansacParams {
 	
 public:
 	int size;
@@ -220,7 +116,7 @@ public:
 		this->prob = prob;
 	}
 	
-	int update_iters(double _eps, int max_iters) {
+	int UpdateIters(double _eps, int max_iters) {
 		double num = FastLn(1 - this->prob);
 		double denom = FastLn(1 - pow_fast(1 - _eps, this->size));
 		return (denom >= 0 || -num >= max_iters*(-denom)) ? max_iters : (int)round(num / denom);
@@ -229,16 +125,15 @@ public:
 
 
 template <class Kernel>
-class motion_estimator {
+class MotionEstimator {
 	Vector<int> indices;
 
 public:
 	
-	bool get_subset(Kernel& kernel, const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, int need_cnt, int max_cnt, Vector<keypoint_t>& from_sub, Vector<keypoint_t>& to_sub) {
+	bool GetSubset(Kernel& kernel, const Vector<Keypoint>& from, const Vector<Keypoint>& to, int need_cnt, int max_cnt, Vector<Keypoint>& from_sub, Vector<Keypoint>& to_sub) {
 		int max_try = 1000;
 		indices.Reserve(need_cnt);
 		indices.SetCount(0);
-		//var i = 0, j = 0, ssiter = 0, idx_i = 0, ok = false;
 		int ssiter = 0;
 		bool ok = false;
 		int i = 0;
@@ -266,7 +161,7 @@ public:
 				auto& t = to_sub.Add();
 				f = from[idx_i];
 				t = to[idx_i];
-				if (!kernel.check_subset(from_sub, to_sub, i + 1)) {
+				if (!kernel.CheckSubset(from_sub, to_sub, i + 1)) {
 					ssiter++;
 					continue;
 				}
@@ -279,13 +174,13 @@ public:
 	}
 	
 	
-	int find_inliers(Kernel& kernel, const FloatMat& model, const Vector<keypoint_t>& from, Vector<keypoint_t>& to, double thresh, Vector<double>& err, ByteMat& mask) {
+	int FindInliers(Kernel& kernel, const FloatMat& model, const Vector<Keypoint>& from, Vector<Keypoint>& to, double thresh, Vector<double>& err, ByteMat& mask) {
 		int numinliers = 0;
 		double t = thresh * thresh;
 		int count = from.GetCount();
 		ASSERT(count);
 		
-		kernel.error(from, to, model, err);
+		kernel.Error(from, to, model, err);
 		
 		for (int i = 0; i < count; ++i) {
 			bool f = err[i] <= t;
@@ -295,7 +190,7 @@ public:
 		return numinliers;
 	}
 	
-	bool ransac(ransac_params_t& params, Kernel& kernel, const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model, ByteMat* mask, int max_iters = 1000) {
+	bool Ransac(RansacParams& params, Kernel& kernel, const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model, ByteMat* mask, int max_iters = 1000) {
 		int count = from.GetCount();
 		if (count < params.size)
 			return false;
@@ -304,8 +199,8 @@ public:
 		int niters = max_iters;
 		bool result = false;
 		
-		Vector<keypoint_t> subset0;
-		Vector<keypoint_t> subset1;
+		Vector<Keypoint> subset0;
+		Vector<Keypoint> subset1;
 		bool found = false;
 		
 		int mc = model.cols;
@@ -324,7 +219,7 @@ public:
 		
 		// special case
 		if (count == model_points) {
-			if (kernel.run(from, to, M) == 0) {
+			if (kernel.Run(from, to, M) == 0) {
 				return false;
 			}
 			
@@ -339,7 +234,7 @@ public:
 		
 		for (int iter = 0; iter < niters; ++iter) {
 			// generate subset
-			found = get_subset(kernel, from, to, model_points, count, subset0, subset1);
+			found = GetSubset(kernel, from, to, model_points, count, subset0, subset1);
 			if (!found) {
 				if (iter == 0) {
 					return false;
@@ -348,21 +243,21 @@ public:
 			}
 			
 			ASSERT(subset0.GetCount() == model_points);
-			nmodels = kernel.run(subset0, subset1, M);
+			nmodels = kernel.Run(subset0, subset1, M);
 			if (nmodels <= 0)
 				continue;
 				
 			// TODO handle multimodel output
 			
 			ASSERT(from.GetCount() == count);
-			numinliers = find_inliers(kernel, M, from, to, params.thresh, err, curr_mask);
+			numinliers = FindInliers(kernel, M, from, to, params.thresh, err, curr_mask);
 			
 			if (numinliers > max(inliers_max, model_points - 1)) {
 				M.copy_to(model);
 				inliers_max = numinliers;
 				if (mask)
 					curr_mask.copy_to(*mask);
-				niters = params.update_iters((count - numinliers) / count, niters);
+				niters = params.UpdateIters((count - numinliers) / count, niters);
 				result = true;
 			}
 		}
@@ -370,7 +265,7 @@ public:
 		return result;
 	}
 	
-	bool lmeds(ransac_params_t& params, Kernel& kernel, const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model, ByteMat* mask, int max_iters = 1000) {
+	bool Lmeds(RansacParams& params, Kernel& kernel, const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model, ByteMat* mask, int max_iters = 1000) {
 		int count = from.GetCount();
 		if (count < params.size)
 			return false;
@@ -379,8 +274,8 @@ public:
 		int niters = max_iters;
 		bool result = false;
 		
-		Vector<keypoint_t> subset0;
-		Vector<keypoint_t> subset1;
+		Vector<Keypoint> subset0;
+		Vector<Keypoint> subset1;
 		bool found = false;
 		
 		int mc = model.cols;
@@ -402,11 +297,11 @@ public:
 		double median_i = 0.0;
 		
 		params.eps = 0.45;
-		niters = params.update_iters(params.eps, niters);
+		niters = params.UpdateIters(params.eps, niters);
 		
 		// special case
 		if (count == model_points) {
-			if (kernel.run(from, to, M) == 0) {
+			if (kernel.Run(from, to, M) == 0) {
 				return false;
 			}
 			
@@ -421,7 +316,7 @@ public:
 		
 		for (int iter = 0; iter < niters; ++iter) {
 			// generate subset
-			found = get_subset(kernel, from, to, model_points, count, subset0, subset1);
+			found = GetSubset(kernel, from, to, model_points, count, subset0, subset1);
 			if (!found) {
 				if (iter == 0) {
 					return false;
@@ -430,15 +325,15 @@ public:
 			}
 			
 			ASSERT(subset0.GetCount() == model_points);
-			nmodels = kernel.run(subset0, subset1, M);
+			nmodels = kernel.Run(subset0, subset1, M);
 			if (nmodels <= 0)
 				continue;
 				
 			// TODO handle multimodel output
 			ASSERT(from.GetCount() == count);
-			kernel.error(from, to, M, err);
+			kernel.Error(from, to, M, err);
 			ASSERT(err.GetCount() == count);
-			median_i = median(err, 0, count - 1);
+			median_i = Median(err, 0, count - 1);
 			
 			if (median_i < min_median) {
 				min_median = median_i;
@@ -451,7 +346,7 @@ public:
 			sigma = 2.5 * 1.4826 * (1 + 5.0 / (count - model_points)) * FastSqrt(min_median);
 			sigma = max(sigma, 0.001);
 			
-			numinliers = find_inliers(kernel, model, from, to, sigma, err, curr_mask);
+			numinliers = FindInliers(kernel, model, from, to, sigma, err, curr_mask);
 			if (mask)
 				*mask = curr_mask;
 				

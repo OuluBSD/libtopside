@@ -2,16 +2,16 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-const int fast_corners::offsets16[] = {0, 3, 1, 3, 2, 2, 3, 1, 3, 0, 3, -1, 2, -2, 1, -3, 0, -3, -1, -3, -2, -2, -3, -1, -3, 0, -3, 1, -2, 2, -1, 3};
+const int FastCorners::offsets16[] = {0, 3, 1, 3, 2, 2, 3, 1, 3, 0, 3, -1, 2, -2, 1, -3, 0, -3, -1, -3, -2, -2, -3, -1, -3, 0, -3, 1, -2, 2, -1, 3};
 
 
-fast_corners::fast_corners() {
+FastCorners::FastCorners() {
 	threshold_tab.SetCount(512);
 	pixel_off.SetCount(25);
 	score_diff.SetCount(25);
 }
 
-void fast_corners::_cmp_offsets(PixVec& pixel, int step, int pattern_size) {
+void FastCorners::_cmp_offsets(PixVec& pixel, int step, int pattern_size) {
 	const int* offsets = offsets16;
 	for (int k = 0; k < pattern_size; ++k) {
 		int j = k << 1;
@@ -23,7 +23,7 @@ void fast_corners::_cmp_offsets(PixVec& pixel, int step, int pattern_size) {
 	}
 }
 
-int fast_corners::_cmp_score_16(const Vector<byte>& src, int off, const PixVec& pixel, Vector<int>& d, int threshold) {
+int FastCorners::_cmp_score_16(const Vector<byte>& src, int off, const PixVec& pixel, Vector<int>& d, int threshold) {
 	int N = 25;
 	int v = src[off];
 	
@@ -70,7 +70,7 @@ int fast_corners::_cmp_score_16(const Vector<byte>& src, int off, const PixVec& 
 }
 
 
-int fast_corners::set_threshold(int threshold) {
+int FastCorners::set_threshold(int threshold) {
 	int _threshold = min(max(threshold, 0), 255);
 	for (int i = -255; i <= 255; ++i) {
 		threshold_tab[(i + 255)] = (i < -_threshold ? 1 : (i > _threshold ? 2 : 0));
@@ -78,7 +78,7 @@ int fast_corners::set_threshold(int threshold) {
 	return _threshold;
 }
 
-int fast_corners::detect(const ByteMat& src, Vector<keypoint_t>& corners, int border) {
+int FastCorners::Detect(const ByteMat& src, Vector<Keypoint>& corners, int border) {
 	int K = 8, N = 25;
 	const auto& img = src.data;
 	int w = src.cols;
@@ -230,7 +230,7 @@ int fast_corners::detect(const ByteMat& src, Vector<keypoint_t>& corners, int bo
 				 score > buf[pprev+jm1] && score > buf[pprev+j] && score > buf[pprev+jp1] &&
 				 score > buf[curr+jm1] && score > buf[curr+j] && score > buf[curr+jp1])) {
 				// save corner
-				keypoint_t& pt = corners.Add();
+				Keypoint& pt = corners.Add();
 				pt.x = j;
 				pt.y = (i - 1);
 				pt.score = score;

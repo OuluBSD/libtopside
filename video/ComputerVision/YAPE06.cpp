@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void yape06::compute_laplacian(const Vector<byte>& src, Vector<int>& dst, int w, int h, int Dxx, int Dyy, int sx, int sy, int ex, int ey) {
+void Yape06::ComputeLaplacian(const Vector<byte>& src, Vector<int>& dst, int w, int h, int Dxx, int Dyy, int sx, int sy, int ex, int ey) {
 	int yrow = (sy * w + sx);
 	int row = yrow;
 	
@@ -19,7 +19,7 @@ void yape06::compute_laplacian(const Vector<byte>& src, Vector<int>& dst, int w,
 	}
 }
 
-double yape06::hessian_min_eigen_value(const Vector<byte>& src, int off, double tr, int Dxx, int Dyy, int Dxy, int Dyx) {
+double Yape06::HessianMinEigenValue(const Vector<byte>& src, int off, double tr, int Dxx, int Dyy, int Dxy, int Dyx) {
 	double Ixx = -2 * src[off] + src[off + Dxx] + src[off - Dxx];
 	double Iyy = -2 * src[off] + src[off + Dyy] + src[off - Dyy];
 	double Ixy = src[off + Dxy] + src[off - Dxy] - src[off + Dyx] - src[off - Dyx];
@@ -28,7 +28,7 @@ double yape06::hessian_min_eigen_value(const Vector<byte>& src, int off, double 
 	return min(abs(tr - sqrt_delta), abs(-(tr + sqrt_delta)));
 }
 
-int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
+int Yape06::Detect(const ByteMat& src, Vector<Keypoint>& points, int border) {
 	using T = int;
 	
 	int w = src.cols;
@@ -55,7 +55,7 @@ int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 	
 	laplacian.SetCount(w * h, 0);
 	
-	compute_laplacian(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
+	ComputeLaplacian(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
 	points.SetCount(0);
 	points.Reserve(512);
 	row = (sy * w + sx);
@@ -75,9 +75,9 @@ int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 				 lv > laplacian[rowx - w + 1] && lv > laplacian[rowx + w + 1])
 			   ) {
 			   
-				min_eigen_value = (T)hessian_min_eigen_value(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
+				min_eigen_value = (T)HessianMinEigenValue(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
 				if (min_eigen_value > eigen_thresh) {
-					keypoint_t& pt = points.Add();
+					Keypoint& pt = points.Add();
 					pt.x = x;
 					pt.y = y;
 					pt.score = min_eigen_value;

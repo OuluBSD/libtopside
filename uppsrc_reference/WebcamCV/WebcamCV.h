@@ -7,17 +7,6 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-struct match_t : Moveable<match_t> {
-    int screen_idx;
-    int pattern_lev;
-    int pattern_idx;
-    int distance;
-    
-    void Set(int screen_idx=0, int pattern_lev=0, int pattern_idx=0, int distance=0);
-};
-
-
-
 
 class ImageProcBase {
 	
@@ -27,9 +16,9 @@ protected:
 	Size sz;
 	
 	void OutputFromGray(const ByteMat& gray);
-	void OutputFromXY(const matrix_t<int>& img_gxgy);
-	void render_corners(const Vector<keypoint_t>& corners, ByteMat& img);
-	void render_corners(const ByteMat& bg, const ByteMat* mini_img, const Vector<keypoint_t>& corners, ByteMat& img);
+	void OutputFromXY(const DMatrix<int>& img_gxgy);
+	void RenderCorners(const Vector<Keypoint>& corners, ByteMat& img);
+	void RenderCorners(const ByteMat& bg, const ByteMat* mini_img, const Vector<Keypoint>& corners, ByteMat& img);
 	
 public:
 	Vector<ColorLine> lines;
@@ -90,7 +79,7 @@ public:
 };
 
 class ScharrBase : public ImageProcBase {
-	matrix_t<int> img_gxgy; // 2ch
+	DMatrix<int> img_gxgy; // 2ch
 	
 public:
 	
@@ -99,7 +88,7 @@ public:
 };
 
 class SobelBase : public ImageProcBase {
-	matrix_t<int> img_gxgy; // 2ch
+	DMatrix<int> img_gxgy; // 2ch
 	
 public:
 	
@@ -108,8 +97,8 @@ public:
 };
 
 class SobelEdgeBase : public ImageProcBase {
-	matrix_t<int> img_gxgy; // 2ch
-	matrix_t<int> img_mag; // 1ch
+	DMatrix<int> img_gxgy; // 2ch
+	DMatrix<int> img_mag; // 1ch
 	
 public:
 	
@@ -142,7 +131,7 @@ public:
 };
 
 class WarpAffineBase : public ImageProcBase {
-	matrix_t<float> mat_affine; // 1ch
+	DMatrix<float> mat_affine; // 1ch
 	
 public:
 	WarpAffineBase();
@@ -152,7 +141,7 @@ public:
 };
 
 class WarpPerspectiveBase : public ImageProcBase {
-	matrix_t<float> transform; // 1ch
+	DMatrix<float> transform; // 1ch
 	
 public:
 	WarpPerspectiveBase();
@@ -162,34 +151,10 @@ public:
 };
 
 class VideoStabilizerBase : public ImageProcBase {
-	/*
-	var videoWidth=0, videoHeight=0;
-    var canvasWidth=0, canvasHeight=0;
-    var ctx;
-    var stabilizer, frame_grabber, motion_estimator;
-    var frameSize = new videostab.size_t(videoWidth, videoHeight);
-
-    var render_gl, tex0, tex1;
-
-    var video = document.getElementById('webcam');
-    var canvas = document.getElementById('canvas');
-    var canvas_gl = document.getElementById('webgl');
-    var stat_div = document.getElementById('log');
-
-    var stat = new profiler();
+    OnepassStabilizer stabilizer;
+    Vector<Keypoint> corners;
     
-    
-	var gui,options,ctx,canvasWidth,canvasHeight;
-	var img_u8, img_u8_smooth, screen_corners, num_corners;
-	var pattern_corners, pattern_preview;
-	var matches, homo3x3, match_mask;
-    */
-    onepass_stabilizer stabilizer;
-    Vector<keypoint_t> corners;
-    
-    void videOK(int videoWidth, int videoHeight);
-    void processGL();
-    void tCorners(const Vector<float>& M, int w, int h);
+    void TCorners(const Vector<float>& M, int w, int h);
     
 public:
 	VideoStabilizerBase();
@@ -198,31 +163,14 @@ public:
     void Process() override;
     void InitDefault() override;
 	
-	struct OglRenderer {
-		int width, height;
-		GLuint gl; // context
-		Vector<float> worldMatrxi;
-		
-		#if 0
-		void renderGL(int w, int h, view);
-		void render();
-		void initShaders();
-		uint32 getShader(gl, id);
-		uint32 createAndSetupTexture();
-		void setRectangle(x, y, width, height);
-		void setCorners(tlx, tly, trx, _try, brx, bry, blx, bly);
-		void render_images(tex_id0, tex_id1, image0, image1, w, h, p);
-		#endif
-	};
-	
 };
 
 class FastCornersBase : public ImageProcBase {
 	int threshold = 20;
 	
-	Vector<keypoint_t> corners;
+	Vector<Keypoint> corners;
 	Size sz;
-	fast_corners c;
+	FastCorners c;
 	
 	
 public:
@@ -238,8 +186,8 @@ class Yape06Base : public ImageProcBase {
 	int lap_thres = 30;
 	int eigen_thres = 25;
 	
-	Vector<keypoint_t> corners;
-	yape06 y;
+	Vector<Keypoint> corners;
+	Yape06 y;
 	
 public:
 	
@@ -253,8 +201,8 @@ public:
 
 class YapeBase : public ImageProcBase {
 	
-	Vector<keypoint_t> corners;
-	yape	y;
+	Vector<Keypoint> corners;
+	Yape y;
 	
 	
 public:
@@ -265,46 +213,46 @@ public:
 };
 
 class OrbBase : public ImageProcBase {
-    matrix_t<byte> lev0_img;
-    matrix_t<byte> lev_img;
-    matrix_t<byte> pattern_preview;
-    matrix_t<byte> match_mask;
-    matrix_t<byte> train_img;
-    matrix_t<float> homo3x3;
-    Vector<keypoint_t> screen_corners;
+    DMatrix<byte> lev0_img;
+    DMatrix<byte> lev_img;
+    DMatrix<byte> pattern_preview;
+    DMatrix<byte> match_mask;
+    DMatrix<byte> train_img;
+    DMatrix<float> homo3x3;
+    Vector<Keypoint> screen_corners;
     
     Vector<BinDescriptor> screen_descriptors;
     Vector<Vector<BinDescriptor>> pattern_descriptors;
     
-    Vector<Vector<keypoint_t>> pattern_corners;
-    Vector<keypoint_t> lev_corners, lev_descr;
-    Vector<keypoint_t> corners, pattern_xy, screen_xy;
-    Vector<match_t> matches;
+    Vector<Vector<Keypoint>> pattern_corners;
+    Vector<Keypoint> lev_corners, lev_descr;
+    Vector<Keypoint> corners, pattern_xy, screen_xy;
+    Vector<KeypointMatch> matches;
 	int num_train_levels = 4;
 	Orb o;
-	yape06 y;
-    homography2d mm_kernel;
-    ransac_params_t ransac_param;
-    motion_estimator<homography2d> mot;
+	Yape06 y;
+    Homography2D mm_kernel;
+    RansacParams ransac_param;
+    MotionEstimator<Homography2D> mot;
     
     int blur_size = 5;
     int lap_thres = 30;
     int eigen_thres = 25;
-    int match_threshold = 48;
+    int KeypointMatchhreshold = 48;
     
     
-    void render_matches(const Vector<match_t>& matches);
+    void render_matches(const Vector<KeypointMatch>& matches);
     void render_pattern_shape();
     
 public:
 	static const int u_max[];
 	
-    void train_pattern();
-	int detect_keypoints(const ByteMat& img, Vector<keypoint_t>& corners, int max_allowed);
-    double ic_angle(const ByteMat& img, int px, int py);
-    int find_transform(Vector<match_t>& matches);
-    int match_pattern();
-    void tCorners(const Vector<float>& M, int w, int h);
+    void TrainPattern();
+	int DetectKeypoints(const ByteMat& img, Vector<Keypoint>& corners, int max_allowed);
+    double IcAngle(const ByteMat& img, int px, int py);
+    int FindTransform(Vector<KeypointMatch>& matches);
+    int MatchPattern();
+    void TCorners(const Vector<float>& M, int w, int h);
     
 	void InitDefault() override;
 	void Process() override;
@@ -320,7 +268,7 @@ class OpticalFlowLKBase : public ImageProcBase {
 	pyra8 curr_img_pyr, prev_img_pyr;
 	Vector<byte> point_status;
 	Vector<float> curr_xy, prev_xy;
-	optical_flow_lk of;
+	OpticalFlowLK of;
 	
 	void MakeRandomPoints();
 public:
@@ -330,10 +278,7 @@ public:
 	void SetEpsilon(double d) {epsilon = d; ASSERT(epsilon >= 0.001 && epsilon <= 0.1);}
 	void SetMinEigen(double d) {min_eigen = d; ASSERT(min_eigen >= 0.001 && min_eigen <= 0.01);}
 	
-	void on_canvas_click();
-	void draw_circle(int x, int y);
-	void prune_oflow_points();
-	Point relMouseCoords();
+	void PruneOverflowPoints();
 	
 	void InitDefault() override;
 	void Process() override;
@@ -351,8 +296,6 @@ class BbfFaceBase : public ImageProcBase {
 public:
 	BbfFaceBase();
 	
-	void draw_faces(Vector<BBox>& rects, double sc, bool max);
-	
 	void InitDefault() override;
 	void Process() override;
 	
@@ -365,19 +308,17 @@ class HaarFaceBase : public ImageProcBase {
 	double scale_factor = 1.15;
 	bool use_canny = false;
 	double edges_density = 0.13;
-	bool is_equalize_histogram = true;
+	bool is_EqualizeHistogram = true;
 	Vector<int> ii_sum;
 	Vector<int> ii_sqsum;
 	Vector<int> ii_tilted;
 	Vector<int> ii_canny;
 	Vector<BBox> detected_rects;
 	ComplexCascade classifier;
-	haar h;
+	Haar h;
 	
 public:
 	HaarFaceBase();
-	
-	void draw_faces(Vector<BBox>& rects, double sc, bool max);
 	
 	void InitDefault() override;
 	void Process() override;
@@ -423,8 +364,8 @@ class WebcamCV : public TopWindow {
 	WarpPerspectiveBase warppers;
 	VideoStabilizerBase vidstab;
 	FastCornersBase fastcor;
-	Yape06Base yape06;
-	YapeBase yape;
+	Yape06Base Yape06;
+	YapeBase Yape;
 	OrbBase orb;
 	OpticalFlowLKBase optflowlk;
 	BbfFaceBase bbf;
@@ -473,9 +414,6 @@ public:
 	String GetDemoName(int i);
 	
 	void LoadImageSeries(String dir);
-	void OpenFile();
-	void OpenVideoCapture(int dev, int cap, int fmt, int res);
-	void CloseInput();
 	void SelectDemo();
 	void Data();
 	

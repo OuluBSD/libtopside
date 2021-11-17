@@ -4,7 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-bool _group_func(const BBox& r1, const BBox& r2) {
+bool IsBBoxCollision(const BBox& r1, const BBox& r2) {
 	auto w1 = r1.width;
 	auto w2 = r2.width;
 	double distance = (w1 * 0.25 + 0.5);
@@ -18,7 +18,7 @@ bool _group_func(const BBox& r1, const BBox& r2) {
 }
 
 
-void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors) {
+void GroupRectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int min_neighbors) {
 	struct Node : Moveable<Node> {
 		int			parent;
 		BBox		element;
@@ -49,7 +49,7 @@ void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int m
 		for (int j = 0; j < c; ++j) {
 			if (i != j &&
 				!node[j].element.IsEmpty() &&
-				_group_func(node[i].element, node[j].element)) {
+				IsBBoxCollision(node[i].element, node[j].element)) {
 				int root2 = j;
 				
 				while (node[root2].parent != -1)

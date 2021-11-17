@@ -4,7 +4,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-class fast_corners {
+class FastCorners {
 	typedef Vector<int> PixVec;
 	
 	Vector<byte> threshold_tab;
@@ -16,10 +16,10 @@ public:
 	static const int offsets16[];
 	
 	
-	fast_corners();
+	FastCorners();
 	
 	int set_threshold(int threshold);
-	int detect(const ByteMat& src, Vector<keypoint_t>& corners, int border = 3);
+	int Detect(const ByteMat& src, Vector<Keypoint>& corners, int border = 3);
 	
 private:
 	void _cmp_offsets(PixVec& pixel, int step, int pattern_size);

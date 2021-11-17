@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
+void OpticalFlowLK::Track(const pyra8& prev_pyr, pyra8& curr_pyr,
 	const Vector<float>& prev_xy, Vector<float>& curr_xy, int count,
 	int win_size, int max_iter, Vector<uint8>& status,
 	double eps, double min_eigen_threshold) {
@@ -23,7 +23,7 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 	int h0 = prev_imgs[0].rows;
 	int lw = 0, lh = 0;
 	
-	matrix_t<int> deriv_m(w0, h0, 2);
+	DMatrix<int> deriv_m(w0, h0, 2);
 	
 	thread_local static Vector<int> iwin_buf;
 	thread_local static Vector<int> deriv_iwin;
@@ -79,7 +79,7 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 		brd_b = (lh - win_size);
 		
 		// calculate level derivatives
-		scharr_derivatives(prev_imgs[level], deriv_m);
+		ScharrDerivatives(prev_imgs[level], deriv_m);
 		int dlen = deriv_lev.GetCount();
 		
 		// iterate through points

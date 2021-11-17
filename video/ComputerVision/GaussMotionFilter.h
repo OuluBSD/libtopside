@@ -5,17 +5,17 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class gauss_motion_filter {
+class GaussMotionFilter {
 	int radius = 15;
 	double stdev = -1.0;
 	
 	Vector<float> weight;
-	matrix_t<float> m33;
+	DMatrix<float> m33;
 	
 public:
 	
-	void setup(int radius=15, double stdev=-1.0);
-	FloatMat& stabilize(int idx, Vector<FloatMat>& motions, int from_idx, int to_idx);
+	void Setup(int radius=15, double stdev=-1.0);
+	FloatMat& Stabilize(int idx, Vector<FloatMat>& motions, int from_idx, int to_idx);
 	
 };
 

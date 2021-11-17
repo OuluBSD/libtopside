@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool have_collinear_points(Vector<keypoint_t>& points, int count) {
+bool HaveCollinearPoints(Vector<Keypoint>& points, int count) {
 	int i = (count - 1);
 	double dx1 = 0.0, dy1 = 0.0, dx2 = 0.0, dy2 = 0.0;
 	
@@ -23,9 +23,108 @@ bool have_collinear_points(Vector<keypoint_t>& points, int count) {
 }
 
 
+Affine2D::Affine2D() :
+	T0(3, 3, 1),
+	T1(3, 3, 1),
+	AtA(6, 6, 1),
+	AtB(6, 1, 1)
+{}
+
+bool Affine2D::Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) {
+	int count = from.GetCount();
+	
+	int dt = 1;
+	auto& md = model.data;
+	auto&t0d = T0.data;
+	auto&t1d = T1.data;
+	
+	IsoNormalizePoints(from, to, t0d, t1d, count);
+	
+	a_mt.SetSize(6, 2*count, 1);
+	b_mt.SetSize(1, 2*count, 1);
+	
+	auto& ad = a_mt.data;
+	auto&bd = b_mt.data;
+	
+	for (int i = 0; i < count; ++i) {
+		const Keypoint& pt0 = from[i];
+		const Keypoint& pt1 = to[i];
+		
+		double px = t0d[0] * pt0.x + t0d[1] * pt0.y + t0d[2];
+		double py = t0d[3] * pt0.x + t0d[4] * pt0.y + t0d[5];
+		
+		int j = i * 2 * 6;
+		ad[j] = px;
+		ad[j+1] = py;
+		ad[j+2] = 1.0;
+		ad[j+3] = 0.0;
+		ad[j+4] = 0.0;
+		ad[j+5] = 0.0;
+		
+		j += 6;
+		ad[j] = 0.0;
+		ad[j+1] = 0.0;
+		ad[j+2] = 0.0;
+		ad[j+3] = px;
+		ad[j+4] = py;
+		ad[j+5] = 1.0;
+		
+		bd[i<<1] = t1d[0] * pt1.x + t1d[1] * pt1.y + t1d[2];
+		bd[(i<<1)+1] = t1d[3] * pt1.x + t1d[4] * pt1.y + t1d[5];
+	}
+	
+	MultiplyAtA(AtA, a_mt);
+	MultiplyAtB(AtB, a_mt, b_mt);
+	
+	LUSolve(AtA, AtB);
+	
+	md[0] = AtB.data[0], md[1] = AtB.data[1], md[2] = AtB.data[2];
+	md[3] = AtB.data[3], md[4] = AtB.data[4], md[5] = AtB.data[5];
+	md[6] = 0.0, md[7] = 0.0, md[8] = 1.0; // fill last row
+	
+	// denormalize
+	Invert3x3(T1, T1);
+	Multiply3x3(model, T1, model);
+	Multiply3x3(model, model, T0);
+	
+	return true;
+}
+
+void Affine2D::Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err) {
+	int count = from.GetCount();
+	const auto& m = model.data;
+	
+	auto f = from.Begin();
+	auto t = to.Begin();
+	for (auto& e : err) {
+		const Keypoint& pt0 = *f;
+		const Keypoint& pt1 = *t;
+		
+		e = Square(pt1.x - m[0] * pt0.x - m[1] * pt0.y - m[2]) +
+		    Square(pt1.y - m[3] * pt0.x - m[4] * pt0.y - m[5]);
+		
+		f++;
+		t++;
+	}
+}
+
+bool Affine2D::CheckSubset(const Vector<Keypoint>& from, const Vector<Keypoint>& to, int count) {
+	return true; // all good
+}
 
 
-void homography2d::error(const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, const FloatMat& model, Vector<double>& err) {
+Homography2D::Homography2D() :
+	mLtL(9, 9, 1),
+	Evec(9, 9, 1)
+{
+	// empty constructor
+	T0.SetSize(3, 3, 1);
+	T1.SetSize(3, 3, 1);
+	mLtL.SetSize(9, 9, 1);
+	Evec.SetSize(9, 9, 1);
+}
+
+void Homography2D::Error(const Vector<Keypoint>& from, const Vector<Keypoint>& to, const FloatMat& model, Vector<double>& err) {
 	const auto& m = model.data;
 	
 	auto f = from.Begin();
@@ -33,8 +132,8 @@ void homography2d::error(const Vector<keypoint_t>& from, const Vector<keypoint_t
 	ASSERT(from.GetCount() == to.GetCount());
 	err.SetCount(from.GetCount());
 	for (auto& e : err) {
-		const keypoint_t& pt0 = *f;
-		const keypoint_t& pt1 = *t;
+		const Keypoint& pt0 = *f;
+		const Keypoint& pt1 = *t;
 		
 		double ww = 1.0 / (m[6] * pt0.x + m[7] * pt0.y + 1.0);
 		double dx = (m[0] * pt0.x + m[1] * pt0.y + m[2]) * ww - pt1.x;
@@ -46,16 +145,16 @@ void homography2d::error(const Vector<keypoint_t>& from, const Vector<keypoint_t
 	}
 }
 
-bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, int count) {
+bool Homography2D::CheckSubset(const Vector<Keypoint>& from, Vector<Keypoint>& to, int count) {
 	// seems to reject good subsets actually
-	//if( have_collinear_points(from, count) || have_collinear_points(to, count) ) {
+	//if( HaveCollinearPoints(from, count) || HaveCollinearPoints(to, count) ) {
 	//return false;
 	//}
 	if (count == 4) {
 		int negative = 0;
 		
-		keypoint_t fp0 = from[0], fp1 = from[1], fp2 = from[2], fp3 = from[3];
-		keypoint_t tp0 = to[0], tp1 = to[1], tp2 = to[2], tp3 = to[3];
+		Keypoint fp0 = from[0], fp1 = from[1], fp2 = from[2], fp3 = from[3];
+		Keypoint tp0 = to[0], tp1 = to[1], tp2 = to[2], tp3 = to[3];
 		
 		// set1
 		double A11 = fp0.x, A12 = fp0.y, A13 = 1.0;
@@ -66,8 +165,8 @@ bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_
 		double B21 = tp1.x, B22 = tp1.y, B23 = 1.0;
 		double B31 = tp2.x, B32 = tp2.y, B33 = 1.0;
 		
-		double detA = determinant_3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
-		double detB = determinant_3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
+		double detA = Determinant3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
+		double detB = Determinant3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
 		
 		if (detA*detB < 0)
 			negative++;
@@ -81,8 +180,8 @@ bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_
 		B21 = tp2.x, B22 = tp2.y;
 		B31 = tp3.x, B32 = tp3.y;
 		
-		detA = determinant_3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
-		detB = determinant_3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
+		detA = Determinant3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
+		detB = Determinant3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
 		
 		if (detA*detB < 0)
 			negative++;
@@ -96,8 +195,8 @@ bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_
 		B21 = tp2.x, B22 = tp2.y;
 		B31 = tp3.x, B32 = tp3.y;
 		
-		detA = determinant_3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
-		detB = determinant_3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
+		detA = Determinant3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
+		detB = Determinant3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
 		
 		if (detA*detB < 0)
 			negative++;
@@ -111,8 +210,8 @@ bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_
 		B21 = tp1.x, B22 = tp1.y;
 		B31 = tp3.x, B32 = tp3.y;
 		
-		detA = determinant_3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
-		detB = determinant_3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
+		detA = Determinant3x3(A11, A12, A13, A21, A22, A23, A31, A32, A33);
+		detB = Determinant3x3(B11, B12, B13, B21, B22, B23, B31, B32, B33);
 		
 		if (detA*detB < 0)
 			negative++;
@@ -124,7 +223,7 @@ bool homography2d::check_subset(const Vector<keypoint_t>& from, Vector<keypoint_
 	return true; // all good
 }
 
-bool homography2d::run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, FloatMat& model) {
+bool Homography2D::Run(const Vector<Keypoint>& from, Vector<Keypoint>& to, FloatMat& model) {
 	auto& md = model.data;
 	auto& t0d = T0.data;
 	auto& t1d = T1.data;
@@ -249,7 +348,7 @@ bool homography2d::run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, F
 			LtL[i*9+j] = LtL[j*9+i];
 	}
 	
-	eigenVV(mLtL, &Evec);
+	EigenVV(mLtL, &Evec);
 	
 	const auto& evd = Evec.data;
 	md[0] = evd[72], md[1] = evd[73], md[2] = evd[74];
@@ -257,8 +356,8 @@ bool homography2d::run(const Vector<keypoint_t>& from, Vector<keypoint_t>& to, F
 	md[6] = evd[78], md[7] = evd[79], md[8] = evd[80];
 	
 	// denormalize
-	multiply_3x3(model, T1, model);
-	multiply_3x3(model, model, T0);
+	Multiply3x3(model, T1, model);
+	Multiply3x3(model, model, T0);
 	
 	// set bottom right to 1.0
 	x = 1.0 / md[8];

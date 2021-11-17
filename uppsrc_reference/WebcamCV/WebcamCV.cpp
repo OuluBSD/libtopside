@@ -33,40 +33,12 @@ WebcamCV::WebcamCV() {
 }
 
 WebcamCV::~WebcamCV() {
-	CloseInput();
+	
 }
 
 void WebcamCV::MainBar(Bar& bar) {
 	bar.Sub("Input", [=](Bar& bar) {
-		bar.Add("Open file", THISBACK(OpenFile));
-		bar.Separator();
 		
-		/*
-		if (!open_dev)
-			vidmgr.Refresh(); // don't refresh while video input is open (buggy currently)
-		
-		for(int i = 0; i < vidmgr.GetCount(); i++) {
-			VideoDevice& dev = vidmgr[i];
-			for(int j = 0; j < dev.GetCaptureCount(); j++) {
-				VideoCaptureDevice& cap = dev.GetCapture(j);
-				
-				String name = dev.GetDescription();
-				if (dev.GetCaptureCount() > 1)
-					 name += " :" + IntStr(j);
-				
-				bar.Sub(name, [=,&cap](Bar& bar) {
-					for(int k = 0; k < cap.GetFormatCount(); k++) {
-						const VideoFormat& fmt = cap.GetFormat(k);
-						for(int l = 0; l < fmt.GetResolutionCount(); l++) {
-							const auto& res = fmt.GetResolution(l);
-							Size sz = res.GetSize();
-							String s = fmt.GetDescription() + " " + sz.ToString();
-							bar.Add(s, THISBACK4(OpenVideoCapture, i, j, k, l));
-						}
-					}
-				});
-			}
-		}*/
 	});
 }
 
@@ -128,48 +100,6 @@ void WebcamCV::LoadImageSeries(String dir) {
 	
 }
 
-void WebcamCV::OpenFile() {
-	
-}
-
-void WebcamCV::CloseInput() {
-	/*if (open_dev) {
-		if (open_cap && stream)
-			open_cap->Close();
-		stream = 0;
-		open_cap = 0;
-		open_dev = 0;
-	}*/
-}
-
-void WebcamCV::OpenVideoCapture(int dev_i, int cap_i, int fmt_i, int res_i) {
-	/*if (dev_i < 0 || cap_i < 0 || fmt_i < 0 || res_i < 0) return;
-	
-	CloseInput();
-	
-	openmgr.Refresh();
-	
-	if (dev_i >= openmgr.GetCount()) return;
-	VideoDevice& dev = openmgr[dev_i];
-	
-	if (cap_i >= dev.GetCaptureCount()) return;
-	VideoCaptureDevice& cap = dev.GetCapture(cap_i);
-	
-	if (fmt_i >= cap.GetFormatCount()) return;
-	const VideoFormat& fmt = cap.GetFormat(fmt_i);
-	
-	if (res_i >= fmt.GetResolutionCount()) return;
-	const VideoFormatResolution& res = fmt.GetResolution(res_i);
-	
-	open_dev = &dev;
-	open_cap = &cap;
-	
-	if (cap.Open(fmt_i, res_i)) {
-		stream = &cap.GetStream();
-	
-	}*/
-}
-
 void WebcamCV::SelectDemo() {
 	if (list.IsCursor())
 		OpenDemo(list.GetCursor());
@@ -177,8 +107,6 @@ void WebcamCV::SelectDemo() {
 }
 
 void WebcamCV::Data() {
-	/*if (open_cap)
-		open_cap->Read();*/
 	
 	if (new_imgs.GetCount())
 		Swap(new_imgs, imgs);
@@ -198,8 +126,8 @@ void WebcamCV::Data() {
 		case DEMO_WARPPERS:		Tick(warppers); break;
 		case DEMO_VIDSTAB:		Tick(vidstab); break;
 		case DEMO_FASTCOR:		Tick(fastcor); break;
-		case DEMO_YAPE06:		Tick(yape06); break;
-		case DEMO_YAPE:			Tick(yape); break;
+		case DEMO_YAPE06:		Tick(Yape06); break;
+		case DEMO_YAPE:			Tick(Yape); break;
 		case DEMO_ORB:			Tick(orb); break;
 		case DEMO_OPTFLOWLK:	Tick(optflowlk); break;
 		case DEMO_BBF:			Tick(bbf); break;
@@ -321,7 +249,7 @@ void ImageProcBase::OutputFromGray(const ByteMat& gray) {
     }
 }
 
-void ImageProcBase::OutputFromXY(const matrix_t<int>& img_gxgy) {
+void ImageProcBase::OutputFromXY(const DMatrix<int>& img_gxgy) {
     ASSERT(img_gxgy.cols == sz.cx && img_gxgy.rows == sz.cy);
     output.SetSize(sz.cx, sz.cy, 4);
     byte* out = output.data.Begin();
@@ -361,7 +289,7 @@ Image ImageProcBase::GetOutput() const {
 	return ib;
 }
 
-void ImageProcBase::render_corners(const Vector<keypoint_t>& corners, ByteMat& out) {
+void ImageProcBase::RenderCorners(const Vector<Keypoint>& corners, ByteMat& out) {
 	int count = corners.GetCount();
 	int step = sz.cx;
 	
@@ -382,7 +310,7 @@ void ImageProcBase::render_corners(const Vector<keypoint_t>& corners, ByteMat& o
     }
 }
 
-void ImageProcBase::render_corners(const ByteMat& bg, const ByteMat* mini_img, const Vector<keypoint_t>& corners, ByteMat& out) {
+void ImageProcBase::RenderCorners(const ByteMat& bg, const ByteMat* mini_img, const Vector<Keypoint>& corners, ByteMat& out) {
 	ASSERT(bg.cols == sz.cx && bg.rows == sz.cy);
 	int count = corners.GetCount();
 	int step = sz.cx;

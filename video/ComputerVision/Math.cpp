@@ -17,12 +17,10 @@ double hypot(double a, double b) {
 	return 0.0;
 }
 
-bool lu_solve(matrix_t<float>& A, matrix_t<float>& B) {
-	//var i = 0, j = 0, k = 0, p = 1;
+bool LUSolve(DMatrix<float>& A, DMatrix<float>& B) {
 	int astep = A.cols;
 	Vector<float>& ad = A.data;
 	Vector<float>& bd = B.data;
-	//var t, alpha, d, s;
 	float t;
 	int p = 1;
 	

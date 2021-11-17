@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void eigenVV(const FloatMat& A, FloatMat* vects, FloatMat* vals) {
+void EigenVV(const FloatMat& A, FloatMat* vects, FloatMat* vals) {
 	ASSERT(vects || vals);
 	int n = A.cols;
 	int dt = 1;

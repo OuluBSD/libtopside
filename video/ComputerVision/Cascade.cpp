@@ -9,7 +9,7 @@ void SimpleCascadeClassifier::Jsonize(JsonIO& json) {
 		("threshold", threshold),
 		("left_val", left_val),
 		("right_val", right_val),
-		("tilted", tilted) // haar::detect_single_scale
+		("tilted", tilted) // Haar::DetectSingleScale
 	;
 	if (json.IsLoading()) {
 		threshold = json.Get("threshold");
@@ -22,7 +22,7 @@ void SimpleCascadeClassifier::Jsonize(JsonIO& json) {
 void ComplexCascadeClassifier::Jsonize(JsonIO& json) {
 	json
 		("simple_classifiers", classifiers)
-		("threshold", threshold) // haar::detect_single_scale
+		("threshold", threshold) // Haar::DetectSingleScale
 	;
 	if (json.IsLoading()) {
 		threshold = json.Get("threshold");
