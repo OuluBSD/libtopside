@@ -23,18 +23,24 @@ class ImageProcBase {
 	
 	
 protected:
-	ByteMat input, output, tmp0, tmp1, tmp2;
+	ByteMat input, output, tmp0, tmp1, tmp2, train_img;
 	Size sz;
 	
 	void OutputFromGray(const ByteMat& gray);
 	void OutputFromXY(const matrix_t<int>& img_gxgy);
 	void render_corners(const Vector<keypoint_t>& corners, ByteMat& img);
+	void render_corners(const ByteMat& bg, const ByteMat* mini_img, const Vector<keypoint_t>& corners, ByteMat& img);
+	
 public:
+	Vector<ColorLine> lines;
+	Vector<Point> points;
+	Vector<BBox> rects;
 	
 	void SetInput(Image i);
 	Image GetOutput() const;
 	
 	
+	virtual void InitDefault() {}
 	virtual void Process() = 0;
 	
 };
@@ -190,6 +196,7 @@ public:
 	
 	void Init();
     void Process() override;
+    void InitDefault() override;
 	
 	struct OglRenderer {
 		int width, height;
@@ -252,8 +259,7 @@ class YapeBase : public ImageProcBase {
 	
 public:
 	
-	void SetSize(Size sz);
-	
+	void InitDefault() override;
 	void Process() override;
 	
 };
@@ -262,13 +268,15 @@ class OrbBase : public ImageProcBase {
     matrix_t<byte> lev0_img;
     matrix_t<byte> lev_img;
     matrix_t<byte> pattern_preview;
-    matrix_t<byte> screen_descriptors;
     matrix_t<byte> match_mask;
+    matrix_t<byte> train_img;
     matrix_t<float> homo3x3;
     Vector<keypoint_t> screen_corners;
     
+    Vector<BinDescriptor> screen_descriptors;
+    Vector<Vector<BinDescriptor>> pattern_descriptors;
+    
     Vector<Vector<keypoint_t>> pattern_corners;
-    Vector<matrix_t<byte>> pattern_descriptors;
     Vector<keypoint_t> lev_corners, lev_descr;
     Vector<keypoint_t> corners, pattern_xy, screen_xy;
     Vector<match_t> matches;
@@ -284,17 +292,21 @@ class OrbBase : public ImageProcBase {
     int eigen_thres = 25;
     int match_threshold = 48;
     
+    
+    void render_matches(const Vector<match_t>& matches);
+    void render_pattern_shape();
+    
 public:
 	static const int u_max[];
 	
     void train_pattern();
-	void SetSize(Size sz);
 	int detect_keypoints(const ByteMat& img, Vector<keypoint_t>& corners, int max_allowed);
     double ic_angle(const ByteMat& img, int px, int py);
     int find_transform(Vector<match_t>& matches);
     int match_pattern();
     void tCorners(const Vector<float>& M, int w, int h);
     
+	void InitDefault() override;
 	void Process() override;
 	
 };
@@ -310,9 +322,9 @@ class OpticalFlowLKBase : public ImageProcBase {
 	Vector<float> curr_xy, prev_xy;
 	optical_flow_lk of;
 	
+	void MakeRandomPoints();
 public:
 	
-	void SetSize(Size sz);
 	void SetWinSize(int i) {win_size = i; ASSERT(win_size >= 7 && win_size <= 30);}
 	void SetMaxIters(int i) {max_iterations = i; ASSERT(max_iterations >= 3 && max_iterations <= 30);}
 	void SetEpsilon(double d) {epsilon = d; ASSERT(epsilon >= 0.001 && epsilon <= 0.1);}
@@ -323,6 +335,7 @@ public:
 	void prune_oflow_points();
 	Point relMouseCoords();
 	
+	void InitDefault() override;
 	void Process() override;
 	
 };
@@ -332,14 +345,15 @@ class BbfFaceBase : public ImageProcBase {
 	
 	BrightnessBinaryFeature b;
 	pyra8 pyr;
-	Vector<BBox> rects, result_seq;
+	Vector<BBox> detected_rects;
 	Cascade cascade;
 	
 public:
 	BbfFaceBase();
-	void SetSize(Size sz);
+	
 	void draw_faces(Vector<BBox>& rects, double sc, bool max);
 	
+	void InitDefault() override;
 	void Process() override;
 	
 };
@@ -356,15 +370,16 @@ class HaarFaceBase : public ImageProcBase {
 	Vector<int> ii_sqsum;
 	Vector<int> ii_tilted;
 	Vector<int> ii_canny;
-	Vector<BBox> rects, result_seq;
+	Vector<BBox> detected_rects;
 	ComplexCascade classifier;
 	haar h;
 	
 public:
 	HaarFaceBase();
-	void SetSize(Size sz);
+	
 	void draw_faces(Vector<BBox>& rects, double sc, bool max);
 	
+	void InitDefault() override;
 	void Process() override;
 	
 	
@@ -374,6 +389,9 @@ class WebcamCV : public TopWindow {
 	
 	struct Renderer : public Ctrl {
 		Image input, output;
+		Vector<ColorLine>* lines = 0;
+		Vector<Point>* points = 0;
+		Vector<BBox>* rects = 0;
 		
 		void Paint(Draw& d) override;
 		
@@ -381,6 +399,7 @@ class WebcamCV : public TopWindow {
 	
 	Vector<Image> imgs, new_imgs;
 	int img_i = 0;
+	int frame_i = 0;
 	Renderer rend;
 	
 	Splitter hsplit;

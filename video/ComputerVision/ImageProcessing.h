@@ -510,14 +510,17 @@ void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector
 	int w0 = src.cols, h0 = src.rows;
 	auto& src_d = src.data;
 	int w1 = (w0 + 1);
+	int h1 = (h0 + 1);
 	int s = 0, s2 = 0, p = 0, pup = 0, i = 0, j = 0, v = 0, k = 0;
 	auto& sq = *dst_sqsum;
 	
 	if (dst_sum && dst_sqsum) {
 		// fill first row with zeros
-		for (int i = 0; i < w1; ++i) {
-			dst_sum[i] = 0, sq[i] = 0;
-		}
+		dst_sum.SetCount(w1*h1);
+		sq.SetCount(w1*h1);
+		for (auto& v : dst_sum) v = 0;
+		for (auto& v : sq) v = 0;
+		
 		int p = (w1 + 1), pup = 1;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
 			int s = 0;
@@ -543,9 +546,9 @@ void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector
 	}
 	else if (dst_sum) {
 		// fill first row with zeros
-		for (int i = 0; i < w1; ++i) {
-			dst_sum[i] = 0;
-		}
+		dst_sum.SetCount(w1*h1);
+		for (auto& v : dst_sum) v = 0;
+		
 		int p = (w1 + 1);
 		int pup = 1;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
@@ -567,9 +570,9 @@ void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector
 		auto& sq = *dst_sqsum;
 		
 		// fill first row with zeros
-		for (int i = 0; i < w1; ++i) {
-			sq[i] = 0;
-		}
+		sq.SetCount(w1*h1);
+		for (auto& v : sq) v = 0;
+		
 		int p = (w1 + 1), pup = 1;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
 			int j;
@@ -594,9 +597,9 @@ void compute_integral_image(const matrix_t<T>& src, Vector<int>& dst_sum, Vector
 		auto& dt = *dst_tilted;
 		
 		// fill first row with zeros
-		for (i = 0; i < w1; ++i) {
-			dt[i] = 0;
-		}
+		dt.SetCount(w1*h1);
+		for (auto& v : dt) v = 0;
+		
 		// diagonal
 		int p = (w1 + 1), pup = 0;
 		for (int i = 0, k = 0; i < h0; ++i, ++p, ++pup) {
@@ -834,103 +837,11 @@ void canny(const matrix_t<T>& src, matrix_t<T>& dst, int low_thresh, int high_th
 }
 
 // transform is 3x3 matrix_t
-template <class T>
-void warp_perspective(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& transform, int fill_value = 0) {
-	int src_width = src.cols;
-	int src_height = src.rows;
-	int dst_width = dst.cols;
-	int dst_height = dst.rows;
-	
-	auto& src_d = src.data;
-	auto& dst_d = dst.data;
-	int x = 0, y = 0, off = 0, ixs = 0, iys = 0;
-	double xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
-	auto& td = transform.data;
-	auto m00 = td[0];
-	auto m01 = td[1];
-	auto m02 = td[2];
-	auto m10 = td[3];
-	auto m11 = td[4];
-	auto m12 = td[5];
-	auto m20 = td[6];
-	auto m21 = td[7];
-	auto m22 = td[8];
-	
-	for (int dptr = 0; y < dst_height; ++y) {
-		xs0 = m01 * y + m02;
-		ys0 = m11 * y + m12;
-		ws  = m21 * y + m22;
-		for (int x = 0; x < dst_width; ++x, ++dptr, xs0 += m00, ys0 += m10, ws += m20) {
-			sc = 1.0 / ws;
-			xs = xs0 * sc, ys = ys0 * sc;
-			ixs = xs, iys = ys;
-			
-			if (xs > 0 && ys > 0 && ixs < (src_width - 1) && iys < (src_height - 1)) {
-				a = max(xs - ixs, 0.0);
-				b = max(ys - iys, 0.0);
-				off = (src_width * iys + ixs);
-				
-				p0 = src_d[off] +  a * (src_d[off+1] - src_d[off]);
-				p1 = src_d[off+src_width] + a * (src_d[off+src_width+1] - src_d[off+src_width]);
-				
-				dst_d[dptr] = p0 + b * (p1 - p0);
-			}
-			else
-				dst_d[dptr] = fill_value;
-		}
-	}
-}
+void warp_perspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
 
 
 // transform is 3x3 or 2x3 matrix_t only first 6 values referenced
-template <class T>
-void warp_affine(const matrix_t<T>& src, matrix_t<T>& dst, const FloatMat& transform, int fill_value = 0) {
-	int src_width = src.cols;
-	int src_height = src.rows;
-	int dst_width = dst.cols;
-	int dst_height = dst.rows;
-	const auto& src_d = src.data;
-	auto& dst_d = dst.data;
-	
-	const auto& td = transform.data;
-	double m00 = td[0];
-	double m01 = td[1];
-	double m02 = td[2];
-	double m10 = td[3];
-	double m11 = td[4];
-	double m12 = td[5];
-	
-	Vector<T>::Iterator dst_iter = dst_d.Begin();
-	ASSERT(dst_d.GetCount() == dst_height * dst_width);
-	
-	for (int y = 0; y < dst_height; ++y) {
-		double xs = m01 * y + m02;
-		double ys = m11 * y + m12;
-		
-		for (int x = 0; x < dst_width; ++x, xs += m00, ys += m10) {
-			double ixs = xs;
-			double iys = ys;
-			
-			if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) && iys < (src_height - 1)) {
-				double a = xs - ixs;
-				double b = ys - iys;
-				int off = (int)(src_width * iys + ixs);
-				
-				double p0 =		src_d[off]
-								+  a * (src_d[off+1] - src_d[off]);
-				double p1 =		src_d[off+src_width]
-								+ a * (src_d[off+src_width+1] - src_d[off+src_width]);
-				
-				T v = (T)(p0 + b * (p1 - p0));
-				*dst_iter = v;
-			}
-			else
-				*dst_iter = fill_value;
-			
-			dst_iter++;
-		}
-	}
-}
+void warp_affine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value = 0);
 
 // Basic RGB Skin detection filter
 // from http://popscan.blogspot.fr/2012/08/skin-detection-in-digital-images.html

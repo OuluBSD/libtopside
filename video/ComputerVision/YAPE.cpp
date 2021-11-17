@@ -10,8 +10,8 @@ void lev_table_t::Set(int w, int h, int r) {
 	radius = r;
 	dirs.SetCount(1024);
 	dirs_count = yape::precompute_directions(w, this->dirs, r);
+	ASSERT(dirs_count > 0);
 	scores.SetCount(w*h, 0);
-	dirs_count = 0;
 }
 
 
@@ -107,6 +107,7 @@ bool yape::is_local_maxima(const Vector<int>& p, int off, int v, int step, int n
 }
 
 void yape::perform_one_point(const Vector<byte>& I, int x, Vector<int>& Scores, byte Im, byte Ip, const Vector<int>& dirs, int opposite, int dirs_nb) {
+	ASSERT(opposite > 0);
 	int score = 0;
 	int a = 0;
 	int b = (opposite - 1);
@@ -117,7 +118,8 @@ void yape::perform_one_point(const Vector<byte>& I, int x, Vector<int>& Scores, 
 	A = I[x+dirs[a]];
 	if ((A <= Ip)) {
 		if ((A >= Im)) { // A ~ I0
-			B0 = I[x+dirs[b]];
+			int i = x+dirs[b];
+			B0 = I[i];
 			if ((B0 <= Ip)) {
 				if ((B0 >= Im)) {
 					Scores[x] = 0;
@@ -665,6 +667,7 @@ void yape::init(int width, int height, int radius, int pyramid_levels) {
 	int i = 0;
 	for (lev_table_t& l : level_tables) {
 		l.Set(width >> i, height >> i, radius);
+		ASSERT(l.dirs_count > 0);
 		i++;
 	}
 }
@@ -675,6 +678,7 @@ int yape::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 	int Rm1 = (R - 1);
 	auto& dirs = t.dirs;
 	int dirs_count = t.dirs_count;
+	ASSERT(dirs_count > 0);
 	int opposite = dirs_count >> 1;
 	const auto& img = src.data;
 	int w = src.cols;

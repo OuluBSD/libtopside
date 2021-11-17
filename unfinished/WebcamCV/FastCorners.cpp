@@ -26,27 +26,6 @@ void FastCornersBase::Process() {
     render_corners(corners, output);
 }
 
-void ImageProcBase::render_corners(const Vector<keypoint_t>& corners, ByteMat& out) {
-	int count = corners.GetCount();
-	int step = sz.cx;
-	
-	out.SetSize(sz.cx, sz.cy, 4);
-	uint32* img = (uint32*)(byte*)out.data.Begin();
-	
-    uint32 pix = (0xff << 24) | (0x00 << 16) | (0xff << 8) | 0x00;
-    for(int i=0; i < count; ++i)
-    {
-        int x = corners[i].x;
-        int y = corners[i].y;
-        int off = (x + y * step);
-        img[off] = pix;
-        img[off-1] = pix;
-        img[off+1] = pix;
-        img[off-step] = pix;
-        img[off+step] = pix;
-    }
-}
-
 
 NAMESPACE_TOPSIDE_END
 

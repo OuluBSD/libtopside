@@ -6,10 +6,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 struct SimpleCascadeClassifier : Moveable<SimpleCascadeClassifier> {
 	Vector<Vector<int>>		features;
-	double					threshold;
-	double					left_val;
-	double					right_val;
-	bool					tilted;
+	double					threshold = 0;
+	double					left_val = 0;
+	double					right_val = 0;
+	bool					tilted = 0;
 	
 	void Jsonize(JsonIO& json);
 	
@@ -18,7 +18,7 @@ struct SimpleCascadeClassifier : Moveable<SimpleCascadeClassifier> {
 
 struct ComplexCascadeClassifier : Moveable<ComplexCascadeClassifier> {
 	Vector<SimpleCascadeClassifier>		classifiers;
-	double								threshold;
+	double								threshold = 0;
 	
 	void Jsonize(JsonIO& json);
 	
@@ -28,7 +28,7 @@ struct ComplexCascadeClassifier : Moveable<ComplexCascadeClassifier> {
 struct ComplexCascade : Moveable<ComplexCascade> {
 	Vector<ComplexCascadeClassifier>	classifiers;
 	Vector<int>							size;
-	bool								tilted;
+	bool								tilted = 0;
 	
 	void Jsonize(JsonIO& json);
 	String	GetCppLoader(String name) const;
@@ -86,8 +86,8 @@ struct CascadeFeature : Moveable<CascadeFeature> {
 };
 
 struct CascadeStageClassifier : Moveable<CascadeStageClassifier> {
-	int						count;
-	double					threshold;
+	int						count = 0;
+	double					threshold = 0;
 	Vector<CascadeFeature>	features;
 	Vector<CascadeFeature>	_features;
 	Vector<double>			alpha;
@@ -98,9 +98,9 @@ struct CascadeStageClassifier : Moveable<CascadeStageClassifier> {
 };
 
 struct Cascade {
-	int count;
-	int width;
-	int height;
+	int count = 0;
+	int width = 0;
+	int height = 0;
 	Vector<CascadeStageClassifier>	classifiers;
 	
 	void	Jsonize(JsonIO& json);

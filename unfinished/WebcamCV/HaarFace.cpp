@@ -8,15 +8,19 @@ HaarFaceBase::HaarFaceBase() {
 	
 }
 
-void HaarFaceBase::SetSize(Size sz) {
+void HaarFaceBase::InitDefault() {
 	auto& videoWidth = sz.cx;
 	auto& videoHeight = sz.cy;
+	
+	use_canny = 0;
+	scale_factor = 2;
+	
+	LoadCascadeFrontalFace(classifier);
+	//LoadCascadeMouth(classifier);
 	
     double scale = min((double)max_work_size/videoWidth, (double)max_work_size/videoHeight);
     int w = (videoWidth*scale);
     int h = (videoHeight*scale);
-    this->sz.cx = w;
-    this->sz.cy = h;
 	
 	auto& img_u8 = tmp0;
 	auto& edg = tmp1;
@@ -25,10 +29,10 @@ void HaarFaceBase::SetSize(Size sz) {
     
     ii_sum.SetCount((w+1)*(h+1));
     ii_sqsum.SetCount((w+1)*(h+1));
-    ii_tilted.SetCount((w+1)*(h+1));
-    ii_canny.SetCount((w+1)*(h+1));
-	
-	LoadCascadeFrontalFace(classifier);
+    if (classifier.tilted)
+		ii_tilted.SetCount((w+1)*(h+1));
+    if (use_canny)
+		ii_canny.SetCount((w+1)*(h+1));
 	
 }
 
@@ -52,9 +56,17 @@ void HaarFaceBase::Process() {
     }
 
     h.SetEdgeDensity(edges_density);
-    h.detect_multi_scale(rects, ii_sum, ii_sqsum, ii_tilted, use_canny ? &ii_canny : 0, img_u8.cols, img_u8.rows, classifier, scale_factor, min_scale);
-    group_rectangles(rects, result_seq, 1);
+    h.detect_multi_scale(detected_rects, ii_sum, ii_sqsum, ii_tilted, use_canny ? &ii_canny : 0, img_u8.cols, img_u8.rows, classifier, scale_factor, min_scale);
     
+	int limit = 10;
+	if (detected_rects.GetCount() > limit) {
+		Sort(detected_rects, BBox());
+		detected_rects.SetCount(limit);
+	}
+	
+    group_rectangles(detected_rects, rects, 1);
+    
+    OutputFromGray(img_u8);
 }
 
 /*void HaarFaceBase::draw_faces(Vector<BBox>& result_seq, double sc, bool max) {

@@ -29,6 +29,11 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 	thread_local static Vector<int> deriv_iwin;
 	auto& deriv_lev = deriv_m.data;
 	
+	iwin_buf  .SetCount(win_area << 2);
+	deriv_iwin.SetCount(win_area << 2);
+	memset(iwin_buf.Begin(), 0, iwin_buf.GetCount() * sizeof(int));
+	memset(deriv_iwin.Begin(), 0, deriv_iwin.GetCount() * sizeof(int));
+	
 	int dstep = 0, iptr = 0, diptr = 0, jptr = 0;
 	double lev_sc = 0.0, prev_x = 0.0, prev_y = 0.0, next_x = 0.0, next_y = 0.0;
 	double prev_delta_x = 0.0, prev_delta_y = 0.0, delta_x = 0.0, delta_y = 0.0;
@@ -67,12 +72,15 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 		dstep = lw << 1;
 		const auto& img_prev = prev_imgs[level].data;
 		const auto& img_next = next_imgs[level].data;
+		int prev_len = img_prev.GetCount();
+		int next_len = img_next.GetCount();
 		
 		brd_r = (lw - win_size);
 		brd_b = (lh - win_size);
 		
 		// calculate level derivatives
 		scharr_derivatives(prev_imgs[level], deriv_m);
+		int dlen = deriv_lev.GetCount();
 		
 		// iterate through points
 		for (int ptid = 0; ptid < count; ++ptid) {
@@ -123,16 +131,26 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 				int iptr = (y * win_size);
 				int diptr = iptr << 1;
 				for (int x = 0 ; x < win_size; ++x, ++src, ++iptr, dsrc += 2) {
-					ival = (int)((img_prev[src]) * iw00 + (img_prev[src+1]) * iw01 +
-							     (img_prev[src+lw]) * iw10 + (img_prev[src+lw+1]) * iw11);
-					ival = (((ival) + W_BITS1m51) >> (W_BITS1m5));
+					int s1 = src+lw;
+					int d1 = dsrc+dstep;
+					byte v0 = img_prev[src];
+					byte v1 = img_prev[src+1];
+					byte v00 = s1   < prev_len ? img_prev[s1] : v0;
+					byte v01 = s1+1 < prev_len ? img_prev[s1+1] : v00;
+					byte l0 = deriv_lev[dsrc];
+					byte l1 = deriv_lev[dsrc+1];
+					byte l2 = deriv_lev[dsrc+2];
+					byte l3 = deriv_lev[dsrc+3];
+					byte l00 = d1   < dlen ? deriv_lev[d1] : l0;
+					byte l01 = d1+1 < dlen ? deriv_lev[d1+1] : l01;
+					byte l02 = d1+2 < dlen ? deriv_lev[d1+2] : l02;
+					byte l03 = d1+3 < dlen ? deriv_lev[d1+3] : l03;
 					
-					ixval = (int)(deriv_lev[dsrc] * iw00 + deriv_lev[dsrc+2] * iw01 +
-							      deriv_lev[dsrc+dstep] * iw10 + deriv_lev[dsrc+dstep+2] * iw11);
+					ival = (int)((v0) * iw00 + v1 * iw01 + v00 * iw10 + v01 * iw11);
+					ival = ((ival + W_BITS1m51) >> (W_BITS1m5));
+					ixval = (int)(l0 * iw00 + l2 * iw01 + l00 * iw10 + l02 * iw11);
 					ixval = (((ixval) + W_BITS41) >> (W_BITS4));
-					
-					iyval = (int)(deriv_lev[dsrc+1] * iw00 + deriv_lev[dsrc+3] * iw01 + deriv_lev[dsrc+dstep+1] * iw10 +
-							      deriv_lev[dsrc+dstep+3] * iw11);
+					iyval = (int)(l1 * iw00 + l3 * iw01 + l01 * iw10 + l03 * iw11);
 					iyval = (int)(((iyval) + W_BITS41) >> (W_BITS4));
 					
 					iwin_buf[iptr] = ival;
@@ -191,9 +209,14 @@ void optical_flow_lk::track(const pyra8& prev_pyr, pyra8& curr_pyr,
 					iptr = (int)(y * win_size);
 					diptr = iptr << 1;
 					for (int x = 0 ; x < win_size; ++x, ++jptr, ++iptr) {
-						ival = (int)((img_next[jptr]) * iw00 + (img_next[jptr+1]) * iw01 +
-								(img_next[jptr+lw]) * iw10 + (img_next[jptr+lw+1]) * iw11);
-						ival = (((ival) + W_BITS1m51) >> (W_BITS1m5));
+						int o1 = jptr+lw;
+						byte n0 = img_next[jptr];
+						byte n1 = img_next[jptr+1];
+						byte n00 = o1   < next_len ? img_next[o1] : n0;
+						byte n01 = o1+1 < next_len ? img_next[o1+1] : n00;
+						
+						ival = (int)(n0 * iw00 + n1 * iw01 + n00 * iw10 + n01 * iw11);
+						ival = ((ival + W_BITS1m51) >> (W_BITS1m5));
 						ival = (ival - iwin_buf[iptr]);
 						
 						b1 += ival * deriv_iwin[diptr++];

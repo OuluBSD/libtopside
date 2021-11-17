@@ -18,7 +18,7 @@ void fast_corners::_cmp_offsets(PixVec& pixel, int step, int pattern_size) {
 		ASSERT(j >= 0 && j < sizeof(offsets16) / sizeof(int));
 		pixel[k] = offsets[j] + offsets[j+1] * step;
 	}
-	for (int k = 0; k < 25; ++k) {
+	for (int k = pattern_size; k < 25; ++k) {
 		pixel[k] = pixel[k - pattern_size];
 	}
 }
@@ -89,6 +89,8 @@ int fast_corners::detect(const ByteMat& src, Vector<keypoint_t>& corners, int bo
 	buf.SetCount(3 * w);
 	cpbuf.SetCount(((w + 1) * 3) << 2);
 	
+	memset(cpbuf.Begin(), 0, cpbuf.GetCount() * sizeof(int));
+	
 	PixVec& pixel = pixel_off;
 	Vector<int>& sd = score_diff;
 	int sy = max(3, border);
@@ -126,6 +128,8 @@ int fast_corners::detect(const ByteMat& src, Vector<keypoint_t>& corners, int bo
 		buf[i] = 0;
 	}
 	
+	corners.SetCount(0);
+	corners.Reserve(1024);
 	for (int i = sy; i < ey; ++i) {
 		int ptr = ((i * w) + sx);
 		int m3 = (i - 3) % 3;
@@ -226,7 +230,7 @@ int fast_corners::detect(const ByteMat& src, Vector<keypoint_t>& corners, int bo
 				 score > buf[pprev+jm1] && score > buf[pprev+j] && score > buf[pprev+jp1] &&
 				 score > buf[curr+jm1] && score > buf[curr+j] && score > buf[curr+jp1])) {
 				// save corner
-				keypoint_t& pt = corners[corners_cnt];
+				keypoint_t& pt = corners.Add();
 				pt.x = j;
 				pt.y = (i - 1);
 				pt.score = score;

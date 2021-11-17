@@ -38,7 +38,7 @@ class onepass_stabilizer {
 public:
     
 	onepass_stabilizer(int motionModel);
-	void Init(Size sz);
+	void Init(Size sz, int radius=15);
 	void reset();
 	void setup(const ByteMat& rgbaImageData);
 	const FloatMat& estimate_motion();

@@ -4,6 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+//VideoStabilizerBase::VideoStabilizerBase() : stabilizer(MM_AFFINE) {
 VideoStabilizerBase::VideoStabilizerBase() : stabilizer(MM_HOMOGRAPHY) {
 	
 }
@@ -83,11 +84,16 @@ void VideoStabilizerBase::tCorners(const Vector<float>& M, int w, int h) {
     }
 }
 
+void VideoStabilizerBase::InitDefault() {
+	ASSERT(!sz.IsEmpty());
+	stabilizer.Init(sz, 10);
+}
+
 void VideoStabilizerBase::Process() {
+    const ByteMat* out = stabilizer.next_stabilized_frame(input);
 
-    stabilizer.next_stabilized_frame(input);
-
-    OutputFromGray(input);
+	if (out)
+		OutputFromGray(*out);
 }
 
 

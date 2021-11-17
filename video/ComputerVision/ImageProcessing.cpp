@@ -198,6 +198,9 @@ void resample(const pyra8::Mat& src, pyra8::Mat& dst, int nw, int nh) {
 		dst.SetSize(nw, nh, src.channels);
 		_resample_u8(src, dst, nw, nh);
 	}
+	else {
+		dst = src;
+	}
 }
 
 void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
@@ -206,6 +209,9 @@ void resample(const pyraf::Mat& src, pyraf::Mat& dst, int nw, int nh) {
 	if (h > nh && w > nw) {
 		dst.SetSize(nw, nh, src.channels);
 		_resample(src, dst, nw, nh);
+	}
+	else {
+		dst = src;
 	}
 }
 
@@ -414,6 +420,124 @@ void Grayscale(const ByteMat& src, ByteMat& dst) {
 			av *= mul;
 			*to++ = (byte)av;
 			from += step;
+		}
+	}
+}
+
+void warp_perspective(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
+	if (dst.IsEmpty())
+		dst.SetSize(src.cols, src.rows, src.channels);
+	
+	int src_width = src.cols;
+	int src_height = src.rows;
+	int src_len = src.data.GetCount();
+	int dst_width = dst.cols;
+	int dst_height = dst.rows;
+	
+	auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	double xs = 0.0, ys = 0.0, xs0 = 0.0, ys0 = 0.0, ws = 0.0, sc = 0.0, a = 0.0, b = 0.0, p0 = 0.0, p1 = 0.0;
+	auto& td = transform.data;
+	auto m00 = td[0];
+	auto m01 = td[1];
+	auto m02 = td[2];
+	auto m10 = td[3];
+	auto m11 = td[4];
+	auto m12 = td[5];
+	auto m20 = td[6];
+	auto m21 = td[7];
+	auto m22 = td[8];
+	
+	auto dst_iter = dst_d.Begin();
+	ASSERT(dst_d.GetCount() == dst_height * dst_width);
+	
+	for (int y = 0; y < dst_height; ++y) {
+		xs0 = m01 * y + m02;
+		ys0 = m11 * y + m12;
+		ws  = m21 * y + m22;
+		for (int x = 0; x < dst_width; ++x, xs0 += m00, ys0 += m10, ws += m20) {
+			sc = 1.0 / ws;
+			xs = xs0 * sc, ys = ys0 * sc;
+			int ixs = xs;
+			int iys = ys;
+			
+			if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) && iys < (src_height - 1)) {
+				double a = xs - ixs;
+				double b = ys - iys;
+				int off0 = (int)(src_width * iys + ixs);
+				int off1 = off0 + src_width;
+				
+				byte v0 = src_d[off0];
+				byte v1 = src_d[off0 + 1];
+				byte v10 = off1 < src_len ? src_d[off1] : v0;
+				byte v11 = off1 < src_len ? src_d[off1+1] : v1;
+				
+				double p0 =		v0  + a *  (v1 -  v0);
+				double p1 =		v10 + a * (v11 - v10);
+				
+				auto v = (p0 + b * (p1 - p0));
+				*dst_iter = v;
+			}
+			else
+				*dst_iter = fill_value;
+			
+			dst_iter++;
+		}
+	}
+}
+
+void warp_affine(const ByteMat& src, ByteMat& dst, const FloatMat& transform, int fill_value) {
+	if (dst.IsEmpty())
+		dst.SetSize(src.cols, src.rows, src.channels);
+	
+	int src_width = src.cols;
+	int src_height = src.rows;
+	int src_len = src.data.GetCount();
+	int dst_width = dst.cols;
+	int dst_height = dst.rows;
+	const auto& src_d = src.data;
+	auto& dst_d = dst.data;
+	
+	const auto& td = transform.data;
+	double m00 = td[0];
+	double m01 = td[1];
+	double m02 = td[2];
+	double m10 = td[3];
+	double m11 = td[4];
+	double m12 = td[5];
+	
+	auto dst_iter = dst_d.Begin();
+	ASSERT(dst_d.GetCount() == dst_height * dst_width);
+	
+	for (int y = 0; y < dst_height; ++y) {
+		double xs = m01 * y + m02;
+		double ys = m11 * y + m12;
+		
+		for (int x = 0; x < dst_width; ++x, xs += m00, ys += m10) {
+			int ixs = xs;
+			int iys = ys;
+			
+			if (ixs >= 0 && iys >= 0 && ixs < (src_width - 1) && iys < (src_height - 1)) {
+				double a = xs - ixs;
+				double b = ys - iys;
+				int off0 = (int)(src_width * iys + ixs);
+				int off1 = off0 + src_width;
+				
+				byte v0 = src_d[off0];
+				byte v1 = src_d[off0 + 1];
+				byte v10 = off1 < src_len ? src_d[off1] : v0;
+				byte v11 = off1 < src_len ? src_d[off1+1] : v1;
+				
+				double p0 =		v0  + a *  (v1 -  v0);
+				double p1 =		v10 + a * (v11 - v10);
+				
+				auto v = (p0 + b * (p1 - p0));
+				*dst_iter = v;
+			}
+			else
+				*dst_iter = fill_value;
+			
+			dst_iter++;
 		}
 	}
 }

@@ -284,7 +284,7 @@ void Orb::rectify_patch(const ByteMat& src, ByteMat& dst, double angle, int px, 
 	warp_affine(src, dst, H, 128);
 }
 
-void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMat& descriptors) {
+void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, Vector<BinDescriptor>& descriptors) {
 	int DESCR_SIZE = 32; // bytes;
 	int t0 = 0, t1 = 0, val = 0;
 	int w = src.cols, h = src.rows;
@@ -294,9 +294,9 @@ void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMa
 	Vector<byte>& patch_d = patch_img.data;
 	int corner_count = corners.GetCount();
 	
-	descriptors.SetSize(DESCR_SIZE, corner_count, 1);
+	descriptors.SetCount(corner_count);
 	
-	Vector<byte>& descr_d = descriptors.data;
+	auto descr_iter = descriptors.Begin();
 	int descr_off = 0;
 	
 	for (const keypoint_t& crn : corners) {
@@ -308,6 +308,7 @@ void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMa
 		
 		// describe the patch
 		patt = 0;
+		byte* descr_d = descr_iter->u8;
 		for (int b = 0; b < DESCR_SIZE; ++b) {
 		
 			t0 = patch_d[patch_off + bit_pattern_31_[patt+1] * 32 + bit_pattern_31_[patt]];
@@ -358,9 +359,10 @@ void Orb::describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMa
 			patt += 2;
 			val |= (t0 < t1) << 7;
 			
-			descr_d[descr_off+b] = val;
+			*descr_d++ = val;
 		}
-		descr_off += DESCR_SIZE;
+		
+		descr_iter++;
 	}
 }
 

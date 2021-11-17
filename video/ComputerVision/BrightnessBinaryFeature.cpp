@@ -33,12 +33,13 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8:
 	int channel = 0; // red
 	
 	this->interval = interval;
-	this->scale = pow_fast(2.0, 1 / (this->interval + 1));
+	this->scale = pow_fast(2.0, 1 / ((double)this->interval + 1));
 	this->next = (this->interval + 1);
-	this->scale_to = (log_fast(min<double>(sw / min_width, sh / min_height)) / log_fast(this->scale));
+	this->scale_to = (log_fast(min<double>((double)sw / min_width, (double)sh / min_height)) / log_fast(this->scale));
 	
-	int pyr_l = (int)((this->scale_to + this->next * 2) * 4);
-	ASSERT(pyr_l > 0 && pyr_l < 64);
+	auto v = (this->scale_to + this->next * 2 + 1) * 4;
+	int pyr_l = (int)v;
+	ASSERT(pyr_l > 0 && pyr_l < 100);
 	if (img_pyr.GetLevels() != pyr_l) {
 		img_pyr.SetLevels(pyr_l);
 		new_pyr = true;
@@ -70,24 +71,27 @@ const pyra8& BrightnessBinaryFeature::build_pyramid(pyra8& img_pyr, const pyra8:
 		src1 = &img_pyr.data[(i << 2) - (this->next << 2)];
 		nw = src1->cols >> 1;
 		nh = src1->rows >> 1;
-		src0 = &img_pyr.data[(i<<2)+1];
+		int j1 = (i<<2)+1;
+		int j2 = (i<<2)+2;
+		int j3 = (i<<2)+3;
+		src0 = &img_pyr.data[j1];
 		if (new_pyr || nw != src0->cols || nh != src0->rows) {
-			img_pyr.data[(i<<2)+1].SetSize(nw, nh, channels);
-			src0 = &img_pyr.data[(i<<2)+1];
+			img_pyr.data[j1].SetSize(nw, nh, channels);
+			src0 = &img_pyr.data[j1];
 		}
 		DownsamplePyramid(*src1, *src0, 1, 0);
 		
-		src0 = &img_pyr.data[(i<<2)+2];
+		src0 = &img_pyr.data[j2];
 		if (new_pyr || nw != src0->cols || nh != src0->rows) {
-			img_pyr.data[(i<<2)+2].SetSize(nw, nh, channels);
-			src0 = &img_pyr.data[(i<<2)+2];
+			img_pyr.data[j2].SetSize(nw, nh, channels);
+			src0 = &img_pyr.data[j2];
 		}
 		DownsamplePyramid(*src1, *src0, 0, 1);
 		
-		src0 = &img_pyr.data[(i<<2)+3];
+		src0 = &img_pyr.data[j3];
 		if (new_pyr || nw != src0->cols || nh != src0->rows) {
-			img_pyr.data[(i<<2)+3].SetSize(nw, nh, channels);
-			src0 = &img_pyr.data[(i<<2)+3];
+			img_pyr.data[j3].SetSize(nw, nh, channels);
+			src0 = &img_pyr.data[j3];
 		}
 		DownsamplePyramid(*src1, *src0, 1, 1);
 	}
@@ -128,11 +132,16 @@ void BrightnessBinaryFeature::detect(Vector<BBox>& seq, const pyra8& pyramid, Ca
 		for (int j = 0; j < sn; j++) {
 			Vector<CascadeFeature>& orig_feature = cascade.classifiers[j].features;
 			Vector<CascadeFeature>& feature = cascade.classifiers[j]._features;
+			feature.SetCount(orig_feature.GetCount());
 			int f_cnt = cascade.classifiers[j].count;
 			for (int k = 0; k < f_cnt; k++) {
 				CascadeFeature& feature_k = feature[k];
 				CascadeFeature& feature_o = orig_feature[k];
 				int q_cnt = feature_o.size;
+				feature_k.px.SetCount(q_cnt);
+				feature_k.pz.SetCount(q_cnt);
+				feature_k.nx.SetCount(q_cnt);
+				feature_k.nz.SetCount(q_cnt);
 				for (int q = 0; q < q_cnt; q++) {
 					feature_k.px[q] = (feature_o.px[q] * bpp) + feature_o.py[q] * step[feature_o.pz[q]];
 					feature_k.pz[q] = feature_o.pz[q];

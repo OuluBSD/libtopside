@@ -159,7 +159,9 @@ void perspective_4point_transform(
 	t8 = Hr2 * Hr3;
 	t10 = Hr1 * Hr6;
 	double t12 = Hr2 * Hr6;
-	t15 = 1.0 / (t4 - t5 * Hr7 - t7 + t8 * Hr7 + t10 * Hr5 - t12 * Hr4);
+	double div = t4 - t5 * Hr7 - t7 + t8 * Hr7 + t10 * Hr5 - t12 * Hr4;
+	ASSERT(div != 0.0);
+	t15 = 1.0 / div;
 	t18 = -Hr3 + Hr5 * Hr6;
 	double t23 = -Hr3 * Hr7 + Hr4 * Hr6;
 	t28 = -Hr1 + Hr2 * Hr7;

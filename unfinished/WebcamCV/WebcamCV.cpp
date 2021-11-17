@@ -173,6 +173,7 @@ void WebcamCV::OpenVideoCapture(int dev_i, int cap_i, int fmt_i, int res_i) {
 void WebcamCV::SelectDemo() {
 	if (list.IsCursor())
 		OpenDemo(list.GetCursor());
+	frame_i = 0;
 }
 
 void WebcamCV::Data() {
@@ -222,9 +223,45 @@ void WebcamCV::Renderer::Paint(Draw& d) {
 		Image out = CachedRescale(output, rend_sz, FILTER_NEAREST);
 		
 		int y = (sz.cy - in_sz.cy) / 2;
+		int out_x = sz.cx / 2;
 		id.DrawImage(0, y, in);
-		id.DrawImage(sz.cx / 2, y, out);
+		id.DrawImage(out_x, y, out);
+		
+		if (lines) {
+			for (ColorLine& l : *lines) {
+				id.DrawLine(
+					out_x + l.a.x * scale,
+					y     + l.a.y * scale,
+					out_x + l.b.x * scale,
+					y     + l.b.y * scale,
+					1, l.clr);
+			}
+		}
+		
+		if (points) {
+			for (Point& p : *points) {
+				id.DrawRect(
+					out_x + p.x * scale - 1,
+					y     + p.y * scale - 1,
+					3, 3, Color(0,255,0));
+			}
+		}
+		
+		if (rects) {
+			for (const BBox& b : *rects) {
+				Point tl(out_x + b.x * scale, y + b.y * scale);
+				Point tr(out_x + (b.x + b.width) * scale, y + b.y * scale);
+				Point bl(out_x + b.x * scale, y + (b.y + b.height) * scale);
+				Point br(out_x + (b.x + b.width) * scale, y + (b.y + b.height) * scale);
+				Color clr(0,255,0);
+				id.DrawLine(tl, tr, 1, clr);
+				id.DrawLine(tr, br, 1, clr);
+				id.DrawLine(br, bl, 1, clr);
+				id.DrawLine(bl, tl, 1, clr);
+			}
+		}
 	}
+	
 	
 	d.DrawImage(0,0,id);
 }
@@ -258,12 +295,21 @@ Image WebcamCV::NewFrame() {
 
 void WebcamCV::Tick(ImageProcBase& proc) {
 	proc.SetInput(NewFrame());
+	if (frame_i++ == 0)
+		proc.InitDefault();
 	proc.Process();
 	rend.output = proc.GetOutput();
+	rend.lines = &proc.lines;
+	rend.points = &proc.points;
+	rend.rects = &proc.rects;
 }
 
 void ImageProcBase::OutputFromGray(const ByteMat& gray) {
-    output.SetSize(sz.cx, sz.cy, 4);
+	ASSERT(gray.channels == 1 && gray.cols == sz.cx && gray.rows == sz.cy);
+	output.SetSize(sz.cx, sz.cy, 4);
+    ASSERT(!gray.IsEmpty());
+	if (gray.IsEmpty())
+		return;
     ASSERT(output.data.GetCount() == gray.data.GetCount() * 4);
     byte* it = output.data.Begin();
     for (byte g : gray.data) {
@@ -313,6 +359,61 @@ Image ImageProcBase::GetOutput() const {
 	RGBA* it = ib.Begin();
 	memcpy(it, output.data.Begin(), len);
 	return ib;
+}
+
+void ImageProcBase::render_corners(const Vector<keypoint_t>& corners, ByteMat& out) {
+	int count = corners.GetCount();
+	int step = sz.cx;
+	
+	out.SetSize(sz.cx, sz.cy, 4);
+	memset(out.data.Begin(), 0, out.data.GetCount());
+	uint32* img = (uint32*)(byte*)out.data.Begin();
+	
+    uint32 pix = (0xff << 24) | (0x00 << 16) | (0xff << 8) | 0x00;
+    for(int i=0; i < count; ++i)
+    {
+        const auto& c = corners[i];
+        int off = (c.x + c.y * step);
+        img[off] = pix;
+        img[off-1] = pix;
+        img[off+1] = pix;
+        img[off-step] = pix;
+        img[off+step] = pix;
+    }
+}
+
+void ImageProcBase::render_corners(const ByteMat& bg, const ByteMat* mini_img, const Vector<keypoint_t>& corners, ByteMat& out) {
+	ASSERT(bg.cols == sz.cx && bg.rows == sz.cy);
+	int count = corners.GetCount();
+	int step = sz.cx;
+	
+	OutputFromGray(bg);
+	
+	if (mini_img && mini_img->cols > 0 && mini_img->cols <= bg.cols) {
+		RGBA* img = (RGBA*)output.data.Begin();
+		const byte* bg_img = (byte*)mini_img->data.Begin();
+		for (int y = 0; y < mini_img->rows; y++) {
+			for (int x = 0; x < mini_img->cols; x++) {
+				img->r = img->g = img->b = *bg_img++;
+				img->a = 255;
+				img++;
+			}
+			img += output.cols - mini_img->cols;
+		}
+	}
+	
+	uint32* img = (uint32*)(byte*)output.data.Begin();
+    for(int i=0; i < count; ++i)
+    {
+        uint32 pix = 0xff << 24 | 0xff << 16;
+        const auto& c = corners[i];
+        int off = (c.x + c.y * step);
+        img[off] = pix;
+        img[off-1] = pix;
+        img[off+1] = pix;
+        img[off-step] = pix;
+        img[off+step] = pix;
+    }
 }
 
 

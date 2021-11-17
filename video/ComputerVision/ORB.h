@@ -16,7 +16,7 @@ public:
 	
 	Orb();
 	void rectify_patch(const ByteMat& src, ByteMat& dst, double angle, int px, int py, int psize);
-	void describe(const ByteMat& src, const Vector<keypoint_t>& corners, ByteMat& descriptors);
+	void describe(const ByteMat& src, const Vector<keypoint_t>& corners, Vector<BinDescriptor>& descriptors);
 	
 };
 

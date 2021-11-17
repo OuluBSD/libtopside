@@ -574,6 +574,7 @@ public:
         this->cols = c;
         this->rows = r;
         this->channels = ch;
+        allocate();
     }
     matrix_t(int c, int r, int ch, const Vector<T>& data) {
         ASSERT(c > 0 && r > 0 && ch > 0);
@@ -592,7 +593,7 @@ public:
 		data <<= s.data;
     }
     void allocate() {
-        data.SetCount(cols * rows * channels);
+        data.SetCount(cols * rows * channels, 0);
     }
     
     void copy_to(matrix_t& other) const {
@@ -608,6 +609,10 @@ public:
         this->channels = ch;
         allocate();
     }
+	
+	bool IsEmpty() const {
+		return cols == 0 || rows == 0 || channels == 0;
+	}
 	
 };
 
@@ -628,6 +633,8 @@ struct Pyramid : Moveable<Pyramid<T>> {
 	
 	
 	int GetLevels() const {return data.GetCount();}
+	bool IsEmpty() const {return data.IsEmpty();}
+	
 	Mat& operator[](int i) {return data[i];}
 	
 	void SetLevels(int i) {data.SetCount(i);}

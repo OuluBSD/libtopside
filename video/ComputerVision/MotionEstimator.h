@@ -230,25 +230,31 @@ public:
 
 template <class Kernel>
 class motion_estimator {
-
+	Vector<int> indices;
 
 public:
 	
 	bool get_subset(Kernel& kernel, const Vector<keypoint_t>& from, const Vector<keypoint_t>& to, int need_cnt, int max_cnt, Vector<keypoint_t>& from_sub, Vector<keypoint_t>& to_sub) {
 		int max_try = 1000;
-		static thread_local Vector<int> indices;
-		indices.SetCount(need_cnt);
+		indices.Reserve(need_cnt);
+		indices.SetCount(0);
 		//var i = 0, j = 0, ssiter = 0, idx_i = 0, ok = false;
 		int ssiter = 0;
 		bool ok = false;
 		int i = 0;
+		from_sub.SetCount(0);
+		from_sub.Reserve(128);
+		to_sub.SetCount(0);
+		to_sub.Reserve(128);
 		for (; ssiter < max_try; ++ssiter)  {
 			for (i = 0; i < need_cnt && ssiter < max_try;) {
+				auto& idx = indices.Add();
+				idx = 0;
 				ok = false;
 				int idx_i = 0;
 				while (!ok) {
 					ok = true;
-					idx_i = indices[i] = Random(max_cnt);
+					idx_i = idx = Random(max_cnt);
 					for (int j = 0; j < i; ++j) {
 						if (idx_i == indices[j]) {
 							ok = false;
@@ -256,8 +262,10 @@ public:
 						}
 					}
 				}
-				from_sub[i] = from[idx_i];
-				to_sub[i] = to[idx_i];
+				auto& f = from_sub.Add();
+				auto& t = to_sub.Add();
+				f = from[idx_i];
+				t = to[idx_i];
 				if (!kernel.check_subset(from_sub, to_sub, i + 1)) {
 					ssiter++;
 					continue;
@@ -429,6 +437,7 @@ public:
 			// TODO handle multimodel output
 			ASSERT(from.GetCount() == count);
 			kernel.error(from, to, M, err);
+			ASSERT(err.GetCount() == count);
 			median_i = median(err, 0, count - 1);
 			
 			if (median_i < min_median) {
@@ -444,7 +453,7 @@ public:
 			
 			numinliers = find_inliers(kernel, model, from, to, sigma, err, curr_mask);
 			if (mask)
-				curr_mask.copy_to(*mask);
+				*mask = curr_mask;
 				
 			result = numinliers >= model_points;
 		}

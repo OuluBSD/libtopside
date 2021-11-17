@@ -5,14 +5,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 WarpPerspectiveBase::WarpPerspectiveBase() {
-    perspective_4point_transform(transform,  0,     0,   50,  50,
+    
+}
+
+void WarpPerspectiveBase::Process() {
+	perspective_4point_transform(transform,  0,     0,   50,  50,
                                            640,     0,  550, 100,
                                          sz.cx, sz.cy,  300, 400,
                                              0,   480,  100, 400);
     invert_3x3(transform, transform);
-}
-
-void WarpPerspectiveBase::Process() {
+    
+    
 	auto& img_u8 = tmp0;
 	auto& img_u8_warp = tmp1;
 	

@@ -4,16 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void YapeBase::SetSize(Size sz) {
-	ASSERT(!sz.IsEmpty());
-	
-	this->sz = sz;
+
+void YapeBase::InitDefault() {
+	ASSERT(!sz.IsEmpty() && sz.cx > 0 && sz.cy > 0);
 	
 	corners.SetCount(sz.cx * sz.cy);
 	for (keypoint_t& k : corners)
 		k.Clear();
 	
-	y.init(sz.cx * sz.cy, 5, 1);
+	y.init(sz.cx, sz.cy, 5, 4);
 }
 
 void YapeBase::Process() {

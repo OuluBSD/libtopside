@@ -66,6 +66,14 @@ typedef Size3_<double> Size3f;
 
 bool IsColliding(Pointf a, Pointf b, Pointf c, Pointf d);
 
+
+
+struct ColorLine : Moveable<ColorLine> {
+	Point a, b;
+	Color clr;
+	byte alpha = 255;
+};
+
 NAMESPACE_TOPSIDE_END
 
 #endif

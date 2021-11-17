@@ -49,13 +49,13 @@ void OrbBase::train_pattern() {
             lev_corners[i].Set(0,0,0,0,-1);
         }
 
-        pattern_descriptors[lev].SetSize(32, max_per_level, 1);
+        pattern_descriptors[lev].SetCount(max_per_level);
     }
 
     // do the first level
     {
 	    Vector<keypoint_t>& lev_corners = pattern_corners[0];
-	    matrix_t<byte>& lev_descr = pattern_descriptors[0];
+	    Vector<BinDescriptor>& lev_descr = pattern_descriptors[0];
 	
 	    gaussian_blur(lev0_img, lev_img, blur_size); // this is more robust
 	    corners_num = detect_keypoints(lev_img, lev_corners, max_per_level);
@@ -72,7 +72,7 @@ void OrbBase::train_pattern() {
     // but its nice to demonstrate that you can do everything with jsfeat
     for(int lev = 1; lev < num_train_levels; ++lev) {
         Vector<keypoint_t>& lev_corners = pattern_corners[lev];
-        matrix_t<byte>& lev_descr = pattern_descriptors[lev];
+        Vector<BinDescriptor>& lev_descr = pattern_descriptors[lev];
 
         int new_width = (int)(lev0_img.cols*sc);
         int new_height = (int)(lev0_img.rows*sc);
@@ -95,17 +95,18 @@ void OrbBase::train_pattern() {
     }
 }
 
-void OrbBase::SetSize(Size sz) {
+void OrbBase::InitDefault() {
 	auto& videoWidth = sz.cx;
 	auto& videoHeight = sz.cy;
 
+	match_threshold = 24;
 	
     /*img_u8 = new jsfeat.matrix_t(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);
     // after blur
     img_u8_smooth = new jsfeat.matrix_t(sz.cx, sz.cy, jsfeat.U8_t | jsfeat.C1_t);*/
     
     // we wll limit to 500 strongest points
-    screen_descriptors.SetSize(32, 500, 1);
+    screen_descriptors.Reserve(500);
     pattern_descriptors.SetCount(0);
 
     pattern_corners.SetCount(0);
@@ -120,6 +121,11 @@ void OrbBase::SetSize(Size sz) {
     // transform matrix
     homo3x3.SetSize(3,3,1);
     match_mask.SetSize(500,1,1);
+    
+    Grayscale(input, tmp0);
+    resample(tmp0, train_img, sz.cx * 0.25, sz.cy * 0.25);
+    
+    train_pattern();
     
 }
 
@@ -139,30 +145,18 @@ void OrbBase::Process() {
     ASSERT(num_corners == screen_corners.GetCount());
     o.describe(img_u8_smooth, screen_corners, screen_descriptors);
 
-	TODO
-	/*
-    render_corners(screen_corners, output);
+    render_corners(img_u8, &train_img, screen_corners, output);
 
     // render pattern and matches
-    int num_matches = 0;
-    int good_matches = 0;
-    if(pattern_preview.data.GetCount()) {
-        TODO
-        render_mono_image(pattern_preview.data, output, pattern_preview.cols, pattern_preview.rows);
-        
-        num_matches = match_pattern();
-        good_matches = find_transform(matches, num_matches);
-        
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-
+    int num_matches = match_pattern();
+    ASSERT(matches.GetCount() == num_matches);
+    int good_matches = find_transform(matches);
+    
     if(num_matches) {
-        render_matches(matches, num_matches);
+        render_matches(matches);
         if(good_matches > 8)
-            render_pattern_shape(ctx);
+            render_pattern_shape();
     }
-    */
 }
 
 
@@ -174,6 +168,7 @@ int OrbBase::detect_keypoints(const ByteMat& img, Vector<keypoint_t>& corners, i
     if(count > max_allowed) {
         Sort(corners, keypoint_t());
         count = max_allowed;
+        corners.SetCount(count);
     }
 
     // calculate dominant orientation for each keypoint
@@ -275,33 +270,30 @@ int OrbBase::find_transform(Vector<match_t>& matches) {
 // each on screen point is compared to all pattern points
 // to find the closest match
 int OrbBase::match_pattern() {
-    int q_cnt = screen_descriptors.rows;
-    auto& query_du8 = screen_descriptors.data;
-    static thread_local Vector<int> query_u32;
-    int qd_off = 0;
+    int q_cnt = screen_descriptors.GetCount();
     int qidx=0,lev=0,pidx=0,k=0;
     int num_matches = 0;
     matches.SetCount(0);
     matches.Reserve(256);
 
     for(qidx = 0; qidx < q_cnt; ++qidx) {
+        const BinDescriptor& scr = screen_descriptors[qidx];
         int best_dist = 256;
         int best_dist2 = 256;
         int best_idx = -1;
         int best_lev = -1;
 
         for(lev = 0; lev < num_train_levels; ++lev) {
-            auto& lev_descr = pattern_descriptors[lev];
-            int ld_cnt = lev_descr.rows;
-            static thread_local Vector<int> ld_i32;
-            int ld_off = 0;
+            auto& pattern = pattern_descriptors[lev];
+            int ld_cnt = pattern.GetCount();
 
             for(pidx = 0; pidx < ld_cnt; ++pidx) {
+                const BinDescriptor& lev_desc = pattern[pidx];
                 int curr_d = 0;
                 
                 // our descriptor is 32 bytes so we have 8 Integers
                 for(k=0; k < 8; ++k) {
-                    curr_d += PopCount32( query_u32[qd_off+k]^ld_i32[ld_off+k] );
+                    curr_d += PopCount32( scr.u8[k] ^ lev_desc.u8[k] );
                 }
 
                 if(curr_d < best_dist) {
@@ -312,8 +304,6 @@ int OrbBase::match_pattern() {
                 } else if(curr_d < best_dist2) {
                     best_dist2 = curr_d;
                 }
-
-                ld_off += 8; // next descriptor
             }
         }
 
@@ -336,7 +326,6 @@ int OrbBase::match_pattern() {
         }
         */
 
-        qd_off += 8; // next query descriptor
     }
 
     return num_matches;
@@ -359,41 +348,48 @@ void OrbBase::tCorners(const Vector<float>& M, int w, int h) {
     }
 }
 
-/*function render_matches(matches, count) {
-
-    for(var i = 0; i < count; ++i) {
-        var m = matches[i];
-        var s_kp = screen_corners[m.screen_idx];
-        var p_kp = pattern_corners[m.pattern_lev][m.pattern_idx];
-        if(match_mask.data[i]) {
-            ctx.strokeStyle = "rgb(0,255,0)";
+void OrbBase::render_matches(const Vector<match_t>& matches) {
+	ASSERT(match_mask.data.GetCount() >= matches.GetCount());
+	byte* mask = match_mask.data.Begin();
+	lines.SetCount(0);
+    for(const match_t& m : matches) {
+        const auto& s_kp = screen_corners[m.screen_idx];
+        const auto& p_kp = pattern_corners[m.pattern_lev][m.pattern_idx];
+        
+        byte b = 0, r,g;
+        if (*mask++) {
+            r = 0;
+            g = 255;
         } else {
-            ctx.strokeStyle = "rgb(255,0,0)";
+            r = 255;
+            g = 0;
         }
-        ctx.beginPath();
-        ctx.moveTo(s_kp.x,s_kp.y);
-        ctx.lineTo(p_kp.x*0.5, p_kp.y*0.5); // our preview is downscaled
-        ctx.lineWidth=1;
-        ctx.stroke();
+        
+        ColorLine& l = lines.Add();
+        l.a.x = s_kp.x;
+        l.a.y = s_kp.y;
+        l.b.x = p_kp.x*0.25;
+        l.b.y = p_kp.y*0.25;
+        l.clr = Color(r,g,b);
     }
-}*/
+}
 
-/*function render_pattern_shape(ctx) {
+void OrbBase::render_pattern_shape() {
     // get the projected pattern corners
-    var shape_pts = tCorners(homo3x3.data, pattern_preview.cols*2, pattern_preview.rows*2);
-
-    ctx.strokeStyle = "rgb(0,255,0)";
-    ctx.beginPath();
-
-    ctx.moveTo(shape_pts[0].x,shape_pts[0].y);
-    ctx.lineTo(shape_pts[1].x,shape_pts[1].y);
-    ctx.lineTo(shape_pts[2].x,shape_pts[2].y);
-    ctx.lineTo(shape_pts[3].x,shape_pts[3].y);
-    ctx.lineTo(shape_pts[0].x,shape_pts[0].y);
-
-    ctx.lineWidth=4;
-    ctx.stroke();
-}*/
+    tCorners(homo3x3.data, pattern_preview.cols*2, pattern_preview.rows*2);
+	
+	for(int i = 0; i < corners.GetCount(); i++) {
+		const keypoint_t& a = corners[i];
+		const keypoint_t& b = corners[(i + 1) % corners.GetCount()];
+		
+		ColorLine& l = lines.Add();
+        l.a.x = a.x;
+        l.a.y = a.y;
+        l.b.x = b.x;
+        l.b.y = b.y;
+        l.clr = Color(0,255,0);
+	}
+}
 
 /*function render_corners(corners, count, img, step) {
     var pix = (0xff << 24) | (0x00 << 16) | (0xff << 8) | 0x00;

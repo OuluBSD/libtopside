@@ -10,13 +10,13 @@ void eigenVV(const FloatMat& A, FloatMat* vects, FloatMat* vals) {
 	int n = A.cols;
 	int dt = 1;
 	
-	FloatMat a_mt(n, n, dt);
-	FloatMat w_mt(1, n, dt);
+	static thread_local FloatMat a_mt;
+	static thread_local FloatMat w_mt;
+	a_mt.SetSize(n, n, dt);
+	w_mt.SetSize(1, n, dt);
 	
-	int i = n * n;
-	while (--i >= 0) {
-		a_mt.data[i] = A.data[i];
-	}
+	ASSERT(a_mt.data.GetCount() == A.data.GetCount());
+	memcpy(a_mt.data.Begin(), A.data.Begin(), sizeof(float) * a_mt.data.GetCount());
 	
 	JacobiImpl(a_mt.data, n, w_mt.data, (vects ? &vects->data : NULL), n, n);
 	

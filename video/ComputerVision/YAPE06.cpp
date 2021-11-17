@@ -53,15 +53,11 @@ int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 	int ex = min(w - 5, w - border);
 	int ey = min(h - 3, h - border);
 	
-	{
-		int x = w * h;
-		while (--x >= 0) {
-			laplacian[x] = 0;
-		}
-	}
+	laplacian.SetCount(w * h, 0);
 	
 	compute_laplacian(srd_d, laplacian, w, h, Dxx, Dyy, sx, sy, ex, ey);
-	
+	points.SetCount(0);
+	points.Reserve(512);
 	row = (sy * w + sx);
 	for (int y = sy; y < ey; ++y, row += w) {
 		for (int x = sx, rowx = row; x < ex; ++x, ++rowx) {
@@ -81,7 +77,7 @@ int yape06::detect(const ByteMat& src, Vector<keypoint_t>& points, int border) {
 			   
 				min_eigen_value = (T)hessian_min_eigen_value(srd_d, rowx, lv, Dxx, Dyy, Dxy, Dyx);
 				if (min_eigen_value > eigen_thresh) {
-					keypoint_t& pt = points[number_of_points];
+					keypoint_t& pt = points.Add();
 					pt.x = x;
 					pt.y = y;
 					pt.score = min_eigen_value;

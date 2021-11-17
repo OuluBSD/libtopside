@@ -88,6 +88,7 @@ void group_rectangles(const Vector<BBox>& rects, Vector<BBox>& result_seq, int m
 	}
 	
 	Vector<int> idx_seq;
+	idx_seq.SetCount(c);
 	int class_idx = 0;
 	for (int i = 0; i < c; i++) {
 		int j = -1;

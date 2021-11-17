@@ -168,7 +168,13 @@ double estimateOptimalTrimRatio(const FloatMat& M, const Size& size) {
 
 
 onepass_stabilizer::onepass_stabilizer(int motionModel) : motion_estimator(motionModel) {
-    radius = 15;
+    
+}
+
+void onepass_stabilizer::Init(Size sz, int radius) {
+    reset();
+    
+    this->radius = radius;
     trimRatio = 0.0;
     doImage = true;
     doCorrectionForInclusion = false;
@@ -184,10 +190,7 @@ onepass_stabilizer::onepass_stabilizer(int motionModel) : motion_estimator(motio
 	
 	im33.SetSize(3,3,1);
 	
-    reset();
-}
-
-void onepass_stabilizer::Init(Size sz) {
+    
     
     motion_estimator.Init(sz);
     
@@ -233,7 +236,7 @@ void onepass_stabilizer::setup(const ByteMat& rgbaImageData) {
 		j = get_ring_ind(i, cache_size);
 		eye3x3.copy_to( motions[j] );
 		gray.copy_to( frames[j] );
-		rgba[i] = rgbaImageData;
+		rgba[-i] = rgbaImageData;
     }
 
     gray.copy_to( frames[0] );
@@ -301,8 +304,9 @@ bool onepass_stabilizer::do_one_iteration(const ByteMat* frame_rgba) {
             ByteMat& gray_frame = get_at(curPos, frameBufferSize, frames);
             ASSERT(frame_rgba->cols == gray_frame.cols && frame_rgba->rows == gray_frame.rows);
             Grayscale(*frame_rgba, gray_frame);
-
-            rgba[get_ring_ind(curPos, frameBufferSize)] = *frame_rgba;
+			
+			int i = get_ring_ind(curPos, frameBufferSize);
+			rgba[i] = *frame_rgba;
 
             const FloatMat& m33 = estimate_motion();
             m33.copy_to( get_at(curPos-1, frameBufferSize, motions) );

@@ -44,6 +44,8 @@ struct BBox : Moveable<BBox> {
 		confidence = c.confidence;
 	}
 	
+	bool operator()(const BBox& a, const BBox& b) const {return a.confidence > b.confidence;}
+	
 };
 
 
@@ -72,6 +74,14 @@ enum {
 	SVD_V_T = 0x02,
 };
 
+
+class BinDescriptor : Moveable<BinDescriptor> {
+public:
+	union {
+		uint32 u32[8];
+		byte u8[32];
+	};
+};
 
 class keypoint_t : Moveable<keypoint_t> {
 	

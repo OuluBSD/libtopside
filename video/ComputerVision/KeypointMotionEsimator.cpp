@@ -42,7 +42,9 @@ void keypoint_motion_estimator::Init(Size size) {
 };
 
 const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& frame1) {
-
+	ASSERT(!prev_img_pyr.IsEmpty());
+	ASSERT(!curr_img_pyr.IsEmpty());
+	
 	// update pyramids
     //frame0.copy_to(prev_img_pyr.data[0]);
     //frame1.copy_to(curr_img_pyr.data[0]);
@@ -79,19 +81,24 @@ const FloatMat& keypoint_motion_estimator::estimate(ByteMat& frame0, ByteMat& fr
     // leave good correspondences only
 
     int good_cnt = 0;
+    corners1.SetCount(0);
+    corners1.Reserve(1024);
     for (i = 0; i < count; ++i) {
         if (point_status[i]) {
-			corners0[good_cnt].x = corners0[i].x;
-			corners0[good_cnt].y = corners0[i].y;
+            const auto& f0 = corners0[i];
+            auto& c0 = corners0[good_cnt];
+            auto& c1 = corners1.Add();
+			c0.x = f0.x;
+			c0.y = f0.y;
 			
-			corners1[good_cnt].x = curr_xy[i<<1];
-			corners1[good_cnt].y = curr_xy[(i<<1)+1];
+			c1.x = curr_xy[i<<1];
+			c1.y = curr_xy[(i<<1)+1];
 			
 			good_cnt++;
         }
     }
 	corners0.SetCount(good_cnt);
-	corners1.SetCount(good_cnt);
+	
 	
     //LOG("lk tracked: " + good_cnt);
 

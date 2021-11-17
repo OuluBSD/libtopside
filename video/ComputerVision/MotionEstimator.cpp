@@ -30,6 +30,8 @@ void homography2d::error(const Vector<keypoint_t>& from, const Vector<keypoint_t
 	
 	auto f = from.Begin();
 	auto t = to.Begin();
+	ASSERT(from.GetCount() == to.GetCount());
+	err.SetCount(from.GetCount());
 	for (auto& e : err) {
 		const keypoint_t& pt0 = *f;
 		const keypoint_t& pt1 = *t;

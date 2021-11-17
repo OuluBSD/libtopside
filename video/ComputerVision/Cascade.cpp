@@ -11,6 +11,12 @@ void SimpleCascadeClassifier::Jsonize(JsonIO& json) {
 		("right_val", right_val),
 		("tilted", tilted) // haar::detect_single_scale
 	;
+	if (json.IsLoading()) {
+		threshold = json.Get("threshold");
+		left_val = json.Get("left_val");
+		right_val = json.Get("right_val");
+		tilted = json.Get("tilted");
+	}
 }
 
 void ComplexCascadeClassifier::Jsonize(JsonIO& json) {
@@ -18,6 +24,9 @@ void ComplexCascadeClassifier::Jsonize(JsonIO& json) {
 		("simple_classifiers", classifiers)
 		("threshold", threshold) // haar::detect_single_scale
 	;
+	if (json.IsLoading()) {
+		threshold = json.Get("threshold");
+	}
 }
 
 void ComplexCascade::Jsonize(JsonIO& json) {
@@ -26,6 +35,9 @@ void ComplexCascade::Jsonize(JsonIO& json) {
 		("tilted", tilted)
 		("complex_classifiers", classifiers)
 	;
+	if (json.IsLoading()) {
+		tilted = json.Get("tilted");
+	}
 }
 
 String ComplexCascade::GetCppLoader(String name) const {
@@ -251,14 +263,26 @@ bool LoadCascadeJs(String path, String dst_title, String dst_dir) {
 	return true;
 }
 
-void LoadCascadeBbfFace(Cascade& c) {TODO}
-void LoadCascadeEye(ComplexCascade& c) {TODO}
-void LoadCascadeFrontalFace(ComplexCascade& c) {TODO}
-void LoadCascadeHandFist(ComplexCascade& c) {TODO}
-void LoadCascadeHandOpen(ComplexCascade& c) {TODO}
-void LoadCascadeMouth(ComplexCascade& c) {TODO}
-void LoadCascadeProfileFace(ComplexCascade& c) {TODO}
-void LoadCascadeUpperBody(ComplexCascade& c) {TODO}
+template <class T>
+void LoadCascadeJsonFile(T& c, String title) {
+	String path = RealizeShareFile("json" DIR_SEPS + title + ".json");
+	String json = LoadFile(path);
+	if (json.IsEmpty()) {
+		LOG("LoadCascadeJsonFile: error: could not load file " + path);
+		return;
+	}
+	
+	LoadFromJson(c, json);
+}
+
+void LoadCascadeBbfFace(Cascade& c) {LoadCascadeJsonFile(c, "BbfFace");}
+void LoadCascadeEye(ComplexCascade& c) {LoadCascadeJsonFile(c, "Eye");}
+void LoadCascadeFrontalFace(ComplexCascade& c) {LoadCascadeJsonFile(c, "FrontalFace");}
+void LoadCascadeHandFist(ComplexCascade& c) {LoadCascadeJsonFile(c, "HandFist");}
+void LoadCascadeHandOpen(ComplexCascade& c) {LoadCascadeJsonFile(c, "HandOpen");}
+void LoadCascadeMouth(ComplexCascade& c) {LoadCascadeJsonFile(c, "Mouth");}
+void LoadCascadeProfileFace(ComplexCascade& c) {LoadCascadeJsonFile(c, "ProfileFace");}
+void LoadCascadeUpperBody(ComplexCascade& c) {LoadCascadeJsonFile(c, "UpperBody");}
 
 
 NAMESPACE_TOPSIDE_END

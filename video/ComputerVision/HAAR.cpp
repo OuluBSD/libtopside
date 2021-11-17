@@ -77,10 +77,12 @@ void haar::detect_single_scale(Vector<BBox>& rects,const Vector<int>& int_sum, c
 				stage_sum = 0;
 				for (int j = 0; j < tn; ++j) {
 					const SimpleCascadeClassifier& tree = trees[j];
+					ASSERT(tree.left_val <= 1e10);
+					ASSERT(tree.right_val <= 1e10);
 					double tree_sum = 0;
 					const Vector<Vector<int>>& features = tree.features;
 					int fn = features.GetCount();
-					if (tree.tilted) {
+					if (tree.tilted && int_tilted.GetCount()) {
 						for (int k = 0; k < fn; ++k) {
 							const Vector<int>& feature = features[k];
 							int fi_a = (int)(x + feature[0] * scale) + (int)(y + feature[1] * scale) * w1;
