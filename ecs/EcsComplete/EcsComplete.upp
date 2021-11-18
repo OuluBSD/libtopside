@@ -6,7 +6,7 @@ uses
 	EcsLocal,
 	EcsCompleteDebug;
 
-uses(CTRL) EcsCtrl;
+uses(GUI) EcsCtrl;
 
 uses(NEVER) Physics;
 

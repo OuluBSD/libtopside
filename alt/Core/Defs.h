@@ -65,6 +65,7 @@
 #include <random>
 #include <memory>
 #include <complex>
+#include <numeric>
 
 #include <emmintrin.h>
 

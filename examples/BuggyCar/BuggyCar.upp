@@ -7,6 +7,6 @@ file
 	BuggyCar.cpp;
 
 mainconfig
-	"" = "GUI ODE",
-	"" = "GUI ODE VR";
+	"" = "SCREEN ODE",
+	"" = "SCREEN ODE VR";
 

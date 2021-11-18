@@ -9,7 +9,7 @@ library(POSIX) "GL GLU";
 
 library(WIN32) "Opengl32 glu32";
 
-library(WIN32) glew32;
+library(WIN32) glew32s;
 
 file
 	OOSDL2.h,

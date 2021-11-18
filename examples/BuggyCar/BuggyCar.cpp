@@ -57,7 +57,7 @@ void Runner(String app_name) {
 	String eon_file;
 	DUMP(eon_file);
 	DUMPC(args);
-	Serial::DebugMain(eon_file, args, 0);
+	Serial::DebugMain("", eon_file, args, 0);
 }
 
 

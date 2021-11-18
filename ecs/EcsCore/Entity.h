@@ -169,10 +169,13 @@ private:
 	template<typename T> void Remove0();
 	template<typename T> RefT_Entity<T> Add0();
 	
+	
 	ComponentBaseRef AddPtr(ComponentBase* comp);
 	
 	
 };
+
+
 
 
 

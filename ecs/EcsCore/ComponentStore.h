@@ -85,6 +85,24 @@ private:
 };
 
 
+template<typename T>
+void Entity::Remove0() {
+	TODO
+	//comps.Remove<T>(GetMachine().Get<ComponentStore>());
+}
+
+template<typename T>
+RefT_Entity<T> Entity::Add0() {
+	TODO
+//	T* comp = GetMachine().Get<ComponentStore>()->CreateComponent<T>();
+//	ASSERT(comp);
+//	comps.Add(comp);
+//	InitializeComponent(*comp);
+//	ASSERT(comp->GetEntityPtr());
+//	return comp;
+
+}
+
 
 
 

@@ -94,7 +94,7 @@ protected:
 private:
 	vec4 SelectColor(double x, double y);
 	
-	FixedArray<vec4, 10> colors = {
+	SimpleFixedArray<vec4, 10> colors = {
 		Colors::Red,
 		Colors::Chocolate,
 		Colors::Yellow,

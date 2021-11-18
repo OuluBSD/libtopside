@@ -60,7 +60,7 @@ public:
         offset = e.offset;
         alpha_multiplier = e.alpha_multiplier;
     }
-#ifdef flagGUI
+#ifdef flagSCREEN
 	Callback1<Shader&> cb;
 #endif
 	//Model* GetModel() {return model ? model->GetModel() : 0;}

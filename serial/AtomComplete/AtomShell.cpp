@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 using ObjMap = VectorMap<String,Object>;
-MAKE_STATIC(ObjMap, args)
+MAKE_STATIC(ObjMap, __def_args)
 MAKE_STATIC(String, eon_script)
 MAKE_STATIC(String, eon_file)
 
@@ -31,7 +31,7 @@ bool DefaultInitializer() {
 		return false;
 	}
 	
-	args <<= cmd.GetVariables();
+	__def_args <<= cmd.GetVariables();
 	
 	
 	eon_file = Serial::RealizeEonFile(eon_file);
@@ -105,9 +105,9 @@ void DefaultRunner(String app_name) {
 	//DUMP(eon_file);
 	//DUMPC(args);
 	if (!break_addr)
-		Serial::DebugMain(eon_script, eon_file, args, verify ? &verifier : 0);
+		Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0);
 	else
-		Serial::DebugMain(eon_script, eon_file, args, verify ? &verifier : 0, 1, break_addr);
+		Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0, 1, break_addr);
 }
 
 void DefaultStartup() {
