@@ -1,6 +1,38 @@
 #include "EcsMach.h"
 
 
+NAMESPACE_SERIAL_BEGIN
+
+bool EntitySystem::Initialize() {
+	engine.Create();
+	SetActiveEngine(*engine);
+	return true;
+}
+
+void EntitySystem::Start() {
+	engine->Start();
+}
+
+void EntitySystem::Update(double dt) {
+	if (engine->IsRunning())
+		engine->Update(dt);
+}
+
+void EntitySystem::Stop() {
+	engine->Stop();
+}
+
+void EntitySystem::Uninitialize() {
+	if (engine) {
+		engine->Clear();
+		engine.Clear();
+	}
+}
+
+NAMESPACE_SERIAL_END
+
+
+
 NAMESPACE_ECS_BEGIN
 
 

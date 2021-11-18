@@ -91,6 +91,14 @@ public:
         return syst->template AsRef<SystemT>();
     }
 
+    template<typename SystemT, typename... Args>
+    Ref<SystemT> GetAdd(Args&&... args) {
+        SystemCollection::Iterator it = FindSystem(AsTypeCls<SystemT>());
+        if (it)
+            return it->AsRef<SystemT>();
+        return Add<SystemT>(args...);
+    }
+    
     template<typename SystemT>
     void Remove()
     {

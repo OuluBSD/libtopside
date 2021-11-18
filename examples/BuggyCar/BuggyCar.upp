@@ -4,7 +4,8 @@ uses
 
 file
 	BuggyCar.h,
-	BuggyCar.cpp;
+	BuggyCar.cpp,
+	BuggyCar.eon;
 
 mainconfig
 	"" = "SCREEN ODE",

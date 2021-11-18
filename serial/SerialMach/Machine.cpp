@@ -13,6 +13,7 @@ SystemBase::~SystemBase() {
 
 
 Callback Machine::WhenInitialize;
+Callback Machine::WhenPostInitialize;
 Callback Machine::WhenPreFirstUpdate;
 
 
@@ -42,6 +43,8 @@ bool Machine::Start() {
 			return false;
 		}
 	}
+	
+	WhenPostInitialize();
 	
 	is_initialized = true;
 	
@@ -191,8 +194,8 @@ NAMESPACE_SERIAL_END
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void SingleMachine::Run(bool gui, void(*fn)()) {
-	if (Open(gui)) {
+void SingleMachine::Run(bool ecs, void(*fn)()) {
+	if (Open(ecs)) {
 		fn();
 		Close();
 	}

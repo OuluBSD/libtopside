@@ -148,6 +148,7 @@ public:
 	Callback WhenLeaveSystemUpdate;
 	
 	static Callback WhenInitialize;
+	static Callback WhenPostInitialize;
 	static Callback WhenPreFirstUpdate;
 	
 private:
@@ -188,14 +189,14 @@ NAMESPACE_TOPSIDE_BEGIN
 class SingleMachine {
 	Serial::Machine mach;
 	
-	bool Open(bool gui);
+	bool Open(bool ecs);
 	void Close();
 	
 public:
 	SingleMachine()		{Serial::SetActiveMachine(mach);}
 	~SingleMachine()	{Serial::ClearActiveMachine();}
 	
-	void Run(bool gui, void(*fn)());
+	void Run(bool ecs, void(*fn)());
 	
 };
 

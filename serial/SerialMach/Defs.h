@@ -16,12 +16,12 @@
 	\
 	void GuiMainFn_()
 #else
-	#define SERIAL_APP_MAIN_(gui) \
+	#define SERIAL_APP_MAIN_(ecs) \
 	void GuiMainFn_(); \
 	\
 	extern "C" int main(int argc, char *argv[]) {\
 		::UPP::AppInit__(argc, (const char **)argv); \
-		TS::SingleMachine().Run(gui, GuiMainFn_); \
+		TS::SingleMachine().Run(ecs, GuiMainFn_); \
 		::UPP::AppExit__(); \
 		return ::UPP::GetExitCode(); \
 	} \
@@ -29,7 +29,7 @@
 	void GuiMainFn_()
 #endif
 
-#define SERIAL_APP_MAIN			SERIAL_APP_MAIN_(true)
+#define ECS_APP_MAIN			SERIAL_APP_MAIN_(true)
 #define RENDER_APP_MAIN			SERIAL_APP_MAIN_(false)
 
 

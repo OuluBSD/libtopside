@@ -12,6 +12,8 @@ file
 	Types.h,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
+	EntitySystem.h,
+	EntitySystem.cpp,
 	AtomUtil.h,
 	AtomUtil.cpp,
 	CustomAtom.h,

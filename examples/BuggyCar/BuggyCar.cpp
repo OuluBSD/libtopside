@@ -31,8 +31,9 @@ NAMESPACE_ECS_BEGIN
 
 void BuggyCarInitializer() {
 	Engine& eng = GetActiveEngine();
-	//eng.Add<EntityStore>();
-	eng.Add<PhysicsSystem>();
+	eng.GetAdd<EntityStore>();
+	eng.GetAdd<ComponentStore>();
+	eng.GetAdd<PhysicsSystem>();
 }
 
 void BuggyCarStartup() {
@@ -64,9 +65,18 @@ void Runner(String app_name) {
 NAMESPACE_TOPSIDE_END
 
 
-RENDER_APP_MAIN {TS::Runner("AtomShell");}
-APP_INITIALIZE_(TS::Ecs::BuggyCarInitializer);
-APP_STARTUP_(TS::Ecs::BuggyCarStartup);
+ECS_INITIALIZE_STARTUP_(TS::Ecs::BuggyCarInitializer, TS::Ecs::BuggyCarStartup) \
+ECS_APP_MAIN {
+	using namespace UPP;
+	String eon_file = GetDataFile("BuggyCar.eon");
+	if (FileExists(eon_file)) {
+		TS::DefaultRunner("Gui App", eon_file);
+	}
+	else {
+		LOG("BuggyCar.eon file not found");
+	}
+}
+
 
 NAMESPACE_UPP
 INITBLOCK {

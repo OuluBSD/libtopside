@@ -6,7 +6,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool SingleMachine::Open(bool gui) {
+bool SingleMachine::Open(bool ecs) {
 	using namespace Serial;
 	
 	const AppFlags& flags = GetAppFlags();
@@ -22,8 +22,8 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<PacketTracker>();
     
     
-    //if (gui)
-	//	mach.Add<WindowSystem>();
+    if (ecs)
+		mach.Add<EntitySystem>();
 	
     /*mach.Add<HolographicScene>();
     mach.Add<EasingSystem>();

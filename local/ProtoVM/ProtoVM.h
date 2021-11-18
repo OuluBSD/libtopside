@@ -7,6 +7,7 @@ using namespace UPP;
 
 #include "Machine.h"
 #include "Generic.h"
+#include "TransArrayProc.h"
 
 
 #endif

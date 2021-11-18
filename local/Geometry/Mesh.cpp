@@ -43,6 +43,9 @@ void Mesh::SetupAutomatic() {
 #if HAVE_OPENGL
 void Mesh::SetupOpenGL() {
 	ASSERT(VAO == 0);
+	ASSERT_(GetAppFlags().IsOpenGLContextOpen(), "OpenGL context is not open");
+	if (!GetAppFlags().IsOpenGLContextOpen())
+		return;
 	
 	// Create objects
 	glGenVertexArrays(1, &VAO);

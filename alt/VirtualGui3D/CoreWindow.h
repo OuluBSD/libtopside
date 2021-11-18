@@ -217,6 +217,8 @@ struct Window : EntityPrefab<CoreWindow, Transform, VR_ScreenWindow> {
 		
 		components.Get<CoreWindow>()->Create<T>();
 		
+		TODO // renderable
+		
         return components;
     }
 };
@@ -238,6 +240,8 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
 		
 		T& t = components.Get<CoreWindowRef>()->Create<T>();
 		ASSERT(&t);
+		
+		TODO // renderable
 		
         return components;
     }

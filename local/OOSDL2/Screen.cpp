@@ -111,6 +111,7 @@ void Screen::Close0() {
 	last_packet.Clear();
 	
 	if (glcontext) {
+		GetAppFlags().SetOpenGLContextOpen(false);
 		SDL_GL_DeleteContext(glcontext);
 		glcontext = 0;
 	}

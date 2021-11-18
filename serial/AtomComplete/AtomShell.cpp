@@ -100,10 +100,22 @@ void DefaultSerialInitializer() {
 }
 
 
-void DefaultRunner(String app_name) {
+void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args) {
 	//DUMP(eon_script);
 	//DUMP(eon_file);
 	//DUMPC(args);
+	
+	if (!override_eon_file.IsEmpty())
+		eon_file = override_eon_file;
+	
+	if (extra_args) {
+		for(int i = 0; i < extra_args->GetCount(); i++)
+			__def_args.GetAdd(
+				extra_args->GetKey(i),
+				(*extra_args)[i]
+			);
+	}
+	
 	if (!break_addr)
 		Serial::DebugMain(eon_script, eon_file, __def_args, verify ? &verifier : 0);
 	else

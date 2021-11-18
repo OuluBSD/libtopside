@@ -2,15 +2,31 @@
 
 
 CONSOLE_APP_MAIN {
-	Machine		mach;
-	int			max_ticks = 10;
-	
-	mach.Init();
-	
-	for(int i = 0; i < max_ticks; i++) {
+	if (1) {
+		TransArrayProc tap;
+		int max_ticks = 10;
 		
-		mach.Tick();
+		tap.InitTest(0);
+		
+		for(int i = 0; i < max_ticks; i++) {
+			
+			tap.Tick();
+			
+		}
+		
+		
 		
 	}
-	
+	else {
+		Machine		mach;
+		int			max_ticks = 10;
+		
+		mach.Init();
+		
+		for(int i = 0; i < max_ticks; i++) {
+			
+			mach.Tick();
+			
+		}
+	}
 }

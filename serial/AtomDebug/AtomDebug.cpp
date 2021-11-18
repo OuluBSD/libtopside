@@ -61,10 +61,10 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 				String path = RealizeEonFile(script_file);
 				
 				String script_str;
-				if (script_content.GetCount())
-					script_str = script_content;
-				else
+				if (script_content.IsEmpty())
 					script_str = LoadFile(path);
+				else
+					script_str = script_content;
 				//script_str.DebugFollow();
 				
 				if (script_str.IsEmpty()) {

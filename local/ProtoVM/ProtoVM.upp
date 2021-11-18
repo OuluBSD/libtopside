@@ -4,6 +4,8 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
+	TransArrayProc.h,
+	TransArrayProc.cpp,
 	Generic.h,
 	Generic.cpp,
 	Machine.h,

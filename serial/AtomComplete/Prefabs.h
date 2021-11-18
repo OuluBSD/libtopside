@@ -59,6 +59,10 @@ void SimpleSerialMain(String title, bool start_machine=false);
 	NAMESPACE_UPP \
 	INITBLOCK {TS::Serial::GetAppFlags().gfx = TS::AppFlags::x;} \
 	END_UPP_NAMESPACE
+#define ECS_INITIALIZE_STARTUP_(init, startup) \
+	NAMESPACE_UPP \
+	INITBLOCK {TS::Ecs::Engine::WhenInitialize << callback(init); TS::Ecs::Engine::WhenPreFirstUpdate << callback(startup);} \
+	END_UPP_NAMESPACE
 
 NAMESPACE_SERIAL_END
 
