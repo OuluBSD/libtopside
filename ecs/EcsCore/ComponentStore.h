@@ -88,20 +88,6 @@ private:
 
 
 
-template<typename T>
-void Entity::Remove0() {
-	comps.Remove<T>(GetEngine().Get<ComponentStore>());
-}
-
-template<typename T>
-RefT_Entity<T> Entity::Add0() {
-	T* comp = GetEngine().Get<ComponentStore>()->CreateComponent<T>();
-	ASSERT(comp);
-	comp->SetParent(this);
-	comps.Add<T>(comp);
-	return RefT_Entity<T>(this, comp);
-}
-
 NAMESPACE_ECS_END
 
 #endif

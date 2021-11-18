@@ -4,8 +4,8 @@
 
 #include "Defs.h"
 
-#ifndef flagCTRL
-	#error "LocalCtrl library requires CTRL flag to be set"
+#ifndef flagGUI
+	#error "LocalCtrl library requires GUI flag to be set"
 #endif
 
 #include "Compat.h"
@@ -20,6 +20,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#include <Local/Ctrl.inl>
 
 void SetFileDialogDirectory(String path);
 

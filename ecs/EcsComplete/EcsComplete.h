@@ -6,7 +6,7 @@
 
 #include <EcsLib/EcsLib.h>
 
-#ifdef flagCTRL
+#ifdef flagGUI
 	#include <EcsCtrl/EcsCtrl.h>
 #endif
 

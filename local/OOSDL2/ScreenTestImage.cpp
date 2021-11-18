@@ -1,4 +1,4 @@
-#include "OOSDL2.h"
+#include <AtomSDL2/AtomSDL2.h>
 
 #ifdef flagSCREEN
 

@@ -1,8 +1,8 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
-#ifdef flagCTRL
+#ifdef flagGUI
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 SubMenuFrame::SubMenuFrame(Windows* wins) : wins(wins) {
@@ -148,6 +148,6 @@ void SubMenuFrame::LocalMenu(Bar& bar) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

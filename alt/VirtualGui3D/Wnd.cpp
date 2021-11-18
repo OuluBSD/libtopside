@@ -1,4 +1,4 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
 
 NAMESPACE_UPP
@@ -80,11 +80,12 @@ void Ctrl::PaintScene(SystemDraw& draw) {
 
 void Ctrl::Invalidate() {
 	using namespace TS;
-	static Ref<WindowSystem> win;
+	static Ref<Ecs::WindowSystem> win;
 	if (!win) {
-		win = GetActiveMachine().Get<WindowSystem>();
+		TODO
+		/*win = GetActiveMachine().Get<Ecs::WindowSystem>();
 		if (win)
-			win->Invalidate();
+			win->Invalidate();*/
 	}
 	else
 		win->Invalidate();

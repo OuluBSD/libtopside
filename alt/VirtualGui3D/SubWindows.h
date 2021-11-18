@@ -1,9 +1,9 @@
 #ifndef _CtrlCore_Windows_h_
 #define _CtrlCore_Windows_h_
 
-#ifdef flagCTRL
+#ifdef flagGUI
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class SubMenuFrameList : public Ctrl {
@@ -41,6 +41,7 @@ public:
 
 class Windows : public Ctrl {
 	RTTI_DECL1(Windows, Ctrl)
+	void Visit(RuntimeVisitor& vis) {}
 	
 protected:
 	friend class OpenVR;
@@ -107,7 +108,7 @@ public:
 	Windows();
 	~Windows();
 	
-	hash_t GetHashValue() const {return (uint64)this;}
+	hash_t GetHashValue() const {return (hash_t)(size_t)this;}
 	
 	void AddWindow(CoreWindow&);
 	CoreWindow& GetWindow(TopWindow& ctrl);
@@ -144,7 +145,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

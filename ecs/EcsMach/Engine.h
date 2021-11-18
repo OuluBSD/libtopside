@@ -52,9 +52,6 @@ public:
 #define ECS_SYS_CTOR(x) \
 	typedef x CLASSNAME; \
 	x(Engine& m) : SP(m) {}
-#define ECS_SYS_CTOR_(x) \
-	typedef x CLASSNAME; \
-	x(Engine& m) : SP(m)
 #define SYS_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<System<CLASSNAME>>(this);}
 #define SYS_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {x; vis.VisitThis<System<CLASSNAME>>(this);}
 
@@ -127,6 +124,7 @@ public:
 	Callback WhenLeaveUpdate;
 	Callback WhenLeaveSystemUpdate;
 	
+	static Callback WhenGuiProgram;
 	static Callback WhenInitialize;
 	static Callback WhenPreFirstUpdate;
 	

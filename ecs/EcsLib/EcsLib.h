@@ -17,15 +17,16 @@
 	#endif
 #endif
 
-#if defined(UPP_VERSION) && defined(flagGUI)
+#if !defined LIBTOPSIDE && defined flagGUI
 	// No WindowSystem
-#elif defined(flagGUI) && defined(flagCTRL)
+#elif defined(flagGUI)
 	#define HAVE_WINDOWSYSTEM 1
 #endif
 
 #define BIG_NUMBER 100000000
 
 #include "Defs.h"
+#include "CommonComponents.h"
 #include "RegistrySystem.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
@@ -34,7 +35,7 @@
 
 #endif
 
-/*#if defined flagGUI && defined flagCTRL
+/*#if defined flagGUI && defined flagGUI
 	#include <SDL2GUI3D/System.h>
 #endif*/
 

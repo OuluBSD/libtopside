@@ -1,5 +1,4 @@
-#include "OOSDL2.h"
-#include <SerialCore/SerialCore.h>
+#include <AtomSDL2/AtomSDL2.h>
 
 NAMESPACE_SDL2_BEGIN
 

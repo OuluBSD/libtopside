@@ -1,9 +1,9 @@
 #ifndef _SDL2GUI3D_System_h_
 #define _SDL2GUI3D_System_h_
 
-#include <SerialLib/SerialLib.h>
+#include <EcsLib/EcsLib.h>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class SDL2GUI3DSystem : public System<SDL2GUI3DSystem> {
@@ -13,7 +13,7 @@ class SDL2GUI3DSystem : public System<SDL2GUI3DSystem> {
 	
 public:
 	SYS_RTTI(SDL2GUI3DSystem)
-	SYS_CTOR_(SDL2GUI3DSystem), gui(this) {}
+	ECS_SYS_CTOR_(SDL2GUI3DSystem), gui(this) {}
 	SYS_DEF_VISIT
 	
 protected:
@@ -31,6 +31,6 @@ protected:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

@@ -74,5 +74,6 @@ file
 	Debugging.h,
 	Debugging.cpp,
 	VR.h,
-	Ctrl.h;
+	Ctrl.h,
+	Ctrl.inl highlight cpp;
 

@@ -17,6 +17,7 @@ Engine& SystemBase::GetEngine() const {
 }
 
 
+Callback Engine::WhenGuiProgram;
 Callback Engine::WhenInitialize;
 Callback Engine::WhenPreFirstUpdate;
 

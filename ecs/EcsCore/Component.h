@@ -149,7 +149,6 @@ public:
 	}
 	
 	void AddBase(ComponentBase* component) {
-		CXX2A_STATIC_ASSERT(ComponentStore::IsComponent<ComponentT>::value, "T should derive from Component");
 		TypeCls type = component->GetTypeId();
 		ComponentMapBase::Iterator it = ComponentMapBase::Find(type);
 		ComponentMapBase::Add(type, component);

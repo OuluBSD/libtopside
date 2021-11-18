@@ -46,7 +46,7 @@
 
 #ifndef _ZLIB_H
 	#ifdef LIBTOPSIDE
-		#include <ports/zlib/zlib.h>
+		#include <plugin/z/zlib.h>
 		#include <ports/bz2lib/bz2lib.h>
 	#else
 		#include <plugin/z/lib/zlib.h>

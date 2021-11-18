@@ -1,13 +1,13 @@
 #ifndef _CtrlCoreAlt_Ctrl_h_
 #define _CtrlCoreAlt_Ctrl_h_
 
-namespace TS {
+namespace TS { namespace Ecs {
 
 class Windows;
 class WindowManager;
 class CoreWindow;
 
-}
+}}
 
 
 NAMESPACE_UPP
@@ -394,6 +394,8 @@ public:
 		DRAG          = 0xc0,
 		HOLD          = 0xd0,
 		TRIPLE        = 0xe0,
+		PEN           = 0xf0,
+		PENLEAVE      = 0x100,
 
 		LEFTDOWN      = LEFT|DOWN,
 		LEFTDOUBLE    = LEFT|DOUBLE,

@@ -8,5 +8,9 @@
 	#define CXX2A_STATIC_ASSERT(x, y)
 #endif
 
+#define ECS_SYS_CTOR_(x) \
+	typedef x CLASSNAME; \
+	x(Engine& e) : SP(e)
+
 
 #endif

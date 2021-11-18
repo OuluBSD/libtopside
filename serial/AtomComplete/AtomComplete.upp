@@ -7,6 +7,8 @@ uses
 	AtomEssential,
 	Shadertoy;
 
+uses(GUI) AtomCtrl;
+
 file
 	AtomComplete.h,
 	Prefabs.h,

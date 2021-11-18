@@ -2,14 +2,14 @@
 #define _EcsCore_EcsCore_h_
 
 
-#include <Graphics/Graphics.h>
-#include <Geometry/Geometry.h>
+//#include <Graphics/Graphics.h>
 #include <EcsMach/EcsMach.h>
 #include <Agent/Agent.h>
 
-#if HAVE_SDL2
-	#include <OOSDL2/OOSDL2.h>
-#endif
+//#if HAVE_SDL2
+//	#include <OOSDL2/OOSDL2.h>
+//#endif
+
 
 
 #include "Defs.h"

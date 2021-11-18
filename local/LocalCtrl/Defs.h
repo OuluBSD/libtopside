@@ -23,12 +23,12 @@
 #include <CtrlLib/CtrlLib.h>
 
 #ifdef UPP_VERSION
-	#define flagCTRL
+	#define flagGUI
 #endif
 
-/*#if defined flagGUI && defined flagCTRL
-	#include <SDL2GUI3D/SDL2GUI3D.h>
-#endif*/
+#ifdef GUIPLATFORM_VIRTUALGUI_INCLUDE
+	#include GUIPLATFORM_VIRTUALGUI_INCLUDE
+#endif
 
 
 #endif

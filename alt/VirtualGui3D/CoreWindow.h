@@ -1,9 +1,9 @@
 #ifndef _CtrlCore_CoreWindow_h_
 #define _CtrlCore_CoreWindow_h_
 
-#ifdef flagCTRL
+#ifdef flagGUI
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 struct WindowsImg {
@@ -124,8 +124,8 @@ protected:
 	void DrawEnd(DrawCommand& cmd);
 	
 public:
-	Ref<Transform>    transform;
-	Ref<Transform2D>  transform2d;
+	TransformRef    transform;
+	Transform2DRef  transform2d;
 	
 public:
 	typedef CoreWindow CLASSNAME;
@@ -244,7 +244,7 @@ struct Window2D : EntityPrefab<CoreWindow, Transform2D> {
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif
 #endif

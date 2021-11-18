@@ -162,7 +162,9 @@
 	#define CPU_X86 1
 	
 	#define UNREACHABLE __assume(0)
+	
 	//#define GLEW_INCLUDE <ports/glew/glew.h>
+	#define GLEW_STATIC
 	#define GLEW_INCLUDE <GL/glew.h>
 	
 	#ifdef _WIN64

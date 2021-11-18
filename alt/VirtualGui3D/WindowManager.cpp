@@ -1,8 +1,8 @@
 #if 0
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 WindowManager::WindowManager() {
@@ -67,6 +67,6 @@ void WindowManager::CloseWindow(TopWindow* tw) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

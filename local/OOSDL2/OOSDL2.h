@@ -3,7 +3,7 @@
 
 
 
-#if !defined UPP_VERSION && defined flagSCREEN
+#if defined LIBTOPSIDE && (defined flagSCREEN || defined flagGUI)
 	#include <Draw/Draw.h>
 	#include <Graphics/Graphics.h>
 #else
@@ -17,6 +17,8 @@
 #define NAMESPACE_SDL2_NAME		OOSDL2
 #define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SERIAL_NAME { namespace NAMESPACE_SDL2_NAME {
 #define NAMESPACE_SDL2_END		}}}
+
+namespace TS {class OglBuffer;}
 
 NAMESPACE_SDL2_BEGIN
 

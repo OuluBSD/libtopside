@@ -1,4 +1,4 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
 
 NAMESPACE_UPP
@@ -8,7 +8,7 @@ TopWindow::TopWindow() : id(-1) {
 	
 }
 
-void TopWindow::Init(TS::CoreWindow* cw, int id) {
+void TopWindow::Init(TS::Ecs::CoreWindow* cw, int id) {
 	this->cw = cw;
 	this->id = id;
 	

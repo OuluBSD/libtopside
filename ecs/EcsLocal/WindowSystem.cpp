@@ -2,10 +2,7 @@
 
 #if HAVE_WINDOWSYSTEM
 
-
 NAMESPACE_ECS_BEGIN
-
-
 
 
 bool WindowSystem::Initialize() {
@@ -14,12 +11,12 @@ bool WindowSystem::Initialize() {
 	Ctrl::SetContentRect(RectC(0, 0, sz.cx, sz.cy));
 	//simple_shader.Load(FindLocalFile("shaders" DIR_SEPS "model_loading.vs"), FindLocalFile("shaders" DIR_SEPS "model_loading.fs"));
 	
-	Ref<DisplaySystem> rend = GetEngine().TryGet<DisplaySystem>();
+	/*Ref<DisplaySystem> rend = GetEngine().TryGet<DisplaySystem>();
 	if (!rend) {
 		LOG("WindowSystem::Initialize: error: couldn't find RenderingSystem");
 		return false;
 	}
-	SetDesktopSize(rend->GetVirtualScreenSize());
+	SetDesktopSize(rend->GetVirtualScreenSize());*/
 	
 	return true;
 }

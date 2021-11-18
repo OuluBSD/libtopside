@@ -499,8 +499,8 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	
 	else if (var == VAR_COMPAT_OFFSET) {
 		if (fb_size.cx > 0 && fb_size.cy > 0) {
-			float x = fb_offset.x;
-			float y = fb_size.cy - fb_size.cy - fb_offset.y; // -y_offset
+			int x = fb_offset.x;
+			int y = fb_size.cy - fb_size.cy - fb_offset.y; // -y_offset
 			glUniform2f(uindex, (GLfloat)x, (GLfloat)y);
 		} else {
 			glUniform2f(uindex, 0.0f, 0.0f);

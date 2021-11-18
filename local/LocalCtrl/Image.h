@@ -3,6 +3,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#ifndef LIBTOPSIDE
+
 #define IMAGECLASS Images
 #define IMAGEFILE <LocalCtrl/Images.iml>
 #include IML_HEADER
@@ -14,6 +16,8 @@ NAMESPACE_TOPSIDE_BEGIN
 #include IML_HEADER
 #undef IMAGECLASS
 #undef IMAGEFILE
+
+#endif
 
 NAMESPACE_TOPSIDE_END
 

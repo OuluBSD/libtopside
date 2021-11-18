@@ -5,9 +5,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-namespace Serial {
-	class Stream;
-}
 
 int GetOglChCode(int channels, bool is_float=false);
 

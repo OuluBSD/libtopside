@@ -144,7 +144,7 @@ class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
 
 
 #if defined flagGUI && !defined flagSCREEN
-	#define flagSCREEN
+	#define flagSCREEN 1
 #endif
 
 #if defined flagSCREEN

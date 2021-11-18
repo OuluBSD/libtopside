@@ -3,7 +3,6 @@
 
 #include <Draw/Draw.h>
 
-
 NAMESPACE_UPP
 
 struct VirtualGui3DAlt;
@@ -89,7 +88,7 @@ public:
 #define GUIPLATFORM_TOPWINDOW_DECLS_INCLUDE <VirtualGui3D/Top.h>
 
 #define GUIPLATFORM_INCLUDE_AFTER <VirtualGui3D/After.h>
-#define GUIPLATFORM_INCLUDE_AFTER_ECSLIB <VirtualGui3D/AfterSerialLib.h>
+#define GUIPLATFORM_INCLUDE_AFTER_ECSLIB <VirtualGui3D/AfterEcsLib.h>
 
 END_UPP_NAMESPACE
 

@@ -1,8 +1,8 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
-#ifdef flagCTRL
+#ifdef flagGUI
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -564,7 +564,7 @@ void CoreWindow::DrawTriangles(DrawCommand& cmd) {
 	int width = sz.cx;
 	int height = sz.cy;
 	
-	const Trianglef* tri = cmd.triangles.GetData();
+	const Trif* tri = cmd.triangles.GetData();
 	int count = cmd.triangles.GetCount();
 	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
@@ -573,7 +573,7 @@ void CoreWindow::DrawTriangles(DrawCommand& cmd) {
 	
 	
 	for(int i = 0; i < count; i++) {
-		const Trianglef& t = *tri++;
+		const Trif& t = *tri++;
 		float pos_x = t.a.x;
 		float pos_y = t.a.y;
 		float x = -width  * 0.5 + pos_x;
@@ -744,6 +744,6 @@ void WindowDecoration::LocalMenu(Bar& bar) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

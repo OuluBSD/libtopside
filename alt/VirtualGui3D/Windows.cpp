@@ -1,9 +1,9 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
-#ifdef flagCTRL
+#ifdef flagGUI
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 /*#define IMAGECLASS WindowsImg
@@ -520,6 +520,6 @@ bool Windows::DeepKey(dword key, int count) {
 }*/
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 #endif

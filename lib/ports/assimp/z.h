@@ -4,7 +4,7 @@
 #include <Core/config.h>
 
 #ifdef LIBTOPSIDE
-	#include <ports/zlib/zlib.h>
+	#include <plugin/z/zlib.h>
 #else
 	#include <plugin/z/lib/zlib.h>
 #endif

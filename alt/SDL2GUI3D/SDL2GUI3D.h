@@ -1,7 +1,7 @@
 #ifndef _SDL2GUI3D_SDL2GUI3D_h_
 #define _SDL2GUI3D_SDL2GUI3D_h_
 
-#include <OOSDL2/OOSDL2.h>
+#include <VirtualGui3D/VirtualGui3D.h>
 
 
 NAMESPACE_UPP
@@ -18,26 +18,26 @@ protected:
 	friend class SDL2GUI3DSystem;
 	//SDL2GUI3D_MachineData* data = 0;
 	
-	TS::OOSDL2::AudioOutput* aout = 0;
+	/*TS::OOSDL2::AudioOutput* aout = 0;
 	TS::OOSDL2::Screen* scr = 0;
-	TS::OOSDL2::Events* ev = 0;
+	TS::OOSDL2::Events* ev = 0;*/
 	
-	TS::AudioProxy			empty_aud;
+	//TS::AudioProxy			empty_aud;
 	SystemDraw					empty_draw;
 	String						desired_title;
 	void*						sys;
 	
 	
 public:
-	bool            Poll(UPP::CtrlEvent& e) override {return ev ? ev->Poll(e) : false;}
-	Size            GetSize() override {return scr ? scr->GetSize() : Size(0,0);}
-	void            SetTitle(String title) override {desired_title = title; if (scr) scr->SetTitle(title);}
-	SystemDraw&     BeginDraw() override {return scr ? scr->BeginDraw() : empty_draw;}
-	void            CommitDraw() override {if (scr) scr->CommitDraw();}
-	uint32          GetTickCount() override {return ev ? ev->GetTickCount() : 0;}
-	void            WaitEvent(int ms) override {if (ev) ev->WaitEvent(ms);}
-	bool            IsWaitingEvent() override {return ev ? ev->IsWaitingEvent() : false;}
-	void            WakeUpGuiThread() override {if (ev) ev->WakeUpEventThread();}
+	bool            Poll(UPP::CtrlEvent& e) override;// {return ev ? ev->Poll(e) : false;}
+	Size            GetSize() override;// {return scr ? scr->GetSize() : Size(0,0);}
+	void            SetTitle(String title) override;// {desired_title = title; if (scr) scr->SetTitle(title);}
+	SystemDraw&     BeginDraw() override;// {return scr ? scr->BeginDraw() : empty_draw;}
+	void            CommitDraw() override;// {if (scr) scr->CommitDraw();}
+	uint32          GetTickCount() override;// {return ev ? ev->GetTickCount() : 0;}
+	void            WaitEvent(int ms) override;// {if (ev) ev->WaitEvent(ms);}
+	bool            IsWaitingEvent() override;// {return ev ? ev->IsWaitingEvent() : false;}
+	void            WakeUpGuiThread() override;// {if (ev) ev->WakeUpEventThread();}
 	
 	/*dword           GetMouseButtons() override;
 	dword           GetModKeys() override;

@@ -1,8 +1,6 @@
 #include "System.h"
-#include <AccelCore/AccelCore.h>
-#include <Physics/Physics.h>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 
@@ -29,7 +27,7 @@ void SDL2GUI3DSystem::Uninitialize() {
 
 
 
-
+#if 0
 bool SingleMachine::Open(bool gui) {
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
@@ -77,6 +75,6 @@ void SingleMachine::Close() {
 	Machine& mach = GetActiveMachine();
 	mach.Stop();
 }
+#endif
 
-
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

@@ -12,9 +12,8 @@
 	#include <Shadertoy/Shadertoy.h>
 #endif
 
-#ifdef flagCTRL
-	#error TODO
-	//#include <AtomCtrl/AtomCtrl.h>
+#ifdef flagGUI
+	#include <AtomCtrl/AtomCtrl.h>
 #endif
 
 #include "Prefabs.h"

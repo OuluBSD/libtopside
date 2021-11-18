@@ -1,9 +1,5 @@
-#ifdef flagWIN32
-	#define GLEW_STATIC 1
-#endif
-
 #ifdef flagSCREEN
-	#include <GL/glew.h>
+	#include GLEW_INCLUDE
 	#include <GL/gl.h>
 #endif
 

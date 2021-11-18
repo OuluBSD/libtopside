@@ -1,8 +1,9 @@
 description "\3770,128,128";
 
+noblitz;
+
 uses
-	Graphics,
-	OOSDL2;
+	VirtualGui3D;
 
 file
 	SDL2GUI3D.h,

@@ -1,7 +1,7 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLocal/EcsLocal.h>
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 //uint32 DirectWindow::prev_ticks;
 
@@ -13,20 +13,22 @@ DirectWindow::DirectWindow() {
 
 
 void DirectWindow::Initialize() {
-	ASSERT(!scr);
+	TODO
+	/*ASSERT(!scr);
 	EntityRef e = GetEntity();
-	scr = e->FindDisplaySink();
+	scr = e->FindDisplaySink();*/
 }
 
 void DirectWindow::Uninitialize() {
-	if (scr)
+	TODO
+	/*if (scr)
 		WhenClose();
 	
 	
-	scr.Clear();
+	scr.Clear();*/
 }
 
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END

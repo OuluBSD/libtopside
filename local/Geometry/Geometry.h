@@ -18,6 +18,10 @@
 
 #include <Local/Local.h>
 
+#ifdef flagGUI
+	#include <LocalCtrl/LocalCtrl.h>
+#endif
+
 #undef rad2
 #undef far
 #undef near

@@ -2,13 +2,12 @@
 #define _VirtualGui3DAlt_Direct_h_
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
 class DirectWindow :
 	public Component<DirectWindow>
 {
-    DisplaySinkRef scr;
 	//static uint32 prev_ticks;
 	
 	
@@ -40,7 +39,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_ECS_END
 
 
 #endif

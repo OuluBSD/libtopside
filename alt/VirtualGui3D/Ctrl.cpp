@@ -1,12 +1,12 @@
-#include <SerialLib/SerialLib.h>
+#include <EcsLib/EcsLib.h>
 
 
 NAMESPACE_UPP
 
-TS::Windows* Ctrl::wm;
+TS::Ecs::Windows* Ctrl::wm;
 
 
-TS::CoreWindow* Ctrl::GetWindow() {
+TS::Ecs::CoreWindow* Ctrl::GetWindow() {
 	TopWindow* tw = GetTopWindow();
 	return tw ? tw->GetWindow() : 0;
 }
@@ -22,10 +22,10 @@ void Ctrl::CloseTopCtrls() {
 
 #if 0
 
-CoreWindow* Ctrl::GetWindow() {
+Ecs::CoreWindow* Ctrl::GetWindow() {
 	Ctrl* c = this;
 	while (c) {
-		CoreWindow* cw = CastPtr<CoreWindow>(c);
+		Ecs::CoreWindow* cw = CastPtr<Ecs::CoreWindow>(c);
 		if (cw)
 			return cw;
 		c = c->GetParent();
@@ -35,7 +35,7 @@ CoreWindow* Ctrl::GetWindow() {
 
 #endif
 
-TS::Windows* Ctrl::GetWindows() {
+TS::Ecs::Windows* Ctrl::GetWindows() {
 	ASSERT(wm);
 	return wm;
 }

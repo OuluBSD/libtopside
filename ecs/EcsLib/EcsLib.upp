@@ -10,6 +10,8 @@ file
 	EcsLib.h,
 	NonGui.cpp,
 	Defs.h,
+	CommonComponents.h,
+	CommonComponents.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	Trash readonly separator;
