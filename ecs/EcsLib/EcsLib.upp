@@ -14,5 +14,9 @@ file
 	CommonComponents.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
+	RenderingSystem.h,
+	RenderingSystem.cpp,
+	EventSystem.h,
+	EventSystem.cpp,
 	Trash readonly separator;
 

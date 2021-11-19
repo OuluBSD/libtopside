@@ -5,9 +5,12 @@ uses
 file
 	BuggyCar.h,
 	BuggyCar.cpp,
-	BuggyCar.eon;
+	BuggyCar.eon highlight cpp,
+	Fragment.glsl highlight cpp,
+	Vertex.glsl highlight cpp;
 
 mainconfig
 	"" = "SCREEN ODE",
-	"" = "SCREEN ODE VR";
+	"" = "SCREEN ODE VR",
+	"" = "SCREEN ODE DEBUG_RT";
 

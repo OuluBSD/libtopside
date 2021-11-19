@@ -28,6 +28,8 @@ BASE(VideoLoaderBase)
 BASE(VolumeLoaderBase)
 BASE(OglKeyboardBase)
 BASE(OglAudioBase)
+BASE(EcsEventsBase)
+//BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)
 //BASE_ACTION(CenterSinkSync,			center.audio.sink)

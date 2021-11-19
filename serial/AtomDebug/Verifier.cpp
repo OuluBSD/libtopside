@@ -1,6 +1,15 @@
 #include "AtomDebug.h"
 
+
+#if 0
+	#define MVER_LOG(x) RTLOG(x)
+#else
+	#define MVER_LOG(x)
+#endif
+
+
 NAMESPACE_SERIAL_BEGIN
+
 
 MachineVerifier* __latest_mver;
 
@@ -131,7 +140,7 @@ void MachineVerifier::Leave(Type t) {
 void MachineVerifier::OnEnterUpdate() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterUpdate");
+	MVER_LOG("MachineVerifier::OnEnterUpdate");
 	Enter(UPDATE);
 	
 	Scope& cur = stack.Top();
@@ -143,7 +152,7 @@ void MachineVerifier::OnEnterUpdate() {
 void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterSystemUpdate " << HexStr((void*)&base));
+	MVER_LOG("MachineVerifier::OnEnterSystemUpdate " << HexStr((void*)&base));
 	Enter(SYSTEM_UPDATE);
 	
 	Scope& cur = stack.Top();
@@ -168,18 +177,19 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 void MachineVerifier::OnEnterScriptLoad(SystemBase& base) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterScriptLoad");
+	MVER_LOG("MachineVerifier::OnEnterScriptLoad");
 	
 	Enter(SCRIPT_LOAD);
 	
 	Scope& cur = stack.Top();
 	cur.AddEnter(LOOPLOADER_FORWARD_BEGINNING);
+	cur.MayLeave(true); // because of errors
 }
 
 void MachineVerifier::OnEnterTerminalTest(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterTerminalTest " << HexStr(call_id));
+	MVER_LOG("MachineVerifier::OnEnterTerminalTest " << HexStr(call_id));
 	Enter(TERMINAL_TEST);
 	
 	Scope& cur = stack.Top();
@@ -189,7 +199,7 @@ void MachineVerifier::OnEnterTerminalTest(size_t call_id) {
 void MachineVerifier::OnEnterSearchNewSegment(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterSearchNewSegment " << HexStr(call_id));
+	MVER_LOG("MachineVerifier::OnEnterSearchNewSegment " << HexStr(call_id));
 	Enter(LOOPLOADER_SEARCH_NEW_SEGMENT);
 	
 	Scope& cur = stack.Top();
@@ -199,7 +209,7 @@ void MachineVerifier::OnEnterSearchNewSegment(size_t call_id) {
 void MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning " << HexStr(call_id));
+	MVER_LOG("MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning " << HexStr(call_id));
 	Enter(LOOPLOADER_FORWARD_BEGINNING);
 	
 	Scope& cur = stack.Top();
@@ -208,7 +218,7 @@ void MachineVerifier::OnEnterScriptLoopLoaderForwardBeginning(size_t call_id) {
 
 void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
 	
-	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardRetry " << HexStr(call_id));
+	MVER_LOG("MachineVerifier::OnEnterScriptLoopLoaderForwardRetry " << HexStr(call_id));
 	Enter(LOOPLOADER_FORWARD_RETRY);
 	
 	Scope& cur = stack.Top();
@@ -218,14 +228,14 @@ void MachineVerifier::OnEnterScriptLoopLoaderForwardRetry(size_t call_id) {
 
 void MachineVerifier::OnEnterScriptLoopLoaderForwardSides(size_t call_id) {
 	
-	RTLOG("MachineVerifier::OnEnterScriptLoopLoaderForwardSides " << HexStr(call_id));
+	MVER_LOG("MachineVerifier::OnEnterScriptLoopLoaderForwardSides " << HexStr(call_id));
 	Enter(LOOPLOADER_FORWARD_SIDES);
 }
 
 void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterOnceForward " << HexStr((void*)fwd));
+	MVER_LOG("MachineVerifier::OnEnterOnceForward " << HexStr((void*)fwd));
 	Enter(ONCE_FORWARD);
 	
 	Scope& cur = stack.Top();
@@ -237,7 +247,7 @@ void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterAtomForward " << HexStr((void*)c));
+	MVER_LOG("MachineVerifier::OnEnterAtomForward " << HexStr((void*)c));
 	Enter(EXTCOMP_FORWARD);
 	
 	Scope& cur = stack.Top();
@@ -249,7 +259,7 @@ void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
 void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterFwdScopeForward " << HexStr((void*)&f));
+	MVER_LOG("MachineVerifier::OnEnterFwdScopeForward " << HexStr((void*)&f));
 	Enter(FWDSCOPE_FORWARD);
 	
 	Scope& cur = stack.Top();
@@ -280,7 +290,7 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 void MachineVerifier::OnEnterProcessPackets(AtomBase& b, PacketIO& p) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterProcessPackets " << HexStr((void*)&b) << ", " << HexStr((void*)&*p.sink[0].p));
+	MVER_LOG("MachineVerifier::OnEnterProcessPackets " << HexStr((void*)&b) << ", " << HexStr((void*)&*p.sink[0].p));
 	Enter(PROCESS_PACKETS);
 	
 	// don't add this you dumb fuck: MayLeaveTop();
@@ -289,7 +299,7 @@ void MachineVerifier::OnEnterProcessPackets(AtomBase& b, PacketIO& p) {
 void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterCreatedEmptyPacket " << HexStr((void*)&*p));
+	MVER_LOG("MachineVerifier::OnEnterCreatedEmptyPacket " << HexStr((void*)&*p));
 	Enter(CREATE_EMPTY_PACKET);
 	
 	MayLeaveTop();
@@ -298,7 +308,7 @@ void MachineVerifier::OnEnterCreatedEmptyPacket(Packet& p) {
 void MachineVerifier::OnEnterValExPtForward(DefaultExchangePoint& p) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnEnterValExPtForward");
+	MVER_LOG("MachineVerifier::OnEnterValExPtForward");
 	Enter(VALEXPT_FWD);
 	
 	MayLeaveTop();
@@ -309,7 +319,7 @@ void MachineVerifier::OnEnterValExPtForward(DefaultExchangePoint& p) {
 void MachineVerifier::OnLeaveUpdate() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveUpdate");
+	MVER_LOG("MachineVerifier::OnLeaveUpdate");
 	Leave(UPDATE);
 	
 }
@@ -317,7 +327,7 @@ void MachineVerifier::OnLeaveUpdate() {
 void MachineVerifier::OnLeaveSystemUpdate() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveSystemUpdate");
+	MVER_LOG("MachineVerifier::OnLeaveSystemUpdate");
 	Leave(SYSTEM_UPDATE);
 	
 }
@@ -325,7 +335,7 @@ void MachineVerifier::OnLeaveSystemUpdate() {
 void MachineVerifier::OnLeaveOnceForward() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveOnceForward");
+	MVER_LOG("MachineVerifier::OnLeaveOnceForward");
 	Leave(ONCE_FORWARD);
 	
 }
@@ -333,7 +343,7 @@ void MachineVerifier::OnLeaveOnceForward() {
 void MachineVerifier::OnLeaveAtomForward() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveAtomForward");
+	MVER_LOG("MachineVerifier::OnLeaveAtomForward");
 	Leave(EXTCOMP_FORWARD);
 	
 }
@@ -341,20 +351,20 @@ void MachineVerifier::OnLeaveAtomForward() {
 void MachineVerifier::OnLeaveFwdScopeForward() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveFwdScopeForward");
+	MVER_LOG("MachineVerifier::OnLeaveFwdScopeForward");
 	
 	if (cur_pk.bytes) {
-		RTLOG("Sent: " << cur_pk.count << " packets, " << cur_pk.bytes << " bytes, " << cur_pk.ch_samples << " ch-samples");
+		MVER_LOG("Sent: " << cur_pk.count << " packets, " << cur_pk.bytes << " bytes, " << cur_pk.ch_samples << " ch-samples");
 		/*if (c) {
 			Format fmt = c->GetSourceValue().GetFormat();
-			RTLOG("Sending format: " << fmt.ToString());
+			MVER_LOG("Sending format: " << fmt.ToString());
 			
 			if (fmt.IsAudio()) {
 				AudioFormat& afmt = fmt;
 				int sample_rate = afmt.GetSampleRate();
 				int min_ch_samples = fmt.GetMinBufSamples();
 				int max_ch_samples = min_ch_samples + sample_rate;
-				RTLOG("Testing: " << min_ch_samples << " <= " << cur_pk.ch_samples << " < " << max_ch_samples);
+				MVER_LOG("Testing: " << min_ch_samples << " <= " << cur_pk.ch_samples << " < " << max_ch_samples);
 				if (cur_pk.ch_samples < min_ch_samples || cur_pk.ch_samples >= max_ch_samples)
 					Panic("Invalid sample count sent");
 			}
@@ -375,7 +385,7 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 void MachineVerifier::OnLeaveProcessPackets(AtomBase& b, PacketIO& io) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveStorePacket");
+	MVER_LOG("MachineVerifier::OnLeaveStorePacket");
 
 	PacketIO::Source& prim_src = io.src[0];
 	ASSERT_(prim_src.p, "primary packet must be forwarded always");
@@ -407,7 +417,7 @@ void MachineVerifier::PacketData::Add(Packet& p) {
 void MachineVerifier::OnLeaveCreatedEmptyPacket() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveCreatedEmptyPacket");
+	MVER_LOG("MachineVerifier::OnLeaveCreatedEmptyPacket");
 	Leave(CREATE_EMPTY_PACKET);
 	
 	MayLeaveTop();
@@ -416,7 +426,7 @@ void MachineVerifier::OnLeaveCreatedEmptyPacket() {
 void MachineVerifier::OnLeaveValExPtForward() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveValExPtForward");
+	MVER_LOG("MachineVerifier::OnLeaveValExPtForward");
 	Leave(VALEXPT_FWD);
 	
 	MayLeaveTop();
@@ -425,21 +435,21 @@ void MachineVerifier::OnLeaveValExPtForward() {
 void MachineVerifier::OnLeaveScriptLoad() {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveScriptLoad");
+	MVER_LOG("MachineVerifier::OnLeaveScriptLoad");
 	Leave(SCRIPT_LOAD);
 }
 
 void MachineVerifier::OnLeaveTerminalTest(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveTerminalTest");
+	MVER_LOG("MachineVerifier::OnLeaveTerminalTest");
 	Leave(TERMINAL_TEST);
 }
 
 void MachineVerifier::OnLeaveSearchNewSegment(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveSearchNewSegment");
+	MVER_LOG("MachineVerifier::OnLeaveSearchNewSegment");
 	Leave(LOOPLOADER_SEARCH_NEW_SEGMENT);
 	
 	Scope& cur = stack.Top();
@@ -449,7 +459,7 @@ void MachineVerifier::OnLeaveSearchNewSegment(size_t call_id) {
 void MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning");
+	MVER_LOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning");
 	Leave(LOOPLOADER_FORWARD_BEGINNING);
 	
 	Scope& cur = stack.Top();
@@ -462,14 +472,14 @@ void MachineVerifier::OnLeaveScriptLoopLoaderForwardBeginning(size_t call_id) {
 void MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry");
+	MVER_LOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardRetry");
 	Leave(LOOPLOADER_FORWARD_RETRY);
 }
 
 void MachineVerifier::OnLeaveScriptLoopLoaderForwardSides(size_t call_id) {
 	if (!Thread::IsMain()) return;
 	
-	RTLOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardSides");
+	MVER_LOG("MachineVerifier::OnLeaveScriptLoopLoaderForwardSides");
 	Leave(LOOPLOADER_FORWARD_SIDES);
 }
 
@@ -485,7 +495,7 @@ void MachineVerifier::OnLoopLoader_Status(ScriptLoopLoader* ll) {
 	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
 	data.ll = ll;
 	auto new_status = ll->GetStatus();
-	RTLOG("MachineVerifier::OnLoopLoader_Status: set loop " << ll->def.id.ToString() << " " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
+	MVER_LOG("MachineVerifier::OnLoopLoader_Status: set loop " << ll->def.id.ToString() << " " << HexStr(ll) << " status to " << GetScriptStatusString(new_status) << " (from " << GetScriptStatusString(data.status0) << ")");
 	
 	
 	#if 0
@@ -520,7 +530,7 @@ void MachineVerifier::UpdateLoopData(ScriptLoopLoader* ll) {
 	ASSERT(atom_count >= data.atoms.GetCount());
 	data.atoms.SetCount(atom_count);
 	
-	//RTLOG("MachineVerifier::UpdateLoopData: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+	//MVER_LOG("MachineVerifier::UpdateLoopData: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 	
 	if (atoms_added > 0 && !data.MayCreateAtoms())
 		Panic("Loop may not create atoms");
@@ -566,18 +576,18 @@ void MachineVerifier::OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll) {
 	UpdateLoopData(ll);
 	
 	int atoms_added = data.atoms.GetCount() - prev_count;
-	//RTLOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
+	//MVER_LOG("MachineVerifier::OnLoopLoader_RealizeAtoms: loop " << HexStr(ll) << ", " << atoms_added << " new atoms");
 }
 
 void MachineVerifier::OnLoopLoader_AtomLinked(ScriptLoopLoader* ll) {
 	
 	UpdateLoopData(ll);
 	
-	RTLOG("MachineVerifier::OnLoopLoader_AtomLinked: linked interface in loop " << HexStr(ll));
+	MVER_LOG("MachineVerifier::OnLoopLoader_AtomLinked: linked interface in loop " << HexStr(ll));
 }
 
 void MachineVerifier::OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll) {
-	RTLOG("MachineVerifier::OnLoopLoader_SearchNewSegment");
+	MVER_LOG("MachineVerifier::OnLoopLoader_SearchNewSegment");
 	
 	LoopLoaderData& data = loop_loaders.GetAdd((size_t)ll);
 	if (!data.atoms.IsEmpty() && !data.MayCreateAtoms())

@@ -546,10 +546,7 @@ struct IfaceConnTuple {
 };
 
 
-
-
-
-
 NAMESPACE_SERIAL_END
+
 
 #endif

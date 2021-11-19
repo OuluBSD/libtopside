@@ -13,7 +13,7 @@ NAMESPACE_SERIAL_BEGIN
 Ecs::Engine* CreateEcsEngine();
 
 class EntitySystem : public System<EntitySystem> {
-	One<Ecs::Engine> engine;
+	Ecs::Engine* engine = 0;
 	ObjectMap reg;
 	
 	
@@ -24,10 +24,13 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
+    void ClearEngine();
+    
 public:
 	SYS_RTTI(EntitySystem)
     SYS_CTOR(EntitySystem)
 	SYS_DEF_VISIT
+	~EntitySystem() {ClearEngine();}
 	
 	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ENTITY_SYSTEM;}
 	

@@ -27,12 +27,18 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	
 	OglBuffer& buf = GetBuffer();
 	buf.SetEnvState(env);
+	buf.AddLink(ws.Get(".link"));
 	
 	String loopback = ws.Get(".loopback");
 	if (loopback.GetCount() && !buf.SetLoopback(loopback))
 		return false;
 	
-	obj->SetShaderFile(ws.Get(".filepath"), ws.Get(".library"));
+	String fragment_path = ws.Get(".fragment");
+	String vertex_path = ws.Get(".vertex");
+	String library_path = ws.Get(".library");
+	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
+	
+	obj->SetShaderFile(fragment_path, vertex_path, library_path);
 	obj->SetTestImage(ws.Get(".testimage") == "true");
 	obj->SetBuffer(buf);
 	obj->Sizeable(ws.Get(".sizeable") == "true");

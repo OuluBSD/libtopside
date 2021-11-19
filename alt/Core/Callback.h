@@ -62,6 +62,15 @@ public:
 	void Execute(const A0& a0) override { (*fn)(a0); }
 };
 
+template <class A0, class A1>
+class StaticCaller2 : public CallBase2<A0, A1> {
+	void (* fn)(A0, A1);
+
+public:
+	StaticCaller2(void (* fn)(A0,A1)) : fn(fn) {}
+	void Execute(const A0& a0, const A1& a1) override { (*fn)(a0, a1); }
+};
+
 
 
 
@@ -298,6 +307,11 @@ inline Callback callback(void (*fn)()) {
 template <class A0>
 inline Callback1<A0> callback(void (* fn)(A0)) {
 	return Callback1<A0>(new StaticCaller1<A0>(fn));
+}
+
+template <class A0, class A1>
+inline Callback2<A0, A1> callback(void (* fn)(A0,A1)) {
+	return Callback2<A0,A1>(new StaticCaller2<A0,A1>(fn));
 }
 
 template <class T>

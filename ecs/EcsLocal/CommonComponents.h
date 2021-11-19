@@ -41,6 +41,16 @@ public:
 	COMP_DEF_VISIT
 	
 	
+	RGBA color;
+	mat4 offset;
+	float alpha_multiplier;
+	//String model_name;
+	//Ref<ModelComponent> model;
+	
+	
+	void Initialize() override;
+	void Uninitialize() override;
+	
 	void ResetModel(mat4 offset = zero<mat4>()) {
 		color = RGBAZero();
 		this->offset = offset;
@@ -48,12 +58,6 @@ public:
 		//model_name = name;
 		//model.Clear();
 	}
-	
-	RGBA color;
-	mat4 offset;
-	float alpha_multiplier;
-	//String model_name;
-	//Ref<ModelComponent> model;
 	
     void operator=(const Renderable& e) {
         color = e.color;

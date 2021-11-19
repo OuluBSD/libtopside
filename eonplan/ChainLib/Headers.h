@@ -70,6 +70,16 @@ HEADER_ACTION(		EventStatePipe,		state.event.pipe)
 
 
 
+HEADER11(			EcsEventsAtom,		EcsEventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterReceipt)
+HEADER_ACTION(		EcsEventsAtom,		ecs.system.events)
+HEADER_ARG(			EcsEventsAtom,		reqdef_flagSCREEN,	1)
+
+//HEADER12_U01(		EcsOglAtom,			EcsOglBase,					pipe,		OglFbo,			OglOrder,		OglFbo,			OglReceipt)
+//HEADER_ACTION(		EcsOglAtom,			ecs.system.rendering)
+//HEADER_ARG(			EcsOglAtom,			reqdef_flagSCREEN,	1)
+
+
+
 
 HEADER11(			OglCustomer,		CustomerBase,				customer,	OglOrder,		OglReceipt,		OglOrder)
 HEADER_ACTION(		OglCustomer,		ogl.customer)
@@ -100,6 +110,7 @@ HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,		1)
 
 
 
+
 HEADER11(			SdlFboAtomSA,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlFboAtomSA,		sdl.fbo.standalone)
 HEADER_ARG(			SdlFboAtomSA,		reqdef_flagSCREEN,		1)
@@ -119,6 +130,7 @@ HEADER_ARG(			SdlFboAtom,			reqdef_flagSCREEN,		1)
 HEADER11(			SdlVideoAtom,		SDL2SwScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
+
 
 
 

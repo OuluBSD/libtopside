@@ -127,7 +127,7 @@ public:
 		for (auto& w : wheels) w.Paint(d);
 	}
 	
-	virtual bool Key(dword key, int count) {
+	/*virtual bool Key(dword key, int count) {
 		switch (key) {
 			case SDLK_a:
 				speed += 0.3;
@@ -147,7 +147,7 @@ public:
 				return true;
 		}
 		return false;
-	}
+	}*/
 	
 	Callback1<Shader&> GetPaintCallback() {return THISBACK(Paint);}
 };

@@ -28,6 +28,22 @@ int GetOglChCode(int channels, bool is_float) {
 
 
 
+Callback2<String, OglBuffer*> OglBuffer::WhenLinkInit;
+
+
+
+void OglBuffer::AddBinder(BinderIfaceOgl* iface) {
+	
+	TODO
+	
+}
+
+void OglBuffer::RemoveBinder(BinderIfaceOgl* iface) {
+	
+	TODO
+	
+}
+
 void OglBuffer::Update(double dt) {
 	if (var_idx[VAR_COMPAT_DATE] >= 0) {
 		time_us += dt;
@@ -64,12 +80,12 @@ bool OglBuffer::SetLoopback(String loopback_str) {
 bool OglBuffer::LoadFragmentShaderFile(String shader_path, String library_paths) {
 	DLOG("OglBuffer::LoadFragmentShaderFile: " << shader_path);
 	
-	common_source.Clear();
+	common_source_frag.Clear();
 	Vector<String> libraries = Split(library_paths, ";");
 	for (String& lib : libraries) {
 		String path = RealizeShareFile(lib);
 		if (FileExists(path))
-			common_source << LoadFile(path);
+			common_source_frag << LoadFile(path);
 	}
 	
 	if (!FileExists(shader_path))
@@ -86,8 +102,39 @@ bool OglBuffer::LoadFragmentShaderFile(String shader_path, String library_paths)
 		return false;
 	}
 	
-	DUMP(content);
+	//DUMP(content);
 	SetFragmentShaderSource(content);
+	
+	return true;
+}
+
+bool OglBuffer::LoadVertexShaderFile(String shader_path, String library_paths) {
+	DLOG("OglBuffer::LoadVertexShaderFile: " << shader_path);
+	
+	common_source_vtx.Clear();
+	Vector<String> libraries = Split(library_paths, ";");
+	for (String& lib : libraries) {
+		String path = RealizeShareFile(lib);
+		if (FileExists(path))
+			common_source_vtx << LoadFile(path);
+	}
+	
+	if (!FileExists(shader_path))
+		shader_path = ShareDirFile(shader_path);
+	
+	if (!FileExists(shader_path)) {
+		LOG("OglBuffer::LoadVertexShaderFile: error: file does not exist: " << shader_path);
+		return false;
+	}
+	
+	String content = LoadFile(shader_path);
+	if (content.IsEmpty()) {
+		LOG("OglBuffer::LoadVertexShaderFile: error: got empty shader file from: " << shader_path);
+		return false;
+	}
+	
+	//DUMP(content);
+	SetVertexShaderSource(content);
 	
 	return true;
 }
@@ -224,6 +271,9 @@ bool OglBuffer::Initialize() {
 		return false;
 	
 	RefreshPipeline();
+	
+	for (String& s : link_ids)
+		WhenLinkInit(s, this);
 	
 	initialized = true;
 	
@@ -729,13 +779,15 @@ bool OglBuffer::CompilePrograms() {
 	for(int i = 0; i < PROG_COUNT; i++) {
 		if (i == PROG_FRAGMENT && !CompileFragmentShader())
 			return false;
+		if (i == PROG_VERTEX && !CompileVertexShader())
+			return false;
 	}
 	
 	return true;
 }
 
 bool OglBuffer::CompileFragmentShader() {
-	const char* fn_name = "CompilePrograms";
+	const char* fn_name = "CompileFragmentShader";
 	
 	ASSERT(prog[PROG_FRAGMENT] < 0);
 	String& fg_glsl = code[PROG_FRAGMENT];
@@ -783,8 +835,8 @@ bool OglBuffer::CompileFragmentShader() {
 	}
 	code << "\n";
 	
-	for(int j = 0; j < common_source.GetCount(); j++) {
-		code += common_source[j] + "\n";
+	for(int j = 0; j < common_source_frag.GetCount(); j++) {
+		code += common_source_frag[j] + "\n";
 	}
 	
 	code += fg_glsl;
@@ -812,6 +864,90 @@ bool OglBuffer::CompileFragmentShader() {
 	//LOG(code);
 	
 	if (!CompileProgram(PROG_FRAGMENT, code)) {
+		LOG(GetLineNumStr(code));
+		return false;
+	}
+	
+	return true;
+}
+
+bool OglBuffer::CompileVertexShader() {
+	const char* fn_name = "CompileVertexShader";
+	
+	ASSERT(prog[PROG_VERTEX] < 0);
+	String& fg_glsl = code[PROG_VERTEX];
+	if (fg_glsl.GetCount() == 0) {
+		OnError(fn_name, "empty source code");
+		return false;
+	}
+	
+	DLOG("\tCompiling stage: " << id << ": " << name);
+	
+	String code;
+	
+	code =		"#version 430\n"
+				"#define GL_ES\n"
+				
+				"layout (location = 0) in vec3 pos;\n"
+				"layout (location = 1) in vec3 normal;\n"
+				"layout (location = 2) in vec2 tex_coords;\n"
+
+				"in int gl_VertexID;\n"
+				"in int gl_InstanceID;\n"
+				
+				"out vec2 TexCoords;\n"
+				"out gl_PerVertex\n"
+				"{\n"
+				"  vec4 gl_Position;\n"
+				"  float gl_PointSize;\n"
+				"  float gl_ClipDistance[];\n"
+				"};\n"
+				
+				"uniform vec2      in_mouse;\n"
+				"uniform float     in_audio_seconds;\n"
+				
+				"uniform vec3      iResolution;           // viewport resolution (in pixels)\n"
+				"uniform float     iTime;                 // shader playback time (in seconds)\n"
+				"uniform float     iTimeDelta;            // duration since the previous frame (in seconds)\n"
+				"uniform int       iFrame;                // frames since the shader (re)started\n"
+				"uniform vec2      iOffset;\n"
+				"uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click\n"
+				"uniform vec4      iDate;                 // (year, month, day, time in secs)\n"
+				"uniform float     iFrameRate;\n"
+				"uniform float     iSampleRate;           // sound sample rate (i.e., 44100)\n"
+				"uniform float     iChannelTime[4];       // channel playback time (in seconds)\n"
+				"uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)\n"
+				"uniform float     iBlockOffset;          // total consumed samples (mostly for audio, for video it's same as iFrame)\n"
+				;
+	
+	for(int j = 0; j < 4; j++) {
+		if (j < in_buf.GetCount()) {
+			OglBufferInput& in = in_buf[j];
+			if (in.type == OglBufferInput::CUBEMAP)
+				code << "uniform samplerCube iChannel" << IntStr(j) << ";\n";
+			else if (in.type == OglBufferInput::VOLUME)
+				code << "uniform sampler3D iChannel" << IntStr(j) << ";\n";
+			else
+				code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
+		}
+		else
+			code << "uniform sampler2D iChannel" << IntStr(j) << ";\n";
+	}
+	code << "\n";
+	
+	for(int j = 0; j < common_source_frag.GetCount(); j++) {
+		code += common_source_frag[j] + "\n";
+	}
+	
+	code += fg_glsl;
+	
+	code +=		"\nvoid main (void) {\n"
+				"	mainVertex();\n"
+				"}\n\n";
+	
+	//LOG(code);
+	
+	if (!CompileProgram(PROG_VERTEX, code)) {
 		LOG(GetLineNumStr(code));
 		return false;
 	}
@@ -849,6 +985,9 @@ GLint OglBuffer::CompileShader(int prog_i, String shader_source) {
 	GLenum shader_type;
 	if (prog_i == PROG_FRAGMENT) {
 		shader_type = GL_FRAGMENT_SHADER;
+	}
+	else if (prog_i == PROG_VERTEX) {
+		shader_type = GL_VERTEX_SHADER;
 	}
 	else {
 		OnError(fn_name, "TODO: other programs than fragment shader");

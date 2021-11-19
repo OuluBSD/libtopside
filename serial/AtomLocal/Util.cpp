@@ -266,14 +266,21 @@ OglShaderBase::OglShaderBase() {
 }
 
 bool OglShaderBase::Initialize(const Script::WorldState& ws) {
-	String shader_path = ws.Get(".filepath");
+	String fragment_path = ws.Get(".fragment");
+	String vertex_path = ws.Get(".vertex");
 	String library_path = ws.Get(".library");
 	String loopback = ws.Get(".loopback");
 	
+	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
+	
 	if (loopback.GetCount() && !buf.SetLoopback(loopback))
 		return false;
-		
-	if (!buf.LoadFragmentShaderFile(shader_path, library_path))
+	
+	if (!vertex_path.IsEmpty() &&
+		!buf.LoadVertexShaderFile(vertex_path, library_path))
+		return false;
+	
+	if (!buf.LoadFragmentShaderFile(fragment_path, library_path))
 		return false;
 	
 	int queue_size = 1;
@@ -282,6 +289,8 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 		queue_size = DEFAULT_AUDIO_QUEUE_SIZE;
 		is_audio = true;
 	}
+	
+	buf.AddLink(ws.Get(".link"));
 	
 	// SDL2ScreenBase duplicate
 	for(int i = 0; i < 4; i++) {

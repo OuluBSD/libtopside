@@ -10,7 +10,7 @@ MAKE_STATIC(String, eon_script)
 MAKE_STATIC(String, eon_file)
 
 
-bool DefaultInitializer() {
+bool DefaultInitializer(bool skip_eon_file) {
 	SetCoutLog();
 	
 	CommandLineArguments cmd;
@@ -24,15 +24,15 @@ bool DefaultInitializer() {
 	for(const auto& in : inputs) {
 		if (in.key == 'e') eon_file = in.value;
 	}
-	if (eon_file.IsEmpty()) {
+	
+	__def_args <<= cmd.GetVariables();
+	
+	if (!skip_eon_file && eon_file.IsEmpty()) {
 		cmd.PrintHelp();
 		LOG("");
 		LOG("\te.g. -e play_audio_file.eon -MACHINE_TIME_LIMIT=3 -FILE=/home/user/some.mp3");
 		return false;
 	}
-	
-	__def_args <<= cmd.GetVariables();
-	
 	
 	eon_file = Serial::RealizeEonFile(eon_file);
 	
@@ -64,7 +64,7 @@ bool verify = false;
 MAKE_STATIC(Serial::MachineVerifier, verifier);
 
 
-void DefaultSerialInitializer() {
+void DefaultSerialInitializer(bool skip_eon_file) {
 	using namespace Serial;
 	
 	SetCoutLog();
@@ -78,7 +78,7 @@ void DefaultSerialInitializer() {
 		break_addr = 0x806A81E68;
 	
 	
-	if (!DefaultInitializer())
+	if (!DefaultInitializer(skip_eon_file))
 		return;
 	
 	if (verify) {
@@ -99,6 +99,9 @@ void DefaultSerialInitializer() {
 	}
 }
 
+void DefaultSerialInitializerInternalEon() {
+	DefaultSerialInitializer(true);
+}
 
 void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args) {
 	//DUMP(eon_script);

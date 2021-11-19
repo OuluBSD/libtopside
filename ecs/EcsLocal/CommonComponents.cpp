@@ -2,6 +2,22 @@
 
 NAMESPACE_ECS_BEGIN
 
+
+void Renderable::Initialize() {
+	Engine& e = GetEngine();
+	RenderingSystemRef rend = e.TryGet<RenderingSystem>();
+	if (rend)
+		rend->AddRenderable(AsRef<ComponentBase>());
+}
+
+void Renderable::Uninitialize() {
+	Engine& e = GetEngine();
+	RenderingSystemRef rend = e.TryGet<RenderingSystem>();
+	if (rend)
+		rend->RemoveRenderable(AsRef<ComponentBase>());
+}
+
+
 #if 0
 
 /*void Transform::MoveTo(const OverlapSink& conn) {

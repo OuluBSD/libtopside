@@ -36,7 +36,7 @@ public:
             tex_id[i] = src.tex_id[i];
         is_colored_only = src.is_colored_only;
         is_lines = src.is_lines;
-        SetupAutomatic();
+        //SetupAutomatic();
     }
     
     void SetupAutomatic();

@@ -96,11 +96,11 @@ bool Screen::Open0() {
 	#endif
 	
 	
-	if (filepath.GetCount())
+	if (frag_path.GetCount())
 		is_ogl_buf = true;
 	
 	if (is_ogl_buf) {
-		if (!TestImageInitialize())
+		if (!ImageInitialize())
 			return false;
 	}
 	

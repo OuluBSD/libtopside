@@ -303,6 +303,24 @@ AtomTypeCls EventStatePipe::GetType() const
 }
 
 #if defined flagSCREEN
+AtomTypeCls EcsEventsAtom::GetAtomType()
+{
+	return ATOM11(ECS_EVENTS_ATOM, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, RECEIPT);
+}
+
+void EcsEventsAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EcsEventsAtom>>(this);
+	vis.VisitThis<EcsEventsBase>(this);
+}
+
+AtomTypeCls EcsEventsAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
 	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);

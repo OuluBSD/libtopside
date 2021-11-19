@@ -4,7 +4,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 bool EntitySystem::Initialize() {
-	engine.Create();
+	engine = new Ecs::Engine;
 	SetActiveEngine(*engine);
 	return true;
 }
@@ -23,9 +23,14 @@ void EntitySystem::Stop() {
 }
 
 void EntitySystem::Uninitialize() {
+	ClearEngine();
+}
+
+void EntitySystem::ClearEngine() {
 	if (engine) {
 		engine->Clear();
-		engine.Clear();
+		delete engine;
+		engine = 0;
 	}
 }
 

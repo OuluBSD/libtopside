@@ -202,7 +202,7 @@ bool ToyLoader::Load(Object& o) {
 		to.name = stage_str;
 		to.type = type_str;
 		to.output_id = output_id_str;
-		to.script_path = EscapeString(stage_path);
+		to.script_path = stage_path;
 		to.script = stage_content;
 		
 		to.inputs.SetCount(input_arr.GetCount());
@@ -606,7 +606,7 @@ bool ToyLoader::MakeScript() {
 		}
 		
 		s << "				env:			event.register;\n";
-		s << "				filepath:		\"" << stage.script_path << "\";\n";
+		s << "				filepath:		\"" << EscapeString(stage.script_path) << "\";\n";
 		
 		if (stage.loopback_stage >= 0)
 			s << "				loopback:			\"" << stage.loopback_stage << "\";\n";

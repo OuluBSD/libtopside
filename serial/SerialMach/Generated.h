@@ -55,6 +55,7 @@ namespace Serial {
 	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(AUDIO_LOADER_ATOM) \
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
+	ATOM_TYPE(ECS_EVENTS_ATOM) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
@@ -77,6 +78,7 @@ namespace Serial {
 	ATOM_CLASS(VideoDbgSrc) \
 	ATOM_CLASS(AudioLoaderAtom) \
 	ATOM_CLASS(VideoLoaderAtom) \
+	ATOM_CLASS(EcsEventsAtom) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \

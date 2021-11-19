@@ -14,6 +14,25 @@ typedef unsigned int	Uint;
 typedef unsigned char	Byte;
 typedef void			Void;
 
+
+
+
+class BinderIfaceEvents : RTTIBase {
+	
+public:
+	RTTI_DECL0(BinderIfaceEvents);
+	
+};
+
+class BinderIfaceOgl : RTTIBase {
+	
+public:
+	RTTI_DECL0(BinderIfaceOgl);
+	
+	
+};
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

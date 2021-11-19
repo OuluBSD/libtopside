@@ -173,7 +173,7 @@ class Screen : public Component {
 	} gltest;
 	
 	
-	bool TestImageInitialize();
+	bool ImageInitialize();
 	void TestImageRender(const RealtimeSourceConfig& cfg);
 	bool Ogl_Initialize();
 	void Ogl_Render();
@@ -216,7 +216,8 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_ogl_buf = false;
-	String filepath;
+	String frag_path;
+	String vtx_path;
 	String library_paths;
 	
 	bool Open0() override;
@@ -242,7 +243,7 @@ public:
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
 	
-	void			SetShaderFile(String filepath, String library_paths) {this->filepath = filepath; this->library_paths = library_paths;}
+	void			SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
 	void			SetTestImage(bool b) {is_ogl_buf = b;}
 	
 };

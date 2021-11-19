@@ -279,6 +279,22 @@ public:
 };
 
 #if defined flagSCREEN
+class EcsEventsAtom : public Atom<EcsEventsAtom>, public EcsEventsBase {
+
+public:
+	RTTI_DECL2(EcsEventsAtom, AtomT, EcsEventsBase)
+	COPY_PANIC(EcsEventsAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ecs.system.events")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
 public:
@@ -659,6 +675,8 @@ using AudioLoaderAtomRef = Ref<AudioLoaderAtom, AtomParent>;
 using VideoLoaderAtomRef = Ref<VideoLoaderAtom, AtomParent>;
 
 using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
+
+using EcsEventsAtomRef = Ref<EcsEventsAtom, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 

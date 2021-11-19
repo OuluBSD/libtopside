@@ -156,8 +156,10 @@ protected:
 		PROG_COUNT
 	};
 	
+	Vector<String>				link_ids;
 	Array<OglBufferInput>		in_buf;
-	Vector<String>				common_source;
+	Vector<String>				common_source_frag;
+	Vector<String>				common_source_vtx;
 	
 	GLint						prog[PROG_COUNT] = {-1,-1,-1,-1,-1};
 	GLuint						color_buf[2] = {0,0};
@@ -231,7 +233,11 @@ public:
 	
 	
 	bool				LoadFragmentShaderFile(String filepath, String library_paths);
+	bool				LoadVertexShaderFile(String filepath, String library_paths);
 	void				SetFragmentShaderSource(String s) {code[PROG_FRAGMENT] = s;}
+	void				SetVertexShaderSource(String s) {code[PROG_VERTEX] = s;}
+	void				AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
+	
 	bool				IsInitialized() const {return initialized;}
 	bool				IsCubemap() const {return is_cubemap;}
 	
@@ -262,6 +268,7 @@ public:
 	bool				SetupLoopback();
 	bool				CompilePrograms();
 	bool				CompileFragmentShader();
+	bool				CompileVertexShader();
 	bool				CompileProgram(int prog_i, String shader_source);
 	GLint				CompileShader(int prog_i, String shader_source);
 	bool				LinkStages();
@@ -285,6 +292,12 @@ public:
 	
 	void				StoreOutputLink(InternalPacketData& v);
 	bool				LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v);
+	
+	void				AddBinder(BinderIfaceOgl* iface);
+	void				RemoveBinder(BinderIfaceOgl* iface);
+	
+	
+	static Callback2<String, OglBuffer*> WhenLinkInit;
 	
 };
 

@@ -17,7 +17,7 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	
 	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
 	m.is_colored_only = mb_is_colored_only;
-	m.SetupAutomatic();
+	//m.SetupAutomatic();
 	return m;
 }
 
@@ -32,7 +32,7 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim) {
 	
 	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
 	m.is_colored_only = mb_is_colored_only;
-	m.SetupAutomatic();
+	//m.SetupAutomatic();
 	return m;
 }
 
@@ -47,7 +47,7 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
 	
 	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
 	m.is_colored_only = mb_is_colored_only;
-	m.SetupAutomatic();
+	//m.SetupAutomatic();
 	return m;
 }
 
@@ -62,7 +62,7 @@ Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length) {
 	
 	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
 	m.is_colored_only = mb_is_colored_only;
-	m.SetupAutomatic();
+	//m.SetupAutomatic();
 	return m;
 }
 

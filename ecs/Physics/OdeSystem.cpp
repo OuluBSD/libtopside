@@ -42,7 +42,7 @@ dSpaceID OdeNode::GetWorldSpaceId() {
 
 
 OdeObject::OdeObject() {
-	model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
+	//model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
 }
 
 void OdeObject::AttachContent() {

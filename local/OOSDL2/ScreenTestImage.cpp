@@ -30,7 +30,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
 
 
 
-bool Screen::TestImageInitialize() {
+bool Screen::ImageInitialize() {
 	ASSERT(ogl_buf)
 	if (!ogl_buf) return false;
 	
@@ -39,12 +39,21 @@ bool Screen::TestImageInitialize() {
 	buf.fb_size = screen_sz;
 	buf.fps = 60;
 	
-	if (filepath.GetCount()) {
-		if (!buf.LoadFragmentShaderFile(filepath, library_paths))
+	if (frag_path.GetCount()) {
+		if (!buf.LoadFragmentShaderFile(frag_path, library_paths)) {
+			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
 			return false;
+		}
 	}
 	else {
 		buf.SetFragmentShaderSource(def_shader);
+	}
+	
+	if (vtx_path.GetCount()) {
+		if (!buf.LoadVertexShaderFile(vtx_path, library_paths)) {
+			LOG("Screen::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
+			return false;
+		}
 	}
 	
 	if (!buf.Initialize()) {

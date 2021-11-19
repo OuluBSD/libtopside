@@ -31,9 +31,14 @@ NAMESPACE_ECS_BEGIN
 
 void BuggyCarInitializer() {
 	Engine& eng = GetActiveEngine();
+	eng.GetAdd<RenderingSystem>();
 	eng.GetAdd<EntityStore>();
 	eng.GetAdd<ComponentStore>();
-	eng.GetAdd<PhysicsSystem>();
+	eng.GetAdd<OdeSystem>();
+	eng.GetAdd<EventSystem>();
+	
+	Serial::Machine& mach = Serial::GetActiveMachine();
+	//eng.GetAdd<PhysicsSystem>();
 }
 
 void BuggyCarStartup() {
@@ -61,19 +66,38 @@ void Runner(String app_name) {
 	Serial::DebugMain("", eon_file, args, 0);
 }
 
+void BindEcsEventsBase(Serial::EcsEventsBase* b) {
+	Ecs::GetActiveEngine().Get<Ecs::EventSystem>()->Attach(b);
+}
+
+void BindOglBuffer(String id, OglBuffer* b) {
+	Ecs::GetActiveEngine().Get<Ecs::RenderingSystem>()->Attach(id, b);
+}
+
+void BindEcsToSerial() {
+	Serial::EcsEventsBase::WhenInitialize << callback(BindEcsEventsBase);
+	OglBuffer::WhenLinkInit << callback(BindOglBuffer);
+}
 
 NAMESPACE_TOPSIDE_END
 
 
-ECS_INITIALIZE_STARTUP_(TS::Ecs::BuggyCarInitializer, TS::Ecs::BuggyCarStartup) \
+
+APP_INITIALIZE_DEFAULT_INTERNAL_EON
+ECS_INITIALIZE_STARTUP_(TS::Ecs::BuggyCarInitializer, TS::Ecs::BuggyCarStartup)
+APP_STARTUP_(TS::BindEcsToSerial)
 ECS_APP_MAIN {
 	using namespace UPP;
-	String eon_file = GetDataFile("BuggyCar.eon");
-	if (FileExists(eon_file)) {
-		TS::DefaultRunner("Gui App", eon_file);
+	String eon_file  = GetDataFile("BuggyCar.eon");
+	String frag_file = GetDataFile("Fragment.glsl");
+	String vtx_file  = GetDataFile("Vertex.glsl");
+	if (FileExists(eon_file) && FileExists(frag_file) && FileExists(vtx_file)) {
+		args.GetAdd("FRAGMENT_SHADER_PATH", frag_file);
+		args.GetAdd("VERTEX_SHADER_PATH", vtx_file);
+		TS::DefaultRunner("Gui App", eon_file, &args);
 	}
 	else {
-		LOG("BuggyCar.eon file not found");
+		LOG("All files were not found");
 	}
 }
 

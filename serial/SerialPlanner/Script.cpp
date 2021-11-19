@@ -127,6 +127,7 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 	Script::Parser p;
 	if (!p.Parse(content, filepath)) {
 		RTLOG(GetLineNumStr(content, 1));
+		WhenLeaveScriptLoad();
 		return false;
 	}
 	//p.Dump();

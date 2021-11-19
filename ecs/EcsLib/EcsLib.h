@@ -28,6 +28,8 @@
 #include "Defs.h"
 #include "CommonComponents.h"
 #include "RegistrySystem.h"
+#include "RenderingSystem.h"
+#include "EventSystem.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB
