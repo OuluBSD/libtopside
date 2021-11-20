@@ -74,6 +74,7 @@ bool ModelLoader::LoadModelAssimp(String path)
     this->directory = GetFileDirectory(path);
 	
 	model = new ModelMesh();
+	model->SetParent(this);
 	
     ProcessNode(scene->mRootNode, scene);
     

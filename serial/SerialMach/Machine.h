@@ -189,14 +189,14 @@ NAMESPACE_TOPSIDE_BEGIN
 class SingleMachine {
 	Serial::Machine mach;
 	
-	bool Open(bool ecs);
+	bool Open(void(*arg_fn)());
 	void Close();
 	
 public:
 	SingleMachine()		{Serial::SetActiveMachine(mach);}
 	~SingleMachine()	{Serial::ClearActiveMachine();}
 	
-	void Run(bool ecs, void(*fn)());
+	void Run(void(*fn)(), void(*arg_fn)());
 	
 };
 

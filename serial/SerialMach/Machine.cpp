@@ -194,8 +194,8 @@ NAMESPACE_SERIAL_END
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void SingleMachine::Run(bool ecs, void(*fn)()) {
-	if (Open(ecs)) {
+void SingleMachine::Run(void(*fn)(), void(*arg_fn)()) {
+	if (Open(arg_fn)) {
 		fn();
 		Close();
 	}

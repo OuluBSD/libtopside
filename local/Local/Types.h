@@ -24,11 +24,16 @@ public:
 	
 };
 
+
+class OglBuffer;
+class OpenGLShader;
+
 class BinderIfaceOgl : RTTIBase {
 	
 public:
 	RTTI_DECL0(BinderIfaceOgl);
 	
+	virtual void Render(const OglBuffer& buf, OpenGLShader& shader) = 0;
 	
 };
 

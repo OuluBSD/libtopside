@@ -13,7 +13,7 @@ typedef enum {
 } BusFunction;
 
 
-struct Bus;
+class Bus;
 class BusClient;
 class BusData;
 
@@ -91,7 +91,9 @@ public:
 	
 };
 
-struct Bus {
+class Bus {
+	
+public:
 	typedef enum {
 		IDLE,
 		WAITING_HOST,

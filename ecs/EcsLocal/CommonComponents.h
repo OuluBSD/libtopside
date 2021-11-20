@@ -34,44 +34,6 @@ public:
 };
 
 
-class Renderable : public Component<Renderable> {
-	
-public:
-	RTTI_COMP0(Renderable)
-	COMP_DEF_VISIT
-	
-	
-	RGBA color;
-	mat4 offset;
-	float alpha_multiplier;
-	//String model_name;
-	//Ref<ModelComponent> model;
-	
-	
-	void Initialize() override;
-	void Uninitialize() override;
-	
-	void ResetModel(mat4 offset = zero<mat4>()) {
-		color = RGBAZero();
-		this->offset = offset;
-		alpha_multiplier = 0;
-		//model_name = name;
-		//model.Clear();
-	}
-	
-    void operator=(const Renderable& e) {
-        color = e.color;
-        offset = e.offset;
-        alpha_multiplier = e.alpha_multiplier;
-    }
-#ifdef flagSCREEN
-	Callback1<Shader&> cb;
-#endif
-	//Model* GetModel() {return model ? model->GetModel() : 0;}
-	
-	
-};
-
 
 
 #if 0

@@ -33,15 +33,11 @@ Callback2<String, OglBuffer*> OglBuffer::WhenLinkInit;
 
 
 void OglBuffer::AddBinder(BinderIfaceOgl* iface) {
-	
-	TODO
-	
+	VectorFindAdd(binders, iface);
 }
 
 void OglBuffer::RemoveBinder(BinderIfaceOgl* iface) {
-	
-	TODO
-	
+	VectorRemoveKey(binders, iface);
 }
 
 void OglBuffer::Update(double dt) {
@@ -275,6 +271,7 @@ bool OglBuffer::Initialize() {
 	for (String& s : link_ids)
 		WhenLinkInit(s, this);
 	
+	shader.SetLoaded();
 	initialized = true;
 	
 	return true;
@@ -400,7 +397,14 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	
 	
 	glClear(GL_COLOR_BUFFER_BIT);
-	glRectf(-1.0, -1.0, 1.0, 1.0);
+	
+	if (binders.GetCount()) {
+		for (BinderIfaceOgl* iface : binders)
+			iface->Render(*this, shader);
+	}
+	else {
+		glRectf(-1.0, -1.0, 1.0, 1.0);
+	}
 	
 	
 	

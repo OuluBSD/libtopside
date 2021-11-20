@@ -45,6 +45,11 @@ OdeObject::OdeObject() {
 	//model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
 }
 
+void OdeObject::LoadModel() {
+	model_ready = model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
+	model_err = !model_ready;
+}
+
 void OdeObject::AttachContent() {
 	ASSERT(geom != 0);
 	ASSERT(body != 0);
@@ -67,7 +72,12 @@ void OdeObject::DetachContent() {
 }
 
 void OdeObject::Paint(Shader& s) {
-	
+	if (!model_ready && !model_err) {
+		LOG("OdeObject::Paint: warning: loading model while painting");
+		LoadModel();
+	}
+	if (!model_ready)
+		return;
 	
 	if (is_override_phys_geom) {
 		s.SetMat4("model", override_geom * model_geom);

@@ -138,7 +138,7 @@ public:
 	
 	void Clear() {model.Clear();}
     bool LoadModel(String path);
-    void Set(const ModelMesh& m) {model = new ModelMesh(m);}
+    void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
 	

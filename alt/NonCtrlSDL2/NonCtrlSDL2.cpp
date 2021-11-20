@@ -6,7 +6,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool SingleMachine::Open(bool ecs) {
+bool SingleMachine::Open(void(*arg_fn)()) {
 	using namespace Serial;
 	
 	const AppFlags& flags = GetAppFlags();
@@ -22,21 +22,8 @@ bool SingleMachine::Open(bool ecs) {
     mach.Add<PacketTracker>();
     
     
-    if (ecs)
-		mach.Add<EntitySystem>();
-	
-    /*mach.Add<HolographicScene>();
-    mach.Add<EasingSystem>();
-    mach.Add<MotionControllerSystem>();
-    mach.Add<WorldLogicSystem>();*/
-	   
-    //if (flags.HaveOdePhysics())
-	//	mach.Add<OdeSystem>();
-	
-    
-    #ifdef flagOPENVR
-    mach.Add<OpenVR>();
-    #endif
+    if(arg_fn)
+        arg_fn();
     
     reg->SetAppName("SDL2 ECS machine");
     

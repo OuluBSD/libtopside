@@ -18,6 +18,7 @@ public:
 	unsigned int ID;
 	
 	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
+	void SetLoaded(bool b=true) {is_loaded = true;}
 	bool IsLoaded() const override {return is_loaded;}
 	void Paint(ModelMesh& model) override;
     void Paint(ModelMesh& model, Mesh& mesh) override;

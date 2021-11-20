@@ -218,5 +218,34 @@ bool SingleEngine::Open(bool gui) {return true;}
 void SingleEngine::Close() {eng.Stop();}
 //#endif
 
+
+
 NAMESPACE_ECS_END
 
+
+NAMESPACE_SERIAL_BEGIN
+
+
+void MachineEcsInit() {
+	Machine& mach = GetActiveMachine();
+	
+	mach.Add<EntitySystem>();
+	
+	
+    /*mach.Add<HolographicScene>();
+    mach.Add<EasingSystem>();
+    mach.Add<MotionControllerSystem>();
+    mach.Add<WorldLogicSystem>();*/
+	   
+    //if (flags.HaveOdePhysics())
+	//	mach.Add<OdeSystem>();
+	
+    
+    #ifdef flagOPENVR
+    mach.Add<OpenVR>();
+    #endif
+    
+}
+
+
+NAMESPACE_SERIAL_END

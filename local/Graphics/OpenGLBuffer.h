@@ -160,6 +160,9 @@ protected:
 	Array<OglBufferInput>		in_buf;
 	Vector<String>				common_source_frag;
 	Vector<String>				common_source_vtx;
+	Vector<BinderIfaceOgl*>		binders;
+	
+	OpenGLShader shader;
 	
 	GLint						prog[PROG_COUNT] = {-1,-1,-1,-1,-1};
 	GLuint						color_buf[2] = {0,0};

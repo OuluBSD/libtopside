@@ -3,6 +3,22 @@
 NAMESPACE_ECS_BEGIN
 
 
+void Renderable::Initialize() {
+	Engine& e = GetEngine();
+	RenderingSystemRef rend = e.TryGet<RenderingSystem>();
+	if (rend)
+		rend->AddRenderable(AsRef<ComponentBase>());
+}
+
+void Renderable::Uninitialize() {
+	Engine& e = GetEngine();
+	RenderingSystemRef rend = e.TryGet<RenderingSystem>();
+	if (rend)
+		rend->RemoveRenderable(AsRef<ComponentBase>());
+}
+
+
+
 bool RenderingSystem::Initialize() {
 	return true;
 }
@@ -21,12 +37,12 @@ void RenderingSystem::Attach(String key, OglBuffer* b) {
 	buf = b;
 }
 
-void RenderingSystem::AddRenderable(ComponentBaseRef b) {
+void RenderingSystem::AddRenderable(RenderableRef b) {
 	ASSERT(b);
 	ArrayFindAdd(rends, b);
 }
 
-void RenderingSystem::RemoveRenderable(ComponentBaseRef b) {
+void RenderingSystem::RemoveRenderable(RenderableRef b) {
 	ASSERT(b);
 	ArrayRemoveKey(rends, b);
 }
@@ -50,6 +66,15 @@ void RenderingSystem::Uninitialize() {
 		buf->RemoveBinder(this);
 		buf = 0;
 	}
+}
+
+void RenderingSystem::Render(const OglBuffer& buf, OpenGLShader& shader) {
+	DUMPC(rends);
+	
+	for (RenderableRef& rend : rends) {
+		rend->cb(shader);
+	}
+	
 }
 
 

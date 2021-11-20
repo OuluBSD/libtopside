@@ -1,7 +1,6 @@
 #ifndef _SerialLib_EntitySystem_h_
 #define _SerialLib_EntitySystem_h_
 
-
 namespace  TS {
 namespace  Ecs {
 class Engine;

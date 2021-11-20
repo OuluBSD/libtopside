@@ -59,6 +59,8 @@ class OdeObject : public OdeNode {
 	
 public:
 	ModelLoader model;
+	bool model_ready = false;
+	bool model_err = false;
 	
 	dGeomID geom = 0;
 	dBodyID body = 0;
@@ -74,6 +76,8 @@ public:
 	typedef OdeObject CLASSNAME;
 	OdeObject();
 	virtual ~OdeObject() {if (geom) dGeomDestroy(geom); if (body) dBodyDestroy(body);}
+	
+	virtual void LoadModel();
 	
 	void OnAttach() override {body = dBodyCreate(GetWorldId());} // Create ID for physics body
 	void OnDetach() override {DetachContent();}

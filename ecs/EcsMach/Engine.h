@@ -171,8 +171,16 @@ public:
 };
 
 
-
 NAMESPACE_ECS_END
+
+
+NAMESPACE_SERIAL_BEGIN
+
+
+void MachineEcsInit();
+
+
+NAMESPACE_SERIAL_END
 
 
 #endif
