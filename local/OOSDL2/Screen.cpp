@@ -294,10 +294,10 @@ bool Screen::ImageInitialize() {
 	if (!ogl_buf) return false;
 	
 	OglBuffer& buf = *ogl_buf;
-	auto& cfg = buf.config;
-	cfg.is_win_fbo = true;
-	cfg.size = screen_sz;
-	cfg.fps = 60;
+	auto& st = buf.state;
+	st.is_win_fbo = true;
+	st.size = screen_sz;
+	st.fps = 60;
 	
 	if (frag_path.GetCount()) {
 		if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT, frag_path, library_paths)) {
@@ -306,7 +306,7 @@ bool Screen::ImageInitialize() {
 		}
 	}
 	else {
-		buf.config.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
+		buf.state.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
 	}
 	
 	if (vtx_path.GetCount()) {

@@ -75,9 +75,9 @@ void OdeObject::DetachContent() {
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
 }
 
-void OdeObject::PushModel(Shader& s) {
+void OdeObject::Refresh(Shader& s) {
 	if (!fb_obj && !model_err) {
-		LOG("OdeObject::PushModel: warning: loading model while painting");
+		LOG("OdeObject::Refresh: warning: loading model while painting");
 		fb_obj = s.CreateObject();
 		if (fb_obj)
 			LoadModel(s);

@@ -6,11 +6,11 @@ bool CpuShader::Load(String vertex_path, String fragment_path, String geometry_p
 	TODO
 }
 
-void CpuShader::PushModel(ModelMesh& model) {
+void CpuShader::Refresh(ModelMesh& model) {
 	TODO
 }
 
-void CpuShader::PushModel(ModelMesh& model, Mesh& mesh) {
+void CpuShader::Refresh(ModelMesh& model, Mesh& mesh) {
 	TODO
 }
 

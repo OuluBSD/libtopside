@@ -331,19 +331,19 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 }
 
 bool OglShaderBase::PostInitialize() {
-	auto& cfg = buf.config;
-	cfg.is_audio = is_audio;
-	cfg.is_win_fbo = false;
+	auto& st = buf.state;
+	st.is_audio = is_audio;
+	st.is_win_fbo = false;
 	if (!is_audio) {
-		cfg.size = Size(1280,720);
-		cfg.fps = 60;
+		st.size = Size(1280,720);
+		st.fps = 60;
 	}
 	else {
-		cfg.size = Size(1024,1);
-		cfg.channels = 2;
-		cfg.fps = 44100.0 / 1024;
+		st.size = Size(1024,1);
+		st.channels = 2;
+		st.fps = 44100.0 / 1024;
 	}
-	cfg.sample = ShaderVar::SAMPLE_FLOAT;
+	st.sample = ShaderVar::SAMPLE_FLOAT;
 	
 	if (!buf.Initialize())
 		return false;
@@ -558,20 +558,20 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& cfg = buf.config;
-		cfg.is_win_fbo = false;
-		cfg.size = sz;
-		cfg.channels = channels;
-		cfg.sample = ShaderVar::SAMPLE_FLOAT;
-		cfg.filter = this->filter;
-		cfg.wrap = this->wrap;
-		cfg.fps = 0;
+		auto& st = buf.state;
+		st.is_win_fbo = false;
+		st.size = sz;
+		st.channels = channels;
+		st.sample = ShaderVar::SAMPLE_FLOAT;
+		st.filter = this->filter;
+		st.wrap = this->wrap;
+		st.fps = 0;
 		
 		if (loading_cubemap) {
 			ASSERT(cubemap.GetCount() == 6);
 			if (!buf.InitializeCubemap(
-					cfg.size,
-					cfg.channels,
+					st.size,
+					st.channels,
 					ShaderVar::SAMPLE_U8,
 					cubemap[0]->GetData(),
 					cubemap[1]->GetData(),
@@ -584,8 +584,8 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		}
 		else if (sz.cz == 0) {
 			if (!buf.InitializeTexture(
-				cfg.size,
-				cfg.channels,
+				st.size,
+				st.channels,
 				ShaderVar::SAMPLE_U8,
 				&*from_data.Begin(),
 				from_data.GetCount()))
@@ -593,8 +593,8 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		}
 		else {
 			if (!buf.InitializeVolume(
-				cfg.size,
-				cfg.channels,
+				st.size,
+				st.channels,
 				ShaderVar::SAMPLE_U8,
 				from_data))
 				return false;
@@ -704,19 +704,19 @@ bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
 			OglBuffer* src_buf = (OglBuffer*)v.ptr;
 			ASSERT(src_buf);
 			
-			auto& cfg = src_buf->config;
+			auto& st = src_buf->state;
 			int afmt_size = afmt.GetSize();
-			ASSERT(cfg.size.cx == afmt.sample_rate && cfg.size.cy == 1 && cfg.channels == afmt_size);
-			int len = afmt.sample_rate * cfg.channels * sizeof(float);
+			ASSERT(st.size.cx == afmt.sample_rate && st.size.cy == 1 && st.channels == afmt_size);
+			int len = afmt.sample_rate * st.channels * sizeof(float);
 			ASSERT(len > 0);
 			Vector<byte>& out_data = src.p->Data();
 			out_data.SetCount(len);
 			
-			GLuint frame_buf = cfg.GetReadFramebuffer();
+			GLuint frame_buf = st.GetReadFramebuffer();
 			ASSERT(frame_buf > 0);
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
 			glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(cfg.channels), GL_FLOAT, out_data.Begin());
+			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(st.channels), GL_FLOAT, out_data.Begin());
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 			
 		}
@@ -1066,12 +1066,12 @@ bool OglKeyboardBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& cfg = buf.config;
-		cfg.is_win_fbo = false;
-		cfg.size = sz;
-		cfg.channels = channels;
-		cfg.sample = ShaderVar::SAMPLE_FLOAT;
-		cfg.fps = 0;
+		auto& st = buf.state;
+		st.is_win_fbo = false;
+		st.size = sz;
+		st.channels = channels;
+		st.sample = ShaderVar::SAMPLE_FLOAT;
+		st.fps = 0;
 		
 		if (!buf.InitializeTexture(
 			Size(sz.cx, sz.cy),
@@ -1191,13 +1191,13 @@ bool OglAudioBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& cfg = buf.config;
-		cfg.is_win_fbo = false;
-		cfg.size = sz;
-		cfg.channels = channels;
+		auto& st = buf.state;
+		st.is_win_fbo = false;
+		st.size = sz;
+		st.channels = channels;
 		ASSERT(afmt.IsSampleFloat());
-		cfg.sample = ShaderVar::SAMPLE_FLOAT;
-		cfg.fps = 0;
+		st.sample = ShaderVar::SAMPLE_FLOAT;
+		st.fps = 0;
 		
 		if (!buf.InitializeTexture(
 			Size(sz.cx, sz.cy),

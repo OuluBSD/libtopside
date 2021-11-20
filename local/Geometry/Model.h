@@ -39,13 +39,13 @@ public:
             tex_id[i] = src.tex_id[i];
         is_colored_only = src.is_colored_only;
         is_lines = src.is_lines;
-        //SetupAutomatic();
+        //Refresh();
     }
     
-    void SetupAutomatic(FramebufferObject& o);
-    void SetupOpenGL(FramebufferObject& o);
+    void Refresh(FramebufferObject& o);
+    void RefreshOgl(FramebufferObject& o);
 #if HAVE_OPENGL
-    void SetupOpenGL(OglFramebufferObject& o);
+    void RefreshOgl(OglFramebufferObject& o);
 #endif
     
     void SetMaterial(const Material& m) {material = m;}

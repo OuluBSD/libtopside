@@ -138,7 +138,7 @@ void ModelLoader::ProcessMesh(FramebufferObject& o, ModelMesh& mout, Mesh& out, 
 			LoadMaterialTextures(mout, out, material, i);
     }
 
-	out.SetupAutomatic(o);
+	out.Refresh(o);
 }
 
 void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type) {

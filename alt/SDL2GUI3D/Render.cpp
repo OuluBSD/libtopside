@@ -137,7 +137,7 @@ void SDL2GUI3D::RenderWindows() {
 		mesh.indices.Add(2);
 		mesh.indices.Add(3);
 		mesh.SetupMesh();
-		simple_shader.PushModel(model);
+		simple_shader.Refresh(model);
 	}
 	
 	

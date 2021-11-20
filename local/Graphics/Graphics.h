@@ -32,7 +32,7 @@ typedef unsigned int	Gxbf;
 #endif
 
 
-#include "Config.h"
+#include "State.h"
 #include "Camera.h"
 #include "Shader.h"
 #include "Framebuffer.h"

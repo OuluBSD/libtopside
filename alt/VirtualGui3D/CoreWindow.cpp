@@ -485,8 +485,8 @@ void CoreWindow::DrawLine(DrawCommand& cmd) {
 	mesh.indices.Reserve(2);
 	mesh.indices.Add(0);
 	mesh.indices.Add(1);
-	mesh.SetupAutomatic();
-	shader->PushModel(model);
+	mesh.Refresh();
+	shader->Refresh(model);
 }
 
 void CoreWindow::DrawImage(DrawCommand& cmd) {
@@ -519,8 +519,8 @@ void CoreWindow::DrawImage(DrawCommand& cmd) {
 	mesh.indices.Add(0);
 	mesh.indices.Add(2);
 	mesh.indices.Add(3);
-	mesh.SetupAutomatic();
-	shader->PushModel(model);
+	mesh.Refresh();
+	shader->Refresh(model);
 }
 
 void CoreWindow::DrawRect(DrawCommand& cmd) {
@@ -555,8 +555,8 @@ void CoreWindow::DrawRect(DrawCommand& cmd) {
 	mesh.indices.Add(0);
 	mesh.indices.Add(2);
 	mesh.indices.Add(3);
-	mesh.SetupAutomatic();
-	shader->PushModel(model);
+	mesh.Refresh();
+	shader->Refresh(model);
 }
 
 void CoreWindow::DrawTriangles(DrawCommand& cmd) {
@@ -599,8 +599,8 @@ void CoreWindow::DrawTriangles(DrawCommand& cmd) {
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
 	mesh.is_colored_only = true;
-	mesh.SetupAutomatic();
-	shader->PushModel(model);
+	mesh.Refresh();
+	shader->Refresh(model);
 }
 
 void CoreWindow::DrawPolyline(DrawCommand& cmd) {
@@ -627,8 +627,8 @@ void CoreWindow::DrawPolyline(DrawCommand& cmd) {
 	//mesh.material.ambient.a = cmd.clr.a;
 	mesh.is_colored_only = true;
 	mesh.is_lines = true;
-	mesh.SetupAutomatic();
-	shader->PushModel(model);
+	mesh.Refresh();
+	shader->Refresh(model);
 }
 
 void CoreWindow::DrawOffset(DrawCommand& cmd) {

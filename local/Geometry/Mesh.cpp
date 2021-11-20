@@ -19,16 +19,16 @@ void Mesh::Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vecto
 	this->vertices <<= vertices;
     this->indices <<= indices;
     
-    SetupAutomatic(o);
+    Refresh(o);
 }
 
-void Mesh::SetupAutomatic(FramebufferObject& o) {
+void Mesh::Refresh(FramebufferObject& o) {
 	AppFlags& f = GetAppFlags();
 	if (f.IsOpenGL()) {
 #if HAVE_OPENGL
-		SetupOpenGL(o);
+		RefreshOgl(o);
 #else
-		LOG("Mesh::SetupAutomatic: error: opengl is not supported in this executable");
+		LOG("Mesh::Refresh: error: opengl is not supported in this executable");
 #endif
 	}
 }

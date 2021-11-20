@@ -39,7 +39,7 @@ public:
     void operator=(const ModelComponent& src) {}
     
     bool LoadModel(String path);
-    //void PushModel(Shader& shader);
+    //void Refresh(Shader& shader);
     bool AddTextureFile(int mesh_i, TexType type, String path);
     void Dispatch() {TODO}
 	Ref<ModelMesh> GetModel() {return loader.GetModel();}
