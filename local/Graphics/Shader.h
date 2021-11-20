@@ -18,8 +18,8 @@ public:
 	
 	virtual bool Load(String vertex_path, String fragment_path, String geometry_path = "") = 0;
 	virtual bool IsLoaded() const = 0;
-	virtual void Paint(ModelMesh& model) = 0;
-    virtual void Paint(ModelMesh& model, Mesh& mesh) = 0;
+	virtual void PushModel(ModelMesh& model) = 0;
+    virtual void PushModel(ModelMesh& model, Mesh& mesh) = 0;
 	virtual void Use() = 0;
 	virtual void SetBool(const String &name, bool value) const = 0;
 	virtual void SetInt(const String &name, int value) const = 0;
@@ -35,7 +35,9 @@ public:
 	virtual void SetVec3(const String &name, float x, float y, float z) const {SetVec3(name, vec3(x,y,z));}
 	virtual void SetVec4(const String &name, float x, float y, float z, float w) const {SetVec4(name, vec4(x,y,z,w));}
 	
-	static Shader* NewDefault();
+	
+	FramebufferObject* CreateObject();
+	
 };
 
 

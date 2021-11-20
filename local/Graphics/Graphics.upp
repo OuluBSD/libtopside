@@ -13,6 +13,8 @@ file
 	Enums.h,
 	GlobalApi.h,
 	OpenGL.h,
+	Config.h,
+	Config.cpp,
 	Camera.h,
 	Shader.h,
 	Shader.cpp,
@@ -27,11 +29,11 @@ file
 	CpuShader.h,
 	CpuShader.cpp,
 	"OpenGL Accelerated" readonly separator,
-	OpenGLRenderer.h,
-	OpenGLRenderer.cpp,
-	OpenGLFramebuffer.cpp,
-	OpenGLShader.h,
-	OpenGLShader.cpp,
-	OpenGLBuffer.h,
-	OpenGLBuffer.cpp;
+	OglRenderer.h,
+	OglRenderer.cpp,
+	OglFramebuffer.cpp,
+	OglShader.h,
+	OglShader.cpp,
+	OglBuffer.h,
+	OglBuffer.cpp;
 

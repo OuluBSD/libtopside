@@ -234,7 +234,7 @@ SystemDraw& Screen::BeginDraw() {
 	    hw_rend.rend = this->rend;
 	    hw_rend.PreFrame();
 	    hw_draw.rend = &hw_rend;
-	    hw_draw.fb = &hw_rend.GetOutputOpenGLFramebuffer();
+	    hw_draw.fb = &hw_rend.GetFramebuffer();
 	    sysdraw.ptr = &hw_draw;
 	    
 	    hw_draw.fb->Enter();
@@ -254,6 +254,74 @@ void Screen::CommitDraw() {
 	
 	hw_draw.fb->Leave();
 	hw_rend.PostFrame();
+}
+
+
+
+
+
+
+
+
+const char* def_shader = R"SH4D3R(
+#define M_PI	3.1415926535897932384626433832795
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    vec3 res = iResolution;
+    float t = iTime;
+    bool mode = mod(t, 6.0) > 3.0;
+    //t = t * 504;
+    //t = t * 0.2;
+    vec3 shift = vec3(
+        sin(t),
+        sin(t + M_PI/3.0),
+        sin(t + M_PI*2.0/3.0));
+    if (mode)
+        fragColor = vec4(
+            fragCoord.x / res.x + shift.x,
+            fragCoord.y / res.y + shift.y,
+            1.0 - fragCoord.y / res.y + shift.z, 0);
+    else
+        fragColor = vec4(fragCoord.y/res.y + shift.x, (shift.y + 1.0) * 0.5, fragCoord.x/res.x, 0);
+}
+)SH4D3R";
+
+
+
+bool Screen::ImageInitialize() {
+	ASSERT(ogl_buf)
+	if (!ogl_buf) return false;
+	
+	OglBuffer& buf = *ogl_buf;
+	auto& cfg = buf.config;
+	cfg.is_win_fbo = true;
+	cfg.size = screen_sz;
+	cfg.fps = 60;
+	
+	if (frag_path.GetCount()) {
+		if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT, frag_path, library_paths)) {
+			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
+			return false;
+		}
+	}
+	else {
+		buf.config.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
+	}
+	
+	if (vtx_path.GetCount()) {
+		if (!buf.LoadShaderFile(ShaderVar::PROG_VERTEX, vtx_path, library_paths)) {
+			LOG("Screen::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
+			return false;
+		}
+	}
+	
+	if (!buf.Initialize()) {
+		ctx->SetError(buf.GetError());
+		return false;
+	}
+	
+	return true;
 }
 
 

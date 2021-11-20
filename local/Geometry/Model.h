@@ -4,7 +4,10 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
-
+struct FramebufferObject;
+#if HAVE_OPENGL
+struct OglFramebufferObject;
+#endif
 
 
 class Mesh : public BoundingBox, Moveable<Mesh> {
@@ -23,7 +26,7 @@ public:
 	Mesh(const Mesh& m) {*this = m;}
 	
 	void Clear();
-	void Set(const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
+	void Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
     bool AddTextureFilePath(String key, String path);
 	void operator=(const Mesh& src) {
         Clear();
@@ -39,9 +42,10 @@ public:
         //SetupAutomatic();
     }
     
-    void SetupAutomatic();
+    void SetupAutomatic(FramebufferObject& o);
+    void SetupOpenGL(FramebufferObject& o);
 #if HAVE_OPENGL
-    void SetupOpenGL();
+    void SetupOpenGL(OglFramebufferObject& o);
 #endif
     
     void SetMaterial(const Material& m) {material = m;}
@@ -82,9 +86,8 @@ public:
     void Dump(int indent=0);
     
 protected:
-	friend class OpenGLShader;
+	friend class OglShader;
 	
-    unsigned int VAO = 0, VBO = 0, EBO = 0;
     
 };
 
@@ -137,7 +140,7 @@ public:
 	ModelLoader();
 	
 	void Clear() {model.Clear();}
-    bool LoadModel(String path);
+    bool LoadModel(FramebufferObject& o, String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
@@ -152,10 +155,10 @@ protected:
     
     
     #ifdef flagASSIMP
-    bool LoadModelAssimp(String path);
+    bool LoadModelAssimp(FramebufferObject& o, String path);
     
-    void ProcessNode(aiNode *node, const aiScene *scene);
-    void ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void ProcessNode(FramebufferObject& o, aiNode *node, const aiScene *scene);
+    void ProcessMesh(FramebufferObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
     #endif
     

@@ -60,7 +60,7 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-    void Render(const OglBuffer& buf, OpenGLShader& shader) override;
+    void Render(const OglBuffer& buf, OglShader& shader) override;
     
     
 public:

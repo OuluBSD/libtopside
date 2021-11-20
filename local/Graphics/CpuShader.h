@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 class CpuShader : public Shader {
 	bool is_loaded = false;
 	
-    void BasicMeshPaint(ModelMesh& model, Mesh& mesh);
+    void BasicMeshPushModel(ModelMesh& model, Mesh& mesh);
     
 public:
 	CpuShader() {}
@@ -14,8 +14,8 @@ public:
 	
 	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
 	bool IsLoaded() const override {return is_loaded;}
-	void Paint(ModelMesh& model) override;
-    void Paint(ModelMesh& model, Mesh& mesh) override;
+	void PushModel(ModelMesh& model) override;
+    void PushModel(ModelMesh& model, Mesh& mesh) override;
 	void Use() override;
 	void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;

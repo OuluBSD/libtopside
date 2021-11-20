@@ -78,6 +78,7 @@ struct VolumeFormat :
 	bool	IsSame(const VolumeFormat& fmt) const;
 	int		GetScalar() const {return DimBase<3>::GetVolume();} // TODO fix unit semantics
 	bool	IsCopyCompatible(const VolumeFormat& b) const;
+	int		GetChannels() const {return SampleBase<BinarySample>::GetPackedCount();}
 	
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };

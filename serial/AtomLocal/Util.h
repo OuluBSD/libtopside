@@ -89,9 +89,12 @@ public:
 class OglTextureBase :
 	public OglBufferBase
 {
+	using Filter = ShaderVar::Filter;
+	using Wrap = ShaderVar::Wrap;
+	
 	bool			loading_cubemap = false;
-	int				filter = OglBufferInput::FILTER_LINEAR;
-	int				wrap = OglBufferInput::WRAP_REPEAT;
+	Filter			filter = ShaderVar::FILTER_LINEAR;
+	Wrap			wrap = ShaderVar::WRAP_REPEAT;
 	Array<Packet>	cubemap;
 	
 public:

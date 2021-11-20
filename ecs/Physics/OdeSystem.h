@@ -59,7 +59,7 @@ class OdeObject : public OdeNode {
 	
 public:
 	ModelLoader model;
-	bool model_ready = false;
+	FramebufferObject* fb_obj = 0;
 	bool model_err = false;
 	
 	dGeomID geom = 0;
@@ -75,13 +75,13 @@ public:
 	RTTI_DECL1(OdeObject, OdeNode)
 	typedef OdeObject CLASSNAME;
 	OdeObject();
-	virtual ~OdeObject() {if (geom) dGeomDestroy(geom); if (body) dBodyDestroy(body);}
+	virtual ~OdeObject();
 	
-	virtual void LoadModel();
+	virtual void LoadModel(Shader& s);
 	
 	void OnAttach() override {body = dBodyCreate(GetWorldId());} // Create ID for physics body
 	void OnDetach() override {DetachContent();}
-	virtual void Paint(Shader& s);
+	virtual void PushModel(Shader& s);
 	
 	void AttachContent();
 	void DetachContent();
@@ -91,7 +91,7 @@ public:
 	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {dMatrix3 R; dRFromAxisAndAngle(R, ax, ay, az, angle); dBodySetRotation(body, R);}
 	const dReal* GetBodyPosition() {return dBodyGetPosition(body);}
 	
-	Callback1<Shader&> GetPaintCallback() {return THISBACK(Paint);}
+	Callback1<Shader&> GetPushModelCallback() {return THISBACK(PushModel);}
 };
 
 class OdeJoint : public OdeNode {

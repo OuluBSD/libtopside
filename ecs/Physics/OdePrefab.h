@@ -44,7 +44,7 @@ struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroun
 		auto ground = components.Get<StaticGroundPlaneRef>();
 		
 		components.Get<TransformRef>()->position[1] = -5.0;
-		components.Get<RenderableRef>()->cb << ground->GetPaintCallback();
+		components.Get<RenderableRef>()->cb << ground->GetPushModelCallback();
 		
 		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
 		OdeSystem& ow = CastRef<OdeSystem>(*w);

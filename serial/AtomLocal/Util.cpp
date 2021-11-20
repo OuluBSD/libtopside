@@ -277,10 +277,10 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 		return false;
 	
 	if (!vertex_path.IsEmpty() &&
-		!buf.LoadVertexShaderFile(vertex_path, library_path))
+		!buf.LoadShaderFile(ShaderVar::PROG_VERTEX, vertex_path, library_path))
 		return false;
 	
-	if (!buf.LoadFragmentShaderFile(fragment_path, library_path))
+	if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT,fragment_path, library_path))
 		return false;
 	
 	int queue_size = 1;
@@ -331,18 +331,19 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 }
 
 bool OglShaderBase::PostInitialize() {
-	buf.is_shader_audio_main = is_audio;
-	buf.is_win_fbo = false;
+	auto& cfg = buf.config;
+	cfg.is_audio = is_audio;
+	cfg.is_win_fbo = false;
 	if (!is_audio) {
-		buf.fb_size = Size(1280,720);
-		buf.fps = 60;
+		cfg.size = Size(1280,720);
+		cfg.fps = 60;
 	}
 	else {
-		buf.fb_size = Size(1024,1);
-		buf.fb_channels = 2;
-		buf.fps = 44100.0 / 1024;;
+		cfg.size = Size(1024,1);
+		cfg.channels = 2;
+		cfg.fps = 44100.0 / 1024;
 	}
-	//buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
+	cfg.sample = ShaderVar::SAMPLE_FLOAT;
 	
 	if (!buf.Initialize())
 		return false;
@@ -457,11 +458,11 @@ bool OglTextureBase::Initialize(const Script::WorldState& ws) {
 	String f = ws.Get(".filter");
 	if (!f.IsEmpty()) {
 		if (f == "nearest")
-			filter = OglBufferInput::FILTER_NEAREST;
+			filter = ShaderVar::FILTER_NEAREST;
 		else if (f == "linear")
-			filter = OglBufferInput::FILTER_LINEAR;
+			filter = ShaderVar::FILTER_LINEAR;
 		else if (f == "mipmap")
-			filter = OglBufferInput::FILTER_MIPMAP;
+			filter = ShaderVar::FILTER_MIPMAP;
 		else {
 			LOG("OglTextureBase::Initialize: error: invalid filter string '" << f << "'");
 			return false;
@@ -471,9 +472,9 @@ bool OglTextureBase::Initialize(const Script::WorldState& ws) {
 	String w = ws.Get(".wrap");
 	if (!w.IsEmpty()) {
 		if (w == "clamp")
-			wrap = OglBufferInput::WRAP_CLAMP;
+			wrap = ShaderVar::WRAP_CLAMP;
 		else if (w == "repeat")
-			wrap = OglBufferInput::WRAP_REPEAT;
+			wrap = ShaderVar::WRAP_REPEAT;
 		else {
 			LOG("OglTextureBase::Initialize: error: invalid wrap string '" << w << "'");
 			return false;
@@ -550,26 +551,28 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	}
 	else if (from_fmt.IsVolume()) {
 		sz			= from_fmt.vol.GetSize();
-		channels	= from_fmt.vid.GetChannels();
+		channels	= from_fmt.vol.GetChannels();
 	}
 	else
 		TODO
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		buf.is_win_fbo = false;
-		buf.fb_size = sz;
-		buf.fb_channels = channels;
-		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
-		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
-		buf.fb_filter = this->filter;
-		buf.fb_wrap = this->wrap;
-		buf.fps = 0;
+		auto& cfg = buf.config;
+		cfg.is_win_fbo = false;
+		cfg.size = sz;
+		cfg.channels = channels;
+		cfg.sample = ShaderVar::SAMPLE_FLOAT;
+		cfg.filter = this->filter;
+		cfg.wrap = this->wrap;
+		cfg.fps = 0;
 		
 		if (loading_cubemap) {
 			ASSERT(cubemap.GetCount() == 6);
-			if (!buf.InitializeCubemapRGBA(
-					Size(sz.cx, sz.cy), channels,
+			if (!buf.InitializeCubemap(
+					cfg.size,
+					cfg.channels,
+					ShaderVar::SAMPLE_U8,
 					cubemap[0]->GetData(),
 					cubemap[1]->GetData(),
 					cubemap[2]->GetData(),
@@ -580,16 +583,29 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 				return false;
 		}
 		else if (sz.cz == 0) {
-			if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, &*from_data.Begin(), from_data.GetCount()))
+			if (!buf.InitializeTexture(
+				cfg.size,
+				cfg.channels,
+				ShaderVar::SAMPLE_U8,
+				&*from_data.Begin(),
+				from_data.GetCount()))
 				return false;
 		}
 		else {
-			if (!buf.InitializeVolume(sz, channels, from_data))
+			if (!buf.InitializeVolume(
+				cfg.size,
+				cfg.channels,
+				ShaderVar::SAMPLE_U8,
+				from_data))
 				return false;
 		}
 	}
 	else {
-		buf.ReadTexture(sz, channels, from.GetData());
+		buf.ReadTexture(
+			sz,
+			channels,
+			ShaderVar::SAMPLE_U8,
+			from.GetData());
 	}
 	
 	
@@ -688,20 +704,19 @@ bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
 			OglBuffer* src_buf = (OglBuffer*)v.ptr;
 			ASSERT(src_buf);
 			
-			Size sz = src_buf->GetFramebufferSize();
-			int channels = src_buf->GetFramebufferChannels();
+			auto& cfg = src_buf->config;
 			int afmt_size = afmt.GetSize();
-			ASSERT(sz.cx == afmt.sample_rate && sz.cy == 1 && channels == afmt_size);
-			int len = afmt.sample_rate * channels * sizeof(float);
+			ASSERT(cfg.size.cx == afmt.sample_rate && cfg.size.cy == 1 && cfg.channels == afmt_size);
+			int len = afmt.sample_rate * cfg.channels * sizeof(float);
 			ASSERT(len > 0);
 			Vector<byte>& out_data = src.p->Data();
 			out_data.SetCount(len);
 			
-			GLuint frame_buf = src_buf->GetReadFramebuffer();
+			GLuint frame_buf = cfg.GetReadFramebuffer();
 			ASSERT(frame_buf > 0);
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
 			glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(channels), GL_FLOAT, out_data.Begin());
+			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(cfg.channels), GL_FLOAT, out_data.Begin());
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 			
 		}
@@ -1051,18 +1066,28 @@ bool OglKeyboardBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		buf.is_win_fbo = false;
-		buf.fb_size = sz;
-		buf.fb_channels = channels;
-		buf.fb_sampletype = OglBuffer::SAMPLE_BYTE;
-		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
-		buf.fps = 0;
+		auto& cfg = buf.config;
+		cfg.is_win_fbo = false;
+		cfg.size = sz;
+		cfg.channels = channels;
+		cfg.sample = ShaderVar::SAMPLE_FLOAT;
+		cfg.fps = 0;
 		
-		if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, data.Get(), data.GetCount() * sizeof(byte)))
+		if (!buf.InitializeTexture(
+			Size(sz.cx, sz.cy),
+			channels,
+			ShaderVar::SAMPLE_U8,
+			data.Get(),
+			data.GetCount() * sizeof(byte)))
 			return false;
 	}
 	else {
-		buf.ReadTexture(sz, channels, data.Get(), data.GetCount() * sizeof(byte));
+		buf.ReadTexture(
+			sz,
+			channels,
+			ShaderVar::SAMPLE_U8,
+			data.Get(),
+			data.GetCount() * sizeof(byte));
 	}
 	
 	
@@ -1166,19 +1191,29 @@ bool OglAudioBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		buf.is_win_fbo = false;
-		buf.fb_size = sz;
-		buf.fb_channels = channels;
+		auto& cfg = buf.config;
+		cfg.is_win_fbo = false;
+		cfg.size = sz;
+		cfg.channels = channels;
 		ASSERT(afmt.IsSampleFloat());
-		buf.fb_sampletype = OglBuffer::SAMPLE_FLOAT;
-		buf.fb_accel_sampletype = OglBuffer::SAMPLE_FLOAT;
-		buf.fps = 0;
+		cfg.sample = ShaderVar::SAMPLE_FLOAT;
+		cfg.fps = 0;
 		
-		if (!buf.InitializeTextureRGBA(Size(sz.cx, sz.cy), channels, &*data.Begin(), data.GetCount() * sizeof(byte)))
+		if (!buf.InitializeTexture(
+			Size(sz.cx, sz.cy),
+			channels,
+			ShaderVar::SAMPLE_U8,
+			&*data.Begin(),
+			data.GetCount() * sizeof(byte)))
 			return false;
 	}
 	else {
-		buf.ReadTexture(sz, channels, &*data.Begin(), data.GetCount() * sizeof(byte));
+		buf.ReadTexture(
+			sz,
+			channels,
+			ShaderVar::SAMPLE_U8,
+			&*data.Begin(),
+			data.GetCount() * sizeof(byte));
 	}
 	
 	

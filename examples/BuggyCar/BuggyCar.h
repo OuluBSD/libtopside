@@ -119,12 +119,12 @@ public:
 		
 	}
 	
-	void Paint(Shader& d) {
+	void PushModel(Shader& s) {
 		speed = 1.0;
 		steer = 1.0;
 		Step();
-		chassis.Paint(d);
-		for (auto& w : wheels) w.Paint(d);
+		chassis.PushModel(s);
+		for (auto& w : wheels) w.PushModel(s);
 	}
 	
 	/*virtual bool Key(dword key, int count) {
@@ -149,7 +149,7 @@ public:
 		return false;
 	}*/
 	
-	Callback1<Shader&> GetPaintCallback() {return THISBACK(Paint);}
+	Callback1<Shader&> GetPushModelCallback() {return THISBACK(PushModel);}
 };
 
 
@@ -160,7 +160,7 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
         auto components = EntityPrefab::Make(e);
 		
 		components.Get<TransformRef>()->position[1] = 3.0;
-		components.Get<RenderableRef>()->cb << components.Get<Ref<BuggyCar>>()->GetPaintCallback();
+		components.Get<RenderableRef>()->cb << components.Get<Ref<BuggyCar>>()->GetPushModelCallback();
 		
 		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
 		w->Attach(*components.Get<Ref<BuggyCar>>());

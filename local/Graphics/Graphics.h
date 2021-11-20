@@ -32,6 +32,7 @@ typedef unsigned int	Gxbf;
 #endif
 
 
+#include "Config.h"
 #include "Camera.h"
 #include "Shader.h"
 #include "Framebuffer.h"
@@ -41,9 +42,9 @@ typedef unsigned int	Gxbf;
 #include "CpuRenderer.h"
 
 #if defined(flagSCREEN)
-#include "OpenGLShader.h"
-#include "OpenGLRenderer.h"
-#include "OpenGLBuffer.h"
+#include "OglShader.h"
+#include "OglRenderer.h"
+#include "OglBuffer.h"
 #endif
 
 

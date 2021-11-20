@@ -68,7 +68,7 @@ void RenderingSystem::Uninitialize() {
 	}
 }
 
-void RenderingSystem::Render(const OglBuffer& buf, OpenGLShader& shader) {
+void RenderingSystem::Render(const OglBuffer& buf, OglShader& shader) {
 	DUMPC(rends);
 	
 	for (RenderableRef& rend : rends) {

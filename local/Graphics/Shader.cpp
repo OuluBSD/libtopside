@@ -18,15 +18,20 @@ void Shader::SetStackMat4(const mat4& mat) {
 	stack[0] = mat;
 }
 
+FramebufferObject* Shader::CreateObject() {
+	
+	TODO
+	
+}
 
-
+#if 0
 Shader* Shader::NewDefault() {
 	AppFlags& f = GetAppFlags();
 	
 	switch (f.gfx) {
 		case AppFlags::GFX_SW:		return new CpuShader();
 #ifdef flagSCREEN
-		case AppFlags::GFX_OPENGL:	return new OpenGLShader();
+		case AppFlags::GFX_OPENGL:	return new OglShader();
 		case AppFlags::GFX_DX12:
 		case AppFlags::GFX_VULKAN:
 		case AppFlags::GFX_METAL:
@@ -37,5 +42,6 @@ Shader* Shader::NewDefault() {
 	
 	return 0;
 }
+#endif
 
 NAMESPACE_TOPSIDE_END

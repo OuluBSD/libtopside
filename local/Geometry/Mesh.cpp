@@ -13,71 +13,25 @@ void Mesh::Clear() {
 	is_colored_only = false;
 	is_lines = false;
 	
-	if (VBO) {
-#if HAVE_OPENGL
-		glDeleteBuffers(1, &VBO);
-		glDeleteBuffers(1, &EBO);
-		glDeleteVertexArrays(1, &VAO);
-#endif
-	}
 }
 
-void Mesh::Set(const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
+void Mesh::Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
 	this->vertices <<= vertices;
     this->indices <<= indices;
     
-    SetupAutomatic();
+    SetupAutomatic(o);
 }
 
-void Mesh::SetupAutomatic() {
+void Mesh::SetupAutomatic(FramebufferObject& o) {
 	AppFlags& f = GetAppFlags();
 	if (f.IsOpenGL()) {
 #if HAVE_OPENGL
-		SetupOpenGL();
+		SetupOpenGL(o);
 #else
-		LOG("error: opengl is not supported in this executable");
+		LOG("Mesh::SetupAutomatic: error: opengl is not supported in this executable");
 #endif
 	}
 }
-
-#if HAVE_OPENGL
-void Mesh::SetupOpenGL() {
-	ASSERT(VAO == 0);
-	ASSERT_(GetAppFlags().IsOpenGLContextOpen(), "OpenGL context is not open");
-	if (!GetAppFlags().IsOpenGLContextOpen())
-		return;
-	
-	// Create objects
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	
-	// Set vertex array object data
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.GetCount() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
-	
-	// Set element buffer object data
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.GetCount() * sizeof(unsigned int),
-	         &indices[0], GL_STATIC_DRAW);
-	
-	// vertex positions
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
-	
-	// vertex normals
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-	
-	// vertex texture coords
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
-	
-	glBindVertexArray(0);
-	
-}
-#endif
 
 void Mesh::UpdateBoundingBox() {
 	int m_num_tri = indices.GetCount() / 3;

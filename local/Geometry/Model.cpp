@@ -46,11 +46,11 @@ ModelLoader::ModelLoader() {
 	
 }
 
-bool ModelLoader::LoadModel(String path) {
+bool ModelLoader::LoadModel(FramebufferObject& o, String path) {
 	model.Clear();
 	
 	#ifdef flagASSIMP
-	if (LoadModelAssimp(path))
+	if (LoadModelAssimp(o, path))
 		return true;
 	#endif
 	
@@ -60,7 +60,7 @@ bool ModelLoader::LoadModel(String path) {
 
 #ifdef flagASSIMP
 
-bool ModelLoader::LoadModelAssimp(String path)
+bool ModelLoader::LoadModelAssimp(FramebufferObject& o, String path)
 {
 	LOG("Model::LoadModelAssimp: " << path);
     Assimp::Importer import;
@@ -76,25 +76,25 @@ bool ModelLoader::LoadModelAssimp(String path)
 	model = new ModelMesh();
 	model->SetParent(this);
 	
-    ProcessNode(scene->mRootNode, scene);
+    ProcessNode(o, scene->mRootNode, scene);
     
     return true;
 }
 
-void ModelLoader::ProcessNode(aiNode *node, const aiScene *scene)
+void ModelLoader::ProcessNode(FramebufferObject& o, aiNode *node, const aiScene *scene)
 {
     // process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
-        ProcessMesh(*model, model->meshes.Add(), mesh, scene);
+        ProcessMesh(o, *model, model->meshes.Add(), mesh, scene);
     }
     // then do the same for each of its children
     for(unsigned int i = 0; i < node->mNumChildren; i++) {
-        ProcessNode(node->mChildren[i], scene);
+        ProcessNode(o, node->mChildren[i], scene);
     }
 }
 
-void ModelLoader::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
+void ModelLoader::ProcessMesh(FramebufferObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
 {
     out.vertices.SetCount(mesh->mNumVertices);
     out.tex_coords.SetCount(mesh->mNumVertices);
@@ -138,7 +138,7 @@ void ModelLoader::ProcessMesh(ModelMesh& mout, Mesh& out, aiMesh *mesh, const ai
 			LoadMaterialTextures(mout, out, material, i);
     }
 
-	out.SetupAutomatic();
+	out.SetupAutomatic(o);
 }
 
 void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type) {

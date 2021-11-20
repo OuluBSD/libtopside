@@ -45,9 +45,13 @@ OdeObject::OdeObject() {
 	//model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
 }
 
-void OdeObject::LoadModel() {
-	model_ready = model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
-	model_err = !model_ready;
+OdeObject::~OdeObject() {
+	if (geom) dGeomDestroy(geom);
+	if (body) dBodyDestroy(body);
+}
+
+void OdeObject::LoadModel(Shader& s) {
+	model_err = !model.LoadModel(*fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"));
 }
 
 void OdeObject::AttachContent() {
@@ -71,16 +75,20 @@ void OdeObject::DetachContent() {
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
 }
 
-void OdeObject::Paint(Shader& s) {
-	if (!model_ready && !model_err) {
-		LOG("OdeObject::Paint: warning: loading model while painting");
-		LoadModel();
+void OdeObject::PushModel(Shader& s) {
+	if (!fb_obj && !model_err) {
+		LOG("OdeObject::PushModel: warning: loading model while painting");
+		fb_obj = s.CreateObject();
+		if (fb_obj)
+			LoadModel(s);
 	}
-	if (!model_ready)
+	if (!fb_obj)
 		return;
 	
+	
+	
 	if (is_override_phys_geom) {
-		s.SetMat4("model", override_geom * model_geom);
+		fb_obj->SetMat4("model", override_geom * model_geom);
 	}
 	else {
 		dVector3 pos;
@@ -97,11 +105,9 @@ void OdeObject::Paint(Shader& s) {
 		q[2] = result[3];
 		mat4 rot = ToMat4(q);
 		
-		s.SetMat4("model", trans * rot * model_geom);
+		fb_obj->SetMat4("model", trans * rot * model_geom);
 	}
 	
-	
-	s.Paint(*model.GetModel());
 }
 
 
