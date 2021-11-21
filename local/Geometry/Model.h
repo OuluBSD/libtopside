@@ -5,8 +5,10 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
 struct FramebufferObject;
+class Shader;
 #if HAVE_OPENGL
 struct OglFramebufferObject;
+class OglShader;
 #endif
 
 
@@ -123,6 +125,8 @@ public:
 	bool SetTexture(Mesh& mesh, TexType type, Image img);
 	
 	void MakeModel(Shape2DWrapper& shape);
+	void Refresh(Shader& s);
+    void Refresh(Shader& s, Mesh& m);
     void Dump();
     
 };
@@ -140,7 +144,7 @@ public:
 	ModelLoader();
 	
 	void Clear() {model.Clear();}
-    bool LoadModel(FramebufferObject& o, String path);
+    bool LoadModel(Shader& s, FramebufferObject& o, String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}

@@ -18,12 +18,6 @@ void Shader::SetStackMat4(const mat4& mat) {
 	stack[0] = mat;
 }
 
-FramebufferObject* Shader::CreateObject() {
-	
-	TODO
-	
-}
-
 #if 0
 Shader* Shader::NewDefault() {
 	AppFlags& f = GetAppFlags();

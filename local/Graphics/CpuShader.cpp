@@ -2,6 +2,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+/*
 bool CpuShader::Load(String vertex_path, String fragment_path, String geometry_path) {
 	TODO
 }
@@ -17,6 +18,7 @@ void CpuShader::Refresh(ModelMesh& model, Mesh& mesh) {
 void CpuShader::Use() {
 	TODO
 }
+*/
 
 void CpuShader::SetBool(const String &name, bool value) const {
 	

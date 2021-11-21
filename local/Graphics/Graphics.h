@@ -44,6 +44,7 @@ typedef unsigned int	Gxbf;
 #if defined(flagSCREEN)
 #include "OglShader.h"
 #include "OglRenderer.h"
+#include "OglCompiler.h"
 #include "OglBuffer.h"
 #endif
 

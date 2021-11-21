@@ -1,6 +1,8 @@
 #ifndef _SerialCore_PacketTracker_h_
 #define _SerialCore_PacketTracker_h_
 
+#define HAVE_PACKETTRACKER 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -29,6 +31,7 @@ public:
     SYS_CTOR(PacketTracker)
 	SYS_DEF_VISIT
 	
+	#if HAVE_PACKETTRACKER
 	static void Track(TrackerInfo info, Packet& p) {Track(info, *p);}
 	static void Checkpoint(TrackerInfo info, Packet& p) {Checkpoint(info, *p);}
 	static void StopTracking(TrackerInfo info, Packet& p) {StopTracking(info, *p);}
@@ -36,7 +39,15 @@ public:
 	static void Track(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Track0(info,p);}
 	static void Checkpoint(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->Checkpoint0(info,p);}
 	static void StopTracking(TrackerInfo info, PacketValue& p) {if (active_tracker()) active_tracker()->StopTracking0(info,p);}
+	#else
+	static void Track(TrackerInfo info, Packet& p) {}
+	static void Checkpoint(TrackerInfo info, Packet& p) {}
+	static void StopTracking(TrackerInfo info, Packet& p) {}
 	
+	static void Track(TrackerInfo info, PacketValue& p) {}
+	static void Checkpoint(TrackerInfo info, PacketValue& p) {}
+	static void StopTracking(TrackerInfo info, PacketValue& p) {}
+	#endif
 };
 
 #undef RTTI_CTX_SYS

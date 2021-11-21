@@ -9,6 +9,7 @@
 
 #include "Before.h"
 #include "Compat.h"
+#include "Defs.h"
 #include <SharedCore/TokenParser.h>
 #include <SharedCore/String.h>
 #include "Types.h"

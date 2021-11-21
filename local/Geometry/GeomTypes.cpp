@@ -47,7 +47,7 @@ void Texture::Clear() {
 	pitch = 0;
 	width = 0, height = 0;
 	compression = 0;
-	ClearAccel();
+	//ClearAccel();
 }
 
 void Texture::Create(Size sz, byte channels) {
@@ -98,7 +98,7 @@ void Texture::Set(Image i) {
 	#endif
 }
 
-void Texture::MakeAccel() {
+/*void Texture::MakeAccel() {
 	if (tex_id < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
 		if (compression == COMP_NONE) {
 #if HAVE_OPENGL
@@ -117,16 +117,16 @@ void Texture::MakeAccel() {
 		}
 		else Panic("TODO");
 	}
-}
+}*/
 
-void Texture::ClearAccel() {
+/*void Texture::ClearAccel() {
 	if (tex_id >= 0) {
 #if HAVE_OPENGL
 		glDeleteTextures(1, (GLuint*)&tex_id);
 		tex_id = -1;
 #endif
 	}
-}
+}*/
 
 
 

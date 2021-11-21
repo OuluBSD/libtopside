@@ -22,7 +22,7 @@ struct Texture : Moveable<Texture> {
 	uint16			pitch;
 	uint16			width, height;
 	byte			compression;
-	int				tex_id = -1;
+	//int				tex_id = -1;
 	
 	enum {
 		COMP_NONE,
@@ -30,15 +30,15 @@ struct Texture : Moveable<Texture> {
 	
 	Texture() {}
 	Texture(const Texture& src) {*this = src;}
-	~Texture() {ClearAccel();}
+	//~Texture() {ClearAccel();}
 	
 	void Clear();
 	void Set(Image i);
 	void Create(Size sz, byte channels);
 	void Zero() {if (data.GetCount()) memset(data.Begin(), 0, data.GetCount());}
 	
-	void MakeAccel();
-	void ClearAccel();
+	//void MakeAccel();
+	//void ClearAccel();
 	
 	bool IsEmpty() {return data.IsEmpty();}
 	operator bool() const {return !data.IsEmpty();}

@@ -40,6 +40,7 @@ void RenderingSystem::Attach(String key, OglBuffer* b) {
 void RenderingSystem::AddRenderable(RenderableRef b) {
 	ASSERT(b);
 	ArrayFindAdd(rends, b);
+	//ASSERT(rends.GetCount() < 10);
 }
 
 void RenderingSystem::RemoveRenderable(RenderableRef b) {

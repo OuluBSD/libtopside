@@ -35,5 +35,7 @@ file
 	OglShader.h,
 	OglShader.cpp,
 	OglBuffer.h,
-	OglBuffer.cpp;
+	OglBuffer.cpp,
+	OglCompiler.h,
+	OglCompiler.cpp;
 

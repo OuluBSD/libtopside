@@ -28,6 +28,7 @@ void PacketTracker::Uninitialize() {
 	
 }
 
+#if HAVE_PACKETTRACKER
 void PacketTracker::Track0(TrackerInfo info, PacketValue& p) {
 	ASSERT(p.GetTrackingId() == 0);
 	p.SetTrackingId(id_counter++);
@@ -57,7 +58,11 @@ void PacketTracker_Checkpoint(const char* fn, const char* file, int line, Packet
 void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p) {
 	PacketTracker::StopTracking(TrackerInfo(fn, file, line), p);
 }
-
+#else
+void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p) {}
+void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p) {}
+void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p) {}
+#endif
 
 
 void PacketValue::CheckTracking(TrackerInfo info) {

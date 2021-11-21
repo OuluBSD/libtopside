@@ -16,11 +16,13 @@ public:
 	void PopMat4();
 	void SetStackMat4(const mat4& mat);
 	
+	/*
 	virtual bool Load(String vertex_path, String fragment_path, String geometry_path = "") = 0;
 	virtual bool IsLoaded() const = 0;
 	virtual void Refresh(ModelMesh& model) = 0;
     virtual void Refresh(ModelMesh& model, Mesh& mesh) = 0;
 	virtual void Use() = 0;
+	*/
 	virtual void SetBool(const String &name, bool value) const = 0;
 	virtual void SetInt(const String &name, int value) const = 0;
 	virtual void SetFloat(const String &name, float value) const = 0;
@@ -36,7 +38,7 @@ public:
 	virtual void SetVec4(const String &name, float x, float y, float z, float w) const {SetVec4(name, vec4(x,y,z,w));}
 	
 	
-	FramebufferObject* CreateObject();
+	virtual FramebufferObject* CreateObject() = 0;
 	
 };
 

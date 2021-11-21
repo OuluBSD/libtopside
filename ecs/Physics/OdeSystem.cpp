@@ -51,7 +51,11 @@ OdeObject::~OdeObject() {
 }
 
 void OdeObject::LoadModel(Shader& s) {
-	model_err = !model.LoadModel(*fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"));
+	model_err = false;
+	if (!model.LoadModel(s, *fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"))) {
+		model_err = true;
+		return;
+	}
 }
 
 void OdeObject::AttachContent() {
@@ -88,7 +92,8 @@ void OdeObject::Refresh(Shader& s) {
 	
 	
 	if (is_override_phys_geom) {
-		fb_obj->SetMat4("model", override_geom * model_geom);
+		mat4 v = override_geom * model_geom;
+		fb_obj->SetMat4("model", v);
 	}
 	else {
 		dVector3 pos;

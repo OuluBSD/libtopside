@@ -10,6 +10,7 @@ file
 	Local.h,
 	Before.h,
 	Compat.h,
+	Defs.h,
 	Types.h,
 	Chrono.h,
 	Recycler.h,
