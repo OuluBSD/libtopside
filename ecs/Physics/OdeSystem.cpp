@@ -90,10 +90,18 @@ void OdeObject::Refresh(Shader& s) {
 		return;
 	
 	
+	/*
+	int width = 1280, height = 720;
+	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
+    mat4 view = LookAt(vec3(0.0f, 0.0f, -1.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
+    mat4 model = identity<mat4>();
+	fb_obj->SetMat4("projection", projection);
+	fb_obj->SetMat4("model", model);
+	fb_obj->SetMat4("view", view);*/
 	
 	if (is_override_phys_geom) {
 		mat4 v = override_geom * model_geom;
-		fb_obj->SetMat4("model", v);
+		TODO // set object var fb_obj->SetMat4("model", v);
 	}
 	else {
 		dVector3 pos;
@@ -110,7 +118,7 @@ void OdeObject::Refresh(Shader& s) {
 		q[2] = result[3];
 		mat4 rot = ToMat4(q);
 		
-		fb_obj->SetMat4("model", trans * rot * model_geom);
+		TODO // set object var fb_obj->SetMat4("model", trans * rot * model_geom);
 	}
 	
 }

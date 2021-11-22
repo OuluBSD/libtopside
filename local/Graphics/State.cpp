@@ -4,8 +4,12 @@ NAMESPACE_TOPSIDE_BEGIN
 
 namespace ShaderVar {
 const char* names[ShaderVar::VAR_COUNT+1] = {
-	"in_mouse",
-	"in_audio_seconds",
+	"iAudioSeconds",
+	"iView",
+	"iProjection",
+	"iScale",
+	"iModel",
+	
 	"iResolution",
 	"iTime",
 	"iTimeDelta",
@@ -25,6 +29,34 @@ const char* names[ShaderVar::VAR_COUNT+1] = {
 	"iChannelResolution[2]",
 	"iChannelResolution[3]",
 	"iBlockOffset",
+	0
+};
+const bool is_obj_var[ShaderVar::VAR_COUNT+1] = {
+	true,
+	true,
+	true,
+	true,
+	true,
+	
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
+	false,
 	0
 };
 }

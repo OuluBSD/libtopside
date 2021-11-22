@@ -18,7 +18,6 @@ void CpuShader::Refresh(ModelMesh& model, Mesh& mesh) {
 void CpuShader::Use() {
 	TODO
 }
-*/
 
 void CpuShader::SetBool(const String &name, bool value) const {
 	
@@ -55,5 +54,5 @@ void CpuShader::SetMat3(const String &name, const mat3 &mat) const {
 void CpuShader::SetMat4(const String &name, const mat4 &mat) const {
 	
 }
-
+*/
 NAMESPACE_TOPSIDE_END

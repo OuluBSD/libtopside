@@ -22,7 +22,7 @@ public:
 	virtual void Refresh(ModelMesh& model) = 0;
     virtual void Refresh(ModelMesh& model, Mesh& mesh) = 0;
 	virtual void Use() = 0;
-	*/
+	
 	virtual void SetBool(const String &name, bool value) const = 0;
 	virtual void SetInt(const String &name, int value) const = 0;
 	virtual void SetFloat(const String &name, float value) const = 0;
@@ -36,7 +36,7 @@ public:
 	virtual void SetVec2(const String &name, float x, float y) const {SetVec2(name, vec2(x,y));}
 	virtual void SetVec3(const String &name, float x, float y, float z) const {SetVec3(name, vec3(x,y,z));}
 	virtual void SetVec4(const String &name, float x, float y, float z, float w) const {SetVec4(name, vec4(x,y,z,w));}
-	
+	*/
 	
 	virtual FramebufferObject* CreateObject() = 0;
 	

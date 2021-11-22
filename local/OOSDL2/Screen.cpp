@@ -204,7 +204,7 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		
 		ASSERT(!is_ogl_buf || ogl_buf);
 		if (is_ogl_buf && ogl_buf) {
-			ogl_buf->ProcessStage(cfg);
+			ogl_buf->Process(cfg);
 		}
 		else {
 			RTLOG("Screen::Render: error: no ogl buf");
@@ -215,7 +215,7 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 	else if (fmt.IsOrder() && is_ogl_buf) {
 		RTLOG("Screen::Render: from order packet: " << last_packet->ToString());
 		BeginDraw();
-		ogl_buf->ProcessStage(cfg);
+		ogl_buf->Process(cfg);
 		CommitDraw();
 	}
 	else {

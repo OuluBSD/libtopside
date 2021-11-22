@@ -403,7 +403,7 @@ bool OglShaderBase::ProcessPackets(PacketIO& io) {
 			
 			
 			//BeginDraw();
-			buf.ProcessStage(*last_cfg);
+			buf.Process(*last_cfg);
 			//CommitDraw();
 			
 			ASSERT(in->GetFormat().IsValid());

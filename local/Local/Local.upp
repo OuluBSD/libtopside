@@ -76,5 +76,7 @@ file
 	Debugging.cpp,
 	VR.h,
 	Ctrl.h,
-	Ctrl.inl highlight cpp;
+	Ctrl.inl highlight cpp,
+	Graphics.h,
+	Graphics.cpp;
 

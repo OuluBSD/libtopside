@@ -36,13 +36,13 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 	}
 }
 
-void ModelMesh::Refresh(Shader& s) {
+void ModelMesh::Refresh(Shader& s, FramebufferObject& o) {
 	for (Mesh& m : meshes) {
-		Refresh(s, m);
+		Refresh(s, o, m);
 	}
 }
 
-void ModelMesh::Refresh(Shader& s, Mesh& mesh) {
+void ModelMesh::Refresh(Shader& s, FramebufferObject& o, Mesh& mesh) {
 	int tex_i = 0;
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
@@ -50,9 +50,12 @@ void ModelMesh::Refresh(Shader& s, Mesh& mesh) {
 		int tex_id = mesh.tex_id[i];
 	    if (tex_id >= 0) {
 	        Texture& tex = textures[tex_id];
-	        tex.MakeAccel();
+	        if (tex.compression != Texture::COMP_NONE) {
+	            TODO
+	        }
+	        o.MakeTexture(tex_id, tex.width, tex.height, tex.pitch, tex.stride, tex.data);
 	        
-	        glActiveTexture(GL_TEXTURE0 + tex_i); // activate proper texture unit before binding
+	        /*glActiveTexture(GL_TEXTURE0 + tex_i); // activate proper texture unit before binding
 	        // retrieve texture number (the N in diffuse_textureN)
 	        String key;
 	        if (i == TEXTYPE_DIFFUSE)
@@ -60,23 +63,24 @@ void ModelMesh::Refresh(Shader& s, Mesh& mesh) {
 	        else if (i == TEXTYPE_SPECULAR)
 	            key = "material.texture_specular" + IntStr(specularNr++);
 	        
-	        SetInt(key, tex_i);
+	        s.SetInt(key, tex_i);
 	        
 	        ASSERT(tex.tex_id >= 0);
 	        glBindTexture(GL_TEXTURE_2D, tex.tex_id);
 	        
-	        tex_i++;
+	        tex_i++;*/
 	    }
 	}
     
-    if (!mesh.is_colored_only)
-	    SetBool("is_colored_only", false);
+    
+    /*if (!mesh.is_colored_only)
+	    s.SetBool("is_colored_only", false);
     else {
         vec4 v4 = MakeVec4(mesh.material.ambient, 1);
-        SetBool("is_colored_only", true);
-        SetVec4("in_color", v4);
-    }
-
+        s.SetBool("is_colored_only", true);
+        s.SetVec4("in_color", v4);
+    }*/
+	
 	//Dump();
 	
 }
@@ -103,7 +107,7 @@ bool ModelLoader::LoadModel(Shader& s, FramebufferObject& o, String path) {
 	else
 		return false;
 	
-	model->Refresh(s);
+	model->Refresh(s, o);
 	
 	return true;
 }

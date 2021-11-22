@@ -108,7 +108,7 @@ public:
 	bool				InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool				InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void				Update(double dt);
-	void				ProcessStage(const RealtimeSourceConfig& cfg);
+	void				Process(const RealtimeSourceConfig& cfg);
 	
 	void				ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	void				ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
@@ -142,7 +142,9 @@ protected:
 	void				CreateTex(bool create_depth, bool create_fbo);
 	void				FindVariables();
 	int					NewWriteBuffer();
+	void				SetVars(GLint prog, const OglFramebufferObject& o);
 	void				SetVars(GLint prog, const RealtimeSourceConfig& cfg);
+	void				SetVar(int var, GLint prog, const OglFramebufferObject& o);
 	void				SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg);
 	void				UseRenderedFramebuffer();
 	GLint				GetInputTex(int input_i) const;

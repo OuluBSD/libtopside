@@ -11,19 +11,24 @@ struct OglFramebufferObject : FramebufferObject {
 	RTTI_DECL1(OglFramebufferObject, FramebufferObject)
 	
 	OglFramebufferState& state;
+	VectorMap<int,GLint> tex;
     GLuint VAO = 0;
     GLuint VBO = 0;
     GLuint EBO = 0;
-    
-    
+    GLuint element_count = 0;
+    mat4 view;
+    mat4 proj;
+    mat4 scale;
+    mat4 model;
+    int id = -1;
     
     OglFramebufferObject(OglFramebufferState& state) : state(state) {}
     ~OglFramebufferObject() {FreeOgl();}
     void FreeOgl();
     void Paint() override;
-    void MakeTexture(Size sz, int pitch, int stride, const Vector<byte>& data) override;
+    void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override;
     
-	void SetBool(const String &name, bool value) const override;
+	/*void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;
 	void SetFloat(const String &name, float value) const override;
 	void SetVec2(const String &name, const vec2 &value) const override;
@@ -31,7 +36,7 @@ struct OglFramebufferObject : FramebufferObject {
 	void SetVec4(const String &name, const vec4 &value) const override;
 	void SetMat2(const String &name, const mat2 &mat) const override;
 	void SetMat3(const String &name, const mat3 &mat) const override;
-	void SetMat4(const String &name, const mat4 &mat) const override;
+	void SetMat4(const String &name, const mat4 &mat) const override;*/
 	
 };
 
@@ -77,7 +82,7 @@ struct OglFramebufferState : FramebufferState {
 	
 	// objects
 	Array<OglFramebufferObject>	objects;
-	
+	Vector<String> user_vars;
 	
 	
 	OglFramebufferState() {memset(&var_idx, 0, sizeof(var_idx));}
@@ -127,9 +132,8 @@ public:
 	void Refresh(ModelMesh& model) override;
     void Refresh(ModelMesh& model, Mesh& mesh) override;
 	void Use() override;
-	#endif
 	
-	FramebufferObject* CreateObject() override;
+	
 	void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;
 	void SetFloat(const String &name, float value) const override;
@@ -142,6 +146,9 @@ public:
 	void SetVec2(const String &name, float x, float y) const override;
 	void SetVec3(const String &name, float x, float y, float z) const override;
 	void SetVec4(const String &name, float x, float y, float z, float w) const override;
+	#endif
+	
+	FramebufferObject* CreateObject() override;
 	
 private:
 	

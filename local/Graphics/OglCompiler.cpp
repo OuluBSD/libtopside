@@ -17,11 +17,11 @@ const char* shader_tmpl = R"SH4D3R(
 uniform ${SAMPLER0} iChannel0;
 uniform ${SAMPLER1} iChannel1;
 uniform ${SAMPLER2} iChannel2;
-uniform ${SAMPLER3} iChanne3;
+uniform ${SAMPLER3} iChannel3;
 #elif ${IS_VERTEX_SHADER}
-layout (location = 0) in vec3 pos;
-layout (location = 1) in vec3 normal;
-layout (location = 2) in vec2 tex_coords;
+layout (location = 0) in vec3 iPos;
+layout (location = 1) in vec3 iNormal;
+layout (location = 2) in vec2 iTexCoords;
 
 in int gl_VertexID;
 in int gl_InstanceID;
@@ -33,10 +33,15 @@ out gl_PerVertex
   float gl_PointSize;
   float gl_ClipDistance[];
 };
+
 #endif
 
-uniform vec2      in_mouse;
-uniform float     in_audio_seconds;
+uniform float     iAudioSeconds;
+uniform mat4      iView;
+uniform mat4      iProjection;
+uniform mat4      iScale;
+uniform mat4      iTransform;
+uniform mat4      iModel;
 
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iTime;                 // shader playback time (in seconds)
@@ -57,7 +62,7 @@ ${USER_CODE}
 #if ${IS_FRAGMENT_SHADER}
 #if ${IS_AUDIO}
 void main (void) {
-	float t = in_audio_seconds + gl_FragCoord.x / iSampleRate;
+	float t = iAudioSeconds + gl_FragCoord.x / iSampleRate;
 	vec2 value = mainSound (t);
 	gl_FragColor = vec4(value, 0.0, 1.0);
 }
@@ -100,6 +105,7 @@ bool OglCompiler::Compile(OglFramebufferState& fb_state, OglShaderState& shd_sta
 	code.Replace("${SAMPLER2}", sampler2);
 	code.Replace("${SAMPLER3}", sampler3);
 	
+	LOG(code);
 	
 	{
 		EnableGfxAccelDebugMessages(1);

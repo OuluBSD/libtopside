@@ -5,8 +5,11 @@ NAMESPACE_TOPSIDE_BEGIN
 
 namespace ShaderVar {
 enum {
-	VAR_MOUSE,
 	VAR_AUDIOTIME,
+	VAR_VIEW,
+	VAR_PROJECTION,
+	VAR_SCALE,
+	VAR_MODEL,
 	
 	VAR_COMPAT_RESOLUTION,
 	VAR_COMPAT_TIME,
@@ -82,29 +85,11 @@ typedef enum {
 } InputType;
 
 extern const char* names[ShaderVar::VAR_COUNT+1];
+extern const bool is_obj_var[ShaderVar::VAR_COUNT+1];
 
 static const int INPUT_COUNT = 4;
 
 }
-
-struct FramebufferObject : RTTIBase {
-	RTTI_DECL0(FramebufferObject)
-	
-	virtual ~FramebufferObject() {}
-	
-    virtual void Paint() = 0;
-    virtual void MakeTexture(Size sz, int pitch, int stride, const Vector<byte>& data) = 0;
-	virtual void SetBool(const String &name, bool value) const = 0;
-	virtual void SetInt(const String &name, int value) const = 0;
-	virtual void SetFloat(const String &name, float value) const = 0;
-	virtual void SetVec2(const String &name, const vec2 &value) const = 0;
-	virtual void SetVec3(const String &name, const vec3 &value) const = 0;
-	virtual void SetVec4(const String &name, const vec4 &value) const = 0;
-	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
-	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
-	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;
-	
-};
 
 
 struct FramebufferState : RTTIBase {

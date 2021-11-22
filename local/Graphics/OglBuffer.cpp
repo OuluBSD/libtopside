@@ -400,7 +400,7 @@ int OglBuffer::NewWriteBuffer() {
 	return s.buf_i;
 }
 
-void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
+void OglBuffer::Process(const RealtimeSourceConfig& cfg) {
 	auto& s = state;
 	GLint prog = s.prog;
 	GLint pipeline = s.pipeline;
@@ -409,11 +409,10 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	if (prog < 0)
 		return;
 	
-	RTLOG("OglBuffer::ProcessStage " << HexStr(this) << " time: " << s.time_total);
+	RTLOG("OglBuffer::Process " << HexStr(this) << " time: " << s.time_total);
 	
 	s.time_total = cfg.time_total;
-	//RTLOG("OglBuffer::ProcessStage: " << time_total);
-	
+	//RTLOG("OglBuffer::Process: " << time_total);
 	s.frames++;
 	
 	if (env) {
@@ -425,7 +424,6 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 			UpdateTexBuffers();
 		}
 	}
-	
 	
 	glBindProgramPipeline(pipeline);
 	glUseProgram(prog);
@@ -448,6 +446,8 @@ void OglBuffer::ProcessStage(const RealtimeSourceConfig& cfg) {
 	
 	
 	SetVars(prog, cfg);
+	
+	RendVer(OnProcess);
 	
 	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -552,19 +552,71 @@ void OglBuffer::CreatePipeline() {
 
 
 void OglBuffer::FindVariables() {
-	for(int j = 0; j < ShaderVar::VAR_COUNT; j++) {
-		const char* var_name = ShaderVar::names[j];
-		GLint idx = glGetUniformLocation(state.prog, var_name);
-		state.var_idx[j] = idx;
-		if (!state.is_time_used && j == ShaderVar::VAR_COMPAT_DATE && idx >= 0)
-			state.is_time_used = true;
+	GLint n_uniforms;
+	glGetProgramiv(state.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
+	GLchar name[80];
+	GLsizei namelen;
+	memset(state.var_idx, -1, sizeof(state.var_idx));
+	state.user_vars.Clear();
+	for (int i = 0; i < n_uniforms; i++) {
+		GLint size;
+		GLenum type;
+		
+		glGetActiveUniform(state.prog, i, 79, &namelen, &size, &type, name);
+		name[namelen] = '\0';
+		String name_str(name);
+		
+		bool found = false;
+		bool state_var = false;
+		for(int j = 0; j < ShaderVar::VAR_COUNT; j++) {
+			const char* var_name = ShaderVar::names[j];
+			if (strncmp(var_name, name, 128) == 0) {
+				state.var_idx[j] = i;
+				if (j == ShaderVar::VAR_COMPAT_DATE && !state.is_time_used)
+					state.is_time_used = true;
+				found = true;
+				state_var = !ShaderVar::is_obj_var[j];
+				break;
+			}
+		}
+		
+		if (!found) {
+			state.user_vars << name_str;
+		}
+		
+		RendVer2(OnRealizeVar, name_str, state_var);
 	}
+	
 	state.is_searched_vars = true;
+}
+
+void OglBuffer::SetVars(GLint prog, const OglFramebufferObject& o) {
+	for(int i = 0; i < ShaderVar::VAR_COUNT; i++)
+		if (ShaderVar::is_obj_var[i] && state.var_idx[i] >= 0)
+			SetVar(i, prog, o);
+}
+
+void OglBuffer::SetVar(int var, GLint prog, const OglFramebufferObject& o) {
+	using namespace ShaderVar;
+	int uindex = state.var_idx[var];
+	ASSERT(uindex >= 0);
+	if (var == VAR_VIEW) {
+		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.view[0][0]);
+	}
+	else if (var == VAR_PROJECTION) {
+		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.proj[0][0]);
+	}
+	else if (var == VAR_SCALE) {
+		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.scale[0][0]);
+	}
+	else if (var == VAR_MODEL) {
+		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.model[0][0]);
+	}
 }
 
 void OglBuffer::SetVars(GLint prog, const RealtimeSourceConfig& cfg) {
 	for(int i = 0; i < ShaderVar::VAR_COUNT; i++)
-		if (state.var_idx[i] >= 0)
+		if (!ShaderVar::is_obj_var[i] && state.var_idx[i] >= 0)
 			SetVar(i, prog, cfg);
 }
 
@@ -576,14 +628,24 @@ void OglBuffer::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 	if (uindex < 0)
 		return;
 	
-	if (var == VAR_MOUSE) {
-		TODO
-	}
+	RendVer1(OnUpdateVar, ShaderVar::names[var]);
 	
-	else if (var == VAR_AUDIOTIME) {
+	if (var == VAR_AUDIOTIME) {
 		glUniform1f(uindex, (GLfloat)s.time_total);
 	}
 	
+	else if (var == VAR_VIEW) {
+		ASSERT(0); // pass
+	}
+	else if (var == VAR_PROJECTION) {
+		ASSERT(0); // pass
+	}
+	else if (var == VAR_SCALE) {
+		ASSERT(0); // pass
+	}
+	else if (var == VAR_MODEL) {
+		ASSERT(0); // pass
+	}
 	else if (var == VAR_COMPAT_RESOLUTION) {
 		ASSERT(s.size.cx > 0 && s.size.cy > 0);
 		glUniform3f(uindex, (GLfloat)s.size.cx, (GLfloat)s.size.cy, 1.0f);
@@ -889,8 +951,8 @@ bool OglBuffer::CompileFragmentShader() {
 	code =		"#version 430\n"
 				"#define GL_ES\n"
 	
-				"uniform vec2      in_mouse;\n"
-				"uniform float     in_audio_seconds;\n"
+				"uniform vec2      iMouse;\n"
+				"uniform float     iAudioSeconds;\n"
 				
 				"uniform vec3      iResolution;           // viewport resolution (in pixels)\n"
 				"uniform float     iTime;                 // shader playback time (in seconds)\n"
@@ -929,7 +991,7 @@ bool OglBuffer::CompileFragmentShader() {
 	
 	if (is_shader_audio_main) {
 		code +=		"\nvoid main (void) {\n"
-					"	float t = in_audio_seconds + gl_FragCoord.x / iSampleRate;\n"
+					"	float t = iAudioSeconds + gl_FragCoord.x / iSampleRate;\n"
 					"	vec2 value = mainSound (t);\n"
 					"	gl_FragColor = vec4(value, 0.0, 1.0);\n"
 					"}\n\n";
@@ -989,8 +1051,8 @@ bool OglBuffer::CompileVertexShader() {
 				"  float gl_ClipDistance[];\n"
 				"};\n"
 				
-				"uniform vec2      in_mouse;\n"
-				"uniform float     in_audio_seconds;\n"
+				"uniform vec2      iMouse;\n"
+				"uniform float     iAudioSeconds;\n"
 				
 				"uniform vec3      iResolution;           // viewport resolution (in pixels)\n"
 				"uniform float     iTime;                 // shader playback time (in seconds)\n"

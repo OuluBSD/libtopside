@@ -4,13 +4,32 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
-struct FramebufferObject;
 class Shader;
 #if HAVE_OPENGL
 struct OglFramebufferObject;
 class OglShader;
 #endif
 
+
+struct FramebufferObject : RTTIBase {
+	RTTI_DECL0(FramebufferObject)
+	
+	virtual ~FramebufferObject() {}
+	
+    virtual void Paint() = 0;
+    virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
+	/*
+	virtual void SetBool(const String &name, bool value) const = 0;
+	virtual void SetInt(const String &name, int value) const = 0;
+	virtual void SetFloat(const String &name, float value) const = 0;
+	virtual void SetVec2(const String &name, const vec2 &value) const = 0;
+	virtual void SetVec3(const String &name, const vec3 &value) const = 0;
+	virtual void SetVec4(const String &name, const vec4 &value) const = 0;
+	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
+	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
+	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
+	
+};
 
 class Mesh : public BoundingBox, Moveable<Mesh> {
 	
@@ -125,8 +144,8 @@ public:
 	bool SetTexture(Mesh& mesh, TexType type, Image img);
 	
 	void MakeModel(Shape2DWrapper& shape);
-	void Refresh(Shader& s);
-    void Refresh(Shader& s, Mesh& m);
+	void Refresh(Shader& s, FramebufferObject& o);
+    void Refresh(Shader& s, FramebufferObject& o, Mesh& m);
     void Dump();
     
 };

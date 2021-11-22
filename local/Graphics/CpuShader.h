@@ -18,7 +18,7 @@ public:
 	void Refresh(ModelMesh& model) override;
     void Refresh(ModelMesh& model, Mesh& mesh) override;
 	void Use() override;
-	*/
+	
 	void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;
 	void SetFloat(const String &name, float value) const override;
@@ -28,7 +28,7 @@ public:
 	void SetMat2(const String &name, const mat2 &mat) const override;
 	void SetMat3(const String &name, const mat3 &mat) const override;
 	void SetMat4(const String &name, const mat4 &mat) const override;
-	
+	*/
 	
 private:
 	

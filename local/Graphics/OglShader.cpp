@@ -28,8 +28,10 @@ void Mesh::RefreshOgl(OglFramebufferObject& o) {
 	
 	// Set element buffer object data
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.GetCount() * sizeof(unsigned int),
-	         &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+			indices.GetCount() * sizeof(unsigned int),
+			&indices[0], GL_STATIC_DRAW);
+	o.element_count = indices.GetCount();
 	
 	// vertex positions
 	glEnableVertexAttribArray(0);
@@ -67,44 +69,62 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void OglFramebufferObject::Paint() {
-	ASSERT(VBO)
-	if (!VBO)
+	ASSERT(VBO && EBO && element_count > 0)
+	if (!VBO || !EBO || !element_count)
 		return;
 	
-	TODO
+	// bind VBOs for vertex array and index array
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);            // for vertex coordinates
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);    // for indices
 	
-    // draw mesh
-    glBindVertexArray(mesh.VAO);
-    glDrawElements(mesh.is_lines ? GL_LINES : GL_TRIANGLES, mesh.indices.GetCount(), GL_UNSIGNED_INT, 0);
-    glBindVertexArray(0);
+	const int vtx = 0;
+	const int nm = 1;
+	const int tex = 2;
+	glEnableVertexAttribArray(vtx);          // activate vertex position array
+	glEnableVertexAttribArray(nm);           // activate vertex normal array
+	glEnableVertexAttribArray(tex);            // activate texture coords array
 	
-    
-    // always good practice to set everything back to defaults once configured
-    glActiveTexture(GL_TEXTURE0);
+	// set vertex arrays with generic API
+	const int stride = sizeof(Vertex);
+	const void* offset1 = 0; // Vertex::position
+	const void* offset2 = (void*)(4*sizeof(float)); // Vertex::normal
+	const void* offset3 = (void*)(6*sizeof(float)); // Vertex::tex_coords
+	glVertexAttribPointer(vtx, 3, GL_FLOAT, false, stride, offset1);
+	glVertexAttribPointer(nm,  3, GL_FLOAT, false, stride, offset2);
+	glVertexAttribPointer(tex, 2, GL_FLOAT, false, stride, offset3);
+	
+	// draw 6 faces using offset of index array
+	glDrawElements(GL_TRIANGLES, element_count, GL_UNSIGNED_INT, 0);
+	
+	glDisableVertexAttribArray(vtx);         // deactivate vertex position
+	glDisableVertexAttribArray(nm);          // deactivate vertex normal
+	glDisableVertexAttribArray(tex);         // deactivate texture coords
+	
+	// bind with 0, so, switch back to normal pointer operation
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void OglFramebufferObject::MakeTexture(Size sz, int pitch, int stride, const Vector<byte>& data) {
+void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pitch, int stride, const Vector<byte>& data) {
+	GLint& gl_tex = this->tex.GetAdd(tex_id, -1);
 	
-	TODO
-	/*
-	if (tex_id < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
-		if (compression == COMP_NONE) {
-#if HAVE_OPENGL
-			GLuint* texture = (GLuint*)&tex_id;
-			glGenTextures(1, texture);
-			glBindTexture(GL_TEXTURE_2D, *texture);
-		
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			int channels = pitch / width;
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0,
-				channels == 4 ? GL_BGRA : GL_BGR,
-				GL_UNSIGNED_BYTE, data.Begin());
-			glGenerateMipmap(GL_TEXTURE_2D);
-#endif
-		}
-		else Panic("TODO");
-	}*/
+	if (gl_tex < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
+		glGenTextures(1, (GLuint*)&gl_tex);
+		glBindTexture(GL_TEXTURE_2D, gl_tex);
+	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		int channels = pitch / width;
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			GL_RGBA,
+			width, height,
+			0,
+			channels == 4 ? GL_BGRA : GL_BGR,
+			GL_UNSIGNED_BYTE, data.Begin());
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
 }
 
 void OglFramebufferObject::FreeOgl() {
@@ -117,19 +137,16 @@ void OglFramebufferObject::FreeOgl() {
 		VAO = 0;
 	}
 	
-	TODO
-	/*if (tex_id >= 0) {
-#if HAVE_OPENGL
-		glDeleteTextures(1, (GLuint*)&tex_id);
-		tex_id = -1;
-#endif
-	}*/
+	for (GLint gl_tex : tex.GetValues())
+		glDeleteTextures(1, (GLuint*)&gl_tex);
+	tex.Clear();
 }
 
 #define PREIDX \
 	auto idx = glGetUniformLocation(state.prog, name.Begin()); \
 	if (idx >= 0)
 
+#if 0
 void OglFramebufferObject::SetBool(const String &name, bool value) const {
 	PREIDX glUniform1i(idx, (int)value);
 }
@@ -166,7 +183,6 @@ void OglFramebufferObject::SetMat4(const String &name, const mat4 &mat) const {
 	PREIDX glUniformMatrix4fv(idx, 1, GL_FALSE, &mat[0][0]);
 }
 
-#if 0
 bool OglShader::Load(String vertex_path, String fragment_path, String geometry_path) {
 	TODO
 	#if 0
@@ -329,10 +345,12 @@ void OglShader::Use() {
 
 FramebufferObject* OglShader::CreateObject() {
 	OglFramebufferObject& o = state.objects.Add(new OglFramebufferObject(state));
-	
+	o.id = state.objects.GetCount() - 1;
+	RendVer1(OnRealizeObject, o.id);
 	return &o;
 }
 
+#if 0
 void OglShader::SetBool(const String &name, bool value) const {
 	TODO // glUniform1i(glGetUniformLocation(ID, name.Begin()), (int)value);
 }
@@ -380,7 +398,7 @@ void OglShader::SetMat3(const String &name, const mat3 &mat) const {
 void OglShader::SetMat4(const String &name, const mat4 &mat) const {
 	TODO // glUniformMatrix4fv(glGetUniformLocation(ID, name.Begin()), 1, GL_FALSE, &mat[0][0]);
 }
-#if 0
+
 bool OglShader::CheckCompileErrors(GLuint shader, String type) {
 	TODO
 	#if 0
