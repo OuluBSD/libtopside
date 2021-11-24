@@ -179,6 +179,11 @@ void Panic() {
 	abort();
 }
 
+void Panic(const char* s) {
+	LOG(" *** Panic: " << s << " ***");
+	Panic();
+}
+
 void Assert(bool b, String s) {
 	if (!b)
 		Panic(s);

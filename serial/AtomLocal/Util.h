@@ -58,7 +58,7 @@ public:
 	SplitterBase();
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
-	void Visit(RuntimeVisitor& vis) final {}
+	void Visit(RuntimeVisitor& vis) override {}
 	bool IsReady(PacketIO& io) final;
 	bool ProcessPackets(PacketIO& io) final;
 	

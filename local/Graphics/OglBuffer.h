@@ -82,7 +82,7 @@ public:
 	//int							fb_filter = OglBufferInput::FILTER_LINEAR;
 	//int							sample_rate = 44100;
 	
-	/*GLint						fb_type = -1;
+	GLint						fb_type = -1;
 	GLint						fb_fmt = -1;
 	int							fb_depth = 0;
 	int							fb_size_bytes = 0;

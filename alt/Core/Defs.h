@@ -107,7 +107,7 @@ using namespace std::chrono;
 
 NAMESPACE_UPP_BEGIN
 
-class Stream;  Stream& VppLog(); void Panic(); void LogCString(const char* c);
+class Stream;  Stream& VppLog(); void Panic(); void Panic(const char* msg); void LogCString(const char* c);
 
 
 #if PLATFORM_POSIX

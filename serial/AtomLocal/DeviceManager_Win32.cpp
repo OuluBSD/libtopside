@@ -1,4 +1,5 @@
 #include "AtomLocal.h"
+#ifdef flagWIN32
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -36,3 +37,4 @@ void WIN32_DeviceManager::Refresh() {
 
 
 NAMESPACE_SERIAL_END
+#endif

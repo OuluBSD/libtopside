@@ -21,7 +21,7 @@ public:
 	void	Visit(RuntimeVisitor& vis) override {}
 	
 	bool	IsReady(PacketIO& io) final;
-	bool	ForwardAsyncMem(byte* mem, int size);
+	bool	ForwardAsyncMem(byte* mem, int size) override;
 	bool	ProcessPackets(PacketIO& io) final;
 	bool	IsConsumedPartialPacket() final {return partial_packet;}
 	
