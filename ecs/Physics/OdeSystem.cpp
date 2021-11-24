@@ -101,7 +101,7 @@ void OdeObject::Refresh(Shader& s) {
 	
 	if (is_override_phys_geom) {
 		mat4 v = override_geom * model_geom;
-		TODO // set object var fb_obj->SetMat4("model", v);
+		fb_obj->Set(v, identity<mat4>(), 0, 0);
 	}
 	else {
 		dVector3 pos;
@@ -118,7 +118,8 @@ void OdeObject::Refresh(Shader& s) {
 		q[2] = result[3];
 		mat4 rot = ToMat4(q);
 		
-		TODO // set object var fb_obj->SetMat4("model", trans * rot * model_geom);
+		mat4 v = trans * rot * model_geom;
+		fb_obj->Set(v, identity<mat4>(), 0, 0);
 	}
 	
 }

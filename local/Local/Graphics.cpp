@@ -42,17 +42,20 @@ void RenderingVerifier::OnRealizeObject(int id) {
 	o.updated_model = false;
 }
 
-void RenderingVerifier::OnUpdateObject(int id) {
+void RenderingVerifier::OnUpdateObject(int id, int var) {
 	int i = objs.Find(id);
 	if (i < 0)
 		Panic("RenderingVerifier: object '" + IntStr(id) + "' not realized");
 	
-	RTLOG("RenderingVerifier::OnUpdateVar: updating object '" + IntStr(id) + "'");
-	Object& o = objs.Add(id);
-	o.updated_view = true;
-	o.updated_proj = true;
-	o.updated_scale = true;
-	o.updated_model = true;
+	RTLOG("RenderingVerifier::OnUpdateObject: updating object '" + IntStr(id) + "'");
+	Object& o = objs[i];
+	switch (var) {
+		case VIEW:		o.updated_view = true; break;
+		case PROJECT:	o.updated_proj = true; break;
+		case SCALE:		o.updated_scale = true; break;
+		case MODEL:		o.updated_model = true; break;
+		default: Panic("invalid var");
+	}
 }
 
 void RenderingVerifier::OnProcess() {
@@ -72,7 +75,22 @@ void RenderingVerifier::OnProcess() {
 	for (Object& o : objs.GetValues()) {
 		if (!o.updated_view || !o.updated_proj || !o.updated_scale || !o.updated_model) {
 			if (!list.IsEmpty()) list << ", ";
-			list << o.id;
+			list << o.id << "(";
+			for(int i = 0, j = 0; i < 4; i++) {
+				bool b;
+				const char* s;
+				switch (i) {
+					case 0: b = o.updated_view; s = "view"; break;
+					case 1: b = o.updated_proj; s = "proj"; break;
+					case 2: b = o.updated_scale; s = "scale"; break;
+					case 3: b = o.updated_model; s = "model"; break;
+				}
+				if (!b) {
+					if (j++ > 0) list << ", ";
+					list << s;
+				}
+			}
+			list << ")";
 		}
 		
 		o.updated_view = false;

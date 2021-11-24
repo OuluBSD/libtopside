@@ -127,6 +127,41 @@ void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pi
 	}
 }
 
+void OglFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
+	this->model = model;
+	this->scale = scale;
+	if (proj) this->proj = *proj;
+	if (view) this->view = *view;
+	this->is_global_proj = proj == 0;
+	this->is_global_view = view == 0;
+	RendVer2(OnUpdateObject, id, RenderingVerifier::MODEL);
+	RendVer2(OnUpdateObject, id, RenderingVerifier::SCALE);
+	RendVer2(OnUpdateObject, id, RenderingVerifier::PROJECT);
+	RendVer2(OnUpdateObject, id, RenderingVerifier::VIEW);
+}
+
+void OglFramebufferObject::SetModel(const mat4& m) {
+	model = m;
+	RendVer2(OnUpdateObject, id, RenderingVerifier::MODEL);
+}
+
+void OglFramebufferObject::SetScale(const mat4& m) {
+	scale = m;
+	RendVer2(OnUpdateObject, id, RenderingVerifier::SCALE);
+}
+
+void OglFramebufferObject::SetProjection(const mat4& m) {
+	proj = m;
+	is_global_proj = false;
+	RendVer2(OnUpdateObject, id, RenderingVerifier::PROJECT);
+}
+
+void OglFramebufferObject::SetView(const mat4& m) {
+	view = m;
+	is_global_view = false;
+	RendVer2(OnUpdateObject, id, RenderingVerifier::VIEW);
+}
+
 void OglFramebufferObject::FreeOgl() {
 	if (VBO) {
 		glDeleteBuffers(1, &VBO);

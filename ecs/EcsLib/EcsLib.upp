@@ -12,6 +12,8 @@ file
 	Defs.h,
 	CommonComponents.h,
 	CommonComponents.cpp,
+	Camera.h,
+	Camera.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	RenderingSystem.h,

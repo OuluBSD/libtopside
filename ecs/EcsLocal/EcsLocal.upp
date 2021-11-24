@@ -6,8 +6,8 @@ uses
 file
 	EcsLocal.h,
 	EcsLocal.icpp,
-	Camera.cpp,
 	Camera.h,
+	Camera.cpp,
 	Model.h,
 	Model.cpp,
 	Viewport.h,

@@ -463,6 +463,7 @@ void OglBuffer::Process(const RealtimeSourceConfig& cfg) {
 	
 	// render VBA from state
 	for (OglFramebufferObject& o : state.objects) {
+		SetVars(state.prog, o);
 		o.Paint();
 	}
 	
@@ -601,10 +602,16 @@ void OglBuffer::SetVar(int var, GLint prog, const OglFramebufferObject& o) {
 	int uindex = state.var_idx[var];
 	ASSERT(uindex >= 0);
 	if (var == VAR_VIEW) {
-		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.view[0][0]);
+		if (o.is_global_view)
+			TODO
+		else
+			glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.view[0][0]);
 	}
 	else if (var == VAR_PROJECTION) {
-		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.proj[0][0]);
+		if (o.is_global_proj)
+			TODO
+		else
+			glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.proj[0][0]);
 	}
 	else if (var == VAR_SCALE) {
 		glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.scale[0][0]);

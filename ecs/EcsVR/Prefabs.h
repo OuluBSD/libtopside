@@ -124,19 +124,6 @@ struct StaticCube : EntityPrefab<Transform, ModelComponent>
     }
 };
 
-struct CameraPrefab : EntityPrefab<Transform, Viewport, Viewable>
-{
-    static Components Make(Entity& e)
-    {
-        auto components = EntityPrefab::Make(e);
-		
-		components.Get<Transform>().position[2] = 10.0;
-		components.Get<Transform>().position[1] = 3.0;
-		
-        return components;
-    }
-};
-
 struct StaticModel : EntityPrefab<Transform, ModelComponent>
 {
     static Components Make(Entity& e)

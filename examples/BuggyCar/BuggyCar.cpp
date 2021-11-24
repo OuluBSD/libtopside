@@ -44,9 +44,16 @@ void BuggyCarInitializer() {
 void BuggyCarStartup() {
 	Engine& eng = GetActiveEngine();
 	EntityStoreRef ents = eng.Get<EntityStore>();
-	PoolRef pool = ents->GetRoot()->GetAddPool("models");
-	pool->Create<StaticGroundPlanePrefab>();
-	pool->Create<BuggyCarPrefab>();
+	RenderingSystemRef rend = eng.Get<RenderingSystem>();
+	PoolRef models = ents->GetRoot()->GetAddPool("models");
+	PoolRef cameras = ents->GetRoot()->GetAddPool("cameras");
+	EntityRef gnd = models->Create<StaticGroundPlanePrefab>();
+	EntityRef car = models->Create<BuggyCarPrefab>();
+	EntityRef cam = cameras->Create<CameraPrefab>();
+	
+	Ref<ChaseCam> chaser = cam->Add<ChaseCam>();
+	chaser->SetTarget(car->Get<Transform>());
+	rend->AddViewable(cam->Get<Viewable>());
 }
 
 

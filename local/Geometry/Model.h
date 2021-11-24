@@ -18,6 +18,13 @@ struct FramebufferObject : RTTIBase {
 	
     virtual void Paint() = 0;
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
+    
+    virtual void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) = 0;
+    virtual void SetModel(const mat4& m) = 0;
+    virtual void SetScale(const mat4& m) = 0;
+    virtual void SetProjection(const mat4& m) = 0;
+    virtual void SetView(const mat4& m) = 0;
+    
 	/*
 	virtual void SetBool(const String &name, bool value) const = 0;
 	virtual void SetInt(const String &name, int value) const = 0;

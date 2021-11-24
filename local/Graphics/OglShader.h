@@ -20,6 +20,8 @@ struct OglFramebufferObject : FramebufferObject {
     mat4 proj;
     mat4 scale;
     mat4 model;
+    bool is_global_proj = false;
+    bool is_global_view = false;
     int id = -1;
     
     OglFramebufferObject(OglFramebufferState& state) : state(state) {}
@@ -27,6 +29,12 @@ struct OglFramebufferObject : FramebufferObject {
     void FreeOgl();
     void Paint() override;
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override;
+    
+    void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) override;
+    void SetModel(const mat4& m) override;
+    void SetScale(const mat4& m) override;
+    void SetProjection(const mat4& m) override;
+    void SetView(const mat4& m) override;
     
 	/*void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;

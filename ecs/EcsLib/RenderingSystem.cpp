@@ -37,10 +37,19 @@ void RenderingSystem::Attach(String key, OglBuffer* b) {
 	buf = b;
 }
 
+void RenderingSystem::AddViewable(ViewableRef v) {
+	ASSERT(v);
+	ArrayFindAdd(views, v);
+}
+
+void RenderingSystem::RemoveViewable(ViewableRef v) {
+	ASSERT(v);
+	ArrayRemoveKey(views, v);
+}
+
 void RenderingSystem::AddRenderable(RenderableRef b) {
 	ASSERT(b);
 	ArrayFindAdd(rends, b);
-	//ASSERT(rends.GetCount() < 10);
 }
 
 void RenderingSystem::RemoveRenderable(RenderableRef b) {
@@ -74,6 +83,10 @@ void RenderingSystem::Render(const OglBuffer& buf, OglShader& shader) {
 	
 	for (RenderableRef& rend : rends) {
 		rend->cb(shader);
+	}
+	
+	for (ViewableRef& view : views) {
+		view->cb(shader);
 	}
 	
 }

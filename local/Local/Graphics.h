@@ -32,10 +32,17 @@ public:
 	void OnRealizeVar(String key, bool state_var);
 	void OnUpdateVar(String key);
 	void OnRealizeObject(int id);
-	void OnUpdateObject(int id);
+	void OnUpdateObject(int id, int var);
 	void OnProcess();
 	
 	static RenderingVerifier& Local() {static RenderingVerifier v; return v;}
+	
+	enum {
+		VIEW,
+		PROJECT,
+		SCALE,
+		MODEL
+	};
 };
 
 

@@ -52,6 +52,7 @@ class RenderingSystem :
 {
 	OglBuffer* buf = 0;
 	Array<RenderableRef> rends;
+	Array<ViewableRef> views;
 	
 protected:
     bool Initialize() override;
@@ -69,7 +70,9 @@ public:
     ECS_SYS_CTOR(RenderingSystem)
 	SYS_DEF_VISIT
 	
+	void AddViewable(ViewableRef v);
 	void AddRenderable(RenderableRef b);
+	void RemoveViewable(ViewableRef v);
 	void RemoveRenderable(RenderableRef b);
 	void Attach(String key, OglBuffer* b);
 	

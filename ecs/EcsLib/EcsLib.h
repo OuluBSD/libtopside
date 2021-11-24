@@ -27,6 +27,7 @@
 
 #include "Defs.h"
 #include "CommonComponents.h"
+#include "Camera.h"
 #include "RegistrySystem.h"
 #include "RenderingSystem.h"
 #include "EventSystem.h"
