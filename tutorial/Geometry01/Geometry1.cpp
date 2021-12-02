@@ -11,7 +11,11 @@ Geometry1::~Geometry1() {
 	
 }
 
-void Geometry1::Render(SystemDraw& draw) {
+void Geometry1::Initialize() {
+	Serial::EcsVideoBase::Latest().AddBinder(this);
+}
+
+void Geometry1::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
 	DrawGeometry fb(draw);
@@ -150,11 +154,23 @@ void Geometry1::Render(SystemDraw& draw) {
 		phase = (phase + 1) % phases;
 		prev_phase_f = f;
 	}
-	
 }
 
 
 
-RENDER_APP_MAIN {
-	SimpleEngineMain<Geometry1>("Geometry1 tutorial");
+
+PREFAB_BEGIN(App)
+	Geometry1
+PREFAB_END
+
+ECS_PREFAB_MAIN(App) {
+	using namespace UPP;
+	String eon_file  = GetDataFile("geom1.eon");
+	if (FileExists(eon_file)) {
+		DefaultCreateOnStart<App>();
+		TS::DefaultRunner("Geometry1 tutorial", eon_file, 0);
+	}
+	else {
+		LOG("Eon file was not found");
+	}
 }

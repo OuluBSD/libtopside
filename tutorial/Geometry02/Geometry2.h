@@ -1,7 +1,7 @@
 #ifndef _Geometry2_Geometry2_h_
 #define _Geometry2_Geometry2_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 
@@ -21,7 +21,7 @@ struct Geometry2 : public Component<Geometry2>, public DisplaySink {
 	void operator=(const Geometry2& t) {Panic("Can't copy Geometry2");}
 	
 	void DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color clr);
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	COMP_DEF_VISIT
 	
 };

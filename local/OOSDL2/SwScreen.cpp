@@ -125,6 +125,22 @@ void SwScreen::Render() {
 			RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
 		}
 	}
+	else if (fmt.IsProg()) {
+		const InternalPacketData& d = p->GetData<InternalPacketData>();
+		const DrawCommand* cmd = (const DrawCommand*)d.ptr;
+		ASSERT(cmd);
+		
+		BeginDraw();
+		
+		DrawProg p;
+		p.SetTarget(sw_draw);
+		p.Process(cmd);
+		
+		CommitDraw();
+	}
+	else {
+		TODO
+	}
 	
 }
 

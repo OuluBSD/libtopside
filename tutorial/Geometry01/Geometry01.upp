@@ -1,14 +1,15 @@
 description "Vectors\377";
 
 uses
-	AtomComplete;
+	EcsComplete;
 
 file
 	Geometry1.h,
-	Geometry1.cpp;
+	Geometry1.cpp,
+	geom1.eon highlight cpp;
 
 mainconfig
-	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
-	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
-	"U++ 2D backend (normal)" = "GUI UPP";
+	"" = "SCREEN",
+	"U++ 3D backend" = "CTRL UPP VIRTUALGUI3D SDL2GUI3D",
+	"U++ 2D backend (normal)" = "CTRL UPP";
 

@@ -1,4 +1,4 @@
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 
 /*
 Tutorial 2:
@@ -198,7 +198,7 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		}
 	}
 	
-	void Render(SystemDraw& draw) override {
+	void Render(Draw& draw) override {
 		Size sz = draw.GetPageSize();
 		draw.DrawRect(sz, Black());
 		

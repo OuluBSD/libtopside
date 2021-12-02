@@ -40,6 +40,7 @@ typedef unsigned int	Gxbf;
 
 #include "CpuShader.h"
 #include "CpuRenderer.h"
+#include "CpuSDL.h"
 
 #if defined(flagSCREEN)
 #include "OglShader.h"
@@ -48,6 +49,7 @@ typedef unsigned int	Gxbf;
 #include "OglBuffer.h"
 #endif
 
+#include "ProgDraw.h"
 
 
 #endif

@@ -24,6 +24,7 @@ public:
 	VAL(Midi) \
 	VAL(Event) \
 	VAL(Fbo) \
+	VAL(Prog) \
 	
 
 #define VAL2_LIST(x) \
@@ -34,6 +35,7 @@ public:
 	VAL2(x, Midi) \
 	VAL2(x, Event) \
 	VAL2(x, Fbo) \
+	VAL2(x, Prog) \
 	
 
 #define VAL(x) \

@@ -91,8 +91,6 @@ class CoreWindow :
 	void (CoreWindow::*reset_fn)();
 	Windows* wins = NULL;
 	
-	Vector<mat4> offset;
-	DrawCommand cmd_screen_begin, cmd_screen_end;
 	//Framebuffer fb;
 	ResizeFrame resize_frame;
 	WindowDecoration decor;
@@ -114,14 +112,6 @@ protected:
 	
 	void SetMaximized(bool b=true);
 	
-	void DrawLine(DrawCommand& cmd);
-	void DrawImage(DrawCommand& cmd);
-	void DrawRect(DrawCommand& cmd);
-	void DrawTriangles(DrawCommand& cmd);
-	void DrawPolyline(DrawCommand& cmd);
-	void DrawPolygon(DrawCommand& cmd);
-	void DrawOffset(DrawCommand& cmd);
-	void DrawEnd(DrawCommand& cmd);
 	
 public:
 	TransformRef    transform;

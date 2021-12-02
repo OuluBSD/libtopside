@@ -33,6 +33,39 @@ public:
 };
 
 
+class EcsVideoBase :
+	virtual public AtomBase
+{
+	Vector<BinderIfaceVideo*> binders;
+	String			target;
+	EnvStateRef		state;
+	int				prev_iter = -1;
+	ValCls			src_type;
+	ProgDraw		d;
+	
+	static EcsVideoBase* latest;
+	
+public:
+	RTTI_DECL0(EcsVideoBase);
+	
+	EcsVideoBase();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	bool			PostInitialize() override;
+	void			Uninitialize() override;
+	bool			IsReady(PacketIO& io) override;
+	bool			ProcessPackets(PacketIO& io) override;
+	void			Visit(RuntimeVisitor& vis) override {}
+	
+	void AddBinder(BinderIfaceVideo* iface);
+	void RemoveBinder(BinderIfaceVideo* iface);
+	
+	static Callback1<EcsVideoBase*>	WhenInitialize;
+	static EcsVideoBase& Latest();
+	
+};
+
+
 #if 0
 class EcsOglBase :
 	public OglBufferBase

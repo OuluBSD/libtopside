@@ -1,7 +1,7 @@
 #ifndef _Graphics06a_Tutorial6a_h_
 #define _Graphics06a_Tutorial6a_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 #include <AccelCore/AccelCore.h>
 using namespace TS;
 
@@ -20,7 +20,7 @@ struct Graphics6a : public Component<Graphics6a>, public DisplaySink {
 	void operator=(const Graphics6a& t) {Panic("Can't copy Graphics6a");}
 	COMP_DEF_VISIT
 	
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	
 };
 

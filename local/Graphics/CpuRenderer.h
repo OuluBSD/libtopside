@@ -5,6 +5,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class CpuFramebuffer : public Framebuffer {
 	
+protected:
+	CpuFramebuffer() {}
+	
 public:
 	
 	void Zero();
@@ -40,76 +43,29 @@ public:
 	
 };
 
-
-#if HAVE_SDL2
 class CpuOutputFramebuffer : public CpuFramebuffer {
-	SDL_Texture* fb;
-	byte* pixels;
-	int pitch;
-	int w, h, stride;
+	Vector<byte> data;
+	byte* pixels = 0;
+	int pitch = 0;
+	int w = 0, h = 0, stride = 0;
 	bool locked = false;
 	
 public:
-	CpuOutputFramebuffer() {}
-	~CpuOutputFramebuffer() {Leave();}
+	CpuOutputFramebuffer();
+	~CpuOutputFramebuffer();
 	
-	void Init(SDL_Texture* fb, int w, int h, int stride) {
-		this->fb = fb;
-		this->w = w;
-		this->h = h;
-		this->stride = stride;
-	}
+	bool Create(int w, int h, int channels=3) override;
+	void Enter() override;
+	void Leave() override;
+	byte* GetIterator(int x, int y) override;
+	int GetWidth() const override;
+	int GetHeight() const override;
+	int GetStride() const override;
+	int GetPitch() const override;
+	void DrawFill(const byte* mem, int sz) override;
 	
-	bool Create(int w, int h, int channels=3) override {ASSERT(this->w == w && this->h == h && this->stride == channels); return true;}
-	void Enter() override {
-		if (!locked) {
-			SDL_Rect r {0, 0, w, h};
-			void* pixels;
-			SDL_LockTexture(fb, &r, &pixels, &pitch);
-			this->pixels = (byte*)pixels;
-			locked = true;
-		}
-	}
-	void Leave() override {
-		if (locked) {
-			SDL_UnlockTexture(fb);
-			locked = false;
-		}
-	}
-	byte* GetIterator(int x, int y) override {return &pixels[x * stride + y * pitch];}
-	int GetWidth() const override {return w;}
-	int GetHeight() const override {return h;}
-	int GetStride() const override {return stride;}
-	int GetPitch() const override {return pitch;}
-	void DrawFill(const byte* mem, int sz) override {
-		if (sz == h * pitch) {
-			memcpy(pixels, mem, sz);
-		}
-		else if (sz == w * h * stride) {
-			int row = w * stride;
-			byte* dst = pixels;
-			for(int y = 0; y < h; y++) {
-				memcpy(dst, mem, row);
-				mem += row;
-				dst += pitch;
-			}
-		}
-		else {
-			sz = min(sz, h * pitch);
-			memcpy(pixels, mem, sz);
-		}
-	}
-	
-	RawSysTexture* GetRawSysTexture() {return fb;}
 	
 };
-
-#else
-
-class CpuOutputFramebuffer : public CpuMemoryFramebuffer {};
-
-#endif
-
 
 class CpuRenderer : public Renderer {
 	CpuOutputFramebuffer output;
@@ -124,11 +80,11 @@ public:
 	
 };
 
-class DrawFramebufferCpu : public DrawFramebuffer {
+class CpuDrawFramebuffer : public DrawFramebuffer {
 public:
-	RTTI_DECL1(DrawFramebufferCpu, DrawFramebuffer)
+	RTTI_DECL1(CpuDrawFramebuffer, DrawFramebuffer)
 	CpuRenderer* rend = 0;
-	CpuFramebuffer* fb = 0;
+	CpuOutputFramebuffer* fb = 0;
 	
 	
 	Renderer* GetRenderer() override {return rend;}

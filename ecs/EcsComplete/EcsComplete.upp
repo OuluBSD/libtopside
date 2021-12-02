@@ -14,5 +14,6 @@ uses(VR) EcsVR;
 
 file
 	EcsComplete.h,
-	Prefabs.h;
+	Prefabs.h,
+	Prefabs.cpp;
 

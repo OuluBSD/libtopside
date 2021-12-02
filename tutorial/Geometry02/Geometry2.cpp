@@ -9,7 +9,7 @@ Geometry2::~Geometry2() {
 	
 }
 
-void Geometry2::Render(SystemDraw& draw) {
+void Geometry2::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
 	DrawGeometry fb(draw);

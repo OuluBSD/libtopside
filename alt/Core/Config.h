@@ -20,6 +20,9 @@
 	
 	#define UNREACHABLE __builtin_unreachable()
 	
+	#define GLEW_STATIC
+	#define GLEW_INCLUDE <GL/glew.h>
+	
 	#if defined(__WIN32) || defined(_WIN32) || defined(WIN32)
 		#define COMPILER_MINGW 1
 		#define PLATFORM_WIN32 1

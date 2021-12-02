@@ -1,11 +1,12 @@
-#ifndef _Complete_Prefabs_h_
-#define _Complete_Prefabs_h_
+#ifndef _EcsComplete_Prefabs_h_
+#define _EcsComplete_Prefabs_h_
 
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_ECS_BEGIN
 
 
+#if 0
 
 template <class T> void SimpleEntityApp() {
 	Engine& mach = GetActiveEngine();
@@ -115,7 +116,6 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	
 }
 
-#if 0
 
 #define CONSOLE_APP_(x) CONSOLE_APP_MAIN {TS::SimpleEntityApp<x>();}
 #define RENDER_APP_(x) RENDER_APP_MAIN {TS::SimpleEntityApp<x>();}
@@ -135,7 +135,20 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 
 #endif
 
-NAMESPACE_TOPSIDE_END
+
+
+
+void DefaultEcsInitializer();
+void DefaultEcsStartup();
+
+#define ECS_PREFAB_MAIN(x) \
+	NAMESPACE_UPP \
+	INITBLOCK {TS::Ecs::Engine::WhenInitialize << callback(TS::Ecs::DefaultEcsInitializer); TS::Ecs::Engine::WhenPreFirstUpdate << callback(TS::Ecs::DefaultEcsStartup); TS::Ecs::DefaultCreateOnStart<x>();} \
+	END_UPP_NAMESPACE \
+	ECS_APP_MAIN
+
+
+NAMESPACE_ECS_END
 
 
 #endif

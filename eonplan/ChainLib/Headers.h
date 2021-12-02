@@ -78,6 +78,14 @@ HEADER_ARG(			EcsEventsAtom,		reqdef_flagSCREEN,	1)
 //HEADER_ACTION(		EcsOglAtom,			ecs.system.rendering)
 //HEADER_ARG(			EcsOglAtom,			reqdef_flagSCREEN,	1)
 
+HEADER11(			EcsSwVideo,			EcsVideoBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
+HEADER_ACTION(		EcsSwVideo,			center.video.ecs)
+HEADER_ARG(			EcsSwVideo,			reqdef_flagSCREEN,	1)
+
+HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	CenterProg)
+HEADER_ACTION(		EcsProgVideo,		center.video.prog.ecs)
+HEADER_ARG(			EcsProgVideo,		reqdef_flagSCREEN,	1)
+
 
 
 
@@ -130,6 +138,10 @@ HEADER_ARG(			SdlFboAtom,			reqdef_flagSCREEN,		1)
 HEADER11(			SdlVideoAtom,		SDL2SwScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
+
+HEADER11(			SdlVideoProgAtom,	SDL2SwScreenBase,			pipe,		CenterVideo,	CenterProg,		CenterReceipt)
+HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
+HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,		1)
 
 
 

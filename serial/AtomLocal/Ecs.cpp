@@ -90,6 +90,101 @@ void EcsEventsBase::RemoveBinder(BinderIfaceEvents* iface) {
 
 
 
+
+
+
+
+EcsVideoBase* EcsVideoBase::latest;
+EcsVideoBase& EcsVideoBase::Latest() {ASSERT(latest); return *latest;}
+
+
+EcsVideoBase::EcsVideoBase() {
+	latest = this;
+}
+
+bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
+	ISourceRef src = this->GetSource();
+	int src_count = src->GetSourceCount();
+	Value& val = src->GetSourceValue(src_count-1);
+	src_type = val.GetFormat().vd.val;
+	return true;
+}
+
+bool EcsVideoBase::PostInitialize() {
+	return true;
+}
+
+void EcsVideoBase::Uninitialize() {
+	
+}
+
+bool EcsVideoBase::IsReady(PacketIO& io) {
+	dword iface_sink_mask = iface.GetSinkMask();
+	bool b =
+		io.active_sink_mask == iface_sink_mask &&
+		io.full_src_mask == 0 &&
+		binders.GetCount() > 0;
+	RTLOG("EcsVideoBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ", " << HexStr(iface_sink_mask) << ", " << HexStr(io.active_sink_mask) << ")");
+	return b;
+}
+
+bool EcsVideoBase::ProcessPackets(PacketIO& io) {
+	RTLOG("EcsVideoBase::ProcessPackets:");
+	
+	Size sz(800, 600);
+	
+	
+	if (src_type == ValCls::PROG) {
+		d.Create(sz);
+		
+		/*CpuOutputFramebuffer fb;
+		CpuDrawFramebuffer fbdraw;
+		CpuRenderer rend;
+		fbdraw.rend = &rend;
+		fbdraw.fb = &fb;
+		fb.Create(sz.cx, sz.cy, 3);*/
+		
+		//fb.Enter();
+		for (BinderIfaceVideo* b : binders)
+			b->Render(d);
+		//fb.Leave();
+		
+		
+		d.Finish();
+		
+		if (io.sink_count == 1) {
+			PacketIO::Sink& sink = io.sink[0];
+			PacketIO::Source& src = io.src[0];
+			
+			ASSERT(sink.p);
+			sink.may_remove = true;
+			src.from_sink_ch = 0;
+			src.p = ReplyPacket(0, sink.p);
+			
+			InternalPacketData& data = src.p->SetData<InternalPacketData>();
+			data.ptr = &d.cmd_screen_begin;
+		}
+		else {
+			TODO
+		}
+	}
+	else {
+		TODO
+	}
+	
+	return true;
+}
+
+void EcsVideoBase::AddBinder(BinderIfaceVideo* iface) {
+	VectorFindAdd(binders, iface);
+}
+
+void EcsVideoBase::RemoveBinder(BinderIfaceVideo* iface) {
+	VectorRemoveKey(binders, iface);
+}
+
+
+
 #if 0
 Callback1<EcsOglBase*> EcsOglBase::WhenInitialize;
 

@@ -1,7 +1,7 @@
 #ifndef _Tutorial5_Tutorial5_h_
 #define _Tutorial5_Tutorial5_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 
@@ -27,7 +27,7 @@ struct Tutorial5 : public Component<Tutorial5>, public DisplaySink {
 	void operator=(const Tutorial5& t) {Panic("Can't copy Tutorial5");}
 	void Visit(RuntimeVisitor& vis) override {TODO}
 	
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	
 	vec3 Barycentric(vec3 pts[3], vec2 P);
 	void Triangle4(SystemDraw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img,

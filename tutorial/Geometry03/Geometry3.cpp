@@ -28,7 +28,7 @@ Geometry3::~Geometry3() {
 	
 }
 
-void Geometry3::Render(SystemDraw& draw) {
+void Geometry3::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
 	DrawGeometry fb(draw);

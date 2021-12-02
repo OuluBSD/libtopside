@@ -97,18 +97,6 @@ struct DrawProxy : Draw {
 };
 
 
-struct SImageDraw : Draw {
-	
-	
-public:
-	SImageDraw(Size sz);
-	SImageDraw(int w, int h);
-	
-	
-	operator Image() const;
-	
-};
-
 END_UPP_NAMESPACE
 
 

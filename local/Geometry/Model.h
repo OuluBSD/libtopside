@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
 class Shader;
+struct CpuFramebufferObject;
 #if HAVE_OPENGL
 struct OglFramebufferObject;
 class OglShader;
@@ -35,6 +36,19 @@ struct FramebufferObject : RTTIBase {
 	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
 	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
 	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
+	
+	
+	typedef enum {
+		UNDEFINED,
+		SW,
+		OGL,
+	} Type;
+	
+	Type type = UNDEFINED;
+	
+	
+	bool IsSoftware() const {return type == SW;}
+	bool IsOpenGL() const {return type == OGL;}
 	
 };
 
@@ -72,6 +86,8 @@ public:
     
     void Refresh(FramebufferObject& o);
     void RefreshOgl(FramebufferObject& o);
+    void RefreshSw(FramebufferObject& o);
+    void RefreshSw(CpuFramebufferObject& o);
 #if HAVE_OPENGL
     void RefreshOgl(OglFramebufferObject& o);
 #endif

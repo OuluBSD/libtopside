@@ -30,6 +30,7 @@
 	IFACE(ORDER) \
 	IFACE(RECEIPT) \
 	IFACE(FBO) \
+	IFACE(PROG) \
 
 
 #define DEV_IFACE(val) \

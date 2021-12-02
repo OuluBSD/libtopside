@@ -6,6 +6,7 @@ uses
 file
 	EcsLocal.h,
 	EcsLocal.icpp,
+	EcsLocal.cpp,
 	Camera.h,
 	Camera.cpp,
 	Model.h,

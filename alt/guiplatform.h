@@ -9,8 +9,8 @@
 	        #define HAVE_SDL2 1
 	    #endif
 	#else
-		#define NONCTRLPLATFORM_BACKEND_INCLUDE     <NonCtrlSDL2/DrawBackend.h>
-		#define NONCTRLPLATFORM_INCLUDE             <NonCtrlSDL2/NonCtrlSDL2.h>
+		#define NONCTRLPLATFORM_BACKEND_INCLUDE     <ScreenSDL2/DrawBackend.h>
+		#define NONCTRLPLATFORM_INCLUDE             <ScreenSDL2/ScreenSDL2.h>
 		#define HAVE_SDL2 1
 	#endif
 #else

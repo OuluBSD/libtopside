@@ -106,33 +106,4 @@ void DrawProxy::EndOp() {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-SImageDraw::SImageDraw(Size sz) {
-	TODO
-}
-
-SImageDraw::SImageDraw(int w, int h) {
-	TODO
-}
-
-SImageDraw::operator Image() const {
-	TODO
-}
-
-
 END_UPP_NAMESPACE

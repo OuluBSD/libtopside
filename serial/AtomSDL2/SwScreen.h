@@ -13,6 +13,8 @@ class SDL2SwScreenBase :
 	One<OOSDL2::SwScreen>	obj;
     Serial::Format			fmt;
 	OOSDL2::Events*			ev = 0;
+	EnvStateRef				env;
+	bool					close_machine = false;
 	
 public:
 	RTTI_DECL2(SDL2SwScreenBase, AltBaseT, FramePollerBase)

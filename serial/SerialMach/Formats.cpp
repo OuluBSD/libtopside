@@ -195,6 +195,33 @@ int EventFormat::GetFrameSize() const {
 
 
 
+String ProgFormat::ToString() const {
+	return		SampleBase<BinarySample>::ToString() + ", " +
+				DimBase<1>::ToString() + ", " +
+				SparseTimeSeriesBase::ToString();
+}
+
+bool ProgFormat::IsValid() const {
+	return true;
+}
+
+bool ProgFormat::IsSame(const ProgFormat& fmt) const {
+	return true;
+}
+
+int ProgFormat::GetFrameSize() const {
+	return		DimBase<1>::GetScalar() *
+				SparseTimeSeriesBase::GetSampleRate() *
+				SampleBase<BinarySample>::GetSampleSize();
+}
+
+
+
+
+
+
+
+
 #define PROXY(x) \
 	if (IsAudio()) return aud.x(); \
 	if (IsVideo()) return vid.x(); \
@@ -202,6 +229,7 @@ int EventFormat::GetFrameSize() const {
 	if (IsMidi())  return mid.x(); \
 	if (IsEvent()) return ev.x(); \
 	if (IsFbo())   return fbo.x(); \
+	if (IsProg())  return prog.x(); \
 	PANIC("Invalid type");
 
 #define PROXY_(x,y) \
@@ -211,6 +239,7 @@ int EventFormat::GetFrameSize() const {
 	if (IsMidi())  return mid.x((const MidiFormat&)y); \
 	if (IsEvent()) return ev.x((const EventFormat&)y); \
 	if (IsFbo())   return fbo.x((const FboFormat&)y); \
+	if (IsProg())  return prog.x((const ProgFormat&)y); \
 	PANIC("Invalid type");
 
 #define PROXY_CHK(x) ASSERT(IsValid()); PROXY(x)
@@ -345,6 +374,12 @@ void Format::SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int f
 void Format::SetEvent(DevCls dev) {
 	vd.dev = dev;
 	vd.val = ValCls::EVENT;
+	memset(data, 0, sizeof(data));
+}
+
+void Format::SetProg(DevCls dev) {
+	vd.dev = dev;
+	vd.val = ValCls::PROG;
 	memset(data, 0, sizeof(data));
 }
 

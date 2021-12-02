@@ -1,5 +1,5 @@
-#ifndef _Complete_Prefabs_h_
-#define _Complete_Prefabs_h_
+#ifndef _AtomComplete_Prefabs_h_
+#define _AtomComplete_Prefabs_h_
 
 
 
@@ -54,6 +54,10 @@ void SimpleSerialMain(String title, bool start_machine=false);
 #define APP_INITIALIZE_STARTUP_(init, startup) \
 	NAMESPACE_UPP \
 	INITBLOCK {TS::Serial::Machine::WhenInitialize << callback(init); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup);} \
+	END_UPP_NAMESPACE
+#define APP_INITIALIZE_STARTUP_2(init, startup, x) \
+	NAMESPACE_UPP \
+	INITBLOCK {TS::Serial::Machine::WhenInitialize << callback(init); TS::Serial::Machine::WhenPreFirstUpdate << callback(startup); TS::Serial::Machine::WhenPreFirstUpdate << callback(x);} \
 	END_UPP_NAMESPACE
 #define APP_DEFAULT_GFX_(x) \
 	NAMESPACE_UPP \

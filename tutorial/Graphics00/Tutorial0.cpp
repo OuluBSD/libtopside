@@ -1,16 +1,17 @@
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 
 
 using namespace TS;
+using namespace TS::Ecs;
 
-struct Tutorial0 : Component<Tutorial0>, public DisplaySink {
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
+
+struct Tutorial0 : Component<Tutorial0> {
+	
 	void operator=(const Tutorial0& t) {Panic("Can't copy");}
 	
-	void Render(SystemDraw& draw) override {
+	/*void Render(Draw& draw) override {
 		draw.DrawRect(draw.GetPageSize(), Black());
-	}
+	}*/
 	
 };
 
@@ -26,7 +27,8 @@ struct StandaloneTutorial0 : EntityPrefab<Tutorial0>
 
 
 RENDER_APP_MAIN {
-	Machine& mach = GetMachine();
+	TODO
+	/*Machine& mach = GetMachine();
 	
 	try {
 	    RegistrySystem& reg = *mach.Add<RegistrySystem>();
@@ -55,5 +57,5 @@ RENDER_APP_MAIN {
 		LOG("Fatal error: " << e);
 	}
 	
-	mach.Stop();
+	mach.Stop();*/
 }

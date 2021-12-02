@@ -23,13 +23,18 @@ void Mesh::Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vecto
 }
 
 void Mesh::Refresh(FramebufferObject& o) {
-	AppFlags& f = GetAppFlags();
-	if (f.IsOpenGL()) {
+	if (o.IsOpenGL()) {
 #if HAVE_OPENGL
 		RefreshOgl(o);
 #else
 		LOG("Mesh::Refresh: error: opengl is not supported in this executable");
 #endif
+	}
+	else if (o.IsSoftware()) {
+		RefreshSw(o);
+	}
+	else {
+		TODO
 	}
 }
 

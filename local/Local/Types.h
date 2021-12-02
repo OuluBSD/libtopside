@@ -25,6 +25,16 @@ public:
 };
 
 
+class BinderIfaceVideo : RTTIBase {
+	
+public:
+	RTTI_DECL0(BinderIfaceVideo);
+	
+	virtual void Render(Draw& draw) = 0;
+	
+};
+
+
 class OglBuffer;
 class OglShader;
 

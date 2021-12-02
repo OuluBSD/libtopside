@@ -2,6 +2,49 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+void CpuFramebufferObject::Paint() {
+	TODO
+}
+
+void CpuFramebufferObject::MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) {
+	TODO
+}
+
+void CpuFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
+	TODO
+}
+
+void CpuFramebufferObject::SetModel(const mat4& m) {
+	TODO
+}
+
+void CpuFramebufferObject::SetScale(const mat4& m) {
+	TODO
+}
+
+void CpuFramebufferObject::SetProjection(const mat4& m) {
+	TODO
+}
+
+void CpuFramebufferObject::SetView(const mat4& m) {
+	TODO
+}
+
+
+
+
+FramebufferObject& CpuFramebufferState::NewObject() {
+	CpuFramebufferObject& o = objects.Add(new CpuFramebufferObject(*this));
+	o.id = objects.GetCount() - 1;
+	RendVer1(OnRealizeObject, o.id);
+	return o;
+}
+
+
+FramebufferObject* CpuShader::CreateObject() {
+	return &state.NewObject();
+}
+
 /*
 bool CpuShader::Load(String vertex_path, String fragment_path, String geometry_path) {
 	TODO
@@ -55,4 +98,19 @@ void CpuShader::SetMat4(const String &name, const mat4 &mat) const {
 	
 }
 */
+
+
+
+
+void Mesh::RefreshSw(FramebufferObject& o) {
+	CpuFramebufferObject* fbo = CastPtr<CpuFramebufferObject>(&o);
+	ASSERT(fbo);
+	if (fbo)
+		RefreshSw(*fbo);
+}
+
+void Mesh::RefreshSw(CpuFramebufferObject& o) {
+	// pass?
+}
+
 NAMESPACE_TOPSIDE_END

@@ -2,7 +2,7 @@ description "\377B128,0,255";
 
 uses(!SCREEN & !GUI) NonScreen;
 
-uses(SCREEN & !GUI) NonCtrlSDL2;
+uses(SCREEN & !GUI) ScreenSDL2;
 
 uses(GUI) SDL2GUI3D;
 

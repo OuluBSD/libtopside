@@ -56,6 +56,8 @@ namespace Serial {
 	ATOM_TYPE(AUDIO_LOADER_ATOM) \
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
 	ATOM_TYPE(ECS_EVENTS_ATOM) \
+	ATOM_TYPE(ECS_SW_VIDEO) \
+	ATOM_TYPE(ECS_PROG_VIDEO) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
@@ -64,6 +66,7 @@ namespace Serial {
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
 	ATOM_TYPE(SDL_FBO_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
+	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(OGL_SHADER_PIPE) \
 	ATOM_TYPE(OGL_SHADER_ATOM) \
 	ATOM_TYPE(OGL_SHADER_ATOM_S_A) \
@@ -79,6 +82,8 @@ namespace Serial {
 	ATOM_CLASS(AudioLoaderAtom) \
 	ATOM_CLASS(VideoLoaderAtom) \
 	ATOM_CLASS(EcsEventsAtom) \
+	ATOM_CLASS(EcsSwVideo) \
+	ATOM_CLASS(EcsProgVideo) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \
@@ -87,6 +92,7 @@ namespace Serial {
 	ATOM_CLASS(SdlFboPipeSide) \
 	ATOM_CLASS(SdlFboAtom) \
 	ATOM_CLASS(SdlVideoAtom) \
+	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(OglShaderPipe) \
 	ATOM_CLASS(OglShaderAtom) \
 	ATOM_CLASS(OglShaderAtomSA) \

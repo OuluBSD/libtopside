@@ -4,6 +4,6 @@ uses
 	EcsLocal;
 
 file
-	CompleteDebug.h,
-	CompleteDebug.cpp;
+	EcsCompleteDebug.h,
+	EcsCompleteDebug.cpp;
 

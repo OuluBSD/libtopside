@@ -378,11 +378,15 @@ void OglShader::Use() {
 }
 #endif
 
-FramebufferObject* OglShader::CreateObject() {
-	OglFramebufferObject& o = state.objects.Add(new OglFramebufferObject(state));
-	o.id = state.objects.GetCount() - 1;
+FramebufferObject& OglFramebufferState::NewObject() {
+	OglFramebufferObject& o = objects.Add(new OglFramebufferObject(*this));
+	o.id = objects.GetCount() - 1;
 	RendVer1(OnRealizeObject, o.id);
-	return &o;
+	return o;
+}
+
+FramebufferObject* OglShader::CreateObject() {
+	return &state.NewObject();
 }
 
 #if 0

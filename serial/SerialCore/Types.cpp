@@ -32,6 +32,9 @@ Format GetDefaultFormat(ValDevCls type) {
 	else if (type.val == ValCls::FBO) {
 		fmt.SetFbo(type.dev, BinarySample::U8_LE_ABCD, 1280, 720, 0, 60, 1);
 	}
+	else if (type.val == ValCls::PROG) {
+		fmt.SetProg(type.dev);
+	}
 	else {
 		TODO
 	}

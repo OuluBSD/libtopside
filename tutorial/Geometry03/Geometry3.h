@@ -1,7 +1,7 @@
 #ifndef _Geometry3_Geometry3_h_
 #define _Geometry3_Geometry3_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 
@@ -29,7 +29,7 @@ struct Geometry3 : public Component<Geometry3>, public DisplaySink {
 	void ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right);
 	
 	void DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr);
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	
 };
 

@@ -1,7 +1,7 @@
 #ifndef _Geometry4_Geometry4_h_
 #define _Geometry4_Geometry4_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 
@@ -39,7 +39,7 @@ struct Geometry4 : public Component<Geometry4>, public DisplaySink {
 	void Initialize() override;
 	
 	void DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr);
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	
 };
 

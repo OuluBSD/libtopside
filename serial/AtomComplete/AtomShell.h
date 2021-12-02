@@ -21,6 +21,9 @@ NAMESPACE_TOPSIDE_END
 #define APP_INITIALIZE_DEFAULT_INTERNAL_EON \
 	APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializerInternalEon, TS::DefaultStartup)
 
+#define APP_INITIALIZE_DEFAULT_INTERNAL_EON_(x) \
+	APP_INITIALIZE_STARTUP_2(TS::DefaultSerialInitializerInternalEon, TS::DefaultStartup, x)
+
 #define DEFAULT_ATOMSHELL_(title_str) \
 	APP_INITIALIZE_DEFAULT \
 	RENDER_APP_MAIN {TS::DefaultRunner(title_str);}

@@ -136,6 +136,8 @@ struct FramebufferState : RTTIBase {
 	
 	
 	
+	virtual FramebufferObject& NewObject() = 0;
+	
 	/*void Free() {name.Clear(); description.Clear();}
 	void Reset() {memset(this, 0, sizeof(FramebufferState));}
 	void Default() {id = -1;}

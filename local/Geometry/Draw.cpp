@@ -37,4 +37,6 @@ void DrawGeometry::DrawHLine(int x0, int x1, int y, int line_width, Color c) {
 	DrawProxy::DrawLine(x0, y, x1, y, line_width, c);
 }
 
+
+
 NAMESPACE_TOPSIDE_END

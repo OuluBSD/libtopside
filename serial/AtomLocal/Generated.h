@@ -295,6 +295,38 @@ public:
 #endif
 
 #if defined flagSCREEN
+class EcsSwVideo : public Atom<EcsSwVideo>, public EcsVideoBase {
+
+public:
+	RTTI_DECL2(EcsSwVideo, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsSwVideo)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class EcsProgVideo : public Atom<EcsProgVideo>, public EcsVideoBase {
+
+public:
+	RTTI_DECL2(EcsProgVideo, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsProgVideo)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
 public:
@@ -493,6 +525,22 @@ public:
 };
 #endif
 
+#if defined flagSCREEN
+class SdlVideoProgAtom : public Atom<SdlVideoProgAtom>, public SDL2SwScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoProgAtom, AtomT, SDL2SwScreenBase)
+	COPY_PANIC(SdlVideoProgAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.prog")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 class SdlAudioAtom : public Atom<SdlAudioAtom>, public SDL2AudioOutputBase {
 
 public:
@@ -678,6 +726,10 @@ using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
 
 using EcsEventsAtomRef = Ref<EcsEventsAtom, AtomParent>;
 
+using EcsSwVideoRef = Ref<EcsSwVideo, AtomParent>;
+
+using EcsProgVideoRef = Ref<EcsProgVideo, AtomParent>;
+
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
@@ -703,6 +755,8 @@ using SdlFboPipeSideRef = Ref<SdlFboPipeSide, AtomParent>;
 using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
 
 using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
+
+using SdlVideoProgAtomRef = Ref<SdlVideoProgAtom, AtomParent>;
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 

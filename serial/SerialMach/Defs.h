@@ -32,6 +32,9 @@
 #define ECS_APP_MAIN			SERIAL_APP_MAIN_(::TS::Serial::MachineEcsInit)
 #define RENDER_APP_MAIN			SERIAL_APP_MAIN_(0)
 
+#define DEFAULT_ECS_APP_MAIN \
+	ECS_INITIALIZE_DEFAULT_INTERNAL_EON_(TS::BindEcsToSerial) \
+	ECS_APP_MAIN
 
 #ifdef flagMSC
 	#define CXX2A_STATIC_ASSERT(x, y) static_assert(x, y)

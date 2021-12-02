@@ -1,4 +1,4 @@
-#include "NonCtrlSDL2.h"
+#include "ScreenSDL2.h"
 #include <Local/Local.h>
 #include <OOSDL2/OOSDL2.h>
 
@@ -36,6 +36,9 @@ void SysImage::Clear() {
 	}
 	raw = 0;
 }
+
+
+
 
 NAMESPACE_UPP_END
 

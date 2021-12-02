@@ -5,6 +5,7 @@
 #include <AtomMusic/AtomMusic.h>
 
 #include <EcsLib/EcsLib.h>
+#include <EcsCompleteDebug/EcsCompleteDebug.h>
 
 #ifdef flagGUI
 	#include <EcsCtrl/EcsCtrl.h>

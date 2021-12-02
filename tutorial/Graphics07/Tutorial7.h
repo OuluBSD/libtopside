@@ -1,7 +1,7 @@
 #ifndef _Tutorial7_Tutorial7_h_
 #define _Tutorial7_Tutorial7_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 

@@ -28,7 +28,7 @@ Geometry4::~Geometry4() {
 	
 }
 
-void Geometry4::Render(SystemDraw& draw) {
+void Geometry4::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
 	DrawGeometry fb(draw);

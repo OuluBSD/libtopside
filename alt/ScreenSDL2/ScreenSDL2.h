@@ -1,12 +1,12 @@
-#ifndef _NonCtrlSDL2_NonCtrlSDL2_h_
-#define _NonCtrlSDL2_NonCtrlSDL2_h_
+#ifndef _ScreenSDL2_ScreenSDL2_h_
+#define _ScreenSDL2_ScreenSDL2_h_
 
 #include <Draw/Draw.h>
 // Not here: #include <OOSDL2/OOSDL2.h>
 
 
 #ifndef flagSCREEN
-	#error NonCtrlSDL2 requires SCREEN flag
+	#error ScreenSDL2 requires SCREEN flag
 #endif
 
 
@@ -23,8 +23,9 @@ public:
 
 class ImageDraw : public SImageDraw {
 public:
-	ImageDraw(Size sz) : SImageDraw(sz) {}
-	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
+	ImageDraw(Size sz) {}
+	ImageDraw(int cx, int cy) {}
+	
 };
 
 

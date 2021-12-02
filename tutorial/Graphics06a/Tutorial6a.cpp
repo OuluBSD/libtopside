@@ -19,7 +19,7 @@ void Graphics6a::Initialize() {
 	
 }
 
-void Graphics6a::Render(SystemDraw& draw) {
+void Graphics6a::Render(Draw& draw) {
 	//Size sz = draw.GetPageSize();
 	//draw.DrawRect(sz, RandomColor(64, 64));
 	if (fail)

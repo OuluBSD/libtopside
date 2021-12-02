@@ -262,8 +262,8 @@ protected:
 	Size					screen_sz;
 	int						fb_stride;
 	String					title;
-	CpuRenderer				sw_rend;
-	DrawFramebufferCpu		sw_draw;
+	SdlRenderer				sw_rend;
+	SdlDrawFramebuffer		sw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool full_screen = false;

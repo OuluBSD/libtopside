@@ -151,6 +151,25 @@ struct EventFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
+struct ProgFormat :
+	public SampleBase<BinarySample>,
+	public DimBase<1>,
+	public SparseTimeSeriesBase
+{
+	static constexpr int base_size =
+		sizeof(SampleBase<BinarySample>) +
+		sizeof(DimBase<1>) +
+		sizeof(SparseTimeSeriesBase);
+	
+	String	ToString() const;
+	bool	IsValid() const;
+	bool	IsSame(const ProgFormat& fmt) const;
+	int		GetFrameSize() const;
+	
+	
+	byte pad[STD_FMT_SIZE - base_size - 4];
+};
+
 #define TEST_FORMAT(x) \
 	static_assert(std::is_trivially_constructible<x>::value == true, #x " must be trivial to construct"); \
 	static_assert(sizeof(x) == STD_FMT_SIZE, "Expecting standard format size in " #x);
@@ -174,6 +193,7 @@ public:
 		DataFormat			dat;
 		EventFormat			ev;
 		FboFormat			fbo;
+		ProgFormat			prog;
 	};
 	
 public:
@@ -194,6 +214,7 @@ public:
 	bool IsMidi()  const {return vd.val == ValCls::MIDI;}
 	bool IsEvent() const {return vd.val == ValCls::EVENT;}
 	bool IsFbo()   const {return vd.val == ValCls::FBO;}
+	bool IsProg()   const {return vd.val == ValCls::PROG;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}
@@ -213,6 +234,7 @@ public:
 	void SetVideo(DevCls dev, const VideoFormat& vid);
 	void SetFbo(DevCls dev, BinarySample::Type t, int w, int h, int d, int freq, int sample_rate);
 	void SetEvent(DevCls dev);
+	void SetProg(DevCls dev);
 	
 	operator const AudioFormat&() const {ASSERT(IsAudio()); return aud;}
 	operator       AudioFormat&()       {ASSERT(IsAudio()); return aud;}
@@ -226,6 +248,8 @@ public:
 	operator       EventFormat&()       {ASSERT(IsEvent()); return ev;}
 	operator const FboFormat&() const   {ASSERT(IsFbo()); return fbo;}
 	operator       FboFormat&()         {ASSERT(IsFbo()); return fbo;}
+	operator const ProgFormat&() const  {ASSERT(IsProg()); return prog;}
+	operator       ProgFormat&()        {ASSERT(IsProg()); return prog;}
 	
 	
 };

@@ -1,7 +1,7 @@
 #ifndef _Tutorial4_Tutorial4_h_
 #define _Tutorial4_Tutorial4_h_
 
-#include <AtomComplete/AtomComplete.h>
+#include <EcsComplete/EcsComplete.h>
 using namespace TS;
 
 
@@ -39,7 +39,7 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	void MultiplyBy(mat3 v);
 	void Add(vec2 v);
 	void Project();
-	void Render(SystemDraw& draw) override;
+	void Render(Draw& draw) override;
 	
 	
 	vec3 Barycentric(vec3 pts[3], vec2 P);

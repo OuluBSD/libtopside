@@ -24,7 +24,7 @@ struct OglFramebufferObject : FramebufferObject {
     bool is_global_view = false;
     int id = -1;
     
-    OglFramebufferObject(OglFramebufferState& state) : state(state) {}
+    OglFramebufferObject(OglFramebufferState& state) : state(state) {type = OGL;}
     ~OglFramebufferObject() {FreeOgl();}
     void FreeOgl();
     void Paint() override;
@@ -100,6 +100,8 @@ struct OglFramebufferState : FramebufferState {
 	GLint GetGlFormat() const;
 	int GetGlSize() const;
 	int GetGlSampleSize() const;
+	
+	FramebufferObject& NewObject() override;
 	
 	/*void Free() {
 		FramebufferState::Free();

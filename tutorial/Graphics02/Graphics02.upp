@@ -1,13 +1,13 @@
-description "Triangle rasterization and back face culling\377";
+description "Triangle rasterization and back face culling\377"    EcsComplete;
 
 uses
-	AtomComplete;
+	    EcsComplete;
 
 file
-	Tutorial2.cpp;
+	Tutorial2.cpp    EcsComplete;
 
 mainconfig
-	"3D backend" = "GUI VIRTUALGUI3D SDL2GUI3D",
+	"" = "SCREEN",
 	"U++ 3D backend" = "GUI UPP VIRTUALGUI3D SDL2GUI3D",
-	"U++ 2D backend (normal)" = "GUI UPP";
+	"U++ 2D backend (normal)" = "GUI UPP"    EcsComplete;
 

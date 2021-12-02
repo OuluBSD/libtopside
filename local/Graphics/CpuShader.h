@@ -3,13 +3,53 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-class CpuShader : public Shader {
+struct CpuFramebufferState;
+
+struct CpuFramebufferObject : FramebufferObject {
+	RTTI_DECL1(CpuFramebufferObject, FramebufferObject)
+	
+	CpuFramebufferState& state;
+    int id = -1;
+	
+	
+	CpuFramebufferObject(CpuFramebufferState& s) : state(s) {type = SW;}
+	
+	
+	
+    void Paint() override;
+    void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override;
+    
+    void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) override;
+    void SetModel(const mat4& m) override;
+    void SetScale(const mat4& m) override;
+    void SetProjection(const mat4& m) override;
+    void SetView(const mat4& m) override;
+};
+
+struct CpuFramebufferState : FramebufferState {
+	RTTI_DECL1(CpuFramebufferState, FramebufferState)
+	
+	// objects
+	Array<CpuFramebufferObject>	objects;
+	Vector<String> user_vars;
+	
+	
+	FramebufferObject& NewObject() override;
+	
+};
+
+class CpuShader :
+	public Shader,
+	public ErrorReporter
+{
 	bool is_loaded = false;
 	
     void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
     
 public:
-	CpuShader() {}
+	CpuShader(CpuFramebufferState& s) : state(s) {}
+	
+	CpuFramebufferState& state;
 	
 	
 	/*
@@ -30,9 +70,12 @@ public:
 	void SetMat4(const String &name, const mat4 &mat) const override;
 	*/
 	
+	FramebufferObject* CreateObject() override;
+	
 private:
 	
 };
+
 
 NAMESPACE_TOPSIDE_END
 

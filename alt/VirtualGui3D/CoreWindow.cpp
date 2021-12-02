@@ -359,7 +359,7 @@ bool CoreWindow::Redraw(bool only_pending) {
 	
 	typedef void (CoreWindow::*FnPtr)(DrawCommand&);
 	
-	static FnPtr ptrs[DRAW_CMD_COUNT];
+	/*static FnPtr ptrs[DRAW_CMD_COUNT];
 	static bool has_ptrs;
 	if (!has_ptrs) {
 		ptrs[DRAW_LINE] = &CoreWindow::DrawLine;
@@ -370,7 +370,7 @@ bool CoreWindow::Redraw(bool only_pending) {
 		ptrs[DRAW_OFFSET] = &CoreWindow::DrawOffset;
 		ptrs[DRAW_END] = &CoreWindow::DrawEnd;
 		has_ptrs = true;
-	}
+	}*/
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -420,13 +420,13 @@ bool CoreWindow::Redraw(bool only_pending) {
 	offset.Add(translate(identity<mat4>(), vec3(-r.left, -r.top, 0)));
 	
 	
-	DrawCommand* cmd = &start;
+	/*DrawCommand* cmd = &start;
 	while (cmd) {
 		if (cmd->type != 0)
 			(*this.*ptrs[cmd->type])(*cmd);
 		
 		cmd = cmd->next;
-	}
+	}*/
 	
 	Swap(begin_prev, cmd_begin.prev);
 	Swap(cmd_end.next, end_next);
@@ -458,191 +458,6 @@ void CoreWindow::ChildMouseEvent(Ctrl *child, int event, Point p, int zdelta, dw
 		FocusEvent();
 	}
 	
-}
-
-void CoreWindow::DrawLine(DrawCommand& cmd) {
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	int pos_x0 = cmd.i[0];
-	int pos_y0 = cmd.i[1];
-	int pos_x1 = cmd.i[2];
-	int pos_y1 = cmd.i[3];
-	float x0 = -width * 0.5 + pos_x0;
-	float y0 = -height * 0.5 + pos_y0;
-	float x1 = -width * 0.5 + pos_x1;
-	float y1 = -height * 0.5 + pos_y1;
-	
-	ModelMesh model;
-	Mesh& mesh = model.meshes.Add();
-	mesh.vertices.Reserve(2);
-	mesh.vertices.Add().Set(x0, y0, 0, 0, 1);
-	mesh.vertices.Add().Set(x1, y1, 0, 1, 0);
-	ColorCopy(cmd.clr, mesh.material.ambient);
-	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.is_lines = true;
-	mesh.indices.Reserve(2);
-	mesh.indices.Add(0);
-	mesh.indices.Add(1);
-	mesh.Refresh();
-	shader->Refresh(model);
-}
-
-void CoreWindow::DrawImage(DrawCommand& cmd) {
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	int pos_x = cmd.i[0];
-	int pos_y = cmd.i[1];
-	int scale_x = cmd.img.GetWidth();
-	int scale_y = cmd.img.GetHeight();
-	float x0 = -width * 0.5 + pos_x + scale_x;
-	float y0 = -height * 0.5 + pos_y + scale_y;
-	float x1 = x0 - scale_x;
-	float y1 = y0 - scale_y;
-	
-	ModelMesh model;
-	Mesh& mesh = model.meshes.Add();
-	mesh.vertices.Reserve(4);
-	mesh.vertices.Add().Set(x0, y0, 0, 1, 1);
-	mesh.vertices.Add().Set(x0, y1, 0, 1, 0);
-	mesh.vertices.Add().Set(x1, y1, 0, 0, 0);
-	mesh.vertices.Add().Set(x1, y0, 0, 0, 1);
-	model.textures.Add().Set(cmd.img);
-	//if (GetTextureImageCount()) mesh.textures.Add().img = GetTextureImage(0);
-	mesh.is_colored_only = false;
-	mesh.indices.Reserve(6);
-	mesh.indices.Add(0);
-	mesh.indices.Add(1);
-	mesh.indices.Add(2);
-	mesh.indices.Add(0);
-	mesh.indices.Add(2);
-	mesh.indices.Add(3);
-	mesh.Refresh();
-	shader->Refresh(model);
-}
-
-void CoreWindow::DrawRect(DrawCommand& cmd) {
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	int pos_x = cmd.i[0];
-	int pos_y = cmd.i[1];
-	int scale_x = cmd.i[2] - pos_x;
-	int scale_y = cmd.i[3] - pos_y;
-	float x0 = -width * 0.5 + pos_x + scale_x;
-	float y0 = -height * 0.5 + pos_y + scale_y;
-	float x1 = x0 - scale_x;
-	float y1 = y0 - scale_y;
-	
-	ModelMesh model;
-	Mesh& mesh = model.meshes.Add();
-	mesh.vertices.Reserve(4);
-	mesh.vertices.Add().Set(x0, y0, 0, 0, 1);
-	mesh.vertices.Add().Set(x0, y1, 0, 0, 0);
-	mesh.vertices.Add().Set(x1, y1, 0, 1, 0);
-	mesh.vertices.Add().Set(x1, y0, 0, 1, 1);
-	//model.textures.Add().tex = tex;
-	//if (GetTextureImageCount()) model.textures.Add().img = GetTextureImage(0);
-	ColorCopy(cmd.clr, mesh.material.ambient);
-	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.indices.Reserve(6);
-	mesh.indices.Add(0);
-	mesh.indices.Add(1);
-	mesh.indices.Add(2);
-	mesh.indices.Add(0);
-	mesh.indices.Add(2);
-	mesh.indices.Add(3);
-	mesh.Refresh();
-	shader->Refresh(model);
-}
-
-void CoreWindow::DrawTriangles(DrawCommand& cmd) {
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	
-	const Trif* tri = cmd.triangles.GetData();
-	int count = cmd.triangles.GetCount();
-	ModelMesh model;
-	Mesh& mesh = model.meshes.Add();
-	mesh.vertices.Reserve(count * 3);
-	mesh.indices.Reserve(count * 3);
-	
-	
-	for(int i = 0; i < count; i++) {
-		const Trif& t = *tri++;
-		float pos_x = t.a.x;
-		float pos_y = t.a.y;
-		float x = -width  * 0.5 + pos_x;
-		float y = -height * 0.5 + pos_y;
-		mesh.indices.Add(mesh.vertices.GetCount());
-		mesh.vertices.Add().Set(x, y, 0, 0, 1);
-		
-		pos_x = t.c.x;
-		pos_y = t.c.y;
-		x = -width  * 0.5 + pos_x;
-		y = -height * 0.5 + pos_y;
-		mesh.indices.Add(mesh.vertices.GetCount());
-		mesh.vertices.Add().Set(x, y, 0, 1, 1);
-		
-		pos_x = t.b.x;
-		pos_y = t.b.y;
-		x = -width  * 0.5 + pos_x;
-		y = -height * 0.5 + pos_y;
-		mesh.indices.Add(mesh.vertices.GetCount());
-		mesh.vertices.Add().Set(x, y, 0, 1, 0);
-		
-	}
-	ColorCopy(cmd.clr, mesh.material.ambient);
-	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.Refresh();
-	shader->Refresh(model);
-}
-
-void CoreWindow::DrawPolyline(DrawCommand& cmd) {
-	Size sz = GetFrameSize();
-	int width = sz.cx;
-	int height = sz.cy;
-	
-	ModelMesh model;
-	Mesh& mesh = model.meshes.Add();
-	mesh.vertices.Reserve(2);
-	const Pointf *a = &cmd.pts[0];
-	for(int i = 0; i < cmd.pts.GetCount(); i++, a++) {
-		float pos_x = a->x;
-		float pos_y = a->y;
-		float x = -width * 0.5 + pos_x;
-		float y = -height * 0.5 + pos_y;
-		mesh.vertices.Add().Set(x, y, 0, 0, 1);
-		if (i) {
-			mesh.indices.Add(i-1);
-			mesh.indices.Add(i);
-		}
-	}
-	ColorCopy(cmd.clr, mesh.material.ambient);
-	//mesh.material.ambient.a = cmd.clr.a;
-	mesh.is_colored_only = true;
-	mesh.is_lines = true;
-	mesh.Refresh();
-	shader->Refresh(model);
-}
-
-void CoreWindow::DrawOffset(DrawCommand& cmd) {
-	mat4& next = offset.Add();
-	mat4& prev = offset[offset.GetCount()-2];
-	float x = cmd.i[0];
-	float y = cmd.i[1];
-	next = translate(prev, vec3(x, y, 0));
-	shader->SetMat4("offset", next);
-}
-
-void CoreWindow::DrawEnd(DrawCommand& cmd) {
-	offset.Pop();
-	shader->SetMat4("offset", offset.Top());
 }
 
 void CoreWindow::Wait() {
