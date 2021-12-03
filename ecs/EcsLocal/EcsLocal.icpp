@@ -11,8 +11,6 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
-	using namespace Ecs;
-	
 	
 }
 

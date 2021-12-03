@@ -25,7 +25,7 @@ struct DrawCommand {
 	RGBA clr;
 	Image img;
 	Vector<Trif> triangles;
-	Vector<Pointf> pts;
+	Vector<Point> pts;
 	bool is_cached = false;
 	
 	~DrawCommand() {img.Clear(); triangles.Clear(); pts.Clear();}
@@ -57,11 +57,48 @@ public:
 };
 
 struct SImageDraw : Draw {
+	Size sz;
+	int pitch = 0;
+	int stride = 0;
+	Vector<byte> pixels;
+	
+	byte AtRGBA(RGBA rgba, int i);
+	void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color);
 	
 public:
 	SImageDraw() {}
-	SImageDraw(Size sz) {}
-	SImageDraw(int cx, int cy) {}
+	SImageDraw(Size sz) : sz(0,0) {Create(sz);}
+	SImageDraw(int cx, int cy) : sz(0,0) {Create(Size(cx,cy));}
+	
+	void Create(Size sz);
+	void Create(Size sz, int stride);
+	void Finish();
+	int GetWidth() const {return sz.cx;}
+	int GetHeight() const {return sz.cy;}
+	int GetPitch() const {return pitch;}
+	int GetStride() const {return stride;}
+	
+	Size GetPageSize() const override;
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
+	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+		            Color ink, int n, const int *dx) override;
+	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+	                        const int *counts, int count_count,
+	                        int width, Color color, Color doxor) override;
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
+	
+	Vector<byte>& Data() {return pixels;}
+	
+	byte* GetIterator(int x, int y);
+	void Zero();
+	
+	void DrawPixel(int x, int y, RGBA color);
+	void DrawPixel(int x, int y, Color color);
+	void DrawHLine(int x0, int x1, int y, Color color);
+	void DrawLine(int x0, int y0, int x1, int y1, Color color);
+	
 };
 
 END_UPP_NAMESPACE

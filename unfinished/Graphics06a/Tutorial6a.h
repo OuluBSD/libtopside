@@ -4,21 +4,23 @@
 #include <EcsComplete/EcsComplete.h>
 #include <AccelCore/AccelCore.h>
 using namespace TS;
+using namespace TS::Ecs;
 
 NAMESPACE_TOPSIDE_BEGIN
 
-struct Graphics6a : public Component<Graphics6a>, public DisplaySink {
+struct Tutorial6a :
+	public Component<Tutorial6a>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(Tutorial6a, ComponentT, BinderIfaceVideo)
+	
 	NS_SHADER::MultiStage ms;
 	bool fail = false;
 	
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
-	
 	Graphics6a() {}
 	void Initialize() override;
 	void operator=(const Graphics6a& t) {Panic("Can't copy Graphics6a");}
-	COMP_DEF_VISIT
 	
 	void Render(Draw& draw) override;
 	

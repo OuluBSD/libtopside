@@ -133,6 +133,8 @@ template <class T> void SimpleEngineMain(String title, bool start_machine=false)
 	INITBLOCK {TS::GetAppFlags().gfx = TS::AppFlags::x;} \
 	END_UPP_NAMESPACE
 
+
+
 #endif
 
 
@@ -147,6 +149,23 @@ void DefaultEcsStartup();
 	END_UPP_NAMESPACE \
 	ECS_APP_MAIN
 
+
+#define SIMPLE_ECS_APP(ecs_component, eon_path) \
+	PREFAB_BEGIN(App) \
+		ecs_component \
+	PREFAB_END \
+	 \
+	ECS_PREFAB_MAIN(App) { \
+		using namespace UPP; \
+		String eon_file  = Serial::RealizeEonFile(eon_path); \
+		if (FileExists(eon_file)) { \
+			DefaultCreateOnStart<App>(); \
+			TS::DefaultRunner(#ecs_component, eon_file, 0); \
+		} \
+		else { \
+			LOG("Eon file was not found"); \
+		} \
+	}
 
 NAMESPACE_ECS_END
 

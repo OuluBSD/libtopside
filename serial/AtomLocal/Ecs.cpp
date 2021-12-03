@@ -107,10 +107,21 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	int src_count = src->GetSourceCount();
 	Value& val = src->GetSourceValue(src_count-1);
 	src_type = val.GetFormat().vd.val;
+	
 	return true;
 }
 
 bool EcsVideoBase::PostInitialize() {
+	// Remove alpha channel
+	if (src_type == ValCls::VIDEO) {
+		ISourceRef src = this->GetSource();
+		int src_count = src->GetSourceCount();
+		Value& val = src->GetSourceValue(src_count-1);
+		Format fmt = val.GetFormat();
+		fmt.vid.SetType(LightSampleFD::RGB_U8_LE);
+		if (!NegotiateSourceFormat(src_count-1, fmt))
+			return false;
+	}
 	return true;
 }
 
@@ -131,26 +142,14 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EcsVideoBase::ProcessPackets:");
 	
-	Size sz(800, 600);
-	
 	
 	if (src_type == ValCls::PROG) {
-		d.Create(sz);
+		Size sz(800, 600);
 		
-		/*CpuOutputFramebuffer fb;
-		CpuDrawFramebuffer fbdraw;
-		CpuRenderer rend;
-		fbdraw.rend = &rend;
-		fbdraw.fb = &fb;
-		fb.Create(sz.cx, sz.cy, 3);*/
-		
-		//fb.Enter();
+		pd.Create(sz);
 		for (BinderIfaceVideo* b : binders)
-			b->Render(d);
-		//fb.Leave();
-		
-		
-		d.Finish();
+			b->Render(pd);
+		pd.Finish();
 		
 		if (io.sink_count == 1) {
 			PacketIO::Sink& sink = io.sink[0];
@@ -162,14 +161,38 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			src.p = ReplyPacket(0, sink.p);
 			
 			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			data.ptr = &d.cmd_screen_begin;
+			data.ptr = &pd.cmd_screen_begin;
 		}
 		else {
 			TODO
 		}
 	}
 	else {
-		TODO
+		Format fmt = io.src[0].val->GetFormat();
+		ASSERT(fmt.IsVideo());
+		
+		Size sz = fmt.vid.GetSize();
+		int stride = fmt.vid.GetPackedCount();
+		
+		id.Create(sz, stride);
+		for (BinderIfaceVideo* b : binders)
+			b->Render(id);
+		id.Finish();
+		
+		if (io.sink_count == 1) {
+			PacketIO::Sink& sink = io.sink[0];
+			PacketIO::Source& src = io.src[0];
+			
+			ASSERT(sink.p);
+			sink.may_remove = true;
+			src.from_sink_ch = 0;
+			src.p = ReplyPacket(0, sink.p);
+			
+			Swap(src.p->Data(), id.Data());
+		}
+		else {
+			TODO
+		}
 	}
 	
 	return true;

@@ -1,11 +1,12 @@
-description "Matrices\377";
+description "2D collision optimization\377";
 
 uses
 	EcsComplete;
 
 file
-	Geometry2.h,
-	Geometry2.cpp;
+	TODO.txt,
+	Geometry4.h,
+	Geometry4.cpp;
 
 mainconfig
 	"" = "SCREEN",

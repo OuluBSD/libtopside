@@ -1,14 +1,12 @@
-description "Simple shader with the ECS\377";
+description "Shaders for the software renderer\377";
 
 uses
-	,
-	FusionCore;
+	Physics,
+	EcsComplete;
 
 file
-	Tutorial6a.h,
-	Tutorial6a.cpp,
-	cornell_box_variant.toy,
-	stage0.glsl;
+	Tutorial6.h,
+	Tutorial6.cpp;
 
 mainconfig
 	"" = "SCREEN",

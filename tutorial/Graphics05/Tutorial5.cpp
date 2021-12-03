@@ -8,13 +8,13 @@ Tutorial 5:
 */
 
 
-Tutorial5::Tutorial5() {
+Tutorial5::Tutorial5() : shader(state) {
 	String data_dir = ShareDirFile("models");
 	String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 	String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-	if (!loader.LoadModel(obj_path))
+	if (!loader.LoadModel(shader, state.NewObject(), obj_path))
 		Panic("Couldn't load model: " + obj_path);
-	loader.model->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+	loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
 }
 
 Tutorial5::~Tutorial5() {
@@ -26,7 +26,11 @@ Tutorial5::~Tutorial5() {
 	zbuffer_empty = 0;
 }
 
-void Tutorial5::Render(SystemDraw& fb) {
+void Tutorial5::Initialize() {
+	Serial::EcsVideoBase::Latest().AddBinder(this);
+}
+
+void Tutorial5::Render(Draw& fb) {
 	Size sz = fb.GetPageSize();
 	height = width = std::min(sz.cx, sz.cy);
 	fb.DrawRect(sz, Black());
@@ -34,11 +38,12 @@ void Tutorial5::Render(SystemDraw& fb) {
 	DrawObj(fb, true);
 	
 	iter++;
-	if (iter >= iters_in_phase) {
+	if (ts.Seconds() >= phase_time) {
 		iter = 0;
+		ts.Reset();
 		phase = (phase + 1) % phases;
 	}
 }
 
 
-RENDER_APP_(Tutorial5)
+SIMPLE_ECS_APP(Tutorial5, "geom_tutorial_base.eon")

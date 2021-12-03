@@ -5,8 +5,7 @@ uses
 
 file
 	Geometry1.h,
-	Geometry1.cpp,
-	geom1.eon highlight cpp;
+	Geometry1.cpp;
 
 mainconfig
 	"" = "SCREEN",

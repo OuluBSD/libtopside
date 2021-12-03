@@ -34,6 +34,41 @@ void SDL2SwScreenBase::Uninitialize() {
 	RemoveAtomFromUpdateList();
 }
 
+bool SDL2SwScreenBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
+		ISinkRef sink = GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
+void SDL2SwScreenBase::Update(double dt) {
+	FramePollerBase::Update(dt);
+	
+	if (env) {
+		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
+		//OglBuffer& buf = GetBuffer();
+		
+		if (close_window) {
+			if (close_machine)
+				GetMachine().SetNotRunning();
+			else
+				Destroy();
+		}
+		/*else if (video_size != buf.state.size) {
+			if (video_size.IsEmpty())
+				video_size = buf.state.size;
+			else
+				buf.SetFramebufferSize(video_size);
+		}*/
+		
+	}
+}
+
 bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
 	PacketIO::Sink& sink = io.sink[0];
 	PacketIO::Source& src = io.src[0];

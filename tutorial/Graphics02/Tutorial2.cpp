@@ -9,23 +9,28 @@ Tutorial 2:
 */
 
 using namespace TS;
+using namespace TS::Ecs;
 
 
-struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
+struct Tutorial2 :
+	public Component<Tutorial2>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(Tutorial2, ComponentT, BinderIfaceVideo)
+	
 	ModelLoader loader;
+	CpuShader shader;
+	CpuFramebufferState state;
 	vec2 t[3][3];
-	int iters_in_phase = 60*2;
 	int iter = 0;
 	int phase = 0;
 	int phases = 8+1;
+	TimeStop ts;
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
-	
-	Tutorial2() {
+	Tutorial2() : shader(state) {
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
-		if (!loader.LoadModel(obj_path))
+		if (!loader.LoadModel(shader, state.NewObject(), obj_path))
 			Panic("Couldn't load model: " + obj_path);
 		
 		t[0][0] = vec2(10, 70);
@@ -38,8 +43,12 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		t[2][1] = vec2(120, 160);
 		t[2][2] = vec2(130, 180);
 	}
+	
+	void Initialize() override {
+		Serial::EcsVideoBase::Latest().AddBinder(this);
+	}
+	
 	void operator=(const Tutorial2&) {}
-	COMP_DEF_VISIT
 	
 	void Triangle1(DrawGeometry& fb, vec2 a, vec2 b, vec2 c, Color color) {
 		fb.DrawLine(a, b, 1, color);
@@ -161,10 +170,12 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		Size sz = fb.GetPageSize();
 		int height = std::min(sz.cy, sz.cx);
 		int width = height;
-		Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
+		Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
 		vec3 light_dir {0.0, 0.0, -1.0};
-		for(EntityRef& e : store->GetEntities()) {
-			if (loader.model) for(const Mesh& mesh : loader.model->GetMeshes()) {
+		PoolRef p = store->GetRoot();
+		for(EntityRef& e : p->GetEntities()) {
+			auto model = loader.GetModel();
+			if (model) for(const Mesh& mesh : model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();
 				
 				for(int i = 0; i < tri_count; i++) {
@@ -244,7 +255,8 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 		}
 		
 		iter++;
-		if (iter >= iters_in_phase) {
+		if (ts.Seconds() > 1.0) {
+			ts.Reset();
 			iter = 0;
 			phase = (phase + 1) % phases;
 		}
@@ -252,6 +264,4 @@ struct Tutorial2 : public Component<Tutorial2>, public DisplaySink {
 };
 
 
-RENDER_APP_MAIN {
-	SimpleEngineMain<Tutorial2>("Tutorial2");
-}
+SIMPLE_ECS_APP(Tutorial2, "geom_tutorial_base.eon")

@@ -20,7 +20,7 @@ vec3 Tutorial4::Barycentric(vec3 pts[3], vec2 P) {
 		              u[0]  / u[2]);
 }
 
-void Tutorial4::Triangle4(SystemDraw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, float intensity, bool have_noise) {
+void Tutorial4::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, float intensity, bool have_noise) {
 	int w = width;
 	int h = height;
 	
@@ -77,7 +77,7 @@ void Tutorial4::Triangle4(SystemDraw& fb, vec3 pts[3], vec2 tex[3], Texture* tex
 	}
 }
 
-void Tutorial4::DrawObj(float f2, SystemDraw& fb, bool use_texture) {
+void Tutorial4::DrawObj(float f2, Draw& fb, bool use_texture) {
 	if (!zbuffer) {
 		int size = width * height;
 		zbuffer = new float[size];

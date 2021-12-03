@@ -13,7 +13,7 @@ class ProgPainter {
 	DrawCommand *cur_begin = NULL;
 	DrawCommand *cur = NULL;
 	
-	Vector<Pointf> tmp0, tmp1;
+	Vector<Point> tmp0, tmp1;
 	Vector<double> angles;
 	
 	DrawCommand& GetNext();
@@ -21,6 +21,9 @@ class ProgPainter {
 	
 public:
 	ProgPainter(DrawCommand& prev, DrawCommand& begin, DrawCommand& end, DrawCommand& next) : prev(&prev), begin(&begin), end(&end), next(&next) {}
+	~ProgPainter() {Clear();}
+	
+	void Clear();
 	
 	void DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA c);
 	void DrawImage(int x, int y, Image img, Byte alpha=255);
@@ -29,11 +32,11 @@ public:
 	void DrawText(int x, int y, String txt, Font fnt, RGBA clr);
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
 		            Color ink, int n, const int *dx);
-	void DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c);
+	void DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c);
 	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	                        const int *counts, int count_count,
 	                        int width, Color color, Color doxor);
-	void DrawPolygon(const Vector<Pointf>& pts, RGBA c);
+	void DrawPolygon(const Vector<Point>& pts, RGBA c);
 	
 	void Offset(const Rect& r);
 	void End();

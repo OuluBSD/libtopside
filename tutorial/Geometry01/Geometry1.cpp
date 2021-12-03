@@ -156,21 +156,5 @@ void Geometry1::Render(Draw& draw) {
 	}
 }
 
+SIMPLE_ECS_APP(Geometry1, "geom_tutorial_base.eon")
 
-
-
-PREFAB_BEGIN(App)
-	Geometry1
-PREFAB_END
-
-ECS_PREFAB_MAIN(App) {
-	using namespace UPP;
-	String eon_file  = GetDataFile("geom1.eon");
-	if (FileExists(eon_file)) {
-		DefaultCreateOnStart<App>();
-		TS::DefaultRunner("Geometry1 tutorial", eon_file, 0);
-	}
-	else {
-		LOG("Eon file was not found");
-	}
-}

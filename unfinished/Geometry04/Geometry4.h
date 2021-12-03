@@ -3,6 +3,7 @@
 
 #include <EcsComplete/EcsComplete.h>
 using namespace TS;
+using namespace TS::Ecs;
 
 
 
@@ -12,7 +13,12 @@ struct Tutorial4Dummy : public Component<Tutorial4Dummy> {
 	
 };
 
-struct Geometry4 : public Component<Geometry4>, public DisplaySink {
+struct Geometry4 :
+	public Component<Geometry4>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(Geometry4, ComponentT, BinderIfaceVideo)
+	
 	TimeStop ts;
 	int phase = 0;
 	int phases = 9;
@@ -26,20 +32,17 @@ struct Geometry4 : public Component<Geometry4>, public DisplaySink {
 	QuadtreeComponent* quad = NULL;
 	
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
-	
 	Geometry4();
 	~Geometry4();
+	void Initialize() override;
+	void Render(Draw& draw) override;
 	void operator=(const Geometry4& t) {Panic("Can't copy Geometry4");}
 	COMP_DEF_VISIT
 	float RandomAngularVel() const {return (0.1 + Randomf() * 0.9) * M_2PI;}
 	void ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right);
 	
-	void Initialize() override;
 	
 	void DrawLine(DrawGeometry& fb, vec2 a, vec2 b, Color clr);
-	void Render(Draw& draw) override;
 	
 };
 

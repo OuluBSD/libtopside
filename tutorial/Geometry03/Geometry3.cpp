@@ -28,6 +28,10 @@ Geometry3::~Geometry3() {
 	
 }
 
+void Geometry3::Initialize() {
+	Serial::EcsVideoBase::Latest().AddBinder(this);
+}
+
 void Geometry3::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
@@ -127,8 +131,4 @@ void Geometry3::ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right)
 	else			s.shape->Move(vec2 {+1, 0});
 }
 
-
-
-RENDER_APP_MAIN {
-	SimpleEngineMain<Geometry3>("Geometry3 tutorial");
-}
+SIMPLE_ECS_APP(Geometry3, "geom_tutorial_base.eon")

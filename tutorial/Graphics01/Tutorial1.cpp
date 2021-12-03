@@ -9,24 +9,33 @@ Tutorial 1:
 */
 
 using namespace TS;
+using namespace TS::Ecs;
 
 
-struct Tutorial1 : public Component<Tutorial1>, public DisplaySink {
+struct Tutorial1 :
+	public Component<Tutorial1>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(Tutorial1, ComponentT, BinderIfaceVideo)
+	
 	ModelLoader loader;
+	CpuShader shader;
+	CpuFramebufferState state;
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
-	
-	Tutorial1() {
+	Tutorial1() : shader(state) {
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
-		if (!loader.LoadModel(obj_path))
+		if (!loader.LoadModel(shader, state.NewObject(), obj_path))
 			Panic("Couldn't load model: " + obj_path);
 	}
 	void operator=(const Tutorial1&) {}
-	void Visit(RuntimeVisitor& vis) override {TODO}
+	void Visit(RuntimeVisitor& vis) override {}
 	
-	void Render(SystemDraw& fb) override {
+	void Initialize() override {
+		Serial::EcsVideoBase::Latest().AddBinder(this);
+	}
+	
+	void Render(Draw& fb) override {
 		Size sz = fb.GetPageSize();
 		fb.DrawRect(sz, Black());
 		
@@ -55,9 +64,11 @@ struct Tutorial1 : public Component<Tutorial1>, public DisplaySink {
 		
 		int height = std::min(sz.cy, sz.cx);
 		int width = height;
-		Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
-		for(EntityRef& e : store->GetEntities()) {
-			if (loader.model) for(const Mesh& mesh : loader.model->GetMeshes()) {
+		Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
+		PoolRef p = store->GetRoot();
+		for(EntityRef& e : p->GetEntities()) {
+			auto model = loader.GetModel();
+			if (model) for(const Mesh& mesh : model->GetMeshes()) {
 				int tri_count = mesh.GetTriangleCount();
 				
 				for(int i = 0; i < tri_count; i++) {
@@ -80,6 +91,4 @@ struct Tutorial1 : public Component<Tutorial1>, public DisplaySink {
 };
 
 
-RENDER_APP_MAIN {
-	SimpleEngineMain<Tutorial1>("Tutorial1");
-}
+SIMPLE_ECS_APP(Tutorial1, "geom_tutorial_base.eon")

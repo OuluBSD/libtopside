@@ -15,5 +15,6 @@ file
 	iml_source.h,
 	SDraw.h,
 	SDraw.cpp,
+	SImageDraw.cpp,
 	Chameleon.h;
 

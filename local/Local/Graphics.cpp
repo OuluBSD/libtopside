@@ -30,6 +30,8 @@ void RenderingVerifier::OnUpdateVar(String key) {
 }
 
 void RenderingVerifier::OnRealizeObject(int id) {
+	// TODO fix: id is per state, not global
+	#if 0
 	if (objs.Find(id) >= 0)
 		Panic("RenderingVerifier: object '" + IntStr(id) + "' already added");
 	
@@ -40,9 +42,12 @@ void RenderingVerifier::OnRealizeObject(int id) {
 	o.updated_proj = false;
 	o.updated_scale = false;
 	o.updated_model = false;
+	#endif
 }
 
 void RenderingVerifier::OnUpdateObject(int id, int var) {
+	// TODO fix: id is per state, not global
+	#if 0
 	int i = objs.Find(id);
 	if (i < 0)
 		Panic("RenderingVerifier: object '" + IntStr(id) + "' not realized");
@@ -56,6 +61,7 @@ void RenderingVerifier::OnUpdateObject(int id, int var) {
 		case MODEL:		o.updated_model = true; break;
 		default: Panic("invalid var");
 	}
+	#endif
 }
 
 void RenderingVerifier::OnProcess() {

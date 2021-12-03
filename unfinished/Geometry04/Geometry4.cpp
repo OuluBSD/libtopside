@@ -129,13 +129,15 @@ void Geometry4::ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right)
 
 
 void Geometry4::Initialize() {
-	Entity& e = GetEntity();
-	Machine& m = e.GetMachine();
+	Serial::EcsVideoBase::Latest().AddBinder(this);
 	
-	quad = e.Add<QuadtreeComponent>();
+	EntityRef e = GetEntity();
+	Engine& m = e->GetEngine();
+	
+	quad = e->Add<QuadtreeComponent>();
 	ASSERT(quad);
 	
-	Ref<EntityStore> es = m.Get<EntityStore>();
+	Ref<EntityStore> es = m->Get<EntityStore>();
 	for(int i = 0; i < 5; i++) {
 		EntityRef c = es->CreateEmpty();
 		c->Add<Connector>();
@@ -174,8 +176,4 @@ void Geometry4::Initialize() {
 	
 }
 
-
-
-RENDER_APP_MAIN {
-	SimpleEngineMain<Geometry4>("Geometry4 tutorial");
-}
+SIMPLE_ECS_APP(Geometry4, "geom_tutorial_base.eon")

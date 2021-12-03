@@ -156,6 +156,8 @@ public:
 		textures.Clear();
 	}
 	
+    void Visit(RuntimeVisitor& vis) {/*vis | meshes | textures;*/}
+    
 	void operator=(const ModelMesh& src) {
         textures <<= src.textures;
         meshes <<= src.meshes;
@@ -190,6 +192,7 @@ public:
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
+    void Visit(RuntimeVisitor& vis) {if (model) vis % *model;}
 	
 	Ref<ModelMesh> GetModel() {return model ? model->AsRefT() : Null;}
 	

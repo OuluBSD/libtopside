@@ -3,26 +3,28 @@
 
 #include <EcsComplete/EcsComplete.h>
 using namespace TS;
+using namespace TS::Ecs;
 
 
 
-struct Geometry2 : public Component<Geometry2>, public DisplaySink {
+struct Geometry2 :
+	public Component<Geometry2>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(Geometry2, ComponentT, BinderIfaceVideo)
+	
 	TimeStop ts;
 	int phase = 0;
 	int phases = 8;
 	int phase_ms = 1000;
 	float prev_phase_f = 0;
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
-	
 	Geometry2();
 	~Geometry2();
+	void Initialize() override;
 	void operator=(const Geometry2& t) {Panic("Can't copy Geometry2");}
-	
 	void DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color clr);
 	void Render(Draw& draw) override;
-	COMP_DEF_VISIT
 	
 };
 

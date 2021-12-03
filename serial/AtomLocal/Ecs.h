@@ -41,7 +41,8 @@ class EcsVideoBase :
 	EnvStateRef		state;
 	int				prev_iter = -1;
 	ValCls			src_type;
-	ProgDraw		d;
+	ProgDraw		pd;
+	ImageDraw		id;
 	
 	static EcsVideoBase* latest;
 	

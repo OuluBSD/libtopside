@@ -9,6 +9,10 @@ Geometry2::~Geometry2() {
 	
 }
 
+void Geometry2::Initialize() {
+	Serial::EcsVideoBase::Latest().AddBinder(this);
+}
+
 void Geometry2::Render(Draw& draw) {
 	draw.DrawRect(draw.GetPageSize(), Black());
 	
@@ -222,7 +226,4 @@ void Geometry2::DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color cl
 }
 
 
-
-RENDER_APP_MAIN {
-	SimpleEngineMain<Geometry2>("Geometry2 tutorial");
-}
+SIMPLE_ECS_APP(Geometry2, "geom_tutorial_base.eon")

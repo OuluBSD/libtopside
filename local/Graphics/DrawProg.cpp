@@ -44,9 +44,11 @@ void DrawProg::DrawLine(const DrawCommand& cmd) {
 }
 
 void DrawProg::DrawImage(const DrawCommand& cmd) {
-	
-	TODO
-	
+	int x0 = cmd.i[0];
+	int y0 = cmd.i[1];
+	((Draw*)this)->DrawImage(
+		x0, y0,
+		cmd.img);
 }
 
 void DrawProg::DrawRect(const DrawCommand& cmd) {
@@ -60,33 +62,30 @@ void DrawProg::DrawRect(const DrawCommand& cmd) {
 }
 
 void DrawProg::DrawTriangles(const DrawCommand& cmd) {
-	
-	TODO
-	
+	thread_local static Vector<Point> v;
+	v.SetCount(0);
+	for (const Trif& t : cmd.triangles) {
+		v << Point(t.a.x, t.a.y)
+		  << Point(t.c.x, t.c.y)
+		  << Point(t.b.x, t.b.y);
+		((Draw*)this)->DrawPolygon(v, cmd.clr);
+	}
 }
 
 void DrawProg::DrawPolyline(const DrawCommand& cmd) {
-	
-	TODO
-	
+	((Draw*)this)->DrawPolyline(cmd.pts, 1, cmd.clr);
 }
 
 void DrawProg::DrawPolygon(const DrawCommand& cmd) {
-	
-	TODO
-	
+	((Draw*)this)->DrawPolygon(cmd.pts, cmd.clr);
 }
 
 void DrawProg::DrawOffset(const DrawCommand& cmd) {
-	
 	TODO
-	
 }
 
 void DrawProg::DrawEnd(const DrawCommand& cmd) {
-	
 	TODO
-	
 }
 
 

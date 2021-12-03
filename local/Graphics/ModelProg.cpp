@@ -177,7 +177,7 @@ void ModelProg::DrawPolyline(const DrawCommand& cmd) {
 	ModelMesh model;
 	Mesh& mesh = model.meshes.Add();
 	mesh.vertices.Reserve(2);
-	const Pointf *a = &cmd.pts[0];
+	const Point *a = &cmd.pts[0];
 	for(int i = 0; i < cmd.pts.GetCount(); i++, a++) {
 		float pos_x = a->x;
 		float pos_y = a->y;

@@ -29,12 +29,12 @@ void ProgPainter::DrawLine(int x0, int y0, int x1, int y1, int line_width, RGBA 
 		cmd.clr = c;
 	}
 	else {
-		Pointf a(x0, y0), b(x1, y1);
-		Pointf off = GetOffsets(a, b, line_width);
-		Pointf p0a(a.x - off.x, a.y - off.y);
-		Pointf p1a(b.x - off.x, b.y - off.y);
-		Pointf p0b(a.x + off.x, a.y + off.y);
-        Pointf p1b(b.x + off.x, b.y + off.y);
+		Point a(x0, y0), b(x1, y1);
+		Point off = GetOffsets(a, b, line_width);
+		Point p0a(a.x - off.x, a.y - off.y);
+		Point p1a(b.x - off.x, b.y - off.y);
+		Point p0b(a.x + off.x, a.y + off.y);
+        Point p1b(b.x + off.x, b.y + off.y);
         
 		DrawCommand& cmd = GetNext();
 		cmd.type = DRAW_TRIANGLES;
@@ -112,7 +112,7 @@ void ProgPainter::DrawTextOp(int x, int y, int angle, const wchar *text, Font fo
 	TODO
 }
 
-void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c) {
+void ProgPainter::DrawPolyline(const Vector<Point>& pts, int line_width, RGBA c) {
 	ASSERT(pts.GetCount() >= 3);
 	DrawCommand& cmd = GetNext();
 	cmd.clr = c;
@@ -127,8 +127,8 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 		tmp0.SetCount(pts.GetCount()-1);
 		tmp1.SetCount(0);
 		angles.SetCount(pts.GetCount()-1);
-		const Pointf* a = NULL;
-		const Pointf* b = &pts[0];
+		const Point* a = NULL;
+		const Point* b = &pts[0];
 		for(int i = 0; i < pts.GetCount()-1; i++) {
 			a = b;
 			b = &pts[i+1];
@@ -143,9 +143,9 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 		}
 		a = NULL;
 		b = &pts[0];
-		const Pointf* c = &pts[1];
+		const Point* c = &pts[1];
 		double a0, a1 = angles[0];
-		Pointf* o0, *o1 = &tmp0[0];
+		Point* o0, *o1 = &tmp0[0];
 		
 		// Loop "left side"
 		for(int i = 0; i < angles.GetCount()-1; i++) {
@@ -159,10 +159,10 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 			o0 = o1;
 			o1 = &tmp0[i+1];
 			
-			Pointf al	(a->x - o0->x, a->y - o0->y);
-			Pointf b0l	(b->x - o0->x, b->y - o0->y);
-			Pointf b1l	(b->x - o1->x, b->y - o1->y);
-			Pointf cl	(c->x - o1->x, c->y - o1->y);
+			Point al	(a->x - o0->x, a->y - o0->y);
+			Point b0l	(b->x - o0->x, b->y - o0->y);
+			Point b1l	(b->x - o1->x, b->y - o1->y);
+			Point cl	(c->x - o1->x, c->y - o1->y);
 			
 			if (!i)
 				tmp1.Add(al);
@@ -171,7 +171,7 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 				tmp1.Add(b0l);
 			}
 			else if (diff > 0) {
-				Pointf is = Intersect(al, b0l, b1l, cl);
+				Point is = Intersect(al, b0l, b1l, cl);
 				tmp1.Add(is);
 			}
 			else {
@@ -199,10 +199,10 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 			o1 = o0;
 			o0 = &tmp0[i];
 			
-			Pointf ar	(a->x + o0->x, a->y + o0->y);
-			Pointf b0r	(b->x + o0->x, b->y + o0->y);
-			Pointf b1r	(b->x + o1->x, b->y + o1->y);
-			Pointf cr	(c->x + o1->x, c->y + o1->y);
+			Point ar	(a->x + o0->x, a->y + o0->y);
+			Point b0r	(b->x + o0->x, b->y + o0->y);
+			Point b1r	(b->x + o1->x, b->y + o1->y);
+			Point cr	(c->x + o1->x, c->y + o1->y);
 			
 			if (i == angles.GetCount()-2)
 				tmp1.Add(cr);
@@ -211,7 +211,7 @@ void ProgPainter::DrawPolyline(const Vector<Pointf>& pts, int line_width, RGBA c
 				tmp1.Add(b0r);
 			}
 			else if (diff < 0) {
-				Pointf is = Intersect(ar, b0r, b1r, cr);
+				Point is = Intersect(ar, b0r, b1r, cr);
 				tmp1.Add(is);
 			}
 			else {
@@ -241,7 +241,7 @@ void ProgPainter::DrawPolyPolylineOp(const Point *vertices, int vertex_count,
 	TODO
 }
 
-void ProgPainter::DrawPolygon(const Vector<Pointf>& pts, RGBA c) {
+void ProgPainter::DrawPolygon(const Vector<Point>& pts, RGBA c) {
 	DrawCommand& cmd = GetNext();
 	cmd.type = DRAW_TRIANGLES;
 	cmd.clr = c;
@@ -295,6 +295,26 @@ void ProgPainter::Link() {
 	}
 	
 	ASSERT(begin->next != begin);
+}
+
+void ProgPainter::Clear() {
+	DrawCommand* free_begin = NULL;
+	DrawCommand* free_end = NULL;
+	if (begin->next != end) {
+		free_begin = begin->next;
+		free_end = end->prev;
+	}
+	
+	if (free_begin) {
+		DrawCommand* free = free_begin;
+		while (free && free != free_end) {
+			if (free->is_cached)
+				DrawCommandCache::Local().Return(free);
+			free = free->next;
+		}
+		begin->next = 0;
+		end->prev = 0;
+	}
 }
 
 

@@ -41,7 +41,7 @@ Tutorial4::~Tutorial4() {
 
 void Tutorial4::Begin() {trans_lines <<= lines;}
 
-void Tutorial4::DrawLine(SystemDraw& fb, const line3& l, Color clr) {
+void Tutorial4::DrawLine(Draw& fb, const line3& l, Color clr) {
 	double mul = 0.2;
 	int x0 = (l.a[0] * mul + 1.0) * width * 0.5;
 	int x1 = (l.b[0] * mul + 1.0) * width * 0.5;
@@ -50,7 +50,7 @@ void Tutorial4::DrawLine(SystemDraw& fb, const line3& l, Color clr) {
 	fb.DrawLine(x0, y0, x1, y1, 1, clr);
 }
 
-void Tutorial4::Draw(SystemDraw& fb) {
+void Tutorial4::Draw(Draw& fb) {
 	DrawLine(fb, unit_x, red);
 	DrawLine(fb, unit_y, green);
 	for(line3& l: lines)       DrawLine(fb, l, white);
@@ -88,7 +88,7 @@ void Tutorial4::Project() {
 	}
 }
 
-void Tutorial4::Render(SystemDraw& fb) {
+void Tutorial4::Render(Draw& fb) {
 	Size sz = fb.GetPageSize();
 	height = width = std::min(sz.cx, sz.cy);
 	fb.DrawRect(sz, Black());

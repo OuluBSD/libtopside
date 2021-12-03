@@ -23,8 +23,9 @@ public:
 
 class ImageDraw : public SImageDraw {
 public:
-	ImageDraw(Size sz) {}
-	ImageDraw(int cx, int cy) {}
+	ImageDraw() {}
+	ImageDraw(Size sz) : SImageDraw(sz) {}
+	ImageDraw(int cx, int cy) : SImageDraw(cx, cy) {}
 	
 };
 

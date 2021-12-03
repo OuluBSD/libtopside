@@ -298,6 +298,8 @@ bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 		src->Link(ep, sink, src_cookie, sink_cookie);
 		ep->Init(this);
 		ep->Set(src, sink, src_cookie, sink_cookie);
+		src_atom->SetPrimarySink(dst_atom);
+		dst_atom->SetPrimarySource(src_atom);
 		return true;
 	}
 	return false;

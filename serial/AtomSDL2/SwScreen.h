@@ -26,7 +26,9 @@ public:
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
+	void			Update(double dt) final;
 	//bool			PassConsumePacket(int sink_ch, const Packet& in) override;
+	bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
 	
 	OOSDL2::Component& GetObj() override {return *obj;}
 	OOSDL2::SwScreen* GetOOSDL2() {return &*obj;}

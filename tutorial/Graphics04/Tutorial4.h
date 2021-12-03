@@ -33,8 +33,8 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	
 	void Begin();
-	void DrawLine(SystemDraw& fb, const line3& l, Color clr);
-	void Draw(SystemDraw& fb);
+	void DrawLine(Draw& fb, const line3& l, Color clr);
+	void Draw(Draw& fb);
 	void MultiplyBy(mat2 v);
 	void MultiplyBy(mat3 v);
 	void Add(vec2 v);
@@ -43,9 +43,9 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	
 	
 	vec3 Barycentric(vec3 pts[3], vec2 P);
-	void Triangle4(SystemDraw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img,
+	void Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img,
 		float intensity, bool have_noise);
-	void DrawObj(float f2, SystemDraw& fb, bool use_texture);
+	void DrawObj(float f2, Draw& fb, bool use_texture);
 	
 };
 

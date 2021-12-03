@@ -31,10 +31,13 @@ public:
 	
 protected:
 	friend class ScriptLoopLoader;
+	friend class Loop;
 	
 	int						id = -1;
 	
-	void SetId(int i) {id = i;}
+	void					SetId(int i) {id = i;}
+	void					SetPrimarySink(AtomBaseRef b) {prim_link_sink = b;}
+	void					SetPrimarySource(AtomBaseRef b) {prim_link_src = b;}
 	
 protected:
 	struct CustomerData {
@@ -62,7 +65,7 @@ protected:
 	RealtimeSourceConfig*	last_cfg = 0;
 	IfaceConnTuple			iface;
 	LinkedList<Exchange>	side_sink_conn, side_src_conn;
-	
+	AtomBaseRef				prim_link_sink, prim_link_src;
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
 	void					ForwardDriver(FwdScope& fwd);
@@ -71,10 +74,11 @@ protected:
 	
 	bool					IsPacketStuck() override;
 	bool					IsLoopComplete(FwdScope& fwd) override {return false;}
-	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & driver_conn;}
+	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src & driver_conn;}
 	bool					IsAllSideSourcesFull(const Vector<int>& src_chs);
 	bool					IsAnySideSourceFull(const Vector<int>& src_chs);
 	bool					IsPrimarySourceFull();
+	
 	
 public:
 	virtual AtomTypeCls		GetType() const = 0;

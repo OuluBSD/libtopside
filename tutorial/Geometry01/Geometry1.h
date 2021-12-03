@@ -21,8 +21,8 @@ struct Geometry1 :
 	Geometry1();
 	~Geometry1();
 	void Initialize() override;
-	void operator=(const Geometry1& t) {Panic("Can't copy Geometry1");}
 	void Render(Draw& draw) override;
+	void operator=(const Geometry1& t) {Panic("Can't copy Geometry1");}
 	
 };
 
