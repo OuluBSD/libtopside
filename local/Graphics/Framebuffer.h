@@ -26,12 +26,15 @@ public:
 	
 };
 
-class DrawFramebuffer : public Draw {
+class DrawFramebuffer : public StateDraw {
 public:
-	RTTI_DECL1(DrawFramebuffer, Draw)
+	RTTI_DECL1(DrawFramebuffer, StateDraw)
 	
 	virtual Renderer* GetRenderer() = 0;
 	virtual Framebuffer* GetFramebuffer() = 0;
+	
+	virtual void DrawShaderPipeline(ShaderPipeline&) {Panic("not implemented");}
+	
 	
 };
 

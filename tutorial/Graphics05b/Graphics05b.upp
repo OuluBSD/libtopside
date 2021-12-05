@@ -1,0 +1,13 @@
+description "Moving the camera (with CpuShader)\377";
+
+uses
+	EcsComplete;
+
+file
+	Tutorial5b.h,
+	Tutorial5b.cpp,
+	DrawObj.cpp;
+
+mainconfig
+	"" = "SCREEN";
+

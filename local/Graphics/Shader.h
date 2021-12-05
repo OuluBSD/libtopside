@@ -4,11 +4,25 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class Shader {
+class Shader;
+
+
+class ShaderPipeline : RTTIBase {
+	
+public:
+	RTTI_DECL0(ShaderPipeline)
+	ShaderPipeline() {}
+	
+	
+};
+
+
+class Shader : RTTIBase {
 	Vector<mat4> stack;
 	
 	
 public:
+	RTTI_DECL0(Shader)
 	
 	virtual ~Shader() {}
 	

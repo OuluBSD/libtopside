@@ -51,6 +51,7 @@ public:
 	
 };
 
+
 class OglDrawFramebuffer : public DrawFramebuffer {
 public:
 	RTTI_DECL1(OglDrawFramebuffer, DrawFramebuffer)
@@ -61,16 +62,6 @@ public:
 	Renderer* GetRenderer() override {return rend;}
 	Framebuffer* GetFramebuffer() override {return fb;}
 	
-	Size GetPageSize() const override {return rend ? rend->GetSize() : Size(0,0);}
-	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
-	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
-	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		             Color ink, int n, const int *dx) override;
-	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
-	                        const int *counts, int count_count,
-	                        int width, Color color, Color doxor) override;
-	bool ClipOp(const Rect& r) override;
-	void EndOp() override;
 	
 };
 

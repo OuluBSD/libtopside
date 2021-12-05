@@ -104,7 +104,7 @@ void CpuRenderer::PostFrame() {
 
 
 
-
+#if 0
 
 void CpuDrawFramebuffer::DrawImageMemory(const byte* mem, int sz, int x, int y, int w, int h, int ch_var_size, int channels) {
 	int w0 = fb->GetWidth();
@@ -179,6 +179,72 @@ bool CpuDrawFramebuffer::ClipOp(const Rect& r) {
 
 void CpuDrawFramebuffer::EndOp() {
 	TODO
+}
+
+#endif
+
+
+
+void CpuDrawFramebuffer::DrawShaderPipeline(ShaderPipeline& p) {
+	if (CpuShaderPipeline* cpu = CastPtr<CpuShaderPipeline>(&p)) {
+		DrawShaderPipeline(*cpu);
+	}
+	else {
+		Panic("CpuDrawFramebuffer::DrawShaderPipeline: invalid pipeline type");
+	}
+}
+
+void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
+	ASSERT(p.state);
+	if (!p.state) return;
+	
+	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+		if (!p.stages[i])
+			continue;
+		
+		CpuShader* sp = CastPtr<CpuShader>(p.stages[i]);
+		if (!sp) {
+			ASSERT_(0, "Unexpected shared added to pipeline");
+			continue;
+		}
+		
+		CpuShader& s = *sp;
+		
+		
+		if (i == ShaderVar::PROG_VERTEX) {
+			for (CpuFramebufferObject& o : p.state->objects) {
+				int vtx_count = 0;
+				TODO
+				for(int j = 0; j < vtx_count; j++) {
+					vec3 pos;
+					vec3 normal;
+					vec2 tex_coords;
+					vec4 pos_out;
+					vec2 tex_coord_out;
+					CpuVertexShaderArgs args {
+						*p.state,
+						o,
+						pos,
+						normal,
+						tex_coords,
+						pos_out,
+						tex_coord_out
+					};
+					TODO
+					s.Process(args);
+				}
+			}
+		}
+		else if (i == ShaderVar::PROG_FRAGMENT) {
+			s.Process(*p.state);
+		}
+		else {
+			TODO
+		}
+		
+		
+	}
+	
 }
 
 NAMESPACE_TOPSIDE_END

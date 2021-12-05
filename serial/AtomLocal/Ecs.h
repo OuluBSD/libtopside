@@ -40,9 +40,14 @@ class EcsVideoBase :
 	String			target;
 	EnvStateRef		state;
 	int				prev_iter = -1;
-	ValCls			src_type;
+	ValDevCls		src_type;
 	ProgDraw		pd;
 	ImageDraw		id;
+	StateDraw		sd;
+	CpuFramebufferState	cpu_state;
+	#if HAVE_OPENGL
+	OglFramebufferState	ogl_state;
+	#endif
 	
 	static EcsVideoBase* latest;
 	

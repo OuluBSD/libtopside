@@ -16,7 +16,8 @@ public:
 	void DrawHLine(int x0, int x1, int y, Color color);
 	void DrawLine(int x0, int y0, int x1, int y1, Color color);
 	//void DrawLine(const vec2& a, const vec2& b, byte* color) {DrawLine(a[0], a[1], b[0], b[1], color);}
-	
+	static void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color);
+	static byte AtRGBA(RGBA rgba, int i);
 };
 
 
@@ -90,18 +91,8 @@ public:
 	Renderer* GetRenderer() override {return rend;}
 	Framebuffer* GetFramebuffer() override {return fb;}
 	
-	Size GetPageSize() const override {return rend ? rend->GetSize() : Size(0,0);}
-	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
-	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
-	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
-		             Color ink, int n, const int *dx) override;
-	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
-	                        const int *counts, int count_count,
-	                        int width, Color color, Color doxor) override;
-	bool ClipOp(const Rect& r) override;
-	void EndOp() override;
-	
-	void DrawImageMemory(const  byte* mem, int sz, int x, int y, int w, int h, int ch_var_size, int channels);
+	void DrawShaderPipeline(ShaderPipeline&) override;
+	void DrawShaderPipeline(CpuShaderPipeline&);
 	
 };
 

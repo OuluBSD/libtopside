@@ -1,7 +1,7 @@
-#include "Tutorial5.h"
+#include "Tutorial5c.h"
 
-
-vec3 Tutorial5::Barycentric(vec3 pts[3], vec2 P) {
+#if 0
+vec3 Tutorial5c::Barycentric(vec3 pts[3], vec2 P) {
 	vec3 u = cross(
 		vec3(	pts[2][0] - pts[0][0],
 				pts[1][0] - pts[0][0],
@@ -20,7 +20,7 @@ vec3 Tutorial5::Barycentric(vec3 pts[3], vec2 P) {
 		              u[0]  / u[2]);
 }
 
-void Tutorial5::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, float intensity, bool have_noise) {
+void Tutorial5c::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, float intensity, bool have_noise) {
 	int w = width;
 	int h = height;
 	vec2 bboxmin(w - 1,  h - 1);
@@ -76,8 +76,12 @@ void Tutorial5::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, 
 		}
 	}
 }
+#endif
 
-void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
+void Tutorial5c::DrawObj(StateDraw& fb, bool use_texture) {
+	ASSERT(fb.HasTarget());
+	FramebufferState& state = fb.GetState();
+	
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
 	float angle = f * (2.0 * M_PI);
@@ -114,10 +118,11 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 	mat4 lookat = LookAt(eye, center, up);
 	mat4 port = GetViewport(-1 + x_mod, -1 + y_mod, 2 - y_mod, 2 + y_mod, 255);
 	
-	mat4 view;
-	if (phase == 0) view = perspective * lookat;
-	if (phase == 1) view = port * perspective * lookat;
+	if (phase == 0)	state.view = perspective * lookat;
+	else			state.view = port * perspective * lookat;
 	
+	
+	#if 0
 	Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
 	PoolRef p = store->GetRoot();
@@ -157,4 +162,33 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 			}
 		}
 	}
+	#endif
+}
+
+void VertexShader5::Process(OglVertexShaderArgs& a) {
+	/*#version 330 core
+	layout (location = 0) in vec3 aPos;
+	layout (location = 1) in vec3 aNormal;
+	layout (location = 2) in vec2 aTexCoords;
+	
+	out vec2 TexCoords;
+	
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
+	
+	void main()
+	{
+	    TexCoords = aTexCoords;
+	    gl_Position = projection * view * model * vec4(aPos, 1.0);
+	}*/
+	
+	TODO
+	
+}
+
+void FragmentShader5::Process(OglFragmentShaderArgs& state) {
+	
+	TODO
+	
 }

@@ -4,6 +4,8 @@ NAMESPACE_UPP
 
 class SystemDraw : public Draw {
 public:
+	RTTI_DECL1(SystemDraw, Draw)
+	
 	virtual dword GetInfo() const;
 	virtual Size  GetPageSize() const;
 

@@ -46,11 +46,22 @@ public:
 };
 
 
+class ProgCpuShader : public CpuShader {
+	
+	
+public:
+	using CpuShader::CpuShader;
+	
+	void Process(CpuFramebufferState& state) override {TODO}
+	
+};
+
+
 class ProgDraw : public Draw {
 	One<ProgPainter> d;
 	CpuFramebufferObject fb;
 	CpuFramebufferState state;
-	CpuShader shader;
+	ProgCpuShader shader;
 	
 	Size GetFrameSize() const {return state.size;}
 	
@@ -60,6 +71,7 @@ public:
 	
 	
 public:
+	RTTI_DECL1(ProgDraw, Draw)
 	ProgDraw();
 	ProgDraw(Size sz);
 	ProgDraw(int w, int h);
@@ -113,6 +125,7 @@ public:
 class DrawProg : public DrawProxy {
 	
 public:
+	RTTI_DECL1(DrawProg, DrawProxy)
 	DrawProg();
 	void Process(const DrawCommand* ptr);
 	

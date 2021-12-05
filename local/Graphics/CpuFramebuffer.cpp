@@ -3,14 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void CpuFramebuffer::Zero() {
-	int pitch = GetPitch();
-	int height = GetHeight();
-	byte* begin = GetIterator(0, 0);
-	memset(begin, 0, height*pitch);
-}
 
-void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color) {
+void CpuFramebuffer::DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color) {
 	ASSERT(data);
 	data += x * stride + y * pitch;
 	RGBA c = color;
@@ -30,6 +24,18 @@ void DrawPixel0(byte* data, int stride, int pitch, int x, int y, Color color) {
 		for(int i = 0; i < stride; i++)
 			data[i] = gray;
 	}
+	
+}
+
+byte CpuFramebuffer::AtRGBA(RGBA rgba, int i) {
+	ASSERT(i >= 0 && i < 4);
+	switch (i) {
+		case 0: return rgba.r;
+		case 1: return rgba.g;
+		case 2: return rgba.b;
+		case 3: return rgba.a;
+	}
+	return 0;
 }
 
 void CpuFramebuffer::DrawPixel(int x, int y, RGBA color) {
@@ -41,7 +47,7 @@ void CpuFramebuffer::DrawPixel(int x, int y, RGBA color) {
 		byte* it = GetIterator(x, y);
 		ASSERT(it);
 		for(int i = 0; i < stride; i++)
-			it[i] = TS::AtRGBA(color, i);
+			it[i] = AtRGBA(color, i);
 	}
 }
 
@@ -155,12 +161,6 @@ void CpuFramebuffer::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 		}
 	}
 }
-
-
-
-
-
-
 
 
 NAMESPACE_TOPSIDE_END

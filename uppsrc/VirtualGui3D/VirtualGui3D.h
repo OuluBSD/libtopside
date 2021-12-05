@@ -10,6 +10,7 @@ namespace UPP {
 
 class SystemDraw : public DrawProxy {
 public:
+	RTTI_DECL1(SystemDraw, DrawProxy)
 	bool    CanSetSurface()                         { return false; }
 	static void Flush()                             {}
 };

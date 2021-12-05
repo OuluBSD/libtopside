@@ -127,7 +127,7 @@ void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pi
 	}
 }
 
-void OglFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
+/*void OglFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
 	this->model = model;
 	this->scale = scale;
 	if (proj) this->proj = *proj;
@@ -160,7 +160,7 @@ void OglFramebufferObject::SetView(const mat4& m) {
 	view = m;
 	is_global_view = false;
 	RendVer2(OnUpdateObject, id, RenderingVerifier::VIEW);
-}
+}*/
 
 void OglFramebufferObject::FreeOgl() {
 	if (VBO) {
@@ -386,7 +386,7 @@ FramebufferObject& OglFramebufferState::NewObject() {
 }
 
 FramebufferObject* OglShader::CreateObject() {
-	return &state.NewObject();
+	return &state->NewObject();
 }
 
 #if 0
@@ -524,6 +524,40 @@ int OglFramebufferState::GetGlSampleSize() const {
 	return 0;
 }
 
+
+
+
+OglShaderPipeline::OglShaderPipeline() {
+	Clear();
+}
+
+void OglShaderPipeline::Clear() {
+	state = 0;
+	for(int i = 0; i < ShaderVar::PROG_COUNT; i++)
+		stages[i] = 0;
+}
+
+void OglShaderPipeline::LoadState(OglFramebufferState& state) {
+	Clear();
+	
+	this->state = &state;
+	AppendState(state);
+}
+
+void OglShaderPipeline::AppendState(OglFramebufferState& state) {
+	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+		if (state.stages[i])
+			stages[i] = CastPtr<OglShader>(state.stages[i]);
+	}
+}
+
+
+void DrawOglShaderPipeline(OglShaderPipeline& pipe) {
+	// compare CpuDrawFramebuffer::DrawShaderPipeline
+	
+	TODO
+	
+}
 
 NAMESPACE_TOPSIDE_END
 

@@ -45,5 +45,4 @@ void Tutorial5::Render(Draw& fb) {
 	}
 }
 
-
 SIMPLE_ECS_APP(Tutorial5, "geom_tutorial_base.eon")

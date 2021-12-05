@@ -327,6 +327,22 @@ public:
 #endif
 
 #if defined flagSCREEN
+class EcsOglFbo : public Atom<EcsOglFbo>, public EcsVideoBase {
+
+public:
+	RTTI_DECL2(EcsOglFbo, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsOglFbo)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
 
 public:
@@ -729,6 +745,8 @@ using EcsEventsAtomRef = Ref<EcsEventsAtom, AtomParent>;
 using EcsSwVideoRef = Ref<EcsSwVideo, AtomParent>;
 
 using EcsProgVideoRef = Ref<EcsProgVideo, AtomParent>;
+
+using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 

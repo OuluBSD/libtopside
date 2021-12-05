@@ -205,8 +205,8 @@ protected:
 	Size					screen_sz;
 	String					title;
 	SDL_GLContext			glcontext = 0;
-	OglRenderer			hw_rend;
-	OglDrawFramebuffer	hw_draw;
+	OglRenderer				hw_rend;
+	OglDrawFramebuffer		hw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool is_opengl = false;

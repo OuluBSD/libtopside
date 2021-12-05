@@ -30,11 +30,11 @@ struct OglFramebufferObject : FramebufferObject {
     void Paint() override;
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override;
     
-    void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) override;
+    /*void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) override;
     void SetModel(const mat4& m) override;
     void SetScale(const mat4& m) override;
     void SetProjection(const mat4& m) override;
-    void SetView(const mat4& m) override;
+    void SetView(const mat4& m) override;*/
     
 	/*void SetBool(const String &name, bool value) const override;
 	void SetInt(const String &name, int value) const override;
@@ -118,6 +118,20 @@ struct OglFramebufferState : FramebufferState {
 	void Clear() {Free(); Reset(); Default();}*/
 };
 
+struct OglVertexShaderArgs {
+	OglFramebufferState& state;
+	OglFramebufferObject& obj;
+	const vec3& pos;
+	const vec3& normal;
+	const vec2& tex_coords;
+	vec4& pos_out;
+	vec2& tex_coord_out;
+};
+
+struct OglFragmentShaderArgs {
+	
+};
+
 class OglShader :
 	public Shader,
 	public ErrorReporter
@@ -129,11 +143,13 @@ class OglShader :
     void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
     #endif
     
-    OglFramebufferState& state;
+    OglFramebufferState* state = 0;
     
     
 public:
-	OglShader(OglFramebufferState& s) : state(s) {}
+	RTTI_DECL1(OglShader, Shader)
+	OglShader() {}
+	OglShader(OglFramebufferState& s) : state(&s) {}
 	
 	#if 0
 	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
@@ -160,12 +176,38 @@ public:
 	
 	FramebufferObject* CreateObject() override;
 	
+	virtual void Process(OglVertexShaderArgs& args) {Panic("not implemented");}
+	virtual void Process(OglFragmentShaderArgs& args) {Panic("not implemented");}
+	
 private:
 	
 	
 	bool CheckCompileErrors(GLuint shader, String type);
 	
 };
+
+class OglShaderPipeline :
+	public ShaderPipeline
+{
+	
+public:
+	OglFramebufferState* state = 0;
+	OglShader* stages[ShaderVar::PROG_COUNT];
+	
+public:
+	RTTI_DECL1(OglShaderPipeline, ShaderPipeline)
+	
+	OglShaderPipeline();
+	
+	void Clear();
+	void LoadState(OglFramebufferState& state);
+	void AppendState(OglFramebufferState& state);
+	void SetVertex(OglShader& s) {stages[ShaderVar::PROG_VERTEX] = &s;}
+	void SetFragment(OglShader& s) {stages[ShaderVar::PROG_FRAGMENT] = &s;}
+	
+};
+
+void DrawOglShaderPipeline(OglShaderPipeline& pipe);
 
 
 NAMESPACE_TOPSIDE_END

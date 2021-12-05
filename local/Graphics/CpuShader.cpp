@@ -9,7 +9,7 @@ void CpuFramebufferObject::Paint() {
 void CpuFramebufferObject::MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) {
 	TODO
 }
-
+/*
 void CpuFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
 	TODO
 }
@@ -28,7 +28,7 @@ void CpuFramebufferObject::SetProjection(const mat4& m) {
 
 void CpuFramebufferObject::SetView(const mat4& m) {
 	TODO
-}
+}*/
 
 
 
@@ -42,7 +42,7 @@ FramebufferObject& CpuFramebufferState::NewObject() {
 
 
 FramebufferObject* CpuShader::CreateObject() {
-	return &state.NewObject();
+	return &state->NewObject();
 }
 
 /*
@@ -112,5 +112,36 @@ void Mesh::RefreshSw(FramebufferObject& o) {
 void Mesh::RefreshSw(CpuFramebufferObject& o) {
 	// pass?
 }
+
+
+
+
+
+
+CpuShaderPipeline::CpuShaderPipeline() {
+	Clear();
+}
+
+void CpuShaderPipeline::LoadState(CpuFramebufferState& state) {
+	Clear();
+	
+	this->state = &state;
+	AppendState(state);
+}
+
+void CpuShaderPipeline::AppendState(CpuFramebufferState& state) {
+	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+		if (state.stages[i])
+			stages[i] = CastPtr<CpuShader>(state.stages[i]);
+	}
+}
+
+void CpuShaderPipeline::Clear() {
+	state = 0;
+	for(int i = 0; i < ShaderVar::PROG_COUNT; i++)
+		stages[i] = 0;
+}
+
+
 
 NAMESPACE_TOPSIDE_END

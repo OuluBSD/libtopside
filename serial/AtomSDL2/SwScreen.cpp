@@ -65,7 +65,6 @@ void SDL2SwScreenBase::Update(double dt) {
 			else
 				buf.SetFramebufferSize(video_size);
 		}*/
-		
 	}
 }
 

@@ -36,13 +36,13 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 	}
 }
 
-void ModelMesh::Refresh(Shader& s, FramebufferObject& o) {
+void ModelMesh::Refresh(FramebufferState& s, FramebufferObject& o) {
 	for (Mesh& m : meshes) {
 		Refresh(s, o, m);
 	}
 }
 
-void ModelMesh::Refresh(Shader& s, FramebufferObject& o, Mesh& mesh) {
+void ModelMesh::Refresh(FramebufferState& s, FramebufferObject& o, Mesh& mesh) {
 	int tex_i = 0;
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
@@ -95,7 +95,7 @@ ModelLoader::ModelLoader() {
 	
 }
 
-bool ModelLoader::LoadModel(Shader& s, FramebufferObject& o, String path) {
+bool ModelLoader::LoadModel(FramebufferState& s, FramebufferObject& o, String path) {
 	model.Clear();
 	
 	if (0)

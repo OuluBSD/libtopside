@@ -1,0 +1,13 @@
+description "Moving the camera (with OglShader)\377";
+
+uses
+	EcsComplete;
+
+file
+	Tutorial5c.h,
+	Tutorial5c.cpp,
+	DrawObj.cpp;
+
+mainconfig
+	"" = "SCREEN";
+

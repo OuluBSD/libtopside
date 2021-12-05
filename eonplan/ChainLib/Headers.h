@@ -86,6 +86,10 @@ HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	Cen
 HEADER_ACTION(		EcsProgVideo,		center.video.prog.ecs)
 HEADER_ARG(			EcsProgVideo,		reqdef_flagSCREEN,	1)
 
+HEADER11(			EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			,OglOrder,		OglFbo)
+HEADER_ACTION(		EcsOglFbo,			ogl.fbo.ecs)
+HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
+
 
 
 

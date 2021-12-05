@@ -1,0 +1,29 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		state event.register;
+		
+		loop center.events: {
+			center.customer: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
+		loop ogl.video: {
+			ogl.customer: true;
+			ogl.fbo.ecs: true;
+			sdl.fbo.pipe: true {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+			};
+		};
+		
+	};
+
+};
+

@@ -357,6 +357,24 @@ AtomTypeCls EcsProgVideo::GetType() const
 
 #endif
 #if defined flagSCREEN
+AtomTypeCls EcsOglFbo::GetAtomType()
+{
+	return ATOM11(ECS_OGL_FBO, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+}
+
+void EcsOglFbo::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EcsOglFbo>>(this);
+	vis.VisitThis<EcsVideoBase>(this);
+}
+
+AtomTypeCls EcsOglFbo::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
 	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);

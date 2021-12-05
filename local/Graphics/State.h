@@ -134,7 +134,9 @@ struct FramebufferState : RTTIBase {
 	double	sample_rate = 0;
 	Time	time;
 	
-	
+	// renderer
+    mat4	view;
+	Shader*	stages[ShaderVar::PROG_COUNT] = {0,0,0,0,0};
 	
 	virtual FramebufferObject& NewObject() = 0;
 	
@@ -190,6 +192,35 @@ struct FramebufferInputState : RTTIBase {
 	void Clear() {Free(); Reset(); Default();}*/
 };
 
+class StateDraw : public Draw {
+	FramebufferState* state = 0;
+	
+	
+public:
+	RTTI_DECL1(StateDraw, Draw)
+	
+	void SetTarget(FramebufferState& state) {this->state = &state;}
+	
+	bool HasTarget() const {return state != 0;}
+	FramebufferState& GetState() {return *state;}
+	
+	Size GetPageSize() const override {return state ? state->size : Size(0,0);}
+	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override;
+	void DrawRectOp(int x, int y, int cx, int cy, Color color) override;
+	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,
+		             Color ink, int n, const int *dx) override;
+	void DrawPolyPolylineOp(const Point *vertices, int vertex_count,
+	                        const int *counts, int count_count,
+	                        int width, Color color, Color doxor) override;
+	bool ClipOp(const Rect& r) override;
+	void EndOp() override;
+	
+	void DrawImageMemory(const  byte* mem, int sz, int x, int y, int w, int h, int ch_var_size, int channels);
+	
+};
+
+
 NAMESPACE_TOPSIDE_END
+
 
 #endif

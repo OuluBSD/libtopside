@@ -13,7 +13,7 @@ void SImageDraw::Create(Size sz, int stride) {
 	int len = sz.cx * sz.cy * stride;
 	pitch = sz.cx * stride;
 	pixels.SetCount(len);
-	Zero();
+	//Zero();
 }
 
 void SImageDraw::Finish() {
@@ -25,8 +25,12 @@ Size SImageDraw::GetPageSize() const {
 }
 
 void SImageDraw::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
-	if (width == 1)
-		SImageDraw::DrawLine(x1, y1, x2, y2, color);
+	if (width == 1) {
+		if (x1 == x2 && y1 == y2)
+			SImageDraw::DrawPixel(x1, GetHeight() - 1 - y1, color);
+		else
+			SImageDraw::DrawLine(x1, y1, x2, y2, color);
+	}
 	else {
 		TODO
 	}

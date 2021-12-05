@@ -200,17 +200,35 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		RTLOG("Screen::Render: from video packet: " << last_packet->ToString());
 		const VideoFormat& vfmt = fmt.vid;
 		
-		BeginDraw();
-		
-		ASSERT(!is_ogl_buf || ogl_buf);
-		if (is_ogl_buf && ogl_buf) {
-			ogl_buf->Process(cfg);
+		if (last_packet->IsData<InternalPacketData>()) {
+			const InternalPacketData& d = last_packet->GetData<InternalPacketData>();
+			
+			if (d.IsText("oglstate") && d.ptr) {
+				OglFramebufferState& sd = *(OglFramebufferState*)d.ptr;
+				
+				OglShaderPipeline pipe;
+				pipe.LoadState(sd);
+				
+				BeginDraw();
+				
+				DrawOglShaderPipeline(pipe);
+				
+				CommitDraw();
+			}
 		}
 		else {
-			RTLOG("Screen::Render: error: no ogl buf");
+			BeginDraw();
+			
+			ASSERT(!is_ogl_buf || ogl_buf);
+			if (is_ogl_buf && ogl_buf) {
+				ogl_buf->Process(cfg);
+			}
+			else {
+				RTLOG("Screen::Render: error: no ogl buf");
+			}
+			
+			CommitDraw();
 		}
-		
-		CommitDraw();
 	}
 	else if (fmt.IsOrder() && is_ogl_buf) {
 		RTLOG("Screen::Render: from order packet: " << last_packet->ToString());

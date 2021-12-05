@@ -113,16 +113,40 @@ void SwScreen::Render() {
 		const VideoFormat& vfmt = fmt.vid;
 		int exp_size = screen_sz.GetArea() * fb_stride;
 		int frame_size = fmt.vid.GetFrameSize();
-		if (exp_size == frame_size) {
-			const Vector<byte>& data = p->GetData();
-			ASSERT(data.GetCount() == frame_size);
+		
+		if (p->IsData<InternalPacketData>()) {
+			const InternalPacketData& d = p->GetData<InternalPacketData>();
 			
-			BeginDraw();
-			sw_draw.DrawImageMemory((const byte*)data.Begin(), data.GetCount(), 0,0, vfmt.res[0], vfmt.res[1], vfmt.GetPackedSingleSize(), vfmt.GetPackedCount());
-			CommitDraw();
+			if (d.IsText("cpustate") && d.ptr) {
+				CpuFramebufferState& sd = *(CpuFramebufferState*)d.ptr;
+				
+				CpuShaderPipeline pipe;
+				pipe.LoadState(sd);
+				
+				BeginDraw();
+				sw_draw.DrawShaderPipeline(pipe);
+				CommitDraw();
+			}
+			else if (d.ptr && d.count > 0 && d.count == frame_size) {
+				const byte* b = (const byte*)d.ptr;
+				int len = d.count;
+				BeginDraw();
+				sw_draw.DrawImageMemory(b, len, 0,0, vfmt.res[0], vfmt.res[1], vfmt.GetPackedSingleSize(), vfmt.GetPackedCount());
+				CommitDraw();
+			}
 		}
 		else {
-			RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
+			if (exp_size == frame_size) {
+				const Vector<byte>& data = p->GetData();
+				ASSERT(data.GetCount() == frame_size);
+				
+				BeginDraw();
+				sw_draw.DrawImageMemory((const byte*)data.Begin(), data.GetCount(), 0,0, vfmt.res[0], vfmt.res[1], vfmt.GetPackedSingleSize(), vfmt.GetPackedCount());
+				CommitDraw();
+			}
+			else {
+				RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
+			}
 		}
 	}
 	else if (fmt.IsProg()) {

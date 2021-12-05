@@ -45,7 +45,7 @@ public:
 	
 };
 
-class SdlDrawFramebuffer : public DrawFramebuffer {
+class SdlDrawFramebuffer : public CpuDrawFramebuffer {
 public:
 	RTTI_DECL1(SdlDrawFramebuffer, DrawFramebuffer)
 	SdlRenderer* rend = 0;

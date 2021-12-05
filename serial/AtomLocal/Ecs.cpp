@@ -106,14 +106,14 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	ISourceRef src = this->GetSource();
 	int src_count = src->GetSourceCount();
 	Value& val = src->GetSourceValue(src_count-1);
-	src_type = val.GetFormat().vd.val;
+	src_type = val.GetFormat().vd;
 	
 	return true;
 }
 
 bool EcsVideoBase::PostInitialize() {
 	// Remove alpha channel
-	if (src_type == ValCls::VIDEO) {
+	if (src_type == VD(CENTER, VIDEO)) {
 		ISourceRef src = this->GetSource();
 		int src_count = src->GetSourceCount();
 		Value& val = src->GetSourceValue(src_count-1);
@@ -143,7 +143,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EcsVideoBase::ProcessPackets:");
 	
 	
-	if (src_type == ValCls::PROG) {
+	if (src_type == VD(CENTER, PROG)) {
 		Size sz(800, 600);
 		
 		pd.Create(sz);
@@ -167,17 +167,80 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			TODO
 		}
 	}
-	else {
+	else if (src_type == VD(CENTER, VIDEO)) {
 		Format fmt = io.src[0].val->GetFormat();
 		ASSERT(fmt.IsVideo());
 		
 		Size sz = fmt.vid.GetSize();
 		int stride = fmt.vid.GetPackedCount();
 		
-		id.Create(sz, stride);
+		// render to memory
+		if (0) {
+			id.Create(sz, stride);
+			for (BinderIfaceVideo* b : binders)
+				b->Render(id);
+			id.Finish();
+			
+			if (io.sink_count == 1) {
+				PacketIO::Sink& sink = io.sink[0];
+				PacketIO::Source& src = io.src[0];
+				
+				ASSERT(sink.p);
+				sink.may_remove = true;
+				src.from_sink_ch = 0;
+				src.p = ReplyPacket(0, sink.p);
+				
+				#if 0
+				Swap(src.p->Data(), id.Data());
+				#else
+				InternalPacketData& data = src.p->SetData<InternalPacketData>();
+				data.ptr = (byte*)id.Data().Begin();
+				data.count = id.Data().GetCount();
+				#endif
+			}
+			else {
+				TODO
+			}
+		}
+		// render to state
+		else {
+			cpu_state.size = sz;
+			cpu_state.channels = stride;
+			cpu_state.sample = ShaderVar::SAMPLE_U8;
+			sd.SetTarget(cpu_state);
+			
+			for (BinderIfaceVideo* b : binders)
+				b->Render(sd);
+			
+			if (io.sink_count == 1) {
+				PacketIO::Sink& sink = io.sink[0];
+				PacketIO::Source& src = io.src[0];
+				
+				ASSERT(sink.p);
+				sink.may_remove = true;
+				src.from_sink_ch = 0;
+				src.p = ReplyPacket(0, sink.p);
+				
+				InternalPacketData& data = src.p->SetData<InternalPacketData>();
+				data.ptr = &cpu_state;
+				data.SetText("cpustate");
+			}
+			else {
+				TODO
+			}
+		}
+	}
+	#if HAVE_OPENGL
+	else if (src_type == VD(OGL,FBO)) {
+		Format fmt = io.src[0].val->GetFormat();
+		ASSERT(fmt.IsFbo());
+		
+		Size sz = fmt.vid.GetSize();
+		int stride = fmt.vid.GetPackedCount();
+		
+		sd.SetTarget(ogl_state);
 		for (BinderIfaceVideo* b : binders)
-			b->Render(id);
-		id.Finish();
+			b->Render(sd);
 		
 		if (io.sink_count == 1) {
 			PacketIO::Sink& sink = io.sink[0];
@@ -188,12 +251,20 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			src.from_sink_ch = 0;
 			src.p = ReplyPacket(0, sink.p);
 			
-			Swap(src.p->Data(), id.Data());
+			InternalPacketData& data = src.p->SetData<InternalPacketData>();
+			data.ptr = &ogl_state;
+			data.SetText("oglstate");
 		}
 		else {
 			TODO
 		}
 	}
+	#endif
+	else {
+		ASSERT_(0, "TODO");
+		return false;
+	}
+	
 	
 	return true;
 }

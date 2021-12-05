@@ -12,6 +12,9 @@ class OglShader;
 #endif
 
 
+struct FramebufferState;
+
+
 struct FramebufferObject : RTTIBase {
 	RTTI_DECL0(FramebufferObject)
 	
@@ -20,11 +23,6 @@ struct FramebufferObject : RTTIBase {
     virtual void Paint() = 0;
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
     
-    virtual void Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) = 0;
-    virtual void SetModel(const mat4& m) = 0;
-    virtual void SetScale(const mat4& m) = 0;
-    virtual void SetProjection(const mat4& m) = 0;
-    virtual void SetView(const mat4& m) = 0;
     
 	/*
 	virtual void SetBool(const String &name, bool value) const = 0;
@@ -45,6 +43,10 @@ struct FramebufferObject : RTTIBase {
 	} Type;
 	
 	Type type = UNDEFINED;
+	
+	mat4 model;
+	mat4 scale;
+	mat4 proj;
 	
 	
 	bool IsSoftware() const {return type == SW;}
@@ -169,8 +171,8 @@ public:
 	bool SetTexture(Mesh& mesh, TexType type, Image img);
 	
 	void MakeModel(Shape2DWrapper& shape);
-	void Refresh(Shader& s, FramebufferObject& o);
-    void Refresh(Shader& s, FramebufferObject& o, Mesh& m);
+	void Refresh(FramebufferState& s, FramebufferObject& o);
+    void Refresh(FramebufferState& s, FramebufferObject& o, Mesh& m);
     void Dump();
     
 };
@@ -188,7 +190,7 @@ public:
 	ModelLoader();
 	
 	void Clear() {model.Clear();}
-    bool LoadModel(Shader& s, FramebufferObject& o, String path);
+    bool LoadModel(FramebufferState& s, FramebufferObject& o, String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
