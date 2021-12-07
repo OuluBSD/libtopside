@@ -26,6 +26,10 @@ file
 	ProgDraw.cpp,
 	ModelProg.cpp,
 	DrawProg.cpp,
+	Compiler.h,
+	Buffer.h,
+	Templates readonly separator,
+	Templates.h,
 	"CPU only" readonly separator,
 	CpuRenderer.h,
 	CpuRenderer.cpp,
@@ -36,13 +40,10 @@ file
 	CpuSDL.h,
 	CpuSDL.cpp,
 	"OpenGL Accelerated" readonly separator,
-	OglRenderer.h,
+	Ogl.h,
 	OglRenderer.cpp,
 	OglFramebuffer.cpp,
-	OglShader.h,
 	OglShader.cpp,
-	OglBuffer.h,
-	OglBuffer.cpp,
-	OglCompiler.h,
-	OglCompiler.cpp;
+	OglCompiler.cpp,
+	OglBuffer.cpp;
 

@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void OglRenderer::PreFrame() {
+void SdlOglRenderer::PreFrame() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -36,12 +36,12 @@ void OglRenderer::PreFrame() {
 	glEnable( GL_CULL_FACE );
 	
 	
-	ASSERT(screen_sz.cx > 0 && screen_sz.cy > 0);
-	glViewport(0, 0, screen_sz.cx, screen_sz.cy);
+	ASSERT(output_sz.cx > 0 && output_sz.cy > 0);
+	glViewport(0, 0, output_sz.cx, output_sz.cy);
 	
 }
 
-void OglRenderer::PostFrame() {
+void SdlOglRenderer::PostFrame() {
 	if (win)
 		SDL_GL_SwapWindow(win);
 }

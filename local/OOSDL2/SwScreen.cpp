@@ -171,9 +171,9 @@ void SwScreen::Render() {
 SystemDraw& SwScreen::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	
-	sw_rend.screen_sz = screen_sz;
     sw_rend.win = win;
     sw_rend.rend = this->rend;
+	sw_rend.SetSize(screen_sz);
     sw_rend.PreFrame();
     sw_draw.rend = &sw_rend;
     sw_draw.fb = &sw_rend.GetOutputCpuFramebuffer();

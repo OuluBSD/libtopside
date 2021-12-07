@@ -22,17 +22,17 @@ public:
 	void Enter() override;
 	void Leave() override;
 	byte* GetIterator(int x, int y) override;
-	int GetWidth() const override;
+	/*int GetWidth() const override;
 	int GetHeight() const override;
 	int GetStride() const override;
-	int GetPitch() const override;
+	int GetPitch() const override;*/
 	void DrawFill(const byte* mem, int sz) override;
 	
 	RawSysTexture* GetRawSysTexture() {return fb;}
 	
 };
 
-class SdlRenderer : public Renderer {
+class SdlCpuRenderer : public RendererT<SdlCpuGfx> {
 	SdlOutputFramebuffer output;
 	
 public:
@@ -48,7 +48,7 @@ public:
 class SdlDrawFramebuffer : public CpuDrawFramebuffer {
 public:
 	RTTI_DECL1(SdlDrawFramebuffer, DrawFramebuffer)
-	SdlRenderer* rend = 0;
+	SdlCpuRenderer* rend = 0;
 	SdlOutputFramebuffer* fb = 0;
 	
 	

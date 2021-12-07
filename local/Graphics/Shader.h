@@ -12,13 +12,17 @@ class ShaderPipeline : RTTIBase {
 public:
 	RTTI_DECL0(ShaderPipeline)
 	ShaderPipeline() {}
+	virtual ~ShaderPipeline() {}
 	
 	
 };
 
 
 class Shader : RTTIBase {
+	
+protected:
 	Vector<mat4> stack;
+	bool is_loaded = false;
 	
 	
 public:
@@ -55,8 +59,6 @@ public:
 	virtual FramebufferObject* CreateObject() = 0;
 	
 };
-
-
 
 
 NAMESPACE_TOPSIDE_END

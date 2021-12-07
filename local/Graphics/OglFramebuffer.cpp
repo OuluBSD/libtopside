@@ -6,7 +6,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-OglFramebuffer::OglFramebuffer() : sz(0,0) {
+OglFramebuffer::OglFramebuffer() {
 	
 }
 
@@ -29,15 +29,15 @@ bool OglFramebuffer::Create(int w, int h, int channels) {
 	Clear();
 	
 	// The framebuffer, which regroups 0, 1, or more textures, and 0 or 1 depth buffer.
-	glGenFramebuffersEXT(1, &fb_name);
-	glBindFramebuffer(GL_FRAMEBUFFER, fb_name);
+	glGenFramebuffersEXT(1, &fb);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb);
 	
 	
 	// The texture we're going to render to
-	glGenTextures(1, &fb_texture);
+	glGenTextures(1, &tex);
 	
 	// "Bind" the newly created texture : all future texture functions will modify this texture
-	glBindTexture(GL_TEXTURE_2D, fb_texture);
+	glBindTexture(GL_TEXTURE_2D, tex);
 	
 	// Give an empty image to OpenGL ( the last "0" )
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
@@ -56,7 +56,7 @@ bool OglFramebuffer::Create(int w, int h, int channels) {
 	
 	
 	// Set "fb_texture" as our colour attachement #0
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, fb_texture, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tex, 0);
 	
 	// Set the list of draw buffers.
 	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
@@ -70,15 +70,15 @@ bool OglFramebuffer::Create(int w, int h, int channels) {
 
 void OglFramebuffer::Bind() {
 	// Render to our framebuffer
-	glBindFramebuffer(GL_FRAMEBUFFER, fb_name);
+	glBindFramebuffer(GL_FRAMEBUFFER, fb);
 }
 
 void OglFramebuffer::Clear() {
-	if (fb_name) {
-		
+	if (fb) {
+		TODO
 	}
-	if (fb_texture) {
-		
+	if (tex) {
+		TODO
 	}
 }
 

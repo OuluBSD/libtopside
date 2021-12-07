@@ -33,7 +33,7 @@ void CpuFramebufferObject::SetView(const mat4& m) {
 
 
 
-FramebufferObject& CpuFramebufferState::NewObject() {
+FramebufferObject& CpuFramebufferState::CreateObject() {
 	CpuFramebufferObject& o = objects.Add(new CpuFramebufferObject(*this));
 	o.id = objects.GetCount() - 1;
 	RendVer1(OnRealizeObject, o.id);
@@ -42,7 +42,7 @@ FramebufferObject& CpuFramebufferState::NewObject() {
 
 
 FramebufferObject* CpuShader::CreateObject() {
-	return &state->NewObject();
+	return &state->CreateObject();
 }
 
 /*

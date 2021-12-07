@@ -64,7 +64,9 @@ bool verify = false;
 MAKE_STATIC(Serial::MachineVerifier, verifier);
 
 
-void DefaultSerialInitializer(bool skip_eon_file) {
+void DefaultSerialInitializer() {DefaultSerialInitializer0(false);}
+
+void DefaultSerialInitializer0(bool skip_eon_file) {
 	using namespace Serial;
 	
 	SetCoutLog();
@@ -100,7 +102,7 @@ void DefaultSerialInitializer(bool skip_eon_file) {
 }
 
 void DefaultSerialInitializerInternalEon() {
-	DefaultSerialInitializer(true);
+	DefaultSerialInitializer0(true);
 }
 
 void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args) {

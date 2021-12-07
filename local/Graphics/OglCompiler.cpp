@@ -157,7 +157,8 @@ bool OglCompiler::CompileShader(String code, ShaderVar::Type type, GLuint& shade
 		Vector<GLchar> msg;
 		msg.SetCount(loglen);
 		glGetShaderInfoLog(shader_out, loglen, NULL, msg.Begin());
-		err = String(msg.Begin());
+		String err(msg.Begin());
+		SetError(err);
 		CHKLOGRET0(0, "OglCompiler::CompileShader: error: shader failed to compile: " + err);
 	}
 	
@@ -171,10 +172,10 @@ bool OglCompiler::CompileShader(String code, ShaderVar::Type type, GLuint& shade
 
 
 bool OglLinker::Link(OglFramebufferState& fb_state) {
-	CHKLOGRET0(fb_state.prog < 0, "OglLinker::Link: error: trying to overwrite compiled program");
+	CHKLOGRET0(fb_state.prog == 0, "OglLinker::Link: error: trying to overwrite compiled program");
 	
 	fb_state.prog = glCreateProgram();
-	CHKLOGRET0(fb_state.prog >= 0, "OglLinker::Link: error: opengl error")
+	CHKLOGRET0(fb_state.prog > 0, "OglLinker::Link: error: opengl error")
 	
 	glProgramParameteri(fb_state.prog, GL_PROGRAM_SEPARABLE, GL_TRUE);
 	
@@ -182,7 +183,7 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 	EnableGfxAccelDebugMessages(1);
 	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
 		OglShaderState& shd_state = fb_state.shaders[i];
-		if (shd_state.shader < 0)
+		if (shd_state.shader == 0)
 			continue;
 		complied_count++;
 		
@@ -206,10 +207,10 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 		if (loglen) {
 			String s;
 			s.Set(msg.Begin(), loglen);
-			err = s;
+			SetError(s);
 		}
 		else
-			err ="linking failed with unknown error";
+			SetError("linking failed with unknown error");
 		return false;
 	}
 	

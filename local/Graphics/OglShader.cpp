@@ -10,24 +10,24 @@ void Mesh::RefreshOgl(OglFramebufferObject& o) {
 	if (!GetAppFlags().IsOpenGLContextOpen())
 		return;
 	
-	auto& VAO = o.VAO;
-	auto& VBO = o.VBO;
-	auto& EBO = o.EBO;
+	auto& vao = o.vao;
+	auto& vbo = o.vbo;
+	auto& ebo = o.ebo;
 	
-	ASSERT(!VAO && !VBO && !EBO);
+	ASSERT(!vao && !vbo && !ebo);
 	
 	// Create objects
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
+	glGenVertexArrays(1, &vao);
+	glGenBuffers(1, &vbo);
+	glGenBuffers(1, &ebo);
 	
 	// Set vertex array object data
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindVertexArray(vao);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.GetCount() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 	
 	// Set element buffer object data
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 			indices.GetCount() * sizeof(unsigned int),
 			&indices[0], GL_STATIC_DRAW);
@@ -69,20 +69,20 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void OglFramebufferObject::Paint() {
-	ASSERT(VBO && EBO && element_count > 0)
-	if (!VBO || !EBO || !element_count)
+	ASSERT(vbo && ebo && element_count > 0)
+	if (!vbo || !ebo || !element_count)
 		return;
 	
-	// bind VBOs for vertex array and index array
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);            // for vertex coordinates
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);    // for indices
+	// bind vbos for vertex array and index array
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);            // for vertex coordinates
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);    // for indices
 	
 	const int vtx = 0;
 	const int nm = 1;
 	const int tex = 2;
 	glEnableVertexAttribArray(vtx);          // activate vertex position array
 	glEnableVertexAttribArray(nm);           // activate vertex normal array
-	glEnableVertexAttribArray(tex);            // activate texture coords array
+	glEnableVertexAttribArray(tex);          // activate texture coords array
 	
 	// set vertex arrays with generic API
 	const int stride = sizeof(Vertex);
@@ -106,11 +106,12 @@ void OglFramebufferObject::Paint() {
 }
 
 void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pitch, int stride, const Vector<byte>& data) {
-	GLint& gl_tex = this->tex.GetAdd(tex_id, -1);
+	GLuint& gl_tex = this->tex.GetAdd(tex_id, 0);
 	
-	if (gl_tex < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
+	if (gl_tex == 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
 		glGenTextures(1, (GLuint*)&gl_tex);
 		glBindTexture(GL_TEXTURE_2D, gl_tex);
+		ASSERT(gl_tex > 0);
 	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -163,13 +164,13 @@ void OglFramebufferObject::SetView(const mat4& m) {
 }*/
 
 void OglFramebufferObject::FreeOgl() {
-	if (VBO) {
-		glDeleteBuffers(1, &VBO);
-		glDeleteBuffers(1, &EBO);
-		glDeleteVertexArrays(1, &VAO);
-		VBO = 0;
-		EBO = 0;
-		VAO = 0;
+	if (vbo) {
+		glDeleteBuffers(1, &vbo);
+		glDeleteBuffers(1, &ebo);
+		glDeleteVertexArrays(1, &vao);
+		vbo = 0;
+		ebo = 0;
+		vao = 0;
 	}
 	
 	for (GLint gl_tex : tex.GetValues())
@@ -321,7 +322,7 @@ void OglShader::Refresh(ModelMesh& model, Mesh& mesh) {
 void OglShader::BasicMeshRefresh(ModelMesh& model, Mesh& mesh) {
 	TODO
 	#if 0
-	if (!mesh.VAO)
+	if (!mesh.vao)
 		return;
 	
 	int tex_i = 0;
@@ -361,7 +362,7 @@ void OglShader::BasicMeshRefresh(ModelMesh& model, Mesh& mesh) {
 	//Dump();
 	
     // draw mesh
-    glBindVertexArray(mesh.VAO);
+    glBindVertexArray(mesh.vao);
     glDrawElements(mesh.is_lines ? GL_LINES : GL_TRIANGLES, mesh.indices.GetCount(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 	
@@ -377,17 +378,6 @@ void OglShader::Use() {
 	TODO // glUseProgram(ID);
 }
 #endif
-
-FramebufferObject& OglFramebufferState::NewObject() {
-	OglFramebufferObject& o = objects.Add(new OglFramebufferObject(*this));
-	o.id = objects.GetCount() - 1;
-	RendVer1(OnRealizeObject, o.id);
-	return o;
-}
-
-FramebufferObject* OglShader::CreateObject() {
-	return &state->NewObject();
-}
 
 #if 0
 void OglShader::SetBool(const String &name, bool value) const {
@@ -525,39 +515,6 @@ int OglFramebufferState::GetGlSampleSize() const {
 }
 
 
-
-
-OglShaderPipeline::OglShaderPipeline() {
-	Clear();
-}
-
-void OglShaderPipeline::Clear() {
-	state = 0;
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++)
-		stages[i] = 0;
-}
-
-void OglShaderPipeline::LoadState(OglFramebufferState& state) {
-	Clear();
-	
-	this->state = &state;
-	AppendState(state);
-}
-
-void OglShaderPipeline::AppendState(OglFramebufferState& state) {
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
-		if (state.stages[i])
-			stages[i] = CastPtr<OglShader>(state.stages[i]);
-	}
-}
-
-
-void DrawOglShaderPipeline(OglShaderPipeline& pipe) {
-	// compare CpuDrawFramebuffer::DrawShaderPipeline
-	
-	TODO
-	
-}
 
 NAMESPACE_TOPSIDE_END
 

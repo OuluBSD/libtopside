@@ -203,18 +203,34 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 		if (last_packet->IsData<InternalPacketData>()) {
 			const InternalPacketData& d = last_packet->GetData<InternalPacketData>();
 			
-			if (d.IsText("oglstate") && d.ptr) {
+			if (!d.ptr) {
+				ASSERT_(0, "no pointer in InternalPacketData");
+			}
+			else if (d.IsText("oglstate")) {
 				OglFramebufferState& sd = *(OglFramebufferState*)d.ptr;
-				
-				OglShaderPipeline pipe;
-				pipe.LoadState(sd);
 				
 				BeginDraw();
 				
-				DrawOglShaderPipeline(pipe);
+				TODO // process state with ogl_buf & require valid shader and pipeline in ogl_buf
 				
 				CommitDraw();
 			}
+			else if (d.IsText("oglpipe")) {
+				OglShaderPipeline& sd = *(OglShaderPipeline*)d.ptr;
+				
+				BeginDraw();
+				
+				if (is_ogl_buf)
+					TODO // merge external pipeline and OglBuffer pipeline?
+				
+				ASSERT(ogl_buf);
+				if (ogl_buf)
+					ogl_buf->Process(sd);
+				
+				CommitDraw();
+			}
+			else
+				TODO
 		}
 		else {
 			BeginDraw();
@@ -247,9 +263,9 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 SystemDraw& Screen::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	if (is_opengl) {
-		hw_rend.screen_sz = screen_sz;
 	    hw_rend.win = win;
 	    hw_rend.rend = this->rend;
+		hw_rend.SetSize(screen_sz);
 	    hw_rend.PreFrame();
 	    hw_draw.rend = &hw_rend;
 	    hw_draw.fb = &hw_rend.GetFramebuffer();

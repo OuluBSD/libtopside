@@ -7,24 +7,21 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class Renderer {
 	
+protected:
+	Size output_sz;
+	
+	
 public:
-	
-	Size screen_sz;
-	
-#if HAVE_SDL2
-	SDL_Window* win = NULL;
-    SDL_Renderer* rend = NULL;
-#endif
-	
 	Renderer();
 	virtual ~Renderer() {}
-	
-	Size GetSize() {return screen_sz;}
 	
 	virtual Framebuffer& GetOutputFramebuffer() = 0;
 	virtual void PreFrame() = 0;
 	virtual void PostFrame() = 0;
 	
+	virtual void SetSize(Size sz) {output_sz = sz;}
+	
+	Size GetSize() const {return output_sz;}
 	
 	
 };
@@ -33,3 +30,4 @@ public:
 NAMESPACE_TOPSIDE_END
 
 #endif
+ 

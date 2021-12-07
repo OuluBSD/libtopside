@@ -138,7 +138,7 @@ struct FramebufferState : RTTIBase {
     mat4	view;
 	Shader*	stages[ShaderVar::PROG_COUNT] = {0,0,0,0,0};
 	
-	virtual FramebufferObject& NewObject() = 0;
+	virtual FramebufferObject& CreateObject() = 0;
 	
 	/*void Free() {name.Clear(); description.Clear();}
 	void Reset() {memset(this, 0, sizeof(FramebufferState));}
@@ -169,10 +169,17 @@ struct ShaderState : RTTIBase {
 	
 	
 	
-	/*void Free() {code.Clear(); library.Clear();}
-	void Reset() {memset(this, 0, sizeof(ShaderState));}
-	void Default() {}
-	void Clear() {Free(); Reset(); Default();}*/
+	void Clear() {
+		enabled = 0;
+		type = ShaderVar::PROG_NULL;
+		code.Clear();
+		library.Clear();
+		view.Clear();
+		projection.Clear();
+		scale.Clear();
+		offset.Clear();
+	}
+	
 };
 
 struct FramebufferInputState : RTTIBase {
@@ -185,11 +192,8 @@ struct FramebufferInputState : RTTIBase {
 	int id = -1;
 	InputType type;
 	
+	void Clear() {id = -1; type = ShaderVar::InputType::INVALID;}
 	
-	/*void Free() {}
-	void Reset() {memset(this, 0, sizeof(FramebufferInputState));}
-	void Default() {}
-	void Clear() {Free(); Reset(); Default();}*/
 };
 
 class StateDraw : public Draw {

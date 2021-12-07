@@ -4,15 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-CpuOutputFramebuffer::CpuOutputFramebuffer() {
+CpuMemFramebuffer::CpuMemFramebuffer() {
 	
 }
 
-CpuOutputFramebuffer::~CpuOutputFramebuffer() {
+CpuMemFramebuffer::~CpuMemFramebuffer() {
 	Leave();
 }
 
-bool CpuOutputFramebuffer::Create(int w, int h, int channels) {
+bool CpuMemFramebuffer::Create(int w, int h, int channels) {
 	this->w = w;
 	this->h = h;
 	this->stride = channels;
@@ -22,7 +22,7 @@ bool CpuOutputFramebuffer::Create(int w, int h, int channels) {
 	return len > 0;
 }
 
-void CpuOutputFramebuffer::Enter() {
+void CpuMemFramebuffer::Enter() {
 	/*if (!locked) {
 		SDL_Rect r {0, 0, w, h};
 		void* pixels;
@@ -32,35 +32,35 @@ void CpuOutputFramebuffer::Enter() {
 	}*/
 }
 
-void CpuOutputFramebuffer::Leave() {
+void CpuMemFramebuffer::Leave() {
 	/*if (locked) {
 		SDL_UnlockTexture(fb);
 		locked = false;
 	}*/
 }
 
-byte* CpuOutputFramebuffer::GetIterator(int x, int y) {
+byte* CpuMemFramebuffer::GetIterator(int x, int y) {
 	ASSERT(pixels);
 	return &pixels[x * stride + y * pitch];
 }
 
-int CpuOutputFramebuffer::GetWidth() const {
+/*int CpuMemFramebuffer::GetWidth() const {
 	return w;
 }
 
-int CpuOutputFramebuffer::GetHeight() const {
+int CpuMemFramebuffer::GetHeight() const {
 	return h;
 }
 
-int CpuOutputFramebuffer::GetStride() const {
+int CpuMemFramebuffer::GetStride() const {
 	return stride;
 }
 
-int CpuOutputFramebuffer::GetPitch() const {
+int CpuMemFramebuffer::GetPitch() const {
 	return pitch;
-}
+}*/
 
-void CpuOutputFramebuffer::DrawFill(const byte* mem, int sz) {
+void CpuMemFramebuffer::DrawFill(const byte* mem, int sz) {
 	if (sz == h * pitch) {
 		memcpy(pixels, mem, sz);
 	}
@@ -84,7 +84,7 @@ void CpuOutputFramebuffer::DrawFill(const byte* mem, int sz) {
 
 
 void CpuRenderer::PreFrame() {
-	output.Create(screen_sz.cx, screen_sz.cy, 3);
+	output.Create(output_sz.cx, output_sz.cy, 3);
 }
 
 void CpuRenderer::PostFrame() {

@@ -59,7 +59,7 @@ void ModelProg::DrawLine(const DrawCommand& cmd) {
 	mesh.indices.Reserve(2);
 	mesh.indices.Add(0);
 	mesh.indices.Add(1);
-	mesh.Refresh(state->NewObject());
+	mesh.Refresh(state->CreateObject());
 }
 
 void ModelProg::DrawImage(const DrawCommand& cmd) {
@@ -91,7 +91,7 @@ void ModelProg::DrawImage(const DrawCommand& cmd) {
 	mesh.indices.Add(0);
 	mesh.indices.Add(2);
 	mesh.indices.Add(3);
-	mesh.Refresh(state->NewObject());
+	mesh.Refresh(state->CreateObject());
 }
 
 void ModelProg::DrawRect(const DrawCommand& cmd) {
@@ -125,7 +125,7 @@ void ModelProg::DrawRect(const DrawCommand& cmd) {
 	mesh.indices.Add(0);
 	mesh.indices.Add(2);
 	mesh.indices.Add(3);
-	mesh.Refresh(state->NewObject());
+	mesh.Refresh(state->CreateObject());
 }
 
 void ModelProg::DrawTriangles(const DrawCommand& cmd) {
@@ -167,7 +167,7 @@ void ModelProg::DrawTriangles(const DrawCommand& cmd) {
 	ColorCopy(cmd.clr, mesh.material.ambient);
 	//mesh.material.ambient.a = cmd.clr.a;
 	mesh.is_colored_only = true;
-	mesh.Refresh(state->NewObject());
+	mesh.Refresh(state->CreateObject());
 }
 
 void ModelProg::DrawPolyline(const DrawCommand& cmd) {
@@ -193,7 +193,7 @@ void ModelProg::DrawPolyline(const DrawCommand& cmd) {
 	//mesh.material.ambient.a = cmd.clr.a;
 	mesh.is_colored_only = true;
 	mesh.is_lines = true;
-	mesh.Refresh(state->NewObject());
+	mesh.Refresh(state->CreateObject());
 }
 
 void ModelProg::DrawOffset(const DrawCommand& cmd) {

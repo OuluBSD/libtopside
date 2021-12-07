@@ -48,7 +48,7 @@ byte* SdlOutputFramebuffer::GetIterator(int x, int y) {
 	return &pixels[x * stride + y * pitch];
 }
 
-int SdlOutputFramebuffer::GetWidth() const {
+/*int SdlOutputFramebuffer::GetWidth() const {
 	return w;
 }
 
@@ -62,7 +62,7 @@ int SdlOutputFramebuffer::GetStride() const {
 
 int SdlOutputFramebuffer::GetPitch() const {
 	return pitch;
-}
+}*/
 
 void SdlOutputFramebuffer::DrawFill(const byte* mem, int sz) {
 	if (sz == h * pitch) {
@@ -87,17 +87,18 @@ void SdlOutputFramebuffer::DrawFill(const byte* mem, int sz) {
 
 
 
-void SdlRenderer::PreFrame() {
-	output.Create(screen_sz.cx, screen_sz.cy, 3);
+void SdlCpuRenderer::PreFrame() {
+	output.Create(output_sz.cx, output_sz.cy, 3);
 }
 
-void SdlRenderer::PostFrame() {
+void SdlCpuRenderer::PostFrame() {
 	RawSysTexture* fb = output.GetRawSysTexture();
 	
-	if (rend && fb) {
+	TODO
+	/*if (rend && fb) {
 		SDL_RenderCopy(rend, fb, NULL, NULL);
 		SDL_RenderPresent(rend);
-	}
+	}*/
 	
 }
 

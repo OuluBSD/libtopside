@@ -571,9 +571,10 @@ bool IsGfxAccelDebugMessages();
 
 
 
-class ErrorReporter {
+class ErrorReporter : RTTIBase {
 	String last_error;
 public:
+	RTTI_DECL0(ErrorReporter)
 	ErrorReporter() {}
 	
 	void ClearError() {last_error.Clear();}

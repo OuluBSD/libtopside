@@ -34,17 +34,17 @@ public:
 	void Enter() override {ASSERT(!locked); locked = true;}
 	void Leave() override {ASSERT(locked);  locked = false;}
 	byte* GetIterator(int x, int y) override {return &pixels[x * stride + y * pitch];}
-	int GetWidth() const override {return w;}
+	/*int GetWidth() const override {return w;}
 	int GetHeight() const override {return h;}
 	int GetStride() const override {return stride;}
-	int GetPitch() const override {return pitch;}
+	int GetPitch() const override {return pitch;}*/
 	void DrawFill(const byte* mem, int sz) override {TODO}
 	
 	RawSysTexture* GetRawSysTexture() {return 0;}
 	
 };
 
-class CpuOutputFramebuffer : public CpuFramebuffer {
+class CpuMemFramebuffer : public CpuFramebuffer {
 	Vector<byte> data;
 	byte* pixels = 0;
 	int pitch = 0;
@@ -52,28 +52,28 @@ class CpuOutputFramebuffer : public CpuFramebuffer {
 	bool locked = false;
 	
 public:
-	CpuOutputFramebuffer();
-	~CpuOutputFramebuffer();
+	CpuMemFramebuffer();
+	~CpuMemFramebuffer();
 	
 	bool Create(int w, int h, int channels=3) override;
 	void Enter() override;
 	void Leave() override;
 	byte* GetIterator(int x, int y) override;
-	int GetWidth() const override;
+	/*int GetWidth() const override;
 	int GetHeight() const override;
 	int GetStride() const override;
-	int GetPitch() const override;
+	int GetPitch() const override;*/
 	void DrawFill(const byte* mem, int sz) override;
 	
 	
 };
 
 class CpuRenderer : public Renderer {
-	CpuOutputFramebuffer output;
+	CpuMemFramebuffer output;
 	
 public:
 	
-	CpuOutputFramebuffer& GetOutputCpuFramebuffer() {return output;}
+	CpuMemFramebuffer& GetOutputCpuFramebuffer() {return output;}
 	
 	Framebuffer& GetOutputFramebuffer() override {return output;}
 	void PreFrame() override;
@@ -85,7 +85,7 @@ class CpuDrawFramebuffer : public DrawFramebuffer {
 public:
 	RTTI_DECL1(CpuDrawFramebuffer, DrawFramebuffer)
 	CpuRenderer* rend = 0;
-	CpuOutputFramebuffer* fb = 0;
+	CpuMemFramebuffer* fb = 0;
 	
 	
 	Renderer* GetRenderer() override {return rend;}

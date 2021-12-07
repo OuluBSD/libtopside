@@ -47,6 +47,7 @@ class EcsVideoBase :
 	CpuFramebufferState	cpu_state;
 	#if HAVE_OPENGL
 	OglFramebufferState	ogl_state;
+	OglShaderPipeline ogl_pipe;
 	#endif
 	
 	static EcsVideoBase* latest;

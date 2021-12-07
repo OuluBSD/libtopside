@@ -37,16 +37,21 @@ typedef unsigned int	Gxbf;
 #include "Shader.h"
 #include "Framebuffer.h"
 #include "Renderer.h"
+#include "Compiler.h"
+#include "Buffer.h"
+
+#include "Templates.h"
 
 #include "CpuShader.h"
 #include "CpuRenderer.h"
 #include "CpuSDL.h"
 
 #if defined(flagSCREEN)
-#include "OglShader.h"
+#include "Ogl.h"
+/*#include "OglShader.h"
 #include "OglRenderer.h"
 #include "OglCompiler.h"
-#include "OglBuffer.h"
+#include "OglBuffer.h"*/
 #endif
 
 #include "ProgDraw.h"

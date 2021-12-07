@@ -252,8 +252,14 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			src.p = ReplyPacket(0, sink.p);
 			
 			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			data.ptr = &ogl_state;
-			data.SetText("oglstate");
+			if (0) {
+				data.ptr = &ogl_state;
+				data.SetText("oglstate");
+			}
+			else {
+				data.ptr = &ogl_pipe;
+				data.SetText("oglpipe");
+			}
 		}
 		else {
 			TODO

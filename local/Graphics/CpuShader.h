@@ -34,7 +34,7 @@ struct CpuFramebufferState : FramebufferState {
 	Vector<String> user_vars;
 	
 	
-	FramebufferObject& NewObject() override;
+	FramebufferObject& CreateObject() override;
 	
 };
 

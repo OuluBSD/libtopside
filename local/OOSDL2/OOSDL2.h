@@ -205,8 +205,8 @@ protected:
 	Size					screen_sz;
 	String					title;
 	SDL_GLContext			glcontext = 0;
-	OglRenderer				hw_rend;
-	OglDrawFramebuffer		hw_draw;
+	SdlOglRenderer			hw_rend;
+	SdlOglDrawFramebuffer	hw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool is_opengl = false;
@@ -262,7 +262,7 @@ protected:
 	Size					screen_sz;
 	int						fb_stride;
 	String					title;
-	SdlRenderer				sw_rend;
+	SdlCpuRenderer			sw_rend;
 	SdlDrawFramebuffer		sw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
