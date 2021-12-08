@@ -4,90 +4,6 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CpuMemFramebuffer;
-class CpuMemBuffer;
-
-class OglFramebuffer;
-class OglFramebufferState;
-class OglBuffer;
-class OglShaderState;
-class OglInputState;
-class OglFramebufferObject;
-class OglVertexShaderArgs;
-class OglFragmentShaderArgs;
-class OglShader;
-class OglShaderPipeline;
-class OglCompiler;
-class OglLinker;
-
-class SdlCpuRenderer;
-class SdlOglRenderer;
-
-struct CpuGfx {
-	using Framebuffer = CpuMemFramebuffer;
-	using Buffer = CpuMemBuffer;
-	
-	using NativeFramebuffer = uint32;
-	using NativeTexture = int32;
-	using NativeShader = uint32;
-	using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
-	using NativeFrameBuffer = uint32;
-	using NativeProgram = uint32;
-	using NativePipeline = uint32;
-	
-	FramebufferObject::Type type = FramebufferObject::SW;
-	
-};
-
-struct OglGfx {
-	using Framebuffer = OglFramebuffer;
-	using FramebufferState = OglFramebufferState;
-	using Buffer = OglBuffer;
-	using Shader = OglShader;
-	using ShaderState = OglShaderState;
-	using ShaderPipeline = OglShaderPipeline;
-	using InputState = OglInputState;
-	using FramebufferObject = OglFramebufferObject;
-	using BinderIface = BinderIfaceOgl;
-	using VertexShaderArgs = OglVertexShaderArgs;
-	using FragmentShaderArgs = OglFragmentShaderArgs;
-	using Compiler = OglCompiler;
-	using Linker = OglLinker;
-	
-	using NativeFramebuffer = GLuint;
-	using NativeTexture = GLuint;
-	using NativeShader = GLuint;
-	using NativeColorBuffer = GLuint;
-	using NativeDepthBuffer = GLuint;
-	using NativeFrameBuffer = GLuint;
-	using NativeVertexArray = GLuint;
-	using NativeVertexBuffer = GLuint;
-	using NativeElementBuffer = GLuint;
-	using NativeProgram = GLuint;
-	using NativePipeline = GLuint;
-	
-	TS::FramebufferObject::Type type = TS::FramebufferObject::OGL;
-	
-	
-};
-
-struct SdlGfx {
-	using NativeWindow = SDL_Window;
-	using NativeRenderer = SDL_Renderer;
-	
-};
-
-struct SdlCpuGfx : CpuGfx, SdlGfx {
-	using Renderer = SdlCpuRenderer;
-	
-};
-
-struct SdlOglGfx : OglGfx, SdlGfx {
-	using Renderer = SdlOglRenderer;
-	
-};
-
 template <class Gfx>
 struct FramebufferT : Framebuffer {
 	using NatFrameBuf = typename Gfx::NativeFramebuffer;
@@ -118,14 +34,37 @@ struct RendererT : Renderer {
     FrameBuf output;
 	
 public:
+	using Base = RendererT<Gfx>;
+	RTTI_DECL1(RendererT, Renderer)
 	RendererT() {}
 	virtual ~RendererT() {}
 	
 	
+	void PreFrame() override {DefaultPreFrame();}
+	void PostFrame() override {DefaultPostFrame();}
 	Framebuffer& GetOutputFramebuffer() override {return output;}
 	FrameBuf& GetFramebuffer() {return output;}
 	
 	
+	void DefaultPreFrame() {
+		ASSERT(rend);
+		NatRend& r = *rend;
+		Gfx::LeaveFramebuffer(r);
+		Gfx::ClearBuffers(r);
+		Gfx::SetSmoothShading(r);
+		Gfx::SetClearValue(r, RGBA(0,0,0,255), 255);
+		Gfx::SetDepthTest(r);
+		Gfx::SetDepthOrderLess(r);
+		Gfx::SetFastPerspectiveCorrection(r);
+		Gfx::SetTriangleBacksideCulling(r);
+		Gfx::SetTriangleFrontsideCCW(r);
+		Gfx::SetViewport(r, output_sz);
+	}
+	
+	void DefaultPostFrame() {
+		ASSERT(win && rend);
+		Gfx::ActivateNextFrame(*win, *rend);
+	}
 };
 
 template <class Gfx>

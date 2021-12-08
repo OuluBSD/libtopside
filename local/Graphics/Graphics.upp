@@ -11,6 +11,7 @@ uses(MSC & NEVER) ports/glext;
 file
 	Graphics.h,
 	Enums.h,
+	Types.h,
 	GlobalApi.h,
 	OpenGL.h,
 	State.h,
@@ -30,6 +31,7 @@ file
 	Buffer.h,
 	Templates readonly separator,
 	Templates.h,
+	Sdl.cpp,
 	"CPU only" readonly separator,
 	CpuRenderer.h,
 	CpuRenderer.cpp,

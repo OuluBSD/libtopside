@@ -50,12 +50,8 @@ public:
 };
 
 
-class SdlOglRenderer : public RendererT<SdlOglGfx> {
-	
-public:
-	void PreFrame() override;
-	void PostFrame() override;
-	
+struct SdlOglRenderer : public RendererT<SdlOglGfx> {
+	RTTI_DECL1(SdlOglRenderer, Base)
 };
 
 

@@ -5,46 +5,67 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void SdlOglRenderer::PreFrame() {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	
+void OglRendererBase::ClearBuffers() {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	
-	
-	// Enable smooth shading
-	glShadeModel( GL_SMOOTH );
-	
+}
+
+void OglRendererBase::SetSmoothShading(bool b) {
+	glShadeModel(b ? GL_SMOOTH : GL_FLAT);
+}
+
+void OglRendererBase::SetDepthTest(bool b) {
+	if (b) glEnable(GL_DEPTH_TEST);
+	else   glDisable(GL_DEPTH_TEST);
+}
+
+void OglRendererBase::SetDepthOrderLess(bool b) {
+	if (b) glDepthFunc( GL_LEQUAL );
+	else   glDepthFunc( GL_GEQUAL );
+}
+
+void OglRendererBase::SetClearValue(RGBA clr, byte depth) {
 	// Set the background black
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearColor( clr.r/255.0f, clr.g/255.0f, clr.b/255.0f, clr.a/255.0f );
 	
 	// Depth buffer setup
-	glClearDepth( 1.0f );
-	
-	// Enables Depth Testing
-	glEnable( GL_DEPTH_TEST );
-	
-	// The Type Of Depth Test To Do
-	glDepthFunc( GL_LEQUAL );
-	
-	// Really Nice Perspective Calculations
-	glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-	
-	
-	// Culling.
-	glCullFace( GL_BACK );
-	glFrontFace( GL_CCW );
-	glEnable( GL_CULL_FACE );
-	
-	
-	ASSERT(output_sz.cx > 0 && output_sz.cy > 0);
-	glViewport(0, 0, output_sz.cx, output_sz.cy);
+	glClearDepth( depth/255.0f );
 	
 }
 
-void SdlOglRenderer::PostFrame() {
-	if (win)
-		SDL_GL_SwapWindow(win);
+void OglRendererBase::SetFastPerspectiveCorrection(bool b) {
+	if (b)
+		glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
+	else
+		glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 }
+
+void OglRendererBase::SetTriangleBacksideCulling(bool b) {
+	if (b) {
+		glEnable( GL_CULL_FACE );
+		glCullFace( GL_BACK );
+	}
+	else
+		glDisable( GL_CULL_FACE );
+}
+
+void OglRendererBase::SetTriangleFrontsideCCW(bool b) {
+	glFrontFace( b ? GL_CCW : GL_CW );
+}
+
+void OglRendererBase::SetViewport(Size sz) {
+	ASSERT(sz.cx > 0 && sz.cy > 0);
+	glViewport(0, 0, sz.cx, sz.cy);
+}
+
+void OglRendererBase::LeaveFramebuffer() {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/*void OglRendererBase::ActivateNextFrame() {
+	// pass
+}*/
+
+
 
 
 

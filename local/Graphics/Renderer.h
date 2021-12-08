@@ -5,13 +5,14 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class Renderer {
+class Renderer : RTTIBase {
 	
 protected:
 	Size output_sz;
 	
 	
 public:
+	RTTI_DECL0(Renderer)
 	Renderer();
 	virtual ~Renderer() {}
 	
