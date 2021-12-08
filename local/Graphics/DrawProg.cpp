@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -91,3 +93,5 @@ void DrawProg::DrawEnd(const DrawCommand& cmd) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

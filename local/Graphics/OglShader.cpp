@@ -1,11 +1,13 @@
 #include "Graphics.h"
 
+#if 0
+
 #ifdef HAVE_OPENGL
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void Mesh::RefreshOgl(OglFramebufferObject& o) {
+void Mesh::RefreshOgl(OglDataObject& o) {
 	ASSERT_(GetAppFlags().IsOpenGLContextOpen(), "OpenGL context is not open");
 	if (!GetAppFlags().IsOpenGLContextOpen())
 		return;
@@ -49,8 +51,8 @@ void Mesh::RefreshOgl(OglFramebufferObject& o) {
 	
 }
 
-void Mesh::RefreshOgl(FramebufferObject& o) {
-	OglFramebufferObject* ogl = CastPtr<OglFramebufferObject>(&o);
+void Mesh::RefreshOgl(GfxDataObject& o) {
+	OglDataObject* ogl = CastPtr<OglDataObject>(&o);
 	ASSERT(ogl);
 	if (ogl)
 		RefreshOgl(*ogl);
@@ -68,7 +70,7 @@ NAMESPACE_TOPSIDE_END
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void OglFramebufferObject::Paint() {
+void OglDataObject::Paint() {
 	ASSERT(vbo && ebo && element_count > 0)
 	if (!vbo || !ebo || !element_count)
 		return;
@@ -105,7 +107,7 @@ void OglFramebufferObject::Paint() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pitch, int stride, const Vector<byte>& data) {
+void OglDataObject::MakeTexture(int tex_id, int width, int height, int pitch, int stride, const Vector<byte>& data) {
 	GLuint& gl_tex = this->tex.GetAdd(tex_id, 0);
 	
 	if (gl_tex == 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
@@ -128,7 +130,7 @@ void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pi
 	}
 }
 
-/*void OglFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
+/*void OglDataObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
 	this->model = model;
 	this->scale = scale;
 	if (proj) this->proj = *proj;
@@ -141,29 +143,29 @@ void OglFramebufferObject::MakeTexture(int tex_id, int width, int height, int pi
 	RendVer2(OnUpdateObject, id, RenderingVerifier::VIEW);
 }
 
-void OglFramebufferObject::SetModel(const mat4& m) {
+void OglDataObject::SetModel(const mat4& m) {
 	model = m;
 	RendVer2(OnUpdateObject, id, RenderingVerifier::MODEL);
 }
 
-void OglFramebufferObject::SetScale(const mat4& m) {
+void OglDataObject::SetScale(const mat4& m) {
 	scale = m;
 	RendVer2(OnUpdateObject, id, RenderingVerifier::SCALE);
 }
 
-void OglFramebufferObject::SetProjection(const mat4& m) {
+void OglDataObject::SetProjection(const mat4& m) {
 	proj = m;
 	is_global_proj = false;
 	RendVer2(OnUpdateObject, id, RenderingVerifier::PROJECT);
 }
 
-void OglFramebufferObject::SetView(const mat4& m) {
+void OglDataObject::SetView(const mat4& m) {
 	view = m;
 	is_global_view = false;
 	RendVer2(OnUpdateObject, id, RenderingVerifier::VIEW);
 }*/
 
-void OglFramebufferObject::FreeOgl() {
+void OglDataObject::FreeOgl() {
 	if (vbo) {
 		glDeleteBuffers(1, &vbo);
 		glDeleteBuffers(1, &ebo);
@@ -183,39 +185,39 @@ void OglFramebufferObject::FreeOgl() {
 	if (idx >= 0)
 
 #if 0
-void OglFramebufferObject::SetBool(const String &name, bool value) const {
+void OglDataObject::SetBool(const String &name, bool value) const {
 	PREIDX glUniform1i(idx, (int)value);
 }
 
-void OglFramebufferObject::SetInt(const String &name, int value) const {
+void OglDataObject::SetInt(const String &name, int value) const {
 	PREIDX glUniform1i(idx, value);
 }
 
-void OglFramebufferObject::SetFloat(const String &name, float value) const {
+void OglDataObject::SetFloat(const String &name, float value) const {
 	PREIDX glUniform1f(idx, value);
 }
 
-void OglFramebufferObject::SetVec2(const String &name, const vec2 &value) const {
+void OglDataObject::SetVec2(const String &name, const vec2 &value) const {
 	PREIDX glUniform2f(idx, value.data[0], value.data[1]);
 }
 
-void OglFramebufferObject::SetVec3(const String &name, const vec3 &value) const {
+void OglDataObject::SetVec3(const String &name, const vec3 &value) const {
 	PREIDX glUniform3f(idx, value.data[0], value.data[1], value.data[2]);
 }
 
-void OglFramebufferObject::SetVec4(const String &name, const vec4 &value) const {
+void OglDataObject::SetVec4(const String &name, const vec4 &value) const {
 	PREIDX glUniform4f(idx, value.data[0], value.data[1], value.data[2], value.data[3]);
 }
 
-void OglFramebufferObject::SetMat2(const String &name, const mat2 &mat) const {
+void OglDataObject::SetMat2(const String &name, const mat2 &mat) const {
 	PREIDX glUniformMatrix2fv(idx, 1, GL_FALSE, &mat[0][0]);
 }
 
-void OglFramebufferObject::SetMat3(const String &name, const mat3 &mat) const {
+void OglDataObject::SetMat3(const String &name, const mat3 &mat) const {
 	PREIDX glUniformMatrix3fv(idx, 1, GL_FALSE, &mat[0][0]);
 }
 
-void OglFramebufferObject::SetMat4(const String &name, const mat4 &mat) const {
+void OglDataObject::SetMat4(const String &name, const mat4 &mat) const {
 	PREIDX glUniformMatrix4fv(idx, 1, GL_FALSE, &mat[0][0]);
 }
 
@@ -455,7 +457,6 @@ bool OglShader::CheckCompileErrors(GLuint shader, String type) {
 	return success;
 	#endif
 }
-#endif
 
 
 
@@ -514,8 +515,10 @@ int OglFramebufferState::GetGlSampleSize() const {
 	return 0;
 }
 
+#endif
 
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

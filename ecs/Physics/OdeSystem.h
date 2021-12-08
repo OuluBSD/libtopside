@@ -59,7 +59,7 @@ class OdeObject : public OdeNode {
 	
 public:
 	ModelLoader model;
-	FramebufferObject* fb_obj = 0;
+	GfxDataObject* fb_obj = 0;
 	bool model_err = false;
 	
 	dGeomID geom = 0;

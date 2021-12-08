@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -213,3 +215,4 @@ void ModelProg::DrawEnd(const DrawCommand& cmd) {
 
 
 NAMESPACE_TOPSIDE_END
+#endif

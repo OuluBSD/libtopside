@@ -1,362 +1,29 @@
-#ifndef _Graphics_Templates_h_
-#define _Graphics_Templates_h_
+#ifndef _Graphics_TemplateBuffer_h_
+#define _Graphics_TemplateBuffer_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class Gfx>
-struct FramebufferT : Framebuffer {
-	using NatFrameBuf = typename Gfx::NativeFramebuffer;
-	using NatTex = typename Gfx::NativeTexture;
-	
-	NatFrameBuf fb;
-	NatTex tex;
-	
-	
-	FramebufferT() {
-		fb = Null;
-		tex = Null;
-	}
-	
-	const NatTex& GetTexture() const {return tex;}
-	
-};
-
-template <class Gfx>
-struct RendererT : Renderer {
-	using NatWin = typename Gfx::NativeWindow;
-	using NatRend = typename Gfx::NativeRenderer;
-	using FrameBuf = typename Gfx::Framebuffer;
-	
-	
-	NatWin* win = NULL;
-    NatRend* rend = NULL;
-    FrameBuf output;
-	
-public:
-	using Base = RendererT<Gfx>;
-	RTTI_DECL1(RendererT, Renderer)
-	RendererT() {}
-	virtual ~RendererT() {}
-	
-	
-	void PreFrame() override {DefaultPreFrame();}
-	void PostFrame() override {DefaultPostFrame();}
-	Framebuffer& GetOutputFramebuffer() override {return output;}
-	FrameBuf& GetFramebuffer() {return output;}
-	
-	
-	void DefaultPreFrame() {
-		ASSERT(rend);
-		NatRend& r = *rend;
-		Gfx::LeaveFramebuffer(r);
-		Gfx::ClearBuffers(r);
-		Gfx::SetSmoothShading(r);
-		Gfx::SetClearValue(r, RGBA(0,0,0,255), 255);
-		Gfx::SetDepthTest(r);
-		Gfx::SetDepthOrderLess(r);
-		Gfx::SetFastPerspectiveCorrection(r);
-		Gfx::SetTriangleBacksideCulling(r);
-		Gfx::SetTriangleFrontsideCCW(r);
-		Gfx::SetViewport(r, output_sz);
-	}
-	
-	void DefaultPostFrame() {
-		ASSERT(win && rend);
-		Gfx::ActivateNextFrame(*win, *rend);
-	}
-};
-
-template <class Gfx>
-struct DrawFramebufferT : DrawFramebuffer {
-	using Base = DrawFramebufferT<Gfx>;
-	using GfxRenderer = typename Gfx::Renderer;
-	using GfxFramebuffer = typename Gfx::Framebuffer;
-	
-	GfxRenderer* rend = 0;
-	GfxFramebuffer* fb = 0;
-	
-	Renderer* GetRenderer() override {return rend;}
-	Framebuffer* GetFramebuffer() override {return fb;}
-	
-	
-};
-
-template <class Gfx>
-struct FramebufferObjectT : FramebufferObject {
-	using Base = FramebufferObjectT<Gfx>;
-	RTTI_DECL1(FramebufferObjectT, FramebufferObject)
-	
-	using GfxFramebufferState = typename Gfx::FramebufferState;
-	using GfxTex = typename Gfx::NativeTexture;
-	using VertexArray = typename Gfx::NativeVertexArray;
-	using VertexBuffer = typename Gfx::NativeVertexBuffer;
-	using ElementBuffer = typename Gfx::NativeElementBuffer;
-	
-	GfxFramebufferState* state = 0;
-	VectorMap<int,GfxTex> tex;
-	uint32 element_count = 0;
-	VertexArray vao;
-	VertexBuffer vbo;
-	ElementBuffer ebo;
-	
-    mat4 view;
-    mat4 proj;
-    mat4 scale;
-    mat4 model;
-    bool is_global_view = false;
-    int id = -1;
-	
-	
-	FramebufferObjectT() {
-		vao = Null;
-		vbo = Null;
-		ebo = Null;
-	}
-	
-	void SetState(GfxFramebufferState& state) {this->state = &state;}
-	
-	
-};
-
-template <class Gfx>
-struct FramebufferInputStateT : FramebufferInputState {
-	using Base = FramebufferInputStateT<Gfx>;
-	using GfxBuffer = typename Gfx::Buffer;
-	
-	const GfxBuffer* in_buf = 0;
-	
-	void Clear() {
-		FramebufferInputState::Clear();
-		in_buf = 0;
-	}
-	
-};
-
-template <class Gfx>
-struct ShaderStateT : ShaderState {
-	using Base = ShaderStateT<Gfx>;
-	using NativeShader = typename Gfx::NativeShader;
-	
-	
-	NativeShader shader;
-	
-	ShaderStateT() {
-		shader = Null;
-	}
-	
-};
-
-template <class Gfx>
-struct FramebufferStateT : FramebufferState {
-	using Base = FramebufferStateT<Gfx>;
-	using ColorBuf = typename Gfx::NativeColorBuffer;
-	using DepthBuf = typename Gfx::NativeDepthBuffer;
-	using FrameBuf = typename Gfx::NativeFrameBuffer;
-	using Program  = typename Gfx::NativeProgram;
-	using Pipeline = typename Gfx::NativePipeline;
-	using NativeShader = typename Gfx::NativeShader;
-	using ShaderState = typename Gfx::ShaderState;
-	using InputState = typename Gfx::InputState;
-	using GfxFramebufferObject = typename Gfx::FramebufferObject;
-	using GfxFramebufferState = typename Gfx::FramebufferState;
-	RTTI_DECL1(FramebufferStateT, FramebufferState)
-	
-	ColorBuf	color_buf[2];
-	DepthBuf	depth_buf[2];
-	FrameBuf	frame_buf[2];
-	Program		prog;
-	Pipeline	pipeline;
-	bool		is_searched_vars = 0;
-	int			var_idx[ShaderVar::VAR_COUNT];
-	
-	ShaderState shaders[ShaderVar::PROG_COUNT];
-	InputState inputs[ShaderVar::INPUT_COUNT];
-	
-	// objects
-	Array<GfxFramebufferObject> objects;
-	Vector<String> user_vars;
-	
-	NativeShader shader;
-	
-	
-	FramebufferStateT() {
-		for(int i = 0; i < 2; i++) {
-			color_buf[i] = Null;
-			depth_buf[i] = Null;
-			frame_buf[i] = Null;
-		}
-		prog = Null;
-		pipeline = Null;
-		shader = Null;
-		memset(&var_idx, 0, sizeof(var_idx));
-	}
-	
-	void SetCode(ShaderVar::Type t, const String& s) {shaders[t].code = s;}
-	GLuint GetReadFramebuffer() const {return frame_buf[buf_i];}
-	GLint GetGlType() const;
-	GLint GetGlFormat() const;
-	int GetGlSize() const;
-	int GetGlSampleSize() const;
-	
-	
-	FramebufferObject& CreateObject() override {
-		GfxFramebufferState* s = CastPtr<GfxFramebufferState>(this);
-		ASSERT(s);
-		GfxFramebufferObject* p = new GfxFramebufferObject();
-		p->SetState(*s);
-		objects.Add(p);
-		p->id = objects.GetCount() - 1;
-		RendVer1(OnRealizeObject, p->id);
-		return *p;
-	}
-
-};
-
-template <class Gfx>
-struct ShaderPipelineT :
-	ShaderPipeline
-{
-	RTTI_DECL1(ShaderPipelineT, ShaderPipeline)
-	using Base = ShaderPipelineT<Gfx>;
-	
-	
-	
-	
-	
-};
-
-template <class Gfx>
-struct ShaderT :
-	Shader,
-	ErrorReporter
-{
-	using Base = ShaderT<Gfx>;
-	using GfxFramebufferState = typename Gfx::FramebufferState;
-	using GfxVertexShaderArgs = typename Gfx::VertexShaderArgs;
-	using GfxFragmentShaderArgs = typename Gfx::FragmentShaderArgs;
-	RTTI_DECL1(ShaderT, Shader)
-	
-    GfxFramebufferState* state = 0;
-    
-    
-	
-    bool CheckCompileErrors(GLuint shader, String type);
-	void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
-    
-	FramebufferObject* CreateObject() override {return state ? &state->CreateObject() : 0;}
-
-	virtual void Process(GfxVertexShaderArgs& args) {Panic("not implemented");}
-	virtual void Process(GfxFragmentShaderArgs& args) {Panic("not implemented");}
-	
-	
-	
-	
-	#if 0
-	bool Load(String vertex_path, String fragment_path, String geometry_path = "") override;
-	void SetLoaded(bool b=true) {is_loaded = true;}
-	bool IsLoaded() const override {return is_loaded;}
-	void Refresh(ModelMesh& model) override;
-    void Refresh(ModelMesh& model, Mesh& mesh) override;
-	void Use() override;
-	
-	
-	void SetBool(const String &name, bool value) const override;
-	void SetInt(const String &name, int value) const override;
-	void SetFloat(const String &name, float value) const override;
-	void SetVec2(const String &name, const vec2 &value) const override;
-	void SetVec3(const String &name, const vec3 &value) const override;
-	void SetVec4(const String &name, const vec4 &value) const override;
-	void SetMat2(const String &name, const mat2 &mat) const override;
-	void SetMat3(const String &name, const mat3 &mat) const override;
-	void SetMat4(const String &name, const mat4 &mat) const override;
-	void SetVec2(const String &name, float x, float y) const override;
-	void SetVec3(const String &name, float x, float y, float z) const override;
-	void SetVec4(const String &name, float x, float y, float z, float w) const override;
-	#endif
-	
-};
-
-template <class Gfx>
-struct FramebufferStateExtT : RTTIBase {
-	using Base = FramebufferStateExtT<Gfx>;
-	using GfxFramebufferState = typename Gfx::FramebufferState;
-	using GfxShader = typename Gfx::Shader;
-	RTTI_DECL0(FramebufferStateExtT)
-	
-	GfxFramebufferState* state = 0;
-	GfxShader* stages[ShaderVar::PROG_COUNT];
-	
-	
-	FramebufferStateExtT() {Clear();}
-	void SetVertex(GfxShader& s) {stages[ShaderVar::PROG_VERTEX] = &s;}
-	void SetFragment(GfxShader& s) {stages[ShaderVar::PROG_FRAGMENT] = &s;}
-	
-	
-	void Clear() {
-		//FramebufferState::Clear();
-		state = 0;
-		for(int i = 0; i < ShaderVar::PROG_COUNT; i++)
-			stages[i] = 0;
-	}
-	
-	void LoadState(FramebufferStateT<Gfx>& state) {
-		Clear();
-		
-		this->state = &state;
-		AppendState(state);
-	}
-	
-	void AppendState(FramebufferStateT<Gfx>& state) {
-		for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
-			if (state.stages[i])
-				stages[i] = CastPtr<ShaderT<Gfx>>(state.stages[i]);
-		}
-	}
-
-};
-
-template <class Gfx>
-struct GCompilerT : GCompiler {
-	using Base = GCompilerT<Gfx>;
-	using NativeShader = typename Gfx::NativeShader;
-	RTTI_DECL1(GCompilerT, GCompiler)
-	
-};
-
-template <class Gfx>
-struct GLinkerT : GLinker {
-	using Base = GLinkerT<Gfx>;
-	RTTI_DECL1(GLinkerT, GLinker)
-	
-	bool log = false;
-	
-	
-	
-	void EnableLog() {log = true;}
-	void DisableLog() {log = false;}
-	
-};
-
-template <class Gfx>
-struct BufferT : GBuffer {
+struct BufferT : GfxBuffer {
 	using Base = BufferT<Gfx>;
-	using GfxBinderIface = typename Gfx::BinderIface;
-	using GfxFramebufferState = typename Gfx::FramebufferState;
-	using GfxBuffer = typename Gfx::Buffer;
-	using GfxShader = typename Gfx::Shader;
-	using GfxShaderState = typename Gfx::ShaderState;
-	using GfxShaderPipeline = typename Gfx::ShaderPipeline;
-	using GfxFramebufferObject = typename Gfx::FramebufferObject;
-	using GfxInputState = typename Gfx::InputState;
-	using GfxCompiler = typename Gfx::Compiler;
-	using GfxLinker = typename Gfx::Linker;
+	using BinderIface = typename Gfx::BinderIface;
+	using FramebufferState = typename Gfx::FramebufferState;
+	using Framebuffer = typename Gfx::Framebuffer;
+	using Buffer = typename Gfx::Buffer;
+	using Shader = typename Gfx::Shader;
+	using ShaderState = typename Gfx::ShaderState;
+	using ShaderPipeline = typename Gfx::ShaderPipeline;
+	using DataObject = typename Gfx::DataObject;
+	using InputState = typename Gfx::InputState;
+	using Compiler = typename Gfx::Compiler;
+	using Linker = typename Gfx::Linker;
 	using Sample = ShaderVar::Sample;
 	RTTI_DECL1(BufferT, Base)
 	
 	
 	Vector<String>				link_ids;
-	Vector<GfxBinderIface*>		binders;
+	Vector<BinderIface*>		binders;
 	String						last_error;
 	
 	// set by user
@@ -365,7 +32,7 @@ struct BufferT : GBuffer {
 	int							loopback = -1;
 	bool						initialized = false;
 	
-	GfxFramebufferState			state;
+	Framebuffer					state;
 	
 	static Callback2<String, BufferT*> WhenLinkInit;
 	
@@ -380,7 +47,7 @@ struct BufferT : GBuffer {
 		DLOG("BufferT::LoadShaderFile: " << shader_path);
 		
 		ASSERT(shader_type > ShaderVar::PROG_NULL && shader_type < ShaderVar::PROG_COUNT);
-		GfxShaderState& shader = state.shaders[shader_type];
+		ShaderState& shader = state.shaders[shader_type];
 		
 		Vector<String> libraries = Split(library_path, ";");
 		String library;
@@ -424,11 +91,11 @@ struct BufferT : GBuffer {
 	
 	
 	
-	void AddBinder(GfxBinderIface* iface) {
+	void AddBinder(BinderIface* iface) {
 		VectorFindAdd(binders, iface);
 	}
 	
-	void RemoveBinder(GfxBinderIface* iface) {
+	void RemoveBinder(BinderIface* iface) {
 		VectorRemoveKey(binders, iface);
 	}
 	
@@ -489,6 +156,7 @@ struct BufferT : GBuffer {
 	
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data) {
 		RTLOG("InitializeVolume: " << sz.ToString() << ", " << data.GetCount());
+		TODO
 		#if 0
 		UpdateTexBuffers();
 		
@@ -498,6 +166,7 @@ struct BufferT : GBuffer {
 	}
 	
 	void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
+		TODO
 		#if 0
 		GLenum type		= GL_TEXTURE_2D;
 		
@@ -523,6 +192,7 @@ struct BufferT : GBuffer {
 	}
 	
 	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data) {
+		TODO
 		#if 0
 		GLenum type		= GL_TEXTURE_3D;
 		
@@ -671,7 +341,7 @@ struct BufferT : GBuffer {
 		return s.buf_i;
 	}
 	
-	void Process(GfxShaderPipeline& pipe) {
+	void Process(ShaderPipeline& pipe) {
 		
 		TODO
 		
@@ -730,10 +400,10 @@ struct BufferT : GBuffer {
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		if (binders.GetCount()) {
-			GfxBuffer* buf = CastPtr<GfxBuffer>(this);
+			Buffer* buf = CastPtr<Buffer>(this);
 			ASSERT(buf);
-			GfxShader shader(state);
-			for (GfxBinderIface* iface : binders)
+			Shader shader(state);
+			for (BinderIface* iface : binders)
 				iface->Render(*buf, shader);
 		}
 		else {
@@ -741,7 +411,7 @@ struct BufferT : GBuffer {
 		}
 		
 		// render VBA from state
-		for (GfxFramebufferObject& o : state.objects) {
+		for (DataObject& o : state.objects) {
 			SetVars(state.prog, o);
 			o.Paint();
 		}
@@ -870,13 +540,13 @@ struct BufferT : GBuffer {
 		state.is_searched_vars = true;
 	}
 	
-	void SetVars(GLint prog, const GfxFramebufferObject& o) {
+	void SetVars(GLint prog, const DataObject& o) {
 		for(int i = 0; i < ShaderVar::VAR_COUNT; i++)
 			if (ShaderVar::is_obj_var[i] && state.var_idx[i] >= 0)
 				SetVar(i, prog, o);
 	}
 	
-	void SetVar(int var, GLint prog, const GfxFramebufferObject& o) {
+	void SetVar(int var, GLint prog, const DataObject& o) {
 		using namespace ShaderVar;
 		int uindex = state.var_idx[var];
 		ASSERT(uindex >= 0);
@@ -1001,7 +671,7 @@ struct BufferT : GBuffer {
 		else if (var == VAR_COMPAT_CHANNELTIME) {
 			double values[INPUT_COUNT];
 			for(int j = 0; j < INPUT_COUNT; j++) {
-				GfxInputState& in = s.inputs[j];
+				InputState& in = s.inputs[j];
 				values[j] = in.in_buf ? in.in_buf->state.time_total : 0;
 			}
 			glUniform4f(uindex, (GLfloat)values[0], (GLfloat)values[1], (GLfloat)values[2], (GLfloat)values[3]);
@@ -1010,7 +680,7 @@ struct BufferT : GBuffer {
 		else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
 			int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 			GLfloat values[3] = {0,0,0};
-			GfxInputState& in = state.inputs[ch];
+			InputState& in = state.inputs[ch];
 			const BufferT* in_buf = in.in_buf;
 			if (in_buf) {
 				values[0] = (GLfloat)in_buf->state.size.cx;
@@ -1121,7 +791,7 @@ struct BufferT : GBuffer {
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
 			return -1;
 		
-		const GfxInputState& in = state.inputs[input_i];
+		const InputState& in = state.inputs[input_i];
 		if (in.in_buf == 0) {
 			RTLOG("GetInputTex: warning: no input fbo buffer");
 			return -1;
@@ -1141,7 +811,7 @@ struct BufferT : GBuffer {
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
 			return -1;
 		
-		const GfxInputState& in = state.inputs[input_i];
+		const InputState& in = state.inputs[input_i];
 		
 		if (in.type == ShaderVar::VOLUME)
 			return GL_TEXTURE_3D;
@@ -1168,8 +838,8 @@ struct BufferT : GBuffer {
 			return false;
 		}
 		
-		GfxInputState& in = state.inputs[loopback];
-		in.in_buf = CastPtr<GfxBuffer>(this);
+		InputState& in = state.inputs[loopback];
+		in.in_buf = CastPtr<Buffer>(this);
 		in.id = state.id;
 		in.type = ShaderVar::BUFFER;
 		ASSERT(in.in_buf);
@@ -1186,15 +856,15 @@ struct BufferT : GBuffer {
 				return false;
 		}*/
 		
-		GfxCompiler comps[ShaderVar::PROG_COUNT];
-		GfxLinker linker;
+		Compiler comps[ShaderVar::PROG_COUNT];
+		Linker linker;
 		linker.EnableLog();
 		for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
 			auto& s = state.shaders[i];
 			if (s.code.IsEmpty())
 				continue;
 			
-			GfxCompiler& comp = comps[i];
+			Compiler& comp = comps[i];
 			s.enabled = true;
 			
 			if (!comp.Compile(state, s, (ShaderVar::Type)i, s.code, s.library)) {
@@ -1269,9 +939,9 @@ struct BufferT : GBuffer {
 			//LOG("LoadOutputLink: " << name << " #" << in_id);
 			
 			ASSERT(v.ptr);
-			GfxInputState& in = state.inputs[in_id];
+			InputState& in = state.inputs[in_id];
 			in.id = in_id;
-			in.in_buf = (GfxBuffer*)v.ptr;
+			in.in_buf = (Buffer*)v.ptr;
 			
 			ASSERT(sz.cx > 0 && sz.cy > 0);
 			
@@ -1310,7 +980,7 @@ struct BufferT : GBuffer {
 		in.type = BufferTInput::CUBEMAP;
 		#endif
 	}
-	
+		
 };
 
 template <class Gfx> inline Callback2<String, BufferT<Gfx>*> BufferT<Gfx>::WhenLinkInit;

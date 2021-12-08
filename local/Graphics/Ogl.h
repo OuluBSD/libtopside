@@ -8,13 +8,13 @@ int GetOglChCode(int channels, bool is_float=false);
 
 
 struct OglFramebufferState;
-struct OglFramebufferObject;
+struct OglDataObject;
 
 
 
 struct OglVertexShaderArgs {
 	OglFramebufferState& state;
-	OglFramebufferObject& obj;
+	OglDataObject& obj;
 	const vec3& pos;
 	const vec3& normal;
 	const vec2& tex_coords;
@@ -28,26 +28,12 @@ struct OglFragmentShaderArgs {
 
 
 
-class OglFramebuffer : public FramebufferT<OglGfx> {
-	
-public:
-	bool locked = false;
-	
-public:
-	typedef OglFramebuffer CLASSNAME;
-	OglFramebuffer();
-	~OglFramebuffer() {Clear();}
-	
-	bool Create(int w, int h, int channels=3) override;
-	void Enter() override {ASSERT(!locked); locked = true;}
-	void Leave() override {ASSERT(locked);  locked = false;}
-	byte* GetIterator(int x, int y) override {Panic("Not usable: OglFramebuffer::GetIterator"); return 0;}
-	void DrawFill(const byte* mem, int sz) override {TODO}
-	
-	void Bind();
-	void Clear();
-	void Render();
-};
+
+
+
+
+struct OglStateDraw : StateDrawT<OglGfx> {RTTI_DECL1(OglStateDraw, Base)};
+struct OglFramebuffer : FramebufferT<OglGfx> {RTTI_DECL1(OglFramebuffer, Base)};
 
 
 struct SdlOglRenderer : public RendererT<SdlOglGfx> {
@@ -61,11 +47,11 @@ public:
 	
 };
 
-struct OglFramebufferObject : FramebufferObjectT<OglGfx> {
-	RTTI_DECL1(OglFramebufferObject, Base)
+struct OglDataObject : DataObjectT<OglGfx> {
+	RTTI_DECL1(OglDataObject, Base)
 	
-    OglFramebufferObject() {}
-    ~OglFramebufferObject() {FreeOgl();}
+    OglDataObject() {}
+    ~OglDataObject() {FreeOgl();}
     void FreeOgl();
     void Paint() override;
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override;
@@ -82,7 +68,7 @@ struct OglShaderState : ShaderStateT<OglGfx> {
 	
 };
 
-struct OglFramebufferState : FramebufferStateT<OglGfx> {
+/*struct OglFramebufferState : FramebufferT<OglGfx> {
 	RTTI_DECL1(OglFramebufferState, Base)
 	
 	GLint GetGlType() const;
@@ -91,13 +77,13 @@ struct OglFramebufferState : FramebufferStateT<OglGfx> {
 	int GetGlSampleSize() const;
 	
 };
-
+*/
 struct OglShader : ShaderT<OglGfx>
 {
 	RTTI_DECL1(OglShader, Base)
 	
 	OglShader() {}
-	OglShader(OglFramebufferState& s) {state = &s;}
+	//OglShader(OglFramebufferState& s) {state = &s;}
 	
 };
 
@@ -107,7 +93,7 @@ struct OglShaderPipeline : ShaderPipelineT<OglGfx>
 	
 };
 
-struct OglCompiler : GCompilerT<OglGfx> {
+struct OglCompiler : GfxCompilerT<OglGfx> {
 	RTTI_DECL1(OglCompiler, Base)
 	
 	OglCompiler();
@@ -117,7 +103,7 @@ struct OglCompiler : GCompilerT<OglGfx> {
 	static void HotfixWebGLSL(String& s);
 };
 
-struct OglLinker : GLinkerT<OglGfx> {
+struct OglLinker : GfxLinkerT<OglGfx> {
 	RTTI_DECL1(OglLinker, Base)
 	
 	bool Link(OglFramebufferState& fb_state);

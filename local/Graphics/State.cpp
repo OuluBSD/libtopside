@@ -63,6 +63,7 @@ const bool is_obj_var[ShaderVar::VAR_COUNT+1] = {
 
 
 
+#if 0
 
 void StateDraw::DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) {
 	TODO
@@ -90,5 +91,7 @@ bool StateDraw::ClipOp(const Rect& r) {
 void StateDraw::EndOp() {
 	TODO
 }
+
+#endif
 
 NAMESPACE_TOPSIDE_END

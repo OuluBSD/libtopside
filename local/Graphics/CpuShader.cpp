@@ -1,47 +1,49 @@
 #include "Graphics.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
-void CpuFramebufferObject::Paint() {
+void CpuDataObject::Paint() {
 	TODO
 }
 
-void CpuFramebufferObject::MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) {
+void CpuDataObject::MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) {
 	TODO
 }
 /*
-void CpuFramebufferObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
+void CpuDataObject::Set(const mat4& model, const mat4& scale, const mat4* proj, const mat4* view) {
 	TODO
 }
 
-void CpuFramebufferObject::SetModel(const mat4& m) {
+void CpuDataObject::SetModel(const mat4& m) {
 	TODO
 }
 
-void CpuFramebufferObject::SetScale(const mat4& m) {
+void CpuDataObject::SetScale(const mat4& m) {
 	TODO
 }
 
-void CpuFramebufferObject::SetProjection(const mat4& m) {
+void CpuDataObject::SetProjection(const mat4& m) {
 	TODO
 }
 
-void CpuFramebufferObject::SetView(const mat4& m) {
+void CpuDataObject::SetView(const mat4& m) {
 	TODO
 }*/
 
 
 
 
-FramebufferObject& CpuFramebufferState::CreateObject() {
-	CpuFramebufferObject& o = objects.Add(new CpuFramebufferObject(*this));
+GfxDataObject& CpuFramebufferState::CreateObject() {
+	CpuDataObject& o = objects.Add(new CpuDataObject(*this));
 	o.id = objects.GetCount() - 1;
 	RendVer1(OnRealizeObject, o.id);
 	return o;
 }
 
 
-FramebufferObject* CpuShader::CreateObject() {
+GfxDataObject* CpuShader::CreateObject() {
 	return &state->CreateObject();
 }
 
@@ -102,14 +104,14 @@ void CpuShader::SetMat4(const String &name, const mat4 &mat) const {
 
 
 
-void Mesh::RefreshSw(FramebufferObject& o) {
-	CpuFramebufferObject* fbo = CastPtr<CpuFramebufferObject>(&o);
+void Mesh::RefreshSw(GfxDataObject& o) {
+	CpuDataObject* fbo = CastPtr<CpuDataObject>(&o);
 	ASSERT(fbo);
 	if (fbo)
 		RefreshSw(*fbo);
 }
 
-void Mesh::RefreshSw(CpuFramebufferObject& o) {
+void Mesh::RefreshSw(CpuDataObject& o) {
 	// pass?
 }
 
@@ -145,3 +147,5 @@ void CpuShaderPipeline::Clear() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

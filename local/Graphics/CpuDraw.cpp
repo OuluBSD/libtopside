@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#if 0
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -212,7 +214,7 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 		
 		
 		if (i == ShaderVar::PROG_VERTEX) {
-			for (CpuFramebufferObject& o : p.state->objects) {
+			for (CpuDataObject& o : p.state->objects) {
 				int vtx_count = 0;
 				TODO
 				for(int j = 0; j < vtx_count; j++) {
@@ -248,3 +250,5 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

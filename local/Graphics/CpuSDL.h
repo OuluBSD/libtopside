@@ -1,6 +1,8 @@
 #ifndef _Graphics_CpuSDL_h_
 #define _Graphics_CpuSDL_h_
 
+#if 0
+
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -75,5 +77,7 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+
+#endif
 
 #endif

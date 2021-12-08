@@ -5,54 +5,15 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
 class Shader;
-struct CpuFramebufferObject;
+struct CpuDataObject;
 #if HAVE_OPENGL
-struct OglFramebufferObject;
+struct OglDataObject;
 class OglShader;
 #endif
 
 
-struct FramebufferState;
+//struct FramebufferState;
 
-
-struct FramebufferObject : RTTIBase {
-	RTTI_DECL0(FramebufferObject)
-	
-	virtual ~FramebufferObject() {}
-	
-    virtual void Paint() = 0;
-    virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
-    
-    
-	/*
-	virtual void SetBool(const String &name, bool value) const = 0;
-	virtual void SetInt(const String &name, int value) const = 0;
-	virtual void SetFloat(const String &name, float value) const = 0;
-	virtual void SetVec2(const String &name, const vec2 &value) const = 0;
-	virtual void SetVec3(const String &name, const vec3 &value) const = 0;
-	virtual void SetVec4(const String &name, const vec4 &value) const = 0;
-	virtual void SetMat2(const String &name, const mat2 &mat) const = 0;
-	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
-	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
-	
-	
-	typedef enum {
-		UNDEFINED,
-		SW,
-		OGL,
-	} Type;
-	
-	Type type = UNDEFINED;
-	
-	mat4 model;
-	mat4 scale;
-	mat4 proj;
-	
-	
-	bool IsSoftware() const {return type == SW;}
-	bool IsOpenGL() const {return type == OGL;}
-	
-};
 
 class Mesh : public BoundingBox, Moveable<Mesh> {
 	
@@ -70,7 +31,7 @@ public:
 	Mesh(const Mesh& m) {*this = m;}
 	
 	void Clear();
-	void Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
+	//void Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
     bool AddTextureFilePath(String key, String path);
 	void operator=(const Mesh& src) {
         Clear();
@@ -86,13 +47,13 @@ public:
         //Refresh();
     }
     
-    void Refresh(FramebufferObject& o);
-    void RefreshOgl(FramebufferObject& o);
-    void RefreshSw(FramebufferObject& o);
-    void RefreshSw(CpuFramebufferObject& o);
+    /*void Refresh(GfxDataObject& o);
+    void RefreshOgl(GfxDataObject& o);
+    void RefreshSw(GfxDataObject& o);
+    void RefreshSw(CpuDataObject& o);
 #if HAVE_OPENGL
-    void RefreshOgl(OglFramebufferObject& o);
-#endif
+    void RefreshOgl(OglDataObject& o);
+#endif*/
     
     void SetMaterial(const Material& m) {material = m;}
     void SetCount(int vertex_count, int triangle_count) {
@@ -171,8 +132,8 @@ public:
 	bool SetTexture(Mesh& mesh, TexType type, Image img);
 	
 	void MakeModel(Shape2DWrapper& shape);
-	void Refresh(FramebufferState& s, FramebufferObject& o);
-    void Refresh(FramebufferState& s, FramebufferObject& o, Mesh& m);
+	//void Refresh(GfxDataState& s, GfxDataObject& o);
+    //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
     void Dump();
     
 };
@@ -190,7 +151,7 @@ public:
 	ModelLoader();
 	
 	void Clear() {model.Clear();}
-    bool LoadModel(FramebufferState& s, FramebufferObject& o, String path);
+    //bool LoadModel(FramebufferState& s, GfxDataObject& o, String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
@@ -206,10 +167,10 @@ protected:
     
     
     #ifdef flagASSIMP
-    bool LoadModelAssimp(FramebufferObject& o, String path);
+    /*bool LoadModelAssimp(GfxDataObject& o, String path);
     
-    void ProcessNode(FramebufferObject& o, aiNode *node, const aiScene *scene);
-    void ProcessMesh(FramebufferObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void ProcessNode(GfxDataObject& o, aiNode *node, const aiScene *scene);
+    void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);*/
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
     #endif
     

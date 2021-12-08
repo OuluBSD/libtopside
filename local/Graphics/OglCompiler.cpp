@@ -1,5 +1,6 @@
 #include "Graphics.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -236,3 +237,5 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

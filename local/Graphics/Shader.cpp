@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -39,3 +41,5 @@ Shader* Shader::NewDefault() {
 #endif
 
 NAMESPACE_TOPSIDE_END
+
+#endif

@@ -7,12 +7,15 @@ NAMESPACE_TOPSIDE_BEGIN
 class CpuMemFramebuffer;
 class CpuMemBuffer;
 
+class OglDataState;
+class OglDataObject;
+
 class OglFramebuffer;
 class OglFramebufferState;
 class OglBuffer;
 class OglShaderState;
 class OglInputState;
-class OglFramebufferObject;
+class OglDataObject;
 class OglVertexShaderArgs;
 class OglFragmentShaderArgs;
 class OglShader;
@@ -36,11 +39,18 @@ struct CpuGfx {
 	using NativeProgram = uint32;
 	using NativePipeline = uint32;
 	
-	FramebufferObject::Type type = FramebufferObject::SW;
+	static const ShaderVar::GfxType type = ShaderVar::SW;
 	
 };
 
 struct OglGfx {
+	// State
+	using DataState = OglDataState;
+	using DataObject = OglDataObject;
+	// Framebuffer
+	// Runtime
+	// Context
+	// Utils
 	using Framebuffer = OglFramebuffer;
 	using FramebufferState = OglFramebufferState;
 	using Buffer = OglBuffer;
@@ -48,7 +58,6 @@ struct OglGfx {
 	using ShaderState = OglShaderState;
 	using ShaderPipeline = OglShaderPipeline;
 	using InputState = OglInputState;
-	using FramebufferObject = OglFramebufferObject;
 	using BinderIface = BinderIfaceOgl;
 	using VertexShaderArgs = OglVertexShaderArgs;
 	using FragmentShaderArgs = OglFragmentShaderArgs;
@@ -67,7 +76,7 @@ struct OglGfx {
 	using NativeProgram = GLuint;
 	using NativePipeline = GLuint;
 	
-	TS::FramebufferObject::Type type = TS::FramebufferObject::OGL;
+	static const ShaderVar::GfxType type = ShaderVar::OGL;
 	
 	
 };

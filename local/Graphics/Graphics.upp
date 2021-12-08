@@ -10,6 +10,7 @@ uses(MSC & NEVER) ports/glext;
 
 file
 	Graphics.h,
+	main.cpp,
 	Enums.h,
 	Types.h,
 	GlobalApi.h,
@@ -17,21 +18,20 @@ file
 	State.h,
 	State.cpp,
 	Camera.h,
-	Shader.h,
 	Shader.cpp,
-	Framebuffer.h,
-	Framebuffer.cpp,
-	Renderer.h,
-	Renderer.cpp,
+	GfxClasses.h,
+	Templates readonly separator,
+	TState.h,
+	TFramebuffer.h,
+	TRuntime.h,
+	TBuffer.h,
+	TContext.h,
+	TUtil.h,
+	Sdl.cpp,
 	ProgDraw.h,
 	ProgDraw.cpp,
 	ModelProg.cpp,
 	DrawProg.cpp,
-	Compiler.h,
-	Buffer.h,
-	Templates readonly separator,
-	Templates.h,
-	Sdl.cpp,
 	"CPU only" readonly separator,
 	CpuRenderer.h,
 	CpuRenderer.cpp,
@@ -48,4 +48,7 @@ file
 	OglShader.cpp,
 	OglCompiler.cpp,
 	OglBuffer.cpp;
+
+mainconfig
+	"" = "SCREEN";
 

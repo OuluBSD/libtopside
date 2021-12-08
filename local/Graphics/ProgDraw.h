@@ -1,6 +1,8 @@
 #ifndef _Graphics_ProgDraw_h_
 #define _Graphics_ProgDraw_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -59,7 +61,7 @@ public:
 
 class ProgDraw : public Draw {
 	One<ProgPainter> d;
-	CpuFramebufferObject fb;
+	CpuDataObject fb;
 	CpuFramebufferState state;
 	ProgCpuShader shader;
 	
@@ -144,4 +146,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

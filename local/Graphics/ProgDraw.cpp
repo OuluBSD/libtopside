@@ -1,5 +1,6 @@
 #include "Graphics.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -399,3 +400,5 @@ void ProgDraw::EndOp() {
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

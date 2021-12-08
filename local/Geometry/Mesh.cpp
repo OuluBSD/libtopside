@@ -1,5 +1,7 @@
 #include "Geometry.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -15,14 +17,14 @@ void Mesh::Clear() {
 	
 }
 
-void Mesh::Set(FramebufferObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
+void Mesh::Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
 	this->vertices <<= vertices;
     this->indices <<= indices;
     
     Refresh(o);
 }
 
-void Mesh::Refresh(FramebufferObject& o) {
+void Mesh::Refresh(GfxDataObject& o) {
 	if (o.IsOpenGL()) {
 #if HAVE_OPENGL
 		RefreshOgl(o);
@@ -160,3 +162,5 @@ void ModelMesh::Dump() {
 }
 
 NAMESPACE_TOPSIDE_END
+
+#endif

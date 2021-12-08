@@ -1,5 +1,7 @@
 #include "Graphics.h"
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -164,3 +166,4 @@ void CpuFramebuffer::DrawLine(int x0, int y0, int x1, int y1, Color color) {
 
 
 NAMESPACE_TOPSIDE_END
+#endif

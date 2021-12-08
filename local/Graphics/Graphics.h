@@ -35,13 +35,15 @@ typedef unsigned int	Gxbf;
 #include "Types.h"
 #include "State.h"
 #include "Camera.h"
-#include "Shader.h"
-#include "Framebuffer.h"
-#include "Renderer.h"
-#include "Compiler.h"
-#include "Buffer.h"
 
-#include "Templates.h"
+#include "GfxClasses.h"
+
+#include "TState.h"
+#include "TFramebuffer.h"
+#include "TRuntime.h"
+#include "TBuffer.h"
+#include "TContext.h"
+#include "TUtil.h"
 
 #include "CpuShader.h"
 #include "CpuRenderer.h"

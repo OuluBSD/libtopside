@@ -1,5 +1,6 @@
 #include "Geometry.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -36,13 +37,13 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 	}
 }
 
-void ModelMesh::Refresh(FramebufferState& s, FramebufferObject& o) {
+void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o) {
 	for (Mesh& m : meshes) {
 		Refresh(s, o, m);
 	}
 }
 
-void ModelMesh::Refresh(FramebufferState& s, FramebufferObject& o, Mesh& mesh) {
+void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o, Mesh& mesh) {
 	int tex_i = 0;
 	unsigned int diffuseNr = 1;
 	unsigned int specularNr = 1;
@@ -95,7 +96,7 @@ ModelLoader::ModelLoader() {
 	
 }
 
-bool ModelLoader::LoadModel(FramebufferState& s, FramebufferObject& o, String path) {
+bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) {
 	model.Clear();
 	
 	if (0)
@@ -115,7 +116,7 @@ bool ModelLoader::LoadModel(FramebufferState& s, FramebufferObject& o, String pa
 
 #ifdef flagASSIMP
 
-bool ModelLoader::LoadModelAssimp(FramebufferObject& o, String path)
+bool ModelLoader::LoadModelAssimp(GfxDataObject& o, String path)
 {
 	LOG("Model::LoadModelAssimp: " << path);
     Assimp::Importer import;
@@ -136,7 +137,7 @@ bool ModelLoader::LoadModelAssimp(FramebufferObject& o, String path)
     return true;
 }
 
-void ModelLoader::ProcessNode(FramebufferObject& o, aiNode *node, const aiScene *scene)
+void ModelLoader::ProcessNode(GfxDataObject& o, aiNode *node, const aiScene *scene)
 {
     // process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
@@ -149,7 +150,7 @@ void ModelLoader::ProcessNode(FramebufferObject& o, aiNode *node, const aiScene 
     }
 }
 
-void ModelLoader::ProcessMesh(FramebufferObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
+void ModelLoader::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene)
 {
     out.vertices.SetCount(mesh->mNumVertices);
     out.tex_coords.SetCount(mesh->mNumVertices);
@@ -215,3 +216,5 @@ void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *m
 
 
 NAMESPACE_TOPSIDE_END
+
+#endif

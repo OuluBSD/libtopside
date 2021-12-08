@@ -1,5 +1,6 @@
 #include "Graphics.h"
 
+#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -188,3 +189,5 @@ void SdlDrawFramebuffer::EndOp() {
 #endif
 
 NAMESPACE_TOPSIDE_END
+
+#endif

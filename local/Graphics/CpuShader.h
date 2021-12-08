@@ -1,18 +1,20 @@
 #ifndef _GRAPHICS_CpuShader_h_
 #define _GRAPHICS_CpuShader_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 struct CpuFramebufferState;
 
-struct CpuFramebufferObject : FramebufferObject {
-	RTTI_DECL1(CpuFramebufferObject, FramebufferObject)
+struct CpuDataObject : GfxDataObject {
+	RTTI_DECL1(CpuDataObject, GfxDataObject)
 	
 	CpuFramebufferState& state;
     int id = -1;
 	
 	
-	CpuFramebufferObject(CpuFramebufferState& s) : state(s) {type = SW;}
+	CpuDataObject(CpuFramebufferState& s) : state(s) {type = SW;}
 	
 	
 	
@@ -30,17 +32,17 @@ struct CpuFramebufferState : FramebufferState {
 	RTTI_DECL1(CpuFramebufferState, FramebufferState)
 	
 	// objects
-	Array<CpuFramebufferObject>	objects;
+	Array<CpuDataObject>	objects;
 	Vector<String> user_vars;
 	
 	
-	FramebufferObject& CreateObject() override;
+	GfxDataObject& CreateObject() override;
 	
 };
 
 struct CpuVertexShaderArgs {
 	CpuFramebufferState& state;
-	CpuFramebufferObject& obj;
+	CpuDataObject& obj;
 	const vec3& pos;
 	const vec3& normal;
 	const vec2& tex_coords;
@@ -49,7 +51,7 @@ struct CpuVertexShaderArgs {
 };
 
 class CpuShader :
-	public Shader,
+	public GfxShader,
 	public ErrorReporter
 {
 	bool is_loaded = false;
@@ -83,7 +85,7 @@ public:
 	void SetMat4(const String &name, const mat4 &mat) const override;
 	*/
 	
-	FramebufferObject* CreateObject() override;
+	GfxDataObject* CreateObject() override;
 	
 	virtual void Process(CpuVertexShaderArgs& args) {Panic("not implemented");}
 	virtual void Process(CpuFramebufferState& state) {Panic("not implemented");}
@@ -115,4 +117,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif

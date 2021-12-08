@@ -5,15 +5,13 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
 
 OglFramebuffer::OglFramebuffer() {
 	
 }
 
 bool OglFramebuffer::Create(int w, int h, int channels) {
-	sz = Size(0,0);
-	this->channels = 0;
-	
 	if (channels != 3) {
 		LOG("OglFramebuffer::Create: error: only channels==3 is supported (tried " << channels << ")");
 		return false;
@@ -22,6 +20,10 @@ bool OglFramebuffer::Create(int w, int h, int channels) {
 	if (sz.cx == w && sz.cy == h) {
 		return true;
 	}
+	
+	sz = Size(0,0);
+	this->channels = 0;
+	
 	this->channels = channels;
 	sz.cx = w;
 	sz.cy = h;
@@ -82,6 +84,7 @@ void OglFramebuffer::Clear() {
 	}
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END
 

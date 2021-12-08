@@ -1,6 +1,8 @@
 #ifndef _GRAPHICS_CpuRenderer_h_
 #define _GRAPHICS_CpuRenderer_h_
 
+#if 0
+
 NAMESPACE_TOPSIDE_BEGIN
 
 class CpuFramebuffer : public Framebuffer {
@@ -99,4 +101,5 @@ public:
 
 NAMESPACE_TOPSIDE_END
 
+#endif
 #endif
