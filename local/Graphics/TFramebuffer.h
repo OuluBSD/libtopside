@@ -54,7 +54,7 @@ struct FramebufferT : GfxFramebuffer {
 	using ShaderState = typename Gfx::ShaderState;
 	using InputState = typename Gfx::InputState;
 	using DataObject = typename Gfx::DataObject;
-	using FramebufferState = typename Gfx::FramebufferState;
+	using DataState = typename Gfx::DataState;
 	RTTI_DECL1(FramebufferT, GfxFramebuffer)
 	
 	NatColorBuf	color_buf[2];
@@ -80,7 +80,9 @@ struct FramebufferT : GfxFramebuffer {
 	int GetGlSize() const;
 	int GetGlSampleSize() const;
 	
-	bool Create(int w, int h, int channels=3) override;
+	void Init(NatFrameBuf* fb, int w, int h, int stride) {TODO}
+	
+	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}
 	void Leave() override {ASSERT(locked);  locked = false;}
 	byte* GetIterator(int x, int y) override {Panic("Not usable: OglFramebuffer::GetIterator"); return 0;}

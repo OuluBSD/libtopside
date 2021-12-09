@@ -35,6 +35,19 @@ public:
 };
 
 
+class CpuBuffer;
+class CpuShader;
+
+class BinderIfaceCpu : RTTIBase {
+	
+public:
+	RTTI_DECL0(BinderIfaceCpu);
+	
+	virtual void Render(const CpuBuffer& buf, CpuShader& shader) = 0;
+	
+};
+
+
 class OglBuffer;
 class OglShader;
 

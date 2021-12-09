@@ -41,13 +41,14 @@ class EcsVideoBase :
 	EnvStateRef		state;
 	int				prev_iter = -1;
 	ValDevCls		src_type;
-	ProgDraw		pd;
 	ImageDraw		id;
-	StateDraw		sd;
-	CpuFramebufferState	cpu_state;
+	ProgDraw			pd;
+	CpuStateDraw		cpu_sd;
+	CpuDataState		cpu_state;
+	CpuFramebuffer		cpu_fb;
 	#if HAVE_OPENGL
-	OglFramebufferState	ogl_state;
-	OglShaderPipeline ogl_pipe;
+	OglDataState		ogl_state;
+	OglShaderPipeline	ogl_pipe;
 	#endif
 	
 	static EcsVideoBase* latest;

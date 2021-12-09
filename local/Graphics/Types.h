@@ -4,14 +4,29 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CpuMemFramebuffer;
-class CpuMemBuffer;
+class CpuDataState;
+class CpuDataObject;
+
+class CpuFramebuffer;
+class CpuContextState;
+class CpuRuntimeState;
+class CpuBuffer;
+class CpuShaderState;
+class CpuInputState;
+class CpuDataObject;
+class CpuVertexShaderArgs;
+class CpuFragmentShaderArgs;
+class CpuShader;
+class CpuShaderPipeline;
+class CpuCompiler;
+class CpuLinker;
 
 class OglDataState;
 class OglDataObject;
 
 class OglFramebuffer;
-class OglFramebufferState;
+class OglContextState;
+class OglRuntimeState;
 class OglBuffer;
 class OglShaderState;
 class OglInputState;
@@ -27,15 +42,36 @@ class SdlCpuRenderer;
 class SdlOglRenderer;
 
 struct CpuGfx {
-	using Framebuffer = CpuMemFramebuffer;
-	using Buffer = CpuMemBuffer;
+	// State
+	using DataState = CpuDataState;
+	using DataObject = CpuDataObject;
+	// Framebuffer
+	// Runtime
+	// Context
+	// Utils
+	using Framebuffer = CpuFramebuffer;
+	using ContextState = CpuContextState;
+	using RuntimeState = CpuRuntimeState;
+	using Buffer = CpuBuffer;
+	using Shader = CpuShader;
+	using ShaderState = CpuShaderState;
+	using ShaderPipeline = CpuShaderPipeline;
+	using InputState = CpuInputState;
+	using BinderIface = BinderIfaceCpu;
+	using VertexShaderArgs = CpuVertexShaderArgs;
+	using FragmentShaderArgs = CpuFragmentShaderArgs;
+	using Compiler = CpuCompiler;
+	using Linker = CpuLinker;
 	
 	using NativeFramebuffer = uint32;
-	using NativeTexture = int32;
+	using NativeTexture = uint32;
 	using NativeShader = uint32;
 	using NativeColorBuffer = uint32;
 	using NativeDepthBuffer = uint32;
 	using NativeFrameBuffer = uint32;
+	using NativeVertexArray = uint32;
+	using NativeVertexBuffer = uint32;
+	using NativeElementBuffer = uint32;
 	using NativeProgram = uint32;
 	using NativePipeline = uint32;
 	
@@ -52,7 +88,8 @@ struct OglGfx {
 	// Context
 	// Utils
 	using Framebuffer = OglFramebuffer;
-	using FramebufferState = OglFramebufferState;
+	using ContextState = OglContextState;
+	using RuntimeState = OglRuntimeState;
 	using Buffer = OglBuffer;
 	using Shader = OglShader;
 	using ShaderState = OglShaderState;

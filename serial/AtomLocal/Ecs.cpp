@@ -204,6 +204,8 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		}
 		// render to state
 		else {
+			TODO
+			#if 0
 			cpu_state.size = sz;
 			cpu_state.channels = stride;
 			cpu_state.sample = ShaderVar::SAMPLE_U8;
@@ -228,10 +230,13 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			else {
 				TODO
 			}
+			#endif
 		}
 	}
 	#if HAVE_OPENGL
 	else if (src_type == VD(OGL,FBO)) {
+		TODO
+		#if 0
 		Format fmt = io.src[0].val->GetFormat();
 		ASSERT(fmt.IsFbo());
 		
@@ -264,6 +269,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		else {
 			TODO
 		}
+		#endif
 	}
 	#endif
 	else {

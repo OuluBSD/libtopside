@@ -12,6 +12,8 @@ Size SwScreen::GetSize() {
 }
 
 bool SwScreen::Open0() {
+	TODO
+	#if 0
 	AppFlags& app_flags = GetAppFlags();
 	
 	
@@ -35,10 +37,11 @@ bool SwScreen::Open0() {
 		LOG("error: couldn't create framebuffer texture");
 	}
 	
-	sw_rend.GetOutputCpuFramebuffer().Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	sw_rend.GetFramebuffer().Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	
 	return true;
+	#endif
 }
 
 void SwScreen::Close0() {
@@ -102,6 +105,8 @@ bool SwScreen::Recv(int ch_i, const Packet& p) {
 }
 
 void SwScreen::Render() {
+	TODO
+	#if 0
 	if (!last_packet) {
 		RTLOG("SwScreen::Render: warning: cannot render without packet");
 		return;
@@ -165,10 +170,12 @@ void SwScreen::Render() {
 	else {
 		TODO
 	}
-	
+	#endif
 }
 
 SystemDraw& SwScreen::BeginDraw() {
+	TODO
+	#if 0
 	AppFlags& flags = GetAppFlags();
 	
     sw_rend.win = win;
@@ -182,6 +189,7 @@ SystemDraw& SwScreen::BeginDraw() {
     sw_draw.fb->Enter();
 	
 	return sysdraw;
+	#endif
 }
 
 void SwScreen::CommitDraw() {

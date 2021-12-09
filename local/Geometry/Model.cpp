@@ -1,6 +1,5 @@
 #include "Geometry.h"
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -36,6 +35,8 @@ void ModelMesh::MakeModel(Shape2DWrapper& shape) {
 		
 	}
 }
+
+#if 0
 
 void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o) {
 	for (Mesh& m : meshes) {
@@ -86,6 +87,7 @@ void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o, Mesh& mesh) {
 	
 }
 
+#endif
 
 
 
@@ -95,6 +97,8 @@ void ModelMesh::Refresh(FramebufferState& s, GfxDataObject& o, Mesh& mesh) {
 ModelLoader::ModelLoader() {
 	
 }
+
+#if 0
 
 bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) {
 	model.Clear();
@@ -113,8 +117,11 @@ bool ModelLoader::LoadModel(FramebufferState& s, GfxDataObject& o, String path) 
 	return true;
 }
 
+#endif
 
 #ifdef flagASSIMP
+
+#if 0
 
 bool ModelLoader::LoadModelAssimp(GfxDataObject& o, String path)
 {
@@ -194,8 +201,10 @@ void ModelLoader::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMe
 			LoadMaterialTextures(mout, out, material, i);
     }
 
-	out.Refresh(o);
+	TODO //out.Refresh(o);
 }
+
+#endif
 
 void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type) {
     for(unsigned int i = 0; i < mat->GetTextureCount((aiTextureType) type); i++) {
@@ -217,4 +226,3 @@ void ModelLoader::LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *m
 
 NAMESPACE_TOPSIDE_END
 
-#endif

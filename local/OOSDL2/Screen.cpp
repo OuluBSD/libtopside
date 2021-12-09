@@ -269,7 +269,8 @@ SystemDraw& Screen::BeginDraw() {
 	    hw_rend.PreFrame();
 	    hw_draw.rend = &hw_rend;
 	    hw_draw.fb = &hw_rend.GetFramebuffer();
-	    sysdraw.ptr = &hw_draw;
+	    TODO
+	    sysdraw.ptr = 0;//&hw_draw;
 	    
 	    hw_draw.fb->Enter();
 	}
@@ -340,7 +341,7 @@ bool Screen::ImageInitialize() {
 		}
 	}
 	else {
-		buf.state.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
+		buf.rt.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
 	}
 	
 	if (vtx_path.GetCount()) {

@@ -57,7 +57,7 @@ struct DataStateT : GfxDataState {
 	using ShaderState = typename Gfx::ShaderState;
 	using InputState = typename Gfx::InputState;
 	using DataObject = typename Gfx::DataObject;
-	using Framebuffer = typename Gfx::FramebufferState;
+	using Framebuffer = typename Gfx::Framebuffer;
 	
 	
 	Array<DataObject> objects;
@@ -75,17 +75,13 @@ struct DataStateT : GfxDataState {
 		RendVer1(OnRealizeObject, p->id);
 		return *p;
 	}
-
-};
-
-template <class Gfx>
-struct StateDrawT : GfxStateDraw {
-	RTTI_DECL1(StateDrawT, GfxStateDraw)
-	using Base = StateDrawT<Gfx>;
 	
-	
+	void Refresh(ModelMesh& m) override {TODO}
+	void LoadModel(ModelLoader& l, String path) override {TODO}
 	
 };
+
+
 
 
 

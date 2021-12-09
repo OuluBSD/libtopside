@@ -10,6 +10,7 @@ struct DrawFramebufferT : GfxStateDraw {
 	using Base = DrawFramebufferT<Gfx>;
 	using Renderer = typename Gfx::Renderer;
 	using Framebuffer = typename Gfx::Framebuffer;
+	using ShaderPipeline = typename Gfx::ShaderPipeline;
 	
 	GfxRenderer* rend = 0;
 	GfxFramebuffer* fb = 0;
@@ -18,9 +19,20 @@ struct DrawFramebufferT : GfxStateDraw {
 	//GfxFramebuffer* GetFramebuffer() override {return fb;}
 	
 	
+	void DrawShaderPipeline(ShaderPipeline&);
+	
 };
 
-
+template <class Gfx>
+struct StateDrawT : GfxStateDraw {
+	RTTI_DECL1(StateDrawT, GfxStateDraw)
+	using Base = StateDrawT<Gfx>;
+	using ShaderPipeline = typename Gfx::ShaderPipeline;
+	
+	
+	void DrawShaderPipeline(ShaderPipeline&) {TODO}
+	
+};
 
 
 NAMESPACE_TOPSIDE_END

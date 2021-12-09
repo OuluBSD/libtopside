@@ -58,6 +58,8 @@ struct OglDataObject : DataObjectT<OglGfx> {
     
 };
 
+struct OglDataState : DataStateT<CpuGfx> {RTTI_DECL1(OglDataState, Base)};
+
 struct OglInputState : FramebufferInputStateT<OglGfx> {
 	RTTI_DECL1(OglInputState, Base)
 	
@@ -109,6 +111,9 @@ struct OglLinker : GfxLinkerT<OglGfx> {
 	bool Link(OglFramebufferState& fb_state);
 	
 };
+
+struct OglRuntimeState : RuntimeStateT<OglGfx> {RTTI_DECL1(OglRuntimeState, Base)};
+struct OglContextState : ContextStateT<OglGfx> {RTTI_DECL1(OglContextState, Base)};
 
 struct OglBuffer : BufferT<OglGfx> {
 	RTTI_DECL1(OglBuffer, Base)

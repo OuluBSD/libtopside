@@ -5,6 +5,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class Gfx>
+struct ContextStateT : GfxContextState {
+	RTTI_DECL1(ContextStateT, GfxContextState)
+	using Base = ContextStateT<Gfx>;
+	
+};
+
+template <class Gfx>
 struct RendererT : GfxRenderer {
 	using NatWin = typename Gfx::NativeWindow;
 	using NatRend = typename Gfx::NativeRenderer;

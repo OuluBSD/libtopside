@@ -101,16 +101,19 @@ struct ShaderPipelineT :
 {
 	RTTI_DECL1(ShaderPipelineT, GfxShaderPipeline)
 	using Base = ShaderPipelineT<Gfx>;
+	using DataState = typename Gfx::DataState;
 	
 	
 	
 	
+	void LoadState(DataState& state) {TODO}
 	
 };
 
 template <class Gfx>
 struct RuntimeStateT : GfxRuntimeState {
 	RTTI_DECL1(RuntimeStateT, GfxRuntimeState)
+	using Base = RuntimeStateT<Gfx>;
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
 	using NatShader = typename Gfx::NativeShader;

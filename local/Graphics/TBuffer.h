@@ -8,8 +8,10 @@ template <class Gfx>
 struct BufferT : GfxBuffer {
 	using Base = BufferT<Gfx>;
 	using BinderIface = typename Gfx::BinderIface;
-	using FramebufferState = typename Gfx::FramebufferState;
+	using DataState = typename Gfx::DataState;
 	using Framebuffer = typename Gfx::Framebuffer;
+	using ContextState = typename Gfx::ContextState;
+	using RuntimeState = typename Gfx::RuntimeState;
 	using Buffer = typename Gfx::Buffer;
 	using Shader = typename Gfx::Shader;
 	using ShaderState = typename Gfx::ShaderState;
@@ -33,6 +35,8 @@ struct BufferT : GfxBuffer {
 	bool						initialized = false;
 	
 	Framebuffer					state;
+	ContextState				ctx;
+	RuntimeState				rt;
 	
 	static Callback2<String, BufferT*> WhenLinkInit;
 	
@@ -47,7 +51,7 @@ struct BufferT : GfxBuffer {
 		DLOG("BufferT::LoadShaderFile: " << shader_path);
 		
 		ASSERT(shader_type > ShaderVar::PROG_NULL && shader_type < ShaderVar::PROG_COUNT);
-		ShaderState& shader = state.shaders[shader_type];
+		ShaderState& shader = rt.shaders[shader_type];
 		
 		Vector<String> libraries = Split(library_path, ";");
 		String library;
@@ -101,11 +105,11 @@ struct BufferT : GfxBuffer {
 	
 	void Update(double dt) {
 		if (state.is_time_used) {
-			state.time_us += dt;
-			if (state.time_us >= 1.0) {
-				state.time_us = fmod(state.time_us, 1.0);
-				state.time = GetSysTime();
-				RTLOG("Update: " << dt << ", time=" << state.time.ToString());
+			ctx.time_us += dt;
+			if (ctx.time_us >= 1.0) {
+				ctx.time_us = fmod(ctx.time_us, 1.0);
+				ctx.time = GetSysTime();
+				RTLOG("Update: " << dt << ", time=" << ctx.time.ToString());
 			}
 		}
 	}
@@ -261,9 +265,9 @@ struct BufferT : GfxBuffer {
 		DLOG("BufferT::Initialize: load new program");
 		
 		ASSERT(state.fps > 0);
-		state.frame_time = 1.0 / state.fps;
-		state.time = GetSysTime();
-		state.block_offset = 0;
+		ctx.frame_time = 1.0 / state.fps;
+		ctx.time = GetSysTime();
+		ctx.block_offset = 0;
 		
 		if (!SetupLoopback())
 			return false;
@@ -298,7 +302,7 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void Reset() {
-		state.time_total = 0;
+		ctx.time_total = 0;
 	}
 	
 	void SetFramebufferSize(Size sz) {
@@ -323,9 +327,12 @@ struct BufferT : GfxBuffer {
 			fb_fmt					= GetGfxChannelFormat(fb_channels, fb_type == GL_FLOAT);
 			fb_accel_fmt			= GetGfxChannelFormat(fb_accel_channels, fb_accel_type == GL_FLOAT);
 			*/
-			ASSERT(s.GetGlSize() > 0);
+			
+			TODO
+			/*ASSERT(s.GetGlSize() > 0);
 			ASSERT(s.GetGlFormat() >= 0);
-			ASSERT(s.GetGlType() >= 0);
+			ASSERT(s.GetGlType() >= 0);*/
+			
 			ClearTex();
 			
 			CreateTex(
@@ -348,6 +355,8 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void Process(const RealtimeSourceConfig& cfg) {
+		TODO
+		#if 0
 		auto& s = state;
 		GLint prog = s.prog;
 		GLint pipeline = s.pipeline;
@@ -442,6 +451,7 @@ struct BufferT : GfxBuffer {
 		else {
 			s.block_offset += 1.0;
 		}
+		#endif
 	}
 	
 	void UseRenderedFramebuffer() {
@@ -470,6 +480,8 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void CreatePipeline() {
+		TODO
+		#if 0
 		ClearPipeline();
 		
 		glGenProgramPipelines(1, &state.pipeline);
@@ -493,6 +505,7 @@ struct BufferT : GfxBuffer {
 				glUseProgramStages(state.pipeline, bmask, prog);
 			}
 		}
+		#endif
 	}
 	
 	
@@ -502,6 +515,8 @@ struct BufferT : GfxBuffer {
 	
 	
 	void FindVariables() {
+		TODO
+		#if 0
 		GLint n_uniforms;
 		glGetProgramiv(state.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
 		GLchar name[80];
@@ -538,6 +553,7 @@ struct BufferT : GfxBuffer {
 		}
 		
 		state.is_searched_vars = true;
+		#endif
 	}
 	
 	void SetVars(GLint prog, const DataObject& o) {
@@ -830,6 +846,8 @@ struct BufferT : GfxBuffer {
 	
 	
 	bool SetupLoopback() {
+		TODO
+		#if 0
 		if (loopback < 0)
 			return true;
 		
@@ -845,9 +863,12 @@ struct BufferT : GfxBuffer {
 		ASSERT(in.in_buf);
 		
 		return true;
+		#endif
 	}
 	
 	bool CompilePrograms() {
+		TODO
+		#if 0
 		/*const char* fn_name = "CompilePrograms";
 		for(int i = 0; i < PROG_COUNT; i++) {
 			if (i == PROG_FRAGMENT && !CompileFragmentShader())
@@ -879,6 +900,7 @@ struct BufferT : GfxBuffer {
 		}
 		
 		return true;
+		#endif
 	}
 	
 	GLint GetOutputTexture(bool reading_self) const {
@@ -935,6 +957,8 @@ struct BufferT : GfxBuffer {
 	}
 	
 	bool LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
+		TODO
+		#if 0
 		if (in_id >= 0 && in_id < ShaderVar::INPUT_COUNT) {
 			//LOG("LoadOutputLink: " << name << " #" << in_id);
 			
@@ -957,6 +981,7 @@ struct BufferT : GfxBuffer {
 		
 		RTLOG("LoadOutputLink: error: unexpected data");
 		return false;
+		#endif
 	}
 	
 	void SetInputVolume(int in_id) {

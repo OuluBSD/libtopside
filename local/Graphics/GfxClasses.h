@@ -104,6 +104,7 @@ struct GfxFramebuffer : ErrorReporter {
 	bool	is_doublebuf = 0;
 	int		pitch = 0;
 	int8	buf_i = 0;
+	double	fps = 0;
 	
 	
 	
@@ -234,7 +235,6 @@ struct GfxContextState : RTTIBase {
 	double	frame_time = 0;
 	double	block_offset = 0;
 	int		frames = 0;
-	double	fps = 0;
 	double	time_us = 0;
 	double	sample_rate = 0;
 	Time	time;
@@ -250,7 +250,7 @@ protected:
 	
 public:
 	RTTI_DECL0(GfxRenderer)
-	GfxRenderer();
+	GfxRenderer() {}
 	virtual ~GfxRenderer() {}
 	
 	virtual GfxFramebuffer& GetOutputFramebuffer() = 0;
@@ -283,6 +283,8 @@ struct GfxStateDraw : ErrorReporter {
 	*/
 	
 };
+
+
 
 
 

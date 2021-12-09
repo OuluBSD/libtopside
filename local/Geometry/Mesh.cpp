@@ -1,6 +1,5 @@
 #include "Geometry.h"
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -17,11 +16,14 @@ void Mesh::Clear() {
 	
 }
 
+#if 0
+
 void Mesh::Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices) {
 	this->vertices <<= vertices;
     this->indices <<= indices;
     
-    Refresh(o);
+    TODO
+    //Refresh(o);
 }
 
 void Mesh::Refresh(GfxDataObject& o) {
@@ -39,6 +41,8 @@ void Mesh::Refresh(GfxDataObject& o) {
 		TODO
 	}
 }
+
+#endif
 
 void Mesh::UpdateBoundingBox() {
 	int m_num_tri = indices.GetCount() / 3;
@@ -163,4 +167,3 @@ void ModelMesh::Dump() {
 
 NAMESPACE_TOPSIDE_END
 
-#endif

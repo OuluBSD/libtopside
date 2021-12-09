@@ -41,13 +41,14 @@ typedef unsigned int	Gxbf;
 #include "TState.h"
 #include "TFramebuffer.h"
 #include "TRuntime.h"
-#include "TBuffer.h"
 #include "TContext.h"
 #include "TUtil.h"
+#include "TBuffer.h"
 
-#include "CpuShader.h"
+#include "Cpu.h"
+/*#include "CpuShader.h"
 #include "CpuRenderer.h"
-#include "CpuSDL.h"
+#include "CpuSDL.h"*/
 
 #if defined(flagSCREEN)
 #include "Ogl.h"
