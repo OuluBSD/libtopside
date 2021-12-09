@@ -43,6 +43,30 @@ struct BufferT : GfxBuffer {
 	
 	
 	
+	
+	BufferT() {
+		
+	}
+	
+	void MakeFrameQuad() {
+		// essentially same as glRectf(-1.0, -1.0, 1.0, 1.0);
+		Mesh m;
+		m.vertices.SetCount(4);
+		Vertex& tl = m.vertices[0];
+		Vertex& tr = m.vertices[1];
+		Vertex& br = m.vertices[2];
+		Vertex& bl = m.vertices[3];
+		tl.SetPosTex(vec3(-1, +1, 0), vec2(-1,+1));
+		tr.SetPosTex(vec3(+1, +1, 0), vec2(+1,+1));
+		br.SetPosTex(vec3(+1, -1, 0), vec2(+1,-1));
+		bl.SetPosTex(vec3(-1, -1, 0), vec2(-1,-1));
+		m.indices << 0 << 2 << 1; // top-right triangle CCW
+		m.indices << 0 << 3 << 2; // bottom-left triangle CCW
+		
+		DataObject& o = data.AddObject();
+		o.Refresh(m);
+	}
+	
 	void Visit(RuntimeVisitor& vis) {vis & env;}
 	void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
@@ -415,7 +439,9 @@ struct BufferT : GfxBuffer {
 				iface->Render(*buf, shader);
 		}
 		else {
-			glRectf(-1.0, -1.0, 1.0, 1.0);
+			//glRectf(-1.0, -1.0, 1.0, 1.0);
+			if (data.objects.IsEmpty())
+				MakeFrameQuad();
 		}
 		
 		// render VBA from state

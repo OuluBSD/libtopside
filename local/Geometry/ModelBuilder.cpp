@@ -152,15 +152,16 @@ void PrimitiveFactory::create_grid(Mesh& mesh,
     // ========================
     // init mesh texture coords
     // ========================
-
-    int tex_vert_index = 0;
+	
+	TODO // tex coord moved to vertex
+    /*int tex_vert_index = 0;
     for(int row = 0; row <= rows; row++) {
         for(int col = 0; col <= cols; col++) {
             mesh.SetTexCoord(tex_vert_index++, vec2(
                     static_cast<float>(col) / cols / tex_width_scale,
                     1 - static_cast<float>(row) / rows / tex_length_scale));
         }
-    }
+    }*/
 
     // ==========================
     // init mesh triangle indices
@@ -589,14 +590,16 @@ void PrimitiveFactory::create_box(Mesh& mesh,
     // ========================
 
     // right
-    mesh.SetTexCoord(0, vec2(0, 0));
+	
+	TODO // tex coord moved to vertex
+    /*mesh.SetTexCoord(0, vec2(0, 0));
     mesh.SetTexCoord(1, vec2(1, 0));
     mesh.SetTexCoord(2, vec2(1, 1));
     mesh.SetTexCoord(3, vec2(0, 1));
 
     for(int i = 4; i < 24; i++) {
         mesh.SetTexCoord(i, mesh.GetTexCoord(i % 4));
-    }
+    }*/
 
     // ==========================
     // init mesh triangle indices

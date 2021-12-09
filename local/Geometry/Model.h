@@ -20,7 +20,7 @@ class Mesh : public BoundingBox, Moveable<Mesh> {
 public:
     Vector<Vertex> vertices;
     Vector<uint32> indices;
-    Vector<vec2> tex_coords;
+    //Vector<vec2> tex_coords;
 	Material material;
 	int tex_id[TEXTYPE_COUNT];
 	bool is_colored_only = false;
@@ -38,7 +38,7 @@ public:
         BoundingBox::operator=(src);
         vertices <<= src.vertices;
         indices <<= src.indices;
-        tex_coords <<= src.tex_coords;
+        //tex_coords <<= src.tex_coords;
         material = src.material;
         for(int i = 0; i < TEXTYPE_COUNT; i++)
             tex_id[i] = src.tex_id[i];
@@ -59,12 +59,12 @@ public:
     void SetCount(int vertex_count, int triangle_count) {
         vertices.SetCount(vertex_count);
         indices.SetCount(3 * triangle_count);
-        tex_coords.SetCount(3 * triangle_count);
+        //tex_coords.SetCount(3 * triangle_count);
     }
     void SetVertCoord(int i, vec3 v) {vertices[i].position = v;}
     void SetVertNormal(int i, vec3 v) {vertices[i].normal = v;}
     void SetVertTangent(int i, vec3 v) {}//vertices[i].tangent = v;}
-    void SetTexCoord(int i, vec2 v) {tex_coords[i] = v;}
+    //void SetTexCoord(int i, vec2 v) {tex_coords[i] = v;}
     void SetTriangleIndices(int i, const ivec3& v) {
         ASSERT(v[0] >= 0 && v[0] < vertices.GetCount());
         ASSERT(v[1] >= 0 && v[1] < vertices.GetCount());
@@ -77,7 +77,7 @@ public:
     int GetTriangleCount() const {return indices.GetCount() / 3;}
     vec3 GetVertCoord(int i) const {return vertices[i].position;}
     vec3 GetVertNormal(int i) const {return vertices[i].normal;}
-    vec2 GetTexCoord(int i) const {return tex_coords[i];}
+    //vec2 GetTexCoord(int i) const {return tex_coords[i];}
     ivec3 GetTriangleIndices(int i) const {
         ivec3 v;
         v[0] = indices[i * 3 + 0];

@@ -52,10 +52,10 @@ struct OglDataObject : DataObjectT<OglGfx> {
 	
     OglDataObject() {}
     ~OglDataObject() {FreeOgl();}
-    void FreeOgl() {TODO}
-    void Paint() override {TODO}
+    void FreeOgl();
+    void Paint() override;
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
-    
+    void Refresh(Mesh& m) override;
 };
 
 struct OglDataState : DataStateT<OglGfx> {RTTI_DECL1(OglDataState, Base)};

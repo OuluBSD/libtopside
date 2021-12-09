@@ -67,7 +67,7 @@ struct DataStateT : GfxDataState {
 		
 	}
 	
-	GfxDataObject& CreateObject() override {
+	DataObject& AddObject() {
 		DataObject* p = new DataObject();
 		p->SetState(this);
 		objects.Add(p);
@@ -75,6 +75,7 @@ struct DataStateT : GfxDataState {
 		RendVer1(OnRealizeObject, p->id);
 		return *p;
 	}
+	GfxDataObject& CreateObject() override {return AddObject();}
 	
 	void Refresh(ModelMesh& m) override {TODO}
 	void LoadModel(ModelLoader& l, String path) override {TODO}

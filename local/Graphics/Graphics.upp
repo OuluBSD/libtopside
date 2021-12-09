@@ -44,6 +44,7 @@ file
 	CpuSDL.cpp,
 	"OpenGL Accelerated" readonly separator,
 	Ogl.h,
+	OglState.cpp,
 	OglRenderer.cpp,
 	OglFramebuffer.cpp,
 	OglShader.cpp,

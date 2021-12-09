@@ -3,6 +3,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+void Vertex::SetPosTex(vec3 pos, vec2 tex) {
+    position = pos;
+    pos_project = 1.0;
+    tex_coords = tex;
+    normal = zero<vec3>();
+}
+
 void Vertex::Set(vec3 pos, vec3 norm) {
     position = pos;
     normal = norm;

@@ -10,6 +10,7 @@ struct Vertex : Moveable<Vertex> {
     vec3 normal;
     vec2 tex_coords;
     
+    void SetPosTex(vec3 pos, vec2 tex);
     void Set(vec3 pos, vec3 norm);
     void Set(vec3 pos, vec3 norm, vec3 tan, vec2 tex);
     void Set(float x, float y, float z);
