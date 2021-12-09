@@ -174,22 +174,19 @@ void SwScreen::Render() {
 }
 
 SystemDraw& SwScreen::BeginDraw() {
-	TODO
-	#if 0
 	AppFlags& flags = GetAppFlags();
 	
     sw_rend.win = win;
     sw_rend.rend = this->rend;
 	sw_rend.SetSize(screen_sz);
     sw_rend.PreFrame();
-    sw_draw.rend = &sw_rend;
-    sw_draw.fb = &sw_rend.GetOutputCpuFramebuffer();
+    //sw_draw.rend = &sw_rend;
+    sw_draw.fb = &sw_rend.GetFramebuffer();
     sysdraw.ptr = &sw_draw;
     
     sw_draw.fb->Enter();
 	
 	return sysdraw;
-	#endif
 }
 
 void SwScreen::CommitDraw() {

@@ -33,7 +33,7 @@ struct FramebufferInputStateT : GfxFramebufferInputState {
 	using Base = FramebufferInputStateT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
 	
-	const GfxBuffer* in_buf = 0;
+	const Buffer* in_buf = 0;
 	
 	void Clear() {
 		GfxFramebufferInputState::Clear();
@@ -75,10 +75,10 @@ struct FramebufferT : GfxFramebuffer {
 	}
 	
 	GLuint GetReadFramebuffer() const {return frame_buf[buf_i];}
-	GLint GetGlType() const;
-	GLint GetGlFormat() const;
-	int GetGlSize() const;
-	int GetGlSampleSize() const;
+	GLint GetGlType() const {TODO}
+	GLint GetGlFormat() const {TODO}
+	int GetGlSize() const {TODO}
+	int GetGlSampleSize() const {TODO}
 	
 	void Init(NatFrameBuf* fb, int w, int h, int stride) {TODO}
 	

@@ -207,7 +207,7 @@ void Screen::Render(const RealtimeSourceConfig& cfg) {
 				ASSERT_(0, "no pointer in InternalPacketData");
 			}
 			else if (d.IsText("oglstate")) {
-				OglFramebufferState& sd = *(OglFramebufferState*)d.ptr;
+				OglFramebuffer& sd = *(OglFramebuffer*)d.ptr;
 				
 				BeginDraw();
 				
@@ -267,10 +267,9 @@ SystemDraw& Screen::BeginDraw() {
 	    hw_rend.rend = this->rend;
 		hw_rend.SetSize(screen_sz);
 	    hw_rend.PreFrame();
-	    hw_draw.rend = &hw_rend;
+	    //hw_draw.rend = &hw_rend;
 	    hw_draw.fb = &hw_rend.GetFramebuffer();
-	    TODO
-	    sysdraw.ptr = 0;//&hw_draw;
+	    sysdraw.ptr = &hw_draw;
 	    
 	    hw_draw.fb->Enter();
 	}
@@ -329,10 +328,10 @@ bool Screen::ImageInitialize() {
 	if (!ogl_buf) return false;
 	
 	OglBuffer& buf = *ogl_buf;
-	auto& st = buf.state;
-	st.is_win_fbo = true;
-	st.size = screen_sz;
-	st.fps = 60;
+	auto& fb = buf.fb;
+	fb.is_win_fbo = true;
+	fb.size = screen_sz;
+	fb.fps = 60;
 	
 	if (frag_path.GetCount()) {
 		if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT, frag_path, library_paths)) {

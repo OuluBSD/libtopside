@@ -1,6 +1,5 @@
 #include "Graphics.h"
 
-#if 0
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -82,9 +81,11 @@ void main (void) {
 )SH4D3R";
 
 
-bool OglCompiler::Compile(OglFramebufferState& fb_state, OglShaderState& shd_state, ShaderVar::Type type, String user_code, String library) {
+bool OglCompiler::Compile(const OglContextState& ctx, OglRuntimeState& rt, OglFramebuffer& fb, OglShaderState& shdr, ShaderVar::Type type) {
 	bool succ = true;
 	String code = shader_tmpl;
+	String user_code = shdr.code;
+	String library = shdr.library;
 	
 	HotfixWebGLSL(library);
 	HotfixWebGLSL(user_code);
@@ -98,7 +99,7 @@ bool OglCompiler::Compile(OglFramebufferState& fb_state, OglShaderState& shd_sta
 	bool is_vertex = type == ShaderVar::PROG_VERTEX;
 	code.Replace("${IS_FRAGMENT_SHADER}", IntStr(is_fragment));
 	code.Replace("${IS_VERTEX_SHADER}", IntStr(is_vertex));
-	code.Replace("${IS_AUDIO}", IntStr(fb_state.is_audio));
+	code.Replace("${IS_AUDIO}", IntStr(fb.is_audio));
 	code.Replace("${USER_CODE}", user_code);
 	code.Replace("${USER_LIBRARY}", library);
 	code.Replace("${SAMPLER0}", sampler0);
@@ -111,9 +112,9 @@ bool OglCompiler::Compile(OglFramebufferState& fb_state, OglShaderState& shd_sta
 	{
 		EnableGfxAccelDebugMessages(1);
 		
-		succ = CompileShader(code, type, shd_state.shader);
+		succ = CompileShader(code, type, shdr.shader);
 		
-		fb_state.is_searched_vars = false;
+		rt.is_searched_vars = false;
 		
 		EnableGfxAccelDebugMessages(0);
 	}
@@ -172,39 +173,39 @@ bool OglCompiler::CompileShader(String code, ShaderVar::Type type, GLuint& shade
 
 
 
-bool OglLinker::Link(OglFramebufferState& fb_state) {
-	CHKLOGRET0(fb_state.prog == 0, "OglLinker::Link: error: trying to overwrite compiled program");
+bool OglLinker::Link(OglRuntimeState& rt) {
+	CHKLOGRET0(rt.prog == 0, "OglLinker::Link: error: trying to overwrite compiled program");
 	
-	fb_state.prog = glCreateProgram();
-	CHKLOGRET0(fb_state.prog > 0, "OglLinker::Link: error: opengl error")
+	rt.prog = glCreateProgram();
+	CHKLOGRET0(rt.prog > 0, "OglLinker::Link: error: opengl error")
 	
-	glProgramParameteri(fb_state.prog, GL_PROGRAM_SEPARABLE, GL_TRUE);
+	glProgramParameteri(rt.prog, GL_PROGRAM_SEPARABLE, GL_TRUE);
 	
 	uint8 complied_count = 0;
 	EnableGfxAccelDebugMessages(1);
 	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
-		OglShaderState& shd_state = fb_state.shaders[i];
+		OglShaderState& shd_state = rt.shaders[i];
 		if (shd_state.shader == 0)
 			continue;
 		complied_count++;
 		
-		glAttachShader(fb_state.prog, shd_state.shader);
+		glAttachShader(rt.prog, shd_state.shader);
 		glDeleteShader(shd_state.shader);
 		shd_state.shader = 0;
 	}
 	EnableGfxAccelDebugMessages(0);
 	CHKLOGRET0(complied_count, "OglLinker::Link: error: no compiled shaders found");
 	
-	glLinkProgram(fb_state.prog);
+	glLinkProgram(rt.prog);
 	
 	GLint status = GL_FALSE;
 	GLint loglen, n_uniforms;
-	glGetProgramiv(fb_state.prog, GL_LINK_STATUS, &status);
+	glGetProgramiv(rt.prog, GL_LINK_STATUS, &status);
 	if (status != GL_TRUE) {
-		glGetProgramiv(fb_state.prog, GL_INFO_LOG_LENGTH, &loglen);
+		glGetProgramiv(rt.prog, GL_INFO_LOG_LENGTH, &loglen);
 		Vector<GLchar> msg;
 		msg.SetCount(loglen);
-		glGetProgramInfoLog(fb_state.prog, loglen, NULL, msg.Begin());
+		glGetProgramInfoLog(rt.prog, loglen, NULL, msg.Begin());
 		if (loglen) {
 			String s;
 			s.Set(msg.Begin(), loglen);
@@ -217,7 +218,7 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 	
 	// diagnostics
 	if (log) {
-		glGetProgramiv(fb_state.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
+		glGetProgramiv(rt.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
 		LOG("\t\t" << (int)n_uniforms << " uniforms:");
 		
 		GLchar name[80];
@@ -226,7 +227,7 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 			GLint size;
 			GLenum type;
 			
-			glGetActiveUniform(fb_state.prog, i, 79, &namelen, &size, &type, name);
+			glGetActiveUniform(rt.prog, i, 79, &namelen, &size, &type, name);
 			name[namelen] = '\0';
 			LOG("\t\t\t" << i << ": " << String(name) << " (type: " << HexStr(type) << ", size: " << (int)size << ")");
 		}
@@ -238,4 +239,3 @@ bool OglLinker::Link(OglFramebufferState& fb_state) {
 
 NAMESPACE_TOPSIDE_END
 
-#endif

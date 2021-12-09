@@ -462,7 +462,7 @@ bool OglShader::CheckCompileErrors(GLuint shader, String type) {
 
 
 
-GLint OglFramebufferState::GetGlType() const {
+GLint OglFramebuffer::GetGlType() const {
 	using namespace ShaderVar;
 	switch (sample) {
 		case SAMPLE_FLOAT:	return GL_FLOAT;
@@ -474,7 +474,7 @@ GLint OglFramebufferState::GetGlType() const {
 	return -1;
 }
 
-GLint OglFramebufferState::GetGlFormat() const {
+GLint OglFramebuffer::GetGlFormat() const {
 	using namespace ShaderVar;
 	ASSERT(channels >= 1 && channels <= 4);
 	if (sample != SAMPLE_FLOAT) {
@@ -498,11 +498,11 @@ GLint OglFramebufferState::GetGlFormat() const {
 	return -1;
 }
 
-int OglFramebufferState::GetGlSize() const {
+int OglFramebuffer::GetGlSize() const {
 	return size.cx * size.cy * GetGlSampleSize() * channels;
 }
 
-int OglFramebufferState::GetGlSampleSize() const {
+int OglFramebuffer::GetGlSampleSize() const {
 	using namespace ShaderVar;
 	switch (sample) {
 		case SAMPLE_FLOAT:	return 4;

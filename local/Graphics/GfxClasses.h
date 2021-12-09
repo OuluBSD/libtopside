@@ -91,7 +91,6 @@ struct GfxFramebuffer : ErrorReporter {
 	bool	is_read_fb_output = 0;
 	bool	is_audio = 0;
 	bool	is_cubemap = 0;
-	bool	is_time_used = 0;
 	Filter	filter;
 	Wrap	wrap;
 	
@@ -210,6 +209,7 @@ struct GfxBuffer : ErrorReporter {
 struct GfxRuntimeState : ErrorReporter {
 	RTTI_DECL1(GfxRuntimeState, ErrorReporter)
 	
+	int		id = -1;
 	
 };
 
@@ -226,7 +226,6 @@ struct GfxContextState : RTTIBase {
 	virtual ~GfxContextState() {}
 	
 	// meta
-	int		id = -1;
 	String	name;
 	String	description;
 	
@@ -272,8 +271,8 @@ public:
 
 
 
-struct GfxStateDraw : ErrorReporter {
-	RTTI_DECL1(GfxStateDraw, ErrorReporter)
+struct GfxStateDraw : Draw {
+	RTTI_DECL1(GfxStateDraw, Draw)
 	
 	/*
 	virtual GfxRenderer* GetRenderer() = 0;

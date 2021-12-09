@@ -5,17 +5,17 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 template <class Gfx>
-struct GfxCompilerT : GfxCompiler {
-	using Base = GfxCompilerT<Gfx>;
+struct CompilerT : GfxCompiler {
+	using Base = CompilerT<Gfx>;
 	using NativeShader = typename Gfx::NativeShader;
-	RTTI_DECL1(GfxCompilerT, GfxCompiler)
+	RTTI_DECL1(CompilerT, GfxCompiler)
 	
 };
 
 template <class Gfx>
-struct GfxLinkerT : GfxLinker {
-	using Base = GfxLinkerT<Gfx>;
-	RTTI_DECL1(GfxLinkerT, GfxLinker)
+struct LinkerT : GfxLinker {
+	using Base = LinkerT<Gfx>;
+	RTTI_DECL1(LinkerT, GfxLinker)
 	
 	bool log = false;
 	
@@ -58,7 +58,7 @@ struct ShaderT :
     DataStateBase* state = 0;
     
     
-	
+	void SetState(DataStateBase& d) {state = &d;}
     bool CheckCompileErrors(GLuint shader, String type);
 	void BasicMeshRefresh(ModelMesh& model, Mesh& mesh);
     
@@ -126,6 +126,7 @@ struct RuntimeStateT : GfxRuntimeState {
 	NatShader	shader;
 	bool		is_searched_vars = 0;
 	int			var_idx[ShaderVar::VAR_COUNT];
+	bool		is_time_used = 0;
 	
 	ShaderState	shaders[ShaderVar::PROG_COUNT];
 	InputState	inputs[ShaderVar::INPUT_COUNT];

@@ -88,9 +88,9 @@ void SDL2ScreenBase::Update(double dt) {
 			else
 				Destroy();
 		}
-		else if (video_size != buf.state.size) {
+		else if (video_size != buf.fb.size) {
 			if (video_size.IsEmpty())
-				video_size = buf.state.size;
+				video_size = buf.fb.size;
 			else
 				buf.SetFramebufferSize(video_size);
 		}

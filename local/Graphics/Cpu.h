@@ -39,11 +39,11 @@ struct SdlCpuRenderer : public RendererT<SdlCpuGfx> {
 };
 
 
-class SdlCpuDrawFramebuffer : public DrawFramebufferT<SdlCpuGfx> {
+/*class SdlCpuDrawFramebuffer : public DrawFramebufferT<SdlCpuGfx> {
 public:
 	RTTI_DECL1(SdlCpuDrawFramebuffer, Base)
 	
-};
+};*/
 
 struct CpuDataObject : DataObjectT<CpuGfx> {
 	RTTI_DECL1(CpuDataObject, Base)
@@ -82,7 +82,7 @@ struct CpuShaderPipeline : ShaderPipelineT<CpuGfx>
 	
 };
 
-struct CpuCompiler : GfxCompilerT<CpuGfx> {
+struct CpuCompiler : CompilerT<CpuGfx> {
 	RTTI_DECL1(CpuCompiler, Base)
 	
 	CpuCompiler();
@@ -92,7 +92,7 @@ struct CpuCompiler : GfxCompilerT<CpuGfx> {
 	static void HotfixWebGLSL(String& s);
 };
 
-struct CpuLinker : GfxLinkerT<CpuGfx> {
+struct CpuLinker : LinkerT<CpuGfx> {
 	RTTI_DECL1(CpuLinker, Base)
 	
 	bool Link(CpuFramebufferState& fb_state);

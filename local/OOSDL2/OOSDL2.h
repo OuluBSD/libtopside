@@ -206,7 +206,7 @@ protected:
 	String					title;
 	SDL_GLContext			glcontext = 0;
 	SdlOglRenderer			hw_rend;
-	SdlOglDrawFramebuffer	hw_draw;
+	OglStateDraw			hw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool is_opengl = false;
@@ -263,7 +263,7 @@ protected:
 	int						fb_stride;
 	String					title;
 	SdlCpuRenderer			sw_rend;
-	SdlCpuDrawFramebuffer	sw_draw;
+	CpuStateDraw			sw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool full_screen = false;

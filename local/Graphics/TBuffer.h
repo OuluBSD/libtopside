@@ -34,9 +34,10 @@ struct BufferT : GfxBuffer {
 	int							loopback = -1;
 	bool						initialized = false;
 	
-	Framebuffer					state;
+	Framebuffer					fb;
 	ContextState				ctx;
 	RuntimeState				rt;
+	DataState					data;
 	
 	static Callback2<String, BufferT*> WhenLinkInit;
 	
@@ -104,7 +105,7 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void Update(double dt) {
-		if (state.is_time_used) {
+		if (rt.is_time_used) {
 			ctx.time_us += dt;
 			if (ctx.time_us >= 1.0) {
 				ctx.time_us = fmod(ctx.time_us, 1.0);
@@ -131,7 +132,7 @@ struct BufferT : GfxBuffer {
 			return false;
 		}
 		
-		state.is_doublebuf = loopback >= 0;
+		fb.is_doublebuf = loopback >= 0;
 		
 		return true;
 	}
@@ -264,8 +265,8 @@ struct BufferT : GfxBuffer {
 	bool Initialize() {
 		DLOG("BufferT::Initialize: load new program");
 		
-		ASSERT(state.fps > 0);
-		ctx.frame_time = 1.0 / state.fps;
+		ASSERT(fb.fps > 0);
+		ctx.frame_time = 1.0 / fb.fps;
 		ctx.time = GetSysTime();
 		ctx.block_offset = 0;
 		
@@ -307,13 +308,13 @@ struct BufferT : GfxBuffer {
 	
 	void SetFramebufferSize(Size sz) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		state.size = sz;
+		fb.size = sz;
 		if (initialized)
 			UpdateTexBuffers();
 	}
 	
 	void UpdateTexBuffers() {
-		auto& s = state;
+		auto& s = fb;
 		if (!s.is_win_fbo) {
 			ASSERT(s.channels > 0);
 			ASSERT(s.size.cx > 0 && s.size.cy > 0);
@@ -342,7 +343,7 @@ struct BufferT : GfxBuffer {
 	}
 	
 	int NewWriteBuffer() {
-		auto& s = state;
+		auto& s = fb;
 		if (s.is_doublebuf)
 			s.buf_i = (s.buf_i + 1) % 2;
 		return s.buf_i;
@@ -355,28 +356,25 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void Process(const RealtimeSourceConfig& cfg) {
-		TODO
-		#if 0
-		auto& s = state;
-		GLint prog = s.prog;
-		GLint pipeline = s.pipeline;
+		GLint prog = rt.prog;
+		GLint pipeline = rt.pipeline;
 		
 		ASSERT(prog > 0);
 		if (prog == 0)
 			return;
 		
-		RTLOG("Process " << HexStr(this) << " time: " << s.time_total);
+		RTLOG("Process " << HexStr(this) << " time: " << ctx.time_total);
 		
-		s.time_total = cfg.time_total;
+		ctx.time_total = cfg.time_total;
 		//RTLOG("Process: " << time_total);
-		s.frames++;
+		ctx.frames++;
 		
 		if (env) {
 			Size& video_size = env->Set<Size>(SCREEN0_SIZE);
 			if (video_size.cx == 0 && video_size.cy == 0)
-				video_size = s.size;
-			else if (video_size != s.size) {
-				s.size = video_size;
+				video_size = fb.size;
+			else if (video_size != fb.size) {
+				fb.size = video_size;
 				UpdateTexBuffers();
 			}
 		}
@@ -384,17 +382,17 @@ struct BufferT : GfxBuffer {
 		glBindProgramPipeline(pipeline);
 		glUseProgram(prog);
 		
-		if (!s.is_searched_vars)
+		if (!rt.is_searched_vars)
 			FindVariables();
 		
 		int bi = NewWriteBuffer();
 		
-		if (!s.is_win_fbo) {
-			ASSERT(s.frame_buf[bi] > 0);
+		if (!fb.is_win_fbo) {
+			ASSERT(fb.frame_buf[bi] > 0);
 			const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
 			
 			// combine FBO
-		    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, s.frame_buf[bi]);
+		    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb.frame_buf[bi]);
 		    
 		    // set up render target
 		    glDrawBuffers(sizeof bufs / sizeof bufs[0], bufs);
@@ -411,7 +409,8 @@ struct BufferT : GfxBuffer {
 		if (binders.GetCount()) {
 			Buffer* buf = CastPtr<Buffer>(this);
 			ASSERT(buf);
-			Shader shader(state);
+			Shader shader;
+			shader.SetState(data);
 			for (BinderIface* iface : binders)
 				iface->Render(*buf, shader);
 		}
@@ -420,21 +419,21 @@ struct BufferT : GfxBuffer {
 		}
 		
 		// render VBA from state
-		for (DataObject& o : state.objects) {
-			SetVars(state.prog, o);
+		for (DataObject& o : data.objects) {
+			SetVars(rt.prog, o);
 			o.Paint();
 		}
 		
 		
 		EnableGfxAccelDebugMessages(1);
 		
-		ASSERT(s.is_win_fbo == (s.frame_buf[bi] == 0));
-		if (s.frame_buf[bi] > 0) {
+		ASSERT(fb.is_win_fbo == (fb.frame_buf[bi] == 0));
+		if (fb.frame_buf[bi] > 0) {
 			// backup render target
 		    //glDrawBuffer(GL_FRONT);
 		    
 		    // Some components (e.g. audio) needs to read the framebuffer
-		    if (s.is_read_fb_output)
+		    if (fb.is_read_fb_output)
 				UseRenderedFramebuffer();
 			
 		    // reset FBO
@@ -445,17 +444,16 @@ struct BufferT : GfxBuffer {
 		
 		glBindProgramPipeline(0);
 		
-		if (s.is_audio) {
-			s.block_offset += s.size.cx;
+		if (fb.is_audio) {
+			ctx.block_offset += fb.size.cx;
 		}
 		else {
-			s.block_offset += 1.0;
+			ctx.block_offset += 1.0;
 		}
-		#endif
 	}
 	
 	void UseRenderedFramebuffer() {
-		auto& s = state;
+		auto& s = fb;
 		auto fmt = s.GetGlFormat();
 		auto type = s.GetGlType();
 		ASSERT(s.GetGlSize() > 0);
@@ -473,27 +471,25 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void ClearPipeline() {
-		if (state.pipeline) {
-			glDeleteProgramPipelines(1, &state.pipeline);
-			state.pipeline = 0;
+		if (rt.pipeline) {
+			glDeleteProgramPipelines(1, &rt.pipeline);
+			rt.pipeline = 0;
 		}
 	}
 	
 	void CreatePipeline() {
-		TODO
-		#if 0
 		ClearPipeline();
 		
-		glGenProgramPipelines(1, &state.pipeline);
+		glGenProgramPipelines(1, &rt.pipeline);
 		
 		
 		// only 1 program in pipeline currently
 		{
-			auto& prog = state.prog;
+			auto& prog = rt.prog;
 			if (prog >= 0) {
 				int bmask = 0;
 				for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
-					if (state.shaders[(ShaderVar::Type)i].enabled) {
+					if (rt.shaders[(ShaderVar::Type)i].enabled) {
 						// Note: ShaderVar::Type is relative to GL_*_SHADER_BIT
 						int bit = 1 << i;
 						ASSERT(i != ShaderVar::PROG_VERTEX   || bit == GL_VERTEX_SHADER_BIT);
@@ -502,10 +498,9 @@ struct BufferT : GfxBuffer {
 					}
 				}
 				ASSERT(bmask != 0);
-				glUseProgramStages(state.pipeline, bmask, prog);
+				glUseProgramStages(rt.pipeline, bmask, prog);
 			}
 		}
-		#endif
 	}
 	
 	
@@ -515,19 +510,17 @@ struct BufferT : GfxBuffer {
 	
 	
 	void FindVariables() {
-		TODO
-		#if 0
 		GLint n_uniforms;
-		glGetProgramiv(state.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
+		glGetProgramiv(rt.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
 		GLchar name[80];
 		GLsizei namelen;
-		memset(state.var_idx, -1, sizeof(state.var_idx));
-		state.user_vars.Clear();
+		memset(rt.var_idx, -1, sizeof(rt.var_idx));
+		rt.user_vars.Clear();
 		for (int i = 0; i < n_uniforms; i++) {
 			GLint size;
 			GLenum type;
 			
-			glGetActiveUniform(state.prog, i, 79, &namelen, &size, &type, name);
+			glGetActiveUniform(rt.prog, i, 79, &namelen, &size, &type, name);
 			name[namelen] = '\0';
 			String name_str(name);
 			
@@ -536,9 +529,9 @@ struct BufferT : GfxBuffer {
 			for(int j = 0; j < ShaderVar::VAR_COUNT; j++) {
 				const char* var_name = ShaderVar::names[j];
 				if (strncmp(var_name, name, 128) == 0) {
-					state.var_idx[j] = i;
-					if (j == ShaderVar::VAR_COMPAT_DATE && !state.is_time_used)
-						state.is_time_used = true;
+					rt.var_idx[j] = i;
+					if (j == ShaderVar::VAR_COMPAT_DATE && !rt.is_time_used)
+						rt.is_time_used = true;
 					found = true;
 					state_var = !ShaderVar::is_obj_var[j];
 					break;
@@ -546,25 +539,24 @@ struct BufferT : GfxBuffer {
 			}
 			
 			if (!found) {
-				state.user_vars << name_str;
+				rt.user_vars << name_str;
 			}
 			
 			RendVer2(OnRealizeVar, name_str, state_var);
 		}
 		
-		state.is_searched_vars = true;
-		#endif
+		rt.is_searched_vars = true;
 	}
 	
 	void SetVars(GLint prog, const DataObject& o) {
 		for(int i = 0; i < ShaderVar::VAR_COUNT; i++)
-			if (ShaderVar::is_obj_var[i] && state.var_idx[i] >= 0)
+			if (ShaderVar::is_obj_var[i] && rt.var_idx[i] >= 0)
 				SetVar(i, prog, o);
 	}
 	
 	void SetVar(int var, GLint prog, const DataObject& o) {
 		using namespace ShaderVar;
-		int uindex = state.var_idx[var];
+		int uindex = rt.var_idx[var];
 		ASSERT(uindex >= 0);
 		if (var == VAR_VIEW) {
 			if (o.is_global_view)
@@ -588,14 +580,13 @@ struct BufferT : GfxBuffer {
 	
 	void SetVars(GLint prog, const RealtimeSourceConfig& cfg) {
 		for(int i = 0; i < ShaderVar::VAR_COUNT; i++)
-			if (!ShaderVar::is_obj_var[i] && state.var_idx[i] >= 0)
+			if (!ShaderVar::is_obj_var[i] && rt.var_idx[i] >= 0)
 				SetVar(i, prog, cfg);
 	}
 	
 	void SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
 		using namespace ShaderVar;
-		auto& s = state;
-		int uindex = state.var_idx[var];
+		int uindex = rt.var_idx[var];
 		ASSERT(uindex >= 0);
 		if (uindex < 0)
 			return;
@@ -603,7 +594,7 @@ struct BufferT : GfxBuffer {
 		RendVer1(OnUpdateVar, ShaderVar::names[var]);
 		
 		if (var == VAR_AUDIOTIME) {
-			glUniform1f(uindex, (GLfloat)s.time_total);
+			glUniform1f(uindex, (GLfloat)ctx.time_total);
 		}
 		
 		else if (var == VAR_VIEW) {
@@ -619,23 +610,23 @@ struct BufferT : GfxBuffer {
 			ASSERT(0); // pass
 		}
 		else if (var == VAR_COMPAT_RESOLUTION) {
-			ASSERT(s.size.cx > 0 && s.size.cy > 0);
-			glUniform3f(uindex, (GLfloat)s.size.cx, (GLfloat)s.size.cy, 1.0f);
+			ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
+			glUniform3f(uindex, (GLfloat)fb.size.cx, (GLfloat)fb.size.cy, 1.0f);
 		}
 		
 		else if (var == VAR_COMPAT_TIME) {
 			//RTLOG("SetVar: " << time_total);
-			glUniform1f(uindex, (GLfloat)s.time_total);
+			glUniform1f(uindex, (GLfloat)ctx.time_total);
 		}
 		
 		else if (var == VAR_COMPAT_TIMEDELTA) {
-			ASSERT(s.frame_time != 0.0);
-			glUniform1f(uindex, (GLfloat)s.frame_time);
+			ASSERT(ctx.frame_time != 0.0);
+			glUniform1f(uindex, (GLfloat)ctx.frame_time);
 		}
 		
 		else if (var == VAR_COMPAT_FRAME) {
-			ASSERT(s.frames >= 0);
-			glUniform1i(uindex, s.frames);
+			ASSERT(ctx.frames >= 0);
+			glUniform1i(uindex, ctx.frames);
 		}
 		
 		else if (var == VAR_COMPAT_MOUSE) {
@@ -651,19 +642,19 @@ struct BufferT : GfxBuffer {
 		}
 		
 		else if (var == VAR_COMPAT_DATE) {
-			double sec = ((int)s.time.hour * 60 + (int)s.time.minute) * 60 + (int)s.time.second;
-			sec += s.time_us;
-			glUniform4f(uindex, (GLfloat)s.time.year, (GLfloat)s.time.month, (GLfloat)s.time.day, (GLfloat)sec);
+			double sec = ((int)ctx.time.hour * 60 + (int)ctx.time.minute) * 60 + (int)ctx.time.second;
+			sec += ctx.time_us;
+			glUniform4f(uindex, (GLfloat)ctx.time.year, (GLfloat)ctx.time.month, (GLfloat)ctx.time.day, (GLfloat)sec);
 		}
 		
 		else if (var == VAR_COMPAT_SAMPLERATE) {
-			glUniform1f(uindex, (GLfloat)s.sample_rate);
+			glUniform1f(uindex, (GLfloat)ctx.sample_rate);
 		}
 		
 		else if (var == VAR_COMPAT_OFFSET) {
-			if (s.size.cx > 0 && s.size.cy > 0) {
-				int x = s.offset.x;
-				int y = s.size.cy - s.size.cy - s.offset.y; // -y_offset
+			if (fb.size.cx > 0 && fb.size.cy > 0) {
+				int x = fb.offset.x;
+				int y = fb.size.cy - fb.size.cy - fb.offset.y; // -y_offset
 				glUniform2f(uindex, (GLfloat)x, (GLfloat)y);
 			} else {
 				glUniform2f(uindex, 0.0f, 0.0f);
@@ -680,15 +671,15 @@ struct BufferT : GfxBuffer {
 		}
 		
 		else if (var == VAR_COMPAT_FRAMERATE) {
-			ASSERT(s.fps > 0);
-			glUniform1f(uindex, (GLfloat)s.fps);
+			ASSERT(fb.fps > 0);
+			glUniform1f(uindex, (GLfloat)fb.fps);
 		}
 		
 		else if (var == VAR_COMPAT_CHANNELTIME) {
 			double values[INPUT_COUNT];
 			for(int j = 0; j < INPUT_COUNT; j++) {
-				InputState& in = s.inputs[j];
-				values[j] = in.in_buf ? in.in_buf->state.time_total : 0;
+				InputState& in = rt.inputs[j];
+				values[j] = in.in_buf ? in.in_buf->ctx.time_total : 0;
 			}
 			glUniform4f(uindex, (GLfloat)values[0], (GLfloat)values[1], (GLfloat)values[2], (GLfloat)values[3]);
 		}
@@ -696,12 +687,12 @@ struct BufferT : GfxBuffer {
 		else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
 			int ch = var - VAR_COMPAT_CHANNELRESOLUTION0;
 			GLfloat values[3] = {0,0,0};
-			InputState& in = state.inputs[ch];
+			InputState& in = rt.inputs[ch];
 			const BufferT* in_buf = in.in_buf;
 			if (in_buf) {
-				values[0] = (GLfloat)in_buf->state.size.cx;
-				values[1] = (GLfloat)in_buf->state.size.cy;
-				values[2] = (GLfloat)in_buf->state.depth;
+				values[0] = (GLfloat)in_buf->fb.size.cx;
+				values[1] = (GLfloat)in_buf->fb.size.cy;
+				values[2] = (GLfloat)in_buf->fb.depth;
 			}
 			/*else if (
 				in.type == BufferTInput::TEXTURE ||
@@ -719,7 +710,7 @@ struct BufferT : GfxBuffer {
 		}
 		
 		else if (var == VAR_COMPAT_BLOCKOFFSET) {
-			glUniform1f(uindex, (GLfloat)s.block_offset);
+			glUniform1f(uindex, (GLfloat)ctx.block_offset);
 		}
 		else {
 			ASSERT_(false, "Invalid variable");
@@ -728,9 +719,9 @@ struct BufferT : GfxBuffer {
 	
 	void ClearTex() {
 		for(int bi = 0; bi < 2; bi++) {
-			GLuint& color_buf = state.color_buf[bi];
-			GLuint& depth_buf = state.depth_buf[bi];
-			GLuint& frame_buf = state.frame_buf[bi];
+			GLuint& color_buf = fb.color_buf[bi];
+			GLuint& depth_buf = fb.depth_buf[bi];
+			GLuint& frame_buf = fb.frame_buf[bi];
 			
 			if (color_buf > 0) {
 				glDeleteTextures(1, &color_buf);
@@ -748,7 +739,7 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void CreateTex(bool create_depth, bool create_fbo) {
-		auto& s = state;
+		auto& s = fb;
 		
 		int buf_count = 1;
 		if (s.is_doublebuf)
@@ -807,7 +798,7 @@ struct BufferT : GfxBuffer {
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
 			return -1;
 		
-		const InputState& in = state.inputs[input_i];
+		const InputState& in = rt.inputs[input_i];
 		if (in.in_buf == 0) {
 			RTLOG("GetInputTex: warning: no input fbo buffer");
 			return -1;
@@ -827,7 +818,7 @@ struct BufferT : GfxBuffer {
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
 			return -1;
 		
-		const InputState& in = state.inputs[input_i];
+		const InputState& in = rt.inputs[input_i];
 		
 		if (in.type == ShaderVar::VOLUME)
 			return GL_TEXTURE_3D;
@@ -846,8 +837,6 @@ struct BufferT : GfxBuffer {
 	
 	
 	bool SetupLoopback() {
-		TODO
-		#if 0
 		if (loopback < 0)
 			return true;
 		
@@ -856,19 +845,16 @@ struct BufferT : GfxBuffer {
 			return false;
 		}
 		
-		InputState& in = state.inputs[loopback];
+		InputState& in = rt.inputs[loopback];
 		in.in_buf = CastPtr<Buffer>(this);
-		in.id = state.id;
+		in.id = rt.id;
 		in.type = ShaderVar::BUFFER;
 		ASSERT(in.in_buf);
 		
 		return true;
-		#endif
 	}
 	
 	bool CompilePrograms() {
-		TODO
-		#if 0
 		/*const char* fn_name = "CompilePrograms";
 		for(int i = 0; i < PROG_COUNT; i++) {
 			if (i == PROG_FRAGMENT && !CompileFragmentShader())
@@ -881,32 +867,33 @@ struct BufferT : GfxBuffer {
 		Linker linker;
 		linker.EnableLog();
 		for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
-			auto& s = state.shaders[i];
+			auto& s = rt.shaders[i];
 			if (s.code.IsEmpty())
 				continue;
 			
 			Compiler& comp = comps[i];
 			s.enabled = true;
 			
-			if (!comp.Compile(state, s, (ShaderVar::Type)i, s.code, s.library)) {
+			if (!comp.Compile(ctx, rt, fb, s, (ShaderVar::Type)i)) {
 				last_error = comp.GetError();
 				return false;
 			}
 		}
 		
-		if (!linker.Link(state)) {
+		if (!linker.Link(rt)) {
 			last_error = linker.GetError();
 			return false;
 		}
 		
 		return true;
-		#endif
 	}
 	
 	GLint GetOutputTexture(bool reading_self) const {
-		auto& s = state;
+		auto& s = fb;
 		ASSERT(!reading_self || s.is_doublebuf);
 		int buf_i = s.buf_i;
+		
+		
 		if (reading_self)
 			buf_i = (buf_i + 1) % 2;
 		if (s.color_buf[buf_i] == 0) {DLOG("BufferT::GetOutputTexture failed");}
@@ -957,19 +944,17 @@ struct BufferT : GfxBuffer {
 	}
 	
 	bool LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
-		TODO
-		#if 0
 		if (in_id >= 0 && in_id < ShaderVar::INPUT_COUNT) {
 			//LOG("LoadOutputLink: " << name << " #" << in_id);
 			
 			ASSERT(v.ptr);
-			InputState& in = state.inputs[in_id];
+			InputState& in = rt.inputs[in_id];
 			in.id = in_id;
 			in.in_buf = (Buffer*)v.ptr;
 			
 			ASSERT(sz.cx > 0 && sz.cy > 0);
 			
-			if (state.is_cubemap)
+			if (fb.is_cubemap)
 				in.type = ShaderVar::CUBEMAP;
 			else if (sz.cz > 0)
 				in.type = ShaderVar::VOLUME;
@@ -981,7 +966,6 @@ struct BufferT : GfxBuffer {
 		
 		RTLOG("LoadOutputLink: error: unexpected data");
 		return false;
-		#endif
 	}
 	
 	void SetInputVolume(int in_id) {

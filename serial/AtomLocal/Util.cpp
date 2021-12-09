@@ -331,19 +331,19 @@ bool OglShaderBase::Initialize(const Script::WorldState& ws) {
 }
 
 bool OglShaderBase::PostInitialize() {
-	auto& st = buf.state;
-	st.is_audio = is_audio;
-	st.is_win_fbo = false;
+	auto& fb = buf.fb;
+	fb.is_audio = is_audio;
+	fb.is_win_fbo = false;
 	if (!is_audio) {
-		st.size = Size(1280,720);
-		st.fps = 60;
+		fb.size = Size(1280,720);
+		fb.fps = 60;
 	}
 	else {
-		st.size = Size(1024,1);
-		st.channels = 2;
-		st.fps = 44100.0 / 1024;
+		fb.size = Size(1024,1);
+		fb.channels = 2;
+		fb.fps = 44100.0 / 1024;
 	}
-	st.sample = ShaderVar::SAMPLE_FLOAT;
+	fb.sample = ShaderVar::SAMPLE_FLOAT;
 	
 	if (!buf.Initialize())
 		return false;
@@ -558,20 +558,20 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& st = buf.state;
-		st.is_win_fbo = false;
-		st.size = sz;
-		st.channels = channels;
-		st.sample = ShaderVar::SAMPLE_FLOAT;
-		st.filter = this->filter;
-		st.wrap = this->wrap;
-		st.fps = 0;
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
+		fb.sample = ShaderVar::SAMPLE_FLOAT;
+		fb.filter = this->filter;
+		fb.wrap = this->wrap;
+		fb.fps = 0;
 		
 		if (loading_cubemap) {
 			ASSERT(cubemap.GetCount() == 6);
 			if (!buf.InitializeCubemap(
-					st.size,
-					st.channels,
+					fb.size,
+					fb.channels,
 					ShaderVar::SAMPLE_U8,
 					cubemap[0]->GetData(),
 					cubemap[1]->GetData(),
@@ -584,8 +584,8 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		}
 		else if (sz.cz == 0) {
 			if (!buf.InitializeTexture(
-				st.size,
-				st.channels,
+				fb.size,
+				fb.channels,
 				ShaderVar::SAMPLE_U8,
 				&*from_data.Begin(),
 				from_data.GetCount()))
@@ -593,8 +593,8 @@ bool OglTextureBase::ProcessPackets(PacketIO& io) {
 		}
 		else {
 			if (!buf.InitializeVolume(
-				st.size,
-				st.channels,
+				fb.size,
+				fb.channels,
 				ShaderVar::SAMPLE_U8,
 				from_data))
 				return false;
@@ -704,19 +704,19 @@ bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
 			OglBuffer* src_buf = (OglBuffer*)v.ptr;
 			ASSERT(src_buf);
 			
-			auto& st = src_buf->state;
+			auto& fb = src_buf->fb;
 			int afmt_size = afmt.GetSize();
-			ASSERT(st.size.cx == afmt.sample_rate && st.size.cy == 1 && st.channels == afmt_size);
-			int len = afmt.sample_rate * st.channels * sizeof(float);
+			ASSERT(fb.size.cx == afmt.sample_rate && fb.size.cy == 1 && fb.channels == afmt_size);
+			int len = afmt.sample_rate * fb.channels * sizeof(float);
 			ASSERT(len > 0);
 			Vector<byte>& out_data = src.p->Data();
 			out_data.SetCount(len);
 			
-			GLuint frame_buf = st.GetReadFramebuffer();
+			GLuint frame_buf = fb.GetReadFramebuffer();
 			ASSERT(frame_buf > 0);
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
 			glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
-			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(st.channels), GL_FLOAT, out_data.Begin());
+			glReadPixels(0, 0, afmt.sample_rate, 1, GetOglChCode(fb.channels), GL_FLOAT, out_data.Begin());
 			glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 			
 		}
@@ -1066,12 +1066,12 @@ bool OglKeyboardBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& st = buf.state;
-		st.is_win_fbo = false;
-		st.size = sz;
-		st.channels = channels;
-		st.sample = ShaderVar::SAMPLE_FLOAT;
-		st.fps = 0;
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
+		fb.sample = ShaderVar::SAMPLE_FLOAT;
+		fb.fps = 0;
 		
 		if (!buf.InitializeTexture(
 			Size(sz.cx, sz.cy),
@@ -1191,13 +1191,13 @@ bool OglAudioBase::ProcessPackets(PacketIO& io) {
 	
 	if (!buf.IsInitialized()) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
-		auto& st = buf.state;
-		st.is_win_fbo = false;
-		st.size = sz;
-		st.channels = channels;
+		auto& fb = buf.fb;
+		fb.is_win_fbo = false;
+		fb.size = sz;
+		fb.channels = channels;
 		ASSERT(afmt.IsSampleFloat());
-		st.sample = ShaderVar::SAMPLE_FLOAT;
-		st.fps = 0;
+		fb.sample = ShaderVar::SAMPLE_FLOAT;
+		fb.fps = 0;
 		
 		if (!buf.InitializeTexture(
 			Size(sz.cx, sz.cy),
