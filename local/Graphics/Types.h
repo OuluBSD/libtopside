@@ -88,8 +88,6 @@ struct GfxBaseStatic : Parent {
 struct CpuGfx {
 	using NativeTexture = uint32;
 	using NativeShader = uint32;
-	using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
 	using NativeVertexArray = uint32;
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffer = uint32;
@@ -126,6 +124,8 @@ struct SdlGfx : GfxBaseStatic<SDL_Renderer, OglRendererBase> {
 
 struct SdlCpuGfx : CpuGfx, SdlGfx {
 	using NativeFrameBuffer = SDL_Texture*;
+	using NativeColorBuffer = SDL_Texture*;
+	using NativeDepthBuffer = SDL_Texture*;
 	
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)

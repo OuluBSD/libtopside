@@ -1,12 +1,14 @@
 #include "AtomSDL2.h"
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
 #ifdef flagSCREEN
 
 
-bool SDL2SwScreenBase::Initialize(const Script::WorldState& ws) {
+bool SDL2CpuScreenBase::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	
 	String env_name = ws.Get(".env");
@@ -14,27 +16,32 @@ bool SDL2SwScreenBase::Initialize(const Script::WorldState& ws) {
 		LoopRef l = GetLoop();
 		env = l->FindNearestState(env_name);
 		if (!env) {
-			LOG("SDL2SwScreenBase::Initialize: error: environment state with name '" << env_name << "' not found");
+			LOG("SDL2CpuScreenBase::Initialize: error: environment state with name '" << env_name << "' not found");
 			return false;
 		}
 	}
 	
 	close_machine = ws.Get(".close_machine") == "true";
+	is_testshader = ws.Get(".testshader") == "true";
 	
 	OBJ_CREATE
+	
+	auto& buf = GetBuffer();
+	buf.SetTestShader(0);
+	obj->SetBuffer(buf);
 	
 	AddAtomToUpdateList();
 	GetSink()->GetValue(0).SetMaxQueueSize(1);
 	return true;
 }
 
-void SDL2SwScreenBase::Uninitialize() {
+void SDL2CpuScreenBase::Uninitialize() {
 	ev = 0;
 	obj.Clear();
 	RemoveAtomFromUpdateList();
 }
 
-bool SDL2SwScreenBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+bool SDL2CpuScreenBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
 	// accept all valid video formats for now
 	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
 		ISinkRef sink = GetSink();
@@ -45,7 +52,7 @@ bool SDL2SwScreenBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
 	return false;
 }
 
-void SDL2SwScreenBase::Update(double dt) {
+void SDL2CpuScreenBase::Update(double dt) {
 	FramePollerBase::Update(dt);
 	
 	if (env) {
@@ -68,7 +75,7 @@ void SDL2SwScreenBase::Update(double dt) {
 	}
 }
 
-bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
+bool SDL2CpuScreenBase::ProcessPackets(PacketIO& io) {
 	PacketIO::Sink& sink = io.sink[0];
 	PacketIO::Source& src = io.src[0];
 	Packet& in = sink.p;
@@ -77,12 +84,12 @@ bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
 	src.from_sink_ch = 0;
 	out = ReplyPacket(0, sink.p);
 	
-	RTLOG("SDL2SwScreenBase::ProcessPackets: sink #0 " << in->ToString());
+	RTLOG("SDL2CpuScreenBase::ProcessPackets: sink #0 " << in->ToString());
 	
 	if (!obj->Recv(0, in))
 		return false;
 	
-	obj->Render();
+	obj->Render(*last_cfg);
 	
 	return true;
 }
@@ -92,3 +99,5 @@ bool SDL2SwScreenBase::ProcessPackets(PacketIO& io) {
 
 
 NAMESPACE_SERIAL_END
+
+#endif

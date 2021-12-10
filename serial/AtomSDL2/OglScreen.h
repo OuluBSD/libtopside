@@ -1,6 +1,8 @@
 #ifndef _AtomSDL2_Screen_h_
 #define _AtomSDL2_Screen_h_
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -42,4 +44,5 @@ public:
 
 NAMESPACE_SERIAL_END
 
+#endif
 #endif

@@ -517,7 +517,7 @@ AtomTypeCls SdlFboAtomSA::GetAtomType()
 void SdlFboAtomSA::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlFboAtomSA>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
+	vis.VisitThis<SDL2OglScreenBase>(this);
 }
 
 AtomTypeCls SdlFboAtomSA::GetType() const
@@ -535,7 +535,7 @@ AtomTypeCls SdlFboPipe::GetAtomType()
 void SdlFboPipe::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlFboPipe>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
+	vis.VisitThis<SDL2OglScreenBase>(this);
 }
 
 AtomTypeCls SdlFboPipe::GetType() const
@@ -553,7 +553,7 @@ AtomTypeCls SdlFboPipeSide::GetAtomType()
 void SdlFboPipeSide::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlFboPipeSide>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
+	vis.VisitThis<SDL2OglScreenBase>(this);
 }
 
 AtomTypeCls SdlFboPipeSide::GetType() const
@@ -571,7 +571,7 @@ AtomTypeCls SdlFboAtom::GetAtomType()
 void SdlFboAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlFboAtom>>(this);
-	vis.VisitThis<SDL2ScreenBase>(this);
+	vis.VisitThis<SDL2OglScreenBase>(this);
 }
 
 AtomTypeCls SdlFboAtom::GetType() const
@@ -589,7 +589,7 @@ AtomTypeCls SdlVideoAtom::GetAtomType()
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlVideoAtom>>(this);
-	vis.VisitThis<SDL2SwScreenBase>(this);
+	vis.VisitThis<SDL2CpuScreenBase>(this);
 }
 
 AtomTypeCls SdlVideoAtom::GetType() const
@@ -607,10 +607,28 @@ AtomTypeCls SdlVideoProgAtom::GetAtomType()
 void SdlVideoProgAtom::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<Atom<SdlVideoProgAtom>>(this);
-	vis.VisitThis<SDL2SwScreenBase>(this);
+	vis.VisitThis<SDL2CpuScreenBase>(this);
 }
 
 AtomTypeCls SdlVideoProgAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls SdlVideoAtomSA::GetAtomType()
+{
+	return ATOM11(SDL_VIDEO_ATOM_S_A, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT);
+}
+
+void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlVideoAtomSA>>(this);
+	vis.VisitThis<SDL2CpuScreenBase>(this);
+}
+
+AtomTypeCls SdlVideoAtomSA::GetType() const
 {
 	return GetAtomType();
 }

@@ -68,6 +68,7 @@ namespace Serial {
 	ATOM_TYPE(SDL_FBO_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
+	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
 	ATOM_TYPE(OGL_SHADER_PIPE) \
 	ATOM_TYPE(OGL_SHADER_ATOM) \
 	ATOM_TYPE(OGL_SHADER_ATOM_S_A) \
@@ -95,6 +96,7 @@ namespace Serial {
 	ATOM_CLASS(SdlFboAtom) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlVideoProgAtom) \
+	ATOM_CLASS(SdlVideoAtomSA) \
 	ATOM_CLASS(OglShaderPipe) \
 	ATOM_CLASS(OglShaderAtom) \
 	ATOM_CLASS(OglShaderAtomSA) \

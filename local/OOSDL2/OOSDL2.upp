@@ -13,13 +13,15 @@ library(WIN32) glew32s;
 
 file
 	OOSDL2.h,
+	Base.h,
+	ScreenT.h,
 	OOSDL2.cpp,
 	Context.cpp,
 	Timer.cpp,
 	AudioIn.cpp,
 	AudioOut.cpp,
-	SwScreen.cpp,
-	Screen.cpp,
+	CpuScreen.cpp,
+	OglScreen.cpp,
 	Events.cpp,
 	Joystick.cpp,
 	GameController.cpp,

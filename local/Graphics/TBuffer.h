@@ -32,6 +32,7 @@ struct BufferT : GfxBuffer {
 	Vector<byte>				fb_out;
 	EnvStateRef					env;
 	int							loopback = -1;
+	int							test_shader = -1;
 	bool						initialized = false;
 	
 	Framebuffer					fb;
@@ -71,6 +72,7 @@ struct BufferT : GfxBuffer {
 	void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
 	bool IsInitialized() const {return initialized;}
+	void SetTestShader(int i) {test_shader = i;}
 	
 	bool LoadShaderFile(ShaderVar::Type shader_type, String shader_path, String library_path) {
 		DLOG("BufferT::LoadShaderFile: " << shader_path);
@@ -380,10 +382,10 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void Process(const RealtimeSourceConfig& cfg) {
-		GLint prog = rt.prog;
-		GLint pipeline = rt.pipeline;
+		auto& prog = rt.prog;
+		auto& pipeline = rt.pipeline;
 		
-		ASSERT(prog > 0);
+		ASSERT(prog);
 		if (prog == 0)
 			return;
 		
@@ -403,6 +405,8 @@ struct BufferT : GfxBuffer {
 			}
 		}
 		
+		TODO
+		#if 0
 		glBindProgramPipeline(pipeline);
 		glUseProgram(prog);
 		
@@ -412,7 +416,7 @@ struct BufferT : GfxBuffer {
 		int bi = NewWriteBuffer();
 		
 		if (!fb.is_win_fbo) {
-			ASSERT(fb.frame_buf[bi] > 0);
+			ASSERT(fb.frame_buf[bi]);
 			const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
 			
 			// combine FBO
@@ -476,9 +480,12 @@ struct BufferT : GfxBuffer {
 		else {
 			ctx.block_offset += 1.0;
 		}
+		#endif
 	}
 	
 	void UseRenderedFramebuffer() {
+		TODO
+		#if 0
 		auto& s = fb;
 		auto fmt = s.GetGlFormat();
 		auto type = s.GetGlType();
@@ -494,16 +501,22 @@ struct BufferT : GfxBuffer {
 		
 		TODO // glReadPixels will crash mysteriously
 		glReadPixels(0, 0, s.size.cx, s.size.cy, fmt, type, fb_out.Begin());
+		#endif
 	}
 	
 	void ClearPipeline() {
+		TODO
+		#if 0
 		if (rt.pipeline) {
 			glDeleteProgramPipelines(1, &rt.pipeline);
 			rt.pipeline = 0;
 		}
+		#endif
 	}
 	
 	void CreatePipeline() {
+		TODO
+		#if 0
 		ClearPipeline();
 		
 		glGenProgramPipelines(1, &rt.pipeline);
@@ -527,6 +540,7 @@ struct BufferT : GfxBuffer {
 				glUseProgramStages(rt.pipeline, bmask, prog);
 			}
 		}
+		#endif
 	}
 	
 	
@@ -536,6 +550,8 @@ struct BufferT : GfxBuffer {
 	
 	
 	void FindVariables() {
+		TODO
+		#if 0
 		GLint n_uniforms;
 		glGetProgramiv(rt.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
 		GLchar name[80];
@@ -572,6 +588,7 @@ struct BufferT : GfxBuffer {
 		}
 		
 		rt.is_searched_vars = true;
+		#endif
 	}
 	
 	void SetVars(GLint prog, const DataObject& o) {
@@ -581,6 +598,8 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void SetVar(int var, GLint prog, const DataObject& o) {
+		TODO
+		#if 0
 		using namespace ShaderVar;
 		int uindex = rt.var_idx[var];
 		ASSERT(uindex >= 0);
@@ -602,6 +621,7 @@ struct BufferT : GfxBuffer {
 		else if (var == VAR_MODEL) {
 			glUniformMatrix4fv(uindex, 1, GL_FALSE, &o.model[0][0]);
 		}
+		#endif
 	}
 	
 	void SetVars(GLint prog, const RealtimeSourceConfig& cfg) {
@@ -611,6 +631,8 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
+		TODO
+		#if 0
 		using namespace ShaderVar;
 		int uindex = rt.var_idx[var];
 		ASSERT(uindex >= 0);
@@ -741,9 +763,12 @@ struct BufferT : GfxBuffer {
 		else {
 			ASSERT_(false, "Invalid variable");
 		}
+		#endif
 	}
 	
 	void ClearTex() {
+		TODO
+		#if 0
 		for(int bi = 0; bi < 2; bi++) {
 			GLuint& color_buf = fb.color_buf[bi];
 			GLuint& depth_buf = fb.depth_buf[bi];
@@ -762,9 +787,12 @@ struct BufferT : GfxBuffer {
 				frame_buf = 0;
 			}
 		}
+		#endif
 	}
 	
 	void CreateTex(bool create_depth, bool create_fbo) {
+		TODO
+		#if 0
 		auto& s = fb;
 		
 		int buf_count = 1;
@@ -816,6 +844,7 @@ struct BufferT : GfxBuffer {
 		}
 		
 		EnableGfxAccelDebugMessages(0);
+		#endif
 	}
 	
 	GLint GetInputTex(int input_i) const {

@@ -11,7 +11,7 @@
 #include "EntitySystem.h"
 #include "AtomUtil.h"
 #include "CustomAtom.h"
-#include "OglUtil.h"
+#include "GfxUtil.h"
 #include "OglAtom.h"
 #include "DummyAtom.h"
 

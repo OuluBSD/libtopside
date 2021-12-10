@@ -8,7 +8,7 @@ void Bundle::AddDefaultComponents() {
 	if (IsEnabled(AUDIO_IN))	GetAddComponent<AudioInput>();
 	if (IsEnabled(AUDIO_OUT))	GetAddComponent<AudioOutput>();
 #ifdef flagSCREEN
-	if (IsEnabled(SCREEN))		GetAddComponent<Screen>();
+	if (IsEnabled(SCREEN))		GetAddComponent<OglScreen>();
 #endif
 	if (IsEnabled(EVENTS))		GetAddComponent<Events>();
 	if (IsEnabled(JOYSTICK))	GetAddComponent<Joystick>();

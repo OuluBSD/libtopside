@@ -462,10 +462,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2ScreenBase {
+class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtomSA, AtomT, SDL2ScreenBase)
+	RTTI_DECL2(SdlFboAtomSA, AtomT, Base)
 	COPY_PANIC(SdlFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
@@ -478,10 +478,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2ScreenBase {
+class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboPipe, AtomT, SDL2ScreenBase)
+	RTTI_DECL2(SdlFboPipe, AtomT, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
@@ -494,10 +494,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboPipeSide : public Atom<SdlFboPipeSide>, public SDL2ScreenBase {
+class SdlFboPipeSide : public Atom<SdlFboPipeSide>, public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboPipeSide, AtomT, SDL2ScreenBase)
+	RTTI_DECL2(SdlFboPipeSide, AtomT, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
@@ -510,10 +510,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2ScreenBase {
+class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtom, AtomT, SDL2ScreenBase)
+	RTTI_DECL2(SdlFboAtom, AtomT, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
@@ -526,10 +526,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2SwScreenBase {
+class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2SwScreenBase)
+	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
@@ -542,13 +542,29 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoProgAtom : public Atom<SdlVideoProgAtom>, public SDL2SwScreenBase {
+class SdlVideoProgAtom : public Atom<SdlVideoProgAtom>, public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoProgAtom, AtomT, SDL2SwScreenBase)
+	RTTI_DECL2(SdlVideoProgAtom, AtomT, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoProgAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.prog")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class SdlVideoAtomSA : public Atom<SdlVideoAtomSA>, public SDL2CpuScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoAtomSA, AtomT, SDL2CpuScreenBase)
+	COPY_PANIC(SdlVideoAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -775,6 +791,8 @@ using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
 using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
 
 using SdlVideoProgAtomRef = Ref<SdlVideoProgAtom, AtomParent>;
+
+using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, AtomParent>;
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 

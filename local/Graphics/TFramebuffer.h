@@ -80,7 +80,12 @@ struct FramebufferT : GfxFramebuffer {
 	int GetGlSize() const {TODO}
 	int GetGlSampleSize() const {TODO}
 	
-	void Init(NatFrameBuf& fb, int w, int h, int stride) {TODO}
+	void Init(NatFrameBuf& fb, int w, int h, int stride) {
+		color_buf[0] = fb;
+		size.cx = w;
+		size.cy = h;
+		channels = stride;
+	}
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}

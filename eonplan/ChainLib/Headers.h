@@ -86,7 +86,7 @@ HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	Cen
 HEADER_ACTION(		EcsProgVideo,		center.video.prog.ecs)
 HEADER_ARG(			EcsProgVideo,		reqdef_flagSCREEN,	1)
 
-HEADER11(			EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			,OglOrder,		OglFbo)
+HEADER11(			EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		EcsOglFbo,			ogl.fbo.ecs)
 HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
 
@@ -123,29 +123,33 @@ HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,		1)
 
 
 
-HEADER11(			SdlFboAtomSA,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER11(			SdlFboAtomSA,		SDL2OglScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlFboAtomSA,		sdl.fbo.standalone)
 HEADER_ARG(			SdlFboAtomSA,		reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlFboPipe,			SDL2ScreenBase,				pipe,		OglFbo,			OglFbo,			OglReceipt)
+HEADER11(			SdlFboPipe,			SDL2OglScreenBase,				pipe,		OglFbo,			OglFbo,			OglReceipt)
 HEADER_ACTION(		SdlFboPipe,			sdl.fbo.pipe)
 HEADER_ARG(			SdlFboPipe,			reqdef_flagSCREEN,		1)
 
-HEADER21(			SdlFboPipeSide,		SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
+HEADER21(			SdlFboPipeSide,		SDL2OglScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		SdlFboPipeSide,		sdl.fbo.pipe.side)
 HEADER_ARG(			SdlFboPipeSide,		reqdef_flagSCREEN,		1)
 
-HEADER55_U44(		SdlFboAtom,			SDL2ScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
+HEADER55_U44(		SdlFboAtom,			SDL2OglScreenBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		SdlFboAtom,			sdl.fbo)
 HEADER_ARG(			SdlFboAtom,			reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlVideoAtom,		SDL2SwScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER11(			SdlVideoAtom,		SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlVideoProgAtom,	SDL2SwScreenBase,			pipe,		CenterVideo,	CenterProg,		CenterReceipt)
+HEADER11(			SdlVideoProgAtom,	SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
 HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,		1)
+
+HEADER11(			SdlVideoAtomSA,		SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
+HEADER_ACTION(		SdlVideoAtomSA,		sdl.video.standalone)
+HEADER_ARG(			SdlVideoAtomSA,		reqdef_flagSCREEN,		1)
 
 
 

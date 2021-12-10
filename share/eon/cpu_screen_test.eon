@@ -17,7 +17,7 @@ machine sdl.app: {
 		
 		loop center.stage0.image: {
 			center.customer: true;
-			sdl.video: true {
+			sdl.video.standalone: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

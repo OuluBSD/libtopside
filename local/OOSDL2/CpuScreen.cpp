@@ -1,17 +1,18 @@
 #include <AtomSDL2/AtomSDL2.h>
 
+#if 0
 #ifdef flagSCREEN
 
 NAMESPACE_SDL2_BEGIN
 
 
-Size SwScreen::GetSize() {
+Size CpuScreen::GetSize() {
 	int w, h;
 	SDL_GetWindowSize(win, &w, &h);
 	return Size(w, h);
 }
 
-bool SwScreen::Open0() {
+bool CpuScreen::Open0() {
 	AppFlags& app_flags = GetAppFlags();
 	
 	
@@ -41,7 +42,7 @@ bool SwScreen::Open0() {
 	return true;
 }
 
-void SwScreen::Close0() {
+void CpuScreen::Close0() {
 	if (rend) {
 		SDL_DestroyRenderer(rend);
 		rend = 0;
@@ -56,7 +57,7 @@ void SwScreen::Close0() {
     }
 }
 
-void SwScreen::Fullscreen(bool b) {
+void CpuScreen::Fullscreen(bool b) {
 	if (b == full_screen)
 		return;
 	full_screen = b;
@@ -68,7 +69,7 @@ void SwScreen::Fullscreen(bool b) {
 	}
 }
 
-void SwScreen::Maximize(bool b) {
+void CpuScreen::Maximize(bool b) {
 	if (b == is_maximized)
 		return;
 	is_maximized = b;
@@ -80,13 +81,13 @@ void SwScreen::Maximize(bool b) {
 	}
 }
 
-void SwScreen::SetTitle(String title) {
+void CpuScreen::SetTitle(String title) {
 	this->title = title;
 	if (IsOpen() && win)
 		SDL_SetWindowTitle(win, title);
 }
 
-void SwScreen::SetRect(Rect r) {
+void CpuScreen::SetRect(Rect r) {
 	desired_rect = r;
 	if (IsOpen() && win && !full_screen) {
 		SDL_SetWindowPosition(win, r.left, r.top);
@@ -94,18 +95,22 @@ void SwScreen::SetRect(Rect r) {
 	}
 }
 
-bool SwScreen::Recv(int ch_i, const Packet& p) {
+bool CpuScreen::Recv(int ch_i, const Packet& p) {
 	if (ch_i == 0)
 		last_packet = p;
 	// TODO: check if 'do render' packet, otherwise return false
 	return true; // assuming 'do render' packet
 }
 
-void SwScreen::Render() {
-	TODO
+void CpuScreen::Render(const RealtimeSourceConfig& cfg) {
+	if (buf) {
+		buf->Process(cfg);
+	}
+	else
+		TODO
 	#if 0
 	if (!last_packet) {
-		RTLOG("SwScreen::Render: warning: cannot render without packet");
+		RTLOG("CpuScreen::Render: warning: cannot render without packet");
 		return;
 	}
 	
@@ -147,7 +152,7 @@ void SwScreen::Render() {
 				CommitDraw();
 			}
 			else {
-				RTLOG("SwScreen::Render: error: got video packet with wrong frame size");
+				RTLOG("CpuScreen::Render: error: got video packet with wrong frame size");
 			}
 		}
 	}
@@ -170,7 +175,7 @@ void SwScreen::Render() {
 	#endif
 }
 
-SystemDraw& SwScreen::BeginDraw() {
+SystemDraw& CpuScreen::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	
     sw_rend.win = win;
@@ -186,15 +191,19 @@ SystemDraw& SwScreen::BeginDraw() {
 	return sysdraw;
 }
 
-void SwScreen::CommitDraw() {
+void CpuScreen::CommitDraw() {
 	AppFlags& flags = GetAppFlags();
 	
 	sw_draw.fb->Leave();
 	sw_rend.PostFrame();
 }
 
+void CpuScreen::RenderTestColors() {
+	
+}
 
 
 NAMESPACE_SDL2_END
 
+#endif
 #endif

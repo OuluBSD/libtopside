@@ -20,53 +20,12 @@
 
 namespace TS {class SdlOglBuffer;}
 
+
+#include "Base.h"
+#include "ScreenT.h"
+
+
 NAMESPACE_SDL2_BEGIN
-
-
-class Context;
-
-
-class Stateful :
-	RTTIBase
-{
-	RTTI_DECL0(Stateful)
-	
-protected:
-	bool is_open = false;
-	
-	virtual bool Open0() = 0;
-	virtual void Close0() = 0;
-	
-public:
-	Stateful() = default;
-	virtual ~Stateful() {/*deleted inheritance crash: Close();*/ ASSERT(!is_open); }
-	
-	bool Open() {if (!is_open && Open0()) is_open = true; return is_open;}
-	void Close() {if (is_open) Close0(); is_open = false;}
-	bool IsOpen() const {return is_open;}
-	
-};
-
-class Component :
-	public Stateful
-{
-	RTTI_DECL1(Component, Stateful)
-	
-protected:
-	friend class Context;
-	Context* ctx = 0;
-	AtomBase* ab = 0;
-	
-	virtual uint32 GetInitFlag() const = 0;
-	
-public:
-	Component(Context* ctx, AtomBase* ab) : ctx(ctx), ab(ab) {}
-	
-	Context*		GetContext() const {return ctx;}
-	AtomBase*		GetAtomBase() const {return ab;}
-	PacketBuffer&	GetSinkBuffer();
-	
-};
 
 
 class Timer : public Component {
@@ -139,6 +98,12 @@ public:
 
 #ifdef flagSCREEN
 
+
+using OglScreen = ScreenT<SdlOglGfx>;
+using CpuScreen = ScreenT<SdlCpuGfx>;
+
+
+#if 0
 class Screen : public Component {
 	RTTI_DECL1(Screen, Component)
 	
@@ -248,8 +213,8 @@ public:
 	
 };
 
-class SwScreen : public Component {
-	RTTI_DECL1(SwScreen, Component)
+class CpuScreen : public Component {
+	RTTI_DECL1(CpuScreen, Component)
 	
 protected:
 	friend class Events;
@@ -262,6 +227,7 @@ protected:
 	Size					screen_sz;
 	int						fb_stride;
 	String					title;
+	SdlCpuBuffer*			buf = 0;
 	SdlCpuRenderer			sw_rend;
 	SdlCpuStateDraw			sw_draw;
 	SystemDraw				sysdraw;
@@ -276,25 +242,29 @@ protected:
 	uint32 GetInitFlag() const override {return SDL_INIT_VIDEO;}
 	
 	void SetWindowRect(Rect r);
+	void RenderTestColors();
 	
 public:
-	SwScreen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
+	CpuScreen(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
 	
 	void			Maximize(bool b=true);
 	void			Fullscreen(bool b=true);
-	SwScreen&		Sizeable(bool b=true) {is_sizeable = b; return *this;}
+	CpuScreen&		Sizeable(bool b=true) {is_sizeable = b; return *this;}
 	void            SetTitle(String title);
 	void			SetRect(Rect r);
-	void            Render();
+	void            Render(const RealtimeSourceConfig& cfg);
 	bool            Recv(int ch_i, const Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
+	void            SetTestShader(int type);
+	void            SetBuffer(SdlCpuBuffer& buf) {this->buf = &buf;}
 	
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
 	
 };
 
+#endif
 #endif
 
 

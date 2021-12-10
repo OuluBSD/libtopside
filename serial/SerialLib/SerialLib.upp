@@ -17,8 +17,8 @@ file
 	AtomUtil.h,
 	AtomUtil.cpp,
 	CustomAtom.h,
-	OglUtil.h,
-	OglUtil.cpp,
+	GfxUtil.h,
+	GfxUtil.cpp,
 	OglAtom.h,
 	DummyAtom.h,
 	DummyAtom.cpp;

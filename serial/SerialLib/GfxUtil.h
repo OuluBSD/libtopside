@@ -1,5 +1,5 @@
-#ifndef _SerialLib_OglUtil_h_
-#define _SerialLib_OglUtil_h_
+#ifndef _SerialLib_GfxUtil_h_
+#define _SerialLib_GfxUtil_h_
 
 
 #ifdef flagSCREEN
@@ -21,6 +21,24 @@ public:
 	void			Update(double dt) override {buf.Update(dt);}
 	
 	SdlOglBuffer&		GetBuffer() {return buf;}
+	
+};
+
+
+class CpuBufferBase :
+	virtual public AtomBase
+{
+	
+protected:
+	SdlCpuBuffer		buf;
+	
+	
+public:
+	
+	void Visit(RuntimeVisitor& vis) override {vis % buf;}
+	void			Update(double dt) override {buf.Update(dt);}
+	
+	SdlCpuBuffer&		GetBuffer() {return buf;}
 	
 };
 

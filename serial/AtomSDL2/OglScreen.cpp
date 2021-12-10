@@ -1,5 +1,7 @@
 #include "AtomSDL2.h"
 
+#if 0
+
 NAMESPACE_SERIAL_BEGIN
 
 
@@ -149,3 +151,5 @@ bool SDL2ScreenBase::ProcessPackets(PacketIO& io) {
 
 
 NAMESPACE_SERIAL_END
+
+#endif
