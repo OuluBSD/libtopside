@@ -3,6 +3,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+#if 0
+
 OglCompiler::OglCompiler() {
 	
 }
@@ -236,6 +238,7 @@ bool OglLinker::Link(OglRuntimeState& rt) {
 	return true;
 }
 
+#endif
 
 NAMESPACE_TOPSIDE_END
 

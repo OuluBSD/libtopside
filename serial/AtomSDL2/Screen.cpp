@@ -25,7 +25,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	
 	OBJ_CREATE
 	
-	OglBuffer& buf = GetBuffer();
+	SdlOglBuffer& buf = GetBuffer();
 	buf.SetEnvState(env);
 	buf.AddLink(ws.Get(".link"));
 	
@@ -80,7 +80,7 @@ void SDL2ScreenBase::Update(double dt) {
 	if (env) {
 		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
 		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
-		OglBuffer& buf = GetBuffer();
+		SdlOglBuffer& buf = GetBuffer();
 		
 		if (close_window) {
 			if (close_machine)

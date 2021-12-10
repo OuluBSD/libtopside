@@ -66,9 +66,6 @@ void OglRendererBase::LeaveFramebuffer() {
 }*/
 
 
-
-
-
 NAMESPACE_TOPSIDE_END
 
 #endif

@@ -6,21 +6,34 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class Gfx>
 struct CompilerT : GfxCompiler {
+	RTTI_DECL1(CompilerT, GfxCompiler)
 	using Base = CompilerT<Gfx>;
 	using NativeShader = typename Gfx::NativeShader;
-	RTTI_DECL1(CompilerT, GfxCompiler)
+	using ContextState = typename Gfx::ContextState;
+	using RuntimeState = typename Gfx::RuntimeState;
+	using Framebuffer = typename Gfx::Framebuffer;
+	using ShaderState = typename Gfx::ShaderState;
+	
+	bool CompileShader(String code, ShaderVar::Type type, NativeShader& shader_out) {TODO}
+	bool Compile(	const ContextState& ctx,
+					RuntimeState& rt_state,
+					Framebuffer& fb_state,
+					ShaderState& shd_state,
+					ShaderVar::Type type) {TODO}
 	
 };
 
 template <class Gfx>
 struct LinkerT : GfxLinker {
-	using Base = LinkerT<Gfx>;
 	RTTI_DECL1(LinkerT, GfxLinker)
+	using Base = LinkerT<Gfx>;
+	using RuntimeState = typename Gfx::RuntimeState;
 	
 	bool log = false;
 	
 	
 	
+	bool Link(RuntimeState& rt_state) {TODO}
 	void EnableLog() {log = true;}
 	void DisableLog() {log = false;}
 	
@@ -28,7 +41,8 @@ struct LinkerT : GfxLinker {
 
 
 template <class Gfx>
-struct ShaderStateT : ShaderState {
+struct ShaderStateT : GfxShaderState {
+	RTTI_DECL1(ShaderStateT, GfxShaderState)
 	using Base = ShaderStateT<Gfx>;
 	using NativeShader = typename Gfx::NativeShader;
 	
@@ -40,6 +54,7 @@ struct ShaderStateT : ShaderState {
 	}
 	
 };
+
 
 template <class Gfx>
 struct ShaderT :
@@ -150,16 +165,16 @@ template <class Gfx>
 struct FramebufferStateExtT : ErrorReporter {
 	RTTI_DECL1(FramebufferStateExtT, ErrorReporter)
 	using Base = FramebufferStateExtT<Gfx>;
-	using Framebuffer = typename Gfx::FramebufferState;
+	using Framebuffer = typename Gfx::Framebuffer;
 	using Shader = typename Gfx::Shader;
 	
-	GfxFramebuffer* state = 0;
-	GfxShader* stages[ShaderVar::PROG_COUNT];
+	Framebuffer* state = 0;
+	Shader* stages[ShaderVar::PROG_COUNT];
 	
 	
 	FramebufferStateExtT() {Clear();}
-	void SetVertex(GfxShader& s) {stages[ShaderVar::PROG_VERTEX] = &s;}
-	void SetFragment(GfxShader& s) {stages[ShaderVar::PROG_FRAGMENT] = &s;}
+	void SetVertex(Shader& s) {stages[ShaderVar::PROG_VERTEX] = &s;}
+	void SetFragment(Shader& s) {stages[ShaderVar::PROG_FRAGMENT] = &s;}
 	
 	
 	void Clear() {

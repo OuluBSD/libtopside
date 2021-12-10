@@ -5,6 +5,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#if 0
+
 void OglDataObject::FreeOgl() {
 	if (vbo) {
 		glDeleteBuffers(1, &vbo);
@@ -100,7 +102,7 @@ void OglDataObject::Paint() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-
+#endif
 
 
 NAMESPACE_TOPSIDE_END

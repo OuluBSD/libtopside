@@ -18,7 +18,7 @@
 #define NAMESPACE_SDL2_BEGIN	namespace NAMESPACE_TOPSIDE_NAME { namespace NAMESPACE_SERIAL_NAME { namespace NAMESPACE_SDL2_NAME {
 #define NAMESPACE_SDL2_END		}}}
 
-namespace TS {class OglBuffer;}
+namespace TS {class SdlOglBuffer;}
 
 NAMESPACE_SDL2_BEGIN
 
@@ -143,7 +143,7 @@ class Screen : public Component {
 	RTTI_DECL1(Screen, Component)
 	
 	
-	OglBuffer*		ogl_buf = 0;
+	SdlOglBuffer*	ogl_buf = 0;
 	
 	
 	
@@ -206,7 +206,7 @@ protected:
 	String					title;
 	SDL_GLContext			glcontext = 0;
 	SdlOglRenderer			hw_rend;
-	OglStateDraw			hw_draw;
+	SdlOglStateDraw			hw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool is_opengl = false;
@@ -238,7 +238,7 @@ public:
 	bool            Recv(int ch_i, const Packet& p);
 	SystemDraw&     BeginDraw();
 	void            CommitDraw();
-	void            SetBuffer(OglBuffer& buf) {ogl_buf = &buf;}
+	void            SetBuffer(SdlOglBuffer& buf) {ogl_buf = &buf;}
 	
 	Size            GetSize();
 	bool			IsCaptured() const {return mouse_captured;}
@@ -263,7 +263,7 @@ protected:
 	int						fb_stride;
 	String					title;
 	SdlCpuRenderer			sw_rend;
-	CpuStateDraw			sw_draw;
+	SdlCpuStateDraw			sw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool full_screen = false;

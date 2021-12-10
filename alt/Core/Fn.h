@@ -45,6 +45,9 @@ public:
 	operator uint64() const   { return 0; }
 	operator double() const   { return DOUBLE_NULL; }
 	operator bool() const     { return false; }
+	
+	template <class T> operator T*() const    { return 0; }
+	
 };
 
 extern const Nuller Null;

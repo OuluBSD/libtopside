@@ -12,7 +12,7 @@ class OglBufferBase :
 {
 	
 protected:
-	OglBuffer		buf;
+	SdlOglBuffer		buf;
 	
 	
 public:
@@ -20,7 +20,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis % buf;}
 	void			Update(double dt) override {buf.Update(dt);}
 	
-	OglBuffer&		GetBuffer() {return buf;}
+	SdlOglBuffer&		GetBuffer() {return buf;}
 	
 };
 

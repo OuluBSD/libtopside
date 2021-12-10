@@ -4,119 +4,37 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class CpuDataState;
-class CpuDataObject;
+#define GFX_CLS_LIST(g) \
+	GFX_CLS(VertexShaderArgs, g) \
+	GFX_CLS(FragmentShaderArgs, g) \
+	GFX_CLS(BinderIface, g) \
+	GFX_CLS(DataObject, g) \
+	GFX_CLS(DataState, g) \
+	GFX_CLS(InputState, g) \
+	GFX_CLS(Framebuffer, g) \
+	GFX_CLS(Compiler, g) \
+	GFX_CLS(Linker, g) \
+	GFX_CLS(ShaderState, g) \
+	GFX_CLS(Shader, g) \
+	GFX_CLS(ShaderPipeline, g) \
+	GFX_CLS(RuntimeState, g) \
+	GFX_CLS(FramebufferStateExt, g) \
+	GFX_CLS(ContextState, g) \
+	GFX_CLS(Renderer, g) \
+	GFX_CLS(StateDraw, g) \
+	GFX_CLS(Buffer, g) \
 
-class CpuFramebuffer;
-class CpuContextState;
-class CpuRuntimeState;
-class CpuBuffer;
-class CpuShaderState;
-class CpuInputState;
-class CpuDataObject;
-class CpuVertexShaderArgs;
-class CpuFragmentShaderArgs;
-class CpuShader;
-class CpuShaderPipeline;
-class CpuCompiler;
-class CpuLinker;
 
-class OglDataState;
-class OglDataObject;
+#define GFX_RENDSYS_LIST \
+	GFX_RSYS(SdlCpu) \
+	GFX_RSYS(SdlOgl) \
 
-class OglFramebuffer;
-class OglContextState;
-class OglRuntimeState;
-class OglBuffer;
-class OglShaderState;
-class OglInputState;
-class OglDataObject;
-class OglVertexShaderArgs;
-class OglFragmentShaderArgs;
-class OglShader;
-class OglShaderPipeline;
-class OglCompiler;
-class OglLinker;
 
-class SdlCpuRenderer;
-class SdlOglRenderer;
-
-struct CpuGfx {
-	// State
-	using DataState = CpuDataState;
-	using DataObject = CpuDataObject;
-	// Framebuffer
-	// Runtime
-	// Context
-	// Utils
-	using Framebuffer = CpuFramebuffer;
-	using ContextState = CpuContextState;
-	using RuntimeState = CpuRuntimeState;
-	using Buffer = CpuBuffer;
-	using Shader = CpuShader;
-	using ShaderState = CpuShaderState;
-	using ShaderPipeline = CpuShaderPipeline;
-	using InputState = CpuInputState;
-	using BinderIface = BinderIfaceCpu;
-	using VertexShaderArgs = CpuVertexShaderArgs;
-	using FragmentShaderArgs = CpuFragmentShaderArgs;
-	using Compiler = CpuCompiler;
-	using Linker = CpuLinker;
-	
-	using NativeFramebuffer = uint32;
-	using NativeTexture = uint32;
-	using NativeShader = uint32;
-	using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
-	using NativeFrameBuffer = uint32;
-	using NativeVertexArray = uint32;
-	using NativeVertexBuffer = uint32;
-	using NativeElementBuffer = uint32;
-	using NativeProgram = uint32;
-	using NativePipeline = uint32;
-	
-	static const ShaderVar::GfxType type = ShaderVar::SW;
-	
-};
-
-struct OglGfx {
-	// State
-	using DataState = OglDataState;
-	using DataObject = OglDataObject;
-	// Framebuffer
-	// Runtime
-	// Context
-	// Utils
-	using Framebuffer = OglFramebuffer;
-	using ContextState = OglContextState;
-	using RuntimeState = OglRuntimeState;
-	using Buffer = OglBuffer;
-	using Shader = OglShader;
-	using ShaderState = OglShaderState;
-	using ShaderPipeline = OglShaderPipeline;
-	using InputState = OglInputState;
-	using BinderIface = BinderIfaceOgl;
-	using VertexShaderArgs = OglVertexShaderArgs;
-	using FragmentShaderArgs = OglFragmentShaderArgs;
-	using Compiler = OglCompiler;
-	using Linker = OglLinker;
-	
-	using NativeFramebuffer = GLuint;
-	using NativeTexture = GLuint;
-	using NativeShader = GLuint;
-	using NativeColorBuffer = GLuint;
-	using NativeDepthBuffer = GLuint;
-	using NativeFrameBuffer = GLuint;
-	using NativeVertexArray = GLuint;
-	using NativeVertexBuffer = GLuint;
-	using NativeElementBuffer = GLuint;
-	using NativeProgram = GLuint;
-	using NativePipeline = GLuint;
-	
-	static const ShaderVar::GfxType type = ShaderVar::OGL;
-	
-	
-};
+#define GFX_CLS(x, g) struct g##x;
+#define GFX_RSYS(x) GFX_CLS_LIST(x)
+GFX_RENDSYS_LIST
+#undef GFX_RSYS
+#undef GFX_CLS
 
 
 struct OglRendererBase {
@@ -166,6 +84,39 @@ struct GfxBaseStatic : Parent {
 	
 };
 
+
+struct CpuGfx {
+	using NativeTexture = uint32;
+	using NativeShader = uint32;
+	using NativeColorBuffer = uint32;
+	using NativeDepthBuffer = uint32;
+	using NativeVertexArray = uint32;
+	using NativeVertexBuffer = uint32;
+	using NativeElementBuffer = uint32;
+	using NativeProgram = uint32;
+	using NativePipeline = uint32;
+	
+	static const ShaderVar::GfxType type = ShaderVar::SW;
+	
+};
+
+struct OglGfx {
+	using NativeTexture = GLuint;
+	using NativeShader = GLuint;
+	using NativeColorBuffer = GLuint;
+	using NativeDepthBuffer = GLuint;
+	using NativeFrameBuffer = GLuint;
+	using NativeVertexArray = GLuint;
+	using NativeVertexBuffer = GLuint;
+	using NativeElementBuffer = GLuint;
+	using NativeProgram = GLuint;
+	using NativePipeline = GLuint;
+	
+	static const ShaderVar::GfxType type = ShaderVar::OGL;
+	
+};
+
+
 struct SdlGfx : GfxBaseStatic<SDL_Renderer, OglRendererBase> {
 	using NativeWindow = SDL_Window;
 	using NativeRenderer = SDL_Renderer;
@@ -174,14 +125,22 @@ struct SdlGfx : GfxBaseStatic<SDL_Renderer, OglRendererBase> {
 };
 
 struct SdlCpuGfx : CpuGfx, SdlGfx {
-	using Renderer = SdlCpuRenderer;
+	using NativeFrameBuffer = SDL_Texture*;
+	
+	#define GFX_CLS(x, g) using x = g##x;
+	GFX_CLS_LIST(SdlCpu)
+	#undef GFX_CLS
 	
 };
 
 struct SdlOglGfx : OglGfx, SdlGfx {
-	using Renderer = SdlOglRenderer;
+	#define GFX_CLS(x, g) using x = g##x;
+	GFX_CLS_LIST(SdlOgl)
+	#undef GFX_CLS
 	
 };
+
+
 
 
 NAMESPACE_TOPSIDE_END

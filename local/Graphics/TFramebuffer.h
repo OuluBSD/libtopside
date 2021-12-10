@@ -28,15 +28,15 @@ struct FramebufferT : GfxFramebuffer {
 
 
 template <class Gfx>
-struct FramebufferInputStateT : GfxFramebufferInputState {
-	RTTI_DECL1(FramebufferInputStateT, GfxFramebufferInputState)
-	using Base = FramebufferInputStateT<Gfx>;
+struct InputStateT : GfxInputState {
+	RTTI_DECL1(InputStateT, GfxInputState)
+	using Base = InputStateT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
 	
 	const Buffer* in_buf = 0;
 	
 	void Clear() {
-		GfxFramebufferInputState::Clear();
+		GfxInputState::Clear();
 		in_buf = 0;
 	}
 	
@@ -80,7 +80,7 @@ struct FramebufferT : GfxFramebuffer {
 	int GetGlSize() const {TODO}
 	int GetGlSampleSize() const {TODO}
 	
-	void Init(NatFrameBuf* fb, int w, int h, int stride) {TODO}
+	void Init(NatFrameBuf& fb, int w, int h, int stride) {TODO}
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}

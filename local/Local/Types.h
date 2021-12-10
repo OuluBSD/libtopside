@@ -35,7 +35,7 @@ public:
 };
 
 
-class CpuBuffer;
+/*class CpuBuffer;
 class CpuShader;
 
 class BinderIfaceCpu : RTTIBase {
@@ -58,7 +58,7 @@ public:
 	
 	virtual void Render(const OglBuffer& buf, OglShader& shader) = 0;
 	
-};
+};*/
 
 
 NAMESPACE_TOPSIDE_END

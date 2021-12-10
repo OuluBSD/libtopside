@@ -4,14 +4,23 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
+GFX_CLS_LIST(SdlOgl)
+#undef GFX_CLS
+
+
+// default frame TODO should be conditional
+using OglStateDraw = SdlOglStateDraw;
+using OglDataState = SdlOglDataState;
+using OglShaderPipeline = SdlOglShaderPipeline;
+using OglFramebuffer = SdlOglFramebuffer;
+using OglBuffer = SdlOglBuffer;
+
+
 int GetOglChCode(int channels, bool is_float=false);
 
 
-struct OglFramebuffer;
-struct OglDataObject;
-
-
-
+#if 0
 struct OglVertexShaderArgs {
 	OglFramebuffer& state;
 	OglDataObject& obj;
@@ -26,11 +35,16 @@ struct OglFragmentShaderArgs {
 	
 };
 
+using OglCpuVertexShaderArgs = OglVertexShaderArgs;
+using OglCpuFragmentShaderArgs = OglFragmentShaderArgs;
 
 
 
 
 
+
+struct OglFramebuffer;
+struct OglDataObject;
 
 struct OglStateDraw : StateDrawT<OglGfx> {RTTI_DECL1(OglStateDraw, Base)};
 struct OglFramebuffer : FramebufferT<OglGfx> {RTTI_DECL1(OglFramebuffer, Base)};
@@ -60,7 +74,7 @@ struct OglDataObject : DataObjectT<OglGfx> {
 
 struct OglDataState : DataStateT<OglGfx> {RTTI_DECL1(OglDataState, Base)};
 
-struct OglInputState : FramebufferInputStateT<OglGfx> {
+struct OglInputState : InputStateT<OglGfx> {
 	RTTI_DECL1(OglInputState, Base)
 	
 };
@@ -121,6 +135,7 @@ struct OglBuffer : BufferT<OglGfx> {
 	
 };
 
+#endif
 
 NAMESPACE_TOPSIDE_END
 

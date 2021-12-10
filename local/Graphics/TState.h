@@ -6,6 +6,31 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class Gfx> struct DataStateT;
 
 template <class Gfx>
+struct VertexShaderArgsT : GfxVertexShaderArgs {
+	using Base = VertexShaderArgsT<Gfx>;
+	using DataState = typename Gfx::DataState;
+	using DataObject = typename Gfx::DataObject;
+	RTTI_DECL1(VertexShaderArgsT, GfxVertexShaderArgs)
+	
+	
+	DataState* state = 0;
+	DataObject* obj = 0;
+	const vec3* pos = 0;
+	const vec3* normal = 0;
+	const vec2* tex_coords = 0;
+	vec4* pos_out = 0;
+	vec2* tex_coord_out = 0;
+};
+
+template <class Gfx>
+struct FragmentShaderArgsT : GfxFragmentShaderArgs {
+	using Base = FragmentShaderArgsT<Gfx>;
+	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
+	
+	
+};
+
+template <class Gfx>
 struct DataObjectT : GfxDataObject {
 	using Base = DataObjectT<Gfx>;
 	RTTI_DECL1(DataObjectT, GfxDataObject)
@@ -38,9 +63,17 @@ struct DataObjectT : GfxDataObject {
 		ebo = Null;
 	}
 	
+	~DataObjectT() {
+		FreeOgl();
+	}
+    
 	void SetState(DataStateBase* state) {this->state = state;}
 	void Refresh(Mesh& m) override {TODO}
-    virtual ShaderVar::GfxType GetGfxType() const override {return Gfx::type;}
+    void FreeOgl() {TODO}
+    void Paint() override {TODO}
+    void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
+    
+    ShaderVar::GfxType GetGfxType() const override {return Gfx::type;}
 	
 };
 

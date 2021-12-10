@@ -9,6 +9,24 @@ NAMESPACE_TOPSIDE_BEGIN
 ////////////// STATE
 
 
+struct GfxVertexShaderArgs : RTTIBase {
+	RTTI_DECL0(GfxVertexShaderArgs)
+	
+	virtual ~GfxVertexShaderArgs() {}
+};
+
+struct GfxFragmentShaderArgs : RTTIBase {
+	RTTI_DECL0(GfxFragmentShaderArgs)
+	
+	virtual ~GfxFragmentShaderArgs() {}
+};
+
+struct GfxBinderIface : RTTIBase {
+	RTTI_DECL0(GfxBinderIface)
+	
+	virtual ~GfxBinderIface() {}
+};
+
 struct GfxDataObject : RTTIBase {
 	RTTI_DECL0(GfxDataObject)
 	
@@ -63,12 +81,12 @@ struct GfxDataState : ErrorReporter {
 
 
 
-struct GfxFramebufferInputState : ErrorReporter {
-	RTTI_DECL1(GfxFramebufferInputState, ErrorReporter)
+struct GfxInputState : ErrorReporter {
+	RTTI_DECL1(GfxInputState, ErrorReporter)
 	
 	using InputType = ShaderVar::InputType;
 	
-	virtual ~GfxFramebufferInputState() {}
+	virtual ~GfxInputState() {}
 	
 	int id = -1;
 	InputType type;

@@ -12,8 +12,6 @@ Size SwScreen::GetSize() {
 }
 
 bool SwScreen::Open0() {
-	TODO
-	#if 0
 	AppFlags& app_flags = GetAppFlags();
 	
 	
@@ -41,7 +39,6 @@ bool SwScreen::Open0() {
 	
 	
 	return true;
-	#endif
 }
 
 void SwScreen::Close0() {

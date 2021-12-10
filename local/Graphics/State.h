@@ -4,12 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct ShaderState : RTTIBase {
-	RTTI_DECL0(ShaderState)
+struct GfxShaderState : RTTIBase {
+	RTTI_DECL0(GfxShaderState)
 	
 	using Type = ShaderVar::Type;
 	
-	virtual ~ShaderState() {}
+	virtual ~GfxShaderState() {}
 	
 	// meta
 	bool enabled;

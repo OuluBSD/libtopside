@@ -701,7 +701,7 @@ bool OglFboReaderBase::ProcessPackets(PacketIO& io) {
 			//DUMP(fmt);
 			AudioFormat& afmt = fmt;
 			InternalPacketData& v = in->GetData<InternalPacketData>();
-			OglBuffer* src_buf = (OglBuffer*)v.ptr;
+			SdlOglBuffer* src_buf = (SdlOglBuffer*)v.ptr;
 			ASSERT(src_buf);
 			
 			auto& fb = src_buf->fb;

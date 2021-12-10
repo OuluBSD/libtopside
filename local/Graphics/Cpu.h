@@ -4,20 +4,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+#define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
+GFX_CLS_LIST(SdlCpu)
+#undef GFX_CLS
 
-struct CpuFramebufferState;
-struct CpuDataObject;
+
+// default frame TODO should be conditional
+using CpuStateDraw = SdlCpuStateDraw;
+using CpuDataState = SdlCpuDataState;
+using CpuFramebuffer = SdlCpuFramebuffer;
 
 
-
+#if 0
 struct CpuVertexShaderArgs {
-	CpuFramebufferState& state;
-	CpuDataObject& obj;
-	const vec3& pos;
-	const vec3& normal;
-	const vec2& tex_coords;
-	vec4& pos_out;
-	vec2& tex_coord_out;
 };
 
 struct CpuFragmentShaderArgs {
@@ -25,13 +24,15 @@ struct CpuFragmentShaderArgs {
 };
 
 
+using SdlCpuVertexShaderArgs = CpuVertexShaderArgs;
+using SdlCpuFragmentShaderArgs = CpuFragmentShaderArgs;
 
 
-
-
+struct CpuFramebufferState;
+struct CpuDataObject;
 
 struct CpuStateDraw : StateDrawT<CpuGfx> {RTTI_DECL1(CpuStateDraw, Base)};
-struct CpuFramebuffer : FramebufferT<CpuGfx> {RTTI_DECL1(CpuFramebuffer, Base)};
+struct SdlCpuFramebuffer : FramebufferT<SdlCpuGfx> {RTTI_DECL1(SdlCpuFramebuffer, Base)};
 
 
 struct SdlCpuRenderer : public RendererT<SdlCpuGfx> {
@@ -58,7 +59,7 @@ struct CpuDataObject : DataObjectT<CpuGfx> {
 
 struct CpuDataState : DataStateT<CpuGfx> {RTTI_DECL1(CpuDataState, Base)};
 
-struct CpuInputState : FramebufferInputStateT<CpuGfx> {
+struct CpuInputState : InputStateT<CpuGfx> {
 	RTTI_DECL1(CpuInputState, Base)
 	
 };
@@ -111,6 +112,7 @@ struct CpuBuffer : BufferT<CpuGfx> {
 
 
 
+#endif
 
 NAMESPACE_TOPSIDE_END
 
