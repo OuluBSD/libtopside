@@ -15,6 +15,9 @@ typedef unsigned int	Gxbf;
 #define NAMESPACE_GRAPHICS_BEGIN namespace  TS { namespace  GL {
 #define NAMESPACE_GRAPHICS_END }}
 
+#define TNG typename Gfx::
+
+
 
 #include "Enums.h"
 
@@ -59,6 +62,8 @@ typedef unsigned int	Gxbf;
 #endif
 
 #include "ProgDraw.h"
+
+
 
 
 #endif

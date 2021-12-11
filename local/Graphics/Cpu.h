@@ -87,8 +87,8 @@ struct CpuCompiler : CompilerT<CpuGfx> {
 	RTTI_DECL1(CpuCompiler, Base)
 	
 	CpuCompiler();
-	bool CompileShader(String code, ShaderVar::Type type, GLuint& shader_out);
-	bool Compile(CpuFramebufferState& fb_state, CpuShaderState& shd_state, ShaderVar::Type type, String code, String library);
+	bool CompileShader(String code, GVar::ShaderType type, GLuint& shader_out);
+	bool Compile(CpuFramebufferState& fb_state, CpuShaderState& shd_state, GVar::ShaderType type, String code, String library);
 	
 };
 

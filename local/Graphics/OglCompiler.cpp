@@ -14,7 +14,7 @@ OglCompiler::OglCompiler() {
 
 
 
-bool OglCompiler::Compile(const OglContextState& ctx, OglRuntimeState& rt, OglFramebuffer& fb, OglShaderState& shdr, ShaderVar::Type type) {
+bool OglCompiler::Compile(const OglContextState& ctx, OglRuntimeState& rt, OglFramebuffer& fb, OglShaderState& shdr, GVar::ShaderType type) {
 	bool succ = true;
 	String code = shader_tmpl;
 	String user_code = shdr.code;
@@ -28,8 +28,8 @@ bool OglCompiler::Compile(const OglContextState& ctx, OglRuntimeState& rt, OglFr
 	String sampler2 = "sampler2D";
 	String sampler3 = "sampler2D";
 	
-	bool is_fragment = type == ShaderVar::PROG_FRAGMENT;
-	bool is_vertex = type == ShaderVar::PROG_VERTEX;
+	bool is_fragment = type == GVar::FRAGMENT_SHADER;
+	bool is_vertex = type == GVar::VERTEX_SHADER;
 	code.Replace("${IS_FRAGMENT_SHADER}", IntStr(is_fragment));
 	code.Replace("${IS_VERTEX_SHADER}", IntStr(is_vertex));
 	code.Replace("${IS_AUDIO}", IntStr(fb.is_audio));
@@ -64,12 +64,12 @@ void OglCompiler::HotfixWebGLSL(String& s) {
 		s.Replace("char(", "_char(");
 }
 
-bool OglCompiler::CompileShader(String code, ShaderVar::Type type, GLuint& shader_out) {
+bool OglCompiler::CompileShader(String code, GVar::ShaderType type, GLuint& shader_out) {
 	GLenum shader_type;
-	if (type == ShaderVar::PROG_FRAGMENT) {
+	if (type == GVar::FRAGMENT_SHADER) {
 		shader_type = GL_FRAGMENT_SHADER;
 	}
-	else if (type == ShaderVar::PROG_VERTEX) {
+	else if (type == GVar::VERTEX_SHADER) {
 		shader_type = GL_VERTEX_SHADER;
 	}
 	else {
@@ -116,7 +116,7 @@ bool OglLinker::Link(OglRuntimeState& rt) {
 	
 	uint8 complied_count = 0;
 	EnableGfxAccelDebugMessages(1);
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		OglShaderState& shd_state = rt.shaders[i];
 		if (shd_state.shader == 0)
 			continue;

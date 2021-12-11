@@ -128,17 +128,17 @@ protected:
 		fb.fps = 60;
 		
 		if (frag_path.GetCount()) {
-			if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT, frag_path, library_paths)) {
+			if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER, frag_path, library_paths)) {
 				LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
 				return false;
 			}
 		}
 		else {
-			buf.rt.SetCode(ShaderVar::PROG_FRAGMENT, def_shader);
+			buf.rt.SetCode(GVar::FRAGMENT_SHADER, def_shader);
 		}
 		
 		if (vtx_path.GetCount()) {
-			if (!buf.LoadShaderFile(ShaderVar::PROG_VERTEX, vtx_path, library_paths)) {
+			if (!buf.LoadShaderFile(GVar::VERTEX_SHADER, vtx_path, library_paths)) {
 				LOG("Screen::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
 				return false;
 			}

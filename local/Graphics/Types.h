@@ -99,6 +99,30 @@ typedef enum : uint32 {
 	TEXTURE_2D,
 } TextureType;
 
+typedef enum : uint32 {
+	PROGRAM_SEPARABLE,
+} ParamType;
+
+#define GVAR_PARAMTYPE_LIST \
+	PARAM_TYPE(PROGRAM_SEPARABLE)
+	
+typedef enum : uint32 {
+	ACTIVE_UNIFORMS,
+} ProgParamType;
+
+#define GVAR_PROGPARAMTYPE_LIST \
+	PARAM_TYPE(ACTIVE_UNIFORMS)
+
+typedef enum : uint32 {
+	COLOR_BUFFER,
+	DEPTH_BUFFER,
+	STENCIL_BUFFER,
+} BufferType;
+
+#define GVAR_BUFFERTYPE_LIST \
+	BUFFER_TYPE(COLOR_BUFFER) \
+	BUFFER_TYPE(DEPTH_BUFFER) \
+	BUFFER_TYPE(STENCIL_BUFFER)
 }
 
 
@@ -114,7 +138,7 @@ struct CpuGfx {
 	using NativeProgram = uint32;
 	using NativePipeline = uint32;
 	
-	static const ShaderVar::GfxType type = ShaderVar::SW;
+	static const GVar::GfxType Type = GVar::SW;
 	
 	static void BindProgramPipeline(NativePipeline& pipeline);
 	static void UseProgram(NativeProgram& prog);
@@ -123,6 +147,23 @@ struct CpuGfx {
 	static void HotfixShaderCode(String& s);
 	static void DrawBuffers(GVar::RenderTarget tgt);
 	static void ActiveTexture(int ch);
+	static bool CreateShader(GVar::ShaderType t, NativeShader& new_shdr);
+	static void ShaderSource(NativeShader& s, String code);
+	static bool CompileShader(NativeShader& s);
+	static String GetLastErrorS(NativeShader& s);
+	static String GetLastErrorP(NativeProgram& s);
+	static void CreateProgram(NativeProgram& prog);
+	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
+	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
+	static void DeleteShader(NativeShader& shdr);
+	static bool LinkProgram(NativeProgram& prog);
+	static void GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out);
+	static String GetActiveUniform(NativeProgram& prog, int i, int* size_out=0, int* type_out=0);
+	static void Clear(GVar::BufferType type);
+	static void GenProgramPipeline(NativePipeline& pipe);
+	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
+	static void DeleteProgramPipeline(NativePipeline& pipe);
+	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
 	
 	static void Uniform1i(int idx, int f);
 	static void Uniform1f(int idx, float f);
@@ -157,7 +198,7 @@ struct OglGfx {
 	using NativeProgram = GLuint;
 	using NativePipeline = GLuint;
 	
-	static const ShaderVar::GfxType type = ShaderVar::OGL;
+	static const GVar::GfxType Type = GVar::OGL;
 	
 	static void BindProgramPipeline(NativePipeline& pipeline);
 	static void UseProgram(NativeProgram& prog);
@@ -172,6 +213,23 @@ struct OglGfx {
 	static void HotfixShaderCode(String& s);
 	static void ActiveTexture(int ch);
 	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static bool CreateShader(GVar::ShaderType t, NativeShader& new_shdr);
+	static void ShaderSource(NativeShader& s, String code);
+	static bool CompileShader(NativeShader& s);
+	static String GetLastErrorS(NativeShader& s);
+	static String GetLastErrorP(NativeProgram& s);
+	static void CreateProgram(NativeProgram& prog);
+	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
+	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
+	static void DeleteShader(NativeShader& shdr);
+	static bool LinkProgram(NativeProgram& prog);
+	static void GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out);
+	static String GetActiveUniform(NativeProgram& prog, int i, int* size_out=0, int* type_out=0);
+	static void Clear(GVar::BufferType type);
+	static void GenProgramPipeline(NativePipeline& pipe);
+	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
+	static void DeleteProgramPipeline(NativePipeline& pipe);
+	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
 	
 	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
 	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}
@@ -232,6 +290,13 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 };
 
 
+#define GFXTYPE_LIST \
+	GFXTYPE(SdlCpuGfx) \
+	GFXTYPE(SdlOglgfx)
+
+#define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
+	template struct x <SdlCpuGfx>; \
+	template struct x <SdlOglGfx>;
 
 
 NAMESPACE_TOPSIDE_END

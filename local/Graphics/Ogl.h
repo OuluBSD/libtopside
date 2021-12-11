@@ -113,8 +113,8 @@ struct OglCompiler : CompilerT<OglGfx> {
 	RTTI_DECL1(OglCompiler, Base)
 	
 	OglCompiler();
-	bool CompileShader(String code, ShaderVar::Type type, GLuint& shader_out);
-	bool Compile(const OglContextState& ctx, OglRuntimeState& rt_state, OglFramebuffer& fb_state, OglShaderState& shd_state, ShaderVar::Type type);
+	bool CompileShader(String code, GVar::ShaderType type, GLuint& shader_out);
+	bool Compile(const OglContextState& ctx, OglRuntimeState& rt_state, OglFramebuffer& fb_state, OglShaderState& shd_state, GVar::ShaderType type);
 	
 	static void HotfixWebGLSL(String& s);
 };

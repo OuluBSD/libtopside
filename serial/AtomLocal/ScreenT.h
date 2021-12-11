@@ -31,10 +31,10 @@ public:
 			return false;
 		
 		if (!vertex_path.IsEmpty() &&
-			!buf.LoadShaderFile(ShaderVar::PROG_VERTEX, vertex_path, library_path))
+			!buf.LoadShaderFile(GVar::VERTEX_SHADER, vertex_path, library_path))
 			return false;
 		
-		if (!buf.LoadShaderFile(ShaderVar::PROG_FRAGMENT,fragment_path, library_path))
+		if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER,fragment_path, library_path))
 			return false;
 		
 		int queue_size = 1;
@@ -98,7 +98,7 @@ public:
 			fb.channels = 2;
 			fb.fps = 44100.0 / 1024;
 		}
-		fb.sample = ShaderVar::SAMPLE_FLOAT;
+		fb.sample = GVar::SAMPLE_FLOAT;
 		
 		if (!buf.Initialize())
 			return false;
@@ -201,12 +201,12 @@ template <class Gfx>
 class TextureBaseT :
 	public BufferBaseT<Gfx>
 {
-	using Filter = ShaderVar::Filter;
-	using Wrap = ShaderVar::Wrap;
+	using Filter = GVar::Filter;
+	using Wrap = GVar::Wrap;
 	
 	bool			loading_cubemap = false;
-	Filter			filter = ShaderVar::FILTER_LINEAR;
-	Wrap			wrap = ShaderVar::WRAP_REPEAT;
+	Filter			filter = GVar::FILTER_LINEAR;
+	Wrap			wrap = GVar::WRAP_REPEAT;
 	Array<Packet>	cubemap;
 	
 public:
@@ -220,11 +220,11 @@ public:
 		String f = ws.Get(".filter");
 		if (!f.IsEmpty()) {
 			if (f == "nearest")
-				filter = ShaderVar::FILTER_NEAREST;
+				filter = GVar::FILTER_NEAREST;
 			else if (f == "linear")
-				filter = ShaderVar::FILTER_LINEAR;
+				filter = GVar::FILTER_LINEAR;
 			else if (f == "mipmap")
-				filter = ShaderVar::FILTER_MIPMAP;
+				filter = GVar::FILTER_MIPMAP;
 			else {
 				LOG("OglTextureBase::Initialize: error: invalid filter string '" << f << "'");
 				return false;
@@ -234,9 +234,9 @@ public:
 		String w = ws.Get(".wrap");
 		if (!w.IsEmpty()) {
 			if (w == "clamp")
-				wrap = ShaderVar::WRAP_CLAMP;
+				wrap = GVar::WRAP_CLAMP;
 			else if (w == "repeat")
-				wrap = ShaderVar::WRAP_REPEAT;
+				wrap = GVar::WRAP_REPEAT;
 			else {
 				LOG("OglTextureBase::Initialize: error: invalid wrap string '" << w << "'");
 				return false;
@@ -314,7 +314,7 @@ public:
 			fb.is_win_fbo = false;
 			fb.size = sz;
 			fb.channels = channels;
-			fb.sample = ShaderVar::SAMPLE_FLOAT;
+			fb.sample = GVar::SAMPLE_FLOAT;
 			fb.filter = this->filter;
 			fb.wrap = this->wrap;
 			fb.fps = 0;
@@ -324,7 +324,7 @@ public:
 				if (!buf.InitializeCubemap(
 						fb.size,
 						fb.channels,
-						ShaderVar::SAMPLE_U8,
+						GVar::SAMPLE_U8,
 						cubemap[0]->GetData(),
 						cubemap[1]->GetData(),
 						cubemap[2]->GetData(),
@@ -338,7 +338,7 @@ public:
 				if (!buf.InitializeTexture(
 					fb.size,
 					fb.channels,
-					ShaderVar::SAMPLE_U8,
+					GVar::SAMPLE_U8,
 					&*from_data.Begin(),
 					from_data.GetCount()))
 					return false;
@@ -347,7 +347,7 @@ public:
 				if (!buf.InitializeVolume(
 					fb.size,
 					fb.channels,
-					ShaderVar::SAMPLE_U8,
+					GVar::SAMPLE_U8,
 					from_data))
 					return false;
 			}
@@ -356,7 +356,7 @@ public:
 			buf.ReadTexture(
 				sz,
 				channels,
-				ShaderVar::SAMPLE_U8,
+				GVar::SAMPLE_U8,
 				from.GetData());
 		}
 		
@@ -589,13 +589,13 @@ public:
 			fb.is_win_fbo = false;
 			fb.size = sz;
 			fb.channels = channels;
-			fb.sample = ShaderVar::SAMPLE_FLOAT;
+			fb.sample = GVar::SAMPLE_FLOAT;
 			fb.fps = 0;
 			
 			if (!buf.InitializeTexture(
 				Size(sz.cx, sz.cy),
 				channels,
-				ShaderVar::SAMPLE_U8,
+				GVar::SAMPLE_U8,
 				data.Get(),
 				data.GetCount() * sizeof(byte)))
 				return false;
@@ -604,7 +604,7 @@ public:
 			buf.ReadTexture(
 				sz,
 				channels,
-				ShaderVar::SAMPLE_U8,
+				GVar::SAMPLE_U8,
 				data.Get(),
 				data.GetCount() * sizeof(byte));
 		}
@@ -702,13 +702,13 @@ public:
 			fb.size = sz;
 			fb.channels = channels;
 			ASSERT(afmt.IsSampleFloat());
-			fb.sample = ShaderVar::SAMPLE_FLOAT;
+			fb.sample = GVar::SAMPLE_FLOAT;
 			fb.fps = 0;
 			
 			if (!buf.InitializeTexture(
 				Size(sz.cx, sz.cy),
 				channels,
-				ShaderVar::SAMPLE_U8,
+				GVar::SAMPLE_U8,
 				&*data.Begin(),
 				data.GetCount() * sizeof(byte)))
 				return false;
@@ -717,7 +717,7 @@ public:
 			buf.ReadTexture(
 				sz,
 				channels,
-				ShaderVar::SAMPLE_U8,
+				GVar::SAMPLE_U8,
 				&*data.Begin(),
 				data.GetCount() * sizeof(byte));
 		}

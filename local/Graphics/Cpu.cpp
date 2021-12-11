@@ -101,5 +101,73 @@ void CpuGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	TODO
 }
 
+bool CpuGfx::CreateShader(GVar::ShaderType t, NativeShader& new_shdr) {
+	TODO
+}
+
+void CpuGfx::ShaderSource(NativeShader& s, String code) {
+	TODO
+}
+
+bool CpuGfx::CompileShader(NativeShader& s) {
+	TODO
+}
+
+String CpuGfx::GetLastErrorS(NativeShader& s) {
+	TODO
+}
+
+String CpuGfx::GetLastErrorP(NativeProgram& p) {
+	TODO
+}
+
+void CpuGfx::CreateProgram(NativeProgram& prog) {
+	TODO
+}
+
+void CpuGfx::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
+	TODO
+}
+
+bool CpuGfx::LinkProgram(NativeProgram& prog) {
+	TODO
+}
+
+void CpuGfx::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
+	TODO
+}
+
+String CpuGfx::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
+	TODO
+}
+
+void CpuGfx::Clear(GVar::BufferType type) {
+	TODO
+}
+
+void CpuGfx::AttachShader(NativeProgram& prog, NativeShader& shdr) {
+	TODO
+}
+
+void CpuGfx::DeleteShader(NativeShader& shdr) {
+	TODO
+}
+
+void CpuGfx::GenProgramPipeline(NativePipeline& pipe) {
+	TODO
+}
+
+void CpuGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
+	TODO
+}
+
+void CpuGfx::DeleteProgramPipeline(NativePipeline& pipe) {
+	TODO
+}
+
+void CpuGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
+	TODO
+}
+
 
 NAMESPACE_TOPSIDE_END

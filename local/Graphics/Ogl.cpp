@@ -224,5 +224,141 @@ void OglGfx::HotfixShaderCode(String& s) {
 		s.Replace("char(", "_char(");
 }
 
+bool OglGfx::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
+	GLenum shader_type;
+	if (type == GVar::FRAGMENT_SHADER) {
+		shader_type = GL_FRAGMENT_SHADER;
+	}
+	else if (type == GVar::VERTEX_SHADER) {
+		shader_type = GL_VERTEX_SHADER;
+	}
+	else {
+		CHKLOGRET0(0, "OglGfx::CreateShader: TODO: other programs than fragment shader");
+	}
+	new_shdr = glCreateShader(shader_type);
+	return new_shdr;
+}
+
+void OglGfx::ShaderSource(NativeShader& s, String code) {
+	const GLchar* src = code.Begin();
+	int len = code.GetCount();
+	glShaderSource(s, 1, &src, &len);
+}
+
+bool OglGfx::CompileShader(NativeShader& s) {
+	glCompileShader(s);
+	GLint status = GL_FALSE;
+	glGetShaderiv(s, GL_COMPILE_STATUS, &status);
+	return status == GL_TRUE;
+}
+
+String OglGfx::GetLastErrorS(NativeShader& s) {
+	GLint loglen = 0;
+	glGetShaderiv(s, GL_INFO_LOG_LENGTH, &loglen);
+	Vector<GLchar> msg;
+	msg.SetCount(loglen);
+	glGetShaderInfoLog(s, loglen, NULL, msg.Begin());
+	return String(msg.Begin());
+}
+
+String OglGfx::GetLastErrorP(NativeProgram& p) {
+	GLint loglen = 0;
+	glGetProgramiv(p, GL_INFO_LOG_LENGTH, &loglen);
+	Vector<GLchar> msg;
+	msg.SetCount(loglen);
+	glGetProgramInfoLog(p, loglen, NULL, msg.Begin());
+	return String(msg.Begin());
+}
+
+void OglGfx::CreateProgram(NativeProgram& prog) {
+	prog = glCreateProgram();
+}
+
+void OglGfx::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
+	glProgramParameteri(prog, type, i);
+}
+
+bool OglGfx::LinkProgram(NativeProgram& prog) {
+	glLinkProgram(prog);
+	GLint status = GL_FALSE;
+	glGetProgramiv(prog, GL_LINK_STATUS, &status);
+	return status == GL_TRUE;
+}
+
+void OglGfx::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
+	GLenum gl_type = 0;
+	switch (type) {
+		#define PARAM_TYPE(x) case GVar::x: gl_type = GL_##x; break;
+		GVAR_PROGPARAMTYPE_LIST
+		#undef PARAM_TYPE
+		default: break;
+	}
+	ASSERT(gl_type > 0);
+	glGetProgramiv(prog, gl_type, &out);
+}
+
+String OglGfx::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
+	GLchar name[80];
+	GLsizei namelen;
+	GLint size;
+	GLenum type;
+	
+	glGetActiveUniform(prog, i, 79, &namelen, &size, &type, name);
+	int last = max(0, min(79, (int)namelen));
+	name[last] = '\0';
+	
+	return name;
+}
+
+void OglGfx::Clear(GVar::BufferType type) {
+	GLenum gl_type = 0;
+	switch (type) {
+		#define BUFFER_TYPE(x) case GVar::x: gl_type = GL_##x##_BIT; break;
+		GVAR_BUFFERTYPE_LIST
+		#undef BUFFER_TYPE
+		default: break;
+	}
+	ASSERT(gl_type > 0);
+	glClear(gl_type);
+}
+
+void OglGfx::AttachShader(NativeProgram& prog, NativeShader& shdr) {
+	glAttachShader(prog, shdr);
+}
+
+void OglGfx::DeleteShader(NativeShader& shdr) {
+	glDeleteShader(shdr);
+}
+
+void OglGfx::GenProgramPipeline(NativePipeline& pipe) {
+	glGenProgramPipelines(1, &pipe);
+}
+
+void OglGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
+	GLenum gl_bmask = 0;
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
+		uint32 j = 1UL << i;
+		if (bmask & j) {
+			switch (bmask) {
+				#define BUFFER_TYPE(x) case GVar::x: gl_bmask = GL_##x##_BIT; break;
+				GVAR_BUFFERTYPE_LIST
+				#undef BUFFER_TYPE
+				default: break;
+			}
+		}
+	}
+	ASSERT(gl_bmask > 0);
+	glUseProgramStages(pipe, gl_bmask, prog);
+}
+
+void OglGfx::DeleteProgramPipeline(NativePipeline& pipe) {
+	glDeleteProgramPipelines(1, &pipe);
+	pipe = 0;
+}
+
+void OglGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
+	TODO
+}
+
 
 NAMESPACE_TOPSIDE_END

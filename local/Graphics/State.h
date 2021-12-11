@@ -5,9 +5,9 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct GfxShaderState : RTTIBase {
-	RTTI_DECL0(GfxShaderState)
+	 RTTI_DECL0(GfxShaderState)
 	
-	using Type = ShaderVar::Type;
+	using ShaderType = GVar::ShaderType;
 	
 	virtual ~GfxShaderState() {}
 	
@@ -15,9 +15,9 @@ struct GfxShaderState : RTTIBase {
 	bool enabled;
 	
 	// shader stage
-	Type	type = ShaderVar::PROG_NULL;
-	String	code;
-	String	library;
+	ShaderType	type = GVar::SHADERTYPE_NULL;
+	String		code;
+	String		library;
 	
 	// vertex shader
 	mat4	view;
@@ -29,7 +29,7 @@ struct GfxShaderState : RTTIBase {
 	
 	void Clear() {
 		enabled = 0;
-		type = ShaderVar::PROG_NULL;
+		type = GVar::SHADERTYPE_NULL;
 		code.Clear();
 		library.Clear();
 		view.Clear();

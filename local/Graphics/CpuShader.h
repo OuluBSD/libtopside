@@ -100,7 +100,7 @@ class CpuShaderPipeline :
 	
 public:
 	CpuFramebufferState* state = 0;
-	CpuShader* stages[ShaderVar::PROG_COUNT];
+	CpuShader* stages[GVar::SHADERTYPE_COUNT];
 	
 public:
 	RTTI_DECL1(CpuShaderPipeline, ShaderPipeline)
@@ -110,8 +110,8 @@ public:
 	void Clear();
 	void LoadState(CpuFramebufferState& state);
 	void AppendState(CpuFramebufferState& state);
-	void SetVertex(CpuShader& s) {stages[ShaderVar::PROG_VERTEX] = &s;}
-	void SetFragment(CpuShader& s) {stages[ShaderVar::PROG_FRAGMENT] = &s;}
+	void SetVertex(CpuShader& s) {stages[GVar::VERTEX_SHADER] = &s;}
+	void SetFragment(CpuShader& s) {stages[GVar::FRAGMENT_SHADER] = &s;}
 	
 };
 

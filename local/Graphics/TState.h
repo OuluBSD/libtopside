@@ -57,23 +57,15 @@ struct DataObjectT : GfxDataObject {
     int id = -1;
 	
 	
-	DataObjectT() {
-		vao = Null;
-		vbo = Null;
-		ebo = Null;
-	}
-	
-	~DataObjectT() {
-		FreeOgl();
-	}
-    
+	DataObjectT();
+	~DataObjectT();
 	void SetState(DataStateBase* state) {this->state = state;}
 	void Refresh(Mesh& m) override {TODO}
     void FreeOgl() {TODO}
     void Paint() override {TODO}
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
     
-    ShaderVar::GfxType GetGfxType() const override {return Gfx::type;}
+    GVar::GfxType GetGfxType() const override {return Gfx::Type;}
 	
 };
 
@@ -96,18 +88,8 @@ struct DataStateT : GfxDataState {
 	Array<DataObject> objects;
 	
 	
-	DataStateT() {
-		
-	}
-	
-	DataObject& AddObject() {
-		DataObject* p = new DataObject();
-		p->SetState(this);
-		objects.Add(p);
-		p->id = objects.GetCount() - 1;
-		RendVer1(OnRealizeObject, p->id);
-		return *p;
-	}
+	DataStateT();
+	DataObject& AddObject();
 	GfxDataObject& CreateObject() override {return AddObject();}
 	
 	void Refresh(ModelMesh& m) override {TODO}

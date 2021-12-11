@@ -132,7 +132,7 @@ void CpuShaderPipeline::LoadState(CpuFramebufferState& state) {
 }
 
 void CpuShaderPipeline::AppendState(CpuFramebufferState& state) {
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		if (state.stages[i])
 			stages[i] = CastPtr<CpuShader>(state.stages[i]);
 	}
@@ -140,7 +140,7 @@ void CpuShaderPipeline::AppendState(CpuFramebufferState& state) {
 
 void CpuShaderPipeline::Clear() {
 	state = 0;
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++)
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++)
 		stages[i] = 0;
 }
 

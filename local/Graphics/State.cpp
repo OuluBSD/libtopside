@@ -2,8 +2,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-namespace ShaderVar {
-const char* names[ShaderVar::VAR_COUNT+1] = {
+namespace GVar {
+const char* names[GVar::VAR_COUNT+1] = {
 	"iAudioSeconds",
 	"iView",
 	"iProjection",
@@ -31,7 +31,7 @@ const char* names[ShaderVar::VAR_COUNT+1] = {
 	"iBlockOffset",
 	0
 };
-const bool is_obj_var[ShaderVar::VAR_COUNT+1] = {
+const bool is_obj_var[GVar::VAR_COUNT+1] = {
 	true,
 	true,
 	true,

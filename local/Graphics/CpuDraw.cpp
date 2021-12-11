@@ -200,7 +200,7 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 	ASSERT(p.state);
 	if (!p.state) return;
 	
-	for(int i = 0; i < ShaderVar::PROG_COUNT; i++) {
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		if (!p.stages[i])
 			continue;
 		
@@ -213,7 +213,7 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 		CpuShader& s = *sp;
 		
 		
-		if (i == ShaderVar::PROG_VERTEX) {
+		if (i == GVar::VERTEX_SHADER) {
 			for (CpuDataObject& o : p.state->objects) {
 				int vtx_count = 0;
 				TODO
@@ -237,7 +237,7 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 				}
 			}
 		}
-		else if (i == ShaderVar::PROG_FRAGMENT) {
+		else if (i == GVar::FRAGMENT_SHADER) {
 			s.Process(*p.state);
 		}
 		else {

@@ -208,7 +208,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			#if 0
 			cpu_state.size = sz;
 			cpu_state.channels = stride;
-			cpu_state.sample = ShaderVar::SAMPLE_U8;
+			cpu_state.sample = GVar::SAMPLE_U8;
 			sd.SetTarget(cpu_state);
 			
 			for (BinderIfaceVideo* b : binders)

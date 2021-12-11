@@ -4,7 +4,7 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-namespace ShaderVar {
+namespace GVar {
 enum {
 	VAR_AUDIOTIME,
 	VAR_VIEW,
@@ -56,16 +56,23 @@ inline int GetSampleSize(Sample s) {
 
 // note: relative to GL_VERTEX_SHADER_BIT etc.
 typedef enum {
-	PROG_NULL = -1,
+	SHADERTYPE_NULL = -1,
 	
-	PROG_VERTEX,
-	PROG_FRAGMENT,
-	PROG_GEOMETRY,
-	PROG_TESS_CONTROL,
-	PROG_TESS_EVALUATION,
+	VERTEX_SHADER,
+	FRAGMENT_SHADER,
+	GEOMETRY_SHADER,
+	TESS_CONTROL_SHADER,
+	TESS_EVALUATION_SHADER,
 	
-	PROG_COUNT
-} Type;
+	SHADERTYPE_COUNT
+} ShaderType;
+
+#define GVAR_SHADERTYPE_LIST \
+	GVAR_SHADERTYPE(VERTEX_SHADER) \
+	GVAR_SHADERTYPE(FRAGMENT_SHADER) \
+	GVAR_SHADERTYPE(GEOMETRY_SHADER) \
+	GVAR_SHADERTYPE(TESS_CONTROL_SHADER) \
+	GVAR_SHADERTYPE(TESS_EVALUATION_SHADER)
 
 typedef enum {
 	FILTER_NEAREST,
@@ -105,8 +112,8 @@ typedef enum {
 	METAL,
 } GfxType;
 
-extern const char* names[ShaderVar::VAR_COUNT+1];
-extern const bool is_obj_var[ShaderVar::VAR_COUNT+1];
+extern const char* names[GVar::VAR_COUNT+1];
+extern const bool is_obj_var[GVar::VAR_COUNT+1];
 
 static const int INPUT_COUNT = 4;
 

@@ -35,7 +35,7 @@ struct GfxDataObject : RTTIBase {
     virtual void Paint() = 0;
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
     virtual void Refresh(Mesh& m) = 0;
-    virtual ShaderVar::GfxType GetGfxType() const = 0;
+    virtual GVar::GfxType GetGfxType() const = 0;
 	
 	/*
 	virtual void SetBool(const String &name, bool value) const = 0;
@@ -53,8 +53,8 @@ struct GfxDataObject : RTTIBase {
 	mat4 proj;
 	
 	
-	bool IsSoftware() const {return GetGfxType() == ShaderVar::SW;}
-	bool IsOpenGL() const {return GetGfxType() == ShaderVar::OGL;}
+	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
+	bool IsOpenGL() const {return GetGfxType() == GVar::OGL;}
 	
 	
 };
@@ -67,7 +67,7 @@ struct GfxDataState : ErrorReporter {
 	
 	// renderer
     mat4	view;
-	Shader*	stages[ShaderVar::PROG_COUNT] = {0,0,0,0,0};
+	Shader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
 	
 	virtual GfxDataObject& CreateObject() = 0;
@@ -84,14 +84,14 @@ struct GfxDataState : ErrorReporter {
 struct GfxInputState : ErrorReporter {
 	RTTI_DECL1(GfxInputState, ErrorReporter)
 	
-	using InputType = ShaderVar::InputType;
+	using InputType = GVar::InputType;
 	
 	virtual ~GfxInputState() {}
 	
 	int id = -1;
 	InputType type;
 	
-	void Clear() {id = -1; type = ShaderVar::InputType::INVALID;}
+	void Clear() {id = -1; type = GVar::InputType::INVALID;}
 	
 };
 
@@ -100,9 +100,9 @@ struct GfxRenderer;
 class Viewable;
 
 struct GfxFramebuffer : ErrorReporter {
-	using Sample = ShaderVar::Sample;
-	using Filter = ShaderVar::Filter;
-	using Wrap = ShaderVar::Wrap;
+	using Sample = GVar::Sample;
+	using Filter = GVar::Filter;
+	using Wrap = GVar::Wrap;
 	
 	// stage
 	bool	is_win_fbo = 0;
@@ -116,7 +116,7 @@ struct GfxFramebuffer : ErrorReporter {
 	int8	channels = 0;
 	Size	size;
 	int		depth = 0;
-	Sample	sample = ShaderVar::SAMPLE_FLOAT;
+	Sample	sample = GVar::SAMPLE_FLOAT;
 	Point	offset;
 	bool	is_doublebuf = 0;
 	int		pitch = 0;
@@ -137,8 +137,8 @@ struct GfxFramebuffer : ErrorReporter {
 	
 	int GetWidth() const {return size.cx;}
 	int GetHeight() const {return size.cy;}
-	int GetStride() const {return channels * ShaderVar::GetSampleSize(sample);}
-	int GetSampleSize() const {return ShaderVar::GetSampleSize(sample);}
+	int GetStride() const {return channels * GVar::GetSampleSize(sample);}
+	int GetSampleSize() const {return GVar::GetSampleSize(sample);}
 	int GetPitch() const {return pitch;}
 	Size GetSize() const {return size;}
 	

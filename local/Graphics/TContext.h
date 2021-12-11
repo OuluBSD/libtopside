@@ -35,19 +35,7 @@ public:
 	FrameBuf& GetFramebuffer() {return output;}
 	
 	
-	void DefaultPreFrame() {
-		ASSERT(rend);
-		Gfx::UnbindFramebuffer();
-		Gfx::ClearBuffers();
-		Gfx::SetSmoothShading();
-		Gfx::SetClearValue(RGBA(0,0,0,255), 255);
-		Gfx::SetDepthTest();
-		Gfx::SetDepthOrderLess();
-		Gfx::SetFastPerspectiveCorrection();
-		Gfx::SetTriangleBacksideCulling();
-		Gfx::SetTriangleFrontsideCCW();
-		Gfx::SetViewport(output_sz);
-	}
+	void DefaultPreFrame();
 	
 	void DefaultPostFrame() {
 		ASSERT(win && rend);

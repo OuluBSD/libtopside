@@ -36,8 +36,8 @@ void Tutorial5c::Render(Draw& fb) {
 		if (!loader.LoadModel(state, state.NewObject(), obj_path))
 			Panic("Couldn't load model: " + obj_path);
 		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
-		state.stages[ShaderVar::PROG_VERTEX] = &vtx;
-		state.stages[ShaderVar::PROG_FRAGMENT] = &frag;
+		state.stages[GVar::VERTEX_SHADER] = &vtx;
+		state.stages[GVar::FRAGMENT_SHADER] = &frag;
 	}
 	
 	Size sz = fb.GetPageSize();

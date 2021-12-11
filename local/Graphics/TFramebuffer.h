@@ -74,9 +74,9 @@ struct FramebufferT : GfxFramebuffer {
 		}
 	}
 	
-	GLuint GetReadFramebuffer() const {return frame_buf[buf_i];}
-	GLint GetGlType() const {TODO}
-	GLint GetGlFormat() const {TODO}
+	const NatFrameBuf& GetReadFramebuffer() const {return frame_buf[buf_i];}
+	int GetGlType() const {TODO}
+	int GetGlFormat() const {TODO}
 	int GetGlSize() const {TODO}
 	int GetGlSampleSize() const {TODO}
 	
