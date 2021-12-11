@@ -3,6 +3,7 @@
 
 #include "Internal.h"
 #include "Debug.h"
+#include "ScreenT.h"
 #include "Util.h"
 #include "Audio.h"
 #include "Video.h"

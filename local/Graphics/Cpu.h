@@ -90,7 +90,6 @@ struct CpuCompiler : CompilerT<CpuGfx> {
 	bool CompileShader(String code, ShaderVar::Type type, GLuint& shader_out);
 	bool Compile(CpuFramebufferState& fb_state, CpuShaderState& shd_state, ShaderVar::Type type, String code, String library);
 	
-	static void HotfixWebGLSL(String& s);
 };
 
 struct CpuLinker : LinkerT<CpuGfx> {

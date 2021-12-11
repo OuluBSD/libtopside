@@ -37,17 +37,16 @@ public:
 	
 	void DefaultPreFrame() {
 		ASSERT(rend);
-		NatRend& r = *rend;
-		Gfx::LeaveFramebuffer(r);
-		Gfx::ClearBuffers(r);
-		Gfx::SetSmoothShading(r);
-		Gfx::SetClearValue(r, RGBA(0,0,0,255), 255);
-		Gfx::SetDepthTest(r);
-		Gfx::SetDepthOrderLess(r);
-		Gfx::SetFastPerspectiveCorrection(r);
-		Gfx::SetTriangleBacksideCulling(r);
-		Gfx::SetTriangleFrontsideCCW(r);
-		Gfx::SetViewport(r, output_sz);
+		Gfx::UnbindFramebuffer();
+		Gfx::ClearBuffers();
+		Gfx::SetSmoothShading();
+		Gfx::SetClearValue(RGBA(0,0,0,255), 255);
+		Gfx::SetDepthTest();
+		Gfx::SetDepthOrderLess();
+		Gfx::SetFastPerspectiveCorrection();
+		Gfx::SetTriangleBacksideCulling();
+		Gfx::SetTriangleFrontsideCCW();
+		Gfx::SetViewport(output_sz);
 	}
 	
 	void DefaultPostFrame() {

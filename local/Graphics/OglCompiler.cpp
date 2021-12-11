@@ -11,76 +11,7 @@ OglCompiler::OglCompiler() {
 
 
 
-const char* shader_tmpl = R"SH4D3R(
-#version 430
-#define GL_ES
 
-#if ${IS_FRAGMENT_SHADER}
-uniform ${SAMPLER0} iChannel0;
-uniform ${SAMPLER1} iChannel1;
-uniform ${SAMPLER2} iChannel2;
-uniform ${SAMPLER3} iChannel3;
-#elif ${IS_VERTEX_SHADER}
-layout (location = 0) in vec3 iPos;
-layout (location = 1) in vec3 iNormal;
-layout (location = 2) in vec2 iTexCoords;
-
-in int gl_VertexID;
-in int gl_InstanceID;
-
-out vec2 TexCoords;
-out gl_PerVertex
-{
-  vec4 gl_Position;
-  float gl_PointSize;
-  float gl_ClipDistance[];
-};
-
-#endif
-
-uniform float     iAudioSeconds;
-uniform mat4      iView;
-uniform mat4      iProjection;
-uniform mat4      iScale;
-uniform mat4      iTransform;
-uniform mat4      iModel;
-
-uniform vec3      iResolution;           // viewport resolution (in pixels)
-uniform float     iTime;                 // shader playback time (in seconds)
-uniform float     iTimeDelta;            // duration since the previous frame (in seconds)
-uniform int       iFrame;                // frames since the shader (re)started
-uniform vec2      iOffset;
-uniform vec4      iMouse;                // mouse pixel coords. xy: current (if MLB down), zw: click
-uniform vec4      iDate;                 // (year, month, day, time in secs)
-uniform float     iFrameRate;
-uniform float     iSampleRate;           // sound sample rate (i.e., 44100)
-uniform float     iChannelTime[4];       // channel playback time (in seconds)
-uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
-uniform float     iBlockOffset;          // total consumed samples (mostly for audio, for video it's same as iFrame)
-
-${USER_LIBRARY}
-${USER_CODE}
-
-#if ${IS_FRAGMENT_SHADER}
-#if ${IS_AUDIO}
-void main (void) {
-	float t = iAudioSeconds + gl_FragCoord.x / iSampleRate;
-	vec2 value = mainSound (t);
-	gl_FragColor = vec4(value, 0.0, 1.0);
-}
-#else
-void main (void) {
-	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);
-	mainImage (color, gl_FragCoord.xy);
-	gl_FragColor = color;
-}
-#endif
-#elif ${IS_VERTEX_SHADER}
-void main (void) {
-	mainVertex();
-}
-#endif
-)SH4D3R";
 
 
 bool OglCompiler::Compile(const OglContextState& ctx, OglRuntimeState& rt, OglFramebuffer& fb, OglShaderState& shdr, ShaderVar::Type type) {

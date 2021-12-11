@@ -6,6 +6,7 @@ uses
 file
 	AtomSDL2.h,
 	AtomSDL2.icpp,
+	ScreenT.h,
 	Base.h,
 	Timer.h,
 	Timer.cpp,
@@ -13,7 +14,6 @@ file
 	AudioIn.cpp,
 	AudioOut.h,
 	AudioOut.cpp,
-	ScreenT.h,
 	CpuScreen.h,
 	CpuScreen.cpp,
 	OglScreen.h,

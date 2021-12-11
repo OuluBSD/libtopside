@@ -37,25 +37,18 @@ GFX_RENDSYS_LIST
 #undef GFX_CLS
 
 
-struct OglRendererBase {
-	static void ClearBuffers();
-	static void LeaveFramebuffer();
-	static void SetSmoothShading(bool b=true);
-	static void SetDepthTest(bool b=true);
-	static void SetDepthOrderLess(bool b=true);
-	static void SetClearValue(RGBA clr, byte depth);
-	static void SetFastPerspectiveCorrection(bool b=true);
-	static void SetTriangleBacksideCulling(bool b=true);
-	static void SetTriangleFrontsideCCW(bool b=true);
-	static void SetViewport(Size sz);
-	//static void ActivateNextFrame();
+/*struct OglRendererBase {
 	
 };
+
+
+
 
 template <class T>
 struct GfxBaseMethod {
 	static void ClearBuffers(T& o) {o.ClearBuffers();}
-	static void LeaveFramebuffer(T& o) {o.LeaveFramebuffer();}
+	//static void LeaveFramebuffer(T& o) {o.LeaveFramebuffer();}
+	//template <class Pipe, class Prog> static void EnterPipelineProgram(T& o, Pipe& pipeline, Prog& prog) {o.EnterPipelineProgram(pipeline, prog);}
 	static void SetSmoothShading(T& o, bool b=true) {o.SetSmoothShading(b);}
 	static void SetDepthTest(T& o, bool b=true) {o.SetDepthTest(b);}
 	static void SetDepthOrderLess(T& o, bool b=true) {o.SetDepthOrderLess(b);}
@@ -65,13 +58,15 @@ struct GfxBaseMethod {
 	static void SetTriangleFrontsideCCW(T& o, bool b=true) {o.SetTriangleFrontsideCCW(b);}
 	static void SetViewport(T& o, Size sz) {o.SetViewport(sz);}
 	//static void ActivateNextFrame(W& w, T& o) {o.ActivateNextFrame();}
+	static void SetDebugOutput(T& o, bool b=true) {o.SetDebugOutput(b);}
 	
 };
 
 template <class T, class Parent>
 struct GfxBaseStatic : Parent {
 	static void ClearBuffers(T&) {Parent::ClearBuffers();}
-	static void LeaveFramebuffer(T&) {Parent::LeaveFramebuffer();}
+	//static void LeaveFramebuffer(T&) {Parent::LeaveFramebuffer();}
+	//template <class Pipe, class Prog> static void EnterPipelineProgram(T&, Pipe& pipeline, Prog& prog) {Parent::EnterPipelineProgram(pipeline, prog);}
 	static void SetSmoothShading(T&, bool b=true) {Parent::SetSmoothShading(b);}
 	static void SetDepthTest(T&, bool b=true) {Parent::SetDepthTest(b);}
 	static void SetDepthOrderLess(T&, bool b=true) {Parent::SetDepthOrderLess(b);}
@@ -81,13 +76,38 @@ struct GfxBaseStatic : Parent {
 	static void SetTriangleFrontsideCCW(T&, bool b=true) {Parent::SetTriangleFrontsideCCW(b);}
 	static void SetViewport(T&, Size sz) {Parent::SetViewport(sz);}
 	//static void ActivateNextFrame(R&, T&) {Parent::ActivateNextFrame();}
+	static void SetDebugOutput(T&, bool b=true) {Parent::SetDebugOutput(b);}
 	
-};
+};*/
+
+
+namespace GVar {
+
+typedef enum {
+	DRAW_FRAMEBUFFER,
+	READ_FRAMEBUFFER,
+} FramebufferTarget;
+
+typedef enum : uint32 {
+	COLOR0_EXT		= 1 << 0
+} RenderTarget;
+
+typedef enum : uint32 {
+	TEXTURE_INVALID,
+	TEXTURE_3D,
+	TEXTURE_CUBE_MAP,
+	TEXTURE_2D,
+} TextureType;
+
+}
 
 
 struct CpuGfx {
 	using NativeTexture = uint32;
 	using NativeShader = uint32;
+	/*using NativeColorBuffer = uint32;
+	using NativeDepthBuffer = uint32;
+	using NativeFrameBuffer = uint32;*/
 	using NativeVertexArray = uint32;
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffer = uint32;
@@ -95,6 +115,33 @@ struct CpuGfx {
 	using NativePipeline = uint32;
 	
 	static const ShaderVar::GfxType type = ShaderVar::SW;
+	
+	static void BindProgramPipeline(NativePipeline& pipeline);
+	static void UseProgram(NativeProgram& prog);
+	static void UnbindProgramPipeline();
+	static const char* GetShaderTemplate();
+	static void HotfixShaderCode(String& s);
+	static void DrawBuffers(GVar::RenderTarget tgt);
+	static void ActiveTexture(int ch);
+	
+	static void Uniform1i(int idx, int f);
+	static void Uniform1f(int idx, float f);
+	static void Uniform2f(int idx, float f0, float f1);
+	static void Uniform3f(int idx, float f0, float f1, float f2);
+	static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
+	
+	
+	static void ClearBuffers();
+	static void SetSmoothShading(bool b=true);
+	static void SetDepthTest(bool b=true);
+	static void SetDepthOrderLess(bool b=true);
+	static void SetClearValue(RGBA clr, byte depth);
+	static void SetFastPerspectiveCorrection(bool b=true);
+	static void SetTriangleBacksideCulling(bool b=true);
+	static void SetTriangleFrontsideCCW(bool b=true);
+	static void SetViewport(Size sz);
+	//static void ActivateNextFrame();
+	static void SetDebugOutput(bool b=true);
 	
 };
 
@@ -112,14 +159,50 @@ struct OglGfx {
 	
 	static const ShaderVar::GfxType type = ShaderVar::OGL;
 	
+	static void BindProgramPipeline(NativePipeline& pipeline);
+	static void UseProgram(NativeProgram& prog);
+	//static void EnterFramebuffer(NativeFrameBuffer& fb);
+	static void BindFramebufferEXT(NativeFrameBuffer& fb);
+	static void UnbindProgramPipeline();
+	static void UnbindFramebuffer();
+	static void DrawBuffers(GVar::RenderTarget tgt);
+	//static void SetRender_Color();
+	static void RenderScreenRect();
+	static const char* GetShaderTemplate();
+	static void HotfixShaderCode(String& s);
+	static void ActiveTexture(int ch);
+	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	
+	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
+	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}
+	static void Uniform2f(int idx, float f0, float f1) {glUniform2f(idx, f0, f1);}
+	static void Uniform3f(int idx, float f0, float f1, float f2) {glUniform3f(idx, f0, f1, f2);}
+	static void Uniform4f(int idx, float f0, float f1, float f2, float f3) {glUniform4f(idx, f0, f1, f2, f3);}
+	
+	
+	static void ClearBuffers();
+	static void SetSmoothShading(bool b=true);
+	static void SetDepthTest(bool b=true);
+	static void SetDepthOrderLess(bool b=true);
+	static void SetClearValue(RGBA clr, byte depth);
+	static void SetFastPerspectiveCorrection(bool b=true);
+	static void SetTriangleBacksideCulling(bool b=true);
+	static void SetTriangleFrontsideCCW(bool b=true);
+	static void SetViewport(Size sz);
+	//static void ActivateNextFrame();
+	static void SetDebugOutput(bool b=true);
+	
 };
 
 
-struct SdlGfx : GfxBaseStatic<SDL_Renderer, OglRendererBase> {
+
+struct SdlGfx {
 	using NativeWindow = SDL_Window;
 	using NativeRenderer = SDL_Renderer;
 	
 	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r);
+	static Size GetWindowSize(NativeWindow& win);
+	
 };
 
 struct SdlCpuGfx : CpuGfx, SdlGfx {
@@ -130,6 +213,14 @@ struct SdlCpuGfx : CpuGfx, SdlGfx {
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
+	
+	//static void EnterFramebuffer(NativeFrameBuffer& fb) {TODO}
+	static void BindFramebufferEXT(NativeFrameBuffer& fb) {TODO}
+	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {TODO}
+	static void UnbindFramebuffer() {TODO}
+	//static void SetRender_Color() {TODO}
+	//static void Clear_Color() {TODO}
+	static void RenderScreenRect() {TODO}
 	
 };
 

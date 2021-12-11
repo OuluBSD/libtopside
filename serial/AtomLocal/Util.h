@@ -65,74 +65,6 @@ public:
 	
 };
 
-#ifdef flagSCREEN
-
-class OglShaderBase :
-	public OglBufferBase
-{
-	bool is_audio = false;
-	
-public:
-	RTTI_DECL1(OglShaderBase, OglBufferBase);
-	
-	OglShaderBase();
-	bool Initialize(const Script::WorldState& ws) override;
-	bool PostInitialize() override;
-	void Uninitialize() override;
-	bool IsReady(PacketIO& io) override;
-	bool ProcessPackets(PacketIO& io) override;
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
-	
-	
-};
-
-class OglTextureBase :
-	public OglBufferBase
-{
-	using Filter = ShaderVar::Filter;
-	using Wrap = ShaderVar::Wrap;
-	
-	bool			loading_cubemap = false;
-	Filter			filter = ShaderVar::FILTER_LINEAR;
-	Wrap			wrap = ShaderVar::WRAP_REPEAT;
-	Array<Packet>	cubemap;
-	
-public:
-	RTTI_DECL1(OglTextureBase, OglBufferBase);
-	
-	OglTextureBase();
-	bool Initialize(const Script::WorldState& ws) override;
-	bool PostInitialize() override;
-	void Uninitialize() override;
-	bool IsReady(PacketIO& io) override;
-	bool ProcessPackets(PacketIO& io) override;
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
-	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
-	
-	
-};
-
-class OglFboReaderBase :
-	public OglBufferBase
-{
-public:
-	RTTI_DECL1(OglFboReaderBase, OglBufferBase);
-	
-	OglFboReaderBase();
-	bool Initialize(const Script::WorldState& ws) override;
-	bool PostInitialize() override;
-	void Uninitialize() override;
-	bool IsReady(PacketIO& io) override;
-	bool ProcessPackets(PacketIO& io) override;
-	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
-	
-	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OglBufferBase>(this);}
-	
-};
-
-#endif
-
-
 class TestEventSrcBase :
 	virtual public AtomBase
 {
@@ -149,14 +81,6 @@ public:
 	
 	
 };
-
-namespace FboKbd {
-
-static const int key_tex_w = 256;
-static const int key_tex_h = 1;//256;
-typedef FixedArray<byte, 256> KeyVec;
-
-}
 
 
 class EventStateBase :
@@ -186,46 +110,6 @@ public:
 	
 	bool			GetBool(dword key) {return state->GetBool(key);}
 	EnvState&		GetState() const;
-	
-};
-
-
-class OglKeyboardBase :
-	public OglBufferBase
-{
-	String			target;
-	EnvStateRef		state;
-	
-	
-public:
-	RTTI_DECL1(OglKeyboardBase, OglBufferBase);
-	OglKeyboardBase();
-	
-	bool			Initialize(const Script::WorldState& ws) override;
-	bool			PostInitialize() override;
-	void			Uninitialize() override;
-	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPackets(PacketIO& io) override;
-	void			Visit(RuntimeVisitor& vis) override {}
-	
-};
-
-
-class OglAudioBase :
-	public OglBufferBase
-{
-	
-public:
-	RTTI_DECL1(OglAudioBase, OglBufferBase);
-	OglAudioBase();
-	
-	bool			Initialize(const Script::WorldState& ws) override;
-	bool			PostInitialize() override;
-	void			Uninitialize() override;
-	bool			IsReady(PacketIO& io) override;
-	bool			ProcessPackets(PacketIO& io) override;
-	bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override;
-	void			Visit(RuntimeVisitor& vis) override {}
 	
 };
 

@@ -390,10 +390,6 @@ private:
 	
 	static int count;
 	
-protected:
-	friend class Screen;
-	
-	void SetError(String s) {last_error = s;}
 	
 public:
 	typedef Context CLASSNAME;
@@ -401,6 +397,7 @@ public:
 	
 	void Add(Component& c) {comps.Add(&c);}
 	void CloseComponents();
+	void SetError(String s) {last_error = s;}
 	
 	String GetLastError() const {return last_error;}
 	

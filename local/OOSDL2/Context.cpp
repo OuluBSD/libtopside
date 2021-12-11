@@ -5,6 +5,9 @@ NAMESPACE_SDL2_BEGIN
 bool is_sdl2_quit;
 bool IsSDL2Open() {return !is_sdl2_quit;}
 
+
+void SetContextError(Context* ctx, String msg) {ctx->SetError(msg);}
+
 int Context::count;
 
 bool Context::Open0() {

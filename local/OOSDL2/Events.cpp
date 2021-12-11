@@ -76,7 +76,7 @@ bool Events::Poll(UPP::CtrlEvent& e) {
 				screen_sz.cx = event.window.data1;
 				screen_sz.cy = event.window.data2;
 				if (scr)
-					scr-screen_sz = screen_sz;
+					scr->screen_sz = screen_sz;
 				/*SetFrameRect0(RectC(0, 0, screen_sz.cx, screen_sz.cy));
 				SetContentRect(RectC(0, 0, screen_sz.cx, screen_sz.cyh));
 				SetPendingLayout();

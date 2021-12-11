@@ -20,6 +20,7 @@ struct BufferT : GfxBuffer {
 	using InputState = typename Gfx::InputState;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
+	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using Sample = ShaderVar::Sample;
 	RTTI_DECL1(BufferT, Base)
 	
@@ -397,7 +398,7 @@ struct BufferT : GfxBuffer {
 		
 		if (env) {
 			Size& video_size = env->Set<Size>(SCREEN0_SIZE);
-			if (video_size.cx == 0 && video_size.cy == 0)
+			if (video_size.cx == 0 || video_size.cy == 0)
 				video_size = fb.size;
 			else if (video_size != fb.size) {
 				fb.size = video_size;
@@ -405,10 +406,9 @@ struct BufferT : GfxBuffer {
 			}
 		}
 		
-		TODO
-		#if 0
-		glBindProgramPipeline(pipeline);
-		glUseProgram(prog);
+		Gfx::BindProgramPipeline(pipeline);
+		Gfx::UseProgram(prog);
+
 		
 		if (!rt.is_searched_vars)
 			FindVariables();
@@ -417,21 +417,16 @@ struct BufferT : GfxBuffer {
 		
 		if (!fb.is_win_fbo) {
 			ASSERT(fb.frame_buf[bi]);
-			const GLenum bufs[] = {GL_COLOR_ATTACHMENT0_EXT};
-			
-			// combine FBO
-		    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb.frame_buf[bi]);
-		    
-		    // set up render target
-		    glDrawBuffers(sizeof bufs / sizeof bufs[0], bufs);
+		    Gfx::BindFramebufferEXT(fb.frame_buf[bi]);
+		    Gfx::DrawBuffers(GVar::COLOR0_EXT);
 		}
-		
-		
+
+
 		SetVars(prog, cfg);
-		
+
 		RendVer(OnProcess);
-		
-		
+
+
 		glClear(GL_COLOR_BUFFER_BIT);
 		
 		if (binders.GetCount()) {
@@ -443,8 +438,9 @@ struct BufferT : GfxBuffer {
 				iface->Render(*buf, shader);
 		}
 		else {
-			//glRectf(-1.0, -1.0, 1.0, 1.0);
-			if (data.objects.IsEmpty())
+			if (1)
+				Gfx::RenderScreenRect();
+			else if (data.objects.IsEmpty())
 				MakeFrameQuad();
 		}
 		
@@ -458,7 +454,7 @@ struct BufferT : GfxBuffer {
 		EnableGfxAccelDebugMessages(1);
 		
 		ASSERT(fb.is_win_fbo == (fb.frame_buf[bi] == 0));
-		if (fb.frame_buf[bi] > 0) {
+		if (fb.frame_buf[bi]) {
 			// backup render target
 		    //glDrawBuffer(GL_FRONT);
 		    
@@ -466,13 +462,12 @@ struct BufferT : GfxBuffer {
 		    if (fb.is_read_fb_output)
 				UseRenderedFramebuffer();
 			
-		    // reset FBO
-		    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		    Gfx::UnbindFramebuffer();
 		}
 		
 		EnableGfxAccelDebugMessages(0);
 		
-		glBindProgramPipeline(0);
+		Gfx::UnbindProgramPipeline();
 		
 		if (fb.is_audio) {
 			ctx.block_offset += fb.size.cx;
@@ -480,7 +475,6 @@ struct BufferT : GfxBuffer {
 		else {
 			ctx.block_offset += 1.0;
 		}
-		#endif
 	}
 	
 	void UseRenderedFramebuffer() {
@@ -505,18 +499,13 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void ClearPipeline() {
-		TODO
-		#if 0
 		if (rt.pipeline) {
 			glDeleteProgramPipelines(1, &rt.pipeline);
 			rt.pipeline = 0;
 		}
-		#endif
 	}
 	
 	void CreatePipeline() {
-		TODO
-		#if 0
 		ClearPipeline();
 		
 		glGenProgramPipelines(1, &rt.pipeline);
@@ -540,7 +529,6 @@ struct BufferT : GfxBuffer {
 				glUseProgramStages(rt.pipeline, bmask, prog);
 			}
 		}
-		#endif
 	}
 	
 	
@@ -550,8 +538,6 @@ struct BufferT : GfxBuffer {
 	
 	
 	void FindVariables() {
-		TODO
-		#if 0
 		GLint n_uniforms;
 		glGetProgramiv(rt.prog, GL_ACTIVE_UNIFORMS, &n_uniforms);
 		GLchar name[80];
@@ -588,7 +574,6 @@ struct BufferT : GfxBuffer {
 		}
 		
 		rt.is_searched_vars = true;
-		#endif
 	}
 	
 	void SetVars(GLint prog, const DataObject& o) {
@@ -631,8 +616,6 @@ struct BufferT : GfxBuffer {
 	}
 	
 	void SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) {
-		TODO
-		#if 0
 		using namespace ShaderVar;
 		int uindex = rt.var_idx[var];
 		ASSERT(uindex >= 0);
@@ -642,7 +625,7 @@ struct BufferT : GfxBuffer {
 		RendVer1(OnUpdateVar, ShaderVar::names[var]);
 		
 		if (var == VAR_AUDIOTIME) {
-			glUniform1f(uindex, (GLfloat)ctx.time_total);
+			Gfx::Uniform1f(uindex, (GLfloat)ctx.time_total);
 		}
 		
 		else if (var == VAR_VIEW) {
@@ -659,29 +642,29 @@ struct BufferT : GfxBuffer {
 		}
 		else if (var == VAR_COMPAT_RESOLUTION) {
 			ASSERT(fb.size.cx > 0 && fb.size.cy > 0);
-			glUniform3f(uindex, (GLfloat)fb.size.cx, (GLfloat)fb.size.cy, 1.0f);
+			Gfx::Uniform3f(uindex, (GLfloat)fb.size.cx, (GLfloat)fb.size.cy, 1.0f);
 		}
 		
 		else if (var == VAR_COMPAT_TIME) {
 			//RTLOG("SetVar: " << time_total);
-			glUniform1f(uindex, (GLfloat)ctx.time_total);
+			Gfx::Uniform1f(uindex, (GLfloat)ctx.time_total);
 		}
 		
 		else if (var == VAR_COMPAT_TIMEDELTA) {
 			ASSERT(ctx.frame_time != 0.0);
-			glUniform1f(uindex, (GLfloat)ctx.frame_time);
+			Gfx::Uniform1f(uindex, (GLfloat)ctx.frame_time);
 		}
 		
 		else if (var == VAR_COMPAT_FRAME) {
 			ASSERT(ctx.frames >= 0);
-			glUniform1i(uindex, ctx.frames);
+			Gfx::Uniform1i(uindex, ctx.frames);
 		}
 		
 		else if (var == VAR_COMPAT_MOUSE) {
 			if (env) {
 				Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 				Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
-				glUniform4f(uindex,
+				Gfx::Uniform4f(uindex,
 					(GLfloat)mouse_click.x,
 					(GLfloat)mouse_click.y,
 					(GLfloat)mouse_drag.x,
@@ -692,35 +675,35 @@ struct BufferT : GfxBuffer {
 		else if (var == VAR_COMPAT_DATE) {
 			double sec = ((int)ctx.time.hour * 60 + (int)ctx.time.minute) * 60 + (int)ctx.time.second;
 			sec += ctx.time_us;
-			glUniform4f(uindex, (GLfloat)ctx.time.year, (GLfloat)ctx.time.month, (GLfloat)ctx.time.day, (GLfloat)sec);
+			Gfx::Uniform4f(uindex, (GLfloat)ctx.time.year, (GLfloat)ctx.time.month, (GLfloat)ctx.time.day, (GLfloat)sec);
 		}
 		
 		else if (var == VAR_COMPAT_SAMPLERATE) {
-			glUniform1f(uindex, (GLfloat)ctx.sample_rate);
+			Gfx::Uniform1f(uindex, (GLfloat)ctx.sample_rate);
 		}
 		
 		else if (var == VAR_COMPAT_OFFSET) {
 			if (fb.size.cx > 0 && fb.size.cy > 0) {
 				int x = fb.offset.x;
 				int y = fb.size.cy - fb.size.cy - fb.offset.y; // -y_offset
-				glUniform2f(uindex, (GLfloat)x, (GLfloat)y);
+				Gfx::Uniform2f(uindex, (GLfloat)x, (GLfloat)y);
 			} else {
-				glUniform2f(uindex, 0.0f, 0.0f);
+				Gfx::Uniform2f(uindex, 0.0f, 0.0f);
 			}
 		}
 		
 		else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
 			int ch = var - VAR_COMPAT_CHANNEL0;
-			int tex = GetInputTex(ch);
-			ASSERT(tex != 0);
-			glActiveTexture(GL_TEXTURE0 + ch);
-			glBindTexture(GetTexType(ch), tex);
-			glUniform1i(uindex, ch);
+			const NativeFrameBuffer* tex = GetInputTex(ch);
+			ASSERT(tex);
+			Gfx::ActiveTexture(ch);
+			Gfx::BindTexture(GetTexType(ch), *tex);
+			Gfx::Uniform1i(uindex, ch);
 		}
 		
 		else if (var == VAR_COMPAT_FRAMERATE) {
 			ASSERT(fb.fps > 0);
-			glUniform1f(uindex, (GLfloat)fb.fps);
+			Gfx::Uniform1f(uindex, (GLfloat)fb.fps);
 		}
 		
 		else if (var == VAR_COMPAT_CHANNELTIME) {
@@ -729,7 +712,7 @@ struct BufferT : GfxBuffer {
 				InputState& in = rt.inputs[j];
 				values[j] = in.in_buf ? in.in_buf->ctx.time_total : 0;
 			}
-			glUniform4f(uindex, (GLfloat)values[0], (GLfloat)values[1], (GLfloat)values[2], (GLfloat)values[3]);
+			Gfx::Uniform4f(uindex, (GLfloat)values[0], (GLfloat)values[1], (GLfloat)values[2], (GLfloat)values[3]);
 		}
 		
 		else if (var >= VAR_COMPAT_CHANNELRESOLUTION0 && var <= VAR_COMPAT_CHANNELRESOLUTION3) {
@@ -754,16 +737,15 @@ struct BufferT : GfxBuffer {
 					values[2] = in.vol_depth;
 				}
 			}*/
-			glUniform3f(uindex, values[0], values[1], values[2]);
+			Gfx::Uniform3f(uindex, values[0], values[1], values[2]);
 		}
 		
 		else if (var == VAR_COMPAT_BLOCKOFFSET) {
-			glUniform1f(uindex, (GLfloat)ctx.block_offset);
+			Gfx::Uniform1f(uindex, (GLfloat)ctx.block_offset);
 		}
 		else {
 			ASSERT_(false, "Invalid variable");
 		}
-		#endif
 	}
 	
 	void ClearTex() {
@@ -847,42 +829,42 @@ struct BufferT : GfxBuffer {
 		#endif
 	}
 	
-	GLint GetInputTex(int input_i) const {
+	const NativeFrameBuffer* GetInputTex(int input_i) const {
 		const char* fn_name = "GetInputTex";
 		//DLOG("BufferT::GetInputTex");
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
-			return -1;
+			return 0;
 		
 		const InputState& in = rt.inputs[input_i];
 		if (in.in_buf == 0) {
 			RTLOG("GetInputTex: warning: no input fbo buffer");
-			return -1;
+			return 0;
 		}
 		
 		const BufferT* in_comp = in.in_buf;
 		if (!in_comp)
-			return -1;
+			return 0;
 		
-		int tex = in_comp->GetOutputTexture(in_comp == this);
-		ASSERT(tex > 0);
+		const NativeFrameBuffer& tex = in_comp->GetOutputTexture(in_comp == this);
+		ASSERT(tex);
 		
-		return tex;
+		return &tex;
 	}
 	
-	int GetTexType(int input_i) const {
+	GVar::TextureType GetTexType(int input_i) const {
 		if (input_i < 0 || input_i >= ShaderVar::INPUT_COUNT)
-			return -1;
+			return GVar::TEXTURE_INVALID;
 		
 		const InputState& in = rt.inputs[input_i];
 		
 		if (in.type == ShaderVar::VOLUME)
-			return GL_TEXTURE_3D;
+			return GVar::TEXTURE_3D;
 		
 		else if (in.type == ShaderVar::CUBEMAP)
-			return GL_TEXTURE_CUBE_MAP;
+			return GVar::TEXTURE_CUBE_MAP;
 		
 		else
-			return GL_TEXTURE_2D;
+			return GVar::TEXTURE_2D;
 	}
 	
 	
@@ -943,7 +925,7 @@ struct BufferT : GfxBuffer {
 		return true;
 	}
 	
-	GLint GetOutputTexture(bool reading_self) const {
+	const NativeFrameBuffer& GetOutputTexture(bool reading_self) const {
 		auto& s = fb;
 		ASSERT(!reading_self || s.is_doublebuf);
 		int buf_i = s.buf_i;
@@ -952,7 +934,7 @@ struct BufferT : GfxBuffer {
 		if (reading_self)
 			buf_i = (buf_i + 1) % 2;
 		if (s.color_buf[buf_i] == 0) {DLOG("BufferT::GetOutputTexture failed");}
-		ASSERT(s.color_buf[buf_i] > 0);
+		ASSERT(s.color_buf[buf_i]);
 		return s.color_buf[buf_i];
 	}
 	

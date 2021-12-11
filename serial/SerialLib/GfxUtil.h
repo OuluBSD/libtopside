@@ -7,38 +7,22 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class OglBufferBase :
+template <class Gfx>
+class BufferBaseT :
 	virtual public AtomBase
 {
 	
 protected:
-	SdlOglBuffer		buf;
-	
-	
-public:
-	
-	void Visit(RuntimeVisitor& vis) override {vis % buf;}
-	void			Update(double dt) override {buf.Update(dt);}
-	
-	SdlOglBuffer&		GetBuffer() {return buf;}
-	
-};
-
-
-class CpuBufferBase :
-	virtual public AtomBase
-{
-	
-protected:
-	SdlCpuBuffer		buf;
-	
+	using Buffer = typename Gfx::Buffer;
+	Buffer buf;
 	
 public:
+	using BufferBase = BufferBaseT<Gfx>;
 	
 	void Visit(RuntimeVisitor& vis) override {vis % buf;}
-	void			Update(double dt) override {buf.Update(dt);}
+	void Update(double dt) override {buf.Update(dt);}
 	
-	SdlCpuBuffer&		GetBuffer() {return buf;}
+	Buffer& GetBuffer() {return buf;}
 	
 };
 

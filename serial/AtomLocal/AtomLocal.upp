@@ -26,6 +26,7 @@ file
 	Debug.cpp,
 	Util.h,
 	Util.cpp,
+	ScreenT.h,
 	Audio.h,
 	Audio.cpp,
 	Video.h,
