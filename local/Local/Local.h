@@ -53,6 +53,7 @@
 #include "VR.h"
 #include "Ctrl.h"
 #include "Graphics.h"
+#include "GEnums.h"
 
 
 

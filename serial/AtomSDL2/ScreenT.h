@@ -62,7 +62,7 @@ public:
 		if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
 		
 		obj->SetShaderFile(fragment_path, vertex_path, library_path);
-		obj->SetTestImage(ws.Get(".testimage") == "true");
+		obj->SetTestImage(ws.Get(".testshader") == "true");
 		obj->SetBuffer(buf);
 		obj->Sizeable(ws.Get(".sizeable") == "true");
 		obj->Maximize(ws.Get(".maximize") == "true");
@@ -157,7 +157,7 @@ public:
 					Destroy();
 			}
 			else if (video_size != buf.fb.size) {
-				if (video_size.IsEmpty())
+				if (video_size.cx == 0 || video_size.cy == 0)
 					video_size = buf.fb.size;
 				else
 					buf.SetFramebufferSize(video_size);

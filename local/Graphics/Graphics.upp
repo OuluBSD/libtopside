@@ -2,7 +2,8 @@ description "\377B64,161,0";
 
 uses
 	Local,
-	Geometry;
+	Geometry,
+	SoftRend;
 
 uses(MSC & NEVER) ports/glew;
 

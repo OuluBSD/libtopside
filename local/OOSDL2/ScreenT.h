@@ -9,6 +9,10 @@ extern const char* def_shader;
 
 void SetContextError(Context* ctx, String msg);
 
+template <class Gfx> bool IsDefaultGfxVal(const ValCls& val);
+template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
+template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return val == ValCls::FBO;}
+
 template <class Gfx>
 class ScreenT : public Component {
 	
@@ -44,6 +48,7 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_buf = false;
+	bool is_test_image = false;
 	String frag_path;
 	String vtx_path;
 	String library_paths;
@@ -109,7 +114,7 @@ protected:
 		if (frag_path.GetCount())
 			is_buf = true;
 		
-		if (is_buf) {
+		if (is_buf || is_test_image) {
 			if (!this->ImageInitialize())
 				return false;
 		}
@@ -228,7 +233,7 @@ public:
 		
 		ASSERT(last_packet);
 		Format fmt = last_packet->GetFormat();
-		if (fmt.IsFbo()) {
+		if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
 			RTLOG("Screen::Render: from video packet: " << last_packet->ToString());
 			const VideoFormat& vfmt = fmt.vid;
 			
@@ -349,7 +354,7 @@ public:
 	bool IsCaptured() const {return mouse_captured;}
 	
 	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
-	void SetTestImage(bool b) {is_buf = b;}
+	void SetTestImage(bool b) {is_test_image = b;}
 	
 };
 

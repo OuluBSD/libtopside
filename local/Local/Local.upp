@@ -78,5 +78,6 @@ file
 	Ctrl.h,
 	Ctrl.inl highlight cpp,
 	Graphics.h,
-	Graphics.cpp;
+	Graphics.cpp,
+	GEnums.h;
 

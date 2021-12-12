@@ -8,7 +8,7 @@ machine sdl.app: {
 		
 		loop ogl.fbo: {
 			ogl.customer: true;
-			sdl.fbo.standalone: true {testimage: true;};
+			sdl.fbo.standalone: true {testshader: true;};
 		};
 		
 		loop audio: {

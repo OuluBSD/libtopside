@@ -3,45 +3,49 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+CpuGfx::Thread& CpuGfx::Local() {thread_local static Thread t; return t;}
+SoftRend& CpuGfx::Rend() {return Local().rend;}
+
+
 
 void CpuGfx::SetDebugOutput(bool b) {
-	TODO
+	Rend().SetDebugOutput(b);
 }
 
 void CpuGfx::ClearBuffers() {
-	TODO
+	Rend().ClearBuffers();
 }
 
 void CpuGfx::SetSmoothShading(bool b) {
-	TODO
+	Rend().SetSmoothShading(b);
 }
 
 void CpuGfx::SetDepthTest(bool b) {
-	TODO
+	Rend().SetDepthTest(b);
 }
 
 void CpuGfx::SetDepthOrderLess(bool b) {
-	TODO
+	Rend().SetDepthOrderLess(b);
 }
 
 void CpuGfx::SetClearValue(RGBA clr, byte depth) {
-	TODO
+	Rend().SetClearValue(clr, depth);
 }
 
 void CpuGfx::SetFastPerspectiveCorrection(bool b) {
-	TODO
+	Rend().SetFastPerspectiveCorrection(b);
 }
 
 void CpuGfx::SetTriangleBacksideCulling(bool b) {
-	TODO
+	Rend().SetTriangleBacksideCulling(b);
 }
 
 void CpuGfx::SetTriangleFrontsideCCW(bool b) {
-	TODO
+	Rend().SetTriangleFrontsideCCW(b);
 }
 
 void CpuGfx::SetViewport(Size sz) {
-	TODO
+	Rend().SetViewport(sz);
 }
 
 void CpuGfx::UseProgram(NativeProgram& prog) {
@@ -77,96 +81,123 @@ const char* CpuGfx::GetShaderTemplate() {
 	return shader_tmpl;
 }
 
-void CpuGfx::HotfixShaderCode(String& s) {
-	TODO
-}
+void CpuGfx::HotfixShaderCode(String& s) {}
 
-void CpuGfx::Uniform1i(int idx, int f) {
-	TODO
+void CpuGfx::Uniform1i(int idx, int i) {
+	auto& shdr = Local().shdr;
+	ASSERT(shdr)
+	if (shdr) shdr->SetVar(idx, i);
 }
 
 void CpuGfx::Uniform1f(int idx, float f) {
-	TODO
+	auto& shdr = Local().shdr;
+	ASSERT(shdr)
+	if (shdr) shdr->SetVar(idx, f);
 }
 
 void CpuGfx::Uniform2f(int idx, float f0, float f1) {
-	TODO
+	auto& shdr = Local().shdr;
+	ASSERT(shdr)
+	if (shdr) shdr->SetVar(idx, f0, f1);
 }
 
 void CpuGfx::Uniform3f(int idx, float f0, float f1, float f2) {
-	TODO
+	auto& shdr = Local().shdr;
+	ASSERT(shdr)
+	if (shdr) shdr->SetVar(idx, f0, f1, f2);
 }
 
 void CpuGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
-	TODO
+	auto& shdr = Local().shdr;
+	ASSERT(shdr)
+	if (shdr) shdr->SetVar(idx, f0, f1, f2, f3);
 }
 
 bool CpuGfx::CreateShader(GVar::ShaderType t, NativeShader& new_shdr) {
-	TODO
+	return new_shdr.Create(t);
 }
 
 void CpuGfx::ShaderSource(NativeShader& s, String code) {
-	TODO
+	s.SetSource(code);
 }
 
 bool CpuGfx::CompileShader(NativeShader& s) {
-	TODO
+	/*ASSERT(ctx && rt && shdr);
+	if (!ctx || !rt || !shdr)
+		return false;
+	
+	if (comp.IsEmpty())
+		comp.Create();
+	
+	return comp->Compile(*ctx, *rt, *shdr, s, s->GetType();*/
+	return Local().comp.Compile(s);
 }
 
 String CpuGfx::GetLastErrorS(NativeShader& s) {
-	TODO
+	return s.GetLastError();
 }
 
 String CpuGfx::GetLastErrorP(NativeProgram& p) {
-	TODO
+	return p.GetLastError();
 }
 
-void CpuGfx::CreateProgram(NativeProgram& prog) {
-	TODO
+bool CpuGfx::CreateProgram(NativeProgram& prog) {
+	return prog.Create();
 }
 
 void CpuGfx::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
-	TODO
+	prog.SetParameter(type, i);
 }
 
 bool CpuGfx::LinkProgram(NativeProgram& prog) {
-	TODO
+	return prog.LinkProgram();
 }
 
 void CpuGfx::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
-	TODO
+	out = prog.GetParamInt(type);
 }
 
 String CpuGfx::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
-	TODO
+	if (size_out)
+		*size_out = prog.GetVarSize(i);
+	if (type_out)
+		*type_out = prog.GetVarType(i);
+	
+	return prog.GetVar(i);
 }
 
 void CpuGfx::Clear(GVar::BufferType type) {
-	TODO
+	auto& fb = Local().fb;
+	ASSERT(fb);
+	if (fb)
+		fb->ClearData(type);
 }
 
 void CpuGfx::AttachShader(NativeProgram& prog, NativeShader& shdr) {
-	TODO
+	prog.Attach(shdr);
 }
 
 void CpuGfx::DeleteShader(NativeShader& shdr) {
-	TODO
+	shdr.Clear();
 }
 
 void CpuGfx::GenProgramPipeline(NativePipeline& pipe) {
-	TODO
+	pipe.Create();
 }
 
 void CpuGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
-	TODO
+	pipe.Use(prog, bmask);
 }
 
 void CpuGfx::DeleteProgramPipeline(NativePipeline& pipe) {
-	TODO
+	pipe.Clear();
 }
 
 void CpuGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
-	TODO
+	auto& fb = Local().fb;
+	ASSERT(fb);
+	if (fb)
+		fb->SetParam(type, filter, repeat);
 }
 
 

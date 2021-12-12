@@ -3,6 +3,7 @@
 
 
 #include <Geometry/Geometry.h>
+#include <SoftRend/SoftRend.h>
 
 typedef float			Gxf;
 typedef unsigned char	Gxb;

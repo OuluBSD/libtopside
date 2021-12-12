@@ -1,0 +1,21 @@
+description "Minimal software renderer with opengl-like api.\3770,255,0";
+
+uses
+	Geometry;
+
+file
+	SoftRend.h,
+	SoftRend.cpp,
+	Framebuffer.h,
+	Framebuffer.cpp,
+	Shader.h,
+	Shader.cpp,
+	Program.h,
+	Program.cpp,
+	Pipeline.h,
+	Pipeline.cpp,
+	Renderer.h,
+	Renderer.cpp,
+	Compiler.h,
+	Compiler.cpp;
+

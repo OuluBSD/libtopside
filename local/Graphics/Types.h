@@ -37,49 +37,6 @@ GFX_RENDSYS_LIST
 #undef GFX_CLS
 
 
-/*struct OglRendererBase {
-	
-};
-
-
-
-
-template <class T>
-struct GfxBaseMethod {
-	static void ClearBuffers(T& o) {o.ClearBuffers();}
-	//static void LeaveFramebuffer(T& o) {o.LeaveFramebuffer();}
-	//template <class Pipe, class Prog> static void EnterPipelineProgram(T& o, Pipe& pipeline, Prog& prog) {o.EnterPipelineProgram(pipeline, prog);}
-	static void SetSmoothShading(T& o, bool b=true) {o.SetSmoothShading(b);}
-	static void SetDepthTest(T& o, bool b=true) {o.SetDepthTest(b);}
-	static void SetDepthOrderLess(T& o, bool b=true) {o.SetDepthOrderLess(b);}
-	static void SetClearValue(T& o, RGBA clr, byte depth) {o.SetClearValue(clr, depth);}
-	static void SetFastPerspectiveCorrection(T& o, bool b=true) {o.SetFastPerspectiveCorrection(b);}
-	static void SetTriangleBacksideCulling(T& o, bool b=true) {o.SetTriangleBacksideCulling(b);}
-	static void SetTriangleFrontsideCCW(T& o, bool b=true) {o.SetTriangleFrontsideCCW(b);}
-	static void SetViewport(T& o, Size sz) {o.SetViewport(sz);}
-	//static void ActivateNextFrame(W& w, T& o) {o.ActivateNextFrame();}
-	static void SetDebugOutput(T& o, bool b=true) {o.SetDebugOutput(b);}
-	
-};
-
-template <class T, class Parent>
-struct GfxBaseStatic : Parent {
-	static void ClearBuffers(T&) {Parent::ClearBuffers();}
-	//static void LeaveFramebuffer(T&) {Parent::LeaveFramebuffer();}
-	//template <class Pipe, class Prog> static void EnterPipelineProgram(T&, Pipe& pipeline, Prog& prog) {Parent::EnterPipelineProgram(pipeline, prog);}
-	static void SetSmoothShading(T&, bool b=true) {Parent::SetSmoothShading(b);}
-	static void SetDepthTest(T&, bool b=true) {Parent::SetDepthTest(b);}
-	static void SetDepthOrderLess(T&, bool b=true) {Parent::SetDepthOrderLess(b);}
-	static void SetClearValue(T&, RGBA clr, byte depth) {Parent::SetClearValue(clr, depth);}
-	static void SetFastPerspectiveCorrection(T&, bool b=true) {Parent::SetFastPerspectiveCorrection(b);}
-	static void SetTriangleBacksideCulling(T&, bool b=true) {Parent::SetTriangleBacksideCulling(b);}
-	static void SetTriangleFrontsideCCW(T&, bool b=true) {Parent::SetTriangleFrontsideCCW(b);}
-	static void SetViewport(T&, Size sz) {Parent::SetViewport(sz);}
-	//static void ActivateNextFrame(R&, T&) {Parent::ActivateNextFrame();}
-	static void SetDebugOutput(T&, bool b=true) {Parent::SetDebugOutput(b);}
-	
-};*/
-
 
 namespace GVar {
 
@@ -99,44 +56,31 @@ typedef enum : uint32 {
 	TEXTURE_2D,
 } TextureType;
 
-typedef enum : uint32 {
-	PROGRAM_SEPARABLE,
-} ParamType;
-
-#define GVAR_PARAMTYPE_LIST \
-	PARAM_TYPE(PROGRAM_SEPARABLE)
-	
-typedef enum : uint32 {
-	ACTIVE_UNIFORMS,
-} ProgParamType;
-
-#define GVAR_PROGPARAMTYPE_LIST \
-	PARAM_TYPE(ACTIVE_UNIFORMS)
-
-typedef enum : uint32 {
-	COLOR_BUFFER,
-	DEPTH_BUFFER,
-	STENCIL_BUFFER,
-} BufferType;
-
-#define GVAR_BUFFERTYPE_LIST \
-	BUFFER_TYPE(COLOR_BUFFER) \
-	BUFFER_TYPE(DEPTH_BUFFER) \
-	BUFFER_TYPE(STENCIL_BUFFER)
 }
 
 
 struct CpuGfx {
+	struct Thread {
+		SoftRend rend;
+		SoftCompiler comp;
+		SoftShader* shdr = 0;
+		SoftProgram* prog = 0;
+		SoftFramebuffer* fb = 0;
+	};
+	
+	static Thread& Local();
+	static SoftRend& Rend();
+	
 	using NativeTexture = uint32;
-	using NativeShader = uint32;
+	using NativeShader = SoftShader;
 	/*using NativeColorBuffer = uint32;
 	using NativeDepthBuffer = uint32;
 	using NativeFrameBuffer = uint32;*/
 	using NativeVertexArray = uint32;
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffer = uint32;
-	using NativeProgram = uint32;
-	using NativePipeline = uint32;
+	using NativeProgram = SoftProgram;
+	using NativePipeline = SoftPipeline;
 	
 	static const GVar::GfxType Type = GVar::SW;
 	
@@ -152,7 +96,7 @@ struct CpuGfx {
 	static bool CompileShader(NativeShader& s);
 	static String GetLastErrorS(NativeShader& s);
 	static String GetLastErrorP(NativeProgram& s);
-	static void CreateProgram(NativeProgram& prog);
+	static bool CreateProgram(NativeProgram& prog);
 	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
 	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
 	static void DeleteShader(NativeShader& shdr);
@@ -218,7 +162,7 @@ struct OglGfx {
 	static bool CompileShader(NativeShader& s);
 	static String GetLastErrorS(NativeShader& s);
 	static String GetLastErrorP(NativeProgram& s);
-	static void CreateProgram(NativeProgram& prog);
+	static bool CreateProgram(NativeProgram& prog);
 	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
 	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
 	static void DeleteShader(NativeShader& shdr);

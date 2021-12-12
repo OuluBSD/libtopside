@@ -85,13 +85,13 @@ bool LinkerT<Gfx>::Link(RuntimeState& rt) {
 	EnableGfxAccelDebugMessages(1);
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		ShaderState& shd_state = rt.shaders[i];
-		if (shd_state.shader == 0)
+		if (!shd_state.shader)
 			continue;
 		complied_count++;
 		
 		Gfx::AttachShader(rt.prog, shd_state.shader);
 		Gfx::DeleteShader(shd_state.shader);
-		shd_state.shader = 0;
+		shd_state.shader = Null;
 	}
 	EnableGfxAccelDebugMessages(0);
 	CHKLOGRET0(complied_count, "Linker::Link: error: no compiled shaders found");

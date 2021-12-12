@@ -270,8 +270,9 @@ String OglGfx::GetLastErrorP(NativeProgram& p) {
 	return String(msg.Begin());
 }
 
-void OglGfx::CreateProgram(NativeProgram& prog) {
+bool OglGfx::CreateProgram(NativeProgram& prog) {
 	prog = glCreateProgram();
+	return prog != 0;
 }
 
 void OglGfx::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
