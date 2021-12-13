@@ -24,7 +24,7 @@
 
 
 NAMESPACE_GRAPHICS_BEGIN
-
+using namespace GVar;
 
 inline void Begin(PrimType type) {glBegin(type);}
 inline void Finish() {glFinish();}

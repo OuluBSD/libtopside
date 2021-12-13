@@ -48,6 +48,7 @@ struct FramebufferT : GfxFramebuffer {
 	using NatColorBuf = typename Gfx::NativeColorBuffer;
 	using NatDepthBuf = typename Gfx::NativeDepthBuffer;
 	using NatFrameBuf = typename Gfx::NativeFrameBuffer;
+	using SysFrameBuf = typename Gfx::SystemFrameBuffer;
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
 	using NatShader = typename Gfx::NativeShader;
@@ -80,7 +81,8 @@ struct FramebufferT : GfxFramebuffer {
 	int GetGlSize() const {TODO}
 	int GetGlSampleSize() const {TODO}
 	
-	void Init(NatFrameBuf& fb, int w, int h, int stride) {
+	void Init(SysFrameBuf& fb, int w, int h, int stride) {
+		Gfx::GenTexture(color_buf[0]);
 		color_buf[0] = fb;
 		size.cx = w;
 		size.cy = h;
@@ -96,6 +98,14 @@ struct FramebufferT : GfxFramebuffer {
 	void Bind();
 	void Clear();
 	void Render();
+	
+	
+	void SetWindowFbo(bool b=true) {
+		is_win_fbo = b;
+		if (b)
+			Gfx::SetContextDefaultFramebuffer(color_buf[0]);
+	}
+	
 };
 
 

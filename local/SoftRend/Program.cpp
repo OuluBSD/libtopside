@@ -8,6 +8,7 @@ SoftProgram::SoftProgram() {
 }
 
 void SoftProgram::Clear() {
+	ASSERT(shaders.IsEmpty());
 	inited = false;
 }
 
@@ -26,11 +27,11 @@ bool SoftProgram::LinkProgram() {
 
 void SoftProgram::SetParameter(GVar::ParamType type, int i) {
 	
-	TODO
-	
 }
 
 int SoftProgram::GetParamInt(GVar::ProgParamType type) {
+	if (type == GVar::ACTIVE_UNIFORMS)
+		return uniforms.GetCount();
 	
 	TODO
 	
@@ -55,9 +56,9 @@ String SoftProgram::GetVar(int idx) const {
 }
 
 void SoftProgram::Attach(SoftShader& s) {
-	
-	TODO
-	
+	ASSERT(s.prog == 0);
+	s.prog = this;
+	shaders.Add(&s);
 }
 
 

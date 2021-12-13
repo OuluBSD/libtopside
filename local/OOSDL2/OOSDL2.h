@@ -25,6 +25,11 @@ namespace TS {class SdlOglBuffer;}
 #include "ScreenT.h"
 
 
+NAMESPACE_TOPSIDE_BEGIN
+struct SdlOglGfx;
+struct SdlCpuGfx;
+NAMESPACE_TOPSIDE_END
+
 NAMESPACE_SDL2_BEGIN
 
 
@@ -170,8 +175,8 @@ protected:
 	Size					screen_sz;
 	String					title;
 	SDL_GLContext			glcontext = 0;
-	SdlOglRenderer			hw_rend;
-	SdlOglStateDraw			hw_draw;
+	SdlOglRenderer			rend;
+	SdlOglStateDraw			draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;
 	bool is_opengl = false;
@@ -228,7 +233,7 @@ protected:
 	int						fb_stride;
 	String					title;
 	SdlCpuBuffer*			buf = 0;
-	SdlCpuRenderer			sw_rend;
+	SdlCpuRenderer			rend;
 	SdlCpuStateDraw			sw_draw;
 	SystemDraw				sysdraw;
 	Packet					last_packet;

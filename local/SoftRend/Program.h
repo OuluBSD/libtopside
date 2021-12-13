@@ -4,10 +4,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct SoftUniform : Moveable<SoftUniform> {
+	
+};
+
+
 class SoftProgram {
 	bool inited = false;
 	String err;
 	
+protected:
+	friend class SoftRend;
+	Vector<SoftShader*> shaders;
+	Vector<SoftUniform> uniforms;
 	
 public:
 	typedef SoftProgram CLASSNAME;

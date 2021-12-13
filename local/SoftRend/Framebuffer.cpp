@@ -19,7 +19,16 @@ bool SoftFramebuffer::Create() {
 	return true;
 }
 
+void SoftFramebuffer::operator=(SDL_Texture* tex) {
+	ASSERT(!this->tex);
+	this->tex = tex;
+}
+
 void SoftFramebuffer::ClearData(GVar::BufferType type) {
+	
+}
+
+void SoftFramebuffer::ClearDataAll() {
 	
 }
 

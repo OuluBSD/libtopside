@@ -105,7 +105,7 @@ void OglGfx::UnbindProgramPipeline() {
 	glBindProgramPipeline(0);
 }
 
-void OglGfx::UnbindFramebuffer() {
+void OglGfx::BindFramebufferDefault() {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
@@ -361,5 +361,8 @@ void OglGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
 	TODO
 }
 
+bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
+	TODO
+}
 
 NAMESPACE_TOPSIDE_END

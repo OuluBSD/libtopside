@@ -49,15 +49,16 @@ void CpuGfx::SetViewport(Size sz) {
 }
 
 void CpuGfx::UseProgram(NativeProgram& prog) {
-	TODO
+	Local().prog = &prog;
 }
 
 void CpuGfx::BindProgramPipeline(NativePipeline& pipeline) {
-	TODO
+	Local().pipe = &pipeline;
 }
 
 void CpuGfx::UnbindProgramPipeline() {
-	TODO
+	Local().pipe = 0;
+	Local().prog = 0;
 }
 
 void CpuGfx::DrawBuffers(GVar::RenderTarget tgt) {
@@ -198,6 +199,40 @@ void CpuGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
 	ASSERT(fb);
 	if (fb)
 		fb->SetParam(type, filter, repeat);
+}
+
+void CpuGfx::BindFramebufferEXT(NativeFrameBuffer& fb) {
+	auto& l = Local();
+	ASSERT_(!l.fb || (l.ctx_default_fb && l.fb == l.ctx_default_fb), "previous frambuffer have not been unbound");
+	l.fb = &fb;
+}
+
+void CpuGfx::BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {
+	
+	TODO
+	
+}
+
+void CpuGfx::BindFramebufferDefault() {
+	Local().fb = Local().ctx_default_fb;
+}
+
+void CpuGfx::RenderScreenRect() {
+	auto& l = Local();
+	ASSERT_(l.fb, "framebuffer is not bound yet");
+	//ASSERT_(l.shdr, "shader is not bound yet");
+	//ASSERT_(l.prog, "program is not bound yet");
+	ASSERT_(l.pipe, "pipe is not bound yet");
+	ASSERT_(*l.fb, "framebuffer is not inited");
+	ASSERT_(*l.pipe, "pipeline is not inited");
+	
+	//l.rend.Render(*l.pipe, *l.fb);
+	l.rend.RenderScreenRect(*l.pipe, *l.fb);
+	
+}
+
+bool CpuGfx::GenTexture(SoftFramebuffer& fb) {
+	return fb.Create();
 }
 
 

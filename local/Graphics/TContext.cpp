@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class Gfx>
 void RendererT<Gfx>::DefaultPreFrame() {
 	ASSERT(rend);
-	Gfx::UnbindFramebuffer();
+	Gfx::BindFramebufferDefault();
 	Gfx::ClearBuffers();
 	Gfx::SetSmoothShading();
 	Gfx::SetClearValue(RGBA(0,0,0,255), 255);

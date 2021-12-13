@@ -17,6 +17,7 @@ file
 	Sdl.cpp,
 	Ogl.cpp,
 	Cpu.cpp,
+	SdlCpu.cpp,
 	GlobalApi.h,
 	OpenGL.h,
 	State.h,

@@ -7,6 +7,10 @@ NAMESPACE_TOPSIDE_BEGIN
 class SoftFramebuffer {
 	bool inited = false;
 	
+protected:
+	friend class SoftRend;
+	SDL_Texture* tex = 0;
+	
 public:
 	typedef SoftFramebuffer CLASSNAME;
 	SoftFramebuffer();
@@ -14,9 +18,11 @@ public:
 	void Clear();
 	bool Create();
 	void ClearData(GVar::BufferType type);
+	void ClearDataAll();
 	
 	void SetParam(int type, GVar::Filter filter, GVar::Wrap repeat);
 	
+	void operator=(SDL_Texture* tex);
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
 	

@@ -36,7 +36,7 @@ bool CpuScreen::Open0() {
 		LOG("error: couldn't create framebuffer texture");
 	}
 	
-	sw_rend.GetFramebuffer().Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	rend.GetFramebuffer().Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	
 	return true;
@@ -178,12 +178,12 @@ void CpuScreen::Render(const RealtimeSourceConfig& cfg) {
 SystemDraw& CpuScreen::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	
-    sw_rend.win = win;
-    sw_rend.rend = this->rend;
-	sw_rend.SetSize(screen_sz);
-    sw_rend.PreFrame();
-    //sw_draw.rend = &sw_rend;
-    sw_draw.fb = &sw_rend.GetFramebuffer();
+    rend.win = win;
+    rend.rend = this->rend;
+	rend.SetSize(screen_sz);
+    rend.PreFrame();
+    //sw_draw.rend = &rend;
+    sw_draw.fb = &rend.GetFramebuffer();
     sysdraw.ptr = &sw_draw;
     
     sw_draw.fb->Enter();
@@ -195,7 +195,7 @@ void CpuScreen::CommitDraw() {
 	AppFlags& flags = GetAppFlags();
 	
 	sw_draw.fb->Leave();
-	sw_rend.PostFrame();
+	rend.PostFrame();
 }
 
 void CpuScreen::RenderTestColors() {

@@ -50,10 +50,10 @@ typedef enum : uint32 {
 } RenderTarget;
 
 typedef enum : uint32 {
-	TEXTURE_INVALID,
-	TEXTURE_3D,
-	TEXTURE_CUBE_MAP,
-	TEXTURE_2D,
+	TEXTYPE_INVALID,
+	TEXTYPE_3D,
+	TEXTYPE_CUBEMAP,
+	TEXTYPE_2D,
 } TextureType;
 
 }
@@ -66,6 +66,8 @@ struct CpuGfx {
 		SoftShader* shdr = 0;
 		SoftProgram* prog = 0;
 		SoftFramebuffer* fb = 0;
+		SoftFramebuffer* ctx_default_fb = 0;
+		SoftPipeline* pipe = 0;
 	};
 	
 	static Thread& Local();
@@ -73,9 +75,10 @@ struct CpuGfx {
 	
 	using NativeTexture = uint32;
 	using NativeShader = SoftShader;
-	/*using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
-	using NativeFrameBuffer = uint32;*/
+	using NativeColorBuffer = SoftFramebuffer;
+	using NativeDepthBuffer = SoftFramebuffer;
+	using NativeFrameBuffer = SoftFramebuffer;
+	using SystemFrameBuffer = SDL_Texture*;
 	using NativeVertexArray = uint32;
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffer = uint32;
@@ -108,6 +111,7 @@ struct CpuGfx {
 	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
 	static void DeleteProgramPipeline(NativePipeline& pipe);
 	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
+	static bool GenTexture(SoftFramebuffer& fb);
 	
 	static void Uniform1i(int idx, int f);
 	static void Uniform1f(int idx, float f);
@@ -128,6 +132,14 @@ struct CpuGfx {
 	//static void ActivateNextFrame();
 	static void SetDebugOutput(bool b=true);
 	
+	
+	static void BindFramebufferEXT(NativeFrameBuffer& fb);
+	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindFramebufferDefault();
+	static void RenderScreenRect();
+	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = &fb;}
+	
+	
 };
 
 struct OglGfx {
@@ -136,6 +148,7 @@ struct OglGfx {
 	using NativeColorBuffer = GLuint;
 	using NativeDepthBuffer = GLuint;
 	using NativeFrameBuffer = GLuint;
+	using SystemFrameBuffer = NativeFrameBuffer;
 	using NativeVertexArray = GLuint;
 	using NativeVertexBuffer = GLuint;
 	using NativeElementBuffer = GLuint;
@@ -149,7 +162,7 @@ struct OglGfx {
 	//static void EnterFramebuffer(NativeFrameBuffer& fb);
 	static void BindFramebufferEXT(NativeFrameBuffer& fb);
 	static void UnbindProgramPipeline();
-	static void UnbindFramebuffer();
+	static void BindFramebufferDefault();
 	static void DrawBuffers(GVar::RenderTarget tgt);
 	//static void SetRender_Color();
 	static void RenderScreenRect();
@@ -174,6 +187,7 @@ struct OglGfx {
 	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
 	static void DeleteProgramPipeline(NativePipeline& pipe);
 	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
+	static bool GenTexture(NativeFrameBuffer& fb);
 	
 	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
 	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}
@@ -193,6 +207,7 @@ struct OglGfx {
 	static void SetViewport(Size sz);
 	//static void ActivateNextFrame();
 	static void SetDebugOutput(bool b=true);
+	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {/* done by opengl*/}
 	
 };
 
@@ -207,22 +222,36 @@ struct SdlGfx {
 	
 };
 
-struct SdlCpuGfx : CpuGfx, SdlGfx {
+/*struct SdlCpuGfx : CpuGfx, SdlGfx {
 	using NativeFrameBuffer = SDL_Texture*;
 	using NativeColorBuffer = SDL_Texture*;
 	using NativeDepthBuffer = SDL_Texture*;
+	
+	struct Thread {
+		NativeFrameBuffer fb = 0;
+		NativeFrameBuffer ctx_default_fb = 0;
+	};
+	
+	static Thread& Local();
 	
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
-	//static void EnterFramebuffer(NativeFrameBuffer& fb) {TODO}
-	static void BindFramebufferEXT(NativeFrameBuffer& fb) {TODO}
-	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {TODO}
-	static void UnbindFramebuffer() {TODO}
-	//static void SetRender_Color() {TODO}
-	//static void Clear_Color() {TODO}
-	static void RenderScreenRect() {TODO}
+	NativeFrameBuffer fb;
+	
+	static void BindFramebufferEXT(NativeFrameBuffer& fb);
+	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindFramebufferDefault();
+	static void RenderScreenRect();
+	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = fb;}
+	
+};*/
+
+struct SdlCpuGfx : CpuGfx, SdlGfx {
+	#define GFX_CLS(x, g) using x = g##x;
+	GFX_CLS_LIST(SdlCpu)
+	#undef GFX_CLS
 	
 };
 

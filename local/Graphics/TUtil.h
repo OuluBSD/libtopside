@@ -29,10 +29,10 @@ struct StateDrawT : GfxStateDraw {
 	RTTI_DECL1(StateDrawT, GfxStateDraw)
 	using Base = StateDrawT<Gfx>;
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
-	//using Renderer = typename Gfx::Renderer;
+	using NativeRenderer = typename Gfx::NativeRenderer;
 	using Framebuffer = typename Gfx::Framebuffer;
 	
-	//Renderer* rend = 0;
+	NativeRenderer* rend = 0;
 	Framebuffer* fb = 0;
 	
 	

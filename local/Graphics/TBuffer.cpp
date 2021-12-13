@@ -415,7 +415,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	    if (fb.is_read_fb_output)
 			UseRenderedFramebuffer();
 		
-	    Gfx::UnbindFramebuffer();
+	    Gfx::BindFramebufferDefault();
 	}
 	
 	EnableGfxAccelDebugMessages(0);
@@ -811,18 +811,18 @@ const TNG NativeFrameBuffer* BufferT<Gfx>::GetInputTex(int input_i) const {
 template <class Gfx>
 GVar::TextureType BufferT<Gfx>::GetTexType(int input_i) const {
 	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
-		return GVar::TEXTURE_INVALID;
+		return GVar::TEXTYPE_INVALID;
 	
 	const InputState& in = rt.inputs[input_i];
 	
-	if (in.type == GVar::VOLUME)
-		return GVar::TEXTURE_3D;
+	if (in.type == GVar::VOLUME_INPUT)
+		return GVar::TEXTYPE_3D;
 	
-	else if (in.type == GVar::CUBEMAP)
-		return GVar::TEXTURE_CUBE_MAP;
+	else if (in.type == GVar::CUBEMAP_INPUT)
+		return GVar::TEXTYPE_CUBEMAP;
 	
 	else
-		return GVar::TEXTURE_2D;
+		return GVar::TEXTYPE_2D;
 }
 
 
@@ -844,7 +844,7 @@ bool BufferT<Gfx>::SetupLoopback() {
 	InputState& in = rt.inputs[loopback];
 	in.in_buf = CastPtr<Buffer>(this);
 	in.id = rt.id;
-	in.type = GVar::BUFFER;
+	in.type = GVar::BUFFER_INPUT;
 	ASSERT(in.in_buf);
 	
 	return true;
@@ -959,11 +959,11 @@ bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		
 		if (fb.is_cubemap)
-			in.type = GVar::CUBEMAP;
+			in.type = GVar::CUBEMAP_INPUT;
 		else if (sz.cz > 0)
-			in.type = GVar::VOLUME;
+			in.type = GVar::VOLUME_INPUT;
 		else
-			in.type = GVar::TEXTURE;
+			in.type = GVar::TEXTURE_INPUT;
 		
 		return true;
 	}

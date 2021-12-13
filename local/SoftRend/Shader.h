@@ -4,11 +4,18 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+class SoftProgram;
+
+
 class SoftShader {
 	bool inited = false;
 	GVar::ShaderType type;
 	String src;
 	String err;
+	
+protected:
+	friend class SoftProgram;
+	SoftProgram* prog = 0;
 	
 public:
 	typedef SoftShader CLASSNAME;

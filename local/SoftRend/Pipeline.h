@@ -7,6 +7,15 @@ NAMESPACE_TOPSIDE_BEGIN
 class SoftPipeline {
 	bool inited = false;
 	
+protected:
+	friend class SoftRend;
+	
+	struct Stage : Moveable<Stage> {
+		SoftProgram* prog = 0;
+		uint32 bmask = 0;
+	};
+	Vector<Stage> stages;
+	
 	
 public:
 	typedef SoftPipeline CLASSNAME;

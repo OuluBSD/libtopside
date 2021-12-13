@@ -19,7 +19,9 @@ void SoftPipeline::Clear() {
 }
 
 void SoftPipeline::Use(SoftProgram& prog, uint32 bmask) {
-	
+	Stage& s = stages.Add();
+	s.prog = &prog;
+	s.bmask = bmask;
 }
 
 

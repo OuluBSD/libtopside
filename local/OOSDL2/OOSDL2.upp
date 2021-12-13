@@ -15,6 +15,7 @@ file
 	OOSDL2.h,
 	Base.h,
 	ScreenT.h,
+	ScreenT.cpp,
 	OOSDL2.cpp,
 	Context.cpp,
 	Timer.cpp,
