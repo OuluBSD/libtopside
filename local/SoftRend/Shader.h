@@ -7,11 +7,19 @@ NAMESPACE_TOPSIDE_BEGIN
 class SoftProgram;
 
 
+struct SoftShaderLibrary {
+	typedef void (*FragmentShader)(vec4&, const vec2&);
+	
+	static VectorMap<String, FragmentShader> frag_shaders;
+	
+};
+
 class SoftShader {
 	bool inited = false;
 	GVar::ShaderType type;
 	String src;
 	String err;
+	SoftShaderLibrary::FragmentShader fs = 0;
 	
 protected:
 	friend class SoftProgram;
@@ -25,13 +33,11 @@ public:
 	bool Create(GVar::ShaderType t);
 	
 	void SetSource(String s);
-	void SetVar(int idx, int i);
-	void SetVar(int idx, float f);
-	void SetVar(int idx, float f0, float f1);
-	void SetVar(int idx, float f0, float f1, float f2);
-	void SetVar(int idx, float f0, float f1, float f2, float f3);
+	void SetTestShader(SoftShaderLibrary::FragmentShader fs);
 	GVar::ShaderType GetType() const {return type;}
+	SoftShaderLibrary::FragmentShader GetFragment() const {return fs;}
 	
+	void operator=(SoftShaderLibrary::FragmentShader fs) {SetTestShader(fs);}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
 	String GetLastError() const {return err;}

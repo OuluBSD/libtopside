@@ -47,7 +47,7 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_user_shader = false;
-	bool is_test_image = false;
+	String test_image;
 	String frag_path;
 	String vtx_path;
 	String library_paths;
@@ -59,7 +59,7 @@ protected:
 	
 	
 	bool Open0() override;
-	bool AcceptsOrder() const {return is_user_shader || is_test_image;}
+	bool AcceptsOrder() const {return is_user_shader || test_image.GetCount();}
 	bool ImageInitialize();
 	void Close0() override;
 	
@@ -86,7 +86,7 @@ protected:
 	bool IsCaptured() const {return mouse_captured;}
 	
 	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
-	void SetTestImage(bool b) {is_test_image = b;}
+	void SetTestImage(String s) {test_image = s;}
 	
 };
 

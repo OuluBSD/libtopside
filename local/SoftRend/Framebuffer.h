@@ -22,6 +22,8 @@ public:
 	
 	void SetParam(int type, GVar::Filter filter, GVar::Wrap repeat);
 	
+	SDL_Texture* GetTex() const {return tex;}
+	
 	void operator=(SDL_Texture* tex);
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}

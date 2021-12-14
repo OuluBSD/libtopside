@@ -57,10 +57,11 @@ bool ScreenT<SdlCpuGfx>::GfxRenderer() {
 		return false;
 	}
 	
+	SDL_SetRenderTarget(nat_rend, fb);
+	
 	auto& rend_fb = rend.GetFramebuffer();
 	rend_fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
 	rend_fb.SetWindowFbo();
-	
 	
 	return true;
 }
@@ -118,7 +119,13 @@ bool ScreenT<Gfx>::ImageInitialize() {
 	fb.size = screen_sz;
 	fb.fps = 60;
 	
-	if (frag_path.GetCount()) {
+	if (test_image.GetCount()) {
+		if (!buf.LoadTestShader(GVar::FRAGMENT_SHADER, test_image)) {
+			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + test_image + "'");
+			return false;
+		}
+	}
+	else if (frag_path.GetCount()) {
 		if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER, frag_path, library_paths)) {
 			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
 			return false;
@@ -309,11 +316,11 @@ SystemDraw& ScreenT<Gfx>::BeginDraw() {
 	    rend.win = win;
 	    rend.rend = nat_rend;
 		rend.SetSize(screen_sz);
-	    rend.PreFrame();
 	    draw.rend = nat_rend;
 	    draw.fb = &rend.GetFramebuffer();
 	    sysdraw.ptr = &draw;
 	    
+	    rend.PreFrame();
 	    draw.fb->Enter();
 	}
 	else if (is_dx11) {

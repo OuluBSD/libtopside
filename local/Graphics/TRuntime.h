@@ -134,14 +134,14 @@ struct RuntimeStateT : GfxRuntimeState {
 	using Base = RuntimeStateT<Gfx>;
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
-	using NatShader = typename Gfx::NativeShader;
+	//using NatShader = typename Gfx::NativeShader;
 	using ShaderState = typename Gfx::ShaderState;
 	using InputState = typename Gfx::InputState;
 	
 	
 	NatProgram	prog;
 	NatPipeline	pipeline;
-	NatShader	shader;
+	//NatShader	shader;
 	bool		is_searched_vars = 0;
 	int			var_idx[GVar::VAR_COUNT];
 	bool		is_time_used = 0;
@@ -156,7 +156,7 @@ struct RuntimeStateT : GfxRuntimeState {
 	RuntimeStateT() {
 		prog = Null;
 		pipeline = Null;
-		shader = Null;
+		//shader = Null;
 		memset(&var_idx, 0, sizeof(var_idx));
 	}
 	

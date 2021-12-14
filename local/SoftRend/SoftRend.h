@@ -10,6 +10,7 @@
 #include "Pipeline.h"
 #include "Renderer.h"
 #include "Compiler.h"
+#include "Library.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN

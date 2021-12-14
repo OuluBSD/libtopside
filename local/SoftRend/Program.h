@@ -34,7 +34,13 @@ public:
 	int GetVarSize(int idx) const;
 	int GetVarType(int idx) const;
 	String GetVar(int idx) const;
+	
 	void SetParameter(GVar::ParamType type, int i);
+	void SetVar(int idx, int i);
+	void SetVar(int idx, float f);
+	void SetVar(int idx, float f0, float f1);
+	void SetVar(int idx, float f0, float f1, float f2);
+	void SetVar(int idx, float f0, float f1, float f2, float f3);
 	
 };
 

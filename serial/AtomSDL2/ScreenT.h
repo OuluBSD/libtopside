@@ -62,7 +62,7 @@ public:
 		if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
 		
 		obj->SetShaderFile(fragment_path, vertex_path, library_path);
-		obj->SetTestImage(ws.Get(".testshader") == "true");
+		obj->SetTestImage(ws.Get(".testshader"));
 		obj->SetBuffer(buf);
 		obj->Sizeable(ws.Get(".sizeable") == "true");
 		obj->Maximize(ws.Get(".maximize") == "true");

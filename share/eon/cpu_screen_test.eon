@@ -21,7 +21,7 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				testshader:		true;
+				testshader:		"simple_single";
 			};
 		};
 

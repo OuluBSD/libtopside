@@ -76,6 +76,7 @@ struct FramebufferT : GfxFramebuffer {
 	}
 	
 	const NatFrameBuf& GetReadFramebuffer() const {return frame_buf[buf_i];}
+	NatColorBuf& GetActiveColorBuffer() {return color_buf[buf_i];}
 	int GetGlType() const {TODO}
 	int GetGlFormat() const {TODO}
 	int GetGlSize() const {TODO}

@@ -3,6 +3,11 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+VectorMap<String, SoftShaderLibrary::FragmentShader> SoftShaderLibrary::frag_shaders;
+
+
+
+
 SoftShader::SoftShader() {
 	
 }
@@ -25,26 +30,9 @@ void SoftShader::SetSource(String s) {
 	src = s;
 }
 
-void SoftShader::SetVar(int idx, int i) {
-	
+void SoftShader::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
+	this->fs = fs;
 }
-
-void SoftShader::SetVar(int idx, float f) {
-	
-}
-
-void SoftShader::SetVar(int idx, float f0, float f1) {
-	
-}
-
-void SoftShader::SetVar(int idx, float f0, float f1, float f2) {
-	
-}
-
-void SoftShader::SetVar(int idx, float f0, float f1, float f2, float f3) {
-	
-}
-
 
 
 NAMESPACE_TOPSIDE_END

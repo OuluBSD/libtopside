@@ -1,0 +1,9 @@
+#include "SoftRend.h"
+
+
+INITBLOCK_(InitSoftRend) {
+	using namespace TS;
+	SoftShaderLibrary::frag_shaders.Add("simple_single", Shaders::FS_SimpleSingle);
+	
+	
+}

@@ -6,6 +6,7 @@ uses
 file
 	SoftRend.h,
 	SoftRend.cpp,
+	SoftRend.icpp,
 	Framebuffer.h,
 	Framebuffer.cpp,
 	Shader.h,
@@ -17,5 +18,8 @@ file
 	Renderer.h,
 	Renderer.cpp,
 	Compiler.h,
-	Compiler.cpp;
+	Compiler.cpp,
+	Library readonly separator,
+	Library.h,
+	libsimple.cpp;
 

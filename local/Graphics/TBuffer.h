@@ -29,6 +29,8 @@ struct BufferT : GfxBuffer {
 	Vector<BinderIface*>		binders;
 	String						last_error;
 	
+	SoftShaderLibrary::FragmentShader	test_fragment = 0;
+	
 	// set by user
 	Vector<byte>				fb_out;
 	EnvStateRef					env;
@@ -58,6 +60,7 @@ struct BufferT : GfxBuffer {
 	void SetTestShader(int i) {test_shader = i;}
 	
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
+	bool LoadTestShader(GVar::ShaderType shader_type, String id);
 	void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
 	void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
 	
@@ -90,6 +93,7 @@ struct BufferT : GfxBuffer {
 	const NativeFrameBuffer* GetInputTex(int input_i) const;
 	GVar::TextureType GetTexType(int input_i) const;
 	bool SetupLoopback();
+	bool TestShader();
 	bool CompilePrograms();
 	const NativeFrameBuffer& GetOutputTexture(bool reading_self) const;
 	void TexFlags(int type, GVar::Filter filter, GVar::Wrap repeat);

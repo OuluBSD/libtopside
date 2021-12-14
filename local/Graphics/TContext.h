@@ -39,7 +39,7 @@ public:
 	
 	void DefaultPostFrame() {
 		ASSERT(win && rend);
-		Gfx::ActivateNextFrame(*win, *rend);
+		Gfx::ActivateNextFrame(*win, *rend, output.GetActiveColorBuffer());
 	}
 };
 

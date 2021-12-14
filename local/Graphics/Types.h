@@ -137,7 +137,7 @@ struct CpuGfx {
 	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
 	static void BindFramebufferDefault();
 	static void RenderScreenRect();
-	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = &fb;}
+	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
 	
 	
 };
@@ -217,7 +217,6 @@ struct SdlGfx {
 	using NativeWindow = SDL_Window;
 	using NativeRenderer = SDL_Renderer;
 	
-	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r);
 	static Size GetWindowSize(NativeWindow& win);
 	
 };
@@ -253,12 +252,16 @@ struct SdlCpuGfx : CpuGfx, SdlGfx {
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
+	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	
 };
 
 struct SdlOglGfx : OglGfx, SdlGfx {
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS
+	
+	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
 

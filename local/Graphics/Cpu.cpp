@@ -85,33 +85,33 @@ const char* CpuGfx::GetShaderTemplate() {
 void CpuGfx::HotfixShaderCode(String& s) {}
 
 void CpuGfx::Uniform1i(int idx, int i) {
-	auto& shdr = Local().shdr;
-	ASSERT(shdr)
-	if (shdr) shdr->SetVar(idx, i);
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, i);
 }
 
 void CpuGfx::Uniform1f(int idx, float f) {
-	auto& shdr = Local().shdr;
-	ASSERT(shdr)
-	if (shdr) shdr->SetVar(idx, f);
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, f);
 }
 
 void CpuGfx::Uniform2f(int idx, float f0, float f1) {
-	auto& shdr = Local().shdr;
-	ASSERT(shdr)
-	if (shdr) shdr->SetVar(idx, f0, f1);
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, f0, f1);
 }
 
 void CpuGfx::Uniform3f(int idx, float f0, float f1, float f2) {
-	auto& shdr = Local().shdr;
-	ASSERT(shdr)
-	if (shdr) shdr->SetVar(idx, f0, f1, f2);
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, f0, f1, f2);
 }
 
 void CpuGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
-	auto& shdr = Local().shdr;
-	ASSERT(shdr)
-	if (shdr) shdr->SetVar(idx, f0, f1, f2, f3);
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, f0, f1, f2, f3);
 }
 
 bool CpuGfx::CreateShader(GVar::ShaderType t, NativeShader& new_shdr) {
@@ -234,6 +234,14 @@ void CpuGfx::RenderScreenRect() {
 bool CpuGfx::GenTexture(SoftFramebuffer& fb) {
 	return fb.Create();
 }
+
+void CpuGfx::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
+	auto& l = Local();
+	l.ctx_default_fb = &fb;
+	if (!l.fb)
+		l.fb = &fb;
+}
+
 
 
 NAMESPACE_TOPSIDE_END

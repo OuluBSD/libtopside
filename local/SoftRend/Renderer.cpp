@@ -74,19 +74,32 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftShader& shdr) {
 	byte* data = (byte*)pixels;
 	*/
 	
-	for (int y = 0; y < h; y++) {
-		byte* it = data + y * pitch;
-		
-		for (int x = 0; x < w; x++) {
-			
-			for(int i = 0; i < stride; i++) {
+	SoftShaderLibrary::FragmentShader fs = shdr.GetFragment();
+	
+	if (Shaders::iResolution[0] == 0 || Shaders::iResolution[1] == 0)
+		Shaders::iResolution = vec3(w, h, 0);
+	
+	if (fs) {
+		for (int y = 0; y < h; y++) {
+			byte* it = data + y * pitch;
+			vec2 coord;
+			//coord[1] = (float)y / (float)(h-1);
+			coord[1] = y;
+			for (int x = 0; x < w; x++) {
+				//coord[0] = (float)x / (float)(w-1);
+				coord[0] = x;
+				vec4 out;
 				
-				*it = Random(255);
+				fs(out, coord);
 				
-				it++;
+				for(int i = 0; i < stride; i++) {
+					*it = max(0, min(255, (int)(out[i] * 255)));
+					it++;
+				}
 			}
 		}
 	}
+	else TODO;
 	
 	
 	

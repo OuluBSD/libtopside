@@ -4,8 +4,13 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-void SdlGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r) {
+void SdlOglGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
 	SDL_GL_SwapWindow(&w);
+}
+
+void SdlCpuGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
+	SDL_RenderCopy(&r, color_buf.GetTex(), NULL, NULL);
+	SDL_RenderPresent(&r);
 }
 
 Size SdlGfx::GetWindowSize(NativeWindow& win) {

@@ -69,6 +69,19 @@ bool BufferT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_pa
 }
 
 template <class Gfx>
+bool BufferT<Gfx>::LoadTestShader(GVar::ShaderType shader_type, String id) {
+	int i = SoftShaderLibrary::frag_shaders.Find(id);
+	if (i < 0) {
+		last_error = "could not find shader";
+		return false;
+	}
+	
+	test_fragment = SoftShaderLibrary::frag_shaders[i];
+	
+	return true;
+}
+
+template <class Gfx>
 void BufferT<Gfx>::Update(double dt) {
 	if (rt.is_time_used) {
 		ctx.time_us += dt;
@@ -851,6 +864,25 @@ bool BufferT<Gfx>::SetupLoopback() {
 }
 
 template <class Gfx>
+bool BufferT<Gfx>::TestShader() {return false;}
+
+template <>
+bool BufferT<SdlCpuGfx>::TestShader() {
+	if (test_fragment) {
+		auto& s = rt.shaders[GVar::FRAGMENT_SHADER];
+		s.shader.Create(GVar::FRAGMENT_SHADER);
+		s.shader = test_fragment;
+		s.enabled = true;
+		rt.prog.Create();
+		rt.prog.Attach(rt.shaders[GVar::FRAGMENT_SHADER].shader);
+		rt.pipeline.Create();
+		rt.pipeline.Use(rt.prog, 1 << GVar::FRAGMENT_SHADER);
+		return true;
+	}
+	return false;
+}
+
+template <class Gfx>
 bool BufferT<Gfx>::CompilePrograms() {
 	/*const char* fn_name = "CompilePrograms";
 	for(int i = 0; i < PROG_COUNT; i++) {
@@ -859,6 +891,9 @@ bool BufferT<Gfx>::CompilePrograms() {
 		if (i == VERTEX_SHADER && !CompileVertexShader())
 			return false;
 	}*/
+	
+	if (TestShader())
+		return true;
 	
 	Compiler comps[GVar::SHADERTYPE_COUNT];
 	Linker linker;
