@@ -120,8 +120,32 @@ void SoftRend::RenderScreenRect(SoftPipeline& pipe, SoftFramebuffer& fb) {
 	
 }
 
-void SoftRend::Render(SoftPipeline& pipe, SoftFramebuffer& fb) {
+void SoftRend::RenderTriangle(SoftFramebuffer& fb, SoftShader& shdr, const Vertex& a, const Vertex& b, const Vertex& c) {
+	
+	TODO
+	
+}
+
+void SoftRend::Render(SoftFramebuffer& fb, SoftShader& shdr, SoftVertexArray& vao) {
+	int triangles = vao.ebo->indices.GetCount() / 3;
+	
+	Vertex* iter = (Vertex*)vao.vbo->vertices.Begin();
+	
+	for(int i = 0; i < triangles; i++) {
+		const Vertex& a = iter[0];
+		const Vertex& b = iter[1];
+		const Vertex& c = iter[2];
+		
+		RenderTriangle(fb, shdr, a, b, c);
+		
+		iter += 3;
+	}
+	
+}
+
+void SoftRend::Render(SoftPipeline& pipe, SoftFramebuffer& fb, SoftVertexArray& vao) {
 	ASSERT(pipe && fb);
+	ASSERT(vao.vbo && vao.ebo);
 	
 	SoftShader* shdrs[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
@@ -131,13 +155,13 @@ void SoftRend::Render(SoftPipeline& pipe, SoftFramebuffer& fb) {
 		ClearTemp();
 		
 		for (SoftShader* shader : prog.shaders) {
-			
-			
-			
-			TODO
-			
+			GVar::ShaderType type = shader->GetType();
+			if (type == GVar::FRAGMENT_SHADER) {
+				Render(fb, *shader, vao);
+			}
 		}
 	}
+	
 	
 	/*
 	VERTEX_SHADER,

@@ -365,4 +365,89 @@ bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
 	TODO
 }
 
+void OglGfx::GenVertexArray(NativeVertexArray& vao) {
+	glGenVertexArrays(1, &vao);
+}
+
+void OglGfx::GenVertexBuffer(NativeVertexBuffer& vbo) {
+	glGenBuffers(1, &vbo);
+}
+
+void OglGfx::GenElementBuffer(NativeElementBuffer& ebo) {
+	glGenBuffers(1, &ebo);
+}
+
+void OglGfx::BindVertexArray(NativeVertexArray& vao) {
+	glBindVertexArray(vao);
+}
+
+void OglGfx::BindVertexBuffer(NativeVertexBuffer& vbo) {
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+}
+
+void OglGfx::VertexBufferData(const Vector<Vertex>& vtx) {
+	glBufferData(GL_ARRAY_BUFFER, vtx.GetCount() * sizeof(Vertex), &vtx[0], GL_STATIC_DRAW);
+}
+
+void OglGfx::BindElementBuffer(NativeElementBuffer& ebo) {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+}
+
+void OglGfx::ElementBufferData(const Vector<uint32>& indices) {
+	glBufferData(	GL_ELEMENT_ARRAY_BUFFER,
+					indices.GetCount() * sizeof(unsigned int),
+					&indices[0], GL_STATIC_DRAW);
+}
+
+void OglGfx::SetupVertexStructure() {
+	// vertex positions
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+
+	// vertex normals
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+
+	// vertex texture coords
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+}
+
+void OglGfx::UnbindVertexArray() {
+	glBindVertexArray(0);
+}
+
+void OglGfx::ActivateVertexStructure() {
+	const int vtx = 0;
+	const int nm = 1;
+	const int tex = 2;
+	glEnableVertexAttribArray(vtx);          // activate vertex position array
+	glEnableVertexAttribArray(nm);           // activate vertex normal array
+	glEnableVertexAttribArray(tex);          // activate texture coords array
+	
+	// set vertex arrays with generic API
+	const int stride = sizeof(Vertex);
+	const void* offset1 = (void*)offsetof(Vertex, position);
+	const void* offset2 = (void*)offsetof(Vertex, normal);
+	const void* offset3 = (void*)offsetof(Vertex, tex_coords);
+	glVertexAttribPointer(vtx, 3, GL_FLOAT, false, stride, offset1);
+	glVertexAttribPointer(nm,  3, GL_FLOAT, false, stride, offset2);
+	glVertexAttribPointer(tex, 2, GL_FLOAT, false, stride, offset3);
+	
+}
+
+void OglGfx::DeactivateVertexStructure() {
+	const int vtx = 0;
+	const int nm = 1;
+	const int tex = 2;
+	glDisableVertexAttribArray(vtx);         // deactivate vertex position
+	glDisableVertexAttribArray(nm);          // deactivate vertex normal
+	glDisableVertexAttribArray(tex);         // deactivate texture coords
+}
+
+void OglGfx::DrawVertexElements(int element_limit) {
+	glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
+}
+
+
 NAMESPACE_TOPSIDE_END

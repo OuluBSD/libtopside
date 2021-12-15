@@ -60,9 +60,9 @@ struct DataObjectT : GfxDataObject {
 	DataObjectT();
 	~DataObjectT();
 	void SetState(DataStateBase* state) {this->state = state;}
-	void Refresh(Mesh& m) override {TODO}
+	void Refresh(Mesh& m) override;
     void FreeOgl() {TODO}
-    void Paint() override {TODO}
+    void Paint() override;
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
     
     GVar::GfxType GetGfxType() const override {return Gfx::Type;}

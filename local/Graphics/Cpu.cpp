@@ -226,9 +226,7 @@ void CpuGfx::RenderScreenRect() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	//l.rend.Render(*l.pipe, *l.fb);
 	l.rend.RenderScreenRect(*l.pipe, *l.fb);
-	
 }
 
 bool CpuGfx::GenTexture(SoftFramebuffer& fb) {
@@ -242,6 +240,64 @@ void CpuGfx::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
 		l.fb = &fb;
 }
 
+void CpuGfx::GenVertexArray(NativeVertexArray& va) {
+	va.Create();
+}
+
+void CpuGfx::GenVertexBuffer(NativeVertexBuffer& vb) {
+	vb.Create();
+}
+
+void CpuGfx::GenElementBuffer(NativeElementBuffer& eb) {
+	eb.Create();
+}
+
+void CpuGfx::BindVertexArray(NativeVertexArray& vao) {
+	Local().vao = &vao;
+}
+
+void CpuGfx::BindVertexBuffer(NativeVertexBuffer& vbo) {
+	auto& l = Local();
+	ASSERT(l.vao);
+	l.vao->vbo = &vbo;
+}
+
+void CpuGfx::VertexBufferData(const Vector<Vertex>& vtx) {
+	auto& l = Local();
+	ASSERT(l.vao);
+	ASSERT(l.vao->vbo);
+	l.vao->vbo->vertices <<= vtx;
+}
+
+void CpuGfx::BindElementBuffer(NativeElementBuffer& ebo) {
+	auto& l = Local();
+	ASSERT(l.vao);
+	l.vao->ebo = &ebo;
+}
+
+void CpuGfx::ElementBufferData(const Vector<uint32>& el) {
+	auto& l = Local();
+	ASSERT(l.vao);
+	ASSERT(l.vao->ebo);
+	l.vao->ebo->indices <<= el;
+}
+
+void CpuGfx::UnbindVertexArray() {
+	Local().vao = 0;
+}
+
+void CpuGfx::DrawVertexElements(int element_limit) {
+	auto& l = Local();
+	ASSERT(l.vao);
+	ASSERT(l.vao->vbo);
+	ASSERT(l.vao->ebo);
+	ASSERT_(l.fb, "framebuffer is not bound yet");
+	ASSERT_(l.pipe, "pipe is not bound yet");
+	ASSERT_(*l.fb, "framebuffer is not inited");
+	ASSERT_(*l.pipe, "pipeline is not inited");
+	
+	l.rend.Render(*l.pipe, *l.fb, *l.vao);
+}
 
 
 NAMESPACE_TOPSIDE_END

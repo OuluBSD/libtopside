@@ -68,6 +68,7 @@ struct CpuGfx {
 		SoftFramebuffer* fb = 0;
 		SoftFramebuffer* ctx_default_fb = 0;
 		SoftPipeline* pipe = 0;
+		SoftVertexArray* vao = 0;
 	};
 	
 	static Thread& Local();
@@ -79,9 +80,9 @@ struct CpuGfx {
 	using NativeDepthBuffer = SoftFramebuffer;
 	using NativeFrameBuffer = SoftFramebuffer;
 	using SystemFrameBuffer = SDL_Texture*;
-	using NativeVertexArray = uint32;
-	using NativeVertexBuffer = uint32;
-	using NativeElementBuffer = uint32;
+	using NativeVertexArray = SoftVertexArray;
+	using NativeVertexBuffer = SoftVertexBuffer;
+	using NativeElementBuffer = SoftElementBuffer;
 	using NativeProgram = SoftProgram;
 	using NativePipeline = SoftPipeline;
 	
@@ -112,6 +113,19 @@ struct CpuGfx {
 	static void DeleteProgramPipeline(NativePipeline& pipe);
 	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
 	static bool GenTexture(SoftFramebuffer& fb);
+	static void GenVertexArray(NativeVertexArray& vao);
+	static void GenVertexBuffer(NativeVertexBuffer& vbo);
+	static void GenElementBuffer(NativeElementBuffer& ebo);
+	static void BindVertexArray(NativeVertexArray& vao);
+	static void BindVertexBuffer(NativeVertexBuffer& vbo);
+	static void BindElementBuffer(NativeElementBuffer& ebo);
+	static void VertexBufferData(const Vector<Vertex>& vtx);
+	static void ElementBufferData(const Vector<uint32>& el);
+	static void SetupVertexStructure() {}
+	static void UnbindVertexArray();
+	static void ActivateVertexStructure() {}
+	static void DeactivateVertexStructure() {}
+	static void DrawVertexElements(int element_limit);
 	
 	static void Uniform1i(int idx, int f);
 	static void Uniform1f(int idx, float f);
@@ -188,6 +202,19 @@ struct OglGfx {
 	static void DeleteProgramPipeline(NativePipeline& pipe);
 	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
 	static bool GenTexture(NativeFrameBuffer& fb);
+	static void GenVertexArray(NativeVertexArray& vao);
+	static void GenVertexBuffer(NativeVertexBuffer& vbo);
+	static void GenElementBuffer(NativeElementBuffer& ebo);
+	static void BindVertexArray(NativeVertexArray& vao);
+	static void BindVertexBuffer(NativeVertexBuffer& vbo);
+	static void BindElementBuffer(NativeElementBuffer& ebo);
+	static void VertexBufferData(const Vector<Vertex>& vtx);
+	static void ElementBufferData(const Vector<uint32>& el);
+	static void SetupVertexStructure();
+	static void UnbindVertexArray();
+	static void ActivateVertexStructure();
+	static void DeactivateVertexStructure();
+	static void DrawVertexElements(int element_limit);
 	
 	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
 	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}

@@ -404,7 +404,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 			iface->Render(*buf, shader);
 	}
 	else {
-		if (1)
+		if (0)
 			Gfx::RenderScreenRect();
 		else if (data.objects.IsEmpty())
 			MakeFrameQuad();
