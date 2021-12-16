@@ -78,9 +78,9 @@ void Tutorial5b::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img,
 }
 #endif
 
-void Tutorial5b::DrawObj(StateDraw& fb, bool use_texture) {
+void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
-	FramebufferState& state = fb.GetState();
+	SdlCpuDataState& state = fb.GetState();
 	
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
@@ -165,7 +165,7 @@ void Tutorial5b::DrawObj(StateDraw& fb, bool use_texture) {
 	#endif
 }
 
-void VertexShader5::Process(CpuVertexShaderArgs& a) {
+void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
 	/*#version 330 core
 	layout (location = 0) in vec3 aPos;
 	layout (location = 1) in vec3 aNormal;
@@ -185,11 +185,9 @@ void VertexShader5::Process(CpuVertexShaderArgs& a) {
 	
 	vec4 pos = a.pos.Extend(1.0f);
 	a.tex_coord_out = a.tex_coords;
-	a.pos_out = a.obj.proj * a.state.view * a.obj.model * pos;
+	a.pos_out = a.obj->proj * a.state->view * a.obj->model * pos;
 }
 
-void FragmentShader5::Process(CpuFramebufferState& state) {
-	
-	TODO
-	
+void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
+	args.frag_color_out = vec4(args.frag_coord[0], args.frag_coord[1], 0, 1);
 }

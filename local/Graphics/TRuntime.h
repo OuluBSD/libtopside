@@ -82,8 +82,6 @@ struct ShaderT :
     
 	GfxDataObject* CreateObject() override {return state ? &state->CreateObject() : 0;}
 
-	virtual void Process(VertexShaderArgs& args) {Panic("not implemented");}
-	virtual void Process(FragmentShaderArgs& args) {Panic("not implemented");}
 	
 	
 	

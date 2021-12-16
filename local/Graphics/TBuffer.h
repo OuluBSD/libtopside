@@ -29,38 +29,38 @@ struct BufferT : GfxBuffer {
 	Vector<BinderIface*>		binders;
 	String						last_error;
 	
-	SoftShaderLibrary::FragmentShader	test_fragment = 0;
+	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
 	
 	// set by user
 	Vector<byte>				fb_out;
 	EnvStateRef					env;
 	int							loopback = -1;
-	int							test_shader = -1;
+	//int							test_shader = -1;
 	bool						initialized = false;
 	
 	Framebuffer					fb;
 	ContextState				ctx;
 	RuntimeState				rt;
 	DataState					data;
+	DataState*					user_data = 0;
 	
-	static Callback2<String, BufferT*> WhenLinkInit;
+	static Callback2<String, BufferT<Gfx>*> WhenLinkInit;
 	
 	
 	
 	
-	BufferT() {
-		
-	}
+	BufferT() {}
 	
 	void MakeFrameQuad();
 	void Visit(RuntimeVisitor& vis) {vis & env;}
 	void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
 	bool IsInitialized() const {return initialized;}
-	void SetTestShader(int i) {test_shader = i;}
+	//void SetBuiltinShader(int i) {test_shader = i;}
+	void SetDataStateOverride(DataState* s) {user_data = s;}
 	
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
-	bool LoadTestShader(GVar::ShaderType shader_type, String id);
+	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
 	void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
 	void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
 	
@@ -93,7 +93,7 @@ struct BufferT : GfxBuffer {
 	const NativeFrameBuffer* GetInputTex(int input_i) const;
 	GVar::TextureType GetTexType(int input_i) const;
 	bool SetupLoopback();
-	bool TestShader();
+	bool BuiltinShader();
 	bool CompilePrograms();
 	const NativeFrameBuffer& GetOutputTexture(bool reading_self) const;
 	void TexFlags(int type, GVar::Filter filter, GVar::Wrap repeat);
@@ -105,7 +105,6 @@ struct BufferT : GfxBuffer {
 		
 };
 
-template <class Gfx> inline Callback2<String, BufferT<Gfx>*> BufferT<Gfx>::WhenLinkInit;
 
 
 NAMESPACE_TOPSIDE_END

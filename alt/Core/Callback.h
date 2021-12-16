@@ -249,12 +249,13 @@ public:
 		Clear();
 		*this << cb;
 	}
-	void operator<<(const Callback2& cb) {
+	void Add(const Callback2& cb) {
 		int begin = calls.GetCount();
 		calls.Append(cb.calls);
 		for (int i = begin; i < calls.GetCount(); i++)
 			calls[i]->Inc();
 	}
+	void operator<<(const Callback2& cb) {Add(cb);}
 	void Clear() {
 		for (int i = 0; i < calls.GetCount(); i++)
 			calls[i]->Dec();

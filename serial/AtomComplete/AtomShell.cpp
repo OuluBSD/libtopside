@@ -105,7 +105,7 @@ void DefaultSerialInitializerInternalEon() {
 	DefaultSerialInitializer0(true);
 }
 
-void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args) {
+void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,Object>* extra_args, const char* extra_str) {
 	//DUMP(eon_script);
 	//DUMP(eon_file);
 	//DUMPC(args);
@@ -119,6 +119,18 @@ void DefaultRunner(String app_name, String override_eon_file, VectorMap<String,O
 				extra_args->GetKey(i),
 				(*extra_args)[i]
 			);
+	}
+	
+	if (extra_str) {
+		Vector<String> args = Split(extra_str, ";");
+		for (String& arg : args) {
+			int i = arg.Find("=");
+			if (i >= 0) {
+				String a = arg.Left(i);
+				String b = arg.Mid(i+1);
+				__def_args.Add(a, b);
+			}
+		}
 	}
 	
 	if (!break_addr)

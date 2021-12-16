@@ -21,6 +21,7 @@ protected:
 	using StateDraw = typename Gfx::StateDraw;
 	using Framebuffer = typename Gfx::Framebuffer;
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
+	using DataState = typename Gfx::DataState;
 	using NatWin = typename Gfx::NativeWindow;
 	using NatRend = typename Gfx::NativeRenderer;
 	using NatFrameBuf = typename Gfx::NativeFrameBuffer;
@@ -47,7 +48,8 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_user_shader = false;
-	String test_image;
+	String frag_shdr;
+	String vtx_shdr;
 	String frag_path;
 	String vtx_path;
 	String library_paths;
@@ -59,7 +61,7 @@ protected:
 	
 	
 	bool Open0() override;
-	bool AcceptsOrder() const {return is_user_shader || test_image.GetCount();}
+	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}
 	bool ImageInitialize();
 	void Close0() override;
 	
@@ -86,7 +88,8 @@ protected:
 	bool IsCaptured() const {return mouse_captured;}
 	
 	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
-	void SetTestImage(String s) {test_image = s;}
+	void SetFragmentShader(String s) {frag_shdr = s;}
+	void SetVertexShader(String s) {vtx_shdr = s;}
 	
 };
 

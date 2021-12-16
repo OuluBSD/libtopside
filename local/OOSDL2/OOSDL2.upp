@@ -21,8 +21,6 @@ file
 	Timer.cpp,
 	AudioIn.cpp,
 	AudioOut.cpp,
-	CpuScreen.cpp,
-	OglScreen.cpp,
 	Events.cpp,
 	Joystick.cpp,
 	GameController.cpp,
@@ -30,5 +28,8 @@ file
 	Image.cpp,
 	Font.cpp,
 	"Draw backend" readonly separator,
-	DrawBackend.cpp;
+	DrawBackend.cpp,
+	Trash readonly separator,
+	CpuScreen.cpp,
+	OglScreen.cpp;
 

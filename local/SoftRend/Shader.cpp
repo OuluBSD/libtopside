@@ -3,8 +3,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-VectorMap<String, SoftShaderLibrary::FragmentShader> SoftShaderLibrary::frag_shaders;
-
+//VectorMap<String, SoftShaderLibrary::FragmentShader> SoftShaderLibrary::frag_shaders;
+VectorMap<String, SoftShaderLibrary::ShaderFactory> SoftShaderLibrary::shader_classes[GVar::SHADERTYPE_COUNT];
 
 
 
@@ -30,9 +30,9 @@ void SoftShader::SetSource(String s) {
 	src = s;
 }
 
-void SoftShader::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
+/*void SoftShader::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
 	this->fs = fs;
-}
+}*/
 
 
 NAMESPACE_TOPSIDE_END

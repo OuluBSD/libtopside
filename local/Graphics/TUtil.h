@@ -31,14 +31,23 @@ struct StateDrawT : GfxStateDraw {
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
 	using NativeRenderer = typename Gfx::NativeRenderer;
 	using Framebuffer = typename Gfx::Framebuffer;
+	using DataState = typename Gfx::DataState;
 	
-	NativeRenderer* rend = 0;
-	Framebuffer* fb = 0;
+	//NativeRenderer* rend = 0;
+	//Framebuffer* fb = 0;
+	DataState* state = 0;
+	Size size;
+	byte channels = 0;
+	GVar::Sample sample;
 	
-	
+	void SetFormat(Framebuffer& fb) {size = fb.size; channels = fb.channels; sample = fb.sample;}
+	void SetTarget(DataState& s) {state = &s;}
 	void DrawShaderPipeline(ShaderPipeline&) {TODO}
 	
-	Size GetPageSize() const override {TODO}
+	bool HasTarget() const {return /*rend && fb &&*/ state;}
+	DataState& GetState() {return *state;}
+	Size GetPageSize() const override {return size;}
+	
 	void DrawLineOp(int x1, int y1, int x2, int y2, int width, Color color) override {TODO}
 	void DrawRectOp(int x, int y, int cx, int cy, Color color) override {TODO}
 	void DrawTextOp(int x, int y, int angle, const wchar *text, Font font,

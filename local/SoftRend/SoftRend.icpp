@@ -3,7 +3,7 @@
 
 INITBLOCK_(InitSoftRend) {
 	using namespace TS;
-	SoftShaderLibrary::frag_shaders.Add("simple_single", Shaders::FS_SimpleSingle);
+	SoftShaderLibrary::AddShaderClass<Shaders::FS_SimpleSingle>(GVar::FRAGMENT_SHADER, "simple_single");
 	
 	
 }

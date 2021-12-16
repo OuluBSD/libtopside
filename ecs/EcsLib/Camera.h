@@ -18,7 +18,7 @@ public:
 	void operator=(const Viewable& c) {}
 	
 	
-	Callback1<Shader&> cb;
+	Callback1<GfxShader&> cb;
 	
 };
 
@@ -56,7 +56,7 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & view & vport;}
 	void Initialize() override;
-	void Refresh(Shader& s);
+	void Refresh(GfxShader& s);
 	
 	void SetTarget(TransformRef tgt) {target = tgt;}
 	

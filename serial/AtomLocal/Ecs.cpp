@@ -204,15 +204,13 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		}
 		// render to state
 		else {
-			TODO
-			#if 0
-			cpu_state.size = sz;
-			cpu_state.channels = stride;
-			cpu_state.sample = GVar::SAMPLE_U8;
-			sd.SetTarget(cpu_state);
+			cpu_fb.size = sz;
+			cpu_fb.channels = stride;
+			cpu_fb.sample = GVar::SAMPLE_U8;
+			cpu_sd.SetTarget(cpu_state);
 			
 			for (BinderIfaceVideo* b : binders)
-				b->Render(sd);
+				b->Render(cpu_sd);
 			
 			if (io.sink_count == 1) {
 				PacketIO::Sink& sink = io.sink[0];
@@ -225,12 +223,11 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 				
 				InternalPacketData& data = src.p->SetData<InternalPacketData>();
 				data.ptr = &cpu_state;
-				data.SetText("cpustate");
+				data.SetText("gfxstate");
 			}
 			else {
 				TODO
 			}
-			#endif
 		}
 	}
 	#if HAVE_OPENGL
@@ -257,14 +254,17 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			src.p = ReplyPacket(0, sink.p);
 			
 			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			if (0) {
+			if (1) {
 				data.ptr = &ogl_state;
-				data.SetText("oglstate");
+				data.SetText("gfxstate");
 			}
+			#if 0
+			// deprecated
 			else {
 				data.ptr = &ogl_pipe;
-				data.SetText("oglpipe");
+				data.SetText("gfxpipe");
 			}
+			#endif
 		}
 		else {
 			TODO

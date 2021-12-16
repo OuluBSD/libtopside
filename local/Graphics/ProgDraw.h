@@ -15,7 +15,7 @@ public:
 	
 public:
 	RTTI_DECL1(ProgDraw, Draw)
-	ProgDraw() {TODO}
+	ProgDraw() {}
 	ProgDraw(Size sz) {TODO}
 	ProgDraw(int w, int h) {TODO}
 	

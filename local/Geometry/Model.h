@@ -4,12 +4,12 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
-class Shader;
+struct GfxShader;
 struct CpuDataObject;
-#if HAVE_OPENGL
+/*#if HAVE_OPENGL
 struct OglDataObject;
 class OglShader;
-#endif
+#endif*/
 
 
 //struct FramebufferState;
@@ -92,9 +92,6 @@ public:
     void TransformVertices(mat4 transform);
     void Dump(int indent=0);
     
-protected:
-	friend class OglShader;
-	
     
 };
 
@@ -107,6 +104,8 @@ class ModelMesh :
 public:
 	Vector<Mesh> meshes;
 	Vector<Texture> textures;
+    String path;
+    String directory;
     
     
     
@@ -144,14 +143,12 @@ using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;
 class ModelLoader :
 	public RefScopeEnabler<ModelLoader,RefRoot>
 {
-	One<ModelMesh> model;
 	
 public:
 	RTTI_DECL_R0(ModelLoader)
 	ModelLoader();
 	
 	void Clear() {model.Clear();}
-    //bool LoadModel(FramebufferState& s, GfxDataObject& o, String path);
     void Set(const ModelMesh& m) {model = new ModelMesh(m); model->SetParent(this);}
     void operator=(const ModelMesh& m) {Set(m);}
 	operator bool() const {return !model.IsEmpty();}
@@ -159,20 +156,11 @@ public:
 	
 	Ref<ModelMesh> GetModel() {return model ? model->AsRefT() : Null;}
 	
-protected:
-	friend class ModelBuilder;
 	
-    String path;
-    String directory;
+public:
+	One<ModelMesh> model;
     
     
-    #ifdef flagASSIMP
-    /*bool LoadModelAssimp(GfxDataObject& o, String path);
-    
-    void ProcessNode(GfxDataObject& o, aiNode *node, const aiScene *scene);
-    void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);*/
-    void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
-    #endif
     
 };
 

@@ -17,6 +17,7 @@ protected:
 	friend class SoftRend;
 	Vector<SoftShader*> shaders;
 	Vector<SoftUniform> uniforms;
+	GenericShaderArgs args;
 	
 public:
 	typedef SoftProgram CLASSNAME;

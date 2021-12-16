@@ -38,7 +38,7 @@ public:
 	void SetTriangleFrontsideCCW(bool b=true);
 	void SetViewport(Size sz);
 	
-	void RenderScreenRect(SoftFramebuffer& fb, SoftShader& shdr);
+	void RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr);
 	void RenderScreenRect(SoftPipeline& pipe, SoftFramebuffer& fb);
 	void Render(SoftPipeline& pipe, SoftFramebuffer& fb, SoftVertexArray& vao);
 	void Render(SoftFramebuffer& fb, SoftShader& shdr, SoftVertexArray& vao);

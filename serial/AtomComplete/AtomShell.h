@@ -5,7 +5,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 void DefaultStartup();
-void DefaultRunner(String app_name, String override_eon_file="", VectorMap<String,Object>* extra_args=0);
+void DefaultRunner(String app_name, String override_eon_file="", VectorMap<String,Object>* extra_args=0, const char* extra_str=0);
 bool DefaultInitializer(bool skip_eon_file);
 void DefaultSerialInitializer();
 void DefaultSerialInitializer0(bool skip_eon_file=false);

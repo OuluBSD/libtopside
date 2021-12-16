@@ -1,4 +1,4 @@
-#include "SoftRend.h"
+#include <Graphics/Graphics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -47,7 +47,7 @@ void SoftRend::SetViewport(Size sz) {
 	viewport_size = sz;
 }
 
-void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftShader& shdr) {
+void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr) {
 	SDL_Texture* tex = fb.tex;
 	
 	uint32 fmt = 0;
@@ -74,32 +74,38 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftShader& shdr) {
 	byte* data = (byte*)pixels;
 	*/
 	
-	SoftShaderLibrary::FragmentShader fs = shdr.GetFragment();
+	SoftShaderBase& fs = shdr.Get();
 	
-	if (Shaders::iResolution[0] == 0 || Shaders::iResolution[1] == 0)
-		Shaders::iResolution = vec3(w, h, 0);
+	SdlCpuFragmentShaderArgs frag_args;
+	SdlCpuVertexShaderArgs vtx_args;
+	GenericShaderArgs& g = prog.args;
+	frag_args.generic = &g;
+	vtx_args.generic = &g;
 	
-	if (fs) {
-		for (int y = 0; y < h; y++) {
-			byte* it = data + y * pitch;
-			vec2 coord;
-			//coord[1] = (float)y / (float)(h-1);
-			coord[1] = y;
-			for (int x = 0; x < w; x++) {
-				//coord[0] = (float)x / (float)(w-1);
-				coord[0] = x;
-				vec4 out;
-				
-				fs(out, coord);
-				
-				for(int i = 0; i < stride; i++) {
-					*it = max(0, min(255, (int)(out[i] * 255)));
-					it++;
-				}
+	if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
+		g.iResolution = vec3(w, h, 0);
+	
+	vec2& coord = frag_args.frag_coord;
+	vec4& out = frag_args.frag_color_out;
+	
+	for (int y = 0; y < h; y++) {
+		byte* it = data + y * pitch;
+		
+		//coord[1] = (float)y / (float)(h-1);
+		coord[1] = y;
+		for (int x = 0; x < w; x++) {
+			//coord[0] = (float)x / (float)(w-1);
+			coord[0] = x;
+			
+			
+			fs.Process(frag_args);
+			
+			for(int i = 0; i < stride; i++) {
+				*it = max(0, min(255, (int)(out[i] * 255)));
+				it++;
 			}
 		}
 	}
-	else TODO;
 	
 	
 	
@@ -113,7 +119,7 @@ void SoftRend::RenderScreenRect(SoftPipeline& pipe, SoftFramebuffer& fb) {
 		for (SoftShader* shader : prog.shaders) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
-				RenderScreenRect(fb, *shader);
+				RenderScreenRect(fb, prog, *shader);
 			}
 		}
 	}

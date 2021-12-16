@@ -56,7 +56,6 @@ struct GfxDataObject : RTTIBase {
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
 	bool IsOpenGL() const {return GetGfxType() == GVar::OGL;}
 	
-	
 };
 
 struct GfxDataState : ErrorReporter {
@@ -66,13 +65,13 @@ struct GfxDataState : ErrorReporter {
 	int		id = -1;
 	
 	// renderer
-    mat4	view;
-	Shader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
+    mat4		view;
+	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
 	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
-	virtual void LoadModel(ModelLoader& l, String path) = 0;
+	virtual bool LoadModel(ModelLoader& l, String path) = 0;
 	
 };
 

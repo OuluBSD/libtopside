@@ -10,11 +10,14 @@ GFX_CLS_LIST(SdlOgl)
 
 
 // default frame TODO should be conditional
-using OglStateDraw = SdlOglStateDraw;
-using OglDataState = SdlOglDataState;
-using OglShaderPipeline = SdlOglShaderPipeline;
-using OglFramebuffer = SdlOglFramebuffer;
-using OglBuffer = SdlOglBuffer;
+using OglStateDraw		= SdlOglStateDraw;
+using OglDataState		= SdlOglDataState;
+using OglShaderPipeline	= SdlOglShaderPipeline;
+using OglShader			= SdlOglShader;
+using OglFramebuffer	= SdlOglFramebuffer;
+using OglBuffer			= SdlOglBuffer;
+using OglBinderIface	= SdlOglBinderIface;
+using OglBufferT		= BufferT<SdlOglGfx>;
 
 
 int GetOglChCode(int channels, bool is_float=false);

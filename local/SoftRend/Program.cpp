@@ -39,8 +39,8 @@ int SoftProgram::GetParamInt(GVar::ProgParamType type) {
 
 int SoftProgram::GetVarSize(int idx) const {
 	switch (idx) {
-		case Shaders::IRESOLUTION:	return sizeof(Shaders::iResolution);
-		case Shaders::ITIME:		return sizeof(Shaders::iTime);
+		case Shaders::IRESOLUTION:	return sizeof(GenericShaderArgs::iResolution);
+		case Shaders::ITIME:		return sizeof(GenericShaderArgs::iTime);
 		default: break;
 	}
 	
@@ -73,7 +73,7 @@ void SoftProgram::SetVar(int idx, int i) {
 
 void SoftProgram::SetVar(int idx, float f) {
 	switch (idx) {
-		case Shaders::ITIME: Shaders::iTime = f; return;
+		case Shaders::ITIME: args.iTime = f; return;
 		default: break;
 	}
 	ASSERT(0);
@@ -85,7 +85,7 @@ void SoftProgram::SetVar(int idx, float f0, float f1) {
 
 void SoftProgram::SetVar(int idx, float f0, float f1, float f2) {
 	switch (idx) {
-		case Shaders::IRESOLUTION: Shaders::iResolution = vec3(f0,f1,f2); return;
+		case Shaders::IRESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
 		default: break;
 	}
 	ASSERT(0);

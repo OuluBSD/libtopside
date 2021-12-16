@@ -7,17 +7,17 @@ using namespace TS::Ecs;
 
 
 
-class VertexShader5 : public CpuShader {
+class VertexShader5 : public SoftShaderBase {
 	
 public:
-	void Process(CpuVertexShaderArgs& args) override;
+	void Process(SdlCpuVertexShaderArgs& args) override;
 	
 };
 
-class FragmentShader5 : public CpuShader {
+class FragmentShader5 : public SoftShaderBase {
 	
 public:
-	void Process(CpuFramebufferState& state) override;
+	void Process(SdlCpuFragmentShaderArgs& args) override;
 	
 };
 
@@ -28,8 +28,6 @@ struct Tutorial5b :
 	RTTI_DECL2(Tutorial5b, ComponentT, BinderIfaceVideo)
 	
 	ModelLoader loader;
-	FragmentShader5 frag;
-	VertexShader5 vtx;
 	TimeStop ts;
 	double phase_time = 1.5;
 	int iter = 0;
@@ -52,7 +50,7 @@ struct Tutorial5b :
 	/*vec3 Barycentric(vec3 pts[3], vec2 P);
 	void Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img,
 		float intensity, bool have_noise);*/
-	void DrawObj(StateDraw& fb, bool use_texture);
+	void DrawObj(SdlCpuStateDraw& fb, bool use_texture);
 	
 };
 

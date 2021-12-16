@@ -410,7 +410,7 @@ void OglGfx::SetupVertexStructure() {
 
 	// vertex texture coords
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coords));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coord));
 }
 
 void OglGfx::UnbindVertexArray() {
@@ -429,7 +429,7 @@ void OglGfx::ActivateVertexStructure() {
 	const int stride = sizeof(Vertex);
 	const void* offset1 = (void*)offsetof(Vertex, position);
 	const void* offset2 = (void*)offsetof(Vertex, normal);
-	const void* offset3 = (void*)offsetof(Vertex, tex_coords);
+	const void* offset3 = (void*)offsetof(Vertex, tex_coord);
 	glVertexAttribPointer(vtx, 3, GL_FLOAT, false, stride, offset1);
 	glVertexAttribPointer(nm,  3, GL_FLOAT, false, stride, offset2);
 	glVertexAttribPointer(tex, 2, GL_FLOAT, false, stride, offset3);

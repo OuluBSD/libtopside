@@ -189,14 +189,14 @@ bool AtomBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 		}
 		
 		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
-			RTLOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
+			LOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
 			return false;
 		}
 	}
 	else {
 		DUMP(*prim_link_sink);
 		if (!prim_link_sink->NegotiateSinkFormat(0, fmt)) {
-			RTLOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
+			LOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
 			return false;
 		}
 	}

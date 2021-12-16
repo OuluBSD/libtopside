@@ -25,7 +25,7 @@ void ChaseCam::Initialize() {
 		view->cb << THISBACK(Refresh);
 }
 
-void ChaseCam::Refresh(Shader& s) {
+void ChaseCam::Refresh(GfxShader& s) {
 	if (vport) {
 		
 	}

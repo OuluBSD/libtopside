@@ -6,6 +6,13 @@ Tutorial 5b:
 	
 */
 
+INITBLOCK_(Shaders) {
+	using namespace TS;
+	SoftShaderLibrary::AddShaderClass<FragmentShader5>(GVar::FRAGMENT_SHADER, "tutorial5_fragment");
+	
+}
+
+
 
 Tutorial5b::Tutorial5b() {
 	
@@ -25,19 +32,17 @@ void Tutorial5b::Initialize() {
 }
 
 void Tutorial5b::Render(Draw& fb) {
-	StateDraw* sd = CastPtr<StateDraw>(&fb);
+	SdlCpuStateDraw* sd = CastPtr<SdlCpuStateDraw>(&fb);
 	ASSERT(sd);
 	
 	if (frame == 0) {
-		FramebufferState& state = sd->GetState();
+		SdlCpuDataState& state = sd->GetState();
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-		if (!loader.LoadModel(state, state.NewObject(), obj_path))
+		if (!state.LoadModel(loader, obj_path))
 			Panic("Couldn't load model: " + obj_path);
 		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
-		state.stages[GVar::VERTEX_SHADER] = &vtx;
-		state.stages[GVar::FRAGMENT_SHADER] = &frag;
 	}
 	
 	Size sz = fb.GetPageSize();
@@ -55,5 +60,5 @@ void Tutorial5b::Render(Draw& fb) {
 	}
 }
 
-//SIMPLE_ECS_APP(Tutorial5b, "geom_tutorial_base_ogl.eon")
-SIMPLE_ECS_APP(Tutorial5b, "geom_tutorial_base.eon")
+
+SIMPLE_ECS_APP_(Tutorial5b, "geom_tutorial_base.eon", "FRAGMENT=tutorial5_fragment;VERTEX=tutorial5_vertex")

@@ -2,6 +2,9 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+template <class Gfx>
+Callback2<String, BufferT<Gfx>*> BufferT<Gfx>::WhenLinkInit;
+
 
 template <class Gfx>
 void BufferT<Gfx>::MakeFrameQuad() {
@@ -69,14 +72,14 @@ bool BufferT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_pa
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::LoadTestShader(GVar::ShaderType shader_type, String id) {
-	int i = SoftShaderLibrary::frag_shaders.Find(id);
+bool BufferT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
+	int i = SoftShaderLibrary::shader_classes[shader_type].Find(id);
 	if (i < 0) {
 		last_error = "could not find shader";
 		return false;
 	}
 	
-	test_fragment = SoftShaderLibrary::frag_shaders[i];
+	soft[shader_type] = SoftShaderLibrary::shader_classes[shader_type][i]();
 	
 	return true;
 }
@@ -406,7 +409,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	else {
 		if (0)
 			Gfx::RenderScreenRect();
-		else if (data.objects.IsEmpty())
+		else if (!user_data && data.objects.IsEmpty())
 			MakeFrameQuad();
 	}
 	
@@ -416,6 +419,12 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		o.Paint();
 	}
 	
+	if (user_data) {
+		for (DataObject& o : user_data->objects) {
+			SetVars(rt.prog, o);
+			o.Paint();
+		}
+	}
 	
 	EnableGfxAccelDebugMessages(1);
 	
@@ -864,22 +873,29 @@ bool BufferT<Gfx>::SetupLoopback() {
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::TestShader() {return false;}
+bool BufferT<Gfx>::BuiltinShader() {return false;}
 
 template <>
-bool BufferT<SdlCpuGfx>::TestShader() {
-	if (test_fragment) {
-		auto& s = rt.shaders[GVar::FRAGMENT_SHADER];
-		s.shader.Create(GVar::FRAGMENT_SHADER);
-		s.shader = test_fragment;
-		s.enabled = true;
-		rt.prog.Create();
-		rt.prog.Attach(rt.shaders[GVar::FRAGMENT_SHADER].shader);
-		rt.pipeline.Create();
-		rt.pipeline.Use(rt.prog, 1 << GVar::FRAGMENT_SHADER);
-		return true;
+bool BufferT<SdlCpuGfx>::BuiltinShader() {
+	bool succ = false;
+	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
+		if (soft[i]) {
+			GVar::ShaderType t = (GVar::ShaderType)i;
+			auto& s = rt.shaders[i];
+			s.shader.Create(t);
+			s.shader = *soft[i];
+			s.enabled = true;
+			if (!rt.prog) {
+				rt.prog.Create();
+				rt.prog.Attach(rt.shaders[i].shader);
+				rt.pipeline.Create();
+			}
+			rt.pipeline.Use(rt.prog, 1 << i);
+			if (i == GVar::FRAGMENT_SHADER)
+				succ = true;
+		}
 	}
-	return false;
+	return succ;
 }
 
 template <class Gfx>
@@ -892,7 +908,7 @@ bool BufferT<Gfx>::CompilePrograms() {
 			return false;
 	}*/
 	
-	if (TestShader())
+	if (BuiltinShader())
 		return true;
 	
 	Compiler comps[GVar::SHADERTYPE_COUNT];

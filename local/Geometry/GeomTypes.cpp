@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 void Vertex::SetPosTex(vec3 pos, vec2 tex) {
     position = pos;
     pos_project = 1.0;
-    tex_coords = tex;
+    tex_coord = tex;
     normal = zero<vec3>();
 }
 
@@ -14,7 +14,7 @@ void Vertex::Set(vec3 pos, vec3 norm) {
     position = pos;
     normal = norm;
     pos_project = 1.0;
-    tex_coords.Clear();
+    tex_coord.Clear();
 }
 
 void Vertex::Set(float x, float y, float z) {
@@ -23,14 +23,14 @@ void Vertex::Set(float x, float y, float z) {
     position[2] = z;
     pos_project = 1.0;
     normal = zero<vec3>();
-    tex_coords.Clear();
+    tex_coord.Clear();
 }
 
 void Vertex::Set(vec3 pos, vec3 norm, vec3 tan, vec2 tex) {
     position = pos;
     normal = norm;
     pos_project = 1.0;
-    tex_coords = tex;
+    tex_coord = tex;
 }
 
 void Vertex::Set(float x, float y, float z, float tex_x, float tex_y) {
@@ -38,8 +38,8 @@ void Vertex::Set(float x, float y, float z, float tex_x, float tex_y) {
     position[1] = y;
     position[2] = z;
     pos_project = 1.0;
-    tex_coords[0] = tex_x;
-    tex_coords[1] = tex_y;
+    tex_coord[0] = tex_x;
+    tex_coord[1] = tex_y;
     normal = zero<vec3>();
 }
 

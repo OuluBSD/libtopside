@@ -23,7 +23,7 @@ bool RenderingSystem::Initialize() {
 	return true;
 }
 
-void RenderingSystem::Attach(String key, OglBuffer* b) {
+void RenderingSystem::Attach(String key, OglBufferT* b) {
 	if (key != "ecs") {
 		RTLOG("RenderingSystem::Attach: warning: skipping unrelated key '" << key << "'");
 		return;

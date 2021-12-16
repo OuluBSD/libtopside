@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 template <class Gfx> struct DataStateT;
 
+
 template <class Gfx>
 struct VertexShaderArgsT : GfxVertexShaderArgs {
 	using Base = VertexShaderArgsT<Gfx>;
@@ -15,11 +16,13 @@ struct VertexShaderArgsT : GfxVertexShaderArgs {
 	
 	DataState* state = 0;
 	DataObject* obj = 0;
-	const vec3* pos = 0;
-	const vec3* normal = 0;
-	const vec2* tex_coords = 0;
-	vec4* pos_out = 0;
-	vec2* tex_coord_out = 0;
+	vec3 pos;
+	vec3 normal;
+	vec2 tex_coords;
+	vec4 pos_out;
+	vec2 tex_coord_out;
+	
+	GenericShaderArgs* generic = 0;
 };
 
 template <class Gfx>
@@ -28,6 +31,10 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
 	
 	
+	vec2 frag_coord;
+	vec4 frag_color_out;
+	
+	GenericShaderArgs* generic = 0;
 };
 
 template <class Gfx>
@@ -93,7 +100,15 @@ struct DataStateT : GfxDataState {
 	GfxDataObject& CreateObject() override {return AddObject();}
 	
 	void Refresh(ModelMesh& m) override {TODO}
-	void LoadModel(ModelLoader& l, String path) override {TODO}
+	bool LoadModel(ModelLoader& l, String path) override;
+	
+protected:
+	#ifdef flagASSIMP
+	bool LoadModelAssimp(ModelLoader& l, DataObject& o, String path);
+    void ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
+    void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
+	#endif
 	
 };
 

@@ -3,10 +3,6 @@
 
 NAMESPACE_SDL2_BEGIN
 
-template <class Gfx> bool IsDefaultGfxVal(const ValCls& val);
-template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
-template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return val == ValCls::FBO;}
-
 
 template <>
 void ScreenT<SdlOglGfx>::GfxFlags(uint32& flags) {
@@ -119,9 +115,9 @@ bool ScreenT<Gfx>::ImageInitialize() {
 	fb.size = screen_sz;
 	fb.fps = 60;
 	
-	if (test_image.GetCount()) {
-		if (!buf.LoadTestShader(GVar::FRAGMENT_SHADER, test_image)) {
-			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + test_image + "'");
+	if (frag_shdr.GetCount()) {
+		if (!buf.LoadBuiltinShader(GVar::FRAGMENT_SHADER, frag_shdr)) {
+			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + frag_shdr + "'");
 			return false;
 		}
 	}
@@ -135,7 +131,13 @@ bool ScreenT<Gfx>::ImageInitialize() {
 		buf.rt.SetCode(GVar::FRAGMENT_SHADER, def_shader);
 	}
 	
-	if (vtx_path.GetCount()) {
+	if (vtx_shdr.GetCount()) {
+		if (!buf.LoadBuiltinShader(GVar::VERTEX_SHADER, vtx_shdr)) {
+			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + vtx_shdr + "'");
+			return false;
+		}
+	}
+	else if (vtx_path.GetCount()) {
 		if (!buf.LoadShaderFile(GVar::VERTEX_SHADER, vtx_path, library_paths)) {
 			LOG("Screen::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
 			return false;
@@ -233,16 +235,26 @@ void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 			if (!d.ptr) {
 				ASSERT_(0, "no pointer in InternalPacketData");
 			}
-			else if (d.IsText("oglstate")) {
-				Framebuffer& sd = *(Framebuffer*)d.ptr;
+			else if (d.IsText("gfxstate")) {
+				DataState& sd = *(DataState*)d.ptr;
 				
 				BeginDraw();
 				
-				TODO // process state with buf & require valid shader and pipeline in buf
+				//ASSERT(!is_user_shader || buf);
+				if (/*is_user_shader &&*/ buf) {
+					buf->SetDataStateOverride(&sd);
+					buf->Process(cfg);
+					buf->SetDataStateOverride(0);
+				}
+				else {
+					RTLOG("Screen::Render: error: no gfx buf");
+				}
 				
 				CommitDraw();
 			}
-			else if (d.IsText("oglpipe")) {
+			#if 0
+			// deprecated: use BufferT indirectly instead
+			else if (d.IsText("gfxpipe")) {
 				ShaderPipeline& sd = *(ShaderPipeline*)d.ptr;
 				
 				BeginDraw();
@@ -256,8 +268,9 @@ void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 				
 				CommitDraw();
 			}
+			#endif
 			else
-				TODO
+				TODO // still "ogl" in "oglstate" ?
 		}
 		else {
 			BeginDraw();
@@ -267,7 +280,7 @@ void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 				buf->Process(cfg);
 			}
 			else {
-				RTLOG("Screen::Render: error: no ogl buf");
+				RTLOG("Screen::Render: error: no gfx buf");
 			}
 			
 			CommitDraw();
@@ -280,6 +293,7 @@ void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 		CommitDraw();
 	}
 	else {
+		DUMP(fmt);
 		RTLOG("Screen::Render: error: unexpected packet: " << last_packet->ToString());
 		ASSERT(0);
 	}
@@ -316,12 +330,13 @@ SystemDraw& ScreenT<Gfx>::BeginDraw() {
 	    rend.win = win;
 	    rend.rend = nat_rend;
 		rend.SetSize(screen_sz);
-	    draw.rend = nat_rend;
-	    draw.fb = &rend.GetFramebuffer();
+	    //draw.rend = nat_rend;
+	    //draw.fb = &rend.GetFramebuffer();
+	    draw.SetFormat(rend.GetFramebuffer());
 	    sysdraw.ptr = &draw;
 	    
 	    rend.PreFrame();
-	    draw.fb->Enter();
+	    //draw.fb->Enter();
 	}
 	else if (is_dx11) {
 		TODO
@@ -337,7 +352,7 @@ template <class Gfx>
 void ScreenT<Gfx>::CommitDraw() {
 	AppFlags& flags = GetAppFlags();
 	
-	draw.fb->Leave();
+	//draw.fb->Leave();
 	rend.PostFrame();
 }
 

@@ -1,15 +1,12 @@
 #include "AtomSDL2.h"
+#ifdef flagSCREEN
 
-#if 0
 
 NAMESPACE_SERIAL_BEGIN
 
 
-
-#ifdef flagSCREEN
-
-
-bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
+template <class Gfx>
+bool SDL2ScreenBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	SetFPS(60);
 	
 	String env_name = ws.Get(".env");
@@ -27,7 +24,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	
 	OBJ_CREATE
 	
-	SdlOglBuffer& buf = GetBuffer();
+	Buffer& buf = this->GetBuffer();
 	buf.SetEnvState(env);
 	buf.AddLink(ws.Get(".link"));
 	
@@ -41,13 +38,14 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
 	
 	obj->SetShaderFile(fragment_path, vertex_path, library_path);
-	obj->SetFragmentShader(ws.Get(".testimage") == "true");
+	obj->SetFragmentShader(ws.Get(".fragshader"));
+	obj->SetVertexShader(ws.Get(".vtxshader"));
 	obj->SetBuffer(buf);
 	obj->Sizeable(ws.Get(".sizeable") == "true");
 	obj->Maximize(ws.Get(".maximize") == "true");
 	obj->Fullscreen(ws.Get(".fullscreen") == "true");
 	
-	// OglShaderBase duplicate
+	// ShaderBase duplicate
 	for(int i = 0; i < 4; i++) {
 		String key = ".buf" + IntStr(i);
 		String value = ws.Get(key);
@@ -68,47 +66,16 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-void SDL2ScreenBase::Uninitialize() {
+template <class Gfx>
+void SDL2ScreenBaseT<Gfx>::Uninitialize() {
 	ev = 0;
 	obj.Clear();
 	RemoveAtomFromUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->RemovePolling(AtomBase::AsRefT());
 }
 
-void SDL2ScreenBase::Update(double dt) {
-	OglBufferBase::Update(dt);
-	FramePollerBase::Update(dt);
-	
-	if (env) {
-		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
-		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
-		SdlOglBuffer& buf = GetBuffer();
-		
-		if (close_window) {
-			if (close_machine)
-				GetMachine().SetNotRunning();
-			else
-				Destroy();
-		}
-		else if (video_size != buf.fb.size) {
-			if (video_size.IsEmpty())
-				video_size = buf.fb.size;
-			else
-				buf.SetFramebufferSize(video_size);
-		}
-		
-	}
-}
-
-bool SDL2ScreenBase::IsReady(PacketIO& io) {
-	//dword iface_sink_mask = iface.GetSinkMask();
-	//bool b = io.active_sink_mask == iface_sink_mask; // wrong here: only primary is required
-	bool b = FramePollerBase::IsReady(io) && io.sink[0].filled;
-	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
-	return b;
-}
-
-bool SDL2ScreenBase::ProcessPackets(PacketIO& io) {
+template <class Gfx>
+bool SDL2ScreenBaseT<Gfx>::ProcessPackets(PacketIO& io) {
 	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
 		PacketIO::Sink& sink = io.sink[sink_ch];
 		Packet& in = sink.p;
@@ -145,9 +112,55 @@ bool SDL2ScreenBase::ProcessPackets(PacketIO& io) {
 	return true;
 }
 
+template <class Gfx>
+bool SDL2ScreenBaseT<Gfx>::IsReady(PacketIO& io) {
+	//dword iface_sink_mask = iface.GetSinkMask();
+	//bool b = io.active_sink_mask == iface_sink_mask; // wrong here: only primary is required
+	bool b = FramePollerBase::IsReady(io) && io.sink[0].filled;
+	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
+	return b;
+}
 
-#endif
+template <class Gfx>
+void SDL2ScreenBaseT<Gfx>::Update(double dt) {
+	BufferBase::Update(dt);
+	FramePollerBase::Update(dt);
+	
+	if (env) {
+		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
+		Buffer& buf = this->GetBuffer();
+		
+		if (close_window) {
+			if (close_machine)
+				GetMachine().SetNotRunning();
+			else
+				Destroy();
+		}
+		else if (video_size != buf.fb.size) {
+			if (video_size.cx == 0 || video_size.cy == 0)
+				video_size = buf.fb.size;
+			else
+				buf.SetFramebufferSize(video_size);
+		}
+		
+	}
+}
 
+template <class Gfx>
+bool SDL2ScreenBaseT<Gfx>::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && IsDefaultGfxVal<Gfx>(new_fmt.vd.val)) {
+		ISinkRef sink = GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
+
+GFX_EXCPLICIT_INITIALIZE_CLASS(SDL2ScreenBaseT)
 
 
 NAMESPACE_SERIAL_END

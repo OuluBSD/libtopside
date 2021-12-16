@@ -214,7 +214,7 @@ public:
 	bool			IsCaptured() const {return mouse_captured;}
 	
 	void			SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}
-	void			SetTestImage(bool b) {is_ogl_buf = b;}
+	void			SetFragmentShader(bool b) {is_ogl_buf = b;}
 	
 };
 

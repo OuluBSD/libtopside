@@ -150,7 +150,7 @@ void DefaultEcsStartup();
 	ECS_APP_MAIN
 
 
-#define SIMPLE_ECS_APP(ecs_component, eon_path) \
+#define SIMPLE_ECS_APP_(ecs_component, eon_path, eon_args) \
 	PREFAB_BEGIN(App) \
 		ecs_component \
 	PREFAB_END \
@@ -160,12 +160,14 @@ void DefaultEcsStartup();
 		String eon_file  = Serial::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
 			DefaultCreateOnStart<App>(); \
-			TS::DefaultRunner(#ecs_component, eon_file, 0); \
+			TS::DefaultRunner(#ecs_component, eon_file, 0, eon_args); \
 		} \
 		else { \
 			LOG("Eon file was not found"); \
 		} \
 	}
+
+#define SIMPLE_ECS_APP(ecs_component, eon_path) SIMPLE_ECS_APP_(ecs_component, eon_path, "")
 
 NAMESPACE_ECS_END
 

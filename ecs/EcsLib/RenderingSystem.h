@@ -35,7 +35,7 @@ public:
         alpha_multiplier = e.alpha_multiplier;
     }
 #ifdef flagSCREEN
-	Callback1<Shader&> cb;
+	Callback1<GfxShader&> cb;
 #endif
 	//Model* GetModel() {return model ? model->GetModel() : 0;}
 	
@@ -48,9 +48,9 @@ using RenderableRef = Ref<Renderable>;
 
 class RenderingSystem :
 	public System<RenderingSystem>,
-	public BinderIfaceOgl
+	public OglBinderIface
 {
-	OglBuffer* buf = 0;
+	OglBufferT* buf = 0;
 	Array<RenderableRef> rends;
 	Array<ViewableRef> views;
 	
@@ -66,7 +66,7 @@ protected:
     
 public:
 	using Base = System<RenderingSystem>;
-	RTTI_DECL2(RenderingSystem, Base, BinderIfaceOgl)
+	RTTI_DECL2(RenderingSystem, Base, OglBinderIface)
     ECS_SYS_CTOR(RenderingSystem)
 	SYS_DEF_VISIT
 	
@@ -74,7 +74,7 @@ public:
 	void AddRenderable(RenderableRef b);
 	void RemoveViewable(ViewableRef v);
 	void RemoveRenderable(RenderableRef b);
-	void Attach(String key, OglBuffer* b);
+	void Attach(String key, OglBufferT* b);
 	
 };
 

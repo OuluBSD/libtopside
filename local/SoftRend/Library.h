@@ -19,10 +19,11 @@ inline const char* GetUniformName(int i) {
 	}
 }
 
-extern vec3 iResolution;
-extern float iTime;
 
-void FS_SimpleSingle(vec4& fragColor, const vec2& fragCoord );
+
+struct FS_SimpleSingle : SoftShaderBase {
+	void Process(SdlCpuFragmentShaderArgs& args) override;
+};
 
 
 }

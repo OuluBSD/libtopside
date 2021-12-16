@@ -8,7 +8,7 @@ struct Vertex : Moveable<Vertex> {
     vec3 position;
     float pos_project;
     vec3 normal;
-    vec2 tex_coords;
+    vec2 tex_coord;
     
     void SetPosTex(vec3 pos, vec2 tex);
     void Set(vec3 pos, vec3 norm);

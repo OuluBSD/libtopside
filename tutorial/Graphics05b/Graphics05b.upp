@@ -9,5 +9,6 @@ file
 	DrawObj.cpp;
 
 mainconfig
-	"" = "SCREEN";
+	"" = "SCREEN",
+	"" = "SCREEN DEBUG_RT";
 

@@ -8,10 +8,17 @@ class SoftProgram;
 
 
 struct SoftShaderLibrary {
-	typedef void (*FragmentShader)(vec4&, const vec2&);
+	typedef SoftShaderBase* (*ShaderFactory)();
 	
-	static VectorMap<String, FragmentShader> frag_shaders;
+	static VectorMap<String, ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
 	
+	template <class T>
+	static void AddShaderClass(GVar::ShaderType type, String key) {
+		ASSERT(shader_classes[type].Find(key) < 0);
+		shader_classes[type].Add(key, &CreateShader<T>);
+	}
+	template <class T>
+	static SoftShaderBase* CreateShader() {return new T();}
 };
 
 class SoftShader {
@@ -19,7 +26,7 @@ class SoftShader {
 	GVar::ShaderType type;
 	String src;
 	String err;
-	SoftShaderLibrary::FragmentShader fs = 0;
+	SoftShaderBase* s = 0;
 	
 protected:
 	friend class SoftProgram;
@@ -33,14 +40,14 @@ public:
 	bool Create(GVar::ShaderType t);
 	
 	void SetSource(String s);
-	void SetTestShader(SoftShaderLibrary::FragmentShader fs);
 	GVar::ShaderType GetType() const {return type;}
-	SoftShaderLibrary::FragmentShader GetFragment() const {return fs;}
+	SoftShaderBase& Get() {ASSERT(s); return *s;}
 	
-	void operator=(SoftShaderLibrary::FragmentShader fs) {SetTestShader(fs);}
+	void operator=(SoftShaderBase& s) {this->s = &s;}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
 	String GetLastError() const {return err;}
+	
 	
 };
 
