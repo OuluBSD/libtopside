@@ -18,6 +18,8 @@ protected:
 	Vector<SoftShader*> shaders;
 	Vector<SoftUniform> uniforms;
 	GenericShaderArgs args;
+	GenericVertexShaderArgs vargs;
+	GenericFragmentShaderArgs fargs;
 	
 public:
 	typedef SoftProgram CLASSNAME;
@@ -42,6 +44,7 @@ public:
 	void SetVar(int idx, float f0, float f1);
 	void SetVar(int idx, float f0, float f1, float f2);
 	void SetVar(int idx, float f0, float f1, float f2, float f3);
+	void SetVar(int idx, const mat4& mat);
 	
 };
 

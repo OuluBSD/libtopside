@@ -1,4 +1,4 @@
-#include "SoftRend.h"
+#include <Graphics/Graphics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -39,6 +39,11 @@ int SoftProgram::GetParamInt(GVar::ProgParamType type) {
 
 int SoftProgram::GetVarSize(int idx) const {
 	switch (idx) {
+		case Shaders::IVIEW:		return sizeof(GenericVertexShaderArgs::view);
+		case Shaders::ILIGHTDIR:	return sizeof(GenericFragmentShaderArgs::light_dir);
+		/*case Shaders::IPROJ:		return sizeof(GenericVertexShaderArgs::proj);
+		case Shaders::ISCALE:		return sizeof(GenericVertexShaderArgs::scale);
+		case Shaders::IMODEL:		return sizeof(GenericVertexShaderArgs::model);*/
 		case Shaders::IRESOLUTION:	return sizeof(GenericShaderArgs::iResolution);
 		case Shaders::ITIME:		return sizeof(GenericShaderArgs::iTime);
 		default: break;
@@ -86,6 +91,7 @@ void SoftProgram::SetVar(int idx, float f0, float f1) {
 void SoftProgram::SetVar(int idx, float f0, float f1, float f2) {
 	switch (idx) {
 		case Shaders::IRESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
+		case Shaders::ILIGHTDIR: fargs.light_dir = vec3(f0,f1,f2); return;
 		default: break;
 	}
 	ASSERT(0);
@@ -93,6 +99,17 @@ void SoftProgram::SetVar(int idx, float f0, float f1, float f2) {
 
 void SoftProgram::SetVar(int idx, float f0, float f1, float f2, float f3) {
 	TODO
+}
+
+void SoftProgram::SetVar(int idx, const mat4& mat) {
+	switch (idx) {
+		case Shaders::IVIEW:		vargs.view = mat; return;
+		/*case Shaders::IPROJ:		vargs.proj = mat; return;
+		case Shaders::ISCALE:		vargs.scale = mat; return;
+		case Shaders::IMODEL:		vargs.model = mat; return;*/
+		default: break;
+	}
+	ASSERT(0);
 }
 
 

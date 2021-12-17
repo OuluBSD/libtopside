@@ -59,6 +59,8 @@ struct BufferT : GfxBuffer {
 	//void SetBuiltinShader(int i) {test_shader = i;}
 	void SetDataStateOverride(DataState* s) {user_data = s;}
 	
+	DataState& GetState() {return user_data ? *user_data : data;}
+	
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
 	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
 	void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
@@ -84,8 +86,8 @@ struct BufferT : GfxBuffer {
 	void ClearPipeline();
 	void CreatePipeline();
 	void FindVariables();
-	void SetVars(GLint prog, const DataObject& o);
-	void SetVar(int var, GLint prog, const DataObject& o);
+	void SetVars(DataState&, GLint prog, const DataObject& o);
+	void SetVar(DataState&, int var, GLint prog, const DataObject& o);
 	void SetVars(GLint prog, const RealtimeSourceConfig& cfg);
 	void SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg);
 	void ClearTex();

@@ -449,5 +449,9 @@ void OglGfx::DrawVertexElements(int element_limit) {
 	glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
 }
 
+void OglGfx::UniformMatrix4fv(int idx, const mat4& mat) {
+	glUniformMatrix4fv(idx, 1, GL_FALSE, &mat[0][0]);
+}
+
 
 NAMESPACE_TOPSIDE_END

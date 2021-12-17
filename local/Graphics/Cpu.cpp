@@ -114,6 +114,12 @@ void CpuGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	if (prog) prog->SetVar(idx, f0, f1, f2, f3);
 }
 
+void CpuGfx::UniformMatrix4fv(int idx, const mat4& mat) {
+	auto& prog = Local().prog;
+	ASSERT(prog)
+	if (prog) prog->SetVar(idx, mat);
+}
+
 bool CpuGfx::CreateShader(GVar::ShaderType t, NativeShader& new_shdr) {
 	return new_shdr.Create(t);
 }

@@ -8,6 +8,7 @@ Tutorial 5b:
 
 INITBLOCK_(Shaders) {
 	using namespace TS;
+	SoftShaderLibrary::AddShaderClass<VertexShader5>(GVar::VERTEX_SHADER, "tutorial5_vertex");
 	SoftShaderLibrary::AddShaderClass<FragmentShader5>(GVar::FRAGMENT_SHADER, "tutorial5_fragment");
 	
 }

@@ -48,9 +48,9 @@ struct GfxDataObject : RTTIBase {
 	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
 	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
 	
-	mat4 model;
+	/*mat4 model;
 	mat4 scale;
-	mat4 proj;
+	mat4 proj;*/
 	
 	
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
@@ -66,6 +66,7 @@ struct GfxDataState : ErrorReporter {
 	
 	// renderer
     mat4		view;
+    vec3		light_dir;
 	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
 	

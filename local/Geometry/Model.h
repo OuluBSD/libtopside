@@ -61,7 +61,7 @@ public:
         indices.SetCount(3 * triangle_count);
         //tex_coords.SetCount(3 * triangle_count);
     }
-    void SetVertCoord(int i, vec3 v) {vertices[i].position = v;}
+    void SetVertCoord(int i, vec3 v) {vertices[i].position = v.Embed();}
     void SetVertNormal(int i, vec3 v) {vertices[i].normal = v;}
     void SetVertTangent(int i, vec3 v) {}//vertices[i].tangent = v;}
     //void SetTexCoord(int i, vec2 v) {tex_coords[i] = v;}
@@ -75,7 +75,7 @@ public:
     }
     
     int GetTriangleCount() const {return indices.GetCount() / 3;}
-    vec3 GetVertCoord(int i) const {return vertices[i].position;}
+    vec3 GetVertCoord(int i) const {return vertices[i].position.Splice();}
     vec3 GetVertNormal(int i) const {return vertices[i].normal;}
     //vec2 GetTexCoord(int i) const {return tex_coords[i];}
     ivec3 GetTriangleIndices(int i) const {

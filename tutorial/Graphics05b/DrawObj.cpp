@@ -122,6 +122,8 @@ void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	else			state.view = port * perspective * lookat;
 	
 	
+	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	
 	#if 0
 	Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
@@ -183,11 +185,54 @@ void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
 	    gl_Position = projection * view * model * vec4(aPos, 1.0);
 	}*/
 	
-	vec4 pos = a.pos.Extend(1.0f);
-	a.tex_coord_out = a.tex_coords;
-	a.pos_out = a.obj->proj * a.state->view * a.obj->model * pos;
+	// TODO DataObject is_global_view ????
+	
+	int width = a.generic->iResolution[0];
+	int height = a.generic->iResolution[1];
+	vec4 screen = a.va->view * a.v.position.Splice().Embed();
+	screen.Project();
+	a.v.position[0] = (int)((screen[0] + 1.0) * width  / 2.0);
+	a.v.position[1] = (int)((screen[1] + 1.0) * height / 2.0);
+	a.v.position[2] = screen[2];
+	a.v.position[3] = 1.0f;
 }
 
 void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
-	args.frag_color_out = vec4(args.frag_coord[0], args.frag_coord[1], 0, 1);
+	#if 0
+	float w = args.generic->iResolution[0];
+	float h = args.generic->iResolution[1];
+	float x = args.frag_coord[0] / w;
+	float y = args.frag_coord[1] / h;
+	args.frag_color_out = vec4(x, y, 0, 1);
+	#endif
+	
+	ASSERT(args.fa);
+	vec3& n = args.normal;
+	vec3& light_dir = args.fa->light_dir;
+	float m = n * light_dir;
+	float intensity = std::max(0.0f, m);
+	
+	vec4& used_clr = args.frag_color_out;
+	used_clr[3] = 0;
+	/*if (tex_img) {
+		float tex_x = 0, tex_y = 0, bary_sum = 0;
+		for(int i = 0; i < 3; i++) {
+			tex_x += tex[i][0] * bc_screen[i];
+			tex_y += tex[i][1] * bc_screen[i];
+		}
+		int tex_xi = tex_x * tex_img->GetWidth();
+		int tex_yi = tex_y * tex_img->GetHeight();
+		tex_xi = std::max(0, std::min(tex_img->GetWidth() - 1, tex_xi));
+		tex_yi = std::max(0, std::min(tex_img->GetHeight() - 1, tex_yi));
+		const byte* b = tex_img->GetIter(tex_xi, tex_yi);
+		used_clr.r = b[2] * intensity;
+		used_clr.g = b[1] * intensity;
+		used_clr.b = b[0] * intensity;
+	}
+	else {*/
+	used_clr[0] = intensity;
+	used_clr[1] = intensity;
+	used_clr[2] = intensity; /*255 * intensity;*/
+	//}
+	
 }

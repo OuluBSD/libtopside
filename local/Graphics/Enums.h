@@ -8,6 +8,7 @@ namespace GVar {
 enum {
 	VAR_AUDIOTIME,
 	VAR_VIEW,
+	VAR_LIGHTDIR,
 	VAR_PROJECTION,
 	VAR_SCALE,
 	VAR_MODEL,

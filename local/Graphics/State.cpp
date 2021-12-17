@@ -6,6 +6,7 @@ namespace GVar {
 const char* names[GVar::VAR_COUNT+1] = {
 	"iAudioSeconds",
 	"iView",
+	"iLightDir",
 	"iProjection",
 	"iScale",
 	"iModel",

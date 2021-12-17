@@ -5,8 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Vertex : Moveable<Vertex> {
-    vec3 position;
-    float pos_project;
+    vec4 position;
     vec3 normal;
     vec2 tex_coord;
     

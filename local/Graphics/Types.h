@@ -132,6 +132,7 @@ struct CpuGfx {
 	static void Uniform2f(int idx, float f0, float f1);
 	static void Uniform3f(int idx, float f0, float f1, float f2);
 	static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
+	static void UniformMatrix4fv(int idx, const mat4& mat);
 	
 	
 	static void ClearBuffers();
@@ -221,6 +222,7 @@ struct OglGfx {
 	static void Uniform2f(int idx, float f0, float f1) {glUniform2f(idx, f0, f1);}
 	static void Uniform3f(int idx, float f0, float f1, float f2) {glUniform3f(idx, f0, f1, f2);}
 	static void Uniform4f(int idx, float f0, float f1, float f2, float f3) {glUniform4f(idx, f0, f1, f2, f3);}
+	static void UniformMatrix4fv(int idx, const mat4& mat);
 	
 	
 	static void ClearBuffers();

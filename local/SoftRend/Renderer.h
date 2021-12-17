@@ -17,11 +17,28 @@ class SoftRend {
 	bool is_triangle_backside_culling = false;
 	bool is_triangle_frontside_cw = false;
 	
+	SoftVertexBuffer processed_vertices;
+	SoftVertexBuffer* input_vertices = 0;
+	SoftElementBuffer* input_indices = 0;
+	bool use_processed_vertices = false;
+	
 	Vector<Vertex> vertices;
 	Vector<uint32> indices;
 	
 	
+	struct DepthInfo : Moveable<DepthInfo> {
+		uint32 triangle_i;
+	};
+	Vector<DepthInfo> zinfo;
+	Vector<float> zbuffer;
+	
 	void ClearTemp();
+	void ProcessVertexShader(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, SoftVertexArray& vao);
+	void Render(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, SoftVertexArray& vao);
+	void TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c);
+	
+	SoftVertexBuffer& GetVertices() {return use_processed_vertices ? processed_vertices : *input_vertices;}
+	SoftElementBuffer& GetIndices() {return *input_indices;}
 	
 public:
 	typedef SoftRend CLASSNAME;
@@ -38,11 +55,11 @@ public:
 	void SetTriangleFrontsideCCW(bool b=true);
 	void SetViewport(Size sz);
 	
-	void RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr);
+	void RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, bool elements=false);
 	void RenderScreenRect(SoftPipeline& pipe, SoftFramebuffer& fb);
 	void Render(SoftPipeline& pipe, SoftFramebuffer& fb, SoftVertexArray& vao);
-	void Render(SoftFramebuffer& fb, SoftShader& shdr, SoftVertexArray& vao);
-	void RenderTriangle(SoftFramebuffer& fb, SoftShader& shdr, const Vertex& a, const Vertex& b, const Vertex& c);
+	
+	float GetDepthResetValue() const {return is_depth_order_greater ? -1e10f : +1e10f;}
 	
 };
 

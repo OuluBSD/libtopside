@@ -21,6 +21,7 @@ machine sdl.app: {
 				sizeable:		true;
 				env:			event.register;
 				fragshader:		"${FRAGMENT}";
+				vtxshader:		"${VERTEX}";
 			};
 		};
 		

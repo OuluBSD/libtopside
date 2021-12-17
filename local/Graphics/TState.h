@@ -14,15 +14,11 @@ struct VertexShaderArgsT : GfxVertexShaderArgs {
 	RTTI_DECL1(VertexShaderArgsT, GfxVertexShaderArgs)
 	
 	
-	DataState* state = 0;
-	DataObject* obj = 0;
-	vec3 pos;
-	vec3 normal;
-	vec2 tex_coords;
-	vec4 pos_out;
-	vec2 tex_coord_out;
-	
 	GenericShaderArgs* generic = 0;
+	GenericVertexShaderArgs* va = 0;
+	
+	Vertex v;
+	
 };
 
 template <class Gfx>
@@ -31,10 +27,13 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
 	
 	
+	GenericShaderArgs* generic = 0;
+	GenericFragmentShaderArgs* fa = 0;
+	
+	vec3 normal;
 	vec2 frag_coord;
 	vec4 frag_color_out;
 	
-	GenericShaderArgs* generic = 0;
 };
 
 template <class Gfx>
@@ -60,7 +59,7 @@ struct DataObjectT : GfxDataObject {
     mat4 proj;
     mat4 scale;
     mat4 model;
-    bool is_global_view = false;
+    //bool is_global_view = false;
     int id = -1;
 	
 	

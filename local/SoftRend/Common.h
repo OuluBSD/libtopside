@@ -23,7 +23,18 @@ struct GenericShaderArgs {
 	
 };
 
+struct GenericVertexShaderArgs {
+    mat4 view;
+    /*mat4 proj;
+    mat4 scale;
+    mat4 model;*/
+    
+};
 
+struct GenericFragmentShaderArgs {
+	vec3 light_dir;
+	
+};
 
 NAMESPACE_TOPSIDE_END
 

@@ -415,13 +415,13 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	// render VBA from state
 	for (DataObject& o : data.objects) {
-		SetVars(rt.prog, o);
+		SetVars(data, rt.prog, o);
 		o.Paint();
 	}
 	
 	if (user_data) {
 		for (DataObject& o : user_data->objects) {
-			SetVars(rt.prog, o);
+			SetVars(*user_data, rt.prog, o);
 			o.Paint();
 		}
 	}
@@ -549,36 +549,42 @@ void BufferT<Gfx>::FindVariables() {
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVars(GLint prog, const DataObject& o) {
+void BufferT<Gfx>::SetVars(DataState& d, GLint prog, const DataObject& o) {
 	for(int i = 0; i < GVar::VAR_COUNT; i++)
 		if (GVar::is_obj_var[i] && rt.var_idx[i] >= 0)
-			SetVar(i, prog, o);
+			SetVar(d, i, prog, o);
 }
 
 template <class Gfx>
-void BufferT<Gfx>::SetVar(int var, GLint prog, const DataObject& o) {
-	TODO
-	#if 0
+void BufferT<Gfx>::SetVar(DataState& data, int var, GLint prog, const DataObject& o) {
 	using namespace GVar;
 	int uindex = rt.var_idx[var];
 	ASSERT(uindex >= 0);
 	if (var == VAR_VIEW) {
+		Gfx::UniformMatrix4fv(uindex, data.view);
+	}
+	else if (var == VAR_LIGHTDIR) {
+		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
+	}
+	else TODO
+	#if 0
+	if (var == VAR_VIEW) {
 		if (o.is_global_view)
-			TODO
+			Gfx::UniformMatrix4fv(uindex, data.view);
 		else
-			Gfx::UniformMatrix4fv(uindex, 1, GL_FALSE, &o.view[0][0]);
+			Gfx::UniformMatrix4fv(uindex, o.view);
 	}
 	else if (var == VAR_PROJECTION) {
 		/*if (o.is_global_proj)
 			TODO
 		else*/
-		Gfx::UniformMatrix4fv(uindex, 1, GL_FALSE, &o.proj[0][0]);
+		Gfx::UniformMatrix4fv(uindex, o.proj);
 	}
 	else if (var == VAR_SCALE) {
-		Gfx::UniformMatrix4fv(uindex, 1, GL_FALSE, &o.scale[0][0]);
+		Gfx::UniformMatrix4fv(uindex, o.scale);
 	}
 	else if (var == VAR_MODEL) {
-		Gfx::UniformMatrix4fv(uindex, 1, GL_FALSE, &o.model[0][0]);
+		Gfx::UniformMatrix4fv(uindex, o.model);
 	}
 	#endif
 }
@@ -887,9 +893,9 @@ bool BufferT<SdlCpuGfx>::BuiltinShader() {
 			s.enabled = true;
 			if (!rt.prog) {
 				rt.prog.Create();
-				rt.prog.Attach(rt.shaders[i].shader);
 				rt.pipeline.Create();
 			}
+			rt.prog.Attach(rt.shaders[i].shader);
 			rt.pipeline.Use(rt.prog, 1 << i);
 			if (i == GVar::FRAGMENT_SHADER)
 				succ = true;
