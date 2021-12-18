@@ -24,13 +24,17 @@ struct VertexShaderArgsT : GfxVertexShaderArgs {
 template <class Gfx>
 struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	using Base = FragmentShaderArgsT<Gfx>;
+	using NativeColorBuffer = typename Gfx::NativeColorBuffer;
 	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
 	
 	
 	GenericShaderArgs* generic = 0;
 	GenericFragmentShaderArgs* fa = 0;
+	NativeColorBuffer* tex_img = NULL;
 	
 	vec3 normal;
+	vec2 tex_coord;
+	vec2 bc_screen;
 	vec2 frag_coord;
 	vec4 frag_color_out;
 	
@@ -49,7 +53,7 @@ struct DataObjectT : GfxDataObject {
 	using DataStateBase = DataStateT<Gfx>;
 	
 	DataStateBase* state = 0;
-	VectorMap<int,NatTex> tex;
+	//VectorMap<int,NatTex> tex;
 	uint32 element_count = 0;
 	NatVertexArray vao;
 	NatVertexBuffer vbo;
@@ -59,7 +63,6 @@ struct DataObjectT : GfxDataObject {
     mat4 proj;
     mat4 scale;
     mat4 model;
-    //bool is_global_view = false;
     int id = -1;
 	
 	
@@ -68,7 +71,7 @@ struct DataObjectT : GfxDataObject {
 	void SetState(DataStateBase* state) {this->state = state;}
 	void Refresh(Mesh& m) override;
     void FreeOgl() {TODO}
-    void Paint() override;
+    void Paint(DataState& state);
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
     
     GVar::GfxType GetGfxType() const override {return Gfx::Type;}
@@ -79,20 +82,20 @@ template <class Gfx>
 struct DataStateT : GfxDataState {
 	RTTI_DECL1(DataStateT, GfxDataState)
 	using Base = DataStateT<Gfx>;
-	using NatColorBuf = typename Gfx::NativeColorBuffer;
+	using NativeColorBuffer = typename Gfx::NativeColorBuffer;
 	using NatDepthBuf = typename Gfx::NativeDepthBuffer;
 	using NatFrameBuf = typename Gfx::NativeFrameBuffer;
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
-	using NatShader = typename Gfx::NativeShader;
+	using NatShader   = typename Gfx::NativeShader;
 	using ShaderState = typename Gfx::ShaderState;
-	using InputState = typename Gfx::InputState;
-	using DataObject = typename Gfx::DataObject;
+	using InputState  = typename Gfx::InputState;
+	using DataObject  = typename Gfx::DataObject;
 	using Framebuffer = typename Gfx::Framebuffer;
 	
 	
 	Array<DataObject> objects;
-	
+	Array<NativeColorBuffer> textures;
 	
 	DataStateT();
 	DataObject& AddObject();
@@ -104,6 +107,7 @@ struct DataStateT : GfxDataState {
 protected:
 	#ifdef flagASSIMP
 	bool LoadModelAssimp(ModelLoader& l, DataObject& o, String path);
+	bool LoadModelTextures(ModelLoader& l);
     void ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
     void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);

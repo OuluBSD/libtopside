@@ -32,7 +32,7 @@ struct GfxDataObject : RTTIBase {
 	
 	virtual ~GfxDataObject() {}
 	
-    virtual void Paint() = 0;
+    //virtual void Paint() = 0;
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
     virtual void Refresh(Mesh& m) = 0;
     virtual GVar::GfxType GetGfxType() const = 0;
@@ -51,6 +51,7 @@ struct GfxDataObject : RTTIBase {
 	/*mat4 model;
 	mat4 scale;
 	mat4 proj;*/
+	int tex_id[TEXTYPE_COUNT] = {0,0,0,0,0,0, 0,0,0,0,0,0};
 	
 	
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}

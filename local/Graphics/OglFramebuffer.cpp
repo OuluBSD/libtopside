@@ -37,6 +37,7 @@ bool OglFramebuffer::Create(int w, int h, int channels) {
 	
 	// The texture we're going to render to
 	glGenTextures(1, &tex);
+	glGenTextures(1, &tex);
 	
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, tex);

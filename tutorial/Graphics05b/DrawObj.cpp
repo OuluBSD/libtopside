@@ -82,6 +82,7 @@ void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	SdlCpuDataState& state = fb.GetState();
 	
+	float ratio = (float)height / (float)width;
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
 	float angle = f * (2.0 * M_PI);
@@ -116,12 +117,14 @@ void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	vec3 center {0, 0, 0};
 	vec3 up {0, 1, 0};
 	mat4 lookat = LookAt(eye, center, up);
-	mat4 port = GetViewport(-1 + x_mod, -1 + y_mod, 2 - y_mod, 2 + y_mod, 255);
+	mat4 port;
 	
-	if (phase == 0)	state.view = perspective * lookat;
-	else			state.view = port * perspective * lookat;
+	if (phase == 0)
+		port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - x_mod) * ratio, 2 + y_mod, 255);
+	else
+		port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 255);
 	
-	
+	state.view = port * perspective * lookat;
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
 	
 	#if 0
@@ -214,25 +217,25 @@ void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
 	
 	vec4& used_clr = args.frag_color_out;
 	used_clr[3] = 0;
-	/*if (tex_img) {
-		float tex_x = 0, tex_y = 0, bary_sum = 0;
-		for(int i = 0; i < 3; i++) {
-			tex_x += tex[i][0] * bc_screen[i];
-			tex_y += tex[i][1] * bc_screen[i];
-		}
-		int tex_xi = tex_x * tex_img->GetWidth();
-		int tex_yi = tex_y * tex_img->GetHeight();
-		tex_xi = std::max(0, std::min(tex_img->GetWidth() - 1, tex_xi));
-		tex_yi = std::max(0, std::min(tex_img->GetHeight() - 1, tex_yi));
-		const byte* b = tex_img->GetIter(tex_xi, tex_yi);
-		used_clr.r = b[2] * intensity;
-		used_clr.g = b[1] * intensity;
-		used_clr.b = b[0] * intensity;
+	
+	if (args.tex_img) {
+		Texture& tex = args.tex_img->GetGeomTex();
+		float tex_x = args.tex_coord[0];
+		float tex_y = args.tex_coord[1];
+		float bary_sum = 0;
+		int tex_xi = tex_x * tex.GetWidth();
+		int tex_yi = tex_y * tex.GetHeight();
+		tex_xi = std::max(0, std::min(tex.GetWidth() - 1, tex_xi));
+		tex_yi = std::max(0, std::min(tex.GetHeight() - 1, tex_yi));
+		const byte* b = tex.GetIter(tex_xi, tex_yi);
+		used_clr[0] = b[2] * intensity;
+		used_clr[1] = b[1] * intensity;
+		used_clr[2] = b[0] * intensity;
 	}
-	else {*/
-	used_clr[0] = intensity;
-	used_clr[1] = intensity;
-	used_clr[2] = intensity; /*255 * intensity;*/
-	//}
+	else {
+		used_clr[0] = intensity;
+		used_clr[1] = intensity;
+		used_clr[2] = intensity;
+	}
 	
 }

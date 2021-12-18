@@ -18,7 +18,11 @@ DataObjectT<Gfx>::~DataObjectT() {
 template <class Gfx>
 void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	ASSERT(!vao && !vbo && !ebo);
-
+	
+	// copy texture ids
+	static_assert(sizeof(tex_id) == sizeof(m.tex_id), "tex_id mismatch");
+	memcpy(tex_id, m.tex_id, sizeof(tex_id));
+	
 	// Create objects
 	Gfx::GenVertexArray(vao);
 	Gfx::GenVertexBuffer(vbo);
@@ -40,10 +44,22 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 }
 
 template <class Gfx>
-void DataObjectT<Gfx>::Paint() {
+void DataObjectT<Gfx>::Paint(DataState& state) {
 	ASSERT(element_count > 0)
 	if (!element_count)
 		return;
+	
+	for(int i = 0; i < TEXTYPE_COUNT; i++) {
+		if (tex_id[i] >= 0) {
+			if (i == TEXTYPE_DIFFUSE) {
+				TODO
+				// set uniform, NOT bind texture
+			}
+			else TODO
+		}
+	}
+	TODO // fix prev
+	
 	
 	// bind vbos for vertex array and index array
 	Gfx::BindVertexArray(vao);
@@ -101,9 +117,61 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, DataObject& o, String path
     l.model->path = path;
     l.model->directory = GetFileDirectory(path);
 	
+	if (!LoadModelTextures(l))
+		return false;
+	
     ProcessNode(o, *l.model, scene->mRootNode, scene);
     
     return true;
+}
+
+template <class Gfx>
+bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
+	ModelMesh& m = *l.model;
+	
+	int prev_count = textures.GetCount();
+	int count = m.textures.GetCount();
+	textures.SetCount(count);
+	for(int i = prev_count; i < count; i++) textures[i] = Null;
+	
+	for(int i = 0; i < m.textures.GetCount(); i++) {
+		NativeColorBuffer& buf = textures[i];
+		Texture& tex = m.textures[i];
+		
+		if (buf || tex.IsEmpty())
+			continue;
+		
+		
+		Gfx::GenTexture(buf);
+		ASSERT(buf);
+		
+		Gfx::BindTexture(GVar::TEXTYPE_2D, buf);
+		Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
+		
+		Gfx::TexImage2D(tex);
+		
+		TODO
+		//buf = &tex;
+		
+		/*
+		GLuint& gl_tex = this->tex.GetAdd(tex_id, 0);
+		
+		if (gl_tex == 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
+			glGenTextures(1, (GLuint*)&gl_tex);
+			glBindTexture(GL_TEXTURE_2D, gl_tex);
+			ASSERT(gl_tex > 0);
+		
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+		*/
+		TODO
+		
+	}
+	
+	
+	return true;
 }
 
 template <class Gfx>

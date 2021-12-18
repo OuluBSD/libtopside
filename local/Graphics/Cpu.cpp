@@ -214,6 +214,8 @@ void CpuGfx::BindFramebufferEXT(NativeFrameBuffer& fb) {
 }
 
 void CpuGfx::BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {
+	auto& l = Local();
+	ASSERT(l.texture);
 	
 	TODO
 	
@@ -302,7 +304,15 @@ void CpuGfx::DrawVertexElements(int element_limit) {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
+	l.rend.BindTexture(l.texture);
 	l.rend.Render(*l.pipe, *l.fb, *l.vao);
+	l.rend.BindTexture(0);
+}
+
+void CpuGfx::TexImage2D(Texture& tex) {
+	auto& l = Local();
+	ASSERT(l.texture);
+	*l.texture = &tex;
 }
 
 

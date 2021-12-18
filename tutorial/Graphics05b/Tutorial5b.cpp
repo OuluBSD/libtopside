@@ -47,7 +47,10 @@ void Tutorial5b::Render(Draw& fb) {
 	}
 	
 	Size sz = fb.GetPageSize();
-	height = width = std::min(sz.cx, sz.cy);
+	//height = width = std::min(sz.cx, sz.cy);
+	width = 1280;
+	height = 720;
+	
 	//fb.DrawRect(sz, Black());
 	
 	DrawObj(*sd, true);

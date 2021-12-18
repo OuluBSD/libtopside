@@ -70,6 +70,8 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	GenericShaderArgs& g = prog.args;
 	frag_args.generic = &g;
 	frag_args.fa = &prog.fargs;
+	frag_args.tex_img = input_texture;
+	TODO // use uniform instead of input_texture
 	
 	if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
 		g.iResolution = vec3(w, h, 0);
@@ -77,10 +79,12 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	vec2& coord = frag_args.frag_coord;
 	vec4& out = frag_args.frag_color_out;
 	vec3& normal = frag_args.normal;
+	vec2& bc_screen = frag_args.bc_screen;
+	vec2& tex_coord = frag_args.tex_coord;
 	
 	if (!elements) {
 		for (int y = 0; y < h; y++) {
-			byte* it = data + y * pitch;
+			byte* it = data + (h - 1 - y) * pitch;
 			coord[1] = y;
 			for (int x = 0; x < w; x++) {
 				coord[0] = x;
@@ -102,7 +106,7 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 		const uint32* indices = GetIndices().indices.Begin();
 		ASSERT(stride >= 1 && stride <= 4);
 		for (int y = 0; y < h; y++) {
-			byte* it = data + y * pitch;
+			byte* it = data + (h - 1 - y) * pitch;
 			coord[1] = y;
 			for (int x = 0; x < w; x++) {
 				coord[0] = x;
@@ -126,12 +130,17 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 						vec3 in_a = input_vertices->vertices[idx_a].position.Splice();
 						vec3 in_b = input_vertices->vertices[idx_b].position.Splice();
 						vec3 in_c = input_vertices->vertices[idx_c].position.Splice();
-						normal = (in_c - in_a) ^
-								 (in_b - in_a);
+						normal = (in_c - in_a) ^ (in_b - in_a);
 						normal.Normalize();
 					}
 					else
 						normal.Clear();
+					
+					bc_screen = zinfo->bc_screen;
+					
+					tex_coord = a.tex_coord * bc_screen
+							  + b.tex_coord * bc_screen
+							  + c.tex_coord * bc_screen;
 					
 					fs.Process(frag_args);
 					
@@ -243,7 +252,9 @@ void SoftRend::TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthIn
 			float& zmem = zbuffer[pos];
 			if ((greater && zmem < z) || (!greater && zmem > z)) {
 				zmem = z;
-				zinfo[pos] = info;
+				auto& i = zinfo[pos];
+				i.triangle_i = info.triangle_i;
+				i.bc_screen = bc_screen.Splice();
 			}
 		}
 	}

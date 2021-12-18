@@ -58,6 +58,11 @@ typedef enum {
 	DEFAULT_FILTER = FILTER_LINEAR
 } Filter;
 
+#define FILTER_LIST \
+	FILTER(NEAREST) \
+	FILTER(LINEAR) \
+	FILTER(MIPMAP)
+
 typedef enum {
 	WRAP_CLAMP,
 	WRAP_REPEAT,
@@ -65,6 +70,9 @@ typedef enum {
 	DEFAULT_WRAP = WRAP_REPEAT
 } Wrap;
 
+#define WRAP_LIST \
+	WRAP(CLAMP) \
+	WRAP(REPEAT)
 
 
 

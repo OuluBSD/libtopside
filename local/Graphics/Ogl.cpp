@@ -357,8 +357,41 @@ void OglGfx::DeleteProgramPipeline(NativePipeline& pipe) {
 	pipe = 0;
 }
 
-void OglGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
-	TODO
+void OglGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap wrap) {
+	GLenum gl_t = 0;
+	switch (type) {
+		#define TEX_TYPE(x) case GVar::TEXTYPE##x: gl_t = GL_TEXTURE##x; break;
+		GVAR_TEXTYPE_LIST
+		#undef TEX_TYPE
+		default: break;
+	}
+	ASSERT(gl_t > 0);
+	
+	GLenum gl_filter = 0;
+	switch (filter) {
+		#define FILTER(x) case GVar::FILTER_##x: gl_filter = GL_##x; break;
+		FILTER_LIST
+		#undef FILTER
+		default: break;
+	}
+	ASSERT(gl_filter > 0);
+	
+	GLenum gl_wrap = 0;
+	switch (wrap) {
+		#define WRAP(x) case GVar::WRAP_##x: gl_wrap = GL_##x; break;
+		WRAP_LIST
+		#undef WRAP
+		default: break;
+	}
+	ASSERT(gl_wrap > 0);
+	
+	glTexParameteri(gl_t, GL_TEXTURE_MIN_FILTER, gl_filter);
+	glTexParameteri(gl_t, GL_TEXTURE_MAG_FILTER, gl_filter);
+	
+	glTexParameteri(type, GL_TEXTURE_WRAP_S, gl_wrap);
+	glTexParameteri(type, GL_TEXTURE_WRAP_T, gl_wrap);
+	if (type == GVar::TEXTYPE_3D)
+		glTexParameteri(type, GL_TEXTURE_WRAP_R, gl_wrap);
 }
 
 bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
@@ -451,6 +484,21 @@ void OglGfx::DrawVertexElements(int element_limit) {
 
 void OglGfx::UniformMatrix4fv(int idx, const mat4& mat) {
 	glUniformMatrix4fv(idx, 1, GL_FALSE, &mat[0][0]);
+}
+
+void OglGfx::TexImage2D(Texture& tex) {
+	TODO
+	/*
+	int channels = pitch / width;
+	glTexImage2D(
+		GL_TEXTURE_2D,
+		0,
+		GL_RGBA,
+		width, height,
+		0,
+		channels == 4 ? GL_BGRA : GL_BGR,
+		GL_UNSIGNED_BYTE, data.Begin());
+	*/
 }
 
 

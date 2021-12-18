@@ -416,13 +416,13 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	// render VBA from state
 	for (DataObject& o : data.objects) {
 		SetVars(data, rt.prog, o);
-		o.Paint();
+		o.Paint(data);
 	}
 	
 	if (user_data) {
 		for (DataObject& o : user_data->objects) {
 			SetVars(*user_data, rt.prog, o);
-			o.Paint();
+			o.Paint(*user_data);
 		}
 	}
 	
@@ -839,7 +839,7 @@ const TNG NativeFrameBuffer* BufferT<Gfx>::GetInputTex(int input_i) const {
 template <class Gfx>
 GVar::TextureType BufferT<Gfx>::GetTexType(int input_i) const {
 	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
-		return GVar::TEXTYPE_INVALID;
+		return GVar::TEXTYPE_2D;
 	
 	const InputState& in = rt.inputs[input_i];
 	
@@ -847,7 +847,7 @@ GVar::TextureType BufferT<Gfx>::GetTexType(int input_i) const {
 		return GVar::TEXTYPE_3D;
 	
 	else if (in.type == GVar::CUBEMAP_INPUT)
-		return GVar::TEXTYPE_CUBEMAP;
+		return GVar::TEXTYPE_CUBE_MAP;
 	
 	else
 		return GVar::TEXTYPE_2D;
