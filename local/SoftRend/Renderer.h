@@ -20,7 +20,7 @@ class SoftRend {
 	SoftVertexBuffer processed_vertices;
 	SoftVertexBuffer* input_vertices = 0;
 	SoftElementBuffer* input_indices = 0;
-	SoftFramebuffer* input_texture = 0;
+	const SoftFramebuffer* input_texture[TEXTYPE_COUNT];
 	bool use_processed_vertices = false;
 	
 	Vector<Vertex> vertices;
@@ -29,7 +29,7 @@ class SoftRend {
 	
 	struct DepthInfo : Moveable<DepthInfo> {
 		uint32 triangle_i;
-		vec2 bc_screen;
+		vec3 bc_screen;
 	};
 	Vector<DepthInfo> zinfo;
 	Vector<float> zbuffer;
@@ -63,7 +63,7 @@ public:
 	
 	float GetDepthResetValue() const {return is_depth_order_greater ? -1e10f : +1e10f;}
 	
-	void BindTexture(SoftFramebuffer* tex) {input_texture = tex;}
+	void BindTexture(int type, const SoftFramebuffer* tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
 	
 };
 

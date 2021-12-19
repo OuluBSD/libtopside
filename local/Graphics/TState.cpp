@@ -19,10 +19,6 @@ template <class Gfx>
 void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	ASSERT(!vao && !vbo && !ebo);
 	
-	// copy texture ids
-	static_assert(sizeof(tex_id) == sizeof(m.tex_id), "tex_id mismatch");
-	memcpy(tex_id, m.tex_id, sizeof(tex_id));
-	
 	// Create objects
 	Gfx::GenVertexArray(vao);
 	Gfx::GenVertexBuffer(vbo);
@@ -44,21 +40,30 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 }
 
 template <class Gfx>
+void DataObjectT<Gfx>::RefreshTexture(Mesh& m) {
+	// copy texture ids
+	static_assert(sizeof(tex_id) == sizeof(m.tex_id), "tex_id mismatch");
+	memcpy(tex_id, m.tex_id, sizeof(tex_id));
+}
+	
+template <class Gfx>
 void DataObjectT<Gfx>::Paint(DataState& state) {
 	ASSERT(element_count > 0)
 	if (!element_count)
 		return;
 	
 	for(int i = 0; i < TEXTYPE_COUNT; i++) {
-		if (tex_id[i] >= 0) {
-			if (i == TEXTYPE_DIFFUSE) {
-				TODO
-				// set uniform, NOT bind texture
-			}
-			else TODO
+		int id = tex_id[i];
+		int ch = TEXTYPE_OFFSET + i;
+		Gfx::ActiveTexture(ch);
+		if (id >= 0) {
+			auto& tex = state.textures[id];
+			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+		}
+		else {
+			Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		}
 	}
-	TODO // fix prev
 	
 	
 	// bind vbos for vertex array and index array
@@ -96,8 +101,8 @@ typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, String path) {
-	return LoadModelAssimp(l, AddObject(), path);
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o, String path) {
+	return LoadModelAssimp(l, o, path);
 }
 
 #ifdef flagASSIMP
@@ -117,16 +122,13 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, DataObject& o, String path
     l.model->path = path;
     l.model->directory = GetFileDirectory(path);
 	
-	if (!LoadModelTextures(l))
-		return false;
-	
     ProcessNode(o, *l.model, scene->mRootNode, scene);
     
     return true;
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
+bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, DataObject& o) {
 	ModelMesh& m = *l.model;
 	
 	int prev_count = textures.GetCount();
@@ -145,31 +147,15 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l) {
 		Gfx::GenTexture(buf);
 		ASSERT(buf);
 		
-		Gfx::BindTexture(GVar::TEXTYPE_2D, buf);
+		Gfx::ActiveTexture(CHANNEL_NONE);
+		Gfx::BindTextureRW(GVar::TEXTYPE_2D, buf);
 		Gfx::TexParameteri(GVar::TEXTYPE_2D, GVar::FILTER_LINEAR, GVar::WRAP_REPEAT);
-		
 		Gfx::TexImage2D(tex);
-		
-		TODO
-		//buf = &tex;
-		
-		/*
-		GLuint& gl_tex = this->tex.GetAdd(tex_id, 0);
-		
-		if (gl_tex == 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {
-			glGenTextures(1, (GLuint*)&gl_tex);
-			glBindTexture(GL_TEXTURE_2D, gl_tex);
-			ASSERT(gl_tex > 0);
-		
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glGenerateMipmap(GL_TEXTURE_2D);
-		}
-		*/
-		TODO
-		
+		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
+		Gfx::GenerateMipmap(GVar::TEXTYPE_2D);
 	}
 	
+    RefreshTexture(o, *l.model);
 	
 	return true;
 }
@@ -212,6 +198,9 @@ void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, 
 		}
 		else
 		    vertex.tex_coord = vec2(0.0f, 0.0f);
+		
+		ASSERT(vertex.tex_coord[0] >= 0.0f && vertex.tex_coord[0] <= 1.0f);
+		ASSERT(vertex.tex_coord[1] >= 0.0f && vertex.tex_coord[1] <= 1.0f);
     }
     
     // process indices
@@ -231,6 +220,17 @@ void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, 
     }
 
 	o.Refresh(out);
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::RefreshTexture(DataObject& o, ModelMesh& model) {
+	for (Mesh& mesh : model.meshes)
+		RefreshTexture(o, model, mesh);
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::RefreshTexture(DataObject& o, ModelMesh& model, Mesh& out) {
+	o.RefreshTexture(out);
 }
 
 template <class Gfx>

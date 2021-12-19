@@ -32,10 +32,10 @@ void SoftFramebuffer::ClearDataAll() {
 	
 }
 
-void SoftFramebuffer::SetParam(int type, GVar::Filter filter, GVar::Wrap repeat) {
-	
-	TODO
-	
+void SoftFramebuffer::SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
+	ASSERT(type >= 0 && type < GVar::TEXTYPE_COUNT);
+	this->filter[type] = filter;
+	this->wrap[type] = wrap;
 }
 
 

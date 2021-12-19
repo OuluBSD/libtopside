@@ -70,7 +70,8 @@ void CpuGfx::DrawBuffers(GVar::RenderTarget tgt) {
 }*/
 
 void CpuGfx::ActiveTexture(int ch) {
-	TODO
+	ASSERT(ch >= 0 && ch < CHANNEL_COUNT);
+	Local().active_texture = ch;
 }
 
 /*void CpuRendererBase::ActivateNextFrame() {
@@ -200,7 +201,7 @@ void CpuGfx::DeleteProgramPipeline(NativePipeline& pipe) {
 	pipe.Clear();
 }
 
-void CpuGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat) {
+void CpuGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	if (fb)
@@ -213,12 +214,26 @@ void CpuGfx::BindFramebufferEXT(NativeFrameBuffer& fb) {
 	l.fb = &fb;
 }
 
-void CpuGfx::BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {
-	auto& l = Local();
-	ASSERT(l.texture);
-	
-	TODO
-	
+void CpuGfx::BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex) {
+	auto& t = Local().T();
+	t.r = &tex;
+	t.rw = 0;
+}
+
+void CpuGfx::BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex) {
+	auto& t = Local().T();
+	t.r = 0;
+	t.rw = &tex;
+}
+
+void CpuGfx::UnbindTexture(GVar::TextureType type) {
+	auto& t = Local().T();
+	t.r = 0;
+	t.rw = 0;
+}
+
+void CpuGfx::GenerateMipmap(GVar::TextureType type) {
+	// not supported
 }
 
 void CpuGfx::BindFramebufferDefault() {
@@ -304,15 +319,17 @@ void CpuGfx::DrawVertexElements(int element_limit) {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	l.rend.BindTexture(l.texture);
+	for(int i = 0; i < TEXTYPE_COUNT; i++)
+		l.rend.BindTexture(i, l.texture[i].GetReadTexture());
+	
 	l.rend.Render(*l.pipe, *l.fb, *l.vao);
-	l.rend.BindTexture(0);
 }
 
 void CpuGfx::TexImage2D(Texture& tex) {
-	auto& l = Local();
-	ASSERT(l.texture);
-	*l.texture = &tex;
+	auto& t = Local().T();
+	ASSERT(!t.r);
+	ASSERT(t.rw);
+	*t.rw = &tex;
 }
 
 

@@ -30,11 +30,11 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	
 	GenericShaderArgs* generic = 0;
 	GenericFragmentShaderArgs* fa = 0;
-	NativeColorBuffer* tex_img = NULL;
+	const NativeColorBuffer* tex_img[TEXTYPE_COUNT];
 	
 	vec3 normal;
 	vec2 tex_coord;
-	vec2 bc_screen;
+	vec3 bc_screen;
 	vec2 frag_coord;
 	vec4 frag_color_out;
 	
@@ -70,6 +70,7 @@ struct DataObjectT : GfxDataObject {
 	~DataObjectT();
 	void SetState(DataStateBase* state) {this->state = state;}
 	void Refresh(Mesh& m) override;
+	void RefreshTexture(Mesh& m);
     void FreeOgl() {TODO}
     void Paint(DataState& state);
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
@@ -102,12 +103,14 @@ struct DataStateT : GfxDataState {
 	GfxDataObject& CreateObject() override {return AddObject();}
 	
 	void Refresh(ModelMesh& m) override {TODO}
-	bool LoadModel(ModelLoader& l, String path) override;
+	bool LoadModel(ModelLoader& l, DataObject& o, String path);
+	bool LoadModelTextures(ModelLoader& l, DataObject& o);
 	
 protected:
 	#ifdef flagASSIMP
 	bool LoadModelAssimp(ModelLoader& l, DataObject& o, String path);
-	bool LoadModelTextures(ModelLoader& l);
+    void RefreshTexture(DataObject& o, ModelMesh& model);
+    void RefreshTexture(DataObject& o, ModelMesh& model, Mesh& out);
     void ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
     void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);

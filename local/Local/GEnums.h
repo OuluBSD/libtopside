@@ -74,6 +74,19 @@ typedef enum {
 	WRAP(CLAMP) \
 	WRAP(REPEAT)
 
+typedef enum : uint32 {
+	TEXTYPE_3D,
+	TEXTYPE_CUBE_MAP,
+	TEXTYPE_2D,
+	
+	TEXTYPE_COUNT
+} TextureType;
+
+#define GVAR_TEXTYPE_LIST \
+	TEX_TYPE(_3D) \
+	TEX_TYPE(_CUBE_MAP) \
+	TEX_TYPE(_2D)
+
 
 
 

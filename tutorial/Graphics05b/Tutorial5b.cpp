@@ -41,9 +41,12 @@ void Tutorial5b::Render(Draw& fb) {
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-		if (!state.LoadModel(loader, obj_path))
+		auto& o = state.AddObject();
+		if (!state.LoadModel(loader, o, obj_path))
 			Panic("Couldn't load model: " + obj_path);
 		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+		if (!state.LoadModelTextures(loader, o))
+			Panic("Couldn't load model textures: " + obj_path);
 	}
 	
 	Size sz = fb.GetPageSize();

@@ -73,7 +73,7 @@ struct GfxDataState : ErrorReporter {
 	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
-	virtual bool LoadModel(ModelLoader& l, String path) = 0;
+	//virtual bool LoadModel(ModelLoader& l, String path) = 0;
 	
 };
 

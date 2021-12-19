@@ -143,6 +143,16 @@ enum TexType {
     TEXTYPE_COUNT
 };
 
+/*
+Texture channel ranges:
+	0 - 12:	TexType
+	13 - 16: shadertoy compat channels
+*/
+static const int TEXTYPE_OFFSET = 0;
+static const int COMPAT_COUNT = 4;
+static const int COMPAT_OFFSET = TEXTYPE_COUNT;
+static const int CHANNEL_COUNT = TEXTYPE_COUNT + COMPAT_COUNT;
+static const int CHANNEL_NONE = 0;
 
 NAMESPACE_TOPSIDE_END
 

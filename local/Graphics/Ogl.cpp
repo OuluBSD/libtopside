@@ -25,6 +25,20 @@ OpenGLMessageCallback( GLenum source,
 	LOG(s);
 }
 
+GLenum GetOglTextureType(GVar::TextureType type) {
+	GLenum gl_t = 0;
+	switch (type) {
+		#define TEX_TYPE(x) case GVar::TEXTYPE##x: gl_t = GL_TEXTURE##x; break;
+		GVAR_TEXTYPE_LIST
+		#undef TEX_TYPE
+		default: break;
+	}
+	ASSERT(gl_t > 0);
+	return gl_t;
+}
+
+
+
 
 
 void OglGfx::SetDebugOutput(bool b) {
@@ -136,8 +150,16 @@ void OglGfx::ActiveTexture(int ch) {
 	glActiveTexture(GL_TEXTURE0 + ch);
 }
 
-void OglGfx::BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex) {
-	TODO //glBindTexture(GetTexType(ch), *tex);
+void OglGfx::BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex) {
+	glBindTexture(GetOglTextureType(type), tex);
+}
+
+void OglGfx::BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex) {
+	glBindTexture(GetOglTextureType(type), tex);
+}
+
+void OglGfx::UnbindTexture(GVar::TextureType type) {
+	glBindTexture(GetOglTextureType(type), 0);
 }
 
 /*void OglRendererBase::ActivateNextFrame() {
@@ -357,15 +379,8 @@ void OglGfx::DeleteProgramPipeline(NativePipeline& pipe) {
 	pipe = 0;
 }
 
-void OglGfx::TexParameteri(int type, GVar::Filter filter, GVar::Wrap wrap) {
-	GLenum gl_t = 0;
-	switch (type) {
-		#define TEX_TYPE(x) case GVar::TEXTYPE##x: gl_t = GL_TEXTURE##x; break;
-		GVAR_TEXTYPE_LIST
-		#undef TEX_TYPE
-		default: break;
-	}
-	ASSERT(gl_t > 0);
+void OglGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
+	GLenum gl_t = GetOglTextureType(type);
 	
 	GLenum gl_filter = 0;
 	switch (filter) {
@@ -499,6 +514,10 @@ void OglGfx::TexImage2D(Texture& tex) {
 		channels == 4 ? GL_BGRA : GL_BGR,
 		GL_UNSIGNED_BYTE, data.Begin());
 	*/
+}
+
+void OglGfx::GenerateMipmap(GVar::TextureType type) {
+	glGenerateMipmap(GetOglTextureType(type));
 }
 
 

@@ -676,11 +676,12 @@ void BufferT<Gfx>::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) 
 	
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
 		int ch = var - VAR_COMPAT_CHANNEL0;
+		int tex_ch = COMPAT_OFFSET + ch;
 		const NativeFrameBuffer* tex = GetInputTex(ch);
 		ASSERT(tex);
-		Gfx::ActiveTexture(ch);
-		Gfx::BindTexture(GetTexType(ch), *tex);
-		Gfx::Uniform1i(uindex, ch);
+		Gfx::ActiveTexture(tex_ch);
+		Gfx::BindTextureRO(GetTexType(ch), *tex);
+		Gfx::Uniform1i(uindex, tex_ch);
 	}
 	
 	else if (var == VAR_COMPAT_FRAMERATE) {

@@ -49,17 +49,6 @@ typedef enum : uint32 {
 	COLOR0_EXT		= 1 << 0
 } RenderTarget;
 
-typedef enum : uint32 {
-	TEXTYPE_3D,
-	TEXTYPE_CUBE_MAP,
-	TEXTYPE_2D,
-} TextureType;
-
-#define GVAR_TEXTYPE_LIST \
-	TEX_TYPE(_3D) \
-	TEX_TYPE(_CUBE_MAP) \
-	TEX_TYPE(_2D)
-
 }
 
 
@@ -73,8 +62,20 @@ struct CpuGfx {
 		SoftFramebuffer* ctx_default_fb = 0;
 		SoftPipeline* pipe = 0;
 		SoftVertexArray* vao = 0;
-		SoftFramebuffer* texture = 0;
 		
+		struct Tex {
+			const SoftFramebuffer* r = 0;
+			SoftFramebuffer* rw = 0;
+			
+			const SoftFramebuffer* GetReadTexture() const {return r ? r : rw;}
+		};
+		Tex texture[CHANNEL_COUNT];
+		int active_texture = -1;
+		
+		Tex& T() {
+			ASSERT(active_texture >= 0 && active_texture < CHANNEL_COUNT);
+			return texture[active_texture];
+		}
 	};
 	
 	static Thread& Local();
@@ -117,7 +118,7 @@ struct CpuGfx {
 	static void GenProgramPipeline(NativePipeline& pipe);
 	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
 	static void DeleteProgramPipeline(NativePipeline& pipe);
-	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
+	static void TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	static bool GenTexture(NativeFrameBuffer& fb);
 	static void GenVertexArray(NativeVertexArray& vao);
 	static void GenVertexBuffer(NativeVertexBuffer& vbo);
@@ -156,7 +157,10 @@ struct CpuGfx {
 	
 	
 	static void BindFramebufferEXT(NativeFrameBuffer& fb);
-	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex);
+	static void UnbindTexture(GVar::TextureType type);
+	static void GenerateMipmap(GVar::TextureType type);
 	static void BindFramebufferDefault();
 	static void RenderScreenRect();
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
@@ -192,7 +196,10 @@ struct OglGfx {
 	static const char* GetShaderTemplate();
 	static void HotfixShaderCode(String& s);
 	static void ActiveTexture(int ch);
-	static void BindTexture(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
+	static void BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex);
+	static void UnbindTexture(GVar::TextureType type);
+	static void GenerateMipmap(GVar::TextureType type);
 	static bool CreateShader(GVar::ShaderType t, NativeShader& new_shdr);
 	static void ShaderSource(NativeShader& s, String code);
 	static bool CompileShader(NativeShader& s);
@@ -209,7 +216,7 @@ struct OglGfx {
 	static void GenProgramPipeline(NativePipeline& pipe);
 	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
 	static void DeleteProgramPipeline(NativePipeline& pipe);
-	static void TexParameteri(int type, GVar::Filter filter, GVar::Wrap repeat);
+	static void TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	static bool GenTexture(NativeFrameBuffer& fb);
 	static void GenVertexArray(NativeVertexArray& vao);
 	static void GenVertexBuffer(NativeVertexBuffer& vbo);

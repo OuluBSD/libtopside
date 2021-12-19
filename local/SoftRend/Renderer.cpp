@@ -5,6 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 SoftRend::SoftRend() {
 	viewport_size = Size(0,0);
+	SET_ZERO(input_texture);
 	
 }
 
@@ -70,8 +71,9 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	GenericShaderArgs& g = prog.args;
 	frag_args.generic = &g;
 	frag_args.fa = &prog.fargs;
-	frag_args.tex_img = input_texture;
-	TODO // use uniform instead of input_texture
+	
+	for(int i = 0; i < TEXTYPE_COUNT; i++)
+		frag_args.tex_img[i] = input_texture[i];
 	
 	if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
 		g.iResolution = vec3(w, h, 0);
@@ -79,7 +81,7 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	vec2& coord = frag_args.frag_coord;
 	vec4& out = frag_args.frag_color_out;
 	vec3& normal = frag_args.normal;
-	vec2& bc_screen = frag_args.bc_screen;
+	vec3& bc_screen = frag_args.bc_screen;
 	vec2& tex_coord = frag_args.tex_coord;
 	
 	if (!elements) {
@@ -138,9 +140,13 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 					
 					bc_screen = zinfo->bc_screen;
 					
-					tex_coord = a.tex_coord * bc_screen
-							  + b.tex_coord * bc_screen
-							  + c.tex_coord * bc_screen;
+					
+					tex_coord.Clear();
+					for(int i = 0; i < 2; i++) tex_coord[i] += a.tex_coord[i] * bc_screen[0];
+					for(int i = 0; i < 2; i++) tex_coord[i] += b.tex_coord[i] * bc_screen[1];
+					for(int i = 0; i < 2; i++) tex_coord[i] += c.tex_coord[i] * bc_screen[2];
+					ASSERT(tex_coord[0] >= 0.0f && tex_coord[0] <= 1.0f);
+					ASSERT(tex_coord[1] >= 0.0f && tex_coord[1] <= 1.0f);
 					
 					fs.Process(frag_args);
 					
@@ -254,7 +260,7 @@ void SoftRend::TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthIn
 				zmem = z;
 				auto& i = zinfo[pos];
 				i.triangle_i = info.triangle_i;
-				i.bc_screen = bc_screen.Splice();
+				i.bc_screen = bc_screen;
 			}
 		}
 	}
