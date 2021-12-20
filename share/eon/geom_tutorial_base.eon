@@ -15,7 +15,9 @@ machine sdl.app: {
 		
 		loop video: {
 			center.customer: true;
-			center.video.ecs: true;
+			center.video.ecs: true {
+				drawmem:		"${DRAWMEM}";
+			};
 			sdl.video: true {
 				close_machine:	true;
 				sizeable:		true;

@@ -29,7 +29,7 @@ bool CompilerT<Gfx>::Compile(
 				ShaderState& shdr,
 				GVar::ShaderType type) {
 	bool succ = true;
-	String code = Gfx::GetShaderTemplate();
+	String code = Gfx::GetShaderTemplate(type);
 	String user_code = shdr.code;
 	String library = shdr.library;
 	

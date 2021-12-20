@@ -98,7 +98,7 @@ struct CpuGfx {
 	static void BindProgramPipeline(NativePipeline& pipeline);
 	static void UseProgram(NativeProgram& prog);
 	static void UnbindProgramPipeline();
-	static const char* GetShaderTemplate();
+	static const char* GetShaderTemplate(GVar::ShaderType t);
 	static void HotfixShaderCode(String& s);
 	static void DrawBuffers(GVar::RenderTarget tgt);
 	static void ActiveTexture(int ch);
@@ -134,6 +134,10 @@ struct CpuGfx {
 	static void DeactivateVertexStructure() {}
 	static void DrawVertexElements(int element_limit);
 	static void TexImage2D(Texture& tex);
+	static void DeleteVertexArray(NativeVertexArray& vao);
+	static void DeleteVertexBuffer(NativeVertexBuffer& vbo);
+	static void DeleteElementBuffer(NativeElementBuffer& ebo);
+	static void DeleteTexture(NativeColorBuffer& b);
 	
 	static void Uniform1i(int idx, int f);
 	static void Uniform1f(int idx, float f);
@@ -193,7 +197,7 @@ struct OglGfx {
 	static void DrawBuffers(GVar::RenderTarget tgt);
 	//static void SetRender_Color();
 	static void RenderScreenRect();
-	static const char* GetShaderTemplate();
+	static const char* GetShaderTemplate(GVar::ShaderType t);
 	static void HotfixShaderCode(String& s);
 	static void ActiveTexture(int ch);
 	static void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
@@ -224,6 +228,9 @@ struct OglGfx {
 	static void BindVertexArray(NativeVertexArray& vao);
 	static void BindVertexBuffer(NativeVertexBuffer& vbo);
 	static void BindElementBuffer(NativeElementBuffer& ebo);
+	static void DeleteVertexArray(NativeVertexArray& vao);
+	static void DeleteVertexBuffer(NativeVertexBuffer& vbo);
+	static void DeleteElementBuffer(NativeElementBuffer& ebo);
 	static void VertexBufferData(const Vector<Vertex>& vtx);
 	static void ElementBufferData(const Vector<uint32>& el);
 	static void SetupVertexStructure();
@@ -232,6 +239,7 @@ struct OglGfx {
 	static void DeactivateVertexStructure();
 	static void DrawVertexElements(int element_limit);
 	static void TexImage2D(Texture& tex);
+	static void DeleteTexture(NativeColorBuffer& b);
 	
 	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
 	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}

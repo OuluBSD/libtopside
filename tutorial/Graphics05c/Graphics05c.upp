@@ -6,8 +6,10 @@ uses
 file
 	Tutorial5c.h,
 	Tutorial5c.cpp,
-	DrawObj.cpp;
+	vertex.glsl highlight cpp,
+	fragment.glsl highlight cpp;
 
 mainconfig
-	"" = "SCREEN";
+	"" = "SCREEN",
+	"" = "SCREEN DEBUG_RT";
 

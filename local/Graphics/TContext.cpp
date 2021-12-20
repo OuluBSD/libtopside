@@ -11,7 +11,7 @@ void RendererT<Gfx>::DefaultPreFrame() {
 	Gfx::SetSmoothShading();
 	Gfx::SetClearValue(RGBA(0,0,0,255), 255);
 	Gfx::SetDepthTest();
-	Gfx::SetDepthOrderLess(false);
+	Gfx::SetDepthOrderLess(true);
 	Gfx::SetFastPerspectiveCorrection();
 	Gfx::SetTriangleBacksideCulling();
 	Gfx::SetTriangleFrontsideCCW();

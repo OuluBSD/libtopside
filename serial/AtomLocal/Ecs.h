@@ -47,9 +47,10 @@ class EcsVideoBase :
 	CpuDataState		cpu_state;
 	CpuFramebuffer		cpu_fb;
 	#if HAVE_OPENGL
+	OglStateDraw		ogl_sd;
 	OglDataState		ogl_state;
-	//OglShaderPipeline	ogl_pipe;
 	#endif
+	bool draw_mem = false;
 	
 	static EcsVideoBase* latest;
 	

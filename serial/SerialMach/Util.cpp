@@ -7,14 +7,21 @@ String RealizeEonFile(String rel_path) {
 	if (rel_path.IsEmpty())
 		return String();
 	
+	int tries_count = 4;
+	#ifdef flagDEBUG
+	tries_count++;
+	#endif
 	
-	for (int tries = 0; tries < 4; tries++) {
+	for (int tries = 0; tries < tries_count; tries++) {
 		String path;
 		switch (tries) {
 			case 0: path = rel_path; break;
 			case 1: path = ShareDirFile(rel_path); break;
 			case 2: path = ShareDirFile(AppendFileName("eon", rel_path)); break;
 			case 3: path = ShareDirFile(AppendFileName("shaders" DIR_SEPS "toys", rel_path)); break;
+			#ifdef flagDEBUG
+			case 4: path = GetDataDirectoryFile(rel_path); break;
+			#endif
 		}
 		
 		

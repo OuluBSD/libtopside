@@ -5,8 +5,7 @@ uses
 
 file
 	Tutorial5b.h,
-	Tutorial5b.cpp,
-	DrawObj.cpp;
+	Tutorial5b.cpp;
 
 mainconfig
 	"" = "SCREEN",

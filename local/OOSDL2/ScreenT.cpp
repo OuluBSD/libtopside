@@ -62,6 +62,14 @@ bool ScreenT<SdlCpuGfx>::GfxRenderer() {
 	return true;
 }
 
+template <>
+void ScreenT<SdlCpuGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem, int len) {
+	int frame_size = vfmt.GetFrameSize();
+	if (mem && len > 0 && len == frame_size) {
+		rend.GetFramebuffer().DrawFill(mem, len);
+	}
+}
+
 template <class Gfx>
 bool ScreenT<Gfx>::Open0() {
 	AppFlags& app_flags = GetAppFlags();
@@ -115,9 +123,12 @@ bool ScreenT<Gfx>::ImageInitialize() {
 	fb.size = screen_sz;
 	fb.fps = 60;
 	
+	frag_path = RealizeShareFile(frag_path);
+	vtx_path = RealizeShareFile(vtx_path);
+	
 	if (frag_shdr.GetCount()) {
 		if (!buf.LoadBuiltinShader(GVar::FRAGMENT_SHADER, frag_shdr)) {
-			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + frag_shdr + "'");
+			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_shdr + "'");
 			return false;
 		}
 	}
@@ -133,7 +144,7 @@ bool ScreenT<Gfx>::ImageInitialize() {
 	
 	if (vtx_shdr.GetCount()) {
 		if (!buf.LoadBuiltinShader(GVar::VERTEX_SHADER, vtx_shdr)) {
-			LOG("Screen::ImageInitialize: error: test image fragment shader loading failed from '" + vtx_shdr + "'");
+			LOG("Screen::ImageInitialize: error: vertex shader loading failed from '" + vtx_shdr + "'");
 			return false;
 		}
 	}
@@ -252,25 +263,15 @@ void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 				
 				CommitDraw();
 			}
-			#if 0
-			// deprecated: use BufferT indirectly instead
-			else if (d.IsText("gfxpipe")) {
+			else if (d.IsText("gfxvector")) {
 				ShaderPipeline& sd = *(ShaderPipeline*)d.ptr;
 				
 				BeginDraw();
-				
-				if (is_user_shader)
-					TODO // merge external pipeline and Buffer pipeline?
-				
-				ASSERT(buf);
-				if (buf)
-					buf->Process(sd);
-				
+				FrameCopy(vfmt, (const byte*)d.ptr, d.count);
 				CommitDraw();
 			}
-			#endif
 			else
-				TODO // still "ogl" in "oglstate" ?
+				TODO
 		}
 		else {
 			BeginDraw();

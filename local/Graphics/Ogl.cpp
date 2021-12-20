@@ -166,33 +166,37 @@ void OglGfx::UnbindTexture(GVar::TextureType type) {
 	// pass
 }*/
 
-const char* OglGfx::GetShaderTemplate() {
-	static const char* shader_tmpl = R"SH4D3R(
+const char* OglGfx::GetShaderTemplate(GVar::ShaderType t) {
+	static const char* common_tmpl = R"SH4D3R(
+#if ${IS_FRAGMENT_SHADER}
+
+#elif ${IS_VERTEX_SHADER}
+
+#endif
+)SH4D3R";
+
+	static const char* frag_tmpl = R"SH4D3R(
 #version 430
 #define GL_ES
 
-#if ${IS_FRAGMENT_SHADER}
+uniform sampler2D iNone;
+uniform sampler2D iDiffuse;
+uniform sampler2D iSpecular;
+uniform sampler2D iAmbient;
+uniform sampler2D iEmissive;
+uniform sampler2D iHeight;
+uniform sampler2D iNormals ;
+uniform sampler2D iShininess;
+uniform sampler2D iOpacity;
+uniform sampler2D iDisplacement;
+uniform sampler2D iLightmap;
+uniform sampler2D iReflection;
+uniform sampler2D iUnknown;
+
 uniform ${SAMPLER0} iChannel0;
 uniform ${SAMPLER1} iChannel1;
 uniform ${SAMPLER2} iChannel2;
 uniform ${SAMPLER3} iChannel3;
-#elif ${IS_VERTEX_SHADER}
-layout (location = 0) in vec3 iPos;
-layout (location = 1) in vec3 iNormal;
-layout (location = 2) in vec2 iTexCoords;
-
-in int gl_VertexID;
-in int gl_InstanceID;
-
-out vec2 TexCoords;
-out gl_PerVertex
-{
-  vec4 gl_Position;
-  float gl_PointSize;
-  float gl_ClipDistance[];
-};
-
-#endif
 
 uniform float     iAudioSeconds;
 uniform mat4      iView;
@@ -200,6 +204,7 @@ uniform mat4      iProjection;
 uniform mat4      iScale;
 uniform mat4      iTransform;
 uniform mat4      iModel;
+uniform vec3      iLightDir;
 
 uniform vec3      iResolution;           // viewport resolution (in pixels)
 uniform float     iTime;                 // shader playback time (in seconds)
@@ -214,30 +219,81 @@ uniform float     iChannelTime[4];       // channel playback time (in seconds)
 uniform vec3      iChannelResolution[4]; // channel resolution (in pixels)
 uniform float     iBlockOffset;          // total consumed samples (mostly for audio, for video it's same as iFrame)
 
+in vec3 vNormal;
+in vec2 vTexCoord;
+
 ${USER_LIBRARY}
 ${USER_CODE}
 
-#if ${IS_FRAGMENT_SHADER}
 #if ${IS_AUDIO}
-void main (void) {
+void main() {
 	float t = iAudioSeconds + gl_FragCoord.x / iSampleRate;
 	vec2 value = mainSound (t);
 	gl_FragColor = vec4(value, 0.0, 1.0);
 }
 #else
-void main (void) {
+void main() {
 	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);
 	mainImage (color, gl_FragCoord.xy);
 	gl_FragColor = color;
 }
 #endif
-#elif ${IS_VERTEX_SHADER}
-void main (void) {
-	mainVertex();
-}
-#endif
 )SH4D3R";
-	return shader_tmpl;
+
+
+static const char* vtx_tmpl = R"SH4D3R(
+#version 430
+#define GL_ES
+layout (location = 0) in vec4 iPos;
+layout (location = 1) in vec3 iNormal;
+layout (location = 2) in vec2 iTexCoord;
+
+in int gl_VertexID;
+in int gl_InstanceID;
+
+out vec2 TexCoords;
+out gl_PerVertex
+{
+  vec4 gl_Position;
+  float gl_PointSize;
+  float gl_ClipDistance[];
+};
+
+uniform sampler2D iNone;
+uniform sampler2D iDiffuse;
+uniform sampler2D iSpecular;
+uniform sampler2D iAmbient;
+uniform sampler2D iEmissive;
+uniform sampler2D iHeight;
+uniform sampler2D iNormals ;
+uniform sampler2D iShininess;
+uniform sampler2D iOpacity;
+uniform sampler2D iDisplacement;
+uniform sampler2D iLightmap;
+uniform sampler2D iReflection;
+uniform sampler2D iUnknown;
+
+uniform mat4      iView;
+
+out vec3 vNormal;
+out vec2 vTexCoord;
+
+${USER_LIBRARY}
+${USER_CODE}
+
+void main() {
+	vTexCoord = iTexCoord;
+	vNormal = iNormal;
+	mainVertex(gl_Position);
+}
+
+)SH4D3R";
+	switch (t) {
+		case GVar::VERTEX_SHADER: return vtx_tmpl;
+		case GVar::FRAGMENT_SHADER: return frag_tmpl;
+		default: Panic("shader is not supported yet");
+	}
+	return "";
 }
 
 void OglGfx::HotfixShaderCode(String& s) {
@@ -362,10 +418,10 @@ void OglGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram&
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		uint32 j = 1UL << i;
 		if (bmask & j) {
-			switch (bmask) {
-				#define BUFFER_TYPE(x) case GVar::x: gl_bmask = GL_##x##_BIT; break;
-				GVAR_BUFFERTYPE_LIST
-				#undef BUFFER_TYPE
+			switch (i) {
+				#define GVAR_SHADERTYPE(x) case GVar::x: gl_bmask |= GL_##x##_BIT; break;
+				GVAR_SHADERTYPE_LIST
+				#undef GVAR_SHADERTYPE
 				default: break;
 			}
 		}
@@ -410,7 +466,8 @@ void OglGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wr
 }
 
 bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
-	TODO
+	glGenTextures(1, &fb);
+	return true;
 }
 
 void OglGfx::GenVertexArray(NativeVertexArray& vao) {
@@ -450,7 +507,7 @@ void OglGfx::ElementBufferData(const Vector<uint32>& indices) {
 void OglGfx::SetupVertexStructure() {
 	// vertex positions
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
 
 	// vertex normals
 	glEnableVertexAttribArray(1);
@@ -478,7 +535,7 @@ void OglGfx::ActivateVertexStructure() {
 	const void* offset1 = (void*)offsetof(Vertex, position);
 	const void* offset2 = (void*)offsetof(Vertex, normal);
 	const void* offset3 = (void*)offsetof(Vertex, tex_coord);
-	glVertexAttribPointer(vtx, 3, GL_FLOAT, false, stride, offset1);
+	glVertexAttribPointer(vtx, 4, GL_FLOAT, false, stride, offset1);
 	glVertexAttribPointer(nm,  3, GL_FLOAT, false, stride, offset2);
 	glVertexAttribPointer(tex, 2, GL_FLOAT, false, stride, offset3);
 	
@@ -502,22 +559,35 @@ void OglGfx::UniformMatrix4fv(int idx, const mat4& mat) {
 }
 
 void OglGfx::TexImage2D(Texture& tex) {
-	TODO
-	/*
-	int channels = pitch / width;
+	ASSERT(tex.stride == 4 || tex.stride == 3);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
 		GL_RGBA,
-		width, height,
+		tex.GetWidth(), tex.GetHeight(),
 		0,
-		channels == 4 ? GL_BGRA : GL_BGR,
-		GL_UNSIGNED_BYTE, data.Begin());
-	*/
+		tex.stride == 4 ? GL_BGRA : GL_BGR,
+		GL_UNSIGNED_BYTE, tex.data.Begin());
 }
 
 void OglGfx::GenerateMipmap(GVar::TextureType type) {
 	glGenerateMipmap(GetOglTextureType(type));
+}
+
+void OglGfx::DeleteVertexArray(NativeVertexArray& vao) {
+	glDeleteVertexArrays(1, &vao);
+}
+
+void OglGfx::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
+	glDeleteBuffers(1, &vbo);
+}
+
+void OglGfx::DeleteElementBuffer(NativeElementBuffer& ebo) {
+	glDeleteBuffers(1, &ebo);
+}
+
+void OglGfx::DeleteTexture(NativeColorBuffer& b) {
+	glDeleteTextures(1, &b);
 }
 
 

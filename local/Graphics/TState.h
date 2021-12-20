@@ -71,7 +71,7 @@ struct DataObjectT : GfxDataObject {
 	void SetState(DataStateBase* state) {this->state = state;}
 	void Refresh(Mesh& m) override;
 	void RefreshTexture(Mesh& m);
-    void FreeOgl() {TODO}
+    void Free();
     void Paint(DataState& state);
     void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) override {TODO}
     
@@ -99,9 +99,11 @@ struct DataStateT : GfxDataState {
 	Array<NativeColorBuffer> textures;
 	
 	DataStateT();
+	~DataStateT();
 	DataObject& AddObject();
 	GfxDataObject& CreateObject() override {return AddObject();}
 	
+	void Free();
 	void Refresh(ModelMesh& m) override {TODO}
 	bool LoadModel(ModelLoader& l, DataObject& o, String path);
 	bool LoadModelTextures(ModelLoader& l, DataObject& o);

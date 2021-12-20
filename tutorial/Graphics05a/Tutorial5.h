@@ -16,8 +16,7 @@ struct Tutorial5 :
 	RTTI_DECL2(Tutorial5, ComponentT, BinderIfaceVideo)
 	
 	ModelLoader loader;
-	CpuShader shader;
-	CpuFramebufferState state;
+	SdlCpuDataState state;
 	TimeStop ts;
 	double phase_time = 1.5;
 	int iter = 0;

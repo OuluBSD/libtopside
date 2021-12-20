@@ -12,7 +12,19 @@ DataObjectT<Gfx>::DataObjectT() {
 
 template <class Gfx>
 DataObjectT<Gfx>::~DataObjectT() {
-	FreeOgl();
+	Free();
+}
+
+template <class Gfx>
+void DataObjectT<Gfx>::Free() {
+	if (vbo) {
+		Gfx::DeleteVertexBuffer(vbo);
+		Gfx::DeleteElementBuffer(ebo);
+		Gfx::DeleteVertexArray(vao);
+		vbo = Null;
+		ebo = Null;
+		vao = Null;
+	}
 }
 
 template <class Gfx>
@@ -88,6 +100,18 @@ void DataObjectT<Gfx>::Paint(DataState& state) {
 template <class Gfx>
 DataStateT<Gfx>::DataStateT() {
 	
+}
+
+template <class Gfx>
+DataStateT<Gfx>::~DataStateT() {
+	Free();
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::Free() {
+	for (NativeColorBuffer& t : textures)
+		Gfx::DeleteTexture(t);
+	textures.Clear();
 }
 
 template <class Gfx>

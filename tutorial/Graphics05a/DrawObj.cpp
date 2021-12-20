@@ -46,7 +46,7 @@ void Tutorial5::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, 
 			
 			int pos = (int)P[0] + (int)P[1] * width;
 			float& zmem = zbuffer[pos];
-			if (zmem < z) {
+			if (zmem > z) {
 				zmem = z;
 
 				RGBA used_clr;
@@ -77,6 +77,7 @@ void Tutorial5::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, 
 }
 
 void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
+	float ratio = (float)height / (float)width;
 	float f = ts.Seconds() / phase_time;
 	float f2 = 1 - fabs(2 * f - 1);
 	float angle = f * (2.0 * M_PI);
@@ -91,7 +92,7 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 		float* it = zbuffer_empty;
 		float* end = it + size;
 		while (it != end)
-			*it++ = -FLT_MAX;
+			*it++ = +FLT_MAX;
 	}
 	memcpy(zbuffer, zbuffer_empty, width * height * 4);
 	
@@ -107,44 +108,50 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 		vec4{0,		0, -1./5.,		1}
 	};
 	
-	vec3 eye {0.2f * eye_x, 0.3f * eye_y, 1};
-	vec3 center {0, 0, 0};
+	vec3 eye {0.3f * eye_x, 0.3f * eye_y, 1};
+	vec3 center {0, 0, -1};
 	vec3 up {0, 1, 0};
 	mat4 lookat = LookAt(eye, center, up);
-	mat4 port = GetViewport(-1 + x_mod, -1 + y_mod, 2 - y_mod, 2 + y_mod, 255);
+	mat4 port;
+	/*if (phase == 0)
+		port = GetViewport((-1 + x_mod) * ratio, -1 + y_mod, (2 - y_mod) * ratio, 2 + y_mod, 1);
+	else*/
+		port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	
-	mat4 view;
-	if (phase == 0) view = perspective * lookat;
-	if (phase == 1) view = port * perspective * lookat;
+	mat4 view = port * perspective * lookat;
 	
 	Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
 	PoolRef p = store->GetRoot();
+	//TimeStop ts;
 	for(EntityRef& e : p->GetEntities()) {
 		auto model = loader.GetModel();
 		if (model) for(const Mesh& mesh : model->GetMeshes()) {
-			int tri_count = mesh.GetTriangleCount();
+			const uint32* idx = (const uint32*)mesh.indices.Begin();
+			const Vertex* vtx = (const Vertex*)mesh.vertices.Begin();
+			int tri_count = mesh.indices.GetCount() / 3;
+			
 			Texture* tex_img = NULL;
 			if (use_texture && mesh.tex_id[TEXTYPE_DIFFUSE] >= 0)
 				tex_img = &model->textures[mesh.tex_id[TEXTYPE_DIFFUSE]];
 			
 			for(int i = 0; i < tri_count; i++) {
-				ivec3 indices = mesh.GetTriangleIndices(i);
 				vec3 screen_coord[3];
 				vec3 world_coord[3];
 				vec2 tex_coord[3];
 				for(int j = 0; j < 3; j++) {
-					vec3 v = mesh.GetVertCoord(indices[j]);
+					const Vertex& v = vtx[idx[j]];
+					vec4 pos = v.position.Splice().Embed();
+					pos[2] = -pos[2] + 1; // hack
 					
-					vec4 v4 {v[0], v[1], v[2], 1.0};
-					vec4 screen = view * v4;
-					screen.Project();
+					vec4 screen = view * pos;
+					screen.Normalize();
 					
 					screen_coord[j][0] = (int)((screen[0] + 1.0) * width  / 2.0);
 					screen_coord[j][1] = (int)((screen[1] + 1.0) * height / 2.0);
 					screen_coord[j][2] = screen[2];
-					world_coord[j] = v;
-					tex_coord[j] = mesh.GetTexCoord(indices[j]);
+					world_coord[j] = pos.Splice();
+					tex_coord[j] = v.tex_coord;
 				}
 				
 				vec3 n = (world_coord[2] - world_coord[0]) ^
@@ -152,7 +159,13 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 				n.Normalize();
 				
 				float intensity = std::max(0.0f, n * light_dir);
+				intensity = intensity * 0.5 + 0.5;
 				Triangle4(fb, screen_coord, tex_coord, tex_img, intensity, false);
+				
+				idx += 3;
+				
+				//if (i % 10 == 0 && ts.Seconds() > 0.5)
+				//	break;
 			}
 		}
 	}

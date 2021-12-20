@@ -69,7 +69,7 @@ protected:
 	
 	void SetWindowRect(Rect r);
 	
-	public:
+public:
 	ScreenT(Context* ctx, AtomBase* ab) : Component(ctx, ab) {desired_rect = RectC(0,0,1280,720);}
 	
 	void Maximize(bool b=true);
@@ -81,6 +81,7 @@ protected:
 	bool Recv(int ch_i, const Packet& p);
 	SystemDraw& BeginDraw();
 	void CommitDraw();
+	void FrameCopy(const VideoFormat& vfmt, const byte* data, int len) {}
 	
 	void SetBuffer(Buffer& buf) {this->buf = &buf;}
 	

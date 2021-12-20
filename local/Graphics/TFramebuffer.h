@@ -94,7 +94,7 @@ struct FramebufferT : GfxFramebuffer {
 	void Enter() override {ASSERT(!locked); locked = true;}
 	void Leave() override {ASSERT(locked);  locked = false;}
 	byte* GetIterator(int x, int y) override {Panic("Not usable: OglFramebuffer::GetIterator"); return 0;}
-	void DrawFill(const byte* mem, int sz) override {TODO}
+	void DrawFill(const byte* mem, int sz) override {}
 	
 	void Bind();
 	void Clear();

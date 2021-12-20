@@ -78,7 +78,7 @@ void CpuGfx::ActiveTexture(int ch) {
 	// pass
 }*/
 
-const char* CpuGfx::GetShaderTemplate() {
+const char* CpuGfx::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* shader_tmpl = "";
 	return shader_tmpl;
 }
@@ -330,6 +330,22 @@ void CpuGfx::TexImage2D(Texture& tex) {
 	ASSERT(!t.r);
 	ASSERT(t.rw);
 	*t.rw = &tex;
+}
+
+void CpuGfx::DeleteVertexArray(NativeVertexArray& vao) {
+	vao.Clear();
+}
+
+void CpuGfx::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
+	vbo.Clear();
+}
+
+void CpuGfx::DeleteElementBuffer(NativeElementBuffer& ebo) {
+	ebo.Clear();
+}
+
+void CpuGfx::DeleteTexture(NativeColorBuffer& b) {
+	b.Clear();
 }
 
 

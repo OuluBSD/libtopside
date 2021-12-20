@@ -566,6 +566,14 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, GLint prog, const DataObject
 	else if (var == VAR_LIGHTDIR) {
 		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
 	}
+	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
+		int tex_ch = var - VAR_NONE;
+		int tex_i = o.tex_id[tex_ch];
+		auto& tex = data.textures[tex_i];
+		Gfx::ActiveTexture(tex_ch);
+		Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+		Gfx::Uniform1i(uindex, tex_ch);
+	}
 	else TODO
 	#if 0
 	if (var == VAR_VIEW) {

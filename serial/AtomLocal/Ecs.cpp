@@ -108,6 +108,8 @@ bool EcsVideoBase::Initialize(const Script::WorldState& ws) {
 	Value& val = src->GetSourceValue(src_count-1);
 	src_type = val.GetFormat().vd;
 	
+	draw_mem = ws.Get(".drawmem") == "true";
+	
 	return true;
 }
 
@@ -175,7 +177,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		int stride = fmt.vid.GetPackedCount();
 		
 		// render to memory
-		if (0) {
+		if (draw_mem) {
 			id.Create(sz, stride);
 			for (BinderIfaceVideo* b : binders)
 				b->Render(id);
@@ -196,6 +198,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 				InternalPacketData& data = src.p->SetData<InternalPacketData>();
 				data.ptr = (byte*)id.Data().Begin();
 				data.count = id.Data().GetCount();
+				data.SetText("gfxvector");
 				#endif
 			}
 			else {
@@ -232,17 +235,15 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	}
 	#if HAVE_OPENGL
 	else if (src_type == VD(OGL,FBO)) {
-		TODO
-		#if 0
 		Format fmt = io.src[0].val->GetFormat();
 		ASSERT(fmt.IsFbo());
 		
 		Size sz = fmt.vid.GetSize();
 		int stride = fmt.vid.GetPackedCount();
 		
-		sd.SetTarget(ogl_state);
+		ogl_sd.SetTarget(ogl_state);
 		for (BinderIfaceVideo* b : binders)
-			b->Render(sd);
+			b->Render(ogl_sd);
 		
 		if (io.sink_count == 1) {
 			PacketIO::Sink& sink = io.sink[0];
@@ -269,7 +270,6 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		else {
 			TODO
 		}
-		#endif
 	}
 	#endif
 	else {
