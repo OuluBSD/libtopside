@@ -3,11 +3,19 @@
 
 #include <EcsComplete/EcsComplete.h>
 using namespace TS;
+using namespace TS::Ecs;
 
 
 
-struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
+struct Tutorial4 :
+	public Component<Tutorial4>,
+	public BinderIfaceVideo
+
+{
+	RTTI_DECL2(Tutorial4, ComponentT, BinderIfaceVideo)
+	
 	ModelLoader loader;
+	SdlCpuDataState state;
 	Color yellow {255, 255, 0};
 	Color white {255, 255, 255};
 	Color red {255, 0, 0};
@@ -24,8 +32,6 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	Vector<line3> lines, trans_lines;
 	line3 unit_y, unit_x;
 	
-	IFACE_CB(DisplaySink);
-	IFACE_GENERIC;
 	
 	Tutorial4();
 	~Tutorial4();
@@ -34,11 +40,12 @@ struct Tutorial4 : public Component<Tutorial4>, public DisplaySink {
 	
 	void Begin();
 	void DrawLine(Draw& fb, const line3& l, Color clr);
-	void Draw(Draw& fb);
+	void Draw0(Draw& fb);
 	void MultiplyBy(mat2 v);
 	void MultiplyBy(mat3 v);
 	void Add(vec2 v);
 	void Project();
+	void Initialize() override;
 	void Render(Draw& draw) override;
 	
 	

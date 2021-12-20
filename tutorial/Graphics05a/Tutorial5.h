@@ -7,8 +7,6 @@ using namespace TS::Ecs;
 
 
 
-
-
 struct Tutorial5 :
 	public Component<Tutorial5>,
 	public BinderIfaceVideo

@@ -19,19 +19,23 @@ struct Tutorial2 :
 	RTTI_DECL2(Tutorial2, ComponentT, BinderIfaceVideo)
 	
 	ModelLoader loader;
-	CpuShader shader;
-	CpuFramebufferState state;
+	SdlCpuDataState state;
 	vec2 t[3][3];
 	int iter = 0;
 	int phase = 0;
 	int phases = 8+1;
 	TimeStop ts;
 	
-	Tutorial2() : shader(state) {
+	Tutorial2() {
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
-		if (!loader.LoadModel(shader, state.NewObject(), obj_path))
+		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
+		auto& o = state.AddObject();
+		if (!state.LoadModel(loader, o, obj_path))
 			Panic("Couldn't load model: " + obj_path);
+		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+		if (!state.LoadModelTextures(loader, o))
+			Panic("Couldn't load model textures: " + obj_path);
 		
 		t[0][0] = vec2(10, 70);
 		t[0][1] = vec2(50, 160);
@@ -263,5 +267,5 @@ struct Tutorial2 :
 	}
 };
 
+SIMPLE_ECS_APP_(Tutorial2, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")
 
-SIMPLE_ECS_APP(Tutorial2, "geom_tutorial_base.eon")

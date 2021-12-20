@@ -18,8 +18,7 @@ struct Tutorial3 :
 	RTTI_DECL2(Tutorial3, ComponentT, BinderIfaceVideo)
 	
 	ModelLoader loader;
-	CpuShader shader;
-	CpuFramebufferState state;
+	SdlCpuDataState state;
 	Color red {255, 0, 0};
 	Color white {255, 255, 255};
 	Color green {0, 255, 0};
@@ -34,13 +33,16 @@ struct Tutorial3 :
 	float *zbuffer_empty = NULL;
 	
 	
-	Tutorial3() : shader(state) {
+	Tutorial3() {
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-		if (!loader.LoadModel(shader, state.NewObject(), obj_path))
+		auto& o = state.AddObject();
+		if (!state.LoadModel(loader, o, obj_path))
 			Panic("Couldn't load model: " + obj_path);
 		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+		if (!state.LoadModelTextures(loader, o))
+			Panic("Couldn't load model textures: " + obj_path);
 	}
 	~Tutorial3() {if (zbuffer) {delete zbuffer; delete zbuffer_empty;} zbuffer = 0; zbuffer_empty = 0;}
 	
@@ -206,4 +208,4 @@ struct Tutorial3 :
 };
 
 
-SIMPLE_ECS_APP(Tutorial3, "geom_tutorial_base.eon")
+SIMPLE_ECS_APP_(Tutorial3, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")

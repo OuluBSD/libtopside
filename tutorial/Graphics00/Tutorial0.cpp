@@ -32,4 +32,4 @@ struct StandaloneTutorial0 : EntityPrefab<Tutorial0>
 };
 
 
-SIMPLE_ECS_APP(Tutorial0, "geom_tutorial_base.eon")
+SIMPLE_ECS_APP_(Tutorial0, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")

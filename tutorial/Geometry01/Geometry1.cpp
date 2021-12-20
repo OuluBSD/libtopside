@@ -156,5 +156,5 @@ void Geometry1::Render(Draw& draw) {
 	}
 }
 
-SIMPLE_ECS_APP(Geometry1, "geom_tutorial_base.eon")
+SIMPLE_ECS_APP_(Geometry1, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")
 

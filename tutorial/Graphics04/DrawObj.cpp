@@ -46,12 +46,13 @@ void Tutorial4::Triangle4(Draw& fb, vec3 pts[3], vec2 tex[3], Texture* tex_img, 
 			for (int i = 0; i < 3; i++)
 				z += pts[i][2] * bc_screen[i];
 			
-			int pos = (int)P[0] + (int)P[1] * sz.cx;
+			int pos = (int)P[0] + (int)P[1] * w;
 			float& zmem = zbuffer[pos];
 			if (zmem < z) {
 				zmem = z;
 
-				Color used_clr;
+				RGBA used_clr;
+				used_clr.a = 0;
 				if (tex_img) {
 					float tex_x = 0, tex_y = 0, bary_sum = 0;
 					for(int i = 0; i < 3; i++) {
@@ -98,30 +99,34 @@ void Tutorial4::DrawObj(float f2, Draw& fb, bool use_texture) {
 		vec4{0,		0,	 -1/c,		1}
 	};
 	
-	Ref<EntityStore> store = GetEntity().GetMachine().Get<EntityStore>();
 	float angle = (use_texture ? -1 : +1) * (float)iter / (float)iters_in_phase * (2.0 * M_PI);
+	Ref<EntityStore> store = GetEntity()->GetEngine().Get<EntityStore>();
 	vec3 light_dir {sin(angle), 0.0, cos(angle)};
-	for(EntityRef& e : store->GetEntities()) {
+	PoolRef p = store->GetRoot();
+	for(EntityRef& e : p->GetEntities()) {
 		if (loader.model) {
 			for(const Mesh& mesh : loader.model->GetMeshes()) {
-				int tri_count = mesh.GetTriangleCount();
+				const uint32* idx = (const uint32*)mesh.indices.Begin();
+				const Vertex* vtx = (const Vertex*)mesh.vertices.Begin();
+				int tri_count = mesh.indices.GetCount() / 3;
+				
 				Texture* tex_img = NULL;
 				if (use_texture && mesh.tex_id[TEXTYPE_DIFFUSE] >= 0)
 					tex_img = &loader.model->textures[mesh.tex_id[TEXTYPE_DIFFUSE]];
 				
 				for(int i = 0; i < tri_count; i++) {
-					ivec3 indices = mesh.GetTriangleIndices(i);
 					vec3 screen_coord[3];
 					vec3 world_coord[3];
 					vec2 tex_coord[3];
 					for(int j = 0; j < 3; j++) {
-						vec3 v = mesh.GetVertCoord(indices[j]);
+						const Vertex& V = vtx[idx[j]];
+						vec3 v = V.position.Splice();
 						
 						vec4 screen;
 						if (1) {
 							vec4 v4 {v[0], v[1], v[2], 1.0};
 							screen = perspective * v4;
-							screen.Project();
+							screen.Normalize();
 						}
 						else {
 							float mul = 1.0 / (1.0 - v[2] / c);
@@ -133,7 +138,7 @@ void Tutorial4::DrawObj(float f2, Draw& fb, bool use_texture) {
 						screen_coord[j][1] = (int)((screen[1] + 1.0) * height / 2.0);
 						screen_coord[j][2] = screen[2];
 						world_coord[j] = v;
-						tex_coord[j] = mesh.GetTexCoord(indices[j]);
+						tex_coord[j] = V.tex_coord;
 					}
 					
 					vec3 n = (world_coord[2] - world_coord[0]) ^
@@ -141,6 +146,7 @@ void Tutorial4::DrawObj(float f2, Draw& fb, bool use_texture) {
 					n.Normalize();
 					
 					float intensity = std::max(0.0f, n * light_dir);
+					intensity = intensity * 0.5 + 0.5;
 					Triangle4(fb, screen_coord, tex_coord, tex_img, intensity, false);
 				}
 			}

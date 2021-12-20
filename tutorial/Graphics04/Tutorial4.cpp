@@ -12,9 +12,12 @@ Tutorial4::Tutorial4() {
 	String data_dir = ShareDirFile("models");
 	String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 	String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-	if (!loader.LoadModel(obj_path))
+	auto& o = state.AddObject();
+	if (!state.LoadModel(loader, o, obj_path))
 		Panic("Couldn't load model: " + obj_path);
-	loader.model->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+	loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
+	if (!state.LoadModelTextures(loader, o))
+		Panic("Couldn't load model textures: " + obj_path);
 	
 	vec3 tl(-1, +1, 1);
 	vec3 tc( 0, +1, 1);
@@ -39,6 +42,10 @@ Tutorial4::~Tutorial4() {
 	zbuffer_empty = 0;
 }
 
+void Tutorial4::Initialize() {
+	Serial::EcsVideoBase::Latest().AddBinder(this);
+}
+
 void Tutorial4::Begin() {trans_lines <<= lines;}
 
 void Tutorial4::DrawLine(Draw& fb, const line3& l, Color clr) {
@@ -50,7 +57,7 @@ void Tutorial4::DrawLine(Draw& fb, const line3& l, Color clr) {
 	fb.DrawLine(x0, y0, x1, y1, 1, clr);
 }
 
-void Tutorial4::Draw(Draw& fb) {
+void Tutorial4::Draw0(Draw& fb) {
 	DrawLine(fb, unit_x, red);
 	DrawLine(fb, unit_y, green);
 	for(line3& l: lines)       DrawLine(fb, l, white);
@@ -102,34 +109,34 @@ void Tutorial4::Render(Draw& fb) {
 	if (phase == 0) {
 		Begin();
 		MultiplyBy(mat2 {vec2{1.0f + f2, 0.0f}, vec2{0.0f, 1.0f + f2}});
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 1) {
 		Begin();
 		MultiplyBy(mat2 {vec2{1.0f, f2}, vec2{0.0f, 1.0f}});
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 2) {
 		Begin();
 		MultiplyBy(mat2 {vec2{x, -y}, vec2{y, x}});
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 3) {
 		Begin();
 		Add(vec2{f2, f2});
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 4) {
 		Begin();
 		MultiplyBy(mat3 {vec3 {x, -1*y, 2*f2}, vec3 {y, x, -2*f2}, vec3 {0,0,1}});
 		Project();
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 5) {
 		Begin();
 		MultiplyBy(mat3 {vec3 {1,0,0}, vec3 {0,1,0}, vec3 {f2/-4.f, 0,1}});
 		Project();
-		Draw(fb);
+		Draw0(fb);
 	}
 	else if (phase == 6) {
 		DrawObj(f2, fb, false);
@@ -146,5 +153,5 @@ void Tutorial4::Render(Draw& fb) {
 	
 }
 
-RENDER_APP_(Tutorial4)
+SIMPLE_ECS_APP_(Tutorial4, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")
 

@@ -77,7 +77,7 @@ public:
     int GetTriangleCount() const {return indices.GetCount() / 3;}
     vec3 GetVertCoord(int i) const {return vertices[i].position.Splice();}
     vec3 GetVertNormal(int i) const {return vertices[i].normal;}
-    //vec2 GetTexCoord(int i) const {return tex_coords[i];}
+    vec2 GetTexCoord(int i) const {return vertices[i].tex_coord;}
     ivec3 GetTriangleIndices(int i) const {
         ivec3 v;
         v[0] = indices[i * 3 + 0];

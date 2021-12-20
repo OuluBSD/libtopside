@@ -226,4 +226,4 @@ void Geometry2::DrawLine(DrawGeometry& fb, float scale, vec4 a, vec4 b, Color cl
 }
 
 
-SIMPLE_ECS_APP(Geometry2, "geom_tutorial_base.eon")
+SIMPLE_ECS_APP_(Geometry2, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")

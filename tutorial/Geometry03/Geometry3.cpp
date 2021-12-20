@@ -131,4 +131,4 @@ void Geometry3::ResetShape(Shape2DWrapper& s, ShapeId shape_type, bool is_right)
 	else			s.shape->Move(vec2 {+1, 0});
 }
 
-SIMPLE_ECS_APP(Geometry3, "geom_tutorial_base.eon")
+SIMPLE_ECS_APP_(Geometry3, "geom_tutorial_base.eon", "FRAGMENT=;VERTEX=;DRAWMEM=true")
