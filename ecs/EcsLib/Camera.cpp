@@ -29,10 +29,6 @@ void ChaseCam::Refresh(GfxShader& s) {
 	if (vport) {
 		
 	}
-	
-	TODO
-	
-	
 }
 
 

@@ -301,7 +301,7 @@ public:
 	RTTI_DECL2(EcsSwVideo, AtomT, EcsVideoBase)
 	COPY_PANIC(EcsSwVideo)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -318,6 +318,22 @@ public:
 	COPY_PANIC(EcsProgVideo)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class EcsOglFboPipe : public Atom<EcsOglFboPipe>, public EcsVideoBase {
+
+public:
+	RTTI_DECL2(EcsOglFboPipe, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsOglFboPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -465,7 +481,7 @@ public:
 class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtomSA, AtomT, Base)
+	RTTI_DECL2(SdlFboAtomSA, AtomT, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
@@ -761,6 +777,8 @@ using EcsEventsAtomRef = Ref<EcsEventsAtom, AtomParent>;
 using EcsSwVideoRef = Ref<EcsSwVideo, AtomParent>;
 
 using EcsProgVideoRef = Ref<EcsProgVideo, AtomParent>;
+
+using EcsOglFboPipeRef = Ref<EcsOglFboPipe, AtomParent>;
 
 using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 

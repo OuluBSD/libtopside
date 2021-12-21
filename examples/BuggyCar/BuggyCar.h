@@ -119,7 +119,7 @@ public:
 		
 	}
 	
-	void Refresh(Shader& s) {
+	void Refresh(OglShader& s) {
 		speed = 1.0;
 		steer = 1.0;
 		Step();
@@ -149,7 +149,7 @@ public:
 		return false;
 	}*/
 	
-	Callback1<Shader&> GetRefreshCallback() {return THISBACK(Refresh);}
+	Callback1<OglShader&> GetRefreshCallback() {return THISBACK(Refresh);}
 };
 
 

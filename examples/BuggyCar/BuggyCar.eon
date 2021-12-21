@@ -16,25 +16,28 @@ machine sdl.app: {
 		
 		loop ogl.fbo.keyboard: {
 			ogl.customer: true;
-			ogl.fbo.keyboard: true [][loop: ogl.fbo.screen] {target: event.register;};
+			ogl.fbo.keyboard: true [][loop: ogl.video] {target: event.register;};
 		};
-		
 		
 		loop center.events.ecs.system: {
 			center.customer: true;
 			ecs.system.events: true {target: event.register;};
 		};
 		
-		
-		loop ogl.fbo.screen: {
+		loop ogl.ecs: {
 			ogl.customer: true;
-			sdl.fbo: true [loop: ogl.fbo.keyboard;;;;] {
+			ogl.fbo.ecs: true [][loop: ogl.video;;;;];
+		};
+		
+		loop ogl.video: {
+			ogl.customer: true;
+			sdl.fbo: true [loop: ogl.ecs; loop: ogl.fbo.keyboard;;;] {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
 				link:			ecs;
-				fragment:		"${FRAGMENT_SHADER_PATH}";
-				vertex:			"${VERTEX_SHADER_PATH}";
+				fragment:		"${FRAGMENT}";
+				vertex:			"${VERTEX}";
 			};
 		};
 		

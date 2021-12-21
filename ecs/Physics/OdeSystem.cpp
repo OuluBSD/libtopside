@@ -50,12 +50,13 @@ OdeObject::~OdeObject() {
 	if (body) dBodyDestroy(body);
 }
 
-void OdeObject::LoadModel(Shader& s) {
-	model_err = false;
+void OdeObject::LoadModel(OglShader& s) {
+	TODO
+	/*model_err = false;
 	if (!model.LoadModel(s, *fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"))) {
 		model_err = true;
 		return;
-	}
+	}*/
 }
 
 void OdeObject::AttachContent() {
@@ -79,7 +80,7 @@ void OdeObject::DetachContent() {
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
 }
 
-void OdeObject::Refresh(Shader& s) {
+void OdeObject::Refresh(OglShader& s) {
 	if (!fb_obj && !model_err) {
 		LOG("OdeObject::Refresh: warning: loading model while painting");
 		fb_obj = s.CreateObject();
@@ -101,7 +102,7 @@ void OdeObject::Refresh(Shader& s) {
 	
 	if (is_override_phys_geom) {
 		mat4 v = override_geom * model_geom;
-		fb_obj->Set(v, identity<mat4>(), 0, 0);
+		fb_obj->Set(v, identity<mat4>());
 	}
 	else {
 		dVector3 pos;
@@ -119,7 +120,7 @@ void OdeObject::Refresh(Shader& s) {
 		mat4 rot = ToMat4(q);
 		
 		mat4 v = trans * rot * model_geom;
-		fb_obj->Set(v, identity<mat4>(), 0, 0);
+		fb_obj->Set(v, identity<mat4>());
 	}
 	
 }

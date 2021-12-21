@@ -53,7 +53,7 @@ struct GfxDataObject : RTTIBase {
 	mat4 proj;*/
 	int tex_id[TEXTYPE_COUNT] = {0,0,0,0,0,0, 0,0,0,0,0,0};
 	
-	
+	void Set(const mat4& model, const mat4& scale) {TODO}
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
 	bool IsOpenGL() const {return GetGfxType() == GVar::OGL;}
 	

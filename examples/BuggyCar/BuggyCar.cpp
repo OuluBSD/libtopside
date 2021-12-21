@@ -60,7 +60,7 @@ void BuggyCarStartup() {
 NAMESPACE_ECS_END
 
 
-NAMESPACE_TOPSIDE_BEGIN
+/*NAMESPACE_TOPSIDE_BEGIN
 
 using ObjMap = VectorMap<String,Object>;
 MAKE_STATIC(ObjMap, args)
@@ -107,4 +107,7 @@ INITBLOCK {
 	
 	f.have_ode_physics = true;
 }
-END_UPP_NAMESPACE
+END_UPP_NAMESPACE*/
+
+//APP_INITIALIZE_DEFAULT_INTERNAL_EON
+SIMPLE_ECS_APP_(TS::ECS::BuggyCar, "BuggyCar.eon", "FRAGMENT=Fragment.glsl;VERTEX=Vertex.glsl")

@@ -79,7 +79,7 @@ void RenderingSystem::Uninitialize() {
 }
 
 void RenderingSystem::Render(const OglBuffer& buf, OglShader& shader) {
-	DUMPC(rends);
+	//DUMPC(rends);
 	
 	for (RenderableRef& rend : rends) {
 		rend->cb(shader);

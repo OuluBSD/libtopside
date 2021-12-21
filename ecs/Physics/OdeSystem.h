@@ -77,11 +77,11 @@ public:
 	OdeObject();
 	virtual ~OdeObject();
 	
-	virtual void LoadModel(Shader& s);
+	virtual void LoadModel(OglShader& s);
 	
 	void OnAttach() override {body = dBodyCreate(GetWorldId());} // Create ID for physics body
 	void OnDetach() override {DetachContent();}
-	virtual void Refresh(Shader& s);
+	virtual void Refresh(OglShader& s);
 	
 	void AttachContent();
 	void DetachContent();
@@ -91,7 +91,7 @@ public:
 	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {dMatrix3 R; dRFromAxisAndAngle(R, ax, ay, az, angle); dBodySetRotation(body, R);}
 	const dReal* GetBodyPosition() {return dBodyGetPosition(body);}
 	
-	Callback1<Shader&> GetRefreshCallback() {return THISBACK(Refresh);}
+	Callback1<OglShader&> GetRefreshCallback() {return THISBACK(Refresh);}
 };
 
 class OdeJoint : public OdeNode {

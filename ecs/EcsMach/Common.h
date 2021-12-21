@@ -111,12 +111,12 @@ struct x##_ : RTTIBase {RTTI_DECL0(x##_)}; \
 \
 struct x : \
 	x##_, \
-	EntityPrefab<
+	TS::ECS::EntityPrefab<
 
 #define PREFAB_END \
 > { \
 	 \
-    static Components Make(Entity& e) \
+    static Components Make(TS::ECS::Entity& e) \
     { \
         auto components = EntityPrefab::Make(e); \
 		return components; \

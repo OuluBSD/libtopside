@@ -154,12 +154,13 @@ void DefaultEcsStartup();
 	PREFAB_BEGIN(App) \
 		ecs_component \
 	PREFAB_END \
+	APP_STARTUP_(TS::BindEcsToSerial) \
 	 \
 	ECS_PREFAB_MAIN(App) { \
 		using namespace UPP; \
 		String eon_file  = Serial::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
-			DefaultCreateOnStart<App>(); \
+			TS::ECS::DefaultCreateOnStart<App>(); \
 			TS::DefaultRunner(#ecs_component, eon_file, 0, eon_args); \
 		} \
 		else { \

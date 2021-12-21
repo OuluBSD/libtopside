@@ -58,6 +58,7 @@ namespace Serial {
 	ATOM_TYPE(ECS_EVENTS_ATOM) \
 	ATOM_TYPE(ECS_SW_VIDEO) \
 	ATOM_TYPE(ECS_PROG_VIDEO) \
+	ATOM_TYPE(ECS_OGL_FBO_PIPE) \
 	ATOM_TYPE(ECS_OGL_FBO) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
@@ -86,6 +87,7 @@ namespace Serial {
 	ATOM_CLASS(EcsEventsAtom) \
 	ATOM_CLASS(EcsSwVideo) \
 	ATOM_CLASS(EcsProgVideo) \
+	ATOM_CLASS(EcsOglFboPipe) \
 	ATOM_CLASS(EcsOglFbo) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
