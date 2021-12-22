@@ -310,5 +310,13 @@ Object ObjectFromValue(const Value& v) {
 
 #endif
 
+
+
+
+#ifdef LIBTOPSIDE
+template<> StringT<char>& StringT<char>::operator=(const Object& c) {return *this = c.ToString();}
+template<> StringT<wchar_t>& StringT<wchar_t>::operator=(const Object& c) {return *this = c.ToString().ToWString();}
+#endif
+
 END_UPP_NAMESPACE
 

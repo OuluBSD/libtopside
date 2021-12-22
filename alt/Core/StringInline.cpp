@@ -1,4 +1,16 @@
-static int CharOctInt(const T *s) {
+#include "Core.h"
+
+
+NAMESPACE_UPP_BEGIN
+
+
+#define TMPL(x)		template <class T> x StringT<T>::
+#define TMPL_THIS	template <class T> StringT<T>& StringT<T>::
+#define TMPL_NEW	template <class T> StringT<T> StringT<T>::
+
+
+TMPL(int) CharOctInt(const T *s)
+{
 	if (!s) return 0;
 	while (IsSpace(*s)) s++;
 	int n=0, neg=0;
@@ -12,7 +24,8 @@ static int CharOctInt(const T *s) {
 	return neg ? n : -n;
 }
 
-static int CharBinInt(const T *s) {
+TMPL(int) CharBinInt(const T *s)
+{
 	if (!s) return 0;
 	while (IsSpace(*s)) s++;
 	int n=0, neg=0;
@@ -27,7 +40,8 @@ static int CharBinInt(const T *s) {
 	return neg ? n : -n;
 }
 
-static int64 CharBinInt64(const T *s) {
+TMPL(int64) CharBinInt64(const T *s)
+{
 	if (!s) return 0;
 	while (IsSpace(*s)) s++;
 	int64 n=0, neg=0;
@@ -42,7 +56,8 @@ static int64 CharBinInt64(const T *s) {
 	return neg ? n : -n;
 }
 
-static int CharHexInt(const T *s) {
+TMPL(int) CharHexInt(const T *s)
+{
 	if (!s) return 0;
 	while (IsSpace(*s)) s++;
 	int n=0, neg=0;
@@ -57,7 +72,8 @@ static int CharHexInt(const T *s) {
 	return neg ? n : -n;
 }
 
-static int64 CharHexInt64(const T *s) {
+TMPL(int64) CharHexInt64(const T *s)
+{
 	if (!s) return 0;
 	while (IsSpace(*s)) s++;
 	int64 n=0, neg=0;
@@ -72,7 +88,7 @@ static int64 CharHexInt64(const T *s) {
 	return neg ? n : -n;
 }
 
-static int CharInt(const T *s)
+TMPL(int) CharInt(const T *s)
 {
 	int n=0, neg=0;
 	while (IsSpace(*s)) s++;
@@ -85,7 +101,7 @@ static int CharInt(const T *s)
 	return neg ? n : -n;
 }
 
-static int64 CharInt64(const T *s)
+TMPL(int64) CharInt64(const T *s)
 {
 	int64 n=0, neg=0;
 	while (IsSpace(*s)) s++;
@@ -98,7 +114,7 @@ static int64 CharInt64(const T *s)
 	return neg ? n : -n;
 }
 
-static uint64 CharIntU64(const T *s)
+TMPL(uint64) CharIntU64(const T *s)
 {
 	uint64 n=0;
 	while (IsSpace(*s)) s++;
@@ -111,7 +127,7 @@ static uint64 CharIntU64(const T *s)
 	return n;
 }
 
-static double CharDbl(const T* s) {
+TMPL(double) CharDbl(const T* s) {
 	double a = 0.0;
 	int e = 0;
 	int c;
@@ -161,7 +177,8 @@ static double CharDbl(const T* s) {
 	return a;
 }
 
-static const T* IntChar(T *p, int bufsize, int x) {
+TMPL(const T*) IntChar(T *p, int bufsize, int x)
+{
 	p += bufsize;
 	bool is_neg = false;
 	if (x < 0) {
@@ -179,7 +196,8 @@ static const T* IntChar(T *p, int bufsize, int x) {
 	return p;
 }
 
-static const T* IntChar64(T *p, int bufsize, int64 x) {
+TMPL(const T*) IntChar64(T *p, int bufsize, int64 x)
+{
 	p += bufsize;
 	bool is_neg = false;
 	if (x < 0) {
@@ -197,7 +215,8 @@ static const T* IntChar64(T *p, int bufsize, int64 x) {
 	return p;
 }
 
-static const T* IntCharU64(T *p, int bufsize, uint64 x) {
+TMPL(const T*) IntCharU64(T *p, int bufsize, uint64 x)
+{
 	p += bufsize;
 	bool is_neg = false;
 	if (x < 0) {
@@ -216,7 +235,8 @@ static const T* IntCharU64(T *p, int bufsize, uint64 x) {
 }
 
 
-static int Length(const T* c, int max_len=-1) {
+TMPL(int) Length(const T* c, int max_len)
+{
 	ASSERT(c);
 	if (!c) return 0;
 	int count = 0;
@@ -237,7 +257,8 @@ static int Length(const T* c, int max_len=-1) {
 	}
 }
 
-static int Compare(const T* a, const T* b) {
+TMPL(int) Compare(const T* a, const T* b)
+{
 	while (*a || *b) {
 		T ac = *a++;
 		T bc = *b++;
@@ -248,7 +269,8 @@ static int Compare(const T* a, const T* b) {
 	return 0;
 }
 
-static int Compare(const T* a, const T* b, int len) {
+TMPL(int) Compare(const T* a, const T* b, int len)
+{
 	while ((*a || *b) && len > 0) {
 		T ac = *a++;
 		T bc = *b++;
@@ -260,7 +282,8 @@ static int Compare(const T* a, const T* b, int len) {
 	return 0;
 }
 
-static void Copy(T* dst, const T* src) {
+TMPL(void) Copy(T* dst, const T* src)
+{
 	ASSERT(dst && src);
 	if (!dst || !src) return;
 	while (*src)
@@ -268,3 +291,14 @@ static void Copy(T* dst, const T* src) {
 	*dst = 0;
 }
 
+
+#undef TMPL
+#undef TMPL_THIS
+#undef TMPL_NEW
+
+
+template class StringT <char>;
+template class StringT <wchar_t>;
+
+	
+NAMESPACE_UPP_END

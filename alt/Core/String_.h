@@ -282,10 +282,27 @@ public:
 	int FindFirstOf(const T* str, int pos=0) const;
 	int FindFirstNotOf(const T* str, int pos=0) const;
 	int ReverseFindFirstNotOf(const T* str) const;
-	#include "StringInline.inl"
+	
+	static int CharOctInt(const T *s);
+	static int CharBinInt(const T *s);
+	static int64 CharBinInt64(const T *s);
+	static int CharHexInt(const T *s);
+	static int64 CharHexInt64(const T *s);
+	static int CharInt(const T *s);
+	static int64 CharInt64(const T *s);
+	static uint64 CharIntU64(const T *s);
+	static double CharDbl(const T* s);
+	static const T* IntChar(T *p, int bufsize, int x);
+	static const T* IntChar64(T *p, int bufsize, int64 x);
+	static const T* IntCharU64(T *p, int bufsize, uint64 x);
+	static int Length(const T* c, int max_len=-1);
+	static int Compare(const T* a, const T* b);
+	static int Compare(const T* a, const T* b, int len);
+	static void Copy(T* dst, const T* src);
+	
+	
 };
 
-#include "StringTmpl.inl"
 
 
 typedef StringT<char> String;
@@ -346,7 +363,7 @@ inline int64 BinInt64(String s) { return String::BinInt64(s); }
 inline int64 StrInt64(String s) { return String::StrInt64(s); }
 inline String IntStr(int i) { return String::IntStr(i); }
 inline String IntStr64(int64 i) { return String::IntStr64(i); }
-inline String DblStr(double d) { return String::DblStr(d); }
+String DblStr(double d);
 double ScanDouble(const char* c);
 String FormatScientific(double d);
 bool FitsInInt64(double x);

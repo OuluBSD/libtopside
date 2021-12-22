@@ -1,3 +1,9 @@
+#include "Core.h"
+
+
+NAMESPACE_UPP_BEGIN
+
+
 #define TMPL(x)		template <class T> x StringT<T>::
 #define TMPL_THIS	template <class T> StringT<T>& StringT<T>::
 #define TMPL_NEW	template <class T> StringT<T> StringT<T>::
@@ -291,25 +297,29 @@ TMPL(bool) operator!=(const StringT& s) const {
 	return !(*this == s);
 }
 
-TMPL(bool) operator==(const char* s) const {
+template <>
+bool StringT<char>::operator==(const char* s) const {
 	int len = (int)strnlen(s, 1 << 20);
 	if (len != GetCount())
 		return false;
 	return Compare(s, Begin(), len) == 0;
 }
 
-TMPL(bool) operator!=(const char* s) const {
+template <>
+bool StringT<char>::operator!=(const char* s) const {
 	int len = (int)strnlen(s, 1 << 20);
 	if (len != GetCount())
 		return true;
 	return Compare(s, Begin(), len) != 0;
 }
 
-TMPL(int) Compare(const char* s) const {
+template <>
+int StringT<char>::Compare(const char* s) const {
 	return Compare(s, Begin(), std::max(GetCount(), (int)strnlen(s, 1 << 20)));
 }
 
-TMPL(int) Compare(const StringT& s) const {
+template <>
+int StringT<char>::Compare(const StringT& s) const {
 	return Compare(s.Begin(), Begin(), std::max(GetCount(), s.GetCount()));
 }
 
@@ -325,12 +335,20 @@ TMPL_NEW IntStr64(int64 i) {
 	return StringT(value);
 }
 
-TMPL_NEW DblStr(double d) {
+template <>
+StringT<char> StringT<char>::DblStr(double d) {
 	char output[50];
 	snprintf(output, 50, "%g", d);
 	printf("%s", output);
 	return StringT(output);
 }
+
+template <>
+StringT<wchar_t> StringT<wchar_t>::DblStr(double d) {
+	return String::DblStr(d).ToWString();
+}
+
+String DblStr(double d) { return String::DblStr(d); }
 
 TMPL(hash_t) GetHashValue() const {
 	CombineHash ch;
@@ -468,3 +486,10 @@ TMPL(int) ReverseFindFirstNotOf(const T* str) const {
 #undef TMPL
 #undef TMPL_THIS
 #undef TMPL_NEW
+
+
+template class StringT <char>;
+template class StringT <wchar_t>;
+
+	
+NAMESPACE_UPP_END
