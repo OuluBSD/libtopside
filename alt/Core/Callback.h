@@ -214,7 +214,8 @@ public:
 		Clear();
 		*this << cb;
 	}
-	void operator<<(const Callback1& cb) {
+	void operator<<(const Callback1& cb) {Add(cb);}
+	void Add(const Callback1& cb) {
 		int begin = calls.GetCount();
 		calls.Append(cb.calls);
 		for (int i = begin; i < calls.GetCount(); i++)

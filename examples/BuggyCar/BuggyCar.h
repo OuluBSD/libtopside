@@ -5,8 +5,27 @@
 #include <Physics/Physics.h>
 
 
+#define SOFTGL 1
+
 
 NAMESPACE_TOPSIDE_BEGIN
+
+
+
+class BuggyCarVertexShader : public SoftShaderBase {
+	
+public:
+	void Process(SdlCpuVertexShaderArgs& args) override;
+	
+};
+
+class BuggyCarFragmentShader : public SoftShaderBase {
+	
+public:
+	void Process(SdlCpuFragmentShaderArgs& args) override;
+	
+};
+
 
 
 
@@ -119,7 +138,7 @@ public:
 		
 	}
 	
-	void Refresh(OglShader& s) {
+	void Refresh(GfxShader& s) {
 		speed = 1.0;
 		steer = 1.0;
 		Step();
@@ -149,7 +168,7 @@ public:
 		return false;
 	}*/
 	
-	Callback1<OglShader&> GetRefreshCallback() {return THISBACK(Refresh);}
+	Callback1<GfxShader&> GetRefreshCallback() {return THISBACK(Refresh);}
 };
 
 
@@ -160,13 +179,40 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
         auto components = EntityPrefab::Make(e);
 		
 		components.Get<TransformRef>()->position[1] = 3.0;
-		components.Get<RenderableRef>()->cb << components.Get<Ref<BuggyCar>>()->GetRefreshCallback();
+		components.Get<RenderableRef>()->cb.Add(components.Get<Ref<BuggyCar>>()->GetRefreshCallback());
 		
 		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
 		w->Attach(*components.Get<Ref<BuggyCar>>());
 		
         return components;
     }
+};
+
+
+struct BuggyCarApp :
+	public Component<BuggyCarApp>,
+	public BinderIfaceVideo
+{
+	RTTI_DECL2(BuggyCarApp, ComponentT, BinderIfaceVideo)
+	
+	ModelLoader loader;
+	TimeStop ts;
+	double phase_time = 1.5;
+	int iter = 0;
+	int frame = 0;
+	int phase = 0;
+	int phases = 2;
+	int width, height;
+	
+	
+	BuggyCarApp();
+	void operator=(const BuggyCarApp& t) {Panic("Can't copy BuggyCarApp");}
+	void Visit(RuntimeVisitor& vis) override {vis % loader;}
+	void Initialize() override;
+	void Render(Draw& draw) override;
+	
+	void DrawObj(GfxStateDraw& fb, bool use_texture);
+	
 };
 
 

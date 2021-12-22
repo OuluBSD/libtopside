@@ -118,10 +118,11 @@ bool EcsVideoBase::PostInitialize() {
 	if (src_type == VD(CENTER, VIDEO)) {
 		ISourceRef src = this->GetSource();
 		int src_count = src->GetSourceCount();
-		Value& val = src->GetSourceValue(src_count-1);
+		int src_ch = side_sink_conn.GetCount() == 1 ? side_sink_conn.First().local_ch_i : src_count-1;
+		Value& val = src->GetSourceValue(src_ch);
 		Format fmt = val.GetFormat();
 		fmt.vid.SetType(LightSampleFD::RGB_U8_LE);
-		if (!NegotiateSourceFormat(src_count-1, fmt))
+		if (!NegotiateSourceFormat(src_ch, fmt))
 			return false;
 	}
 	return true;
@@ -144,6 +145,8 @@ bool EcsVideoBase::IsReady(PacketIO& io) {
 bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 	RTLOG("EcsVideoBase::ProcessPackets:");
 	
+	int src_ch = io.src_count > 1 ? 1 : 0;
+	int sink_ch = 0; //io.sink_count > 1 ? 1 : 0;
 	
 	if (src_type == VD(CENTER, PROG)) {
 		Size sz(800, 600);
@@ -154,13 +157,13 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		pd.Finish();
 		
 		if (io.sink_count == 1) {
-			PacketIO::Sink& sink = io.sink[0];
-			PacketIO::Source& src = io.src[0];
+			PacketIO::Sink& sink = io.sink[sink_ch];
+			PacketIO::Source& src = io.src[src_ch];
 			
 			ASSERT(sink.p);
 			sink.may_remove = true;
 			src.from_sink_ch = 0;
-			src.p = ReplyPacket(0, sink.p);
+			src.p = ReplyPacket(src_ch, sink.p);
 			
 			InternalPacketData& data = src.p->SetData<InternalPacketData>();
 			data.ptr = &pd.cmd_screen_begin;
@@ -170,7 +173,7 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		}
 	}
 	else if (src_type == VD(CENTER, VIDEO)) {
-		Format fmt = io.src[0].val->GetFormat();
+		Format fmt = io.src[src_ch].val->GetFormat();
 		ASSERT(fmt.IsVideo());
 		
 		Size sz = fmt.vid.GetSize();
@@ -184,13 +187,13 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			id.Finish();
 			
 			if (io.sink_count == 1) {
-				PacketIO::Sink& sink = io.sink[0];
-				PacketIO::Source& src = io.src[0];
+				PacketIO::Sink& sink = io.sink[sink_ch];
+				PacketIO::Source& src = io.src[src_ch];
 				
 				ASSERT(sink.p);
 				sink.may_remove = true;
 				src.from_sink_ch = 0;
-				src.p = ReplyPacket(0, sink.p);
+				src.p = ReplyPacket(src_ch, sink.p);
 				
 				#if 0
 				Swap(src.p->Data(), id.Data());
@@ -215,27 +218,23 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 			for (BinderIfaceVideo* b : binders)
 				b->Render(cpu_sd);
 			
-			if (io.sink_count == 1) {
-				PacketIO::Sink& sink = io.sink[0];
-				PacketIO::Source& src = io.src[0];
-				
-				ASSERT(sink.p);
-				sink.may_remove = true;
-				src.from_sink_ch = 0;
-				src.p = ReplyPacket(0, sink.p);
-				
-				InternalPacketData& data = src.p->SetData<InternalPacketData>();
-				data.ptr = &cpu_state;
-				data.SetText("gfxstate");
-			}
-			else {
-				TODO
-			}
+			
+			PacketIO::Sink& sink = io.sink[sink_ch];
+			PacketIO::Source& src = io.src[src_ch];
+			
+			ASSERT(sink.p);
+			sink.may_remove = true;
+			src.from_sink_ch = 0;
+			src.p = ReplyPacket(src_ch, sink.p);
+			
+			InternalPacketData& data = src.p->SetData<InternalPacketData>();
+			data.ptr = &cpu_state;
+			data.SetText("gfxstate");
 		}
 	}
 	#if HAVE_OPENGL
 	else if (src_type == VD(OGL,FBO)) {
-		Format fmt = io.src[0].val->GetFormat();
+		Format fmt = io.src[src_ch].val->GetFormat();
 		ASSERT(fmt.IsFbo());
 		
 		Size sz = fmt.vid.GetSize();
@@ -245,31 +244,26 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		for (BinderIfaceVideo* b : binders)
 			b->Render(ogl_sd);
 		
-		if (io.sink_count == 1) {
-			PacketIO::Sink& sink = io.sink[0];
-			PacketIO::Source& src = io.src[0];
-			
-			ASSERT(sink.p);
-			sink.may_remove = true;
-			src.from_sink_ch = 0;
-			src.p = ReplyPacket(0, sink.p);
-			
-			InternalPacketData& data = src.p->SetData<InternalPacketData>();
-			if (1) {
-				data.ptr = &ogl_state;
-				data.SetText("gfxstate");
-			}
-			#if 0
-			// deprecated
-			else {
-				data.ptr = &ogl_pipe;
-				data.SetText("gfxpipe");
-			}
-			#endif
+		PacketIO::Sink& sink = io.sink[sink_ch];
+		PacketIO::Source& src = io.src[src_ch];
+		
+		ASSERT(sink.p);
+		sink.may_remove = true;
+		src.from_sink_ch = 0;
+		src.p = ReplyPacket(src_ch, sink.p);
+		
+		InternalPacketData& data = src.p->SetData<InternalPacketData>();
+		if (1) {
+			data.ptr = &ogl_state;
+			data.SetText("gfxstate");
 		}
+		#if 0
+		// deprecated
 		else {
-			TODO
+			data.ptr = &ogl_pipe;
+			data.SetText("gfxpipe");
 		}
+		#endif
 	}
 	#endif
 	else {
@@ -277,6 +271,12 @@ bool EcsVideoBase::ProcessPackets(PacketIO& io) {
 		return false;
 	}
 	
+	if (src_ch > 0 && io.src[src_ch].p) {
+		PacketIO::Sink& prim_sink = io.sink[0];
+		PacketIO::Source& prim_src = io.src[0];
+		prim_src.from_sink_ch = 0;
+		prim_src.p = ReplyPacket(0, prim_sink.p);
+	}
 	
 	return true;
 }

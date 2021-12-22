@@ -140,6 +140,23 @@ void Mesh::TransformVertices(TS::mat4 transform)
     UpdateBoundingBox();
 }*/
 
+void ModelMesh::ReverseFaces() {
+	for (Mesh& m : meshes)
+		m.ReverseFaces();
+}
+
+void Mesh::ReverseFaces() {
+	int triangle_count = indices.GetCount() / 3;
+	uint32* idx = (uint32*)indices.Begin();
+	uint32* end = idx + triangle_count * 3;
+	while (idx != end) {
+		uint32 u = idx[1];
+		idx[1] = idx[2];
+		idx[2] = u;
+		idx += 3;
+	}
+}
+
 void Mesh::Dump(int indent) {
 	String in;
 	in.Cat('\t', indent);

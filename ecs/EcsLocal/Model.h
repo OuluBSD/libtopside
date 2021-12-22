@@ -33,6 +33,7 @@ class ModelComponent :
 	public Component<ModelComponent>
 {
 public:
+	RTTI_COMP0(ModelComponent);
 	COMP_DEF_VISIT
 	
 	
@@ -45,11 +46,14 @@ public:
 	Ref<ModelMesh> GetModel() {return loader.GetModel();}
     
 	void GetModels(VectorRendModel& models);
-	
+	void Attach(ModelMesh* m) {loader.model = m;}
+	void LoadModel(CpuDataState& state);
+	void LoadModel(OglDataState& state);
 	
 protected:
 	ModelLoader loader;
-	
+	CpuDataObject* cpu_obj = 0;
+	OglDataObject* ogl_obj = 0;
 	
 	
 	

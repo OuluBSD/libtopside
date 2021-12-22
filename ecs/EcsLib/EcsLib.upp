@@ -20,5 +20,6 @@ file
 	RenderingSystem.cpp,
 	EventSystem.h,
 	EventSystem.cpp,
+	Prefab.h,
 	Trash readonly separator;
 

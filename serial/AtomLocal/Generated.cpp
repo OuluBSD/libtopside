@@ -321,18 +321,18 @@ AtomTypeCls EcsEventsAtom::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls EcsSwVideo::GetAtomType()
+AtomTypeCls EcsCpuVideoPipe::GetAtomType()
 {
-	return ATOM11(ECS_SW_VIDEO, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+	return ATOM11(ECS_CPU_VIDEO_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
 }
 
-void EcsSwVideo::Visit(RuntimeVisitor& vis)
+void EcsCpuVideoPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Atom<EcsSwVideo>>(this);
+	vis.VisitThis<Atom<EcsCpuVideoPipe>>(this);
 	vis.VisitThis<EcsVideoBase>(this);
 }
 
-AtomTypeCls EcsSwVideo::GetType() const
+AtomTypeCls EcsCpuVideoPipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -369,6 +369,24 @@ void EcsOglFboPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls EcsOglFboPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls EcsCpuVideo::GetAtomType()
+{
+	return ATOM11_U44(ECS_CPU_VIDEO, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);
+}
+
+void EcsCpuVideo::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<EcsCpuVideo>>(this);
+	vis.VisitThis<EcsVideoBase>(this);
+}
+
+AtomTypeCls EcsCpuVideo::GetType() const
 {
 	return GetAtomType();
 }
@@ -599,18 +617,18 @@ AtomTypeCls SdlFboAtom::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls SdlVideoAtom::GetAtomType()
+AtomTypeCls SdlVideoAtomPipe::GetAtomType()
 {
-	return ATOM11(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+	return ATOM11(SDL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
 }
 
-void SdlVideoAtom::Visit(RuntimeVisitor& vis)
+void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<Atom<SdlVideoAtom>>(this);
+	vis.VisitThis<Atom<SdlVideoAtomPipe>>(this);
 	vis.VisitThis<SDL2CpuScreenBase>(this);
 }
 
-AtomTypeCls SdlVideoAtom::GetType() const
+AtomTypeCls SdlVideoAtomPipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -647,6 +665,24 @@ void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlVideoAtomSA::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls SdlVideoAtom::GetAtomType()
+{
+	return ATOM11_U44(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);
+}
+
+void SdlVideoAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<SdlVideoAtom>>(this);
+	vis.VisitThis<SDL2CpuScreenBase>(this);
+}
+
+AtomTypeCls SdlVideoAtom::GetType() const
 {
 	return GetAtomType();
 }
@@ -807,6 +843,24 @@ void OglAudioSource::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls OglAudioSource::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls CpuKeyboardSource::GetAtomType()
+{
+	return ATOM11_U01(CPU_KEYBOARD_SOURCE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO);
+}
+
+void CpuKeyboardSource::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Atom<CpuKeyboardSource>>(this);
+	vis.VisitThis<CpuKeyboardBase>(this);
+}
+
+AtomTypeCls CpuKeyboardSource::GetType() const
 {
 	return GetAtomType();
 }

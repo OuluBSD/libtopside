@@ -12,6 +12,7 @@
 #include "WorldLogic.h"
 #include "WindowSystem.h"
 #include "PhysicsSystem.h"
+#include "Prefabs.h"
 
 
 NAMESPACE_ECS_BEGIN

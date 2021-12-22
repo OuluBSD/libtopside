@@ -82,7 +82,7 @@ public:
 
 
 class ModelBuilder {
-	ModelMesh model;
+	One<ModelMesh> model;
 	
 public:
 	
@@ -94,6 +94,9 @@ public:
 	
 	operator const ModelMesh&() const {return model;}
 	const ModelMesh& AsModel() const {return model;}
+	
+	ModelMesh* Detach() {if (model) return model.Detach(); else return 0;}
+	
 };
 
 

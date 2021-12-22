@@ -50,7 +50,7 @@ OdeObject::~OdeObject() {
 	if (body) dBodyDestroy(body);
 }
 
-void OdeObject::LoadModel(OglShader& s) {
+void OdeObject::LoadModel(GfxShader& s) {
 	TODO
 	/*model_err = false;
 	if (!model.LoadModel(s, *fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"))) {
@@ -80,7 +80,7 @@ void OdeObject::DetachContent() {
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
 }
 
-void OdeObject::Refresh(OglShader& s) {
+void OdeObject::Refresh(GfxShader& s) {
 	if (!fb_obj && !model_err) {
 		LOG("OdeObject::Refresh: warning: loading model while painting");
 		fb_obj = s.CreateObject();

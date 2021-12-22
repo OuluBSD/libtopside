@@ -1,0 +1,46 @@
+machine sdl.app: {
+		
+	driver context: {
+		sdl.context: true;
+	};
+		
+	chain program: {
+		state event.register;
+		
+		loop center.events: {
+			center.customer: true;
+			sdl.event.pipe: true;
+			state.event.pipe: true {target: event.register;};
+		};
+		
+		loop center.keyboard: {
+			center.customer: true;
+			center.video.keyboard: true [][loop: center.video] {target: event.register;};
+		};
+		
+		loop center.events.ecs.system: {
+			center.customer: true;
+			ecs.system.events: true {target: event.register;};
+		};
+		
+		loop center.ecs: {
+			center.customer: true;
+			center.video.ecs: true [][loop: center.video;;;;] {
+				drawmem:		false;
+			};
+		};
+		
+		loop center.video: {
+			center.customer: true;
+			sdl.video: true [loop: center.ecs; loop: center.keyboard;;;] {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				fragshader:		"${FRAGMENT}";
+				vtxshader:		"${VERTEX}";
+			};
+		};
+		
+	};
+	
+};

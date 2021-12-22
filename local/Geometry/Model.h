@@ -5,7 +5,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 class ModelLoader;
 struct GfxShader;
-struct CpuDataObject;
+//struct CpuDataObject;
 /*#if HAVE_OPENGL
 struct OglDataObject;
 class OglShader;
@@ -31,6 +31,7 @@ public:
 	Mesh(const Mesh& m) {*this = m;}
 	
 	void Clear();
+	void ReverseFaces();
 	//void Set(GfxDataObject& o, const Vector<Vertex>& Vertices, const Vector<uint32>& indices);
     bool AddTextureFilePath(String key, String path);
 	void operator=(const Mesh& src) {
@@ -134,7 +135,7 @@ public:
 	//void Refresh(GfxDataState& s, GfxDataObject& o);
     //void Refresh(GfxDataState& s, GfxDataObject& o, Mesh& m);
     void Dump();
-    
+    void ReverseFaces();
 };
 
 using ModelMeshRef = Ref<ModelMesh, RefParent1<ModelLoader>>;

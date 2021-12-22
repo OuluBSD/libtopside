@@ -5,6 +5,8 @@ uses
 file
 	BuggyCar.h,
 	BuggyCar.cpp,
+	Soft.cpp,
+	BuggyCarSoft.eon highlight cpp,
 	BuggyCar.eon highlight cpp,
 	Fragment.glsl highlight cpp,
 	Vertex.glsl highlight cpp;

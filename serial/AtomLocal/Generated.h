@@ -295,11 +295,11 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsSwVideo : public Atom<EcsSwVideo>, public EcsVideoBase {
+class EcsCpuVideoPipe : public Atom<EcsCpuVideoPipe>, public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsSwVideo, AtomT, EcsVideoBase)
-	COPY_PANIC(EcsSwVideo)
+	RTTI_DECL2(EcsCpuVideoPipe, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsCpuVideoPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs.pipe")
 	ATOM_MAKE_ACTION_END
@@ -334,6 +334,22 @@ public:
 	COPY_PANIC(EcsOglFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class EcsCpuVideo : public Atom<EcsCpuVideo>, public EcsVideoBase {
+
+public:
+	RTTI_DECL2(EcsCpuVideo, AtomT, EcsVideoBase)
+	COPY_PANIC(EcsCpuVideo)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -542,13 +558,13 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2CpuScreenBase {
+class SdlVideoAtomPipe : public Atom<SdlVideoAtomPipe>, public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2CpuScreenBase)
-	COPY_PANIC(SdlVideoAtom)
+	RTTI_DECL2(SdlVideoAtomPipe, AtomT, SDL2CpuScreenBase)
+	COPY_PANIC(SdlVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -581,6 +597,22 @@ public:
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2CpuScreenBase {
+
+public:
+	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2CpuScreenBase)
+	COPY_PANIC(SdlVideoAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	void Visit(RuntimeVisitor& vis) override;
@@ -732,6 +764,22 @@ public:
 };
 #endif
 
+#if defined flagSCREEN
+class CpuKeyboardSource : public Atom<CpuKeyboardSource>, public CpuKeyboardBase {
+
+public:
+	RTTI_DECL2(CpuKeyboardSource, AtomT, CpuKeyboardBase)
+	COPY_PANIC(CpuKeyboardSource)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.keyboard")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 
 using TestRealtimeSrcRef = Ref<TestRealtimeSrc, AtomParent>;
@@ -774,11 +822,13 @@ using EventStatePipeRef = Ref<EventStatePipe, AtomParent>;
 
 using EcsEventsAtomRef = Ref<EcsEventsAtom, AtomParent>;
 
-using EcsSwVideoRef = Ref<EcsSwVideo, AtomParent>;
+using EcsCpuVideoPipeRef = Ref<EcsCpuVideoPipe, AtomParent>;
 
 using EcsProgVideoRef = Ref<EcsProgVideo, AtomParent>;
 
 using EcsOglFboPipeRef = Ref<EcsOglFboPipe, AtomParent>;
+
+using EcsCpuVideoRef = Ref<EcsCpuVideo, AtomParent>;
 
 using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 
@@ -806,11 +856,13 @@ using SdlFboPipeSideRef = Ref<SdlFboPipeSide, AtomParent>;
 
 using SdlFboAtomRef = Ref<SdlFboAtom, AtomParent>;
 
-using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
+using SdlVideoAtomPipeRef = Ref<SdlVideoAtomPipe, AtomParent>;
 
 using SdlVideoProgAtomRef = Ref<SdlVideoProgAtom, AtomParent>;
 
 using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, AtomParent>;
+
+using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 
@@ -829,6 +881,8 @@ using OglAudioSinkRef = Ref<OglAudioSink, AtomParent>;
 using OglKeyboardSourceRef = Ref<OglKeyboardSource, AtomParent>;
 
 using OglAudioSourceRef = Ref<OglAudioSource, AtomParent>;
+
+using CpuKeyboardSourceRef = Ref<CpuKeyboardSource, AtomParent>;
 
 }
 

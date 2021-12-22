@@ -125,6 +125,31 @@ typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
 }
 
 template <class Gfx>
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o) {
+	ASSERT(l.model);
+	if (!l.model) return false;
+	
+	l.model->SetParent(&l);
+    l.model->path = "";
+    l.model->directory = "";
+	
+    ProcessNode(o, *l.model);
+    
+    return true;
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::ProcessNode(DataObject& o, ModelMesh& model) {
+	for (Mesh& mesh : model.meshes)
+		ProcessMesh(o, model, mesh);
+}
+
+template <class Gfx>
+void DataStateT<Gfx>::ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out) {
+	o.Refresh(out);
+}
+
+template <class Gfx>
 bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o, String path) {
 	return LoadModelAssimp(l, o, path);
 }
@@ -185,7 +210,7 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, DataObject& o) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessNode(DataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene) {
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
@@ -198,7 +223,7 @@ void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *no
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
 	out.vertices.SetCount(mesh->mNumVertices);
 	
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)

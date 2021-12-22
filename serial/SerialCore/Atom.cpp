@@ -184,19 +184,19 @@ bool AtomBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 			if (ex.local_ch_i == src_ch)
 				e = &ex;
 		if (!e) {
-			RTLOG("AtomBase::NegotiateSourceFormat: exchange not found");
+			LOG("AtomBase::NegotiateSourceFormat: error: exchange not found");
 			return false;
 		}
 		
 		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
-			LOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
+			LOG("AtomBase::NegotiateSourceFormat: error: audio format negotiation failed");
 			return false;
 		}
 	}
 	else {
 		DUMP(*prim_link_sink);
 		if (!prim_link_sink->NegotiateSinkFormat(0, fmt)) {
-			LOG("AtomBase::NegotiateSourceFormat: audio format negotiation failed");
+			LOG("AtomBase::NegotiateSourceFormat: error: audio format negotiation failed");
 			return false;
 		}
 	}

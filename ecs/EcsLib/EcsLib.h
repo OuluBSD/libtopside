@@ -31,6 +31,7 @@
 #include "RegistrySystem.h"
 #include "RenderingSystem.h"
 #include "EventSystem.h"
+#include "Prefab.h"
 
 #ifdef GUIPLATFORM_INCLUDE_AFTER_ECSLIB
 	#include GUIPLATFORM_INCLUDE_AFTER_ECSLIB

@@ -22,5 +22,6 @@ file
 	WindowSystem.cpp,
 	PhysicsSystem.h,
 	PhysicsSystem.cpp,
+	Prefabs.h,
 	_ readonly separator;
 

@@ -51,7 +51,7 @@ struct GfxDataObject : RTTIBase {
 	/*mat4 model;
 	mat4 scale;
 	mat4 proj;*/
-	int tex_id[TEXTYPE_COUNT] = {0,0,0,0,0,0, 0,0,0,0,0,0};
+	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
 	
 	void Set(const mat4& model, const mat4& scale) {TODO}
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
@@ -70,10 +70,12 @@ struct GfxDataState : ErrorReporter {
     vec3		light_dir;
 	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
-	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
-	//virtual bool LoadModel(ModelLoader& l, String path) = 0;
+	
+	/*
+	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o) = 0;
+	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;*/
 	
 };
 
@@ -299,6 +301,9 @@ struct GfxStateDraw : Draw {
 	
 	virtual void DrawShaderPipeline(GfxShaderPipeline&) {Panic("not implemented");}
 	*/
+	
+	virtual GfxDataState& GetGfxState() = 0;
+	virtual bool HasTarget() const = 0;
 	
 };
 

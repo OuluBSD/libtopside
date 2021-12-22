@@ -17,6 +17,7 @@ using OglShader			= SdlOglShader;
 using OglFramebuffer	= SdlOglFramebuffer;
 using OglBuffer			= SdlOglBuffer;
 using OglBinderIface	= SdlOglBinderIface;
+using OglDataObject		= SdlOglDataObject;
 using OglBufferT		= BufferT<SdlOglGfx>;
 
 

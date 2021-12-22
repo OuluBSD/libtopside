@@ -105,16 +105,21 @@ struct DataStateT : GfxDataState {
 	
 	void Free();
 	void Refresh(ModelMesh& m) override {TODO}
+	bool LoadModel(ModelLoader& l, DataObject& o);
 	bool LoadModel(ModelLoader& l, DataObject& o, String path);
 	bool LoadModelTextures(ModelLoader& l, DataObject& o);
 	
 protected:
+	
+	void ProcessNode(DataObject& o, ModelMesh& model);
+	void ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out);
+	
 	#ifdef flagASSIMP
 	bool LoadModelAssimp(ModelLoader& l, DataObject& o, String path);
     void RefreshTexture(DataObject& o, ModelMesh& model);
     void RefreshTexture(DataObject& o, ModelMesh& model, Mesh& out);
-    void ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
-    void ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
+    void ProcessNode(DataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene);
+    void ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene);
     void LoadMaterialTextures(ModelMesh& mout, Mesh& out, aiMaterial *mat, int type);
 	#endif
 	

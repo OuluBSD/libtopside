@@ -16,6 +16,7 @@ class MotionControllerComponent :
 	
 	
 public:
+	RTTI_COMM0(MotionControllerComponent);
 	
 	
 	SpatialInteractionSourceHandedness req_hand;

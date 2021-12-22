@@ -7,11 +7,12 @@ NAMESPACE_TOPSIDE_BEGIN
 bool mb_is_colored_only = false;
 
 Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
+	this->model.Create();
+	ModelMesh& model = this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_grid(m, 1, 1, size[0], size[1]);
 	
-	for(int i = 0; i < m.vertices.GetCount(); i++) {
-		Vertex& v = m.vertices[i];
+	for(Vertex& v : m.vertices) {
 		v.position += pos;
 	}
 	
@@ -22,11 +23,12 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 }
 
 Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim) {
+	this->model.Create();
+	ModelMesh& model = this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_box(m, dim[0], dim[1], dim[2]);
 	
-	for(int i = 0; i < m.vertices.GetCount(); i++) {
-		Vertex& v = m.vertices[i];
+	for(Vertex& v : m.vertices) {
 		v.position += pos;
 	}
 	
@@ -37,11 +39,12 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim) {
 }
 
 Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
+	this->model.Create();
+	ModelMesh& model = this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_sphere(m, 16, 16, radius);
 	
-	for(int i = 0; i < m.vertices.GetCount(); i++) {
-		Vertex& v = m.vertices[i];
+	for(Vertex& v : m.vertices) {
 		v.position += pos;
 	}
 	
@@ -52,11 +55,12 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
 }
 
 Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length) {
+	this->model.Create();
+	ModelMesh& model = this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_cylinder(m, 16, radius, length);
 	
-	for(int i = 0; i < m.vertices.GetCount(); i++) {
-		Vertex& v = m.vertices[i];
+	for(Vertex& v : m.vertices) {
 		v.position += pos;
 	}
 	
