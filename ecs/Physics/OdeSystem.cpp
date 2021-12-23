@@ -125,6 +125,27 @@ void OdeObject::Refresh(GfxShader& s) {
 	
 }
 
+void OdeObject::LoadModel(CpuDataState& state) {
+	auto& o = cpu_obj ? *cpu_obj : state.AddObject();
+	cpu_obj = cpu_obj ? cpu_obj : &o;
+	fb_obj = cpu_obj;
+	if (!state.LoadModel(loader, o))
+		Panic("Couldn't load model: ModelComponent");
+	if (!state.LoadModelTextures(loader, o))
+		Panic("Couldn't load model textures: ModelComponent");
+}
+
+void OdeObject::LoadModel(OglDataState& state) {
+	auto& o = ogl_obj ? *ogl_obj : state.AddObject();
+	ogl_obj = ogl_obj ? ogl_obj : &o;
+	fb_obj = ogl_obj;
+	if (!state.LoadModel(loader, o))
+		Panic("Couldn't load model: ModelComponent");
+	if (!state.LoadModelTextures(loader, o))
+		Panic("Couldn't load model textures: ModelComponent");
+}
+
+
 
 NAMESPACE_TOPSIDE_END
 

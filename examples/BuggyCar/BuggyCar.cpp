@@ -22,7 +22,7 @@ void BuggyWheel::OnAttach() {
 	ModelBuilder mb;
 	mb	.AddCylinder(vec3(0, 0, 0), radius, 0.02)
 		.SetMaterial(DefaultMaterial());
-	model = mb;
+	loader = mb;
 	
 	model_geom = rotate(identity<mat4>(), M_PI_2, vec3(0,0,1));
 	
@@ -59,10 +59,10 @@ void BuggyCarStartup(T& state) {
 	
 	
 	EntityRef sky = models->Create<StaticSkybox>();
+	EntityRef gnd = models->Create<StaticGroundPlanePrefab>();
 	
 	sky->Get<ModelComponent>()->LoadModel(state);
-	
-	//EntityRef gnd = models->Create<StaticGroundPlanePrefab>();
+	gnd->Get<StaticGroundPlane>()->LoadModel(state);
 	
 	/*EntityRef car = models->Create<BuggyCarPrefab>();
 	EntityRef cam = cameras->Create<CameraPrefab>();

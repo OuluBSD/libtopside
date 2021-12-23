@@ -48,13 +48,12 @@ void SoftRend::SetViewport(Size sz) {
 	viewport_size = sz;
 }
 
-void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, bool elements) {
-	SDL_Texture* tex = fb.tex;
+void SoftRend::RenderScreenRect(bool elements) {
+	ASSERT(tgt_pipe && tgt_fb);
+	SoftPipeline& pipe = *tgt_pipe;
+	SoftFramebuffer& fb = *tgt_fb;
 	
-	uint32 fmt = 0;
-	int access, w = 0, h = 0;
-	if (SDL_QueryTexture(tex, &fmt, &access, &w, &h) < 0 || w == 0 || h == 0)
-		return;
+	SDL_Texture* tex = fb.tex;
 	
 	SDL_Surface* surf = 0;
 	SDL_Rect r {0, 0, w, h};
@@ -65,18 +64,10 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	int pitch = surf->pitch;
 	byte* data = (byte*)surf->pixels;
 	
-	SoftShaderBase& fs = shdr.Get();
-	
 	SdlCpuFragmentShaderArgs frag_args;
-	GenericShaderArgs& g = prog.args;
-	frag_args.generic = &g;
-	frag_args.fa = &prog.fargs;
 	
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		frag_args.tex_img[i] = input_texture[i];
-	
-	if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
-		g.iResolution = vec3(w, h, 0);
 	
 	vec2& coord = frag_args.frag_coord;
 	vec4& out = frag_args.frag_color_out;
@@ -85,6 +76,7 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	vec2& tex_coord = frag_args.tex_coord;
 	
 	if (!elements) {
+		SoftShaderBase& fs = tmp_sources[0].frag->Get();
 		for (int y = 0; y < h; y++) {
 			byte* it = data + (h - 1 - y) * pitch;
 			coord[1] = y;
@@ -104,8 +96,8 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 		DepthInfo* zinfo = (DepthInfo*)this->zinfo.Begin();
 		float* zbuffer = (float*)this->zbuffer.Begin();
 		float reset_f = GetDepthResetValue();
-		const Vertex* vertices = GetVertices().vertices.Begin();
-		const uint32* indices = GetIndices().indices.Begin();
+		//const Vertex* vertices = GetVertices().vertices.Begin();
+		//const uint32* indices = GetIndices().indices.Begin();
 		ASSERT(stride >= 1 && stride <= 4);
 		for (int y = 0; y < h; y++) {
 			byte* it = data + (h - 1 - y) * pitch;
@@ -120,6 +112,19 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 					}
 				}
 				else {
+					const RenderSource& rs = tmp_sources[zinfo->src_id];
+					const Vertex* vertices = rs.GetVertices().vertices.Begin();
+					const uint32* indices = rs.ebo->indices.Begin();
+					SoftVertexBuffer* input_vertices = rs.vbo;
+					SoftShaderBase& fs = rs.frag->Get();
+					
+					SoftProgram& prog = *rs.prog;
+					GenericShaderArgs& g = prog.args;
+					frag_args.generic = &g;
+					frag_args.fa = &prog.fargs;
+					if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
+						g.iResolution = vec3(w, h, 0);
+					
 					int idx_base = zinfo->triangle_i * 3;
 					int idx_a = indices[idx_base + 0];
 					int idx_b = indices[idx_base + 1];
@@ -165,25 +170,27 @@ void SoftRend::RenderScreenRect(SoftFramebuffer& fb, SoftProgram& prog, SoftShad
 	SDL_UnlockTexture(tex);
 }
 
-void SoftRend::RenderScreenRect(SoftPipeline& pipe, SoftFramebuffer& fb) {
-	
-	for (SoftPipeline::Stage& stage : pipe.stages) {
+void SoftRend::RenderScreenRect() {
+	ASSERT(tgt_pipe && tgt_fb);
+	for (SoftPipeline::Stage& stage : tgt_pipe->stages) {
 		SoftProgram& prog = *stage.prog;
 		for (SoftShader* shader : prog.shaders) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
-				RenderScreenRect(fb, prog, *shader);
+				RenderScreenRect(false);
 			}
 		}
 	}
-	
 }
 
-void SoftRend::ProcessVertexShader(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, SoftVertexArray& vao) {
+void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id) {
+	RenderSource& rs = tmp_sources[src_id];
+	SoftVertexBuffer& processed_vertices = rs.processed_vertices;
 	ASSERT(vao.vbo && vao.ebo);
 	SoftVertexBuffer& vbo = *vao.vbo;
 	SoftElementBuffer& ebo = *vao.ebo;
 	SoftShaderBase& vs = shdr.Get();
+	SoftProgram& prog = *rs.prog;
 	
 	SdlCpuVertexShaderArgs vtx_args;
 	GenericShaderArgs& g = prog.args;
@@ -219,12 +226,10 @@ void SoftRend::ProcessVertexShader(SoftFramebuffer& fb, SoftProgram& prog, SoftS
 	}
 	#endif
 	
-	use_processed_vertices = true;
+	rs.use_processed_vertices = true;
 }
 
-void SoftRend::TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c) {
-	int w = prog.args.iResolution[0];
-	int h = prog.args.iResolution[1];
+void SoftRend::TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
 	vec2 bboxmin(w - 1,  h - 1);
 	vec2 bboxmax(0, 0);
 	vec2 clamp(w - 1, h - 1);
@@ -261,28 +266,20 @@ void SoftRend::TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthIn
 				auto& i = zinfo[pos];
 				i.triangle_i = info.triangle_i;
 				i.bc_screen = bc_screen;
+				i.src_id = src_id;
 			}
 		}
 	}
 }
 
-void SoftRend::Render(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, SoftVertexArray& vao) {
+void SoftRend::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	SoftElementBuffer& ebo = *vao.ebo;
-	SoftVertexBuffer& vbo = GetVertices();
+	SoftVertexBuffer& vbo = tmp_sources[src_id].GetVertices();
 	Vertex* vert = (Vertex*)vbo.vertices.Begin();
 	uint32* iter = (uint32*)ebo.indices.Begin();
 	uint32 vtx_count = vbo.vertices.GetCount();
 	uint32 idx_count = ebo.indices.GetCount();
 	uint32 triangles = idx_count / 3;
-	
-	int w = prog.args.iResolution[0];
-	int h = prog.args.iResolution[1];
-	int len = w * h;
-	zinfo.SetCount(len);
-	memset((DepthInfo*)zinfo.Begin(), 0, len * sizeof(DepthInfo));
-	zbuffer.SetCount(len);
-	float reset_f = GetDepthResetValue();
-	for (float& f : zbuffer) f = reset_f;
 	
 	DepthInfo info;
 		
@@ -295,36 +292,49 @@ void SoftRend::Render(SoftFramebuffer& fb, SoftProgram& prog, SoftShader& shdr, 
 		const Vertex& b = vert[tri_b];
 		const Vertex& c = vert[tri_c];
 		
-		TriangleDepthTest(fb, prog, info, a, b, c);
+		TriangleDepthTest(info, a, b, c, src_id);
 		
 		iter += 3;
 	}
 	
-	input_indices = &ebo;
-	RenderScreenRect(fb, prog, shdr, true);
+	//input_indices = &ebo;
+	//RenderScreenRect(fb, prog, shdr, true);
 }
 
-void SoftRend::Render(SoftPipeline& pipe, SoftFramebuffer& fb, SoftVertexArray& vao) {
-	ASSERT(pipe && fb);
+void SoftRend::Render(SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
+	ASSERT(tgt_pipe && tgt_fb);
+	SoftPipeline& pipe = *tgt_pipe;
+	SoftFramebuffer& fb = *tgt_fb;
 	
 	//SoftShader* shdrs[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
-	input_vertices = vao.vbo;
+	
+	//input_vertices = vao.vbo;
 	
 	for (SoftPipeline::Stage& stage : pipe.stages) {
 		SoftProgram& prog = *stage.prog;
 		
-		ClearTemp();
+		if (tmp_sources.GetCount() >= UINT16_MAX)
+			Panic("SoftRend render source limit exceeded");
+		uint16 src_id = tmp_sources.GetCount();
+		RenderSource& rs = tmp_sources.Add();
+		//rs.pipe = &pipe;
+		//rs.fb = &fb;
+		rs.vbo = vao.vbo;
+		rs.ebo = vao.ebo;
+		rs.prog = &prog;
 		
-		use_processed_vertices = false;
+		//ClearTemp();
+		
 		for (SoftShader* shader : prog.shaders) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::VERTEX_SHADER) {
-				ProcessVertexShader(fb, prog, *shader, vao);
+				ProcessVertexShader(*shader, vao, src_id);
+				DepthTest(vao, src_id);
 			}
 			else if (type == GVar::FRAGMENT_SHADER) {
-				Render(fb, prog, *shader, vao);
+				rs.frag = shader;
 			}
 			else {
 				TODO
@@ -333,10 +343,36 @@ void SoftRend::Render(SoftPipeline& pipe, SoftFramebuffer& fb, SoftVertexArray& 
 	}
 }
 
-void SoftRend::ClearTemp() {
+void SoftRend::Begin() {
+	ASSERT(tgt_fb && tgt_pipe);
+	
+	tmp_sources.SetCount(0);
+	
+	// query target dimension
+	SDL_Texture* tex = tgt_fb->tex;
+	uint32 fmt = 0;
+	int access;
+	w = 0, h = 0;
+	SDL_QueryTexture(tex, &fmt, &access, &w, &h);
+	
+	// reset z-buffer
+	int len = w * h;
+	zinfo.SetCount(len);
+	memset((DepthInfo*)zinfo.Begin(), 0, len * sizeof(DepthInfo));
+	zbuffer.SetCount(len);
+	float reset_f = GetDepthResetValue();
+	for (float& f : zbuffer) f = reset_f;
+	
+}
+
+void SoftRend::End() {
+	RenderScreenRect(true);
+}
+
+/*void SoftRend::ClearTemp() {
 	vertices.SetCount(0);
 	indices.SetCount(0);
-}
+}*/
 
 
 NAMESPACE_TOPSIDE_END

@@ -8,7 +8,9 @@ void DefaultEcsInitializer() {
 	eng.GetAdd<RenderingSystem>();
 	eng.GetAdd<EntityStore>();
 	eng.GetAdd<ComponentStore>();
-	//eng.GetAdd<OdeSystem>();
+	#ifdef flagODE
+	eng.GetAdd<OdeSystem>();
+	#endif
 	eng.GetAdd<EventSystem>();
 	
 	Serial::Machine& mach = Serial::GetActiveMachine();

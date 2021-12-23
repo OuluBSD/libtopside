@@ -416,16 +416,20 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		}
 		
 		// render VBA from state
+		Gfx::BeginRender();
 		for (DataObject& o : data.objects) {
 			SetVars(data, rt.prog, o);
 			o.Paint(data);
 		}
+		Gfx::EndRender();
 	}
 	else if (user_data) {
+		Gfx::BeginRender();
 		for (DataObject& o : user_data->objects) {
 			SetVars(*user_data, rt.prog, o);
 			o.Paint(*user_data);
 		}
+		Gfx::EndRender();
 	}
 	
 	EnableGfxAccelDebugMessages(1);

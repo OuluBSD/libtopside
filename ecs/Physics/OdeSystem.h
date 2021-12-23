@@ -58,7 +58,10 @@ public:
 class OdeObject : public OdeNode {
 	
 public:
-	ModelLoader model;
+	ModelLoader loader;
+	CpuDataObject* cpu_obj = 0;
+	OglDataObject* ogl_obj = 0;
+	
 	GfxDataObject* fb_obj = 0;
 	bool model_err = false;
 	
@@ -90,6 +93,8 @@ public:
 	void SetGeomRotationIdentity(){dMatrix3 R; dRSetIdentity(R); dGeomSetRotation(geom, R);}
 	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {dMatrix3 R; dRFromAxisAndAngle(R, ax, ay, az, angle); dBodySetRotation(body, R);}
 	const dReal* GetBodyPosition() {return dBodyGetPosition(body);}
+	void LoadModel(CpuDataState& state);
+	void LoadModel(OglDataState& state);
 	
 	Callback1<GfxShader&> GetRefreshCallback() {return THISBACK(Refresh);}
 };

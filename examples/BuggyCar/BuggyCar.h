@@ -5,7 +5,7 @@
 #include <Physics/Physics.h>
 
 
-#define SOFTGL 0
+#define SOFTGL 1
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -58,7 +58,7 @@ struct BuggyChassis : public OdeObject {
 		ModelBuilder mb;
 		mb	.AddBox(vec3(-width/2, -height/2, -length/2), vec3(width, height, length))
 			.SetMaterial(DefaultMaterial());
-		model = mb;
+		loader = mb;
 		
 		//model_geom = rotate<float>(identity<mat4>(), M_PI_2, vec3(0,0,1));
 		

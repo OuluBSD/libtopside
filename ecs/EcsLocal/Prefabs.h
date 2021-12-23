@@ -5,7 +5,7 @@ NAMESPACE_ECS_BEGIN
 
 
 
-struct StaticSkybox : EntityPrefab<Transform, ModelComponent>
+struct StaticSkybox : EntityPrefab<Transform, Renderable, ModelComponent>
 {
     static Components Make(Entity& e)
     {

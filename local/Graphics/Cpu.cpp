@@ -249,7 +249,10 @@ void CpuGfx::RenderScreenRect() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	l.rend.RenderScreenRect(*l.pipe, *l.fb);
+	l.rend.SetTarget(*l.pipe, *l.fb);
+	l.rend.Begin();
+	l.rend.RenderScreenRect();
+	l.rend.End();
 }
 
 bool CpuGfx::GenTexture(SoftFramebuffer& fb) {
@@ -322,7 +325,7 @@ void CpuGfx::DrawVertexElements(int element_limit) {
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		l.rend.BindTexture(i, l.texture[i].GetReadTexture());
 	
-	l.rend.Render(*l.pipe, *l.fb, *l.vao);
+	l.rend.Render(*l.vao);
 }
 
 void CpuGfx::TexImage2D(Texture& tex) {
@@ -347,6 +350,23 @@ void CpuGfx::DeleteElementBuffer(NativeElementBuffer& ebo) {
 void CpuGfx::DeleteTexture(NativeColorBuffer& b) {
 	b.Clear();
 }
+
+void CpuGfx::BeginRender() {
+	auto& l = Local();
+	ASSERT_(l.fb, "framebuffer is not bound yet");
+	ASSERT_(l.pipe, "pipe is not bound yet");
+	ASSERT_(*l.fb, "framebuffer is not inited");
+	ASSERT_(*l.pipe, "pipeline is not inited");
+	
+	l.rend.SetTarget(*l.pipe, *l.fb);
+	l.rend.Begin();
+}
+
+void CpuGfx::EndRender() {
+	auto& l = Local();
+	l.rend.End();
+}
+
 
 
 NAMESPACE_TOPSIDE_END

@@ -28,7 +28,7 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 		ModelBuilder mb;
 		mb	.AddPlane(vec3(-50, 0, -50), vec2(100, 100))
 			.SetMaterial(DefaultMaterial());
-		model = mb.AsModel();
+		loader = mb.AsModel();
 	}
 	
 	String ToString() override {return "StaticGroundPlane";}
@@ -36,7 +36,8 @@ struct StaticGroundPlane : public OdeObject, public Component<StaticGroundPlane>
 
 using StaticGroundPlaneRef = Ref<StaticGroundPlane>;
 
-struct StaticGroundPlanePrefab : EntityPrefab<Transform, Renderable, StaticGroundPlane>
+struct StaticGroundPlanePrefab :
+	EntityPrefab<Transform, Renderable, StaticGroundPlane>
 {
     static Components Make(Entity& e)
     {
@@ -117,7 +118,7 @@ struct OdeSphere : public OdeScalarObject {
 		ModelBuilder mb;
 		mb	.AddSphere(vec3(0., 0., 0.), radius)
 			.SetMaterial(DefaultMaterial());
-		model = mb;
+		loader = mb;
 		
 		AttachContent();
 	}

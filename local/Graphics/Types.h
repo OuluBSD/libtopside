@@ -174,6 +174,8 @@ struct CpuGfx {
 	static void BindFramebufferDefault();
 	static void RenderScreenRect();
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
+	static void BeginRender();
+	static void EndRender();
 	
 	static Serial::VideoFormat& GetFormat(Serial::Format& fmt);
 	
@@ -269,6 +271,8 @@ struct OglGfx {
 	//static void ActivateNextFrame();
 	static void SetDebugOutput(bool b=true);
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {/* done by opengl*/}
+	static void BeginRender() {}
+	static void EndRender() {}
 	
 	static Serial::FboFormat& GetFormat(Serial::Format& fmt);
 	
