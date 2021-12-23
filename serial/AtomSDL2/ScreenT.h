@@ -24,6 +24,7 @@ private:
 	OOSDL2::Events*		ev = 0;
 	EnvStateRef			env;
 	bool				close_machine = false;
+	bool				render_on_side = false;
 	
 public:
 	using BufferBase = BufferBaseT<Gfx>;

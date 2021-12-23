@@ -1,4 +1,4 @@
-#include "Core.h"
+#include "Core0.h"
 
 
 NAMESPACE_UPP_BEGIN
@@ -350,6 +350,8 @@ StringT<wchar_t> StringT<wchar_t>::DblStr(double d) {
 
 String DblStr(double d) { return String::DblStr(d); }
 
+TMPL_THIS operator << (double d) { Cat(DblStr(d)); return *this; }
+
 TMPL(hash_t) GetHashValue() const {
 	CombineHash ch;
 	const T* buf = Begin();
@@ -492,4 +494,6 @@ template class StringT <char>;
 template class StringT <wchar_t>;
 
 	
+
+
 NAMESPACE_UPP_END

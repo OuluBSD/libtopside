@@ -406,20 +406,22 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 		for (BinderIface* iface : binders)
 			iface->Render(*buf, shader);
 	}
-	else {
-		if (0)
-			Gfx::RenderScreenRect();
-		else if (!user_data && data.objects.IsEmpty())
-			MakeFrameQuad();
-	}
 	
-	// render VBA from state
-	for (DataObject& o : data.objects) {
-		SetVars(data, rt.prog, o);
-		o.Paint(data);
+	if (!use_user_data) {
+		if (binders.IsEmpty()) {
+			if (0)
+				Gfx::RenderScreenRect();
+			else if (!user_data && data.objects.IsEmpty())
+				MakeFrameQuad();
+		}
+		
+		// render VBA from state
+		for (DataObject& o : data.objects) {
+			SetVars(data, rt.prog, o);
+			o.Paint(data);
+		}
 	}
-	
-	if (user_data) {
+	else if (user_data) {
 		for (DataObject& o : user_data->objects) {
 			SetVars(*user_data, rt.prog, o);
 			o.Paint(*user_data);
@@ -893,6 +895,8 @@ bool BufferT<Gfx>::BuiltinShader() {return false;}
 template <>
 bool BufferT<SdlCpuGfx>::BuiltinShader() {
 	bool succ = false;
+	if (!rt.pipeline)
+		rt.pipeline.Create();
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		if (soft[i]) {
 			GVar::ShaderType t = (GVar::ShaderType)i;
@@ -902,7 +906,6 @@ bool BufferT<SdlCpuGfx>::BuiltinShader() {
 			s.enabled = true;
 			if (!rt.prog) {
 				rt.prog.Create();
-				rt.pipeline.Create();
 			}
 			rt.prog.Attach(rt.shaders[i].shader);
 			rt.pipeline.Use(rt.prog, 1 << i);
@@ -923,8 +926,11 @@ bool BufferT<Gfx>::CompilePrograms() {
 			return false;
 	}*/
 	
-	if (BuiltinShader())
+	if (BuiltinShader()) {
+		use_user_data = true;
 		return true;
+	}
+	use_user_data = false;
 	
 	Compiler comps[GVar::SHADERTYPE_COUNT];
 	Linker linker;
@@ -1009,11 +1015,12 @@ template <class Gfx>
 void BufferT<Gfx>::StoreOutputLink(InternalPacketData& v) {
 	static_assert(sizeof(v.u32) == sizeof(GLuint), "Unexpected GLuint size");
 	
+	v.SetText("gfxbuf");
 	v.ptr = this;
 }
 
 template <class Gfx>
-bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v) {
+bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v) {
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
 		//LOG("LoadOutputLink: " << name << " #" << in_id);
 		

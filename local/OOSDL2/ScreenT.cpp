@@ -165,7 +165,7 @@ bool ScreenT<Gfx>::ImageInitialize() {
 
 template <class Gfx>
 void ScreenT<Gfx>::Close0() {
-	last_packet.Clear();
+	fb_packet.Clear();
 	
 	if (glcontext) {
 		GetAppFlags().SetOpenGLContextOpen(false);
@@ -228,78 +228,26 @@ template <class Gfx>
 void ScreenT<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 	auto& buf = this->buf;
 	
-	if (!last_packet) {
-		RTLOG("Screen::Render: warning: cannot render without packet");
-		return;
-	}
+	BeginDraw();
 	
-	
-	ASSERT(last_packet);
-	Format fmt = last_packet->GetFormat();
-	if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
-		RTLOG("Screen::Render: from video packet: " << last_packet->ToString());
-		const VideoFormat& vfmt = fmt.vid;
-		
-		if (last_packet->IsData<InternalPacketData>()) {
-			const InternalPacketData& d = last_packet->GetData<InternalPacketData>();
-			
-			if (!d.ptr) {
-				ASSERT_(0, "no pointer in InternalPacketData");
-			}
-			else if (d.IsText("gfxstate")) {
-				DataState& sd = *(DataState*)d.ptr;
-				
-				BeginDraw();
-				
-				//ASSERT(!is_user_shader || buf);
-				if (/*is_user_shader &&*/ buf) {
-					buf->SetDataStateOverride(&sd);
-					buf->Process(cfg);
-					buf->SetDataStateOverride(0);
-				}
-				else {
-					RTLOG("Screen::Render: error: no gfx buf");
-				}
-				
-				CommitDraw();
-			}
-			else if (d.IsText("gfxvector")) {
-				ShaderPipeline& sd = *(ShaderPipeline*)d.ptr;
-				
-				BeginDraw();
-				FrameCopy(vfmt, (const byte*)d.ptr, d.count);
-				CommitDraw();
-			}
-			else
-				TODO
-		}
-		else {
-			BeginDraw();
-			
-			ASSERT(!is_user_shader || buf);
-			if (is_user_shader && buf) {
-				buf->Process(cfg);
-			}
-			else {
-				RTLOG("Screen::Render: error: no gfx buf");
-			}
-			
-			CommitDraw();
-		}
-	}
-	else if (fmt.IsOrder() && AcceptsOrder()) {
-		RTLOG("Screen::Render: from order packet: " << last_packet->ToString());
+	if (fb_packet) {
+		Format fmt = fb_packet->GetFormat();
+		const auto& vfmt = Gfx::GetFormat(fmt);
+		const InternalPacketData& d = fb_packet->GetData<InternalPacketData>();
+		ShaderPipeline& sd = *(ShaderPipeline*)d.ptr;
 		BeginDraw();
-		buf->Process(cfg);
+		FrameCopy(vfmt, (const byte*)d.ptr, d.count);
 		CommitDraw();
+		fb_packet.Clear();
+	}
+	else if (buf) {
+		buf->Process(cfg);
 	}
 	else {
-		DUMP(fmt);
-		RTLOG("Screen::Render: error: unexpected packet: " << last_packet->ToString());
-		ASSERT(0);
+		RTLOG("Screen::Render: error: no gfx buf");
 	}
 	
-	last_packet.Clear();
+	CommitDraw();
 }
 
 template <class Gfx>
@@ -307,19 +255,54 @@ bool ScreenT<Gfx>::Recv(int ch_i, const Packet& p) {
 	auto& buf = this->buf;
 	bool succ = true;
 	Format fmt = p->GetFormat();
-	if (fmt.IsFbo()) {
-		Size3 sz = fmt.fbo.GetSize();
-		int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+	if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
+		const auto& vfmt = Gfx::GetFormat(fmt);
+		
 		if (p->IsData<InternalPacketData>()) {
-			succ = buf->LoadOutputLink(sz, ch_i - base, p->GetData<InternalPacketData>());
-		}
-		else {
-			RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());
+			const InternalPacketData& d = p->GetData<InternalPacketData>();
+			
+			if (!d.ptr) {
+				ASSERT_(0, "no pointer in InternalPacketData");
+			}
+			else if (d.IsText("gfxstate")) {
+				DataState& sd = *(DataState*)d.ptr;
+				
+				//ASSERT(!is_user_shader || buf);
+				if (/*is_user_shader &&*/ buf) {
+					buf->SetDataStateOverride(&sd);
+				}
+				else {
+					RTLOG("Screen::Render: error: no gfx buf");
+				}
+			}
+			else if (d.IsText("gfxvector")) {
+				fb_packet = p;
+			}
+			else if (d.IsText("gfxbuf")) {
+				Size3 sz = vfmt.GetSize();
+				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+				if (p->IsData<InternalPacketData>()) {
+					succ = buf->LoadOutputLink(sz, ch_i - base, d);
+				}
+				else {
+					RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());
+				}
+			}
+			else {
+				DUMP(d.GetText());
+				TODO // some old class pushing ptr without txt?
+			}
 		}
 	}
-	
-	if (ch_i == 0)
-		last_packet = p;
+	else if (fmt.IsOrder() && AcceptsOrder()) {
+		// pass
+	}
+	else {
+		DUMP(fmt);
+		RTLOG("Screen::Render: error: unexpected packet: " << last_packet->ToString());
+		ASSERT(0);
+		succ = false;
+	}
 	
 	return succ;
 }

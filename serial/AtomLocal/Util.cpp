@@ -396,6 +396,9 @@ void EventStateBase::Event(const CtrlEvent& e) {
 	if (e.type == EVENT_MOUSEMOVE) {
 		MouseMove(e.pt, e.value);
 	}
+	else if (e.type == EVENT_MOUSEWHEEL) {
+		TODO
+	}
 	else if (e.type == EVENT_KEYDOWN || e.type == EVENT_KEYUP) {
 		Key(e.value, e.n);
 	}

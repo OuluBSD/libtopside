@@ -66,8 +66,10 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec operator*(T v)          const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v; return r;}
 	Vec operator/(T v)          const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] / v; return r;}
 	Vec operator^(const Vec& v) const {return GetCrossProduct(v);}
-	T   operator*(const Vec& v) const {return GetDotProduct(v);}
+	//T   operator*(const Vec& v) const {return GetDotProduct(v);}
+	Vec operator*(const Vec& v) const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
 	
+	Vec Multiply(const Vec& v)   const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
 	Vec Multiply(T v)           const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v; return r;}
 	
 	Vec operator*(const Matrix<T,I,I>& m) const;
@@ -288,8 +290,8 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	}
 	Matrix GetInverseTransposed() const {
 		Matrix ret = GetAdjugated();
-		T mul = ret[0] * data[0];
-		ret /= mul;
+		T d = dot(ret[0], data[0]);
+		ret /= d;
 		return ret;
 	}
 	Matrix GetInverse() const {return GetInverseTransposed().GetTransposed();}

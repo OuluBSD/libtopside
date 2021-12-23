@@ -1,5 +1,7 @@
 description "U++ compatible Non-GUI code. Streams, NTL containers, concrete types, Value, XML, C parsing etc...\377B194,0,0";
 
+noblitz;
+
 options(BUILDER_OPTION) NOWARNINGS;
 
 uses
@@ -29,6 +31,7 @@ file
 	TODO.txt,
 	Core.h options(BUILDER_OPTION) PCH,
 	Core.cpp,
+	Core0.h,
 	Config.h,
 	Defs.h,
 	Macros.h,
@@ -43,6 +46,8 @@ file
 	StringInline.cpp highlight cpp,
 	StringTmpl.cpp highlight cpp,
 	String.cpp,
+	StringUtil.h,
+	StringUtil.cpp,
 	Tuple.h,
 	Vector.h,
 	Vector.cpp,

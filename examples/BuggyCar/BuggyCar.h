@@ -5,7 +5,7 @@
 #include <Physics/Physics.h>
 
 
-#define SOFTGL 1
+#define SOFTGL 0
 
 
 NAMESPACE_TOPSIDE_BEGIN

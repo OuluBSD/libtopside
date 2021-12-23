@@ -256,7 +256,7 @@ void SoftRend::TriangleDepthTest(SoftFramebuffer& fb, SoftProgram& prog, DepthIn
 			int pos = (int)P[0] + (int)P[1] * w;
 			ASSERT(pos >= 0 && pos < pos_limit);
 			float& zmem = zbuffer[pos];
-			if ((greater && zmem < z) || (!greater && zmem > z)) {
+			if ((greater && z > 0.0f && zmem < z) || (!greater && z < 0.0f && zmem > z)) {
 				zmem = z;
 				auto& i = zinfo[pos];
 				i.triangle_i = info.triangle_i;

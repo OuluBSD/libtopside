@@ -13,7 +13,7 @@ struct StaticSkybox : EntityPrefab<Transform, ModelComponent>
         
         float huge_distance = 10e5;
         ModelBuilder b;
-        b.AddBox(vec3(0,0,0), vec3(huge_distance, huge_distance, huge_distance));
+        b.AddBox(vec3(0,0,0), vec3(huge_distance, huge_distance, huge_distance), true);
         
         ModelMesh* m = b.Detach();
         m->ReverseFaces();

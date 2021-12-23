@@ -7,5 +7,5 @@ void mainVertex(out vec4 pos_out){
 	pos.z = -pos.z + 1;
     pos_out = normalize(iView * vec4(pos, 1.0));
     
-    pos_out = iPos;
+    //pos_out = iPos;
 }

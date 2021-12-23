@@ -6,22 +6,18 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 void BuggyCarVertexShader::Process(SdlCpuVertexShaderArgs& a) {
-	TODO
-	
-	#if 0
 	int width = a.generic->iResolution[0];
 	int height = a.generic->iResolution[1];
 	vec4 pos = a.v.position.Splice().Embed();
-	pos[2] = -pos[2] + 1; // hack
+	//pos[2] = -pos[2] + 1; // hack
 	vec4 screen = a.va->view * pos;
-	//screen.Project();
-	screen.Normalize();
+	screen.Project();
+	//screen.Normalize();
 	a.v.position[0] = (int)((screen[0] + 1.0) * width  / 2.0);
 	a.v.position[1] = (int)((screen[1] + 1.0) * height / 2.0);
 	a.v.position[2] = screen[2];
 	a.v.position[3] = 1.0f;
 	//ASSERT(a.v.position[2] >= 0.0f);
-	#endif
 }
 
 void BuggyCarFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
@@ -33,13 +29,20 @@ void BuggyCarFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
 	args.frag_color_out = vec4(x, y, 0, 1);
 	#endif
 	
-	TODO
-	
 	#if 0
+	float intensity = 0.5f;
+	vec4& used_clr = args.frag_color_out;
+	used_clr[3] = 0;
+	used_clr[0] = intensity;
+	used_clr[1] = intensity;
+	used_clr[2] = intensity;
+	
+	#else
+	
 	ASSERT(args.fa);
 	vec3& n = args.normal;
 	vec3& light_dir = args.fa->light_dir;
-	float m = n * light_dir;
+	float m = dot(n, light_dir);
 	
 	vec4& used_clr = args.frag_color_out;
 	used_clr[3] = 0;

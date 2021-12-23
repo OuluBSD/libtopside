@@ -8,6 +8,15 @@ inline void* MemoryAlloc(size_t size) {return malloc(size);}
 inline void MemoryFree(void* ptr) {free(ptr);}
 
 
+template <class T>
+void Swap(T& a, T& b) {
+	uint8 tmp[sizeof(T)];
+	MemoryCopy((void*)tmp, (void*)&a, sizeof(T));
+	MemoryCopy((void*)&a, (void*)&b, sizeof(T));
+	MemoryCopy((void*)&b, (void*)tmp, sizeof(T));
+}
+
+
 template <class T, class K>
 constexpr int findarg(const T& x, const K& k) {
 	return x == k ? 0 : -1;

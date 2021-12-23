@@ -1,6 +1,12 @@
 #include "AtomSDL2.h"
 #ifdef flagSCREEN
 
+NAMESPACE_TOPSIDE_BEGIN
+
+Serial::VideoFormat& CpuGfx::GetFormat(Serial::Format& fmt) {return fmt.vid;}
+Serial::FboFormat& OglGfx::GetFormat(Serial::Format& fmt) {return fmt.fbo;}
+
+NAMESPACE_TOPSIDE_END
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -61,8 +67,14 @@ bool SDL2ScreenBaseT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	AddAtomToUpdateList();
 	//AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
-	GetSink()->GetValue(0).SetMaxQueueSize(1);
+	ISinkRef sink = GetSink();
+	sink->GetValue(0).SetMaxQueueSize(1);
 	
+	int sink_count = sink->GetSinkCount();
+	for(int i = 0; i < sink_count; i++)
+		if (IsDefaultGfxVal<Gfx>(sink->GetValue(i).GetFormat().vd.val))
+			render_on_side = true;
+			
 	return true;
 }
 
@@ -76,6 +88,7 @@ void SDL2ScreenBaseT<Gfx>::Uninitialize() {
 
 template <class Gfx>
 bool SDL2ScreenBaseT<Gfx>::ProcessPackets(PacketIO& io) {
+	bool do_render = false;
 	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
 		PacketIO::Sink& sink = io.sink[sink_ch];
 		Packet& in = sink.p;
@@ -88,9 +101,13 @@ bool SDL2ScreenBaseT<Gfx>::ProcessPackets(PacketIO& io) {
 		if (!obj->Recv(sink_ch, in))
 			return false;
 		
-		if (sink_ch == 0)
-			obj->Render(*last_cfg);
+		if  ((render_on_side && IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)) ||
+			(!render_on_side && sink_ch == 0))
+			do_render = true;
 	}
+	
+	if (do_render)
+		obj->Render(*last_cfg);
 	
 	int src_ch = 0;
 	PacketIO::Sink& prim_sink = io.sink[0];
@@ -116,7 +133,10 @@ template <class Gfx>
 bool SDL2ScreenBaseT<Gfx>::IsReady(PacketIO& io) {
 	//dword iface_sink_mask = iface.GetSinkMask();
 	//bool b = io.active_sink_mask == iface_sink_mask; // wrong here: only primary is required
-	bool b = FramePollerBase::IsReady(io) && io.sink[0].filled;
+	bool b = AtomBase::side_src_conn.GetCount() ?
+		(io.active_sink_mask & 1 && io.active_sink_mask > 1) :
+		io.active_sink_mask;
+	b = b && FramePollerBase::IsReady(io);
 	RTLOG("SDL2ScreenBase::IsReady: " << (b ? "true" : "false") << " (" << io.nonempty_sinks << ", " << io.sink_count << ")");
 	return b;
 }

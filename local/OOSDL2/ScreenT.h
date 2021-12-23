@@ -25,6 +25,7 @@ protected:
 	using NatWin = typename Gfx::NativeWindow;
 	using NatRend = typename Gfx::NativeRenderer;
 	using NatFrameBuf = typename Gfx::NativeFrameBuffer;
+	using ValFormat = typename Gfx::ValFormat;
 	
 	Buffer* buf = 0;
     NatWin*					win = NULL;
@@ -39,7 +40,6 @@ protected:
 	Renderer				rend;
 	StateDraw				draw;
 	SystemDraw				sysdraw;
-	Packet					last_packet;
 	bool is_opengl = false;
 	bool is_sw = false;
 	bool is_dx11 = false;
@@ -54,6 +54,7 @@ protected:
 	String vtx_path;
 	String library_paths;
 	
+	Packet fb_packet;
 	
 	// requires template specialization
 	void GfxFlags(uint32& flags);
@@ -81,7 +82,7 @@ public:
 	bool Recv(int ch_i, const Packet& p);
 	SystemDraw& BeginDraw();
 	void CommitDraw();
-	void FrameCopy(const VideoFormat& vfmt, const byte* data, int len) {}
+	void FrameCopy(const ValFormat& vfmt, const byte* data, int len) {}
 	
 	void SetBuffer(Buffer& buf) {this->buf = &buf;}
 	

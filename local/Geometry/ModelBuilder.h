@@ -87,7 +87,7 @@ class ModelBuilder {
 public:
 	
 	Mesh& AddPlane(const vec3& pos, const vec2& size);
-	Mesh& AddBox(const vec3& pos, const vec3& dim);
+	Mesh& AddBox(const vec3& pos, const vec3& dim, bool centered=false);
 	Mesh& AddSphere(const vec3& pos, float radius);
 	Mesh& AddCylinder(const vec3& pos, float radius, float length);
 	

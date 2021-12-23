@@ -22,14 +22,17 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	return m;
 }
 
-Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim) {
+Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	this->model.Create();
 	ModelMesh& model = this->model;
 	Mesh& m = model.meshes.Add();
+	
+	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
+	
 	PrimitiveFactory::create_box(m, dim[0], dim[1], dim[2]);
 	
 	for(Vertex& v : m.vertices) {
-		v.position += pos;
+		v.position += off;
 	}
 	
 	model.SetTexture(m, TEXTYPE_DIFFUSE, GetDefaultImage(IMAGEID_GRID));
@@ -117,10 +120,12 @@ void PrimitiveFactory::get_box_corners(vec3        (&points)[8],
     if(!origin && !dim) {
         return;
     }
-    vec3 _origin = origin ? *origin : vec3(0);
-    vec3 _dim    = dim    ? *dim    : vec3(1);
+    vec3 _origin = origin ? *origin : vec3(0,0,0);
+    vec3 _dim    = dim    ? *dim    : vec3(1,1,1);
     for(int i = 0; i < 8; i++) {
-        points[i] = _origin + points[i] * _dim;
+        vec3 m = points[i] * _dim;
+        vec3 n = _origin + m;
+        points[i] = n;
     }
 }
 
@@ -583,7 +588,9 @@ void PrimitiveFactory::create_box(Mesh& mesh,
     for(int i = 0; i < 6; i++) {
         for(int j = 0; j < 4; j++) {
             int vert_index = i * 4 + j;
-            mesh.SetVertCoord(  vert_index, points[tri_indices[i][j]]);
+            int idx = tri_indices[i][j];
+            vec3 pt = points[idx];
+            mesh.SetVertCoord(  vert_index, pt);
             mesh.SetVertNormal( vert_index, tri_normals[i]);
             mesh.SetVertTangent(vert_index, tri_tangents[i]);
         }

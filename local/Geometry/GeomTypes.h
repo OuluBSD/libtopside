@@ -16,6 +16,7 @@ struct Vertex : Moveable<Vertex> {
     void Set(float x, float y, float z, float tex_x, float tex_y);
 };
 
+
 struct Texture : Moveable<Texture> {
 	Vector<byte>	data;
 	uint8			stride;

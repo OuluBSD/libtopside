@@ -77,7 +77,7 @@ void BuggyCarStartup(T& state) {
 
 
 BuggyCarApp::BuggyCarApp() {
-	
+	LOG("BuggyCarApp::BuggyCarApp");
 }
 
 void BuggyCarApp::Initialize() {

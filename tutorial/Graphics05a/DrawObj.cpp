@@ -145,7 +145,7 @@ void Tutorial5::DrawObj(Draw& fb, bool use_texture) {
 					pos[2] = -pos[2] + 1; // hack
 					
 					vec4 screen = view * pos;
-					screen.Normalize();
+					screen.Project();
 					
 					screen_coord[j][0] = (int)((screen[0] + 1.0) * width  / 2.0);
 					screen_coord[j][1] = (int)((screen[1] + 1.0) * height / 2.0);

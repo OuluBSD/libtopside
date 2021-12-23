@@ -97,7 +97,8 @@ vec3 jodieReinhardTonemap(vec3 c){
 
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ){
-
+	
+	#if 1
 	vec2 position = fragCoord.xy / max(iResolution.x, iResolution.y) * 2.0;
 	vec2 lightPosition = iMouse.xy / iResolution.xy * 2.0 + ((iMouse.x + iMouse.y) == 0.0 ? vec2(1.0, 0.4) : vec2(0.0));
 	
@@ -106,5 +107,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ){
     color = pow(color, vec3(2.2)); //Back to linear
 	
 	fragColor = vec4(color, 1.0 );
-
+	#else
+	fragColor = vec4(0.5,0.5,0.5, 1.0 );
+	#endif
+	
 }

@@ -3,6 +3,11 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+namespace Serial {
+class Format;
+class FboFormat;
+class VideoFormat;
+}
 
 #define GFX_CLS_LIST(g) \
 	GFX_CLS(VertexShaderArgs, g) \
@@ -92,6 +97,7 @@ struct CpuGfx {
 	using NativeElementBuffer = SoftElementBuffer;
 	using NativeProgram = SoftProgram;
 	using NativePipeline = SoftPipeline;
+	using ValFormat = Serial::VideoFormat;
 	
 	static const GVar::GfxType Type = GVar::SW;
 	
@@ -169,6 +175,7 @@ struct CpuGfx {
 	static void RenderScreenRect();
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
 	
+	static Serial::VideoFormat& GetFormat(Serial::Format& fmt);
 	
 };
 
@@ -185,6 +192,7 @@ struct OglGfx {
 	using NativeElementBuffer = GLuint;
 	using NativeProgram = GLuint;
 	using NativePipeline = GLuint;
+	using ValFormat = Serial::FboFormat;
 	
 	static const GVar::GfxType Type = GVar::OGL;
 	
@@ -261,6 +269,8 @@ struct OglGfx {
 	//static void ActivateNextFrame();
 	static void SetDebugOutput(bool b=true);
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {/* done by opengl*/}
+	
+	static Serial::FboFormat& GetFormat(Serial::Format& fmt);
 	
 };
 

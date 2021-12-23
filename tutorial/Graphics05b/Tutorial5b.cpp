@@ -104,8 +104,7 @@ void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
 	vec4 pos = a.v.position.Splice().Embed();
 	pos[2] = -pos[2] + 1; // hack
 	vec4 screen = a.va->view * pos;
-	//screen.Project();
-	screen.Normalize();
+	screen.Project();
 	a.v.position[0] = (int)((screen[0] + 1.0) * width  / 2.0);
 	a.v.position[1] = (int)((screen[1] + 1.0) * height / 2.0);
 	a.v.position[2] = screen[2];

@@ -43,6 +43,7 @@ struct BufferT : GfxBuffer {
 	RuntimeState				rt;
 	DataState					data;
 	DataState*					user_data = 0;
+	bool						use_user_data = false;
 	
 	static Callback2<String, BufferT<Gfx>*> WhenLinkInit;
 	
@@ -57,7 +58,7 @@ struct BufferT : GfxBuffer {
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
 	bool IsInitialized() const {return initialized;}
 	//void SetBuiltinShader(int i) {test_shader = i;}
-	void SetDataStateOverride(DataState* s) {user_data = s;}
+	void SetDataStateOverride(DataState* s) {user_data = s; use_user_data = s != 0;}
 	
 	DataState& GetState() {return user_data ? *user_data : data;}
 	
@@ -101,7 +102,7 @@ struct BufferT : GfxBuffer {
 	void TexFlags(int type, GVar::Filter filter, GVar::Wrap repeat);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
-	bool LoadOutputLink(Size3 sz, int in_id, InternalPacketData& v);
+	bool LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v);
 	void SetInputVolume(int in_id);
 	void SetInputCubemap(int in_id);
 		

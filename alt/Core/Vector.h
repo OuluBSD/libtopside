@@ -28,14 +28,6 @@ inline void Destroy(T *t, const T *end)
 
 
 template <class T>
-void Swap(T& a, T& b) {
-	uint8 tmp[sizeof(T)];
-	MemoryCopy((void*)tmp, (void*)&a, sizeof(T));
-	MemoryCopy((void*)&a, (void*)&b, sizeof(T));
-	MemoryCopy((void*)&b, (void*)tmp, sizeof(T));
-}
-
-template <class T>
 inline void Reverse(T& t) {
 	int count = t.GetCount();
 	int count_2 = count / 2;

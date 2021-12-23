@@ -607,10 +607,10 @@ struct InternalPacketData : RTTIBase {
 	};
 	
 	
-	int GetTextLength()		{return (int)strnlen(txt, 8);}
-	String GetText()		{return String(txt, GetTextLength());}
-	void SetText(const char* s) {strncpy(txt, s, 8);}
-	bool IsText(const char* s) const {return strncmp(txt, s, 8) == 0;}
+	int GetTextLength() const			{return (int)strnlen(txt, 8);}
+	String GetText() const				{return String(txt, GetTextLength());}
+	void SetText(const char* s)			{strncpy(txt, s, 8);}
+	bool IsText(const char* s) const	{return strncmp(txt, s, 8) == 0;}
 	
 	//void ClearLinks() {dev_comp = 0;}
 };

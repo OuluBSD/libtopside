@@ -41,7 +41,7 @@ bool Circle::Intersects(const line2& l) const {
 		return true;
 	
 	// Get length of difference vector in line's space
-	F t = (ct_a * ab) / ab.GetLengthSquared();
+	F t = dot(ct_a, ab) / ab.GetLengthSquared();
 	
 	// If length/point is less than 0, then point is "behind" line
 	// If length/point is more than 1, then it's "in front" of line
@@ -173,9 +173,9 @@ ival2 Rectangle::GetInterval(const vec2& axis) const {
 		min, vec2 {min[0], max[1]},
 		max, vec2 {max[0], min[1]}
 	};
-	res.min = res.max = axis * verts[0];
+	res.min = res.max = dot(axis, verts[0]);
 	for(int i = 1; i < 4; i++) {
-		F proj = axis * verts[i];
+		F proj = dot(axis, verts[i]);
 		res.min = std::min(res.min, proj);
 		res.max = std::max(res.max, proj);
 	}
@@ -266,9 +266,9 @@ ival2 OrientedRectangle::GetInterval(const vec2& axis) const {
 		verts[i] = d + ct;
 	}
 	ival2 res;
-	res.min = res.max = axis * verts[0];
+	res.min = res.max = dot(axis, verts[0]);
 	for(int i = 1; i < 4; i++) {
-		F proj = axis * verts[i];
+		F proj = dot(axis, verts[i]);
 		res.min = std::min(res.min, proj);
 		res.max = std::max(res.max, proj);
 	}

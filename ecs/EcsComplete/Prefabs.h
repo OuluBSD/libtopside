@@ -160,7 +160,7 @@ void DefaultEcsStartup();
 		using namespace UPP; \
 		String eon_file  = Serial::RealizeEonFile(eon_path); \
 		if (FileExists(eon_file)) { \
-			TS::ECS::DefaultCreateOnStart<App>(); \
+			/*TS::ECS::DefaultCreateOnStart<App>();*/ \
 			TS::DefaultRunner(#ecs_component, eon_file, 0, eon_args); \
 		} \
 		else { \
