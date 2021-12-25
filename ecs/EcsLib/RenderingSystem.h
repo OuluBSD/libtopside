@@ -47,8 +47,7 @@ using RenderableRef = Ref<Renderable>;
 
 
 class RenderingSystem :
-	public System<RenderingSystem>,
-	public OglBinderIface
+	public System<RenderingSystem>
 {
 	OglBufferT* buf = 0;
 	Array<RenderableRef> rends;
@@ -61,12 +60,12 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-    void Render(const OglBuffer& buf, OglShader& shader) override;
+    void Render(GfxDataState& data);
     
     
 public:
 	using Base = System<RenderingSystem>;
-	RTTI_DECL2(RenderingSystem, Base, OglBinderIface)
+	RTTI_DECL1(RenderingSystem, Base)
     ECS_SYS_CTOR(RenderingSystem)
 	SYS_DEF_VISIT
 	

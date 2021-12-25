@@ -13,10 +13,10 @@ GFX_CLS_LIST(SdlOgl)
 using OglStateDraw		= SdlOglStateDraw;
 using OglDataState		= SdlOglDataState;
 using OglShaderPipeline	= SdlOglShaderPipeline;
-using OglShader			= SdlOglShader;
+//using OglShader			= SdlOglShader;
 using OglFramebuffer	= SdlOglFramebuffer;
 using OglBuffer			= SdlOglBuffer;
-using OglBinderIface	= SdlOglBinderIface;
+//using OglBinderIface	= SdlOglBinderIface;
 using OglDataObject		= SdlOglDataObject;
 using OglBufferT		= BufferT<SdlOglGfx>;
 

@@ -5,7 +5,7 @@
 #include <Physics/Physics.h>
 
 
-#define SOFTGL 1
+#define SOFTGL 0
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -95,6 +95,12 @@ public:
 	
 	void operator = (const BuggyCar& c) {Panic("Not implemented");}
 	COMP_DEF_VISIT
+	
+	template <class T>
+	void LoadModel(T& state) {
+		chassis.LoadModel(state);
+		for (auto& w : wheels) w.LoadModel(state);
+	}
 	
 	void OnAttach() override {
 		OdeSpace::OnAttach();
@@ -203,6 +209,7 @@ struct BuggyCarApp :
 	int phase = 0;
 	int phases = 2;
 	int width, height;
+	Ref<ChaseCam> chaser;
 	
 	
 	BuggyCarApp();
@@ -212,6 +219,8 @@ struct BuggyCarApp :
 	void Render(Draw& draw) override;
 	
 	void DrawObj(GfxStateDraw& fb, bool use_texture);
+	
+	template <class T> void BuggyCarStartup(T& state);
 	
 };
 

@@ -7,13 +7,13 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class Gfx>
 struct BufferT : GfxBuffer {
 	using Base = BufferT<Gfx>;
-	using BinderIface = typename Gfx::BinderIface;
+	//using BinderIface = typename Gfx::BinderIface;
 	using DataState = typename Gfx::DataState;
 	using Framebuffer = typename Gfx::Framebuffer;
 	using ContextState = typename Gfx::ContextState;
 	using RuntimeState = typename Gfx::RuntimeState;
 	using Buffer = typename Gfx::Buffer;
-	using Shader = typename Gfx::Shader;
+	//using Shader = typename Gfx::Shader;
 	using ShaderState = typename Gfx::ShaderState;
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
 	using DataObject = typename Gfx::DataObject;
@@ -26,7 +26,7 @@ struct BufferT : GfxBuffer {
 	
 	
 	Vector<String>				link_ids;
-	Vector<BinderIface*>		binders;
+	//Vector<BinderIface*>		binders;
 	String						last_error;
 	
 	One<SoftShaderBase>			soft[GVar::SHADERTYPE_COUNT];
@@ -64,8 +64,8 @@ struct BufferT : GfxBuffer {
 	
 	bool LoadShaderFile(GVar::ShaderType shader_type, String shader_path, String library_path);
 	bool LoadBuiltinShader(GVar::ShaderType shader_type, String id);
-	void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
-	void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
+	//void AddBinder(BinderIface* iface) {VectorFindAdd(binders, iface);}
+	//void RemoveBinder(BinderIface* iface) {VectorRemoveKey(binders, iface);}
 	
 	void Update(double dt);
 	bool SetLoopback(String loopback_str);

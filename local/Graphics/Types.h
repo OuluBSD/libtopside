@@ -12,7 +12,7 @@ class VideoFormat;
 #define GFX_CLS_LIST(g) \
 	GFX_CLS(VertexShaderArgs, g) \
 	GFX_CLS(FragmentShaderArgs, g) \
-	GFX_CLS(BinderIface, g) \
+	/*GFX_CLS(BinderIface, g)*/ \
 	GFX_CLS(DataObject, g) \
 	GFX_CLS(DataState, g) \
 	GFX_CLS(InputState, g) \
@@ -20,10 +20,10 @@ class VideoFormat;
 	GFX_CLS(Compiler, g) \
 	GFX_CLS(Linker, g) \
 	GFX_CLS(ShaderState, g) \
-	GFX_CLS(Shader, g) \
+	/*GFX_CLS(Shader, g)*/ \
 	GFX_CLS(ShaderPipeline, g) \
 	GFX_CLS(RuntimeState, g) \
-	GFX_CLS(FramebufferStateExt, g) \
+	/*GFX_CLS(FramebufferStateExt, g)*/ \
 	GFX_CLS(ContextState, g) \
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
@@ -136,6 +136,8 @@ struct CpuGfx {
 	static void ElementBufferData(const Vector<uint32>& el);
 	static void SetupVertexStructure() {}
 	static void UnbindVertexArray();
+	static void UnbindVertexBuffer();
+	static void UnbindElementBuffer();
 	static void ActivateVertexStructure() {}
 	static void DeactivateVertexStructure() {}
 	static void DrawVertexElements(int element_limit);
@@ -245,6 +247,8 @@ struct OglGfx {
 	static void ElementBufferData(const Vector<uint32>& el);
 	static void SetupVertexStructure();
 	static void UnbindVertexArray();
+	static void UnbindVertexBuffer();
+	static void UnbindElementBuffer();
 	static void ActivateVertexStructure();
 	static void DeactivateVertexStructure();
 	static void DrawVertexElements(int element_limit);

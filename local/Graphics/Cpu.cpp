@@ -312,6 +312,18 @@ void CpuGfx::UnbindVertexArray() {
 	Local().vao = 0;
 }
 
+void CpuGfx::UnbindVertexBuffer() {
+	auto& l = Local();
+	ASSERT(l.vao);
+	l.vao->vbo = 0;
+}
+
+void CpuGfx::UnbindElementBuffer() {
+	auto& l = Local();
+	ASSERT(l.vao);
+	l.vao->ebo = 0;
+}
+
 void CpuGfx::DrawVertexElements(int element_limit) {
 	auto& l = Local();
 	ASSERT(l.vao);

@@ -46,6 +46,7 @@ struct Viewport : public Component<Viewport> {
 class ChaseCam :
 	public Component<ChaseCam>
 {
+	TransformRef trans;
 	TransformRef target;
 	ViewableRef view;
 	ViewportRef vport;
@@ -56,7 +57,7 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); vis & target & view & vport;}
 	void Initialize() override;
-	void Refresh(GfxShader& s);
+	void Refresh(GfxDataState& s);
 	
 	void SetTarget(TransformRef tgt) {target = tgt;}
 	

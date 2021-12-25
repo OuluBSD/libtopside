@@ -176,7 +176,7 @@ const char* OglGfx::GetShaderTemplate(GVar::ShaderType t) {
 )SH4D3R";
 
 	static const char* frag_tmpl = R"SH4D3R(
-#version 430
+#version 410
 #define GL_ES
 
 uniform sampler2D iNone;
@@ -248,8 +248,8 @@ layout (location = 0) in vec4 iPos;
 layout (location = 1) in vec3 iNormal;
 layout (location = 2) in vec2 iTexCoord;
 
-in int gl_VertexID;
-in int gl_InstanceID;
+in int iVertexID;
+in int iInstanceID;
 
 out vec2 TexCoords;
 out gl_PerVertex
@@ -520,6 +520,14 @@ void OglGfx::SetupVertexStructure() {
 
 void OglGfx::UnbindVertexArray() {
 	glBindVertexArray(0);
+}
+
+void OglGfx::UnbindVertexBuffer() {
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void OglGfx::UnbindElementBuffer() {
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void OglGfx::ActivateVertexStructure() {

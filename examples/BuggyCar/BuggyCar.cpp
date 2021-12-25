@@ -50,26 +50,25 @@ void BuggyCarInitializer() {
 }
 
 template <class T>
-void BuggyCarStartup(T& state) {
+void BuggyCarApp::BuggyCarStartup(T& state) {
 	Engine& eng = GetActiveEngine();
 	EntityStoreRef ents = eng.Get<EntityStore>();
 	RenderingSystemRef rend = eng.Get<RenderingSystem>();
 	PoolRef models = ents->GetRoot()->GetAddPool("models");
-	PoolRef cameras = ents->GetRoot()->GetAddPool("cameras");
-	
 	
 	EntityRef sky = models->Create<StaticSkybox>();
 	EntityRef gnd = models->Create<StaticGroundPlanePrefab>();
+	EntityRef car = models->Create<BuggyCarPrefab>();
 	
 	sky->Get<ModelComponent>()->LoadModel(state);
 	gnd->Get<StaticGroundPlane>()->LoadModel(state);
+	car->Get<BuggyCar>()->LoadModel(state);
 	
-	/*EntityRef car = models->Create<BuggyCarPrefab>();
+	PoolRef cameras = ents->GetRoot()->GetAddPool("cameras");
 	EntityRef cam = cameras->Create<CameraPrefab>();
-	
-	Ref<ChaseCam> chaser = cam->Add<ChaseCam>();
+	chaser = cam->Add<ChaseCam>();
 	chaser->SetTarget(car->Get<Transform>());
-	rend->AddViewable(cam->Get<Viewable>());*/
+	rend->AddViewable(cam->Get<Viewable>());
 }
 
 
@@ -99,6 +98,8 @@ void BuggyCarApp::Render(Draw& fb) {
 			BuggyCarStartup(state);
 			
 		}
+		
+		
 		/*
 		String data_dir = ShareDirFile("models");
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
@@ -111,11 +112,13 @@ void BuggyCarApp::Render(Draw& fb) {
 			Panic("Couldn't load model textures: " + obj_path);*/
 	}
 	
+	
 	Size sz = fb.GetPageSize();
 	//height = width = std::min(sz.cx, sz.cy);
 	width = 1280;
 	height = 720;
 	
+	//chaser->Refresh(od ? (GfxDataState&)od->GetState() : (GfxDataState&)cd->GetState());
 	DrawObj(od ? *(GfxStateDraw*)od : *(GfxStateDraw*)cd, true);
 	
 	iter++;

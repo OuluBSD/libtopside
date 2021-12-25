@@ -61,17 +61,17 @@ struct StateDrawT : GfxStateDraw {
 	Draw& Alpha() {TODO}
 };
 
+#if 0
 template <class Gfx>
 struct BinderIfaceT : GfxBinderIface {
 	RTTI_DECL1(BinderIfaceT, GfxBinderIface);
 	using Base = BinderIfaceT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
-	using Shader = typename Gfx::Shader;
+	using DataState = typename Gfx::DataState;
 	
-	virtual void Render(const Buffer& buf, Shader& shader) = 0;
 	
 };
-
+#endif
 
 NAMESPACE_TOPSIDE_END
 

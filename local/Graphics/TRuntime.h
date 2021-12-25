@@ -59,6 +59,7 @@ struct ShaderStateT : GfxShaderState {
 };
 
 
+#if 0
 template <class Gfx>
 struct ShaderT :
 	GfxShader,
@@ -110,6 +111,8 @@ struct ShaderT :
 	#endif
 	
 };
+#endif
+
 
 template <class Gfx>
 struct ShaderPipelineT :
@@ -162,20 +165,21 @@ struct RuntimeStateT : GfxRuntimeState {
 	
 };
 
+#if 0
 template <class Gfx>
 struct FramebufferStateExtT : ErrorReporter {
 	RTTI_DECL1(FramebufferStateExtT, ErrorReporter)
 	using Base = FramebufferStateExtT<Gfx>;
 	using Framebuffer = typename Gfx::Framebuffer;
-	using Shader = typename Gfx::Shader;
+	//using Shader = typename Gfx::Shader;
 	
 	Framebuffer* state = 0;
-	Shader* stages[GVar::SHADERTYPE_COUNT];
+	//Shader* stages[GVar::SHADERTYPE_COUNT];
 	
 	
 	FramebufferStateExtT() {Clear();}
-	void SetVertex(Shader& s) {stages[GVar::VERTEX_SHADER] = &s;}
-	void SetFragment(Shader& s) {stages[GVar::FRAGMENT_SHADER] = &s;}
+	//void SetVertex(Shader& s) {stages[GVar::VERTEX_SHADER] = &s;}
+	//void SetFragment(Shader& s) {stages[GVar::FRAGMENT_SHADER] = &s;}
 	
 	
 	void Clear() {
@@ -201,7 +205,7 @@ struct FramebufferStateExtT : ErrorReporter {
 	}*/
 
 };
-
+#endif
 
 
 NAMESPACE_TOPSIDE_END

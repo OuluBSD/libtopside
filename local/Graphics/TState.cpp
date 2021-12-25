@@ -48,6 +48,8 @@ void DataObjectT<Gfx>::Refresh(Mesh& m) {
 
 	Gfx::SetupVertexStructure();
 	
+	Gfx::UnbindVertexBuffer();
+	Gfx::UnbindElementBuffer();
 	Gfx::UnbindVertexArray();
 }
 
@@ -80,7 +82,8 @@ void DataObjectT<Gfx>::Paint(DataState& state) {
 	
 	// bind vbos for vertex array and index array
 	Gfx::BindVertexArray(vao);
-	Gfx::GenElementBuffer(ebo);
+	Gfx::BindVertexBuffer(vbo);
+	Gfx::BindElementBuffer(ebo);
 	Gfx::ActivateVertexStructure();
 	
 	// draw 6 faces using offset of index array
@@ -89,6 +92,8 @@ void DataObjectT<Gfx>::Paint(DataState& state) {
 	Gfx::DeactivateVertexStructure();
 	
 	// bind with 0, so, switch back to normal pointer operation
+	Gfx::UnbindVertexBuffer();
+	Gfx::UnbindElementBuffer();
 	Gfx::UnbindVertexArray();
 }
 

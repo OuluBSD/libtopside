@@ -8,6 +8,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 ////////////// STATE
 
+struct GfxDataState;
 
 struct GfxVertexShaderArgs : RTTIBase {
 	RTTI_DECL0(GfxVertexShaderArgs)
@@ -21,11 +22,17 @@ struct GfxFragmentShaderArgs : RTTIBase {
 	virtual ~GfxFragmentShaderArgs() {}
 };
 
+
+#if 0
 struct GfxBinderIface : RTTIBase {
 	RTTI_DECL0(GfxBinderIface)
 	
 	virtual ~GfxBinderIface() {}
+	
+	virtual void Render(GfxDataState& data) = 0;
+	
 };
+#endif
 
 struct GfxDataObject : RTTIBase {
 	RTTI_DECL0(GfxDataObject)
@@ -48,12 +55,12 @@ struct GfxDataObject : RTTIBase {
 	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
 	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
 	
-	/*mat4 model;
+	mat4 model;
 	mat4 scale;
-	mat4 proj;*/
+	//mat4 proj;
 	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
 	
-	void Set(const mat4& model, const mat4& scale) {TODO}
+	void Set(const mat4& model, const mat4& scale) {this->model = model; this->scale = scale;}
 	bool IsSoftware() const {return GetGfxType() == GVar::SW;}
 	bool IsOpenGL() const {return GetGfxType() == GVar::OGL;}
 	

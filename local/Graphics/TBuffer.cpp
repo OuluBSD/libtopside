@@ -398,22 +398,23 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 
 	Gfx::Clear(GVar::COLOR_BUFFER);
 	
-	if (binders.GetCount()) {
-		Buffer* buf = CastPtr<Buffer>(this);
-		ASSERT(buf);
-		Shader shader;
-		shader.SetState(data);
-		for (BinderIface* iface : binders)
-			iface->Render(*buf, shader);
-	}
 	
 	if (!use_user_data) {
-		if (binders.IsEmpty()) {
-			if (0)
-				Gfx::RenderScreenRect();
-			else if (!user_data && data.objects.IsEmpty())
-				MakeFrameQuad();
-		}
+		/*if (binders.GetCount()) {
+			Buffer* buf = CastPtr<Buffer>(this);
+			ASSERT(buf);
+			Shader shader;
+			shader.SetState(data);
+			for (BinderIface* iface : binders)
+				iface->Render(data);
+		}*/
+		
+		//if (binders.IsEmpty()) {
+		if (0)
+			Gfx::RenderScreenRect();
+		else if (!user_data && data.objects.IsEmpty())
+			MakeFrameQuad();
+		//}
 		
 		// render VBA from state
 		Gfx::BeginRender();

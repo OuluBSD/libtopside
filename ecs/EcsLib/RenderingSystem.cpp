@@ -29,12 +29,12 @@ void RenderingSystem::Attach(String key, OglBufferT* b) {
 		return;
 	}
 	
-	ASSERT(!buf);
+	/*ASSERT(!buf);
 	if (buf) buf->RemoveBinder(this);
 	
 	ASSERT(b);
 	b->AddBinder(this);
-	buf = b;
+	buf = b;*/
 }
 
 void RenderingSystem::AddViewable(ViewableRef v) {
@@ -72,22 +72,24 @@ void RenderingSystem::Stop() {
 void RenderingSystem::Uninitialize() {
 	ASSERT_(rends.IsEmpty(), "RenderingSystem must be added to Engine before EntityStore");
 	
-	if (buf) {
+	/*if (buf) {
 		buf->RemoveBinder(this);
 		buf = 0;
-	}
+	}*/
 }
 
-void RenderingSystem::Render(const OglBuffer& buf, OglShader& shader) {
+void RenderingSystem::Render(GfxDataState& data) {
 	//DUMPC(rends);
 	
-	for (RenderableRef& rend : rends) {
-		rend->cb(shader);
+	TODO
+	
+	/*for (RenderableRef& rend : rends) {
+		rend->cb(data);
 	}
 	
 	for (ViewableRef& view : views) {
-		view->cb(shader);
-	}
+		view->cb(data);
+	}*/
 	
 }
 
