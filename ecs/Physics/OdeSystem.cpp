@@ -1,5 +1,6 @@
 #include "Physics.h"
 
+#if 0
 #ifdef flagODE
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -50,7 +51,7 @@ OdeObject::~OdeObject() {
 	if (body) dBodyDestroy(body);
 }
 
-void OdeObject::LoadModel(GfxShader& s) {
+void OdeObject::LoadModel(GfxDataState& s) {
 	TODO
 	/*model_err = false;
 	if (!model.LoadModel(s, *fb_obj, ShareDirFile("models" DIR_SEPS "cube.obj"))) {
@@ -80,13 +81,15 @@ void OdeObject::DetachContent() {
 	dSpaceRemove(GetSpace()->GetSpaceId(), geom);
 }
 
-void OdeObject::Refresh(GfxShader& s) {
-	if (!fb_obj && !model_err) {
+void OdeObject::Refresh() {
+	/*if (!fb_obj && !model_err) {
 		LOG("OdeObject::Refresh: warning: loading model while painting");
 		fb_obj = s.CreateObject();
 		if (fb_obj)
 			LoadModel(s);
-	}
+	}*/
+	
+	ASSERT(fb_obj);
 	if (!fb_obj)
 		return;
 	
@@ -117,12 +120,15 @@ void OdeObject::Refresh(GfxShader& s) {
 		q[0] = result[1];
 		q[1] = result[2];
 		q[2] = result[3];
+		/*q[0] = result[0];
+		q[1] = result[1];
+		q[2] = result[2];
+		q[3] = result[3];*/
 		mat4 rot = ToMat4(q);
 		
 		mat4 v = trans * rot * model_geom;
 		fb_obj->Set(v, identity<mat4>());
 	}
-	
 }
 
 void OdeObject::LoadModel(CpuDataState& state) {
@@ -144,6 +150,8 @@ void OdeObject::LoadModel(OglDataState& state) {
 	if (!state.LoadModelTextures(loader, o))
 		Panic("Couldn't load model textures: ModelComponent");
 }
+
+
 
 
 
@@ -209,5 +217,6 @@ INITBLOCK(OdeSystem) {
 }
 
 END_UPP_NAMESPACE
+#endif
 #endif
 #endif

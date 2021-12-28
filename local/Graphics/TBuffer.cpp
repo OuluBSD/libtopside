@@ -573,6 +573,18 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, GLint prog, const DataObject
 	else if (var == VAR_LIGHTDIR) {
 		Gfx::Uniform3f(uindex, data.light_dir[0], data.light_dir[1], data.light_dir[2]);
 	}
+	else if (var == VAR_PROJECTIONOVERRIDE) {
+		Gfx::UniformMatrix4fv(uindex, o.proj_override);
+	}
+	else if (var == VAR_SCALE) {
+		Gfx::UniformMatrix4fv(uindex, o.scale);
+	}
+	else if (var == VAR_VIEWOVERRIDE) {
+		Gfx::UniformMatrix4fv(uindex, o.view_override);
+	}
+	else if (var == VAR_MODEL) {
+		Gfx::UniformMatrix4fv(uindex, o.model);
+	}
 	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
 		int tex_ch = var - VAR_NONE;
 		int tex_i = o.tex_id[tex_ch];
@@ -628,7 +640,10 @@ void BufferT<Gfx>::SetVar(int var, GLint prog, const RealtimeSourceConfig& cfg) 
 	else if (var == VAR_VIEW) {
 		ASSERT(0); // pass
 	}
-	else if (var == VAR_PROJECTION) {
+	else if (var == VAR_VIEWOVERRIDE) {
+		ASSERT(0); // pass
+	}
+	else if (var == VAR_PROJECTIONOVERRIDE) {
 		ASSERT(0); // pass
 	}
 	else if (var == VAR_SCALE) {

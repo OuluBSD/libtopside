@@ -31,6 +31,12 @@ template <class Gfx>
 void DataObjectT<Gfx>::Refresh(Mesh& m) {
 	ASSERT(!vao && !vbo && !ebo);
 	
+	mat4 ident = identity<mat4>();
+	scale = ident;
+	model = ident;
+	proj_override = ident;
+	view_override = ident;
+	
 	// Create objects
 	Gfx::GenVertexArray(vao);
 	Gfx::GenVertexBuffer(vbo);

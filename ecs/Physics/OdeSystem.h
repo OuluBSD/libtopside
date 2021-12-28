@@ -1,6 +1,7 @@
 #ifndef _System_OdeSystem_h_
 #define _System_OdeSystem_h_
 
+#if 0
 #ifdef flagODE
 
 
@@ -80,11 +81,11 @@ public:
 	OdeObject();
 	virtual ~OdeObject();
 	
-	virtual void LoadModel(GfxShader& s);
+	virtual void LoadModel(GfxDataState& s);
 	
 	void OnAttach() override {body = dBodyCreate(GetWorldId());} // Create ID for physics body
 	void OnDetach() override {DetachContent();}
-	virtual void Refresh(GfxShader& s);
+	virtual void Refresh();
 	
 	void AttachContent();
 	void DetachContent();
@@ -96,7 +97,7 @@ public:
 	void LoadModel(CpuDataState& state);
 	void LoadModel(OglDataState& state);
 	
-	Callback1<GfxShader&> GetRefreshCallback() {return THISBACK(Refresh);}
+	Callback GetRefreshCallback() {return THISBACK(Refresh);}
 };
 
 class OdeJoint : public OdeNode {
@@ -283,5 +284,6 @@ NAMESPACE_ECS_END
 
 
 
+#endif
 #endif
 #endif

@@ -1,6 +1,7 @@
 #ifndef _System_PhysicsPrefab_h_
 #define _System_PhysicsPrefab_h_
 
+#if 0
 #ifdef flagODE
 
 NAMESPACE_ECS_BEGIN
@@ -129,5 +130,6 @@ struct OdeSphere : public OdeScalarObject {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif
 #endif

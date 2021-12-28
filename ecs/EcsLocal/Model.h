@@ -49,6 +49,8 @@ public:
 	void Attach(ModelMesh* m) {loader.model = m;}
 	void LoadModel(CpuDataState& state);
 	void LoadModel(OglDataState& state);
+	void RefreshModel(CpuDataState& state);
+	void RefreshModel(OglDataState& state);
 	
 protected:
 	ModelLoader loader;

@@ -55,9 +55,12 @@ struct GfxDataObject : RTTIBase {
 	virtual void SetMat3(const String &name, const mat3 &mat) const = 0;
 	virtual void SetMat4(const String &name, const mat4 &mat) const = 0;*/
 	
-	mat4 model;
-	mat4 scale;
-	//mat4 proj;
+    mat4 view_override;
+    mat4 proj_override;
+    mat4 scale;
+    mat4 model;
+    int id = -1;
+    
 	int tex_id[TEXTYPE_COUNT] = {-1,-1,-1,-1,-1,-1, -1,-1,-1,-1,-1,-1,-1};
 	
 	void Set(const mat4& model, const mat4& scale) {this->model = model; this->scale = scale;}

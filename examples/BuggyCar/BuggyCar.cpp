@@ -12,7 +12,7 @@ INITBLOCK_(Shaders) {
 
 
 void BuggyWheel::OnAttach() {
-	OdeObject::OnAttach();
+	DefObject::OnAttach();
 	
 	dQFromAxisAndAngle(orient, 1, 0, 0, M_PI*0.5);	// Set orientation from axis (1i+0j+0k) and it's (angle 90 degrees)
 	dMassSetSphere(&mass, 1, radius);				// Set mass function for physics body as sphere
@@ -42,7 +42,7 @@ void BuggyCarInitializer() {
 	eng.GetAdd<RenderingSystem>();
 	eng.GetAdd<EntityStore>();
 	eng.GetAdd<ComponentStore>();
-	eng.GetAdd<OdeSystem>();
+	eng.GetAdd<DefSystem>();
 	eng.GetAdd<EventSystem>();
 	
 	Serial::Machine& mach = Serial::GetActiveMachine();
@@ -57,18 +57,29 @@ void BuggyCarApp::BuggyCarStartup(T& state) {
 	PoolRef models = ents->GetRoot()->GetAddPool("models");
 	
 	EntityRef sky = models->Create<StaticSkybox>();
-	EntityRef gnd = models->Create<StaticGroundPlanePrefab>();
+	EntityRef gnd = models->Create<DefStaticGroundPlanePrefab>();
 	EntityRef car = models->Create<BuggyCarPrefab>();
 	
-	sky->Get<ModelComponent>()->LoadModel(state);
-	gnd->Get<StaticGroundPlane>()->LoadModel(state);
-	car->Get<BuggyCar>()->LoadModel(state);
+	this->sky = sky->Get<ModelComponent>();
+	this->gnd = gnd->Get<DefStaticGroundPlane>();
+	this->car = car->Get<BuggyCar>();
+	
+	//this->sky->LoadModel(state);
+	//this->gnd->LoadModel(state);
+	this->car->LoadModel(state);
 	
 	PoolRef cameras = ents->GetRoot()->GetAddPool("cameras");
 	EntityRef cam = cameras->Create<CameraPrefab>();
 	chaser = cam->Add<ChaseCam>();
 	chaser->SetTarget(car->Get<Transform>());
 	rend->AddViewable(cam->Get<Viewable>());
+}
+
+template <class T>
+void BuggyCarApp::BuggyCarUpdate(T& state) {
+	//this->sky->RefreshModel(state);
+	//this->gnd->RefreshModel(state);
+	this->car->Refresh();
 }
 
 
@@ -96,7 +107,6 @@ void BuggyCarApp::Render(Draw& fb) {
 		else {
 			SdlCpuDataState& state = cd->GetState();
 			BuggyCarStartup(state);
-			
 		}
 		
 		
@@ -110,6 +120,15 @@ void BuggyCarApp::Render(Draw& fb) {
 		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
 		if (!state.LoadModelTextures(loader, o))
 			Panic("Couldn't load model textures: " + obj_path);*/
+	}
+	
+	if (od) {
+		SdlOglDataState& state = od->GetState();
+		BuggyCarUpdate(state);
+	}
+	else {
+		SdlCpuDataState& state = cd->GetState();
+		BuggyCarUpdate(state);
 	}
 	
 	
@@ -134,6 +153,8 @@ void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	GfxDataState& state = fb.GetGfxState();
 	
+	#if 1
+	
 	float ratio = (float)height / (float)width;
 	float aspect = (float)width / (float)height;
 	float f = ts.Seconds() / phase_time;
@@ -147,15 +168,17 @@ void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	float eye_y = sin(eye_angle);
 	float x_mod = 0.2 * eye_x;
 	float y_mod = 0.2 * eye_y;
-	mat4 perspective {
+	mat4 projection {
 		vec4{1,		0,	    0,		0},
 		vec4{0,		1,	    0,		0},
 		vec4{0,		0,	    1,		0},
 		vec4{0,		0, -1./5.,		1}
 	};
 	
+	projection = perspective(DEG2RAD(90.0f), (float)width / (float)height, 0.1f, 100.0f);
+	
 	vec3 eye {0.3f * eye_x, 0.3f * eye_y, 1};
-	vec3 center {0, 0, -1};
+	vec3 center {0, 0.5, -1};
 	vec3 up {0, 1, 0};
 	mat4 lookat = LookAt(eye, center, up);
 	mat4 port;
@@ -165,8 +188,15 @@ void BuggyCarApp::DrawObj(GfxStateDraw& fb, bool use_texture) {
 	else*/
 		port = GetViewport(-1 * ratio, -1, 2 * ratio, 2, 1);
 	
-	state.view = port * perspective * lookat;
+	state.view = port * projection * lookat;
 	state.light_dir = vec3 {sin(angle), 0.0, cos(angle)};
+	
+	#else
+	mat4 projection = ortho(-width, width, -height, height, -1024.0f, 1024.0f);
+	projection = perspective(DEG2RAD(90.0f), (float)width / (float)height, 0.1f, 1000.0f);
+    mat4 lookat = LookAt(vec3(0.0f, 0.5f, -3.0f), vec3(0.0f,0.0f,0.0f), vec3(0.0f, 1.0f, 0.0f));
+    state.view = projection * lookat;
+	#endif
 }
 
 

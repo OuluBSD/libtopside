@@ -59,10 +59,6 @@ struct DataObjectT : GfxDataObject {
 	NatVertexBuffer vbo;
 	NatElementBuffer ebo;
 	
-    mat4 view;
-    mat4 proj;
-    mat4 scale;
-    mat4 model;
     int id = -1;
 	
 	

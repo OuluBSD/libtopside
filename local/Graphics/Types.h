@@ -339,7 +339,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #define GFXTYPE_LIST \
 	GFXTYPE(SdlCpuGfx) \
-	GFXTYPE(SdlOglgfx)
+	GFXTYPE(SdlOglGfx)
 
 #define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
 	template struct x <SdlCpuGfx>; \

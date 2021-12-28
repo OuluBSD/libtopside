@@ -499,6 +499,7 @@ typedef Matrix<float, 3, 1> mat31;
 typedef Matrix<float, 3, 2> mat32;
 typedef Matrix<float, 3, 3> mat3;
 typedef Matrix<float, 4, 4> mat4;
+typedef Matrix<float, 4, 3> mat43;
 
 
 inline mat12 AsMatrix(const vec2& v) {return mat12 {v};}

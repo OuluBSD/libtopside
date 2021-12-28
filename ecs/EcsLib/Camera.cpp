@@ -30,7 +30,7 @@ void ChaseCam::Refresh(GfxDataState& s) {
 	int width = 1280;
 	int height = 720;
 	
-	mat4 projection = perspective(DEG2RAD(45.0f), (float)width / (float)height, 0.1f, 100.0f);
+	mat4 projection = perspective(DEG2RAD(120.0f), (float)width / (float)height, 0.1f, 100.0f);
     //simple_shader.SetMat4("projection", projection);
     
     // camera/view transformation

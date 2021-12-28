@@ -1,5 +1,6 @@
 #include "Physics.h"
 
+#if 0
 #ifdef flagODE
 
 NAMESPACE_ECS_BEGIN
@@ -17,4 +18,5 @@ void StaticBox::OnAttach() {
 
 NAMESPACE_ECS_END
 
+#endif
 #endif

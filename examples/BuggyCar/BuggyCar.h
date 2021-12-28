@@ -8,8 +8,27 @@
 #define SOFTGL 0
 
 
+
 NAMESPACE_TOPSIDE_BEGIN
 
+
+#ifdef flagODE
+using DefSpace = OdeSpace;
+using DefNode = OdeNode;
+using DefJoint = OdeJoint;
+using DefObject = OdeObject;
+using DefSystem = Ecs::OdeSystem;
+using DefStaticGroundPlane = Ecs::StaticGroundPlane<OdeFys>;
+using DefStaticGroundPlanePrefab = Ecs::StaticGroundPlanePrefab<OdeFys>;
+#else
+using DefSpace = TosSpace;
+using DefNode = TosNode;
+using DefJoint = TosJoint;
+using DefObject = TosObject;
+using DefSystem = Ecs::TosSystem;
+using DefStaticGroundPlane = Ecs::StaticGroundPlane<TosFys>;
+using DefStaticGroundPlanePrefab = Ecs::StaticGroundPlanePrefab<TosFys>;
+#endif
 
 
 class BuggyCarVertexShader : public SoftShaderBase {
@@ -29,7 +48,7 @@ public:
 
 
 
-struct BuggyWheel : public OdeObject {
+struct BuggyWheel : public DefObject {
 	double radius = 0.18;	// wheel radius
 	double wmass  = 0.2;	// wheel mass
 	
@@ -39,7 +58,7 @@ struct BuggyWheel : public OdeObject {
 	
 };
 
-struct BuggyChassis : public OdeObject {
+struct BuggyChassis : public DefObject {
 	float startz = 0.5f;	// starting height of chassis
 	float length = 1.7f;	// chassis length
 	float width  = 1.2f;	// chassis width
@@ -47,9 +66,11 @@ struct BuggyChassis : public OdeObject {
 	float cmass   = 0.1f;	// chassis mass
 	
 	
-	virtual void OnAttach() {
-		OdeObject::OnAttach();
+	void OnAttach() override {
+		DefObject::OnAttach();
 		
+		TODO
+		#if 0
 		dBodySetPosition(body, 0, startz, 0);			// Set position for physics body
 		dMassSetBox(&mass, 1, width, height, length);	// Set mass function for physics body as box
 		dMassAdjust(&mass, cmass);						// Set mass for the mass function
@@ -63,8 +84,10 @@ struct BuggyChassis : public OdeObject {
 		//model_geom = rotate<float>(identity<mat4>(), M_PI_2, vec3(0,0,1));
 		
 		AttachContent();
+		#endif
 	}
 	
+	String ToString() const override {return "BuggyChassis";}
 	
 };
 
@@ -77,19 +100,19 @@ NAMESPACE_ECS_BEGIN
 
 
 struct BuggyCar :
-	public OdeSpace,
+	public DefSpace,
 	public Component<BuggyCar>
 {
 	BuggyChassis chassis;
 	Array<BuggyWheel> wheels;
-	Array<OdeJoint> joints;
+	Array<DefJoint> joints;
 	
 	dReal speed=0, steer=0;	// user commands
 	
 	using Parent = Entity;
 	
 public:
-	RTTI_DECL2(BuggyCar, OdeSpace, Component<BuggyCar>)
+	RTTI_DECL2(BuggyCar, DefSpace, Component<BuggyCar>)
 	typedef BuggyCar CLASSNAME;
 	BuggyCar() {}
 	
@@ -102,8 +125,13 @@ public:
 		for (auto& w : wheels) w.LoadModel(state);
 	}
 	
+	/*void Refresh() {
+		chassis.Refresh();
+		for (auto& w : wheels) w.Refresh();
+	}*/
+	
 	void OnAttach() override {
-		OdeSpace::OnAttach();
+		DefSpace::OnAttach();
 		
 		Attach(chassis);
 		for(int i = 0; i < 3; i++) {
@@ -117,8 +145,8 @@ public:
 		
 		
 		for(int i = 0; i < joints.GetCount(); i++) {
-			OdeJoint& joint = joints[i];
-			OdeObject& wheel = wheels[i];
+			DefJoint& joint = joints[i];
+			DefObject& wheel = wheels[i];
 			joint.AttachHinge(chassis, wheel);
 			joint.SetHingeSuspension(0.4, 0.8);
 			joint.SetHingeLock();
@@ -126,7 +154,7 @@ public:
 	}
 	
 	void Step() {
-		OdeJoint& motor_joint = joints[0];
+		DefJoint& motor_joint = joints[0];
 		
 		// motor
 		motor_joint.SetVelocity2(-speed);
@@ -144,12 +172,12 @@ public:
 		
 	}
 	
-	void Refresh(GfxShader& s) {
+	void Refresh() override {
 		speed = 1.0;
 		steer = 1.0;
 		Step();
-		chassis.Refresh(s);
-		for (auto& w : wheels) w.Refresh(s);
+		chassis.Refresh();
+		for (auto& w : wheels) w.Refresh();
 	}
 	
 	/*virtual bool Key(dword key, int count) {
@@ -174,7 +202,7 @@ public:
 		return false;
 	}*/
 	
-	Callback1<GfxShader&> GetRefreshCallback() {return THISBACK(Refresh);}
+	Callback GetRefreshCallback() {return THISBACK(Refresh);}
 };
 
 
@@ -187,7 +215,7 @@ struct BuggyCarPrefab : EntityPrefab<Transform, Renderable, BuggyCar>
 		components.Get<TransformRef>()->position[1] = 3.0;
 		components.Get<RenderableRef>()->cb.Add(components.Get<Ref<BuggyCar>>()->GetRefreshCallback());
 		
-		OdeSystemRef w = e.GetEngine().Get<OdeSystem>();
+		Ref<DefSystem> w = e.GetEngine().Get<DefSystem>();
 		w->Attach(*components.Get<Ref<BuggyCar>>());
 		
         return components;
@@ -210,7 +238,9 @@ struct BuggyCarApp :
 	int phases = 2;
 	int width, height;
 	Ref<ChaseCam> chaser;
-	
+	Ref<ModelComponent> sky;
+	Ref<DefStaticGroundPlane> gnd;
+	Ref<BuggyCar> car;
 	
 	BuggyCarApp();
 	void operator=(const BuggyCarApp& t) {Panic("Can't copy BuggyCarApp");}
@@ -221,6 +251,7 @@ struct BuggyCarApp :
 	void DrawObj(GfxStateDraw& fb, bool use_texture);
 	
 	template <class T> void BuggyCarStartup(T& state);
+	template <class T> void BuggyCarUpdate(T& state);
 	
 };
 

@@ -60,6 +60,17 @@ void ModelComponent::LoadModel(OglDataState& state) {
 		Panic("Couldn't load model textures: ModelComponent");
 }
 
+void ModelComponent::RefreshModel(CpuDataState& state) {
+	ASSERT(cpu_obj);
+	TODO
+}
+
+void ModelComponent::RefreshModel(OglDataState& state) {
+	ASSERT(ogl_obj);
+	TODO
+}
+
+
 
 
 

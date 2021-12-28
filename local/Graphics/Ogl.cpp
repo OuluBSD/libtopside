@@ -273,7 +273,13 @@ uniform sampler2D iLightmap;
 uniform sampler2D iReflection;
 uniform sampler2D iUnknown;
 
+uniform float     iAudioSeconds;
 uniform mat4      iView;
+uniform mat4      iProjection;
+uniform mat4      iScale;
+uniform mat4      iTransform;
+uniform mat4      iModel;
+uniform vec3      iLightDir;
 
 out vec3 vNormal;
 out vec2 vTexCoord;
