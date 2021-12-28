@@ -20,18 +20,15 @@ struct StaticGroundPlane : public Component<StaticGroundPlane<Fys>>, public Fys:
 	void OnAttach() override {
 		Object::OnAttach();
 		
-		TODO
-		#if 0
-		geom = dCreatePlane(GetSpace()->GetSpaceId(), 0, 1, 0, 0);
+		Fys::SetGeomModelPlane(this->geom, this->GetSystem()->GetSpace());
 		
-		is_override_phys_geom = true;
-		override_geom = identity<mat4>();
+		this->is_override_phys_geom = true;
+		this->override_geom = identity<mat4>();
 		
 		ModelBuilder mb;
 		mb	.AddPlane(vec3(-50, 0, -50), vec2(100, 100))
 			.SetMaterial(DefaultMaterial());
-		loader = mb.AsModel();
-		#endif
+		this->loader = mb.AsModel();
 	}
 	
 	String ToString() const override {return "StaticGroundPlane";}

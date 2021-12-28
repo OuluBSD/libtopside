@@ -13,6 +13,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 #ifdef flagODE
+using DefFys = OdeFys;
 using DefSpace = OdeSpace;
 using DefNode = OdeNode;
 using DefJoint = OdeJoint;
@@ -21,6 +22,7 @@ using DefSystem = Ecs::OdeSystem;
 using DefStaticGroundPlane = Ecs::StaticGroundPlane<OdeFys>;
 using DefStaticGroundPlanePrefab = Ecs::StaticGroundPlanePrefab<OdeFys>;
 #else
+using DefFys = TosFys;
 using DefSpace = TosSpace;
 using DefNode = TosNode;
 using DefJoint = TosJoint;
@@ -69,12 +71,17 @@ struct BuggyChassis : public DefObject {
 	void OnAttach() override {
 		DefObject::OnAttach();
 		
-		TODO
-		#if 0
-		dBodySetPosition(body, 0, startz, 0);			// Set position for physics body
-		dMassSetBox(&mass, 1, width, height, length);	// Set mass function for physics body as box
-		dMassAdjust(&mass, cmass);						// Set mass for the mass function
-		geom = dCreateBox(0, width, height, length);	// Set 3D geometry for the object as box
+		// Set position for physics body
+		DefFys::SetBodyPosition(body, 0, startz, 0);
+		
+		// Set mass function for physics body as box
+		DefFys::SetMassFunctionBox(mass, width, height, length);
+		
+		// Set mass for the mass function
+		DefFys::SetMass(mass, cmass);
+		
+		// Set 3D geometry for the object as box
+		DefFys::SetGeomModelBox(geom, width, height, length);
 		
 		ModelBuilder mb;
 		mb	.AddBox(vec3(-width/2, -height/2, -length/2), vec3(width, height, length))
@@ -84,7 +91,6 @@ struct BuggyChassis : public DefObject {
 		//model_geom = rotate<float>(identity<mat4>(), M_PI_2, vec3(0,0,1));
 		
 		AttachContent();
-		#endif
 	}
 	
 	String ToString() const override {return "BuggyChassis";}
@@ -117,7 +123,7 @@ public:
 	BuggyCar() {}
 	
 	void operator = (const BuggyCar& c) {Panic("Not implemented");}
-	COMP_DEF_VISIT
+	COMP_DEF_VISIT_(vis % chassis; vis | wheels | joints;)
 	
 	template <class T>
 	void LoadModel(T& state) {
@@ -243,8 +249,10 @@ struct BuggyCarApp :
 	Ref<BuggyCar> car;
 	
 	BuggyCarApp();
+	
+	COMP_DEF_VISIT_(vis % loader; vis & chaser & sky & gnd & car;)
+	
 	void operator=(const BuggyCarApp& t) {Panic("Can't copy BuggyCarApp");}
-	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	void Initialize() override;
 	void Render(Draw& draw) override;
 	

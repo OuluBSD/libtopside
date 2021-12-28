@@ -136,7 +136,7 @@ typename Gfx::DataObject& DataStateT<Gfx>::AddObject() {
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o) {
+bool DataStateT<Gfx>::LoadModel(ModelLoader& l, GfxDataObject& o) {
 	ASSERT(l.model);
 	if (!l.model) return false;
 	
@@ -150,13 +150,13 @@ bool DataStateT<Gfx>::LoadModel(ModelLoader& l, DataObject& o) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(DataObject& o, ModelMesh& model) {
+void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model) {
 	for (Mesh& mesh : model.meshes)
 		ProcessMesh(o, model, mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out) {
+void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out) {
 	o.Refresh(out);
 }
 
@@ -188,7 +188,7 @@ bool DataStateT<Gfx>::LoadModelAssimp(ModelLoader& l, DataObject& o, String path
 }
 
 template <class Gfx>
-bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, DataObject& o) {
+bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, GfxDataObject& o) {
 	ModelMesh& m = *l.model;
 	
 	int prev_count = textures.GetCount();
@@ -221,7 +221,7 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, DataObject& o) {
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessNode(DataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessNode(GfxDataObject& o, ModelMesh& model, aiNode *node, const aiScene *scene) {
 	// process all the node's meshes (if any)
     for(unsigned int i = 0; i < node->mNumMeshes; i++) {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
@@ -234,7 +234,7 @@ void DataStateT<Gfx>::ProcessNode(DataObject& o, ModelMesh& model, aiNode *node,
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
+void DataStateT<Gfx>::ProcessMesh(GfxDataObject& o, ModelMesh& mout, Mesh& out, aiMesh *mesh, const aiScene *scene) {
 	out.vertices.SetCount(mesh->mNumVertices);
 	
     for(unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -283,13 +283,13 @@ void DataStateT<Gfx>::ProcessMesh(DataObject& o, ModelMesh& mout, Mesh& out, aiM
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(DataObject& o, ModelMesh& model) {
+void DataStateT<Gfx>::RefreshTexture(GfxDataObject& o, ModelMesh& model) {
 	for (Mesh& mesh : model.meshes)
 		RefreshTexture(o, model, mesh);
 }
 
 template <class Gfx>
-void DataStateT<Gfx>::RefreshTexture(DataObject& o, ModelMesh& model, Mesh& out) {
+void DataStateT<Gfx>::RefreshTexture(GfxDataObject& o, ModelMesh& model, Mesh& out) {
 	o.RefreshTexture(out);
 }
 

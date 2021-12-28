@@ -19,6 +19,7 @@ struct SystemT :
 	using NativeThreading = typename Fys::NativeThreading;
 	using NativeThreadPool = typename Fys::NativeThreadPool;
 	using NativeGeom = typename Fys::NativeGeom;
+	using FysSystem = typename Fys::System;
 	
 protected:
 	NativeWorld world = NULL;
@@ -52,7 +53,6 @@ public:
 		Fys::AttachThreadPool(threading, pool);
 		Fys::AttachThreading(world, threading);
 	}
-	SYS_DEF_VISIT
 	
 	~SystemT() {
 		Fys::DetachThreading(threading);
@@ -66,6 +66,8 @@ public:
 		Fys::ClearWorld(world);
 		Fys::UninitializeLibrary();
 	}
+	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Space)}
 	
     bool Initialize() override {
 		SetGravity(vec3(0, -0.5, 0));
@@ -91,6 +93,8 @@ public:
 	
 	const NativeWorld& GetWorld() const {ASSERT(world); return world;}
 	const NativeJointGroup& GetJointGroup() const {ASSERT(contactgroup); return contactgroup;}
+	NativeWorld& GetWorld() {ASSERT(world); return world;}
+	NativeJointGroup& GetJointGroup() {ASSERT(contactgroup); return contactgroup;}
 	
 	void Collide() {ASSERT(this->space); Fys::Collide(this->space, this, &SystemT::StaticNearCallback);}
 	void StepWorld(double seconds) {Fys::Step(world, seconds);}
@@ -100,6 +104,8 @@ public:
 	static void StaticNearCallback(void *data, NativeGeom o1, NativeGeom o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	
 	String ToString() const override {return Fys::Id() + "System";}
+	
+	static void AddEngineSystem();
 	
 };
 

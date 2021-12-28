@@ -146,8 +146,16 @@ void OdeFys::SetBodyAngularVelocity(NativeBody& b, const vec3& v) {
 	dBodySetAngularVel(b, v[0], v[1], v[2]);
 }
 
+void OdeFys::SetGeomModelPlane(NativeGeom& g, NativeSpace& s, float a, float b, float c, float d) {
+	g = dCreatePlane(s, a, b, c, d);
+}
+
 void OdeFys::SetGeomModelSphere(NativeGeom& g, float radius) {
 	g = dCreateSphere(0, radius);
+}
+
+void OdeFys::SetGeomModelBox(NativeGeom& g, float w, float h, float l) {
+	g = dCreateBox(0, w, h, l);
 }
 
 void OdeFys::SetGeomPosition(NativeGeom& geom, float x, float y, float z) {
@@ -287,6 +295,10 @@ void OdeFys::SetQuatFromAxisAngle(NativeQuat& q, const vec3& axis, float angle) 
 
 void OdeFys::SetMassFunctionSphere(NativeMass& mass, float density, float radius) {
 	dMassSetSphere(&mass, density, radius);
+}
+
+void OdeFys::SetMassFunctionBox(NativeMass& mass, float w, float h, float l) {
+	dMassSetBox(&mass, 1, w, h, l);
 }
 
 void OdeFys::SetMass(NativeMass& mass, float kg) {

@@ -18,6 +18,7 @@ protected:
 public:
 	RTTI_DECL1(SpaceT, Node)
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node)}
 	
 	void OnAttach() override {
 		Fys::CreateSpace(space, this->owner ? &this->owner->GetWorldSpace() : 0, is_root);
@@ -25,6 +26,7 @@ public:
 	
 	void SetRoot(bool b=true) {is_root=b;}
 	const NativeSpace& GetSpace() const {ASSERT(space); return space;}
+	NativeSpace& GetSpace() {ASSERT(space); return space;}
 	
 	String ToString() const override {return Fys::Id() + "Space";}
 	

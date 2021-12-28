@@ -27,6 +27,8 @@ public:
 	RTTI_DECL1(JointT, Node)
 	JointT() {}
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node)}
+	
 	void OnAttach() override {
 		Fys::CreateJointHinge2(this->GetWorld(), joint);
 		Fys::SetJointFeedback(joint, feedback);

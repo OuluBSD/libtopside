@@ -25,6 +25,8 @@ public:
 	NodeT() {}
 	virtual ~NodeT() {}
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(FysNode)}
+	
 	virtual void Attach(NodeT& node) {
 		node.owner = this;
 		nodes.Add(&node);
@@ -44,8 +46,8 @@ public:
 	
 	String ToString() const override {return Fys::Id() + "Node";}
 	
-	System& GetSystem();
-	Space& GetSpace();
+	System* GetSystem();
+	Space* GetSpace();
 	NativeWorld& GetWorld();
 	NativeSpace& GetWorldSpace();
 	

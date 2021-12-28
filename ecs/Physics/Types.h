@@ -127,7 +127,9 @@ struct OdeFys {
 	static void SetBodyLinearVelocity(NativeBody& b, const vec3& v);
 	static void SetBodyAngularVelocity(NativeBody& b, const vec3& v);
 	
+	static void SetGeomModelPlane(NativeGeom& g, NativeSpace& s, float a=0, float b=1, float c=0, float d=0);
 	static void SetGeomModelSphere(NativeGeom& g, float radius);
+	static void SetGeomModelBox(NativeGeom& g, float w, float h, float l);
 	static void SetGeomPosition(NativeGeom& g, float x, float y, float z);
 	static void SetGeomRotationAxisAngle(NativeBody& body, float ax, float ay, float az, float angle);
 	static void ResetGeomRotation(NativeGeom& geom);
@@ -153,6 +155,7 @@ struct OdeFys {
 	// utility functions
 	static void SetQuatFromAxisAngle(NativeQuat& q, const vec3& axis, float angle);
 	static void SetMassFunctionSphere(NativeMass& mass, float density, float radius);
+	static void SetMassFunctionBox(NativeMass& mass, float w, float h, float l);
 	static void SetMass(NativeMass& mass, float kg);
 	
 	static String Id() {return "Ode";}

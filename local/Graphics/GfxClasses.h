@@ -43,6 +43,7 @@ struct GfxDataObject : RTTIBase {
     virtual void MakeTexture(int tex_id, int w, int h, int pitch, int stride, const Vector<byte>& data) = 0;
     virtual void Refresh(Mesh& m) = 0;
     virtual GVar::GfxType GetGfxType() const = 0;
+	virtual void RefreshTexture(Mesh& m) = 0;
 	
 	/*
 	virtual void SetBool(const String &name, bool value) const = 0;
@@ -82,10 +83,8 @@ struct GfxDataState : ErrorReporter {
 	
 	virtual GfxDataObject& CreateObject() = 0;
 	virtual void Refresh(ModelMesh& m) = 0;
-	
-	/*
 	virtual bool LoadModel(ModelLoader& l, GfxDataObject& o) = 0;
-	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;*/
+	virtual bool LoadModelTextures(ModelLoader& l, GfxDataObject& o) = 0;
 	
 };
 

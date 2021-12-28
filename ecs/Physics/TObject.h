@@ -23,15 +23,18 @@ struct ObjectT : NodeT<Fys> {
 	NativeBody body = 0;
 	NativeMass mass;
 	NativeQuat orient;
+	
+	bool is_override_phys_geom = false;
+	mat4 override_geom;
 	mat4 model_geom = identity<mat4>();
 	
 public:
 	RTTI_DECL1(ObjectT, Node)
 	typedef ObjectT CLASSNAME;
-	ObjectT() {Fys::GetDefaultOrientation(orient);}
+	ObjectT();
 	virtual ~ObjectT();
 	
-	void LoadModel(GfxDataState& s) override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Node>(this); vis % loader;}
 	
 	void OnAttach() override {Fys::CreateBody(this->GetWorld(), body);}
 	void OnDetach() override {DetachContent();}
@@ -41,8 +44,10 @@ public:
 	void DetachContent();
 	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetGeomRotationAxisAngle(body, ax, ay, az, angle);}
 	vec3 GetBodyPosition() {return Fys::GetBodyPosition(body);}
-	void LoadModel(CpuDataState& state);
-	void LoadModel(OglDataState& state);
+	//void LoadModel(CpuDataState& state);
+	//void LoadModel(OglDataState& state);
+	bool LoadModel(GfxDataState& s) override;
+	//bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
 	String ToString() const override {return Fys::Id() + "Object";}
 	
 	ObjectT& SetRotationX(double angle) {Fys::SetGeomRotationAxisAngle(body, 1, 0, 0, angle); return *this;}
