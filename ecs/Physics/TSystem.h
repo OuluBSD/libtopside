@@ -19,13 +19,14 @@ struct SystemT :
 	using NativeThreading = typename Fys::NativeThreading;
 	using NativeThreadPool = typename Fys::NativeThreadPool;
 	using NativeGeom = typename Fys::NativeGeom;
+	using NativeContact = typename Fys::NativeContact;
 	using FysSystem = typename Fys::System;
 	
 protected:
-	NativeWorld world = NULL;
-	NativeJointGroup contactgroup = NULL;
-	NativeThreading threading = NULL;
-	NativeThreadPool pool = NULL;
+	NativeWorld world;
+	NativeJointGroup contactgroup;
+	NativeThreading threading;
+	NativeThreadPool pool;
 	
 	
 public:
@@ -36,6 +37,11 @@ public:
 	
 	typedef SystemT<Fys> CLASSNAME;
 	SystemT(Engine& e) {
+		world = Null;
+		contactgroup = Null;
+		threading = Null;
+		pool = Null;
+		
 		this->SetParent(e);
 		Fys::InitializeLibrary();
 		Fys::CreateWorld(world);

@@ -6,36 +6,44 @@ NAMESPACE_TOPSIDE_BEGIN
 template <class Fys>
 ObjectT<Fys>::ObjectT() {
 	//model.LoadModel(ShareDirFile("models" DIR_SEPS "cube.obj"));
+	geom = Null;
+	body = Null;
 	Fys::GetDefaultOrientation(orient);
 }
 
 template <class Fys>
 ObjectT<Fys>::~ObjectT() {
-	if (geom) dGeomDestroy(geom);
-	if (body) dBodyDestroy(body);
+	Fys::ClearGeom(geom);
+	Fys::ClearBody(body);
 }
 
 template <class Fys>
 void ObjectT<Fys>::AttachContent() {
 	ASSERT(geom != 0);
 	ASSERT(body != 0);
-	dBodySetMass(body, &mass);						// Set mass of the physics body
-	dGeomSetBody(geom, body);						// Set physics body of a geometry
-	dBodySetQuaternion(body, orient);				// Set orientation of a physics body
 	
+	// Set mass of the physics body
+	Fys::SetBodyMass(body, mass);
+	
+	// Set physics body of a geometry
+	Fys::SetGeomBody(geom, body);
+	
+	// Set orientation of a physics body
+	Fys::SetBodyQuaternion(body, orient);
 	
 	//LOG(ToString());
 	
+	auto space = this->GetSystem()->GetSpace();
+	ASSERT(space);
+	Fys::AddGeomToSpace(space, geom);
 	
-	dSpaceID space = this->GetSpace()->GetSpace();
-	dSpaceAdd(space, geom);
 }
 
 template <class Fys>
 void ObjectT<Fys>::DetachContent() {
 	ASSERT(geom != 0);
 	ASSERT(body != 0);
-	dSpaceRemove(this->GetSpace()->GetSpace(), geom);
+	Fys::RemoveGeomFromSpace(this->GetSpace()->GetSpace(), geom);
 }
 
 template <class Fys>
@@ -66,24 +74,10 @@ void ObjectT<Fys>::Refresh() {
 		fb_obj->Set(v, identity<mat4>());
 	}
 	else {
-		dVector3 pos;
-		dGeomCopyPosition (geom, pos);
-		vec3 v3 = MakeVec3(pos);
+		vec3 v3 = Fys::GetGeomPosition(geom);
 		mat4 trans = translate(identity<mat4>(), v3);
-		
-		dQuaternion result;
-		dGeomGetQuaternion (geom, result);
-		quat q;
-		q[3] = result[0];
-		q[0] = result[1];
-		q[1] = result[2];
-		q[2] = result[3];
-		/*q[0] = result[0];
-		q[1] = result[1];
-		q[2] = result[2];
-		q[3] = result[3];*/
+		quat q = Fys::GetGeomQuaternion(geom);
 		mat4 rot = ToMat4(q);
-		
 		mat4 v = trans * rot * model_geom;
 		fb_obj->Set(v, identity<mat4>());
 	}

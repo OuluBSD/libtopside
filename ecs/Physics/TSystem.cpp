@@ -12,20 +12,16 @@ void SystemT<Fys>::NearCallback(void*, NativeGeom& o1, NativeGeom& o2) {
 	if (!(g1 ^ g2)) return;*/
 
 	const int N = 10;
-	dContact contact[N];
-	int n = dCollide(o1, o2, N, &contact[0].geom, sizeof(dContact));
+	NativeContact contact[N];
+	int n = Fys::Collide(o1, o2, N, &contact[0], sizeof(NativeContact));
 	if (n > 0) {
 		for (int i = 0; i < n; i++) {
-			contact[i].surface.mode = dContactSlip1 | dContactSlip2 | dContactSoftERP | dContactSoftCFM | dContactApprox1;
-			contact[i].surface.mu = dInfinity;
-			contact[i].surface.slip1 = 0.1;
-			contact[i].surface.slip2 = 0.1;
-			contact[i].surface.soft_erp = 0.5;
-			contact[i].surface.soft_cfm = 0.3;
-			dJointID c = dJointCreateContact(world,contactgroup,&contact[i]);
-			dJointAttach(c,
-						 dGeomGetBody(contact[i].geom.g1),
-						 dGeomGetBody(contact[i].geom.g2));
+			Fys::AttachContact(
+				world,
+				contactgroup,
+				contact[i],
+				0.1f, 0.1f,
+				0.5f, 0.3f);
 		}
 	}
 }

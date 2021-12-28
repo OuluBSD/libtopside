@@ -12,11 +12,13 @@ struct SpaceT : NodeT<Fys> {
 	using NativeSpace = typename Fys::NativeSpace;
 	
 protected:
-	NativeSpace space = NULL;
+	NativeSpace space;
 	bool is_root = false;
 	
 public:
 	RTTI_DECL1(SpaceT, Node)
+	
+	SpaceT() {space = Null;}
 	
 	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node)}
 	
@@ -24,7 +26,7 @@ public:
 		Fys::CreateSpace(space, this->owner ? &this->owner->GetWorldSpace() : 0, is_root);
 	}
 	
-	void SetRoot(bool b=true) {is_root=b;}
+	void SetRoot(bool b=true) {is_root = b;}
 	const NativeSpace& GetSpace() const {ASSERT(space); return space;}
 	NativeSpace& GetSpace() {ASSERT(space); return space;}
 	

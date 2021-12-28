@@ -14,10 +14,17 @@ INITBLOCK_(Shaders) {
 void BuggyWheel::OnAttach() {
 	DefObject::OnAttach();
 	
-	dQFromAxisAndAngle(orient, 1, 0, 0, M_PI*0.5);	// Set orientation from axis (1i+0j+0k) and it's (angle 90 degrees)
-	dMassSetSphere(&mass, 1, radius);				// Set mass function for physics body as sphere
-	dMassAdjust(&mass, wmass);						// Set mass for the mass function
-	geom = dCreateSphere(0, radius);				// Set 3D geometry for the object as sphere
+	// Set orientation from axis (1i+0j+0k) and it's (angle 90 degrees)
+	DefFys::SetQuatFromAxisAngle(orient, vec3(1, 0, 0), M_PI*0.5);
+	
+	// Set mass function for physics body as sphere
+	DefFys::SetMassFunctionSphere(mass, 1, radius);
+	
+	// Set mass for the mass function
+	DefFys::SetMass(mass, wmass);
+	
+	// Set 3D geometry for the object as sphere
+	DefFys::SetGeomModelSphere(geom, radius);
 	
 	ModelBuilder mb;
 	mb	.AddCylinder(vec3(0, 0, 0), radius, 0.02)

@@ -113,7 +113,7 @@ struct BuggyCar :
 	Array<BuggyWheel> wheels;
 	Array<DefJoint> joints;
 	
-	dReal speed=0, steer=0;	// user commands
+	float speed=0, steer=0;	// user commands
 	
 	using Parent = Entity;
 	

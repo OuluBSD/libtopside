@@ -14,13 +14,14 @@ struct ObjectT : NodeT<Fys> {
 	using NativeBody = typename Fys::NativeBody;
 	using NativeMass = typename Fys::NativeMass;
 	using NativeQuat = typename Fys::NativeQuat;
+	using Space = typename Fys::Space;
 	
 	ModelLoader loader;
 	GfxDataObject* fb_obj = 0;
 	bool model_err = false;
 	
-	NativeGeom geom = 0;
-	NativeBody body = 0;
+	NativeGeom geom;
+	NativeBody body;
 	NativeMass mass;
 	NativeQuat orient;
 	

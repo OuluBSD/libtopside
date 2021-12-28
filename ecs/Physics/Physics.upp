@@ -1,5 +1,8 @@
 description "\377B141,85,150";
 
+uses
+	SoftPhys;
+
 library(DEBUG & WIN32) ode_doubled;
 
 library(!DEBUG & WIN32) ode_double;
@@ -10,6 +13,7 @@ file
 	Physics.h,
 	Enums.h,
 	Types.h,
+	Tos.cpp,
 	Ode.cpp,
 	FysClasses.h,
 	Templates readonly separator,

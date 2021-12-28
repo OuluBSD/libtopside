@@ -68,8 +68,33 @@ void OdeFys::Collide(NativeSpace& space, void* data, NearCallback cb) {
 	dSpaceCollide(space, data, cb);
 }
 
+int OdeFys::Collide(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch) {
+	return dCollide(o1, o2, count, &c->geom, ptr_pitch);
+}
+
 void OdeFys::Step(NativeWorld& world, float seconds) {
 	dWorldStep(world, seconds);
+}
+
+void OdeFys::AddGeomToSpace(NativeSpace& space, NativeGeom& geom) {
+	dSpaceAdd(space, geom);
+}
+
+void OdeFys::RemoveGeomFromSpace(NativeSpace& space, NativeGeom& geom) {
+	dSpaceRemove(space, geom);
+}
+
+void OdeFys::AttachContact(NativeWorld& w, NativeJointGroup& cg, NativeContact& c, float slip1, float slip2, float erp, float cfm) {
+	c.surface.mode = dContactSlip1 | dContactSlip2 | dContactSoftERP | dContactSoftCFM | dContactApprox1;
+	c.surface.mu = dInfinity;
+	c.surface.slip1 = slip1;
+	c.surface.slip2 = slip2;
+	c.surface.soft_erp = erp;
+	c.surface.soft_cfm = cfm;
+	dJointID j = dJointCreateContact(w, cg, &c);
+	dJointAttach(	j,
+					dGeomGetBody(c.geom.g1),
+					dGeomGetBody(c.geom.g2));
 }
 
 void OdeFys::CreateJointGroup(NativeJointGroup& g) {
@@ -122,6 +147,12 @@ void OdeFys::CreateBody(NativeWorld& w, NativeBody& b) {
 	b = dBodyCreate(w);
 }
 
+void OdeFys::ClearBody(NativeBody& b) {
+	if (b)
+		dBodyDestroy(b);
+	b = 0;
+}
+
 vec3 OdeFys::GetBodyPosition(NativeBody& b) {
 	const dReal* r = dBodyGetPosition(b);
 	if (r)
@@ -129,13 +160,22 @@ vec3 OdeFys::GetBodyPosition(NativeBody& b) {
 	return vec3(0,0,0);
 }
 
+void OdeFys::SetBodyMass(NativeBody& b, NativeMass& m) {
+	dBodySetMass(b, &m);
+}
+
 void OdeFys::SetBodyPosition(NativeBody& body, float x, float y, float z) {
 	dBodySetPosition(body, x, y, z);
 }
 
 void OdeFys::SetBodyQuaternion(NativeBody& b, const quat& q) {
-	dQuaternion Q {q[0], q[1], q[2], q[3]};
-	dBodySetQuaternion(b, Q);
+	NativeQuat r;
+	GetNativeQuat(q, r);
+	dBodySetQuaternion(b, r);
+}
+
+void OdeFys::SetBodyQuaternion(NativeBody& b, const NativeQuat& q) {
+	dBodySetQuaternion(b, q);
 }
 
 void OdeFys::SetBodyLinearVelocity(NativeBody& b, const vec3& v) {
@@ -144,6 +184,12 @@ void OdeFys::SetBodyLinearVelocity(NativeBody& b, const vec3& v) {
 
 void OdeFys::SetBodyAngularVelocity(NativeBody& b, const vec3& v) {
 	dBodySetAngularVel(b, v[0], v[1], v[2]);
+}
+
+void OdeFys::ClearGeom(NativeGeom& g) {
+	if (g)
+		dGeomDestroy(g);
+	g = 0;
 }
 
 void OdeFys::SetGeomModelPlane(NativeGeom& g, NativeSpace& s, float a, float b, float c, float d) {
@@ -168,6 +214,34 @@ void OdeFys::ResetGeomRotation(NativeGeom& geom) {
 	dGeomSetRotation(geom, R);
 }
 
+vec3 OdeFys::GetGeomPosition(NativeGeom& geom) {
+	dVector3 pos;
+	dGeomCopyPosition(geom, pos);
+	return vec3(pos[0], pos[1], pos[2]);
+}
+
+quat OdeFys::GetQuat(const NativeQuat& q) {
+	quat r;
+	r[3] = q[0];
+	r[0] = q[1];
+	r[1] = q[2];
+	r[2] = q[3];
+	return r;
+}
+
+void OdeFys::GetNativeQuat(const quat& q, NativeQuat& r) {
+	r[0] = q[3];
+	r[1] = q[0];
+	r[2] = q[1];
+	r[3] = q[2];
+}
+
+quat OdeFys::GetGeomQuaternion(NativeGeom& geom) {
+	dQuaternion result;
+	dGeomGetQuaternion(geom, result);
+	return GetQuat(result);
+}
+
 mat43 OdeFys::GetGeomRotationAxisAngle(NativeBody& body) {
 	const dReal* r = dBodyGetRotation(body);
 	mat43 m;
@@ -180,6 +254,10 @@ void OdeFys::SetGeomRotationAxisAngle(NativeBody& body, float ax, float ay, floa
 	dMatrix3 R;
 	dRFromAxisAndAngle(R, ax, ay, az, angle);
 	dBodySetRotation(body, R);
+}
+
+void OdeFys::SetGeomBody(NativeGeom& g, NativeBody& b) {
+	dGeomSetBody(g, b);
 }
 
 void OdeFys::CreateJointHinge2(NativeWorld& w, NativeJoint& j) {

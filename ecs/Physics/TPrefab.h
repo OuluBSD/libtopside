@@ -76,9 +76,10 @@ struct StaticBox : public Fys::Object {
 template <class Fys>
 class ScalarObject : public Fys::Object {
 	using Object = typename Fys::Object;
+	using Float = typename Fys::Float;
 	
 protected:
-	dReal sides[3];
+	vec3 sides;
 	
 public:
 	RTTI_DECL1(ScalarObject, Object)
@@ -86,7 +87,7 @@ public:
 		for (int k = 0; k < 3; k++) sides[k] = 1.0;
 	}
 	void SetRandomSize() {
-		for (int k = 0; k < 3; k++) sides[k] = dRandReal() * 0.5 + 0.1;
+		for (int k = 0; k < 3; k++) sides[k] = Randomf() * 0.5 + 0.1;
 	}
 	
 	String ToString() override {return "ScalarObject";}

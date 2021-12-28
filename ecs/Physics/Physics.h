@@ -7,6 +7,7 @@
 #endif
 
 #include <EcsLocal/EcsLocal.h>
+#include <SoftPhys/SoftPhys.h>
 
 #include "Enums.h"
 #include "Types.h"

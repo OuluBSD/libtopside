@@ -1,0 +1,18 @@
+description "\3770,255,169";
+
+file
+	SoftPhys.h,
+	SoftPhys.cpp,
+	Common.h,
+	World.h,
+	Body.h,
+	Space.h,
+	Joint.h,
+	Mass.h,
+	Feedback.h,
+	JointGroup.h,
+	Threading.h,
+	ThreadPool.h,
+	Contact.h,
+	Geometry.h;
+
