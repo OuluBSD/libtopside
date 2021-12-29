@@ -59,7 +59,8 @@ void TosFys::ClearSpace(SoftPhys::Space& space) {
 	space.Clear();
 }
 
-void TosFys::Collide(SoftPhys::Space& space, void* data, NearCallback cb) {
+void TosFys::Collide(SoftPhys::Space& space, void* data) {
+	NearCallback cb = &System::StaticNearCallbackR;
 	space.Collide(data, cb);
 }
 
@@ -143,6 +144,10 @@ vec3 TosFys::GetBodyPosition(SoftPhys::Body& b) {
 	b.GetPosition();
 }
 
+void TosFys::SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle) {
+	b.SetRotation(vec3(ax, ay, az), angle);
+}
+
 void TosFys::SetBodyMass(SoftPhys::Body& b, SoftPhys::Mass& m) {
 	b.SetMass(m);
 }
@@ -184,7 +189,7 @@ void TosFys::SetGeomPosition(SoftPhys::Geometry& g, float x, float y, float z) {
 	g.SetPosition(vec3(x,y,z));
 }
 
-void TosFys::SetGeomRotationAxisAngle(SoftPhys::Geometry& g, float ax, float ay, float az, float angle) {
+void TosFys::SetGeomRotationAxisAngle(NativeGeom& g, float ax, float ay, float az, float angle) {
 	g.SetRotation(vec3(ax, ay, az), angle);
 }
 

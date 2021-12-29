@@ -39,6 +39,12 @@ Body& Body::SetAngularVelocity(const vec3& v) {
 	angular_vel = v;
 }
 
+Body& Body::SetRotation(const vec3& axis, float angle) {
+	this->axis = axis;
+	this->angle = angle;
+	return *this;
+}
+
 
 
 }

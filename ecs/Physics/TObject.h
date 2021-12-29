@@ -43,7 +43,7 @@ public:
 	
 	void AttachContent();
 	void DetachContent();
-	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetGeomRotationAxisAngle(geom, ax, ay, az, angle);}
+	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetBodyRotationAxisAngle(body, ax, ay, az, angle);}
 	vec3 GetBodyPosition() {return Fys::GetBodyPosition(body);}
 	//void LoadModel(CpuDataState& state);
 	//void LoadModel(OglDataState& state);

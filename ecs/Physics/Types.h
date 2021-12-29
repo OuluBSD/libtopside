@@ -92,7 +92,7 @@ struct TosFys {
 	
 	static void CreateSpace(NativeSpace& space, NativeSpace* owner, bool is_root);
 	static void ClearSpace(NativeSpace& space);
-	static void Collide(NativeSpace& space, void* data, NearCallback cb);
+	static void Collide(NativeSpace& space, void* data);
 	static int  Collide(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch);
 	static void Step(NativeWorld& world, float seconds);
 	static void AttachContact(NativeWorld& w, NativeJointGroup& cg, NativeContact& c, float slip1, float slip2, float erp, float cfm);
@@ -115,6 +115,7 @@ struct TosFys {
 	static void CreateBody(NativeWorld& w, NativeBody& b);
 	static void ClearBody(NativeBody& b);
 	static vec3 GetBodyPosition(NativeBody& b);
+	static void SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle);
 	static void SetBodyMass(NativeBody& b, NativeMass& m);
 	static void SetBodyPosition(NativeBody& b, float x, float y, float z);
 	static void SetBodyQuaternion(NativeBody& b, const quat& q);
@@ -126,7 +127,7 @@ struct TosFys {
 	static void SetGeomModelSphere(NativeGeom& g, float radius);
 	static void SetGeomModelBox(NativeGeom& g, float w, float h, float l);
 	static void SetGeomPosition(NativeGeom& g, float x, float y, float z);
-	static void SetGeomRotationAxisAngle(NativeGeom& geom, float ax, float ay, float az, float angle);
+	static void SetGeomRotationAxisAngle(NativeGeom& g, float ax, float ay, float az, float angle);
 	static void SetGeomBody(NativeGeom& g, NativeBody& b);
 	static void ResetGeomRotation(NativeGeom& geom);
 	static vec3 GetGeomPosition(NativeGeom& geom);
@@ -200,7 +201,7 @@ struct OdeFys {
 	
 	static void CreateSpace(NativeSpace& space, NativeSpace* owner, bool is_root);
 	static void ClearSpace(NativeSpace& space);
-	static void Collide(NativeSpace& space, void* data, NearCallback cb);
+	static void Collide(NativeSpace& space, void* data);
 	static int  Collide(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch);
 	static void Step(NativeWorld& world, float seconds);
 	static void AttachContact(NativeWorld& w, NativeJointGroup& cg, NativeContact& c, float slip1, float slip2, float erp, float cfm);
@@ -223,6 +224,7 @@ struct OdeFys {
 	static void CreateBody(NativeWorld& w, NativeBody& b);
 	static void ClearBody(NativeBody& b);
 	static vec3 GetBodyPosition(NativeBody& b);
+	static void SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle);
 	static void SetBodyMass(NativeBody& b, NativeMass& m);
 	static void SetBodyPosition(NativeBody& b, float x, float y, float z);
 	static void SetBodyQuaternion(NativeBody& b, const quat& q);
@@ -235,7 +237,7 @@ struct OdeFys {
 	static void SetGeomModelSphere(NativeGeom& g, float radius);
 	static void SetGeomModelBox(NativeGeom& g, float w, float h, float l);
 	static void SetGeomPosition(NativeGeom& g, float x, float y, float z);
-	static void SetGeomRotationAxisAngle(NativeGeometry& geom, float ax, float ay, float az, float angle);
+	static void SetGeomRotationAxisAngle(NativeGeom& g, float ax, float ay, float az, float angle);
 	static void SetGeomBody(NativeGeom& g, NativeBody& b);
 	static void ResetGeomRotation(NativeGeom& geom);
 	static vec3 GetGeomPosition(NativeGeom& geom);

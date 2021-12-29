@@ -102,12 +102,13 @@ public:
 	NativeWorld& GetWorld() {ASSERT(world); return world;}
 	NativeJointGroup& GetJointGroup() {ASSERT(contactgroup); return contactgroup;}
 	
-	void Collide() {ASSERT(this->space); Fys::Collide(this->space, this, &SystemT::StaticNearCallback);}
+	void Collide() {ASSERT(this->space); Fys::Collide(this->space, this);}
 	void StepWorld(double seconds) {Fys::Step(world, seconds);}
 	void RemoveContactJoints() {Fys::DetachJointGroup(contactgroup);}
 	
 	virtual void NearCallback(void *, NativeGeom& o1, NativeGeom& o2);
-	static void StaticNearCallback(void *data, NativeGeom& o1, NativeGeom& o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
+	static void StaticNearCallbackC(void *data, NativeGeom o1, NativeGeom o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
+	static void StaticNearCallbackR(void *data, NativeGeom& o1, NativeGeom& o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	
 	String ToString() const override {return Fys::Id() + "System";}
 	

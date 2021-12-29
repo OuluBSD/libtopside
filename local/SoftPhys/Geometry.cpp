@@ -41,14 +41,14 @@ Geometry& Geometry::SetGeomBody(Body& b) {
 	return *this;
 }
 
+Geometry& Geometry::ResetRotation() {
+	TODO
+}
+
 Geometry& Geometry::SetRotation(const vec3& axis, float angle) {
 	this->axis = axis;
 	this->angle = angle;
 	return *this;
-}
-
-Geometry& Geometry::ResetRotation() {
-	TODO
 }
 
 

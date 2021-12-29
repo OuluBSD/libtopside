@@ -13,6 +13,8 @@ struct Body : Object {
 	Mass mass;
 	vec3 linear_vel;
 	vec3 angular_vel;
+	vec3 axis;
+	float angle = 0;
 	
 	Body();
 	
@@ -24,6 +26,7 @@ struct Body : Object {
 	Body& SetQuaternion(const quat& q);
 	Body& SetLinearVelocity(const vec3& v);
 	Body& SetAngularVelocity(const vec3& v);
+	Body& SetRotation(const vec3& axis, float angle);
 	
 };
 

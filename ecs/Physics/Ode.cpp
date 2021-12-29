@@ -64,7 +64,8 @@ void OdeFys::ClearSpace(NativeSpace& space) {
 	dSpaceDestroy(space);
 }
 
-void OdeFys::Collide(NativeSpace& space, void* data, NearCallback cb) {
+void OdeFys::Collide(NativeSpace& space, void* data) {
+	NearCallback cb = &System::StaticNearCallbackC;
 	dSpaceCollide(space, data, cb);
 }
 
@@ -160,6 +161,12 @@ vec3 OdeFys::GetBodyPosition(NativeBody& b) {
 	return vec3(0,0,0);
 }
 
+void OdeFys::SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle) {
+	dMatrix3 R;
+	dRFromAxisAndAngle(R, ax, ay, az, angle);
+	dBodySetRotation(b, R);
+}
+
 void OdeFys::SetBodyMass(NativeBody& b, NativeMass& m) {
 	dBodySetMass(b, &m);
 }
@@ -192,8 +199,8 @@ void OdeFys::ClearGeom(NativeGeom& g) {
 	g = 0;
 }
 
-void OdeFys::SetGeomModelPlane(NativeGeom& g, NativeSpace& s, float a, float b, float c, float d) {
-	g = dCreatePlane(s, a, b, c, d);
+void OdeFys::SetGeomModelPlane(NativeGeom& g, NativeSpace& s, const vec4& v) {
+	g = dCreatePlane(s, v[0], v[1], v[2], v[3]);
 }
 
 void OdeFys::SetGeomModelSphere(NativeGeom& g, float radius) {
@@ -250,10 +257,10 @@ mat43 OdeFys::GetGeomRotationAxisAngle(NativeBody& body) {
 	return m;
 }
 
-void OdeFys::SetGeomRotationAxisAngle(NativeBody& body, float ax, float ay, float az, float angle) {
+void OdeFys::SetGeomRotationAxisAngle(NativeGeom& g, float ax, float ay, float az, float angle) {
 	dMatrix3 R;
 	dRFromAxisAndAngle(R, ax, ay, az, angle);
-	dBodySetRotation(body, R);
+	dGeomSetRotation(g, R);
 }
 
 void OdeFys::SetGeomBody(NativeGeom& g, NativeBody& b) {
