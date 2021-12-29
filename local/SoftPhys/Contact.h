@@ -9,6 +9,9 @@ struct Contact : Object {
 	using Object::Object;
 	
 	
+	
+	Contact() {}
+	
 };
 
 

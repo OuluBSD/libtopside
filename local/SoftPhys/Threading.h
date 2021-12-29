@@ -9,6 +9,12 @@ struct Threading : Object {
 	using Object::Object;
 	
 	
+	
+	Threading();
+	
+	void Add(ThreadPool& p);
+	void Detach();
+	
 };
 
 

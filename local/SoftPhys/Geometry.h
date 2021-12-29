@@ -9,6 +9,20 @@ struct Geometry : Object {
 	using Object::Object;
 	
 	
+	
+	Geometry();
+	
+	vec3 GetPosition() const;
+	quat GetQuaternion() const;
+	
+	Geometry& SetModelPlane(Space& s, const vec4& plane);
+	Geometry& SetModelSphere(float radius);
+	Geometry& SetModelBox(const vec3& v);
+	Geometry& SetPosition(const vec3& v);
+	Geometry& SetGeomBody(const Body& b);
+	Geometry& SetRotation(const vec3& axis, float angle);
+	Geometry& ResetRotation();
+	
 };
 
 

@@ -43,7 +43,7 @@ public:
 	
 	void AttachContent();
 	void DetachContent();
-	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetGeomRotationAxisAngle(body, ax, ay, az, angle);}
+	void RotateFromAxisAndAngle(double ax, double ay, double az, double angle) {Fys::SetGeomRotationAxisAngle(geom, ax, ay, az, angle);}
 	vec3 GetBodyPosition() {return Fys::GetBodyPosition(body);}
 	//void LoadModel(CpuDataState& state);
 	//void LoadModel(OglDataState& state);
@@ -51,9 +51,9 @@ public:
 	//bool LoadModel(ModelLoader& l, GfxDataObject& o) override;
 	String ToString() const override {return Fys::Id() + "Object";}
 	
-	ObjectT& SetRotationX(double angle) {Fys::SetGeomRotationAxisAngle(body, 1, 0, 0, angle); return *this;}
-	ObjectT& SetRotationY(double angle) {Fys::SetGeomRotationAxisAngle(body, 0, 1, 0, angle); return *this;}
-	ObjectT& SetRotationZ(double angle) {Fys::SetGeomRotationAxisAngle(body, 0, 0, 1, angle); return *this;}
+	ObjectT& SetRotationX(double angle) {Fys::SetGeomRotationAxisAngle(geom, 1, 0, 0, angle); return *this;}
+	ObjectT& SetRotationY(double angle) {Fys::SetGeomRotationAxisAngle(geom, 0, 1, 0, angle); return *this;}
+	ObjectT& SetRotationZ(double angle) {Fys::SetGeomRotationAxisAngle(geom, 0, 0, 1, angle); return *this;}
 	ObjectT& SetPosition(double x, double y, double z) {Fys::SetGeomPosition(geom, x, y, z); return *this;}
 	ObjectT& SetGeomPosition(double x, double y, double z) {Fys::SetGeomPosition(geom, x, y, z); return *this;}
 	ObjectT& SetGeomRotationIdentity() {Fys::ResetGeomRotation(geom); return *this;}

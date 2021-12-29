@@ -9,6 +9,11 @@ struct JointGroup : Object {
 	using Object::Object;
 	
 	
+	
+	JointGroup();
+	
+	void Detach();
+	
 };
 
 

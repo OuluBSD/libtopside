@@ -107,7 +107,7 @@ public:
 	void RemoveContactJoints() {Fys::DetachJointGroup(contactgroup);}
 	
 	virtual void NearCallback(void *, NativeGeom& o1, NativeGeom& o2);
-	static void StaticNearCallback(void *data, NativeGeom o1, NativeGeom o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
+	static void StaticNearCallback(void *data, NativeGeom& o1, NativeGeom& o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	
 	String ToString() const override {return Fys::Id() + "System";}
 	

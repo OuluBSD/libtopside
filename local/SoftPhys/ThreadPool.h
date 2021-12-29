@@ -9,6 +9,9 @@ struct ThreadPool : Object {
 	using Object::Object;
 	
 	
+	
+	ThreadPool() {}
+	
 };
 
 

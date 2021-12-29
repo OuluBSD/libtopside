@@ -9,6 +9,8 @@ struct Feedback : Object {
 	using Object::Object;
 	
 	
+	Feedback() {}
+	
 };
 
 

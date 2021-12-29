@@ -10,6 +10,8 @@ void DefaultEcsInitializer() {
 	eng.GetAdd<ComponentStore>();
 	#ifdef flagODE
 	eng.GetAdd<OdeSystem>();
+	#else
+	eng.GetAdd<TosSystem>();
 	#endif
 	eng.GetAdd<EventSystem>();
 	

@@ -8,6 +8,19 @@ namespace SoftPhys {
 struct Mass : Object {
 	using Object::Object;
 	
+	float mass;
+	mat3 inertia;
+	
+	
+	Mass();
+	
+	void Reset();
+	bool Check();
+	
+	Mass& SetMass(float kg);
+	Mass& SetFunctionSphere(float density, float radius);
+	Mass& SetFunctionBox(const vec3& dim, float density=1);
+	Mass& SetFunctionBoxTotal(const vec3& dim, float total_mass);
 	
 };
 
