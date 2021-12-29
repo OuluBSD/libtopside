@@ -14,11 +14,11 @@ void Space::Collide(void* data, NearCallback cb) {
 }
 
 void Space::Add(Geometry& g) {
-	TODO
+	VectorFindAdd(geoms, &g);
 }
 
 void Space::Remove(Geometry& g) {
-	TODO
+	VectorRemoveKey(geoms, &g);
 }
 
 

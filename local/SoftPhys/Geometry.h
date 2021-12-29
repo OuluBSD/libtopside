@@ -10,6 +10,12 @@ struct Geometry : Object {
 	
 	
 	
+	Body* body = 0;
+	vec3 position;
+	vec3 axis;
+	float angle = 0;
+	
+	
 	Geometry();
 	
 	vec3 GetPosition() const;
@@ -19,7 +25,7 @@ struct Geometry : Object {
 	Geometry& SetModelSphere(float radius);
 	Geometry& SetModelBox(const vec3& v);
 	Geometry& SetPosition(const vec3& v);
-	Geometry& SetGeomBody(const Body& b);
+	Geometry& SetGeomBody(Body& b);
 	Geometry& SetRotation(const vec3& axis, float angle);
 	Geometry& ResetRotation();
 	

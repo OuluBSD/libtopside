@@ -9,6 +9,10 @@ struct Body : Object {
 	using Object::Object;
 	
 	
+	vec3 position;
+	Mass mass;
+	vec3 linear_vel;
+	vec3 angular_vel;
 	
 	Body();
 	

@@ -8,6 +8,7 @@ namespace SoftPhys {
 struct ThreadPool : Object {
 	using Object::Object;
 	
+	Threading* threading = 0;
 	
 	
 	ThreadPool() {}

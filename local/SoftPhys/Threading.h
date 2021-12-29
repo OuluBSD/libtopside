@@ -8,12 +8,15 @@ namespace SoftPhys {
 struct Threading : Object {
 	using Object::Object;
 	
+	Vector<ThreadPool*> pools;
+	World* world = 0;
 	
 	
 	Threading();
 	
 	void Add(ThreadPool& p);
 	void Detach();
+	void DetachWorld();
 	
 };
 

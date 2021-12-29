@@ -11,11 +11,21 @@ Threading::Threading() {
 
 
 void Threading::Add(ThreadPool& p) {
-	TODO
+	pools.Add(&p);
+	p.threading = this;
 }
 
 void Threading::Detach() {
-	TODO
+	for (ThreadPool* p : pools)
+		p->threading = this;
+	pools.Clear();
+}
+
+void Threading::DetachWorld() {
+	if (world) {
+		world->threading = 0;
+		world = 0;
+	}
 }
 
 

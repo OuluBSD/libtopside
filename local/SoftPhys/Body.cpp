@@ -20,11 +20,11 @@ mat43 Body::GetRotationAxisAngle() const {
 
 
 Body& Body::SetPosition(const vec3& v) {
-	TODO
+	position = v;
 }
 
 Body& Body::SetMass(const Mass& m) {
-	TODO
+	mass = m;
 }
 
 Body& Body::SetQuaternion(const quat& q) {
@@ -32,11 +32,11 @@ Body& Body::SetQuaternion(const quat& q) {
 }
 
 Body& Body::SetLinearVelocity(const vec3& v) {
-	TODO
+	linear_vel = v;
 }
 
 Body& Body::SetAngularVelocity(const vec3& v) {
-	TODO
+	angular_vel = v;
 }
 
 

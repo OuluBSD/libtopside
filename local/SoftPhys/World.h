@@ -8,6 +8,16 @@ namespace SoftPhys {
 struct World : Object {
 	using Object::Object;
 	
+	Threading* threading = 0;
+	
+	vec3 gravity;
+	float correcting_velocity = 0;
+	float surface_layer = 0;
+	int iters = 64;
+	int auto_disable_samples = 0;
+	bool auto_disable = 0;
+	
+public:
 	
 	
 	World();

@@ -8,7 +8,25 @@ namespace SoftPhys {
 struct Joint : Object {
 	using Object::Object;
 	
+	struct Hinge {
+		float lo = 0;
+		float hi = 0;
+		float vel = 0;
+		float max_force = 0;
+		
+	};
 	
+	static const int HINGE_COUNT = 4;
+	Hinge hinges[HINGE_COUNT];
+	Feedback fb;
+	vec3 hinge_anchor;
+	vec3 hinge_axis1;
+	vec3 hinge_axis2;
+	vec3 axis;
+	float erp = 0;
+	float cfm = 0;
+	float fudge_factor = 0;
+	float angle = 0;
 	
 	Joint();
 	
@@ -18,7 +36,7 @@ struct Joint : Object {
 	Joint& SetHingeAnchor(const vec3& pos);
 	Joint& SetHingeAxes(const vec3& axis1, const vec3& axis2);
 	Joint& SetSuspensionERP(float erp);
-	Joint& SetSuspensionCFM(float erp);
+	Joint& SetSuspensionCFM(float cfm);
 	Joint& SetHingeRange(float lo, float hi, int idx);
 	Joint& SetHingeVelocity(float v, int idx);
 	Joint& SetMaxForce(float v, int idx);

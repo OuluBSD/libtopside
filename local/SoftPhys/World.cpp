@@ -6,6 +6,7 @@ namespace SoftPhys {
 
 
 World::World() {
+	gravity.Clear();
 	
 }
 
@@ -15,11 +16,18 @@ void World::Step(float seconds) {
 }
 
 void World::AttachThreading(Threading& t) {
-	TODO
+	t.DetachWorld();
+	DetachThreading();
+	ASSERT(!t.world && !threading);
+	threading = &t;
+	t.world = this;
 }
 
 void World::DetachThreading() {
-	TODO
+	if (threading) {
+		threading->world = 0;
+		threading = 0;
+	}
 }
 
 void World::CreateBody(Body& b) {
@@ -32,27 +40,33 @@ void World::CreateJoint(Joint& j) {
 
 
 World& World::SetGravity(const vec3& v) {
-	TODO
+	gravity = v;
+	return *this;
 }
 
 World& World::SetMaxCorrectingVelocity(float f) {
-	TODO
+	correcting_velocity = f;
+	return *this;
 }
 
 World& World::SetContactSurfaceLayer(float f) {
-	TODO
+	surface_layer = f;
+	return *this;
 }
 
 World& World::SetAutoDisable(bool b) {
-	TODO
+	auto_disable = b;
+	return *this;
 }
 
 World& World::SetStepIterations(int i) {
-	TODO
+	iters = i;
+	return *this;
 }
 
 World& World::SetAutoDisableSamples(int i) {
-	TODO
+	auto_disable_samples = i;
+	return *this;
 }
 
 

@@ -11,7 +11,7 @@ struct Space : Object {
 	typedef void (*NearCallback)(void*, Geometry& o1, Geometry& o2);
 	
 	Space* owner = 0;
-	
+	Vector<Geometry*> geoms;
 	
 	
 	Space();

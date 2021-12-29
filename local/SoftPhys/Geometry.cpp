@@ -11,7 +11,7 @@ Geometry::Geometry() {
 
 
 vec3 Geometry::GetPosition() const {
-	TODO
+	return position;
 }
 
 quat Geometry::GetQuaternion() const {
@@ -32,15 +32,19 @@ Geometry& Geometry::SetModelBox(const vec3& v) {
 }
 
 Geometry& Geometry::SetPosition(const vec3& v) {
-	TODO
+	position = v;
 }
 
-Geometry& Geometry::SetGeomBody(const Body& b) {
-	TODO
+Geometry& Geometry::SetGeomBody(Body& b) {
+	ASSERT(!body);
+	body = &b;
+	return *this;
 }
 
 Geometry& Geometry::SetRotation(const vec3& axis, float angle) {
-	TODO
+	this->axis = axis;
+	this->angle = angle;
+	return *this;
 }
 
 Geometry& Geometry::ResetRotation() {
