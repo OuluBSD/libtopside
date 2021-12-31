@@ -36,5 +36,11 @@ file
 	ModelBuilder.h,
 	ModelBuilder.cpp,
 	Draw.h,
-	Draw.cpp;
+	Draw.cpp,
+	Frustum.h,
+	Frustum.cpp,
+	Compare.h,
+	Compare.cpp,
+	Camera.h,
+	Camera.cpp;
 

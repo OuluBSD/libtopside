@@ -321,7 +321,7 @@ inline float RandomFloat32() {
 	return f;
 }
 
-double Multiply(double prev_norm, int64 count, double multiplier);
+double FastMultiply(double prev_norm, int64 count, double multiplier);
 
 inline int msb(dword d) {
     int res = 0;

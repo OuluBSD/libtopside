@@ -17,12 +17,14 @@ T normalize(const T& a) {
 }
 
 
+
 mat4 perspective(float fov, float aspect, float near, float far);
 mat4 ortho(float left, float right, float bottom, float top, float near, float far);
 mat4 ToMat4(const quat& q);
 
 template <class T> T cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
 template <class T> T inverse(const T& o) {return o.GetInverse();}
+template <class T> T transpose(const T& o) {return o.GetTransposed();}
 template<class T, class K> T scale(const T& a, const K& b) {return a.Scale(b);}
 template<class T, class K> T translate(const T& a, const K& b) {return a.Translate(b);}
 template<class T> float dot(const T& a, const T& b) {return a.GetDotProduct(b);}
@@ -36,6 +38,60 @@ vec3 transform(const vec3& v, const quat& m);
 vec3 lerp(const vec3& pos, const vec3& tgt_pos, float easing_factor);
 quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor);
 
+vec3 MultiplyPoint(const vec3& vec, const mat4& mat);
+vec3 MultiplyVector(const vec3& v, const mat3& m);
+vec3 MultiplyVector(const vec3& v, const mat4& m);
+mat4 FastInverse(const mat4& mat);
+vec2 Project(const vec2& length, const vec2& direction);
+vec3 Project(const vec3& length, const vec3& direction);
+vec2 Normalized(const vec2& v);
+vec3 Normalized(const vec3& v);
+mat4 Translation(const vec3& pos);
+mat2 Cut(const mat3& mat, int row, int col);
+mat3 Cut(const mat4& mat, int row, int col);
+mat2 Minor(const mat2& mat);
+mat3 Minor(const mat3& mat);
+mat4 Minor(const mat4& mat);
+mat2 Cofactor(const mat2& mat);
+mat3 Cofactor(const mat3& mat);
+mat4 Cofactor(const mat4& mat);
+float Determinant(const mat3& mat);
+float Determinant(const mat4& mat);
+mat2 Adjugate(const mat2& mat);
+mat3 Adjugate(const mat3& mat);
+mat4 Adjugate(const mat4& mat);
+mat2 Inverse(const mat2& mat);
+mat3 Inverse(const mat3& mat);
+mat4 Inverse(const mat4& m);
+bool Multiply(vec2& out, const vec2& v, const mat2& m);
+bool Multiply(vec3& out, const vec3& v, const mat3& m);
+bool Multiply(vec4& out, const vec4& v, const mat4& m);
+float Dot(const vec2& a, const vec2& b);
+float Dot(const vec3& a, const vec3& b);
+vec3 Cross(const vec3& l, const vec3& r);
+float Magnitude(const vec2& v);
+float Magnitude(const vec3& v);
+float MagnitudeSq(const vec2& v);
+float MagnitudeSq(const vec3& v);
+float CorrectDegrees(float degrees);
+float RadDeg(float radians);
+float DegRad(float degrees);
+mat2 Transpose(const mat2& matrix);
+mat3 Transpose(const mat3& matrix);
+mat4 Transpose(const mat4& matrix);
+float Determinant(const mat2& matrix);
+float Determinant(const mat3& matrix);
+
+mat4 Rotation(float pitch, float yaw, float roll);
+mat3 Rotation3x3(float pitch, float yaw, float roll);
+mat2 Rotation2x2(float angle);
+mat4 YawPitchRoll(float yaw, float pitch, float roll);
+mat4 XRotation(float angle);
+mat3 XRotation3x3(float angle);
+mat4 YRotation(float angle);
+mat3 YRotation3x3(float angle);
+mat4 ZRotation(float angle);
+mat3 ZRotation3x3(float angle);
 
 template <class T> T Min(const T& a, const T& b) {return T::GetMin(a, b);}
 template <class T> T Max(const T& a, const T& b) {return T::GetMax(a, b);}

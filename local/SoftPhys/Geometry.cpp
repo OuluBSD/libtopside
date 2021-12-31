@@ -33,6 +33,7 @@ Geometry& Geometry::SetModelBox(const vec3& v) {
 
 Geometry& Geometry::SetPosition(const vec3& v) {
 	position = v;
+	return *this;
 }
 
 Geometry& Geometry::SetGeomBody(Body& b) {

@@ -66,6 +66,7 @@ Mass& Mass::SetFunctionSphere(float density, float radius) {
 
 Mass& Mass::SetFunctionBox(const vec3& dim, float density) {
 	SetFunctionBoxTotal(dim, dim[0] * dim[1] * dim[2] * density);
+	return *this;
 }
 
 Mass& Mass::SetFunctionBoxTotal(const vec3& dim, float total_mass) {
@@ -80,6 +81,7 @@ Mass& Mass::SetFunctionBoxTotal(const vec3& dim, float total_mass) {
     inertia[2][2] = total_mass/12.0f * (lx*lx + ly*ly);
 	
 	ASSERT(Check());
+	return *this;
 }
 
 

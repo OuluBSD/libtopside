@@ -22,7 +22,6 @@ file
 	OpenGL.h,
 	State.h,
 	State.cpp,
-	Camera.h,
 	Shader.cpp,
 	GfxClasses.h,
 	Templates readonly separator,

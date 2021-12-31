@@ -141,7 +141,7 @@ void TosFys::ClearBody(SoftPhys::Body& b) {
 }
 
 vec3 TosFys::GetBodyPosition(SoftPhys::Body& b) {
-	b.GetPosition();
+	return b.GetPosition();
 }
 
 void TosFys::SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle) {

@@ -38,6 +38,9 @@
 #include "Model.h"
 #include "ModelBuilder.h"
 #include "Draw.h"
+#include "Frustum.h"
+#include "Compare.h"
+#include "Camera.h"
 
 
 NAMESPACE_UPP_BEGIN

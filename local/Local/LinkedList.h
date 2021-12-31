@@ -113,6 +113,7 @@ public:
 	
 	T& First() {return first->value;}
 	const T& First() const {return first->value;}
+	T PopFirst() {if (!first) return Null; T o = First(); RemoveFirst(); return o;}
 	
 	T& Top() {return last->value;}
 	const T& Top() const {return last->value;}
@@ -132,8 +133,25 @@ public:
 		++count;
 		return it;
 	}
+	Item* AddFirstItem() {
+		Item* it = GetRecyclerPool().New();
+		if (!first) {
+			last = first = it;
+			first->prev = 0;
+			first->next = 0;
+		}
+		else {
+			first->prev = it;
+			it->next = first;
+			first = it;
+		}
+		++count;
+		return it;
+	}
 	T& Add() {return AddItem()->value;}
 	T& Add(const T& o) {T& r = AddItem()->value; r = o; return r;}
+	T& AddFirst() {return AddFirstItem()->value;}
+	T& AddFirst(const T& o) {T& r = AddFirstItem()->value; r = o; return r;}
 	int GetCount() const {return count;}
 	bool IsEmpty() const {return count == 0;}
 	bool IsFilled() const {return count != 0;}

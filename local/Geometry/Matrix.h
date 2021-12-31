@@ -19,9 +19,7 @@ template <class T> struct PartVec<T, 3> {
 template <class T, int I>
 struct Vec : Moveable<Vec<T, I> > {
 	static const int size = I;
-	
-	typedef T Unit;
-	
+	using Unit = T;
 	
 	T data[I];
 	
@@ -77,6 +75,9 @@ struct Vec : Moveable<Vec<T, I> > {
 	bool operator==(const Vec& v) const {for(int i = 0; i < I; i++) if (data[i] != v.data[i]) return false; return true;}
 	bool operator!=(const Vec& v) const {return !(*this == v);}
 	
+	T GetMagnitude() const {return FastSqrt(Dot(*this));}
+	T GetMagnitudeSq() const {return Dot(*this);}
+	
 	Vec& Normalize() {
 		T mag = 0;
 		for(int i = 0; i < I; i++) mag += data[i] * data[i];
@@ -101,6 +102,12 @@ struct Vec : Moveable<Vec<T, I> > {
 	}
 	template <int from_i=I-1> Vec& Project() {ASSERT(data[from_i] != 0.0); static_assert(from_i >= 0 && from_i < I, "Invalid project pos");for(int i = 0; i < I; i++) if (i != from_i) data[i] /= data[from_i]; data[from_i] = 1.0; return *this;}
 	
+	Vec<T, I-1> Cut(int c) {
+		Vec<T, I-1> v;
+		for(int i = 0, j = 0; i < I && j < I; i++)
+			if (i != c) v.data[j++] = data[i];
+		return v;
+	}
 	template <int begin=0, int end=I-1> Vec<T, end - begin> Splice() const {
 		static_assert(begin < end, "Splicing area must be positive");
 		static_assert(end - begin <= I, "Splicing area must be less or equal to source area");
@@ -263,6 +270,20 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	vec& operator[](int i) {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	const vec& operator[](int i) const {STRICT_MTX_CHECK(i >= 0 && i < R); return data[i];}
 	
+	vecR GetColumn(int c) const {ASSERT(c >= 0 && c < C); vecR v; for(int i = 0; i < R; i++) v[i] = data[i][c]; return v;}
+	
+	Matrix<T,C-1,R-1> Cut(int r, int c) const {
+		Matrix<T,C-1,R-1> m;
+		for(int a = 0, b = 0; a < R && b < R; a++) {
+			if (a != r) {
+				const auto& src = data[a];
+				auto& dst = m.data[b++];
+				for(int i = 0, j = 0; i < C && j < C; i++)
+					if (i != c) dst[j++] = src[i];
+			}
+		}
+		return m;
+	}
 	Matrix<T,C,R> GetTransposed() const {
 		Matrix<T,C,R> ret;
 		for(int c = 0; c < C; c++)
@@ -336,20 +357,23 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 				data[r].data[c] = (T)(r == c ? 1 : 0);
 		return *this;
 	}
-	Matrix& SetTranspose(T x, T y, T z) {
-		SetIdentity();
+	Matrix& SetComponentTranslate(T x, T y, T z) {
 		data[3][0] = x;
 		data[3][1] = y;
 		data[3][2] = z;
 		return *this;
 	}
-	Matrix& SetScale(float scale) {
-		SetIdentity();
-		data[0][0] = scale;
-		data[1][1] = scale;
-		data[2][2] = scale;
+	
+	Matrix& SetComponentScale(T x, T y, T z) {
+		data[0][0] = x;
+		data[1][1] = y;
+		data[2][2] = z;
 		return *this;
 	}
+	
+	Matrix& SetTranslate(T x, T y, T z) {SetIdentity().SetComponentTranslate(x, y, z); return *this;}
+	Matrix& SetScale(T scale) {SetIdentity().SetComponentScale(scale, scale, scale); return *this;}
+	
 	Matrix& SetRotation(int axis, float angle_rad) {
 		static_assert(R == C && R >= 3, "Expecting square matrix of at least size 3");
 		SetIdentity();
@@ -390,12 +414,12 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	}
 	Matrix& SetOrtographic(T left, T right, T bottom, T top, T near, T far) {
 		Clear();
-		data[0][0] = 2.0f / (right - left);
-		data[1][1] = 2.0f / (top - bottom);
-		data[2][2] = 1.0f / (far - near);
-		data[3][0] = (left + right) / (left - right);
-		data[3][1] = (top + bottom) / (bottom - top);
-		data[3][2] = (near) / (near - far);
+		SetComponentScale(		2.0f / (right - left),
+								2.0f / (top - bottom),
+								1.0f / (far - near));
+		SetComponentTranslate(	(left + right) / (left - right),
+								(top + bottom) / (bottom - top),
+								(near) / (near - far));
 		data[3][3] = 1;
 		return *this;
 	}
@@ -449,8 +473,16 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	Matrix& operator*=(T v) {for(int i = 0; i < R; i++) data[i] *= v; return *this;}
 	Matrix& operator/=(T v) {for(int i = 0; i < R; i++) data[i] /= v; return *this;}
 	
+	Matrix operator*(T m) const {return Multiply(m);}
 	template<int C2> Matrix<T,R,C2> operator*(const Matrix<T,C,C2>& src) const {return Multiply(src);}
 	
+	Matrix Multiply(T f) const {
+		Matrix m;
+		for(int r = 0; r < R; r++)
+			for(int c = 0; c < C; c++)
+				m.data[r].data[c] = data[r].data[c] * f;
+		return m;
+	}
 	template<int C2> Matrix<T,R,C2> Multiply(const Matrix<T,C,C2>& src) const {
 		Matrix<T,R,C2> m;
 		for(int r = 0; r < R; r++) {

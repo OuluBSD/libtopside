@@ -120,7 +120,7 @@ bool Rectangle::Intersects(const line2& l) const {
 	// Raycast version
 	else {
 		// Get unit vector for line
-		vec2 norm = l.GetVector().Normalize();
+		vec2 norm = l.GetVector().GetNormalized();
 	
 		// If unit vector is not in single axis, set the multiplicative inverse
 		//norm = norm.GetCrossProduct(norm * -1);
@@ -165,8 +165,8 @@ bool Rectangle::Intersects(const Rectangle& r) const {
 	return overlap_x && overlap_y;
 }
 
-ival2 Rectangle::GetInterval(const vec2& axis) const {
-	ival2 res;
+ival1 Rectangle::GetInterval(const vec2& axis) const {
+	ival1 res;
 	vec2 min = GetMin();
 	vec2 max = GetMax();
 	vec2 verts[4] {
@@ -175,16 +175,16 @@ ival2 Rectangle::GetInterval(const vec2& axis) const {
 	};
 	res.min = res.max = dot(axis, verts[0]);
 	for(int i = 1; i < 4; i++) {
-		F proj = dot(axis, verts[i]);
-		res.min = std::min(res.min, proj);
-		res.max = std::max(res.max, proj);
+		float proj = dot(axis, verts[i]);
+		res.min = Min(res.min, proj);
+		res.max = Max(res.max, proj);
 	}
 	return res;
 }
 
 bool Rectangle::OverlapsOnAxis(const Rectangle& r, const vec2& axis) const {
-	ival2 a = GetInterval(axis);
-	ival2 b = r.GetInterval(axis);
+	ival1 a = GetInterval(axis);
+	ival1 b = r.GetInterval(axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
@@ -249,7 +249,7 @@ bool OrientedRectangle::Intersects(const Circle& c) const {
 	return lr.Intersects(lc);
 }
 
-ival2 OrientedRectangle::GetInterval(const vec2& axis) const {
+ival1 OrientedRectangle::GetInterval(const vec2& axis) const {
 	Rectangle r { ct - hext, hext * (F)2};
 	vec2 min = r.GetMin();
 	vec2 max = r.GetMax();
@@ -265,7 +265,7 @@ ival2 OrientedRectangle::GetInterval(const vec2& axis) const {
 		d = AsMatrix(d) * zrot;
 		verts[i] = d + ct;
 	}
-	ival2 res;
+	ival1 res;
 	res.min = res.max = dot(axis, verts[0]);
 	for(int i = 1; i < 4; i++) {
 		F proj = dot(axis, verts[i]);
@@ -276,8 +276,8 @@ ival2 OrientedRectangle::GetInterval(const vec2& axis) const {
 }
 
 bool OrientedRectangle::OverlapsOnAxis(const Rectangle& r, const vec2& axis) const {
-	ival2 a = r.GetInterval(axis);
-	ival2 b = GetInterval(axis);
+	ival1 a = r.GetInterval(axis);
+	ival1 b = GetInterval(axis);
 	return ((b.min <= a.max) && (a.min <= b.max));
 }
 
@@ -520,7 +520,7 @@ bool Shape2DWrapper::ShapeBase::Intersects(const ShapeBase& b) {
 
 
 
-bool BoundingShape2::Intersects(const line2& l0) const {
+bool BoundingShape::Intersects(const line2& l0) const {
 	for(const auto& l : lines)
 		if (l.Intersects(l0))
 			return true;
@@ -536,7 +536,7 @@ bool BoundingShape2::Intersects(const line2& l0) const {
 	return false;
 }
 
-bool BoundingShape2::Intersects(const Circle& c0) const {
+bool BoundingShape::Intersects(const Circle& c0) const {
 	for(const auto& l : lines)
 		if (c0.Intersects(l))
 			return true;
@@ -552,7 +552,7 @@ bool BoundingShape2::Intersects(const Circle& c0) const {
 	return false;
 }
 
-bool BoundingShape2::Intersects(const Rectangle& r0) const {
+bool BoundingShape::Intersects(const Rectangle& r0) const {
 	for(const auto& l : lines)
 		if (r0.Intersects(l))
 			return true;
@@ -568,7 +568,7 @@ bool BoundingShape2::Intersects(const Rectangle& r0) const {
 	return false;
 }
 
-bool BoundingShape2::Intersects(const OrientedRectangle& o0) const {
+bool BoundingShape::Intersects(const OrientedRectangle& o0) const {
 	for(const auto& l : lines)
 		if (o0.Intersects(l))
 			return true;

@@ -38,7 +38,6 @@ typedef unsigned int	Gxbf;
 
 #include "Types.h"
 #include "State.h"
-#include "Camera.h"
 
 #include "GfxClasses.h"
 

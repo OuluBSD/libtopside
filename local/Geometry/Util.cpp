@@ -16,28 +16,48 @@ quat slerp(const quat& orient, const quat& tgt_orient, float easing_factor) {
 mat4 LookAt(const vec3& eye, const vec3& center, const vec3& up) {
     vec3 z = normalize(eye - center);
     vec3 x = normalize(cross(up, z));
-    vec3 y = normalize(cross(z,x));
-    mat4 minv = identity<mat4>();
-    mat4 tr   = identity<mat4>();
+    vec3 y = cross(z,x);
+    mat4 minv = zero<mat4>();
     for (int i=0; i<3; i++) {
-        minv[0][i] = x[i];
-        minv[1][i] = y[i];
-        minv[2][i] = z[i];
-        tr[i][3] = -center[i];
+        minv[i][0] = x[i];
+        minv[i][1] = y[i];
+        minv[i][2] = z[i];
     }
-    minv *= tr;
+    minv[3][0] = -dot(x, eye);
+    minv[3][1] = -dot(y, eye);
+    minv[3][2] = -dot(z, eye);
+    minv[3][3] = 1.0f;
     return minv;
 }
 
 mat4 GetViewport(float x, float y, float w, float h, float depth) {
-	mat4 m = identity<mat4>();
+	#if 1
+	mat4 m = zero<mat4>();
 	m[0][3] = x + w / 2.f;
 	m[1][3] = y + h / 2.f;
 	m[2][3] = depth / 2.f;
-	
+
 	m[0][0] = w / 2.f;
 	m[1][1] = h / 2.f;
 	m[2][2] = depth / 2.f;
+	m[3][3] = 1.0f;
+	
+	return m;
+	#else
+	mat4 m = zero<mat4>();
+	
+	m.SetComponentTranslate(
+		x + w / 2.f,
+		y + h / 2.f,
+		depth / 2.f);
+	
+	m.SetComponentScale(
+		w / 2.f;
+		h / 2.f;
+		depth / 2.f);
+	
+	m.Transpose();
+	#endif
 	return m;
 }
 
@@ -457,6 +477,383 @@ quat make_quat_from_rotation_matrix(const mat4& m) {
                     0.5f * s,
                     (m[1][2] - m[2][1]) * inv_s);
     }
+}
+
+vec3 MultiplyPoint(const vec3& vec, const mat4& mat) {
+	return (vec.Embed() * mat).Splice(); // notice Embed = Extend(1)
+}
+
+vec3 MultiplyVector(const vec3& vec, const mat3& mat) {
+	return vec * mat;
+}
+
+vec3 MultiplyVector(const vec3& vec, const mat4& mat) {
+	return (vec.Extend() * mat).Splice();
+}
+
+mat4 Rotation(float pitch, float yaw, float roll) {
+	return  ZRotation(roll) * XRotation(pitch) * YRotation(yaw);
+}
+
+mat3 Rotation3x3(float pitch, float yaw, float roll) {
+	return ZRotation3x3(roll) * XRotation3x3(pitch) * YRotation3x3(yaw);
+}
+
+mat2 Rotation2x2(float angle) {
+	return mat2{
+		cosf(angle), sinf(angle),
+		-sinf(angle), cosf(angle)
+		};
+}
+
+mat4 YawPitchRoll(float yaw, float pitch, float roll) {
+	yaw = DegRad(yaw);
+	pitch = DegRad(pitch);
+	roll = DegRad(roll);
+
+	mat4 out;
+	out.Clear();
+	vec4& r0 = out.data[0];
+	vec4& r1 = out.data[1];
+	vec4& r2 = out.data[2];
+	vec4& r3 = out.data[3];
+	r0[0] = (cosf(roll) * cosf(yaw)) + (sinf(roll) * sinf(pitch) * sinf(yaw));
+	r1[0] = (sinf(roll) * cosf(pitch));
+	r2[0] = (cosf(roll) * -sinf(yaw)) + (sinf(roll) * sinf(pitch) * cosf(yaw));
+	r0[1] = (-sinf(roll) * cosf(yaw)) + (cosf(roll) * sinf(pitch) * sinf(yaw));
+	r1[1] = (cosf(roll) * cosf(pitch));
+	r2[1] = (sinf(roll) * sinf(yaw)) + (cosf(roll) * sinf(pitch) * cosf(yaw));
+	r0[2] = (cosf(pitch) * sinf(yaw));
+	r1[2] = -sinf(pitch);
+	r2[2] = (cosf(pitch) * cosf(yaw));
+	r3[3] = 1;
+	return out;
+}
+
+mat4 XRotation(float angle) {
+	angle = DegRad(angle);
+	return mat4 {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, cosf(angle), sinf(angle), 0.0f,
+		0.0f, -sinf(angle), cosf(angle), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+}
+
+mat3 XRotation3x3(float angle) {
+	angle = DegRad(angle);
+	return mat3 {
+		1.0f, 0.0f, 0.0f,
+		0.0f, cosf(angle), sinf(angle),
+		0.0f, -sinf(angle), cosf(angle)
+	};
+}
+
+mat4 YRotation(float angle) {
+	angle = DegRad(angle);
+	return mat4{
+		cosf(angle), 0.0f, -sinf(angle), 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		sinf(angle), 0.0f, cosf(angle), 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+}
+
+mat3 YRotation3x3(float angle) {
+	angle = DegRad(angle);
+	return mat3{
+		cosf(angle), 0.0f, -sinf(angle),
+		0.0f, 1.0f, 0.0f,
+		sinf(angle), 0.0f, cosf(angle)
+	};
+}
+
+mat4 ZRotation(float angle) {
+	angle = DegRad(angle);
+	return mat4{
+		cosf(angle), sinf(angle), 0.0f, 0.0f,
+		-sinf(angle), cosf(angle), 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	};
+}
+
+mat3 ZRotation3x3(float angle) {
+	angle = DegRad(angle);
+	return mat3{
+		cosf(angle), sinf(angle), 0.0f,
+		-sinf(angle), cosf(angle), 0.0f,
+		0.0f, 0.0f, 1.0f
+	};
+}
+
+mat4 FastInverse(const mat4& mat) {
+
+	mat4 inverse = mat.GetTransposed();
+	inverse[3][0] = 0.0f;
+	inverse[0][3] = 0.0f;
+	inverse[3][1] = 0.0f;
+	inverse[1][3] = 0.0f;
+	inverse[3][2] = 0.0f;
+	inverse[2][3] = 0.0f;
+
+	vec3 right =	mat[0].Splice();
+	vec3 up =		mat[1].Splice();
+	vec3 forward =	mat[2].Splice();
+	vec3 position = mat[3].Splice();
+
+	inverse[3][0] = -dot(right, position);
+	inverse[3][1] = -dot(up, position);
+	inverse[3][2] = -dot(forward, position);
+
+	return inverse;
+}
+
+vec2 Project(const vec2& length, const vec2& direction) {
+	float dot = Dot(length, direction);
+	float magSq = MagnitudeSq(direction);
+	return direction * (dot / magSq);
+}
+
+vec3 Project(const vec3& length, const vec3& direction) {
+	float dot = Dot(length, direction);
+	float magSq = MagnitudeSq(direction);
+	return direction * (dot / magSq);
+}
+
+vec2 Normalized(const vec2& v) {
+	return v * (1.0f / Magnitude(v));
+}
+vec3 Normalized(const vec3& v) {
+	return v * (1.0f / Magnitude(v));
+}
+
+mat4 Translation(const vec3& pos) {
+	return mat4 {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		pos[0],pos[1],pos[2],1.0f
+	};
+}
+
+mat2 Cut(const mat3& mat, int row, int col) {
+	return mat.Cut(row, col);
+}
+
+mat3 Cut(const mat4& mat, int row, int col) {
+	return mat.Cut(row, col);
+}
+
+mat2 Minor(const mat2& mat) {
+	return mat2 {
+		mat[1][1], mat[1][0],
+		mat[0][1], mat[0][0]
+	};
+}
+
+mat3 Minor(const mat3& mat) {
+	mat3 result;
+
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			result[i][j] = Determinant(Cut(mat, i, j));
+		}
+	}
+	
+	return result;
+}
+
+mat4 Minor(const mat4& mat) {
+	mat4 result;
+
+	for (int i = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j) {
+			result[i][j] = Determinant(Cut(mat, i, j));
+		}
+	}
+
+	return result;
+}
+
+void Cofactor(mat2& out, const mat2& minor) {
+	for (int i = 0; i < 2; ++i)
+		for (int j = 0; j < 2; ++j)
+			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+}
+
+void Cofactor(mat3& out, const mat3& minor) {
+	for (int i = 0; i < 3; ++i)
+		for (int j = 0; j < 3; ++j)
+			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+}
+
+void Cofactor(mat4& out, const mat4& minor) {
+	for (int i = 0; i < 4; ++i)
+		for (int j = 0; j < 4; ++j)
+			out[j][i] = minor[j][i] * powf(-1.0f, i + j);
+}
+
+mat2 Cofactor(const mat2& mat) {
+	mat2 result;
+	Cofactor(result, Minor(mat));
+	return result;
+}
+
+mat3 Cofactor(const mat3& mat) {
+	mat3 result;
+	Cofactor(result, Minor(mat));
+	return result;
+}
+
+mat4 Cofactor(const mat4& mat) {
+	mat4 result;
+	Cofactor(result, Minor(mat));
+	return result;
+}
+
+float Determinant(const mat2& mat) {
+	float result = 0.0f;
+
+	mat2 cofactor = Cofactor(mat);
+	for (int j = 0; j < 2; ++j) {
+		result += mat[0][j] * cofactor[0][j];
+	}
+
+	return result;
+}
+
+float Determinant(const mat3& mat) {
+	float result = 0.0f;
+
+	mat3 cofactor = Cofactor(mat);
+	for (int j = 0; j < 3; ++j) {
+		result += mat[0][j] * cofactor[0][j];
+	}
+
+	return result;
+}
+
+float Determinant(const mat4& mat) {
+	float result = 0.0f;
+
+	mat4 cofactor = Cofactor(mat);
+	for (int j = 0; j < 4; ++j) {
+		result += mat[0][j] * cofactor[0][j];
+	}
+
+	return result;
+}
+
+mat2 Transpose(const mat2& matrix) {return matrix.GetTransposed();}
+mat3 Transpose(const mat3& matrix) {return matrix.GetTransposed();}
+mat4 Transpose(const mat4& matrix) {return matrix.GetTransposed();}
+
+mat2 Adjugate(const mat2& mat) {return Transpose(Cofactor(mat));}
+mat3 Adjugate(const mat3& mat) {return Transpose(Cofactor(mat));}
+mat4 Adjugate(const mat4& mat) {return Transpose(Cofactor(mat));}
+
+mat2 Inverse(const mat2& mat) {
+	float det = Determinant(mat);
+	if (CMP(det, 0.0f)) { return mat2(); }
+	mat2 a = Adjugate(mat);
+	return a * (1.0f / det);
+}
+
+mat3 Inverse(const mat3& mat) {
+	float det = Determinant(mat);
+	if (CMP(det, 0.0f)) { return mat3(); }
+	mat3 a = Adjugate(mat);
+	return a * (1.0f / det);
+}
+
+mat4 Inverse(const mat4& m) {
+
+	float det
+		= m.data[0].data[0] * m.data[1].data[1] * m.data[2].data[2] * m.data[3].data[3] + m.data[0].data[0] * m.data[1].data[2] * m.data[2].data[3] * m.data[3].data[1] + m.data[0].data[0] * m.data[1].data[3] * m.data[2].data[1] * m.data[3].data[2]
+		+ m.data[0].data[1] * m.data[1].data[0] * m.data[2].data[3] * m.data[3].data[2] + m.data[0].data[1] * m.data[1].data[2] * m.data[2].data[0] * m.data[3].data[3] + m.data[0].data[1] * m.data[1].data[3] * m.data[2].data[2] * m.data[3].data[0]
+		+ m.data[0].data[2] * m.data[1].data[0] * m.data[2].data[1] * m.data[3].data[3] + m.data[0].data[2] * m.data[1].data[1] * m.data[2].data[3] * m.data[3].data[0] + m.data[0].data[2] * m.data[1].data[3] * m.data[2].data[0] * m.data[3].data[1]
+		+ m.data[0].data[3] * m.data[1].data[0] * m.data[2].data[2] * m.data[3].data[1] + m.data[0].data[3] * m.data[1].data[1] * m.data[2].data[0] * m.data[3].data[2] + m.data[0].data[3] * m.data[1].data[2] * m.data[2].data[1] * m.data[3].data[0]
+		- m.data[0].data[0] * m.data[1].data[1] * m.data[2].data[3] * m.data[3].data[2] - m.data[0].data[0] * m.data[1].data[2] * m.data[2].data[1] * m.data[3].data[3] - m.data[0].data[0] * m.data[1].data[3] * m.data[2].data[2] * m.data[3].data[1]
+		- m.data[0].data[1] * m.data[1].data[0] * m.data[2].data[2] * m.data[3].data[3] - m.data[0].data[1] * m.data[1].data[2] * m.data[2].data[3] * m.data[3].data[0] - m.data[0].data[1] * m.data[1].data[3] * m.data[2].data[0] * m.data[3].data[2]
+		- m.data[0].data[2] * m.data[1].data[0] * m.data[2].data[3] * m.data[3].data[1] - m.data[0].data[2] * m.data[1].data[1] * m.data[2].data[0] * m.data[3].data[3] - m.data[0].data[2] * m.data[1].data[3] * m.data[2].data[1] * m.data[3].data[0]
+		- m.data[0].data[3] * m.data[1].data[0] * m.data[2].data[1] * m.data[3].data[2] - m.data[0].data[3] * m.data[1].data[1] * m.data[2].data[2] * m.data[3].data[0] - m.data[0].data[3] * m.data[1].data[2] * m.data[2].data[0] * m.data[3].data[1];
+
+	if (CMP(det, 0.0f)) {
+		return mat4();
+	}
+	float i_det = 1.0f / det;
+
+	mat4 result;
+	result[0].data[0] = (m.data[1].data[1] * m.data[2].data[2] * m.data[3].data[3] + m.data[1].data[2] * m.data[2].data[3] * m.data[3].data[1] + m.data[1].data[3] * m.data[2].data[1] * m.data[3].data[2] - m.data[1].data[1] * m.data[2].data[3] * m.data[3].data[2] - m.data[1].data[2] * m.data[2].data[1] * m.data[3].data[3] - m.data[1].data[3] * m.data[2].data[2] * m.data[3].data[1]) * i_det;
+	result[0].data[1] = (m.data[0].data[1] * m.data[2].data[3] * m.data[3].data[2] + m.data[0].data[2] * m.data[2].data[1] * m.data[3].data[3] + m.data[0].data[3] * m.data[2].data[2] * m.data[3].data[1] - m.data[0].data[1] * m.data[2].data[2] * m.data[3].data[3] - m.data[0].data[2] * m.data[2].data[3] * m.data[3].data[1] - m.data[0].data[3] * m.data[2].data[1] * m.data[3].data[2]) * i_det;
+	result[0].data[2] = (m.data[0].data[1] * m.data[1].data[2] * m.data[3].data[3] + m.data[0].data[2] * m.data[1].data[3] * m.data[3].data[1] + m.data[0].data[3] * m.data[1].data[1] * m.data[3].data[2] - m.data[0].data[1] * m.data[1].data[3] * m.data[3].data[2] - m.data[0].data[2] * m.data[1].data[1] * m.data[3].data[3] - m.data[0].data[3] * m.data[1].data[2] * m.data[3].data[1]) * i_det;
+	result[0].data[3] = (m.data[0].data[1] * m.data[1].data[3] * m.data[2].data[2] + m.data[0].data[2] * m.data[1].data[1] * m.data[2].data[3] + m.data[0].data[3] * m.data[1].data[2] * m.data[2].data[1] - m.data[0].data[1] * m.data[1].data[2] * m.data[2].data[3] - m.data[0].data[2] * m.data[1].data[3] * m.data[2].data[1] - m.data[0].data[3] * m.data[1].data[1] * m.data[2].data[2]) * i_det;
+	result[1].data[0] = (m.data[1].data[0] * m.data[2].data[3] * m.data[3].data[2] + m.data[1].data[2] * m.data[2].data[0] * m.data[3].data[3] + m.data[1].data[3] * m.data[2].data[2] * m.data[3].data[0] - m.data[1].data[0] * m.data[2].data[2] * m.data[3].data[3] - m.data[1].data[2] * m.data[2].data[3] * m.data[3].data[0] - m.data[1].data[3] * m.data[2].data[0] * m.data[3].data[2]) * i_det;
+	result[1].data[1] = (m.data[0].data[0] * m.data[2].data[2] * m.data[3].data[3] + m.data[0].data[2] * m.data[2].data[3] * m.data[3].data[0] + m.data[0].data[3] * m.data[2].data[0] * m.data[3].data[2] - m.data[0].data[0] * m.data[2].data[3] * m.data[3].data[2] - m.data[0].data[2] * m.data[2].data[0] * m.data[3].data[3] - m.data[0].data[3] * m.data[2].data[2] * m.data[3].data[0]) * i_det;
+	result[1].data[2] = (m.data[0].data[0] * m.data[1].data[3] * m.data[3].data[2] + m.data[0].data[2] * m.data[1].data[0] * m.data[3].data[3] + m.data[0].data[3] * m.data[1].data[2] * m.data[3].data[0] - m.data[0].data[0] * m.data[1].data[2] * m.data[3].data[3] - m.data[0].data[2] * m.data[1].data[3] * m.data[3].data[0] - m.data[0].data[3] * m.data[1].data[0] * m.data[3].data[2]) * i_det;
+	result[1].data[3] = (m.data[0].data[0] * m.data[1].data[2] * m.data[2].data[3] + m.data[0].data[2] * m.data[1].data[3] * m.data[2].data[0] + m.data[0].data[3] * m.data[1].data[0] * m.data[2].data[2] - m.data[0].data[0] * m.data[1].data[3] * m.data[2].data[2] - m.data[0].data[2] * m.data[1].data[0] * m.data[2].data[3] - m.data[0].data[3] * m.data[1].data[2] * m.data[2].data[0]) * i_det;
+	result[2].data[0] = (m.data[1].data[0] * m.data[2].data[1] * m.data[3].data[3] + m.data[1].data[1] * m.data[2].data[3] * m.data[3].data[0] + m.data[1].data[3] * m.data[2].data[0] * m.data[3].data[1] - m.data[1].data[0] * m.data[2].data[3] * m.data[3].data[1] - m.data[1].data[1] * m.data[2].data[0] * m.data[3].data[3] - m.data[1].data[3] * m.data[2].data[1] * m.data[3].data[0]) * i_det;
+	result[2].data[1] = (m.data[0].data[0] * m.data[2].data[3] * m.data[3].data[1] + m.data[0].data[1] * m.data[2].data[0] * m.data[3].data[3] + m.data[0].data[3] * m.data[2].data[1] * m.data[3].data[0] - m.data[0].data[0] * m.data[2].data[1] * m.data[3].data[3] - m.data[0].data[1] * m.data[2].data[3] * m.data[3].data[0] - m.data[0].data[3] * m.data[2].data[0] * m.data[3].data[1]) * i_det;
+	result[2].data[2] = (m.data[0].data[0] * m.data[1].data[1] * m.data[3].data[3] + m.data[0].data[1] * m.data[1].data[3] * m.data[3].data[0] + m.data[0].data[3] * m.data[1].data[0] * m.data[3].data[1] - m.data[0].data[0] * m.data[1].data[3] * m.data[3].data[1] - m.data[0].data[1] * m.data[1].data[0] * m.data[3].data[3] - m.data[0].data[3] * m.data[1].data[1] * m.data[3].data[0]) * i_det;
+	result[2].data[3] = (m.data[0].data[0] * m.data[1].data[3] * m.data[2].data[1] + m.data[0].data[1] * m.data[1].data[0] * m.data[2].data[3] + m.data[0].data[3] * m.data[1].data[1] * m.data[2].data[0] - m.data[0].data[0] * m.data[1].data[1] * m.data[2].data[3] - m.data[0].data[1] * m.data[1].data[3] * m.data[2].data[0] - m.data[0].data[3] * m.data[1].data[0] * m.data[2].data[1]) * i_det;
+	result[3].data[0] = (m.data[1].data[0] * m.data[2].data[2] * m.data[3].data[1] + m.data[1].data[1] * m.data[2].data[0] * m.data[3].data[2] + m.data[1].data[2] * m.data[2].data[1] * m.data[3].data[0] - m.data[1].data[0] * m.data[2].data[1] * m.data[3].data[2] - m.data[1].data[1] * m.data[2].data[2] * m.data[3].data[0] - m.data[1].data[2] * m.data[2].data[0] * m.data[3].data[1]) * i_det;
+	result[3].data[1] = (m.data[0].data[0] * m.data[2].data[1] * m.data[3].data[2] + m.data[0].data[1] * m.data[2].data[2] * m.data[3].data[0] + m.data[0].data[2] * m.data[2].data[0] * m.data[3].data[1] - m.data[0].data[0] * m.data[2].data[2] * m.data[3].data[1] - m.data[0].data[1] * m.data[2].data[0] * m.data[3].data[2] - m.data[0].data[2] * m.data[2].data[1] * m.data[3].data[0]) * i_det;
+	result[3].data[2] = (m.data[0].data[0] * m.data[1].data[2] * m.data[3].data[1] + m.data[0].data[1] * m.data[1].data[0] * m.data[3].data[2] + m.data[0].data[2] * m.data[1].data[1] * m.data[3].data[0] - m.data[0].data[0] * m.data[1].data[1] * m.data[3].data[2] - m.data[0].data[1] * m.data[1].data[2] * m.data[3].data[0] - m.data[0].data[2] * m.data[1].data[0] * m.data[3].data[1]) * i_det;
+	result[3].data[3] = (m.data[0].data[0] * m.data[1].data[1] * m.data[2].data[2] + m.data[0].data[1] * m.data[1].data[2] * m.data[2].data[0] + m.data[0].data[2] * m.data[1].data[0] * m.data[2].data[1] - m.data[0].data[0] * m.data[1].data[2] * m.data[2].data[1] - m.data[0].data[1] * m.data[1].data[0] * m.data[2].data[2] - m.data[0].data[2] * m.data[1].data[1] * m.data[2].data[0]) * i_det;
+	
+	return result;
+}
+
+bool Multiply(vec2& out, const vec2& v, const mat2& m) {
+	out = v * m;
+	return true;
+}
+
+bool Multiply(vec3& out, const vec3& v, const mat3& m) {
+	out = v * m;
+	return true;
+}
+
+bool Multiply(vec4& out, const vec4& v, const mat4& m) {
+	out = v * m;
+	return true;
+}
+
+float Dot(const vec2& a, const vec2& b) {
+	return a.Dot(b);
+}
+
+float Dot(const vec3& a, const vec3& b) {
+	return a.Dot(b);
+}
+
+vec3 Cross(const vec3& l, const vec3& r) {return cross(l,r);}
+float Magnitude(const vec2& v) {return v.GetMagnitude();}
+float Magnitude(const vec3& v) {return v.GetMagnitude();}
+float MagnitudeSq(const vec2& v) {return v.GetMagnitudeSq();}
+float MagnitudeSq(const vec3& v) {return v.GetMagnitudeSq();}
+
+float CorrectDegrees(float degrees) {
+	while (degrees > 360.0f) {
+		degrees -= 360.0f;
+	}
+	while (degrees < -360.0f) {
+		degrees += 360.0f;
+	}
+	return degrees;
+}
+
+float RadDeg(float radians) {
+	float degrees = radians * 57.295754f;
+	degrees = CorrectDegrees(degrees);
+	return degrees;
+}
+
+float DegRad(float degrees) {
+	degrees = CorrectDegrees(degrees);
+	float radians = degrees * 0.0174533f;
+	return radians;
 }
 
 

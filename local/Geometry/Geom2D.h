@@ -5,13 +5,20 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
 struct Circle {
 	typedef float F;
 	
-	vec2 ct;
-	float rad;
+	union {
+		vec2 ct;
+		vec2 position;
+	};
+	union {
+		float rad;
+		float radius;
+	};
 	
-	Circle() {}
+	Circle() : ct(0,0), radius(1.0f) {}
 	Circle(vec2 ct, float rad) : ct(ct), rad(rad) {}
 	Circle(float x, float y, float rad) : rad(rad) {ct[0] = x; ct[1] = y;}
 	Circle(Circle&& c) {*this = c;}
@@ -38,7 +45,14 @@ struct Rectangle {
 	typedef float F;
 	typedef Vec<F, 2> vec2;
 	
-	vec2 pos, sz;
+	union {
+		vec2 origin;
+		vec2 pos;
+	};
+	union {
+		vec2 size;
+		vec2 sz;
+	};
 	
 	Rectangle() {}
 	Rectangle(const Rectangle& r) { *this = r; }
@@ -63,7 +77,7 @@ struct Rectangle {
 	bool Intersects(const Circle& c) const;
 	bool Intersects(const Rectangle& r) const;
 	bool IntersectsSAT(const Rectangle& r) const;
-	ival2 GetInterval(const vec2& axis) const;
+	ival1 GetInterval(const vec2& axis) const;
 	bool OverlapsOnAxis(const Rectangle& r, const vec2& axis) const;
 	
 	Rectangle& SetFromMinMax(vec2 min, vec2 max) {pos = min; sz = max - min; return *this;}
@@ -79,8 +93,18 @@ struct OrientedRectangle {
 	typedef float F;
 	typedef Vec<F, 2> vec2;
 	
-	vec2 ct, hext;
-	float rot;
+	union {
+		vec2 position;
+		vec2 ct;
+	};
+	union {
+		vec2 halfExtents;
+		vec2 hext;
+	};
+	union {
+		float rot;
+		float rotation;
+	};
 	
 	OrientedRectangle() {}
 	OrientedRectangle(const Rectangle& r) { *this = r; }
@@ -105,7 +129,7 @@ struct OrientedRectangle {
 	bool Intersects(const Circle& c) const;
 	bool Intersects(const Rectangle& r) const;
 	bool Intersects(const OrientedRectangle& r) const;
-	ival2 GetInterval(const vec2& axis) const;
+	ival1 GetInterval(const vec2& axis) const;
 	bool OverlapsOnAxis(const Rectangle& r, const vec2& axis) const;
 
 	
@@ -216,7 +240,7 @@ struct Shape2DWrapper : Moveable<Shape2DWrapper> {
 
 
 
-struct BoundingShape2 {
+struct BoundingShape {
 	Vector<line2> lines;
 	Vector<Circle> circles;
 	Vector<Rectangle> rects;

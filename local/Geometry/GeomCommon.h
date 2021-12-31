@@ -5,17 +5,23 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-template <int I>
 struct Interval {
-	typedef float F;
+	float min;
+	float max;
+};
+
+template <int I>
+struct IntervalT {
+	using Value = Vec<float, I>;
 	
-	F min, max;
+	Value min, max;
 	
 	
 };
 
-typedef Interval<2> ival2;
-typedef Interval<3> ival3;
+typedef Interval     ival1;
+typedef IntervalT<2> ival2;
+typedef IntervalT<3> ival3;
 
 
 
@@ -24,7 +30,14 @@ template <class T, int I, class F=float>
 struct Line : Moveable<Line<T,I,F>> {
 	typedef Vec<T,I> vec;
 	
-	vec a, b;
+	union {
+		vec start;
+		vec a;
+	};
+	union {
+		vec end;
+		vec b;
+	};
 	
 	
 	Line() {}

@@ -155,6 +155,59 @@ static const int COMPAT_OFFSET = TEXTYPE_COUNT;
 static const int CHANNEL_COUNT = TEXTYPE_COUNT + COMPAT_COUNT;
 static const int CHANNEL_NONE = 0;
 
+
+
+struct Ray {
+	vec3 origin;
+	vec3 direction;
+
+	inline Ray() : direction(0.0f, 0.0f, 1.0f) {}
+	inline Ray(const vec3& o, const vec3& d) : origin(o), direction(d) {direction.Normalize();}
+	inline void NormalizeDirection() {direction.Normalize();}
+};
+
+struct Sphere {
+	vec3 position;
+	float radius;
+
+	inline Sphere() : radius(1.0f) {}
+	inline Sphere(const vec3& p, float r) : position(p), radius(r) {}
+};
+
+struct AABB {
+	vec3 position;
+	vec3 size; // half size
+
+	inline AABB() : size(1, 1, 1) {}
+	inline AABB(const vec3& p, const vec3& s) : position(p), size(s) {}
+};
+
+struct OBB : Moveable<OBB> {
+	vec3 position;
+	vec3 size; // half size
+	mat3 orientation;
+
+	inline OBB() : size(1, 1, 1) {}
+	inline OBB(const vec3& p, const vec3& s) : position(p), size(s) { }
+	inline OBB(const vec3& p, const vec3& s, const mat3& o) : position(p), size(s), orientation(o) {}
+};
+
+struct Plane : Moveable<Plane> {
+	vec3 normal;
+	float distance;
+
+	inline Plane() : normal(1, 0, 0) {}
+	inline Plane(const vec3& n, float d) : normal(n), distance(d) {}
+};
+
+struct RaycastResult : Moveable<RaycastResult> {
+	vec3 point;
+	vec3 normal;
+	float t;
+	bool hit;
+};
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

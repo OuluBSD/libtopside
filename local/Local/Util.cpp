@@ -12,7 +12,7 @@ bool IsClose(double a, double b) {
 	}
 }
 
-double Multiply(double prev_norm, int64 count, double multiplier) {
+double FastMultiply(double prev_norm, int64 count, double multiplier) {
 	if (count <= 0)
 		return multiplier;
 	if (prev_norm == 0.0 || multiplier == 0.0)
