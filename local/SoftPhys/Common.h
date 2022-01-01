@@ -18,18 +18,23 @@ struct Contact;
 struct Geometry;
 
 
-struct Object {
+struct Object : RTTIBase {
+	RTTI_DECL0(Object)
+	
 	bool inited = false;
 	
 	
 	Object() {}
 	Object(const Nuller& n) {}
+	virtual void Visit(RuntimeVisitor& vis) {}
 	void Create() {ASSERT(!inited); inited = true;}
 	void Clear() {ASSERT(inited); inited = false;}
 	operator bool() const {return inited;}
 	void operator=(const Nuller& n) {inited = false;}
 };
 
+
+typedef void (*NearCallback)(void*, Geometry& o1, Geometry& o2);
 
 }
 NAMESPACE_TOPSIDE_END

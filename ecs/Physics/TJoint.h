@@ -30,7 +30,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node)}
 	
 	void OnAttach() override {
-		Fys::CreateJointHinge2(this->GetWorld(), joint);
+		Fys::CreateJointHinge2(this->GetNativeWorld(), joint);
 		Fys::SetJointFeedback(joint, feedback);
 	}
 	
@@ -66,6 +66,7 @@ public:
 	void SetAnchor(const vec3& v) {Fys::SetHingeAnchor(joint, v);}
 	void SetAxis(const vec3& v) {Fys::SetAxis(joint, v);}
 	
+	NativeJoint& GetNative() {return joint;}
 	float GetAngle() {return Fys::GetAngle(joint);}
 	
 	String ToString() const override {return Fys::Id() + "Joint";}

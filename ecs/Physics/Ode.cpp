@@ -50,7 +50,7 @@ void OdeFys::SetAutoDisableSamples(NativeWorld& world, int i) {
 	dWorldSetAutoDisableAverageSamplesCount(world, i);
 }
 
-void OdeFys::CreateSpace(NativeSpace& space, NativeSpace* owner, bool is_root) {
+void OdeFys::CreateSpace(NativeWorld& world, NativeSpace& space, NativeSpace* owner, bool is_root) {
 	if (is_root) {
 		space = dHashSpaceCreate(0);
 	} else {

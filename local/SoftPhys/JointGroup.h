@@ -6,12 +6,14 @@ namespace SoftPhys {
 
 
 struct JointGroup : Object {
+	RTTI_DECL1(JointGroup, Object)
 	using Object::Object;
 	
 	
 	
 	JointGroup();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 	void Detach();
 	
 };

@@ -20,7 +20,7 @@ struct StaticGroundPlane : public Component<StaticGroundPlane<Fys>>, public Fys:
 	void OnAttach() override {
 		Object::OnAttach();
 		
-		Fys::SetGeomModelPlane(this->geom, this->GetSystem()->GetSpace());
+		Fys::SetGeomModelPlane(this->geom, this->GetSystem()->GetSpace().GetNative());
 		
 		this->is_override_phys_geom = true;
 		this->override_geom = identity<mat4>();

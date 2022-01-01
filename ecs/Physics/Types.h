@@ -90,7 +90,7 @@ struct TosFys {
 	static void SetStepIterations(NativeWorld& world, int i);
 	static void SetAutoDisableSamples(NativeWorld& world, int i);
 	
-	static void CreateSpace(NativeSpace& space, NativeSpace* owner, bool is_root);
+	static void CreateSpace(NativeWorld& world, NativeSpace& space, NativeSpace* owner, bool is_root);
 	static void ClearSpace(NativeSpace& space);
 	static void Collide(NativeSpace& space, void* data);
 	static int  Collide(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch);
@@ -199,7 +199,7 @@ struct OdeFys {
 	static void SetStepIterations(NativeWorld& world, int i);
 	static void SetAutoDisableSamples(NativeWorld& world, int i);
 	
-	static void CreateSpace(NativeSpace& space, NativeSpace* owner, bool is_root);
+	static void CreateSpace(NativeWorld& world, NativeSpace& space, NativeSpace* owner, bool is_root);
 	static void ClearSpace(NativeSpace& space);
 	static void Collide(NativeSpace& space, void* data);
 	static int  Collide(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch);

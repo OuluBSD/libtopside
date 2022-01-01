@@ -18,7 +18,7 @@ PhysicsSystem::PhysicsSystem() {
 	results.Reserve(100);
 }
 
-void PhysicsSystem::Update(float dt) {
+void PhysicsSystem::Collide(Space& space, void* data, NearCallback cb) {
 	colliders1.Clear();
 	colliders2.Clear();
 	results.Clear();
@@ -26,51 +26,59 @@ void PhysicsSystem::Update(float dt) {
 	{ // Find objects whom are colliding
 	  // First, build a list of colliding objects
 		CollisionManifold result;
-		for (int i = 0, size = bodies.GetCount(); i < size; ++i) {
-			for (int j = i; j < size; ++j) {
-				if (i == j) {
-					continue;
-				}
-				ResetCollisionManifold(&result);
-				if (bodies[i]->HasVolume() && bodies[j]->HasVolume()) {
-					RigidbodyVolume* m1 = (RigidbodyVolume*)bodies[i];
-					RigidbodyVolume* m2 = (RigidbodyVolume*)bodies[j];
-					result = FindCollisionFeatures(*m1, *m2);
-				}
-				if (result.colliding) {
+		for (Geometry* b0 : space.geoms) {
+			for (Geometry* b1 : space.geoms) {
+				if (b0 == b1)
+					break;
+				cb(data, *b0, *b1);
+			}
+		}
+	}
+}
+
+#if 0
+void PhysicsSystem::asdf() {
+	ResetCollisionManifold(&result);
+	if (bodies[i]->HasVolume() && bodies[j]->HasVolume()) {
+		RigidbodyVolume* m1 = (RigidbodyVolume*)bodies[i];
+		RigidbodyVolume* m2 = (RigidbodyVolume*)bodies[j];
+		result = FindCollisionFeatures(*m1, *m2);
+	}
+	if (result.colliding) {
 #if 0 
-					bool isDuplicate = false;
-					for (int k = 0, kSize = colliders1.GetCount(); k < kSize; ++k) {
-						if (colliders1[k] == bodies[i] || colliders1[k] == bodies[j]) {
-							if (colliders2[k] == bodies[i] || colliders2[k] == bodies[j]) {
-								isDuplicate = true;
-								break;
-							}
-						}
-					}
+		bool isDuplicate = false;
+		for (int k = 0, kSize = colliders1.GetCount(); k < kSize; ++k) {
+			if (colliders1[k] == bodies[i] || colliders1[k] == bodies[j]) {
+				if (colliders2[k] == bodies[i] || colliders2[k] == bodies[j]) {
+					isDuplicate = true;
+					break;
+				}
+			}
+		}
 
-					if (!isDuplicate) {
-						for (int k = 0, kSize = colliders2.GetCount(); k < kSize; ++k) {
-							if (colliders2[k] == bodies[i] || colliders2[k] == bodies[j]) {
-								if (colliders1[k] == bodies[i] || colliders1[k] == bodies[j]) {
-									isDuplicate = true;
-									break;
-								}
-							}
-						}
-					}
-					if (!isDuplicate)
-#endif
-
-					{
-						colliders1.Add(bodies[i]);
-						colliders2.Add(bodies[j]);
-						results.Add(result);
+		if (!isDuplicate) {
+			for (int k = 0, kSize = colliders2.GetCount(); k < kSize; ++k) {
+				if (colliders2[k] == bodies[i] || colliders2[k] == bodies[j]) {
+					if (colliders1[k] == bodies[i] || colliders1[k] == bodies[j]) {
+						isDuplicate = true;
+						break;
 					}
 				}
 			}
 		}
+		if (!isDuplicate)
+#endif
+
+		{
+			colliders1.Add(bodies[i]);
+			colliders2.Add(bodies[j]);
+			results.Add(result);
+		}
 	}
+}
+#endif
+
+void PhysicsSystem::Update(float dt) {
 
 	// Calculate foces acting on the object
 	for (int i = 0, size = bodies.GetCount(); i < size; ++i) {
@@ -153,7 +161,7 @@ void PhysicsSystem::Update(float dt) {
 	}
 }
 
-void PhysicsSystem::AddRigidbody(Rigidbody* body) {
+void PhysicsSystem::AddRigidbody(Geometry* body) {
 	bodies.Add(body);
 }
 

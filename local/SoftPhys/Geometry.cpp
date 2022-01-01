@@ -20,7 +20,8 @@ quat Geometry::GetQuaternion() const {
 
 
 Geometry& Geometry::SetModelPlane(Space& s, const vec4& plane) {
-	TODO
+	LOG("Geometry::SetModelPlane: warning: pass, for now");
+	return *this;
 }
 
 Geometry& Geometry::SetModelSphere(float radius) {

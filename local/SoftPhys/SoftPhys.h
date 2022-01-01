@@ -7,22 +7,8 @@
 #define NAMESPACE_SOFTPHYS_END NAMESPACE_TOPSIDE_END }
 #define SOFTPHYS SoftPhys
 	
-#include "Common.h"
-#include "World.h"
-#include "Space.h"
-#include "Feedback.h"
-#include "Joint.h"
-#include "Mass.h"
-#include "Body.h"
-#include "JointGroup.h"
-#include "Threading.h"
-#include "ThreadPool.h"
-#include "Geometry.h"
-#include "Contact.h"
-
-
-
-
+	
+	
 #if 1
 // fast
 #define EULER_INTEGRATION
@@ -42,6 +28,18 @@
 #define GRAVITY_CONST vec3(0.0f, -9.82f, 0.0f)
 
 
+
+#include "Common.h"
+#include "Feedback.h"
+#include "Joint.h"
+#include "Mass.h"
+#include "Body.h"
+#include "JointGroup.h"
+#include "Geometry.h"
+#include "Contact.h"
+
+
+
 #include "Geometry2D.h"
 #include "Geometry3D.h"
 #include "Rigidbody.h"
@@ -56,6 +54,17 @@
 #include "RigidbodyVolume.h"
 #include "Scene.h"
 #include "Spring.h"
+
+
+#include "Threading.h"
+#include "ThreadPool.h"
+#include "World.h"
+#include "Space.h"
+
+
+
+
+
 
 NAMESPACE_TOPSIDE_BEGIN
 

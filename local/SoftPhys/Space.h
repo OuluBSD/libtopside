@@ -6,15 +6,18 @@ namespace SoftPhys {
 
 
 struct Space : Object {
+	RTTI_DECL1(Space, Object)
 	using Object::Object;
 	
-	typedef void (*NearCallback)(void*, Geometry& o1, Geometry& o2);
 	
 	Space* owner = 0;
+	World* world = 0;
 	Vector<Geometry*> geoms;
 	
-	
+public:
 	Space();
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
+	void SetWorld(World& w) {ASSERT(!world); world = &w;}
 	void Collide(void* data, NearCallback cb);
 	void Add(Geometry& g);
 	void Remove(Geometry& g);

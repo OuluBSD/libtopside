@@ -6,8 +6,8 @@ NAMESPACE_ECS_BEGIN
 
 template <class Fys>
 struct SystemT :
-	SpaceT<Fys>,
-	System<SystemT<Fys>>
+	System<SystemT<Fys>>,
+	NodeT<Fys>
 {
 	using Base = SystemT<Fys>;
 	using Node = NodeT<Fys>;
@@ -27,13 +27,8 @@ protected:
 	NativeJointGroup contactgroup;
 	NativeThreading threading;
 	NativeThreadPool pool;
+	Space space;
 	
-	
-public:
-	RTTI_DECL2(SystemT, Space, EcsSystem)
-	using Parent = Engine;
-	
-	static vec3 EarthGravity() {return vec3(0, -9.81, 0);}
 	
 	typedef SystemT<Fys> CLASSNAME;
 	SystemT(Engine& e) {
@@ -43,11 +38,12 @@ public:
 		pool = Null;
 		
 		this->SetParent(e);
+		
 		Fys::InitializeLibrary();
 		Fys::CreateWorld(world);
 		
-		this->SetRoot();
-		this->OnAttach();
+		this->Attach(space);
+		space.SetRoot();
 		
 		Fys::CreateJointGroup(contactgroup);
 		
@@ -60,6 +56,12 @@ public:
 		Fys::AttachThreading(world, threading);
 	}
 	
+public:
+	RTTI_DECL2(SystemT, EcsSystem, Node)
+	using Parent = Engine;
+	
+	static vec3 EarthGravity() {return vec3(0, -9.81, 0);}
+	
 	~SystemT() {
 		Fys::DetachThreading(threading);
 		Fys::ClearThreadPool(pool);
@@ -68,12 +70,12 @@ public:
 		
 		Fys::DetachJointGroup(contactgroup);
 		Fys::ClearJointGroup(contactgroup);
-		Fys::ClearSpace(this->space);
+		Fys::ClearSpace(space.GetNative());
 		Fys::ClearWorld(world);
 		Fys::UninitializeLibrary();
 	}
 	
-	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Space)}
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node); vis % world % contactgroup % threading % pool % space;}
 	
     bool Initialize() override {
 		SetGravity(vec3(0, -0.5, 0));
@@ -101,16 +103,15 @@ public:
 	const NativeJointGroup& GetJointGroup() const {ASSERT(contactgroup); return contactgroup;}
 	NativeWorld& GetWorld() {ASSERT(world); return world;}
 	NativeJointGroup& GetJointGroup() {ASSERT(contactgroup); return contactgroup;}
+	Space& GetSpace() {return space;}
 	
-	void Collide() {ASSERT(this->space); Fys::Collide(this->space, this);}
+	void Collide() {Fys::Collide(space.GetNative(), this);}
 	void StepWorld(double seconds) {Fys::Step(world, seconds);}
 	void RemoveContactJoints() {Fys::DetachJointGroup(contactgroup);}
 	
 	virtual void NearCallback(void *, NativeGeom& o1, NativeGeom& o2);
 	static void StaticNearCallbackC(void *data, NativeGeom o1, NativeGeom o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
 	static void StaticNearCallbackR(void *data, NativeGeom& o1, NativeGeom& o2) {((SystemT*)data)->NearCallback(NULL, o1, o2);}
-	
-	String ToString() const override {return Fys::Id() + "System";}
 	
 	static void AddEngineSystem();
 	

@@ -10,7 +10,7 @@ JointGroup::JointGroup() {
 }
 
 void JointGroup::Detach() {
-	TODO
+	LOG("JointGroup::Detach: warning: pass, for now");
 }
 
 

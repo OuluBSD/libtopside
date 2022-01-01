@@ -6,12 +6,14 @@ namespace SoftPhys {
 
 
 struct Contact : Object {
+	RTTI_DECL1(Contact, Object)
 	using Object::Object;
 	
 	
 	
 	Contact() {}
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 };
 
 

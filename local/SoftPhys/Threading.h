@@ -6,6 +6,7 @@ namespace SoftPhys {
 
 
 struct Threading : Object {
+	RTTI_DECL1(Threading, Object)
 	using Object::Object;
 	
 	Vector<ThreadPool*> pools;
@@ -14,6 +15,7 @@ struct Threading : Object {
 	
 	Threading();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 	void Add(ThreadPool& p);
 	void Detach();
 	void DetachWorld();

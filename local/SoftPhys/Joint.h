@@ -6,6 +6,7 @@ namespace SoftPhys {
 
 
 struct Joint : Object {
+	RTTI_DECL1(Joint, Object)
 	using Object::Object;
 	
 	struct Hinge {
@@ -28,8 +29,11 @@ struct Joint : Object {
 	float fudge_factor = 0;
 	float angle = 0;
 	
+	
+public:
 	Joint();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 	void Attach(Body& b0, Body& b1);
 	
 	Joint& SetFeedback(Feedback& f);

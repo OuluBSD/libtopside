@@ -5,17 +5,21 @@
 NAMESPACE_SOFTPHYS_BEGIN
 
 
+struct Geometry;
 
-class PhysicsSystem {
+
+class PhysicsSystem : RTTIBase {
+	RTTI_DECL0(PhysicsSystem)
 	
 protected:
-	Vector<Rigidbody*> bodies;
+	
+	Vector<Geometry*> bodies;
 	Vector<Cloth*> cloths;
 	Vector<OBB> constraints;
 	Vector<Spring> springs;
 
-	Vector<Rigidbody*> colliders1;
-	Vector<Rigidbody*> colliders2;
+	Vector<Geometry*> colliders1;
+	Vector<Geometry*> colliders2;
 	Vector<CollisionManifold> results;
 	
 public:
@@ -30,10 +34,12 @@ public:
 
 	PhysicsSystem();
 
+	virtual void Visit(RuntimeVisitor& vis) {}
+	void Collide(Space& space, void* data, NearCallback cb);
 	void Update(float dt);
 	void Render();
 	
-	void AddRigidbody(Rigidbody* body);
+	void AddRigidbody(Geometry* body);
 	void AddCloth(Cloth* cloth);
 	void AddSpring(const Spring& spring);
 	void AddConstraint(const OBB& constraint);

@@ -12,6 +12,14 @@ typename Fys::System* NodeT<Fys>::GetSystem() {
 }
 
 template <class Fys>
+typename Ecs::SystemT<Fys>* NodeT<Fys>::GetSystemT() {
+	NodeT* n = this;
+	while (n->owner)
+		n = n->owner;
+	return CastPtr<SystemT>(n);
+}
+
+template <class Fys>
 typename Fys::Space* NodeT<Fys>::GetSpace() {
 	NodeT* n = this;
 	while (n) {
@@ -24,13 +32,17 @@ typename Fys::Space* NodeT<Fys>::GetSpace() {
 }
 
 template <class Fys>
-typename Fys::NativeWorld& NodeT<Fys>::GetWorld() {
-	return GetSystem()->GetWorld();
+typename Fys::NativeWorld& NodeT<Fys>::GetNativeWorld() {
+	auto sys = GetSystemT();
+	ASSERT(sys);
+	return sys->GetWorld();
 }
 
 template <class Fys>
-typename Fys::NativeSpace& NodeT<Fys>::GetWorldSpace() {
-	return GetSystem()->GetSpace();
+typename Fys::NativeSpace& NodeT<Fys>::GetNativeWorldSpace(bool dbg_chk) {
+	auto sys = GetSystemT();
+	ASSERT(sys);
+	return sys->GetSpace().GetNative(dbg_chk);
 }
 
 

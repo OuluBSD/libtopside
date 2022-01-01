@@ -5,7 +5,7 @@
 NAMESPACE_SOFTPHYS_BEGIN
 
 
-class Particle : public Rigidbody {
+class Particle : public Geometry {
 	vec3 position;
 	vec3 old_position;
 	vec3 forces;

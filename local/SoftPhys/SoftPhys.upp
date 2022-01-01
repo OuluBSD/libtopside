@@ -42,11 +42,12 @@ file
 	PhysicsSystem.cpp,
 	QuadTree.h,
 	QuadTree.cpp,
-	Rigidbody.h,
 	RigidbodyVolume.h,
 	RigidbodyVolume.cpp,
 	Scene.h,
 	Scene.cpp,
 	Spring.h,
-	Spring.cpp;
+	Spring.cpp,
+	Trash readonly separator,
+	Rigidbody.h;
 

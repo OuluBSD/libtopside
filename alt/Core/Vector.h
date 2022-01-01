@@ -273,6 +273,10 @@ public:
 		}
 		count = new_count;
 	}
+	void SetCountZero() {
+		for (int i = count - 1; i >= 0; i--) data[i].~K();
+		count = 0;
+	}
 	void SetCount(int new_count, const K& value) {
 		ASSERT(new_count >= 0);
 		if (new_count < 0) return;
@@ -289,7 +293,7 @@ public:
 		count = new_count;
 	}
 	void operator <<=(const Vector& a) {
-		SetCount(0);
+		SetCountZero();
 		Reserve(a.GetCount());
 		for (int i = 0; i < a.GetCount(); i++)
 			new (&data[i]) K(a[i]);

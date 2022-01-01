@@ -6,9 +6,11 @@ namespace SoftPhys {
 
 
 struct Body : Object {
+	RTTI_DECL1(Body, Object)
 	using Object::Object;
 	
 	
+	World* world = 0;
 	vec3 position;
 	Mass mass;
 	vec3 linear_vel;
@@ -16,8 +18,10 @@ struct Body : Object {
 	vec3 axis;
 	float angle = 0;
 	
+public:
 	Body();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 	vec3 GetPosition() const;
 	mat43 GetRotationAxisAngle() const;
 	

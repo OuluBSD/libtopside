@@ -1,6 +1,7 @@
 #ifndef _SoftPhys_RigidBody_
 #define _SoftPhys_RigidBody_
 
+#if 0
 
 NAMESPACE_SOFTPHYS_BEGIN
 
@@ -29,4 +30,5 @@ public:
 
 NAMESPACE_SOFTPHYS_END
 
+#endif
 #endif

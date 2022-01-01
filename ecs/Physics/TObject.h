@@ -37,7 +37,7 @@ public:
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Node>(this); vis % loader;}
 	
-	void OnAttach() override {Fys::CreateBody(this->GetWorld(), body);}
+	void OnAttach() override {Fys::CreateBody(this->GetNativeWorld(), body);}
 	void OnDetach() override {DetachContent();}
 	void Refresh() override;
 	

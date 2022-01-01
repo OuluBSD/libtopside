@@ -49,10 +49,11 @@ void TosFys::SetAutoDisableSamples(SoftPhys::World& world, int i) {
 }
 
 
-void TosFys::CreateSpace(SoftPhys::Space& space, SoftPhys::Space* owner, bool is_root) {
+void TosFys::CreateSpace(NativeWorld& world, SoftPhys::Space& space, SoftPhys::Space* owner, bool is_root) {
 	space.Create();
 	ASSERT((owner == NULL) == is_root);
 	space.SetOwner(owner);
+	space.SetWorld(world);
 }
 
 void TosFys::ClearSpace(SoftPhys::Space& space) {

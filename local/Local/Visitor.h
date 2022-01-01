@@ -133,6 +133,9 @@ public:
 	
 };
 
+#define VIS_THIS(t) vis.VisitThis<t>(this);
+#define EMPTY_VISIT void Visit(RuntimeVisitor& vis) override {}
+
 
 NAMESPACE_TOPSIDE_END
 

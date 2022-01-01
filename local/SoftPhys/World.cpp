@@ -10,9 +10,12 @@ World::World() {
 	
 }
 
+void World::Collide(Space& space, void* data, NearCallback cb) {
+	phys_sys.Collide(space, data, cb);
+}
 
 void World::Step(float seconds) {
-	TODO
+	phys_sys.Update(seconds);
 }
 
 void World::AttachThreading(Threading& t) {
@@ -31,7 +34,8 @@ void World::DetachThreading() {
 }
 
 void World::CreateBody(Body& b) {
-	TODO
+	ASSERT(b && !b.world);
+	b.world = this;
 }
 
 void World::CreateJoint(Joint& j) {

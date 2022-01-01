@@ -19,8 +19,8 @@ ObjectT<Fys>::~ObjectT() {
 
 template <class Fys>
 void ObjectT<Fys>::AttachContent() {
-	ASSERT(geom != 0);
-	ASSERT(body != 0);
+	ASSERT(geom);
+	ASSERT(body);
 	
 	// Set mass of the physics body
 	Fys::SetBodyMass(body, mass);
@@ -33,7 +33,7 @@ void ObjectT<Fys>::AttachContent() {
 	
 	//LOG(ToString());
 	
-	auto space = this->GetSystem()->GetSpace();
+	auto space = this->GetSystem()->GetSpace().GetNative();
 	ASSERT(space);
 	Fys::AddGeomToSpace(space, geom);
 	
@@ -41,9 +41,9 @@ void ObjectT<Fys>::AttachContent() {
 
 template <class Fys>
 void ObjectT<Fys>::DetachContent() {
-	ASSERT(geom != 0);
-	ASSERT(body != 0);
-	Fys::RemoveGeomFromSpace(this->GetSpace()->GetSpace(), geom);
+	ASSERT(geom);
+	ASSERT(body);
+	Fys::RemoveGeomFromSpace(this->GetSpace()->GetNative(), geom);
 }
 
 template <class Fys>

@@ -138,8 +138,6 @@ struct x : \
 
 
 
-#define VIS_THIS(t) vis.VisitThis<t>(this);
-
 #define COMP_DEF_VISIT void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this);}
 #define COMP_DEF_VISIT_(x) void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ComponentT>(this); x;}
 

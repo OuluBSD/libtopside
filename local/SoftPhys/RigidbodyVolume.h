@@ -6,7 +6,7 @@ NAMESPACE_SOFTPHYS_BEGIN
 
 
 
-class RigidbodyVolume : public Rigidbody {
+class RigidbodyVolume : public Geometry {
 public:
 	vec3 position;
 	vec3 velocity;

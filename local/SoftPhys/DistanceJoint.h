@@ -5,7 +5,7 @@
 NAMESPACE_SOFTPHYS_BEGIN
 
 
-class DistanceJoint : public Rigidbody {
+class DistanceJoint : public Geometry {
 	
 protected:
 	Particle* p1;

@@ -3,10 +3,15 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+namespace Ecs {
+template <class Fys> struct SystemT;
+}
+
 
 template <class Fys>
 struct NodeT : FysNode {
 	using Base = NodeT<Fys>;
+	using SystemT = Ecs::SystemT<Fys>;
 	using Node = typename Fys::Node;
 	using Object = typename Fys::Object;
 	using Joint = typename Fys::Joint;
@@ -47,9 +52,10 @@ public:
 	String ToString() const override {return Fys::Id() + "Node";}
 	
 	System* GetSystem();
+	SystemT* GetSystemT();
 	Space* GetSpace();
-	NativeWorld& GetWorld();
-	NativeSpace& GetWorldSpace();
+	NativeWorld& GetNativeWorld();
+	NativeSpace& GetNativeWorldSpace(bool dbg_chk=true);
 	
 };
 

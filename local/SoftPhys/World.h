@@ -6,6 +6,8 @@ namespace SoftPhys {
 
 
 struct World : Object {
+	RTTI_DECL1(World, Object)
+	
 	using Object::Object;
 	
 	Threading* threading = 0;
@@ -17,11 +19,15 @@ struct World : Object {
 	int auto_disable_samples = 0;
 	bool auto_disable = 0;
 	
+	PhysicsSystem phys_sys;
+	
 public:
 	
 	
 	World();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object); vis % phys_sys;}
+	void Collide(Space& space, void* data, NearCallback cb);
 	void Step(float seconds);
 	void AttachThreading(Threading& t);
 	void DetachThreading();

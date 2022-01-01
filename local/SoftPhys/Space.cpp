@@ -10,7 +10,8 @@ Space::Space() {
 }
 
 void Space::Collide(void* data, NearCallback cb) {
-	TODO
+	ASSERT(world);
+	world->Collide(*this, data, cb);
 }
 
 void Space::Add(Geometry& g) {

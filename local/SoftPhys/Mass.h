@@ -6,14 +6,17 @@ namespace SoftPhys {
 
 
 struct Mass : Object {
+	RTTI_DECL1(Mass, Object)
 	using Object::Object;
 	
 	float mass;
 	mat3 inertia;
 	
 	
+public:
 	Mass();
 	
+	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
 	void Reset();
 	bool Check();
 	
