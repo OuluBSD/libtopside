@@ -10,6 +10,7 @@ struct Mass : Object {
 	using Object::Object;
 	
 	float mass;
+	vec3 center;
 	mat3 inertia;
 	
 	
@@ -20,6 +21,8 @@ public:
 	void Reset();
 	bool Check();
 	
+	Mass& Translate(const vec3& v);
+	Mass& MoveMassCenter();
 	Mass& SetMass(float kg);
 	Mass& SetFunctionSphere(float density, float radius);
 	Mass& SetFunctionBox(const vec3& dim, float density=1);

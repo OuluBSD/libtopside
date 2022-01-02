@@ -1,6 +1,10 @@
 description "\3770,255,169";
 
+uses
+	Geometry;
+
 file
+	TODO.txt,
 	SoftPhys.h,
 	SoftPhys.cpp,
 	Internal.h,

@@ -21,6 +21,8 @@ struct Geometry : Object {
 	Geometry();
 	
 	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
+	void OnBodyMove();
+	
 	vec3 GetPosition() const;
 	quat GetQuaternion() const;
 	

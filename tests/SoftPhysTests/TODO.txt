@@ -1,0 +1,1 @@
+- swrenderer from side without perspective

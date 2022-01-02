@@ -1,0 +1,23 @@
+uses
+	SoftPhys,
+	OOSDL2,
+	AtomLocal;
+
+file
+	TODO.txt,
+	SoftPhysTests.h,
+	SoftPhysTests.cpp,
+	TestBase.h,
+	TestBase.cpp,
+	ParticleTest.h,
+	ParticleTest.cpp,
+	ManyTest.h,
+	ManyTest.cpp,
+	ClothTest.h,
+	ClothTest.cpp,
+	Rendering.h,
+	Rendering.cpp;
+
+mainconfig
+	"" = "SCREEN";
+

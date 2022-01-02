@@ -325,7 +325,7 @@ mat4 rotate(mat4 const& m, float angle, vec3 const& v) {
 	return res;
 }
 
-quat make_quat_from_axis_angle(vec3 v, float angle) {
+quat make_quat_from_axis_angle(const vec3& v, float angle) {
 	double s = sinf(angle * 0.5);
 	quat r;
 	r[0] = v[0] * s;
@@ -855,6 +855,103 @@ float DegRad(float degrees) {
 	float radians = degrees * 0.0174533f;
 	return radians;
 }
+
+void SetCrossMatrixPlus(mat3& res, const vec3& a)
+{
+	const float a_0 = a[0];
+	const float a_1 = a[1];
+	const float a_2 = a[2];
+	res[0][1] = -a_2;
+	res[0][2] = +a_1;
+	res[1][0] = +a_2;
+	res[1][2] = -a_0;
+	res[2][0] = -a_1;
+	res[2][1] = +a_0;
+}
+
+
+
+float CalcVectorDot(const mat3& a, int a_col, const vec3& b) {
+	return	a[0][a_col] * b[0] +
+			a[1][a_col] * b[1] +
+			a[2][a_col] * b[2];
+}
+
+void Multiply0_333_Helper(vec3& res, const mat3& a, const vec3& b) {
+  float res_0 = CalcVectorDot(a, 0, b);
+  float res_1 = CalcVectorDot(a, 1, b);
+  float res_2 = CalcVectorDot(a, 2, b);
+  res[0] = res_0;
+  res[1] = res_1;
+  res[2] = res_2;
+}
+
+void Multiply(mat3& res, const mat3& a, const mat3& b) {
+	Multiply0_333_Helper(res[0], b, a[0]);
+	Multiply0_333_Helper(res[1], b, a[1]);
+	Multiply0_333_Helper(res[2], b, a[2]);
+}
+
+
+bool FactorCholesky(mat3& A, vec3& out) {
+    bool failure = false;
+    const unsigned n = 3;
+    
+    for (unsigned i = 0; i < n; ++i) {
+        vec3& cc = A[i];
+        {
+            for (unsigned j = 0; j < i; ++j) {
+                vec3& bb = A[j];
+                
+                float sum = cc[j];
+				for(int k = 0; k < j; k++) {
+					sum -= cc[k] * bb[k];
+				}
+				cc[j] = sum * out[j];
+            }
+        }
+        {
+            float sum = cc[i];
+            for (unsigned j = 0; j < i; ++j) {
+                float f = cc[j];
+                sum -= f * f;
+            }
+            if (sum <= 0.0f) {
+                failure = true;
+                break;
+            }
+            float sumsqrt = FastSqrt(sum);
+            cc[i] = sumsqrt;
+            out[i] = 1.0f / sumsqrt;
+        }
+    }
+    
+    return failure ? 0 : 1;
+}
+
+bool IsPositiveDefinite(const mat3& m) {
+	vec3 tmp{0,0,0};
+	mat3 tmp_m = m;
+	return FactorCholesky(tmp_m, tmp);
+}
+
+void ToMat3_(mat3& m, const quat& q) {
+    float qq1 = 2 * q[1] * q[1];
+    float qq2 = 2 * q[2] * q[2];
+    float qq3 = 2 * q[3] * q[3];
+    m[0][0] = 1 - qq2 - qq3;
+    m[0][1] = 2*(q[1]*q[2] - q[0]*q[3]);
+    m[0][2] = 2*(q[1]*q[3] + q[0]*q[2]);
+    
+    m[1][0] = 2*(q[1]*q[2] + q[0]*q[3]);
+    m[1][1] = 1 - qq1 - qq3;
+    m[1][2] = 2*(q[2]*q[3] - q[0]*q[1]);
+    
+    m[2][0] = 2*(q[1]*q[3] - q[0]*q[2]);
+    m[2][1] = 2*(q[2]*q[3] + q[0]*q[1]);
+    m[2][2] = 1 - qq1 - qq2;
+}
+
 
 
 NAMESPACE_TOPSIDE_END

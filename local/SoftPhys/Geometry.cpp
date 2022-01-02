@@ -15,9 +15,12 @@ vec3 Geometry::GetPosition() const {
 }
 
 quat Geometry::GetQuaternion() const {
-	TODO
+	return make_quat_from_axis_angle(axis, angle);
 }
 
+void Geometry::OnBodyMove() {
+	TODO
+}
 
 Geometry& Geometry::SetModelPlane(Space& s, const vec4& plane) {
 	LOG("Geometry::SetModelPlane: warning: pass, for now");
@@ -25,11 +28,13 @@ Geometry& Geometry::SetModelPlane(Space& s, const vec4& plane) {
 }
 
 Geometry& Geometry::SetModelSphere(float radius) {
-	TODO
+	type = RIGIDBODY_TYPE_SPHERE;
+	return *this;
 }
 
 Geometry& Geometry::SetModelBox(const vec3& v) {
-	TODO
+	type = RIGIDBODY_TYPE_BOX;
+	return *this;
 }
 
 Geometry& Geometry::SetPosition(const vec3& v) {

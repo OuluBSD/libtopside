@@ -175,14 +175,17 @@ void TosFys::ClearGeom(SoftPhys::Geometry& g) {
 }
 
 void TosFys::SetGeomModelPlane(SoftPhys::Geometry& g, SoftPhys::Space& s, const vec4& plane) {
+	g.Create();
 	g.SetModelPlane(s, plane);
 }
 
 void TosFys::SetGeomModelSphere(SoftPhys::Geometry& g, float radius) {
+	g.Create();
 	g.SetModelSphere(radius);
 }
 
 void TosFys::SetGeomModelBox(SoftPhys::Geometry& g, float w, float h, float l) {
+	g.Create();
 	g.SetModelBox(vec3(w,h,l));
 }
 
@@ -215,7 +218,6 @@ mat43 GetGeomRotationAxisAngle(SoftPhys::Body& b) {
 }
 
 void TosFys::CreateJointHinge2(SoftPhys::World& w, SoftPhys::Joint& j) {
-	ASSERT(j);
 	w.CreateJoint(j);
 }
 

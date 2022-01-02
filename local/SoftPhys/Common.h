@@ -36,6 +36,17 @@ struct Object : RTTIBase {
 
 typedef void (*NearCallback)(void*, Geometry& o1, Geometry& o2);
 
+
+
+struct PosRot : Moveable<PosRot> {
+    vec3 pos;
+    mat3 rot;
+};
+
+#define RfromQ(R,Q)	ToMat3_((R),(q))
+#define QtoR(q,R)	ToMat3_((R),(q))
+
+
 }
 NAMESPACE_TOPSIDE_END
 

@@ -18,6 +18,10 @@ struct Joint : Object {
 	};
 	
 	static const int HINGE_COUNT = 4;
+	
+	JointGroup* group = 0;
+	Body* b0 = 0;
+	Body* b1 = 0;
 	Hinge hinges[HINGE_COUNT];
 	Feedback fb;
 	vec3 hinge_anchor;

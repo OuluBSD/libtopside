@@ -7,7 +7,7 @@ namespace SoftPhys {
 
 World::World() {
 	gravity.Clear();
-	
+	jgroup.world = this;
 }
 
 void World::Collide(Space& space, void* data, NearCallback cb) {
@@ -39,7 +39,10 @@ void World::CreateBody(Body& b) {
 }
 
 void World::CreateJoint(Joint& j) {
-	TODO
+	ASSERT(!j.group);
+	j.Create();
+	j.group = &jgroup;
+	jgroup.joints.Add(&j);
 }
 
 

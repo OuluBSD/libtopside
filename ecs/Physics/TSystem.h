@@ -75,7 +75,7 @@ public:
 		Fys::UninitializeLibrary();
 	}
 	
-	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Node); vis % world % contactgroup % threading % pool % space;}
+	void Visit(RuntimeVisitor& vis) override;
 	
     bool Initialize() override {
 		SetGravity(vec3(0, -0.5, 0));

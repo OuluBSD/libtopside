@@ -24,7 +24,7 @@ struct Vec : Moveable<Vec<T, I> > {
 	T data[I];
 	
 	
-	Vec() {}
+	Vec() {for(int i = 0; i < I; i++) data[i] = 0;}
 	Vec(Vec&& v) {memcpy(this, &v, sizeof(Vec));}
 	Vec(const Vec& v) {memcpy(this, &v, sizeof(Vec));}
 	Vec(T value) {SetConst(value);}
@@ -78,9 +78,10 @@ struct Vec : Moveable<Vec<T, I> > {
 	T GetMagnitude() const {return FastSqrt(Dot(*this));}
 	T GetMagnitudeSq() const {return Dot(*this);}
 	
-	Vec& Normalize() {
+	Vec& Normalize(bool unsafe=false) {
 		T mag = 0;
 		for(int i = 0; i < I; i++) mag += data[i] * data[i];
+		if (unsafe && mag == 0) return *this;
 		ASSERT_(mag != 0, "zero magnitude vector");
 		mag = 1 / std::sqrt(mag);
 		for(int i = 0; i < I; i++) data[i] *= mag;
@@ -190,6 +191,8 @@ struct quat {
 	bool IsNull() const {return data.IsNull();}
 	
 	quat& SetIdentity() {data.SetIdentity(); return *this;}
+	quat& Normalize() {data.Normalize(); return *this;}
+	
 	const float& operator[](int i) const {return data[i];}
 	float& operator[](int i) {return data[i];}
 	quat GetConjugate() const;
@@ -259,8 +262,14 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	Matrix() {}
 	Matrix(const Matrix& m) {*this = m;}
 	Matrix(std::initializer_list<vec> list) {
-		ASSERT(list.size() == R);
-		int i = 0; for(auto& v : list) data[i++] = v;
+		if (list.size() != R)
+			Panic("invalid initializer_list size to matrix");
+		int i = 0; for(auto& v : list) {data[i] = v; i++;}
+	}
+	Matrix(std::initializer_list<float> list) {
+		if (list.size() != R*C)
+			Panic("invalid initializer_list size to matrix");
+		int i = 0; for(auto& v : list) {data[i / C].data[i % C] = v; i++;}
 	}
 	
 	void SetNull() {for(int i = 0; i < R; i++) data[i].SetNull();}
@@ -272,6 +281,12 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 	
 	vecR GetColumn(int c) const {ASSERT(c >= 0 && c < C); vecR v; for(int i = 0; i < R; i++) v[i] = data[i][c]; return v;}
 	
+	T* AsArray() {
+		thread_local static T t[C*R];
+		int k = 0;
+		for(int i = 0; i < R; i++) for(int j = 0; j < C; j++) t[k++] = data[i].data[j];
+		return t;
+	}
 	Matrix<T,C-1,R-1> Cut(int r, int c) const {
 		Matrix<T,C-1,R-1> m;
 		for(int a = 0, b = 0; a < R && b < R; a++) {
@@ -282,6 +297,17 @@ struct Matrix : Moveable<Matrix<T,R,C> > {
 					if (i != c) dst[j++] = src[i];
 			}
 		}
+		return m;
+	}
+	Matrix<T,C+1,R+1> Extend(T value=0) const {
+		Matrix<T,C+1,R+1> m;
+		for(int i = 0; i < R; i++)
+			for(int j = 0; j < C; j++)
+				m.data[i].data[j] = data[i].data[j];
+		for(int i = 0; i < R+1; i++)
+			m.data[i].data[C] = value;
+		for(int i = 0; i < C; i++)
+			m.data[R].data[i] = value;
 		return m;
 	}
 	Matrix<T,C,R> GetTransposed() const {

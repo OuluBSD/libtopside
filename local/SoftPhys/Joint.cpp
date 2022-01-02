@@ -11,7 +11,9 @@ Joint::Joint() {
 
 
 void Joint::Attach(Body& b0, Body& b1) {
-	TODO
+	ASSERT(!this->b0 && !this->b1);
+	this->b0 = &b0;
+	this->b1 = &b1;
 }
 
 

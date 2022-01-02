@@ -19,12 +19,14 @@ PhysicsSystem::PhysicsSystem() {
 }
 
 void PhysicsSystem::Collide(Space& space, void* data, NearCallback cb) {
+	ASSERT(VectorFind(spaces, &space) >= 0);
 	colliders1.Clear();
 	colliders2.Clear();
 	results.Clear();
 
-	{ // Find objects whom are colliding
-	  // First, build a list of colliding objects
+	{
+		// Find objects whom are colliding
+		// First, build a list of colliding objects
 		CollisionManifold result;
 		for (Geometry* b0 : space.geoms) {
 			for (Geometry* b1 : space.geoms) {
@@ -81,14 +83,14 @@ void PhysicsSystem::asdf() {
 void PhysicsSystem::Update(float dt) {
 
 	// Calculate foces acting on the object
-	for (int i = 0, size = bodies.GetCount(); i < size; ++i) {
-		bodies[i]->ApplyForces();
-	}
+	for (Space* s : spaces)
+		for(Geometry* g : s->geoms)
+			g->ApplyForces();
 
 	// Same as above, calculate forces acting on cloths
-	for (int i = 0, size = cloths.GetCount(); i < size; ++i) {
-		cloths[i]->ApplyForces();
-	}
+	for (Cloth* c : cloths)
+		c->ApplyForces();
+	
 
 	// Apply impulses to resolve collisions
 	for (int k = 0; k < impulse_iter; ++k) { // Apply impulses
@@ -104,15 +106,14 @@ void PhysicsSystem::Update(float dt) {
 	}
 
 	// Integrate velocity and impulse of objects
-	for (int i = 0, size = bodies.GetCount(); i < size; ++i) {
-		bodies[i]->Update(dt);
-	}
-
+	for (Space* s : spaces)
+		for(Geometry* g : s->geoms)
+			g->Update(dt);
+	
 	// Same as above, integrate velocity and impulse of cloths
-	for (int i = 0, size = cloths.GetCount(); i < size; ++i) {
-		cloths[i]->Update(dt);
-	}
-
+	for (Cloth* c : cloths)
+		c->Update(dt);
+	
 	// Correct position to avoid sinking!
 	if (do_lin_proj) {
 		for (int i = 0, size = results.GetCount(); i < size; ++i) {
@@ -141,37 +142,39 @@ void PhysicsSystem::Update(float dt) {
 	}
 
 	// Apply spring forces
-	for (int i = 0, size = springs.GetCount(); i < size; ++i) {
-		springs[i].ApplyForce(dt);
-	}
+	for (Spring& s : springs)
+		s.ApplyForce(dt);
 
 	// Same as above, apply spring forces for cloths
-	for (int i = 0, size = cloths.GetCount(); i < size; ++i) {
-		cloths[i]->ApplySpringForces(dt);
-	}
-
+	for (Cloth* c : cloths)
+		c->ApplySpringForces(dt);
+	
 	// Solve constraints
-	for (int i = 0, size = bodies.GetCount(); i < size; ++i) {
-		bodies[i]->SolveConstraints(constraints);
-	}
-
+	for (Space* s : spaces)
+		for(Geometry* g : s->geoms)
+			g->SolveConstraints(constraints);
+	
 	// Same as above, solve cloth constraints
-	for (int i = 0, size = cloths.GetCount(); i < size; ++i) {
-		cloths[i]->SolveConstraints(constraints);
-	}
+	for (Cloth* c : cloths)
+		c->SolveConstraints(constraints);
+	
 }
 
-void PhysicsSystem::AddRigidbody(Geometry* body) {
-	bodies.Add(body);
+void PhysicsSystem::AddSpace(Space& space) {
+	spaces.Add(&space);
 }
+
+/*void PhysicsSystem::AddRigidbody(Geometry* body) {
+	bodies.Add(body);
+}*/
 
 void PhysicsSystem::AddConstraint(const OBB& obb) {
 	constraints.Add(obb);
 }
 
-void PhysicsSystem::ClearRigidbodys() {
-	bodies.Clear();
-}
+/*void PhysicsSystem::ClearRigidbodys() {
+	geoms.Clear();
+}*/
 
 void PhysicsSystem::ClearConstraints() {
 	constraints.Clear();
@@ -192,6 +195,7 @@ void PhysicsSystem::AddCloth(Cloth* cloth) {
 void PhysicsSystem::ClearCloths() {
 	cloths.Clear();
 }
+
 
 
 NAMESPACE_SOFTPHYS_END

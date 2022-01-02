@@ -13,7 +13,8 @@ class PhysicsSystem : RTTIBase {
 	
 protected:
 	
-	Vector<Geometry*> bodies;
+	Vector<Space*> spaces;
+	//Vector<Geometry*> bodies;
 	Vector<Cloth*> cloths;
 	Vector<OBB> constraints;
 	Vector<Spring> springs;
@@ -39,12 +40,13 @@ public:
 	void Update(float dt);
 	void Render();
 	
-	void AddRigidbody(Geometry* body);
+	void AddSpace(Space& space);
+	//void AddRigidbody(Geometry* body);
 	void AddCloth(Cloth* cloth);
 	void AddSpring(const Spring& spring);
 	void AddConstraint(const OBB& constraint);
 
-	void ClearRigidbodys();
+	//void ClearRigidbodys();
 	void ClearConstraints();
 	void ClearSprings();
 	void ClearCloths();

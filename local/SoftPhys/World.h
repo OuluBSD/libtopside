@@ -20,6 +20,7 @@ struct World : Object {
 	bool auto_disable = 0;
 	
 	PhysicsSystem phys_sys;
+	JointGroup jgroup;
 	
 public:
 	
@@ -40,6 +41,9 @@ public:
 	World& SetAutoDisable(bool b);
 	World& SetStepIterations(int i);
 	World& SetAutoDisableSamples(int i);
+	
+	PhysicsSystem& GetSystem() {return phys_sys;}
+	const PhysicsSystem& GetSystem() const {return phys_sys;}
 	
 };
 

@@ -686,7 +686,10 @@ bool Raycast(const OBB& obb, const Ray& ray, RaycastResult* outResult) {
 
 		for (int i = 0; i < 6; ++i) {
 			if (CMP(t_result, t[i])) {
-				outResult->normal = normals[i].GetNormalized();
+				//outResult->normal = normals[i].GetUnsafeNormalized();
+				vec3 v = normals[i];
+				v.Normalize(true);
+				outResult->normal = v;
 			}
 		}
 	}

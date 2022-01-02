@@ -17,10 +17,11 @@ struct Space : Object {
 public:
 	Space();
 	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
-	void SetWorld(World& w) {ASSERT(!world); world = &w;}
+	void SetWorld(World& w);
 	void Collide(void* data, NearCallback cb);
 	void Add(Geometry& g);
 	void Remove(Geometry& g);
+	void Clear();
 	
 	Space& SetOwner(Space* s) {owner = s; return *this;}
 	

@@ -8,7 +8,7 @@ NAMESPACE_SOFTPHYS_BEGIN
 class Cloth {
 	
 protected:
-	Vector<Particle> verts;
+	Array<Particle> verts;
 	Vector<Spring> structural;
 	Vector<Spring> shear;
 	Vector<Spring> bend;

@@ -9,6 +9,8 @@ struct JointGroup : Object {
 	RTTI_DECL1(JointGroup, Object)
 	using Object::Object;
 	
+	World* world = 0;
+	Vector<Joint*> joints;
 	
 	
 	JointGroup();

@@ -21,6 +21,7 @@ T normalize(const T& a) {
 mat4 perspective(float fov, float aspect, float near, float far);
 mat4 ortho(float left, float right, float bottom, float top, float near, float far);
 mat4 ToMat4(const quat& q);
+void ToMat3_(mat3& m, const quat& q);
 
 template <class T> T cross(const T& a, const T& b) {return a.GetCrossProduct(b);}
 template <class T> T inverse(const T& o) {return o.GetInverse();}
@@ -156,7 +157,7 @@ T safe_normalize(T v) {
 mat4 GetEulerAngleYXZ(const vec3& roll);
 mat4 GetEulerAngleYX(const vec3& roll);
 mat4 rotate(mat4 const& m, float angle, vec3 const& v);
-quat make_quat_from_axis_angle(vec3 v, float angle);
+quat make_quat_from_axis_angle(const vec3& v, float angle);
 mat4 make_mat4_from_quat(const quat& q);
 quat make_quat_from_yaw_pitch_roll(float yaw, float pitch, float roll);
 mat4 make_mat4_rotation_x(float angle);
@@ -231,9 +232,12 @@ inline mat4 RemoveScale(const mat4& transform)
 
 }
 
-
 inline float ConvertToRadians(float angle) {return (float)(angle / 180.0 * M_PI);}
 
+void Multiply(mat3& res, const mat3& a, const mat3& b);
+void SetCrossMatrixPlus(mat3& res, const vec3& a);
+bool FactorCholesky(const mat3& A, vec3& out);
+bool IsPositiveDefinite(const mat3& m);
 
 NAMESPACE_TOPSIDE_END
 

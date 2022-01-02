@@ -11,40 +11,89 @@ Mass::Mass() {
 
 void Mass::Reset() {
 	mass = 0;
+	center.Clear();
 	inertia.Clear();
 }
 
 bool Mass::Check() {
-	TODO
-	#if 0
     if (mass <= 0) {
         LOG("mass must be > 0");
         return false;
     }
-    if (!dIsPositiveDefinite (I,3,NULL)) {
+    if (!IsPositiveDefinite(inertia)) {
         LOG("inertia must be positive definite");
         return false;
     }
     
     mat3 I2, chat;
-    dSetZero (chat,12);
-    dSetCrossMatrixPlus (chat, c, 4);
-    dMultiply0_333 (I2,chat,chat);
+    chat.Clear();
+    SetCrossMatrixPlus(chat, center);
+    Multiply(I2, chat, chat);
     
-    for (int i=0; i<3; i++) I2[i] = I[i] + mass*I2[i];
-    for (int i=4; i<7; i++) I2[i] = I[i] + mass*I2[i];
-    for (int i=8; i<11; i++) I2[i] = I[i] + mass*I2[i];
+    for(int i = 0; i < 3; i++)
+        for(int j = 0; j < 3; j++)
+            I2[i][j] = inertia[i][j] + mass * I2[i][j];
     
-    if (!dIsPositiveDefinite (I2,3,NULL)) {
+    if (!IsPositiveDefinite(I2)) {
         LOG("center of mass inconsistent with mass parameters");
         return false;
     }
     return true;
-    #endif
+}
+
+Mass& Mass::Translate(const vec3& v) {
+	// counterparts: ode=dMassTranslate
+	float x = v[0];
+	float y = v[1];
+	float z = v[2];
+	mat3 ahat, chat, t1, t2;
+	vec3 a;
+	
+	ASSERT(mass > 0);
+	
+	chat.Clear();
+	SetCrossMatrixPlus (chat, center);
+	a[0] = x + center[0];
+	a[1] = y + center[1];
+	a[2] = z + center[2];
+	ahat.Clear();
+	SetCrossMatrixPlus(ahat, a);
+	Multiply(t1, ahat, ahat);
+	Multiply(t2, chat, chat);
+	
+	for (int i=0; i<3; i++)
+		for (int j=0; j<3; j++)
+			inertia[i][j] +=
+				mass *
+				(t2[i][j] - t1[i][j]);
+	
+	inertia[1][0] = inertia[0][1];
+	inertia[2][0] = inertia[0][2];
+	inertia[2][1] = inertia[1][2];
+	
+	center[0] += x;
+	center[1] += y;
+	center[2] += z;
+	
+	ASSERT(Check());
+	return *this;
+}
+
+Mass& Mass::MoveMassCenter() {
+	Translate( center * -1 );
+	return *this;
 }
 
 Mass& Mass::SetMass(float kg) {
-	TODO
+	ASSERT(kg > 0 && mass > 0);
+	float scale = kg / mass;
+	mass = kg;
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			inertia[i][j] *= scale;
+	
+	ASSERT(Check());
+	return *this;
 }
 
 Mass& Mass::SetFunctionSphere(float density, float radius) {

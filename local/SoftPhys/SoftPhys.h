@@ -8,6 +8,7 @@
 #define SOFTPHYS SoftPhys
 	
 	
+#define PHYS_EPSILON FLT_EPSILON
 	
 #if 1
 // fast

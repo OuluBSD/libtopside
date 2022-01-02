@@ -11,6 +11,7 @@ struct Body : Object {
 	
 	
 	World* world = 0;
+	Vector<Geometry*> geoms;
 	vec3 position;
 	Mass mass;
 	vec3 linear_vel;
@@ -18,11 +19,18 @@ struct Body : Object {
 	vec3 axis;
 	float angle = 0;
 	
+	// possibly unused
+	// JointGroup* jgroup = 0;
+	PosRot posr;
+	quat q;
+	mat3 inv_inertia;
+	float inv_mass = 0;
+	
 public:
 	Body();
 	
 	void Visit(RuntimeVisitor& vis) override {VIS_THIS(Object);}
-	vec3 GetPosition() const;
+	const vec3& GetPosition() const {return position;}
 	mat43 GetRotationAxisAngle() const;
 	
 	Body& SetPosition(const vec3& v);
@@ -31,6 +39,7 @@ public:
 	Body& SetLinearVelocity(const vec3& v);
 	Body& SetAngularVelocity(const vec3& v);
 	Body& SetRotation(const vec3& axis, float angle);
+	Body& SetMass(float kg);
 	
 };
 

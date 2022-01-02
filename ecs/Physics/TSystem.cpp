@@ -2,6 +2,12 @@
 
 NAMESPACE_ECS_BEGIN
 
+template <class Fys>
+void SystemT<Fys>::Visit(RuntimeVisitor& vis) {VIS_THIS(Node); vis % space;}
+
+template <>
+void SystemT<TosFys>::Visit(RuntimeVisitor& vis) {VIS_THIS(Node); vis % world % contactgroup % threading % pool % space;}
+
 
 template <class Fys>
 void SystemT<Fys>::NearCallback(void*, NativeGeom& o1, NativeGeom& o2) {
