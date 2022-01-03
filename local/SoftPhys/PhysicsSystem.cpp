@@ -9,7 +9,6 @@ PhysicsSystem::PhysicsSystem() {
 	penet_slack = 0.01f;
 	impulse_iter = 5;
 
-	dbg_render = false;
 	do_lin_proj = true;
 	rend_rand_clr = false;
 
@@ -168,7 +167,7 @@ void PhysicsSystem::AddSpace(Space& space) {
 	bodies.Add(body);
 }*/
 
-void PhysicsSystem::AddConstraint(const OBB& obb) {
+void PhysicsSystem::AddConstraint(const OBB_& obb) {
 	constraints.Add(obb);
 }
 

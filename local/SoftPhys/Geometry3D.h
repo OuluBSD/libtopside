@@ -16,6 +16,8 @@ struct Line : Moveable<Line> {
 		start(s), end(e) { }
 };
 
+using Line_ = Wrap<Line>;
+
 struct Triangle : Moveable<Triangle> {
 	union {
 		struct {
@@ -86,6 +88,9 @@ struct CollisionManifold : Moveable<CollisionManifold> {
 	vec3 normal;
 	float depth;
 	Vector<vec3> contacts;
+	
+	
+	SOFTPHYS_RENDER_COMMON
 };
 void ResetCollisionManifold(CollisionManifold* result);
 
@@ -277,7 +282,7 @@ Ray GetPickRay(const vec2& viewportPoint, const vec2& viewportOrigin, const vec2
 
 
 Vector<Point> GetVertices(const OBB& obb);
-Vector<Line> GetEdges(const OBB& obb);
+void GetEdges(const OBB& obb, Vector<Line>& edges);
 Vector<Plane> GetPlanes(const OBB& obb);
 bool ClipToPlane(const Plane& plane, const Line& line, Point* outPoint);
 Vector<Point> ClipEdgesToOBB(const Vector<Line>& edges, const OBB& obb);

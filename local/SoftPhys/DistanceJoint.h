@@ -14,7 +14,9 @@ protected:
 	
 public:
 	void Initialize(Particle* _p1, Particle* _p2, float len);
-	void SolveConstraints(const Vector<OBB>& constraints);
+	void SolveConstraints(const Vector<OBB_>& constraints);
+	
+	SOFTPHYS_RENDER_COMMON
 	
 };
 

@@ -27,9 +27,11 @@ protected:
 	
 	void ApplyForces();
 	void Update(float dt);
-	void SolveConstraints(const Vector<OBB>& constraints);
+	void SolveConstraints(const Vector<OBB_>& constraints);
 	void ApplySpringForces(float dt);
-	void Render(bool debug);
+	
+	SOFTPHYS_RENDER_COMMON
+	
 };
 
 

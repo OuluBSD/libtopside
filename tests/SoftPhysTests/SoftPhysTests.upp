@@ -1,12 +1,12 @@
 uses
-	SoftPhys,
-	OOSDL2,
-	AtomLocal;
+	EcsComplete;
 
 file
 	TODO.txt,
 	SoftPhysTests.h,
 	SoftPhysTests.cpp,
+	Ecs.h,
+	Ecs.cpp,
 	TestBase.h,
 	TestBase.cpp,
 	ParticleTest.h,

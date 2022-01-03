@@ -38,7 +38,7 @@ double GetMilliseconds() {
 NAMESPACE_TOPSIDE_END
 
 
-
+#if 0
 CONSOLE_APP_MAIN {
 	using namespace UPP;
 	using namespace TS;
@@ -85,3 +85,4 @@ CONSOLE_APP_MAIN {
 	LOG("---- SoftPhysTests End ----");
 }
 
+#endif

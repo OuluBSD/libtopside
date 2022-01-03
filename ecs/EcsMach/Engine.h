@@ -125,6 +125,9 @@ public:
 	void SetNotRunning() {is_running = false;}
 	void Visit(RuntimeVisitor& vis);
 	
+	void AddToUpdateList(ComponentBase* c);
+	void RemoveFromUpdateList(ComponentBase* c);
+	
 	
 	Callback WhenEnterUpdate;
 	Callback1<SystemBase&> WhenEnterSystemUpdate;
@@ -148,6 +151,9 @@ private:
     SystemCollection::Iterator FindSystem(TypeCls type_id) {return systems.Find(type_id);}
     void Add(TypeCls type_id, SystemBase* system);
     void Remove(TypeCls typeId);
+    
+    Vector<ComponentBase*> update_list;
+    
 };
 
 

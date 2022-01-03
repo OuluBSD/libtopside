@@ -18,9 +18,9 @@ public:
 	virtual inline ~Rigidbody() { }
 
 	virtual inline void Update(float dt) { }
-	virtual inline void Render() { }
+	virtual inline void Refresh(GfxDataState& s) { }
 	virtual inline void ApplyForces() { }
-	virtual inline void SolveConstraints(const Vector<OBB>& constraints) { }
+	virtual inline void SolveConstraints(const Vector<OBB_>& constraints) { }
 
 	inline bool HasVolume() {
 		return type == RIGIDBODY_TYPE_SPHERE || type == RIGIDBODY_TYPE_BOX;

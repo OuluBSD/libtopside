@@ -5,10 +5,6 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class TestBase {
-	Serial::OOSDL2::Context ctx;
-	Serial::OOSDL2::OglScreen screen;
-	
-	
 	TestBase(const TestBase&);
 	TestBase& operator=(const TestBase);
 	
@@ -28,14 +24,11 @@ public:
 	TestBase();
 	inline virtual ~TestBase() { }
 
-	virtual void Initialize(int width, int height);
+	virtual void Initialize();
 	virtual void Resize(int width, int height);
-	virtual void Render();
+	virtual void Refresh(GfxDataState& s);
 	virtual void Update(float dt);
-	virtual void Shutdown();
 	
-	void RenderBegin();
-	void RenderEnd();
 	
 	void SetMouseState(bool left, bool middle, bool right, const vec2& delta, const vec2& mouse);
 	

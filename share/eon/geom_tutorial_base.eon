@@ -18,7 +18,7 @@ machine sdl.app: {
 			center.video.ecs.pipe: true {
 				drawmem:		"${DRAWMEM}";
 			};
-			sdl.video: true {
+			sdl.video.pipe: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

@@ -10,7 +10,7 @@ void DistanceJoint::Initialize(Particle* _p1, Particle* _p2, float len) {
 	length = len;
 }
 
-void DistanceJoint::SolveConstraints(const Vector<OBB>& constraints) {
+void DistanceJoint::SolveConstraints(const Vector<OBB_>& constraints) {
 	vec3 delta = p2->GetPosition() - p1->GetPosition();
 	float distance = Magnitude(delta);
 	float correction = (distance - length) / distance;

@@ -1,1 +1,5 @@
-- swrenderer from side without perspective
+- gfx abstraction
+- cpu renderer
+- ogl renderer
+- physic abstraction (maintain SoftPhys working status)
+- ode physics support via abstraction

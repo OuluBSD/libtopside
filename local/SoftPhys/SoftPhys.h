@@ -7,7 +7,16 @@
 #define NAMESPACE_SOFTPHYS_END NAMESPACE_TOPSIDE_END }
 #define SOFTPHYS SoftPhys
 	
-	
+#if 1 // flagDEBUGSOFTPHYS
+#define SOFTPHYS_RENDER 1
+
+#define SOFTPHYS_RENDER_COMMON \
+	void Refresh(GfxDataState& s);
+
+#else
+#define SOFTPHYS_RENDER_COMMON
+#endif
+
 #define PHYS_EPSILON FLT_EPSILON
 	
 #if 1

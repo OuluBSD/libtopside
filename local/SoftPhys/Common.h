@@ -2,6 +2,11 @@
 #define _SoftPhys_Common_h_
 
 NAMESPACE_TOPSIDE_BEGIN
+
+
+struct GfxDataState;
+
+
 namespace SoftPhys {
 
 
@@ -17,6 +22,17 @@ struct ThreadPool;
 struct Contact;
 struct Geometry;
 
+
+
+template <class T>
+struct Wrap : T, Moveable<Wrap<T>> {
+	
+	SOFTPHYS_RENDER_COMMON
+	
+};
+
+using OBB_ = Wrap<OBB>;
+using Sphere_ = Wrap<Sphere>;
 
 struct Object : RTTIBase {
 	RTTI_DECL0(Object)

@@ -79,6 +79,7 @@ struct GfxDataState : ErrorReporter {
 	// renderer
     mat4		view;
     vec3		light_dir;
+    bool		dbg_render = false;
 	//GfxShader*	stages[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
 	virtual GfxDataObject& CreateObject() = 0;

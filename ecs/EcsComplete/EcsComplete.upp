@@ -4,11 +4,10 @@ uses
 	AudioCore,
 	EcsEssential,
 	EcsLocal,
-	EcsCompleteDebug;
+	EcsCompleteDebug,
+	Physics;
 
 uses(GUI) EcsCtrl;
-
-uses(NEVER) Physics;
 
 uses(VR) EcsVR;
 

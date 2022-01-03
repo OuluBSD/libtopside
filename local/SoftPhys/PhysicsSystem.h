@@ -12,11 +12,10 @@ class PhysicsSystem : RTTIBase {
 	RTTI_DECL0(PhysicsSystem)
 	
 protected:
-	
 	Vector<Space*> spaces;
 	//Vector<Geometry*> bodies;
 	Vector<Cloth*> cloths;
-	Vector<OBB> constraints;
+	Vector<OBB_> constraints;
 	Vector<Spring> springs;
 
 	Vector<Geometry*> colliders1;
@@ -29,7 +28,6 @@ public:
 	int impulse_iter;
 
 	// Not in book, just for debug purposes
-	bool dbg_render;
 	bool do_lin_proj;
 	bool rend_rand_clr;
 
@@ -38,13 +36,14 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) {}
 	void Collide(Space& space, void* data, NearCallback cb);
 	void Update(float dt);
-	void Render();
+	
+	SOFTPHYS_RENDER_COMMON
 	
 	void AddSpace(Space& space);
 	//void AddRigidbody(Geometry* body);
 	void AddCloth(Cloth* cloth);
 	void AddSpring(const Spring& spring);
-	void AddConstraint(const OBB& constraint);
+	void AddConstraint(const OBB_& constraint);
 
 	//void ClearRigidbodys();
 	void ClearConstraints();

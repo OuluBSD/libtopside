@@ -23,7 +23,7 @@ public:
 
 	void Update(float dt);
 	void ApplyForces();
-	void SolveConstraints(const Vector<OBB>& constraints);
+	void SolveConstraints(const Vector<OBB_>& constraints);
 	void AddImpulse(const vec3& impulse);
 
 	vec3 GetPosition();
@@ -35,6 +35,13 @@ public:
 	void SetBounce(float b);
 	void SetMass(float m);
 	void SetFriction(float f);
+	
+public:
+	#if SOFTPHYS_RENDER
+	Wrap<Sphere> vis;
+	SOFTPHYS_RENDER_COMMON
+	#endif
+	
 };
 
 

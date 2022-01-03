@@ -11,8 +11,8 @@ protected:
 	PhysicsSystem phys;
 	Space space;
 	Cloth cloth;
-	OBB ground;
-	Vector<OBB> renderObjects;
+	OBB_ ground;
+	Vector<OBB_> renderObjects;
 
 	int num_part;
 	float part_dist;
@@ -28,9 +28,9 @@ protected:
 public:
 	inline ClothTest() : TestBase(), size_imgui_window(true) { }
 
-	void Initialize(int width, int height) override;
+	void Initialize() override;
 	void Update(float dt) override;
-	void Render() override;
+	void Refresh(GfxDataState& s) override;
 	
 };
 

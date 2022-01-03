@@ -6,8 +6,8 @@ NAMESPACE_TOPSIDE_BEGIN
 
 extern double GetMilliseconds();
  
-void ParticleTest::Initialize(int width, int height) {
-	TestBase::Initialize(width, height);
+void ParticleTest::Initialize() {
+	TestBase::Initialize();
 	
 	phys.AddSpace(space);
 	
@@ -32,20 +32,20 @@ void ParticleTest::ResetDemo() {
 	phys.ClearConstraints();
 
 
-	OBB ground;
+	OBB_ ground;
 	ground.size = vec3(10.0f, 0.15f, 10.0f);
 
-	OBB obb1;
+	OBB_ obb1;
 	obb1.position = vec3(0.0f, 1.86f, -1.92f);
 	obb1.orientation = Rotation3x3(30.716f, 0.0f, 0.0f);
 	obb1.size = vec3(2.0f, 0.15f, 2.0f);
 
-	OBB obb2;
+	OBB_ obb2;
 	obb2.position = vec3(-1.0f, 3.6f, 1.2f);
 	obb2.orientation = Rotation3x3(-33.964f, -24.233f, 9.128f);
 	obb2.size = vec3(2.0f, 0.15f, 2.0f);
 
-	OBB obb3;
+	OBB_ obb3;
 	obb3.position = vec3(0.0f, 3.93f, -2.27f);
 	obb3.orientation = Rotation3x3(24.702f, 0.0f, 0.0f);
 	obb3.size = vec3(2.0f, 0.15f, 0.7817011f);
@@ -118,13 +118,10 @@ vec3 ParticleTest::Random(vec3 min, vec3 max) {
 	return result;
 }
 
-void ParticleTest::Render() {
-	TestBase::Render();
-
-	float val[] = { 0.0f, 1.0f, 0.0f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, val);
-
-	phys.Render();
+void ParticleTest::Refresh(GfxDataState& s) {
+	TestBase::Refresh(s);
+	
+	phys.Refresh(s);
 }
 
 

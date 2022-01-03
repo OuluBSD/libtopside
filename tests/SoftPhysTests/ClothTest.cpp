@@ -4,8 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void ClothTest::Initialize(int width, int height) {
-	TestBase::Initialize(width, height);
+void ClothTest::Initialize() {
+	TestBase::Initialize();
 
 	phys.AddSpace(space);
 	
@@ -74,13 +74,10 @@ void ClothTest::Update(float dt) {
 	phys.Update(dt);
 }
 
-void ClothTest::Render() {
-	TestBase::Render();
-
-	float val[] = { 0.0f, 1.0f, 0.0f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, val);
-
-	phys.Render();
+void ClothTest::Refresh(GfxDataState& s) {
+	TestBase::Refresh(s);
+	
+	phys.Refresh(s);
 }
 
 

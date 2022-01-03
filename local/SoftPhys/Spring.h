@@ -26,6 +26,12 @@ public:
 	Particle* GetP2();
 	void SetConstants(float _k, float _b);
 	void ApplyForce(float dt);
+	
+	#if SOFTPHYS_RENDER
+	Line_ l;
+	SOFTPHYS_RENDER_COMMON
+	#endif
+	
 };
 
 

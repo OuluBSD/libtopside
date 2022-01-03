@@ -25,11 +25,14 @@ public:
 	virtual void Visit(RuntimeVisitor& vis) = 0; // linking errors here means invalid derived visit
 	virtual void Initialize() {};
 	virtual void Uninitialize() {};
+	virtual void Update(double dt) {Panic("unimplemented");}
 	virtual String ToString() const;
 	
 	
 	Engine& GetEngine();
 	
+	void AddToUpdateList() {GetEngine().AddToUpdateList(this);}
+	void RemoveFromUpdateList() {GetEngine().RemoveFromUpdateList(this);}
 	
 public:
 	RTTI_DECL_R2(ComponentBase, Destroyable, Enableable)

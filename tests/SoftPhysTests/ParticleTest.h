@@ -23,9 +23,9 @@ protected:
 public:
 	inline ParticleTest() : TestBase(), size_imgui_window(true) { }
 
-	void Initialize(int width, int height) override;
+	void Initialize() override;
 	void Update(float dt) override;
-	void Render() override;
+	void Refresh(GfxDataState& s) override;
 
 	float Random(float min, float max);
 	vec3 Random(vec3 min, vec3 max);

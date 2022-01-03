@@ -4,6 +4,7 @@
 NAMESPACE_SOFTPHYS_BEGIN
 
 
+
 void RigidbodyVolume::ApplyForces() {
 	forces = GRAVITY_CONST * mass;
 }

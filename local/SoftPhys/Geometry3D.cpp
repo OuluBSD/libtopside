@@ -2040,8 +2040,7 @@ Vector<Point> GetVertices(const OBB& obb) {
 	return v;
 }
 
-Vector<Line> GetEdges(const OBB& obb) {
-	Vector<Line> result;
+void GetEdges(const OBB& obb, Vector<Line>& result) {
 	result.Reserve(12);
 	Vector<Point> v = GetVertices(obb);
 
@@ -2055,8 +2054,6 @@ Vector<Line> GetEdges(const OBB& obb) {
 			v[index[j][0]], v[index[j][1]]
 		));
 	}
-
-	return result;
 }
 
 Vector<Plane> GetPlanes(const OBB& obb) {
@@ -2203,8 +2200,12 @@ CollisionManifold FindCollisionFeatures(const OBB& A, const OBB& B) {
 	}
 	vec3 axis = Normalized(*hitNormal);
 
-	Vector<Point> c1 = ClipEdgesToOBB(GetEdges(B), A);
-	Vector<Point> c2 = ClipEdgesToOBB(GetEdges(A), B);
+	Vector<Line> la, lb;
+	GetEdges(B, lb);
+	GetEdges(A, la);
+	
+	Vector<Point> c1 = ClipEdgesToOBB(lb, A);
+	Vector<Point> c2 = ClipEdgesToOBB(la, B);
 	result.contacts.Reserve(c1.GetCount() + c2.GetCount());
 	result.contacts.Append(c1);
 	result.contacts.Append(c2);

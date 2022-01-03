@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-TestBase::TestBase() : screen(&ctx,0) {
+TestBase::TestBase() {
 	show_help = false;
 	mouseLeftDown = false;
 	mouseRightDown = false;
@@ -15,22 +15,8 @@ TestBase::TestBase() : screen(&ctx,0) {
 	configHelpWindow = true;
 }
 
-void TestBase::Initialize(int width, int height) {
-	ctx.Add(screen);
-	if (!ctx.Open())
-		Exit(1);
-	
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-
-	float val[] = { 0.5f, 1.0f, -1.5f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, val);
-	
-	Resize(width, height);
-}
-
-void TestBase::Shutdown() {
-	ctx.Close();
+void TestBase::Initialize() {
+	Resize(640, 480);
 }
 
 void TestBase::Resize(int width, int height) {
@@ -61,16 +47,8 @@ void TestBase::SetMouseState(bool left, bool middle, bool right, const vec2& del
 	mousePos = mouse;
 }
 
-void TestBase::Render() {
+void TestBase::Refresh(GfxDataState& s) {
 	FixedFunctionOrigin();
-}
-
-void TestBase::RenderBegin() {
-	screen.BeginDraw();
-}
-
-void TestBase::RenderEnd() {
-	screen.CommitDraw();
 }
 
 

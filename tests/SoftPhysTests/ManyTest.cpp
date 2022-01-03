@@ -4,8 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-void ManyTest::Initialize(int width, int height) {
-	TestBase::Initialize(width, height);
+void ManyTest::Initialize() {
+	TestBase::Initialize();
 
 	phys.AddSpace(space);
 	phys.rend_rand_clr = true;
@@ -37,7 +37,7 @@ void ManyTest::ResetDemo() {
 	bodies[1].position = vec3(0, 1, 0);
 	bodies[1].mass = 5.0f;
 
-	gnd = RigidbodyVolume(RIGIDBODY_TYPE_BOX);
+	gnd.type = RIGIDBODY_TYPE_BOX;
 	gnd.position = vec3(0, -0.5f, 0) * vec3(1, 0.5f, 1);
 	gnd.box.size = vec3(50, 1, 50) * 0.25f;
 	gnd.mass = 0.0f;
@@ -57,13 +57,10 @@ void ManyTest::Update(float dt) {
 	phys.Update(dt);
 }
 
-void ManyTest::Render() {
-	TestBase::Render();
-
-	float val[] = { 0.0f, 1.0f, 0.0f, 0.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, val);
-
-	phys.Render();
+void ManyTest::Refresh(GfxDataState& s) {
+	TestBase::Refresh(s);
+	
+	phys.Refresh(s);
 }
 
 

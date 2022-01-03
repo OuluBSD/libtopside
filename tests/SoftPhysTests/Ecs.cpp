@@ -1,49 +1,103 @@
-#include "Tutorial5b.h"
+#include "SoftPhysTests.h"
 
-/*
-Tutorial 5b:
-	Same as tutorial 5a, but with more complex cpu shader class usage
-	
-*/
+NAMESPACE_ECS_BEGIN
+
 
 INITBLOCK_(Shaders) {
 	using namespace TS;
-	SoftShaderLibrary::AddShaderClass<VertexShader5>(GVar::VERTEX_SHADER, "tutorial5_vertex");
-	SoftShaderLibrary::AddShaderClass<FragmentShader5>(GVar::FRAGMENT_SHADER, "tutorial5_fragment");
+	SoftShaderLibrary::AddShaderClass<LocalVertexShader>(GVar::VERTEX_SHADER, "softphystest_vertex");
+	SoftShaderLibrary::AddShaderClass<LocalFragmentShader>(GVar::FRAGMENT_SHADER, "softphystest_fragment");
 	
 }
 
 
 
-Tutorial5b::Tutorial5b() {
+LocalApp::LocalApp() {
 	
 }
 
-void Tutorial5b::Initialize() {
+void LocalApp::Initialize() {
+	if (CommandLine().GetCount() != 1)
+		Panic("invalid commandline argument");
+	
+	int test_i = StrInt(CommandLine()[0]);
+	
+	if      (test_i == 0)	test = new ParticleTest();
+	else if (test_i == 1)	test = new ManyTest();
+	else if (test_i == 2)	test = new ClothTest();
+	else Panic("invalid commandline argument");
+	
+	test->Initialize();
+	
+	AddToUpdateList();
 	Serial::EcsVideoBase::Latest().AddBinder(this);
 }
 
-void Tutorial5b::Render(Draw& fb) {
+void LocalApp::Uninitialize() {
+	RemoveFromUpdateList();
+	Serial::EcsVideoBase::Latest().RemoveBinder(this);
+}
+
+void LocalApp::Update(double dt) {
+	test->Update(dt);
+}
+
+void LocalApp::StateStartup(GfxDataState& state) {
+	Engine& eng = GetActiveEngine();
+	EntityStoreRef ents = eng.Get<EntityStore>();
+	RenderingSystemRef rend = eng.Get<RenderingSystem>();
+	PoolRef models = ents->GetRoot()->GetAddPool("models");
+	
+	//test->Refresh(state);
+	
+	/*EntityRef sky = models->Create<StaticSkybox>();
+	EntityRef gnd = models->Create<DefStaticGroundPlanePrefab>();
+	EntityRef car = models->Create<BuggyCarPrefab>();
+	
+	this->sky = sky->Get<ModelComponent>();
+	this->gnd = gnd->Get<DefStaticGroundPlane>();
+	this->car = car->Get<BuggyCar>();
+	
+	//this->sky->LoadModel(state);
+	//this->gnd->LoadModel(state);
+	this->car->LoadModel(state);
+	
+	PoolRef cameras = ents->GetRoot()->GetAddPool("cameras");
+	EntityRef cam = cameras->Create<CameraPrefab>();
+	chaser = cam->Add<ChaseCam>();
+	chaser->SetTarget(car->Get<Transform>());
+	rend->AddViewable(cam->Get<Viewable>());*/
+}
+
+void LocalApp::Render(Draw& fb) {
 	SdlCpuStateDraw* sd = CastPtr<SdlCpuStateDraw>(&fb);
 	ASSERT(sd);
 	
-	if (frame == 0) {
-		SdlCpuDataState& state = sd->GetState();
-		String data_dir = ShareDirFile("models");
-		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
-		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
-		auto& o = state.AddObject();
-		if (!state.LoadModel(loader, o, obj_path))
-			Panic("Couldn't load model: " + obj_path);
-		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
-		if (!state.LoadModelTextures(loader, o))
-			Panic("Couldn't load model textures: " + obj_path);
-	}
+	SdlOglStateDraw* od = CastPtr<SdlOglStateDraw>(&fb);
+	SdlCpuStateDraw* cd = CastPtr<SdlCpuStateDraw>(&fb);
+	ASSERT(od || cd);
+	
+	/*if (frame == 0) {
+		if (od) {
+			SdlOglDataState& state = od->GetState();
+			StateStartup(state);
+		}
+		else {
+			SdlCpuDataState& state = cd->GetState();
+			StateStartup(state);
+		}
+	}*/
 	
 	Size sz = fb.GetPageSize();
 	//height = width = std::min(sz.cx, sz.cy);
 	width = 1280;
 	height = 720;
+	
+	test->Resize(width, height);
+	
+	GfxDataState& s = od ? (GfxDataState&)od->GetState() : (GfxDataState&)cd->GetState();
+	s.dbg_render = true;
+	test->Refresh(s);
 	
 	//fb.DrawRect(sz, Black());
 	
@@ -58,7 +112,7 @@ void Tutorial5b::Render(Draw& fb) {
 	}
 }
 
-void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
+void LocalApp::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	ASSERT(fb.HasTarget());
 	SdlCpuDataState& state = fb.GetState();
 	
@@ -98,7 +152,7 @@ void Tutorial5b::DrawObj(SdlCpuStateDraw& fb, bool use_texture) {
 	
 }
 
-void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
+void LocalVertexShader::Process(SdlCpuVertexShaderArgs& a) {
 	int width = a.generic->iResolution[0];
 	int height = a.generic->iResolution[1];
 	vec4 pos = a.v.position.Splice().Embed();
@@ -112,7 +166,7 @@ void VertexShader5::Process(SdlCpuVertexShaderArgs& a) {
 	//ASSERT(a.v.position[2] >= 0.0f);
 }
 
-void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
+void LocalFragmentShader::Process(SdlCpuFragmentShaderArgs& args) {
 	#if 0
 	float w = args.generic->iResolution[0];
 	float h = args.generic->iResolution[1];
@@ -164,5 +218,9 @@ void FragmentShader5::Process(SdlCpuFragmentShaderArgs& args) {
 	}
 }
 
+NAMESPACE_ECS_END
 
-SIMPLE_ECS_APP_(Tutorial5b, "geom_tutorial_base.eon", "FRAGMENT=tutorial5_fragment;VERTEX=tutorial5_vertex;DRAWMEM=false")
+
+SIMPLE_ECS_APP_(TS::ECS::LocalApp, "geom_tutorial_base.eon", "FRAGMENT=softphystest_fragment;VERTEX=softphystest_vertex;DRAWMEM=false")
+
+

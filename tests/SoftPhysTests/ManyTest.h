@@ -19,9 +19,9 @@ protected:
 	void ResetDemo();
 	
 public:
-	void Initialize(int width, int height) override;
+	void Initialize() override;
 	void Update(float dt) override;
-	void Render() override;
+	void Refresh(GfxDataState& s) override;
 	
 };
 

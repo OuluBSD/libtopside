@@ -7,6 +7,8 @@ namespace SoftPhys {
 	#define M_PI 3.14159265358979323846f
 #endif
 
+#if 0
+
 void Render(const Mesh& mesh) {
 	glBegin(GL_TRIANGLES);
 
@@ -32,47 +34,6 @@ void Render(const Model& model) {
 	}
 
 	glPopMatrix();
-}
-
-void Render(const CollisionManifold& manifold) {
-	if (!manifold.colliding) {
-		return;
-	}
-
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glBegin(GL_POINTS);
-	for (auto& c : manifold.contacts) {
-		glVertex3f(c[0], c[1], c[2]);
-	}
-	glEnd();
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glBegin(GL_LINES);
-	vec3 center = vec3();
-	for (const vec3& start : manifold.contacts) {
-		vec3 end = start + manifold.normal * manifold.depth;
-		center = center + start;
-
-		glVertex3fv(start.data);
-		glVertex3fv(end.data);
-	}
-	glEnd();
-
-	if (manifold.contacts.GetCount() == 0) {
-		return;
-	}
-	float denom = 1.0f / (float)manifold.contacts.GetCount();
-	center = center * denom;
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glBegin(GL_LINES);
-	vec3 start = center;
-	vec3 end = center + manifold.normal;
-
-	glVertex3fv(start.data);
-	glVertex3fv(end.data);
-	glEnd();
-
 }
 
 void RenderNormals(const Frustum& frustum) {
@@ -257,24 +218,6 @@ void Render(const Line2D& line) {
 	glEnd();
 }
 
-void Render(const Line& line) {
-	glBegin(GL_LINES);
-	glVertex3f(line.start[0], line.start[1], line.start[2]);
-	glVertex3f(line.end[0], line.end[1], line.end[2]);
-	glEnd();
-}
-
-void Render(const Vector<Line>& edges) {
-	glBegin(GL_LINES);
-	for (int i = 0; i < edges.GetCount(); ++i) {
-		vec3 p1 = edges[i].start;
-		vec3 p2 = edges[i].end;
-		glVertex3f(p1[0], p1[1], p1[2]);
-		glVertex3f(p2[0], p2[1], p2[2]);
-	}
-	glEnd();
-}
-
 void Render(const Point2D& point) {
 	glBegin(GL_POINTS);
 	glVertex3f(point[0], point[1], 0.0f);
@@ -298,37 +241,6 @@ void Render(const Ray& ray) {
 	glVertex3f(line.end[0], line.end[1], line.end[2]);
 	glEnd();
 	// At some point i'm going to fix this
-}
-
-void Render(const Sphere& sphere) {
-	glPushMatrix();
-
-	glTranslatef(sphere.position[0], sphere.position[1], sphere.position[2]);
-	FixedFunctionSphere(2, sphere.radius);
-
-	glPopMatrix();
-}
-
-void Render(const OBB& obb) {
-	glPushMatrix();
-
-	mat4 scale = TS::scale(obb.size);
-	mat4 rotation = obb.orientation.Extend();
-	mat4 translation = Translation(obb.position);
-
-	// SRT: Scale First, Rotate Second, Translate Last
-	// orientation = roll * pitch * yaw;
-	mat4 transform = scale * rotation * translation;
-	
-	// Using GL pipe stuff:
-	// glTranslate(obb.position[0], obb.position[1], obb.position[2]);
-	// Orientation = yaw * pitch * roll
-	// glRotate??? Probably do a matrix multiplication instead
-	// glScale(obb.size[0], obb.size[1], obb.size[2]);
-
-	glMultMatrixf(transform.AsArray());
-	FixedFunctionCube();
-	glPopMatrix();
 }
 
 void Render(const AABB& aabb) {
@@ -398,83 +310,8 @@ void Render(const OrientedRectangle& rect) {
 	glPopMatrix();
 }
 
-void FixedFunctionSubdivTetrahedron(float* a, float* b, float* c, int div, float r) {
-	if (div <= 0) {
-		glNormal3fv(a);
-		glVertex3f(a[0] * r, a[1] * r, a[2] * r);
-		
-		glNormal3fv(b);
-		glVertex3f(b[0] * r, b[1] * r, b[2] * r);
-		
-		glNormal3fv(c);
-		glVertex3f(c[0] * r, c[1] * r, c[2] * r);
-	}
-	else {
-		float ab[3], ac[3], bc[3];
-
-		ab[0] = (a[0] + b[0]) / 2.0f;
-		ac[0] = (a[0] + c[0]) / 2.0f;
-		bc[0] = (b[0] + c[0]) / 2.0f;
-
-		ab[1] = (a[1] + b[1]) / 2.0f;
-		ac[1] = (a[1] + c[1]) / 2.0f;
-		bc[1] = (b[1] + c[1]) / 2.0f;
-		
-		ab[2] = (a[2] + b[2]) / 2.0f;
-		ac[2] = (a[2] + c[2]) / 2.0f;
-		bc[2] = (b[2] + c[2]) / 2.0f;
-
-		// Normalize ab
-		float d = sqrtf(ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2]);
-		ab[0] /= d; ab[1] /= d; ab[2] /= d;
-		// Normalize ac
-		d = sqrtf(ac[0] * ac[0] + ac[1] * ac[1] + ac[2] * ac[2]);
-		ac[0] /= d; ac[1] /= d; ac[2] /= d;
-		// Normalize bc
-		d = sqrtf(bc[0] * bc[0] + bc[1] * bc[1] + bc[2] * bc[2]);
-		bc[0] /= d; bc[1] /= d; bc[2] /= d;
-
-		FixedFunctionSubdivTetrahedron(a, ab, ac, div - 1, r);
-		FixedFunctionSubdivTetrahedron(b, bc, ab, div - 1, r);
-		FixedFunctionSubdivTetrahedron(c, ac, bc, div - 1, r);
-		FixedFunctionSubdivTetrahedron(ab, bc, ac, div - 1, r); 
-	}
-}
-
 void FixedFunctionSphere() {
 	FixedFunctionSphere(2, 1.0f);
-}
-
-void FixedFunctionSphere(int numDivisions, float radius) {
-	static float X = 0.525731112119133606f;
-	static float Y = 0.0f;
-	static float Z = 0.850650808352039932f;
-
-	static float vdata[12][3] = {
-		{ -X,Y,Z },{ X,Y,Z },{ -X,Y,-Z },{ X,Y,-Z },
-		{ Y,Z,X },{ Y,Z,-X },{ Y,-Z,X },{ Y,-Z,-X },
-		{ Z,X,Y },{ -Z,X,Y },{ Z,-X,Y },{ -Z,-X,Y } 
-	};
-	static int tindices[20][3] = { 
-		{ 0,4,1 },{ 0,9,4 },{ 9,5,4 },{ 4,5,8 },{ 4,8,1 },
-		{ 8,10,1 },{ 8,3,10 },{ 5,3,8 },{ 5,2,3 },{ 2,7,3 },
-		{ 7,10,3 },{ 7,6,10 },{ 7,11,6 },{ 11,0,6 },{ 0,1,6 },
-		{ 6,1,10 },{ 9,0,11 },{ 9,11,2 },{ 9,2,5 },{ 7,2,11 } 
-	};
-
-	glBegin(GL_TRIANGLES);
-
-	for (int i = 0; i < 20; ++i) {
-		FixedFunctionSubdivTetrahedron(
-			vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], numDivisions, radius
-		);
-	}
-
-	glEnd();
-}
-
-void FixedFunctionCube() {
-	FixedFunctionCube(1.0f, 1.0f, 1.0f);
 }
 
 void FixedFunctionCubeQuads(float extentsX, float extentsY, float extentsZ) {
@@ -532,81 +369,6 @@ void FixedFunctionCubeQuads(float extentsX, float extentsY, float extentsZ) {
 	// Right
 	glNormal3f(1.0f, 0.0f, 0.0f);
 	/*0*/glVertex3f(max[0], max[1], max[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*2*/glVertex3f(max[0], min[1], min[2]);
-	/*3*/glVertex3f(max[0], min[1], max[2]);
-#endif
-
-	glEnd();
-}
-
-void FixedFunctionCube(float extentsX, float extentsY, float extentsZ) {
-	float min[] = { -extentsX, -extentsY, -extentsZ };
-	float max[] = { +extentsX, +extentsY, +extentsZ };
-
-	glBegin(GL_TRIANGLES);
-
-#if 1
-	// Top!
-	glNormal3f(0.0f, 1.0f, 0.0f);
-	/*0*/glVertex3f(min[0], max[1], min[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*3*/glVertex3f(min[0], max[1], max[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*2*/glVertex3f(max[0], max[1], max[2]);
-	/*3*/glVertex3f(min[0], max[1], max[2]);
-#endif
-
-#if 1
-	// Front!
-	glNormal3f(0.0f, 0.0f, 1.0f);
-	/*0*/glVertex3f(min[0], max[1], max[2]);
-	/*1*/glVertex3f(max[0], max[1], max[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-	/*1*/glVertex3f(max[0], max[1], max[2]);
-	/*2*/glVertex3f(max[0], min[1], max[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-#endif
-
-#if 1
-	// Left
-	glNormal3f(-1.0f, 0.0f, 0.0f);
-	/*0*/glVertex3f(min[0], max[1], max[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-	/*1*/glVertex3f(min[0], max[1], min[2]);
-	/*1*/glVertex3f(min[0], max[1], min[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-	/*2*/glVertex3f(min[0], min[1], min[2]);
-#endif
-
-#if 1
-	// Bottom!
-	glNormal3f(0.0f, -1.0f, 0.0f);
-	/*0*/glVertex3f(min[0], min[1], min[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-	/*1*/glVertex3f(max[0], min[1], min[2]);
-	/*1*/glVertex3f(max[0], min[1], min[2]);
-	/*3*/glVertex3f(min[0], min[1], max[2]);
-	/*2*/glVertex3f(max[0], min[1], max[2]);
-#endif
-
-#if 1
-	// Back!
-	glNormal3f(0.0f, 0.0f, -1.0f);
-	/*0*/glVertex3f(min[0], max[1], min[2]);
-	/*3*/glVertex3f(min[0], min[1], min[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*3*/glVertex3f(min[0], min[1], min[2]);
-	/*2*/glVertex3f(max[0], min[1], min[2]);
-#endif
-
-#if 1
-	// Right
-	glNormal3f(1.0f, 0.0f, 0.0f);
-	/*0*/glVertex3f(max[0], max[1], max[2]);
-	/*1*/glVertex3f(max[0], max[1], min[2]);
-	/*3*/glVertex3f(max[0], min[1], max[2]);
 	/*1*/glVertex3f(max[0], max[1], min[2]);
 	/*2*/glVertex3f(max[0], min[1], min[2]);
 	/*3*/glVertex3f(max[0], min[1], max[2]);
@@ -754,60 +516,6 @@ void FixedFunctionPlane() {
 	FixedFunctionPlane(10, 10);
 }
 
-void FixedFunctionOrigin(bool depthTest, bool twoSided) {
-	bool isLit = glIsEnabled(GL_LIGHTING) == GL_TRUE;
-	bool depthOn = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE;
-
-	if (isLit) {
-		glDisable(GL_LIGHTING);
-	}
-	if (depthOn && !depthTest) {
-		glDisable(GL_DEPTH_TEST);
-	} else if (depthTest) {
-		glEnable(GL_DEPTH_TEST);
-	}
-
-	glBegin(GL_LINES);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(1.0f, 0.0f, 0.0f);
-	if (twoSided) {
-		glVertex3f(0.0f, 0.0f, 0.0f);
-		glVertex3f(-1.0f, 0.0f, 0.0f);
-	}
-
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 1.0f, 0.0f);
-	if (twoSided) {
-		glVertex3f(0.0f, 0.0f, 0.0f);
-		glVertex3f(0.0f, -1.0f, 0.0f);
-	}
-
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f);
-	glVertex3f(0.0f, 0.0f, 1.0f);
-	if (twoSided) {
-		glVertex3f(0.0f, 0.0f, 0.0f);
-		glVertex3f(0.0f, 0.0f, -1.0f);
-	}
-	glEnd();
-
-	if (isLit) {
-		glEnable(GL_LIGHTING);
-	}
-	if (depthOn) {
-		glEnable(GL_DEPTH_TEST);
-	}
-}
-
-void FixedFunctionOrigin(bool depthTest) {
-	FixedFunctionOrigin(depthTest, false);
-}
-
-void FixedFunctionOrigin() {
-	FixedFunctionOrigin(false, false);
-}
 
 void FixedFunctionSubdivCone(float *v1, float *v2, int subdiv, float height, float radius) {
 	float v0[3] = { 0, 0, 0 };
@@ -879,120 +587,280 @@ void FixedFunctionCone() {
 	FixedFunctionCone(3, 1.0f, 1.0f);
 }
 
+#endif
 
+void FixedFunctionCube(float extentsX, float extentsY, float extentsZ) {
+	float min[] = { -extentsX, -extentsY, -extentsZ };
+	float max[] = { +extentsX, +extentsY, +extentsZ };
 
+	glBegin(GL_TRIANGLES);
 
-void PhysicsSystem::Render() {
-	if (dbg_render) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+#if 1
+	// Top!
+	glNormal3f(0.0f, 1.0f, 0.0f);
+	/*0*/glVertex3f(min[0], max[1], min[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*3*/glVertex3f(min[0], max[1], max[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*2*/glVertex3f(max[0], max[1], max[2]);
+	/*3*/glVertex3f(min[0], max[1], max[2]);
+#endif
+
+#if 1
+	// Front!
+	glNormal3f(0.0f, 0.0f, 1.0f);
+	/*0*/glVertex3f(min[0], max[1], max[2]);
+	/*1*/glVertex3f(max[0], max[1], max[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+	/*1*/glVertex3f(max[0], max[1], max[2]);
+	/*2*/glVertex3f(max[0], min[1], max[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+#endif
+
+#if 1
+	// Left
+	glNormal3f(-1.0f, 0.0f, 0.0f);
+	/*0*/glVertex3f(min[0], max[1], max[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+	/*1*/glVertex3f(min[0], max[1], min[2]);
+	/*1*/glVertex3f(min[0], max[1], min[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+	/*2*/glVertex3f(min[0], min[1], min[2]);
+#endif
+
+#if 1
+	// Bottom!
+	glNormal3f(0.0f, -1.0f, 0.0f);
+	/*0*/glVertex3f(min[0], min[1], min[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+	/*1*/glVertex3f(max[0], min[1], min[2]);
+	/*1*/glVertex3f(max[0], min[1], min[2]);
+	/*3*/glVertex3f(min[0], min[1], max[2]);
+	/*2*/glVertex3f(max[0], min[1], max[2]);
+#endif
+
+#if 1
+	// Back!
+	glNormal3f(0.0f, 0.0f, -1.0f);
+	/*0*/glVertex3f(min[0], max[1], min[2]);
+	/*3*/glVertex3f(min[0], min[1], min[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*3*/glVertex3f(min[0], min[1], min[2]);
+	/*2*/glVertex3f(max[0], min[1], min[2]);
+#endif
+
+#if 1
+	// Right
+	glNormal3f(1.0f, 0.0f, 0.0f);
+	/*0*/glVertex3f(max[0], max[1], max[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*3*/glVertex3f(max[0], min[1], max[2]);
+	/*1*/glVertex3f(max[0], max[1], min[2]);
+	/*2*/glVertex3f(max[0], min[1], min[2]);
+	/*3*/glVertex3f(max[0], min[1], max[2]);
+#endif
+
+	glEnd();
+}
+
+void FixedFunctionSubdivTetrahedron(float* a, float* b, float* c, int div, float r) {
+	if (div <= 0) {
+		glNormal3fv(a);
+		glVertex3f(a[0] * r, a[1] * r, a[2] * r);
+		
+		glNormal3fv(b);
+		glVertex3f(b[0] * r, b[1] * r, b[2] * r);
+		
+		glNormal3fv(c);
+		glVertex3f(c[0] * r, c[1] * r, c[2] * r);
 	}
-	static const float rigidbodyDiffuse[]{ 200.0f / 255.0f, 0.0f, 0.0f, 0.0f };
-	static const float rigidbodyAmbient[]{ 200.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f, 0.0f };
+	else {
+		float ab[3], ac[3], bc[3];
 
-	static const float groundDiffuse[]{ 0.0f, 0.0f, 200.0f / 255.0f, 0.0f };
-	static const float groundAmbient[]{ 50.0f / 255.0f, 50.0f / 255.0f, 200.0f / 255.0f, 0.0f };
+		ab[0] = (a[0] + b[0]) / 2.0f;
+		ac[0] = (a[0] + c[0]) / 2.0f;
+		bc[0] = (b[0] + c[0]) / 2.0f;
 
-	static const float constraintDiffuse[]{ 0.0f, 200.0f / 255.0f, 0.0f, 0.0f };
-	static const float constraintAmbient[]{ 50.0f / 255.0f, 200.0f / 255.0f, 50.0f / 255.0f, 0.0f };
-	
-	static const float zero[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		ab[1] = (a[1] + b[1]) / 2.0f;
+		ac[1] = (a[1] + c[1]) / 2.0f;
+		bc[1] = (b[1] + c[1]) / 2.0f;
+		
+		ab[2] = (a[2] + b[2]) / 2.0f;
+		ac[2] = (a[2] + c[2]) / 2.0f;
+		bc[2] = (b[2] + c[2]) / 2.0f;
 
-	Vector<const float*> ambient;
-	Vector<const float*> diffuse;
-	if (rend_rand_clr) {
-		ambient.push_back(rigidbodyAmbient);
-		ambient.push_back(groundAmbient);
-		ambient.push_back(constraintAmbient);
-		diffuse.push_back(rigidbodyDiffuse);
-		diffuse.push_back(groundDiffuse);
-		diffuse.push_back(constraintDiffuse);
-	}
+		// Normalize ab
+		float d = sqrtf(ab[0] * ab[0] + ab[1] * ab[1] + ab[2] * ab[2]);
+		ab[0] /= d; ab[1] /= d; ab[2] /= d;
+		// Normalize ac
+		d = sqrtf(ac[0] * ac[0] + ac[1] * ac[1] + ac[2] * ac[2]);
+		ac[0] /= d; ac[1] /= d; ac[2] /= d;
+		// Normalize bc
+		d = sqrtf(bc[0] * bc[0] + bc[1] * bc[1] + bc[2] * bc[2]);
+		bc[0] /= d; bc[1] /= d; bc[2] /= d;
 
-	glColor3f(rigidbodyDiffuse[0], rigidbodyDiffuse[1], rigidbodyDiffuse[2]);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, rigidbodyAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, rigidbodyDiffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, zero);
-	int i = 0;
-	
-	for (Space* s : spaces) for(Geometry* g : s->geoms) {
-		if (rend_rand_clr) {
-			int a_i = i % ambient.GetCount();
-			int d_i = i % diffuse.GetCount();
-			glColor3f(diffuse[d_i][0], diffuse[d_i][1], diffuse[d_i][2]);
-			glLightfv(GL_LIGHT0, GL_AMBIENT, ambient[a_i]);
-			glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse[d_i]);
-			glLightfv(GL_LIGHT0, GL_SPECULAR, zero);
-		}
-		if (dbg_render && g->type == RIGIDBODY_TYPE_BOX) {
-			RigidbodyVolume* mb = CastPtr<RigidbodyVolume>(g);
-			ASSERT(mb);
-			mb->SynchCollisionVolumes();
-			SoftPhys::Render(GetEdges(mb->box));
-		}
-		else {
-			g->Render();
-		}
-		i++;
-	}
-
-	// First constraint is usually the ground
-	// Rendering it diferent color is just a hack to make visualization easyer
-	// Normally, you wouldn't even render physics geo!
-	if (constraints.GetCount() > 0) {
-		glColor3f(groundDiffuse[0], groundDiffuse[1], groundDiffuse[2]);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, groundAmbient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, groundDiffuse);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, zero);
-		SoftPhys::Render(constraints[0]);
-	}
-
-	glColor3f(constraintDiffuse[0], constraintDiffuse[1], constraintDiffuse[2]);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, constraintAmbient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, constraintDiffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, zero);
-	for (int i = 1, size = constraints.GetCount(); i < size; ++i) {
-		SoftPhys::Render(constraints[i]);
-	}
-	if (dbg_render) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		GLboolean status;
-		glGetBooleanv(GL_LIGHTING, &status);
-
-		glDisable(GL_LIGHTING);
-		for (int i = 0; i < results.GetCount(); ++i) {
-			SoftPhys::Render(results[i]);
-		}
-		if (status) {
-			glEnable(GL_LIGHTING);
-		}
-	}
-
-	// Render springs
-	GLboolean status;
-	glGetBooleanv(GL_LIGHTING, &status);
-	for (int i = 0, size = springs.GetCount(); i < size; ++i) {
-		for (int i = 0, size = springs.GetCount(); i < size; ++i) {
-			if (springs[i].GetP1() == 0 || springs[i].GetP2() == 0) {
-				continue;
-			}
-
-			Line l(springs[i].GetP1()->GetPosition(), springs[i].GetP2()->GetPosition());
-			SoftPhys::Render(l);
-		}
-	}
-	if (status) {
-		glEnable(GL_LIGHTING);
-	}
-
-	// Render all cloths
-	for (int i = 0, size = cloths.GetCount(); i < size; ++i) {
-		cloths[i]->Render(dbg_render);
+		FixedFunctionSubdivTetrahedron(a, ab, ac, div - 1, r);
+		FixedFunctionSubdivTetrahedron(b, bc, ab, div - 1, r);
+		FixedFunctionSubdivTetrahedron(c, ac, bc, div - 1, r);
+		FixedFunctionSubdivTetrahedron(ab, bc, ac, div - 1, r); 
 	}
 }
 
+void FixedFunctionSphere(int numDivisions, float radius) {
+	static float X = 0.525731112119133606f;
+	static float Y = 0.0f;
+	static float Z = 0.850650808352039932f;
 
-void Cloth::Render(bool debug) {
+	static float vdata[12][3] = {
+		{ -X,Y,Z },{ X,Y,Z },{ -X,Y,-Z },{ X,Y,-Z },
+		{ Y,Z,X },{ Y,Z,-X },{ Y,-Z,X },{ Y,-Z,-X },
+		{ Z,X,Y },{ -Z,X,Y },{ Z,-X,Y },{ -Z,-X,Y } 
+	};
+	static int tindices[20][3] = { 
+		{ 0,4,1 },{ 0,9,4 },{ 9,5,4 },{ 4,5,8 },{ 4,8,1 },
+		{ 8,10,1 },{ 8,3,10 },{ 5,3,8 },{ 5,2,3 },{ 2,7,3 },
+		{ 7,10,3 },{ 7,6,10 },{ 7,11,6 },{ 11,0,6 },{ 0,1,6 },
+		{ 6,1,10 },{ 9,0,11 },{ 9,11,2 },{ 9,2,5 },{ 7,2,11 } 
+	};
+
+	glBegin(GL_TRIANGLES);
+
+	for (int i = 0; i < 20; ++i) {
+		FixedFunctionSubdivTetrahedron(
+			vdata[tindices[i][0]], vdata[tindices[i][1]], vdata[tindices[i][2]], numDivisions, radius
+		);
+	}
+
+	glEnd();
+}
+
+void FixedFunctionCube() {
+	FixedFunctionCube(1.0f, 1.0f, 1.0f);
+}
+
+void FixedFunctionOrigin(bool depthTest, bool twoSided) {
+	bool isLit = glIsEnabled(GL_LIGHTING) == GL_TRUE;
+	bool depthOn = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE;
+
+	if (isLit) {
+		glDisable(GL_LIGHTING);
+	}
+	if (depthOn && !depthTest) {
+		glDisable(GL_DEPTH_TEST);
+	} else if (depthTest) {
+		glEnable(GL_DEPTH_TEST);
+	}
+
+	glBegin(GL_LINES);
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(1.0f, 0.0f, 0.0f);
+	if (twoSided) {
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(-1.0f, 0.0f, 0.0f);
+	}
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 1.0f, 0.0f);
+	if (twoSided) {
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, -1.0f, 0.0f);
+	}
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glVertex3f(0.0f, 0.0f, 0.0f);
+	glVertex3f(0.0f, 0.0f, 1.0f);
+	if (twoSided) {
+		glVertex3f(0.0f, 0.0f, 0.0f);
+		glVertex3f(0.0f, 0.0f, -1.0f);
+	}
+	glEnd();
+
+	if (isLit) {
+		glEnable(GL_LIGHTING);
+	}
+	if (depthOn) {
+		glEnable(GL_DEPTH_TEST);
+	}
+}
+
+void FixedFunctionOrigin(bool depthTest) {
+	FixedFunctionOrigin(depthTest, false);
+}
+
+void FixedFunctionOrigin() {
+	FixedFunctionOrigin(false, false);
+}
+
+template<>
+void Wrap<Line>::Refresh(GfxDataState& s) {
+	glBegin(GL_LINES);
+	glVertex3f(start[0], start[1], start[2]);
+	glVertex3f(end[0], end[1], end[2]);
+	glEnd();
+}
+
+template<>
+void Wrap<Sphere>::Refresh(GfxDataState& s) {
+	glPushMatrix();
+
+	glTranslatef(position[0], position[1], position[2]);
+	FixedFunctionSphere(2, radius);
+
+	glPopMatrix();
+}
+
+template<>
+void Wrap<OBB>::Refresh(GfxDataState& s) {
+	glPushMatrix();
+
+	mat4 scale = TS::scale(size);
+	mat4 rotation = orientation.Extend();
+	mat4 translation = Translation(position);
+
+	// SRT: Scale First, Rotate Second, Translate Last
+	// orientation = roll * pitch * yaw;
+	mat4 transform = scale * rotation * translation;
+	
+	// Using GL pipe stuff:
+	// glTranslate(obb.position[0], obb.position[1], obb.position[2]);
+	// Orientation = yaw * pitch * roll
+	// glRotate??? Probably do a matrix multiplication instead
+	// glScale(obb.size[0], obb.size[1], obb.size[2]);
+
+	glMultMatrixf(transform.AsArray());
+	FixedFunctionCube();
+	glPopMatrix();
+}
+
+
+void PhysicsSystem::Refresh(GfxDataState& s) {
+	int i = 0;
+	for (Space* sp : spaces) for(Geometry* g : sp->geoms) {
+		g->Refresh(s);
+		i++;
+	}
+
+	for (OBB_& obb : constraints)
+		obb.Refresh(s);
+	
+	if (s.dbg_render) {
+		for (CollisionManifold& cm : results)
+			cm.Refresh(s);
+	}
+
+	for (Spring& sp : springs)
+		sp.Refresh(s);
+
+	for (Cloth* c : cloths)
+		c->Refresh(s);
+	
+}
+
+
+void Cloth::Refresh(GfxDataState& s) {
 	static const float redDiffuse[]{ 200.0f / 255.0f, 0.0f, 0.0f, 0.0f };
 	static const float redAmbient[]{ 200.0f / 255.0f, 50.0f / 255.0f, 50.0f / 255.0f, 0.0f };
 	static const float zero[] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1002,9 +870,9 @@ void Cloth::Render(bool debug) {
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, redDiffuse);
 	glLightfv(GL_LIGHT0, GL_SPECULAR, zero);
 
-	if (debug) {
+	if (s.dbg_render) {
 		for (int i = 0, size = verts.GetCount(); i < size; ++i) {
-			verts[i].Render();
+			verts[i].Refresh(s);
 		}
 
 		GLboolean status;
@@ -1012,51 +880,44 @@ void Cloth::Render(bool debug) {
 		glDisable(GL_LIGHTING);
 		
 		glColor3f(1.0f, 0.0f, 1.0f);
-		for (int i = 0, size = structural.GetCount(); i < size; ++i) {
-			if (structural[i].GetP1() == 0 || structural[i].GetP2() == 0) {
+		for (Spring& p : structural) {
+			if (p.GetP1() == 0 || p.GetP2() == 0)
 				continue;
-			}
-
-			Line l(structural[i].GetP1()->GetPosition(), structural[i].GetP2()->GetPosition());
-			::Render(l);
+			
+			p.Refresh(s);
 		}
 
 		glColor3f(1.0f, 1.0f, 0.0f);
-		for (int i = 0, size = shear.GetCount(); i < size; ++i) {
-			if (shear[i].GetP1() == 0 || shear[i].GetP2() == 0) {
+		for (Spring& p : shear) {
+			if (p.GetP1() == 0 || p.GetP2() == 0)
 				continue;
-			}
-
-			Line l(shear[i].GetP1()->GetPosition(), shear[i].GetP2()->GetPosition());
-			::Render(l);
+			
+			p.Refresh(s);
 		}
 
 		glColor3f(0.0f, 1.0f, 1.0f);
-		for (int i = 0, size = bend.GetCount(); i < size; ++i) {
-			if (bend[i].GetP1() == 0 || bend[i].GetP2() == 0) {
+		for (Spring& p : bend) {
+			if (p.GetP1() == 0 || p.GetP2() == 0)
 				continue;
-			}
-
+			
+			// Visualization
+			/*
 			vec3 p1 = bend[i].GetP1()->GetPosition();
 			vec3 p2 = bend[i].GetP2()->GetPosition();
-
-			// Visualization
-			/*p1.y += 0.1f;
+			p1.y += 0.1f;
 			p2.y += 0.1f;
 			for (int j = i; j >= 0; --j) {
 				p1.y += 0.1f;
 				p2.y += 0.1f;
 			}*/
 
-			Line l(p1, p2);
-			::Render(l);
+			p.Refresh(s);
 		}
-
-		if (status) {
-			glEnable(GL_LIGHTING);
-		}
+		
 	}
 	else {
+		TODO
+		#if 0
 		for (int x = 0; x < clothSize - 1; ++x) {
 			for (int z = 0; z < clothSize - 1; ++z) {
 				int tl = z * clothSize + x;
@@ -1071,7 +932,104 @@ void Cloth::Render(bool debug) {
 				::Render(t2, true);
 			}
 		}
+		#endif
 	}
+}
+
+void RigidbodyVolume::Refresh(GfxDataState& s) {
+	SynchCollisionVolumes();
+
+	if (type == RIGIDBODY_TYPE_SPHERE) {
+		sphere.Refresh(s);
+	}
+	else if (type == RIGIDBODY_TYPE_BOX) {
+		if (s.dbg_render) {
+			box.Refresh(s);
+		}
+		else {
+			GetEdges(box, edges);
+			RefreshEdges(s);
+		}
+	}
+}
+
+void RigidbodyVolume::RefreshEdges(GfxDataState& s) {
+	glBegin(GL_LINES);
+	for (int i = 0; i < edges.GetCount(); ++i) {
+		vec3 p1 = edges[i].start;
+		vec3 p2 = edges[i].end;
+		glVertex3f(p1[0], p1[1], p1[2]);
+		glVertex3f(p2[0], p2[1], p2[2]);
+	}
+	glEnd();
+}
+
+void Spring::Refresh(GfxDataState& s) {
+	if (p1 == 0 || p2 == 0) {
+		TODO
+		// if gfxobj, free gfxobj
+	}
+	else {
+		l.Refresh(s);
+	}
+	
+}
+
+void DistanceJoint::Refresh(GfxDataState& s) {
+	TODO
+	#if 0
+	vec3 pos1 = p1->GetPosition();
+	vec3 pos2 = p2->GetPosition();
+	Line l(pos1, pos2);
+	::Render(l);
+	#endif
+}
+
+void Particle::Refresh(GfxDataState& s) {
+	vis.position = position,
+	vis.radius = 0.1f;
+	vis.Refresh(s);
+}
+
+void CollisionManifold::Refresh(GfxDataState& s) {
+	if (!colliding) {
+		return;
+	}
+
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POINTS);
+	for (auto& c : contacts) {
+		glVertex3f(c[0], c[1], c[2]);
+	}
+	glEnd();
+
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glBegin(GL_LINES);
+	vec3 center = vec3();
+	for (const vec3& start : contacts) {
+		vec3 end = start + normal * depth;
+		center = center + start;
+
+		glVertex3fv(start.data);
+		glVertex3fv(end.data);
+	}
+	glEnd();
+
+	if (contacts.GetCount() == 0) {
+		return;
+	}
+	float denom = 1.0f / (float)contacts.GetCount();
+	center = center * denom;
+
+	glColor3f(0.0f, 0.0f, 1.0f);
+	glBegin(GL_LINES);
+	vec3 start = center;
+	vec3 end = center + normal;
+
+	glVertex3fv(start.data);
+	glVertex3fv(end.data);
+	glEnd();
+
 }
 
 }

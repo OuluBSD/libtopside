@@ -31,8 +31,8 @@ public:
 	float friction;
 #endif
 
-	OBB box;
-	Sphere sphere;
+	OBB_ box;
+	Sphere_ sphere;
 public:
 
 	inline RigidbodyVolume() :
@@ -61,20 +61,31 @@ public:
 
 	virtual ~RigidbodyVolume() { }
 
-	virtual void Update(float dt); // Update Position
-
+	void Update(float dt) override; // Update Position
+	
 	float InvMass();
 #ifndef LINEAR_ONLY
 	mat4 InvTensor();
 #endif
 
-	virtual void ApplyForces();
+	void ApplyForces() override;
 	void SynchCollisionVolumes();
 
 	virtual void AddLinearImpulse(const vec3& impulse);
 #ifndef LINEAR_ONLY
 	virtual void AddRotationalImpulse(const vec3& point, const vec3& impulse);
 #endif
+
+
+public:
+	#if SOFTPHYS_RENDER
+	Vector<Line> edges;
+	
+	void Refresh(GfxDataState& s) override;
+	void RefreshEdges(GfxDataState& s);
+	#endif
+	
+	
 };
 
 CollisionManifold FindCollisionFeatures(RigidbodyVolume& ra, RigidbodyVolume& rb);

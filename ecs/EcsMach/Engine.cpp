@@ -185,6 +185,14 @@ void Engine::Visit(RuntimeVisitor& vis) {
 		vis.Visit(iter());
 }
 
+void Engine::AddToUpdateList(ComponentBase* c) {
+	VectorFindAdd(update_list, c);
+}
+
+void Engine::RemoveFromUpdateList(ComponentBase* c) {
+	VectorRemoveKey(update_list, c);
+}
+
 
 
 

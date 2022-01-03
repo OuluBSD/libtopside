@@ -43,7 +43,7 @@ void Particle::ApplyForces() {
 #endif
 }
 
-void Particle::SolveConstraints(const Vector<OBB>& constraints) {
+void Particle::SolveConstraints(const Vector<OBB_>& constraints) {
 	int size = constraints.GetCount();
 	for (int i = 0; i < size; ++i) {
 		Line traveled(old_position, position);

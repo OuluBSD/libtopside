@@ -190,6 +190,7 @@ struct OBB : Moveable<OBB> {
 	inline OBB() : size(1, 1, 1) {}
 	inline OBB(const vec3& p, const vec3& s) : position(p), size(s) { }
 	inline OBB(const vec3& p, const vec3& s, const mat3& o) : position(p), size(s), orientation(o) {}
+	
 };
 
 struct Plane : Moveable<Plane> {

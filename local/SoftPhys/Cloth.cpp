@@ -151,7 +151,7 @@ void Cloth::Update(float dt) {
 	}
 }
 
-void Cloth::SolveConstraints(const Vector<OBB>& constraints) {
+void Cloth::SolveConstraints(const Vector<OBB_>& constraints) {
 	for (int i = 0, size = verts.GetCount(); i < size; ++i) {
 		verts[i].SolveConstraints(constraints);
 	}
