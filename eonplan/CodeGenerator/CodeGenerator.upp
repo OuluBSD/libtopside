@@ -1,0 +1,11 @@
+uses
+	ChainLib,
+	IfaceLib;
+
+file
+	CodeGenerator.h,
+	CodeGenerator.cpp;
+
+mainconfig
+	"" = "";
+

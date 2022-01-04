@@ -1,5 +1,7 @@
 #include "SoftPhysTests.h"
 
+#include <Graphics/IfaceOgl.h>
+
 NAMESPACE_TOPSIDE_BEGIN
 namespace SoftPhys {
 
@@ -916,7 +918,6 @@ void Cloth::Refresh(GfxDataState& s) {
 		
 	}
 	else {
-		TODO
 		#if 0
 		for (int x = 0; x < clothSize - 1; ++x) {
 			for (int z = 0; z < clothSize - 1; ++z) {
@@ -966,7 +967,6 @@ void RigidbodyVolume::RefreshEdges(GfxDataState& s) {
 
 void Spring::Refresh(GfxDataState& s) {
 	if (p1 == 0 || p2 == 0) {
-		TODO
 		// if gfxobj, free gfxobj
 	}
 	else {
@@ -976,7 +976,6 @@ void Spring::Refresh(GfxDataState& s) {
 }
 
 void DistanceJoint::Refresh(GfxDataState& s) {
-	TODO
 	#if 0
 	vec3 pos1 = p1->GetPosition();
 	vec3 pos2 = p2->GetPosition();

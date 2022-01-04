@@ -1,0 +1,10 @@
+description "\377B60,66,171";
+
+uses
+	IfaceCore;
+
+file
+	IfaceLib.h,
+	IfaceLib.cpp,
+	Ifaces.h;
+

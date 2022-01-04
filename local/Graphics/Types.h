@@ -45,11 +45,6 @@ GFX_RENDSYS_LIST
 
 namespace GVar {
 
-typedef enum {
-	DRAW_FRAMEBUFFER,
-	READ_FRAMEBUFFER,
-} FramebufferTarget;
-
 typedef enum : uint32 {
 	COLOR0_EXT		= 1 << 0
 } RenderTarget;

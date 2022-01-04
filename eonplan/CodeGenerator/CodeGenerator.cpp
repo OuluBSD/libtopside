@@ -1,4 +1,4 @@
-#include "DebugPlan.h"
+#include "CodeGenerator.h"
 using namespace UPP;
 using namespace TS;
 
@@ -73,20 +73,35 @@ bool Export(CompilationUnit& cu) {
 CONSOLE_APP_MAIN {
 	SetCoutLog();
 	
-	Plan::Factory::Dump();
+	int have_code = 3;
+	if (CommandLine().GetCount() == 1)
+		have_code = StrInt(CommandLine()[0]);
 	
-	CompilationUnit	cu;
+	bool have_atoms = have_code & 1;
+	bool have_ifaces = have_code & 2;
 	
-	cu.WeakHint(HINT_PKG, "AtomLocal");
-	cu.WeakHint(HINT_FILE, "Generated");
-	
-	Plan::Factory::Export(cu);
-	
-	
-	if (!Export(cu)) {
-		LOG("Plan export failed.");
+	if (have_atoms) {
+		Plan::Factory::Dump();
+		
+		CompilationUnit	cu;
+		
+		cu.WeakHint(HINT_PKG, "AtomLocal");
+		cu.WeakHint(HINT_FILE, "Generated");
+		
+		Plan::Factory::Export(cu);
+		
+		if (!Export(cu)) {
+			LOG("Plan export failed.");
+		}
+		else {
+			LOG("Plan export was a success!");
+		}
 	}
-	else {
-		LOG("Plan export was a success!");
+	
+	if (have_ifaces) {
+		
+		
+		TODO
 	}
+	
 }
