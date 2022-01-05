@@ -1,2 +1,8 @@
 #include "IfaceLib.h"
 
+
+NAMESPACE_PLAN_BEGIN
+
+
+
+NAMESPACE_PLAN_END

@@ -6,5 +6,9 @@
 #define NAMESPACE_PLAN_BEGIN	namespace TS { namespace Plan {
 #define NAMESPACE_PLAN_END		}}
 
+#include "Defs.h"
+#include "Package.h"
+#include "Lib.h"
+
 
 #endif

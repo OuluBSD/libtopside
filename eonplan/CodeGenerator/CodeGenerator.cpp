@@ -80,28 +80,30 @@ CONSOLE_APP_MAIN {
 	bool have_atoms = have_code & 1;
 	bool have_ifaces = have_code & 2;
 	
+	CompilationUnit	cu;
+	
 	if (have_atoms) {
 		Plan::Factory::Dump();
-		
-		CompilationUnit	cu;
 		
 		cu.WeakHint(HINT_PKG, "AtomLocal");
 		cu.WeakHint(HINT_FILE, "Generated");
 		
 		Plan::Factory::Export(cu);
-		
-		if (!Export(cu)) {
-			LOG("Plan export failed.");
-		}
-		else {
-			LOG("Plan export was a success!");
-		}
 	}
 	
 	if (have_ifaces) {
+		Plan::IfaceLib::Dump();
 		
+		cu.WeakHint(HINT_PKG, "");
+		cu.WeakHint(HINT_FILE, "");
 		
-		TODO
+		Plan::IfaceLib::Export(cu);
 	}
 	
+	if (!Export(cu)) {
+		LOG("Plan export failed.");
+	}
+	else {
+		LOG("Plan export was a success!");
+	}
 }

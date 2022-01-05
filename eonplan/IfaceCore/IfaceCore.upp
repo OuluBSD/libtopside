@@ -5,5 +5,10 @@ uses
 
 file
 	IfaceCore.h,
-	IfaceCore.cpp;
+	IfaceCore.cpp,
+	Defs.h,
+	Package.h,
+	Package.cpp,
+	Lib.h,
+	Lib.cpp;
 

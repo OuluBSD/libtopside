@@ -6,5 +6,5 @@ uses
 file
 	IfaceLib.h,
 	IfaceLib.cpp,
-	Ifaces.h;
+	Gfx.cpp;
 

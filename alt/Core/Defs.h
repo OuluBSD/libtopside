@@ -141,7 +141,6 @@ class Stream;  Stream& VppLog(); void Panic(); void Panic(const char* msg); void
 #endif
 #define PANIC(msg) ASSERT_(false, msg); UNREACHABLE
 
-#define PKG(x) <x/x.h>
 
 
 #if defined flagGUI && !defined flagSCREEN
