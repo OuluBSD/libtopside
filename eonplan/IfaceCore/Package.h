@@ -5,8 +5,12 @@ NAMESPACE_PLAN_BEGIN
 
 struct Class {
 	String name;
+	String cpp_name;
+	String t_name;
+	String inherits;
 	
 	Class& SetName(String s) {name = s; return *this;}
+	Class& Inherit(String s) {ASSERT(inherits.IsEmpty()); inherits = s; return *this;}
 	String GetTreeString(int indent);
 };
 
@@ -51,6 +55,7 @@ struct Function {
 	Function& Arg(String param);
 	Function& Ret(String type);
 	String GetTreeString(int indent);
+	String GetDeclarationString() const;
 	
 };
 
@@ -73,18 +78,33 @@ struct Vendor {
 };
 
 struct Package {
+	
+protected:
 	Namespace ns;
 	Interface iface;
 	ArrayMap<String, Vendor> vendors;
+	Index<String> deps;
+	Index<String> main_flags;
+	RGBA clr;
+	
+	void SetColor(int r, int g, int b) {clr.r = r; clr.b = b; clr.g = g;}
+	void AddDependency(String s) {deps.FindAdd(s);}
+	void AddMainFlag(String s) {main_flags.FindAdd(s);}
+	
+public:
+	Package();
 	
 	Vendor& AddVendor(String name);
 	
 	virtual const char* GetTitle() const = 0;
 	virtual const char* GetAbbreviation() const = 0;
+	virtual char GetAbbreviationLetter() const = 0;
 	
 	String GetTreeString(int indent);
 	void Dump();
-	void Export(CompilationUnit& cu);
+	bool Export(CompilationUnit& cu);
+	bool Export();
+	
 	
 };
 

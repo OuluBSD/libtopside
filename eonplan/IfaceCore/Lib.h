@@ -12,6 +12,7 @@ public:
 	
 	static void Dump();
 	static void Export(CompilationUnit& cu);
+	static void Export();
 	static void Add(Package* p) {Packages().Add(p);}
 	
 };

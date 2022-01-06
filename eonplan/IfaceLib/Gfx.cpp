@@ -3,8 +3,13 @@
 NAMESPACE_PLAN_BEGIN
 
 
-PKG(Graphics, Gfx) {
+PKG(Graphics, Gfx, G) {
 	IfaceLib::Add(this);
+	
+	COLOR(64,161,0)
+	MAINFLAG(Screen)
+	DEPENDENCY(Geometry)
+	DEPENDENCY(SoftRend)
 	
 	NAMESPACE {
 		ENUM(RenderTarget) {
@@ -20,27 +25,33 @@ PKG(Graphics, Gfx) {
 			
 		}
 		CLASS(DataState) {
+			INHERIT(ErrorReporter)
 			
 		}
 		CLASS(InputState) {
+			INHERIT(ErrorReporter)
 			
 		}
 		CLASS(Framebuffer) {
+			INHERIT(ErrorReporter)
 			
 		}
 		CLASS(Compiler) {
+			INHERIT(ErrorReporter)
 			
 		}
 		CLASS(Linker) {
+			INHERIT(ErrorReporter)
 			
 		}
-		CLASS(ShaderState) {
+		/*CLASS(ShaderState) {
 			
-		}
+		}*/
 		CLASS(ShaderPipeline) {
 			
 		}
 		CLASS(RuntimeState) {
+			INHERIT(ErrorReporter)
 			
 		}
 		CLASS(ContextState) {
@@ -50,6 +61,7 @@ PKG(Graphics, Gfx) {
 			
 		}
 		CLASS(StateDraw) {
+			INHERIT(Draw)
 			
 		}
 		CLASS(Buffer) {

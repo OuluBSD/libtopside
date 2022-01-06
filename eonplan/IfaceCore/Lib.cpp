@@ -13,5 +13,10 @@ void IfaceLib::Export(CompilationUnit& cu) {
 		p->Export(cu);
 }
 
+void IfaceLib::Export() {
+	for (Package* p : Packages())
+		p->Export();
+}
+
 
 NAMESPACE_PLAN_END

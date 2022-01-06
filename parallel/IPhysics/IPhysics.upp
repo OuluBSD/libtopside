@@ -1,0 +1,17 @@
+description "\377B113,42,150";;
+
+uses
+	Local,
+	SoftPhys;
+
+file
+	IPhysics.h,
+	Enums.h,
+	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = "Screen"
+
