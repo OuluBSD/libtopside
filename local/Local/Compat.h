@@ -102,7 +102,7 @@ typedef Image RawSysTexture;
 template <class T> inline int64 ToInt(const T& o) {return o.ToInt();}
 template<> inline int64 ToInt(const bool& o) {return (int64)o;}
 template<> inline int64 ToInt(const int& o) {return (int64)o;}
-template<> inline int64 ToInt(const int32& o) {return (int64)o;}
+//template<> inline int64 ToInt(const int32& o) {return (int64)o;}
 template<> inline int64 ToInt(const int64& o) {return (int64)o;}
 template<> inline int64 ToInt(const byte& o) {return (int64)o;}
 template<> inline int64 ToInt(const char& o) {return (int64)o;}
@@ -117,7 +117,7 @@ template<> inline int64 ToInt(const Time& o) {return (int64)o.Get();}
 template <class T> inline double ToDouble(const T& o) {return o.ToDouble();}
 template<> inline double ToDouble(const bool& o) {return (double)o;}
 template<> inline double ToDouble(const int& o) {return (double)o;}
-template<> inline double ToDouble(const int32& o) {return (double)o;}
+//template<> inline double ToDouble(const int32& o) {return (double)o;}
 template<> inline double ToDouble(const int64& o) {return (double)o;}
 template<> inline double ToDouble(const byte& o) {return (double)o;}
 template<> inline double ToDouble(const char& o) {return (double)o;}

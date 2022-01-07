@@ -27,6 +27,7 @@ file
 	AvFile.cpp,
 	NetFile.cpp,
 	MidiFile.cpp,
+	MusicXmlFile.cpp,
 	Os.cpp,
 	Browser.cpp,
 	Math.cpp,
