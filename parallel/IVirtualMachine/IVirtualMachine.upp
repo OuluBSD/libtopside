@@ -1,0 +1,17 @@
+description "\377B56,170,0";;
+
+uses
+	Local,
+	Local;
+
+file
+	IVirtualMachine.h,
+	Enums.h,
+	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = ""
+

@@ -234,7 +234,7 @@ bool Package::Export() {
 		fout <<	"\t\"\" = \"";
 		for(int i = 0; i < main_flags.GetCount(); i++) {
 			if (i) fout << " ";
-			fout << main_flags[i];
+			fout << ToUpper(main_flags[i]);
 		}
 		fout << "\"\n\n";
 	}

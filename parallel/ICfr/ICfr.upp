@@ -1,0 +1,17 @@
+description "\377B26,185,123";;
+
+uses
+	Local,
+	Local;
+
+file
+	ICfr.h,
+	Enums.h,
+	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = ""
+

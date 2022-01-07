@@ -1,0 +1,17 @@
+description "\377B56,127,255";;
+
+uses
+	Local,
+	Local;
+
+file
+	IScript.h,
+	Enums.h,
+	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = ""
+

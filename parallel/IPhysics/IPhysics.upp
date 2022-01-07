@@ -13,5 +13,5 @@ file
 	TmplClasses.h;
 
 mainconfig
-	"" = "Screen"
+	"" = "SCREEN"
 

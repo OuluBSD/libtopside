@@ -5,7 +5,7 @@
 NAMESPACE_MIDI_BEGIN
 
 class Event : public Message {
-
+	
 public:
 	Event();
 	Event(int command);

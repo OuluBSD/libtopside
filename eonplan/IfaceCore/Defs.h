@@ -33,6 +33,8 @@
 #define FUNCTION3R(name, r, a0, a1, a2) i->AddFunction(#name).Ret(#r).Arg(#a0).Arg(#a1).Arg(#a2);
 #define FUNCTION4R(name, r, a0, a1, a2, a3) i->AddFunction(#name).Ret(#r).Arg(#a0).Arg(#a1).Arg(#a2).Arg(#a3);
 #define FUNCTION5R(name, r, a0, a1, a2, a3, a4) i->AddFunction(#name).Ret(#r).Arg(#a0).Arg(#a1).Arg(#a2).Arg(#a3).Arg(#a4);
+#define FUNCTION6R(name, r, a0, a1, a2, a3, a4, a5) i->AddFunction(#name).Ret(#r).Arg(#a0).Arg(#a1).Arg(#a2).Arg(#a3).Arg(#a4).Arg(#a5);
+#define FUNCTION7R(name, r, a0, a1, a2, a3, a4, a5, a6) i->AddFunction(#name).Ret(#r).Arg(#a0).Arg(#a1).Arg(#a2).Arg(#a3).Arg(#a4).Arg(#a5).Arg(#a6);
 #define VENDOR(name) for (Vendor* v = &AddVendor(#name); v; v = 0)
 #define DEPENDENCY(x) this->AddDependency(#x);
 #define MAINFLAG(x) this->AddMainFlag(#x);
