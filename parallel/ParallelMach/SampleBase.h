@@ -1,7 +1,7 @@
-#ifndef _SerialMach_SampleBase_h_
-#define _SerialMach_SampleBase_h_
+#ifndef _ParallelMach_SampleBase_h_
+#define _ParallelMach_SampleBase_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #define TYPE_LIST(endianess, pack_code, pack_sz) \
@@ -295,6 +295,6 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

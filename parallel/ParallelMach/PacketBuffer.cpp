@@ -1,6 +1,6 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 String TrackerInfo::ToString() const {
@@ -123,4 +123,11 @@ int PacketValue::GetSizeChannelSamples() const {
 
 
 
-NAMESPACE_SERIAL_END
+
+
+void PacketValue::StopTracking(TrackerInfo info) {TODO}
+void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p) {TODO}
+void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p) {TODO}
+void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p) {TODO}
+
+NAMESPACE_PARALLEL_END

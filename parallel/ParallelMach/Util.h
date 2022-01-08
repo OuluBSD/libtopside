@@ -1,7 +1,7 @@
-#ifndef _SerialMach_Util_h_
-#define _SerialMach_Util_h_
+#ifndef _ParallelMach_Util_h_
+#define _ParallelMach_Util_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 String RealizeEonFile(String path);
 
@@ -35,9 +35,9 @@ String RealizeEonFile(String path);
 MACHVER_FWDFN_LIST
 #undef MACHVER_FWD_FN
 
-#define MACHVER_ENTER(fn)		{static byte __; Serial::MachineVerifier_OnEnter##fn((size_t)&__);}
-#define MACHVER_LEAVE(fn)		{static byte __; Serial::MachineVerifier_OnLeave##fn((size_t)&__);}
-#define MACHVER_STATUS(fn, ptr)	{static byte __; Serial::MachineVerifier_On##fn(ptr);}
+#define MACHVER_ENTER(fn)		{static byte __; Parallel::MachineVerifier_OnEnter##fn((size_t)&__);}
+#define MACHVER_LEAVE(fn)		{static byte __; Parallel::MachineVerifier_OnLeave##fn((size_t)&__);}
+#define MACHVER_STATUS(fn, ptr)	{static byte __; Parallel::MachineVerifier_On##fn(ptr);}
 
 class ScriptLoopLoader;
 
@@ -55,6 +55,6 @@ void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll);
 
 #endif
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

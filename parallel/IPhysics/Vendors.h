@@ -29,9 +29,23 @@ FYS_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct FysTos {
+	using NativeGeom = uint32;
+	using NativeBody = uint32;
+	using NativeWorld = uint32;
+	using NativeSpace = uint32;
+	using NativeJoint = uint32;
+	using NativeMass = uint32;
+	using NativeQuat = uint32;
+	using NativeFeedback = uint32;
+	using NativeJointGroup = uint32;
+	using NativeThreading = uint32;
+	using NativeThreadPool = uint32;
+	using NativeContact = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -40,7 +54,22 @@ struct FysTos {
 };
 
 struct FysOde {
+	using NativeGeom = uint32;
+	using NativeBody = uint32;
+	using NativeWorld = uint32;
+	using NativeSpace = uint32;
+	using NativeJoint = uint32;
+	using NativeMass = uint32;
+	using NativeQuat = uint32;
+	using NativeFeedback = uint32;
+	using NativeJointGroup = uint32;
+	using NativeThreading = uint32;
+	using NativeThreadPool = uint32;
+	using NativeContact = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

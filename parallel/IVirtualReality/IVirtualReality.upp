@@ -8,7 +8,6 @@ file
 	IVirtualReality.h,
 	Enums.h,
 	Vendors.h,
-	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

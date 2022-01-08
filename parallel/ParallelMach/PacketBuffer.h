@@ -1,8 +1,8 @@
-#ifndef _SerialMach_PacketBuffer_h_
-#define _SerialMach_PacketBuffer_h_
+#ifndef _ParallelMach_PacketBuffer_h_
+#define _ParallelMach_PacketBuffer_h_
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 struct TrackerInfo {
@@ -223,7 +223,7 @@ struct PacketBufferBasePtr :
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

@@ -31,8 +31,8 @@ PKG(Audio, Aud, A) {
 		FUNCTION1V(ClearSinkDevice,   NativeSinkDevice&)
 		FUNCTION1V(ClearSourceDevice, NativeSourceDevice&)
 		
-		FUNCTION2R(SetSinkCallback,   bool, void*, SinkCallbackFn)
-		FUNCTION2R(SetSourceCallback, bool, void*, SourceCallbackFn)
+		FUNCTION2R(SetSinkCallback,   bool, void*, DataCallbackFn)
+		FUNCTION2R(SetSourceCallback, bool, void*, DataCallbackFn)
 		
 		FUNCTION1R(GetSinkFormatCount,   int, NativeSinkDevice&)
 		FUNCTION1R(GetSourceFormatCount, int, NativeSourceDevice&)

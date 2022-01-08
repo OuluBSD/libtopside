@@ -1,6 +1,6 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void SimpleValue::Exchange(Ex& e) {
@@ -146,4 +146,4 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

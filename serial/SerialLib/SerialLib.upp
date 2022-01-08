@@ -1,4 +1,4 @@
-description "Components\377B0,87,128";
+description "Components\377B128,0,0";
 
 uses
 	SerialPlanner;

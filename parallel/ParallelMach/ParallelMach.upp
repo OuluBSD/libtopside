@@ -1,0 +1,26 @@
+description "\377B41,32,114";
+
+uses
+	Local;
+
+file
+	ParallelMach.h,
+	Types.h,
+	Types.cpp,
+	Util.h,
+	Util.cpp,
+	SampleBase.h,
+	SampleBase.cpp,
+	Samples.h,
+	Samples.cpp,
+	Formats.h,
+	Formats.cpp,
+	PacketBuffer.h,
+	PacketBuffer.cpp,
+	ValDevScope.h,
+	ValDevScope.cpp,
+	Defs.h,
+	Machine.h,
+	Machine.cpp,
+	Audio.cpp;
+

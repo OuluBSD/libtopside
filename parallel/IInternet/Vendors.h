@@ -27,9 +27,12 @@ NET_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct NetPosix {
+	using NativeSocket = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -38,7 +41,11 @@ struct NetPosix {
 };
 
 struct NetWin32 {
+	using NativeSocket = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -47,7 +54,11 @@ struct NetWin32 {
 };
 
 struct NetEnet {
+	using NativeSocket = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -56,7 +67,11 @@ struct NetEnet {
 };
 
 struct NetNullSerial {
+	using NativeSocket = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

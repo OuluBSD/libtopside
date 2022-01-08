@@ -1,0 +1,11 @@
+description "\377B41,32,114";
+
+uses
+	ParallelCore,
+	IAudio;
+
+file
+	ParallelLib.h,
+	Interfaces.h,
+	ParallelLib.cpp;
+

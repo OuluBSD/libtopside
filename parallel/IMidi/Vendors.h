@@ -25,9 +25,14 @@ MID_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct MidPortmidi {
+	using NativeSinkDevice = uint32;
+	using NativeSourceDevice = uint32;
+	using NativeEvent = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

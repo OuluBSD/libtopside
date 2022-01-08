@@ -41,9 +41,12 @@ UI_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct UiImgui {
+	using NativeCtrl = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

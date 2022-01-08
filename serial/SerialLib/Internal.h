@@ -2,7 +2,8 @@
 #define _SerialLib_Internal_h_
 
 #include "SerialLib.h"
-#include <AtomLocal/AtomLocal.h>
+#include <SerialPlanner/SerialPlanner.h>
+//#include <AtomLocal/AtomLocal.h>
 
 
 #endif

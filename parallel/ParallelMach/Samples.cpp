@@ -1,6 +1,6 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 String MidiSample::ToString(Type t) {
@@ -125,4 +125,4 @@ int DataSample::GetSize(Type t) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

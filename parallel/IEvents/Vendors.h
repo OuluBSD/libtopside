@@ -27,9 +27,13 @@ EV_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct EvSdl {
+	using NativeContext = uint32;
+	using NativeEvents = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -38,7 +42,12 @@ struct EvSdl {
 };
 
 struct EvGlfw {
+	using NativeContext = uint32;
+	using NativeEvents = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -47,7 +56,12 @@ struct EvGlfw {
 };
 
 struct EvX11 {
+	using NativeContext = uint32;
+	using NativeEvents = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -56,7 +70,12 @@ struct EvX11 {
 };
 
 struct EvWin32 {
+	using NativeContext = uint32;
+	using NativeEvents = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

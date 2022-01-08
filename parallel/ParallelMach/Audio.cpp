@@ -1,7 +1,7 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <typename SRC, typename DST, bool SRC_NATIVE_ENDIAN, bool DST_NATIVE_ENDIAN>
@@ -88,4 +88,4 @@ bool AudioConvert(int src_ch_samples, const AudioFormat& src_fmt, const byte* sr
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

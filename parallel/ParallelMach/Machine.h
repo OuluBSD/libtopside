@@ -1,7 +1,7 @@
-#ifndef _SerialMach_Machine_h_
-#define _SerialMach_Machine_h_
+#ifndef _ParallelMach_Machine_h_
+#define _ParallelMach_Machine_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class MachineVerifier;
@@ -179,7 +179,7 @@ void SetActiveMachine(Machine& m);
 void ClearActiveMachine();
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 
 
@@ -187,14 +187,14 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 class SingleMachine {
-	Serial::Machine mach;
+	Parallel::Machine mach;
 	
 	bool Open(void(*arg_fn)());
 	void Close();
 	
 public:
-	SingleMachine()		{Serial::SetActiveMachine(mach);}
-	~SingleMachine()	{Serial::ClearActiveMachine();}
+	SingleMachine()		{Parallel::SetActiveMachine(mach);}
+	~SingleMachine()	{Parallel::ClearActiveMachine();}
 	
 	void Run(void(*fn)(), void(*arg_fn)());
 	

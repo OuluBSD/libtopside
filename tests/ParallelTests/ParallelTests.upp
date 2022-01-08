@@ -1,0 +1,11 @@
+uses
+	ParallelLib;
+
+file
+	ParallelTests.h,
+	ParallelTest.cpp;
+
+mainconfig
+	"" = "",
+	"" = "SCREEN";
+

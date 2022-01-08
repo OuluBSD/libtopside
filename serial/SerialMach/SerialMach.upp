@@ -1,27 +1,13 @@
 description "\377B114,32,32";
 
 uses
-	Local;
+	Local,
+	ParallelLib;
 
 file
 	SerialMach.h,
 	Generated.h,
+	Generated.cpp,
 	Types.h,
-	Types.cpp,
-	Util.h,
-	Util.cpp,
-	SampleBase.h,
-	SampleBase.cpp,
-	Samples.h,
-	Samples.cpp,
-	Formats.h,
-	Formats.cpp,
-	PacketBuffer.h,
-	PacketBuffer.cpp,
-	ValDevScope.h,
-	ValDevScope.cpp,
-	Defs.h,
-	Machine.h,
-	Machine.cpp,
-	Audio.cpp;
+	Types.cpp;
 

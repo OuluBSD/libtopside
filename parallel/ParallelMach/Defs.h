@@ -1,8 +1,8 @@
-#ifndef _SerialMach_Defs_h_
-#define _SerialMach_Defs_h_
+#ifndef _ParallelMach_Defs_h_
+#define _ParallelMach_Defs_h_
 
 #if defined(flagWIN32) && defined(flagGUI)
-	#define SERIAL_APP_MAIN_(arg_fn) \
+	#define PARALLEL_APP_MAIN_(arg_fn) \
 	void GuiMainFn_(); \
 	\
 	int WINAPI WinMain(HINSTANCE hinst, HINSTANCE hprev, LPSTR cmdline, int show) {\
@@ -16,7 +16,7 @@
 	\
 	void GuiMainFn_()
 #else
-	#define SERIAL_APP_MAIN_(arg_fn) \
+	#define PARALLEL_APP_MAIN_(arg_fn) \
 	void GuiMainFn_(); \
 	\
 	extern "C" int main(int argc, char *argv[]) {\
@@ -29,11 +29,11 @@
 	void GuiMainFn_()
 #endif
 
-#define ECS_APP_MAIN			SERIAL_APP_MAIN_(::TS::Serial::MachineEcsInit)
-#define RENDER_APP_MAIN			SERIAL_APP_MAIN_(0)
+#define ECS_APP_MAIN			PARALLEL_APP_MAIN_(::TS::Parallel::MachineEcsInit)
+#define RENDER_APP_MAIN			PARALLEL_APP_MAIN_(0)
 
 #define DEFAULT_ECS_APP_MAIN \
-	ECS_INITIALIZE_DEFAULT_INTERNAL_EON_(TS::BindEcsToSerial) \
+	ECS_INITIALIZE_DEFAULT_INTERNAL_EON_(TS::BindEcsToParallel) \
 	ECS_APP_MAIN
 
 #ifdef flagMSC

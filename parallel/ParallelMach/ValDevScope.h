@@ -1,7 +1,7 @@
-#ifndef _SerialMach_ValDevScope_h_
-#define _SerialMach_ValDevScope_h_
+#ifndef _ParallelMach_ValDevScope_h_
+#define _ParallelMach_ValDevScope_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class Ex;
@@ -139,6 +139,6 @@ bool Convert(const Format& src_fmt, const byte* src, const Format& dst_fmt, byte
 bool Convert(const Packet& src, Packet& dst, bool keep_tracking=true);
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

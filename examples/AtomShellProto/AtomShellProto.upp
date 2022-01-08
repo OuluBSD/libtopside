@@ -1,0 +1,11 @@
+uses
+	SerialLib;
+
+file
+	AtomShellProto.h,
+	AtomShellProto.cpp;
+
+mainconfig
+	"" = "",
+	"" = "SCREEN";
+

@@ -4,17 +4,13 @@
 #ifndef _IImageFile_IImageFile_h_
 #define _IImageFile_IImageFile_h
 
-NAMESPACE_TOPSIDE_BEGIN
-
 #include <Local/Local.h>
 
 #include "Enums.h"
 #include "Vendors.h"
-#include "IfaceFuncs.inl"
 #include "BaseClasses.h"
 #include "TmplClasses.h"
 
-NAMESPACE_TOPSIDE_END
 
 #endif
 

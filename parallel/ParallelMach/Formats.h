@@ -1,7 +1,7 @@
-#ifndef _SerialMach_Formats_h_
-#define _SerialMach_Formats_h_
+#ifndef _ParallelMach_Formats_h_
+#define _ParallelMach_Formats_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #define STD_FMT_SIZE (4*16)
@@ -254,6 +254,6 @@ public:
 	
 };
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

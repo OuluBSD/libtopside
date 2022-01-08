@@ -27,9 +27,13 @@ SCR_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct ScrEsc {
+	using NativeRunner = uint32;
+	using NativeThread = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -38,7 +42,12 @@ struct ScrEsc {
 };
 
 struct ScrPython {
+	using NativeRunner = uint32;
+	using NativeThread = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -47,7 +56,12 @@ struct ScrPython {
 };
 
 struct ScrDuktape {
+	using NativeRunner = uint32;
+	using NativeThread = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

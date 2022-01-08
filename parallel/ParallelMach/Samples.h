@@ -1,7 +1,7 @@
-#ifndef _SerialMach_Samples_h_
-#define _SerialMach_Samples_h_
+#ifndef _ParallelMach_Samples_h_
+#define _ParallelMach_Samples_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class SoundSample : public BinarySample {
@@ -185,6 +185,6 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

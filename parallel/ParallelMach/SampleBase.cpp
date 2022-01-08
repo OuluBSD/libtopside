@@ -1,6 +1,6 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <> BinarySample::Type BinarySample::GetSampleType<uint8>() {return U8_LE;}
@@ -186,4 +186,4 @@ bool BinarySample::IsBigEndian(Type t) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

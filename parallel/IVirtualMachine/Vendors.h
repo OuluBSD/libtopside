@@ -25,9 +25,13 @@ VM_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct VmTos {
+	using NativeVirtualMachine = uint32;
+	using NativeThread = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

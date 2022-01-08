@@ -38,9 +38,21 @@ GFX_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct GfxCpu {
+	using NativeTexture = uint32;
+	using NativeShader = uint32;
+	using NativeColorBuffer = uint32;
+	using NativeDepthBuffer = uint32;
+	using NativeFrameBuffer = uint32;
+	using NativeVertexArray = uint32;
+	using NativeVertexBuffer = uint32;
+	using NativeElementBuffr = uint32;
+	using NativeProgram = uint32;
+	using Nativepipeline = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -49,7 +61,20 @@ struct GfxCpu {
 };
 
 struct GfxOgl {
+	using NativeTexture = uint32;
+	using NativeShader = uint32;
+	using NativeColorBuffer = uint32;
+	using NativeDepthBuffer = uint32;
+	using NativeFrameBuffer = uint32;
+	using NativeVertexArray = uint32;
+	using NativeVertexBuffer = uint32;
+	using NativeElementBuffr = uint32;
+	using NativeProgram = uint32;
+	using Nativepipeline = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

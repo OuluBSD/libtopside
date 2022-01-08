@@ -1,0 +1,8 @@
+description "\377B49,44,101";
+
+uses
+	ParallelMach;
+
+file
+	ParallelCore.h;
+

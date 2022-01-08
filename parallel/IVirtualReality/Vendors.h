@@ -35,9 +35,13 @@ VR_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct VrHolo {
+	using NativeMotionController = uint32;
+	using NativeMotionControllerSystem = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -46,7 +50,12 @@ struct VrHolo {
 };
 
 struct VrOvr {
+	using NativeMotionController = uint32;
+	using NativeMotionControllerSystem = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -55,7 +64,12 @@ struct VrOvr {
 };
 
 struct VrHmd {
+	using NativeMotionController = uint32;
+	using NativeMotionControllerSystem = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	

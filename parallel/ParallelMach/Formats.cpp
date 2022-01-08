@@ -1,6 +1,6 @@
-#include "SerialMach.h"
+#include "ParallelMach.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void AudioFormat::Set(SoundSample::Type type, int channels, int freq, int sample_rate) {
@@ -389,4 +389,4 @@ void Format::operator=(const Format& f) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

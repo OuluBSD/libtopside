@@ -5,7 +5,8 @@ uses
 	AtomLocal,
 	AtomMusic,
 	AtomEssential,
-	Shadertoy;
+	Shadertoy,
+	Default;
 
 uses(GUI) AtomCtrl;
 

@@ -200,7 +200,7 @@ bool Package::Export() {
 	file_list.Add(main_h);
 	file_list.Add("Enums.h");
 	file_list.Add("Vendors.h");
-	file_list.Add("IfaceFuncs.inl");
+	//file_list.Add("IfaceFuncs.inl");
 	file_list.Add("BaseClasses.h");
 	file_list.Add("TmplClasses.h");
 	
@@ -248,7 +248,6 @@ bool Package::Export() {
 		fout << "// DO NOT MODIFY THIS FILE!\n\n";
 		fout << "#ifndef _" + pkgname + "_" + pkgname + "_h_\n";
 		fout << "#define _" + pkgname + "_" + pkgname + "_h\n\n";
-		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
 
 		for (String dep : deps)
 			fout << "#include <" << dep << "/" << dep << ".h>\n";
@@ -258,7 +257,6 @@ bool Package::Export() {
 			fout << "#include \"" << file_list[i] << "\"\n";
 		fout << "\n";
 		
-		fout << "NAMESPACE_TOPSIDE_END\n";
 		fout << "\n#endif\n\n";
 	}
 	
@@ -368,12 +366,15 @@ bool Package::Export() {
 		
 		fout << "\n\n\n";
 		
-		fout << "VENDORSSZZ\n";
-		
 		for (Vendor& v : vendors.GetValues()) {
 			fout << "struct " << abbr << v.name << " {\n";
+			for (Class& c : iface.nat_cls.GetValues()) {
+				fout << "\tusing Native" << c.name << " = uint32;\n";
+			}
+			fout << "\ttypedef void (*DataCallbackFn)(void*, char* data, int size);\n";
+			fout << "\t\n";
 			fout << "\tstruct Thread {\n";
-			
+			fout << "\t\t\n";
 			fout << "\t};\n";
 			fout << "\tstatic Thread& Local() {thread_local static Thread t; return t;}\n";
 			

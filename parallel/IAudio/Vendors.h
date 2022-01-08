@@ -26,9 +26,13 @@ AUD_VNDR_LIST
 
 
 
-VENDORSSZZ
 struct AudSdl {
+	using NativeSinkDevice = uint32;
+	using NativeSourceDevice = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
@@ -37,7 +41,12 @@ struct AudSdl {
 };
 
 struct AudPortaudio {
+	using NativeSinkDevice = uint32;
+	using NativeSourceDevice = uint32;
+	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	
 	struct Thread {
+		
 	};
 	static Thread& Local() {thread_local static Thread t; return t;}
 	
