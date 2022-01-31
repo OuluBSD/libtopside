@@ -1,0 +1,11 @@
+uses
+	LocalCtrl;
+
+file
+	PlayEditor.h,
+	main.cpp,
+	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp;
+
+mainconfig
+	"" = "GUI";
+

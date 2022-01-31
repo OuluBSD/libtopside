@@ -1,0 +1,14 @@
+uses
+	LocalCtrl;
+
+file
+	Copying,
+	Adventure.h,
+	Demo.esc highlight cpp,
+	Adventure.cpp,
+	Engine.h,
+	Engine.cpp;
+
+mainconfig
+	"" = "GUI";
+

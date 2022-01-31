@@ -23,7 +23,9 @@
 #include <CtrlLib/CtrlLib.h>
 
 #ifdef UPP_VERSION
-	#define flagGUI
+	#ifndef flagGUI
+		#define flagGUI
+	#endif
 #endif
 
 #ifdef GUIPLATFORM_VIRTUALGUI_INCLUDE
