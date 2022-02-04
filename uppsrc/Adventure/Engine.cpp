@@ -19,9 +19,27 @@ void Program::reset_ui() {
 void Program::startup_script() {
 	reset_ui();
 	
-	change_room(rm_hall,  1);
+	Room* r = FindRoom("rm_hall");
+	ASSERT(r);
+	if (r)
+		change_room(*r,  1);
 }
 
+Room* Program::FindRoom(const String& name) {
+	TODO
+}
+
+EscValue& Program::Classes(SObj& s) {
+	TODO
+}
+
+String Program::State(SObj& s) {
+	TODO
+}
+
+String Program::VerbStr(Verb v) {
+	TODO
+}
 
 
 
@@ -34,145 +52,164 @@ void Program::shake(bool enabled) {
 }
 
 
-Program::Verb Program::find_default_verb(Object& obj) {
+Program::Verb Program::find_default_verb(SObj& obj) {
 	Verb default_verb = V_LOOKAT;
 
-	if (has_flag(obj.classes, "class_talkable"))
+	if (has_flag(Classes(obj), "class_talkable"))
 		default_verb = V_TALKTO;
-	else if (has_flag(obj.classes, "class_openable")) {
-		if (obj.state == "state_closed")
+	else if (has_flag(Classes(obj), "class_openable")) {
+		if (State(obj) == "state_closed")
 			default_verb = V_OPEN;
 		else
 			default_verb = V_CLOSE;
 	}
 
 	// now find the full verb definition
-	for (auto v : all(verbs)) {
+	/*for (auto v : all(verbs)) {
 		vi = get_verb(v);
 		if (vi[2] == default_verb) { default_verb = v; break; }
-	}
+	}*/
 	
 	return default_verb;
 }
 
 // actions to perform when object doesn't have an entry for (verb
-void Program::unsupported_action(Verb verb, Object& obj1, Object& obj2) {
-	bool is_actor = has_flag(obj1.classes, "class_actor");
+void Program::unsupported_action(Verb verb, SObj& obj1, SObj& obj2) {
+	bool is_actor = has_flag(Classes(obj1), "class_actor");
 
-	if (verb == V_WALKTO
+	if (verb == V_WALKTO)
 		return;
 
 	else if (verb == V_PICKUP)
-		say_line(is_actor ? "i don't need them" : "i don't need that");
+		say_line(obj1, is_actor ? "i don't need them" : "i don't need that");
 
 	else if (verb == V_USE)
-		say_line(
+		say_line(is_actor ? obj1 : obj2,
 			is_actor ? "i can't just *use* someone" :
-				((obj2 ? has_flag(obj2.classes, class_actor)) ?
+				(has_flag(Classes(obj2), "class_actor") ?
 					"i can't use that on someone!" : "that doesn't work"));
 
 	else if (verb == V_GIVE)
-		say_line(is_actor ? "i don't think i should be giving this away" : "i can't do that");
+		say_line(obj1, is_actor ? "i don't think i should be giving this away" : "i can't do that");
 
 	else if (verb == V_LOOKAT)
-		say_line(is_actor ? "i think it's alive" : "looks pretty ordinary");
+		say_line(obj1, is_actor ? "i think it's alive" : "looks pretty ordinary");
 
 	else if (verb == V_OPEN || verb == V_CLOSE)
-		say_line((is_actor ? "they don't" : "it doesn't")  + " seem to " + VerbStr(verb));
+		say_line(obj1, String(is_actor ? "they don't" : "it doesn't")  + " seem to " + VerbStr(verb));
 
 	else if (verb == V_PUSH || verb == V_PULL)
-		say_line(is_actor ? "moving them would accomplish nothing" : "it won't budge!");
+		say_line(obj1, is_actor ? "moving them would accomplish nothing" : "it won't budge!");
 
-	else if (verb == "talkto")
-		say_line(is_actor ? "erm ...  i don't think they want to talk" : "i am not talking to that!");
+	else if (verb == V_TALKTO)
+		say_line(obj1, is_actor ? "erm ...  i don't think they want to talk" : "i am not talking to that!");
 
 	else
-		say_line("hmm. no.");
+		say_line(obj1, "hmm. no.");
 	
 }
 
 
 
-function camera_at(val) {
+void Program::camera_at(const Point& val) {
 	// point center of camera at val, clear other cam values
-	cam_x, cam_pan_to_x, cam_following_actor = _center_camera(val);
+	Point c = _center_camera(val);
+	cam_x = c;
+	cam_pan_to_x = c;
+	cam_following_actor = 0;
 }
 
-function camera_follow(actor) {
+void Program::camera_follow(SObj& actor) {
 	stop_script(cam_script); // bg script
-
+	
 	// set target, clear other cam values
-	cam_following_actor, cam_pan_to_x = actor;
-
-	cam_script = function() {
-		// keep the camera following actor
-		// (until further notice)
-		while (cam_following_actor) {
-			// keep camera within "room" bounds
-			if (cam_following_actor.in_room == room_curr) cam_x = _center_camera(cam_following_actor);
-			yield();
-		}
-	};
-	start_script(cam_script, true); // bg script
-
+	cam_following_actor = &actor;
+	cam_pan_to_x = GetXY(actor);
+	
+	start_script(THISBACK(cam_script0), true); // bg script
+	
 	// auto-switch to room actor resides in
-	if (cam_following_actor.in_room != room_curr) change_room(cam_following_actor.in_room, 1);
+	Room* r = InRoom(*cam_following_actor);
+	if (r != room_curr)
+		change_room(*r, 1);
 }
 
-
-function camera_pan_to(val) {
-	// set target, but keep camera within "room" bounds, clear other cam values
-	cam_pan_to_x, cam_following_actor = _center_camera(val);
-
-	cam_script = function() {
-		// update the camera pan until reaches dest
-		while (cam_x ~= cam_pan_to_x) {
-			cam_x += sgn(cam_pan_to_x-cam_x)/2
-			// don't hog cpu
-			yield()
-		}
-		// pan complete
-		cam_pan_to_x = nil
-	};
-	start_script(cam_script, true); // bg script
-}
-
-
-function wait_for_camera() {
-	while (script_running(cam_script)) {
-		yield();
+void Program::cam_script0() {
+	// keep the camera following actor
+	// (until further notice)
+	while (cam_following_actor) {
+		// keep camera within "room" bounds
+		if (InRoom(*cam_following_actor) == room_curr)
+			cam_x = _center_camera(*cam_following_actor);
+		TODO // yield();
 	}
 }
 
+void Program::camera_pan_to(SObj& val) {
+	// set target, but keep camera within "room" bounds, clear other cam values
+	Point c = _center_camera(val);
+	cam_pan_to_x = c;
+	cam_following_actor = 0;
 
-function cutscene(type, func_cutscene, func_override) {
-	cut = {
+	cam_script.Clear();
+	
+	start_script(THISBACK(cam_script1), true); // bg script
+}
+
+void Program::cam_script1() {
+	
+	// update the camera pan until reaches dest
+	TODO
+	/*
+	while (cam_x ~= cam_pan_to_x) {
+		cam_x += sgn(cam_pan_to_x-cam_x)/2
+		// don't hog cpu
+		TODO // yield()
+	}*/
+	
+	// pan complete
+	cam_pan_to_x.Clear();
+}
+
+void Program::wait_for_camera() {
+	while (script_running(cam_script)) {
+		TODO // yield();
+	}
+}
+
+void Program::cutscene(SceneType type, Callback func_cutscene, Callback func_override) {
+	TODO /*cut = {
 		flags = type,
-		thread = cocreate(func_cutscene),
-		override = func_override,
+		thrd = cocreate(func_cutscene),
+		override_ = func_override,
 		paused_cam_following = cam_following_actor
-	};
+	};*/
+	
+	
 	
 	add(cutscenes, cut);
+	
 	// set as active cutscene
-	cutscene_curr = cut;
+	cutscene_curr = &cut;
 
 	// yield for (system catch-up
 	// todo: see if (this is still needed!
 	break_time();
 }
 
-function dialog_set(msg_table) {
-	for (msg in all(msg_table)) {
+void Program::dialog_set(StrVec& msg_table) {
+	for (const String& msg : msg_table) {
 		dialog_add(msg);
 	}
 }
 
-function dialog_add(msg) {
+void Program::dialog_add(const String& msg) {
 	// check params
 	dialog_curr = dialog_curr || { sentences = {} };
+	
 	// break msg into lines (if (necc.)
 	lines = create_text_lines(msg, 32);
+	
 	// find longest line
 	longest_line = longest_line_size(lines);
 	sentence={
@@ -184,96 +221,120 @@ function dialog_add(msg) {
 	add(dialog_curr.sentences, sentence);
 }
 
-function dialog_start(col, hlcol) {
+void Program::dialog_start(int col, int hlcol) {
 	dialog_curr.col = col;
 	dialog_curr.hlcol = hlcol;
 	dialog_curr.visible = true;
-	selected_sentence = nil;
+	selected_sentence = NULL;
 }
 
-function dialog_hide() {
+void Program::dialog_hide() {
 	dialog_curr.visible = false;
 }
 
-function dialog_clear() {
+void Program::dialog_clear() {
 	dialog_curr.sentences = {};
-	selected_sentence = nil;
+	selected_sentence = NULL;
 }
 
-function dialog_end() {
-	dialog_curr=nil;
+void Program::dialog_end() {
+	dialog_curr = NULL;
 }
 
-function get_use_pos(obj) {
-	local obj_use_pos, y, x = obj.use_pos || "pos_infront", obj.y, obj.x; // -cam_x
+Point Program::get_use_pos(SObj& obj) {
+	UsePos obj_use_pos = obj.use_pos != POS_NULL ? obj.use_pos : POS_INFRONT;
+	int y = obj.y;
+	int x = obj.x;
 
 	// first check for (specific pos
 	if (istable(obj_use_pos)) {
-		x, y = obj_use_pos[1], obj_use_pos[2]; // -cam_x, -stage-top
+		x = obj_use_pos[1];
+		y = obj_use_pos[2]; // -cam_x, -stage-top
 	}
 	// determine use pos
 	else {
-		local use_pos_offsets = {
-			pos_left = { -2, obj.h * 8 - 2 },
-			pos_right = { obj.w * 8, obj.h * 8 - 2 },
-			pos_above = { obj.w * 4 - 4, -2 },
-			pos_center = { obj.w * 4, obj.h * 4 - 4 },
-			pos_infront = { obj.w * 4 - 4, obj.h * 8 + 2 }
-		};
 		if (obj_use_pos == "pos_left" && obj.offset_x) {
-		// diff calc for (actors
+			// diff calc for (actors
 			x -= (obj.w*8 +4);
 			y += 1;
 		}
 		else {
-			x += use_pos_offsets[obj_use_pos][1];
-			y += use_pos_offsets[obj_use_pos][2];
+			int xd = 0, xy = 0;
+			switch (obj_use_pos) {
+				case POS_LEFT
+					xd = -2;
+					yd = obj.h * 8 - 2;
+					break;
+				case POS_RIGHT
+					xd = obj.w * 8;
+					yd = obj.h * 8 - 2;
+					break;
+				case POS_ABOVE
+					xd = obj.w * 4 - 4;
+					yd = -2;
+					break;
+				case POS_CENTER
+					xd = obj.w * 4;
+					yd = obj.h * 4 - 4;
+					break;
+				case POS_INFRONT
+					xd = obj.w * 4 - 4;
+					yd = obj.h * 8 + 2;
+					break;
+				default:
+					break;
+			}
+			
+			x += xd;
+			y += xy;
 		}
 	}
 
-	return {x=x,y=y};
+	return Point(x,y);
 }
 
-function _anim(thing, param1, param2) {
- //
- // scumm examples:
- // ) {-animation selected-actor stand
- // ) {-animation selected-actor get-up
-
- // ) {-animation bernard ring-bell
- //  break-here 4
- // ) {-animation bernard reach-low
-
- // ) {-animation hermit face-towards guybrush
- // ) {-animation max face-towards sam
-
- // face-towards?
+void Program::_anim(Thing& thing, const String& param1, int& param2) {
+	//
+	// scumm examples:
+	// do-animation selected-actor stand
+	// do-animation selected-actor get-up
+	
+	// do-animation bernard ring-bell
+	//  break-here 4
+	// do-animation bernard reach-low
+	
+	// do-animation hermit face-towards guybrush
+	// do-animation max face-towards sam
+	
+	// face-towards?
 	//   animate turn to face (object/actor || explicit direction)
 	if (param1 == "face_towards") {
-		// check if (param2 is an actor/object, rather than explicit face_dir
+		// check if param2 is an actor/object, rather than explicit face_dir
 		if (istable(param2)) {
 			// need to calculate face_dir from positions
-			angle_rad = atan2(thing.x  - param2.x , param2.y - thing.y);
+			double angle_rad = atan2(thing.x  - param2.x , param2.y - thing.y);
+			
 			// calc player's angle offset in this
-			plr_angle = 93 * (3.1415/180);
+			double plr_angle = 93 * (3.1415 / 180);
+			
 			// adjust for (player's angle
 			angle_rad = plr_angle - angle_rad;
-
+			
 			// convert radians to degrees
 			// (note: everyone says should be: rad * (180/pi), but
 			//        that only seems to give me degrees 0..57? so...)
-			degrees = (angle_rad * 360) % 360; //(1130.938/3.1415)
-
+			double degrees = (angle_rad * 360) % 360; //(1130.938/3.1415)
+			
 			// set final target face direction to obj/actor
-			param2 = 4 - flr(degrees/90);
-
+			param2 = 4 - flr(degrees / 90);
+			
 			// convert final value
 			param2 = face_dirs[param2];
 		}
-
-		face_dir = face_dirs[thing.face_dir];
-		param2 = face_dirs[param2];
-
+		
+		int face_dir = face_dirs[thing.face_dir];
+		//!!! param2 = face_dirs[param2];
+		
 		while (face_dir != param2) {
 			// turn to target face_dir
 			if (face_dir < param2) {
@@ -282,26 +343,27 @@ function _anim(thing, param1, param2) {
 			else {
 				face_dir -= 1;
 			}
+			
 			// set face dir
 			thing.face_dir = face_dirs[face_dir];
+			
 			// is target dir left? flip?
 			thing.flip = (thing.face_dir == "face_left");
 			break_time(10);
 		}
 	}
-
- else {
-  // must be an explicit animation (e.g. "idle")
-  // so start it now
-  thing.curr_anim = param1;
-  thing.anim_pos = 1;
-  thing.tmr = 1;
-	} //  if (param1 == "face_towards"
-
+	else {
+		// must be an explicit animation (e.g. "idle")
+		// so start it now
+		thing.curr_anim = param1;
+		thing.anim_pos = 1;
+		thing.tmr = 1;
+	}
+	
 }
 
-// open one (or more)) {ors
-function open_door(door_obj1, door_obj2) {
+// open one (or more) doors
+void Program::open_door(SObj& door_obj1, SObj& door_obj2) {
 	if (door_obj1.state == "state_open") {
 		say_line = "it's already open";
 	}
@@ -312,8 +374,8 @@ function open_door(door_obj1, door_obj2) {
 	}
 }
 
-// close one (or more)) {ors
-function close_door(door_obj1, door_obj2) {
+// close one (or more) doors
+void Program::close_door(SObj& door_obj1, SObj& door_obj2) {
 	if (door_obj1.state == "state_closed" {
 		say_line("it's already closed");
 	}
@@ -324,49 +386,52 @@ function close_door(door_obj1, door_obj2) {
 	}
 }
 
-function come_out_door(from_door, to_door, fade_effect) {
+void Program::come_out_door(Door& from_door, Door& to_door, bool fade_effect) {
 	// check param
-	if (to_door == nil)
+	if (to_door == NULL)
 		show_error("target door does not exist") return;
-
-	if ((from_door.state ~= "state_open") {
-		say_line("the door is closed");
+		
+	if (from_door.state ~ = "state_open") {
+		say_line("the door is closed")
+		;
 		return;
 	}
-
+	
 	// go to new room!
 	new_room = to_door.in_room;
-
+	
 	if ((new_room != room_curr)
 		change_room(new_room, fade_effect); // switch to new room and ...
-
-	// ...auto-position actor at to_door in new room...
-	local pos = get_use_pos(to_door);
-	put_at(selected_actor, pos.x, pos.y, new_room);
-
+	    
+		// ...auto-position actor at to_door in new room...
+		local pos = get_use_pos(to_door);
+		put_at(selected_actor, pos.x, pos.y, new_room);
+	    
 	if (to_door.use_dir) {
-  //  ... in opposite use direction!
-	 opp_dir = face_dirs[(face_dirs[to_door.use_dir]+1)%4+1];
+		//  ... in opposite use direction!
+		int i = (face_dirs[to_door.use_dir] + 1) % 4 + 1;
+		opp_dir = face_dirs[i];
 		// opp_dir = to_door.use_dir + 2
 		// if (opp_dir > 4 {
 		// 	opp_dir -= 4
 		// }
 	}
 	else {
-	opp_dir = "face_front"; // front
+		opp_dir = "face_front"; // front
 	}
 	selected_actor.face_dir = opp_dir;
 	// is target dir left? flip?
 	selected_actor.flip = (selected_actor.face_dir == "face_left");
 }
 
-door_funcs = {
+
+/*door_funcs = {
 	open = open_door,
 	close = close_door,
 	walkto = come_out_door
-}
+}*/
 
-function fades(fade, int dir) {
+void Program::fades(int fade, int dir) {
 	// dir: 1=down, -1=up
 	local fade_amount = 25 - 25 * dir;
 
@@ -381,11 +446,11 @@ function fades(fade, int dir) {
 		if (fade == 1)
 			fade_iris = min(fade_amount, 32);;
 
-		yield();
+		TODO // yield();
 	}
 }
 
-function change_room(new_room, fade) {
+void Program::change_room(Room& new_room, bool fade) {
 	// check param
 	if (!new_room) {show_error("room does not exist") return; }
 
@@ -410,7 +475,7 @@ function change_room(new_room, fade) {
 	room_curr = new_room;
 
 	// reset camera pos in new room (unless camera following)
-	if (!cam_following_actor || cam_following_actor.in_room != room_curr) cam_x = 0;
+	if (!cam_following_actor || InRoom(cam_following_actor) != room_curr) cam_x = 0;
 
 	// stop everyone talking & remove displayed text
 	stop_talking();
@@ -437,7 +502,7 @@ function change_room(new_room, fade) {
 	}
 }
 
-function valid_verb(verb, object) {
+void Program::valid_verb(Verb verb, SObj& object) {
  // check params
 	if ((!object || !object.verbs)
 		return false;
@@ -452,18 +517,19 @@ function valid_verb(verb, object) {
 	// return false
 }
 
-function pickup_obj(obj, actor) {
+void Program::pickup_obj(SObj& obj, SObj& actor) {
 	// use actor spectified, || default to selected
     actor = actor || selected_actor;
 
 	add(actor.inventory, obj);
 	obj.owner = actor;
 	// remove it from room
-	del(obj.in_room.objects, obj);
+	
+	TODO //del(obj.in_room.objects, obj);
 }
 
 
-function start_script(func, bg, noun1, noun2) {
+void Program::start_script(Callback func, bool bg, String noun1, String noun2) {
 	// create new thread for (script and add to list of local_scripts (or background scripts)
 	local thread = cocreate(func);
 	
@@ -472,20 +538,20 @@ function start_script(func, bg, noun1, noun2) {
 }
 
 
-function script_running(func)  {
+void Program::script_running(Script& func)  {
 	// loop through both sets of scripts...
 	for (s in all( { local_scripts, global_scripts } )) {
 		for (k,scr_obj in pairs(s)) {
-			if (scr_obj[1] == func) {
+			if (scr_obj[1] == &func) {
 				return scr_obj;
 			}
 		}
 	}
 	// must not be running
-	// return false
+	return false
 }
 
-function stop_script(func) {
+void Program::stop_script(Script& func) {
 	// find script and stop it running
 	scr_obj = script_running(func) {
 		// just delete from all scripts (don't bother checking!)
@@ -494,21 +560,22 @@ function stop_script(func) {
 	}
 }
 
-function break_time(jiffies) {
+void Program::break_time(int jiffies) {
 	// wait for (cycles specified (min 1 cycle)
-	for (x = 1, jiffies || 1) {
-		yield();
+	jiffies = max(1, jiffies);
+	for (int x = 0; x < jiffies; x++) {
+		TODO // yield();
 	}
 }
 
-function wait_for_message() {
+void Program::wait_for_message() {
 	while (talking_curr) {
-		yield();
+		TODO // yield();
 	}
 }
 
 // uses actor's position and color
-function say_line(actor, msg, use_caps, duration) {
+void Program::say_line(SObj& actor, String msg, bool use_caps, float duration) {
 	// check for (missing actor
 	if (type(actor) == "string") {
 		// assume actor ommitted and default to current
@@ -524,19 +591,19 @@ function say_line(actor, msg, use_caps, duration) {
 }
 
 // stop everyone talking & remove displayed text
-function stop_talking() {
-	talking_curr, talking_actor = nil;
+void Program::stop_talking() {
+	talking_curr, talking_actor = NULL;
 }
 
 
-function print_line(msg, x, y, col, align, use_caps, duration, big_font) {
+void Program::print_line(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font) {
   // punctuation...
 	//  > ":" new line, shown after text prior expires
 	//  > ";" new line, shown immediately
 	// note: an actor's talk animation is not activated as it is with say-line.
 
-	col = col || 7;   // default to white
-	align = align || 0; // default to no align
+	col = col ? col : 7;   // default to white
+	align = align ? align : 0; // default to no align
 
 	// calc max line width based on x-pos/available space
 	local screen_space = 127 - (x - cam_x);
@@ -593,7 +660,7 @@ function print_line(msg, x, y, col, align, use_caps, duration, big_font) {
 	  talking = talking_actor
 		wait_for_message()
 		talking_actor = talking
-		print_line(msg_left, x, y, col, align, use_caps, nil, big_font)
+		print_line(msg_left, x, y, col, align, use_caps, NULL, big_font)
 	}
 
 	// and wait for (message?
@@ -602,20 +669,21 @@ function print_line(msg, x, y, col, align, use_caps, duration, big_font) {
 	//}
 }
 
-function put_at(obj, x, y, room) {
-	if (room) {
-		if (!has_flag(obj.classes, "class_actor")) {
+void Program::put_at(SObj& obj, int x, int y, Room* room) {
+	TODO
+	/*if (room) {
+		if (!has_flag(Classes(obj), "class_actor")) {
 			if (obj.in_room) del(obj.in_room.objects, obj);
 			add(room.objects, obj);
-			obj.owner = nil;
+			obj.owner = NULL;
 		}
 		obj.in_room = room;
 	}
-	obj.x, obj.y = x, y;
+	obj.x, obj.y = x, y;*/
 }
 
 
-function stop_actor(actor) {
+void Program::stop_actor(SObj& actor) {
  // 0=stopped, 1=walking, 2=arrived
 	actor.moving, actor.curr_anim = 0;
  // no need to) {_anim(idle) here, as actor_draw code handles this
@@ -623,7 +691,7 @@ function stop_actor(actor) {
 }
 
 // walk actor to position
-function walk_to(actor, x, y) {
+void Program::walk_to(SObj& actor, int x, int y) {
 	local actor_cell_pos = getcellpos(actor);
 	local celx, cely = flr(x /8) + room_curr.map[1], flr(y /8) + room_curr.map[2];
 	local target_cell_pos = { celx, cely };
@@ -681,7 +749,7 @@ function walk_to(actor, x, y) {
      // actually move actor
 					actor.x += step_x;
 					actor.y += step_y;
-					yield();
+					TODO // yield();
 
 			}
 
@@ -690,46 +758,23 @@ function walk_to(actor, x, y) {
 	actor.moving, actor.curr_anim = 2; //arrived
 }
 
-function wait_for_actor(actor) {
+void Program::wait_for_actor(SObj& actor) {
 	actor = actor || selected_actor;
 	// wait for (actor to stop moving/turning
 	while (actor.moving != 2) {
-		yield();
+		TODO // yield();
 	}
 }
 
-function proximity(obj1, obj2) {
+void Program::proximity(SObj& obj1, SObj& obj2) {
 	// calc dist between objects, || big value for (different room
 	return obj1.in_room == obj2.in_room ? sqrt((obj1.x - obj2.x) ^ 2 + (obj1.y - obj2.y) ^ 2) : 1000;
 }
 
 
 
-// internal functions
 
-
-// global vars
-stage_top = 16;
-cam_x, cam_shake_amount = 0, 0;
-cursor_x, cursor_y, cursor_tmr, cursor_colpos = 63.5, 63.5, 0, 1;
-
-ui_arrows = {
-	{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
-	{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
-};
-
-face_dirs = {
-	"face_front",
-	"face_left",
-	"face_back",
-	"face_right",
-	face_front=1,
-	face_left=2,
-	face_back=3,
-	face_right=4
-};
-
-function get_keys(obj) {
+const StrMap& Program::get_keys(SObj& obj) {
 	local keys = {};
 	for (k,v in pairs(obj)) {
 		add(keys,k);
@@ -737,7 +782,7 @@ function get_keys(obj) {
 	return keys;
 }
 
-function get_verb(obj) {
+Verb Program::get_verb(SObj& obj) {
 	local verb, keys = {}, get_keys(obj[1]);
 	add(verb, keys[1]);						// verb func
 	add(verb, obj[1][ keys[1] ]);  // verb ref name
@@ -745,17 +790,17 @@ function get_verb(obj) {
 	return verb;
 }
 
-function clear_curr_cmd() {
+void Program::clear_curr_cmd() {
 	// reset all command values
 	verb_curr, executing_cmd, cmd_curr, noun1_curr, noun2_curr, me = get_verb(verb_default), false, ""
 }
 
 
 
-function _update60() {
+void Program::_update60() {
 	// process selected_actor threads/actions
 	if (selected_actor && selected_actor.thread && !coresume(selected_actor.thread)) {
-		selected_actor.thread = nil;
+		selected_actor.thread = NULL;
 	}
 
 	// global scripts (always updated - regardless of cutscene)
@@ -786,7 +831,7 @@ function _update60() {
 				// start countdown (delay to ensure cutscenes/dialogs all over!)
 				if (cutscene_curr.flags != 2) cutscene_cooloff = 3;
 				
-				cutscene_curr = nil;
+				cutscene_curr = NULL;
 			}
 		}
 	}
@@ -808,12 +853,12 @@ function _update60() {
 	// update camera shake (if (active)
 	cam_shake_x, cam_shake_y = 1.5-rnd(3), 1.5-rnd(3);
 	cam_shake_x = flr(cam_shake_x * cam_shake_amount);
-  cam_shake_y = flr(cam_shake_y * cam_shake_amount);
+	cam_shake_y = flr(cam_shake_y * cam_shake_amount);
 	if (!cam_shake) cam_shake_amount = cam_shake_amount > 0.05 ? cam_shake_amount * 0.90 : 0;
 }
 
 
-function _draw() {
+void Program::_draw() {
 	// clear screen every frame
 	cls();
 
@@ -881,64 +926,79 @@ function _draw() {
 	if ((!cutscene_curr) cursor_draw();
 }
 
-function update_mouse_click_state() {
+void Program::update_mouse_click_state() {
 	ismouseclicked = stat(34) > 0;
 }
 
 // handle button inputs
-function playercontrol() {
+void Program::playercontrol() {
 
 	// check for (skip/override's
 	if (talking_curr && !ismouseclicked && (btnp(4) || stat(34) == 1)) {
-			// skip current talking message
+		// skip current talking message
 		talking_curr.time_left, ismouseclicked = 0, true;
+		return;
+		
+	}
+	
+	// cutscene? (or skip?)
+	if (cutscene_curr) {
+		if ((btnp(5) || stat(34) == 2) && cutscene_curr.override) {
+			cutscene_curr.thread = cocreate(cutscene_curr.override);
+			cutscene_curr.override = NULL;
 			return;
-			
- }
-
- // cutscene? (or skip?)
- if (cutscene_curr) {
-		if ((btnp(5) || stat(34)==2) && cutscene_curr.override) {
-    cutscene_curr.thread = cocreate(cutscene_curr.override);
-    cutscene_curr.override = nil;
-    return;
-  }
-
-  // either way - don't allow other user actions!
-  update_mouse_click_state();
-  return;
- }
-
-
+		}
+		
+		// either way - don't allow other user actions!
+		update_mouse_click_state();
+		return;
+	}
+	
+	
 	//
-	if (btn(0)) { cursor_x -= 1; }
-	if (btn(1)) { cursor_x += 1; }
-	if (btn(2)) { cursor_y -= 1; }
-	if (btn(3)) { cursor_y += 1; }
-
-	if (btnp(4)) { input_button_pressed(1); }
-	if (btnp(5)) { input_button_pressed(2); }
-
+	if (btn(0)) {
+		cursor_x -= 1;
+	}
+	if (btn(1)) {
+		cursor_x += 1;
+	}
+	if (btn(2)) {
+		cursor_y -= 1;
+	}
+	if (btn(3)) {
+		cursor_y += 1;
+	}
+	
+	if (btnp(4)) {
+		input_button_pressed(1);
+	}
+	if (btnp(5)) {
+		input_button_pressed(2);
+	}
+	
 	// only update position if (mouse moved
- mouse_x,mouse_y = stat(32)-1, stat(33)-1;
- if (mouse_x != last_mouse_x) { cursor_x = mouse_x; }	// mouse xpos
- if (mouse_y!= last_mouse_y) { cursor_y = mouse_y; }  // mouse ypos
-
- // don't repeat action if (same press/click
- if (stat(34)>0 && !ismouseclicked) {
-  input_button_pressed(stat(34));
- }
- // store for (comparison next cycle
+	mouse_x, mouse_y = stat(32) - 1, stat(33) - 1;
+	if (mouse_x != last_mouse_x) {
+		cursor_x = mouse_x;    // mouse xpos
+	}
+	if (mouse_y != last_mouse_y) {
+		cursor_y = mouse_y;    // mouse ypos
+	}
+	
+// don't repeat action if (same press/click
+	if (stat(34) > 0 && !ismouseclicked) {
+		input_button_pressed(stat(34));
+	}
+// store for (comparison next cycle
 	last_mouse_x, last_mouse_y = mouse_x, mouse_y;
-
- update_mouse_click_state();
+	
+	update_mouse_click_state();
 }
 
-// keep cursor within screen
-cursor_x, cursor_y = mid(0, cursor_x, 127), mid(0, cursor_y, 127);
+
 
 // 1 = z/lmb, 2 = x/rmb, (4=middle)
-function input_button_pressed(button_index) {
+void Program::input_button_pressed(int button_index) {
 
  
 	// abort if (no actor selected at this point
@@ -982,7 +1042,7 @@ function input_button_pressed(button_index) {
 			else if (hover_curr_default_verb) {
 				// perform default verb action (if (present)
 				verb_curr, noun1_curr = get_verb(hover_curr_default_verb), hover_curr_object;
-	   // force repaint of command (to reflect default verb)
+	 	  // force repaint of command (to reflect default verb)
 				command_draw();
 				}
 	
@@ -992,7 +1052,7 @@ function input_button_pressed(button_index) {
 			if (hover_curr_arrow == ui_arrows[1]) {
 				if (selected_actor.inv_pos > 0) selected_actor.inv_pos -= 1;
 			}
-			else { //) {wn arrow
+			else { // down arrow
 				if (selected_actor.inv_pos + 2 < flr(#selected_actor.inventory/4)) {
 					selected_actor.inv_pos += 1;
 				}
@@ -1024,7 +1084,7 @@ function input_button_pressed(button_index) {
 		selected_actor.thread = cocreate(function() {
 			// if (obj not in inventory (or about to give/use it)...
 			if ((!noun1_curr.owner
-				   ? (!has_flag(noun1_curr.classes, "class_actor")
+				   ? (!has_flag(Classes(noun1_curr), "class_actor")
 							: vc2 != V_USE))
 			 || noun2_curr)
 			{
@@ -1043,15 +1103,15 @@ function input_button_pressed(button_index) {
 				// turn to use dir
 				do_anim(selected_actor, "face_towards", use_dir);
 			}
-			//) {es current object support active verb?
+			// does current object support active verb?
 			if (valid_verb(verb_curr,noun1_curr)) {
 				// finally, execute verb script
 				start_script(noun1_curr.verbs[verb_curr[1]], false, noun1_curr, noun2_curr);
 			}
 			else {
-				// check for (door
-				if (has_flag(noun1_curr.classes, "class_door")) {
-					// perform default) {or action
+				// check for door
+				if (has_flag(Classes(noun1_curr), "class_door")) {
+					// perform default door action
 					//start_script(function()
 						local func = door_funcs[vc2];
 						if (func) func(noun1_curr, noun1_curr.target_door);
@@ -1081,12 +1141,12 @@ function input_button_pressed(button_index) {
 }
 
 // collision detection
-function check_collisions() {
+void Program::check_collisions() {
  // check for (current room
 	if (!room_curr) return;
 
 	// reset hover collisions
-	hover_curr_verb, hover_curr_default_verb, hover_curr_object, hover_curr_sentence, hover_curr_arrow = nil;
+	hover_curr_verb, hover_curr_default_verb, hover_curr_object, hover_curr_sentence, hover_curr_arrow = NULL;
 	
 	// are we in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
@@ -1103,8 +1163,8 @@ function check_collisions() {
 	// check room/object collisions
 	for (obj in all(room_curr.objects)) {
 		// capture bounds (even for ("invisible", but not untouchable/dependent, objects)
-		if ((!obj.classes
-			|| (obj.classes && !has_flag(obj.classes, "class_untouchable")))
+		if ((!Classes(obj)
+			|| (Classes(obj) && !has_flag(Classes(obj), "class_untouchable")))
 			&&
 			(!obj.dependent_on			// object has a valid dependent state?
 			 || obj.dependent_on.state == obj.dependent_on_state))
@@ -1113,7 +1173,7 @@ function check_collisions() {
 		}
 		else {
 			// reset bounds
-			obj.bounds = nil;
+			obj.bounds = NULL;
 		}
 
 		if (iscursorcolliding(obj)) {
@@ -1153,7 +1213,7 @@ function check_collisions() {
 			if (iscursorcolliding(obj)) {
 				hover_curr_object = obj;
 				// pickup override for (inventory objects
-				if (verb_curr[2] == V_PICKUP && hover_curr_object.owner) verb_curr = nil;
+				if (verb_curr[2] == V_PICKUP && hover_curr_object.owner) verb_curr = NULL;
 			}
 			// check for (disowned objects!
 			if (obj.owner != selected_actor) del(selected_actor.inventory, obj);
@@ -1168,37 +1228,37 @@ function check_collisions() {
 }
 
 
-function reset_zplanes() {
+void Program::reset_zplanes() {
 	// draw_zplanes = {}
 	for (x = -64, 64) {
 		draw_zplanes[x] = {};
 	}
 }
 
-function recalc_zplane(obj) {
+void Program::recalc_zplane(SObj& obj) {
 	// calculate the correct z-plane
 	// based on obj || x,y pos + elevation
 	add(draw_zplanes[obj.z ? obj.z : flr(obj.y + (obj.offset_y ? 0 : obj.h * 8))], obj);
 }
 
-function room_draw() {
- // check for (current room
- if (!room_curr) {
- 	print("-error-  no current room set",5+cam_x,5+stage_top,8,0);
-  return;
- }
-
+void Program::room_draw() {
+// check for (current room
+	if (!room_curr) {
+		print("-error-  no current room set", 5 + cam_x, 5 + stage_top, 8, 0);
+		return;
+	}
+	
 	// set room background col (or black by default)
-	rectfill(0, stage_top, 127, stage_top+64, room_curr.bg_col || 0);
-
+	rectfill(0, stage_top, 127, stage_top + 64, room_curr.bg_col || 0);
+	
 	// draw each zplane, from back to front
-	for (z = -64,64) {
-
+	for (z = -64, 64) {
+	
 		// draw bg layer?
 		if (z == 0) {
 			// replace colors?
 			replace_colors(room_curr);
-
+			
 			if (room_curr.trans_col) {
 				palt(0, false);
 				palt(room_curr.trans_col, true);
@@ -1207,77 +1267,77 @@ function room_draw() {
 			
 			//reset palette
 			pal();
-
-
-					// ===============================================================
-					// debug walkable areas
-
-					// if (show_pathfinding {
-					// 	actor_cell_pos = getcellpos(selected_actor)
-
-     // //## need to correct this offset (in code above)
-     // //actor_cell_pos[2] -= 2
-
-					// 	celx = flr((cursor_x + cam_x + 0) /8) + room_curr.map[1]
-					// 	cely = flr((cursor_y - stage_top + 0) /8 ) + room_curr.map[2]
-					// 	target_cell_pos = { celx, cely }
-
-					// 	path = find_path(actor_cell_pos, target_cell_pos)
-
-					// 	// finally, add our destination to list
-					// 	click_cell = getcellpos({x=(cursor_x + cam_x), y=(cursor_y - stage_top)})
-					// 	if (is_cell_walkable(click_cell[1], click_cell[2]) {
-					// 	//if ((#path>0) {
-					// 		add(path, click_cell)
-					// 	}
-
-					// 	for (p in all(path)) {
-					// 		//printh("  > "..p[1]..","..p[2])
-					// 		rect(
-					// 			(p[1]-room_curr.map[1])*8,
-					// 			stage_top+(p[2]-room_curr.map[2])*8,
-					// 			(p[1]-room_curr.map[1])*8+7,
-					// 			stage_top+(p[2]-room_curr.map[2])*8+7, 11)
-					// 	}
-					// }
-
-     // ===============================================================
+			
+			
+			// ===============================================================
+			// debug walkable areas
+			
+			// if (show_pathfinding {
+			// 	actor_cell_pos = getcellpos(selected_actor)
+			
+			// //## need to correct this offset (in code above)
+			// //actor_cell_pos[2] -= 2
+			
+			// 	celx = flr((cursor_x + cam_x + 0) /8) + room_curr.map[1]
+			// 	cely = flr((cursor_y - stage_top + 0) /8 ) + room_curr.map[2]
+			// 	target_cell_pos = { celx, cely }
+			
+			// 	path = find_path(actor_cell_pos, target_cell_pos)
+			
+			// 	// finally, add our destination to list
+			// 	click_cell = getcellpos({x=(cursor_x + cam_x), y=(cursor_y - stage_top)})
+			// 	if (is_cell_walkable(click_cell[1], click_cell[2]) {
+			// 	//if ((#path>0) {
+			// 		add(path, click_cell)
+			// 	}
+			
+			// 	for (p in all(path)) {
+			// 		//printh("  > "..p[1]..","..p[2])
+			// 		rect(
+			// 			(p[1]-room_curr.map[1])*8,
+			// 			stage_top+(p[2]-room_curr.map[2])*8,
+			// 			(p[1]-room_curr.map[1])*8+7,
+			// 			stage_top+(p[2]-room_curr.map[2])*8+7, 11)
+			// 	}
+			// }
+			
+			// ===============================================================
 		}
 		else {
 			// draw other layers
 			zplane = draw_zplanes[z];
-
+			
 			// draw all objs/actors in current zplane
 			for (obj in all(zplane)) {
 				// object || actor?
-				if (!has_flag(obj.classes, "class_actor")) {
+				if (!has_flag(Classes(obj), "class_actor")) {
 					// object
-					if (obj.states	  /* object has a state?*/
-				    ? (obj.state
-					   && obj[obj.state]
-					   && obj[obj.state] > 0)
-					 : (!obj.dependent_on 			/* object has a valid dependent state?*/
-						|| obj.dependent_on.state == obj.dependent_on_state)
-					 ? !obj.owner   						/* object is not "owned"*/
-					 : obj.draw
-      || obj.curr_anim)
-					{
+					if (State(obj)s	  /* object has a state?*/
+						? (State(obj)
+						   && obj[State(obj)]
+						   && obj[State(obj)] > 0)
+						: (!obj.dependent_on 			/* object has a valid dependent state?*/
+						   || obj.dependent_on.state == obj.dependent_on_state)
+						? !obj.owner   						/* object is not "owned"*/
+						: obj.draw
+						|| obj.curr_anim) {
 						// something to draw
 						object_draw(obj);
 					}
 				}
 				else {
 					// actor
-					if (obj.in_room == room_curr) actor_draw(obj);
+					if (obj.in_room == room_curr)
+						actor_draw(obj);
 				}
 				//show_collision_box(obj);
 			}
 		}
 	}
-
+	
 }
 
-function replace_colors(obj) {
+void Program::replace_colors(SObj& obj) {
 	// replace colors (where defined)
 	if (obj.col_replace) {
 		c = obj.col_replace;
@@ -1295,7 +1355,7 @@ function replace_colors(obj) {
 }
 
 
-function object_draw(obj) {
+void Program::object_draw(SObj& obj) {
 	local sprnum = 0;
 	// replace colors?
 	replace_colors(obj);
@@ -1315,11 +1375,11 @@ function object_draw(obj) {
 				 // allow for (repeating
 		for (h = 0, obj.repeat_x ? obj.repeat_x - 1 : 0) {
 			// draw object (in its state!)
-			if (obj.states) {
-				sprnum = obj.states[obj.state];
+			if (State(obj)s) {
+				sprnum = State(obj)s[State(obj)];
 			}
 			else if (sprnum == 0) {
-				sprnum = obj[obj.state];
+				sprnum = obj[State(obj)];
 			}
 			sprdraw(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
 		}
@@ -1334,85 +1394,85 @@ function object_draw(obj) {
 
 
 // draw actor(s)
-function actor_draw(actor) {
+void Program::actor_draw(SObj& actor) {
 
 	local dirnum, sprnum = face_dirs[actor.face_dir];
-
-	if (actor.curr_anim && (actor.moving == 1 || istable(actor.curr_anim))
-	{
-		// update animation state
-		animate(actor);
+	
+	if (actor.curr_anim && (actor.moving == 1 || istable(actor.curr_anim)) {
+	// update animation state
+	animate(actor)
+		;
 		// choose walk anim frame
 		sprnum = actor.curr_anim[actor.anim_pos];
 	}
 	else {
-
+	
 		// idle
 		sprnum = actor.idle[dirnum];
 	}
-
+	
 	// replace colors?
 	replace_colors(actor);
+	
+// auto-scaling for (depth?
+	local factor = (actor.y - room_curr.autodepth_pos[1]) / (room_curr.autodepth_pos[2] - room_curr.autodepth_pos[1]);
+	factor = room_curr.autodepth_scale[1] + (room_curr.autodepth_scale[2] - room_curr.autodepth_scale[1]) * factor;
+	actor.auto_scale = mid(room_curr.autodepth_scale[1], factor, room_curr.autodepth_scale[2]);
+	
+// apply "zoom" to autoscale (e.g. camera further away)
+//auto_scale *= (room_curr.scale || 1)
 
- // auto-scaling for (depth?
- local factor = (actor.y-room_curr.autodepth_pos[1]) / (room_curr.autodepth_pos[2]-room_curr.autodepth_pos[1]);
- factor = room_curr.autodepth_scale[1]+(room_curr.autodepth_scale[2]-room_curr.autodepth_scale[1])*factor;
- actor.auto_scale = mid(room_curr.autodepth_scale[1], factor, room_curr.autodepth_scale[2]);
 
- // apply "zoom" to autoscale (e.g. camera further away)
- //auto_scale *= (room_curr.scale || 1)
-
-
- // calc scaling offset (to align to bottom-centered)
- local scale = actor.scale || actor.auto_scale;
+// calc scaling offset (to align to bottom-centered)
+	local scale = actor.scale || actor.auto_scale;
 	local scale_height, scale_width = (8 * actor.h), (8 * actor.w);
- local scaleoffset_y = scale_height - (scale_height * scale);
- local scaleoffset_x = scale_width - (scale_width * scale);
- local draw_x = actor.offset_x + flr(scaleoffset_x/2);
- local draw_y = actor.offset_y + scaleoffset_y;
-
+	local scaleoffset_y = scale_height - (scale_height * scale);
+	local scaleoffset_x = scale_width - (scale_width * scale);
+	local draw_x = actor.offset_x + flr(scaleoffset_x / 2);
+	local draw_y = actor.offset_y + scaleoffset_y;
+	
 	sprdraw(sprnum,
-		draw_x,
-		draw_y,
-		actor.w ,
-		actor.h,
-		actor.trans_col,
-		actor.flip,
-		false,
-		scale);
-
-
+			draw_x,
+			draw_y,
+			actor.w ,
+			actor.h,
+			actor.trans_col,
+			actor.flip,
+			false,
+			scale);
+	        
+	        
 	// talking overlay
 	if (talking_actor
-	 && talking_actor == actor
-	 && talking_actor.talk)
-	{
-		if (actor.talk_tmr < 7) {
-		    // note: scaling from top-left
-		    sprdraw(actor.talk[dirnum],
-				draw_x + (actor.talk[5] || 0),
-				draw_y + flr((actor.talk[6] || 8)*scale),
-				(actor.talk[7] || 1),
-				(actor.talk[8] || 1),
-				actor.trans_col,
-				actor.flip,
-				false,
-				scale);
-			}
+		&& talking_actor == actor
+	&& talking_actor.talk) {
+	if (actor.talk_tmr < 7) {
+			// note: scaling from top-left
+			sprdraw(actor.talk[dirnum],
+					draw_x + (actor.talk[5] || 0),
+					draw_y + flr((actor.talk[6] || 8)*scale),
+					(actor.talk[7] || 1),
+					(actor.talk[8] || 1),
+					actor.trans_col,
+					actor.flip,
+					false,
+					scale);
+		}
 		actor.talk_tmr = actor.talk_tmr % 14 + 1;
 	}
-
- // debug
- // if (show_debuginfo {
-  // pset(actor.x, actor.y + stage_top, 8)
-  // pset(actor.offset_x, actor.offset_y+stage_top, 11)
- // }
+	
+// debug
+// if (show_debuginfo {
+	// pset(actor.x, actor.y + stage_top, 8)
+	// pset(actor.offset_x, actor.offset_y+stage_top, 11)
+// }
 
 	//reset palette
 	pal();
 }
 
-function command_draw() {
+
+void Program::command_draw() {
 	// draw current command
 	local cmd_col, verb_curr_ref, command = verb_maincol, verb_curr[2], verb_curr ? verb_curr[3] : "";
 
@@ -1455,7 +1515,7 @@ function command_draw() {
 	print( smallcaps(command), 63.5-flr(#command*2), stage_top + 66, cmd_col );
 }
 
-function talking_draw() {
+void Program::talking_draw() {
 	// alignment
 	//   0 = no align
 	//   1 = center
@@ -1485,7 +1545,7 @@ function talking_draw() {
 }
 
 // draw ui and inventory
-function ui_draw() {
+void Program::ui_draw() {
 	// draw verbs
 	local xpos, ypos, col_len = 0, 75, 0;
 
@@ -1562,7 +1622,7 @@ function ui_draw() {
 	}
 }
 
-function dialog_draw() {
+void Program::dialog_draw() {
 	local xpos, ypos = 0, 70;
 
 	for (s in all(dialog_curr.sentences)) {
@@ -1585,7 +1645,7 @@ function dialog_draw() {
 }
 
 // draw cursor
-function cursor_draw() {
+void Program::cursor_draw() {
 	col = ui_cursor_cols[cursor_colpos];
 	// switch sprite color accordingly
 	pal(7,col);
@@ -1601,28 +1661,27 @@ function cursor_draw() {
 	}
 }
 
-function sprdraw(n, x, y, w, h, transcol, flip_x, flip_y, scale) {
+void Program::sprdraw(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
 	// switch transparency
 	set_trans_col(transcol); //, true)
-
- n = n || 0;
+	
 	// draw zoomed sprite
- //https://www.lexaloffle.com/bbs/?tid=2429
+//https://www.lexaloffle.com/bbs/?tid=2429
 	local sx, sy = 8 * (n % 16), 8 * flr(n / 16);
 	local sw, sh = 8 * w, 8 * h;
- local dz = scale || 1;
+	local dz = scale || 1;
 	local dw, dh = sw * dz, sh * dz;
-  sspr(sx, sy, sw, sh, x, stage_top + y, dw, dh, flip_x, flip_y);
-
-  // first scale, bottom-anchored
- //sspr(sx, sy, sw, sh, x, stage_top + y +(sh-dh), dw, dh, flip_x, flip_y)
+	sspr(sx, sy, sw, sh, x, stage_top + y, dw, dh, flip_x, flip_y);
+	
+	// first scale, bottom-anchored
+//sspr(sx, sy, sw, sh, x, stage_top + y +(sh-dh), dw, dh, flip_x, flip_y)
 
 	//spr(n, x, stage_top + y, w, h, flip_x, flip_y) // orig method (pre-scale)
-
+	
 	//pal() // don't) {, affects lighting!
 }
 
-function set_trans_col(transcol) { //, enabled)
+void Program::set_trans_col(int transcol) { //, enabled)
 	// set transparency for (specific col
 	palt(0, false);
 	palt(transcol, true);
@@ -1630,26 +1689,27 @@ function set_trans_col(transcol) { //, enabled)
 
 
 // initialise all the rooms (e.g. add in parent links)
-function game_init() {
+void Program::game_init() {
 
 	for (room in all(rooms)) {
 		explode_data(room);
-
+		
 		room.map_w = #room.map > 2 ? room.map[3] - room.map[1] + 1 : 16;
 		room.map_h = #room.map > 2 ? room.map[4] - room.map[2] + 1 : 8;
-  // auto-depth (or defaults)
-  room.autodepth_pos = room.autodepth_pos || {9,50};
-  room.autodepth_scale = room.autodepth_scale || {0.25,1};
-
+		// auto-depth (or defaults)
+		room.autodepth_pos = room.autodepth_pos || {9, 50};
+		room.autodepth_scale = room.autodepth_scale || {0.25, 1};
+		
 		// init objects (in room)
 		for (obj in all(room.objects)) {
 			explode_data(obj);
 			obj.in_room, obj.h = room, obj.h || 0;
-			if (obj.init) obj.init(obj);
+			if (obj.init)
+				obj.init(obj);
 		}
 	}
 	// init actors with defaults
-	for (ka,actor in pairs(actors)) {
+	for (ka, actor in pairs(actors)) {
 		explode_data(actor);
 		actor.moving = 2 ;		// 0=stopped, 1=walking, 2=arrived
 		actor.tmr = 1; 		  // internal timer for (managing animation
@@ -1663,6 +1723,7 @@ function game_init() {
 	}
 }
 
+
 // function show_collision_box(obj)
 // 	local obj_bounds = obj.bounds
 // 	if (show_collision
@@ -1672,35 +1733,44 @@ function game_init() {
 // 	}
 // }
 
-function update_scripts(scripts) {
-	for (scr_obj in all(scripts)) {
-		if (scr_obj[2] && !coresume(scr_obj[2], scr_obj[3], scr_obj[4]) {
+void Program::update_scripts(Vector<String>& scripts) {
+	for (scr_obj : all(scripts)) {
+		if (scr_obj[2] && !coresume(scr_obj[2], scr_obj[3], scr_obj[4])) {
 			del(scripts, scr_obj);
 		}
 	}
 }
 
-function _fadepal(perc) {
-	if ((perc) perc = 1-perc;
- local p=flr(mid(0,perc,1)*100);
- local dpal={0,1,1, 2,1,13,6,
-          4,4,9,3, 13,1,13,14};
- for (j=1,15) {
-  col = j;
-  kmax=(p+(j*1.46))/22;
-  for (k=1,kmax) {
-   col=dpal[col];
-  }
-  pal(j,col);
- }
+void Program::_fadepal(perc) {
+	if ((perc)
+		perc = 1 - perc;
+	
+	local p = flr(mid(0, perc, 1) * 100);
+	local dpal = {
+		0, 1, 1, 2, 1, 13, 6,
+		4, 4, 9, 3, 13, 1, 13, 14
+	};
+	for (int j = 1; j <= 15; j++) {
+		col = j;
+		kmax = (p + (j * 1.46)) / 22;
+		for (int k = 1; k <= kmax; k++) {
+			col = dpal[col];
+		}
+		pal(j, col);
+	}
 }
 
 
-function istable(t) {
+
+bool Program::istable(SObj& t) {
 	return type(t) == "table";
 }
 
-function _center_camera(val) {
+Point Program::_center_camera(const Point& val) {
+	TODO
+}
+
+Point Program::_center_camera(SObj& val) {
 	// check params for (obj/actor
 	// keep camera within "room" bounds
 	return mid(0, (istable(val) ? val.x : val)-64, (room_curr.map_w*8) -128 );
@@ -1708,17 +1778,17 @@ function _center_camera(val) {
 
 
 
-function getcellpos(obj) {
+Point Program::getcellpos(SObj& obj) {
 	return { flr(obj.x/8) + room_curr.map[1], flr(obj.y/8) + room_curr.map[2] };
 }
 
-function is_cell_walkable(celx, cely) {
-		return fget(mget(celx, cely),0);
+bool Program::is_cell_walkable(int celx, int cely) {
+	return fget(mget(celx, cely),0);
 }
 
 
 // auto-break message into lines
-function create_text_lines(msg, max_line_length) { //, comma_is_newline)
+Vector<String> Program::create_text_lines(String msg, int max_line_length) { //, comma_is_newline)
 	//  > ";" new line, shown immediately
 	local lines, currline, curword, curchar = {}, "", "", "";
 
@@ -1757,7 +1827,7 @@ function create_text_lines(msg, max_line_length) { //, comma_is_newline)
 }
 
 // find longest line
-function longest_line_size(lines) {
+int Program::longest_line_size(const Vector<String>& lines) {
 	local longest_line = 0;
 	for (l in all(lines)) {
 		if ((#l > longest_line) longest_line = #l;
@@ -1765,78 +1835,78 @@ function longest_line_size(lines) {
 	return longest_line;
 }
 
-function has_flag(obj, value) {
-	for (f in all(obj)) {
-		if ((f == value) return true;
-	 }
-	// return false
+bool Program::has_flag(SObj& obj, String value) {
+	for (f : all(obj)) {
+		if (f == value) return true;
+	}
+	return false
 }
 
 
-function recalc_bounds(obj, w, h, cam_off_x, cam_off_y) {
+void Program::recalc_bounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y) {
 	local x, y = obj.x, obj.y;
 	// offset for (actors?
-	if (has_flag(obj.classes, "class_actor")) {
-  obj.offset_x = x - (obj.w *8) /2;
-		obj.offset_y = y - (obj.h *8) +1;
-  x = obj.offset_x;
+	if (has_flag(Classes(obj), "class_actor")) {
+		obj.offset_x = x - (obj.w * 8) / 2;
+		obj.offset_y = y - (obj.h * 8) + 1;
+		x = obj.offset_x;
 		y = obj.offset_y;
 	}
 	obj.bounds = {
 		x = x,
 		y = y + stage_top,
-		x1 = x + w -1,
-		y1 = y + h + stage_top -1,
+		x1 = x + w - 1,
+		y1 = y + h + stage_top - 1,
 		cam_off_x = cam_off_x,
 		cam_off_y = cam_off_y
 	};
 }
 
 
+
 //
 // a* pathfinding functions
 //
 
-
+/*
 function find_path(start, goal) {
 	local frontier, came_from, cost_so_far, lowest_dist, lowest_dist_node, current = {}, {}, {};
 	insert(frontier, start, 0);
-	// came_from[vectoindex(start)] = nil
+	// came_from[vectoindex(start)] = NULL
 	cost_so_far[vectoindex(start)] = 0;
-
+	
 	while (#frontier > 0 && #frontier < 1000) {
 		// pop the last element off a table
 		current = frontier[#frontier][1];
 		del(frontier, frontier[#frontier]);
-
+		
 		if (vectoindex(current) == vectoindex(goal)) break;
-
+		
 		//local neighbours = getneighbours(current)
 		local neighbours = {};
 		for (x = -1, 1) {
 			for (y = -1, 1, x == 0 ? 2 : 1) {
 				local chk_x, chk_y = current[1] + x, current[2] + y;
-
+				
 				if (chk_x >= room_curr.map[1] && chk_x <= room_curr.map[1] + room_curr.map_w
 					and chk_y >= room_curr.map[2] && chk_y <= room_curr.map[2] + room_curr.map_h
 					and is_cell_walkable(chk_x, chk_y)
-				// squeeze check for (corners
-					and ((abs(x) != abs(y))
+					// squeeze check for (corners
+					and((abs(x) != abs(y))
 						or is_cell_walkable(chk_x, current[2])
 						or is_cell_walkable(chk_x - x, chk_y)
-						or enable_diag_squeeze))
-				 {
+						or enable_diag_squeeze)) {
 					// process a valid neighbor
 					local next = {chk_x, chk_y};
 					local nextindex = vectoindex(next);
 					local new_cost = cost_so_far[vectoindex(current)] + (x * y == 0 ? 1.0 : 1.414); // diagonals cost more
-
+					
 					if (!cost_so_far[nextindex] || new_cost < cost_so_far[nextindex]) {
 						cost_so_far[nextindex] = new_cost;
 						local h = max(abs(goal[1] - chk_x), abs(goal[2] - chk_y)) + min(abs(goal[1] - chk_x), abs(goal[2] - chk_y)) * .414;
 						insert(frontier, next, new_cost + h);
 						came_from[nextindex] = current;
-
+						
 						if (!lowest_dist || h < lowest_dist) {
 							lowest_dist = h;
 							lowest_dist_node = nextindex;
@@ -1847,47 +1917,49 @@ function find_path(start, goal) {
 			}
 		}
 	}
-
- // now find goal..
- local path = {};
- current = came_from[vectoindex(goal)];
-
- if (current) {
- 	// add "goal" to path
-	 add(path, goal);
- // check for ("no goal found"
- }
- else if (lowest_dist_node) {
-   // start from closest to goal instead
-   current = came_from[lowest_dist_node];
-	 add(path, lowest_dist_neigh);
- }
-
- if (current) {
+	
+// now find goal..
+	local path = {};
+	current = came_from[vectoindex(goal)];
+	
+	if (current) {
+		// add "goal" to path
+		add(path, goal);
+// check for ("no goal found"
+	}
+	else
+		if (lowest_dist_node) {
+			// start from closest to goal instead
+			current = came_from[lowest_dist_node];
+			add(path, lowest_dist_neigh);
+		}
+		
+	if (current) {
 		local cindex, sindex = vectoindex(current), vectoindex(start);
-
-	while (cindex != sindex) {
-		add(path, current);
-		current = came_from[cindex];
-		cindex = vectoindex(current);
+		
+		while (cindex != sindex) {
+			add(path, current);
+			current = came_from[cindex];
+			cindex = vectoindex(current);
+		}
+		
+		//reverse(path)
+		for (i = 1, #path/2) {
+			local temp = path[i];
+			local oppindex = #path-(i-1);
+			path[i] = path[oppindex];
+			path[oppindex] = temp;
+		}
 	}
-
-	//reverse(path)
-	for (i=1,#path/2) {
-		local temp = path[i];
-		local oppindex = #path-(i-1);
-		path[i] = path[oppindex];
-		path[oppindex] = temp;
-	}
- }
-
- return path;
+	
+	return path;
 }
 
 
 
+
 // insert into table and sort by priority
-function insert(t, val, p) {
+void Program::insert(t, val, p) {
 	local new = {val, p};
  if (#t >= 1) {
 		for (i = #t + 1, 2, -1) {
@@ -1905,10 +1977,10 @@ function insert(t, val, p) {
 }
 
 // translate a 2d x,y coordinate to a 1d index and back again
-function vectoindex(vec) {
+void Program::vectoindex(vec) {
 	return ((vec[1]+1) * 16) + vec[2];
 }
-
+*/
 
 
 
@@ -1916,7 +1988,7 @@ function vectoindex(vec) {
 // helper functions
 //
 
-function animate(obj) {
+void Program::animate(SObj& obj) {
  // animate the object
  // (update frames, looping as req)
  obj.tmr += 1;
@@ -1927,11 +1999,11 @@ function animate(obj) {
 }
 
 
-function show_error(msg) {
+void Program::show_error(String msg) {
 	print_line("-error-;"..msg,5+cam_x,5,8,0);
 }
 
-function explode_data(obj) {
+void Program::explode_data(SObj& obj) {
 	for (l in all(split(obj.data, "\n"))) {
 		local pairs=split(l, "=");
 		if (#pairs==2) {
@@ -1945,7 +2017,7 @@ function explode_data(obj) {
 
 // split s on delimiter, ignoring leading and trailing space and tab
 
-function split(s, delimiter) {
+/*function split(s, delimiter) {
 	local retval, start_pos, last_char_pos = {}, 0, 0;
 
 	for (i=1,#s) {
@@ -1965,7 +2037,7 @@ function split(s, delimiter) {
 		add(retval, sub(s,start_pos,last_char_pos));
 	}
 	return retval
-}
+}*/
 
 function autotype(str_value) {
 	local first_letter = sub(str_value,1,1);
@@ -1995,20 +2067,20 @@ function autotype(str_value) {
 	}
 }
 
-function outline_text(str,x,y,c0,c1,use_caps,big_font) {
+void Program::outline_text(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
 	if ((!use_caps) str = smallcaps(str);
- if ((big_font) str="\^w\^t"..str;
- for (xx = -1, 1) {
+	if ((big_font) str = "\^w\^t"..str;
+	for (xx = -1, 1) {
 		for (yy = -1, 1, xx == 0 ? 2 : 1) {
-			print(str, x+xx, y+yy, c1);
+				print(str, x + xx, y + yy, c1);
+			}
 		}
- }
- print(str,x,y,c0);
+	print(str, x, y, c0);
 }
 
 
 // collision check
-function iscursorcolliding(obj) {
+bool Program::iscursorcolliding(SObj& obj) {
 	// check params / not in cutscene
 	if ((!obj.bounds || cutscene_curr) return false;
 
@@ -2017,13 +2089,54 @@ function iscursorcolliding(obj) {
 			|| (cursor_y > bounds.y1 || cursor_y < bounds.y));
 }
 
-function smallcaps(s) {
-  local t="";
-  for (i=1,#s) {
-    local c=ord(s,i);
-    t..=chr(c>96 && c<123 ? c-32 : c);
-  }
-  return t;
+String Program::smallcaps(const String& s) {
+	local t = "";
+	for (i = 1, #s) {
+		local c = ord(s, i);
+		t.. = chr(c > 96 && c < 123 ? c - 32 : c);
+	}
+	return t;
+}
+
+
+void Program::Run() {
+	
+	reset_ui();
+	
+	clear_curr_cmd();
+	
+	// talking_curr = NULL  // currently displayed speech {x,y,col,lines ... }
+	// dialog_curr = NULL   // currently displayed dialog options to pick
+	// cutscene_curr = NULL // currently active cutscene
+	// talking_actor = NULL // currently talking actor
+	
+	global_scripts.Clear();
+	local_scripts.Clear();
+	cutscenes.Clear();
+	draw_zplanes.Clear();
+	
+	fade_iris = 0;
+	fade_iris = 0;
+	cutscene_cooloff = 0;
+	
+	// game loop
+	
+	function _init();
+	
+	// use mouse input
+	poke(0x5f2d, 1);
+	
+	// init all the rooms/objects/actors
+	game_init();
+	
+	// run any startup script(s)
+	start_script(startup_script, true);
+}
+
+Point Program::GetXY(SObj& o) {
+	return Point(
+		Get(actor, "x").GetInt(),
+		Get(actor, "y").GetInt());
 }
 
 /*
