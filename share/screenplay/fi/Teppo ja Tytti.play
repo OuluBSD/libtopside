@@ -1,27 +1,6 @@
-#include "
+*
 
-1781
-"", "Samuli Palmfelt"
-"Tytin isä", "Mikael Kuhlman"
-"", "Veijo Palmfelt"
-"Oulun maaherra", "Karl Magnus Jägerhorn"
-"", "Aleksanteri Jägerhorn"
-"", "Matti Kuhlman"
-"", "Magnus Palmfelt", "Make"
-"", "Teppo Palmfelt"
-"", "Maija Forsman"
-"Tytin äiti", "Maria Kuhlman"
-"Tepon ja Veijon kaveri", "Aatu"
-"pastori", "Henrik Lindström"
-"pastorin poika", "Johan Lindström"
 
-class abc {
-	
-};
-
-/*
-
- 
 										Tytti ja Teppo
 
 
@@ -50,7 +29,10 @@ Palmfelt palvelija 2	PPalv2
 Matin kaveri 1			Kuhl1
 Matin kaveri 2			Kuhl2
 
-*/
+
+
+
+
 
 // Oulun kaduilla puhkeaa toinen tappelu Kuhlmanin ja Palmfeltin aatelissukujen palvelijoiden välillä.
 
@@ -169,6 +151,13 @@ Veijo:	Kyllä me kuule löyetään sulle semmonen.
 {
 	# musiikki cutie from future
 	/*
+	Maailma on täynnä naisia.
+	Vielä se paras tuolla tulevaisuudessa odottaa.
+
+
+
+
+
 	Se ei vaan mua huomaa,
 	ohi katsoo kun yritän jututtaa.
 	
@@ -240,6 +229,9 @@ Mikael:			Noniin, no sitten menee.
 	# musiikki kangaroo dictator
 	
 	/*
+	VIRHE: synä väärässä kohtaa
+
+
 	Liian nuori on se, et voi sä huijata, et aikuinen se viel ois.
 	
 	Sä tarvit juhlat, viiniä, seuraa.
@@ -683,9 +675,9 @@ Lindström:	Olemme kokoontuntuneet ... [katsoo tyhjää kirkkoa] tänne Oulun tu
 			Noh, eipä jaaritella.
 			Tahdotko sinä Teppo Palmfelt ottaa Tytti Kuhlmanin vaimoksi?
 Teppo:		Tahdon.
-Lindström:	Tahdotko sinä Tytti Kuhlman ottaa Teppo Palmfeltin mieheksesi?
+Lindström:	Tahdotko sinä Tytti Kuhlman ottaa Teppo Palmfeltin aviomieheksesi?
 Tytti:		Tahdon.
-Lindström:	Minulle sallituin oikeuksin julistan teidät mieheksi ja vaimoksi.
+Lindström:	Minulle sallituin oikeuksin julistan teidät aviomieheksi ja vaimoksi.
 
 {
 	# musiikki dreaming together
@@ -847,6 +839,9 @@ Teppo:		Selvä, kiitos.
 {
 	# musiikki waiting for tonight
 	/*
+
+	VIRHE: pizzicato on väärässä kohtaa jossain kertsissä... kuulee ennen kertsiä kohdasta
+
 	Katso kuinka mä tanssin
 	
 	Kohta sut ihollani tunnen
@@ -951,6 +946,9 @@ Mikael:		Olipa se teatraalista.
 	# musiikki first of the year 2022
 	
 	/*
+	VIRHE: clean kitara soolo huono soundi efekti
+
+
 	Et voi sä pettää mua nyt.
 	Just nyt tarvin sua tueksi.
 	
@@ -1096,6 +1094,8 @@ Teppo:			Hei ootappa, mun tarvii päästä vastarannalle!
 
 	** Teppo menee apteekkiin **
 	
+VIRHE: äänet mykkänä
+
 Teppo:			Rotanmyrkkyä kiitos, koko pullo. Meillä on ... paha rottaongelma.
 Apteekkari:		Rottaongelma. Harvemmin ne rotat pistää miestä noin surulliseksi.
 Teppo:			Kyllä ne nyt vaan pistää.
@@ -1132,6 +1132,8 @@ Teppo:			Tytti kulta...
 
 Lindström:		Teppo? Ei hyvän tähden.
 
+VIRHE: ääniongelmia
+
 // Samaan aikaan Tytti herää.
 // Tytti näkee rakkaan Tepon ja tajuaa, että tämä on tappanut itsensä myrkyllä.
 
@@ -1158,6 +1160,8 @@ Tytti:			Teppo rakas, me nähdään vielä.
 	/*
 	Uskotko rakkauteen?
 	Uskotko yhteiseen kohtaloon?
+	Uskotko elämään?
+
 	
 	Kuinka kaikki tää,
 	on merkitystä tähtien.
@@ -1211,6 +1215,8 @@ Tytti:			Teppo rakas, me nähdään vielä.
 	
 	
 	/*
+	Kuka poimis maasta sen saastan?
+
 	Ei arvaisi ei kuinka hetkessä kaikki voi kadota.
 	Kuinka kaikki kaunis lakastuu ja vuodet on kuin turhia.
 	
@@ -1248,6 +1254,8 @@ Tytti:			Teppo rakas, me nähdään vielä.
 	
 	
 	*/
+
+	VIRHE: pizz low cut liikaa
 }
 
 
