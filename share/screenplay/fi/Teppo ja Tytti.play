@@ -535,27 +535,61 @@ Tytti:	No kosi sinä sitä sitten.
 Maria:	Tytti!
 Tytti:	No mitä?
 
-{
-	# musiikki twisted xmas 2021
-	
-	/*
-	No ohan se kyllä varakas.
-	No kyllähän kaikki aina puhuu siitä.
-	Ehkä mä voin,
-	oppii siit tykkäämään.
-	
-	Mieti mikä maine, maine.
-	Kun nait sä sen, kuulee kyllä kaikki, kaikki.
-	
-	Juuret on sillä Euroopassa asti,
-	
-	Kuninkaallisia suvussa on kuultu sillä olevan.
-	
-	Oisit sää sit ison tilan leidi, leidi.
-	
-	
-	*/
-}
+
+Musiikki: "2021/twisted xmas 2021.tg"
+
+Maria:	Tääl ruokaa saat,
+		katto on pääl.
+		Miettisit vaan, et
+		kuinka kiität.
+
+Katri:	Eipä piioilla oo vara päästä nuihin
+		naimisiin mitkä sulle tarjoillaan.
+		Kaikki mahdollista on kun sanot kyllä.
+		Miettisit vaan et mitä siitä saat.
+
+Tytti:	Ai, kaikki muut tietää mua paremmin,
+		en sit, tiedä miten
+		tää homma on, miksi miehet
+		itkee, kun jätän ne, miks on se niin
+
+Maria:	Koulussakin
+		saat sen opin
+		mil pärjätään
+		keskustassa.
+
+Katri:	Etpä renkiä sä kyllä koskaan ottais,
+		myönnä pois et meil eri miehet on.
+		Aina helpompi rikkampi on ottaa
+		koskaan sen kanssa et oo onneton.
+
+Tytti:	Ai, kaikki muut tietää mua paremmin,
+		en sit, tiedä miten
+		tää homma on, miksi miehet
+		itkee, kun jätän ne, miksei ne
+		mattoo saata naisten alta vetää poissa,
+		on vaan kurja olo,
+		ja vaimoo painostaa nii että
+		lapsii tuottaa tai on horo
+
+		Niin armollas syön leivänpalan
+		Niin vedellä huuhtelen sen alas.
+		Niin velkaa, velkaantuu en saa.
+		Teen velkaa, pelkästään velkaa.
+
+Maria:	O ou
+Katri:	O ou
+Maria:	Nuori pieni katkera ja mieli niin pehmee...
+Katri:	Nuori eikä huoli että tekee myös virheen...
+
+Tytti:	Ai, kaikki muut tietää mua paremmin,
+		en sit, tiedä miten
+		tää homma on, miksi miehet
+		itkee, kun jätän ne, miksei ne
+		mattoo saata naisten alta vetää poissa,
+		on vaan kurja olo,
+		ja vaimoo painostaa nii että
+		lapsii tuottaa tai on horo
 
 
 // Tytti ei ole vielä harkinnut naimisiinmenoa, mutta suostuu tapaamaan Aleksanterin juhlissa nähdäkseen, voisiko tämä rakastua häneen.
@@ -717,17 +751,17 @@ Katri:	Älä sinä moimottele.
 		Se on tämän talon isännän tytär, ja täällä pitäisi muidenkin miesten huomata se.
 		Oo ilonen että kukaan ei juuri nähnyt tuota, tai lentäisit pihalle muuten.
 Teppo:	Ai, no kerro sille terveiset Tepolta, että me kyllä osataan ulos omin avuin.
-Katri:	Keneltä Tepolta? Ai Kuhlmanilta?
+Katri:	Keneltä Tepolta? Ai Palmfeltiltä?
 Teppo:	Juurikin siltä.
 
 	** Katri menee jutteleen Tytille **
 	
 Katri:	Tajuatko sinä kuka tuo sika oli?
 Tytti:	Se oli koira.
-Katri:	Se oli Kuhlmanin Teppo.
+Katri:	Se oli Palmfeltin Teppo.
 Tytti:	O ou.
 Katri:	No niin.
-Tytti:	Ei tänne pitänyt olla Kuhlmaneja kutsuttu?
+Tytti:	Ei tänne pitänyt olla Palmfelttejä kutsuttu?
 Katri:	No ei mutta olivatpahan tulleet silti.
 Tytti:	Voi helvetin helvetti!
 		Mikä saatanan tollo tulee juhliin kutsumatta?
