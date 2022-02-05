@@ -203,7 +203,7 @@ Teppo:	Missä niitä on?
 Veijo:	Kyllä me kuule löyetään sulle semmonen.
 
 
-Musiikki: cutie from future
+Musiikki: "2021/cutie from future.tg"
 
 Veijo:	Sä et oo kuumana siit,
 		se ei oo kuumana sust.
@@ -274,50 +274,6 @@ Veijo:	ja vastaa ei,
 		kun peili ei se oo
 
 
-		 
-		
-	
-
-	Voisit yrittää
-
-	
-	ja avaa kuores
-	niin etsitään sulle
-
-	/*
-	Maailma on täynnä naisia.
-	Vielä se paras tuolla tulevaisuudessa odottaa.
-
-
-
-
-
-	Se ei vaan mua huomaa,
-	ohi katsoo kun yritän jututtaa.
-	
-	Niin paljon susta tykkään,
-	etkä huomaa, miten mun tunne palaa.
-	
-	
-	Voisitko sää antaa mulle
-	tilaisuuden
-	
-	
-	Kun sää tuut tiellä vastaan
-	hymyille vilkaiset vaan.
-	
-	En voi unohtaa katsetta sun.
-	
-	Unissa vaan, unissa oon sun kaa.
-	Vain siellä voin herkkää ihoas koskettaa.
-	
-	Viikot vierää, etkä huomaa
-	kuin hidas aika on tää, kun et oo mun sylissä.
-	
-	*/
-}
-
-
 // Sillä välin Aleksanteri, maaherran sukulainen, pyrkii avioliittoon Tytin kanssa. Hänen
 // isänsä Mikael, vaikka olisikin tyytyväinen pariskuntaan, pyytää Aleksanteria odottamaan
 // kaksi vuotta, koska Tytti ei ole vielä edes kuuttatoista.
@@ -356,32 +312,68 @@ Maria:			Vai on sille Tytille jo kosioita niin että pitää isännältä asti t
 Mikael:			Joo.
 				Jos ei nyt ihan ekalle kosialle menis kuitenkaan.
 				Mietin, että tämän kesän naamiaisiin kutsutaankin reilummin väkeä, niin pääsee Tytti tapaan muitakin tuttavuuksia.
-Maria:			Sinne menee aivan hirveästi työtä valmisteluun sitten.
-Mikael:			Noniin, no sitten menee.
-
-{
-	# musiikki kangaroo dictator
-	
-	/*
-	VIRHE: synä väärässä kohtaa
+Maria:			Sinne menee aivan hirveästi työtä valmisteluun sitten. [Maria sanoo tympääntyneenä]
+Mikael:			Noh, älä huoli, hankitaan apuvoimia.
 
 
-	Liian nuori on se, et voi sä huijata, et aikuinen se viel ois.
-	
-	Sä tarvit juhlat, viiniä, seuraa.
-	Piristy mies täällä ilmankin on aikaa.
-	
-	Juhlit illan, pitkälle aamuun.
-	
-	Kutsut kaikki, ja kaikki kyl tulee
-	
-	
-	*/
-}
+Musiikki: "2021/kangaroo dictator.tg"
+VIRHE: synä väärässä kohtaa
+
+Mikael:			Mutrusuu, sitruunanaama,
+				keität vaan meille kahvin vahvan.
+				Myrttisen piiat palkkaan mä laittaan
+				koristeet, viinin ja ruuan.
+				Viinaa, on veli polttamassa taas,
+				panee tilaamaan, illalle vahvempaa.
+Maria:			Mut miten järjestyksen teet?
+				Tytti tarvitsee kivan, siistin, fiksun juhlan.
+
+Mikael:			Sanoit: tarvit miehistä mittaa
+Maria:			Sanoin: tarjoo voi, mut ei liikaa
+Mikael:			Sanoit: kutsu sun ystäviisi
+Maria:			Sanoin: pliis hei, Tytti kiltti
+				aikuinen melkein on,
+				en voi mä huijata et
+				maailma on viaton.
+
+Mikael:			Annoin puolet sulle metsistä, maasta,
+				puolet saat myös tästä illasta.
+				Puolet tiukkaa, puolet on hauskaa,
+				puolet saat mun huolista illankin.
+
+Maria:			Tahdon kuulla viulun ja sellon,
+				rummun kaijun taas ylitse pellon,
+				Tilaat kai basson soittajankin,
+				kitaristin ja laulajatkin.
+Mikael:			Sun luo tuon tähdetkin
+Maria:			Et voi sä huijata et
+				vain pilli sois.
+
+Mikael:			Annoin puolet sulle metsistä, maasta,
+				puolet saat myös tästä illasta.
+				Puolet tiukkaa, puolet on hauskaa,
+				puolet saat mun huumasta illankin.
+
+Maria:			Aina uudestaan
+				sun puoli illan luo
+				ja ihmiset tänne tuo
+				naurun hymyyni suo.
+
+Mikael:			Annoin puolet sulle metsistä, maasta,
+				puolet saat myös tästä illasta.
+				Puolet tiukkaa, puolet on hauskaa,
+				puolet saat mun huumasta illankin.
+
+Maria:			Annoin puolet luotosta järjen
+				puolet saat myös huolesta jäljen.
+				Puolet selvii, puolet on turhaa,
+				puolet saat mun onnesta illankin.
+
+
 
 // Mikael lähettää palvelijalle luettelon ihmisistä, jotka hän kutsuu naamiaisiin ja juhlaan, jonka hän perinteisesti pitää kesän alussa.
 
-	** Mikael asettaa 'A4' kokoisen paperin rengin eteen **
+	** Mikael asettaa 'A4' kokoisen käärepaperin rengin eteen **
 				
 Mikael:			Kierräpäs nuo ihmiset läpi ja käy kutsuun ne naamiaisiin ens lauantaina.
 KPalv1:			Selvä.
