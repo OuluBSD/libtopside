@@ -55,34 +55,81 @@ KPalv1:	Ai me haistaan vai?
 	** KPalv2 lyö PPVal2:sta naamaan **
 	** Käsirysy alkaa
 
-{
-	# musiikki focus
-	
-	/* 
-	
-	Iljettävät huijarit, meikäläisiä huonosti kohtelee.
-	On me todistettu, että kun selkä välttää niin nämä alistaa naisia.
-	Ja pimeällä kujalla pelottelee.
-	
-	Ei ne veroja maksa, ei ne tue ketään.
-	Ei maksa käypää hintaa ja aina viilaa linssini.
-	
-	On me kyllästytty nuiden naamoihin.
-	Ei oo kaupungissa tässä tilaa molemmille.
-	
-	
-	On täällä meitäkin, ammatinharjoittajia lähes nimettömiä.
-	Hyvin voidaan elää ilman kumpaakin teidän suvuista.
-	Kaikki toimii silti edelleen.
-	
-	
-	*/
 
-}
+Musiikki: "2021/focus.tg"
+	
+	On vaattees kuluneet,
+	hampaat jo kadonneet.
+	Sun vanha konikaan,
+	ei kelpaa makkaraan.
+	Teil pettuleipä on
+	tarjolla kesäl jo.
+	Luut paistaa vaimollas,
+	lehmillä, sijoillas.
+	
+	Metsäs on kaadettu,
+	tervaksi poltettu,
+	halvalla poistettu,
+ 	ja rahat pois juotu.
+	Kun tulee tapaamaan,
+	tuo täitä tullessaan.
+	Kai käy ne pesulla,
+	vain kerran vuodessa.
+	
+	Pieni kylä pienellä tiel.
+	Pielessä on elämä siel.
+	Kaikki voi saada remmistä ne viel.
+	
+	On vääril poluilla,
+	tavattu kulkea.
+	Ja laittaa maksamaan
+	alemmat arvoltaan.
+	Ei oo mun ongelma,
+	jos puus on lopussa,
+	ja jäädyt talvella,
+	voit laittaa vaatetta.
+	
+	Metsäs on kaadettu,
+	tervaksi poltettu,
+	rahdattu Eurooppaan,
+	laivoja valmistaan.
+	Kun tulee tapamaan,
+	tuo nälän mukanaan,
+	ja jälkeen katsotaan,
+	veikö jotain mukanaan.
+	
+	Pieni kylä pienellä tiel.
+	Pielessä on elämä siel.
+	Kaikki voi saada remmistä ne viel.
+	
+	Pelkää ne vallan alla ja
+	vallasta riitelee.
+	Puolustaa ei heikompaa kai saa
+	kukaan.
+	
+	Meitä yhdistää
+	riidat joihin kaikki kelpaa.
+	Säännöt rikotaan,
+	syypää heikommasta saadaan.
+	Valheit juorutaan,
+	niin et liian tylsää ei ois.
+	Mukaan huijataan
+	vanhat kun vain lähtee pois.
+	
+	Pieni kylä pienellä tiel.
+	Pielessä on elämä siel.
+	Kaikki voi saada remmistä ne viel.
+	
+	Pelkää ne vallan alla ja
+	vallasta riitelee.
+	Puolustaa ei heikompaa kai saa
+	kukaan.
+
 
 
 // Veijo Palmfelt, yrittää pysäyttää tappelun, mutta hän joutuu mukaan,
 // kun uhkarohkea Matti Kuhlman, saapuu paikalle.
+
 Veijo:	Hei! Nyt loppuu se tappelu Palmfeltin miehiltä.
 
 	** Tappelu jatkuu **
@@ -125,6 +172,7 @@ Teppo:	Itelläkin kyl.
 
 // Veijon utelun jälkeen Teppo myöntää olevansa rakastunut Maijaan, naiseen,
 // joka ei vastaa hänen kiintymykseensä.
+
 Veijo:	Äijä ei kyl oo selkeesti parhaimmalla tuulella; katse on maata kohen niin
 		että et melkeen huomannu meikää.
 Teppo:	Aijaa.
@@ -143,6 +191,7 @@ Teppo:	Mikä vai?
 
 // Veijo neuvoo häntä unohtamaan tämän naisen ja etsimään toisen, mutta Teppo on edelleen alakuloinen
 // sydänsuruissaan.
+
 Veijo:	Nyt kuule unohat sen Maijan.
 		Ei se oo sun tyyppiä.
 Teppo:	Niinkö oot mieltä?
@@ -153,8 +202,88 @@ Veijo:	Nii, kuule ku se on vähän sellanen haahuileva tyyppi, eikä oo tarpeeks
 Teppo:	Missä niitä on?
 Veijo:	Kyllä me kuule löyetään sulle semmonen.
 
-{
-	# musiikki cutie from future
+
+Musiikki: cutie from future
+
+Veijo:	Sä et oo kuumana siit,
+		se ei oo kuumana sust.
+		mitenkö teistä löytyis
+		ees hetken lemmenlöylyt.
+		Ja mä oon tästä varma,
+		sä et tuu sitä saamaan,
+		mut pilata sä voit sen
+		tulevaisuuden onnen.
+	
+		Niin kovin haluat suudella
+Teppo:	etsin vain paikkoja
+		kun samas huoneessa oon...
+Veijo:	Etkä huomaa,
+		kuinka kärsimätön mieles onkaan
+Teppo:	mä kädest pitäisin vaan
+
+Veijo:	voisit yrittää rauhoittua
+Teppo:	ei sydän tää, voi hidastua
+Veijo:	on muitakin
+Teppo:	mut se on ainoo
+Veijo:	ja vastaa ei,
+		kun peili ei se oo
+
+Veijo:	Sä et oo pahoillasi,
+		se ei oo pahoillansa
+		jos mitään sanotkaan et
+		ja vain pois päin kävelet
+Teppo:	Ja miten olisinkaan
+		mä niin piittamaton vaan
+Veijo:	ei teil oo sopimusta
+		ei pientä lausettakaan
+
+Teppo:	Niin kovin haluan kuunnella
+		kaunista ääntäs vaan.
+Veijo:	Sä viulun ostaakkin voit
+Teppo:	Enkä huomaa, kuinka kärsii
+		henki sisälläni.
+Veijo:	Sä et saa toivettasi
+	
+Veijo:	voisit yrittää rauhoittua
+Teppo:	ei sydän tää, voi hidastua
+Veijo:	on muitakin
+Teppo:	mut se on ainoo
+Veijo:	ja vastaa ei,
+		kun peili ei se oo
+
+		kuvaasi sun katoppa tarkemmin
+		sen vastaavan tahtoisit
+		ei sun repliikit niin hyvii oo
+		et saisit vaan
+		ne niillä vastaamaan
+		ei kuitenkaan
+		ne hylkää omiaan
+
+Teppo:	Niin kovin haluun taivuttaa
+		mieles mun vankilaan
+Veijo:	Et saisi tehdä sitä
+Teppo:	Enkä huomaa, kuinka kärsii
+		henki sisälläsi,
+		kun jatkan näytelmääni.
+
+Veijo:	voisit yrittää rauhoittua
+Teppo:	ei sydän tää, voi hidastua
+Veijo:	on muitakin
+Teppo:	mut se on ainoo
+Veijo:	ja vastaa ei,
+		kun peili ei se oo
+
+
+		 
+		
+	
+
+	Voisit yrittää
+
+	
+	ja avaa kuores
+	niin etsitään sulle
+
 	/*
 	Maailma on täynnä naisia.
 	Vielä se paras tuolla tulevaisuudessa odottaa.
