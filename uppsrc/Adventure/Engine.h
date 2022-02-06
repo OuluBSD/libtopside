@@ -4,14 +4,6 @@
 
 namespace Adventure {
 
-struct Script {
-	
-	
-	
-	void Clear() {TODO}
-	
-};
-
 /*struct ScriptObject {
 	
 };
@@ -19,9 +11,6 @@ struct Script {
 using SObj = ScriptObject;
 */
 
-struct Door {
-	
-};
 
 struct Room {
 	
@@ -35,9 +24,48 @@ typedef enum {
 	
 } SceneType;
 
-struct CutScene {
+typedef enum {
+	STATE_OPEN,
+	STATE_CLOSED,
+} StateType;
+
+typedef enum {
+	FACE_NULL,
+	FACE_FRONT,
+	FACE_LEFT,
+	FACE_BACK,
+	FACE_RIGHT,
+} FaceDir;
+
+struct Sentence : Moveable<Sentence> {
+	int num;
+	String msg;
+	Vector<String> lines;
+	int char_width;
+};
+
+struct Dialog {
+	Array<Sentence> sentences;
+	int col = 0;
+	int hlcol = 0;
+	bool visible = 0;
+	
+	
+	Sentence& Add();
+	void Clear();
 	
 };
+
+struct Script {
+	SceneType type;
+	//Thread thrd;
+	Callback override_;
+	SObj* paused_cam_following = 0;
+	
+	void Clear() {TODO}
+	
+};
+
 
 struct Program {
 	typedef Program CLASSNAME;
@@ -50,6 +78,8 @@ struct Program {
 	bool enable_diag_squeeze = false;
 	
 	typedef enum {
+		V_DEFAULT,
+		
 		V_OPEN,
 		V_CLOSE,
 		V_GIVE,
@@ -98,13 +128,13 @@ struct Program {
 	};
 	
 	
-	Vector<Script> global_scripts;	// table of scripts that are at game-level (background)
-	Vector<Script> local_scripts;	// table of scripts that are actively running
-	Vector<Script> cutscenes;		// table of scripts for (the active cutscene(s)
-	Vector<Script> draw_zplanes;	// table of tables for (each of the (8) zplanes for (drawing depth
-	CutScene cut;
+	Array<Script> global_scripts;	// table of scripts that are at game-level (background)
+	Array<Script> local_scripts;	// table of scripts that are actively running
+	Array<Script> cutscenes;		// table of scripts for (the active cutscene(s)
+	Array<Script> draw_zplanes;		// table of tables for (each of the (8) zplanes for (drawing depth
 	
-	CutScene* cutscene_curr = 0;
+	
+	Script* cutscene_curr = 0;
 	
 	
 	int verb_default_inventory_index = V_LOOKAT;
@@ -119,7 +149,6 @@ struct Program {
 	Image ui_dnarrowspr;
 	
 	bool cam_shake = false;
-
 	Point cam_pan_to_x;
 	SObj* cam_following_actor = 0;
 	Thread thrd;
@@ -134,23 +163,28 @@ struct Program {
 	
 	Script cam_script;
 	
-	Room* room_curr = 0;
+	SObj* room_curr = 0;
+	Sentence* selected_sentence = 0;
+	Dialog dialog_curr;
+	
+	SObj* selected_actor = 0;
+	
+	int fade_iris = 0;
+	int cutscene_cooloff = 0;
+	Script* fade_script = 0;
+	
+	SObj* talking_curr = 0;
+	SObj* talking_actor = 0;
 	
 	/*ui_arrows = {
 		{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
 		{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
-	};
-	
-	face_dirs = {
-		"face_front",
-		"face_left",
-		"face_back",
-		"face_right",
-		face_front=1,
-		face_left=2,
-		face_back=3,
-		face_right=4
 	};*/
+	
+	Verb verb_curr;
+	bool executing_cmd = false;
+	bool ismouseclicked = false;
+	
 	
 	void reset_ui();
 	void startup_script();
@@ -172,26 +206,27 @@ struct Program {
 	void dialog_end();
 	Point get_use_pos(SObj& obj);
 	void _anim(Thing& thing, const String& param1, int& param2);
-	void open_door(SObj& door_obj1, SObj& door_obj2);
-	void close_door(SObj& door_obj1, SObj& door_obj2);
-	void come_out_door(Door& from_door, Door& to_door, bool fade_effect);
+	void open_door(SObj& door_obj1, SObj* door_obj2);
+	void close_door(SObj& door_obj1, SObj* door_obj2);
+	void come_out_door(SObj& from_door, SObj& to_door, bool fade_effect);
 	void fades(int fade, int dir);
-	void change_room(Room& new_room, bool fade);
+	void change_room(SObj& new_room, bool fade);
 	void valid_verb(Verb verb, SObj& object);
-	void pickup_obj(SObj& obj, SObj& actor);
+	void pickup_obj(SObj& obj, SObj* actor);
 	void start_script(Callback func, bool bg, String noun1="", String noun2="");
 	void stop_script(Script& func);
 	void break_time(int jiffies=0);
 	void wait_for_message();
 	void say_line(SObj& actor, String msg, bool use_caps=false, float duration=1.0f);
+	void say_line(String msg);
 	void stop_talking();
 	void print_line(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
-	void put_at(SObj& obj, int x, int y, Room* room);
+	void put_at(SObj& obj, int x, int y, SObj* room);
 	void stop_actor(SObj& actor);
 	void walk_to(SObj& actor, int x, int y);
-	void wait_for_actor(SObj& actor);
-	void proximity(SObj& obj1, SObj& obj2);
-	const StrMap& get_keys(SObj& obj);
+	void wait_for_actor(SObj* actor);
+	double proximity(SObj& obj1, SObj& obj2);
+	//const StrMap& get_keys(SObj& obj);
 	Verb get_verb(SObj& obj);
 	void clear_curr_cmd();
 	void _update60();
@@ -215,12 +250,12 @@ struct Program {
 	void set_trans_col(int transcol);
 	void game_init();
 	void update_scripts(Vector<String>& scripts);
-	void istable(SObj& t);
+	bool istable(SObj& t);
 	Point _center_camera(const Point& val);
 	Point _center_camera(SObj& val);
 	Point getcellpos(SObj& obj);
 	bool is_cell_walkable(int celx, int cely);
-	Vector<String> create_text_lines(String msg, int max_line_length);
+	void create_text_lines(String msg, int max_line_length, Vector<String>& lines);
 	int longest_line_size(const Vector<String>& lines);
 	bool has_flag(SObj& obj, String value);
 	void recalc_bounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y);
@@ -230,20 +265,28 @@ struct Program {
 	void outline_text(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
 	bool iscursorcolliding(SObj& obj);
 	String smallcaps(const String& s);
+	void _fadepal(float perc);
+	String autotype(const String& str_value);
 	
 	void dialog_set(StrVec& msg_table);
 	
 	void Run();
 	
-	Room* FindRoom(const String& name);
+	SObj* FindRoom(const String& name);
 	EscValue& Classes(SObj& s);
 	String State(SObj& s);
 	String VerbStr(Verb v);
 	EscValue& Get(SObj& o, String key);
-	Room* InRoom(SObj& o);
+	SObj* GetInRoom(SObj& o);
 	Point GetXY(SObj& o);
+	Point GetOffset(SObj& o);
+	Size GetSize(SObj& o);
+	UsePos GetUsePos(SObj& o);
+	FaceDir GetFaceDir(SObj& o);
+	StateType GetState(SObj& o);
+	String GetFaceString(FaceDir d);
 	
-	void add(Vector<Script>& cutscenes, CutScene& sc);
+	void SetState(SObj& o, StateType s);
 	
 };
 
