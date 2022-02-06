@@ -14,7 +14,7 @@ game = {
 						w: 1,
 						h: 4,
 						state_closed: 79,
-						classes: {class_door,class_openable},
+						classes: ["class_door","class_openable"],
 						use_pos: pos_right,
 						use_dir: face_left
 					},
@@ -26,8 +26,8 @@ game = {
 	
 				obj_hall_door_library: {
 					data: {
-						name: library,
-						state: state_open,
+						name: "library",
+						state: "state_open",
 						x: 56,
 						y: 16,
 						w: 1,
@@ -35,7 +35,7 @@ game = {
 						flip_x: true,
 						state_closed: 78,
 						use_dir: "face_back",
-						classes: {class_door,class_openable}
+						classes: ["class_door","class_openable"]
 					},
 					init: @(&me) {
 						me.target_door = obj_library_door_hall;
@@ -43,349 +43,341 @@ game = {
 				},
 	
 				obj_hall_door_kitchen: {
-					data: [[
-						name: kitchen
-						state: state_open
-						x=176
-						y=16
-						w=1
-						h=4
-						use_pos: pos_left
-						use_dir: face_right
-						classes: {class_door}
-					]],
+					data: {
+						name: "kitchen",
+						state: "state_open",
+						x: 176,
+						y: 16,
+						w: 1,
+						h: 4,
+						use_pos: pos_left,
+						use_dir: face_right,
+						classes: ["class_door"]
+					},
 					init: @(&me) {
-						me.target_door: obj_kitchen_door_hall
-					end
-				}
+						me.target_door = obj_kitchen_door_hall;
+					}
+				},
 	
 				obj_bucket: {
-					data: [[
-						name: full bucket
-						state: state_closed
-						x=142
-						y=48
-						w=1
-						h=1
-						state_closed=143
-						state_open: 159
-						trans_col=15
-						use_with=true
-						classes: {class_pickupable}
-					]],
-					verbs = {
-						lookat = function(me)
+					data: {
+						name: "full bucket",
+						state: "state_closed",
+						x: 142,
+						y: 48,
+						w: 1,
+						h: 1,
+						state_closed: 143,
+						state_open: 159,
+						trans_col: 15,
+						use_with: true,
+						classes: ["class_pickupable"]
+					},
+					verbs: {
+						lookat: @(me) {
 							say_line("it's an old bucket")
-						end,
-						pickup = function(me)
+						},
+						pickup: @(&me) {
 							pickup_obj(me)
-						end,
-						use = function(me, noun2)
-							if noun2 == obj_fire and me.state == "state_closed" then
-								put_at(obj_fire, 0, 0, rm_void)
-								--put_at(obj_key, 88, 32, rm_library)
-								obj_bucket.state = "state_open"
-								say_line("the fire's out now")
-							end
-						end
+						},
+						use: (me, noun2) {
+							if (noun2 == obj_fire && me.state == "state_closed") {
+								put_at(obj_fire, 0, 0, rm_void);
+								//put_at(obj_key, 88, 32, rm_library);
+								obj_bucket.state = "state_open";
+								say_line("the fire's out now");
+							}
+						}
 					}
-				}
+				},
 	
-				obj_spinning_top = {
-					data = [[
-						name=spinning top
-						x=36
-						y=37
-						w=1
-						h=1
-						state=state_idle
-	     state_idle=158
-						anim_spin={158,174,190}
-	     frame_delay=4
-						col_replace={12,7}
-						trans_col=15
-	     use_dir = face_front
-					]],
-					verbs = {
-	     lookat = function(me)
-	      -- do cutscene
-	      cutscene(
-	       1, -- no verbs
-	       -- cutscene code (hides ui, etc.)
-	       function()
-	        say_line("this is some example dialog")
-	        break_time(20)
-	        say_line("with some pauses...")
-	        break_time(20)
-	        say_line("you can try skipping next time!")
-	       end,
-	       -- override for cutscene
-	       function()
-	        stop_talking()
-	       end
-	      )
-	     end,
-						use = function(me)
-	      
-							if script_running(room_curr.scripts.spin_top) then
-								stop_script(room_curr.scripts.spin_top)
-	       me.curr_anim = nil      -- stop cycle anim
-								me.state = "state_idle" -- go to initial state/frame
-							else
-								start_script(room_curr.scripts.spin_top, 
-	                    true) -- bg script, continues executing on room change
-							end
-						end
+				obj_spinning_top: {
+					data: {
+						name: "spinning top",
+						x: 36,
+						y: 37,
+						w: 1,
+						h: 1,
+						state: "state_idle",
+						state_idle: 158,
+						anim_spin: [158, 174, 190],
+						frame_delay: 4,
+						col_replace: [12, 7],
+						trans_col: 15,
+						use_dir: face_front
+					},
+					verbs: {
+					    lookat: (@me) {
+							// do cutscene
+							cutscene(
+								1, // no verbs
+								// cutscene code (hides ui, etc.)
+								@() {
+								say_line("this is some example dialog");
+								break_time(20);
+								say_line("with some pauses...");
+								break_time(20);
+								say_line("you can try skipping next time!");
+								},
+								// override for cutscene
+								@() {
+								stop_talking()
+								}
+							);
+						},
+						use: (@me) {
+							if (script_running(room_curr.scripts.spin_top)) {
+								stop_script(room_curr.scripts.spin_top);
+								me.curr_anim = Null;      // stop cycle anim
+								me.state = "state_idle"; // go to initial state/frame
+							}
+							else {
+								start_script(room_curr.scripts.spin_top, true); // bg script, continues executing on room change
+							}
+						}
 					}
-				}
-	
-			rm_hall = {
-				data = [[
-					map = {32,24,55,31}
-				]],
-				objects = {
+				},
+			},
+			rm_hall: {
+				data: {
+					map: {32,24,55,31}
+				},
+				objects: {
 					obj_front_door_inside,
 					obj_hall_door_library,
 					obj_hall_door_kitchen,
 					obj_spinning_top,
-	    obj_bucket,
+					obj_bucket,
 				},
-				enter = function(me)
-	    -- note: this will work for first enter,  but when using doors 
-	    --       to enter room, door position will override put_at()
-					selected_actor = main_actor
-	    put_at(selected_actor, 30, 55, rm_hall)
-					camera_follow(selected_actor)
-				end,
-				exit = function(me)
-					-- todo: anything here?
-				end,
+				enter: @(me) {
+					// note: this will work for first enter,  but when using doors
+					//       to enter room, door position will override put_at()
+					selected_actor = main_actor;
+					put_at(selected_actor, 30, 55, rm_hall);
+					camera_follow(selected_actor);
+				},
+				exit: @(me) {
+					// todo: anything here?
+				},
 	
-	   scripts = {	  -- scripts that are at room-level
-					spin_top = function()
-						dir=-1
-	     do_anim(obj_spinning_top, obj_spinning_top.anim_spin)
-						while true do
-							for x=1,3 do
-								-- move top
-								obj_spinning_top.x -= dir
-	       break_time(12)
-							end
-							dir *= -1
-						end
-					end,
+				scripts = {	  // scripts that are at room-level
+					spin_top: @() {
+						dir = -1;
+						do_anim(obj_spinning_top, obj_spinning_top.anim_spin);
+						while (true) {
+							for (x = 0; x < 3; x++) {
+								// move top
+								obj_spinning_top.x -= dir;
+								break_time(12);
+							}
+							dir *= -1;
+						}
+					},
 				},
 			}
-	
-	-- library
-			-- objects
-	
-				obj_library_door_hall = {
-					data = [[
-						name = hall
-						state = state_open
-						x=136
-						y=16
-						w=1
-						h=3
-	     state_closed = 78
-						use_dir = face_back
-						classes = {class_door,class_openable}
-					]],
-					init = function(me)
-						me.target_door = obj_hall_door_library
-					end
+		}
+	},
+	library: {
+		objects: {
+			obj_library_door_hall: {
+				data: {
+					name: hall,
+					state: state_open,
+					x: 136,
+					y: 16,
+					w: 1,
+					h: 3,
+					state_closed: 78,
+					use_dir: face_back,
+					classes: ["class_door", "class_openable"]
+				},
+				init: (me) {
+					me.target_door = obj_hall_door_library;
 				}
-	
-				obj_fire = {
-					data = [[
-						name=fire
-						x=88
-						y=32
-						w=1
-						h=1
-						state=state_here
-	     state_here=81
-	     anim_fire={81,82,83}     
-	     frame_delay=8
-	     use_pos={97,42}
-						lighting = 1
-					]],
-					init = function(me)
-	     -- animate fireplace
-	     do_anim(me, me.anim_fire)
-	    end,
-					verbs = {
-						lookat = function()
-							say_line("it's a nice, warm fire...")
-							break_time(10)
-							do_anim(selected_actor, "face_towards", "face_front")
-							say_line("ouch! it's hot!:*stupid fire*")
-						end,
-						talkto = function()
-							say_line("'hi fire...'")
-							break_time(10)
-							do_anim(selected_actor, "face_towards", "face_front")
-							say_line("the fire didn't say hello back:burn!!")
-						end,
-						pickup = function(me)
-							pickup_obj(me)
-						end
+			},
+			
+			obj_fire: {
+				data: {
+					name: fire,
+					x: 88,
+					y: 32,
+					w: 1,
+					h: 1,
+					state: "state_here",
+					state_here: 81,
+					anim_fire: [81,82,83],
+					frame_delay: 8,
+					use_pos: [97,42],
+					lighting: 1
+				},
+				init: @(me) {
+					// animate fireplace
+					do_anim(me, me.anim_fire)
+			    },
+				verbs: {
+					lookat: @() {
+						say_line("it's a nice, warm fire...");
+						break_time(10);
+						do_anim(selected_actor, "face_towards", "face_front");
+						say_line("ouch! it's hot!:*stupid fire*");
+					},
+					talkto: @() {
+						say_line("'hi fire...'");
+						break_time(10);
+						do_anim(selected_actor, "face_towards", "face_front");
+						say_line("the fire didn't say hello back:burn!!");
+					},
+					pickup: @(me) {
+						pickup_obj(me);
 					}
 				}
-	
-	
-			rm_library = {
-				data = [[
-					map = {56,24,79,31}
-					col_replace={7,4}
-				]],
-				objects = {
-					obj_library_door_hall,
-					obj_fire,
+			},
+			
+			rm_library: {
+				data: {
+					map: {56,24,79,31},
+					col_replace: {7,4}
 				},
-				enter = function(me)
-					-- setup anything necessary on "enter" of room
-				end,
-				exit = function(me)
-	    -- tidy-up/stop anything necessary on "exit" of room
-					-- note: we don't need to pause fireplace as not using a script
-	    --       (it's an anim, so if not visible, will not animate)				
-				end,			
+				objects: {
+					"obj_library_door_hall",
+					"obj_fire",
+				},
+				enter: @(me) {
+					// setup anything necessary on "enter" of room
+				},
+				exit: @(me) {
+					// tidy-up/stop anything necessary on "exit" of room
+					// note: we don't need to pause fireplace as not using a script
+					//       (it's an anim, so if not visible, will not animate)
+				},
 			}
-	
-	
-	
-	-- "the void" (room)
-	-- a place to put objects/actors when not in any visible room
-	
-		-- objects
-	
-		rm_void = {
-			data = [[
-				map = {0,0}
-			]],
-			objects = {
+		},
+		
+		// "the void" (room)
+		// a place to put objects/actors when not in any visible room
+		
+		// objects
+		
+		rm_void: {
+			data: {
+				map: [0,0],
+			},
+			objects: {
+				
+			},
+		},
+		
+		//
+		// room definitions
+		//
+		
+		rooms: {
+			"rm_void",
+			"rm_hall",
+			"rm_library",
+		},
+		
+		// actor definitions
+		//
+		
+		// initialize the player's actor object
+		main_actor: {
+			// sprite/anim order for directions = front, left, back, right)
+			// (note: right = left value...flipped!)
+			data: {
+				name: "humanoid",
+				w: 1,
+				h: 4,
+				idle: [ 193, 197, 199, 197 ],
+				talk: [ 218, 219, 220, 219, 0,8, 1,1 ],
+				walk_anim_side: [ 196, 197, 198, 197 ],
+				walk_anim_front: [ 194, 193, 195, 193 ],
+				walk_anim_back: [ 200, 199, 201, 199 ],
+				col: 12,
+				trans_col: 11,
+				walk_speed: 0.5,
+				frame_delay: 5,
+				classes: ["class_actor"],
+				face_dir: "face_front"
 			},
 		}
-	
-	
-	
-	--
-	-- room definitions
-	--
-	
-	
-	
-	rooms = {
-		rm_void,
-		rm_hall,
-		rm_library,
 	}
 	
-	
-	
-	
-	-- actor definitions
-	--
-	
-	-- initialize the player's actor object
-	main_actor = {
-			-- sprite/anim order for directions = front, left, back, right) 
-	  -- (note: right = left value...flipped!)
-			data = [[
-				name = humanoid
-				w = 1
-				h = 4
-				idle = { 193, 197, 199, 197 }
-				talk = { 218, 219, 220, 219, 0,8, 1,1 }
-				walk_anim_side = { 196, 197, 198, 197 }
-				walk_anim_front = { 194, 193, 195, 193 }
-				walk_anim_back = { 200, 199, 201, 199 }
-				col = 12
-				trans_col = 11
-				walk_speed = 0.5
-				frame_delay = 5
-				classes = {class_actor}
-				face_dir = face_front
-			]],
-	}
-	
-	purp_tentacle = {
-			data = [[
-				name = purple tentacle
-				x = 88
-				y = 51
-				w = 1
-				h = 3
-				idle = { 154, 154, 154, 154 }
-				talk = { 171, 171, 171, 171 }
-				col = 11
-				trans_col = 15
-				walk_speed = 0.4
-				frame_delay = 5
-				classes = {class_actor,class_talkable}
-				face_dir = face_front
-				use_pos = pos_left
-			]],
-			in_room = rm_hall,
-			verbs = {
-					lookat = function()
-						say_line("it's a weird looking tentacle, thing!")
-					end,
-					talkto = function(me)
-						cutscene(
-							1, -- no verbs
-							function()
-								--do_anim(purp_tentacle, face_towards, selected_actor)
-								say_line(me,"what do you want?")
-							end)
-	
-						-- dialog loop start
-						while (true) do
-							-- build dialog options
-							dialog_set({
-								(me.asked_where and "" or "where am i?"),
-								--"who are you?",
-								(me.asked_woodchuck and "" or "how much wood would a wood-chuck chuck, if a wood-chuck could chuck wood?"),
-								"nevermind"
-							})
-							dialog_start(selected_actor.col, 7)
-	
-							-- wait for selection
-							while not selected_sentence do break_time() end
-							-- chosen options
-							dialog_hide()
-	
-							cutscene(
-								1, -- no verbs
-								function()
-									say_line(selected_sentence.msg)
-									
-									if selected_sentence.num == 1 then
-										say_line(me, "you are in a demo scumm-8 game, i think!")
-										me.asked_where = true
-	
-									elseif selected_sentence.num == 2 then
-										say_line(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!")
-										me.asked_woodchuck = true
-	
-									elseif selected_sentence.num == 3 then
-										say_line(me, "ok bye!")
-										dialog_end()
-										return
-									end
-								end)
-	
-							dialog_clear()
-	
-						end --dialog loop
-					end, -- talkto
+	purp_tentacle: {
+		data: {
+			name: "purple tentacle",
+			x: 88,
+			y: 51,
+			w: 1,
+			h: 3,
+			idle: [ 154, 154, 154, 154 ],
+			talk: [ 171, 171, 171, 171 ],
+			col: 11,
+			trans_col: 15,
+			walk_speed: 0.4,
+			frame_delay: 5,
+			classes: ["class_actor", "class_talkable"],
+			face_dir: "face_front",
+			use_pos: "pos_left",
+		},
+		in_room: "rm_hall",
+		verbs: {
+			lookat: @() {
+				say_line("it's a weird looking tentacle, thing!")
+			},
+			talkto: @(&me) {
+				cutscene(
+					1, // no verbs
+					@() {
+						--do_anim(purp_tentacle, face_towards, selected_actor)
+						say_line(me,"what do you want?")
+				});
+
+				// dialog loop start
+				while (true) {
+					// build dialog options
+					dialog_set({
+						(me.asked_where and "" or "where am i?"),
+						--"who are you?",
+						(me.asked_woodchuck and "" or "how much wood would a wood-chuck chuck, if a wood-chuck could chuck wood?"),
+						"nevermind"
+					});
+					dialog_start(selected_actor.col, 7);
+
+					// wait for selection
+					while (!selected_sentence) {break_time();}
+					
+					// chosen options
+					dialog_hide();
+
+					cutscene(
+						1, // no verbs
+						@() {
+						say_line(selected_sentence.msg);
+						
+						if (selected_sentence.num == 1) {
+							say_line(me, "you are in a demo scumm-8 game, i think!");
+							me.asked_where = true;
+						}
+						else if (selected_sentence.num == 2) {
+							say_line(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!");
+							me.asked_woodchuck = true;
+						}
+						else if (selected_sentence.num == 3) {
+							say_line(me, "ok bye!");
+							dialog_end();
+							return;
+						}
+					});
+
+					dialog_clear();
 				}
+			}
 		}
+	},
 	
-	actors = {
-	 main_actor,
-	 purp_tentacle
+	actors: {
+		"main_actor",
+		"purp_tentacle"
 	}
 }
