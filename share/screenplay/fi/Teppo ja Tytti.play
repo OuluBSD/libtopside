@@ -623,45 +623,87 @@ Veijo:	En en, ei juua ku maistiaiset.
 Veijo:	Täällähän on väkiä.
 Teppo:	En oo kyllä ollu näin tupaten täydessä talossa koskaan.
 		Mitähän tapahtuu sitten kun nää on ympäripäissään myöhemmin?
-Veijo:	Tuskin ne on niin paljo varannu juomista.
-Teppo:	Näillä näyttää olevan omia mukana.
+Aatu:	Tuskin ne on niin paljo varannu juomista.
+Veijo:	Näillä näyttää olevan omia mukana.
 
 
-{
-	# musiikki catwoman
-	
-	
-	/*
-	Kato ketä tääl
-	näyttää tulevan juhlimaan.
-	Kaikki tyypit nää on nimeä tekeviä.
-	
-	Naisetkin niin, hienoissa vaatteissa.
-	
-	Kuka tuo tyttö on?
-	Joka katseen vangitsee.
-	Kuka tuo tyttö on?
-	Joka on täynnä lempeää pehmeyttä.
-	
-	En voi olla sua katsomatta...
-	
-	
-	
-	Kuinka tuo kehtaa tänne tulla.
-	Kaikki oli niin hyvin, mutta tuo pilaa koko illan.
-	Heitän tuon saatanan roskan ulos täältä.
-	
-	Ei nyt tehdä draamaa,
-	ei nää ikäviin juhliin tule uudestaan.
-	
-	
-	Hymyilee niin,
-	Hymyilee niin kauniisti.
-	Se hymyilee niin kauniisti.
-	
-	*/
-	
-}
+Musiikki: "2011/catwoman.tg"
+
+Veijo:	Kato ketä tääl
+		näyttää löytyvän.
+		Kaikki tulleet on
+		illanviettoon.
+Aatu:	Naiset kauniinpii
+		on kuin arkisin.
+Teppo:	Tarjoillakin on
+		kostuke janoon,
+		mut hei,
+
+Veijo:	kuka tuo tyttö on?
+Teppo:	Kuka tuo tyttö on?
+Aatu:	Kuka tuo tyttö on?
+Kaikki:	Joka tanssii noin.
+Veijo:	Kuka sille kelpaa?
+Teppo:	Kuka saa sen nauraan?
+Aaut:	Kuka kotiin saattaa?
+Teppo:	Jolle tuuri käy.
+
+		Tää on se ilta viimeinen,
+		kun tulen tänne etsien,
+		et kuka on mun kohtalo,
+		ja kenen kanssa täsmää vartalot.
+		
+Veijo:	Kuule mikä on
+		pauhu mahoton.
+Aatu:	Mikähän on tuo
+		nauru ja huuto?
+Teppo:	Mikä tuoksuu noin,
+		sen syödä vois.
+Veijo:	Kukahan ois tääl
+		liian yksinään, niinku tuo,
+		
+		kuka tuo jätkä on?
+Teppo:	Kuka tuo jätkä on?
+Aatu:	Kuka tuo jätkä on?
+Kaikki:	Joka iskee noin.
+Veijo:	Kaikki vastaanottaa.
+Teppo:	Kaikki nauramaan saa.
+Aatu:	Kaikki saa haluaan,
+Teppo:	muttei annakkaan.
+
+		Tää on se ilta viimeinen,
+		kun tulen tänne etsien,
+		et kuka on mun kohtalo,
+		ja kenen kanssa täsmää vartalot.
+
+Veijo:	Tää on se ilta tähtien,
+		kun tulen tänne toivoen,
+		että sä lennät viel mun luo
+		kuin taivaalla viivat.
+
+Aatu:	Kaikille riitä ei aikaa, ehei,
+		miehistä paras sen huomion vei.
+		Kaadutaan rivissä pimeän taa,
+		armahda ei hän kai tappelijaa.
+
+Veijo:	Ei et sä saa tarttua mukaan,
+		ottaja vie
+Teppo:	ja muut jää nuoleen haavojaan.
+
+Aatu:	Tää on se ilta sankarin,
+		kun toiseks jäi se roistokin.
+		Sen kuka parhaan diilin möi,
+		ja sopimuksella sen sinetöi.
+
+Teppo:	Tää on se ilta viimeinen,
+		kun tulen tänne etsien,
+		et kuka on mun kohtalo ja unelma, aa-a.
+
+Teppo:	Kuka se on?
+Veijo:	Niin kuka se onkaan?
+Aamu:	Kuka se on?
+Kaikki:	Niin kuka se on ja
+		kelle se jää?
 
 
 // Kun Teppo katselee Tyttiä ihastuneena, nuori Matti Kuhlman tunnistaa hänet ja on raivoissaan siitä, että joku Palmfelt livahtaa Kuhlmanien juhlaan.
