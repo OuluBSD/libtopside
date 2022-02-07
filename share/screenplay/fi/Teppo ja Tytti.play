@@ -631,7 +631,7 @@ Aatu:	Tuskin ne on niin paljo varannu juomista.
 Veijo:	Näillä näyttää olevan omia mukana.
 
 
-Musiikki: "2011/catwoman.tg"
+Musiikki: "2021/catwoman.tg"
 
 Veijo:	Kato ketä tääl
 		näyttää löytyvän.
@@ -863,7 +863,7 @@ Katri:	Onhan nyt ihme taas,
 		voihan nuita nuoria ihmisii.
 		Kuinka päähän järkeä menisi?
 
-		Ikävyyttä, itsekkyyttä se on kun ei pidä housuja jalois,
+		Ikävyyttä, itsekkyyttä se on kun ei pidä housujaan jalois,
 		kun viaton tarttuu, ja huonosti käykin.
 
 Tytti:	Mietin minä vaan iltaa kanssas
@@ -990,30 +990,56 @@ Lindström:	Tahdotko sinä Tytti Kuhlman ottaa Teppo Palmfeltin aviomieheksesi?
 Tytti:		Tahdon.
 Lindström:	Minulle sallituin oikeuksin julistan teidät aviomieheksi ja vaimoksi.
 
-{
-	# musiikki dreaming together
-	
-	/*
-	Kanssa sun lävitse vuosien,
-	mää oon kuin aikain nuorien.
-	
-	Sun seuras sydämeni vapauttaa,
-	mieleni taivaalla lentää saa.
-	Oot se mikä rauhan tuo,
-	ja uneen tuudittaa.
-	
-	Vaik ympäröis meitä tulimeri,
-	sun luona pysyy sydämeni.
-	
-	Lailla vanhan aitan harmajan,
-	me jäädään tänne seisomaan.
-	Laille menneiden polvien,
-	meidän rakkaus voittaa kaiken.
-	
-	
-	
-	*/
-}
+
+Musiikki: "2021/dreaming together.tg":
+
+Tytti:	Valkoisella nähdä sä saat,
+Teppo:	mustal pääset turvaan,
+Tytti:	Muisto kesän nuorena
+Teppo:	ja rauha myös huomenna.
+Tytti:	Oot kultani mun,
+Teppo:	oot vastaus nääntymykseen.
+Tytti:	Tuulet viedä voi meidät pois päin
+Teppo:	kunhan vie se mut pois sun kanssas.
+
+Tytti:	Voi vain sydän tuntea sen,
+		on rakkaus tää ikuinen,
+Teppo:	kun voima suurin aukaisee,
+		meille lehden yhteisen.
+
+Tytti:	Maailma on kauniimpi nyt
+		oon kuin uudelleensyntynyt.
+Teppo:	Onnen päivä on parhain taas
+		kanssas kun oon uudestaan.
+Tytti:	Oot ainoa mun,
+Teppo:	oot mun elämäni.
+Tytti:	Aika viedä voi nuoruuden pois
+Teppo:	kunhan viedään se pois sun kanssas.
+
+Tytti:	Voi vain sydän tuntea sen,
+		on rakkaus tää ikuinen,
+Teppo:	kun voima suurin aukaisee,
+		meille lehden yhteisen.
+
+Tytti:	Kaikki kuulla onnemme saa
+		ja kun onnemme versoaa.
+Teppo:	ja kun arki on vauhtia, elämää
+		piiloon ei muilta se jää.
+Tytti:	Kun on aika jo vienyt pois
+Teppo:	ja kun korkealta voi katsoo,
+Tytti:	viel jossain onnemme soi
+Teppo:	ja kanssas siellä oon.
+
+Tytti:	Voi vain sydän tuntea sen,
+		on rakkaus tää ikuinen,
+Teppo:	kun voima suurin aukaisee,
+		meille lehden yhteisen.
+Tytti:	Voi vain sydän tuntea sen,
+		on rakkaus tää ikuinen,
+Teppo:	kun voima suurin aukaisee,
+		meille lehden yhteisen,
+T&T:	lehden yhteisen.
+
 
 	** Katri on yleisössä ja nakkelee iloisena riisiä ohikävelevän tuoreen pariskunnan päälle **
 
