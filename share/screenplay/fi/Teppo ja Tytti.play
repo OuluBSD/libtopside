@@ -4,8 +4,12 @@
 										Tytti ja Teppo
 
  
-									Mukaelma Romeo ja Juliasta
-									kirjoittanut Seppo Pakonen
+							Mukaelma Shakespearen Romeo ja Juliasta.
+				Tehty alkuperäisen näytelmän lyhennelmästä, ilman tietoa sen sisällöstä.
+
+
+									Kirjoittanut Seppo Pakonen
+
 
 
 Teppo					Teppo Palmfelt
@@ -808,31 +812,77 @@ Katri:	No ei mutta olivatpahan tulleet silti.
 Tytti:	Voi helvetin helvetti!
 		Mikä saatanan tollo tulee juhliin kutsumatta?
 
-{
-	# musiikki got your message
-	
-	/*
-	Kuuletko nää?
-	Tiäkkö nää?
-	
-	Veit mun, hei veit mun sydämen,
-	älä luotain poissa mee.
-	
-	
-	Tuo mulle lämpö,
-	tuo mulle voima,
-	Teppo yksin voi vaan
-	kaiken sen tuoda.
-	
-	
-	Kukaan ei oo niinkuin sää,
-	sun tyylis voittaa kaikki nää.
-	
-	Sun hymys naurus, mieleen jäi.
-	Pehmyt ääni ja kädet vahvat.
-	
-	*/
-}
+Musiikki: "2021/got your message.tg"
+
+Katri:	Hei, tiiäkkö nää,
+		missä mennään?
+		Vaaraks on nuo,
+		mies niinku tuo.
+		Ei siitä tuu
+		mahdollisuus,
+		etsi sä uus
+		turvallinen.
+
+Teppo:	Tytti, hei poissa mä jo meen,
+		älä siitä huolta tee.
+ 		Tytti, hei jäit mun sydämeen, mut
+		en mä surulliseks mee.
+
+Tytti:	Mietin minä vaan iltaa kanssas
+		ja kuinka saan sen uudestaan.
+		Mietin minä vaan kuinka kiedot sä
+		kätesi mun selän taa.
+
+Katri:	Pliis, nyt miettisit
+		viimaa talven,
+Tytti:	kuin lämpimäks
+		sais hän kaiken,
+Katri:	kuin kuolemaa
+Tytti:	välttää mun kaa
+Katri:	ei jatkoa
+Tytti:	jää tulematta.
+
+Teppo:	Tytti, hei lämpös loittonee,
+		mut kyllä täällä tarkenee.
+ 		Tytti, hei jäit mun unelmiin, mut
+		paikka se on sielläkin.
+
+Tytti:	Mietin minä vaan iltaa kanssas
+		ja kuinka saan sen uudestaan.
+		Mietin minä vaan kuinka kiedot sä
+		kätesi mun selän taa.
+
+T&T:	Jää mun luo, älä mee pois,
+		älä luotain poissa mee.
+		Sä mulle vanno vaan
+		taivaat ja maat,
+		ikuisesti mut sä saat.
+
+Katri:	Onhan nyt ihme taas,
+		voihan tuota ketkua rakastajaa,
+		voihan nuita nuoria ihmisii.
+		Kuinka päähän järkeä menisi?
+
+		Ikävyyttä, itsekkyyttä se on kun ei pidä housuja jalois,
+		kun viaton tarttuu, ja huonosti käykin.
+
+Tytti:	Mietin minä vaan iltaa kanssas
+		ja kuinka saan sen uudestaan.
+		Mietin minä vaan kuinka kiedot sä
+		kätesi mun selän taa.
+
+T&T:	Jää mun luo, älä mee pois,
+		älä luotain poissa mee.
+		Sä mulle vanno vaan
+		taivaat ja maat,
+		ikuisesti mut sä saat.
+
+Teppo:	Kyllä mä kiertää
+		voin sut vielä,
+		vielä kun ei oo
+		toiveita tiellä.
+Tytti:	Vielä voi aamul
+		nousta ilman muistoo.
 
 
 // Kun Aatu ja Veijo jättävät Mikael Kuhlmanin kartanon, Teppo hyppää piha-aidan yli puutarhaan pystymättä jättämään Tyttia taakseen.
