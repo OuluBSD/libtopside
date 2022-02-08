@@ -7,8 +7,9 @@ file
 	Adventure.h,
 	Demo.esc highlight cpp,
 	Adventure.cpp,
-	Engine.h,
-	Engine.cpp;
+	Program.h,
+	Program.cpp,
+	App.cpp;
 
 mainconfig
 	"" = "GUI";

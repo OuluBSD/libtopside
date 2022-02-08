@@ -27,7 +27,7 @@ void Dialog::Clear() {
 
 
 
-void Program::reset_ui() {
+void Program::ResetUI() {
 	verb_maincol = Color(28, 170, 255);
 	verb_hovcol = Color(255, 255, 255);
 	verb_shadcol = Color(28, 42, 150);
@@ -37,13 +37,13 @@ void Program::reset_ui() {
 }
 
 
-void Program::startup_script() {
-	reset_ui();
+void Program::StartupScript() {
+	ResetUI();
 	
 	SObj* r = FindRoom("rm_hall");
 	ASSERT(r);
 	if (r)
-		change_room(*r,  1);
+		ChangeRoom(*r,  1);
 }
 
 SObj* Program::FindRoom(const String& name) {
@@ -75,18 +75,18 @@ SObj* Program::GetInRoom(SObj& o) {
 
 
 
-void Program::shake(bool enabled) {
+void Program::Shake(bool enabled) {
 	cam_shake = enabled;
 	cam_shake_amount = enabled ? 1 : cam_shake_amount;
 }
 
 
-Program::Verb Program::find_default_verb(SObj& obj) {
+Program::Verb Program::FindDefaultVerb(SObj& obj) {
 	Verb default_verb = V_LOOKAT;
 
-	if (has_flag(Classes(obj), "class_talkable"))
+	if (HasFlag(Classes(obj), "class_talkable"))
 		default_verb = V_TALKTO;
-	else if (has_flag(Classes(obj), "class_openable")) {
+	else if (HasFlag(Classes(obj), "class_openable")) {
 		if (State(obj) == "state_closed")
 			default_verb = V_OPEN;
 		else
@@ -95,7 +95,7 @@ Program::Verb Program::find_default_verb(SObj& obj) {
 
 	// now find the full verb definition
 	/*for (auto v : all(verbs)) {
-		vi = get_verb(v);
+		vi = GetVerb(v);
 		if (vi[2] == default_verb) { default_verb = v; break; }
 	}*/
 	
@@ -103,89 +103,89 @@ Program::Verb Program::find_default_verb(SObj& obj) {
 }
 
 // actions to perform when object doesn't have an entry for (verb
-void Program::unsupported_action(Verb verb, SObj& obj1, SObj& obj2) {
-	bool is_actor = has_flag(Classes(obj1), "class_actor");
+void Program::UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2) {
+	bool is_actor = HasFlag(Classes(obj1), "class_actor");
 
 	if (verb == V_WALKTO)
 		return;
 
 	else if (verb == V_PICKUP)
-		say_line(is_actor ? "i don't need them" : "i don't need that");
+		SayLine(is_actor ? "i don't need them" : "i don't need that");
 
 	else if (verb == V_USE)
-		say_line(is_actor ? obj1 : obj2,
+		SayLine(is_actor ? obj1 : obj2,
 			is_actor ? "i can't just *use* someone" :
-				(has_flag(Classes(obj2), "class_actor") ?
+				(HasFlag(Classes(obj2), "class_actor") ?
 					"i can't use that on someone!" : "that doesn't work"));
 
 	else if (verb == V_GIVE)
-		say_line(is_actor ? "i don't think i should be giving this away" : "i can't do that");
+		SayLine(is_actor ? "i don't think i should be giving this away" : "i can't do that");
 
 	else if (verb == V_LOOKAT)
-		say_line(is_actor ? "i think it's alive" : "looks pretty ordinary");
+		SayLine(is_actor ? "i think it's alive" : "looks pretty ordinary");
 
 	else if (verb == V_OPEN || verb == V_CLOSE)
-		say_line(String(is_actor ? "they don't" : "it doesn't")  + " seem to " + VerbStr(verb));
+		SayLine(String(is_actor ? "they don't" : "it doesn't")  + " seem to " + VerbStr(verb));
 
 	else if (verb == V_PUSH || verb == V_PULL)
-		say_line(is_actor ? "moving them would accomplish nothing" : "it won't budge!");
+		SayLine(is_actor ? "moving them would accomplish nothing" : "it won't budge!");
 
 	else if (verb == V_TALKTO)
-		say_line(is_actor ? "erm ...  i don't think they want to talk" : "i am not talking to that!");
+		SayLine(is_actor ? "erm ...  i don't think they want to talk" : "i am not talking to that!");
 
 	else
-		say_line("hmm. no.");
+		SayLine("hmm. no.");
 	
 }
 
 
 
-void Program::camera_at(const Point& val) {
+void Program::CameraAt(const Point& val) {
 	// point center of camera at val, clear other cam values
-	Point c = _center_camera(val);
+	Point c = CenterCamera(val);
 	cam_x = c;
 	cam_pan_to_x = c;
 	cam_following_actor = 0;
 }
 
-void Program::camera_follow(SObj& actor) {
-	stop_script(cam_script); // bg script
+void Program::CameraFollow(SObj& actor) {
+	StopScript(cam_script); // bg script
 	
 	// set target, clear other cam values
 	cam_following_actor = &actor;
 	cam_pan_to_x = GetXY(actor);
 	
-	start_script(THISBACK(cam_script0), true); // bg script
+	StartScript(THISBACK(CamScript0), true); // bg script
 	
 	// auto-switch to room actor resides in
 	SObj* r = GetInRoom(*cam_following_actor);
 	if (r != room_curr)
-		change_room(*r, 1);
+		ChangeRoom(*r, 1);
 }
 
-void Program::cam_script0() {
+void Program::CamScript0() {
 	// keep the camera following actor
 	// (until further notice)
 	while (cam_following_actor) {
 		// keep camera within "room" bounds
 		if (GetInRoom(*cam_following_actor) == room_curr)
-			cam_x = _center_camera(*cam_following_actor);
+			cam_x = CenterCamera(*cam_following_actor);
 		TODO // yield();
 	}
 }
 
-void Program::camera_pan_to(SObj& val) {
+void Program::CameraPanTo(SObj& val) {
 	// set target, but keep camera within "room" bounds, clear other cam values
-	Point c = _center_camera(val);
+	Point c = CenterCamera(val);
 	cam_pan_to_x = c;
 	cam_following_actor = 0;
 
 	cam_script.Clear();
 	
-	start_script(THISBACK(cam_script1), true); // bg script
+	StartScript(THISBACK(CamScript1), true); // bg script
 }
 
-void Program::cam_script1() {
+void Program::CamScript1() {
 	
 	// update the camera pan until reaches dest
 	TODO
@@ -200,13 +200,13 @@ void Program::cam_script1() {
 	cam_pan_to_x.Clear();
 }
 
-void Program::wait_for_camera() {
-	while (script_running(cam_script)) {
+void Program::WaitForCamera() {
+	while (ScriptRunning(cam_script)) {
 		TODO // yield();
 	}
 }
 
-void Program::cutscene(SceneType type, Callback func_cutscene, Callback func_override) {
+void Program::Cutscene(SceneType type, Callback func_cutscene, Callback func_override) {
 	TODO /*cut = {
 		flags = type,
 		thrd = cocreate(func_cutscene),
@@ -221,48 +221,48 @@ void Program::cutscene(SceneType type, Callback func_cutscene, Callback func_ove
 
 	// yield for (system catch-up
 	// todo: see if (this is still needed!
-	TODO //break_time();
+	TODO //BreakTime();
 }
 
-void Program::dialog_set(StrVec& msg_table) {
+void Program::DialogSet(StrVec& msg_table) {
 	for (const String& msg : msg_table) {
-		dialog_add(msg);
+		DialogAdd(msg);
 	}
 }
 
-void Program::dialog_add(const String& msg) {
+void Program::DialogAdd(const String& msg) {
 	Sentence& s = dialog_curr.Add();
 	s.msg = msg;
 	
 	// break msg into lines (if (necc.)
-	create_text_lines(msg, 32, s.lines);
+	CreateTextLines(msg, 32, s.lines);
 	
 	// find longest line
-	s.char_width = longest_line_size(s.lines);
+	s.char_width = GetLongestLineSize(s.lines);
 	
 }
 
-void Program::dialog_start(int col, int hlcol) {
+void Program::DialogStart(int col, int hlcol) {
 	dialog_curr.col = col;
 	dialog_curr.hlcol = hlcol;
 	dialog_curr.visible = true;
 	selected_sentence = NULL;
 }
 
-void Program::dialog_hide() {
+void Program::DialogHide() {
 	dialog_curr.visible = false;
 }
 
-void Program::dialog_clear() {
+void Program::DialogClear() {
 	dialog_curr.sentences = {};
 	selected_sentence = NULL;
 }
 
-void Program::dialog_end() {
+void Program::DialogEnd() {
 	dialog_curr.Clear();
 }
 
-Point Program::get_use_pos(SObj& obj) {
+Point Program::GetUsePos(SObj& obj) {
 	UsePos obj_use_pos = GetUsePos(obj);
 	
 	Point pt = GetXY(obj);
@@ -278,7 +278,7 @@ Point Program::get_use_pos(SObj& obj) {
 	
 	// first check for (specific pos
 	TODO
-	/*if (istable(obj_use_pos)) {
+	/*if (IsTable(obj_use_pos)) {
 		x = obj_use_pos[1];
 		y = obj_use_pos[2]; // -cam_x, -stage-top
 	}
@@ -324,7 +324,7 @@ Point Program::get_use_pos(SObj& obj) {
 	return Point(x,y);
 }
 
-void Program::_anim(Thing& thing, const String& param1, int& param2) {
+void Program::DoAnim(Thing& thing, const String& param1, int& param2) {
 	//
 	// scumm examples:
 	// do-animation selected-actor stand
@@ -343,7 +343,7 @@ void Program::_anim(Thing& thing, const String& param1, int& param2) {
 		TODO
 		/*
 		// check if param2 is an actor/object, rather than explicit face_dir
-		if (istable(param2)) {
+		if (IsTable(param2)) {
 			// need to calculate face_dir from positions
 			double angle_rad = atan2(thing.x  - param2.x , param2.y - thing.y);
 			
@@ -382,7 +382,7 @@ void Program::_anim(Thing& thing, const String& param1, int& param2) {
 			
 			// is target dir left? flip?
 			thing.flip = (thing.face_dir == "face_left");
-			break_time(10);
+			BreakTime(10);
 		}*/
 	}
 	else {
@@ -396,11 +396,11 @@ void Program::_anim(Thing& thing, const String& param1, int& param2) {
 }
 
 // open one (or more) doors
-void Program::open_door(SObj& door_obj1, SObj* door_obj2) {
+void Program::OpenDoor(SObj& door_obj1, SObj* door_obj2) {
 	StateType state1 = GetState(door_obj1);
 	
 	if (state1 == STATE_OPEN) {
-		say_line("it's already open");
+		SayLine("it's already open");
 	}
 	else {
 		SetState(door_obj1, STATE_OPEN);
@@ -410,10 +410,10 @@ void Program::open_door(SObj& door_obj1, SObj* door_obj2) {
 }
 
 // close one (or more) doors
-void Program::close_door(SObj& door_obj1, SObj* door_obj2) {
+void Program::CloseDoor(SObj& door_obj1, SObj* door_obj2) {
 	StateType state1 = GetState(door_obj1);
 	if (state1 == STATE_CLOSED) {
-		say_line("it's already closed");
+		SayLine("it's already closed");
 	}
 	else {
 		SetState(door_obj1, STATE_CLOSED);
@@ -422,16 +422,16 @@ void Program::close_door(SObj& door_obj1, SObj* door_obj2) {
 	}
 }
 
-void Program::come_out_door(SObj& from_door, SObj& to_door, bool fade_effect) {
+void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 	// check param
 	/*if (to_door == NULL) {
-		show_error("target door does not exist");
+		ShowError("target door does not exist");
 		return;
 	}*/
 	
 	StateType from_state = GetState(from_door);
 	if (from_state != STATE_OPEN) {
-		say_line("the door is closed");
+		SayLine("the door is closed");
 		return;
 	}
 	
@@ -439,11 +439,11 @@ void Program::come_out_door(SObj& from_door, SObj& to_door, bool fade_effect) {
 	SObj* new_room = GetInRoom(to_door);
 	
 	if (new_room != room_curr) {
-		change_room(*new_room, fade_effect); // switch to new room and ...
+		ChangeRoom(*new_room, fade_effect); // switch to new room and ...
 	    
 		// ...auto-position actor at to_door in new room...
-		Point pos = get_use_pos(to_door);
-		put_at(*selected_actor, pos.x, pos.y, new_room);
+		Point pos = GetUsePos(to_door);
+		PutAt(*selected_actor, pos.x, pos.y, new_room);
 	}
 	
 	FaceDir to_dir = GetFaceDir(to_door);
@@ -471,12 +471,12 @@ void Program::come_out_door(SObj& from_door, SObj& to_door, bool fade_effect) {
 
 
 /*door_funcs = {
-	open = open_door,
-	close = close_door,
-	walkto = come_out_door
+	open = OpenDoor,
+	close = CloseDoor,
+	walkto = ComeOutDoor
 }*/
 
-void Program::fades(int fade, int dir) {
+void Program::Fades(int fade, int dir) {
 	// dir: 1=down, -1=up
 	int fade_amount = 25 - 25 * dir;
 
@@ -495,23 +495,23 @@ void Program::fades(int fade, int dir) {
 	}
 }
 
-void Program::change_room(SObj& new_room, bool fade) {
+void Program::ChangeRoom(SObj& new_room, bool fade) {
 	// check param
 	/*if (!new_room) {
-		show_error("room does not exist");
+		ShowError("room does not exist");
 		return;
 	}*/
 
 	// stop any existing fade (shouldn't be any, but just in case!)
 	TODO
 	/*if (fade_script) {
-		stop_script(*fade_script);
+		StopScript(*fade_script);
 		fade_script = 0;
 	}
 
 	// fade) {wn existing room (or skip if (first room)
 	if (fade && room_curr) {
-		fades(fade, 1);
+		Fades(fade, 1);
 	}
 	// switch to new room
 	// execute the exit() script of old room
@@ -522,7 +522,7 @@ void Program::change_room(SObj& new_room, bool fade) {
 	local_scripts = {};
 
 	// clear current command
-	clear_curr_cmd();
+	ClearCurrCmd();
 
 	// actually change rooms now
 	room_curr = new_room;
@@ -531,7 +531,7 @@ void Program::change_room(SObj& new_room, bool fade) {
 	if (!cam_following_actor || GetInRoom(cam_following_actor) != room_curr) cam_x = 0;
 
 	// stop everyone talking & remove displayed text
-	stop_talking();
+	StopTalking();
 
 	// fade up again?
 	// (use "thread" so that room.enter code is able to
@@ -539,9 +539,9 @@ void Program::change_room(SObj& new_room, bool fade) {
 	if (fade) {
 		// setup new fade up
 		fade_script = function() {
-				fades(fade, -1);
+				Fades(fade, -1);
 		}
-		start_script(*fade_script, true);
+		StartScript(*fade_script, true);
 	}
 	else {
 		// no fade - reset any existing fade
@@ -555,14 +555,14 @@ void Program::change_room(SObj& new_room, bool fade) {
 	}*/
 }
 
-void Program::valid_verb(Verb verb, SObj& object) {
+void Program::ValidVerb(Verb verb, SObj& object) {
 	TODO
 	/*
  // check params
 	if ((!object || !object.verbs)
 		return false;
 	// look for (verb
-	if (istable(verb)) {
+	if (IsTable(verb)) {
 		if (object.verbs[verb[1]]) return true;
 	}
 	else {
@@ -573,7 +573,7 @@ void Program::valid_verb(Verb verb, SObj& object) {
 	*/
 }
 
-void Program::pickup_obj(SObj& obj, SObj* actor) {
+void Program::PickupObj(SObj& obj, SObj* actor) {
 	// use actor spectified, || default to selected
 	if (!actor)
 		actor = selected_actor;
@@ -587,7 +587,7 @@ void Program::pickup_obj(SObj& obj, SObj* actor) {
 }
 
 
-void Program::start_script(Callback func, bool bg, String noun1, String noun2) {
+void Program::StartScript(Callback func, bool bg, String noun1, String noun2) {
 	// create new thread for (script and add to list of local_scripts (or background scripts)
 	TODO
 	/*local thread = cocreate(func);
@@ -597,7 +597,7 @@ void Program::start_script(Callback func, bool bg, String noun1, String noun2) {
 }
 
 
-bool Program::script_running(Script& func)  {
+bool Program::ScriptRunning(Script& func)  {
 	// loop through both sets of scripts...
 	TODO // ptr or content?
 	/*for (Script& s : local_scripts) {
@@ -619,17 +619,17 @@ bool Program::script_running(Script& func)  {
 	return false;
 }
 
-void Program::stop_script(Script& func) {
+void Program::StopScript(Script& func) {
 	// find script and stop it running
 	TODO
-	/*scr_obj = script_running(func) {
+	/*scr_obj = ScriptRunning(func) {
 		// just delete from all scripts (don't bother checking!)
 		del(local_scripts, scr_obj);
 		del(global_scripts, scr_obj);
 	}*/
 }
 
-void Program::break_time(int jiffies) {
+void Program::BreakTime(int jiffies) {
 	// wait for (cycles specified (min 1 cycle)
 	jiffies = max(1, jiffies);
 	for (int x = 0; x < jiffies; x++) {
@@ -637,7 +637,7 @@ void Program::break_time(int jiffies) {
 	}
 }
 
-void Program::wait_for_message() {
+void Program::WaitForMessage() {
 	TODO
 	/*while (talking_curr) {
 		yield();
@@ -645,7 +645,7 @@ void Program::wait_for_message() {
 }
 
 // uses actor's position and color
-void Program::say_line(SObj& actor, String msg, bool use_caps, float duration) {
+void Program::SayLine(SObj& actor, String msg, bool use_caps, float duration) {
 	TODO
 	/*
 	// check for (missing actor
@@ -658,23 +658,23 @@ void Program::say_line(SObj& actor, String msg, bool use_caps, float duration) {
 	talking_actor = actor;
 	
 	// offset to display speech above actors (dist in px from their feet)
-	// call the base print_line to show actor line
-	print_line(msg, actor.x, actor.y - actor.h * 8 + 4, actor.col, 1, use_caps, duration);
+	// call the base PrintLine to show actor line
+	PrintLine(msg, actor.x, actor.y - actor.h * 8 + 4, actor.col, 1, use_caps, duration);
 	*/
 }
 
-void Program::say_line(String msg) {
+void Program::SayLine(String msg) {
 	TODO
 }
 
 // stop everyone talking & remove displayed text
-void Program::stop_talking() {
+void Program::StopTalking() {
 	talking_curr = NULL;
 	talking_actor = NULL;
 }
 
 
-void Program::print_line(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font) {
+void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font) {
   // punctuation...
 	//  > ":" new line, shown after text prior expires
 	//  > ";" new line, shown immediately
@@ -707,10 +707,10 @@ void Program::print_line(String msg, int x, int y, int col, int align, bool use_
 	}
 	
 	Vector<String> lines;
-	create_text_lines(msg, max_line_length, lines);
+	CreateTextLines(msg, max_line_length, lines);
 	
 	// find longest line
-	int longest_line = longest_line_size(lines);
+	int longest_line = GetLongestLineSize(lines);
 	
 	// center-align text block
 	int xpos = x - cam_x.x;
@@ -742,22 +742,22 @@ void Program::print_line(String msg, int x, int y, int col, int align, bool use_
 	// if (message was split...
 	if (#msg_left > 0) {
 	  talking = talking_actor
-		wait_for_message()
+		WaitForMessage()
 		talking_actor = talking
-		print_line(msg_left, x, y, col, align, use_caps, NULL, big_font)
+		PrintLine(msg_left, x, y, col, align, use_caps, NULL, big_font)
 	}
 
 	// and wait for (message?
 	//if (!dont_wait_msg) {
-		wait_for_message();
+		WaitForMessage();
 	//}
 	*/
 }
 
-void Program::put_at(SObj& obj, int x, int y, SObj* room) {
+void Program::PutAt(SObj& obj, int x, int y, SObj* room) {
 	TODO
 	/*if (room) {
-		if (!has_flag(Classes(obj), "class_actor")) {
+		if (!HasFlag(Classes(obj), "class_actor")) {
 			if (obj.in_room) del(obj.in_room.objects, obj);
 			add(room.objects, obj);
 			obj.owner = NULL;
@@ -768,18 +768,18 @@ void Program::put_at(SObj& obj, int x, int y, SObj* room) {
 }
 
 
-void Program::stop_actor(SObj& actor) {
+void Program::StopActor(SObj& actor) {
 // 0=stopped, 1=walking, 2=arrived
 	actor.MapSet("moving", 0);
 	actor.MapSet("curr_anim", 0);
 	
-// no need to) {_anim(idle) here, as actor_draw code handles this
-	clear_curr_cmd();
+// no need to) {DoAnim(idle) here, as actor_draw code handles this
+	ClearCurrCmd();
 }
 
 // walk actor to position
-void Program::walk_to(SObj& actor, int x, int y) {
-	Point actor_cell_pos = getcellpos(actor);
+void Program::WalkTo(SObj& actor, int x, int y) {
+	Point actor_cell_pos = GetCellPos(actor);
 	EscValue map = room_curr->MapGet("map");
 	int celx = x / 8 + map.ArrayGet(0).GetInt();
 	int cely = y / 8 + map.ArrayGet(1).GetInt();
@@ -849,7 +849,7 @@ void Program::walk_to(SObj& actor, int x, int y) {
 	*/
 }
 
-void Program::wait_for_actor(SObj* actor) {
+void Program::WaitForActor(SObj* actor) {
 	if (!actor)
 		actor = selected_actor;
 	ASSERT(actor);
@@ -860,7 +860,7 @@ void Program::wait_for_actor(SObj* actor) {
 	}
 }
 
-double Program::proximity(SObj& obj1, SObj& obj2) {
+double Program::Proximity(SObj& obj1, SObj& obj2) {
 	// calc dist between objects, || big value for (different room
 	Point pt1 = GetXY(obj1);
 	Point pt2 = GetXY(obj2);
@@ -881,7 +881,7 @@ double Program::proximity(SObj& obj1, SObj& obj2) {
 	return keys;
 }*/
 
-Program::Verb Program::get_verb(SObj& obj) {
+Program::Verb Program::GetVerb(SObj& obj) {
 	const VectorMap<EscValue, EscValue>& keys = obj.ArrayGet(0).GetMap();
 	
 	TODO
@@ -891,7 +891,7 @@ Program::Verb Program::get_verb(SObj& obj) {
 	return verb;*/
 }
 
-void Program::clear_curr_cmd() {
+void Program::ClearCurrCmd() {
 	// reset all command values
 	verb_curr = V_DEFAULT;
 	executing_cmd = 0;
@@ -904,7 +904,7 @@ void Program::clear_curr_cmd() {
 
 
 
-void Program::_update60() {
+void Program::Update60() {
 	TODO
 	/*
 	// process selected_actor threads/actions
@@ -913,7 +913,7 @@ void Program::_update60() {
 	}
 
 	// global scripts (always updated - regardless of cutscene)
-	update_scripts(global_scripts);
+	UpdateScripts(global_scripts);
 
 	// update active cutscene (if (any)
 	if (cutscene_curr) {
@@ -922,10 +922,10 @@ void Program::_update60() {
 
 			// restore follow-cam if (flag allows (and had a value!)
 			if (cutscene_curr.flags != 3
-			//if (!has_flag(cutscene_curr.flags, "cut_no_follow")
+			//if (!HasFlag(cutscene_curr.flags, "cut_no_follow")
 			 && cutscene_curr.paused_cam_following)
 			{
-				camera_follow(cutscene_curr.paused_cam_following);
+				CameraFollow(cutscene_curr.paused_cam_following);
 					// assume to re-select prev actor
 				selected_actor = cutscene_curr.paused_cam_following;
 			}
@@ -950,14 +950,14 @@ void Program::_update60() {
 		// (will auto-remove those that have ended)
 
 		// local/room-level scripts
-		update_scripts(local_scripts);
+		UpdateScripts(local_scripts);
 	}
 
 	// player/ui control
-	playercontrol();
+	PlayerControl();
 
 	// check for (collisions
-	check_collisions();
+	CheckCollisions();
 
 	// update camera shake (if (active)
 	cam_shake_x, cam_shake_y = 1.5-rnd(3), 1.5-rnd(3);
@@ -968,7 +968,7 @@ void Program::_update60() {
 }
 
 
-void Program::_draw() {
+void Program::Draw() {
 	TODO
 	/*
 	// clear screen every frame
@@ -985,7 +985,7 @@ void Program::_draw() {
 		64 -fade_iris*2);
 	
 	// draw room (bg + objects + actors)
-	room_draw();
+	RoomDraw();
 	
 	// reset camera and clip bounds for ("static" content (ui, etc.)
 	camera(0,0);
@@ -1006,13 +1006,13 @@ void Program::_draw() {
 	// }
 	
 	// draw active/speech text
-	talking_draw();
+	DrawTalking();
 	
 	// in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
 		// draw dialog sentences?
-		dialog_draw();
-		cursor_draw();
+		DrawDialog();
+		DrawCursor();
 		// skip rest
 		return;
 	}
@@ -1025,34 +1025,34 @@ void Program::_draw() {
 	if (cutscene_cooloff > 0) {cutscene_cooloff -= 1; return;}
 	
 	// draw current command (verb/object)
-	if (!cutscene_curr) command_draw();
+	if (!cutscene_curr) DrawCommand();
 	
 	// draw ui and inventory (only if (actor selected to use it!)
 	if (!cutscene_curr
 		? cutscene_curr.flags == 2 // quick-cut
 		// and not just left a cutscene
 		: cutscene_cooloff == 0) {
-		ui_draw();
+		DrawUI();
 	}
 	
-	if ((!cutscene_curr) cursor_draw();
+	if ((!cutscene_curr) DrawCursor();
 	*/
 }
 
 
-void Program::update_mouse_click_state() {
+void Program::UpdateMouseClickState() {
 	TODO
-	//ismouseclicked = stat(34) > 0;
+	//is_mouse_clicked = stat(34) > 0;
 }
 
 // handle button inputs
-void Program::playercontrol() {
+void Program::PlayerControl() {
 	TODO
 /*
 	// check for (skip/override's
-	if (talking_curr && !ismouseclicked && (btnp(4) || stat(34) == 1)) {
+	if (talking_curr && !is_mouse_clicked && (btnp(4) || stat(34) == 1)) {
 		// skip current talking message
-		talking_curr.time_left, ismouseclicked = 0, true;
+		talking_curr.time_left, is_mouse_clicked = 0, true;
 		return;
 		
 	}
@@ -1066,7 +1066,7 @@ void Program::playercontrol() {
 		}
 		
 		// either way - don't allow other user actions!
-		update_mouse_click_state();
+		UpdateMouseClickState();
 		return;
 	}
 	
@@ -1086,10 +1086,10 @@ void Program::playercontrol() {
 	}
 	
 	if (btnp(4)) {
-		input_button_pressed(1);
+		InputButtonPressed(1);
 	}
 	if (btnp(5)) {
-		input_button_pressed(2);
+		InputButtonPressed(2);
 	}
 	
 	// only update position if (mouse moved
@@ -1102,20 +1102,20 @@ void Program::playercontrol() {
 	}
 	
 // don't repeat action if (same press/click
-	if (stat(34) > 0 && !ismouseclicked) {
-		input_button_pressed(stat(34));
+	if (stat(34) > 0 && !is_mouse_clicked) {
+		InputButtonPressed(stat(34));
 	}
 // store for (comparison next cycle
 	last_mouse_x, last_mouse_y = mouse_x, mouse_y;
 	
-	update_mouse_click_state();*/
+	UpdateMouseClickState();*/
 }
 
 
 
 
 // 1 = z/lmb, 2 = x/rmb, (4=middle)
-void Program::input_button_pressed(int button_index) {
+void Program::InputButtonPressed(int button_index) {
 	TODO
 	
 /*
@@ -1134,11 +1134,11 @@ void Program::input_button_pressed(int button_index) {
 // if (already executing, clear current command
 // (allow abort of commands by) {ing other actions, like walking)
 	if (executing_cmd)
-		clear_curr_cmd();
+		ClearCurrCmd();
 		
 	if (hover_curr_verb) {
 		// change verb and now reset any active objects
-		verb_curr, noun1_curr, noun2_curr = get_verb(hover_curr_verb);
+		verb_curr, noun1_curr, noun2_curr = GetVerb(hover_curr_verb);
 	}
 	else
 		if (hover_curr_object) {
@@ -1155,18 +1155,18 @@ void Program::input_button_pressed(int button_index) {
 				noun1_curr = hover_curr_object;
 			}
 			
-			if (verb_curr[2] == get_verb(verb_default)[2]
+			if (verb_curr[2] == GetVerb(verb_default)[2]
 				&& hover_curr_object.owner) {
 				// inventory item, perform look-at
-				verb_curr = get_verb(verbs[verb_default_inventory_index]);
+				verb_curr = GetVerb(verbs[verb_default_inventory_index]);
 			}
 			
 			else
 				if (hover_curr_default_verb) {
 					// perform default verb action (if (present)
-					verb_curr, noun1_curr = get_verb(hover_curr_default_verb), hover_curr_object;
+					verb_curr, noun1_curr = GetVerb(hover_curr_default_verb), hover_curr_object;
 					// force repaint of command (to reflect default verb)
-					command_draw();
+					DrawCommand();
 				}
 				
 			// ui arrow clicked
@@ -1211,15 +1211,15 @@ void Program::input_button_pressed(int button_index) {
 		selected_actor.thread = cocreate(function() {
 			// if (obj not in inventory (or about to give/use it)...
 			if ((!noun1_curr.owner
-				 ? (!has_flag(Classes(noun1_curr), "class_actor")
+				 ? (!HasFlag(Classes(noun1_curr), "class_actor")
 					: vc2 != V_USE))
 			|| noun2_curr) {
 				// walk to use pos and face dir
 				// determine which item we're walking to
 				walk_obj = noun2_curr || noun1_curr;
 				//todo: find nearest usepos if (none set?
-				dest_pos = get_use_pos(walk_obj);
-				walk_to(selected_actor, dest_pos.x, dest_pos.y);
+				dest_pos = GetUsePos(walk_obj);
+				WalkTo(selected_actor, dest_pos.x, dest_pos.y);
 				// abort if (walk was interrupted
 				if (selected_actor.moving != 2) {
 					return;
@@ -1231,18 +1231,18 @@ void Program::input_button_pressed(int button_index) {
 					use_dir = walk_obj.use_dir;
 				}
 				// turn to use dir
-				do_anim(selected_actor, "face_towards", use_dir);
+				doDoAnim(selected_actor, "face_towards", use_dir);
 			}
 			// does current object support active verb?
-			if (valid_verb(verb_curr, noun1_curr)) {
+			if (ValidVerb(verb_curr, noun1_curr)) {
 				// finally, execute verb script
-				start_script(noun1_curr.verbs[verb_curr[1]], false, noun1_curr, noun2_curr);
+				StartScript(noun1_curr.verbs[verb_curr[1]], false, noun1_curr, noun2_curr);
 			}
 			else {
 				// check for door
-				if (has_flag(Classes(noun1_curr), "class_door")) {
+				if (HasFlag(Classes(noun1_curr), "class_door")) {
 					// perform default door action
-					//start_script(function()
+					//StartScript(function()
 					local func = door_funcs[vc2];
 					if (func)
 						func(noun1_curr, noun1_curr.target_door);
@@ -1250,11 +1250,11 @@ void Program::input_button_pressed(int button_index) {
 				}
 				else {
 					// e.g. "i don't think that will work"
-					unsupported_action(vc2, noun1_curr, noun2_curr);
+					UnsupportedAction(vc2, noun1_curr, noun2_curr);
 				}
 			}
 			// clear current command
-			clear_curr_cmd();
+			ClearCurrCmd();
 		}
 										);
 		coresume(selected_actor.thread);
@@ -1264,9 +1264,9 @@ void Program::input_button_pressed(int button_index) {
 		executing_cmd = true;
 		// attempt to walk to target
 		selected_actor.thread = cocreate(function() {
-			walk_to(selected_actor, cursor_x + cam_x, cursor_y - stage_top);
+			WalkTo(selected_actor, cursor_x + cam_x, cursor_y - stage_top);
 			// clear current command
-			clear_curr_cmd();
+			ClearCurrCmd();
 		}
 										);
 		coresume(selected_actor.thread);
@@ -1275,7 +1275,7 @@ void Program::input_button_pressed(int button_index) {
 
 
 // collision detection
-void Program::check_collisions() {
+void Program::CheckCollisions() {
 	TODO
 	/*
 // check for (current room
@@ -1288,7 +1288,7 @@ void Program::check_collisions() {
 	// are we in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
 		for (s in all(dialog_curr.sentences)) {
-			if (iscursorcolliding(s))
+			if (IsCursorColliding(s))
 				hover_curr_sentence = s;
 		}
 		// skip remaining collisions
@@ -1296,41 +1296,41 @@ void Program::check_collisions() {
 	}
 	
 	// reset zplane info
-	reset_zplanes();
+	ResetZPlanes();
 	
 	// check room/object collisions
 	for (obj in all(room_curr.objects)) {
 		// capture bounds (even for ("invisible", but not untouchable/dependent, objects)
 		if ((!Classes(obj)
-			 || (Classes(obj) && !has_flag(Classes(obj), "class_untouchable")))
+			 || (Classes(obj) && !HasFlag(Classes(obj), "class_untouchable")))
 			&&
 			(!obj.dependent_on			// object has a valid dependent state?
 			 || obj.dependent_on.state == obj.dependent_on_state)) {
-			recalc_bounds(obj, obj.w*8, obj.h*8, cam_x, cam_y);
+			RecalculateBounds(obj, obj.w*8, obj.h*8, cam_x, cam_y);
 		}
 		else {
 			// reset bounds
 			obj.bounds = NULL;
 		}
 		
-		if (iscursorcolliding(obj)) {
+		if (IsCursorColliding(obj)) {
 			// if (highest (or first) object in hover "stack"
 			if (!hover_curr_object || max(obj.z, hover_curr_object.z) == obj.z) {
 				hover_curr_object = obj;
 			}
 		}
 		// recalc z-plane
-		recalc_zplane(obj);
+		RecalcZPlane(obj);
 	}
 	
 	// check actor collisions
 	for (k, actor in pairs(actors)) {
 		if (actor.in_room == room_curr) {
-			recalc_bounds(actor, actor.w*8, actor.h*8, cam_x, cam_y);
+			RecalculateBounds(actor, actor.w*8, actor.h*8, cam_x, cam_y);
 			// recalc z-plane
-			recalc_zplane(actor);
+			RecalcZPlane(actor);
 			// are we colliding (ignore self!)
-			if (iscursorcolliding(actor) && actor != selected_actor)
+			if (IsCursorColliding(actor) && actor != selected_actor)
 				hover_curr_object = actor;
 		}
 	}
@@ -1338,15 +1338,15 @@ void Program::check_collisions() {
 	if (selected_actor) {
 		// check ui/inventory collisions
 		for (v in all(verbs)) {
-			if ((iscursorcolliding(v)) hover_curr_verb = v;
+			if ((IsCursorColliding(v)) hover_curr_verb = v;
 			}
 	for (a in all(ui_arrows)) {
-			if ((iscursorcolliding(a)) hover_curr_arrow = a;
+			if ((IsCursorColliding(a)) hover_curr_arrow = a;
 			}
 		    
 		// check room/object collisions
 	for (k, obj in pairs(selected_actor.inventory)) {
-			if (iscursorcolliding(obj)) {
+			if (IsCursorColliding(obj)) {
 				hover_curr_object = obj;
 				// pickup override for (inventory objects
 				if (verb_curr[2] == V_PICKUP && hover_curr_object.owner)
@@ -1358,16 +1358,16 @@ void Program::check_collisions() {
 		}
 		
 		// default to walkto (if (nothing set)
-		verb_curr = verb_curr || get_verb(verb_default);
+		verb_curr = verb_curr || GetVerb(verb_default);
 		
 		// update "default" verb for (hovered object (if (any)
-		hover_curr_default_verb = hover_curr_object ? find_default_verb(hover_curr_object) : hover_curr_default_verb;
+		hover_curr_default_verb = hover_curr_object ? FindDefaultVerb(hover_curr_object) : hover_curr_default_verb;
 	}*/
 }
 
 
 
-void Program::reset_zplanes() {
+void Program::ResetZPlanes() {
 	TODO
 	/*
 	// draw_zplanes = {}
@@ -1377,13 +1377,13 @@ void Program::reset_zplanes() {
 	*/
 }
 
-void Program::recalc_zplane(SObj& obj) {
+void Program::RecalcZPlane(SObj& obj) {
 	// calculate the correct z-plane
 	// based on obj || x,y pos + elevation
 	TODO //add(draw_zplanes[obj.z ? obj.z : flr(obj.y + (obj.offset_y ? 0 : obj.h * 8))], obj);
 }
 
-void Program::room_draw() {
+void Program::RoomDraw() {
 	TODO
 /*
 // check for (current room
@@ -1401,7 +1401,7 @@ void Program::room_draw() {
 		// draw bg layer?
 		if (z == 0) {
 			// replace colors?
-			replace_colors(room_curr);
+			ReplaceColors(room_curr);
 			
 			if (room_curr.trans_col) {
 				palt(0, false);
@@ -1417,7 +1417,7 @@ void Program::room_draw() {
 			// debug walkable areas
 			
 			// if (show_pathfinding {
-			// 	actor_cell_pos = getcellpos(selected_actor)
+			// 	actor_cell_pos = GetCellPos(selected_actor)
 			
 			// //## need to correct this offset (in code above)
 			// //actor_cell_pos[2] -= 2
@@ -1429,8 +1429,8 @@ void Program::room_draw() {
 			// 	path = find_path(actor_cell_pos, target_cell_pos)
 			
 			// 	// finally, add our destination to list
-			// 	click_cell = getcellpos({x=(cursor_x + cam_x), y=(cursor_y - stage_top)})
-			// 	if (is_cell_walkable(click_cell[1], click_cell[2]) {
+			// 	click_cell = GetCellPos({x=(cursor_x + cam_x), y=(cursor_y - stage_top)})
+			// 	if (IsCellWalkable(click_cell[1], click_cell[2]) {
 			// 	//if ((#path>0) {
 			// 		add(path, click_cell)
 			// 	}
@@ -1454,7 +1454,7 @@ void Program::room_draw() {
 			// draw all objs/actors in current zplane
 			for (obj in all(zplane)) {
 				// object || actor?
-				if (!has_flag(Classes(obj), "class_actor")) {
+				if (!HasFlag(Classes(obj), "class_actor")) {
 					// object
 					if (State(obj)s	  // object has a state?
 						? (State(obj)
@@ -1466,13 +1466,13 @@ void Program::room_draw() {
 						: obj.draw
 						|| obj.curr_anim) {
 						// something to draw
-						object_draw(obj);
+						DrawObject(obj);
 					}
 				}
 				else {
 					// actor
 					if (obj.in_room == room_curr)
-						actor_draw(obj);
+						DrawActor(obj);
 				}
 				//show_collision_box(obj);
 			}
@@ -1481,7 +1481,7 @@ void Program::room_draw() {
 	*/
 }
 
-void Program::replace_colors(SObj& obj) {
+void Program::ReplaceColors(SObj& obj) {
 	TODO
 	/*
 	// replace colors (where defined)
@@ -1493,20 +1493,20 @@ void Program::replace_colors(SObj& obj) {
 	}
 	// also apply brightness (default to room-level, if (not set)
 	if (obj.lighting) {
-		_fadepal(obj.lighting);
+		FadePalette(obj.lighting);
 	}
 	else if (obj.in_room && obj.in_room.lighting) {
-		_fadepal(obj.in_room.lighting);
+		FadePalette(obj.in_room.lighting);
 	}*/
 }
 
 
-void Program::object_draw(SObj& obj) {
+void Program::DrawObject(SObj& obj) {
 	TODO
 	/*
 	local sprnum = 0;
 	// replace colors?
-	replace_colors(obj);
+	ReplaceColors(obj);
 	               
 	// check for (custom draw
 	if (obj.draw) {
@@ -1516,7 +1516,7 @@ void Program::object_draw(SObj& obj) {
 	else {
 		if (obj.curr_anim) {
 			// update animation state
-			animate(obj);
+			Animate(obj);
 			// choose walk anim frame
 			sprnum = obj.curr_anim[obj.anim_pos];
 				 }
@@ -1529,7 +1529,7 @@ void Program::object_draw(SObj& obj) {
 			else if (sprnum == 0) {
 				sprnum = obj[State(obj)];
 			}
-			sprdraw(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
+			DrawSprite(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
 		}
 	}
      
@@ -1542,13 +1542,13 @@ void Program::object_draw(SObj& obj) {
 
 
 // draw actor(s)
-void Program::actor_draw(SObj& actor) {
+void Program::DrawActor(SObj& actor) {
 
 	local dirnum, sprnum = face_dirs[actor.face_dir];
 	
-	if (actor.curr_anim && (actor.moving == 1 || istable(actor.curr_anim)) {
+	if (actor.curr_anim && (actor.moving == 1 || IsTable(actor.curr_anim)) {
 	// update animation state
-	animate(actor)
+	Animate(actor)
 		;
 		// choose walk anim frame
 		sprnum = actor.curr_anim[actor.anim_pos];
@@ -1560,7 +1560,7 @@ void Program::actor_draw(SObj& actor) {
 	}
 	
 	// replace colors?
-	replace_colors(actor);
+	ReplaceColors(actor);
 	
 // auto-scaling for (depth?
 	local factor = (actor.y - room_curr.autodepth_pos[1]) / (room_curr.autodepth_pos[2] - room_curr.autodepth_pos[1]);
@@ -1579,7 +1579,7 @@ void Program::actor_draw(SObj& actor) {
 	local draw_x = actor.offset_x + flr(scaleoffset_x / 2);
 	local draw_y = actor.offset_y + scaleoffset_y;
 	
-	sprdraw(sprnum,
+	DrawSprite(sprnum,
 			draw_x,
 			draw_y,
 			actor.w ,
@@ -1596,7 +1596,7 @@ void Program::actor_draw(SObj& actor) {
 	&& talking_actor.talk) {
 	if (actor.talk_tmr < 7) {
 			// note: scaling from top-left
-			sprdraw(actor.talk[dirnum],
+			DrawSprite(actor.talk[dirnum],
 					draw_x + (actor.talk[5] || 0),
 					draw_y + flr((actor.talk[6] || 8)*scale),
 					(actor.talk[7] || 1),
@@ -1621,7 +1621,7 @@ void Program::actor_draw(SObj& actor) {
 }
 
 
-void Program::command_draw() {
+void Program::DrawCommand() {
 	TODO
 	/*
 	// draw current command
@@ -1645,12 +1645,12 @@ void Program::command_draw() {
 		and ( !noun1_curr || (noun1_curr != hover_curr_object) )
 		// || walk-to objs in inventory!
 		// && ( not hover_curr_object.owner or
-		// 				or verb_curr_ref != get_verb(verb_default)[2] )
+		// 				or verb_curr_ref != GetVerb(verb_default)[2] )
   // || when already executing!
   && !executing_cmd)
 	{
 	  // default to look-at for (inventory items
-	  if (hover_curr_object.owner && verb_curr_ref == get_verb(verb_default)[2]) {
+	  if (hover_curr_object.owner && verb_curr_ref == GetVerb(verb_default)[2]) {
 	   command = "look-at";
 	  }
 		command = command.." "..hover_curr_object.name;
@@ -1663,11 +1663,11 @@ void Program::command_draw() {
 		cmd_col = verb_hovcol;
 	}
 
-	print( smallcaps(command), 63.5-flr(#command*2), stage_top + 66, cmd_col );
+	print( SmallCaps(command), 63.5-flr(#command*2), stage_top + 66, cmd_col );
 	*/
 }
 
-void Program::talking_draw() {
+void Program::DrawTalking() {
 	TODO
 	
 	// alignment
@@ -1681,7 +1681,7 @@ void Program::talking_draw() {
 			if (talking_curr.align == 1) {
 				line_offset_x = ((talking_curr.char_width*4)-(#l*4))/2;
 			}
-			outline_text(
+			OutlineText(
 				l,
 				talking_curr.x + line_offset_x,
 				talking_curr.y + line_offset_y,
@@ -1694,12 +1694,12 @@ void Program::talking_draw() {
 		// update message lifespan
 		talking_curr.time_left -= 1;
 		// remove text & reset actor's talk anim
-		if (talking_curr.time_left <= 0) stop_talking();
+		if (talking_curr.time_left <= 0) StopTalking();
 	}*/
 }
 
 // draw ui and inventory
-void Program::ui_draw() {
+void Program::DrawUI() {
 	TODO
 	
 	// draw verbs
@@ -1711,14 +1711,14 @@ void Program::ui_draw() {
 			verb_maincol);
 
 		// get verb info
-		local vi = get_verb(v);
+		local vi = GetVerb(v);
 		print(vi[3], xpos, ypos+stage_top+1, verb_shadcol);  // shadow
 		print(vi[3], xpos, ypos+stage_top, txtcol);  // main
 
 		// capture bounds
 		v.x = xpos;
 		v.y = ypos;
-		recalc_bounds(v, #vi[3]*4, 5, 0, 0);
+		RecalculateBounds(v, #vi[3]*4, 5, 0, 0);
 		//show_collision_box(v)
 
 		// auto-size column
@@ -1750,9 +1750,9 @@ void Program::ui_draw() {
 				// something to draw
 				obj.x, obj.y = xpos, ypos;
 				// draw object/sprite
-				object_draw(obj);
+				DrawObject(obj);
 				// re-calculate bounds (as pos may have changed)
-				recalc_bounds(obj, obj.w*8, obj.h*8, 0, 0);
+				RecalculateBounds(obj, obj.w*8, obj.h*8, 0, 0);
 				//show_collision_box(obj)
 			}
 			xpos += 11;
@@ -1769,16 +1769,16 @@ void Program::ui_draw() {
 			arrow = ui_arrows[i];
 			pal(7, hover_curr_arrow == arrow ? verb_hovcol : verb_maincol);
 			pal(5, verb_shadcol);
-			sprdraw(arrow.spr, arrow.x, arrow.y, 1, 1, 0);
+			DrawSprite(arrow.spr, arrow.x, arrow.y, 1, 1, 0);
 			// capture bounds
-			recalc_bounds(arrow, 8, 7, 0, 0);
+			RecalculateBounds(arrow, 8, 7, 0, 0);
 			//show_collision_box(arrow)
 			pal(); //reset palette
 		}
 	}*/
 }
 
-void Program::dialog_draw() {
+void Program::DrawDialog() {
 	TODO
 	/*local xpos, ypos = 0, 70;
 
@@ -1786,12 +1786,12 @@ void Program::dialog_draw() {
 		if (s.char_width > 0) {
 			// capture bounds
 			s.x, s.y = xpos, ypos;
-			recalc_bounds(s, s.char_width*4, #s.lines*5, 0, 0);
+			RecalculateBounds(s, s.char_width*4, #s.lines*5, 0, 0);
 
 			local txtcol = s == hover_curr_sentence ? dialog_curr.hlcol : dialog_curr.col;
 
 			for (l in all(s.lines)) {
-				print(smallcaps(l), xpos, ypos+stage_top, txtcol);
+				print(SmallCaps(l), xpos, ypos+stage_top, txtcol);
 				ypos += 5;
 			}
 
@@ -1802,7 +1802,7 @@ void Program::dialog_draw() {
 }
 
 // draw cursor
-void Program::cursor_draw() {
+void Program::DrawCursor() {
 	TODO
 	/*col = ui_cursor_cols[cursor_colpos];
 	// switch sprite color accordingly
@@ -1819,11 +1819,11 @@ void Program::cursor_draw() {
 	}*/
 }
 
-void Program::sprdraw(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
+void Program::DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
 	TODO
 	/*
 	// switch transparency
-	set_trans_col(transcol); //, true)
+	SetTransCol(transcol); //, true)
 	
 	// draw zoomed sprite
 //https://www.lexaloffle.com/bbs/?tid=2429
@@ -1842,7 +1842,7 @@ void Program::sprdraw(int n, int x, int y, int w, int h, bool transcol, bool fli
 	*/
 }
 
-void Program::set_trans_col(int transcol) { //, enabled)
+void Program::SetTransCol(int transcol) { //, enabled)
 	TODO
 	/*
 	// set transparency for (specific col
@@ -1853,11 +1853,11 @@ void Program::set_trans_col(int transcol) { //, enabled)
 
 
 // initialise all the rooms (e.g. add in parent links)
-void Program::game_init() {
+void Program::InitGame() {
 	TODO
 	/*
 	for (room in all(rooms)) {
-		explode_data(room);
+		ExplodeData(room);
 		
 		room.map_w = #room.map > 2 ? room.map[3] - room.map[1] + 1 : 16;
 		room.map_h = #room.map > 2 ? room.map[4] - room.map[2] + 1 : 8;
@@ -1867,7 +1867,7 @@ void Program::game_init() {
 		
 		// init objects (in room)
 		for (obj in all(room.objects)) {
-			explode_data(obj);
+			ExplodeData(obj);
 			obj.in_room, obj.h = room, obj.h || 0;
 			if (obj.init)
 				obj.init(obj);
@@ -1875,7 +1875,7 @@ void Program::game_init() {
 	}
 	// init actors with defaults
 	for (ka, actor in pairs(actors)) {
-		explode_data(actor);
+		ExplodeData(actor);
 		actor.moving = 2 ;		// 0=stopped, 1=walking, 2=arrived
 		actor.tmr = 1; 		  // internal timer for (managing animation
 		actor.talk_tmr = 1;
@@ -1899,7 +1899,7 @@ void Program::game_init() {
 // 	}
 // }
 
-void Program::update_scripts(Vector<String>& scripts) {
+void Program::UpdateScripts(Vector<String>& scripts) {
 	TODO
 	/*for (scr_obj : all(scripts)) {
 		if (scr_obj[2] && !coresume(scr_obj[2], scr_obj[3], scr_obj[4])) {
@@ -1908,7 +1908,7 @@ void Program::update_scripts(Vector<String>& scripts) {
 	}*/
 }
 
-void Program::_fadepal(float perc) {
+void Program::FadePalette(float perc) {
 	TODO
 	/*if ((perc)
 		perc = 1 - perc;
@@ -1930,38 +1930,38 @@ void Program::_fadepal(float perc) {
 
 
 
-bool Program::istable(SObj& t) {
+bool Program::IsTable(SObj& t) {
 	TODO
 	///return type(t) == "table";
 }
 
-Point Program::_center_camera(const Point& val) {
+Point Program::CenterCamera(const Point& val) {
 	TODO
 }
 
-Point Program::_center_camera(SObj& val) {
+Point Program::CenterCamera(SObj& val) {
 	// check params for (obj/actor
 	// keep camera within "room" bounds
 	TODO
 	//Point pt = GetXY(val);
-	//return mid(0, (istable(val) ? val.x : val)-64, (room_curr.map_w*8) -128 );
+	//return mid(0, (IsTable(val) ? val.x : val)-64, (room_curr.map_w*8) -128 );
 }
 
 
 
-Point Program::getcellpos(SObj& obj) {
+Point Program::GetCellPos(SObj& obj) {
 	TODO
 	//return { flr(obj.x/8) + room_curr.map[1], flr(obj.y/8) + room_curr.map[2] };
 }
 
-bool Program::is_cell_walkable(int celx, int cely) {
+bool Program::IsCellWalkable(int celx, int cely) {
 	TODO
 	//return fget(mget(celx, cely),0);
 }
 
 
 // auto-break message into lines
-void Program::create_text_lines(String msg, int max_line_length, Vector<String>& lines) { //, comma_is_newline)
+void Program::CreateTextLines(String msg, int max_line_length, Vector<String>& lines) { //, comma_is_newline)
 	TODO
 	/*
 	//  > ";" new line, shown immediately
@@ -2003,14 +2003,14 @@ void Program::create_text_lines(String msg, int max_line_length, Vector<String>&
 }
 
 // find longest line
-int Program::longest_line_size(const Vector<String>& lines) {
+int Program::GetLongestLineSize(const Vector<String>& lines) {
 	int longest_line = 0;
 	for (const String& l : lines)
 		longest_line = max(longest_line, l.GetCount());
 	return longest_line;
 }
 
-bool Program::has_flag(SObj& obj, String value) {
+bool Program::HasFlag(SObj& obj, String value) {
 	TODO
 	/*for (f : all(obj)) {
 		if (f == value) return true;
@@ -2019,14 +2019,14 @@ bool Program::has_flag(SObj& obj, String value) {
 }
 
 
-void Program::recalc_bounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y) {
+void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y) {
 	TODO
 	/*
 	int x = obj.x;
 	int y = obj.y;
 	
 	// offset for (actors?
-	if (has_flag(Classes(obj), "class_actor")) {
+	if (HasFlag(Classes(obj), "class_actor")) {
 		obj.offset_x = x - (obj.w * 8) / 2;
 		obj.offset_y = y - (obj.h * 8) + 1;
 		x = obj.offset_x;
@@ -2070,11 +2070,11 @@ function find_path(start, goal) {
 				
 				if (chk_x >= room_curr.map[1] && chk_x <= room_curr.map[1] + room_curr.map_w
 					and chk_y >= room_curr.map[2] && chk_y <= room_curr.map[2] + room_curr.map_h
-					and is_cell_walkable(chk_x, chk_y)
+					and IsCellWalkable(chk_x, chk_y)
 					// squeeze check for (corners
 					and((abs(x) != abs(y))
-						or is_cell_walkable(chk_x, current[2])
-						or is_cell_walkable(chk_x - x, chk_y)
+						or IsCellWalkable(chk_x, current[2])
+						or IsCellWalkable(chk_x - x, chk_y)
 						or enable_diag_squeeze)) {
 					// process a valid neighbor
 					local next = {chk_x, chk_y};
@@ -2168,7 +2168,7 @@ void Program::vectoindex(vec) {
 // helper functions
 //
 
-void Program::animate(SObj& obj) {
+void Program::Animate(SObj& obj) {
 	TODO
 	
 	// animate the object
@@ -2182,17 +2182,17 @@ void Program::animate(SObj& obj) {
 
 
 
-void Program::show_error(String msg) {
+void Program::ShowError(String msg) {
 	TODO
-	//print_line("-error-;"..msg,5+cam_x,5,8,0);
+	//PrintLine("-error-;"..msg,5+cam_x,5,8,0);
 }
 
-void Program::explode_data(SObj& obj) {
+void Program::ExplodeData(SObj& obj) {
 	TODO
 	/*for (l in all(split(obj.data, "\n"))) {
 		local pairs=split(l, "=");
 		if (#pairs==2) {
-			obj[pairs[1]] = autotype(pairs[2]);
+			obj[pairs[1]] = Autotype(pairs[2]);
 		}
 		else {
 			printh(" > invalid data: ["..pairs[1].."]");
@@ -2224,7 +2224,7 @@ void Program::explode_data(SObj& obj) {
 	return retval
 }*/
 
-String Program::autotype(const String& str_value) {
+String Program::Autotype(const String& str_value) {
 	TODO
 	/*local first_letter = sub(str_value, 1, 1);
 	
@@ -2243,7 +2243,7 @@ String Program::autotype(const String& str_value) {
 		local temp = sub(str_value, 2, #str_value-1);
 		retarray = {};
 		for (val in all(split(temp, ","))) {
-			add(retarray, autotype(val))
+			add(retarray, Autotype(val))
 			;
 		}
 		return retarray;
@@ -2255,10 +2255,10 @@ String Program::autotype(const String& str_value) {
 }
 
 
-void Program::outline_text(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
+void Program::OutlineText(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
 	TODO
 	/*
-	if (!use_caps) str = smallcaps(str);
+	if (!use_caps) str = SmallCaps(str);
 	if (big_font) str = "\^w\^t"..str;
 	for (xx = -1, 1) {
 		for (yy = -1, 1, xx == 0 ? 2 : 1) {
@@ -2271,7 +2271,7 @@ void Program::outline_text(String str, int x, int y, int c0, int c1, bool use_ca
 
 
 // collision check
-bool Program::iscursorcolliding(SObj& obj) {
+bool Program::IsCursorColliding(SObj& obj) {
 	TODO
 	/*
 	// check params / not in cutscene
@@ -2283,7 +2283,7 @@ bool Program::iscursorcolliding(SObj& obj) {
 	*/
 }
 
-String Program::smallcaps(const String& s) {
+String Program::SmallCaps(const String& s) {
 	TODO
 	/*
 	local t = "";
@@ -2298,9 +2298,9 @@ String Program::smallcaps(const String& s) {
 
 void Program::Run() {
 	
-	reset_ui();
+	ResetUI();
 	
-	clear_curr_cmd();
+	ClearCurrCmd();
 	
 	// talking_curr = NULL  // currently displayed speech {x,y,col,lines ... }
 	// dialog_curr = NULL   // currently displayed dialog options to pick
@@ -2322,10 +2322,10 @@ void Program::Run() {
 	TODO //poke(0x5f2d, 1);
 	
 	// init all the rooms/objects/actors
-	game_init();
+	InitGame();
 	
 	// run any startup script(s)
-	TODO //start_script(startup_script, true);
+	TODO //StartScript(StartupScript, true);
 }
 
 Point Program::GetXY(SObj& o) {
