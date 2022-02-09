@@ -1,7 +1,8 @@
 
 
 
-										Tytti ja Teppo
+                                        Tytti ja Teppo
+                                          musikaali
 
  
 							Mukaelma Shakespearen Romeo ja Juliasta.
@@ -1213,7 +1214,7 @@ Tytti:
     Katso kuinka mä tanssin taas
     Katso hehkuvaa maailmaa
     Kuule musiikki, kaiku sen
-    Elämää sykkivän totuuden
+    elämää sykkivän totuuden.
     
     Polta merkkisi ikuinen 
     sisimpään niin että tunnen sen.
@@ -1233,7 +1234,7 @@ Tytti:
     katso hehkuvaa maailmaa.
     Kuule musiikki, kaiku sen
     elämää sykkivän totuuden.
-    Tanssin koska hehkun nään
+    Tanssin koska mä hehkun nään
     Elämä taas multa huumaa pään
     Tunnen sykkeen mun sydämen
     Kaivannut oon sitä ikuisuuden.
@@ -1259,7 +1260,7 @@ Tytti:
     Katso kuinka mä tanssin taas
     Katso hehkuvaa maailmaa
     Kuule musiikki, kaiku sen
-    Elämää sykkivän totuuden
+    elämää sykkivän totuuden.
     
     Saat mut pyöriin sängyssä oottaen,
     tunteitain mä hillitä pysty en.
@@ -1268,6 +1269,7 @@ Tytti:
     Katson mä ulos vaan
     ootan et sut vihdoin nähdä saan.
     
+Teppo:
     Tuuli tuo sun viestis kaukaa,
     puissa nimes kuulen vaan.
     Ei tästä mikään vuuduu puutu 
@@ -1277,6 +1279,7 @@ Tytti:
     Silmiä on luonto täynnä.
     Kaikki näyttää sulla hyvältä.
     
+Tytti:
     Katso kuinka mä tanssin taas,
     katso hehkuvaa maailmaa.
     Kuule musiikki, kaiku sen
@@ -1382,34 +1385,77 @@ Tytti:		Mää vihaan sua Katri!
 Mikael:		Olipa se teatraalista.
 
 
-{
-	# musiikki first of the year 2022
-	
-	/*
-	VIRHE: clean kitara soolo huono soundi efekti
+Musiikki: "2022/first of the year 2022.tg"
 
+Tytti:      Viet rakkaan, aamun parhaan,
+            mustaat sen kun suus avaat.
+            Tunnusta, pääs on kusta, 
+            e i oo juttuu julmempaa.
+            
+            Polttaa, lähtö täältä
+            polttaa, kuuma tie tuol
+            polttaa, pommi päässä
+            oottaa, anna kipinä.
 
-	Et voi sä pettää mua nyt.
-	Just nyt tarvin sua tueksi.
-	
-	Polttaa, tiet nää jalkoi polttaa.
-	
-	Mä jään sun luo.
-	Mä jään sun luo.
-	
-	
-	Täytyy ongelma tää ratkaista,
-	tää kujanjuoksu katkaista.
-	Ne aikoo viedä sut multa,
-	juuri kun kaikki näytti niin hyvältä.
-	
-	Ne selkeän taivaan mustaa,
-	ne tähdet verhoaa.
-	Ne myrskyks meren muuttaa,
-	kun laiva rantaa etsii.
-	
-	*/
-}
+Katri:      Täynnä epäkohtia
+            elämä on,
+            neiti melankolia.
+            Mahdoton
+            on saada kaikkea,
+            armoton
+            tytöl valinta on;
+            kuuma tie,
+            kuuma tie.
+
+Tyttö:      Viet juhlan, onnen huuman,
+            dumppaat sen kuin paskan vaan.
+            Pois mut vaan tahdot kuskaa,
+            kunhan mainees kiiltää saa.
+            
+            Polttaa, rintaa julmuus
+            polttaa, toivetta en
+            koskaan saa sen hinta
+            jos vaan armon näyttää.
+            
+Katri:      Täynnä epäkohtia
+            elämä on,
+            neiti melankolia.
+            Mahdoton
+            on saada kaikkea,
+            armoton
+            tytöl valinta on; kuuma
+            tie vie sut,
+            hei pieni tyttökulta,
+            kauas poissa
+            eikä sielt takas tulla,
+            kuuma tie vie sut
+            eikä takas tulla,
+            ei Tytti takas tulla,
+            ei sieltä takas tulla.
+            
+Tytti:      Täynnä epäkohtia
+            jääminen on,
+            en sitä tahdokkaan.
+            Mahdoton
+            on sydän paikata.
+            Armoton
+            synti isällä on; kuuma
+            tie vie mut
+            ja älä takas tuokkaan,
+            vie mut, vie pois
+            ja älä sure koskaan,
+            Katri, sun tie
+            on täällä kylmän lyhyt,
+            se on se kylmän lyhyt,
+            on liian kylmän lyhyt.
+            
+Katria:     Renki löytyy se piallekkin,
+            vailla tietä piinaavaakin.
+            Selvitä voit mut mietippä vaan,
+            kuinka pärjäät omillaan,
+            omillaan.
+
+        
 
 // Pastori suunnittelee Tytin ja Tepon tapaamista Haaparannassa.
 	** Tytti menee pastorin luo **
