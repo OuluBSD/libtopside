@@ -1103,7 +1103,7 @@ Teppo:		Hei nyt loppuu tämä.
 			Ei oo mitään tappelun aihetta oikeesti.
 
 			
-Musiikki: "2011/second class man.tg"
+Musiikki: "2021/second class man.tg"
 
 Aatu:       Oletko sä sellanen
             joka karkuun pakenee?
@@ -1202,23 +1202,95 @@ Teppo:		Selvä, kiitos.
 
 	** Tytti harjaa hiuksiaan ja laittautuu peilin edessä. Hän hyräilee ja alkaa tanssimaan **
 
-{
-	# musiikki waiting for tonight
-	/*
+Musiikki: "2021/waiting for tonight.tg"
+Sanat: Sari Rokka, Seppo Pakonen
 
-	VIRHE: pizzicato on väärässä kohtaa jossain kertsissä... kuulee ennen kertsiä kohdasta
+Tytti:
+    Katso kuinka mä tanssin taas,
+    katso vapaata maailmaa.
+    Kuule kuinka sävelet nuo
+    meille elämän askeleet tuo.
+    Katso kuinka mä tanssin taas
+    Katso hehkuvaa maailmaa
+    Kuule musiikki, kaiku sen
+    Elämää sykkivän totuuden
+    
+    Polta merkkisi ikuinen 
+    sisimpään niin että tunnen sen.
+    Aika on vielä ihmeiden, kun
+    laulu porautuu kallioon.
 
-	Katso kuinka mä tanssin
-	
-	Kohta sut ihollani tunnen
-	Kohta,
-	
-	Ihmeiden aika ei ohi oo...
-	
-	Ihmeet taas toteutuu, meille maailma avautuu.
-	
-	*/
-}
+    Maa on lämmin ja hiekka sen 
+    tuo meille mereltä kuumuuden.
+    Ihmeet taas toteutuu,
+    meille maailma avautuu.
+    Ilmassa on jännite,
+    ootan iltaa mä nääntyen,
+    Tuut sä kuin sateena
+    kuival kaudella.
+
+    Katso kuinka mä tanssin taas,
+    katso hehkuvaa maailmaa.
+    Kuule musiikki, kaiku sen
+    elämää sykkivän totuuden.
+    Tanssin koska hehkun nään
+    Elämä taas multa huumaa pään
+    Tunnen sykkeen mun sydämen
+    Kaivannut oon sitä ikuisuuden.
+    
+    Ilta tuo tuoksun kesäisen ja
+    saapuu se hetki kultainen.
+    Ootan sua tänne vierelleni
+    tunteen kun syke kovenee. 
+    
+    Laulan ja tanssin koska mä voin
+    Elämän kovuus mun voimani loi.
+    Enää en itke, hyräilen vain
+    Sieluuni uuden avaimen sain.
+    Toiveet vielä toteutuu,
+    olla ilta voi aivan uus.
+    Tuut kesäsateena
+    janon sammuttaan.
+
+    Katso kuinka mä tanssin taas,
+    katso vapaata maailmaa.
+    Kuule kuinka sävelet nuo
+    meille elämän askeleet tuo.
+    Katso kuinka mä tanssin taas
+    Katso hehkuvaa maailmaa
+    Kuule musiikki, kaiku sen
+    Elämää sykkivän totuuden
+    
+    Saat mut pyöriin sängyssä oottaen,
+    tunteitain mä hillitä pysty en.
+    Viel kello raksuttaa,
+    viisarit sua kuljettaa.
+    Katson mä ulos vaan
+    ootan et sut vihdoin nähdä saan.
+    
+    Tuuli tuo sun viestis kaukaa,
+    puissa nimes kuulen vaan.
+    Ei tästä mikään vuuduu puutu 
+    kun oon susta huumaantunu.
+    Tanssi sun ilta pitkä, kuuma.
+    Liikkuun sä laita mitä sul on.
+    Silmiä on luonto täynnä.
+    Kaikki näyttää sulla hyvältä.
+    
+    Katso kuinka mä tanssin taas,
+    katso hehkuvaa maailmaa.
+    Kuule musiikki, kaiku sen
+    elämää sykkivän totuuden.
+    Tanssin koska hehkun nään.
+    Elämä taas multa huumaa pään.
+    Tunnen sykkeen mun sydämen,
+    kaivannut oon sitä ikuisuuden.
+    
+    Viel tuut sä syliini, syliini ja
+    tuot onnen iltaani, iltaani.
+    Ota mut käsiisi, käsiisi ja
+    katso mun tanssiini, tanssiini.
+
 
 // Hoitajatar tulee sisään ja kertoo hämmennyksen jälkeen Tytille, että Teppo on tappanut Matin.
 
