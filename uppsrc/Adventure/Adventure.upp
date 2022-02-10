@@ -5,8 +5,8 @@ uses
 file
 	Copying,
 	Adventure.h,
-	Demo.esc highlight cpp,
 	Adventure.cpp,
+	Demo.esc highlight cpp,
 	Program.h,
 	Program.cpp,
 	App.cpp;

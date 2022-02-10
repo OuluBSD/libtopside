@@ -6,6 +6,27 @@ namespace Adventure {
 
 
 
+Color ReadColor(const SObj& o, String key, Color def) {
+	TODO
+}
+
+bool TryReadColor(const SObj& o, Color& c) {
+	TODO
+}
+
+bool ReadFlag(const SObj& o, String key) {
+	TODO
+}
+
+SObj* ReadKey(SObj& o, String key) {
+	TODO
+}
+
+
+
+
+
+
 Sentence& Dialog::Add() {
 	Sentence& s = sentences.Add();
 	s.num = sentences.GetCount() - 1;
@@ -262,7 +283,7 @@ void Program::DialogEnd() {
 	dialog_curr.Clear();
 }
 
-Point Program::GetUsePos(SObj& obj) {
+Point Program::GetUsePoint(SObj& obj) {
 	UsePos obj_use_pos = GetUsePos(obj);
 	
 	Point pt = GetXY(obj);
@@ -442,7 +463,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 		ChangeRoom(*new_room, fade_effect); // switch to new room and ...
 	    
 		// ...auto-position actor at to_door in new room...
-		Point pos = GetUsePos(to_door);
+		Point pos = GetUsePoint(to_door);
 		PutAt(*selected_actor, pos.x, pos.y, new_room);
 	}
 	
@@ -669,7 +690,7 @@ void Program::SayLine(String msg) {
 
 // stop everyone talking & remove displayed text
 void Program::StopTalking() {
-	talking_curr = NULL;
+	talking_curr.enabled = false;
 	talking_actor = NULL;
 }
 
@@ -967,79 +988,6 @@ void Program::Update60() {
 	*/
 }
 
-
-void Program::Draw() {
-	TODO
-	/*
-	// clear screen every frame
-	cls();
-	
-	// reposition camera (account for (shake, if (active)
-	camera(cam_x+cam_shake_x, 0+cam_shake_y);
-	
-	// clip room bounds (also used for ("iris" transition)
-	clip(
-		0 +fade_iris -cam_shake_x,
-		stage_top +fade_iris -cam_shake_y,
-		128 -fade_iris*2 -cam_shake_x,
-		64 -fade_iris*2);
-	
-	// draw room (bg + objects + actors)
-	RoomDraw();
-	
-	// reset camera and clip bounds for ("static" content (ui, etc.)
-	camera(0,0);
-	clip();
-	
-	if (show_debuginfo) {
-		print("cpu: "..flr(100*stat(1)).."%", 0, stage_top - 16, 8);
-		print("mem: "..flr(stat(0)/1024*100).."%", 0, stage_top - 8, 8);
-		print("x: "..flr(cursor_x+cam_x).." y:"..cursor_y-stage_top, 80, stage_top - 8, 8);
-	}
-	// if (show_depth {
-	//  fillp(0b0011001111001100.1)
-	//  line(0,room_curr.autodepth_pos[1]+stage_top,128,room_curr.autodepth_pos[1]+stage_top,1)
-	//  print(room_curr.autodepth_scale[1], 0,room_curr.autodepth_pos[1]+stage_top+2)
-	//  line(0,room_curr.autodepth_pos[2]+stage_top,128,room_curr.autodepth_pos[2]+stage_top,12)
-	//  print(room_curr.autodepth_scale[2], 0,room_curr.autodepth_pos[2]+stage_top+2)
-	//  fillp()
-	// }
-	
-	// draw active/speech text
-	DrawTalking();
-	
-	// in dialog mode?
-	if (dialog_curr && dialog_curr.visible) {
-		// draw dialog sentences?
-		DrawDialog();
-		DrawCursor();
-		// skip rest
-		return;
-	}
-	
-	// hack:
-	// skip draw if (just exited a cutscene
-	// as could be going straight into a dialog
-	// (would prefer a better way than this, but couldn't find one!)
-	//
-	if (cutscene_cooloff > 0) {cutscene_cooloff -= 1; return;}
-	
-	// draw current command (verb/object)
-	if (!cutscene_curr) DrawCommand();
-	
-	// draw ui and inventory (only if (actor selected to use it!)
-	if (!cutscene_curr
-		? cutscene_curr.flags == 2 // quick-cut
-		// and not just left a cutscene
-		: cutscene_cooloff == 0) {
-		DrawUI();
-	}
-	
-	if ((!cutscene_curr) DrawCursor();
-	*/
-}
-
-
 void Program::UpdateMouseClickState() {
 	TODO
 	//is_mouse_clicked = stat(34) > 0;
@@ -1218,7 +1166,7 @@ void Program::InputButtonPressed(int button_index) {
 				// determine which item we're walking to
 				walk_obj = noun2_curr || noun1_curr;
 				//todo: find nearest usepos if (none set?
-				dest_pos = GetUsePos(walk_obj);
+				dest_pos = GetUsePoint(walk_obj);
 				WalkTo(selected_actor, dest_pos.x, dest_pos.y);
 				// abort if (walk was interrupted
 				if (selected_actor.moving != 2) {
@@ -1383,104 +1331,6 @@ void Program::RecalcZPlane(SObj& obj) {
 	TODO //add(draw_zplanes[obj.z ? obj.z : flr(obj.y + (obj.offset_y ? 0 : obj.h * 8))], obj);
 }
 
-void Program::RoomDraw() {
-	TODO
-/*
-// check for (current room
-	if (!room_curr) {
-		print("-error-  no current room set", 5 + cam_x, 5 + stage_top, 8, 0);
-		return;
-	}
-	
-	// set room background col (or black by default)
-	rectfill(0, stage_top, 127, stage_top + 64, room_curr.bg_col || 0);
-	
-	// draw each zplane, from back to front
-	for (z = -64, 64) {
-	
-		// draw bg layer?
-		if (z == 0) {
-			// replace colors?
-			ReplaceColors(room_curr);
-			
-			if (room_curr.trans_col) {
-				palt(0, false);
-				palt(room_curr.trans_col, true);
-			}
-			map(room_curr.map[1], room_curr.map[2], 0, stage_top, room_curr.map_w, room_curr.map_h);
-			
-			//reset palette
-			pal();
-			
-			
-			// ===============================================================
-			// debug walkable areas
-			
-			// if (show_pathfinding {
-			// 	actor_cell_pos = GetCellPos(selected_actor)
-			
-			// //## need to correct this offset (in code above)
-			// //actor_cell_pos[2] -= 2
-			
-			// 	celx = flr((cursor_x + cam_x + 0) /8) + room_curr.map[1]
-			// 	cely = flr((cursor_y - stage_top + 0) /8 ) + room_curr.map[2]
-			// 	target_cell_pos = { celx, cely }
-			
-			// 	path = find_path(actor_cell_pos, target_cell_pos)
-			
-			// 	// finally, add our destination to list
-			// 	click_cell = GetCellPos({x=(cursor_x + cam_x), y=(cursor_y - stage_top)})
-			// 	if (IsCellWalkable(click_cell[1], click_cell[2]) {
-			// 	//if ((#path>0) {
-			// 		add(path, click_cell)
-			// 	}
-			
-			// 	for (p in all(path)) {
-			// 		//printh("  > "..p[1]..","..p[2])
-			// 		rect(
-			// 			(p[1]-room_curr.map[1])*8,
-			// 			stage_top+(p[2]-room_curr.map[2])*8,
-			// 			(p[1]-room_curr.map[1])*8+7,
-			// 			stage_top+(p[2]-room_curr.map[2])*8+7, 11)
-			// 	}
-			// }
-			
-			// ===============================================================
-		}
-		else {
-			// draw other layers
-			zplane = draw_zplanes[z];
-			
-			// draw all objs/actors in current zplane
-			for (obj in all(zplane)) {
-				// object || actor?
-				if (!HasFlag(Classes(obj), "class_actor")) {
-					// object
-					if (State(obj)s	  // object has a state?
-						? (State(obj)
-						   && obj[State(obj)]
-						   && obj[State(obj)] > 0)
-						: (!obj.dependent_on 			// object has a valid dependent state?
-						   || obj.dependent_on.state == obj.dependent_on_state)
-						? !obj.owner   						// object is not "owned"
-						: obj.draw
-						|| obj.curr_anim) {
-						// something to draw
-						DrawObject(obj);
-					}
-				}
-				else {
-					// actor
-					if (obj.in_room == room_curr)
-						DrawActor(obj);
-				}
-				//show_collision_box(obj);
-			}
-		}
-	}
-	*/
-}
-
 void Program::ReplaceColors(SObj& obj) {
 	TODO
 	/*
@@ -1498,348 +1348,6 @@ void Program::ReplaceColors(SObj& obj) {
 	else if (obj.in_room && obj.in_room.lighting) {
 		FadePalette(obj.in_room.lighting);
 	}*/
-}
-
-
-void Program::DrawObject(SObj& obj) {
-	TODO
-	/*
-	local sprnum = 0;
-	// replace colors?
-	ReplaceColors(obj);
-	               
-	// check for (custom draw
-	if (obj.draw) {
-		obj.draw(obj);
-	}
-	
-	else {
-		if (obj.curr_anim) {
-			// update animation state
-			Animate(obj);
-			// choose walk anim frame
-			sprnum = obj.curr_anim[obj.anim_pos];
-				 }
-				 // allow for (repeating
-		for (h = 0, obj.repeat_x ? obj.repeat_x - 1 : 0) {
-			// draw object (in its state!)
-			if (State(obj)s) {
-				sprnum = State(obj)s[State(obj)];
-			}
-			else if (sprnum == 0) {
-				sprnum = obj[State(obj)];
-			}
-			DrawSprite(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
-		}
-	}
-     
-// debug
-	//pset(obj.x, obj.y + stage_top, 8)
-     
-	//reset palette
-	pal();
- }
-
-
-// draw actor(s)
-void Program::DrawActor(SObj& actor) {
-
-	local dirnum, sprnum = face_dirs[actor.face_dir];
-	
-	if (actor.curr_anim && (actor.moving == 1 || IsTable(actor.curr_anim)) {
-	// update animation state
-	Animate(actor)
-		;
-		// choose walk anim frame
-		sprnum = actor.curr_anim[actor.anim_pos];
-	}
-	else {
-	
-		// idle
-		sprnum = actor.idle[dirnum];
-	}
-	
-	// replace colors?
-	ReplaceColors(actor);
-	
-// auto-scaling for (depth?
-	local factor = (actor.y - room_curr.autodepth_pos[1]) / (room_curr.autodepth_pos[2] - room_curr.autodepth_pos[1]);
-	factor = room_curr.autodepth_scale[1] + (room_curr.autodepth_scale[2] - room_curr.autodepth_scale[1]) * factor;
-	actor.auto_scale = mid(room_curr.autodepth_scale[1], factor, room_curr.autodepth_scale[2]);
-	
-// apply "zoom" to autoscale (e.g. camera further away)
-//auto_scale *= (room_curr.scale || 1)
-
-
-// calc scaling offset (to align to bottom-centered)
-	local scale = actor.scale || actor.auto_scale;
-	local scale_height, scale_width = (8 * actor.h), (8 * actor.w);
-	local scaleoffset_y = scale_height - (scale_height * scale);
-	local scaleoffset_x = scale_width - (scale_width * scale);
-	local draw_x = actor.offset_x + flr(scaleoffset_x / 2);
-	local draw_y = actor.offset_y + scaleoffset_y;
-	
-	DrawSprite(sprnum,
-			draw_x,
-			draw_y,
-			actor.w ,
-			actor.h,
-			actor.trans_col,
-			actor.flip,
-			false,
-			scale);
-	        
-	        
-	// talking overlay
-	if (talking_actor
-		&& talking_actor == actor
-	&& talking_actor.talk) {
-	if (actor.talk_tmr < 7) {
-			// note: scaling from top-left
-			DrawSprite(actor.talk[dirnum],
-					draw_x + (actor.talk[5] || 0),
-					draw_y + flr((actor.talk[6] || 8)*scale),
-					(actor.talk[7] || 1),
-					(actor.talk[8] || 1),
-					actor.trans_col,
-					actor.flip,
-					false,
-					scale);
-		}
-		actor.talk_tmr = actor.talk_tmr % 14 + 1;
-	}
-	
-// debug
-// if (show_debuginfo {
-	// pset(actor.x, actor.y + stage_top, 8)
-	// pset(actor.offset_x, actor.offset_y+stage_top, 11)
-// }
-
-	//reset palette
-	pal();
-	*/
-}
-
-
-void Program::DrawCommand() {
-	TODO
-	/*
-	// draw current command
-	local cmd_col, verb_curr_ref, command = verb_maincol, verb_curr[2], verb_curr ? verb_curr[3] : "";
-
-	if (noun1_curr) {
-		command = command.." "..noun1_curr.name;
-		if (verb_curr_ref == V_USE && (!executing_cmd || noun2_curr)) {
-			command = command.." with";
-		}
-		else if (verb_curr_ref == V_GIVE) {
-			command = command.." to";
-		}
-	}
-	if (noun2_curr) {
-		command = command.." "..noun2_curr.name;
-	}
-	else if (hover_curr_object
-		and hover_curr_object.name != ""
-		// don't show use object with itself!
-		and ( !noun1_curr || (noun1_curr != hover_curr_object) )
-		// || walk-to objs in inventory!
-		// && ( not hover_curr_object.owner or
-		// 				or verb_curr_ref != GetVerb(verb_default)[2] )
-  // || when already executing!
-  && !executing_cmd)
-	{
-	  // default to look-at for (inventory items
-	  if (hover_curr_object.owner && verb_curr_ref == GetVerb(verb_default)[2]) {
-	   command = "look-at";
-	  }
-		command = command.." "..hover_curr_object.name;
-	}
-	cmd_curr = command;
-
-	if (executing_cmd) {
-		// highlight active command
-		command = cmd_curr;
-		cmd_col = verb_hovcol;
-	}
-
-	print( SmallCaps(command), 63.5-flr(#command*2), stage_top + 66, cmd_col );
-	*/
-}
-
-void Program::DrawTalking() {
-	TODO
-	
-	// alignment
-	//   0 = no align
-	//   1 = center
-	/*if (talking_curr) {
-		local line_offset_y = 0;
-		for (l in all(talking_curr.msg_lines)) {
-			local line_offset_x = 0;
-			// center-align line
-			if (talking_curr.align == 1) {
-				line_offset_x = ((talking_curr.char_width*4)-(#l*4))/2;
-			}
-			OutlineText(
-				l,
-				talking_curr.x + line_offset_x,
-				talking_curr.y + line_offset_y,
-				talking_curr.col,
-				0,
-				talking_curr.use_caps,
-    talking_curr.big_font);
-			line_offset_y += talking_curr.big_font ? 12 : 6;
-		}
-		// update message lifespan
-		talking_curr.time_left -= 1;
-		// remove text & reset actor's talk anim
-		if (talking_curr.time_left <= 0) StopTalking();
-	}*/
-}
-
-// draw ui and inventory
-void Program::DrawUI() {
-	TODO
-	
-	// draw verbs
-	/*local xpos, ypos, col_len = 0, 75, 0;
-
-	for (v in all(verbs)) {
-		local txtcol = v == hover_curr_verb ? verb_hovcol :
-			(hover_curr_default_verb && v == hover_curr_default_verb ? verb_defcol :
-			verb_maincol);
-
-		// get verb info
-		local vi = GetVerb(v);
-		print(vi[3], xpos, ypos+stage_top+1, verb_shadcol);  // shadow
-		print(vi[3], xpos, ypos+stage_top, txtcol);  // main
-
-		// capture bounds
-		v.x = xpos;
-		v.y = ypos;
-		RecalculateBounds(v, #vi[3]*4, 5, 0, 0);
-		//show_collision_box(v)
-
-		// auto-size column
-		if (#vi[3] > col_len) col_len = #vi[3];
-
-		ypos += 8;
-
-		// move to next column
-		if (ypos >= 95) {
-			ypos = 75;
-			xpos += (col_len + 1.0) * 4;
-			col_len = 0;
-		}
-	}
-
-	if (selected_actor) {
-		// draw inventory
-		xpos, ypos = 86, 76;
-		// determine the inventory "window"
-		local start_pos = selected_actor.inv_pos * 4;
-		local end_pos = min(start_pos+8, #selected_actor.inventory);
-
-		for (ipos = 1,8) {
-			// draw inventory bg
-			rectfill(xpos-1, stage_top+ypos-1, xpos+8, stage_top+ypos+8, verb_shadcol);
-
-			obj = selected_actor.inventory[start_pos+ipos];
-			if (obj) {
-				// something to draw
-				obj.x, obj.y = xpos, ypos;
-				// draw object/sprite
-				DrawObject(obj);
-				// re-calculate bounds (as pos may have changed)
-				RecalculateBounds(obj, obj.w*8, obj.h*8, 0, 0);
-				//show_collision_box(obj)
-			}
-			xpos += 11;
-
-			if (xpos >= 125) {
-				ypos += 12;
-				xpos = 86;
-			}
-			ipos += 1;
-		}
-
-		// draw arrows
-		for (i = 1,2) {
-			arrow = ui_arrows[i];
-			pal(7, hover_curr_arrow == arrow ? verb_hovcol : verb_maincol);
-			pal(5, verb_shadcol);
-			DrawSprite(arrow.spr, arrow.x, arrow.y, 1, 1, 0);
-			// capture bounds
-			RecalculateBounds(arrow, 8, 7, 0, 0);
-			//show_collision_box(arrow)
-			pal(); //reset palette
-		}
-	}*/
-}
-
-void Program::DrawDialog() {
-	TODO
-	/*local xpos, ypos = 0, 70;
-
-	for (s in all(dialog_curr.sentences)) {
-		if (s.char_width > 0) {
-			// capture bounds
-			s.x, s.y = xpos, ypos;
-			RecalculateBounds(s, s.char_width*4, #s.lines*5, 0, 0);
-
-			local txtcol = s == hover_curr_sentence ? dialog_curr.hlcol : dialog_curr.col;
-
-			for (l in all(s.lines)) {
-				print(SmallCaps(l), xpos, ypos+stage_top, txtcol);
-				ypos += 5;
-			}
-
-			//show_collision_box(s)
-			ypos += 2;
-		}
-	}*/
-}
-
-// draw cursor
-void Program::DrawCursor() {
-	TODO
-	/*col = ui_cursor_cols[cursor_colpos];
-	// switch sprite color accordingly
-	pal(7,col);
-	spr(ui_cursorspr, cursor_x-4, cursor_y-3, 1, 1, 0);
-	pal(); //reset palette
-
-	cursor_tmr += 1;
-	if (cursor_tmr > 7) {
-		//reset timer
-		cursor_tmr = 1;
-		// move to next color?
-		cursor_colpos = cursor_colpos % #ui_cursor_cols + 1;
-	}*/
-}
-
-void Program::DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
-	TODO
-	/*
-	// switch transparency
-	SetTransCol(transcol); //, true)
-	
-	// draw zoomed sprite
-//https://www.lexaloffle.com/bbs/?tid=2429
-	local sx, sy = 8 * (n % 16), 8 * flr(n / 16);
-	local sw, sh = 8 * w, 8 * h;
-	local dz = scale || 1;
-	local dw, dh = sw * dz, sh * dz;
-	sspr(sx, sy, sw, sh, x, stage_top + y, dw, dh, flip_x, flip_y);
-	
-	// first scale, bottom-anchored
-//sspr(sx, sy, sw, sh, x, stage_top + y +(sh-dh), dw, dh, flip_x, flip_y)
-
-	//spr(n, x, stage_top + y, w, h, flip_x, flip_y) // orig method (pre-scale)
-	
-	//pal() // don't) {, affects lighting!
-	*/
 }
 
 void Program::SetTransCol(int transcol) { //, enabled)
@@ -2254,20 +1762,6 @@ String Program::Autotype(const String& str_value) {
 	}*/
 }
 
-
-void Program::OutlineText(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
-	TODO
-	/*
-	if (!use_caps) str = SmallCaps(str);
-	if (big_font) str = "\^w\^t"..str;
-	for (xx = -1, 1) {
-		for (yy = -1, 1, xx == 0 ? 2 : 1) {
-				print(str, x + xx, y + yy, c1);
-			}
-		}
-	print(str, x, y, c0);
-	*/
-}
 
 
 // collision check

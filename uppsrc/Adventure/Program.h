@@ -20,6 +20,11 @@ using SObj = EscValue;
 using StrMap = VectorMap<String,String>;
 using StrVec = Vector<String>;
 
+Color ReadColor(const SObj& o, String key, Color def);
+bool TryReadColor(const SObj& o, Color& c);
+bool ReadFlag(const SObj& o, String key);
+SObj* ReadKey(SObj& o, String key);
+
 typedef enum {
 	
 } SceneType;
@@ -49,10 +54,13 @@ struct Dialog {
 	int col = 0;
 	int hlcol = 0;
 	bool visible = 0;
+	bool enabled = false;
 	
 	
 	Sentence& Add();
 	void Clear();
+	
+	operator bool() const {return enabled;}
 	
 };
 
@@ -61,17 +69,32 @@ struct Script {
 	//Thread thrd;
 	Callback override_;
 	SObj* paused_cam_following = 0;
+	dword flags = 0;
 	
 	void Clear() {TODO}
 	
 };
 
+struct TalkingState {
+	Vector<String> msg_lines;
+	int x = 0;
+	int y = 0;
+	int col = 0;
+	int align = 0;
+	int time_left = 0;
+	int char_width = 0;
+	bool use_caps = 0;
+	bool big_font = 0;
+	bool enabled = false;
+	
+	operator bool() const {return enabled;}
+	
+};
 
 struct Program {
 	typedef Program CLASSNAME;
 	
 	
-	bool show_debuginfo = true;
 	bool show_collision = true;
 	bool show_pathfinding = true;
 	bool show_depth = true;
@@ -173,7 +196,7 @@ struct Program {
 	int cutscene_cooloff = 0;
 	Script* fade_script = 0;
 	
-	SObj* talking_curr = 0;
+	TalkingState talking_curr;
 	SObj* talking_actor = 0;
 	
 	/*ui_arrows = {
@@ -184,6 +207,9 @@ struct Program {
 	Verb verb_curr;
 	bool executing_cmd = false;
 	bool is_mouse_clicked = false;
+	
+	int cam_shake_x = 0;
+	int cam_shake_y = 0;
 	
 	
 	void ResetUI();
@@ -205,7 +231,7 @@ struct Program {
 	void DialogClear();
 	void DialogEnd();
 	void DialogSet(StrVec& msg_table);
-	Point GetUsePos(SObj& obj);
+	Point GetUsePoint(SObj& obj);
 	void DoAnim(Thing& thing, const String& param1, int& param2);
 	void OpenDoor(SObj& door_obj1, SObj* door_obj2);
 	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
@@ -230,23 +256,13 @@ struct Program {
 	Verb GetVerb(SObj& obj);
 	void ClearCurrCmd();
 	void Update60();
-	void Draw();
 	void UpdateMouseClickState();
 	void PlayerControl();
 	void InputButtonPressed(int button_index);
 	void CheckCollisions();
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
-	void RoomDraw();
 	void ReplaceColors(SObj& obj);
-	void DrawObject(SObj& obj);
-	void DrawActor(SObj& actor);
-	void DrawCommand();
-	void DrawTalking();
-	void DrawUI();
-	void DrawDialog();
-	void DrawCursor();
-	void DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale);
 	void SetTransCol(int transcol);
 	void InitGame();
 	void UpdateScripts(Vector<String>& scripts);
@@ -262,7 +278,6 @@ struct Program {
 	void Animate(SObj& obj);
 	void ShowError(String msg);
 	void ExplodeData(SObj& obj);
-	void OutlineText(String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
 	bool IsCursorColliding(SObj& obj);
 	String SmallCaps(const String& s);
 	void FadePalette(float perc);
@@ -290,18 +305,48 @@ struct Program {
 };
 
 
+struct ZPlane : Moveable<ZPlane> {
+	Vector<SObj*> objs;
+	
+	
+};
+
 class ProgramDraw : public Ctrl {
+	Vector<ZPlane> draw_zplanes;
+	
+	Program* p = 0;
+	bool show_debuginfo = true;
 	
 	
+public:
 	
-	void Paint(Draw& w) override;
+	void SetProgram(Program& p) {this->p = &p;}
+	
+	void Paint(Draw& d) override;
+	
+	void PaintLog(Draw& d, String s, int x, int y, int font_h);
+	
+	
+	void DrawRoom(Draw& d);
+	void DrawTalking(Draw& d);
+	void OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
+	void DrawObject(SObj& obj);
+	void DrawActor(SObj& actor);
+	void DrawCommand();
+	void DrawUI();
+	void DrawDialog();
+	void DrawCursor();
+	void DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale);
+	
+	void ResetPalette();
+	void ReplaceColors(const SObj& o);
 	
 };
 
 
 class ProgramApp : public TopWindow {
 	ProgramDraw draw;
-	Program eng;
+	Program prog;
 	TimeCallback tc;
 	
 public:
