@@ -795,7 +795,8 @@ Katri:	Hei kuuleppa.
 Teppo:	Moi.
 Katri:	Älä sinä moimottele.
 		Tiiäkkö sää kuka tuo kissanainen on?
-		Se on tämän talon isännän tytär, ja täällä pitäisi muidenkin miesten huomata se.
+Teppo:  En.
+Katri:	Se on tämän talon isännän tytär, ja täällä pitäisi muidenkin miesten huomata se.
 		Oo ilonen että kukaan ei juuri nähnyt tuota, tai lentäisit pihalle muuten.
 Teppo:	Ai, no kerro sille terveiset Tepolta, että me kyllä osataan ulos omin avuin.
 Katri:	Keneltä Tepolta? Ai Palmfeltiltä?
@@ -1157,7 +1158,7 @@ Teppo:      Vaijettu viisaus:
 
             Älkää turhaan tehkö taisteluu,
             kun eihän sillä loppu tuu, vaan alku uus.
- 
+
 
 	** Matti puukottaa Aatua Tepon käsivarren alta, ja Aatu kuolee. **
 
@@ -1390,7 +1391,7 @@ Musiikki: "2022/first of the year 2022.tg"
 Tytti:      Viet rakkaan, aamun parhaan,
             mustaat sen kun suus avaat.
             Tunnusta, pääs on kusta, 
-            e i oo juttuu julmempaa.
+            ei oo juttuu julmempaa.
             
             Polttaa, lähtö täältä
             polttaa, kuuma tie tuol
@@ -1449,8 +1450,8 @@ Tytti:      Täynnä epäkohtia
             se on se kylmän lyhyt,
             on liian kylmän lyhyt.
             
-Katria:     Renki löytyy se piallekkin,
-            vailla tietä piinaavaakin.
+Katri:      Renki löytyy se piallekkin,
+            ilman tietä piinaavaakin.
             Selvitä voit mut mietippä vaan,
             kuinka pärjäät omillaan,
             omillaan.
@@ -1525,41 +1526,107 @@ Vartija:	Hiljaa.
 
 	** Teppo heräilee pienestä ranta-saunasta Haaparannan puolella **
 	
-{
-	# musiikki she comes between us
+Musiikki: "2021/she comes between us.tg"
+
+Teppo:
+    Kerran mun onnen sain, kerran
+    sain onnen kasvamaan, ja
+    kerran sen menetin, vielä
+    huonommin kävikin. Nyt ei
+    
+    riitä mun tahto, ystävät, enkä
+    yksinään saa mä yhteyttä.
+    Oon ollu se kohde moitteiden,
+    enkä nää mä tääl pakoreittiäkään.
+    
+    Pois viety on mun rohkeus ja
+    poissa on rakkauskin.
+    Ei jäänyt mul käsiin mitään
+    ja elämäin käsis mul on.
+    
+    Voi vuodet menettää,
+    ja voi hetkes onnen löytää.
+    Voi heittää menemään,
+    ja voi joku toinen riistää.
+    
+    Vielä vaan ja uudestaan
+    sun nauruu muistelen,
+    enkä tiedä voinko vielä luotas
+    löytää vanhan rakkauden.
+    Ikävöin päivät ja ikävöin yöt,
+    kuulen kun kaipuuta rinta lyö.
+    Sekaisin pää ja sydänkin tää mun on
+	kun et oo luonain.
 	
-	/*
-	Ei mikään auta, mä tuun sun luo.
+	Viestii tuo rivinvälit,
+	ei ne vastaa siit,
+	tietoisuus kun rumaa jälkee ois 
+	ja muut valittaa vois.
 	
-	Vie tuuli mut sen luo,
-	ohjaa mun polkuni.
-	
-	Enkä tiedä, onko tää oikein?
-	
-	Ikävöin päivät, ja ikävöin yöt.
-	
-	Sekaisin pää, ja sydänkin tää, kun et tuu mun luo.
-	Kun en mä luonas oo.
+	Viaton tääl kukaan ei oo ja
+    kierot valheil meitä vainoo, mut
+    ei kai onnee, ilmaisuutta oo
+    elo huoleton.
 	
 	Mielessä kaikki, mielessä muut,
-	mielessä syy, ja vain katkeruus.
+	mielessä syy ja vain katkeruus.
+	On kaikissa syy ja syy mussa vaan,
+	aiheuttajat kun sylkii mun suuntaan.
 	
-	En jää yksin,
-	en mä yksin jää.
+	Viaton on taulu tyhjä
+	kun sen mittaa maalaajat, ja
+	vielä tuuli toivoo tuo mun luo,
+	että armo voittaa.
 	
+    Vielä vaan ja uudestaan
+    sun nauruu muistelen,
+    enkä tiedä voinko vielä luotas
+    löytää vanhan rakkauden.
+    Ikävöin päivät ja ikävöin yöt,
+    kuulen kun kaipuuta rinta lyö.
+    Sekaisin pää ja sydänkin tää mun on
+	kun et oo luonain.
+	Kun et oo luonain,
+	kun et mun luona oo,
+	kun et mun luokse tuu,
+	kun luos en pääse.
 	
-	Vaikempaa, kuin ..., on luovuttaa.
+	Mikään ei voi lohduttaa,
+	mikään ei korvaakkaan.
+	Kukaan ei tuu huomaamaan,
+	et ei oo sydän kotonaan.
 	
+	Ehkä viima vie
+	vihdoin tunteen viimisen.
+	Voin löytää sen uudelleen,
+	kun toivo tulee eteen.
 	
-	Me vielä nähdään.
-	Me vielä halataan.
+	Yhteisen ajan ja paikan
+	hoksaa vielä kun vain
+	sen muistelee.
 	
+	Takaisin ei aika tuo
+	sun suudelmaa
+	muistojen mun.
 	
-	Kanssas sun on rauha mun.
+	Sit kun mä lähen uudelleen
+	luo samanlaisten,
+	ja vastassa on juuri ne,
+	ne mieleltään kuin mun nuoruuden,
+	mä vaan lähen kun
 	
-	
-	*/
-}
+    vielä vaan ja uudestaan
+    sun nauruu muistelen,
+    enkä tiedä voinko vielä luotas
+    löytäävanhan rakkauden.
+    Ikävöin päivät ja ikävöin yöt,
+    kuulen kun kaipuu se rinnas lyö.
+    Sekaisin pää ja sydänkin tää mun on
+	kun et oo luonain.
+	Kun et oo luonain,
+	kun et mun luona oo,
+	kun et mun luokse tuu,
+	kun luos en pääse.
 
 	** Joku ylittää veneellä joen **
 	
