@@ -11,6 +11,9 @@ ProgramApp::ProgramApp() {
 	Title("Program App");
 	Sizeable().MaximizeBox().MinimizeBox();
 	
+	Rect r = GetRect();
+	SetRect(RectC(r.left, r.top, 512, 512));
+	
 	Add(draw.SizePos());
 	
 	tc.Set(-10, THISBACK(ProcessScript));
@@ -31,8 +34,31 @@ void ProgramApp::ProcessScript() {
 
 
 
+
+ProgramDraw::ProgramDraw() {
+	fnt = SansSerif(8);
+	ResetPalette();
+	LoadBuiltinGfx();
+}
+
+void ProgramDraw::ResetPalette() {
+	for(int i = 0; i < PALETTE_SIZE; i++)
+		dyn_palette[i] = i;
+	for(int i = 0; i < PALETTE_SIZE; i++)
+		palette[i] = GetPicoPalette(i);
+}
+
+void ProgramDraw::SetPalette(int idx, PaletteColor clr) {
+	ASSERT(idx >= 0 && idx < PALETTE_SIZE);
+	dyn_palette[idx] = clr;
+}
+
 void ProgramDraw::Paint(Draw& w) {
 	Size sz = GetSize();
+	int min_edge = min(sz.cx, sz.cy);
+	Size tgt_sz(min_edge, min_edge);
+	ImageDraw d(128, 128);
+	
 	int cam_x = p->cam_x.x;
 	int cam_shake_x = p->cam_shake_x;
 	int cam_shake_y = p->cam_shake_y;
@@ -43,30 +69,30 @@ void ProgramDraw::Paint(Draw& w) {
 	const auto& cutscene_curr = p->cutscene_curr;
 	
 	// clear screen every frame
-	w.DrawRect(sz, White());
+	d.DrawRect(sz, White());
 	
 	// reposition camera (account for (shake, if (active)
-	w.Offset(cam_x + cam_shake_x, 0 + cam_shake_y);
+	d.Offset(cam_x + cam_shake_x, 0 + cam_shake_y);
 	
 	// clip room bounds (also used for ("iris" transition)
-	w.Clip(
+	d.Clip(
 		0 + fade_iris - cam_shake_x,
 		stage_top + fade_iris - cam_shake_y,
 		128 - fade_iris*2 - cam_shake_x,
 		64 - fade_iris*2);
 	    
 	// draw room (bg + objects + actors)
-	DrawRoom(w);
+	PaintRoom(d);
 	
 	// reset camera and clip bounds for ("static" content (ui, etc.)
-	w.End();
-	w.End();
+	d.End();
+	d.End();
 	
 	#if 0
 	if (show_debuginfo) {
-		PaintLog(w, "cpu: " + IntStr(100*stat(1)) + "%", 0, stage_top - 16, 8);
-		PaintLog(w, "mem: " + IntStr(stat(0) / 1024*100) + "%", 0, stage_top - 8, 8);
-		PaintLog(w, "x: " + IntStr(cursor_x + cam_x) + " y:" + cursor_y - stage_top, 80, stage_top - 8, 8);
+		PaintLog(d, "cpu: " + IntStr(100*stat(1)) + "%", 0, stage_top - 16, 8);
+		PaintLog(d, "mem: " + IntStr(stat(0) / 1024*100) + "%", 0, stage_top - 8, 8);
+		PaintLog(d, "x: " + IntStr(cursor_x + cam_x) + " y:" + cursor_y - stage_top, 80, stage_top - 8, 8);
 	}
 	#endif
 	
@@ -80,13 +106,13 @@ void ProgramDraw::Paint(Draw& w) {
 	// }
 	
 	// draw active/speech text
-	DrawTalking(w);
+	PaintTalking(d);
 	
 	// in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
 		// draw dialog sentences?
-		DrawDialog();
-		DrawCursor();
+		PaintDialog(d);
+		PaintCursor(d);
 		// skip rest
 		return;
 	}
@@ -103,36 +129,37 @@ void ProgramDraw::Paint(Draw& w) {
 	
 	// draw current command (verb/object)
 	if (!cutscene_curr)
-		DrawCommand();
+		PaintCommand(d);
 		
 	// draw ui and inventory (only if (actor selected to use it!)
-	if (!cutscene_curr
+	if (cutscene_curr
 		? cutscene_curr->flags == 2 // quick-cut
 		// and not just left a cutscene
 		: cutscene_cooloff == 0) {
-		DrawUI();
+		PaintUI(d);
 	}
 	
-	if (!cutscene_curr) DrawCursor();
+	if (!cutscene_curr)
+		PaintCursor(d);
 	
+	
+	Image img = d;
+	img = RescaleFilter(img, tgt_sz, FILTER_NEAREST);
+	w.DrawImage(0,0, img);
 }
 
-void ProgramDraw::PaintLog(Draw& w, String s, int x, int y, int font_h) {
-	Font fnt = SansSerif(font_h);
-	w.DrawText(x, y, s, fnt);
+void ProgramDraw::PaintLog(Draw& d, String s, int x, int y, PaletteColor clr) {
+	Color c = GetPaletteColor(clr);
+	d.DrawText(x, y, s, fnt, c);
 }
 
-void ProgramDraw::ResetPalette() {
-	TODO
-}
-
-void ProgramDraw::DrawRoom(Draw& w) {
+void ProgramDraw::PaintRoom(Draw& d) {
 	const auto& cam_x = p->cam_x.x;
 	const auto& stage_top = p->stage_top;
 	
 	// check for (current room
 	if (!p->room_curr) {
-		PaintLog(w, "-error-  no current room set", 5 + cam_x, 5 + stage_top, 8);
+		PaintLog(d, "-error-  no current room set", 5 + cam_x, 5 + stage_top, 8);
 		return;
 	}
 	
@@ -140,7 +167,7 @@ void ProgramDraw::DrawRoom(Draw& w) {
 	
 	
 	// set room background col (or black by default)
-	w.DrawRect(0, stage_top, 127, stage_top + 64, ReadColor(room_curr, "bg_col", Black()));
+	d.DrawRect(0, stage_top, 127, stage_top + 64, ReadColor(room_curr, "bg_col", Black()));
 	
 	// draw each zplane, from back to front
 	int begin_z = -64;
@@ -235,14 +262,14 @@ void ProgramDraw::DrawRoom(Draw& w) {
 						: obj.draw
 						|| obj.curr_anim) {
 						// something to draw
-						DrawObject(obj);
+						PaintObject(obj);
 					}*/
 				}
 				else {
 					// actor
 					SObj* in_room = this->p->GetInRoom(obj);
 					if (in_room == &room_curr)
-						DrawActor(obj);
+						PaintActor(obj);
 				}
 				//show_collision_box(obj);
 			}
@@ -251,7 +278,7 @@ void ProgramDraw::DrawRoom(Draw& w) {
 }
 
 
-void ProgramDraw::DrawTalking(Draw& d) {
+void ProgramDraw::PaintTalking(Draw& d) {
 	// alignment
 	//   0 = no align
 	//   1 = center
@@ -287,33 +314,54 @@ void ProgramDraw::DrawTalking(Draw& d) {
 
 
 // draw ui and inventory
-void ProgramDraw::DrawUI() {
-	TODO
+void ProgramDraw::PaintUI(Draw& d) {
+	using Verb = Program::Verb;
 	
 	// draw verbs
-	/*local xpos, ypos, col_len = 0, 75, 0;
-
-	for (v in all(verbs)) {
-		local txtcol = v == hover_curr_verb ? verb_hovcol :
-			(hover_curr_default_verb && v == hover_curr_default_verb ? verb_defcol :
-			verb_maincol);
-
+	int xpos = 0;
+	int ypos = 75;
+	int col_len = 0;
+	
+	Verb hover_curr_verb = p->hover_curr_verb;
+	Verb hover_curr_default_verb = p->hover_curr_default_verb;
+	PaletteColor verb_shadcol = p->verb_shadcol;
+	PaletteColor verb_hovcol = p->verb_hovcol;
+	PaletteColor verb_defcol = p->verb_defcol;
+	PaletteColor verb_maincol = p->verb_maincol;
+	int stage_top = p->stage_top;
+	SObj* selected_actor = p->selected_actor;
+	SObj* hover_curr_arrow = p->hover_curr_arrow;
+	
+	for (int i = Program::V_BEGIN; i != Program::V_END; i++) {
+		Verb v = (Verb)i;
+		
+		PaletteColor txtcol;
+		if (v == hover_curr_verb)
+			txtcol = verb_hovcol;
+		else if (v == hover_curr_default_verb)
+			txtcol = verb_defcol;
+		else
+			txtcol = verb_maincol;
+		
 		// get verb info
-		local vi = GetVerb(v);
-		print(vi[3], xpos, ypos+stage_top+1, verb_shadcol);  // shadow
-		print(vi[3], xpos, ypos+stage_top, txtcol);  // main
-
+		String name = p->GetVerbString(v);
+		int namelen = name.GetCount();
+		PaintLog(d, name, xpos, ypos+stage_top+1, verb_shadcol);  // shadow
+		PaintLog(d, name, xpos, ypos+stage_top, txtcol);  // main
+		
 		// capture bounds
-		v.x = xpos;
-		v.y = ypos;
-		RecalculateBounds(v, #vi[3]*4, 5, 0, 0);
-		//show_collision_box(v)
+		SObj obj;
+		obj.MapSet("x", xpos);
+		obj.MapSet("y", ypos);
+		p->RecalculateBounds(obj, namelen*4, 5, 0, 0);
+		//show_collision_box(obj)
 
 		// auto-size column
-		if (#vi[3] > col_len) col_len = #vi[3];
-
+		if (namelen > col_len)
+			col_len = namelen;
+		
 		ypos += 8;
-
+		
 		// move to next column
 		if (ypos >= 95) {
 			ypos = 75;
@@ -321,26 +369,39 @@ void ProgramDraw::DrawUI() {
 			col_len = 0;
 		}
 	}
-
+	
 	if (selected_actor) {
+		EscValue inventory = selected_actor->MapGet("inventory");
+		int inv_arr_len = inventory.GetArray().GetCount();
+		
 		// draw inventory
-		xpos, ypos = 86, 76;
+		int xpos = 86;
+		int ypos = 76;
+		
 		// determine the inventory "window"
-		local start_pos = selected_actor.inv_pos * 4;
-		local end_pos = min(start_pos+8, #selected_actor.inventory);
+		int inv_pos = selected_actor->MapGet("inv_pos").GetInt();
+		ASSERT(inv_pos >= 0 && inv_pos < 0x10000);
+		int start_pos = inv_pos * 4;
+		int end_pos = min(start_pos+8, inv_arr_len);
 
-		for (ipos = 1,8) {
+		for (int ipos = 0; ipos < 8; ipos++) {
 			// draw inventory bg
-			rectfill(xpos-1, stage_top+ypos-1, xpos+8, stage_top+ypos+8, verb_shadcol);
+			Color rect_clr = GetPaletteColor(verb_shadcol);
+			d.DrawRect(xpos-1, stage_top+ypos-1, xpos+8, stage_top+ypos+8, rect_clr);
 
-			obj = selected_actor.inventory[start_pos+ipos];
-			if (obj) {
+			SObj obj = inventory.ArrayGet(start_pos+ipos);
+			/*if (obj)*/ {
 				// something to draw
-				obj.x, obj.y = xpos, ypos;
+				obj.MapSet("x", xpos);
+				obj.MapSet("y", ypos);
 				// draw object/sprite
-				DrawObject(obj);
+				PaintObject(obj);
 				// re-calculate bounds (as pos may have changed)
-				RecalculateBounds(obj, obj.w*8, obj.h*8, 0, 0);
+				int w = obj.MapGet("w").GetInt();
+				int h = obj.MapGet("h").GetInt();
+				ASSERT(w > 0 && w < 0x10000);
+				ASSERT(h > 0 && h < 0x10000);
+				p->RecalculateBounds(obj, w*8, h*8, 0, 0);
 				//show_collision_box(obj)
 			}
 			xpos += 11;
@@ -349,24 +410,28 @@ void ProgramDraw::DrawUI() {
 				ypos += 12;
 				xpos = 86;
 			}
-			ipos += 1;
 		}
 
 		// draw arrows
-		for (i = 1,2) {
-			arrow = ui_arrows[i];
-			pal(7, hover_curr_arrow == arrow ? verb_hovcol : verb_maincol);
-			pal(5, verb_shadcol);
-			DrawSprite(arrow.spr, arrow.x, arrow.y, 1, 1, 0);
+		for (int i = 0; i < 2; i++) {
+			PaletteImage sprite = p->ui_arrows[i];
+			SObj& arrow = p->arrow[i];
+			TODO
+			int x = arrow.MapGet("x").GetInt();
+			int y = arrow.MapGet("y").GetInt();
+			SetPalette(7, hover_curr_arrow == &arrow ? verb_hovcol : verb_maincol);
+			SetPalette(5, verb_shadcol);
+			PaintSprite(d, lbl, sprite, x, y, 1, 1, 0);
+			
 			// capture bounds
-			RecalculateBounds(arrow, 8, 7, 0, 0);
+			p->RecalculateBounds(arrow, 8, 7, 0, 0);
 			//show_collision_box(arrow)
-			pal(); //reset palette
+			ResetPalette(); //reset palette
 		}
-	}*/
+	}
 }
 
-void ProgramDraw::DrawDialog() {
+void ProgramDraw::PaintDialog(Draw& d) {
 	TODO
 	/*local xpos, ypos = 0, 70;
 
@@ -390,24 +455,42 @@ void ProgramDraw::DrawDialog() {
 }
 
 // draw cursor
-void ProgramDraw::DrawCursor() {
-	TODO
-	/*col = ui_cursor_cols[cursor_colpos];
+void ProgramDraw::PaintCursor(Draw& d) {
+	PaletteColor col = p->ui_cursor_cols[p->cursor_colpos];
+	
 	// switch sprite color accordingly
-	pal(7,col);
-	spr(ui_cursorspr, cursor_x-4, cursor_y-3, 1, 1, 0);
-	pal(); //reset palette
+	SetPalette(7, col);
+	PaintSprite(d, gfx, p->ui_cursorspr, p->cursor_x-4, p->cursor_y-3, 1, 1, 0);
+	ResetPalette(); //reset palette
 
+	auto& cursor_tmr = p->cursor_tmr;
+	auto& cursor_colpos = p->cursor_colpos;
+	
 	cursor_tmr += 1;
 	if (cursor_tmr > 7) {
 		//reset timer
 		cursor_tmr = 1;
+		
 		// move to next color?
-		cursor_colpos = cursor_colpos % #ui_cursor_cols + 1;
-	}*/
+		cursor_colpos = cursor_colpos % Program::ui_cursor_cols_len + 1;
+	}
 }
 
-void ProgramDraw::DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
+void ProgramDraw::PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, bool flip_x, bool flip_y, int scale) {
+	Size src_sz = src.GetSize();
+	int src_cols = src_sz.cx / 8;
+	ASSERT(src_sz.cx % 8 == 0);
+	int row = n / src_cols;
+	int col = n % src_cols;
+	Point tl(col * 8, row * 8);
+	int w = 8;
+	int h = 8;
+	Rect r = RectC(tl.x, tl.y, w, h);
+	ASSERT(tl.x < src_sz.cx && tl.y < src_sz.cy);
+	d.DrawImage(x, y, src, r);
+}
+
+void ProgramDraw::PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale) {
 	TODO
 	/*
 	// switch transparency
@@ -430,7 +513,7 @@ void ProgramDraw::DrawSprite(int n, int x, int y, int w, int h, bool transcol, b
 	*/
 }
 
-void ProgramDraw::DrawObject(SObj& obj) {
+void ProgramDraw::PaintObject(SObj& obj) {
 	TODO
 	/*
 	local sprnum = 0;
@@ -458,7 +541,7 @@ void ProgramDraw::DrawObject(SObj& obj) {
 			else if (sprnum == 0) {
 				sprnum = obj[State(obj)];
 			}
-			DrawSprite(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
+			PaintSprite(sprnum, obj.x + (h * (obj.w * 8)), obj.y, obj.w, obj.h, obj.trans_col, obj.flip_x, obj.scale);
 		}
 	}
      
@@ -472,7 +555,7 @@ void ProgramDraw::DrawObject(SObj& obj) {
 
 
 // draw actor(s)
-void ProgramDraw::DrawActor(SObj& actor) {
+void ProgramDraw::PaintActor(SObj& actor) {
 	TODO
 	/*
 	local dirnum, sprnum = face_dirs[actor.face_dir];
@@ -510,7 +593,7 @@ void ProgramDraw::DrawActor(SObj& actor) {
 	local draw_x = actor.offset_x + flr(scaleoffset_x / 2);
 	local draw_y = actor.offset_y + scaleoffset_y;
 	
-	DrawSprite(sprnum,
+	PaintSprite(sprnum,
 			draw_x,
 			draw_y,
 			actor.w ,
@@ -527,7 +610,7 @@ void ProgramDraw::DrawActor(SObj& actor) {
 	&& talking_actor.talk) {
 	if (actor.talk_tmr < 7) {
 			// note: scaling from top-left
-			DrawSprite(actor.talk[dirnum],
+			PaintSprite(actor.talk[dirnum],
 					draw_x + (actor.talk[5] || 0),
 					draw_y + flr((actor.talk[6] || 8)*scale),
 					(actor.talk[7] || 1),
@@ -552,50 +635,63 @@ void ProgramDraw::DrawActor(SObj& actor) {
 }
 
 
-void ProgramDraw::DrawCommand() {
-	TODO
-	/*
-	// draw current command
-	local cmd_col, verb_curr_ref, command = verb_maincol, verb_curr[2], verb_curr ? verb_curr[3] : "";
+void ProgramDraw::PaintCommand(Draw& d) {
 
+	// draw current command
+	PaletteColor cmd_col = p->verb_maincol;
+	Program::Verb verb_curr_ref = p->verb_curr;
+	String command = p->GetVerbString(verb_curr_ref);
+	bool executing_cmd = p->executing_cmd;
+	SObj* noun1_curr = p->noun1_curr;
+	SObj* noun2_curr = p->noun2_curr;
+	SObj* hover_curr_object = p->hover_curr_object;
+	int stage_top = p->stage_top;
+	
+	
 	if (noun1_curr) {
-		command = command.." "..noun1_curr.name;
-		if (verb_curr_ref == V_USE && (!executing_cmd || noun2_curr)) {
-			command = command.." with";
+		command << " " << noun1_curr->MapGet("name");
+		if (verb_curr_ref == Program::V_USE && (!executing_cmd || noun2_curr)) {
+			command << " with";
 		}
-		else if (verb_curr_ref == V_GIVE) {
-			command = command.." to";
-		}
+		else
+			if (verb_curr_ref == Program::V_GIVE) {
+				command << " to";
+			}
 	}
 	if (noun2_curr) {
-		command = command.." "..noun2_curr.name;
+		command << " " << noun2_curr->MapGet("name");
 	}
-	else if (hover_curr_object
-		and hover_curr_object.name != ""
-		// don't show use object with itself!
-		and ( !noun1_curr || (noun1_curr != hover_curr_object) )
-		// || walk-to objs in inventory!
-		// && ( not hover_curr_object.owner or
-		// 				or verb_curr_ref != GetVerb(verb_default)[2] )
-  // || when already executing!
-  && !executing_cmd)
-	{
-	  // default to look-at for (inventory items
-	  if (hover_curr_object.owner && verb_curr_ref == GetVerb(verb_default)[2]) {
-	   command = "look-at";
-	  }
-		command = command.." "..hover_curr_object.name;
+	else if (hover_curr_object) {
+		String name = hover_curr_object->MapGet("name");
+		
+		if (!name.IsEmpty()
+			// don't show use object with itself!
+			&& (!noun1_curr || (noun1_curr != hover_curr_object))
+			// || walk-to objs in inventory!
+			// && ( not hover_curr_object.owner or
+			//				or verb_curr_ref != GetVerb(verb_default)[2] )
+			// || when already executing!
+			&& !executing_cmd) {
+			// default to look-at for (inventory items
+			TODO // owner?
+			/*if (hover_curr_object.owner && verb_curr_ref == GetVerb(verb_default)[2]) {
+				command = "look-at";
+			}*/
+			command << " " << name;
+		}
 	}
 	cmd_curr = command;
-
+	
 	if (executing_cmd) {
 		// highlight active command
 		command = cmd_curr;
-		cmd_col = verb_hovcol;
+		cmd_col = p->verb_hovcol;
 	}
-
-	print( SmallCaps(command), 63.5-flr(#command*2), stage_top + 66, cmd_col );
-	*/
+	
+	int x = (int)(63.5 - command.GetCount()*2);
+	int y = stage_top + 66;
+	PaintLog(d, ToLower(command), x, y, cmd_col);
+	
 }
 
 void ProgramDraw::ReplaceColors(const SObj& obj) {

@@ -3,6 +3,34 @@
 namespace Adventure {
 
 
+Color GetPicoPalette(PaletteColor idx) {
+	switch (idx) {
+		case 0:  return Color(0x00, 0x00, 0x00);
+		case 1:  return Color(0x1D, 0x2B, 0x53);
+		case 2:  return Color(0x7E, 0x25, 0x53);
+		case 3:  return Color(0x00, 0x87, 0x51);
+		
+		case 4:  return Color(0xAB, 0x52, 0x36);
+		case 5:  return Color(0x5F, 0x57, 0x4F);
+		case 6:  return Color(0xC2, 0xC3, 0xC7);
+		case 7:  return Color(0xFF, 0xF1, 0xE8);
+		
+		case 8:  return Color(0xFF, 0x00, 0x4D);
+		case 9:  return Color(0xFF, 0xA3, 0x00);
+		case 10: return Color(0xFF, 0xEC, 0x27);
+		case 11: return Color(0x00, 0xE4, 0x36);
+		
+		case 12: return Color(0x29, 0xAD, 0xFF);
+		case 13: return Color(0x83, 0x76, 0x9C);
+		case 14: return Color(0xFF, 0x77, 0xA8);
+		case 15: return Color(0xFF, 0xCC, 0xAA);
+		
+		default: break;
+	}
+	ASSERT(0);
+	return Color(0,0,0);
+}
+
 
 
 
@@ -47,14 +75,37 @@ void Dialog::Clear() {
 
 
 
+Program::Program() {
+	ResetUI();
+}
+
+void Program::ResetPalette() {
+	ui_cursor_cols[0] = GetPicoPalette(7);
+	ui_cursor_cols[1] = GetPicoPalette(12);
+	ui_cursor_cols[2] = GetPicoPalette(13);
+	ui_cursor_cols[3] = GetPicoPalette(13);
+	ui_cursor_cols[4] = GetPicoPalette(12);
+	ui_cursor_cols[5] = GetPicoPalette(7);
+	
+}
 
 void Program::ResetUI() {
-	verb_maincol = Color(28, 170, 255);
-	verb_hovcol = Color(255, 255, 255);
-	verb_shadcol = Color(28, 42, 150);
-	verb_defcol = Color(226, 212, 0);
+	verb_maincol = 12;   // main color (lt blue)
+	verb_hovcol = 7;     // hover color (white)
+	verb_shadcol = 1;    // shadow (dk blue)
+	verb_defcol = 10;    // default action (yellow)
+	ui_cursorspr = 224;  // default cursor sprite
+	ui_uparrowspr = 208; // default up arrow sprite
+	ui_dnarrowspr = 240; // default up arrow sprite
 	
-	TODO
+	// default cols to use when animating cursor
+	ui_cursor_cols[0] = 7;
+	ui_cursor_cols[1] = 12;
+	ui_cursor_cols[2] = 13;
+	ui_cursor_cols[3] = 13;
+	ui_cursor_cols[4] = 12;
+	ui_cursor_cols[5] = 7;
+	
 }
 
 
@@ -71,19 +122,11 @@ SObj* Program::FindRoom(const String& name) {
 	TODO
 }
 
-EscValue& Program::Classes(SObj& s) {
-	TODO
+EscValue Program::Classes(SObj& s) {
+	return s.MapGet("classes");
 }
 
 String Program::State(SObj& s) {
-	TODO
-}
-
-String Program::VerbStr(Verb v) {
-	TODO
-}
-
-EscValue& Program::Get(SObj& o, String key) {
 	TODO
 }
 
@@ -146,7 +189,7 @@ void Program::UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2) {
 		SayLine(is_actor ? "i think it's alive" : "looks pretty ordinary");
 
 	else if (verb == V_OPEN || verb == V_CLOSE)
-		SayLine(String(is_actor ? "they don't" : "it doesn't")  + " seem to " + VerbStr(verb));
+		SayLine(String(is_actor ? "they don't" : "it doesn't")  + " seem to " + GetVerbString(verb));
 
 	else if (verb == V_PUSH || verb == V_PULL)
 		SayLine(is_actor ? "moving them would accomplish nothing" : "it won't budge!");
@@ -912,6 +955,12 @@ Program::Verb Program::GetVerb(SObj& obj) {
 	return verb;*/
 }
 
+String Program::GetVerbString(const Verb& v) {
+	if (v >= V_DEFAULT && v < V_COUNT)
+		return verbs[v];
+	return "<error>";
+}
+
 void Program::ClearCurrCmd() {
 	// reset all command values
 	verb_curr = V_DEFAULT;
@@ -1114,7 +1163,7 @@ void Program::InputButtonPressed(int button_index) {
 					// perform default verb action (if (present)
 					verb_curr, noun1_curr = GetVerb(hover_curr_default_verb), hover_curr_object;
 					// force repaint of command (to reflect default verb)
-					DrawCommand();
+					PaintCommand();
 				}
 				
 			// ui arrow clicked
@@ -1518,36 +1567,45 @@ int Program::GetLongestLineSize(const Vector<String>& lines) {
 	return longest_line;
 }
 
-bool Program::HasFlag(SObj& obj, String value) {
-	TODO
-	/*for (f : all(obj)) {
-		if (f == value) return true;
-	}*/
+bool Program::HasFlag(const SObj& obj, String key) {
+	if (obj.IsMap()) {
+		const auto& map = obj.GetMap();
+		return map.Find(key) >= 0;
+	}
+	else if (obj.IsArray()) {
+		const auto& arr = obj.GetArray();
+		for (const auto& v : arr)
+			if ((String)v == key)
+				return true;
+	}
 	return false;
 }
 
 
 void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y) {
-	TODO
-	/*
-	int x = obj.x;
-	int y = obj.y;
+	int x = obj.MapGet("x").GetInt();
+	int y = obj.MapGet("y").GetInt();
 	
 	// offset for (actors?
 	if (HasFlag(Classes(obj), "class_actor")) {
-		obj.offset_x = x - (obj.w * 8) / 2;
-		obj.offset_y = y - (obj.h * 8) + 1;
-		x = obj.offset_x;
-		y = obj.offset_y;
+		int w = obj.MapGet("w").GetInt();
+		int h = obj.MapGet("h").GetInt();
+		int offset_x = x - (w * 8) / 2;
+		int offset_y = y - (h * 8) + 1;
+		x = offset_x;
+		y = offset_y;
+		obj.MapSet("offset_x", offset_x);
+		obj.MapSet("offset_y", offset_y);
 	}
-	obj.bounds = {
-		x = x,
-		y = y + stage_top,
-		x1 = x + w - 1,
-		y1 = y + h + stage_top - 1,
-		cam_off_x = cam_off_x,
-		cam_off_y = cam_off_y
-	};*/
+	
+	EscValue bounds;
+	bounds.MapSet("x", x);
+	bounds.MapSet("y", y + stage_top);
+	bounds.MapSet("x1", x + w - 1);
+	bounds.MapSet("y1", y + h + stage_top - 1);
+	bounds.MapSet("cam_off_x", cam_off_x);
+	bounds.MapSet("cam_off_y", cam_off_y);
+	obj.MapSet("bounds", bounds);
 }
 
 
@@ -1824,20 +1882,20 @@ void Program::Run() {
 
 Point Program::GetXY(SObj& o) {
 	return Point(
-		Get(o, "x").GetInt(),
-		Get(o, "y").GetInt());
+		o.MapGet("x").GetInt(),
+		o.MapGet("y").GetInt());
 }
 
 Point Program::GetOffset(SObj& o) {
 	return Point(
-		Get(o, "offset_x").GetInt(),
-		Get(o, "offset_y").GetInt());
+		o.MapGet("offset_x").GetInt(),
+		o.MapGet("offset_y").GetInt());
 }
 
 Size Program::GetSize(SObj& o) {
 	return Size(
-		Get(o, "w").GetInt(),
-		Get(o, "h").GetInt());
+		o.MapGet("w").GetInt(),
+		o.MapGet("h").GetInt());
 }
 
 Program::UsePos Program::GetUsePos(SObj& o) {
@@ -1851,7 +1909,7 @@ Program::UsePos Program::GetUsePos(SObj& o) {
 }
 
 StateType Program::GetState(SObj& o) {
-	String s = Get(o, "state");
+	String s = o.MapGet("state");
 	if (s == "state_open")   return STATE_OPEN;
 	if (s == "state_closed") return STATE_CLOSED;
 	ASSERT(0);
@@ -1865,7 +1923,7 @@ void Program::SetState(SObj& o, StateType s) {
 }
 
 FaceDir Program::GetFaceDir(SObj& o) {
-	String s = Get(o, "state");
+	String s = o.MapGet("state");
 	if (s == "face_front")	return FACE_FRONT;
 	if (s == "face_left")	return FACE_LEFT;
 	if (s == "face_back")	return FACE_BACK;
@@ -1885,8 +1943,8 @@ String Program::GetFaceString(FaceDir d) {
 }
 
 
-/*
-__gfx__
+
+const char* builtin_gfx = R"MULTILINE(
 0000000000000000000000000000000044444444440000004444444477777777f9e9f9f9ddd5ddd5bbbbbbbb5500000010101010000000000000000000000000
 00000000000000000000000000000000444444404400000044444444777777779eee9f9fdd5ddd5dbbbbbbbb5555000001010101000000000000000000000000
 00800800000000000000000000000000aaaaaa00aaaa000005aaaaaa77777777feeef9f9d5ddd5ddbbbbbbbb5555550010101010000000000000000000000000
@@ -2015,7 +2073,9 @@ ffff4fff1dd6dd6dd6dd6dd6d6dd6d517000000766665555444ffffffffff4440000000000000000
 05700750bb1121bbbb1121bbbb1121bbc111222bbb2111bbb22211ccbb1211bbbb12cc7bb7cc11bb000000000000000000000000000000000000000000000000
 00577500bbccccbbbb77c77bb77c77bb7ccc222bbbccccbbb222cc77bbccccbbbbcc677bb776ccbb000000000000000000000000000000000000000000000000
 00055000b776677bbbbb677bb776bbbbb7776666bb6777bbb66677bbb776677bbb77bbbbbbbb77bb000000000000000000000000000000000000000000000000
-__label__
+)MULTILINE";
+
+const char* builtin_lbl = R"MULTILINE(
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
@@ -2144,11 +2204,14 @@ ccc0ccc01c10ccc0000000000a00a0a0aaa0a0a000000a00aa1000001cc0cc10ccc0000000000011
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+)MULTILINE";
 
-__gff__
+const char* builtin_gff = R"MULTILINE(
 0001010100010100000000010000000000010101010101000000000100000000000101010101010101000000000000000001010101010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
 0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
-__map__
+)MULTILINE";
+
+const char* builtin_map = R"MULTILINE(
 0707070808080808080808080807070707070717171717171717171717070707171717080808080808080808081717170707071717171717171717171707070717171708080808080808080808171717070707171717171717171717170707071717170808080808080808080817171707070717171717171717171717070707
 0707070800000808080808080807070707070717171717171717171717070707171717080808080808080808081717170707071717171717171717171707070717171708080808080808080808171717070707171717171717171717170707071717170808080808080808080817171707070717171717171717171717070707
 0707070800000808080808080807000707000717171717171717171717070007170017080808080808080808081700170700071717171717171717171707000717001708080808080808080808170017070007171717171717171717170700071700170808080808080808080817001707000717171717171717171717070007
@@ -2181,7 +2244,75 @@ __map__
 151515151515151515151818181818181818343434341818181818181818151507011131313131313131313131313131313131313121010707271131313131313131313131313131313131313121280717021232323232323232323232323232323232323222021715153c191919191919191919343434191919193d15151515
 1515151515151515151515151515151515143434343424151515151515151515113131313131312515151515151515353131313131313121113131313131312515151515151515353131313131313121123232323232323232323232323232323232323232323222153c3937373737378e373737373737373737373a3d151515
 15151515151515151515151515151515151515151515151515151515151515153131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313232323232323232323232323232323232323232323232323c393737373737373737373737373737373737373a3d1515
+)MULTILINE";
 
-*/
+void ProgramDraw::LoadBuiltinGfx() {
+	LoadBuiltinGfxStr(builtin_gfx, gfx);
+	LoadBuiltinGfxStr(builtin_lbl, lbl);
+	LoadBuiltinGfxStr(builtin_gff, gff);
+	LoadBuiltinGfxStr(builtin_map, map);
+	
+}
+
+void ProgramDraw::LoadBuiltinGfxStr(const char* s, Image& out) {
+	if (*s == '\n') s++;
+	
+	thread_local static Vector<RGBA> data;
+	data.SetCount(0);
+	data.Reserve(10000);
+	
+	int line = 0;
+	int max_col = 0;
+	int col = 0;
+	while (1) {
+		int chr = *s++;
+		
+		if (chr == '\n') {
+			line++;
+			ASSERT(max_col == 0 || col == max_col);
+			ASSERT(col > 0);
+			max_col = max(max_col, col);
+			col = -1;
+		}
+		else if (chr >= 'a' && chr <= 'f') {
+			int n = chr - 'a' + 10;
+			Color c = GetPaletteColor(n);
+			RGBA r = c;
+			data.Add(r);
+		}
+		else if (chr >= '0' && chr <= '9') {
+			int n = chr - '0';
+			RGBA r;
+			if (n > 0)
+				r = GetPaletteColor(n);
+			else {
+				r.r = 0;
+				r.g = 0;
+				r.b = 0;
+				r.a = 0;
+			}
+			data.Add(r);
+		}
+		else if (!chr)
+			break;
+		else Panic("Invalid data");
+		
+		col++;
+	}
+	
+	Size res(max_col, line);
+	ImageBuffer ib(res);
+	RGBA* it = ib.Begin();
+	RGBA* end = ib.End();
+	int a = end - it;
+	int b = data.GetCount();
+	ASSERT(a == b);
+	const RGBA* src = data.Begin();
+	while (it != end)
+		*it++ = *src++;
+	
+	out = ib;
+}
+
 
 }

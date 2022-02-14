@@ -4,6 +4,8 @@
 
 namespace Adventure {
 
+#define PALETTE_SIZE 16
+
 /*struct ScriptObject {
 	
 };
@@ -11,6 +13,10 @@ namespace Adventure {
 using SObj = ScriptObject;
 */
 
+typedef int PaletteColor;
+typedef int PaletteImage;
+
+Color GetPicoPalette(PaletteColor idx);
 
 struct Room {
 	
@@ -114,10 +120,15 @@ struct Program {
 		V_USE,
 		V_WALKTO,
 		
-		V_COUNT
+		V_COUNT,
+		
+		V_BEGIN = V_OPEN,
+		V_END = V_COUNT,
 	} Verb;
 	
-	const char* verbs[V_COUNT] {
+	const char* verbs[(int)V_COUNT] {
+		"<null>",
+		
 		"open",
 		"close",
 		"give",
@@ -160,16 +171,18 @@ struct Program {
 	Script* cutscene_curr = 0;
 	
 	
-	int verb_default_inventory_index = V_LOOKAT;
+	Verb verb_default_inventory_index = Verb::V_LOOKAT;
 	
-	Color verb_maincol;
-	Color verb_hovcol;
-	Color verb_shadcol;
-	Color verb_defcol;
+	PaletteColor verb_maincol;
+	PaletteColor verb_hovcol;
+	PaletteColor verb_shadcol;
+	PaletteColor verb_defcol;
+	PaletteColor ui_cursor_cols[6];
+	static const int ui_cursor_cols_len = 6;
 	
-	Image ui_cursorspr;
-	Image ui_uparrowspr;
-	Image ui_dnarrowspr;
+	PaletteImage ui_cursorspr;
+	PaletteImage ui_uparrowspr;
+	PaletteImage ui_dnarrowspr;
 	
 	bool cam_shake = false;
 	Point cam_pan_to_x;
@@ -191,6 +204,7 @@ struct Program {
 	Dialog dialog_curr;
 	
 	SObj* selected_actor = 0;
+	SObj* hover_curr_arrow = 0;
 	
 	int fade_iris = 0;
 	int cutscene_cooloff = 0;
@@ -199,12 +213,20 @@ struct Program {
 	TalkingState talking_curr;
 	SObj* talking_actor = 0;
 	
+	PaletteImage ui_arrows[2];
+	SObj arrow[2];
 	/*ui_arrows = {
 		{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
 		{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
 	};*/
 	
+	Verb hover_curr_default_verb;
+	Verb hover_curr_verb;
+	
 	Verb verb_curr;
+	SObj* noun1_curr = 0;
+	SObj* noun2_curr = 0;
+	SObj* hover_curr_object = 0;
 	bool executing_cmd = false;
 	bool is_mouse_clicked = false;
 	
@@ -212,6 +234,8 @@ struct Program {
 	int cam_shake_y = 0;
 	
 	
+	Program();
+	void ResetPalette();
 	void ResetUI();
 	void StartupScript();
 	void Shake(bool enabled);
@@ -254,6 +278,7 @@ struct Program {
 	void WaitForActor(SObj* actor);
 	double Proximity(SObj& obj1, SObj& obj2);
 	Verb GetVerb(SObj& obj);
+	String GetVerbString(const Verb& v);
 	void ClearCurrCmd();
 	void Update60();
 	void UpdateMouseClickState();
@@ -273,7 +298,7 @@ struct Program {
 	bool IsCellWalkable(int celx, int cely);
 	void CreateTextLines(String msg, int max_line_length, Vector<String>& lines);
 	int GetLongestLineSize(const Vector<String>& lines);
-	bool HasFlag(SObj& obj, String value);
+	bool HasFlag(const SObj& obj, String key);
 	void RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y);
 	void Animate(SObj& obj);
 	void ShowError(String msg);
@@ -287,10 +312,8 @@ struct Program {
 	void Run();
 	
 	SObj* FindRoom(const String& name);
-	EscValue& Classes(SObj& s);
+	EscValue Classes(SObj& s);
 	String State(SObj& s);
-	String VerbStr(Verb v);
-	EscValue& Get(SObj& o, String key);
 	SObj* GetInRoom(SObj& o);
 	Point GetXY(SObj& o);
 	Point GetOffset(SObj& o);
@@ -314,30 +337,51 @@ struct ZPlane : Moveable<ZPlane> {
 class ProgramDraw : public Ctrl {
 	Vector<ZPlane> draw_zplanes;
 	
+	Image gfx, lbl, gff, map;
+	
+	Font fnt;
+	PaletteColor dyn_palette[PALETTE_SIZE];
+	Color palette[PALETTE_SIZE];
 	Program* p = 0;
 	bool show_debuginfo = true;
 	
+	String cmd_curr;
+	
+	
+	Color GetPaletteColor(int i) const {
+		ASSERT(i >= 0 && i < PALETTE_SIZE);
+		i = dyn_palette[i];
+		ASSERT(i >= 0 && i < PALETTE_SIZE);
+		return palette[i];
+	}
+	
+	void LoadBuiltinGfx();
+	void LoadBuiltinGfxStr(const char* s, Image& out);
 	
 public:
 	
+	ProgramDraw();
+
 	void SetProgram(Program& p) {this->p = &p;}
 	
 	void Paint(Draw& d) override;
 	
-	void PaintLog(Draw& d, String s, int x, int y, int font_h);
+	void PaintLog(Draw& d, String s, int x, int y, PaletteColor clr);
 	
 	
-	void DrawRoom(Draw& d);
-	void DrawTalking(Draw& d);
+	void PaintRoom(Draw& d);
+	void PaintTalking(Draw& d);
 	void OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
-	void DrawObject(SObj& obj);
-	void DrawActor(SObj& actor);
-	void DrawCommand();
-	void DrawUI();
-	void DrawDialog();
-	void DrawCursor();
-	void DrawSprite(int n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale);
+	void PaintObject(SObj& obj);
+	void PaintActor(SObj& actor);
+	void PaintCommand(Draw& d);
+	void PaintUI(Draw& d);
+	void PaintDialog(Draw& d);
+	void PaintCursor(Draw& d);
+	void PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, bool flip_x, bool flip_y, int scale);
+	void PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale);
 	
+	void SetPalette(int idx, PaletteColor clr);
 	void ResetPalette();
 	void ReplaceColors(const SObj& o);
 	
