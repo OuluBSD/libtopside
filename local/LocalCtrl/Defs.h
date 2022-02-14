@@ -6,7 +6,9 @@
 	#error <LocalCtrl/LocalCtrl.h> should only be included, when GUI flag is set.
 #endif
 
-#if 0 && defined flagWIN32
+#include <Local/Before.h>
+
+#if UPP_OLD_VERSION //defined flagWIN32 && defined flagGCC
 	#define GLEW_STATIC 1
 	#include <ports/glew/glew.h>
 #else

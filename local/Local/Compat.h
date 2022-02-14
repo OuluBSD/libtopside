@@ -7,6 +7,12 @@ extern char **environ;
 #endif
 
 
+#ifdef UPP_OLD_VERSION
+	#ifdef flagGCC
+		#include <x86intrin.h> // for rdtsc
+	#endif
+#endif
+
 #ifdef UPP_VERSION
 
 #if __GNUC__
@@ -36,6 +42,10 @@ extern char **environ;
 
 
 NAMESPACE_UPP_BEGIN
+
+#if UPP_OLD_VERSION
+typedef unsigned hash_t;
+#endif
 
 inline bool IsOctDigit(char c) { return c >= '0' && c <= '7'; }
 inline bool IsHexDigit(char c) { return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F'); }

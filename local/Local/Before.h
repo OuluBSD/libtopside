@@ -30,6 +30,11 @@
 #endif
 
 
+// stable 32bit win u++ compatibility (<r13664)
+#if !defined UPP_VERSION && defined UPP_HEAP
+	#define UPP_VERSION 1
+	#define UPP_OLD_VERSION 1
+#endif
 
 #ifdef UPP_VERSION
 	#define flagSTDRTTI
