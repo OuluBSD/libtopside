@@ -1408,7 +1408,7 @@ Katri:      Täynnä epäkohtia
             kuuma tie,
             kuuma tie.
 
-Tyttö:      Viet juhlan, onnen huuman,
+Tytti:      Viet juhlan, onnen huuman,
             dumppaat sen kuin paskan vaan.
             Pois mut vaan tahdot kuskaa,
             kunhan mainees kiiltää saa.
@@ -1774,7 +1774,7 @@ Tytti:  Vieläkö sut nään
         vaikka aika
         sut vei.
         
-        Ei, en usko, et sää oot pois mennyt.
+        Ei, en usko, et sää oo pois mennyt.
         Viel sä nouset, heräät unestas.
         Hei, sun sormissas kai nään viel liikkeen.
         Et sää täysin kylmä vielä oo.
@@ -1831,54 +1831,114 @@ Tytti:	Teppo rakas, me nähdään vielä.
 	Samuli:		Mitä nää Teppo oot menny tekemään.
 	Mikael:		Onko Tytti ollut elossa ja puukottanut itseään?
 
-{
-	# musiikki breaking my survival
-	
-	
-	/*
-	Kuka poimis maasta sen saastan?
 
-	Ei arvaisi ei kuinka hetkessä kaikki voi kadota.
-	Kuinka kaikki kaunis lakastuu ja vuodet on kuin turhia.
-	
-	Kuinka ne sanoo, näin ei voi enää jatkua,
-	täytyisi kai paremmin kuunnella.
-	
-	Kuinka voisin tunnistaa saastan,
-	mielessä.
-	
-	
-	Tuuli ulvoo tyhmyyttäni,
-	muiden silmät välttää mun kohtaloani.
-	
-	Tästä vääryyden kivi jää.
-	
-	
-	Tästä jää vain vääryys, virheen kivi.
-	
-	Ne huokaa, eihän se totta oo...
-	
-	Viimeinen rauha, meidät masentaa.
-	Toteutunut ei rakkaus, ei kun muut sen pilaa.
-	
-	
-	Anteeksi ei anna, haamut.
-	
-	Anteeks se mitä tein ja sanoinkin.
-	Anteeks se jääräpäisyys.
-	
-	Väärin, niin kaikki oli vain.
-	Väärin mun rakkain mä tein.
-	
-	Väärin, ei mikää muutu ei.
-	Väärin, mä kaiken hävisin.
-	
-	
-	*/
+Musiikki: "2022/breaking my survival.tg"
 
-	VIRHE: pizz low cut liikaa
-}
+// Mikael, Maria, Katri, Samuli ei laula välttämättä samasta sijainnista
 
+Samuli:     Mitä sä nyt teitkään?
+            Miten sä nyt näin?
+            Miksi sä ny luulit et
+            auttaa en mä vois?
+            
+Mikael:     En mää sulle tällaistakaan tarkoittanut.
+            Ei et sä voi mennä, sä kaiken vielä saat,
+            sä mitä haluatkaan.
+            
+Vahti:      Lauseista kauheista
+            sut muistan nyt.
+            Niis menee pieleen se kaikki,
+            se mikä voikin vaan.
+            
+            Kuitenkaan en järkee löydä tästä,
+            et miks kaksi lemmekästä
+            on nähneet tän ainoona tienä pois,
+            se hiertää päätäin.
+            
+Katri:      Kuumaa tietä,
+            kuinkahan ne voikin sietää,
+            kuinka voi ne tappiot kiertää,
+            kyllä Tytti viisastuu vielä.
+            
+Maria:      Ja eihän ole se niin harmi.
+            Kyllä ne viel mua tarvii,
+            kun on niillä lapset viel,
+            kun on pöydäs ruokittavat suut
+            ja kun ei autakkaan muut.
+            
+Veijo:      Tyhmät häjyt vei ystävän, nyt
+            on myrkyttänyt vaimon ja vävyn.
+            Kuinka voisi hirviöt pahentuu?
+            Ne naurain poistuu.
+            
+Katri:      Tyhmä tyttö,
+            maksaa liikaa pelkkä yks yö,
+            se mikä pois vie ystävän kalliin,
+            ja minkä korvais renkikin tallin.
+            
+Maria:      Ja eihän ole se niin harmi.
+            Kyllä ne viel mua tarvii,
+            kun on niillä lapset viel,
+            kun on pöydäs ruokittavat suut
+            ja kun ei autakkaan muut.
+            Arjessa mies voi olla vähän
+            hermojenkiristäjä,
+            vaikka siitä huumaantuu
+            vaikka illal mielessä ei ois muu.
+            
+            Se arki voiton vie mun
+            tyttö, poissa ilon viet,
+            poissa viet mun toivon,
+            et jatkoo mulla on.
+            
+Mikael:     Mustaks sä maalasit
+            tän taivaan,
+            tulevaisuudenkin.
+            
+            Mun ois parempi olla
+            yksinään koska,
+            vaimo ei anteeksi anna kai.
+            Viimeinen yhteys
+            menee näin poikki.
+            
+Veijo:      Nyt oon yksin vain ja
+            kaikki mut täällä muistaa
+            "tuo oli oudon murhaajan kaa"
+            Kukaan ei tunne kuinka autoin
+            kauniin liiton.
+            
+Katri:      Ei me ehditty muille kertoo
+            kuinka kaunis pari se on,
+            eikä kuuluttaa kuinka
+            on kaikki ylpeit,
+            kuinka meikäläiset ymmärtää
+            rakkautta.
+            
+Maria:      Ja eihän ole se niin harmi.
+            Kyllä ne viel mua tarvii,
+            kun on niillä lapset viel,
+            kun on pöydäs ruokittavat suut
+            ja kun ei autakkaan muut.
+            Arjessa mies voi olla vähän
+            hermojenkiristäjä,
+            vaikka siitä huumaantuu
+            vaikka illal mielessä ei ois muu.
+            Se arki voiton vie mut
+            
+Mikael:     ei tässä ollut nyt yhtään mitään järkee,
+            mut se niin silti menikin.
+            Oikeus ei aina löydy ajoissa
+            ja rakkaus on muille liikaa.
+            
+Veijo:      Liikaa hermot menikin,
+            liikaa turhaan hävisin,
+            liian toiveikas mä oon.
+            
+Katri:      Piisaa pettymykseni,
+            niin vaan riittää tämäkin, mut
+            liikaa, toivoo onko
+            liikaa, et tuut sä takaisin.
+            
 
 // Nähtyään lastensa ruumiit Mikael ja Samuli sopivat lopettavansa pitkäaikaisen kiistansa ja pystyttävänsä hautakivet lapsillensa vierekkäin Oulun hautausmaalle Intiössä.
 
