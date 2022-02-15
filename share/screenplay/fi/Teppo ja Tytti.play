@@ -1554,7 +1554,7 @@ Teppo:
     enkä tiedä voinko vielä luotas
     löytää vanhan rakkauden.
     Ikävöin päivät ja ikävöin yöt,
-    kuulen kun kaipuuta rinta lyö.
+    kuulen kun rinnassa kaipuu lyö.
     Sekaisin pää ja sydänkin tää mun on
 	kun et oo luonain.
 	
@@ -1583,7 +1583,7 @@ Teppo:
     enkä tiedä voinko vielä luotas
     löytää vanhan rakkauden.
     Ikävöin päivät ja ikävöin yöt,
-    kuulen kun kaipuuta rinta lyö.
+    kuulen kun rinnassa kaipuu lyö.
     Sekaisin pää ja sydänkin tää mun on
 	kun et oo luonain.
 	Kun et oo luonain,
@@ -1618,9 +1618,9 @@ Teppo:
     vielä vaan ja uudestaan
     sun nauruu muistelen,
     enkä tiedä voinko vielä luotas
-    löytäävanhan rakkauden.
+    löytää vanhan rakkauden.
     Ikävöin päivät ja ikävöin yöt,
-    kuulen kun kaipuu se rinnas lyö.
+    kuulen kun rinnassa kaipuu lyö.
     Sekaisin pää ja sydänkin tää mun on
 	kun et oo luonain.
 	Kun et oo luonain,
@@ -1706,37 +1706,100 @@ Tytti:			Miksi mää lähtisin kun Teppo on jo täällä.
 
 	** Kun Tytti kieltäytyy lähtemästä hänen kanssaan, pastori pakenee yksin **
 	
+
+Musiikki: "2021/will you believe in rock.tg"
+
+Tytti:  Vieläkö sut nään
+        aivan läheltä?
+        Vieläkö sua saan
+        kauan halata?
+        Kaikkein rakkaimpaa
+        olet mulle aina,
+        vaikka aika
+        sut vei.
+        
+        Liitävät linnut taivaal,
+        pilvistä etsin kuvaas.
+        Riittää mun usko vielä,
+        siellä ootat sä meitä.
+        
+        Et jättänyt sä paljoa,
+        mut ei se ollut tarkoituskaan.
+        Ei sun jälki ollut puhdasta,
+        mut niin se aina tääl menee.
+        
+        Niin erilaiset
+        viiden tähden aikeet,
+        Niin antavainen,
+        ainoo ainokaisen naisen.
+        Niin ilon aihe,
+        onnen tuot sä kaikkeen.
+        Niin koet kaiken,
+        kuljet tiet ja lennät taivaatkin.
+        
+        Vieläkö sut nään
+        aivan läheltä?
+        Vieläkö sua saan
+        kauan halata?
+        Kaikkein rakkaimpaa
+        olet mulle aina,
+        vaikka aika
+        sut vei.
+        
+        Merta päin laivat kulkee,
+        laineista ne viel tunnen.
+        Vielä on matka mulla,
+        rannal vastaan voit tulla.
+        
+        Et kertonut sä huolistas,
+        mut en mä kai ois niist tajunnutkaan.
+        Et antanut sä auttaakkaan,
+        mut haitaksi oisin kai vain ollut.
+        
+        Erilainen
+        piilevästi vaikee.
+        Niin antavainen,
+        aina halus antaa kaiken.
+        Niin ilon aihe,
+        kaunis mieli kaikes.
+        Niin koet kaiken,
+        lämmön, valon, pimeen, kylmyyden.
+        
+        Vieläkö sut nään
+        aivan läheltä?
+        Vieläkö sua saan
+        kauan halata?
+        Kaikkein rakkaimpaa
+        olet mulle aina,
+        vaikka aika
+        sut vei.
+        
+        Ei, en usko, et sää oot pois mennyt.
+        Viel sä nouset, heräät unestas.
+        Hei, sun sormissas kai nään viel liikkeen.
+        Et sää täysin kylmä vielä oo.
+        
+        Miks mulle käy, miten mulle käy näin?
+        Kaikki te ain pilaatte vain kaiken.
+        Saastaset maan likaa joka paikan.
+        Miks säkin noin, miks sä teit just noin?
+        
+        Et sä viel täysin poissa oo, voin aistii sen, 
+        levoton on henkes sun, mua koskien.
+        Vielä tuut sä takaisin leijuen,
+        viel otat syliis uudelleen, mut uudelleen.
+        
+        Mä en ehkä jaksakkaan, ens aamua,
+        ja kun henkes kuitenkaan ei tänne tuu.
+        Ei muut, usko kuitenkaan, kuin kaunista
+        sun kanssa on kahdestaan
+        aivan missä vaan.
+        
+        
 	** Tytti suutelee Tepon myrkytettyjä huulia, ja kun se ei tapa häntä, hän työntää Tepon tikarin rintaansa ja
 	   lyhistyy kuolleena Tepon ruumiin päälle.**
 
-Tytti:			Teppo rakas, me nähdään vielä.
-
-
-{
-	# musiikki will you believe in rock
-	
-	/*
-	Uskotko rakkauteen?
-	Uskotko yhteiseen kohtaloon?
-	Uskotko elämään?
-
-	
-	Kuinka kaikki tää,
-	on merkitystä tähtien.
-	
-	Punoo juonta satujen,
-	voima meitä ohjailee.
-	
-	Merkitystä ei voi vähetellä,
-	vaik onni vain hetken kestää.
-	
-	Myrkyn sen juon vaik sun huulilt.
-	
-	Sun rakkaus mun rintaa vihloo vain.
-	Sun valan sanat ei mun siulua jätä rauhaan.
-	
-	*/
-}
+Tytti:	Teppo rakas, me nähdään vielä.
 
 
 	** Vahti saapuu mukanaan maaherra, jota seuraa tiiviisti Mikael Kuhlman ja Samuli Palmfelt **
