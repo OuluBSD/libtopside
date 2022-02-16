@@ -1,7 +1,5 @@
 description "Essential classes for GUI classes in Topside namespace.\377B0,0,255";
 
-noblitz;
-
 uses
 	Local,
 	CtrlLib;

@@ -50,6 +50,14 @@ SObj* ReadKey(SObj& o, String key) {
 	TODO
 }
 
+void SrcMapSet(EscValue map, EscValue key, EscValue value) {
+	ASSERT(map.IsMap());
+	if (map.IsMap()) {
+		VectorMap<EscValue, EscValue>& m = const_cast<VectorMap<EscValue, EscValue>&>(map.GetMap());
+		m.GetAdd(key) = value;
+	}
+}
+
 
 
 
@@ -112,17 +120,45 @@ void Program::ResetUI() {
 void Program::StartupScript() {
 	ResetUI();
 	
-	SObj* r = FindRoom("rm_hall");
+	const SObj* r = FindRoom("rm_hall");
 	ASSERT(r);
 	if (r)
 		ChangeRoom(*r,  1);
 }
 
-SObj* Program::FindRoom(const String& name) {
-	TODO
+const SObj* Program::FindRoom(const String& name) const {
+	const auto& arr = rooms.GetArray();
+	for (const auto& val : arr) {
+		String room_str = val;
+		LOG(room_str);
+		if (room_str == name)
+			return FindDeep(name);
+	}
+	return 0;
+}
+
+const SObj* Program::FindDeep(const String& name) const {
+	return FindDeep(name, &game);
+}
+
+const SObj* Program::FindDeep(const String& name, const SObj* o) const {
+	if (!o || !o->IsMap())
+		return 0;
+	const auto& m = o->GetMap();
+	int i = m.Find(name);
+	if (i >= 0)
+		return &m[i];
+	const auto& v = m.GetValues();
+	for (const auto& val : v) {
+		const SObj* r = FindDeep(name, &val);
+		if (r)
+			return r;
+	}
+	return 0;
 }
 
 EscValue Program::Classes(SObj& s) {
+	ASSERT(s.IsMap());
 	return s.MapGet("classes");
 }
 
@@ -130,8 +166,24 @@ String Program::State(SObj& s) {
 	TODO
 }
 
-SObj* Program::GetInRoom(SObj& o) {
-	TODO
+SObj Program::GetInRoom(SObj& o) {
+	//LOG(o.ToString());
+	if (o.IsMap()) {
+		SObj in_room = o.MapGet("in_room");
+		if (in_room.IsMap())
+			return in_room;
+		
+		//LOG(in_room.ToString());
+		String name = in_room;
+		const SObj* ptr = FindDeep(name);
+		if (ptr) {
+			ASSERT(ptr->IsMap());
+			return *ptr;
+		}
+		ASSERT(0);
+	}
+	ASSERT(0);
+	return SObj();
 }
 
 
@@ -212,28 +264,35 @@ void Program::CameraAt(const Point& val) {
 	cam_following_actor = 0;
 }
 
-void Program::CameraFollow(SObj& actor) {
+void Program::EscCameraFollow(EscEscape& e) {
+	CameraFollow(e[0]);
+}
+
+void Program::CameraFollow(SObj actor) {
+	GetReference(actor);
+	
 	StopScript(cam_script); // bg script
 	
 	// set target, clear other cam values
-	cam_following_actor = &actor;
+	cam_following_actor = actor;
 	cam_pan_to_x = GetXY(actor);
 	
 	StartScript(THISBACK(CamScript0), true); // bg script
 	
 	// auto-switch to room actor resides in
-	SObj* r = GetInRoom(*cam_following_actor);
+	SObj r = GetInRoom(cam_following_actor);
+	ASSERT(!r.IsVoid());
 	if (r != room_curr)
-		ChangeRoom(*r, 1);
+		ChangeRoom(r, 1);
 }
 
 void Program::CamScript0() {
 	// keep the camera following actor
 	// (until further notice)
-	while (cam_following_actor) {
+	while (cam_following_actor.IsMap()) {
 		// keep camera within "room" bounds
-		if (GetInRoom(*cam_following_actor) == room_curr)
-			cam_x = CenterCamera(*cam_following_actor);
+		if (GetInRoom(cam_following_actor) == room_curr)
+			cam_x = CenterCamera(cam_following_actor);
 		TODO // yield();
 	}
 }
@@ -500,14 +559,14 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 	}
 	
 	// go to new room!
-	SObj* new_room = GetInRoom(to_door);
+	SObj new_room = GetInRoom(to_door);
 	
 	if (new_room != room_curr) {
-		ChangeRoom(*new_room, fade_effect); // switch to new room and ...
+		ChangeRoom(new_room, fade_effect); // switch to new room and ...
 	    
 		// ...auto-position actor at to_door in new room...
 		Point pos = GetUsePoint(to_door);
-		PutAt(*selected_actor, pos.x, pos.y, new_room);
+		PutAt(selected_actor, pos.x, pos.y, new_room);
 	}
 	
 	FaceDir to_dir = GetFaceDir(to_door);
@@ -526,10 +585,10 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 		opp_dir = FACE_FRONT;
 	}
 	
-	selected_actor->MapSet("face_dir", GetFaceString(opp_dir));
+	SrcMapSet(selected_actor, "face_dir", GetFaceString(opp_dir));
 	
 	// is target dir left? flip?
-	selected_actor->MapSet("flip", GetFaceDir(*selected_actor) == FACE_LEFT);
+	SrcMapSet(selected_actor, "flip", GetFaceDir(selected_actor) == FACE_LEFT);
 	
 }
 
@@ -559,31 +618,33 @@ void Program::Fades(int fade, int dir) {
 	}
 }
 
-void Program::ChangeRoom(SObj& new_room, bool fade) {
+void Program::ChangeRoom(SObj new_room, bool fade) {
 	// check param
-	/*if (!new_room) {
+	if (new_room.IsVoid()) {
 		ShowError("room does not exist");
 		return;
-	}*/
+	}
 
 	// stop any existing fade (shouldn't be any, but just in case!)
-	TODO
-	/*if (fade_script) {
+	if (fade_script) {
 		StopScript(*fade_script);
 		fade_script = 0;
 	}
 
 	// fade) {wn existing room (or skip if (first room)
-	if (fade && room_curr) {
+	if (fade && !room_curr.IsVoid()) {
 		Fades(fade, 1);
 	}
 	// switch to new room
 	// execute the exit() script of old room
-	if (room_curr && room_curr.exit)
-		room_curr.exit(room_curr); // run script directly, so wait to finish
+	if (room_curr.IsMap()) {
+		EscValue exit = room_curr.MapGet("exit");
+		if (exit.IsLambda())
+			RunLambda1(&room_curr, exit, room_curr); // run script directly, so wait to finish
+	}
 
 	// stop all active (local) scripts
-	local_scripts = {};
+	local_scripts.Clear();
 
 	// clear current command
 	ClearCurrCmd();
@@ -592,7 +653,8 @@ void Program::ChangeRoom(SObj& new_room, bool fade) {
 	room_curr = new_room;
 
 	// reset camera pos in new room (unless camera following)
-	if (!cam_following_actor || GetInRoom(cam_following_actor) != room_curr) cam_x = 0;
+	if (cam_following_actor.IsVoid() || GetInRoom(cam_following_actor) != room_curr)
+		cam_x = Point(0,0);
 
 	// stop everyone talking & remove displayed text
 	StopTalking();
@@ -602,10 +664,7 @@ void Program::ChangeRoom(SObj& new_room, bool fade) {
 	//  reposition camera before fade-up, if (needed)
 	if (fade) {
 		// setup new fade up
-		fade_script = function() {
-				Fades(fade, -1);
-		}
-		StartScript(*fade_script, true);
+		StartScript(THISBACK2(Fades, fade, -1), true);
 	}
 	else {
 		// no fade - reset any existing fade
@@ -613,10 +672,11 @@ void Program::ChangeRoom(SObj& new_room, bool fade) {
 	}
 
 	// execute the enter() script of new room
-	if (room_curr.enter) {
+	EscValue enter = room_curr.MapGet("enter");
+	if (enter.IsLambda()) {
 		// run script directly
-		room_curr.enter(room_curr);
-	}*/
+		RunLambda1(&room_curr, enter, room_curr);
+	}
 }
 
 void Program::ValidVerb(Verb verb, SObj& object) {
@@ -637,9 +697,9 @@ void Program::ValidVerb(Verb verb, SObj& object) {
 	*/
 }
 
-void Program::PickupObj(SObj& obj, SObj* actor) {
+void Program::PickupObj(SObj& obj, SObj& actor) {
 	// use actor spectified, || default to selected
-	if (!actor)
+	if (actor.IsVoid())
 		actor = selected_actor;
 	
 	TODO
@@ -652,12 +712,12 @@ void Program::PickupObj(SObj& obj, SObj* actor) {
 
 
 void Program::StartScript(Callback func, bool bg, String noun1, String noun2) {
-	// create new thread for (script and add to list of local_scripts (or background scripts)
-	TODO
-	/*local thread = cocreate(func);
-	
 	// background || local?
-	add(bg ? global_scripts : local_scripts, {func, thread, noun1, noun2} );*/
+	if (bg)
+		global_scripts.Add().Set(func, noun1, noun2).Start();
+	
+	else
+		local_scripts.Add().Set(func, noun1, noun2).Start();
 }
 
 
@@ -684,13 +744,14 @@ bool Program::ScriptRunning(Script& func)  {
 }
 
 void Program::StopScript(Script& func) {
-	// find script and stop it running
-	TODO
-	/*scr_obj = ScriptRunning(func) {
-		// just delete from all scripts (don't bother checking!)
-		del(local_scripts, scr_obj);
-		del(global_scripts, scr_obj);
-	}*/
+	for(int i = 0; i < local_scripts.GetCount(); i++)
+		if (&local_scripts[i] == &func)
+			{local_scripts.Remove(i); break;}
+			
+	for(int i = 0; i < global_scripts.GetCount(); i++)
+		if (&global_scripts[i] == &func)
+			{global_scripts.Remove(i); break;}
+	
 }
 
 void Program::BreakTime(int jiffies) {
@@ -818,24 +879,73 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 	*/
 }
 
-void Program::PutAt(SObj& obj, int x, int y, SObj* room) {
-	TODO
-	/*if (room) {
-		if (!HasFlag(Classes(obj), "class_actor")) {
-			if (obj.in_room) del(obj.in_room.objects, obj);
-			add(room.objects, obj);
-			obj.owner = NULL;
-		}
-		obj.in_room = room;
+void Program::EscPutAt(EscEscape& e) {
+	if (e.arg.GetCount() == 4) {
+		PutAt(
+			e[0],
+			e[1].GetInt(),
+			e[2].GetInt(),
+			e[3]);
 	}
-	obj.x, obj.y = x, y;*/
+	else {
+		ASSERT_(0, "invalid put_at args");
+	}
+}
+
+void Program::GetReference(SObj& obj, bool everywhere) {
+	if (!obj.IsMap()) {
+		String name = obj;
+		//LOG(name);
+		const SObj* f = FindDeep(name, &library);
+		if (f) {
+			obj = *f;
+			return;
+		}
+		if (everywhere) {
+			f = FindDeep(name, &game);
+			if (f) {
+				obj = *f;
+				return;
+			}
+		}
+		ASSERT(0);
+	}
+}
+
+void Program::PutAt(SObj obj, int x, int y, SObj room) {
+	GetReference(obj);
+	GetReference(room, true);
+	//LOG(obj.ToString());
+	//LOG(room.ToString());
+	if (room.IsMap()) {
+		if (!HasFlag(Classes(obj), "class_actor")) {
+			SObj in_room = obj.MapGet("in_room");
+			if (in_room.IsArray())
+				GetReference(in_room, true);
+			if (in_room.IsMap()) {
+				SObj objects = in_room.MapGet("objects");
+				Vector<EscValue>& arr = (Vector<EscValue>&)objects.GetArray();
+				VectorRemoveKey(arr, obj);
+			}
+			SrcMapSet(obj, "owner", EscValue());
+			SObj objects = room.MapGet("objects");
+			ASSERT(objects.IsArray());
+			objects.ArrayAdd(obj);
+		}
+	}
+	SrcMapSet(obj, "in_room", room);
+	
+	//LOG(obj.ToString());
+	ASSERT(obj.IsMap());
+	SrcMapSet(obj, "x", x);
+	SrcMapSet(obj, "y", y);
 }
 
 
 void Program::StopActor(SObj& actor) {
 // 0=stopped, 1=walking, 2=arrived
-	actor.MapSet("moving", 0);
-	actor.MapSet("curr_anim", 0);
+	SrcMapSet(actor, "moving", 0);
+	SrcMapSet(actor, "curr_anim", 0);
 	
 // no need to) {DoAnim(idle) here, as actor_draw code handles this
 	ClearCurrCmd();
@@ -844,7 +954,7 @@ void Program::StopActor(SObj& actor) {
 // walk actor to position
 void Program::WalkTo(SObj& actor, int x, int y) {
 	Point actor_cell_pos = GetCellPos(actor);
-	EscValue map = room_curr->MapGet("map");
+	EscValue map = room_curr.MapGet("map");
 	int celx = x / 8 + map.ArrayGet(0).GetInt();
 	int cely = y / 8 + map.ArrayGet(1).GetInt();
 	Point target_cell_pos(celx, cely);
@@ -913,13 +1023,13 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 	*/
 }
 
-void Program::WaitForActor(SObj* actor) {
-	if (!actor)
+void Program::WaitForActor(SObj& actor) {
+	if (actor.IsVoid())
 		actor = selected_actor;
-	ASSERT(actor);
+	ASSERT(actor.IsMap());
 	
 	// wait for (actor to stop moving/turning
-	while (actor->MapGet("moving").GetInt() != 2) {
+	while (actor.MapGet("moving").GetInt() != 2) {
 		TODO // yield();
 	}
 }
@@ -965,11 +1075,10 @@ void Program::ClearCurrCmd() {
 	// reset all command values
 	verb_curr = V_DEFAULT;
 	executing_cmd = 0;
-	TODO
-	/*cmd_curr = 0;
+	cmd_curr.Clear();
 	noun1_curr = 0;
 	noun2_curr = 0;
-	me.Clear();*/
+	//me.Clear();
 }
 
 
@@ -1408,12 +1517,53 @@ void Program::SetTransCol(int transcol) { //, enabled)
 	*/
 }
 
+bool Program::ParseGame(String content, String path) {
+	//Escape(global, "Print(x)", SIC_Print);
+	//Escape(global, "Input()", SIC_Input);
+	//Escape(global, "InputNumber()", SIC_InputNumber);
+	Escape(global, "put_at(obj, x, y, room)", THISBACK(EscPutAt));
+	Escape(global, "camera_follow(actor)", THISBACK(EscCameraFollow));
+	StdLib(global);
+	
+	try {
+		Scan(global, content, path);
+		game = Execute(global, "main", INT_MAX);
+	}
+	catch(CParser::Error e) {
+		LOG("Program::ParseGame: error: " << e << "\n");
+		return false;
+	}
+	
+	library = game.MapGet("library");
+	if (!library.IsMap()) {LOG("Program::ParseGame: error: could not find library"); return false;}
+	
+	rooms = library.MapGet("rooms");
+	if (!rooms.IsArray() || rooms.GetArray().IsEmpty()) {LOG("Program::ParseGame: error: could not find rooms"); return false;}
+	
+	
+	//LOG(game.ToString());
+	return true;
+}
+
+EscValue Program::RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0) {
+	ASSERT(l.IsLambda());
+	
+	try {
+		Vector<EscValue> args;
+		args.Add(arg0);
+		return Execute(global, self, l, args, 10000);
+	}
+	catch(CParser::Error e) {
+		LOG("Program::RunLambda1: error: " << e << "\n");
+		ASSERT(0);
+	}
+	
+	return EscValue();
+}
 
 // initialise all the rooms (e.g. add in parent links)
 void Program::InitGame() {
-	TODO
-	/*
-	for (room in all(rooms)) {
+	/*for (room in all(rooms)) {
 		ExplodeData(room);
 		
 		room.map_w = #room.map > 2 ? room.map[3] - room.map[1] + 1 : 16;
@@ -1433,17 +1583,16 @@ void Program::InitGame() {
 	// init actors with defaults
 	for (ka, actor in pairs(actors)) {
 		ExplodeData(actor);
-		actor.moving = 2 ;		// 0=stopped, 1=walking, 2=arrived
-		actor.tmr = 1; 		  // internal timer for (managing animation
+		actor.moving = 2 ;	// 0=stopped, 1=walking, 2=arrived
+		actor.tmr = 1;      // internal timer for (managing animation
 		actor.talk_tmr = 1;
-		actor.anim_pos = 1; 	// used to track anim pos
+		actor.anim_pos = 1; // used to track anim pos
 		actor.inventory = {
 			// obj_switch_player,
 			// obj_switch_tent
 		};
-		actor.inv_pos = 0; 	// pointer to the row to start displaying from
-	}
-	*/
+		actor.inv_pos = 0;  // pointer to the row to start displaying from
+	}*/
 }
 
 
@@ -1568,11 +1717,13 @@ int Program::GetLongestLineSize(const Vector<String>& lines) {
 }
 
 bool Program::HasFlag(const SObj& obj, String key) {
-	if (obj.IsMap()) {
+	ASSERT(obj.IsVoid() || obj.IsArray());
+	/*if (obj.IsMap()) {
 		const auto& map = obj.GetMap();
 		return map.Find(key) >= 0;
 	}
-	else if (obj.IsArray()) {
+	else */
+	if (obj.IsArray()) {
 		const auto& arr = obj.GetArray();
 		for (const auto& v : arr)
 			if ((String)v == key)
@@ -1594,18 +1745,19 @@ void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_
 		int offset_y = y - (h * 8) + 1;
 		x = offset_x;
 		y = offset_y;
-		obj.MapSet("offset_x", offset_x);
-		obj.MapSet("offset_y", offset_y);
+		SrcMapSet(obj, "offset_x", offset_x);
+		SrcMapSet(obj, "offset_y", offset_y);
 	}
 	
 	EscValue bounds;
-	bounds.MapSet("x", x);
-	bounds.MapSet("y", y + stage_top);
-	bounds.MapSet("x1", x + w - 1);
-	bounds.MapSet("y1", y + h + stage_top - 1);
-	bounds.MapSet("cam_off_x", cam_off_x);
-	bounds.MapSet("cam_off_y", cam_off_y);
-	obj.MapSet("bounds", bounds);
+	bounds.SetEmptyMap();
+	SrcMapSet(bounds, "x", x);
+	SrcMapSet(bounds, "y", y + stage_top);
+	SrcMapSet(bounds, "x1", x + w - 1);
+	SrcMapSet(bounds, "y1", y + h + stage_top - 1);
+	SrcMapSet(bounds, "cam_off_x", cam_off_x);
+	SrcMapSet(bounds, "cam_off_y", cam_off_y);
+	SrcMapSet(obj, "bounds", bounds);
 }
 
 
@@ -1848,7 +2000,7 @@ String Program::SmallCaps(const String& s) {
 }
 
 
-void Program::Run() {
+bool Program::Init() {
 	
 	ResetUI();
 	
@@ -1867,17 +2019,22 @@ void Program::Run() {
 	fade_iris = 0;
 	cutscene_cooloff = 0;
 	
-	// game loop
-	TODO //_init();
-	
-	// use mouse input
-	TODO //poke(0x5f2d, 1);
+	String path = GetDataFile("Demo.esc");
+	String content = LoadFile(path);
+	if (content.IsEmpty()) {
+		LOG("error: empty script");
+		return false;
+	}
+	if (!ParseGame(content, path))
+		return false;
 	
 	// init all the rooms/objects/actors
 	InitGame();
 	
 	// run any startup script(s)
-	TODO //StartScript(StartupScript, true);
+	StartScript(THISBACK(StartupScript), true);
+	
+	return true;
 }
 
 Point Program::GetXY(SObj& o) {
@@ -1917,8 +2074,8 @@ StateType Program::GetState(SObj& o) {
 }
 
 void Program::SetState(SObj& o, StateType s) {
-	if      (s == STATE_OPEN)	o.MapSet("state", "state_open");
-	else if (s == STATE_CLOSED)	o.MapSet("state", "state_closed");
+	if      (s == STATE_OPEN)	SrcMapSet(o, "state", "state_open");
+	else if (s == STATE_CLOSED)	SrcMapSet(o, "state", "state_closed");
 	else ASSERT(0);
 }
 

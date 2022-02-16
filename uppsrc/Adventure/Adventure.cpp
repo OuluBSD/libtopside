@@ -3,8 +3,8 @@
 GUI_APP_MAIN {
 	using namespace Adventure;
 	
-	ProgramApp().Run();
-	
-	
+	ProgramApp a;
+	if (a.Init())
+		a.Run();
 	
 }

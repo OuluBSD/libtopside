@@ -30,6 +30,7 @@ Color ReadColor(const SObj& o, String key, Color def);
 bool TryReadColor(const SObj& o, Color& c);
 bool ReadFlag(const SObj& o, String key);
 SObj* ReadKey(SObj& o, String key);
+void SrcMapSet(EscValue map, EscValue key, EscValue value);
 
 typedef enum {
 	
@@ -76,9 +77,11 @@ struct Script {
 	Callback override_;
 	SObj* paused_cam_following = 0;
 	dword flags = 0;
+	String n1, n2;
 	
 	void Clear() {TODO}
-	
+	Script& Set(Callback cb, String noun1, String noun2) {override_ = cb; n1 = noun1; n2 = noun2; return *this;}
+	Script& Start() {if (override_) PostCallback(override_); else Panic("TODO"); return *this;}
 };
 
 struct TalkingState {
@@ -186,7 +189,7 @@ struct Program {
 	
 	bool cam_shake = false;
 	Point cam_pan_to_x;
-	SObj* cam_following_actor = 0;
+	SObj cam_following_actor;
 	Thread thrd;
 	
 	int stage_top = 16;
@@ -199,12 +202,13 @@ struct Program {
 	
 	Script cam_script;
 	
-	SObj* room_curr = 0;
+	String cmd_curr;
+	SObj room_curr;
 	Sentence* selected_sentence = 0;
 	Dialog dialog_curr;
 	
-	SObj* selected_actor = 0;
-	SObj* hover_curr_arrow = 0;
+	SObj selected_actor;
+	SObj hover_curr_arrow;
 	
 	int fade_iris = 0;
 	int cutscene_cooloff = 0;
@@ -234,7 +238,21 @@ struct Program {
 	int cam_shake_y = 0;
 	
 	
+	// Script
+	ArrayMap<String, EscValue> global;
+	EscValue game;
+	EscValue library;
+	EscValue rooms;
+	Script* scr_obj = 0;
+	
+	
+public:
+	
 	Program();
+	
+	bool ParseGame(String content, String path);
+	EscValue RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0);
+	void GetReference(SObj& o, bool everywhere=false);
 	void ResetPalette();
 	void ResetUI();
 	void StartupScript();
@@ -242,7 +260,8 @@ struct Program {
 	Verb FindDefaultVerb(SObj& obj);
 	void UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2);
 	void CameraAt(const Point& val);
-	void CameraFollow(SObj& actor);
+	void EscCameraFollow(EscEscape& e);
+	void CameraFollow(SObj actor);
 	void CamScript0();
 	void CamScript1();
 	void CameraPanTo(SObj& val);
@@ -261,9 +280,9 @@ struct Program {
 	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
 	void ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect);
 	void Fades(int fade, int dir);
-	void ChangeRoom(SObj& new_room, bool fade);
+	void ChangeRoom(SObj new_room, bool fade);
 	void ValidVerb(Verb verb, SObj& object);
-	void PickupObj(SObj& obj, SObj* actor);
+	void PickupObj(SObj& obj, SObj& actor);
 	void StartScript(Callback func, bool bg, String noun1="", String noun2="");
 	void StopScript(Script& func);
 	void BreakTime(int jiffies=0);
@@ -272,10 +291,11 @@ struct Program {
 	void SayLine(String msg);
 	void StopTalking();
 	void PrintLine(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
-	void PutAt(SObj& obj, int x, int y, SObj* room);
+	void PutAt(SObj obj, int x, int y, SObj room);
+	void EscPutAt(EscEscape& e);
 	void StopActor(SObj& actor);
 	void WalkTo(SObj& actor, int x, int y);
-	void WaitForActor(SObj* actor);
+	void WaitForActor(SObj& actor);
 	double Proximity(SObj& obj1, SObj& obj2);
 	Verb GetVerb(SObj& obj);
 	String GetVerbString(const Verb& v);
@@ -309,12 +329,14 @@ struct Program {
 	String Autotype(const String& str_value);
 	
 	
-	void Run();
+	bool Init();
 	
-	SObj* FindRoom(const String& name);
+	const SObj* FindRoom(const String& name) const;
+	const SObj* FindDeep(const String& name) const;
+	const SObj* FindDeep(const String& name, const SObj* o) const;
 	EscValue Classes(SObj& s);
 	String State(SObj& s);
-	SObj* GetInRoom(SObj& o);
+	SObj GetInRoom(SObj& o);
 	Point GetXY(SObj& o);
 	Point GetOffset(SObj& o);
 	Size GetSize(SObj& o);
@@ -345,7 +367,6 @@ class ProgramDraw : public Ctrl {
 	Program* p = 0;
 	bool show_debuginfo = true;
 	
-	String cmd_curr;
 	
 	
 	Color GetPaletteColor(int i) const {
@@ -400,6 +421,7 @@ public:
 	
 	void ProcessScript();
 	
+	bool Init() {return prog.Init();}
 	
 };
 

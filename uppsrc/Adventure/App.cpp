@@ -158,12 +158,12 @@ void ProgramDraw::PaintRoom(Draw& d) {
 	const auto& stage_top = p->stage_top;
 	
 	// check for (current room
-	if (!p->room_curr) {
+	if (p->room_curr.IsVoid()) {
 		PaintLog(d, "-error-  no current room set", 5 + cam_x, 5 + stage_top, 8);
 		return;
 	}
 	
-	const SObj& room_curr = *p->room_curr;
+	const SObj& room_curr = p->room_curr;
 	
 	
 	// set room background col (or black by default)
@@ -267,8 +267,8 @@ void ProgramDraw::PaintRoom(Draw& d) {
 				}
 				else {
 					// actor
-					SObj* in_room = this->p->GetInRoom(obj);
-					if (in_room == &room_curr)
+					SObj in_room = this->p->GetInRoom(obj);
+					if (in_room == room_curr)
 						PaintActor(obj);
 				}
 				//show_collision_box(obj);
@@ -329,8 +329,11 @@ void ProgramDraw::PaintUI(Draw& d) {
 	PaletteColor verb_defcol = p->verb_defcol;
 	PaletteColor verb_maincol = p->verb_maincol;
 	int stage_top = p->stage_top;
-	SObj* selected_actor = p->selected_actor;
-	SObj* hover_curr_arrow = p->hover_curr_arrow;
+	const SObj& selected_actor = p->selected_actor;
+	const SObj& hover_curr_arrow = p->hover_curr_arrow;
+	
+	EscValue ea;
+	ea.SetEmptyArray();
 	
 	for (int i = Program::V_BEGIN; i != Program::V_END; i++) {
 		Verb v = (Verb)i;
@@ -353,6 +356,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 		SObj obj;
 		obj.MapSet("x", xpos);
 		obj.MapSet("y", ypos);
+		obj.MapSet("classes", ea);
 		p->RecalculateBounds(obj, namelen*4, 5, 0, 0);
 		//show_collision_box(obj)
 
@@ -370,8 +374,8 @@ void ProgramDraw::PaintUI(Draw& d) {
 		}
 	}
 	
-	if (selected_actor) {
-		EscValue inventory = selected_actor->MapGet("inventory");
+	if (selected_actor.IsMap()) {
+		EscValue inventory = selected_actor.MapGet("inventory");
 		int inv_arr_len = inventory.GetArray().GetCount();
 		
 		// draw inventory
@@ -379,7 +383,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 		int ypos = 76;
 		
 		// determine the inventory "window"
-		int inv_pos = selected_actor->MapGet("inv_pos").GetInt();
+		int inv_pos = selected_actor.MapGet("inv_pos").GetInt();
 		ASSERT(inv_pos >= 0 && inv_pos < 0x10000);
 		int start_pos = inv_pos * 4;
 		int end_pos = min(start_pos+8, inv_arr_len);
@@ -419,7 +423,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 			TODO
 			int x = arrow.MapGet("x").GetInt();
 			int y = arrow.MapGet("y").GetInt();
-			SetPalette(7, hover_curr_arrow == &arrow ? verb_hovcol : verb_maincol);
+			SetPalette(7, hover_curr_arrow == arrow ? verb_hovcol : verb_maincol);
 			SetPalette(5, verb_shadcol);
 			PaintSprite(d, lbl, sprite, x, y, 1, 1, 0);
 			
@@ -680,11 +684,11 @@ void ProgramDraw::PaintCommand(Draw& d) {
 			command << " " << name;
 		}
 	}
-	cmd_curr = command;
+	p->cmd_curr = command;
 	
 	if (executing_cmd) {
 		// highlight active command
-		command = cmd_curr;
+		command = p->cmd_curr;
 		cmd_col = p->verb_hovcol;
 	}
 	
