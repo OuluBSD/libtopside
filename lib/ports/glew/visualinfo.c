@@ -30,6 +30,8 @@
 ** stcl     = # bits of stencil
 */
 
+#ifdef flagHAVE_GLEW_VISUALINFO
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -98,6 +100,7 @@ int visual = -1;
 
 FILE* file = 0;
 
+#if 0
 int 
 main (int argc, char** argv)
 {
@@ -224,6 +227,7 @@ main (int argc, char** argv)
     fclose(file);
   return 0;
 }
+#endif
 
 /* do the magic to separate all extensions with comma's, except
    for the last one that _may_ terminate in a space. */
@@ -1295,3 +1299,4 @@ GLboolean ParseArgs (int argc, char** argv)
   }
   return GL_FALSE;
 }
+#endif

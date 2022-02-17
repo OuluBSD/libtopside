@@ -30,6 +30,8 @@
 ** THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#ifdef flagHAVE_GLEW_GLEWINFO
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16879,3 +16881,5 @@ void glewDestroyContext ()
 }
 
 #endif /* __UNIX || (__APPLE__ && GLEW_APPLE_GLX) */
+
+#endif

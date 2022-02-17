@@ -4,13 +4,17 @@ uses
 	Local,
 	CtrlLib;
 
+uses(WIN32 & GCC) ports/glew;
+
 library(POSIX) "GL GLEW glut";
 
 library(NEVER) "opengl32 libglew32.a libfreetype.dll.a";
 
 library(NEVER) libglew32mx.a;
 
-library(WIN32) "opengl32 glew32s";
+library(WIN32 & !GCC) glew32s;
+
+library(WIN32) opengl32;
 
 file
 	LocalCtrl.h,
