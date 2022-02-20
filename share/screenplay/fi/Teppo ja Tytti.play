@@ -5,34 +5,35 @@
                                           musikaali
 
  
-							Mukaelma Shakespearen Romeo ja Juliasta.
-				Tehty alkuperäisen näytelmän lyhennelmästä, ilman tietoa sen sisällöstä.
+                            Mukaelma Shakespearen Romeo ja Juliasta.
+            Tehty alkuperäisen näytelmän lyhennelmästä, ilman tietoa sen sisällöstä.
 
 
-									Kirjoittanut Seppo Pakonen
+                                    Kirjoittanut Seppo Pakonen
+                                          15.2.2022
 
 
 
-Teppo					Teppo Palmfelt
-Tytti					Tytti Kuhlman
-Tepon isä				Samuli Palmfelt
-Tepon serkku			Veijo Palmfelt
-Tepon ja Veijon kaveri	Aatu Rancken
-Tytin isä				Mikael Kuhlman
-Tytin äiti				Maria Kuhlman
-Tytin sukulainen		Matti Kuhlman
-Pastori					Henrik Lindström
-Pastori poika			Johan Lindström
-Oulun maaherra			Karl Magnus Jägerhorn
-Maaherran sukulainen	Aleksanteri Jägerhorn
-Tepon ensirakkaus		Maija Forsman
-Hoitajatar				Katri
-Kuhlman palvelija 1		KPalv1
-Kuhlman palvelija 2		KPalv2
-Palmfelt palvelija 1	PPalv1
-Palmfelt palvelija 2	PPalv2
-Matin kaveri 1			Kuhl1
-Matin kaveri 2			Kuhl2
+Teppo                   Teppo Palmfelt
+Tepon isä               Samuli Palmfelt
+Tepon serkku            Veijo Palmfelt
+Tepon ja Veijon kaveri  Aatu Rancken
+Tytti                   Tyyne Kuhlman
+Tytin isä               Mikael Kuhlman
+Tytin äiti              Maria Kuhlman
+Tytin sukulainen        Matti Kuhlman
+Pastori                 Henrik Lindström
+Pastori poika           Johan Lindström
+Oulun maaherra          Karl Magnus Jägerhorn
+Maaherran sukulainen    Aleksanteri Jägerhorn
+Tepon ensirakkaus       Maija Forsman
+Hoitajatar              Katri
+Kuhlman työläinen 1     KPalv1
+Kuhlman työläinen 2     KPalv2
+Palmfelt työläinen 1    PPalv1
+Palmfelt työläinen 2    PPalv2
+Matin sukulainen 1      Kuhl1
+Matin sukulainen 2      Kuhl2
 
 
 
@@ -40,7 +41,7 @@ Matin kaveri 2			Kuhl2
  
 // Oulun kaduilla puhkeaa jo toinen tappelu Kuhlmanin ja Palmfeltin aatelissukujen palvelijoiden välillä.
  
-	** KPalv1 tönäisee ohimenn en PPalv1:stä ** 
+	** KPalv1 tönäisee ohimennen PPalv1:stä ** 
 
 PPalv1:	Hä, mikä on?
 		Onko sulla menny näkö Kuhlmanin savupirtissä?
@@ -54,81 +55,81 @@ PPalv2: Meijän väellä ei kuule ole mitään salattavaa eikä hävettävää.
 	** KPalv1 tönäisee PPalv2:sta rintaan **
 
 KPalv1:	Ai me haistaan vai?
-		Sinä löyhkäät korttelin päähän.
+		Sanoo tyyppi jonka lemu löyhkää korttelin päähän.
 
-	** PPalv2 lyö KPalv1:stä naamaan **
-	** KPalv2 lyö PPVal2:sta naamaan **
-	** Käsirysy alkaa
+	** Palmfeltin työläinen (PPalv2) lyö Kuhlmanin työläistä (KPalv1) naamaan **
+	** Toinen Kuhlmanin työläinen vastaa samalla mitalla (KPalv2 lyö PPVal2) **
+	** Käsirysy alkaa ** 
 
 
 Musiikki: "2021/focus.tg"
 	
-	On vaattees kuluneet,
-	hampaat jo kadonneet.
-	Sun vanha konikaan,
-	ei kelpaa makkaraan.
-	Teil pettuleipä on
-	tarjolla kesäl jo.
-	Luut paistaa vaimollas,
-	lehmillä, sijoillas.
-	
-	Metsäs on kaadettu,
-	tervaksi poltettu,
-	halvalla poistettu,
- 	ja rahat pois juotu.
-	Kun tulee tapaamaan,
-	tuo täitä tullessaan.
-	Kai käy ne pesulla,
-	vain kerran vuodessa.
-	
-	Pieni kylä pienellä tiel.
-	Pielessä on elämä siel.
-	Kaikki voi saada remmistä ne viel.
-	
-	On vääril poluilla,
-	tavattu kulkea.
-	Ja laittaa maksamaan
-	alemmat arvoltaan.
-	Ei oo mun ongelma,
-	jos puus on lopussa,
-	ja jäädyt talvella,
-	voit laittaa vaatetta.
-	
-	Metsäs on kaadettu,
-	tervaksi poltettu,
-	rahdattu Eurooppaan,
-	laivoja valmistaan.
-	Kun tulee tapamaan,
-	tuo nälän mukanaan,
-	ja jälkeen katsotaan,
-	veikö jotain mukanaan.
-	
-	Pieni kylä pienellä tiel.
-	Pielessä on elämä siel.
-	Kaikki voi saada remmistä ne viel.
-	
-	Pelkää ne vallan alla ja
-	vallasta riitelee.
-	Puolustaa ei heikompaa kai saa
-	kukaan.
-	
-	Meitä yhdistää
-	riidat joihin kaikki kelpaa.
-	Säännöt rikotaan,
-	syypää heikommasta saadaan.
-	Valheit juorutaan,
-	niin et liian tylsää ei ois.
-	Mukaan huijataan
-	vanhat kun vain lähtee pois.
-	
-	Pieni kylä pienellä tiel.
-	Pielessä on elämä siel.
-	Kaikki voi saada remmistä ne viel.
-	
-	Pelkää ne vallan alla ja
-	vallasta riitelee.
-	Puolustaa ei heikompaa kai saa
-	kukaan.
+    On vaattees kuluneet,
+    hampaat jo kadonneet.
+    Sun vanha konikaan,
+    ei kelpaa makkaraan.
+    Teil pettuleipä on
+    tarjolla kesäl jo.
+    Luut paistaa vaimollas,
+    lehmillä, sijoillas.
+
+    Metsäs on kaadettu,
+    tervaksi poltettu,
+    halvalla poistettu,
+    ja rahat pois juotu.
+    Kun tulee tapaamaan,
+    tuo täitä tullessaan.
+    Kai käy ne pesulla,
+    vain kerran vuodessa.
+
+    Pieni kylä pienellä tiel.
+    Pielessä on elämä siel.
+    Kaikki voi saada remmistä ne viel.
+
+    On vääril poluilla,
+    tavattu kulkea.
+    Ja laittaa maksamaan
+    alemmat arvoltaan.
+    Ei oo mun ongelma,
+    jos puus on lopussa,
+    ja jäädyt talvella,
+    voit laittaa vaatetta.
+
+    Metsäs on kaadettu,
+    tervaksi poltettu,
+    rahdattu Eurooppaan,
+    laivoja valmistaan.
+    Kun tulee tapaamaan,
+    tuo nälän mukanaan,
+    ja jälkeen katsotaan,
+    veikö jotain mukanaan.
+
+    Pieni kylä pienellä tiel.
+    Pielessä on elämä siel.
+    Kaikki voi saada remmistä ne viel.
+
+    Pelkää ne vallan alla ja
+    vallasta riitelee.
+    Puolustaa ei heikompaa kai saa
+    kukaan.
+
+    Meitä yhdistää
+    riidat joihin kaikki kelpaa.
+    Säännöt rikotaan,
+    syypää heikommasta saadaan.
+    Valheit juorutaan,
+    niin et liian tylsää ei ois.
+    Mukaan huijataan
+    vanhat kun vain lähtee pois.
+
+    Pieni kylä pienellä tiel.
+    Pielessä on elämä siel.
+    Kaikki voi saada remmistä ne viel.
+
+    Pelkää ne vallan alla ja
+    vallasta riitelee.
+    Puolustaa ei heikompaa kai saa
+    kukaan.
 
 
 
@@ -170,15 +171,15 @@ Karl:	Voi perkele näitä urpoja.
 Teppo:	Ai katos, Veijo, no moro moro, mitä jätkä?
 Veijo:	Teppo, miestä näkyy vielä. Eikait täs mitään.
 		Katoin tuolt kaukaa et kuka siel menee kun on niin tutun näkönen.
-		Lähin sit tuleen tähän vastaan kattoon lähemmin.
-Teppo:	Juujuu, noniin, ei oo suakaan näkynyt aikoihin.
+		Lähin sit tuleen tähän vastaan kattoon tarkemmin.
+Teppo:	Juujuu, noniin, ei oo suakaan oo näkyny aikoihin.
 Veijo:	Täs nyt on ollu kaikkee.
 Teppo:	Itelläkin kyl.
 
 // Veijon utelun jälkeen Teppo myöntää olevansa rakastunut Maijaan, naiseen,
 // joka ei vastaa hänen kiintymykseensä.
 
-Veijo:	Äijä ei kyl oo selkeesti parhaimmalla tuulella; katse on maata kohen niin
+Veijo:	Äijä ei kyl selkeesti oo parhaimmalla tuulella; katot maata siihen malliin
 		että et melkeen huomannu meikää.
 Teppo:	Aijaa.
 Veijo:	Nii. 
@@ -199,7 +200,7 @@ Teppo:	Mikä vai?
 
 Veijo:	Nyt kuule unohat sen Maijan.
 		Ei se oo sun tyyppiä.
-Teppo:	Niinkö oot mieltä?
+Teppo:	Sitäkö mieltä oot ?
 Veijo:	Joo, kato ku ei se toimis ikinä teijän välillä.
 Teppo:	Aijaa.
 Veijo:	Nii, kuule ku se on vähän sellanen haahuileva tyyppi, eikä oo tarpeeks tulinen sulle.
@@ -211,7 +212,7 @@ Veijo:	Kyllä me kuule löyetään sulle semmonen.
 Musiikki: "2021/cutie from future.tg"
 
 Veijo:	Sä et oo kuumana siit,
-		se ei oo kuumana sust.
+		se ei oo kuumana sust. 
 		mitenkö teistä löytyis
 		ees hetken lemmenlöylyt.
 		Ja mä oon tästä varma,
@@ -219,28 +220,28 @@ Veijo:	Sä et oo kuumana siit,
 		mut pilata sä voit sen
 		tulevaisuuden onnen.
 	
-		Niin kovin haluat suudella
-Teppo:	etsin vain paikkoja
+		Niin kovin haluat suudella.
+Teppo:	Etsin vain paikkoja
 		kun samas huoneessa oon...
 Veijo:	Etkä huomaa,
-		kuinka kärsimätön mieles onkaan
-Teppo:	mä kädest pitäisin vaan
+		kuinka kärsimätön mieles onkaan.
+Teppo:	Mä kädest pitäisin vaan.
 
-Veijo:	voisit yrittää rauhoittua
-Teppo:	ei sydän tää, voi hidastua
-Veijo:	on muitakin
+Veijo:	Voisit yrittää rauhoittua.
+Teppo:	Ei sydän tää, voi hidastua.
+Veijo:	On muitakin,
 Teppo:	mut se on ainoo
 Veijo:	ja vastaa ei,
-		kun peili ei se oo
+		kun peili ei se oo.
 
 Veijo:	Sä et oo pahoillasi,
-		se ei oo pahoillansa
+		se ei oo pahoillansa,
 		jos mitään sanotkaan et
-		ja vain pois päin kävelet
+		ja pois päin vain kävelet.
 Teppo:	Ja miten olisinkaan
-		mä niin piittamaton vaan
-Veijo:	ei teil oo sopimusta
-		ei pientä lausettakaan
+		mä niin piittamaton vaan.
+Veijo:	Ei teil oo sopimusta,
+		ei pientä lausettakaan.
 
 Teppo:	Niin kovin haluan kuunnella
 		kaunista ääntäs vaan.
@@ -249,34 +250,34 @@ Teppo:	Enkä huomaa, kuinka kärsii
 		henki sisälläni.
 Veijo:	Sä et saa toivettasi
 	
-Veijo:	voisit yrittää rauhoittua
-Teppo:	ei sydän tää, voi hidastua
-Veijo:	on muitakin
+Veijo:	Voisit yrittää rauhoittua.
+Teppo:	Ei sydän tää, voi hidastua.
+Veijo:	On muitakin,
 Teppo:	mut se on ainoo
 Veijo:	ja vastaa ei,
-		kun peili ei se oo
+		kun peili ei se oo.
 
-		kuvaasi sun katoppa tarkemmin
-		sen vastaavan tahtoisit
-		ei sun repliikit niin hyvii oo
-		et saisit vaan
-		ne niillä vastaamaan
-		ei kuitenkaan
-		ne hylkää omiaan
+        Kuvaasi sun katoppa tarkemmin,
+        sen vastaavan tahtoisit.
+        Ei sun repliikit niin hyvii oo,
+        et saisit vaan
+        ne niillä vastaamaan.
+        Ei kuitenkaan
+        ne hylkää omiaan.
 
 Teppo:	Niin kovin haluun taivuttaa
-		mieles mun vankilaan
-Veijo:	Et saisi tehdä sitä
+		mieles mun vankilaan.
+Veijo:	Et saisi tehdä sitä.
 Teppo:	Enkä huomaa, kuinka kärsii
 		henki sisälläsi,
 		kun jatkan näytelmääni.
 
-Veijo:	voisit yrittää rauhoittua
-Teppo:	ei sydän tää, voi hidastua
-Veijo:	on muitakin
+Veijo:	Voisit yrittää rauhoittua.
+Teppo:	Ei sydän tää, voi hidastua.
+Veijo:	On muitakin,
 Teppo:	mut se on ainoo
 Veijo:	ja vastaa ei,
-		kun peili ei se oo
+		kun peili ei se oo.
 
 
 // Sillä välin Aleksanteri, maaherran sukulainen, pyrkii avioliittoon Tytin kanssa. Hänen
@@ -295,25 +296,25 @@ Aleksanteri:	Päivää vaan.
 	** Mikael katsoo kysyväisesti Alekanteria **
 
 Mikael:			Päivää päivää.
-Aleksanteri:	Siitä teidän tyttärestänne mää tulin vaan jutteleen.
+Aleksanteri:	Siitä teijän tyttärestänne mää tulin vaan jutteleen.
 Mikael:			Niin joo, mehän siitä jo ollaan puhuttu.
 				Kuules. 
-				Tytti on vain kuusitoista vasta.
+				Tyyne on vasta kuusitoista.
 				Nyt tehdään niin, että sää ootat sen kaks vuotta vielä sen kans.
 Aleksanteri:	...
 Mikael:			Niin, ei me nyt vielä aleta tähän häähommaan.
 Aleksanteri:	Jaa, eikö se nyt vielä sovi sitten.
 Mikael:			Juu ei.
-				Vaikka te olisittekin sopiva pari niin me tarvitaan Tyttiä täällä vielä ja sen tarvii oppiakkin vielä.
+				Vaikka te olisittekin sopiva pari niin me tarvitaan Tyttiä täällä vielä ja sen tarvii oppiakkin lisää.
 Aleksanteri:	Selvä juttu.
 				Harmi on kyllä, toivoin hieman toisenlaista vastausta.
 Mikael:			Niin olishan se tietenkin kiva päästä häitä viettään aina.
 
 	** Mikael ja Aleksanteri kävelevät pirtistä ulos **
 
-	** Keittiössä Maria ja Mikael ja renki **
+	** Keittiössä Maria, Mikael ja renki **
 
-Maria:			Vai on sille Tytille jo kosioita niin että pitää isännältä asti tulla kyseleen.
+Maria:			Vai on sille Tytille jo kosioita niin paljon, että alkavat isännältä asti tulla kyseleen.
 Mikael:			Joo.
 				Jos ei nyt ihan ekalle kosialle menis kuitenkaan.
 				Mietin, että tämän kesän naamiaisiin kutsutaankin reilummin väkeä, niin pääsee Tytti tapaan muitakin tuttavuuksia.
@@ -322,41 +323,40 @@ Mikael:			Noh, älä huoli, hankitaan apuvoimia.
 
 
 Musiikki: "2021/kangaroo dictator.tg"
-VIRHE: synä väärässä kohtaa
 
 Mikael:			Mutrusuu, sitruunanaama,
 				keität vaan meille kahvin vahvan.
 				Myrttisen piiat palkkaan mä laittaan
 				koristeet, viinin ja ruuan.
-				Viinaa, on veli polttamassa taas,
-				panee tilaamaan, illalle vahvempaa.
-Maria:			Mut miten järjestyksen teet?
+				Viinaa, on veli polttamassa taas.
+				Panee tilaamaan illalle vahvempaa.
+Maria:			Mut miten järjestyksen piät?
 				Tytti tarvitsee kivan, siistin, fiksun juhlan.
 
-Mikael:			Sanoit: tarvit miehistä mittaa
-Maria:			Sanoin: tarjoo voi, mut ei liikaa
-Mikael:			Sanoit: kutsu sun ystäviisi
+Mikael:			Sanoit: tarvit miehistä mittaa.
+Maria:			Sanoin: tarjoo voi, mut ei liikaa.
+Mikael:			Sanoit: kutsu sun ystäviisi.
 Maria:			Sanoin: pliis hei, Tytti kiltti
 				aikuinen melkein on,
-				en voi mä huijata et
+				en voi mä huijata, et
 				maailma on viaton.
 
 Mikael:			Annoin puolet sulle metsistä, maasta,
 				puolet saat myös tästä illasta.
-				Puolet tiukkaa, puolet on hauskaa,
+				Puolet tiukkaa, puolet on rentoo,
 				puolet saat mun huolista illankin.
 
 Maria:			Tahdon kuulla viulun ja sellon,
 				rummun kaijun taas ylitse pellon,
 				Tilaat kai basson soittajankin,
 				kitaristin ja laulajatkin.
-Mikael:			Sun luo tuon tähdetkin
-Maria:			Et voi sä huijata et
-				vain pilli sois.
+Mikael:			Sun luo tuon tähdetkin.
+Maria:			Et voi sä huijata, et
+				vain pilli soi.
 
 Mikael:			Annoin puolet sulle metsistä, maasta,
 				puolet saat myös tästä illasta.
-				Puolet tiukkaa, puolet on hauskaa,
+				Puolet tiukkaa, puolet on rentoo,
 				puolet saat mun huumasta illankin.
 
 Maria:			Aina uudestaan
@@ -366,19 +366,19 @@ Maria:			Aina uudestaan
 
 Mikael:			Annoin puolet sulle metsistä, maasta,
 				puolet saat myös tästä illasta.
-				Puolet tiukkaa, puolet on hauskaa,
+				Puolet tiukkaa, puolet on rentoo,
 				puolet saat mun huumasta illankin.
 
 Maria:			Annoin puolet luotosta järjen
 				puolet saat myös huolesta jäljen.
-				Puolet selvii, puolet on turhaa,
+				Puolet tehdään, puolet on turhaa,
 				puolet saat mun onnesta illankin.
 
 
 
-// Mikael lähettää palvelijalle luettelon ihmisistä, jotka hän kutsuu naamiaisiin ja juhlaan, jonka hän perinteisesti pitää kesän alussa.
+// Mikael lähettää työläinenlle luettelon ihmisistä, jotka hän kutsuu naamiaisiin ja juhlaan, jonka hän perinteisesti pitää kesän alussa.
 
-	** Mikael asettaa 'A4' kokoisen käärepaperin rengin eteen **
+	** Mikael asettaa kutsulistan rengin eteen **
 				
 Mikael:			Kierräpäs nuo ihmiset läpi ja käy kutsuun ne naamiaisiin ens lauantaina.
 KPalv1:			Selvä.
@@ -388,27 +388,27 @@ KPalv1:			Selvä.
 	** Mikael kääntyy Marian puoleen **
 
 Mikael:			On sinne Aleksanterikin kutsuttu.
-				Jos Tytti siitä tykkää niin onpahan verrattu muihinkin, niin ei tuu katumapäälle heti.
+				Jos Tytti siitä tykkää niin onpahan verrattu muihinkin, niin ei tuu heti katumapäälle.
 
 
-	** Teppo ja Veijo, jotka edelleen keskustelevat Maijasta, kohtaavat Mikael Kuhlmanin palvelijan, joka kantaa kutsuluetteloa. **
+	** Teppo ja Veijo, jotka edelleen keskustelevat Maijasta, kohtaavat Mikael Kuhlmanin työläisen, joka kantaa kutsulistaa. **
 
-Veijo:			Katos katos, kukas se vastaan tulee.
+Veijo:			Katos katos, kukas se tulee vastaan.
 KPalv1:			Pääs kii, etkö kuullu että seuraavat riitelijät joutuu tyrmään.
 Veijo:			Onko se ennenkään hidastanu?
 KPalv1:			Oon Kuhlmanin asioilla nyt.
-Veijo:			Mitä Kuhlmanilla on muka asiaa näille peräteille?
+Veijo:			Mitä Kuhlmanilla on muka asiaa näille pikkuteille?
 KPalv1:			Sattuu kuule oleen niin, että tässä on pitkä lista kutsuvieraita Kuhlmanin naamiaisiin.
 				Sinne kutsutaan melkeen kaikki jotka vaan hevosen omistaa.
 				
-	** KPalv1 vilauttaa listaa Veijon ja Tepon naaman edessä **
+	** Palvelija (KPalv1) vilauttaa listaa Veijon ja Tepon naaman edessä **
 
 Veijo:			Hah.
 				Ompa oudot juhlat.
 KPalv1:			Ne vuotuiset naamiaiset ne vain on.
 				Palmfeltit ei sitten taaskaan ole tervetulleita, onko selvä?
 
-	** KPalv1 poistuu moikkaamatta **
+	** Palvelija (KPalv1) poistuu moikkaamatta **
 
 // Veijo ehdottaa heidän osallistumista, koska sen avulla Teppo voisi verrata rakkauden kohdettaan muihin Oulun naisiin.
 
@@ -419,10 +419,11 @@ Teppo:			Niin mitä?
 Veijo:			Niin että eihän ne meitäkään erota siellä.
 
 	** Teppo katsoo synkistyneenä Veijoa **
-Teppo:			Ai mitä sää tarkotat?
-Veijo:			Niin että mehän mennään sinne, kun ei ne meitä voi tunnistaa.
 
-	** Tauko. Teppo katsoo epäuskoisena Veijoa **
+Teppo:			Ai mitä sää tarkotat?
+Veijo:			Niin että mehän mennään sinne, kun eihän ne meitä voi tunnistaa.
+
+	** Teppo katsoo epäuskoisena Veijoa **
 
 Veijo:			Niin kato ku sää voit verrata Maijaa niihin muihin naisiin.
 				Sehän sano että sinne kutsutaan melkeen kaikki, niin ei tommosta tilaisuutta verrata tuu toiste.
@@ -436,7 +437,7 @@ Veijo:			Eihän ole.
 Teppo:			Maijakin kyllä näytti olevan kutsuttu.
 				Sen nimi näky siinä listassa.
 Veijo:			Aijaa, noniin mutta eihän se haittaa.
-Teppo:			Ei ei, just siks mää ehkä voin lähtä sinne.
+Teppo:			Ei ei, just siks mää voin lähtä sinne.
 Veijo:			Noniin asiaa.
 
 
@@ -453,7 +454,7 @@ Teppo:			On mielessä
 Veijo:			Illalla
 				on kaikki kaunis paikalla
 				ja tapahtuu voi viel,
-				et löydät juuri oikean,
+				se et löydät juuri oikean,
 				sen onnen tuottavan.
 
 Teppo:			Pinkkiä unelmaa
@@ -485,7 +486,7 @@ Teppo ja Veijo:	Pinkkiä unelmaa
 Veijo:			Korkee on tunne,
 				korkeempia ne juonet,
 				mitkä mua vie tääl,
-				minne vie, en tiedä.
+				minne mut vie, en tiedä.
 Teppo:			Fiilistä viinin,
 				tarttuu se unelmiini,
 				sieltä sen löydän
@@ -497,7 +498,7 @@ Veijo:			Saa aina kuulla maa
 				pinkin juonen.
 Teppo:			On pinkki tää mun tie,
 				se mikä vie,
-				mut luokse lämpeän lemmen.
+				mut luokse lämpimän lemmen.
 
 Teppo ja Veijo:	Pinkkiä unelmaa
 				me tänään seurataan.
@@ -508,7 +509,7 @@ Teppo ja Veijo:	Pinkkiä unelmaa
 Veijo:			Korkee on tunne,
 				korkeempia ne juonet,
 				mitkä mua vie tääl,
-				minne vie, en tiedä.
+				minne mut vie, en tiedä.
 Teppo:			Fiilistä viinin,
 				tarttuu se unelmiini,
 				sieltä sen löydän
@@ -527,6 +528,7 @@ Teppo:			Mä voin löytää toisenkin,
 // Mikaelin taloudessa nuori Tytti keskustelee äitinsä Maria Kuhlmanin ja hoitajattarensa kanssa mahdollisuudesta mennä naimisiin Aleksanterin kanssa.
 
 	** Tytti keskustelee äitinsä Maria Kuhlmanin ja hoitajattarensa Katrin kanssa ** 
+	
 Maria:	Ooksää siitä Aleksanterista kuullu?
 Tytti:	Onko se Aleksanteri se maaherran sukulainen?
 Katri:	Juuri se.
@@ -565,7 +567,7 @@ Maria:	Koulussakin
 
 Katri:	Etpä renkiä sä kyllä koskaan ottais,
 		myönnä pois et meil eri miehet on.
-		Aina helpompi rikkampi on ottaa
+		Aina helpompi rikkaampi on ottaa
 		koskaan sen kanssa et oo onneton.
 
 Tytti:	Ai, kaikki muut tietää mua paremmin,
@@ -585,7 +587,7 @@ Tytti:	Ai, kaikki muut tietää mua paremmin,
 Maria:	O ou
 Katri:	O ou
 Maria:	Nuori pieni katkera ja mieli niin pehmee...
-Katri:	Nuori eikä huoli että tekee myös virheen...
+Katri:	Nuori eikä huoli, että tekee myös virheen...
 
 Tytti:	Ai, kaikki muut tietää mua paremmin,
 		en sit, tiedä miten
@@ -640,7 +642,7 @@ Veijo:	Kato ketä tääl
 		illanviettoon.
 Aatu:	Naiset kauniinpii
 		on kuin arkisin.
-Teppo:	Tarjoillakin on
+Teppo:	Tarjollakin on
 		kostuke janoon,
 		mut hei,
 
@@ -650,7 +652,7 @@ Aatu:	Kuka tuo tyttö on?
 Kaikki:	Joka tanssii noin.
 Veijo:	Kuka sille kelpaa?
 Teppo:	Kuka saa sen nauraan?
-Aaut:	Kuka kotiin saattaa?
+Aatu:	Kuka kotiin saattaa?
 Teppo:	Jolle tuuri käy.
 
 		Tää on se ilta viimeinen,
@@ -706,7 +708,7 @@ Teppo:	Tää on se ilta viimeinen,
 
 Teppo:	Kuka se on?
 Veijo:	Niin kuka se onkaan?
-Aamu:	Kuka se on?
+Aatu:	Kuka se on?
 Kaikki:	Niin kuka se on ja
 		kelle se jää?
 
@@ -716,14 +718,14 @@ Kaikki:	Niin kuka se on ja
 	** Matti kavereineen kuulee lisää vieraita tulevan **
 
 Kuhl1:	Taas tuli joitakin
-Kuhl2:	Ketä tänne muka vielä voi tulla ees.
+Kuhl2:	Ketä tänne muka vielä voi ees tulla.
 Matti:	Mää käyn kattoon.
 
-	** Matti menee porstuaa päin ja näkee Tepon, Veijon ja Aatun naamioituneena. Hän pysähtyy katsomaan tarkemmin. **
+	** Matti menee eteiseen päin ja näkee Tepon, Veijon ja Aatun naamioituneena. Hän pysähtyy katsomaan tarkemmin **
 
 Veijo:	Lähetäänkö vaan kiertään huoneet läpi?
 Teppo:	Mennään vähän varovammin.
-Aatu:	Yritetään löytää joku porukka missä voi jutella.
+Aatu:	Yritetään löytää joku porukka missä voi porista.
 
 	** Matti palaa takaisin kavereidensa luo **
 	
@@ -733,8 +735,8 @@ Matti:	Ne saatanan Palmfeltit tuli tänne.
 Kuhl2:	Ai ketkä?
 Matti:	No ne yhet.
 		Olikohan ne Pentti ja Aukusti.
-Kuhl1:	Oisko Taneli ja Eljas?
-Kuhl2:	No ei ne. Ehkä Kalle ja Tahvo.
+Kuhl1:	Taneli ja Eljas?
+Kuhl2:	No ei ne. Kalle ja Tahvo?
 Matti:	Eikun Veijo ja Aatu... ja joku kolmas.
 Kuhl1:	Ai ne.
 Kuhl2:	Onko ne kutsuttu?
@@ -756,7 +758,7 @@ Matti:	Niin se on.
 
 Teppo:	Moi.
 Tytti:	No moi.
-Teppo:	Mä taisin nähä sut jossain. [osoittaa Tytin kissamaskia]
+Teppo:	Mä taisin nähä sun näkösen kissan jossain. [osoittaa Tytin kissamaskia]
 		Oot vissiin karannu häkistä?
 Tytti:	Pöljä.
 		Mikä possu ite oot? [osoittaa Tepon kuonomaskia]
@@ -953,21 +955,17 @@ Lindström:	Vai että sellaista.
 			No, ketkä pitäisi vihkiä?
 Teppo:		Minut ja Tytti.
 Lindström:	Sinut?
-			Ja Tytti?
-			Kuhlman?
+			Ja Tytti Kuhlman?
 			Oi voi.
 Teppo:		Niin, ei kun Tytiltäkin täytyy kysyä ensin.
-Lindström:	Ensin?
-			Kysyä vielä?
+Lindström:	Ensin kysyä vielä?
 			Oi voi voi...
 Teppo:		Eikun se jo tavallaan lupasi.
 			Kyllä se mut mielummin nai, kuin menee sen toisen kanssa naimisiin.
 Lindström:	Aivan.
 			No olettehan te jo naimaiässä, ja tilanne on poikkeuksellinen.
 			Vai että pakotetaan Tytti naimisiin...
-Teppo:		Hmmm...
-Lindström:	Mitä?
-Teppo:		Ei mitään.
+Teppo:		Niin mää käsitin.
 Lindström:	Noh, tulkaa tänne yhdessä huomenna ja hoidetaan se muodollisuutena.
 Teppo:		Kiitos pastori.
 			Kiitos kovasti.
@@ -981,12 +979,11 @@ Lindström:	Hei vaan.
 	** Oulun tuomiokirkossa pidetään pienimuotoinen toimitus **
 	** Tytti on löytänyt itselleen jotain valkoista vaatetta ja Teppo jotain mustaa **
 	
-Lindström:	Olemme kokoontuntuneet ... [katsoo tyhjää kirkkoa] tänne Oulun tuomiokirkkoon todistamaan
-			tämän nuorenparin rakkautta ja sitoutumista avioliittoon.
-			Joskus nuori rakkaus yllättää, ja joskus siinä ei ole mitään järkeä, tai vain juuri
-			ja juuri riittävästi järkeä.
+Lindström:	Olemme kokoontuntuneet ... [katsoo tyhjää kirkkoa] tänne Oulun tuomiokirkkoon todistamaan tämän nuorenparin rakkautta ja sitoutumista avioliittoon.
+			Joskus nuori rakkaus yllättää, ja joskus siinä ei ole mitään järkeä, tai vain juuri ja juuri riittävästi järkeä.
 			Noh, eipä jaaritella.
 			Tahdotko sinä Teppo Palmfelt ottaa Tytti Kuhlmanin vaimoksi?
+			
 Teppo:		Tahdon.
 Lindström:	Tahdotko sinä Tytti Kuhlman ottaa Teppo Palmfeltin aviomieheksesi?
 Tytti:		Tahdon.
@@ -1094,8 +1091,9 @@ Veijo:		Teppo etkö sää kuule mitä se sanoo.
 			Ei tuollainen mulkero saa tommosta sanoa.
 
 // Tästä rauhanrukouksesta inhottuneena Aatu sanoo taistelevansa itse Mattia vastaan.
+
 Aatu:		Nii et sää voi antaa tuon mennä läpi, ei tuo oksettava ihmissaasta tästä nuin vaan pääse ohi.
-			Noniin, Kuhlman, kyllä me tämä tässä nyt mitataan ettei tarvi kyräillä myöhemmin.
+			Noniin, Kuhlman, kyllä me tämä tässä nyt mitataan, ettei tarvi kyräillä myöhemmin.
 
 // Kaksikko alkaa kaksintaistella.
 
@@ -1168,6 +1166,7 @@ Teppo:		Saatanan hirviö, mitä sää menit tekemään.
 	** Puolustautuva Teppo lyö puukolla Mattia rintaan tappaen hänet **
 
 Teppo:		Ei helvetti.
+
 	** Teppo pakenee paikalta **
 
 // Pian tämän jälkeen maaherra julistaa Tepon ikuisesti karkotetuksi
@@ -1191,7 +1190,7 @@ Karl:	Vaikka kaksintaistelu oli sovittu, ja toinen kuolema oli eri osapuolien to
 Teppo:		Iltaa pastori, voin selittää...
 Lindström:	Kyllä sinun selitykset tiedetään.
 			Sehän nyt meni nopeasti ojasta allikkoon.
-			Missä Tytti on? Oletko jutellut hänelle?
+			Missä Tytti on? Ookko sää jutellu hänelle?
 Teppo:		En ole. Kotonaan kai se on.
 Lindström:	Sinun on lähdettävä Haaparantaan heti aamusta.
 			Voin järjestää sinulle kyydin Tytin luo yöksi.
@@ -1313,10 +1312,11 @@ Katri:		Sanovat että se oli puolustusta.
 
 
 // Hämmentyneenä Tytti huomaa olevansa yhtäkkiä naimisissa miehen kanssa, joka on tappanut hänen sukulaisensa.
+
 Tytti:		Sukumurhaaja jo ennen ensimmäistä hääyötä. Voi ei! [Tytti purskahtaa itkuun]
 
-
 // Hän kuitenkin rauhoittuu uudelleen ja tajuaa, että hänen velvollisuutensa kuuluu hänen rakkautensa kohteelle: Tepolle.
+
 Tytti:		Teppo ei varmasti tarkoittanut sitä...
 
 
@@ -1339,12 +1339,12 @@ Teppo:		Tytti! Tytti, vihdoinkin!
 Teppo:		Voi perkele.
 Tytti:		Älä mee.
 			Jää mun luo.
-Teppo:		Ei kun kyllä mun on pakko mennä.
+Teppo:		Ei, kun kyllä mun on pakko mennä.
 
 
 // Tytti saa tietää, että hänen isänsä, viimeaikaisten tapahtumien vaikutuksesta, aikoo nyt naittaa hänet Aleksanterin kanssa vain kolmen päivän kuluttua.
 
-	** Tytti, hänen äitinsä ja isänsä, ja Katri, ja 2-3 muuta ylempää työläistä istuu aamupalapöydässä **
+	** Tytti, hänen äitinsä ja isänsä, ja Katri, ja muutama muu ylempää työläistä istuu aamupalapöydässä **
 
 Mikael:		Huomenta.
 			On se lippu näköjään jo osattu laittaa puolitankoon.
@@ -1355,7 +1355,7 @@ Tytti:		Eikö se Matti ite kerjännyt verta nenästään?
 Maria:		Tytti miten sinä voit sanoa tuollaista.
 			Ekkö sää nää että me surraan.
 Mikael:		Oli miten oli.
-			Minä oon tehny sellasen päätöksen että sinä Tytti otat mieheksesi sen Aleksanterin.
+			Minä oon tehny sellasen päätöksen, että sinä Tytti otat mieheksesi sen Aleksanterin.
 			Me pidetään häät heti.
 			Muutaman päivän päästä pääsee pastori.
 
@@ -1366,7 +1366,7 @@ Mikael:		Oli miten oli.
 
 Tyttö:		Siis mitä? Et sää voi väkisin naittaa mua siihen Aleksanteriin.
 Mikael:		Teille tulee iso tila ja paljon nautoja.
-			Me ollaan jo juteltu rahoitus sille.
+			Me ollaan juteltu rahoitus sille jo.
 
 
 // Tytti kysyy hoitajattareltaan neuvoa. Hän neuvoo Tyttiä jatkamaan kuin Teppo olisi kuollut
@@ -1383,7 +1383,7 @@ Tytti:		Mää vihaan sua Katri!
 
 	** Tytti heittää leivän Katrin naamaan ja juoksee pois aamiaispöydästä **
 
-Mikael:		Olipa se teatraalista.
+Mikael:		Olipas se teatraalista.
 
 
 Musiikki: "2022/first of the year 2022.tg"
@@ -1432,7 +1432,7 @@ Katri:      Täynnä epäkohtia
             kuuma tie vie sut
             eikä takas tulla,
             ei Tytti takas tulla,
-            ei sieltä takas tulla.
+            ei sieltä takas tulla ei.
             
 Tytti:      Täynnä epäkohtia
             jääminen on,
@@ -1450,7 +1450,7 @@ Tytti:      Täynnä epäkohtia
             se on se kylmän lyhyt,
             on liian kylmän lyhyt.
             
-Katri:      Renki löytyy se piallekkin,
+Katri:      Renki löytyy se piiallekkin,
             ilman tietä piinaavaakin.
             Selvitä voit mut mietippä vaan,
             kuinka pärjäät omillaan,
@@ -1459,38 +1459,42 @@ Katri:      Renki löytyy se piallekkin,
         
 
 // Pastori suunnittelee Tytin ja Tepon tapaamista Haaparannassa.
+
 	** Tytti menee pastorin luo **
+	
 Tytti:		Pastori, teidän täytyy auttaa. Se pakkoavioliitto tapahtuu kuitenkin.
 Lindström:	Niin. Tässä ei ole paljoa tehtävissä.
 			Minulla olisi kyllä eräs ... ei nyt ihan suunnitelma, mutta idea.
 			Voisit tekeytyä kuolleeksi.
-Tytti:		Onko tuo sun idea?
+Tytti:		Onks tuo sun idea?
 
 // Suunnitelma menee niin, että Aleksanterin häitä edeltävänä iltana Tytti juo juomaa, joka saa
 // hänet näyttämään kuolleelta, ja kun hänet on viety hautakellariin, Henrik ja Teppo hakevat
 // hänet salaa, jotta hän saa asua Tepon kanssa poissa riitaisilta vanhemmiltaan.
-Lindström:	On, joo. Sellanen nukutusaine juotuna saa näyttään sut kuolleelta ja sitten, niinku
-			Jeesuskin, niin, sitten nouset sitte aamulla sieltä hautakellarista. Se menee kyllä varmasti läpi
-			niin mää hoidan sen puolen sitten.
-			Siis Henri ja Teppo käy sut sitten hakeen sieltä hautakellarista.
-			Ja sitte te voitte mennä Ruotsiin asumaan.
+Lindström:	On, joo.
+            Sellanen nukutusaine juotuna saa näyttään sut kuolleelta ja sitten, niinku Jeesuskin, niin, sitten aamulla nouset sieltä hautakellarista.
+			Se menee kyllä varmasti läpi.
+			Mää hoidan sen selityspuolen sitten.
+			Myöhemmin Henri ja Teppo käy hakeen sut sieltä hautakellarista.
+			Ja lopulta te sitten voitte mennä Ruotsiin asumaan.
 
 
 // Tytti palaa kotiinsa ja huomaa, että häitä on aikaistettu yhdellä päivällä lisää, ja hänen on
 // määrä mennä naimisiin jo seuraavana päivänä.
+
 	** Tytti saapuu kotiinsa **
 	
 Tytti:		Mikä tää viesti on?
 			Häitä on aikaistettu?
 			Ne on jo huomenna?!
-			Huomenna, miten ne voi jo huomenna olla?!
+			Huomenna, miten ne voi olla jo huomenna?!
 
 	** Sinä iltana Tytti juo juoman, ja hoitajatar löytää kuolleelta näyttävän Tytin seuraavana aamuna. **
-	** Katri käy koputtaa monta kertaa Tytin huoneen oveen, ja menee lopulta sisään kun vastausta ei kuulu **
+	** Katri käy koputtamassa Tytin huoneen oveen monta kertaa, ja lopulta menee sisään, koska vastausta ei kuulu **
 
 Katri:		Iiik! [näyttelijän oma paras säikähtäminen]
 
-	** Katri juoksee Mikaelin ja Marian luo aamiaispöytään kiljuen **
+	** Katri juoksee ruokailuhuoneeseen kiljuen **
 	
 Katri:		Iiiiiiik!
 			Tytille on tapahtunut jotain!
@@ -1507,7 +1511,7 @@ Katri:		Iiiiiiik!
 // Ikävä kyllä pastori Lindströmin viesti, joka selittäisi suunnitelman Tepolle, ei koskaan
 // saavuta Haaparantaa. Sen kantaja, Johan Lindström, suljetaan rajalla karanteeniin.
 	
-	** Johannes on kuljettamassa viestiä juonesta Tepolle, kun rajanylityksellä vartiomies pysäyttää 
+	** Johannes Lindström on kuljettamassa viestiä juonesta Tepolle, kun rajanylityksellä vartiomies pysäyttää 
 	   epätavallisen rajanylittäjän iltahämärässä **
 	  
 Vartija:	Hei sinä siellä!
@@ -1521,8 +1525,7 @@ Vartija:	Vai että sellaista.
 			No mikäs viesti se niin kiireellinen on, että yöllä pitää viedä.
 Johan:		No sellainen että...
 Vartija:	Hiljaa.
-			Sinä tuut nyt yöksi raja-asemalle odottaan että tämä selvitetään. Odotat kunnes aamulla virkailijat tulee töihin.
-
+			Sinä tuut nyt yöksi raja-asemalle oottaan että tämä selvitetään. Odotat kunnes aamulla päällikkö tulee töihin.
 
 	** Teppo heräilee pienestä ranta-saunasta Haaparannan puolella **
 	
@@ -1541,7 +1544,7 @@ Teppo:
     
     Pois viety on mun rohkeus ja
     poissa on rakkauskin.
-    Ei jäänyt mul käsiin mitään
+    Ei jäänyt mulle käsiin mitään
     ja elämäin käsis mul on.
     
     Voi vuodet menettää,
@@ -1605,10 +1608,6 @@ Teppo:
 	hoksaa vielä kun vain
 	sen muistelee.
 	
-	Takaisin ei aika tuo
-	sun suudelmaa
-	muistojen mun.
-	
 	Sit kun mä lähen uudelleen
 	luo samanlaisten,
 	ja vastassa on juuri ne,
@@ -1640,7 +1639,7 @@ Veneilijä:		Joku Kuhlman. Olikohan se Tytti se etunimi.
 
 	** Teppo järkyttyy niin että jalat meinaa pettää **
 
-Veneilijä:		Mikä niillä Oululaisilla on ku ne ei ossaa olla?
+Veneilijä:		Mikä niillä Oululaisilla on, ku ei ne ossaa olla?
 Teppo:			Hei ootappa, mun tarvii päästä vastarannalle!
 
 
@@ -1648,8 +1647,6 @@ Teppo:			Hei ootappa, mun tarvii päästä vastarannalle!
 // Tämä ostaa myrkkypullon vastahakoiselta apteekkarilta ja ratsastaa sitten takaisin Ouluun ottaakseen henkensä Tytin haudalla.
 
 	** Teppo menee apteekkiin **
-	
-VIRHE: äänet mykkänä
 
 Teppo:			Rotanmyrkkyä kiitos, koko pullo. Meillä on ... paha rottaongelma.
 Apteekkari:		Rottaongelma. Harvemmin ne rotat pistää miestä noin surulliseksi.
@@ -1671,13 +1668,13 @@ Teppo:			Nyt ei riitä.
 Aleksanteri:	Jumalauta Teppo, kehtaatkin näyttää naamaas täällä vielä.
 Teppo:			Tietenkin kehtaan. Mää tulin Tytin takia.
 Aleksanteri:	Et sää tuntenut koko naista.
-				Vitun hullu tuut tänne pilaan vielä sen muistotkin.
+				Vitun hullu tuut tänne pilaan vielä sen muistonkin.
 
 	** Aleksanteri ottaa vyöltään puukon, ja lähtee iskemään sillä Teppoa näennäisen kömpelösti **
 
 Teppo:			Ei sun tarvi tehdä tuota.
 
-	** Aleksanteri jatkaa hyökkäystä ja Teppo kaivaa nopeaa puukon esiin, torjuu Aleksanterin iskua ja
+	** Aleksanteri jatkaa hyökkäystä ja Teppo kaivaa nopeaa puukon esiin, torjuu Aleksanterin iskun ja
 	   upottaa puukon Aleksanterin alavartaloon **
 
 	** Teppo astuu hautakellariin, ja näkee Tytin elottoman ruumiin **
@@ -1688,8 +1685,6 @@ Teppo:			Tytti kulta...
 	** Juuri silloin sisään astuu pastori Lindström ja tajuaa, että Teppo on tappanut Aleksanterin ja itsensä. **
 
 Lindström:		Teppo? Ei hyvän tähden.
-
-VIRHE: ääniongelmia
 
 	** Samaan aikaan Tytti herää. **
 	** Tytti näkee rakkaan Tepon ja tajuaa, että tämä on tappanut itsensä myrkyllä **
@@ -1774,6 +1769,8 @@ Tytti:  Vieläkö sut nään
         vaikka aika
         sut vei.
         
+        // Tempomuutos 
+        
         Ei, en usko, et sää oo pois mennyt.
         Viel sä nouset, heräät unestas.
         Hei, sun sormissas kai nään viel liikkeen.
@@ -1795,12 +1792,11 @@ Tytti:  Vieläkö sut nään
         sun kanssa on kahdestaan
         aivan missä vaan.
         
+	   
         
-	** Tytti suutelee Tepon myrkytettyjä huulia, ja kun se ei tapa häntä, hän työntää Tepon tikarin rintaansa ja
-	   lyhistyy kuolleena Tepon ruumiin päälle.**
+	** Tytti suutelee Tepon myrkytettyjä huulia, ja kun se ei tapa häntä, hän työntää Tepon tikarin rintaansa jalyhistyy kuolleena Tepon ruumiin päälle.**
 
 Tytti:	Teppo rakas, me nähdään vielä.
-
 
 	** Vahti saapuu mukanaan maaherra, jota seuraa tiiviisti Mikael Kuhlman ja Samuli Palmfelt **
 
@@ -1945,7 +1941,7 @@ Katri:      Piisaa pettymykseni,
 	** Kellarin ovi suljetaan **
 	
 	Mikael:	Nehän on jo naimisissakin. Ei niitä voi erikseenkään haudata.
-	Samuli:	Pienintä mitä me voidaan tehdä tässä vaiheessa on antaa niille yhteinen tulevaisuus...
+	Samuli:	Pienintä mitä me voidaan tehdä niille tässä vaiheessa on antaa yhteinen tulevaisuus...
 			vaikkakin sitten maan povessa.
 	Mikael:	Niin.
 			Tämä oli kyllä viiminen pisara.
