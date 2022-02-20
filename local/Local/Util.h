@@ -4,9 +4,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+
+template <class T> inline T Mid(const T& low, const T& mid, const T& high) {return std::max(std::min(mid, high), low);}
+
 template<class T> inline bool IsPositive(const T& o);
 template<>        inline bool IsPositive(const Size& o) {return o.cx > 0 && o.cy > 0;}
 
+int HexDigitAny(int c);
 
 /*
 	Heapless Copying

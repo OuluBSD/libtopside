@@ -36,6 +36,8 @@ void ProgramApp::ProcessScript() {
 
 
 ProgramDraw::ProgramDraw() {
+	draw_zplanes.SetCount(128+1);
+	
 	fnt = SansSerif(8);
 	ResetPalette();
 	LoadBuiltinGfx();
@@ -69,24 +71,30 @@ void ProgramDraw::Paint(Draw& w) {
 	const auto& cutscene_curr = p->cutscene_curr;
 	
 	// clear screen every frame
-	d.DrawRect(sz, White());
+	d.DrawRect(sz, Black());
 	
-	// reposition camera (account for (shake, if (active)
-	d.Offset(cam_x + cam_shake_x, 0 + cam_shake_y);
+	bool do_shake = false;
 	
-	// clip room bounds (also used for ("iris" transition)
-	d.Clip(
-		0 + fade_iris - cam_shake_x,
-		stage_top + fade_iris - cam_shake_y,
-		128 - fade_iris*2 - cam_shake_x,
-		64 - fade_iris*2);
+	if (do_shake) {
+		// reposition camera (account for (shake, if (active)
+		d.Offset(cam_x + cam_shake_x, 0 + cam_shake_y);
+		
+		// clip room bounds (also used for ("iris" transition)
+		d.Clip(
+			0 + fade_iris - cam_shake_x,
+			stage_top + fade_iris - cam_shake_y,
+			128 - fade_iris*2 - cam_shake_x,
+			64 - fade_iris*2);
+	}
 	    
 	// draw room (bg + objects + actors)
 	PaintRoom(d);
 	
-	// reset camera and clip bounds for ("static" content (ui, etc.)
-	d.End();
-	d.End();
+	if (do_shake) {
+		// reset camera and clip bounds for ("static" content (ui, etc.)
+		d.End();
+		d.End();
+	}
 	
 	#if 0
 	if (show_debuginfo) {
@@ -180,12 +188,19 @@ void ProgramDraw::PaintRoom(Draw& d) {
 			ReplaceColors(room_curr);
 			
 			Color trans_col;
-			if (TryReadColor("trans_col", trans_col)) {
+			if (TryReadColor(room_curr, "trans_col", trans_col)) {
 				//palt(0, false);
 				//palt(room_curr.trans_col, true);
 				TODO
 			}
-			TODO //map(room_curr.map[1], room_curr.map[2], 0, stage_top, room_curr.map_w, room_curr.map_h);
+			EscValue map = room_curr.MapGet("data").MapGet("map");
+			//LOG(room_curr.ToString()); LOG(map.ToString());
+			ASSERT(map.IsArray());
+			int map0 = map.ArrayGet(0).GetInt();
+			int map1 = map.ArrayGet(1).GetInt();
+			int map_w = map.ArrayGet(2).GetInt();
+			int map_h = map.ArrayGet(3).GetInt();
+			PaintMap(d, map0, map1, 0, stage_top, map_w, map_h);
 			
 			ResetPalette();
 			
@@ -226,7 +241,8 @@ void ProgramDraw::PaintRoom(Draw& d) {
 		}
 		else {
 			// draw other layers
-			ZPlane& zplane = draw_zplanes[begin_z - z];
+			int idx = z - begin_z;
+			ZPlane& zplane = draw_zplanes[idx];
 			
 			// draw all objs/actors in current zplane
 			for (SObj* p : zplane.objs) {
@@ -517,6 +533,30 @@ void ProgramDraw::PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, 
 	*/
 }
 
+void ProgramDraw::PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, int h) {
+	const uint16* m = map.Begin();
+	int img_w = map_sz.cx;
+	int img_h = map_sz.cy;
+	
+	int tiles_w = gfx.GetWidth() / 8;
+	
+	for (int y0 = y, y1 = 0; y0 < img_h; y0++, y1++) {
+		const uint16* row = m + y0 * img_w;
+		const uint16* it = row + x;
+		for (int x0 = x, x1 = 0; x0 < img_w; x0++, x1++) {
+			uint16 tile = *it++;
+			int tile_x = tile % tiles_w;
+			int tile_y = tile / tiles_w;
+			int src_x = tile_x * 8;
+			int src_y = tile_y * 8;
+			Rect src = RectC(src_x, src_y, 8, 8);
+			int x2 = dst_x + x1 * 8;
+			int y2 = dst_y + y1 * 8;
+			d.DrawImage(x2, y2, gfx, src);
+		}
+	}
+}
+
 void ProgramDraw::PaintObject(SObj& obj) {
 	TODO
 	/*
@@ -699,7 +739,34 @@ void ProgramDraw::PaintCommand(Draw& d) {
 }
 
 void ProgramDraw::ReplaceColors(const SObj& obj) {
-	TODO
+	if (!obj.IsMap()) return;
+	
+	EscValue col_replace = obj.MapGet("col_replace");
+	EscValue lighting = obj.MapGet("lighting");
+	
+	// replace colors (where defined)
+	if (col_replace.IsArray()) {
+		ASSERT(col_replace.GetArray().GetCount() == 2);
+		int a = col_replace.ArrayGet(0).GetInt();
+		int b = col_replace.ArrayGet(1).GetInt();
+		SetPalette(a, b);
+	}
+	
+	// also apply brightness (default to room-level, if (not set)
+	if (lighting.IsInt()) {
+		int a = lighting.GetInt();
+		FadePalette(a);
+	}
+	else {
+		EscValue in_room = obj.MapGet("in_room");
+		if (in_room.IsMap()) {
+			EscValue lighting = in_room.MapGet("lighting");
+			if (lighting.IsInt()) {
+				int a = lighting.GetInt();
+				FadePalette(a);
+			}
+		}
+	}
 }
 
 void ProgramDraw::OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
@@ -714,6 +781,30 @@ void ProgramDraw::OutlineText(Draw& d, String str, int x, int y, int c0, int c1,
 		}
 	print(str, x, y, c0);
 	*/
+}
+
+void ProgramDraw::FadePalette(float perc) {
+	if (perc)
+		perc = 1 - perc;
+	
+	int p = (int)(min(max(0.f, perc), 1.f) * 100.f);
+	int dpal[15] = {
+		0, 1, 1,
+		2, 1, 13,
+		6, 4, 4,
+		9, 3, 13,
+		1, 13, 14
+	};
+	
+	for (int j = 0; j < 15; j++) {
+		int col = j;
+		int kmax = (p + ((j+1) * 1.46)) / 22;
+		for (int k = 1; k <= kmax; k++) {
+			ASSERT(col >= 0 && col < PALETTE_SIZE);
+			col = dpal[col];
+		}
+		SetPalette(j, col);
+	}
 }
 
 

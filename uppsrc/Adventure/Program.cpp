@@ -34,12 +34,28 @@ Color GetPicoPalette(PaletteColor idx) {
 
 
 
-Color ReadColor(const SObj& o, String key, Color def) {
-	TODO
+Color ReadColor(const SObj& o, EscValue key, Color def) {
+	if (o.IsMap()) {
+		const auto& m = o.GetMap();
+		int i = m.Find(key);
+		if (i >= 0) {
+			LOG(o.ToString());
+			TODO
+		}
+	}
+	return def;
 }
 
-bool TryReadColor(const SObj& o, Color& c) {
-	TODO
+bool TryReadColor(const SObj& o, EscValue key, Color& c) {
+	if (o.IsMap()) {
+		const auto& m = o.GetMap();
+		int i = m.Find(key);
+		if (i >= 0) {
+			LOG(o.ToString());
+			TODO
+		}
+	}
+	return false;
 }
 
 bool ReadFlag(const SObj& o, String key) {
@@ -117,20 +133,22 @@ void Program::ResetUI() {
 }
 
 
-void Program::StartupScript() {
+bool Program::StartupScript() {
 	ResetUI();
 	
 	const SObj* r = FindRoom("rm_hall");
 	ASSERT(r);
 	if (r)
 		ChangeRoom(*r,  1);
+	
+	return false;
 }
 
 const SObj* Program::FindRoom(const String& name) const {
 	const auto& arr = rooms.GetArray();
 	for (const auto& val : arr) {
 		String room_str = val;
-		LOG(room_str);
+		//LOG(room_str);
 		if (room_str == name)
 			return FindDeep(name);
 	}
@@ -286,15 +304,17 @@ void Program::CameraFollow(SObj actor) {
 		ChangeRoom(r, 1);
 }
 
-void Program::CamScript0() {
+bool Program::CamScript0() {
 	// keep the camera following actor
 	// (until further notice)
-	while (cam_following_actor.IsMap()) {
+	if (cam_following_actor.IsMap()) {
 		// keep camera within "room" bounds
 		if (GetInRoom(cam_following_actor) == room_curr)
 			cam_x = CenterCamera(cam_following_actor);
-		TODO // yield();
+		return true;
 	}
+	else
+		return false;
 }
 
 void Program::CameraPanTo(SObj& val) {
@@ -308,7 +328,7 @@ void Program::CameraPanTo(SObj& val) {
 	StartScript(THISBACK(CamScript1), true); // bg script
 }
 
-void Program::CamScript1() {
+bool Program::CamScript1() {
 	
 	// update the camera pan until reaches dest
 	TODO
@@ -599,23 +619,24 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 	walkto = ComeOutDoor
 }*/
 
-void Program::Fades(int fade, int dir) {
+bool Program::Fades(int fade, int dir) {
 	// dir: 1=down, -1=up
 	int fade_amount = 25 - 25 * dir;
 
-	while (true) {
-		fade_amount += dir*2;
+	fade_amount += dir*2;
 
-		if (fade_amount > 50 || fade_amount < 0) {
-			return;
-		}
-
+	if (fade_amount >= 0 && fade_amount <= 50) {
 		// iris) {wn/up
 		if (fade == 1)
 			fade_iris = min(fade_amount, 32);
-
-		TODO // yield();
+		
+		fade_iter++;
+		if (fade_iter < 1000)
+			return true;
 	}
+	
+	fade_iter = 0;
+	return false;
 }
 
 void Program::ChangeRoom(SObj new_room, bool fade) {
@@ -711,7 +732,7 @@ void Program::PickupObj(SObj& obj, SObj& actor) {
 }
 
 
-void Program::StartScript(Callback func, bool bg, String noun1, String noun2) {
+void Program::StartScript(Gate0 func, bool bg, String noun1, String noun2) {
 	// background || local?
 	if (bg)
 		global_scripts.Add().Set(func, noun1, noun2).Start();
@@ -1489,25 +1510,6 @@ void Program::RecalcZPlane(SObj& obj) {
 	TODO //add(draw_zplanes[obj.z ? obj.z : flr(obj.y + (obj.offset_y ? 0 : obj.h * 8))], obj);
 }
 
-void Program::ReplaceColors(SObj& obj) {
-	TODO
-	/*
-	// replace colors (where defined)
-	if (obj.col_replace) {
-		c = obj.col_replace;
-		//for (c in all(obj.col_replace)) {
-			pal(c[1], c[2]);
-		//}
-	}
-	// also apply brightness (default to room-level, if (not set)
-	if (obj.lighting) {
-		FadePalette(obj.lighting);
-	}
-	else if (obj.in_room && obj.in_room.lighting) {
-		FadePalette(obj.in_room.lighting);
-	}*/
-}
-
 void Program::SetTransCol(int transcol) { //, enabled)
 	TODO
 	/*
@@ -1614,28 +1616,6 @@ void Program::UpdateScripts(Vector<String>& scripts) {
 	}*/
 }
 
-void Program::FadePalette(float perc) {
-	TODO
-	/*if ((perc)
-		perc = 1 - perc;
-	
-	local p = flr(mid(0, perc, 1) * 100);
-	local dpal = {
-		0, 1, 1, 2, 1, 13, 6,
-		4, 4, 9, 3, 13, 1, 13, 14
-	};
-	for (int j = 1; j <= 15; j++) {
-		col = j;
-		kmax = (p + (j * 1.46)) / 22;
-		for (int k = 1; k <= kmax; k++) {
-			col = dpal[col];
-		}
-		pal(j, col);
-	}*/
-}
-
-
-
 bool Program::IsTable(SObj& t) {
 	TODO
 	///return type(t) == "table";
@@ -1646,11 +1626,24 @@ Point Program::CenterCamera(const Point& val) {
 }
 
 Point Program::CenterCamera(SObj& val) {
+	LOG(val.ToString());
+	
 	// check params for (obj/actor
 	// keep camera within "room" bounds
-	TODO
-	//Point pt = GetXY(val);
-	//return mid(0, (IsTable(val) ? val.x : val)-64, (room_curr.map_w*8) -128 );
+	int x = 0;
+	
+	if (val.IsMap())
+		x = val.MapGet("x").GetInt();
+	
+	else if (val.IsInt())
+		x = val.GetInt();
+	
+	//int map_w = room_curr.MapGet("map_w").GetInt();
+	int map_w = room_curr.MapGet("data").MapGet("map").ArrayGet(2).GetInt();
+	
+	Point pt(0,0);
+	pt.x = Mid(0, x-64, (map_w*8) -128 );
+	return pt;
 }
 
 
@@ -2014,7 +2007,6 @@ bool Program::Init() {
 	global_scripts.Clear();
 	local_scripts.Clear();
 	cutscenes.Clear();
-	draw_zplanes.Clear();
 	
 	fade_iris = 0;
 	cutscene_cooloff = 0;
@@ -2403,11 +2395,12 @@ const char* builtin_map = R"MULTILINE(
 15151515151515151515151515151515151515151515151515151515151515153131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313232323232323232323232323232323232323232323232323c393737373737373737373737373737373737373a3d1515
 )MULTILINE";
 
+ 
 void ProgramDraw::LoadBuiltinGfx() {
 	LoadBuiltinGfxStr(builtin_gfx, gfx);
 	LoadBuiltinGfxStr(builtin_lbl, lbl);
 	LoadBuiltinGfxStr(builtin_gff, gff);
-	LoadBuiltinGfxStr(builtin_map, map);
+	LoadBuiltinGfxStr(builtin_map, map, map_sz);
 	
 }
 
@@ -2469,6 +2462,44 @@ void ProgramDraw::LoadBuiltinGfxStr(const char* s, Image& out) {
 		*it++ = *src++;
 	
 	out = ib;
+}
+
+void ProgramDraw::LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz) {
+	if (*s == '\n') s++;
+	
+	out.SetCount(0);
+	out.Reserve(10000);
+	
+	int line = 0;
+	int max_col = 0;
+	int col = 0;
+	while (1) {
+		int chr0 = *s++;
+		
+		if (chr0 == '\n') {
+			line++;
+			ASSERT(max_col == 0 || col == max_col);
+			ASSERT(col > 0);
+			max_col = max(max_col, col);
+			col = 0;
+		}
+		else if (chr0 == 0)
+			break;
+		else {
+			int chr1 = *s++;
+			
+			int n0 = HexDigitAny(chr0);
+			int n1 = HexDigitAny(chr1);
+			ASSERT(n0 >= 0 && n0 < 0x10);
+			ASSERT(n1 >= 0 && n1 < 0x10);
+			int n = (n0 << 4) | n1;
+			out.Add(n);
+			
+			col++;
+		}
+	}
+	
+	sz = Size(max_col, line);
 }
 
 

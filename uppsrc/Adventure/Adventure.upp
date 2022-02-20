@@ -7,6 +7,10 @@ file
 	Adventure.h,
 	Adventure.cpp,
 	Demo.esc highlight cpp,
+	Game.esc highlight cpp,
+	C8_Intro.esc highlight cpp,
+	C8_Part1.esc highlight cpp,
+	C8_Part2.esc highlight cpp,
 	Program.h,
 	Program.cpp,
 	App.cpp;

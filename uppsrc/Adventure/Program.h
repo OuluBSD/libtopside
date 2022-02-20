@@ -26,14 +26,14 @@ using SObj = EscValue;
 using StrMap = VectorMap<String,String>;
 using StrVec = Vector<String>;
 
-Color ReadColor(const SObj& o, String key, Color def);
-bool TryReadColor(const SObj& o, Color& c);
+Color ReadColor(const SObj& o, EscValue key, Color def);
+bool TryReadColor(const SObj& o, EscValue key, Color& c);
 bool ReadFlag(const SObj& o, String key);
 SObj* ReadKey(SObj& o, String key);
 void SrcMapSet(EscValue map, EscValue key, EscValue value);
 
 typedef enum {
-	
+	SCENE_NULL,
 } SceneType;
 
 typedef enum {
@@ -73,15 +73,24 @@ struct Dialog {
 
 struct Script {
 	SceneType type;
-	//Thread thrd;
-	Callback override_;
+	bool running = false;
+	Gate0 fn;
+	TimeCallback tc;
 	SObj* paused_cam_following = 0;
 	dword flags = 0;
 	String n1, n2;
 	
-	void Clear() {TODO}
-	Script& Set(Callback cb, String noun1, String noun2) {override_ = cb; n1 = noun1; n2 = noun2; return *this;}
-	Script& Start() {if (override_) PostCallback(override_); else Panic("TODO"); return *this;}
+	typedef Script CLASSNAME;
+	void Clear() {Stop(); fn.Clear(); n1.Clear(); n2.Clear(); flags = 0; paused_cam_following = 0; type = SCENE_NULL;}
+	Script& Set(Gate0 cb, String noun1, String noun2) {fn = cb; n1 = noun1; n2 = noun2; return *this;}
+	Script& Start() {tc.KillSet(10, THISBACK(Execute)); running = true; return *this;}
+	Script& Stop() {tc.Kill(); running = false; return *this;}
+	void Execute() {
+		if (fn && !fn()) {
+			tc.Kill();
+			running = false;
+		}
+	}
 };
 
 struct TalkingState {
@@ -168,7 +177,6 @@ struct Program {
 	Array<Script> global_scripts;	// table of scripts that are at game-level (background)
 	Array<Script> local_scripts;	// table of scripts that are actively running
 	Array<Script> cutscenes;		// table of scripts for (the active Cutscene(s)
-	Array<Script> draw_zplanes;		// table of tables for (each of the (8) zplanes for (drawing depth
 	
 	
 	Script* cutscene_curr = 0;
@@ -245,6 +253,7 @@ struct Program {
 	EscValue rooms;
 	Script* scr_obj = 0;
 	
+	int fade_iter = 0;
 	
 public:
 	
@@ -255,15 +264,15 @@ public:
 	void GetReference(SObj& o, bool everywhere=false);
 	void ResetPalette();
 	void ResetUI();
-	void StartupScript();
+	bool StartupScript();
 	void Shake(bool enabled);
 	Verb FindDefaultVerb(SObj& obj);
 	void UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2);
 	void CameraAt(const Point& val);
 	void EscCameraFollow(EscEscape& e);
 	void CameraFollow(SObj actor);
-	void CamScript0();
-	void CamScript1();
+	bool CamScript0();
+	bool CamScript1();
 	void CameraPanTo(SObj& val);
 	void WaitForCamera();
 	bool ScriptRunning(Script& script);
@@ -279,11 +288,11 @@ public:
 	void OpenDoor(SObj& door_obj1, SObj* door_obj2);
 	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
 	void ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect);
-	void Fades(int fade, int dir);
+	bool Fades(int fade, int dir);
 	void ChangeRoom(SObj new_room, bool fade);
 	void ValidVerb(Verb verb, SObj& object);
 	void PickupObj(SObj& obj, SObj& actor);
-	void StartScript(Callback func, bool bg, String noun1="", String noun2="");
+	void StartScript(Gate0 func, bool bg, String noun1="", String noun2="");
 	void StopScript(Script& func);
 	void BreakTime(int jiffies=0);
 	void WaitForMessage();
@@ -307,7 +316,6 @@ public:
 	void CheckCollisions();
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
-	void ReplaceColors(SObj& obj);
 	void SetTransCol(int transcol);
 	void InitGame();
 	void UpdateScripts(Vector<String>& scripts);
@@ -325,7 +333,6 @@ public:
 	void ExplodeData(SObj& obj);
 	bool IsCursorColliding(SObj& obj);
 	String SmallCaps(const String& s);
-	void FadePalette(float perc);
 	String Autotype(const String& str_value);
 	
 	
@@ -357,9 +364,11 @@ struct ZPlane : Moveable<ZPlane> {
 };
 
 class ProgramDraw : public Ctrl {
-	Vector<ZPlane> draw_zplanes;
+	Vector<ZPlane> draw_zplanes; // table of tables for (each of the (8) zplanes for (drawing depth
 	
-	Image gfx, lbl, gff, map;
+	Image gfx, lbl, gff;
+	Vector<uint16> map;
+	Size map_sz;
 	
 	Font fnt;
 	PaletteColor dyn_palette[PALETTE_SIZE];
@@ -378,6 +387,7 @@ class ProgramDraw : public Ctrl {
 	
 	void LoadBuiltinGfx();
 	void LoadBuiltinGfxStr(const char* s, Image& out);
+	void LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz);
 	
 public:
 	
@@ -401,10 +411,12 @@ public:
 	void PaintCursor(Draw& d);
 	void PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, bool flip_x, bool flip_y, int scale);
 	void PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, int y, int w, int h, bool transcol, bool flip_x, bool flip_y, int scale);
+	void PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, int h);
 	
 	void SetPalette(int idx, PaletteColor clr);
 	void ResetPalette();
 	void ReplaceColors(const SObj& o);
+	void FadePalette(float perc);
 	
 };
 
