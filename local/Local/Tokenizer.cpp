@@ -68,7 +68,7 @@ bool Tokenizer::Process(String str, String path) {
 	loc.col = 1;
 	loc.cursor = 0;
 	
-	parse_indent = true;
+	parse_indent = have_indent_tokens;
 	user_spaces = 0;
 	indent = 0;
 	
@@ -287,7 +287,7 @@ bool Tokenizer::Process(String str, String path) {
 				if (chr == '\n') {
 					AddError(tk.loc, "no newline allowed in string literal");
 					Next();
-					parse_indent = true;
+					parse_indent = have_indent_tokens;
 					loc.line++;
 					loc.col = 1;
 				}
@@ -382,7 +382,7 @@ bool Tokenizer::Process(String str, String path) {
 				}
 				if (tk) tk->end = loc;
 				if (add_line) {
-					parse_indent = true;
+					parse_indent = have_indent_tokens;
 					loc.line++;
 					loc.col = 1;
 				}
@@ -459,7 +459,7 @@ bool Tokenizer::Process(String str, String path) {
 				if (chr == '\n') {
 					AddError(tk.loc, "no newline allowed in char literal");
 					Next();
-					parse_indent = true;
+					parse_indent = have_indent_tokens;
 					loc.line++;
 					loc.col = 1;
 				}
@@ -524,7 +524,7 @@ bool Tokenizer::Process(String str, String path) {
 				tk.end.col = 1; tk.end.line++;
 			}
 			Next();
-			parse_indent = true;
+			parse_indent = have_indent_tokens;
 			loc.line++;
 			loc.col = 1;
 		}

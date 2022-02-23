@@ -27,7 +27,7 @@ enable_gfx_loa"d": "true",
 }
 // verb to use when just clicking aroung (e.g. move actor);
 "verb_default": {
-	{ walkto = "walkto" }, "text": "walk to",
+	{ "walkto": "walkto" }, "text": "walk to",
 }
 function reset_ui();
 	verb_main"col": 12, // main color (lt blue)
@@ -157,7 +157,7 @@ reset_ui();
      "use_dir": "face_right",
     },
     "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
 						printh("load disk 1!!!");
       //set flag for (entered/exited door
       dset(10,2) // crash
@@ -179,7 +179,7 @@ reset_ui();
      "use_dir": "face_back",
     },
     "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
 						printh("load disk 1!!!");
       //set flag for (entered/exited door
       dset(10,3) // graves
@@ -201,7 +201,7 @@ reset_ui();
      "use_dir": "face_back",
     },
     "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
 						printh("load disk 1!!!");
       //set flag for (entered/exited door
       dset(10,7) // cave
@@ -231,7 +231,7 @@ reset_ui();
     me.target_door = obj_signal_door_map,
    },
    "verbs": {
-    walkto = @(&me) {
+    "walkto": @(&me) {
      if not main_actor.disabled_signal then
       come_out_door(me, obj_signal_door_map);
      else
@@ -371,7 +371,7 @@ reset_ui();
     "use_dir": "face_back",
    },
    "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
       if me."state": ="state_open" then,
        come_out_door(me, obj_alieninside_door_alienbase);
       else

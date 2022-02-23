@@ -3,5 +3,8 @@
 
 #include <LocalCtrl/LocalCtrl.h>
 
+#include "FileFormat.h"
+#include "App.h"
+
 
 #endif

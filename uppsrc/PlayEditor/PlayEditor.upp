@@ -2,8 +2,12 @@ uses
 	LocalCtrl;
 
 file
-	PlayEditor.h,
 	main.cpp,
+	PlayEditor.h,
+	App.h,
+	App.cpp,
+	FileFormat.h,
+	FileFormat.cpp,
 	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp;
 
 mainconfig

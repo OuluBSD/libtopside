@@ -252,6 +252,7 @@ class Tokenizer : public ErrorSource {
 	bool skip_comments = false;
 	bool skip_newlines = false;
 	bool skip_separateunary = false;
+	bool have_indent_tokens = true;
 	int pass_cursor = 0;
 	bool parse_indent = false;
 	int user_spaces = -1;
@@ -276,6 +277,7 @@ public:
 	void SkipComments(bool b=true) {skip_comments = b;}
 	void SkipNewLines(bool b=true) {skip_newlines = b;}
 	void SkipSeparateUnary(bool b=true) {skip_separateunary = b;}
+	void HaveIdents(bool b=true) {have_indent_tokens = b;}
 	void SetTabSize(int i) {tab_size = i;}
 	
 	void CombineTokens();

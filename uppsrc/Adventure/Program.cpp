@@ -616,7 +616,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 /*door_funcs = {
 	open = OpenDoor,
 	close = CloseDoor,
-	walkto = ComeOutDoor
+	"walkto": ComeOutDoor
 }*/
 
 bool Program::Fades(int fade, int dir) {

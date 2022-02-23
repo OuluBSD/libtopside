@@ -26,7 +26,7 @@ enable_diag_squeeze = true, // allow squeeze through diag gap?
 }
 // verb to use when just clicking aroung (e.g. move actor);
 "verb_default": {
-	{ walkto = "walkto" }, "text": "walk to",
+	{ "walkto": "walkto" }, "text": "walk to",
 }
 function reset_ui();
 	verb_main"col": 12, // main color (lt blue)
@@ -105,7 +105,7 @@ reset_ui();
      obj_ship.scripts.view_my_engine();
      //say_line("my ship needs to be repaired:the energy crystal has shattered:without it, i have no way to get home!");
     },
-    walkto = @(&me) {
+    "walkto": @(&me) {
      obj_ship.scripts.view_my_engine();
     },
    }
@@ -208,7 +208,7 @@ reset_ui();
     "use_dir": "face_front",
    },
    "verbs": {
-    walkto = @(&me) {
+    "walkto": @(&me) {
      put_at(selected_actor,86,61,rm_crash);
      change_room(rm_crash,1);
     },
@@ -350,7 +350,7 @@ reset_ui();
     }
    },
    "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
 						if not main_actor.disabled_signal then
        dset(10,2) // signal generator
        load("_game-pt2");
@@ -374,7 +374,7 @@ reset_ui();
      "use_dir": "face_back",
     },
    "verbs": {
-					walkto = @(&me) {
+					"walkto": @(&me) {
 						//printh("load disk 2!!!");
       //set flag for (entered/exited door
       dset(10,3) // alien base (outside);

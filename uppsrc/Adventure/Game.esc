@@ -359,7 +359,7 @@ main() {
 							"use_dir": "face_back"
 						},
 						"verbs": {
-							walkto = @(&me) {
+							"walkto": @(&me) {
 								come_out_door(me, obj_landing_exit_hall);
 							}
 						}
@@ -375,7 +375,7 @@ main() {
 							"use_dir": "face_back"
 						},
 						"verbs": {
-							walkto = @(&me) {
+							"walkto": @(&me) {
 								come_out_door(me, obj_library_door_hall);
 							}
 						}
@@ -392,7 +392,7 @@ main() {
 							"use_dir": "face_right"
 						},
 						"verbs": {
-							walkto = @(&me) {
+							"walkto": @(&me) {
 								come_out_door(me, obj_kitchen_door_hall);
 							}
 						}
@@ -822,7 +822,7 @@ main() {
 							"use_dir": "face_front"
 						},
 						"verbs": {
-							walkto = @(&me) {
+							"walkto": @(&me) {
 								say_line("i can't swim!");
 							},
 							"lookat": @(&me) {

@@ -27,7 +27,7 @@ enable_gfx_loa"d": "true",
 }
 // verb to use when just clicking aroung (e.g. move actor);
 "verb_default": {
-	{ walkto = "walkto" }, "text": "walk to",
+	{ "walkto": "walkto" }, "text": "walk to",
 }
 function reset_ui();
 	verb_main"col": 12, // main color (lt blue)
