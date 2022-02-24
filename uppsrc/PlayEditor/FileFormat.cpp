@@ -54,6 +54,10 @@ bool PlayTokenizer::Process(String str, String path) {
 				cursor++;
 				Add(TK_COMMENT);
 			}
+			else if (chr == '*' && chr1 == '*') {
+				cursor++;
+				Add(TK_BLOCK_COMMENT);
+			}
 			else {
 				state = WORD;
 				s.Clear();
@@ -68,9 +72,10 @@ bool PlayTokenizer::Process(String str, String path) {
 				loc.line++;
 				state = ANY;
 			}
-			else if (chr == '\r' || chr == '\t' || chr == ' ') {
+			else if (chr == '\r' || chr == '\t' || chr == ' ' || chr == '*') {
 				Add(TK_ID).str_value = s.ToString();
 				state = ANY;
+				cursor--;
 				continue;
 			}
 			else if (chr == ':') {
@@ -227,7 +232,7 @@ bool PlayParser::ParsePart(PlayPart& p) {
 	if (!CheckColon()) return false;
 	Next();
 	if (!CheckEof()) return false;
-	if (!ParseSentenceEol(p.title)) return false;
+	if (!ParseSentenceEol(p.title, false)) return false;
 	
 	
 	while (!IsEof()) {
@@ -284,7 +289,7 @@ bool PlayParser::ParseSection(PlaySection& s) {
 	if (!CheckColon()) return false;
 	Next();
 	if (!CheckEof()) return false;
-	if (!ParseSentenceEol(s.title)) return false;
+	if (!ParseSentenceEol(s.title, false)) return false;
 	if (!ParsePlayDialogue(s.dialog)) return false;
 	
 	return true;
@@ -313,7 +318,7 @@ bool PlayParser::ParseMetaText(MetaText& txt) {
 	while (!IsEof()) {
 		PlaySentence& sent = txt.sents.Add();
 		
-		if (!ParseSentence(sent))
+		if (!ParseSentence(sent, false))
 			return false;
 		
 		const Token& t = Current();
@@ -334,9 +339,9 @@ bool PlayParser::ParseMetaText(MetaText& txt) {
 	return true;
 }
 
-bool PlayParser::ParseSentenceEol(PlaySentence& sent) {
+bool PlayParser::ParseSentenceEol(PlaySentence& sent, bool opt_voice_id) {
 	
-	if (!ParseSentence(sent))
+	if (!ParseSentence(sent, opt_voice_id))
 		return false;
 	
 	{
@@ -350,7 +355,30 @@ bool PlayParser::ParseSentenceEol(PlaySentence& sent) {
 	return true;
 }
 
-bool PlayParser::ParseSentence(PlaySentence& p) {
+bool PlayParser::ParseSentence(PlaySentence& p, bool opt_voice_id) {
+	
+	if (opt_voice_id && Current().IsType(TK_ID)) {
+		WString txt = Current().GetTextValue().ToWString();
+		if (txt.GetCount() && txt[0] == '(') {
+			Next();
+			if (txt.GetCount() == 1) {
+				while (!IsEof()) {
+					txt += Current().GetTextValue().ToWString();
+					Next();
+					if (txt[txt.GetCount()-1] == ')')
+						break;
+				}
+			}
+			if (txt[0] == '(' && txt[txt.GetCount()-1] == ')') {
+				p.voice_id = txt.Mid(1, txt.GetCount()-2);
+			}
+			else {
+				AddError(Current().loc, "invalid voice id");
+				return false;
+			}
+		}
+	}
+	
 	while (!IsEof()) {
 		const Token& t = Current();
 		if (t.IsType(TK_ID) || t.IsType(TK_STRING)) {
@@ -362,6 +390,8 @@ bool PlayParser::ParseSentence(PlaySentence& p) {
 	}
 	
 	if (p.tokens.IsEmpty()) {
+		const Token& t = Current();
+		DUMP(t);
 		AddError(Current().loc, "Expected text");
 		return false;
 	}
@@ -383,13 +413,15 @@ bool PlayParser::ParsePlayDialogue(PlayDialogue& p) {
 	PassEmpty();
 	
 	while (!IsEof()) {
-		if (Current().IsType(TK_NEWLINE))
+		if (IsSectionToken(Current()) || IsPartToken(Current()))
 			break;
 		
 		PlayLine& l = p.lines.Add();
 		
 		if (!ParsePlayLine(l))
 			return false;
+		
+		PassEmpty();
 	}
 	
 	if (p.lines.IsEmpty()) {
@@ -401,49 +433,66 @@ bool PlayParser::ParsePlayDialogue(PlayDialogue& p) {
 }
 
 bool PlayParser::ParsePlayLine(PlayLine& l) {
-	if (Current().IsType(TK_COMMENT)) {
+	if (Current().IsType(TK_BLOCK_COMMENT)) {
 		Next();
-		l.is_comment = true;
-	}
-	else {
-		{
-			const Token& t = Current();
-			if (!t.IsType(TK_ID)) {
-				AddError(t.loc, "Expected identifier");
-				return false;
-			}
-			l.id.name = t.GetTextValue().ToWString();
-			Next();
-		}
-		
-		{
-			const Token& t = Current();
-			if (!CheckColon())
-				return false;
-			Next();
-		}
-	}
-	
-	while (!IsEof()) {
-		{
-			const Token& t = Current();
-			const Token* n = GetNext();
-			if (t.IsType(TK_ID) && n && n->IsType(TK_COLON))
-				break;
-			if (t.IsType(TK_NEWLINE))
-				break;
-		}
+		l.is_narration = true;
 		
 		PlaySentence& sent = l.sents.Add();
-		if (!ParseSentenceEol(sent))
+		if (!ParseSentence(sent, false))
 			return false;
+		
+		if (!Current().IsType(TK_BLOCK_COMMENT)) {
+			AddError(Current().loc, "Expected end of narration '**'");
+			return false;
+		}
+		Next();
 	}
-	
-	if (l.sents.IsEmpty()) {
-		AddError(Current().loc, "Expected sentences");
-		return false;
+	else {
+		if (Current().IsType(TK_COMMENT)) {
+			Next();
+			l.is_comment = true;
+		}
+		else {
+			{
+				const Token& t = Current();
+				if (!t.IsType(TK_ID)) {
+					AddError(t.loc, "Expected identifier");
+					return false;
+				}
+				l.id.name = t.GetTextValue().ToWString();
+				Next();
+			}
+			
+			{
+				const Token& t = Current();
+				if (!CheckColon())
+					return false;
+				Next();
+			}
+		}
+		
+		while (!IsEof()) {
+			{
+				const Token& t = Current();
+				const Token* n = GetNext();
+				if (t.IsType(TK_ID) && n && n->IsType(TK_COLON))
+					break;
+				if (t.IsType(TK_NEWLINE))
+					break;
+				if (t.IsType(TK_COMMENT) || t.IsType(TK_BLOCK_COMMENT))
+					break;
+			}
+			
+			PlaySentence& sent = l.sents.Add();
+			if (!ParseSentenceEol(sent, true))
+				return false;
+		}
+		
+		if (l.sents.IsEmpty()) {
+			AddError(Current().loc, "Expected sentences");
+			return false;
+		}
 	}
-	
 	return true;
 }
 
@@ -478,6 +527,8 @@ String PlaySentence::ToString(int indent) const {
 	if (indent >= 0)
 		s.Cat('\t', indent);
 	int i = 0;
+	if (voice_id.GetCount())
+		s << "[voice " << voice_id.ToString() << "] ";
 	for (const Token& t : tokens) {
 		if (i++ > 0)
 			s.Cat(' ');
@@ -493,6 +544,11 @@ String PlayLine::ToString(int indent) const {
 	s.Cat('\t', indent);
 	if (is_comment) {
 		s << "Comment:\n";
+		for (const PlaySentence& sent : sents)
+			s << sent.ToString(indent+1);
+	}
+	else if (is_narration) {
+		s << "Narration:\n";
 		for (const PlaySentence& sent : sents)
 			s << sent.ToString(indent+1);
 	}

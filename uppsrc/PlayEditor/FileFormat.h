@@ -55,7 +55,7 @@ struct PlayIdentifier : ScriptObject {
 
 struct PlaySentence : ScriptObject {
 	Vector<Token> tokens;
-	
+	WString voice_id;
 	
 	String ToString(int indent=-1) const;
 	
@@ -72,6 +72,7 @@ struct MetaText : ScriptObject {
 struct PlayLine : ScriptObject {
 	PlayIdentifier id;
 	bool is_comment = false;
+	bool is_narration = false;
 	Array<PlaySentence> sents;
 	
 	
@@ -136,8 +137,8 @@ class PlayParser : public ErrorSource {
 	bool ParseScript(PlayScript& s);
 	bool ParseParts(PlayScript& s);
 	bool ParseMetaText(MetaText& t);
-	bool ParseSentence(PlaySentence& p);
-	bool ParseSentenceEol(PlaySentence& p);
+	bool ParseSentence(PlaySentence& p, bool opt_voice_id);
+	bool ParseSentenceEol(PlaySentence& p, bool opt_voice_id);
 	bool ParsePlayDialogue(PlayDialogue& p);
 	bool ParsePlayLine(PlayLine& l);
 	bool ParsePart(PlayPart& p);

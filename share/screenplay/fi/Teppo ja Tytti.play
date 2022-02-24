@@ -53,7 +53,7 @@ Vahti:                   Vahti
  
 // Oulun kaduilla puhkeaa jo toinen tappelu Kuhlmanin ja Palmfeltin aatelissukujen palvelijoiden välillä.
  
-	** Kuhlmanin työläinen (KPalv1) tönäisee ohimennen Palmfeltin työläistä (PPalv1)s ** 
+	** Kuhlmanin työläinen (KPalv1) tönäisee ohimennen Palmfeltin työläistä (PPalv1)s **
 
 PPalv1:	(A) Hä, mikä on?
 			Onko sulla menny näkö Kuhlmanin savupirtissä?
@@ -69,7 +69,7 @@ PPalv2: (A) Meijän väellä ei kuule ole mitään salattavaa eikä hävettävä
 KPalv2:	(Ä) Ai me haistaan vai?
 			Sanoo tyyppi jonka lemu löyhkää korttelin päähän.
 
-	** Toinen työläinen lyö toista työläistä naamaan, mihin vastataan samalla mitalla ja käsirysy alkaa ** 
+	** Toinen työläinen lyö toista työläistä naamaan, mihin vastataan samalla mitalla ja käsirysy alkaa **
 
 
                         Luku 2: Pieni kylä
@@ -77,103 +77,99 @@ KPalv2:	(Ä) Ai me haistaan vai?
 
 Musiikki: "2021/focus.tg"
 	
-    On vaattees kuluneet,
-    hampaat jo kadonneet.
-    Sun vanha konikaan,
-    ei kelpaa makkaraan.
-    Teil pettuleipä on
-    tarjolla kesäl jo.
-    Luut paistaa vaimollas,
-    lehmillä, sijoillas.
-
-    Metsäs on kaadettu,
-    tervaksi poltettu,
-    halvalla poistettu,
-    ja rahat pois juotu.
-    Kun tulee tapaamaan,
-    tuo täitä tullessaan.
-    Kai käy ne pesulla,
-    vain kerran vuodessa.
-
-    Pieni kylä pienellä tiel.
-    Pielessä on elämä siel.
-    Kaikki voi saada remmistä ne viel.
-
-    On vääril poluilla,
-    tavattu kulkea.
-    Ja laittaa maksamaan
-    alemmat arvoltaan.
-    Ei oo mun ongelma,
-    jos puus on lopussa,
-    ja jäädyt talvella,
-    voit laittaa vaatetta.
-
-    Metsäs on kaadettu,
-    tervaksi poltettu,
-    rahdattu Eurooppaan,
-    laivoja valmistaan.
-    Kun tulee tapaamaan,
-    tuo nälän mukanaan,
-    ja jälkeen katsotaan,
-    veikö jotain mukanaan.
-
-    Pieni kylä pienellä tiel.
-    Pielessä on elämä siel.
-    Kaikki voi saada remmistä ne viel.
-
-    Pelkää ne vallan alla ja
-    vallasta riitelee.
-    Puolustaa ei heikompaa kai saa
-    kukaan.
-
-    Meitä yhdistää
-    riidat joihin kaikki kelpaa.
-    Säännöt rikotaan,
-    syypää heikommasta saadaan.
-    Valheit juorutaan,
-    niin et liian tylsää ei ois.
-    Mukaan huijataan
-    vanhat kun vain lähtee pois.
-
-    Pieni kylä pienellä tiel.
-    Pielessä on elämä siel.
-    Kaikki voi saada remmistä ne viel.
-
-    Pelkää ne vallan alla ja
-    vallasta riitelee.
-    Puolustaa ei heikompaa kai saa
-    kukaan.
+KPalv1:		On vaattees kuluneet,
+			hampaat jo kadonneet.
+PPalv1:		Sun vanha konikaan,
+			ei kelpaa makkaraan.
+KPalv1:		Teil pettuleipä on
+			tarjolla kesäl jo.
+PPalv1:		Luut paistaa vaimollas,
+			lehmillä, sijoillas.
+			
+KPalv1:		Metsäs on kaadettu,
+			tervaksi poltettu,
+			halvalla poistettu,
+			ja rahat pois juotu.
+PPalv1:		Kun tulee tapaamaan,
+			tuo täitä tullessaan.
+			Kai käy ne pesulla,
+			vain kerran vuodessa.
+			
+Karl:		Pieni kylä pienellä tiel.
+			Pielessä on elämä siel.
+			Kaikki voi saada remmistä ne viel.
+			
+PPalv2:		On vääril poluilla,
+			tavattu kulkea.
+PPalv1:		Ja laittaa maksamaan
+			alemmat arvoltaan.
+KPalv1:		Ei oo mun ongelma,
+			jos puus on lopussa,
+KPalv2:		ja jäädyt talvella,
+			voit laittaa vaatetta.
+			
+KPalv2:		Metsäs on kaadettu,
+			tervaksi poltettu,
+			rahdattu Eurooppaan,
+			laivoja valmistaan.
+PPalv2:		Kun tulee tapaamaan,
+			tuo nälän mukanaan,
+			ja jälkeen katsotaan,
+			veikö jotain mukanaan.
+			
+Karl:		Pieni kylä pienellä tiel.
+			Pielessä on elämä siel.
+			Kaikki voi saada remmistä ne viel.
+			-
+			Pelkää ne vallan alla ja
+			vallasta riitelee.
+			Puolustaa ei heikompaa kai saa
+			kukaan.
+			
+KPalv1:		Meitä yhdistää
+			riidat joihin kaikki kelpaa.
+PPalv1:		Säännöt rikotaan,
+			syypää heikommasta saadaan.
+KPalv2:		Valheit juorutaan,
+			niin et liian tylsää ei ois.
+PPalv2:		Mukaan huijataan
+			vanhat kun vain lähtee pois.
+			
+Karl:		Pieni kylä pienellä tiel.
+			Pielessä on elämä siel.
+			Kaikki voi saada remmistä ne viel.
+			-
+			Pelkää ne vallan alla ja
+			vallasta riitelee.
+			Puolustaa ei heikompaa kai saa
+			kukaan.
 
 
                         Luku 3: Normipäivä jatkuu
 
 
-// Veijo Palmfelt, yrittää pysäyttää tappelun, mutta hän joutuu mukaan,
-// kun uhkarohkea Matti Kuhlman, saapuu paikalle.
+// Veijo Palmfelt, yrittää pysäyttää tappelun, mutta hän joutuu mukaan, kun uhkarohkea Matti Kuhlman, saapuu paikalle.
 
 Veijo:	(E) Hei! Nyt loppuu se tappelu Palmfeltin miehiltä.
 
-	** Tappelu jatkuu **
-	** Matti Kuhlman saapuu Veijon takaa **
+	** Tappelu jatkuu. **
+	** Matti Kuhlman saapuu Veijon takaa. **
 
 Veijo:	(E) Eikö kuulu? Nyt ...
 
-	** Matti työntää Veijon selkäpuolelta tappelevaan väkijoukkoon **
-	** Joku lyö Veijoa välittömästi naamaan ja häntä riuhdotaan vaatteista mukaan **
-	** Veijo repäisee itsensä irti ja kääntyy Matin puoleen **
+	** Matti työntää Veijon selkäpuolelta tappelevaan väkijoukkoon. **
+	** Joku lyö Veijoa välittömästi naamaan ja häntä riuhdotaan vaatteista mukaan. **
+	** Veijo repäisee itsensä irti ja kääntyy Matin puoleen. **
 
 Veijo:	(E) Saatatan tollo!
 
-	** Veijo lyö Mattia naamaan, Matti ottaa Veijoa rinnuksista,
-	    ja molemmat päätyvät kaatumaan tappelevaan joukkoon **
+	** Veijo lyö Mattia naamaan, Matti ottaa Veijoa rinnuksista, ja molemmat päätyvät kaatumaan tappelevaan joukkoon. **
 
 
 
-// Jatkuvasta väkivallasta raivostuneiden ihmisten lyötyä rettelöivät ryhmät alas, Oulun
-// maaherra s Magnus Jägerhorn yrittää estää perheiden väliset uudet konfliktit määräämällä
-// tyrmään jokaisen, joka häiritsee rauhaa tulevaisuudessa.
+// Jatkuvasta väkivallasta raivostuneiden ihmisten lyötyä rettelöivät ryhmät alas, Oulun maaherra Karl Magnus Jägerhorn yrittää estää perheiden väliset uudet konfliktit määräämällä tyrmään jokaisen, joka häiritsee rauhaa tulevaisuudessa.
 
-	** Oulun maaherra Karl J ägerhorn istuu työpöytänsä ääressä kirjoittamassa sulkakynällä kynttilän valossa **
+	** Oulun maaherra Karl Jägerhorn istuu työpöytänsä ääressä kirjoittamassa sulkakynällä kynttilän valossa **
 
 Karl:	(Å) Voi perkele näitä urpoja.
 			Mitä ihmettä niiden päässä kulkee?
@@ -230,14 +226,14 @@ Veijo:	(E) Kyllä me kuule löyetään sulle semmonen.
 Musiikki: "2021/cutie from future.tg"
 
 Veijo:	(E) Sä et oo kuumana siit,
-			se ei oo kuumana sust. 
+			se ei oo kuumana sust.
 			mitenkö teistä löytyis
 			ees hetken lemmenlöylyt.
 			Ja mä oon tästä varma,
 			sä et tuu sitä saamaan,
 			mut pilata sä voit sen
 			tulevaisuuden onnen.
-	
+			-
 			Niin kovin haluat suudella.
 Teppo:	( ) Etsin vain paikkoja
 			kun samas huoneessa oon...
@@ -251,8 +247,8 @@ Veijo:	(E) On muitakin,
 Teppo:	( ) mut se on ainoo
 Veijo:	(E) ja vastaa ei,
 			kun peili ei se oo.
-
-Veijo:	(E) Sä et oo pahoillasi,
+			-
+			Sä et oo pahoillasi,
 			se ei oo pahoillansa,
 			jos mitään sanotkaan et
 			ja pois päin vain kävelet.
@@ -274,7 +270,7 @@ Veijo:	(E) On muitakin,
 Teppo:	( ) mut se on ainoo
 Veijo:	(E) ja vastaa ei,
 			kun peili ei se oo.
-
+			-
 			Kuvaasi sun katoppa tarkemmin,
 			sen vastaavan tahtoisit.
 			Ei sun repliikit niin hyvii oo,
@@ -291,6 +287,12 @@ Teppo:	( ) Enkä huomaa, kuinka kärsii
 			kun jatkan näytelmääni.
 
 Veijo:	(E) Voisit yrittää rauhoittua.
+Teppo:	( ) Ei sydän tää, voi hidastua.
+Veijo:	(E) On muitakin,
+Teppo:	( ) mut se on ainoo
+Veijo:	(E) ja vastaa ei,
+			kun peili ei se oo.
+Veijo:	(E) Hei yritä rauhoittua.
 Teppo:	( ) Ei sydän tää, voi hidastua.
 Veijo:	(E) On muitakin,
 Teppo:	( ) mut se on ainoo
@@ -319,7 +321,7 @@ Aleksanteri:	(O) Päivää vaan.
 Mikael:			(ä) Päivää päivää.
 Aleksanteri:	(O) Siitä teijän tyttärestänne mää tulin vaan jutteleen.
 Mikael:			(ä) Niin joo, mehän siitä jo ollaan puhuttu.
-					Kuules. 
+					Kuules.
 					Tyyne on vasta kuusitoista.
 					Nyt tehdään niin, että sää ootat sen kaks vuotta vielä sen kans.
 Aleksanteri:	(O) ...
@@ -357,10 +359,10 @@ Mikael:		(ä) Mutrusuu, sitruunanaama,
 Maria:			(a) Mut miten järjestyksen piät?
 				Tytti tarvitsee kivan, siistin, fiksun juhlan.
 
-Mikael:		(ä) Sanoit: tarvit miehistä mittaa.
-Maria:		(a) Sanoin: tarjoo voi, mut ei liikaa.
-Mikael:		(ä) Sanoit: kutsu sun ystäviisi.
-Maria:		(a) Sanoin: pliis hei, Tytti kiltti
+Mikael:		(ä) Sanoit; tarvit miehistä mittaa.
+Maria:		(a) Sanoin; tarjoo voi, mut ei liikaa.
+Mikael:		(ä) Sanoit; kutsu sun ystäviisi.
+Maria:		(a) Sanoin; pliis hei, Tytti kiltti
 				aikuinen melkein on,
 				en voi mä huijata, et
 				maailma on viaton.
@@ -506,7 +508,7 @@ Teppo:		( ) Illalla
 				On kaikki tyypit oottamas
 				et fiilis nostetaan.
 
-Teppo ja Veijo:	Pinkkiä unelmaa
+T&V:			Pinkkiä unelmaa
 				me tänään seurataan.
 				Pehmeää rakkautta,
 				ja makuu makeaa
@@ -559,7 +561,7 @@ Teppo:		( ) Mä voin löytää toisenkin,
 
 // Mikaelin taloudessa nuori Tytti keskustelee äitinsä Maria Kuhlmanin ja hoitajattarensa kanssa mahdollisuudesta mennä naimisiin Aleksanterin kanssa.
 
-	** Tytti keskustelee äitinsä Maria Kuhlmanin ja hoitajattarensa Katrin kanssa ** 
+	** Tytti keskustelee äitinsä Maria Kuhlmanin ja hoitajattarensa Katrin kanssa **
 	
 Maria:	(a)	Ooksää siitä Aleksanterista kuullu?
 Tytti:	(ö) Onko se Aleksanteri se maaherran sukulainen?
@@ -613,7 +615,7 @@ Tytti:	(ö) Ai, kaikki muut tietää mua paremmin,
 			on vaan kurja olo,
 			ja vaimoo painostaa nii että
 			lapsii tuottaa tai on horo
-
+			-
 			Niin armollas syön leivänpalan
 			Niin vedellä huuhtelen sen alas.
 			Niin velkaa, velkaantuu en saa.
@@ -695,7 +697,7 @@ Veijo:	(E) Kuka sille kelpaa?
 Teppo:	( ) Kuka saa sen nauraan?
 Aatu:	(U) Kuka kotiin saattaa?
 Teppo:	( ) Jolle tuuri käy.
-
+			-
 			Tää on se ilta viimeinen,
 			kun tulen tänne etsien,
 			et kuka on mun kohtalo,
@@ -709,7 +711,7 @@ Teppo:	( ) Mikä tuoksuu noin,
 			sen syödä vois.
 Veijo:	(E) Kukahan ois tääl
 			liian yksinään, niinku tuo,
-			
+			-
 			kuka tuo jätkä on?
 Teppo:	( ) Kuka tuo jätkä on?
 Aatu:	(U) Kuka tuo jätkä on?
@@ -718,7 +720,7 @@ Veijo:	(E) Kaikki vastaanottaa.
 Teppo:	( ) Kaikki nauramaan saa.
 Aatu:	(U) Kaikki saa haluaan,
 Teppo:	( ) muttei annakkaan.
-
+			-
 			Tää on se ilta viimeinen,
 			kun tulen tänne etsien,
 			et kuka on mun kohtalo,
@@ -762,7 +764,7 @@ Kaikki:	( ) Niin kuka se on ja
 	** Matti kavereineen kuulee lisää vieraita tulevan **
 
 Kuhl1:	(O) Taas tuli joitakin
-Kuhl2:		Ketä tänne muka vielä voi ees tulla.
+Kuhl2:	(O) Ketä tänne muka vielä voi ees tulla.
 Matti:	(Y) Mää käyn kattoon.
 
 	** Matti menee eteiseen päin ja näkee Tepon, Veijon ja Aatun naamioituneena. Hän pysähtyy katsomaan tarkemmin **
@@ -780,10 +782,10 @@ Kuhl2:	(O) Ai ketkä?
 Matti:	(Y) No ne yhet.
 			Olikohan ne Pentti ja Aukusti.
 Kuhl1:	(O) Taneli ja Eljas?
-Kuhl2:		No ei ne. Kalle ja Tahvo?
+Kuhl2:	(O) No ei ne. Kalle ja Tahvo?
 Matti:	(Y) Eikun Veijo ja Aatu... ja joku kolmas.
 Kuhl1:	(O) Ai ne.
-Kuhl2:		Onko ne kutsuttu?
+Kuhl2:	(O) Onko ne kutsuttu?
 Matti:	(Y) Ei tietenkään.
 Kuhl1:	(O) No ehkä jotku vieraat on kutsunu ne.
 Matti:	(Y) Ehkä, mutta kyllähän kaikkien pitäis tietää että Palmfeltit ei oo tervetulleita Kuhlmanin taloon.
@@ -792,7 +794,7 @@ Matti:	(Y) Ehkä, mutta kyllähän kaikkien pitäis tietää että Palmfeltit ei
 	** Matti valmistautuu hyökkäämään, mutta hänen sukulaisensa pidättelevät häntä. **
 
 Kuhl2:	(O) Niin, mutta jos täällä joku tappelu tulee niin siitä puhutaan kohta joka paikassa.
-Kuhl1:		Sillä ne varmaan tulikin.
+Kuhl1:	(O) Sillä ne varmaan tulikin.
 			Ne tietää ettei me voida tehdä mitään.
 Matti:	(Y) Niin se on.
 			Liian iso riski..
@@ -914,7 +916,7 @@ Katri:	(u) Onhan nyt ihme taas,
 			voihan tuota ketkua rakastajaa,
 			voihan nuita nuoria ihmisii.
 			Kuinka päähän järkeä menisi?
-
+			-
 			Ikävyyttä, itsekkyyttä se on kun ei pidä housujaan jalois,
 			kun viaton tarttuu, ja huonosti käykin.
 
@@ -1044,7 +1046,7 @@ Lindström:	(Ä) Minulle sallituin oikeuksin julistan teidät aviomieheksi ja va
                         Luku 16: Ikuinen rakkaus
 
 
-Musiikki: "2021/dreaming together.tg":
+Musiikki: "2021/dreaming together.tg"
 
 Tytti:	(ö) Valkoisella nähdä sä saat,
 Teppo:	( ) mustal pääset turvaan,
@@ -1178,7 +1180,7 @@ Matti:  (Y) Oletko sä sellanen
             voittajana selviytynyt.
 
 Aatu:   (U) On elämässä mulla tää yks totuus vain,
-            kuule 'life suck and then you die'  
+            kuule 'life suck and then you die'
 
 Matti:  (Y) Ootko menny luulemaan
             voittavas mut muuten vaan?
@@ -1190,9 +1192,9 @@ Matti:  (Y) Ootko menny luulemaan
             hengellesi armoa.
 
 Aatu:   (U) On elämässä mulla tää yks totuus vain,
-            kuule 'life suck and then you die'  
+            kuule 'life suck and then you die'
 
-Teppo:  ( ) Vaijettu viisaus:
+Teppo:  ( ) Vaijettu viisaus;
             vaa'assa painaa seuraus uus.
             Liikaa on tappio, jos voi hävii kaiken,
             vaik "hävii voi sä et".
@@ -1210,13 +1212,13 @@ Matti:  (Y) Vain on tiellä, teot vielä,
             kummoinenkaan.
 
 Aatu:   (U) On elämässä mulla tää yks totuus vain,
-            kuule 'life suck and then you die'  
+            kuule 'life suck and then you die'
 
-Teppo:  ( ) Vaijettu viisaus:
+Teppo:  ( ) Vaijettu viisaus;
             vaa'assa painaa seuraus uus.
             Liikaa on tappio, jos voi hävii kaiken,
             vaik "hävii voi sä et".
-
+			-
             Älkää turhaan tehkö taisteluu,
             kun eihän sillä loppu tuu, vaan alku uus.
 
@@ -1276,93 +1278,90 @@ Teppo:		( ) Selvä, kiitos.
 Musiikki: "2021/waiting for tonight.tg"
 Sanat: Sari Rokka, Seppo Pakonen
 
-Tytti:
-(ö) Katso kuinka mä tanssin taas,
-    katso vapaata maailmaa.
-    Kuule kuinka sävelet nuo
-    meille elämän askeleet tuo.
-    Katso kuinka mä tanssin taas
-    Katso hehkuvaa maailmaa
-    Kuule musiikki, kaiku sen
-    elämää sykkivän totuuden.
+Tytti:	(ö) Katso kuinka mä tanssin taas,
+			katso vapaata maailmaa.
+			Kuule kuinka sävelet nuo
+			meille elämän askeleet tuo.
+			Katso kuinka mä tanssin taas
+			Katso hehkuvaa maailmaa
+			Kuule musiikki, kaiku sen
+			elämää sykkivän totuuden.
+			-
+			Polta merkkisi ikuinen
+			sisimpään niin että tunnen sen.
+			Aika on vielä ihmeiden, kun
+			laulu porautuu kallioon.
+			-
+			Maa on lämmin ja hiekka sen
+			tuo meille mereltä kuumuuden.
+			Ihmeet taas toteutuu,
+			meille maailma avautuu.
+			Ilmassa on jännite,
+			ootan iltaa mä nääntyen,
+			Tuut sä kuin sateena
+			kuival kaudella.
+			-
+			Katso kuinka mä tanssin taas,
+			katso hehkuvaa maailmaa.
+			Kuule musiikki, kaiku sen
+			elämää sykkivän totuuden.
+			Tanssin koska mä hehkun nään
+			Elämä taas multa huumaa pään
+			Tunnen sykkeen mun sydämen
+			Kaivannut oon sitä ikuisuuden.
+			-
+			Ilta tuo tuoksun kesäisen ja
+			saapuu se hetki kultainen.
+			Ootan sua tänne vierelleni
+			tunteen kun syke kovenee.
+			-
+			Laulan ja tanssin koska mä voin
+			Elämän kovuus mun voimani loi.
+			Enää en itke, hyräilen vain
+			Sieluuni uuden avaimen sain.
+			Toiveet vielä toteutuu,
+			olla ilta voi aivan uus.
+			Tuut kesäsateena
+			janon sammuttaan.
+			-
+			Katso kuinka mä tanssin taas,
+			katso vapaata maailmaa.
+			Kuule kuinka sävelet nuo
+			meille elämän askeleet tuo.
+			Katso kuinka mä tanssin taas
+			Katso hehkuvaa maailmaa
+			Kuule musiikki, kaiku sen
+			elämää sykkivän totuuden.
+			-
+			Saat mut pyöriin sängyssä oottaen,
+			tunteitain mä hillitä pysty en.
+			Viel kello raksuttaa,
+			viisarit sua kuljettaa.
+			Katson mä ulos vaan
+			ootan et sut vihdoin nähdä saan.
     
-    Polta merkkisi ikuinen 
-    sisimpään niin että tunnen sen.
-    Aika on vielä ihmeiden, kun
-    laulu porautuu kallioon.
-
-    Maa on lämmin ja hiekka sen 
-    tuo meille mereltä kuumuuden.
-    Ihmeet taas toteutuu,
-    meille maailma avautuu.
-    Ilmassa on jännite,
-    ootan iltaa mä nääntyen,
-    Tuut sä kuin sateena
-    kuival kaudella.
-
-    Katso kuinka mä tanssin taas,
-    katso hehkuvaa maailmaa.
-    Kuule musiikki, kaiku sen
-    elämää sykkivän totuuden.
-    Tanssin koska mä hehkun nään
-    Elämä taas multa huumaa pään
-    Tunnen sykkeen mun sydämen
-    Kaivannut oon sitä ikuisuuden.
-    
-    Ilta tuo tuoksun kesäisen ja
-    saapuu se hetki kultainen.
-    Ootan sua tänne vierelleni
-    tunteen kun syke kovenee. 
-    
-    Laulan ja tanssin koska mä voin
-    Elämän kovuus mun voimani loi.
-    Enää en itke, hyräilen vain
-    Sieluuni uuden avaimen sain.
-    Toiveet vielä toteutuu,
-    olla ilta voi aivan uus.
-    Tuut kesäsateena
-    janon sammuttaan.
-
-    Katso kuinka mä tanssin taas,
-    katso vapaata maailmaa.
-    Kuule kuinka sävelet nuo
-    meille elämän askeleet tuo.
-    Katso kuinka mä tanssin taas
-    Katso hehkuvaa maailmaa
-    Kuule musiikki, kaiku sen
-    elämää sykkivän totuuden.
-    
-    Saat mut pyöriin sängyssä oottaen,
-    tunteitain mä hillitä pysty en.
-    Viel kello raksuttaa,
-    viisarit sua kuljettaa.
-    Katson mä ulos vaan
-    ootan et sut vihdoin nähdä saan.
-    
-Teppo:
-( ) Tuuli tuo sun viestis kaukaa,
-    puissa nimes kuulen vaan.
-    Ei tästä mikään vuuduu puutu 
-    kun oon susta huumaantunu.
-    Tanssi sun ilta pitkä, kuuma.
-    Liikkuun sä laita mitä sul on.
-    Silmiä on luonto täynnä.
-    Kaikki näyttää sulla hyvältä.
-    
-Tytti:
-(ö) Katso kuinka mä tanssin taas,
-    katso hehkuvaa maailmaa.
-    Kuule musiikki, kaiku sen
-    elämää sykkivän totuuden.
-    Tanssin koska hehkun nään.
-    Elämä taas multa huumaa pään.
-    Tunnen sykkeen mun sydämen,
-    kaivannut oon sitä ikuisuuden.
-    
-    Viel tuut sä syliini, syliini ja
-    tuot onnen iltaani, iltaani.
-    Ota mut käsiisi, käsiisi ja
-    katso mun tanssiini, tanssiini.
+Teppo:	( ) Tuuli tuo sun viestis kaukaa,
+		    puissa nimes kuulen vaan.
+		    Ei tästä mikään vuuduu puutu
+		    kun oon susta huumaantunu.
+		    Tanssi sun ilta pitkä, kuuma.
+		    Liikkuun sä laita mitä sul on.
+		    Silmiä on luonto täynnä.
+		    Kaikki näyttää sulla hyvältä.
+		    
+Tytti:	(ö) Katso kuinka mä tanssin taas,
+			katso hehkuvaa maailmaa.
+			Kuule musiikki, kaiku sen
+			elämää sykkivän totuuden.
+			Tanssin koska hehkun nään.
+			Elämä taas multa huumaa pään.
+			Tunnen sykkeen mun sydämen,
+			kaivannut oon sitä ikuisuuden.
+			-
+			Viel tuut sä syliini, syliini ja
+			tuot onnen iltaani, iltaani.
+			Ota mut käsiisi, käsiisi ja
+			katso mun tanssiini, tanssiini.
 
 
                         Luku 5: Hääyö
@@ -1388,7 +1387,7 @@ Katri:	(u) Sanovat että se oli puolustusta.
 
 Tytti:	(ö) Sukumurhaaja jo ennen ensimmäistä hääyötä. Voi ei! [Tytti purskahtaa itkuun]
 
-// Hän kuitenkin rauhoittuu uudelleen ja tajuaa, että hänen velvollisuutensa kuuluu hänen rakkautensa kohteelle: Tepolle.
+// Hän kuitenkin rauhoittuu uudelleen ja tajuaa, että hänen velvollisuutensa kuuluu hänen rakkautensa kohteelle, Tepolle.
 
 Tytti:	(ö) Teppo ei varmasti tarkoittanut sitä...
 
@@ -1466,9 +1465,9 @@ Musiikki: "2022/first of the year 2022.tg"
 
 Tytti:  (ö) Viet rakkaan, aamun parhaan,
             mustaat sen kun suus avaat.
-            Tunnusta, pääs on kusta, 
+            Tunnusta, pääs on kusta,
             ei oo juttuu julmempaa.
-            
+            -
             Polttaa, lähtö täältä
             polttaa, kuuma tie tuol
             polttaa, pommi päässä
@@ -1488,7 +1487,7 @@ Tytti:  (ö) Viet juhlan, onnen huuman,
             dumppaat sen kuin paskan vaan.
             Pois mut vaan tahdot kuskaa,
             kunhan mainees kiiltää saa.
-            
+            -
             Polttaa, rintaa julmuus
             polttaa, toivetta en
             koskaan saa sen hinta
@@ -1582,15 +1581,13 @@ Katri:	(u) Iiiiiiik!
 
 // Kuhlmanit surevat, ja Tytti viedään hautakellariin suunnitelman mukaan.
 
-	** Tytti kuljetetaan paareilla hautakellariin.
-	   Perässä kulkevat itkevät Maria, Mikael ja Katri **
+	** Tytti kuljetetaan paareilla hautakellariin. Perässä kulkevat itkevät Maria, Mikael ja Katri **
 
 
 // Ikävä kyllä pastori Lindströmin viesti, joka selittäisi suunnitelman Tepolle, ei koskaan
 // saavuta Haaparantaa. Sen kantaja, Johan Lindström, suljetaan rajalla karanteeniin.
 	
-	** Johannes Lindström on kuljettamassa viestiä juonesta Tepolle, kun rajanylityksellä vartiomies pysäyttää 
-	   epätavallisen rajanylittäjän iltahämärässä **
+	** Johannes Lindström on kuljettamassa viestiä juonesta Tepolle, kun rajanylityksellä vartiomies pysäyttää epätavallisen rajanylittäjän iltahämärässä **
 	  
 Vartija:	(O) Hei sinä siellä!
 				Niin sinä just!
@@ -1613,101 +1610,100 @@ Vartija:	(O) Hiljaa.
 
 Musiikki: "2021/she comes between us.tg"
 
-Teppo:
-( ) Kerran mun onnen sain, kerran
-    sain onnen kasvamaan, ja
-    kerran sen menetin, vielä
-    huonommin kävikin. Nyt ei
-    
-    riitä mun tahto, ystävät, enkä
-    yksinään saa mä yhteyttä.
-    Oon ollu se kohde moitteiden,
-    enkä nää mä tääl pakoreittiäkään.
-    
-    Pois viety on mun rohkeus ja
-    poissa on rakkauskin.
-    Ei jäänyt mulle käsiin mitään
-    ja elämäin käsis mul on.
-    
-    Voi vuodet menettää,
-    ja voi hetkes onnen löytää.
-    Voi heittää menemään,
-    ja voi joku toinen riistää.
-    
-    Vielä vaan ja uudestaan
-    sun nauruu muistelen,
-    enkä tiedä voinko vielä luotas
-    löytää vanhan rakkauden.
-    Ikävöin päivät ja ikävöin yöt,
-    kuulen kun rinnassa kaipuu lyö.
-    Sekaisin pää ja sydänkin tää mun on
-	kun et oo luonain.
-	
-	Viestii tuo rivinvälit,
-	ei ne vastaa siit,
-	tietoisuus kun rumaa jälkee ois 
-	ja muut valittaa vois.
-	
-	Viaton tääl kukaan ei oo ja
-    kierot valheil meitä vainoo, mut
-    ei kai onnee, ilmaisuutta oo
-    elo huoleton.
-	
-	Mielessä kaikki, mielessä muut,
-	mielessä syy ja vain katkeruus.
-	On kaikissa syy ja syy mussa vaan,
-	aiheuttajat kun sylkii mun suuntaan.
-	
-	Viaton on taulu tyhjä
-	kun sen mittaa maalaajat, ja
-	vielä tuuli toivoo tuo mun luo,
-	että armo voittaa.
-	
-    Vielä vaan ja uudestaan
-    sun nauruu muistelen,
-    enkä tiedä voinko vielä luotas
-    löytää vanhan rakkauden.
-    Ikävöin päivät ja ikävöin yöt,
-    kuulen kun rinnassa kaipuu lyö.
-    Sekaisin pää ja sydänkin tää mun on
-	kun et oo luonain.
-	Kun et oo luonain,
-	kun et mun luona oo,
-	kun et mun luokse tuu,
-	kun luos en pääse.
-	
-	Mikään ei voi lohduttaa,
-	mikään ei korvaakkaan.
-	Kukaan ei tuu huomaamaan,
-	et ei oo sydän kotonaan.
-	
-	Ehkä viima vie
-	vihdoin tunteen viimisen.
-	Voin löytää sen uudelleen,
-	kun toivo tulee eteen.
-	
-	Yhteisen ajan ja paikan
-	hoksaa vielä kun vain
-	sen muistelee.
-	
-	Sit kun mä lähen uudelleen
-	luo samanlaisten,
-	ja vastassa on juuri ne,
-	ne mieleltään kuin mun nuoruuden,
-	mä vaan lähen kun
-	
-    vielä vaan ja uudestaan
-    sun nauruu muistelen,
-    enkä tiedä voinko vielä luotas
-    löytää vanhan rakkauden.
-    Ikävöin päivät ja ikävöin yöt,
-    kuulen kun rinnassa kaipuu lyö.
-    Sekaisin pää ja sydänkin tää mun on
-	kun et oo luonain.
-	Kun et oo luonain,
-	kun et mun luona oo,
-	kun et mun luokse tuu,
-	kun luos en pääse.
+Teppo:	( ) Kerran mun onnen sain, kerran
+		    sain onnen kasvamaan, ja
+		    kerran sen menetin, vielä
+		    huonommin kävikin. Nyt ei
+		    -
+		    riitä mun tahto, ystävät, enkä
+		    yksinään saa mä yhteyttä.
+		    Oon ollu se kohde moitteiden,
+		    enkä nää mä tääl pakoreittiäkään.
+		    -
+		    Pois viety on mun rohkeus ja
+		    poissa on rakkauskin.
+		    Ei jäänyt mulle käsiin mitään
+		    ja elämäin käsis mul on.
+		    -
+		    Voi vuodet menettää,
+		    ja voi hetkes onnen löytää.
+		    Voi heittää menemään,
+		    ja voi joku toinen riistää.
+		    -
+		    Vielä vaan ja uudestaan
+		    sun nauruu muistelen,
+		    enkä tiedä voinko vielä luotas
+		    löytää vanhan rakkauden.
+		    Ikävöin päivät ja ikävöin yöt,
+		    kuulen kun rinnassa kaipuu lyö.
+		    Sekaisin pää ja sydänkin tää mun on
+			kun et oo luonain.
+			-
+			Viestii tuo rivinvälit,
+			ei ne vastaa siit,
+			tietoisuus kun rumaa jälkee ois
+			ja muut valittaa vois.
+			-
+			Viaton tääl kukaan ei oo ja
+		    kierot valheil meitä vainoo, mut
+		    ei kai onnee, ilmaisuutta oo
+		    elo huoleton.
+			-
+			Mielessä kaikki, mielessä muut,
+			mielessä syy ja vain katkeruus.
+			On kaikissa syy ja syy mussa vaan,
+			aiheuttajat kun sylkii mun suuntaan.
+			-
+			Viaton on taulu tyhjä
+			kun sen mittaa maalaajat, ja
+			vielä tuuli toivoo tuo mun luo,
+			että armo voittaa.
+			-
+		    Vielä vaan ja uudestaan
+		    sun nauruu muistelen,
+		    enkä tiedä voinko vielä luotas
+		    löytää vanhan rakkauden.
+		    Ikävöin päivät ja ikävöin yöt,
+		    kuulen kun rinnassa kaipuu lyö.
+		    Sekaisin pää ja sydänkin tää mun on
+			kun et oo luonain.
+			Kun et oo luonain,
+			kun et mun luona oo,
+			kun et mun luokse tuu,
+			kun luos en pääse.
+			-
+			Mikään ei voi lohduttaa,
+			mikään ei korvaakkaan.
+			Kukaan ei tuu huomaamaan,
+			et ei oo sydän kotonaan.
+			-
+			Ehkä viima vie
+			vihdoin tunteen viimisen.
+			Voin löytää sen uudelleen,
+			kun toivo tulee eteen.
+			-
+			Yhteisen ajan ja paikan
+			hoksaa vielä kun vain
+			sen muistelee.
+			-
+			Sit kun mä lähen uudelleen
+			luo samanlaisten,
+			ja vastassa on juuri ne,
+			ne mieleltään kuin mun nuoruuden,
+			mä vaan lähen kun
+			-
+		    vielä vaan ja uudestaan
+		    sun nauruu muistelen,
+		    enkä tiedä voinko vielä luotas
+		    löytää vanhan rakkauden.
+		    Ikävöin päivät ja ikävöin yöt,
+		    kuulen kun rinnassa kaipuu lyö.
+		    Sekaisin pää ja sydänkin tää mun on
+			kun et oo luonain.
+			Kun et oo luonain,
+			kun et mun luona oo,
+			kun et mun luokse tuu,
+			kun luos en pääse.
 
 	
                         Luku 9: Rottaongelma
@@ -1760,8 +1756,7 @@ Aleksanteri:	(O) Et sää tuntenut koko naista.
 
 Teppo:			( ) Ei sun tarvi tehdä tuota.
 
-	** Aleksanteri jatkaa hyökkäystä ja Teppo kaivaa nopeaa puukon esiin, torjuu Aleksanterin iskun ja
-	   upottaa puukon Aleksanterin alavartaloon **
+	** Aleksanteri jatkaa hyökkäystä ja Teppo kaivaa nopeaa puukon esiin, torjuu Aleksanterin iskun ja upottaa puukon Aleksanterin alavartaloon **
 
 	** Teppo astuu hautakellariin, ja näkee Tytin elottoman ruumiin **
 
@@ -1793,94 +1788,93 @@ Tytti:		(ö) Miksi mää lähtisin kun Teppo on jo täällä.
 
 Musiikki: "2021/will you believe in rock.tg"
 
-Tytti:
-	(ö) Vieläkö sut nään
-        aivan läheltä?
-        Vieläkö sua saan
-        kauan halata?
-        Kaikkein rakkaimpaa
-        olet mulle aina,
-        vaikka aika
-        sut vei.
+Tytti:	(ö) Vieläkö sut nään
+	        aivan läheltä?
+	        Vieläkö sua saan
+	        kauan halata?
+	        Kaikkein rakkaimpaa
+	        olet mulle aina,
+	        vaikka aika
+	        sut vei.
+	        -
+	        Liitävät linnut taivaal,
+	        pilvistä etsin kuvaas.
+	        Riittää mun usko vielä,
+	        siellä ootat sä meitä.
+	        -
+	        Et jättänyt sä paljoa,
+	        mut ei se ollut tarkoituskaan.
+	        Ei sun jälki ollut puhdasta,
+	        mut niin se aina tääl menee.
+	        -
+	        Niin erilaiset
+	        viiden tähden aikeet,
+	        Niin antavainen,
+	        ainoo ainokaisen naisen.
+	        Niin ilon aihe,
+	        onnen tuot sä kaikkeen.
+	        Niin koet kaiken,
+	        kuljet tiet ja lennät taivaatkin.
+	        -
+	        Vieläkö sut nään
+	        aivan läheltä?
+	        Vieläkö sua saan
+	        kauan halata?
+	        Kaikkein rakkaimpaa
+	        olet mulle aina,
+	        vaikka aika
+	        sut vei.
+	        -
+	        Merta päin laivat kulkee,
+	        laineista ne viel tunnen.
+	        Vielä on matka mulla,
+	        rannal vastaan voit tulla.
+	        -
+	        Et kertonut sä huolistas,
+	        mut en mä kai ois niist tajunnutkaan.
+	        Et antanut sä auttaakkaan,
+	        mut haitaksi oisin kai vain ollut.
+	        -
+	        Erilainen
+	        piilevästi vaikee.
+	        Niin antavainen,
+	        aina halus antaa kaiken.
+	        Niin ilon aihe,
+	        kaunis mieli kaikes.
+	        Niin koet kaiken,
+	        lämmön, valon, pimeen, kylmyyden.
+	        -
+	        Vieläkö sut nään
+	        aivan läheltä?
+	        Vieläkö sua saan
+	        kauan halata?
+	        Kaikkein rakkaimpaa
+	        olet mulle aina,
+	        vaikka aika
+	        sut vei.
+	        
+	        // Tempomuutos
         
-        Liitävät linnut taivaal,
-        pilvistä etsin kuvaas.
-        Riittää mun usko vielä,
-        siellä ootat sä meitä.
-        
-        Et jättänyt sä paljoa,
-        mut ei se ollut tarkoituskaan.
-        Ei sun jälki ollut puhdasta,
-        mut niin se aina tääl menee.
-        
-        Niin erilaiset
-        viiden tähden aikeet,
-        Niin antavainen,
-        ainoo ainokaisen naisen.
-        Niin ilon aihe,
-        onnen tuot sä kaikkeen.
-        Niin koet kaiken,
-        kuljet tiet ja lennät taivaatkin.
-        
-        Vieläkö sut nään
-        aivan läheltä?
-        Vieläkö sua saan
-        kauan halata?
-        Kaikkein rakkaimpaa
-        olet mulle aina,
-        vaikka aika
-        sut vei.
-        
-        Merta päin laivat kulkee,
-        laineista ne viel tunnen.
-        Vielä on matka mulla,
-        rannal vastaan voit tulla.
-        
-        Et kertonut sä huolistas,
-        mut en mä kai ois niist tajunnutkaan.
-        Et antanut sä auttaakkaan,
-        mut haitaksi oisin kai vain ollut.
-        
-        Erilainen
-        piilevästi vaikee.
-        Niin antavainen,
-        aina halus antaa kaiken.
-        Niin ilon aihe,
-        kaunis mieli kaikes.
-        Niin koet kaiken,
-        lämmön, valon, pimeen, kylmyyden.
-        
-        Vieläkö sut nään
-        aivan läheltä?
-        Vieläkö sua saan
-        kauan halata?
-        Kaikkein rakkaimpaa
-        olet mulle aina,
-        vaikka aika
-        sut vei.
-        
-        // Tempomuutos 
-        
-        Ei, en usko, et sää oo pois mennyt.
-        Viel sä nouset, heräät unestas.
-        Hei, sun sormissas kai nään viel liikkeen.
-        Et sää täysin kylmä vielä oo.
-        
-        Miks mulle käy, miten mulle käy näin?
-        Kaikki te ain pilaatte vain kaiken.
-        Saastaset maan likaa joka paikan.
-        Miks säkin noin, miks sä teit just noin?
-        
-        Et sä viel täysin poissa oo, voin aistii sen, 
-        levoton on henkes sun, mua koskien.
-        Vielä tuut sä takaisin leijuen,
-        viel otat syliis uudelleen, mut uudelleen.
-        
-        Mä en ehkä jaksakkaan, ens aamua,
-        ja kun henkes kuitenkaan ei tänne tuu.
-        Ei muut, usko kuitenkaan, kuin kaunista
-        sun kanssa on kahdestaan
-        aivan missä vaan.
+Tytti:  (ö) Ei, en usko, et sää oo pois mennyt.
+	        Viel sä nouset, heräät unestas.
+	        Hei, sun sormissas kai nään viel liikkeen.
+	        Et sää täysin kylmä vielä oo.
+	        -
+	        Miks mulle käy, miten mulle käy näin?
+	        Kaikki te ain pilaatte vain kaiken.
+	        Saastaset maan likaa joka paikan.
+	        Miks säkin noin, miks sä teit just noin?
+	        -
+	        Et sä viel täysin poissa oo, voin aistii sen,
+	        levoton on henkes sun, mua koskien.
+	        Vielä tuut sä takaisin leijuen,
+	        viel otat syliis uudelleen, mut uudelleen.
+	        -
+	        Mä en ehkä jaksakkaan, ens aamua,
+	        ja kun henkes kuitenkaan ei tänne tuu.
+	        Ei muut, usko kuitenkaan, kuin kaunista
+	        sun kanssa on kahdestaan
+	        aivan missä vaan.
         
 
                         Luku 11: Hei hei
@@ -1897,7 +1891,7 @@ Tytti:	(ö) Teppo rakas, me nähdään vielä.
 	Mikael:	(ä) Pää kiinni jo. Ei auta itkeä kun maito on jo maassa.
 	Vahti:	(O) Aivan käsittämätöntä. Miten jotkut pystyy tekeen noin typerästi?
 
-// Samuli ilmoittaa, että hänen vaimonsa on kuollut suruun Tepon maanpaosta. **
+// Samuli ilmoittaa, että hänen vaimonsa on kuollut suruun Tepon maanpaosta.
 
 	Samuli:	(A)	Kuulkaas, vaimon sydän ei kestänyt.
 	Mikael:	(ä) Ylipainoa vai?
@@ -1940,7 +1934,7 @@ Vahti:  (O) Lauseista kauheista
             sut muistan nyt.
             Niis menee pieleen se kaikki,
             se mikä voikin vaan.
-            
+            -
             Kuitenkaan en järkee löydä tästä,
             et miks kaksi lemmekästä
             on nähneet tän ainoona tienä pois,
@@ -1972,11 +1966,12 @@ Maria:  (a) Ja eihän ole se niin harmi.
             kun on niillä lapset viel,
             kun on pöydäs ruokittavat suut
             ja kun ei autakkaan muut.
+            -
             Arjessa mies voi olla vähän
             hermojenkiristäjä,
             vaikka siitä huumaantuu
             vaikka illal mielessä ei ois muu.
-            
+            -
             Se arki voiton vie mun
             tyttö, poissa ilon viet,
             poissa viet mun toivon,
@@ -1985,7 +1980,7 @@ Maria:  (a) Ja eihän ole se niin harmi.
 Mikael: (ä) Mustaks sä maalasit
             tän taivaan,
             tulevaisuudenkin.
-            
+            -
             Mun ois parempi olla
             yksinään koska,
             vaimo ei anteeksi anna kai.
@@ -1994,7 +1989,7 @@ Mikael: (ä) Mustaks sä maalasit
             
 Veijo:  (E) Nyt oon yksin vain ja
             kaikki mut täällä muistaa
-            "tuo oli oudon murhaajan kaa"
+            'tuo oli oudon murhaajan kaa'
             Kukaan ei tunne kuinka autoin
             kauniin liiton.
             
@@ -2010,6 +2005,7 @@ Maria:  (a) Ja eihän ole se niin harmi.
             kun on niillä lapset viel,
             kun on pöydäs ruokittavat suut
             ja kun ei autakkaan muut.
+            -
             Arjessa mies voi olla vähän
             hermojenkiristäjä,
             vaikka siitä huumaantuu
@@ -2029,7 +2025,7 @@ Katri:  (u) Piisaa pettymykseni,
             niin vaan riittää tämäkin, mut
             liikaa, toivoo onko
             liikaa, et tuut sä takaisin.
-            
+
 
                         Luku 13: Sovittu
 
