@@ -195,6 +195,7 @@ String ReadFileName(String s);
 String GetLineNumStr(String s, bool from_zero=false);
 bool ScanBoolString(const String& s);
 String Join(const Vector<int>& v, String join_str);
+String CenteredString(const String& s, int lw);
 
 bool IsConstChar(const WString& n, const char* cmp, int cmp_len);
 bool IsConstCharEnd(const WString& n, const char* cmp, int cmp_begin, int cmp_len);

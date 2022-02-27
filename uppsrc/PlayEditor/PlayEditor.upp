@@ -6,6 +6,9 @@ file
 	PlayEditor.h,
 	App.h,
 	App.cpp,
+	App.lay,
+	Renderer.h,
+	Renderer.cpp,
 	FileFormat.h,
 	FileFormat.cpp,
 	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp;

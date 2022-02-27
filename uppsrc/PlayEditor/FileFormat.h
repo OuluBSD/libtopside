@@ -50,6 +50,7 @@ struct PlayIdentifier : ScriptObject {
 	
 	
 	String ToString() const;
+	String ToScript() const;
 	
 };
 
@@ -57,7 +58,12 @@ struct PlaySentence : ScriptObject {
 	Vector<Token> tokens;
 	WString voice_id;
 	
+	PlaySentence() {}
+	PlaySentence(const PlaySentence& ps) {tokens <<= ps.tokens; voice_id = ps.voice_id;}
+	
 	String ToString(int indent=-1) const;
+	String ToScript() const;
+	Value GetData() const;
 	
 };
 
@@ -66,6 +72,8 @@ struct MetaText : ScriptObject {
 	
 	
 	String ToString(String title="", int indent=0) const;
+	String ToScript() const;
+	Value GetData() const;
 	
 };
 
@@ -73,10 +81,13 @@ struct PlayLine : ScriptObject {
 	PlayIdentifier id;
 	bool is_comment = false;
 	bool is_narration = false;
+	bool is_meta = false;
+	int timing = -1;
 	Array<PlaySentence> sents;
 	
 	
 	String ToString(int indent=0) const;
+	String ToScript() const;
 	
 };
 
@@ -85,6 +96,7 @@ struct PlayDialogue : ScriptObject {
 	
 	
 	String ToString(String title="", int indent=0) const;
+	String ToScript() const;
 	
 };
 
@@ -94,6 +106,7 @@ struct PlaySection : ScriptObject {
 	PlayDialogue dialog;
 	
 	String ToString(int indent=0) const;
+	String ToScript() const;
 	
 };
 
@@ -104,6 +117,7 @@ struct PlayPart : ScriptObject {
 	
 	
 	String ToString(int indent=0) const;
+	String ToScript() const;
 	
 };
 
@@ -116,9 +130,23 @@ struct PlayScript : ScriptObject {
 	Array<PlayPart> parts;
 	
 	
+	struct Subtitle {
+		PlayLine* line = 0;
+		PlaySentence* sent = 0;
+		int part_i = -1;
+		WString str;
+		
+		String ToString() const {return str.ToString();}
+	};
+	
+	Array<Subtitle> subtitles;
+	
+	
 	String ToString(int indent=0) const;
+	String ToScript() const;
 	void Dump() const {LOG(ToString());}
 	
+	void MakeSubtitles();
 	
 	
 };
@@ -126,12 +154,13 @@ struct PlayScript : ScriptObject {
 class PlayParser : public ErrorSource {
 	const Vector<Token>* tokens = 0;
 	int cursor = 0;
+	PlayScript& script;
 	
-	PlayScript script;
 	
 	bool IsPartToken(const Token& t);
 	bool IsSectionToken(const Token& t);
 	bool CheckEof();
+	bool CheckEol();
 	bool CheckColon();
 	
 	bool ParseScript(PlayScript& s);
@@ -139,6 +168,7 @@ class PlayParser : public ErrorSource {
 	bool ParseMetaText(MetaText& t);
 	bool ParseSentence(PlaySentence& p, bool opt_voice_id);
 	bool ParseSentenceEol(PlaySentence& p, bool opt_voice_id);
+	bool ParseTiming(PlayLine& p);
 	bool ParsePlayDialogue(PlayDialogue& p);
 	bool ParsePlayLine(PlayLine& l);
 	bool ParsePart(PlayPart& p);
@@ -153,7 +183,7 @@ class PlayParser : public ErrorSource {
 public:
 	typedef PlayParser CLASSNAME;
 	
-	PlayParser();
+	PlayParser(PlayScript& script);
 	
 	bool Process(const Vector<Token>& tokens);
 	

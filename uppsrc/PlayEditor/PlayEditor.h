@@ -4,6 +4,7 @@
 #include <LocalCtrl/LocalCtrl.h>
 
 #include "FileFormat.h"
+#include "Renderer.h"
 #include "App.h"
 
 

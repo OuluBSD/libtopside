@@ -1,0 +1,35 @@
+LAYOUT(LineConf, 568, 200)
+	ITEM(Upp::Button, insert_before, SetLabel(t_("Insert line before")).LeftPosZ(4, 120).TopPosZ(4, 20))
+	ITEM(Upp::Button, insert_after, SetLabel(t_("Add line after")).LeftPosZ(128, 120).TopPosZ(4, 20))
+	ITEM(Upp::Button, remove, SetLabel(t_("Remove line")).LeftPosZ(252, 120).TopPosZ(4, 20))
+	ITEM(Upp::Label, dv___3, SetLabel(t_("Actor:")).SetAlign(ALIGN_RIGHT).LeftPosZ(8, 68).TopPosZ(28, 20))
+	ITEM(Upp::DropList, actor, LeftPosZ(80, 124).TopPosZ(28, 19))
+	ITEM(Upp::Option, dv___5, SetLabel(t_("Has timing")).LeftPosZ(252, 76).TopPosZ(28, 20))
+	ITEM(Upp::EditDoubleSpin, timing, LeftPosZ(332, 116).TopPosZ(28, 19))
+	ITEM(Upp::Label, dv___7, SetLabel(t_("Line:")).SetAlign(ALIGN_RIGHT).LeftPosZ(8, 68).TopPosZ(52, 20))
+	ITEM(Upp::DocEdit, line, SetFont(Monospace()).HSizePosZ(80, 4).VSizePosZ(52, 4))
+END_LAYOUT
+
+LAYOUT(MetaScript, 816, 468)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -220))
+	ITEM(Upp::DocEdit, title, HCenterPosZ(560, -52).VCenterPosZ(112, -174))
+	ITEM(Upp::Label, dv___2, SetLabel(t_("Description:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -104))
+	ITEM(Upp::DocEdit, description, HCenterPosZ(560, -52).VCenterPosZ(112, -58))
+	ITEM(Upp::Label, dv___4, SetLabel(t_("Disclaimer:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, 12))
+	ITEM(Upp::DocEdit, disclaimer, HCenterPosZ(560, -52).VCenterPosZ(112, 58))
+	ITEM(Upp::Label, dv___6, SetLabel(t_("Author notes:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, 128))
+	ITEM(Upp::DocEdit, author, HCenterPosZ(560, -52).VCenterPosZ(112, 174))
+	ITEM(Upp::Label, dv___8, SetLabel(t_("Actors:")).SetAlign(ALIGN_RIGHT).HCenterPosZ(36, 250).VCenterPosZ(20, -220))
+	ITEM(Upp::ArrayCtrl, actors, HCenterPosZ(132, 338).VCenterPosZ(436, -12))
+	ITEM(Upp::Button, add_actor, SetLabel(t_("Add")).HCenterPosZ(64, 304).VCenterPosZ(20, 220))
+	ITEM(Upp::Button, rm_actor, SetLabel(t_("Remove")).HCenterPosZ(64, 372).VCenterPosZ(20, 220))
+END_LAYOUT
+
+LAYOUT(MetaSection, 640, 300)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -136))
+	ITEM(Upp::LineEdit, title, HCenterPosZ(308, -90).VCenterPosZ(20, -136))
+END_LAYOUT
+
+LAYOUT(SubtitleEdit, 400, 200)
+END_LAYOUT
+

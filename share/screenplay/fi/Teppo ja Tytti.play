@@ -3,24 +3,23 @@
 
                                     Tytti ja Teppo musikaali
 
- 
+
                             Mukaelma Shakespearen Romeosta ja Juliasta.
-            Tehty alkuperäisen näytelmän lyhennelmästä, ilman tietoa sen sisällöstä.
-					Tämä näytelmä sijoittuu kuvitteelliseen vuoden 1781 Ouluun.
+					Näytelmä sijoittuu kuvitteelliseen vuoden 1781 Ouluun.
+        Tehty alkuperäisen näytelmän lyhennelmästä, ilman mitään tietoa sen sisällöstä.
 
 
-                                    Kirjoittanut Seppo Pakonen
+Tämä näytelmä on nopeasti improvisoitu ilman taustatyötä, kun oli tarve sanoittaa nopeasti 14 kappaletta.
+			Henkilöt ovat kuvitteellisia ja tarina ei ole historiallisesti korrekti.
+				Tällaisen kokonaisuuden tekeminen on todella vaativa suoritus.
+
+
+                      Kirjoittanut, säveltänyt ja sanoittanut Seppo Pakonen
                                           15.2.2022
 
-                                            Varoitus
-            Tämä on mielikuvituksen tuotetta ja faktoja ei ole edes yritetty selvittää.
-        Tämä on myös kirjoittajan ensimmäinen yritys kirjoittaa musikaali, tai edes näytelmä.
-            Tämä on siis versio ennen yhtä ainuttakaan feedback palautetta keneltäkään.
 
-            
-            
-            
-            
+
+
 
 Teppo:                   Teppo Palmfelt
 Samuli:                  Samuli Palmfelt, Tepon isä
@@ -45,12 +44,11 @@ Vahti:                   Vahti
 
 
 
-                        Osa 1: Kohti onnea
+                       Osa 1: Kohti onnea
                         
-
                        Luku 1: Normipäivä
     
- 
+
 // Oulun kaduilla puhkeaa jo toinen tappelu Kuhlmanin ja Palmfeltin aatelissukujen palvelijoiden välillä.
  
 	** Kuhlmanin työläinen (KPalv1) tönäisee ohimennen Palmfeltin työläistä (PPalv1)s **
@@ -75,7 +73,7 @@ KPalv2:	(Ä) Ai me haistaan vai?
                         Luku 2: Pieni kylä
 
 
-Musiikki: "2021/focus.tg"
+# Musiikki "2021/focus.tg"
 	
 KPalv1:		On vaattees kuluneet,
 			hampaat jo kadonneet.
@@ -223,7 +221,7 @@ Veijo:	(E) Kyllä me kuule löyetään sulle semmonen.
                         Luku 4: Yritä rauhoitua
 
 
-Musiikki: "2021/cutie from future.tg"
+# Musiikki "2021/cutie from future.tg"
 
 Veijo:	(E) Sä et oo kuumana siit,
 			se ei oo kuumana sust.
@@ -348,7 +346,7 @@ Mikael:			(ä) Noh, älä huoli, hankitaan apuvoimia.
                         Luku 6: Puolet juhlasta
 
 
-Musiikki: "2021/kangaroo dictator.tg"
+# Musiikki "2021/kangaroo dictator.tg"
 
 Mikael:		(ä) Mutrusuu, sitruunanaama,
 				keität vaan meille kahvin vahvan.
@@ -472,7 +470,7 @@ Veijo:		(E) Noniin asiaa.
                         Luku 8: Pinkki unelma
 
 
-Musiikki: "2021/pink trance.tg"
+# Musiikki "2021/pink trance.tg"
 
 Teppo:		( ) On mielessä
 				yks unelma
@@ -489,7 +487,7 @@ Veijo:		(E) Illalla
 				sen onnen tuottavan.
 
 Teppo:		( ) Pinkkiä unelmaa
-				mä tänään seuraan vaan.
+				me tänään seurataan.
 				Pehmeää rakkautta,
 				ja makuu makeaa
 				haen vaan.
@@ -580,7 +578,7 @@ Tytti:	(ö) No mitä?
                         Luku 10: Muutko tietää paremmin?
 
 
-Musiikki: "2021/twisted xmas 2021.tg"
+# Musiikki "2021/twisted xmas 2021.tg"
 
 Maria:	(a) Tääl ruokaa saat,
 			katto on pääl.
@@ -677,7 +675,7 @@ Veijo:	(E) Näillä näyttää olevan omia mukana.
                         Luku 12: Kuka tuo tyttö on?
 
 
-Musiikki: "2021/catwoman.tg"
+# Musiikki "2021/catwoman.tg"
 
 Veijo:	(E) Kato ketä tääl
 			näyttää löytyvän.
@@ -866,7 +864,7 @@ Tytti:	(ö) Voi helvetin helvetti!
                         Luku 14: Mietin minä vaan
 
 
-Musiikki: "2021/got your message.tg"
+# Musiikki "2021/got your message.tg"
 
 Katri:	(u) Hei, tiiäkkö nää,
 			missä mennään?
@@ -1046,7 +1044,7 @@ Lindström:	(Ä) Minulle sallituin oikeuksin julistan teidät aviomieheksi ja va
                         Luku 16: Ikuinen rakkaus
 
 
-Musiikki: "2021/dreaming together.tg"
+# Musiikki "2021/dreaming together.tg"
 
 Tytti:	(ö) Valkoisella nähdä sä saat,
 Teppo:	( ) mustal pääset turvaan,
@@ -1168,7 +1166,7 @@ Teppo:	( ) Hei nyt loppuu tämä.
                         Luku 2: Mun totuus
 
 
-Musiikki: "2021/second class man.tg"
+# Musiikki "2021/second class man.tg"
 
 Matti:  (Y) Oletko sä sellanen
             joka karkuun pakenee?
@@ -1275,7 +1273,7 @@ Teppo:		( ) Selvä, kiitos.
                         Luku 4: Katso mua
 
 
-Musiikki: "2021/waiting for tonight.tg"
+# Musiikki "2021/waiting for tonight.tg"
 Sanat: Sari Rokka, Seppo Pakonen
 
 Tytti:	(ö) Katso kuinka mä tanssin taas,
@@ -1461,7 +1459,7 @@ Mikael:	(ä) Olipas se teatraalista.
                         Luku 6: Elämä on
 
 
-Musiikki: "2022/first of the year 2022.tg"
+# Musiikki "2022/first of the year 2022.tg"
 
 Tytti:  (ö) Viet rakkaan, aamun parhaan,
             mustaat sen kun suus avaat.
@@ -1608,7 +1606,7 @@ Vartija:	(O) Hiljaa.
                         Luku 8: Kun et oo luonain
 
 
-Musiikki: "2021/she comes between us.tg"
+# Musiikki "2022/she comes between us.tg"
 
 Teppo:	( ) Kerran mun onnen sain, kerran
 		    sain onnen kasvamaan, ja
@@ -1786,7 +1784,7 @@ Tytti:		(ö) Miksi mää lähtisin kun Teppo on jo täällä.
                         Luku 10: Kaikkein rakkaimpaa
 
 
-Musiikki: "2021/will you believe in rock.tg"
+# Musiikki "2022/will you believe in rock.tg"
 
 Tytti:	(ö) Vieläkö sut nään
 	        aivan läheltä?
@@ -1917,7 +1915,7 @@ Tytti:	(ö) Teppo rakas, me nähdään vielä.
                         Luku 12: Eihän se ole niin harmi
 
 
-Musiikki: "2022/breaking my survival.tg"
+# Musiikki "2022/breaking my survival.tg"
 
 // Mikael, Maria, Katri, Samuli ei laula välttämättä samasta sijainnista
 

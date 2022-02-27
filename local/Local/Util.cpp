@@ -464,4 +464,21 @@ int HexDigitAny(int c) {
 }
 
 
+
+String CenteredString(const String& s, int lw) {
+	String o;
+	Vector<String> lines = Split(s, "\n");
+	for(int i = 0; i < lines.GetCount(); i++) {
+		if (i) o.Cat('\n');
+		String& j = lines[i];
+		WString l = j.ToWString();
+		int c = l.GetCount();
+		int pad = (lw - c) / 2;
+		if (pad > 0)
+			o.Cat(' ', pad);
+		o.Cat(j);
+	}
+	return o;
+}
+
 NAMESPACE_TOPSIDE_END

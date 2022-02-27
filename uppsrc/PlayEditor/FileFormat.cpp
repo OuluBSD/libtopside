@@ -58,6 +58,9 @@ bool PlayTokenizer::Process(String str, String path) {
 				cursor++;
 				Add(TK_BLOCK_COMMENT);
 			}
+			else if (chr == '#') {
+				Add(TK_NUMBERSIGN);
+			}
 			else {
 				state = WORD;
 				s.Clear();
@@ -132,7 +135,7 @@ void PlayTokenizer::Dump() const {
 
 
 
-PlayParser::PlayParser() : ErrorSource("PlayParser") {
+PlayParser::PlayParser(PlayScript& script) : ErrorSource("PlayParser"), script(script) {
 	
 }
 
@@ -152,8 +155,8 @@ bool PlayParser::ParseScript(PlayScript& s) {
 	
 	if (!ParseMetaText(s.title)) return false;
 	if (!ParseMetaText(s.description)) return false;
-	if (!ParseMetaText(s.author)) return false;
 	if (!ParseMetaText(s.disclaimer)) return false;
+	if (!ParseMetaText(s.author)) return false;
 	if (!ParsePlayDialogue(s.actors)) return false;
 	if (!ParseParts(s)) return false;
 	
@@ -339,20 +342,52 @@ bool PlayParser::ParseMetaText(MetaText& txt) {
 	return true;
 }
 
+bool PlayParser::CheckEol() {
+	const Token& t = Current();
+	if (!t.IsType(TK_NEWLINE)) {
+		AddError(t.loc, "Expected newline");
+		return false;
+	}
+	Next();
+	return true;
+}
+
 bool PlayParser::ParseSentenceEol(PlaySentence& sent, bool opt_voice_id) {
 	
 	if (!ParseSentence(sent, opt_voice_id))
 		return false;
 	
-	{
-		const Token& t = Current();
-		if (!t.IsType(TK_NEWLINE)) {
-			AddError(t.loc, "Expected newline");
-			return false;
+	return CheckEol();
+}
+
+bool PlayParser::ParseTiming(PlayLine& l) {
+	if (Current().IsType(TK_ID)) {
+		String a = Current().GetTextValue();
+		if (a.Left(1) == "[") {
+			Next();
+			if (Current().IsType(TK_COLON)) {
+				Next();
+				if (Current().IsType(TK_ID)) {
+					String b = Current().GetTextValue();
+					if (b.Right(1) == "]") {
+						Next();
+						a = a.Mid(1);
+						b = b.Left(b.GetCount()-1);
+						int min = ScanInt(a);
+						int sec = ScanInt(b);
+						if (min >= 0 && min < 10000 && sec >= 0 && sec < 60) {
+							l.is_meta = true;
+							l.timing = min * 60 + sec;
+							return CheckEol();
+						}
+					}
+				}
+			}
 		}
-		Next();
 	}
-	return true;
+	
+	AddError(Current().loc, "Invalid timing declaration");
+	return false;
 }
 
 bool PlayParser::ParseSentence(PlaySentence& p, bool opt_voice_id) {
@@ -421,6 +456,16 @@ bool PlayParser::ParsePlayDialogue(PlayDialogue& p) {
 		if (!ParsePlayLine(l))
 			return false;
 		
+		if (p.lines.GetCount() >= 2) {
+			PlayLine& prev = p.lines[p.lines.GetCount()-2];
+			if ((prev.is_narration && l.is_narration) ||
+				(prev.is_comment && l.is_comment) ||
+				(prev.is_meta && l.is_meta)) {
+				prev.sents.Append(l.sents);
+				p.lines.Remove(p.lines.GetCount()-1);
+			}
+		}
+		
 		PassEmpty();
 	}
 	
@@ -446,6 +491,19 @@ bool PlayParser::ParsePlayLine(PlayLine& l) {
 			return false;
 		}
 		Next();
+	}
+	else if (Current().IsType(TK_NUMBERSIGN)) {
+		Next();
+		l.is_meta = true;
+		
+		if (Current().IsType(TK_ID) && Current().GetTextValue().Left(1) == "[") {
+			ParseTiming(l);
+		}
+		else {
+			PlaySentence& sent = l.sents.Add();
+			if (!ParseSentenceEol(sent, false))
+				return false;
+		}
 	}
 	else {
 		if (Current().IsType(TK_COMMENT)) {
@@ -527,8 +585,8 @@ String PlaySentence::ToString(int indent) const {
 	if (indent >= 0)
 		s.Cat('\t', indent);
 	int i = 0;
-	if (voice_id.GetCount())
-		s << "[voice " << voice_id.ToString() << "] ";
+	//if (voice_id.GetCount())
+	//	s << "[voice " << voice_id.ToString() << "] ";
 	for (const Token& t : tokens) {
 		if (i++ > 0)
 			s.Cat(' ');
@@ -536,6 +594,12 @@ String PlaySentence::ToString(int indent) const {
 	}
 	if (indent >= 0)
 		s.Cat('\n');
+	return s;
+}
+
+Value PlaySentence::GetData() const {
+	String s = ToString();
+	
 	return s;
 }
 
@@ -586,8 +650,8 @@ String PlayScript::ToString(int indent) const {
 	String s;
 	s << title.ToString("Title");
 	s << description.ToString("Description");
-	s << author.ToString("Author");
 	s << disclaimer.ToString("Disclaimer");
+	s << author.ToString("Author");
 	s << actors.ToString("Actors");
 	
 	s.Cat('\t', indent);
@@ -600,6 +664,187 @@ String PlayScript::ToString(int indent) const {
 }
 
 
+#define LW 96
+
+String GetPartString() {
+	return "Osa";
+}
+
+String GetSectionString() {
+	return "Luku";
+}
+
+
+String PlayScript::ToScript() const {
+	String s;
+	
+	s << title.ToScript() << "\n\n";
+	s << description.ToScript() << "\n\n";
+	s << disclaimer.ToScript() << "\n\n";
+	s << author.ToScript() << "\n\n";
+	
+	for (const PlayPart& p : parts)
+		s << p.ToScript() << "\n\n";
+	
+	return s;
+}
+
+String MetaText::ToScript() const {
+	String s;
+	
+	for (const PlaySentence& ps : sents)
+		s << CenteredString(ps.ToString(), LW) << "\n";
+	
+	return s;
+}
+
+Value MetaText::GetData() const {
+	String s;
+	
+	for (const PlaySentence& ps : sents) {
+		if (!s.IsEmpty()) s.Cat('\n');
+		s << ps.ToString();
+	}
+	
+	return s;
+}
+
+String PlayPart::ToScript() const {
+	String s;
+	
+	s << CenteredString(GetPartString() + " " + IntStr(idx+1) + ": " + title.ToString(), LW) << "\n\n";
+	
+	for (const PlaySection& ps : sections) {
+		s << ps.ToScript() << "\n\n";
+	}
+	
+	return s;
+}
+
+String PlaySection::ToScript() const {
+	String s;
+	
+	s << CenteredString(GetSectionString() + " " + IntStr(idx+1) + ": " + title.ToString(), LW) << "\n\n";
+	
+	s << dialog.ToScript();
+	
+	return s;
+}
+
+String PlayDialogue::ToScript() const {
+	String s;
+	
+	for (const PlayLine& l : lines) {
+		s << l.ToScript();
+	}
+	s << "\n";
+	
+	return s;
+}
+
+String PlayLine::ToScript() const {
+	String s;
+	
+	if (is_comment) {
+		s << "\n";
+		for (const PlaySentence& ps : sents)
+			s << "// " << ps.ToScript() << "\n";
+		s << "\n";
+	}
+	else if (is_narration) {
+		s << "\n";
+		for (const PlaySentence& ps : sents)
+			s << "    ** " + ps.ToScript() + " **" << "\n";
+			//s << CenteredString("** " + ps.ToScript() + " **", LW) << "\n";
+		s << "\n";
+	}
+	else if (is_meta) {
+		for (const PlaySentence& ps : sents)
+			s << "#" + ps.ToScript() << "\n";
+	}
+	else {
+		s << id.ToScript() << ": ";
+		int c = s.ToWString().GetCount();
+		static const int indent = 13;
+		if (c < indent)
+			s.Cat(' ', indent - c);
+		for(int i = 0; i < sents.GetCount(); i++) {
+			const PlaySentence& ps = sents[i];
+			if (i) s.Cat(' ', indent);
+			s << ps.ToScript() << "\n";
+		}
+	}
+	
+	return s;
+}
+
+String PlaySentence::ToScript() const {
+	String s;
+	int i = 0;
+	//if (voice_id.GetCount())
+	//	s << "(" << voice_id.ToString() << ") ";
+	for (const Token& t : tokens) {
+		if (i++ > 0)
+			s.Cat(' ');
+		s << t.GetTextValue();
+	}
+	return TrimBoth(s);
+}
+
+String PlayIdentifier::ToScript() const {
+	return name.ToString();
+}
+
+
+
+
+
+void PlayScript::MakeSubtitles() {
+	subtitles.Clear();
+	
+	for (PlayPart& part : parts) {
+		for (PlaySection& sect : part.sections) {
+			for (PlayLine& line : sect.dialog.lines) {
+				for (PlaySentence& sent : line.sents) {
+					String s = sent.ToScript();
+					
+					int part_i = 0;
+					int a = 0;
+					int f = 0;
+					while (1) {
+						int f0 = s.Find(". ", f+1);
+						int f1 = s.Find(", ", f+1);
+						f = f0 == -1 ? f1 : f0;
+						if (f < 0) break;
+						
+						int b = f+1;
+						
+						String part = s.Mid(a, b-a);
+						
+						Subtitle& st = subtitles.Add();
+						st.line = &line;
+						st.sent = &sent;
+						st.part_i = part_i++;
+						st.str = part.ToWString();
+						
+						a = b+1;
+					}
+					
+					int b = s.GetCount();
+					String part = s.Mid(a, b-a);
+					Subtitle& st = subtitles.Add();
+					st.line = &line;
+					st.sent = &sent;
+					st.part_i = part_i++;
+					st.str = part.ToWString();
+					
+				}
+			}
+		}
+	}
+	
+	//DUMPC(subtitles);
+}
 
 
 NAMESPACE_TOPSIDE_END
