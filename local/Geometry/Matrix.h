@@ -66,9 +66,12 @@ struct Vec : Moveable<Vec<T, I> > {
 	Vec operator^(const Vec& v) const {return GetCrossProduct(v);}
 	//T   operator*(const Vec& v) const {return GetDotProduct(v);}
 	Vec operator*(const Vec& v) const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
+	Vec operator/(const Vec& v) const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] / v.data[i]; return r;}
 	
-	Vec Multiply(const Vec& v)   const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
+	Vec Multiply(const Vec& v)  const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v.data[i]; return r;}
 	Vec Multiply(T v)           const {Vec r; for(int i = 0; i < I; i++) r.data[i] = data[i] * v; return r;}
+	Vec Modulus(T v)            const {Vec r; for(int i = 0; i < I; i++) r.data[i] = fmod(data[i], v); return r;}
+	Vec Mix(const Vec& v, T f)  const {Vec r; for(int i = 0; i < I; i++) r.data[i] = (1.0 - f) * data[i] + f * v.data[i]; return r;}
 	
 	Vec operator*(const Matrix<T,I,I>& m) const;
 	

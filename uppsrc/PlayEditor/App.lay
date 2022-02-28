@@ -11,25 +11,36 @@ LAYOUT(LineConf, 568, 200)
 END_LAYOUT
 
 LAYOUT(MetaScript, 816, 468)
-	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -220))
-	ITEM(Upp::DocEdit, title, HCenterPosZ(560, -52).VCenterPosZ(112, -174))
-	ITEM(Upp::Label, dv___2, SetLabel(t_("Description:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -104))
-	ITEM(Upp::DocEdit, description, HCenterPosZ(560, -52).VCenterPosZ(112, -58))
-	ITEM(Upp::Label, dv___4, SetLabel(t_("Disclaimer:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, 12))
-	ITEM(Upp::DocEdit, disclaimer, HCenterPosZ(560, -52).VCenterPosZ(112, 58))
-	ITEM(Upp::Label, dv___6, SetLabel(t_("Author notes:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, 128))
-	ITEM(Upp::DocEdit, author, HCenterPosZ(560, -52).VCenterPosZ(112, 174))
-	ITEM(Upp::Label, dv___8, SetLabel(t_("Actors:")).SetAlign(ALIGN_RIGHT).HCenterPosZ(36, 250).VCenterPosZ(20, -220))
-	ITEM(Upp::ArrayCtrl, actors, HCenterPosZ(132, 338).VCenterPosZ(436, -12))
-	ITEM(Upp::Button, add_actor, SetLabel(t_("Add")).HCenterPosZ(64, 304).VCenterPosZ(20, 220))
-	ITEM(Upp::Button, rm_actor, SetLabel(t_("Remove")).HCenterPosZ(64, 372).VCenterPosZ(20, 220))
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).TopPosZ(4, 20))
+	ITEM(Upp::DocEdit, title, HCenterPosZ(560, -52).TopPosZ(4, 112))
+	ITEM(Upp::Label, dv___2, SetLabel(t_("Description:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).TopPosZ(120, 20))
+	ITEM(Upp::DocEdit, description, HCenterPosZ(560, -52).TopPosZ(120, 112))
+	ITEM(Upp::Label, dv___4, SetLabel(t_("Disclaimer:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).TopPosZ(236, 20))
+	ITEM(Upp::DocEdit, disclaimer, HCenterPosZ(560, -52).TopPosZ(236, 112))
+	ITEM(Upp::Label, dv___6, SetLabel(t_("Author notes:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).TopPosZ(352, 20))
+	ITEM(Upp::DocEdit, author, HCenterPosZ(560, -52).TopPosZ(352, 112))
+	ITEM(Upp::Label, dv___8, SetLabel(t_("Actors:")).SetAlign(ALIGN_RIGHT).HCenterPosZ(36, 250).TopPosZ(4, 20))
+	ITEM(Upp::ArrayCtrl, actors, HCenterPosZ(132, 338).TopPosZ(4, 436))
+	ITEM(Upp::Button, add_actor, SetLabel(t_("Add")).HCenterPosZ(64, 304).TopPosZ(444, 20))
+	ITEM(Upp::Button, rm_actor, SetLabel(t_("Remove")).HCenterPosZ(64, 372).TopPosZ(444, 20))
 END_LAYOUT
 
 LAYOUT(MetaSection, 640, 300)
-	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).VCenterPosZ(20, -136))
-	ITEM(Upp::LineEdit, title, HCenterPosZ(308, -90).VCenterPosZ(20, -136))
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Title:")).SetAlign(ALIGN_RIGHT).LeftPosZ(4, 68).TopPosZ(4, 20))
+	ITEM(Upp::LineEdit, title, HCenterPosZ(308, -90).TopPosZ(4, 20))
 END_LAYOUT
 
-LAYOUT(SubtitleEdit, 400, 200)
+LAYOUT(SubtitleEdit, 428, 256)
+	ITEM(Upp::Label, subtitle, SetLabel(t_("Some subtitle")).SetAlign(ALIGN_CENTER).SetFont(StdFontZ(36)).HSizePosZ(8, 4).VCenterPosZ(176, -36))
+	ITEM(Upp::Button, tap, SetLabel(t_("Tap")).SetFont(StdFontZ(20)).HSizePosZ(8, 4).VCenterPosZ(36, 74))
+	ITEM(Upp::Button, stop, SetLabel(t_("Stop")).HCenterPosZ(96, 50).VCenterPosZ(28, 110))
+	ITEM(Upp::Label, time, SetLabel(t_("0:00")).SetAlign(ALIGN_CENTER).SetFont(StdFontZ(20)).SetInk(Color(85, 42, 0)).SetFrame(InsetFrame()).HCenterPosZ(96, -50).VCenterPosZ(28, 110))
+	ITEM(Upp::Option, fill_hole, SetLabel(t_("Fill hole")).HCenterPosZ(108, 156).VCenterPosZ(28, 110))
+END_LAYOUT
+
+LAYOUT(PlayRenderer, 320, 236)
+	ITEM(Upp::ImageCtrl, frame, HSizePosZ(4, 4).VSizePosZ(4, 28))
+	ITEM(Upp::Button, play, SetLabel(t_("Play")).RightPosZ(4, 56).BottomPosZ(4, 24))
+	ITEM(Upp::SliderCtrl, time, HSizePosZ(4, 64).BottomPosZ(4, 24))
 END_LAYOUT
 

@@ -1,5 +1,6 @@
 uses
-	LocalCtrl;
+	LocalCtrl,
+	Geometry;
 
 file
 	main.cpp,
@@ -11,7 +12,9 @@ file
 	Renderer.cpp,
 	FileFormat.h,
 	FileFormat.cpp,
-	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp;
+	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp,
+	Backgrounds readonly separator,
+	BgLiquidBokeh.cpp;
 
 mainconfig
 	"" = "GUI";

@@ -521,6 +521,9 @@ inline RandomGaussian& GetRandomGaussian(int length) {
 	return *r;
 }
 
+float smoothstep(float edge0, float edge1, float x);
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

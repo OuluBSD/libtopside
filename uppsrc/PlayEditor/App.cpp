@@ -3,14 +3,18 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-PlayEditor::PlayEditor() {
+PlayEditor::PlayEditor() : renderer(script) {
 	Title("PlayEditor");
 	MaximizeBox().MinimizeBox().Sizeable();
+	
+	AddFrame(menu);
+	menu.Set(THISBACK(MainMenu));
 	
 	CtrlLayout(scriptconf);
 	CtrlLayout(sectconf);
 	CtrlLayout(lineconf);
 	CtrlLayout(st_edit);
+	CtrlLayout(rend_ctrl);
 	
 	Add(part_split.SizePos());
 	
@@ -29,6 +33,11 @@ PlayEditor::PlayEditor() {
 	tabs.Add(rend_split.SizePos(),		"Renderer");
 	
 	
+	// Meta script
+	scriptconf.actors.AddColumn("Id");
+	scriptconf.actors.AddColumn("Description");
+	scriptconf.actors.ColumnWidths("2 3");
+	
 	// Dialogue edit
 	dialog_split.Vert() << dialog << lineconf;
 	dialog_split.SetPos(6600);
@@ -38,10 +47,15 @@ PlayEditor::PlayEditor() {
 	
 	// Subtitles
 	st_split.Horz() << st_dialog << st_edit;
-	st_split.SetPos(2500);
+	st_split.SetPos(3000);
 	st_dialog.AddColumn("Actor");
 	st_dialog.AddColumn("Line");
-	st_dialog.ColumnWidths("1 3");
+	st_dialog.AddColumn("Time");
+	st_dialog.ColumnWidths("1 3 1");
+	st_dialog <<= THISBACK(SubtitleData);
+	st_edit.tap.WantFocus();
+	st_edit.tap <<= THISBACK(SubtitleTap);
+	st_edit.stop <<= THISBACK(SubtitleStop);
 	
 	// Renderer
 	rend_split.Horz() << rend_dialog << rend_ctrl;
@@ -49,12 +63,44 @@ PlayEditor::PlayEditor() {
 	rend_dialog.AddColumn("Actor");
 	rend_dialog.AddColumn("Line");
 	rend_dialog.ColumnWidths("1 3");
-	
+	rend_ctrl.time.MinMax(0,1);
+	rend_ctrl.time.SetData(0);
+	rend_ctrl.time <<= THISBACK(OnTimeSlider);
+	rend_ctrl.time.Step(500); // milliseconds
+	rend_ctrl.play <<= THISBACK(ToggleRenderPlay);
 	
 	PostCallback(THISBACK(Data));
 	
 	partlist <<= THISBACK(Data);
 	tabs <<= THISBACK(TabData);
+}
+
+void PlayEditor::MainMenu(Bar& bar) {
+	
+	bar.Sub("File", [this](Bar& bar) {
+		bar.Add("Save file", THISBACK(SaveFile)).Key(K_CTRL_S);
+	});
+	
+}
+
+void PlayEditor::SaveFile() {
+	if (filepath.IsEmpty())
+		return;
+	
+	String output = "\n\n" + script.ToScript();
+	
+	FileOut fout(filepath);
+	if (!fout.IsOpen()) {
+		PromptOK("Could not open file for saving");
+		return;
+	}
+	
+	fout << output;
+	fout.Close();
+	
+	if (fout.IsError())
+		PromptOK("Unknown error while saving the script file");
+	
 }
 
 void PlayEditor::Data() {
@@ -73,6 +119,8 @@ void PlayEditor::Data() {
 		partlist.SetCursor(0);
 	
 	int list_i = partlist.GetCursor();
+	if (list_i < 0) return;
+	
 	int part_i = partlist.Get(list_i, 0);
 	int sect_i = partlist.Get(list_i, 1);
 	
@@ -101,11 +149,24 @@ void PlayEditor::TabData() {
 	
 	int tab = tabs.Get();
 	
+	if (is_subtitle_recording && tab != TAB_SUBTITLES)
+		SubtitleStop();
+	
 	if (tab == TAB_METASCRIPT) {
 		scriptconf.title.SetData(script.title.GetData());
 		scriptconf.description.SetData(script.description.GetData());
 		scriptconf.disclaimer.SetData(script.disclaimer.GetData());
 		scriptconf.author.SetData(script.author.GetData());
+		
+		int c = script.actors.lines.GetCount();
+		for(int i = 0; i < c; i++) {
+			const PlayLine& pl = script.actors.lines[i];
+			Value id = pl.id.name;
+			Value str = pl.sents[0].GetData();
+			scriptconf.actors.Set(i, 0, id);
+			scriptconf.actors.Set(i, 1, str);
+		}
+		scriptconf.actors.SetCount(c);
 	}
 	else if (tab == TAB_METASECTION) {
 		if (active_sect) {
@@ -124,9 +185,9 @@ void PlayEditor::TabData() {
 				sents << s.ToString();
 			}
 			
-			Color clr = RandomColor(256-64, 64);
-			dialog.Set(i, 0, AttrText().Text(line.id.ToString()).NormalPaper(clr).SetFont(Monospace()));
-			dialog.Set(i, 1, AttrText().Text(sents).NormalPaper(clr).SetFont(Monospace()));
+			const PlayScript::Actor& a = script.GetActor(line);
+			dialog.Set(i, 0, AttrText().Text(a.name).NormalPaper(a.normal_paper).SetFont(Monospace()));
+			dialog.Set(i, 1, AttrText().Text(sents).NormalPaper(a.normal_paper).SetFont(Monospace()));
 		}
 		dialog.SetCount(c);
 		
@@ -153,13 +214,17 @@ void PlayEditor::TabData() {
 		for(int i = 0; i < c; i++) {
 			const PlayScript::Subtitle& st = script.subtitles[i];
 			if (!st.line) continue;
-			String actor = st.line->id.ToString();
+			int t = st.time;
 			
-			Color clr = RandomColor(256-64, 64);
-			st_dialog.Set(i, 0, AttrText().Text(actor.ToString()).NormalPaper(clr).SetFont(Monospace()));
-			st_dialog.Set(i, 1, AttrText().Text(st.str).NormalPaper(clr).SetFont(Monospace()));
+			const PlayScript::Actor& a = script.GetActor(*st.line);
+			st_dialog.Set(i, 0, AttrText().Text(a.name.ToString()).NormalPaper(a.normal_paper).SetFont(Monospace()));
+			st_dialog.Set(i, 1, AttrText().Text(st.str).NormalPaper(a.normal_paper).SetFont(Monospace()));
+			st_dialog.Set(i, 2, t >= 0 ? Value(t / 1000) : Value());
 		}
 		st_dialog.SetCount(c);
+		if (!c) return;
+		
+		SubtitleData();
 	}
 	else if (tab == TAB_RENDER) {
 		int c = active_sect->dialog.lines.GetCount();
@@ -173,11 +238,29 @@ void PlayEditor::TabData() {
 				sents << s.ToString();
 			}
 			
-			Color clr = RandomColor(256-64, 64);
-			rend_dialog.Set(i, 0, AttrText().Text(line.id.ToString()).NormalPaper(clr).SetFont(Monospace()));
-			rend_dialog.Set(i, 1, AttrText().Text(sents).NormalPaper(clr).SetFont(Monospace()));
+			const PlayScript::Actor& a = script.GetActor(line);
+			rend_dialog.Set(i, 0, AttrText().Text(a.name).NormalPaper(a.normal_paper).SetFont(Monospace()));
+			rend_dialog.Set(i, 1, AttrText().Text(sents).NormalPaper(a.normal_paper).SetFont(Monospace()));
 		}
 		rend_dialog.SetCount(c);
+		
+		int last_time = script.GetLastSubtitleTiming();
+		if (last_time > 0)
+			rend_ctrl.time.MinMax(0, last_time);
+		
+		OnTimeSlider();
+	}
+}
+
+void PlayEditor::SubtitleData() {
+	if (!st_dialog.IsCursor())
+		st_dialog.SetCursor(0);
+	
+	if (!is_subtitle_recording) {
+		int cursor = st_dialog.GetCursor();
+		const PlayScript::Subtitle& st = script.subtitles[cursor];
+		String st_str = st.str.ToString();
+		st_edit.subtitle.SetLabel(st_str);
 	}
 }
 
@@ -186,6 +269,13 @@ bool PlayEditor::LoadFile(String path) {
 }
 
 bool PlayEditor::Load(String content, String path) {
+	this->filepath.Clear();
+	
+	Vector<String> segments = Split(content, "\n<Extension:");
+	content = segments[0];
+	
+	for(int i = 1; i < segments.GetCount(); i++)
+		script.LoadExtension(segments[i]);
 	
 	PlayTokenizer t;
 	t.WhenMessage << THISBACK(OnMessage);
@@ -203,6 +293,14 @@ bool PlayEditor::Load(String content, String path) {
 	LOG(script.ToScript());
 	
 	script.MakeSubtitles();
+	script.MakeActors();
+	
+	if (!script.CheckReferences()) {
+		LOG("Reference checking failed");
+		return false;
+	}
+	
+	this->filepath = path;
 	
 	return true;
 }
@@ -211,6 +309,123 @@ void PlayEditor::OnMessage(const ProcMsg& p) {
 	
 	LOG(p.ToString());
 	
+}
+
+void PlayEditor::SubtitleTap() {
+	if (!is_subtitle_recording) {
+		if (!st_dialog.IsCursor())
+			return;
+		
+		if (st_edit.fill_hole.Get()) {
+			PromptOK("Hole filling feature TODO");
+			return;
+		}
+		
+		int cursor = st_dialog.GetCursor();
+		const PlayScript::Subtitle& st = script.subtitles[cursor];
+		if (st.time >= 0) {
+			subtitle_recording_offset = st.time;
+			subtitle_recording_cursor = cursor+1;
+			is_subtitle_recording = true;
+			st_edit.tap.SetFocus();
+			st_ts.Reset();
+			
+			SubtitleUpdate();
+			st_tc.Set(-10, THISBACK(SubtitleIteration));
+		}
+	}
+	else {
+		PlayScript::Subtitle& st = script.subtitles[subtitle_recording_cursor];
+		int time = st_ts.Seconds() * 1000 + subtitle_recording_offset;
+		st.time = time;
+		st_dialog.Set(subtitle_recording_cursor, 2, time / 1000);
+		
+		subtitle_recording_cursor++;
+		SubtitleUpdate();
+	}
+}
+
+void PlayEditor::SubtitleUpdate() {
+	if (subtitle_recording_cursor >= script.subtitles.GetCount()) {
+		SubtitleStop();
+		st_edit.subtitle.SetLabel("");
+		subtitle_recording_offset = 0;
+	}
+	else {
+		const PlayScript::Subtitle& st = script.subtitles[subtitle_recording_cursor];
+		st_edit.subtitle.SetLabel(st.str.ToString());
+		st_dialog.SetCursor(subtitle_recording_cursor);
+	}
+}
+
+void PlayEditor::SubtitleStop() {
+	is_subtitle_recording = false;
+	st_tc.Kill();
+}
+
+void PlayEditor::SubtitleIteration() {
+	double elapsed = st_ts.Seconds() * 1000 + subtitle_recording_offset;
+	int seconds = (int)(elapsed / 1000);
+	int milliseconds = (int)elapsed % 1000;
+	int minutes = seconds / 60;
+	seconds = seconds % 60;
+	int hours = minutes / 60;
+	minutes = minutes % 60;
+	String s = Format("%01d:%01d:%01d:%03d", hours, minutes, seconds, milliseconds);
+	st_edit.time.SetLabel(s);
+}
+
+void PlayEditor::OnTimeSlider() {
+	int time = rend_ctrl.time.GetData();
+	if (time < 0) return;
+	
+	if (!is_render_play) {
+		renderer.Seek(time);
+		
+		Image img = renderer.Render();
+		rend_ctrl.frame.SetImage(img);
+	}
+	else {
+		play_begin_time = time;
+		rend_ts.Reset();
+	}
+}
+
+void PlayEditor::ToggleRenderPlay() {
+	if (!is_render_play) {
+		is_render_play = true;
+		if (rend_ctrl.time.GetData() == rend_ctrl.time.GetMax())
+			rend_ctrl.time.SetData(0);
+		rend_ts.Reset();
+		play_begin_time = rend_ctrl.time.GetData();
+		rend_ctrl.play.SetLabel("Stop");
+		rend_tc.Set(-1000/30, THISBACK(RenderFrameToPlayer));
+	}
+	else {
+		rend_tc.Kill();
+		is_render_play = false;
+		rend_ctrl.play.SetLabel("Play");
+	}
+}
+
+void PlayEditor::RenderFrameToPlayer() {
+	int time = rend_ts.Seconds() * 1000 + play_begin_time;
+	int max_time = rend_ctrl.time.GetMax();
+	if (time >= max_time) {
+		time = max_time;
+		if (is_render_play)
+			ToggleRenderPlay();
+	}
+	
+	Event<> tmp_cb;
+	Swap(tmp_cb, rend_ctrl.time.WhenAction);
+	rend_ctrl.time.SetData(time);
+	Swap(tmp_cb, rend_ctrl.time.WhenAction);
+	
+	renderer.Seek(time);
+		
+	Image img = renderer.Render();
+	rend_ctrl.frame.SetImage(img);
 }
 
 

@@ -360,6 +360,7 @@ bool PlayParser::ParseSentenceEol(PlaySentence& sent, bool opt_voice_id) {
 	return CheckEol();
 }
 
+#if 0
 bool PlayParser::ParseTiming(PlayLine& l) {
 	if (Current().IsType(TK_ID)) {
 		String a = Current().GetTextValue();
@@ -377,7 +378,7 @@ bool PlayParser::ParseTiming(PlayLine& l) {
 						int sec = ScanInt(b);
 						if (min >= 0 && min < 10000 && sec >= 0 && sec < 60) {
 							l.is_meta = true;
-							l.timing = min * 60 + sec;
+							l.time = min * 60 + sec;
 							return CheckEol();
 						}
 					}
@@ -386,9 +387,10 @@ bool PlayParser::ParseTiming(PlayLine& l) {
 		}
 	}
 	
-	AddError(Current().loc, "Invalid timing declaration");
+	AddError(Current().loc, "Invalid time declaration");
 	return false;
 }
+#endif
 
 bool PlayParser::ParseSentence(PlaySentence& p, bool opt_voice_id) {
 	
@@ -496,10 +498,13 @@ bool PlayParser::ParsePlayLine(PlayLine& l) {
 		Next();
 		l.is_meta = true;
 		
+		#if 0
 		if (Current().IsType(TK_ID) && Current().GetTextValue().Left(1) == "[") {
 			ParseTiming(l);
 		}
-		else {
+		else
+		#endif
+		{
 			PlaySentence& sent = l.sents.Add();
 			if (!ParseSentenceEol(sent, false))
 				return false;
@@ -579,6 +584,15 @@ String PlayIdentifier::ToString() const {
 		return "<PlayIdentifier>";
 	return name.ToString();
 }
+
+PlaySentence& PlaySentence::Set(String txt) {
+	tokens.Clear();
+	Token& t = tokens.Add();
+	t.type = TK_ID;
+	t.str_value = txt;
+	return *this;
+}
+
 
 String PlaySentence::ToString(int indent) const {
 	String s;
@@ -683,8 +697,25 @@ String PlayScript::ToScript() const {
 	s << disclaimer.ToScript() << "\n\n";
 	s << author.ToScript() << "\n\n";
 	
+	s << actors.ToScript() << "\n\n";
+	
 	for (const PlayPart& p : parts)
 		s << p.ToScript() << "\n\n";
+	
+	s << GetSubtitleExtensionScript();
+	
+	return s;
+}
+
+String PlayScript::GetSubtitleExtensionScript() const {
+	String s;
+	
+	s << "<Extension: Subtitle-time>\n";
+	for (const Subtitle& st : subtitles) {
+		if (st.time < 0) continue;
+		unsigned h = st.str.GetHashValue();
+		s << HexStr(h).Mid(2) << "," << st.time << "\n";
+	}
 	
 	return s;
 }
@@ -799,51 +830,219 @@ String PlayIdentifier::ToScript() const {
 
 
 
+void PlayScript::LoadExtension(String s) {
+	Vector<String> lines = Split(s, "\n");
+	if (lines.IsEmpty()) return;
+	String header = TrimBoth(lines[0]);
+	if (header.Right(1) == ">") header = header.Left(header.GetCount()-1);
+	header = ToLower(header);
+	
+	if (header == "subtitle-time") {
+		input_ext_time.Clear();
+		
+		for(int i = 1; i < lines.GetCount(); i++) {
+			const String& line = lines[i];
+			int j = line.Find(",");
+			if (j == -1) continue;
+			String hash = line.Left(j);
+			String timestr = line.Mid(j+1);
+			unsigned h = HexInt64("0x" + hash);
+			int time = StrInt(timestr);
+			if (time >= 0)
+				input_ext_time.Add(h, time);
+		}
+		
+	}
+	else {
+		PromptOK("Unsupported extension: " + header);
+	}
+}
+
 void PlayScript::MakeSubtitles() {
 	subtitles.Clear();
+	
+	beginning.id.name = "Comment";
+	beginning.is_meta = true;
+	AddSubtitle(beginning, beginning.sents.Add().Set("<Beginning>"));
+	
+	intro_line.id.name = String("Narrator").ToWString();
+	for (PlaySentence& sent : title.sents)       AddSubtitle(intro_line, sent);
+	for (PlaySentence& sent : description.sents) AddSubtitle(intro_line, sent);
+	for (PlaySentence& sent : author.sents)      AddSubtitle(intro_line, sent);
+	for (PlaySentence& sent : disclaimer.sents)  AddSubtitle(intro_line, sent);
 	
 	for (PlayPart& part : parts) {
 		for (PlaySection& sect : part.sections) {
 			for (PlayLine& line : sect.dialog.lines) {
+				if (line.is_comment || line.is_meta)
+					continue;
+				
 				for (PlaySentence& sent : line.sents) {
-					String s = sent.ToScript();
-					
-					int part_i = 0;
-					int a = 0;
-					int f = 0;
-					while (1) {
-						int f0 = s.Find(". ", f+1);
-						int f1 = s.Find(", ", f+1);
-						f = f0 == -1 ? f1 : f0;
-						if (f < 0) break;
-						
-						int b = f+1;
-						
-						String part = s.Mid(a, b-a);
-						
-						Subtitle& st = subtitles.Add();
-						st.line = &line;
-						st.sent = &sent;
-						st.part_i = part_i++;
-						st.str = part.ToWString();
-						
-						a = b+1;
-					}
-					
-					int b = s.GetCount();
-					String part = s.Mid(a, b-a);
-					Subtitle& st = subtitles.Add();
-					st.line = &line;
-					st.sent = &sent;
-					st.part_i = part_i++;
-					st.str = part.ToWString();
-					
+					AddSubtitle(line, sent);
 				}
 			}
 		}
 	}
 	
 	//DUMPC(subtitles);
+}
+
+void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
+	String s = sent.ToScript();
+	
+	int part_i = 0;
+	int a = 0;
+	int f = 0;
+	while (1) {
+		int f0 = s.Find(". ", f+1);
+		int f1 = s.Find(", ", f+1);
+		f = f0 == -1 ? f1 : f0;
+		if (f < 0) break;
+		
+		int b = f+1;
+		
+		String part = s.Mid(a, b-a);
+		
+		if (part.Find(" ") == -1 && part.Right(1) == ",")
+			continue;
+		
+		Subtitle& st = subtitles.Add();
+		if (subtitles.GetCount() == 1) st.time = 0;
+		st.line = &line;
+		st.sent = &sent;
+		st.part_i = part_i++;
+		st.str = part.ToWString();
+		
+		unsigned h = st.str.GetHashValue();
+		int i = input_ext_time.Find(h);
+		if (i >= 0)
+			st.time = input_ext_time[i];
+		
+		a = b+1;
+	}
+	
+	int b = s.GetCount();
+	String part = s.Mid(a, b-a);
+	Subtitle& st = subtitles.Add();
+	if (subtitles.GetCount() == 1) st.time = 0;
+	st.line = &line;
+	st.sent = &sent;
+	st.part_i = part_i++;
+	st.str = part.ToWString();
+
+	unsigned h = st.str.GetHashValue();
+	int i = input_ext_time.Find(h);
+	if (i >= 0)
+		st.time = input_ext_time[i];
+	
+}
+
+void PlayScript::MakeActors() {
+	tmp_actors.Clear();
+	
+	int i = 0;
+	for (PlayLine& pl : actors.lines) {
+		String id = pl.id.name.ToString();
+		
+		Actor& act = tmp_actors.Add(id);
+		act.name = id;
+		act.idx = i++;
+		act.normal_paper = RandomColor(256-64, 64);
+		act.line = &pl;
+		
+		{
+			String desc = pl.sents[0].GetData();
+			int a = desc.Find("Color(");
+			if (a >= 0) {
+				a += 6;
+				int b = desc.Find(")", a);
+				if (b >= 0) {
+					String clr_str = desc.Mid(a, b-a);
+					Vector<String> comps = Split(clr_str, ",");
+					if (comps.GetCount() == 3) {
+						int r = ScanInt(TrimBoth(comps[0]));
+						int g = ScanInt(TrimBoth(comps[1]));
+						int b = ScanInt(TrimBoth(comps[2]));
+						act.normal_paper = Color(r,g,b);
+					}
+				}
+			}
+		}
+	}
+	
+	Actor& narrator = tmp_actors.Add("Narrator");
+	narrator.name = "Narrator";
+	narrator.normal_paper = GrayColor(256-64);
+	narrator.idx = i++;
+	
+	Actor& comment = tmp_actors.Add("Comment");
+	comment.name = "Comment";
+	comment.normal_paper = Color(256-64, 255, 256-64);
+	comment.idx = i++;
+	
+	Actor& meta = tmp_actors.Add("Meta");
+	meta.name = "Meta";
+	meta.normal_paper = Color(255, 256-64, 256-64);
+	meta.idx = i++;
+	
+}
+
+bool PlayScript::CheckReferences() {
+	Index<String> failed;
+	bool succ = true;
+	
+	for (const PlayPart& part : parts) {
+		for (const PlaySection& sect : part.sections) {
+			for (const PlayLine& line : sect.dialog.lines) {
+				String id = line.id.name.ToString();
+				
+				if (id.IsEmpty()) continue;
+				
+				int i = tmp_actors.Find(id);
+				if (i < 0 && failed.Find(id) < 0) {
+					LOG("PlayScript::CheckReferences: error: actor '" << id << "' is not added to the actor list");
+					succ = false;
+					failed.Add(id);
+				}
+				
+			}
+		}
+	}
+	
+	return succ;
+}
+
+const PlayScript::Actor& PlayScript::GetActor(const PlayLine& line) const {
+	String key;
+	if (line.is_comment)
+		key = "Comment";
+	else if (line.is_narration)
+		key = "Narrator";
+	else if (line.is_meta)
+		key = "Meta";
+	else
+		key = line.id.name.ToString();
+	
+	int i = tmp_actors.Find(key);
+	if (i == -1) Panic("Internal error: invalid actor key");
+	return tmp_actors[i];
+}
+
+const PlayScript::Subtitle* PlayScript::FindSubtitle(int time) const {
+	for (const Subtitle& st : subtitles) {
+		if (st.time >= time)
+			return &st;
+	}
+	return 0;
+}
+
+int PlayScript::GetLastSubtitleTiming() const {
+	for (int i = subtitles.GetCount()-1; i >= 0; i--) {
+		const Subtitle& st = subtitles[i];
+		if (st.time >= 0)
+			return st.time;
+	}
+	return -1;
 }
 
 

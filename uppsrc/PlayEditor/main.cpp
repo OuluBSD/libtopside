@@ -12,6 +12,8 @@ GUI_APP_MAIN {
 	
 	e.Run();
 	
+	e.SaveFile();
+	
 }
 
 #endif

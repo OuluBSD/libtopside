@@ -92,8 +92,8 @@ public:
 	Mesh& AddCylinder(const vec3& pos, float radius, float length);
 	
 	
-	operator const ModelMesh&() const {return model;}
-	const ModelMesh& AsModel() const {return model;}
+	operator const ModelMesh&() const {return *model;}
+	const ModelMesh& AsModel() const {return *model;}
 	
 	ModelMesh* Detach() {if (model) return model.Detach(); else return 0;}
 	

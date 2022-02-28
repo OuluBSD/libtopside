@@ -8,7 +8,7 @@ bool mb_is_colored_only = false;
 
 Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 	this->model.Create();
-	ModelMesh& model = this->model;
+	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_grid(m, 1, 1, size[0], size[1]);
 	
@@ -24,7 +24,7 @@ Mesh& ModelBuilder::AddPlane(const vec3& pos, const vec2& size) {
 
 Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 	this->model.Create();
-	ModelMesh& model = this->model;
+	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
 	
 	vec3 off = (centered ? dim * -0.5 : vec3(0,0,0)) + pos;
@@ -43,7 +43,7 @@ Mesh& ModelBuilder::AddBox(const vec3& pos, const vec3& dim, bool centered) {
 
 Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
 	this->model.Create();
-	ModelMesh& model = this->model;
+	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_sphere(m, 16, 16, radius);
 	
@@ -59,7 +59,7 @@ Mesh& ModelBuilder::AddSphere(const vec3& pos, float radius) {
 
 Mesh& ModelBuilder::AddCylinder(const vec3& pos, float radius, float length) {
 	this->model.Create();
-	ModelMesh& model = this->model;
+	ModelMesh& model = *this->model;
 	Mesh& m = model.meshes.Add();
 	PrimitiveFactory::create_cylinder(m, 16, radius, length);
 	

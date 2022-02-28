@@ -16,6 +16,8 @@ T normalize(const T& a) {
 	return o;
 }
 
+template <class T> T mod(const T& a, float f) {return a.Modulus(f);}
+template <class T> T mix(const T& a, const T& b, float f) {return a.Mix(b, f);}
 
 
 mat4 perspective(float fov, float aspect, float near, float far);

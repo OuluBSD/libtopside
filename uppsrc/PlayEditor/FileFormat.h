@@ -61,6 +61,7 @@ struct PlaySentence : ScriptObject {
 	PlaySentence() {}
 	PlaySentence(const PlaySentence& ps) {tokens <<= ps.tokens; voice_id = ps.voice_id;}
 	
+	PlaySentence& Set(String txt);
 	String ToString(int indent=-1) const;
 	String ToScript() const;
 	Value GetData() const;
@@ -82,7 +83,6 @@ struct PlayLine : ScriptObject {
 	bool is_comment = false;
 	bool is_narration = false;
 	bool is_meta = false;
-	int timing = -1;
 	Array<PlaySentence> sents;
 	
 	
@@ -135,19 +135,40 @@ struct PlayScript : ScriptObject {
 		PlaySentence* sent = 0;
 		int part_i = -1;
 		WString str;
+		int time = -1;
 		
 		String ToString() const {return str.ToString();}
 	};
 	
-	Array<Subtitle> subtitles;
+	struct Actor {
+		PlayLine* line = 0;
+		Color normal_paper;
+		String name;
+		int idx = -1;
+		
+	};
 	
+	Array<Subtitle> subtitles;
+	ArrayMap<String, Actor> tmp_actors;
+	PlayLine beginning;
+	PlayLine intro_line;
+	
+	VectorMap<unsigned, int> input_ext_time;
 	
 	String ToString(int indent=0) const;
 	String ToScript() const;
+	String GetSubtitleExtensionScript() const;
 	void Dump() const {LOG(ToString());}
 	
+	void LoadExtension(String s);
 	void MakeSubtitles();
+	void MakeActors();
+	bool CheckReferences();
+	void AddSubtitle(PlayLine& line, PlaySentence& sent);
 	
+	const Actor& GetActor(const PlayLine& line) const;
+	const Subtitle* FindSubtitle(int time) const;
+	int GetLastSubtitleTiming() const;
 	
 };
 	
