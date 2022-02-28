@@ -8,10 +8,9 @@
 					Näytelmä sijoittuu kuvitteelliseen vuoden 1781 Ouluun.
         Tehty alkuperäisen näytelmän lyhennelmästä, ilman mitään tietoa sen sisällöstä.
 
-
-Tämä näytelmä on nopeasti improvisoitu ilman taustatyötä, kun oli tarve sanoittaa nopeasti 14 kappaletta.
 			Henkilöt ovat kuvitteellisia ja tarina ei ole historiallisesti korrekti.
-				Tällaisen kokonaisuuden tekeminen on todella vaativa suoritus.
+				Tämä näytelmä on tehty pienellä työpanoksella ja improvisoiden,
+						kun oli tarve sanoittaa nopeasti 14 kappaletta.
 
 
                       Kirjoittanut, säveltänyt ja sanoittanut Seppo Pakonen
@@ -21,26 +20,32 @@ Tämä näytelmä on nopeasti improvisoitu ilman taustatyötä, kun oli tarve sa
 
 
 
-Teppo:                   Teppo Palmfelt
-Samuli:                  Samuli Palmfelt, Tepon isä
-Veijo:                   Veijo Palmfelt, Tepon serkku
-Aatu:                    Aatu Rancken, Tepon ja Veijon kaveri
-Tytti:                   Tyyne Kuhlman
-Mikael:                  Mikael Kuhlman, Tytin isä
-Maria:                   Maria Kuhlman, Tytin äiti
-Matti:                   Matti Kuhlman, Tytin sukulainen
-Lindström:               Henrik Lindström, Pastori
-Johan:                   Johan Lindström, Pastori poika
-Karl:                    Karl Magnus Jägerhorn, Oulun maaherra
-Aleksanteri:             Aleksanteri Jägerhorn, Maaherran sukulainen
-Katri:                   Tytin hoitajatar
-KPalv1:                  Kuhlman työläinen 1
-KPalv2:                  Kuhlman työläinen 2
-PPalv1:                  Palmfelt työläinen 1
-PPalv2:                  Palmfelt työläinen 2
-Kuhl1:                   Matin sukulainen 1
-Kuhl2:                   Matin sukulainen 2
-Vahti:                   Vahti
+Teppo:                   Teppo Palmfelt, Color(28, 212, 255)
+Samuli:                  Samuli Palmfelt, Tepon isä, Color(28, 170, 255)
+Veijo:                   Veijo Palmfelt, Tepon serkku, Color(28, 255, 150)
+Aatu:                    Aatu Rancken, Tepon ja Veijon kaveri, Color(209, 155, 255)
+Tytti:                   Tyyne Kuhlman, Color(255, 140, 192)
+Mikael:                  Mikael Kuhlman, Tytin isä, Color(255, 159, 151)
+Maria:                   Maria Kuhlman, Tytin äiti, Color(201, 115, 171)
+Matti:                   Matti Kuhlman, Tytin sukulainen, Color(180, 159, 116)
+Lindström:               Henrik Lindström, Pastori, Color(255, 255, 139)
+Johan:                   Johan Lindström, Pastori poika, Color(208, 255, 143)
+Karl:                    Karl Magnus Jägerhorn, Oulun maaherra, Color(183, 135, 202)
+Aleksanteri:             Aleksanteri Jägerhorn, Maaherran sukulainen, Color(170, 212, 200)
+Katri:                   Tytin hoitajatar, Color(155, 155, 217)
+KPalv1:                  Kuhlman työläinen 1, Color(197, 137, 128)
+KPalv2:                  Kuhlman työläinen 2, Color(207, 147, 138)
+PPalv1:                  Palmfelt työläinen 1, Color(139, 144, 205)
+PPalv2:                  Palmfelt työläinen 2, Color(149, 154, 215)
+Kuhl1:                   Matin sukulainen 1, Color(197, 137, 128)
+Kuhl2:                   Matin sukulainen 2, Color(207, 147, 138)
+Vahti:                   Vahti, Color(146, 167, 117)
+Vartija:                 Vartija, Color(146, 167, 117)
+Veneilijä:               Veneilijä, Color(146, 167, 117)
+Apteekkari:              Apteekkari, Color(146, 167, 117)
+T&V:                     Teppo ja Veijo, Color(28, 212, 255)
+T&T:                     Teppo ja Tytti, Color(28, 212, 255)
+V&T&A:                   Veijo, Teppo ja Aatu, Color(28, 212, 255)
 
 
 
@@ -690,7 +695,7 @@ Teppo:	( ) Tarjollakin on
 Veijo:	(E) kuka tuo tyttö on?
 Teppo:	( ) Kuka tuo tyttö on?
 Aatu:	(U) Kuka tuo tyttö on?
-Kaikki:	( ) Joka tanssii noin.
+V&T&A:	( ) Joka tanssii noin.
 Veijo:	(E) Kuka sille kelpaa?
 Teppo:	( ) Kuka saa sen nauraan?
 Aatu:	(U) Kuka kotiin saattaa?
@@ -713,7 +718,7 @@ Veijo:	(E) Kukahan ois tääl
 			kuka tuo jätkä on?
 Teppo:	( ) Kuka tuo jätkä on?
 Aatu:	(U) Kuka tuo jätkä on?
-Kaikki:	( ) Joka iskee noin.
+V&T&A:	( ) Joka iskee noin.
 Veijo:	(E) Kaikki vastaanottaa.
 Teppo:	( ) Kaikki nauramaan saa.
 Aatu:	(U) Kaikki saa haluaan,
@@ -750,7 +755,7 @@ Teppo:	( ) Tää on se ilta viimeinen,
 Teppo:	( ) Kuka se on?
 Veijo:	(E) Niin kuka se onkaan?
 Aatu:	(U) Kuka se on?
-Kaikki:	( ) Niin kuka se on ja
+V&T&A:	( ) Niin kuka se on ja
 			kelle se jää?
 
 
@@ -1141,12 +1146,12 @@ Matti:	(Y) Mää haastan sut kaksintaisteluun niin selvitetään sun sähläykse
 // Kuhlmaneja keskeyttämään kaksintaistelun, kunnes tämä ymmärtää, miksi Teppo ei halua
 // taistella.
 
-Tappo:	( ) Ei tässä nyt oo mitään järkeä kuule.
+Teppo:	( ) Ei tässä nyt oo mitään järkeä kuule.
 Matti:	(Y) Tää on kunniakysymys.
 			Te Palmfeltit taas kerran ylititte rajan.
-Tappo:	( ) Eihän se nyt niin vakavaa ollut.
+Teppo:	( ) Eihän se nyt niin vakavaa ollut.
 Matti:	(Y) Mitä Tyttiin tulee, niin sinä olet Kuhlmaneille raiskaaja.
-Tappo:	( ) Hei nyt ihan oikeasti, tää menee liian pitkälle.
+Teppo:	( ) Hei nyt ihan oikeasti, tää menee liian pitkälle.
 Veijo:	(E) Teppo etkö sää kuule mitä se sanoo.
 			Ei tuollainen mulkero saa tommosta sanoa.
 
@@ -1274,7 +1279,7 @@ Teppo:		( ) Selvä, kiitos.
 
 
 # Musiikki "2021/waiting for tonight.tg"
-Sanat: Sari Rokka, Seppo Pakonen
+# San. Sari Rokka, Seppo Pakonen
 
 Tytti:	(ö) Katso kuinka mä tanssin taas,
 			katso vapaata maailmaa.
@@ -1711,7 +1716,7 @@ Teppo:	( ) Kerran mun onnen sain, kerran
 	
 Veneilijä:		Huomenta.
 Teppo:		( ) Huomenta.
-Veneiliä:		Taas sieltä Oulusta kuului uutisia.
+Veneilijä:		Taas sieltä Oulusta kuului uutisia.
 				Tällä kertaa joku aatelistyttö on tappanut itsensä.
 				Niin, myrkyttänyt ittensä.
 Teppo:		( ) Jaa, minkä niminen?
