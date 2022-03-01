@@ -55,6 +55,9 @@ class PlayEditor : public TopWindow {
 	TimeCallback rend_tc;
 	TimeStop rend_ts;
 	
+	// Exporting
+	WithVideoExport<ParentCtrl> exporting;
+	
 	
 	PlayScript script;
 	PlayRenderer renderer;
@@ -75,6 +78,9 @@ class PlayEditor : public TopWindow {
 	void OnTimeSlider();
 	void ToggleRenderPlay();
 	void RenderFrameToPlayer();
+	void ReadRendererConfig(PlayRendererConfig& cfg);
+	
+	void ToggleExporting();
 	
 public:
 	typedef PlayEditor CLASSNAME;

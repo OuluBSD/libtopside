@@ -15,6 +15,7 @@ PlayEditor::PlayEditor() : renderer(script) {
 	CtrlLayout(lineconf);
 	CtrlLayout(st_edit);
 	CtrlLayout(rend_ctrl);
+	CtrlLayout(exporting);
 	
 	Add(part_split.SizePos());
 	
@@ -31,6 +32,7 @@ PlayEditor::PlayEditor() : renderer(script) {
 	tabs.Add(dialog_split.SizePos(),	"Dialogue");
 	tabs.Add(st_split.SizePos(),		"Subtitles");
 	tabs.Add(rend_split.SizePos(),		"Renderer");
+	tabs.Add(exporting.SizePos(),		"Exporting");
 	
 	
 	// Meta script
@@ -68,6 +70,28 @@ PlayEditor::PlayEditor() : renderer(script) {
 	rend_ctrl.time <<= THISBACK(OnTimeSlider);
 	rend_ctrl.time.Step(500); // milliseconds
 	rend_ctrl.play <<= THISBACK(ToggleRenderPlay);
+	
+	// Export
+	String export_notes =	"ffmpeg -i ../videotrack.mp4 -vf fps=25 \%05d.jpg\n"
+							"ffmpeg -i ../videotrack.mp4 -vf fps=25 -qscale:v 2 \%05d.jpg\n"
+							"ffmpeg -i ../videotrack.mp4 -vf fps=25 -qmin 1 -qscale:v 1 \%05d.jpg\n"
+							"Remove all images before the first frame.\n"
+							"\n"
+							"ffmpeg -framerate 25 -i %05d.jpg -i ../audiotrack.wav -c:a aac -c:v nvenc_hevc -r 25 ../exported.mp4\n"
+							"\n"
+							"ffmpeg -framerate 25 -i %05d.jpg -c:v nvenc_hevc -r 25 ../exported-video.mp4\n"
+							"ffmpeg -i exported-video.mp4 -i audiotrack.wav -c:v copy -c:a aac -map 0:v:0 -map 1:a:0 exported.mp4\n"
+							"\n"
+							"cat mylist.txt\n"
+							"\tfile '/path/to/file1'\n"
+							"\tfile '/path/to/file2'\n"
+							"\tfile '/path/to/file3'\n"
+							"\n"
+							"ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4\n"
+							;
+	exporting.hints.SetData(export_notes);
+	exporting.start <<= THISBACK(ToggleExporting);
+	exporting.prog.Set(0,1);
 	
 	PostCallback(THISBACK(Data));
 	
@@ -210,6 +234,9 @@ void PlayEditor::TabData() {
 		}
 	}
 	else if (tab == TAB_SUBTITLES) {
+		script.MakeTempPlaySentenceTimes();
+		renderer.Clear();
+		
 		int c = script.subtitles.GetCount();
 		for(int i = 0; i < c; i++) {
 			const PlayScript::Subtitle& st = script.subtitles[i];
@@ -227,6 +254,9 @@ void PlayEditor::TabData() {
 		SubtitleData();
 	}
 	else if (tab == TAB_RENDER) {
+		script.MakeTempPlaySentenceTimes();
+		renderer.Clear();
+		
 		int c = active_sect->dialog.lines.GetCount();
 		for(int i = 0; i < c; i++) {
 			PlayLine& line = active_sect->dialog.lines[i];
@@ -382,7 +412,9 @@ void PlayEditor::OnTimeSlider() {
 	if (!is_render_play) {
 		renderer.Seek(time);
 		
-		Image img = renderer.Render();
+		PlayRendererConfig cfg;
+		ReadRendererConfig(cfg);
+		Image img = renderer.Render(cfg);
 		rend_ctrl.frame.SetImage(img);
 	}
 	else {
@@ -423,9 +455,25 @@ void PlayEditor::RenderFrameToPlayer() {
 	Swap(tmp_cb, rend_ctrl.time.WhenAction);
 	
 	renderer.Seek(time);
-		
-	Image img = renderer.Render();
+	
+	PlayRendererConfig cfg;
+	ReadRendererConfig(cfg);
+	Image img = renderer.Render(cfg);
 	rend_ctrl.frame.SetImage(img);
+}
+
+void PlayEditor::ReadRendererConfig(PlayRendererConfig& cfg) {
+	cfg.render_bg = rend_ctrl.render_bg.Get();
+	cfg.render_blur = rend_ctrl.render_blur.Get();
+	cfg.render_text_bending = rend_ctrl.render_text_bending.Get();
+	cfg.render_person = rend_ctrl.render_person.Get();
+	cfg.render_notes = rend_ctrl.render_notes.Get();
+	cfg.render_person_background = rend_ctrl.render_person_background.Get();
+}
+
+void PlayEditor::ToggleExporting() {
+	
+	
 }
 
 

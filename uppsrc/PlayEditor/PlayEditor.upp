@@ -13,6 +13,7 @@ file
 	FileFormat.h,
 	FileFormat.cpp,
 	"../../share/screenplay/fi/Teppo ja Tytti.play" highlight cpp,
+	../../share/screenplay/fi/DummyTester.play highlight cpp,
 	Backgrounds readonly separator,
 	BgLiquidBokeh.cpp;
 

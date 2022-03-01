@@ -889,6 +889,8 @@ void PlayScript::MakeSubtitles() {
 
 void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	String s = sent.ToScript();
+	if (s == "-")
+		return;
 	
 	int part_i = 0;
 	int a = 0;
@@ -1028,12 +1030,18 @@ const PlayScript::Actor& PlayScript::GetActor(const PlayLine& line) const {
 	return tmp_actors[i];
 }
 
-const PlayScript::Subtitle* PlayScript::FindSubtitle(int time) const {
+int PlayScript::FindSubtitle(int time) const {
+	int i = 0;
 	for (const Subtitle& st : subtitles) {
 		if (st.time >= time)
-			return &st;
+			return i;
+		i++;
 	}
-	return 0;
+	return -1;
+}
+
+const PlayScript::Subtitle& PlayScript::Get(int i) const {
+	return subtitles[i];
 }
 
 int PlayScript::GetLastSubtitleTiming() const {
@@ -1043,6 +1051,80 @@ int PlayScript::GetLastSubtitleTiming() const {
 			return st.time;
 	}
 	return -1;
+}
+
+void PlayScript::MakeTempPlaySentenceTimes() {
+	Vector<PlaySentence*> sents;
+	sents.Reserve(10000);
+	
+	for (PlayPart& part : parts) {
+		for (PlaySection& sect : part.sections) {
+			for (PlayLine& line : sect.dialog.lines) {
+				for (PlaySentence& sent : line.sents) {
+					sent.tmp_time = -1;
+					sent.tmp_duration = 0;
+					sents.Add(&sent);
+				}
+			}
+		}
+	}
+	
+	PlaySentence* prev = 0;
+	
+	for (Subtitle& st : subtitles) {
+		if (st.sent == prev)
+			continue;
+		prev = st.sent;
+		
+		st.sent->tmp_time = st.time;
+	}
+	
+	prev = 0;
+	int prev_time = 0;
+	for(int i = 0; i < sents.GetCount(); i++) {
+		PlaySentence& a = *sents[i];
+		
+		/*if (i == 47) {
+			LOG("");
+		}*/
+		
+		if (a.tmp_time < 0) {
+			bool found = false;
+			for(int j = i+1; j < sents.GetCount(); j++) {
+				PlaySentence& b = *sents[j];
+				
+				if (b.tmp_time > prev_time) {
+					a.tmp_time = (prev_time + b.tmp_time) / 2;
+					prev_time = a.tmp_time;
+					found = true;
+				}
+			}
+			
+			if (!found) {
+				a.tmp_time = ++prev_time;
+			}
+		}
+		else if (a.tmp_time < prev_time) {
+			a.tmp_time = ++prev_time;
+		}
+		else {
+			prev_time = a.tmp_time;
+		}
+		
+		ASSERT(!prev || a.tmp_time > prev->tmp_time);
+		prev = &a;
+	}
+	
+	prev = 0;
+	for (PlaySentence* sent : sents) {
+		if (prev) {
+			prev->tmp_duration = sent->tmp_time - prev->tmp_time;
+			ASSERT(prev->tmp_duration > 0);
+		}
+		prev = sent;
+	}
+	prev->tmp_duration = 1000;
+	
 }
 
 

@@ -58,6 +58,9 @@ struct PlaySentence : ScriptObject {
 	Vector<Token> tokens;
 	WString voice_id;
 	
+	int tmp_time = -1;
+	int tmp_duration = 0;
+	
 	PlaySentence() {}
 	PlaySentence(const PlaySentence& ps) {tokens <<= ps.tokens; voice_id = ps.voice_id;}
 	
@@ -165,9 +168,11 @@ struct PlayScript : ScriptObject {
 	void MakeActors();
 	bool CheckReferences();
 	void AddSubtitle(PlayLine& line, PlaySentence& sent);
+	void MakeTempPlaySentenceTimes();
 	
 	const Actor& GetActor(const PlayLine& line) const;
-	const Subtitle* FindSubtitle(int time) const;
+	int FindSubtitle(int time) const;
+	const Subtitle& Get(int i) const;
 	int GetLastSubtitleTiming() const;
 	
 };
