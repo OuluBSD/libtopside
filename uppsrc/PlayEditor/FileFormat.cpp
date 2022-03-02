@@ -709,12 +709,20 @@ String PlayScript::ToScript() const {
 
 String PlayScript::GetSubtitleExtensionScript() const {
 	String s;
+	Index<unsigned> used_hashes;
 	
 	s << "<Extension: Subtitle-time>\n";
 	for (const Subtitle& st : subtitles) {
-		if (st.time < 0) continue;
-		unsigned h = st.str.GetHashValue();
-		s << HexStr(h).Mid(2) << "," << st.time << "\n";
+		WString str = st.str;
+		unsigned h = str.GetHashValue();
+		while (used_hashes.Find(h) >= 0) {
+			str.Cat('_');
+			h = str.GetHashValue();
+		}
+		used_hashes.Add(h);
+		
+		if (st.time >= 0)
+			s << HexStr(h).Mid(2) << "," << st.time << "\n";
 	}
 	
 	return s;
@@ -860,16 +868,19 @@ void PlayScript::LoadExtension(String s) {
 
 void PlayScript::MakeSubtitles() {
 	subtitles.Clear();
+	used_hashes.Clear();
 	
-	beginning.id.name = "Comment";
+	beginning.id.name = "Meta";
 	beginning.is_meta = true;
+	beginning.sents.Clear();
 	AddSubtitle(beginning, beginning.sents.Add().Set("<Beginning>"));
 	
 	intro_line.id.name = String("Narrator").ToWString();
+	intro_line.is_narration = true;
 	for (PlaySentence& sent : title.sents)       AddSubtitle(intro_line, sent);
 	for (PlaySentence& sent : description.sents) AddSubtitle(intro_line, sent);
-	for (PlaySentence& sent : author.sents)      AddSubtitle(intro_line, sent);
 	for (PlaySentence& sent : disclaimer.sents)  AddSubtitle(intro_line, sent);
+	for (PlaySentence& sent : author.sents)      AddSubtitle(intro_line, sent);
 	
 	for (PlayPart& part : parts) {
 		for (PlaySection& sect : part.sections) {
@@ -884,6 +895,10 @@ void PlayScript::MakeSubtitles() {
 		}
 	}
 	
+	ending.id.name = "Meta";
+	ending.is_meta = true;
+	ending.sents.Clear();
+	AddSubtitle(ending, ending.sents.Add().Set("<Ending>"));
 	//DUMPC(subtitles);
 }
 
@@ -895,6 +910,7 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	int part_i = 0;
 	int a = 0;
 	int f = 0;
+	
 	while (1) {
 		int f0 = s.Find(". ", f+1);
 		int f1 = s.Find(", ", f+1);
@@ -909,16 +925,25 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 			continue;
 		
 		Subtitle& st = subtitles.Add();
+		st.str = part.ToWString();
+		
+		// Find unique subtitle hash
+		WString str = st.str;
+		unsigned h = str.GetHashValue();
+		while (used_hashes.Find(h) >= 0) {
+			str.Cat('_');
+			h = str.GetHashValue();
+		}
+		used_hashes.Add(h);
+		
+		int i = input_ext_time.Find(h);
+		if (i >= 0)
+			st.time = input_ext_time[i];
+		
 		if (subtitles.GetCount() == 1) st.time = 0;
 		st.line = &line;
 		st.sent = &sent;
 		st.part_i = part_i++;
-		st.str = part.ToWString();
-		
-		unsigned h = st.str.GetHashValue();
-		int i = input_ext_time.Find(h);
-		if (i >= 0)
-			st.time = input_ext_time[i];
 		
 		a = b+1;
 	}
@@ -926,17 +951,26 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	int b = s.GetCount();
 	String part = s.Mid(a, b-a);
 	Subtitle& st = subtitles.Add();
-	if (subtitles.GetCount() == 1) st.time = 0;
-	st.line = &line;
-	st.sent = &sent;
-	st.part_i = part_i++;
 	st.str = part.ToWString();
-
-	unsigned h = st.str.GetHashValue();
+	
+	// Find unique subtitle hash
+	WString str = st.str;
+	unsigned h = str.GetHashValue();
+	while (used_hashes.Find(h) >= 0) {
+		str.Cat('_');
+		h = str.GetHashValue();
+	}
+	used_hashes.Add(h);
+	
 	int i = input_ext_time.Find(h);
 	if (i >= 0)
 		st.time = input_ext_time[i];
 	
+	if (subtitles.GetCount() == 1) st.time = 0;
+	st.line = &line;
+	st.sent = &sent;
+	st.part_i = part_i++;
+
 }
 
 void PlayScript::MakeActors() {
@@ -1057,6 +1091,18 @@ void PlayScript::MakeTempPlaySentenceTimes() {
 	Vector<PlaySentence*> sents;
 	sents.Reserve(10000);
 	
+	Vector<MetaText*> intro_metatext;
+	intro_metatext << &title << &description << &disclaimer << &author;
+	
+	for (MetaText* t : intro_metatext) {
+		MetaText& mt = *t;
+		for (PlaySentence& sent : mt.sents) {
+			sent.tmp_time = -1;
+			sent.tmp_duration = 0;
+			sents.Add(&sent);
+		}
+	}
+	
 	for (PlayPart& part : parts) {
 		for (PlaySection& sect : part.sections) {
 			for (PlayLine& line : sect.dialog.lines) {
@@ -1079,12 +1125,19 @@ void PlayScript::MakeTempPlaySentenceTimes() {
 		st.sent->tmp_time = st.time;
 	}
 	
+	if (0) {
+		int i = 0;
+		for (PlaySentence* sent : sents) {
+			LOG(i++ << ": " << sent->tmp_time << "\t" << sent->GetData());
+		}
+	}
+	
 	prev = 0;
 	int prev_time = 0;
 	for(int i = 0; i < sents.GetCount(); i++) {
 		PlaySentence& a = *sents[i];
 		
-		/*if (i == 47) {
+		/*if (i == 40) {
 			LOG("");
 		}*/
 		
@@ -1097,6 +1150,7 @@ void PlayScript::MakeTempPlaySentenceTimes() {
 					a.tmp_time = (prev_time + b.tmp_time) / 2;
 					prev_time = a.tmp_time;
 					found = true;
+					break;
 				}
 			}
 			
@@ -1125,6 +1179,12 @@ void PlayScript::MakeTempPlaySentenceTimes() {
 	}
 	prev->tmp_duration = 1000;
 	
+}
+
+
+
+String PlayScript::Subtitle::ToString() const {
+	return IntStr(time) + "\t" + str.ToString();
 }
 
 

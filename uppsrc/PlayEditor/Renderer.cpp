@@ -22,14 +22,16 @@ int ScriptLayout::GetOffset(int time) const {
 	if (objects.IsEmpty())
 		return 0;
 	
+	const LayoutObject* prev = 0;
 	for (const LayoutObject& o : objects) {
 		int begin = o.time;
 		int end = begin + o.duration;
 		if (o.col == LayoutObject::COL_NAME)
 			continue;
 		
+		ASSERT(begin >= 0);
 		if (end < time)
-			continue;
+			;
 		else if (time >= begin && time < end) {
 			double f = (double)(time - begin) / (double)o.duration;
 			ASSERT(f >= 0.0 && f <= 1.0);
@@ -39,17 +41,33 @@ int ScriptLayout::GetOffset(int time) const {
 		}
 		else if (time > begin)
 			return o.y + o.txt_sz.cy;
-		else if (time < begin) {
+		else if (time < begin && !prev) {
 			double f = (double)time / (double)begin;
 			ASSERT(f >= 0.0 && f <= 1.0);
-			int offset = (int)(o.txt_sz.cy * f);
+			int offset = (int)(o.y * f);
+			return offset;
+		}
+		else if (time < begin && prev) {
+			int prev_end = prev->time + prev->duration;
+			int duration = begin - prev_end;
+			ASSERT(duration > 0);
+			double f = (double)(time - prev_end) / (double)duration;
+			ASSERT(f >= 0.0 && f <= 1.0);
+			int y0 = prev->y + prev->txt_sz.cy;
+			int y1 = o.y;
+			int h = y1 - y0;
+			ASSERT(h >= 0);
+			int offset = y0 + (int)(h * f);
 			ASSERT(o.txt_sz.cy > 0);
 			return offset;
 		}
+		
+		
+		prev = &o;
 	}
 	
-	ASSERT(0);
-	return 0;
+	const LayoutObject& last = objects.Top();
+	return last.y + last.txt_sz.cy;
 }
 
 
@@ -144,9 +162,14 @@ Image PlayRenderer::RenderScript() {
 	
 	id.DrawRect(frame_sz, Black());
 	
+	//int y_offset = time * 0.020;
 	int y_offset = layout.GetOffset(time);
 	int y_begin = y_offset - frame_sz.cy / 2;
 	int y_end = y_offset + frame_sz.cy / 2;
+	
+	int indent = layout.max_name_w + 10;
+	
+	//LOG("time: " << time << ", y-offset: " << y_offset);
 	
 	for (const LayoutObject& o : layout.objects) {
 		int a = o.y;
@@ -155,16 +178,20 @@ Image PlayRenderer::RenderScript() {
 		if ((a >= y_begin && a <= y_end) ||
 			(b >= y_begin && b <= y_end)) {
 			int dst_x = 0;
-			int dst_y = o.y - y_begin;
+			int dst_y = o.y - y_begin + o.frame_y;
 			
+			String txt = o.txt;
 			if (o.col == LayoutObject::COL_NAME) {
-				
+				dst_x += layout.max_name_w - o.txt_sz.cx;
+				txt += ":";
 			}
 			else if (o.col == LayoutObject::COL_TXT) {
-				dst_x += layout.max_name_w;
+				dst_x += indent;
+				if (txt == "-")
+					txt.Clear();
 			}
 			else if (o.col == LayoutObject::COL_CENTER) {
-				dst_x += layout.max_name_w / 2;
+				dst_x += indent / 2;
 			}
 			
 			Font fnt;
@@ -177,7 +204,7 @@ Image PlayRenderer::RenderScript() {
 			if (y_offset >= a && y_offset < b)
 				clr = Red();
 			
-			id.DrawText(dst_x, dst_y, o.txt, fnt, clr);
+			id.DrawText(dst_x, dst_y, txt, fnt, clr);
 		}
 	}
 	
@@ -188,20 +215,56 @@ Image PlayRenderer::RenderScript() {
 void PlayRenderer::RenderScriptLayout() {
 	layout.Clear();
 	
+	int narrator_padding = 5;
+	int metatext_padding = 30;
 	
 	int y = 0;
+	
+	Vector<MetaText*> intro_metatext;
+	intro_metatext << &script.title << &script.description << &script.disclaimer << &script.author;
+	
+	for (const MetaText* t : intro_metatext) {
+		const MetaText& mt = *t;
+		
+		int i = 0;
+		for (const PlaySentence& sent : mt.sents) {
+			LayoutObject& o = layout.objects.Add();
+			o.y = y;
+			o.col = LayoutObject::COL_CENTER;
+			o.txt = sent.GetData();
+			o.txt_sz = GetTextSize(o.txt, layout.regular);
+			o.time = sent.tmp_time;
+			o.duration = sent.tmp_duration;
+			if (++i == mt.sents.GetCount())
+				o.txt_sz.cy += metatext_padding;
+			y += o.txt_sz.cy;
+		}
+	}
+	
 	for (const PlayPart& part : script.parts) {
 		for (const PlaySection& sect : part.sections) {
 			for (const PlayLine& line : sect.dialog.lines) {
 				if (line.sents.IsEmpty())
 					continue;
 				
-				if (line.is_narration) {
-					LayoutObject& o = layout.objects.Add();
-					o.y = y;
-					o.col = LayoutObject::COL_CENTER;
-					o.txt = line.id.name.ToString();
-					o.txt_sz = GetTextSize(o.txt, layout.regular);
+				if (line.is_comment || line.is_meta) {
+					// skip
+				}
+				else if (line.is_narration) {
+					int i = 0;
+					for (const PlaySentence& sent : line.sents) {
+						LayoutObject& o = layout.objects.Add();
+						o.y = y;
+						o.frame_y = i == 0 ? narrator_padding : 0;
+						o.col = LayoutObject::COL_CENTER;
+						o.txt = sent.GetData();
+						o.txt_sz = GetTextSize(o.txt, layout.regular);
+						o.time = sent.tmp_time;
+						o.duration = sent.tmp_duration;
+						if (++i == line.sents.GetCount())
+							o.txt_sz.cy += narrator_padding;
+						y += o.txt_sz.cy;
+					}
 				}
 				else {
 					LayoutObject& name = layout.objects.Add();
@@ -209,6 +272,8 @@ void PlayRenderer::RenderScriptLayout() {
 					name.col = LayoutObject::COL_NAME;
 					name.txt = line.id.name.ToString();
 					name.txt_sz = GetTextSize(name.txt, layout.regular);
+					name.time = -1;
+					name.duration = 0;
 					
 					layout.max_name_w = max(layout.max_name_w, name.txt_sz.cx);
 					
@@ -221,13 +286,16 @@ void PlayRenderer::RenderScriptLayout() {
 						l.time = sent.tmp_time;
 						l.duration = sent.tmp_duration;
 						
-						y += layout.regular_h;
+						//y += layout.regular_h;
+						y += l.txt_sz.cy;// + 5;
 					}
 				}
 			}
 		}
 	}
 	
+	//DUMPC(script.subtitles); DUMPC(layout.objects);
+	//LOG("");
 	
 }
 

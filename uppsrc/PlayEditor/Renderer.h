@@ -23,11 +23,15 @@ struct LayoutObject : Moveable<LayoutObject> {
 	int col = -1;
 	byte fnt = 0;
 	int y = 0;
+	int frame_y = 0;
 	String txt;
 	Size txt_sz;
 	
 	int time = -1;
 	int duration = -1;
+	
+	
+	String ToString() const {return IntStr(time) + "\t" + txt;}
 	
 };
 

@@ -140,7 +140,7 @@ struct PlayScript : ScriptObject {
 		WString str;
 		int time = -1;
 		
-		String ToString() const {return str.ToString();}
+		String ToString() const;
 	};
 	
 	struct Actor {
@@ -153,10 +153,11 @@ struct PlayScript : ScriptObject {
 	
 	Array<Subtitle> subtitles;
 	ArrayMap<String, Actor> tmp_actors;
-	PlayLine beginning;
+	PlayLine beginning, ending;
 	PlayLine intro_line;
 	
 	VectorMap<unsigned, int> input_ext_time;
+	Index<unsigned> used_hashes;
 	
 	String ToString(int indent=0) const;
 	String ToScript() const;
