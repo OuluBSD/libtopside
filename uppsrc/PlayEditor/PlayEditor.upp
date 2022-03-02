@@ -1,6 +1,7 @@
 uses
 	LocalCtrl,
-	Geometry;
+	Geometry,
+	plugin/jpg;
 
 file
 	main.cpp,

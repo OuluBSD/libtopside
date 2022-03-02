@@ -108,12 +108,12 @@ void PlayEditor::MainMenu(Bar& bar) {
 }
 
 void PlayEditor::SaveFile() {
-	if (filepath.IsEmpty())
+	if (script.filepath.IsEmpty())
 		return;
 	
 	String output = "\n\n" + script.ToScript();
 	
-	FileOut fout(filepath);
+	FileOut fout(script.filepath);
 	if (!fout.IsOpen()) {
 		PromptOK("Could not open file for saving");
 		return;
@@ -299,7 +299,7 @@ bool PlayEditor::LoadFile(String path) {
 }
 
 bool PlayEditor::Load(String content, String path) {
-	this->filepath.Clear();
+	script.filepath = path;
 	
 	Vector<String> segments = Split(content, "\n<Extension:");
 	content = segments[0];
@@ -330,7 +330,7 @@ bool PlayEditor::Load(String content, String path) {
 		return false;
 	}
 	
-	this->filepath = path;
+	script.LoadImages();
 	
 	return true;
 }

@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 
-struct LayoutObject : Moveable<LayoutObject> {
+struct LayoutObject {
 	
 	enum {
 		COL_NAME,
@@ -26,6 +26,8 @@ struct LayoutObject : Moveable<LayoutObject> {
 	int frame_y = 0;
 	String txt;
 	Size txt_sz;
+	Image img;
+	Size img_sz;
 	
 	int time = -1;
 	int duration = -1;
@@ -36,7 +38,7 @@ struct LayoutObject : Moveable<LayoutObject> {
 };
 
 struct ScriptLayout {
-	Vector<LayoutObject> objects;
+	Array<LayoutObject> objects;
 	
 	Font regular;
 	Font h1;
@@ -50,6 +52,7 @@ struct ScriptLayout {
 	ScriptLayout();
 	void Clear() {objects.Clear(); max_name_w = 0;}
 	int GetOffset(int time) const;
+	Font GetFont(int fnt) const;
 	
 };
 

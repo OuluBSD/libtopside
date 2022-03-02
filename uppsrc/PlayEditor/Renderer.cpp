@@ -16,6 +16,15 @@ ScriptLayout::ScriptLayout() {
 	
 }
 
+Font ScriptLayout::GetFont(int fnt) const {
+	switch (fnt) {
+		case LayoutObject::FNT_H1: return h1;
+		case LayoutObject::FNT_H2: return h2;
+		default:
+		case LayoutObject::FNT_REGULAR: return regular;
+	}
+}
+
 int ScriptLayout::GetOffset(int time) const {
 	time = max(time, 0);
 	
@@ -181,6 +190,7 @@ Image PlayRenderer::RenderScript() {
 			int dst_y = o.y - y_begin + o.frame_y;
 			
 			String txt = o.txt;
+			Image img = o.img;
 			if (o.col == LayoutObject::COL_NAME) {
 				dst_x += layout.max_name_w - o.txt_sz.cx;
 				txt += ":";
@@ -191,20 +201,28 @@ Image PlayRenderer::RenderScript() {
 					txt.Clear();
 			}
 			else if (o.col == LayoutObject::COL_CENTER) {
-				dst_x += indent / 2;
+				dst_x = (frame_sz.cx - o.txt_sz.cx) / 2;
 			}
 			
-			Font fnt;
-			if      (o.fnt == 0) fnt = layout.regular;
-			else if (o.fnt == 1) fnt = layout.h1;
-			else if (o.fnt == 2) fnt = layout.h2;
+			if (txt.GetCount()) {
+				Font fnt;
+				if      (o.fnt == 0) fnt = layout.regular;
+				else if (o.fnt == 1) fnt = layout.h1;
+				else if (o.fnt == 2) fnt = layout.h2;
+				
+				Color clr = White();
+				
+				if (y_offset >= a && y_offset < b)
+					clr = Color(151, 170, 255);
+				
+				id.DrawText(dst_x+2, dst_y+2, txt, fnt, GrayColor(1));
+				id.DrawText(dst_x+1, dst_y+1, txt, fnt, GrayColor(64));
+				id.DrawText(dst_x, dst_y, txt, fnt, clr);
+			}
 			
-			Color clr = White();
-			
-			if (y_offset >= a && y_offset < b)
-				clr = Red();
-			
-			id.DrawText(dst_x, dst_y, txt, fnt, clr);
+			if (!img.IsEmpty()) {
+				id.DrawImage(dst_x, dst_y, img);
+			}
 		}
 	}
 	
@@ -217,29 +235,81 @@ void PlayRenderer::RenderScriptLayout() {
 	
 	int narrator_padding = 5;
 	int metatext_padding = 30;
+	int max_width = frame_sz.cx;
+	int max_img_width = max_width * 0.333;
 	
 	int y = 0;
 	
 	Vector<MetaText*> intro_metatext;
 	intro_metatext << &script.title << &script.description << &script.disclaimer << &script.author;
 	
+	LayoutObject* prev = 0;
+	
 	for (const MetaText* t : intro_metatext) {
 		const MetaText& mt = *t;
 		
 		int i = 0;
 		for (const PlaySentence& sent : mt.sents) {
+			if (i == 0) {
+				Image img;
+				if (t == &script.title)
+					img = script.logo;
+				else if (t == &script.disclaimer)
+					img = script.subscribe;
+				else if (t == &script.author)
+					img = script.author_img;
+				
+				if (!img.IsEmpty()) {
+					Size sz = img.GetSize();
+					
+					if (sz.cx > max_img_width) {
+						double ratio = (double)max_img_width / (double)sz.cx;
+						sz.cx = max_img_width;
+						sz.cy = sz.cy * ratio;
+					}
+					
+					LayoutObject& p = layout.objects.Add();
+					p.y = y;
+					p.col = LayoutObject::COL_CENTER;
+					p.img = RescaleFilter(img, sz, FILTER_BSPLINE);
+					p.txt_sz = Size(sz.cx, sz.cy + metatext_padding);
+					p.img_sz = sz;
+					if (prev) {
+						int stolen_time = prev->duration / 2;
+						prev->duration -= stolen_time;
+						p.time = prev->time + prev->duration;
+						p.duration = stolen_time;
+					}
+					else {
+						p.time = 0;
+						p.duration = sent.tmp_time;
+					}
+					y += p.txt_sz.cy;
+					
+					prev = &p;
+				}
+			}
+			
+			
 			LayoutObject& o = layout.objects.Add();
+			
+			if (t == &script.title) o.fnt = LayoutObject::FNT_H1;
+			if (t == &script.author) o.fnt = LayoutObject::FNT_H2;
+			
 			o.y = y;
 			o.col = LayoutObject::COL_CENTER;
 			o.txt = sent.GetData();
-			o.txt_sz = GetTextSize(o.txt, layout.regular);
+			o.txt_sz = GetTextSize(o.txt, layout.GetFont(o.fnt));
 			o.time = sent.tmp_time;
 			o.duration = sent.tmp_duration;
 			if (++i == mt.sents.GetCount())
 				o.txt_sz.cy += metatext_padding;
 			y += o.txt_sz.cy;
+			
+			prev = &o;
 		}
 	}
+	
 	
 	for (const PlayPart& part : script.parts) {
 		for (const PlaySection& sect : part.sections) {

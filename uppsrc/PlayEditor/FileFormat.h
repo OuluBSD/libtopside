@@ -75,6 +75,7 @@ struct MetaText : ScriptObject {
 	Array<PlaySentence> sents;
 	
 	
+	void Clear() {sents.Clear();}
 	String ToString(String title="", int indent=0) const;
 	String ToScript() const;
 	Value GetData() const;
@@ -155,6 +156,9 @@ struct PlayScript : ScriptObject {
 	ArrayMap<String, Actor> tmp_actors;
 	PlayLine beginning, ending;
 	PlayLine intro_line;
+	String filepath;
+	Image logo, subscribe, author_img;
+	
 	
 	VectorMap<unsigned, int> input_ext_time;
 	Index<unsigned> used_hashes;
@@ -170,6 +174,7 @@ struct PlayScript : ScriptObject {
 	bool CheckReferences();
 	void AddSubtitle(PlayLine& line, PlaySentence& sent);
 	void MakeTempPlaySentenceTimes();
+	void LoadImages();
 	
 	const Actor& GetActor(const PlayLine& line) const;
 	int FindSubtitle(int time) const;

@@ -1181,6 +1181,28 @@ void PlayScript::MakeTempPlaySentenceTimes() {
 	
 }
 
+void PlayScript::LoadImages() {
+	author_img.Clear();
+	subscribe.Clear();
+	logo.Clear();
+	
+	String dir = GetFileDirectory(filepath);
+	if (!DirectoryExists(dir))
+		return;
+	
+	String logo_path = AppendFileName(dir, "logo.png");
+	String author_path = AppendFileName(dir, "author.png");
+	String subscribe_path = AppendFileName(dir, "subscribe.png");
+	
+	if (FileExists(logo_path))
+		logo		= StreamRaster::LoadFileAny(logo_path);
+	if (FileExists(author_path))
+		author_img	= StreamRaster::LoadFileAny(author_path);
+	if (FileExists(subscribe_path))
+		subscribe	= StreamRaster::LoadFileAny(subscribe_path);
+	
+}
+
 
 
 String PlayScript::Subtitle::ToString() const {

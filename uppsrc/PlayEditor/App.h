@@ -15,7 +15,6 @@ class PlayEditor : public TopWindow {
 	PlayPart* active_part = 0;
 	PlaySection* active_sect = 0;
 	MenuBar menu;
-	String filepath;
 	
 	enum {
 		TAB_METASCRIPT,
