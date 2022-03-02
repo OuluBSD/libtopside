@@ -76,11 +76,16 @@ class PlayRenderer {
 	
 	ScriptLayout layout;
 	
+	Vector<Vector<float>> gaussians;
 	
 	void RenderScriptLayout();
 	Image RenderScript();
 	void CopyImage(ImageBuffer& ib, Point pt, Image img);
 	void CopyImageTransparent(ImageBuffer& ib, Point pt, Image img, Color key);
+	void CopyImageTransparentBent(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend);
+	void CopyImageTransparentBentBlurred(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend, int max_blur);
+	RGBA GetBoxBlurredTransparent(int x0, int y0, const RGBA* src, const Size& ssz, float max_blur, const RGBA& transparent);
+	RGBA GetGaussianBlurTransparent(int x0, int y0, const RGBA* src, const Size& ssz, const Vector<float>& kernel, int edge, const RGBA& transparent);
 	
 public:
 	typedef PlayRenderer CLASSNAME;

@@ -36,9 +36,9 @@ Image LiquidBokeh(Size sz, float time)
 			/*ASSERT(color[0] >= 0.0 && color[0] <= 1.0);
 			ASSERT(color[1] >= 0.0 && color[1] <= 1.0);
 			ASSERT(color[2] >= 0.0 && color[2] <= 1.0);*/
-			color[0] = min(1.0f, color[0]);
-			color[1] = min(1.0f, color[1]);
-			color[2] = min(1.0f, color[2]);
+			color[0] = max(0.0f, min(1.0f, color[0]));
+			color[1] = max(0.0f, min(1.0f, color[1]));
+			color[2] = max(0.0f, min(1.0f, color[2]));
 			
 			dst->r = color[0] * 255;
 			dst->g = color[1] * 255;

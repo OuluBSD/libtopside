@@ -120,7 +120,19 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 	
 	Image script = RenderScript();
 	
-	CopyImageTransparent(ib, Point(0,0), script, Black());
+	if (!cfg.render_blur && !cfg.render_text_bending) {
+		CopyImageTransparent(ib, Point(0,0), script, Black());
+	}
+	else {
+		float bend = 0;
+		if (cfg.render_text_bending)
+			bend = M_PI / 4.0 * 0.5;
+		int max_blur = 0;
+		if (cfg.render_blur)
+			max_blur = 5;
+		CopyImageTransparentBentBlurred(ib, Point(0,0), script, Black(), +bend, -bend, max_blur);
+	}
+	
 	
 	return ib;
 }
@@ -161,6 +173,261 @@ void PlayRenderer::CopyImageTransparent(ImageBuffer& ib, Point pt, Image img, Co
 	}
 }
 
+void PlayRenderer::CopyImageTransparentBentBlurred(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend, int max_blur) {
+	RGBA transparent = key;
+	const RGBA* src = img.Begin();
+	RGBA* dst = ib.Begin();
+	Size dsz = ib.GetSize();
+	Size ssz = img.GetSize();
+	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
+	float bend_range = top_bend - bottom_bend;
+	bool use_gauss = true;
+	bool is_gauss = use_gauss && max_blur > 0;
+	Vector<float> kernel;
+	for (int y = pt.y, y0 = 0; y < dsz.cy; y++, y0++) {
+		if (y < 0) continue;
+		float fy = (float)y0 / (float)ssz.cy;
+		float fbend = cos(top_bend - fy * bend_range);
+		float fyblur = fabsf(fy - 0.5f) * 2.0f;
+		float fyopacity = 1.0f - fyblur * 0.5f ;
+		ASSERT(fbend >= 0.0);
+		RGBA* dit = dst + y * dsz.cx;
+		dit += pt.x;
+		const RGBA* srow = src + y0 * ssz.cx;
+		int edge;
+		float blur = max(0.0f, max_blur * fyblur - 0.2f);
+		//float blur = max_blur * fyblur;
+		if (is_gauss) {
+			float m = fmodf(blur, 1.0);
+			
+			if (m == 0)
+				edge = 1 + (int)blur * 2;
+			else
+				edge = 3 + (int)blur * 2;
+			ASSERT(edge != 0);
+			
+			int c = gaussians.GetCount();
+			if (c <= edge)
+				gaussians.SetCount(edge+1);
+			for (int g = c; g <= edge; g++) {
+				if (g < 3 || g % 2 != 1) continue;
+				
+				Vector<float>& kernel = gaussians[g];
+				int area = g * g;
+				kernel.SetCount(area);
+				float* k = kernel.Begin();
+				for(int i = 0; i < g; i++) {
+					float x = (cos((float)i / (float)(g-1) * 2 * M_PI) - 1.0) * -0.5;
+					for(int j = 0; j < g; j++) {
+						float y = (cos((float)j / (float)(g-1) * 2 * M_PI) - 1.0) * -0.5;
+						float v = x * y;
+						ASSERT(v >= 0.f && v <= 1.f);
+						*k++ = v;
+					}
+				}
+			}
+			
+			if (edge == 1) {
+				kernel.SetCount(1);
+				kernel[0] = 1;
+			}
+			else {
+				const Vector<float>& from = gaussians[edge];
+				if (m == 0)
+					kernel <<= from;
+				else {
+					kernel.SetCount(from.GetCount());
+					const float* f = from.Begin();
+					float* t = kernel.Begin();
+					int edge_2 = edge / 2;
+					float begin = m;
+					float step = (1.0f - m) / (float)edge_2;
+					float ymul = begin;
+					for(int i = 0; i < edge; i++) {
+						float xmul = begin;
+						for(int j = 0; j < edge; j++) {
+							float mul = xmul * ymul;
+							float val = *f++ * mul;
+							*t++ = val;
+							xmul += j < edge_2 ? step : -step;
+							ASSERT(xmul > -step && xmul <= 1.0001f);
+						}
+						ymul += i < edge_2 ? step : -step;
+						ASSERT(ymul > -step && ymul <= 1.0001f);
+					}
+					ASSERT(t == kernel.End());
+				}
+			}
+		}
+		
+		for (int x = pt.x, x0 = 0; x < wlimit; x++, x0++) {
+			if (x < 0) continue;
+			float fx = (float)x0 / (float)ssz.cx;
+			fx = fx - 0.5f;
+			fx /= fbend;
+			fx = 0.5f + fx;
+			fx *= ssz.cx;
+			int x1 = (int)fx;
+			
+			float pixelf = fmodf(fx, 1.0);
+			if (x1 >= 0 && x1 < ssz.cx) {
+				RGBA a, b;
+				int x2 = x1+1 < ssz.cx ? x1+1 : x1;
+				
+				if (max_blur == 0) {
+					a = *(srow + x1);
+					b = *(srow + x2);
+				}
+				else if (is_gauss) {
+					a = GetGaussianBlurTransparent(x1, y0, src, ssz, kernel, edge, transparent);
+					b = GetGaussianBlurTransparent(x2, y0, src, ssz, kernel, edge, transparent);
+				}
+				else {
+					a = GetBoxBlurredTransparent(x1, y0, src, ssz, blur, transparent);
+					b = GetBoxBlurredTransparent(x2, y0, src, ssz, blur, transparent);
+				}
+				
+				if (a == transparent) a.a = 0;
+				if (b == transparent) b.a = 0;
+				RGBA r;
+				r.r = (1.f - pixelf) * a.r + (pixelf * b.r);
+				r.g = (1.f - pixelf) * a.g + (pixelf * b.g);
+				r.b = (1.f - pixelf) * a.b + (pixelf * b.b);
+				r.a = (1.f - pixelf) * a.a + (pixelf * b.a);
+				pixelf = r.a / 255.f * fyopacity;
+				if (pixelf == 1.0f)
+					*dit = r;
+				else if (r.a != 0) {
+					a = *dit;
+					r.r = (1.f - pixelf) * a.r + (pixelf * r.r);
+					r.g = (1.f - pixelf) * a.g + (pixelf * r.g);
+					r.b = (1.f - pixelf) * a.b + (pixelf * r.b);
+					r.a = (1.f - pixelf) * a.a + (pixelf * r.a);
+					*dit = r;
+				}
+			}
+			dit++;
+		}
+	}
+}
+
+RGBA PlayRenderer::GetBoxBlurredTransparent(int x0, int y0, const RGBA* src, const Size& ssz, float max_blurf, const RGBA& transparent) {
+	int max_blur = max_blurf;
+	float edge_factor = fmodf(max_blurf, 1.0);
+	if (edge_factor > 0.0f)
+		max_blur++;
+	else
+		edge_factor = 1.0f;
+	
+	float edge = 1.0f + 2 * max_blurf;
+	float area = edge * edge;
+	float area_mul = 1.0f / area;
+	
+	float r = 0, g = 0, b = 0, a = 0;
+	int ybegin = max(     0, y0 - max_blur);
+	int yend   = min(ssz.cy, y0 + max_blur + 1);
+	int xbegin = max(     0, x0 - max_blur);
+	int xend   = min(ssz.cx, x0 + max_blur + 1);
+	int yedge = y0 + max_blur;
+	int xedge = x0 + max_blur;
+	const RGBA* row = src + ybegin * ssz.cx + xbegin;
+	float alpha_samples = 0.0f;
+	for (int y = ybegin; y < yend; y++) {
+		const RGBA* it = row;
+		for (int x = xbegin; x < xend; x++) {
+			if (*it != transparent) {
+				float weight = 1.0f;
+				if (x == xbegin || x == xedge || y == ybegin || y == yedge)
+					weight = edge_factor;
+				r += it->r * weight;
+				g += it->g * weight;
+				b += it->b * weight;
+				a += it->a * weight;
+				alpha_samples += weight;
+			}
+			it++;
+		}
+		row += ssz.cx;
+	}
+	
+	RGBA ret;
+	if (alpha_samples == 0) {
+		ret.r = ret.g = ret.b = ret.a = 0;
+	}
+	else {
+		float mul = 1.0f / (float)alpha_samples;
+		int br = r * mul;
+		int bg = g * mul;
+		int bb = b * mul;
+		int ba = min(255, (int)(a * area_mul)); // small error due to corner case (literally)
+		ASSERT(br >= 0 && br <= 255);
+		ASSERT(bg >= 0 && bg <= 255);
+		ASSERT(bb >= 0 && bb <= 255);
+		ASSERT(ba >= 0 && ba <= 255);
+		ret.r = br;
+		ret.g = bg;
+		ret.b = bb;
+		ret.a = ba;
+	}
+	return ret;
+}
+
+RGBA PlayRenderer::GetGaussianBlurTransparent(int x0, int y0, const RGBA* src, const Size& ssz, const Vector<float>& kernel, int edge, const RGBA& transparent) {
+	float r = 0, g = 0, b = 0, a = 0;
+	ASSERT(edge % 2 == 1);
+	int edge_2 = edge / 2;
+	int ybegin = max(     0, y0 - edge_2);
+	int yend   = min(ssz.cy, y0 + edge_2 + 1);
+	int xbegin = max(     0, x0 - edge_2);
+	int xend   = min(ssz.cx, x0 + edge_2 + 1);
+	int yedge = y0 + edge_2;
+	int xedge = x0 + edge_2;
+	int xoff = xbegin - (x0 - edge_2);
+	int yoff = ybegin - (y0 - edge_2);
+	const float* krow = kernel.Begin() + yoff * edge + xoff;
+	const RGBA* row = src + ybegin * ssz.cx + xbegin;
+	float alpha_samples = 0.0f;
+	for (int y = ybegin; y < yend; y++) {
+		const RGBA* it = row;
+		const float* kit = krow;
+		for (int x = xbegin; x < xend; x++) {
+			float weight = *kit;
+			if (*it != transparent) {
+				r += it->r * weight;
+				g += it->g * weight;
+				b += it->b * weight;
+				a += it->a * weight;
+			}
+			alpha_samples += weight;
+			it++;
+			kit++;
+		}
+		row += ssz.cx;
+		krow += edge;
+	}
+	
+	RGBA ret;
+	if (alpha_samples == 0) {
+		ret.r = ret.g = ret.b = ret.a = 0;
+	}
+	else {
+		float mul = 1.0f / (float)alpha_samples;
+		int br = r * mul;
+		int bg = g * mul;
+		int bb = b * mul;
+		int ba = a * mul;
+		ASSERT(br >= 0 && br <= 255);
+		ASSERT(bg >= 0 && bg <= 255);
+		ASSERT(bb >= 0 && bb <= 255);
+		ASSERT(ba >= 0 && ba <= 255);
+		ret.r = br;
+		ret.g = bg;
+		ret.b = bb;
+		ret.a = ba;
+	}
+	return ret;
+}
+
 Image PlayRenderer::RenderScript() {
 	int pad = 10;
 	Size frame_sz = this->frame_sz;
@@ -186,7 +453,7 @@ Image PlayRenderer::RenderScript() {
 		
 		if ((a >= y_begin && a <= y_end) ||
 			(b >= y_begin && b <= y_end)) {
-			int dst_x = 0;
+			int dst_x = pad;
 			int dst_y = o.y - y_begin + o.frame_y;
 			
 			String txt = o.txt;
@@ -201,7 +468,7 @@ Image PlayRenderer::RenderScript() {
 					txt.Clear();
 			}
 			else if (o.col == LayoutObject::COL_CENTER) {
-				dst_x = (frame_sz.cx - o.txt_sz.cx) / 2;
+				dst_x += (frame_sz.cx - o.txt_sz.cx) / 2;
 			}
 			
 			if (txt.GetCount()) {
