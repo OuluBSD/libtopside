@@ -93,11 +93,21 @@ PlayRenderer::PlayRenderer(PlayScript& s) : script(s) {
 	//frame_sz = Size(1280,720);
 	frame_sz = Size(640,360);
 	
-	
+	for(int i = 0; i < 3; i++) {
+		clr0[i].SetPeriod(25 * color_av);
+		clr1[i].SetPeriod(25 * color_av);
+	}
 }
 
 void PlayRenderer::Seek(int i) {
 	time = i;
+	
+	if (i == 0) {
+		for(int i = 0; i < 3; i++) {
+			clr0[i].Clear();
+			clr1[i].Clear();
+		}
+	}
 }
 
 Image PlayRenderer::Render(PlayRendererConfig& cfg) {
@@ -108,8 +118,26 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 	ImageBuffer ib(frame_sz);
 	
 	if (cfg.render_bg) {
+		int i = script.FindSubtitle(time + (color_av * 1000) / 2);
+		if (i >= 0) {
+			const PlayScript::Subtitle& st = script.Get(i);
+			clr0[0].Add(st.clr.GetR());
+			clr0[1].Add(st.clr.GetG());
+			clr0[2].Add(st.clr.GetB());
+		}
+		
+		i = script.FindSubtitle(time - (color_av * 1000) / 6);
+		if (i >= 0) {
+			const PlayScript::Subtitle& st = script.Get(i);
+			clr1[0].Add(st.clr.GetR());
+			clr1[1].Add(st.clr.GetG());
+			clr1[2].Add(st.clr.GetB());
+		}
+		
+		Color a = Color(clr0[0].GetMean(), clr0[1].GetMean(), clr0[2].GetMean());
+		Color b = Color(clr1[0].GetMean(), clr1[1].GetMean(), clr1[2].GetMean());
 		Size bg_size(320, 180);
-		Image bg = LiquidBokeh(bg_size, time * 0.001);
+		Image bg = LiquidBokeh(bg_size, time * 0.001, a, b);
 		bg = RescaleFilter(bg, frame_sz, FILTER_BSPLINE);
 		CopyImage(ib, Point(0,0), bg);
 	}
@@ -189,7 +217,7 @@ void PlayRenderer::CopyImageTransparentBentBlurred(ImageBuffer& ib, Point pt, Im
 		float fy = (float)y0 / (float)ssz.cy;
 		float fbend = cos(top_bend - fy * bend_range);
 		float fyblur = fabsf(fy - 0.5f) * 2.0f;
-		float fyopacity = 1.0f - fyblur * 0.5f ;
+		float fyopacity = 1.0f - fyblur * 0.9f ;
 		ASSERT(fbend >= 0.0);
 		RGBA* dit = dst + y * dsz.cx;
 		dit += pt.x;
@@ -477,13 +505,18 @@ Image PlayRenderer::RenderScript() {
 				else if (o.fnt == 1) fnt = layout.h1;
 				else if (o.fnt == 2) fnt = layout.h2;
 				
-				Color clr = White();
-				
-				if (y_offset >= a && y_offset < b)
-					clr = Color(151, 170, 255);
+				int alpha = 64;
+				if (y_offset >= a && y_offset < b) {
+					//alpha = 128;
+					alpha = 256-64;
+					//clr = Color(151, 170, 255);
+					//fnt.Bold();
+				}
+					
+				Color clr = Blend(o.clr, White(), alpha);
 				
 				id.DrawText(dst_x+2, dst_y+2, txt, fnt, GrayColor(1));
-				id.DrawText(dst_x+1, dst_y+1, txt, fnt, GrayColor(64));
+				id.DrawText(dst_x+1, dst_y+1, txt, fnt, GrayColor(10));
 				id.DrawText(dst_x, dst_y, txt, fnt, clr);
 			}
 			
@@ -500,10 +533,20 @@ Image PlayRenderer::RenderScript() {
 void PlayRenderer::RenderScriptLayout() {
 	layout.Clear();
 	
-	int narrator_padding = 5;
-	int metatext_padding = 30;
+	layout.regular_h = frame_sz.cy * 0.040;
+	layout.h1_h = frame_sz.cy * 0.055;
+	layout.h2_h = frame_sz.cy * 0.070;
+	
+	layout.regular = SansSerif(layout.regular_h);
+	layout.h1 = SansSerif(layout.h1_h);
+	layout.h2 = SansSerif(layout.h2_h);
+	
+	
+	int narrator_padding = frame_sz.cy * 0.040;
+	int metatext_padding = frame_sz.cy * 0.08;
 	int max_width = frame_sz.cx;
 	int max_img_width = max_width * 0.333;
+	
 	
 	int y = 0;
 	
@@ -511,6 +554,8 @@ void PlayRenderer::RenderScriptLayout() {
 	intro_metatext << &script.title << &script.description << &script.disclaimer << &script.author;
 	
 	LayoutObject* prev = 0;
+	
+	const PlayScript::Actor& meta_actor = script.tmp_actors.Get("Meta");
 	
 	for (const MetaText* t : intro_metatext) {
 		const MetaText& mt = *t;
@@ -541,6 +586,7 @@ void PlayRenderer::RenderScriptLayout() {
 					p.img = RescaleFilter(img, sz, FILTER_BSPLINE);
 					p.txt_sz = Size(sz.cx, sz.cy + metatext_padding);
 					p.img_sz = sz;
+					
 					if (prev) {
 						int stolen_time = prev->duration / 2;
 						prev->duration -= stolen_time;
@@ -569,6 +615,7 @@ void PlayRenderer::RenderScriptLayout() {
 			o.txt_sz = GetTextSize(o.txt, layout.GetFont(o.fnt));
 			o.time = sent.tmp_time;
 			o.duration = sent.tmp_duration;
+			o.clr = meta_actor.normal_paper;
 			if (++i == mt.sents.GetCount())
 				o.txt_sz.cy += metatext_padding;
 			y += o.txt_sz.cy;
@@ -584,6 +631,9 @@ void PlayRenderer::RenderScriptLayout() {
 				if (line.sents.IsEmpty())
 					continue;
 				
+				String id = line.GetId();
+				const PlayScript::Actor& actor = script.tmp_actors.Get(id);
+				
 				if (line.is_comment || line.is_meta) {
 					// skip
 				}
@@ -598,8 +648,13 @@ void PlayRenderer::RenderScriptLayout() {
 						o.txt_sz = GetTextSize(o.txt, layout.regular);
 						o.time = sent.tmp_time;
 						o.duration = sent.tmp_duration;
-						if (++i == line.sents.GetCount())
+						o.clr = actor.normal_paper;
+						
+						if (line.sents.GetCount() == 1)
+							o.txt_sz.cy += narrator_padding * 2;
+						else if (i == 0 || i == line.sents.GetCount())
 							o.txt_sz.cy += narrator_padding;
+						i++;
 						y += o.txt_sz.cy;
 					}
 				}
@@ -611,6 +666,7 @@ void PlayRenderer::RenderScriptLayout() {
 					name.txt_sz = GetTextSize(name.txt, layout.regular);
 					name.time = -1;
 					name.duration = 0;
+					name.clr = actor.normal_paper;
 					
 					layout.max_name_w = max(layout.max_name_w, name.txt_sz.cx);
 					
@@ -622,6 +678,7 @@ void PlayRenderer::RenderScriptLayout() {
 						l.txt_sz = GetTextSize(l.txt, layout.regular);
 						l.time = sent.tmp_time;
 						l.duration = sent.tmp_duration;
+						l.clr = actor.normal_paper;
 						
 						//y += layout.regular_h;
 						y += l.txt_sz.cy;// + 5;

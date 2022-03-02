@@ -781,6 +781,21 @@ String PlayDialogue::ToScript() const {
 	return s;
 }
 
+String PlayLine::GetId() const {
+	if (is_comment) {
+		return "Comment";
+	}
+	else if (is_narration) {
+		return "Narrator";
+	}
+	else if (is_meta) {
+		return "Meta";
+	}
+	else {
+		return id.name.ToString();
+	}
+}
+
 String PlayLine::ToScript() const {
 	String s;
 	
@@ -911,6 +926,15 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	int a = 0;
 	int f = 0;
 	
+	Color clr = Black();
+	String id = line.GetId();
+	int i = tmp_actors.Find(id);
+	ASSERT(i >= 0);
+	if (i >= 0) {
+		Actor& a = tmp_actors[i];
+		clr = a.normal_paper;
+	}
+	
 	while (1) {
 		int f0 = s.Find(". ", f+1);
 		int f1 = s.Find(", ", f+1);
@@ -944,6 +968,7 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 		st.line = &line;
 		st.sent = &sent;
 		st.part_i = part_i++;
+		st.clr = clr;
 		
 		a = b+1;
 	}
@@ -962,7 +987,7 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	}
 	used_hashes.Add(h);
 	
-	int i = input_ext_time.Find(h);
+	i = input_ext_time.Find(h);
 	if (i >= 0)
 		st.time = input_ext_time[i];
 	
@@ -970,7 +995,8 @@ void PlayScript::AddSubtitle(PlayLine& line, PlaySentence& sent) {
 	st.line = &line;
 	st.sent = &sent;
 	st.part_i = part_i++;
-
+	st.clr = clr;
+	
 }
 
 void PlayScript::MakeActors() {

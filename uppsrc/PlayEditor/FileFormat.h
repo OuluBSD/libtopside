@@ -92,7 +92,7 @@ struct PlayLine : ScriptObject {
 	
 	String ToString(int indent=0) const;
 	String ToScript() const;
-	
+	String GetId() const;
 };
 
 struct PlayDialogue : ScriptObject {
@@ -140,6 +140,7 @@ struct PlayScript : ScriptObject {
 		int part_i = -1;
 		WString str;
 		int time = -1;
+		Color clr;
 		
 		String ToString() const;
 	};

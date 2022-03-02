@@ -322,8 +322,8 @@ bool PlayEditor::Load(String content, String path) {
 	//p.GetResult().Dump();
 	LOG(script.ToScript());
 	
-	script.MakeSubtitles();
 	script.MakeActors();
+	script.MakeSubtitles();
 	
 	if (!script.CheckReferences()) {
 		LOG("Reference checking failed");

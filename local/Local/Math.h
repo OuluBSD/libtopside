@@ -299,6 +299,7 @@ public:
 	OnlineVariance& Get() {return vec[0];}
 	
 	void SetPeriod(int i) {if (i > 0) {period = i; skip = false;} else {period = 1; skip = true; vec.SetCount(1);}}
+	void Add(double d) {for(int i = 0; i < vec.GetCount(); i++) {vec[i].Add(d);}}
 	void AddResult(double d) {for(int i = 0; i < vec.GetCount(); i++) {vec[i].Add(d);}}
 	void Next() {if (skip) return; while (vec.GetCount() >= period) {vec.Remove(0);} vec.Add();}
 	void Clear() {vec.SetCount(1); vec[0].Clear();}

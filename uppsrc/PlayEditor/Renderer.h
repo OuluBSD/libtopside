@@ -28,6 +28,7 @@ struct LayoutObject {
 	Size txt_sz;
 	Image img;
 	Size img_sz;
+	Color clr;
 	
 	int time = -1;
 	int duration = -1;
@@ -57,7 +58,7 @@ struct ScriptLayout {
 };
 
 
-Image LiquidBokeh(Size sz, float time);
+Image LiquidBokeh(Size sz, float time, Color a, Color b);
 
 struct PlayRendererConfig {
 	bool render_bg = true;
@@ -77,6 +78,9 @@ class PlayRenderer {
 	ScriptLayout layout;
 	
 	Vector<Vector<float>> gaussians;
+	
+	int color_av = 6;
+	MovingOnlineVariance clr0[3], clr1[3];
 	
 	void RenderScriptLayout();
 	Image RenderScript();
