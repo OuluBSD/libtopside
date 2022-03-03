@@ -300,6 +300,39 @@ Color HeatmapBlack(float progress) {
     }
 }
 
+RGBA InvertRGBA(const RGBA& c) {
+	RGBA a;
+	a.r = ~c.r;
+	a.g = ~c.g;
+	a.b = ~c.b;
+	a.a = 255;
+	return a;
+}
+
+RGBA InvertRGBA_GrayOnly(const RGBA& c, int gray_range) {
+	int av = ((int)c.r + (int)c.g + (int)c.b) / 3;
+	int r = av - (int)c.r;
+	int g = av - (int)c.g;
+	int b = av - (int)c.b;
+	int dist_sum = abs(r) + abs(g) + abs(b);
+	if (dist_sum < 3*gray_range) {
+		RGBA a;
+		#if 0
+		a.r = ~c.r;
+		a.g = ~c.g;
+		a.b = ~c.b;
+		#else
+		av = 255 - av;
+		a.r = min(255, max(0, av + r));
+		a.g = min(255, max(0, av + g));
+		a.b = min(255, max(0, av + b));
+		#endif
+		a.a = c.a;
+		return a;
+	}
+	else
+		return c;
+}
 
 
 NAMESPACE_TOPSIDE_END

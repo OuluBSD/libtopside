@@ -70,6 +70,10 @@ struct PlayRendererConfig {
 };
 
 class PlayRenderer {
+	static const int fps = 25;
+	static const int notes_fps = 12;
+	static const int color_av = 6;
+	
 	PlayScript& script;
 	
 	int time = 0;
@@ -79,13 +83,15 @@ class PlayRenderer {
 	
 	Vector<Vector<float>> gaussians;
 	
-	int color_av = 6;
 	MovingOnlineVariance clr0[3], clr1[3];
+	PNGRaster png;
 	
 	void RenderScriptLayout();
 	Image RenderScript();
+	Image LoadNotes();
 	void CopyImage(ImageBuffer& ib, Point pt, Image img);
 	void CopyImageTransparent(ImageBuffer& ib, Point pt, Image img, Color key);
+	void CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img, Color key, int alpha);
 	void CopyImageTransparentBent(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend);
 	void CopyImageTransparentBentBlurred(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend, int max_blur);
 	RGBA GetBoxBlurredTransparent(int x0, int y0, const RGBA* src, const Size& ssz, float max_blur, const RGBA& transparent);

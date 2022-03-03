@@ -332,6 +332,11 @@ bool PlayEditor::Load(String content, String path) {
 	
 	script.LoadImages();
 	
+	if (!script.CheckMusical()) {
+		LOG("Musical check failed");
+		return false;
+	}
+	
 	return true;
 }
 

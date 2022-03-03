@@ -161,6 +161,10 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 		CopyImageTransparentBentBlurred(ib, Point(0,0), script, Black(), +bend, -bend, max_blur);
 	}
 	
+	Image notes = LoadNotes();
+	if (!notes.IsEmpty()) {
+		CopyImageSemiTransparent(ib, Point(0,0), notes, Black(), 128);
+	}
 	
 	return ib;
 }
@@ -188,14 +192,40 @@ void PlayRenderer::CopyImageTransparent(ImageBuffer& ib, Point pt, Image img, Co
 	Size dsz = ib.GetSize();
 	Size ssz = img.GetSize();
 	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
-	for (int y = pt.y, y0 = 0; y < dsz.cy; y++, y0++) {
+	for (int y = pt.y, y0 = 0; y < dsz.cy && y0 < ssz.cy; y++, y0++) {
 		RGBA* dit = dst + y * dsz.cx;
 		dit += pt.x;
 		const RGBA* sit = src + y0 * ssz.cx;
-		for (int x = pt.x; x < wlimit; x++) {
+		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
 			RGBA r = *sit++;
 			if (r != transparent)
 				*dit = r;
+			dit++;
+		}
+	}
+}
+
+void PlayRenderer::CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img, Color key, int alpha) {
+	RGBA transparent = key;
+	const RGBA* src = img.Begin();
+	RGBA* dst = ib.Begin();
+	Size dsz = ib.GetSize();
+	Size ssz = img.GetSize();
+	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
+	for (int y = pt.y, y0 = 0; y < dsz.cy && y0 < ssz.cy; y++, y0++) {
+		RGBA* dit = dst + y * dsz.cx;
+		dit += pt.x;
+		const RGBA* sit = src + y0 * ssz.cx;
+		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
+			RGBA r = *sit++;
+			if (r != transparent) {
+				*dit = r;
+			}
+			else {
+				dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
+				dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
+				dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
+			}
 			dit++;
 		}
 	}
@@ -691,6 +721,59 @@ void PlayRenderer::RenderScriptLayout() {
 	//DUMPC(script.subtitles); DUMPC(layout.objects);
 	//LOG("");
 	
+}
+
+Image PlayRenderer::LoadNotes() {
+	const PlaySection* sect = script.FindSection(time);
+	
+	if (!sect || sect->musical_idx < 0)
+		return Image();
+	
+	int sect_begin = sect->dialog.GetFirstActorTime();
+	int song_time = time - sect_begin;
+	if (song_time < 0)
+		return Image();
+	
+	int song_frame = (int)((double)song_time * 0.001 * (double)notes_fps);
+	ASSERT(song_frame >= 0);
+	int note_idx = sect->notes_min + song_frame;
+	if (note_idx > sect->notes_max)
+		return Image();
+	
+	String idxstr = IntStr(note_idx);
+	String path = sect->musical_dir + DIR_SEPS + "notes ";
+	int zeros = sect->notes_idx_digits - idxstr.GetCount();
+	path.Cat('0', zeros);
+	path << idxstr << ".png";
+	
+	if (!FileExists(path)) {
+		//DUMP(path);
+		return Image();
+	}
+	
+	Image img = png.LoadFile(path);
+	
+	if (1) {
+		ImageBuffer inv(img.GetSize());
+		RGBA* dst = inv.Begin();
+		const RGBA* src = img.Begin();
+		const RGBA* end = img.End();
+		while (src != end) {
+			*dst = InvertRGBA_GrayOnly(*src, 10);
+			src++;
+			dst++;
+		}
+		img = inv;
+	}
+	
+	double ratio = (double)frame_sz.cx / (double)img.GetWidth();
+	if (ratio < 1.0) {
+		Size new_sz = img.GetSize() * ratio;
+		new_sz.cx = min(new_sz.cx, frame_sz.cx);
+		img = RescaleFilter(img, new_sz, FILTER_BILINEAR);
+	}
+	
+	return img;
 }
 
 /*Image PlayRenderer::RenderText(int& time_y) {

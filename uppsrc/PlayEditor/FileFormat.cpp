@@ -1229,6 +1229,119 @@ void PlayScript::LoadImages() {
 	
 }
 
+bool PlayScript::CheckMusical() {
+	String dir = GetFileDirectory(filepath);
+	
+	int musical_idx = 0;
+	for (PlayPart& part : parts) {
+		for (PlaySection& sect : part.sections) {
+			sect.musical_idx = -1;
+			for (PlayLine& line : sect.dialog.lines) {
+				
+				if (line.is_meta && line.sents.GetCount() && line.sents[0].tokens.GetCount()) {
+					const PlaySentence& sent = line.sents[0];
+					const Token& meta_token = sent.tokens[0];
+					
+					if (meta_token.IsType(TK_ID)) {
+						String str = meta_token.GetTextValue();
+						if (str == "Musiikki" || str == "Music") {
+							sect.musical_idx = musical_idx++;
+							sect.musical_dir.Clear();
+							
+							String s = Format("%02d", sect.musical_idx + 1);
+							FindFile ff;
+							if (ff.Search(AppendFileName(dir, s + " *"))) {
+								do {
+									if (ff.IsDirectory()) {
+										sect.musical_dir = ff.GetPath();
+										break;
+									}
+								}
+								while (ff.Next());
+							}
+							
+							if (sect.musical_dir.IsEmpty()) {
+								LOG("Could not find musical directory with beginning '" + s + "'");
+								return false;
+							}
+							
+							if (ff.Search(AppendFileName(sect.musical_dir, "notes *.png"))) {
+								int min = INT_MAX, max = 0;
+								int count = 0;
+								int idx_digits = 0;
+								do {
+									String filename = ff.GetName();
+									String numstr = filename.Mid(6, filename.GetCount() - 6 - 4);
+									int num = ScanInt(numstr);
+									if (num < min) min = num;
+									if (num > max) max = num;
+									count++;
+									idx_digits = std::max(idx_digits, numstr.GetCount());
+								}
+								while (ff.Next());
+								
+								if (count == 0) {
+									LOG("No images in musical directory " + sect.musical_dir);
+									return false;
+								}
+								
+								LOG("Image range in '" + sect.musical_dir + "': min " << min << ", max " << max << ", count " << count);
+								sect.notes_min = min;
+								sect.notes_max = max;
+								sect.notes_idx_digits = idx_digits;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	return true;
+}
+
+const PlaySection* PlayScript::FindSection(int time) const {
+	const PlaySection* ret = 0;
+	
+	for (const PlayPart& part : parts) {
+		for (const PlaySection& sect : part.sections) {
+			for (const PlayLine& line : sect.dialog.lines) {
+				if (!line.is_meta && !line.is_comment && line.sents.GetCount()) {
+					const PlaySentence& sent = line.sents[0];
+					
+					if (sent.tmp_time > time)
+						return ret;
+					if (sent.tmp_time <= time)
+						ret = &sect;
+					
+					break;
+				}
+			}
+		}
+	}
+	return ret;
+}
+
+int PlayDialogue::GetFirstTime() const {
+	for (const PlayLine& line : lines) {
+		if (!line.is_meta && !line.is_comment && line.sents.GetCount()) {
+			const PlaySentence& sent = line.sents[0];
+			return sent.tmp_time;
+		}
+	}
+	return -1;
+}
+
+int PlayDialogue::GetFirstActorTime() const {
+	for (const PlayLine& line : lines) {
+		if (!line.is_meta && !line.is_comment && !line.is_narration && line.sents.GetCount()) {
+			const PlaySentence& sent = line.sents[0];
+			return sent.tmp_time;
+		}
+	}
+	return -1;
+}
+
 
 
 String PlayScript::Subtitle::ToString() const {

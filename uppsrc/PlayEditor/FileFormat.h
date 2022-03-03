@@ -101,11 +101,18 @@ struct PlayDialogue : ScriptObject {
 	
 	String ToString(String title="", int indent=0) const;
 	String ToScript() const;
+	int GetFirstTime() const;
+	int GetFirstActorTime() const;
 	
 };
 
 struct PlaySection : ScriptObject {
 	int idx = -1;
+	int musical_idx = -1;
+	int notes_min = -1;
+	int notes_max = -1;
+	int notes_idx_digits = -1;
+	String musical_dir;
 	PlaySentence title;
 	PlayDialogue dialog;
 	
@@ -176,11 +183,13 @@ struct PlayScript : ScriptObject {
 	void AddSubtitle(PlayLine& line, PlaySentence& sent);
 	void MakeTempPlaySentenceTimes();
 	void LoadImages();
+	bool CheckMusical();
 	
 	const Actor& GetActor(const PlayLine& line) const;
 	int FindSubtitle(int time) const;
 	const Subtitle& Get(int i) const;
 	int GetLastSubtitleTiming() const;
+	const PlaySection* FindSection(int time) const;
 	
 };
 	

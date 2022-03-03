@@ -51,6 +51,11 @@ inline byte AtRGBA(RGBA rgba, int i) {
 }
 
 
+RGBA InvertRGBA(const RGBA& c);
+RGBA InvertRGBA_GrayOnly(const RGBA& c, int gray_range=5);
+
+
+
 NAMESPACE_TOPSIDE_END
 
 
