@@ -9,6 +9,8 @@ file
 	App.h,
 	App.cpp,
 	App.lay,
+	Export.h,
+	Export.cpp,
 	Renderer.h,
 	Renderer.cpp,
 	FileFormat.h,

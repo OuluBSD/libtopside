@@ -161,9 +161,11 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 		CopyImageTransparentBentBlurred(ib, Point(0,0), script, Black(), +bend, -bend, max_blur);
 	}
 	
-	Image notes = LoadNotes();
-	if (!notes.IsEmpty()) {
-		CopyImageSemiTransparent(ib, Point(0,0), notes, Black(), 128);
+	if (cfg.render_notes) {
+		Image notes = LoadNotes();
+		if (!notes.IsEmpty()) {
+			CopyImageSemiTransparent(ib, Point(0,0), notes, Black(), 128);
+		}
 	}
 	
 	return ib;

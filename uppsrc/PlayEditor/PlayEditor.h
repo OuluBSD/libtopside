@@ -5,6 +5,7 @@
 
 #include "FileFormat.h"
 #include "Renderer.h"
+#include "Export.h"
 #include "App.h"
 
 

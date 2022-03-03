@@ -1113,6 +1113,22 @@ int PlayScript::GetLastSubtitleTiming() const {
 	return -1;
 }
 
+int PlayScript::GetTotalTime() const {
+	const PlaySection& sect = parts.Top().sections.Top();
+	for(int i = sect.dialog.lines.GetCount()-1; i >= 0; i--) {
+		const PlayLine& line = sect.dialog.lines[i];
+		for(int j = line.sents.GetCount()-1; j >= 0; j--) {
+			const PlaySentence& sent = line.sents[j];
+			if (sent.tmp_time >= 0) {
+				int end = sent.tmp_time + sent.tmp_duration;
+				return end;
+			}
+		}
+	}
+	ASSERT(0);
+	return 0;
+}
+
 void PlayScript::MakeTempPlaySentenceTimes() {
 	Vector<PlaySentence*> sents;
 	sents.Reserve(10000);

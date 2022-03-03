@@ -483,7 +483,7 @@ struct RunningFlag {
 	void Stop();
 	void SetNotRunning() {running = false;}
 	void IncreaseRunning() {workers_running++;}
-	void DecreaseRunning() {workers_running--; if (workers_running == 0) running = false;}
+	int DecreaseRunning() {int r = workers_running--; if (workers_running == 0) running = false; return r-1;}
 	bool IsRunning() const {return running;}
 	void Wait();
 };

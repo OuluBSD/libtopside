@@ -56,6 +56,8 @@ class PlayEditor : public TopWindow {
 	
 	// Exporting
 	WithVideoExport<ParentCtrl> exporting;
+	VideoExporter exporter;
+	TimeCallback export_tc;
 	
 	
 	PlayScript script;
@@ -80,6 +82,9 @@ class PlayEditor : public TopWindow {
 	void ReadRendererConfig(PlayRendererConfig& cfg);
 	
 	void ToggleExporting();
+	void OnExportingStop();
+	void OnExportingProgressUpdate();
+	void PostOnExportingStop() {PostCallback(THISBACK(OnExportingStop));}
 	
 public:
 	typedef PlayEditor CLASSNAME;

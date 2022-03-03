@@ -189,6 +189,7 @@ struct PlayScript : ScriptObject {
 	int FindSubtitle(int time) const;
 	const Subtitle& Get(int i) const;
 	int GetLastSubtitleTiming() const;
+	int GetTotalTime() const;
 	const PlaySection* FindSection(int time) const;
 	
 };

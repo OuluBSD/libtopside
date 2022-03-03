@@ -102,6 +102,7 @@ public:
 	
 	PlayRenderer(PlayScript& s);
 	
+	void SetFrameSize(Size sz) {frame_sz = sz;}
 	void Seek(int i);
 	Image Render(PlayRendererConfig& cfg);
 	//Image RenderText();

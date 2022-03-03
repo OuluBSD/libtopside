@@ -3,7 +3,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-PlayEditor::PlayEditor() : renderer(script) {
+PlayEditor::PlayEditor() : renderer(script), exporter(script) {
 	Title("PlayEditor");
 	MaximizeBox().MinimizeBox().Sizeable();
 	
@@ -88,10 +88,13 @@ PlayEditor::PlayEditor() : renderer(script) {
 							"\tfile '/path/to/file3'\n"
 							"\n"
 							"ffmpeg -f concat -safe 0 -i mylist.txt -c copy output.mp4\n"
+							"\n"
+							"ffmpeg -i ../audiotrack.wav -f segment -segment_time 10 audio_\%04d.wav\n";
 							;
 	exporting.hints.SetData(export_notes);
 	exporting.start <<= THISBACK(ToggleExporting);
 	exporting.prog.Set(0,1);
+	exporter.WhenEnd << THISBACK(PostOnExportingStop);
 	
 	PostCallback(THISBACK(Data));
 	
@@ -477,10 +480,29 @@ void PlayEditor::ReadRendererConfig(PlayRendererConfig& cfg) {
 }
 
 void PlayEditor::ToggleExporting() {
-	
-	
+	if (!exporter.IsRunning()) {
+		exporting.start.SetLabel("Stop");
+		script.MakeTempPlaySentenceTimes();
+		exporter.SetTotalTime(script.GetTotalTime());
+		exporter.Start();
+		export_tc.Set(-100, THISBACK(OnExportingProgressUpdate));
+	}
+	else {
+		exporter.Stop();
+	}
 }
 
+void PlayEditor::OnExportingStop() {
+	exporting.start.SetLabel("Start");
+	export_tc.Kill();
+	exporting.prog.Set(0,1);
+}
+
+void PlayEditor::OnExportingProgressUpdate() {
+	int actual = exporter.GetActual();
+	int total = exporter.GetTotal();
+	exporting.prog.Set(actual, total);
+}
 
 
 NAMESPACE_TOPSIDE_END
