@@ -94,6 +94,7 @@ PlayEditor::PlayEditor() : renderer(script), exporter(script) {
 	exporting.hints.SetData(export_notes);
 	exporting.start <<= THISBACK(ToggleExporting);
 	exporting.prog.Set(0,1);
+	exporting.res_h.SetData(1080);
 	exporter.WhenEnd << THISBACK(PostOnExportingStop);
 	
 	PostCallback(THISBACK(Data));
@@ -481,8 +482,13 @@ void PlayEditor::ReadRendererConfig(PlayRendererConfig& cfg) {
 
 void PlayEditor::ToggleExporting() {
 	if (!exporter.IsRunning()) {
+		Size res;
+		res.cy = exporting.res_h.GetData();
+		res.cx = (1920.0 / 1080.0) * res.cy;
 		exporting.start.SetLabel("Stop");
 		script.MakeTempPlaySentenceTimes();
+		exporter.SetFrameSize(res);
+		exporter.SetLastBlockOnly(exporting.last_block.Get());
 		exporter.SetTotalTime(script.GetTotalTime());
 		exporter.Start();
 		export_tc.Set(-100, THISBACK(OnExportingProgressUpdate));

@@ -188,6 +188,7 @@ struct PlayScript : ScriptObject {
 	const Actor& GetActor(const PlayLine& line) const;
 	int FindSubtitle(int time) const;
 	const Subtitle& Get(int i) const;
+	int GetSubtitleCount() const {return subtitles.GetCount();}
 	int GetLastSubtitleTiming() const;
 	int GetTotalTime() const;
 	const PlaySection* FindSection(int time) const;

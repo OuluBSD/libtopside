@@ -60,6 +60,38 @@ void VideoExporter::Start() {
 				block_exists = DirectoryExists(GetBlockDirectory(block_i));
 			}
 		}
+		
+		int block_count = tasks.Top().block + 1;
+		int block_begin = 0;
+		
+		if (last_block_only) {
+			block_begin = block_count - 1;
+			int rm_end = 0;
+			ready_count = 0;
+			for (int i = tasks.GetCount()-1; i >= 0; i--) {
+				Task& t = tasks[i];
+				if (t.block < block_count-1) {
+					rm_end = i+1;
+					break;
+				}
+				else if (t.ready)
+					ready_count++;
+			}
+			tasks.Remove(0, rm_end);
+		}
+		
+		FileOut fout(AppendFileName(GetExportDirectory(), last_block_only ? "lastone.sh" : "process.sh"));
+		fout	<< "#!/bin/bash\n\n"
+				<< "ffmpeg -i ../audiotrack.wav -f segment -segment_time 10 audio\%04d.wav\n";
+		
+		for(int i = block_begin; i < block_count; i++) {
+			fout << Format("ffmpeg -n -framerate 25 -i block%04d/%%05d.jpg -i audio%04d.wav -c:a aac -c:v nvenc_hevc -r 25 block%04d.mp4\n", i, i, i);
+		}
+			
+		for(int i = block_begin; i < block_count; i++) {
+			fout << Format("echo file block%04d.mp4", i) << (i == block_begin ? " >  " : " >> ") << "joinlist.txt\n";
+		}
+		fout << "ffmpeg -y -f concat -safe 0 -i joinlist.txt -c copy ../" << (last_block_only ? "lastone-exported" : "exported") << IntStr(frame_sz.cy) << ".mp4\n\n";
 	}
 	task_iter = tasks.Begin();
 	
@@ -73,10 +105,16 @@ void VideoExporter::Start() {
 	for(int i = 0; i < thrd_count; i++) {
 		Thread::Start(THISBACK1(Process, i));
 	}
+	
+	ExportSrt();
+}
+
+String VideoExporter::GetExportDirectory() {
+	return AppendFileName(GetFileDirectory(script.filepath), "export" + IntStr(frame_sz.cy));
 }
 
 String VideoExporter::GetBlockDirectory(int block) {
-	return AppendFileName(GetFileDirectory(script.filepath), Format("block%04d", block));
+	return AppendFileName(GetExportDirectory(), Format("block%04d", block));
 }
 
 String VideoExporter::GetFramePath(int block, int frame) {
@@ -152,6 +190,38 @@ void VideoExporter::ProcessTask(int thrd_i, Task& task) {
 	LOG("VideoExporter::ProcessTask: " << thrd_i << " stopped task " << task.total_frame);
 }
 
+void VideoExporter::ExportSrt() {
+	String dir = GetFileDirectory(script.filepath);
+	String path = AppendFileName(dir, "exported" + IntStr(frame_sz.cy) + ".srt");
+	
+	FileOut fout(path);
+	int idx = 1;
+	for(int i = 0; i < script.subtitles.GetCount(); i++) {
+		const PlayScript::Subtitle& st = script.subtitles[i];
+		if (st.str[0] == '<')
+			continue;
+		
+		int time = st.time;
+		int duration = 3000;
+		
+		if (i+1 < script.subtitles.GetCount())
+			duration = min(3000, script.subtitles[i+1].time - time);
+		
+		fout << idx++ << "\n";
+		fout << GetSrtTimeString(time) << " --> " << GetSrtTimeString(time + duration) << "\n";
+		fout << st.str.ToString() << "\n\n";
+	}
+}
+
+String VideoExporter::GetSrtTimeString(int time) {
+	int ms = time % 1000;
+	int sec = time / 1000;
+	int min = sec / 60;
+	sec = sec % 60;
+	int hour = min / 60;
+	min = min % 60;
+	return Format("%02d:%02d:%02d,%03d", hour, min, sec, ms);
+}
 
 
 NAMESPACE_TOPSIDE_END

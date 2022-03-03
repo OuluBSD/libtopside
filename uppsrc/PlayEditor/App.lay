@@ -50,10 +50,13 @@ LAYOUT(PlayRenderer, 320, 280)
 	ITEM(Upp::Option, render_notes, SetLabel(t_("Render notes")).LeftPosZ(120, 168).BottomPosZ(4, 16))
 END_LAYOUT
 
-LAYOUT(VideoExport, 604, 120)
-	ITEM(Upp::Label, dv___0, SetLabel(t_("Notes:")).HCenterPosZ(40, -274).TopPosZ(32, 19))
-	ITEM(Upp::DocEdit, hints, SetFrame(NullFrame()).RightPosZ(4, 548).TopPosZ(32, 84))
+LAYOUT(VideoExport, 604, 156)
+	ITEM(Upp::Label, dv___0, SetLabel(t_("Notes:")).LeftPosZ(8, 40).TopPosZ(32, 19))
+	ITEM(Upp::DocEdit, hints, SetFrame(NullFrame()).HSizePosZ(52, 4).VSizePosZ(32, 4))
 	ITEM(Upp::Button, start, SetLabel(t_("Export")).RightPosZ(4, 84).TopPosZ(4, 24))
-	ITEM(Upp::ProgressIndicator, prog, HSizePosZ(4, 92).TopPosZ(4, 24))
+	ITEM(Upp::ProgressIndicator, prog, HSizePosZ(4, 312).TopPosZ(4, 24))
+	ITEM(Upp::EditInt, res_h, Min(180).Max(2048).RightPosZ(184, 64).TopPosZ(4, 24))
+	ITEM(Upp::Label, dv___5, SetLabel(t_("Res. height:")).SetAlign(ALIGN_RIGHT).RightPosZ(252, 56).TopPosZ(4, 24))
+	ITEM(Upp::Option, last_block, SetLabel(t_("Only last block")).RightPosZ(92, 88).TopPosZ(4, 24))
 END_LAYOUT
 

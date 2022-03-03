@@ -309,6 +309,39 @@ RGBA InvertRGBA(const RGBA& c) {
 	return a;
 }
 
+RGBA TransformHue(const RGBA& in, float angle) {
+	float U = cos(angle * M_PI / 180);
+	float W = sin(angle * M_PI / 180);
+	
+	RGBA ret;
+	float r =   (.299 + .701 * U + .168 * W) * in.r
+			  + (.587 - .587 * U + .330 * W) * in.g
+			  + (.114 - .114 * U - .497 * W) * in.b;
+	float g =   (.299 - .299 * U - .328 * W) * in.r
+			  + (.587 + .413 * U + .035 * W) * in.g
+			  + (.114 - .114 * U + .292 * W) * in.b;
+	float b =   (.299 - .3   * U + 1.25 * W) * in.r
+			  + (.587 - .588 * U - 1.05 * W) * in.g
+			  + (.114 + .886 * U - .203 * W) * in.b;
+	ret.r = min(255, max(0, (int)r));
+	ret.g = min(255, max(0, (int)g));
+	ret.b = min(255, max(0, (int)b));
+	ret.a = in.a;
+	return ret;
+}
+
+
+RGBA InvertRGBA_InvertHue(const RGBA& c) {
+	RGBA a;
+	//if (c.r == 255 && c.g == 255 && c.r == 255) {a = Black(); a.a = c.a; return a;}
+	//if (c.r ==   0 && c.g ==   0 && c.r ==   0) {a = White(); a.a = c.a; return a;}
+	a.r = ~c.r;
+	a.g = ~c.g;
+	a.b = ~c.b;
+	a.a = 255;
+	return TransformHue(a, 180);
+}
+
 RGBA InvertRGBA_GrayOnly(const RGBA& c, int gray_range) {
 	int av = ((int)c.r + (int)c.g + (int)c.b) / 3;
 	int r = av - (int)c.r;

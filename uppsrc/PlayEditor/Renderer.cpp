@@ -93,21 +93,11 @@ PlayRenderer::PlayRenderer(PlayScript& s) : script(s) {
 	//frame_sz = Size(1280,720);
 	frame_sz = Size(640,360);
 	
-	for(int i = 0; i < 3; i++) {
-		clr0[i].SetPeriod(25 * color_av);
-		clr1[i].SetPeriod(25 * color_av);
-	}
 }
 
 void PlayRenderer::Seek(int i) {
 	time = i;
 	
-	if (i == 0) {
-		for(int i = 0; i < 3; i++) {
-			clr0[i].Clear();
-			clr1[i].Clear();
-		}
-	}
 }
 
 Image PlayRenderer::Render(PlayRendererConfig& cfg) {
@@ -118,24 +108,21 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 	ImageBuffer ib(frame_sz);
 	
 	if (cfg.render_bg) {
-		int i = script.FindSubtitle(time + (color_av * 1000) / 2);
-		if (i >= 0) {
-			const PlayScript::Subtitle& st = script.Get(i);
-			clr0[0].Add(st.clr.GetR());
-			clr0[1].Add(st.clr.GetG());
-			clr0[2].Add(st.clr.GetB());
-		}
-		
-		i = script.FindSubtitle(time - (color_av * 1000) / 6);
-		if (i >= 0) {
-			const PlayScript::Subtitle& st = script.Get(i);
-			clr1[0].Add(st.clr.GetR());
-			clr1[1].Add(st.clr.GetG());
-			clr1[2].Add(st.clr.GetB());
+		int i = script.FindSubtitle(time);
+		OnlineAverage clr0[3];
+		{
+			int a = max(0, i - fps * 2);
+			int b = min(script.GetSubtitleCount(), i + fps * 2);
+			for(int i = a; i < b; i++) {
+				const PlayScript::Subtitle& st = script.Get(i);
+				clr0[0].Add(st.clr.GetR());
+				clr0[1].Add(st.clr.GetG());
+				clr0[2].Add(st.clr.GetB());
+			}
 		}
 		
 		Color a = Color(clr0[0].GetMean(), clr0[1].GetMean(), clr0[2].GetMean());
-		Color b = Color(clr1[0].GetMean(), clr1[1].GetMean(), clr1[2].GetMean());
+		Color b = TransformHue(a, 90);
 		Size bg_size(320, 180);
 		Image bg = LiquidBokeh(bg_size, time * 0.001, a, b);
 		bg = RescaleFilter(bg, frame_sz, FILTER_BSPLINE);
@@ -164,7 +151,7 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 	if (cfg.render_notes) {
 		Image notes = LoadNotes();
 		if (!notes.IsEmpty()) {
-			CopyImageSemiTransparent(ib, Point(0,0), notes, Black(), 128);
+			CopyImageSemiTransparentDark(ib, Point(0,0), notes, 128, 128+64);
 		}
 	}
 	
@@ -227,6 +214,52 @@ void PlayRenderer::CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img
 				dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
 				dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
 				dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
+			}
+			dit++;
+		}
+	}
+}
+
+void PlayRenderer::CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img, int alpha) {
+	const RGBA* src = img.Begin();
+	RGBA* dst = ib.Begin();
+	Size dsz = ib.GetSize();
+	Size ssz = img.GetSize();
+	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
+	for (int y = pt.y, y0 = 0; y < dsz.cy && y0 < ssz.cy; y++, y0++) {
+		RGBA* dit = dst + y * dsz.cx;
+		dit += pt.x;
+		const RGBA* sit = src + y0 * ssz.cx;
+		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
+			RGBA r = *sit++;
+			dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
+			dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
+			dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
+			dit++;
+		}
+	}
+}
+
+void PlayRenderer::CopyImageSemiTransparentDark(ImageBuffer& ib, Point pt, Image img, int gray, int alpha) {
+	const RGBA* src = img.Begin();
+	RGBA* dst = ib.Begin();
+	Size dsz = ib.GetSize();
+	Size ssz = img.GetSize();
+	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
+	for (int y = pt.y, y0 = 0; y < dsz.cy && y0 < ssz.cy; y++, y0++) {
+		RGBA* dit = dst + y * dsz.cx;
+		dit += pt.x;
+		const RGBA* sit = src + y0 * ssz.cx;
+		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
+			RGBA r = *sit++;
+			int av = (r.r + r.g + r.b) / 3;
+			if (av < gray) {
+				dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
+				dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
+				dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
+			}
+			else {
+				*dit = r;
 			}
 			dit++;
 		}
@@ -761,7 +794,7 @@ Image PlayRenderer::LoadNotes() {
 		const RGBA* src = img.Begin();
 		const RGBA* end = img.End();
 		while (src != end) {
-			*dst = InvertRGBA_GrayOnly(*src, 10);
+			*dst = InvertRGBA_InvertHue(*src);
 			src++;
 			dst++;
 		}

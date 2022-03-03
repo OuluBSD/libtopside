@@ -30,6 +30,7 @@ class VideoExporter {
 	Task* task_iter;
 	Mutex lock;
 	int ready_count = 0;
+	bool last_block_only = false;
 	
 	int total_time = 0;
 	int total_frames = 0;
@@ -38,7 +39,9 @@ class VideoExporter {
 	Task* GetTask(int thrd_i);
 	void ProcessTask(int thrd_i, Task& task);
 	void Process(int thrd_i);
+	void ExportSrt();
 	
+	String GetExportDirectory();
 	String GetBlockDirectory(int block);
 	String GetFramePath(int block, int frame);
 	
@@ -48,6 +51,7 @@ public:
 	
 	
 	void SetTotalTime(int ms);
+	void SetLastBlockOnly(bool b) {last_block_only = b;}
 	void SetFrameSize(Size sz) {frame_sz = sz;}
 	void Start();
 	void Stop();
@@ -56,6 +60,8 @@ public:
 	int GetTotal() const {return tasks.GetCount();}
 	
 	Callback WhenEnd;
+	
+	static String GetSrtTimeString(int time);
 	
 };
 
