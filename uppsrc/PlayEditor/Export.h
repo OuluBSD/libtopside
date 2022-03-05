@@ -48,7 +48,7 @@ class VideoExporter {
 public:
 	typedef VideoExporter CLASSNAME;
 	VideoExporter(PlayScript& script);
-	
+	~VideoExporter();
 	
 	void SetTotalTime(int ms);
 	void SetLastBlockOnly(bool b) {last_block_only = b;}

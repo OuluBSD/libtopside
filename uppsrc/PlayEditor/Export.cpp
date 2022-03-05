@@ -10,6 +10,11 @@ VideoExporter::VideoExporter(PlayScript& script) : script(script) {
 	
 }
 
+VideoExporter::~VideoExporter() {
+	if (flag.IsRunning())
+		flag.Stop();
+}
+
 void VideoExporter::SetTotalTime(int ms) {
 	total_time = ms;
 	total_frames = (ms * 25) / 1000;
@@ -80,6 +85,7 @@ void VideoExporter::Start() {
 			tasks.Remove(0, rm_end);
 		}
 		
+		RealizeDirectory(GetExportDirectory());
 		FileOut fout(AppendFileName(GetExportDirectory(), last_block_only ? "lastone.sh" : "process.sh"));
 		fout	<< "#!/bin/bash\n\n"
 				<< "ffmpeg -i ../audiotrack.wav -f segment -segment_time 10 audio\%04d.wav\n";

@@ -151,7 +151,7 @@ Image PlayRenderer::Render(PlayRendererConfig& cfg) {
 	if (cfg.render_notes) {
 		Image notes = LoadNotes();
 		if (!notes.IsEmpty()) {
-			CopyImageSemiTransparentDark(ib, Point(0,0), notes, 128, 128+64);
+			CopyImageSemiTransparentDark(ib, Point(0,0), notes, 256-32);
 		}
 	}
 	
@@ -232,6 +232,28 @@ void PlayRenderer::CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img
 		const RGBA* sit = src + y0 * ssz.cx;
 		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
 			RGBA r = *sit++;
+			dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
+			dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
+			dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
+			dit++;
+		}
+	}
+}
+
+void PlayRenderer::CopyImageSemiTransparentDark(ImageBuffer& ib, Point pt, Image img, int base_alpha) {
+	const RGBA* src = img.Begin();
+	RGBA* dst = ib.Begin();
+	Size dsz = ib.GetSize();
+	Size ssz = img.GetSize();
+	int wlimit = min(pt.x + img.GetWidth(), dsz.cx);
+	for (int y = pt.y, y0 = 0; y < dsz.cy && y0 < ssz.cy; y++, y0++) {
+		RGBA* dit = dst + y * dsz.cx;
+		dit += pt.x;
+		const RGBA* sit = src + y0 * ssz.cx;
+		for (int x = pt.x, x0 = 0; x < wlimit && x0 < ssz.cx; x++) {
+			RGBA r = *sit++;
+			int alpha = (r.r + r.g + r.b) / 3;
+			alpha = base_alpha + (alpha * (255 - base_alpha)) / 255;
 			dit->r = (((int)dit->r * (255-alpha)) + ((int)sit->r * alpha)) / 255;
 			dit->g = (((int)dit->g * (255-alpha)) + ((int)sit->g * alpha)) / 255;
 			dit->b = (((int)dit->b * (255-alpha)) + ((int)sit->b * alpha)) / 255;
@@ -759,17 +781,19 @@ void PlayRenderer::RenderScriptLayout() {
 }
 
 Image PlayRenderer::LoadNotes() {
-	const PlaySection* sect = script.FindSection(time);
+	const PlaySection* sect = script.FindSection(time, true);
 	
 	if (!sect || sect->musical_idx < 0)
 		return Image();
 	
-	int sect_begin = sect->dialog.GetFirstActorTime();
-	int song_time = time - sect_begin;
+	int song_begin = sect->musical_time >= 0 ? sect->musical_time : sect->dialog.GetFirstActorTime();
+	int song_time = time - song_begin;
 	if (song_time < 0)
 		return Image();
 	
-	int song_frame = (int)((double)song_time * 0.001 * (double)notes_fps);
+	double notes_fps = sect->musical_fps > 0 ? sect->musical_fps : this->notes_fps;
+	
+	int song_frame = (int)((double)song_time * 0.001 * notes_fps);
 	ASSERT(song_frame >= 0);
 	int note_idx = sect->notes_min + song_frame;
 	if (note_idx > sect->notes_max)

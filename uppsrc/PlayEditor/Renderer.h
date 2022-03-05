@@ -71,8 +71,8 @@ struct PlayRendererConfig {
 
 class PlayRenderer {
 	static const int fps = 25;
-	static const int notes_fps = 12;
 	static const int color_av = 6;
+	double notes_fps = 15;
 	
 	PlayScript& script;
 	
@@ -91,6 +91,7 @@ class PlayRenderer {
 	void CopyImage(ImageBuffer& ib, Point pt, Image img);
 	void CopyImageTransparent(ImageBuffer& ib, Point pt, Image img, Color key);
 	void CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img, int alpha);
+	void CopyImageSemiTransparentDark(ImageBuffer& ib, Point pt, Image img, int base_alpha);
 	void CopyImageSemiTransparentDark(ImageBuffer& ib, Point pt, Image img, int gray, int alpha);
 	void CopyImageSemiTransparent(ImageBuffer& ib, Point pt, Image img, Color key, int alpha);
 	void CopyImageTransparentBent(ImageBuffer& ib, Point pt, Image img, Color key, float top_bend, float bottom_bend);

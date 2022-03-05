@@ -112,6 +112,8 @@ struct PlaySection : ScriptObject {
 	int notes_min = -1;
 	int notes_max = -1;
 	int notes_idx_digits = -1;
+	int musical_time = -1;
+	double musical_fps = 0;
 	String musical_dir;
 	PlaySentence title;
 	PlayDialogue dialog;
@@ -160,6 +162,13 @@ struct PlayScript : ScriptObject {
 		
 	};
 	
+	struct NoteData : Moveable<NoteData> {
+		int time = -1;
+		double fps = 0;
+		
+		void Set(int t, double f) {time = t; fps = f;}
+	};
+	
 	Array<Subtitle> subtitles;
 	ArrayMap<String, Actor> tmp_actors;
 	PlayLine beginning, ending;
@@ -169,11 +178,13 @@ struct PlayScript : ScriptObject {
 	
 	
 	VectorMap<unsigned, int> input_ext_time;
+	VectorMap<int, VectorMap<int,NoteData>> input_ext_notes;
 	Index<unsigned> used_hashes;
 	
 	String ToString(int indent=0) const;
 	String ToScript() const;
 	String GetSubtitleExtensionScript() const;
+	String GetNotesExtensionScript() const;
 	void Dump() const {LOG(ToString());}
 	
 	void LoadExtension(String s);
@@ -191,7 +202,7 @@ struct PlayScript : ScriptObject {
 	int GetSubtitleCount() const {return subtitles.GetCount();}
 	int GetLastSubtitleTiming() const;
 	int GetTotalTime() const;
-	const PlaySection* FindSection(int time) const;
+	const PlaySection* FindSection(int time, bool musical) const;
 	
 };
 	

@@ -703,6 +703,7 @@ String PlayScript::ToScript() const {
 		s << p.ToScript() << "\n\n";
 	
 	s << GetSubtitleExtensionScript();
+	s << GetNotesExtensionScript();
 	
 	return s;
 }
@@ -724,7 +725,27 @@ String PlayScript::GetSubtitleExtensionScript() const {
 		if (st.time >= 0)
 			s << HexStr(h).Mid(2) << "," << st.time << "\n";
 	}
+	s << "\n";
 	
+	return s;
+}
+
+String PlayScript::GetNotesExtensionScript() const {
+	String s;
+	s << "<Extension: Notes-time>\n";
+	for(int i = 0; i < input_ext_notes.GetCount(); i++) {
+		int part = input_ext_notes.GetKey(i);
+		const auto& p = input_ext_notes[i];
+		for(int j = 0; j < p.GetCount(); j++) {
+			int sect = p.GetKey(j);
+			const NoteData& n = p[j];
+			s << part << "," << sect << "," << n.time;
+			if (n.fps > 0.0)
+				s << "," << n.fps;
+			s << "\n";
+		}
+	}
+	s << "\n";
 	return s;
 }
 
@@ -874,6 +895,27 @@ void PlayScript::LoadExtension(String s) {
 			if (time >= 0)
 				input_ext_time.Add(h, time);
 		}
+		
+	}
+	else if (header == "notes-time") {
+		input_ext_notes.Clear();
+		for(int i = 1; i < lines.GetCount(); i++) {
+			const String& line = lines[i];
+			Vector<String> parts = Split(line, ",");
+			if (parts.GetCount() < 3) {
+				ASSERT(0);
+				LOG("error: line does not have 3 parts: " << line);
+				continue;
+			}
+			int part = ScanInt(parts[0]);
+			int sect = ScanInt(parts[1]);
+			int time = ScanInt(parts[2]);
+			double fps = 0;
+			if (parts.GetCount() >= 4)
+				fps = ScanDouble(parts[3]);
+			input_ext_notes.GetAdd(part).GetAdd(sect).Set(time, fps);
+		}
+		//DUMPC(input_ext_notes);
 		
 	}
 	else {
@@ -1305,6 +1347,18 @@ bool PlayScript::CheckMusical() {
 								sect.notes_min = min;
 								sect.notes_max = max;
 								sect.notes_idx_digits = idx_digits;
+								
+								
+								auto& part_data = input_ext_notes.GetAdd(part.idx+1);
+								int i = part_data.Find(sect.idx+1);
+								if (i >= 0) {
+									NoteData& n = part_data[i];
+									if (n.time >= 0) {
+										sect.musical_time = n.time;
+										if (n.fps >= 0)
+											sect.musical_fps = n.fps;
+									}
+								}
 							}
 						}
 					}
@@ -1316,21 +1370,29 @@ bool PlayScript::CheckMusical() {
 	return true;
 }
 
-const PlaySection* PlayScript::FindSection(int time) const {
+const PlaySection* PlayScript::FindSection(int time, bool musical) const {
 	const PlaySection* ret = 0;
 	
 	for (const PlayPart& part : parts) {
 		for (const PlaySection& sect : part.sections) {
-			for (const PlayLine& line : sect.dialog.lines) {
-				if (!line.is_meta && !line.is_comment && line.sents.GetCount()) {
-					const PlaySentence& sent = line.sents[0];
-					
-					if (sent.tmp_time > time)
-						return ret;
-					if (sent.tmp_time <= time)
-						ret = &sect;
-					
-					break;
+			if (musical && sect.musical_time >= 0) {
+				if (sect.musical_time > time)
+					return ret;
+				if (sect.musical_time <= time)
+					ret = &sect;
+			}
+			else {
+				for (const PlayLine& line : sect.dialog.lines) {
+					if (!line.is_meta && !line.is_comment && line.sents.GetCount()) {
+						const PlaySentence& sent = line.sents[0];
+						
+						if (sent.tmp_time > time)
+							return ret;
+						if (sent.tmp_time <= time)
+							ret = &sect;
+						
+						break;
+					}
 				}
 			}
 		}
