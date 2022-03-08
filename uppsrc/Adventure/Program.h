@@ -15,6 +15,8 @@ using SObj = ScriptObject;
 
 typedef int PaletteColor;
 typedef int PaletteImage;
+typedef ArrayMap<String, EscValue> EscGlobal;
+
 
 Color GetPicoPalette(PaletteColor idx);
 
@@ -34,6 +36,9 @@ void SrcMapSet(EscValue map, EscValue key, EscValue value);
 
 typedef enum {
 	SCENE_NULL,
+	SCENE_NO_VERBS,
+	SCENE_QUICK_CUT,
+	SCENE_CUT_NO_FOLLOW // no verbs & no follow,
 } SceneType;
 
 typedef enum {
@@ -72,25 +77,32 @@ struct Dialog {
 };
 
 struct Script {
-	SceneType type;
+	int op_limit = 1000000;
+	static const int op_limit_at_once = 100;
+	
+	SceneType type = SCENE_NULL;
 	bool running = false;
 	Gate0 fn;
 	TimeCallback tc;
 	SObj* paused_cam_following = 0;
 	dword flags = 0;
-	String n1, n2;
+	EscGlobal* global = 0;
+	String fn_name;
+	EscValue a0, a1;
+	One<Esc> esc;
+	bool is_esc = false;
+	Callback WhenStop;
 	
 	typedef Script CLASSNAME;
-	void Clear() {Stop(); fn.Clear(); n1.Clear(); n2.Clear(); flags = 0; paused_cam_following = 0; type = SCENE_NULL;}
-	Script& Set(Gate0 cb, String noun1, String noun2) {fn = cb; n1 = noun1; n2 = noun2; return *this;}
-	Script& Start() {tc.KillSet(10, THISBACK(Execute)); running = true; return *this;}
-	Script& Stop() {tc.Kill(); running = false; return *this;}
-	void Execute() {
-		if (fn && !fn()) {
-			tc.Kill();
-			running = false;
-		}
-	}
+	void Clear();
+	Script& Set(Gate0 cb, EscValue a0=EscValue(), EscValue a1=EscValue());
+	Script& Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0=EscValue(), EscValue a1=EscValue());
+	Script& Start();
+	Script& Stop();
+	void Execute();
+	void ProcessEsc();
+	bool RunEscSteps();
+	
 };
 
 struct TalkingState {
@@ -211,11 +223,9 @@ struct Program {
 	Script cam_script;
 	
 	String cmd_curr;
-	SObj room_curr;
 	Sentence* selected_sentence = 0;
 	Dialog dialog_curr;
 	
-	SObj selected_actor;
 	SObj hover_curr_arrow;
 	
 	int fade_iris = 0;
@@ -247,36 +257,54 @@ struct Program {
 	
 	
 	// Script
-	ArrayMap<String, EscValue> global;
+	EscGlobal global;
 	EscValue game;
-	EscValue library;
 	EscValue rooms;
+	EscValue room_curr;
+	EscValue cutscene_override;
 	Script* scr_obj = 0;
+	Vector<String> room_names;
 	
 	int fade_iter = 0;
 	
+	
+	void FindRooms(String name, EscValue v, Vector<String>& names);
 public:
 	
 	Program();
 	
 	bool ParseGame(String content, String path);
+	bool ReadGame();
 	EscValue RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0);
 	void GetReference(SObj& o, bool everywhere=false);
+	void ProcessEsc();
 	void ResetPalette();
 	void ResetUI();
-	bool StartupScript();
 	void Shake(bool enabled);
 	Verb FindDefaultVerb(SObj& obj);
 	void UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2);
 	void CameraAt(const Point& val);
+	
+	
 	void EscCameraFollow(EscEscape& e);
+	void EscChangeRoom(EscEscape& e);
+	void EscSetGlobalGame(EscEscape& e);
+	void EscCutscene(EscEscape& e);
+	void EscPutAt(EscEscape& e);
+	void EscPrintLine(EscEscape& e);
+	void EscBreakTime(EscEscape& e);
+	void EscSelectActor(EscEscape& e);
+	
+	void ClearCutsceneOverride();
+	void RealizeGame();
 	void CameraFollow(SObj actor);
+	void ChangeRoom(SObj new_room, SObj fade);
 	bool CamScript0();
 	bool CamScript1();
 	void CameraPanTo(SObj& val);
 	void WaitForCamera();
 	bool ScriptRunning(Script& script);
-	void Cutscene(SceneType type, Callback func_cutscene, Callback func_override);
+	void Cutscene(SceneType type, EscValue* self, EscValue func_cutscene, EscValue func_override);
 	void DialogAdd(const String& msg);
 	void DialogStart(int col, int hlcol);
 	void DialogHide();
@@ -289,11 +317,12 @@ public:
 	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
 	void ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect);
 	bool Fades(int fade, int dir);
-	void ChangeRoom(SObj new_room, bool fade);
 	void ValidVerb(Verb verb, SObj& object);
 	void PickupObj(SObj& obj, SObj& actor);
-	void StartScript(Gate0 func, bool bg, String noun1="", String noun2="");
+	void StartScript(Gate0 func, bool bg, EscValue noun1=EscValue(), EscValue noun2=EscValue());
+	void StartScriptEsc(EscValue* self, EscValue func, bool bg, EscValue noun1=EscValue(), EscValue noun2=EscValue());
 	void StopScript(Script& func);
+	void RemoveStoppedScripts();
 	void BreakTime(int jiffies=0);
 	void WaitForMessage();
 	void SayLine(SObj& actor, String msg, bool use_caps=false, float duration=1.0f);
@@ -301,7 +330,6 @@ public:
 	void StopTalking();
 	void PrintLine(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
 	void PutAt(SObj obj, int x, int y, SObj room);
-	void EscPutAt(EscEscape& e);
 	void StopActor(SObj& actor);
 	void WalkTo(SObj& actor, int x, int y);
 	void WaitForActor(SObj& actor);
@@ -317,7 +345,7 @@ public:
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
 	void SetTransCol(int transcol);
-	void InitGame();
+	bool InitGame();
 	void UpdateScripts(Vector<String>& scripts);
 	bool IsTable(SObj& t);
 	Point CenterCamera(const Point& val);
@@ -351,6 +379,7 @@ public:
 	FaceDir GetFaceDir(SObj& o);
 	StateType GetState(SObj& o);
 	String GetFaceString(FaceDir d);
+	SObj GetSelectedActor();
 	
 	void SetState(SObj& o, StateType s);
 	

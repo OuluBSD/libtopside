@@ -22,10 +22,7 @@ ProgramApp::ProgramApp() {
 }
 
 void ProgramApp::ProcessScript() {
-	
-	
-	
-	Sleep(1);
+	prog.ProcessEsc();
 }
 
 
@@ -198,8 +195,11 @@ void ProgramDraw::PaintRoom(Draw& d) {
 			ASSERT(map.IsArray());
 			int map0 = map.ArrayGet(0).GetInt();
 			int map1 = map.ArrayGet(1).GetInt();
-			int map_w = map.ArrayGet(2).GetInt();
-			int map_h = map.ArrayGet(3).GetInt();
+			int map_w = 0, map_h = 0;
+			if (map.GetArray().GetCount() >= 4) {
+				map_w = map.ArrayGet(2).GetInt();
+				map_h = map.ArrayGet(3).GetInt();
+			}
 			PaintMap(d, map0, map1, 0, stage_top, map_w, map_h);
 			
 			ResetPalette();
@@ -345,7 +345,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 	PaletteColor verb_defcol = p->verb_defcol;
 	PaletteColor verb_maincol = p->verb_maincol;
 	int stage_top = p->stage_top;
-	const SObj& selected_actor = p->selected_actor;
+	SObj selected_actor = p->GetSelectedActor();
 	const SObj& hover_curr_arrow = p->hover_curr_arrow;
 	
 	EscValue ea;
@@ -410,12 +410,15 @@ void ProgramDraw::PaintUI(Draw& d) {
 			d.DrawRect(xpos-1, stage_top+ypos-1, xpos+8, stage_top+ypos+8, rect_clr);
 
 			SObj obj = inventory.ArrayGet(start_pos+ipos);
+			DUMP(obj);
 			/*if (obj)*/ {
 				// something to draw
 				obj.MapSet("x", xpos);
 				obj.MapSet("y", ypos);
+				
 				// draw object/sprite
 				PaintObject(obj);
+				
 				// re-calculate bounds (as pos may have changed)
 				int w = obj.MapGet("w").GetInt();
 				int h = obj.MapGet("h").GetInt();
@@ -538,12 +541,15 @@ void ProgramDraw::PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, i
 	int img_w = map_sz.cx;
 	int img_h = map_sz.cy;
 	
+	int write_w = w >= 0 ? min(img_w, w) : img_w;
+	int write_h = h >= 0 ? min(img_h, h) : img_h;
+	
 	int tiles_w = gfx.GetWidth() / 8;
 	
-	for (int y0 = y, y1 = 0; y0 < img_h; y0++, y1++) {
+	for (int y0 = y, y1 = 0; y0 < write_h; y0++, y1++) {
 		const uint16* row = m + y0 * img_w;
 		const uint16* it = row + x;
-		for (int x0 = x, x1 = 0; x0 < img_w; x0++, x1++) {
+		for (int x0 = x, x1 = 0; x0 < write_w; x0++, x1++) {
 			uint16 tile = *it++;
 			int tile_x = tile % tiles_w;
 			int tile_y = tile / tiles_w;

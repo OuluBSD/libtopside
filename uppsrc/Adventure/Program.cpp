@@ -79,6 +79,155 @@ void SrcMapSet(EscValue map, EscValue key, EscValue value) {
 
 
 
+
+
+void Script::Clear() {
+	Stop();
+	fn.Clear();
+	a0 = EscValue();
+	a1 = EscValue();
+	flags = 0;
+	paused_cam_following = 0;
+	type = SCENE_NULL;
+	is_esc = false;
+	
+}
+
+Script& Script::Set(Gate0 cb, EscValue a0, EscValue a1) {
+	Clear();
+	this->a0 = a0;
+	this->a1 = a1;
+	is_esc = false;
+	fn = cb;
+	global = 0;
+	running = true;
+	return *this;
+}
+
+Script& Script::Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0, EscValue a1) {
+	Clear();
+	is_esc = false;
+	
+	// Find & check lambda before setting fields
+	EscValue lambda;
+	String fn_name;
+	if (fn.IsLambda()) {
+		lambda = fn;
+		fn_name = "<lambda>";
+	}
+	else {
+		fn_name = fn.ToString();
+		fn_name.Replace("\"", "");
+		if (self && self->IsMap())
+			lambda = self->MapGet(fn_name);
+		if (!lambda.IsLambda()) {
+			lambda = g.Get(fn_name, EscValue());
+			if (!lambda.IsLambda()) {
+				LOG("Key '" << fn_name << "' is not lambda");
+				return *this;
+			}
+		}
+	}
+	
+	Vector<EscValue> arg;
+	if (!a0.IsVoid()) arg << a0;
+	if (!a0.IsVoid() && !a1.IsVoid()) arg << a1;
+	
+	const EscLambda& l = lambda.GetLambda();
+	if (arg.GetCount() != l.arg.GetCount()) {
+		String argnames;
+		for(int i = 0; i < l.arg.GetCount(); i++)
+			argnames << (i ? ", " : "") << l.arg[i];
+		LOG(Format("invalid number of arguments (%d passed, expected: %s)", arg.GetCount(), argnames));
+		return *this;
+	}
+	
+	// Set fields
+	this->a0 = a0;
+	this->a1 = a1;
+	is_esc = true;
+	global = &g;
+	this->fn_name = fn_name;
+	
+	// Initialize esc runner
+	op_limit = 1000000;
+	esc = new Esc(g, l.code, op_limit, l.filename, l.line);
+	auto& e = *esc;
+	if (self)
+		e.self = *self;
+	for(int i = 0; i < l.arg.GetCount(); i++)
+		e.var.GetPut(l.arg[i]) = arg[i];
+	
+	e.no_return = e.no_break = e.no_continue = true;
+	e.loop = 0;
+	e.skipexp = 0;
+	
+	running = true;
+	LOG("Script::Set: started " << fn_name);
+	
+	return *this;
+}
+
+Script& Script::Start() {
+	tc.KillSet(10, THISBACK(Execute));
+	return *this;
+}
+
+Script& Script::Stop() {
+	tc.Kill();
+	running = false;
+	return *this;
+}
+
+void Script::Execute() {
+	if (!is_esc) {
+		if (!fn || !fn()) {
+			tc.Kill();
+			running = false;
+			LOG("Script::Set: stopped " << fn_name);
+			WhenStop();
+		}
+	}
+	else {
+		tc.Kill();
+		ASSERT_(0, "Do not execute esc outside main thread");
+	}
+}
+
+void Script::ProcessEsc() {
+	LOG("Script::ProcessEsc");
+	if (!esc || !RunEscSteps()) {
+		tc.Kill();
+		running = false;
+		LOG("Script::ProcessEsc: stopped " << fn_name);
+		WhenStop();
+	}
+}
+
+bool Script::RunEscSteps() {
+	LOG("Script::RunEscSteps");
+	auto& e = *esc;
+	int op = 0;
+	try {
+		while(!e.IsEof() && e.no_return && e.no_break && e.no_continue && op < op_limit_at_once) {
+			e.DoStatement();
+			op++;
+		}
+	}
+	catch (CParser::Error e) {
+		LOG("Script::RunEscSteps: error: " << e);
+		return false;
+	}
+	
+	return !e.IsEof();
+}
+
+
+
+
+
+
+
 Sentence& Dialog::Add() {
 	Sentence& s = sentences.Add();
 	s.num = sentences.GetCount() - 1;
@@ -101,6 +250,34 @@ void Dialog::Clear() {
 
 Program::Program() {
 	ResetUI();
+}
+
+void Program::ProcessEsc() {
+	//LOG("Program::ProcessEsc: start");
+	
+	int i = 0;
+	for (Script& s : global_scripts) {
+		if (s.is_esc && s.running) {
+			s.ProcessEsc();
+			i++;
+		}
+	}
+	
+	for (Script& s : local_scripts) {
+		if (s.is_esc && s.running) {
+			s.ProcessEsc();
+			i++;
+		}
+	}
+	
+	for (Script& s : cutscenes) {
+		if (s.is_esc && s.running) {
+			s.ProcessEsc();
+			i++;
+		}
+	}
+	
+	//LOG("Program::ProcessEsc: end " << i);
 }
 
 void Program::ResetPalette() {
@@ -130,18 +307,6 @@ void Program::ResetUI() {
 	ui_cursor_cols[4] = 12;
 	ui_cursor_cols[5] = 7;
 	
-}
-
-
-bool Program::StartupScript() {
-	ResetUI();
-	
-	const SObj* r = FindRoom("rm_hall");
-	ASSERT(r);
-	if (r)
-		ChangeRoom(*r,  1);
-	
-	return false;
 }
 
 const SObj* Program::FindRoom(const String& name) const {
@@ -282,12 +447,8 @@ void Program::CameraAt(const Point& val) {
 	cam_following_actor = 0;
 }
 
-void Program::EscCameraFollow(EscEscape& e) {
-	CameraFollow(e[0]);
-}
-
 void Program::CameraFollow(SObj actor) {
-	GetReference(actor);
+	GetReference(actor, true);
 	
 	StopScript(cam_script); // bg script
 	
@@ -349,22 +510,28 @@ void Program::WaitForCamera() {
 	}
 }
 
-void Program::Cutscene(SceneType type, Callback func_cutscene, Callback func_override) {
-	TODO /*cut = {
+void Program::Cutscene(SceneType type, EscValue* self, EscValue func_cutscene, EscValue func_override) {
+	/*cut = {
 		flags = type,
 		thrd = cocreate(func_cutscene),
 		override_ = func_override,
 		paused_cam_following = cam_following_actor
 	};*/
 	
-	Script& cut = cutscenes.Add();
-	
-	// set as active cutscene
-	cutscene_curr = &cut;
-
-	// yield for (system catch-up
-	// todo: see if (this is still needed!
-	TODO //BreakTime();
+	if (cutscene_override.IsVoid()) {
+		cutscene_override = func_override;
+		
+		Script& cut = cutscenes.Add();
+		cut.type = type;
+		cut.WhenStop = THISBACK(ClearCutsceneOverride);
+		cut.Set(global, 0, func_cutscene, room_curr);
+		
+		// set as active cutscene
+		cutscene_curr = &cut;
+	}
+	else {
+		StartScriptEsc(self, cutscene_override, 0);
+	}
 }
 
 void Program::DialogSet(StrVec& msg_table) {
@@ -571,6 +738,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 		ShowError("target door does not exist");
 		return;
 	}*/
+	EscValue selected_actor = GetSelectedActor();
 	
 	StateType from_state = GetState(from_door);
 	if (from_state != STATE_OPEN) {
@@ -639,7 +807,18 @@ bool Program::Fades(int fade, int dir) {
 	return false;
 }
 
-void Program::ChangeRoom(SObj new_room, bool fade) {
+void Program::ChangeRoom(SObj new_room, SObj fade_) {
+	if (!new_room.IsMap()) {
+		String name = new_room;
+		const SObj* ptr = FindDeep(name);
+		if (!ptr) {
+			LOG("Could not find room '" << name << "'");
+			return;
+		}
+		new_room = *ptr;
+	}
+	int fade = fade_.GetInt();
+	
 	// check param
 	if (new_room.IsVoid()) {
 		ShowError("room does not exist");
@@ -659,9 +838,7 @@ void Program::ChangeRoom(SObj new_room, bool fade) {
 	// switch to new room
 	// execute the exit() script of old room
 	if (room_curr.IsMap()) {
-		EscValue exit = room_curr.MapGet("exit");
-		if (exit.IsLambda())
-			RunLambda1(&room_curr, exit, room_curr); // run script directly, so wait to finish
+		StartScriptEsc(&room_curr, "exit", 0, room_curr); // run script directly, so wait to finish
 	}
 
 	// stop all active (local) scripts
@@ -693,10 +870,11 @@ void Program::ChangeRoom(SObj new_room, bool fade) {
 	}
 
 	// execute the enter() script of new room
-	EscValue enter = room_curr.MapGet("enter");
-	if (enter.IsLambda()) {
-		// run script directly
-		RunLambda1(&room_curr, enter, room_curr);
+	if (room_curr.IsMap()) {
+		StartScriptEsc(&room_curr, "enter", 0, room_curr);
+	}
+	else {
+		LOG("Program::ChangeRoom. error: room is not map object");
 	}
 }
 
@@ -721,7 +899,7 @@ void Program::ValidVerb(Verb verb, SObj& object) {
 void Program::PickupObj(SObj& obj, SObj& actor) {
 	// use actor spectified, || default to selected
 	if (actor.IsVoid())
-		actor = selected_actor;
+		actor = GetSelectedActor();
 	
 	TODO
 	/*add(actor.inventory, obj);
@@ -732,7 +910,9 @@ void Program::PickupObj(SObj& obj, SObj& actor) {
 }
 
 
-void Program::StartScript(Gate0 func, bool bg, String noun1, String noun2) {
+void Program::StartScript(Gate0 func, bool bg, EscValue noun1, EscValue noun2) {
+	RemoveStoppedScripts();
+	
 	// background || local?
 	if (bg)
 		global_scripts.Add().Set(func, noun1, noun2).Start();
@@ -741,6 +921,17 @@ void Program::StartScript(Gate0 func, bool bg, String noun1, String noun2) {
 		local_scripts.Add().Set(func, noun1, noun2).Start();
 }
 
+void Program::StartScriptEsc(EscValue* self, EscValue script_name, bool bg, EscValue noun1, EscValue noun2) {
+	//LOG("Program::StartScriptEsc: " << script_name);
+	RemoveStoppedScripts();
+	
+	// background || local?
+	if (bg)
+		global_scripts.Add().Set(global, self, script_name, noun1, noun2);
+	
+	else
+		local_scripts.Add().Set(global, self, script_name, noun1, noun2);
+}
 
 bool Program::ScriptRunning(Script& func)  {
 	// loop through both sets of scripts...
@@ -772,6 +963,21 @@ void Program::StopScript(Script& func) {
 	for(int i = 0; i < global_scripts.GetCount(); i++)
 		if (&global_scripts[i] == &func)
 			{global_scripts.Remove(i); break;}
+	
+}
+
+void Program::RemoveStoppedScripts() {
+	for(int i = 0; i < local_scripts.GetCount(); i++)
+		if (!local_scripts[i].running)
+			local_scripts.Remove(i);
+	
+	for(int i = 0; i < global_scripts.GetCount(); i++)
+		if (!global_scripts[i].running)
+			global_scripts.Remove(i);
+	
+	for(int i = 0; i < cutscenes.GetCount(); i++)
+		if (!cutscenes[i].running)
+			cutscenes.Remove(i);
 	
 }
 
@@ -900,6 +1106,48 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 	*/
 }
 
+bool Program::ParseGame(String content, String path) {
+	//Escape(global, "Print(x)", SIC_Print);
+	//Escape(global, "Input()", SIC_Input);
+	//Escape(global, "InputNumber()", SIC_InputNumber);
+	Escape(global, "print_line(txt, x, y, col, align, use_caps, duration, big_font)", THISBACK(EscPrintLine));
+	Escape(global, "break_time(t)", THISBACK(EscBreakTime));
+	Escape(global, "put_at(obj, x, y, room)", THISBACK(EscPutAt));
+	Escape(global, "camera_follow(actor)", THISBACK(EscCameraFollow));
+	Escape(global, "change_room(new_room, fade)", THISBACK(EscChangeRoom));
+	Escape(global, "set_global_game(game)", THISBACK(EscSetGlobalGame));
+	Escape(global, "cutscene(type, func_cutscene, func_override)", THISBACK(EscCutscene));
+	Escape(global, "sub(type, func_cutscene, func_override)", THISBACK(EscCutscene));
+	Escape(global, "select_actor(name)", THISBACK(EscSelectActor));
+	StdLib(global);
+	
+	try {
+		Scan(global, content, path);
+	}
+	catch(CParser::Error e) {
+		LOG("Program::ParseGame: error: " << e << "\n");
+		return false;
+	}
+	
+	return true;
+}
+
+void Program::EscCameraFollow(EscEscape& e) {
+	CameraFollow(e[0]);
+}
+
+void Program::EscChangeRoom(EscEscape& e) {
+	ChangeRoom(e[0], e[1]);
+}
+
+void Program::EscSetGlobalGame(EscEscape& e) {
+	game = e[0];
+}
+
+void Program::EscCutscene(EscEscape& e) {
+	Cutscene((SceneType)e[0].GetInt(), &e.self, e[1], e[2]);
+}
+
 void Program::EscPutAt(EscEscape& e) {
 	if (e.arg.GetCount() == 4) {
 		PutAt(
@@ -913,11 +1161,37 @@ void Program::EscPutAt(EscEscape& e) {
 	}
 }
 
+void Program::EscPrintLine(EscEscape& e) {
+	String txt = e[0].ToString();
+	int x = e[1].GetInt();
+	int y = e[2].GetInt();
+	int col = e[3].GetInt();
+	int align = e[4].GetInt();
+	bool use_caps = e[5].GetInt();
+	int duration = e[6].GetInt();
+	bool big_font = e[7].GetInt();
+	
+	LOG("Program::EscPrintLine: " << txt);
+}
+
+void Program::EscBreakTime(EscEscape& e) {
+	int t = e[0].GetInt();
+	
+	LOG("Program::EscPrintLine: " << t);
+	
+}
+
+void Program::EscSelectActor(EscEscape& e) {
+	
+	TODO
+	
+}
+
 void Program::GetReference(SObj& obj, bool everywhere) {
 	if (!obj.IsMap()) {
 		String name = obj;
 		//LOG(name);
-		const SObj* f = FindDeep(name, &library);
+		const SObj* f = FindDeep(name, &room_curr);
 		if (f) {
 			obj = *f;
 			return;
@@ -934,7 +1208,7 @@ void Program::GetReference(SObj& obj, bool everywhere) {
 }
 
 void Program::PutAt(SObj obj, int x, int y, SObj room) {
-	GetReference(obj);
+	GetReference(obj, true);
 	GetReference(room, true);
 	//LOG(obj.ToString());
 	//LOG(room.ToString());
@@ -1046,7 +1320,8 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 
 void Program::WaitForActor(SObj& actor) {
 	if (actor.IsVoid())
-		actor = selected_actor;
+		actor = GetSelectedActor();
+	
 	ASSERT(actor.IsMap());
 	
 	// wait for (actor to stop moving/turning
@@ -1519,32 +1794,57 @@ void Program::SetTransCol(int transcol) { //, enabled)
 	*/
 }
 
-bool Program::ParseGame(String content, String path) {
-	//Escape(global, "Print(x)", SIC_Print);
-	//Escape(global, "Input()", SIC_Input);
-	//Escape(global, "InputNumber()", SIC_InputNumber);
-	Escape(global, "put_at(obj, x, y, room)", THISBACK(EscPutAt));
-	Escape(global, "camera_follow(actor)", THISBACK(EscCameraFollow));
-	StdLib(global);
+void Program::ClearCutsceneOverride() {
+	cutscene_override = EscValue();
+}
+
+void Program::RealizeGame() {
+	if (game.IsVoid())
+		game = global.Get("game", EscValue());
+}
+
+bool Program::ReadGame() {
+	//DUMPM(global);
+	RealizeGame();
 	
-	try {
-		Scan(global, content, path);
-		game = Execute(global, "main", INT_MAX);
+	room_names.Clear();
+	FindRooms("", game, room_names);
+	if (room_names.IsEmpty()) {
+		LOG("Could not find any rooms");
+		return false;
 	}
-	catch(CParser::Error e) {
-		LOG("Program::ParseGame: error: " << e << "\n");
+	//DUMPC(room_names);
+	
+	if (room_curr.IsVoid()) {
+		const SObj* found = FindDeep(room_names[0]);
+		if (!found || !found->IsMap()) {
+			LOG("Could not find room " << room_names[0]);
+			return false;
+		}
+		room_curr = *found;
+	}
+	
+	rooms = game.MapGet("rooms");
+	if (!rooms.IsArray() || rooms.GetArray().IsEmpty()) {
+		LOG("Program::ParseGame: error: could not find rooms");
 		return false;
 	}
 	
-	library = game.MapGet("library");
-	if (!library.IsMap()) {LOG("Program::ParseGame: error: could not find library"); return false;}
-	
-	rooms = library.MapGet("rooms");
-	if (!rooms.IsArray() || rooms.GetArray().IsEmpty()) {LOG("Program::ParseGame: error: could not find rooms"); return false;}
-	
-	
 	//LOG(game.ToString());
 	return true;
+}
+
+void Program::FindRooms(String name, EscValue v, Vector<String>& names) {
+	if (v.IsMap()) {
+		const VectorMap<EscValue,EscValue>& m = v.GetMap();
+		if (name.GetCount() && m.Find("objects") >= 0)
+			names.Add(name);
+		else {
+			for(int i = 0; i < m.GetCount(); i++) {
+				FindRooms(m.GetKey(i), m[i], names);
+			}
+		}
+	}
 }
 
 EscValue Program::RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0) {
@@ -1564,7 +1864,23 @@ EscValue Program::RunLambda1(EscValue* self, const EscValue& l, const EscValue& 
 }
 
 // initialise all the rooms (e.g. add in parent links)
-void Program::InitGame() {
+bool Program::InitGame() {
+	game = EscValue();
+	
+	try {
+		EscValue empty_lambda;
+		empty_lambda.CreateLambda();
+		Vector<EscValue> arg;
+		Execute(global, 0, global.Get("main", empty_lambda), arg, INT_MAX);
+		RealizeGame();
+		Execute(global, 0, global.Get("startup_script", empty_lambda), arg, INT_MAX);
+	}
+	catch(CParser::Error e) {
+		LOG("Program::ParseGame: error: " << e << "\n");
+		return false;
+	}
+	
+	
 	/*for (room in all(rooms)) {
 		ExplodeData(room);
 		
@@ -1595,6 +1911,9 @@ void Program::InitGame() {
 		};
 		actor.inv_pos = 0;  // pointer to the row to start displaying from
 	}*/
+	
+	
+	return true;
 }
 
 
@@ -2021,10 +2340,11 @@ bool Program::Init() {
 		return false;
 	
 	// init all the rooms/objects/actors
-	InitGame();
+	if (!InitGame())
+		return false;
 	
-	// run any startup script(s)
-	StartScript(THISBACK(StartupScript), true);
+	if (!ReadGame())
+		return false;
 	
 	return true;
 }
@@ -2089,6 +2409,11 @@ String Program::GetFaceString(FaceDir d) {
 		default: break;
 	}
 	return String();
+}
+
+SObj Program::GetSelectedActor() {
+	ASSERT(global.Find("selected_actor") >= 0);
+	return global.Get("selected_actor", EscValue());
 }
 
 
@@ -2395,7 +2720,7 @@ const char* builtin_map = R"MULTILINE(
 15151515151515151515151515151515151515151515151515151515151515153131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313131313232323232323232323232323232323232323232323232323c393737373737373737373737373737373737373a3d1515
 )MULTILINE";
 
- 
+
 void ProgramDraw::LoadBuiltinGfx() {
 	LoadBuiltinGfxStr(builtin_gfx, gfx);
 	LoadBuiltinGfxStr(builtin_lbl, lbl);
