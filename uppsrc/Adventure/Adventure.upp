@@ -1,6 +1,6 @@
 uses
 	LocalCtrl,
-	Esc;
+	High;
 
 file
 	Copying,

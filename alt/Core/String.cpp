@@ -18,12 +18,6 @@ double ScanDouble(const char* c) {
 	return a;
 }
 
-String FormatScientific(double d) {
-	char buffer [100];
-	int len = snprintf ( buffer, 100, "%.8g", d);
-	return String(buffer, len);
-}
-
 bool FitsInInt64(double x) {
 	return x >= -9223372036854775808.0 && x < 9223372036854775808.0;
 }

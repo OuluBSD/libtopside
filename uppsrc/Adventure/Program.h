@@ -15,7 +15,7 @@ using SObj = ScriptObject;
 
 typedef int PaletteColor;
 typedef int PaletteImage;
-typedef ArrayMap<String, EscValue> EscGlobal;
+typedef ArrayMap<String, HiValue> HiGlobal;
 
 
 Color GetPicoPalette(PaletteColor idx);
@@ -24,15 +24,15 @@ struct Room {
 	
 };
 
-using SObj = EscValue;
+using SObj = HiValue;
 using StrMap = VectorMap<String,String>;
 using StrVec = Vector<String>;
 
-Color ReadColor(const SObj& o, EscValue key, Color def);
-bool TryReadColor(const SObj& o, EscValue key, Color& c);
+Color ReadColor(const SObj& o, HiValue key, Color def);
+bool TryReadColor(const SObj& o, HiValue key, Color& c);
 bool ReadFlag(const SObj& o, String key);
 SObj* ReadKey(SObj& o, String key);
-void SrcMapSet(EscValue map, EscValue key, EscValue value);
+void SrcMapSet(HiValue map, HiValue key, HiValue value);
 
 typedef enum {
 	SCENE_NULL,
@@ -54,11 +54,33 @@ typedef enum {
 	FACE_RIGHT,
 } FaceDir;
 
+typedef enum {
+	BTN_LEFT,
+	BTN_RIGHT,
+	BTN_UP,
+	BTN_DOWN,
+	BTN_O,
+	BTN_X,
+	
+	BTN_COUNT,
+} GamepadButton;
+
+typedef enum {
+	MBMASK_LEFT = 0x1,
+	MBMASK_RIGHT = 0x2,
+	MBMASK_MIDDLE = 0x4,
+} MouseButtonMask;
+
+struct Bounds {
+	int cam_off_x, x1, y1, x, y;
+};
+
 struct Sentence : Moveable<Sentence> {
 	int num;
 	String msg;
 	Vector<String> lines;
 	int char_width;
+	Bounds bounds;
 };
 
 struct Dialog {
@@ -86,22 +108,22 @@ struct Script {
 	TimeCallback tc;
 	SObj* paused_cam_following = 0;
 	dword flags = 0;
-	EscGlobal* global = 0;
+	HiGlobal* global = 0;
 	String fn_name;
-	EscValue a0, a1;
-	One<Esc> esc;
+	HiValue a0, a1;
+	One<Hi> esc;
 	bool is_esc = false;
-	Callback WhenStop;
+	Callback1<Script*> WhenStop;
 	
 	typedef Script CLASSNAME;
 	void Clear();
-	Script& Set(Gate0 cb, EscValue a0=EscValue(), EscValue a1=EscValue());
-	Script& Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0=EscValue(), EscValue a1=EscValue());
+	Script& Set(Gate0 cb, HiValue a0=HiValue(), HiValue a1=HiValue());
+	Script& Set(HiGlobal& g, HiValue *self, HiValue fn, HiValue a0=HiValue(), HiValue a1=HiValue());
 	Script& Start();
 	Script& Stop();
 	void Execute();
-	void ProcessEsc();
-	bool RunEscSteps();
+	bool ProcessHi();
+	bool RunHiSteps();
 	
 };
 
@@ -130,7 +152,7 @@ struct Program {
 	bool show_depth = true;
 	bool enable_diag_squeeze = false;
 	
-	typedef enum {
+	/*typedef enum {
 		V_DEFAULT,
 		
 		V_OPEN,
@@ -148,9 +170,9 @@ struct Program {
 		
 		V_BEGIN = V_OPEN,
 		V_END = V_COUNT,
-	} Verb;
+	} Verb;*/
 	
-	const char* verbs[(int)V_COUNT] {
+	/*const char* verbs[(int)V_COUNT] {
 		"<null>",
 		
 		"open",
@@ -163,7 +185,7 @@ struct Program {
 		"pull",
 		"use",
 		"walk to",
-	};
+	};*/
 	
 	typedef enum {
 		POS_NULL,
@@ -194,7 +216,7 @@ struct Program {
 	Script* cutscene_curr = 0;
 	
 	
-	Verb verb_default_inventory_index = Verb::V_LOOKAT;
+	int verb_default_inventory_index = 4;
 	
 	PaletteColor verb_maincol;
 	PaletteColor verb_hovcol;
@@ -208,15 +230,17 @@ struct Program {
 	PaletteImage ui_dnarrowspr;
 	
 	bool cam_shake = false;
-	Point cam_pan_to_x;
+	Point cam_pan_to;
 	SObj cam_following_actor;
 	Thread thrd;
 	
 	int stage_top = 16;
-	Point cam_x;
-	int cam_shake_amount = 0;
+	Point cam;
+	float cam_shake_amount = 0;
 	float cursor_x = 63.5;
 	float cursor_y = 63.5;
+	float last_cursor_x = 0;
+	float last_cursor_y = 0;
 	int cursor_tmr = 0;
 	int cursor_colpos = 1;
 	
@@ -235,67 +259,67 @@ struct Program {
 	TalkingState talking_curr;
 	SObj* talking_actor = 0;
 	
-	PaletteImage ui_arrows[2];
+	HiValue ui_arrows;
 	SObj arrow[2];
-	/*ui_arrows = {
-		{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
-		{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
-	};*/
 	
-	Verb hover_curr_default_verb;
-	Verb hover_curr_verb;
+	HiValue hover_curr_default_verb;
+	HiValue hover_curr_verb;
+	Sentence* hover_curr_sentence = 0;
 	
-	Verb verb_curr;
+	HiValue verb_curr;
 	SObj* noun1_curr = 0;
 	SObj* noun2_curr = 0;
-	SObj* hover_curr_object = 0;
+	SObj hover_curr_object;
 	bool executing_cmd = false;
 	bool is_mouse_clicked = false;
 	
-	int cam_shake_x = 0;
-	int cam_shake_y = 0;
+	float cam_shake_x = 0;
+	float cam_shake_y = 0;
 	
+	bool pressed[BTN_COUNT];
+	dword mouse_pressed = 0;
 	
 	// Script
-	EscGlobal global;
-	EscValue game;
-	EscValue rooms;
-	EscValue room_curr;
-	EscValue cutscene_override;
+	HiGlobal global;
+	HiValue game;
+	HiValue rooms;
+	HiValue cutscene_override;
+	HiValue verbs;
+	HiValue V_DEFAULT, V_USE, V_GIVE, V_PUSH, V_PULL, V_WALKTO, V_PICKUP, V_LOOKAT, V_OPEN, V_CLOSE, V_TALKTO;
+	HiValue room_curr;
 	Script* scr_obj = 0;
-	Vector<String> room_names;
+	int V_COUNT = 0;
 	
 	int fade_iter = 0;
 	
 	
-	void FindRooms(String name, EscValue v, Vector<String>& names);
 public:
 	
 	Program();
 	
 	bool ParseGame(String content, String path);
 	bool ReadGame();
-	EscValue RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0);
+	HiValue RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0);
 	void GetReference(SObj& o, bool everywhere=false);
-	void ProcessEsc();
+	void ProcessHi();
 	void ResetPalette();
 	void ResetUI();
 	void Shake(bool enabled);
-	Verb FindDefaultVerb(SObj& obj);
-	void UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2);
+	HiValue FindDefaultVerb(SObj& obj);
+	void UnsupportedAction(HiValue verb, SObj& obj1, SObj& obj2);
 	void CameraAt(const Point& val);
 	
 	
-	void EscCameraFollow(EscEscape& e);
-	void EscChangeRoom(EscEscape& e);
-	void EscSetGlobalGame(EscEscape& e);
-	void EscCutscene(EscEscape& e);
-	void EscPutAt(EscEscape& e);
-	void EscPrintLine(EscEscape& e);
-	void EscBreakTime(EscEscape& e);
-	void EscSelectActor(EscEscape& e);
+	void HiCameraFollow(HiEscape& e);
+	void HiChangeRoom(HiEscape& e);
+	void HiSetGlobalGame(HiEscape& e);
+	void HiCutscene(HiEscape& e);
+	void HiPutAt(HiEscape& e);
+	void HiPrintLine(HiEscape& e);
+	void HiBreakTime(HiEscape& e);
+	void HiSelectActor(HiEscape& e);
 	
-	void ClearCutsceneOverride();
+	void ClearCutsceneOverride(Script* s);
 	void RealizeGame();
 	void CameraFollow(SObj actor);
 	void ChangeRoom(SObj new_room, SObj fade);
@@ -304,7 +328,7 @@ public:
 	void CameraPanTo(SObj& val);
 	void WaitForCamera();
 	bool ScriptRunning(Script& script);
-	void Cutscene(SceneType type, EscValue* self, EscValue func_cutscene, EscValue func_override);
+	void Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiValue func_override);
 	void DialogAdd(const String& msg);
 	void DialogStart(int col, int hlcol);
 	void DialogHide();
@@ -317,10 +341,10 @@ public:
 	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
 	void ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect);
 	bool Fades(int fade, int dir);
-	void ValidVerb(Verb verb, SObj& object);
+	void ValidVerb(HiValue verb, SObj& object);
 	void PickupObj(SObj& obj, SObj& actor);
-	void StartScript(Gate0 func, bool bg, EscValue noun1=EscValue(), EscValue noun2=EscValue());
-	void StartScriptEsc(EscValue* self, EscValue func, bool bg, EscValue noun1=EscValue(), EscValue noun2=EscValue());
+	void StartScript(Gate0 func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
+	void StartScriptHi(HiValue* self, HiValue func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
 	void StopScript(Script& func);
 	void RemoveStoppedScripts();
 	void BreakTime(int jiffies=0);
@@ -334,19 +358,21 @@ public:
 	void WalkTo(SObj& actor, int x, int y);
 	void WaitForActor(SObj& actor);
 	double Proximity(SObj& obj1, SObj& obj2);
-	Verb GetVerb(SObj& obj);
-	String GetVerbString(const Verb& v);
+	HiValue GetVerb(int idx);
+	String GetVerbString(int idx);
+	String GetVerbString(SObj v);
 	void ClearCurrCmd();
-	void Update60();
+	void Update();
 	void UpdateMouseClickState();
 	void PlayerControl();
-	void InputButtonPressed(int button_index);
+	void InputButtonPressed(dword button_index);
 	void CheckCollisions();
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
 	void SetTransCol(int transcol);
 	bool InitGame();
-	void UpdateScripts(Vector<String>& scripts);
+	void UpdateScripts(Array<Script>& scripts);
+	void RemoveStoppedScripts(Array<Script>& scripts);
 	bool IsTable(SObj& t);
 	Point CenterCamera(const Point& val);
 	Point CenterCamera(SObj& val);
@@ -359,7 +385,8 @@ public:
 	void Animate(SObj& obj);
 	void ShowError(String msg);
 	void ExplodeData(SObj& obj);
-	bool IsCursorColliding(SObj& obj);
+	bool IsCursorColliding(const SObj& obj);
+	bool IsCursorColliding(const Sentence& obj);
 	String SmallCaps(const String& s);
 	String Autotype(const String& str_value);
 	
@@ -369,8 +396,9 @@ public:
 	const SObj* FindRoom(const String& name) const;
 	const SObj* FindDeep(const String& name) const;
 	const SObj* FindDeep(const String& name, const SObj* o) const;
-	EscValue Classes(SObj& s);
+	HiValue Classes(const SObj& s);
 	String State(SObj& s);
+	String GetInRoomString(SObj& o);
 	SObj GetInRoom(SObj& o);
 	Point GetXY(SObj& o);
 	Point GetOffset(SObj& o);
@@ -380,8 +408,15 @@ public:
 	StateType GetState(SObj& o);
 	String GetFaceString(FaceDir d);
 	SObj GetSelectedActor();
+	dword GetMouseButtonMask() const {return mouse_pressed;}
+	bool IsPressed(GamepadButton b) const;
+	bool IsMousePressed(MouseButtonMask m) const;
+	bool IsAnyMousePressed() const {return mouse_pressed;}
+	bool IsMouseLeftPressed() const {return IsMousePressed(MBMASK_LEFT);}
+	bool IsMouseRightPressed() const {return IsMousePressed(MBMASK_RIGHT);}
 	
 	void SetState(SObj& o, StateType s);
+	void SetSelectedActor(SObj& o);
 	
 };
 
@@ -398,6 +433,7 @@ class ProgramDraw : public Ctrl {
 	Image gfx, lbl, gff;
 	Vector<uint16> map;
 	Size map_sz;
+	double size_mul = 1.0;
 	
 	Font fnt;
 	PaletteColor dyn_palette[PALETTE_SIZE];
@@ -446,6 +482,10 @@ public:
 	void ResetPalette();
 	void ReplaceColors(const SObj& o);
 	void FadePalette(float perc);
+	
+	
+	void MouseMove(Point p, dword keyflags) override;
+	bool Key(dword key, int count) override;
 	
 };
 

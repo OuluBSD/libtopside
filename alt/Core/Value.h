@@ -431,8 +431,6 @@ public:
 
 
 String Format(String pattern, Value v0=Value(), Value v1=Value(), Value v2=Value(), Value v3=Value(), Value v4=Value(), Value v5=Value(), Value v6=Value(), Value v7=Value());
-String StdFormat(const Value& q);
-String StdFormatObj(const Object& q);
 
 
 NAMESPACE_UPP_END

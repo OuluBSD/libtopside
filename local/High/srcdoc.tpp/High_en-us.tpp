@@ -1,4 +1,4 @@
-topic "Esc scripting language";
+topic "High scripting language";
 [b133;a83;*+117 $$1,0#31310162474203024125188417583966:subtitle]
 [H4;b83;*+150 $$2,0#07864147445237544204411237157677:title]
 [l321;C@5;1 $$3,3#20902679421464641399138805415013:code]
@@ -6,23 +6,23 @@ topic "Esc scripting language";
 [a83;*6 $$5,5#B3A4428F1E67450ED340E28F681B00E8:caption]
 [2 $$0,0#00000000000000000000000000000000:Default]
 [{_}%EN-US 
-[s5; Esc scripting language&]
+[s5; High scripting language&]
 [s2; Table of contents&]
 [s0; &]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#1^ 1. Introduction]&]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2^ 2. Value types]&]
-[s0;     [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2`_1^ 2.1 Voids]&]
-[s0;     [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2`_2^ 2.2 Numbers]&]
-[s0;     [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2`_3^ 2.3 Arrays]&]
-[s0;     [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2`_4^ 2.4 Maps]&]
-[s0;     [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#2`_5^ 2.5 Lambdas]&]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#3^ 3. Variables and contexts]&]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#4^ 4. Expressions]&]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#5^ 5. Statements]&]
-[s0; [^topic`:`/`/Esc`/srcdoc`/Esc`_en`-us`#6^ 6. Standard library]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#1^ 1. Introduction]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2^ 2. Value types]&]
+[s0;     [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2`_1^ 2.1 Voids]&]
+[s0;     [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2`_2^ 2.2 Numbers]&]
+[s0;     [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2`_3^ 2.3 Arrays]&]
+[s0;     [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2`_4^ 2.4 Maps]&]
+[s0;     [^topic`:`/`/High`/srcdoc`/High`_en`-us`#2`_5^ 2.5 Lambdas]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#3^ 3. Variables and contexts]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#4^ 4. Expressions]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#5^ 5. Statements]&]
+[s0; [^topic`:`/`/High`/srcdoc`/High`_en`-us`#6^ 6. Standard library]&]
 [s0; &]
 [s2;:1: 1. Introduction&]
-[s4; Esc is a simple scripting language intended for embedding in 
+[s4; High is a simple scripting language intended for embedding in 
 Ultimate`+`+ applications.&]
 [s4; It is typeless, value oriented language with simple interfacing 
 with C`+`+/U`+`+ code. It is very simple yet quite complete language.&]
@@ -47,9 +47,9 @@ Examples of number literals:&]
 [s3; 0b10100100  [@4 // binary]&]
 [s3; `'x`'         [@4 // character code]&]
 [s0; &]
-[s4; Esc supports common C`-like operations for number values.&]
+[s4; High supports common C`-like operations for number values.&]
 [s1;:2`_3: 2.3 Arrays&]
-[s4; Arrays are ordered random access sequences of other Esc values 
+[s4; Arrays are ordered random access sequences of other High values 
 (nested arrays included). Array values are specified using [@(128.0.255) `[`]] 
 brackets:&]
 [s0; &]
@@ -154,7 +154,7 @@ array is replaced:&]
 [s0; &]
 [s3; array `= array `+ array1 `+ array2 `+ array3&]
 [s0; &]
-[s4; Esc allows [/ void] value on the right side of array concatenation 
+[s4; High allows [/ void] value on the right side of array concatenation 
 expression `- in such cases, operator has no effect.&]
 [s1;:2`_4: 2.4 Maps&]
 [s4; Maps contain key`-value pairs as entries. Normal subscripts 
@@ -196,7 +196,7 @@ this job easier, special [/ .field] syntax is supported:&]
 expressions]&]
 [s0; &]
 [s1;:2`_5: 2.5 Lambdas&]
-[s4; Lambdas represent executable Esc code. Lambda values are introduced 
+[s4; Lambdas represent executable High code. Lambda values are introduced 
 using [@(128.0.255) `@] character:&]
 [s0; &]
 [s3; `@(x) `{ return 2 `* x; `}&]
@@ -226,10 +226,10 @@ is available:&]
 [s3; #:foo(x) `{ return 2 `* x; `}&]
 [s0; &]
 [s2;i150;O9;:3: 3. Variables and contexts&]
-[s4; Variable names in Esc follow C principles (are case sensitive, 
+[s4; Variable names in High follow C principles (are case sensitive, 
 start with alphabetic character or [@(128.0.255) `_] and can contain 
 alphabetic characters, [@(128.0.255) `_] and numbers).&]
-[s4; Esc distinguishes three types of variables contexts using [*@(128.0.255) .] 
+[s4; High distinguishes three types of variables contexts using [*@(128.0.255) .] 
 and [*@(128.0.255) :] characters:&]
 [s0; &]
 [s3; var-|-|[@4 // local]&]

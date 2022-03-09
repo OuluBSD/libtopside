@@ -481,4 +481,11 @@ String CenteredString(const String& s, int lw) {
 	return o;
 }
 
+String FormatScientific(double d) {
+	char buffer [100];
+	int len = snprintf ( buffer, 100, "%.8g", d);
+	return String(buffer, len);
+}
+
+
 NAMESPACE_TOPSIDE_END

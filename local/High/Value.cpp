@@ -1,11 +1,11 @@
-#include <Esc/Esc.h>
+#include <High/High.h>
 
 
 namespace UPP {
 
-EscValue EscFromStdValue(const Object& v)
+HiValue HiFromStdValue(const Object& v)
 {
-	EscValue r;
+	HiValue r;
 	Time t;
 	if(!IsNull(v))
 		switch(v.GetType()) {
@@ -34,12 +34,12 @@ EscValue EscFromStdValue(const Object& v)
 			ObjectArray va = v;
 			r.SetEmptyArray();
 			for(int i = 0; i < va.GetCount(); i++)
-				r.ArrayAdd(EscFromStdValue(va[i]));
+				r.ArrayAdd(HiFromStdValue(va[i]));
 		}
 	return r;
 }
 
-Object StdValueFromEsc(const EscValue& v)
+Object StdValueFromHi(const HiValue& v)
 {
 	if(v.IsNumber())
 		return v.GetNumber();
@@ -53,14 +53,14 @@ Object StdValueFromEsc(const EscValue& v)
 	return Object();
 }
 
-void SIC_StdFormat(EscEscape& e)
+void SIC_StdFormat(HiEscape& e)
 {
-	e = StdFormatObj(StdValueFromEsc(e[0]));
+	e = StdFormatObj(StdValueFromHi(e[0]));
 }
 
-void StdValueLib(ArrayMap<String, EscValue>& global)
+void StdValueLib(ArrayMap<String, HiValue>& global)
 {
-	Escape(global, "StdFormat(x)", SIC_StdFormat);
+	HighCall(global, "StdFormat(x)", SIC_StdFormat);
 }
 
 }

@@ -149,12 +149,4 @@ String Format(String pattern, Value v0, Value v1, Value v2, Value v3, Value v4, 
 
 
 
-String StdFormat(const Value& q) {
-	TODO
-}
-
-String StdFormatObj(const Object& q) {
-	TODO
-}
-
 END_UPP_NAMESPACE

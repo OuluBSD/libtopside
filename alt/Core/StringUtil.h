@@ -60,7 +60,6 @@ inline String IntStr(int i) { return String::IntStr(i); }
 inline String IntStr64(int64 i) { return String::IntStr64(i); }
 String DblStr(double d);
 double ScanDouble(const char* c);
-String FormatScientific(double d);
 bool FitsInInt64(double x);
 
 template<class T>

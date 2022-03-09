@@ -1,11 +1,11 @@
-#include "Esc.h"
+#include "High.h"
 
 
 namespace UPP {
 
 #define LTIMING(x) // RTIMING(x)
 
-void LambdaArgs(CParser& p, EscLambda& l)
+void LambdaArgs(CParser& p, HiLambda& l)
 {
 	p.PassChar('(');
 	if(!p.Char(')'))
@@ -47,10 +47,10 @@ void LambdaArgs(CParser& p, EscLambda& l)
 	l.arg.Shrink();
 }
 
-EscValue ReadLambda(CParser& p)
+HiValue ReadLambda(CParser& p)
 {
-	EscValue lambda;
-	EscLambda& l = lambda.CreateLambda();
+	HiValue lambda;
+	HiLambda& l = lambda.CreateLambda();
 	LambdaArgs(p, l);
 	const char *t = p.GetPtr();
 	l.filename = p.GetFileName();
@@ -62,18 +62,18 @@ EscValue ReadLambda(CParser& p)
 	return lambda;
 }
 
-EscValue ReadLambda(const char *s)
+HiValue ReadLambda(const char *s)
 {
 	CParser p(s);
 	return ReadLambda(p);
 }
 
-String EscEscape::InCall()
+String HiEscape::InCall()
 {
 	return id.IsEmpty() ? String() : " in call to '" + id + "'";
 }
 
-String EscEscape::DumpType(int i)
+String HiEscape::DumpType(int i)
 {
 	if(i < arg.GetCount())
 		return String().Cat() << " (" << arg[i].GetTypeName() << " present)";
@@ -81,7 +81,7 @@ String EscEscape::DumpType(int i)
 		return " (not enough arguments)";
 }
 
-void  EscEscape::CheckNumber(int i)
+void  HiEscape::CheckNumber(int i)
 {
 	if(i < arg.GetCount() && arg[i].IsNumber())
 		return;
@@ -89,21 +89,21 @@ void  EscEscape::CheckNumber(int i)
 	           << DumpType(i));
 }
 
-double EscEscape::Number(int i)
+double HiEscape::Number(int i)
 {
 	if(i >= arg.GetCount())
 		ThrowError("too little parameters" + InCall());
 	return esc.Number(arg[i], "parameter" + InCall());
 }
 
-int EscEscape::Int(int i)
+int HiEscape::Int(int i)
 {
 	if(i >= arg.GetCount())
 		ThrowError("too little parameters" + InCall());
 	return (int)esc.Int(arg[i], "parameter" + InCall());
 }
 
-void  EscEscape::CheckArray(int i)
+void  HiEscape::CheckArray(int i)
 {
 	if(i < arg.GetCount() && arg[i].IsArray())
 		return;
@@ -111,44 +111,44 @@ void  EscEscape::CheckArray(int i)
 	           << DumpType(i));
 }
 
-void  EscEscape::CheckMap(int i)
+void  HiEscape::CheckMap(int i)
 {
 	if(i < arg.GetCount() && arg[i].IsMap())
 		return;
 	ThrowError(String().Cat() << "map expected as parameter " << i + 1 << InCall());
 }
 
-void Escape(ArrayMap<String, EscValue>& globals, const char *function, Callback1<EscEscape&> escape)
+void HighCall(ArrayMap<String, HiValue>& globals, const char *function, Callback1<HiEscape&> escape)
 {
 	CParser p(function);
-	EscValue& v = globals.GetAdd(p.ReadId());
-	EscLambda& l = v.CreateLambda();
+	HiValue& v = globals.GetAdd(p.ReadId());
+	HiLambda& l = v.CreateLambda();
 	l.escape = escape;
 	LambdaArgs(p, l);
 }
 
-void Escape(ArrayMap<String, EscValue>& globals, const char *function, void (*escape)(EscEscape& e))
+void HighCall(ArrayMap<String, HiValue>& globals, const char *function, void (*escape)(HiEscape& e))
 {
-	Escape(globals, function, callback(escape));
+	HighCall(globals, function, callback(escape));
 }
 
-void  EscValue::Escape(const char *method, Callback1<EscEscape&> escape)
+void  HiValue::HighCall(const char *method, Callback1<HiEscape&> escape)
 {
 	CParser p(method);
 	String id = p.ReadId();
-	EscValue v;
-	EscLambda& l = v.CreateLambda();
+	HiValue v;
+	HiLambda& l = v.CreateLambda();
 	l.escape = escape;
 	LambdaArgs(p, l);
 	MapSet(id, v);
 }
 
-void  EscValue::Escape(const char *method, EscHandle *h, Callback1<EscEscape&> escape)
+void  HiValue::HighCall(const char *method, HiHandle *h, Callback1<HiEscape&> escape)
 {
 	CParser p(method);
 	String id = p.ReadId();
-	EscValue v;
-	EscLambda& l = v.CreateLambda();
+	HiValue v;
+	HiLambda& l = v.CreateLambda();
 	l.escape = escape;
 	l.handle = h;
 	h->Retain();
@@ -158,29 +158,29 @@ void  EscValue::Escape(const char *method, EscHandle *h, Callback1<EscEscape&> e
 	MapSet(id, v);
 }
 
-void Scan(ArrayMap<String, EscValue>& global, const char *file, const char *filename)
+void Scan(ArrayMap<String, HiValue>& global, const char *file, const char *filename)
 {
 	LTIMING("Scan");
 	CParser p(file, filename);
 	while(!p.IsEof()) {
-		EscValue& v = global.GetAdd(p.ReadId());
+		HiValue& v = global.GetAdd(p.ReadId());
 		v = ReadLambda(p);
 	}
 }
 
-EscValue Execute(ArrayMap<String, EscValue>& global, EscValue *self,
-                 const EscValue& lambda, Vector<EscValue>& arg, int op_limit)
+HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self,
+                 const HiValue& lambda, Vector<HiValue>& arg, int op_limit)
 {
-	const EscLambda& l = lambda.GetLambda();
+	const HiLambda& l = lambda.GetLambda();
 	if(arg.GetCount() != l.arg.GetCount()) {
 		String argnames;
 		for(int i = 0; i < l.arg.GetCount(); i++)
 			argnames << (i ? ", " : "") << l.arg[i];
 		throw CParser::Error(Format("invalid number of arguments (%d passed, expected: %s)", arg.GetCount(), argnames));
 	}
-	EscValue ret;
+	HiValue ret;
 	{
-		Esc sub(global, l.code, op_limit, l.filename, l.line);
+		Hi sub(global, l.code, op_limit, l.filename, l.line);
 		if(self)
 			sub.self = *self;
 		for(int i = 0; i < l.arg.GetCount(); i++)
@@ -193,49 +193,49 @@ EscValue Execute(ArrayMap<String, EscValue>& global, EscValue *self,
 	return ret;
 }
 
-EscValue Execute(ArrayMap<String, EscValue>& global, EscValue *self,
-                 const char *name, Vector<EscValue>& arg, int op_limit)
+HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self,
+                 const char *name, Vector<HiValue>& arg, int op_limit)
 {
 	if(!self->IsMap())
-		return EscValue();
-	const VectorMap<EscValue, EscValue>& m = self->GetMap();
+		return HiValue();
+	const VectorMap<HiValue, HiValue>& m = self->GetMap();
 	int ii = m.Find(String(name));
 	if(ii >= 0 && m[ii].IsLambda())
 		return Execute(global, self, m[ii], arg, op_limit);
-	return EscValue();
+	return HiValue();
 }
 
-EscValue Execute(ArrayMap<String, EscValue>& global, const char *name, int op_limit)
+HiValue Execute(ArrayMap<String, HiValue>& global, const char *name, int op_limit)
 {
 	int ii = global.Find(String(name));
-	Vector<EscValue> arg;
+	Vector<HiValue> arg;
 	if(ii >= 0 && global[ii].IsLambda())
 		return Execute(global, NULL, global[ii], arg, op_limit);
-	return EscValue();
+	return HiValue();
 }
 
-EscValue Evaluatex(const char *expression, ArrayMap<String, EscValue>& global, int oplimit)
+HiValue Evaluatex(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
-	Esc sub(global, expression, oplimit, "", 0);
+	Hi sub(global, expression, oplimit, "", 0);
 	for(int i = 0; i < global.GetCount(); i++)
 		sub.var.Add(global.GetKey(i), global[i]);
-	EscValue v;
+	HiValue v;
 	v = sub.GetExp();
 	for(int i = 0; i < sub.var.GetCount(); i++)
 		global.GetAdd(sub.var.GetKey(i)) = sub.var[i];
 	return v;
 }
 
-EscValue Evaluate(const char *expression, ArrayMap<String, EscValue>& global, int oplimit)
+HiValue Evaluate(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
 	try {
 		return Evaluatex(expression, global, oplimit);
 	}
 	catch(CParser::Error&) {}
-	return EscValue();
+	return HiValue();
 }
 
-String   Expand(const String& doc, ArrayMap<String, EscValue>& global,
+String   Expand(const String& doc, ArrayMap<String, HiValue>& global,
                 int oplimit, String (*format)(const Object& v))
 {
 	String out;
@@ -245,17 +245,17 @@ String   Expand(const String& doc, ArrayMap<String, EscValue>& global,
 		if(term[0] == '<' && term[1] == ':') {
 			term += 2;
 			try {
-				Esc sub(global, term, oplimit, "", 0);
+				Hi sub(global, term, oplimit, "", 0);
 				for(int i = 0; i < global.GetCount(); i++)
 					sub.var.Add(global.GetKey(i), global[i]);
-				EscValue v;
+				HiValue v;
 				if(*term == '{') {
 					sub.Run();
 					v = sub.return_value;
 				}
 				else
 				if(sub.Char('!')) {
-					EscValue& v = global.GetAdd(sub.ReadId());
+					HiValue& v = global.GetAdd(sub.ReadId());
 					v = ReadLambda(sub);
 				}
 				else
@@ -270,8 +270,12 @@ String   Expand(const String& doc, ArrayMap<String, EscValue>& global,
 				else
 					v = sub.GetExp();
 				if(cond)
-					out << format(StdValueFromEsc(v));
+					out << format(StdValueFromHi(v));
+				#if LIBTOPSIDE
 				sub.DoSpaces();
+				#else
+				sub.Spaces();
+				#endif
 				term = sub.GetPtr();
 				if(term[0] != ':' || term[1] != '>')
 					throw CParser::Error("missing :>" + String(term));

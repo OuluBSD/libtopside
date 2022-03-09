@@ -1,0 +1,19 @@
+description "High scripting language interpreter\377B28,42,150";
+
+uses
+	SharedCore,
+	Local;
+
+file
+	High.h options(BUILDER_OPTION) PCH,
+	HighValue.cpp,
+	HighArray.cpp,
+	HighMap.cpp,
+	High.cpp,
+	HighRun.cpp,
+	HighStdLib.cpp,
+	Value.cpp,
+	Info readonly separator,
+	srcdoc.tpp,
+	Copying;
+

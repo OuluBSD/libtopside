@@ -1,4 +1,4 @@
-#include <Esc/Esc.h>
+#include <High/High.h>
 
 
 namespace UPP {
@@ -10,38 +10,38 @@ namespace UPP {
 
 #define LTIMING(x)  // RTIMING(x)
 
-void Esc::OutOfMemory()
+void Hi::OutOfMemory()
 {
 	ThrowError("Out of memory");
 }
 
-void Esc::TestLimit()
+void Hi::TestLimit()
 {
 	LTIMING("TestLimit");
 	if(op_limit < 0)
 		ThrowError("out of operations limit - considered frozen");
-	if(EscValue::GetTotalCount() >= EscValue::GetMaxTotalCount())
+	if(HiValue::GetTotalCount() >= HiValue::GetMaxTotalCount())
 		OutOfMemory();
 }
 
-EscValue Esc::Get(const SRVal& val)
+HiValue Hi::Get(const SRVal& val)
 {
 	LTIMING("Get");
 	if(skipexp)
 		return (int64)1;
-	EscValue v = val.lval ? *val.lval : val.rval;
+	HiValue v = val.lval ? *val.lval : val.rval;
 	if(val.sbs.IsArray()) {
-		const Vector<EscValue>& sbs = val.sbs.GetArray();
+		const Vector<HiValue>& sbs = val.sbs.GetArray();
 		for(int i = 0; i < sbs.GetCount(); i++) {
-			const EscValue& ss = sbs[i];
+			const HiValue& ss = sbs[i];
 			if(v.IsMap()) //!!!! (problem with a[1, 2]
 				v = v.MapGet(ss);
 			else
 			if(v.IsArray()) {
 				int count = v.GetCount();
 				if(ss.IsArray() && ss.GetArray().GetCount() >= 2) {
-					EscValue v1 = ss.ArrayGet(0);
-					EscValue v2 = ss.ArrayGet(1);
+					HiValue v1 = ss.ArrayGet(0);
+					HiValue v2 = ss.ArrayGet(1);
 					int i = v1.GetInt();
 					int n = count - i;
 					if(ss.GetCount() == 2)
@@ -55,7 +55,7 @@ EscValue Esc::Get(const SRVal& val)
 						}
 					}
 					if(i >= 0 && n >= 0 && i + n <= count)
-						v = v.ArrayGet(i, n);
+						v = v.ArrayGetMid(i, n);
 					else
 						ThrowError("slice out of range");
 				}
@@ -77,15 +77,15 @@ EscValue Esc::Get(const SRVal& val)
 	return v;
 }
 
-void Esc::Assign(EscValue& val, const Vector<EscValue>& sbs, int si, const EscValue& src)
+void Hi::Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src)
 {
 	LTIMING("Assign");
-	const EscValue& ss = sbs[si++];
+	const HiValue& ss = sbs[si++];
 	if(val.IsVoid())
 		val.SetEmptyMap();
 	if(val.IsMap()) {
 		if(si < sbs.GetCount()) {
-			EscValue x = val.MapGet(ss);
+			HiValue x = val.MapGet(ss);
 			val.MapSet(ss, 0.0);
 			Assign(x, sbs, si, src);
 			val.MapSet(ss, x);
@@ -101,7 +101,7 @@ void Esc::Assign(EscValue& val, const Vector<EscValue>& sbs, int si, const EscVa
 				ThrowError("slice must be last subscript");
 			int64 i = Int(ss, "index");
 			if(i >= 0 && i < val.GetCount()) {
-				EscValue x = val.ArrayGet((int)i);
+				HiValue x = val.ArrayGet((int)i);
 				val.ArraySet((int)i, 0.0);
 				Assign(x, sbs, si, src);
 				if(!val.ArraySet((int)i, x))
@@ -114,8 +114,8 @@ void Esc::Assign(EscValue& val, const Vector<EscValue>& sbs, int si, const EscVa
 			if(ss.IsArray()) {
 				if(!src.IsArray() || ss.GetArray().GetCount() < 2)
 					ThrowError("only array can be assigned to the slice");
-				EscValue v1 = ss.ArrayGet(0);
-				EscValue v2 = ss.ArrayGet(1);
+				HiValue v1 = ss.ArrayGet(0);
+				HiValue v2 = ss.ArrayGet(1);
 				int i = v1.IsInt() ? v1.GetInt() : 0;
 				int n = count - i;
 				if(ss.GetCount() == 2)
@@ -150,7 +150,7 @@ void Esc::Assign(EscValue& val, const Vector<EscValue>& sbs, int si, const EscVa
 	ThrowError("invalid indirection");
 }
 
-void Esc::Assign(const SRVal& val, const EscValue& src)
+void Hi::Assign(const SRVal& val, const HiValue& src)
 {
 	if(skipexp)
 		return;
@@ -162,16 +162,16 @@ void Esc::Assign(const SRVal& val, const EscValue& src)
 		*val.lval = src;
 }
 
-EscValue Esc::ExecuteLambda(const String& id, EscValue lambda, SRVal self, Vector<SRVal>& arg)
+HiValue Hi::ExecuteLambda(const String& id, HiValue lambda, SRVal self, Vector<SRVal>& arg)
 {
 	LTIMING("ExecuteLambda");
 	if(!lambda.IsLambda())
 		ThrowError(Format("'%s' is not a lambda", id));
-	const EscLambda& l = lambda.GetLambda();
+	const HiLambda& l = lambda.GetLambda();
 	if(!l.varargs && arg.GetCount() > l.arg.GetCount()
 	   || arg.GetCount() < l.arg.GetCount() - l.def.GetCount())
 		ThrowError("invalid number of arguments in call to '" + id + "'");
-	Esc sub(global, l.code, op_limit, l.filename, l.line);
+	Hi sub(global, l.code, op_limit, l.filename, l.line);
 	sub.self = Get(self);
 	for(int i = 0; i < l.arg.GetCount(); i++) {
 		sub.var.GetAdd(l.arg[i]) =
@@ -179,15 +179,20 @@ EscValue Esc::ExecuteLambda(const String& id, EscValue lambda, SRVal self, Vecto
 		                       : Evaluatex(l.def[i - (l.arg.GetCount() - l.def.GetCount())], global, op_limit);
 		TestLimit();
 	}
-	EscValue retval;
-	Array<EscValue> argvar;
+	HiValue retval;
+	Array<HiValue> argvar;
 	if(l.escape) {
+		#if LIBTOPSIDE
 		sub.var.PickValues(argvar);
+		#else
+		argvar = sub.var.PickValues();
+		#endif
+		
 		for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
 			argvar.Add(Get(arg[i]));
 		}
-		EscValue v = Get(self);
-		EscEscape e(*this, v, argvar);
+		HiValue v = Get(self);
+		HiEscape e(*this, v, argvar);
 		e.id = id;
 		l.escape(e);
 		retval = e.ret_val;
@@ -195,14 +200,19 @@ EscValue Esc::ExecuteLambda(const String& id, EscValue lambda, SRVal self, Vecto
 	}
 	else {
 		if(l.varargs) {
-			EscValue& argv = sub.var.GetAdd("argv");
+			HiValue& argv = sub.var.GetAdd("argv");
 			argv.SetEmptyArray();
 			for(int i = l.arg.GetCount(); i < arg.GetCount(); i++)
 				argv.ArrayAdd(Get(arg[i]));
 		}
 		sub.Run();
 		retval = sub.return_value;
+		
+		#if LIBTOPSIDE
 		sub.var.PickValues(argvar);
+		#else
+		argvar = sub.var.PickValues();
+		#endif
 	}
 	for(int i = 0; i < l.inout.GetCount(); i++)
 		if(l.inout[i] && i < arg.GetCount() && arg[i].lval)
@@ -212,22 +222,22 @@ EscValue Esc::ExecuteLambda(const String& id, EscValue lambda, SRVal self, Vecto
 	return retval;
 }
 
-void Esc::Subscript(Esc::SRVal& r, Esc::SRVal _self, String id)
+void Hi::Subscript(Hi::SRVal& r, Hi::SRVal _self, String id)
 {
 	LTIMING("Subscript");
 	for(;;) {
 		TestLimit();
 		if(Char('['))
 			if(Char(']'))
-				r.sbs.ArrayAdd(EscValue());
+				r.sbs.ArrayAdd(HiValue());
 			else {
-				EscValue v1, v2;
+				HiValue v1, v2;
 				if(!IsChar(',') && !IsChar(':'))
 					v1 = GetExp();
 				if(Char(',')) {
 					if(!IsChar(']'))
 						v2 = GetExp();
-					EscValue x;
+					HiValue x;
 					x.ArrayAdd(v1);
 					x.ArrayAdd(v2);
 					r.sbs.ArrayAdd(x);
@@ -236,10 +246,10 @@ void Esc::Subscript(Esc::SRVal& r, Esc::SRVal _self, String id)
 				if(Char(':')) {
 					if(!IsChar(']'))
 						v2 = GetExp();
-					EscValue x;
+					HiValue x;
 					x.ArrayAdd(v1);
 					x.ArrayAdd(v2);
-					x.ArrayAdd(EscValue());
+					x.ArrayAdd(HiValue());
 					r.sbs.ArrayAdd(x);
 				}
 				else
@@ -264,11 +274,11 @@ void Esc::Subscript(Esc::SRVal& r, Esc::SRVal _self, String id)
 				}
 			if(!IsChar2('!', '=') && Char('!')) {
 				Term(_self);
-				EscValue g = Get(_self);
+				HiValue g = Get(_self);
 				if(!_self.lval || (!g.IsVoid() && !g.IsMap()))
 					ThrowError("l-value map or l-value void expected on the right side of !");
 				if(g.IsVoid()) {
-					EscValue v;
+					HiValue v;
 					v.SetEmptyMap();
 					Assign(_self, v);
 				}
@@ -286,14 +296,14 @@ void Esc::Subscript(Esc::SRVal& r, Esc::SRVal _self, String id)
 	}
 }
 
-void Esc::Subscript(Esc::SRVal& r)
+void Hi::Subscript(Hi::SRVal& r)
 {
 	Subscript(r, SRVal(), String());
 }
 
-void Esc::Term(SRVal& r)
+void Hi::Term(SRVal& r)
 {
-	r.sbs = EscValue();
+	r.sbs = HiValue();
 
 	op_limit--;
 	TestLimit();
@@ -319,7 +329,7 @@ void Esc::Term(SRVal& r)
 		return;
 	}
 	if(IsString()) {
-		r = EscValue(FromUtf8(ReadString()));
+		r = HiValue(FromUtf8(ReadString()));
 		return;
 	}
 	if(IsChar('\'')) {
@@ -335,15 +345,15 @@ void Esc::Term(SRVal& r)
 		return;
 	}
 	if(Id("void")) {
-		r = EscValue();
+		r = HiValue();
 		return;
 	}
 	if(Char('{')) {
-		EscValue map;
+		HiValue map;
 		map.SetEmptyMap();
 		if(!Char('}'))
 			for(;;) {
-				EscValue v = GetExp();
+				HiValue v = GetExp();
 				PassChar(':');
 				map.MapSet(v, GetExp());
 				if(Char('}'))
@@ -356,7 +366,7 @@ void Esc::Term(SRVal& r)
 		return;
 	}
 	if(Char('[')) {
-		EscValue array;
+		HiValue array;
 		array.SetEmptyArray();
 		if(!Char(']'))
 			for(;;) {
@@ -389,7 +399,7 @@ void Esc::Term(SRVal& r)
 		_global = true;
 	if(IsId()) {
 		String id = ReadId();
-		EscValue method;
+		HiValue method;
 		int locali = var.Find(id);
 		int ii;
 
@@ -437,35 +447,35 @@ String Lims(const String& s)
 	return s.GetLength() > 80 ? s.Mid(0, 80) : s;
 }
 
-double Esc::Number(const EscValue& a, const char *oper)
+double Hi::Number(const HiValue& a, const char *oper)
 {
 	if(!a.IsNumber())
 		ThrowError(String().Cat() << "number expected for '" << oper << "', encountered " << Lims(a.ToString()));
 	return a.GetNumber();
 }
 
-int64 Esc::Int(const EscValue& a, const char *oper)
+int64 Hi::Int(const HiValue& a, const char *oper)
 {
 	if(!a.IsNumber())
 		ThrowError(String().Cat() << "integer expected for '" << oper << "', encountered " << Lims(a.ToString()));
 	return a.GetInt64();
 }
 
-double Esc::Number(const Esc::SRVal& a, const char *oper)
+double Hi::Number(const Hi::SRVal& a, const char *oper)
 {
 	return Number(Get(a), oper);
 }
 
-int64 Esc::Int(const Esc::SRVal& a, const char *oper)
+int64 Hi::Int(const Hi::SRVal& a, const char *oper)
 {
 	return Int(Get(a), oper);
 }
 
-void Esc::Unary(Esc::SRVal& r)
+void Hi::Unary(Hi::SRVal& r)
 {
 	if(Char2('+', '+')) {
 		Unary(r);
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			Assign(r, Int(v, "++") + 1);
 		else
@@ -474,7 +484,7 @@ void Esc::Unary(Esc::SRVal& r)
 	else
 	if(Char2('-', '-')) {
 		Unary(r);
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			Assign(r, Int(v, "--") - 1);
 		else
@@ -483,7 +493,7 @@ void Esc::Unary(Esc::SRVal& r)
 	else
 	if(Char('-')) {
 		Unary(r);
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			r = -Int(v, "-");
 		else
@@ -492,7 +502,7 @@ void Esc::Unary(Esc::SRVal& r)
 	else
 	if(Char('+')) {
 		Unary(r);
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			r = Int(v, "+");
 		else
@@ -512,7 +522,7 @@ void Esc::Unary(Esc::SRVal& r)
 		Term(r);
 
 	if(Char2('+', '+')) {
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			Assign(r, Int(v, "++") + 1);
 		else
@@ -520,7 +530,7 @@ void Esc::Unary(Esc::SRVal& r)
 		r = v;
 	}
 	if(Char2('-', '-')) {
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		if(v.IsInt64())
 			Assign(r, Int(v, "--") - 1);
 		else
@@ -529,9 +539,9 @@ void Esc::Unary(Esc::SRVal& r)
 	}
 }
 
-EscValue Esc::MulArray(EscValue array, EscValue times)
+HiValue Hi::MulArray(HiValue array, HiValue times)
 {
-	EscValue r;
+	HiValue r;
 	r.SetEmptyArray();
 	for(int n = times.GetInt(); n > 0; n >>= 1) {
 		if(n & 1)
@@ -544,15 +554,15 @@ EscValue Esc::MulArray(EscValue array, EscValue times)
 	return r;
 }
 
-void Esc::Mul(Esc::SRVal& r)
+void Hi::Mul(Hi::SRVal& r)
 {
 	Unary(r);
 	for(;;)
 		if(!IsChar2('*', '=') && Char('*')) {
-			EscValue x = Get(r);
+			HiValue x = Get(r);
 			SRVal w;
 			Unary(w);
-			EscValue y = Get(w);
+			HiValue y = Get(w);
 			if(x.IsArray() && y.IsInt())
 				r = MulArray(x, y);
 			else
@@ -568,8 +578,8 @@ void Esc::Mul(Esc::SRVal& r)
 		if(!IsChar2('/', '=') && Char('/')) {
 			SRVal w;
 			Unary(w);
-			EscValue x = Get(r);
-			EscValue y = Get(w);
+			HiValue x = Get(r);
+			HiValue y = Get(w);
 			double b = Number(y, "/");
 			if(b == 0)
 				ThrowError("divide by zero");
@@ -588,15 +598,15 @@ void Esc::Mul(Esc::SRVal& r)
 			return;
 }
 
-void Esc::Add(Esc::SRVal& r)
+void Hi::Add(Hi::SRVal& r)
 {
 	Mul(r);
 	for(;;)
 		if(!IsChar2('+', '=') && Char('+')) {
-			EscValue v = Get(r);
+			HiValue v = Get(r);
 			SRVal w;
 			Mul(w);
-			EscValue b = Get(w);
+			HiValue b = Get(w);
 			if(v.IsArray() && b.IsArray()) {
 				if(!v.Replace(v.GetCount(), 0, b))
 					OutOfMemory();
@@ -614,8 +624,8 @@ void Esc::Add(Esc::SRVal& r)
 		if(!IsChar2('-', '=') && Char('-')) {
 			SRVal w;
 			Mul(w);
-			EscValue v = Get(r);
-			EscValue b = Get(w);
+			HiValue v = Get(r);
+			HiValue b = Get(w);
 			if(v.IsInt64() && b.IsInt64())
 				r = Int(v, "-") - Int(b, "-");
 			else
@@ -625,15 +635,15 @@ void Esc::Add(Esc::SRVal& r)
 			return;
 }
 
-void Esc::Shift(Esc::SRVal& r)
+void Hi::Shift(Hi::SRVal& r)
 {
 	Add(r);
 	for(;;)
 		if(Char2('<', '<')) {
-			EscValue v = Get(r);
+			HiValue v = Get(r);
 			SRVal w;
 			Add(w);
-			EscValue b = Get(w);
+			HiValue b = Get(w);
 			if(v.IsArray() && b.IsArray()) {
 				if(!v.Replace(v.GetCount(), 0, b))
 					OutOfMemory();
@@ -653,7 +663,7 @@ void Esc::Shift(Esc::SRVal& r)
 			return;
 }
 
-double Esc::DoCompare(const EscValue& a, const EscValue& b, const char *op)
+double Hi::DoCompare(const HiValue& a, const HiValue& b, const char *op)
 {
 	LTIMING("DoCompare");
 	if(a.IsInt64() && b.IsInt64())
@@ -661,8 +671,8 @@ double Esc::DoCompare(const EscValue& a, const EscValue& b, const char *op)
 	if(a.IsNumber() && b.IsNumber())
 		return SgnCompare(a.GetNumber(), b.GetNumber());
 	if(a.IsArray() && b.IsArray()) {
-		const Vector<EscValue>& x = a.GetArray();
-		const Vector<EscValue>& y = b.GetArray();
+		const Vector<HiValue>& x = a.GetArray();
+		const Vector<HiValue>& y = b.GetArray();
 		int i = 0;
 		for(;;) {
 			if(i >= x.GetCount())
@@ -684,14 +694,14 @@ double Esc::DoCompare(const EscValue& a, const EscValue& b, const char *op)
 	return 0;
 }
 
-double Esc::DoCompare(const SRVal& a, const char *op)
+double Hi::DoCompare(const SRVal& a, const char *op)
 {
 	SRVal w;
 	Shift(w);
 	return DoCompare(Get(a), Get(w), op);
 }
 
-void Esc::Compare(Esc::SRVal& r)
+void Hi::Compare(Hi::SRVal& r)
 {
 	Shift(r);
 	for(;;)
@@ -710,7 +720,7 @@ void Esc::Compare(Esc::SRVal& r)
 			return;
 }
 
-void Esc::Equal(Esc::SRVal& r)
+void Hi::Equal(Hi::SRVal& r)
 {
 	Compare(r);
 	for(;;)
@@ -729,7 +739,7 @@ void Esc::Equal(Esc::SRVal& r)
 			return;
 }
 
-void Esc::BinAnd(Esc::SRVal& r)
+void Hi::BinAnd(Hi::SRVal& r)
 {
 	Equal(r);
 	while(!IsChar2('&', '&') && Char('&')) {
@@ -739,7 +749,7 @@ void Esc::BinAnd(Esc::SRVal& r)
 	}
 }
 
-void Esc::BinXor(Esc::SRVal& r)
+void Hi::BinXor(Hi::SRVal& r)
 {
 	BinAnd(r);
 	while(Char('^')) {
@@ -749,7 +759,7 @@ void Esc::BinXor(Esc::SRVal& r)
 	}
 }
 
-void Esc::BinOr(Esc::SRVal& r)
+void Hi::BinOr(Hi::SRVal& r)
 {
 	BinXor(r);
 	while(!IsChar2('|', '|') && Char('|')) {
@@ -759,7 +769,7 @@ void Esc::BinOr(Esc::SRVal& r)
 	}
 }
 
-void Esc::And(Esc::SRVal& r)
+void Hi::And(Hi::SRVal& r)
 {
 	BinOr(r);
 	if(IsChar2('&', '&')) {
@@ -780,7 +790,7 @@ void Esc::And(Esc::SRVal& r)
 	}
 }
 
-void Esc::Or(Esc::SRVal& r)
+void Hi::Or(Hi::SRVal& r)
 {
 	And(r);
 	if(IsChar2('|', '|')) {
@@ -801,7 +811,7 @@ void Esc::Or(Esc::SRVal& r)
 	}
 }
 
-void Esc::Cond(Esc::SRVal& r)
+void Hi::Cond(Hi::SRVal& r)
 {
 	Or(r);
 	if(Char('?')) {
@@ -824,7 +834,7 @@ void Esc::Cond(Esc::SRVal& r)
 	}
 }
 
-void Esc::Assign(Esc::SRVal& r)
+void Hi::Assign(Hi::SRVal& r)
 {
 	Cond(r);
 	if(Char('=')) {
@@ -834,10 +844,10 @@ void Esc::Assign(Esc::SRVal& r)
 	}
 	else
 	if(Char2('+', '=')) {
-		EscValue v = Get(r);
+		HiValue v = Get(r);
 		SRVal w;
 		Cond(w);
-		EscValue b = Get(w);
+		HiValue b = Get(w);
 		if(v.IsArray() && b.IsArray()) {
 			if(!v.Replace(v.GetCount(), 0, b))
 				OutOfMemory();
@@ -855,8 +865,8 @@ void Esc::Assign(Esc::SRVal& r)
 	if(Char2('-', '=')) {
 		SRVal w;
 		Cond(w);
-		EscValue v = Get(r);
-		EscValue b = Get(w);
+		HiValue v = Get(r);
+		HiValue b = Get(w);
 		if(v.IsInt64() && b.IsInt64())
 			Assign(r, Int(v, "-=") - Int(b, "-="));
 		else
@@ -866,8 +876,8 @@ void Esc::Assign(Esc::SRVal& r)
 	if(Char2('*', '=')) {
 		SRVal w;
 		Cond(w);
-		EscValue x = Get(r);
-		EscValue y = Get(w);
+		HiValue x = Get(r);
+		HiValue y = Get(w);
 		if(x.IsInt64() && y.IsInt64())
 			Assign(r, Int(x, "*=") * Int(y, "*="));
 		else
@@ -877,8 +887,8 @@ void Esc::Assign(Esc::SRVal& r)
 	if(Char2('/', '=')) {
 		SRVal w;
 		Cond(w);
-		EscValue v = Get(r);
-		EscValue b = Get(w);
+		HiValue v = Get(r);
+		HiValue b = Get(w);
 		double q = Number(v, "/=");
 		if(q == 0)
 			ThrowError("divide by zero");
@@ -896,9 +906,9 @@ void Esc::Assign(Esc::SRVal& r)
 	}
 }
 
-int Esc::stack_level = 50;
+int Hi::stack_level = 50;
 
-void Esc::Exp(Esc::SRVal& r)
+void Hi::Exp(Hi::SRVal& r)
 {
 	LTIMING("Exp");
 	Spaces();
@@ -909,13 +919,13 @@ void Esc::Exp(Esc::SRVal& r)
 	stack_level++;
 }
 
-EscValue Esc::GetExp() {
+HiValue Hi::GetExp() {
 	SRVal r;
 	Exp(r);
 	return Get(r);
 }
 
-void Esc::SkipTerm()
+void Hi::SkipTerm()
 {
 	if(IsEof())
 		ThrowError("unexpected end of file");
@@ -923,7 +933,7 @@ void Esc::SkipTerm()
 	Spaces();
 }
 
-void Esc::SkipExp()
+void Hi::SkipExp()
 {
 	int level = 0;
 	for(;;) {
@@ -955,7 +965,7 @@ void SkipBlock(CParser& p)
 	}
 }
 
-void Esc::SkipStatement()
+void Hi::SkipStatement()
 {
 	stack_level--;
 	if(stack_level <= 0)
@@ -1008,7 +1018,7 @@ void Esc::SkipStatement()
 	stack_level++;
 }
 
-bool  Esc::PCond()
+bool  Hi::PCond()
 {
 	PassChar('(');
 	bool c = IsTrue(GetExp());
@@ -1016,7 +1026,7 @@ bool  Esc::PCond()
 	return c;
 }
 
-void Esc::FinishSwitch()
+void Hi::FinishSwitch()
 {
 	while(no_break && no_return && no_continue) {
 		if(Id("case")) {
@@ -1036,7 +1046,7 @@ void Esc::FinishSwitch()
 		SkipStatement();
 }
 
-void  Esc::DoStatement()
+void  Hi::DoStatement()
 {
 	op_limit--;
 	TestLimit();
@@ -1090,7 +1100,7 @@ void  Esc::DoStatement()
 		if(!IsChar(';'))
 			Exp(var);
 		if(Id("in") || Char(':')) {
-			EscValue range = GetExp();
+			HiValue range = GetExp();
 			PassChar(')');
 			Pos stmt = GetPos();
 			int i = 0;
@@ -1103,7 +1113,7 @@ void  Esc::DoStatement()
 				}
 				else
 				if(range.IsMap()) {
-					const VectorMap<EscValue, EscValue>& map = range.GetMap();
+					const VectorMap<HiValue, HiValue>& map = range.GetMap();
 					if(i >= map.GetCount())
 						break;
 					if(map.IsUnlinked(i)) {
@@ -1191,18 +1201,18 @@ void  Esc::DoStatement()
 			PassChar(';');
 		}
 		else
-			return_value = EscValue();
+			return_value = HiValue();
 	}
 	else
 	if(Id("switch")) {
 		loop++;
 		PassChar('(');
-		EscValue a = GetExp();
+		HiValue a = GetExp();
 		PassChar(')');
 		PassChar('{');
 		while(!Char('}')) {
 			if(Id("case")) {
-				EscValue b = GetExp();
+				HiValue b = GetExp();
 				PassChar(':');
 				if(a == b) {
 					FinishSwitch();
@@ -1230,7 +1240,7 @@ void  Esc::DoStatement()
 		if(Char(':'))
 			type = 2;
 		String id = ReadId();
-		EscValue l = ReadLambda(*this);
+		HiValue l = ReadLambda(*this);
 		if(type == 1) {
 			if(self.IsVoid())
 				ThrowError("no instance");
@@ -1255,13 +1265,24 @@ void  Esc::DoStatement()
 	}
 }
 
-void  Esc::Run()
+void  Hi::Run()
 {
 	no_return = no_break = no_continue = true;
 	loop = 0;
 	skipexp = 0;
 	while(!IsEof() && no_return && no_break && no_continue)
 		DoStatement();
+}
+
+
+#if LIBTOPSIDE
+String StdFormat(const Value& q) {
+	TODO
+}
+#endif
+
+String StdFormatObj(const Object& q) {
+	TODO
 }
 
 }

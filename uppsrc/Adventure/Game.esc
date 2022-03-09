@@ -166,149 +166,9 @@ main() {
 			}
 		}
 	};
-
-	//
-	// actor definitions
-	//
 	
-	// initialize the player's actor object
-	:main_actor = {
-		"data": {
-			"name": "humanoid",
-			"w": 1,
-			"h": 4,
-			"idle": [193, 197, 199, 197],
-			"talk": [218, 219, 220, 219],
-			"walk_anim_side": [196, 197, 198, 197],
-			"walk_anim_front": [194, 193, 195, 193],
-			"walk_anim_back": [200, 199, 201, 199],
-			"col": 12,
-			"trans_col": 11,
-			"walk_speed": 0.6,
-			"frame_delay": 5,
-			"classes": ["class_actor"],
-			"face_dir": "face_front"
-		},
-		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
-		"inventory": [
-			:obj_switch_tent
-		],
-		"verbs": {
-			"use": @(&me) {
-				:selected_actor = me;
-				camera_follow(me);
-			}
-		}
-	};
 	
-	:purp_tentacle = {
-		"data": {
-			"name": "purple tentacle",
-			"x": 140,
-			"y": 52,
-			"w": 1,
-			"h": 3,
-			"idle": [154, 154, 154, 154],
-			"talk": [171, 171, 171, 171],
-			"col": 11,
-			"trans_col": 15,
-			"walk_speed": 0.4,
-			"frame_delay": 5,
-			"classes": ["class_actor", "class_talkable"],
-			"face_dir": "face_front",
-			"use_pos": "pos_left"
-		},
-		"in_room": "rm_kitchen",
-		"inventory": [
-			:obj_switch_player
-		],
-		"verbs": {
-			"lookat": @() {
-				say_line("it's a weird looking tentacle, thing!");
-			},
-			"talkto": @(&me) {
-				cutscene(
-					1, // no verbs
-					@(me) {
-						//do_anim(:purp_tentacle, face_towards, :selected_actor);
-						say_line(me,"what do you want?");
-					});
-				// dialog loop start
-				while (true) {
-					// build dialog options
-					dialog_set({
-						(!me.stopped_player ? "" : "why did you stop me?"),
-						(me.asked_where ? "" : "where am i?"),
-						//"who are you?",
-						(me.asked_woodchuck ? "" : "how much wood would a wood-chuck chuck, if a wood-chuck could chuck wood?"),
-						"nevermind"
-					});
-					dialog_start(:selected_actor.col, 7);
-					
-					// wait for (selection
-					while (!selected_sentence) { break_time(); }
-					
-					// chosen options
-					dialog_hide();
-					cutscene(
-						1, // no verbs
-					@(me) {
-						say_line(selected_sentence.msg);
-						if (selected_sentence.num == 1) {
-							say_line(me, "i need your help:i'm bored with this spinning top...:if you can you find something i can play with, i'd appreciate it");
-							me.asked_why_stop = true;
-						}
-						else if (selected_sentence.num == 2) {
-							say_line(me, "you are in paul's demo scumm-8 game, i think!");
-							me.asked_where = true;
-						}
-						// elseif selected_sentence.num == 3 then
-						//	say_line(me, "it's complicated...");
-						else if (selected_sentence.num == 3) {
-							say_line(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!");
-							me.asked_woodchuck = true;
-						}
-						else if (selected_sentence.num == 4) {
-							say_line(me, "ok bye!");
-							dialog_end();
-							return;
-						}
-					});
-					dialog_clear();
-				} //dialog loop
-			}, // talkto
-			"use": @(&me) {
-				:selected_actor = me;
-				camera_follow(me);
-			}
-		}
-	};
-	
-	:mi_actor = {
-		"data": {
-			"name": "guybrush",
-			"w": 1,
-			"h": 2,
-			"idle":[47, 47, 15, 47],
-			"walk_anim_side":[44, 45, 44, 46],
-			"col": 7,
-			"trans_col": 8,
-			"walk_speed": 0.5,
-			"frame_delay": 8,
-			"classes": ["class_actor"],
-			"face_dir": "face_front"
-		},
-		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
-		"inventory": {
-			// obj_switch_tent
-		},
-		"verbs": {
-			// "use": @(&me) {
-			//	:selected_actor = me
-			//	camera_follow(me);
-			// }
-		}
-	};
+	// Rooms
 	
 	:rm_title = {
 		"data": {
@@ -461,11 +321,11 @@ main() {
 			"autodepth_scale": [0.75, 1]
 		},
 		"objects": [
-			"obj_outside_stairs",
-			"obj_rail_left",
-			"obj_rail_right",
-			"obj_front_door",
-			"obj_bucket"
+			:obj_outside_stairs,
+			:obj_rail_left,
+			:obj_rail_right,
+			:obj_front_door,
+			:obj_bucket
 		],
 		"enter": @(&me) {
 			//
@@ -660,15 +520,15 @@ main() {
 		    "autodepth_scale": [0.82, 1]
 		},
 		"objects": [
-			//"obj_spinning_top",
-			"obj_clock",
-			"obj_pendulum",
-			"obj_front_door_inside",
-			"obj_inside_stairs",
-			"obj_hall_rail",
-			"obj_hall_exit_landing",
-			"obj_hall_door_library",
-			"obj_hall_door_kitchen"
+			//:obj_spinning_top,
+			:obj_clock,
+			:obj_pendulum,
+			:obj_front_door_inside,
+			:obj_inside_stairs,
+			:obj_hall_rail,
+			:obj_hall_exit_landing,
+			:obj_hall_door_library,
+			:obj_hall_door_kitchen
 		],
 		"enter": @(&me) {
 			// animate clock
@@ -906,12 +766,12 @@ main() {
 			"lighting": 0.25
 		},
 		"objects": [
-			"obj_library_door_hall",
-			"obj_lightswitch",
-			"obj_fire",
-			"obj_library_door_secret",
-			"obj_library_secret_panel",
-			"obj_book"
+			:obj_library_door_hall,
+			:obj_lightswitch,
+			:obj_fire,
+			:obj_library_door_secret,
+			:obj_library_secret_panel,
+			:obj_book
 		],
 		"enter": @(&me) {
 			// animate fireplace
@@ -1097,8 +957,8 @@ main() {
 			"autodepth_scale": [0.75, 1]
 		},
 		"objects": [
-			"obj_garden_door_kitchen",
-			"obj_pool"
+			:obj_garden_door_kitchen,
+			:obj_pool
 		],
 		"enter": @() {
 			// todo: "anything here?"
@@ -1241,13 +1101,13 @@ main() {
 			"map": [32, 16, 55, 31]
 		},
 		"objects": [
-			"obj_rail_left",
-			"obj_rail_right",
-			"obj_landing_exit_hall",
-			"obj_landing_door_room1",
-			"obj_landing_door_room2",
-			"obj_landing_door_room3",
-			"obj_landing_door_computer"
+			:obj_rail_left,
+			:obj_rail_right,
+			:obj_landing_exit_hall,
+			:obj_landing_door_room1,
+			:obj_landing_door_room2,
+			:obj_landing_door_room3,
+			:obj_landing_door_computer
 		],
 		"enter": @(&me) {
 		},
@@ -1389,10 +1249,10 @@ main() {
 			"autodepth_scale":[0.75, 1]
 		},
 		"objects": [
-			"obj_computer_door_landing",
-			"obj_computer",
-			"obj_cursor",
-			"obj_floppy_disk"
+			:obj_computer_door_landing,
+			:obj_computer,
+			:obj_cursor,
+			:obj_floppy_disk
 		],
 		"enter": @(&me) {
 			// just exited the game?
@@ -1572,7 +1432,153 @@ main() {
 		]
 	};
 	
-		
+	
+	
+	//
+	// actor definitions
+	//
+	
+	// initialize the player's actor object
+	:main_actor = {
+		"data": {
+			"name": "humanoid",
+			"w": 1,
+			"h": 4,
+			"idle": [193, 197, 199, 197],
+			"talk": [218, 219, 220, 219],
+			"walk_anim_side": [196, 197, 198, 197],
+			"walk_anim_front": [194, 193, 195, 193],
+			"walk_anim_back": [200, 199, 201, 199],
+			"col": 12,
+			"trans_col": 11,
+			"walk_speed": 0.6,
+			"frame_delay": 5,
+			"classes": ["class_actor"],
+			"face_dir": "face_front"
+		},
+		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
+		"inventory": [
+			:obj_switch_tent
+		],
+		"verbs": {
+			"use": @(&me) {
+				:selected_actor = me;
+				camera_follow(me);
+			}
+		}
+	};
+	
+	:purp_tentacle = {
+		"data": {
+			"name": "purple tentacle",
+			"x": 140,
+			"y": 52,
+			"w": 1,
+			"h": 3,
+			"idle": [154, 154, 154, 154],
+			"talk": [171, 171, 171, 171],
+			"col": 11,
+			"trans_col": 15,
+			"walk_speed": 0.4,
+			"frame_delay": 5,
+			"classes": ["class_actor", "class_talkable"],
+			"face_dir": "face_front",
+			"use_pos": "pos_left"
+		},
+		"in_room": :rm_kitchen,
+		"inventory": [
+			:obj_switch_player
+		],
+		"verbs": {
+			"lookat": @() {
+				say_line("it's a weird looking tentacle, thing!");
+			},
+			"talkto": @(&me) {
+				cutscene(
+					1, // no verbs
+					@(me) {
+						//do_anim(:purp_tentacle, face_towards, :selected_actor);
+						say_line(me,"what do you want?");
+					});
+				// dialog loop start
+				while (true) {
+					// build dialog options
+					dialog_set({
+						(!me.stopped_player ? "" : "why did you stop me?"),
+						(me.asked_where ? "" : "where am i?"),
+						//"who are you?",
+						(me.asked_woodchuck ? "" : "how much wood would a wood-chuck chuck, if a wood-chuck could chuck wood?"),
+						"nevermind"
+					});
+					dialog_start(:selected_actor.col, 7);
+					
+					// wait for (selection
+					while (!selected_sentence) { break_time(); }
+					
+					// chosen options
+					dialog_hide();
+					cutscene(
+						1, // no verbs
+					@(me) {
+						say_line(selected_sentence.msg);
+						if (selected_sentence.num == 1) {
+							say_line(me, "i need your help:i'm bored with this spinning top...:if you can you find something i can play with, i'd appreciate it");
+							me.asked_why_stop = true;
+						}
+						else if (selected_sentence.num == 2) {
+							say_line(me, "you are in paul's demo scumm-8 game, i think!");
+							me.asked_where = true;
+						}
+						// elseif selected_sentence.num == 3 then
+						//	say_line(me, "it's complicated...");
+						else if (selected_sentence.num == 3) {
+							say_line(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!");
+							me.asked_woodchuck = true;
+						}
+						else if (selected_sentence.num == 4) {
+							say_line(me, "ok bye!");
+							dialog_end();
+							return;
+						}
+					});
+					dialog_clear();
+				} //dialog loop
+			}, // talkto
+			"use": @(&me) {
+				:selected_actor = me;
+				camera_follow(me);
+			}
+		}
+	};
+	
+	:mi_actor = {
+		"data": {
+			"name": "guybrush",
+			"w": 1,
+			"h": 2,
+			"idle":[47, 47, 15, 47],
+			"walk_anim_side":[44, 45, 44, 46],
+			"col": 7,
+			"trans_col": 8,
+			"walk_speed": 0.5,
+			"frame_delay": 8,
+			"classes": ["class_actor"],
+			"face_dir": "face_front"
+		},
+		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
+		"inventory": {
+			// obj_switch_tent
+		},
+		"verbs": {
+			// "use": @(&me) {
+			//	:selected_actor = me
+			//	camera_follow(me);
+			// }
+		}
+	};
+	
+	
+	
 	//
 	// active rooms list
 	//

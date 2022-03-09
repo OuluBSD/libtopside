@@ -22,7 +22,8 @@ ProgramApp::ProgramApp() {
 }
 
 void ProgramApp::ProcessScript() {
-	prog.ProcessEsc();
+	prog.Update();
+	draw.Refresh();
 }
 
 
@@ -56,9 +57,11 @@ void ProgramDraw::Paint(Draw& w) {
 	Size sz = GetSize();
 	int min_edge = min(sz.cx, sz.cy);
 	Size tgt_sz(min_edge, min_edge);
+	Size canvas_sz(128, 128);
 	ImageDraw d(128, 128);
+	size_mul = (double)canvas_sz.cx / (double)tgt_sz.cx;
 	
-	int cam_x = p->cam_x.x;
+	int cam_x = p->cam.x;
 	int cam_shake_x = p->cam_shake_x;
 	int cam_shake_y = p->cam_shake_y;
 	int fade_iris = p->fade_iris;
@@ -159,7 +162,7 @@ void ProgramDraw::PaintLog(Draw& d, String s, int x, int y, PaletteColor clr) {
 }
 
 void ProgramDraw::PaintRoom(Draw& d) {
-	const auto& cam_x = p->cam_x.x;
+	const auto& cam_x = p->cam.x;
 	const auto& stage_top = p->stage_top;
 	
 	// check for (current room
@@ -190,7 +193,7 @@ void ProgramDraw::PaintRoom(Draw& d) {
 				//palt(room_curr.trans_col, true);
 				TODO
 			}
-			EscValue map = room_curr.MapGet("data").MapGet("map");
+			HiValue map = room_curr.MapGet("data").MapGet("map");
 			//LOG(room_curr.ToString()); LOG(map.ToString());
 			ASSERT(map.IsArray());
 			int map0 = map.ArrayGet(0).GetInt();
@@ -331,15 +334,14 @@ void ProgramDraw::PaintTalking(Draw& d) {
 
 // draw ui and inventory
 void ProgramDraw::PaintUI(Draw& d) {
-	using Verb = Program::Verb;
 	
 	// draw verbs
 	int xpos = 0;
 	int ypos = 75;
 	int col_len = 0;
 	
-	Verb hover_curr_verb = p->hover_curr_verb;
-	Verb hover_curr_default_verb = p->hover_curr_default_verb;
+	SObj hover_curr_verb = p->hover_curr_verb;
+	SObj hover_curr_default_verb = p->hover_curr_default_verb;
 	PaletteColor verb_shadcol = p->verb_shadcol;
 	PaletteColor verb_hovcol = p->verb_hovcol;
 	PaletteColor verb_defcol = p->verb_defcol;
@@ -348,11 +350,11 @@ void ProgramDraw::PaintUI(Draw& d) {
 	SObj selected_actor = p->GetSelectedActor();
 	const SObj& hover_curr_arrow = p->hover_curr_arrow;
 	
-	EscValue ea;
+	HiValue ea;
 	ea.SetEmptyArray();
 	
-	for (int i = Program::V_BEGIN; i != Program::V_END; i++) {
-		Verb v = (Verb)i;
+	for (int i = 0; i != p->V_COUNT; i++) {
+		SObj v = p->verbs.ArrayGet(i);
 		
 		PaletteColor txtcol;
 		if (v == hover_curr_verb)
@@ -391,7 +393,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 	}
 	
 	if (selected_actor.IsMap()) {
-		EscValue inventory = selected_actor.MapGet("inventory");
+		HiValue inventory = selected_actor.MapGet("inventory");
 		int inv_arr_len = inventory.GetArray().GetCount();
 		
 		// draw inventory
@@ -689,34 +691,34 @@ void ProgramDraw::PaintCommand(Draw& d) {
 
 	// draw current command
 	PaletteColor cmd_col = p->verb_maincol;
-	Program::Verb verb_curr_ref = p->verb_curr;
+	SObj verb_curr_ref = p->verb_curr;
 	String command = p->GetVerbString(verb_curr_ref);
 	bool executing_cmd = p->executing_cmd;
 	SObj* noun1_curr = p->noun1_curr;
 	SObj* noun2_curr = p->noun2_curr;
-	SObj* hover_curr_object = p->hover_curr_object;
+	SObj hover_curr_object = p->hover_curr_object;
 	int stage_top = p->stage_top;
 	
 	
 	if (noun1_curr) {
 		command << " " << noun1_curr->MapGet("name");
-		if (verb_curr_ref == Program::V_USE && (!executing_cmd || noun2_curr)) {
+		if (verb_curr_ref == p->V_USE && (!executing_cmd || noun2_curr)) {
 			command << " with";
 		}
 		else
-			if (verb_curr_ref == Program::V_GIVE) {
+			if (verb_curr_ref == p->V_GIVE) {
 				command << " to";
 			}
 	}
 	if (noun2_curr) {
 		command << " " << noun2_curr->MapGet("name");
 	}
-	else if (hover_curr_object) {
-		String name = hover_curr_object->MapGet("name");
+	else if (!hover_curr_object.IsVoid()) {
+		String name = hover_curr_object.MapGet("name");
 		
 		if (!name.IsEmpty()
 			// don't show use object with itself!
-			&& (!noun1_curr || (noun1_curr != hover_curr_object))
+			&& (!noun1_curr || (*noun1_curr != hover_curr_object))
 			// || walk-to objs in inventory!
 			// && ( not hover_curr_object.owner or
 			//				or verb_curr_ref != GetVerb(verb_default)[2] )
@@ -747,8 +749,8 @@ void ProgramDraw::PaintCommand(Draw& d) {
 void ProgramDraw::ReplaceColors(const SObj& obj) {
 	if (!obj.IsMap()) return;
 	
-	EscValue col_replace = obj.MapGet("col_replace");
-	EscValue lighting = obj.MapGet("lighting");
+	HiValue col_replace = obj.MapGet("col_replace");
+	HiValue lighting = obj.MapGet("lighting");
 	
 	// replace colors (where defined)
 	if (col_replace.IsArray()) {
@@ -764,9 +766,9 @@ void ProgramDraw::ReplaceColors(const SObj& obj) {
 		FadePalette(a);
 	}
 	else {
-		EscValue in_room = obj.MapGet("in_room");
+		HiValue in_room = obj.MapGet("in_room");
 		if (in_room.IsMap()) {
-			EscValue lighting = in_room.MapGet("lighting");
+			HiValue lighting = in_room.MapGet("lighting");
 			if (lighting.IsInt()) {
 				int a = lighting.GetInt();
 				FadePalette(a);
@@ -811,6 +813,19 @@ void ProgramDraw::FadePalette(float perc) {
 		}
 		SetPalette(j, col);
 	}
+}
+
+void ProgramDraw::MouseMove(Point p, dword keyflags) {
+	if (this->p) {
+		this->p->cursor_x = p.x * size_mul;
+		this->p->cursor_y = p.y * size_mul;
+	}
+}
+
+bool ProgramDraw::Key(dword key, int count) {
+	
+	
+	return false;
 }
 
 

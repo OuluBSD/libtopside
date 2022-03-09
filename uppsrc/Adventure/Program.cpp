@@ -34,7 +34,7 @@ Color GetPicoPalette(PaletteColor idx) {
 
 
 
-Color ReadColor(const SObj& o, EscValue key, Color def) {
+Color ReadColor(const SObj& o, HiValue key, Color def) {
 	if (o.IsMap()) {
 		const auto& m = o.GetMap();
 		int i = m.Find(key);
@@ -46,7 +46,7 @@ Color ReadColor(const SObj& o, EscValue key, Color def) {
 	return def;
 }
 
-bool TryReadColor(const SObj& o, EscValue key, Color& c) {
+bool TryReadColor(const SObj& o, HiValue key, Color& c) {
 	if (o.IsMap()) {
 		const auto& m = o.GetMap();
 		int i = m.Find(key);
@@ -66,10 +66,10 @@ SObj* ReadKey(SObj& o, String key) {
 	TODO
 }
 
-void SrcMapSet(EscValue map, EscValue key, EscValue value) {
+void SrcMapSet(HiValue map, HiValue key, HiValue value) {
 	ASSERT(map.IsMap());
 	if (map.IsMap()) {
-		VectorMap<EscValue, EscValue>& m = const_cast<VectorMap<EscValue, EscValue>&>(map.GetMap());
+		VectorMap<HiValue, HiValue>& m = const_cast<VectorMap<HiValue, HiValue>&>(map.GetMap());
 		m.GetAdd(key) = value;
 	}
 }
@@ -84,8 +84,8 @@ void SrcMapSet(EscValue map, EscValue key, EscValue value) {
 void Script::Clear() {
 	Stop();
 	fn.Clear();
-	a0 = EscValue();
-	a1 = EscValue();
+	a0 = HiValue();
+	a1 = HiValue();
 	flags = 0;
 	paused_cam_following = 0;
 	type = SCENE_NULL;
@@ -93,7 +93,7 @@ void Script::Clear() {
 	
 }
 
-Script& Script::Set(Gate0 cb, EscValue a0, EscValue a1) {
+Script& Script::Set(Gate0 cb, HiValue a0, HiValue a1) {
 	Clear();
 	this->a0 = a0;
 	this->a1 = a1;
@@ -104,12 +104,12 @@ Script& Script::Set(Gate0 cb, EscValue a0, EscValue a1) {
 	return *this;
 }
 
-Script& Script::Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0, EscValue a1) {
+Script& Script::Set(HiGlobal& g, HiValue *self, HiValue fn, HiValue a0, HiValue a1) {
 	Clear();
 	is_esc = false;
 	
 	// Find & check lambda before setting fields
-	EscValue lambda;
+	HiValue lambda;
 	String fn_name;
 	if (fn.IsLambda()) {
 		lambda = fn;
@@ -121,7 +121,7 @@ Script& Script::Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0, EscV
 		if (self && self->IsMap())
 			lambda = self->MapGet(fn_name);
 		if (!lambda.IsLambda()) {
-			lambda = g.Get(fn_name, EscValue());
+			lambda = g.Get(fn_name, HiValue());
 			if (!lambda.IsLambda()) {
 				LOG("Key '" << fn_name << "' is not lambda");
 				return *this;
@@ -129,11 +129,11 @@ Script& Script::Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0, EscV
 		}
 	}
 	
-	Vector<EscValue> arg;
+	Vector<HiValue> arg;
 	if (!a0.IsVoid()) arg << a0;
 	if (!a0.IsVoid() && !a1.IsVoid()) arg << a1;
 	
-	const EscLambda& l = lambda.GetLambda();
+	const HiLambda& l = lambda.GetLambda();
 	if (arg.GetCount() != l.arg.GetCount()) {
 		String argnames;
 		for(int i = 0; i < l.arg.GetCount(); i++)
@@ -151,7 +151,7 @@ Script& Script::Set(EscGlobal& g, EscValue *self, EscValue fn, EscValue a0, EscV
 	
 	// Initialize esc runner
 	op_limit = 1000000;
-	esc = new Esc(g, l.code, op_limit, l.filename, l.line);
+	esc = new Hi(g, l.code, op_limit, l.filename, l.line);
 	auto& e = *esc;
 	if (self)
 		e.self = *self;
@@ -185,7 +185,7 @@ void Script::Execute() {
 			tc.Kill();
 			running = false;
 			LOG("Script::Set: stopped " << fn_name);
-			WhenStop();
+			WhenStop(this);
 		}
 	}
 	else {
@@ -194,18 +194,19 @@ void Script::Execute() {
 	}
 }
 
-void Script::ProcessEsc() {
-	LOG("Script::ProcessEsc");
-	if (!esc || !RunEscSteps()) {
+bool Script::ProcessHi() {
+	LOG("Script::ProcessHi");
+	if (!esc || !RunHiSteps()) {
 		tc.Kill();
 		running = false;
-		LOG("Script::ProcessEsc: stopped " << fn_name);
-		WhenStop();
+		LOG("Script::ProcessHi: stopped " << fn_name);
+		WhenStop(this);
 	}
+	return running;
 }
 
-bool Script::RunEscSteps() {
-	LOG("Script::RunEscSteps");
+bool Script::RunHiSteps() {
+	LOG("Script::RunHiSteps");
 	auto& e = *esc;
 	int op = 0;
 	try {
@@ -215,7 +216,7 @@ bool Script::RunEscSteps() {
 		}
 	}
 	catch (CParser::Error e) {
-		LOG("Script::RunEscSteps: error: " << e);
+		LOG("Script::RunHiSteps: error: " << e);
 		return false;
 	}
 	
@@ -249,36 +250,45 @@ void Dialog::Clear() {
 
 
 Program::Program() {
+	ui_arrows.SetEmptyArray();
+	ui_arrows.ArrayAdd(HiValue());
+	ui_arrows.ArrayAdd(HiValue());
+	
+	/*ui_arrows = {
+		{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
+		{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
+	};*/
+	
 	ResetUI();
 }
 
-void Program::ProcessEsc() {
-	//LOG("Program::ProcessEsc: start");
+/*void Program::ProcessHi() {
+	//LOG("Program::ProcessHi: start");
 	
 	int i = 0;
 	for (Script& s : global_scripts) {
 		if (s.is_esc && s.running) {
-			s.ProcessEsc();
+			s.ProcessHi();
 			i++;
 		}
 	}
 	
 	for (Script& s : local_scripts) {
 		if (s.is_esc && s.running) {
-			s.ProcessEsc();
+			s.ProcessHi();
 			i++;
 		}
 	}
 	
 	for (Script& s : cutscenes) {
 		if (s.is_esc && s.running) {
-			s.ProcessEsc();
+			s.ProcessHi();
 			i++;
 		}
 	}
 	
-	//LOG("Program::ProcessEsc: end " << i);
-}
+	//LOG("Program::ProcessHi: end " << i);
+}*/
 
 void Program::ResetPalette() {
 	ui_cursor_cols[0] = GetPicoPalette(7);
@@ -307,6 +317,9 @@ void Program::ResetUI() {
 	ui_cursor_cols[4] = 12;
 	ui_cursor_cols[5] = 7;
 	
+	for(int i = 0; i < BTN_COUNT; i++)
+		pressed[i] = false;
+	mouse_pressed = 0;
 }
 
 const SObj* Program::FindRoom(const String& name) const {
@@ -340,13 +353,25 @@ const SObj* Program::FindDeep(const String& name, const SObj* o) const {
 	return 0;
 }
 
-EscValue Program::Classes(SObj& s) {
+HiValue Program::Classes(const SObj& s) {
 	ASSERT(s.IsMap());
 	return s.MapGet("classes");
 }
 
 String Program::State(SObj& s) {
 	TODO
+}
+
+String Program::GetInRoomString(SObj& o) {
+	if (o.IsMap()) {
+		SObj in_room = o.MapGet("in_room");
+		if (in_room.IsArray()) {
+			String name = in_room.ToString();
+			return name;
+		}
+	}
+	ASSERT(0);
+	return String();
 }
 
 SObj Program::GetInRoom(SObj& o) {
@@ -380,8 +405,8 @@ void Program::Shake(bool enabled) {
 }
 
 
-Program::Verb Program::FindDefaultVerb(SObj& obj) {
-	Verb default_verb = V_LOOKAT;
+HiValue Program::FindDefaultVerb(SObj& obj) {
+	HiValue default_verb = V_LOOKAT;
 
 	if (HasFlag(Classes(obj), "class_talkable"))
 		default_verb = V_TALKTO;
@@ -402,7 +427,7 @@ Program::Verb Program::FindDefaultVerb(SObj& obj) {
 }
 
 // actions to perform when object doesn't have an entry for (verb
-void Program::UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2) {
+void Program::UnsupportedAction(HiValue verb, SObj& obj1, SObj& obj2) {
 	bool is_actor = HasFlag(Classes(obj1), "class_actor");
 
 	if (verb == V_WALKTO)
@@ -442,8 +467,8 @@ void Program::UnsupportedAction(Verb verb, SObj& obj1, SObj& obj2) {
 void Program::CameraAt(const Point& val) {
 	// point center of camera at val, clear other cam values
 	Point c = CenterCamera(val);
-	cam_x = c;
-	cam_pan_to_x = c;
+	cam = c;
+	cam_pan_to = c;
 	cam_following_actor = 0;
 }
 
@@ -454,13 +479,13 @@ void Program::CameraFollow(SObj actor) {
 	
 	// set target, clear other cam values
 	cam_following_actor = actor;
-	cam_pan_to_x = GetXY(actor);
+	cam_pan_to = GetXY(actor);
 	
 	StartScript(THISBACK(CamScript0), true); // bg script
 	
 	// auto-switch to room actor resides in
-	SObj r = GetInRoom(cam_following_actor);
-	ASSERT(!r.IsVoid());
+	String r = GetInRoomString(cam_following_actor);
+	ASSERT(r.GetCount());
 	if (r != room_curr)
 		ChangeRoom(r, 1);
 }
@@ -470,8 +495,8 @@ bool Program::CamScript0() {
 	// (until further notice)
 	if (cam_following_actor.IsMap()) {
 		// keep camera within "room" bounds
-		if (GetInRoom(cam_following_actor) == room_curr)
-			cam_x = CenterCamera(cam_following_actor);
+		if (GetInRoomString(cam_following_actor) == room_curr)
+			cam = CenterCamera(cam_following_actor);
 		return true;
 	}
 	else
@@ -481,7 +506,7 @@ bool Program::CamScript0() {
 void Program::CameraPanTo(SObj& val) {
 	// set target, but keep camera within "room" bounds, clear other cam values
 	Point c = CenterCamera(val);
-	cam_pan_to_x = c;
+	cam_pan_to = c;
 	cam_following_actor = 0;
 
 	cam_script.Clear();
@@ -494,14 +519,14 @@ bool Program::CamScript1() {
 	// update the camera pan until reaches dest
 	TODO
 	/*
-	while (cam_x ~= cam_pan_to_x) {
-		cam_x += sgn(cam_pan_to_x-cam_x)/2
+	while (cam_x ~= cam_pan_to) {
+		cam_x += sgn(cam_pan_to-cam_x)/2
 		// don't hog cpu
 		TODO // yield()
 	}*/
 	
 	// pan complete
-	cam_pan_to_x.Clear();
+	cam_pan_to.Clear();
 }
 
 void Program::WaitForCamera() {
@@ -510,7 +535,7 @@ void Program::WaitForCamera() {
 	}
 }
 
-void Program::Cutscene(SceneType type, EscValue* self, EscValue func_cutscene, EscValue func_override) {
+void Program::Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiValue func_override) {
 	/*cut = {
 		flags = type,
 		thrd = cocreate(func_cutscene),
@@ -530,7 +555,7 @@ void Program::Cutscene(SceneType type, EscValue* self, EscValue func_cutscene, E
 		cutscene_curr = &cut;
 	}
 	else {
-		StartScriptEsc(self, cutscene_override, 0);
+		StartScriptHi(self, cutscene_override, 0);
 	}
 }
 
@@ -738,7 +763,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 		ShowError("target door does not exist");
 		return;
 	}*/
-	EscValue selected_actor = GetSelectedActor();
+	HiValue selected_actor = GetSelectedActor();
 	
 	StateType from_state = GetState(from_door);
 	if (from_state != STATE_OPEN) {
@@ -747,7 +772,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 	}
 	
 	// go to new room!
-	SObj new_room = GetInRoom(to_door);
+	String new_room = GetInRoomString(to_door);
 	
 	if (new_room != room_curr) {
 		ChangeRoom(new_room, fade_effect); // switch to new room and ...
@@ -832,31 +857,36 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	}
 
 	// fade) {wn existing room (or skip if (first room)
-	if (fade && !room_curr.IsVoid()) {
+	if (fade && room_curr.GetCount()) {
 		Fades(fade, 1);
 	}
+	
 	// switch to new room
 	// execute the exit() script of old room
-	if (room_curr.IsMap()) {
-		StartScriptEsc(&room_curr, "exit", 0, room_curr); // run script directly, so wait to finish
+	if (room_curr.GetCount()) {
+		int i = global.Find(room_curr);
+		if (i >= 0) {
+			SObj& room = global[i];
+			StartScriptHi(&room, "exit", 0, room); // run script directly, so wait to finish
+		}
 	}
-
+	
 	// stop all active (local) scripts
 	local_scripts.Clear();
-
+	
 	// clear current command
 	ClearCurrCmd();
-
+	
 	// actually change rooms now
 	room_curr = new_room;
-
+	
 	// reset camera pos in new room (unless camera following)
-	if (cam_following_actor.IsVoid() || GetInRoom(cam_following_actor) != room_curr)
-		cam_x = Point(0,0);
-
+	if (cam_following_actor.IsVoid() || GetInRoomString(cam_following_actor) != room_curr)
+		cam = Point(0,0);
+	
 	// stop everyone talking & remove displayed text
 	StopTalking();
-
+	
 	// fade up again?
 	// (use "thread" so that room.enter code is able to
 	//  reposition camera before fade-up, if (needed)
@@ -870,15 +900,22 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	}
 
 	// execute the enter() script of new room
-	if (room_curr.IsMap()) {
-		StartScriptEsc(&room_curr, "enter", 0, room_curr);
+	if (room_curr.GetCount()) {
+		int i = global.Find(room_curr);
+		if (i >= 0) {
+			SObj& room = global[i];
+			StartScriptHi(&room, "enter", 0, room);
+		}
+		else {
+			LOG("Program::ChangeRoom. error: room was not found in global scope");
+		}
 	}
 	else {
-		LOG("Program::ChangeRoom. error: room is not map object");
+		LOG("Program::ChangeRoom. error: room is not string");
 	}
 }
 
-void Program::ValidVerb(Verb verb, SObj& object) {
+void Program::ValidVerb(HiValue verb, SObj& object) {
 	TODO
 	/*
  // check params
@@ -910,7 +947,7 @@ void Program::PickupObj(SObj& obj, SObj& actor) {
 }
 
 
-void Program::StartScript(Gate0 func, bool bg, EscValue noun1, EscValue noun2) {
+void Program::StartScript(Gate0 func, bool bg, HiValue noun1, HiValue noun2) {
 	RemoveStoppedScripts();
 	
 	// background || local?
@@ -921,8 +958,8 @@ void Program::StartScript(Gate0 func, bool bg, EscValue noun1, EscValue noun2) {
 		local_scripts.Add().Set(func, noun1, noun2).Start();
 }
 
-void Program::StartScriptEsc(EscValue* self, EscValue script_name, bool bg, EscValue noun1, EscValue noun2) {
-	//LOG("Program::StartScriptEsc: " << script_name);
+void Program::StartScriptHi(HiValue* self, HiValue script_name, bool bg, HiValue noun1, HiValue noun2) {
+	//LOG("Program::StartScriptHi: " << script_name);
 	RemoveStoppedScripts();
 	
 	// background || local?
@@ -967,18 +1004,15 @@ void Program::StopScript(Script& func) {
 }
 
 void Program::RemoveStoppedScripts() {
-	for(int i = 0; i < local_scripts.GetCount(); i++)
-		if (!local_scripts[i].running)
-			local_scripts.Remove(i);
-	
-	for(int i = 0; i < global_scripts.GetCount(); i++)
-		if (!global_scripts[i].running)
-			global_scripts.Remove(i);
-	
-	for(int i = 0; i < cutscenes.GetCount(); i++)
-		if (!cutscenes[i].running)
-			cutscenes.Remove(i);
-	
+	RemoveStoppedScripts(local_scripts);
+	RemoveStoppedScripts(global_scripts);
+	RemoveStoppedScripts(cutscenes);
+}
+
+void Program::RemoveStoppedScripts(Array<Script>& scripts) {
+	for(int i = 0; i < scripts.GetCount(); i++)
+		if (!scripts[i].running)
+			scripts.Remove(i);
 }
 
 void Program::BreakTime(int jiffies) {
@@ -1036,9 +1070,9 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 	align = align ? align : 0; // default to no align
 	
 	// calc max line width based on x-pos/available space
-	int screen_space = 127 - (x - cam_x.x);
+	int screen_space = 127 - (x - cam.x);
 	if (align == 1)
-		screen_space = min(x -cam_x.x, screen_space);
+		screen_space = min(x -cam.x, screen_space);
 	int max_line_length = max(screen_space / 2, 16);
 	
 	// search for (";"'s
@@ -1065,7 +1099,7 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 	int longest_line = GetLongestLineSize(lines);
 	
 	// center-align text block
-	int xpos = x - cam_x.x;
+	int xpos = x - cam.x;
 	if (align == 1)
 		xpos -= longest_line * (big_font ? 4 : 2);
 	
@@ -1107,18 +1141,18 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 }
 
 bool Program::ParseGame(String content, String path) {
-	//Escape(global, "Print(x)", SIC_Print);
-	//Escape(global, "Input()", SIC_Input);
-	//Escape(global, "InputNumber()", SIC_InputNumber);
-	Escape(global, "print_line(txt, x, y, col, align, use_caps, duration, big_font)", THISBACK(EscPrintLine));
-	Escape(global, "break_time(t)", THISBACK(EscBreakTime));
-	Escape(global, "put_at(obj, x, y, room)", THISBACK(EscPutAt));
-	Escape(global, "camera_follow(actor)", THISBACK(EscCameraFollow));
-	Escape(global, "change_room(new_room, fade)", THISBACK(EscChangeRoom));
-	Escape(global, "set_global_game(game)", THISBACK(EscSetGlobalGame));
-	Escape(global, "cutscene(type, func_cutscene, func_override)", THISBACK(EscCutscene));
-	Escape(global, "sub(type, func_cutscene, func_override)", THISBACK(EscCutscene));
-	Escape(global, "select_actor(name)", THISBACK(EscSelectActor));
+	//HighCall(global, "Print(x)", SIC_Print);
+	//HighCall(global, "Input()", SIC_Input);
+	//HighCall(global, "InputNumber()", SIC_InputNumber);
+	HighCall(global, "print_line(txt, x, y, col, align, use_caps, duration, big_font)", THISBACK(HiPrintLine));
+	HighCall(global, "break_time(t)", THISBACK(HiBreakTime));
+	HighCall(global, "put_at(obj, x, y, room)", THISBACK(HiPutAt));
+	HighCall(global, "camera_follow(actor)", THISBACK(HiCameraFollow));
+	HighCall(global, "change_room(new_room, fade)", THISBACK(HiChangeRoom));
+	HighCall(global, "set_global_game(game)", THISBACK(HiSetGlobalGame));
+	HighCall(global, "cutscene(type, func_cutscene, func_override)", THISBACK(HiCutscene));
+	HighCall(global, "sub(type, func_cutscene, func_override)", THISBACK(HiCutscene));
+	HighCall(global, "select_actor(name)", THISBACK(HiSelectActor));
 	StdLib(global);
 	
 	try {
@@ -1132,23 +1166,23 @@ bool Program::ParseGame(String content, String path) {
 	return true;
 }
 
-void Program::EscCameraFollow(EscEscape& e) {
+void Program::HiCameraFollow(HiEscape& e) {
 	CameraFollow(e[0]);
 }
 
-void Program::EscChangeRoom(EscEscape& e) {
+void Program::HiChangeRoom(HiEscape& e) {
 	ChangeRoom(e[0], e[1]);
 }
 
-void Program::EscSetGlobalGame(EscEscape& e) {
+void Program::HiSetGlobalGame(HiEscape& e) {
 	game = e[0];
 }
 
-void Program::EscCutscene(EscEscape& e) {
+void Program::HiCutscene(HiEscape& e) {
 	Cutscene((SceneType)e[0].GetInt(), &e.self, e[1], e[2]);
 }
 
-void Program::EscPutAt(EscEscape& e) {
+void Program::HiPutAt(HiEscape& e) {
 	if (e.arg.GetCount() == 4) {
 		PutAt(
 			e[0],
@@ -1161,7 +1195,7 @@ void Program::EscPutAt(EscEscape& e) {
 	}
 }
 
-void Program::EscPrintLine(EscEscape& e) {
+void Program::HiPrintLine(HiEscape& e) {
 	String txt = e[0].ToString();
 	int x = e[1].GetInt();
 	int y = e[2].GetInt();
@@ -1171,17 +1205,17 @@ void Program::EscPrintLine(EscEscape& e) {
 	int duration = e[6].GetInt();
 	bool big_font = e[7].GetInt();
 	
-	LOG("Program::EscPrintLine: " << txt);
+	LOG("Program::HiPrintLine: " << txt);
 }
 
-void Program::EscBreakTime(EscEscape& e) {
+void Program::HiBreakTime(HiEscape& e) {
 	int t = e[0].GetInt();
 	
-	LOG("Program::EscPrintLine: " << t);
+	LOG("Program::HiPrintLine: " << t);
 	
 }
 
-void Program::EscSelectActor(EscEscape& e) {
+void Program::HiSelectActor(HiEscape& e) {
 	
 	TODO
 	
@@ -1191,7 +1225,13 @@ void Program::GetReference(SObj& obj, bool everywhere) {
 	if (!obj.IsMap()) {
 		String name = obj;
 		//LOG(name);
-		const SObj* f = FindDeep(name, &room_curr);
+		int i = global.Find(name);
+		if (i >= 0) {
+			obj = global[i];
+			return;
+		}
+		
+		/*const SObj* f = FindDeep(name, &room_curr);
 		if (f) {
 			obj = *f;
 			return;
@@ -1202,7 +1242,7 @@ void Program::GetReference(SObj& obj, bool everywhere) {
 				obj = *f;
 				return;
 			}
-		}
+		}*/
 		ASSERT(0);
 	}
 }
@@ -1219,10 +1259,10 @@ void Program::PutAt(SObj obj, int x, int y, SObj room) {
 				GetReference(in_room, true);
 			if (in_room.IsMap()) {
 				SObj objects = in_room.MapGet("objects");
-				Vector<EscValue>& arr = (Vector<EscValue>&)objects.GetArray();
+				Vector<HiValue>& arr = (Vector<HiValue>&)objects.GetArray();
 				VectorRemoveKey(arr, obj);
 			}
-			SrcMapSet(obj, "owner", EscValue());
+			SrcMapSet(obj, "owner", HiValue());
 			SObj objects = room.MapGet("objects");
 			ASSERT(objects.IsArray());
 			objects.ArrayAdd(obj);
@@ -1249,7 +1289,7 @@ void Program::StopActor(SObj& actor) {
 // walk actor to position
 void Program::WalkTo(SObj& actor, int x, int y) {
 	Point actor_cell_pos = GetCellPos(actor);
-	EscValue map = room_curr.MapGet("map");
+	HiValue map = room_curr.MapGet("map");
 	int celx = x / 8 + map.ArrayGet(0).GetInt();
 	int cely = y / 8 + map.ArrayGet(1).GetInt();
 	Point target_cell_pos(celx, cely);
@@ -1335,7 +1375,7 @@ double Program::Proximity(SObj& obj1, SObj& obj2) {
 	Point pt1 = GetXY(obj1);
 	Point pt2 = GetXY(obj2);
 	return
-		GetInRoom(obj1) == GetInRoom(obj2)
+		GetInRoomString(obj1) == GetInRoomString(obj2)
 			? sqrt((pt1.x - pt2.x) ^ 2 + (pt1.y - pt2.y) ^ 2)
 			: 1000;
 }
@@ -1351,8 +1391,8 @@ double Program::Proximity(SObj& obj1, SObj& obj2) {
 	return keys;
 }*/
 
-Program::Verb Program::GetVerb(SObj& obj) {
-	const VectorMap<EscValue, EscValue>& keys = obj.ArrayGet(0).GetMap();
+HiValue Program::GetVerb(int idx) {
+	//const VectorMap<HiValue, HiValue>& keys = obj.ArrayGet(0).GetMap();
 	
 	TODO
 	/*add(verb, keys[1]);						// verb func
@@ -1361,10 +1401,16 @@ Program::Verb Program::GetVerb(SObj& obj) {
 	return verb;*/
 }
 
-String Program::GetVerbString(const Verb& v) {
-	if (v >= V_DEFAULT && v < V_COUNT)
-		return verbs[v];
+String Program::GetVerbString(int i) {
+	if (i >= 0 && i < V_COUNT)
+		return verbs.ArrayGet(i);
 	return "<error>";
+}
+
+String Program::GetVerbString(SObj v) {
+	
+	TODO
+	
 }
 
 void Program::ClearCurrCmd() {
@@ -1379,41 +1425,38 @@ void Program::ClearCurrCmd() {
 
 
 
-void Program::Update60() {
-	TODO
-	/*
-	// process selected_actor threads/actions
-	if (selected_actor && selected_actor.thread && !coresume(selected_actor.thread)) {
-		selected_actor.thread = NULL;
-	}
-
+void Program::Update() {
+	SObj selected_actor = GetSelectedActor();
+	
 	// global scripts (always updated - regardless of cutscene)
 	UpdateScripts(global_scripts);
 
 	// update active cutscene (if (any)
 	if (cutscene_curr) {
-		if (cutscene_curr.thread && !coresume(cutscene_curr.thread)) {
+		Script& cut = *cutscene_curr;
+		
+		if (!cut.running || !cut.ProcessHi()) {
 			// cutscene ended, restore prev state
 
 			// restore follow-cam if (flag allows (and had a value!)
-			if (cutscene_curr.flags != 3
-			//if (!HasFlag(cutscene_curr.flags, "cut_no_follow")
-			 && cutscene_curr.paused_cam_following)
-			{
-				CameraFollow(cutscene_curr.paused_cam_following);
-					// assume to re-select prev actor
-				selected_actor = cutscene_curr.paused_cam_following;
+			if (cut.flags != 3 && cut.paused_cam_following) {
+				CameraFollow(*cut.paused_cam_following);
+				
+				// assume to re-select prev actor
+				SetSelectedActor(*cut.paused_cam_following);
 			}
+			
 			// now delete cutscene
-			del(cutscenes, cutscene_curr);
+			RemoveStoppedScripts(cutscenes);
 
 			// any more cutscenes?
-			if (#cutscenes > 0) {
-				cutscene_curr = cutscenes[#cutscenes];
+			if (!cutscenes.IsEmpty()) {
+				cutscene_curr = &cutscenes.Top();
 			}
 			else {
 				// start countdown (delay to ensure cutscenes/dialogs all over!)
-				if (cutscene_curr.flags != 2) cutscene_cooloff = 3;
+				if (cut.flags != 2)
+					cutscene_cooloff = 3;
 				
 				cutscene_curr = NULL;
 			}
@@ -1435,35 +1478,35 @@ void Program::Update60() {
 	CheckCollisions();
 
 	// update camera shake (if (active)
-	cam_shake_x, cam_shake_y = 1.5-rnd(3), 1.5-rnd(3);
-	cam_shake_x = flr(cam_shake_x * cam_shake_amount);
-	cam_shake_y = flr(cam_shake_y * cam_shake_amount);
-	if (!cam_shake) cam_shake_amount = cam_shake_amount > 0.05 ? cam_shake_amount * 0.90 : 0;
-	*/
+	cam_shake_x = 1.5 - Randomf() * 3;
+	cam_shake_y = 1.5 - Randomf() * 3;
+	cam_shake_x = (int)(cam_shake_x * cam_shake_amount);
+	cam_shake_y = (int)(cam_shake_y * cam_shake_amount);
+	
+	if (!cam_shake)
+		cam_shake_amount = cam_shake_amount > 0.05 ? cam_shake_amount * 0.90 : 0;
+	
 }
 
 void Program::UpdateMouseClickState() {
-	TODO
-	//is_mouse_clicked = stat(34) > 0;
+	is_mouse_clicked = mouse_pressed != 0;
 }
 
 // handle button inputs
 void Program::PlayerControl() {
-	TODO
-/*
+	
 	// check for (skip/override's
-	if (talking_curr && !is_mouse_clicked && (btnp(4) || stat(34) == 1)) {
+	if (talking_curr && !is_mouse_clicked && (IsPressed(BTN_O) || IsMouseLeftPressed())) {
 		// skip current talking message
-		talking_curr.time_left, is_mouse_clicked = 0, true;
+		talking_curr.time_left = 0;
+		is_mouse_clicked = true;
 		return;
-		
 	}
 	
 	// cutscene? (or skip?)
 	if (cutscene_curr) {
-		if ((btnp(5) || stat(34) == 2) && cutscene_curr.override) {
-			cutscene_curr.thread = cocreate(cutscene_curr.override);
-			cutscene_curr.override = NULL;
+		if ((IsPressed(BTN_X) || IsMouseRightPressed()) && cutscene_curr->running) {
+			cutscene_curr->Stop();
 			return;
 		}
 		
@@ -1473,51 +1516,41 @@ void Program::PlayerControl() {
 	}
 	
 	
-	//
-	if (btn(0)) {
+	if (IsPressed(BTN_LEFT)) {
 		cursor_x -= 1;
 	}
-	if (btn(1)) {
+	if (IsPressed(BTN_RIGHT)) {
 		cursor_x += 1;
 	}
-	if (btn(2)) {
+	if (IsPressed(BTN_UP)) {
 		cursor_y -= 1;
 	}
-	if (btn(3)) {
+	if (IsPressed(BTN_DOWN)) {
 		cursor_y += 1;
 	}
-	
-	if (btnp(4)) {
-		InputButtonPressed(1);
+	if (IsPressed(BTN_O)) {
+		InputButtonPressed(MBMASK_LEFT);
 	}
-	if (btnp(5)) {
-		InputButtonPressed(2);
-	}
-	
-	// only update position if (mouse moved
-	mouse_x, mouse_y = stat(32) - 1, stat(33) - 1;
-	if (mouse_x != last_mouse_x) {
-		cursor_x = mouse_x;    // mouse xpos
-	}
-	if (mouse_y != last_mouse_y) {
-		cursor_y = mouse_y;    // mouse ypos
+	if (IsPressed(BTN_X)) {
+		InputButtonPressed(MBMASK_RIGHT);
 	}
 	
-// don't repeat action if (same press/click
-	if (stat(34) > 0 && !is_mouse_clicked) {
-		InputButtonPressed(stat(34));
+	// don't repeat action if (same press/click
+	if (IsAnyMousePressed() && !is_mouse_clicked) {
+		InputButtonPressed(GetMouseButtonMask());
 	}
-// store for (comparison next cycle
-	last_mouse_x, last_mouse_y = mouse_x, mouse_y;
+	// store for (comparison next cycle
+	last_cursor_x = cursor_x;
+	last_cursor_y = cursor_y;
 	
-	UpdateMouseClickState();*/
+	UpdateMouseClickState();
 }
 
 
 
 
 // 1 = z/lmb, 2 = x/rmb, (4=middle)
-void Program::InputButtonPressed(int button_index) {
+void Program::InputButtonPressed(dword button_index) {
 	TODO
 	
 /*
@@ -1678,20 +1711,23 @@ void Program::InputButtonPressed(int button_index) {
 
 // collision detection
 void Program::CheckCollisions() {
-	TODO
-	/*
-// check for (current room
-	if (!room_curr)
+	
+	// check for (current room
+	if (room_curr.IsVoid())
 		return;
 		
 	// reset hover collisions
-	hover_curr_verb, hover_curr_default_verb, hover_curr_object, hover_curr_sentence, hover_curr_arrow = NULL;
+	hover_curr_verb			= HiValue();
+	hover_curr_default_verb	= HiValue();
+	hover_curr_object		= 0;
+	//hover_curr_sentence	= HiValue();
+	hover_curr_arrow		= HiValue();
 	
 	// are we in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
-		for (s in all(dialog_curr.sentences)) {
+		for (Sentence& s : dialog_curr.sentences) {
 			if (IsCursorColliding(s))
-				hover_curr_sentence = s;
+				hover_curr_sentence = &s;
 		}
 		// skip remaining collisions
 		return;
@@ -1701,23 +1737,29 @@ void Program::CheckCollisions() {
 	ResetZPlanes();
 	
 	// check room/object collisions
-	for (obj in all(room_curr.objects)) {
+	VectorMap<HiValue,HiValue>& room_map = const_cast<VectorMap<HiValue,HiValue>&>(room_curr.GetMap());
+	for (HiValue& obj : room_map.GetValues()) {
 		// capture bounds (even for ("invisible", but not untouchable/dependent, objects)
-		if ((!Classes(obj)
-			 || (Classes(obj) && !HasFlag(Classes(obj), "class_untouchable")))
-			&&
-			(!obj.dependent_on			// object has a valid dependent state?
-			 || obj.dependent_on.state == obj.dependent_on_state)) {
-			RecalculateBounds(obj, obj.w*8, obj.h*8, cam_x, cam_y);
+		HiValue c = Classes(obj);
+		HiValue dep_on = global.Get(obj.MapGet("dependent_on").ToString(), HiValue());
+		if ((c.IsVoid() || (!c.IsVoid() && !HasFlag(c, "class_untouchable")))
+			&& (dep_on.IsVoid() // object has a valid dependent state?
+			 || dep_on.MapGet("state") == obj.MapGet("dependent_on_state"))) {
+			int w = obj.MapGet("w").GetInt();
+			int h = obj.MapGet("h").GetInt();
+			RecalculateBounds(obj, w*8, h*8, cam.x, cam.y);
 		}
 		else {
 			// reset bounds
-			obj.bounds = NULL;
+			obj.MapSet("bounds", HiValue());
 		}
 		
 		if (IsCursorColliding(obj)) {
 			// if (highest (or first) object in hover "stack"
-			if (!hover_curr_object || max(obj.z, hover_curr_object.z) == obj.z) {
+			int obj_z = obj.MapGet("z").GetInt();
+			int hover_curr_object_z = hover_curr_object.IsMap() ? hover_curr_object.MapGet("z").GetInt() : 0;
+			int max_z = max(obj_z, hover_curr_object_z);
+			if (hover_curr_object.IsVoid() || max_z == obj_z) {
 				hover_curr_object = obj;
 			}
 		}
@@ -1725,46 +1767,58 @@ void Program::CheckCollisions() {
 		RecalcZPlane(obj);
 	}
 	
+	SObj selected_actor = GetSelectedActor();
+	
 	// check actor collisions
-	for (k, actor in pairs(actors)) {
-		if (actor.in_room == room_curr) {
-			RecalculateBounds(actor, actor.w*8, actor.h*8, cam_x, cam_y);
-			// recalc z-plane
-			RecalcZPlane(actor);
-			// are we colliding (ignore self!)
-			if (IsCursorColliding(actor) && actor != selected_actor)
-				hover_curr_object = actor;
+	SObj actors = global.Get("actors", HiValue());
+	if (actors.IsArray()) {
+		int actor_count = actors.GetArray().GetCount();
+		for(int k = 0; k < actor_count; k++) {
+			SObj actor = actors.ArrayGet(k);
+			if (actor["in_room"] == room_curr) {
+				RecalculateBounds(actor, (int)actor["w"]*8, (int)actor["h"]*8, cam.x, cam.y);
+				
+				// recalc z-plane
+				RecalcZPlane(actor);
+				
+				// are we colliding (ignore self!)
+				if (IsCursorColliding(actor) && actor != selected_actor)
+					hover_curr_object = actor;
+			}
 		}
 	}
 	
 	if (selected_actor) {
 		// check ui/inventory collisions
-		for (v in all(verbs)) {
-			if ((IsCursorColliding(v)) hover_curr_verb = v;
-			}
-	for (a in all(ui_arrows)) {
-			if ((IsCursorColliding(a)) hover_curr_arrow = a;
-			}
+		for (const HiValue& v : verbs.GetArray()) {
+			if (IsCursorColliding(v))
+				hover_curr_verb = v;
+		}
+		for (const HiValue& a : ui_arrows.GetArray()) {
+			if (IsCursorColliding(a))
+				hover_curr_arrow = a;
+		}
 		    
 		// check room/object collisions
-	for (k, obj in pairs(selected_actor.inventory)) {
+		for (const HiValue& obj : selected_actor["inventory"].GetArray()) {
 			if (IsCursorColliding(obj)) {
 				hover_curr_object = obj;
 				// pickup override for (inventory objects
-				if (verb_curr[2] == V_PICKUP && hover_curr_object.owner)
-					verb_curr = NULL;
+				if (verb_curr == V_PICKUP && !hover_curr_object.MapGet("owner").IsVoid())
+					verb_curr = HiValue();
 			}
 			// check for (disowned objects!
-			if (obj.owner != selected_actor)
-				del(selected_actor.inventory, obj);
+			if (obj.MapGet("owner") != selected_actor)
+				selected_actor["inventory"].ArrayRemoveValue(obj);
 		}
 		
 		// default to walkto (if (nothing set)
-		verb_curr = verb_curr || GetVerb(verb_default);
+		if (verb_curr.IsVoid())
+			verb_curr = GetVerb(verb_default_inventory_index);
 		
 		// update "default" verb for (hovered object (if (any)
 		hover_curr_default_verb = hover_curr_object ? FindDefaultVerb(hover_curr_object) : hover_curr_default_verb;
-	}*/
+	}
 }
 
 
@@ -1794,64 +1848,60 @@ void Program::SetTransCol(int transcol) { //, enabled)
 	*/
 }
 
-void Program::ClearCutsceneOverride() {
-	cutscene_override = EscValue();
+void Program::ClearCutsceneOverride(Script* s) {
+	cutscene_override = HiValue();
+	
+	if (s == cutscene_curr)
+		cutscene_curr = 0;
 }
 
 void Program::RealizeGame() {
 	if (game.IsVoid())
-		game = global.Get("game", EscValue());
+		game = global.Get("game", HiValue());
 }
 
 bool Program::ReadGame() {
 	//DUMPM(global);
 	RealizeGame();
 	
-	room_names.Clear();
+	/*room_names.Clear();
 	FindRooms("", game, room_names);
 	if (room_names.IsEmpty()) {
 		LOG("Could not find any rooms");
 		return false;
-	}
+	}*/
 	//DUMPC(room_names);
 	
 	if (room_curr.IsVoid()) {
-		const SObj* found = FindDeep(room_names[0]);
+		TODO
+		/*const SObj* found = FindDeep(room_names[0]);
 		if (!found || !found->IsMap()) {
 			LOG("Could not find room " << room_names[0]);
 			return false;
 		}
-		room_curr = *found;
+		room_curr = *found;*/
 	}
 	
-	rooms = game.MapGet("rooms");
+	//rooms = game.MapGet("rooms");
+	rooms = global.Get("rooms", HiValue());
+	
 	if (!rooms.IsArray() || rooms.GetArray().IsEmpty()) {
 		LOG("Program::ParseGame: error: could not find rooms");
 		return false;
 	}
 	
+	TODO // verbs
+	//V_USE etc
+	
 	//LOG(game.ToString());
 	return true;
 }
 
-void Program::FindRooms(String name, EscValue v, Vector<String>& names) {
-	if (v.IsMap()) {
-		const VectorMap<EscValue,EscValue>& m = v.GetMap();
-		if (name.GetCount() && m.Find("objects") >= 0)
-			names.Add(name);
-		else {
-			for(int i = 0; i < m.GetCount(); i++) {
-				FindRooms(m.GetKey(i), m[i], names);
-			}
-		}
-	}
-}
-
-EscValue Program::RunLambda1(EscValue* self, const EscValue& l, const EscValue& arg0) {
+HiValue Program::RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0) {
 	ASSERT(l.IsLambda());
 	
 	try {
-		Vector<EscValue> args;
+		Vector<HiValue> args;
 		args.Add(arg0);
 		return Execute(global, self, l, args, 10000);
 	}
@@ -1860,17 +1910,17 @@ EscValue Program::RunLambda1(EscValue* self, const EscValue& l, const EscValue& 
 		ASSERT(0);
 	}
 	
-	return EscValue();
+	return HiValue();
 }
 
 // initialise all the rooms (e.g. add in parent links)
 bool Program::InitGame() {
-	game = EscValue();
+	game = HiValue();
 	
 	try {
-		EscValue empty_lambda;
+		HiValue empty_lambda;
 		empty_lambda.CreateLambda();
-		Vector<EscValue> arg;
+		Vector<HiValue> arg;
 		Execute(global, 0, global.Get("main", empty_lambda), arg, INT_MAX);
 		RealizeGame();
 		Execute(global, 0, global.Get("startup_script", empty_lambda), arg, INT_MAX);
@@ -1926,13 +1976,21 @@ bool Program::InitGame() {
 // 	}
 // }
 
-void Program::UpdateScripts(Vector<String>& scripts) {
-	TODO
-	/*for (scr_obj : all(scripts)) {
-		if (scr_obj[2] && !coresume(scr_obj[2], scr_obj[3], scr_obj[4])) {
-			del(scripts, scr_obj);
-		}
-	}*/
+void Program::UpdateScripts(Array<Script>& scripts) {
+	int i = 0;
+	Vector<int> rm_list;
+	for (Script& s : scripts) {
+		if (s.is_esc && s.running)
+			s.ProcessHi();
+		
+		if (!s.running)
+			rm_list << i;
+		
+		i++;
+	}
+	
+	if (rm_list.GetCount())
+		scripts.Remove(rm_list);
 }
 
 bool Program::IsTable(SObj& t) {
@@ -2061,7 +2119,7 @@ void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_
 		SrcMapSet(obj, "offset_y", offset_y);
 	}
 	
-	EscValue bounds;
+	HiValue bounds;
 	bounds.SetEmptyMap();
 	SrcMapSet(bounds, "x", x);
 	SrcMapSet(bounds, "y", y + stage_top);
@@ -2287,16 +2345,25 @@ String Program::Autotype(const String& str_value) {
 
 
 // collision check
-bool Program::IsCursorColliding(SObj& obj) {
-	TODO
-	/*
+bool Program::IsCursorColliding(const Sentence& obj) {
 	// check params / not in cutscene
-	if (!obj.bounds || cutscene_curr) return false;
+	if (cutscene_curr) return false;
+	const Bounds& b = obj.bounds;
+	return !((cursor_x + b.cam_off_x > b.x1 || cursor_x + b.cam_off_x < b.x) || (cursor_y > b.y1 || cursor_y < b.y));
+}
 
-	local bounds = obj.bounds;
-	return !((cursor_x + bounds.cam_off_x > bounds.x1 || cursor_x + bounds.cam_off_x < bounds.x)
-			|| (cursor_y > bounds.y1 || cursor_y < bounds.y));
-	*/
+bool Program::IsCursorColliding(const SObj& obj) {
+	// check params / not in cutscene
+	HiValue bounds = obj.MapGet("bounds");
+	if (!obj.MapGet("bounds") || cutscene_curr) return false;
+
+	int cam_off_x = bounds["cam_off_x"];
+	int x1 = bounds["x1"];
+	int y1 = bounds["y1"];
+	int x = bounds["x"];
+	int y = bounds["y"];
+	
+	return !((cursor_x + cam_off_x > x1 || cursor_x + cam_off_x < x) || (cursor_y > y1 || cursor_y < y));
 }
 
 String Program::SmallCaps(const String& s) {
@@ -2411,9 +2478,27 @@ String Program::GetFaceString(FaceDir d) {
 	return String();
 }
 
+void Program::SetSelectedActor(SObj& o) {
+	global.GetAdd("selected_actor") = o;
+}
+
 SObj Program::GetSelectedActor() {
-	ASSERT(global.Find("selected_actor") >= 0);
-	return global.Get("selected_actor", EscValue());
+	//DUMPC(global.GetKeys());
+	//ASSERT(global.Find("selected_actor") >= 0);
+	return global.Get("selected_actor", HiValue());
+}
+
+bool Program::IsPressed(GamepadButton b) const {
+	ASSERT(b >= (GamepadButton)0 && b < BTN_COUNT);
+	
+	if (b >= (GamepadButton)0 && b < BTN_COUNT)
+		return pressed[b];
+	
+	return false;
+}
+
+bool Program::IsMousePressed(MouseButtonMask m) const {
+	return mouse_pressed & m;
 }
 
 
