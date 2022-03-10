@@ -69,8 +69,7 @@ SObj* ReadKey(SObj& o, String key) {
 void SrcMapSet(HiValue map, HiValue key, HiValue value) {
 	ASSERT(map.IsMap());
 	if (map.IsMap()) {
-		VectorMap<HiValue, HiValue>& m = const_cast<VectorMap<HiValue, HiValue>&>(map.GetMap());
-		m.GetAdd(key) = value;
+		map.MapSet(key, value);
 	}
 }
 
@@ -250,14 +249,7 @@ void Dialog::Clear() {
 
 
 Program::Program() {
-	ui_arrows.SetEmptyArray();
-	ui_arrows.ArrayAdd(HiValue());
-	ui_arrows.ArrayAdd(HiValue());
-	
-	/*ui_arrows = {
-		{ spr = ui_uparrowspr, x = 75, y = stage_top + 60 },
-		{ spr = ui_dnarrowspr, x = 75, y = stage_top + 72 }
-	};*/
+	draw_zplanes.SetCount(128+1);
 	
 	ResetUI();
 }
@@ -320,6 +312,23 @@ void Program::ResetUI() {
 	for(int i = 0; i < BTN_COUNT; i++)
 		pressed[i] = false;
 	mouse_pressed = 0;
+	
+	
+	ui_arrows.SetEmptyArray();
+	
+	HiValue& up = ui_arrows.ArrayAdd(HiValue());
+	up.SetEmptyMap();
+	up.MapSet("spr", ui_uparrowspr);
+	up.MapSet("x", 75);
+	up.MapSet("y", stage_top + 60);
+	
+	HiValue& down = ui_arrows.ArrayAdd(HiValue());
+	down.SetEmptyMap();
+	down.MapSet("spr", ui_dnarrowspr);
+	down.MapSet("x", 75);
+	down.MapSet("y", stage_top + 72);
+	
+	
 }
 
 const SObj* Program::FindRoom(const String& name) const {
@@ -354,6 +363,7 @@ const SObj* Program::FindDeep(const String& name, const SObj* o) const {
 }
 
 HiValue Program::Classes(const SObj& s) {
+	if (!s.IsMap()) {DUMP(s);}
 	ASSERT(s.IsMap());
 	return s.MapGet("classes");
 }
@@ -362,7 +372,7 @@ String Program::State(SObj& s) {
 	TODO
 }
 
-String Program::GetInRoomString(SObj& o) {
+/*String Program::GetInRoomString(SObj& o) {
 	if (o.IsMap()) {
 		SObj in_room = o.MapGet("in_room");
 		if (in_room.IsArray()) {
@@ -370,9 +380,10 @@ String Program::GetInRoomString(SObj& o) {
 			return name;
 		}
 	}
+	DUMP(o);
 	ASSERT(0);
 	return String();
-}
+}*/
 
 SObj Program::GetInRoom(SObj& o) {
 	//LOG(o.ToString());
@@ -382,15 +393,15 @@ SObj Program::GetInRoom(SObj& o) {
 			return in_room;
 		
 		//LOG(in_room.ToString());
-		String name = in_room;
-		const SObj* ptr = FindDeep(name);
-		if (ptr) {
-			ASSERT(ptr->IsMap());
-			return *ptr;
-		}
-		ASSERT(0);
+		/*String name = in_room;
+		if (name.GetCount()) {
+			const SObj* ptr = FindDeep(name);
+			if (ptr) {
+				ASSERT(ptr->IsMap());
+				return *ptr;
+			}
+		}*/
 	}
-	ASSERT(0);
 	return SObj();
 }
 
@@ -473,7 +484,8 @@ void Program::CameraAt(const Point& val) {
 }
 
 void Program::CameraFollow(SObj actor) {
-	GetReference(actor, true);
+	//GetReference(actor, true);
+	ASSERT(actor.IsMap());
 	
 	StopScript(cam_script); // bg script
 	
@@ -484,8 +496,8 @@ void Program::CameraFollow(SObj actor) {
 	StartScript(THISBACK(CamScript0), true); // bg script
 	
 	// auto-switch to room actor resides in
-	String r = GetInRoomString(cam_following_actor);
-	ASSERT(r.GetCount());
+	SObj r = GetInRoom(cam_following_actor);
+	ASSERT(r);
 	if (r != room_curr)
 		ChangeRoom(r, 1);
 }
@@ -495,7 +507,7 @@ bool Program::CamScript0() {
 	// (until further notice)
 	if (cam_following_actor.IsMap()) {
 		// keep camera within "room" bounds
-		if (GetInRoomString(cam_following_actor) == room_curr)
+		if (GetInRoom(cam_following_actor) == room_curr)
 			cam = CenterCamera(cam_following_actor);
 		return true;
 	}
@@ -772,7 +784,7 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 	}
 	
 	// go to new room!
-	String new_room = GetInRoomString(to_door);
+	SObj new_room = GetInRoom(to_door);
 	
 	if (new_room != room_curr) {
 		ChangeRoom(new_room, fade_effect); // switch to new room and ...
@@ -834,6 +846,9 @@ bool Program::Fades(int fade, int dir) {
 
 void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	if (!new_room.IsMap()) {
+		DUMP(new_room);
+		TODO
+		/*
 		String name = new_room;
 		const SObj* ptr = FindDeep(name);
 		if (!ptr) {
@@ -841,7 +856,9 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 			return;
 		}
 		new_room = *ptr;
+		*/
 	}
+	ASSERT(new_room.IsMap());
 	int fade = fade_.GetInt();
 	
 	// check param
@@ -857,18 +874,14 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	}
 
 	// fade) {wn existing room (or skip if (first room)
-	if (fade && room_curr.GetCount()) {
+	if (fade && room_curr) {
 		Fades(fade, 1);
 	}
 	
 	// switch to new room
 	// execute the exit() script of old room
-	if (room_curr.GetCount()) {
-		int i = global.Find(room_curr);
-		if (i >= 0) {
-			SObj& room = global[i];
-			StartScriptHi(&room, "exit", 0, room); // run script directly, so wait to finish
-		}
+	if (room_curr) {
+		StartScriptHi(&room_curr, "exit", 0, room_curr); // run script directly, so wait to finish
 	}
 	
 	// stop all active (local) scripts
@@ -881,7 +894,7 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	room_curr = new_room;
 	
 	// reset camera pos in new room (unless camera following)
-	if (cam_following_actor.IsVoid() || GetInRoomString(cam_following_actor) != room_curr)
+	if (cam_following_actor.IsVoid() || GetInRoom(cam_following_actor) != room_curr)
 		cam = Point(0,0);
 	
 	// stop everyone talking & remove displayed text
@@ -900,15 +913,8 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	}
 
 	// execute the enter() script of new room
-	if (room_curr.GetCount()) {
-		int i = global.Find(room_curr);
-		if (i >= 0) {
-			SObj& room = global[i];
-			StartScriptHi(&room, "enter", 0, room);
-		}
-		else {
-			LOG("Program::ChangeRoom. error: room was not found in global scope");
-		}
+	if (room_curr) {
+		StartScriptHi(&room_curr, "enter", 0, room_curr);
 	}
 	else {
 		LOG("Program::ChangeRoom. error: room is not string");
@@ -1056,7 +1062,7 @@ void Program::SayLine(String msg) {
 // stop everyone talking & remove displayed text
 void Program::StopTalking() {
 	talking_curr.enabled = false;
-	talking_actor = NULL;
+	talking_actor = HiValue();
 }
 
 
@@ -1221,6 +1227,7 @@ void Program::HiSelectActor(HiEscape& e) {
 	
 }
 
+#if 0
 void Program::GetReference(SObj& obj, bool everywhere) {
 	if (!obj.IsMap()) {
 		String name = obj;
@@ -1246,17 +1253,22 @@ void Program::GetReference(SObj& obj, bool everywhere) {
 		ASSERT(0);
 	}
 }
+#endif
 
 void Program::PutAt(SObj obj, int x, int y, SObj room) {
-	GetReference(obj, true);
-	GetReference(room, true);
+	//GetReference(obj, true);
+	//GetReference(room, true);
 	//LOG(obj.ToString());
 	//LOG(room.ToString());
+	ASSERT(obj.IsMap());
+	ASSERT(room.IsMap());
+	
 	if (room.IsMap()) {
 		if (!HasFlag(Classes(obj), "class_actor")) {
 			SObj in_room = obj.MapGet("in_room");
-			if (in_room.IsArray())
-				GetReference(in_room, true);
+			//if (in_room.IsArray())
+			//	GetReference(in_room, true);
+			ASSERT(in_room.IsMap() || in_room.IsVoid());
 			if (in_room.IsMap()) {
 				SObj objects = in_room.MapGet("objects");
 				Vector<HiValue>& arr = (Vector<HiValue>&)objects.GetArray();
@@ -1375,7 +1387,7 @@ double Program::Proximity(SObj& obj1, SObj& obj2) {
 	Point pt1 = GetXY(obj1);
 	Point pt2 = GetXY(obj2);
 	return
-		GetInRoomString(obj1) == GetInRoomString(obj2)
+		GetInRoom(obj1) == GetInRoom(obj2)
 			? sqrt((pt1.x - pt2.x) ^ 2 + (pt1.y - pt2.y) ^ 2)
 			: 1000;
 }
@@ -1392,13 +1404,9 @@ double Program::Proximity(SObj& obj1, SObj& obj2) {
 }*/
 
 HiValue Program::GetVerb(int idx) {
-	//const VectorMap<HiValue, HiValue>& keys = obj.ArrayGet(0).GetMap();
-	
-	TODO
-	/*add(verb, keys[1]);						// verb func
-	add(verb, obj[1][ keys[1] ]);  // verb ref name
-	add(verb, obj.text);						// verb disp name
-	return verb;*/
+	HiValue ret = verbs(idx);
+	//DUMP(ret);
+	return ret;
 }
 
 String Program::GetVerbString(int i) {
@@ -1408,9 +1416,10 @@ String Program::GetVerbString(int i) {
 }
 
 String Program::GetVerbString(SObj v) {
-	
-	TODO
-	
+	ASSERT(v.IsMap());
+	String name = v.MapGet("name");
+	ASSERT(name.GetCount() > 0);
+	return name;
 }
 
 void Program::ClearCurrCmd() {
@@ -1719,7 +1728,7 @@ void Program::CheckCollisions() {
 	// reset hover collisions
 	hover_curr_verb			= HiValue();
 	hover_curr_default_verb	= HiValue();
-	hover_curr_object		= 0;
+	hover_curr_object		= HiValue();
 	//hover_curr_sentence	= HiValue();
 	hover_curr_arrow		= HiValue();
 	
@@ -1737,8 +1746,9 @@ void Program::CheckCollisions() {
 	ResetZPlanes();
 	
 	// check room/object collisions
-	VectorMap<HiValue,HiValue>& room_map = const_cast<VectorMap<HiValue,HiValue>&>(room_curr.GetMap());
-	for (HiValue& obj : room_map.GetValues()) {
+	HiValue objects = room_curr["objects"];
+	Vector<HiValue>& room_arr = const_cast<Vector<HiValue>&>(objects.GetArray());
+	for (HiValue& obj : room_arr) {
 		// capture bounds (even for ("invisible", but not untouchable/dependent, objects)
 		HiValue c = Classes(obj);
 		HiValue dep_on = global.Get(obj.MapGet("dependent_on").ToString(), HiValue());
@@ -1813,7 +1823,7 @@ void Program::CheckCollisions() {
 		}
 		
 		// default to walkto (if (nothing set)
-		if (verb_curr.IsVoid())
+		if (!verb_curr)
 			verb_curr = GetVerb(verb_default_inventory_index);
 		
 		// update "default" verb for (hovered object (if (any)
@@ -1824,28 +1834,27 @@ void Program::CheckCollisions() {
 
 
 void Program::ResetZPlanes() {
-	TODO
-	/*
-	// draw_zplanes = {}
-	for (x = -64, 64) {
-		draw_zplanes[x] = {};
-	}
-	*/
+	draw_zplanes.Clear();
+	draw_zplanes.SetCount(64*2+1); // -64 to +64
 }
 
 void Program::RecalcZPlane(SObj& obj) {
 	// calculate the correct z-plane
 	// based on obj || x,y pos + elevation
-	TODO //add(draw_zplanes[obj.z ? obj.z : flr(obj.y + (obj.offset_y ? 0 : obj.h * 8))], obj);
-}
-
-void Program::SetTransCol(int transcol) { //, enabled)
-	TODO
-	/*
-	// set transparency for (specific col
-	palt(0, false);
-	palt(transcol, true);
-	*/
+	HiValue y = obj.MapGet("y");
+	HiValue h = obj.MapGet("h");
+	HiValue z = obj.MapGet("z");
+	HiValue offset_y = obj.MapGet("offset_y");
+	int idx;
+	if (z.IsInt())
+		idx = z.GetInt();
+	else {
+		int hi = h.IsInt() ? h.GetInt() : 0;
+		int yi = y.IsInt() ? y.GetInt() : 0;
+		int offset_yi = offset_y.IsInt() ? offset_y.GetInt() : 0;
+		idx = (int)(yi + (offset_yi ? 0 : hi * 8));
+	}
+	draw_zplanes[idx].objs.Add(obj);
 }
 
 void Program::ClearCutsceneOverride(Script* s) {
@@ -1872,7 +1881,7 @@ bool Program::ReadGame() {
 	}*/
 	//DUMPC(room_names);
 	
-	if (room_curr.IsVoid()) {
+	if (!room_curr) {
 		TODO
 		/*const SObj* found = FindDeep(room_names[0]);
 		if (!found || !found->IsMap()) {
@@ -1890,8 +1899,63 @@ bool Program::ReadGame() {
 		return false;
 	}
 	
-	TODO // verbs
-	//V_USE etc
+	verbs = global.Get("verbs", SObj());
+	if (!verbs.IsArray()) {
+		LOG("No verbs in game");
+		return false;
+	}
+	
+	const Vector<HiValue>& verb_arr = verbs.GetArray();
+	for(int i = 0; i < verb_arr.GetCount(); i++) {
+		const HiValue& verb = verb_arr[i];
+		if (!verb.IsMap() || verb.GetMap().Find("name") < 0 || verb.GetMap().Find("text") < 0) {
+			LOG("Invalid verb");
+			return false;
+		}
+		String name = verb.MapGet("name");
+		if (name == "use")		V_USE = verb;
+		if (name == "use")		V_USE = verb;
+		if (name == "give")		V_GIVE = verb;
+		if (name == "push")		V_PUSH = verb;
+		if (name == "pull")		V_PULL = verb;
+		if (name == "walkto")	V_WALKTO = verb;
+		if (name == "pickup")	V_PICKUP = verb;
+		if (name == "lookat")	V_LOOKAT = verb;
+		if (name == "open")		V_OPEN = verb;
+		if (name == "close")	V_CLOSE = verb;
+		if (name == "talkto")	V_TALKTO = verb;
+		
+		if (verb_idx.Find(name) >= 0) {
+			LOG("Verb already defined");
+			return false;
+		}
+		verb_idx.Add(name);
+	}
+	V_COUNT = verb_arr.GetCount();
+	if (V_COUNT == 0)  {
+		LOG("No verbs");
+		return false;
+	}
+	
+	/*EscValue def_verb = global.Get("verb_default", EscValue());
+	if (!def_verb.IsMap() || def_verb.GetMap().Find("name") < 0) {
+		LOG("No default verb defined");
+		return false;
+	}
+	String def_verb_name = def_verb.MapGet("name");
+	int def_verb_idx = verb_idx.Find(def_verb_name);
+	if (def_verb_idx < 0) {
+		LOG("Could not find default verb from list");
+		return false;
+	}*/
+	
+	int verb_default_inventory_index = global.Get("verb_default_inventory_index", -1);
+	if (verb_default_inventory_index < 0 || verb_default_inventory_index >= verb_idx.GetCount()) {
+		LOG("Invalid default inventory index");
+		return false;
+	}
+	verb_curr = verbs[verb_default_inventory_index];
+	
 	
 	//LOG(game.ToString());
 	return true;
@@ -2003,7 +2067,7 @@ Point Program::CenterCamera(const Point& val) {
 }
 
 Point Program::CenterCamera(SObj& val) {
-	LOG(val.ToString());
+	//LOG(val.ToString());
 	
 	// check params for (obj/actor
 	// keep camera within "room" bounds
@@ -2256,18 +2320,6 @@ void Program::vectoindex(vec) {
 // helper functions
 //
 
-void Program::Animate(SObj& obj) {
-	TODO
-	
-	// animate the object
-	// (update frames, looping as req)
-	/*obj.tmr += 1;
-	if (obj.tmr > obj.frame_delay) {
-		obj.tmr = 1;
-		obj.anim_pos = obj.anim_pos % #obj.curr_anim + 1;
-	}*/
-}
-
 
 
 void Program::ShowError(String msg) {
@@ -2397,7 +2449,7 @@ bool Program::Init() {
 	fade_iris = 0;
 	cutscene_cooloff = 0;
 	
-	String path = GetDataFile("Demo.esc");
+	String path = GetDataFile("Game.esc");
 	String content = LoadFile(path);
 	if (content.IsEmpty()) {
 		LOG("error: empty script");
@@ -2459,7 +2511,9 @@ void Program::SetState(SObj& o, StateType s) {
 }
 
 FaceDir Program::GetFaceDir(SObj& o) {
-	String s = o.MapGet("state");
+	String s = o.MapGet("face_dir");
+	ASSERT(s.GetCount());
+	//String s = o.MapGet("state");
 	if (s == "face_front")	return FACE_FRONT;
 	if (s == "face_left")	return FACE_LEFT;
 	if (s == "face_back")	return FACE_BACK;
@@ -2499,6 +2553,16 @@ bool Program::IsPressed(GamepadButton b) const {
 
 bool Program::IsMousePressed(MouseButtonMask m) const {
 	return mouse_pressed & m;
+}
+
+bool HasArrayValue(SObj arr, SObj value) {
+	ASSERT(arr.IsArray());
+	if (!arr.IsArray()) return false;
+	const auto& a = arr.GetArray();
+	for (const SObj& o : a)
+		if (o == value)
+			return true;
+	return false;
 }
 
 

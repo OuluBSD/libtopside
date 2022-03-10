@@ -199,6 +199,9 @@ bool HiValue::operator==(const HiValue& a) const
 
 String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) const
 {
+	if (visited)
+		return String("<visited>");
+	visited = true;
 	String ind(' ', indent);
 	StringStream r;
 	String s;
@@ -217,6 +220,7 @@ String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) cons
 			if (hex && number >= 0 && number < 65536 && (int)number == number)
 				s << " " << AsCString(::UPP::AsString(WString((wchar_t)number, 1)));
 			
+			visited = false;
 			return s;
 		}
 	case HIGH_INT64:
@@ -227,6 +231,7 @@ String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) cons
 				s << " " << HexStr(i64);
 			if(hex && i64 >= 0 && i64 < 65536)
 				s << " " << AsCString(::UPP::AsString(WString((int)i64, 1)));
+			visited = false;
 			return s;
 		}
 	case HIGH_ARRAY:
@@ -271,6 +276,7 @@ String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) cons
 			}
 			if(a.GetCount() > 100)
 				s << ind << "\n...more than 100 elements";
+			visited = false;
 			return s;
 		}
 	case HIGH_LAMBDA:
@@ -283,6 +289,7 @@ String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) cons
 			r << lambda->arg[i];
 		}
 		r << ")\n" << lambda->code;
+		visited = false;
 		return r.GetResult();
 	case HIGH_MAP:
 		r << ind << "{ ";
@@ -313,8 +320,10 @@ String HiValue::ToString(int maxlen, int indent_step, bool hex, int indent) cons
 		s = r.GetResult();
 		if(map->map.GetCount() > 100)
 			s << ind << "\n...more than 100 elements";
+		visited = false;
 		return s;
 	}
+	visited = false;
 	return "void";
 }
 

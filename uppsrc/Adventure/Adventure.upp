@@ -16,5 +16,6 @@ file
 	App.cpp;
 
 mainconfig
-	"" = "GUI";
+	"" = "GUI",
+	"" = "GUI USEMALLOC";
 

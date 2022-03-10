@@ -33,6 +33,7 @@ bool TryReadColor(const SObj& o, HiValue key, Color& c);
 bool ReadFlag(const SObj& o, String key);
 SObj* ReadKey(SObj& o, String key);
 void SrcMapSet(HiValue map, HiValue key, HiValue value);
+bool HasArrayValue(SObj arr, SObj value);
 
 typedef enum {
 	SCENE_NULL,
@@ -140,6 +141,12 @@ struct TalkingState {
 	bool enabled = false;
 	
 	operator bool() const {return enabled;}
+	
+};
+
+struct ZPlane : Moveable<ZPlane> {
+	Vector<HiValue> objs;
+	
 	
 };
 
@@ -257,7 +264,7 @@ struct Program {
 	Script* fade_script = 0;
 	
 	TalkingState talking_curr;
-	SObj* talking_actor = 0;
+	SObj talking_actor;
 	
 	HiValue ui_arrows;
 	SObj arrow[2];
@@ -289,9 +296,11 @@ struct Program {
 	HiValue room_curr;
 	Script* scr_obj = 0;
 	int V_COUNT = 0;
+	Index<String> verb_idx;
 	
 	int fade_iter = 0;
 	
+	Vector<ZPlane> draw_zplanes; // table of tables for (each of the (8) zplanes for (drawing depth
 	
 public:
 	
@@ -300,7 +309,7 @@ public:
 	bool ParseGame(String content, String path);
 	bool ReadGame();
 	HiValue RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0);
-	void GetReference(SObj& o, bool everywhere=false);
+	//void GetReference(SObj& o, bool everywhere=false);
 	void ProcessHi();
 	void ResetPalette();
 	void ResetUI();
@@ -369,7 +378,6 @@ public:
 	void CheckCollisions();
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
-	void SetTransCol(int transcol);
 	bool InitGame();
 	void UpdateScripts(Array<Script>& scripts);
 	void RemoveStoppedScripts(Array<Script>& scripts);
@@ -382,7 +390,6 @@ public:
 	int GetLongestLineSize(const Vector<String>& lines);
 	bool HasFlag(const SObj& obj, String key);
 	void RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y);
-	void Animate(SObj& obj);
 	void ShowError(String msg);
 	void ExplodeData(SObj& obj);
 	bool IsCursorColliding(const SObj& obj);
@@ -398,13 +405,13 @@ public:
 	const SObj* FindDeep(const String& name, const SObj* o) const;
 	HiValue Classes(const SObj& s);
 	String State(SObj& s);
-	String GetInRoomString(SObj& o);
+	//String GetInRoomString(SObj& o);
 	SObj GetInRoom(SObj& o);
 	Point GetXY(SObj& o);
 	Point GetOffset(SObj& o);
 	Size GetSize(SObj& o);
 	UsePos GetUsePos(SObj& o);
-	FaceDir GetFaceDir(SObj& o);
+	static FaceDir GetFaceDir(SObj& o);
 	StateType GetState(SObj& o);
 	String GetFaceString(FaceDir d);
 	SObj GetSelectedActor();
@@ -421,18 +428,12 @@ public:
 };
 
 
-struct ZPlane : Moveable<ZPlane> {
-	Vector<SObj*> objs;
-	
-	
-};
-
 class ProgramDraw : public Ctrl {
-	Vector<ZPlane> draw_zplanes; // table of tables for (each of the (8) zplanes for (drawing depth
 	
 	Image gfx, lbl, gff;
 	Vector<uint16> map;
 	Size map_sz;
+	Size canvas_sz;
 	double size_mul = 1.0;
 	
 	Font fnt;
@@ -453,6 +454,7 @@ class ProgramDraw : public Ctrl {
 	void LoadBuiltinGfx();
 	void LoadBuiltinGfxStr(const char* s, Image& out);
 	void LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz);
+	void Animate(SObj& obj);
 	
 public:
 	
@@ -468,8 +470,8 @@ public:
 	void PaintRoom(Draw& d);
 	void PaintTalking(Draw& d);
 	void OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
-	void PaintObject(SObj& obj);
-	void PaintActor(SObj& actor);
+	void PaintObject(Draw& d, SObj& obj);
+	void PaintActor(Draw& d, SObj& actor);
 	void PaintCommand(Draw& d);
 	void PaintUI(Draw& d);
 	void PaintDialog(Draw& d);
@@ -486,6 +488,9 @@ public:
 	
 	void MouseMove(Point p, dword keyflags) override;
 	bool Key(dword key, int count) override;
+	
+	// TODO remove
+	void SetTransCol(int transcol);
 	
 };
 

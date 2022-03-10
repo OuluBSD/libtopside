@@ -23,7 +23,8 @@ class HiValue : Moveable<HiValue> {
 
 	int              type;
 	mutable hash_t   hash;
-
+	mutable bool	 visited = 0;
+	
 	struct HiMap;
 	struct HiArray;
 
@@ -79,7 +80,8 @@ public:
 
 	operator WString() const;
 	operator String() const                    { return ::UPP::AsString(operator WString()); }
-	operator int() const {return GetInt();}
+	operator int() const                       { return GetInt(); }
+	operator double() const                    { return GetNumber(); }
 	
 	HiValue(const char *s)                     { InitString(::UPP::ToWString(String(s))); }
 	HiValue(const WString& s)                  { InitString(s); }
@@ -93,6 +95,10 @@ public:
 	HiValue&							operator[](const char* key);
 	const HiValue&						operator[](int i) const;
 	HiValue&							operator[](int i);
+	HiValue								operator()(String key) const;
+	HiValue								operator()(String key, HiValue def) const;
+	HiValue								operator()(int i) const;
+	HiValue								operator()(int i, HiValue def) const;
 	void                                SetEmptyMap();
 
 	bool                                IsLambda() const     { return type == HIGH_LAMBDA; }

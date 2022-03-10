@@ -50,6 +50,20 @@ HiValue& HiValue::operator[](int i) {
 	return array->array[i];
 }
 
+HiValue HiValue::operator()(int i) const {
+	if (IsArray() && i >= 0 && i < array->array.GetCount())
+		return array->array[i];
+	else
+		return HiValue();
+}
+
+HiValue HiValue::operator()(int i, HiValue def) const {
+	if (IsArray() && i >= 0 && i < array->array.GetCount())
+		return array->array[i];
+	else
+		return def;
+}
+
 const HiValue& HiValue::operator[](int i) const {
 	ASSERT(IsArray());
 	return array->array[i];

@@ -55,6 +55,28 @@ void HiValue::MapSet(HiValue key, HiValue value)
 	}
 }
 
+HiValue HiValue::operator()(String key) const {
+	if (!IsMap())
+		return HiValue();
+	VectorMap<HiValue, HiValue>& m = map->map; // CloneMap();
+	int q = m.Find(key);
+	if(q >= 0)
+		return m[q];
+	else
+		return HiValue();
+}
+
+HiValue HiValue::operator()(String key, HiValue def) const {
+	if (!IsMap())
+		return def;
+	VectorMap<HiValue, HiValue>& m = map->map; // CloneMap();
+	int q = m.Find(key);
+	if(q >= 0)
+		return m[q];
+	else
+		return def;
+}
+
 HiValue& HiValue::operator[](String key) {
 	ASSERT(IsVoid() || IsMap());
 	if (!IsMap())

@@ -33,14 +33,11 @@ reset() {
 		{ "name": "talkto",	"text": "talk-to" },
 		{ "name": "push",	"text": "push" },
 		{ "name": "pull",	"text": "pull" },
-		{ "name": "use",	"text": "use" },
+		{ "name": "use",	"text": "use" }
 	];
 	
-	// verb to use when just clicking aroung (e.g. move actor);
-	:verb_default = { "name" = "walkto", "text": "walk to" };
-	
 	// index of the verb to use when clicking items in inventory (e.g. look-at);
-	:verb_default_inventory_index = 5;
+	:verb_default_inventory_index = 4;
 	
 	:ui_cursorspr = 224; // default cursor sprite
 	:ui_uparrowspr = 208; // default up arrow sprite
@@ -79,11 +76,11 @@ startup_script() {
 	:selected_actor = :main_actor;
 	
 	// init actor
-	//put_at(:selected_actor, 100, 48, rm_kitchen)
-	//put_at(:selected_actor, 60, 48, rm_hall)
-	//put_at(:selected_actor, 16, 48, rm_computer)
-	//put_at(:selected_actor, 110, 38, rm_garden)
-	//put_at(:selected_actor, 110, 38, rm_library)
+	//put_at(:selected_actor, 100, 48, :rm_kitchen)
+	//put_at(:selected_actor, 60, 48, :rm_hall)
+	//put_at(:selected_actor, 16, 48, :rm_computer)
+	//put_at(:selected_actor, 110, 38, :rm_garden)
+	//put_at(:selected_actor, 110, 38, :rm_library)
 	
 	// make camera follow player
 	// (setting now, will be re-instated after cutscene)
@@ -109,6 +106,8 @@ fn() {
 
 
 main() {
+	reset();
+	
 	
 	:obj_switch_tent = {
 		"data": {
@@ -169,45 +168,45 @@ main() {
 	
 	
 	// Rooms
+	:rm_title_fn0 = @(me) {
+		if (!me.gameover) {
+			print_line("return of the...", 64, 40, 8, 1, true, 32, false);
+			for (x = 1; x <= 7; x++) {
+				s = "  scumm";
+				s = s[0, x];
+				print_line(s, 55, 45, 11, 1, true, 32, true);
+			}
+			change_room(:rm_outside, 1); // iris fade
+		}
+		else {
+			// win gameuse_caps, duration, big_font
+			print_line("congratulations!:you've completed the game!", 64, 45, 8, 1, true, 8, false);
+			fades(1, 1); // fade out
+			while (true) {
+				break_time(10);
+			}
+		}
+	};
 	
+	:rm_title_fn1 = @(me) {
+		if (!:rm_title.gameover) {
+			:rm_outside.done_intro = true;
+			:selected_actor = :main_actor;
+			put_at(:selected_actor, 30, 55, :rm_outside);
+			camera_follow(:selected_actor);
+		}
+	};
+
 	:rm_title = {
 		"data": {
 			"map":[0, 16]
 		},
 		"objects": [],
-		"enter": @(&me) {
-			fn0 = @(&me) {
-				if (!me.gameover) {
-					print_line("return of the...", 64, 40, 8, 1, true, 32, false);
-					for (x = 1; x <= 7; x++) {
-						s = "  scumm";
-						s = s[0, x];
-						print_line(s, 55, 45, 11, 1, true, 32, true);
-					}
-					change_room("rm_outside", 1); // iris fade
-				}
-				else {
-					// win gameuse_caps, duration, big_font
-					print_line("congratulations!:you've completed the game!", 64, 45, 8, 1, true, 8, false);
-					fades(1, 1); // fade out
-					while (true) {
-						break_time(10);
-					}
-				}
-			};
-			fn1 = @(&me) {
-				if (!rm_title.gameover) {
-					rm_outside.done_intro = true;
-					:selected_actor = :main_actor;
-					put_at(:selected_actor, 30, 55, rm_outside);
-					camera_follow(:selected_actor);
-				}
-			};
-			 
+		"enter": @(me) {
 			cutscene(
 				3, // no verbs & no follow
-				fn0,
-				fn1
+				:rm_title_fn0,
+				:rm_title_fn1
 			);
 		},
 		"exit": @() {
@@ -300,8 +299,8 @@ main() {
 			},
 			"use": @(me, noun2) {
 				if (noun2 == obj_fire && me.state := "state_closed") {
-					put_at(obj_fire, 0, 0, rm_void);
-					put_at(obj_key, 88, 32, rm_library);
+					put_at(obj_fire, 0, 0, :rm_void);
+					put_at(obj_key, 88, 32, :rm_library);
 					obj_bucket."state": "state_open";
 					say_line("the fire's out now");
 				}
@@ -339,7 +338,7 @@ main() {
 				:selected_actor = :main_actor;
 				
 				// init actor
-				put_at(:selected_actor, 30, 55, rm_outside);
+				put_at(:selected_actor, 30, 55, :rm_outside);
 				
 				// make camera follow player
 				// (setting now, will be re-instated after cutscene);
@@ -601,13 +600,13 @@ main() {
 		"verbs": {
 			"use": @(&me) {
 				if (me.on) {
-					rm_library.lighting = 0.25;
+					:rm_library.lighting = 0.25;
 					obj_library_door_hall.lighting = 1;
 					obj_lightswitch.lighting = 0.6;
 					me.on = false;
 				}
 				else {
-					rm_library.lighting = 1;
+					:rm_library.lighting = 1;
 					obj_library_door_hall.lighting = 0;
 					obj_lightswitch.lighting = 1;
 					me.on = true;
@@ -683,8 +682,8 @@ main() {
 		"dependent_on_state": "state_open",
 		"verbs": {
 			"walkto": @(&me) {
-				rm_title.gameover = true;
-				change_room(rm_title, 1);
+				:rm_title.gameover = true;
+				change_room(:rm_title, 1);
 			}
 		}
 	};
@@ -745,7 +744,7 @@ main() {
 			},
 			"use": @(me, noun2) {
 				if (noun2 == obj_book) {
-					put_at(me, 0,0, rm_void);
+					put_at(me, 0,0, :rm_void);
 					obj_library_secret_panel.state: "state_open";
 					shake(true);
 					while (obj_library_secret_panel.y > -8) {
@@ -1048,7 +1047,7 @@ main() {
 		},
 		"verbs": {
 			"open": @(&me) {
-				rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
+				:rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
 			}
 		}
 	};
@@ -1069,7 +1068,7 @@ main() {
 		},
 		"verbs": {
 			"open": @(&me) {
-				rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
+				:rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
 			}
 		}
 	};
@@ -1091,7 +1090,7 @@ main() {
 		},
 		"verbs": {
 			"open": @(&me) {
-				rm_landing.scripts.door_teleport(me, obj_landing_door_room1);
+				:rm_landing.scripts.door_teleport(me, obj_landing_door_room1);
 			}
 		}
 	};
@@ -1120,7 +1119,7 @@ main() {
 					@(me) {
 						open_door(door1);
 						break_time(10);
-						put_at(:selected_actor,0,0,rm_void);
+						put_at(:selected_actor,0,0, :rm_void);
 						close_door(door1);
 						camera_pan_to(door2);
 						wait_for_camera();
@@ -1178,7 +1177,7 @@ main() {
 			},
 			"use": @(&me) {
 				me.played: true;
-				change_room(rm_mi_title, 1);
+				change_room(:rm_mi_title, 1);
 			}
 		}
 	};
@@ -1232,9 +1231,9 @@ main() {
 					me.owner = :purp_tentacle;
 					say_line(:purp_tentacle, "this is perfect!", true);
 					say_line(:purp_tentacle, "thank you!:i shall start making a game right now...");
-					stop_script(rm_kitchen.scripts.tentacle_guard);
+					stop_script(:rm_kitchen.scripts.tentacle_guard);
 					walk_to(:purp_tentacle, obj_kitchen_door_hall.x+4, obj_kitchen_door_hall.y+30);
-					put_at(:purp_tentacle, 0,0, rm_void);
+					put_at(:purp_tentacle, 0,0, :rm_void);
 				}
 				else {
 					say_line("i might need this");
@@ -1310,7 +1309,7 @@ main() {
 				// intro
 				break_time(50);
 				print_line("deep in the; caribbean:on the isle of;...thimbleweed!",64,40,8,1,true,nil,true);
-				change_room(rm_mi_dock, 1);
+				change_room(:rm_mi_dock, 1);
 			}
 			); // end cutscene
 		},
@@ -1368,7 +1367,7 @@ main() {
 			"walkto": @(&me) {
 				if (me.state:= "state_open") {
 					// outro
-					change_room(rm_computer, 1);
+					change_room(:rm_computer, 1);
 				}
 				else {
 					say_line("the door is closed");
@@ -1406,7 +1405,7 @@ main() {
 			:selected_actor = :mi_actor;
 			
 			// init actor
-			put_at(:selected_actor, 212, 60, rm_mi_dock);
+			put_at(:selected_actor, 212, 60, :rm_mi_dock);
 			camera_at(0);
 			break_time(30);
 			camera_pan_to(212,60);
