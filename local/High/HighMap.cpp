@@ -33,13 +33,27 @@ void  HiValue::SetEmptyMap()
 	map = new HiMap;
 }
 
-HiValue HiValue::MapGet(HiValue key) const
+HiValue& HiValue::MapGetAdd(HiValue key) {
+	ASSERT(IsVoid() || IsMap());
+	if(IsVoid() || !IsMap())
+		SetEmptyMap();
+	VectorMap<HiValue, HiValue>& m = map->map; // CloneMap();
+	int q = m.Find(key);
+	if(q >= 0)
+		return m[q];
+	else {
+		map->count++;
+		return m.Add(key);
+	}
+}
+
+HiValue HiValue::Get(HiValue key) const
 {
 	LTIMING("MapGet");
 	return GetMap().Get(key, HiValue());
 }
 
-void HiValue::MapSet(HiValue key, HiValue value)
+void HiValue::Set(HiValue key, HiValue value)
 {
 	LTIMING("MapSet");
 	if(IsVoid())
@@ -52,6 +66,9 @@ void HiValue::MapSet(HiValue key, HiValue value)
 	else if (!value.IsVoid()) {
 		map->count++;
 		m.Add(key, value);
+	}
+	else {
+		ASSERT(0);
 	}
 }
 

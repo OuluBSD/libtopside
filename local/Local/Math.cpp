@@ -236,5 +236,12 @@ float smoothstep(float edge0, float edge1, float x) {
     return x * x * (3 - 2 * x);
 }
 
+double GetDistance(Point a, Point b) {
+	int x = a.x - b.x;
+	int y = a.y - b.y;
+	return sqrt(x * x + y * y);
+}
+
+
 
 NAMESPACE_TOPSIDE_END

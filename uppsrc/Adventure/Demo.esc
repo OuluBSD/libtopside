@@ -17,7 +17,7 @@ reset() {
 	];
 	
 	// index of the verb to use when clicking items in inventory (e.g. look-at);
-	:verb_default_inventory_index = 4;
+	:verb_default = 4;
 	
 	:ui_cursorspr = 224; // default cursor sprite
 	:ui_uparrowspr = 208; // default up arrow sprite

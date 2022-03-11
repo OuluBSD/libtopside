@@ -89,8 +89,11 @@ public:
 
 	bool                                IsMap() const        { return type == HIGH_MAP; }
 	const VectorMap<HiValue, HiValue>&  GetMap() const;
-	HiValue                             MapGet(HiValue key) const;
-	void                                MapSet(HiValue key, HiValue value);
+	HiValue                             Get(HiValue key) const;
+	HiValue                             MapGet(HiValue key) const {return Get(key);}
+	void                                Set(HiValue key, HiValue value);
+	void                                MapSet(HiValue key, HiValue value) {return Set(key,value);}
+	HiValue&							MapGetAdd(HiValue key);
 	HiValue&							operator[](String key);
 	HiValue&							operator[](const char* key);
 	const HiValue&						operator[](int i) const;

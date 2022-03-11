@@ -203,7 +203,7 @@ struct Program {
 		POS_INFRONT
 	} UsePos;
 	
-	struct Thing {
+	/*struct Thing {
 		int x = 0;
 		int y = 0;
 		int face_dir = 0;
@@ -212,7 +212,7 @@ struct Program {
 		int anim_pos = 0;
 		int tmr = 0;
 		
-	};
+	};*/
 	
 	
 	Array<Script> global_scripts;	// table of scripts that are at game-level (background)
@@ -223,7 +223,7 @@ struct Program {
 	Script* cutscene_curr = 0;
 	
 	
-	int verb_default_inventory_index = 4;
+	int verb_default = 4;
 	
 	PaletteColor verb_maincol;
 	PaletteColor verb_hovcol;
@@ -274,8 +274,8 @@ struct Program {
 	Sentence* hover_curr_sentence = 0;
 	
 	HiValue verb_curr;
-	SObj* noun1_curr = 0;
-	SObj* noun2_curr = 0;
+	SObj noun1_curr;
+	SObj noun2_curr;
 	SObj hover_curr_object;
 	bool executing_cmd = false;
 	bool is_mouse_clicked = false;
@@ -301,6 +301,11 @@ struct Program {
 	int fade_iter = 0;
 	
 	Vector<ZPlane> draw_zplanes; // table of tables for (each of the (8) zplanes for (drawing depth
+	Vector<Point> path;
+	
+	
+	Vector<uint16> map, gff;
+	Size map_sz, gff_sz;
 	
 public:
 	
@@ -334,6 +339,8 @@ public:
 	void ChangeRoom(SObj new_room, SObj fade);
 	bool CamScript0();
 	bool CamScript1();
+	bool VerbScript(HiValue vc2);
+	bool WalkScript();
 	void CameraPanTo(SObj& val);
 	void WaitForCamera();
 	bool ScriptRunning(Script& script);
@@ -345,12 +352,12 @@ public:
 	void DialogEnd();
 	void DialogSet(StrVec& msg_table);
 	Point GetUsePoint(SObj& obj);
-	void DoAnim(Thing& thing, const String& param1, int& param2);
-	void OpenDoor(SObj& door_obj1, SObj* door_obj2);
-	void CloseDoor(SObj& door_obj1, SObj* door_obj2);
-	void ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect);
+	void DoAnim(SObj thing, const String& param1, int& param2);
+	void OpenDoor(SObj door_obj1, SObj door_obj2);
+	void CloseDoor(SObj door_obj1, SObj door_obj2);
+	void ComeOutDoor(SObj from_door, SObj to_door, bool fade_effect);
 	bool Fades(int fade, int dir);
-	void ValidVerb(HiValue verb, SObj& object);
+	bool IsValidVerb(HiValue verb, SObj object);
 	void PickupObj(SObj& obj, SObj& actor);
 	void StartScript(Gate0 func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
 	void StartScriptHi(HiValue* self, HiValue func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
@@ -389,14 +396,15 @@ public:
 	void CreateTextLines(String msg, int max_line_length, Vector<String>& lines);
 	int GetLongestLineSize(const Vector<String>& lines);
 	bool HasFlag(const SObj& obj, String key);
-	void RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y);
+	void RecalculateBounds(SObj obj, int w, int h, int cam_off_x, int cam_off_y);
 	void ShowError(String msg);
 	void ExplodeData(SObj& obj);
 	bool IsCursorColliding(const SObj& obj);
 	bool IsCursorColliding(const Sentence& obj);
 	String SmallCaps(const String& s);
 	String Autotype(const String& str_value);
-	
+	void FindPath(Point start, Point goal, Vector<Point>& pt);
+	double GetHeuristic(Point chk, Point goal);
 	
 	bool Init();
 	
@@ -406,13 +414,13 @@ public:
 	HiValue Classes(const SObj& s);
 	String State(SObj& s);
 	//String GetInRoomString(SObj& o);
-	SObj GetInRoom(SObj& o);
-	Point GetXY(SObj& o);
-	Point GetOffset(SObj& o);
-	Size GetSize(SObj& o);
-	UsePos GetUsePos(SObj& o);
-	static FaceDir GetFaceDir(SObj& o);
-	StateType GetState(SObj& o);
+	SObj GetInRoom(SObj o);
+	Point GetXY(SObj o);
+	Point GetOffset(SObj o);
+	Size GetSize(SObj o);
+	UsePos GetUsePos(SObj o);
+	static FaceDir GetFaceDir(SObj o);
+	StateType GetState(SObj o);
 	String GetFaceString(FaceDir d);
 	SObj GetSelectedActor();
 	dword GetMouseButtonMask() const {return mouse_pressed;}
@@ -422,17 +430,21 @@ public:
 	bool IsMouseLeftPressed() const {return IsMousePressed(MBMASK_LEFT);}
 	bool IsMouseRightPressed() const {return IsMousePressed(MBMASK_RIGHT);}
 	
-	void SetState(SObj& o, StateType s);
-	void SetSelectedActor(SObj& o);
+	void SetState(SObj o, StateType s);
+	void SetSelectedActor(SObj o);
+	
+	//static void LoadBuiltinGfxStr(const char* s, Image& out);
+	static void LoadBuiltinGfxStr(const char* s, Vector<byte>& out, Size& sz);
+	static void LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz);
 	
 };
 
 
 class ProgramDraw : public Ctrl {
 	
-	Image gfx, lbl, gff;
-	Vector<uint16> map;
-	Size map_sz;
+	Image gfx, lbl;
+	Vector<byte> gfx_data, lbl_data;
+	Size gfx_sz, lbl_sz;
 	Size canvas_sz;
 	double size_mul = 1.0;
 	
@@ -452,9 +464,8 @@ class ProgramDraw : public Ctrl {
 	}
 	
 	void LoadBuiltinGfx();
-	void LoadBuiltinGfxStr(const char* s, Image& out);
-	void LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz);
-	void Animate(SObj& obj);
+	void Animate(SObj obj);
+	void GetPaletteImage(const Vector<byte>& src, Size src_sz, Image& out);
 	
 public:
 	
@@ -470,8 +481,8 @@ public:
 	void PaintRoom(Draw& d);
 	void PaintTalking(Draw& d);
 	void OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
-	void PaintObject(Draw& d, SObj& obj);
-	void PaintActor(Draw& d, SObj& actor);
+	void PaintObject(Draw& d, SObj obj);
+	void PaintActor(Draw& d, SObj actor);
 	void PaintCommand(Draw& d);
 	void PaintUI(Draw& d);
 	void PaintDialog(Draw& d);
@@ -482,11 +493,15 @@ public:
 	
 	void SetPalette(int idx, PaletteColor clr);
 	void ResetPalette();
-	void ReplaceColors(const SObj& o);
+	void ReplaceColors(SObj o);
 	void FadePalette(float perc);
 	
 	
 	void MouseMove(Point p, dword keyflags) override;
+	void LeftDown(Point p, dword keyflags) override;
+	void LeftUp(Point p, dword keyflags) override;
+	void RightDouble(Point p, dword keyflags) override;
+	void RightUp(Point p, dword keyflags) override;
 	bool Key(dword key, int count) override;
 	
 	// TODO remove

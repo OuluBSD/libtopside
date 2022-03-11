@@ -525,6 +525,9 @@ inline RandomGaussian& GetRandomGaussian(int length) {
 float smoothstep(float edge0, float edge1, float x);
 
 
+double GetDistance(Point a, Point b);
+
+
 NAMESPACE_TOPSIDE_END
 
 #endif

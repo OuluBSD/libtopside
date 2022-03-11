@@ -192,7 +192,7 @@ void ProgramDraw::PaintRoom(Draw& d) {
 				//palt(room_curr.trans_col, true);
 				TODO
 			}
-			HiValue map = room_curr.MapGet("data").MapGet("map");
+			HiValue map = room_curr("data")("map");
 			//LOG(room_curr.ToString()); LOG(map.ToString());
 			ASSERT(map.IsArray());
 			int map0 = map.ArrayGet(0).GetInt();
@@ -372,9 +372,10 @@ void ProgramDraw::PaintUI(Draw& d) {
 		
 		// capture bounds
 		SObj obj;
-		obj.MapSet("x", xpos);
-		obj.MapSet("y", ypos);
-		obj.MapSet("classes", ea);
+		SObj data = obj.MapGetAdd("data");
+		data.Set("x", xpos);
+		data.Set("y", ypos);
+		data.Set("classes", ea);
 		p->RecalculateBounds(obj, namelen*4, 5, 0, 0);
 		//show_collision_box(obj)
 
@@ -393,7 +394,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 	}
 	
 	if (selected_actor.IsMap()) {
-		HiValue inventory = selected_actor.MapGet("inventory");
+		HiValue inventory = selected_actor["data"]["inventory"];
 		if (!inventory.IsArray()) {DUMP(inventory);}
 		ASSERT(inventory.IsArray());
 		
@@ -404,7 +405,7 @@ void ProgramDraw::PaintUI(Draw& d) {
 		int ypos = 76;
 		
 		// determine the inventory "window"
-		int inv_pos = selected_actor.MapGet("inv_pos").GetInt();
+		int inv_pos = selected_actor["data"]("inv_pos").GetInt();
 		ASSERT(inv_pos >= 0 && inv_pos < 0x10000);
 		int start_pos = inv_pos * 4;
 		int end_pos = min(start_pos+8, inv_arr_len);
@@ -415,18 +416,21 @@ void ProgramDraw::PaintUI(Draw& d) {
 			d.DrawRect(xpos-1, stage_top+ypos-1, xpos+8, stage_top+ypos+8, rect_clr);
 
 			SObj obj = inventory(start_pos+ipos, SObj());
+			
 			//DUMP(obj);
 			if (obj) {
+				SObj data = obj["data"];
+				
 				// something to draw
-				obj.MapSet("x", xpos);
-				obj.MapSet("y", ypos);
+				data.Set("x", xpos);
+				data.Set("y", ypos);
 				
 				// draw object/sprite
 				PaintObject(d, obj);
 				
 				// re-calculate bounds (as pos may have changed)
-				int w = obj.MapGet("w").GetInt();
-				int h = obj.MapGet("h").GetInt();
+				int w = obj["w"];
+				int h = obj["h"];
 				ASSERT(w >= 0 && w < 0x10000);
 				ASSERT(h >= 0 && h < 0x10000);
 				p->RecalculateBounds(obj, w*8, h*8, 0, 0);
@@ -443,9 +447,10 @@ void ProgramDraw::PaintUI(Draw& d) {
 		// draw arrows
 		for (int i = 0; i < 2; i++) {
 			HiValue arrow = p->ui_arrows[i];
-			int spr = arrow("spr");
-			int x = arrow("x");
-			int y = arrow("y");
+			HiValue adata = arrow["data"];
+			int spr = adata["spr"];
+			int x = adata["x"];
+			int y = adata["y"];
 			SetPalette(7, hover_curr_arrow == arrow ? verb_hovcol : verb_maincol);
 			SetPalette(5, verb_shadcol);
 			PaintSprite(d, gfx, spr, x, y, 1, 1, 0);
@@ -564,9 +569,9 @@ void ProgramDraw::PaintSprite(Draw& d, const Image& src, PaletteImage n, int x, 
 }
 
 void ProgramDraw::PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, int h) {
-	const uint16* m = map.Begin();
-	int img_w = map_sz.cx;
-	int img_h = map_sz.cy;
+	const uint16* m = p->map.Begin();
+	int img_w = p->map_sz.cx;
+	int img_h = p->map_sz.cy;
 	
 	int write_w = w >= 0 ? min(img_w, w) : img_w;
 	int write_h = h >= 0 ? min(img_h, h) : img_h;
@@ -590,31 +595,32 @@ void ProgramDraw::PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, i
 	}
 }
 
-void ProgramDraw::PaintObject(Draw& d, SObj& obj) {
+void ProgramDraw::PaintObject(Draw& d, SObj obj) {
 	int sprnum = 0;
+	SObj data = obj["data"];
 	
 	// replace colors?
 	ReplaceColors(obj);
 	               
 	// check for (custom draw
-	if (obj("draw")) {
+	if (data("draw")) {
 		TODO //obj.draw(obj);
 	}
 	
 	else {
-		SObj anim = obj("curr_anim");
+		SObj anim = data("curr_anim");
 		if (anim) {
 			// update animation state
 			Animate(obj);
 			// choose walk anim frame
-			int pos = obj("anim_pos", 1);
+			int pos = data("anim_pos", 1);
 			sprnum = anim[pos];
 		}
 		// allow for (repeating
-		int c = (int)obj("repeat_x", 1) - 1;
+		int c = (int)data("repeat_x", 1) - 1;
 		for (int i = 0; i < c; i++) {
 			// draw object (in its state!)
-			SObj state = obj("state");
+			SObj state = data("state");
 			if (state) {
 				String s = state;
 				TODO;
@@ -624,13 +630,13 @@ void ProgramDraw::PaintObject(Draw& d, SObj& obj) {
 				TODO
 				//sprnum = obj[State(obj)];
 			}
-			int x = obj("x", 0);
-			int y = obj("y", 0);
-			int w = obj("w", 1);
-			int h = obj("h", 1);
-			int flip_x = obj("flip_x", 0);
-			int trans_col = obj("trans_col", 0);
-			double scale = obj("scale", 0.0);
+			int x = data("x", 0);
+			int y = data("y", 0);
+			int w = data("w", 1);
+			int h = data("h", 1);
+			int flip_x = data("flip_x", 0);
+			int trans_col = data("trans_col", 0);
+			double scale = data("scale", 0.0);
 			x = x + (h * (w * 8));
 			PaintSprite(d, gfx, sprnum, x, y, w, h, trans_col, flip_x, 0, scale);
 		}
@@ -645,7 +651,7 @@ void ProgramDraw::PaintObject(Draw& d, SObj& obj) {
  }
 
 
-void ProgramDraw::Animate(SObj& obj) {
+void ProgramDraw::Animate(SObj obj) {
 	TODO
 	
 	// animate the object
@@ -657,8 +663,33 @@ void ProgramDraw::Animate(SObj& obj) {
 	}*/
 }
 
+void ProgramDraw::GetPaletteImage(const Vector<byte>& src, Size src_sz, Image& out) {
+	ImageBuffer ib(src_sz);
+	RGBA* it = ib.Begin();
+	RGBA* end = ib.End();
+	const byte* sit = src.Begin();
+	
+	while (it != end) {
+		byte n = *sit;
+		RGBA r;
+		if (n > 0)
+			r = GetPaletteColor(n);
+		else {
+			r.r = 0;
+			r.g = 0;
+			r.b = 0;
+			r.a = 0;
+		}
+		*it = r;
+		it++;
+		sit++;
+	}
+	
+	out = ib;
+}
+
 // draw actor(s)
-void ProgramDraw::PaintActor(Draw& d, SObj& actor) {
+void ProgramDraw::PaintActor(Draw& d, SObj actor) {
 	
 	HiValue data = actor["data"];
 	HiValue curr_anim = data["curr_anim"];
@@ -703,7 +734,7 @@ void ProgramDraw::PaintActor(Draw& d, SObj& actor) {
 	double actor_y = adata("y", 0);
 	double factor = (actor_y - pos0) / (pos1 - pos0);
 	factor = scale0 + (scale1 - scale0) * factor;
-	adata.MapSet("auto_scale", Mid(scale0, factor, scale1));
+	adata.Set("auto_scale", Mid(scale0, factor, scale1));
 	
 	// apply "zoom" to autoscale (e.g. camera further away)
 	//auto_scale *= (room_curr.scale || 1)
@@ -745,7 +776,8 @@ void ProgramDraw::PaintActor(Draw& d, SObj& actor) {
     
 	// talking overlay
 	SObj talking_actor = p->talking_actor;
-	if (talking_actor && talking_actor == actor && talking_actor("talk")) {
+	SObj ta_data = talking_actor("data");
+	if (talking_actor && talking_actor == actor && ta_data("talk")) {
 		int talk_tmr = adata("talk_tmr", 0);
 		if (talk_tmr < 7) {
 			// note: scaling from top-left
@@ -787,14 +819,15 @@ void ProgramDraw::PaintCommand(Draw& d) {
 	SObj verb_curr_ref = p->verb_curr;
 	String command = p->GetVerbString(verb_curr_ref);
 	bool executing_cmd = p->executing_cmd;
-	SObj* noun1_curr = p->noun1_curr;
-	SObj* noun2_curr = p->noun2_curr;
+	SObj noun1_curr = p->noun1_curr;
+	SObj noun2_curr = p->noun2_curr;
 	SObj hover_curr_object = p->hover_curr_object;
 	int stage_top = p->stage_top;
 	
 	
 	if (noun1_curr) {
-		command << " " << noun1_curr->MapGet("name");
+		DUMP(noun1_curr);
+		command << " " << noun1_curr["name"];
 		if (verb_curr_ref == p->V_USE && (!executing_cmd || noun2_curr)) {
 			command << " with";
 		}
@@ -804,15 +837,15 @@ void ProgramDraw::PaintCommand(Draw& d) {
 			}
 	}
 	if (noun2_curr) {
-		command << " " << noun2_curr->MapGet("name");
+		command << " " << noun2_curr["name"];
 	}
 	else if (hover_curr_object) {
 		//DUMP(hover_curr_object);
-		String name = hover_curr_object.MapGet("name");
+		String name = hover_curr_object["name"];
 		
 		if (!name.IsEmpty()
 			// don't show use object with itself!
-			&& (!noun1_curr || (*noun1_curr != hover_curr_object))
+			&& (!noun1_curr || noun1_curr != hover_curr_object)
 			// || walk-to objs in inventory!
 			// && ( not hover_curr_object.owner or
 			//				or verb_curr_ref != GetVerb(verb_default)[2] )
@@ -840,11 +873,12 @@ void ProgramDraw::PaintCommand(Draw& d) {
 	
 }
 
-void ProgramDraw::ReplaceColors(const SObj& obj) {
+void ProgramDraw::ReplaceColors(SObj obj) {
 	if (!obj.IsMap()) return;
 	
-	HiValue col_replace = obj.MapGet("col_replace");
-	HiValue lighting = obj.MapGet("lighting");
+	SObj data = obj["data"];
+	HiValue col_replace = data("col_replace");
+	HiValue lighting = data("lighting");
 	
 	// replace colors (where defined)
 	if (col_replace.IsArray()) {
@@ -860,10 +894,11 @@ void ProgramDraw::ReplaceColors(const SObj& obj) {
 		FadePalette(a);
 	}
 	else {
-		HiValue in_room = obj.MapGet("in_room");
+		HiValue in_room = data("in_room");
 		if (in_room.IsMap()) {
-			HiValue lighting = in_room.MapGet("lighting");
-			if (lighting.IsInt()) {
+			HiValue rm_data = in_room["data"];
+			HiValue lighting = rm_data("lighting");
+			if (lighting) {
 				int a = lighting.GetInt();
 				FadePalette(a);
 			}
@@ -918,8 +953,23 @@ void ProgramDraw::MouseMove(Point p, dword keyflags) {
 
 bool ProgramDraw::Key(dword key, int count) {
 	
-	
 	return false;
+}
+
+void ProgramDraw::LeftDown(Point p, dword keyflags) {
+	this->p->mouse_pressed |= MBMASK_LEFT;
+}
+
+void ProgramDraw::LeftUp(Point p, dword keyflags) {
+	this->p->mouse_pressed &= ~(dword)MBMASK_LEFT;
+}
+
+void ProgramDraw::RightDouble(Point p, dword keyflags) {
+	this->p->mouse_pressed |= MBMASK_RIGHT;
+}
+
+void ProgramDraw::RightUp(Point p, dword keyflags) {
+	this->p->mouse_pressed &= ~(dword)MBMASK_RIGHT;
 }
 
 

@@ -247,9 +247,14 @@ void Dialog::Clear() {
 
 
 
+extern const char* builtin_map;
+extern const char* builtin_gff;
 
 Program::Program() {
 	draw_zplanes.SetCount(128+1);
+	
+	LoadBuiltinGfxStr(builtin_map, map, map_sz);
+	LoadBuiltinGfxStr(builtin_gff, gff, gff_sz);
 	
 	ResetUI();
 }
@@ -316,13 +321,13 @@ void Program::ResetUI() {
 	
 	ui_arrows.SetEmptyArray();
 	
-	HiValue& up = ui_arrows.ArrayAdd(HiValue());
+	HiValue up = ui_arrows.ArrayAdd(HiValue()).MapGetAdd("data");
 	up.SetEmptyMap();
 	up.MapSet("spr", ui_uparrowspr);
 	up.MapSet("x", 75);
 	up.MapSet("y", stage_top + 60);
 	
-	HiValue& down = ui_arrows.ArrayAdd(HiValue());
+	HiValue& down = ui_arrows.ArrayAdd(HiValue()).MapGetAdd("data");
 	down.SetEmptyMap();
 	down.MapSet("spr", ui_dnarrowspr);
 	down.MapSet("x", 75);
@@ -365,7 +370,12 @@ const SObj* Program::FindDeep(const String& name, const SObj* o) const {
 HiValue Program::Classes(const SObj& s) {
 	if (!s.IsMap()) {DUMP(s);}
 	ASSERT(s.IsMap());
-	return s.MapGet("classes");
+	//DUMP(s);
+	SObj r = s("classes");
+	if (r)
+		return r;
+	else
+		return s("data")("classes");
 }
 
 String Program::State(SObj& s) {
@@ -385,7 +395,7 @@ String Program::State(SObj& s) {
 	return String();
 }*/
 
-SObj Program::GetInRoom(SObj& o) {
+SObj Program::GetInRoom(SObj o) {
 	//LOG(o.ToString());
 	if (o.IsMap()) {
 		SObj in_room = o.MapGet("in_room");
@@ -671,7 +681,7 @@ Point Program::GetUsePoint(SObj& obj) {
 	return Point(x,y);
 }
 
-void Program::DoAnim(Thing& thing, const String& param1, int& param2) {
+void Program::DoAnim(SObj thing, const String& param1, int& param2) {
 	//
 	// scumm examples:
 	// do-animation selected-actor stand
@@ -735,15 +745,15 @@ void Program::DoAnim(Thing& thing, const String& param1, int& param2) {
 	else {
 		// must be an explicit animation (e.g. "idle")
 		// so start it now
-		thing.curr_anim = param1;
-		thing.anim_pos = 1;
-		thing.tmr = 1;
+		thing.Set("curr_anim", param1);
+		thing.Set("anim_pos", 1);
+		thing.Set("tmr", 1);
 	}
 	
 }
 
 // open one (or more) doors
-void Program::OpenDoor(SObj& door_obj1, SObj* door_obj2) {
+void Program::OpenDoor(SObj door_obj1, SObj door_obj2) {
 	StateType state1 = GetState(door_obj1);
 	
 	if (state1 == STATE_OPEN) {
@@ -752,12 +762,12 @@ void Program::OpenDoor(SObj& door_obj1, SObj* door_obj2) {
 	else {
 		SetState(door_obj1, STATE_OPEN);
 		if (door_obj2)
-			SetState(*door_obj2, STATE_OPEN);
+			SetState(door_obj2, STATE_OPEN);
 	}
 }
 
 // close one (or more) doors
-void Program::CloseDoor(SObj& door_obj1, SObj* door_obj2) {
+void Program::CloseDoor(SObj door_obj1, SObj door_obj2) {
 	StateType state1 = GetState(door_obj1);
 	if (state1 == STATE_CLOSED) {
 		SayLine("it's already closed");
@@ -765,11 +775,11 @@ void Program::CloseDoor(SObj& door_obj1, SObj* door_obj2) {
 	else {
 		SetState(door_obj1, STATE_CLOSED);
 		if (door_obj2)
-			SetState(*door_obj2, STATE_CLOSED);
+			SetState(door_obj2, STATE_CLOSED);
 	}
 }
 
-void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
+void Program::ComeOutDoor(SObj from_door, SObj to_door, bool fade_effect) {
 	// check param
 	/*if (to_door == NULL) {
 		ShowError("target door does not exist");
@@ -818,11 +828,6 @@ void Program::ComeOutDoor(SObj& from_door, SObj& to_door, bool fade_effect) {
 }
 
 
-/*door_funcs = {
-	open = OpenDoor,
-	close = CloseDoor,
-	"walkto": ComeOutDoor
-}*/
 
 bool Program::Fades(int fade, int dir) {
 	// dir: 1=down, -1=up
@@ -921,7 +926,7 @@ void Program::ChangeRoom(SObj new_room, SObj fade_) {
 	}
 }
 
-void Program::ValidVerb(HiValue verb, SObj& object) {
+bool Program::IsValidVerb(SObj verb, SObj object) {
 	TODO
 	/*
  // check params
@@ -1300,74 +1305,95 @@ void Program::StopActor(SObj& actor) {
 
 // walk actor to position
 void Program::WalkTo(SObj& actor, int x, int y) {
+	SObj adata = actor("data");
 	Point actor_cell_pos = GetCellPos(actor);
-	HiValue map = room_curr.MapGet("map");
-	int celx = x / 8 + map.ArrayGet(0).GetInt();
-	int cely = y / 8 + map.ArrayGet(1).GetInt();
+	HiValue map = room_curr("data")("map");
+	int map_x = map(0,0);
+	int map_y = map(1,0);
+	int celx = x / 8 + map_x;
+	int cely = y / 8 + map_y;
 	Point target_cell_pos(celx, cely);
 	
-	TODO
 	// use pathfinding!
-	/*local path = find_path(actor_cell_pos, target_cell_pos, {x, y});
+	FindPath(actor_cell_pos, target_cell_pos, path);
 	
-	actor.moving = 1;
+	actor.Set("moving", 1);
 	
-	for (c = 1, #path) {
-		local p = path[c];
-		// auto-adjust walk-speed for (depth
-		local scaled_speed = actor.walk_speed * (actor.scale || actor.auto_scale);
-		//local y_speed = actor.walk_speed/2 // removed, messes up the a* pathfinding
+	for (int c = 0; c < path.GetCount(); c++) {
+		Point p = path[c];
 		
-		local px, py = (p[1] - room_curr.map[1]) * 8 + 4, (p[2] - room_curr.map[2]) * 8 + 4;
+		// auto-adjust walk-speed for (depth
+		double walk_speed = adata("walk_speed");
+		SObj scale = adata("scale");
+		SObj auto_scale = adata("auto_scale", 1.0);
+		double s = scale ? scale : auto_scale;
+		double scaled_speed = walk_speed * s;
+		
+		//local y_speed = actor.walk_speed/2 // removed, messes up the a* pathfinding
+		SObj rc_map = room_curr("data")("map");
+		int rc_map_x = rc_map[0];
+		int rc_map_y = rc_map[1];
+		int px = (p.x - rc_map_x) * 8 + 4;
+		int py = (p.y - rc_map_y) * 8 + 4;
 		
 		// last cell (walk to precise location, if (clicked in it)
-		if (c == #path && x >= px-4 && x <= px+4 && y >= py-4 && y <= py+4) px, py = x, y;
+		if (c == path.GetCount() && x >= px-4 && x <= px+4 && y >= py-4 && y <= py+4) {
+			px = x;
+			py = y;
+		}
 		
-		local distance = sqrt((px - actor.x) ^ 2 + (py - actor.y) ^ 2);
-		local step_x = scaled_speed * (px - actor.x) / distance;
-		local step_y = scaled_speed * (py - actor.y) / distance;
+		int actor_x = adata("x");
+		int actor_y = adata("y");
+		double distance = sqrt(pow(px - actor_x, 2) + pow(py - actor_y, 2));
+		double step_x = scaled_speed * (px - actor_x) / distance;
+		double step_y = scaled_speed * (py - actor_y) / distance;
 		
 		// only walk if (we're not already there!
 		if (distance > 0) {
 		
 			//walking
 			
-			for (i = 0, distance / scaled_speed - 1) {
+			int lim = distance / scaled_speed - 1;
+			for (int i = 0; i < lim; i++) {
 			
 				// todo: need to somehow recalc here, else walk too fast/slow in depth planes
 				
 				// abort if (actor stopped
-				if (actor.moving == 0) {
-					return
-					}
-				    
-					actor.flip = step_x < 0;
+				int m = adata("moving", 0);
+				if (m == 0) {
+					return;
+				}
+			    
+				adata.Set("flip", step_x < 0);
 				    
 				// choose walk anim based on dir
 				//if (abs(step_x) < abs(step_y) {
 				if (abs(step_x) < scaled_speed / 2) {
 					// vertical walk
-					actor.curr_anim = step_y > 0 ? actor.walk_anim_front : actor.walk_anim_back;
-					actor.face_dir = step_y > 0 ? "face_front" : "face_back";
+					adata.Set("curr_anim", step_y > 0 ? adata("walk_anim_front") : adata("walk_anim_back"));
+					adata.Set("face_dir", step_y > 0 ? "face_front" : "face_back");
 				}
 				else {
 					// horizontal walk
-					actor.curr_anim = actor.walk_anim_side;
+					adata.Set("curr_anim", adata("walk_anim_side"));
+					
 					// face dir (at end of walk)
-					actor.face_dir = actor.flip ? "face_left" : "face_right";
+					adata.Set("face_dir", adata("flip") ? "face_left" : "face_right");
 				}
 				
 				// actually move actor
-				actor.x += step_x;
-				actor.y += step_y;
-				TODO // yield();
+				actor_x = adata("x");
+				actor_y = adata("y");
+				adata.Set("x", actor_x + step_x);
+				adata.Set("y", actor_y + step_y);
 				
+				// yield();
 			}
 			
 		}
 	}
-	actor.moving, actor.curr_anim = 2; //arrived
-	*/
+	
+	adata.Set("moving", 2);
 }
 
 void Program::WaitForActor(SObj& actor) {
@@ -1560,9 +1586,8 @@ void Program::PlayerControl() {
 
 // 1 = z/lmb, 2 = x/rmb, (4=middle)
 void Program::InputButtonPressed(dword button_index) {
-	TODO
+	SObj selected_actor = global.Get("selected_actor");
 	
-/*
 	// abort if (no actor selected at this point
 	if (!selected_actor)
 		return;
@@ -1575,66 +1600,66 @@ void Program::InputButtonPressed(dword button_index) {
 		return;
 	}
 	
-// if (already executing, clear current command
-// (allow abort of commands by) {ing other actions, like walking)
+	// if (already executing, clear current command
+	// (allow abort of commands by) {ing other actions, like walking)
 	if (executing_cmd)
 		ClearCurrCmd();
-		
+	
+	HiValue noun1_curr, noun2_curr;
 	if (hover_curr_verb) {
 		// change verb and now reset any active objects
-		verb_curr, noun1_curr, noun2_curr = GetVerb(hover_curr_verb);
+		verb_curr = GetVerb(hover_curr_verb);
 	}
-	else
-		if (hover_curr_object) {
-			// if (valid obj, complete command
-			// else, abort command (clear verb, etc.)
-			if (button_index == 1) {
-			}
-			// if (already have obj #1
-			if (noun1_curr && !executing_cmd) {
-				// complete with obj #2
-				noun2_curr = hover_curr_object;
-			}
-			else {
-				noun1_curr = hover_curr_object;
-			}
-			
-			if (verb_curr[2] == GetVerb(verb_default)[2]
-				&& hover_curr_object.owner) {
-				// inventory item, perform look-at
-				verb_curr = GetVerb(verbs[verb_default_inventory_index]);
-			}
-			
-			else
-				if (hover_curr_default_verb) {
-					// perform default verb action (if (present)
-					verb_curr, noun1_curr = GetVerb(hover_curr_default_verb), hover_curr_object;
-					// force repaint of command (to reflect default verb)
-					PaintCommand();
-				}
-				
-			// ui arrow clicked
-				else
-					if (hover_curr_arrow) {
-						// up arrow
-						if (hover_curr_arrow == ui_arrows[1]) {
-							if (selected_actor.inv_pos > 0)
-								selected_actor.inv_pos -= 1;
-						}
-						else { // down arrow
-							if (selected_actor.inv_pos + 2 < flr(#selected_actor.inventory/4)) {
-								selected_actor.inv_pos += 1;
-							}
-						}
-						return;
-					}
-			//else
-			// what else could there be? actors!?
+	else if (hover_curr_object) {
+		// if (valid obj, complete command
+		// else, abort command (clear verb, etc.)
+		if (button_index == 1) {
+		}
+		// if (already have obj #1
+		if (noun1_curr && !executing_cmd) {
+			// complete with obj #2
+			noun2_curr = hover_curr_object;
+		}
+		else {
+			noun1_curr = hover_curr_object;
 		}
 		
-	local vc2 = verb_curr[2]
-				;
-	            
+		if (verb_curr[2] == GetVerb(verb_default)[2] && hover_curr_object("owner")) {
+			// inventory item, perform look-at
+			verb_curr = GetVerb(verbs[verb_default]);
+		}
+		
+		else if (hover_curr_default_verb) {
+			// perform default verb action (if (present)
+			verb_curr = GetVerb(hover_curr_default_verb);
+			
+			// force repaint of command (to reflect default verb)
+			//PaintCommand();
+		}
+		
+		// ui arrow clicked
+		else if (hover_curr_arrow) {
+			int inv_pos = selected_actor("inv_pos");
+			
+			// up arrow
+			if (hover_curr_arrow == ui_arrows[1]) {
+				if (inv_pos > 0)
+					inv_pos -= 1;
+			}
+			else { // down arrow
+				int inv_len = selected_actor("inventory").GetArray().GetCount();
+				if (inv_pos + 2 < inv_len/4) {
+					inv_pos += 1;
+				}
+			}
+			return;
+		}
+		//else
+		// what else could there be? actors!?
+	}
+	
+	SObj vc2 = verb_curr;
+	
 	// attempt to use verb on object (if is not already executing verb)
 	if (noun1_curr) {
 		// are we starting a 'use' command?
@@ -1642,79 +1667,100 @@ void Program::InputButtonPressed(dword button_index) {
 			if (noun2_curr) {
 				// 'use' part 2
 			}
-			else
-				if (noun1_curr.use_with && noun1_curr.owner == selected_actor) {
-					// 'use' part 1 (e.g. "use hammer")
-					// wait for (noun2 to be set
-					return;
-				}
+			else if (noun1_curr("use_with") && noun1_curr("owner") == selected_actor) {
+				// 'use' part 1 (e.g. "use hammer")
+				// wait for (noun2 to be set
+				return;
+			}
 		}
 		
 		// execute verb script
 		executing_cmd = true;
-		selected_actor.thread = cocreate(function() {
-			// if (obj not in inventory (or about to give/use it)...
-			if ((!noun1_curr.owner
-				 ? (!HasFlag(Classes(noun1_curr), "class_actor")
-					: vc2 != V_USE))
-			|| noun2_curr) {
-				// walk to use pos and face dir
-				// determine which item we're walking to
-				walk_obj = noun2_curr || noun1_curr;
-				//todo: find nearest usepos if (none set?
-				dest_pos = GetUsePoint(walk_obj);
-				WalkTo(selected_actor, dest_pos.x, dest_pos.y);
-				// abort if (walk was interrupted
-				if (selected_actor.moving != 2) {
-					return;
-				}
-				// face object/actor by default
-				use_dir = walk_obj;
-				// unless a diff dir specified
-				if (walk_obj.use_dir) {
-					use_dir = walk_obj.use_dir;
-				}
-				// turn to use dir
-				doDoAnim(selected_actor, "face_towards", use_dir);
-			}
-			// does current object support active verb?
-			if (ValidVerb(verb_curr, noun1_curr)) {
-				// finally, execute verb script
-				StartScript(noun1_curr.verbs[verb_curr[1]], false, noun1_curr, noun2_curr);
-			}
-			else {
-				// check for door
-				if (HasFlag(Classes(noun1_curr), "class_door")) {
-					// perform default door action
-					//StartScript(function()
-					local func = door_funcs[vc2];
-					if (func)
-						func(noun1_curr, noun1_curr.target_door);
-					//}, false)
-				}
-				else {
-					// e.g. "i don't think that will work"
-					UnsupportedAction(vc2, noun1_curr, noun2_curr);
-				}
-			}
-			// clear current command
-			ClearCurrCmd();
-		}
-										);
-		coresume(selected_actor.thread);
+		StartScript(THISBACK1(VerbScript, vc2), 0);
 	}
 	else if (cursor_y > stage_top && cursor_y < stage_top + 64) {
 		// in map area
 		executing_cmd = true;
+		
 		// attempt to walk to target
-		selected_actor.thread = cocreate(function() {
-			WalkTo(selected_actor, cursor_x + cam_x, cursor_y - stage_top);
-			// clear current command
-			ClearCurrCmd();
+		StartScript(THISBACK(WalkScript), 0);
+	}
+	
+}
+
+
+bool Program::WalkScript() {
+	HiValue selected_actor = global.Get("selected_actor");
+	WalkTo(selected_actor, cursor_x + cam.x, cursor_y - stage_top);
+	
+	// clear current command
+	ClearCurrCmd();
+	return false;
+}
+
+bool Program::VerbScript(HiValue vc2) {
+	// if (obj not in inventory (or about to give/use it)...
+	if ((!noun1_curr("owner")
+			 ? !HasFlag(Classes(noun1_curr), "class_actor")
+			 : vc2 != V_USE)
+		|| noun2_curr) {
+		SObj selected_actor = global.Get("selected_actor");
+		
+		// walk to use pos and face dir
+		// determine which item we're walking to
+		SObj walk_obj = noun2_curr || noun1_curr;
+		
+		//todo: find nearest usepos if (none set?
+		Point dest_pos = GetUsePoint(walk_obj);
+		WalkTo(selected_actor, dest_pos.x, dest_pos.y);
+		
+		// abort if (walk was interrupted
+		int m = selected_actor("moving");
+		if (m != 2) {
+			return (false);
 		}
-										);
-		coresume(selected_actor.thread);
-	}*/
+		
+		// face object/actor by default
+		int use_dir = walk_obj;
+		
+		// unless a diff dir specified
+		int walk_dir = walk_obj("use_dir");
+		if (walk_dir) {
+			use_dir = walk_dir;
+		}
+		
+		// turn to use dir
+		DoAnim(selected_actor, "face_towards", use_dir);
+	}
+	// does current object support active verb?
+	if (IsValidVerb(verb_curr, noun1_curr)) {
+		// finally, execute verb script
+		SObj nc_verbs = noun1_curr("verbs");
+		String verb_name = verb_curr("name");
+		SObj verb_lambda = nc_verbs(verb_name);
+		ASSERT(verb_lambda.IsLambda());
+		StartScriptHi(0, verb_lambda, false, noun1_curr, noun2_curr);
+	}
+	else {
+		// check for door
+		if (HasFlag(Classes(noun1_curr), "class_door")) {
+			// perform default door action
+			String s = vc2;
+			ASSERT(s.GetCount());
+			Gate0 func;
+			if      (s == "open")	OpenDoor(noun1_curr, noun1_curr("target_door"));
+			else if (s == "close")	CloseDoor(noun1_curr, noun1_curr("target_door"));
+			else if (s == "walkto")	ComeOutDoor(noun1_curr, noun1_curr("target_door"), 0);
+		}
+		else {
+			// e.g. "i don't think that will work"
+			UnsupportedAction(vc2, noun1_curr, noun2_curr);
+		}
+	}
+	
+	// clear current command
+	ClearCurrCmd();
+	return false;
 }
 
 
@@ -1824,10 +1870,11 @@ void Program::CheckCollisions() {
 		
 		// default to walkto (if (nothing set)
 		if (!verb_curr)
-			verb_curr = GetVerb(verb_default_inventory_index);
+			verb_curr = GetVerb(verb_default);
 		
 		// update "default" verb for (hovered object (if (any)
-		hover_curr_default_verb = hover_curr_object ? FindDefaultVerb(hover_curr_object) : hover_curr_default_verb;
+		hover_curr_default_verb =
+			hover_curr_object ? FindDefaultVerb(hover_curr_object) : hover_curr_default_verb;
 	}
 }
 
@@ -1949,12 +1996,12 @@ bool Program::ReadGame() {
 		return false;
 	}*/
 	
-	int verb_default_inventory_index = global.Get("verb_default_inventory_index", -1);
-	if (verb_default_inventory_index < 0 || verb_default_inventory_index >= verb_idx.GetCount()) {
+	int verb_default = global.Get("verb_default", -1);
+	if (verb_default < 0 || verb_default >= verb_idx.GetCount()) {
 		LOG("Invalid default inventory index");
 		return false;
 	}
-	verb_curr = verbs[verb_default_inventory_index];
+	verb_curr = verbs[verb_default];
 	
 	
 	//LOG(game.ToString());
@@ -2073,6 +2120,9 @@ Point Program::CenterCamera(SObj& val) {
 	// keep camera within "room" bounds
 	int x = 0;
 	
+	DUMP(val);
+	TODO;
+	
 	if (val.IsMap())
 		x = val.MapGet("x").GetInt();
 	
@@ -2080,7 +2130,7 @@ Point Program::CenterCamera(SObj& val) {
 		x = val.GetInt();
 	
 	//int map_w = room_curr.MapGet("map_w").GetInt();
-	int map_w = room_curr.MapGet("data").MapGet("map").ArrayGet(2).GetInt();
+	int map_w = room_curr("data")("map")(2);
 	
 	Point pt(0,0);
 	pt.x = Mid(0, x-64, (map_w*8) -128 );
@@ -2090,13 +2140,30 @@ Point Program::CenterCamera(SObj& val) {
 
 
 Point Program::GetCellPos(SObj& obj) {
-	TODO
-	//return { flr(obj.x/8) + room_curr.map[1], flr(obj.y/8) + room_curr.map[2] };
+	Point p;
+	int map_x = room_curr("data")("map")(0,0);
+	int map_y = room_curr("data")("map")(1,0);
+	int obj_x = obj("data")("x");
+	int obj_y = obj("data")("y");
+	p.x = obj_x/8 + map_x;
+	p.y = obj_y/8 + map_y;
+	return p;
 }
 
 bool Program::IsCellWalkable(int celx, int cely) {
-	TODO
-	//return fget(mget(celx, cely),0);
+	const uint16* m = map.Begin();
+	int img_w = map_sz.cx;
+	int img_h = map_sz.cy;
+	ASSERT(celx >= 0 && celx < img_w);
+	ASSERT(cely >= 0 && cely < img_h);
+	int i = (cely * img_w) + celx;
+	uint16 tile = *(m + i);
+	
+	ASSERT(tile >= 0 && tile < gff.GetCount());
+	uint16 flag = *(gff + tile);
+	
+	bool r = flag & 1;
+	return r;
 }
 
 
@@ -2157,6 +2224,7 @@ bool Program::HasFlag(const SObj& obj, String key) {
 		return map.Find(key) >= 0;
 	}
 	else */
+	//DUMP(obj);
 	if (obj.IsArray()) {
 		const auto& arr = obj.GetArray();
 		for (const auto& v : arr)
@@ -2167,20 +2235,21 @@ bool Program::HasFlag(const SObj& obj, String key) {
 }
 
 
-void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_off_y) {
-	int x = obj.MapGet("x").GetInt();
-	int y = obj.MapGet("y").GetInt();
+void Program::RecalculateBounds(SObj obj, int w, int h, int cam_off_x, int cam_off_y) {
+	SObj data = obj("data");
+	int x = data("x");
+	int y = data("y");
 	
 	// offset for (actors?
 	if (HasFlag(Classes(obj), "class_actor")) {
-		int w = obj.MapGet("w").GetInt();
-		int h = obj.MapGet("h").GetInt();
+		int w = data("w");
+		int h = data("h");
 		int offset_x = x - (w * 8) / 2;
 		int offset_y = y - (h * 8) + 1;
 		x = offset_x;
 		y = offset_y;
-		SrcMapSet(obj, "offset_x", offset_x);
-		SrcMapSet(obj, "offset_y", offset_y);
+		SrcMapSet(data, "offset_x", offset_x);
+		SrcMapSet(data, "offset_y", offset_y);
 	}
 	
 	HiValue bounds;
@@ -2191,7 +2260,7 @@ void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_
 	SrcMapSet(bounds, "y1", y + h + stage_top - 1);
 	SrcMapSet(bounds, "cam_off_x", cam_off_x);
 	SrcMapSet(bounds, "cam_off_y", cam_off_y);
-	SrcMapSet(obj, "bounds", bounds);
+	SrcMapSet(data, "bounds", bounds);
 }
 
 
@@ -2200,119 +2269,112 @@ void Program::RecalculateBounds(SObj& obj, int w, int h, int cam_off_x, int cam_
 // a* pathfinding functions
 //
 
-/*
-function find_path(start, goal) {
-	local frontier, came_from, cost_so_far, lowest_dist, lowest_dist_node, current = {}, {}, {};
-	insert(frontier, start, 0);
-	// came_from[vectoindex(start)] = NULL
-	cost_so_far[vectoindex(start)] = 0;
+double Program::GetHeuristic(Point chk, Point goal) {
+	double h = max(abs(goal.x - chk.x), abs(goal.y - chk.y)) + min(abs(goal.x - chk.x), abs(goal.y - chk.y)) * .414;
+	return h;
+}
+
+void Program::FindPath(Point start, Point goal, Vector<Point>& path) {
+	path.SetCount(0);
 	
-	while (#frontier > 0 && #frontier < 1000) {
+	struct Node {
+		Point pt;
+		Node* came_from;
+		double cost;
+		double heuristic;
+		
+		void Set(Point p, Node* came, double c, double h) {pt = p; came = came_from; cost = c; heuristic = h;}
+	};
+	ArrayMap<Point, Node> frontier, visited;
+	frontier.Add(start).Set(start, 0, 0, GetDistance(start, goal));
+	
+	const int frontier_limit = 1000;
+	
+	SObj data = room_curr("data");
+	int rc_map_x = ("map")[0];
+	int rc_map_y = data("map")[1];
+	int rc_map_w = data("map")[2];
+	int rc_map_h = data("map")[3];
+	Node* lowest_dist_node = 0;
+	while (!frontier.IsEmpty() && frontier.GetCount() < frontier_limit) {
+		double lowest_dist = DBL_MAX;
+		lowest_dist_node = 0;
+		int lowest_dist_i = -1, i = 0;
+		for (Node& n : frontier.GetValues()) {
+			bool fast_exit = n.pt == goal;
+			if (fast_exit || n.heuristic < lowest_dist) {
+				lowest_dist = n.heuristic;
+				lowest_dist_node = &n;
+				lowest_dist_i = i;
+				if (fast_exit)
+					break;
+			}
+			i++;
+		}
+		
 		// pop the last element off a table
-		current = frontier[#frontier][1];
-		del(frontier, frontier[#frontier]);
+		Node& current = *lowest_dist_node;
+		visited.Add(current.pt, frontier.Detach(lowest_dist_i));
 		
-		if (vectoindex(current) == vectoindex(goal)) break;
+		if (current.pt == goal)
+			break;
 		
-		//local neighbours = getneighbours(current)
-		local neighbours = {};
-		for (x = -1, 1) {
-			for (y = -1, 1, x == 0 ? 2 : 1) {
-				local chk_x, chk_y = current[1] + x, current[2] + y;
+		for (int x = -1; x <= 1; x++) {
+			for (int y = -1; y <= 1; y++) {
+				if (x == 0 && y == 0) continue;
 				
-				if (chk_x >= room_curr.map[1] && chk_x <= room_curr.map[1] + room_curr.map_w
-					and chk_y >= room_curr.map[2] && chk_y <= room_curr.map[2] + room_curr.map_h
-					and IsCellWalkable(chk_x, chk_y)
+				Point next_pt(current.pt.x + x, current.pt.y + y);
+				
+				if (    next_pt.x >= rc_map_x && next_pt.x <= rc_map_x + rc_map_w
+					and next_pt.y >= rc_map_y && next_pt.y <= rc_map_y + rc_map_h
+					and IsCellWalkable(next_pt.x, next_pt.y)
+					
 					// squeeze check for (corners
 					and((abs(x) != abs(y))
-						or IsCellWalkable(chk_x, current[2])
-						or IsCellWalkable(chk_x - x, chk_y)
+						or IsCellWalkable(next_pt.x, current.pt.y)
+						or IsCellWalkable(next_pt.x - x, next_pt.y)
 						or enable_diag_squeeze)) {
 					// process a valid neighbor
-					local next = {chk_x, chk_y};
-					local nextindex = vectoindex(next);
-					local new_cost = cost_so_far[vectoindex(current)] + (x * y == 0 ? 1.0 : 1.414); // diagonals cost more
+					double new_cost = current.cost + (x * y == 0 ? 1.0 : 1.414); // diagonals cost more
 					
-					if (!cost_so_far[nextindex] || new_cost < cost_so_far[nextindex]) {
-						cost_so_far[nextindex] = new_cost;
-						local h = max(abs(goal[1] - chk_x), abs(goal[2] - chk_y)) + min(abs(goal[1] - chk_x), abs(goal[2] - chk_y)) * .414;
-						insert(frontier, next, new_cost + h);
-						came_from[nextindex] = current;
-						
-						if (!lowest_dist || h < lowest_dist) {
-							lowest_dist = h;
-							lowest_dist_node = nextindex;
-							lowest_dist_neigh = next;
-						}
+					int next_i = visited.Find(next_pt);
+					Node* next = next_i >= 0 ? &visited[next_i] : 0;
+					if (!next || new_cost < next->cost) {
+						if (next)
+							frontier.Add(next_pt, visited.Detach(next_i));
+						else
+							next = &frontier.Add(next_pt);
+						next->pt = next_pt;
+						next->cost = new_cost;
+						next->came_from = &current;
+						next->heuristic = new_cost + GetHeuristic(next_pt, goal);
 					}
 				}
 			}
 		}
 	}
+	if (!lowest_dist_node)
+		return;
 	
-// now find goal..
-	local path = {};
-	current = came_from[vectoindex(goal)];
-	
-	if (current) {
-		// add "goal" to path
-		add(path, goal);
-// check for ("no goal found"
-	}
-	else
-		if (lowest_dist_node) {
-			// start from closest to goal instead
-			current = came_from[lowest_dist_node];
-			add(path, lowest_dist_neigh);
-		}
-		
-	if (current) {
-		local cindex, sindex = vectoindex(current), vectoindex(start);
-		
-		while (cindex != sindex) {
-			add(path, current);
-			current = came_from[cindex];
-			cindex = vectoindex(current);
-		}
-		
-		//reverse(path)
-		for (i = 1, #path/2) {
-			local temp = path[i];
-			local oppindex = #path-(i-1);
-			path[i] = path[oppindex];
-			path[oppindex] = temp;
+	int i = 0;
+	Node* n = lowest_dist_node;
+	while (n) {
+		path.Add(n->pt);
+		n = n->came_from;
+		if (++i >= 10000) {
+			ASSERT(0);
+			path.SetCount(0);
+			return;
 		}
 	}
+	int c = path.GetCount();
+	int c_2 = c / 2;
+	for(int i = 0; i < c_2; i++)
+		Swap(path[i], path[c-1-i]);
 	
-	return path;
 }
 
 
-
-
-// insert into table and sort by priority
-void Program::insert(t, val, p) {
-	local new = {val, p};
- if (#t >= 1) {
-		for (i = #t + 1, 2, -1) {
-   local next = t[i-1];
-   if (p < next[2]) {
-				t[i] = new; // found the right spot, insert the new item
-    return;
-   }
-   else{
-				t[i] = next; // copy the next item to this spot
-   }
-  }
- }
-	t[1] = new; // empty table || new highest p
-}
-
-// translate a 2d x,y coordinate to a 1d index and back again
-void Program::vectoindex(vec) {
-	return ((vec[1]+1) * 16) + vec[2];
-}
-*/
 
 
 
@@ -2406,8 +2468,8 @@ bool Program::IsCursorColliding(const Sentence& obj) {
 
 bool Program::IsCursorColliding(const SObj& obj) {
 	// check params / not in cutscene
-	HiValue bounds = obj.MapGet("bounds");
-	if (!obj.MapGet("bounds") || cutscene_curr) return false;
+	HiValue bounds = obj("data")("bounds");
+	if (!bounds || cutscene_curr) return false;
 
 	int cam_off_x = bounds["cam_off_x"];
 	int x1 = bounds["x1"];
@@ -2468,25 +2530,28 @@ bool Program::Init() {
 	return true;
 }
 
-Point Program::GetXY(SObj& o) {
+Point Program::GetXY(SObj o) {
+	SObj data = o["data"];
 	return Point(
-		o.MapGet("x").GetInt(),
-		o.MapGet("y").GetInt());
+		data("x").GetInt(),
+		data("y").GetInt());
 }
 
-Point Program::GetOffset(SObj& o) {
+Point Program::GetOffset(SObj o) {
+	SObj data = o["data"];
 	return Point(
-		o.MapGet("offset_x").GetInt(),
-		o.MapGet("offset_y").GetInt());
+		data("offset_x").GetInt(),
+		data("offset_y").GetInt());
 }
 
-Size Program::GetSize(SObj& o) {
+Size Program::GetSize(SObj o) {
+	SObj data = o["data"];
 	return Size(
-		o.MapGet("w").GetInt(),
-		o.MapGet("h").GetInt());
+		data("w").GetInt(),
+		data("h").GetInt());
 }
 
-Program::UsePos Program::GetUsePos(SObj& o) {
+Program::UsePos Program::GetUsePos(SObj o) {
 	TODO
 	/*
 	UsePos obj_use_pos =
@@ -2496,22 +2561,25 @@ Program::UsePos Program::GetUsePos(SObj& o) {
 	*/
 }
 
-StateType Program::GetState(SObj& o) {
-	String s = o.MapGet("state");
+StateType Program::GetState(SObj o) {
+	SObj data = o["data"];
+	String s = data("state");
 	if (s == "state_open")   return STATE_OPEN;
 	if (s == "state_closed") return STATE_CLOSED;
 	ASSERT(0);
 	return STATE_CLOSED;
 }
 
-void Program::SetState(SObj& o, StateType s) {
-	if      (s == STATE_OPEN)	SrcMapSet(o, "state", "state_open");
-	else if (s == STATE_CLOSED)	SrcMapSet(o, "state", "state_closed");
+void Program::SetState(SObj o, StateType s) {
+	SObj data = o["data"];
+	if      (s == STATE_OPEN)	SrcMapSet(data, "state", "state_open");
+	else if (s == STATE_CLOSED)	SrcMapSet(data, "state", "state_closed");
 	else ASSERT(0);
 }
 
-FaceDir Program::GetFaceDir(SObj& o) {
-	String s = o.MapGet("face_dir");
+FaceDir Program::GetFaceDir(SObj o) {
+	SObj data = o["data"];
+	String s = data.MapGet("face_dir");
 	ASSERT(s.GetCount());
 	//String s = o.MapGet("state");
 	if (s == "face_front")	return FACE_FRONT;
@@ -2532,7 +2600,7 @@ String Program::GetFaceString(FaceDir d) {
 	return String();
 }
 
-void Program::SetSelectedActor(SObj& o) {
+void Program::SetSelectedActor(SObj o) {
 	global.GetAdd("selected_actor") = o;
 }
 
@@ -2871,19 +2939,14 @@ const char* builtin_map = R"MULTILINE(
 
 
 void ProgramDraw::LoadBuiltinGfx() {
-	LoadBuiltinGfxStr(builtin_gfx, gfx);
-	LoadBuiltinGfxStr(builtin_lbl, lbl);
-	LoadBuiltinGfxStr(builtin_gff, gff);
-	LoadBuiltinGfxStr(builtin_map, map, map_sz);
-	
+	Program::LoadBuiltinGfxStr(builtin_gfx, gfx_data, gfx_sz);
+	Program::LoadBuiltinGfxStr(builtin_lbl, lbl_data, lbl_sz);
+	GetPaletteImage(gfx_data, gfx_sz, gfx);
+	GetPaletteImage(lbl_data, lbl_sz, lbl);
 }
-
+/*
 void ProgramDraw::LoadBuiltinGfxStr(const char* s, Image& out) {
 	if (*s == '\n') s++;
-	
-	thread_local static Vector<RGBA> data;
-	data.SetCount(0);
-	data.Reserve(10000);
 	
 	int line = 0;
 	int max_col = 0;
@@ -2924,21 +2987,41 @@ void ProgramDraw::LoadBuiltinGfxStr(const char* s, Image& out) {
 		col++;
 	}
 	
-	Size res(max_col, line);
-	ImageBuffer ib(res);
-	RGBA* it = ib.Begin();
-	RGBA* end = ib.End();
-	int a = end - it;
-	int b = data.GetCount();
-	ASSERT(a == b);
-	const RGBA* src = data.Begin();
-	while (it != end)
-		*it++ = *src++;
+}
+*/
+void Program::LoadBuiltinGfxStr(const char* s, Vector<byte>& out, Size& sz) {
+	if (*s == '\n') s++;
 	
-	out = ib;
+	out.SetCount(0);
+	out.Reserve(10000);
+	
+	int line = 0;
+	int max_col = 0;
+	int col = 0;
+	while (1) {
+		int chr0 = *s++;
+		
+		if (chr0 == '\n') {
+			line++;
+			ASSERT(max_col == 0 || col == max_col);
+			ASSERT(col > 0);
+			max_col = max(max_col, col);
+			col = 0;
+		}
+		else if (chr0 == 0)
+			break;
+		else {
+			int n = HexDigitAny(chr0);
+			out.Add(n);
+			
+			col++;
+		}
+	}
+	
+	sz = Size(max_col, line);
 }
 
-void ProgramDraw::LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz) {
+void Program::LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz) {
 	if (*s == '\n') s++;
 	
 	out.SetCount(0);
@@ -2975,6 +3058,7 @@ void ProgramDraw::LoadBuiltinGfxStr(const char* s, Vector<uint16>& out, Size& sz
 	
 	sz = Size(max_col, line);
 }
+
 
 
 }
