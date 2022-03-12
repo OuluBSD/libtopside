@@ -370,4 +370,17 @@ bool IsTrue(const HiValue& a)
 	return a.GetCount();
 }
 
+
+
+
+#if LIBTOPSIDE
+String StdFormat(const Value& q) {
+	TODO
+}
+#endif
+
+String StdFormatObj(const Object& q) {
+	TODO
+}
+
 }

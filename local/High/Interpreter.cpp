@@ -1,5 +1,5 @@
 #include <High/High.h>
-
+#if !USE_HIGH_BYTECODE
 
 namespace UPP {
 
@@ -1275,14 +1275,6 @@ void  Hi::Run()
 }
 
 
-#if LIBTOPSIDE
-String StdFormat(const Value& q) {
-	TODO
 }
+
 #endif
-
-String StdFormatObj(const Object& q) {
-	TODO
-}
-
-}

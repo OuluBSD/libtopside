@@ -598,8 +598,17 @@ void ProgramDraw::PaintObject(Draw& d, SObj o) {
 	ReplaceColors(o);
 	               
 	// check for (custom draw
-	if (o("draw")) {
-		TODO //o.draw(o);
+	HiValue draw = o("draw");
+	if (draw && draw.IsLambda()) {
+		try {
+			Vector<HiValue> arg;
+			arg << o;
+			Execute(p->global, 0, draw, arg, INT_MAX);
+		}
+		catch(CParser::Error e) {
+			LOG("ProgramDraw::PaintObject: error: " << e << "\n");
+			ASSERT(0);
+		}
 	}
 	
 	else {
