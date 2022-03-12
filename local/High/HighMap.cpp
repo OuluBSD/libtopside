@@ -63,14 +63,26 @@ void HiValue::Set(HiValue key, HiValue value)
 	if(q >= 0) {
 		m[q] = value;
 	}
-	else if (!value.IsVoid()) {
+	else /*if (!value.IsVoid())*/ {
 		map->count++;
 		m.Add(key, value);
 	}
-	else {
+	/*else {
+		DUMP(*this);
 		ASSERT(0);
-	}
+	}*/
 }
+
+/*HiValue HiValue::operator()(HiValue key) const {
+	if (!IsMap())
+		return HiValue();
+	VectorMap<HiValue, HiValue>& m = map->map; // CloneMap();
+	int q = m.Find(key);
+	if(q >= 0)
+		return m[q];
+	else
+		return HiValue();
+}*/
 
 HiValue HiValue::operator()(String key) const {
 	if (!IsMap())

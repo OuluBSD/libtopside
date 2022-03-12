@@ -110,16 +110,15 @@ main() {
 	
 	
 	:obj_switch_tent = {
-		"data": {
-			"name": "purple tentacle",
-			"state": "state_here",
-			"state_here": 170,
-			"trans_col": 15,
-			"x": 1,
-			"y": 1,
-			"w": 1,
-			"h": 1
-		},
+		"name": "purple tentacle",
+		"state": "state_here",
+		"state_here": 170,
+		"trans_col": 15,
+		"x": 1,
+		"y": 1,
+		"w": 1,
+		"h": 1,
+		
 		"verbs": {
 			"use": @(&me) {
 				:selected_actor = :purp_tentacle
@@ -129,16 +128,15 @@ main() {
 	};
 	
 	:obj_switch_player = {
-		"data": {
-			"name": "humanoid",
-			"state": "state_here",
-			"state_here": 209,
-			"trans_col": 11,
-			"x": 1,
-			"y": 1,
-			"w": 1,
-			"h": 1
-		},
+		"name": "humanoid",
+		"state": "state_here",
+		"state_here": 209,
+		"trans_col": 11,
+		"x": 1,
+		"y": 1,
+		"w": 1,
+		"h": 1,
+		
 		"verbs": {
 			"use": @(&me) {
 				:selected_actor = :main_actor
@@ -148,17 +146,16 @@ main() {
 	};
 	
 	:obj_duck = {
-		"data": {
-			"name": "rubber duck",
-			"state": "state_here",
-			"state_here": 142,
-			"trans_col": 12,
-			"x": 1,
-			"y": 1,
-			"w": 1,
-			"h": 1,
-			"classes":["class_pickupable"]
-		},
+		"name": "rubber duck",
+		"state": "state_here",
+		"state_here": 142,
+		"trans_col": 12,
+		"x": 1,
+		"y": 1,
+		"w": 1,
+		"h": 1,
+		"classes":["class_pickupable"],
+		
 		"verbs": {
 			"pickup": @(&me) {
 				pickup_obj(me);
@@ -198,9 +195,8 @@ main() {
 	};
 
 	:rm_title = {
-		"data": {
-			"map":[0, 16]
-		},
+		"map":[0, 16],
+		
 		"objects": [],
 		"enter": @(me) {
 			cutscene(
@@ -216,11 +212,10 @@ main() {
 	
 	//ground floor, outside (front):
 	:obj_outside_stairs = {
-		"data": {
-			"x": 1,
-			"y": 1,
-			"classes": ["class_untouchable"]
-		},
+		"x": 1,
+		"y": 1,
+		"classes": ["class_untouchable"],
+		
 		"draw": @(&me) {
 			// switch transparency
 			set_trans_col(8, true);
@@ -231,65 +226,59 @@ main() {
 	};
 	
 	:obj_rail_left = {
-		"data": {
-			"state": "state_here",
-			"x": 80,
-			"y": 24,
-			"w": 1,
-			"h": 2,
-			"state_here": 47,
-			"trans_col": 8,
-			"repeat_x": 8,
-			"classes":["class_untouchable"]
-		}
+		"state": "state_here",
+		"x": 80,
+		"y": 24,
+		"w": 1,
+		"h": 2,
+		"state_here": 47,
+		"trans_col": 8,
+		"repeat_x": 8,
+		"classes":["class_untouchable"]
 	};
 	
 	:obj_rail_right = {
-		"data": {
-			"state": "state_here",
-			"x": 176,
-			"y": 24,
-			"w": 1,
-			"h": 2,
-			"state_here": 47,
-			"trans_col": 8,
-			"repeat_x": 8,
-			"classes": ["class_untouchable"]
-		}
+		"state": "state_here",
+		"x": 176,
+		"y": 24,
+		"w": 1,
+		"h": 2,
+		"state_here": 47,
+		"trans_col": 8,
+		"repeat_x": 8,
+		"classes": ["class_untouchable"]
 	};
 	
 	:obj_front_door = {
-		"data": {
-			"name": "front door",
-			"state": "state_closed",
-			"x": 152,
-			"y": 8,
-			"w": 1,
-			"h": 3,
-			"state_closed": 78,
-			"flip_x": "true",
-			"classes":["class_openable", "class_door"],
-			"use_dir": "face_back"
-		},
+		"name": "front door",
+		"state": "state_closed",
+		"x": 152,
+		"y": 8,
+		"w": 1,
+		"h": 3,
+		"state_closed": 78,
+		"flip_x": "true",
+		"classes":["class_openable", "class_door"],
+		"use_dir": "face_back",
+		
 		"init": @(&me) {
 			me.target_door = obj_front_door_inside,
 		}
 	};
 	
 	:obj_bucket = {
-		"data": {
-			"name": "bucket",
-			"state": "state_open",
-			"x": 208,
-			"y": 48,
-			"w": 1,
-			"h": 1,
-			"state_closed": 143,
-			"state_open": 159,
-			"trans_col": 15,
-			"use_with": "true",
-			"classes": ["class_pickupable"]
-		},
+		"name": "bucket",
+		"state": "state_open",
+		"x": 208,
+		"y": 48,
+		"w": 1,
+		"h": 1,
+		"state_closed": 143,
+		"state_open": 159,
+		"trans_col": 15,
+		"use_with": "true",
+		"classes": ["class_pickupable"],
+		
 		"verbs": {
 			"lookat": @(&me) {
 				say_line("it's an old bucket");
@@ -315,10 +304,9 @@ main() {
 	};
 	
 	:rm_outside = {
-		"data": {
-			"map": [0, 24, 31, 31],
-			"autodepth_scale": [0.75, 1]
-		},
+		"map": [0, 24, 31, 31],
+		"autodepth_scale": [0.75, 1],
+		
 		"objects": [
 			:obj_outside_stairs,
 			:obj_rail_left,
@@ -364,33 +352,31 @@ main() {
 	
 	// hall
 	:obj_front_door_inside = {
-		"data": {
-			"name": "front door",
-			"state": "state_closed",
-			"x": 8,
-			"y": 16,
-			"z": 1,
-			"w": 1,
-			"h": 4,
-			"state_closed": 79,
-			"classes":["class_door"],
-			"use_pos": "pos_right",
-			"use_dir": "face_left"
-		},
+		"name": "front door",
+		"state": "state_closed",
+		"x": 8,
+		"y": 16,
+		"z": 1,
+		"w": 1,
+		"h": 4,
+		"state_closed": 79,
+		"classes":["class_door"],
+		"use_pos": "pos_right",
+		"use_dir": "face_left",
+		
 		"init": @(&me) {
 			me.target_door = obj_front_door;
 		}
 	};
 	
 	:obj_clock = {
-		"data": {
-			"name": "clock",
-			"x": 32,
-			"y": 0,
-			"w": 2,
-			"h": 5,
-			"z": 2
-		},
+		"name": "clock",
+		"x": 32,
+		"y": 0,
+		"w": 2,
+		"h": 5,
+		"z": 2,
+		
 		"draw": @(&me) {
 			// switch transparency
 			set_trans_col(8, true);
@@ -406,12 +392,11 @@ main() {
 	};
 	
 	:obj_pendulum = {
-		"data": {
-			"x": 40,
-			"y": 20,
-			"w": 1,
-			"z": 1
-		},
+		"x": 40,
+		"y": 20,
+		"w": 1,
+		"z": 1,
+		
 		"draw": @(&me) {
 			rectfill(35, 20, 43, 56, 0);
 			line(me.x, me.y, obj_pendulum.bobx, obj_pendulum.boby, 9);
@@ -420,15 +405,14 @@ main() {
 	};
 	
 	:obj_inside_stairs = {
-		"data": {
-			"x": 1,
-			"y": 1,
-			"w": 1,
-			"h": 1,
-			"state": "state_here",
-			"state_here": 3,
-			"classes": ["class_untouchable"]
-		},
+		"x": 1,
+		"y": 1,
+		"w": 1,
+		"h": 1,
+		"state": "state_here",
+		"state_here": 3,
+		"classes": ["class_untouchable"],
+		
 		"draw": @(&me) {
 			// switch transparency
 			set_trans_col(8, true);
@@ -439,16 +423,15 @@ main() {
 	};
 	
 	:obj_hall_rail = {
-		"data": {
-			"state": "state_here",
-			"x": 1,
-			"y": 1,
-			"w": 1,
-			"h": 2,
-			"z": 30,
-			"state_here": 3,
-			"classes": ["class_untouchable"]
-		},
+		"state": "state_here",
+		"x": 1,
+		"y": 1,
+		"w": 1,
+		"h": 2,
+		"z": 30,
+		"state_here": 3,
+		"classes": ["class_untouchable"],
+		
 		"draw": @(&me) {
 			// switch transparency
 			set_trans_col(8, true);
@@ -459,16 +442,15 @@ main() {
 	};
 	
 	:obj_hall_exit_landing = {
-		"data": {
-			"name": "upstairs",
-			"state": "state_open",
-			"x": 106,
-			"y": 0,
-			"w": 3,
-			"h": 2,
-			"use_pos": "pos_center",
-			"use_dir": "face_back"
-		},
+		"name": "upstairs",
+		"state": "state_open",
+		"x": 106,
+		"y": 0,
+		"w": 3,
+		"h": 2,
+		"use_pos": "pos_center",
+		"use_dir": "face_back",
+		
 		"verbs": {
 			"walkto": @(&me) {
 				come_out_door(me, obj_landing_exit_hall);
@@ -477,15 +459,14 @@ main() {
 	};
 	
 	:obj_hall_door_library = {
-		"data": {
-			"name": "library",
-			"state": "state_open",
-			"x": 136,
-			"y": 16,
-			"w": 1,
-			"h": 3,
-			"use_dir": "face_back"
-		},
+		"name": "library",
+		"state": "state_open",
+		"x": 136,
+		"y": 16,
+		"w": 1,
+		"h": 3,
+		"use_dir": "face_back",
+		
 		"verbs": {
 			"walkto": @(&me) {
 				come_out_door(me, obj_library_door_hall);
@@ -494,16 +475,15 @@ main() {
 	};
 	
 	:obj_hall_door_kitchen = {
-		"data": {
-			"name": "kitchen",
-			"state": "state_open",
-			"x": 176,
-			"y": 16,
-			"w": 1,
-			"h": 4,
-			"use_pos": "pos_left",
-			"use_dir": "face_right"
-		},
+		"name": "kitchen",
+		"state": "state_open",
+		"x": 176,
+		"y": 16,
+		"w": 1,
+		"h": 4,
+		"use_pos": "pos_left",
+		"use_dir": "face_right",
+		
 		"verbs": {
 			"walkto": @(&me) {
 				come_out_door(me, obj_kitchen_door_hall);
@@ -512,12 +492,11 @@ main() {
 	};
 	
 	:rm_hall = {
-		"data": {
-			"map": [32, 24, 55, 31],
-			"col_replace": [5, 2],
-		    "autodepth_pos": [40,50],
-		    "autodepth_scale": [0.82, 1]
-		},
+		"map": [32, 24, 55, 31],
+		"col_replace": [5, 2],
+	    "autodepth_pos": [40,50],
+	    "autodepth_scale": [0.82, 1],
+		
 		"objects": [
 			//:obj_spinning_top,
 			:obj_clock,
@@ -569,34 +548,32 @@ main() {
 	
 	// library
 	:obj_library_door_hall = {
-		"data": {
-			"name": "hall",
-			"state": "state_open",
-			"x": 48,
-			"y": 16,
-			"w": 1,
-			"h": 3,
-			"state_open": 128,
-			"use_dir": "face_back",
-			"classes": ["class_door"],
-			"lighting": 1
-		},
+		"name": "hall",
+		"state": "state_open",
+		"x": 48,
+		"y": 16,
+		"w": 1,
+		"h": 3,
+		"state_open": 128,
+		"use_dir": "face_back",
+		"classes": ["class_door"],
+		"lighting": 1,
+		
 		"init": @(&me) {
 			me.target_door = obj_hall_door_library;
 		}
 	};
 	
 	:obj_lightswitch = {
-		"data": {
-			"name": "light switch",
-			"state": "state_here",
-			"x": 56,
-			"y": 23,
-			"w": 1,
-			"h": 1,
-			"state_here": 125,
-			"lighting": 0.6
-		},
+		"name": "light switch",
+		"state": "state_here",
+		"x": 56,
+		"y": 23,
+		"w": 1,
+		"h": 1,
+		"state_here": 125,
+		"lighting": 0.6,
+		
 		"verbs": {
 			"use": @(&me) {
 				if (me.on) {
@@ -616,17 +593,16 @@ main() {
 	};
 	
 	:obj_fire = {
-		"data": {
-			"name": "fire",
-			"x": 88,
-			"y": 32,
-			"w": 1,
-			"h": 1,
-			"state": 1,
-			"states": [81, 82, 83],
-			"use_pos": [97, 42],
-			"lighting": 1
-		},
+		"name": "fire",
+		"x": 88,
+		"y": 32,
+		"w": 1,
+		"h": 1,
+		"state": 1,
+		"states": [81, 82, 83],
+		"use_pos": [97, 42],
+		"lighting": 1,
+		
 		// "dependent_on": "obj_front_door_inside",
 		// "dependent_on_state": "state_open",
 		"verbs": {
@@ -649,35 +625,33 @@ main() {
 	};
 	
 	:obj_library_secret_panel = {
-		"data": {
-			"state": "state_closed",
-			"x": 120,
-			"y": 16,
-			"z": -1,
-			"w": 1,
-			"h": 3,
-			"state_closed": 80,
-			"state_open": 80,
-			"classes": ["class_untouchable"],
-			"use_dir": "face_back"
-		},
+		"state": "state_closed",
+		"x": 120,
+		"y": 16,
+		"z": -1,
+		"w": 1,
+		"h": 3,
+		"state_closed": 80,
+		"state_open": 80,
+		"classes": ["class_untouchable"],
+		"use_dir": "face_back",
+		
 		"verbs": {
 		}
 	};
 	
 	:obj_library_door_secret = {
-		"data": {
-			"name": "secret passage",
-			"state": "state_closed",
-			"x": 120,
-			"y": 16,
-			"z": -10,
-			"w": 1,
-			"h": 3,
-			"state_closed": 77,
-			"use_dir": "face_back",
-			"dependent_on_state": "state_open"
-		},
+		"name": "secret passage",
+		"state": "state_closed",
+		"x": 120,
+		"y": 16,
+		"z": -10,
+		"w": 1,
+		"h": 3,
+		"state_closed": 77,
+		"use_dir": "face_back",
+		"dependent_on_state": "state_open",
+		
 		"dependent_on": "obj_library_secret_panel",
 		"dependent_on_state": "state_open",
 		"verbs": {
@@ -689,18 +663,17 @@ main() {
 	};
 	
 	:obj_book = {
-		"data": {
-			"name": "loose book",
-			"state": "state_gone",
-			"x": 136,
-			"y": 16,
-			"w": 1,
-			"h": 1,
-			"state_gone": 66,
-			"state_here": 65,
-			"use_pos":[144, 40],
-			"classes":["class_pickupable"]
-		},
+		"name": "loose book",
+		"state": "state_gone",
+		"x": 136,
+		"y": 16,
+		"w": 1,
+		"h": 1,
+		"state_gone": 66,
+		"state_here": 65,
+		"use_pos":[144, 40],
+		"classes":["class_pickupable"],
+		
 		"verbs": {
 			"lookat": @(&me) {
 				if (me.state := state_gone) {
@@ -721,19 +694,18 @@ main() {
 	};
 	
 	:obj_key = {
-		"data": {
-			"name": "gold key",
-			"state": "state_gone",
-			"x": 1,
-			"y": 1,
-			"z": 30,
-			"w": 1,
-			"h": 1,
-			"state_gone": 32,
-			"state_here": 173,
-			"use_with": "true",
-			"classes":["class_pickupable"]
-		},
+		"name": "gold key",
+		"state": "state_gone",
+		"x": 1,
+		"y": 1,
+		"z": 30,
+		"w": 1,
+		"h": 1,
+		"state_gone": 32,
+		"state_here": 173,
+		"use_with": "true",
+		"classes":["class_pickupable"],
+		
 		"verbs": {
 			"lookat": @(&me) {
 				say_line("it's a gold key");
@@ -758,12 +730,11 @@ main() {
 	};
 	
 	:rm_library = {
-		"data": {
-			"map": [56, 24, 79, 31],
-			"trans_col": 10,
-			"col_replace": [7, 4],
-			"lighting": 0.25
-		},
+		"map": [56, 24, 79, 31],
+		"trans_col": 10,
+		"col_replace": [7, 4],
+		"lighting": 0.25,
+		
 		"objects": [
 			:obj_library_door_hall,
 			:obj_lightswitch,
@@ -794,17 +765,16 @@ main() {
 	
 	// kitchen
 	:obj_spinning_top = {
-		"data": {
-			"name": "spinning top",
-			"x": 148,
-			"y": 50,
-			"w": 1,
-			"h": 1,
-			"state": 1,
-			"states": [158, 174, 190],
-			"col_replace": [12, 7],
-			"trans_col": 15
-		},
+		"name": "spinning top",
+		"x": 148,
+		"y": 50,
+		"w": 1,
+		"h": 1,
+		"state": 1,
+		"states": [158, 174, 190],
+		"col_replace": [12, 7],
+		"trans_col": 15,
+		
 		"scripts": {
 			spin_top: @() {
 				dir = -1;
@@ -836,50 +806,47 @@ main() {
 	};
 	
 	:obj_kitchen_door_hall = {
-		"data": {
-			"name": "hall",
-			"state": "state_open",
-			"x": 8,
-			"y": 16,
-			"w": 1,
-			"h": 4,
-			"use_pos": "pos_right",
-			"use_dir": "face_left",
-			"classes": ["class_door"]
-		},
+		"name": "hall",
+		"state": "state_open",
+		"x": 8,
+		"y": 16,
+		"w": 1,
+		"h": 4,
+		"use_pos": "pos_right",
+		"use_dir": "face_left",
+		"classes": ["class_door"],
+		
 		"init": @(&me) {
 			me.target_door = obj_hall_door_kitchen;
 		}
 	};
 	
 	:obj_back_door = {
-		"data": {
-			"name": "back door",
-			"state": "state_closed",
-			"x": 176,
-			"y": 16,
-			"z": 1,
-			"w": 1,
-			"h": 4,
-			"state_closed": 79,
-			"flip_x": "true",
-			"classes": ["class_openable", "class_door"],
-			"use_pos": "pos_left",
-			"use_dir": "face_right"
-		},
+		"name": "back door",
+		"state": "state_closed",
+		"x": 176,
+		"y": 16,
+		"z": 1,
+		"w": 1,
+		"h": 4,
+		"state_closed": 79,
+		"flip_x": "true",
+		"classes": ["class_openable", "class_door"],
+		"use_pos": "pos_left",
+		"use_dir": "face_right",
+		
 		"init": @(&me) {
 			me.target_door = obj_garden_door_kitchen;
 		}
 	};
 	
 	:rm_kitchen = {
-		"data": {
-			"map":[80, 24, 103, 31]
-		},
+		"map":[80, 24, 103, 31],
+		
 		"objects": [
-			"obj_spinning_top",
-			"obj_kitchen_door_hall",
-			"obj_back_door"
+			:obj_spinning_top,
+			:obj_kitchen_door_hall,
+			:obj_back_door
 		],
 		"enter": @(&me) {
 			start_script(me.scripts.tentacle_guard, true); // bg script
@@ -914,32 +881,30 @@ main() {
 	
 	// back garden
 	:obj_garden_door_kitchen = {
-		"data": {
-			"name": "kitchen",
-			"state": "state_closed",
-			"x": 104,
-			"y": 8,
-			"w": 1,
-			"h": 3,
-			"state_closed": 78,
-			"classes": ["class_openable", "class_door"],
-			"use_dir": "face_back"
-		},
+		"name": "kitchen",
+		"state": "state_closed",
+		"x": 104,
+		"y": 8,
+		"w": 1,
+		"h": 3,
+		"state_closed": 78,
+		"classes": ["class_openable", "class_door"],
+		"use_dir": "face_back",
+		
 		"init": @(&me) {
 			me.target_door = obj_back_door;
 		}
 	};
 	
 	:obj_pool = {
-		"data": {
-			"name": "swimming pool",
-			"x": 96,
-			"y": 48,
-			"w": 3,
-			"h": 2,
-			"use_pos": "pos_above",
-			"use_dir": "face_front"
-		},
+		"name": "swimming pool",
+		"x": 96,
+		"y": 48,
+		"w": 3,
+		"h": 2,
+		"use_pos": "pos_above",
+		"use_dir": "face_front",
+		
 		"verbs": {
 			"walkto": @(&me) {
 				say_line("i can't swim!");
@@ -951,10 +916,9 @@ main() {
 	};
 	
 	:rm_garden = {
-		"data": {
-			"map": [104, 24, 127, 31],
-			"autodepth_scale": [0.75, 1]
-		},
+		"map": [104, 24, 127, 31],
+		"autodepth_scale": [0.75, 1],
+		
 		"objects": [
 			:obj_garden_door_kitchen,
 			:obj_pool
@@ -969,82 +933,75 @@ main() {
 	
 	//second floor, landing
 	:obj_rail_left = {
-		"data": {
-			"state": "state_here",
-			"x": 0,
-			"y": 47,
-			"w": 1,
-			"h": 2,
-			"state_here": 47,
-			"trans_col": 8,
-			"repeat_x": 16,
-			"classes": ["class_untouchable"]
-		}
+		"state": "state_here",
+		"x": 0,
+		"y": 47,
+		"w": 1,
+		"h": 2,
+		"state_here": 47,
+		"trans_col": 8,
+		"repeat_x": 16,
+		"classes": ["class_untouchable"]
 	};
 	
 	:obj_rail_right = {
-		"data": {
-			"state": "state_here",
-			"x": 144,
-			"y": 47,
-			"w": 1,
-			"h": 2,
-			"state_here": 47,
-			"trans_col": 8,
-			"repeat_x": 6,
-			"classes":["class_untouchable"]
-		}
+		"state": "state_here",
+		"x": 144,
+		"y": 47,
+		"w": 1,
+		"h": 2,
+		"state_here": 47,
+		"trans_col": 8,
+		"repeat_x": 6,
+		"classes":["class_untouchable"]
 	};
 	
 	:obj_landing_exit_hall = {
-		"data": {
-			"name": "hall",
-			"state": "state_open",
-			"x": 124,
-			"y": 56,
-			"w": 3,
-			"h": 2,
-			"use_pos": "pos_center",
-			"use_dir": "face_front",
-			"classes": ["class_door"]
-		},
+		"name": "hall",
+		"state": "state_open",
+		"x": 124,
+		"y": 56,
+		"w": 3,
+		"h": 2,
+		"use_pos": "pos_center",
+		"use_dir": "face_front",
+		"classes": ["class_door"],
+		
 		"init": @(&me) {
 			me.target_door = obj_hall_exit_landing;
 		}
 	};
 	
 	:obj_landing_door_computer = {
-		"data": {
-			"name": "computer room",
-			"state": "state_open",
-			"x": 176,
-			"y": 16,
-			"w": 1,
-			"h": 4,
-			"use_pos": "pos_left",
-			"use_dir": "face_right",
-			"classes":["class_door"]
-		},
+		"name": "computer room",
+		"state": "state_open",
+		"x": 176,
+		"y": 16,
+		"w": 1,
+		"h": 4,
+		"use_pos": "pos_left",
+		"use_dir": "face_right",
+		"classes":["class_door"],
+		
 		"init": @(&me) {
 			me.target_door = obj_computer_door_landing;
 		}
 	};
 	
 	:obj_landing_door_room1 = {
-		"data": {
-			"name": "door #1",
-			"state": "state_closed",
-			"x": 8,
-			"y": 16,
-			"z": 1,
-			"w": 1,
-			"h": 4,
-			"state_closed": 79,
-			"state_open": 0,
-			"classes":["class_openable"],
-			"use_pos": "pos_right",
-			"use_dir": "face_left"
-		},
+		"name": "door #1",
+		"state": "state_closed",
+		"x": 8,
+		"y": 16,
+		"z": 1,
+		"w": 1,
+		"h": 4,
+		"state_closed": 79,
+		"state_open": 0,
+		"classes":["class_openable"],
+		"use_pos": "pos_right",
+		"use_dir": "face_left",
+		
 		"verbs": {
 			"open": @(&me) {
 				:rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
@@ -1053,19 +1010,18 @@ main() {
 	};
 	
 	:obj_landing_door_room2 = {
-		"data": {
-			"name": "door #2",
-			"state": "state_closed",
-			"x": 48,
-			"y": 16,
-			"z": 1,
-			"w": 1,
-			"h": 3,
-			"state_closed": 78,
-			"classes":["class_openable"],
-			"use_pos": "pos_infront",
-			"use_dir": "face_back"
-		},
+		"name": "door #2",
+		"state": "state_closed",
+		"x": 48,
+		"y": 16,
+		"z": 1,
+		"w": 1,
+		"h": 3,
+		"state_closed": 78,
+		"classes":["class_openable"],
+		"use_pos": "pos_infront",
+		"use_dir": "face_back",
+		
 		"verbs": {
 			"open": @(&me) {
 				:rm_landing.scripts.door_teleport(me, obj_landing_door_room3);
@@ -1074,20 +1030,19 @@ main() {
 	};
 	
 	:obj_landing_door_room3 = {
-		"data": {
-			"name": "door #3",
-			"state": "state_closed",
-			"x": 136,
-			"y": 16,
-			"z": 1,
-			"w": 1,
-			"h": 3,
-			"state_closed": 78,
-			"state_open": 0,
-			"classes":["class_openable"],
-			"use_pos": "pos_infront",
-			"use_dir": "face_back"
-		},
+		"name": "door #3",
+		"state": "state_closed",
+		"x": 136,
+		"y": 16,
+		"z": 1,
+		"w": 1,
+		"h": 3,
+		"state_closed": 78,
+		"state_open": 0,
+		"classes":["class_openable"],
+		"use_pos": "pos_infront",
+		"use_dir": "face_back",
+		
 		"verbs": {
 			"open": @(&me) {
 				:rm_landing.scripts.door_teleport(me, obj_landing_door_room1);
@@ -1096,9 +1051,8 @@ main() {
 	};
 	
 	:rm_landing = {
-		"data": {
-			"map": [32, 16, 55, 31]
-		},
+		"map": [32, 16, 55, 31],
+		
 		"objects": [
 			:obj_rail_left,
 			:obj_rail_right,
@@ -1135,35 +1089,33 @@ main() {
 	
 	// computer room
 	:obj_computer_door_landing = {
-		"data": {
-			"name": "first floor",
-			"state": "state_open",
-			"x": 8,
-			"y": 16,
-			"w": 1,
-			"h": 4,
-			"use_pos": "pos_right",
-			"use_dir": "face_left",
-			"classes":["class_door"]
-		},
+		"name": "first floor",
+		"state": "state_open",
+		"x": 8,
+		"y": 16,
+		"w": 1,
+		"h": 4,
+		"use_pos": "pos_right",
+		"use_dir": "face_left",
+		"classes":["class_door"],
+		
 		"init": @(&me) {
 			me.target_door = obj_landing_door_computer;
 		}
 	};
 	
 	:obj_computer = {
-		"data": {
-			"name": "computer",
-			"state": "state_here",
-			"state_here": 1,
-			"x": 56,
-			"y": 16,
-			"z": 1,
-			"w": 2,
-			"h": 2,
-			"use_pos":[63, 44],
-			"use_dir": "face_back"
-		},
+		"name": "computer",
+		"state": "state_here",
+		"state_here": 1,
+		"x": 56,
+		"y": 16,
+		"z": 1,
+		"w": 2,
+		"h": 2,
+		"use_pos":[63, 44],
+		"use_dir": "face_back",
+		
 		"draw": @(&me) {
 			// switch transparency
 			set_trans_col(8, true);
@@ -1183,34 +1135,32 @@ main() {
 	};
 	
 	:obj_cursor = {
-		"data": {
-			"x": 56,
-			"y": 12,
-			"w": 1,
-			"h": 1,
-			"trans_col": 8,
-			"state": 1,
-			"states": [74, 76],
-			"classes": ["class_untouchable"]
-		},
+		"x": 56,
+		"y": 12,
+		"w": 1,
+		"h": 1,
+		"trans_col": 8,
+		"state": 1,
+		"states": [74, 76],
+		"classes": ["class_untouchable"],
+		
 		"verbs": {
 			
 		}
 	};
 	
 	:obj_floppy_disk = {
-		"data": {
-			"name": "pico-8",
-			"x": 60,
-			"y": 44,
-			"w": 1,
-			"h": 1,
-			"state": "state_here",
-			"state_here": 189,
-			"trans_col": 11,
-			"use_with": "true",
-			"classes":["class_pickupable"]
-		},
+		"name": "pico-8",
+		"x": 60,
+		"y": 44,
+		"w": 1,
+		"h": 1,
+		"state": "state_here",
+		"state_here": 189,
+		"trans_col": 11,
+		"use_with": "true",
+		"classes":["class_pickupable"],
+		
 		"verbs": {
 			"lookat": @(&me) {
 				say_line("it's a licenced copy of pico-8:\"a fantasy console for (making, sharing and playing tiny games and other computer programs\":sounds like fun!");
@@ -1243,10 +1193,9 @@ main() {
 	};
 	
 	:rm_computer = {
-		"data": {
-			"map":[64, 16],
-			"autodepth_scale":[0.75, 1]
-		},
+		"map":[64, 16],
+		"autodepth_scale":[0.75, 1],
+		
 		"objects": [
 			:obj_computer_door_landing,
 			:obj_computer,
@@ -1290,9 +1239,8 @@ main() {
 	
 	// monkey island mini-game, title room
 	:rm_mi_title = {
-		"data": {
-			"map":[72, 0]
-		},
+		"map":[72, 0],
+		
 		"objects": {
 		},
 		"enter": @(&me) {
@@ -1320,29 +1268,27 @@ main() {
 	
 	// monkey island mini-game, dock
 	:obj_mi_bg = {
-		"data": {
-			"x": 0,
-			"y": 0,
-			"w": 1,
-			"h": 1,
-			"z": -10,
-			"classes": ["class_untouchable"],
-			"state": "state_here",
-			"state_here": 1
-		},
+		"x": 0,
+		"y": 0,
+		"w": 1,
+		"h": 1,
+		"z": -10,
+		"classes": ["class_untouchable"],
+		"state": "state_here",
+		"state_here": 1,
+		
 		"draw": @(&me) {
 			map(88, 0, 0, 16, 40, 7);
 		}
 	};
 	
 	:obj_mi_poster = {
-		"data": {
-			"name": "poster",
-			"x": 32,
-			"y": 40,
-			"w": 1,
-			"h": 1
-		},
+		"name": "poster",
+		"x": 32,
+		"y": 40,
+		"w": 1,
+		"h": 1,
+		
 		"verbs": {
 			"lookat": @(&me) {
 				say_line("\"re-elect governor marly\"");
@@ -1351,18 +1297,17 @@ main() {
 	};
 	
 	:obj_mi_scummdoor = {
-		"data": {
-			"name": "door",
-			"state": "state_closed",
-			"x": 240,
-			"y": 40,
-			"w": 1,
-			"h": 2,
-			"state_closed": 43,
-			"state_open": 12,
-			"classes": ["class_openable"],
-			"use_dir": "face_back"
-		},
+		"name": "door",
+		"state": "state_closed",
+		"x": 240,
+		"y": 40,
+		"w": 1,
+		"h": 2,
+		"state_closed": 43,
+		"state_open": 12,
+		"classes": ["class_openable"],
+		"use_dir": "face_back",
+		
 		"verbs": {
 			"walkto": @(&me) {
 				if (me.state:= "state_open") {
@@ -1383,14 +1328,13 @@ main() {
 	};
 	
 	:rm_mi_dock = {
-		"data": {
-			"map": [88, 8, 127, 15],
-			"trans_col": 11
-		},
+		"map": [88, 8, 127, 15],
+		"trans_col": 11,
+		
 		"objects": [
-			"obj_mi_bg",
-			"obj_mi_poster",
-			"obj_mi_scummdoor"
+			:obj_mi_bg,
+			:obj_mi_poster,
+			:obj_mi_scummdoor
 		],
 		"enter": @(&me) {
 			//
@@ -1421,11 +1365,10 @@ main() {
 	
 	// the void
 	:rm_void = {
-		"data": {
-			"map":[0, 0]
-		},
+		"map":[0, 0],
+		
 		"objects": [
-			"obj_key"
+			:obj_key
 			// obj_switch_player,
 			// obj_switch_tent
 		]
@@ -1439,22 +1382,21 @@ main() {
 	
 	// initialize the player's actor object
 	:main_actor = {
-		"data": {
-			"name": "humanoid",
-			"w": 1,
-			"h": 4,
-			"idle": [193, 197, 199, 197],
-			"talk": [218, 219, 220, 219],
-			"walk_anim_side": [196, 197, 198, 197],
-			"walk_anim_front": [194, 193, 195, 193],
-			"walk_anim_back": [200, 199, 201, 199],
-			"col": 12,
-			"trans_col": 11,
-			"walk_speed": 0.6,
-			"frame_delay": 5,
-			"classes": ["class_actor"],
-			"face_dir": "face_front"
-		},
+		"name": "humanoid",
+		"w": 1,
+		"h": 4,
+		"idle": [193, 197, 199, 197],
+		"talk": [218, 219, 220, 219],
+		"walk_anim_side": [196, 197, 198, 197],
+		"walk_anim_front": [194, 193, 195, 193],
+		"walk_anim_back": [200, 199, 201, 199],
+		"col": 12,
+		"trans_col": 11,
+		"walk_speed": 0.6,
+		"frame_delay": 5,
+		"classes": ["class_actor"],
+		"face_dir": "face_front",
+		
 		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
 		"inventory": [
 			:obj_switch_tent
@@ -1468,22 +1410,21 @@ main() {
 	};
 	
 	:purp_tentacle = {
-		"data": {
-			"name": "purple tentacle",
-			"x": 140,
-			"y": 52,
-			"w": 1,
-			"h": 3,
-			"idle": [154, 154, 154, 154],
-			"talk": [171, 171, 171, 171],
-			"col": 11,
-			"trans_col": 15,
-			"walk_speed": 0.4,
-			"frame_delay": 5,
-			"classes": ["class_actor", "class_talkable"],
-			"face_dir": "face_front",
-			"use_pos": "pos_left"
-		},
+		"name": "purple tentacle",
+		"x": 140,
+		"y": 52,
+		"w": 1,
+		"h": 3,
+		"idle": [154, 154, 154, 154],
+		"talk": [171, 171, 171, 171],
+		"col": 11,
+		"trans_col": 15,
+		"walk_speed": 0.4,
+		"frame_delay": 5,
+		"classes": ["class_actor", "class_talkable"],
+		"face_dir": "face_front",
+		"use_pos": "pos_left",
+		
 		"in_room": :rm_kitchen,
 		"inventory": [
 			:obj_switch_player
@@ -1551,19 +1492,18 @@ main() {
 	};
 	
 	:mi_actor = {
-		"data": {
-			"name": "guybrush",
-			"w": 1,
-			"h": 2,
-			"idle":[47, 47, 15, 47],
-			"walk_anim_side":[44, 45, 44, 46],
-			"col": 7,
-			"trans_col": 8,
-			"walk_speed": 0.5,
-			"frame_delay": 8,
-			"classes": ["class_actor"],
-			"face_dir": "face_front"
-		},
+		"name": "guybrush",
+		"w": 1,
+		"h": 2,
+		"idle":[47, 47, 15, 47],
+		"walk_anim_side":[44, 45, 44, 46],
+		"col": 7,
+		"trans_col": 8,
+		"walk_speed": 0.5,
+		"frame_delay": 8,
+		"classes": ["class_actor"],
+		"face_dir": "face_front",
+		
 		// sprites for (directions (front, left, back, right) - note: "right=left-flipped"
 		"inventory": {
 			// obj_switch_tent

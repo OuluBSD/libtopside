@@ -45,6 +45,12 @@ HiValue HiValue::ArrayGetMid(int i, int n) const
 	return t;
 }
 
+/*HiValue& HiValue::operator[](HiValue i) {
+	ASSERT(IsArray());
+	int v = i.GetNumber();
+	return array->array[i];
+}*/
+
 HiValue& HiValue::operator[](int i) {
 	ASSERT(IsArray());
 	return array->array[i];

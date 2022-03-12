@@ -31,8 +31,6 @@ using StrVec = Vector<String>;
 Color ReadColor(const SObj& o, HiValue key, Color def);
 bool TryReadColor(const SObj& o, HiValue key, Color& c);
 bool ReadFlag(const SObj& o, String key);
-SObj* ReadKey(SObj& o, String key);
-void SrcMapSet(HiValue map, HiValue key, HiValue value);
 bool HasArrayValue(SObj arr, SObj value);
 
 typedef enum {
@@ -371,7 +369,7 @@ public:
 	void PrintLine(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
 	void PutAt(SObj obj, int x, int y, SObj room);
 	void StopActor(SObj& actor);
-	void WalkTo(SObj& actor, int x, int y);
+	void WalkTo(SObj a, int x, int y);
 	void WaitForActor(SObj& actor);
 	double Proximity(SObj& obj1, SObj& obj2);
 	HiValue GetVerb(int idx);
@@ -411,7 +409,7 @@ public:
 	const SObj* FindRoom(const String& name) const;
 	const SObj* FindDeep(const String& name) const;
 	const SObj* FindDeep(const String& name, const SObj* o) const;
-	HiValue Classes(const SObj& s);
+	HiValue Classes(SObj s);
 	String State(SObj& s);
 	//String GetInRoomString(SObj& o);
 	SObj GetInRoom(SObj o);

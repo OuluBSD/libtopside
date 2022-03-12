@@ -98,6 +98,8 @@ public:
 	HiValue&							operator[](const char* key);
 	const HiValue&						operator[](int i) const;
 	HiValue&							operator[](int i);
+	//HiValue&							operator[](HiValue i);
+	//HiValue							operator()(HiValue key) const;
 	HiValue								operator()(String key) const;
 	HiValue								operator()(String key, HiValue def) const;
 	HiValue								operator()(int i) const;

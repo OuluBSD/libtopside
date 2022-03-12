@@ -62,17 +62,6 @@ bool ReadFlag(const SObj& o, String key) {
 	TODO
 }
 
-SObj* ReadKey(SObj& o, String key) {
-	TODO
-}
-
-void SrcMapSet(HiValue map, HiValue key, HiValue value) {
-	ASSERT(map.IsMap());
-	if (map.IsMap()) {
-		map.MapSet(key, value);
-	}
-}
-
 
 
 
@@ -321,13 +310,13 @@ void Program::ResetUI() {
 	
 	ui_arrows.SetEmptyArray();
 	
-	HiValue up = ui_arrows.ArrayAdd(HiValue()).MapGetAdd("data");
+	HiValue up = ui_arrows.ArrayAdd(HiValue());
 	up.SetEmptyMap();
 	up.MapSet("spr", ui_uparrowspr);
 	up.MapSet("x", 75);
 	up.MapSet("y", stage_top + 60);
 	
-	HiValue& down = ui_arrows.ArrayAdd(HiValue()).MapGetAdd("data");
+	HiValue& down = ui_arrows.ArrayAdd(HiValue());
 	down.SetEmptyMap();
 	down.MapSet("spr", ui_dnarrowspr);
 	down.MapSet("x", 75);
@@ -367,15 +356,11 @@ const SObj* Program::FindDeep(const String& name, const SObj* o) const {
 	return 0;
 }
 
-HiValue Program::Classes(const SObj& s) {
+HiValue Program::Classes(SObj s) {
 	if (!s.IsMap()) {DUMP(s);}
 	ASSERT(s.IsMap());
 	//DUMP(s);
-	SObj r = s("classes");
-	if (r)
-		return r;
-	else
-		return s("data")("classes");
+	return s("classes");
 }
 
 String Program::State(SObj& s) {
@@ -820,10 +805,10 @@ void Program::ComeOutDoor(SObj from_door, SObj to_door, bool fade_effect) {
 		opp_dir = FACE_FRONT;
 	}
 	
-	SrcMapSet(selected_actor, "face_dir", GetFaceString(opp_dir));
+	selected_actor.Set("face_dir", GetFaceString(opp_dir));
 	
 	// is target dir left? flip?
-	SrcMapSet(selected_actor, "flip", GetFaceDir(selected_actor) == FACE_LEFT);
+	selected_actor.Set("flip", GetFaceDir(selected_actor) == FACE_LEFT);
 	
 }
 
@@ -1279,35 +1264,34 @@ void Program::PutAt(SObj obj, int x, int y, SObj room) {
 				Vector<HiValue>& arr = (Vector<HiValue>&)objects.GetArray();
 				VectorRemoveKey(arr, obj);
 			}
-			SrcMapSet(obj, "owner", HiValue());
+			obj.Set("owner", HiValue());
 			SObj objects = room.MapGet("objects");
 			ASSERT(objects.IsArray());
 			objects.ArrayAdd(obj);
 		}
 	}
-	SrcMapSet(obj, "in_room", room);
+	obj.Set("in_room", room);
 	
 	//LOG(obj.ToString());
 	ASSERT(obj.IsMap());
-	SrcMapSet(obj, "x", x);
-	SrcMapSet(obj, "y", y);
+	obj.Set("x", x);
+	obj.Set("y", y);
 }
 
 
 void Program::StopActor(SObj& actor) {
-// 0=stopped, 1=walking, 2=arrived
-	SrcMapSet(actor, "moving", 0);
-	SrcMapSet(actor, "curr_anim", 0);
+	// 0=stopped, 1=walking, 2=arrived
+	actor.Set("moving", 0);
+	actor.Set("curr_anim", 0);
 	
-// no need to) {DoAnim(idle) here, as actor_draw code handles this
+	// no need to) {DoAnim(idle) here, as actor_draw code handles this
 	ClearCurrCmd();
 }
 
 // walk actor to position
-void Program::WalkTo(SObj& actor, int x, int y) {
-	SObj adata = actor("data");
-	Point actor_cell_pos = GetCellPos(actor);
-	HiValue map = room_curr("data")("map");
+void Program::WalkTo(SObj a, int x, int y) {
+	Point actor_cell_pos = GetCellPos(a);
+	HiValue map = room_curr("map");
 	int map_x = map(0,0);
 	int map_y = map(1,0);
 	int celx = x / 8 + map_x;
@@ -1317,20 +1301,20 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 	// use pathfinding!
 	FindPath(actor_cell_pos, target_cell_pos, path);
 	
-	actor.Set("moving", 1);
+	a.Set("moving", 1);
 	
 	for (int c = 0; c < path.GetCount(); c++) {
 		Point p = path[c];
 		
 		// auto-adjust walk-speed for (depth
-		double walk_speed = adata("walk_speed");
-		SObj scale = adata("scale");
-		SObj auto_scale = adata("auto_scale", 1.0);
+		double walk_speed = a("walk_speed");
+		SObj scale = a("scale");
+		SObj auto_scale = a("auto_scale", 1.0);
 		double s = scale ? scale : auto_scale;
 		double scaled_speed = walk_speed * s;
 		
 		//local y_speed = actor.walk_speed/2 // removed, messes up the a* pathfinding
-		SObj rc_map = room_curr("data")("map");
+		SObj rc_map = room_curr("map");
 		int rc_map_x = rc_map[0];
 		int rc_map_y = rc_map[1];
 		int px = (p.x - rc_map_x) * 8 + 4;
@@ -1342,8 +1326,8 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 			py = y;
 		}
 		
-		int actor_x = adata("x");
-		int actor_y = adata("y");
+		int actor_x = a("x");
+		int actor_y = a("y");
 		double distance = sqrt(pow(px - actor_x, 2) + pow(py - actor_y, 2));
 		double step_x = scaled_speed * (px - actor_x) / distance;
 		double step_y = scaled_speed * (py - actor_y) / distance;
@@ -1359,33 +1343,33 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 				// todo: need to somehow recalc here, else walk too fast/slow in depth planes
 				
 				// abort if (actor stopped
-				int m = adata("moving", 0);
+				int m = a("moving", 0);
 				if (m == 0) {
 					return;
 				}
 			    
-				adata.Set("flip", step_x < 0);
+				a.Set("flip", step_x < 0);
 				    
 				// choose walk anim based on dir
 				//if (abs(step_x) < abs(step_y) {
 				if (abs(step_x) < scaled_speed / 2) {
 					// vertical walk
-					adata.Set("curr_anim", step_y > 0 ? adata("walk_anim_front") : adata("walk_anim_back"));
-					adata.Set("face_dir", step_y > 0 ? "face_front" : "face_back");
+					a.Set("curr_anim", step_y > 0 ? a("walk_anim_front") : a("walk_anim_back"));
+					a.Set("face_dir", step_y > 0 ? "face_front" : "face_back");
 				}
 				else {
 					// horizontal walk
-					adata.Set("curr_anim", adata("walk_anim_side"));
+					a.Set("curr_anim", a("walk_anim_side"));
 					
 					// face dir (at end of walk)
-					adata.Set("face_dir", adata("flip") ? "face_left" : "face_right");
+					a.Set("face_dir", a("flip") ? "face_left" : "face_right");
 				}
 				
 				// actually move actor
-				actor_x = adata("x");
-				actor_y = adata("y");
-				adata.Set("x", actor_x + step_x);
-				adata.Set("y", actor_y + step_y);
+				actor_x = a("x");
+				actor_y = a("y");
+				a.Set("x", actor_x + step_x);
+				a.Set("y", actor_y + step_y);
 				
 				// yield();
 			}
@@ -1393,7 +1377,7 @@ void Program::WalkTo(SObj& actor, int x, int y) {
 		}
 	}
 	
-	adata.Set("moving", 2);
+	a.Set("moving", 2);
 }
 
 void Program::WaitForActor(SObj& actor) {
@@ -1453,8 +1437,8 @@ void Program::ClearCurrCmd() {
 	verb_curr = V_DEFAULT;
 	executing_cmd = 0;
 	cmd_curr.Clear();
-	noun1_curr = 0;
-	noun2_curr = 0;
+	noun1_curr = HiValue();
+	noun2_curr = HiValue();
 	//me.Clear();
 }
 
@@ -1807,7 +1791,7 @@ void Program::CheckCollisions() {
 		}
 		else {
 			// reset bounds
-			obj.MapSet("bounds", HiValue());
+			obj.Set("bounds", HiValue());
 		}
 		
 		if (IsCursorColliding(obj)) {
@@ -2130,7 +2114,7 @@ Point Program::CenterCamera(SObj& val) {
 		x = val.GetInt();
 	
 	//int map_w = room_curr.MapGet("map_w").GetInt();
-	int map_w = room_curr("data")("map")(2);
+	int map_w = room_curr("map")(2);
 	
 	Point pt(0,0);
 	pt.x = Mid(0, x-64, (map_w*8) -128 );
@@ -2141,10 +2125,10 @@ Point Program::CenterCamera(SObj& val) {
 
 Point Program::GetCellPos(SObj& obj) {
 	Point p;
-	int map_x = room_curr("data")("map")(0,0);
-	int map_y = room_curr("data")("map")(1,0);
-	int obj_x = obj("data")("x");
-	int obj_y = obj("data")("y");
+	int map_x = room_curr("map")(0,0);
+	int map_y = room_curr("map")(1,0);
+	int obj_x = obj("x");
+	int obj_y = obj("y");
 	p.x = obj_x/8 + map_x;
 	p.y = obj_y/8 + map_y;
 	return p;
@@ -2235,32 +2219,31 @@ bool Program::HasFlag(const SObj& obj, String key) {
 }
 
 
-void Program::RecalculateBounds(SObj obj, int w, int h, int cam_off_x, int cam_off_y) {
-	SObj data = obj("data");
-	int x = data("x");
-	int y = data("y");
+void Program::RecalculateBounds(SObj o, int w, int h, int cam_off_x, int cam_off_y) {
+	int x = o("x");
+	int y = o("y");
 	
 	// offset for (actors?
-	if (HasFlag(Classes(obj), "class_actor")) {
-		int w = data("w");
-		int h = data("h");
+	if (HasFlag(Classes(o), "class_actor")) {
+		int w = o("w");
+		int h = o("h");
 		int offset_x = x - (w * 8) / 2;
 		int offset_y = y - (h * 8) + 1;
 		x = offset_x;
 		y = offset_y;
-		SrcMapSet(data, "offset_x", offset_x);
-		SrcMapSet(data, "offset_y", offset_y);
+		o.Set("offset_x", offset_x);
+		o.Set("offset_y", offset_y);
 	}
 	
 	HiValue bounds;
 	bounds.SetEmptyMap();
-	SrcMapSet(bounds, "x", x);
-	SrcMapSet(bounds, "y", y + stage_top);
-	SrcMapSet(bounds, "x1", x + w - 1);
-	SrcMapSet(bounds, "y1", y + h + stage_top - 1);
-	SrcMapSet(bounds, "cam_off_x", cam_off_x);
-	SrcMapSet(bounds, "cam_off_y", cam_off_y);
-	SrcMapSet(data, "bounds", bounds);
+	bounds.Set("x", x);
+	bounds.Set("y", y + stage_top);
+	bounds.Set("x1", x + w - 1);
+	bounds.Set("y1", y + h + stage_top - 1);
+	bounds.Set("cam_off_x", cam_off_x);
+	bounds.Set("cam_off_y", cam_off_y);
+	o.Set("bounds", bounds);
 }
 
 
@@ -2290,11 +2273,11 @@ void Program::FindPath(Point start, Point goal, Vector<Point>& path) {
 	
 	const int frontier_limit = 1000;
 	
-	SObj data = room_curr("data");
-	int rc_map_x = ("map")[0];
-	int rc_map_y = data("map")[1];
-	int rc_map_w = data("map")[2];
-	int rc_map_h = data("map")[3];
+	SObj map = room_curr("map");
+	int rc_map_x = map[0];
+	int rc_map_y = map[1];
+	int rc_map_w = map[2];
+	int rc_map_h = map[3];
 	Node* lowest_dist_node = 0;
 	while (!frontier.IsEmpty() && frontier.GetCount() < frontier_limit) {
 		double lowest_dist = DBL_MAX;
@@ -2468,7 +2451,7 @@ bool Program::IsCursorColliding(const Sentence& obj) {
 
 bool Program::IsCursorColliding(const SObj& obj) {
 	// check params / not in cutscene
-	HiValue bounds = obj("data")("bounds");
+	HiValue bounds = obj("bounds");
 	if (!bounds || cutscene_curr) return false;
 
 	int cam_off_x = bounds["cam_off_x"];
@@ -2531,24 +2514,21 @@ bool Program::Init() {
 }
 
 Point Program::GetXY(SObj o) {
-	SObj data = o["data"];
 	return Point(
-		data("x").GetInt(),
-		data("y").GetInt());
+		o("x").GetInt(),
+		o("y").GetInt());
 }
 
 Point Program::GetOffset(SObj o) {
-	SObj data = o["data"];
 	return Point(
-		data("offset_x").GetInt(),
-		data("offset_y").GetInt());
+		o("offset_x").GetInt(),
+		o("offset_y").GetInt());
 }
 
 Size Program::GetSize(SObj o) {
-	SObj data = o["data"];
 	return Size(
-		data("w").GetInt(),
-		data("h").GetInt());
+		o("w").GetInt(),
+		o("h").GetInt());
 }
 
 Program::UsePos Program::GetUsePos(SObj o) {
@@ -2562,8 +2542,7 @@ Program::UsePos Program::GetUsePos(SObj o) {
 }
 
 StateType Program::GetState(SObj o) {
-	SObj data = o["data"];
-	String s = data("state");
+	String s = o("state");
 	if (s == "state_open")   return STATE_OPEN;
 	if (s == "state_closed") return STATE_CLOSED;
 	ASSERT(0);
@@ -2571,15 +2550,13 @@ StateType Program::GetState(SObj o) {
 }
 
 void Program::SetState(SObj o, StateType s) {
-	SObj data = o["data"];
-	if      (s == STATE_OPEN)	SrcMapSet(data, "state", "state_open");
-	else if (s == STATE_CLOSED)	SrcMapSet(data, "state", "state_closed");
+	if      (s == STATE_OPEN)	o.Set("state", "state_open");
+	else if (s == STATE_CLOSED)	o.Set("state", "state_closed");
 	else ASSERT(0);
 }
 
 FaceDir Program::GetFaceDir(SObj o) {
-	SObj data = o["data"];
-	String s = data.MapGet("face_dir");
+	String s = o("face_dir");
 	ASSERT(s.GetCount());
 	//String s = o.MapGet("state");
 	if (s == "face_front")	return FACE_FRONT;
