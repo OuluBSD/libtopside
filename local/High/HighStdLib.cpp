@@ -89,6 +89,8 @@ void HIGH_reverse(HiEscape& e)
 	e = r;
 }
 
+#if !USE_HIGH_BYTECODE
+
 struct HiCmp {
 	Hi *esc;
 	bool operator()(const HiValue& a, const HiValue& b) const {
@@ -122,6 +124,8 @@ void HIGH_order(HiEscape& e)
 		r.ArrayAdd(so[i]);
 	e = r;
 }
+
+#endif
 
 // ---------------------------
 
@@ -271,8 +275,11 @@ void StdLib(ArrayMap<String, HiValue>& global)
 	HighCall(global, "values(map)", HIGH_values);
 	HighCall(global, "rand()", HIGH_rand);
 	HighCall(global, "reverse(array)", HIGH_reverse);
+	
+	#if !USE_HIGH_BYTECODE
 	HighCall(global, "sort(array)", HIGH_sort);
 	HighCall(global, "order(array)", HIGH_order);
+	#endif
 	
 	HighCall(global, "replace(str, find, replace)", HIGH_replace);
 	

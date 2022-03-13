@@ -148,7 +148,7 @@ Script& Script::Set(HiGlobal& g, HiValue *self, HiValue fn, HiValue a0, HiValue 
 	
 	e.no_return = e.no_break = e.no_continue = true;
 	e.loop = 0;
-	e.skipexp = 0;
+	//e.skipexp = 0;
 	
 	running = true;
 	LOG("Script::Set: started " << fn_name);

@@ -10,74 +10,43 @@ namespace UPP {
 
 #define LTIMING(x)  // RTIMING(x)
 
-void Hi::OutOfMemory()
+
+
+int IrValue::total = 0;
+int IrValue::GetTotalCount() {return total;}
+int IrValue::GetMaxTotalCount() {return 1000000;}
+
+
+
+void IrVM::TestLimit()
+{
+	LTIMING("TestLimit1");
+	if(op_limit < 0)
+		ThrowError("out of operations limit - considered frozen");
+}
+
+void HiCompiler::OutOfMemory()
 {
 	ThrowError("Out of memory");
 }
 
-void Hi::TestLimit()
+void HiCompiler::TestLimit()
 {
-	LTIMING("TestLimit");
-	if(op_limit < 0)
-		ThrowError("out of operations limit - considered frozen");
+	LTIMING("TestLimit2");
 	if(IrValue::GetTotalCount() >= IrValue::GetMaxTotalCount())
 		OutOfMemory();
 }
-/*
-IrValue Hi::Get(const SRVal& val)
+
+IrValue HiCompiler::Get()
 {
 	LTIMING("Get");
-	if(skipexp)
-		return (int64)1;
-	IrValue v = val.lval ? *val.lval : val.rval;
-	if(val.sbs.IsArray()) {
-		const Vector<IrValue>& sbs = val.sbs.GetArray();
-		for(int i = 0; i < sbs.GetCount(); i++) {
-			const IrValue& ss = sbs[i];
-			if(v.IsMap()) //!!!! (problem with a[1, 2]
-				v = v.MapGet(ss);
-			else
-			if(v.IsArray()) {
-				int count = v.GetCount();
-				if(ss.IsArray() && ss.GetArray().GetCount() >= 2) {
-					IrValue v1 = ss.ArrayGet(0);
-					IrValue v2 = ss.ArrayGet(1);
-					int i = v1.GetInt();
-					int n = count - i;
-					if(ss.GetCount() == 2)
-						n = v2.IsInt() ? v2.GetInt() : n;
-					else {
-						if(v2.IsInt()) {
-							n = v2.GetInt();
-							if(n < 0)
-								n += count;
-							n -= i;
-						}
-					}
-					if(i >= 0 && n >= 0 && i + n <= count)
-						v = v.ArrayGetMid(i, n);
-					else
-						ThrowError("slice out of range");
-				}
-				else {
-					int64 i = Int(ss, "index");
-					if(i < 0)
-						i += count;
-					if(i >= 0 && i < count)
-						v = v.ArrayGet((int)i);
-					else
-						ThrowError("index out of range");
-				}
-			}
-			else
-				ThrowError("invalid indirection");
-			TestLimit();
-		}
-	}
+	Emit(IR_R_GET);
+	IrValue v;
+	v.SetRegisterValue(IrValue::REG_R0);
 	return v;
-}*/
+}
 /*
-void Hi::Assign(IrValue& val, const Vector<IrValue>& sbs, int si, const IrValue& src)
+void HiCompiler::Assign(IrValue& val, const Vector<IrValue>& sbs, int si, const IrValue& src)
 {
 	LTIMING("Assign");
 	const IrValue& ss = sbs[si++];
@@ -150,19 +119,14 @@ void Hi::Assign(IrValue& val, const Vector<IrValue>& sbs, int si, const IrValue&
 	ThrowError("invalid indirection");
 }*/
 
-/*void Hi::Assign(const SRVal& val, const IrValue& src)
+void HiCompiler::Assign(const IrValue& src)
 {
-	if(skipexp)
-		return;
-	if(!val.lval)
-		ThrowError("l-value required");
-	if(val.sbs.IsArray() && val.sbs.GetCount())
-		Assign(*val.lval, val.sbs.GetArray(), 0, src);
-	else
-		*val.lval = src;
-}*/
+	//if(skipexp)
+	//	return;
+	Emit1(IR_ASSIGN_R_LVAL2, src);
+}
 
-/*IrValue Hi::ExecuteLambda(const String& id, IrValue lambda, SRVal self, Vector<SRVal>& arg)
+/*IrValue HiCompiler::ExecuteLambda(const String& id, IrValue lambda, SRVal self, Vector<SRVal>& arg)
 {
 	LTIMING("ExecuteLambda");
 	if(!lambda.IsLambda())
@@ -222,7 +186,7 @@ void Hi::Assign(IrValue& val, const Vector<IrValue>& sbs, int si, const IrValue&
 	return retval;
 }*/
 
-void Hi::Subscript(String id)
+void HiCompiler::Subscript(String id)
 {
 	LTIMING("Subscript");
 	
@@ -254,9 +218,8 @@ void Hi::Subscript(String id)
 		}
 		else
 		if(Char('.')) {
-			Emit(IR_PUSH_TEMPSELF_R);
-			id = ReadId()
-			Emit(IR_POP_SELF);
+			Emit(IR_ASSIGN_SELF_R);
+			id = ReadId();
 			Emit1(IR_R_SBS_ARRAYADD_1, id);
 		}
 		else
@@ -274,14 +237,14 @@ void Hi::Subscript(String id)
 				}
 			}
 			if(!IsChar2('!', '=') && Char('!')) {
-				Emit(IR_PUSH_R_TEMPSELF);
+				Emit(IR_PUSH_R_POP_SELF);
 				Term();
 				IrValue g = Get();
 				Emit1(IR_OP_INEQ_TEMPSELF, g);
 			}
-			if(!skipexp) {
+			/*if(!skipexp)*/ {
 				IrValue v = Get();
-				Emit2(IR_EXECUTE_LAMBDA, id, v)
+				Emit2(IR_EXECUTE_LAMBDA, id, v);
 			}
 			Emit(IR_ARGVEC_POP);
 		}
@@ -290,16 +253,16 @@ void Hi::Subscript(String id)
 	}
 }
 
-void Hi::Subscript()
+void HiCompiler::Subscript()
 {
 	Subscript(String());
 }
 
-void Hi::Term()
+void HiCompiler::Term()
 {
 	Emit(IR_R_SBS_RESET);
 
-	op_limit--;
+	//op_limit--;
 	TestLimit();
 	if(Char2('0', 'x') || Char2('0', 'X')) {
 		Emit1(IR_ASSIGN_R, ReadNumber64(16));
@@ -343,33 +306,32 @@ void Hi::Term()
 		return;
 	}
 	if(Char('{')) {
-		Emit(IR_SCOPE_PUSH_EMPTYMAP);
+		Emit(IR_ASSIGN_R_EMPTYMAP);
 		if(!Char('}')) {
 			for(;;) {
 				IrValue v = GetExp();
 				PassChar(':');
-				Emit2(IR_SCOPE_MAPSET, v, GetExp());
+				Emit2(IR_R_MAPSET, v, GetExp());
 				if(Char('}'))
 					break;
 				PassChar(',');
 				TestLimit();
 			}
 		}
-		Emit(IR_ASSIGN_R_SCOPE_POP);
 		Subscript();
 		return;
 	}
 	if(Char('[')) {
-		Emit(IR_SCOPE_PUSH_EMPTYARRAY);
-		if(!Char(']'))
+		Emit(IR_ASSIGN_R_EMPTYARRAY);
+		if(!Char(']')) {
 			for(;;) {
-				Emit2(IR_SCOPE_ARRAYADD, GetExp());
+				Emit1(IR_R_ARRAYADD, GetExp());
 				if(Char(']'))
 					break;
 				PassChar(',');
 				TestLimit();
 			}
-		Emit(IR_ASSIGN_R_SCOPE_POP);
+		}
 		Subscript();
 		return;
 	}
@@ -380,12 +342,13 @@ void Hi::Term()
 		return;
 	}
 	
-	Emit(IR_PUSH_TEMPSELF);
+	Emit(IR_ASSIGN_R1_SELF);
+	Emit(IR_PUSH_SELF);
 	bool  _global = false;
 	if(Char('.')) {
-		if(!self.IsMap())
-			ThrowError("member-access in non-member code");
-		Emit(IR_ASSIGN_TEMPSELF_LVAL_SELF);
+		Emit(IR_ASSERT_SELF_MAP);
+		Emit(IR_ASSIGN_SELF_LVAL_R1); // _self.lval = &self;
+		Emit(IR_ASSIGN_R_R1); // r = self;
 	}
 	else
 	if(Char(':'))
@@ -398,30 +361,31 @@ void Hi::Term()
 
 		
 		if(id == "self") {
-			Emit(IR_ASSIGN_TEMPSELF_LVAL_SELF);
-			Emit(IR_ASSIGN_R_SELF);
+			Emit(IR_ASSERT_SELF_MAP);
+			Emit(IR_ASSIGN_SELF_LVAL_R1);
+			Emit(IR_ASSIGN_R_R1);
 		}
 		else {
 			Emit(IR_COND_IF_SELFLAMBDA);
 			{
-			    Emit(IR_ASSIGN_TEMPSELF_LVAL_SELF);
+			    Emit(IR_ASSIGN_SELF_LVAL_R1);
 				Emit(IR_ASSIGN_R_TMPMETHOD);
 			}
 			Emit(IR_COND_ELSE); {
-				Emit(IR_COND_IF_GLOBALLAMBDA) {
+				Emit(IR_COND_IF_GLOBALLAMBDA); {
 					Emit(IR_ASSIGN_R_TMPGLOBALIDX);
 				}
 				Emit(IR_COND_ELSE); {
-					Emit(IR_COND_IF_SELF_LVAL) {
-						Emit(IR_ASSIGN_R_TMPSELF);
+					Emit(IR_COND_IF_SELF_LVAL); {
+						Emit(IR_ASSIGN_R_SELF);
 						Emit1(IR_R_SBS_ARRAYADD_1, id);
 					}
 					Emit(IR_COND_ELSE); {
 						Emit(IR_COND_IF_GLOBAL); {
-							Emit1(IR_ASSIGN_R_LVAL, &global.GetAdd(id));
+							Emit1(IR_ASSIGN_R_LVAL1, global.GetAdd(id));
 						}
 						Emit(IR_COND_ELSE); {
-							Emit1(IR_ASSIGN_R_LVAL, &var.GetAdd(id));
+							Emit1(IR_ASSIGN_R_LVAL1, var.GetAdd(id));
 						}
 						Emit(IR_COND_ENDIF);
 					}
@@ -442,7 +406,7 @@ void Hi::Term()
 	else
 		ThrowError("invalid expression");
 	
-	Emit(IR_POP_TEMPSELF);
+	Emit(IR_POP_SELF);
 }
 
 String Lims(const String& s)
@@ -450,31 +414,31 @@ String Lims(const String& s)
 	return s.GetLength() > 80 ? s.Mid(0, 80) : s;
 }
 
-/*double Hi::Number(const IrValue& a, const char *oper)
+/*double HiCompiler::Number(const IrValue& a, const char *oper)
 {
 	if(!a.IsNumber())
 		ThrowError(String().Cat() << "number expected for '" << oper << "', encountered " << Lims(a.ToString()));
 	return a.GetNumber();
 }
 
-int64 Hi::Int(const IrValue& a, const char *oper)
+int64 HiCompiler::Int(const IrValue& a, const char *oper)
 {
 	if(!a.IsNumber())
 		ThrowError(String().Cat() << "integer expected for '" << oper << "', encountered " << Lims(a.ToString()));
 	return a.GetInt64();
 }
 
-double Hi::Number(const Hi::SRVal& a, const char *oper)
+double HiCompiler::Number(const HiCompiler::SRVal& a, const char *oper)
 {
 	return Number(Get(a), oper);
 }
 
-int64 Hi::Int(const Hi::SRVal& a, const char *oper)
+int64 HiCompiler::Int(const HiCompiler::SRVal& a, const char *oper)
 {
 	return Int(Get(a), oper);
 }*/
 
-void Hi::Unary()
+void HiCompiler::Unary()
 {
 	if(Char2('+', '+')) {
 		Unary();
@@ -513,14 +477,14 @@ void Hi::Unary()
 		Term();
 
 	if(Char2('+', '+')) {
-		Emit1(IR_POSTINC, Get());
+		Emit1(IR_OP_POSTINC, Get());
 	}
 	if(Char2('-', '-')) {
-		Emit1(IR_POSTDEC, Get());
+		Emit1(IR_OP_POSTDEC, Get());
 	}
 }
 
-/*IrValue Hi::MulArray(IrValue array, IrValue times)
+/*IrValue HiCompiler::MulArray(IrValue array, IrValue times)
 {
 	IrValue r;
 	r.SetEmptyArray();
@@ -535,13 +499,13 @@ void Hi::Unary()
 	return r;
 }*/
 
-void Hi::Mul()
+void HiCompiler::Mul()
 {
 	Unary();
 	for(;;) {
 		if(!IsChar2('*', '=') && Char('*')) {
 			IrValue x = Get();
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Unary();
 			IrValue y = Get();
 			Emit(IR_POP_R);
@@ -549,62 +513,62 @@ void Hi::Mul()
 		}
 		else
 		if(!IsChar2('/', '=') && Char('/')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Unary();
-			Emit(IR_POP_TEMP_R);
+			Emit(IR_POP_R_TEMP);
 			IrValue x = Get();
-			Emit(IR_PUSH_TEMP_R);
+			Emit(IR_PUSH_R_TEMP);
 			IrValue y = Get();
 			Emit(IR_POP_R);
-			Emit2(IR_OP_DIVASS, x, b);
+			Emit2(IR_OP_DIVASS1, x, y);
 		}
 		else
 		if(!IsChar2('%', '=') && Char('%')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Unary();
-			Emit(IR_POP_R);
-			Emit1(IR_OP_MODASS_R, b);
+			Emit(IR_POP_R_R1);
+			Emit(IR_OP_MODASS1);
 		}
 		else
 			return;
 	}
 }
 
-void Hi::Add()
+void HiCompiler::Add()
 {
 	Mul();
 	for(;;) {
 		if(!IsChar2('+', '=') && Char('+')) {
 			IrValue v = Get();
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Mul();
 			IrValue b = Get();
 			Emit(IR_POP_R);
-			Emit1(IR_OP_ADDASS, b);
+			Emit2(IR_OP_ADDASS1, v, b);
 		}
 		else
 		if(!IsChar2('-', '=') && Char('-')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Mul();
-			Emit(IR_POP_TEMP_R);
+			Emit(IR_POP_R_TEMP);
 			IrValue v = Get();
-			Emit(IR_PUSH_TEMP_R);
+			Emit(IR_PUSH_R_TEMP);
 			IrValue b = Get();
 			Emit(IR_POP_R);
-			Emit2(IR_OP_SUBASS, v, b);
+			Emit2(IR_OP_SUBASS1, v, b);
 		}
 		else
 			return;
 	}
 }
 
-void Hi::Shift()
+void HiCompiler::Shift()
 {
 	Add();
 	for(;;) {
 		if(Char2('<', '<')) {
 			IrValue v = Get();
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Add();
 			IrValue b = Get();
 			Emit(IR_POP_R);
@@ -612,9 +576,9 @@ void Hi::Shift()
 		}
 		else
 		if(Char2('>', '>')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Add();
-			Emit(IR_POP_R_A1);
+			Emit(IR_POP_R_R1);
 			Emit(IR_OP_RSHF);
 		}
 		else
@@ -622,7 +586,7 @@ void Hi::Shift()
 	}
 }
 
-/*double Hi::DoCompare(const IrValue& a, const IrValue& b, const char *op)
+/*double HiCompiler::DoCompare(const IrValue& a, const IrValue& b, const char *op)
 {
 	LTIMING("DoCompare");
 	if(a.IsInt64() && b.IsInt64())
@@ -653,36 +617,36 @@ void Hi::Shift()
 	return 0;
 }*/
 
-void Hi::DoCompare(const char *op)
+void HiCompiler::DoCompare(const char *op)
 {
-	Emit(IR_PUSH_NEW_R);
+	Emit(IR_PUSH_R_EMPTY);
 	Shift();
-	Emit(IR_POP_TEMP_R);
-	HiValue a = Get();
-	Emit(IR_PUSH_TEMP_R);
-	HiValue b = Get();
+	Emit(IR_POP_R_TEMP);
+	IrValue a = Get();
+	Emit(IR_PUSH_R_TEMP);
+	IrValue b = Get();
 	Emit(IR_POP_R);
 	Emit3(IR_OP_CMP, a, b, op);
 }
 
-void Hi::Compare(Hi::SRVal& r)
+void HiCompiler::Compare()
 {
-	Shift(r);
+	Shift();
 	for(;;) {
 		if (Char2('>', '=')) {
-			DoCompare(r, ">=");
+			DoCompare(">=");
 			Emit1(IR_OP_CMP_RESULT, 0);
 		}
 		else if (Char2('<', '=')) {
-			DoCompare(r, "<=") <= 0;
+			DoCompare("<=");
 			Emit1(IR_OP_CMP_RESULT, 1);
 		}
 		else if (Char('>')) {
-			DoCompare(r, ">") > 0;
+			DoCompare(">");
 			Emit1(IR_OP_CMP_RESULT, 2);
 		}
 		else if (Char('<')) {
-			DoCompare(r, "<") < 0;
+			DoCompare("<");
 			Emit1(IR_OP_CMP_RESULT, 3);
 		}
 		else
@@ -690,27 +654,27 @@ void Hi::Compare(Hi::SRVal& r)
 	}
 }
 
-void Hi::Equal(Hi::SRVal& r)
+void HiCompiler::Equal()
 {
-	Compare(r);
+	Compare();
 	for(;;) {
 		if(Char2('=', '=')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Compare();
-			Emit(IR_POP_TEMP_R);
+			Emit(IR_POP_R_TEMP);
 			IrValue a = Get();
-			Emit(IR_PUSH_TEMP_R);
+			Emit(IR_PUSH_R_TEMP);
 			IrValue b = Get();
 			Emit(IR_POP_R);
 			Emit2(IR_OP_EQ, a, b);
 		}
 		else
 		if(Char2('!', '=')) {
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			Compare();
-			Emit(IR_POP_TEMP_R);
+			Emit(IR_POP_R_TEMP);
 			IrValue a = Get();
-			Emit(IR_PUSH_TEMP_R);
+			Emit(IR_PUSH_R_TEMP);
 			IrValue b = Get();
 			Emit(IR_POP_R);
 			Emit2(IR_OP_INEQ, a, b);
@@ -720,52 +684,52 @@ void Hi::Equal(Hi::SRVal& r)
 	}
 }
 
-void Hi::BinAnd()
+void HiCompiler::BinAnd()
 {
 	Equal();
 	while(!IsChar2('&', '&') && Char('&')) {
-		Emit(IR_PUSH_NEW_R);
+		Emit(IR_PUSH_R_EMPTY);
 		Equal();
-		Emit(IR_POP_R_A1);
-		Emit(IR_PUSH_BWAND);
+		Emit(IR_POP_R_R1);
+		Emit(IR_ASSIGN_R_BWAND);
 	}
 }
 
-void Hi::BinXor()
+void HiCompiler::BinXor()
 {
 	BinAnd();
 	while(Char('^')) {
-		Emit(IR_PUSH_NEW_R);
+		Emit(IR_PUSH_R_EMPTY);
 		BinAnd();
-		Emit(IR_POP_R_A1);
-		Emit(IR_PUSH_BWXOR);
+		Emit(IR_POP_R_R1);
+		Emit(IR_ASSIGN_R_BWXOR);
 	}
 }
 
-void Hi::BinOr()
+void HiCompiler::BinOr()
 {
 	BinXor();
 	while(!IsChar2('|', '|') && Char('|')) {
-		Emit(IR_PUSH_NEW_R);
+		Emit(IR_PUSH_R_EMPTY);
 		BinXor();
-		Emit(IR_POP_R_A1);
-		Emit(IR_PUSH_BWOR);
+		Emit(IR_POP_R_R1);
+		Emit(IR_ASSIGN_R_BWOR);
 	}
 }
 
-void Hi::And()
+void HiCompiler::And()
 {
 	BinOr();
 	if(IsChar2('&', '&')) {
 		IrValue b = IsTrue(Get());
-		IrValue exit = CreateLocalLabel();
+		IrValue exit = CreateLabel();
 		while(Char2('&', '&')) {
 			Emit2(IR_JUMP_IF_FALSE, b, exit);
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			BinOr();
 			IrValue v = IsTrue(Get());
 			Emit(IR_POP_R);
-			Emit2(IR_OP_ANDASS, b, v);
+			Emit2(IR_OP_ANDASS1, b, v);
 		}
 		EmitLabel(exit);
 		
@@ -773,19 +737,19 @@ void Hi::And()
 	}
 }
 
-void Hi::Or()
+void HiCompiler::Or()
 {
 	And();
 	if(IsChar2('|', '|')) {
 		IrValue b = IsTrue(Get());
-		IrValue exit = CreateLocalLabel();
+		IrValue exit = CreateLabel();
 		while(Char2('|', '|')) {
 			Emit2(IR_JUMP_IF_TRUE, b, exit);
-			Emit(IR_PUSH_NEW_R);
+			Emit(IR_PUSH_R_EMPTY);
 			And();
 			IrValue v = IsTrue(Get());
 			Emit(IR_POP_R);
-			Emit2(IR_OP_ORASS, b, v);
+			Emit2(IR_OP_ORASS1, b, v);
 		}
 		EmitLabel(exit);
 		
@@ -793,121 +757,104 @@ void Hi::Or()
 	}
 }
 
-void Hi::Cond()
+void HiCompiler::Cond()
 {
 	Or();
 	if(Char('?')) {
-		IrValue t = IsTrue(Get(r));
-		SRVal dummy;
-		if(t) {
-			Cond(r);
-			PassChar(':');
-			skipexp++;
-			Cond(dummy);
-			skipexp--;
+		IrValue t = IsTrue(Get());
+		Emit1(IR_COND_IF, t); {
+			Cond();
 		}
-		else {
-			skipexp++;
-			Cond(dummy);
-			skipexp--;
-			PassChar(':');
-			Cond(r);
+		PassChar(':');
+		Emit(IR_COND_ELSE); {
+			Cond();
 		}
+		Emit(IR_COND_ENDIF);
 	}
 }
 
-void Hi::Assign(Hi::SRVal& r)
+void HiCompiler::Assign()
 {
-	Cond(r);
+	Cond();
 	if(Char('=')) {
-		SRVal w;
-		Assign(w);
-		Assign(r, Get(w));
+		Emit(IR_PUSH_R_EMPTY);
+		Assign();
+		IrValue v = Get();
+		Emit(IR_POP_R);
+		Assign(v);
 	}
 	else
 	if(Char2('+', '=')) {
-		IrValue v = Get(r);
-		SRVal w;
-		Cond(w);
-		IrValue b = Get(w);
-		if(v.IsArray() && b.IsArray()) {
-			if(!v.Replace(v.GetCount(), 0, b))
-				OutOfMemory();
-			Assign(r, v);
-		}
-		else
-		if(!(v.IsArray() && b.IsVoid())) {
-			if(v.IsInt64() && b.IsInt64())
-				Assign(r, Int(v, "+=") + Int(b, "+="));
-			else
-				Assign(r, Number(v, "+=") + Number(b, "+="));
-		}
+		IrValue v = Get();
+		Emit(IR_PUSH_R_EMPTY);
+		Cond();
+		IrValue b = Get();
+		Emit(IR_POP_R);
+		Emit(IR_OP_ADDASS2);
 	}
 	else
 	if(Char2('-', '=')) {
-		SRVal w;
-		Cond(w);
-		IrValue v = Get(r);
-		IrValue b = Get(w);
-		if(v.IsInt64() && b.IsInt64())
-			Assign(r, Int(v, "-=") - Int(b, "-="));
-		else
-			Assign(r, Number(v, "-=") - Number(b, "-="));
+		Emit(IR_PUSH_R_EMPTY);
+		Cond();
+		Emit(IR_POP_R_TEMP);
+		IrValue v = Get();
+		Emit(IR_PUSH_R_TEMP);
+		IrValue b = Get();
+		Emit(IR_POP_R);
+		Emit(IR_OP_SUBASS2);
 	}
 	else
 	if(Char2('*', '=')) {
-		SRVal w;
-		Cond(w);
-		IrValue x = Get(r);
-		IrValue y = Get(w);
-		if(x.IsInt64() && y.IsInt64())
-			Assign(r, Int(x, "*=") * Int(y, "*="));
-		else
-			Assign(r, Number(x, "*=") * Number(y, "*="));
+		Emit(IR_PUSH_R_EMPTY);
+		Cond();
+		Emit(IR_POP_R_TEMP);
+		IrValue x = Get();
+		Emit(IR_PUSH_R_TEMP);
+		IrValue y = Get();
+		Emit(IR_POP_R);
+		Emit(IR_OP_MULASS2);
 	}
 	else
 	if(Char2('/', '=')) {
-		SRVal w;
-		Cond(w);
-		IrValue v = Get(r);
-		IrValue b = Get(w);
-		double q = Number(v, "/=");
-		if(q == 0)
-			ThrowError("divide by zero");
-		Assign(r, Number(b, "/=") / q);
+		Emit(IR_PUSH_R_EMPTY);
+		Cond();
+		Emit(IR_POP_R_TEMP);
+		IrValue v = Get();
+		Emit(IR_PUSH_R_TEMP);
+		IrValue b = Get();
+		Emit(IR_POP_R);
+		Emit(IR_OP_DIVASS2);
 	}
 	else
 	if(Char2('%', '=')) {
-		SRVal w;
-		Cond(w);
-		int64 a = Int(r, "%=");
-		int64 b = Int(w, "%=");
-		if(b == 0)
-			ThrowError("divide by zero");
-		Assign(r, a % b);
+		Emit(IR_PUSH_R_EMPTY);
+		Cond();
+		Emit(IR_POP_R_R1);
 	}
 }
 
-int Hi::stack_level = 50;
+int HiCompiler::stack_level = 50;
 
-void Hi::Exp(Hi::SRVal& r)
+void HiCompiler::Exp()
 {
 	LTIMING("Exp");
 	Spaces();
 	stack_level--;
 	if(stack_level <= 0)
 		ThrowError("stack overflow");
-	Assign(r);
+	Assign();
 	stack_level++;
 }
 
-IrValue Hi::GetExp() {
-	SRVal r;
-	Exp(r);
-	return Get(r);
+IrValue HiCompiler::GetExp() {
+	Emit(IR_PUSH_R_EMPTY);
+	Exp();
+	IrValue v = Get();
+	Emit(IR_POP_R);
+	return v;
 }
 
-void Hi::SkipTerm()
+void HiCompiler::SkipTerm()
 {
 	if(IsEof())
 		ThrowError("unexpected end of file");
@@ -915,7 +862,7 @@ void Hi::SkipTerm()
 	Spaces();
 }
 
-void Hi::SkipExp()
+void HiCompiler::SkipExp()
 {
 	int level = 0;
 	for(;;) {
@@ -946,8 +893,8 @@ void SkipBlock(CParser& p)
 			p.SkipTerm();
 	}
 }
-
-void Hi::SkipStatement()
+/*
+void HiCompiler::SkipStatement()
 {
 	stack_level--;
 	if(stack_level <= 0)
@@ -998,89 +945,87 @@ void Hi::SkipStatement()
 		PassChar(';');
 	}
 	stack_level++;
-}
+}*/
 
-bool  Hi::PCond()
+IrValue  HiCompiler::PCond()
 {
 	PassChar('(');
-	bool c = IsTrue(GetExp());
+	IrValue c = IsTrue(GetExp());
 	PassChar(')');
 	return c;
 }
 
-void Hi::FinishSwitch()
+void HiCompiler::FinishSwitch()
 {
-	while(no_break && no_return && no_continue) {
-		if(Id("case")) {
-			SRVal r;
-			Exp(r);
-			PassChar(':');
-		}
-		else
-		if(Id("default"))
-			PassChar(':');
-		else
-			if(Char('}'))
-				return;
+	for(;;) {
+		if(IsId("case") || IsId("default") || IsChar('}'))
+			break;
 		DoStatement();
 	}
-	while(!Char('}'))
-		SkipStatement();
 }
 
-void  Hi::DoStatement()
+void  HiCompiler::DoStatement()
 {
-	op_limit--;
+	//op_limit--;
 	TestLimit();
-	if(Id("if"))
-		if(PCond()) {
+	if(Id("if")) {
+		IrValue cond = PCond();
+		Emit1(IR_COND_IF, cond);
+		DoStatement();
+		if(Id("else")) {
+			Emit(IR_COND_ELSE);
 			DoStatement();
-			if(Id("else"))
-				SkipStatement();
 		}
-		else {
-			SkipStatement();
-			if(Id("else"))
-				DoStatement();
-		}
+		Emit(IR_COND_ENDIF);
+	}
 	else
 	if(Id("do")) {
-		loop++;
-		Pos pos = GetPos();
-		do {
-			SetPos(pos);
+		//Pos pos = GetPos();
+		IrValue exit = CreateLabel();
+		IrValue cont = CreateLabel();
+		PushLoop(exit, cont);
+		/*do*/ {
+			EmitLabel(cont);
+			//SetPos(pos);
 			DoStatement();
 			PassId("while");
-			no_continue = true;
+			//no_continue = true;
 		}
-		while(PCond() && no_break && no_return);
 		PassChar(';');
-		no_break = true;
-		loop--;
+		Emit2(IR_JUMP_IF_TRUE, PCond(), cont);
+		EmitLabel(exit);
+		PopLoop();
+		//no_break = true;
 	}
 	else
 	if(Id("while")) {
-		loop++;
-		Pos pos = GetPos();
-		for(;;) {
-			SetPos(pos);
-			if(!PCond() || !no_break || !no_return || !no_continue) {
-				SkipStatement();
-				break;
-			}
+		//Pos pos = GetPos();
+		IrValue exit = CreateLabel();
+		IrValue cont = CreateLabel();
+		PushLoop(exit, cont);
+		/*for(;;)*/ {
+			//SetPos(pos);
+			EmitLabel(cont);
+			Emit2(IR_JUMP_IF_FALSE, PCond(), exit);
 			DoStatement();
-			no_continue = true;
+			//no_continue = true;
 		}
-		no_break = true;
-		loop--;
+		EmitLabel(exit);
+		PopLoop();
+		//no_break = true;
 	}
 	else
 	if(Id("for")) {
-		loop++;
+		IrValue lbl_exit = CreateLabel();
+		IrValue lbl_first = CreateLabel();
+		IrValue lbl_post = CreateLabel();
+		IrValue lbl_cond = CreateLabel();
+		PushLoop(lbl_exit, lbl_cond);
 		PassChar('(');
-		SRVal var;
+		Emit(IR_PUSH_R_EMPTY);
 		if(!IsChar(';'))
-			Exp(var);
+			Exp();
+		/* TODO
 		if(Id("in") || Char(':')) {
 			IrValue range = GetExp();
 			PassChar(')');
@@ -1088,10 +1033,12 @@ void  Hi::DoStatement()
 			int i = 0;
 			for(;;) {
 				SetPos(stmt);
+				// TODO iterator in vm
+				// TODO emit if
 				if(range.IsArray()) {
 					if(i >= range.GetCount())
 						break;
-					Assign(var, (int64)i);
+					Emit1(IR_ASSIGN_R, (int64)i);
 				}
 				else
 				if(range.IsMap()) {
@@ -1102,11 +1049,7 @@ void  Hi::DoStatement()
 						i++;
 						continue;
 					}
-					Assign(var, map.GetKey(i));
-				}
-				if(!no_break || !no_return || !no_continue) {
-					SkipStatement();
-					break;
+					Emit1(IR_ASSIGN_R, map.GetKey(i));
 				}
 				DoStatement();
 				no_continue = true;
@@ -1114,56 +1057,56 @@ void  Hi::DoStatement()
 			}
 			SkipStatement();
 		}
-		else {
+		else*/ {
+			Emit1(IR_JUMP, lbl_first);
 			PassChar(';');
-			Pos cond;
+			
+			// for conditional
+			EmitLabel(lbl_cond);
+			IrValue cond;
 			if(!IsChar(';')) {
-				cond = GetPos();
+				cond = IsTrue(GetExp());
 				SkipExp();
 			}
 			PassChar(';');
-			Pos after;
+			Emit1(IR_JUMP, lbl_first);
+			
+			// for post op
+			EmitLabel(lbl_post);
 			if(!IsChar(')')) {
-				after = GetPos();
-				SkipExp();
+				Emit(IR_PUSH_R_EMPTY);
+				Exp();
+				Emit(IR_POP_R);
 			}
 			PassChar(')');
-			Pos stmt = GetPos();
-			for(;;) {
-				bool c = true;
-				if(cond.ptr) {
-					SetPos(cond);
-					c = IsTrue(GetExp());
-				}
-				SetPos(stmt);
-				if(!c || !no_break || !no_return || !no_continue) {
-					SkipStatement();
-					break;
-				}
+			Emit1(IR_JUMP, lbl_cond);
+			
+			// for block statement
+			EmitLabel(lbl_first);
+			{
 				DoStatement();
-				no_continue = true;
-				if(after.ptr) {
-					SetPos(after);
-					SRVal r;
-					Exp(r);
-				}
+				//no_continue = true;
 			}
+			
+			Emit1(IR_JUMP, lbl_post);
 		}
-		no_break = true;
-		loop--;
+		EmitLabel(lbl_exit);
+		PopLoop();
+		Emit(IR_POP_R);
+		//no_break = true;
 	}
 	else
 	if(Id("break")) {
 		if(!loop)
 			ThrowError("misplaced 'break'");
-		no_break = false;
+		//no_break = false;
 		PassChar(';');
 	}
 	else
 	if(Id("continue")) {
 		if(!loop)
 			ThrowError("misplaced 'continue'");
-		no_continue = false;
+		//no_continue = false;
 		PassChar(';');
 	}
 	else
@@ -1177,29 +1120,31 @@ void  Hi::DoStatement()
 		ThrowError("misplaced 'else'");
 	else
 	if(Id("return")) {
-		no_return = false;
+		//no_return = false;
 		if(!Char(';')) {
-			return_value = GetExp();
+			//already: Emit1(R_ASSIGN_R0, GetExp());
+			GetExp();
 			PassChar(';');
 		}
 		else
-			return_value = IrValue();
+			Emit1(IR_ASSIGN_R0, IrValue());
 	}
 	else
 	if(Id("switch")) {
-		loop++;
 		PassChar('(');
 		IrValue a = GetExp();
 		PassChar(')');
 		PassChar('{');
+		IrValue exit = CreateLabel();
+		IrValue next_case = CreateLabel();
+		PushLoop(exit);
 		while(!Char('}')) {
 			if(Id("case")) {
 				IrValue b = GetExp();
 				PassChar(':');
-				if(a == b) {
-					FinishSwitch();
-					break;
-				}
+				Emit3(IR_JUMP_IF_INEQ, a, b, next_case);
+				FinishSwitch();
+				EmitLabel(next_case);
 			}
 			else
 			if(Id("default")) {
@@ -1208,10 +1153,11 @@ void  Hi::DoStatement()
 				break;
 			}
 			else
-				SkipStatement();
+				ThrowError("Unexpected statement in switch block");
 		}
-		loop--;
-		no_break = true;
+		EmitLabel(exit);
+		PopLoop();
+		//no_break = true;
 	}
 	else
 	if(Char('#')) {
@@ -1224,9 +1170,8 @@ void  Hi::DoStatement()
 		String id = ReadId();
 		IrValue l = ReadLambda(*this);
 		if(type == 1) {
-			if(self.IsVoid())
-				ThrowError("no instance");
-			self.MapSet(id, l);
+			Emit(IR_ASSERT_SELF_NONVOID);
+			Emit2(IR_ASSIGN_SELF_MAP, id, l);
 		}
 		else
 		if(type == 2)
@@ -1236,25 +1181,126 @@ void  Hi::DoStatement()
 	}
 	else
 	if(Char('{')) {
-		while(!Char('}') && no_break && no_return && no_continue)
+		while(!Char('}') /*&& no_break && no_return && no_continue*/)
 			DoStatement();
 	}
 	else
 	if(!Char(';')) {
-		SRVal v;
-		Exp(v);
+		Emit(IR_PUSH_R_EMPTY);
+		Exp();
+		Emit(IR_POP_R);
 		PassChar(';');
 	}
 }
 
-void  Hi::Run()
+void HiCompiler::Run()
 {
-	no_return = no_break = no_continue = true;
+	//no_return = no_break = no_continue = true;
 	loop = 0;
-	skipexp = 0;
-	while(!IsEof() && no_return && no_break && no_continue)
+	//skipexp = 0;
+	while(!IsEof() /*&& no_return && no_break && no_continue*/)
 		DoStatement();
 }
+
+void Hi::Run() {
+	HiCompiler::Run();
+	
+	vm.Execute(ir);
+	
+	return_value = vm.regs[0];
+}
+
+HiValue Hi::Number(const HiValue& a, const char *oper) {
+	return vm.Number(a, oper);
+}
+
+HiValue Hi::Int(const HiValue& a, const char *oper) {
+	return vm.Int(a, oper);
+}
+
+
+
+
+
+
+
+void HiCompiler::Emit(IrCode x) {
+	IR& ir = this->ir.Add();
+	ir.code = x;
+}
+
+void HiCompiler::Emit1(IrCode x, IrValue a) {
+	IR& ir = this->ir.Add();
+	ir.code = x;
+	ir.arg[0] = a;
+}
+
+void HiCompiler::Emit2(IrCode x, IrValue a, IrValue b) {
+	IR& ir = this->ir.Add();
+	ir.code = x;
+	ir.arg[0] = a;
+	ir.arg[1] = b;
+}
+
+void HiCompiler::Emit3(IrCode x, IrValue a, IrValue b, IrValue c) {
+	IR& ir = this->ir.Add();
+	ir.code = x;
+	ir.arg[0] = a;
+	ir.arg[1] = b;
+	ir.arg[2] = c;
+}
+
+void HiCompiler::EmitLabel(IrValue l) {
+	IR& ir = this->ir.Add();
+	ir.code = IR_LABEL;
+	ir.arg[0] = l;
+}
+
+IrValue HiCompiler::CreateLabel() {
+	return IrValue().SetLabel(lbl_counter++);
+}
+
+void HiCompiler::PushLoop(IrValue exit) {
+	LoopStack& l = loop_stack.Add();
+	l.exit = exit;
+	loop++;
+}
+
+void HiCompiler::PushLoop(IrValue exit, IrValue repeat) {
+	LoopStack& l = loop_stack.Add();
+	l.exit = exit;
+	l.repeat = repeat;
+	loop++;
+}
+
+void HiCompiler::CreateSwitchDefault() {
+	TODO
+}
+
+void HiCompiler::PopLoop() {
+	loop_stack.Remove(loop_stack.GetCount()-1);
+	loop--;
+}
+
+void HiCompiler::ReadGlobalIr() {
+	for(int i = 0; i < global_hi.GetCount(); i++) {
+		String key = global_hi.GetKey(i);
+		HiValue& val = global_hi[i];
+		
+		IrValue& ir = global.GetAdd(key);
+		
+		
+	}
+}
+
+IrValue HiCompiler::IsTrue(const IrValue& v) {
+	Emit1(IR_R_ISTRUE, v);
+	IrValue r;
+	r.SetRegisterValue(IrValue::REG_R0);
+	return r;
+}
+
+
 
 
 }

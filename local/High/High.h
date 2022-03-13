@@ -4,7 +4,7 @@
 #include <Local/Local.h>
 
 
-#define USE_HIGH_BYTECODE 0
+#define USE_HIGH_BYTECODE 1
 
 namespace UPP {
 

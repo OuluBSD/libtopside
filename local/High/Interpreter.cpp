@@ -557,7 +557,7 @@ HiValue Hi::MulArray(HiValue array, HiValue times)
 void Hi::Mul(Hi::SRVal& r)
 {
 	Unary(r);
-	for(;;)
+	for(;;) {
 		if(!IsChar2('*', '=') && Char('*')) {
 			HiValue x = Get(r);
 			SRVal w;
@@ -596,6 +596,7 @@ void Hi::Mul(Hi::SRVal& r)
 		}
 		else
 			return;
+	}
 }
 
 void Hi::Add(Hi::SRVal& r)
