@@ -1275,6 +1275,11 @@ void  Hi::Run()
 		DoStatement();
 }
 
+HiValue&  Hi::VarGetAdd(const HiValue& key) {
+	return var.GetAdd(key);
+}
+
+
 
 }
 

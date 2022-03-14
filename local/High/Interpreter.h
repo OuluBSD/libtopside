@@ -1,6 +1,8 @@
 #ifndef _High_Interpreter_h_
 #define _High_Interpreter_h_
 
+namespace UPP {
+
 struct Hi : public CParser {
 	struct SRVal : Moveable<SRVal> {
 		HiValue *lval;
@@ -48,7 +50,8 @@ struct Hi : public CParser {
 	double Number(const SRVal& a, const char *oper);
 	int64  Int(const SRVal& a, const char *oper);
 
-	HiValue   MulArray(HiValue array, HiValue times);
+	HiValue		MulArray(HiValue array, HiValue times);
+	HiValue&	VarGetAdd(const HiValue& key);
 
 	void  Subscript(SRVal& r, SRVal _self, String id);
 	void  Subscript(SRVal& r);
@@ -83,5 +86,7 @@ struct Hi : public CParser {
 	{ r_stack_level = stack_level;  skipexp = false; }
 	~Hi() { stack_level = r_stack_level; }
 };
+
+}
 
 #endif

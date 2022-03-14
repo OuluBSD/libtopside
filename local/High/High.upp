@@ -15,7 +15,7 @@ file
 	Interpreter.h,
 	Interpreter.cpp,
 	Bytecode.h,
-	IrList.inl,
+	IrList.inl highlight cpp,
 	Bytecode.cpp,
 	IrVM.cpp,
 	Info readonly separator,

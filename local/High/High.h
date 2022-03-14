@@ -201,12 +201,16 @@ void     SkipBlock(CParser& p);
 HiValue ReadLambda(CParser& p);
 HiValue ReadLambda(const char *s);
 
+}
+
 #if USE_HIGH_BYTECODE
 #include "Bytecode.h"
 #else
 #include "Interpreter.h"
 #endif
 
+namespace UPP {
+	
 struct HiEscape {
 	Hi&             esc;
 	HiValue         self;

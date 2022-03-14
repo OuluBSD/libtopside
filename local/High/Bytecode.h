@@ -1,6 +1,7 @@
 #ifndef _High_Emitter_h_
 #define _High_Emitter_h_
 
+namespace UPP {
 
 typedef enum {
 	#define IR(x) IR_##x,
@@ -9,6 +10,42 @@ typedef enum {
 } IrCode;
 
 
+
+struct VmState {
+	static const int REG_COUNT = 5;
+	
+	
+	struct SRVal {
+		HiValue *lval;
+		HiValue  lval_owned;
+		HiValue  rval;
+		HiValue  sbs;
+
+		SRVal()                    { lval = NULL; }
+		SRVal(const HiValue& v)    { lval = NULL; rval = v; }
+		SRVal(double n)            { lval = NULL; rval = n; }
+		SRVal(int64 n)             { lval = NULL; rval = n; }
+		SRVal(uint64 n)            { lval = NULL; rval = (int64)n; }
+		SRVal(bool n)              { lval = NULL; rval = (int64)n; }
+		
+		void operator=(const HiValue& v)    { lval = NULL; rval = v; }
+		void operator=(double n)            { lval = NULL; rval = n; }
+		void operator=(int64 n)             { lval = NULL; rval = n; }
+		void operator=(uint64 n)            { lval = NULL; rval = (int64)n; }
+		void operator=(bool n)              { lval = NULL; rval = (int64)n; }
+	};
+	
+	Array<SRVal> r_stack;
+	Array<SRVal> temp_stack;
+	Array<SRVal> rself_stack;
+	Array<HiValue> var_stack;
+	Array<HiValue> self_stack;
+	Array<HiValue> argvec_stack;
+	HiValue regs[REG_COUNT];
+	int pc = 0;
+	int max_pc = 0;
+	
+};
 
 struct IrValue {
 	static int total;
@@ -30,16 +67,18 @@ struct IrValue {
 		V_ARRAY,
 		V_LABEL_INT,
 		V_LABEL_STR,
+		V_VARSTACK,
 	} Type;
 	
-	typedef enum {
+	/*typedef enum {
 		REG_VOID,
 		REG_R0,
 		REG_R1,
 		REG_R2,
 		REG_R3,
 		REG_R4,
-	} RegType;
+	} RegType;*/
+	static const int REG_COUNT = VmState::REG_COUNT;
 	
 	Type type;
 	const char* str;
@@ -54,7 +93,6 @@ struct IrValue {
 	HiValue hv;
 	ArrayMap<String, IrValue> map;
 	Array<IrValue> array;
-	RegType reg;
 	
 	
 	IrValue();
@@ -78,19 +116,24 @@ struct IrValue {
 	void SetEmptyArray();
 	void MapSet(const IrValue& key, const IrValue& value);
 	void ArrayAdd(const IrValue& value);
-	IrValue& SetRegisterValue(RegType r);
+	IrValue& SetRegisterValue(int r);
 	IrValue& SetLabel(int i);
 	IrValue& SetLabel(String s);
+	IrValue& SetVarStackValue(int offset);
 	bool IsVoid() const;
 	bool IsMap() const;
 	bool IsArray() const;
+	bool IsInt() const;
 	bool IsAnyString() const;
+	bool IsVarStackValue(int offset) const;
+	bool IsRegister(int reg) const;
+	bool IsRegister() const;
 	String GetString() const;
 	int GetCount() const;
 	String GetTypeString() const;
 	String GetTextValue() const;
 	String ToString() const;
-	HiValue AsHiValue() const;
+	HiValue AsHiValue(VmState& s) const;
 	
 	const VectorMap<IrValue, IrValue>& GetMap() const;
 	
@@ -125,6 +168,13 @@ protected:
 	void Emit2(IrCode x, IrValue a, IrValue b);
 	void Emit3(IrCode x, IrValue a, IrValue b, IrValue c);
 	void EmitLabel(IrValue l);
+	//IrValue	EmitMovReg(const IrValue& v, int reg);
+	IrValue		EmitPushVar(const IrValue& v);
+	IrValue		EmitPopVar(const IrValue& v, int reg=0);
+	IrValue		EmitPopVar(const IrValue& v, const IrValue& avoid0);
+	IrValue		EmitSelfLambdaCheck(String id, IrValue& tmp);
+	IrValue		EmitGlobalLambdaCheck(String id, IrValue& tmp);
+	IrValue		EmitSelfLvalCheck();
 	
 	IrValue CreateLabel();
 	void PushLoop(IrValue exit);
@@ -133,6 +183,8 @@ protected:
 	void PopLoop();
 	
 	void ReadGlobalIr();
+	
+	void OnError(String msg);
 	
 public:
 	
@@ -149,36 +201,29 @@ public:
 		SRVal(bool n)              { lval = NULL; rval = (int64)n; }
 	};*/
 
-	ArrayMap<String, HiValue>& global_hi;
-	ArrayMap<String, IrValue>  global;
-	IrValue                    self;
-	ArrayMap<String, IrValue>  var;
+	
 
-	//int      skipexp;
-	int      r_stack_level;
-	int      loop;
+	//int		skipexp;
+	int			r_stack_level;
+	int			loop;
+	bool		fail = false;
 	
 	static int stack_level;
 	
-	void       OutOfMemory();
+	void		OutOfMemory();
 	
-	void       TestLimit();
-	void       DoCompare(const IrValue& a, const IrValue& b, const char *op);
-	void       DoCompare(const char *op);
-	String     ReadName();
-	IrValue    ExecuteLambda(const String& id, IrValue lambda);
-	IrValue	   IsTrue(const IrValue& v);
-	void       Assign(IrValue& val, const Vector<IrValue>& sbs, int si, const IrValue& src);
+	void		TestLimit();
+	void		DoCompare(const IrValue& a, const IrValue& b, const char *op);
+	void		DoCompare(const char *op);
+	String		ReadName();
+	IrValue		ExecuteLambda(const String& id, IrValue lambda);
+	IrValue		IsTrue(const IrValue& v);
+	
+	IrValue		Get();
+	void		Assign(const IrValue& src);
 
-	IrValue    Get();
-	void       Assign(const IrValue& src);
-
-	IrValue   GetExp();
-
-	//double Number(const SRVal& a, const char *oper);
-	//int64  Int(const SRVal& a, const char *oper);
-
-	IrValue   MulArray(IrValue array, IrValue times);
+	IrValue		GetExp();
+	
 
 	void  Subscript(String id);
 	void  Subscript();
@@ -207,9 +252,9 @@ public:
 
 	void  Run();
 
-	HiCompiler(ArrayMap<String, HiValue>& global, const char *s, int& oplimit,
+	HiCompiler(/*ArrayMap<String, HiValue>& global,*/ const char *s, int& oplimit,
 	    const String& fn, int line = 1)
-	: CParser(s, fn, line), global_hi(global)
+	: CParser(s, fn, line)/*, global_hi(global)*/
 	{ r_stack_level = stack_level; ReadGlobalIr();}
 	~HiCompiler() { stack_level = r_stack_level; }
 };
@@ -217,48 +262,49 @@ public:
 
 
 struct IrVM {
-	struct SRVal : Moveable<SRVal> {
-		HiValue *lval;
-		HiValue  rval;
-		HiValue  sbs;
-
-		SRVal()                    { lval = NULL; }
-		SRVal(const HiValue& v)    { lval = NULL; rval = v; }
-		SRVal(double n)            { lval = NULL; rval = n; }
-		SRVal(int64 n)             { lval = NULL; rval = n; }
-		SRVal(uint64 n)            { lval = NULL; rval = (int64)n; }
-		SRVal(bool n)              { lval = NULL; rval = (int64)n; }
-		
-		void operator=(const HiValue& v)    { lval = NULL; rval = v; }
-		void operator=(double n)            { lval = NULL; rval = n; }
-		void operator=(int64 n)             { lval = NULL; rval = n; }
-		void operator=(uint64 n)            { lval = NULL; rval = (int64)n; }
-		void operator=(bool n)              { lval = NULL; rval = (int64)n; }
-	};
 	static const int REG_COUNT = 5;
+	using SRVal = VmState::SRVal;
 	
-	Vector<SRVal> r_stack;
-	HiValue regs[REG_COUNT];
+	VmState*				s;
+	VmState					state;
+	TS::RunningFlagSingle	flag;
+	int&					op_limit;
+	Vector<int>				lbl_pos;
+	VectorMap<String, int>	lbl_names;
+	bool					fail = 0;
 	
-	int pc = 0;
-	int max_pc = 0;
-	TS::RunningFlagSingle flag;
-	int&     op_limit;
+	ArrayMap<String, HiValue>&	global;
+	HiValue						self;
+	ArrayMap<String, HiValue>	var;
 	
 	
-	IrVM(int& op_limit) : op_limit(op_limit) {}
-	void Execute(const IR& ir);
-	void Execute(const Vector<IR>& ir);
-	void Get();
-	bool IsRunning() const {return flag.IsRunning();}
-	void SetNotRunning() {flag.SetNotRunning();}
-	void OnError(String msg);
-	void ThrowError(String msg);
-	HiValue  Number(const HiValue& a, const char *oper);
-	HiValue  Int(const HiValue& a, const char *oper);
-	void     TestLimit();
-	void     AddAssign1(SRVal& r, const HiValue& a, const HiValue& b);
-	void     OutOfMemory();
+	IrVM(ArrayMap<String, HiValue>& g, int& op_limit) : global(g), op_limit(op_limit) {s = &state;}
+	void	Execute(const IR& ir);
+	void	Execute(const Vector<IR>& ir);
+	bool	RefreshLabels(const Vector<IR>& ir);
+	void	Get();
+	void    Get(const SRVal& r, HiValue& v);
+	bool	IsRunning() const {return flag.IsRunning();}
+	void	SetNotRunning() {flag.SetNotRunning();}
+	void	OnError(String msg);
+	void	ThrowError(String msg);
+	void	TestLimit();
+	void	AddAssign1(SRVal& r, const HiValue& a, const HiValue& b);
+	void	AddAssign2(SRVal& r, const HiValue& a, const HiValue& b);
+	void	OutOfMemory();
+	void	WriteRegister(const IrValue& reg, const HiValue& v);
+	HiValue	ReadVar(const IrValue& v);
+	void	Jump(const IrValue& v);
+	void	Assign(const SRVal& val, const HiValue& src);
+	void	Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src);
+	double	DoCompare(const HiValue& a, const HiValue& b, const char *op);
+	HiValue	MulArray(HiValue array, HiValue times);
+	
+	double	Number(const HiValue& a, const char *oper);
+	int64	Int(const HiValue& a, const char *oper);
+	double	Number(const SRVal& a, const char *oper);
+	int64	Int(const SRVal& a, const char *oper);
+	String	Lims(const String& s) const;
 	
 };
 
@@ -266,18 +312,21 @@ struct IrVM {
 struct Hi : public HiCompiler {
 	HiValue  self;
 	HiValue  return_value;
-	bool     no_break, no_return, no_continue;
 	IrVM     vm;
 	
 	
 	Hi(ArrayMap<String, HiValue>& global, const char *s, int& oplimit,
-	    const String& fn, int line = 1) : HiCompiler(global, s, oplimit, fn, line), vm(oplimit) {}
+	    const String& fn, int line = 1) : HiCompiler(s, oplimit, fn, line), vm(global, oplimit) {}
 	
-	void     Run();
-	HiValue  Number(const HiValue& a, const char *oper);
-	HiValue  Int(const HiValue& a, const char *oper);
+	void	Run();
+	double	Number(const HiValue& a, const char *oper);
+	int64	Int(const HiValue& a, const char *oper);
 	
+	HiValue&	VarGetAdd(const HiValue& key) {return vm.var.GetAdd(key);}
 	
 };
+
+
+}
 
 #endif

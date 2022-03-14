@@ -184,7 +184,7 @@ HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self,
 		if(self)
 			sub.self = *self;
 		for(int i = 0; i < l.arg.GetCount(); i++)
-			sub.var.GetAdd(l.arg[i]) = arg[i];
+			sub.VarGetAdd(l.arg[i]) = arg[i];
 		sub.Run();
 		if(self)
 			*self = sub.self;
