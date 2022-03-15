@@ -25,7 +25,8 @@ void SIC_Input(HiEscape& e)
 
 void SIC_InputNumber(HiEscape& e)
 {
-    e = atof(ReadStdIn());
+	float f = atof(ReadStdIn());
+    e = f;
 }
 
 CONSOLE_APP_MAIN
@@ -39,17 +40,20 @@ CONSOLE_APP_MAIN
     String dir = GetDataFile("");
 	Vector<String> files;
 	files << "Test0.high";
+	files << "Test1.high";
+	files << "Test99.high";
     
     for (String file : files) {
         String path = AppendFileName(dir, file);
 	    LOG("Processing file: " << path);
         try {
-	        Scan(global, LoadFile(path));
+	        Scan(global, LoadFile(path), path);
 	        HiValue ret = Execute(global, "main", INT_MAX);
 	        DUMP(ret);
 	    }
-	    catch(CParser::Error e) {
+	    catch(Exc e) {
 	        PRINT("ERROR: " << e << "\n");
+	        break;
 	    }
     }
     

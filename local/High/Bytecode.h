@@ -15,9 +15,8 @@ struct VmState {
 	static const int REG_COUNT = 5;
 	
 	
-	struct SRVal {
+	struct SRVal : Moveable<SRVal> {
 		HiValue *lval;
-		HiValue  lval_owned;
 		HiValue  rval;
 		HiValue  sbs;
 
@@ -37,10 +36,10 @@ struct VmState {
 	
 	Array<SRVal> r_stack;
 	Array<SRVal> temp_stack;
-	Array<SRVal> rself_stack;
+	Vector<SRVal> rself_stack;
 	Array<HiValue> var_stack;
 	Array<HiValue> self_stack;
-	Array<HiValue> argvec_stack;
+	Array<Array<SRVal>> argvec_stack;
 	HiValue regs[REG_COUNT];
 	int pc = 0;
 	int max_pc = 0;
@@ -128,6 +127,7 @@ struct IrValue {
 	bool IsVarStackValue(int offset) const;
 	bool IsRegister(int reg) const;
 	bool IsRegister() const;
+	bool IsLabel() const;
 	String GetString() const;
 	int GetCount() const;
 	String GetTypeString() const;
@@ -143,6 +143,9 @@ struct IR : Moveable<IR> {
 	IrCode code;
 	IrValue arg[3];
 	String label;
+	const char* file;
+	int line;
+	CParser::Pos codepos;
 	
 	
 	String GetCodeString() const;
@@ -163,18 +166,18 @@ protected:
 	int lbl_counter = 0;
 	
 	
-	void Emit(IrCode x);
-	void Emit1(IrCode x, IrValue a);
-	void Emit2(IrCode x, IrValue a, IrValue b);
-	void Emit3(IrCode x, IrValue a, IrValue b, IrValue c);
-	void EmitLabel(IrValue l);
+	void Emit_(IrCode x, const char* file, int line);
+	void Emit1_(IrCode x, IrValue a, const char* file, int line);
+	void Emit2_(IrCode x, IrValue a, IrValue b, const char* file, int line);
+	void Emit3_(IrCode x, IrValue a, IrValue b, IrValue c, const char* file, int line);
+	void EmitLabel_(IrValue l, const char* file, int line);
 	//IrValue	EmitMovReg(const IrValue& v, int reg);
-	IrValue		EmitPushVar(const IrValue& v);
-	IrValue		EmitPopVar(const IrValue& v, int reg=0);
-	IrValue		EmitPopVar(const IrValue& v, const IrValue& avoid0);
-	IrValue		EmitSelfLambdaCheck(String id, IrValue& tmp);
-	IrValue		EmitGlobalLambdaCheck(String id, IrValue& tmp);
-	IrValue		EmitSelfLvalCheck();
+	IrValue		EmitPushVar_(const IrValue& v, const char* file, int line);
+	IrValue		EmitPopVar_(const IrValue& v, int reg, const char* file, int line);
+	IrValue		EmitPopVar_(const IrValue& v, const IrValue& avoid0, const char* file, int line);
+	IrValue		EmitSelfLambdaCheck(String id, IrValue& tmp, const char* file, int line);
+	IrValue		EmitGlobalLambdaCheck(String id, IrValue& tmp, const char* file, int line);
+	IrValue		EmitSelfLvalCheck(const char* file, int line);
 	
 	IrValue CreateLabel();
 	void PushLoop(IrValue exit);
@@ -216,7 +219,6 @@ public:
 	void		DoCompare(const IrValue& a, const IrValue& b, const char *op);
 	void		DoCompare(const char *op);
 	String		ReadName();
-	IrValue		ExecuteLambda(const String& id, IrValue lambda);
 	IrValue		IsTrue(const IrValue& v);
 	
 	IrValue		Get();
@@ -274,7 +276,7 @@ struct IrVM {
 	bool					fail = 0;
 	
 	ArrayMap<String, HiValue>&	global;
-	HiValue						self;
+	//HiValue						self;
 	ArrayMap<String, HiValue>	var;
 	
 	
@@ -284,6 +286,7 @@ struct IrVM {
 	bool	RefreshLabels(const Vector<IR>& ir);
 	void	Get();
 	void    Get(const SRVal& r, HiValue& v);
+	void    Get0(SRVal& r, HiValue& v);
 	bool	IsRunning() const {return flag.IsRunning();}
 	void	SetNotRunning() {flag.SetNotRunning();}
 	void	OnError(String msg);
@@ -299,6 +302,7 @@ struct IrVM {
 	void	Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src);
 	double	DoCompare(const HiValue& a, const HiValue& b, const char *op);
 	HiValue	MulArray(HiValue array, HiValue times);
+	HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
 	
 	double	Number(const HiValue& a, const char *oper);
 	int64	Int(const HiValue& a, const char *oper);
@@ -306,11 +310,13 @@ struct IrVM {
 	int64	Int(const SRVal& a, const char *oper);
 	String	Lims(const String& s) const;
 	
+	HiValue&	Self();
+	
 };
 
 
 struct Hi : public HiCompiler {
-	HiValue  self;
+	//HiValue  self;
 	HiValue  return_value;
 	IrVM     vm;
 	
@@ -323,6 +329,10 @@ struct Hi : public HiCompiler {
 	int64	Int(const HiValue& a, const char *oper);
 	
 	HiValue&	VarGetAdd(const HiValue& key) {return vm.var.GetAdd(key);}
+	HiValue		GetExp();
+	
+	ArrayMap<String, HiValue>& Var() {return vm.var;}
+	HiValue& Self() {return vm.Self();}
 	
 };
 

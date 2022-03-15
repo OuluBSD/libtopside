@@ -3,6 +3,17 @@
 
 namespace UPP {
 
+
+#define EMIT_FLAGS __FILE__, __LINE__
+#define Emit(x) Emit_(x, EMIT_FLAGS)
+#define Emit1(x, a) Emit1_(x, a, EMIT_FLAGS)
+#define Emit2(x, a, b) Emit2_(x, a, b, EMIT_FLAGS)
+#define Emit3(x, a, b, c) Emit3_(x, a, b, c, EMIT_FLAGS)
+#define EmitLabel(x) EmitLabel_(x, EMIT_FLAGS)
+#define EmitPushVar(x) EmitPushVar_(x, EMIT_FLAGS)
+#define EmitPopVar(x, y) EmitPopVar_(x, y, EMIT_FLAGS)
+
+
 #ifdef _MSC_VER
 #pragma inline_depth(255)
 #pragma optimize("t", on)
@@ -48,7 +59,7 @@ IrValue HiCompiler::Get()
 
 void HiCompiler::Assign(const IrValue& src)
 {
-	Emit1(IR_ASSIGN_R_LVAL_2, src);
+	Emit1(IR_ASSIGN_R_LVAL_VALUE, src);
 }
 
 /*IrValue HiCompiler::ExecuteLambda(const String& id, IrValue lambda, SRVal self, Vector<SRVal>& arg)
@@ -126,14 +137,20 @@ void HiCompiler::Subscript(String id)
 					v1 = GetExp();
 				
 				if(Char(',')) {
-					if(!IsChar(']'))
+					if(!IsChar(']')) {
+						v1 = EmitPushVar(v1);
 						v2 = GetExp();
+						v1 = EmitPopVar(v1, v2);
+					}
 					Emit2(IR_R_SBS_ARRAYADD_1_ARRAY2, v1, v2);
 				}
 				else
 				if(Char(':')) {
-					if(!IsChar(']'))
+					if(!IsChar(']')) {
+						v1 = EmitPushVar(v1);
 						v2 = GetExp();
+						v1 = EmitPopVar(v1, v2);
+					}
 					Emit3(IR_R_SBS_ARRAYADD_1_ARRAY3, v1, v2, IrValue());
 				}
 				else
@@ -154,9 +171,9 @@ void HiCompiler::Subscript(String id)
 			if(!Char(')')) {
 				for(;;) {
 					LTIMING("make args");
-					Emit(IR_PUSH_R_ARGVEC_ADD);
+					Emit(IR_PUSH_R_EMPTY);
 					Exp();
-					Emit(IR_POP_R);
+					Emit(IR_POP_R_ARGVEC_ADD);
 					if(Char(')')) break;
 					PassChar(',');
 				}
@@ -235,9 +252,12 @@ void HiCompiler::Term()
 		Emit(IR_ASSIGN_R_EMPTYMAP);
 		if(!Char('}')) {
 			for(;;) {
-				IrValue v = GetExp();
+				IrValue a = GetExp();
 				PassChar(':');
-				Emit2(IR_R_MAPSET, v, GetExp());
+				EmitPushVar(a);
+				IrValue b = GetExp();
+				a = EmitPopVar(a, b);
+				Emit2(IR_R_MAPSET, a, b);
 				if(Char('}'))
 					break;
 				PassChar(',');
@@ -298,7 +318,7 @@ void HiCompiler::Term()
 				b.SetRegisterValue(0);
 				Emit2(IR_JUMP_IF_TRUE, b, lbl_c);
 				
-				b = EmitSelfLambdaCheck(id, tmp);
+				b = EmitSelfLambdaCheck(id, tmp, EMIT_FLAGS);
 				Emit2(IR_JUMP_IF_FALSE, b, lbl_b);
 				{
 				    Emit(IR_ASSIGN_RSELF_LVAL_SELF);
@@ -307,7 +327,7 @@ void HiCompiler::Term()
 				}
 				
 				EmitLabel(lbl_b);
-				b = EmitGlobalLambdaCheck(id, tmp);
+				b = EmitGlobalLambdaCheck(id, tmp, EMIT_FLAGS);
 				Emit2(IR_JUMP_IF_FALSE, b, lbl_c);
 				{
 					Emit1(IR_ASSIGN_R_GLOBALIDX, tmp);
@@ -318,7 +338,7 @@ void HiCompiler::Term()
 			
 			IrValue lbl_d = CreateLabel();
 			
-			b = EmitSelfLvalCheck();
+			b = EmitSelfLvalCheck(EMIT_FLAGS);
 			Emit2(IR_JUMP_IF_FALSE, b, lbl_d);
 			{
 				Emit(IR_ASSIGN_R_RSELF);
@@ -328,13 +348,11 @@ void HiCompiler::Term()
 			
 			EmitLabel(lbl_d);
 			
+			ASSERT(id.GetCount());
 			if (_global)
-				Emit1(IR_GLOBAL_GETADD, id);
+				Emit1(IR_ASSIGN_R_LVAL_GLOBAL_GETADD, id);
 			else
-				Emit1(IR_VAR_GETADD, id);
-			
-			tmp.SetRegisterValue(0);
-			Emit1(IR_ASSIGN_R_LVAL_1, tmp);
+				Emit1(IR_ASSIGN_R_LVAL_VAR_GETADD, id);
 			
 			EmitLabel(lbl_exit);
 		}
@@ -869,15 +887,16 @@ void  HiCompiler::DoStatement()
 		IrValue exit = CreateLabel();
 		IrValue cont = CreateLabel();
 		PushLoop(exit, cont);
-		/*do*/ {
-			EmitLabel(cont);
+		EmitLabel(cont);
+		 {
 			//SetPos(pos);
 			DoStatement();
-			PassId("while");
 			//no_continue = true;
 		}
+		PassId("while");
+		IrValue cond = PCond();
 		PassChar(';');
-		Emit2(IR_JUMP_IF_TRUE, PCond(), cont);
+		Emit2(IR_JUMP_IF_TRUE, cond, cont);
 		EmitLabel(exit);
 		PopLoop();
 		//no_break = true;
@@ -905,7 +924,7 @@ void  HiCompiler::DoStatement()
 		IrValue lbl_first = CreateLabel();
 		IrValue lbl_post = CreateLabel();
 		IrValue lbl_cond = CreateLabel();
-		PushLoop(lbl_exit, lbl_cond);
+		PushLoop(lbl_exit, lbl_post);
 		PassChar('(');
 		Emit(IR_PUSH_R_EMPTY);
 		if(!IsChar(';'))
@@ -954,6 +973,7 @@ void  HiCompiler::DoStatement()
 				SkipExp();
 			}
 			PassChar(';');
+			Emit2(IR_JUMP_IF_FALSE, cond, lbl_exit);
 			Emit1(IR_JUMP, lbl_first);
 			
 			// for post op
@@ -984,6 +1004,12 @@ void  HiCompiler::DoStatement()
 	if(Id("break")) {
 		if(!loop)
 			ThrowError("misplaced 'break'");
+		if (loop_stack.IsEmpty())
+			ThrowError("internal error: empty loop stack");
+		LoopStack& l = loop_stack.Top();
+		if (!l.exit.IsLabel())
+			ThrowError("trying to jump non-label");
+		Emit1(IR_JUMP, l.exit);
 		//no_break = false;
 		PassChar(';');
 	}
@@ -991,6 +1017,12 @@ void  HiCompiler::DoStatement()
 	if(Id("continue")) {
 		if(!loop)
 			ThrowError("misplaced 'continue'");
+		if (loop_stack.IsEmpty())
+			ThrowError("internal error: empty loop stack");
+		LoopStack& l = loop_stack.Top();
+		if (!l.repeat.IsLabel())
+			ThrowError("trying to jump non-label");
+		Emit1(IR_JUMP, l.repeat);
 		//no_continue = false;
 		PassChar(';');
 	}
@@ -1013,6 +1045,9 @@ void  HiCompiler::DoStatement()
 		}
 		else
 			Emit1(IR_ASSIGN_R0, IrValue());
+		if (loop_stack.IsEmpty())
+			ThrowError("internal error: empty loop stack");
+		Emit1(IR_JUMP, loop_stack[0].exit);
 	}
 	else
 	if(Id("switch")) {
@@ -1025,8 +1060,10 @@ void  HiCompiler::DoStatement()
 		PushLoop(exit);
 		while(!Char('}')) {
 			if(Id("case")) {
+				a = EmitPushVar(a);
 				IrValue b = GetExp();
 				PassChar(':');
+				a = EmitPopVar(a, b);
 				Emit3(IR_JUMP_IF_INEQ, a, b, next_case);
 				FinishSwitch();
 				EmitLabel(next_case);
@@ -1035,7 +1072,6 @@ void  HiCompiler::DoStatement()
 			if(Id("default")) {
 				PassChar(':');
 				FinishSwitch();
-				break;
 			}
 			else
 				ThrowError("Unexpected statement in switch block");
@@ -1085,8 +1121,16 @@ void HiCompiler::Run()
 	loop = 0;
 	fail = 0;
 	//skipexp = 0;
+	
+	ASSERT(loop_stack.IsEmpty());
+	IrValue exit = CreateLabel();
+	PushLoop(exit);
+	
 	while(!IsEof() && !fail)
 		DoStatement();
+	
+	EmitLabel(exit);
+	PopLoop();
 }
 
 void Hi::Run() {
@@ -1110,41 +1154,71 @@ int64 Hi::Int(const HiValue& a, const char *oper) {
 	return vm.Int(a, oper);
 }
 
-
-
-
-
-
-
-void HiCompiler::Emit(IrCode x) {
-	IR& ir = this->ir.Add();
-	ir.code = x;
+HiValue Hi::GetExp() {
+	return_value = HiValue();
+	
+	IrValue e = HiCompiler::GetExp();
+	
+	if (HiCompiler::fail)
+		return HiValue();
+	
+	vm.Execute(ir);
+	
+	return_value = vm.ReadVar(e);
+	//DUMP(return_value);
+	
+	return return_value;
 }
 
-void HiCompiler::Emit1(IrCode x, IrValue a) {
+
+
+
+
+
+void HiCompiler::Emit_(IrCode x, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = x;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
+}
+
+void HiCompiler::Emit1_(IrCode x, IrValue a, const char* file, int line) {
+	IR& ir = this->ir.Add();
+	ir.code = x;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = a;
 }
 
-void HiCompiler::Emit2(IrCode x, IrValue a, IrValue b) {
+void HiCompiler::Emit2_(IrCode x, IrValue a, IrValue b, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = x;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = a;
 	ir.arg[1] = b;
 }
 
-void HiCompiler::Emit3(IrCode x, IrValue a, IrValue b, IrValue c) {
+void HiCompiler::Emit3_(IrCode x, IrValue a, IrValue b, IrValue c, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = x;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = a;
 	ir.arg[1] = b;
 	ir.arg[2] = c;
 }
 
-void HiCompiler::EmitLabel(IrValue l) {
+void HiCompiler::EmitLabel_(IrValue l, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = IR_LABEL;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = l;
 }
 
@@ -1157,9 +1231,12 @@ void HiCompiler::EmitLabel(IrValue l) {
 	return dst;
 }*/
 
-IrValue HiCompiler::EmitSelfLambdaCheck(String id, IrValue& tmp) {
+IrValue HiCompiler::EmitSelfLambdaCheck(String id, IrValue& tmp, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = IR_SELF_LAMBDA_CHECK;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = id;
 	tmp.SetRegisterValue(1);
 	IrValue dst;
@@ -1167,9 +1244,12 @@ IrValue HiCompiler::EmitSelfLambdaCheck(String id, IrValue& tmp) {
 	return dst;
 }
 
-IrValue HiCompiler::EmitGlobalLambdaCheck(String id, IrValue& tmp) {
+IrValue HiCompiler::EmitGlobalLambdaCheck(String id, IrValue& tmp, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = IR_GLOBAL_LAMBDA_CHECK;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = id;
 	tmp.SetRegisterValue(1);
 	IrValue dst;
@@ -1177,40 +1257,52 @@ IrValue HiCompiler::EmitGlobalLambdaCheck(String id, IrValue& tmp) {
 	return dst;
 }
 
-IrValue HiCompiler::EmitSelfLvalCheck() {
+IrValue HiCompiler::EmitSelfLvalCheck(const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = IR_RSELF_LVAL_CHECK;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	IrValue dst;
 	dst.SetRegisterValue(0);
 	return dst;
 }
 
-IrValue HiCompiler::EmitPushVar(const IrValue& v) {
+IrValue HiCompiler::EmitPushVar_(const IrValue& v, const char* file, int line) {
 	IR& ir = this->ir.Add();
 	ir.code = IR_PUSH_VAR;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = v;
 	IrValue dst;
 	dst.SetVarStackValue(0);
 	return dst;
 }
 
-IrValue HiCompiler::EmitPopVar(const IrValue& v, int reg) {
+IrValue HiCompiler::EmitPopVar_(const IrValue& v, int reg, const char* file, int line) {
 	ASSERT(v.IsVarStackValue(0));
 	IR& ir = this->ir.Add();
 	ir.code = IR_POP_VAR;
+	ir.file = file;
+	ir.line = line;
+	ir.codepos = GetPos();
 	ir.arg[0] = reg;
 	IrValue dst;
 	dst.SetRegisterValue(reg);
 	return dst;
 }
 
-IrValue HiCompiler::EmitPopVar(const IrValue& v, const IrValue& avoid0) {
+IrValue HiCompiler::EmitPopVar_(const IrValue& v, const IrValue& avoid0, const char* file, int line) {
 	ASSERT(v.IsVarStackValue(0));
 	for(int i = 0; i < IrValue::REG_COUNT; i++) {
 		if (avoid0.IsRegister(i))
 			continue;
 		IR& ir = this->ir.Add();
 		ir.code = IR_POP_VAR;
+		ir.file = file;
+		ir.line = line;
+		ir.codepos = GetPos();
 		ir.arg[0] = i;
 		IrValue dst;
 		dst.SetRegisterValue(i);

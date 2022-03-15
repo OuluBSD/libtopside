@@ -5,6 +5,7 @@ file
 	HighTest.h,
 	HighTest.cpp,
 	Test0.high highlight cpp,
+	Test1.high highlight cpp,
 	Test99.high highlight cpp;
 
 mainconfig

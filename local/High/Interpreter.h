@@ -52,7 +52,10 @@ struct Hi : public CParser {
 
 	HiValue		MulArray(HiValue array, HiValue times);
 	HiValue&	VarGetAdd(const HiValue& key);
-
+	
+	ArrayMap<String, HiValue>&	Var() {return var;}
+	HiValue&					Self() {return self;}
+	
 	void  Subscript(SRVal& r, SRVal _self, String id);
 	void  Subscript(SRVal& r);
 	void  Term(SRVal& r);

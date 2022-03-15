@@ -1,0 +1,137 @@
+
+fn0() {
+	return 10;
+}
+
+cls() {
+	this = {};
+	this.method = @() {.field = 17;};
+	return this;
+}
+
+main() {
+	v0 = void;
+	v1 = 1;
+	v2 = 1.123;
+	v3 = 1.123e-96;
+	v4 = 0x123;       // hexadecimal
+	v5 = 0123;        // octal
+	// NOTE: FAIL around here means buggy CParser and ScanUint, where non 0-9,a-f,A-F are use instead
+	// of skipped.
+	v6 = 0b10100100;  // binary
+	v7 = 'x';         // character code
+	
+	a0 = [];                 // empty array
+	a1 = [ 1, 2, 3, 4, 5 ];
+	a2 = [ 1, [2, 3], 4 ];   // array contains nested array
+	a3 = "Hello";            // equivalent to ['H', 'e', 'l', 'l', 'o']
+	a4 = [ 1, 2, 3 * v1 ]; // expressions can be used as well
+	
+	v8 = a4[1];
+	a4[1] = 3;
+	v8 = a4[-1];
+	
+	a4[] = 4; // add element
+	a5 = a3[1,3]; // "ell"
+	a6 = a3[1:4]; // "ell"
+	a7 = a3[1:]; // "ello";
+	a8 = a3[:4]; // "Hell";
+	
+	a8[0:2] = "Ba"; // "Hell" -> "Ball"
+	a9 = a3 + a8; // "HelloBall"
+	
+	a10 = 2 * a8; // "BallBall"
+	
+	a3 += " world"; // "Hello" -> "Hello world"
+	
+	a0 << "Appending" << " more";
+	
+	m0 = {};
+	m0["key"] = "value";
+	
+	
+	v8 = fn0();
+	:fn1 = @(i) {return 20 * i;};
+	v9 = fn1(2);
+	
+	// TODO :sum = @(...) { s = 0; for(i in argv) s += argv[i]; }
+	
+	fn2 = @(i = 3) {return i;}; // default argument
+	v10 = fn2();
+	
+	// TODO #:foo(x) { return 2 * x; }
+	
+	
+	local = 1;
+	// not a thing here: .instance = 2;
+	:global = 3;
+	
+	o0 = cls(); // create "new cls"
+	o0.method(); // call cls::method() on o0
+	v11 = o0.field; // 17
+	bject.field = 18;
+	v11 = o0.field; // 18
+	
+	o1 = {};
+	o0.method() ! o1; // call cls::method on o1
+	v12 = o1.field; // 17
+	
+	v13 = ++v12;
+	v13 = v12++;
+	v13 = -v12;
+	v13 = !v12;
+	v13 = v12 == 19;
+	v14 = v12 == 19 ? 10 : 4;
+	
+	
+	if (v14 == 10) {
+		v15 = 15;
+	}
+	
+	if (v14 == 11) {
+		v15 = 16;
+	}
+	else {
+		v15 = 18;
+	}
+	
+	while (v15 < 20) {
+		v15++;
+	}
+	
+	do {
+		++v15;
+	}
+	while (v15 < 23);
+	
+	for (i = 0; i < 2; i++)
+		v15 *= 2;
+	
+	for (i = 0; i < 2; i++) {
+		v15 /= 2;
+	}
+	
+	for(i = 0; i < 5; i++) {
+		v16 = i;
+		if (i == 3)
+			break;
+	}
+	
+	for(i = 0; i < 5; i++) {
+		if (i > 3)
+			continue;
+		v16 = i;
+	}
+	
+	r = -1;
+	switch (v16) {
+		case 0: r = 4; break;
+		case 1: r = 5; break;
+		case 2: r = 6; break;
+		default: r = 70; break;
+	}
+	
+	v0 = count(a1);
+	
+	return v0;
+}

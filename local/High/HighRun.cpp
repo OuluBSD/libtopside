@@ -181,13 +181,14 @@ HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self,
 	HiValue ret;
 	{
 		Hi sub(global, l.code, op_limit, l.filename, l.line);
+		HiValue& sub_self = sub.Self();
 		if(self)
-			sub.self = *self;
+			sub_self = *self;
 		for(int i = 0; i < l.arg.GetCount(); i++)
 			sub.VarGetAdd(l.arg[i]) = arg[i];
 		sub.Run();
 		if(self)
-			*self = sub.self;
+			*self = sub_self;
 		ret = sub.return_value;
 	}
 	return ret;
@@ -214,19 +215,20 @@ HiValue Execute(ArrayMap<String, HiValue>& global, const char *name, int op_limi
 	return HiValue();
 }
 
-#if !USE_HIGH_BYTECODE
 HiValue Evaluatex(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
 	Hi sub(global, expression, oplimit, "", 0);
+	auto& var = sub.Var();
 	for(int i = 0; i < global.GetCount(); i++)
-		sub.var.Add(global.GetKey(i), global[i]);
+		var.Add(global.GetKey(i), global[i]);
 	HiValue v;
 	v = sub.GetExp();
-	for(int i = 0; i < sub.var.GetCount(); i++)
-		global.GetAdd(sub.var.GetKey(i)) = sub.var[i];
+	for(int i = 0; i < var.GetCount(); i++)
+		global.GetAdd(var.GetKey(i)) = var[i];
 	return v;
 }
 
+#if !USE_HIGH_BYTECODE
 HiValue Evaluate(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
 	try {

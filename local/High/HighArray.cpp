@@ -140,6 +140,9 @@ bool HiValue::Replace(int i, int n, HiValue a)
 		ta.InsertN(i, q);
 	else
 		ta.Remove(i, -q);
+	int last = sa.GetCount()-1 + i;
+	//if (last >= ta.GetCount())
+	//	return false;
 	for(q = 0; q < sa.GetCount(); q++)
 		ta[q + i] = sa[q];
 	return true;
@@ -149,7 +152,7 @@ bool HiValue::Append(HiValue a)
 {
 	if(IsVoid())
 		SetEmptyArray();
-	return Replace(GetCount(), 0, a);
+	return Replace(0, GetCount(), a);
 }
 
 HiValue::operator WString() const

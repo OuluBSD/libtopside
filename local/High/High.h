@@ -212,7 +212,13 @@ HiValue ReadLambda(const char *s);
 namespace UPP {
 	
 struct HiEscape {
-	Hi&             esc;
+	#if USE_HIGH_BYTECODE
+	using Vm = IrVM;
+	#else
+	using Vm = Hi;
+	#endif
+	
+	Vm&             esc;
 	HiValue         self;
 	Array<HiValue>& arg;
 	HiValue         ret_val;
@@ -233,8 +239,8 @@ struct HiEscape {
 
 	double       Number(int i);
 	int          Int(int i);
-
-	HiEscape(Hi& esc, HiValue self, Array<HiValue>& arg)
+	
+	HiEscape(Vm& esc, HiValue self, Array<HiValue>& arg)
 	  : esc(esc), self(self), arg(arg) {}
 };
 

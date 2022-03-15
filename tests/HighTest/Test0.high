@@ -1,12 +1,78 @@
 
+fn0() {
+	return 10;
+}
+
+cls() {
+	this = {};
+	this.method = @() {.field = 17;};
+	return this;
+}
+
+getnumber()
+{
+    for(;;) {
+        h = InputNumber();
+        if(h > 0)
+                return h;
+        Print("Please enter a positive number!\n");
+    }
+}
+
 main() {
-	//return 9;
-	//return 9+1;
-	//return 9+1+2;
+	// Problem 1
+	/*a1 = [3];
+	a1[0] += 2;
+	v0 = a1[0];
+	return v0;*/
+	// solution: fixed wrong assert
 	
-	r = 1;
-	for (i = 0; i < 2; i++) {
-		r = r + i;
-	}
-	return r;
+	// Problem 2
+	/*a3 = "Hello"; // equivalent to ['H', 'e', 'l', 'l', 'o']
+	a5 = a3[1,3];*/ // "ell"
+	// solution: fixed missing push/pop var with multiple GetExp() functions
+	
+	// Problem 3
+	/*a3 = "Hello";            // equivalent to ['H', 'e', 'l', 'l', 'o']
+	a8 = a3[:4]; // "Hell";
+	a8[0:2] = "Ba"; // "Hell" -> "Ball"
+	a10 = 2 * a8;*/ // "BallBall"
+	// solution: fixed buggy u++ HiValue::Append, with inverted Replace() argument order
+	
+	// Problem 4
+	//v8 = fn0();
+	// solution: implemented (was unimplemented)
+	
+	// Problem 5
+	/*:fn1 = @(i) {return 20 * i;};
+	v9 = fn1(2);*/
+	// solution: fixed argument SRVal order problems: don't pre-push but post-pop argument SRVal
+	
+	// Problem 6
+	/*fn2 = @(i = 3) {return i*10;}; // default argument
+	v10 = fn2();*/
+	// solution: fixed Evaluatex
+	
+	// Problem 7
+	/*o0 = cls();
+	o1 = {};
+	o0.method() ! o1; // call cls::method on o1
+	v12 = o1.field; // 17
+	v13 = ++v12;*/
+	// solution: remove stupid useless self variables and use self_stack
+	
+	// Problem 8
+	/*v15 = 22;
+	for (i = 0; i < 2; i++)
+		v15 *= 2;*/
+	// solution: fix incorrect ir-code execution impl. Forgot a= and b= in many instructions.
+	
+	//Problem 9
+	/*w = getnumber();
+	bmi = w / (174 * 174 / 10000);
+    Print("Your body mass index is " + to_string(bmi) + "\n");*/
+    // solution: jump to function's end when return is called.
+	v15 = "success!";
+	
+	return v15;
 }

@@ -365,6 +365,8 @@ int HiValue::GetInt() const
 
 bool IsTrue(const HiValue& a)
 {
+	if (a.GetType() == HIGH_INT64)
+		return a.GetInt64();
 	if(a.IsNumber())
 		return a.GetNumber();
 	return a.GetCount();

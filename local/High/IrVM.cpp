@@ -23,6 +23,7 @@ IrValue::IrValue(const char* s) {
 IrValue::IrValue(String s) {
 	type = V_STRING;
 	this->s = s;
+	ASSERT(s.GetCount());
 }
 
 IrValue::IrValue(WString s) {
@@ -168,6 +169,10 @@ bool IrValue::IsRegister(int reg) const {
 	return type == V_REG && i32 == reg;
 }
 
+bool IrValue::IsLabel() const {
+	return type == V_LABEL_INT || type == V_LABEL_STR;
+}
+
 String IrValue::GetString() const {
 	if (type == V_STRING)  return s;
 	if (type == V_CSTRING) return str;
@@ -212,7 +217,7 @@ String IrValue::GetTextValue() const {
 		case V_VOID:	return "<void>";
 		case V_REG:		return "R" + IntStr(i32);
 		case V_CSTRING:	return str;
-		case V_STRING:	return s;
+		case V_STRING:	return this->s;
 		case V_WSTRING:	return ws.ToString();
 		case V_INT32:	return IntStr(i32);
 		case V_INT64:	return IntStr64(i64);
@@ -228,7 +233,7 @@ String IrValue::GetTextValue() const {
 				s << "[" << i << "] " << array[i].ToString() << "\n";
 			break;
 		case V_LABEL_INT:	return IntStr(i32);
-		case V_LABEL_STR:	return s;
+		case V_LABEL_STR:	return this->s;
 		case V_VARSTACK:	return IntStr(i32);
 		default: return "<invalid type>";
 	}
@@ -284,7 +289,16 @@ String IR::ToString() const {
 	for(int i = 0; i < 3; i++) {
 		if (arg[i].IsVoid())
 			break;
-		s << ", " << arg[i].ToString();
+		String v = arg[i].ToString();
+		ASSERT(v.GetCount());
+		s << ", " << v;
+	}
+	if (file)
+		s += " (" + GetFileName(String(file)) + ":" + IntStr(line) + ")";
+	if (codepos.ptr) {
+		int col = codepos.ptr - codepos.lineptr;
+		int line = codepos.line;
+		s += " (" + IntStr(line) + ":" + IntStr(col) + ")";
 	}
 	return s;
 }
@@ -328,7 +342,7 @@ bool IrVM::RefreshLabels(const Vector<IR>& ir) {
 }
 
 void IrVM::Execute(const Vector<IR>& ir) {
-	DUMPC(ir);
+	//DUMPC(ir);
 	int& max_pc		= s->max_pc;
 	int& pc			= s->pc;
 	auto& r_stack	= s->r_stack;
@@ -353,6 +367,7 @@ void IrVM::Execute(const Vector<IR>& ir) {
 	while (IsRunning()) {
 		const IR& ins = vec[pc];
 		
+		//LOG(pc);
 		Execute(ins);
 		
 		pc++;
@@ -366,10 +381,12 @@ void IrVM::Execute(const Vector<IR>& ir) {
 void IrVM::Execute(const IR& ir) {
 	#undef CHECK
 	#define CHECK(x) if (!(x)) {OnError("Instruction " + ir.GetCodeString() + " failed: " #x " == false"); return;}
-	HiValue a, b;
+	HiValue a, b, c;
 	double d;
 	int64 i;
 	SRVal* val;
+	String str;
+	bool boolean;
 	int& max_pc		= s->max_pc;
 	int& pc			= s->pc;
 	auto& r_stack	= s->r_stack;
@@ -396,9 +413,10 @@ void IrVM::Execute(const IR& ir) {
 	//	r_stack.Add(self_stack.Top());
 	//	return;
 	
-	case IR_PUSH_R_ARGVEC_ADD:
+	case IR_POP_R_ARGVEC_ADD:
+		CHECK(!r_stack.IsEmpty());
 		CHECK(!argvec_stack.IsEmpty());
-		r_stack.Add(argvec_stack.Top().ArrayAdd(HiValue()));
+		argvec_stack.Top().Add(r_stack.Detach(r_stack.GetCount()-1));
 		return;
 	
 	case IR_PUSH_R_TEMP:
@@ -406,9 +424,14 @@ void IrVM::Execute(const IR& ir) {
 		r_stack.Add(temp_stack.Detach(temp_stack.GetCount()-1));
 		return;
 	
+	case IR_PUSH_R_RSELF:
+		CHECK(!rself_stack.IsEmpty());
+		r_stack.Add(rself_stack.Top());
+		return;
+	
 	case IR_POP_R:
 		CHECK(!r_stack.IsEmpty());
-		r_stack.Remove(r_stack.GetCount()-1);
+		r_stack.SetCount(r_stack.GetCount()-1);
 		return;
 	
 	case IR_POP_R_TEMP:
@@ -419,7 +442,14 @@ void IrVM::Execute(const IR& ir) {
 	case IR_POP_R_R1:
 		CHECK(!r_stack.IsEmpty());
 		Get(r_stack.Top(), regs[1]);
-		r_stack.Remove(r_stack.GetCount()-1);
+		r_stack.SetCount(r_stack.GetCount()-1);
+		return;
+	
+	case IR_POP_R_RSELF:
+		CHECK(!rself_stack.IsEmpty());
+		CHECK(!r_stack.IsEmpty());
+		rself_stack.Top() = r_stack.Top();
+		r_stack.SetCount(r_stack.GetCount()-1);
 		return;
 	
 	//case IR_PUSH_SELF_EMPTYMAP:
@@ -461,37 +491,44 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_R_SBS_ARRAYADD_EMPTY:
 		CHECK(!r_stack.IsEmpty())
-		CHECK(r_stack.Top().sbs.IsArray());
-		r_stack.Top().sbs.ArrayAdd(HiValue());
+		val = &r_stack.Top();
+		CHECK(val->sbs.IsArray() || val->sbs.IsVoid());
+		val->sbs.ArrayAdd(HiValue());
 		return;
 	
 	case IR_R_SBS_ARRAYADD_1:
-		CHECK(r_stack.Top().sbs.IsArray());
-		r_stack.Top().sbs.ArrayAdd(ReadVar(ir.arg[0]));
+		val = &r_stack.Top();
+		CHECK(val->sbs.IsArray() || val->sbs.IsVoid());
+		val->sbs.ArrayAdd(ReadVar(ir.arg[0]));
 		return;
 	
 	case IR_R_SBS_ARRAYADD_1_ARRAY1:
-		CHECK(r_stack.Top().sbs.IsArray());
+		val = &r_stack.Top();
+		CHECK(val->sbs.IsArray() || val->sbs.IsVoid());
 		a.SetEmptyArray();
 		a.ArrayAdd(ReadVar(ir.arg[0]));
-		r_stack.Top().sbs.ArrayAdd(a);
+		val->sbs.ArrayAdd(a);
 		return;
 	
 	case IR_R_SBS_ARRAYADD_1_ARRAY2:
-		CHECK(r_stack.Top().sbs.IsArray());
+		val = &r_stack.Top();
+		CHECK(val->sbs.IsArray() || val->sbs.IsVoid());
 		a.SetEmptyArray();
-		a.ArrayAdd(ReadVar(ir.arg[0]));
-		a.ArrayAdd(ReadVar(ir.arg[1]));
-		r_stack.Top().sbs.ArrayAdd(a);
+		b = ReadVar(ir.arg[0]);
+		c = ReadVar(ir.arg[1]);
+		a.ArrayAdd(b);
+		a.ArrayAdd(c);
+		val->sbs.ArrayAdd(a);
 		return;
 	
 	case IR_R_SBS_ARRAYADD_1_ARRAY3:
-		CHECK(r_stack.Top().sbs.IsArray());
+		val = &r_stack.Top();
+		CHECK(val->sbs.IsArray() || val->sbs.IsVoid());
 		a.SetEmptyArray();
 		a.ArrayAdd(ReadVar(ir.arg[0]));
 		a.ArrayAdd(ReadVar(ir.arg[1]));
 		a.ArrayAdd(ReadVar(ir.arg[2]));
-		r_stack.Top().sbs.ArrayAdd(a);
+		val->sbs.ArrayAdd(a);
 		return;
 	
 	
@@ -504,14 +541,13 @@ void IrVM::Execute(const IR& ir) {
 		argvec_stack.SetCount(argvec_stack.GetCount()-1);
 		return;
 	
-	case IR_EXECUTE_LAMBDA: break;
-	
 	case IR_JUMP:
 		Jump(ir.arg[0]);
 		return;
 	
 	case IR_JUMP_IF_FALSE:
-		if (!IsTrue(ReadVar(ir.arg[0])))
+		a = ReadVar(ir.arg[0]);
+		if (!IsTrue(a))
 			Jump(ir.arg[1]);
 		return;
 	
@@ -647,21 +683,23 @@ void IrVM::Execute(const IR& ir) {
 	case IR_OP_CMP_RESULT:
 		CHECK(!r_stack.IsEmpty())
 		CHECK(ir.arg[0].type == IrValue::V_INT32);
-		if (regs[0].IsInt()) {
+		if (regs[0].GetType() == HIGH_INT64) {
+			i = regs[0].GetInt64();
 			switch (ir.arg[0].i32) {
-				case 0: r_stack.Top() = (int)regs[0] >= 0; return;
-				case 1: r_stack.Top() = (int)regs[0] <= 0; return;
-				case 2: r_stack.Top() = (int)regs[0] > 0; return;
-				case 3: r_stack.Top() = (int)regs[0] < 0; return;
+				case 0: r_stack.Top() = i >= 0; return;
+				case 1: r_stack.Top() = i <= 0; return;
+				case 2: r_stack.Top() = i > 0; return;
+				case 3: r_stack.Top() = i < 0; return;
 				default: return;
 			}
 		}
 		else {
+			d = regs[0].GetNumber();
 			switch (ir.arg[0].i32) {
-				case 0: r_stack.Top() = (double)regs[0] >= 0; return;
-				case 1: r_stack.Top() = (double)regs[0] <= 0; return;
-				case 2: r_stack.Top() = (double)regs[0] > 0; return;
-				case 3: r_stack.Top() = (double)regs[0] < 0; return;
+				case 0: r_stack.Top() = (double)d >= 0; return;
+				case 1: r_stack.Top() = (double)d <= 0; return;
+				case 2: r_stack.Top() = (double)d > 0; return;
+				case 3: r_stack.Top() = (double)d < 0; return;
 				default: return;
 			}
 		}
@@ -673,12 +711,16 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_OP_SUBASS1:
 		CHECK(!r_stack.IsEmpty());
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
 		if(a.IsInt64() && b.IsInt64())	r_stack.Top() = Int(a, "-") - Int(b, "-");
 		else							r_stack.Top() = Number(a, "-") - Number(b, "-");
 		return;
 	
 	case IR_OP_DIVASS1:
 		CHECK(!r_stack.IsEmpty());
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
 		d = Number(b, "/");
 		if (d == 0)
 			OnError("divide by zero");
@@ -710,11 +752,15 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_OP_ADDASS2:
 		CHECK(!r_stack.IsEmpty() && !ir.arg[0].IsVoid() && !ir.arg[1].IsVoid());
-		AddAssign2(r_stack.Top(), ReadVar(ir.arg[0]), ReadVar(ir.arg[1]));
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
+		AddAssign2(r_stack.Top(), a, b);
 		return;
 	
 	case IR_OP_SUBASS2:
 		CHECK(!r_stack.IsEmpty());
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
 		if(a.IsInt64() && b.IsInt64())
 			Assign(r_stack.Top(), Int(a, "-=") - Int(b, "-="));
 		else
@@ -722,6 +768,8 @@ void IrVM::Execute(const IR& ir) {
 		return;
 	
 	case IR_OP_MULASS2:
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
 		if(a.IsInt64() && b.IsInt64())
 			Assign(r_stack.Top(), Int(a, "*=") * Int(b, "*="));
 		else
@@ -729,6 +777,8 @@ void IrVM::Execute(const IR& ir) {
 		return;
 	
 	case IR_OP_DIVASS2:
+		a = ReadVar(ir.arg[0]);
+		b = ReadVar(ir.arg[1]);
 		if(a.IsInt64() && b.IsInt64())
 			Assign(r_stack.Top(), Int(a, "/=") / Int(b, "/="));
 		else
@@ -764,15 +814,8 @@ void IrVM::Execute(const IR& ir) {
 		CHECK(!rself_stack.IsEmpty());
 		r_stack.Top() = rself_stack.Top();
 		return;
-		
-	case IR_ASSIGN_R_LVAL_1:
-		CHECK(!r_stack.IsEmpty());
-		val = &r_stack.Top();
-		val->lval_owned = ReadVar(ir.arg[0]);
-		val->lval = &val->lval_owned;
-		return;
-		
-	case IR_ASSIGN_R_LVAL_2:
+	
+	case IR_ASSIGN_R_LVAL_VALUE:
 		CHECK(!r_stack.IsEmpty());
 		val = &r_stack.Top();
 		a = ReadVar(ir.arg[0]);
@@ -850,45 +893,58 @@ void IrVM::Execute(const IR& ir) {
 			OnError("no instance");
 		return;
 	
-	case IR_GLOBAL_GETADD:
+	case IR_ASSIGN_R_LVAL_GLOBAL_GETADD:
 		CHECK(!r_stack.IsEmpty());
 		CHECK(ir.arg[0].IsAnyString());
-		r_stack.Top().lval = &global.GetAdd(ir.arg[0].GetString());
+		str = ir.arg[0].GetString();
+		CHECK(str.GetCount());
+		r_stack.Top().lval = &global.GetAdd(str);
 		return;
 	
-	case IR_VAR_GETADD:
+	case IR_ASSIGN_R_LVAL_VAR_GETADD:
 		CHECK(!r_stack.IsEmpty());
 		CHECK(ir.arg[0].IsAnyString());
-		r_stack.Top().lval = &var.GetAdd(ir.arg[0].GetString());
+		str = ir.arg[0].GetString();
+		CHECK(str.GetCount());
+		val = &r_stack.Top();
+		val->lval = &var.GetAdd(str);
 		return;
 	
 	case IR_SELF_LAMBDA_CHECK:
-		CHECK(!rself_stack.IsEmpty());
-		CHECK(!self_stack.IsEmpty());
-		CHECK(ir.arg[0].IsAnyString());
-		val = &rself_stack.Top();
-		if (!val->lval && self_stack.Top().IsMap()) {
-			regs[1] = self.MapGet(ir.arg[0].GetString());
-			regs[0] = regs[1].IsLambda();
+		if (!rself_stack.IsEmpty() && !self_stack.IsEmpty()) {
+			CHECK(!self_stack.IsEmpty());
+			CHECK(ir.arg[0].IsAnyString());
+			str = ir.arg[0].GetString();
+			CHECK(str.GetCount());
+			val = &rself_stack.Top();
+			if (!val->lval && self_stack.Top().IsMap()) {
+				regs[1] = self_stack.Top().MapGet(str);
+				regs[0] = regs[1].IsLambda();
+				return;
+			}
 		}
-		else regs[0] = false;
+		regs[0] = false;
 		return;
 	  
 	case IR_GLOBAL_LAMBDA_CHECK:
-		CHECK(!rself_stack.IsEmpty());
-		CHECK(!self_stack.IsEmpty());
-		CHECK(ir.arg[0].IsAnyString());
-		val = &rself_stack.Top();
-		if (!val->lval && (i = global.Find(ir.arg[0].GetString()) >= 0)) {
-			regs[1] = i;
-			regs[0] = global[i].IsLambda();
+		if (!rself_stack.IsEmpty()) {
+			CHECK(ir.arg[0].IsAnyString());
+			val = &rself_stack.Top();
+			str = ir.arg[0].GetString();
+			if (!val->lval && (i = global.Find(str)) >= 0) {
+				//DUMPM(global);
+				regs[1] = i;
+				regs[0] = global[i].IsLambda();
+				return;
+			}
 		}
-		else regs[0] = false;
+		regs[0] = false;
 		return;
 	 
 	case IR_ASSIGN_R_GLOBALIDX:
 		CHECK(!r_stack.IsEmpty());
-		if (!ir.arg[0].IsInt() || i < 0 || i >= global.GetCount())
+		i = ReadVar(ir.arg[0]).GetInt64();
+		if (i < 0 || i >= global.GetCount())
 			OnError("invalid global index");
 		else
 			r_stack.Top() = global[i];
@@ -896,19 +952,8 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_RSELF_LVAL_CHECK:
 		CHECK(!rself_stack.IsEmpty());
-		regs[0] = rself_stack.Top().lval != 0;
-		return;
-	
-	case IR_PUSH_R_RSELF:
-		CHECK(!rself_stack.IsEmpty());
-		r_stack.Add(rself_stack.Top());
-		return;
-	
-	case IR_POP_R_RSELF:
-		CHECK(!rself_stack.IsEmpty());
-		CHECK(!r_stack.IsEmpty());
-		rself_stack.Top() = r_stack.Top();
-		r_stack.SetCount(r_stack.GetCount()-1);
+		boolean = rself_stack.Top().lval != 0;
+		regs[0] = boolean;
 		return;
 	
 	case IR_PUSH_RSELF_EMPTY:
@@ -917,7 +962,7 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_POP_RSELF:
 		CHECK(!rself_stack.IsEmpty());
-		r_stack.SetCount(r_stack.GetCount()-1);
+		rself_stack.SetCount(r_stack.GetCount()-1);
 		return;
 	
 	case IR_HAS_VAR:
@@ -925,336 +970,38 @@ void IrVM::Execute(const IR& ir) {
 		regs[0] = var.Find(ir.arg[0].GetString()) >= 0;
 		return;
 	
+	case IR_EXECUTE_LAMBDA:
+		CHECK(!argvec_stack.IsEmpty());
+		CHECK(!rself_stack.IsEmpty());
+		CHECK(!r_stack.IsEmpty());
+		str = ir.arg[0].GetString();
+		a = ReadVar(ir.arg[1]);
+		//val = rself_stack.IsEmpty() ? 0 : &rself_stack.Top();
+		val = &rself_stack.Top();
+		try {
+			r_stack.Top() = ExecuteLambda(str, a, *val, argvec_stack.Top());
+		}
+		catch(Exc e) {
+			throw Exc(a.GetTypeName() + "." + str + "(): " + e);
+		}
+		return;
+		
 	}
 	
 	DUMP(ir);
 	Panic("not implemented");
 	
-	#if 0
-	TODO
-	switch (ir.code) {
-		case IR_R_SBS_RESET:
-			// r.sbs = IrValue();
-		case IR_R_SBS_ARRAYADD_EMPTY:
-			//r.sbs.ArrayAdd(HiValue());
-		
-		case IR_R_SBS_ARRAYADD_1:
-			//r.sbs.ArrayAdd(x);
-		case IR_R_SBS_ARRAYADD_1_ARRAY1:
-		case IR_R_SBS_ARRAYADD_1_ARRAY2:
-			/*HiValue x;
-			x.ArrayAdd(v1);
-			x.ArrayAdd(v2);
-			r.sbs.ArrayAdd(x);*/
-		case IR_R_SBS_ARRAYADD_1_ARRAY3:
-		
-		case IR_EXECUTE_LAMBDA:
-			/*try {
-				r = ExecuteLambda(id, v, _self, arg);
-			}
-			catch(Exc e) {
-				throw Error(Get(r).GetTypeName() + "." + id + "(): " + e);
-			}*/
-			
-		//case IR_PUSH_RSELF:
-			// _self = IrValue()
-			
-		case IR_ASSIGN_RSELF_LVAL_SELF:
-			// _self.lval = &self;
-			
-		//case IR_PUSH_SELF_EMPTYMAP_R:
-			// _self = r;
-		
-		case IR_POP_SELF:
-			
-		case IR_ASSIGN_R:
-			// r =
-			
-		/*
-		WROOOOOOOOOONG
-		case IR_ASSIGN_R_RSELF:
-			// r = self;
-		case IR_ASSIGN_R_VOID:
-			// r = IrValue()
-		case IR_ASSIGN_R_TMPSELF:
-			// r = _self;
-		case IR_ASSIGN_R_TMPMETHOD:
-			//// see: IR_COND_IF_SELFLAMBDA
-			// r = method;
-		case IR_ASSIGN_R_TMPGLOBALIDX:
-			//// see: IR_COND_IF_GLOBALLAMBDA
-			// r = global[ii];
-		case IR_ASSIGN_R_LVAL:
-			// r.lval = &v0;
-			
-		*/
-		case IR_ASSIGN_R_LVAL_1:
-			// r.lval = a0
-			
-		case IR_ASSIGN_R_LVAL_2:
-			/*if(!r.lval)
-				ThrowError("l-value required");
-			if(r.sbs.IsArray() && r.sbs.GetCount())
-				Assign(*r.lval, r.sbs.GetArray(), 0, src);
-			else
-				*r.lval = src;*/
-		
-		case IR_ASSIGN_SELF_R:
-			// self = r
-			
-		//case IR_PUSH_R_RSELF:
-			// r = _self
-		
-		//case IR_SCOPE_PUSH_EMPTYMAP:
-			// IrValue map;
-			// map.SetEmptyMap();
-			//// be able to reference with stack.top
-		
-		//case IR_ASSIGN_R_SCOPE_POP:
-			// r = scope.Pop();
-		
-		//case IR_SCOPE_ARRAYADD:
-			// stack.Top().ArrayAdd(v);
-			
-		//case IR_SCOPE_MAPSET:
-			//// reference stack.top
-			// stack.Top().MapSet(k, v);
-			
-		//case IR_SCOPE_PUSH_EMPTYARRAY:
-			// IrValue array;
-			//array.SetEmptyArray();
-			//// be able to reference with stack.Top()
-		
-		case IR_COND_ELSE:
-			
-		case IR_COND_ENDIF:
-			// finishes if or if+else
-			
-			
-		case IR_COND_IF_SELFLAMBDA:
-			// if(!_self.lval && !_global && locali < 0 && IsChar('(') &&
-			//     self.IsMap() && (method = self.MapGet(id)).IsLambda()) {
-		
-		case IR_COND_IF_GLOBALLAMBDA:
-			// if(!_self.lval && !_global && locali < 0 && IsChar('(') &&
-			//    (ii = global.Find(id)) >= 0 && global[ii].IsLambda()) {
-		
-		case IR_COND_IF_SELF_LVAL:
-			// if(_self.lval) {
-		
-		case IR_COND_IF_GLOBAL:
-			// if(_global) {
-		
-		case IR_ASSERT_SELF_MAP:
-			//if(!self.IsMap())
-			//	ThrowError("self in non-member code");
-			
-			
-		case IR_OP_PREINC:
-			/*if(v.IsInt64())
-				Assign(r, Int(v, "++") + 1);
-			else
-				Assign(r, Number(v, "++") + 1);*/
-
-		case IR_OP_PREDEC:
-			/*if(v.IsInt64())
-				Assign(r, Int(v, "--") - 1);
-			else
-				Assign(r, Number(v, "--") - 1);*/
-		
-		case IR_OP_NEGATIVE:
-			/*if(v.IsInt64())
-				r = -Int(v, "-");
-			else
-				r = -Number(v, "-");*/
-				
-		case IR_OP_POSITIVE:
-			/*if(v.IsInt64())
-				r = Int(v, "+");
-			else
-				r = Number(v, "+");*/
-		
-		case IR_OP_NOT:
-			//r = (int64)!IsTrue(v0);
-			
-		case IR_OP_NEGATE:
-			//r = ~Int(Get(r), "~");
-		
-		case IR_OP_DIVASS1:
-			/*
-			IrValue b = Number(y, "/");
-			if(b == 0)
-				ThrowError("divide by zero");
-			r = Number(x, "/") / b;*/
-		
-		case IR_OP_MODASS1:
-			// w in R1
-			/*
-			IrValue b = Int(w, "%");
-			if(b == 0)
-				ThrowError("divide by zero");
-			r = Int(r, "%") % b;*/
-			// pop r
-		
-			// pop r
-		
-		case IR_OP_ADDASS2:
-			/*if(v.IsArray() && b.IsArray()) {
-				if(!v.Replace(v.GetCount(), 0, b))
-					OutOfMemory();
-				Assign(r, v);
-			}
-			else
-			if(!(v.IsArray() && b.IsVoid())) {
-				if(v.IsInt64() && b.IsInt64())
-					Assign(r, Int(v, "+=") + Int(b, "+="));
-				else
-					Assign(r, Number(v, "+=") + Number(b, "+="));
-			}*/
-			
-		case IR_OP_LSHF:
-			/*if(v.IsArray() && b.IsArray()) {
-				if(!v.Replace(v.GetCount(), 0, b))
-					OutOfMemory();
-				Assign(r, v);
-			}
-			else
-			if(!(v.IsArray() && b.IsVoid()))
-				r = Int(v, "<<") << Int(b, "<<");*/
-		
-		case IR_OP_RSHF:
-			// w is in 2nd argument register R1
-			//r = Int(r, ">>") >> Int(w,  ">>");
-			
-		case IR_OP_SUBASS1:
-			/*if(v.IsInt64() && b.IsInt64())
-				r = Int(v, "-") - Int(b, "-");
-			else
-				r = Number(v, "-") - Number(b, "-");*/
-		
-		case IR_OP_SUBASS2:
-			/*if(v.IsInt64() && b.IsInt64())
-				Assign(r, Int(v, "-=") - Int(b, "-="));
-			else
-				Assign(r, Number(v, "-=") - Number(b, "-="));*/
-		
-		case IR_OP_MULASS2:
-			/*if(x.IsInt64() && y.IsInt64())
-				Assign(r, Int(x, "*=") * Int(y, "*="));
-			else
-				Assign(r, Number(x, "*=") * Number(y, "*="));*/
-			
-		case IR_OP_DIVASS2:
-			/*double q = Number(v, "/=");
-			if(q == 0)
-				ThrowError("divide by zero");
-			Assign(r, Number(b, "/=") / q);*/
-		
-		//case IR_OP_MODASS2:
-			// w in R1
-			/*int64 a = Int(r, "%=");
-			int64 b = Int(w, "%=");
-			if(b == 0)
-				ThrowError("divide by zero");
-			Assign(r, a % b);*/
-			
-		case IR_OP_CMP:
-			// DoCompare(a, b, op);
-			// store return integer to register A0
-		
-		case IR_OP_CMP_RESULT:
-			/* x = ingeger from IR_OP_CMP register A0
-			code 0: r = x >= 0
-			code 1: r = x <= 0
-			code 2: r = x > 0
-			code 3: r = x < 0*/
-		
-		case IR_OP_EQ:
-			// r = a == b
-		
-		case IR_OP_INEQ_RSELF:
-			/*if(!_self.lval || (!g.IsVoid() && !g.IsMap()))
-				ThrowError("l-value map or l-value void expected on the right side of !");
-			if(g.IsVoid()) {
-				IrValue v;
-				v.SetEmptyMap();
-				Assign(_self, v);
-			}*/
-			
-		case IR_OP_INEQ:
-			// r = a != b
-		
-		case IR_OP_ANDASS1:
-			// b = b && IsTrue(v);
-		
-		case IR_OP_ORASS1:
-			// b = b || IsTrue(v);
-		
-		
-		case IR_ASSIGN_R_BWAND:
-			// r = Int(r, "&") & Int(R1, "&");
-		
-		case IR_ASSIGN_R_BWXOR:
-			// r = Int(r, "^") ^ Int(R1, "^");
-		
-		case IR_ASSIGN_R_BWOR:
-			// r = Int(r, "|") | Int(R1, "|");
-		
-		
-		
-		case IR_OP_POSTINC:
-			/*if(v.IsInt64())
-				Assign(r, Int(v, "++") + 1);
-			else
-				Assign(r, Number(v, "++") + 1);
-			r = v;*/
-		
-		case IR_OP_POSTDEC:
-			/*if(v.IsInt64())
-				Assign(r, Int(v, "--") - 1);
-			else
-				Assign(r, Number(v, "--") - 1);
-			r = v;*/
-		
-		case IR_PUSH_R_EMPTY:
-			// SRVal w;
-		
-		case IR_POP_R:
-			// kuten nimi kertoo
-		
-		case IR_POP_R_R1:
-			// pop r to 2nd argument register
-		
-		
-		case IR_OP_MULARRAY:
-			/*if(x.IsArray() && y.IsInt())
-				r = MulArray(x, y);
-			else
-			if(y.IsArray() && x.IsInt())
-				r = MulArray(y, x);
-			else
-			if(x.IsInt64() && y.IsInt64())
-				r = Int(x, "*") * Int(y, "*");
-			else
-				r = Number(x, "*") * Number(y, "*");*/
-		case IR_POP_R_TEMP:
-			// pop last r to temp register
-		case IR_PUSH_R_TEMP:
-			// push temp register back to stack
-		
-		case IR_R_GET:
-			Get();
-			
-			
-		default: break;
-	}
-	#endif
 }
 
 void IrVM::Get() {
 	SRVal& r = s->r_stack.Top();
 	HiValue& v = s->regs[0];
 	
+	v = r.lval ? *r.lval : r.rval;
+	Get(r, v);
+}
+
+void IrVM::Get0(SRVal& r, HiValue& v) {
 	v = r.lval ? *r.lval : r.rval;
 	Get(r, v);
 }
@@ -1370,7 +1117,7 @@ void IrVM::Jump(const IrValue& v) {
 			OnError("Position label out-of-range");
 			return;
 		}
-		s->pc = lbl_pos[v.i32];
+		s->pc = lbl_pos[v.i32]; // no " + 1;" because pc++ is after this
 	}
 	else if (v.type == IrValue::V_LABEL_STR) {
 		int i = lbl_names.Find(v.s);
@@ -1378,7 +1125,7 @@ void IrVM::Jump(const IrValue& v) {
 			OnError("String label not found");
 			return;
 		}
-		s->pc = lbl_names[i];
+		s->pc = lbl_names[i]; // no " + 1;" because pc++ is after this
 	}
 	else {
 		OnError("Invalid address value for program counter jump");
@@ -1568,6 +1315,74 @@ HiValue IrVM::MulArray(HiValue array, HiValue times)
 	}
 	return r;
 }
+
+HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg) {
+	//LTIMING("ExecuteLambda");
+	if(!lambda.IsLambda())
+		ThrowError(Format("'%s' is not a lambda", id));
+	const HiLambda& l = lambda.GetLambda();
+	if(!l.varargs && arg.GetCount() > l.arg.GetCount()
+	   || arg.GetCount() < l.arg.GetCount() - l.def.GetCount())
+		ThrowError("invalid number of arguments in call to '" + id + "'");
+	Hi sub(global, l.code, op_limit, l.filename, l.line);
+	HiValue& sub_self = sub.Self();
+	Get0(self, sub_self);
+	for(int i = 0; i < l.arg.GetCount(); i++) {
+		HiValue& v = sub.vm.var.GetAdd(l.arg[i]);
+		if (i < arg.GetCount())
+			Get0(arg[i], v);
+		else
+		    v = Evaluatex(l.def[i - (l.arg.GetCount() - l.def.GetCount())], global, op_limit);
+		TestLimit();
+	}
+	HiValue retval;
+	Array<HiValue> argvar;
+	if(l.escape) {
+		#if LIBTOPSIDE
+		sub.vm.var.PickValues(argvar);
+		#else
+		argvar = sub.vm.var.PickValues();
+		#endif
+		
+		for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
+			Get0(arg[i], argvar.Add());
+		}
+		HiValue v;
+		Get0(self, v);
+		HiEscape e(*this, v, argvar);
+		e.id = id;
+		l.escape(e);
+		retval = e.ret_val;
+		self = e.self;
+	}
+	else {
+		if(l.varargs) {
+			HiValue& argv = sub.vm.var.GetAdd("argv");
+			argv.SetEmptyArray();
+			for(int i = l.arg.GetCount(); i < arg.GetCount(); i++)
+				Get(arg[i], argv.ArrayAdd(HiValue()));
+		}
+		sub.Run();
+		retval = sub.return_value;
+		
+		#if LIBTOPSIDE
+		sub.var.PickValues(argvar);
+		#else
+		argvar = sub.vm.var.PickValues();
+		#endif
+	}
+	for(int i = 0; i < l.inout.GetCount(); i++)
+		if(l.inout[i] && i < arg.GetCount() && arg[i].lval)
+			Assign(arg[i], argvar[i]);
+	if(self.lval)
+		Assign(self, sub_self);
+	return retval;
+}
+
+HiValue& IrVM::Self() {
+	return state.self_stack.IsEmpty() ? state.self_stack.Add() : state.self_stack.Top();
+}
+	
 
 
 
