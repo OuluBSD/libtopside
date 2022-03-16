@@ -99,7 +99,7 @@ void Hi::Run() {
 					comp.SwapIR(c.tmp_ir);
 			}
 			
-			c.vm = new IrVM(global, oplimit, c.l ? c.l->ir : c.tmp_ir);
+			c.vm = new IrVM(global, c.var, oplimit, c.l ? c.l->ir : c.tmp_ir);
 			IrVM& vm = *c.vm;
 			
 			if (calls.GetCount() == 1)
@@ -179,8 +179,7 @@ HiValue Hi::GetExp() {
 }
 
 ArrayMap<String, HiValue>& Hi::Var() {
-	TODO
-	//return vm.var;
+	return calls.Top().var;
 }
 
 HiValue& Hi::Self() {

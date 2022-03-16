@@ -176,10 +176,10 @@ struct IrVM {
 	String					return_argname;
 	
 	ArrayMap<String, HiValue>&	global;
-	ArrayMap<String, HiValue>	var;
+	ArrayMap<String, HiValue>&	var;
 	const Vector<IR>&			ir;
 	
-	IrVM(ArrayMap<String, HiValue>& g, int& op_limit, const Vector<IR>& ir) : global(g), op_limit(op_limit), ir(ir) {s = &state;}
+	IrVM(ArrayMap<String, HiValue>& g, ArrayMap<String, HiValue>& v, int& op_limit, const Vector<IR>& ir) : global(g), var(v), op_limit(op_limit), ir(ir) {s = &state;}
 	
 	int		InitLambdaExecution(HiLambda& l, IrVM& parent);
 	void	ExecuteInstruction(const IR& ir);
@@ -246,6 +246,7 @@ class Hi {
 		bool get_exp = false;
 		IrValue out_var;
 		Vector<IR> tmp_ir;
+		ArrayMap<String, HiValue> var;
 	};
 		
 	Array<Call> calls;
