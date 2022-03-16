@@ -110,6 +110,7 @@ public:
 
 	bool                                IsLambda() const     { return type == HIGH_LAMBDA; }
 	const HiLambda&                     GetLambda() const;
+	HiLambda&                           GetLambdaRW() const;
 	HiLambda&                           CreateLambda();
 
 
@@ -162,13 +163,21 @@ struct HiHandle {
 	virtual ~HiHandle()       {}
 };
 
+}
+
+#if USE_HIGH_BYTECODE
+#include "IR.h"
+#endif
+
+namespace UPP {
+
 class HiLambda {
 	Atomic   refcount;
 
 	void     Retain()        { AtomicInc(refcount); }
 	void     Release()       { if(AtomicDec(refcount) == 0) delete this; }
 
-	HiLambda()                 { refcount = 1; varargs = false; handle = NULL; }
+	HiLambda()                 { refcount = 1; varargs = false; compiled = false; handle = NULL; }
 	~HiLambda()                { if(handle) handle->Release(); }
 
 	friend class HiValue;
@@ -178,12 +187,14 @@ public:
 	Vector<String>        def;
 	Vector<bool>          inout;
 	String                code;
-	HiHandle            *handle;
-	Callback1<HiEscape&>     escape;
+	HiHandle             *handle;
+	Callback1<HiEscape&>  escape;
 	bool                  varargs;
+	bool                  compiled;
 	String                filename;
 	int                   line;
-
+	Vector<IR>            ir;
+	
 private:
 	HiLambda(const HiLambda&);
 	void operator=(const HiLambda&);

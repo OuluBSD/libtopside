@@ -3,16 +3,10 @@
 
 namespace UPP {
 
-typedef enum {
-	#define IR(x) IR_##x,
-	#include "IrList.inl"
-	#undef IR
-} IrCode;
-
 
 
 struct VmState {
-	static const int REG_COUNT = 5;
+	static const int REG_COUNT = IrValue::REG_COUNT;
 	
 	
 	struct SRVal : Moveable<SRVal> {
@@ -44,113 +38,6 @@ struct VmState {
 	HiValue regs[REG_COUNT];
 	int pc = 0;
 	int max_pc = 0;
-	
-};
-
-struct IrValue {
-	static int total;
-	static int GetTotalCount();
-	static int GetMaxTotalCount();
-	
-	typedef enum {
-		V_VOID,
-		V_REG,
-		V_CSTRING,
-		V_STRING,
-		V_WSTRING,
-		V_INT32,
-		V_INT64,
-		V_UINT64,
-		V_DOUBLE,
-		V_HIVAL,
-		V_MAP,
-		V_ARRAY,
-		V_LABEL_INT,
-		V_LABEL_STR,
-		V_VARSTACK,
-	} Type;
-	
-	/*typedef enum {
-		REG_VOID,
-		REG_R0,
-		REG_R1,
-		REG_R2,
-		REG_R3,
-		REG_R4,
-	} RegType;*/
-	static const int REG_COUNT = VmState::REG_COUNT;
-	
-	Type type;
-	const char* str;
-	String s;
-	WString ws;
-	int i32;
-	union {
-		int64 i64;
-		uint64 u64;
-		double d;
-	};
-	HiValue hv;
-	ArrayMap<String, IrValue> map;
-	Array<IrValue> array;
-	
-	
-	IrValue();
-	//IrValue(IrValue&& v);
-	IrValue(const IrValue& v);
-	IrValue(const char* s);
-	IrValue(String s);
-	IrValue(WString s);
-	IrValue(int i);
-	IrValue(int64 i);
-	IrValue(uint64 i);
-	IrValue(double d);
-	IrValue(const HiValue& v);
-	
-	
-	IrValue& operator=(const IrValue& v);
-	
-	
-	void Clear();
-	void SetEmptyMap();
-	void SetEmptyArray();
-	void MapSet(const IrValue& key, const IrValue& value);
-	void ArrayAdd(const IrValue& value);
-	IrValue& SetRegisterValue(int r);
-	IrValue& SetLabel(int i);
-	IrValue& SetLabel(String s);
-	IrValue& SetVarStackValue(int offset);
-	bool IsVoid() const;
-	bool IsMap() const;
-	bool IsArray() const;
-	bool IsInt() const;
-	bool IsAnyString() const;
-	bool IsVarStackValue(int offset) const;
-	bool IsRegister(int reg) const;
-	bool IsRegister() const;
-	bool IsLabel() const;
-	String GetString() const;
-	int GetCount() const;
-	String GetTypeString() const;
-	String GetTextValue() const;
-	String ToString() const;
-	HiValue AsHiValue(VmState& s) const;
-	
-	const VectorMap<IrValue, IrValue>& GetMap() const;
-	
-};
-
-struct IR : Moveable<IR> {
-	IrCode code;
-	IrValue arg[3];
-	String label;
-	const char* file;
-	int line;
-	CParser::Pos codepos;
-	
-	
-	String GetCodeString() const;
-	String ToString() const;
 	
 };
 
@@ -254,10 +141,11 @@ public:
 	void  DoStatement();
 
 	void  Run();
+	void  WriteLambda(HiLambda& l);
+	void  SwapIR(Vector<IR>& ir);
 
-	HiCompiler(/*ArrayMap<String, HiValue>& global,*/ const char *s, int& oplimit,
-	    const String& fn, int line = 1)
-	: CParser(s, fn, line)/*, global_hi(global)*/
+	HiCompiler(const char *s, const String& fn, int line = 1)
+	: CParser(s, fn, line)
 	{ r_stack_level = stack_level; ReadGlobalIr();}
 	~HiCompiler() { stack_level = r_stack_level; }
 };
@@ -268,6 +156,8 @@ struct IrVM {
 	static const int REG_COUNT = 5;
 	using SRVal = VmState::SRVal;
 	
+	
+	IrVM*					parent = 0;
 	VmState*				s;
 	VmState					state;
 	TS::RunningFlagSingle	flag;
@@ -275,15 +165,30 @@ struct IrVM {
 	Vector<int>				lbl_pos;
 	VectorMap<String, int>	lbl_names;
 	bool					fail = 0;
+	HiLambda*				fn = 0;
+	HiLambda*				call_fn = 0;
+	SRVal*					call_self = 0;
+	Array<SRVal>*			call_arg = 0;
+	String					call_id;
+	bool					is_calling = 0;
+	bool					is_subcall = 0;
+	Array<HiValue>			argvar;
+	String					return_argname;
 	
 	ArrayMap<String, HiValue>&	global;
-	//HiValue						self;
 	ArrayMap<String, HiValue>	var;
+	const Vector<IR>&			ir;
 	
+	IrVM(ArrayMap<String, HiValue>& g, int& op_limit, const Vector<IR>& ir) : global(g), op_limit(op_limit), ir(ir) {s = &state;}
 	
-	IrVM(ArrayMap<String, HiValue>& g, int& op_limit) : global(g), op_limit(op_limit) {s = &state;}
-	void	Execute(const IR& ir);
-	void	Execute(const Vector<IR>& ir);
+	int		InitLambdaExecution(HiLambda& l, IrVM& parent);
+	void	ExecuteInstruction(const IR& ir);
+	void	ExecuteEscape();
+	void	SetReturnArg(IrVM& vm, String arg);
+	void	InitSubcall();
+	void	FinishSubcall();
+	void	FinishArgument();
+	bool	Execute();
 	bool	RefreshLabels(const Vector<IR>& ir);
 	void	Get();
 	void    Get(const SRVal& r, HiValue& v);
@@ -303,7 +208,8 @@ struct IrVM {
 	void	Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src);
 	double	DoCompare(const HiValue& a, const HiValue& b, const char *op);
 	HiValue	MulArray(HiValue array, HiValue times);
-	HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
+	//HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
+	void	BeginExecutingLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
 	
 	double	Number(const HiValue& a, const char *oper);
 	int64	Int(const HiValue& a, const char *oper);
@@ -315,25 +221,70 @@ struct IrVM {
 	
 };
 
-
-struct Hi : public HiCompiler {
-	//HiValue  self;
-	HiValue  return_value;
-	IrVM     vm;
+class Hi {
+	ArrayMap<String, HiValue>& global;
+	int& oplimit;
+	
+	typedef enum {
+		EVALX,
+		SUBCALL,
+		LAMBDA,
+		STRING,
+		FN_NAME,
+	} CallType;
+		
+	struct Call {
+		CallType type;
+		One<IrVM> vm;
+		IrVM* parent = 0;
+		int parent_arg_i = -1;
+		HiLambda* l = 0;
+		HiLambda* scope_l = 0;
+		HiValue lambda;
+		String fn, code;
+		int line = 0;
+		bool get_exp = false;
+		IrValue out_var;
+		Vector<IR> tmp_ir;
+	};
+		
+	Array<Call> calls;
+	HiValue self;
+	bool fail = false;
 	
 	
+public:
 	Hi(ArrayMap<String, HiValue>& global, const char *s, int& oplimit,
-	    const String& fn, int line = 1) : HiCompiler(s, oplimit, fn, line), vm(global, oplimit) {}
+	    const String& fn, int line = 1)
+		: global(global), oplimit(oplimit) {
+	    Call& c = calls.Add();
+	    c.type = STRING;
+	    c.fn = fn;
+	    c.code = s;
+	    c.line = line;
+	}
 	
-	void	Run();
-	double	Number(const HiValue& a, const char *oper);
-	int64	Int(const HiValue& a, const char *oper);
+	Hi(ArrayMap<String, HiValue>& global, int& oplimit, HiLambda& l)
+		: global(global), oplimit(oplimit) {
+	    Call& c = calls.Add();
+	    c.type = LAMBDA;
+	    c.l = &l;
+	}
 	
-	HiValue&	VarGetAdd(const HiValue& key) {return vm.var.GetAdd(key);}
+	void		Run();
+	double		Number(const HiValue& a, const char *oper);
+	int64		Int(const HiValue& a, const char *oper);
+	
+	HiValue&	VarGetAdd(const HiValue& key);
 	HiValue		GetExp();
+	void		OnError(String s);
 	
-	ArrayMap<String, HiValue>& Var() {return vm.var;}
-	HiValue& Self() {return vm.Self();}
+	ArrayMap<String, HiValue>& Var();
+	HiValue& Self();
+	
+	
+	
+	HiValue return_value;
 	
 };
 

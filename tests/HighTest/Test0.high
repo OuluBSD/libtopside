@@ -3,6 +3,11 @@ fn0() {
 	return 10;
 }
 
+fn1(i = 2) {
+	v = fn0();
+	return v * i;
+}
+
 cls() {
 	this = {};
 	this.method = @() {.field = 17;};
@@ -78,7 +83,7 @@ main() {
 	var.field = 0;
 	v15 = !var.field;*/
 	// solution: clear sbs with new untrivial "r = " expression: add sbs = HiValue() to SRVal operators
-	
+	v15 = fn1();
 	
 	//v15 = "success!";
 	return v15;

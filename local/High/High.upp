@@ -14,6 +14,7 @@ file
 	Value.cpp,
 	Interpreter.h,
 	Interpreter.cpp,
+	IR.h,
 	Bytecode.h,
 	IrList.inl highlight cpp,
 	Bytecode.cpp,

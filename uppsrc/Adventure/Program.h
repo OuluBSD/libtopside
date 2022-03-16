@@ -330,6 +330,7 @@ public:
 	void HiPrintLine(HiEscape& e);
 	void HiBreakTime(HiEscape& e);
 	void HiSelectActor(HiEscape& e);
+	void HiTodo(HiEscape& e);
 	
 	void ClearCutsceneOverride(Script* s);
 	void RealizeGame();

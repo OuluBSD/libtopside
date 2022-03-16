@@ -341,7 +341,8 @@ main() {
 					camera_pan_to(:selected_actor);
 					wait_for_camera();
 					say_line("wow! look at that old house:i wonder if anyone's home...");
-					}
+					},
+					void
 				);
 			}
 		},
@@ -540,7 +541,7 @@ main() {
 					else if (angle > 0.49 and angle < 0.50) {
 						played = false;
 					}
-					break_time();
+					break_time(void);
 				}
 			}
 		}
@@ -863,14 +864,16 @@ main() {
 						and :purp_tentacle.in_room == :selected_actor.in_room) {
 						:purp_tentacle.alerting = true;
 						:purp_tentacle.stopped_player = true;
-						cutscene(2,
+						cutscene(
+							2,
 							@(me) {
 								stop_actor(:selected_actor);
 								say_line(:purp_tentacle, "stop!:come back here!", true);
 								walk_to(:selected_actor, :purp_tentacle.x-8, :purp_tentacle.y);
 								do_anim(:selected_actor, "face_towards", :purp_tentacle);
 								:purp_tentacle.alerting = false;
-							}
+							},
+							void
 						);
 					}
 					break_time(10);
@@ -1071,7 +1074,7 @@ main() {
 				cutscene(
 					2, // quick-cut
 					@(me) {
-						open_door(door1);
+						open_door(door1, void);
 						break_time(10);
 						put_at(:selected_actor,0,0, :rm_void);
 						close_door(door1);
@@ -1082,7 +1085,9 @@ main() {
 						come_out_door(door1, door2);
 						close_door(door1,door2);
 						camera_follow(:selected_actor);
-					});
+					},
+					void
+				);
 			}
 		}
 	};
@@ -1218,7 +1223,8 @@ main() {
 						do_anim(:selected_actor, "face_towards", "face_front");
 						say_line("well, that was short!:developers are so lazy...");
 						//say_line("test");
-					}
+					},
+					void
 				); // end cutscene
 			}
 		},
@@ -1253,12 +1259,13 @@ main() {
 			// demo intro
 			cutscene(
 				3, // no verbs & no follow,
-			@(me) {
+				@(me) {
 				// intro
 				break_time(50);
 				print_line("deep in the; caribbean:on the isle of;...thimbleweed!",64,40,8,1,true,nil,true);
 				change_room(:rm_mi_dock, 1);
-			}
+				},
+				void
 			); // end cutscene
 		},
 		"exit": @() {
@@ -1439,7 +1446,9 @@ main() {
 					@(me) {
 						//do_anim(:purp_tentacle, face_towards, :selected_actor);
 						say_line(me,"what do you want?");
-					});
+					},
+					void
+				);
 				// dialog loop start
 				while (true) {
 					// build dialog options
@@ -1453,13 +1462,13 @@ main() {
 					dialog_start(:selected_actor.col, 7);
 					
 					// wait for (selection
-					while (!selected_sentence) { break_time(); }
+					while (!selected_sentence) { break_time(void); }
 					
 					// chosen options
 					dialog_hide();
 					cutscene(
 						1, // no verbs
-					@(me) {
+						@(me) {
 						say_line(selected_sentence.msg);
 						if (selected_sentence.num == 1) {
 							say_line(me, "i need your help:i'm bored with this spinning top...:if you can you find something i can play with, i'd appreciate it");
@@ -1480,7 +1489,9 @@ main() {
 							dialog_end();
 							return;
 						}
-					});
+						},
+						void
+					);
 					dialog_clear();
 				} //dialog loop
 			}, // talkto

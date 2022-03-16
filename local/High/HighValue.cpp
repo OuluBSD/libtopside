@@ -99,6 +99,12 @@ const HiLambda& HiValue::GetLambda() const
 	return *lambda;
 }
 
+HiLambda& HiValue::GetLambdaRW() const
+{
+	ASSERT(IsLambda());
+	return *lambda;
+}
+
 int HiValue::GetCount() const
 {
 	switch(type) {

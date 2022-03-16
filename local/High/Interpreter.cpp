@@ -18,7 +18,7 @@ void Hi::OutOfMemory()
 void Hi::TestLimit()
 {
 	LTIMING("TestLimit");
-	if(op_limit < 0)
+	if(op_limit < 0)f
 		ThrowError("out of operations limit - considered frozen");
 	if(HiValue::GetTotalCount() >= HiValue::GetMaxTotalCount())
 		OutOfMemory();

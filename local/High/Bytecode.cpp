@@ -62,66 +62,6 @@ void HiCompiler::Assign(const IrValue& src)
 	Emit1(IR_ASSIGN_R_LVAL_VALUE, src);
 }
 
-/*IrValue HiCompiler::ExecuteLambda(const String& id, IrValue lambda, SRVal self, Vector<SRVal>& arg)
-{
-	LTIMING("ExecuteLambda");
-	if(!lambda.IsLambda())
-		ThrowError(Format("'%s' is not a lambda", id));
-	const HiLambda& l = lambda.GetLambda();
-	if(!l.varargs && arg.GetCount() > l.arg.GetCount()
-	   || arg.GetCount() < l.arg.GetCount() - l.def.GetCount())
-		ThrowError("invalid number of arguments in call to '" + id + "'");
-	Hi sub(global, l.code, op_limit, l.filename, l.line);
-	sub.self = Get(self);
-	for(int i = 0; i < l.arg.GetCount(); i++) {
-		sub.var.GetAdd(l.arg[i]) =
-			i < arg.GetCount() ? Get(arg[i])
-		                       : Evaluatex(l.def[i - (l.arg.GetCount() - l.def.GetCount())], global, op_limit);
-		TestLimit();
-	}
-	IrValue retval;
-	Array<IrValue> argvar;
-	if(l.escape) {
-		#if LIBTOPSIDE
-		sub.var.PickValues(argvar);
-		#else
-		argvar = sub.var.PickValues();
-		#endif
-		
-		for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
-			argvar.Add(Get(arg[i]));
-		}
-		IrValue v = Get(self);
-		HiEscape e(*this, v, argvar);
-		e.id = id;
-		l.escape(e);
-		retval = e.ret_val;
-		self = e.self;
-	}
-	else {
-		if(l.varargs) {
-			IrValue& argv = sub.var.GetAdd("argv");
-			argv.SetEmptyArray();
-			for(int i = l.arg.GetCount(); i < arg.GetCount(); i++)
-				argv.ArrayAdd(Get(arg[i]));
-		}
-		sub.Run();
-		retval = sub.return_value;
-		
-		#if LIBTOPSIDE
-		sub.var.PickValues(argvar);
-		#else
-		argvar = sub.var.PickValues();
-		#endif
-	}
-	for(int i = 0; i < l.inout.GetCount(); i++)
-		if(l.inout[i] && i < arg.GetCount() && arg[i].lval)
-			Assign(arg[i], argvar[i]);
-	if(self.lval)
-		Assign(self, sub.self);
-	return retval;
-}*/
-
 void HiCompiler::Subscript(String id)
 {
 	LTIMING("Subscript");
@@ -1133,47 +1073,14 @@ void HiCompiler::Run()
 	PopLoop();
 }
 
-void Hi::Run() {
-	return_value = HiValue();
-	
-	HiCompiler::Run();
-	
-	if (HiCompiler::fail)
-		return;
-	
-	vm.Execute(ir);
-	
-	return_value = vm.s->regs[0];
+void HiCompiler::SwapIR(Vector<IR>& ir) {
+	Swap(ir, this->ir);
 }
 
-double Hi::Number(const HiValue& a, const char *oper) {
-	return vm.Number(a, oper);
+void HiCompiler::WriteLambda(HiLambda& l) {
+	Swap(l.ir, ir);
+	l.compiled = true;
 }
-
-int64 Hi::Int(const HiValue& a, const char *oper) {
-	return vm.Int(a, oper);
-}
-
-HiValue Hi::GetExp() {
-	return_value = HiValue();
-	
-	IrValue e = HiCompiler::GetExp();
-	
-	if (HiCompiler::fail)
-		return HiValue();
-	
-	vm.Execute(ir);
-	
-	return_value = vm.ReadVar(e);
-	//DUMP(return_value);
-	
-	return return_value;
-}
-
-
-
-
-
 
 void HiCompiler::Emit_(IrCode x, const char* file, int line) {
 	IR& ir = this->ir.Add();
@@ -1287,7 +1194,7 @@ IrValue HiCompiler::EmitPopVar_(const IrValue& v, int reg, const char* file, int
 	ir.file = file;
 	ir.line = line;
 	ir.codepos = GetPos();
-	ir.arg[0] = reg;
+	ir.arg[0].SetRegisterValue(reg);
 	IrValue dst;
 	dst.SetRegisterValue(reg);
 	return dst;

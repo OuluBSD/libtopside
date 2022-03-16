@@ -53,7 +53,7 @@ CONSOLE_APP_MAIN
     String dir = GetDataFile("");
 	Vector<String> files;
 	files << "Test0.high";
-	//files << "Test1.high";
+	files << "Test1.high";
 	//files << "Test99.high";
     
     for (String file : files) {

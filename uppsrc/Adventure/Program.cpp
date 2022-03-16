@@ -147,7 +147,7 @@ Script& Script::Set(HiGlobal& g, HiValue *self, HiValue fn, HiValue a0, HiValue 
 		e.Var().GetPut(l.arg[i]) = arg[i];
 	
 	//e.no_return = e.no_break = e.no_continue = true;
-	e.loop = 0;
+	//e.loop = 0;
 	//e.skipexp = 0;
 	
 	running = true;
@@ -1153,6 +1153,32 @@ bool Program::ParseGame(String content, String path) {
 	HighCall(global, "cutscene(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "sub(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "select_actor(name)", THISBACK(HiSelectActor));
+	HighCall(global, "pickup_obj(me)", THISBACK(HiTodo));
+	HighCall(global, "set_trans_col(name, b)", THISBACK(HiTodo));
+	HighCall(global, "fades(a, b)", THISBACK(HiTodo));
+	HighCall(global, "map(a, b, c, d, e, f)", THISBACK(HiTodo));
+	HighCall(global, "say_line(a)", THISBACK(HiTodo));
+	HighCall(global, "camera_at(a)", THISBACK(HiTodo));
+	HighCall(global, "camera_pan_to(a)", THISBACK(HiTodo));
+	HighCall(global, "wait_for_camera()", THISBACK(HiTodo));
+	HighCall(global, "rectfill(a, b, c, d, e)", THISBACK(HiTodo));
+	HighCall(global, "line(a, b, c, d, e)", THISBACK(HiTodo));
+	HighCall(global, "circfill(a, b, c)", THISBACK(HiTodo));
+	HighCall(global, "come_out_door(a, b)", THISBACK(HiTodo));
+	HighCall(global, "start_script(a, b)", THISBACK(HiTodo));
+	HighCall(global, "stop_script(a, b)", THISBACK(HiTodo));
+	HighCall(global, "sfx0()", THISBACK(HiTodo));
+	HighCall(global, "sfx1()", THISBACK(HiTodo));
+	HighCall(global, "do_anim(a, b, c)", THISBACK(HiTodo));
+	HighCall(global, "shake(a)", THISBACK(HiTodo));
+	HighCall(global, "script_running(a)", THISBACK(HiTodo));
+	HighCall(global, "walk_to(a, b, c)", THISBACK(HiTodo));
+	HighCall(global, "open_door(a, b)", THISBACK(HiTodo));
+	HighCall(global, "close_door(a)", THISBACK(HiTodo));
+	HighCall(global, "dialog_set(a)", THISBACK(HiTodo));
+	HighCall(global, "dialog_start(a, b)", THISBACK(HiTodo));
+	HighCall(global, "dialog_hide()", THISBACK(HiTodo));
+	HighCall(global, "dialog_clear()", THISBACK(HiTodo));
 	StdLib(global);
 	
 	try {
@@ -1206,6 +1232,8 @@ void Program::HiPrintLine(HiEscape& e) {
 	bool big_font = e[7].GetInt();
 	
 	LOG("Program::HiPrintLine: " << txt);
+	
+	TODO
 }
 
 void Program::HiBreakTime(HiEscape& e) {
@@ -1213,9 +1241,16 @@ void Program::HiBreakTime(HiEscape& e) {
 	
 	LOG("Program::HiPrintLine: " << t);
 	
+	TODO
 }
 
 void Program::HiSelectActor(HiEscape& e) {
+	
+	TODO
+	
+}
+
+void Program::HiTodo(HiEscape& e) {
 	
 	TODO
 	
