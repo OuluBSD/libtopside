@@ -254,7 +254,7 @@ void HiCompiler::Term()
 			for(;;) {
 				IrValue a = GetExp();
 				PassChar(':');
-				EmitPushVar(a);
+				a = EmitPushVar(a);
 				IrValue b = GetExp();
 				a = EmitPopVar(a, b);
 				Emit2(IR_R_MAPSET, a, b);

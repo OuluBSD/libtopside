@@ -39,6 +39,7 @@ main() {
 	
 	a8[0:2] = "Ba"; // "Hell" -> "Ball"
 	a9 = a3 + a8; // "HelloBall"
+	Printl(a9);
 	
 	a10 = 2 * a8; // "BallBall"
 	
@@ -69,12 +70,14 @@ main() {
 	o0 = cls(); // create "new cls"
 	o0.method(); // call cls::method() on o0
 	v11 = o0.field; // 17
-	bject.field = 18;
+	o0.field = 18;
 	v11 = o0.field; // 18
+	Printl(v11);
 	
 	o1 = {};
 	o0.method() ! o1; // call cls::method on o1
 	v12 = o1.field; // 17
+	Printl(v12);
 	
 	v13 = ++v12;
 	v13 = v12++;
@@ -82,7 +85,7 @@ main() {
 	v13 = !v12;
 	v13 = v12 == 19;
 	v14 = v12 == 19 ? 10 : 4;
-	
+	Printl(v14);
 	
 	if (v14 == 10) {
 		v15 = 15;
@@ -110,6 +113,7 @@ main() {
 	for (i = 0; i < 2; i++) {
 		v15 /= 2;
 	}
+	Printl(v15);
 	
 	for(i = 0; i < 5; i++) {
 		v16 = i;
@@ -122,6 +126,7 @@ main() {
 			continue;
 		v16 = i;
 	}
+	Printl(v16);
 	
 	r = -1;
 	switch (v16) {

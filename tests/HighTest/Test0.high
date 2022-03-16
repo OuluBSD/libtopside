@@ -67,12 +67,19 @@ main() {
 		v15 *= 2;*/
 	// solution: fix incorrect ir-code execution impl. Forgot a= and b= in many instructions.
 	
-	//Problem 9
+	// Problem 9
 	/*w = getnumber();
 	bmi = w / (174 * 174 / 10000);
     Print("Your body mass index is " + to_string(bmi) + "\n");*/
     // solution: jump to function's end when return is called.
-	v15 = "success!";
 	
+	// Problem 10
+	/*var = {};
+	var.field = 0;
+	v15 = !var.field;*/
+	// solution: clear sbs with new untrivial "r = " expression: add sbs = HiValue() to SRVal operators
+	
+	
+	//v15 = "success!";
 	return v15;
 }

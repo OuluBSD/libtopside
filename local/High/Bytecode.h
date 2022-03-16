@@ -27,11 +27,12 @@ struct VmState {
 		SRVal(uint64 n)            { lval = NULL; rval = (int64)n; }
 		SRVal(bool n)              { lval = NULL; rval = (int64)n; }
 		
-		void operator=(const HiValue& v)    { lval = NULL; rval = v; }
-		void operator=(double n)            { lval = NULL; rval = n; }
-		void operator=(int64 n)             { lval = NULL; rval = n; }
-		void operator=(uint64 n)            { lval = NULL; rval = (int64)n; }
-		void operator=(bool n)              { lval = NULL; rval = (int64)n; }
+		void operator=(const HiValue& v)    { lval = NULL; rval = v; sbs = HiValue();}
+		void operator=(double n)            { lval = NULL; rval = n; sbs = HiValue();}
+		void operator=(int64 n)             { lval = NULL; rval = n; sbs = HiValue();}
+		void operator=(uint64 n)            { lval = NULL; rval = (int64)n; sbs = HiValue();}
+		void operator=(bool n)              { lval = NULL; rval = (int64)n; sbs = HiValue();}
+		void operator=(const SRVal& v)		{ lval = v.lval; rval = v.rval; sbs = v.sbs; }
 	};
 	
 	Array<SRVal> r_stack;

@@ -342,7 +342,7 @@ bool IrVM::RefreshLabels(const Vector<IR>& ir) {
 }
 
 void IrVM::Execute(const Vector<IR>& ir) {
-	//DUMPC(ir);
+	DUMPC(ir);
 	int& max_pc		= s->max_pc;
 	int& pc			= s->pc;
 	auto& r_stack	= s->r_stack;
@@ -367,7 +367,11 @@ void IrVM::Execute(const Vector<IR>& ir) {
 	while (IsRunning()) {
 		const IR& ins = vec[pc];
 		
-		//LOG(pc);
+		if (pc == 66) {
+			LOG("");
+		}
+		
+		LOG(pc);
 		Execute(ins);
 		
 		pc++;
@@ -581,7 +585,7 @@ void IrVM::Execute(const IR& ir) {
 		a = ReadVar(ir.arg[0]);
 		if(!rself_stack.Top().lval || (!a.IsVoid() && !a.IsMap()))
 			OnError("l-value map or l-value void expected on the right side of !");
-		if(a.IsVoid()) {
+		else if(a.IsVoid()) {
 			b.SetEmptyMap();
 			Assign(rself_stack.Top(), b);
 		}
@@ -603,7 +607,9 @@ void IrVM::Execute(const IR& ir) {
 	
 	case IR_OP_NOT:
 		CHECK(!r_stack.IsEmpty())
-		r_stack.Top() = (int64)!IsTrue(ReadVar(ir.arg[0]));
+		a = ReadVar(ir.arg[0]);
+		val = &r_stack.Top();
+		*val = (int64)!IsTrue(a);
 		return;
 	
 	case IR_OP_NEGATE:
@@ -731,7 +737,7 @@ void IrVM::Execute(const IR& ir) {
 	case IR_OP_MODASS1:
 		i = Int(regs[1], "%");
 		if (i == 0)
-			ThrowError("divide by zero");
+			OnError("divide by zero");
 		else
 			r_stack.Top() = Int(r_stack.Top(), "%") % i;
 		return;
@@ -1034,7 +1040,7 @@ void IrVM::Get(const SRVal& r, HiValue& v) {
 					if(i >= 0 && n >= 0 && i + n <= count)
 						v = v.ArrayGetMid(i, n);
 					else
-						ThrowError("slice out of range");
+						OnError("slice out of range");
 				}
 				else {
 					int64 i = (int)Int(ss, "index");
@@ -1043,11 +1049,11 @@ void IrVM::Get(const SRVal& r, HiValue& v) {
 					if(i >= 0 && i < count)
 						v = v.ArrayGet((int)i);
 					else
-						ThrowError("index out of range");
+						OnError("index out of range");
 				}
 			}
 			else
-				ThrowError("invalid indirection");
+				OnError("invalid indirection");
 			TestLimit();
 		}
 	}
@@ -1059,16 +1065,18 @@ void IrVM::ThrowError(String msg) {
 
 double IrVM::Number(const HiValue& a, const char *oper)
 {
-	if(!a.IsNumber())
-		ThrowError(String().Cat() << "number expected for '" << oper << "', encountered " << Lims(a.ToString()));
-	return a.GetNumber();
+	if(a.IsNumber())
+		return a.GetNumber();
+	OnError(String().Cat() << "number expected for '" << oper << "', encountered " << Lims(a.ToString()));
+	return 0;
 }
 
 int64 IrVM::Int(const HiValue& a, const char *oper)
 {
-	if(!a.IsNumber())
-		ThrowError(String().Cat() << "integer expected for '" << oper << "', encountered " << Lims(a.ToString()));
-	return a.GetInt64();
+	if(a.IsNumber())
+		return a.GetInt64();
+	OnError(String().Cat() << "integer expected for '" << oper << "', encountered " << Lims(a.ToString()));
+	return 0;
 }
 
 double IrVM::Number(const SRVal& a, const char *oper)
@@ -1093,7 +1101,7 @@ String IrVM::Lims(const String& s) const {
 }
 
 void IrVM::OutOfMemory() {
-	ThrowError("IrVM out of memory");
+	OnError("IrVM out of memory");
 }
 
 HiValue	IrVM::ReadVar(const IrValue& v) {
@@ -1190,7 +1198,7 @@ void IrVM::AddAssign2(SRVal& r, const HiValue& a, const HiValue& b) {
 void IrVM::Assign(const SRVal& val, const HiValue& src)
 {
 	if(!val.lval)
-		ThrowError("l-value required");
+		OnError("l-value required");
 	if(val.sbs.IsArray() && val.sbs.GetCount())
 		Assign(*val.lval, val.sbs.GetArray(), 0, src);
 	else
@@ -1218,7 +1226,7 @@ void IrVM::Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValu
 	if(val.IsArray()) {
 		if(si < sbs.GetCount()) {
 			if(ss.IsArray())
-				ThrowError("slice must be last subscript");
+				OnError("slice must be last subscript");
 			int64 i = Int(ss, "index");
 			if(i >= 0 && i < val.GetCount()) {
 				HiValue x = val.ArrayGet((int)i);
@@ -1233,7 +1241,7 @@ void IrVM::Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValu
 			int count = val.GetCount();
 			if(ss.IsArray()) {
 				if(!src.IsArray() || ss.GetArray().GetCount() < 2)
-					ThrowError("only array can be assigned to the slice");
+					OnError("only array can be assigned to the slice");
 				HiValue v1 = ss.ArrayGet(0);
 				HiValue v2 = ss.ArrayGet(1);
 				int i = v1.IsInt() ? v1.GetInt() : 0;
@@ -1253,7 +1261,7 @@ void IrVM::Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValu
 					return;
 				}
 				else
-					ThrowError("slice out of range");
+					OnError("slice out of range");
 			}
 			else {
 				int64 i = ss.IsVoid() ? val.GetCount() : Int(ss, "index");
@@ -1261,13 +1269,13 @@ void IrVM::Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValu
 					i = count + i;
 				if(i >= 0 && i < INT_MAX) {
 					if(!val.ArraySet((int)i, src))
-						ThrowError("out of memory");
+						OnError("out of memory");
 					return;
 				}
 			}
 		}
 	}
-	ThrowError("invalid indirection");
+	OnError("invalid indirection");
 }
 
 double IrVM::DoCompare(const HiValue& a, const HiValue& b, const char *op)
@@ -1318,12 +1326,16 @@ HiValue IrVM::MulArray(HiValue array, HiValue times)
 
 HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg) {
 	//LTIMING("ExecuteLambda");
-	if(!lambda.IsLambda())
-		ThrowError(Format("'%s' is not a lambda", id));
+	if(!lambda.IsLambda()) {
+		OnError(Format("'%s' is not a lambda", id));
+		return HiValue();
+	}
 	const HiLambda& l = lambda.GetLambda();
 	if(!l.varargs && arg.GetCount() > l.arg.GetCount()
-	   || arg.GetCount() < l.arg.GetCount() - l.def.GetCount())
-		ThrowError("invalid number of arguments in call to '" + id + "'");
+	   || arg.GetCount() < l.arg.GetCount() - l.def.GetCount()) {
+		OnError("invalid number of arguments in call to '" + id + "'");
+		return HiValue();
+	}
 	Hi sub(global, l.code, op_limit, l.filename, l.line);
 	HiValue& sub_self = sub.Self();
 	Get0(self, sub_self);

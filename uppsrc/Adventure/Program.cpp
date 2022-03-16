@@ -142,11 +142,11 @@ Script& Script::Set(HiGlobal& g, HiValue *self, HiValue fn, HiValue a0, HiValue 
 	esc = new Hi(g, l.code, op_limit, l.filename, l.line);
 	auto& e = *esc;
 	if (self)
-		e.self = *self;
+		e.Self() = *self;
 	for(int i = 0; i < l.arg.GetCount(); i++)
-		e.var.GetPut(l.arg[i]) = arg[i];
+		e.Var().GetPut(l.arg[i]) = arg[i];
 	
-	e.no_return = e.no_break = e.no_continue = true;
+	//e.no_return = e.no_break = e.no_continue = true;
 	e.loop = 0;
 	//e.skipexp = 0;
 	
@@ -196,7 +196,7 @@ bool Script::ProcessHi() {
 bool Script::RunHiSteps() {
 	LOG("Script::RunHiSteps");
 	auto& e = *esc;
-	int op = 0;
+	/*int op = 0;
 	try {
 		while(!e.IsEof() && e.no_return && e.no_break && e.no_continue && op < op_limit_at_once) {
 			e.DoStatement();
@@ -208,7 +208,11 @@ bool Script::RunHiSteps() {
 		return false;
 	}
 	
-	return !e.IsEof();
+	return !e.IsEof();*/
+	
+	e.Run();
+	
+	return false;
 }
 
 
