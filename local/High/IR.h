@@ -37,14 +37,6 @@ struct IrValue {
 		V_VARSTACK,
 	} Type;
 	
-	/*typedef enum {
-		REG_VOID,
-		REG_R0,
-		REG_R1,
-		REG_R2,
-		REG_R3,
-		REG_R4,
-	} RegType;*/
 	static const int REG_COUNT = 5;
 	
 	Type type;
@@ -63,7 +55,6 @@ struct IrValue {
 	
 	
 	IrValue();
-	//IrValue(IrValue&& v);
 	IrValue(const IrValue& v);
 	IrValue(const char* s);
 	IrValue(String s);

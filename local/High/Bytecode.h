@@ -54,12 +54,11 @@ protected:
 	int lbl_counter = 0;
 	
 	
-	void Emit_(IrCode x, const char* file, int line);
-	void Emit1_(IrCode x, IrValue a, const char* file, int line);
-	void Emit2_(IrCode x, IrValue a, IrValue b, const char* file, int line);
-	void Emit3_(IrCode x, IrValue a, IrValue b, IrValue c, const char* file, int line);
-	void EmitLabel_(IrValue l, const char* file, int line);
-	//IrValue	EmitMovReg(const IrValue& v, int reg);
+	void		Emit_(IrCode x, const char* file, int line);
+	void		Emit1_(IrCode x, IrValue a, const char* file, int line);
+	void		Emit2_(IrCode x, IrValue a, IrValue b, const char* file, int line);
+	void		Emit3_(IrCode x, IrValue a, IrValue b, IrValue c, const char* file, int line);
+	void		EmitLabel_(IrValue l, const char* file, int line);
 	IrValue		EmitPushVar_(const IrValue& v, const char* file, int line);
 	IrValue		EmitPopVar_(const IrValue& v, int reg, const char* file, int line);
 	IrValue		EmitPopVar_(const IrValue& v, const IrValue& avoid0, const char* file, int line);
@@ -73,28 +72,10 @@ protected:
 	void CreateSwitchDefault();
 	void PopLoop();
 	
-	void ReadGlobalIr();
-	
 	void OnError(String msg);
 	
 public:
 	
-	/*struct SRVal : Moveable<SRVal> {
-		IrValue *lval;
-		IrValue  rval;
-		IrValue  sbs;
-
-		SRVal()                    { lval = NULL; }
-		SRVal(const IrValue& v)    { lval = NULL; rval = v; }
-		SRVal(double n)            { lval = NULL; rval = n; }
-		SRVal(int64 n)             { lval = NULL; rval = n; }
-		SRVal(uint64 n)            { lval = NULL; rval = (int64)n; }
-		SRVal(bool n)              { lval = NULL; rval = (int64)n; }
-	};*/
-
-	
-
-	//int		skipexp;
 	int			r_stack_level;
 	int			loop;
 	bool		fail = false;
@@ -134,7 +115,6 @@ public:
 	void  Exp();
 
 	void  SkipTerm();
-	//void  SkipStatement();
 	void  SkipExp();
 	IrValue  PCond();
 	void  FinishSwitch();
@@ -146,7 +126,7 @@ public:
 
 	HiCompiler(const char *s, const String& fn, int line = 1)
 	: CParser(s, fn, line)
-	{ r_stack_level = stack_level; ReadGlobalIr();}
+	{ r_stack_level = stack_level;}
 	~HiCompiler() { stack_level = r_stack_level; }
 };
 
@@ -182,6 +162,7 @@ struct IrVM {
 	IrVM(ArrayMap<String, HiValue>& g, ArrayMap<String, HiValue>& v, int& op_limit, const Vector<IR>& ir) : global(g), var(v), op_limit(op_limit), ir(ir) {s = &state;}
 	
 	int		InitLambdaExecution(HiLambda& l, IrVM& parent);
+	HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
 	void	ExecuteInstruction(const IR& ir);
 	void	ExecuteEscape();
 	void	SetReturnArg(IrVM& vm, String arg);
@@ -208,7 +189,6 @@ struct IrVM {
 	void	Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src);
 	double	DoCompare(const HiValue& a, const HiValue& b, const char *op);
 	HiValue	MulArray(HiValue array, HiValue times);
-	//HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
 	void	BeginExecutingLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
 	
 	double	Number(const HiValue& a, const char *oper);

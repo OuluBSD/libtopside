@@ -11,40 +11,12 @@ void Hi::OnError(String s) {
 void Hi::Run() {
 	return_value = HiValue();
 	
-	//IrValue out_var;
-	//HiLambda* sub_call = 0;
-	//String new_fn = fn;
-	
 	while(!calls.IsEmpty() && !fail) {
 		Call& c = calls.Top();
 		
-		/*bool get_exp = vms.IsEmpty() && first_get_exp;
-		
-		bool force_evalx = false;
-		if (!new_irvm && evals.GetCount()) {
-			force_evalx = true;
-			new_irvm = true;
-			get_exp = true;
-		}*/
-		
 		if (c.vm.IsEmpty()) {
 			int src = -1;
-			//HiValue lambda;
-			//EvalxRequest r;
 			
-			
-			
-			/*if (force_evalx) {
-				src = EVALX;
-				r = evals.Pop();
-			}
-			else if (sub_call)
-				src = SUBCALL;
-			else if (this->l)
-				src = LAMBDA;
-			else if (this->s)
-				src = STRING;
-			else */
 			if (c.type == FN_NAME) {
 				int i = global.Find(c.fn);
 				if (i < 0) {
@@ -58,18 +30,6 @@ void Hi::Run() {
 					return;
 				}
 			}
-			/*else {
-				OnError("no sources");
-				return;
-			}*/
-			
-			/*HiLambda* l = 0;
-			// No! l.def[] code instead: if (src == EVALX)	l = r.l;
-			if (src == SUBCALL)	l = sub_call;
-			if (src == LAMBDA)	l = this->l;
-			if (src == FN_NAME)	l = &lambda.GetLambdaRW();*/
-			
-			//sub_call = 0;
 			
 			if (c.l ? !c.l->compiled && !c.l->escape : true) {
 				String code;
@@ -167,8 +127,7 @@ int64 Hi::Int(const HiValue& a, const char *oper) {
 }
 
 HiValue& Hi::VarGetAdd(const HiValue& key) {
-	TODO
-	//return vm.var.GetAdd(key);
+	return calls.Top().var.GetAdd(key);
 }
 
 HiValue Hi::GetExp() {
@@ -201,10 +160,6 @@ HiValue& Hi::Self() {
 IrValue::IrValue() {
 	type = V_VOID;
 }
-
-/*IrValue::IrValue(IrValue&& v) {
-	
-}*/
 
 IrValue::IrValue(const IrValue& v) {
 	*this = v;
@@ -668,11 +623,11 @@ bool IrVM::Execute() {
 	while (IsRunning()) {
 		const IR& ins = vec[pc];
 		
+		#if VERBOSE_IRVM
 		/*if (pc == 66) {
 			LOG("");
 		}*/
 		
-		#if VERBOSE_IRVM
 		LOG(pc);
 		#endif
 		
@@ -724,16 +679,9 @@ void IrVM::ExecuteInstruction(const IR& ir) {
     case IR_LABEL:
         return;
 	
-	//case IR_SCOPE_PUSH:break;
-	
 	case IR_PUSH_R_EMPTY:
 		r_stack.Add();
 		return;
-	
-	//case IR_PUSH_R_SELF:
-	//	CHECK(!self_stack.IsEmpty());
-	//	r_stack.Add(self_stack.Top());
-	//	return;
 	
 	case IR_POP_R_ARGVEC_ADD:
 		CHECK(!r_stack.IsEmpty());
@@ -773,15 +721,6 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 		rself_stack.Top() = r_stack.Top();
 		r_stack.SetCount(r_stack.GetCount()-1);
 		return;
-	
-	//case IR_PUSH_SELF_EMPTYMAP:
-	//	self_stack.Add().SetEmptyMap();
-	//	return;
-	
-	//case IR_POP_SELF:
-	//	CHECK(!self_stack.IsEmpty());
-	//	self_stack.Remove(self_stack.GetCount()-1);
-	//	return;
 	
 	case IR_POP_SELF_R1:
 		CHECK(!self_stack.IsEmpty());
@@ -1256,7 +1195,6 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 			val = &rself_stack.Top();
 			str = ir.arg[0].GetString();
 			if (!val->lval && (i = global.Find(str)) >= 0) {
-				//DUMPM(global);
 				regs[1] = i;
 				regs[0] = global[i].IsLambda();
 				return;
@@ -1300,15 +1238,17 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 		CHECK(!r_stack.IsEmpty());
 		str = ir.arg[0].GetString();
 		a = ReadVar(ir.arg[1]);
-		//val = rself_stack.IsEmpty() ? 0 : &rself_stack.Top();
 		val = &rself_stack.Top();
-		/*try {
+		#if 0
+		try {
 			r_stack.Top() = ExecuteLambda(str, a, *val, argvec_stack.Top());
 		}
 		catch(Exc e) {
 			throw Exc(a.GetTypeName() + "." + str + "(): " + e);
-		}*/
+		}
+		#else
 		BeginExecutingLambda(str, a, *val, argvec_stack.Top());
+		#endif
 		return;
 		
 	}
@@ -1425,16 +1365,7 @@ void IrVM::OutOfMemory() {
 
 HiValue	IrVM::ReadVar(const IrValue& v) {
 	HiValue r;
-	/*if (v.type == IrValue::V_REG) {
-		int i = v.i32;
-		if (i < 0 || i >= REG_COUNT)
-			OnError("Trying to write out-of-range register");
-		else
-			r = s->regs[i];
-	}
-	else*/
-		r = v.AsHiValue(*s);
-	
+	r = v.AsHiValue(*s);
 	return r;
 }
 
@@ -1479,13 +1410,11 @@ void IrVM::AddAssign1(SRVal& r, const HiValue& a, const HiValue& b) {
 	}
 	else if (!(a.IsArray() && b.IsVoid())) {
 		if (a.IsInt64() && b.IsInt64()) {
-			//r = (int64)(int)Int(a, "+") + (int64)(int)Int(b, "+");
 			int64 ai = (int)Int(a, "+");
 			int64 bi = (int)Int(b, "+");
 			r = ai + bi;
 		}
 		else {
-			//r = (double)Number(a, "+") + (double)Number(b, "+");
 			double ai = Number(a, "+");
 			double bi = Number(b, "+");
 			r = ai + bi;
@@ -1682,7 +1611,7 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	return l.arg.GetCount() - arg.GetCount();
 }
 
-/*HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg) {
+HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg) {
 	//LTIMING("ExecuteLambda");
 	if(!lambda.IsLambda()) {
 		OnError(Format("'%s' is not a lambda", id));
@@ -1700,7 +1629,7 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	
 	Get0(self, sub_self);
 	for(int i = 0; i < l.arg.GetCount(); i++) {
-		HiValue& v = sub.vm.var.GetAdd(l.arg[i]);
+		HiValue& v = sub.Var().GetAdd(l.arg[i]);
 		if (i < arg.GetCount())
 			Get0(arg[i], v);
 		else
@@ -1710,9 +1639,9 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	Array<HiValue> argvar;
 	if(l.escape) {
 		#if LIBTOPSIDE
-		sub.vm.var.PickValues(argvar);
+		sub.Var().PickValues(argvar);
 		#else
-		argvar = sub.vm.var.PickValues();
+		argvar = sub.Var().PickValues();
 		#endif
 		
 		for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
@@ -1728,7 +1657,7 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	}
 	else {
 		if(l.varargs) {
-			HiValue& argv = sub.vm.var.GetAdd("argv");
+			HiValue& argv = sub.Var().GetAdd("argv");
 			argv.SetEmptyArray();
 			for(int i = l.arg.GetCount(); i < arg.GetCount(); i++)
 				Get(arg[i], argv.ArrayAdd(HiValue()));
@@ -1737,9 +1666,9 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 		retval = sub.return_value;
 		
 		#if LIBTOPSIDE
-		sub.var.PickValues(argvar);
+		sub.Var().PickValues(argvar);
 		#else
-		argvar = sub.vm.var.PickValues();
+		argvar = sub.Var().PickValues();
 		#endif
 	}
 	for(int i = 0; i < l.inout.GetCount(); i++)
@@ -1748,7 +1677,7 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	if(self.lval)
 		Assign(self, sub_self);
 	return retval;
-}*/
+}
 
 HiValue& IrVM::Self() {
 	return state.self_stack.IsEmpty() ? state.self_stack.Add() : state.self_stack.Top();

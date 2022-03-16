@@ -26,7 +26,7 @@ struct Hi : public CParser {
 	bool     no_break, no_return, no_continue;
 	int&     op_limit;
 	int      r_stack_level;
-	HiValue return_value;
+	HiValue  return_value;
 
 	static int stack_level;
 
@@ -36,14 +36,14 @@ struct Hi : public CParser {
 	double     DoCompare(const HiValue& a, const HiValue& b, const char *op);
 	double     DoCompare(const SRVal& a, const char *op);
 	String     ReadName();
-	HiValue   ExecuteLambda(const String& id, HiValue lambda, SRVal self, Vector<SRVal>& arg);
+	HiValue    ExecuteLambda(const String& id, HiValue lambda, SRVal self, Vector<SRVal>& arg);
 
 	void       Assign(HiValue& val, const Vector<HiValue>& sbs, int si, const HiValue& src);
 
-	HiValue   Get(const SRVal& val);
+	HiValue    Get(const SRVal& val);
 	void       Assign(const SRVal& val, const HiValue& src);
 
-	HiValue   GetExp();
+	HiValue    GetExp();
 
 	double Number(const HiValue& a, const char *oper);
 	int64  Int(const HiValue& a, const char *oper);
@@ -85,8 +85,8 @@ struct Hi : public CParser {
 
 	Hi(ArrayMap<String, HiValue>& global, const char *s, int& oplimit,
 	    const String& fn, int line = 1)
-	: CParser(s, fn, line), global(global), op_limit(oplimit)
-	{ r_stack_level = stack_level;  skipexp = false; }
+		: CParser(s, fn, line), global(global), op_limit(oplimit)
+		{ r_stack_level = stack_level;  skipexp = false; }
 	~Hi() { stack_level = r_stack_level; }
 };
 

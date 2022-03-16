@@ -215,7 +215,6 @@ HiValue Execute(ArrayMap<String, HiValue>& global, const char *name, int op_limi
 	return HiValue();
 }
 
-#if !USE_HIGH_BYTECODE
 HiValue Evaluatex(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
 	Hi sub(global, expression, oplimit, "", 0);
@@ -229,6 +228,7 @@ HiValue Evaluatex(const char *expression, ArrayMap<String, HiValue>& global, int
 	return v;
 }
 
+#if !USE_HIGH_BYTECODE
 HiValue Evaluate(const char *expression, ArrayMap<String, HiValue>& global, int oplimit)
 {
 	try {
