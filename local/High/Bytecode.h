@@ -136,7 +136,7 @@ struct IrVM {
 	static const int REG_COUNT = 5;
 	using SRVal = VmState::SRVal;
 	
-	
+	Hi&						hi;
 	IrVM*					parent = 0;
 	VmState*				s;
 	VmState					state;
@@ -152,6 +152,7 @@ struct IrVM {
 	String					call_id;
 	bool					is_calling = 0;
 	bool					is_subcall = 0;
+	bool					is_sleeping = 0;
 	Array<HiValue>			argvar;
 	String					return_argname;
 	
@@ -159,7 +160,9 @@ struct IrVM {
 	ArrayMap<String, HiValue>&	var;
 	const Vector<IR>&			ir;
 	
-	IrVM(ArrayMap<String, HiValue>& g, ArrayMap<String, HiValue>& v, int& op_limit, const Vector<IR>& ir) : global(g), var(v), op_limit(op_limit), ir(ir) {s = &state;}
+	IrVM(Hi* hi, ArrayMap<String, HiValue>& g, ArrayMap<String, HiValue>& v, int& op_limit, const Vector<IR>& ir)
+		: hi(*hi), global(g), var(v), op_limit(op_limit), ir(ir)
+		{s = &state;}
 	
 	int		InitLambdaExecution(HiLambda& l, IrVM& parent);
 	HiValue	ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
@@ -233,6 +236,13 @@ class Hi {
 	HiValue self;
 	bool fail = false;
 	
+protected:
+	friend class IrVM;
+	
+	bool sleep = false;
+	bool spinning_sleep = false;
+	double sleep_s = 0;
+	TimeStop ts;
 	
 public:
 	Hi(ArrayMap<String, HiValue>& global, const char *s, int& oplimit,
@@ -259,6 +269,12 @@ public:
 	HiValue&	VarGetAdd(const HiValue& key);
 	HiValue		GetExp();
 	void		OnError(String s);
+	void		SleepSpinning(int ms);
+	void		SleepReleasing(int ms);
+	
+	bool		IsSleepExit() const;
+	bool		IsSleepFinished() const;
+	bool		CheckSleepFinished();
 	
 	ArrayMap<String, HiValue>& Var();
 	HiValue& Self();

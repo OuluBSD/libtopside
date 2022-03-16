@@ -18,6 +18,20 @@ void SIC_Print(HiEscape& e)
 		e.ThrowError("invalid argument to 'Print'");
 }
 
+void SIC_SpinningSleep(HiEscape& e)
+{
+	int i = e[0].GetNumber();
+	if (i >= 0 && i < 5000)
+		e.esc.hi.SleepSpinning(i);
+}
+
+void SIC_ReleasingSleep(HiEscape& e)
+{
+	int i = e[0].GetNumber();
+	if (i >= 0 && i < 5000)
+		e.esc.hi.SleepReleasing(i);
+}
+
 void SIC_PrintLine(HiEscape& e)
 {
     if(e[0].IsArray())
@@ -46,6 +60,8 @@ CONSOLE_APP_MAIN
     ArrayMap<String, HiValue> global;
     HighCall(global, "Print(x)", SIC_Print);
     HighCall(global, "Printl(x)", SIC_PrintLine);
+    HighCall(global, "SpinningSleep(x)", SIC_SpinningSleep);
+    HighCall(global, "ReleasingSleep(x)", SIC_ReleasingSleep);
     HighCall(global, "Input()", SIC_Input);
     HighCall(global, "InputNumber()", SIC_InputNumber);
     StdLib(global);

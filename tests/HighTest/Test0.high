@@ -85,6 +85,14 @@ main() {
 	// solution: clear sbs with new untrivial "r = " expression: add sbs = HiValue() to SRVal operators
 	v15 = fn1();
 	
+	for(i = 0; i < 5; i++) {
+		Printl("tick");
+		if (false)
+			SpinningSleep(750);
+		else
+			ReleasingSleep(750);
+	}
+	
 	//v15 = "success!";
 	return v15;
 }

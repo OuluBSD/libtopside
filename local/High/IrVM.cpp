@@ -3,6 +3,37 @@
 
 namespace UPP {
 
+void Hi::SleepSpinning(int ms) {
+	sleep = true;
+	spinning_sleep = true;
+	sleep_s = ms * 0.001;
+	ts.Reset();
+}
+
+void Hi::SleepReleasing(int ms) {
+	sleep = true;
+	spinning_sleep = false;
+	sleep_s = ms * 0.001;
+	ts.Reset();
+}
+
+bool Hi::IsSleepExit() const {
+	return !fail && sleep && !spinning_sleep;
+}
+
+bool Hi::IsSleepFinished() const {
+	return sleep && ts.Seconds() >= sleep_s;
+}
+
+bool Hi::CheckSleepFinished() {
+	bool b = sleep && ts.Seconds() < sleep_s;
+	if (!b) {
+		sleep = false;
+		spinning_sleep = false;
+	}
+	return !b;
+}
+
 void Hi::OnError(String s) {
 	LOG("error: " << s);
 	fail = true;
@@ -59,7 +90,7 @@ void Hi::Run() {
 					comp.SwapIR(c.tmp_ir);
 			}
 			
-			c.vm = new IrVM(global, c.var, oplimit, c.l ? c.l->ir : c.tmp_ir);
+			c.vm = new IrVM(this, global, c.var, oplimit, c.l ? c.l->ir : c.tmp_ir);
 			IrVM& vm = *c.vm;
 			
 			if (calls.GetCount() == 1)
@@ -94,7 +125,6 @@ void Hi::Run() {
 		bool cont = vm.Execute();
 		
 		
-		ASSERT(cont == vm.is_calling); // for now
 		if (cont) {
 			if (vm.is_calling) {
 				Call& e = calls.Add();
@@ -102,7 +132,12 @@ void Hi::Run() {
 				e.parent = &vm;
 				e.l = vm.call_fn;
 			}
-			else TODO
+			else if (sleep && !spinning_sleep) {
+				return;
+			}
+			else {
+				OnError("unexpected non-continue signal in IrVM");
+			}
 		}
 		else {
 			if (calls.GetCount() == 1) {
@@ -586,7 +621,10 @@ bool IrVM::Execute() {
 	int& pc			= s->pc;
 	auto& r_stack	= s->r_stack;
 	
-	if (!is_calling) {
+	if (is_sleeping) {
+		is_sleeping = false;
+	}
+	else if (!is_calling) {
 		fail = 0;
 		argvar.Clear();
 		
@@ -621,6 +659,24 @@ bool IrVM::Execute() {
 	const IR* vec = ir.Begin();
 	
 	while (IsRunning()) {
+		
+		if (hi.sleep) {
+			if (hi.spinning_sleep) {
+				if (hi.ts.Seconds() >= hi.sleep_s) {
+					hi.sleep = false;
+					hi.spinning_sleep = false;
+				}
+				else {
+					Sleep(1);
+					continue;
+				}
+			}
+			else {
+				is_sleeping = true;
+				return true; // do continue
+			}
+		}
+		
 		const IR& ins = vec[pc];
 		
 		#if VERBOSE_IRVM

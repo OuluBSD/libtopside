@@ -186,7 +186,13 @@ HiValue Execute(ArrayMap<String, HiValue>& global, HiValue *self,
 			sub_self = *self;
 		for(int i = 0; i < l.arg.GetCount(); i++)
 			sub.VarGetAdd(l.arg[i]) = arg[i];
-		sub.Run();
+		for (;;) {
+			sub.Run();
+			if (!sub.IsSleepExit())
+				break;
+			while (!sub.CheckSleepFinished())
+				Sleep(1);
+		}
 		if(self)
 			*self = sub_self;
 		ret = sub.return_value;

@@ -233,9 +233,9 @@ struct HiEscape {
 	HiValue         self;
 	Array<HiValue>& arg;
 	HiValue         ret_val;
-	String           id;
+	String          id;
 
-	HiValue&    operator[](int i)             { return arg[i]; }
+	HiValue&     operator[](int i)             { return arg[i]; }
 	int          GetCount() const              { return arg.GetCount(); }
 	void         operator=(const HiValue& v)  { ret_val = v; }
 	operator     HiValue&()                   { return ret_val; }
