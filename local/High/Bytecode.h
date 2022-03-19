@@ -176,7 +176,7 @@ struct IrVM {
 	bool	RefreshLabels(const Vector<IR>& ir);
 	void	Get();
 	void    Get(const SRVal& r, HiValue& v);
-	void    Get0(SRVal& r, HiValue& v);
+	void    GetSbs(const SRVal& r, HiValue& v);
 	bool	IsRunning() const {return flag.IsRunning();}
 	void	SetNotRunning() {flag.SetNotRunning();}
 	void	OnError(String msg);
@@ -234,11 +234,11 @@ class Hi {
 		
 	Array<Call> calls;
 	HiValue self;
-	bool fail = false;
 	
 protected:
 	friend class IrVM;
 	
+	bool fail = false;
 	bool sleep = false;
 	bool spinning_sleep = false;
 	double sleep_s = 0;
@@ -271,6 +271,8 @@ public:
 	void		OnError(String s);
 	void		SleepSpinning(int ms);
 	void		SleepReleasing(int ms);
+	void		SleepInfiniteReleasing();
+	void		StopSleep();
 	
 	bool		IsSleepExit() const;
 	bool		IsSleepFinished() const;

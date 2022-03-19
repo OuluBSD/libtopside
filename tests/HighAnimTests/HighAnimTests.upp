@@ -1,0 +1,10 @@
+uses
+	HighAnim;
+
+file
+	HighAnimTests.h,
+	HighAnimTests.cpp;
+
+mainconfig
+	"" = "GUI";
+

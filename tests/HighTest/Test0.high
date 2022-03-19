@@ -83,15 +83,20 @@ main() {
 	var.field = 0;
 	v15 = !var.field;*/
 	// solution: clear sbs with new untrivial "r = " expression: add sbs = HiValue() to SRVal operators
-	v15 = fn1();
+	//v15 = fn1();
 	
-	for(i = 0; i < 5; i++) {
+	// Problem 11
+	/*for(i = 0; i < 5; i++) {
 		Printl("tick");
 		if (false)
 			SpinningSleep(750);
 		else
 			ReleasingSleep(750);
-	}
+	}*/
+	
+	// Problem 12
+	//v15 = rand() % 5;
+	// solution: fix buggy IrVM::Get usage (and cleanup Get name)
 	
 	//v15 = "success!";
 	return v15;

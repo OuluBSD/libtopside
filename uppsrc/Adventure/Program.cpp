@@ -1233,7 +1233,14 @@ void Program::HiPrintLine(HiEscape& e) {
 	
 	LOG("Program::HiPrintLine: " << txt);
 	
-	TODO
+	if (use_caps)
+		txt = ToUpper(txt);
+	
+	int fnt_h = big_font ? 20 : 10;
+	
+	AObj& o = scene.GetRoot().AddObject();
+	
+	asdfads
 }
 
 void Program::HiBreakTime(HiEscape& e) {

@@ -17,16 +17,28 @@ void Hi::SleepReleasing(int ms) {
 	ts.Reset();
 }
 
+void Hi::SleepInfiniteReleasing() {
+	sleep = true;
+	spinning_sleep = false;
+	sleep_s = 0;
+}
+
+void Hi::StopSleep() {
+	sleep = false;
+	spinning_sleep = false;
+	ts.Reset();
+}
+
 bool Hi::IsSleepExit() const {
 	return !fail && sleep && !spinning_sleep;
 }
 
 bool Hi::IsSleepFinished() const {
-	return sleep && ts.Seconds() >= sleep_s;
+	return sleep && (sleep_s > 0 && ts.Seconds() >= sleep_s);
 }
 
 bool Hi::CheckSleepFinished() {
-	bool b = sleep && ts.Seconds() < sleep_s;
+	bool b = sleep && (sleep_s <= 0 || ts.Seconds() < sleep_s);
 	if (!b) {
 		sleep = false;
 		spinning_sleep = false;
@@ -504,6 +516,7 @@ void IrVM::OnError(String msg) {
 	LOG("	   at " << s->pc);
 	SetNotRunning();
 	fail = true;
+	hi.fail = true;
 }
 
 bool IrVM::RefreshLabels(const Vector<IR>& ir) {
@@ -549,11 +562,11 @@ void IrVM::ExecuteEscape() {
 	#endif
 	
 	for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
-		Get0(arg[i], argvar.Add());
+		Get(arg[i], argvar.Add());
 	}
 	
 	HiValue v;
-	Get0(self, v);
+	Get(self, v);
 	HiEscape e(*this, v, argvar);
 	e.id = id;
 	l.escape(e);
@@ -611,7 +624,7 @@ void IrVM::FinishArgument() {
 }
 
 bool IrVM::Execute() {
-	#define VERBOSE_IRVM 1
+	#define VERBOSE_IRVM 0
 	
 	#if VERBOSE_IRVM
 	DUMPC(ir);
@@ -992,7 +1005,8 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 	
 	case IR_OP_RSHF:
 		CHECK(!r_stack.IsEmpty())
-		r_stack.Top() = Int(r_stack.Top(), ">>") >> Int(regs[1],  ">>");
+		b = ReadVar(regs[1]);
+		r_stack.Top() = Int(r_stack.Top(), ">>") >> Int(b,  ">>");
 		return;
 	
 	case IR_OP_CMP:
@@ -1048,11 +1062,12 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 		return;
 	
 	case IR_OP_MODASS1:
-		i = Int(regs[1], "%");
+		i = Int(ReadVar(regs[1]), "%");
+		val = &r_stack.Top();
 		if (i == 0)
 			OnError("divide by zero");
 		else
-			r_stack.Top() = Int(r_stack.Top(), "%") % i;
+			*val = Int(*val, "%") % i;
 		return;
 	
 	case IR_OP_ANDASS1:
@@ -1149,19 +1164,22 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 	case IR_ASSIGN_R_BWAND:
 		CHECK(!r_stack.IsEmpty());
 		val = &r_stack.Top();
-		*val = Int(*val, "&") & Int(regs[1], "&");
+		b = ReadVar(regs[1]);
+		*val = Int(*val, "&") & Int(b, "&");
 		return;
 		
 	case IR_ASSIGN_R_BWXOR:
 		CHECK(!r_stack.IsEmpty());
 		val = &r_stack.Top();
-		*val = Int(*val, "^") ^ Int(regs[1], "^");
+		b = ReadVar(regs[1]);
+		*val = Int(*val, "^") ^ Int(b, "^");
 		return;
 		
 	case IR_ASSIGN_R_BWOR:
 		CHECK(!r_stack.IsEmpty());
 		val = &r_stack.Top();
-		*val = Int(*val, "|") | Int(regs[1], "|");
+		b = ReadVar(regs[1]);
+		*val = Int(*val, "|") | Int(b, "|");
 		return;
 	
 	case IR_ASSIGN_R_EMPTYMAP:
@@ -1280,7 +1298,7 @@ void IrVM::ExecuteInstruction(const IR& ir) {
 	
 	case IR_POP_RSELF:
 		CHECK(!rself_stack.IsEmpty());
-		rself_stack.SetCount(r_stack.GetCount()-1);
+		rself_stack.SetCount(rself_stack.GetCount()-1);
 		return;
 	
 	case IR_HAS_VAR:
@@ -1319,15 +1337,15 @@ void IrVM::Get() {
 	HiValue& v = s->regs[0];
 	
 	v = r.lval ? *r.lval : r.rval;
-	Get(r, v);
-}
-
-void IrVM::Get0(SRVal& r, HiValue& v) {
-	v = r.lval ? *r.lval : r.rval;
-	Get(r, v);
+	GetSbs(r, v);
 }
 
 void IrVM::Get(const SRVal& r, HiValue& v) {
+	v = r.lval ? *r.lval : r.rval;
+	GetSbs(r, v);
+}
+
+void IrVM::GetSbs(const SRVal& r, HiValue& v) {
 	if(r.sbs.IsArray()) {
 		const Vector<HiValue>& sbs = r.sbs.GetArray();
 		for(int i = 0; i < sbs.GetCount(); i++) {
@@ -1654,11 +1672,11 @@ int IrVM::InitLambdaExecution(HiLambda& l, IrVM& parent) {
 	this->fn = &l;
 	this->parent = &parent;
 	
-	Get0(self, sub_self);
+	Get(self, sub_self);
 	for(int i = 0; i < l.arg.GetCount(); i++) {
 		HiValue& v = var.GetAdd(l.arg[i]);
 		if (i < arg.GetCount())
-			Get0(arg[i], v);
+			Get(arg[i], v);
 		else
 		    break;
 		TestLimit();
@@ -1683,11 +1701,11 @@ HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Arra
 	Hi sub(global, l.code, op_limit, l.filename, l.line);
 	HiValue& sub_self = sub.Self();
 	
-	Get0(self, sub_self);
+	Get(self, sub_self);
 	for(int i = 0; i < l.arg.GetCount(); i++) {
 		HiValue& v = sub.Var().GetAdd(l.arg[i]);
 		if (i < arg.GetCount())
-			Get0(arg[i], v);
+			Get(arg[i], v);
 		else
 		    v = Evaluatex(l.def[i - (l.arg.GetCount() - l.def.GetCount())], global, op_limit);
 		TestLimit();
@@ -1701,10 +1719,10 @@ HiValue IrVM::ExecuteLambda(const String& id, HiValue& lambda, SRVal& self, Arra
 		#endif
 		
 		for(int i = l.arg.GetCount(); i < arg.GetCount(); i++) {
-			Get0(arg[i], argvar.Add());
+			Get(arg[i], argvar.Add());
 		}
 		HiValue v;
-		Get0(self, v);
+		Get(self, v);
 		HiEscape e(*this, v, argvar);
 		e.id = id;
 		l.escape(e);

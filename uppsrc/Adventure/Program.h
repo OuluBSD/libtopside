@@ -148,7 +148,11 @@ struct ZPlane : Moveable<ZPlane> {
 	
 };
 
-struct Program {
+class Program {
+	
+protected:
+	friend class ProgramDraw;
+	
 	typedef Program CLASSNAME;
 	
 	
@@ -304,6 +308,10 @@ struct Program {
 	
 	Vector<uint16> map, gff;
 	Size map_sz, gff_sz;
+	
+	
+	AnimScene scene;
+	
 	
 public:
 	

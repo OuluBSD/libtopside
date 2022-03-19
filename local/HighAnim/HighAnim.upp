@@ -1,0 +1,20 @@
+description "\377B85,42,255";
+
+uses
+	High,
+	LocalCtrl,
+	Geometry;
+
+file
+	HighAnim.h,
+	HighAnim.cpp,
+	Common.h,
+	Player.h,
+	Player.cpp,
+	Animation.h,
+	Animation.cpp,
+	Scene.h,
+	Scene.cpp,
+	Object.h,
+	Object.cpp;
+

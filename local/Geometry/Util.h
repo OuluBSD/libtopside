@@ -96,6 +96,7 @@ mat3 YRotation3x3(float angle);
 mat4 ZRotation(float angle);
 mat3 ZRotation3x3(float angle);
 
+
 template <class T> T Min(const T& a, const T& b) {return T::GetMin(a, b);}
 template <class T> T Max(const T& a, const T& b) {return T::GetMax(a, b);}
 #define DEF_MINMAX(T) \

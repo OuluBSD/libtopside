@@ -56,7 +56,7 @@ void HIGH_to_number(HiEscape& e)
 
 void HIGH_rand(HiEscape& e)
 {
-	e = rand();
+	e = (int)Random(32768);
 }
 
 void HIGH_keys(HiEscape& e)
