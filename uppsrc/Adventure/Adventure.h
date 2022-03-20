@@ -3,6 +3,7 @@
 
 #include <LocalCtrl/LocalCtrl.h>
 #include <High/High.h>
+#include <HighAnim/HighAnim.h>
 using namespace TS;
 using namespace Upp;
 

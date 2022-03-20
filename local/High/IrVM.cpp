@@ -29,6 +29,10 @@ void Hi::StopSleep() {
 	ts.Reset();
 }
 
+bool Hi::IsRunning() const {
+	return !calls.IsEmpty();
+}
+
 bool Hi::IsSleepExit() const {
 	return !fail && sleep && !spinning_sleep;
 }

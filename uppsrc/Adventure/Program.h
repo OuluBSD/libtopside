@@ -310,7 +310,6 @@ protected:
 	Size map_sz, gff_sz;
 	
 	
-	AnimScene scene;
 	
 	
 public:

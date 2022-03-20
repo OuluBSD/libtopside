@@ -1238,9 +1238,10 @@ void Program::HiPrintLine(HiEscape& e) {
 	
 	int fnt_h = big_font ? 20 : 10;
 	
-	AObj& o = scene.GetRoot().AddObject();
+	TODO
+	/*AObj& o = scene.GetRoot().AddObject();
 	
-	asdfads
+	asdfads*/
 }
 
 void Program::HiBreakTime(HiEscape& e) {

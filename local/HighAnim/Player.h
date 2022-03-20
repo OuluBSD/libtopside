@@ -94,6 +94,7 @@ public:
 	void Update(double dt);
 	void Paint(Draw& d);
 	void AddTimedRemoveObject(int ms, AnimObject& o, Callback call_after=Callback());
+	bool IsRunning() const;
 	
 	AnimPlayer& SetExternalTime(bool b=true);
 	

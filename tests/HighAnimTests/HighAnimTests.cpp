@@ -8,12 +8,7 @@ TestApp::TestApp() {
 }
 
 void TestApp::Clear() {
-	code.Clear();
-	global.Clear();
-	p.Clear();
-	a.Clear();
-	vm.Clear();
-	op_limit = 1000000;
+	ctx.Clear();
 }
 
 void TestApp::MakeNext() {
@@ -21,97 +16,28 @@ void TestApp::MakeNext() {
 	
 	Clear();
 	
-	p.SetAnimation(a);
-	p.WhenSceneEnd = THISBACK(MakeNext);
+	ctx.WhenStop = THISBACK(MakeNext);
 	
 	if (mode == 0)
 		Make1();
 	else if (mode == 1)
 		Make2();
 	
-	BeginVm();
-	
-	p.Compile();
-	p.Play();
-	
+	ctx.Init();
 }
 
-void TestApp::HI_DrawText(HiEscape& e)
-{
-	int x = e[0];
-	int y = e[1];
-	String str = e[2];
-	int ms = e[3];
-	
-	//TODO
-	LOG(x << "," << y << ": " << str);
-	
-	AnimScene& s = a.GetActiveScene();
-	AnimObject& parent = s.GetRoot();
-	AnimObject& o = parent.Add();
-	o.SetPosition(Point(x,y));
-	o.SetText(str, 20, Color(47, 98, 158));
-	p.Recompile(parent);
-	
-	p.AddTimedRemoveObject(1000, o, THISBACK(ContinueVm));
-	
-	//e.esc.hi.SleepReleasing(ms);
-	vm->SleepInfiniteReleasing();
-}
-
-
-void TestApp::ContinueVm() {
-	vm->StopSleep();
-}
-
-void TestApp::BeginVm() {
-	
-	if (code.IsEmpty())
-		return;
-	
-    HighCall(global, "DrawText(x,y,str,sleep)", THISBACK(HI_DrawText));
-    StdLib(global);
-    
-	try {
-		Scan(global, code, "internal");
-	}
-    catch(Exc e) {
-        LOG("ERROR: " << e << "\n");
-        return;
-    }
-	
-	int i = global.Find("main");
-	if (i >= 0) {
-		HiValue lambda = global[i];
-		if (lambda.IsLambda()) {
-			vm = new Hi(global, op_limit, lambda.GetLambdaRW());
-		}
-	}
-}
 
 void TestApp::Iterate() {
-	if (vm) {
-		if (vm->CheckSleepFinished()) {
-			vm->Run();
-			
-			if (!vm->IsSleepExit()) {
-				//tc.Kill();
-				MakeNext();
-			}
-		}
-	}
-	
-	p.Data();
-	
+	ctx.Iterate();
 	Refresh();
 }
 
 void TestApp::Make1() {
-	AnimScene& s = a.AddScene("def");
+	AnimScene& s = ctx.a.AddScene("def");
 	AnimObject& r = s.GetRoot();
 	r.SetPolygon(Color(255, 140, 140));
 	
-	int kps = a.GetKeysFromTime(4)+1;
+	int kps = ctx.a.GetKeysFromTime(4)+1;
 	s.SetLength(kps);
 	r.SetLength(kps);
 	int kp0 = 0;
@@ -133,11 +59,11 @@ void TestApp::Make1() {
 }
 
 void TestApp::Make2() {
-	AnimScene& s = a.AddScene("def");
+	AnimScene& s = ctx.a.AddScene("def");
 	AnimObject& r = s.GetRoot();
 	
 	
-	code =
+	ctx.code.Add("draw clock") =
 R"SH4D3R(
 to_digit_string(x) {
 	if (x >= 0 && x <= 9)
@@ -162,7 +88,7 @@ void TestApp::Paint(Draw& d) {
 	//LOG("TestApp::Paint");
 	d.DrawRect(GetSize(), White());
 	
-	p.Paint(d);
+	ctx.p.Paint(d);
 	
 }
 

@@ -1,0 +1,15 @@
+description "\377B56,42,150";
+
+uses
+	High,
+	HighAnim;
+
+file
+	HighLib.h,
+	HighLib.cpp,
+	AnimContext.h,
+	AnimContext.cpp,
+	AnimLib.cpp,
+	AnimProgram.h,
+	AnimProgram.cpp;
+

@@ -1,5 +1,5 @@
 uses
-	HighAnim;
+	HighLib;
 
 file
 	HighAnimTests.h,

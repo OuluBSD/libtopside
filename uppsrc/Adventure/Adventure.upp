@@ -1,6 +1,7 @@
 uses
 	LocalCtrl,
-	High;
+	High,
+	HighAnim;
 
 file
 	Copying,

@@ -302,13 +302,13 @@ void AnimPlayer::UpdateKeypointIndex() {
 	kpi = time * a->GetKeysPerSecond();
 	AnimScene& s = a->GetActiveScene();
 	int s_len = s.GetLength();
-	if (kpi >= s_len) {
+	if (is_playing && kpi >= s_len) {
 		if (s.IsRepeating()) {
 			kpi = 0;
 			time = 0;
 			ts.Reset();
 		}
-		else if (s_len > 0) {
+		else {
 			kpi = s_len-1;
 			Stop();
 			WhenSceneEnd();
@@ -372,8 +372,14 @@ AnimPlayer& AnimPlayer::SetExternalTime(bool b) {
 }
 
 void AnimPlayer::Play() {
-	is_playing = true;
-	is_first_playing_frame = true;
+	AnimScene& s = a->GetActiveScene();
+	if (s.GetLength() > 0) {
+		is_playing = true;
+		is_first_playing_frame = true;
+	}
+	else {
+		is_playing = false;
+	}
 }
 
 void AnimPlayer::Stop() {
@@ -386,9 +392,13 @@ void AnimPlayer::Data() {
 		ts.Reset();
 	}
 	else {
-		if (is_playing && !is_external_time)
+		if (!is_external_time)
 			UpdateInternalTime();
 	}
+}
+
+bool AnimPlayer::IsRunning() const {
+	return is_playing;
 }
 
 void AnimPlayer::Paint(Draw& d) {

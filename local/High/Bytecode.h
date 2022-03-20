@@ -274,6 +274,7 @@ public:
 	void		SleepInfiniteReleasing();
 	void		StopSleep();
 	
+	bool		IsRunning() const;
 	bool		IsSleepExit() const;
 	bool		IsSleepFinished() const;
 	bool		CheckSleepFinished();
