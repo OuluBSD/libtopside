@@ -4,13 +4,26 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
-	TransArrayProc.h,
-	TransArrayProc.cpp,
 	Generic.h,
 	Generic.cpp,
 	Machine.h,
 	Machine.cpp,
-	test_prog0.txt;
+	Pcb.h,
+	Pcb.cpp,
+	Component.h,
+	Mechanical.h,
+	ICs.h,
+	Chip.h,
+	Common.h,
+	Common.cpp,
+	ICs readonly separator,
+	6502a.h,
+	6502a.cpp,
+	6502b.h,
+	6502b.c,
+	6850.h,
+	6850.c,
+	_ readonly separator;
 
 mainconfig
 	"" = "";

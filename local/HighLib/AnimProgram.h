@@ -33,6 +33,8 @@ public:
 	
 	void HI_DrawText(HiEscape& e);
 	
+	Callback ContinueVmCallback() {return THISBACK(ContinueVm);}
+	
 };
 
 

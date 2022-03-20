@@ -5,9 +5,14 @@
 using namespace UPP;
 
 
+#include "Common.h"
+#include "Chip.h"
+#include "ICs.h"
+#include "Mechanical.h"
+#include "Component.h"
+#include "Pcb.h"
 #include "Machine.h"
 #include "Generic.h"
-#include "TransArrayProc.h"
 
 
 #endif

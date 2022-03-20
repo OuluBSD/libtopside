@@ -1,7 +1,7 @@
 #ifndef _ProtoVM_Generic_h_
 #define _ProtoVM_Generic_h_
 
-
+/*
 typedef enum {
 	FN_NULL,
 	
@@ -13,7 +13,6 @@ typedef enum {
 } BusFunction;
 
 
-class Bus;
 class BusClient;
 class BusData;
 
@@ -184,16 +183,16 @@ struct TestReceiver : public BusClient {
 	
 	void Tick() override;
 	
-};
+};*/
 
-struct Machine {
+/*struct Machine {
 	Bus bus;
 	
 	
 	void Init();
 	void Tick();
 	
-};
+};*/
 
 
 #endif

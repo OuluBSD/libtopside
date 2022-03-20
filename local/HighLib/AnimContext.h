@@ -18,7 +18,6 @@ public:
 	
 	
 	
-	HiAnimProgram* FindProgram(HiEscape& e);
 	
 public:
 	typedef HiAnimContext CLASSNAME;
@@ -29,8 +28,15 @@ public:
 	void Iterate();
 	void CreateProgram(String name);
 	bool IsRunning() const;
+	void StopProgram(HiAnimProgram& p);
+	void RemoveProgramGroup(int group);
 	
 	void HI_DrawText(HiEscape& e);
+	
+	HiAnimProgram* FindProgram(HiEscape& e);
+	
+	template <class T>
+	T& CreateProgramT(String name, int group);
 	
 	
 	Callback1<HiAnimProgram&> WhenStopProgram;

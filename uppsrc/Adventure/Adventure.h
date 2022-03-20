@@ -2,8 +2,7 @@
 #define _Adventure_Adventure_h_
 
 #include <LocalCtrl/LocalCtrl.h>
-#include <High/High.h>
-#include <HighAnim/HighAnim.h>
+#include <HighLib/HighLib.h>
 using namespace TS;
 using namespace Upp;
 

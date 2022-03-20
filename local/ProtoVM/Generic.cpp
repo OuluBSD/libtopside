@@ -1,5 +1,7 @@
 #include "ProtoVM.h"
 
+
+/*
 void IfaceFlags::ClearTick() {
 	interrupt = false;
 	// not this: write = false;
@@ -84,13 +86,13 @@ int Bus::FindInterruptIface() const {
 	}
 	return -1;
 }
+*/
 
 
 
 
 
-
-void Machine::Init() {
+/*void Machine::Init() {
 	Bus& iface_bus = bus;
 	
 	{
@@ -162,12 +164,12 @@ void Machine::Tick() {
 	
 	bus.Tick();
 	
-}
+}*/
 
 
 
 
-
+/*
 void TestSender::Tick() {
 	if (bus_status == IDLE) {
 		RequestWrite();
@@ -192,3 +194,4 @@ void TestReceiver::Tick() {
 	}
 	else TODO
 }
+*/

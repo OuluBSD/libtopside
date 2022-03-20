@@ -97,7 +97,7 @@ struct Dialog {
 	
 };
 
-struct Script {
+struct Script : public HiAnimProgram {
 	int op_limit = 1000000;
 	static const int op_limit_at_once = 100;
 	
@@ -216,11 +216,22 @@ protected:
 		
 	};*/
 	
+	enum {
+		SCRIPT_GLOBAL,
+		SCRIPT_LOCAL,
+		SCRIPT_CUTSCENE,
+	};
 	
+	/*
 	Array<Script> global_scripts;	// table of scripts that are at game-level (background)
 	Array<Script> local_scripts;	// table of scripts that are actively running
 	Array<Script> cutscenes;		// table of scripts for (the active Cutscene(s)
+	*/
 	
+	Script& AddScript(String name, int group);
+	Script& AddLocal(String name);
+	Script& AddGlobal(String name);
+	Script& AddCutscene(String name);
 	
 	Script* cutscene_curr = 0;
 	
@@ -289,7 +300,8 @@ protected:
 	dword mouse_pressed = 0;
 	
 	// Script
-	HiGlobal global;
+	//HiGlobal global;
+	HiAnimContext ctx;
 	HiValue game;
 	HiValue rooms;
 	HiValue cutscene_override;
@@ -392,8 +404,8 @@ public:
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
 	bool InitGame();
-	void UpdateScripts(Array<Script>& scripts);
-	void RemoveStoppedScripts(Array<Script>& scripts);
+	void UpdateScripts(int group);
+	void RemoveStoppedScripts(int group);
 	bool IsTable(SObj& t);
 	Point CenterCamera(const Point& val);
 	Point CenterCamera(SObj& val);

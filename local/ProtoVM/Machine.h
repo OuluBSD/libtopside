@@ -1,8 +1,7 @@
 #pragma once
 
-#if 0
 
-#define IFACE_BUS_BW		8
+/*#define IFACE_BUS_BW		8
 #define IFACE_BUS_BYTES		1
 #define IFACE_SLOTS			8
 #define	COMPUTING_BUS_BW	8
@@ -10,43 +9,7 @@
 typedef byte msize;
 typedef byte csize;
 
-/*
 
-Vesiputousmalli:
-	- src/sink
-	- väylää pitkin valutettaisiin ...
-	- väylien hierarkia
-		- cpu:ssa useampi
-	- väylässä hierarkiset statusbitit
-		- väylän interrupt olisi pudottamassa jotain
-		- väylän 'virtuaaliväylä' varaa väylää
-		- väylän väliltä pudotetaan jotain väylän ulkopuolelle
-			- tai väylämanagerille (interrupt ctrl)
-		- väylän väli on vapaa
-		- väylän funktio-koodit kuuluu tiettyihin statusbitteihin
-	
-Hierarkia:
-	interface bus
-		bios
-			board bus
-				memory
-		computer
-			board bus
-				cache1
-				processing bus
-					registers
-					bit shifter
-					add/sub
-					multiplier
-					divider
-					floating point number math
-		memory
-			board bus
-		disk controller
-			board bus
-		video
-			board bus
-*/
 
 struct Board;
 
@@ -146,19 +109,17 @@ struct ComputerBoard : public Board {
 	void Tick();
 	
 };
+*/
 
 struct Machine {
-	Backplane				back;
-	InterruptController		ir;
-	MemoryBoard				mem;
-	DiskControllerBoard		disk;
-	VideoBoard				video;
-	ComputerBoard			computer;
+	Array<Pcb> pcbs;
+	Port power;
 	
-	
+	void Init();
 	void Tick();
 	
-		
+	Pcb& AddPcb();
+	Port& GetPower() {return power;}
+	
 };
 
-#endif

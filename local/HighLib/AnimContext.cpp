@@ -4,9 +4,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 HiAnimContext::HiAnimContext() {
-	
-	
-	
+	Clear();
 }
 
 void HiAnimContext::Clear() {

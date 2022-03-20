@@ -1,7 +1,6 @@
 #include "ProtoVM.h"
-#if 0
 
-void InterfaceBus::Attach(Board* b) {
+/*void InterfaceBus::Attach(Board* b) {
 	for (int i = 0; i < IFACE_SLOTS; i++) {
 		if (slots[i] == NULL) {
 			slots[i] = b;
@@ -39,4 +38,19 @@ void Machine::Tick() {
 	computer.Tick();
 }
 
-#endif
+*/
+
+
+void Machine::Init() {
+	TODO
+}
+
+void Machine::Tick() {
+	TODO
+}
+
+Pcb& Machine::AddPcb() {
+	Pcb& p = pcbs.Add();
+	p.mach = this;
+	return p;
+}

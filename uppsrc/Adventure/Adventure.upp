@@ -1,7 +1,6 @@
 uses
 	LocalCtrl,
-	High,
-	HighAnim;
+	HighLib;
 
 file
 	Copying,
@@ -15,7 +14,18 @@ file
 	C8_Part2.esc highlight cpp,
 	Program.h,
 	Program.cpp,
-	App.cpp;
+	Gfx.cpp,
+	Camera.cpp,
+	Ui.cpp,
+	Script.cpp,
+	Game.cpp,
+	Room.cpp,
+	Object.cpp,
+	Actor.cpp,
+	Physics.cpp,
+	Dialog.cpp,
+	App.cpp,
+	Builtin.cpp;
 
 mainconfig
 	"" = "GUI",

@@ -592,6 +592,7 @@ void ProgramDraw::PaintMap(Draw& d, int x, int y, int dst_x, int dst_y, int w, i
 }
 
 void ProgramDraw::PaintObject(Draw& d, SObj o) {
+	auto& global = p->ctx.global;
 	int sprnum = 0;
 	
 	// replace colors?
@@ -603,7 +604,7 @@ void ProgramDraw::PaintObject(Draw& d, SObj o) {
 		try {
 			Vector<HiValue> arg;
 			arg << o;
-			Execute(p->global, 0, draw, arg, INT_MAX);
+			Execute(p->ctx.global, 0, draw, arg, INT_MAX);
 		}
 		catch(CParser::Error e) {
 			LOG("ProgramDraw::PaintObject: error: " << e << "\n");
