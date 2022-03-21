@@ -11,7 +11,9 @@ file
 	Pcb.h,
 	Pcb.cpp,
 	Component.h,
+	Component.cpp,
 	Mechanical.h,
+	Mechanical.cpp,
 	ICs.h,
 	Chip.h,
 	Common.h,
@@ -26,5 +28,5 @@ file
 	_ readonly separator;
 
 mainconfig
-	"" = "";
+	"" = "STDEXC";
 

@@ -4,14 +4,19 @@
 
 
 struct Pin : public ElcBase {
+	RTTI_DECL1(Pin, ElcBase);
+	
 	bool is_ref_volt = false;
 	double voltage;
 	
-	Pin& SetReference(double voltage) {is_ref_volt = true; this->voltage = voltage; return *this;}
+	Pin();
+	Pin& SetReference(double voltage);
 	
 };
 
 struct Port : public ElcBase {
+	RTTI_DECL1(Port, ElcBase);
+	
 	Array<Pin> pins;
 	
 	
@@ -22,19 +27,29 @@ struct Port : public ElcBase {
 };
 
 
-template <int Ohm>
+//template <int Ohm>
 class Resistor : public ElcBase {
+	RTTI_DECL1(Resistor, ElcBase);
 	
+	
+public:
+	Resistor() {
+		AddSink("A");
+		AddSource("B");
+		
+	}
 	
 	
 	
 };
 
-using Resistor4k7 = Resistor<4700>;
+using Resistor4k7 = Resistor;//<4700>;
 
 
 template <int Hz>
 class Crystal : public ElcBase {
+	RTTI_DECL1(Crystal<Hz>, ElcBase);
+	
 	
 	
 };
@@ -44,19 +59,41 @@ using Crystal4 = Crystal<4000000>;
 
 
 class ElcNor : public ElcBase {
+	RTTI_DECL1(ElcNor, ElcBase);
+	
 	
 };
 
 
 class ElcNand : public ElcBase {
+	RTTI_DECL1(ElcNand, ElcBase);
+	
 	
 };
 
 
 class ElcNot : public ElcBase {
+	RTTI_DECL1(ElcNot, ElcBase);
+	
 	
 };
 
+
+class ElcCapacitor : public ElcBase {
+	RTTI_DECL1(ElcCapacitor, ElcBase);
+	
+	
+};
+
+
+class FlipFlopJK : public ElcBase {
+	RTTI_DECL1(FlipFlopJK, ElcBase);
+	
+	
+	FlipFlopJK();
+	
+	
+};
 
 
 #endif

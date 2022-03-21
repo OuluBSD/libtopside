@@ -5,6 +5,13 @@
 
 
 class PushButtonComp : public ElcBase {
+	RTTI_DECL1(PushButtonComp, ElcBase);
+	
+	
+	
+public:
+	typedef PushButtonComp CLASSNAME;
+	PushButtonComp();
 	
 	
 };

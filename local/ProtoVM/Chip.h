@@ -3,6 +3,8 @@
 
 
 class Chip : public ElcBase {
+	RTTI_DECL1(Chip, ElcBase);
+	
 	
 	
 };

@@ -26,6 +26,7 @@ public:
 	}
 	
 	ENode& AddNode(String name);
+	ElcBase& AddReferenceSingle(ElcBase& n, int pin_i);
 	
 	void Attach(ElectricNodeBase& from, ElectricNodeBase& to);
 	
@@ -34,6 +35,8 @@ public:
 
 template <int Width>
 class Bus : public ElcBase {
+	RTTI_DECL1(Bus, ElcBase);
+	
 	
 	
 };
