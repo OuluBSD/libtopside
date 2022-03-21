@@ -5,18 +5,18 @@ namespace Adventure {
 
 
 
-void Program::RealizeGame() {
+/*void Program::RealizeGame() {
 	auto& global = ctx.global;
 	
 	if (game.IsVoid())
 		game = global.Get("game", HiValue());
-}
+}*/
 
 bool Program::ReadGame() {
 	auto& global = ctx.global;
 	
 	//DUMPM(global);
-	RealizeGame();
+	//RealizeGame();
 	
 	/*room_names.Clear();
 	FindRooms("", game, room_names);
@@ -110,14 +110,14 @@ bool Program::ReadGame() {
 bool Program::InitGame() {
 	auto& global = ctx.global;
 	
-	game = HiValue();
+	//game = HiValue();
 	
 	try {
 		HiValue empty_lambda;
 		empty_lambda.CreateLambda();
 		Vector<HiValue> arg;
 		Execute(global, 0, global.Get("main", empty_lambda), arg, INT_MAX);
-		RealizeGame();
+		//RealizeGame();
 		Execute(global, 0, global.Get("startup_script", empty_lambda), arg, INT_MAX);
 	}
 	catch(CParser::Error e) {

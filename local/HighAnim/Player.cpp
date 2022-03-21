@@ -372,6 +372,9 @@ AnimPlayer& AnimPlayer::SetExternalTime(bool b) {
 }
 
 void AnimPlayer::Play() {
+	ASSERT(scenes.GetCount());
+	if (scenes.IsEmpty())
+		return;
 	AnimScene& s = a->GetActiveScene();
 	if (s.GetLength() > 0) {
 		is_playing = true;

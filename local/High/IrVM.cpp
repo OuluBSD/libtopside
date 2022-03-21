@@ -55,6 +55,11 @@ void Hi::OnError(String s) {
 	fail = true;
 }
 
+void Hi::Stop() {
+	calls.Clear();
+	fail = false;
+}
+
 void Hi::Run() {
 	return_value = HiValue();
 	

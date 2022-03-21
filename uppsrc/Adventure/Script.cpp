@@ -5,6 +5,8 @@ namespace Adventure {
 	
 
 
+/*
+
 void Script::Clear() {
 	Stop();
 	fn.Clear();
@@ -132,27 +134,30 @@ bool Script::ProcessHi() {
 bool Script::RunHiSteps() {
 	LOG("Script::RunHiSteps");
 	auto& e = *esc;
-	/*int op = 0;
-	try {
-		while(!e.IsEof() && e.no_return && e.no_break && e.no_continue && op < op_limit_at_once) {
-			e.DoStatement();
-			op++;
-		}
-	}
-	catch (CParser::Error e) {
-		LOG("Script::RunHiSteps: error: " << e);
-		return false;
-	}
-	
-	return !e.IsEof();*/
+	int op = 0;
+//	try {
+//		while(!e.IsEof() && e.no_return && e.no_break && e.no_continue && op < op_limit_at_once) {
+//			e.DoStatement();
+//			op++;
+//		}
+//	}
+//	catch (CParser::Error e) {
+//		LOG("Script::RunHiSteps: error: " << e);
+//		return false;
+//	}
+//	
+//	return !e.IsEof();
+
 	
 	e.Run();
 	
 	return false;
 }
+*/
+
+
 
 void Program::Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiValue func_override) {
-	auto& global = ctx.global;
 	
 	/*cut = {
 		flags = type,
@@ -165,9 +170,9 @@ void Program::Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiV
 		cutscene_override = func_override;
 		
 		Script& cut = AddCutscene("cutscene0");
-		cut.type = type;
+		cut.user_type = type;
 		cut.WhenStop = THISBACK(ClearCutsceneOverride);
-		cut.Set(global, 0, func_cutscene, room_curr);
+		cut.Set(0, func_cutscene, room_curr);
 		
 		// set as active cutscene
 		cutscene_curr = &cut;
@@ -177,27 +182,27 @@ void Program::Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiV
 	}
 }
 
-void Program::ClearCutsceneOverride(Script* s) {
+void Program::ClearCutsceneOverride(Script& s) {
 	cutscene_override = HiValue();
 	
-	if (s == cutscene_curr)
+	if (&s == cutscene_curr)
 		cutscene_curr = 0;
 }
 
 
-Script& Program::AddScript(String name, int group) {
+HiAnimProgram& Program::AddScript(String name, int group) {
 	return ctx.CreateProgramT<Script>(name, group);
 }
 
-Script& Program::AddLocal(String name) {
+HiAnimProgram& Program::AddLocal(String name) {
 	return AddScript(name, SCRIPT_LOCAL);
 }
 
-Script& Program::AddGlobal(String name) {
+HiAnimProgram& Program::AddGlobal(String name) {
 	return AddScript(name, SCRIPT_GLOBAL);
 }
 
-Script& Program::AddCutscene(String name) {
+HiAnimProgram& Program::AddCutscene(String name) {
 	return AddScript(name, SCRIPT_CUTSCENE);
 }
 
@@ -206,24 +211,23 @@ void Program::StartScript(Gate0 func, bool bg, HiValue noun1, HiValue noun2) {
 	
 	// background || local?
 	if (bg)
-		AddGlobal("script").Set(func, noun1, noun2).Start();
+		AddGlobal("script").Set(func, noun1, noun2);
 	
 	else
-		AddLocal("script").Set(func, noun1, noun2).Start();
+		AddLocal("script").Set(func, noun1, noun2);
 }
 
 void Program::StartScriptHi(HiValue* self, HiValue script_name, bool bg, HiValue noun1, HiValue noun2) {
-	auto& global = ctx.global;
 	
 	//LOG("Program::StartScriptHi: " << script_name);
 	RemoveStoppedScripts();
 	
 	// background || local?
 	if (bg)
-		AddGlobal("hi-script").Set(global, self, script_name, noun1, noun2);
+		AddGlobal("hi-script").Set(self, script_name, noun1, noun2);
 	
 	else
-		AddLocal("hi-script").Set(global, self, script_name, noun1, noun2);
+		AddLocal("hi-script").Set(self, script_name, noun1, noun2);
 }
 
 bool Program::ScriptRunning(Script& func)  {
@@ -260,35 +264,10 @@ void Program::StopScript(Script& func) {
 }
 
 void Program::RemoveStoppedScripts() {
-	RemoveStoppedScripts(local_scripts);
-	RemoveStoppedScripts(global_scripts);
-	RemoveStoppedScripts(cutscenes);
+	ctx.RemoveStopped();
 }
 
-void Program::RemoveStoppedScripts(int group) {
-	for(int i = 0; i < scripts.GetCount(); i++)
-		if (!scripts[i].running)
-			scripts.Remove(i);
-}
-
-void Program::UpdateScripts(int group) {
-	int i = 0;
-	Vector<int> rm_list;
-	for (Script& s : scripts) {
-		if (s.is_esc && s.running)
-			s.ProcessHi();
-		
-		if (!s.running)
-			rm_list << i;
-		
-		i++;
-	}
-	
-	if (rm_list.GetCount())
-		scripts.Remove(rm_list);
-}
-
-bool Program::ParseGame(String content, String path) {
+bool Program::AddHighFunctions() {
 	auto& global = ctx.global;
 	
 	//HighCall(global, "Print(x)", SIC_Print);
@@ -299,7 +278,7 @@ bool Program::ParseGame(String content, String path) {
 	HighCall(global, "put_at(obj, x, y, room)", THISBACK(HiPutAt));
 	HighCall(global, "camera_follow(actor)", THISBACK(HiCameraFollow));
 	HighCall(global, "change_room(new_room, fade)", THISBACK(HiChangeRoom));
-	HighCall(global, "set_global_game(game)", THISBACK(HiSetGlobalGame));
+	//HighCall(global, "set_global_game(game)", THISBACK(HiSetGlobalGame));
 	HighCall(global, "cutscene(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "sub(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "select_actor(name)", THISBACK(HiSelectActor));
@@ -329,15 +308,6 @@ bool Program::ParseGame(String content, String path) {
 	HighCall(global, "dialog_start(a, b)", THISBACK(HiTodo));
 	HighCall(global, "dialog_hide()", THISBACK(HiTodo));
 	HighCall(global, "dialog_clear()", THISBACK(HiTodo));
-	StdLib(global);
-	
-	try {
-		Scan(global, content, path);
-	}
-	catch(CParser::Error e) {
-		LOG("Program::ParseGame: error: " << e << "\n");
-		return false;
-	}
 	
 	return true;
 }
@@ -350,9 +320,9 @@ void Program::HiChangeRoom(HiEscape& e) {
 	ChangeRoom(e[0], e[1]);
 }
 
-void Program::HiSetGlobalGame(HiEscape& e) {
+/*void Program::HiSetGlobalGame(HiEscape& e) {
 	game = e[0];
-}
+}*/
 
 void Program::HiCutscene(HiEscape& e) {
 	Cutscene((SceneType)e[0].GetInt(), &e.self, e[1], e[2]);
@@ -383,10 +353,13 @@ void Program::HiPrintLine(HiEscape& e) {
 	
 	LOG("Program::HiPrintLine: " << txt);
 	
+	if (txt.GetCount() >= 2 && txt[0] == '"')
+		txt = txt.Mid(1, txt.GetCount()-2);
+	
 	if (use_caps)
 		txt = ToUpper(txt);
 	
-	int fnt_h = big_font ? 20 : 10;
+	int fnt_h = big_font ? 16 : 8;
 	
 	LOG(x << "," << y << ": " << txt);
 	
@@ -399,11 +372,14 @@ void Program::HiPrintLine(HiEscape& e) {
 	AnimObject& parent = s.GetRoot();
 	AnimObject& o = parent.Add();
 	o.SetPosition(Point(x,y));
-	o.SetText(txt, 20, Color(47, 98, 158));
+	o.SetText(txt, fnt_h, Color(47, 98, 158));
 	p.Recompile(parent);
 	
 	int ms = duration / 32.0 * 1000;
-	p.AddTimedRemoveObject(ms, o, prog->ContinueVmCallback());
+	
+	ms *= dbg_sleep_multiplier;
+	
+	p.AddTimedRemoveObject(ms, o, prog->ContinueCallback());
 	
 	//e.esc.hi.SleepReleasing(ms);
 	e.esc.hi.SleepInfiniteReleasing();

@@ -15,7 +15,6 @@ using SObj = ScriptObject;
 
 typedef int PaletteColor;
 typedef int PaletteImage;
-typedef ArrayMap<String, HiValue> HiGlobal;
 
 
 Color GetPicoPalette(PaletteColor idx);
@@ -96,7 +95,7 @@ struct Dialog {
 	operator bool() const {return enabled;}
 	
 };
-
+/*
 struct Script : public HiAnimProgram {
 	int op_limit = 1000000;
 	static const int op_limit_at_once = 100;
@@ -124,7 +123,7 @@ struct Script : public HiAnimProgram {
 	bool ProcessHi();
 	bool RunHiSteps();
 	
-};
+};*/
 
 struct TalkingState {
 	Vector<String> msg_lines;
@@ -228,6 +227,9 @@ protected:
 	Array<Script> cutscenes;		// table of scripts for (the active Cutscene(s)
 	*/
 	
+	using Script = HiAnimProgram;
+	
+	
 	Script& AddScript(String name, int group);
 	Script& AddLocal(String name);
 	Script& AddGlobal(String name);
@@ -235,6 +237,8 @@ protected:
 	
 	Script* cutscene_curr = 0;
 	
+	
+	double dbg_sleep_multiplier = 0.4;
 	
 	int verb_default = 4;
 	
@@ -302,7 +306,7 @@ protected:
 	// Script
 	//HiGlobal global;
 	HiAnimContext ctx;
-	HiValue game;
+	//HiValue game;
 	HiValue rooms;
 	HiValue cutscene_override;
 	HiValue verbs;
@@ -328,7 +332,7 @@ public:
 	
 	Program();
 	
-	bool ParseGame(String content, String path);
+	bool AddHighFunctions();
 	bool ReadGame();
 	HiValue RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0);
 	//void GetReference(SObj& o, bool everywhere=false);
@@ -343,7 +347,7 @@ public:
 	
 	void HiCameraFollow(HiEscape& e);
 	void HiChangeRoom(HiEscape& e);
-	void HiSetGlobalGame(HiEscape& e);
+	//void HiSetGlobalGame(HiEscape& e);
 	void HiCutscene(HiEscape& e);
 	void HiPutAt(HiEscape& e);
 	void HiPrintLine(HiEscape& e);
@@ -351,8 +355,8 @@ public:
 	void HiSelectActor(HiEscape& e);
 	void HiTodo(HiEscape& e);
 	
-	void ClearCutsceneOverride(Script* s);
-	void RealizeGame();
+	void ClearCutsceneOverride(Script& s);
+	//void RealizeGame();
 	void CameraFollow(SObj actor);
 	void ChangeRoom(SObj new_room, SObj fade);
 	bool CamScript0();
@@ -404,8 +408,6 @@ public:
 	void ResetZPlanes();
 	void RecalcZPlane(SObj& obj);
 	bool InitGame();
-	void UpdateScripts(int group);
-	void RemoveStoppedScripts(int group);
 	bool IsTable(SObj& t);
 	Point CenterCamera(const Point& val);
 	Point CenterCamera(SObj& val);

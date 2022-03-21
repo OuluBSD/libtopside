@@ -263,6 +263,7 @@ public:
 	}
 	
 	void		Run();
+	void		Stop();
 	double		Number(const HiValue& a, const char *oper);
 	int64		Int(const HiValue& a, const char *oper);
 	

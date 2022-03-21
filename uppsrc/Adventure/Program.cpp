@@ -39,13 +39,15 @@ bool Program::Init() {
 	fade_iris = 0;
 	cutscene_cooloff = 0;
 	
-	String path = GetDataFile("Game.esc");
-	String content = LoadFile(path);
-	if (content.IsEmpty()) {
-		LOG("error: empty script");
+	ctx.InitializeEmptyScene();
+	
+	if (!ctx.AddCodePath(GetDataFile("Game.esc")))
 		return false;
-	}
-	if (!ParseGame(content, path))
+	
+	if (!ctx.Init(false))
+		return false;
+	
+	if (!AddHighFunctions())
 		return false;
 	
 	// init all the rooms/objects/actors
@@ -55,11 +57,7 @@ bool Program::Init() {
 	if (!ReadGame())
 		return false;
 	
-	
-	AnimScene& s = ctx.a.AddScene("def");
-	AnimObject& r = s.GetRoot();
-	ctx.CreateProgram("null");
-	ctx.Init();
+	ctx.KeepRunning();
 	
 	return true;
 }
@@ -69,21 +67,21 @@ bool Program::Init() {
 	
 	int i = 0;
 	for (Script& s : global_scripts) {
-		if (s.is_esc && s.running) {
+		if (s.is_esc && s.IsRunning()) {
 			s.ProcessHi();
 			i++;
 		}
 	}
 	
 	for (Script& s : local_scripts) {
-		if (s.is_esc && s.running) {
+		if (s.is_esc && s.IsRunning()) {
 			s.ProcessHi();
 			i++;
 		}
 	}
 	
 	for (Script& s : cutscenes) {
-		if (s.is_esc && s.running) {
+		if (s.is_esc && s.IsRunning()) {
 			s.ProcessHi();
 			i++;
 		}
@@ -93,7 +91,9 @@ bool Program::Init() {
 }*/
 
 const SObj* Program::FindDeep(const String& name) const {
-	return FindDeep(name, &game);
+	DUMP(name);
+	TODO
+	//return FindDeep(name, &game);
 }
 
 const SObj* Program::FindDeep(const String& name, const SObj* o) const {
@@ -286,34 +286,42 @@ void Program::ClearCurrCmd() {
 void Program::Update() {
 	SObj selected_actor = GetSelectedActor();
 	
+	// See HiAnimContext::Iterate
+	// It is implemented here
+	ASSERT(ctx.IsRunning());
+	
 	// global scripts (always updated - regardless of cutscene)
-	UpdateScripts(SCRIPT_GLOBAL);
+	ctx.ProcessAndRemoveGroup(SCRIPT_GLOBAL);
 
 	// update active cutscene (if (any)
 	if (cutscene_curr) {
 		Script& cut = *cutscene_curr;
 		
-		if (!cut.running || !cut.ProcessHi()) {
+		if (!cut.IsRunning() || !cut.Process()) {
 			// cutscene ended, restore prev state
 
 			// restore follow-cam if (flag allows (and had a value!)
-			if (cut.flags != 3 && cut.paused_cam_following) {
-				CameraFollow(*cut.paused_cam_following);
+			dword& flags = cut.user_flags;
+			HiValue& paused_cam_following = cut.user;
+			if (flags != 3 && paused_cam_following) {
+				CameraFollow(paused_cam_following);
 				
 				// assume to re-select prev actor
-				SetSelectedActor(*cut.paused_cam_following);
+				SetSelectedActor(paused_cam_following);
 			}
 			
 			// now delete cutscene
-			RemoveStoppedScripts(SCRIPT_CUTSCENE);
+			ctx.RemoveStoppedGroup(SCRIPT_CUTSCENE);
 
 			// any more cutscenes?
+			Vector<HiAnimProgram*> cutscenes = ctx.FindGroupPrograms(SCRIPT_CUTSCENE);
 			if (!cutscenes.IsEmpty()) {
-				cutscene_curr = &cutscenes.Top();
+				cutscene_curr = cutscenes.Top();
+				ASSERT(cutscene_curr);
 			}
 			else {
 				// start countdown (delay to ensure cutscenes/dialogs all over!)
-				if (cut.flags != 2)
+				if (flags != 2)
 					cutscene_cooloff = 3;
 				
 				cutscene_curr = NULL;
@@ -326,9 +334,13 @@ void Program::Update() {
 		// (will auto-remove those that have ended)
 
 		// local/room-level scripts
-		UpdateScripts(local_scripts);
+		ctx.ProcessAndRemoveGroup(SCRIPT_LOCAL);
 	}
-
+	
+	ctx.p.Data();
+	if (!ctx.IsRunning())
+		ctx.WhenStop();
+	
 	// player/ui control
 	PlayerControl();
 

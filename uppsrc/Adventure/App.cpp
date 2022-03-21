@@ -139,7 +139,7 @@ void ProgramDraw::Paint(Draw& w) {
 			
 		// draw ui and inventory (only if (actor selected to use it!)
 		if (cutscene_curr
-			? cutscene_curr->flags == 2 // quick-cut
+			? cutscene_curr->user_flags == 2 // quick-cut
 			// and not just left a cutscene
 			: cutscene_cooloff == 0) {
 			PaintUI(d);
@@ -149,6 +149,8 @@ void ProgramDraw::Paint(Draw& w) {
 			PaintCursor(d);
 		
 	}
+	
+	p->ctx.p.Paint(d);
 	
 	Image img = d;
 	img = RescaleFilter(img, tgt_sz, FILTER_NEAREST);

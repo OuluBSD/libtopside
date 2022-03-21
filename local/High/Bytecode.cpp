@@ -986,8 +986,7 @@ void  HiCompiler::DoStatement()
 	}
 }
 
-void HiCompiler::Run()
-{
+void HiCompiler::Run() {
 	loop = 0;
 	fail = 0;
 	

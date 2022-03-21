@@ -60,7 +60,7 @@ void Program::PlayerControl() {
 	
 	// cutscene? (or skip?)
 	if (cutscene_curr) {
-		if ((IsPressed(BTN_X) || IsMouseRightPressed()) && cutscene_curr->running) {
+		if ((IsPressed(BTN_X) || IsMouseRightPressed()) && cutscene_curr->IsRunning()) {
 			cutscene_curr->Stop();
 			return;
 		}

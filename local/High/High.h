@@ -255,34 +255,37 @@ struct HiEscape {
 	  : esc(esc), self(self), arg(arg) {}
 };
 
-void HighCall(ArrayMap<String, HiValue>& globals, const char *function, void (*escape)(HiEscape& e));
+using HiGlobal = ArrayMap<String, HiValue>;
+
+
+void HighCall(HiGlobal& globals, const char *function, void (*escape)(HiEscape& e));
 
 inline // resolve overloading with Function...
-void Hifn(ArrayMap<String, HiValue>& globals, const char *function, void (*escape)(HiEscape& e))
+void Hifn(HiGlobal& globals, const char *function, void (*escape)(HiEscape& e))
 {
 	return HighCall(globals, function, escape);
 }
 
-void HighCall(ArrayMap<String, HiValue>& globals, const char *function, Callback1<HiEscape&> escape);
+void HighCall(HiGlobal& globals, const char *function, Callback1<HiEscape&> escape);
 
-void Scan(ArrayMap<String, HiValue>& global, const char *code, const char *filename = "");
+void Scan(HiGlobal& global, const char *code, const char *filename = "");
 
-void StdLib(ArrayMap<String, HiValue>& global);
+void StdLib(HiGlobal& global);
 
 void     LambdaArgs(CParser& p, HiLambda& l);
 
-HiValue  Execute(ArrayMap<String, HiValue>& global, HiValue *self,
+HiValue  Execute(HiGlobal& global, HiValue *self,
                  const HiValue& lambda, Vector<HiValue>& arg, int oplimit = 50000);
-HiValue  Execute(ArrayMap<String, HiValue>& global, HiValue *self,
+HiValue  Execute(HiGlobal& global, HiValue *self,
                  const char *name, Vector<HiValue>& arg, int oplimit = 50000);
-HiValue  Execute(ArrayMap<String, HiValue>& global, const char *name, int oplimit = 50000);
+HiValue  Execute(HiGlobal& global, const char *name, int oplimit = 50000);
 
-HiValue  Evaluatex(const char *expression, ArrayMap<String, HiValue>& global, int oplimit = 50000);
-HiValue  Evaluate(const char *expression, ArrayMap<String, HiValue>& global, int oplimit = 50000);
+HiValue  Evaluatex(const char *expression, HiGlobal& global, int oplimit = 50000);
+HiValue  Evaluate(const char *expression, HiGlobal& global, int oplimit = 50000);
 
 HiValue  HiFromStdValue(const Object& v);
 Object   StdValueFromHi(const HiValue& v);
-void     StdValueLib(ArrayMap<String, HiValue>& global);
+void     StdValueLib(HiGlobal& global);
 
 bool     IsDate(const HiValue& v);
 bool     IsTime(const HiValue& v);
@@ -290,8 +293,12 @@ bool     IsTime(const HiValue& v);
 String   StdFormat(const Value& q);
 String   StdFormatObj(const Object& q);
 
-String   Expand(const String& doc, ArrayMap<String, HiValue>& global,
+String   Expand(const String& doc, HiGlobal& global,
                 int oplimit = 50000, String (*format)(const Object& v) = StdFormatObj);
+
+
+
+
 
 }
 

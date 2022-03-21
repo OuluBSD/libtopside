@@ -33,7 +33,7 @@ void HiAnimProgram::HI_DrawText(HiEscape& e) {
 	o.SetText(str, 20, Color(47, 98, 158));
 	p.Recompile(parent);
 	
-	p.AddTimedRemoveObject(1000, o, THISBACK(ContinueVm));
+	p.AddTimedRemoveObject(1000, o, THISBACK(Continue));
 	
 	//e.esc.hi.SleepReleasing(ms);
 	vm->SleepInfiniteReleasing();
