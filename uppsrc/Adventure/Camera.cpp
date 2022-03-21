@@ -20,13 +20,16 @@ void Program::CameraFollow(SObj actor) {
 	//GetReference(actor, true);
 	ASSERT(actor.IsMap());
 	
-	StopScript(cam_script); // bg script
+	if (cam_script) {
+		StopScript(*cam_script); // bg script
+		cam_script = 0;
+	}
 	
 	// set target, clear other cam values
 	cam_following_actor = actor;
 	cam_pan_to = GetXY(actor);
 	
-	StartScript(THISBACK(CamScript0), true); // bg script
+	cam_script = &StartScript(THISBACK(CamScript0), true); // bg script
 	
 	// auto-switch to room actor resides in
 	SObj r = GetInRoom(cam_following_actor);
@@ -53,10 +56,9 @@ void Program::CameraPanTo(SObj& val) {
 	Point c = CenterCamera(val);
 	cam_pan_to = c;
 	cam_following_actor = 0;
-
-	cam_script.Clear();
+	cam_script = 0;;
 	
-	StartScript(THISBACK(CamScript1), true); // bg script
+	cam_script = &StartScript(THISBACK(CamScript1), true); // bg script
 }
 
 bool Program::CamScript1() {
@@ -75,7 +77,7 @@ bool Program::CamScript1() {
 }
 
 void Program::WaitForCamera() {
-	while (ScriptRunning(cam_script)) {
+	while (cam_script && ScriptRunning(*cam_script)) {
 		TODO // yield();
 	}
 }

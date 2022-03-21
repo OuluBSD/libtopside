@@ -14,6 +14,7 @@ file
 	C8_Part2.esc highlight cpp,
 	Program.h,
 	Program.cpp,
+	ProgramDraw.cpp,
 	Gfx.cpp,
 	Camera.cpp,
 	Ui.cpp,

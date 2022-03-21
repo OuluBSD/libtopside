@@ -147,6 +147,8 @@ struct ZPlane : Moveable<ZPlane> {
 	
 };
 
+class ProgramDraw;
+
 class Program {
 	
 protected:
@@ -154,6 +156,8 @@ protected:
 	
 	typedef Program CLASSNAME;
 	
+	
+	ProgramDraw* draw = 0;
 	
 	bool show_collision = true;
 	bool show_pathfinding = true;
@@ -268,7 +272,7 @@ protected:
 	int cursor_tmr = 0;
 	int cursor_colpos = 1;
 	
-	Script cam_script;
+	Script* cam_script = 0;
 	
 	String cmd_curr;
 	Sentence* selected_sentence = 0;
@@ -353,6 +357,32 @@ public:
 	void HiPrintLine(HiEscape& e);
 	void HiBreakTime(HiEscape& e);
 	void HiSelectActor(HiEscape& e);
+	void HiPickupObject(HiEscape& e);
+	void HiSetTransparencyColor(HiEscape& e);
+	void HiFades(HiEscape& e);
+	void HiMap(HiEscape& e);
+	void HiSayLine(HiEscape& e);
+	void HiCameraAt(HiEscape& e);
+	void HiCameraPanTo(HiEscape& e);
+	void HiWaitForCamera(HiEscape& e);
+	void HiDrawRectFill(HiEscape& e);
+	void HiDrawLine(HiEscape& e);
+	void HiDrawCircleFill(HiEscape& e);
+	void HiComeOutDoor(HiEscape& e);
+	void HiStartScript(HiEscape& e);
+	void HiStopScript(HiEscape& e);
+	void HiSoundFx0(HiEscape& e);
+	void HiSoundFx1(HiEscape& e);
+	void HiDoAnimation(HiEscape& e);
+	void HiShake(HiEscape& e);
+	void HiScriptRunning(HiEscape& e);
+	void HiWalkTo(HiEscape& e);
+	void HiOpenDoor(HiEscape& e);
+	void HiCloseDoor(HiEscape& e);
+	void HiDialogSet(HiEscape& e);
+	void HiDialogStart(HiEscape& e);
+	void HiDialogHide(HiEscape& e);
+	void HiDialogClear(HiEscape& e);
 	void HiTodo(HiEscape& e);
 	
 	void ClearCutsceneOverride(Script& s);
@@ -381,8 +411,8 @@ public:
 	bool Fades(int fade, int dir);
 	bool IsValidVerb(HiValue verb, SObj object);
 	void PickupObj(SObj& obj, SObj& actor);
-	void StartScript(Gate0 func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
-	void StartScriptHi(HiValue* self, HiValue func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
+	HiAnimProgram& StartScript(Gate0 func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
+	HiAnimProgram& StartScriptHi(HiValue* self, HiValue func, bool bg, HiValue noun1=HiValue(), HiValue noun2=HiValue());
 	void StopScript(Script& func);
 	void RemoveStoppedScripts();
 	void BreakTime(int jiffies=0);
@@ -487,11 +517,17 @@ class ProgramDraw : public Ctrl {
 	void Animate(SObj obj);
 	void GetPaletteImage(const Vector<byte>& src, Size src_sz, Image& out);
 	
+	
+protected:
+	friend class Program;
+	ImageDraw* img_draw = 0;
+	
+	
 public:
 	
 	ProgramDraw();
 
-	void SetProgram(Program& p) {this->p = &p;}
+	void SetProgram(Program& p) {this->p = &p; p.draw = this;}
 	
 	void Paint(Draw& d) override;
 	
@@ -525,7 +561,7 @@ public:
 	bool Key(dword key, int count) override;
 	
 	// TODO remove
-	void SetTransCol(int transcol);
+	void SetTransCol(int transcol, bool enabled);
 	
 };
 

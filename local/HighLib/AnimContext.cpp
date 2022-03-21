@@ -128,7 +128,17 @@ void HiAnimContext::ProcessAndRemoveGroup(int group) {
 }
 
 void HiAnimContext::StopProgram(HiAnimProgram& p) {
-	TODO
+	int i = 0;
+	for (HiAnimProgram& prog : progs) {
+		if (&prog == &p) {
+			if (prog.IsRunning())
+				prog.Stop();
+			progs.Remove(i);
+			return;
+		}
+		i++;
+	}
+	ASSERT_(0, "program was not found from context");
 }
 
 void HiAnimContext::RemoveProgramGroup(int group) {
@@ -137,8 +147,11 @@ void HiAnimContext::RemoveProgramGroup(int group) {
 	Vector<int> rm_list;
 	int i = 0;
 	for (HiAnimProgram& prog : progs) {
-		if (prog.user_group == group)
+		if (prog.user_group == group) {
+			if (prog.IsRunning())
+				prog.Stop();
 			rm_list << i;
+		}
 		i++;
 	}
 	if (!rm_list.IsEmpty())
@@ -149,8 +162,9 @@ void HiAnimContext::RemoveStopped() {
 	Vector<int> rm_list;
 	int i = 0;
 	for (HiAnimProgram& prog : progs) {
-		if (!prog.IsRunning())
+		if (!prog.IsRunning()) {
 			rm_list << i;
+		}
 		i++;
 	}
 	if (!rm_list.IsEmpty())

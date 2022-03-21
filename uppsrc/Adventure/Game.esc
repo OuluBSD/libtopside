@@ -167,12 +167,12 @@ main() {
 	// Rooms
 	:rm_title_fn0 = @(me) {
 		if (!me.gameover) {
-			print_line("return of the...", 64, 40, 8, 1, true, 32, false);
+			/*print_line("return of the...", 64, 40, 8, 1, true, 32, false);
 			for (x = 1; x <= 7; x++) {
 				s = "  scumm";
 				s = s[0, x];
 				print_line(s, 55, 45, 11, 1, true, 32, true);
-			}
+			}*/
 			change_room(:rm_outside, 1); // iris fade
 		}
 		else {

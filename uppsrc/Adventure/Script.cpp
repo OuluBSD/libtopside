@@ -206,28 +206,28 @@ HiAnimProgram& Program::AddCutscene(String name) {
 	return AddScript(name, SCRIPT_CUTSCENE);
 }
 
-void Program::StartScript(Gate0 func, bool bg, HiValue noun1, HiValue noun2) {
+HiAnimProgram& Program::StartScript(Gate0 func, bool bg, HiValue noun1, HiValue noun2) {
 	RemoveStoppedScripts();
 	
 	// background || local?
 	if (bg)
-		AddGlobal("script").Set(func, noun1, noun2);
+		return AddGlobal("script").Set(func, noun1, noun2);
 	
 	else
-		AddLocal("script").Set(func, noun1, noun2);
+		return AddLocal("script").Set(func, noun1, noun2);
 }
 
-void Program::StartScriptHi(HiValue* self, HiValue script_name, bool bg, HiValue noun1, HiValue noun2) {
+HiAnimProgram& Program::StartScriptHi(HiValue* self, HiValue script_name, bool bg, HiValue noun1, HiValue noun2) {
 	
 	//LOG("Program::StartScriptHi: " << script_name);
 	RemoveStoppedScripts();
 	
 	// background || local?
 	if (bg)
-		AddGlobal("hi-script").Set(self, script_name, noun1, noun2);
+		return AddGlobal("hi-script").Set(self, script_name, noun1, noun2);
 	
 	else
-		AddLocal("hi-script").Set(self, script_name, noun1, noun2);
+		return AddLocal("hi-script").Set(self, script_name, noun1, noun2);
 }
 
 bool Program::ScriptRunning(Script& func)  {
@@ -253,13 +253,6 @@ bool Program::ScriptRunning(Script& func)  {
 }
 
 void Program::StopScript(Script& func) {
-	/*for(int i = 0; i < local_scripts.GetCount(); i++)
-		if (&local_scripts[i] == &func)
-			{local_scripts.Remove(i); break;}
-			
-	for(int i = 0; i < global_scripts.GetCount(); i++)
-		if (&global_scripts[i] == &func)
-			{global_scripts.Remove(i); break;}*/
 	ctx.StopProgram(func);
 }
 
@@ -282,32 +275,32 @@ bool Program::AddHighFunctions() {
 	HighCall(global, "cutscene(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "sub(type, func_cutscene, func_override)", THISBACK(HiCutscene));
 	HighCall(global, "select_actor(name)", THISBACK(HiSelectActor));
-	HighCall(global, "pickup_obj(me)", THISBACK(HiTodo));
-	HighCall(global, "set_trans_col(name, b)", THISBACK(HiTodo));
-	HighCall(global, "fades(a, b)", THISBACK(HiTodo));
-	HighCall(global, "map(a, b, c, d, e, f)", THISBACK(HiTodo));
-	HighCall(global, "say_line(a)", THISBACK(HiTodo));
-	HighCall(global, "camera_at(a)", THISBACK(HiTodo));
-	HighCall(global, "camera_pan_to(a)", THISBACK(HiTodo));
-	HighCall(global, "wait_for_camera()", THISBACK(HiTodo));
-	HighCall(global, "rectfill(a, b, c, d, e)", THISBACK(HiTodo));
-	HighCall(global, "line(a, b, c, d, e)", THISBACK(HiTodo));
-	HighCall(global, "circfill(a, b, c)", THISBACK(HiTodo));
-	HighCall(global, "come_out_door(a, b)", THISBACK(HiTodo));
-	HighCall(global, "start_script(a, b)", THISBACK(HiTodo));
-	HighCall(global, "stop_script(a, b)", THISBACK(HiTodo));
-	HighCall(global, "sfx0()", THISBACK(HiTodo));
-	HighCall(global, "sfx1()", THISBACK(HiTodo));
-	HighCall(global, "do_anim(a, b, c)", THISBACK(HiTodo));
-	HighCall(global, "shake(a)", THISBACK(HiTodo));
-	HighCall(global, "script_running(a)", THISBACK(HiTodo));
-	HighCall(global, "walk_to(a, b, c)", THISBACK(HiTodo));
-	HighCall(global, "open_door(a, b)", THISBACK(HiTodo));
-	HighCall(global, "close_door(a)", THISBACK(HiTodo));
-	HighCall(global, "dialog_set(a)", THISBACK(HiTodo));
-	HighCall(global, "dialog_start(a, b)", THISBACK(HiTodo));
-	HighCall(global, "dialog_hide()", THISBACK(HiTodo));
-	HighCall(global, "dialog_clear()", THISBACK(HiTodo));
+	HighCall(global, "pickup_obj(me)", THISBACK(HiPickupObject));
+	HighCall(global, "set_trans_col(clr, boolean)", THISBACK(HiSetTransparencyColor));
+	HighCall(global, "fades(a, b)", THISBACK(HiFades));
+	HighCall(global, "map(celx, cely, sx, sy, celw, celh)", THISBACK(HiMap));
+	HighCall(global, "say_line(a)", THISBACK(HiSayLine));
+	HighCall(global, "camera_at(a)", THISBACK(HiCameraAt));
+	HighCall(global, "camera_pan_to(a)", THISBACK(HiCameraPanTo));
+	HighCall(global, "wait_for_camera()", THISBACK(HiWaitForCamera));
+	HighCall(global, "rectfill(a, b, c, d, e)", THISBACK(HiDrawRectFill));
+	HighCall(global, "line(a, b, c, d, e)", THISBACK(HiDrawLine));
+	HighCall(global, "circfill(a, b, c)", THISBACK(HiDrawCircleFill));
+	HighCall(global, "come_out_door(a, b)", THISBACK(HiComeOutDoor));
+	HighCall(global, "start_script(a, b)", THISBACK(HiStartScript));
+	HighCall(global, "stop_script(a, b)", THISBACK(HiStopScript));
+	HighCall(global, "sfx0()", THISBACK(HiSoundFx0));
+	HighCall(global, "sfx1()", THISBACK(HiSoundFx1));
+	HighCall(global, "do_anim(a, b, c)", THISBACK(HiDoAnimation));
+	HighCall(global, "shake(a)", THISBACK(HiShake));
+	HighCall(global, "script_running(a)", THISBACK(HiScriptRunning));
+	HighCall(global, "walk_to(a, b, c)", THISBACK(HiWalkTo));
+	HighCall(global, "open_door(a, b)", THISBACK(HiOpenDoor));
+	HighCall(global, "close_door(a)", THISBACK(HiCloseDoor));
+	HighCall(global, "dialog_set(a)", THISBACK(HiDialogSet));
+	HighCall(global, "dialog_start(a, b)", THISBACK(HiDialogStart));
+	HighCall(global, "dialog_hide()", THISBACK(HiDialogHide));
+	HighCall(global, "dialog_clear()", THISBACK(HiDialogClear));
 	
 	return true;
 }
@@ -351,8 +344,6 @@ void Program::HiPrintLine(HiEscape& e) {
 	int duration = e[6].GetInt();
 	bool big_font = e[7].GetInt();
 	
-	LOG("Program::HiPrintLine: " << txt);
-	
 	if (txt.GetCount() >= 2 && txt[0] == '"')
 		txt = txt.Mid(1, txt.GetCount()-2);
 	
@@ -361,7 +352,7 @@ void Program::HiPrintLine(HiEscape& e) {
 	
 	int fnt_h = big_font ? 16 : 8;
 	
-	LOG(x << "," << y << ": " << txt);
+	LOG("Program::HiPrintLine: " << x << "," << y << ": " << txt);
 	
 	Animation& a = ctx.a;
 	AnimPlayer& p = ctx.p;
@@ -399,12 +390,123 @@ void Program::HiSelectActor(HiEscape& e) {
 	
 }
 
-void Program::HiTodo(HiEscape& e) {
-	
+void Program::HiPickupObject(HiEscape& e) {
 	TODO
-	
 }
 
+void Program::HiSetTransparencyColor(HiEscape& e) {
+	int col = e[0];
+	int is_transparent = e[1];
+	
+	if (draw) draw->SetTransCol(col, is_transparent);
+}
+
+void Program::HiFades(HiEscape& e) {
+	TODO
+}
+
+void Program::HiMap(HiEscape& e) {
+	int celx = e[0];
+	int cely = e[1];
+	int sx = e[2];
+	int sy = e[3];
+	int celw = e[4];
+	int celh = e[5];
+	
+	if (draw) draw->PaintMap(*draw->img_draw, celx, cely, sx, sy, celw, celh);
+}
+
+void Program::HiSayLine(HiEscape& e) {
+	TODO
+}
+
+void Program::HiCameraAt(HiEscape& e) {
+	TODO
+}
+
+void Program::HiCameraPanTo(HiEscape& e) {
+	TODO
+}
+
+void Program::HiWaitForCamera(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDrawRectFill(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDrawLine(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDrawCircleFill(HiEscape& e) {
+	TODO
+}
+
+void Program::HiComeOutDoor(HiEscape& e) {
+	TODO
+}
+
+void Program::HiStartScript(HiEscape& e) {
+	TODO
+}
+
+void Program::HiStopScript(HiEscape& e) {
+	TODO
+}
+
+void Program::HiSoundFx0(HiEscape& e) {
+	TODO
+}
+
+void Program::HiSoundFx1(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDoAnimation(HiEscape& e) {
+	TODO
+}
+
+void Program::HiShake(HiEscape& e) {
+	TODO
+}
+
+void Program::HiScriptRunning(HiEscape& e) {
+	TODO
+}
+
+void Program::HiWalkTo(HiEscape& e) {
+	TODO
+}
+
+void Program::HiOpenDoor(HiEscape& e) {
+	TODO
+}
+
+void Program::HiCloseDoor(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDialogSet(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDialogStart(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDialogHide(HiEscape& e) {
+	TODO
+}
+
+void Program::HiDialogClear(HiEscape& e) {
+	TODO
+}
+
+void Program::HiTodo(HiEscape& e) {
+	TODO
+}
 
 
 	
