@@ -37,6 +37,8 @@ public:
 	void RemoveStoppedGroup(int group);
 	void ProcessAndRemoveGroup(int group);
 	void KeepRunning(bool b=true) {keep_running = b;}
+	bool HasProgram(HiAnimProgram& p);
+	HiValue GetGlobal(String key);
 	
 	void HI_DrawText(HiEscape& e);
 	

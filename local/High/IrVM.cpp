@@ -632,6 +632,11 @@ void IrVM::FinishArgument() {
 	v = s->regs[0];
 }
 
+void IrVM::Yield() {
+	run_ins_again = true;
+	hi.SleepReleasing(1);
+}
+
 bool IrVM::Execute() {
 	#define VERBOSE_IRVM 0
 	
@@ -714,9 +719,14 @@ bool IrVM::Execute() {
 		if (is_calling)
 			return true;
 		
-		pc++;
-		if (pc >= max_pc)
-			SetNotRunning();
+		if (run_ins_again) {
+			run_ins_again = false;
+		}
+		else {
+			pc++;
+			if (pc >= max_pc)
+				SetNotRunning();
+		}
 	}
 	
 	if (is_subcall)

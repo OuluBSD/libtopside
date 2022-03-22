@@ -153,6 +153,7 @@ struct IrVM {
 	bool					is_calling = 0;
 	bool					is_subcall = 0;
 	bool					is_sleeping = 0;
+	bool					run_ins_again = 0;
 	Array<HiValue>			argvar;
 	String					return_argname;
 	
@@ -193,6 +194,7 @@ struct IrVM {
 	double	DoCompare(const HiValue& a, const HiValue& b, const char *op);
 	HiValue	MulArray(HiValue array, HiValue times);
 	void	BeginExecutingLambda(const String& id, HiValue& lambda, SRVal& self, Array<SRVal>& arg);
+	void	Yield();
 	
 	double	Number(const HiValue& a, const char *oper);
 	int64	Int(const HiValue& a, const char *oper);

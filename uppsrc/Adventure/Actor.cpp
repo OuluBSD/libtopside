@@ -22,7 +22,7 @@ void Program::UnsupportedAction(HiValue verb, SObj& obj1, SObj& obj2) {
 		SayLine(is_actor ? "i don't need them" : "i don't need that");
 
 	else if (verb == V_USE)
-		SayLine(is_actor ? obj1 : obj2,
+		SayLineActor(is_actor ? obj1 : obj2,
 			is_actor ? "i can't just *use* someone" :
 				(HasFlag(Classes(obj2), "class_actor") ?
 					"i can't use that on someone!" : "that doesn't work"));
@@ -61,31 +61,32 @@ void Program::PickupObj(SObj& obj, SObj& actor) {
 }
 
 // uses actor's position and color
-void Program::SayLine(SObj& actor, String msg, bool use_caps, float duration) {
-	TODO
-	/*
-	// check for (missing actor
-	if (type(actor) == "string") {
-		// assume actor ommitted and default to current
-		msg, actor = actor, selected_actor;
-	}
-
+void Program::SayLineActor(SObj& actor, String msg, bool use_caps, float duration) {
+	if (duration == 0)
+		duration = 1.0f;
+	
 	// trigger actor's talk anim
 	talking_actor = actor;
 	
 	// offset to display speech above actors (dist in px from their feet)
 	// call the base PrintLine to show actor line
-	PrintLine(msg, actor.x, actor.y - actor.h * 8 + 4, actor.col, 1, use_caps, duration);
-	*/
+	int x = actor("x",0);
+	int y = actor("y",0);
+	int w = actor("w",1);
+	int h = actor("h",1);
+	int col = actor("col",0);
+	PrintLine(msg, x, y - h * 8 + 4, col, 1, use_caps, duration, false);
 }
 
 void Program::SayLine(String msg) {
-	TODO
+	HiValue selected_actor = ctx.GetGlobal("selected_actor");
+	if (selected_actor)
+		SayLineActor(selected_actor, msg, false, 0);
 }
 
 // stop everyone talking & remove displayed text
 void Program::StopTalking() {
-	talking_curr.enabled = false;
+	talking_curr.Clear();
 	talking_actor = HiValue();
 }
 

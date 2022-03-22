@@ -232,24 +232,9 @@ HiAnimProgram& Program::StartScriptHi(HiValue* self, HiValue script_name, bool b
 
 bool Program::ScriptRunning(Script& func)  {
 	// loop through both sets of scripts...
-	TODO // ptr or content?
-	/*for (Script& s : local_scripts) {
-		
-	}
-	for (Script& s : global_scripts) {
-		
-	}
-	
-	for (s : all( { local_scripts, global_scripts } )) {
-		for (k,scr_obj in pairs(s)) {
-			if (scr_obj[1] == &func) {
-				return scr_obj;
-			}
-		}
-	}*/
-	
-	// must not be running
-	return false;
+	ASSERT(ctx.HasProgram(func));
+	bool b = func.IsRunning();
+	return b;
 }
 
 void Program::StopScript(Script& func) {
@@ -279,9 +264,11 @@ bool Program::AddHighFunctions() {
 	HighCall(global, "set_trans_col(clr, boolean)", THISBACK(HiSetTransparencyColor));
 	HighCall(global, "fades(a, b)", THISBACK(HiFades));
 	HighCall(global, "map(celx, cely, sx, sy, celw, celh)", THISBACK(HiMap));
-	HighCall(global, "say_line(a)", THISBACK(HiSayLine));
+	HighCall(global, "say_line(str)", THISBACK(HiSayLine));
+	HighCall(global, "say_line_actor(actor, str, caps, duration)", THISBACK(HiSayLineActor));
 	HighCall(global, "camera_at(a)", THISBACK(HiCameraAt));
 	HighCall(global, "camera_pan_to(a)", THISBACK(HiCameraPanTo));
+	HighCall(global, "camera_pan_to_coord(x,y)", THISBACK(HiCameraPanToCoord));
 	HighCall(global, "wait_for_camera()", THISBACK(HiWaitForCamera));
 	HighCall(global, "rectfill(a, b, c, d, e)", THISBACK(HiDrawRectFill));
 	HighCall(global, "line(a, b, c, d, e)", THISBACK(HiDrawLine));
@@ -341,18 +328,22 @@ void Program::HiPrintLine(HiEscape& e) {
 	int col = e[3].GetInt();
 	int align = e[4].GetInt();
 	bool use_caps = e[5].GetInt();
-	int duration = e[6].GetInt();
+	float duration = e[6].GetNumber();
 	bool big_font = e[7].GetInt();
 	
 	if (txt.GetCount() >= 2 && txt[0] == '"')
 		txt = txt.Mid(1, txt.GetCount()-2);
 	
+	AddTextObject(e, txt, x, y, col, align, use_caps, duration, big_font);
+}
+
+void Program::AddTextObject(HiEscape& e, String txt, int x, int y, int col, int align, bool use_caps, float duration, bool big_font) {
+	LOG("Program::AddTextObject: " << x << "," << y << ": " << txt);
+	
 	if (use_caps)
 		txt = ToUpper(txt);
 	
 	int fnt_h = big_font ? 16 : 8;
-	
-	LOG("Program::HiPrintLine: " << x << "," << y << ": " << txt);
 	
 	Animation& a = ctx.a;
 	AnimPlayer& p = ctx.p;
@@ -417,19 +408,43 @@ void Program::HiMap(HiEscape& e) {
 }
 
 void Program::HiSayLine(HiEscape& e) {
-	TODO
+	String str = e[0];
+	SayLine(str);
+}
+
+void Program::HiSayLineActor(HiEscape& e) {
+	HiValue actor = e[0];
+	String str = e[1];
+	int use_caps = e[2];
+	double duration = e[3];
+	SayLineActor(actor, str, use_caps, duration);
 }
 
 void Program::HiCameraAt(HiEscape& e) {
-	TODO
+	Point pt;
+	pt.x = e[0];
+	pt.y = 0;
+	CameraAt(pt);
 }
 
 void Program::HiCameraPanTo(HiEscape& e) {
-	TODO
+	HiValue o = e[0];
+	CameraPanTo(o);
+}
+
+void Program::HiCameraPanToCoord(HiEscape& e) {
+	int x = e[0];
+	int y = e[1];
+	HiValue o;
+	o.SetEmptyMap();
+	o.Set("x", x);
+	o.Set("y", y);
+	CameraPanTo(o);
 }
 
 void Program::HiWaitForCamera(HiEscape& e) {
-	TODO
+	if (cam_script && ScriptRunning(*cam_script))
+		e.esc.Yield();
 }
 
 void Program::HiDrawRectFill(HiEscape& e) {

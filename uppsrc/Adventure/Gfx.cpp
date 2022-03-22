@@ -119,36 +119,29 @@ void Program::PrintLine(String msg, int x, int y, int col, int align, bool use_c
 	int ypos = max(18, y); // left, top
 	xpos = min(xpos, 127 - (longest_line * 4) - 1); // right
 	
-	TODO
-	/*
-	talking_curr = {
-		msg_lines = lines,
-		x = xpos,
-		y = ypos,
-		col = col,
-		align = align,
-		time_left = duration || #msg * 8,
-		char_width = longest_line,
-		use_caps = use_caps,
-		big_font = big_font
-	};
+	TalkingState& t = talking_curr.Add();
+	Swap(t.msg_lines, lines);
+	t.x = xpos;
+	t.y = ypos;
+	t.col = col;
+	t.align = align;
+	t.time_left = duration || (msg.GetCount() * 0.25);
+	t.char_width = longest_line;
+	t.use_caps = use_caps;
+	t.big_font = big_font;
+	
+	
 	// ref point for (skip #####################??????
-	//talking_curr.time_orig=talking_curr.time_left
-
-
+	//t.time_orig=t.time_left
+	
+	
 	// if (message was split...
-	if (#msg_left > 0) {
-	  talking = talking_actor
-		WaitForMessage()
-		talking_actor = talking
-		PrintLine(msg_left, x, y, col, align, use_caps, NULL, big_font)
+	if (msg_left.GetCount() > 0 && msg_left.GetCount() < msg.GetCount()) {
+		PrintLine(msg_left, x, y, col, align, use_caps, 0, big_font);
 	}
-
+	
 	// and wait for (message?
-	//if (!dont_wait_msg) {
-		WaitForMessage();
-	//}
-	*/
+	
 }
 
 }

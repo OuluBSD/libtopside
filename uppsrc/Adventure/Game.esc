@@ -868,7 +868,7 @@ main() {
 							2,
 							@(me) {
 								stop_actor(:selected_actor);
-								say_line(:purp_tentacle, "stop!:come back here!", true);
+								say_line_actor(:purp_tentacle, "stop!:come back here!", true, 0);
 								walk_to(:selected_actor, :purp_tentacle.x-8, :purp_tentacle.y);
 								do_anim(:selected_actor, "face_towards", :purp_tentacle);
 								:purp_tentacle.alerting = false;
@@ -1181,11 +1181,11 @@ main() {
 			"give": @(me, noun2) {
 				if (noun2 == :purp_tentacle) {
 					say_line("do you like programming?");
-					say_line(:purp_tentacle, "yes, why?");
+					say_line_actor(:purp_tentacle, "yes, why?", 0,0);
 					say_line("give pico-8 a go,;see what you can make");
 					me.owner = :purp_tentacle;
-					say_line(:purp_tentacle, "this is perfect!", true);
-					say_line(:purp_tentacle, "thank you!:i shall start making a game right now...");
+					say_line_actor(:purp_tentacle, "this is perfect!", true, 0);
+					say_line_actor(:purp_tentacle, "thank you!:i shall start making a game right now...", 0,0);
 					stop_script(:rm_kitchen.scripts.tentacle_guard);
 					walk_to(:purp_tentacle, obj_kitchen_door_hall.x+4, obj_kitchen_door_hall.y+30);
 					put_at(:purp_tentacle, 0,0, :rm_void);
@@ -1359,7 +1359,7 @@ main() {
 			put_at(:selected_actor, 212, 60, :rm_mi_dock);
 			camera_at(0);
 			break_time(30);
-			camera_pan_to(212,60);
+			camera_pan_to_coord(212,60);
 			wait_for_camera();
 			camera_follow(:selected_actor);
 			say_line("this all seems very famililar...");
@@ -1445,7 +1445,7 @@ main() {
 					1, // no verbs
 					@(me) {
 						//do_anim(:purp_tentacle, face_towards, :selected_actor);
-						say_line(me,"what do you want?");
+						say_line_actor(me,"what do you want?",0,0);
 					},
 					void
 				);
@@ -1471,21 +1471,21 @@ main() {
 						@(me) {
 						say_line(selected_sentence.msg);
 						if (selected_sentence.num == 1) {
-							say_line(me, "i need your help:i'm bored with this spinning top...:if you can you find something i can play with, i'd appreciate it");
+							say_line_actor(me, "i need your help:i'm bored with this spinning top...:if you can you find something i can play with, i'd appreciate it",0,0);
 							me.asked_why_stop = true;
 						}
 						else if (selected_sentence.num == 2) {
-							say_line(me, "you are in paul's demo scumm-8 game, i think!");
+							say_line_actor(me, "you are in paul's demo scumm-8 game, i think!",0,0);
 							me.asked_where = true;
 						}
 						// elseif selected_sentence.num == 3 then
 						//	say_line(me, "it's complicated...");
 						else if (selected_sentence.num == 3) {
-							say_line(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!");
+							say_line_actor(me, "a wood-chuck would chuck no amount of wood, coz a wood-chuck can't chuck wood!",0,0);
 							me.asked_woodchuck = true;
 						}
 						else if (selected_sentence.num == 4) {
-							say_line(me, "ok bye!");
+							say_line_actor(me, "ok bye!",0,0);
 							dialog_end();
 							return;
 						}

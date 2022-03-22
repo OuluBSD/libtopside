@@ -194,12 +194,11 @@ void Program::BreakTime(int jiffies) {
 	}
 }
 
-void Program::WaitForMessage() {
-	TODO
-	/*while (talking_curr) {
+/*void Program::WaitForMessage() {
+	while (talking_curr) {
 		yield();
-	}*/
-}
+	}
+}*/
 
 
 #if 0

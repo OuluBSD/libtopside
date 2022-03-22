@@ -141,6 +141,17 @@ void HiAnimContext::StopProgram(HiAnimProgram& p) {
 	ASSERT_(0, "program was not found from context");
 }
 
+bool HiAnimContext::HasProgram(HiAnimProgram& p) {
+	for (HiAnimProgram& prog : progs)
+		if (&prog == &p)
+			return true;
+	return false;
+}
+
+HiValue HiAnimContext::GetGlobal(String key) {
+	return global.Get(key, HiValue());
+}
+
 void HiAnimContext::RemoveProgramGroup(int group) {
 	if (group < 0)
 		return;

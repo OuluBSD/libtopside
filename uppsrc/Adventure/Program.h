@@ -131,7 +131,7 @@ struct TalkingState {
 	int y = 0;
 	int col = 0;
 	int align = 0;
-	int time_left = 0;
+	double time_left = 0;
 	int char_width = 0;
 	bool use_caps = 0;
 	bool big_font = 0;
@@ -284,7 +284,7 @@ protected:
 	int cutscene_cooloff = 0;
 	Script* fade_script = 0;
 	
-	TalkingState talking_curr;
+	Array<TalkingState> talking_curr;
 	SObj talking_actor;
 	
 	HiValue ui_arrows;
@@ -362,8 +362,10 @@ public:
 	void HiFades(HiEscape& e);
 	void HiMap(HiEscape& e);
 	void HiSayLine(HiEscape& e);
+	void HiSayLineActor(HiEscape& e);
 	void HiCameraAt(HiEscape& e);
 	void HiCameraPanTo(HiEscape& e);
+	void HiCameraPanToCoord(HiEscape& e);
 	void HiWaitForCamera(HiEscape& e);
 	void HiDrawRectFill(HiEscape& e);
 	void HiDrawLine(HiEscape& e);
@@ -394,7 +396,6 @@ public:
 	bool VerbScript(HiValue vc2);
 	bool WalkScript();
 	void CameraPanTo(SObj& val);
-	void WaitForCamera();
 	bool ScriptRunning(Script& script);
 	void Cutscene(SceneType type, HiValue* self, HiValue func_cutscene, HiValue func_override);
 	void DialogAdd(const String& msg);
@@ -416,8 +417,8 @@ public:
 	void StopScript(Script& func);
 	void RemoveStoppedScripts();
 	void BreakTime(int jiffies=0);
-	void WaitForMessage();
-	void SayLine(SObj& actor, String msg, bool use_caps=false, float duration=1.0f);
+	//void WaitForMessage();
+	void SayLineActor(SObj& actor, String msg, bool use_caps=false, float duration=1.0f);
 	void SayLine(String msg);
 	void StopTalking();
 	void PrintLine(String msg, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
@@ -439,7 +440,7 @@ public:
 	void RecalcZPlane(SObj& obj);
 	bool InitGame();
 	bool IsTable(SObj& t);
-	Point CenterCamera(const Point& val);
+	Point CenterCamera(Point val);
 	Point CenterCamera(SObj& val);
 	Point GetCellPos(SObj& obj);
 	bool IsCellWalkable(int celx, int cely);
@@ -455,6 +456,7 @@ public:
 	String Autotype(const String& str_value);
 	void FindPath(Point start, Point goal, Vector<Point>& pt);
 	double GetHeuristic(Point chk, Point goal);
+	void AddTextObject(HiEscape& e, String txt, int x, int y, int col, int align, bool use_caps, float duration, bool big_font);
 	
 	bool Init();
 	
@@ -504,6 +506,7 @@ class ProgramDraw : public Ctrl {
 	Program* p = 0;
 	bool show_debuginfo = true;
 	
+	TimeStop frame_ts;
 	
 	
 	Color GetPaletteColor(int i) const {
@@ -535,7 +538,7 @@ public:
 	
 	
 	void PaintRoom(Draw& d);
-	void PaintTalking(Draw& d);
+	void PaintTalking(Draw& d, double dt);
 	void OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font);
 	void PaintObject(Draw& d, SObj obj);
 	void PaintActor(Draw& d, SObj actor);

@@ -64,22 +64,17 @@ void Program::CameraPanTo(SObj& val) {
 bool Program::CamScript1() {
 	
 	// update the camera pan until reaches dest
-	TODO
-	/*
-	while (cam_x ~= cam_pan_to) {
-		cam_x += sgn(cam_pan_to-cam_x)/2
-		// don't hog cpu
-		TODO // yield()
-	}*/
+	if (cam.x != cam_pan_to.x) {
+		int diff = cam_pan_to.x - cam.x;
+		if (abs(diff) >= 2)
+			diff /= 2;
+		cam.x += diff;
+		return true;
+	}
 	
 	// pan complete
-	cam_pan_to.Clear();
-}
-
-void Program::WaitForCamera() {
-	while (cam_script && ScriptRunning(*cam_script)) {
-		TODO // yield();
-	}
+	cam_pan_to = cam;
+	return false;
 }
 
 bool Program::Fades(int fade, int dir) {
@@ -102,8 +97,12 @@ bool Program::Fades(int fade, int dir) {
 	return false;
 }
 
-Point Program::CenterCamera(const Point& val) {
-	TODO
+Point Program::CenterCamera(Point val) {
+	int map_w = room_curr("map")(2);
+	
+	Point pt(0,0);
+	pt.x = Mid(0, val.x-64, (map_w*8) -128 );
+	return pt;
 }
 
 Point Program::CenterCamera(SObj& val) {
@@ -111,23 +110,19 @@ Point Program::CenterCamera(SObj& val) {
 	
 	// check params for (obj/actor
 	// keep camera within "room" bounds
-	int x = 0;
+	Point p(0,0);
 	
-	DUMP(val);
-	TODO;
+	//DUMP(val);
 	
 	if (val.IsMap())
-		x = val.MapGet("x").GetInt();
+		p.x = val.MapGet("x").GetInt();
 	
 	else if (val.IsInt())
-		x = val.GetInt();
+		p.x = val.GetInt();
 	
+	return CenterCamera(p);
 	//int map_w = room_curr.MapGet("map_w").GetInt();
-	int map_w = room_curr("map")(2);
-	
-	Point pt(0,0);
-	pt.x = Mid(0, x-64, (map_w*8) -128 );
-	return pt;
+	//return mid(0, (istable(val) and val.x or val)-64, (room_curr.map_w*8) -128 )
 }
 
 

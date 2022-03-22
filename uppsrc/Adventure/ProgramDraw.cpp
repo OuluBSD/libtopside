@@ -40,6 +40,9 @@ void ProgramDraw::Paint(Draw& w) {
 	int& cutscene_cooloff = p->cutscene_cooloff;
 	const auto& cutscene_curr = p->cutscene_curr;
 	
+	double dt = frame_ts.Seconds();
+	frame_ts.Reset();
+	
 	// clear screen every frame
 	d.DrawRect(sz, Black());
 	
@@ -84,7 +87,7 @@ void ProgramDraw::Paint(Draw& w) {
 	// }
 	
 	// draw active/speech text
-	PaintTalking(d);
+	PaintTalking(d, dt);
 	
 	// in dialog mode?
 	if (dialog_curr && dialog_curr.visible) {
@@ -273,37 +276,43 @@ void ProgramDraw::PaintRoom(Draw& d) {
 }
 
 
-void ProgramDraw::PaintTalking(Draw& d) {
+void ProgramDraw::PaintTalking(Draw& d, double dt) {
 	// alignment
 	//   0 = no align
 	//   1 = center
-	TalkingState& talking_curr = p->talking_curr;
-	
-	if (talking_curr) {
+	if (p->talking_curr.GetCount()) {
+		TalkingState& t = p->talking_curr[0];
+		
 		int line_offset_y = 0;
-		for (const String& l : talking_curr.msg_lines) {
+		for (const String& l : t.msg_lines) {
 			int line_offset_x = 0;
 			// center-align line
-			if (talking_curr.align == 1) {
+			if (t.align == 1) {
 				int len = l.GetCount();
-				line_offset_x = ((talking_curr.char_width * 4) - (len * 4)) / 2;
+				line_offset_x = ((t.char_width * 4) - (len * 4)) / 2;
 			}
 			OutlineText(
 				d,
 				l,
-				talking_curr.x + line_offset_x,
-				talking_curr.y + line_offset_y,
-				talking_curr.col,
+				t.x + line_offset_x,
+				t.y + line_offset_y,
+				t.col,
 				0,
-				talking_curr.use_caps,
-				talking_curr.big_font);
-			line_offset_y += talking_curr.big_font ? 12 : 6;
+				t.use_caps,
+				t.big_font);
+			line_offset_y += t.big_font ? 12 : 6;
 		}
+		
 		// update message lifespan
-		talking_curr.time_left -= 1;
+		t.time_left -= dt;
+		
 		// remove text & reset actor's talk anim
-		if (talking_curr.time_left <= 0)
-			p->StopTalking();
+		if (t.time_left <= 0) {
+			if (p->talking_curr.GetCount() > 1)
+				p->talking_curr.Remove(0);
+			else
+				p->StopTalking();
+		}
 	}
 }
 
@@ -638,15 +647,21 @@ void ProgramDraw::PaintObject(Draw& d, SObj o) {
 
 
 void ProgramDraw::Animate(SObj obj) {
-	TODO
-	
 	// animate the object
 	// (update frames, looping as req)
-	/*obj.tmr += 1;
-	if (obj.tmr > obj.frame_delay) {
-		obj.tmr = 1;
-		obj.anim_pos = obj.anim_pos % #obj.curr_anim + 1;
-	}*/
+	int tmr = obj("tmr");
+	int frame_delay = obj("frame_delay");
+	tmr += 1;
+	if (tmr > frame_delay) {
+		tmr = 1;
+		HiValue curr_anim = obj("curr_anim");
+		int anim_pos = obj("anim_pos").GetInt();
+		if (curr_anim.IsArray()) {
+			int anim_len = curr_anim.GetArray().GetCount();
+			obj.Set("anim_pos", anim_pos % anim_len + 1);
+		}
+	}
+	obj.Set("tmr", tmr);
 }
 
 void ProgramDraw::GetPaletteImage(const Vector<byte>& src, Size src_sz, Image& out) {
@@ -679,7 +694,7 @@ void ProgramDraw::PaintActor(Draw& d, SObj a) {
 	HiValue r = p->room_curr;
 	HiValue curr_anim = a["curr_anim"];
 	FaceDir dirnum = Program::GetFaceDir(a);
-	int sprnum;
+	int sprnum = 0;
 	int moving = a["moving"];
 	if (curr_anim.IsArray() && moving) {
 		// update animation state
@@ -687,7 +702,11 @@ void ProgramDraw::PaintActor(Draw& d, SObj a) {
 		
 		// choose walk anim frame
 		int i = a["anim_pos"];
-		sprnum = curr_anim[i];
+		const auto& curr_anim_arr = curr_anim.GetArray();
+		if (!curr_anim_arr.IsEmpty()) {
+			i = i % curr_anim_arr.GetCount();
+			sprnum = curr_anim[i];
+		}
 	}
 	else if (curr_anim) {
 		sprnum = curr_anim;
@@ -887,17 +906,16 @@ void ProgramDraw::ReplaceColors(SObj o) {
 }
 
 void ProgramDraw::OutlineText(Draw& d, String str, int x, int y, int c0, int c1, bool use_caps, bool big_font) {
-	TODO
-	/*
-	if (!use_caps) str = SmallCaps(str);
-	if (big_font) str = "\^w\^t"..str;
-	for (xx = -1, 1) {
-		for (yy = -1, 1, xx == 0 ? 2 : 1) {
-				print(str, x + xx, y + yy, c1);
-			}
+	if (use_caps)
+		str = ToUpper(str);
+	
+	Color clr = GetPaletteColor(c1);
+	for (int yy = -1; yy <= 1; yy++) {
+		for (int xx = -1; xx <= 1; xx += (yy == 0 ? 2 : 1)) {
+			d.DrawText(x + xx, y + yy, str, clr);
 		}
-	print(str, x, y, c0);
-	*/
+	}
+	d.DrawText(x, y, str, clr);
 }
 
 void ProgramDraw::FadePalette(float perc) {

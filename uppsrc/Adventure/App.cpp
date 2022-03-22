@@ -16,7 +16,7 @@ ProgramApp::ProgramApp() {
 	
 	Add(draw.SizePos());
 	
-	tc.Set(-10, THISBACK(ProcessScript));
+	tc.Set(-1, THISBACK(ProcessScript));
 	
 	draw.SetProgram(prog);
 }

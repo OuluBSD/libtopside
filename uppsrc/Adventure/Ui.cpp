@@ -51,9 +51,9 @@ void Program::UpdateMouseClickState() {
 void Program::PlayerControl() {
 	
 	// check for (skip/override's
-	if (talking_curr && !is_mouse_clicked && (IsPressed(BTN_O) || IsMouseLeftPressed())) {
+	if (talking_curr.GetCount() && !is_mouse_clicked && (IsPressed(BTN_O) || IsMouseLeftPressed())) {
 		// skip current talking message
-		talking_curr.time_left = 0;
+		talking_curr[0].time_left = 0;
 		is_mouse_clicked = true;
 		return;
 	}
@@ -225,46 +225,46 @@ HiValue Program::RunLambda1(HiValue* self, const HiValue& l, const HiValue& arg0
 	return HiValue();
 }
 
+void Upt(int max_length, WString& curword, WString& currline, Vector<String>& lines) {
+	if (curword.GetCount() + currline.GetCount() > max_length) {
+		lines.Add(currline.ToString());
+		currline.Clear();
+	}
+	currline += curword;
+	curword.Clear();
+}
+
 // auto-break message into lines
-void Program::CreateTextLines(String msg, int max_line_length, Vector<String>& lines) { //, comma_is_newline)
-	TODO
-	/*
+void Program::CreateTextLines(String msg_, int max_line_length, Vector<String>& lines) { //, comma_is_newline)
+	WString msg = msg_.ToWString();
+	
 	//  > ";" new line, shown immediately
-	local lines, currline, curword, curchar = {}, "", "", "";
+	lines.SetCount(0);
+	WString currline, curword, curchar;
+	
+	for(int i = 0; i < msg.GetCount(); i++) {
+		int curchar = msg[i];
+		curword.Cat(curchar);
 
-	local function upt(max_length) {
-		if (#curword + #currline > max_length) {
-			add(lines,currline);
-			currline="";
+		if (curchar == ' ' || curword.GetCount() > max_line_length-1) {
+			Upt(max_line_length, curword, currline, lines);
 		}
-		currline=currline..curword;
-		curword="";
-	}
-
-	for (i = 1, #msg) {
-		curchar=sub(msg,i,i);
-		curword=curword..curchar;
-
-		if (curchar == " " || #curword > max_line_length-1) {
-			upt(max_line_length);
+		else if (curword.GetCount() > max_line_length-1) {
+			curword.Cat('-');
+			Upt(max_line_length, curword, currline, lines);
 		}
-		else if (#curword>max_line_length-1) {
-			curword=curword.."-";
-			upt(max_line_length);
-		}
-		else if (curchar == ";") {
+		else if (curchar == ';') {
 			// line break
-			currline=currline..sub(curword,1,#curword-1);
-			curword="";
-			upt(0);
+			currline += curword.Mid(1, curword.GetCount()-1);
+			curword.Clear();
+			Upt(0, curword, currline, lines);
 		}
 	}
-
-	upt(max_line_length);
-	if (currline != "") add(lines,currline);
-
-	return lines
-	*/
+	
+	Upt(max_line_length, curword, currline, lines);
+	if (currline.GetCount())
+		lines.Add(currline.ToString());
+	
 }
 
 // find longest line
