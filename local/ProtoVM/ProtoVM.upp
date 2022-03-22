@@ -15,6 +15,7 @@ file
 	Mechanical.h,
 	Mechanical.cpp,
 	ICs.h,
+	ICs.cpp,
 	Chip.h,
 	Common.h,
 	Common.cpp,

@@ -89,7 +89,7 @@ class ElcCapacitor : public ElcBase {
 class FlipFlopJK : public ElcBase {
 	RTTI_DECL1(FlipFlopJK, ElcBase);
 	
-	
+public:
 	FlipFlopJK();
 	
 	
