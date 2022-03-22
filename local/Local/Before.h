@@ -38,7 +38,9 @@
 
 #ifdef UPP_VERSION
 	#define flagSTDRTTI
-	#define flagSTDEXC
+	#ifndef flagSTDEXC
+		#define flagSTDEXC
+	#endif
 	#include <algorithm>
 	#include <plugin/bz2/bz2.h>
 	#define IML_HEADER <Draw/iml_header.h>
