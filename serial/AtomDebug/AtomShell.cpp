@@ -76,7 +76,7 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 	//Serial::Factory::Dump();
 	
 	
-	if (1)
+	if (0)
 		verify = true;
 	
 	if (0)

@@ -29,7 +29,7 @@
 	void GuiMainFn_()
 #endif
 
-#define ECS_APP_MAIN			PARALLEL_APP_MAIN_(::TS::Parallel::MachineEcsInit)
+#define ECS_APP_MAIN			PARALLEL_APP_MAIN_(::TS::Serial::MachineEcsInit)
 #define RENDER_APP_MAIN			PARALLEL_APP_MAIN_(0)
 
 #define DEFAULT_ECS_APP_MAIN \

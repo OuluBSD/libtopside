@@ -12,10 +12,11 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	LoopStoreRef loops = mach.Add<LoopStore>();
-    mach.Add<AtomStore>();
+	mach.Add<AtomStore>();
     mach.Add<AtomSystem>();
+    mach.Add<ScriptLoader>();
     
-    reg->SetAppName("SDL2 ECS machine");
+    reg->SetAppName("Non-screen machine");
     
     if (!mach.Start())
 		return false;

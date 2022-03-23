@@ -34,7 +34,7 @@ NAMESPACE_TOPSIDE_END
 
 #define DEFAULT_ATOMSHELL_(title_str) \
 	APP_INITIALIZE_DEFAULT \
-	CONSOLE_APP_MAIN {TS::DefaultRunner(title_str);}
+	RENDER_APP_MAIN {TS::DefaultRunner(title_str);}
 
 #endif
 

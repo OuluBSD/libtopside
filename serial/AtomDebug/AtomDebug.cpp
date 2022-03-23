@@ -34,7 +34,7 @@ void DebugMain(String script_content, String script_file, VectorMap<String,Objec
 	    #endif
 			bool fail = false;
 			{
-				if (mach.IsStarted()) {
+				if (!mach.IsStarted()) {
 					RegistrySystemRef reg	= mach.FindAdd<RegistrySystem>();
 					LoopStoreRef ls			= mach.FindAdd<LoopStore>();
 					AtomStoreRef as			= mach.FindAdd<AtomStore>();
