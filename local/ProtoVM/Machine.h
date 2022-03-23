@@ -115,7 +115,7 @@ struct Machine {
 	Array<Pcb> pcbs;
 	Port power;
 	
-	void Init();
+	bool Init();
 	void Tick();
 	
 	Pcb& AddPcb();

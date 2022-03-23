@@ -7,7 +7,6 @@ IC6502::IC6502() {
 	AddSource("~IRQ");
 	AddSource("Rdy");
 	AddBidirectional("D0");
-	AddBidirectional("D0");
 	AddBidirectional("D1");
 	AddBidirectional("D2");
 	AddBidirectional("D3");
@@ -15,8 +14,8 @@ IC6502::IC6502() {
 	AddBidirectional("D5");
 	AddBidirectional("D6");
 	AddBidirectional("D7");
-	AddSink("~R/W");
-	AddSink("Phi2 out");
+	AddSource("~RW");
+	AddSource("Phi2 out");
 	AddSource("A0");
 	AddSource("A1");
 	AddSource("A2");
@@ -45,7 +44,7 @@ IC6850::IC6850() {
 	AddSink("CS0");
 	AddSink("~CS2");
 	AddSink("RS");
-	AddSink("~R/W");
+	AddSink("~RW");
 	AddSink("E");
 	AddSink("~CTS");
 	AddSink("~DCD");
@@ -137,7 +136,7 @@ IC74LS138::IC74LS138() {
 	AddSink("~G2a");
 	AddSource("~0");
 	AddSource("~1");
-	AddSource("~3");
+	AddSource("~2");
 	AddSource("~3");
 	AddSource("~4");
 	AddSource("~5");
@@ -158,18 +157,19 @@ IC74LS163::IC74LS163() {
 	AddSource("~Ld");
 	AddSource("Qd");
 	AddSource("Qc");
-	AddSource("~Clr");
+	AddSink("~Clr");
 	
 }
 
 
 ICMAX232::ICMAX232() {
 	AddSink("-V");
-	AddSink("Vcc");
+	AddSource("+V");
 	AddSink("+C1");
 	AddSink("+C2");
 	AddSink("T2I");
 	AddSink("T2O");
+	AddSink("Vcc");
 	AddSource("Gnd");
 	AddSource("-C1");
 	AddSource("-C2");

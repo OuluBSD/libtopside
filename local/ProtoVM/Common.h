@@ -9,11 +9,12 @@ class Pcb;
 class ElectricNodeBase : RTTIBase {
 	
 protected:
+	friend class Pcb;
 	
 	typedef enum {
-		V_VOID,
 		V_WHOLE,
 		V_PARTIAL,
+		V_PARTIAL_RANGE,
 	} Type;
 	
 	struct Connector : Moveable<Connector> {
@@ -21,18 +22,26 @@ protected:
 		bool is_sink = false;
 		bool is_src = false;
 		bool accept_multiconn = false;
-		
+		bool required = true;
+		 
 		Vector<Connector*> links;
 		
+		bool IsConnected() const {return !links.IsEmpty();}
+		bool IsRequired() const {return required;}
 		bool IsConnectable() const {return links.IsEmpty() || accept_multiconn;}
 		void SetMultiConn() {accept_multiconn = true;}
+		void SetRequired(bool b=true) {required = b;}
 	};
 	
 	friend class Pcb;
 	Pcb* pcb = 0;
+	ElectricNodeBase* ptr = 0;
+	int ptr_i = -1;
+	int ptr_n = 0;
+	Connector* ptr_conn = 0;
 	String name;
 	Array<Connector> conns;
-	Type type = V_VOID;
+	Type type = V_WHOLE;
 	int sink_count = 0;
 	int src_count = 0;
 	int bi_count = 0;
@@ -50,12 +59,20 @@ public:
 	
 	RTTI_DECL0(ElectricNodeBase);
 	
-	bool IsEmpty() const {return conns.IsEmpty();}
-	bool IsTrivialSourceDefault() const;
-	bool IsTrivialSinkDefault() const;
+	void Clear();
+	ElectricNodeBase& SetName(String s);
+	ElectricNodeBase& NotRequired(String s);
 	
+	bool IsEmpty() const;
+	bool IsTrivialSourceDefault() const;
+	bool IsTrivialSourceDefaultRange() const;
+	bool IsTrivialSinkDefault() const;
+	bool IsTrivialSinkDefaultRange() const;
+	int GetPinWidth() const;
+	Connector& Get(int i);
 	Connector& GetTrivialSource();
 	Connector& GetTrivialSink();
+	String GetName() const {return name;}
 	
 	ElectricNodeBase& operator>>(ElectricNodeBase& b);
 	ElectricNodeBase& operator[](String code);

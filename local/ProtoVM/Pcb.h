@@ -11,7 +11,8 @@ protected:
 	friend class Machine;
 	Machine* mach = 0;
 	Array<ElectricNodeBase> nodes;
-	
+	Array<ElectricNodeBase> refs;
+	String name;
 	
 public:
 	
@@ -27,6 +28,10 @@ public:
 	
 	ENode& AddNode(String name);
 	ElcBase& AddReferenceSingle(ElcBase& n, int pin_i);
+	ElcBase& AddReferenceRange(ElcBase& n, int pin_i, int pin_count);
+	
+	bool IsAllConnected() const;
+	String GetName() const {return name;}
 	
 	void Attach(ElectricNodeBase& from, ElectricNodeBase& to);
 	
@@ -38,6 +43,11 @@ class Bus : public ElcBase {
 	RTTI_DECL1(Bus, ElcBase);
 	
 	
+public:
+	Bus() {
+		for(int i = 0; i < Width; i++)
+			AddBidirectional(IntStr(i)).SetMultiConn();
+	}
 	
 };
 

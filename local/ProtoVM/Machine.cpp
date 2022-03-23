@@ -41,8 +41,19 @@ void Machine::Tick() {
 */
 
 
-void Machine::Init() {
+bool Machine::Init() {
+	
+	// Check that all pins are connected
+	for (Pcb& pcb : pcbs) {
+		if (!pcb.IsAllConnected()) {
+			LOG("Pcb \"" + pcb.GetName() + "\" not fully connected");
+			return false;
+		}
+	}
+	LOG("Machine::Init: all pcbs fully connected!");
+	
 	TODO
+	return true;
 }
 
 void Machine::Tick() {

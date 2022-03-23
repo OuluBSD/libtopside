@@ -8,6 +8,7 @@ CONSOLE_APP_MAIN {
 	
 	// http://searle.x10host.com/uk101/uk101.html
 	// Next: http://searle.x10host.com/zx80/zx80.html
+	// Then: https://hackaday.io/project/168194-interak-z80-computer-documentation
 	
 	Pcb& b = mach.AddPcb();
 	
@@ -15,6 +16,8 @@ CONSOLE_APP_MAIN {
 	power.SetCount(2);
 	Pin& ground = power.GetPin(0).SetReference(0);
 	Pin& vcc = power.GetPin(1).SetReference(1);
+	ground.SetName("ground");
+	vcc.SetName("vcc");
 	PushButtonComp& reset = b.Add<PushButtonComp>();
 	Resistor4k7& r4k7 = b.Add<Resistor4k7>();
 	Resistor& crystal_r0 = b.Add<Resistor>();
@@ -63,7 +66,7 @@ CONSOLE_APP_MAIN {
 	IC74LS138& demux = b.Add<IC74LS138>();
 	IC74LS163& count4bit = b.Add<IC74LS163>();
 	ICMAX232& serial = b.Add<ICMAX232>();
-	Crystal4& crystal = b.Add<Crystal4>();
+	Crystal& crystal = b.Add<Crystal>();
 	
 	try {
 		ground >> reset >> reset_ground;
@@ -81,15 +84,16 @@ CONSOLE_APP_MAIN {
 		comm["D0,8"] >> data_bus;
 		
 		cpu["A0,16"] >> addr_bus;
-		ram32k["A0,16"] >> addr_bus;
-		eprom32k["A0,16"] >> addr_bus;
+		addr_bus >> ram32k["A0,16"];
+		addr_bus >> eprom32k["A0,16"];
 		
 		cpu["~RW"] >> cpu_rw >> comm["~RW"];
 		cpu_rw >> ram_write_not >> ram_write_nand[0];
 		cpu_rw >> ram_read_nand[0];
+		ram_write_nand[2] >> ram32k["~WR"];
 		
 		ram_read_nand[2] >> ram_read;
-		ram_read >> ram32k["~WR"];
+		ram_read >> ram32k["~OE"];
 		ram_read >> eprom32k["~OE"];
 		
 		phi_in >> cpu["Phi in"];
@@ -108,11 +112,11 @@ CONSOLE_APP_MAIN {
 		ground >> demux["~G2a"];
 		
 		// SPARE DECODER O/P
-		//demux["~0"] >>
-		//demux["~1"] >>
-		//demux["~4"] >>
-		//demux["~5"] >>
-		//demux["~6"] >>
+		demux.NotRequired("~0");
+		demux.NotRequired("~1");
+		demux.NotRequired("~4");
+		demux.NotRequired("~5");
+		demux.NotRequired("~6");
 		
 		// Address 0000-7FFF (RAM)
 		ram_cs >> ram32k["~CS"];
@@ -145,11 +149,12 @@ CONSOLE_APP_MAIN {
 		ground >> serial_gnd_cap >> serial["-V"];
 		serial["+V"] >> serial_vcc_cap >> vcc;
 		serial["R20"] >> comm["Rx"];
-		comm["Tx"] >> serial["T21"];
+		comm["Tx"] >> serial["T2I"];
 		serial["-C1"] >> serial_cap1 >> serial["+C1"];
 		serial["-C2"] >> serial_cap2 >> serial["+C2"];
-		serial["Gnd"] >> serial_cap2 >> serial["Vcc"]; // from internal charger
-		
+		serial["Gnd"] >> serial_cap3 >> serial["Vcc"]; // from internal charger
+		serial.NotRequired("T2O");
+		serial.NotRequired("R1I");
 		
 		// 4-bit counter
 		ground >> count4bit["Da"];
@@ -162,8 +167,8 @@ CONSOLE_APP_MAIN {
 		count4bit["Qd"] >> counter_qd >> counter_nand[0];
 		count4bit["Qc"] >> counter_nand[1];
 		counter_nand >> count4bit["~Clr"];
-		counter_qd >> serial["Rx clk"];
-		counter_qd >> serial["Tx clk"];
+		counter_qd >> comm["Rx clk"];
+		counter_qd >> comm["Tx clk"];
 		master_clk >> count4bit["Clk"];
 		
 		
@@ -188,7 +193,7 @@ CONSOLE_APP_MAIN {
 		crystal_c >> crystal_not1 >> crystal_d;
 		crystal_c >> crystal_r1 >> crystal_d;
 		crystal_d >> crystal_not2 >> master_clk;
-		
+		crystal_d >> crystal;
 		
 	}
 	catch (Exc e) {
@@ -197,11 +202,13 @@ CONSOLE_APP_MAIN {
 	}
 	
 	
-	mach.Init();
-	
-	for(int i = 0; i < max_ticks; i++) {
+	if (mach.Init()) {
 		
-		mach.Tick();
+		for(int i = 0; i < max_ticks; i++) {
+			
+			mach.Tick();
+			
+		}
 		
 	}
 }
