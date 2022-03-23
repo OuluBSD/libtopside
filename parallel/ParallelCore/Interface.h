@@ -1,7 +1,7 @@
 #ifndef _SerialCore_Interface_h_
 #define _SerialCore_Interface_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class T>
@@ -240,6 +240,6 @@ using DefaultInterfaceSourceRef			= Ref<DefaultInterfaceSource,		AtomParent>;
 using DefaultInterfaceSinkRef			= Ref<DefaultInterfaceSink,			AtomParent>;
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

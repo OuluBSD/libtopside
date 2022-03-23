@@ -79,7 +79,7 @@ PKG(Graphics, Gfx, G) {
 		NATIVE_CLASS(VertexBuffer)
 		NATIVE_CLASS(ElementBuffr)
 		NATIVE_CLASS(Program)
-		NATIVE_CLASS(pipeline)
+		NATIVE_CLASS(Pipeline)
 		UTIL_CLASS(SystemFramebuffer)
 		UTIL_CLASS(ValFormat)
 		

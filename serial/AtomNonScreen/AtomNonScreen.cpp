@@ -4,7 +4,7 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-bool SingleMachine::Open(bool gui) {
+bool SingleMachine::Open(void(*arg_fn)()) {
 	using namespace Serial;
 	
 	const AppFlags& flags = GetAppFlags();

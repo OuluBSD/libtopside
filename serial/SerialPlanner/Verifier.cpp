@@ -1,4 +1,4 @@
-#include "AtomDebug.h"
+#include "SerialPlanner.h"
 
 
 #if 0
@@ -93,7 +93,7 @@ void MachineVerifier::SetDefaultExpected() {
 	scope.AddEnter(UPDATE);
 }
 
-VerifierSystem& MachineVerifier::AddSystem(TypeCls t, SerialTypeCls et) {
+VerifierSystem& MachineVerifier::AddSystem(TypeCls t, ParallelTypeCls et) {
 	VerifierSystem& sys = this->sys.Add();
 	sys.type = t;
 	sys.ecs_type = et;
@@ -643,7 +643,7 @@ void VerifierAtom::LinkTo(VerifierAtom& comp) {
 
 
 
-VerifierAtom& VerifierEntity::AddAtomWith(SerialTypeCls t) {
+VerifierAtom& VerifierEntity::AddAtomWith(ParallelTypeCls t) {
 	VerifierAtom& e = ext.Add();
 	e.type = t;
 	return e;

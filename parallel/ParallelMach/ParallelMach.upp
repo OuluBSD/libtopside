@@ -5,6 +5,8 @@ uses
 
 file
 	ParallelMach.h,
+	Generated.h,
+	Fwd.h,
 	Types.h,
 	Types.cpp,
 	Util.h,

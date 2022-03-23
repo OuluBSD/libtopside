@@ -1,4 +1,4 @@
-description "\377B226,212,0";
+description "\377B226,212,0";;
 
 uses
 	Local,
@@ -8,10 +8,9 @@ file
 	IAudio.h,
 	Enums.h,
 	Vendors.h,
-	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 
 mainconfig
-	"" = "";
+	"" = ""
 

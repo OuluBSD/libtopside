@@ -8,6 +8,7 @@
 #include "Parser.h"
 #include "Planner.h"
 #include "Script.h"
+#include "Verifier.h"
 #include "ToyLoader.h"
 
 

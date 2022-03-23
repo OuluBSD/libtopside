@@ -28,7 +28,7 @@ void SDL2GUI3DSystem::Uninitialize() {
 
 
 #if 0
-bool SingleMachine::Open(bool gui) {
+bool SingleMachine::Open(void(*arg_fn)()) {
 	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
@@ -43,8 +43,8 @@ bool SingleMachine::Open(bool gui) {
     mach.Add<DeviceSystem>();
     mach.Add<FusionSystem>();
     
-    if (gui)
-		mach.Add<WindowSystem>();
+    //if (gui)
+	//	mach.Add<WindowSystem>();
 	
     mach.Add<HolographicScene>();
     mach.Add<EasingSystem>();

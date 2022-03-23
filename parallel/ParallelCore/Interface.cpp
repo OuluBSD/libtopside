@@ -1,7 +1,7 @@
 #include "Internal.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 bool DefaultExchangePoint::IsPacketStuck() {
@@ -142,4 +142,4 @@ bool DefaultInterfaceSource::Initialize() {
 
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

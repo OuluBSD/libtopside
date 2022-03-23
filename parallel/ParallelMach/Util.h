@@ -39,7 +39,6 @@ MACHVER_FWDFN_LIST
 #define MACHVER_LEAVE(fn)		{static byte __; Parallel::MachineVerifier_OnLeave##fn((size_t)&__);}
 #define MACHVER_STATUS(fn, ptr)	{static byte __; Parallel::MachineVerifier_On##fn(ptr);}
 
-class ScriptLoopLoader;
 
 void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll);
 void MachineVerifier_OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll);

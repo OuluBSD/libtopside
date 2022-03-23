@@ -245,9 +245,10 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_" + pkgname + "_h_\n";
-		fout << "#define _" + pkgname + "_" + pkgname + "_h\n\n";
+		fout << "#define _" + pkgname + "_" + pkgname + "_h_\n\n";
 
 		for (String dep : deps)
 			fout << "#include <" << dep << "/" << dep << ".h>\n";
@@ -266,9 +267,10 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_BaseClasses_h_\n";
-		fout << "#define _" + pkgname + "_BaseClasses_h\n\n";
+		fout << "#define _" + pkgname + "_BaseClasses_h_\n\n";
 		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
@@ -297,9 +299,10 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_TmplClasses_h_\n";
-		fout << "#define _" + pkgname + "_TmplClasses_h\n\n";
+		fout << "#define _" + pkgname + "_TmplClasses_h_\n\n";
 		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
@@ -326,7 +329,8 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		
 		for (Function& f : iface.funcs.GetValues()) {
 			fout << f.GetDeclarationString() << "\n";
@@ -339,9 +343,10 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_Vendors_h_\n";
-		fout << "#define _" + pkgname + "_Vendors_h\n\n";
+		fout << "#define _" + pkgname + "_Vendors_h_\n\n";
 		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
 		
 		fout << "#define " << abbrup << "_CLS_LIST(x) \\\n";
@@ -399,9 +404,10 @@ bool Package::Export() {
 		FileOut fout(path);
 		
 		fout << "// This file have been generated automatically.\n";
-		fout << "// DO NOT MODIFY THIS FILE!\n\n";
+		fout << "// DO NOT MODIFY THIS FILE!\n";
+		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_Enums_h_\n";
-		fout << "#define _" + pkgname + "_Enums_h\n\n";
+		fout << "#define _" + pkgname + "_Enums_h_\n\n";
 		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
 		
 		

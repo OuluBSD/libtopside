@@ -1,6 +1,6 @@
 #include "Internal.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 int AtomBase::GetSinkPacketCount() {
@@ -484,4 +484,4 @@ int AtomBase::FindSourceWithValDev(ValDevCls vd) {
 	return -1;
 }
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

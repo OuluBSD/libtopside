@@ -171,7 +171,8 @@ bool AssemblyExporter::ExportHeader(Package& pkg, PackageFile& file, String path
 	fout << "#ifndef _" << pkg.name << "_" << file.name << "_h_\n";
 	fout << "#define _" << pkg.name << "_" << file.name << "_h_\n\n";
 	
-	fout << "// This file is generated. Do not modify this file.\n\n";
+	fout << "// This file is generated. Do not modify this file.\n";
+	fout << "// Last modified: " << GetSysTime().ToString() << "\n\n";
 	
 	String path_name = GetFileTitle(path);
 	if (pkg.name == file.name) {

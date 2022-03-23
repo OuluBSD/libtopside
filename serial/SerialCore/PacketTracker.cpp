@@ -45,8 +45,17 @@ void PacketTracker::StopTracking0(TrackerInfo info, PacketValue& p) {
 	p.SetTrackingId(0);
 }
 
+#endif
 
 
+NAMESPACE_SERIAL_END
+
+
+NAMESPACE_PARALLEL_BEGIN
+
+
+
+#if HAVE_PACKETTRACKER
 void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p) {
 	PacketTracker::Track(TrackerInfo(fn, file, line), p);
 }
@@ -63,6 +72,7 @@ void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue
 void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p) {}
 void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p) {}
 #endif
+
 
 
 void PacketValue::CheckTracking(TrackerInfo info) {
@@ -117,4 +127,5 @@ bool PacketValue::PaintOpenGLTexture(int texture) {
 #endif
 
 
-NAMESPACE_SERIAL_END
+
+NAMESPACE_PARALLEL_END

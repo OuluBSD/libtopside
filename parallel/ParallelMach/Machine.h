@@ -2,9 +2,8 @@
 #define _ParallelMach_Machine_h_
 
 NAMESPACE_PARALLEL_BEGIN
+using namespace Serial;
 
-
-class MachineVerifier;
 
 
 class SystemBase : public MetaSystemBase {
@@ -166,7 +165,7 @@ private:
     
     
 protected:
-	friend class MachineVerifier;
+	friend class Serial::MachineVerifier;
 	
     MachineVerifier* mver = 0;
     

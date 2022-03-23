@@ -22,6 +22,8 @@ file
 	State.cpp,
 	System.cpp,
 	TopChain.cpp,
+	Verifier.h,
+	Verifier.cpp,
 	ToyLoader.h,
 	ToyLoader.cpp,
 	_ readonly separator;

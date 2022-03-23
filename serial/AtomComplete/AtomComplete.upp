@@ -13,7 +13,5 @@ uses(GUI) AtomCtrl;
 file
 	AtomComplete.h,
 	Prefabs.h,
-	Prefabs.cpp,
-	AtomShell.h,
-	AtomShell.cpp;
+	Prefabs.cpp;
 

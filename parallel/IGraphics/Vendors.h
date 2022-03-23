@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
+// Last export: 23.3.23 18:44:22
 
 #ifndef _IGraphics_Vendors_h_
-#define _IGraphics_Vendors_h
+#define _IGraphics_Vendors_h_
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -48,7 +49,7 @@ struct GfxCpu {
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffr = uint32;
 	using NativeProgram = uint32;
-	using Nativepipeline = uint32;
+	using NativePipeline = uint32;
 	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
@@ -70,7 +71,7 @@ struct GfxOgl {
 	using NativeVertexBuffer = uint32;
 	using NativeElementBuffr = uint32;
 	using NativeProgram = uint32;
-	using Nativepipeline = uint32;
+	using NativePipeline = uint32;
 	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {

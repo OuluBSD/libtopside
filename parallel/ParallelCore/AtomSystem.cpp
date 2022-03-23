@@ -1,7 +1,7 @@
 #include "Internal.h"
 
   
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 SYS_DEF_VISIT_I(AtomSystem, vis && customers)
@@ -198,4 +198,4 @@ void AtomSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

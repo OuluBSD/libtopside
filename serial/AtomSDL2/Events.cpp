@@ -24,6 +24,7 @@ bool SDL2EventsBase::IsReady(PacketIO& io) {
 	if (b) {
 		if (seq == 0) {
 			ev.type = EVENT_WINDOW_RESIZE;
+			#ifdef flagSCREEN
 			OOSDL2::OglScreen* screen = obj->GetContext()->FindContextConnector<OOSDL2::OglScreen>();
 			if (screen) {
 				ev.sz = screen->GetSize();
@@ -34,6 +35,7 @@ bool SDL2EventsBase::IsReady(PacketIO& io) {
 				seq++;
 				b = false;
 			}
+			#endif
 		}
 		else if (obj->Poll(ev)) {
 			ev_sendable = true;

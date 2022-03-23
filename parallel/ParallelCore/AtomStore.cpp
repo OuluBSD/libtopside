@@ -1,6 +1,6 @@
 #include "Internal.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #if 0
 void AtomStore::Clone(Main& dst, const Main& src) {
@@ -52,4 +52,4 @@ AtomBase* AtomStore::CreateAtomTypeCls(AtomTypeCls cls) {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

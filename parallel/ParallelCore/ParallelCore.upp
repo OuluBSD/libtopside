@@ -4,5 +4,17 @@ uses
 	ParallelMach;
 
 file
-	ParallelCore.h;
+	ParallelCore.h,
+	Internal.h,
+	Types.h,
+	Types.cpp,
+	Interface.h,
+	Interface.cpp,
+	Atom.h,
+	Atom.cpp,
+	AtomSystem.h,
+	AtomSystem.cpp,
+	AtomForward.cpp,
+	AtomStore.h,
+	AtomStore.cpp;
 

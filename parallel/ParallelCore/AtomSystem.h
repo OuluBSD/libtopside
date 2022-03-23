@@ -1,7 +1,7 @@
 #ifndef _SerialCore_AtomSystem_h_
 #define _SerialCore_AtomSystem_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class AtomSystem :
@@ -33,7 +33,7 @@ public:
 	
 	
 	static inline Callback& WhenUninit() {static Callback cb; return cb;}
-	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ATOM_SYSTEM;}
+	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::ATOM_SYSTEM;}
 	
 protected:
 	
@@ -62,6 +62,6 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

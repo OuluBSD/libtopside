@@ -6,8 +6,6 @@ uses
 
 file
 	SerialMach.h,
-	Generated.h,
-	Generated.cpp,
 	Types.h,
 	Types.cpp;
 

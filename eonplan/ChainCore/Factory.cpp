@@ -124,7 +124,7 @@ void Factory::OnError(String msg) {
 void InitPre(Namespace& ns_serial, String pre, Vector<MExpr*>& deflists, Vector<MExpr*>& clslists) {
 	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_TYPE_LIST");
 	MExpr& ms_deflist_expr = ms_deflist;
-	ms_deflist.Hint(HINT_PKG, "SerialMach");
+	ms_deflist.Hint(HINT_PKG, "ParallelMach");
 	ms_deflist.Hint(HINT_FILE, "Generated");
 	ms_deflist.HideStatement();
 	ms_deflist_expr.SetDefine(pre + "ATOM_TYPE_LIST");
@@ -132,7 +132,7 @@ void InitPre(Namespace& ns_serial, String pre, Vector<MExpr*>& deflists, Vector<
 	
 	MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_CLASS_LIST");
 	MExpr& ms_clslist_expr = ms_clslist;
-	ms_clslist.Hint(HINT_PKG, "SerialMach");
+	ms_clslist.Hint(HINT_PKG, "ParallelMach");
 	ms_clslist.Hint(HINT_FILE, "Generated");
 	ms_clslist.HideStatement();
 	ms_clslist_expr.SetDefine(pre + "ATOM_CLASS_LIST");
@@ -153,6 +153,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	ClassDecl& fcls_rtvis = ns_serial.GetAddClassDecl("RuntimeVisitor");
 	ClassDecl& fcls_packet = ns_serial.GetAddClassDecl("Packet");
 	ClassDecl& fcls_fwdscope = ns_serial.GetAddClassDecl("FwdScope");
+	
 	
 	TypeExpr te_atomtype;
 	te_atomtype.SetMove(fcls_atomtype);
@@ -433,9 +434,9 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		String sample_name = "SoundSample";
 		
 		Class& sample_type = ns_serial.GetAddClass(sample_name);
-		sample_type.Hint(HINT_PKG, "SerialMach");
+		sample_type.Hint(HINT_PKG, "ParallelMach");
 		sample_type.Hint(HINT_FILE, "GenSamples");
-		sample_type.Hint(HINT_FWD_DECL_PKG, "SerialMach");
+		sample_type.Hint(HINT_FWD_DECL_PKG, "ParallelMach");
 		sample_type.Hint(HINT_FWD_DECL_FILE, "GenDefs");
 		sample_type.Inherit(cls_binary_sample);
 		
@@ -445,7 +446,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	
 	{
 		Class& cls_format = ns_serial.GetAddClass("Format");
-		cls_format.Hint(HINT_PKG, "SerialMach");
+		cls_format.Hint(HINT_PKG, "ParallelMach");
 		cls_format.Hint(HINT_FILE, "GenFormats");
 		
 		

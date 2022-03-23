@@ -1,14 +1,22 @@
 #ifndef _SerialCore_Atom_h_
 #define _SerialCore_Atom_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_TOPSIDE_BEGIN
+namespace Serial {
 
-
-class AtomBase;
 namespace Script {
 class WorldState;
 class Plan;
 }
+
+}
+NAMESPACE_TOPSIDE_END
+
+
+NAMESPACE_PARALLEL_BEGIN
+using namespace Serial;
+
+class AtomBase;
 
 template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
 template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
@@ -30,8 +38,8 @@ public:
 	#endif
 	
 protected:
-	friend class ScriptLoopLoader;
-	friend class Loop;
+	friend class Serial::ScriptLoopLoader;
+	friend class Serial::Loop;
 	
 	int						id = -1;
 	
@@ -151,7 +159,7 @@ public:
 	
 	
 	LoopRef		GetLoop();
-	Loop&		GetParent() {return *((SP*)this)->GetParent().AsStatic<Loop>();}
+	Loop&		GetParent();
 	int			GetId() const {return id;}
 	
 	template <class T> RefT_Loop<T> As() {return AtomBase_Static_As<T>(this);}
@@ -249,7 +257,7 @@ public:
 	void ClearSource() override {TODO}
 	
 	
-	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::CUSTOM_ATOM;}
+	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::CUSTOM_ATOM;}
 	
 	
 };
@@ -276,7 +284,7 @@ public:
 	RefT_Loop<AtomT> Get() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator it = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
+		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
 		ASSERT(!IS_EMPTY_SHAREDPTR(it));
 		if (it.IsEmpty())
 			THROW(Exc("Could not find atom " + AsTypeString<AtomT>()));
@@ -288,7 +296,7 @@ public:
 	RefT_Loop<AtomT> Find() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator it = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
+		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
 		if (IS_EMPTY_SHAREDPTR(it))
 			return Null;
 		else
@@ -308,7 +316,7 @@ public:
 	void Remove(AtomStoreRef s) {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
-		AtomMapBase::Iterator iter = AtomMapBase::Find(AsSerialTypeCls<AtomT>());
+		AtomMapBase::Iterator iter = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
 		iter.value().Uninitialize();
@@ -329,6 +337,6 @@ public:
 	
 };
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

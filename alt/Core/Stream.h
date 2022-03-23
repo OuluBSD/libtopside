@@ -36,6 +36,7 @@ public:
 	virtual int64 GetSize() const {return 0;}
 	virtual int Peek() {if (IsEof()) return 0; byte b; Get(&b, 1); SeekCur(-1); return b;}
 	
+	virtual void SetSize(int64 len);
 	void SetError(bool b=true) {err = b;}
 	bool IsError() const {return err;}
 	

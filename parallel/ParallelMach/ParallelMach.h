@@ -10,6 +10,8 @@
 
 
 
+#include "Fwd.h"
+#include "Generated.h"
 #include "Types.h"
 #include "Util.h"
 #include "SampleBase.h"

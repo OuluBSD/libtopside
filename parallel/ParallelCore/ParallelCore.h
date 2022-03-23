@@ -4,4 +4,11 @@
 #include <ParallelMach/ParallelMach.h>
 
 
+#include "Types.h"
+#include "Interface.h"
+#include "Atom.h"
+#include "AtomStore.h"
+#include "AtomSystem.h"
+
+
 #endif

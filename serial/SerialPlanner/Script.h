@@ -553,7 +553,7 @@ public:
 	int&			GetSideIdCounter() {return tmp_side_id_counter;}
 	
 	
-	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::SCRIPT_LOADER_SYSTEM;}
+	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::SCRIPT_LOADER_SYSTEM;}
 	
 protected:
 	

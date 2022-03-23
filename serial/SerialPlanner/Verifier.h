@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 struct VerifierAtom {
 	VerifierAtom* src = 0;
-	SerialTypeCls type;
+	ParallelTypeCls type;
 	Format sink_fmt;
 	Format src_fmt;
 	
@@ -26,8 +26,8 @@ struct VerifierEntity {
 	Array<VerifierAtom> ext;
 	
 	
-	VerifierAtom& AddAtomWith(SerialTypeCls t);
-	template <class T> VerifierAtom& AddAtomWith(ValDevCls vd) {return AddAtomWith(AsSerialTypeCls<T>(vd));}
+	VerifierAtom& AddAtomWith(ParallelTypeCls t);
+	template <class T> VerifierAtom& AddAtomWith(ValDevCls vd) {return AddAtomWith(AsParallelTypeCls<T>(vd));}
 	
 };
 
@@ -44,7 +44,7 @@ struct VerifierLoop {
 
 struct VerifierSystem {
 	TypeCls			type;
-	SerialTypeCls	ecs_type;
+	ParallelTypeCls	ecs_type;
 	
 };
 
@@ -179,8 +179,8 @@ public:
 	
 	VerifierLoop& GetRoot() {return root;}
 	
-	VerifierSystem& AddSystem(TypeCls t, SerialTypeCls et);
-	template<class T> VerifierSystem& AddSystem() {return AddSystem(AsTypeCls<T>(), AsSerialTypeCls<T>(VD(CENTER,ORDER)));}
+	VerifierSystem& AddSystem(TypeCls t, ParallelTypeCls et);
+	template<class T> VerifierSystem& AddSystem() {return AddSystem(AsTypeCls<T>(), AsParallelTypeCls<T>(VD(CENTER,ORDER)));}
 	
 };
 

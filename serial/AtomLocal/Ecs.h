@@ -37,11 +37,11 @@ class EcsVideoBase :
 	virtual public AtomBase
 {
 	Vector<BinderIfaceVideo*> binders;
-	String			target;
-	EnvStateRef		state;
-	int				prev_iter = -1;
-	ValDevCls		src_type;
-	ImageDraw		id;
+	String				target;
+	EnvStateRef			state;
+	int					prev_iter = -1;
+	ValDevCls			src_type;
+	ImageDraw			id;
 	ProgDraw			pd;
 	CpuStateDraw		cpu_sd;
 	CpuDataState		cpu_state;

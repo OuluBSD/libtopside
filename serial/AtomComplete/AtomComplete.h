@@ -17,7 +17,6 @@
 #endif
 
 #include "Prefabs.h"
-#include "AtomShell.h"
 
 
 #endif

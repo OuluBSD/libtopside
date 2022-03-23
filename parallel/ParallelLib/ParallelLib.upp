@@ -7,5 +7,6 @@ uses
 file
 	ParallelLib.h,
 	Interfaces.h,
+	Base.h,
 	ParallelLib.cpp;
 

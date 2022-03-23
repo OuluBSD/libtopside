@@ -1,6 +1,7 @@
 #ifndef _ParallelMach_ValDevScope_h_
 #define _ParallelMach_ValDevScope_h_
 
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -36,7 +37,7 @@ public:
 class DefaultExchangePoint :
 	public ExchangePoint
 {
-	Loop* loop = 0;
+	Serial::Loop* loop = 0;
 	
 public:
 	RTTI_DECL1(DefaultExchangePoint, ExchangePoint)

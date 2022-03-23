@@ -1,15 +1,15 @@
 description "Components\377B128,0,0";
 
 uses
-	SerialPlanner;
-
-uses(STDEXC) Esc;
+	SerialPlanner,
+	High;
 
 file
 	SerialLib.h,
 	Internal.h,
 	Init.icpp,
 	Types.h,
+	Generated.h,
 	RegistrySystem.h,
 	RegistrySystem.cpp,
 	EntitySystem.h,

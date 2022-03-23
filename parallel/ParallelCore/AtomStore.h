@@ -1,10 +1,10 @@
 #ifndef _SerialCore_AtomStore_h_
 #define _SerialCore_AtomStore_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-template<class T> using SerialTypeMap	= LinkedMap<SerialTypeCls, T>;
+template<class T> using SerialTypeMap	= LinkedMap<ParallelTypeCls, T>;
 template<class T> using AtomTypeMap		= LinkedMap<AtomTypeCls, T>;
 
 
@@ -16,7 +16,7 @@ public:
     using Producer = ProducerT;
     using Refurbisher = RefurbisherT;
 	
-    void RegisterProducer(const SerialTypeCls& typeId, Producer producer, Refurbisher refurbisher)
+    void RegisterProducer(const ParallelTypeCls& typeId, Producer producer, Refurbisher refurbisher)
     {
         auto p = producers.find(typeId);
         AssertFalse(p != producers.end(), "multiple registrations for the same type is not allowed");
@@ -76,7 +76,7 @@ public:
 	void ReturnAtom(Base* c);
 	
 	
-	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ATOM_STORE;}
+	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::ATOM_STORE;}
 	
 	
 private:
@@ -86,6 +86,6 @@ private:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

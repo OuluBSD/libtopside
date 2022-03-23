@@ -1,4 +1,4 @@
-#include "AtomComplete.h"
+#include "AtomDebug.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -38,6 +38,8 @@ bool DefaultInitializer(bool skip_eon_file) {
 	
 	
 	if (GetFileExt(eon_file) == ".toy") {
+		TODO // use some extension thingy here to allow later file extension hooks
+		#if 0
 		ShadertoyContextLoader toy_loader;
 		Object o;
 		if (!toy_loader.Load(eon_file, o)) {
@@ -53,6 +55,7 @@ bool DefaultInitializer(bool skip_eon_file) {
 		
 		eon_script = ser_loader.GetResult();
 		//DUMP(eon_script);
+		#endif
 	}
 	
 	return true;
@@ -84,6 +87,8 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 		return;
 	
 	if (verify) {
+		TODO // some extension thing is required here to work with only AtomDebug
+		#if 0
 		verifier.AddSystem<RegistrySystem>();
 		verifier.AddSystem<LoopStore>();
 		verifier.AddSystem<AtomStore>();
@@ -97,7 +102,7 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 		customer << src << sink << customer;
 		src.SetSourceFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
 		sink.SetSinkFormat(GetDefaultFormat(VD(CENTER,AUDIO)));
-		
+		#endif
 	}
 }
 

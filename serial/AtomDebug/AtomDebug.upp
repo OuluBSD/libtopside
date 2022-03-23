@@ -1,7 +1,8 @@
 description "\3770,128,128";
 
 uses
-	AtomLocal;
+	SerialLib,
+	SerialPlanner;
 
 uses(!SCREEN) AtomNonScreen;
 
@@ -9,6 +10,7 @@ file
 	AtomDebug.h,
 	AtomDebug.cpp,
 	Init.icpp,
-	Verifier.h,
-	Verifier.cpp;
+	Prefabs.h,
+	AtomShell.h,
+	AtomShell.cpp;
 

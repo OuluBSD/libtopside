@@ -1,5 +1,5 @@
-#ifndef _AtomComplete_AtomShell_h_
-#define _AtomComplete_AtomShell_h_
+#ifndef _AtomDebug_AtomShell_h_
+#define _AtomDebug_AtomShell_h_
 
 
 NAMESPACE_TOPSIDE_BEGIN
@@ -14,8 +14,6 @@ void DefaultSerialInitializerInternalEon();
 NAMESPACE_TOPSIDE_END
 
 
-#ifdef flagSCREEN
-
 #define APP_INITIALIZE_DEFAULT \
 	APP_INITIALIZE_STARTUP_(TS::DefaultSerialInitializer, TS::DefaultStartup)
 
@@ -24,6 +22,9 @@ NAMESPACE_TOPSIDE_END
 
 #define APP_INITIALIZE_DEFAULT_INTERNAL_EON_(x) \
 	APP_INITIALIZE_STARTUP_2(TS::DefaultSerialInitializerInternalEon, TS::DefaultStartup, x)
+
+
+#ifdef flagSCREEN
 
 #define DEFAULT_ATOMSHELL_(title_str) \
 	APP_INITIALIZE_DEFAULT \

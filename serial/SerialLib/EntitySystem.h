@@ -31,7 +31,7 @@ public:
 	SYS_DEF_VISIT
 	~EntitySystem() {ClearEngine();}
 	
-	static SerialTypeCls::Type GetSerialType() {return SerialTypeCls::ENTITY_SYSTEM;}
+	static ParallelTypeCls::Type GetSerialType() {return ParallelTypeCls::ENTITY_SYSTEM;}
 	
 };
 

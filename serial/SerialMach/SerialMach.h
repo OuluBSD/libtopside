@@ -10,7 +10,6 @@
 #define NAMESPACE_SERIAL_END	}}
 
 
-#include "Generated.h"
 #include "Types.h"
 
 

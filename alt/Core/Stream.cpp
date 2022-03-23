@@ -32,6 +32,16 @@ void Stream::PutEol() {
 #endif
 }
 
+void Stream::SetSize(int64 len) {
+	int64 sz = GetSize();
+	if (sz < len) {
+		Seek(sz);
+		int64 add = len - sz;
+		Put((char)0, add);
+	}
+}
+
+
 void StdLogSetup(dword flags) {
 	MultiStream& s = LogMulti();
 	s.Clear();

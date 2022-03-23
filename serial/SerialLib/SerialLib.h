@@ -13,6 +13,7 @@
 
 
 #include "Types.h"
+#include "Generated.h"
 #include "RegistrySystem.h"
 #include "EntitySystem.h"
 #include "AtomUtil.h"

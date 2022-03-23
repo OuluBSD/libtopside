@@ -1,5 +1,5 @@
-#ifndef _SerialMach_Generated_h_
-#define _SerialMach_Generated_h_
+#ifndef _ParallelMach_Generated_h_
+#define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
 

@@ -1,7 +1,7 @@
 #include "Internal.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 // incomplete Script::Plan dtor in header
 AtomBase::CustomerData::CustomerData() : cfg(gen) {}
@@ -47,6 +47,10 @@ void AtomBase::SetPrimarySinkQueueSize(int i) {
 
 LoopRef AtomBase::GetLoop() {
 	return GetParent().AsRefT();
+}
+
+Loop& AtomBase::GetParent() {
+	return *((SP*)this)->GetParent().AsStatic<Loop>();
 }
 
 String AtomBase::ToString() const {
@@ -228,4 +232,4 @@ void AtomMap::ReturnAtom(AtomStore& s, AtomBase* c) {
 
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
