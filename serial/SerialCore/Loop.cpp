@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "SerialCore.h"
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -12,116 +12,32 @@ Loop::~Loop() {
 	DBG_DESTRUCT
 }
 
-LoopId Loop::GetNextId() {
-	static Atomic next_id;
-	return ++next_id;
-}
-
 Loop* Loop::GetParent() const {
 	return static_cast<Loop*>(RefScopeParent<LoopParent>::GetParentUnsafe().b);
 }
 
-Machine& Loop::GetMachine() const {
-	if (machine)
-		return *machine;
-	const Loop* l = this;
-	int levels = 0;
-	while (l && levels++ < 1000) {
-		const LoopParent& par = l->RefScopeParent<LoopParent>::GetParent();
-		if (par.a) {
-			machine = &static_cast<LoopStore*>(par.a)->GetMachine();
-			ASSERT(machine);
-			return *machine;
-		}
-		ASSERT(l != par.b);
-		l = static_cast<Loop*>(par.b);
-	}
-	THROW(Exc("Machine ptr not found"));
-}
-
-void Loop::OnChange() {
-	changed = GetMachine().GetTicks();
-}
-
-AtomBaseRef Loop::GetTypeCls(AtomTypeCls atom_type) {
-	for (AtomBaseRef& comp : atoms) {
-		AtomTypeCls type = comp->GetType();
-		ASSERT(type.IsValid());
-		if (type == atom_type)
-			return comp;
-	}
-	return AtomBaseRef();
-}
-
-AtomBaseRef Loop::GetAddTypeCls(AtomTypeCls cls) {
-	AtomBaseRef cb = FindTypeCls(cls);
-	return cb ? cb : AddPtr(GetMachine().Get<AtomStore>()->CreateAtomTypeCls(cls));
-}
-
-AtomBaseRef Loop::FindTypeCls(AtomTypeCls atom_type) {
-	for (AtomBaseRef& comp : atoms) {
-		AtomTypeCls type = comp->GetType();
-		if (type == atom_type)
-			return comp;
-	}
-	return AtomBaseRef();
-}
-
-AtomBaseRef Loop::AddPtr(AtomBase* comp) {
-	comp->SetParent(this);
-	atoms.AddBase(comp);
-	InitializeAtom(*comp);
-	return AtomBaseRef(this, comp);
-}
-
-void Loop::InitializeAtoms() {
-	for(auto& comp : atoms.GetValues())
-		InitializeAtom(*comp);
-}
-
-void Loop::InitializeAtom(AtomBase& comp) {
-	comp.SetParent(this);
-	//comp.Initialize();
-}
-
-void Loop::UninitializeAtoms() {
-	auto& atoms = this->atoms.GetValues();
-	int dbg_i = 0;
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		it().Uninitialize();
-		dbg_i++;
-	}
-}
-
-void Loop::ClearAtoms() {
-	AtomStoreRef sys = GetMachine().Get<AtomStore>();
-	for (auto iter = atoms.rbegin(); iter; --iter)
-		sys->ReturnAtom(atoms.Detach(iter));
-	ASSERT(atoms.IsEmpty());
-}
-
 void Loop::ClearInterfaces() {
-	for (auto iter = atoms.rbegin(); iter; --iter)
-		iter().ClearSinkSource();
+	for (auto iter = links.rbegin(); iter; --iter)
+		iter()->ClearSinkSource();
 }
 
-void Loop::CopyTo(Loop& l) const {
+/*void Loop::CopyTo(Loop& l) const {
 	l.AppendCopy(*this);
-}
+}*/
 
 void Loop::AppendCopy(const Loop& l) {
 	TODO
 }
 
-void Loop::VisitSinks(RuntimeVisitor& vis) {
-	for(AtomBaseRef& c : atoms)
+/*void Loop::VisitSinks(RuntimeVisitor& vis) {
+	for(LinkBaseRef& c : links)
 		c->VisitSink(vis);
 }
 
 void Loop::VisitSources(RuntimeVisitor& vis){
-	for(AtomBaseRef& c : atoms)
+	for(LinkBaseRef& c : links)
 		c->VisitSource(vis);
-}
+}*/
 
 int Loop::GetLoopDepth() const {
 	int d = 0;
@@ -144,28 +60,10 @@ bool Loop::HasLoopParent(LoopRef pool) const {
 	return false;
 }
 
-void Loop::Initialize(Loop& l, String prefab) {
-	uint64 ticks = GetMachine().GetTicks();
-	l.SetPrefab(prefab);
-	l.SetCreated(ticks);
-	l.SetChanged(ticks);
-	
-}
-
-LoopRef Loop::CreateEmpty() {
-	Loop& l = loops.Add();
-	l.SetParent(this);
-	l.SetId(GetNextId());
-	Initialize(l);
-	return l;
-}
-
 void Loop::Clear() {
 	// useless ClearInterfacesDeep();
 	UnrefDeep();
 	UnlinkDeep();
-	UninitializeAtomsDeep();
-	ClearAtomsDeep();
 	ClearDeep();
 }
 
@@ -195,46 +93,33 @@ void Loop::UnlinkExchangePoints() {
 	pts.Clear();
 }
 
-void Loop::UninitializeAtomsDeep() {
-	for (LoopRef& p : loops)
-		p->UninitializeAtomsDeep();
-	
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		it().UninitializeDeep();
-	}
-	
-	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UninitializeWithExt();
-	}*/
-}
-
-void Loop::ClearAtomsDeep() {
+/*void Loop::ClearAtomsDeep() {
 	for (LoopRef& p : loops)
 		p->ClearAtomsDeep();
 	
 	AtomStoreRef sys = GetMachine().Get<AtomStore>();
-	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
-		sys->ReturnAtom(atoms.Detach(it));
+	for (auto it = links.rbegin(); it != links.rend(); --it) {
+		sys->ReturnAtom(links.Detach(it));
 	}
 	
-}
+}*/
 
 void Loop::ClearDeep() {
 	for (LoopRef& p : loops)
 		p->ClearDeep();
 	loops.Clear();
 	
-	atoms.Clear();
+	links.Clear();
 }
 
-LoopRef Loop::GetAddEmpty(String name) {
+/*LoopRef Loop::GetAddEmpty(String name) {
 	LoopRef l = FindLoopByName(name);
 	if (l)
 		return l;
 	l = CreateEmpty();
 	l->SetName(name);
 	return l;
-}
+}*/
 
 LoopRef Loop::FindLoopByName(String name) {
 	for (LoopRef object : loops)
@@ -255,8 +140,8 @@ String Loop::GetTreeString(int indent) {
 	
 	s << ".." << (name.IsEmpty() ? "unnamed" : "\"" + name + "\"") << "[" << (int)id << "]\n";
 	
-	for (AtomBaseRef& a : atoms)
-		s << a->ToString();
+	for (LinkBaseRef& l : links)
+		s << l->ToString();
 	
 	for (LoopRef& l : loops)
 		s << l->GetTreeString(indent+1);
@@ -264,7 +149,7 @@ String Loop::GetTreeString(int indent) {
 	return s;
 }
 
-bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
+/*bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 	ASSERT(iface.IsValid());
 	InterfaceSourceRef src = src_atom->GetSource();
 	InterfaceSinkRef sink = dst_atom->GetSink();
@@ -303,9 +188,9 @@ bool Loop::Link(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 		return true;
 	}
 	return false;
-}
+}*/
 
-EnvStateRef Loop::FindNearestState(String name) {
+/*EnvStateRef Loop::FindNearestState(String name) {
 	Loop* l = this;
 	while (l) {
 		EnvStateRef e = l->FindState(name);
@@ -314,7 +199,7 @@ EnvStateRef Loop::FindNearestState(String name) {
 		l = l->GetParent();
 	}
 	return EnvStateRef();
-}
+}*/
 
 String Loop::GetDeepName() const {
 	String s = name;
@@ -324,6 +209,11 @@ String Loop::GetDeepName() const {
 		l = l->GetParent();
 	}
 	return s;
+}
+
+LoopId Loop::GetNextId() {
+	static Atomic next_id;
+	return ++next_id;
 }
 
 

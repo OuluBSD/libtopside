@@ -4,10 +4,23 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+namespace Parallel {
+	
+class Space;
+using SpaceParent			= HierExBaseParent;
+using SpaceRef				= Ref<Space,				SpaceParent>;
+using SpaceVec				= RefLinkedList<Space,		SpaceParent>;
+
+}
+
+
+
 namespace Serial {
 
+class LinkBase;
 class Loop;
-using LoopParent			= HierExBaseParent;
+using LoopParent			= DirExBaseParent;
+using LinkBaseRef			= Ref<LinkBase,				RefParent1<MetaDirectoryBase>>;
 using LoopRef				= Ref<Loop,					LoopParent>;
 
 class MachineVerifier;

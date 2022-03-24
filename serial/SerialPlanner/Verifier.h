@@ -50,7 +50,7 @@ struct VerifierSystem {
 
 class MachineVerifier {
 	Machine* mach = 0;
-	AtomSystem* ext_sys = 0;
+	LoopSystem* ext_sys = 0;
 	VerifierLoop root;
 	Array<VerifierSystem> sys;
 	
@@ -99,7 +99,7 @@ protected:
 	
 	Vector<Scope> stack;
 	PacketData cur_pk;
-	AtomBase* c;
+	LinkBase* c;
 	DefaultExchangePoint* vep;
 	
 	void SetDefaultExpected();

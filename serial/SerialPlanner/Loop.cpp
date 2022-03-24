@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "SerialPlanner.h"
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -368,7 +368,8 @@ void ScriptLoopLoader::InitSegments() {
 		dev = DevCls::CENTER;
 	
 	AtomTypeCls consumer;
-	if (dev == DevCls::CENTER)
+	TODO
+	/*if (dev == DevCls::CENTER)
 		consumer = AsAtomTypeCls<CenterCustomer>();
 	else if (dev == DevCls::OGL) {
 		#ifdef flagSCREEN
@@ -380,7 +381,7 @@ void ScriptLoopLoader::InitSegments() {
 	else {
 		TODO
 		return;
-	}
+	}*/
 	
 	// Prepare action planner and world states
 	int CONNECTED = planner.GetAddAtom("loop.connected");
@@ -694,11 +695,12 @@ bool ScriptLoopLoader::Load() {
 					stmt = ws.FindStatement(prev_ws0, def.stmts, true);
 			}
 			
-			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
+			TODO
+			/*if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 				const auto& a = Serial::Factory::AtomDataMap().Get(type);
 				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
-			}
+			}*/
 			
 		}
 		else {
@@ -724,13 +726,14 @@ bool ScriptLoopLoader::Load() {
 		ValDevCls common_vd = sink_ws.GetCommonSink();
 		ASSERT(common_vd.IsValid());
 		
-		if (!l->Link(src, sink, common_vd)) {
+		TODO
+		/*if (!l->Link(src, sink, common_vd)) {
 			AtomTypeCls atom = sink_ws.GetAtom();
 			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
 			String src_sink_name = Serial::Factory::IfaceLinkDataMap().Get(common_vd).name;
 			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");
 			return false;
-		}
+		}*/
 		
 		src->SetInterface(src_info.iface);
 		
@@ -776,7 +779,8 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	int c = added_atoms.GetCount()-1;
 	int total_max = 1000000;
 	int total_min = 0;
-	for(int i = 0; i < c; i++) {
+	TODO
+	/*for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
 		InterfaceSourceRef src = info.r->GetSource();
 		int src_c = src->GetSourceCount();
@@ -795,7 +799,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			total_min = max(total_min, sink_min_packets);
 			total_max = min(total_max, sink_max_packets);
 		}
-	}
+	}*/
 	if (total_min > total_max) {
 		total_max = total_min;
 	}
@@ -804,9 +808,11 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
+		TODO
+		/*
 		InterfaceSourceRef src = info.r->GetSource();
 		InterfaceSinkRef sink = info.r->GetSink();
-			
+		
 		int sink_c = sink->GetSinkCount();
 		for(int k = 0; k < sink_c; k++) {
 			Value& v = sink->GetValue(k);
@@ -819,23 +825,24 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			Value& v = src->GetSourceValue(k);
 			v.SetMinQueueSize(total_min);
 			v.SetMaxQueueSize(total_max);
-		}
-			
-		/*if (link_changes) {
-			DUMP(min_packets);
-			DUMP(sink_min_packets);
-			DUMP(src_min_packets);
 		}*/
+			
+		/*
+		//DUMP(min_packets);
+		//DUMP(sink_min_packets);
+		//DUMP(src_min_packets);
+		*/
 	}
 }
 
 
 bool ScriptLoopLoader::PostInitialize() {
-	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+	TODO
+	/*for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		AddedAtom& a = added_atoms[i];
 		if (!a.r->PostInitialize())
 			return false;
-	}
+	}*/
 	return true;
 }
 

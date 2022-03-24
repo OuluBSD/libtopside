@@ -5,6 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 using namespace Parallel;
 
 
+
 using ValCls = Parallel::ValCls;
 using DevCls = Parallel::DevCls;
 using ValDevCls = Parallel::ValDevCls;
@@ -21,11 +22,13 @@ using AtomParent = Parallel::AtomParent;
 using DefaultExchangePoint = Parallel::DefaultExchangePoint;
 using SideStatus = Parallel::SideStatus;
 using PacketIO = Parallel::PacketIO;
+template <class T> using RefT_Loop = Ref<T, AtomParent>;
 template <class T> using System = Parallel::System<T>;
 template <class T> using RefT_Loop = Parallel::RefT_Loop<T>;
 
 //class AtomBase;
 //struct AtomTypeCls;
+
 
 
 //class Loop;
@@ -38,6 +41,9 @@ using LoopVec				= RefLinkedList<Loop,		LoopParent>;
 
 using SerialSystemParent	= MetaSystemParent;
 
+
+
+typedef dword LoopId;
 
 
 

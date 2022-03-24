@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "ParallelCore.h"
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -41,7 +41,7 @@ AtomBase* AtomStore::CreateAtom(AtomTypeCls cls) {
 AtomBase* AtomStore::CreateAtomTypeCls(AtomTypeCls cls) {
 	auto it = Factory::producers.Find(cls);
 	if (!it) {
-		auto new_fn = Serial::Factory::AtomDataMap().Get(cls).new_fn;
+		auto new_fn = Parallel::Factory::AtomDataMap().Get(cls).new_fn;
 		std::function<AtomBase*()> p([new_fn] { return new_fn();});
 		std::function<void(AtomBase*)> r([] (Base* b){ delete b;});
 		Factory::producers.Add(cls) = p;

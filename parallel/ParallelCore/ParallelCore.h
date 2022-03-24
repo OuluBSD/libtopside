@@ -7,6 +7,9 @@
 #include "Types.h"
 #include "Interface.h"
 #include "Atom.h"
+#include "Space.h"
+#include "SpaceStore.h"
+#include "Factory.h"
 #include "AtomStore.h"
 #include "AtomSystem.h"
 

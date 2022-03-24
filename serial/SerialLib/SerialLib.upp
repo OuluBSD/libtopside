@@ -1,12 +1,11 @@
 description "Components\377B128,0,0";
 
 uses
-	SerialPlanner,
-	High;
+	High,
+	SerialPlanner;
 
 file
 	SerialLib.h,
-	Internal.h,
 	Init.icpp,
 	Types.h,
 	Generated.h,
@@ -20,6 +19,8 @@ file
 	GfxUtil.h,
 	GfxUtil.cpp,
 	OglAtom.h,
+	AtomShell.h,
+	AtomShell.cpp,
 	DummyAtom.h,
 	DummyAtom.cpp;
 

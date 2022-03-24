@@ -30,7 +30,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 typedef dword PacketId;
-typedef dword LoopId;
+typedef dword SpaceId;
 typedef dword AtomId;
 
 
@@ -47,13 +47,13 @@ using AtomParent			= ExchangeBaseParent;
 
 
 template <class T>
-using RefT_Loop				= Ref<T,					AtomParent>;
+using RefT_Space				= Ref<T,					AtomParent>;
 
 template <class T>
 using RefT_Machine			= Ref<T,					ParallelSystemParent>;
 
 
-//using LoopParent			= RefParent2<LoopStore, Loop>;
+//using SpaceParent			= RefParent2<SpaceStore, Space>;
 //using AtomParent			= AtomParent;
 using AtomBaseRef			= Ref<AtomBase,				AtomParent>;
 using AtomStoreRef			= Ref<AtomStore,			ParallelSystemParent>;

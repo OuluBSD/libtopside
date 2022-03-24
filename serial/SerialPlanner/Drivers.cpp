@@ -1,7 +1,7 @@
-#include "Internal.h"
-
+#include "SerialPlanner.h"
 
 NAMESPACE_SERIAL_BEGIN
+using namespace Parallel;
 
 
 ScriptDriverLoader::ScriptDriverLoader(ScriptMachineLoader& parent, int id, Script::DriverDefinition& def) :
@@ -100,12 +100,12 @@ bool ScriptDriverLoader::Load() {
 			}
 		}
 		
-		
-		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
+		TODO
+		/*if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
 			const auto& a = Serial::Factory::AtomDataMap().Get(type);
 			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 			return false;
-		}
+		}*/
 		
 		added_atoms.Add(ab);
 	}
@@ -114,10 +114,11 @@ bool ScriptDriverLoader::Load() {
 }
 
 bool ScriptDriverLoader::PostInitialize() {
-	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+	TODO
+	/*for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		if (!added_atoms[i]->PostInitialize())
 			return false;
-	}
+	}*/
 	return true;
 }
 
@@ -141,7 +142,7 @@ void ScriptDriverLoader::FindAtoms() {
 	}
 	
 	
-	for (const auto& atom : Factory::AtomDataMap().GetValues()) {
+	for (const auto& atom : Parallel::Factory::AtomDataMap().GetValues()) {
 		Script::Action act;
 		Script::WorldState& pre		= act.Pre();
 		Script::WorldState& post	= act.Post();

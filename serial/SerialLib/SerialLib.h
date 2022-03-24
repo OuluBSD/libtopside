@@ -2,7 +2,6 @@
 #define _SerialLib_SerialLib_h_
 
 
-#include <SerialCore/SerialCore.h>
 #include <SerialPlanner/SerialPlanner.h>
 
 #if 0
@@ -21,6 +20,7 @@
 #include "GfxUtil.h"
 #include "OglAtom.h"
 #include "DummyAtom.h"
+#include "AtomShell.h"
 
 
 #endif

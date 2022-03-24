@@ -1,7 +1,7 @@
-#include "Internal.h"
+#include "ParallelCore.h"
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -56,4 +56,4 @@ const Vector<Factory::Link>& Factory::GetSinkAtoms(AtomTypeCls src_atom) {
 
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

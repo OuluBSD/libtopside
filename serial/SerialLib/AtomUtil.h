@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class AsyncMemForwarderBase :
-	virtual public AtomBase
+	virtual public LinkBase
 {
 	Packet		partial_packet;
 	byte*		write_mem = 0;
@@ -50,7 +50,7 @@ public:
 
 
 class CenterDriver :
-	virtual public AtomBase
+	virtual public LinkBase
 {
 	
 protected:
@@ -62,26 +62,27 @@ protected:
 public:
 	RTTI_DECL0(CenterDriver)
 	
-	bool Initialize(const Script::WorldState& ws) override {
+	bool Initialize(const Script::WorldState& ws) override; /*{
 		customer.Create();
-		AtomBaseRef r = AtomBase::AsRefT();
+		LinkBaseRef r = LinkBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->AddDriver(r);
+		TODO LinkSystem
+		LinkBase::GetMachine().template Get<AtomSystem>()->AddDriver(r);
 		return true;
-	}
+	}*/
 	
-	void Uninitialize() override {
-		AtomBaseRef r = AtomBase::AsRefT();
+	void Uninitialize() override; /*{
+		LinkBaseRef r = LinkBase::AsRefT();
 		ASSERT(r);
-		AtomBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
-	}
+		LinkBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
+	}*/
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
-	void UpdateConfig(double dt) final {
+	/*cleanup TODO void UpdateConfig(double dt) final {
 		ASSERT(customer);
 		customer->cfg.Update(dt, true);
-	}
+	}*/
 	
 	RealtimeSourceConfig* GetConfig() final {ASSERT(customer); return customer ? &customer->cfg : 0;}
 	

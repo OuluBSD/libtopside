@@ -292,6 +292,23 @@ void ExchangePoint::Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef s
 
 
 
+MetaSpaceBase::MetaSpaceBase() {
+	DBG_CONSTRUCT
+}
+
+MetaSpaceBase::~MetaSpaceBase() {
+	DBG_DESTRUCT
+}
+
+String MetaSpaceBase::ToString() const {
+	String s = GetDynamicName();
+	return s;
+}
+
+
+
+
+
 MetaDirectoryBase::MetaDirectoryBase() {
 	DBG_CONSTRUCT
 }
@@ -320,16 +337,15 @@ void MetaDirectoryBase::UnlinkAll() {
 	pts.Clear();
 }
 
-ExchangePointRef MetaDirectoryBase::Add(TypeCls expt) {
-	const auto& m = ExptDataMap();
+/*ExchangePointRef MetaDirectoryBase::Add(TypeCls expt) {
+	TODO directory has space always, use that ptr here
+	const auto& m = MetaSpaceBase::ExptDataMap();
 	const auto& d = m.Get(expt);
 	ExchangePoint* o = d.new_fn();
 	pts.Add(o);
 	o->SetParent(this);
 	return o->AsRefT();
-}
-
-
+}*/
 
 
 

@@ -1,7 +1,9 @@
-#include "Internal.h"
+#include "SerialPlanner.h"
 
 
 NAMESPACE_SERIAL_BEGIN
+using namespace Parallel;
+
 namespace Script {
 
 WorldState::WorldState() {
@@ -808,3 +810,4 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 
 
 NAMESPACE_SERIAL_END
+

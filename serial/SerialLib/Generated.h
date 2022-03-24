@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 using namespace Parallel;
 
 
-class CenterCustomer : public Atom<CenterCustomer>, public CustomerBase {
+/*class CenterCustomer : public Atom<CenterCustomer>, public CustomerBase {
 
 public:
 	RTTI_DECL2(CenterCustomer, AtomT, CustomerBase)
@@ -18,7 +18,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {TODO}
 	AtomTypeCls GetType() const override {TODO}
 
-};
+};*/
 
 
 NAMESPACE_SERIAL_END

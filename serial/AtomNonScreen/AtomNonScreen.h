@@ -2,7 +2,7 @@
 #define _AtomNonScreen_AtomNonScreen_h_
 
 
-#include <SerialLib/SerialLib.h>
+#include <ParallelLib/ParallelLib.h>
 
 
 #endif

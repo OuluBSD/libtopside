@@ -2,10 +2,17 @@ description "\377B114,32,32";
 
 uses
 	Local,
-	ParallelLib;
+	AtomDebug;
 
 file
 	SerialMach.h,
+	Fn.h,
+	LoopSystem.h,
+	LoopSystem.cpp,
 	Types.h,
-	Types.cpp;
+	Types.cpp,
+	Link.h,
+	Link.cpp,
+	LinkFwd.cpp,
+	Base.h;
 

@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "SerialPlanner.h"
 
 
 NAMESPACE_SERIAL_BEGIN
@@ -255,14 +255,15 @@ LoopRef ScriptLoader::ResolveLoop(Script::Id& id) {
 	LoopRef e;
 	LoopRef p = es->GetRoot();
 	int i = 0, count = id.parts.GetCount();
-	for (const String& part : id.parts) {
+	TODO
+	/*for (const String& part : id.parts) {
 		if (i++ == count - 1) {
 			e = p->GetAddEmpty(part);
 		}
 		else {
 			p = p->GetAddLoop(part);
 		}
-	}
+	}*/
 	return e;
 }
 
@@ -333,14 +334,15 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 						ASSERT(src_conn.other == sink_conn.local);
 						ASSERT(sink_conn.other == src_conn.local);
 						
-						if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
+						TODO
+						/*if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
 							AddError("Side-source refused linking to side-src");
 							return false;
 						}
 						if (!sink->LinkSideSource(src, sink_ch_i, src_ch_i)) {
 							AddError("Side-src refused linking to side-source");
 							return false;
-						}
+						}*/
 						
 						LOG(src->ToString() + "(" << src_ch_i << ") side-linked to " + sink->ToString() + "(" << sink_ch_i << ")");
 						
@@ -498,3 +500,4 @@ Script::State* ScriptLoader::FindState(const Script::Id& id) {
 
 
 NAMESPACE_SERIAL_END
+

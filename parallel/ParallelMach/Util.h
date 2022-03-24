@@ -40,10 +40,10 @@ MACHVER_FWDFN_LIST
 #define MACHVER_STATUS(fn, ptr)	{static byte __; Parallel::MachineVerifier_On##fn(ptr);}
 
 
-void MachineVerifier_OnLoopLoader_Status(ScriptLoopLoader* ll);
-void MachineVerifier_OnLoopLoader_RealizeAtoms(ScriptLoopLoader* ll);
-void MachineVerifier_OnLoopLoader_AtomLinked(ScriptLoopLoader* ll);
-void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll);
+void MachineVerifier_OnSpaceLoader_Status(ScriptLoopLoader* ll);
+void MachineVerifier_OnSpaceLoader_RealizeAtoms(ScriptLoopLoader* ll);
+void MachineVerifier_OnSpaceLoader_AtomLinked(ScriptLoopLoader* ll);
+void MachineVerifier_OnSpaceLoader_SearchNewSegment(ScriptLoopLoader* ll);
 
 #else
 

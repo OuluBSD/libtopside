@@ -45,7 +45,7 @@ public:
 	DefaultExchangePoint() {}
 	~DefaultExchangePoint() {Deinit();}
 	
-	void Init(MetaDirectoryBase* conn) override;
+	void Init(MetaSpaceBase* conn) override;
 	void Deinit();
 	void ForwardSetup(FwdScope& fwd) override;
 	void ForwardAtom(FwdScope& fwd) override;
@@ -61,7 +61,7 @@ public:
 	
 };
 
-using DefaultExchangePointRef	= Ref<DefaultExchangePoint,	RefParent1<MetaDirectoryBase>>;
+using DefaultExchangePointRef	= Ref<DefaultExchangePoint,	RefParent1<MetaSpaceBase>>;
 
 
 class Ex :

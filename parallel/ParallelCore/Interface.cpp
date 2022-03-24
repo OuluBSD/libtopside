@@ -1,4 +1,4 @@
-#include "Internal.h"
+#include "ParallelCore.h"
 
 
 NAMESPACE_PARALLEL_BEGIN
@@ -10,7 +10,7 @@ bool DefaultExchangePoint::IsPacketStuck() {
 
 void DefaultExchangePoint::ForwardExchange(FwdScope& fwd) {
 	Ref<DefaultInterfaceSink> sink = this->sink;
-	fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
+	TODO //fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
 }
 
 void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {
@@ -77,20 +77,20 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 		RTLOG("ExchangePoint::Forward: empty source");
 	}
 	
-	fwd.AddNext(sink->AsAtomBase());
+	TODO //fwd.AddNext(sink->AsAtomBase());
 	
 	WhenLeaveValExPtForward();
 }
 
-void DefaultExchangePoint::Init(MetaDirectoryBase* mexpt) {
+void DefaultExchangePoint::Init(MetaSpaceBase* mexpt) {
 	ASSERT(mexpt);
 	
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	this->conn = conn;
 	if (conn) {
-		LoopRef loop = GetConnectorBaseLoop(conn);
-		Machine& mach = GetLoopMachine(loop);
+		SpaceRef loop = GetConnectorBaseSpace(conn);
+		Machine& mach = GetSpaceMachine(loop);
 		Ref<ValSystem> sys = mach.Get<ValSystem>();
 		ASSERT(sys);
 		if (sys)
@@ -103,8 +103,8 @@ void DefaultExchangePoint::Deinit() {
 	#if HAVE_VALSYSTEM
 	USING_VALDEVCORE(ValSystem)
 	if (conn) {
-		LoopRef loop = GetConnectorBaseLoop(conn);
-		Machine& mach = GetLoopMachine(loop);
+		SpaceRef loop = GetConnectorBaseSpace(conn);
+		Machine& mach = GetSpaceMachine(loop);
 		Ref<ValSystem> sys = mach.Get<ValSystem>();
 		ASSERT(sys);
 		if (sys)

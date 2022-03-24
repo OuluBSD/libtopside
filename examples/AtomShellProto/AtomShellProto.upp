@@ -1,9 +1,10 @@
 uses
-	AtomDebug;
+	SerialLib;
 
 file
 	AtomShellProto.h,
-	AtomShellProto.cpp;
+	AtomShellProto.cpp,
+	Test.cpp;
 
 mainconfig
 	"" = "",

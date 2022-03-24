@@ -14,13 +14,15 @@ class ExchangeSideSourceProvider;
 class ExchangeProviderCookie;
 class ExchangePoint;
 class MetaDirectoryBase;
+class MetaSpaceBase;
 class MetaSystemBase;
 class MetaMachineBase;
 
 using MetaSystemParent				= RefParent1<MetaMachineBase>;
-using ExBaseParent					= RefParent1<MetaDirectoryBase>;
-using HierExBaseParent				= RefParent2<MetaSystemBase, MetaDirectoryBase>;
-using ExchangeBaseParent			= RefParent1<MetaDirectoryBase>;
+using ExBaseParent					= RefParent1<MetaSpaceBase>;
+using HierExBaseParent				= RefParent2<MetaSystemBase, MetaSpaceBase>;
+using DirExBaseParent				= RefParent2<MetaSystemBase, MetaDirectoryBase>;
+using ExchangeBaseParent			= RefParent1<MetaSpaceBase>;
 
 using ExchangeBaseRef				= Ref<ExchangeBase,					ExchangeBaseParent>;
 using ExchangeProviderBaseRef		= Ref<ExchangeProviderBase,			ExBaseParent>;
@@ -28,7 +30,7 @@ using ExchangeSinkProviderRef		= Ref<ExchangeSinkProvider,			ExBaseParent>;
 using ExchangeSourceProviderRef		= Ref<ExchangeSourceProvider,		ExBaseParent>;
 using ExchangeSideSinkProviderRef	= Ref<ExchangeSideSinkProvider,		ExBaseParent>;
 using ExchangeSideSourceProviderRef	= Ref<ExchangeSideSourceProvider,	ExBaseParent>;
-using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaDirectoryBase>>;
+using ExchangePointRef				= Ref<ExchangePoint,				RefParent1<MetaSpaceBase>>;
 using CookieRef						= Ref<ExchangeProviderCookie,		RefParent1<ExchangePoint>>;
 
 
@@ -234,7 +236,7 @@ public:
 
 
 class ExchangeProviderBase :
-	public RefScopeEnabler<ExchangeProviderBase, MetaDirectoryBase>
+	public RefScopeEnabler<ExchangeProviderBase, MetaSpaceBase>
 {
 	
 public:
@@ -472,13 +474,21 @@ public:
 	
 };
 
+class PacketForwarderData :
+	RTTIBase
+{
+public:
+	RTTI_DECL0(PacketForwarderData)
+	
+};
+
 class ExchangePoint :
 	virtual public PacketForwarder,
-	public RefScopeEnabler<ExchangePoint,MetaDirectoryBase>
+	public RefScopeEnabler<ExchangePoint,MetaSpaceBase>
 {
 	
 protected:
-	friend class MetaDirectoryBase;
+	friend class MetaSpaceBase;
 	
 	ExchangeSourceProviderRef	src;
 	ExchangeSinkProviderRef		sink;
@@ -491,7 +501,7 @@ public:
 	ExchangePoint();
 	virtual ~ExchangePoint();
 	
-	virtual void Init(MetaDirectoryBase* mdir) = 0;
+	virtual void Init(MetaSpaceBase* mdir) = 0;
 	
 	void Clear();
 	void Set(ExchangeSourceProviderRef src, ExchangeSinkProviderRef sink);
@@ -522,6 +532,38 @@ class MetaSystemBase :
 public:
 	virtual ~MetaSystemBase() {}
 	using RScope = RefScopeEnabler<MetaSystemBase, MetaMachineBase>;
+	
+};
+
+class MetaSpaceBase :
+	public RefScopeEnabler<MetaSpaceBase, MetaSystemBase, RefParent2<MetaSystemBase, MetaSpaceBase>>
+{
+	
+public:
+	RTTI_DECL_R0(MetaSpaceBase)
+	typedef MetaSpaceBase CLASSNAME;
+	MetaSpaceBase();
+	virtual ~MetaSpaceBase();
+	
+	String ToString() const;
+	
+	void Visit(RuntimeVisitor& vis) {}
+	
+	
+	
+public:
+	
+	typedef ExchangePoint* (*NewExpt)();
+	struct ExptData : Moveable<ExptData> {
+		NewExpt new_fn;
+	};
+	typedef VectorMap<TypeCls,ExptData> ExptMap;
+	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
+	template <class T> static ExchangePoint* New() {return new T();}
+	template <class T> static void RegisterExchangePoint() {
+		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());
+		d.new_fn = &New<T>;
+	}
 	
 };
 
@@ -567,21 +609,6 @@ public:
 	String ToString() const;
 	
 	void Visit(RuntimeVisitor& vis) {vis || pts;}
-	
-	
-public:
-	
-	typedef ExchangePoint* (*NewExpt)();
-	struct ExptData : Moveable<ExptData> {
-		NewExpt new_fn;
-	};
-	typedef VectorMap<TypeCls,ExptData> ExptMap;
-	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
-	template <class T> static ExchangePoint* New() {return new T();}
-	template <class T> static void RegisterExchangePoint() {
-		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());
-		d.new_fn = &New<T>;
-	}
 	
 };
 

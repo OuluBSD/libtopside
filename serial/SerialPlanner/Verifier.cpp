@@ -161,7 +161,7 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	cur.AddEnter(ONCE_FORWARD);
 	cur.AddEnter(SCRIPT_LOAD);
 		
-	if (!ext_sys && (ext_sys = CastPtr<AtomSystem>(&base))) {
+	if (!ext_sys && (ext_sys = CastPtr<LoopSystem>(&base))) {
 		ext_sys->WhenEnterOnceForward << THISBACK(OnEnterOnceForward);
 		ext_sys->WhenEnterAtomForward << THISBACK(OnEnterAtomForward);
 		ext_sys->WhenEnterFwdScopeForward << THISBACK(OnEnterFwdScopeForward);
@@ -271,7 +271,7 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	cur_pk.Clear();
 	c = 0;
 	vep = 0;
-	if ((c = CastPtr<AtomBase>(f.GetCurrent()))) {
+	if ((c = CastPtr<LinkBase>(f.GetCurrent()))) {
 		if (!c->WhenEnterProcessPackets) {
 			c->WhenEnterProcessPackets << THISBACK(OnEnterProcessPackets);
 			c->WhenLeaveProcessPackets << THISBACK(OnLeaveProcessPackets);

@@ -1,0 +1,204 @@
+#include "SerialMach.h"
+
+
+
+NAMESPACE_SERIAL_BEGIN
+
+
+LinkBase::LinkBase() {
+	DBG_CONSTRUCT
+}
+
+LinkBase::~LinkBase() {
+	DBG_DESTRUCT
+}
+
+String LinkBase::ToString() const {
+	TODO
+}
+
+AtomTypeCls LinkBase::GetType() const {
+	return atom->GetType();
+}
+
+void LinkBase::ForwardAsync() {
+	RTLOG("LinkBase::ForwardAsync " << HexStr(last_cfg));
+	
+	TODO
+	/*if (!last_cfg)
+		return;
+	
+	FwdScope fwd(this, *last_cfg);
+	fwd.SetOnce();
+	fwd.Forward();*/
+	
+}
+
+bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
+	if (src_ch > 0) {
+		Exchange* e = 0;
+		for (Exchange& ex : side_sink_conn)
+			if (ex.local_ch_i == src_ch)
+				e = &ex;
+		if (!e) {
+			LOG("LinkBase::NegotiateSourceFormat: error: exchange not found");
+			return false;
+		}
+		
+		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
+			LOG("LinkBase::NegotiateSourceFormat: error: audio format negotiation failed");
+			return false;
+		}
+	}
+	else {
+		DUMP(*prim_link_sink);
+		if (!prim_link_sink->NegotiateSinkFormat(0, fmt)) {
+			LOG("LinkBase::NegotiateSourceFormat: error: audio format negotiation failed");
+			return false;
+		}
+	}
+	Value& src = GetSource()->GetSourceValue(src_ch);
+	src.SetFormat(fmt);
+	return true;
+}
+
+Packet LinkBase::InitialPacket(int src_ch, off32 off) {
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	Packet to = CreatePacket(off);
+	to->SetFormat(src_fmt);
+	InternalPacketData& data = to->template SetData<InternalPacketData>();
+	return to;
+}
+
+Packet LinkBase::ReplyPacket(int src_ch, const Packet& in) {
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	off32 off = in->GetOffset();
+	Packet to = CreatePacket(off);
+	to->SetFormat(src_fmt);
+	to->CopyRouteData(*in);
+	InternalPacketData& data = to->template SetData<InternalPacketData>();
+	PacketTracker_Track("LinkBase::ReplyPacket", __FILE__, __LINE__, *to);
+	return to;
+}
+
+Packet LinkBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
+	Format content_fmt = content->GetFormat();
+	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
+	off32 off = in->GetOffset();
+	Packet to;
+	if (content_fmt.IsCopyCompatible(src_fmt)) {
+		to = content;
+		to->SetOffset(off);
+	}
+	else {
+		//DUMP(content_fmt); DUMP(src_fmt);
+		Packet to = CreatePacket(off);
+		to->SetFormat(src_fmt);
+		Convert(content, to);
+	}
+	to->CopyRouteData(*in);
+	PacketTracker_Track("LinkBase::ReplyPacket", __FILE__, __LINE__, *to);
+	return to;
+}
+
+bool LinkBase::ProcessPackets(PacketIO& io) {
+	PacketIO::Sink& sink = io.sink[0];
+	PacketIO::Source& src = io.src[0];
+	sink.may_remove = true;
+	src.from_sink_ch = 0;
+	src.p = ReplyPacket(0, sink.p);
+	src.p->AddRouteData(src.from_sink_ch);
+	return true;
+}
+
+void LinkBase::SetPrimarySinkQueueSize(int i) {
+	GetSink()->GetValue(0).SetMinQueueSize(i);
+}
+
+String LinkBase::GetInlineConnectionsString() const {
+	String s;
+	s << "sink(";
+	int i = 0;
+	for (Exchange& ex : side_sink_conn) {
+		if (i++ > 0) s << ", ";
+		s << HexStr(&*ex.other);
+	}
+	s << "), src(";
+	i = 0;
+	for (Exchange& ex : side_src_conn) {
+		if (i++ > 0) s << ", ";
+		s << HexStr(&*ex.other);
+	}
+	s << ")";
+	return s;
+}
+
+bool LinkBase::LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i) {
+	ASSERT(sink);
+	if (!sink)
+		return false;
+	
+	AtomTypeCls type = sink->GetType();
+	//DUMP(type);
+	ASSERT(type.IsRolePipe());
+	if (PassLinkSideSink(sink)) {
+		RTLOG("LinkBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetType().ToString());
+		
+		Exchange& ex = side_sink_conn.Add();
+		ex.other = sink;
+		ex.local_ch_i = local_ch_i;
+		ex.other_ch_i = other_ch_i;
+		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
+		
+		
+		// as in LinkBase::LinkSideSink
+		
+		InterfaceSourceRef src_iface = GetSource();
+		InterfaceSinkRef sink_iface = sink->GetSink();
+		Value& src_val = src_iface->GetSourceValue(local_ch_i);
+		Value& sink_val = sink_iface->GetValue(other_ch_i);
+		int src_max_packets = src_val.GetMaxPackets();
+		int src_min_packets = src_val.GetMinPackets();
+		int sink_max_packets = sink_val.GetMaxPackets();
+		int sink_min_packets = sink_val.GetMinPackets();
+		int max_packets = min(sink_max_packets, src_max_packets);
+		int min_packets = max(sink_min_packets, src_min_packets);
+		
+		if (min_packets > max_packets) {
+			max_packets = min_packets;
+		}
+		
+		LOG("LinkBase::LinkSideSink: min=" << min_packets << ", max=" << max_packets);
+		
+		src_val.SetMinQueueSize(min_packets);
+		src_val.SetMaxQueueSize(max_packets);
+		sink_val.SetMinQueueSize(min_packets);
+		sink_val.SetMaxQueueSize(max_packets);
+		
+		return true;
+	}
+	return false;
+}
+
+bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
+	//side_sink = -1; // SetSideSink(-1)
+	ASSERT(src);
+	if (!src)
+		return false;
+	
+	AtomTypeCls type = src->GetType();
+	//DUMP(type);
+	ASSERT(type.IsRolePipe());
+	if (PassLinkSideSource(src)) {
+		Exchange& ex = side_src_conn.Add();
+		ex.other = src;
+		ex.local_ch_i = local_ch_i;
+		ex.other_ch_i = other_ch_i;
+		RTLOG(HexStr((void*)this) << " connections: " << GetInlineConnectionsString());
+		return true;
+	}
+	return false;
+}
+
+
+NAMESPACE_SERIAL_END

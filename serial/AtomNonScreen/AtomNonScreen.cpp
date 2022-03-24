@@ -1,13 +1,15 @@
-#include "Internal.h"
+#include "AtomNonScreen.h"
 
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
 bool SingleMachine::Open(void(*arg_fn)()) {
+	using namespace Parallel;
 	using namespace Serial;
 	
-	const AppFlags& flags = GetAppFlags();
+	TODO
+	/*const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
@@ -19,13 +21,13 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     reg->SetAppName("Non-screen machine");
     
     if (!mach.Start())
-		return false;
+		return false;*/
     
 	return true;
 }
 
 void SingleMachine::Close() {
-	using namespace Serial;
+	using namespace Parallel;
 	
 	Machine& mach = GetActiveMachine();
 	mach.Stop();

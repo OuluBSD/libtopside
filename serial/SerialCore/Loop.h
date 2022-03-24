@@ -7,13 +7,14 @@ NAMESPACE_SERIAL_BEGIN
 class Loop :
 	public MetaDirectoryBase
 {
-	mutable Machine*	machine = 0;
-	BitField<dword>		freeze_bits;
+	//mutable Machine*	machine = 0;
+	//BitField<dword>		freeze_bits;
+	Serial::Space*		space = 0;
 	String				name;
 	String				prefab;
 	LoopId				id;
-	int64				created = 0;
-	int64				changed = 0;
+	//int64				created = 0;
+	//int64				changed = 0;
 	
 protected:
 	friend class LoopStore;
@@ -29,96 +30,95 @@ public:
 	Loop();
 	~Loop();
 	
-	typedef enum {
+	/*typedef enum {
 		BIT_OVERLAP,
 		BIT_TRANSFORM,
-	} Bit;
+	} Bit;*/
 	
 	
 	LoopId GetId() const {return id;}
 	
 	void SetName(String s)			{name = s;}
 	void SetPrefab(String s)		{prefab = s;}
-	void SetCreated(int64 i)		{created = i;}
-	void SetChanged(int64 i)		{changed = i;}
-	void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
+	//void SetCreated(int64 i)		{created = i;}
+	//void SetChanged(int64 i)		{changed = i;}
+	/*void FreezeTransform()			{freeze_bits.Set(BIT_TRANSFORM, true);}
 	void FreezeOverlap()			{freeze_bits.Set(BIT_OVERLAP, true);}
 	bool IsFrozenTransform() const	{return freeze_bits.Is(BIT_TRANSFORM);}
-	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_OVERLAP);}
+	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_OVERLAP);}*/
 	
-	void				ReverseEntities();
 	void				Clear();
 	void				UnlinkDeep();
 	void				UnlinkExchangePoints();
 	void				ClearInterfacesDeep();
 	void				UnrefDeep();
-	void				UninitializeAtomsDeep();
-	void				ClearAtomsDeep();
+	//void				UninitializeAtomsDeep();
+	//void				ClearAtomsDeep();
 	void				ClearDeep();
-	void				PruneFromContainer();
+	//void				PruneFromContainer();
 	void				Dump();
 	String				GetTreeString(int indent=0);
 	
 	Loop*				GetParent() const;
-	Machine&			GetMachine() const;
+	//Machine&			GetMachine() const;
 	String				GetName() const {return name;}
 	String				GetDeepName() const;
-	bool				HasEntities() const {return !atoms.IsEmpty();}
+	bool				HasAtoms() const {return !links.IsEmpty();}
 	bool				HasLoops() const {return !loops.IsEmpty();}
 	
-	void				Initialize(Loop& l, String prefab="Custom");
+	//void				Initialize(Loop& l, String prefab="Custom");
 	
-	LoopRef				CreateEmpty();
+	/*LoopRef				CreateEmpty();
 	LoopRef				GetAddEmpty(String name);
-	void				CopyTo(Loop& l) const;
+	void				CopyTo(Loop& l) const;*/
 	
-	bool				Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
+	bool				MakeLink(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
 	void				OnChange();
-	AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);
-	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
-	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type);
+	/*AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);*/
+	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls) {return space->GetAddTypeCls(cls);}
+	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type) {return space->FindTypeCls(atom_type);}
 	LoopRef				FindLoopByName(String name);
 	
 	
 	
-	AtomBaseRef			AddPtr(AtomBase* atom);
-	void				InitializeAtoms();
+	//AtomBaseRef			AddPtr(AtomBase* atom);
+	/*void				InitializeAtoms();
 	void				InitializeAtom(AtomBase& atom);
 	void				InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}
 	void				UninitializeAtoms();
-	void				ClearAtoms();
+	void				ClearAtoms();*/
 	void				ClearInterfaces();
 	void				AppendCopy(const Loop& l);
 	
 	int					GetLoopDepth() const;
 	bool				HasLoopParent(LoopRef pool) const;
 	
-	template<typename T>
+	/*template<typename T>
 	RefT_Loop<T> FindCast() {
-		for (Ref<AtomBase>& a : atoms.GetValues()) {
+		for (Ref<AtomBase>& a : links.GetValues()) {
 			T* o = CastPtr<T>(&*a);
 			if (o)
 				return o->template AsRef<T>();
 		}
 		return RefT_Loop<T>();
-	}
+	}*/
 	
-	template<typename T> RefT_Loop<T> FindNearestAtomCast(int nearest_loop_depth);
-	EnvStateRef FindNearestState(String name);
+	//template<typename T> RefT_Loop<T> FindNearestAtomCast(int nearest_loop_depth);
+	//EnvStateRef FindNearestState(String name);
 	
-	StateVec& GetStates() {return states;}
-	AtomMap& GetAtoms() {return atoms;}
+	//StateVec& GetStates() {return states;}
+	//AtomMap& GetAtoms() {return links;}
 	LoopVec& GetLoops() {return loops;}
-	const StateVec& GetStates() const {return states;}
-	const AtomMap& GetAtoms() const {return atoms;}
-	const LoopVec& GetLoops() const {return loops;}
+	//const StateVec& GetStates() const {return states;}
+	//const AtomMap& GetAtoms() const {return links;}
+	//const LoopVec& GetLoops() const {return loops;}
 	
 	LoopRef AddLoop(String name="") {
 		Loop& p = loops.Add();
-		p.SetParent(HierExBaseParent(0, this));
+		p.SetParent(DirExBaseParent(0, this));
 		p.SetName(name);
-		p.SetId(GetNextId());
+		//p.SetId(GetNextId());
 		return p;
 	}
 	
@@ -129,7 +129,9 @@ public:
 		return AddLoop(name);
 	}
 	
-	EnvStateRef AddState(String name="") {
+	EnvStateRef GetAddEnv(String name) {return space->GetAddEnv(name);}
+	
+	/*EnvStateRef AddState(String name="") {
 		EnvState& p = states.Add();
 		p.SetParent(this);
 		p.SetName(name);
@@ -147,19 +149,20 @@ public:
 			if (s->GetName() == name)
 				return s;
 		return EnvStateRef();
-	}
+	}*/
 	
-	AtomMap::Iterator			begin()			{return atoms.begin();}
-	AtomMap::Iterator			end()			{return atoms.end();}
-	LoopVec::Iterator			BeginLoop()		{return loops.begin();}
+	/*AtomMap::Iterator			begin()			{return links.begin();}
+	AtomMap::Iterator			end()			{return links.end();}
+	LoopVec::Iterator			BeginLoop()		{return loops.begin();}*/
 	
-	void Visit(RuntimeVisitor& vis) {vis || atoms || loops || states;}
-	void VisitSinks(RuntimeVisitor& vis);
-	void VisitSources(RuntimeVisitor& vis);
+	void Visit(RuntimeVisitor& vis) {vis && links; vis || loops;}
+	//void VisitSinks(RuntimeVisitor& vis);
+	//void VisitSources(RuntimeVisitor& vis);
 	
 private:
-	StateVec				states;
-	AtomMap					atoms;
+	//StateVec				states;
+	//AtomMap				links;
+	Array<LinkBaseRef>		links;
 	LoopVec					loops;
 };
 
@@ -178,22 +181,6 @@ public:
 
 
 
-
-template<typename T>
-RefT_Loop<T> Loop::FindNearestAtomCast(int nearest_loop_depth) {
-	if (auto r = FindCast<T>())
-		return r;
-	
-	if (nearest_loop_depth > 0)
-		for (auto& loop : loops)
-			if (auto ret = loop->FindNearestAtomCast<T>(nearest_loop_depth-1))
-				return ret;
-	
-	if (Loop* p = GetParent())
-		return p->FindNearestAtomCast<T>(nearest_loop_depth);
-	
-	return RefT_Loop<T>();
-}
 
 
 NAMESPACE_SERIAL_END

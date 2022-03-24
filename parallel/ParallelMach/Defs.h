@@ -48,14 +48,14 @@ struct x##_ : RTTIBase {RTTI_DECL0(x##_)}; \
 \
 struct x : \
 	x##_, \
-	LoopPrefab<
+	SpacePrefab<
 
 #define LOOP_PREFAB_END \
 > { \
 	 \
-    static Atoms Make(Loop& e) \
+    static Atoms Make(Space& e) \
     { \
-        auto atoms = LoopPrefab::Make(e); \
+        auto atoms = SpacePrefab::Make(e); \
 		return atoms; \
     } \
 };

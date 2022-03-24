@@ -2,12 +2,8 @@
 #define _SerialCore_Factory_h_
 
 
+NAMESPACE_PARALLEL_BEGIN
 
-NAMESPACE_SERIAL_BEGIN
-
-namespace Script {
-class Action;
-}
 
 class Factory {
 	
@@ -35,7 +31,7 @@ public:
 		d.name = T::GetTypeName();
 		d.vd.dev = dev;
 		d.vd.val = val;
-		MetaDirectoryBase::RegisterExchangePoint<T>();
+		MetaSpaceBase::RegisterExchangePoint<T>();
 	}
 	
 	
@@ -46,7 +42,7 @@ public:
 	
 	typedef AtomBase* (*NewFn)();
 	typedef bool (*AtomActionFn)(const AtomTypeCls& t, Script::Action& act);
-	typedef SideStatus (*SideFn)(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to);
+	typedef SideStatus (*SideFn)(const AtomTypeCls& src_type, const Serial::Script::WorldState& from, const AtomTypeCls& sink_type, const Serial::Script::WorldState& to);
 	struct AtomData : Moveable<AtomData> {
 		NewFn			new_fn;
 		AtomActionFn	action_fn;
@@ -63,7 +59,7 @@ public:
 	
 	template <class T> static AtomBase* CreateAtom() {return new T();}
 	template <class T> static bool MakeAtomAction(const AtomTypeCls& t, Script::Action& act) {return T::MakeAction(t, act);}
-	template <class T> static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {return T::MakeSide(src_type, from, sink_type, to);}
+	template <class T> static SideStatus MakeSide(const AtomTypeCls& src_type, const Serial::Script::WorldState& from, const AtomTypeCls& sink_type, const Serial::Script::WorldState& to) {return T::MakeSide(src_type, from, sink_type, to);}
 	
 	template <class T> static void RegisterAtom() {
 		AtomTypeCls cls = T::GetAtomType();
@@ -87,6 +83,6 @@ public:
 	
 };
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

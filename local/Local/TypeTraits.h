@@ -153,7 +153,7 @@ protected:
 
 
 template<typename T, typename ProducerT, typename RefurbisherT>
-class Factory
+class FactoryT
 {
 public:
     using Type = T;

@@ -41,7 +41,7 @@ class AtomStore :
 	
 	
 public:
-	using Main = Loop;
+	using Main = Space;
 	using Base = AtomBase;
 	SYS_RTTI(AtomStore)
     SYS_CTOR(AtomStore)

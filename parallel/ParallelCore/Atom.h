@@ -19,23 +19,19 @@ using namespace Serial;
 class AtomBase;
 
 template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
-template <class T> inline RefT_Loop<T> AtomBase_Static_As(AtomBase*) {return RefT_Loop<T>();}
+template <class T> inline RefT_Space<T> AtomBase_Static_As(AtomBase*) {return RefT_Space<T>();}
 
 class AtomBase :
 	public Destroyable,
 	public Enableable,
-	virtual public PacketForwarder,
-	public RefScopeEnabler<AtomBase, MetaDirectoryBase>
+	public PacketForwarderData,
+	public RefScopeEnabler<AtomBase, MetaSpaceBase>
 {
 	
 	
 public:
 	using AtomBaseRef = Ref<AtomBase, AtomParent>;
 	
-	
-	#ifdef flagDEBUG
-	bool dbg_async_race = false;
-	#endif
 	
 protected:
 	friend class Serial::ScriptLoopLoader;
@@ -44,10 +40,16 @@ protected:
 	int						id = -1;
 	
 	void					SetId(int i) {id = i;}
-	void					SetPrimarySink(AtomBaseRef b) {prim_link_sink = b;}
-	void					SetPrimarySource(AtomBaseRef b) {prim_link_src = b;}
 	
 protected:
+	friend class Serial::LinkBase;
+	
+	Mutex					fwd_lock;
+	IfaceConnTuple			iface;
+	
+	
+public:
+	
 	struct CustomerData {
 		RealtimeSourceConfig	cfg;
 		off32_gen				gen;
@@ -56,83 +58,21 @@ protected:
 		~CustomerData();
 	};
 	
-	struct Exchange : RTTIBase {
-		AtomBaseRef				other;
-		int						local_ch_i = -1;
-		int						other_ch_i = -1;
-		
-		RTTI_DECL0(Exchange);
-		void Clear() {other.Clear(); local_ch_i = -1; other_ch_i = -1;}
-		void Visit(RuntimeVisitor& vis) {vis & other;}
-	};
-	
-	Mutex					fwd_lock;
-	int						packets_forwarded = 0;
-	int						skipped_fwd_count = 0;
-	AtomBaseRef				driver_conn;
-	RealtimeSourceConfig*	last_cfg = 0;
-	IfaceConnTuple			iface;
-	LinkedList<Exchange>	side_sink_conn, side_src_conn;
-	AtomBaseRef				prim_link_sink, prim_link_src;
-	void					ForwardAtom(FwdScope& fwd) override;
-	void					ForwardExchange(FwdScope& fwd) override;
-	void					ForwardDriver(FwdScope& fwd);
-	void					ForwardPipe(FwdScope& fwd);
-	void					ForwardSideConnections();
-	
-	bool					IsPacketStuck() override;
-	bool					IsLoopComplete(FwdScope& fwd) override {return false;}
-	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src & driver_conn;}
-	bool					IsAllSideSourcesFull(const Vector<int>& src_chs);
-	bool					IsAnySideSourceFull(const Vector<int>& src_chs);
-	bool					IsPrimarySourceFull();
-	
 	
 public:
 	virtual AtomTypeCls		GetType() const = 0;
 	virtual void			CopyTo(AtomBase* atom) const = 0;
 	virtual void			Visit(RuntimeVisitor& vis) = 0;
+	virtual void			Uninitialize() = 0;
+	virtual void			UninitializeAtom() = 0;
+	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
 	virtual void			VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void			VisitSink(RuntimeVisitor& vis) = 0;
-	virtual void			ClearSinkSource() = 0;
-	virtual ISourceRef		GetSource() = 0;
-	virtual ISinkRef		GetSink() = 0;
-	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
-	virtual void			UninitializeAtom() = 0;
 	
-	virtual bool			NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {return false;}
-	virtual bool			ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
-	virtual bool			IsConsumedPartialPacket() {return 0;}
-	virtual bool			Initialize(const Script::WorldState& ws) {return true;}
-	virtual void			Uninitialize() {}
 	virtual void			Update(double dt) {}
-	virtual void			Forward(FwdScope& fwd) {}
-	virtual bool			PostInitialize() {return true;}
 	virtual String			ToString() const;
-	virtual bool			ProcessPackets(PacketIO& io);
 	virtual bool			IsReady(PacketIO& io) {return true;}
-	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
-	
-	virtual bool			PassLinkSideSink(AtomBaseRef sink) {return true;}
-	virtual bool			PassLinkSideSource(AtomBaseRef src) {return true;}
-	
-	void					ForwardAsync();
-	Packet					InitialPacket(int src_ch, off32 off);
-	Packet					ReplyPacket(int src_ch, const Packet& in);
-	Packet					ReplyPacket(int src_ch, const Packet& in, Packet content);
-	int						FindSourceWithValDev(ValDevCls vd);
-	
-	AtomBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
-	AtomBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
-	void					SetInterface(const IfaceConnTuple& iface);
-	const IfaceConnTuple&	GetInterface() const {return iface;}
-	bool					LinkSideSink(AtomBaseRef sink, int local_ch_i, int other_ch_i);
-	bool					LinkSideSource(AtomBaseRef src, int local_ch_i, int other_ch_i);
-	bool					NegotiateSourceFormat(int src_ch, const Format& fmt);
-	
-	int						GetSinkPacketCount();
-	int						GetSourcePacketCount();
 	
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
@@ -148,21 +88,20 @@ public:
 	
 	Machine&				GetMachine();
 	void					UninitializeDeep();
-	void					PostContinueForward();
-	void					SetPrimarySinkQueueSize(int i);
-	String					GetInlineConnectionsString() const;
+	void					SetInterface(const IfaceConnTuple& iface);
+	const IfaceConnTuple&	GetInterface() const;
 	
 public:
-	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarder)
+	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarderData)
 	AtomBase();
 	virtual ~AtomBase();
 	
 	
-	LoopRef		GetLoop();
-	Loop&		GetParent();
+	SpaceRef	GetSpace();
+	Space&		GetParent();
 	int			GetId() const {return id;}
 	
-	template <class T> RefT_Loop<T> As() {return AtomBase_Static_As<T>(this);}
+	template <class T> RefT_Space<T> As() {return AtomBase_Static_As<T>(this);}
 	
 	template <class S, class R>
 	void AddToSystem(R ref) {
@@ -181,8 +120,6 @@ public:
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
 	
 	
-	Callback2<AtomBase&, PacketIO&>			WhenEnterProcessPackets;
-	Callback2<AtomBase&, PacketIO&>			WhenLeaveProcessPackets;
 	
 };
 
@@ -218,8 +155,6 @@ public:
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {
-		//vis.VisitThis<AtomBase>(this);
-		BaseVisit(vis);
 		vis.VisitThis<SinkT>(this);
 		vis.VisitThis<SourceT>(this);
 	}
@@ -281,7 +216,7 @@ public:
 	void Dump();
 	
 	template<typename AtomT>
-	RefT_Loop<AtomT> Get() {
+	RefT_Space<AtomT> Get() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
 		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
@@ -293,7 +228,7 @@ public:
 	}
 	
 	template<typename AtomT>
-	RefT_Loop<AtomT> Find() {
+	RefT_Space<AtomT> Find() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
 		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
@@ -319,7 +254,8 @@ public:
 		AtomMapBase::Iterator iter = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
 		ASSERT_(iter, "Tried to remove non-existent atom");
 		
-		iter.value().Uninitialize();
+		TODO //iter.value().Uninitialize();
+		
 		//iter.value().Destroy();
 		
 		ReturnAtom(*s, iter.value.GetItem()->value.Detach());

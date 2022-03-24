@@ -603,7 +603,7 @@ public:
 
 
 class EnvState :
-	public RefScopeEnabler<EnvState, MetaDirectoryBase>
+	public RefScopeEnabler<EnvState, MetaSpaceBase>
 {
 	VectorMap<dword, Object> data;
 	String name;
@@ -632,7 +632,7 @@ public:
 	
 };
 
-using ExchangeBaseParent	= RefParent1<MetaDirectoryBase>;
+using ExchangeBaseParent	= RefParent1<MetaSpaceBase>;
 using EnvStateParent		= ExchangeBaseParent;
 using EnvStateRef			= Ref<EnvState,				EnvStateParent>;
 

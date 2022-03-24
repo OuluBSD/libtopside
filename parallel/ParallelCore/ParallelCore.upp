@@ -5,16 +5,21 @@ uses
 
 file
 	ParallelCore.h,
-	Internal.h,
 	Types.h,
 	Types.cpp,
 	Interface.h,
 	Interface.cpp,
 	Atom.h,
 	Atom.cpp,
+	AtomForward.cpp,
+	Space.h,
+	Space.cpp,
+	SpaceStore.h,
+	SpaceStore.cpp,
+	Factory.h,
+	Factory.cpp,
 	AtomSystem.h,
 	AtomSystem.cpp,
-	AtomForward.cpp,
 	AtomStore.h,
 	AtomStore.cpp;
 

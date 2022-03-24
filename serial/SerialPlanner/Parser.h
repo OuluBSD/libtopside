@@ -3,6 +3,8 @@
 
 
 NAMESPACE_SERIAL_BEGIN
+using namespace Parallel;
+
 namespace Script {
 
 
