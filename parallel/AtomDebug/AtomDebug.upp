@@ -9,5 +9,7 @@ file
 	AtomDebug.h,
 	AtomDebug.cpp,
 	Init.icpp,
-	Prefabs.h;
+	Prefabs.h,
+	Generated.h,
+	Generated.cpp;
 

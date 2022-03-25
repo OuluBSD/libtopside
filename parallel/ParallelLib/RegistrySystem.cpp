@@ -1,6 +1,6 @@
-#include "SerialLib.h"
+#include "ParallelLib.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 bool RegistrySystem::Initialize() {
@@ -24,4 +24,4 @@ void RegistrySystem::Uninitialize() {
 }
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END

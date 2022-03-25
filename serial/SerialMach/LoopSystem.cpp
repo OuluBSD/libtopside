@@ -7,27 +7,25 @@ NAMESPACE_SERIAL_BEGIN
 SYS_DEF_VISIT_I(LoopSystem, vis && customers)
 
 
-void LoopSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms) {
-	TODO // rename to ForwardLinks
-	/*
+void LoopSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>& atoms) {
 	int dbg_i = 0;
-	for (AtomBaseRef& c : atoms) {
+	for (LinkBaseRef& c : atoms) {
 		RealtimeSourceConfig* cfg = c->GetConfig();
 		if (!cfg) {
-			RTLOG("LoopSystem::ForwardAtoms: warning: GetConfig returns NULL");
+			RTLOG("LoopSystem::ForwardLinks: warning: GetConfig returns NULL");
 			continue;
 		}
 		
-		RTLOG("LoopSystem::ForwardAtoms: begin " << (String)id << " #" << dbg_i << " (" << c->ToString() << " " << HexStr(&*c) << ")");
+		RTLOG("LoopSystem::ForwardLinks: begin " << (String)id << " #" << dbg_i << " (" << c->ToString() << " " << HexStr(&*c) << ")");
 		
-		WhenEnterAtomForward(&*c);
+		WhenEnterLinkForward(&*c);
 		
 		int dbg_j = 0;
 		for (FwdScope scope(*c, *cfg); scope; scope++) {
-			RTLOG("LoopSystem::ForwardAtoms: loop id=" << c->GetId() << " " << HexStr(&*c) << " packets: " << GetDebugPacketString(c, cfg));
+			RTLOG("LoopSystem::ForwardLinks: loop id=" << c->GetId() << " " << HexStr(&*c) << " packets: " << GetDebugPacketString(c, cfg));
 			
 			if (!scope.IsBreak()) {
-				RTLOG("LoopSystem::ForwardAtoms: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
+				RTLOG("LoopSystem::ForwardLinks: " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
 				WhenEnterFwdScopeForward(scope);
 				
 				scope.Forward();
@@ -35,7 +33,7 @@ void LoopSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>
 				WhenLeaveFwdScopeForward();
 			}
 			else {
-				RTLOG("LoopSystem::ForwardAtoms: weak try fwd " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
+				RTLOG("LoopSystem::ForwardLinks: weak try fwd " << (String)id << " #" << dbg_i << " fwd #" << dbg_j++);
 				WhenEnterFwdScopeForward(scope);
 				
 				scope.ForwardWeak();
@@ -44,16 +42,16 @@ void LoopSystem::ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>
 			}
 			
 			if (scope.IsLoopComplete()) {
-				RTLOG("LoopSystem::ForwardAtoms: loop complete");
+				RTLOG("LoopSystem::ForwardLinks: loop complete");
 			}
 			else if (!scope) {
-				RTLOG("LoopSystem::ForwardAtoms: scope flag dump: " << scope.GetFlagString());
+				RTLOG("LoopSystem::ForwardLinks: scope flag dump: " << scope.GetFlagString());
 			}
 		}
 		
-		WhenLeaveAtomForward();
+		WhenLeaveLinkForward();
 		dbg_i++;
-	}*/
+	}
 }
 
 
@@ -72,10 +70,6 @@ void LoopSystem::Update(double dt) {
 	MemSwap(cbs, once_cbs);
 	lock.Leave();
 	
-	for (AtomBaseRef& c : customers) {
-		c->UpdateConfig(dt);
-	}
-	
 	for (Once& o : cbs) {
 		WhenEnterOnceForward(o.fwd);
 		
@@ -90,10 +84,13 @@ void LoopSystem::Update(double dt) {
 		WhenLeaveOnceForward();
 	}
 	
+	for (LinkBaseRef& c : customers) {
+		c->atom->UpdateConfig(dt);
+	}
 	
-	ForwardAtoms(dt, "customer", customers);
-	ForwardAtoms(dt, "driver", drivers);
-	ForwardAtoms(dt, "poller", pollers);
+	ForwardLinks(dt, "customer", customers);
+	ForwardLinks(dt, "driver", drivers);
+	ForwardLinks(dt, "poller", pollers);
 	
 }
 
@@ -102,36 +99,39 @@ void LoopSystem::Stop() {
 }
 
 void LoopSystem::Uninitialize() {
+	ASSERT(customers.IsEmpty());
+	ASSERT(drivers.IsEmpty());
+	ASSERT(pollers.IsEmpty());
 	once_cbs.Clear();
 	customers.Clear();
 	
 	WhenUninit()();
 }
 
-void LoopSystem::AddCustomer(AtomBaseRef p) {
+void LoopSystem::AddCustomer(LinkBaseRef p) {
 	if (p)
 		customers.FindAdd(p);
 }
 
-void LoopSystem::AddDriver(AtomBaseRef p) {
+void LoopSystem::AddDriver(LinkBaseRef p) {
 	if (p)
 		drivers.FindAdd(p);
 }
 
-void LoopSystem::AddPolling(AtomBaseRef p) {
+void LoopSystem::AddPolling(LinkBaseRef p) {
 	if (p)
 		pollers.FindAdd(p);
 }
 
-void LoopSystem::RemoveCustomer(AtomBaseRef p) {
+void LoopSystem::RemoveCustomer(LinkBaseRef p) {
 	customers.RemoveKey(p);
 }
 
-void LoopSystem::RemoveDriver(AtomBaseRef p) {
+void LoopSystem::RemoveDriver(LinkBaseRef p) {
 	drivers.RemoveKey(p);
 }
 
-void LoopSystem::RemovePolling(AtomBaseRef p) {
+void LoopSystem::RemovePolling(LinkBaseRef p) {
 	pollers.RemoveKey(p);
 }
 

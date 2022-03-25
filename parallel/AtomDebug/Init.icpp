@@ -22,8 +22,11 @@ NAMESPACE_UPP
 
 
 INITBLOCK {
+	using namespace TS::Parallel;
 	using namespace TS::Serial;
 	using namespace TS;
+	
+	Factory::RegisterAtom<CenterCustomer>();
 	
 }
 

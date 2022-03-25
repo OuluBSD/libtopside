@@ -14,7 +14,7 @@ class LoopSystem :
 		RealtimeSourceConfig*	cfg;
 	};
 	LinkedList<Once> once_cbs;
-	LinkedList<AtomBaseRef> customers, drivers, pollers;
+	LinkedList<LinkBaseRef> customers, drivers, pollers;
 	Mutex lock;
 	
 public:
@@ -25,11 +25,11 @@ public:
 	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	
 	Callback1<PacketForwarder*>				WhenEnterOnceForward;
-	Callback1<AtomBase*>					WhenEnterAtomForward;
+	Callback1<LinkBase*>					WhenEnterLinkForward;
 	Callback1<FwdScope&>					WhenEnterFwdScopeForward;
 	
 	Callback								WhenLeaveOnceForward;
-	Callback								WhenLeaveAtomForward;
+	Callback								WhenLeaveLinkForward;
 	Callback								WhenLeaveFwdScopeForward;
 	
 	
@@ -44,16 +44,16 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-    void ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
+    void ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>& links);
     
     
 public:
-    void AddCustomer(AtomBaseRef p);
-    void AddDriver(AtomBaseRef p);
-    void AddPolling(AtomBaseRef p);
-    void RemoveCustomer(AtomBaseRef p);
-    void RemoveDriver(AtomBaseRef p);
-    void RemovePolling(AtomBaseRef p);
+    void AddCustomer(LinkBaseRef p);
+    void AddDriver(LinkBaseRef p);
+    void AddPolling(LinkBaseRef p);
+    void RemoveCustomer(LinkBaseRef p);
+    void RemoveDriver(LinkBaseRef p);
+    void RemovePolling(LinkBaseRef p);
     
     
 };

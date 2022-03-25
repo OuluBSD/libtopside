@@ -16,7 +16,9 @@ bool Export(CompilationUnit& cu) {
 	}
 	dir = GetParentDirectory(dir);
 	
-	String serial_dir = AppendFileName(dir, "serial");
+	String assembly = cu.hints.Get(HINT_ASSEMBLY, "parallel");
+	
+	String serial_dir = AppendFileName(dir, assembly);
 	//String serial_dir = ConfigFile("serial");
 	
 	LOG("Realizing directory: " << serial_dir);

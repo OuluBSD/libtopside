@@ -16,10 +16,10 @@ Loop* Loop::GetParent() const {
 	return static_cast<Loop*>(RefScopeParent<LoopParent>::GetParentUnsafe().b);
 }
 
-void Loop::ClearInterfaces() {
+/*void Loop::ClearInterfaces() {
 	for (auto iter = links.rbegin(); iter; --iter)
 		iter()->ClearSinkSource();
-}
+}*/
 
 /*void Loop::CopyTo(Loop& l) const {
 	l.AppendCopy(*this);

@@ -8,6 +8,7 @@
 
 
 #include "Prefabs.h"
+#include "Generated.h"
 
 
 #endif

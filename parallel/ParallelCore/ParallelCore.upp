@@ -5,6 +5,7 @@ uses
 
 file
 	ParallelCore.h,
+	Defs.h,
 	Types.h,
 	Types.cpp,
 	Interface.h,
@@ -21,5 +22,6 @@ file
 	AtomSystem.h,
 	AtomSystem.cpp,
 	AtomStore.h,
-	AtomStore.cpp;
+	AtomStore.cpp,
+	Serial.h;
 

@@ -6,7 +6,10 @@ uses
 
 file
 	ParallelLib.h,
+	ParallelLib.cpp,
 	Interfaces.h,
 	Base.h,
-	ParallelLib.cpp;
+	Base.cpp,
+	RegistrySystem.h,
+	RegistrySystem.cpp;
 

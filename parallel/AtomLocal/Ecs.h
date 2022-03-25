@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class EcsEventsBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	Vector<BinderIfaceEvents*> binders;
 	String			target;
@@ -34,7 +34,7 @@ public:
 
 
 class EcsVideoBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	Vector<BinderIfaceVideo*> binders;
 	String				target;

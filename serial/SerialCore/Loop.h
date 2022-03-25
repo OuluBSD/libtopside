@@ -88,7 +88,7 @@ public:
 	void				InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}
 	void				UninitializeAtoms();
 	void				ClearAtoms();*/
-	void				ClearInterfaces();
+	//void				ClearInterfaces();
 	void				AppendCopy(const Loop& l);
 	
 	int					GetLoopDepth() const;

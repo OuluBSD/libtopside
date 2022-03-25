@@ -6,7 +6,7 @@ NAMESPACE_TOPSIDE_BEGIN
 
 #define HINT_PKG				"pkg"
 #define HINT_FILE				"file"
-#define HINT_FILE				"file"
+#define HINT_ASSEMBLY			"asm"
 #define HINT_HIDDEN				"hidden"
 #define HINT_FWD_DECL_PKG		"fdpkg"
 #define HINT_FWD_DECL_FILE		"fdfile"

@@ -31,7 +31,7 @@ public:
 
 
 class FramePollerBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	double		dt = 0;
 	double		frame_age = 0;

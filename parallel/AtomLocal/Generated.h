@@ -2,30 +2,16 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
+// Last modified: 25.3.25 19:11:33
 
 namespace TS {
 
-namespace Serial {
+namespace Parallel {
 
-class CenterCustomer : public Atom<CenterCustomer>, public CustomerBase {
-
-public:
-	RTTI_DECL2(CenterCustomer, AtomT, CustomerBase)
-	COPY_PANIC(CenterCustomer)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.customer")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class TestRealtimeSrc : public Atom<TestRealtimeSrc>, public RollingValueBase {
+class TestRealtimeSrc : public RollingValueBase {
 
 public:
-	RTTI_DECL2(TestRealtimeSrc, AtomT, RollingValueBase)
+	RTTI_DECL1(TestRealtimeSrc, RollingValueBase)
 	COPY_PANIC(TestRealtimeSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
@@ -36,40 +22,10 @@ public:
 
 };
 
-class TestRealtimeSink : public Atom<TestRealtimeSink>, public VoidSinkBase {
+class AudioHardwareSink : public PortaudioSink {
 
 public:
-	RTTI_DECL2(TestRealtimeSink, AtomT, VoidSinkBase)
-	COPY_PANIC(TestRealtimeSink)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.realtime")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class TestPollerSink : public Atom<TestPollerSink>, public VoidPollerSinkBase {
-
-public:
-	RTTI_DECL2(TestPollerSink, AtomT, VoidPollerSinkBase)
-	COPY_PANIC(TestPollerSink)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioHardwareSink : public Atom<AudioHardwareSink>, public PortaudioSink {
-
-public:
-	RTTI_DECL2(AudioHardwareSink, AtomT, PortaudioSink)
+	RTTI_DECL1(AudioHardwareSink, PortaudioSink)
 	COPY_PANIC(AudioHardwareSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -81,10 +37,10 @@ public:
 
 };
 
-class AudioDecoderSrc : public Atom<AudioDecoderSrc>, public FfmpegAtomBase {
+class AudioDecoderSrc : public FfmpegAtomBase {
 
 public:
-	RTTI_DECL2(AudioDecoderSrc, AtomT, FfmpegAtomBase)
+	RTTI_DECL1(AudioDecoderSrc, FfmpegAtomBase)
 	COPY_PANIC(AudioDecoderSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
@@ -95,24 +51,10 @@ public:
 
 };
 
-class AudioDbgSrc : public Atom<AudioDbgSrc>, public AudioGenBase {
+class AudioSplitter : public SplitterBase {
 
 public:
-	RTTI_DECL2(AudioDbgSrc, AtomT, AudioGenBase)
-	COPY_PANIC(AudioDbgSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.dbg_generator")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioSplitter : public Atom<AudioSplitter>, public SplitterBase {
-
-public:
-	RTTI_DECL2(AudioSplitter, AtomT, SplitterBase)
+	RTTI_DECL1(AudioSplitter, SplitterBase)
 	COPY_PANIC(AudioSplitter)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
@@ -124,10 +66,10 @@ public:
 
 };
 
-class AudioSplitterUser : public Atom<AudioSplitterUser>, public SplitterBase {
+class AudioSplitterUser : public SplitterBase {
 
 public:
-	RTTI_DECL2(AudioSplitterUser, AtomT, SplitterBase)
+	RTTI_DECL1(AudioSplitterUser, SplitterBase)
 	COPY_PANIC(AudioSplitterUser)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
@@ -139,10 +81,10 @@ public:
 
 };
 
-class AudioJoiner : public Atom<AudioJoiner>, public JoinerBase {
+class AudioJoiner : public JoinerBase {
 
 public:
-	RTTI_DECL2(AudioJoiner, AtomT, JoinerBase)
+	RTTI_DECL1(AudioJoiner, JoinerBase)
 	COPY_PANIC(AudioJoiner)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
@@ -154,10 +96,10 @@ public:
 
 };
 
-class AudioJoinerUser : public Atom<AudioJoinerUser>, public JoinerBase {
+class AudioJoinerUser : public JoinerBase {
 
 public:
-	RTTI_DECL2(AudioJoinerUser, AtomT, JoinerBase)
+	RTTI_DECL1(AudioJoinerUser, JoinerBase)
 	COPY_PANIC(AudioJoinerUser)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
@@ -169,10 +111,10 @@ public:
 
 };
 
-class AudioJoiner2User : public Atom<AudioJoiner2User>, public JoinerBase {
+class AudioJoiner2User : public JoinerBase {
 
 public:
-	RTTI_DECL2(AudioJoiner2User, AtomT, JoinerBase)
+	RTTI_DECL1(AudioJoiner2User, JoinerBase)
 	COPY_PANIC(AudioJoiner2User)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
@@ -185,10 +127,10 @@ public:
 };
 
 #if defined flagSCREEN
-class VideoDbgSrc : public Atom<VideoDbgSrc>, public VideoGenBase {
+class VideoDbgSrc : public VideoGenBase {
 
 public:
-	RTTI_DECL2(VideoDbgSrc, AtomT, VideoGenBase)
+	RTTI_DECL1(VideoDbgSrc, VideoGenBase)
 	COPY_PANIC(VideoDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
@@ -201,10 +143,10 @@ public:
 #endif
 
 #if defined HAVE_OPENCV
-class WebcamPipe : public Atom<WebcamPipe>, public OpenCVBase {
+class WebcamPipe : public OpenCVBase {
 
 public:
-	RTTI_DECL2(WebcamPipe, AtomT, OpenCVBase)
+	RTTI_DECL1(WebcamPipe, OpenCVBase)
 	COPY_PANIC(WebcamPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam.pipe")
@@ -217,10 +159,10 @@ public:
 #endif
 
 #if defined HAVE_OPENCV
-class WebcamAtom : public Atom<WebcamAtom>, public OpenCVBase {
+class WebcamAtom : public OpenCVBase {
 
 public:
-	RTTI_DECL2(WebcamAtom, AtomT, OpenCVBase)
+	RTTI_DECL1(WebcamAtom, OpenCVBase)
 	COPY_PANIC(WebcamAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam")
@@ -233,10 +175,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class AudioLoaderAtom : public Atom<AudioLoaderAtom>, public FfmpegAtomBase {
+class AudioLoaderAtom : public FfmpegAtomBase {
 
 public:
-	RTTI_DECL2(AudioLoaderAtom, AtomT, FfmpegAtomBase)
+	RTTI_DECL1(AudioLoaderAtom, FfmpegAtomBase)
 	COPY_PANIC(AudioLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
@@ -249,10 +191,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class VideoLoaderAtom : public Atom<VideoLoaderAtom>, public FfmpegAtomBase {
+class VideoLoaderAtom : public FfmpegAtomBase {
 
 public:
-	RTTI_DECL2(VideoLoaderAtom, AtomT, FfmpegAtomBase)
+	RTTI_DECL1(VideoLoaderAtom, FfmpegAtomBase)
 	COPY_PANIC(VideoLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.loader")
@@ -264,10 +206,10 @@ public:
 };
 #endif
 
-class EventStatePipe : public Atom<EventStatePipe>, public EventStateBase {
+class EventStatePipe : public EventStateBase {
 
 public:
-	RTTI_DECL2(EventStatePipe, AtomT, EventStateBase)
+	RTTI_DECL1(EventStatePipe, EventStateBase)
 	COPY_PANIC(EventStatePipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
@@ -279,10 +221,10 @@ public:
 };
 
 #if defined flagSCREEN
-class EcsEventsAtom : public Atom<EcsEventsAtom>, public EcsEventsBase {
+class EcsEventsAtom : public EcsEventsBase {
 
 public:
-	RTTI_DECL2(EcsEventsAtom, AtomT, EcsEventsBase)
+	RTTI_DECL1(EcsEventsAtom, EcsEventsBase)
 	COPY_PANIC(EcsEventsAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ecs.system.events")
@@ -295,10 +237,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsCpuVideoPipe : public Atom<EcsCpuVideoPipe>, public EcsVideoBase {
+class EcsCpuVideoPipe : public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsCpuVideoPipe, AtomT, EcsVideoBase)
+	RTTI_DECL1(EcsCpuVideoPipe, EcsVideoBase)
 	COPY_PANIC(EcsCpuVideoPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs.pipe")
@@ -311,10 +253,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsProgVideo : public Atom<EcsProgVideo>, public EcsVideoBase {
+class EcsProgVideo : public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsProgVideo, AtomT, EcsVideoBase)
+	RTTI_DECL1(EcsProgVideo, EcsVideoBase)
 	COPY_PANIC(EcsProgVideo)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
@@ -327,10 +269,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsOglFboPipe : public Atom<EcsOglFboPipe>, public EcsVideoBase {
+class EcsOglFboPipe : public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsOglFboPipe, AtomT, EcsVideoBase)
+	RTTI_DECL1(EcsOglFboPipe, EcsVideoBase)
 	COPY_PANIC(EcsOglFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs.pipe")
@@ -343,10 +285,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsCpuVideo : public Atom<EcsCpuVideo>, public EcsVideoBase {
+class EcsCpuVideo : public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsCpuVideo, AtomT, EcsVideoBase)
+	RTTI_DECL1(EcsCpuVideo, EcsVideoBase)
 	COPY_PANIC(EcsCpuVideo)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs")
@@ -359,10 +301,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class EcsOglFbo : public Atom<EcsOglFbo>, public EcsVideoBase {
+class EcsOglFbo : public EcsVideoBase {
 
 public:
-	RTTI_DECL2(EcsOglFbo, AtomT, EcsVideoBase)
+	RTTI_DECL1(EcsOglFbo, EcsVideoBase)
 	COPY_PANIC(EcsOglFbo)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs")
@@ -375,10 +317,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglCustomer : public Atom<OglCustomer>, public CustomerBase {
+class OglCustomer : public CustomerBase {
 
 public:
-	RTTI_DECL2(OglCustomer, AtomT, CustomerBase)
+	RTTI_DECL1(OglCustomer, CustomerBase)
 	COPY_PANIC(OglCustomer)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
@@ -391,10 +333,10 @@ public:
 };
 #endif
 
-class SdlContextAtom : public Atom<SdlContextAtom>, public SDL2ContextBase {
+class SdlContextAtom : public SDL2ContextBase {
 
 public:
-	RTTI_DECL2(SdlContextAtom, AtomT, SDL2ContextBase)
+	RTTI_DECL1(SdlContextAtom, SDL2ContextBase)
 	COPY_PANIC(SdlContextAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
@@ -405,10 +347,10 @@ public:
 
 };
 
-class SdlEventAtomPipe : public Atom<SdlEventAtomPipe>, public SDL2EventsBase {
+class SdlEventAtomPipe : public SDL2EventsBase {
 
 public:
-	RTTI_DECL2(SdlEventAtomPipe, AtomT, SDL2EventsBase)
+	RTTI_DECL1(SdlEventAtomPipe, SDL2EventsBase)
 	COPY_PANIC(SdlEventAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
@@ -419,10 +361,10 @@ public:
 
 };
 
-class SdlEventAtom : public Atom<SdlEventAtom>, public SDL2EventsBase {
+class SdlEventAtom : public SDL2EventsBase {
 
 public:
-	RTTI_DECL2(SdlEventAtom, AtomT, SDL2EventsBase)
+	RTTI_DECL1(SdlEventAtom, SDL2EventsBase)
 	COPY_PANIC(SdlEventAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event")
@@ -433,10 +375,10 @@ public:
 
 };
 
-class EventState : public Atom<EventState>, public EventStateBase {
+class EventState : public EventStateBase {
 
 public:
-	RTTI_DECL2(EventState, AtomT, EventStateBase)
+	RTTI_DECL1(EventState, EventStateBase)
 	COPY_PANIC(EventState)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event")
@@ -447,10 +389,10 @@ public:
 
 };
 
-class TestEventSrcPipe : public Atom<TestEventSrcPipe>, public TestEventSrcBase {
+class TestEventSrcPipe : public TestEventSrcBase {
 
 public:
-	RTTI_DECL2(TestEventSrcPipe, AtomT, TestEventSrcBase)
+	RTTI_DECL1(TestEventSrcPipe, TestEventSrcBase)
 	COPY_PANIC(TestEventSrcPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("event.src.test.pipe")
@@ -462,10 +404,10 @@ public:
 };
 
 #if defined flagSCREEN
-class SdlImageLoader : public Atom<SdlImageLoader>, public SDL2ImageBase {
+class SdlImageLoader : public SDL2ImageBase {
 
 public:
-	RTTI_DECL2(SdlImageLoader, AtomT, SDL2ImageBase)
+	RTTI_DECL1(SdlImageLoader, SDL2ImageBase)
 	COPY_PANIC(SdlImageLoader)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
@@ -478,10 +420,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class VolumeLoaderAtom : public Atom<VolumeLoaderAtom>, public VolumeLoaderBase {
+class VolumeLoaderAtom : public VolumeLoaderBase {
 
 public:
-	RTTI_DECL2(VolumeLoaderAtom, AtomT, VolumeLoaderBase)
+	RTTI_DECL1(VolumeLoaderAtom, VolumeLoaderBase)
 	COPY_PANIC(VolumeLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.volume.loader")
@@ -494,10 +436,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtomSA : public Atom<SdlFboAtomSA>, public SDL2OglScreenBase {
+class SdlFboAtomSA : public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtomSA, AtomT, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboAtomSA, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
@@ -510,10 +452,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboPipe : public Atom<SdlFboPipe>, public SDL2OglScreenBase {
+class SdlFboPipe : public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboPipe, AtomT, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboPipe, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
@@ -526,10 +468,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboPipeSide : public Atom<SdlFboPipeSide>, public SDL2OglScreenBase {
+class SdlFboPipeSide : public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboPipeSide, AtomT, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboPipeSide, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
@@ -542,10 +484,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtom : public Atom<SdlFboAtom>, public SDL2OglScreenBase {
+class SdlFboAtom : public SDL2OglScreenBase {
 
 public:
-	RTTI_DECL2(SdlFboAtom, AtomT, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboAtom, SDL2OglScreenBase)
 	COPY_PANIC(SdlFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
@@ -558,10 +500,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtomPipe : public Atom<SdlVideoAtomPipe>, public SDL2CpuScreenBase {
+class SdlVideoAtomPipe : public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtomPipe, AtomT, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoAtomPipe, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
@@ -574,10 +516,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoProgAtom : public Atom<SdlVideoProgAtom>, public SDL2CpuScreenBase {
+class SdlVideoProgAtom : public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoProgAtom, AtomT, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoProgAtom, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoProgAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.prog")
@@ -590,10 +532,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtomSA : public Atom<SdlVideoAtomSA>, public SDL2CpuScreenBase {
+class SdlVideoAtomSA : public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtomSA, AtomT, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoAtomSA, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
@@ -606,10 +548,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtom : public Atom<SdlVideoAtom>, public SDL2CpuScreenBase {
+class SdlVideoAtom : public SDL2CpuScreenBase {
 
 public:
-	RTTI_DECL2(SdlVideoAtom, AtomT, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoAtom, SDL2CpuScreenBase)
 	COPY_PANIC(SdlVideoAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
@@ -621,10 +563,10 @@ public:
 };
 #endif
 
-class SdlAudioAtom : public Atom<SdlAudioAtom>, public SDL2AudioOutputBase {
+class SdlAudioAtom : public SDL2AudioOutputBase {
 
 public:
-	RTTI_DECL2(SdlAudioAtom, AtomT, SDL2AudioOutputBase)
+	RTTI_DECL1(SdlAudioAtom, SDL2AudioOutputBase)
 	COPY_PANIC(SdlAudioAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
@@ -637,10 +579,10 @@ public:
 };
 
 #if defined flagSCREEN
-class OglShaderPipe : public Atom<OglShaderPipe>, public OglShaderBase {
+class OglShaderPipe : public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderPipe, AtomT, OglShaderBase)
+	RTTI_DECL1(OglShaderPipe, OglShaderBase)
 	COPY_PANIC(OglShaderPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.pipe")
@@ -653,10 +595,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglShaderAtom : public Atom<OglShaderAtom>, public OglShaderBase {
+class OglShaderAtom : public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderAtom, AtomT, OglShaderBase)
+	RTTI_DECL1(OglShaderAtom, OglShaderBase)
 	COPY_PANIC(OglShaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
@@ -669,10 +611,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglShaderAtomSA : public Atom<OglShaderAtomSA>, public OglShaderBase {
+class OglShaderAtomSA : public OglShaderBase {
 
 public:
-	RTTI_DECL2(OglShaderAtomSA, AtomT, OglShaderBase)
+	RTTI_DECL1(OglShaderAtomSA, OglShaderBase)
 	COPY_PANIC(OglShaderAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
@@ -685,10 +627,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglTextureSource : public Atom<OglTextureSource>, public OglTextureBase {
+class OglTextureSource : public OglTextureBase {
 
 public:
-	RTTI_DECL2(OglTextureSource, AtomT, OglTextureBase)
+	RTTI_DECL1(OglTextureSource, OglTextureBase)
 	COPY_PANIC(OglTextureSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.image")
@@ -701,10 +643,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglVolumeSource : public Atom<OglVolumeSource>, public OglTextureBase {
+class OglVolumeSource : public OglTextureBase {
 
 public:
-	RTTI_DECL2(OglVolumeSource, AtomT, OglTextureBase)
+	RTTI_DECL1(OglVolumeSource, OglTextureBase)
 	COPY_PANIC(OglVolumeSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
@@ -717,10 +659,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglAudioSink : public Atom<OglAudioSink>, public OglFboReaderBase {
+class OglAudioSink : public OglFboReaderBase {
 
 public:
-	RTTI_DECL2(OglAudioSink, AtomT, OglFboReaderBase)
+	RTTI_DECL1(OglAudioSink, OglFboReaderBase)
 	COPY_PANIC(OglAudioSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.center.audio")
@@ -733,10 +675,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglKeyboardSource : public Atom<OglKeyboardSource>, public OglKeyboardBase {
+class OglKeyboardSource : public OglKeyboardBase {
 
 public:
-	RTTI_DECL2(OglKeyboardSource, AtomT, OglKeyboardBase)
+	RTTI_DECL1(OglKeyboardSource, OglKeyboardBase)
 	COPY_PANIC(OglKeyboardSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.keyboard")
@@ -749,10 +691,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglAudioSource : public Atom<OglAudioSource>, public OglAudioBase {
+class OglAudioSource : public OglAudioBase {
 
 public:
-	RTTI_DECL2(OglAudioSource, AtomT, OglAudioBase)
+	RTTI_DECL1(OglAudioSource, OglAudioBase)
 	COPY_PANIC(OglAudioSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.audio")
@@ -765,10 +707,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class CpuKeyboardSource : public Atom<CpuKeyboardSource>, public CpuKeyboardBase {
+class CpuKeyboardSource : public CpuKeyboardBase {
 
 public:
-	RTTI_DECL2(CpuKeyboardSource, AtomT, CpuKeyboardBase)
+	RTTI_DECL1(CpuKeyboardSource, CpuKeyboardBase)
 	COPY_PANIC(CpuKeyboardSource)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.keyboard")

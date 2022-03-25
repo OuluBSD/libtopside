@@ -4,6 +4,7 @@
 #include <ParallelMach/ParallelMach.h>
 
 
+#include "Defs.h"
 #include "Types.h"
 #include "Interface.h"
 #include "Atom.h"
@@ -12,6 +13,7 @@
 #include "Factory.h"
 #include "AtomStore.h"
 #include "AtomSystem.h"
+#include "Serial.h"
 
 
 #endif

@@ -7,7 +7,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class FfmpegAtomBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	typedef enum {
 		INVALID_MODE,

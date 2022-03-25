@@ -3,4 +3,4 @@
 
 
 // Just call default macro in AtomComplete
-//DEFAULT_ATOMSHELL
+DEFAULT_ATOMSHELL

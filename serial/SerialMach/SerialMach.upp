@@ -14,5 +14,6 @@ file
 	Link.h,
 	Link.cpp,
 	LinkFwd.cpp,
-	Base.h;
+	Base.h,
+	Base.cpp;
 

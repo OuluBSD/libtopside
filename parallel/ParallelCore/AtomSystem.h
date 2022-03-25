@@ -29,7 +29,7 @@ protected:
     void Stop() override;
     void Uninitialize() override;
     
-    void ForwardAtoms(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
+    void ForwardLinks(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
     
     String GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cfg);
     

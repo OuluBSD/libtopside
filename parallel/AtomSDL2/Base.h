@@ -6,7 +6,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class SDL2Base :
-	virtual public AtomBase
+	public AtomBase
 {
 	
 public:

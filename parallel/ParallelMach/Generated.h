@@ -2,24 +2,11 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
+// Last modified: 25.3.25 19:11:33
 
 namespace TS {
 
-namespace Serial {
-
-#define SERIAL_TYPE_LIST \
-	SERIAL_TYPE(LOOP_STORE) \
-	SERIAL_TYPE(REGISTRY_SYSTEM) \
-	SERIAL_TYPE(ENTITY_SYSTEM) \
-	SERIAL_TYPE(ATOM_STORE) \
-	SERIAL_TYPE(ATOM_SYSTEM) \
-	SERIAL_TYPE(LOOP_SYSTEM) \
-	SERIAL_TYPE(SCRIPT_LOADER_SYSTEM) \
-	\
-	SERIAL_TYPE(CUSTOM_ATOM) \
-	\
-	SERIAL_TYPE(DUMMY_SERIAL_TYPE) \
-	
+namespace Parallel {
 
 #define ATOM_TYPE_LIST \
 	ATOM_TYPE(CENTER_CUSTOMER) \

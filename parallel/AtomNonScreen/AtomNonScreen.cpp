@@ -1,5 +1,5 @@
 #include "AtomNonScreen.h"
-
+#include <SerialPlanner/SerialPlanner.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
@@ -8,12 +8,12 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	using namespace Parallel;
 	using namespace Serial;
 	
-	TODO
-	/*const AppFlags& flags = GetAppFlags();
+	const AppFlags& flags = GetAppFlags();
 	Machine& mach = GetActiveMachine();
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
 	LoopStoreRef loops = mach.Add<LoopStore>();
+	mach.Add<LoopSystem>();
 	mach.Add<AtomStore>();
     mach.Add<AtomSystem>();
     mach.Add<ScriptLoader>();
@@ -21,7 +21,7 @@ bool SingleMachine::Open(void(*arg_fn)()) {
     reg->SetAppName("Non-screen machine");
     
     if (!mach.Start())
-		return false;*/
+		return false;
     
 	return true;
 }

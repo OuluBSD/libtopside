@@ -32,6 +32,15 @@ class AtomBase :
 public:
 	using AtomBaseRef = Ref<AtomBase, AtomParent>;
 	
+	struct CustomerData {
+		RealtimeSourceConfig	cfg;
+		off32_gen				gen;
+		
+		CustomerData();
+		~CustomerData();
+	};
+	
+	
 	
 protected:
 	friend class Serial::ScriptLoopLoader;
@@ -50,15 +59,6 @@ protected:
 	
 public:
 	
-	struct CustomerData {
-		RealtimeSourceConfig	cfg;
-		off32_gen				gen;
-		
-		CustomerData();
-		~CustomerData();
-	};
-	
-	
 public:
 	virtual AtomTypeCls		GetType() const = 0;
 	virtual void			CopyTo(AtomBase* atom) const = 0;
@@ -68,6 +68,9 @@ public:
 	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
 	virtual void			VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void			VisitSink(RuntimeVisitor& vis) = 0;
+	virtual void			ClearSinkSource() = 0;
+	virtual ISourceRef		GetSource() = 0;
+	virtual ISinkRef		GetSink() = 0;
 	
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
@@ -84,7 +87,7 @@ public:
 		else
 			return SIDE_NOT_ACCEPTED;
 	}
-
+	
 	
 	Machine&				GetMachine();
 	void					UninitializeDeep();
@@ -126,19 +129,17 @@ public:
 
 
 
-template<
-	typename T,
-	class SinkT=DefaultInterfaceSink,
-	class SourceT=DefaultInterfaceSource
->
+
 struct Atom :
-	virtual public AtomBase,
-	public SinkT,
-	public SourceT
+	public AtomBase,
+	public DefaultInterfaceSink,
+	public DefaultInterfaceSource
 {
 public:
-	using AtomT = Atom<T, SinkT, SourceT>;
-	RTTI_DECL3(AtomT, AtomBase, SinkT, SourceT)
+	RTTI_DECL3(Atom, AtomBase, DefaultInterfaceSink, DefaultInterfaceSource)
+	using SinkT = DefaultInterfaceSink;
+	using SourceT = DefaultInterfaceSource;
+	
 	
 	bool InitializeAtom(const Script::WorldState& ws) override {
 		return SinkT::Initialize() && SourceT::Initialize();

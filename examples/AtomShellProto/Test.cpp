@@ -1,6 +1,6 @@
 #include "AtomShellProto.h"
 
-
+#
 NAMESPACE_TOPSIDE_BEGIN
 
 
@@ -43,6 +43,4 @@ void Test() {
 
 NAMESPACE_TOPSIDE_END
 
-CONSOLE_APP_MAIN {
-	TS::Test();
-}
+//CONSOLE_APP_MAIN {TS::Test();}

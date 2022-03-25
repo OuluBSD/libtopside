@@ -9,8 +9,6 @@ file
 	Init.icpp,
 	Types.h,
 	Generated.h,
-	RegistrySystem.h,
-	RegistrySystem.cpp,
 	EntitySystem.h,
 	EntitySystem.cpp,
 	AtomUtil.h,

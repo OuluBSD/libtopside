@@ -1,7 +1,7 @@
-#ifndef _SerialLib_RegistrySystem_h_
-#define _SerialLib_RegistrySystem_h_
+#ifndef _ParallelLib_RegistrySystem_h_
+#define _ParallelLib_RegistrySystem_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 class RegistrySystem : public System<RegistrySystem> {
@@ -33,7 +33,9 @@ public:
 	
 };
 
+using RegistrySystemRef = Ref<RegistrySystem>;
 
-NAMESPACE_SERIAL_END
+
+NAMESPACE_PARALLEL_END
 
 #endif

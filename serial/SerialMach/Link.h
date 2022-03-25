@@ -8,6 +8,10 @@ class LinkBase :
 	virtual public PacketForwarder,
 	public RefScopeEnabler<LinkBase, MetaDirectoryBase>
 {
+	
+protected:
+	friend class LoopSystem;
+	
 	Parallel::AtomBaseRef atom;
 	
 	
@@ -15,6 +19,8 @@ public:
 	#ifdef flagDEBUG
 	bool dbg_async_race = false;
 	#endif
+	
+	using CustomerData = AtomBase::CustomerData;
 	
 	
 protected:
@@ -64,9 +70,6 @@ public:
 	virtual bool			PassLinkSideSource(LinkBaseRef src) {return true;}
 	
 	virtual void			Visit(RuntimeVisitor& vis) = 0;
-	virtual void			ClearSinkSource() = 0;
-	virtual ISourceRef		GetSource() = 0;
-	virtual ISinkRef		GetSink() = 0;
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	
 	void					ForwardAsync();
@@ -90,6 +93,8 @@ public:
 	String					GetInlineConnectionsString() const;
 	String					ToString() const;
 	AtomTypeCls				GetType() const;
+	ISourceRef				GetSource();
+	ISinkRef				GetSink();
 	
 	
 	void					Clear();

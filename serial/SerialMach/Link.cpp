@@ -21,6 +21,14 @@ AtomTypeCls LinkBase::GetType() const {
 	return atom->GetType();
 }
 
+ISourceRef LinkBase::GetSource() {
+	return atom->GetSource();
+}
+
+ISinkRef LinkBase::GetSink() {
+	return atom->GetSink();
+}
+
 void LinkBase::ForwardAsync() {
 	RTLOG("LinkBase::ForwardAsync " << HexStr(last_cfg));
 	

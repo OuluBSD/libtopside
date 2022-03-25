@@ -143,9 +143,9 @@ public:
 	void OnEnterUpdate();
 	void OnEnterSystemUpdate(SystemBase& base);
 	void OnEnterOnceForward(PacketForwarder*);
-	void OnEnterAtomForward(AtomBase* c);
+	void OnEnterLinkForward(LinkBase* c);
 	void OnEnterFwdScopeForward(FwdScope& c);
-	void OnEnterProcessPackets(AtomBase&, PacketIO& p);
+	void OnEnterProcessPackets(LinkBase&, PacketIO& p);
 	void OnEnterCreatedEmptyPacket(Packet& p);
 	void OnEnterValExPtForward(DefaultExchangePoint& p);
 	void OnEnterScriptLoad(SystemBase& base);
@@ -158,9 +158,9 @@ public:
 	void OnLeaveUpdate();
 	void OnLeaveSystemUpdate();
 	void OnLeaveOnceForward();
-	void OnLeaveAtomForward();
+	void OnLeaveLinkForward();
 	void OnLeaveFwdScopeForward();
-	void OnLeaveProcessPackets(AtomBase&, PacketIO& p);
+	void OnLeaveProcessPackets(LinkBase&, PacketIO& p);
 	void OnLeaveCreatedEmptyPacket();
 	void OnLeaveValExPtForward();
 	void OnLeaveScriptLoad();

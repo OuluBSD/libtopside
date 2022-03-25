@@ -22,7 +22,7 @@ Machine& AtomBase::GetMachine() {
 
 void AtomBase::UninitializeDeep() {
 	Uninitialize();
-	TODO //ClearSinkSource();
+	ClearSinkSource();
 	UninitializeAtom();
 }
 

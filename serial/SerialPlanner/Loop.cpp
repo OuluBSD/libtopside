@@ -368,8 +368,8 @@ void ScriptLoopLoader::InitSegments() {
 		dev = DevCls::CENTER;
 	
 	AtomTypeCls consumer;
-	TODO
-	/*if (dev == DevCls::CENTER)
+	
+	if (dev == DevCls::CENTER)
 		consumer = AsAtomTypeCls<CenterCustomer>();
 	else if (dev == DevCls::OGL) {
 		#ifdef flagSCREEN
@@ -381,7 +381,7 @@ void ScriptLoopLoader::InitSegments() {
 	else {
 		TODO
 		return;
-	}*/
+	}
 	
 	// Prepare action planner and world states
 	int CONNECTED = planner.GetAddAtom("loop.connected");

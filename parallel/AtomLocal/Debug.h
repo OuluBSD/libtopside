@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class RollingValueBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	byte				rolling_value = 0;
 	double				time = 0;
@@ -44,7 +44,7 @@ public:
 
 
 class VoidPollerSinkBase :
-	virtual public AtomBase
+	public AtomBase
 {
 	struct Thread {
 		byte				rolling_value = 0;

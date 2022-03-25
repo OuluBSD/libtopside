@@ -39,6 +39,8 @@ protected:
 	
 };
 
+using LoopStoreRef = Ref<LoopStore>;
+
 
 NAMESPACE_SERIAL_END
 

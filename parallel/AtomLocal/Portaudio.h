@@ -31,7 +31,7 @@ struct StreamCallbackArgs;
 
 
 class PortaudioSink :
-	virtual public AtomBase,
+	public AtomBase,
 	public AsyncMemForwarderBase
 {
 	One<Portaudio::BufferedAudioDeviceStream> obj;

@@ -124,6 +124,7 @@ void Factory::OnError(String msg) {
 void InitPre(Namespace& ns_serial, String pre, Vector<MExpr*>& deflists, Vector<MExpr*>& clslists) {
 	MStmt& ms_deflist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_TYPE_LIST");
 	MExpr& ms_deflist_expr = ms_deflist;
+	ms_deflist.Hint(HINT_ASSEMBLY, "parallel");
 	ms_deflist.Hint(HINT_PKG, "ParallelMach");
 	ms_deflist.Hint(HINT_FILE, "Generated");
 	ms_deflist.HideStatement();
@@ -132,6 +133,7 @@ void InitPre(Namespace& ns_serial, String pre, Vector<MExpr*>& deflists, Vector<
 	
 	MStmt& ms_clslist = ns_serial.GetAddMetaStatement("$" + pre + "ATOM_CLASS_LIST");
 	MExpr& ms_clslist_expr = ms_clslist;
+	ms_clslist.Hint(HINT_ASSEMBLY, "parallel");
 	ms_clslist.Hint(HINT_PKG, "ParallelMach");
 	ms_clslist.Hint(HINT_FILE, "Generated");
 	ms_clslist.HideStatement();
@@ -147,12 +149,12 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	auto& headers = Headers();
 	
 	Namespace& ns_ts = cu.GetAddNamespace("TS");
-	Namespace& ns_serial = ns_ts.GetAddNamespace("Serial");
+	Namespace& ns_parallel = ns_ts.GetAddNamespace("Parallel");
 	
-	ClassDecl& fcls_atomtype = ns_serial.GetAddClassDecl("AtomTypeCls");
-	ClassDecl& fcls_rtvis = ns_serial.GetAddClassDecl("RuntimeVisitor");
-	ClassDecl& fcls_packet = ns_serial.GetAddClassDecl("Packet");
-	ClassDecl& fcls_fwdscope = ns_serial.GetAddClassDecl("FwdScope");
+	ClassDecl& fcls_atomtype = ns_parallel.GetAddClassDecl("AtomTypeCls");
+	ClassDecl& fcls_rtvis = ns_parallel.GetAddClassDecl("RuntimeVisitor");
+	ClassDecl& fcls_packet = ns_parallel.GetAddClassDecl("Packet");
+	ClassDecl& fcls_fwdscope = ns_parallel.GetAddClassDecl("FwdScope");
 	
 	
 	TypeExpr te_atomtype;
@@ -179,7 +181,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	Vector<MExpr*> deflists, clslists;
 	
 	atom_types.Add("");
-	InitPre(ns_serial, "", deflists, clslists);
+	InitPre(ns_parallel, "", deflists, clslists);
 	
 	
 	
@@ -199,7 +201,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		}
 		Base& base = bases[i];
 		
-		Class& cls_h = ns_serial.GetAddClass(h_name);
+		Class& cls_h = ns_parallel.GetAddClass(h_name);
 		
 		String req_def;
 		int list_i = 0;
@@ -212,19 +214,26 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 				list_i = atom_types.Find(pre);
 				if (list_i < 0) {
 					req_def = def;
-					InitPre(ns_serial, pre, deflists, clslists);
+					InitPre(ns_parallel, pre, deflists, clslists);
 					list_i = atom_types.GetCount();
 					atom_types.Add(pre);
 				}
 			}
+			else if (key == "HINT_PKG") {
+				String value = h.args[i];
+				ASSERT(value.GetCount() > 2);
+				if (value.GetCount() > 2)
+					value = value.Mid(1, value.GetCount()-2);
+				cls_h.WeakHint(HINT_PKG, value);
+			}
 		}
 		
 		Index<String> inherits;
-		inherits.Add("Atom<" + h_name + ">");
+		/*inherits.Add("Atom<" + h_name + ">");
 		if (0)
 			inherits.Add(base_name + "<" + h_name + ">");
-		else
-			inherits.Add(base_name);
+		else*/
+		inherits.Add(base_name);
 		inherits.Append(h.inherits);
 		
 		{
@@ -241,7 +250,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		
 		for(int i = 0; i < inherits.GetCount(); i++) {
 			String cls_name = inherits[i];
-			Class& cls = ns_serial.GetAddClass(cls_name);
+			Class& cls = ns_parallel.GetAddClass(cls_name);
 			if (cls_name.Find("<") >= 0)
 				cls.tmpl.is = true;
 			else
@@ -259,8 +268,8 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 			MExpr& ms_rtti_expr = ms_rtti;
 			ms_rtti_expr.SetCall("RTTI_DECL" + IntStr(inherits.GetCount()));
 			ms_rtti_expr.AddSub().SetId(h_name);
-			ms_rtti_expr.AddSub().SetId("AtomT");
-			for(int i = 1; i < inherits.GetCount(); i++)
+			//ms_rtti_expr.AddSub().SetId("AtomT");
+			for(int i = 0; i < inherits.GetCount(); i++)
 				ms_rtti_expr.AddSub().SetId(inherits[i]);
 		}
 		
@@ -376,7 +385,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 		
 		// using CenterCustomerRef = Ref<CenterCustomer, AtomParent>;
 		{
-			UsingStatement& using_ref = ns_serial.GetAddUsing(h_name + "Ref");
+			UsingStatement& using_ref = ns_parallel.GetAddUsing(h_name + "Ref");
 			Expression& using_expr = using_ref;
 			using_expr.SetIdTemplate("Ref");
 			using_expr.Add().SetId(h_name);
@@ -427,13 +436,13 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	}
 	
 	/*
-	Class& cls_binary_sample = ns_serial.GetAddClass("BinarySample");
+	Class& cls_binary_sample = ns_parallel.GetAddClass("BinarySample");
 	cls_binary_sample.Hint(HINT_HIDDEN, "true");
 	
 	{
 		String sample_name = "SoundSample";
 		
-		Class& sample_type = ns_serial.GetAddClass(sample_name);
+		Class& sample_type = ns_parallel.GetAddClass(sample_name);
 		sample_type.Hint(HINT_PKG, "ParallelMach");
 		sample_type.Hint(HINT_FILE, "GenSamples");
 		sample_type.Hint(HINT_FWD_DECL_PKG, "ParallelMach");
@@ -445,7 +454,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	
 	
 	{
-		Class& cls_format = ns_serial.GetAddClass("Format");
+		Class& cls_format = ns_parallel.GetAddClass("Format");
 		cls_format.Hint(HINT_PKG, "ParallelMach");
 		cls_format.Hint(HINT_FILE, "GenFormats");
 		

@@ -9,7 +9,7 @@ NAMESPACE_SERIAL_BEGIN
 
 template <class Gfx>
 class BufferBaseT :
-	virtual public AtomBase
+	public AtomBase
 {
 	
 protected:

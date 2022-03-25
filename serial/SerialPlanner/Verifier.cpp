@@ -163,11 +163,11 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 		
 	if (!ext_sys && (ext_sys = CastPtr<LoopSystem>(&base))) {
 		ext_sys->WhenEnterOnceForward << THISBACK(OnEnterOnceForward);
-		ext_sys->WhenEnterAtomForward << THISBACK(OnEnterAtomForward);
+		ext_sys->WhenEnterLinkForward << THISBACK(OnEnterLinkForward);
 		ext_sys->WhenEnterFwdScopeForward << THISBACK(OnEnterFwdScopeForward);
 		
 		ext_sys->WhenLeaveOnceForward << THISBACK(OnLeaveOnceForward);
-		ext_sys->WhenLeaveAtomForward << THISBACK(OnLeaveAtomForward);
+		ext_sys->WhenLeaveLinkForward << THISBACK(OnLeaveLinkForward);
 		ext_sys->WhenLeaveFwdScopeForward << THISBACK(OnLeaveFwdScopeForward);
 	}
 	
@@ -244,10 +244,10 @@ void MachineVerifier::OnEnterOnceForward(PacketForwarder* fwd) {
 	
 }
 
-void MachineVerifier::OnEnterAtomForward(AtomBase* c) {
+void MachineVerifier::OnEnterLinkForward(LinkBase* c) {
 	if (!Thread::IsMain()) return;
 	
-	MVER_LOG("MachineVerifier::OnEnterAtomForward " << HexStr((void*)c));
+	MVER_LOG("MachineVerifier::OnEnterLinkForward " << HexStr((void*)c));
 	Enter(EXTCOMP_FORWARD);
 	
 	Scope& cur = stack.Top();
@@ -273,21 +273,21 @@ void MachineVerifier::OnEnterFwdScopeForward(FwdScope& f) {
 	vep = 0;
 	if ((c = CastPtr<LinkBase>(f.GetCurrent()))) {
 		if (!c->WhenEnterProcessPackets) {
-			c->WhenEnterProcessPackets << THISBACK(OnEnterProcessPackets);
-			c->WhenLeaveProcessPackets << THISBACK(OnLeaveProcessPackets);
+			c->WhenEnterProcessPackets.Add(THISBACK(OnEnterProcessPackets));
+			c->WhenLeaveProcessPackets.Add(THISBACK(OnLeaveProcessPackets));
 		}
 	}
 	else if ((vep = CastPtr<DefaultExchangePoint>(f.GetCurrent()))) {
 		if (!vep->WhenEnterValExPtForward) {
-			vep->WhenEnterValExPtForward << THISBACK(OnEnterValExPtForward);
-			vep->WhenLeaveValExPtForward << THISBACK(OnLeaveValExPtForward);
+			vep->WhenEnterValExPtForward.Add(THISBACK(OnEnterValExPtForward));
+			vep->WhenLeaveValExPtForward.Add(THISBACK(OnLeaveValExPtForward));
 		}
 	}
 	else TODO;
 	
 }
 
-void MachineVerifier::OnEnterProcessPackets(AtomBase& b, PacketIO& p) {
+void MachineVerifier::OnEnterProcessPackets(LinkBase& b, PacketIO& p) {
 	if (!Thread::IsMain()) return;
 	
 	MVER_LOG("MachineVerifier::OnEnterProcessPackets " << HexStr((void*)&b) << ", " << HexStr((void*)&*p.sink[0].p));
@@ -340,10 +340,10 @@ void MachineVerifier::OnLeaveOnceForward() {
 	
 }
 
-void MachineVerifier::OnLeaveAtomForward() {
+void MachineVerifier::OnLeaveLinkForward() {
 	if (!Thread::IsMain()) return;
 	
-	MVER_LOG("MachineVerifier::OnLeaveAtomForward");
+	MVER_LOG("MachineVerifier::OnLeaveLinkForward");
 	Leave(EXTCOMP_FORWARD);
 	
 }
@@ -382,7 +382,7 @@ void MachineVerifier::OnLeaveFwdScopeForward() {
 	MayLeaveTop();
 }
 
-void MachineVerifier::OnLeaveProcessPackets(AtomBase& b, PacketIO& io) {
+void MachineVerifier::OnLeaveProcessPackets(LinkBase& b, PacketIO& io) {
 	if (!Thread::IsMain()) return;
 	
 	MVER_LOG("MachineVerifier::OnLeaveStorePacket");
