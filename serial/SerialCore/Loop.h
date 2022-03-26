@@ -9,7 +9,6 @@ class Loop :
 {
 	//mutable Machine*	machine = 0;
 	//BitField<dword>		freeze_bits;
-	Serial::Space*		space = 0;
 	String				name;
 	String				prefab;
 	LoopId				id;
@@ -18,6 +17,9 @@ class Loop :
 	
 protected:
 	friend class LoopStore;
+	friend class ScriptLoader;
+	
+	Serial::Space*		space = 0;
 	
 	void SetId(LoopId i) {id = i;}
 	
@@ -60,17 +62,18 @@ public:
 	String				GetTreeString(int indent=0);
 	
 	Loop*				GetParent() const;
+	Space*				GetSpace() const;
 	//Machine&			GetMachine() const;
 	String				GetName() const {return name;}
 	String				GetDeepName() const;
 	bool				HasAtoms() const {return !links.IsEmpty();}
 	bool				HasLoops() const {return !loops.IsEmpty();}
 	
-	//void				Initialize(Loop& l, String prefab="Custom");
+	void				Initialize(Loop& l, String prefab="Custom");
 	
-	/*LoopRef				CreateEmpty();
+	//void				CopyTo(Loop& l) const;
+	LoopRef				CreateEmpty();
 	LoopRef				GetAddEmpty(String name);
-	void				CopyTo(Loop& l) const;*/
 	
 	bool				MakeLink(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
@@ -155,14 +158,14 @@ public:
 	AtomMap::Iterator			end()			{return links.end();}
 	LoopVec::Iterator			BeginLoop()		{return loops.begin();}*/
 	
-	void Visit(RuntimeVisitor& vis) {vis && links; vis || loops;}
+	void Visit(RuntimeVisitor& vis) {vis || links || loops;}
 	//void VisitSinks(RuntimeVisitor& vis);
 	//void VisitSources(RuntimeVisitor& vis);
 	
 private:
 	//StateVec				states;
 	//AtomMap				links;
-	Array<LinkBaseRef>		links;
+	LinkVec					links;
 	LoopVec					loops;
 };
 

@@ -69,9 +69,10 @@ public:
 	virtual bool			PassLinkSideSink(LinkBaseRef sink) {return true;}
 	virtual bool			PassLinkSideSource(LinkBaseRef src) {return true;}
 	
-	virtual void			Visit(RuntimeVisitor& vis) = 0;
+	virtual void			Visit(RuntimeVisitor& vis) {}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	
+	int						GetId() const;
 	void					ForwardAsync();
 	Packet					InitialPacket(int src_ch, off32 off);
 	Packet					ReplyPacket(int src_ch, const Packet& in);
@@ -123,8 +124,9 @@ public:
 //using LinkBaseRef = Ref<LinkBase>;
 
 
+using Atom = AtomBase;
 
-template<
+/*template<
 	typename Atom
 >
 struct Link :
@@ -143,7 +145,7 @@ public:
 	static ParallelTypeCls::Type GetSerialType() {return Atom::GetSerialType();}
 	
 	
-};
+};*/
 
 
 NAMESPACE_SERIAL_END

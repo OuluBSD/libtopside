@@ -9,7 +9,6 @@ class Space :
 	public MetaSpaceBase
 {
 	mutable Machine*	machine = 0;
-	Serial::Loop*		loop = 0;
 	//BitField<dword>		freeze_bits;
 	String				name;
 	String				prefab;
@@ -19,6 +18,9 @@ class Space :
 	
 protected:
 	friend class SpaceStore;
+	friend class Serial::ScriptLoader;
+	
+	Serial::Loop*		loop = 0;
 	
 	void SetId(SpaceId i) {id = i;}
 	

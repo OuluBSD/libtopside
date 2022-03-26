@@ -7,6 +7,7 @@ HEADER_ARG(			CenterCustomer,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			TestRealtimeSrc,	RollingValueBase,			pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
+HEADER_ARG(			TestRealtimeSrc,	HINT_PKG,					"AtomDebug")
 
 HEADER11(			TestRealtimeSink,	VoidSinkBase,				pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)

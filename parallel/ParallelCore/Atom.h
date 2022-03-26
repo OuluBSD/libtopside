@@ -65,6 +65,7 @@ public:
 	virtual void			Visit(RuntimeVisitor& vis) = 0;
 	virtual void			Uninitialize() = 0;
 	virtual void			UninitializeAtom() = 0;
+	virtual bool			Initialize(const Script::WorldState& ws) = 0;
 	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
 	virtual void			VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void			VisitSink(RuntimeVisitor& vis) = 0;
@@ -201,8 +202,13 @@ public:
 
 #define ATOM_RTTI(x)  RTTI_DECL1(x, Atom<x>)
 
-using AtomMapBase	= RefAtomTypeMapIndirect<AtomBase>;
 using AtomRefMap	= ArrayMap<AtomTypeCls,Ref<AtomBase>>;
+
+#if 0
+using AtomMap	= RefAtomTypeMapIndirect<AtomBase>;
+#else
+
+using AtomMapBase	= RefAtomTypeMapIndirect<AtomBase>;
 
 class AtomMap : public AtomMapBase {
 	
@@ -273,6 +279,7 @@ public:
 	#undef IS_EMPTY_SHAREDPTR
 	
 };
+#endif
 
 NAMESPACE_PARALLEL_END
 

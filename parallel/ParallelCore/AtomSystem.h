@@ -31,7 +31,6 @@ protected:
     
     void ForwardLinks(double dt, const char* id, LinkedList<AtomBaseRef>& atoms);
     
-    String GetDebugPacketString(AtomBaseRef& c, RealtimeSourceConfig* cfg);
     
 public:
 	

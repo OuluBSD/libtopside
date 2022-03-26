@@ -55,6 +55,7 @@ public:
     void RemoveDriver(LinkBaseRef p);
     void RemovePolling(LinkBaseRef p);
     
+    String GetDebugPacketString(LinkBaseRef& c, RealtimeSourceConfig* cfg);
     
 };
 

@@ -174,7 +174,7 @@ struct CpuGfx {
 	static void BeginRender();
 	static void EndRender();
 	
-	static Serial::VideoFormat& GetFormat(Serial::Format& fmt);
+	static Serial::VideoFormat& GetFormat(Parallel::Format& fmt);
 	
 };
 
@@ -273,7 +273,7 @@ struct OglGfx {
 	static void BeginRender() {}
 	static void EndRender() {}
 	
-	static Serial::FboFormat& GetFormat(Serial::Format& fmt);
+	static Serial::FboFormat& GetFormat(Parallel::Format& fmt);
 	
 };
 

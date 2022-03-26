@@ -8,5 +8,6 @@ file
 
 mainconfig
 	"" = "",
-	"" = "SCREEN";
+	"" = "SCREEN",
+	"" = "DEBUG_RT";
 

@@ -44,6 +44,12 @@ bool ScriptLoader::Initialize() {
 		return false;
 	}
 	
+	ss = mach.Find<SpaceStore>();
+	if (!ss) {
+		LOG("ScriptLoader requires SpaceStore present in machine");
+		return false;
+	}
+	
 	if (!DoPostLoad())
 		return false;
 	
@@ -252,19 +258,29 @@ bool ScriptLoader::LoadGlobalScope(Script::GlobalScope& glob) {
 
 LoopRef ScriptLoader::ResolveLoop(Script::Id& id) {
 	ASSERT(es);
-	LoopRef e;
-	LoopRef p = es->GetRoot();
+	LoopRef l0;
+	LoopRef l1 = es->GetRoot();
+	SpaceRef s0;
+	SpaceRef s1 = ss->GetRoot();
 	int i = 0, count = id.parts.GetCount();
-	TODO
-	/*for (const String& part : id.parts) {
+	
+	for (const String& part : id.parts) {
 		if (i++ == count - 1) {
-			e = p->GetAddEmpty(part);
+			l0 = l1->GetAddEmpty(part);
+			s0 = s1->GetAddEmpty(part);
+			l0->space = &*s0;
+			s0->loop = &*l0;
 		}
 		else {
-			p = p->GetAddLoop(part);
+			l1 = l1->GetAddLoop(part);
+			s1 = s1->GetAddSpace(part);
+			l1->space = &*s1;
+			s1->loop = &*l1;
 		}
-	}*/
-	return e;
+	}
+	
+	ASSERT(l0->GetSpace());
+	return l0;
 }
 
 void ScriptLoader::AddError(String msg) {

@@ -96,9 +96,9 @@ public:
 	RTTI_DECL0(InterfaceBase)
 	
 	virtual AtomBase* AsAtomBase() = 0;
-	virtual AtomTypeCls GetType() const = 0;
-	ValDevTuple GetSinkCls() const {return GetType().iface.sink;}
-	ValDevTuple GetSourceCls() const {return GetType().iface.src;}
+	AtomTypeCls GetAtomType() const;
+	ValDevTuple GetSinkCls() const {return GetAtomType().iface.sink;}
+	ValDevTuple GetSourceCls() const {return GetAtomType().iface.src;}
 	void Visit(RuntimeVisitor& vis) {}
 	
 };

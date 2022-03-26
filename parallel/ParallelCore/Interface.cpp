@@ -4,6 +4,14 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+
+AtomTypeCls InterfaceBase::GetAtomType() const {
+	InterfaceBase& b = const_cast<InterfaceBase&>(*this);
+	return b.AsAtomBase()->GetType();
+}
+
+
+
 bool DefaultExchangePoint::IsPacketStuck() {
 	return false;
 }

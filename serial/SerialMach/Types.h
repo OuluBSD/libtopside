@@ -37,6 +37,7 @@ class LoopStore;
 //using LoopRef				= Ref<Loop,					LoopParent>;
 using LoopStoreRef			= Ref<LoopStore,			ParallelSystemParent>;
 using LoopVec				= RefLinkedList<Loop,		LoopParent>;
+using LinkVec				= RefLinkedList<LinkBase,	LinkParent>;
 
 
 using SerialSystemParent	= MetaSystemParent;

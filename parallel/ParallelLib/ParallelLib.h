@@ -7,6 +7,7 @@
 //#include <IGraphics/IGraphics.h>
 
 #include "Base.h"
+#include "BaseAudio.h"
 #include "RegistrySystem.h"
 
 

@@ -71,7 +71,7 @@ private:
 	SDL_AudioSpec			audio_fmt;
 	SDL_AudioSpec			audio_desired;
 	SDL_AudioDeviceID		audio_dev = 0;
-	Serial::Format			fmt;
+	Parallel::Format		fmt;
 	dword					frames = 0;
 	
 	#ifdef flagDEBUG

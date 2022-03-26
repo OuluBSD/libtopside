@@ -16,6 +16,10 @@ Loop* Loop::GetParent() const {
 	return static_cast<Loop*>(RefScopeParent<LoopParent>::GetParentUnsafe().b);
 }
 
+Space* Loop::GetSpace() const {
+	return space;
+}
+
 /*void Loop::ClearInterfaces() {
 	for (auto iter = links.rbegin(); iter; --iter)
 		iter()->ClearSinkSource();
@@ -112,14 +116,30 @@ void Loop::ClearDeep() {
 	links.Clear();
 }
 
-/*LoopRef Loop::GetAddEmpty(String name) {
+LoopRef Loop::GetAddEmpty(String name) {
 	LoopRef l = FindLoopByName(name);
 	if (l)
 		return l;
 	l = CreateEmpty();
 	l->SetName(name);
 	return l;
-}*/
+}
+
+LoopRef Loop::CreateEmpty() {
+	Loop& l = loops.Add();
+	l.SetParent(this);
+	l.SetId(GetNextId());
+	Initialize(l);
+	return l;
+}
+
+void Loop::Initialize(Loop& l, String prefab) {
+	l.SetPrefab(prefab);
+	/*uint64 ticks = atom->GetMachine().GetTicks();
+	l.SetCreated(ticks);
+	l.SetChanged(ticks);*/
+	
+}
 
 LoopRef Loop::FindLoopByName(String name) {
 	for (LoopRef object : loops)

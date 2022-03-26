@@ -60,6 +60,7 @@ void AtomBase::RemoveAtomFromUpdateList() {
 
 
 
+#if 0
 
 void AtomMap::Dump() {
 	auto iter = AtomMapBase::begin();
@@ -74,7 +75,7 @@ void AtomMap::ReturnAtom(AtomStore& s, AtomBase* c) {
 	s.ReturnAtom(c);
 }
 
-
+#endif
 
 
 NAMESPACE_PARALLEL_END

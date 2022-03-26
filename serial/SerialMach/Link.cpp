@@ -29,6 +29,10 @@ ISinkRef LinkBase::GetSink() {
 	return atom->GetSink();
 }
 
+int LinkBase::GetId() const {
+	return id;
+}
+
 void LinkBase::ForwardAsync() {
 	RTLOG("LinkBase::ForwardAsync " << HexStr(last_cfg));
 	

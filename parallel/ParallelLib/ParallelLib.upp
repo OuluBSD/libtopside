@@ -10,6 +10,8 @@ file
 	Interfaces.h,
 	Base.h,
 	Base.cpp,
+	BaseAudio.h,
+	BaseAudio.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp;
 

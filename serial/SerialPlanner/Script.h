@@ -528,6 +528,7 @@ protected:
 	Vector<String> post_load_string;
 	Script::CompilationUnit root;
 	LoopStoreRef es;
+	SpaceStoreRef ss;
 	
 	Vector<ScriptError> errs;
 	bool collect_errors = false;

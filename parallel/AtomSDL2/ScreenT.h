@@ -20,7 +20,7 @@ private:
 	using OOScreen = OOSDL2::ScreenT<Gfx>;
 	using AltBaseT = SDL2BaseT<SDL2ScreenBaseT<Gfx>>;
 	One<OOScreen>		obj;
-    Serial::Format		fmt;
+    Parallel::Format	fmt;
 	OOSDL2::Events*		ev = 0;
 	EnvStateRef			env;
 	bool				close_machine = false;

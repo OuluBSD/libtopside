@@ -39,6 +39,8 @@ protected:
 	
 };
 
+using SpaceStoreRef = Ref<SpaceStore>;
+
 
 NAMESPACE_PARALLEL_END
 

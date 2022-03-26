@@ -19,9 +19,12 @@ namespace Serial {
 
 class LinkBase;
 class Loop;
+class ScriptLoader;
 using LoopParent			= DirExBaseParent;
+using LinkParent			= RefParent1<MetaDirectoryBase>;
 using LinkBaseRef			= Ref<LinkBase,				RefParent1<MetaDirectoryBase>>;
 using LoopRef				= Ref<Loop,					LoopParent>;
+using LinkRef				= Ref<LinkBase,				LinkParent>;
 
 class MachineVerifier;
 class ScriptLoopLoader;

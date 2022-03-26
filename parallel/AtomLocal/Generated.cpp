@@ -4,21 +4,6 @@ namespace TS {
 
 namespace Parallel {
 
-AtomTypeCls TestRealtimeSrc::GetAtomType()
-{
-	return ATOM11(TEST_REALTIME_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
-}
-
-void TestRealtimeSrc::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<RollingValueBase>(this);
-}
-
-AtomTypeCls TestRealtimeSrc::GetType() const
-{
-	return GetAtomType();
-}
-
 AtomTypeCls AudioHardwareSink::GetAtomType()
 {
 	return ATOM11(AUDIO_HARDWARE_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);

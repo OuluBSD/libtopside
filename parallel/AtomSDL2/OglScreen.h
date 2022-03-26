@@ -14,7 +14,7 @@ class SDL2ScreenBase :
 	public FramePollerBase
 {
 	One<OOSDL2::Screen>	obj;
-    Serial::Format		fmt;
+    Parallel::Format	fmt;
 	OOSDL2::Events*		ev = 0;
 	EnvStateRef			env;
 	bool				close_machine = false;

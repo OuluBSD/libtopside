@@ -8,7 +8,7 @@
 #endif
 
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 MachineVerifier* __latest_mver;
@@ -49,11 +49,15 @@ void MachineVerifier_OnLoopLoader_SearchNewSegment(ScriptLoopLoader* ll) {
 }
 
 
+NAMESPACE_PARALLEL_END
+
+
+NAMESPACE_SERIAL_BEGIN
 
 
 MachineVerifier::MachineVerifier() {
-	ASSERT(!__latest_mver);
-	__latest_mver = this;
+	ASSERT(!Parallel::__latest_mver);
+	Parallel::__latest_mver = this;
 	
 	Clear();
 }

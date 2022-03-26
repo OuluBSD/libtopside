@@ -3,8 +3,8 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
-Serial::VideoFormat& CpuGfx::GetFormat(Serial::Format& fmt) {return fmt.vid;}
-Serial::FboFormat& OglGfx::GetFormat(Serial::Format& fmt) {return fmt.fbo;}
+Serial::VideoFormat& CpuGfx::GetFormat(Parallel::Format& fmt) {return fmt.vid;}
+Serial::FboFormat& OglGfx::GetFormat(Parallel::Format& fmt) {return fmt.fbo;}
 
 NAMESPACE_TOPSIDE_END
 

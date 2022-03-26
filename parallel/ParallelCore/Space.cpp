@@ -66,6 +66,7 @@ AtomBaseRef Space::FindTypeCls(AtomTypeCls atom_type) {
 
 AtomBaseRef Space::AddPtr(AtomBase* comp) {
 	comp->SetParent(this);
+	TypeCls type = comp->GetTypeId();
 	atoms.AddBase(comp);
 	InitializeAtom(*comp);
 	return AtomBaseRef(this, comp);

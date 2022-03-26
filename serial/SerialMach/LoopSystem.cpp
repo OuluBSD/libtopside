@@ -153,5 +153,43 @@ void LoopSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 	lock.Leave();
 }
 
+String LoopSystem::GetDebugPacketString(LinkBaseRef& c, RealtimeSourceConfig* cfg) {
+	TODO
+	/*
+	int dbg_j = 0;
+	String line;
+	for (FwdScope scope(*c, *cfg); scope; scope++) {
+		scope.ForwardAddNext();
+		AtomBase* ab = CastPtr<AtomBase>(scope.GetCurrent());
+		if (ab) {
+			int sink_pk = 0;
+			int src_pk = 0;
+			
+			line << (line.IsEmpty() ? "| " : " | ");
+			
+			InterfaceSinkRef sink_iface = ab->GetSink();
+			int c = sink_iface->GetSinkCount();
+			for(int i = 0; i < c; i++) {
+				if (i) line << "+";
+				line << sink_iface->GetValue(i).GetQueueSize();
+			}
+			
+			line << "__";
+			
+			InterfaceSourceRef src_iface = ab->GetSource();
+			c = src_iface->GetSourceCount();
+			for(int i = 0; i < c; i++) {
+				if (i) line << "+";
+				line << src_iface->GetSourceValue(i).GetQueueSize();
+			}
+			
+		}
+	}
+	line << " |";
+	return line;
+	*/
+}
+
+
 
 NAMESPACE_SERIAL_END

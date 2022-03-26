@@ -2,25 +2,11 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 25.3.25 19:11:33
+// Last modified: 26.3.26 14:33:33
 
 namespace TS {
 
 namespace Parallel {
-
-class TestRealtimeSrc : public RollingValueBase {
-
-public:
-	RTTI_DECL1(TestRealtimeSrc, RollingValueBase)
-	COPY_PANIC(TestRealtimeSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
 
 class AudioHardwareSink : public PortaudioSink {
 

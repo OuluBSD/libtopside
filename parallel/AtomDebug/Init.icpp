@@ -27,6 +27,10 @@ INITBLOCK {
 	using namespace TS;
 	
 	Factory::RegisterAtom<CenterCustomer>();
+	Factory::RegisterAtom<TestRealtimeSrc>();
+	Factory::RegisterAtom<TestRealtimeSink>();
+	Factory::RegisterAtom<TestPollerSink>();
+	Factory::RegisterAtom<AudioDbgSrc>();
 	
 }
 
