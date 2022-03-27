@@ -18,6 +18,10 @@ SpaceId Space::GetNextId() {
 	return ++next_id;
 }
 
+Serial::Loop* Space::GetLoop() const {
+	return loop;
+}
+
 Space* Space::GetParent() const {
 	return static_cast<Space*>(RefScopeParent<SpaceParent>::GetParentUnsafe().b);
 }
@@ -256,6 +260,14 @@ String Space::GetDeepName() const {
 	return s;
 }
 
+void Space::UnlinkExchangePoints() {
+	for (ExchangePointRef& pt : pts) {
+		pt->Source()	->ClearLink();
+		pt->Sink()		->ClearLink();
+		pt->Clear();
+	}
+	pts.Clear();
+}
 
 
 

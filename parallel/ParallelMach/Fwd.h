@@ -18,6 +18,8 @@ using SpaceVec				= RefLinkedList<Space,		SpaceParent>;
 namespace Serial {
 
 class LinkBase;
+//class Link;
+using Link = LinkBase;
 class Loop;
 class ScriptLoader;
 using LoopParent			= DirExBaseParent;
@@ -28,6 +30,9 @@ using LinkRef				= Ref<LinkBase,				LinkParent>;
 
 class MachineVerifier;
 class ScriptLoopLoader;
+class LinkSystem;
+
+using LinkSystemRef			= Ref<LinkSystem,			MetaSystemParent>;
 
 namespace Script {
 class Action;

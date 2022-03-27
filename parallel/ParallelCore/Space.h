@@ -59,6 +59,7 @@ public:
 	void				Dump();
 	String				GetTreeString(int indent=0);
 	
+	Serial::Loop*		GetLoop() const;
 	Space*				GetParent() const;
 	Machine&			GetMachine() const;
 	String				GetName() const {return name;}
@@ -72,7 +73,7 @@ public:
 	SpaceRef			GetAddEmpty(String name);
 	void				CopyTo(Space& l) const;
 	
-	//bool				Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
+	bool				Link(AtomBaseRef src_comp, AtomBaseRef dst_comp, ValDevCls iface);
 	
 	//void				OnChange();
 	AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);
@@ -93,6 +94,8 @@ public:
 	
 	int					GetSpaceDepth() const;
 	bool				HasSpaceParent(SpaceRef pool) const;
+	
+	void				UnlinkExchangePoints();
 	
 	template<typename T>
 	RefT_Space<T> FindCast() {

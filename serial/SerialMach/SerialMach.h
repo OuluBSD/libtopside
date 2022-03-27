@@ -13,7 +13,11 @@
 
 #include "Fn.h"
 #include "Types.h"
+#include "Factory.h"
 #include "Link.h"
+#include "LinkStore.h"
+#include "LinkSystem.h"
+#include "LinkUtil.h"
 #include "Base.h"
 #include "LoopSystem.h"
 

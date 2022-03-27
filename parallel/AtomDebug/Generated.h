@@ -18,9 +18,10 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.customer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-
+	
 };
 
 class TestRealtimeSrc : public RollingValueBase {
@@ -32,6 +33,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.test")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -47,6 +49,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.realtime")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -62,6 +65,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -76,6 +80,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.dbg_generator")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 

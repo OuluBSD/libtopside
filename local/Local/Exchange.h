@@ -539,46 +539,14 @@ class MetaSpaceBase :
 	public RefScopeEnabler<MetaSpaceBase, MetaSystemBase, RefParent2<MetaSystemBase, MetaSpaceBase>>
 {
 	
+protected:
+	RefLinkedListIndirect<ExchangePoint> pts;
+	
 public:
 	RTTI_DECL_R0(MetaSpaceBase)
 	typedef MetaSpaceBase CLASSNAME;
 	MetaSpaceBase();
 	virtual ~MetaSpaceBase();
-	
-	String ToString() const;
-	
-	void Visit(RuntimeVisitor& vis) {}
-	
-	
-	
-public:
-	
-	typedef ExchangePoint* (*NewExpt)();
-	struct ExptData : Moveable<ExptData> {
-		NewExpt new_fn;
-	};
-	typedef VectorMap<TypeCls,ExptData> ExptMap;
-	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
-	template <class T> static ExchangePoint* New() {return new T();}
-	template <class T> static void RegisterExchangePoint() {
-		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());
-		d.new_fn = &New<T>;
-	}
-	
-};
-
-class MetaDirectoryBase :
-	public RefScopeEnabler<MetaDirectoryBase, MetaSystemBase, RefParent2<MetaSystemBase, MetaDirectoryBase>>
-{
-	
-protected:
-	RefLinkedListIndirect<ExchangePoint> pts;
-	
-public:
-	RTTI_DECL_R0(MetaDirectoryBase)
-	typedef MetaDirectoryBase CLASSNAME;
-	MetaDirectoryBase();
-	virtual ~MetaDirectoryBase();
 	
 	virtual void UnlinkAll();
 	
@@ -609,6 +577,38 @@ public:
 	String ToString() const;
 	
 	void Visit(RuntimeVisitor& vis) {vis || pts;}
+	
+	
+	
+public:
+	
+	typedef ExchangePoint* (*NewExpt)();
+	struct ExptData : Moveable<ExptData> {
+		NewExpt new_fn;
+	};
+	typedef VectorMap<TypeCls,ExptData> ExptMap;
+	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
+	template <class T> static ExchangePoint* New() {return new T();}
+	template <class T> static void RegisterExchangePoint() {
+		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());
+		d.new_fn = &New<T>;
+	}
+	
+};
+
+class MetaDirectoryBase :
+	public RefScopeEnabler<MetaDirectoryBase, MetaSystemBase, RefParent2<MetaSystemBase, MetaDirectoryBase>>
+{
+	
+public:
+	RTTI_DECL_R0(MetaDirectoryBase)
+	typedef MetaDirectoryBase CLASSNAME;
+	MetaDirectoryBase();
+	virtual ~MetaDirectoryBase();
+	
+	String ToString() const;
+	
+	void Visit(RuntimeVisitor& vis) {}
 	
 };
 

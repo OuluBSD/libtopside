@@ -15,6 +15,7 @@ void SimpleSerialMain(String title, bool start_machine) {
 			LoopStore& ents = *mach.Add<LoopStore>();
 		    mach.Add<AtomStore>();
 		    mach.Add<AtomSystem>();
+			TODO
 		    
 		    #if 0
 		    

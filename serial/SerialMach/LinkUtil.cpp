@@ -1,4 +1,4 @@
-#include "SerialLib.h"
+#include "SerialMach.h"
 
 NAMESPACE_SERIAL_BEGIN
 
@@ -135,15 +135,16 @@ void AsyncMemForwarderBase::Consume(int data_begin, Packet p) {
 
 
 
-void FramePollerBase::Update(double dt) {
+/*void FramePollerBase::Update(double dt) {
 	ASSERT(dt > 0.0);
 	frame_age += dt;
 	RTLOG("FramePollerBase::Update: dt: " << dt << ", frame_age: " << frame_age);
-}
+}*/
 
 bool FramePollerBase::IsReady(PacketIO& io) {
 	bool b = frame_age >= dt;
 	RTLOG("FramePollerBase::IsReady: " << (b ? "true" : "false"));
+	TODO
 	return b;
 }
 

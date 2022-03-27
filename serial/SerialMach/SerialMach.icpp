@@ -1,0 +1,37 @@
+#include "SerialMach.h"
+
+NAMESPACE_UPP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+INITBLOCK {
+	using namespace TS::Parallel;
+	using namespace TS::Serial;
+	using namespace TS;
+	
+	Serial::Factory::RegisterLink<CustomerLink>();
+	Serial::Factory::RegisterLink<PipeLink>();
+	Serial::Factory::RegisterLink<IntervalPipeLink>();
+	
+}
+
+END_UPP_NAMESPACE

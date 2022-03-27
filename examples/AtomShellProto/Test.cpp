@@ -17,6 +17,8 @@ void Test() {
 	    mach.Add<AtomStore>();
 	    mach.Add<AtomSystem>();
 	    mach.Add<LoopSystem>();
+	    TODO
+	    
 		LoopRef root = ents.GetRoot();
 	    
 	    reg.SetAppName("Test");

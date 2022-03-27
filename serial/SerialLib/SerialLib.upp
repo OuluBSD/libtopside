@@ -11,8 +11,6 @@ file
 	Generated.h,
 	EntitySystem.h,
 	EntitySystem.cpp,
-	AtomUtil.h,
-	AtomUtil.cpp,
 	CustomAtom.h,
 	GfxUtil.h,
 	GfxUtil.cpp,

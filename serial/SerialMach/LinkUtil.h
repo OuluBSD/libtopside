@@ -1,11 +1,11 @@
-#ifndef _SerialLib_AtomUtil_h_
-#define _SerialLib_AtomUtil_h_
+#ifndef _SerialLib_LinkUtil_h_
+#define _SerialLib_LinkUtil_h_
 
 NAMESPACE_SERIAL_BEGIN
 
 
 class AsyncMemForwarderBase :
-	virtual public LinkBase
+	public Link
 {
 	Packet		partial_packet;
 	byte*		write_mem = 0;
@@ -31,7 +31,7 @@ public:
 
 
 class FramePollerBase :
-	public AtomBase
+	public Link
 {
 	double		dt = 0;
 	double		frame_age = 0;
@@ -39,7 +39,7 @@ class FramePollerBase :
 	
 public:
 	
-	void	Update(double dt) override;
+	//void	Update(double dt) override;
 	bool	IsReady(PacketIO& io) override;
 	
 	void	Visit(RuntimeVisitor& vis) override {}
@@ -50,7 +50,7 @@ public:
 
 
 class CenterDriver :
-	virtual public LinkBase
+	public Link
 {
 	
 protected:

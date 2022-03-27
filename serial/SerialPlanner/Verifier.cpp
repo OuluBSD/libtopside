@@ -165,7 +165,7 @@ void MachineVerifier::OnEnterSystemUpdate(SystemBase& base) {
 	cur.AddEnter(ONCE_FORWARD);
 	cur.AddEnter(SCRIPT_LOAD);
 		
-	if (!ext_sys && (ext_sys = CastPtr<LoopSystem>(&base))) {
+	if (!ext_sys && (ext_sys = CastPtr<LinkSystem>(&base))) {
 		ext_sys->WhenEnterOnceForward << THISBACK(OnEnterOnceForward);
 		ext_sys->WhenEnterLinkForward << THISBACK(OnEnterLinkForward);
 		ext_sys->WhenEnterFwdScopeForward << THISBACK(OnEnterFwdScopeForward);

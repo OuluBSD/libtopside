@@ -12,11 +12,13 @@ bool SingleMachine::Open(void(*arg_fn)()) {
 	Machine& mach = GetActiveMachine();
 	
 	RegistrySystemRef reg = mach.Add<RegistrySystem>();
-	LoopStoreRef loops = mach.Add<LoopStore>();
-	mach.Add<LoopSystem>();
-	mach.Add<SpaceStore>();
 	mach.Add<AtomStore>();
     mach.Add<AtomSystem>();
+	mach.Add<SpaceStore>();
+	mach.Add<LinkStore>();
+	mach.Add<LinkSystem>();
+	mach.Add<LoopStore>();
+	mach.Add<LoopSystem>();
     mach.Add<ScriptLoader>();
     
     reg->SetAppName("Non-screen machine");

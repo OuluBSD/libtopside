@@ -257,6 +257,7 @@ void SerialInitializer() {
 		verifier.AddSystem<AtomStore>();
 		verifier.AddSystem<AtomSystem>();
 		verifier.AddSystem<ScriptLoader>();
+		TODO
 		
 		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
 		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));

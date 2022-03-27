@@ -4,7 +4,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-template<class T> using SerialTypeMap	= LinkedMap<ParallelTypeCls, T>;
+template<class T> using ParallelTypeMap	= LinkedMap<ParallelTypeCls, T>;
 template<class T> using AtomTypeMap		= LinkedMap<AtomTypeCls, T>;
 
 

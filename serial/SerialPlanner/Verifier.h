@@ -50,7 +50,7 @@ struct VerifierSystem {
 
 class MachineVerifier {
 	Machine* mach = 0;
-	LoopSystem* ext_sys = 0;
+	LinkSystem* ext_sys = 0;
 	VerifierLoop root;
 	Array<VerifierSystem> sys;
 	

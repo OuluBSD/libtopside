@@ -13,12 +13,20 @@ LinkBase::~LinkBase() {
 	DBG_DESTRUCT
 }
 
-String LinkBase::ToString() const {
-	TODO
+Parallel::Machine& LinkBase::GetMachine() {
+	return atom->GetMachine();
 }
 
-AtomTypeCls LinkBase::GetType() const {
+String LinkBase::ToString() const {
+	return GetDynamicName();
+}
+
+AtomTypeCls LinkBase::GetAtomType() const {
 	return atom->GetType();
+}
+
+LinkTypeCls LinkBase::GetLinkType() const {
+	TODO
 }
 
 ISourceRef LinkBase::GetSource() {
@@ -36,14 +44,12 @@ int LinkBase::GetId() const {
 void LinkBase::ForwardAsync() {
 	RTLOG("LinkBase::ForwardAsync " << HexStr(last_cfg));
 	
-	TODO
-	/*if (!last_cfg)
+	if (!last_cfg)
 		return;
 	
 	FwdScope fwd(this, *last_cfg);
 	fwd.SetOnce();
-	fwd.Forward();*/
-	
+	fwd.Forward();
 }
 
 bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
@@ -113,16 +119,6 @@ Packet LinkBase::ReplyPacket(int src_ch, const Packet& in, Packet content) {
 	return to;
 }
 
-bool LinkBase::ProcessPackets(PacketIO& io) {
-	PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
-	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	src.p = ReplyPacket(0, sink.p);
-	src.p->AddRouteData(src.from_sink_ch);
-	return true;
-}
-
 void LinkBase::SetPrimarySinkQueueSize(int i) {
 	GetSink()->GetValue(0).SetMinQueueSize(i);
 }
@@ -150,11 +146,11 @@ bool LinkBase::LinkSideSink(LinkBaseRef sink, int local_ch_i, int other_ch_i) {
 	if (!sink)
 		return false;
 	
-	AtomTypeCls type = sink->GetType();
+	AtomTypeCls type = sink->GetAtomType();
 	//DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSink(sink)) {
-		RTLOG("LinkBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetType().ToString());
+		RTLOG("LinkBase::LinkSideSink: local " << local_ch_i << " other " << other_ch_i << ": " << GetLinkType().ToString());
 		
 		Exchange& ex = side_sink_conn.Add();
 		ex.other = sink;
@@ -198,7 +194,7 @@ bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
 	if (!src)
 		return false;
 	
-	AtomTypeCls type = src->GetType();
+	AtomTypeCls type = src->GetAtomType();
 	//DUMP(type);
 	ASSERT(type.IsRolePipe());
 	if (PassLinkSideSource(src)) {

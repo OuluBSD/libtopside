@@ -1,5 +1,5 @@
 #include "ParallelCore.h"
-
+#include <SerialMach/SerialMach.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -18,7 +18,7 @@ bool DefaultExchangePoint::IsPacketStuck() {
 
 void DefaultExchangePoint::ForwardExchange(FwdScope& fwd) {
 	Ref<DefaultInterfaceSink> sink = this->sink;
-	TODO //fwd.AddNext(sink->AsAtomBase()->GetPacketForwarder());
+	fwd.AddNext(sink->AsAtomBase()->GetLink()->GetPacketForwarder());
 }
 
 void DefaultExchangePoint::ForwardSetup(FwdScope& fwd) {

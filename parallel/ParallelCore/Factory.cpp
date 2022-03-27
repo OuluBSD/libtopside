@@ -54,6 +54,15 @@ const Vector<Factory::Link>& Factory::GetSinkAtoms(AtomTypeCls src_atom) {
 	return d.sink_links;
 }
 
+LinkTypeCls Factory::GetAtomLinkType(AtomTypeCls atom) {
+	auto& m = Factory::AtomDataMap();
+	int i = AtomDataMap().Find(atom);
+	ASSERT(i >= 0);
+	if (i < 0)
+		return LinkTypeCls();
+	return AtomDataMap()[i].link_type();
+}
+
 
 
 NAMESPACE_PARALLEL_END

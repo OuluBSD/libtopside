@@ -19,18 +19,18 @@ protected:
 	
 	
 public:
-	RTTI_DECL0(CustomerBase);
+	RTTI_DECL1(CustomerBase, Atom)
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
+	bool ProcessPacket(PacketValue& v) override;
 	
-	/*RTSrcConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
-	bool PostInitialize() override;
+	RTSrcConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
+	/*bool PostInitialize() override;
 	void Forward(FwdScope& fwd) override;
-	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}
-	bool ProcessPackets(PacketIO& io) override;
-	void UpdateConfig(double dt) override;*/
+	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}*/
+	void UpdateConfig(double dt) override;
 	
 };
 
@@ -43,12 +43,12 @@ class RollingValueBase :
 	Format				internal_fmt;
 	
 public:
-	RTTI_DECL0(RollingValueBase)
+	RTTI_DECL1(RollingValueBase, Atom)
 	bool Initialize(const Script::WorldState& ws) override;
-	//bool ProcessPackets(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	void Uninitialize() override {}
-	
+	bool ProcessPacket(PacketValue& v) override;
+	const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 };
 
@@ -59,18 +59,18 @@ class VoidSinkBase :
 {
 	byte				rolling_value = 0;
 	Format				internal_fmt;
-	RunningFlag			flag;
 	
 public:
-	RTTI_DECL0(VoidSinkBase)
+	RTTI_DECL1(VoidSinkBase, Atom)
 	typedef VoidSinkBase CLASSNAME;
-	~VoidSinkBase() {ASSERT(!flag.IsRunning());}
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	//very old: void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void Visit(RuntimeVisitor& vis) override {}
+	bool ProcessPacket(PacketValue& v) override;
+	bool Consume(const void* data, int len) override;
+	const Format& GetInternalFormat() const override {return internal_fmt;}
 	
-	void IntervalSinkProcess();
 	
 	
 };
@@ -91,13 +91,15 @@ class VoidPollerSinkBase :
 	int					dbg_total_bytes = 0;
 	
 public:
-	RTTI_DECL0(VoidPollerSinkBase);
+	RTTI_DECL1(VoidPollerSinkBase, Atom)
 	bool	Initialize(const Script::WorldState& ws) override;
 	void	Uninitialize() override;
 	/*bool	ProcessPackets(PacketIO& io) override;
 	void	Update(double dt) override;
 	bool	IsReady(PacketIO& io) override;*/
 	void	Visit(RuntimeVisitor& vis) override {}
+	bool ProcessPacket(PacketValue& v) override;
+	const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
 };

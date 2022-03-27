@@ -467,7 +467,7 @@ void ScriptLoopLoader::DumpLoop() {
 	for (Script::ActionNode* n : seg.ep.plan) {
 		const Script::WorldState& ws = n->GetWorldState();
 		AtomTypeCls atom = ws.GetAtom();
-		const auto& d = Serial::Factory::AtomDataMap().Get(atom);
+		const auto& d = Parallel::Factory::AtomDataMap().Get(atom);
 		if (ws.IsAddAtom()) {
 			LOG(pos++ << ": add atom: " << d.name);
 		}
@@ -646,22 +646,44 @@ bool ScriptLoopLoader::Load() {
 		if (ws.IsAddAtom()) {
 			bool is_last = plan_i == seg.ep.plan.GetCount()-1;
 			AtomTypeCls atom = ws.GetAtom();
-			AtomBaseRef ab =
-				is_last ?
-					l->FindTypeCls(atom) :
-					l->GetAddTypeCls(atom);
+			LinkTypeCls link = Parallel::Factory::GetAtomLinkType(atom);
+			LinkBaseRef lb;
+			AtomBaseRef ab;
+			
+			if (is_last) {
+				ab = l->GetSpace()->FindTypeCls(atom);
+				lb = l->FindTypeCls(link);
+			}
+			else {
+				ab = l->GetSpace()->GetAddTypeCls(atom);
+				lb = l->GetAddTypeCls(link);
+			}
+			
 			if (!ab) {
-				String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
+				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
 				SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
 				DUMP(atom);
 				ASSERT(0);
 				return false;
 			}
 			
+			if (!lb) {
+				String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+				SetError("Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+				DUMP(atom);
+				ASSERT(0);
+				return false;
+			}
+			
 			ab->SetId(id);
+			lb->SetId(id);
+			
+			ab->link = &*lb;
+			lb->atom = &*ab;
 			
 			auto& c = added_atoms.Add();
 			c.r					= ab;
+			c.l					= lb;
 			c.plan_i			= plan_i;
 			c.seg_i				= seg_i;
 			c.iface				= n->GetInterface();
@@ -696,7 +718,13 @@ bool ScriptLoopLoader::Load() {
 			}
 			
 			if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
-				const auto& a = Serial::Factory::AtomDataMap().Get(type);
+				const auto& a = Parallel::Factory::AtomDataMap().Get(type);
+				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+				return false;
+			}
+			
+			if (!lb->Initialize(ws)) {
+				const auto& a = Parallel::Factory::AtomDataMap().Get(type);
 				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
@@ -724,14 +752,13 @@ bool ScriptLoopLoader::Load() {
 		ValDevCls common_vd = sink_ws.GetCommonSink();
 		ASSERT(common_vd.IsValid());
 		
-		TODO
-		/*if (!l->Link(src, sink, common_vd)) {
+		if (!l->MakeLink(src, sink, common_vd)) {
 			AtomTypeCls atom = sink_ws.GetAtom();
-			String atom_name = Serial::Factory::AtomDataMap().Get(atom).name;
-			String src_sink_name = Serial::Factory::IfaceLinkDataMap().Get(common_vd).name;
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			String src_sink_name = Parallel::Factory::IfaceLinkDataMap().Get(common_vd).name;
 			SetError("Could not link atom '" + atom_name + "' source '" + src_sink_name + "' at '" + def.id.ToString() + "'");
 			return false;
-		}*/
+		}
 		
 		src->SetInterface(src_info.iface);
 		
@@ -777,8 +804,8 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	int c = added_atoms.GetCount()-1;
 	int total_max = 1000000;
 	int total_min = 0;
-	TODO
-	/*for(int i = 0; i < c; i++) {
+	
+	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
 		InterfaceSourceRef src = info.r->GetSource();
 		int src_c = src->GetSourceCount();
@@ -797,7 +824,8 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			total_min = max(total_min, sink_min_packets);
 			total_max = min(total_max, sink_max_packets);
 		}
-	}*/
+	}
+	
 	if (total_min > total_max) {
 		total_max = total_min;
 	}
@@ -806,8 +834,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 	
 	for(int i = 0; i < c; i++) {
 		AddedAtom& info = added_atoms[i];
-		TODO
-		/*
+		
 		InterfaceSourceRef src = info.r->GetSource();
 		InterfaceSinkRef sink = info.r->GetSink();
 		
@@ -823,7 +850,7 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 			Value& v = src->GetSourceValue(k);
 			v.SetMinQueueSize(total_min);
 			v.SetMaxQueueSize(total_max);
-		}*/
+		}
 			
 		/*
 		//DUMP(min_packets);
@@ -835,12 +862,11 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 
 
 bool ScriptLoopLoader::PostInitialize() {
-	TODO
-	/*for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		AddedAtom& a = added_atoms[i];
-		if (!a.r->PostInitialize())
+		if (!a.l->PostInitialize())
 			return false;
-	}*/
+	}
 	return true;
 }
 

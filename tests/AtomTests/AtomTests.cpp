@@ -62,6 +62,7 @@ void Main() {
 		verifier.AddSystem<AtomStore>();
 		verifier.AddSystem<AtomSystem>();
 		//verifier.AddSystem<EonLoader>();
+		TODO
 		
 		auto& ent		= verifier.GetRoot().AddLoop("tester").AddLoop("generator").AddEntity();
 		auto& customer	= ent.AddAtomWith<CenterCustomer>	(VD(CENTER,ORDER));

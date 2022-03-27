@@ -81,20 +81,11 @@ void Loop::UnlinkDeep() {
 		it().UnlinkDeep();
 	}
 	
-	UnlinkExchangePoints();
+	space->UnlinkExchangePoints();
 	
 	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UnlinkAll();
 	}*/
-}
-
-void Loop::UnlinkExchangePoints() {
-	for (ExchangePointRef& pt : pts) {
-		pt->Source()	->ClearLink();
-		pt->Sink()		->ClearLink();
-		pt->Clear();
-	}
-	pts.Clear();
 }
 
 /*void Loop::ClearAtomsDeep() {
@@ -141,6 +132,28 @@ void Loop::Initialize(Loop& l, String prefab) {
 	
 }
 
+LinkBaseRef Loop::GetAddTypeCls(LinkTypeCls cls) {
+	LinkBaseRef cb = FindTypeCls(cls);
+	return cb ? cb : AddPtr(space->GetMachine().Get<LinkStore>()->CreateLinkTypeCls(cls));
+}
+
+LinkBaseRef Loop::AddPtr(LinkBase* comp) {
+	comp->SetParent(this);
+	LinkTypeCls type = comp->GetLinkType();
+	links.Add(type, comp);
+	InitializeLink(*comp);
+	return LinkBaseRef(this, comp);
+}
+
+LinkBaseRef Loop::FindTypeCls(LinkTypeCls atom_type) {
+	for (LinkBaseRef& l : links) {
+		LinkTypeCls type = l->GetLinkType();
+		if (type == atom_type)
+			return l;
+	}
+	return LinkBaseRef();
+}
+
 LoopRef Loop::FindLoopByName(String name) {
 	for (LoopRef object : loops)
 		if (object->GetName() == name)
@@ -150,6 +163,16 @@ LoopRef Loop::FindLoopByName(String name) {
 
 void Loop::Dump() {
 	LOG(GetTreeString());
+}
+
+void Loop::InitializeLinks() {
+	for(auto& comp : links.GetValues())
+		InitializeLink(*comp);
+}
+
+void Loop::InitializeLink(LinkBase& comp) {
+	comp.SetParent(this);
+	//comp.Initialize();
 }
 
 String Loop::GetTreeString(int indent) {
@@ -169,7 +192,7 @@ String Loop::GetTreeString(int indent) {
 	return s;
 }
 
-/*bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
+bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface) {
 	ASSERT(iface.IsValid());
 	InterfaceSourceRef src = src_atom->GetSource();
 	InterfaceSinkRef sink = dst_atom->GetSink();
@@ -177,12 +200,12 @@ String Loop::GetTreeString(int indent) {
 	if (!src || !sink)
 		return false;
 	
-	ASSERT(src	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
-	ASSERT(sink	->AsAtomBase()->GetLoop()->HasLoopParent(AsRefT()));
+	ASSERT(src	->AsAtomBase()->GetSpace()->GetLoop()->HasLoopParent(AsRefT()));
+	ASSERT(sink	->AsAtomBase()->GetSpace()->GetLoop()->HasLoopParent(AsRefT()));
 	CookieRef src_cookie, sink_cookie;
 	
 	if (src->Accept(sink, src_cookie, sink_cookie)) {
-		auto& sdmap = Serial::Factory::IfaceLinkDataMap();
+		auto& sdmap = Parallel::Factory::IfaceLinkDataMap();
 		int i = sdmap.Find(iface);
 		if (i < 0) {
 			LOG("error: no exchange-point class set for type " + iface.ToString());
@@ -198,17 +221,17 @@ String Loop::GetTreeString(int indent) {
 		
 		TypeCls expt_type = src_d.cls;
 		ASSERT(expt_type);
-		ExchangePointRef ep = MetaDirectoryBase::Add(expt_type);
+		ExchangePointRef ep = space->MetaSpaceBase::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
 		src->Link(ep, sink, src_cookie, sink_cookie);
-		ep->Init(this);
+		ep->Init(this->GetSpace());
 		ep->Set(src, sink, src_cookie, sink_cookie);
-		src_atom->SetPrimarySink(dst_atom);
-		dst_atom->SetPrimarySource(src_atom);
+		src_atom->GetLink()->SetPrimarySink(dst_atom->GetLink()->AsRefT());
+		dst_atom->GetLink()->SetPrimarySource(src_atom->GetLink()->AsRefT());
 		return true;
 	}
 	return false;
-}*/
+}
 
 /*EnvStateRef Loop::FindNearestState(String name) {
 	Loop* l = this;

@@ -13,6 +13,7 @@
 #include "Fwd.h"
 #include "Generated.h"
 #include "Types.h"
+#include "FwdTypes.h"
 #include "Util.h"
 #include "SampleBase.h"
 #include "Samples.h"

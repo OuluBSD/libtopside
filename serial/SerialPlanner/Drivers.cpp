@@ -72,16 +72,16 @@ bool ScriptDriverLoader::Load() {
 		
 		RTLOG("Loading driver atom " << type.ToString());
 		
-		AtomBaseRef ab = l->FindTypeCls(type);
+		AtomBaseRef ab = l->GetSpace()->FindTypeCls(type);
 		if (ab) {
 			SetError("loop '" + def.id.ToString() + "' already has atom: " + type.ToString());
 			return false;
 		}
 		
-		ab = l->GetAddTypeCls(type);
+		ab = l->GetSpace()->GetAddTypeCls(type);
 		
 		if (!ab) {
-			String atom_name = Serial::Factory::AtomDataMap().Get(type).name;
+			String atom_name = Parallel::Factory::AtomDataMap().Get(type).name;
 			SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
 			DUMP(type);
 			ASSERT(0);

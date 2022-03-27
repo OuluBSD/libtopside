@@ -51,7 +51,6 @@ public:
 	
 	void				Clear();
 	void				UnlinkDeep();
-	void				UnlinkExchangePoints();
 	void				ClearInterfacesDeep();
 	void				UnrefDeep();
 	//void				UninitializeAtomsDeep();
@@ -79,18 +78,18 @@ public:
 	
 	void				OnChange();
 	/*AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);*/
-	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls) {return space->GetAddTypeCls(cls);}
-	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type) {return space->FindTypeCls(atom_type);}
+	LinkBaseRef			GetAddTypeCls(LinkTypeCls cls);
+	LinkBaseRef			FindTypeCls(LinkTypeCls atom_type);
 	LoopRef				FindLoopByName(String name);
 	
 	
 	
-	//AtomBaseRef			AddPtr(AtomBase* atom);
-	/*void				InitializeAtoms();
-	void				InitializeAtom(AtomBase& atom);
-	void				InitializeAtomRef(AtomBaseRef atom) {return InitializeAtom(*atom);}
-	void				UninitializeAtoms();
-	void				ClearAtoms();*/
+	LinkBaseRef			AddPtr(LinkBase* link);
+	void				InitializeLink(LinkBase& atom);
+	void				InitializeLinks();
+	/*void				InitializeLinkRef(LinkBaseRef link) {return InitializeAtom(*link);}
+	void				UninitializeLinks();
+	void				ClearLinks();*/
 	//void				ClearInterfaces();
 	void				AppendCopy(const Loop& l);
 	
@@ -165,7 +164,7 @@ public:
 private:
 	//StateVec				states;
 	//AtomMap				links;
-	LinkVec					links;
+	LinkMap					links;
 	LoopVec					loops;
 };
 

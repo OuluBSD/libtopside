@@ -167,7 +167,7 @@ bool ScriptConnectionSolver::FindAcceptedLinks() {
 				ASSERT(b_side_id >= 0);
 				ASSERT(b_ws.IsAddAtom());
 				AtomTypeCls b_atom = b_ws.GetAtom();
-				auto& b_d = Serial::Factory::AtomDataMap().Get(b_atom);
+				auto& b_d = Parallel::Factory::AtomDataMap().Get(b_atom);
 				const Script::Statement& b_stmt = *b_opt.stmt;
 				const Array<Script::Statement>& b_conds = b_opt.is_src ? b_stmt.src_side_conds : b_stmt.sink_side_conds;
 				
@@ -183,7 +183,7 @@ bool ScriptConnectionSolver::FindAcceptedLinks() {
 					ASSERT(a_side_id >= 0);
 					ASSERT(a_ws.IsAddAtom());
 					AtomTypeCls a_atom = a_ws.GetAtom();
-					auto& a_d = Serial::Factory::AtomDataMap().Get(a_atom);
+					auto& a_d = Parallel::Factory::AtomDataMap().Get(a_atom);
 					const Script::Statement& a_stmt = *a_opt.stmt;
 					const Array<Script::Statement>& a_conds = a_opt.is_src ? a_stmt.src_side_conds : a_stmt.sink_side_conds;
 					

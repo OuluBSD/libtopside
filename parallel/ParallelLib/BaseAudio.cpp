@@ -35,8 +35,10 @@ void AudioGenBase::Uninitialize() {
 void AudioGenBase::Forward(FwdScope& fwd) {
 	
 }
-
-bool AudioGenBase::ProcessPackets(PacketIO& io) {
+*/
+bool AudioGenBase::ProcessPacket(PacketValue& v) {
+	TODO
+	/*
 	PacketIO::Sink& sink = io.sink[0];
 	PacketIO::Source& src = io.src[0];
 	Packet& out = src.p;
@@ -53,9 +55,10 @@ bool AudioGenBase::ProcessPackets(PacketIO& io) {
 	out->Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	
-	RTLOG("AudioGenBase::StorePacket: offset " << (int)off << " " << out->ToStringWithHash());
+	RTLOG("AudioGenBase::ProcessPacket: offset " << (int)off << " " << out->ToStringWithHash());
+	*/
 	return true;
 }
-*/
+
 
 NAMESPACE_PARALLEL_END

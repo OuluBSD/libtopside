@@ -302,7 +302,31 @@ MetaSpaceBase::~MetaSpaceBase() {
 
 String MetaSpaceBase::ToString() const {
 	String s = GetDynamicName();
+	s << " [expts: " << pts.GetCount() << "]";
 	return s;
+}
+
+void MetaSpaceBase::Remove(ExchangePoint* expt) {
+	for (auto iter = pts.begin(); iter; ++iter) {
+		if (*iter == expt) {
+			pts.Remove(iter);
+			return;
+		}
+	}
+	THROW(Exc("MetaSpaceBase::Remove: internal error"));
+}
+
+void MetaSpaceBase::UnlinkAll() {
+	pts.Clear();
+}
+
+ExchangePointRef MetaSpaceBase::Add(TypeCls expt) {
+	const auto& m = MetaSpaceBase::ExptDataMap();
+	const auto& d = m.Get(expt);
+	ExchangePoint* o = d.new_fn();
+	pts.Add(o);
+	o->SetParent(this);
+	return o->AsRefT();
 }
 
 
@@ -319,33 +343,8 @@ MetaDirectoryBase::~MetaDirectoryBase() {
 
 String MetaDirectoryBase::ToString() const {
 	String s = GetDynamicName();
-	s << " [expts: " << pts.GetCount() << "]";
 	return s;
 }
-
-void MetaDirectoryBase::Remove(ExchangePoint* expt) {
-	for (auto iter = pts.begin(); iter; ++iter) {
-		if (*iter == expt) {
-			pts.Remove(iter);
-			return;
-		}
-	}
-	THROW(Exc("MetaDirectoryBase::Remove: internal error"));
-}
-
-void MetaDirectoryBase::UnlinkAll() {
-	pts.Clear();
-}
-
-/*ExchangePointRef MetaDirectoryBase::Add(TypeCls expt) {
-	TODO directory has space always, use that ptr here
-	const auto& m = MetaSpaceBase::ExptDataMap();
-	const auto& d = m.Get(expt);
-	ExchangePoint* o = d.new_fn();
-	pts.Add(o);
-	o->SetParent(this);
-	return o->AsRefT();
-}*/
 
 
 

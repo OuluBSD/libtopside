@@ -34,6 +34,10 @@ Space& AtomBase::GetParent() {
 	return *((SP*)this)->GetParent().AsStatic<Space>();
 }
 
+Serial::Link* AtomBase::GetLink() {
+	return link;
+}
+
 String AtomBase::ToString() const {
 	return GetDynamicName();
 }
@@ -52,6 +56,18 @@ void AtomBase::AddAtomToUpdateList() {
 
 void AtomBase::RemoveAtomFromUpdateList() {
 	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveUpdated(AtomBase::AsRefT());
+}
+
+int AtomBase::FindSourceWithValDev(ValDevCls vd) {
+	InterfaceSourceRef src = GetSource();
+	int c = src->GetSourceCount();
+	for(int i = 0; i < c; i++) {
+		Value& v = src->GetSourceValue(i);
+		Format f = v.GetFormat();
+		if (f.vd == vd)
+			return i;
+	}
+	return -1;
 }
 
 

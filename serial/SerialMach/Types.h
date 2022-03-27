@@ -48,13 +48,6 @@ typedef dword LoopId;
 
 
 
-
-
-
-
-
-
-
 NAMESPACE_SERIAL_END
 
 #endif

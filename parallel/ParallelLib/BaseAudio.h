@@ -120,7 +120,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
 	//void Forward(FwdScope& fwd) final;
-	//bool ProcessPackets(PacketIO& io) final;
+	bool ProcessPacket(PacketValue& v) override;
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	

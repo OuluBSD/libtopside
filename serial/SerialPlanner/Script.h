@@ -147,6 +147,7 @@ protected:
 	// Implement found loop
 	struct AddedAtom {
 		AtomBaseRef		r;
+		LinkBaseRef		l;
 		int				plan_i;
 		int				seg_i;
 		IfaceConnTuple	iface;

@@ -554,7 +554,6 @@ template<class T, class Parent = RefParent1<typename T::Parent>>
 using RefAtomTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 
 
-
 NAMESPACE_PARALLEL_END
 
 

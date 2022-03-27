@@ -11,8 +11,9 @@ class LinkBase :
 	
 protected:
 	friend class LoopSystem;
+	friend class LinkSystem;
 	
-	Parallel::AtomBaseRef atom;
+	Parallel::AtomBase* atom = 0;
 	
 	
 public:
@@ -58,26 +59,27 @@ protected:
 	bool					IsPrimarySourceFull();
 	
 public:
-	virtual bool			Initialize(const Script::WorldState& ws) {return true;}
-	virtual void			Uninitialize() {}
+	virtual bool			Initialize(const Script::WorldState& ws) = 0;
+	virtual void			Uninitialize() = 0;
+	virtual bool			ProcessPackets(PacketIO& io) = 0;
 	virtual bool			ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
 	virtual bool			IsConsumedPartialPacket() {return 0;}
 	virtual void			Forward(FwdScope& fwd) {}
 	virtual bool			PostInitialize() {return true;}
-	virtual bool			ProcessPackets(PacketIO& io);
 	virtual bool			IsReady(PacketIO& io) {return atom->IsReady(io);}
 	virtual bool			PassLinkSideSink(LinkBaseRef sink) {return true;}
 	virtual bool			PassLinkSideSource(LinkBaseRef src) {return true;}
 	
+	virtual LinkTypeCls		GetLinkType() const = 0;
+	
 	virtual void			Visit(RuntimeVisitor& vis) {}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
-	
+	Parallel::Machine&		GetMachine();
 	int						GetId() const;
 	void					ForwardAsync();
 	Packet					InitialPacket(int src_ch, off32 off);
 	Packet					ReplyPacket(int src_ch, const Packet& in);
 	Packet					ReplyPacket(int src_ch, const Packet& in, Packet content);
-	int						FindSourceWithValDev(ValDevCls vd);
 	
 	LinkBaseRef				GetLinkedSideSink()   {ASSERT(side_sink_conn.GetCount() == 1); return side_sink_conn.First().other;}
 	LinkBaseRef				GetLinkedSideSource() {ASSERT(side_src_conn.GetCount()  == 1); return side_src_conn.First().other;}
@@ -93,7 +95,7 @@ public:
 	void					SetPrimarySinkQueueSize(int i);
 	String					GetInlineConnectionsString() const;
 	String					ToString() const;
-	AtomTypeCls				GetType() const;
+	AtomTypeCls				GetAtomType() const;
 	ISourceRef				GetSource();
 	ISinkRef				GetSink();
 	
@@ -124,7 +126,8 @@ public:
 //using LinkBaseRef = Ref<LinkBase>;
 
 
-using Atom = AtomBase;
+using Link = LinkBase;
+using LinkMap = RefLinkTypeMapIndirect<LinkBase>;
 
 /*template<
 	typename Atom

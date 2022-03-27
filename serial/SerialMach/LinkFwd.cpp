@@ -327,7 +327,7 @@ void LinkBase::PostContinueForward() {
 }
 
 void LinkBase::ForwardExchange(FwdScope& fwd) {
-	ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(this);
+	ExchangeSourceProvider* src = CastPtr<ExchangeSourceProvider>(atom);
 	ASSERT(src);
 	ExchangePointRef expt = src->GetExPt();
 	//ASSERT(expt || GetType().role == AtomRole::DRIVER);
@@ -337,7 +337,7 @@ void LinkBase::ForwardExchange(FwdScope& fwd) {
 }
 
 bool LinkBase::IsPacketStuck() {
-	AtomTypeCls type = GetType();
+	AtomTypeCls type = GetAtomType();
 	InterfaceSinkRef sink_iface = GetSink();
 	int sink_c = sink_iface->GetSinkCount() - type.user_sink_count;
 	for(int i = 0; i < sink_c; i++) {
@@ -455,17 +455,6 @@ void LinkBase::ForwardSideConnections() {
 	}
 }
 
-int LinkBase::FindSourceWithValDev(ValDevCls vd) {
-	InterfaceSourceRef src = GetSource();
-	int c = src->GetSourceCount();
-	for(int i = 0; i < c; i++) {
-		Value& v = src->GetSourceValue(i);
-		Format f = v.GetFormat();
-		if (f.vd == vd)
-			return i;
-	}
-	return -1;
-}
 
 
 NAMESPACE_SERIAL_END

@@ -752,11 +752,11 @@ bool ActionNode::Conflicts(const ActionNode& n) const {
 
 
 void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts) {
-	auto& m = Factory::AtomDataMap();
+	auto& m = Parallel::Factory::AtomDataMap();
 	
 	AtomTypeCls atom = src.GetAtom();
-	Factory::AtomData& d = m.Get(atom);
-	Factory::RefreshLinks(d);
+	Parallel::Factory::AtomData& d = m.Get(atom);
+	Parallel::Factory::RefreshLinks(d);
 	
 	Script::Action a;
 	a.Pre() = src;
@@ -774,10 +774,10 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		}
 	}*/
 	
-	for (const Factory::Link& link : d.sink_links) {
+	for (const Parallel::Factory::Link& link : d.sink_links) {
 		AtomTypeCls dst = link.dst_atom;
 		ASSERT(dst.IsValid());
-		const Factory::AtomData& dst_cd = m.Get(dst);
+		const Parallel::Factory::AtomData& dst_cd = m.Get(dst);
 		
 		/*if (dst.sub == SubAtomCls::CONVERTER && dst.side.vd == VD(OGL,AUDIO)) {
 			LOG(dst.ToString());

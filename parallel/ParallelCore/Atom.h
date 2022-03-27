@@ -55,9 +55,8 @@ protected:
 	
 	Mutex					fwd_lock;
 	IfaceConnTuple			iface;
+	Serial::LinkBase*		link = 0;
 	
-	
-public:
 	
 public:
 	virtual AtomTypeCls		GetType() const = 0;
@@ -72,11 +71,15 @@ public:
 	virtual void			ClearSinkSource() = 0;
 	virtual ISourceRef		GetSource() = 0;
 	virtual ISinkRef		GetSink() = 0;
+	virtual bool			ProcessPacket(PacketValue& v) = 0;
 	
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
 	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
+	virtual const Format&	GetInternalFormat() const {Panic("Unimplemented"); NEVER();}
+	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
+	virtual RealtimeSourceConfig* GetConfig() {return 0;}
 	
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
@@ -94,6 +97,7 @@ public:
 	void					UninitializeDeep();
 	void					SetInterface(const IfaceConnTuple& iface);
 	const IfaceConnTuple&	GetInterface() const;
+	int						FindSourceWithValDev(ValDevCls vd);
 	
 public:
 	RTTI_DECL_R3(AtomBase, Destroyable, Enableable, PacketForwarderData)
@@ -101,9 +105,10 @@ public:
 	virtual ~AtomBase();
 	
 	
-	SpaceRef	GetSpace();
-	Space&		GetParent();
-	int			GetId() const {return id;}
+	SpaceRef		GetSpace();
+	Space&			GetParent();
+	Serial::Link*	GetLink();
+	int				GetId() const {return id;}
 	
 	template <class T> RefT_Space<T> As() {return AtomBase_Static_As<T>(this);}
 	

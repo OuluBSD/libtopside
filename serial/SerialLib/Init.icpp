@@ -16,7 +16,7 @@ NAMESPACE_UPP
 INITBLOCK {
 	
 	#define ECS_CTX(dev, val, prefix) \
-		TS::Serial::Factory::RegisterInterfaceLink<TS::Serial::DefaultExchangePoint>(TS::Serial::DevCls::dev, TS::Serial::ValCls::val);
+		TS::Parallel::Factory::RegisterInterfaceLink<TS::Parallel::DefaultExchangePoint>(TS::Parallel::DevCls::dev, TS::Parallel::ValCls::val);
 	#define IFACE_CTX_CLS(dev, value, prefix) ECS_CTX(dev, value, prefix)
 	#define IFACE(x) DEV_IFACE(x)
 	IFACE_LIST

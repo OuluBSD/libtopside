@@ -9,6 +9,8 @@ file
 	Fwd.h,
 	Types.h,
 	Types.cpp,
+	FwdTypes.h,
+	FwdTypes.cpp,
 	Util.h,
 	Util.cpp,
 	SampleBase.h,
