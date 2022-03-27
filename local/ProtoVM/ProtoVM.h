@@ -10,6 +10,7 @@ using namespace UPP;
 #include "ICs.h"
 #include "Mechanical.h"
 #include "Component.h"
+#include "Bus.h"
 #include "Pcb.h"
 #include "Machine.h"
 #include "Generic.h"

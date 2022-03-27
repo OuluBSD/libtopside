@@ -4,6 +4,8 @@ uses
 file
 	ProtoVM.h,
 	ProtoVM.cpp,
+	UK101.cpp,
+	Interak.cpp,
 	Generic.h,
 	Generic.cpp,
 	Machine.h,
@@ -17,6 +19,8 @@ file
 	ICs.h,
 	ICs.cpp,
 	Chip.h,
+	Bus.h,
+	Bus.cpp,
 	Common.h,
 	Common.cpp,
 	ICs readonly separator,

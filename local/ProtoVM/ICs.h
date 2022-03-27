@@ -80,5 +80,28 @@ public:
 };
 
 
+class Z80 : public Chip {
+	RTTI_DECL1(Z80, Chip)
+	
+	
+public:
+	Z80();
+	
+	
+};
+
+
+// 3-STATE Octal Bus Transceiver
+// https://www.futurlec.com/74LS/74LS245.shtml
+class IC74LS245 : public Chip {
+	RTTI_DECL1(IC74LS245, Chip)
+	
+	
+public:
+	IC74LS245();
+	
+	
+	
+}
 
 #endif

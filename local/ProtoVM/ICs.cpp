@@ -38,6 +38,49 @@ IC6502::IC6502() {
 }
 
 
+Z80::Z80() {
+	AddSink("CLK");
+	AddSink("~RESET");
+	AddSink("~NMI");
+	AddSink("~WAIT");
+	AddSink("~WR");
+	AddSink("~RD");
+	AddSink("~IORQ");
+	AddSink("~MREQ");
+	AddSource("~BUSAK");
+	AddSource("~BUSRQ");
+	AddSource("~INT");
+	AddSource("~HALT");
+	AddSource("~RFSH");
+	AddSource("~M1");
+	AddSource("BA0");
+	AddSource("BA1");
+	AddSource("BA2");
+	AddSource("BA3");
+	AddSource("BA4");
+	AddSource("BA5");
+	AddSource("BA6");
+	AddSource("BA7");
+	AddSource("BA8");
+	AddSource("BA9");
+	AddSource("BA10");
+	AddSource("BA11");
+	AddSource("BA12");
+	AddSource("BA13");
+	AddSource("BA14");
+	AddSource("BA15");
+	AddSource("vcc");
+	AddBidirectional("BD0");
+	AddBidirectional("BD1");
+	AddBidirectional("BD2");
+	AddBidirectional("BD3");
+	AddBidirectional("BD4");
+	AddBidirectional("BD5");
+	AddBidirectional("BD6");
+	AddBidirectional("BD7");
+	
+}
+
 IC6850::IC6850() {
 	AddSink("Rx clk");
 	AddSink("Tx clk");
@@ -175,6 +218,11 @@ ICMAX232::ICMAX232() {
 	AddSource("-C2");
 	AddSource("R20");
 	AddSource("R1I");
+	
+}
+
+
+IC74LS245::IC74LS245() {
 	
 }
 

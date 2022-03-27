@@ -22,6 +22,9 @@ ElectricNodeBase& ElectricNodeBase::operator[](String code) {
 	if ((a = code.Find(",")) >= 0) {
 		String range_str = code.Mid(a+1);
 		code = code.Left(a);
+		if (range_str.Left(1) == "-")
+			TODO;
+		
 		int range = StrInt(range_str);
 		
 		int i = 0;
