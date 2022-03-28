@@ -1,4 +1,4 @@
-description "\377B226,212,0";;
+description "\377B226,212,0";
 
 uses
 	Local,
@@ -12,5 +12,5 @@ file
 	TmplClasses.h;
 
 mainconfig
-	"" = ""
+	"" = "";
 

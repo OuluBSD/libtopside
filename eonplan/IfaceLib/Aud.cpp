@@ -24,7 +24,7 @@ PKG(Audio, Aud, A) {
 		NATIVE_CLASS(SourceDevice)
 		//UTIL_CLASS()
 		
-		FUNCTION0R(GetSinkDeviceCount,   int)
+		/*FUNCTION0R(GetSinkDeviceCount,   int)
 		FUNCTION0R(GetSourceDeviceCount, int)
 		FUNCTION2R(CreateSinkDevice,   bool, int, NativeSinkDevice&)
 		FUNCTION2R(CreateSourceDevice, bool, int, NativeSourceDevice&)
@@ -38,7 +38,7 @@ PKG(Audio, Aud, A) {
 		FUNCTION1R(GetSourceFormatCount, int, NativeSourceDevice&)
 		FUNCTION7R(GetSinkFormat,   bool, NativeSinkDevice&, int, int& channels, int& samplerate, int& bytes, bool& is_signed, bool& is_float);
 		FUNCTION7R(GetSourceFormat, bool, NativeSinkDevice&, int, int& channels, int& samplerate, int& bytes, bool& is_signed, bool& is_float);
-		
+		*/
 	}
 	
 	

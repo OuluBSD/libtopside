@@ -7,10 +7,9 @@ NAMESPACE_PARALLEL_BEGIN
 bool CustomerBase::Initialize(const Script::WorldState& ws) {
 	RTLOG("CustomerBase::Initialize");
 	
-	AtomTypeCls type = GetType();
-	
-	//if (type.iface.content.val == ValCls::AUDIO)
-	//	packet_thrds = 10;
+	/*AtomTypeCls type = GetType();
+	if (type.iface.content.val == ValCls::AUDIO)
+		packet_thrds = 10;*/
 	
 	customer.Create();
 	

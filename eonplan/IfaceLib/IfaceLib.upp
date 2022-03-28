@@ -6,11 +6,11 @@ uses
 file
 	IfaceLib.h,
 	IfaceLib.cpp,
+	Aud.cpp,
 	Ev.cpp,
 	Gfx.cpp,
 	Fys.cpp,
 	Vr.cpp,
-	Aud.cpp,
 	Midi.cpp,
 	Gui.cpp,
 	Script.cpp,
