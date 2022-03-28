@@ -51,6 +51,7 @@ public:
 	bool IsFrozenOverlap() const	{return freeze_bits.Is(BIT_OVERLAP);}*/
 	
 	void				Clear();
+	void				UnlinkDeep();
 	void				UnrefDeep();
 	void				UninitializeAtomsDeep();
 	void				ClearAtomsDeep();

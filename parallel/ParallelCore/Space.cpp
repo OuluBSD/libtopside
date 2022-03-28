@@ -161,6 +161,7 @@ void Space::Clear() {
 	// useless ClearInterfacesDeep();
 	UnrefDeep();
 	UninitializeAtomsDeep();
+	UnlinkDeep();
 	ClearAtomsDeep();
 	ClearDeep();
 }
@@ -180,6 +181,18 @@ void Space::UninitializeAtomsDeep() {
 	
 	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
 		it().UninitializeWithExt();
+	}*/
+}
+
+void Space::UnlinkDeep() {
+	for (auto it = sub.rbegin(); it != sub.rend(); --it) {
+		it().UnlinkDeep();
+	}
+	
+	UnlinkExchangePoints();
+	
+	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
+		it().UnlinkAll();
 	}*/
 }
 

@@ -751,15 +751,16 @@ bool ActionNode::Conflicts(const ActionNode& n) const {
 
 
 
-void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts) {
+void GetAtomActions(const Script::WorldState& src, Array<Script::Action>& acts) {
 	auto& m = Parallel::Factory::AtomDataMap();
 	
 	AtomTypeCls atom = src.GetAtom();
 	Parallel::Factory::AtomData& d = m.Get(atom);
 	Parallel::Factory::RefreshLinks(d);
 	
-	Script::Action a;
-	a.Pre() = src;
+	One<Script::Action> a;
+	a.Create();
+	a->Pre() = src;
 	
 	
 	/*if (src.IsAddAtom()) {
@@ -795,14 +796,15 @@ void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts)
 		
 		//ASSERT(src.GetAtom() != link.dst_atom);
 		
-		auto& post = a.Post();
+		auto& post = a->Post();
 		post = src;
 		post.SetAs_AddAtom(dst);
 		post.SetSinkCls(link.common_vd);
 		ASSERT(post.GetSinkCls().IsValid());
-		if (dst_cd.action_fn(dst_cd.cls, a)) {
-			MemSwap(acts.Add(), a);
-			a.Pre() = src;
+		if (dst_cd.action_fn(dst_cd.cls, *a)) {
+			acts.Add(a.Detach());
+			a.Create();
+			a->Pre() = src;
 		}
 	}
 	

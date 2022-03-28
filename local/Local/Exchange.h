@@ -192,7 +192,8 @@ public:
 
 
 template <class R>
-class ExchangeProviderT {
+class ExchangeProviderT : RTTIBase {
+	using ExchangeProviderTmpl = ExchangeProviderT<R>;
 	
 private:
 	ExchangePointRef expt;
@@ -214,7 +215,7 @@ protected:
 	
 	
 public:
-	
+	RTTI_DECL0(ExchangeProviderTmpl);
 	void Visit(RuntimeVisitor& vis) {(vis & expt) & dst;}
 	
 	/*void Unlink(R o) {
@@ -278,7 +279,7 @@ public:
 	virtual ~ExchangeSinkProvider();
 	
 	void						ClearLink() {base.ClearLink();}
-	void						Visit(RuntimeVisitor& vis) {base.Visit(vis);}
+	void						Visit(RuntimeVisitor& vis) {vis % base;}
 	ExchangePointRef			GetExPt() const {return base.GetExPt();}
 	ExchangeSourceProviderRef	GetSinkLink() const {return base.GetLink();}
 	

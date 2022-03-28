@@ -125,10 +125,6 @@ static Packet CreatePacket(off32 off) {
 	return Packet(obj, base);
 }
 
-void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p);
-void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p);
-void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p);
-
 
 struct ValStreamState : RTTIBase {
 	RTTI_DECL0(ValStreamState)
@@ -224,6 +220,18 @@ struct PacketBufferBasePtr :
 
 
 NAMESPACE_PARALLEL_END
+
+
+
+NAMESPACE_TOPSIDE_BEGIN
+namespace Serial {
+
+void PacketTracker_Track(const char* fn, const char* file, int line, PacketValue& p);
+void PacketTracker_Checkpoint(const char* fn, const char* file, int line, PacketValue& p);
+void PacketTracker_StopTracking(const char* fn, const char* file, int line, PacketValue& p);
+
+}
+NAMESPACE_TOPSIDE_END
 
 
 #endif

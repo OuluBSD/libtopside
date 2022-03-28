@@ -321,9 +321,8 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 }
 
 void LinkBase::PostContinueForward() {
-	TODO
-	//if (last_cfg)
-	//	GetMachine().Get<LoopSystem>()->AddOnce(*this, *last_cfg);
+	if (last_cfg)
+		GetMachine().Get<LinkSystem>()->AddOnce(*this, *last_cfg);
 }
 
 void LinkBase::ForwardExchange(FwdScope& fwd) {

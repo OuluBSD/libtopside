@@ -17,20 +17,14 @@ bool CustomerBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-#if 0
 bool CustomerBase::PostInitialize() {
 	packet_thrds = GetSink()->GetValue(0).GetMinPackets();
 	
 	return true;
 }
 
-#endif
-
 void CustomerBase::Uninitialize() {
-	TODO
-	/*AtomBaseRef r = AtomBase::AsRefT();
-	ASSERT(r);
-	AtomBase::GetMachine().template Get<AtomSystem>()->RemoveCustomer(r);*/
+	
 }
 
 void CustomerBase::UpdateConfig(double dt) {
@@ -48,63 +42,22 @@ void CustomerBase::UpdateConfig(double dt) {
 	}
 }
 
-#if 0
-
-void CustomerBase::Forward(FwdScope& fwd) {
-	//RTLOG("CustomerBase::Forward");
-	
-	while (packet_count < packet_thrds) {
-		RTLOG("CustomerBase::Forward: create packet");
-		InterfaceSinkRef sink_iface = GetSink();
-		
-		int sink_count = sink_iface->GetSinkCount();
-		ASSERT(sink_count == 1);
-		
-		Value&			sink_val = sink_iface->GetValue(0);
-		PacketBuffer&	sink_buf = sink_val.GetBuffer();
-		Format			fmt = sink_val.GetFormat();
-		
-		off32 init_off(&off_gen, 0);
-		Packet p = CreatePacket(init_off);
-		p->SetFormat(fmt);
-		p->seq = -1;
-		
-		InternalPacketData& data = p->template SetData<InternalPacketData>();
-		data.pos = 0;
-		data.count = 1;
-		
-		//PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *p);
-		sink_val.GetBuffer().Add(p);
-		
-		packet_count++;
-	}
-	
-}
-#endif
-
 bool CustomerBase::ProcessPacket(PacketValue& v) {
-	RTLOG("CustomerBase::ProcessPacket");
-	
-	TODO
-	/*
-	PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
-	
-	ASSERT(sink.p);
-	PacketTracker::StopTracking(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *sink.p);
-	
-	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	src.p = sink.p;
-	src.p->SetFormat(src.val->GetFormat());
-	src.p->SetOffset(off_gen.Create());
-	
-	
-	PacketTracker::Track(TrackerInfo("CustomerBase::Forward", __FILE__, __LINE__), *src.p);
-	*/
+	// pass
 	return true;
 }
 
+bool CustomerBase::IsForwardReady() {
+	return packet_count < packet_thrds;
+}
+
+void CustomerBase::ForwardPacket(PacketValue& v) {
+	InternalPacketData& data = v.template SetData<InternalPacketData>();
+	data.pos = 0;
+	data.count = 1;
+	
+	packet_count++;
+}
 
 
 
@@ -172,6 +125,20 @@ bool RollingValueBase::ProcessPacket(PacketValue& v) {
 
 
 bool VoidSinkBase::Initialize(const Script::WorldState& ws) {
+	//DUMP(ws);
+	String dbg_limit_str = ws.Get(".dbg_limit");
+	if (!dbg_limit_str.IsEmpty())
+		dbg_limit = ScanInt(dbg_limit_str);
+	
+	return true;
+}
+
+bool VoidSinkBase::PostInitialize() {
+	InterfaceSinkRef sink = GetSink();
+	const int sink_ch_i = sink->GetSinkCount() - 1;
+	Value& sink_value = sink->GetValue(sink_ch_i);
+	fmt = sink_value.GetFormat();
+	
 	return true;
 }
 
@@ -185,30 +152,42 @@ bool VoidSinkBase::ProcessPacket(PacketValue& v) {
 }
 
 bool VoidSinkBase::Consume(const void* data, int len) {
-	TODO
 	
-	#if 0
-	AudioFormat& afmt = fmt;
-	// Verify data
-	if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
-		float* it = (float*)data;
-		float* end = (float*)((byte*)data + len);
-		int dbg_i = 0;
-		int dbg_count = (int)(end - it);
-		for (; it != end; ++it, ++dbg_i) {
-			float f0 = *it;
-			double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
-			ASSERT(IsClose(f0, f1));
-		}
-		dbg_total_samples += dbg_count;
-		dbg_total_bytes += dbg_count * 4;
+	if (fmt.IsAudio()) {
+		AudioFormat& afmt = fmt;
 		
-		RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
+		// Verify data
+		bool fail = false;
+		if (afmt.type == TS::Serial::BinarySample::FLT_LE) {
+			float* it = (float*)data;
+			float* end = (float*)((byte*)data + len);
+			int dbg_i = 0;
+			int dbg_count = (int)(end - it);
+			for (; it != end; ++it, ++dbg_i) {
+				float f0 = *it;
+				double f1 = rolling_value++ / 255.0 * 2.0 - 1.0;
+				if (!IsClose(f0, f1))
+					fail = true;
+			}
+			dbg_total_samples += dbg_count;
+			dbg_total_bytes += dbg_count * 4;
+			dbg_iter++;
+			
+			if (fail || (dbg_limit > 0 && dbg_iter >= dbg_limit)) {
+				GetMachine().SetNotRunning();
+				LOG("IntervalPipeLink::IntervalSinkProcess: stops. total-samples=" << dbg_total_samples << ", total-bytes=" << dbg_total_bytes);
+				if (!fail) {LOG("IntervalPipeLink::IntervalSinkProcess: success!");}
+				else       {LOG("IntervalPipeLink::IntervalSinkProcess: fail :(");}
+			}
+			
+			RTLOG("IntervalPipeLink::IntervalSinkProcess: successfully verified frame");
+		}
+		else {
+			LOG("IntervalPipeLink::IntervalSinkProcess: error: invalid audio format");
+		}
 	}
-	else {
-		LOG("IntervalPipeLink::IntervalSinkProcess: error: invalid audio format");
-	}
-	#endif
+	
+	return true;
 }
 
 

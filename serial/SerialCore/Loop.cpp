@@ -67,7 +67,7 @@ bool Loop::HasLoopParent(LoopRef pool) const {
 void Loop::Clear() {
 	// useless ClearInterfacesDeep();
 	UnrefDeep();
-	UnlinkDeep();
+	UninitializeLinksDeep();
 	ClearDeep();
 }
 
@@ -76,15 +76,16 @@ void Loop::UnrefDeep() {
 	vis.Visit(*this);
 }
 
-void Loop::UnlinkDeep() {
-	for (auto it = loops.rbegin(); it != loops.rend(); --it) {
-		it().UnlinkDeep();
+void Loop::UninitializeLinksDeep() {
+	for (LoopRef& l : loops)
+		l->UninitializeLinksDeep();
+	
+	for (auto it = links.rbegin(); it != links.rend(); --it) {
+		it().Uninitialize();
 	}
 	
-	space->UnlinkExchangePoints();
-	
 	/*for (auto it = comps.rbegin(); it != comps.rend(); --it) {
-		it().UnlinkAll();
+		it().UninitializeWithExt();
 	}*/
 }
 
@@ -140,6 +141,7 @@ LinkBaseRef Loop::GetAddTypeCls(LinkTypeCls cls) {
 LinkBaseRef Loop::AddPtr(LinkBase* comp) {
 	comp->SetParent(this);
 	LinkTypeCls type = comp->GetLinkType();
+	ASSERT(!links.Find(type));
 	links.Add(type, comp);
 	InitializeLink(*comp);
 	return LinkBaseRef(this, comp);
@@ -151,6 +153,7 @@ LinkBaseRef Loop::FindTypeCls(LinkTypeCls atom_type) {
 		if (type == atom_type)
 			return l;
 	}
+	ASSERT(!links.Find(atom_type));
 	return LinkBaseRef();
 }
 

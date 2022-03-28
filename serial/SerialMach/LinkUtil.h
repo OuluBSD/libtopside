@@ -17,8 +17,8 @@ class AsyncMemForwarderBase :
 	void	Consume(int data_begin, Packet p); // "const Packet&"" is invalid here
 	
 public:
-	
-	void	Visit(RuntimeVisitor& vis) override {}
+	RTTI_DECL1(AsyncMemForwarderBase, Link)
+	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	bool	IsReady(PacketIO& io) final;
 	bool	ForwardAsyncMem(byte* mem, int size) override;
@@ -38,11 +38,12 @@ class FramePollerBase :
 	
 	
 public:
+	RTTI_DECL1(FramePollerBase, Link)
 	
 	//void	Update(double dt) override;
 	bool	IsReady(PacketIO& io) override;
 	
-	void	Visit(RuntimeVisitor& vis) override {}
+	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	void	SetFPS(int fps) {dt = 1.0 / (double)fps;}
 	
@@ -60,7 +61,7 @@ protected:
 	
 	
 public:
-	RTTI_DECL0(CenterDriver)
+	RTTI_DECL1(CenterDriver, Link)
 	
 	bool Initialize(const Script::WorldState& ws) override; /*{
 		customer.Create();
@@ -77,7 +78,7 @@ public:
 		LinkBase::GetMachine().template Get<AtomSystem>()->RemoveDriver(r);
 	}*/
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	/*cleanup TODO void UpdateConfig(double dt) final {
 		ASSERT(customer);

@@ -44,7 +44,6 @@ public:
 	
 	static StackDebugger& Static() {MAKE_STATIC(StackDebugger, s); return s;}
 	
-	
 };
 
 

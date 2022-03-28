@@ -527,7 +527,7 @@ protected:
 	
 	Vector<String> post_load_file;
 	Vector<String> post_load_string;
-	Script::CompilationUnit root;
+	One<Script::CompilationUnit> root;
 	LoopStoreRef es;
 	SpaceStoreRef ss;
 	
@@ -546,7 +546,7 @@ protected:
 public:
 	SYS_RTTI(ScriptLoader)
 	SYS_CTOR(ScriptLoader);
-	SYS_DEF_VISIT_((vis & es); if (!loader.IsEmpty()) vis % *loader;)
+	SYS_DEF_VISIT_(((vis & es) & ss); if (!loader.IsEmpty()) vis % *loader;)
 	
 	void PostLoadFile(const String& path) {post_load_file << path;}
 	void PostLoadString(const String& s) {post_load_string << s;}

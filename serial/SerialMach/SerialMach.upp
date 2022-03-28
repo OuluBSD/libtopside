@@ -17,8 +17,6 @@ file
 	LinkStore.cpp,
 	LinkSystem.h,
 	LinkSystem.cpp,
-	LoopSystem.h,
-	LoopSystem.cpp,
 	Factory.h,
 	Factory.cpp,
 	LinkUtil.h,

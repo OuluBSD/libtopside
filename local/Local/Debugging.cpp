@@ -311,7 +311,7 @@ void RefDebugVisitor::Remove(void* mem) {
 		items.Remove(i);
 	}
 	else {
-		LOG("\terror: trying to remove unfollowed Ref at " << HexStr(mem));
+		LOG("\twarning: trying to remove unfollowed Ref at " << HexStr(mem) << " (it's ok if SetDebugRefVisits() was called later than ctor)");
 	}
 }
 

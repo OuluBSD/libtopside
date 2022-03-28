@@ -134,6 +134,12 @@ String Value::ToString() const {
 	else if (type == VAL_STRING) {
 		s << "\"" << str << "\"";
 	}
+	else if (type == VAL_INT) {
+		s << IntStr(i);
+	}
+	else if (type == VAL_DOUBLE) {
+		s << DblStr(f);
+	}
 	else if (type == VAL_BOOLEAN) {
 		s << (b ? "true" : "false");
 	}
@@ -151,6 +157,12 @@ String Value::GetValue() const {
 	}
 	else if (type == VAL_STRING) {
 		s << str;
+	}
+	else if (type == VAL_INT) {
+		s << IntStr(i);
+	}
+	else if (type == VAL_DOUBLE) {
+		s << DblStr(f);
 	}
 	else if (type == VAL_BOOLEAN) {
 		s << (b ? "true" : "false");
@@ -173,6 +185,16 @@ String Value::GetTreeString(int indent) const {
 	else if (type == VAL_STRING) {
 		s.Cat('\t', indent);
 		s << "\"" << str << "\"";
+		s << "\n";
+	}
+	else if (type == VAL_INT) {
+		s.Cat('\t', indent);
+		s << IntStr(i);
+		s << "\n";
+	}
+	else if (type == VAL_DOUBLE) {
+		s.Cat('\t', indent);
+		s << DblStr(f);
 		s << "\n";
 	}
 	else if (type == VAL_BOOLEAN) {
@@ -260,10 +282,18 @@ String CompilationUnit::GetTreeString(int indent) const {
 #define PASS_ID(x) if (!Id(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 #define PASS_CHAR(x) if (!Char(x)) {/*LOG(__LINE__);*/ String s = "Expected '"; s.Cat(x); s.Cat('\''); AddError(s); return false;}
 
+Parser::Parser() {
+	cunit.Create();
+}
+
+void Parser::Dump() {
+	LOG(cunit->GetTreeString());
+}
+
 bool Parser::Parse(const String& content, const String& filepath) {
 	Set(content, filepath);
 	DoSpaces();
-	return Parse(cunit);
+	return Parse(*cunit);
 }
 
 bool Parser::Parse(Script::CompilationUnit& cunit) {

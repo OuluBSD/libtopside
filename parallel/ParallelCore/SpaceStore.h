@@ -5,9 +5,9 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 class SpaceStore : public System<SpaceStore> {
-	SpaceVec							root;
+	SpaceVec		root;
 	
-	Mutex							lock;
+	Mutex			lock;
 	
 	enum {
 		READ,

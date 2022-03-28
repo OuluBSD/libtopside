@@ -3,7 +3,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-SYS_DEF_VISIT_I(LinkSystem, vis && customers)
+SYS_DEF_VISIT_I(LinkSystem, vis && customers && drivers && pollers)
 
 
 void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>& atoms) {
@@ -56,7 +56,7 @@ void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>
 
 
 bool LinkSystem::Initialize() {
-	
+	once_cbs.Create();
 	return true;
 }
 
@@ -65,12 +65,13 @@ void LinkSystem::Start() {
 }
 
 void LinkSystem::Update(double dt) {
-	LinkedList<Once> cbs;
+	One<LinkedList<Once>> cbs;
 	lock.Enter();
-	MemSwap(cbs, once_cbs);
+	cbs = once_cbs.Detach();
+	once_cbs.Create();
 	lock.Leave();
 	
-	for (Once& o : cbs) {
+	for (Once& o : *cbs) {
 		WhenEnterOnceForward(o.fwd);
 		
 		for (FwdScope scope(o.fwd, *o.cfg); scope; scope++) {
@@ -104,6 +105,8 @@ void LinkSystem::Uninitialize() {
 	ASSERT(pollers.IsEmpty());
 	once_cbs.Clear();
 	customers.Clear();
+	drivers.Clear();
+	pollers.Clear();
 	
 	WhenUninit()();
 }
@@ -139,14 +142,14 @@ void LinkSystem::RemovePolling(LinkBaseRef p) {
 void LinkSystem::AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg) {
 	lock.Enter();
 	bool found = false;
-	for (Once& o : once_cbs) {
+	for (Once& o : *once_cbs) {
 		if (o.fwd == &fwd && o.cfg == &cfg) {
 			found = true;
 			break;
 		}
 	}
 	if (!found) {
-		Once& o = once_cbs.Add();
+		Once& o = once_cbs->Add();
 		o.fwd = &fwd;
 		o.cfg = &cfg;
 	}
@@ -159,8 +162,9 @@ String LinkSystem::GetDebugPacketString(LinkBaseRef& c, RealtimeSourceConfig* cf
 	String line;
 	for (FwdScope scope(*c, *cfg); scope; scope++) {
 		scope.ForwardAddNext();
-		AtomBase* ab = CastPtr<AtomBase>(scope.GetCurrent());
-		if (ab) {
+		LinkBase* lb = CastPtr<LinkBase>(scope.GetCurrent());
+		if (lb) {
+			AtomBase* ab = lb->GetAtom();
 			int sink_pk = 0;
 			int src_pk = 0;
 			

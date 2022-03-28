@@ -96,7 +96,9 @@ void ScriptLoader::Stop() {
 }
 
 void ScriptLoader::Uninitialize() {
-	
+	es.Clear();
+	ss.Clear();
+	loader.Clear();
 }
 
 bool ScriptLoader::LoadFile(String path) {
@@ -137,9 +139,9 @@ bool ScriptLoader::Load(const String& content, const String& filepath) {
 		return false;
 	}
 	//p.Dump();
-	MemSwap(p.GetResult(), root);
+	root = p.DetachResult();
 	
-	if (!LoadCompilationUnit(root)) {
+	if (!LoadCompilationUnit(*root)) {
 		LOG("error dump:"); loader->Dump();
 		DumpErrors();
 		

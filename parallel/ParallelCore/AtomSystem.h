@@ -13,7 +13,7 @@ class AtomSystem :
 public:
 	SYS_RTTI(AtomSystem)
 	SYS_CTOR(AtomSystem);
-	SYS_DEF_VISIT
+	SYS_DEF_VISIT_(vis && updated)
 	
 	void AddOnce(PacketForwarder& fwd, RealtimeSourceConfig& cfg);
 	
@@ -36,6 +36,7 @@ public:
 	
     void AddUpdated(AtomBaseRef p);
     void RemoveUpdated(AtomBaseRef p);
+	
 	
 	
 };

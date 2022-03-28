@@ -864,6 +864,8 @@ void ScriptLoopLoader::UpdateLoopLimits() {
 bool ScriptLoopLoader::PostInitialize() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		AddedAtom& a = added_atoms[i];
+		if (!a.r->PostInitialize())
+			return false;
 		if (!a.l->PostInitialize())
 			return false;
 	}

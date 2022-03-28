@@ -61,11 +61,10 @@ protected:
 public:
 	virtual AtomTypeCls		GetType() const = 0;
 	virtual void			CopyTo(AtomBase* atom) const = 0;
-	virtual void			Visit(RuntimeVisitor& vis) = 0;
-	virtual void			Uninitialize() = 0;
-	virtual void			UninitializeAtom() = 0;
 	virtual bool			Initialize(const Script::WorldState& ws) = 0;
 	virtual bool			InitializeAtom(const Script::WorldState& ws) = 0;
+	virtual void			Uninitialize() = 0;
+	virtual void			UninitializeAtom() = 0;
 	virtual void			VisitSource(RuntimeVisitor& vis) = 0;
 	virtual void			VisitSink(RuntimeVisitor& vis) = 0;
 	virtual void			ClearSinkSource() = 0;
@@ -73,12 +72,16 @@ public:
 	virtual ISinkRef		GetSink() = 0;
 	virtual bool			ProcessPacket(PacketValue& v) = 0;
 	
+	virtual void			Visit(RuntimeVisitor& vis) {}
+	virtual bool			PostInitialize() {return true;}
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
 	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
 	virtual const Format&	GetInternalFormat() const {Panic("Unimplemented"); NEVER();}
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
+	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
+	virtual void			ForwardPacket(PacketValue& v) {Panic("Unimplemented"); NEVER();}
 	virtual RealtimeSourceConfig* GetConfig() {return 0;}
 	
 	void					AddAtomToUpdateList();
@@ -162,6 +165,7 @@ public:
 	}
 	
 	void Visit(RuntimeVisitor& vis) override {
+		vis.VisitThis<AtomBase>(this);
 		vis.VisitThis<SinkT>(this);
 		vis.VisitThis<SourceT>(this);
 	}

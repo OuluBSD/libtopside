@@ -7,6 +7,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class CustomerLink : public Link {
+	off32_gen	off_gen;
 	
 	
 public:
@@ -18,6 +19,9 @@ public:
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
 	RTSrcConfig*	GetConfig() override;
+	void			Forward(FwdScope& fwd) override;
+	bool			IsLoopComplete(FwdScope& fwd) override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	static LinkTypeCls GetType();
 	LinkTypeCls GetLinkType() const override {return GetType();}
@@ -35,6 +39,7 @@ public:
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
 	bool			ProcessPackets(PacketIO& io) override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
 	
 	static LinkTypeCls GetType();
 	LinkTypeCls GetLinkType() const override {return GetType();}
@@ -46,13 +51,14 @@ class IntervalPipeLink : public AsyncMemForwarderBase {
 	
 	
 public:
-	RTTI_DECL1(IntervalPipeLink, Link)
+	RTTI_DECL1(IntervalPipeLink, AsyncMemForwarderBase)
 	typedef IntervalPipeLink CLASSNAME;
 	IntervalPipeLink();
 	~IntervalPipeLink();
 	
 	bool			Initialize(const Script::WorldState& ws) override;
 	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<AsyncMemForwarderBase>(this);}
 	
 	static LinkTypeCls GetType();
 	LinkTypeCls GetLinkType() const override {return GetType();}

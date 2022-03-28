@@ -122,7 +122,7 @@ public:
 	//void Forward(FwdScope& fwd) final;
 	bool ProcessPacket(PacketValue& v) override;
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	void SetPreset(int i) {preset_i = i;}
 	String GetLastError() const {return last_error;}

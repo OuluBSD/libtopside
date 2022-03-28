@@ -9,7 +9,6 @@ class CustomerBase :
 {
 	int			packet_count = 0;
 	int			packet_thrds = 0;
-	off32_gen	off_gen;
 	
 protected:
 	friend class Space;
@@ -21,15 +20,16 @@ protected:
 public:
 	RTTI_DECL1(CustomerBase, Atom)
 	
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
 	bool ProcessPacket(PacketValue& v) override;
+	bool IsForwardReady() override;
+	void ForwardPacket(PacketValue& v) override;
+	
 	
 	RTSrcConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
-	/*bool PostInitialize() override;
-	void Forward(FwdScope& fwd) override;
-	bool IsLoopComplete(FwdScope& fwd) override {return fwd.GetPos() > 0;}*/
+	bool PostInitialize() override;
 	void UpdateConfig(double dt) override;
 	
 };
@@ -45,7 +45,7 @@ class RollingValueBase :
 public:
 	RTTI_DECL1(RollingValueBase, Atom)
 	bool Initialize(const Script::WorldState& ws) override;
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
 	bool ProcessPacket(PacketValue& v) override;
 	const Format& GetInternalFormat() const override {return internal_fmt;}
@@ -59,14 +59,20 @@ class VoidSinkBase :
 {
 	byte				rolling_value = 0;
 	Format				internal_fmt;
+	int					dbg_total_samples = 0;
+	int					dbg_total_bytes = 0;
+	int					dbg_iter = 0;
+	int					dbg_limit = 0;
+	Format				fmt;
 	
 public:
 	RTTI_DECL1(VoidSinkBase, Atom)
 	typedef VoidSinkBase CLASSNAME;
 	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
 	void Uninitialize() override;
 	//very old: void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
-	void Visit(RuntimeVisitor& vis) override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool ProcessPacket(PacketValue& v) override;
 	bool Consume(const void* data, int len) override;
 	const Format& GetInternalFormat() const override {return internal_fmt;}

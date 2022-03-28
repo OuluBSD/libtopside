@@ -176,7 +176,7 @@ struct CompilationUnit {
 
 
 class Parser : public CParser {
-	Script::CompilationUnit cunit;
+	One<Script::CompilationUnit> cunit;
 	
 	
 	bool Parse(Script::CompilationUnit&);
@@ -205,14 +205,16 @@ class Parser : public CParser {
 	void AddError(String msg);
 	
 public:
-	Parser() {}
+	Parser();
 	
 	bool Parse(const String& content, const String& filepath);
 	
-	Script::CompilationUnit& GetResult() {return cunit;}
-	const Script::CompilationUnit& GetResult() const {return cunit;}
+	Script::CompilationUnit& GetResult() {return *cunit;}
+	Script::CompilationUnit* DetachResult() {return cunit.Detach();}
+	const Script::CompilationUnit& GetResult() const {return *cunit;}
 	
-	void Dump() {LOG(cunit.GetTreeString());}
+	void Dump();
+	
 };
 
 

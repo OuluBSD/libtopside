@@ -10,6 +10,11 @@ void LoopStore::InitRoot() {
 	p.SetParent(LoopParent(this,0));
 	p.SetName("root");
 	p.SetId(Loop::GetNextId());
+	
+	Ref<SpaceStore> ss = GetMachine().Find<SpaceStore>();
+	if (ss) {
+		p.space = &*ss->GetRoot();
+	}
 }
 
 bool LoopStore::Initialize() {

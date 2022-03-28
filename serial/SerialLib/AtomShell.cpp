@@ -80,7 +80,7 @@ void DefaultSerialInitializer0(bool skip_eon_file) {
 		verify = true;
 	
 	if (0)
-		break_addr = 0x806A81E68;
+		break_addr = 0x1;
 	
 	
 	if (!DefaultInitializer(skip_eon_file))

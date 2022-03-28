@@ -53,7 +53,6 @@ protected:
 	LinkedList<Exchange>	side_sink_conn, side_src_conn;
 	LinkBaseRef				prim_link_sink, prim_link_src;
 	
-	void					BaseVisit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src;}
 	bool					IsAllSideSourcesFull(const Vector<int>& src_chs);
 	bool					IsAnySideSourceFull(const Vector<int>& src_chs);
 	bool					IsPrimarySourceFull();
@@ -72,8 +71,10 @@ public:
 	
 	virtual LinkTypeCls		GetLinkType() const = 0;
 	
-	virtual void			Visit(RuntimeVisitor& vis) {}
+	virtual void			Visit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
+	
+	Parallel::AtomBase*		GetAtom();
 	Parallel::Machine&		GetMachine();
 	int						GetId() const;
 	void					ForwardAsync();

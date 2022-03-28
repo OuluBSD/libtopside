@@ -13,6 +13,10 @@ LinkBase::~LinkBase() {
 	DBG_DESTRUCT
 }
 
+Parallel::AtomBase* LinkBase::GetAtom() {
+	return atom;
+}
+
 Parallel::Machine& LinkBase::GetMachine() {
 	return atom->GetMachine();
 }
@@ -207,6 +211,7 @@ bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
 	}
 	return false;
 }
+
 
 
 NAMESPACE_SERIAL_END

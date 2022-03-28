@@ -85,7 +85,7 @@ void DefaultExchangePoint::ForwardAtom(FwdScope& fwd) {
 		RTLOG("ExchangePoint::Forward: empty source");
 	}
 	
-	TODO //fwd.AddNext(sink->AsAtomBase());
+	fwd.AddNext(sink->AsAtomBase()->GetLink());
 	
 	WhenLeaveValExPtForward();
 }

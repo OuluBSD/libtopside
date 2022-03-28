@@ -11,7 +11,7 @@ class LinkSystem :
 		PacketForwarder*		fwd;
 		RealtimeSourceConfig*	cfg;
 	};
-	LinkedList<Once> once_cbs;
+	One<LinkedList<Once>> once_cbs;
 	LinkedList<LinkBaseRef> customers, drivers, pollers;
 	Mutex lock;
 	

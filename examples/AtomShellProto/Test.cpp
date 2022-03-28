@@ -16,7 +16,6 @@ void Test() {
 		LoopStore& ents = *mach.Add<LoopStore>();
 	    mach.Add<AtomStore>();
 	    mach.Add<AtomSystem>();
-	    mach.Add<LoopSystem>();
 	    TODO
 	    
 		LoopRef root = ents.GetRoot();

@@ -605,7 +605,7 @@ public:
 	public:
 		Iterator() {}
 		Iterator(Item* it) : it(it) {}
-		Iterator(Iterator&& it) {MemSwap(*this, it);}
+		Iterator(Iterator&& i) {it = i.it; i.it = 0; ref = i.ref; i.ref.Clear();}
 		Iterator(const Iterator& i) : it(i.it) {}
 		void  Clear() {ref.Clear(); it = 0;}
 		Item* GetItem() const {return it;}

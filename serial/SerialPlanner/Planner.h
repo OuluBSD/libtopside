@@ -14,7 +14,7 @@ class ScriptLoopLoader;
 class ScriptDriverLoader;
 class ScriptStateLoader;
 
-void GetAtomActions(const Script::WorldState& src, Vector<Script::Action>& acts);
+void GetAtomActions(const Script::WorldState& src, Array<Script::Action>& acts);
 
 
 namespace Script {
@@ -108,7 +108,7 @@ protected:
 	};
 	
 	VectorMap<String, Atom>		atoms;
-	Vector<Action>				acts;
+	Array<Action>				acts;
 	ActionPlannerWrapper*		wrapper = 0;
 	ScriptLoopLoader*			loop_loader = 0;
 	Array<WorldState>			search_cache;

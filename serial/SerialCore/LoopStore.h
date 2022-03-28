@@ -5,9 +5,9 @@ NAMESPACE_SERIAL_BEGIN
 
 
 class LoopStore : public System<LoopStore> {
-	LoopVec							root;
+	LoopVec				root;
 	
-	Mutex							lock;
+	Mutex				lock;
 	
 	enum {
 		READ,
