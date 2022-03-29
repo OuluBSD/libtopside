@@ -3,31 +3,37 @@
 
 HEADER11(			CenterCustomer,		CustomerBase,				customer,	CenterOrder,	CenterReceipt,	CenterOrder)
 HEADER_ACTION(		CenterCustomer,		center.customer)
+HEADER_LINK(		CenterCustomer,		CUSTOMER, CUSTOMER)
 HEADER_ARG(			CenterCustomer,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			TestRealtimeSrc,	RollingValueBase,			pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
+HEADER_LINK(		TestRealtimeSrc,	PIPE, PROCESS)
 HEADER_ARG(			TestRealtimeSrc,	HINT_PKG,					"AtomDebug")
 
 HEADER11(			TestRealtimeSink,	VoidSinkBase,				pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
+HEADER_LINK(		TestRealtimeSink,	INTERVAL_PIPE, PROCESS)
 HEADER_ARG(			TestRealtimeSink,	HINT_PKG,					"AtomDebug")
 
 HEADER11(			TestPollerSink,		VoidPollerSinkBase,			pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		TestPollerSink,		center.audio.sink)
 HEADER_ACTION(		TestPollerSink,		center.audio.sink.test.poller)
-HEADER_ARG(			TestPollerSink,		HINT_PKG,					"AtomDebug")
+//HEADER_ARG(			TestPollerSink,		HINT_PKG,					"AtomDebug")
 
-HEADER11(			AudioHardwareSink,	PortaudioSink,				pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
-HEADER_ACTION(		AudioHardwareSink,	center.audio.sink)
-HEADER_ACTION(		AudioHardwareSink,	center.audio.sink.hw)
+HEADER11(			PortaudioSink,		PortaudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER_ACTION(		PortaudioSink,		center.audio.sink)
+HEADER_ACTION(		PortaudioSink,		center.audio.sink.hw)
+HEADER_LINK(		PortaudioSink,		EXTERNAL_PIPE, PROCESS)
+HEADER_ARG(			PortaudioSink,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			AudioDecoderSrc,	FfmpegAtomBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDecoderSrc,	perma.audio.source.decoder)
 
 HEADER11(			AudioDbgSrc,		AudioGenBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
+HEADER_LINK(		AudioDbgSrc,		PIPE, PROCESS)
 HEADER_ARG(			AudioDbgSrc,		HINT_PKG,					"AtomDebug")
 
 HEADER12(			AudioSplitter,		SplitterBase,				pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)

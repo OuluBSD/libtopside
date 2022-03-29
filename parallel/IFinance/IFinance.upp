@@ -1,13 +1,14 @@
 description "\377B226,85,123";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IFinance.h,
 	Enums.h,
 	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

@@ -1,27 +1,59 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IScript_TmplClasses_h_
 #define _IScript_TmplClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-template <class Scr> struct RunnerT;
-template <class Scr> struct ThreadT;
+template <class Scr> struct ScriptRunnerT;
+template <class Scr> struct ScriptThreadT;
 
 
 template <class Scr>
-struct RunnerT : ScrRunner {
+struct ScriptRunnerT : ScrRunner {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Scr>
-struct ThreadT : ScrThread {
+struct ScriptThreadT : ScrThread {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
-NAMESPACE_TOPSIDE_END
+using EscRunner = ScriptRunnerT<ScrEsc>;
+using EscThread = ScriptThreadT<ScrEsc>;
+using PythonRunner = ScriptRunnerT<ScrPython>;
+using PythonThread = ScriptThreadT<ScrPython>;
+using DuktapeRunner = ScriptRunnerT<ScrDuktape>;
+using DuktapeThread = ScriptThreadT<ScrDuktape>;
+
+
+NAMESPACE_PARALLEL_END
 
 
 

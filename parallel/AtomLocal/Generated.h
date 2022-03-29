@@ -2,22 +2,23 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 26.3.26 14:33:33
+// Last modified: 29.3.29 19:55:44
 
 namespace TS {
 
 namespace Parallel {
 
-class AudioHardwareSink : public PortaudioSink {
+class TestPollerSink : public VoidPollerSinkBase {
 
 public:
-	RTTI_DECL1(AudioHardwareSink, PortaudioSink)
-	COPY_PANIC(AudioHardwareSink)
+	RTTI_DECL1(TestPollerSink, VoidPollerSinkBase)
+	COPY_PANIC(TestPollerSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -32,6 +33,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -47,6 +49,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -62,6 +65,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center.user")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -77,6 +81,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -92,6 +97,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center.user")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -107,6 +113,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink2.center.user")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -122,6 +129,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -138,6 +146,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -154,6 +163,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.webcam")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -170,6 +180,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -186,6 +197,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -201,6 +213,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -216,6 +229,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ecs.system.events")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -232,6 +246,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -248,6 +263,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.prog.ecs")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -264,6 +280,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -280,6 +297,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.ecs")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -296,6 +314,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -313,6 +332,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.customer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -328,6 +348,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -342,6 +363,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -356,6 +378,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.event")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -370,6 +393,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -384,6 +408,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("event.src.test.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -399,6 +424,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.image.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -415,6 +441,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.volume.loader")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -431,6 +458,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -447,6 +475,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -463,6 +492,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -479,6 +509,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -495,6 +526,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -511,6 +543,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.prog")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -527,6 +560,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -543,6 +577,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -559,6 +594,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -574,6 +610,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -590,6 +627,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -606,6 +644,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -622,6 +661,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.image")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -638,6 +678,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.volume")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -654,6 +695,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.center.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -670,6 +712,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.keyboard")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -686,6 +729,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.audio")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -702,6 +746,7 @@ public:
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.keyboard")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
 
@@ -716,7 +761,7 @@ using TestRealtimeSinkRef = Ref<TestRealtimeSink, AtomParent>;
 
 using TestPollerSinkRef = Ref<TestPollerSink, AtomParent>;
 
-using AudioHardwareSinkRef = Ref<AudioHardwareSink, AtomParent>;
+using PortaudioSinkRef = Ref<PortaudioSink, AtomParent>;
 
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, AtomParent>;
 

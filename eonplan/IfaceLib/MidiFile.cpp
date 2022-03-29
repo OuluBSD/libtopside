@@ -8,22 +8,23 @@ PKG(MidiFile, Mif, m) {
 	IfaceLib::Add(this);
 	
 	COLOR(114, 157, 142)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(MidiFile) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(MidiFile)
 		NATIVE_CLASS(Process)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(CreateMidiFile, bool, NativeMidiFile&)
-		FUNCTION1V(ClearMidiFile, NativeMidiFile&)
 		
+	}
+	
+	NAMESPACE {
+		CLASS(MidiFile) {
+			NATIVE_INHERIT(MidiFile, file)
+			
+			METHOD1R(CreateMidiFile, bool, NativeMidiFile& this)
+			METHOD1V(ClearMidiFile, NativeMidiFile& this)
+		}
 	}
 	
 }

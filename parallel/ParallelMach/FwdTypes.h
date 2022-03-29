@@ -10,6 +10,7 @@ using namespace Parallel;
 	LINK_TYPE(CUSTOMER) \
 	LINK_TYPE(PIPE) \
 	LINK_TYPE(INTERVAL_PIPE) \
+	LINK_TYPE(EXTERNAL_PIPE) \
 
 
 

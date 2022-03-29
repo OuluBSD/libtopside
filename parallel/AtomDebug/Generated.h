@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 26.3.26 14:33:33
+// Last modified: 29.3.29 19:55:44
 
 namespace TS {
 
@@ -21,7 +21,7 @@ public:
 	static LinkTypeCls GetLinkType();
 	void Visit(RuntimeVisitor& vis) override;
 	AtomTypeCls GetType() const override;
-	
+
 };
 
 class TestRealtimeSrc : public RollingValueBase {
@@ -55,14 +55,14 @@ public:
 
 };
 
-class TestPollerSink : public VoidPollerSinkBase {
+class PortaudioSink : public PortaudioSinkDevice {
 
 public:
-	RTTI_DECL1(TestPollerSink, VoidPollerSinkBase)
-	COPY_PANIC(TestPollerSink)
+	RTTI_DECL1(PortaudioSink, PortaudioSinkDevice)
+	COPY_PANIC(PortaudioSink)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

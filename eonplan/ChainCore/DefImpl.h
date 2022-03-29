@@ -66,6 +66,7 @@
 #define HEADER31_U20(x, base, role, content, sink, s0, s1, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	2,0,	#sink, #s0, #s1, 0, 0,	#src, 0, 0, 0, 0);
 #define HEADER55_U44(x, base, role, content, sink, side, src)	Factory::RegHeader<x>(#x, #base, #role, #content,	4,4,	#sink, #side, #side, #side, #side,		#src, #side, #side, #side, #side);
 #define HEADER_ACTION(x, act)									Factory::HeaderAction<x>(#x, #act);
+#define HEADER_LINK(x, key, role)								Factory::HeaderLinktype<x>(#x, #key, #role);
 #define HEADER_INHERITS(x, cls)									Factory::HeaderInherits<x>(#x, #cls);
 #define HEADER_ARG(x, key, value)								Factory::HeaderArg<x>(#x, #key, #value);
 

@@ -9,6 +9,19 @@ String Class::GetTreeString(int indent) {
 	return s;
 }
 
+void Class::AddNativeInherit(String cls, String name) {
+	nat_inherited.GetAdd(cls) = name;
+}
+
+Function& Class::AddFunction(String name) {
+	ASSERT(funcs.Find(name) < 0);
+	return funcs.Add(name).SetName(name);
+}
+
+
+
+
+
 String EnumValue::GetTreeString(int indent) {
 	String s;
 	s.Cat('\t', indent);
@@ -53,6 +66,19 @@ String Namespace::GetTreeString(int indent) {
 
 Function& Function::Arg(String param) {
 	arg_str.Add(param);
+	
+	String type, name;
+	int i = param.Find(" ");
+	if (i >= 0) {
+		type = param.Left(i);
+		name = param.Mid(i+1);
+	}
+	else {
+		type = param;
+		name = "a" + IntStr(args.GetCount());
+	}
+	args.Add(name, type);
+	
 	return *this;
 }
 
@@ -79,18 +105,65 @@ String Function::GetTreeString(int indent) {
 	return s;
 }
 
-String Function::GetDeclarationString() const {
+String Function::GetDeclarationString(bool argnames, String prefix, bool have_this_arg) const {
 	String s;
 	if (ret_str.IsEmpty())
 		s << "void";
 	else
 		s << ret_str;
-	s << " " << name << "(";
-	for(int i = 0; i < arg_str.GetCount(); i++) {
-		if (i) s << ", ";
-		s << arg_str[i];
+	s << " " << prefix << name << "(";
+	for(int i = 0, j = 0; i < args.GetCount(); i++) {
+		String type = args[i];
+		String line = type;
+		if (argnames) {
+			String name = args.GetKey(i);
+			if (name == "this") {
+				name = "o";
+				if (!have_this_arg)
+					continue;
+			}
+			line << " " << name;
+		}
+		if (j) s << ", ";
+		s << line;
+		j++;
 	}
-	s << ");";
+	s << ")";
+	return s;
+}
+
+String Function::GetProxyString(const Class& c, String prefix) const {
+	String s;
+	if (!ret_str.IsEmpty())
+		s << "return ";
+	
+	s << prefix << name << "(";
+	for(int i = 0; i < args.GetCount(); i++) {
+		String name = args.GetKey(i);
+		if (name == "this") {
+			name.Clear();
+			String type = args[i];
+			
+			if (type.Left(6) == "Native")
+				type = type.Mid(6);
+			if (type.Right(1) == "&")
+				type = type.Left(type.GetCount()-1);
+			
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String a = c.nat_inherited.GetKey(i);
+				//LOG(a << " == " << type);
+				if (a == type)
+					name = c.nat_inherited[i];
+			}
+			if (name.GetCount())
+				name = "this->" + name;
+			else
+				Panic("invalid this argument: " + type);
+		}
+		if (i) s << ", ";
+		s << name;
+	}
+	s << ")";
 	return s;
 }
 
@@ -200,7 +273,9 @@ bool Package::Export() {
 	file_list.Add(main_h);
 	file_list.Add("Enums.h");
 	file_list.Add("Vendors.h");
-	//file_list.Add("IfaceFuncs.inl");
+	for (Vendor& v : vendors.GetValues())
+		file_list.Add(v.name + ".cpp");
+	file_list.Add("IfaceFuncs.inl"); 
 	file_list.Add("BaseClasses.h");
 	file_list.Add("TmplClasses.h");
 	
@@ -214,7 +289,7 @@ bool Package::Export() {
 				<< IntStr(clr.g) << ","
 				<< IntStr(clr.b) << "\";;\n\n";
 		
-		fout << "uses\n\tLocal";
+		fout << "uses\n\tParallelLib";
 		for (String dep : deps) {
 			fout << ",\n\t" << dep;
 		}
@@ -254,8 +329,15 @@ bool Package::Export() {
 			fout << "#include <" << dep << "/" << dep << ".h>\n";
 		fout << "\n";
 		
-		for(int i = 1; i < file_list.GetCount(); i++)
-			fout << "#include \"" << file_list[i] << "\"\n";
+		for(int i = 1; i < file_list.GetCount(); i++) {
+			String f = file_list[i];
+			if (GetFileExt(f) == ".inl")
+				;
+			else if (GetFileExt(f) == ".cpp")
+				;
+			else
+				fout << "#include \"" << f << "\"\n";
+		}
 		fout << "\n";
 		
 		fout << "\n#endif\n\n";
@@ -271,16 +353,16 @@ bool Package::Export() {
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_BaseClasses_h_\n";
 		fout << "#define _" + pkgname + "_BaseClasses_h_\n\n";
-		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
+		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
 			c.cpp_name = abbr + c.name;
-			c.t_name = c.name + "T";
+			c.t_name = title + c.name + "T";
 			
 			if (c.inherits.IsEmpty())
-				c.inherits = "RTTIBase";
+				c.inherits = "Atom";
 			
-			fout << "struct " << c.cpp_name << " : " << c.inherits << " {\n";
+			fout << "struct " << c.cpp_name << " : public " << c.inherits << " {\n";
 			fout << "\tRTTI_DECL" << (c.inherits == "RTTIBase" ? String("0(") << c.cpp_name : String("1(") << c.cpp_name << ", " << c.inherits) << ")\n";
 			fout << "\t\n";
 			fout << "\tvirtual ~" << c.cpp_name << "() {}\n\n";
@@ -289,7 +371,7 @@ bool Package::Export() {
 			fout << "};\n\n";
 		}
 		
-		fout << "NAMESPACE_TOPSIDE_END\n\n";
+		fout << "NAMESPACE_PARALLEL_END\n\n";
 		fout << "\n\n#endif\n\n";
 	}
 	
@@ -303,7 +385,7 @@ bool Package::Export() {
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_TmplClasses_h_\n";
 		fout << "#define _" + pkgname + "_TmplClasses_h_\n\n";
-		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
+		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
 			fout << "template <class " << abbr << "> struct " << c.t_name << ";\n";
@@ -312,14 +394,96 @@ bool Package::Export() {
 		
 		for (Class& c : ns.classes.GetValues()) {
 			fout << "template <class " << abbr << ">\nstruct " << c.t_name << " : " << c.cpp_name << " {\n";
+			
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\ttypename " << abbr << "::Native" << cls << " " << name << ";\n";
+			}
 			fout << "\t\n";
+			
+			fout << "\tbool Initialize(const Script::WorldState& ws) override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\tif (!" << abbr << "::" << cls << "_Initialize(" << name << ", *this, ws))\n";
+				fout << "\t\t\treturn false;\n";
+			}
+			/*fout << "\t\tconst int sink_ch_i = 0;\n";
+			fout << "\t\tobj.Create();\n";
+			fout << "\t\tobj->WhenAction << THISBACK(SinkCallback);\n";
+			fout << "\t\tif (!obj->Initialize(*this, ws))\n";
+			fout << "\t\t\treturn false;\n";
+			fout << "\t\tobj->OpenDefault();\n";
+			fout << "\t\tValue& sink_val = GetSink()->GetValue(sink_ch_i);\n";
+			fout << "\t\tfmt = ConvertPortaudioFormat(obj->GetFormat());\n";
+			fout << "\t\tASSERT(fmt.IsValid());\n";
+			fout << "\t\tsink_val.SetFormat(fmt);\n";
+			fout << "\t\tobj->Start();\n";
+			fout << "\t\tSetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);\n";
+			fout << "\t\tobj->Start();\n";*/
+			fout << "\t\treturn true;\n";
+			fout << "\t}\n\n";
+			
+			fout << "\tvoid Uninitialize() override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\t" << abbr << "::" << cls << "_Uninitialize(" << name << ");\n";
+			}
+			/*fout << "\t\tobj->Stop();\n";
+			fout << "\t\tobj.Clear();\n";*/
+			fout << "\t}\n\n";
+			
+			fout << "\tbool ProcessPacket(PacketValue& v) override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\tif (!" << abbr << "::" << cls << "_ProcessPacket(" << name << ", v))\n";
+				fout << "\t\t\treturn false;\n";
+			}
+			fout << "\t\treturn true;\n";
+			fout << "\t}\n\n";
+			
+			
+			// Proxy functions
+			/*String nat_this;
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String type = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				if (i)
+					nat_this << ", ";
+				nat_this << "Native" << type << "& " << name;
+			}
+			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());*/
+			
+			String prefix0 = "";
+			String prefix1 = abbr + "::" + c.name + "_";
+			for (Function& f : c.funcs.GetValues()) {
+				fout << "\t" << f.GetDeclarationString(true, prefix0, false) << " {\n";
+				fout << "\t\t" << f.GetProxyString(c, prefix1) << ";\n";
+				fout << "\t}\n";
+				fout << "\t\n";
+			}
+			
+			fout << "\t\n";
+			
+			
 			
 			fout << "};\n\n";
 		}
 		
+		for (Vendor& v : vendors.GetValues()) {
+			for (Class& c : ns.classes.GetValues()) {
+				String to = v.name + c.name;
+				String from = c.t_name + "<" + abbr + v.name + ">";
+				fout << "using " << to << " = " << from << ";\n";
+				//using PortAudioSinkDevice = AudioSinkDeviceT<AudPortaudio>;
+			}
+		}
+		fout << "\n\n";
 		
-		
-		fout << "NAMESPACE_TOPSIDE_END\n\n";
+		fout << "NAMESPACE_PARALLEL_END\n\n";
 		fout << "\n\n#endif\n\n";
 	}
 	
@@ -332,12 +496,36 @@ bool Package::Export() {
 		fout << "// DO NOT MODIFY THIS FILE!\n";
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		
+		for (Class& c : ns.classes.GetValues()) {
+			String nat_this;
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String type = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				if (i)
+					nat_this << ", ";
+				nat_this << "Native" << type << "& " << name;
+			}
+			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
+			fout << "static bool " << c.name << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n";
+			fout << "static void " << c.name << "_Start(" << nat_this << ");\n";
+			fout << "static void " << c.name << "_Stop(" << nat_this << ");\n";
+			fout << "static void " << c.name << "_Uninitialize(" << nat_this << ");\n";
+			fout << "static bool " << c.name << "_ProcessPacket(" << nat_this_ << "PacketValue& v);\n";
+			fout << "\n";
+			
+			String prefix = c.name + "_";
+			for (Function& f : c.funcs.GetValues()) {
+				fout << "static " << f.GetDeclarationString(true, prefix) << ";\n";
+			}
+			fout << "\t\n";
+		}
+		
 		for (Function& f : iface.funcs.GetValues()) {
-			fout << f.GetDeclarationString() << "\n";
+			fout << f.GetDeclarationString(true) << ";\n";
 		}
 	}
 	
-	// Vendors file
+	// Vendors header file
 	if (1) {
 		String path = AppendFileName(pkgdir, "Vendors.h");
 		FileOut fout(path);
@@ -347,7 +535,7 @@ bool Package::Export() {
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_Vendors_h_\n";
 		fout << "#define _" + pkgname + "_Vendors_h_\n\n";
-		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
+		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 		
 		fout << "#define " << abbrup << "_CLS_LIST(x) \\\n";
 		for (Class& c : ns.classes.GetValues()) {
@@ -376,8 +564,10 @@ bool Package::Export() {
 			for (Class& c : iface.nat_cls.GetValues()) {
 				fout << "\tusing Native" << c.name << " = uint32;\n";
 			}
-			fout << "\ttypedef void (*DataCallbackFn)(void*, char* data, int size);\n";
+			//fout << "\ttypedef void (*DataCallbackFn)(void*, char* data, int size);\n";
 			fout << "\t\n";
+			
+			
 			fout << "\tstruct Thread {\n";
 			fout << "\t\t\n";
 			fout << "\t};\n";
@@ -394,9 +584,73 @@ bool Package::Export() {
 		
 		
 		fout << "\n\n";
-		fout << "NAMESPACE_TOPSIDE_END\n";
+		fout << "NAMESPACE_PARALLEL_END\n";
 		fout << "\n\n#endif\n\n";
 	}
+	
+	if (1) {
+		for (Vendor& v : vendors.GetValues()) {
+			String path = AppendFileName(pkgdir, v.name + ".cpp");
+			
+			// Protect user-made changes
+			if (FileExists(path)) {
+				LOG("Protecting file: " << path);
+				continue;
+			}
+			
+			FileOut fout(path);
+			
+			fout << "#include \"" << pkgname << ".h\"\n\n";
+			fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
+			
+			for (Class& c : ns.classes.GetValues()) {
+				String cls = abbr + v.name;
+				String nat_this;
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String type = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					if (i)
+						nat_this << ", ";
+					nat_this << "Native" << type << "& " << name;
+				}
+				String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
+				
+				fout << "bool " << cls << "::" << c.name << "_Initialize(" << nat_this_ << "AtomBase& a, const Script::WorldState& ws) {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				fout << "void " << cls << "::" << c.name << "_Start(" << nat_this << ") {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				fout << "void " << cls << "::" << c.name << "_Stop(" << nat_this << ") {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				fout << "void " << cls << "::" << c.name << "_Uninitialize(" << nat_this << ") {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				fout << "bool " << cls << "::" << c.name << "_ProcessPacket(" << nat_this_ << "PacketValue& v) {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				for (Function& f : c.funcs.GetValues()) {
+					String prefix = cls + "::" + c.name + "_";
+					fout << f.GetDeclarationString(true, prefix) << " {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+				}
+			}
+			
+			fout << "\n\n\n";
+			fout << "\nNAMESPACE_PARALLEL_END\n\n";
+		}
+		
+		
+		
+	}
+	
 	
 	// Enums file
 	if (1) {
@@ -408,12 +662,12 @@ bool Package::Export() {
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_Enums_h_\n";
 		fout << "#define _" + pkgname + "_Enums_h_\n\n";
-		fout << "NAMESPACE_TOPSIDE_BEGIN\n\n";
+		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 		
 		
 		
 		fout << "\n\n";
-		fout << "NAMESPACE_TOPSIDE_END\n";
+		fout << "NAMESPACE_PARALLEL_END\n";
 		fout << "\n\n#endif\n\n";
 	}
 	

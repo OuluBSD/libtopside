@@ -8,7 +8,7 @@ PKG(Font, Fnt, F) {
 	IfaceLib::Add(this);
 	
 	COLOR(54, 54, 54)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(Font) {

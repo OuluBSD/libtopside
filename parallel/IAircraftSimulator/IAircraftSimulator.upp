@@ -1,13 +1,14 @@
 description "\377B226,125,223";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IAircraftSimulator.h,
 	Enums.h,
 	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

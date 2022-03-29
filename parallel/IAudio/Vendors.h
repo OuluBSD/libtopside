@@ -1,15 +1,15 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IAudio_Vendors_h_
 #define _IAudio_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define AUD_CLS_LIST(x) \
-	AUD_CLS(AudioSinkDevice, x) \
-	AUD_CLS(AudioSourceDevice, x) \
+	AUD_CLS(SinkDevice, x) \
+	AUD_CLS(SourceDevice, x) \
 
 
 
@@ -30,7 +30,6 @@ AUD_VNDR_LIST
 struct AudSdl {
 	using NativeSinkDevice = uint32;
 	using NativeSourceDevice = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -44,7 +43,6 @@ struct AudSdl {
 struct AudPortaudio {
 	using NativeSinkDevice = uint32;
 	using NativeSourceDevice = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -57,7 +55,7 @@ struct AudPortaudio {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

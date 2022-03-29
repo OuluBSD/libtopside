@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 26.3.26 14:33:33
+// Last modified: 29.3.29 19:55:44
 
 namespace TS {
 
@@ -13,7 +13,7 @@ namespace Parallel {
 	ATOM_TYPE(TEST_REALTIME_SRC) \
 	ATOM_TYPE(TEST_REALTIME_SINK) \
 	ATOM_TYPE(TEST_POLLER_SINK) \
-	ATOM_TYPE(AUDIO_HARDWARE_SINK) \
+	ATOM_TYPE(PORTAUDIO_SINK) \
 	ATOM_TYPE(AUDIO_DECODER_SRC) \
 	ATOM_TYPE(AUDIO_DBG_SRC) \
 	ATOM_TYPE(AUDIO_SPLITTER) \
@@ -35,7 +35,7 @@ namespace Parallel {
 	ATOM_CLASS(TestRealtimeSrc) \
 	ATOM_CLASS(TestRealtimeSink) \
 	ATOM_CLASS(TestPollerSink) \
-	ATOM_CLASS(AudioHardwareSink) \
+	ATOM_CLASS(PortaudioSink) \
 	ATOM_CLASS(AudioDecoderSrc) \
 	ATOM_CLASS(AudioDbgSrc) \
 	ATOM_CLASS(AudioSplitter) \

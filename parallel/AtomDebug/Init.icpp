@@ -29,7 +29,8 @@ INITBLOCK {
 	Factory::RegisterAtom<CenterCustomer>();
 	Factory::RegisterAtom<TestRealtimeSrc>();
 	Factory::RegisterAtom<TestRealtimeSink>();
-	Factory::RegisterAtom<TestPollerSink>();
+	//Factory::RegisterAtom<TestPollerSink>();
+	Factory::RegisterAtom<PortaudioSink>();
 	Factory::RegisterAtom<AudioDbgSrc>();
 	
 }

@@ -1,13 +1,16 @@
 description "\377B113,42,150";;
 
 uses
-	Local,
+	ParallelLib,
 	SoftPhys;
 
 file
 	IPhysics.h,
 	Enums.h,
 	Vendors.h,
+	Tos.cpp,
+	Ode.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

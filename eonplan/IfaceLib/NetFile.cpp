@@ -8,7 +8,7 @@ PKG(NetFile, Nef, n) {
 	IfaceLib::Add(this);
 	
 	COLOR(214, 57, 42)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(NetFile) {

@@ -1,13 +1,15 @@
 description "\377B56,170,0";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IVirtualMachine.h,
 	Enums.h,
 	Vendors.h,
+	Tos.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

@@ -1,13 +1,14 @@
 description "\377B114,37,142";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IOperatingSystem.h,
 	Enums.h,
 	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

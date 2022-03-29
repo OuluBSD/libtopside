@@ -8,7 +8,7 @@ PKG(StreamServer, Svr, R) {
 	IfaceLib::Add(this);
 	
 	COLOR(28, 0, 42)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(StreamServer) {

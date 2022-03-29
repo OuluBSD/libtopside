@@ -1,13 +1,18 @@
 description "\377B85,42,0";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
-	IEvents.h,
+	IEvent.h,
 	Enums.h,
 	Vendors.h,
+	Sdl.cpp,
+	Glfw.cpp,
+	X11.cpp,
+	Win32.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

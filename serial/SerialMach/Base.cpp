@@ -139,6 +139,9 @@ LinkTypeCls PipeLink::GetType() {
 
 
 
+
+
+
 IntervalPipeLink::IntervalPipeLink() {
 	
 }
@@ -207,6 +210,38 @@ void IntervalPipeLink::IntervalSinkProcess() {
 	}
 	
 	flag.DecreaseRunning();
+}
+
+
+
+
+
+
+
+
+ExternalPipeLink::ExternalPipeLink() {
+	
+}
+
+ExternalPipeLink::~ExternalPipeLink() {
+	ASSERT(!flag.IsRunning());
+}
+
+bool ExternalPipeLink::Initialize(const Script::WorldState& ws) {
+	flag.Start(1);
+	GetSink()->GetValue(0).SetMinQueueSize(5);
+	
+	//Thread::Start(THISBACK(IntervalSinkProcess));
+	
+	return true;
+}
+
+void ExternalPipeLink::Uninitialize() {
+	flag.Stop();
+}
+
+LinkTypeCls ExternalPipeLink::GetType() {
+	return LINKTYPE(EXTERNAL_PIPE, PROCESS);
 }
 
 

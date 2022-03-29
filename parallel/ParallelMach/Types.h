@@ -554,6 +554,11 @@ template<class T, class Parent = RefParent1<typename T::Parent>>
 using RefAtomTypeMapIndirect	= RefLinkedMapIndirect<AtomTypeCls, T, Parent>;
 
 
+
+typedef void (*DataCallbackFn)(void*, char* data, int size);
+
+
+
 NAMESPACE_PARALLEL_END
 
 

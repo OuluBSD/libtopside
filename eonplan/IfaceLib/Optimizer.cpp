@@ -8,7 +8,7 @@ PKG(Optimizer, Opt, o) {
 	IfaceLib::Add(this);
 	
 	COLOR(14, 37, 142)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(Solver) {

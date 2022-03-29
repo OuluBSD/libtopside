@@ -8,21 +8,21 @@ PKG(Webcam, Cam, W) {
 	IfaceLib::Add(this);
 	
 	COLOR(54, 157, 442)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(Webcam) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Webcam)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(CreateWebcam, bool, NativeWebcam&)
-		FUNCTION1V(ClearWebcam, NativeWebcam&)
-		
+	}
+	
+	NAMESPACE {
+		CLASS(Webcam) {
+			NATIVE_INHERIT(Webcam, dev)
+			
+			METHOD1R(CreateWebcam, bool, NativeWebcam& this)
+			METHOD1V(ClearWebcam, NativeWebcam& this)
+		}
 	}
 	
 	

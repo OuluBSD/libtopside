@@ -1,74 +1,39 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
-void InitializeLibrary();
-void UninitializeLibrary();
-void CreateWorld(NativeWorld& world);
-void ClearWorld(NativeWorld& world);
-void SetGravity(NativeWorld& world, const vec3& v);
-void SetWorldCFM(NativeWorld& world, float f);
-void SetMaxCorrectingVelocity(NativeWorld& world, float f);
-void SetContactSurfaceLayer(NativeWorld& world, float f);
-void SetAutoDisable(NativeWorld& world, bool b);
-void SetStepIterations(NativeWorld& world, int i);
-void SetAutoDisableSamples(NativeWorld& world, int i);
-void CreateSpace(NativeWorld& world, NativeSpace& space, NativeSpace* owner, bool is_root);
-void ClearSpace(NativeSpace& space);
-void Collide(NativeSpace& space, void* data);
-int CollideContacts(NativeGeom& o1, NativeGeom& o2, int count, NativeContact* c, int ptr_pitch);
-void Step(NativeWorld& world, float seconds);
-void AttachContact(NativeWorld& w, NativeJointGroup& cg, NativeContact& c, float slip1, float slip2, float erp, float cfm);
-void AddGeomToSpace(NativeSpace& space, NativeGeom& geom);
-void RemoveGeomFromSpace(NativeSpace& space, NativeGeom& geom);
-void CreateJointGroup(NativeJointGroup& g);
-void ClearJointGroup(NativeJointGroup& g);
-void DetachJointGroup(NativeJointGroup& g);
-void CreateThreading(NativeThreading& t);
-void CreateThreadPool(NativeThreadPool& p);
-void AttachThreadPool(NativeThreading& t, NativeThreadPool& p);
-void AttachThreading(NativeWorld& w, NativeThreading& t);
-void DetachWorldThreading(NativeWorld& w);
-void DetachThreading(NativeThreading& t);
-void ClearThreadPool(NativeThreadPool& p);
-void ClearThreading(NativeThreading& t);
-void CreateBody(NativeWorld& w, NativeBody& b);
-void ClearBody(NativeBody& b);
-vec3 GetBodyPosition(NativeBody& b);
-void SetBodyRotationAxisAngle(NativeBody& b, float ax, float ay, float az, float angle);
-void SetBodyMass(NativeBody& b, NativeMass& m);
-void SetBodyPosition(NativeBody& b, float x, float y, float z);
-void SetBodyQuaternion(NativeBody& b, const quat& q);
-void SetBodyLinearVelocity(NativeBody& b, const vec3& v);
-void SetBodyAngularVelocity(NativeBody& b, const vec3& v);
-void ClearGeom(NativeGeom& g);
-void SetGeomModelPlane(NativeGeom& g, NativeSpace& s, const vec4& plane=vec4(0,1,0,0));
-void SetGeomModelSphere(NativeGeom& g, float radius);
-void SetGeomModelBox(NativeGeom& g, float w, float h, float l);
-void SetGeomPosition(NativeGeom& g, float x, float y, float z);
-void SetGeomRotationAxisAngle(NativeGeom& g, float ax, float ay, float az, float angle);
-void SetGeomBody(NativeGeom& g, NativeBody& b);
-void ResetGeomRotation(NativeGeom& geom);
-vec3 GetGeomPosition(NativeGeom& geom);
-quat GetGeomQuaternion(NativeGeom& geom);
-mat43 GetGeomRotationAxisAngle(NativeBody& body);
-void CreateJointHinge2(NativeWorld& w, NativeJoint& j);
-void AttachJoint(NativeJoint& j, NativeBody& b0, NativeBody& b1);
-void GetDefaultOrientation(NativeQuat& q);
-void SetJointFeedback(NativeJoint& j, NativeFeedback& fb);
-void SetJointHingeAnchor(NativeJoint& j, const vec3& pos);
-void SetJointHingeAxes(NativeJoint& j, const vec3& axis1, const vec3& axis2);
-void SetSuspensionERP(NativeJoint& j, float erp);
-void SetSuspensionCFM(NativeJoint& j, float cfm);
-void SetHingeRange(NativeJoint& j, float lo, float hi, int idx=0);
-void SetHingeVelocity(NativeJoint& j, float v, int idx=0);
-void SetMaxForce(NativeJoint& j, float v, int idx=0);
-void SetFudgeFactor(NativeJoint& j, float v);
-void SetHingeAnchor(NativeJoint& j, const vec3& v);
-void SetAxis(NativeJoint& j, const vec3& v);
-float GetAngle(NativeJoint& j);
-void SetQuatFromAxisAngle(NativeQuat& q, const vec3& axis, float angle);
-void SetMassFunctionSphere(NativeMass& mass, float density, float radius);
-void SetMassFunctionBoxDefault(NativeMass& mass, float w, float h, float l);
-void SetMassFunctionBox(NativeMass& mass, float density, float w, float h, float l);
-void SetMass(NativeMass& mass, float kg);
+static bool Node_Initialize(AtomBase&, const Script::WorldState&);
+static void Node_Start();
+static void Node_Stop();
+static void Node_Uninitialize();
+static bool Node_ProcessPacket(PacketValue& v);
+
+	
+static bool Object_Initialize(AtomBase&, const Script::WorldState&);
+static void Object_Start();
+static void Object_Stop();
+static void Object_Uninitialize();
+static bool Object_ProcessPacket(PacketValue& v);
+
+	
+static bool Joint_Initialize(AtomBase&, const Script::WorldState&);
+static void Joint_Start();
+static void Joint_Stop();
+static void Joint_Uninitialize();
+static bool Joint_ProcessPacket(PacketValue& v);
+
+	
+static bool Space_Initialize(AtomBase&, const Script::WorldState&);
+static void Space_Start();
+static void Space_Stop();
+static void Space_Uninitialize();
+static bool Space_ProcessPacket(PacketValue& v);
+
+	
+static bool System_Initialize(AtomBase&, const Script::WorldState&);
+static void System_Start();
+static void System_Stop();
+static void System_Uninitialize();
+static bool System_ProcessPacket(PacketValue& v);
+
+	

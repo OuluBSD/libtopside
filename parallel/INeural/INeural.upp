@@ -1,13 +1,14 @@
 description "\377B226,85,0";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	INeural.h,
 	Enums.h,
 	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

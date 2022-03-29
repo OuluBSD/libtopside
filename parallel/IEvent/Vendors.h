@@ -1,14 +1,14 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
-#ifndef _IEvents_Vendors_h_
-#define _IEvents_Vendors_h_
+#ifndef _IEvent_Vendors_h_
+#define _IEvent_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define EV_CLS_LIST(x) \
-	EV_CLS(Events, x) \
+	EV_CLS(SourceDevice, x) \
 
 
 
@@ -30,8 +30,7 @@ EV_VNDR_LIST
 
 struct EvSdl {
 	using NativeContext = uint32;
-	using NativeEvents = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	using NativeSourceDevice = uint32;
 	
 	struct Thread {
 		
@@ -44,8 +43,7 @@ struct EvSdl {
 
 struct EvGlfw {
 	using NativeContext = uint32;
-	using NativeEvents = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	using NativeSourceDevice = uint32;
 	
 	struct Thread {
 		
@@ -58,8 +56,7 @@ struct EvGlfw {
 
 struct EvX11 {
 	using NativeContext = uint32;
-	using NativeEvents = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	using NativeSourceDevice = uint32;
 	
 	struct Thread {
 		
@@ -72,8 +69,7 @@ struct EvX11 {
 
 struct EvWin32 {
 	using NativeContext = uint32;
-	using NativeEvents = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
+	using NativeSourceDevice = uint32;
 	
 	struct Thread {
 		
@@ -86,7 +82,7 @@ struct EvWin32 {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

@@ -8,7 +8,18 @@ PKG(UserInterface, Ui, U) {
 	IfaceLib::Add(this);
 	
 	COLOR(28, 85, 255)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
+	
+	PKG_IFACE {
+		NATIVE_CLASS(Ctrl)
+		//UTIL_CLASS()
+		
+		/*FUNCTION2R(CreateCtrl,		bool, int type, NativeCtrl&)
+		FUNCTION1V(ClearCtrl,		NativeCtrl&)
+		
+		FUNCTION3R(SetCallback,		bool, NativeCtrl&, int when_enum, Callback cb)
+		*/
+	}
 	
 	NAMESPACE {
 		CLASS(Window) {
@@ -65,17 +76,6 @@ PKG(UserInterface, Ui, U) {
 		CLASS(MenuBar) {
 			
 		}
-	}
-	
-	PKG_IFACE {
-		NATIVE_CLASS(Ctrl)
-		//UTIL_CLASS()
-		
-		FUNCTION2R(CreateCtrl,		bool, int type, NativeCtrl&)
-		FUNCTION1V(ClearCtrl,		NativeCtrl&)
-		
-		FUNCTION3R(SetCallback,		bool, NativeCtrl&, int when_enum, Callback cb)
-		
 	}
 	
 	

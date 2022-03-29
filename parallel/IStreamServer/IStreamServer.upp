@@ -1,13 +1,14 @@
 description "\377B28,0,42";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IStreamServer.h,
 	Enums.h,
 	Vendors.h,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

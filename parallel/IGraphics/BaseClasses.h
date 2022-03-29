@@ -1,111 +1,111 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IGraphics_BaseClasses_h_
 #define _IGraphics_BaseClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-struct GfxVertexShader : RTTIBase {
-	RTTI_DECL0(GfxVertexShader)
+struct GfxVertexShader : public Atom {
+	RTTI_DECL1(GfxVertexShader, Atom)
 	
 	virtual ~GfxVertexShader() {}
 
 };
 
-struct GfxFragmentShader : RTTIBase {
-	RTTI_DECL0(GfxFragmentShader)
+struct GfxFragmentShader : public Atom {
+	RTTI_DECL1(GfxFragmentShader, Atom)
 	
 	virtual ~GfxFragmentShader() {}
 
 };
 
-struct GfxDataObject : RTTIBase {
-	RTTI_DECL0(GfxDataObject)
+struct GfxDataObject : public Atom {
+	RTTI_DECL1(GfxDataObject, Atom)
 	
 	virtual ~GfxDataObject() {}
 
 };
 
-struct GfxDataState : ErrorReporter {
+struct GfxDataState : public ErrorReporter {
 	RTTI_DECL1(GfxDataState, ErrorReporter)
 	
 	virtual ~GfxDataState() {}
 
 };
 
-struct GfxInputState : ErrorReporter {
+struct GfxInputState : public ErrorReporter {
 	RTTI_DECL1(GfxInputState, ErrorReporter)
 	
 	virtual ~GfxInputState() {}
 
 };
 
-struct GfxFramebuffer : ErrorReporter {
+struct GfxFramebuffer : public ErrorReporter {
 	RTTI_DECL1(GfxFramebuffer, ErrorReporter)
 	
 	virtual ~GfxFramebuffer() {}
 
 };
 
-struct GfxCompiler : ErrorReporter {
+struct GfxCompiler : public ErrorReporter {
 	RTTI_DECL1(GfxCompiler, ErrorReporter)
 	
 	virtual ~GfxCompiler() {}
 
 };
 
-struct GfxLinker : ErrorReporter {
+struct GfxLinker : public ErrorReporter {
 	RTTI_DECL1(GfxLinker, ErrorReporter)
 	
 	virtual ~GfxLinker() {}
 
 };
 
-struct GfxShaderPipeline : RTTIBase {
-	RTTI_DECL0(GfxShaderPipeline)
+struct GfxShaderPipeline : public Atom {
+	RTTI_DECL1(GfxShaderPipeline, Atom)
 	
 	virtual ~GfxShaderPipeline() {}
 
 };
 
-struct GfxRuntimeState : ErrorReporter {
+struct GfxRuntimeState : public ErrorReporter {
 	RTTI_DECL1(GfxRuntimeState, ErrorReporter)
 	
 	virtual ~GfxRuntimeState() {}
 
 };
 
-struct GfxContextState : RTTIBase {
-	RTTI_DECL0(GfxContextState)
+struct GfxContextState : public Atom {
+	RTTI_DECL1(GfxContextState, Atom)
 	
 	virtual ~GfxContextState() {}
 
 };
 
-struct GfxRenderer : RTTIBase {
-	RTTI_DECL0(GfxRenderer)
+struct GfxRenderer : public Atom {
+	RTTI_DECL1(GfxRenderer, Atom)
 	
 	virtual ~GfxRenderer() {}
 
 };
 
-struct GfxStateDraw : Draw {
+struct GfxStateDraw : public Draw {
 	RTTI_DECL1(GfxStateDraw, Draw)
 	
 	virtual ~GfxStateDraw() {}
 
 };
 
-struct GfxBuffer : RTTIBase {
-	RTTI_DECL0(GfxBuffer)
+struct GfxBuffer : public Atom {
+	RTTI_DECL1(GfxBuffer, Atom)
 	
 	virtual ~GfxBuffer() {}
 
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

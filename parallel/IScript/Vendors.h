@@ -1,11 +1,11 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IScript_Vendors_h_
 #define _IScript_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define SCR_CLS_LIST(x) \
 	SCR_CLS(Runner, x) \
@@ -31,7 +31,6 @@ SCR_VNDR_LIST
 struct ScrEsc {
 	using NativeRunner = uint32;
 	using NativeThread = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -45,7 +44,6 @@ struct ScrEsc {
 struct ScrPython {
 	using NativeRunner = uint32;
 	using NativeThread = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -59,7 +57,6 @@ struct ScrPython {
 struct ScrDuktape {
 	using NativeRunner = uint32;
 	using NativeThread = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -72,7 +69,7 @@ struct ScrDuktape {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

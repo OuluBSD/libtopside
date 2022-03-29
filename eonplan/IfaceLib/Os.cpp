@@ -8,7 +8,7 @@ PKG(OperatingSystem, Os, O) {
 	IfaceLib::Add(this);
 	
 	COLOR(114, 37, 142)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(MessageBus) {

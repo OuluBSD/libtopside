@@ -1,13 +1,17 @@
 description "\377B56,127,255";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IScript.h,
 	Enums.h,
 	Vendors.h,
+	Esc.cpp,
+	Python.cpp,
+	Duktape.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

@@ -11,64 +11,6 @@ PKG(Graphics, Gfx, G) {
 	DEPENDENCY(Geometry)
 	DEPENDENCY(SoftRend)
 	
-	NAMESPACE {
-		ENUM(RenderTarget) {
-			ENUMVAL(COLOR0_EXT, 1 << 0)
-		}
-		CLASS(VertexShader) {
-			
-		}
-		CLASS(FragmentShader) {
-			
-		}
-		CLASS(DataObject) {
-			
-		}
-		CLASS(DataState) {
-			INHERIT(ErrorReporter)
-			
-		}
-		CLASS(InputState) {
-			INHERIT(ErrorReporter)
-			
-		}
-		CLASS(Framebuffer) {
-			INHERIT(ErrorReporter)
-			
-		}
-		CLASS(Compiler) {
-			INHERIT(ErrorReporter)
-			
-		}
-		CLASS(Linker) {
-			INHERIT(ErrorReporter)
-			
-		}
-		/*CLASS(ShaderState) {
-			
-		}*/
-		CLASS(ShaderPipeline) {
-			
-		}
-		CLASS(RuntimeState) {
-			INHERIT(ErrorReporter)
-			
-		}
-		CLASS(ContextState) {
-			
-		}
-		CLASS(Renderer) {
-			
-		}
-		CLASS(StateDraw) {
-			INHERIT(Draw)
-			
-		}
-		CLASS(Buffer) {
-			
-		}
-	}
-	
 	PKG_IFACE {
 		NATIVE_CLASS(Texture)
 		NATIVE_CLASS(Shader)
@@ -83,6 +25,7 @@ PKG(Graphics, Gfx, G) {
 		UTIL_CLASS(SystemFramebuffer)
 		UTIL_CLASS(ValFormat)
 		
+		/*
 		FUNCTION1V(BindProgramPipeline, NativePipeline&)
 		FUNCTION1V(UseProgram, NativeProgram&)
 		FUNCTION0V(UnbindProgramPipeline)
@@ -160,8 +103,66 @@ PKG(Graphics, Gfx, G) {
 		FUNCTION1V(SetContextDefaultFramebuffer, NativeFrameBuffer& fb);
 		FUNCTION0V(BeginRender);
 		FUNCTION0V(EndRender);
+		*/
 	}
 	
+	NAMESPACE {
+		ENUM(RenderTarget) {
+			ENUMVAL(COLOR0_EXT, 1 << 0)
+		}
+		CLASS(VertexShader) {
+			
+		}
+		CLASS(FragmentShader) {
+			
+		}
+		CLASS(DataObject) {
+			
+		}
+		CLASS(DataState) {
+			INHERIT(ErrorReporter)
+			
+		}
+		CLASS(InputState) {
+			INHERIT(ErrorReporter)
+			
+		}
+		CLASS(Framebuffer) {
+			INHERIT(ErrorReporter)
+			
+		}
+		CLASS(Compiler) {
+			INHERIT(ErrorReporter)
+			
+		}
+		CLASS(Linker) {
+			INHERIT(ErrorReporter)
+			
+		}
+		/*CLASS(ShaderState) {
+			
+		}*/
+		CLASS(ShaderPipeline) {
+			
+		}
+		CLASS(RuntimeState) {
+			INHERIT(ErrorReporter)
+			
+		}
+		CLASS(ContextState) {
+			
+		}
+		CLASS(Renderer) {
+			
+		}
+		CLASS(StateDraw) {
+			INHERIT(Draw)
+			
+		}
+		CLASS(Buffer) {
+			
+		}
+	}
 	
 	VENDOR(Cpu) {
 		

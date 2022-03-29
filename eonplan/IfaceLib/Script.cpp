@@ -8,7 +8,7 @@ PKG(Script, Scr, S) {
 	IfaceLib::Add(this);
 	
 	COLOR(56, 127, 255)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(Runner) {

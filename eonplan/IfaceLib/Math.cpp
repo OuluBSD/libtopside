@@ -8,7 +8,7 @@ PKG(Math, Math, m) {
 	IfaceLib::Add(this);
 	
 	COLOR(14, 37, 142)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(System) {

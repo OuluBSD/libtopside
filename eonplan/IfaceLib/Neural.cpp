@@ -8,7 +8,7 @@ PKG(Neural, Nrl, N) {
 	IfaceLib::Add(this);
 	
 	COLOR(226, 85, 0)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(Network) {

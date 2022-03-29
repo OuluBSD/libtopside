@@ -9,7 +9,8 @@ AtomTypeCls CenterCustomer::GetAtomType()
 	return ATOM11(CENTER_CUSTOMER, CUSTOMER, CENTER, ORDER, CENTER, RECEIPT, CENTER, ORDER);
 }
 
-LinkTypeCls CenterCustomer::GetLinkType() {
+LinkTypeCls CenterCustomer::GetLinkType()
+{
 	return LINKTYPE(CUSTOMER, CUSTOMER);
 }
 
@@ -28,7 +29,8 @@ AtomTypeCls TestRealtimeSrc::GetAtomType()
 	return ATOM11(TEST_REALTIME_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
 }
 
-LinkTypeCls TestRealtimeSrc::GetLinkType() {
+LinkTypeCls TestRealtimeSrc::GetLinkType()
+{
 	return LINKTYPE(PIPE, PROCESS);
 }
 
@@ -47,7 +49,8 @@ AtomTypeCls TestRealtimeSink::GetAtomType()
 	return ATOM11(TEST_REALTIME_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
-LinkTypeCls TestRealtimeSink::GetLinkType() {
+LinkTypeCls TestRealtimeSink::GetLinkType()
+{
 	return LINKTYPE(INTERVAL_PIPE, PROCESS);
 }
 
@@ -61,21 +64,22 @@ AtomTypeCls TestRealtimeSink::GetType() const
 	return GetAtomType();
 }
 
-AtomTypeCls TestPollerSink::GetAtomType()
+AtomTypeCls PortaudioSink::GetAtomType()
 {
-	return ATOM11(TEST_POLLER_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+	return ATOM11(PORTAUDIO_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
 }
 
-LinkTypeCls TestPollerSink::GetLinkType() {
-	TODO
-}
-
-void TestPollerSink::Visit(RuntimeVisitor& vis)
+LinkTypeCls PortaudioSink::GetLinkType()
 {
-	vis.VisitThis<VoidPollerSinkBase>(this);
+	return LINKTYPE(EXTERNAL_PIPE, PROCESS);
 }
 
-AtomTypeCls TestPollerSink::GetType() const
+void PortaudioSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<PortaudioSinkDevice>(this);
+}
+
+AtomTypeCls PortaudioSink::GetType() const
 {
 	return GetAtomType();
 }
@@ -85,8 +89,9 @@ AtomTypeCls AudioDbgSrc::GetAtomType()
 	return ATOM11(AUDIO_DBG_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
 }
 
-LinkTypeCls AudioDbgSrc::GetLinkType() {
-	TODO
+LinkTypeCls AudioDbgSrc::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
 }
 
 void AudioDbgSrc::Visit(RuntimeVisitor& vis)

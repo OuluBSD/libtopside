@@ -3,15 +3,38 @@
 
 NAMESPACE_PLAN_BEGIN
 
+struct Class;
+
+struct Function {
+	Vector<String> arg_str;
+	VectorMap<String,String> args;
+	String ret_str;
+	String name;
+	
+	
+	Function& SetName(String s) {name = s; return *this;}
+	Function& Arg(String param);
+	Function& Ret(String type);
+	String GetTreeString(int indent);
+	String GetDeclarationString(bool argnames, String prefix="", bool have_this_arg=true) const;
+	String GetProxyString(const Class& c, String prefix) const;
+	String GetWrapDeclarationString(String cls) const;
+	
+};
+
 struct Class {
 	String name;
 	String cpp_name;
 	String t_name;
 	String inherits;
+	VectorMap<String, String> nat_inherited;
+	ArrayMap<String, Function> funcs;
 	
 	Class& SetName(String s) {name = s; return *this;}
 	Class& Inherit(String s) {ASSERT(inherits.IsEmpty()); inherits = s; return *this;}
 	String GetTreeString(int indent);
+	Function& AddFunction(String name);
+	void AddNativeInherit(String cls, String name);
 };
 
 struct EnumValue {
@@ -42,20 +65,6 @@ struct Namespace {
 	Enum& AddEnum(String name);
 	Class& AddClass(String name);
 	String GetTreeString(int indent);
-	
-};
-
-struct Function {
-	Vector<String> arg_str;
-	String ret_str;
-	String name;
-	
-	
-	Function& SetName(String s) {name = s; return *this;}
-	Function& Arg(String param);
-	Function& Ret(String type);
-	String GetTreeString(int indent);
-	String GetDeclarationString() const;
 	
 };
 

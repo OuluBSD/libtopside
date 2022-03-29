@@ -1,13 +1,18 @@
 description "\377B56,170,0";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IInternet.h,
 	Enums.h,
 	Vendors.h,
+	Posix.cpp,
+	Win32.cpp,
+	Enet.cpp,
+	NullSerial.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

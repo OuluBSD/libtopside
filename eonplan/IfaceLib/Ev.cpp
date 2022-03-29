@@ -4,28 +4,28 @@ NAMESPACE_PLAN_BEGIN
 
 
 
-PKG(Events, Ev, E) {
+PKG(Event, Ev, E) {
 	IfaceLib::Add(this);
 	
 	COLOR(85, 42, 0)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(Events) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Context)
-		NATIVE_CLASS(Events)
+		NATIVE_CLASS(SourceDevice)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(Poll, bool, UPP::CtrlEvent& e)
-		FUNCTION0R(GetTickCount, uint32)
-		FUNCTION1V(WaitEvent, int ms)
-		FUNCTION0R(IsWaitingEvent, bool)
-		
+	}
+	
+	NAMESPACE {
+		CLASS(SourceDevice) {
+			NATIVE_INHERIT(SourceDevice, dev)
+			
+			METHOD2R(Poll, bool, NativeSourceDevice& this, UPP::CtrlEvent& e)
+			METHOD1R(GetTickCount, uint32, NativeSourceDevice& this)
+			METHOD2V(WaitEvent, NativeSourceDevice& this, int ms)
+			METHOD1R(IsWaitingEvent, bool, NativeSourceDevice& this)
+		}
 	}
 	
 	

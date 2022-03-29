@@ -68,6 +68,26 @@ public:
 };
 
 
+class ExternalPipeLink : public AsyncMemForwarderBase {
+	RunningFlag			flag;
+	
+	
+public:
+	RTTI_DECL1(ExternalPipeLink, AsyncMemForwarderBase)
+	typedef ExternalPipeLink CLASSNAME;
+	ExternalPipeLink();
+	~ExternalPipeLink();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<AsyncMemForwarderBase>(this);}
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
+
 NAMESPACE_SERIAL_END
 
 #endif

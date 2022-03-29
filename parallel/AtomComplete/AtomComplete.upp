@@ -6,7 +6,9 @@ uses
 	AtomMusic,
 	AtomEssential,
 	Shadertoy,
-	Default;
+	Default,
+	IGraphics,
+	IEvent;
 
 uses(GUI) AtomCtrl;
 

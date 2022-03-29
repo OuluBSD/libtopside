@@ -13,6 +13,7 @@
 #define HEADER55_U44(x, base, role, content, sink, side, src)	using x = HeaderT<base, sink, src>;
 #define BASE_FLAG(x, flag)
 #define BASE_ACTION(x, act)
+#define HEADER_LINK(x, key, role)
 #define HEADER_ACTION(x, act)
 #define HEADER_INHERITS(x, cls)
 #define HEADER_ARG(x, key, value)

@@ -12,28 +12,6 @@ PKG(Physics, Fys, F) {
 	MAINFLAG(Screen)
 	DEPENDENCY(SoftPhys)
 	
-	NAMESPACE {
-		CLASS(Node) {
-			
-		}
-		CLASS(Object) {
-			
-		}
-		CLASS(Joint) {
-			
-		}
-		CLASS(Space) {
-			
-		}
-		CLASS(System) {
-			
-		}
-		
-		/*PREFAB() {
-			
-		}*/
-	}
-	
 	PKG_IFACE {
 		NATIVE_CLASS(Geom)
 		NATIVE_CLASS(Body)
@@ -48,7 +26,7 @@ PKG(Physics, Fys, F) {
 		NATIVE_CLASS(ThreadPool)
 		NATIVE_CLASS(Contact)
 		
-		FUNCTION0V(InitializeLibrary)
+		/*FUNCTION0V(InitializeLibrary)
 		FUNCTION0V(UninitializeLibrary)
 		
 		FUNCTION1V(CreateWorld, NativeWorld& world);
@@ -128,6 +106,29 @@ PKG(Physics, Fys, F) {
 		FUNCTION4V(SetMassFunctionBoxDefault, NativeMass& mass, float w, float h, float l);
 		FUNCTION5V(SetMassFunctionBox, NativeMass& mass, float density, float w, float h, float l);
 		FUNCTION2V(SetMass, NativeMass& mass, float kg);
+		*/
+	}
+	
+	NAMESPACE {
+		CLASS(Node) {
+			
+		}
+		CLASS(Object) {
+			
+		}
+		CLASS(Joint) {
+			
+		}
+		CLASS(Space) {
+			
+		}
+		CLASS(System) {
+			
+		}
+		
+		/*PREFAB() {
+			
+		}*/
 	}
 	
 	

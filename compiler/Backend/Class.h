@@ -58,10 +58,10 @@ class Class :
 	public MetaConditional
 {
 public:
-	TemplateClass			tmpl;
-	Vector<Class*>			inherited;
-	ArrayMap<String, Class>	classes;
-	ArrayMap<String,Field>	fields;
+	TemplateClass						tmpl;
+	Vector<Class*>						inherited;
+	ArrayMap<String, Class>				classes;
+	ArrayMap<String,Field>				fields;
 	ArrayMap<String,FunctionIdScope>	funcids;
 	ArrayMap<String, MetaStatement>		mstmts;
 	String					name;

@@ -76,6 +76,7 @@ public:
 		int				sink_user_side_count = 0;
 		int				src_user_side_count = 0;
 		String			role, key;
+		String			link_role, link_key;
 		Index<String>				actions, inherits;
 		VectorMap<String,String>	args;
 		
@@ -180,6 +181,13 @@ public:
 	void HeaderAction(const char* name, const char* action) {
 		Header& v = Headers().GetAdd(name);
 		v.actions.FindAdd(action);
+	}
+	
+	template <class T> static
+	void HeaderLinktype(const char* name, const char* key, const char* role) {
+		Header& v = Headers().GetAdd(name);
+		v.link_key = key;
+		v.link_role = role;
 	}
 	
 	template <class T> static

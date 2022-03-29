@@ -1,83 +1,83 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IVirtualReality_BaseClasses_h_
 #define _IVirtualReality_BaseClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-struct VrMotionController : RTTIBase {
-	RTTI_DECL0(VrMotionController)
+struct VrMotionController : public Atom {
+	RTTI_DECL1(VrMotionController, Atom)
 	
 	virtual ~VrMotionController() {}
 
 };
 
-struct VrMotionControllerSystem : RTTIBase {
-	RTTI_DECL0(VrMotionControllerSystem)
+struct VrMotionControllerSystem : public Atom {
+	RTTI_DECL1(VrMotionControllerSystem, Atom)
 	
 	virtual ~VrMotionControllerSystem() {}
 
 };
 
-struct VrAppView : RTTIBase {
-	RTTI_DECL0(VrAppView)
+struct VrAppView : public Atom {
+	RTTI_DECL1(VrAppView, Atom)
 	
 	virtual ~VrAppView() {}
 
 };
 
-struct VrCameraResources : RTTIBase {
-	RTTI_DECL0(VrCameraResources)
+struct VrCameraResources : public Atom {
+	RTTI_DECL1(VrCameraResources, Atom)
 	
 	virtual ~VrCameraResources() {}
 
 };
 
-struct VrControllerModelCache : RTTIBase {
-	RTTI_DECL0(VrControllerModelCache)
+struct VrControllerModelCache : public Atom {
+	RTTI_DECL1(VrControllerModelCache, Atom)
 	
 	virtual ~VrControllerModelCache() {}
 
 };
 
-struct VrDeviceResources : RTTIBase {
-	RTTI_DECL0(VrDeviceResources)
+struct VrDeviceResources : public Atom {
+	RTTI_DECL1(VrDeviceResources, Atom)
 	
 	virtual ~VrDeviceResources() {}
 
 };
 
-struct VrHolographicRenderer : RTTIBase {
-	RTTI_DECL0(VrHolographicRenderer)
+struct VrHolographicRenderer : public Atom {
+	RTTI_DECL1(VrHolographicRenderer, Atom)
 	
 	virtual ~VrHolographicRenderer() {}
 
 };
 
-struct VrHolographicScene : RTTIBase {
-	RTTI_DECL0(VrHolographicScene)
+struct VrHolographicScene : public Atom {
+	RTTI_DECL1(VrHolographicScene, Atom)
 	
 	virtual ~VrHolographicScene() {}
 
 };
 
-struct VrSpatialInteractionSystem : RTTIBase {
-	RTTI_DECL0(VrSpatialInteractionSystem)
+struct VrSpatialInteractionSystem : public Atom {
+	RTTI_DECL1(VrSpatialInteractionSystem, Atom)
 	
 	virtual ~VrSpatialInteractionSystem() {}
 
 };
 
-struct VrRenderer : RTTIBase {
-	RTTI_DECL0(VrRenderer)
+struct VrRenderer : public Atom {
+	RTTI_DECL1(VrRenderer, Atom)
 	
 	virtual ~VrRenderer() {}
 
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

@@ -1,7 +1,8 @@
 description "\3770,128,128";
 
 uses
-	ParallelLib;
+	ParallelLib,
+	IAudio;
 
 uses(!SCREEN) AtomNonScreen;
 

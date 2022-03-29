@@ -12,11 +12,21 @@ PKG(VirtualReality, Vr, V) {
 	MAINFLAG(Vr)
 	DEPENDENCY(Geometry)
 	
+	PKG_IFACE {
+		NATIVE_CLASS(MotionController)
+		NATIVE_CLASS(MotionControllerSystem)
+		//UTIL_CLASS()
+		
+	}
+	
 	NAMESPACE {
 		CLASS(MotionController) {
+			NATIVE_INHERIT(MotionController, ctrl)
 			
+			METHOD2V(SendContinuousBuzzForDuration, NativeMotionController& this, float)
 		}
 		CLASS(MotionControllerSystem) {
+			NATIVE_INHERIT(MotionControllerSystem, sys)
 			
 		}
 		CLASS(AppView) {
@@ -43,14 +53,6 @@ PKG(VirtualReality, Vr, V) {
 		CLASS(Renderer) {
 			
 		}
-	}
-	
-	PKG_IFACE {
-		NATIVE_CLASS(MotionController)
-		NATIVE_CLASS(MotionControllerSystem)
-		//UTIL_CLASS()
-		
-		FUNCTION1V(SendContinuousBuzzForDuration, float)
 	}
 	
 	

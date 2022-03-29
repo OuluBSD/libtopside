@@ -1,13 +1,16 @@
 description "\377B226,212,0";
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IAudio.h,
 	Enums.h,
 	Vendors.h,
+	Sdl.cpp,
+	Portaudio.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

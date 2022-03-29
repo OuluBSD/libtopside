@@ -8,21 +8,22 @@ PKG(Internet, Net, N) {
 	IfaceLib::Add(this);
 	
 	COLOR(56, 170, 0)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(Socket) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Socket)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(CreateSocket, bool, NativeSocket&)
-		FUNCTION1V(ClearSocket, NativeVirtualMachine&)
 		
+	}
+	
+	NAMESPACE {
+		CLASS(Socket) {
+			NATIVE_INHERIT(Socket, sock)
+			
+			METHOD1R(CreateSocket, bool, NativeSocket& this)
+			METHOD1V(ClearSocket, NativeSocket& this)
+		}
 	}
 	
 	

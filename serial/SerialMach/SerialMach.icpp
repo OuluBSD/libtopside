@@ -31,6 +31,7 @@ INITBLOCK {
 	Serial::Factory::RegisterLink<CustomerLink>();
 	Serial::Factory::RegisterLink<PipeLink>();
 	Serial::Factory::RegisterLink<IntervalPipeLink>();
+	Serial::Factory::RegisterLink<ExternalPipeLink>();
 	
 }
 

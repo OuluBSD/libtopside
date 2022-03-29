@@ -13,22 +13,23 @@ PKG(ImgProc, Imp, I) {
 	IfaceLib::Add(this);
 	
 	COLOR(214, 57, 42)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(Image) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Image)
 		NATIVE_CLASS(Process)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(CreateImage, bool, NativeImage&)
-		FUNCTION1V(ClearImage, NativeImage&)
 		
+	}
+	
+	NAMESPACE {
+		CLASS(Image) {
+			NATIVE_INHERIT(Image, dev)
+			
+			METHOD1R(CreateImage, bool, NativeImage& this)
+			METHOD1V(ClearImage, NativeImage& this)
+		}
 	}
 	
 }

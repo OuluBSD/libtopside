@@ -8,7 +8,7 @@ PKG(Autoencoder, Aenc, a) {
 	IfaceLib::Add(this);
 	
 	COLOR(226, 125, 223)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(System) {

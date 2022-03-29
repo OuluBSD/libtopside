@@ -8,7 +8,7 @@ PKG(VirtualMachine, Vm, X) {
 	IfaceLib::Add(this);
 	
 	COLOR(56, 170, 0)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(VirtualMachine) {

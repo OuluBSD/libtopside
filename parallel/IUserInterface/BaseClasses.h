@@ -1,139 +1,139 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IUserInterface_BaseClasses_h_
 #define _IUserInterface_BaseClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-struct UiWindow : RTTIBase {
-	RTTI_DECL0(UiWindow)
+struct UiWindow : public Atom {
+	RTTI_DECL1(UiWindow, Atom)
 	
 	virtual ~UiWindow() {}
 
 };
 
-struct UiSplitter : RTTIBase {
-	RTTI_DECL0(UiSplitter)
+struct UiSplitter : public Atom {
+	RTTI_DECL1(UiSplitter, Atom)
 	
 	virtual ~UiSplitter() {}
 
 };
 
-struct UiSeparatorCtrl : RTTIBase {
-	RTTI_DECL0(UiSeparatorCtrl)
+struct UiSeparatorCtrl : public Atom {
+	RTTI_DECL1(UiSeparatorCtrl, Atom)
 	
 	virtual ~UiSeparatorCtrl() {}
 
 };
 
-struct UiArrayCtrl : RTTIBase {
-	RTTI_DECL0(UiArrayCtrl)
+struct UiArrayCtrl : public Atom {
+	RTTI_DECL1(UiArrayCtrl, Atom)
 	
 	virtual ~UiArrayCtrl() {}
 
 };
 
-struct UiColumnCtrl : RTTIBase {
-	RTTI_DECL0(UiColumnCtrl)
+struct UiColumnCtrl : public Atom {
+	RTTI_DECL1(UiColumnCtrl, Atom)
 	
 	virtual ~UiColumnCtrl() {}
 
 };
 
-struct UiTreeCtrl : RTTIBase {
-	RTTI_DECL0(UiTreeCtrl)
+struct UiTreeCtrl : public Atom {
+	RTTI_DECL1(UiTreeCtrl, Atom)
 	
 	virtual ~UiTreeCtrl() {}
 
 };
 
-struct UiIconCtrl : RTTIBase {
-	RTTI_DECL0(UiIconCtrl)
+struct UiIconCtrl : public Atom {
+	RTTI_DECL1(UiIconCtrl, Atom)
 	
 	virtual ~UiIconCtrl() {}
 
 };
 
-struct UiImageCtrl : RTTIBase {
-	RTTI_DECL0(UiImageCtrl)
+struct UiImageCtrl : public Atom {
+	RTTI_DECL1(UiImageCtrl, Atom)
 	
 	virtual ~UiImageCtrl() {}
 
 };
 
-struct UiButton : RTTIBase {
-	RTTI_DECL0(UiButton)
+struct UiButton : public Atom {
+	RTTI_DECL1(UiButton, Atom)
 	
 	virtual ~UiButton() {}
 
 };
 
-struct UiLabel : RTTIBase {
-	RTTI_DECL0(UiLabel)
+struct UiLabel : public Atom {
+	RTTI_DECL1(UiLabel, Atom)
 	
 	virtual ~UiLabel() {}
 
 };
 
-struct UiStringEdit : RTTIBase {
-	RTTI_DECL0(UiStringEdit)
+struct UiStringEdit : public Atom {
+	RTTI_DECL1(UiStringEdit, Atom)
 	
 	virtual ~UiStringEdit() {}
 
 };
 
-struct UiIntEdit : RTTIBase {
-	RTTI_DECL0(UiIntEdit)
+struct UiIntEdit : public Atom {
+	RTTI_DECL1(UiIntEdit, Atom)
 	
 	virtual ~UiIntEdit() {}
 
 };
 
-struct UiFloatEdit : RTTIBase {
-	RTTI_DECL0(UiFloatEdit)
+struct UiFloatEdit : public Atom {
+	RTTI_DECL1(UiFloatEdit, Atom)
 	
 	virtual ~UiFloatEdit() {}
 
 };
 
-struct UiTimeEdit : RTTIBase {
-	RTTI_DECL0(UiTimeEdit)
+struct UiTimeEdit : public Atom {
+	RTTI_DECL1(UiTimeEdit, Atom)
 	
 	virtual ~UiTimeEdit() {}
 
 };
 
-struct UiDateEdit : RTTIBase {
-	RTTI_DECL0(UiDateEdit)
+struct UiDateEdit : public Atom {
+	RTTI_DECL1(UiDateEdit, Atom)
 	
 	virtual ~UiDateEdit() {}
 
 };
 
-struct UiDocEdit : RTTIBase {
-	RTTI_DECL0(UiDocEdit)
+struct UiDocEdit : public Atom {
+	RTTI_DECL1(UiDocEdit, Atom)
 	
 	virtual ~UiDocEdit() {}
 
 };
 
-struct UiBar : RTTIBase {
-	RTTI_DECL0(UiBar)
+struct UiBar : public Atom {
+	RTTI_DECL1(UiBar, Atom)
 	
 	virtual ~UiBar() {}
 
 };
 
-struct UiMenuBar : RTTIBase {
-	RTTI_DECL0(UiMenuBar)
+struct UiMenuBar : public Atom {
+	RTTI_DECL1(UiMenuBar, Atom)
 	
 	virtual ~UiMenuBar() {}
 
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

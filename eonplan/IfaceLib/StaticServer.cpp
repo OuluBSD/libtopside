@@ -8,7 +8,7 @@ PKG(StaticServer, Svt, T) {
 	IfaceLib::Add(this);
 	
 	COLOR(28, 42, 0)
-	DEPENDENCY(Local)
+	DEPENDENCY(ParallelLib)
 	
 	NAMESPACE {
 		CLASS(ServerInstance) {

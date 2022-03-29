@@ -8,24 +8,26 @@ PKG(Crypt, Cry, C) {
 	IfaceLib::Add(this);
 	
 	COLOR(54, 57, 42)
-	DEPENDENCY(Local)
-	
-	NAMESPACE {
-		CLASS(Crypt) {
-			
-		}
-	}
+	DEPENDENCY(ParallelLib)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Crypt)
 		//UTIL_CLASS()
 		
-		FUNCTION1R(CreateNativeCrypt, bool, NativeCrypt&)
-		FUNCTION1V(ClearNativeCrypt, NativeCrypt&)
 		
-		FUNCTION3V(Encrypt, NativeCrypt&, const Vector<byte>& in, Vector<byte>& out)
-		FUNCTION3V(Decrypt, NativeCrypt&, const Vector<byte>& in, Vector<byte>& out)
-		
+	}
+	
+	NAMESPACE {
+		CLASS(Crypt) {
+			NATIVE_INHERIT(Crypt, dev)
+			
+			METHOD1R(CreateNativeCrypt, bool, NativeCrypt& this)
+			METHOD1V(ClearNativeCrypt, NativeCrypt& this)
+			
+			METHOD3V(Encrypt, NativeCrypt&, const Vector<byte>& in, Vector<byte>& out)
+			METHOD3V(Decrypt, NativeCrypt&, const Vector<byte>& in, Vector<byte>& out)
+			
+		}
 	}
 	
 	

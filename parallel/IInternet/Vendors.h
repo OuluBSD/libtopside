@@ -1,11 +1,11 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IInternet_Vendors_h_
 #define _IInternet_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define NET_CLS_LIST(x) \
 	NET_CLS(Socket, x) \
@@ -30,7 +30,6 @@ NET_VNDR_LIST
 
 struct NetPosix {
 	using NativeSocket = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -43,7 +42,6 @@ struct NetPosix {
 
 struct NetWin32 {
 	using NativeSocket = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -56,7 +54,6 @@ struct NetWin32 {
 
 struct NetEnet {
 	using NativeSocket = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -69,7 +66,6 @@ struct NetEnet {
 
 struct NetNullSerial {
 	using NativeSocket = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -82,7 +78,7 @@ struct NetNullSerial {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

@@ -1,20 +1,20 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IThree_BaseClasses_h_
 #define _IThree_BaseClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-struct ThrModel : RTTIBase {
-	RTTI_DECL0(ThrModel)
+struct ThrModel : public Atom {
+	RTTI_DECL1(ThrModel, Atom)
 	
 	virtual ~ThrModel() {}
 
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

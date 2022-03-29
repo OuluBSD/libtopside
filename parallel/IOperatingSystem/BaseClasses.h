@@ -1,34 +1,34 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IOperatingSystem_BaseClasses_h_
 #define _IOperatingSystem_BaseClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-struct OsMessageBus : RTTIBase {
-	RTTI_DECL0(OsMessageBus)
+struct OsMessageBus : public Atom {
+	RTTI_DECL1(OsMessageBus, Atom)
 	
 	virtual ~OsMessageBus() {}
 
 };
 
-struct OsProcessManager : RTTIBase {
-	RTTI_DECL0(OsProcessManager)
+struct OsProcessManager : public Atom {
+	RTTI_DECL1(OsProcessManager, Atom)
 	
 	virtual ~OsProcessManager() {}
 
 };
 
-struct OsDesktopManager : RTTIBase {
-	RTTI_DECL0(OsDesktopManager)
+struct OsDesktopManager : public Atom {
+	RTTI_DECL1(OsDesktopManager, Atom)
 	
 	virtual ~OsDesktopManager() {}
 
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 

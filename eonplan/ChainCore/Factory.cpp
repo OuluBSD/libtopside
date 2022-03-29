@@ -152,6 +152,7 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	Namespace& ns_parallel = ns_ts.GetAddNamespace("Parallel");
 	
 	ClassDecl& fcls_atomtype = ns_parallel.GetAddClassDecl("AtomTypeCls");
+	ClassDecl& fcls_linktype = ns_parallel.GetAddClassDecl("LinkTypeCls");
 	ClassDecl& fcls_rtvis = ns_parallel.GetAddClassDecl("RuntimeVisitor");
 	ClassDecl& fcls_packet = ns_parallel.GetAddClassDecl("Packet");
 	ClassDecl& fcls_fwdscope = ns_parallel.GetAddClassDecl("FwdScope");
@@ -160,6 +161,10 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 	TypeExpr te_atomtype;
 	te_atomtype.SetMove(fcls_atomtype);
 	cu.Activate(te_atomtype);
+	
+	TypeExpr te_linktype;
+	te_linktype.SetMove(fcls_linktype);
+	cu.Activate(te_linktype);
 	
 	TypeExpr te_void;
 	te_void.SetVoid();
@@ -320,6 +325,26 @@ bool Factory::Export(CompilationUnit& cu, Package& pkg) {
 				ret_val.Add().SetId(dev);
 				ret_val.Add().SetId(val);
 			}
+		}
+		
+		// static LinkTypeCls GetLinkType()
+		{
+			FunctionIdScope& fis_atype = cls_h.GetAddFunctionIdScope("GetLinkType");
+			Function& fn_atype = fis_atype.AddFunction();
+			fn_atype.SetStatic();
+			fn_atype.SetReturn(te_linktype);
+			
+			// return ATOM0(CENTER_CUSTOMER, CUSTOMER, CENTER, RECEIPT, CENTER, ORDER);
+			Statement& stmt = fn_atype;
+			Statement& ret = stmt.Add();
+			Expression& ret_expr = ret;
+			Expression& ret_val = ret_expr.SetReturn().First();
+			ASSERT(h.src_count > 0 && h.sink_count > 0);
+			
+			String call = "LINKTYPE";
+			ret_val.SetMetaCall(call);
+			ret_val.Add().SetId(h.link_key);
+			ret_val.Add().SetId(h.link_role);
 		}
 		
 		// void Visit(RuntimeVisitor& vis) override

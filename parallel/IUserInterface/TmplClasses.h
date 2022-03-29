@@ -1,123 +1,359 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IUserInterface_TmplClasses_h_
 #define _IUserInterface_TmplClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-template <class Ui> struct WindowT;
-template <class Ui> struct SplitterT;
-template <class Ui> struct SeparatorCtrlT;
-template <class Ui> struct ArrayCtrlT;
-template <class Ui> struct ColumnCtrlT;
-template <class Ui> struct TreeCtrlT;
-template <class Ui> struct IconCtrlT;
-template <class Ui> struct ImageCtrlT;
-template <class Ui> struct ButtonT;
-template <class Ui> struct LabelT;
-template <class Ui> struct StringEditT;
-template <class Ui> struct IntEditT;
-template <class Ui> struct FloatEditT;
-template <class Ui> struct TimeEditT;
-template <class Ui> struct DateEditT;
-template <class Ui> struct DocEditT;
-template <class Ui> struct BarT;
-template <class Ui> struct MenuBarT;
+template <class Ui> struct UserInterfaceWindowT;
+template <class Ui> struct UserInterfaceSplitterT;
+template <class Ui> struct UserInterfaceSeparatorCtrlT;
+template <class Ui> struct UserInterfaceArrayCtrlT;
+template <class Ui> struct UserInterfaceColumnCtrlT;
+template <class Ui> struct UserInterfaceTreeCtrlT;
+template <class Ui> struct UserInterfaceIconCtrlT;
+template <class Ui> struct UserInterfaceImageCtrlT;
+template <class Ui> struct UserInterfaceButtonT;
+template <class Ui> struct UserInterfaceLabelT;
+template <class Ui> struct UserInterfaceStringEditT;
+template <class Ui> struct UserInterfaceIntEditT;
+template <class Ui> struct UserInterfaceFloatEditT;
+template <class Ui> struct UserInterfaceTimeEditT;
+template <class Ui> struct UserInterfaceDateEditT;
+template <class Ui> struct UserInterfaceDocEditT;
+template <class Ui> struct UserInterfaceBarT;
+template <class Ui> struct UserInterfaceMenuBarT;
 
 
 template <class Ui>
-struct WindowT : UiWindow {
+struct UserInterfaceWindowT : UiWindow {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct SplitterT : UiSplitter {
+struct UserInterfaceSplitterT : UiSplitter {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct SeparatorCtrlT : UiSeparatorCtrl {
+struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct ArrayCtrlT : UiArrayCtrl {
+struct UserInterfaceArrayCtrlT : UiArrayCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct ColumnCtrlT : UiColumnCtrl {
+struct UserInterfaceColumnCtrlT : UiColumnCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct TreeCtrlT : UiTreeCtrl {
+struct UserInterfaceTreeCtrlT : UiTreeCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct IconCtrlT : UiIconCtrl {
+struct UserInterfaceIconCtrlT : UiIconCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct ImageCtrlT : UiImageCtrl {
+struct UserInterfaceImageCtrlT : UiImageCtrl {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct ButtonT : UiButton {
+struct UserInterfaceButtonT : UiButton {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct LabelT : UiLabel {
+struct UserInterfaceLabelT : UiLabel {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct StringEditT : UiStringEdit {
+struct UserInterfaceStringEditT : UiStringEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct IntEditT : UiIntEdit {
+struct UserInterfaceIntEditT : UiIntEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct FloatEditT : UiFloatEdit {
+struct UserInterfaceFloatEditT : UiFloatEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct TimeEditT : UiTimeEdit {
+struct UserInterfaceTimeEditT : UiTimeEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct DateEditT : UiDateEdit {
+struct UserInterfaceDateEditT : UiDateEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct DocEditT : UiDocEdit {
+struct UserInterfaceDocEditT : UiDocEdit {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct BarT : UiBar {
+struct UserInterfaceBarT : UiBar {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Ui>
-struct MenuBarT : UiMenuBar {
+struct UserInterfaceMenuBarT : UiMenuBar {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
-NAMESPACE_TOPSIDE_END
+using ImguiWindow = UserInterfaceWindowT<UiImgui>;
+using ImguiSplitter = UserInterfaceSplitterT<UiImgui>;
+using ImguiSeparatorCtrl = UserInterfaceSeparatorCtrlT<UiImgui>;
+using ImguiArrayCtrl = UserInterfaceArrayCtrlT<UiImgui>;
+using ImguiColumnCtrl = UserInterfaceColumnCtrlT<UiImgui>;
+using ImguiTreeCtrl = UserInterfaceTreeCtrlT<UiImgui>;
+using ImguiIconCtrl = UserInterfaceIconCtrlT<UiImgui>;
+using ImguiImageCtrl = UserInterfaceImageCtrlT<UiImgui>;
+using ImguiButton = UserInterfaceButtonT<UiImgui>;
+using ImguiLabel = UserInterfaceLabelT<UiImgui>;
+using ImguiStringEdit = UserInterfaceStringEditT<UiImgui>;
+using ImguiIntEdit = UserInterfaceIntEditT<UiImgui>;
+using ImguiFloatEdit = UserInterfaceFloatEditT<UiImgui>;
+using ImguiTimeEdit = UserInterfaceTimeEditT<UiImgui>;
+using ImguiDateEdit = UserInterfaceDateEditT<UiImgui>;
+using ImguiDocEdit = UserInterfaceDocEditT<UiImgui>;
+using ImguiBar = UserInterfaceBarT<UiImgui>;
+using ImguiMenuBar = UserInterfaceMenuBarT<UiImgui>;
+
+
+NAMESPACE_PARALLEL_END
 
 
 

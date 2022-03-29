@@ -1,13 +1,15 @@
 description "\377B28,85,255";;
 
 uses
-	Local,
-	Local;
+	ParallelLib,
+	ParallelLib;
 
 file
 	IUserInterface.h,
 	Enums.h,
 	Vendors.h,
+	Imgui.cpp,
+	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;
 

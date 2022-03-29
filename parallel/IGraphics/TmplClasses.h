@@ -1,99 +1,297 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IGraphics_TmplClasses_h_
 #define _IGraphics_TmplClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-template <class Gfx> struct VertexShaderT;
-template <class Gfx> struct FragmentShaderT;
-template <class Gfx> struct DataObjectT;
-template <class Gfx> struct DataStateT;
-template <class Gfx> struct InputStateT;
-template <class Gfx> struct FramebufferT;
-template <class Gfx> struct CompilerT;
-template <class Gfx> struct LinkerT;
-template <class Gfx> struct ShaderPipelineT;
-template <class Gfx> struct RuntimeStateT;
-template <class Gfx> struct ContextStateT;
-template <class Gfx> struct RendererT;
-template <class Gfx> struct StateDrawT;
-template <class Gfx> struct BufferT;
+template <class Gfx> struct GraphicsVertexShaderT;
+template <class Gfx> struct GraphicsFragmentShaderT;
+template <class Gfx> struct GraphicsDataObjectT;
+template <class Gfx> struct GraphicsDataStateT;
+template <class Gfx> struct GraphicsInputStateT;
+template <class Gfx> struct GraphicsFramebufferT;
+template <class Gfx> struct GraphicsCompilerT;
+template <class Gfx> struct GraphicsLinkerT;
+template <class Gfx> struct GraphicsShaderPipelineT;
+template <class Gfx> struct GraphicsRuntimeStateT;
+template <class Gfx> struct GraphicsContextStateT;
+template <class Gfx> struct GraphicsRendererT;
+template <class Gfx> struct GraphicsStateDrawT;
+template <class Gfx> struct GraphicsBufferT;
 
 
 template <class Gfx>
-struct VertexShaderT : GfxVertexShader {
+struct GraphicsVertexShaderT : GfxVertexShader {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct FragmentShaderT : GfxFragmentShader {
+struct GraphicsFragmentShaderT : GfxFragmentShader {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct DataObjectT : GfxDataObject {
+struct GraphicsDataObjectT : GfxDataObject {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct DataStateT : GfxDataState {
+struct GraphicsDataStateT : GfxDataState {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct InputStateT : GfxInputState {
+struct GraphicsInputStateT : GfxInputState {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct FramebufferT : GfxFramebuffer {
+struct GraphicsFramebufferT : GfxFramebuffer {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct CompilerT : GfxCompiler {
+struct GraphicsCompilerT : GfxCompiler {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct LinkerT : GfxLinker {
+struct GraphicsLinkerT : GfxLinker {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct ShaderPipelineT : GfxShaderPipeline {
+struct GraphicsShaderPipelineT : GfxShaderPipeline {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct RuntimeStateT : GfxRuntimeState {
+struct GraphicsRuntimeStateT : GfxRuntimeState {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct ContextStateT : GfxContextState {
+struct GraphicsContextStateT : GfxContextState {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct RendererT : GfxRenderer {
+struct GraphicsRendererT : GfxRenderer {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct StateDrawT : GfxStateDraw {
+struct GraphicsStateDrawT : GfxStateDraw {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Gfx>
-struct BufferT : GfxBuffer {
+struct GraphicsBufferT : GfxBuffer {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
-NAMESPACE_TOPSIDE_END
+using CpuVertexShader = GraphicsVertexShaderT<GfxCpu>;
+using CpuFragmentShader = GraphicsFragmentShaderT<GfxCpu>;
+using CpuDataObject = GraphicsDataObjectT<GfxCpu>;
+using CpuDataState = GraphicsDataStateT<GfxCpu>;
+using CpuInputState = GraphicsInputStateT<GfxCpu>;
+using CpuFramebuffer = GraphicsFramebufferT<GfxCpu>;
+using CpuCompiler = GraphicsCompilerT<GfxCpu>;
+using CpuLinker = GraphicsLinkerT<GfxCpu>;
+using CpuShaderPipeline = GraphicsShaderPipelineT<GfxCpu>;
+using CpuRuntimeState = GraphicsRuntimeStateT<GfxCpu>;
+using CpuContextState = GraphicsContextStateT<GfxCpu>;
+using CpuRenderer = GraphicsRendererT<GfxCpu>;
+using CpuStateDraw = GraphicsStateDrawT<GfxCpu>;
+using CpuBuffer = GraphicsBufferT<GfxCpu>;
+using OglVertexShader = GraphicsVertexShaderT<GfxOgl>;
+using OglFragmentShader = GraphicsFragmentShaderT<GfxOgl>;
+using OglDataObject = GraphicsDataObjectT<GfxOgl>;
+using OglDataState = GraphicsDataStateT<GfxOgl>;
+using OglInputState = GraphicsInputStateT<GfxOgl>;
+using OglFramebuffer = GraphicsFramebufferT<GfxOgl>;
+using OglCompiler = GraphicsCompilerT<GfxOgl>;
+using OglLinker = GraphicsLinkerT<GfxOgl>;
+using OglShaderPipeline = GraphicsShaderPipelineT<GfxOgl>;
+using OglRuntimeState = GraphicsRuntimeStateT<GfxOgl>;
+using OglContextState = GraphicsContextStateT<GfxOgl>;
+using OglRenderer = GraphicsRendererT<GfxOgl>;
+using OglStateDraw = GraphicsStateDrawT<GfxOgl>;
+using OglBuffer = GraphicsBufferT<GfxOgl>;
+
+
+NAMESPACE_PARALLEL_END
 
 
 

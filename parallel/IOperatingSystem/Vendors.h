@@ -1,11 +1,11 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IOperatingSystem_Vendors_h_
 #define _IOperatingSystem_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define OS_CLS_LIST(x) \
 	OS_CLS(MessageBus, x) \
@@ -28,7 +28,7 @@ OS_VNDR_LIST
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

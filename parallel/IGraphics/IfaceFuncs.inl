@@ -1,75 +1,102 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
-void BindProgramPipeline(NativePipeline&);
-void UseProgram(NativeProgram&);
-void UnbindProgramPipeline();
-const char* GetShaderTemplate(ShaderType);
-void HotfixShaderCode(String&);
-void DrawBuffers(RenderTarget);
-void ActiveTexture(in);
-bool CreateShader(ShaderType, NativeShader&);
-void ShaderSource(NativeShader&, String);
-bool CompileShader(NativeShader& s);
-String GetLastErrorS(NativeShader& s);
-String GetLastErrorP(NativeProgram& s);
-bool CreateProgram(NativeProgram& prog);
-void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
-void AttachShader(NativeProgram& prog, NativeShader& shdr);
-void DeleteShader(NativeShader& shdr);
-bool LinkProgram(NativeProgram& prog);
-void GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out);
-String GetActiveUniform(NativeProgram& prog, int i, int* size_out=0, int* type_out=0);
-void Clear(GVar::BufferType type);
-void GenProgramPipeline(NativePipeline& pipe);
-void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
-void DeleteProgramPipeline(NativePipeline& pipe);
-void TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-bool GenTexture(NativeFrameBuffer& fb);
-void GenVertexArray(NativeVertexArray& vao);
-void GenVertexBuffer(NativeVertexBuffer& vbo);
-void GenElementBuffer(NativeElementBuffer& ebo);
-void BindVertexArray(NativeVertexArray& vao);
-void BindVertexBuffer(NativeVertexBuffer& vbo);
-void BindElementBuffer(NativeElementBuffer& ebo);
-void VertexBufferData(const Vector<Vertex>& vtx);
-void ElementBufferData(const Vector<uint32>& el);
-void SetupVertexStructure();
-void UnbindVertexArray();
-void UnbindVertexBuffer();
-void UnbindElementBuffer();
-void ActivateVertexStructure();
-void DeactivateVertexStructure();
-void DrawVertexElements(int element_limit);
-void TexImage2D(Texture& tex);
-void DeleteVertexArray(NativeVertexArray& vao);
-void DeleteVertexBuffer(NativeVertexBuffer& vbo);
-void DeleteElementBuffer(NativeElementBuffer& ebo);
-void DeleteTexture(NativeColorBuffer& b);
-void Uniform1i(int idx, int f);
-void Uniform1f(int idx, float f);
-void Uniform2f(int idx, float f0, float f1);
-void Uniform3f(int idx, float f0, float f1, float f2);
-void Uniform4f(int idx, float f0, float f1, float f2, float f3);
-void UniformMatrix4fv(int idx, const mat4& mat);
-void ClearBuffers();
-void SetSmoothShading(bool b=true);
-void SetDepthTest(bool b=true);
-void SetDepthOrderLess(bool b=true);
-void SetClearValue(RGBA clr, byte depth);
-void SetFastPerspectiveCorrection(bool b=true);
-void SetTriangleBacksideCulling(bool b=true);
-void SetTriangleFrontsideCCW(bool b=true);
-void SetViewport(Size sz);
-void SetDebugOutput(bool b=true);
-void BindFramebufferEXT(NativeFrameBuffer& fb);
-void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
-void BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex);
-void UnbindTexture(GVar::TextureType type);
-void GenerateMipmap(GVar::TextureType type);
-void BindFramebufferDefault();
-void RenderScreenRect();
-void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
-void BeginRender();
-void EndRender();
+static bool VertexShader_Initialize(AtomBase&, const Script::WorldState&);
+static void VertexShader_Start();
+static void VertexShader_Stop();
+static void VertexShader_Uninitialize();
+static bool VertexShader_ProcessPacket(PacketValue& v);
+
+	
+static bool FragmentShader_Initialize(AtomBase&, const Script::WorldState&);
+static void FragmentShader_Start();
+static void FragmentShader_Stop();
+static void FragmentShader_Uninitialize();
+static bool FragmentShader_ProcessPacket(PacketValue& v);
+
+	
+static bool DataObject_Initialize(AtomBase&, const Script::WorldState&);
+static void DataObject_Start();
+static void DataObject_Stop();
+static void DataObject_Uninitialize();
+static bool DataObject_ProcessPacket(PacketValue& v);
+
+	
+static bool DataState_Initialize(AtomBase&, const Script::WorldState&);
+static void DataState_Start();
+static void DataState_Stop();
+static void DataState_Uninitialize();
+static bool DataState_ProcessPacket(PacketValue& v);
+
+	
+static bool InputState_Initialize(AtomBase&, const Script::WorldState&);
+static void InputState_Start();
+static void InputState_Stop();
+static void InputState_Uninitialize();
+static bool InputState_ProcessPacket(PacketValue& v);
+
+	
+static bool Framebuffer_Initialize(AtomBase&, const Script::WorldState&);
+static void Framebuffer_Start();
+static void Framebuffer_Stop();
+static void Framebuffer_Uninitialize();
+static bool Framebuffer_ProcessPacket(PacketValue& v);
+
+	
+static bool Compiler_Initialize(AtomBase&, const Script::WorldState&);
+static void Compiler_Start();
+static void Compiler_Stop();
+static void Compiler_Uninitialize();
+static bool Compiler_ProcessPacket(PacketValue& v);
+
+	
+static bool Linker_Initialize(AtomBase&, const Script::WorldState&);
+static void Linker_Start();
+static void Linker_Stop();
+static void Linker_Uninitialize();
+static bool Linker_ProcessPacket(PacketValue& v);
+
+	
+static bool ShaderPipeline_Initialize(AtomBase&, const Script::WorldState&);
+static void ShaderPipeline_Start();
+static void ShaderPipeline_Stop();
+static void ShaderPipeline_Uninitialize();
+static bool ShaderPipeline_ProcessPacket(PacketValue& v);
+
+	
+static bool RuntimeState_Initialize(AtomBase&, const Script::WorldState&);
+static void RuntimeState_Start();
+static void RuntimeState_Stop();
+static void RuntimeState_Uninitialize();
+static bool RuntimeState_ProcessPacket(PacketValue& v);
+
+	
+static bool ContextState_Initialize(AtomBase&, const Script::WorldState&);
+static void ContextState_Start();
+static void ContextState_Stop();
+static void ContextState_Uninitialize();
+static bool ContextState_ProcessPacket(PacketValue& v);
+
+	
+static bool Renderer_Initialize(AtomBase&, const Script::WorldState&);
+static void Renderer_Start();
+static void Renderer_Stop();
+static void Renderer_Uninitialize();
+static bool Renderer_ProcessPacket(PacketValue& v);
+
+	
+static bool StateDraw_Initialize(AtomBase&, const Script::WorldState&);
+static void StateDraw_Start();
+static void StateDraw_Stop();
+static void StateDraw_Uninitialize();
+static bool StateDraw_ProcessPacket(PacketValue& v);
+
+	
+static bool Buffer_Initialize(AtomBase&, const Script::WorldState&);
+static void Buffer_Start();
+static void Buffer_Stop();
+static void Buffer_Uninitialize();
+static bool Buffer_ProcessPacket(PacketValue& v);
+
+	

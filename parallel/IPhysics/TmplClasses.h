@@ -1,45 +1,117 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IPhysics_TmplClasses_h_
 #define _IPhysics_TmplClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-template <class Fys> struct NodeT;
-template <class Fys> struct ObjectT;
-template <class Fys> struct JointT;
-template <class Fys> struct SpaceT;
-template <class Fys> struct SystemT;
+template <class Fys> struct PhysicsNodeT;
+template <class Fys> struct PhysicsObjectT;
+template <class Fys> struct PhysicsJointT;
+template <class Fys> struct PhysicsSpaceT;
+template <class Fys> struct PhysicsSystemT;
 
 
 template <class Fys>
-struct NodeT : FysNode {
+struct PhysicsNodeT : FysNode {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Fys>
-struct ObjectT : FysObject {
+struct PhysicsObjectT : FysObject {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Fys>
-struct JointT : FysJoint {
+struct PhysicsJointT : FysJoint {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Fys>
-struct SpaceT : FysSpace {
+struct PhysicsSpaceT : FysSpace {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
 template <class Fys>
-struct SystemT : FysSystem {
+struct PhysicsSystemT : FysSystem {
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& v) override {
+		return true;
+	}
+
 	
 };
 
-NAMESPACE_TOPSIDE_END
+using TosNode = PhysicsNodeT<FysTos>;
+using TosObject = PhysicsObjectT<FysTos>;
+using TosJoint = PhysicsJointT<FysTos>;
+using TosSpace = PhysicsSpaceT<FysTos>;
+using TosSystem = PhysicsSystemT<FysTos>;
+using OdeNode = PhysicsNodeT<FysOde>;
+using OdeObject = PhysicsObjectT<FysOde>;
+using OdeJoint = PhysicsJointT<FysOde>;
+using OdeSpace = PhysicsSpaceT<FysOde>;
+using OdeSystem = PhysicsSystemT<FysOde>;
+
+
+NAMESPACE_PARALLEL_END
 
 
 

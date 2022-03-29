@@ -1,11 +1,11 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 26.3.26 14:33:33
+// Last export: 29.3.29 19:55:44
 
 #ifndef _IMidi_Vendors_h_
 #define _IMidi_Vendors_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #define MID_CLS_LIST(x) \
 	MID_CLS(MidiSinkDevice, x) \
@@ -30,7 +30,6 @@ struct MidPortmidi {
 	using NativeSinkDevice = uint32;
 	using NativeSourceDevice = uint32;
 	using NativeEvent = uint32;
-	typedef void (*DataCallbackFn)(void*, char* data, int size);
 	
 	struct Thread {
 		
@@ -43,7 +42,7 @@ struct MidPortmidi {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif
