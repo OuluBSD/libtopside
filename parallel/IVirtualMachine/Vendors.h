@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IVirtualMachine_Vendors_h_
 #define _IVirtualMachine_Vendors_h_
@@ -26,9 +26,10 @@ VM_VNDR_LIST
 
 
 
+#if 0
 struct VmTos {
-	using NativeVirtualMachine = uint32;
-	using NativeThread = uint32;
+	using NativeVirtualMachine = void*;
+	using NativeThread = void*;
 	
 	struct Thread {
 		
@@ -38,6 +39,7 @@ struct VmTos {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IWebcam_TmplClasses_h_
 #define _IWebcam_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Cam> struct WebcamWebcamT;
 
 template <class Cam>
 struct WebcamWebcamT : CamWebcam {
+	using CLASSNAME = WebcamWebcamT<Cam>;
+	RTTI_DECL1(CLASSNAME, CamWebcam)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CamWebcam>(this);}
+	
 	typename Cam::NativeWebcam dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +44,6 @@ struct WebcamWebcamT : CamWebcam {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

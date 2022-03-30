@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -13,6 +13,10 @@ template <class Mid> struct MidiMidiSourceDeviceT;
 
 template <class Mid>
 struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
+	using CLASSNAME = MidiMidiSinkDeviceT<Mid>;
+	RTTI_DECL1(CLASSNAME, MidMidiSinkDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MidMidiSinkDevice>(this);}
+	
 	typename Mid::NativeSinkDevice dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -52,6 +56,10 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 
 template <class Mid>
 struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
+	using CLASSNAME = MidiMidiSourceDeviceT<Mid>;
+	RTTI_DECL1(CLASSNAME, MidMidiSourceDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MidMidiSourceDevice>(this);}
+	
 	typename Mid::NativeSourceDevice dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -89,8 +97,10 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 	
 };
 
+#if 0
 using PortmidiMidiSinkDevice = MidiMidiSinkDeviceT<MidPortmidi>;
 using PortmidiMidiSourceDevice = MidiMidiSourceDeviceT<MidPortmidi>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

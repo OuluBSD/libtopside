@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IThree_TmplClasses_h_
 #define _IThree_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Thr> struct ThreeModelT;
 
 template <class Thr>
 struct ThreeModelT : ThrModel {
+	using CLASSNAME = ThreeModelT<Thr>;
+	RTTI_DECL1(CLASSNAME, ThrModel)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ThrModel>(this);}
+	
 	typename Thr::NativeModel model;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +44,6 @@ struct ThreeModelT : ThrModel {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

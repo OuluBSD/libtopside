@@ -24,6 +24,7 @@ struct Function {
 
 struct Class {
 	String name;
+	String type;
 	String cpp_name;
 	String t_name;
 	String inherits;
@@ -31,6 +32,7 @@ struct Class {
 	ArrayMap<String, Function> funcs;
 	
 	Class& SetName(String s) {name = s; return *this;}
+	Class& SetType(String s) {type = s; return *this;}
 	Class& Inherit(String s) {ASSERT(inherits.IsEmpty()); inherits = s; return *this;}
 	String GetTreeString(int indent);
 	Function& AddFunction(String name);
@@ -72,18 +74,35 @@ struct Interface {
 	ArrayMap<String, Class> nat_cls, util_cls;
 	ArrayMap<String, Function> funcs;
 	
-	Class& AddNativeClass(String name);
+	Class& AddNativeClass(String name, String type="void*");
 	Class& AddUtilClass(String name);
 	Function& AddFunction(String name);
 	String GetTreeString(int indent);
 };
 
+struct EnabledFlag : Moveable<EnabledFlag> {
+	Vector<String> flags;
+	
+	
+	EnabledFlag& AddFlag(String f) {flags.Add(f); return *this;}
+	
+};
+
 struct Vendor {
 	String name;
-	
+	VectorMap<String, String> nat_typedef;
+	VectorMap<String, Vector<String>> includes;
+	Vector<EnabledFlag> enabled;
+	bool includes_in_header = false;
 	
 	Vendor& SetName(String s) {name = s; return *this;}
+	Vendor& AddNativeTypedef(String iface_cls, String nat_cls) {nat_typedef.Add(iface_cls, nat_cls); return *this;}
+	Vendor& AddInclude(String macro_if_str, String filepath) {includes.GetAdd(macro_if_str).Add(filepath); return *this;}
+	Vendor& SetIncludeInHeader(bool b=true) {includes_in_header = b; return *this;}
+	EnabledFlag& AddEnabled() {return enabled.Add();}
 	String GetTreeString(int indent);
+	String GetPreprocessorEnabler() const;
+	String GetIncludes(int indent=0) const;
 };
 
 struct Package {
@@ -94,6 +113,7 @@ protected:
 	ArrayMap<String, Vendor> vendors;
 	Index<String> deps;
 	Index<String> main_flags;
+	VectorMap<String, Vector<String>> libraries;
 	RGBA clr;
 	
 	void SetColor(int r, int g, int b) {clr.r = r; clr.b = b; clr.g = g;}
@@ -104,6 +124,7 @@ public:
 	Package();
 	
 	Vendor& AddVendor(String name);
+	Package& AddLibrary(String upp_cond_str, String library_str) {libraries.GetAdd(upp_cond_str).Add(library_str); return *this;}
 	
 	virtual const char* GetTitle() const = 0;
 	virtual const char* GetAbbreviation() const = 0;

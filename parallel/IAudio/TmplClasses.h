@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IAudio_TmplClasses_h_
 #define _IAudio_TmplClasses_h_
@@ -13,6 +13,10 @@ template <class Aud> struct AudioSourceDeviceT;
 
 template <class Aud>
 struct AudioSinkDeviceT : AudSinkDevice {
+	using CLASSNAME = AudioSinkDeviceT<Aud>;
+	RTTI_DECL1(CLASSNAME, AudSinkDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AudSinkDevice>(this);}
+	
 	typename Aud::NativeSinkDevice dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -60,6 +64,10 @@ struct AudioSinkDeviceT : AudSinkDevice {
 
 template <class Aud>
 struct AudioSourceDeviceT : AudSourceDevice {
+	using CLASSNAME = AudioSourceDeviceT<Aud>;
+	RTTI_DECL1(CLASSNAME, AudSourceDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AudSourceDevice>(this);}
+	
 	typename Aud::NativeSourceDevice dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -105,10 +113,15 @@ struct AudioSourceDeviceT : AudSourceDevice {
 	
 };
 
+#if defined flagSDL
 using SdlSinkDevice = AudioSinkDeviceT<AudSdl>;
 using SdlSourceDevice = AudioSourceDeviceT<AudSdl>;
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 using PortaudioSinkDevice = AudioSinkDeviceT<AudPortaudio>;
 using PortaudioSourceDevice = AudioSourceDeviceT<AudPortaudio>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

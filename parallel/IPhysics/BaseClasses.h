@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IPhysics_BaseClasses_h_
 #define _IPhysics_BaseClasses_h_
@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 struct FysNode : public Atom {
 	RTTI_DECL1(FysNode, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~FysNode() {}
 
@@ -16,6 +17,7 @@ struct FysNode : public Atom {
 
 struct FysObject : public Atom {
 	RTTI_DECL1(FysObject, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~FysObject() {}
 
@@ -23,6 +25,7 @@ struct FysObject : public Atom {
 
 struct FysJoint : public Atom {
 	RTTI_DECL1(FysJoint, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~FysJoint() {}
 
@@ -30,6 +33,7 @@ struct FysJoint : public Atom {
 
 struct FysSpace : public Atom {
 	RTTI_DECL1(FysSpace, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~FysSpace() {}
 
@@ -37,6 +41,7 @@ struct FysSpace : public Atom {
 
 struct FysSystem : public Atom {
 	RTTI_DECL1(FysSystem, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~FysSystem() {}
 

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IMidiFile_TmplClasses_h_
 #define _IMidiFile_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Mif> struct MidiFileMidiFileT;
 
 template <class Mif>
 struct MidiFileMidiFileT : MifMidiFile {
+	using CLASSNAME = MidiFileMidiFileT<Mif>;
+	RTTI_DECL1(CLASSNAME, MifMidiFile)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MifMidiFile>(this);}
+	
 	typename Mif::NativeMidiFile file;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +44,6 @@ struct MidiFileMidiFileT : MifMidiFile {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

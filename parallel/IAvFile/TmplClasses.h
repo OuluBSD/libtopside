@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IAvFile_TmplClasses_h_
 #define _IAvFile_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class AV> struct AvFileAVFileT;
 
 template <class AV>
 struct AvFileAVFileT : AVAVFile {
+	using CLASSNAME = AvFileAVFileT<AV>;
+	RTTI_DECL1(CLASSNAME, AVAVFile)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AVAVFile>(this);}
+	
 	typename AV::NativeAVFile file;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +44,6 @@ struct AvFileAVFileT : AVAVFile {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IGraphics_Vendors_h_
 #define _IGraphics_Vendors_h_
@@ -39,17 +39,18 @@ GFX_VNDR_LIST
 
 
 
+#if 0
 struct GfxCpu {
-	using NativeTexture = uint32;
-	using NativeShader = uint32;
-	using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
-	using NativeFrameBuffer = uint32;
-	using NativeVertexArray = uint32;
-	using NativeVertexBuffer = uint32;
-	using NativeElementBuffr = uint32;
-	using NativeProgram = uint32;
-	using NativePipeline = uint32;
+	using NativeTexture = void*;
+	using NativeShader = void*;
+	using NativeColorBuffer = void*;
+	using NativeDepthBuffer = void*;
+	using NativeFrameBuffer = void*;
+	using NativeVertexArray = void*;
+	using NativeVertexBuffer = void*;
+	using NativeElementBuffr = void*;
+	using NativeProgram = void*;
+	using NativePipeline = void*;
 	
 	struct Thread {
 		
@@ -59,18 +60,20 @@ struct GfxCpu {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct GfxOgl {
-	using NativeTexture = uint32;
-	using NativeShader = uint32;
-	using NativeColorBuffer = uint32;
-	using NativeDepthBuffer = uint32;
-	using NativeFrameBuffer = uint32;
-	using NativeVertexArray = uint32;
-	using NativeVertexBuffer = uint32;
-	using NativeElementBuffr = uint32;
-	using NativeProgram = uint32;
-	using NativePipeline = uint32;
+	using NativeTexture = void*;
+	using NativeShader = void*;
+	using NativeColorBuffer = void*;
+	using NativeDepthBuffer = void*;
+	using NativeFrameBuffer = void*;
+	using NativeVertexArray = void*;
+	using NativeVertexBuffer = void*;
+	using NativeElementBuffr = void*;
+	using NativeProgram = void*;
+	using NativePipeline = void*;
 	
 	struct Thread {
 		
@@ -80,6 +83,7 @@ struct GfxOgl {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

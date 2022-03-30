@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IPhysics_Vendors_h_
 #define _IPhysics_Vendors_h_
@@ -30,19 +30,20 @@ FYS_VNDR_LIST
 
 
 
+#if 0
 struct FysTos {
-	using NativeGeom = uint32;
-	using NativeBody = uint32;
-	using NativeWorld = uint32;
-	using NativeSpace = uint32;
-	using NativeJoint = uint32;
-	using NativeMass = uint32;
-	using NativeQuat = uint32;
-	using NativeFeedback = uint32;
-	using NativeJointGroup = uint32;
-	using NativeThreading = uint32;
-	using NativeThreadPool = uint32;
-	using NativeContact = uint32;
+	using NativeGeom = void*;
+	using NativeBody = void*;
+	using NativeWorld = void*;
+	using NativeSpace = void*;
+	using NativeJoint = void*;
+	using NativeMass = void*;
+	using NativeQuat = void*;
+	using NativeFeedback = void*;
+	using NativeJointGroup = void*;
+	using NativeThreading = void*;
+	using NativeThreadPool = void*;
+	using NativeContact = void*;
 	
 	struct Thread {
 		
@@ -52,20 +53,22 @@ struct FysTos {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct FysOde {
-	using NativeGeom = uint32;
-	using NativeBody = uint32;
-	using NativeWorld = uint32;
-	using NativeSpace = uint32;
-	using NativeJoint = uint32;
-	using NativeMass = uint32;
-	using NativeQuat = uint32;
-	using NativeFeedback = uint32;
-	using NativeJointGroup = uint32;
-	using NativeThreading = uint32;
-	using NativeThreadPool = uint32;
-	using NativeContact = uint32;
+	using NativeGeom = void*;
+	using NativeBody = void*;
+	using NativeWorld = void*;
+	using NativeSpace = void*;
+	using NativeJoint = void*;
+	using NativeMass = void*;
+	using NativeQuat = void*;
+	using NativeFeedback = void*;
+	using NativeJointGroup = void*;
+	using NativeThreading = void*;
+	using NativeThreadPool = void*;
+	using NativeContact = void*;
 	
 	struct Thread {
 		
@@ -75,6 +78,7 @@ struct FysOde {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

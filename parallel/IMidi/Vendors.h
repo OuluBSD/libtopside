@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IMidi_Vendors_h_
 #define _IMidi_Vendors_h_
@@ -26,10 +26,11 @@ MID_VNDR_LIST
 
 
 
+#if 0
 struct MidPortmidi {
-	using NativeSinkDevice = uint32;
-	using NativeSourceDevice = uint32;
-	using NativeEvent = uint32;
+	using NativeSinkDevice = void*;
+	using NativeSourceDevice = void*;
+	using NativeEvent = void*;
 	
 	struct Thread {
 		
@@ -39,6 +40,7 @@ struct MidPortmidi {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

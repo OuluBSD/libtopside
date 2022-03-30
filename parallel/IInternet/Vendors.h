@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IInternet_Vendors_h_
 #define _IInternet_Vendors_h_
@@ -28,8 +28,9 @@ NET_VNDR_LIST
 
 
 
+#if 0
 struct NetPosix {
-	using NativeSocket = uint32;
+	using NativeSocket = void*;
 	
 	struct Thread {
 		
@@ -39,9 +40,11 @@ struct NetPosix {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct NetWin32 {
-	using NativeSocket = uint32;
+	using NativeSocket = void*;
 	
 	struct Thread {
 		
@@ -51,9 +54,11 @@ struct NetWin32 {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct NetEnet {
-	using NativeSocket = uint32;
+	using NativeSocket = void*;
 	
 	struct Thread {
 		
@@ -63,9 +68,11 @@ struct NetEnet {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct NetNullSerial {
-	using NativeSocket = uint32;
+	using NativeSocket = void*;
 	
 	struct Thread {
 		
@@ -75,6 +82,7 @@ struct NetNullSerial {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

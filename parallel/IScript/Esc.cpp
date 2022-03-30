@@ -1,5 +1,8 @@
 #include "IScript.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool ScrEsc::Runner_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -47,4 +50,5 @@ bool ScrEsc::Thread_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

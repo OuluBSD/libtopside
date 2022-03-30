@@ -111,7 +111,7 @@ String Time::ToString() const {
 	s[0] = '0' + sec / 10;
 	s[1] = '0' + sec / 10;
 	s[2] = 0;
-	return	IntStr(day) + "." + IntStr(month) + "." + IntStr(day) +
+	return	IntStr(year) + "." + IntStr(month) + "." + IntStr(day) +
 			" " + IntStr(hour) + ":" + String(m) + ":" + String(s);
 	//return Format("%s.%s.%s %s:%s", (int)t.day(), (int)t.month(), (int)t.year(), (int)t.hour(), min);
 }

@@ -1,5 +1,8 @@
 #include "IEvent.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool EvSdl::SourceDevice_Initialize(NativeSourceDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -43,4 +46,5 @@ bool EvSdl::SourceDevice_IsWaitingEvent(NativeSourceDevice& o) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

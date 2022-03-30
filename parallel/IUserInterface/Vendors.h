@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IUserInterface_Vendors_h_
 #define _IUserInterface_Vendors_h_
@@ -42,8 +42,9 @@ UI_VNDR_LIST
 
 
 
+#if 0
 struct UiImgui {
-	using NativeCtrl = uint32;
+	using NativeCtrl = void*;
 	
 	struct Thread {
 		
@@ -53,6 +54,7 @@ struct UiImgui {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

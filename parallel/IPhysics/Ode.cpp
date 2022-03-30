@@ -1,5 +1,8 @@
 #include "IPhysics.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool FysOde::Node_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -107,4 +110,5 @@ bool FysOde::System_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

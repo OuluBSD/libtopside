@@ -1,5 +1,8 @@
 #include "IGraphics.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool GfxCpu::VertexShader_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -287,4 +290,5 @@ bool GfxCpu::Buffer_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

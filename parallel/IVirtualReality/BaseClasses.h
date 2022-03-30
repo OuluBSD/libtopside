@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IVirtualReality_BaseClasses_h_
 #define _IVirtualReality_BaseClasses_h_
@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 struct VrMotionController : public Atom {
 	RTTI_DECL1(VrMotionController, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrMotionController() {}
 
@@ -16,6 +17,7 @@ struct VrMotionController : public Atom {
 
 struct VrMotionControllerSystem : public Atom {
 	RTTI_DECL1(VrMotionControllerSystem, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrMotionControllerSystem() {}
 
@@ -23,6 +25,7 @@ struct VrMotionControllerSystem : public Atom {
 
 struct VrAppView : public Atom {
 	RTTI_DECL1(VrAppView, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrAppView() {}
 
@@ -30,6 +33,7 @@ struct VrAppView : public Atom {
 
 struct VrCameraResources : public Atom {
 	RTTI_DECL1(VrCameraResources, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrCameraResources() {}
 
@@ -37,6 +41,7 @@ struct VrCameraResources : public Atom {
 
 struct VrControllerModelCache : public Atom {
 	RTTI_DECL1(VrControllerModelCache, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrControllerModelCache() {}
 
@@ -44,6 +49,7 @@ struct VrControllerModelCache : public Atom {
 
 struct VrDeviceResources : public Atom {
 	RTTI_DECL1(VrDeviceResources, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrDeviceResources() {}
 
@@ -51,6 +57,7 @@ struct VrDeviceResources : public Atom {
 
 struct VrHolographicRenderer : public Atom {
 	RTTI_DECL1(VrHolographicRenderer, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrHolographicRenderer() {}
 
@@ -58,6 +65,7 @@ struct VrHolographicRenderer : public Atom {
 
 struct VrHolographicScene : public Atom {
 	RTTI_DECL1(VrHolographicScene, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrHolographicScene() {}
 
@@ -65,6 +73,7 @@ struct VrHolographicScene : public Atom {
 
 struct VrSpatialInteractionSystem : public Atom {
 	RTTI_DECL1(VrSpatialInteractionSystem, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrSpatialInteractionSystem() {}
 
@@ -72,6 +81,7 @@ struct VrSpatialInteractionSystem : public Atom {
 
 struct VrRenderer : public Atom {
 	RTTI_DECL1(VrRenderer, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~VrRenderer() {}
 

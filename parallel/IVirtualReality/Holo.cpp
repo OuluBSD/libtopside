@@ -1,5 +1,8 @@
 #include "IVirtualReality.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool VrHolo::MotionController_Initialize(NativeMotionController& ctrl, AtomBase& a, const Script::WorldState& ws) {
@@ -211,4 +214,5 @@ bool VrHolo::Renderer_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

@@ -1,5 +1,8 @@
 #include "IInternet.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool NetPosix::Socket_Initialize(NativeSocket& sock, AtomBase& a, const Script::WorldState& ws) {
@@ -35,4 +38,5 @@ void NetPosix::Socket_ClearSocket(NativeSocket& o) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

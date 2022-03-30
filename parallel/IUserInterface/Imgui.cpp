@@ -1,5 +1,8 @@
 #include "IUserInterface.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool UiImgui::Window_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -367,4 +370,5 @@ bool UiImgui::MenuBar_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

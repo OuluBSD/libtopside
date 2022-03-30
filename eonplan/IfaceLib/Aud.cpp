@@ -41,10 +41,26 @@ PKG(Audio, Aud, A) {
 	}
 	
 	VENDOR(Sdl) {
+		VENDOR_ENABLED_FLAG(SDL)
+		
 		
 	}
 	
 	VENDOR(Portaudio) {
+		const char* builtin = "defined flagBUILTIN_PORTAUDIO | (defined flagWIN32 & defined flagMSC)";
+		LIBRARY("BUILTIN_PORTAUDIO | (WIN32&MSC)", ports/portaudio)
+		LIBRARY("!(BUILTIN_PORTAUDIO | (WIN32&MSC))", portaudio)
+		
+		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG(FREEBSD)
+		VENDOR_ENABLED_FLAG(WIN32)
+		VENDOR_INCLUDE(builtin, ports/portaudio/portaudio.h)
+		VENDOR_INCLUDE(builtin, ports/portaudio/pa_types.h)
+		VENDOR_INCLUDE("", portaudio.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_CLASS(SinkDevice, PaStream*)
+		VENDOR_CLASS(SourceDevice, PaStream*)
+		
 		
 	}
 	

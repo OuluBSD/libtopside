@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IUserInterface_TmplClasses_h_
 #define _IUserInterface_TmplClasses_h_
@@ -29,6 +29,10 @@ template <class Ui> struct UserInterfaceMenuBarT;
 
 template <class Ui>
 struct UserInterfaceWindowT : UiWindow {
+	using CLASSNAME = UserInterfaceWindowT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiWindow)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiWindow>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -46,6 +50,10 @@ struct UserInterfaceWindowT : UiWindow {
 
 template <class Ui>
 struct UserInterfaceSplitterT : UiSplitter {
+	using CLASSNAME = UserInterfaceSplitterT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiSplitter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiSplitter>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -63,6 +71,10 @@ struct UserInterfaceSplitterT : UiSplitter {
 
 template <class Ui>
 struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
+	using CLASSNAME = UserInterfaceSeparatorCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiSeparatorCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiSeparatorCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -80,6 +92,10 @@ struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
 
 template <class Ui>
 struct UserInterfaceArrayCtrlT : UiArrayCtrl {
+	using CLASSNAME = UserInterfaceArrayCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiArrayCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiArrayCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -97,6 +113,10 @@ struct UserInterfaceArrayCtrlT : UiArrayCtrl {
 
 template <class Ui>
 struct UserInterfaceColumnCtrlT : UiColumnCtrl {
+	using CLASSNAME = UserInterfaceColumnCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiColumnCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiColumnCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -114,6 +134,10 @@ struct UserInterfaceColumnCtrlT : UiColumnCtrl {
 
 template <class Ui>
 struct UserInterfaceTreeCtrlT : UiTreeCtrl {
+	using CLASSNAME = UserInterfaceTreeCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiTreeCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiTreeCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -131,6 +155,10 @@ struct UserInterfaceTreeCtrlT : UiTreeCtrl {
 
 template <class Ui>
 struct UserInterfaceIconCtrlT : UiIconCtrl {
+	using CLASSNAME = UserInterfaceIconCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiIconCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiIconCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -148,6 +176,10 @@ struct UserInterfaceIconCtrlT : UiIconCtrl {
 
 template <class Ui>
 struct UserInterfaceImageCtrlT : UiImageCtrl {
+	using CLASSNAME = UserInterfaceImageCtrlT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiImageCtrl)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiImageCtrl>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -165,6 +197,10 @@ struct UserInterfaceImageCtrlT : UiImageCtrl {
 
 template <class Ui>
 struct UserInterfaceButtonT : UiButton {
+	using CLASSNAME = UserInterfaceButtonT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiButton)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiButton>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -182,6 +218,10 @@ struct UserInterfaceButtonT : UiButton {
 
 template <class Ui>
 struct UserInterfaceLabelT : UiLabel {
+	using CLASSNAME = UserInterfaceLabelT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiLabel)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiLabel>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -199,6 +239,10 @@ struct UserInterfaceLabelT : UiLabel {
 
 template <class Ui>
 struct UserInterfaceStringEditT : UiStringEdit {
+	using CLASSNAME = UserInterfaceStringEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiStringEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiStringEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -216,6 +260,10 @@ struct UserInterfaceStringEditT : UiStringEdit {
 
 template <class Ui>
 struct UserInterfaceIntEditT : UiIntEdit {
+	using CLASSNAME = UserInterfaceIntEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiIntEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiIntEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -233,6 +281,10 @@ struct UserInterfaceIntEditT : UiIntEdit {
 
 template <class Ui>
 struct UserInterfaceFloatEditT : UiFloatEdit {
+	using CLASSNAME = UserInterfaceFloatEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiFloatEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiFloatEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -250,6 +302,10 @@ struct UserInterfaceFloatEditT : UiFloatEdit {
 
 template <class Ui>
 struct UserInterfaceTimeEditT : UiTimeEdit {
+	using CLASSNAME = UserInterfaceTimeEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiTimeEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiTimeEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -267,6 +323,10 @@ struct UserInterfaceTimeEditT : UiTimeEdit {
 
 template <class Ui>
 struct UserInterfaceDateEditT : UiDateEdit {
+	using CLASSNAME = UserInterfaceDateEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiDateEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiDateEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -284,6 +344,10 @@ struct UserInterfaceDateEditT : UiDateEdit {
 
 template <class Ui>
 struct UserInterfaceDocEditT : UiDocEdit {
+	using CLASSNAME = UserInterfaceDocEditT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiDocEdit)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiDocEdit>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -301,6 +365,10 @@ struct UserInterfaceDocEditT : UiDocEdit {
 
 template <class Ui>
 struct UserInterfaceBarT : UiBar {
+	using CLASSNAME = UserInterfaceBarT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiBar)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiBar>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -318,6 +386,10 @@ struct UserInterfaceBarT : UiBar {
 
 template <class Ui>
 struct UserInterfaceMenuBarT : UiMenuBar {
+	using CLASSNAME = UserInterfaceMenuBarT<Ui>;
+	RTTI_DECL1(CLASSNAME, UiMenuBar)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<UiMenuBar>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -333,6 +405,7 @@ struct UserInterfaceMenuBarT : UiMenuBar {
 	
 };
 
+#if 0
 using ImguiWindow = UserInterfaceWindowT<UiImgui>;
 using ImguiSplitter = UserInterfaceSplitterT<UiImgui>;
 using ImguiSeparatorCtrl = UserInterfaceSeparatorCtrlT<UiImgui>;
@@ -351,6 +424,7 @@ using ImguiDateEdit = UserInterfaceDateEditT<UiImgui>;
 using ImguiDocEdit = UserInterfaceDocEditT<UiImgui>;
 using ImguiBar = UserInterfaceBarT<UiImgui>;
 using ImguiMenuBar = UserInterfaceMenuBarT<UiImgui>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

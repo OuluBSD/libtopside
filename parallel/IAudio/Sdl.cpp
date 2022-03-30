@@ -1,5 +1,8 @@
 #include "IAudio.h"
 
+#if defined flagSDL
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool AudSdl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -95,4 +98,5 @@ bool AudSdl::SourceDevice_GetSourceFormat(NativeSourceDevice& o, int ch_i, int& 
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _ICrypt_TmplClasses_h_
 #define _ICrypt_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Cry> struct CryptCryptT;
 
 template <class Cry>
 struct CryptCryptT : CryCrypt {
+	using CLASSNAME = CryptCryptT<Cry>;
+	RTTI_DECL1(CLASSNAME, CryCrypt)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CryCrypt>(this);}
+	
 	typename Cry::NativeCrypt dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -48,7 +52,6 @@ struct CryptCryptT : CryCrypt {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

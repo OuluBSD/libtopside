@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IScript_Vendors_h_
 #define _IScript_Vendors_h_
@@ -28,9 +28,10 @@ SCR_VNDR_LIST
 
 
 
+#if 0
 struct ScrEsc {
-	using NativeRunner = uint32;
-	using NativeThread = uint32;
+	using NativeRunner = void*;
+	using NativeThread = void*;
 	
 	struct Thread {
 		
@@ -40,10 +41,12 @@ struct ScrEsc {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct ScrPython {
-	using NativeRunner = uint32;
-	using NativeThread = uint32;
+	using NativeRunner = void*;
+	using NativeThread = void*;
 	
 	struct Thread {
 		
@@ -53,10 +56,12 @@ struct ScrPython {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct ScrDuktape {
-	using NativeRunner = uint32;
-	using NativeThread = uint32;
+	using NativeRunner = void*;
+	using NativeThread = void*;
 	
 	struct Thread {
 		
@@ -66,6 +71,7 @@ struct ScrDuktape {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

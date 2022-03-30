@@ -1,9 +1,18 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IAudio_Vendors_h_
 #define _IAudio_Vendors_h_
+
+#if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
+	#if defined flagBUILTIN_PORTAUDIO | (defined flagWIN32 & defined flagMSC)
+		#include <ports/portaudio/portaudio.h>
+		#include <ports/portaudio/pa_types.h>
+	#else
+		#include <portaudio.h>
+	#endif
+#endif
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -27,9 +36,10 @@ AUD_VNDR_LIST
 
 
 
+#if defined flagSDL
 struct AudSdl {
-	using NativeSinkDevice = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeSinkDevice = void*;
+	using NativeSourceDevice = void*;
 	
 	struct Thread {
 		
@@ -39,10 +49,12 @@ struct AudSdl {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 struct AudPortaudio {
-	using NativeSinkDevice = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeSinkDevice = PaStream*;
+	using NativeSourceDevice = PaStream*;
 	
 	struct Thread {
 		
@@ -52,6 +64,7 @@ struct AudPortaudio {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

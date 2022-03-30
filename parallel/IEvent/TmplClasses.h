@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IEvent_TmplClasses_h_
 #define _IEvent_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Ev> struct EventSourceDeviceT;
 
 template <class Ev>
 struct EventSourceDeviceT : EvSourceDevice {
+	using CLASSNAME = EventSourceDeviceT<Ev>;
+	RTTI_DECL1(CLASSNAME, EvSourceDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<EvSourceDevice>(this);}
+	
 	typename Ev::NativeSourceDevice dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -49,10 +53,21 @@ struct EventSourceDeviceT : EvSourceDevice {
 	
 };
 
+#if 0
 using SdlSourceDevice = EventSourceDeviceT<EvSdl>;
+#endif
+
+#if 0
 using GlfwSourceDevice = EventSourceDeviceT<EvGlfw>;
+#endif
+
+#if 0
 using X11SourceDevice = EventSourceDeviceT<EvX11>;
+#endif
+
+#if 0
 using Win32SourceDevice = EventSourceDeviceT<EvWin32>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

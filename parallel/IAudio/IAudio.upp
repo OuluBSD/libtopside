@@ -1,8 +1,11 @@
 description "\377B226,212,0";
 
 uses
-	ParallelLib,
 	ParallelLib;
+
+library(BUILTIN_PORTAUDIO | (WIN32&MSC)) ports/portaudio;
+
+library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 
 file
 	IAudio.h,

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IImgProc_TmplClasses_h_
 #define _IImgProc_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Imp> struct ImgProcImageT;
 
 template <class Imp>
 struct ImgProcImageT : ImpImage {
+	using CLASSNAME = ImgProcImageT<Imp>;
+	RTTI_DECL1(CLASSNAME, ImpImage)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ImpImage>(this);}
+	
 	typename Imp::NativeImage dev;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -40,7 +44,6 @@ struct ImgProcImageT : ImpImage {
 	
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

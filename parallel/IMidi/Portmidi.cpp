@@ -1,5 +1,8 @@
 #include "IMidi.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool MidPortmidi::MidiSinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -79,4 +82,5 @@ bool MidPortmidi::MidiSourceDevice_PollSource(NativeSourceDevice& o, NativeEvent
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

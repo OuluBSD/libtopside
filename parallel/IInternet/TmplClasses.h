@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IInternet_TmplClasses_h_
 #define _IInternet_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Net> struct InternetSocketT;
 
 template <class Net>
 struct InternetSocketT : NetSocket {
+	using CLASSNAME = InternetSocketT<Net>;
+	RTTI_DECL1(CLASSNAME, NetSocket)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<NetSocket>(this);}
+	
 	typename Net::NativeSocket sock;
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -41,10 +45,21 @@ struct InternetSocketT : NetSocket {
 	
 };
 
+#if 0
 using PosixSocket = InternetSocketT<NetPosix>;
+#endif
+
+#if 0
 using Win32Socket = InternetSocketT<NetWin32>;
+#endif
+
+#if 0
 using EnetSocket = InternetSocketT<NetEnet>;
+#endif
+
+#if 0
 using NullSerialSocket = InternetSocketT<NetNullSerial>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

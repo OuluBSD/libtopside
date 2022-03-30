@@ -18,10 +18,16 @@
 #define CLASS(name) for (Class* c = &n->AddClass(#name); c; c = 0)
 #define PKG_IFACE for (Interface* i = &this->iface; i; i = 0)
 #define NATIVE_CLASS(name) i->AddNativeClass(#name);
+#define NATIVE_CLASS_(name, nat_type) i->AddNativeClass(#name, #nat_type);
+#define VENDOR_CLASS(iface_type, nat_type) v->AddNativeTypedef(#iface_type, #nat_type);
 #define NATIVE_FIELD(cls, name) c->AddNativeField(#cls, #name);
 #define NATIVE_INHERIT(cls, name) c->AddNativeInherit(#cls, #name);
 #define UTIL_CLASS(name) i->AddUtilClass(#name);
 #define VENDOR(name) for (Vendor* v = &AddVendor(#name); v; v = 0)
+#define VENDOR_ENABLED_FLAG(flag) v->AddEnabled().AddFlag(#flag);
+#define VENDOR_INCLUDE(macro_if_str, filepath) v->AddInclude(macro_if_str, #filepath);
+#define VENDOR_HEADER_REQUIRES_INCLUDES v->SetIncludeInHeader(true);
+#define LIBRARY(upp_if_str, lib) this->AddLibrary(upp_if_str, #lib);
 #define DEPENDENCY(x) this->AddDependency(#x);
 #define MAINFLAG(x) this->AddMainFlag(#x);
 #define COLOR(r,g,b) this->SetColor(r,g,b);

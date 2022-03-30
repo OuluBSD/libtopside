@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IMath_TmplClasses_h_
 #define _IMath_TmplClasses_h_
@@ -12,6 +12,10 @@ template <class Math> struct MathSystemT;
 
 template <class Math>
 struct MathSystemT : MathSystem {
+	using CLASSNAME = MathSystemT<Math>;
+	RTTI_DECL1(CLASSNAME, MathSystem)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MathSystem>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -26,7 +30,6 @@ struct MathSystemT : MathSystem {
 
 	
 };
-
 
 
 NAMESPACE_PARALLEL_END

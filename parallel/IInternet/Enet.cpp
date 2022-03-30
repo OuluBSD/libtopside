@@ -1,5 +1,8 @@
 #include "IInternet.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool NetEnet::Socket_Initialize(NativeSocket& sock, AtomBase& a, const Script::WorldState& ws) {
@@ -35,4 +38,5 @@ void NetEnet::Socket_ClearSocket(NativeSocket& o) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

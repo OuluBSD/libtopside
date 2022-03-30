@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IVirtualReality_Vendors_h_
 #define _IVirtualReality_Vendors_h_
@@ -36,9 +36,10 @@ VR_VNDR_LIST
 
 
 
+#if 0
 struct VrHolo {
-	using NativeMotionController = uint32;
-	using NativeMotionControllerSystem = uint32;
+	using NativeMotionController = void*;
+	using NativeMotionControllerSystem = void*;
 	
 	struct Thread {
 		
@@ -48,10 +49,12 @@ struct VrHolo {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct VrOvr {
-	using NativeMotionController = uint32;
-	using NativeMotionControllerSystem = uint32;
+	using NativeMotionController = void*;
+	using NativeMotionControllerSystem = void*;
 	
 	struct Thread {
 		
@@ -61,10 +64,12 @@ struct VrOvr {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct VrHmd {
-	using NativeMotionController = uint32;
-	using NativeMotionControllerSystem = uint32;
+	using NativeMotionController = void*;
+	using NativeMotionControllerSystem = void*;
 	
 	struct Thread {
 		
@@ -74,6 +79,7 @@ struct VrHmd {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

@@ -1,5 +1,8 @@
 #include "IScript.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool ScrDuktape::Runner_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -47,4 +50,5 @@ bool ScrDuktape::Thread_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

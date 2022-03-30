@@ -1,5 +1,8 @@
 #include "IVirtualMachine.h"
 
+#if 0
+
+
 NAMESPACE_PARALLEL_BEGIN
 
 bool VmTos::VirtualMachine_Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -47,4 +50,5 @@ bool VmTos::Thread_ProcessPacket(PacketValue& v) {
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

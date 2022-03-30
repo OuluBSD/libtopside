@@ -1,7 +1,6 @@
 description "\377B54,157,186";;
 
 uses
-	ParallelLib,
 	ParallelLib;
 
 file

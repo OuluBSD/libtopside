@@ -1,5 +1,6 @@
 #include "IAudio.h"
 
+#if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 NAMESPACE_PARALLEL_BEGIN
 
 bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
@@ -95,4 +96,5 @@ bool AudPortaudio::SourceDevice_GetSourceFormat(NativeSourceDevice& o, int ch_i,
 
 
 NAMESPACE_PARALLEL_END
+#endif
 

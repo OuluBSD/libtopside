@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IUserInterface_BaseClasses_h_
 #define _IUserInterface_BaseClasses_h_
@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 struct UiWindow : public Atom {
 	RTTI_DECL1(UiWindow, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiWindow() {}
 
@@ -16,6 +17,7 @@ struct UiWindow : public Atom {
 
 struct UiSplitter : public Atom {
 	RTTI_DECL1(UiSplitter, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiSplitter() {}
 
@@ -23,6 +25,7 @@ struct UiSplitter : public Atom {
 
 struct UiSeparatorCtrl : public Atom {
 	RTTI_DECL1(UiSeparatorCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiSeparatorCtrl() {}
 
@@ -30,6 +33,7 @@ struct UiSeparatorCtrl : public Atom {
 
 struct UiArrayCtrl : public Atom {
 	RTTI_DECL1(UiArrayCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiArrayCtrl() {}
 
@@ -37,6 +41,7 @@ struct UiArrayCtrl : public Atom {
 
 struct UiColumnCtrl : public Atom {
 	RTTI_DECL1(UiColumnCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiColumnCtrl() {}
 
@@ -44,6 +49,7 @@ struct UiColumnCtrl : public Atom {
 
 struct UiTreeCtrl : public Atom {
 	RTTI_DECL1(UiTreeCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiTreeCtrl() {}
 
@@ -51,6 +57,7 @@ struct UiTreeCtrl : public Atom {
 
 struct UiIconCtrl : public Atom {
 	RTTI_DECL1(UiIconCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiIconCtrl() {}
 
@@ -58,6 +65,7 @@ struct UiIconCtrl : public Atom {
 
 struct UiImageCtrl : public Atom {
 	RTTI_DECL1(UiImageCtrl, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiImageCtrl() {}
 
@@ -65,6 +73,7 @@ struct UiImageCtrl : public Atom {
 
 struct UiButton : public Atom {
 	RTTI_DECL1(UiButton, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiButton() {}
 
@@ -72,6 +81,7 @@ struct UiButton : public Atom {
 
 struct UiLabel : public Atom {
 	RTTI_DECL1(UiLabel, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiLabel() {}
 
@@ -79,6 +89,7 @@ struct UiLabel : public Atom {
 
 struct UiStringEdit : public Atom {
 	RTTI_DECL1(UiStringEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiStringEdit() {}
 
@@ -86,6 +97,7 @@ struct UiStringEdit : public Atom {
 
 struct UiIntEdit : public Atom {
 	RTTI_DECL1(UiIntEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiIntEdit() {}
 
@@ -93,6 +105,7 @@ struct UiIntEdit : public Atom {
 
 struct UiFloatEdit : public Atom {
 	RTTI_DECL1(UiFloatEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiFloatEdit() {}
 
@@ -100,6 +113,7 @@ struct UiFloatEdit : public Atom {
 
 struct UiTimeEdit : public Atom {
 	RTTI_DECL1(UiTimeEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiTimeEdit() {}
 
@@ -107,6 +121,7 @@ struct UiTimeEdit : public Atom {
 
 struct UiDateEdit : public Atom {
 	RTTI_DECL1(UiDateEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiDateEdit() {}
 
@@ -114,6 +129,7 @@ struct UiDateEdit : public Atom {
 
 struct UiDocEdit : public Atom {
 	RTTI_DECL1(UiDocEdit, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiDocEdit() {}
 
@@ -121,6 +137,7 @@ struct UiDocEdit : public Atom {
 
 struct UiBar : public Atom {
 	RTTI_DECL1(UiBar, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiBar() {}
 
@@ -128,6 +145,7 @@ struct UiBar : public Atom {
 
 struct UiMenuBar : public Atom {
 	RTTI_DECL1(UiMenuBar, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~UiMenuBar() {}
 

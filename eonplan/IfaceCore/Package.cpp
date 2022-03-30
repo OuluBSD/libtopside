@@ -167,9 +167,9 @@ String Function::GetProxyString(const Class& c, String prefix) const {
 	return s;
 }
 
-Class& Interface::AddNativeClass(String name) {
+Class& Interface::AddNativeClass(String name, String type) {
 	ASSERT(nat_cls.Find(name) < 0);
-	return nat_cls.Add(name).SetName(name);
+	return nat_cls.Add(name).SetName(name).SetType(type);
 }
 
 Class& Interface::AddUtilClass(String name) {
@@ -201,6 +201,65 @@ String Vendor::GetTreeString(int indent) {
 	s << "Vendor " << name << "\n";
 	return s;
 }
+
+String Vendor::GetPreprocessorEnabler() const {
+	String s;
+	if (enabled.IsEmpty())
+		s << "#if 0";
+	else {
+		s << "#if ";
+		if (enabled.GetCount() > 1) s << "(";
+		for(int i = 0; i < enabled.GetCount(); i++) {
+			if (i) s << ") || (";
+			const EnabledFlag& f = enabled[i];
+			for(int j = 0; j < f.flags.GetCount(); j++) {
+				if (j) s << " && ";
+				const String& flag = f.flags[j];
+				s << "defined flag" << flag;
+			}
+		}
+		if (enabled.GetCount() > 1) s << ")";
+	}
+	return s;
+}
+
+String Vendor::GetIncludes(int indent) const {
+	String s;
+	
+	int else_i = -1;
+	for(int i = 0; i <= includes.GetCount(); i++) {
+		// Logic for doing "else" last
+		bool is_regular = i < includes.GetCount();
+		if (is_regular && includes.GetKey(i).IsEmpty() ) {
+			else_i = i;
+			continue;
+		}
+		int j = is_regular ? i : else_i;
+		if (j < 0) break; // no "else"
+		
+		String cond = includes.GetKey(j);
+		bool first = s.IsEmpty();
+		s.Cat('\t', indent);
+		if (first)
+			s << "#if " << cond << "\n";
+		else if (cond.IsEmpty())
+			s << "#else\n";
+		else
+			s << "#elif " << cond << "\n";
+		
+		const auto& paths = includes[j];
+		for (const auto& path : paths) {
+			s.Cat('\t', indent+1);
+			s << "#include <" << path << ">\n";
+		}
+	}
+	if (!s.IsEmpty()) {
+		s.Cat('\t', indent);
+		s << "#endif\n";
+	}
+	return s;
+}
+
 
 
 
@@ -289,11 +348,27 @@ bool Package::Export() {
 				<< IntStr(clr.g) << ","
 				<< IntStr(clr.b) << "\";;\n\n";
 		
-		fout << "uses\n\tParallelLib";
+		fout << "uses";
+		int i = 0;
+		if (deps.IsEmpty()) {
+			fout << "\n\tParallelLib";
+			i++;
+		}
 		for (String dep : deps) {
-			fout << ",\n\t" << dep;
+			if (i++) fout << ",";
+			fout << "\n\t" << dep;
 		}
 		fout << ";\n\n";
+		
+		for(int i = 0; i < libraries.GetCount(); i++) {
+			String cond = libraries.GetKey(i);
+			const auto& libs = libraries[i];
+			for(String lib : libs) {
+				if (lib.Find(" ") >= 0)
+					lib = "\"" + lib + "\"";
+				fout << "library(" << cond << ") " << lib << ";\n\n";
+			}
+		}
 		
 		fout << "file";
 		for(int i = 0; i < file_list.GetCount(); i++) {
@@ -364,6 +439,7 @@ bool Package::Export() {
 			
 			fout << "struct " << c.cpp_name << " : public " << c.inherits << " {\n";
 			fout << "\tRTTI_DECL" << (c.inherits == "RTTIBase" ? String("0(") << c.cpp_name : String("1(") << c.cpp_name << ", " << c.inherits) << ")\n";
+			fout << "\tvoid Visit(RuntimeVisitor& vis) override {vis.VisitThis<" << c.inherits << ">(this);}\n";
 			fout << "\t\n";
 			fout << "\tvirtual ~" << c.cpp_name << "() {}\n\n";
 			
@@ -394,6 +470,10 @@ bool Package::Export() {
 		
 		for (Class& c : ns.classes.GetValues()) {
 			fout << "template <class " << abbr << ">\nstruct " << c.t_name << " : " << c.cpp_name << " {\n";
+			fout << "\tusing CLASSNAME = " << c.t_name << "<" << abbr << ">;\n";
+			fout << "\tRTTI_DECL1(CLASSNAME, " << c.cpp_name << ")\n";
+			fout << "\tvoid Visit(RuntimeVisitor& vis) override {vis.VisitThis<" << c.cpp_name << ">(this);}\n";
+			fout << "\t\n";
 			
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
@@ -474,14 +554,16 @@ bool Package::Export() {
 		}
 		
 		for (Vendor& v : vendors.GetValues()) {
+			fout << v.GetPreprocessorEnabler() << "\n";
 			for (Class& c : ns.classes.GetValues()) {
 				String to = v.name + c.name;
 				String from = c.t_name + "<" + abbr + v.name + ">";
 				fout << "using " << to << " = " << from << ";\n";
 				//using PortAudioSinkDevice = AudioSinkDeviceT<AudPortaudio>;
 			}
+			fout << "#endif\n\n";
 		}
-		fout << "\n\n";
+		fout << "\n";
 		
 		fout << "NAMESPACE_PARALLEL_END\n\n";
 		fout << "\n\n#endif\n\n";
@@ -535,6 +617,15 @@ bool Package::Export() {
 		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
 		fout << "#ifndef _" + pkgname + "_Vendors_h_\n";
 		fout << "#define _" + pkgname + "_Vendors_h_\n\n";
+		
+		for (Vendor& v : vendors.GetValues()) {
+			if (v.includes.IsEmpty() || !v.includes_in_header)
+				continue;
+			fout << v.GetPreprocessorEnabler() << "\n";
+			fout << v.GetIncludes(1);
+			fout << "#endif\n\n";
+		}
+		
 		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 		
 		fout << "#define " << abbrup << "_CLS_LIST(x) \\\n";
@@ -560,9 +651,17 @@ bool Package::Export() {
 		fout << "\n\n\n";
 		
 		for (Vendor& v : vendors.GetValues()) {
+			fout << v.GetPreprocessorEnabler() << "\n";
+			
 			fout << "struct " << abbr << v.name << " {\n";
 			for (Class& c : iface.nat_cls.GetValues()) {
-				fout << "\tusing Native" << c.name << " = uint32;\n";
+				String type = c.type;
+				int i = v.nat_typedef.Find(c.name);
+				if (i >= 0)
+					type = v.nat_typedef[i];
+				else if (type.IsEmpty())
+					type = "void*";
+				fout << "\tusing Native" << c.name << " = " << type << ";\n";
 			}
 			//fout << "\ttypedef void (*DataCallbackFn)(void*, char* data, int size);\n";
 			fout << "\t\n";
@@ -579,7 +678,7 @@ bool Package::Export() {
 			
 			fout << "\t\n";
 			
-			fout << "};\n\n";
+			fout << "};\n#endif\n\n";
 		}
 		
 		
@@ -601,6 +700,9 @@ bool Package::Export() {
 			FileOut fout(path);
 			
 			fout << "#include \"" << pkgname << ".h\"\n\n";
+			fout << v.GetPreprocessorEnabler() << "\n";
+			if (!v.includes_in_header)
+				fout << "\n" << v.GetIncludes() << "\n";
 			fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
 			
 			for (Class& c : ns.classes.GetValues()) {
@@ -644,7 +746,7 @@ bool Package::Export() {
 			}
 			
 			fout << "\n\n\n";
-			fout << "\nNAMESPACE_PARALLEL_END\n\n";
+			fout << "\nNAMESPACE_PARALLEL_END\n#endif\n\n";
 		}
 		
 		

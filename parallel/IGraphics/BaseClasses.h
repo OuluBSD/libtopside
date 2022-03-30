@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IGraphics_BaseClasses_h_
 #define _IGraphics_BaseClasses_h_
@@ -9,6 +9,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 struct GfxVertexShader : public Atom {
 	RTTI_DECL1(GfxVertexShader, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxVertexShader() {}
 
@@ -16,6 +17,7 @@ struct GfxVertexShader : public Atom {
 
 struct GfxFragmentShader : public Atom {
 	RTTI_DECL1(GfxFragmentShader, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxFragmentShader() {}
 
@@ -23,6 +25,7 @@ struct GfxFragmentShader : public Atom {
 
 struct GfxDataObject : public Atom {
 	RTTI_DECL1(GfxDataObject, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxDataObject() {}
 
@@ -30,6 +33,7 @@ struct GfxDataObject : public Atom {
 
 struct GfxDataState : public ErrorReporter {
 	RTTI_DECL1(GfxDataState, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxDataState() {}
 
@@ -37,6 +41,7 @@ struct GfxDataState : public ErrorReporter {
 
 struct GfxInputState : public ErrorReporter {
 	RTTI_DECL1(GfxInputState, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxInputState() {}
 
@@ -44,6 +49,7 @@ struct GfxInputState : public ErrorReporter {
 
 struct GfxFramebuffer : public ErrorReporter {
 	RTTI_DECL1(GfxFramebuffer, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxFramebuffer() {}
 
@@ -51,6 +57,7 @@ struct GfxFramebuffer : public ErrorReporter {
 
 struct GfxCompiler : public ErrorReporter {
 	RTTI_DECL1(GfxCompiler, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxCompiler() {}
 
@@ -58,6 +65,7 @@ struct GfxCompiler : public ErrorReporter {
 
 struct GfxLinker : public ErrorReporter {
 	RTTI_DECL1(GfxLinker, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxLinker() {}
 
@@ -65,6 +73,7 @@ struct GfxLinker : public ErrorReporter {
 
 struct GfxShaderPipeline : public Atom {
 	RTTI_DECL1(GfxShaderPipeline, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxShaderPipeline() {}
 
@@ -72,6 +81,7 @@ struct GfxShaderPipeline : public Atom {
 
 struct GfxRuntimeState : public ErrorReporter {
 	RTTI_DECL1(GfxRuntimeState, ErrorReporter)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ErrorReporter>(this);}
 	
 	virtual ~GfxRuntimeState() {}
 
@@ -79,6 +89,7 @@ struct GfxRuntimeState : public ErrorReporter {
 
 struct GfxContextState : public Atom {
 	RTTI_DECL1(GfxContextState, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxContextState() {}
 
@@ -86,6 +97,7 @@ struct GfxContextState : public Atom {
 
 struct GfxRenderer : public Atom {
 	RTTI_DECL1(GfxRenderer, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxRenderer() {}
 
@@ -93,6 +105,7 @@ struct GfxRenderer : public Atom {
 
 struct GfxStateDraw : public Draw {
 	RTTI_DECL1(GfxStateDraw, Draw)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Draw>(this);}
 	
 	virtual ~GfxStateDraw() {}
 
@@ -100,6 +113,7 @@ struct GfxStateDraw : public Draw {
 
 struct GfxBuffer : public Atom {
 	RTTI_DECL1(GfxBuffer, Atom)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	
 	virtual ~GfxBuffer() {}
 

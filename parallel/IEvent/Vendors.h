@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IEvent_Vendors_h_
 #define _IEvent_Vendors_h_
@@ -28,9 +28,10 @@ EV_VNDR_LIST
 
 
 
+#if 0
 struct EvSdl {
-	using NativeContext = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeContext = void*;
+	using NativeSourceDevice = void*;
 	
 	struct Thread {
 		
@@ -40,10 +41,12 @@ struct EvSdl {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct EvGlfw {
-	using NativeContext = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeContext = void*;
+	using NativeSourceDevice = void*;
 	
 	struct Thread {
 		
@@ -53,10 +56,12 @@ struct EvGlfw {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct EvX11 {
-	using NativeContext = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeContext = void*;
+	using NativeSourceDevice = void*;
 	
 	struct Thread {
 		
@@ -66,10 +71,12 @@ struct EvX11 {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
+#if 0
 struct EvWin32 {
-	using NativeContext = uint32;
-	using NativeSourceDevice = uint32;
+	using NativeContext = void*;
+	using NativeSourceDevice = void*;
 	
 	struct Thread {
 		
@@ -79,6 +86,7 @@ struct EvWin32 {
 	#include "IfaceFuncs.inl"
 	
 };
+#endif
 
 
 

@@ -1,7 +1,6 @@
 description "\377B28,85,150";;
 
 uses
-	ParallelLib,
 	Geometry;
 
 file

@@ -1,7 +1,6 @@
 description "\377B113,42,150";;
 
 uses
-	ParallelLib,
 	SoftPhys;
 
 file

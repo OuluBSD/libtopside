@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 29.3.29 19:55:44
+// Last export: 2022.3.30 15:00:33
 
 #ifndef _IVirtualMachine_TmplClasses_h_
 #define _IVirtualMachine_TmplClasses_h_
@@ -13,6 +13,10 @@ template <class Vm> struct VirtualMachineThreadT;
 
 template <class Vm>
 struct VirtualMachineVirtualMachineT : VmVirtualMachine {
+	using CLASSNAME = VirtualMachineVirtualMachineT<Vm>;
+	RTTI_DECL1(CLASSNAME, VmVirtualMachine)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VmVirtualMachine>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -30,6 +34,10 @@ struct VirtualMachineVirtualMachineT : VmVirtualMachine {
 
 template <class Vm>
 struct VirtualMachineThreadT : VmThread {
+	using CLASSNAME = VirtualMachineThreadT<Vm>;
+	RTTI_DECL1(CLASSNAME, VmThread)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VmThread>(this);}
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
@@ -45,8 +53,10 @@ struct VirtualMachineThreadT : VmThread {
 	
 };
 
+#if 0
 using TosVirtualMachine = VirtualMachineVirtualMachineT<VmTos>;
 using TosThread = VirtualMachineThreadT<VmTos>;
+#endif
 
 
 NAMESPACE_PARALLEL_END
