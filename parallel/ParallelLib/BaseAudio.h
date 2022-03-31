@@ -13,13 +13,13 @@ class DebugSoundGenerator
 	
 public:
 	DebugSoundGenerator() {}
-	void Play(int frame_offset, const Packet& p) {
+	void Play(int frame_offset, PacketValue& p) {
 		int total_bytes = frame.GetCount() * sizeof(T);
 		frame_offset = frame_offset % total_bytes;
-		int copy_size = p->GetFormat().GetFrameSize();
-		p->Data().SetCount(copy_size, 0);
+		int copy_size = p.GetFormat().GetFrameSize();
+		p.Data().SetCount(copy_size, 0);
 		int frame_remaining = total_bytes - frame_offset;
-		byte* dst = p->Data().Begin();
+		byte* dst = p.Data().Begin();
 		byte* src = (byte*)(void*)frame.Begin() + frame_offset;
 		
 		// 2 parts

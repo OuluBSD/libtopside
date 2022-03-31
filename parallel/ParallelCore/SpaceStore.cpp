@@ -16,6 +16,10 @@ bool SpaceStore::Initialize() {
 	return true;
 }
 
+void SpaceStore::Stop() {
+	GetRoot()->StopDeep();
+}
+
 void SpaceStore::Uninitialize() {
 	GetRoot()->Clear();
 }

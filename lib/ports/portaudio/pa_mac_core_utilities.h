@@ -1,0 +1,5 @@
+#ifndef _ports_portaudio_pa_mac_core_utilities_h_
+#define _ports_portaudio_pa_mac_core_utilities_h_
+
+
+#endif

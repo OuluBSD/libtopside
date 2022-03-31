@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IStaticServer_TmplClasses_h_
 #define _IStaticServer_TmplClasses_h_
@@ -19,6 +19,12 @@ struct StaticServerServerInstanceT : SvtServerInstance {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {

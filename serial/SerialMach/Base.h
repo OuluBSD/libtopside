@@ -69,8 +69,6 @@ public:
 
 
 class ExternalPipeLink : public AsyncMemForwarderBase {
-	RunningFlag			flag;
-	
 	
 public:
 	RTTI_DECL1(ExternalPipeLink, AsyncMemForwarderBase)

@@ -56,6 +56,7 @@ protected:
 	Mutex					fwd_lock;
 	IfaceConnTuple			iface;
 	Serial::LinkBase*		link = 0;
+	//Format					user_internal_fmt;
 	
 	
 public:
@@ -72,13 +73,17 @@ public:
 	virtual ISinkRef		GetSink() = 0;
 	virtual bool			ProcessPacket(PacketValue& v) = 0;
 	
+	virtual bool			Start() {return true;}
+	virtual void			Stop() {}
 	virtual void			Visit(RuntimeVisitor& vis) {}
 	virtual bool			PostInitialize() {return true;}
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
 	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
-	virtual const Format&	GetInternalFormat() const {Panic("Unimplemented"); NEVER();}
+	// internal format should be sink:0
+	//virtual const Format&	GetInternalFormat() const {ASSERT(user_internal_fmt.IsValid()) return user_internal_fmt;}
+	//virtual void			SetInternalFormat(const Format& f) {user_internal_fmt = f;}
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
 	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
 	virtual void			ForwardPacket(PacketValue& v) {Panic("Unimplemented"); NEVER();}

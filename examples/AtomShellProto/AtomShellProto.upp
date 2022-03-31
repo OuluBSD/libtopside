@@ -9,5 +9,7 @@ file
 mainconfig
 	"" = "",
 	"" = "SCREEN",
-	"" = "DEBUG_RT";
+	"" = "BUILTIN_PORTAUDIO",
+	"" = "DEBUG_RT",
+	"" = "DEBUG_RT BUILTIN_PORTAUDIO";
 

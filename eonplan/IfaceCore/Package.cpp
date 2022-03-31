@@ -360,6 +360,16 @@ bool Package::Export() {
 		}
 		fout << ";\n\n";
 		
+		for(int i = 0; i < cond_deps.GetCount(); i++) {
+			String cond = cond_deps.GetKey(i);
+			const auto& libs = cond_deps[i];
+			for(String lib : libs) {
+				if (lib.Find(" ") >= 0)
+					lib = "\"" + lib + "\"";
+				fout << "uses(" << cond << ") " << lib << ";\n\n";
+			}
+		}
+		
 		for(int i = 0; i < libraries.GetCount(); i++) {
 			String cond = libraries.GetKey(i);
 			const auto& libs = libraries[i];
@@ -489,20 +499,23 @@ bool Package::Export() {
 				fout << "\t\tif (!" << abbr << "::" << cls << "_Initialize(" << name << ", *this, ws))\n";
 				fout << "\t\t\treturn false;\n";
 			}
-			/*fout << "\t\tconst int sink_ch_i = 0;\n";
-			fout << "\t\tobj.Create();\n";
-			fout << "\t\tobj->WhenAction << THISBACK(SinkCallback);\n";
-			fout << "\t\tif (!obj->Initialize(*this, ws))\n";
-			fout << "\t\t\treturn false;\n";
-			fout << "\t\tobj->OpenDefault();\n";
-			fout << "\t\tValue& sink_val = GetSink()->GetValue(sink_ch_i);\n";
-			fout << "\t\tfmt = ConvertPortaudioFormat(obj->GetFormat());\n";
-			fout << "\t\tASSERT(fmt.IsValid());\n";
-			fout << "\t\tsink_val.SetFormat(fmt);\n";
-			fout << "\t\tobj->Start();\n";
-			fout << "\t\tSetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);\n";
-			fout << "\t\tobj->Start();\n";*/
 			fout << "\t\treturn true;\n";
+			fout << "\t}\n\n";
+			
+			fout << "\tbool Start() override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\treturn " << abbr << "::" << cls << "_Start(" << name << ");\n";
+			}
+			fout << "\t}\n\n";
+			
+			fout << "\tvoid Stop() override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\t" << abbr << "::" << cls << "_Stop(" << name << ");\n";
+			}
 			fout << "\t}\n\n";
 			
 			fout << "\tvoid Uninitialize() override {\n";
@@ -511,8 +524,6 @@ bool Package::Export() {
 				String name = c.nat_inherited[i];
 				fout << "\t\t" << abbr << "::" << cls << "_Uninitialize(" << name << ");\n";
 			}
-			/*fout << "\t\tobj->Stop();\n";
-			fout << "\t\tobj.Clear();\n";*/
 			fout << "\t}\n\n";
 			
 			fout << "\tbool ProcessPacket(PacketValue& v) override {\n";
@@ -589,7 +600,7 @@ bool Package::Export() {
 			}
 			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
 			fout << "static bool " << c.name << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n";
-			fout << "static void " << c.name << "_Start(" << nat_this << ");\n";
+			fout << "static bool " << c.name << "_Start(" << nat_this << ");\n";
 			fout << "static void " << c.name << "_Stop(" << nat_this << ");\n";
 			fout << "static void " << c.name << "_Uninitialize(" << nat_this << ");\n";
 			fout << "static bool " << c.name << "_ProcessPacket(" << nat_this_ << "PacketValue& v);\n";

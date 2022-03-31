@@ -14,16 +14,6 @@ namespace Portaudio {
 #endif
 #define CHECK_ERR CHECK_ERROR(*this)
 
-enum SampleFormat {
-	SND_FLOAT32				= paFloat32,
-	SND_INT32				= paInt32,
-	SND_INT24				= paInt24,
-	SND_INT16				= paInt16,
-	SND_INT8				= paInt8,
-	SND_UINT8				= paUInt8,
-	SND_UNKNOWN				= -1
-};
-
 enum StreamFlags {
 	SND_NOFLAG				= paNoFlag,
 	SND_NOCLIP				= paClipOff,
@@ -33,25 +23,12 @@ enum StreamFlags {
 	SND_PLATFORM_SPECIFIC	= paPlatformSpecificFlags
 };
 
-enum StreamCallbackResult {
-	SND_CONTINUE			= paContinue,
-	SND_COMPLETE			= paComplete,
-	SND_ABORT				= paAbort
-};
-
 enum StreamCallbackFlags {
 	SND_INPUT_UNDERFLOW		= paInputUnderflow,
 	SND_INPUT_OVERFLOW		= paInputOverflow,
 	SND_OUTPUT_UNDERFLOW	= paOutputUnderflow,
 	SND_OUTPUT_OVERFLOW		= paOutputOverflow,
 	SND_PRIMING_OUTPUT		= paPrimingOutput
-};
-
-struct AudioFormat {
-	int				channels = 0;
-	int				freq = 0;
-	int				sample_rate = 0;
-	SampleFormat	fmt = SND_UNKNOWN;
 };
 
 struct StreamTimeInfo {

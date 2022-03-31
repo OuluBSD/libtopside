@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IEvent_TmplClasses_h_
 #define _IEvent_TmplClasses_h_
@@ -22,6 +22,14 @@ struct EventSourceDeviceT : EvSourceDevice {
 		if (!Ev::SourceDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Ev::SourceDevice_Start(dev);
+	}
+
+	void Stop() override {
+		Ev::SourceDevice_Stop(dev);
 	}
 
 	void Uninitialize() override {

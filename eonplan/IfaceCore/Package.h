@@ -114,10 +114,12 @@ protected:
 	Index<String> deps;
 	Index<String> main_flags;
 	VectorMap<String, Vector<String>> libraries;
+	VectorMap<String, Vector<String>> cond_deps;
 	RGBA clr;
 	
 	void SetColor(int r, int g, int b) {clr.r = r; clr.b = b; clr.g = g;}
 	void AddDependency(String s) {deps.FindAdd(s);}
+	void AddDependency(String upp_if_str, String s) {cond_deps.GetAdd(upp_if_str).Add(s);}
 	void AddMainFlag(String s) {main_flags.FindAdd(s);}
 	
 public:

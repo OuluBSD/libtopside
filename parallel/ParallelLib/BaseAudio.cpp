@@ -37,26 +37,27 @@ void AudioGenBase::Forward(FwdScope& fwd) {
 }
 */
 bool AudioGenBase::ProcessPacket(PacketValue& v) {
-	TODO
-	/*
-	PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
+	const int sink_ch = 0;
+	const int src_ch = 0;
+	
+	/*PacketIO::Sink& sink = io.sink[sink_ch];
+	PacketIO::Source& src = io.src[src_ch];
 	Packet& out = src.p;
 	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	out = ReplyPacket(0, sink.p);
+	src.from_sink_ch = sink_ch;
+	out = ReplyPacket(sink_ch, sink.p);*/
 	
 	int frame = fmt.GetFrameSize();
-	dword off = out->GetOffset().value;
+	dword off = v.GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
-	out->Set(fmt, time);
-	out->Data().SetCount(frame, 0);
-	gen.Play((int)offset, out);
+	v.Set(fmt, time);
+	v.Data().SetCount(frame, 0);
+	gen.Play((int)offset, v);
 	
-	RTLOG("AudioGenBase::ProcessPacket: offset " << (int)off << " " << out->ToStringWithHash());
-	*/
+	RTLOG("AudioGenBase::ProcessPacket: offset " << (int)off << " " << v.ToStringWithHash());
+	
 	return true;
 }
 

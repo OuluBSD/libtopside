@@ -3,7 +3,7 @@ description "\377B226,212,0";
 uses
 	ParallelLib;
 
-library(BUILTIN_PORTAUDIO | (WIN32&MSC)) ports/portaudio;
+uses(BUILTIN_PORTAUDIO | (WIN32&MSC)) ports/portaudio;
 
 library(!(BUILTIN_PORTAUDIO | (WIN32&MSC))) portaudio;
 

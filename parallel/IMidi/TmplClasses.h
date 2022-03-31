@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -23,6 +23,14 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 		if (!Mid::SinkDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Mid::SinkDevice_Start(dev);
+	}
+
+	void Stop() override {
+		Mid::SinkDevice_Stop(dev);
 	}
 
 	void Uninitialize() override {
@@ -66,6 +74,14 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 		if (!Mid::SourceDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Mid::SourceDevice_Start(dev);
+	}
+
+	void Stop() override {
+		Mid::SourceDevice_Stop(dev);
 	}
 
 	void Uninitialize() override {

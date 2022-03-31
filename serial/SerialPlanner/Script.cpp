@@ -216,6 +216,8 @@ bool ScriptLoader::ImplementScript() {
 		}
 	}
 	
+	
+	
 	RTLOG("ScriptLoader::ImplementScript: driver post initialize");
 	for (ScriptDriverLoader* dl: drivers) {
 		if (!dl->PostInitialize())
@@ -225,6 +227,20 @@ bool ScriptLoader::ImplementScript() {
 	RTLOG("ScriptLoader::ImplementScript: loop post initialize");
 	for (ScriptLoopLoader* ll : loops) {
 		if (!ll->PostInitialize())
+			return false;
+	}
+	
+	
+	
+	RTLOG("ScriptLoader::ImplementScript: driver start");
+	for (ScriptDriverLoader* dl: drivers) {
+		if (!dl->Start())
+			return false;
+	}
+	
+	RTLOG("ScriptLoader::ImplementScript: loop start");
+	for (ScriptLoopLoader* ll : loops) {
+		if (!ll->Start())
 			return false;
 	}
 	

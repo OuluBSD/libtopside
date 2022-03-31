@@ -184,6 +184,20 @@ void Space::UninitializeAtomsDeep() {
 	}*/
 }
 
+void Space::StopDeep() {
+	for (auto it = sub.rbegin(); it != sub.rend(); --it) {
+		it().StopDeep();
+	}
+	
+	Stop();
+}
+
+void Space::Stop() {
+	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
+		it->Stop();
+	}
+}
+
 void Space::UnlinkDeep() {
 	for (auto it = sub.rbegin(); it != sub.rend(); --it) {
 		it().UnlinkDeep();

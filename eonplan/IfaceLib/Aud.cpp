@@ -48,7 +48,7 @@ PKG(Audio, Aud, A) {
 	
 	VENDOR(Portaudio) {
 		const char* builtin = "defined flagBUILTIN_PORTAUDIO | (defined flagWIN32 & defined flagMSC)";
-		LIBRARY("BUILTIN_PORTAUDIO | (WIN32&MSC)", ports/portaudio)
+		DEPENDENCY_("BUILTIN_PORTAUDIO | (WIN32&MSC)", ports/portaudio)
 		LIBRARY("!(BUILTIN_PORTAUDIO | (WIN32&MSC))", portaudio)
 		
 		VENDOR_ENABLED_FLAG(LINUX)

@@ -1,9 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 static bool WebBrowser_Initialize(AtomBase&, const Script::WorldState&);
-static void WebBrowser_Start();
+static bool WebBrowser_Start();
 static void WebBrowser_Stop();
 static void WebBrowser_Uninitialize();
 static bool WebBrowser_ProcessPacket(PacketValue& v);

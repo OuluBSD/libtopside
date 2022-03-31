@@ -109,17 +109,21 @@ void PipeLink::Uninitialize() {
 }
 
 bool PipeLink::ProcessPackets(PacketIO& io) {
-	const auto& internal_fmt = atom->GetInternalFormat();
+	//const auto& internal_fmt = atom->GetInternalFormat();
+	
+	const int sink_ch = 0;
+	const int src_ch = 0;
+	
+	/*Format internal_fmt = atom->GetSink()->GetValue(sink_ch).GetFormat();
 	ASSERT(internal_fmt.IsValid());
+	RTLOG("LinkBase::ProcessPackets: fmt=" << internal_fmt.ToString());*/
 	
-	RTLOG("LinkBase::ProcessPackets: fmt=" << internal_fmt.ToString());
-	
-	PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
+	PacketIO::Sink& sink = io.sink[sink_ch];
+	PacketIO::Source& src = io.src[src_ch];
 	ASSERT(sink.p);
 	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	src.p = ReplyPacket(0, sink.p);
+	src.from_sink_ch = sink_ch;
+	src.p = ReplyPacket(sink_ch, sink.p);
 	src.p->AddRouteData(src.from_sink_ch);
 	
 	PacketValue& v = *src.p;
@@ -224,20 +228,17 @@ ExternalPipeLink::ExternalPipeLink() {
 }
 
 ExternalPipeLink::~ExternalPipeLink() {
-	ASSERT(!flag.IsRunning());
+	
 }
 
 bool ExternalPipeLink::Initialize(const Script::WorldState& ws) {
-	flag.Start(1);
 	GetSink()->GetValue(0).SetMinQueueSize(5);
-	
-	//Thread::Start(THISBACK(IntervalSinkProcess));
 	
 	return true;
 }
 
 void ExternalPipeLink::Uninitialize() {
-	flag.Stop();
+	
 }
 
 LinkTypeCls ExternalPipeLink::GetType() {

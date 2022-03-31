@@ -38,6 +38,8 @@ namespace Script {
 class Action;
 }
 
+bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size);
+
 }
 
 NAMESPACE_TOPSIDE_END

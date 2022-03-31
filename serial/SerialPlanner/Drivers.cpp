@@ -114,11 +114,18 @@ bool ScriptDriverLoader::Load() {
 }
 
 bool ScriptDriverLoader::PostInitialize() {
-	TODO
-	/*for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
 		if (!added_atoms[i]->PostInitialize())
 			return false;
-	}*/
+	}
+	return true;
+}
+
+bool ScriptDriverLoader::Start() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		if (!added_atoms[i]->Start())
+			return false;
+	}
 	return true;
 }
 

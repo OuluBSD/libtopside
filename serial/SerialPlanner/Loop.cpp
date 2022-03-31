@@ -872,6 +872,17 @@ bool ScriptLoopLoader::PostInitialize() {
 	return true;
 }
 
+bool ScriptLoopLoader::Start() {
+	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
+		AddedAtom& a = added_atoms[i];
+		if (!a.r->Start())
+			return false;
+		if (!a.l->Start())
+			return false;
+	}
+	return true;
+}
+
 #if 0
 SideStatus ScriptLoopLoader::AcceptSink(ScriptLoopLoader& sink_loader, Script::ActionPlanner::State*& accepted_src, Script::ActionPlanner::State*& accepted_sink) {
 	

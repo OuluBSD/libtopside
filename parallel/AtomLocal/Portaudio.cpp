@@ -3,42 +3,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-Format ConvertPortaudioFormat(Portaudio::AudioFormat pa_fmt) {
-	Format fmt;
-	fmt.vd = VD(CENTER,AUDIO);
-	AudioFormat& r = fmt;
-	r.res[0] = pa_fmt.channels;
-	r.freq = pa_fmt.freq;
-	r.sample_rate = pa_fmt.sample_rate;
-	switch (pa_fmt.fmt) {
-		#if CPU_BIG_ENDIAN
-		#error TODO
-		#endif
-		
-		case Portaudio::SND_FLOAT32:
-			r.SetType(SoundSample::FLT_LE);
-			break;
-		case Portaudio::SND_INT32:
-			r.SetType(SoundSample::S32_LE);
-			break;
-		case Portaudio::SND_INT24:
-			r.SetType(SoundSample::S24_LE);
-			break;
-		case Portaudio::SND_INT16:
-			r.SetType(SoundSample::S16_LE);
-			break;
-		case Portaudio::SND_INT8:
-			r.SetType(SoundSample::S8_LE);
-			break;
-		case Portaudio::SND_UINT8:
-			r.SetType(SoundSample::U8_LE);
-			break;
-		default:
-			THROW(Exc("invalid portaudio sound sample format"));
-	}
-	return fmt;
-}
-
 
 namespace Portaudio {
 	

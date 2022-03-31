@@ -28,6 +28,7 @@
 #define VENDOR_INCLUDE(macro_if_str, filepath) v->AddInclude(macro_if_str, #filepath);
 #define VENDOR_HEADER_REQUIRES_INCLUDES v->SetIncludeInHeader(true);
 #define LIBRARY(upp_if_str, lib) this->AddLibrary(upp_if_str, #lib);
+#define DEPENDENCY_(upp_if_str, lib) this->AddDependency(upp_if_str, #lib);
 #define DEPENDENCY(x) this->AddDependency(#x);
 #define MAINFLAG(x) this->AddMainFlag(#x);
 #define COLOR(r,g,b) this->SetColor(r,g,b);

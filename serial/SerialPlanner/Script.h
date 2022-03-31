@@ -217,6 +217,7 @@ public:
 	bool		Parse();
 	bool		Load();
 	bool		PostInitialize();
+	bool		Start();
 	void		AddSideConnectionSegment(Script::ActionPlanner::State& n);
 	void		UpdateLoopLimits();
 	void		RealizeConnections(const Script::ActionPlanner::State& last_state);
@@ -456,6 +457,7 @@ public:
 	void		Forward();
 	bool		Load();
 	bool		PostInitialize();
+	bool		Start();
 	
 };
 

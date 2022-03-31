@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IPhysics_TmplClasses_h_
 #define _IPhysics_TmplClasses_h_
@@ -25,6 +25,12 @@ struct PhysicsNodeT : FysNode {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -44,6 +50,12 @@ struct PhysicsObjectT : FysObject {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -67,6 +79,12 @@ struct PhysicsJointT : FysJoint {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -88,6 +106,12 @@ struct PhysicsSpaceT : FysSpace {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -107,6 +131,12 @@ struct PhysicsSystemT : FysSystem {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {

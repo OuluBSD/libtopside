@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IAudio_TmplClasses_h_
 #define _IAudio_TmplClasses_h_
@@ -23,6 +23,14 @@ struct AudioSinkDeviceT : AudSinkDevice {
 		if (!Aud::SinkDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Aud::SinkDevice_Start(dev);
+	}
+
+	void Stop() override {
+		Aud::SinkDevice_Stop(dev);
 	}
 
 	void Uninitialize() override {
@@ -74,6 +82,14 @@ struct AudioSourceDeviceT : AudSourceDevice {
 		if (!Aud::SourceDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Aud::SourceDevice_Start(dev);
+	}
+
+	void Stop() override {
+		Aud::SourceDevice_Stop(dev);
 	}
 
 	void Uninitialize() override {

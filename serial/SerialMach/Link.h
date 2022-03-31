@@ -68,9 +68,10 @@ public:
 	virtual bool			IsReady(PacketIO& io) {return atom->IsReady(io);}
 	virtual bool			PassLinkSideSink(LinkBaseRef sink) {return true;}
 	virtual bool			PassLinkSideSource(LinkBaseRef src) {return true;}
-	
 	virtual LinkTypeCls		GetLinkType() const = 0;
 	
+	virtual bool			Start() {return true;}
+	virtual void			Stop() {}
 	virtual void			Visit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
 	
@@ -150,6 +151,8 @@ public:
 	
 	
 };*/
+
+bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size);
 
 
 NAMESPACE_SERIAL_END

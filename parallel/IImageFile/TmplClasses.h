@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IImageFile_TmplClasses_h_
 #define _IImageFile_TmplClasses_h_
@@ -22,6 +22,14 @@ struct ImageFileImageT : ImgImage {
 		if (!Img::Image_Initialize(img, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Img::Image_Start(img);
+	}
+
+	void Stop() override {
+		Img::Image_Stop(img);
 	}
 
 	void Uninitialize() override {

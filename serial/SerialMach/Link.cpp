@@ -213,5 +213,10 @@ bool LinkBase::LinkSideSource(LinkBaseRef src, int local_ch_i, int other_ch_i) {
 }
 
 
+bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size) {
+	ASSERT(l)
+	return l ? l->ForwardAsyncMem(data, size) : 0;
+}
+
 
 NAMESPACE_SERIAL_END

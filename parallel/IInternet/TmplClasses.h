@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IInternet_TmplClasses_h_
 #define _IInternet_TmplClasses_h_
@@ -22,6 +22,14 @@ struct InternetSocketT : NetSocket {
 		if (!Net::Socket_Initialize(sock, *this, ws))
 			return false;
 		return true;
+	}
+
+	bool Start() override {
+		return Net::Socket_Start(sock);
+	}
+
+	void Stop() override {
+		Net::Socket_Stop(sock);
 	}
 
 	void Uninitialize() override {

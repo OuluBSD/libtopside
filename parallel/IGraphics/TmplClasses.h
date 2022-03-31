@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IGraphics_TmplClasses_h_
 #define _IGraphics_TmplClasses_h_
@@ -34,6 +34,12 @@ struct GraphicsVertexShaderT : GfxVertexShader {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -53,6 +59,12 @@ struct GraphicsFragmentShaderT : GfxFragmentShader {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -76,6 +88,12 @@ struct GraphicsDataObjectT : GfxDataObject {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -95,6 +113,12 @@ struct GraphicsDataStateT : GfxDataState {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -118,6 +142,12 @@ struct GraphicsInputStateT : GfxInputState {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -137,6 +167,12 @@ struct GraphicsFramebufferT : GfxFramebuffer {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -160,6 +196,12 @@ struct GraphicsCompilerT : GfxCompiler {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -179,6 +221,12 @@ struct GraphicsLinkerT : GfxLinker {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -202,6 +250,12 @@ struct GraphicsShaderPipelineT : GfxShaderPipeline {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -221,6 +275,12 @@ struct GraphicsRuntimeStateT : GfxRuntimeState {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -244,6 +304,12 @@ struct GraphicsContextStateT : GfxContextState {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -263,6 +329,12 @@ struct GraphicsRendererT : GfxRenderer {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -286,6 +358,12 @@ struct GraphicsStateDrawT : GfxStateDraw {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -305,6 +383,12 @@ struct GraphicsBufferT : GfxBuffer {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {

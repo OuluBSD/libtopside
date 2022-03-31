@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.30 15:00:33
+// Last export: 2022.3.31 14:22:11
 
 #ifndef _IUserInterface_TmplClasses_h_
 #define _IUserInterface_TmplClasses_h_
@@ -38,6 +38,12 @@ struct UserInterfaceWindowT : UiWindow {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -57,6 +63,12 @@ struct UserInterfaceSplitterT : UiSplitter {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -80,6 +92,12 @@ struct UserInterfaceSeparatorCtrlT : UiSeparatorCtrl {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -99,6 +117,12 @@ struct UserInterfaceArrayCtrlT : UiArrayCtrl {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -122,6 +146,12 @@ struct UserInterfaceColumnCtrlT : UiColumnCtrl {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -141,6 +171,12 @@ struct UserInterfaceTreeCtrlT : UiTreeCtrl {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -164,6 +200,12 @@ struct UserInterfaceIconCtrlT : UiIconCtrl {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -183,6 +225,12 @@ struct UserInterfaceImageCtrlT : UiImageCtrl {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -206,6 +254,12 @@ struct UserInterfaceButtonT : UiButton {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -225,6 +279,12 @@ struct UserInterfaceLabelT : UiLabel {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -248,6 +308,12 @@ struct UserInterfaceStringEditT : UiStringEdit {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -267,6 +333,12 @@ struct UserInterfaceIntEditT : UiIntEdit {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -290,6 +362,12 @@ struct UserInterfaceFloatEditT : UiFloatEdit {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -309,6 +387,12 @@ struct UserInterfaceTimeEditT : UiTimeEdit {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -332,6 +416,12 @@ struct UserInterfaceDateEditT : UiDateEdit {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -351,6 +441,12 @@ struct UserInterfaceDocEditT : UiDocEdit {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {
@@ -374,6 +470,12 @@ struct UserInterfaceBarT : UiBar {
 		return true;
 	}
 
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
 	void Uninitialize() override {
 	}
 
@@ -393,6 +495,12 @@ struct UserInterfaceMenuBarT : UiMenuBar {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
 	}
 
 	void Uninitialize() override {

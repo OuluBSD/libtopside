@@ -48,7 +48,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
 	bool ProcessPacket(PacketValue& v) override;
-	const Format& GetInternalFormat() const override {return internal_fmt;}
+	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 };
 
@@ -75,7 +75,7 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool ProcessPacket(PacketValue& v) override;
 	bool Consume(const void* data, int len) override;
-	const Format& GetInternalFormat() const override {return internal_fmt;}
+	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
 	
@@ -105,7 +105,7 @@ public:
 	bool	IsReady(PacketIO& io) override;*/
 	void	Visit(RuntimeVisitor& vis) override {}
 	bool ProcessPacket(PacketValue& v) override;
-	const Format& GetInternalFormat() const override {return internal_fmt;}
+	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
 };

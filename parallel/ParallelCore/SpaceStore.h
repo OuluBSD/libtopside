@@ -34,6 +34,7 @@ public:
 protected:
 	void Update(double) override;
 	bool Initialize() override;
+	void Stop() override;
 	void Uninitialize() override;
 	
 	
