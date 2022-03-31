@@ -148,7 +148,7 @@ double PaUtil_GetTime( void )
     }
     else
     {
-#ifndef UNDER_CE
+#if !defined UNDER_CE && !defined flagGCC
 	#if defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_APP)
         return GetTickCount64() * .001;
 	#else

@@ -17,7 +17,7 @@ void thread_runner(Callback* cb) {
 
 void Thread::Run(Callback cb) {
 	this->cb = cb;
-	t = new std::thread(thread_runner, &this->cb);
+	t = new std_thread(thread_runner, &this->cb);
 }
 
 void Thread::ShutdownThreads() {

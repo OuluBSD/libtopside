@@ -373,7 +373,9 @@ inline void DumpProbVector(const Vector<double>& probs, int steps, int indent=0)
 
 
 inline int64 GetCpuTicks() {
-	#ifdef flagWIN32
+	#if MINGWTHREAD
+	return clock();
+	#elif defined flagWIN32
     return __rdtsc();
     #else
     return clock();

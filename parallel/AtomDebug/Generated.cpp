@@ -104,6 +104,8 @@ AtomTypeCls AudioDbgSrc::GetType() const
 	return GetAtomType();
 }
 
+#ifdef flagSDL2
+
 AtomTypeCls SdlContextAtom::GetAtomType()
 {
 	return ATOM11(SDL_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
@@ -143,6 +145,8 @@ AtomTypeCls SdlAudioAtom::GetType() const
 {
 	return GetAtomType();
 }
+
+#endif
 
 }
 

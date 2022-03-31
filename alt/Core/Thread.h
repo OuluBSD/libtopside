@@ -4,14 +4,14 @@
 NAMESPACE_UPP_BEGIN
 
 
-inline int CPU_Cores() {return std::thread::hardware_concurrency();}
+inline int CPU_Cores() {return std_thread_hardware_concurrency();}
 
 #define MAIN_THREAD_ID -1
 void __ForceSetThreadId(int i);
 void RunThreadExitCallbacks();
 
 class Thread {
-	One<std::thread> t;
+	One<std_thread> t;
 	Callback cb;
 	int id;
 	
@@ -31,7 +31,7 @@ public:
 	static void Start(Callback cb) {
 		Thread* t = new Thread();
 		t->cb = cb;
-		t->t = new std::thread([t, cb]() {
+		t->t = new std_thread([t, cb]() {
 			cb.Execute();
 			RunThreadExitBlocks();
 			t->t->detach();
@@ -43,7 +43,7 @@ public:
 		Thread* t = new Thread();
 		t->cb.Clear();
 		int id = t->GetId();
-		t->t = new std::thread([id, t, fn]() {
+		t->t = new std_thread([id, t, fn]() {
 			SetThreadId(id);
 			fn();
 			RunThreadExitBlocks();
@@ -69,7 +69,7 @@ public:
 inline bool IsMainThread() { return Thread::IsMain(); }
 
 class Mutex {
-	std::mutex m;
+	std_mutex m;
 public:
 	Mutex() {}
 	

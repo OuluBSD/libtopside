@@ -86,6 +86,8 @@ public:
 
 };
 
+#ifdef flagSDL2
+
 class SdlContextAtom : public Sdl2ContextBase {
 
 public:
@@ -116,6 +118,8 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+
+#endif
 
 }
 

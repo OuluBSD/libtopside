@@ -104,6 +104,7 @@
 //
 // ****************************************************************************
 
+#ifdef flagASIO
 
 #ifndef included_iasiothiscallresolver_h
 #define included_iasiothiscallresolver_h
@@ -194,4 +195,4 @@ public:
 
 #endif /* included_iasiothiscallresolver_h */
 
-
+#endif

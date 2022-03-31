@@ -70,7 +70,16 @@
 #include <emmintrin.h>
 
 #if defined flagWIN32 && defined flagGCC
-#include <ports/MingwThreads/mingw.thread.h>
+	#include <ports/MingwThreads/mingw.thread.h>
+	#include <ports/MingwThreads/mingw.mutex.h>
+	#define MINGWTHREAD 1
+	using std_thread = mingw_stdthread::thread;
+	using std_mutex = mingw_stdthread::mutex;
+	#define std_thread_hardware_concurrency		mingw_stdthread::thread::hardware_concurrency
+#else
+	using std_thread = std::thread;
+	using std_mutex = std::mutex;
+	#define std_thread_hardware_concurrency		std::thread::hardware_concurrency
 #endif
 
 #ifdef flagPOSIX

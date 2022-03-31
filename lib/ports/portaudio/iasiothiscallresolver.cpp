@@ -152,6 +152,7 @@
     recent versions of the gcc assembler.
 */
 
+#ifdef flagASIO
 
 // We only need IASIOThiscallResolver at all if we are on Win32. For other
 // platforms we simply bypass the IASIOThiscallResolver definition to allow us
@@ -569,4 +570,5 @@ ASIOError IASIOThiscallResolver::ASIOInit(ASIODriverInfo *info)
 #endif /* !defined(_MSC_VER) */
 
 #endif /* Win32 */
+#endif
 

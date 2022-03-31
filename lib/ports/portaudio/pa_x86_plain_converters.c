@@ -37,6 +37,7 @@
  @ingroup win_src
 */
 
+#ifdef flagMSC
 #ifdef flagWIN32
 
 #include "pa_x86_plain_converters.h"
@@ -1219,4 +1220,5 @@ void PaUtil_InitializeX86PlainConverters( void )
 
 /* -------------------------------------------------------------------------- */
 
+#endif
 #endif

@@ -80,6 +80,8 @@
     synchronous full duplex double-buffered architecture of ASIO.
 */
 
+
+#ifdef flagASIO
 #ifdef flagWIN32
 
 #include <stdio.h>
@@ -4252,5 +4254,6 @@ PaError PaAsio_SetStreamSampleRate( PaStream* s, double sampleRate )
     return ValidateAndSetSampleRate( sampleRate );
 }
 
+#endif
 #endif
 #endif

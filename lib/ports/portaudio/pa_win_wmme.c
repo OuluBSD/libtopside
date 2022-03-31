@@ -83,7 +83,7 @@
     When implementing a PA blocking read/write stream, we simply wait on these
     Events (when necessary) inside the ReadStream() and WriteStream() functions.
 */
-#ifdef flagWIN32
+#if defined flagWIN32 && defined flagWMME
 
 #include <stdio.h>
 #include <stdlib.h>

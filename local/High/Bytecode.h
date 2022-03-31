@@ -1,6 +1,8 @@
 #ifndef _High_Emitter_h_
 #define _High_Emitter_h_
 
+#undef Yield
+
 namespace UPP {
 
 
