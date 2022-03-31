@@ -85,6 +85,24 @@ public:
 	
 };
 
+class DriverLink : public Link {
+	
+public:
+	RTTI_DECL1(DriverLink, Link)
+	typedef DriverLink CLASSNAME;
+	DriverLink();
+	~DriverLink();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
+	bool			ProcessPackets(PacketIO& io) override;
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
 
 NAMESPACE_SERIAL_END
 

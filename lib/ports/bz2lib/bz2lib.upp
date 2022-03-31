@@ -5,9 +5,9 @@ options(BUILDER_OPTION) NOWARNINGS;
 library(POSIX & !NOSO) bz2;
 
 file
+	Copying,
 	bz2lib.h,
 	bz2lib.cpp,
 	bzlib.c,
-	lib\LICENSE,
-	Copying;
+	lib\LICENSE;
 

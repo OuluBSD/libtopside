@@ -67,26 +67,47 @@ bool ScriptDriverLoader::Load() {
 	}
 	
 	for (Script::WorldState& ws : atoms) {
-		AtomTypeCls type = ws.GetAtom();
-		ASSERT(type.IsValid());
+		AtomTypeCls atom = ws.GetAtom();
+		LinkTypeCls link = Parallel::Factory::GetAtomLinkType(atom);
+		ASSERT(atom.IsValid());
 		
-		RTLOG("Loading driver atom " << type.ToString());
+		RTLOG("Loading driver atom " << atom.ToString());
 		
-		AtomBaseRef ab = l->GetSpace()->FindTypeCls(type);
+		AtomBaseRef ab = l->GetSpace()->FindTypeCls(atom);
 		if (ab) {
-			SetError("loop '" + def.id.ToString() + "' already has atom: " + type.ToString());
+			SetError("loop '" + def.id.ToString() + "' already has atom: " + atom.ToString());
 			return false;
 		}
 		
-		ab = l->GetSpace()->GetAddTypeCls(type);
+		LinkBaseRef lb;
+		ab = l->GetSpace()->GetAddTypeCls(atom);
+		lb = l->GetAddTypeCls(link);
 		
 		if (!ab) {
-			String atom_name = Parallel::Factory::AtomDataMap().Get(type).name;
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
 			SetError("Could not create atom '" + atom_name + "' at '" + def.id.ToString() + "'");
-			DUMP(type);
+			DUMP(atom);
 			ASSERT(0);
 			return false;
 		}
+		
+		if (!lb) {
+			String atom_name = Parallel::Factory::AtomDataMap().Get(atom).name;
+			SetError("Could not create link for atom '" + atom_name + "' at '" + def.id.ToString() + "'");
+			DUMP(atom);
+			ASSERT(0);
+			return false;
+		}
+		
+		ab->SetId(id);
+		lb->SetId(id);
+		
+		ab->link = &*lb;
+		lb->atom = &*ab;
+		
+		auto& c = added_atoms.Add();
+		c.a					= ab;
+		c.l					= lb;
 		
 		// Add arguments to ws
 		const Script::Statement* stmt = ws.FindStatement(0, def.stmts);
@@ -100,14 +121,18 @@ bool ScriptDriverLoader::Load() {
 			}
 		}
 		
-		TODO
-		/*if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
-			const auto& a = Serial::Factory::AtomDataMap().Get(type);
+		if (!ab->InitializeAtom(ws) || !ab->Initialize(ws)) {
+			const auto& a = Parallel::Factory::AtomDataMap().Get(atom);
 			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 			return false;
-		}*/
+		}
 		
-		added_atoms.Add(ab);
+		if (!lb->Initialize(ws)) {
+			const auto& a = Serial::Factory::LinkDataMap().Get(link);
+			SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
+			return false;
+		}
+		
 	}
 	
 	return true;
@@ -115,7 +140,10 @@ bool ScriptDriverLoader::Load() {
 
 bool ScriptDriverLoader::PostInitialize() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
-		if (!added_atoms[i]->PostInitialize())
+		auto& a = added_atoms[i];
+		if (!a.a->PostInitialize())
+			return false;
+		if (!a.l->PostInitialize())
 			return false;
 	}
 	return true;
@@ -123,7 +151,10 @@ bool ScriptDriverLoader::PostInitialize() {
 
 bool ScriptDriverLoader::Start() {
 	for(int i = added_atoms.GetCount()-1; i >= 0; i--) {
-		if (!added_atoms[i]->Start())
+		auto& a = added_atoms[i];
+		if (!a.a->Start())
+			return false;
+		if (!a.l->Start())
 			return false;
 	}
 	return true;

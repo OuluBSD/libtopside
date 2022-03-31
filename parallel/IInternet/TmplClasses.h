@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IInternet_TmplClasses_h_
 #define _IInternet_TmplClasses_h_
@@ -20,6 +20,12 @@ struct InternetSocketT : NetSocket {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Net::Socket_Initialize(sock, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Net::Socket_PostInitialize(sock))
 			return false;
 		return true;
 	}

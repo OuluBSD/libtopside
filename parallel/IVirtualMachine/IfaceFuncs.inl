@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 static bool VirtualMachine_Initialize(AtomBase&, const Script::WorldState&);
+static bool VirtualMachine_PostInitialize();
 static bool VirtualMachine_Start();
 static void VirtualMachine_Stop();
 static void VirtualMachine_Uninitialize();
@@ -10,6 +11,7 @@ static bool VirtualMachine_ProcessPacket(PacketValue& v);
 
 	
 static bool Thread_Initialize(AtomBase&, const Script::WorldState&);
+static bool Thread_PostInitialize();
 static bool Thread_Start();
 static void Thread_Stop();
 static void Thread_Uninitialize();

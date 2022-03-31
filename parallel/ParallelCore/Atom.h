@@ -44,6 +44,7 @@ public:
 	
 protected:
 	friend class Serial::ScriptLoopLoader;
+	friend class Serial::ScriptDriverLoader;
 	friend class Serial::Loop;
 	
 	int						id = -1;

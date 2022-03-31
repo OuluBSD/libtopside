@@ -11,6 +11,7 @@ using namespace Parallel;
 	LINK_TYPE(PIPE) \
 	LINK_TYPE(INTERVAL_PIPE) \
 	LINK_TYPE(EXTERNAL_PIPE) \
+	LINK_TYPE(DRIVER) \
 
 
 
@@ -29,6 +30,7 @@ typedef enum : byte {
 #define LINK_ROLE_LIST \
 	LINK_ROLE(CUSTOMER) \
 	LINK_ROLE(PROCESS) \
+	LINK_ROLE(DRIVER) \
 
 
 typedef enum : int8 {

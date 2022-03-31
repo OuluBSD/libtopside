@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 static bool Webcam_Initialize(NativeWebcam& dev, AtomBase&, const Script::WorldState&);
+static bool Webcam_PostInitialize(NativeWebcam& dev);
 static bool Webcam_Start(NativeWebcam& dev);
 static void Webcam_Stop(NativeWebcam& dev);
 static void Webcam_Uninitialize(NativeWebcam& dev);

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -21,6 +21,12 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mid::SinkDevice_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Mid::SinkDevice_PostInitialize(dev))
 			return false;
 		return true;
 	}
@@ -72,6 +78,12 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mid::SourceDevice_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Mid::SourceDevice_PostInitialize(dev))
 			return false;
 		return true;
 	}

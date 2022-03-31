@@ -428,26 +428,6 @@ AtomTypeCls OglCustomer::GetType() const
 }
 
 #endif
-AtomTypeCls SdlContextAtom::GetAtomType()
-{
-	return ATOM11(SDL_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
-}
-
-LinkTypeCls SdlContextAtom::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlContextAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SDL2ContextBase>(this);
-}
-
-AtomTypeCls SdlContextAtom::GetType() const
-{
-	return GetAtomType();
-}
-
 AtomTypeCls SdlEventAtomPipe::GetAtomType()
 {
 	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
@@ -748,26 +728,6 @@ AtomTypeCls SdlVideoAtom::GetType() const
 }
 
 #endif
-AtomTypeCls SdlAudioAtom::GetAtomType()
-{
-	return ATOM11(SDL_AUDIO_ATOM, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
-}
-
-LinkTypeCls SdlAudioAtom::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlAudioAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SDL2AudioOutputBase>(this);
-}
-
-AtomTypeCls SdlAudioAtom::GetType() const
-{
-	return GetAtomType();
-}
-
 #if defined flagSCREEN
 AtomTypeCls OglShaderPipe::GetAtomType()
 {

@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 static bool MidiFile_Initialize(NativeMidiFile& file, AtomBase&, const Script::WorldState&);
+static bool MidiFile_PostInitialize(NativeMidiFile& file);
 static bool MidiFile_Start(NativeMidiFile& file);
 static void MidiFile_Stop(NativeMidiFile& file);
 static void MidiFile_Uninitialize(NativeMidiFile& file);

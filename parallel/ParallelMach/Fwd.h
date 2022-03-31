@@ -30,6 +30,7 @@ using LinkRef				= Ref<LinkBase,				LinkParent>;
 
 class MachineVerifier;
 class ScriptLoopLoader;
+class ScriptDriverLoader;
 class LinkSystem;
 
 using LinkSystemRef			= Ref<LinkSystem,			MetaSystemParent>;

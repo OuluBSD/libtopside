@@ -1,0 +1,22 @@
+description "\377B198,127,200";
+
+uses
+	ParallelLib;
+
+library
+	SDL2,
+	SDL2_ttf,
+	SDL2_image;
+
+file
+	IHal.h,
+	Enums.h,
+	Vendors.h,
+	Sdl2.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = "";
+

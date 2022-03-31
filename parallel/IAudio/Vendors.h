@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IAudio_Vendors_h_
 #define _IAudio_Vendors_h_
@@ -23,7 +23,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 #define AUD_VNDR_LIST \
-	AUD_VNDR(AudSdl) \
 	AUD_VNDR(AudPortaudio) \
 
 
@@ -35,21 +34,6 @@ AUD_VNDR_LIST
 #undef AUD_CLS
 
 
-
-#if defined flagSDL
-struct AudSdl {
-	using NativeSinkDevice = void*;
-	using NativeSourceDevice = void*;
-	
-	struct Thread {
-		
-	};
-	static Thread& Local() {thread_local static Thread t; return t;}
-	
-	#include "IfaceFuncs.inl"
-	
-};
-#endif
 
 #if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 struct AudPortaudio {

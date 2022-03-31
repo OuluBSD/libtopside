@@ -11,5 +11,6 @@ mainconfig
 	"" = "SCREEN",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
-	"" = "DEBUG_RT BUILTIN_PORTAUDIO";
+	"" = "DEBUG_RT BUILTIN_PORTAUDIO",
+	"" = "SDL2";
 

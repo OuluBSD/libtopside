@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 static bool StreamServer_Initialize(AtomBase&, const Script::WorldState&);
+static bool StreamServer_PostInitialize();
 static bool StreamServer_Start();
 static void StreamServer_Stop();
 static void StreamServer_Uninitialize();

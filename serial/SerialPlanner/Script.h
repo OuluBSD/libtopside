@@ -432,9 +432,18 @@ public:
 class ScriptDriverLoader : public ScriptLoaderBase<Script::DriverDefinition, ScriptMachineLoader> {
 	
 protected:
+	
+	// Implement found loop
+	struct AddedAtom {
+		AtomBaseRef		a;
+		LinkBaseRef		l;
+	};
+	
+	Array<AddedAtom>		added_atoms;
+	
+protected:
 	Vector<Script::WorldState>	atoms;
 	Script::ActionPlanner		planner;  // required for Script::Action -> Script:WorldState -> key-index
-	Array<AtomBaseRef>			added_atoms;
 	
 	void		FindAtoms();
 	

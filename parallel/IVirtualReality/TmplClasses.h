@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IVirtualReality_TmplClasses_h_
 #define _IVirtualReality_TmplClasses_h_
@@ -29,6 +29,12 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Vr::MotionController_Initialize(ctrl, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Vr::MotionController_PostInitialize(ctrl))
 			return false;
 		return true;
 	}
@@ -72,6 +78,12 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		if (!Vr::MotionControllerSystem_PostInitialize(sys))
+			return false;
+		return true;
+	}
+
 	bool Start() override {
 		return Vr::MotionControllerSystem_Start(sys);
 	}
@@ -104,6 +116,10 @@ struct VirtualRealityAppViewT : VrAppView {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		return true;
+	}
+
 	bool Start() override {
 	}
 
@@ -128,6 +144,10 @@ struct VirtualRealityCameraResourcesT : VrCameraResources {
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	bool PostInitialize() override {
 		return true;
 	}
 
@@ -158,6 +178,10 @@ struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		return true;
+	}
+
 	bool Start() override {
 	}
 
@@ -182,6 +206,10 @@ struct VirtualRealityDeviceResourcesT : VrDeviceResources {
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	bool PostInitialize() override {
 		return true;
 	}
 
@@ -212,6 +240,10 @@ struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		return true;
+	}
+
 	bool Start() override {
 	}
 
@@ -236,6 +268,10 @@ struct VirtualRealityHolographicSceneT : VrHolographicScene {
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	bool PostInitialize() override {
 		return true;
 	}
 
@@ -266,6 +302,10 @@ struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		return true;
+	}
+
 	bool Start() override {
 	}
 
@@ -290,6 +330,10 @@ struct VirtualRealityRendererT : VrRenderer {
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	bool PostInitialize() override {
 		return true;
 	}
 

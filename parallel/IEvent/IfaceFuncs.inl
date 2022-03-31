@@ -1,8 +1,9 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 static bool SourceDevice_Initialize(NativeSourceDevice& dev, AtomBase&, const Script::WorldState&);
+static bool SourceDevice_PostInitialize(NativeSourceDevice& dev);
 static bool SourceDevice_Start(NativeSourceDevice& dev);
 static void SourceDevice_Stop(NativeSourceDevice& dev);
 static void SourceDevice_Uninitialize(NativeSourceDevice& dev);

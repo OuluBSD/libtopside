@@ -69,6 +69,10 @@
 
 #include <emmintrin.h>
 
+#if defined flagWIN32 && defined flagGCC
+#include <ports/MingwThreads/mingw.thread.h>
+#endif
+
 #ifdef flagPOSIX
 #include <unistd.h>
 #include <sys/types.h>

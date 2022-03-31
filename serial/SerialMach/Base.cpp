@@ -247,4 +247,34 @@ LinkTypeCls ExternalPipeLink::GetType() {
 
 
 
+
+
+
+
+DriverLink::DriverLink() {
+	
+}
+
+DriverLink::~DriverLink() {
+	
+}
+
+bool DriverLink::Initialize(const Script::WorldState& ws) {
+	TODO
+}
+
+void DriverLink::Uninitialize() {
+	TODO
+}
+
+bool DriverLink::ProcessPackets(PacketIO& io) {
+	TODO
+}
+
+LinkTypeCls DriverLink::GetType() {
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+
+
 NAMESPACE_SERIAL_END

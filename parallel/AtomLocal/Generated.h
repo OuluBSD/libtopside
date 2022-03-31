@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.3.31 14:22:11
+// Last modified: 2022.3.31 23:44:55
 
 namespace TS {
 
@@ -339,21 +339,6 @@ public:
 };
 #endif
 
-class SdlContextAtom : public SDL2ContextBase {
-
-public:
-	RTTI_DECL1(SdlContextAtom, SDL2ContextBase)
-	COPY_PANIC(SdlContextAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.context")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
 class SdlEventAtomPipe : public SDL2EventsBase {
 
 public:
@@ -583,22 +568,6 @@ public:
 
 };
 #endif
-
-class SdlAudioAtom : public SDL2AudioOutputBase {
-
-public:
-	RTTI_DECL1(SdlAudioAtom, SDL2AudioOutputBase)
-	COPY_PANIC(SdlAudioAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.audio")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
 
 #if defined flagSCREEN
 class OglShaderPipe : public OglShaderBase {

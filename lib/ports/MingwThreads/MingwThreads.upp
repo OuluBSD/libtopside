@@ -1,0 +1,11 @@
+description "\37728,170,255";
+
+file
+	Copying,
+	mingw.thread.h,
+	mingw.condition_variable.h,
+	mingw.future.h,
+	mingw.invoke.h,
+	mingw.mutex.h,
+	mingw.shared_mutex.h;
+

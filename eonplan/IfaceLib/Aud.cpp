@@ -40,12 +40,6 @@ PKG(Audio, Aud, A) {
 		}
 	}
 	
-	VENDOR(Sdl) {
-		VENDOR_ENABLED_FLAG(SDL)
-		
-		
-	}
-	
 	VENDOR(Portaudio) {
 		const char* builtin = "defined flagBUILTIN_PORTAUDIO | (defined flagWIN32 & defined flagMSC)";
 		DEPENDENCY_("BUILTIN_PORTAUDIO | (WIN32&MSC)", ports/portaudio)

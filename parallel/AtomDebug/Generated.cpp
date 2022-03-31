@@ -104,6 +104,46 @@ AtomTypeCls AudioDbgSrc::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls SdlContextAtom::GetAtomType()
+{
+	return ATOM11(SDL_CONTEXT_ATOM, DRIVER, CENTER, RECEIPT, CENTER, RECEIPT, CENTER, RECEIPT);
+}
+
+LinkTypeCls SdlContextAtom::GetLinkType()
+{
+	return LINKTYPE(DRIVER, DRIVER);
+}
+
+void SdlContextAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2ContextBase>(this);
+}
+
+AtomTypeCls SdlContextAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls SdlAudioAtom::GetAtomType()
+{
+	return ATOM11(SDL_AUDIO_ATOM, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+}
+
+LinkTypeCls SdlAudioAtom::GetLinkType()
+{
+	return LINKTYPE(EXTERNAL_PIPE, PROCESS);
+}
+
+void SdlAudioAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2AudioSinkDevice>(this);
+}
+
+AtomTypeCls SdlAudioAtom::GetType() const
+{
+	return GetAtomType();
+}
+
 }
 
 }

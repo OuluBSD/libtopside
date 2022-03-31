@@ -9,6 +9,7 @@ library(WIN32) "User32 Advapi32";
 library(LINUX) asound;
 
 file
+	Copying,
 	portaudio.h,
 	defs.h,
 	common readonly separator,

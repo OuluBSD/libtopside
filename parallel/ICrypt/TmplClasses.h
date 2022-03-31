@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _ICrypt_TmplClasses_h_
 #define _ICrypt_TmplClasses_h_
@@ -20,6 +20,12 @@ struct CryptCryptT : CryCrypt {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Cry::Crypt_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Cry::Crypt_PostInitialize(dev))
 			return false;
 		return true;
 	}

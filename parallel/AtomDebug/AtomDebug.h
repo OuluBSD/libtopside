@@ -5,6 +5,7 @@
 #include <AtomNonScreen/AtomNonScreen.h>
 #include <ParallelLib/ParallelLib.h>
 #include <IAudio/IAudio.h>
+#include <IHal/IHal.h>
 
 
 

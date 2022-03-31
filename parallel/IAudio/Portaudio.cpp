@@ -267,9 +267,10 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	if (err != paNoError) // Bail out on errors
 		return false;
 	
-	//sink_val.SetPrimarySinkQueueSize(DEFAULT_AUDIO_QUEUE_SIZE);
-	//AddToContext<CenterSpec>(AsRef<CenterSink>());
-	
+	return true;
+}
+
+bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev) {
 	return true;
 }
 
@@ -287,7 +288,6 @@ bool AudPortaudio::SinkDevice_Start(NativeSinkDevice& dev) {
 
 void AudPortaudio::SinkDevice_Stop(NativeSinkDevice& dev) {
 	PaError err = paNoError;
-	
 	err = Pa_StopStream(dev);
 	CHECK_ERR;
 }
@@ -302,7 +302,8 @@ void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev) {
 }
 
 bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, PacketValue& v) {
-	TODO
+	Panic("won't implement");
+	NEVER();
 }
 
 int AudPortaudio::SinkDevice_GetSinkDeviceCount() {

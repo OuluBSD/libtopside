@@ -116,8 +116,10 @@ HEADER11(			OglCustomer,		CustomerBase,				customer,	OglOrder,		OglReceipt,		Ogl
 HEADER_ACTION(		OglCustomer,		ogl.customer)
 HEADER_ARG(			OglCustomer,		reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlContextAtom,		SDL2ContextBase,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
+HEADER11(			SdlContextAtom,		Sdl2ContextBase,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
+HEADER_LINK(		SdlContextAtom,		DRIVER, DRIVER)
+HEADER_ARG(			SdlContextAtom,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			SdlEventAtomPipe,	SDL2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
@@ -177,9 +179,11 @@ HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
 
 
 
-HEADER11 (			SdlAudioAtom,		SDL2AudioOutputBase,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER11 (			SdlAudioAtom,		Sdl2AudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
+HEADER_LINK(		SdlAudioAtom,		EXTERNAL_PIPE, PROCESS)
+HEADER_ARG(			SdlAudioAtom,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			OglShaderPipe,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source.pipe)

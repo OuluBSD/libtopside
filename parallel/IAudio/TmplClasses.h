@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IAudio_TmplClasses_h_
 #define _IAudio_TmplClasses_h_
@@ -21,6 +21,12 @@ struct AudioSinkDeviceT : AudSinkDevice {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Aud::SinkDevice_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Aud::SinkDevice_PostInitialize(dev))
 			return false;
 		return true;
 	}
@@ -84,6 +90,12 @@ struct AudioSourceDeviceT : AudSourceDevice {
 		return true;
 	}
 
+	bool PostInitialize() override {
+		if (!Aud::SourceDevice_PostInitialize(dev))
+			return false;
+		return true;
+	}
+
 	bool Start() override {
 		return Aud::SourceDevice_Start(dev);
 	}
@@ -128,11 +140,6 @@ struct AudioSourceDeviceT : AudSourceDevice {
 	
 	
 };
-
-#if defined flagSDL
-using SdlSinkDevice = AudioSinkDeviceT<AudSdl>;
-using SdlSourceDevice = AudioSourceDeviceT<AudSdl>;
-#endif
 
 #if (defined flagLINUX) || (defined flagFREEBSD) || (defined flagWIN32)
 using PortaudioSinkDevice = AudioSinkDeviceT<AudPortaudio>;

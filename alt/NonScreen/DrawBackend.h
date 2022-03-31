@@ -5,7 +5,7 @@
 #include <ports/stb/stb_truetype.h>
 
 
-#if defined flagWIN32 && defined flagMSC
+/*#if defined flagWIN32 && defined flagMSC
 	#include <SDL.h>
 	#include <SDL_ttf.h>
 	#include <SDL_image.h>
@@ -18,11 +18,11 @@
 	#include <SDL2/SDL_ttf.h>
 	#include <SDL2/SDL_image.h>
 	#ifdef flagSCREEN
-		#include <SDL2/SDL_opengl.h>
+			#include <SDL2/SDL_opengl.h>
 	#endif
 #endif
 
-#undef main
+#undef main*/
 
 
 NAMESPACE_UPP

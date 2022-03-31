@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IMidiFile_TmplClasses_h_
 #define _IMidiFile_TmplClasses_h_
@@ -20,6 +20,12 @@ struct MidiFileMidiFileT : MifMidiFile {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mif::MidiFile_Initialize(file, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Mif::MidiFile_PostInitialize(file))
 			return false;
 		return true;
 	}

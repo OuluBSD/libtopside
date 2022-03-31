@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 14:22:11
+// Last export: 2022.3.31 23:44:55
 
 #ifndef _IAvFile_TmplClasses_h_
 #define _IAvFile_TmplClasses_h_
@@ -20,6 +20,12 @@ struct AvFileAVFileT : AVAVFile {
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!AV::AVFile_Initialize(file, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!AV::AVFile_PostInitialize(file))
 			return false;
 		return true;
 	}

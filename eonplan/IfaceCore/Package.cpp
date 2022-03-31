@@ -226,36 +226,45 @@ String Vendor::GetPreprocessorEnabler() const {
 String Vendor::GetIncludes(int indent) const {
 	String s;
 	
-	int else_i = -1;
-	for(int i = 0; i <= includes.GetCount(); i++) {
-		// Logic for doing "else" last
-		bool is_regular = i < includes.GetCount();
-		if (is_regular && includes.GetKey(i).IsEmpty() ) {
-			else_i = i;
-			continue;
-		}
-		int j = is_regular ? i : else_i;
-		if (j < 0) break; // no "else"
-		
-		String cond = includes.GetKey(j);
-		bool first = s.IsEmpty();
-		s.Cat('\t', indent);
-		if (first)
-			s << "#if " << cond << "\n";
-		else if (cond.IsEmpty())
-			s << "#else\n";
-		else
-			s << "#elif " << cond << "\n";
-		
-		const auto& paths = includes[j];
+	if (includes.GetCount() == 1 && includes.GetKey(0).IsEmpty()) {
+		const auto& paths = includes[0];
 		for (const auto& path : paths) {
-			s.Cat('\t', indent+1);
+			s.Cat('\t', indent);
 			s << "#include <" << path << ">\n";
 		}
 	}
-	if (!s.IsEmpty()) {
-		s.Cat('\t', indent);
-		s << "#endif\n";
+	else {
+		int else_i = -1;
+		for(int i = 0; i <= includes.GetCount(); i++) {
+			// Logic for doing "else" last
+			bool is_regular = i < includes.GetCount();
+			if (is_regular && includes.GetKey(i).IsEmpty() ) {
+				else_i = i;
+				continue;
+			}
+			int j = is_regular ? i : else_i;
+			if (j < 0) break; // no "else"
+			
+			String cond = includes.GetKey(j);
+			bool first = s.IsEmpty();
+			s.Cat('\t', indent);
+			if (first)
+				s << "#if " << cond << "\n";
+			else if (cond.IsEmpty())
+				s << "#else\n";
+			else
+				s << "#elif " << cond << "\n";
+			
+			const auto& paths = includes[j];
+			for (const auto& path : paths) {
+				s.Cat('\t', indent+1);
+				s << "#include <" << path << ">\n";
+			}
+		}
+		if (!s.IsEmpty()) {
+			s.Cat('\t', indent);
+			s << "#endif\n";
+		}
 	}
 	return s;
 }
@@ -502,6 +511,16 @@ bool Package::Export() {
 			fout << "\t\treturn true;\n";
 			fout << "\t}\n\n";
 			
+			fout << "\tbool PostInitialize() override {\n";
+			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+				String cls = c.nat_inherited.GetKey(i);
+				String name = c.nat_inherited[i];
+				fout << "\t\tif (!" << abbr << "::" << cls << "_PostInitialize(" << name << "))\n";
+				fout << "\t\t\treturn false;\n";
+			}
+			fout << "\t\treturn true;\n";
+			fout << "\t}\n\n";
+			
 			fout << "\tbool Start() override {\n";
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
@@ -600,6 +619,7 @@ bool Package::Export() {
 			}
 			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
 			fout << "static bool " << c.name << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n";
+			fout << "static bool " << c.name << "_PostInitialize(" << nat_this << ");\n";
 			fout << "static bool " << c.name << "_Start(" << nat_this << ");\n";
 			fout << "static void " << c.name << "_Stop(" << nat_this << ");\n";
 			fout << "static void " << c.name << "_Uninitialize(" << nat_this << ");\n";
@@ -732,7 +752,11 @@ bool Package::Export() {
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "void " << cls << "::" << c.name << "_Start(" << nat_this << ") {\n";
+				fout << "bool " << cls << "::" << c.name << "_PostInitialize(" << nat_this << ") {\n";
+				fout << "\tTODO\n";
+				fout << "}\n\n";
+				
+				fout << "bool " << cls << "::" << c.name << "_Start(" << nat_this << ") {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
