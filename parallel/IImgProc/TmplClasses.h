@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IImgProc_TmplClasses_h_
 #define _IImgProc_TmplClasses_h_
@@ -25,25 +25,25 @@ struct ImgProcImageT : ImpImage {
 	}
 
 	bool PostInitialize() override {
-		if (!Imp::Image_PostInitialize(dev))
+		if (!Imp::Image_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Imp::Image_Start(dev);
+		return Imp::Image_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Imp::Image_Stop(dev);
+		Imp::Image_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Imp::Image_Uninitialize(dev);
+		Imp::Image_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Imp::Image_ProcessPacket(dev, v))
+		if (!Imp::Image_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}

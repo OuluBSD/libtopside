@@ -1,21 +1,21 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 static bool Runner_Initialize(AtomBase&, const Script::WorldState&);
-static bool Runner_PostInitialize();
-static bool Runner_Start();
-static void Runner_Stop();
-static void Runner_Uninitialize();
-static bool Runner_ProcessPacket(PacketValue& v);
+static bool Runner_PostInitialize(, AtomBase&);
+static bool Runner_Start(, AtomBase&);
+static void Runner_Stop(, AtomBase&);
+static void Runner_Uninitialize(, AtomBase&);
+static bool Runner_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool Thread_Initialize(AtomBase&, const Script::WorldState&);
-static bool Thread_PostInitialize();
-static bool Thread_Start();
-static void Thread_Stop();
-static void Thread_Uninitialize();
-static bool Thread_ProcessPacket(PacketValue& v);
+static bool Thread_PostInitialize(, AtomBase&);
+static bool Thread_Start(, AtomBase&);
+static void Thread_Stop(, AtomBase&);
+static void Thread_Uninitialize(, AtomBase&);
+static bool Thread_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 bool CreateRunner(NativeRunner& a0);

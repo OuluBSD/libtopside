@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.3.31 23:44:55
+// Last modified: 2022.4.1 19:22:00
 
 namespace TS {
 
@@ -86,8 +86,7 @@ public:
 
 };
 
-#ifdef flagSDL2
-
+#if defined flagSDL2
 class SdlContextAtom : public Sdl2ContextBase {
 
 public:
@@ -102,7 +101,9 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
+#if defined flagSDL2
 class SdlAudioAtom : public Sdl2AudioSinkDevice {
 
 public:
@@ -118,7 +119,6 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
-
 #endif
 
 }

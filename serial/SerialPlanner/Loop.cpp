@@ -728,6 +728,8 @@ bool ScriptLoopLoader::Load() {
 				SetError("Could not " + String(!ab ? "create" : "initialize") + " atom '" + a.name + "' at '" + def.id.ToString() + "'");
 				return false;
 			}
+			
+			ab->SetRunning();
 		}
 		else {
 			Panic("Invalid world state type");

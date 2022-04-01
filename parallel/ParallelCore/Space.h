@@ -68,7 +68,7 @@ public:
 	String				GetName() const {return name;}
 	String				GetDeepName() const;
 	bool				HasAtoms() const {return !atoms.IsEmpty();}
-	bool				HasSpaces() const {return !sub.IsEmpty();}
+	bool				HasSpaces() const {return !spaces.IsEmpty();}
 	
 	void				Initialize(Space& l, String prefab="Custom");
 	
@@ -101,27 +101,27 @@ public:
 	void				UnlinkExchangePoints();
 	
 	template<typename T>
-	RefT_Space<T> FindCast() {
+	RefT_Atom<T> FindCast() {
 		for (Ref<AtomBase>& a : atoms.GetValues()) {
 			T* o = CastPtr<T>(&*a);
 			if (o)
 				return o->template AsRef<T>();
 		}
-		return RefT_Space<T>();
+		return RefT_Atom<T>();
 	}
 	
-	template<typename T> RefT_Space<T> FindNearestAtomCast(int nearest_loop_depth);
+	template<typename T> RefT_Atom<T> FindNearestAtomCast(int nearest_loop_depth);
 	EnvStateRef FindNearestState(String name);
 	
 	StateVec& GetStates() {return states;}
 	AtomMap& GetAtoms() {return atoms;}
-	SpaceVec& GetSpaces() {return sub;}
+	SpaceVec& GetSpaces() {return spaces;}
 	const StateVec& GetStates() const {return states;}
 	const AtomMap& GetAtoms() const {return atoms;}
-	const SpaceVec& GetSpaces() const {return sub;}
+	const SpaceVec& GetSpaces() const {return spaces;}
 	
 	SpaceRef AddSpace(String name="") {
-		Space& p = sub.Add();
+		Space& p = spaces.Add();
 		p.SetParent(HierExBaseParent(0, this));
 		p.SetName(name);
 		p.SetId(GetNextId());
@@ -129,7 +129,7 @@ public:
 	}
 	
 	SpaceRef GetAddSpace(String name) {
-		for (SpaceRef& pool : sub)
+		for (SpaceRef& pool : spaces)
 			if (pool->GetName() == name)
 				return pool;
 		return AddSpace(name);
@@ -157,16 +157,16 @@ public:
 	
 	AtomMap::Iterator			begin()			{return atoms.begin();}
 	AtomMap::Iterator			end()			{return atoms.end();}
-	SpaceVec::Iterator			BeginSpace()		{return sub.begin();}
+	SpaceVec::Iterator			BeginSpace()		{return spaces.begin();}
 	
-	void Visit(RuntimeVisitor& vis) {vis || atoms || sub || states;}
+	void Visit(RuntimeVisitor& vis) {vis || atoms || spaces || states;}
 	void VisitSinks(RuntimeVisitor& vis);
 	void VisitSources(RuntimeVisitor& vis);
 	
 private:
 	StateVec				states;
 	AtomMap					atoms;
-	SpaceVec				sub;
+	SpaceVec				spaces;
 };
 
 
@@ -181,6 +181,24 @@ public:
 	operator hash_t() const {return ch;}
 	
 };
+
+
+
+template<typename T>
+RefT_Atom<T> Space::FindNearestAtomCast(int nearest_space_depth) {
+	if (auto r = FindCast<T>())
+		return r;
+	
+	if (nearest_space_depth > 0)
+		for (auto& space : spaces)
+			if (auto ret = space->FindNearestAtomCast<T>(nearest_space_depth-1))
+				return ret;
+	
+	if (Space* p = GetParent())
+		return p->FindNearestAtomCast<T>(nearest_space_depth);
+	
+	return RefT_Atom<T>();
+}
 
 
 NAMESPACE_PARALLEL_END

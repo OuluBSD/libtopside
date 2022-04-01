@@ -1,13 +1,13 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 static bool ServerInstance_Initialize(AtomBase&, const Script::WorldState&);
-static bool ServerInstance_PostInitialize();
-static bool ServerInstance_Start();
-static void ServerInstance_Stop();
-static void ServerInstance_Uninitialize();
-static bool ServerInstance_ProcessPacket(PacketValue& v);
+static bool ServerInstance_PostInitialize(, AtomBase&);
+static bool ServerInstance_Start(, AtomBase&);
+static void ServerInstance_Stop(, AtomBase&);
+static void ServerInstance_Uninitialize(, AtomBase&);
+static bool ServerInstance_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 bool CreateServerInstance(NativeServerInstance& a0);

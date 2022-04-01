@@ -260,15 +260,16 @@ DriverLink::~DriverLink() {
 }
 
 bool DriverLink::Initialize(const Script::WorldState& ws) {
-	TODO
+	DLOG("DriverLink::Initialize");
+	return true;
 }
 
 void DriverLink::Uninitialize() {
-	TODO
+	
 }
 
 bool DriverLink::ProcessPackets(PacketIO& io) {
-	TODO
+	return true;
 }
 
 LinkTypeCls DriverLink::GetType() {

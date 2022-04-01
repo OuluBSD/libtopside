@@ -105,6 +105,12 @@ HiLambda& HiValue::GetLambdaRW() const
 	return *lambda;
 }
 
+Parallel::AtomBase& HiValue::GetAtom() const
+{
+	ASSERT(IsAtom());
+	return *atom;
+}
+
 int HiValue::GetCount() const
 {
 	switch(type) {

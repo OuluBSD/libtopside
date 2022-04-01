@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.3.31 23:44:55
+// Last modified: 2022.4.1 19:22:00
 
 namespace TS {
 
@@ -22,12 +22,10 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
 	ATOM_TYPE(EVENT_STATE_PIPE) \
-	ATOM_TYPE(SDL_CONTEXT_ATOM) \
 	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
 	ATOM_TYPE(SDL_EVENT_ATOM) \
 	ATOM_TYPE(EVENT_STATE) \
 	ATOM_TYPE(TEST_EVENT_SRC_PIPE) \
-	ATOM_TYPE(SDL_AUDIO_ATOM) \
 
 
 #define ATOM_CLASS_LIST \
@@ -44,12 +42,10 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
 	ATOM_CLASS(EventStatePipe) \
-	ATOM_CLASS(SdlContextAtom) \
 	ATOM_CLASS(SdlEventAtomPipe) \
 	ATOM_CLASS(SdlEventAtom) \
 	ATOM_CLASS(EventState) \
 	ATOM_CLASS(TestEventSrcPipe) \
-	ATOM_CLASS(SdlAudioAtom) \
 
 
 #define flagSCREEN_ATOM_TYPE_LIST \
@@ -124,6 +120,16 @@ namespace Parallel {
 #define HAVE_OPENCV_ATOM_CLASS_LIST \
 	ATOM_CLASS(WebcamPipe) \
 	ATOM_CLASS(WebcamAtom) \
+
+
+#define flagSDL2_ATOM_TYPE_LIST \
+	ATOM_TYPE(SDL_CONTEXT_ATOM) \
+	ATOM_TYPE(SDL_AUDIO_ATOM) \
+
+
+#define flagSDL2_ATOM_CLASS_LIST \
+	ATOM_CLASS(SdlContextAtom) \
+	ATOM_CLASS(SdlAudioAtom) \
 
 
 }

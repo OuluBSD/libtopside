@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IThree_TmplClasses_h_
 #define _IThree_TmplClasses_h_
@@ -25,25 +25,25 @@ struct ThreeModelT : ThrModel {
 	}
 
 	bool PostInitialize() override {
-		if (!Thr::Model_PostInitialize(model))
+		if (!Thr::Model_PostInitialize(model, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Thr::Model_Start(model);
+		return Thr::Model_Start(model, *this);
 	}
 
 	void Stop() override {
-		Thr::Model_Stop(model);
+		Thr::Model_Stop(model, *this);
 	}
 
 	void Uninitialize() override {
-		Thr::Model_Uninitialize(model);
+		Thr::Model_Uninitialize(model, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Thr::Model_ProcessPacket(model, v))
+		if (!Thr::Model_ProcessPacket(model, *this, v))
 			return false;
 		return true;
 	}

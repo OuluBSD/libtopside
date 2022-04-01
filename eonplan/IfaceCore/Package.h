@@ -29,7 +29,9 @@ struct Class {
 	String t_name;
 	String inherits;
 	VectorMap<String, String> nat_inherited;
+	VectorMap<String, String> nat_field;
 	ArrayMap<String, Function> funcs;
+	bool have_context_fns = false;
 	
 	Class& SetName(String s) {name = s; return *this;}
 	Class& SetType(String s) {type = s; return *this;}

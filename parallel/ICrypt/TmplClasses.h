@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _ICrypt_TmplClasses_h_
 #define _ICrypt_TmplClasses_h_
@@ -25,25 +25,25 @@ struct CryptCryptT : CryCrypt {
 	}
 
 	bool PostInitialize() override {
-		if (!Cry::Crypt_PostInitialize(dev))
+		if (!Cry::Crypt_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Cry::Crypt_Start(dev);
+		return Cry::Crypt_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Cry::Crypt_Stop(dev);
+		Cry::Crypt_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Cry::Crypt_Uninitialize(dev);
+		Cry::Crypt_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Cry::Crypt_ProcessPacket(dev, v))
+		if (!Cry::Crypt_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}

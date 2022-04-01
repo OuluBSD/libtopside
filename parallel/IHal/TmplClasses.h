@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IHal_TmplClasses_h_
 #define _IHal_TmplClasses_h_
@@ -26,25 +26,25 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 	}
 
 	bool PostInitialize() override {
-		if (!Hal::AudioSinkDevice_PostInitialize(dev))
+		if (!Hal::AudioSinkDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Hal::AudioSinkDevice_Start(dev);
+		return Hal::AudioSinkDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Hal::AudioSinkDevice_Stop(dev);
+		Hal::AudioSinkDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Hal::AudioSinkDevice_Uninitialize(dev);
+		Hal::AudioSinkDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Hal::AudioSinkDevice_ProcessPacket(dev, v))
+		if (!Hal::AudioSinkDevice_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}
@@ -67,27 +67,35 @@ struct HalContextBaseT : HalContextBase {
 	}
 
 	bool PostInitialize() override {
-		if (!Hal::ContextBase_PostInitialize(ctx))
+		if (!Hal::ContextBase_PostInitialize(ctx, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Hal::ContextBase_Start(ctx);
+		return Hal::ContextBase_Start(ctx, *this);
 	}
 
 	void Stop() override {
-		Hal::ContextBase_Stop(ctx);
+		Hal::ContextBase_Stop(ctx, *this);
 	}
 
 	void Uninitialize() override {
-		Hal::ContextBase_Uninitialize(ctx);
+		Hal::ContextBase_Uninitialize(ctx, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Hal::ContextBase_ProcessPacket(ctx, v))
+		if (!Hal::ContextBase_ProcessPacket(ctx, *this, v))
 			return false;
 		return true;
+	}
+
+	bool AttachContext(AtomBase& a) override {
+		return Hal::ContextBase_AttachContext(ctx, *this, a);
+	}
+
+	void DetachContext(AtomBase& a) override {
+		Hal::ContextBase_DetachContext(ctx, *this, a);
 	}
 
 	

@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.3.31 23:44:55
+// Last modified: 2022.4.1 19:22:00
 
 namespace TS {
 
@@ -776,7 +776,9 @@ using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
+#if defined flagSDL2
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
+#endif
 
 using SdlEventAtomPipeRef = Ref<SdlEventAtomPipe, AtomParent>;
 

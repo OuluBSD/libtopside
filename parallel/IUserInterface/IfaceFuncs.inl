@@ -1,148 +1,148 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 static bool Window_Initialize(AtomBase&, const Script::WorldState&);
-static bool Window_PostInitialize();
-static bool Window_Start();
-static void Window_Stop();
-static void Window_Uninitialize();
-static bool Window_ProcessPacket(PacketValue& v);
+static bool Window_PostInitialize(, AtomBase&);
+static bool Window_Start(, AtomBase&);
+static void Window_Stop(, AtomBase&);
+static void Window_Uninitialize(, AtomBase&);
+static bool Window_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool Splitter_Initialize(AtomBase&, const Script::WorldState&);
-static bool Splitter_PostInitialize();
-static bool Splitter_Start();
-static void Splitter_Stop();
-static void Splitter_Uninitialize();
-static bool Splitter_ProcessPacket(PacketValue& v);
+static bool Splitter_PostInitialize(, AtomBase&);
+static bool Splitter_Start(, AtomBase&);
+static void Splitter_Stop(, AtomBase&);
+static void Splitter_Uninitialize(, AtomBase&);
+static bool Splitter_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool SeparatorCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool SeparatorCtrl_PostInitialize();
-static bool SeparatorCtrl_Start();
-static void SeparatorCtrl_Stop();
-static void SeparatorCtrl_Uninitialize();
-static bool SeparatorCtrl_ProcessPacket(PacketValue& v);
+static bool SeparatorCtrl_PostInitialize(, AtomBase&);
+static bool SeparatorCtrl_Start(, AtomBase&);
+static void SeparatorCtrl_Stop(, AtomBase&);
+static void SeparatorCtrl_Uninitialize(, AtomBase&);
+static bool SeparatorCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool ArrayCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool ArrayCtrl_PostInitialize();
-static bool ArrayCtrl_Start();
-static void ArrayCtrl_Stop();
-static void ArrayCtrl_Uninitialize();
-static bool ArrayCtrl_ProcessPacket(PacketValue& v);
+static bool ArrayCtrl_PostInitialize(, AtomBase&);
+static bool ArrayCtrl_Start(, AtomBase&);
+static void ArrayCtrl_Stop(, AtomBase&);
+static void ArrayCtrl_Uninitialize(, AtomBase&);
+static bool ArrayCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool ColumnCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool ColumnCtrl_PostInitialize();
-static bool ColumnCtrl_Start();
-static void ColumnCtrl_Stop();
-static void ColumnCtrl_Uninitialize();
-static bool ColumnCtrl_ProcessPacket(PacketValue& v);
+static bool ColumnCtrl_PostInitialize(, AtomBase&);
+static bool ColumnCtrl_Start(, AtomBase&);
+static void ColumnCtrl_Stop(, AtomBase&);
+static void ColumnCtrl_Uninitialize(, AtomBase&);
+static bool ColumnCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool TreeCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool TreeCtrl_PostInitialize();
-static bool TreeCtrl_Start();
-static void TreeCtrl_Stop();
-static void TreeCtrl_Uninitialize();
-static bool TreeCtrl_ProcessPacket(PacketValue& v);
+static bool TreeCtrl_PostInitialize(, AtomBase&);
+static bool TreeCtrl_Start(, AtomBase&);
+static void TreeCtrl_Stop(, AtomBase&);
+static void TreeCtrl_Uninitialize(, AtomBase&);
+static bool TreeCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool IconCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool IconCtrl_PostInitialize();
-static bool IconCtrl_Start();
-static void IconCtrl_Stop();
-static void IconCtrl_Uninitialize();
-static bool IconCtrl_ProcessPacket(PacketValue& v);
+static bool IconCtrl_PostInitialize(, AtomBase&);
+static bool IconCtrl_Start(, AtomBase&);
+static void IconCtrl_Stop(, AtomBase&);
+static void IconCtrl_Uninitialize(, AtomBase&);
+static bool IconCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool ImageCtrl_Initialize(AtomBase&, const Script::WorldState&);
-static bool ImageCtrl_PostInitialize();
-static bool ImageCtrl_Start();
-static void ImageCtrl_Stop();
-static void ImageCtrl_Uninitialize();
-static bool ImageCtrl_ProcessPacket(PacketValue& v);
+static bool ImageCtrl_PostInitialize(, AtomBase&);
+static bool ImageCtrl_Start(, AtomBase&);
+static void ImageCtrl_Stop(, AtomBase&);
+static void ImageCtrl_Uninitialize(, AtomBase&);
+static bool ImageCtrl_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool Button_Initialize(AtomBase&, const Script::WorldState&);
-static bool Button_PostInitialize();
-static bool Button_Start();
-static void Button_Stop();
-static void Button_Uninitialize();
-static bool Button_ProcessPacket(PacketValue& v);
+static bool Button_PostInitialize(, AtomBase&);
+static bool Button_Start(, AtomBase&);
+static void Button_Stop(, AtomBase&);
+static void Button_Uninitialize(, AtomBase&);
+static bool Button_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool Label_Initialize(AtomBase&, const Script::WorldState&);
-static bool Label_PostInitialize();
-static bool Label_Start();
-static void Label_Stop();
-static void Label_Uninitialize();
-static bool Label_ProcessPacket(PacketValue& v);
+static bool Label_PostInitialize(, AtomBase&);
+static bool Label_Start(, AtomBase&);
+static void Label_Stop(, AtomBase&);
+static void Label_Uninitialize(, AtomBase&);
+static bool Label_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool StringEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool StringEdit_PostInitialize();
-static bool StringEdit_Start();
-static void StringEdit_Stop();
-static void StringEdit_Uninitialize();
-static bool StringEdit_ProcessPacket(PacketValue& v);
+static bool StringEdit_PostInitialize(, AtomBase&);
+static bool StringEdit_Start(, AtomBase&);
+static void StringEdit_Stop(, AtomBase&);
+static void StringEdit_Uninitialize(, AtomBase&);
+static bool StringEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool IntEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool IntEdit_PostInitialize();
-static bool IntEdit_Start();
-static void IntEdit_Stop();
-static void IntEdit_Uninitialize();
-static bool IntEdit_ProcessPacket(PacketValue& v);
+static bool IntEdit_PostInitialize(, AtomBase&);
+static bool IntEdit_Start(, AtomBase&);
+static void IntEdit_Stop(, AtomBase&);
+static void IntEdit_Uninitialize(, AtomBase&);
+static bool IntEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool FloatEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool FloatEdit_PostInitialize();
-static bool FloatEdit_Start();
-static void FloatEdit_Stop();
-static void FloatEdit_Uninitialize();
-static bool FloatEdit_ProcessPacket(PacketValue& v);
+static bool FloatEdit_PostInitialize(, AtomBase&);
+static bool FloatEdit_Start(, AtomBase&);
+static void FloatEdit_Stop(, AtomBase&);
+static void FloatEdit_Uninitialize(, AtomBase&);
+static bool FloatEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool TimeEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool TimeEdit_PostInitialize();
-static bool TimeEdit_Start();
-static void TimeEdit_Stop();
-static void TimeEdit_Uninitialize();
-static bool TimeEdit_ProcessPacket(PacketValue& v);
+static bool TimeEdit_PostInitialize(, AtomBase&);
+static bool TimeEdit_Start(, AtomBase&);
+static void TimeEdit_Stop(, AtomBase&);
+static void TimeEdit_Uninitialize(, AtomBase&);
+static bool TimeEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool DateEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool DateEdit_PostInitialize();
-static bool DateEdit_Start();
-static void DateEdit_Stop();
-static void DateEdit_Uninitialize();
-static bool DateEdit_ProcessPacket(PacketValue& v);
+static bool DateEdit_PostInitialize(, AtomBase&);
+static bool DateEdit_Start(, AtomBase&);
+static void DateEdit_Stop(, AtomBase&);
+static void DateEdit_Uninitialize(, AtomBase&);
+static bool DateEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool DocEdit_Initialize(AtomBase&, const Script::WorldState&);
-static bool DocEdit_PostInitialize();
-static bool DocEdit_Start();
-static void DocEdit_Stop();
-static void DocEdit_Uninitialize();
-static bool DocEdit_ProcessPacket(PacketValue& v);
+static bool DocEdit_PostInitialize(, AtomBase&);
+static bool DocEdit_Start(, AtomBase&);
+static void DocEdit_Stop(, AtomBase&);
+static void DocEdit_Uninitialize(, AtomBase&);
+static bool DocEdit_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool Bar_Initialize(AtomBase&, const Script::WorldState&);
-static bool Bar_PostInitialize();
-static bool Bar_Start();
-static void Bar_Stop();
-static void Bar_Uninitialize();
-static bool Bar_ProcessPacket(PacketValue& v);
+static bool Bar_PostInitialize(, AtomBase&);
+static bool Bar_Start(, AtomBase&);
+static void Bar_Stop(, AtomBase&);
+static void Bar_Uninitialize(, AtomBase&);
+static bool Bar_ProcessPacket(AtomBase&, PacketValue& v);
 
 	
 static bool MenuBar_Initialize(AtomBase&, const Script::WorldState&);
-static bool MenuBar_PostInitialize();
-static bool MenuBar_Start();
-static void MenuBar_Stop();
-static void MenuBar_Uninitialize();
-static bool MenuBar_ProcessPacket(PacketValue& v);
+static bool MenuBar_PostInitialize(, AtomBase&);
+static bool MenuBar_Start(, AtomBase&);
+static void MenuBar_Stop(, AtomBase&);
+static void MenuBar_Uninitialize(, AtomBase&);
+static bool MenuBar_ProcessPacket(AtomBase&, PacketValue& v);
 
 	

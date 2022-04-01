@@ -1,9 +1,15 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IHal_Vendors_h_
 #define _IHal_Vendors_h_
+
+#if defined flagSDL2
+	#include <SDL2/SDL.h>
+	#include <SDL2/SDL_ttf.h>
+	#include <SDL2/SDL_image.h>
+#endif
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -28,7 +34,7 @@ HAL_VNDR_LIST
 
 #if defined flagSDL2
 struct HalSdl2 {
-	using NativeAudioSinkDevice = void*;
+	using NativeAudioSinkDevice = SDL_AudioDeviceID;
 	using NativeContextBase = void*;
 	
 	struct Thread {

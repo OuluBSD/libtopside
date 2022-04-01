@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IWebcam_TmplClasses_h_
 #define _IWebcam_TmplClasses_h_
@@ -25,25 +25,25 @@ struct WebcamWebcamT : CamWebcam {
 	}
 
 	bool PostInitialize() override {
-		if (!Cam::Webcam_PostInitialize(dev))
+		if (!Cam::Webcam_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Cam::Webcam_Start(dev);
+		return Cam::Webcam_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Cam::Webcam_Stop(dev);
+		Cam::Webcam_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Cam::Webcam_Uninitialize(dev);
+		Cam::Webcam_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Cam::Webcam_ProcessPacket(dev, v))
+		if (!Cam::Webcam_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}

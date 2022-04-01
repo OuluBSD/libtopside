@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IAvFile_TmplClasses_h_
 #define _IAvFile_TmplClasses_h_
@@ -25,25 +25,25 @@ struct AvFileAVFileT : AVAVFile {
 	}
 
 	bool PostInitialize() override {
-		if (!AV::AVFile_PostInitialize(file))
+		if (!AV::AVFile_PostInitialize(file, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return AV::AVFile_Start(file);
+		return AV::AVFile_Start(file, *this);
 	}
 
 	void Stop() override {
-		AV::AVFile_Stop(file);
+		AV::AVFile_Stop(file, *this);
 	}
 
 	void Uninitialize() override {
-		AV::AVFile_Uninitialize(file);
+		AV::AVFile_Uninitialize(file, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!AV::AVFile_ProcessPacket(file, v))
+		if (!AV::AVFile_ProcessPacket(file, *this, v))
 			return false;
 		return true;
 	}

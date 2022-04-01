@@ -120,6 +120,7 @@ HEADER11(			SdlContextAtom,		Sdl2ContextBase,			driver,		CenterReceipt,	CenterRe
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
 HEADER_LINK(		SdlContextAtom,		DRIVER, DRIVER)
 HEADER_ARG(			SdlContextAtom,		HINT_PKG,					"AtomDebug")
+HEADER_ARG(			SdlContextAtom,		reqdef_flagSDL2,		1)
 
 HEADER11(			SdlEventAtomPipe,	SDL2EventsBase,				pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		SdlEventAtomPipe,	sdl.event.pipe)
@@ -184,6 +185,7 @@ HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
 HEADER_LINK(		SdlAudioAtom,		EXTERNAL_PIPE, PROCESS)
 HEADER_ARG(			SdlAudioAtom,		HINT_PKG,					"AtomDebug")
+HEADER_ARG(			SdlAudioAtom,		reqdef_flagSDL2,		1)
 
 HEADER11(			OglShaderPipe,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source.pipe)

@@ -105,7 +105,6 @@ public:
 		return RefT_Loop<T>();
 	}*/
 	
-	//template<typename T> RefT_Loop<T> FindNearestAtomCast(int nearest_loop_depth);
 	//EnvStateRef FindNearestState(String name);
 	
 	//StateVec& GetStates() {return states;}

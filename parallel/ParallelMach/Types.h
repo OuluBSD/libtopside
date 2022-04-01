@@ -59,8 +59,8 @@ using ParallelSystemParent	= MetaSystemParent;
 using AtomParent			= ExchangeBaseParent;
 
 
-template <class T>
-using RefT_Space				= Ref<T,					AtomParent>;
+//template <class T>
+//using RefT_Space				= Ref<T,					SpaceParent>;
 
 template <class T>
 using RefT_Machine			= Ref<T,					ParallelSystemParent>;
@@ -74,6 +74,7 @@ using AtomSystemRef			= Ref<AtomSystem,			ParallelSystemParent>;
 
 using StateVec				= RefLinkedList<EnvState,		EnvStateParent>;
 
+template <class T> using RefT_Atom = Ref<T, AtomParent>;
 
 typedef enum {
 	SIDE_NOT_ACCEPTED,
@@ -336,6 +337,10 @@ typedef enum : byte {
 	
 	#ifdef HAVE_OPENCV
 	HAVE_OPENCV_ATOM_TYPE_LIST
+	#endif
+	
+	#ifdef flagSDL2
+	flagSDL2_ATOM_TYPE_LIST
 	#endif
 	
 	#undef ATOM_TYPE

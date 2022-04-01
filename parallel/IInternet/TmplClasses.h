@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IInternet_TmplClasses_h_
 #define _IInternet_TmplClasses_h_
@@ -25,25 +25,25 @@ struct InternetSocketT : NetSocket {
 	}
 
 	bool PostInitialize() override {
-		if (!Net::Socket_PostInitialize(sock))
+		if (!Net::Socket_PostInitialize(sock, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Net::Socket_Start(sock);
+		return Net::Socket_Start(sock, *this);
 	}
 
 	void Stop() override {
-		Net::Socket_Stop(sock);
+		Net::Socket_Stop(sock, *this);
 	}
 
 	void Uninitialize() override {
-		Net::Socket_Uninitialize(sock);
+		Net::Socket_Uninitialize(sock, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Net::Socket_ProcessPacket(sock, v))
+		if (!Net::Socket_ProcessPacket(sock, *this, v))
 			return false;
 		return true;
 	}

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IEvent_TmplClasses_h_
 #define _IEvent_TmplClasses_h_
@@ -25,25 +25,25 @@ struct EventSourceDeviceT : EvSourceDevice {
 	}
 
 	bool PostInitialize() override {
-		if (!Ev::SourceDevice_PostInitialize(dev))
+		if (!Ev::SourceDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Ev::SourceDevice_Start(dev);
+		return Ev::SourceDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Ev::SourceDevice_Stop(dev);
+		Ev::SourceDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Ev::SourceDevice_Uninitialize(dev);
+		Ev::SourceDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Ev::SourceDevice_ProcessPacket(dev, v))
+		if (!Ev::SourceDevice_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}

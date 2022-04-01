@@ -133,6 +133,7 @@ bool ScriptDriverLoader::Load() {
 			return false;
 		}
 		
+		ab->SetRunning();
 	}
 	
 	return true;

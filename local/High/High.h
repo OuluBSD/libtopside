@@ -6,9 +6,19 @@
 
 #define USE_HIGH_BYTECODE 1
 
+namespace TS { namespace Parallel { class AtomBase; }}
+
 namespace UPP {
 
-enum HiTypeKind { HIGH_VOID, HIGH_DOUBLE, HIGH_ARRAY, HIGH_MAP, HIGH_LAMBDA, HIGH_INT64 };
+enum HiTypeKind {
+	HIGH_VOID,
+	HIGH_DOUBLE,
+	HIGH_ARRAY,
+	HIGH_MAP,
+	HIGH_LAMBDA,
+	HIGH_INT64,
+	HIGH_ATOM,
+};
 
 String HiTypeName(int sv_type);
 
@@ -18,46 +28,49 @@ struct HiHandle;
 struct Hi;
 
 class HiValue : Moveable<HiValue> {
+	using AtomBase = TS::Parallel::AtomBase;
+	
 	struct RefCount {
 		Atomic   refcount;
 		RefCount()              { refcount = 1; }
 	};
-
+	
 	int              type;
 	mutable hash_t   hash;
 	mutable bool	 visited = 0;
 	
 	struct HiMap;
 	struct HiArray;
-
+	
 	union {
-		double         number;
-		int64          i64;
-		HiArray      *array;
-		HiMap        *map;
-		HiLambda     *lambda;
+		double		 number;
+		int64		 i64;
+		HiArray		*array;
+		HiMap		*map;
+		HiLambda	*lambda;
+		AtomBase	*atom;
 	};
-
+	
 	void                  Free();
 	void                  Assign(const HiValue& s);
-
+	
 	void                  InitString(const WString& w);
 	Vector<HiValue>&      CloneArray();
-
+	
 	VectorMap<HiValue, HiValue>& CloneMap();
-
+	
 	static int             total;
 	static int             max_total;
-
+	
 public:
 	static int             GetTotalCount();
 	static void            SetMaxTotalCount(int n);
 	static int             GetMaxTotalCount();
-
+	
 	bool IsVoid() const                          { return type == HIGH_VOID; }
 	operator bool() const                        { return type != HIGH_VOID; }
 	HiValue();
-
+	
 	bool                   IsNumber() const      { return findarg(type, HIGH_DOUBLE, HIGH_INT64) >= 0; }
 	double                 GetNumber() const;
 	bool                   IsInt64() const       { return type == HIGH_INT64; }
@@ -67,9 +80,10 @@ public:
 	HiValue(double n);
 	HiValue(int64 n);
 	HiValue(int n);
-
+	
 	bool                    IsArray() const      { return type == HIGH_ARRAY; }
 	const Vector<HiValue>&  GetArray() const;
+	bool                    IsAtom() const       { return type == HIGH_ATOM; }
 	HiValue&                ArrayGet(int i);
 	const HiValue&          ArrayGet(int i) const;
 	HiValue                 ArrayGetMid(int i, int n) const;
@@ -88,7 +102,8 @@ public:
 	HiValue(const char *s)                     { InitString(::UPP::ToWString(String(s))); }
 	HiValue(const WString& s)                  { InitString(s); }
 	HiValue(const String& s)                   { InitString(::UPP::ToWString(s)); }
-
+	HiValue(AtomBase& a);
+	
 	bool                                IsMap() const        { return type == HIGH_MAP; }
 	const VectorMap<HiValue, HiValue>&  GetMap() const;
 	HiValue                             Get(HiValue key) const;
@@ -112,7 +127,8 @@ public:
 	const HiLambda&                     GetLambda() const;
 	HiLambda&                           GetLambdaRW() const;
 	HiLambda&                           CreateLambda();
-
+	AtomBase&							GetAtom() const;
+	
 
 	void    HighCall(const char *method, Callback1<HiEscape&> escape);
 	void    HighCall(const char *method, HiHandle *h, Callback1<HiEscape&> escape);

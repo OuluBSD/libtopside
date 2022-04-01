@@ -270,11 +270,11 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	return true;
 }
 
-bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev) {
+bool AudPortaudio::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&) {
 	return true;
 }
 
-bool AudPortaudio::SinkDevice_Start(NativeSinkDevice& dev) {
+bool AudPortaudio::SinkDevice_Start(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
 	
 	err = Pa_StartStream(dev);
@@ -286,13 +286,13 @@ bool AudPortaudio::SinkDevice_Start(NativeSinkDevice& dev) {
 	return true;
 }
 
-void AudPortaudio::SinkDevice_Stop(NativeSinkDevice& dev) {
+void AudPortaudio::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
 	err = Pa_StopStream(dev);
 	CHECK_ERR;
 }
 
-void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev) {
+void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&) {
 	PaError err = paNoError;
 	
 	err = Pa_CloseStream(dev);
@@ -301,7 +301,7 @@ void AudPortaudio::SinkDevice_Uninitialize(NativeSinkDevice& dev) {
 	PaStatic().Remove(dev);
 }
 
-bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, PacketValue& v) {
+bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& v) {
 	Panic("won't implement");
 	NEVER();
 }
@@ -334,19 +334,19 @@ bool AudPortaudio::SourceDevice_Initialize(NativeSourceDevice& dev, AtomBase& a,
 	TODO
 }
 
-bool AudPortaudio::SourceDevice_Start(NativeSourceDevice& dev) {
+bool AudPortaudio::SourceDevice_Start(NativeSourceDevice& dev, AtomBase&) {
 	TODO
 }
 
-void AudPortaudio::SourceDevice_Stop(NativeSourceDevice& dev) {
+void AudPortaudio::SourceDevice_Stop(NativeSourceDevice& dev, AtomBase&) {
 	TODO
 }
 
-void AudPortaudio::SourceDevice_Uninitialize(NativeSourceDevice& dev) {
+void AudPortaudio::SourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&) {
 	TODO
 }
 
-bool AudPortaudio::SourceDevice_ProcessPacket(NativeSourceDevice& dev, PacketValue& v) {
+bool AudPortaudio::SourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& v) {
 	TODO
 }
 

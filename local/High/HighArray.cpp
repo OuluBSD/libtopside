@@ -244,4 +244,11 @@ HiValue::HiValue(int n)
 	total++;
 }
 
+HiValue::HiValue(AtomBase& a) {
+	atom = &a;
+	type = HIGH_ATOM;
+	hash = (size_t)&a;
+	total++;
+}
+
 }

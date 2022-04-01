@@ -2,6 +2,7 @@
 #define _ParallelMach_ParallelMach_h_
 
 #include <Local/Local.h>
+#include <High/High.h>
 
 #define NAMESPACE_PARALLEL_NAME		Parallel
 #define PARALLEL					Parallel

@@ -3,11 +3,10 @@ description "\377B198,127,200";
 uses
 	ParallelLib;
 
-library(SDL2) SDL2_image;
-
-library(SDL2) SDL2_ttf;
-
-library(SDL2) SDL2;
+library
+	SDL2,
+	SDL2_ttf,
+	SDL2_image;
 
 file
 	IHal.h,

@@ -28,6 +28,7 @@ PKG(Hal, Hal, H) {
 		}*/
 		CLASS(ContextBase) {
 			NATIVE_INHERIT(ContextBase, ctx)
+			HAVE_VIRTUAL_CONTEXT
 			
 		}
 	}
@@ -41,6 +42,9 @@ PKG(Hal, Hal, H) {
 		VENDOR_INCLUDE("", SDL2/SDL.h)
 		VENDOR_INCLUDE("", SDL2/SDL_ttf.h)
 		VENDOR_INCLUDE("", SDL2/SDL_image.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		
+		VENDOR_CLASS(AudioSinkDevice, SDL_AudioDeviceID)
 		
 		// POSIX: GLEW GL GLU
 		// Win32: Opengl32 glu32 glew32s

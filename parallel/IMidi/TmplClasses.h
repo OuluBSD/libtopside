@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -26,25 +26,25 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 	}
 
 	bool PostInitialize() override {
-		if (!Mid::SinkDevice_PostInitialize(dev))
+		if (!Mid::SinkDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Mid::SinkDevice_Start(dev);
+		return Mid::SinkDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Mid::SinkDevice_Stop(dev);
+		Mid::SinkDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Mid::SinkDevice_Uninitialize(dev);
+		Mid::SinkDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Mid::SinkDevice_ProcessPacket(dev, v))
+		if (!Mid::SinkDevice_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}
@@ -83,25 +83,25 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 	}
 
 	bool PostInitialize() override {
-		if (!Mid::SourceDevice_PostInitialize(dev))
+		if (!Mid::SourceDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Mid::SourceDevice_Start(dev);
+		return Mid::SourceDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Mid::SourceDevice_Stop(dev);
+		Mid::SourceDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Mid::SourceDevice_Uninitialize(dev);
+		Mid::SourceDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Mid::SourceDevice_ProcessPacket(dev, v))
+		if (!Mid::SourceDevice_ProcessPacket(dev, *this, v))
 			return false;
 		return true;
 	}

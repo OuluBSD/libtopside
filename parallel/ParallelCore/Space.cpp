@@ -150,7 +150,7 @@ void Space::Initialize(Space& l, String prefab) {
 }
 
 SpaceRef Space::CreateEmpty() {
-	Space& l = sub.Add();
+	Space& l = spaces.Add();
 	l.SetParent(this);
 	l.SetId(GetNextId());
 	Initialize(l);
@@ -172,7 +172,7 @@ void Space::UnrefDeep() {
 }
 
 void Space::UninitializeAtomsDeep() {
-	for (SpaceRef& p : sub)
+	for (SpaceRef& p : spaces)
 		p->UninitializeAtomsDeep();
 	
 	for (auto it = atoms.rbegin(); it != atoms.rend(); --it) {
@@ -185,7 +185,7 @@ void Space::UninitializeAtomsDeep() {
 }
 
 void Space::StopDeep() {
-	for (auto it = sub.rbegin(); it != sub.rend(); --it) {
+	for (auto it = spaces.rbegin(); it != spaces.rend(); --it) {
 		it().StopDeep();
 	}
 	
@@ -199,7 +199,7 @@ void Space::Stop() {
 }
 
 void Space::UnlinkDeep() {
-	for (auto it = sub.rbegin(); it != sub.rend(); --it) {
+	for (auto it = spaces.rbegin(); it != spaces.rend(); --it) {
 		it().UnlinkDeep();
 	}
 	
@@ -211,7 +211,7 @@ void Space::UnlinkDeep() {
 }
 
 void Space::ClearAtomsDeep() {
-	for (SpaceRef& p : sub)
+	for (SpaceRef& p : spaces)
 		p->ClearAtomsDeep();
 	
 	AtomStoreRef sys = GetMachine().Get<AtomStore>();
@@ -222,9 +222,9 @@ void Space::ClearAtomsDeep() {
 }
 
 void Space::ClearDeep() {
-	for (SpaceRef& p : sub)
+	for (SpaceRef& p : spaces)
 		p->ClearDeep();
-	sub.Clear();
+	spaces.Clear();
 	
 	atoms.Clear();
 }
@@ -239,7 +239,7 @@ SpaceRef Space::GetAddEmpty(String name) {
 }
 
 SpaceRef Space::FindSpaceByName(String name) {
-	for (SpaceRef object : sub)
+	for (SpaceRef object : spaces)
 		if (object->GetName() == name)
 			return object;
 	return SpaceRef();
@@ -260,7 +260,7 @@ String Space::GetTreeString(int indent) {
 	for (AtomBaseRef& a : atoms)
 		s << a->ToString();
 	
-	for (SpaceRef& l : sub)
+	for (SpaceRef& l : spaces)
 		s << l->GetTreeString(indent+1);
 	
 	return s;

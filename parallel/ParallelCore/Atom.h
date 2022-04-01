@@ -19,7 +19,7 @@ using namespace Serial;
 class AtomBase;
 
 template <class T> inline SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {Panic("Unimplemented"); NEVER();}
-template <class T> inline RefT_Space<T> AtomBase_Static_As(AtomBase*) {return RefT_Space<T>();}
+template <class T> inline RefT_Atom<T> AtomBase_Static_As(AtomBase*) {return RefT_Atom<T>();}
 
 class AtomBase :
 	public Destroyable,
@@ -48,8 +48,10 @@ protected:
 	friend class Serial::Loop;
 	
 	int						id = -1;
+	bool					is_running = false;
 	
 	void					SetId(int i) {id = i;}
+	void					SetRunning(bool b=true) {is_running = b;}
 	
 protected:
 	friend class Serial::LinkBase;
@@ -57,7 +59,9 @@ protected:
 	Mutex					fwd_lock;
 	IfaceConnTuple			iface;
 	Serial::LinkBase*		link = 0;
-	//Format					user_internal_fmt;
+	//Format				user_internal_fmt;
+	AtomBaseRef				atom_dependency;
+	HiValue					user_data;
 	
 	
 public:
@@ -76,7 +80,7 @@ public:
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}
-	virtual void			Visit(RuntimeVisitor& vis) {}
+	virtual void			Visit(RuntimeVisitor& vis) {vis & atom_dependency;}
 	virtual bool			PostInitialize() {return true;}
 	virtual void			Update(double dt) {}
 	virtual String			ToString() const;
@@ -88,10 +92,18 @@ public:
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
 	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
 	virtual void			ForwardPacket(PacketValue& v) {Panic("Unimplemented"); NEVER();}
+	virtual bool			AttachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
+	virtual void			DetachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual RealtimeSourceConfig* GetConfig() {return 0;}
 	
+	HiValue&				UserData() {return user_data;}
+	bool					IsRunning() const {return is_running;}
 	void					AddAtomToUpdateList();
 	void					RemoveAtomFromUpdateList();
+	void					SetDependency(AtomBaseRef a) {atom_dependency = a;}
+	AtomBaseRef				GetDependency() const {return atom_dependency;}
+	void					ClearDependency() {atom_dependency.Clear();}
+	void					UpdateSinkFormat(ValCls val, Format fmt);
 	
 	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
 		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);
@@ -119,7 +131,7 @@ public:
 	Serial::Link*	GetLink();
 	int				GetId() const {return id;}
 	
-	template <class T> RefT_Space<T> As() {return AtomBase_Static_As<T>(this);}
+	template <class T> RefT_Atom<T> As() {return AtomBase_Static_As<T>(this);}
 	
 	template <class S, class R>
 	void AddToSystem(R ref) {
@@ -136,7 +148,6 @@ public:
 	}
 	
 	template <class ValDevSpec, class T> bool LinkManually(T& o, String* err_msg=0);
-	
 	
 	
 };
@@ -238,7 +249,7 @@ public:
 	void Dump();
 	
 	template<typename AtomT>
-	RefT_Space<AtomT> Get() {
+	RefT_Atom<AtomT> Get() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
 		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
@@ -250,7 +261,7 @@ public:
 	}
 	
 	template<typename AtomT>
-	RefT_Space<AtomT> Find() {
+	RefT_Atom<AtomT> Find() {
 		CXX2A_STATIC_ASSERT(AtomStore::IsAtom<AtomT>::value, "T should derive from Atom");
 		
 		AtomMapBase::Iterator it = AtomMapBase::Find(AsParallelTypeCls<AtomT>());
@@ -295,6 +306,7 @@ public:
 	
 };
 #endif
+
 
 NAMESPACE_PARALLEL_END
 

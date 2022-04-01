@@ -70,6 +70,18 @@ int AtomBase::FindSourceWithValDev(ValDevCls vd) {
 	return -1;
 }
 
+void AtomBase::UpdateSinkFormat(ValCls vc, Format fmt) {
+	InterfaceSinkRef sink_iface = GetSink();
+	int sink_count = sink_iface->GetSinkCount();
+	for(int i = 0; i < sink_count; i++) {
+		Value& val = sink_iface->GetValue(i);
+		Format val_fmt = val.GetFormat();
+		if (val_fmt.vd.val == vc && val_fmt != fmt) {
+			RTLOG("AudioOutput::UpdateSinkFormat: updating sink #" << i << " format to " << fmt.ToString());
+			val.SetFormat(fmt);
+		}
+	}
+}
 
 
 

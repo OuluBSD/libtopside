@@ -22,7 +22,7 @@ using AtomParent = Parallel::AtomParent;
 using DefaultExchangePoint = Parallel::DefaultExchangePoint;
 using SideStatus = Parallel::SideStatus;
 using PacketIO = Parallel::PacketIO;
-template <class T> using RefT_Loop = Ref<T, AtomParent>;
+template <class T> using RefT_Loop = Ref<T, LoopParent>;
 template <class T> using System = Parallel::System<T>;
 template <class T> using RefT_Loop = Parallel::RefT_Loop<T>;
 

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.3.31 23:44:55
+// Last export: 2022.4.1 19:22:00
 
 #ifndef _IVirtualReality_TmplClasses_h_
 #define _IVirtualReality_TmplClasses_h_
@@ -34,25 +34,25 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 	}
 
 	bool PostInitialize() override {
-		if (!Vr::MotionController_PostInitialize(ctrl))
+		if (!Vr::MotionController_PostInitialize(ctrl, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Vr::MotionController_Start(ctrl);
+		return Vr::MotionController_Start(ctrl, *this);
 	}
 
 	void Stop() override {
-		Vr::MotionController_Stop(ctrl);
+		Vr::MotionController_Stop(ctrl, *this);
 	}
 
 	void Uninitialize() override {
-		Vr::MotionController_Uninitialize(ctrl);
+		Vr::MotionController_Uninitialize(ctrl, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Vr::MotionController_ProcessPacket(ctrl, v))
+		if (!Vr::MotionController_ProcessPacket(ctrl, *this, v))
 			return false;
 		return true;
 	}
@@ -79,25 +79,25 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 	}
 
 	bool PostInitialize() override {
-		if (!Vr::MotionControllerSystem_PostInitialize(sys))
+		if (!Vr::MotionControllerSystem_PostInitialize(sys, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Vr::MotionControllerSystem_Start(sys);
+		return Vr::MotionControllerSystem_Start(sys, *this);
 	}
 
 	void Stop() override {
-		Vr::MotionControllerSystem_Stop(sys);
+		Vr::MotionControllerSystem_Stop(sys, *this);
 	}
 
 	void Uninitialize() override {
-		Vr::MotionControllerSystem_Uninitialize(sys);
+		Vr::MotionControllerSystem_Uninitialize(sys, *this);
 	}
 
 	bool ProcessPacket(PacketValue& v) override {
-		if (!Vr::MotionControllerSystem_ProcessPacket(sys, v))
+		if (!Vr::MotionControllerSystem_ProcessPacket(sys, *this, v))
 			return false;
 		return true;
 	}
