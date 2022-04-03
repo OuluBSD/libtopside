@@ -22,10 +22,12 @@ PKG(Hal, Hal, H) {
 			NATIVE_INHERIT(AudioSinkDevice, dev)
 			
 		}
-		/*CLASS(SourceDevice) {
-			NATIVE_INHERIT(SourceDevice, dev)
+		/*
+		CLASS(AudioSourceDevice) {
+			NATIVE_INHERIT(AudioSourceDevice, dev)
 			
 		}*/
+		
 		CLASS(ContextBase) {
 			NATIVE_INHERIT(ContextBase, ctx)
 			HAVE_VIRTUAL_CONTEXT

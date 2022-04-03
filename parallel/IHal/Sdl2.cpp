@@ -133,12 +133,12 @@ bool HalSdl2::AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase
 
 
 bool HalSdl2::ContextBase_Initialize(NativeContextBase& ctx, AtomBase& a, const Script::WorldState& ws) {
-	DLOG("HalSdl2::ContextBase_Initialize");
+	RTLOG("HalSdl2::ContextBase_Initialize");
 	return true;
 }
 
 bool HalSdl2::ContextBase_PostInitialize(NativeContextBase& ctx, AtomBase& a) {
-	DLOG("HalSdl2::ContextBase_PostInitialize");
+	RTLOG("HalSdl2::ContextBase_PostInitialize");
 	
 	// SDL
 	uint32 sdl_flags = 0;

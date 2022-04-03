@@ -343,6 +343,7 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 	
 	int dbg_i = 0;
 	for (AtomBaseRef& sink : loop0.atoms) {
+		LinkBaseRef sink_link = sink->GetLink()->AsRefT();
 		const IfaceConnTuple& sink_iface = sink->GetInterface();
 		for (int sink_ch = 1; sink_ch < sink_iface.type.iface.sink.count; sink_ch++) {
 			const IfaceConnLink& sink_conn = sink_iface.sink[sink_ch];
@@ -352,6 +353,7 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 				continue;
 			bool found = false;
 			for (AtomBaseRef& src : loop1.atoms) {
+				LinkBaseRef src_link = src->GetLink()->AsRefT();
 				const IfaceConnTuple& src_iface = src->GetInterface();
 				for (int src_ch = 1; src_ch < src_iface.type.iface.src.count; src_ch++) {
 					const IfaceConnLink& src_conn = src_iface.src[src_ch];
@@ -368,15 +370,14 @@ bool ScriptLoader::ConnectSides(ScriptLoopLoader& loop0, ScriptLoopLoader& loop1
 						ASSERT(src_conn.other == sink_conn.local);
 						ASSERT(sink_conn.other == src_conn.local);
 						
-						TODO
-						/*if (!src->LinkSideSink(sink, src_ch_i, sink_ch_i)) {
+						if (!src_link->LinkSideSink(sink_link, src_ch_i, sink_ch_i)) {
 							AddError("Side-source refused linking to side-src");
 							return false;
 						}
-						if (!sink->LinkSideSource(src, sink_ch_i, src_ch_i)) {
+						if (!sink_link->LinkSideSource(src_link, sink_ch_i, src_ch_i)) {
 							AddError("Side-src refused linking to side-source");
 							return false;
-						}*/
+						}
 						
 						LOG(src->ToString() + "(" << src_ch_i << ") side-linked to " + sink->ToString() + "(" << sink_ch_i << ")");
 						

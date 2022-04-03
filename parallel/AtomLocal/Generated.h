@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.1 19:22:00
+// Last modified: 2022.4.3 11:11:55
 
 namespace TS {
 
@@ -39,26 +39,10 @@ public:
 
 };
 
-class AudioSplitter : public SplitterBase {
+class AudioSplitterUser : public VoidBase {
 
 public:
-	RTTI_DECL1(AudioSplitter, SplitterBase)
-	COPY_PANIC(AudioSplitter)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioSplitterUser : public SplitterBase {
-
-public:
-	RTTI_DECL1(AudioSplitterUser, SplitterBase)
+	RTTI_DECL1(AudioSplitterUser, VoidBase)
 	COPY_PANIC(AudioSplitterUser)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
@@ -71,26 +55,10 @@ public:
 
 };
 
-class AudioJoiner : public JoinerBase {
+class AudioJoinerUser : public VoidBase {
 
 public:
-	RTTI_DECL1(AudioJoiner, JoinerBase)
-	COPY_PANIC(AudioJoiner)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioJoinerUser : public JoinerBase {
-
-public:
-	RTTI_DECL1(AudioJoinerUser, JoinerBase)
+	RTTI_DECL1(AudioJoinerUser, VoidBase)
 	COPY_PANIC(AudioJoinerUser)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
@@ -103,10 +71,10 @@ public:
 
 };
 
-class AudioJoiner2User : public JoinerBase {
+class AudioJoiner2User : public VoidBase {
 
 public:
-	RTTI_DECL1(AudioJoiner2User, JoinerBase)
+	RTTI_DECL1(AudioJoiner2User, VoidBase)
 	COPY_PANIC(AudioJoiner2User)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")

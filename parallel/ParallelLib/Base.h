@@ -98,17 +98,31 @@ class VoidPollerSinkBase :
 	
 public:
 	RTTI_DECL1(VoidPollerSinkBase, Atom)
-	bool	Initialize(const Script::WorldState& ws) override;
-	void	Uninitialize() override;
-	/*bool	ProcessPackets(PacketIO& io) override;
-	void	Update(double dt) override;
-	bool	IsReady(PacketIO& io) override;*/
-	void	Visit(RuntimeVisitor& vis) override {}
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	/*bool ProcessPackets(PacketIO& io) override;
+	void Update(double dt) override;
+	bool IsReady(PacketIO& io) override;*/
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool ProcessPacket(PacketValue& v) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
 };
+
+class VoidBase :
+	public Atom
+{
+	
+public:
+	RTTI_DECL1(VoidBase, Atom)
+	bool Initialize(const Script::WorldState& ws) override {return true;}
+	void Uninitialize() override {}
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	bool ProcessPacket(PacketValue& v) override {return true;}
+	
+};
+
 
 
 NAMESPACE_PARALLEL_END

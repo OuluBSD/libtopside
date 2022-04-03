@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.1 19:22:00
+// Last modified: 2022.4.3 11:11:55
 
 namespace TS {
 
@@ -78,6 +78,38 @@ public:
 	COPY_PANIC(AudioDbgSrc)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.src.dbg_generator")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioSplitter : public VoidBase {
+
+public:
+	RTTI_DECL1(AudioSplitter, VoidBase)
+	COPY_PANIC(AudioSplitter)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioJoiner : public VoidBase {
+
+public:
+	RTTI_DECL1(AudioJoiner, VoidBase)
+	COPY_PANIC(AudioJoiner)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

@@ -4,39 +4,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-
-class JoinerBase :
-	public AtomBase
-{
-	byte scheduler_iter = 1;
-	
-public:
-	JoinerBase();
-	bool Initialize(const Script::WorldState& ws) override;
-	void Uninitialize() override;
-	void Visit(RuntimeVisitor& vis) override {}
-	bool IsReady(PacketIO& io) override;
-	bool ProcessPackets(PacketIO& io) override;
-	
-	
-};
-
-
-class SplitterBase :
-	public AtomBase
-{
-	
-public:
-	SplitterBase();
-	bool Initialize(const Script::WorldState& ws) final;
-	void Uninitialize() final;
-	void Visit(RuntimeVisitor& vis) override {}
-	bool IsReady(PacketIO& io) final;
-	bool ProcessPackets(PacketIO& io) final;
-	
-	
-};
-
 class TestEventSrcBase :
 	public AtomBase
 {

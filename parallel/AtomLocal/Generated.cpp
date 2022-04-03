@@ -44,26 +44,6 @@ AtomTypeCls AudioDecoderSrc::GetType() const
 	return GetAtomType();
 }
 
-AtomTypeCls AudioSplitter::GetAtomType()
-{
-	return ATOM12(AUDIO_SPLITTER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
-}
-
-LinkTypeCls AudioSplitter::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void AudioSplitter::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SplitterBase>(this);
-}
-
-AtomTypeCls AudioSplitter::GetType() const
-{
-	return GetAtomType();
-}
-
 AtomTypeCls AudioSplitterUser::GetAtomType()
 {
 	return ATOM11_U01(AUDIO_SPLITTER_USER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
@@ -76,30 +56,10 @@ LinkTypeCls AudioSplitterUser::GetLinkType()
 
 void AudioSplitterUser::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<SplitterBase>(this);
+	vis.VisitThis<VoidBase>(this);
 }
 
 AtomTypeCls AudioSplitterUser::GetType() const
-{
-	return GetAtomType();
-}
-
-AtomTypeCls AudioJoiner::GetAtomType()
-{
-	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
-}
-
-LinkTypeCls AudioJoiner::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void AudioJoiner::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<JoinerBase>(this);
-}
-
-AtomTypeCls AudioJoiner::GetType() const
 {
 	return GetAtomType();
 }
@@ -116,7 +76,7 @@ LinkTypeCls AudioJoinerUser::GetLinkType()
 
 void AudioJoinerUser::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<JoinerBase>(this);
+	vis.VisitThis<VoidBase>(this);
 }
 
 AtomTypeCls AudioJoinerUser::GetType() const
@@ -136,7 +96,7 @@ LinkTypeCls AudioJoiner2User::GetLinkType()
 
 void AudioJoiner2User::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<JoinerBase>(this);
+	vis.VisitThis<VoidBase>(this);
 }
 
 AtomTypeCls AudioJoiner2User::GetType() const

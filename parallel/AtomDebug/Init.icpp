@@ -32,6 +32,8 @@ INITBLOCK {
 	//Factory::RegisterAtom<TestPollerSink>();
 	Factory::RegisterAtom<PortaudioSink>();
 	Factory::RegisterAtom<AudioDbgSrc>();
+	Factory::RegisterAtom<AudioSplitter>();
+	Factory::RegisterAtom<AudioJoiner>();
 	
 	#ifdef flagSDL2
 	Factory::RegisterAtom<SdlAudioAtom>();

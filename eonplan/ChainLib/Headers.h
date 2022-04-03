@@ -36,23 +36,27 @@ HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
 HEADER_LINK(		AudioDbgSrc,		PIPE, PROCESS)
 HEADER_ARG(			AudioDbgSrc,		HINT_PKG,					"AtomDebug")
 
-HEADER12(			AudioSplitter,		SplitterBase,				pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER12(			AudioSplitter,		VoidBase,					pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioSplitter,		center.audio.side.src)
 HEADER_ACTION(		AudioSplitter,		center.audio.side.src.center)
+HEADER_ARG(			AudioSplitter,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		AudioSplitter,		SPLITTER, PROCESS)
 
-HEADER12_U01(		AudioSplitterUser,	SplitterBase,				pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
+HEADER12_U01(		AudioSplitterUser,	VoidBase,					pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src)
 HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src.center.user)
 
-HEADER21(			AudioJoiner,		JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER21(			AudioJoiner,		VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink.center)
+HEADER_ARG(			AudioJoiner,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		AudioJoiner,		JOINER, PROCESS)
 
-HEADER21_U10(		AudioJoinerUser,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
+HEADER21_U10(		AudioJoinerUser,	VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink.center.user)
 
-HEADER31_U20(		AudioJoiner2User,	JoinerBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio,	CenterAudio)
+HEADER31_U20(		AudioJoiner2User,	VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink2.center.user)
 

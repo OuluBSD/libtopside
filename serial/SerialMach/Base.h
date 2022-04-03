@@ -103,6 +103,41 @@ public:
 	
 };
 
+class JoinerLink : public Link
+{
+	byte scheduler_iter = 1;
+	
+public:
+	RTTI_DECL1(JoinerLink, Link)
+	JoinerLink();
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPackets(PacketIO& io) override;
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
+class SplitterLink : public Link
+{
+	
+public:
+	RTTI_DECL1(SplitterLink, Link)
+	SplitterLink();
+	bool Initialize(const Script::WorldState& ws) final;
+	void Uninitialize() final;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}
+	bool IsReady(PacketIO& io) final;
+	bool ProcessPackets(PacketIO& io) override;
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+};
+
 
 NAMESPACE_SERIAL_END
 

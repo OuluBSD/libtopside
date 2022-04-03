@@ -104,6 +104,46 @@ AtomTypeCls AudioDbgSrc::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls AudioSplitter::GetAtomType()
+{
+	return ATOM12(AUDIO_SPLITTER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioSplitter::GetLinkType()
+{
+	return LINKTYPE(SPLITTER, PROCESS);
+}
+
+void AudioSplitter::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidBase>(this);
+}
+
+AtomTypeCls AudioSplitter::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioJoiner::GetAtomType()
+{
+	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioJoiner::GetLinkType()
+{
+	return LINKTYPE(JOINER, PROCESS);
+}
+
+void AudioJoiner::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidBase>(this);
+}
+
+AtomTypeCls AudioJoiner::GetType() const
+{
+	return GetAtomType();
+}
+
 #if defined flagSDL2
 AtomTypeCls SdlContextAtom::GetAtomType()
 {

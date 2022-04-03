@@ -12,7 +12,7 @@ chain tester: {
 		center.customer: true;
 		center.audio.side.sink: true;
 		center.audio.side.sink.center: true;
-		center.audio.sink.test.realtime: true;
+		center.audio.sink.test.realtime: true {dbg_limit: 100;};
 		return has.input: true;
 	};
 	
