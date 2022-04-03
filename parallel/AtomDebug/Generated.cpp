@@ -64,6 +64,26 @@ AtomTypeCls TestRealtimeSink::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls TestPollerSink::GetAtomType()
+{
+	return ATOM11(TEST_POLLER_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
+}
+
+LinkTypeCls TestPollerSink::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void TestPollerSink::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidPollerSinkBase>(this);
+}
+
+AtomTypeCls TestPollerSink::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls PortaudioSink::GetAtomType()
 {
 	return ATOM11(PORTAUDIO_SINK, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT);
@@ -124,6 +144,26 @@ AtomTypeCls AudioSplitter::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls AudioSplitterUser::GetAtomType()
+{
+	return ATOM11_U01(AUDIO_SPLITTER_USER, PIPE, CENTER, AUDIO, CENTER, AUDIO, CENTER, RECEIPT, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioSplitterUser::GetLinkType()
+{
+	return LINKTYPE(SPLITTER, PROCESS);
+}
+
+void AudioSplitterUser::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidBase>(this);
+}
+
+AtomTypeCls AudioSplitterUser::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls AudioJoiner::GetAtomType()
 {
 	return ATOM21(AUDIO_JOINER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
@@ -140,6 +180,88 @@ void AudioJoiner::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls AudioJoiner::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioJoinerUser::GetAtomType()
+{
+	return ATOM11_U10(AUDIO_JOINER_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioJoinerUser::GetLinkType()
+{
+	return LINKTYPE(JOINER, PROCESS);
+}
+
+void AudioJoinerUser::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidBase>(this);
+}
+
+AtomTypeCls AudioJoinerUser::GetType() const
+{
+	return GetAtomType();
+}
+
+AtomTypeCls AudioJoiner2User::GetAtomType()
+{
+	return ATOM11_U20(AUDIO_JOINER2_USER, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO, CENTER, AUDIO, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioJoiner2User::GetLinkType()
+{
+	return LINKTYPE(JOINER, PROCESS);
+}
+
+void AudioJoiner2User::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VoidBase>(this);
+}
+
+AtomTypeCls AudioJoiner2User::GetType() const
+{
+	return GetAtomType();
+}
+
+#if defined flagSCREEN
+AtomTypeCls VideoDbgSrc::GetAtomType()
+{
+	return ATOM11(VIDEO_DBG_SRC, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+}
+
+LinkTypeCls VideoDbgSrc::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void VideoDbgSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<VideoGenBase>(this);
+}
+
+AtomTypeCls VideoDbgSrc::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+AtomTypeCls EventStatePipe::GetAtomType()
+{
+	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
+}
+
+LinkTypeCls EventStatePipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void EventStatePipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<EventStateBase>(this);
+}
+
+AtomTypeCls EventStatePipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -161,6 +283,48 @@ void SdlContextAtom::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlContextAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+AtomTypeCls TestEventSrcPipe::GetAtomType()
+{
+	return ATOM11(TEST_EVENT_SRC_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);
+}
+
+LinkTypeCls TestEventSrcPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void TestEventSrcPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<TestEventSrcBase>(this);
+}
+
+AtomTypeCls TestEventSrcPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#if defined flagSCREEN
+AtomTypeCls SdlVideoAtom::GetAtomType()
+{
+	return ATOM11_U44(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);
+}
+
+LinkTypeCls SdlVideoAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlVideoAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlVideoAtom::GetType() const
 {
 	return GetAtomType();
 }

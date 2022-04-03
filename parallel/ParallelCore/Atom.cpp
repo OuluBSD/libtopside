@@ -84,6 +84,13 @@ void AtomBase::UpdateSinkFormat(ValCls vc, Format fmt) {
 }
 
 
+void AtomBase::PostContinueForward() {
+	RTLOG("AtomBase::PostContinueForward");
+	
+	Serial_Link_PostContinueForward(link);
+}
+
+
 
 
 

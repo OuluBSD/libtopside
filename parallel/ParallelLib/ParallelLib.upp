@@ -11,6 +11,8 @@ file
 	Base.cpp,
 	BaseAudio.h,
 	BaseAudio.cpp,
+	BaseVideo.h,
+	BaseVideo.cpp,
 	RegistrySystem.h,
 	RegistrySystem.cpp;
 

@@ -18,7 +18,7 @@ void EvGlfw::Events_Uninitialize() {
 	TODO
 }
 
-bool EvGlfw::Events_ProcessPacket(PacketValue& v) {
+bool EvGlfw::Events_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

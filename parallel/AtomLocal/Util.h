@@ -4,24 +4,6 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-class TestEventSrcBase :
-	public AtomBase
-{
-	
-public:
-	RTTI_DECL0(TestEventSrcBase);
-	
-	TestEventSrcBase();
-	bool Initialize(const Script::WorldState& ws) override;
-	void Uninitialize() override;
-	bool IsReady(PacketIO& io) override;
-	bool ProcessPackets(PacketIO& io) override;
-	void Visit(RuntimeVisitor& vis) override {}
-	
-	
-};
-
-
 class EventStateBase :
 	public AtomBase
 {

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IPhysics_TmplClasses_h_
 #define _IPhysics_TmplClasses_h_
@@ -38,7 +38,7 @@ struct PhysicsNodeT : FysNode {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -69,7 +69,7 @@ struct PhysicsObjectT : FysObject {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -100,7 +100,7 @@ struct PhysicsJointT : FysJoint {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -131,7 +131,7 @@ struct PhysicsSpaceT : FysSpace {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -162,7 +162,7 @@ struct PhysicsSystemT : FysSystem {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 

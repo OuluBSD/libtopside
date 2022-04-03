@@ -1,13 +1,13 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 static bool MidiSinkDevice_Initialize(NativeSinkDevice& dev, AtomBase&, const Script::WorldState&);
 static bool MidiSinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&);
 static bool MidiSinkDevice_Start(NativeSinkDevice& dev, AtomBase&);
 static void MidiSinkDevice_Stop(NativeSinkDevice& dev, AtomBase&);
 static void MidiSinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&);
-static bool MidiSinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& v);
+static bool MidiSinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& in, PacketValue& out);
 
 static int MidiSinkDevice_GetSinkDeviceCount();
 static bool MidiSinkDevice_CreateSinkDevice(int dev_i, NativeSinkDevice& o);
@@ -19,7 +19,7 @@ static bool MidiSourceDevice_PostInitialize(NativeSourceDevice& dev, AtomBase&);
 static bool MidiSourceDevice_Start(NativeSourceDevice& dev, AtomBase&);
 static void MidiSourceDevice_Stop(NativeSourceDevice& dev, AtomBase&);
 static void MidiSourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&);
-static bool MidiSourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& v);
+static bool MidiSourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& in, PacketValue& out);
 
 static int MidiSourceDevice_GetSourceDeviceCount();
 static bool MidiSourceDevice_CreateSourceDevice(int dev_i, NativeSourceDevice& o);

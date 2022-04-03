@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IAudio_TmplClasses_h_
 #define _IAudio_TmplClasses_h_
@@ -43,8 +43,8 @@ struct AudioSinkDeviceT : AudSinkDevice {
 		Aud::SinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Aud::SinkDevice_ProcessPacket(dev, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Aud::SinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}
@@ -108,8 +108,8 @@ struct AudioSourceDeviceT : AudSourceDevice {
 		Aud::SourceDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Aud::SourceDevice_ProcessPacket(dev, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Aud::SourceDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}

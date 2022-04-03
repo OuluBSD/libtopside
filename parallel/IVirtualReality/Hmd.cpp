@@ -65,7 +65,7 @@ void VrHmd::AppView_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::AppView_ProcessPacket(PacketValue& v) {
+bool VrHmd::AppView_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -85,7 +85,7 @@ void VrHmd::CameraResources_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::CameraResources_ProcessPacket(PacketValue& v) {
+bool VrHmd::CameraResources_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -105,7 +105,7 @@ void VrHmd::ControllerModelCache_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::ControllerModelCache_ProcessPacket(PacketValue& v) {
+bool VrHmd::ControllerModelCache_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -125,7 +125,7 @@ void VrHmd::DeviceResources_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::DeviceResources_ProcessPacket(PacketValue& v) {
+bool VrHmd::DeviceResources_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -145,7 +145,7 @@ void VrHmd::HolographicRenderer_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::HolographicRenderer_ProcessPacket(PacketValue& v) {
+bool VrHmd::HolographicRenderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -165,7 +165,7 @@ void VrHmd::HolographicScene_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::HolographicScene_ProcessPacket(PacketValue& v) {
+bool VrHmd::HolographicScene_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -185,7 +185,7 @@ void VrHmd::SpatialInteractionSystem_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::SpatialInteractionSystem_ProcessPacket(PacketValue& v) {
+bool VrHmd::SpatialInteractionSystem_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -205,7 +205,7 @@ void VrHmd::Renderer_Uninitialize() {
 	TODO
 }
 
-bool VrHmd::Renderer_ProcessPacket(PacketValue& v) {
+bool VrHmd::Renderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

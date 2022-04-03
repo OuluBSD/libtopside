@@ -8,6 +8,7 @@
 
 #include "Base.h"
 #include "BaseAudio.h"
+#include "BaseVideo.h"
 #include "RegistrySystem.h"
 
 

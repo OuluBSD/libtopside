@@ -21,7 +21,7 @@ void FysOde::Node_Uninitialize() {
 	TODO
 }
 
-bool FysOde::Node_ProcessPacket(PacketValue& v) {
+bool FysOde::Node_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void FysOde::Object_Uninitialize() {
 	TODO
 }
 
-bool FysOde::Object_ProcessPacket(PacketValue& v) {
+bool FysOde::Object_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void FysOde::Joint_Uninitialize() {
 	TODO
 }
 
-bool FysOde::Joint_ProcessPacket(PacketValue& v) {
+bool FysOde::Joint_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void FysOde::Space_Uninitialize() {
 	TODO
 }
 
-bool FysOde::Space_ProcessPacket(PacketValue& v) {
+bool FysOde::Space_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void FysOde::System_Uninitialize() {
 	TODO
 }
 
-bool FysOde::System_ProcessPacket(PacketValue& v) {
+bool FysOde::System_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

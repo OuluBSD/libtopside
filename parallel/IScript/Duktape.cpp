@@ -21,7 +21,7 @@ void ScrDuktape::Runner_Uninitialize() {
 	TODO
 }
 
-bool ScrDuktape::Runner_ProcessPacket(PacketValue& v) {
+bool ScrDuktape::Runner_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void ScrDuktape::Thread_Uninitialize() {
 	TODO
 }
 
-bool ScrDuktape::Thread_ProcessPacket(PacketValue& v) {
+bool ScrDuktape::Thread_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

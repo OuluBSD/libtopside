@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IOptimizer_TmplClasses_h_
 #define _IOptimizer_TmplClasses_h_
@@ -34,7 +34,7 @@ struct OptimizerSolverT : OptSolver {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 

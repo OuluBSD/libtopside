@@ -11,6 +11,8 @@ PKG(Hal, Hal, H) {
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
+		NATIVE_CLASS(Window)
+		NATIVE_CLASS(Renderer)
 		//NATIVE_CLASS(AudioSourceDevice)
 		NATIVE_CLASS(ContextBase)
 		//UTIL_CLASS()
@@ -27,6 +29,19 @@ PKG(Hal, Hal, H) {
 			NATIVE_INHERIT(AudioSourceDevice, dev)
 			
 		}*/
+		CLASS(Window) {
+			NATIVE_INHERIT(Window, win)
+			
+		}
+		
+		CLASS(Renderer) {
+			NATIVE_INHERIT(Renderer, rend)
+			
+		}
+		
+		CLASS(CenterVideoSinkDevice) {
+			
+		}
 		
 		CLASS(ContextBase) {
 			NATIVE_INHERIT(ContextBase, ctx)
@@ -47,6 +62,8 @@ PKG(Hal, Hal, H) {
 		VENDOR_HEADER_REQUIRES_INCLUDES
 		
 		VENDOR_CLASS(AudioSinkDevice, SDL_AudioDeviceID)
+		VENDOR_CLASS(Window, SDL_Window*)
+		VENDOR_CLASS(Renderer, SDL_Renderer*)
 		
 		// POSIX: GLEW GL GLU
 		// Win32: Opengl32 glu32 glew32s

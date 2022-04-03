@@ -21,7 +21,7 @@ void ScrEsc::Runner_Uninitialize() {
 	TODO
 }
 
-bool ScrEsc::Runner_ProcessPacket(PacketValue& v) {
+bool ScrEsc::Runner_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void ScrEsc::Thread_Uninitialize() {
 	TODO
 }
 
-bool ScrEsc::Thread_ProcessPacket(PacketValue& v) {
+bool ScrEsc::Thread_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

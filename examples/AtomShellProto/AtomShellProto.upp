@@ -8,9 +8,10 @@ file
 
 mainconfig
 	"" = "",
-	"" = "SCREEN",
+	"" = "SCREEN SDL2",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
+	"" = "DEBUG_RT SCREEN SDL2",
 	"" = "DEBUG_RT BUILTIN_PORTAUDIO",
 	"" = "SDL2";
 

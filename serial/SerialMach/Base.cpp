@@ -38,7 +38,7 @@ bool CustomerLink::ProcessPackets(PacketIO& io) {
 	src.p->SetFormat(src.val->GetFormat());
 	src.p->SetOffset(off_gen.Create());
 	
-	bool r = atom->ProcessPacket(*src.p);
+	bool r = atom->ProcessPacket(*sink.p, *src.p);
 	
 	if (r)
 		PacketTracker_Track("CustomerLink::ProcessPackets", __FILE__, __LINE__, *src.p);
@@ -76,7 +76,9 @@ void CustomerLink::Forward(FwdScope& fwd) {
 		p->SetFormat(fmt);
 		p->seq = -1;
 		
-		atom->ForwardPacket(*p);
+		PacketValue null_in(init_off);
+		PacketValue& out = *p;
+		atom->ForwardPacket(null_in, out);
 		
 		//PacketTracker::Track(TrackerInfo("CustomerLink::Forward", __FILE__, __LINE__), *p);
 		sink_val.GetBuffer().Add(p);
@@ -126,8 +128,9 @@ bool PipeLink::ProcessPackets(PacketIO& io) {
 	src.p = ReplyPacket(sink_ch, sink.p);
 	src.p->AddRouteData(src.from_sink_ch);
 	
-	PacketValue& v = *src.p;
-	bool b = atom->ProcessPacket(v);
+	PacketValue& in = *sink.p;
+	PacketValue& out = *src.p;
+	bool b = atom->ProcessPacket(in, out);
 	
 	return b;
 }

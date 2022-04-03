@@ -1,13 +1,13 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 static bool StreamServer_Initialize(AtomBase&, const Script::WorldState&);
 static bool StreamServer_PostInitialize(, AtomBase&);
 static bool StreamServer_Start(, AtomBase&);
 static void StreamServer_Stop(, AtomBase&);
 static void StreamServer_Uninitialize(, AtomBase&);
-static bool StreamServer_ProcessPacket(AtomBase&, PacketValue& v);
+static bool StreamServer_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
 
 	
 bool CreateServerInstance(NativeStreamServer& a0);

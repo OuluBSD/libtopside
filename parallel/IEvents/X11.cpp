@@ -18,7 +18,7 @@ void EvX11::Events_Uninitialize() {
 	TODO
 }
 
-bool EvX11::Events_ProcessPacket(PacketValue& v) {
+bool EvX11::Events_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

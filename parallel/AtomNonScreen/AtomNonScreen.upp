@@ -1,6 +1,0 @@
-description "\3770,128,128";
-
-file
-	AtomNonScreen.h,
-	AtomNonScreen.cpp;
-

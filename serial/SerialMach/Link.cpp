@@ -218,5 +218,11 @@ bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size) {
 	return l ? l->ForwardAsyncMem(data, size) : 0;
 }
 
+void Serial_Link_PostContinueForward(Link* l) {
+	ASSERT(l);
+	if (l)
+		l->PostContinueForward();
+}
+
 
 NAMESPACE_SERIAL_END

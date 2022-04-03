@@ -29,15 +29,27 @@ INITBLOCK {
 	Factory::RegisterAtom<CenterCustomer>();
 	Factory::RegisterAtom<TestRealtimeSrc>();
 	Factory::RegisterAtom<TestRealtimeSink>();
-	//Factory::RegisterAtom<TestPollerSink>();
+	Factory::RegisterAtom<TestPollerSink>();
 	Factory::RegisterAtom<PortaudioSink>();
 	Factory::RegisterAtom<AudioDbgSrc>();
 	Factory::RegisterAtom<AudioSplitter>();
+	Factory::RegisterAtom<AudioSplitterUser>();
 	Factory::RegisterAtom<AudioJoiner>();
+	Factory::RegisterAtom<AudioJoinerUser>();
+	Factory::RegisterAtom<AudioJoiner2User>();
+	Factory::RegisterAtom<EventStatePipe>();
+	Factory::RegisterAtom<TestEventSrcPipe>();
 	
 	#ifdef flagSDL2
 	Factory::RegisterAtom<SdlAudioAtom>();
 	Factory::RegisterAtom<SdlContextAtom>();
+	#endif
+	
+	#if defined flagSCREEN
+	Factory::RegisterAtom<VideoDbgSrc>();
+	#ifdef flagSDL2
+	Factory::RegisterAtom<SdlVideoAtom>();
+	#endif
 	#endif
 }
 

@@ -11,6 +11,7 @@ HEADER_ACTION(		TestRealtimeSrc,	center.audio.src.test)
 HEADER_LINK(		TestRealtimeSrc,	PIPE, PROCESS)
 HEADER_ARG(			TestRealtimeSrc,	HINT_PKG,					"AtomDebug")
 
+
 HEADER11(			TestRealtimeSink,	VoidSinkBase,				pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink)
 HEADER_ACTION(		TestRealtimeSink,	center.audio.sink.test.realtime)
@@ -20,7 +21,8 @@ HEADER_ARG(			TestRealtimeSink,	HINT_PKG,					"AtomDebug")
 HEADER11(			TestPollerSink,		VoidPollerSinkBase,			pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		TestPollerSink,		center.audio.sink)
 HEADER_ACTION(		TestPollerSink,		center.audio.sink.test.poller)
-//HEADER_ARG(			TestPollerSink,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		TestPollerSink,		PIPE, PROCESS)
+HEADER_ARG(			TestPollerSink,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			PortaudioSink,		PortaudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		PortaudioSink,		center.audio.sink)
@@ -45,6 +47,8 @@ HEADER_LINK(		AudioSplitter,		SPLITTER, PROCESS)
 HEADER12_U01(		AudioSplitterUser,	VoidBase,					pipe,		CenterAudio,	CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src)
 HEADER_ACTION(		AudioSplitterUser,	center.audio.side.src.center.user)
+HEADER_ARG(			AudioSplitterUser,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		AudioSplitterUser,	SPLITTER, PROCESS)
 
 HEADER21(			AudioJoiner,		VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner,		center.audio.side.sink)
@@ -55,14 +59,20 @@ HEADER_LINK(		AudioJoiner,		JOINER, PROCESS)
 HEADER21_U10(		AudioJoinerUser,	VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoinerUser,	center.audio.side.sink.center.user)
+HEADER_ARG(			AudioJoinerUser,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		AudioJoinerUser,	JOINER, PROCESS)
 
 HEADER31_U20(		AudioJoiner2User,	VoidBase,					pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterAudio,	CenterAudio)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink)
 HEADER_ACTION(		AudioJoiner2User,	center.audio.side.sink2.center.user)
+HEADER_ARG(			AudioJoiner2User,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		AudioJoiner2User,	JOINER, PROCESS)
 
 HEADER11(			VideoDbgSrc,		VideoGenBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		VideoDbgSrc,		center.video.src.dbg_generator)
 HEADER_ARG(			VideoDbgSrc,		reqdef_flagSCREEN,		1)
+HEADER_ARG(			VideoDbgSrc,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		VideoDbgSrc,		PIPE, PROCESS)
 
 HEADER11(			WebcamPipe,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		WebcamPipe,			center.video.webcam.pipe)
@@ -82,6 +92,8 @@ HEADER_ARG(			VideoLoaderAtom,	reqdef_flagSCREEN,	1)
 
 HEADER11(			EventStatePipe,		EventStateBase,			driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
 HEADER_ACTION(		EventStatePipe,		state.event.pipe)
+HEADER_ARG(			EventStatePipe,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		EventStatePipe,		PIPE, PROCESS)
 
 
 
@@ -137,6 +149,8 @@ HEADER_ACTION(		EventState,			state.event)
 
 HEADER11(			TestEventSrcPipe,	TestEventSrcBase,			pipe,		CenterEvent,	CenterOrder,	CenterEvent)
 HEADER_ACTION(		TestEventSrcPipe,	event.src.test.pipe)
+HEADER_LINK(		TestEventSrcPipe,	PIPE, PROCESS)
+HEADER_ARG(			TestEventSrcPipe,	HINT_PKG,					"AtomDebug")
 
 HEADER12_U01(		SdlImageLoader,		SDL2ImageBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlImageLoader,		center.image.loader)
@@ -165,21 +179,23 @@ HEADER55_U44(		SdlFboAtom,			SDL2OglScreenBase,				pipe,		OglFbo,			OglOrder,		O
 HEADER_ACTION(		SdlFboAtom,			sdl.fbo)
 HEADER_ARG(			SdlFboAtom,			reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlVideoAtomPipe,	SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER11(			SdlVideoAtomPipe,	Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomPipe,	sdl.video.pipe)
 HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlVideoProgAtom,	SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterProg,		CenterReceipt)
+HEADER11(			SdlVideoProgAtom,	Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
 HEADER_ARG(			SdlVideoProgAtom,	reqdef_flagSCREEN,		1)
 
-HEADER11(			SdlVideoAtomSA,		SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
+HEADER11(			SdlVideoAtomSA,		Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterOrder,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomSA,		sdl.video.standalone)
 HEADER_ARG(			SdlVideoAtomSA,		reqdef_flagSCREEN,		1)
 
-HEADER55_U44(		SdlVideoAtom,		SDL2CpuScreenBase,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
+HEADER55_U44(		SdlVideoAtom,		Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlVideoAtom,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		SdlVideoAtom,		PIPE, PROCESS)
 
 
 

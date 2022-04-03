@@ -40,6 +40,7 @@ class Action;
 }
 
 bool Serial_Link_ForwardAsyncMem(Link* l, byte* data, int size);
+void Serial_Link_PostContinueForward(Link* l);
 
 }
 

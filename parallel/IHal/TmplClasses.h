@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IHal_TmplClasses_h_
 #define _IHal_TmplClasses_h_
@@ -8,6 +8,9 @@
 NAMESPACE_PARALLEL_BEGIN
 
 template <class Hal> struct HalAudioSinkDeviceT;
+template <class Hal> struct HalWindowT;
+template <class Hal> struct HalRendererT;
+template <class Hal> struct HalCenterVideoSinkDeviceT;
 template <class Hal> struct HalContextBaseT;
 
 
@@ -43,9 +46,122 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		Hal::AudioSinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Hal::AudioSinkDevice_ProcessPacket(dev, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::AudioSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
+		return true;
+	}
+
+	
+};
+
+template <class Hal>
+struct HalWindowT : HalWindow {
+	using CLASSNAME = HalWindowT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalWindow)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalWindow>(this);}
+	
+	typename Hal::NativeWindow win;
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::Window_Initialize(win, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Hal::Window_PostInitialize(win, *this))
+			return false;
+		return true;
+	}
+
+	bool Start() override {
+		return Hal::Window_Start(win, *this);
+	}
+
+	void Stop() override {
+		Hal::Window_Stop(win, *this);
+	}
+
+	void Uninitialize() override {
+		Hal::Window_Uninitialize(win, *this);
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::Window_ProcessPacket(win, *this, in, out))
+			return false;
+		return true;
+	}
+
+	
+};
+
+template <class Hal>
+struct HalRendererT : HalRenderer {
+	using CLASSNAME = HalRendererT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalRenderer)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalRenderer>(this);}
+	
+	typename Hal::NativeRenderer rend;
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::Renderer_Initialize(rend, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Hal::Renderer_PostInitialize(rend, *this))
+			return false;
+		return true;
+	}
+
+	bool Start() override {
+		return Hal::Renderer_Start(rend, *this);
+	}
+
+	void Stop() override {
+		Hal::Renderer_Stop(rend, *this);
+	}
+
+	void Uninitialize() override {
+		Hal::Renderer_Uninitialize(rend, *this);
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::Renderer_ProcessPacket(rend, *this, in, out))
+			return false;
+		return true;
+	}
+
+	
+};
+
+template <class Hal>
+struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
+	using CLASSNAME = HalCenterVideoSinkDeviceT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalCenterVideoSinkDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalCenterVideoSinkDevice>(this);}
+	
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		return true;
+	}
+
+	bool PostInitialize() override {
+		return true;
+	}
+
+	bool Start() override {
+	}
+
+	void Stop() override {
+	}
+
+	void Uninitialize() override {
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -84,8 +200,8 @@ struct HalContextBaseT : HalContextBase {
 		Hal::ContextBase_Uninitialize(ctx, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Hal::ContextBase_ProcessPacket(ctx, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::ContextBase_ProcessPacket(ctx, *this, in, out))
 			return false;
 		return true;
 	}
@@ -103,6 +219,9 @@ struct HalContextBaseT : HalContextBase {
 
 #if defined flagSDL2
 using Sdl2AudioSinkDevice = HalAudioSinkDeviceT<HalSdl2>;
+using Sdl2Window = HalWindowT<HalSdl2>;
+using Sdl2Renderer = HalRendererT<HalSdl2>;
+using Sdl2CenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl2>;
 using Sdl2ContextBase = HalContextBaseT<HalSdl2>;
 #endif
 

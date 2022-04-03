@@ -65,7 +65,7 @@ void VrOvr::AppView_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::AppView_ProcessPacket(PacketValue& v) {
+bool VrOvr::AppView_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -85,7 +85,7 @@ void VrOvr::CameraResources_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::CameraResources_ProcessPacket(PacketValue& v) {
+bool VrOvr::CameraResources_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -105,7 +105,7 @@ void VrOvr::ControllerModelCache_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::ControllerModelCache_ProcessPacket(PacketValue& v) {
+bool VrOvr::ControllerModelCache_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -125,7 +125,7 @@ void VrOvr::DeviceResources_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::DeviceResources_ProcessPacket(PacketValue& v) {
+bool VrOvr::DeviceResources_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -145,7 +145,7 @@ void VrOvr::HolographicRenderer_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::HolographicRenderer_ProcessPacket(PacketValue& v) {
+bool VrOvr::HolographicRenderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -165,7 +165,7 @@ void VrOvr::HolographicScene_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::HolographicScene_ProcessPacket(PacketValue& v) {
+bool VrOvr::HolographicScene_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -185,7 +185,7 @@ void VrOvr::SpatialInteractionSystem_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::SpatialInteractionSystem_ProcessPacket(PacketValue& v) {
+bool VrOvr::SpatialInteractionSystem_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -205,7 +205,7 @@ void VrOvr::Renderer_Uninitialize() {
 	TODO
 }
 
-bool VrOvr::Renderer_ProcessPacket(PacketValue& v) {
+bool VrOvr::Renderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

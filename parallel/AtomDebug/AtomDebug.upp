@@ -5,11 +5,8 @@ uses
 	IAudio,
 	IHal;
 
-uses(!SCREEN) AtomNonScreen;
-
 file
 	AtomDebug.h,
-	AtomDebug.cpp,
 	Init.icpp,
 	Prefabs.h,
 	Generated.h,

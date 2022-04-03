@@ -18,7 +18,7 @@ void EvWin32::Events_Uninitialize() {
 	TODO
 }
 
-bool EvWin32::Events_ProcessPacket(PacketValue& v) {
+bool EvWin32::Events_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

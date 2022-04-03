@@ -124,7 +124,7 @@ void HalSdl2::AudioSinkDevice_Uninitialize(NativeAudioSinkDevice& dev, AtomBase&
 	}
 }
 
-bool HalSdl2::AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase& a, PacketValue& v) {
+bool HalSdl2::AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
 	return true;
 }
 
@@ -179,7 +179,7 @@ void HalSdl2::ContextBase_Uninitialize(NativeContextBase& ctx, AtomBase& a) {
 	SDL_Quit();
 }
 
-bool HalSdl2::ContextBase_ProcessPacket(NativeContextBase& ctx, AtomBase& a, PacketValue& v) {
+bool HalSdl2::ContextBase_ProcessPacket(NativeContextBase& ctx, AtomBase& a, PacketValue& in, PacketValue& out) {
 	return true;
 }
 

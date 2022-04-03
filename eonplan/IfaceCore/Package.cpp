@@ -545,11 +545,11 @@ bool Package::Export() {
 			}
 			fout << "\t}\n\n";
 			
-			fout << "\tbool ProcessPacket(PacketValue& v) override {\n";
+			fout << "\tbool ProcessPacket(PacketValue& in, PacketValue& out) override {\n";
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\tif (!" << abbr << "::" << cls << "_ProcessPacket(" << name << ", *this, v))\n";
+				fout << "\t\tif (!" << abbr << "::" << cls << "_ProcessPacket(" << name << ", *this, in, out))\n";
 				fout << "\t\t\treturn false;\n";
 			}
 			fout << "\t\treturn true;\n";
@@ -640,7 +640,7 @@ bool Package::Export() {
 			fout << "static bool " << c.name << "_Start(" << nat_this << ", AtomBase&);\n";
 			fout << "static void " << c.name << "_Stop(" << nat_this << ", AtomBase&);\n";
 			fout << "static void " << c.name << "_Uninitialize(" << nat_this << ", AtomBase&);\n";
-			fout << "static bool " << c.name << "_ProcessPacket(" << nat_this_ << "AtomBase&, PacketValue& v);\n";
+			fout << "static bool " << c.name << "_ProcessPacket(" << nat_this_ << "AtomBase&, PacketValue& in, PacketValue& out);\n";
 			if (c.have_context_fns) {
 				fout << "static bool " << c.name << "_AttachContext(" << nat_this << ", AtomBase& a, AtomBase& other);\n";
 				fout << "static void " << c.name << "_DetachContext(" << nat_this << ", AtomBase& a, AtomBase& other);\n";
@@ -789,7 +789,7 @@ bool Package::Export() {
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "bool " << cls << "::" << c.name << "_ProcessPacket(" << nat_this_ << "AtomBase& a, PacketValue& v) {\n";
+				fout << "bool " << cls << "::" << c.name << "_ProcessPacket(" << nat_this_ << "AtomBase& a, PacketValue& in, PacketValue& out) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IGraphics_TmplClasses_h_
 #define _IGraphics_TmplClasses_h_
@@ -47,7 +47,7 @@ struct GraphicsVertexShaderT : GfxVertexShader {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -78,7 +78,7 @@ struct GraphicsFragmentShaderT : GfxFragmentShader {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -109,7 +109,7 @@ struct GraphicsDataObjectT : GfxDataObject {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -140,7 +140,7 @@ struct GraphicsDataStateT : GfxDataState {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -171,7 +171,7 @@ struct GraphicsInputStateT : GfxInputState {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -202,7 +202,7 @@ struct GraphicsFramebufferT : GfxFramebuffer {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -233,7 +233,7 @@ struct GraphicsCompilerT : GfxCompiler {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -264,7 +264,7 @@ struct GraphicsLinkerT : GfxLinker {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -295,7 +295,7 @@ struct GraphicsShaderPipelineT : GfxShaderPipeline {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -326,7 +326,7 @@ struct GraphicsRuntimeStateT : GfxRuntimeState {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -357,7 +357,7 @@ struct GraphicsContextStateT : GfxContextState {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -388,7 +388,7 @@ struct GraphicsRendererT : GfxRenderer {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -419,7 +419,7 @@ struct GraphicsStateDrawT : GfxStateDraw {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -450,7 +450,7 @@ struct GraphicsBufferT : GfxBuffer {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 

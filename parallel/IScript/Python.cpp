@@ -21,7 +21,7 @@ void ScrPython::Runner_Uninitialize() {
 	TODO
 }
 
-bool ScrPython::Runner_ProcessPacket(PacketValue& v) {
+bool ScrPython::Runner_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void ScrPython::Thread_Uninitialize() {
 	TODO
 }
 
-bool ScrPython::Thread_ProcessPacket(PacketValue& v) {
+bool ScrPython::Thread_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

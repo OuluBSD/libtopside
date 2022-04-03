@@ -8,9 +8,8 @@ uses
 	ports/bz2lib,
 	RTTI,
 	SharedCore,
-	ports/MingwThreads;
-
-uses(!SCREEN & !GUI) NonScreen;
+	ports/MingwThreads,
+	StaticInterface;
 
 library(WIN32) "shlwapi comdlg32";
 

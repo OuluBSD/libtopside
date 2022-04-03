@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IImageFile_TmplClasses_h_
 #define _IImageFile_TmplClasses_h_
@@ -42,8 +42,8 @@ struct ImageFileImageT : ImgImage {
 		Img::Image_Uninitialize(img, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Img::Image_ProcessPacket(img, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Img::Image_ProcessPacket(img, *this, in, out))
 			return false;
 		return true;
 	}

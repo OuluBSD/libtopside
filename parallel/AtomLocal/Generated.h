@@ -2,27 +2,11 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.3 11:11:55
+// Last modified: 2022.4.3 22:44:00
 
 namespace TS {
 
 namespace Parallel {
-
-class TestPollerSink : public VoidPollerSinkBase {
-
-public:
-	RTTI_DECL1(TestPollerSink, VoidPollerSinkBase)
-	COPY_PANIC(TestPollerSink)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.test.poller")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
 
 class AudioDecoderSrc : public FfmpegAtomBase {
 
@@ -38,71 +22,6 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
-
-class AudioSplitterUser : public VoidBase {
-
-public:
-	RTTI_DECL1(AudioSplitterUser, VoidBase)
-	COPY_PANIC(AudioSplitterUser)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.src.center.user")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioJoinerUser : public VoidBase {
-
-public:
-	RTTI_DECL1(AudioJoinerUser, VoidBase)
-	COPY_PANIC(AudioJoinerUser)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink.center.user")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-class AudioJoiner2User : public VoidBase {
-
-public:
-	RTTI_DECL1(AudioJoiner2User, VoidBase)
-	COPY_PANIC(AudioJoiner2User)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.side.sink2.center.user")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
-#if defined flagSCREEN
-class VideoDbgSrc : public VideoGenBase {
-
-public:
-	RTTI_DECL1(VideoDbgSrc, VideoGenBase)
-	COPY_PANIC(VideoDbgSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.src.dbg_generator")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
 
 #if defined HAVE_OPENCV
 class WebcamPipe : public OpenCVBase {
@@ -171,21 +90,6 @@ public:
 
 };
 #endif
-
-class EventStatePipe : public EventStateBase {
-
-public:
-	RTTI_DECL1(EventStatePipe, EventStateBase)
-	COPY_PANIC(EventStatePipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("state.event.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
 
 #if defined flagSCREEN
 class EcsEventsAtom : public EcsEventsBase {
@@ -352,21 +256,6 @@ public:
 
 };
 
-class TestEventSrcPipe : public TestEventSrcBase {
-
-public:
-	RTTI_DECL1(TestEventSrcPipe, TestEventSrcBase)
-	COPY_PANIC(TestEventSrcPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("event.src.test.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-
 #if defined flagSCREEN
 class SdlImageLoader : public SDL2ImageBase {
 
@@ -470,10 +359,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtomPipe : public SDL2CpuScreenBase {
+class SdlVideoAtomPipe : public Sdl2CenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlVideoAtomPipe, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoAtomPipe, Sdl2CenterVideoSinkDevice)
 	COPY_PANIC(SdlVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
@@ -487,10 +376,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoProgAtom : public SDL2CpuScreenBase {
+class SdlVideoProgAtom : public Sdl2CenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlVideoProgAtom, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoProgAtom, Sdl2CenterVideoSinkDevice)
 	COPY_PANIC(SdlVideoProgAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.prog")
@@ -504,30 +393,13 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtomSA : public SDL2CpuScreenBase {
+class SdlVideoAtomSA : public Sdl2CenterVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlVideoAtomSA, SDL2CpuScreenBase)
+	RTTI_DECL1(SdlVideoAtomSA, Sdl2CenterVideoSinkDevice)
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class SdlVideoAtom : public SDL2CpuScreenBase {
-
-public:
-	RTTI_DECL1(SdlVideoAtom, SDL2CpuScreenBase)
-	COPY_PANIC(SdlVideoAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

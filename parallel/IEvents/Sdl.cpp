@@ -18,7 +18,7 @@ void EvSdl::Events_Uninitialize() {
 	TODO
 }
 
-bool EvSdl::Events_ProcessPacket(PacketValue& v) {
+bool EvSdl::Events_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

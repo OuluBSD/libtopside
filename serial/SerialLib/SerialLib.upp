@@ -7,6 +7,7 @@ uses
 file
 	SerialLib.h,
 	Init.icpp,
+	SingleMachine.cpp,
 	Types.h,
 	Generated.h,
 	EntitySystem.h,

@@ -21,7 +21,7 @@ void VmTos::VirtualMachine_Uninitialize() {
 	TODO
 }
 
-bool VmTos::VirtualMachine_ProcessPacket(PacketValue& v) {
+bool VmTos::VirtualMachine_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void VmTos::Thread_Uninitialize() {
 	TODO
 }
 
-bool VmTos::Thread_ProcessPacket(PacketValue& v) {
+bool VmTos::Thread_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

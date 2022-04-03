@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -43,8 +43,8 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 		Mid::SinkDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Mid::SinkDevice_ProcessPacket(dev, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Mid::SinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}
@@ -100,8 +100,8 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 		Mid::SourceDevice_Uninitialize(dev, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Mid::SourceDevice_ProcessPacket(dev, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Mid::SourceDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}

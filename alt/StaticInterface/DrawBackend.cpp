@@ -3,6 +3,7 @@
 
 NAMESPACE_UPP_BEGIN
 
+
 Image StreamRaster::LoadStringAny(String content) {
 	return Image();
 }
@@ -33,6 +34,10 @@ void SysImage::Clear() {
 	if (raw)
 		delete raw;
 	raw = 0;
+}
+
+Image ImageBuffer::GetImage() {
+	TODO
 }
 
 

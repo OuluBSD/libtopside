@@ -21,7 +21,7 @@ void GfxCpu::VertexShader_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::VertexShader_ProcessPacket(PacketValue& v) {
+bool GfxCpu::VertexShader_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void GfxCpu::FragmentShader_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::FragmentShader_ProcessPacket(PacketValue& v) {
+bool GfxCpu::FragmentShader_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void GfxCpu::DataObject_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::DataObject_ProcessPacket(PacketValue& v) {
+bool GfxCpu::DataObject_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void GfxCpu::DataState_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::DataState_ProcessPacket(PacketValue& v) {
+bool GfxCpu::DataState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void GfxCpu::InputState_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::InputState_ProcessPacket(PacketValue& v) {
+bool GfxCpu::InputState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -121,7 +121,7 @@ void GfxCpu::Framebuffer_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::Framebuffer_ProcessPacket(PacketValue& v) {
+bool GfxCpu::Framebuffer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -141,7 +141,7 @@ void GfxCpu::Compiler_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::Compiler_ProcessPacket(PacketValue& v) {
+bool GfxCpu::Compiler_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -161,7 +161,7 @@ void GfxCpu::Linker_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::Linker_ProcessPacket(PacketValue& v) {
+bool GfxCpu::Linker_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -181,7 +181,7 @@ void GfxCpu::ShaderPipeline_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::ShaderPipeline_ProcessPacket(PacketValue& v) {
+bool GfxCpu::ShaderPipeline_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -201,7 +201,7 @@ void GfxCpu::RuntimeState_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::RuntimeState_ProcessPacket(PacketValue& v) {
+bool GfxCpu::RuntimeState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -221,7 +221,7 @@ void GfxCpu::ContextState_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::ContextState_ProcessPacket(PacketValue& v) {
+bool GfxCpu::ContextState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -241,7 +241,7 @@ void GfxCpu::Renderer_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::Renderer_ProcessPacket(PacketValue& v) {
+bool GfxCpu::Renderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -261,7 +261,7 @@ void GfxCpu::StateDraw_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::StateDraw_ProcessPacket(PacketValue& v) {
+bool GfxCpu::StateDraw_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -281,7 +281,7 @@ void GfxCpu::Buffer_Uninitialize() {
 	TODO
 }
 
-bool GfxCpu::Buffer_ProcessPacket(PacketValue& v) {
+bool GfxCpu::Buffer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

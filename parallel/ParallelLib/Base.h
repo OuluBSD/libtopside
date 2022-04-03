@@ -23,9 +23,9 @@ public:
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	bool ProcessPacket(PacketValue& v) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	bool IsForwardReady() override;
-	void ForwardPacket(PacketValue& v) override;
+	void ForwardPacket(PacketValue& in, PacketValue& out) override;
 	
 	
 	RTSrcConfig* GetConfig() override {ASSERT(customer); return customer ? &customer->cfg : 0;}
@@ -47,7 +47,7 @@ public:
 	bool Initialize(const Script::WorldState& ws) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	void Uninitialize() override {}
-	bool ProcessPacket(PacketValue& v) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 };
@@ -73,7 +73,7 @@ public:
 	void Uninitialize() override;
 	//very old: void Forward(FwdScope& fwd) override {AtomBase::ForwardVoidSink(fwd);}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& v) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	bool Consume(const void* data, int len) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
@@ -100,11 +100,10 @@ public:
 	RTTI_DECL1(VoidPollerSinkBase, Atom)
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	/*bool ProcessPackets(PacketIO& io) override;
 	void Update(double dt) override;
-	bool IsReady(PacketIO& io) override;*/
+	bool IsReady(PacketIO& io) override;
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& v) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	//const Format& GetInternalFormat() const override {return internal_fmt;}
 	
 	
@@ -119,9 +118,57 @@ public:
 	bool Initialize(const Script::WorldState& ws) override {return true;}
 	void Uninitialize() override {}
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
-	bool ProcessPacket(PacketValue& v) override {return true;}
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {return true;}
 	
 };
+
+class EventStateBase :
+	public Atom
+{
+	String			target;
+	EnvStateRef		state;
+	
+public:
+	RTTI_DECL1(EventStateBase, Atom)
+	
+	EventStateBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	bool PostInitialize() override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	
+	void Event(const CtrlEvent& e);
+	void LeftDown(Point pt, dword keyflags);
+	void LeftUp(Point pt, dword keyflags);
+	void MouseMove(Point pt, dword keyflags);
+	bool Key(dword key, int count);
+	
+	void			SetBool(dword key, bool b) {state->SetBool(key, b);}
+	
+	bool			GetBool(dword key) {return state->GetBool(key);}
+	EnvState&		GetState() const;
+	
+};
+
+class TestEventSrcBase :
+	public Atom
+{
+	
+public:
+	RTTI_DECL1(TestEventSrcBase, Atom)
+	
+	TestEventSrcBase();
+	bool Initialize(const Script::WorldState& ws) override;
+	void Uninitialize() override;
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
+	bool IsReady(PacketIO& io) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
+	
+	
+};
+
 
 
 

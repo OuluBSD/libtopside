@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 11:11:55
+// Last export: 2022.4.3 22:44:00
 
 #ifndef _IVirtualReality_TmplClasses_h_
 #define _IVirtualReality_TmplClasses_h_
@@ -51,8 +51,8 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 		Vr::MotionController_Uninitialize(ctrl, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Vr::MotionController_ProcessPacket(ctrl, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Vr::MotionController_ProcessPacket(ctrl, *this, in, out))
 			return false;
 		return true;
 	}
@@ -96,8 +96,8 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 		Vr::MotionControllerSystem_Uninitialize(sys, *this);
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
-		if (!Vr::MotionControllerSystem_ProcessPacket(sys, *this, v))
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Vr::MotionControllerSystem_ProcessPacket(sys, *this, in, out))
 			return false;
 		return true;
 	}
@@ -129,7 +129,7 @@ struct VirtualRealityAppViewT : VrAppView {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -160,7 +160,7 @@ struct VirtualRealityCameraResourcesT : VrCameraResources {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -191,7 +191,7 @@ struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -222,7 +222,7 @@ struct VirtualRealityDeviceResourcesT : VrDeviceResources {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -253,7 +253,7 @@ struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -284,7 +284,7 @@ struct VirtualRealityHolographicSceneT : VrHolographicScene {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -315,7 +315,7 @@ struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 
@@ -346,7 +346,7 @@ struct VirtualRealityRendererT : VrRenderer {
 	void Uninitialize() override {
 	}
 
-	bool ProcessPacket(PacketValue& v) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
 		return true;
 	}
 

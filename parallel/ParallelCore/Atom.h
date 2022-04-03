@@ -76,7 +76,7 @@ public:
 	virtual void			ClearSinkSource() = 0;
 	virtual ISourceRef		GetSource() = 0;
 	virtual ISinkRef		GetSink() = 0;
-	virtual bool			ProcessPacket(PacketValue& v) = 0;
+	virtual bool			ProcessPacket(PacketValue& in, PacketValue& out) = 0;
 	
 	virtual bool			Start() {return true;}
 	virtual void			Stop() {}
@@ -91,7 +91,7 @@ public:
 	//virtual void			SetInternalFormat(const Format& f) {user_internal_fmt = f;}
 	virtual bool			Consume(const void* data, int len) {Panic("Unimplemented"); return false;}
 	virtual bool			IsForwardReady() {Panic("Unimplemented"); NEVER();}
-	virtual void			ForwardPacket(PacketValue& v) {Panic("Unimplemented"); NEVER();}
+	virtual void			ForwardPacket(PacketValue& in, PacketValue& out) {Panic("Unimplemented"); NEVER();}
 	virtual bool			AttachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual void			DetachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual RealtimeSourceConfig* GetConfig() {return 0;}
@@ -104,6 +104,7 @@ public:
 	AtomBaseRef				GetDependency() const {return atom_dependency;}
 	void					ClearDependency() {atom_dependency.Clear();}
 	void					UpdateSinkFormat(ValCls val, Format fmt);
+	void					PostContinueForward();
 	
 	static SideStatus MakeSide(const AtomTypeCls& src_type, const Script::WorldState& from, const AtomTypeCls& sink_type, const Script::WorldState& to) {
 		ValDevCls common_vd = src_type.iface.src.GetCommon(sink_type.iface.sink);

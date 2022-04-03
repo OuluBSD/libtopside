@@ -1,8 +1,0 @@
-#include "AtomDebug.h"
-
-
-NAMESPACE_PARALLEL_BEGIN
-
-
-
-NAMESPACE_PARALLEL_END

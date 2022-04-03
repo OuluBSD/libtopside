@@ -115,12 +115,13 @@ class AudioGenBase :
 	void GenerateStereoSine(const AudioFormat& fmt);
 	
 public:
+	RTTI_DECL1(AudioGenBase, Atom)
 	AudioGenBase();
 	
 	bool Initialize(const Script::WorldState& ws) final;
 	void Uninitialize() final;
 	//void Forward(FwdScope& fwd) final;
-	bool ProcessPacket(PacketValue& v) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<Atom>(this);}
 	

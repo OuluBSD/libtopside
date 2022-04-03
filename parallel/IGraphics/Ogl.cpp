@@ -21,7 +21,7 @@ void GfxOgl::VertexShader_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::VertexShader_ProcessPacket(PacketValue& v) {
+bool GfxOgl::VertexShader_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -41,7 +41,7 @@ void GfxOgl::FragmentShader_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::FragmentShader_ProcessPacket(PacketValue& v) {
+bool GfxOgl::FragmentShader_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -61,7 +61,7 @@ void GfxOgl::DataObject_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::DataObject_ProcessPacket(PacketValue& v) {
+bool GfxOgl::DataObject_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -81,7 +81,7 @@ void GfxOgl::DataState_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::DataState_ProcessPacket(PacketValue& v) {
+bool GfxOgl::DataState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -101,7 +101,7 @@ void GfxOgl::InputState_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::InputState_ProcessPacket(PacketValue& v) {
+bool GfxOgl::InputState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -121,7 +121,7 @@ void GfxOgl::Framebuffer_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::Framebuffer_ProcessPacket(PacketValue& v) {
+bool GfxOgl::Framebuffer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -141,7 +141,7 @@ void GfxOgl::Compiler_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::Compiler_ProcessPacket(PacketValue& v) {
+bool GfxOgl::Compiler_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -161,7 +161,7 @@ void GfxOgl::Linker_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::Linker_ProcessPacket(PacketValue& v) {
+bool GfxOgl::Linker_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -181,7 +181,7 @@ void GfxOgl::ShaderPipeline_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::ShaderPipeline_ProcessPacket(PacketValue& v) {
+bool GfxOgl::ShaderPipeline_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -201,7 +201,7 @@ void GfxOgl::RuntimeState_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::RuntimeState_ProcessPacket(PacketValue& v) {
+bool GfxOgl::RuntimeState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -221,7 +221,7 @@ void GfxOgl::ContextState_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::ContextState_ProcessPacket(PacketValue& v) {
+bool GfxOgl::ContextState_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -241,7 +241,7 @@ void GfxOgl::Renderer_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::Renderer_ProcessPacket(PacketValue& v) {
+bool GfxOgl::Renderer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -261,7 +261,7 @@ void GfxOgl::StateDraw_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::StateDraw_ProcessPacket(PacketValue& v) {
+bool GfxOgl::StateDraw_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 
@@ -281,7 +281,7 @@ void GfxOgl::Buffer_Uninitialize() {
 	TODO
 }
 
-bool GfxOgl::Buffer_ProcessPacket(PacketValue& v) {
+bool GfxOgl::Buffer_ProcessPacket(PacketValue& in, PacketValue& out) {
 	TODO
 }
 

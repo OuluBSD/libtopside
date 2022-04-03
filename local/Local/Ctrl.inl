@@ -8,10 +8,13 @@ enum EventStateKey {
 	SCREEN0_OFFSET,
 	
 	
+	#if defined flagSCREEN || defined flagGUI
+	
 	MOUSE_EVENT_BASE = 0x1000,
 	
 	#undef MOUSE_EVENT // win32 wincontypes.h
-	#define MOUSE_EVENT(x) MOUSE_##x = MOUSE_EVENT_BASE + Ctrl::x,
+	//#define MOUSE_EVENT(x) MOUSE_##x = MOUSE_EVENT_BASE + Ctrl::x,
+	#define MOUSE_EVENT(x) MOUSE_##x,
 	
 	MOUSE_EVENT(BUTTON)
 	MOUSE_EVENT(ACTION)
@@ -65,5 +68,7 @@ enum EventStateKey {
 	
 	MOUSE_TOYCOMPAT_DRAG,
 	MOUSE_TOYCOMPAT_CLICK,
+	
+	#endif
 	
 };
