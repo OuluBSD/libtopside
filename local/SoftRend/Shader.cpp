@@ -8,15 +8,18 @@ VectorMap<String, SoftShaderLibrary::ShaderFactory> SoftShaderLibrary::shader_cl
 
 
 
-SoftShader::SoftShader() {
+template <class B>
+SoftShaderT<B>::SoftShaderT() {
 	
 }
 
-void SoftShader::Clear() {
+template <class B>
+void SoftShaderT<B>::Clear() {
 	inited = false;
 }
 
-bool SoftShader::Create(GVar::ShaderType t) {
+template <class B>
+bool SoftShaderT<B>::Create(GVar::ShaderType t) {
 	Clear();
 	
 	type = t;
@@ -26,11 +29,13 @@ bool SoftShader::Create(GVar::ShaderType t) {
 	return true;
 }
 
-void SoftShader::SetSource(String s) {
+template <class B>
+void SoftShaderT<B>::SetSource(String s) {
 	src = s;
 }
 
-/*void SoftShader::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
+/*template <class B>
+void SoftShaderT<B>::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
 	this->fs = fs;
 }*/
 

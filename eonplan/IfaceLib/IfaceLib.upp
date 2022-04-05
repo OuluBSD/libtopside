@@ -8,8 +8,8 @@ file
 	IfaceLib.cpp,
 	Aud.cpp,
 	Hal.cpp,
+	Screen.cpp,
 	Ev.cpp,
-	Gfx.cpp,
 	Fys.cpp,
 	Vr.cpp,
 	Midi.cpp,
@@ -23,7 +23,6 @@ file
 	MidiFile.cpp,
 	Ideas... readonly separator,
 	Gui.cpp,
-	Script.cpp,
 	Vm.cpp,
 	StaticServer.cpp,
 	StreamServer.cpp,
@@ -42,5 +41,8 @@ file
 	AiAutoenc.cpp,
 	SimAircraft.cpp,
 	SimElectric.cpp,
+	Trash readonly separator,
+	Gfx.cpp,
+	Script.cpp,
 	_ readonly separator;
 

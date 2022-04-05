@@ -9,11 +9,14 @@ struct SoftUniform : Moveable<SoftUniform> {
 };
 
 
-class SoftProgram {
+template <class Backend>
+class SoftProgramT {
 	bool inited = false;
 	String err;
 	
 protected:
+	using SoftShader	= SoftShaderT<Backend>;
+	
 	friend class SoftRend;
 	Vector<SoftShader*> shaders;
 	Vector<SoftUniform> uniforms;
@@ -22,8 +25,8 @@ protected:
 	GenericFragmentShaderArgs fargs;
 	
 public:
-	typedef SoftProgram CLASSNAME;
-	SoftProgram();
+	typedef SoftProgramT CLASSNAME;
+	SoftProgramT();
 	
 	void Clear();
 	bool Create();

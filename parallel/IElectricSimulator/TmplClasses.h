@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IElectricSimulator_TmplClasses_h_
 #define _IElectricSimulator_TmplClasses_h_
@@ -15,6 +15,7 @@ struct ElectricSimulatorSystemT : EsimSystem {
 	using CLASSNAME = ElectricSimulatorSystemT<Esim>;
 	RTTI_DECL1(CLASSNAME, EsimSystem)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<EsimSystem>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

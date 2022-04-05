@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IAircraftSimulator_TmplClasses_h_
 #define _IAircraftSimulator_TmplClasses_h_
@@ -15,6 +15,7 @@ struct AircraftSimulatorSystemT : AsimSystem {
 	using CLASSNAME = AircraftSimulatorSystemT<Asim>;
 	RTTI_DECL1(CLASSNAME, AsimSystem)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<AsimSystem>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

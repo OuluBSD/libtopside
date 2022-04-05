@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IVirtualReality_TmplClasses_h_
 #define _IVirtualReality_TmplClasses_h_
@@ -26,6 +26,7 @@ struct VirtualRealityMotionControllerT : VrMotionController {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrMotionController>(this);}
 	
 	typename Vr::NativeMotionController ctrl;
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Vr::MotionController_Initialize(ctrl, *this, ws))
@@ -72,6 +73,7 @@ struct VirtualRealityMotionControllerSystemT : VrMotionControllerSystem {
 	
 	typename Vr::NativeMotionControllerSystem sys;
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Vr::MotionControllerSystem_Initialize(sys, *this, ws))
 			return false;
@@ -112,6 +114,7 @@ struct VirtualRealityAppViewT : VrAppView {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrAppView>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -141,6 +144,7 @@ struct VirtualRealityCameraResourcesT : VrCameraResources {
 	using CLASSNAME = VirtualRealityCameraResourcesT<Vr>;
 	RTTI_DECL1(CLASSNAME, VrCameraResources)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrCameraResources>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -174,6 +178,7 @@ struct VirtualRealityControllerModelCacheT : VrControllerModelCache {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrControllerModelCache>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -203,6 +208,7 @@ struct VirtualRealityDeviceResourcesT : VrDeviceResources {
 	using CLASSNAME = VirtualRealityDeviceResourcesT<Vr>;
 	RTTI_DECL1(CLASSNAME, VrDeviceResources)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrDeviceResources>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -236,6 +242,7 @@ struct VirtualRealityHolographicRendererT : VrHolographicRenderer {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrHolographicRenderer>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -265,6 +272,7 @@ struct VirtualRealityHolographicSceneT : VrHolographicScene {
 	using CLASSNAME = VirtualRealityHolographicSceneT<Vr>;
 	RTTI_DECL1(CLASSNAME, VrHolographicScene)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrHolographicScene>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -298,6 +306,7 @@ struct VirtualRealitySpatialInteractionSystemT : VrSpatialInteractionSystem {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrSpatialInteractionSystem>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -327,6 +336,7 @@ struct VirtualRealityRendererT : VrRenderer {
 	using CLASSNAME = VirtualRealityRendererT<Vr>;
 	RTTI_DECL1(CLASSNAME, VrRenderer)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<VrRenderer>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

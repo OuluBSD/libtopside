@@ -67,6 +67,7 @@ public:
 	virtual bool ClipOp(const Rect& r) = 0;
 	virtual void EndOp() = 0;
 	
+	
 };
 
 

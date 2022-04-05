@@ -163,6 +163,17 @@ HEADER_ARG(			VolumeLoaderAtom,	reqdef_flagSCREEN,		1)
 
 
 
+HEADER11(			X11VideoAtomPipe,	X11SinkDevice,				pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER_ACTION(		X11VideoAtomPipe,	x11.video.pipe)
+HEADER_ACTION(		X11VideoAtomPipe,	any.video.pipe)
+HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagPOSIX,		1)
+HEADER_ARG(			X11VideoAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11VideoAtomPipe,	PIPE, PROCESS)
+
+
+
+
 HEADER11(			SdlFboAtomSA,		SDL2OglScreenBase,				pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlFboAtomSA,		sdl.fbo.standalone)
 HEADER_ARG(			SdlFboAtomSA,		reqdef_flagSCREEN,		1)
@@ -181,7 +192,11 @@ HEADER_ARG(			SdlFboAtom,			reqdef_flagSCREEN,		1)
 
 HEADER11(			SdlVideoAtomPipe,	Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtomPipe,	sdl.video.pipe)
+HEADER_ACTION(		SdlVideoAtomPipe,	any.video.pipe)
 HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSDL2,		1)
+HEADER_ARG(			SdlVideoAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		SdlVideoAtomPipe,	PIPE, PROCESS)
 
 HEADER11(			SdlVideoProgAtom,	Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
@@ -194,6 +209,7 @@ HEADER_ARG(			SdlVideoAtomSA,		reqdef_flagSCREEN,		1)
 HEADER55_U44(		SdlVideoAtom,		Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlVideoAtom,		reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlVideoAtom,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlVideoAtom,		PIPE, PROCESS)
 
@@ -203,9 +219,9 @@ HEADER_LINK(		SdlVideoAtom,		PIPE, PROCESS)
 HEADER11 (			SdlAudioAtom,		Sdl2AudioSinkDevice,		pipe,		CenterAudio,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		SdlAudioAtom,		center.audio.sink)
 HEADER_ACTION(		SdlAudioAtom,		sdl.audio)
-HEADER_LINK(		SdlAudioAtom,		EXTERNAL_PIPE, PROCESS)
-HEADER_ARG(			SdlAudioAtom,		HINT_PKG,					"AtomDebug")
 HEADER_ARG(			SdlAudioAtom,		reqdef_flagSDL2,		1)
+HEADER_ARG(			SdlAudioAtom,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		SdlAudioAtom,		EXTERNAL_PIPE, PROCESS)
 
 HEADER11(			OglShaderPipe,		OglShaderBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
 HEADER_ACTION(		OglShaderPipe,		ogl.fbo.source.pipe)

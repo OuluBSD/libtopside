@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.3 22:44:00
+// Last modified: 2022.4.6 0:00:44
 
 namespace TS {
 
@@ -359,23 +359,6 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlVideoAtomPipe : public Sdl2CenterVideoSinkDevice {
-
-public:
-	RTTI_DECL1(SdlVideoAtomPipe, Sdl2CenterVideoSinkDevice)
-	COPY_PANIC(SdlVideoAtomPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class SdlVideoProgAtom : public Sdl2CenterVideoSinkDevice {
 
 public:
@@ -631,6 +614,10 @@ using TestEventSrcPipeRef = Ref<TestEventSrcPipe, AtomParent>;
 using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
 
 using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
+
+#if defined flagPOSIX
+using X11VideoAtomPipeRef = Ref<X11VideoAtomPipe, AtomParent>;
+#endif
 
 using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
 

@@ -13,6 +13,10 @@ void Class::AddNativeInherit(String cls, String name) {
 	nat_inherited.GetAdd(cls) = name;
 }
 
+void Class::AddNativeField(String cls, String name) {
+	nat_field.GetAdd(name) = cls;
+}
+
 Function& Class::AddFunction(String name) {
 	ASSERT(funcs.Find(name) < 0);
 	return funcs.Add(name).SetName(name);
@@ -343,7 +347,7 @@ bool Package::Export() {
 	file_list.Add("Vendors.h");
 	for (Vendor& v : vendors.GetValues())
 		file_list.Add(v.name + ".cpp");
-	file_list.Add("IfaceFuncs.inl"); 
+	file_list.Add("IfaceFuncs.inl");
 	file_list.Add("BaseClasses.h");
 	file_list.Add("TmplClasses.h");
 	
@@ -494,6 +498,8 @@ bool Package::Export() {
 			fout << "\tvoid Visit(RuntimeVisitor& vis) override {vis.VisitThis<" << c.cpp_name << ">(this);}\n";
 			fout << "\t\n";
 			
+			String prefix = c.name;
+			
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
@@ -501,11 +507,18 @@ bool Package::Export() {
 			}
 			fout << "\t\n";
 			
+			for(int i = 0; i < c.nat_field.GetCount(); i++) {
+				String name = c.nat_field.GetKey(i);
+				String cls = c.nat_field[i];
+				fout << "\t" << abbr << "::" << cls << " " << name << ";\n";
+			}
+			fout << "\t\n";
+			
 			fout << "\tbool Initialize(const Script::WorldState& ws) override {\n";
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\tif (!" << abbr << "::" << cls << "_Initialize(" << name << ", *this, ws))\n";
+				fout << "\t\tif (!" << abbr << "::" << prefix << "_Initialize(" << name << ", *this, ws))\n";
 				fout << "\t\t\treturn false;\n";
 			}
 			fout << "\t\treturn true;\n";
@@ -515,7 +528,7 @@ bool Package::Export() {
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\tif (!" << abbr << "::" << cls << "_PostInitialize(" << name << ", *this))\n";
+				fout << "\t\tif (!" << abbr << "::" << prefix << "_PostInitialize(" << name << ", *this))\n";
 				fout << "\t\t\treturn false;\n";
 			}
 			fout << "\t\treturn true;\n";
@@ -525,7 +538,7 @@ bool Package::Export() {
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\treturn " << abbr << "::" << cls << "_Start(" << name << ", *this);\n";
+				fout << "\t\treturn " << abbr << "::" << prefix << "_Start(" << name << ", *this);\n";
 			}
 			fout << "\t}\n\n";
 			
@@ -533,7 +546,7 @@ bool Package::Export() {
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\t" << abbr << "::" << cls << "_Stop(" << name << ", *this);\n";
+				fout << "\t\t" << abbr << "::" << prefix << "_Stop(" << name << ", *this);\n";
 			}
 			fout << "\t}\n\n";
 			
@@ -541,7 +554,7 @@ bool Package::Export() {
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\t" << abbr << "::" << cls << "_Uninitialize(" << name << ", *this);\n";
+				fout << "\t\t" << abbr << "::" << prefix << "_Uninitialize(" << name << ", *this);\n";
 			}
 			fout << "\t}\n\n";
 			
@@ -549,7 +562,7 @@ bool Package::Export() {
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 				String cls = c.nat_inherited.GetKey(i);
 				String name = c.nat_inherited[i];
-				fout << "\t\tif (!" << abbr << "::" << cls << "_ProcessPacket(" << name << ", *this, in, out))\n";
+				fout << "\t\tif (!" << abbr << "::" << prefix << "_ProcessPacket(" << name << ", *this, in, out))\n";
 				fout << "\t\t\treturn false;\n";
 			}
 			fout << "\t\treturn true;\n";
@@ -560,7 +573,7 @@ bool Package::Export() {
 				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 					String cls = c.nat_inherited.GetKey(i);
 					String name = c.nat_inherited[i];
-					fout << "\t\treturn " << abbr << "::" << cls << "_AttachContext(" << name << ", *this, a);\n";
+					fout << "\t\treturn " << abbr << "::" << prefix << "_AttachContext(" << name << ", *this, a);\n";
 				}
 				fout << "\t}\n\n";
 				
@@ -568,7 +581,7 @@ bool Package::Export() {
 				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 					String cls = c.nat_inherited.GetKey(i);
 					String name = c.nat_inherited[i];
-					fout << "\t\t" << abbr << "::" << cls << "_DetachContext(" << name << ", *this, a);\n";
+					fout << "\t\t" << abbr << "::" << prefix << "_DetachContext(" << name << ", *this, a);\n";
 				}
 				fout << "\t}\n\n";
 			}
@@ -636,14 +649,14 @@ bool Package::Export() {
 			}
 			String nat_this_ = (nat_this.GetCount() ? (nat_this + ", ") : String());
 			fout << "static bool " << c.name << "_Initialize(" << nat_this_ << "AtomBase&, const Script::WorldState&);\n";
-			fout << "static bool " << c.name << "_PostInitialize(" << nat_this << ", AtomBase&);\n";
-			fout << "static bool " << c.name << "_Start(" << nat_this << ", AtomBase&);\n";
-			fout << "static void " << c.name << "_Stop(" << nat_this << ", AtomBase&);\n";
-			fout << "static void " << c.name << "_Uninitialize(" << nat_this << ", AtomBase&);\n";
+			fout << "static bool " << c.name << "_PostInitialize(" << nat_this_ << "AtomBase&);\n";
+			fout << "static bool " << c.name << "_Start(" << nat_this_ << "AtomBase&);\n";
+			fout << "static void " << c.name << "_Stop(" << nat_this_ << "AtomBase&);\n";
+			fout << "static void " << c.name << "_Uninitialize(" << nat_this_ << "AtomBase&);\n";
 			fout << "static bool " << c.name << "_ProcessPacket(" << nat_this_ << "AtomBase&, PacketValue& in, PacketValue& out);\n";
 			if (c.have_context_fns) {
-				fout << "static bool " << c.name << "_AttachContext(" << nat_this << ", AtomBase& a, AtomBase& other);\n";
-				fout << "static void " << c.name << "_DetachContext(" << nat_this << ", AtomBase& a, AtomBase& other);\n";
+				fout << "static bool " << c.name << "_AttachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
+				fout << "static void " << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
 			}
 			fout << "\n";
 			
@@ -718,6 +731,18 @@ bool Package::Export() {
 			//fout << "\ttypedef void (*DataCallbackFn)(void*, char* data, int size);\n";
 			fout << "\t\n";
 			
+			for(int i = 0; i < v.structs.GetCount(); i++) {
+				const auto& s = v.structs[i];
+				String struct_name = v.structs.GetKey(i);
+				
+				fout << "\tstruct " << struct_name << " {\n";
+				for(int j = 0; j < s.fields.GetCount(); j++) {
+					String name = s.fields.GetKey(j);
+					String type = s.fields[j];
+					fout << "\t\t" << type << " " << name << ";\n";
+				}
+				fout << "\t};\n\n\t\n";
+			}
 			
 			fout << "\tstruct Thread {\n";
 			fout << "\t\t\n";

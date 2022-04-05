@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IHal_Vendors_h_
 #define _IHal_Vendors_h_
@@ -15,8 +15,6 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define HAL_CLS_LIST(x) \
 	HAL_CLS(AudioSinkDevice, x) \
-	HAL_CLS(Window, x) \
-	HAL_CLS(Renderer, x) \
 	HAL_CLS(CenterVideoSinkDevice, x) \
 	HAL_CLS(ContextBase, x) \
 
@@ -38,9 +36,14 @@ HAL_VNDR_LIST
 #if defined flagSDL2
 struct HalSdl2 {
 	using NativeAudioSinkDevice = SDL_AudioDeviceID;
-	using NativeWindow = SDL_Window*;
-	using NativeRenderer = SDL_Renderer*;
 	using NativeContextBase = void*;
+	
+	struct NativeVideoSink {
+		SDL_Window* win;
+		SDL_Renderer* rend;
+		SoftFramebuffer fb;
+	};
+
 	
 	struct Thread {
 		

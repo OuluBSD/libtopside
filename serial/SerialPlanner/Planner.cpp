@@ -253,6 +253,29 @@ String WorldState::Get(int idx) const {
 	return String();
 }
 
+Size WorldState::GetSize(const String& cx, const String& cy, Size def) const {
+	String cx_str = Get(cx);
+	String cy_str = Get(cy);
+	if (cx_str.IsEmpty() || cy_str.IsEmpty())
+		return def;
+	return Size(StrInt(cx_str), StrInt(cy_str));
+}
+
+bool WorldState::GetBool(const String& key, bool def) const {
+	String str = Get(key);
+	if (str.IsEmpty())
+		return def;
+	str = ToLower(str);
+	return str == "true" || str == "1";
+}
+
+String WorldState::GetString(const String& key, String def) const {
+	String str = Get(key);
+	if (str.IsEmpty())
+		return def;
+	return str;
+}
+
 String WorldState::ToString() const {
 	ASSERT(ap);
 	String s;

@@ -7,6 +7,8 @@ file
 	SoftRend.h,
 	SoftRend.icpp,
 	Common.h,
+	Backend.h,
+	Backend.cpp,
 	Data.h,
 	Framebuffer.h,
 	Framebuffer.cpp,

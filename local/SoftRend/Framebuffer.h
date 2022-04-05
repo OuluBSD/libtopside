@@ -21,19 +21,23 @@ public:
 	operator bool() const {return inited;}
 };*/
 
-class SoftFramebuffer {
+
+template <class Backend>
+class SoftFramebufferT {
 	bool inited = false;
 	
 protected:
 	friend class SoftRend;
-	SDL_Texture* tex = 0;
+	using NativeTexture = typename Backend::Texture;
+	
+	NativeTexture* tex = 0;
 	Texture* gtex = 0;
 	
 	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
 	GVar::Filter filter[GVar::TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
 public:
-	typedef SoftFramebuffer CLASSNAME;
-	SoftFramebuffer();
+	typedef SoftFramebufferT CLASSNAME;
+	SoftFramebufferT();
 	
 	void Clear();
 	bool Create();
@@ -42,10 +46,10 @@ public:
 	
 	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	
-	SDL_Texture* GetTex() const {ASSERT(tex); return tex;}
+	NativeTexture* GetTex() const {ASSERT(tex); return tex;}
 	Texture& GetGeomTex() const {ASSERT(gtex); return *gtex;}
 	
-	void operator=(SDL_Texture* tex);
+	void operator=(NativeTexture* tex);
 	void operator=(Texture* t) {ASSERT(tex == 0); gtex = t;}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}

@@ -1,0 +1,14 @@
+machine x11.app: {
+	
+	chain program: {
+		
+		loop video: {
+			center.customer: true;
+			center.video.src.dbg_generator: true {mode: "noise";};
+			x11.video.pipe: true;
+		};
+		
+	};
+	
+};
+

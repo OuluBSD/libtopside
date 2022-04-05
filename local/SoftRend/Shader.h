@@ -4,7 +4,8 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SoftProgram;
+template <class Backend>
+class SoftProgramT;
 
 
 struct SoftShaderLibrary {
@@ -21,7 +22,8 @@ struct SoftShaderLibrary {
 	static SoftShaderBase* CreateShader() {return new T();}
 };
 
-class SoftShader {
+template <class Backend>
+class SoftShaderT {
 	bool inited = false;
 	GVar::ShaderType type;
 	String src;
@@ -29,12 +31,13 @@ class SoftShader {
 	SoftShaderBase* s = 0;
 	
 protected:
-	friend class SoftProgram;
+	using SoftProgram = SoftProgramT<Backend>;
+	
 	SoftProgram* prog = 0;
 	
 public:
-	typedef SoftShader CLASSNAME;
-	SoftShader();
+	typedef SoftShaderT CLASSNAME;
+	SoftShaderT();
 	
 	void Clear();
 	bool Create(GVar::ShaderType t);

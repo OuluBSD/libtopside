@@ -590,6 +590,8 @@ public:
 	bool IsError() const {return !last_error.IsEmpty();}
 	String GetError() const {return last_error;}
 	
+	virtual void Visit(RuntimeVisitor& vis) {}
+	
 };
 
 

@@ -16,27 +16,29 @@ class ScreenT : public Component {
 protected:
 	friend class Events;
 	
-	using Buffer = typename Gfx::Buffer;
-	using Renderer = typename Gfx::Renderer;
-	using StateDraw = typename Gfx::StateDraw;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using ShaderPipeline = typename Gfx::ShaderPipeline;
-	using DataState = typename Gfx::DataState;
-	using NatWin = typename Gfx::NativeWindow;
-	using NatRend = typename Gfx::NativeRenderer;
-	using NatFrameBuf = typename Gfx::NativeFrameBuffer;
-	using ValFormat = typename Gfx::ValFormat;
+	using Buffer			= typename Gfx::Buffer;
+	using Renderer			= typename Gfx::Renderer;
+	using StateDraw			= typename Gfx::StateDraw;
+	using Framebuffer		= typename Gfx::Framebuffer;
+	using ShaderPipeline	= typename Gfx::ShaderPipeline;
+	using DataState			= typename Gfx::DataState;
+	using NatWin			= typename Gfx::NativeWindow;
+	using NatRend			= typename Gfx::NativeRenderer;
+	using NatFrameBuf		= typename Gfx::NativeFrameBuffer;
+	using ValFormat			= typename Gfx::ValFormat;
+	using RendererInfo		= typename Gfx::NativeRendererInfo;
+	using GLContext			= typename Gfx::NativeGLContext;
 	
 	Buffer* buf = 0;
     NatWin*					win = NULL;
     NatRend*				nat_rend = NULL;
     //NatFrameBuf*			fb = NULL;
 	int						fb_stride;
-    SDL_RendererInfo		rend_info;
+    RendererInfo			rend_info;
     Rect					desired_rect;
 	Size					screen_sz;
 	String					title;
-	SDL_GLContext			glcontext = 0;
+	GLContext				glcontext = 0;
 	Renderer				rend;
 	StateDraw				draw;
 	SystemDraw				sysdraw;

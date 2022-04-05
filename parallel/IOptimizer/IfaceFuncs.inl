@@ -1,12 +1,12 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 static bool Solver_Initialize(AtomBase&, const Script::WorldState&);
-static bool Solver_PostInitialize(, AtomBase&);
-static bool Solver_Start(, AtomBase&);
-static void Solver_Stop(, AtomBase&);
-static void Solver_Uninitialize(, AtomBase&);
+static bool Solver_PostInitialize(AtomBase&);
+static bool Solver_Start(AtomBase&);
+static void Solver_Stop(AtomBase&);
+static void Solver_Uninitialize(AtomBase&);
 static bool Solver_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
 
 	

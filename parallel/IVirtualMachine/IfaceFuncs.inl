@@ -1,20 +1,20 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 static bool VirtualMachine_Initialize(AtomBase&, const Script::WorldState&);
-static bool VirtualMachine_PostInitialize(, AtomBase&);
-static bool VirtualMachine_Start(, AtomBase&);
-static void VirtualMachine_Stop(, AtomBase&);
-static void VirtualMachine_Uninitialize(, AtomBase&);
+static bool VirtualMachine_PostInitialize(AtomBase&);
+static bool VirtualMachine_Start(AtomBase&);
+static void VirtualMachine_Stop(AtomBase&);
+static void VirtualMachine_Uninitialize(AtomBase&);
 static bool VirtualMachine_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
 
 	
 static bool Thread_Initialize(AtomBase&, const Script::WorldState&);
-static bool Thread_PostInitialize(, AtomBase&);
-static bool Thread_Start(, AtomBase&);
-static void Thread_Stop(, AtomBase&);
-static void Thread_Uninitialize(, AtomBase&);
+static bool Thread_PostInitialize(AtomBase&);
+static bool Thread_Start(AtomBase&);
+static void Thread_Stop(AtomBase&);
+static void Thread_Uninitialize(AtomBase&);
 static bool Thread_ProcessPacket(AtomBase&, PacketValue& in, PacketValue& out);
 
 	

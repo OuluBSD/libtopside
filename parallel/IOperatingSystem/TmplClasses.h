@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IOperatingSystem_TmplClasses_h_
 #define _IOperatingSystem_TmplClasses_h_
@@ -17,6 +17,7 @@ struct OperatingSystemMessageBusT : OsMessageBus {
 	using CLASSNAME = OperatingSystemMessageBusT<Os>;
 	RTTI_DECL1(CLASSNAME, OsMessageBus)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OsMessageBus>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -50,6 +51,7 @@ struct OperatingSystemProcessManagerT : OsProcessManager {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OsProcessManager>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -79,6 +81,7 @@ struct OperatingSystemDesktopManagerT : OsDesktopManager {
 	using CLASSNAME = OperatingSystemDesktopManagerT<Os>;
 	RTTI_DECL1(CLASSNAME, OsDesktopManager)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<OsDesktopManager>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

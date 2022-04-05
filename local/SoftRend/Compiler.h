@@ -4,12 +4,15 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SoftCompiler {
+template <class Backend>
+class SoftCompilerT {
 	
 	
 public:
-	typedef SoftCompiler CLASSNAME;
-	SoftCompiler();
+	using SoftShader	= SoftShaderT<Backend>;
+	
+	typedef SoftCompilerT CLASSNAME;
+	SoftCompilerT();
 	
 	
 	bool Compile(SoftShader& s);

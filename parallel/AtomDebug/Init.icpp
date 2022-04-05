@@ -47,7 +47,13 @@ INITBLOCK {
 	
 	#if defined flagSCREEN
 	Factory::RegisterAtom<VideoDbgSrc>();
+	
+	#if defined flagPOSIX
+	Factory::RegisterAtom<X11VideoAtomPipe>();
+	#endif
+	
 	#ifdef flagSDL2
+	Factory::RegisterAtom<SdlVideoAtomPipe>();
 	Factory::RegisterAtom<SdlVideoAtom>();
 	#endif
 	#endif

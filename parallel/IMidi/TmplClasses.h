@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IMidi_TmplClasses_h_
 #define _IMidi_TmplClasses_h_
@@ -19,32 +19,33 @@ struct MidiMidiSinkDeviceT : MidMidiSinkDevice {
 	
 	typename Mid::NativeSinkDevice dev;
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
-		if (!Mid::SinkDevice_Initialize(dev, *this, ws))
+		if (!Mid::MidiSinkDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
 	}
 
 	bool PostInitialize() override {
-		if (!Mid::SinkDevice_PostInitialize(dev, *this))
+		if (!Mid::MidiSinkDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Mid::SinkDevice_Start(dev, *this);
+		return Mid::MidiSinkDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Mid::SinkDevice_Stop(dev, *this);
+		Mid::MidiSinkDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Mid::SinkDevice_Uninitialize(dev, *this);
+		Mid::MidiSinkDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
-		if (!Mid::SinkDevice_ProcessPacket(dev, *this, in, out))
+		if (!Mid::MidiSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}
@@ -76,32 +77,33 @@ struct MidiMidiSourceDeviceT : MidMidiSourceDevice {
 	
 	typename Mid::NativeSourceDevice dev;
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
-		if (!Mid::SourceDevice_Initialize(dev, *this, ws))
+		if (!Mid::MidiSourceDevice_Initialize(dev, *this, ws))
 			return false;
 		return true;
 	}
 
 	bool PostInitialize() override {
-		if (!Mid::SourceDevice_PostInitialize(dev, *this))
+		if (!Mid::MidiSourceDevice_PostInitialize(dev, *this))
 			return false;
 		return true;
 	}
 
 	bool Start() override {
-		return Mid::SourceDevice_Start(dev, *this);
+		return Mid::MidiSourceDevice_Start(dev, *this);
 	}
 
 	void Stop() override {
-		Mid::SourceDevice_Stop(dev, *this);
+		Mid::MidiSourceDevice_Stop(dev, *this);
 	}
 
 	void Uninitialize() override {
-		Mid::SourceDevice_Uninitialize(dev, *this);
+		Mid::MidiSourceDevice_Uninitialize(dev, *this);
 	}
 
 	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
-		if (!Mid::SourceDevice_ProcessPacket(dev, *this, in, out))
+		if (!Mid::MidiSourceDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
 	}

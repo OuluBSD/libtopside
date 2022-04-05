@@ -6,6 +6,12 @@
 #include <IAudio/IAudio.h>
 #include <IHal/IHal.h>
 
+#ifdef flagSCREEN
+	#include <IGraphics/IGraphics.h>
+#endif
+
+#include <IScreen/IScreen.h>
+
 
 
 #include "Prefabs.h"

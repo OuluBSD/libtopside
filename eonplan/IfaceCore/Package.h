@@ -39,6 +39,7 @@ struct Class {
 	String GetTreeString(int indent);
 	Function& AddFunction(String name);
 	void AddNativeInherit(String cls, String name);
+	void AddNativeField(String cls, String name);
 };
 
 struct EnumValue {
@@ -91,16 +92,24 @@ struct EnabledFlag : Moveable<EnabledFlag> {
 };
 
 struct Vendor {
+	struct Struct {
+		VectorMap<String,String> fields;
+		
+		Struct& Add(String name, String type) {fields.Add(name, type); return *this;}
+	};
+	
 	String name;
 	VectorMap<String, String> nat_typedef;
 	VectorMap<String, Vector<String>> includes;
 	Vector<EnabledFlag> enabled;
+	ArrayMap<String, Struct> structs;
 	bool includes_in_header = false;
 	
 	Vendor& SetName(String s) {name = s; return *this;}
 	Vendor& AddNativeTypedef(String iface_cls, String nat_cls) {nat_typedef.Add(iface_cls, nat_cls); return *this;}
 	Vendor& AddInclude(String macro_if_str, String filepath) {includes.GetAdd(macro_if_str).Add(filepath); return *this;}
 	Vendor& SetIncludeInHeader(bool b=true) {includes_in_header = b; return *this;}
+	Struct& AddStruct(String type) {return structs.Add(type);}
 	EnabledFlag& AddEnabled() {return enabled.Add();}
 	String GetTreeString(int indent);
 	String GetPreprocessorEnabler() const;

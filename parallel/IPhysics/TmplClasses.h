@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IPhysics_TmplClasses_h_
 #define _IPhysics_TmplClasses_h_
@@ -19,6 +19,7 @@ struct PhysicsNodeT : FysNode {
 	using CLASSNAME = PhysicsNodeT<Fys>;
 	RTTI_DECL1(CLASSNAME, FysNode)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FysNode>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -52,6 +53,7 @@ struct PhysicsObjectT : FysObject {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FysObject>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -81,6 +83,7 @@ struct PhysicsJointT : FysJoint {
 	using CLASSNAME = PhysicsJointT<Fys>;
 	RTTI_DECL1(CLASSNAME, FysJoint)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FysJoint>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -114,6 +117,7 @@ struct PhysicsSpaceT : FysSpace {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FysSpace>(this);}
 	
 	
+	
 	bool Initialize(const Script::WorldState& ws) override {
 		return true;
 	}
@@ -143,6 +147,7 @@ struct PhysicsSystemT : FysSystem {
 	using CLASSNAME = PhysicsSystemT<Fys>;
 	RTTI_DECL1(CLASSNAME, FysSystem)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<FysSystem>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

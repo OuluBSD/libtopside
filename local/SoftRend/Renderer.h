@@ -4,7 +4,16 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SoftRend {
+template <class Backend>
+class SoftRendT {
+	using SoftFramebuffer		= SoftFramebufferT<Backend>;
+	using SoftPipeline			= SoftPipelineT<Backend>;
+	using SoftShader			= SoftShaderT<Backend>;
+	using FragmentShaderArgs	= FragmentShaderArgsT<Backend>;
+	using SoftProgram			= SoftProgramT<Backend>;
+	using Texture				= typename Backend::Texture;
+	using Surface				= typename Backend::Surface;
+	
 	bool verbose = false;
 	Vector<SoftFramebuffer*> buffers;
 	GVar::ShadeMode shading = GVar::FLAT;
@@ -62,8 +71,8 @@ class SoftRend {
 	//SoftElementBuffer& GetIndices() {return *input_indices;}
 	
 public:
-	typedef SoftRend CLASSNAME;
-	SoftRend();
+	typedef SoftRendT CLASSNAME;
+	SoftRendT();
 	
 	void Begin();
 	void End();

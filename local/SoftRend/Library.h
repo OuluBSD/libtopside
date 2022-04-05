@@ -32,9 +32,11 @@ inline const char* GetUniformName(int i) {
 
 
 
-struct FS_SimpleSingle : SoftShaderBase {
+#ifdef flagSDL2
+struct FS_Sdl2CpuSimpleSingle : SoftShaderBase {
 	void Process(SdlCpuFragmentShaderArgs& args) override;
 };
+#endif
 
 
 }

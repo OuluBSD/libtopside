@@ -3,36 +3,43 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-SoftFramebuffer::SoftFramebuffer() {
+template <class B>
+SoftFramebufferT<B>::SoftFramebufferT() {
 	
 }
 
-void SoftFramebuffer::Clear() {
+template <class B>
+void SoftFramebufferT<B>::Clear() {
 	inited = false;
 	
 }
 
-bool SoftFramebuffer::Create() {
+template <class B>
+bool SoftFramebufferT<B>::Create() {
 	
 	
 	inited = true;
 	return true;
 }
 
-void SoftFramebuffer::operator=(SDL_Texture* tex) {
+template <class B>
+void SoftFramebufferT<B>::operator=(NativeTexture* tex) {
 	ASSERT(!this->tex);
 	this->tex = tex;
 }
 
-void SoftFramebuffer::ClearData(GVar::BufferType type) {
+template <class B>
+void SoftFramebufferT<B>::ClearData(GVar::BufferType type) {
 	
 }
 
-void SoftFramebuffer::ClearDataAll() {
+template <class B>
+void SoftFramebufferT<B>::ClearDataAll() {
 	
 }
 
-void SoftFramebuffer::SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
+template <class B>
+void SoftFramebufferT<B>::SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
 	ASSERT(type >= 0 && type < GVar::TEXTYPE_COUNT);
 	this->filter[type] = filter;
 	this->wrap[type] = wrap;

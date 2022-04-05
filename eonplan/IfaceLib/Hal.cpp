@@ -8,11 +8,12 @@ PKG(Hal, Hal, H) {
 	IfaceLib::Add(this);
 	COLOR(198, 127, 200)
 	DEPENDENCY(ParallelLib)
+	DEPENDENCY(SoftRend)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
-		NATIVE_CLASS(Window)
-		NATIVE_CLASS(Renderer)
+		//NATIVE_CLASS(Window)
+		//NATIVE_CLASS(Renderer)
 		//NATIVE_CLASS(AudioSourceDevice)
 		NATIVE_CLASS(ContextBase)
 		//UTIL_CLASS()
@@ -29,7 +30,7 @@ PKG(Hal, Hal, H) {
 			NATIVE_INHERIT(AudioSourceDevice, dev)
 			
 		}*/
-		CLASS(Window) {
+		/*CLASS(Window) {
 			NATIVE_INHERIT(Window, win)
 			
 		}
@@ -37,9 +38,13 @@ PKG(Hal, Hal, H) {
 		CLASS(Renderer) {
 			NATIVE_INHERIT(Renderer, rend)
 			
-		}
+		}*/
 		
 		CLASS(CenterVideoSinkDevice) {
+			NATIVE_INHERIT(VideoSink, dev)
+			
+			//NATIVE_FIELD(NativeWindow*, win)
+			//NATIVE_FIELD(NativeRenderer*, rend)
 			
 		}
 		
@@ -62,8 +67,14 @@ PKG(Hal, Hal, H) {
 		VENDOR_HEADER_REQUIRES_INCLUDES
 		
 		VENDOR_CLASS(AudioSinkDevice, SDL_AudioDeviceID)
-		VENDOR_CLASS(Window, SDL_Window*)
-		VENDOR_CLASS(Renderer, SDL_Renderer*)
+		//VENDOR_CLASS(Window, SDL_Window*)
+		//VENDOR_CLASS(Renderer, SDL_Renderer*)
+		
+		v->AddStruct("NativeVideoSink")
+			.Add("win",		"SDL_Window*")
+			.Add("rend",	"SDL_Renderer*")
+			.Add("fb",		"SoftFramebuffer")
+			;
 		
 		// POSIX: GLEW GL GLU
 		// Win32: Opengl32 glu32 glew32s

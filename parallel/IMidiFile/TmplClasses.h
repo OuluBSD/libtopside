@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IMidiFile_TmplClasses_h_
 #define _IMidiFile_TmplClasses_h_
@@ -17,6 +17,7 @@ struct MidiFileMidiFileT : MifMidiFile {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<MifMidiFile>(this);}
 	
 	typename Mif::NativeMidiFile file;
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Mif::MidiFile_Initialize(file, *this, ws))

@@ -1,70 +1,80 @@
-#include <Graphics/Graphics.h>
+#include "SoftRend.h"
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-SoftRend::SoftRend() {
+template <class B>
+SoftRendT<B>::SoftRendT() {
 	viewport_size = Size(0,0);
 	SET_ZERO(input_texture);
 	
 }
 
-void SoftRend::ClearBuffers() {
+template <class B>
+void SoftRendT<B>::ClearBuffers() {
 	for (SoftFramebuffer* fb : buffers) {
 		fb->Clear();
 	}
 }
 
-void SoftRend::SetSmoothShading(bool b) {
+template <class B>
+void SoftRendT<B>::SetSmoothShading(bool b) {
 	shading = b ? GVar::SMOOTH : GVar::FLAT;
 }
 
-void SoftRend::SetDepthTest(bool b) {
+template <class B>
+void SoftRendT<B>::SetDepthTest(bool b) {
 	is_depth_test = b;
 }
 
-void SoftRend::SetDepthOrderLess(bool b) {
+template <class B>
+void SoftRendT<B>::SetDepthOrderLess(bool b) {
 	is_depth_order_greater = !b;
 }
 
-void SoftRend::SetClearValue(RGBA clr, byte depth) {
+template <class B>
+void SoftRendT<B>::SetClearValue(RGBA clr, byte depth) {
 	clear_color = clr;
 	clear_depth = depth;
 }
 
-void SoftRend::SetFastPerspectiveCorrection(bool b) {
+template <class B>
+void SoftRendT<B>::SetFastPerspectiveCorrection(bool b) {
 	is_fast_perspective_correction = b;
 }
 
-void SoftRend::SetTriangleBacksideCulling(bool b) {
+template <class B>
+void SoftRendT<B>::SetTriangleBacksideCulling(bool b) {
 	is_triangle_backside_culling = b;
 }
 
-void SoftRend::SetTriangleFrontsideCCW(bool b) {
+template <class B>
+void SoftRendT<B>::SetTriangleFrontsideCCW(bool b) {
 	is_triangle_frontside_cw = !b;
 }
 
-void SoftRend::SetViewport(Size sz) {
+template <class B>
+void SoftRendT<B>::SetViewport(Size sz) {
 	viewport_size = sz;
 }
 
-void SoftRend::RenderScreenRect(bool elements) {
+template <class B>
+void SoftRendT<B>::RenderScreenRect(bool elements) {
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
 	SoftFramebuffer& fb = *tgt_fb;
 	
-	SDL_Texture* tex = fb.tex;
-	
-	SDL_Surface* surf = 0;
-	SDL_Rect r {0, 0, w, h};
-	if (SDL_LockTextureToSurface(tex, &r, &surf) < 0 || !surf)
+	Texture* tex = fb.tex;
+	Surface* surf = 0;
+	Rect r = RectC(0, 0, w, h);
+	if (!B::LockTextureToSurface(tex, r, surf) || !surf)
 		return;
 	
 	int stride = surf->format->BytesPerPixel;
 	int pitch = surf->pitch;
 	byte* data = (byte*)surf->pixels;
 	
-	SdlCpuFragmentShaderArgs frag_args;
+	FragmentShaderArgs frag_args;
 	
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
 		frag_args.tex_img[i] = input_texture[i];
@@ -170,9 +180,11 @@ void SoftRend::RenderScreenRect(bool elements) {
 	SDL_UnlockTexture(tex);
 }
 
-void SoftRend::RenderScreenRect() {
+template <class B>
+void SoftRendT<B>::RenderScreenRect() {
 	ASSERT(tgt_pipe && tgt_fb);
-	for (SoftPipeline::Stage& stage : tgt_pipe->stages) {
+	using Stage = typename SoftPipelineT<B>::Stage;
+	for (Stage& stage : tgt_pipe->stages) {
 		SoftProgram& prog = *stage.prog;
 		for (SoftShader* shader : prog.shaders) {
 			GVar::ShaderType type = shader->GetType();
@@ -183,7 +195,8 @@ void SoftRend::RenderScreenRect() {
 	}
 }
 
-void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id) {
+template <class B>
+void SoftRendT<B>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id) {
 	RenderSource& rs = tmp_sources[src_id];
 	SoftVertexBuffer& processed_vertices = rs.processed_vertices;
 	ASSERT(vao.vbo && vao.ebo);
@@ -192,7 +205,7 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 	SoftShaderBase& vs = shdr.Get();
 	SoftProgram& prog = *rs.prog;
 	
-	SdlCpuVertexShaderArgs vtx_args;
+	VertexShaderArgsT<B> vtx_args;
 	GenericShaderArgs& g = prog.args;
 	vtx_args.generic = &g;
 	vtx_args.va = &prog.vargs;
@@ -229,7 +242,8 @@ void SoftRend::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint1
 	rs.use_processed_vertices = true;
 }
 
-void SoftRend::TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
+template <class B>
+void SoftRendT<B>::TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id) {
 	vec2 bboxmin(w - 1,  h - 1);
 	vec2 bboxmax(0, 0);
 	vec2 clamp(w - 1, h - 1);
@@ -272,7 +286,8 @@ void SoftRend::TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex&
 	}
 }
 
-void SoftRend::DepthTest(SoftVertexArray& vao, uint16 src_id) {
+template <class B>
+void SoftRendT<B>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	SoftElementBuffer& ebo = *vao.ebo;
 	SoftVertexBuffer& vbo = tmp_sources[src_id].GetVertices();
 	Vertex* vert = (Vertex*)vbo.vertices.Begin();
@@ -301,7 +316,8 @@ void SoftRend::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 	//RenderScreenRect(fb, prog, shdr, true);
 }
 
-void SoftRend::Render(SoftVertexArray& vao) {
+template <class B>
+void SoftRendT<B>::Render(SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
@@ -311,8 +327,9 @@ void SoftRend::Render(SoftVertexArray& vao) {
 	
 	
 	//input_vertices = vao.vbo;
+	using Stage = typename SoftPipelineT<B>::Stage;
 	
-	for (SoftPipeline::Stage& stage : pipe.stages) {
+	for (Stage& stage : pipe.stages) {
 		SoftProgram& prog = *stage.prog;
 		
 		if (tmp_sources.GetCount() >= UINT16_MAX)
@@ -343,17 +360,18 @@ void SoftRend::Render(SoftVertexArray& vao) {
 	}
 }
 
-void SoftRend::Begin() {
+template <class B>
+void SoftRendT<B>::Begin() {
 	ASSERT(tgt_fb && tgt_pipe);
 	
 	tmp_sources.SetCount(0);
 	
 	// query target dimension
-	SDL_Texture* tex = tgt_fb->tex;
+	Texture* tex = tgt_fb->tex;
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
-	SDL_QueryTexture(tex, &fmt, &access, &w, &h);
+	B::QueryTexture(tex, fmt, access, w, h);
 	
 	// reset z-buffer
 	int len = w * h;
@@ -365,11 +383,14 @@ void SoftRend::Begin() {
 	
 }
 
-void SoftRend::End() {
+template <class B>
+void SoftRendT<B>::End() {
 	RenderScreenRect(true);
 }
 
-/*void SoftRend::ClearTemp() {
+/*
+template <class B>
+void SoftRendT<B>::ClearTemp() {
 	vertices.SetCount(0);
 	indices.SetCount(0);
 }*/

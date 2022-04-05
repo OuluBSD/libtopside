@@ -1,5 +1,8 @@
 #include "IfaceLib.h"
 
+
+// This is made manually because of the code complexity
+#if 0
 NAMESPACE_PLAN_BEGIN
 
 
@@ -10,6 +13,7 @@ PKG(Graphics, Gfx, G) {
 	MAINFLAG(Screen)
 	DEPENDENCY(Geometry)
 	DEPENDENCY(SoftRend)
+	DEPENDENCY(IGraphics)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(Texture)
@@ -22,6 +26,7 @@ PKG(Graphics, Gfx, G) {
 		NATIVE_CLASS(ElementBuffr)
 		NATIVE_CLASS(Program)
 		NATIVE_CLASS(Pipeline)
+		
 		UTIL_CLASS(SystemFramebuffer)
 		UTIL_CLASS(ValFormat)
 		
@@ -180,3 +185,4 @@ PKG(Graphics, Gfx, G) {
 
 
 NAMESPACE_PLAN_END
+#endif

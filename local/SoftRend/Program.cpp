@@ -1,35 +1,42 @@
-#include <Graphics/Graphics.h>
+#include "SoftRend.h"
+//#include <Graphics/Graphics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 
 
-SoftProgram::SoftProgram() {
+template <class B>
+SoftProgramT<B>::SoftProgramT() {
 	
 }
 
-void SoftProgram::Clear() {
+template <class B>
+void SoftProgramT<B>::Clear() {
 	ASSERT(shaders.IsEmpty());
 	inited = false;
 }
 
-bool SoftProgram::Create() {
+template <class B>
+bool SoftProgramT<B>::Create() {
 	
 	
 	inited = true;
 	return true;
 }
 
-bool SoftProgram::LinkProgram() {
+template <class B>
+bool SoftProgramT<B>::LinkProgram() {
 	
 	
 	return true;
 }
 
-void SoftProgram::SetParameter(GVar::ParamType type, int i) {
+template <class B>
+void SoftProgramT<B>::SetParameter(GVar::ParamType type, int i) {
 	TODO
 }
 
-int SoftProgram::GetParamInt(GVar::ProgParamType type) {
+template <class B>
+int SoftProgramT<B>::GetParamInt(GVar::ProgParamType type) {
 	if (type == GVar::ACTIVE_UNIFORMS)
 		return Shaders::UNIFORM_COUNT + uniforms.GetCount();
 	
@@ -37,7 +44,8 @@ int SoftProgram::GetParamInt(GVar::ProgParamType type) {
 	
 }
 
-int SoftProgram::GetVarSize(int idx) const {
+template <class B>
+int SoftProgramT<B>::GetVarSize(int idx) const {
 	switch (idx) {
 		case Shaders::IVIEW:		return sizeof(GenericVertexShaderArgs::view);
 		case Shaders::ILIGHTDIR:	return sizeof(GenericFragmentShaderArgs::light_dir);
@@ -53,11 +61,13 @@ int SoftProgram::GetVarSize(int idx) const {
 	
 }
 
-int SoftProgram::GetVarType(int idx) const {
+template <class B>
+int SoftProgramT<B>::GetVarType(int idx) const {
 	return 1;
 }
 
-String SoftProgram::GetVar(int idx) const {
+template <class B>
+String SoftProgramT<B>::GetVar(int idx) const {
 	if (idx < 0) return "";
 	if (idx < Shaders::UNIFORM_COUNT) return Shaders::GetUniformName(idx);
 	if (idx > Shaders::UNIFORM_COUNT + uniforms.GetCount()) return "";
@@ -66,17 +76,20 @@ String SoftProgram::GetVar(int idx) const {
 	
 }
 
-void SoftProgram::Attach(SoftShader& s) {
+template <class B>
+void SoftProgramT<B>::Attach(SoftShader& s) {
 	ASSERT(s.prog == 0);
 	s.prog = this;
 	shaders.Add(&s);
 }
 
-void SoftProgram::SetVar(int idx, int i) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, int i) {
 	TODO
 }
 
-void SoftProgram::SetVar(int idx, float f) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, float f) {
 	switch (idx) {
 		case Shaders::ITIME: args.iTime = f; return;
 		default: break;
@@ -84,11 +97,13 @@ void SoftProgram::SetVar(int idx, float f) {
 	ASSERT(0);
 }
 
-void SoftProgram::SetVar(int idx, float f0, float f1) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, float f0, float f1) {
 	TODO
 }
 
-void SoftProgram::SetVar(int idx, float f0, float f1, float f2) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, float f0, float f1, float f2) {
 	switch (idx) {
 		case Shaders::IRESOLUTION: args.iResolution = vec3(f0,f1,f2); return;
 		case Shaders::ILIGHTDIR: fargs.light_dir = vec3(f0,f1,f2); return;
@@ -97,11 +112,13 @@ void SoftProgram::SetVar(int idx, float f0, float f1, float f2) {
 	ASSERT(0);
 }
 
-void SoftProgram::SetVar(int idx, float f0, float f1, float f2, float f3) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, float f0, float f1, float f2, float f3) {
 	TODO
 }
 
-void SoftProgram::SetVar(int idx, const mat4& mat) {
+template <class B>
+void SoftProgramT<B>::SetVar(int idx, const mat4& mat) {
 	switch (idx) {
 		case Shaders::IVIEW:		vargs.view = mat; return;
 		/*case Shaders::IPROJ:		vargs.proj = mat; return;

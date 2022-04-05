@@ -4,11 +4,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-class SoftPipeline {
+template <class Backend>
+class SoftPipelineT {
 	bool inited = false;
 	
 protected:
 	friend class SoftRend;
+	using SoftProgram = SoftProgramT<Backend>;
 	
 	struct Stage : Moveable<Stage> {
 		SoftProgram* prog = 0;
@@ -18,8 +20,8 @@ protected:
 	
 	
 public:
-	typedef SoftPipeline CLASSNAME;
-	SoftPipeline();
+	typedef SoftPipelineT CLASSNAME;
+	SoftPipelineT();
 	
 	bool Create();
 	void Clear();

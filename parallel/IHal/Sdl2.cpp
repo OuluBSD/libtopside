@@ -202,6 +202,110 @@ void HalSdl2::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, Ato
 
 
 
+
+bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
+	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
+	ASSERT(ev_ctx);
+	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
+	
+	if (!ev_ctx->AttachContext(a))
+		return false;
+	
+	String title = ws.GetString(".title", "SDL2 Window");
+	Size sz = ws.GetSize(".cx", ".cy", Size(800,600));
+	bool fullscreen = ws.GetBool(".fullscreen", false);
+	bool sizeable = ws.GetBool(".sizeable", false);
+	bool maximized = ws.GetBool(".maximized", false);
+	
+	HiValue& data = a.UserData();
+	data.Set("cx", sz.cx);
+	data.Set("cy", sz.cy);
+	data.Set("fullscreen", fullscreen);
+	data.Set("sizeable", sizeable);
+	data.Set("maximized", maximized);
+	data.Set("title", title);
+	
+	
+	// Set init flag
+	dword sdl_flag = SDL_INIT_VIDEO;
+	ev_ctx->UserData().MapGetAdd("dependencies").MapGetAdd(a).MapSet("sdl_flag", (int64)sdl_flag);
+	
+	return true;
+}
+
+bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBase& a) {
+	AppFlags& app_flags = GetAppFlags();
+	dev.win = 0;
+	dev.rend = 0;
+	
+	HiValue& data = a.UserData();
+	Size screen_sz(data["cx"], data["cy"]);
+	bool is_fullscreen = data["fullscreen"];
+	bool is_sizeable = data["sizeable"];
+	bool is_maximized = data["maximized"];
+	String title = data["title"];
+	
+	// Window
+	uint32 flags = 0;
+	
+	if (is_fullscreen)	flags |= SDL_WINDOW_FULLSCREEN;
+	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
+	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
+	
+	if (SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &dev.win, &dev.rend) == -1)
+        return false;
+	SDL_SetWindowTitle(dev.win, title);
+    
+    
+    
+    // Renderer
+    int fb_stride = 3;
+	
+	SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
+	if (!fb) {
+		LOG("error: couldn't create framebuffer texture");
+		return false;
+	}
+	
+	SDL_SetRenderTarget(dev.rend, fb);
+	
+	auto& rend_fb = dev.fb;
+	rend_fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	rend_fb.SetWindowFbo();
+	
+	if (is_fullscreen)
+		SDL_SetWindowFullscreen(dev.win, SDL_WINDOW_FULLSCREEN);
+	
+	return true;
+}
+
+bool HalSdl2::CenterVideoSinkDevice_Start(NativeVideoSink& dev, AtomBase& a) {
+	
+	return true;
+}
+
+void HalSdl2::CenterVideoSinkDevice_Stop(NativeVideoSink& dev, AtomBase& a) {
+	a.ClearDependency();
+}
+
+void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase& a) {
+	if (dev.rend) {
+		SDL_DestroyRenderer(dev.rend);
+		dev.rend = 0;
+	}
+	if (dev.win) {
+		SDL_DestroyWindow(dev.win);
+		dev.win = 0;
+	}
+}
+
+bool HalSdl2::CenterVideoSinkDevice_ProcessPacket(NativeVideoSink& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+	TODO
+}
+
+
+
+
 NAMESPACE_PARALLEL_END
 #endif
 

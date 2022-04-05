@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IImageFile_TmplClasses_h_
 #define _IImageFile_TmplClasses_h_
@@ -17,6 +17,7 @@ struct ImageFileImageT : ImgImage {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ImgImage>(this);}
 	
 	typename Img::NativeImage img;
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Img::Image_Initialize(img, *this, ws))

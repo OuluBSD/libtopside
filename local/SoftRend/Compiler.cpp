@@ -3,11 +3,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-SoftCompiler::SoftCompiler() {
+template <class B>
+SoftCompilerT<B>::SoftCompilerT() {
 	
 }
 
-bool SoftCompiler::Compile(SoftShader& s) {
+template <class B>
+bool SoftCompilerT<B>::Compile(SoftShader& s) {
 	LOG("SoftCompiler::Compile: warning: TODO");
 	
 	return true;

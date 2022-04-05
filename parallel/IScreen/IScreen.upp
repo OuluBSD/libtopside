@@ -1,0 +1,20 @@
+description "\377B112,112,112";
+
+uses
+	ParallelLib;
+
+library
+	X11;
+
+file
+	IScreen.h,
+	Enums.h,
+	Vendors.h,
+	X11.cpp,
+	IfaceFuncs.inl highlight cpp,
+	BaseClasses.h,
+	TmplClasses.h;
+
+mainconfig
+	"" = "";
+

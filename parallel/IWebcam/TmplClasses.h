@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IWebcam_TmplClasses_h_
 #define _IWebcam_TmplClasses_h_
@@ -17,6 +17,7 @@ struct WebcamWebcamT : CamWebcam {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<CamWebcam>(this);}
 	
 	typename Cam::NativeWebcam dev;
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Cam::Webcam_Initialize(dev, *this, ws))

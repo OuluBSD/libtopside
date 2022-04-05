@@ -1,10 +1,11 @@
 #include "IfaceLib.h"
 
+#if 0
 NAMESPACE_PLAN_BEGIN
 
 
 
-PKG(Script, Scr, S) {
+PKG(Script, Sc, S) {
 	IfaceLib::Add(this);
 	
 	COLOR(56, 127, 255)
@@ -54,3 +55,4 @@ PKG(Script, Scr, S) {
 
 
 NAMESPACE_PLAN_END
+#endif

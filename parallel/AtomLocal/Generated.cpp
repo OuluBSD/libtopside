@@ -459,28 +459,6 @@ AtomTypeCls SdlFboAtom::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls SdlVideoAtomPipe::GetAtomType()
-{
-	return ATOM11(SDL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
-}
-
-LinkTypeCls SdlVideoAtomPipe::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
-}
-
-AtomTypeCls SdlVideoAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
 AtomTypeCls SdlVideoProgAtom::GetAtomType()
 {
 	return ATOM11(SDL_VIDEO_PROG_ATOM, PIPE, CENTER, VIDEO, CENTER, PROG, CENTER, RECEIPT);

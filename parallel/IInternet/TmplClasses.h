@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.6 0:00:44
 
 #ifndef _IInternet_TmplClasses_h_
 #define _IInternet_TmplClasses_h_
@@ -17,6 +17,7 @@ struct InternetSocketT : NetSocket {
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<NetSocket>(this);}
 	
 	typename Net::NativeSocket sock;
+	
 	
 	bool Initialize(const Script::WorldState& ws) override {
 		if (!Net::Socket_Initialize(sock, *this, ws))

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.3 22:44:00
+// Last export: 2022.4.5 17:55:33
 
 #ifndef _IScript_TmplClasses_h_
 #define _IScript_TmplClasses_h_
@@ -16,6 +16,7 @@ struct ScriptRunnerT : ScrRunner {
 	using CLASSNAME = ScriptRunnerT<Scr>;
 	RTTI_DECL1(CLASSNAME, ScrRunner)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ScrRunner>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {
@@ -47,6 +48,7 @@ struct ScriptThreadT : ScrThread {
 	using CLASSNAME = ScriptThreadT<Scr>;
 	RTTI_DECL1(CLASSNAME, ScrThread)
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<ScrThread>(this);}
+	
 	
 	
 	bool Initialize(const Script::WorldState& ws) override {

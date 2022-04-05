@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.3 22:44:00
+// Last modified: 2022.4.6 0:00:44
 
 namespace TS {
 
@@ -246,7 +246,43 @@ public:
 
 };
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagPOSIX
+class X11VideoAtomPipe : public X11SinkDevice {
+
+public:
+	RTTI_DECL1(X11VideoAtomPipe, X11SinkDevice)
+	COPY_PANIC(X11VideoAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.video.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.video.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
+class SdlVideoAtomPipe : public Sdl2CenterVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlVideoAtomPipe, Sdl2CenterVideoSinkDevice)
+	COPY_PANIC(SdlVideoAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.video.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagSDL2
 class SdlVideoAtom : public Sdl2CenterVideoSinkDevice {
 
 public:

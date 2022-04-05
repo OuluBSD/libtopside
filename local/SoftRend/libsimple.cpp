@@ -1,12 +1,12 @@
-#include <Graphics/Graphics.h>
+#include <IGraphics/IGraphics.h>
 
 NAMESPACE_TOPSIDE_BEGIN
 namespace Shaders {
 
 
 
-
-void FS_SimpleSingle::Process(SdlCpuFragmentShaderArgs& a)
+#ifdef flagSDL2
+void FS_Sdl2CpuSimpleSingle::Process(SdlCpuFragmentShaderArgs& a)
 {
 	GenericShaderArgs& g = *a.generic;
     vec3 res = g.iResolution;
@@ -21,7 +21,7 @@ void FS_SimpleSingle::Process(SdlCpuFragmentShaderArgs& a)
         a.frag_coord[1] / res[1] + shift[1],
         1.0 - a.frag_coord[1] / res[1] + shift[2], 0);
 }
-
+#endif
 
 
 }

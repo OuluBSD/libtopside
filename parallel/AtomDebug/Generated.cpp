@@ -308,7 +308,51 @@ AtomTypeCls TestEventSrcPipe::GetType() const
 	return GetAtomType();
 }
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagPOSIX
+AtomTypeCls X11VideoAtomPipe::GetAtomType()
+{
+	return ATOM11(X11_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+}
+
+LinkTypeCls X11VideoAtomPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void X11VideoAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SinkDevice>(this);
+}
+
+AtomTypeCls X11VideoAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagSDL2
+AtomTypeCls SdlVideoAtomPipe::GetAtomType()
+{
+	return ATOM11(SDL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+}
+
+LinkTypeCls SdlVideoAtomPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2CenterVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlVideoAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagSDL2
 AtomTypeCls SdlVideoAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_VIDEO_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO, CENTER, VIDEO);

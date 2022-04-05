@@ -7,7 +7,6 @@ uses
 	AtomEssential,
 	Shadertoy,
 	Default,
-	IGraphics,
 	IEvent;
 
 uses(GUI) AtomCtrl;

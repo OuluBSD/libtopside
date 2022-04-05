@@ -3,7 +3,9 @@ description "\3770,128,128";
 uses
 	ParallelLib,
 	IAudio,
-	IHal;
+	IHal,
+	IGraphics,
+	IScreen;
 
 file
 	AtomDebug.h,
