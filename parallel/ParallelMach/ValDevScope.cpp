@@ -135,7 +135,10 @@ bool Convert(const Packet& src, Packet& dst, bool keep_tracking) {
 		
 		ret = AudioConvert(src_ch_samples, srcf, src_data.Begin(), dstf, dst_data.Begin());
 	}
-	else TODO
+	else {
+		LOG("from: " << src_fmt.ToString() << "\nto:   " << dst_fmt.ToString());
+		TODO
+	}
 	//else if (src_fmt.vd.val.type == ValCls::ORDER) {
 	
 	if (track) {

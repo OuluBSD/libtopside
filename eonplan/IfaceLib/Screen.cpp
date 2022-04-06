@@ -35,6 +35,8 @@ PKG(Screen, Scr, S) {
 		v->AddStruct("NativeSinkDevice")
 			.Add("win",			"::Window")
 			.Add("display",		"::Display*")
+			.Add("fb",			"::XImage*")
+			.Add("visual",		"::Visual*")
 			.Add("gc",			"::GC")
 			;
 		

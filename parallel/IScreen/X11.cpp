@@ -13,6 +13,8 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	char *display_name = getenv("DISPLAY"); // address of the X display.
 	::GC& gc = dev.gc;					// GC (graphics context) used for drawing
 										// in our window.
+	::Visual*& visual = dev.visual;
+	
 	int x = 0;
 	int y = 0;
 	
@@ -29,10 +31,12 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	screen_num = DefaultScreen(display);
 	display_width = DisplayWidth(display, screen_num);
 	display_height = DisplayHeight(display, screen_num);
+	visual = XDefaultVisual(display, screen_num);
+	int dplanes = DisplayPlanes(display, screen_num);
 	
-	// make the new window occupy 1/9 of the screen's size.
-	width = (display_width / 3);
-	height = (display_height / 3);
+	// default resolution is 1280x720 for now
+	width = 1280;
+	height = 720;
 	RTLOG("ScrX11::SinkDevice_Initialize: window width - '" << width << "'; height - '" << height << "'");
 	
 	// create a simple window, as a direct child of the screen's
@@ -95,6 +99,41 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 		XSetFillStyle(display, gc, FillSolid);
 	}
 	
+	int bpp = 3;
+	
+	::XImage*& fb = dev.fb;
+	fb = XCreateImage(
+		dev.display,
+		visual,
+		dplanes,
+		ZPixmap,
+		0,
+		0,
+		width,
+		height,
+		8,
+		0// does not work with: width * bpp
+	);
+	ASSERT(fb);
+	
+	/*fb.width = width;
+	fb.height = height;
+	fb.xoffset = 0;
+	fb.format = ZPixmap; // XYBitmap, XYPixmap, or ZPixmap
+	fb.data = NULL;
+	fb.byte_order = LSBFirst;
+	fb.bitmap_unit = 8;
+	fb.bitmap_bit_order = LSBFirst;
+	fb.bitmap_pad = 8;
+	fb.depth = bpp;
+	fb.bytes_per_line = width * bpp;
+	fb.bits_per_pixel = bpp * 8;
+	fb.red_mask   = 0xFF0000;
+	fb.green_mask = 0x00FF00;
+	fb.blue_mask  = 0x0000FF;
+	XInitImage(&fb);*/
+	
+
 	XSync(display, False);
 	
 	return true;
@@ -121,7 +160,47 @@ void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 bool ScrX11::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	TODO
+	const Vector<byte>& pixmap = in.Data();
+	Format fmt = in.GetFormat();
+	ASSERT(fmt.IsVideo());
+	VideoFormat& vfmt = fmt;
+	int frame_sz = vfmt.GetFrameSize();
+	ASSERT(pixmap.GetCount() == frame_sz);
+	
+	int width = vfmt.res[0];
+	int height = vfmt.res[1];
+	
+	ASSERT(dev.fb);
+	ASSERT(!dev.fb->data);
+    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
+    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
+    ASSERT(width == dev.fb->width);
+    ASSERT(height == dev.fb->height);
+    if (width != dev.fb->width || height != dev.fb->height) {
+        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
+        return false;
+    }
+    
+    int rc = XPutImage(	dev.display,
+						dev.win,
+						dev.gc,
+						dev.fb,
+						0,0,
+						0,0,
+						width,
+						height);
+    
+    if (rc == BadMatch) {
+        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
+        dev.fb->data = 0;
+        return false;
+    }
+    
+	XFlush(dev.display);
+	//XSync(dev.display, False);
+	
+	dev.fb->data = 0;
+	return true;
 }
 
 

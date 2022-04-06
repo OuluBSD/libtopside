@@ -3,8 +3,7 @@ description "\377B112,112,112";
 uses
 	ParallelLib;
 
-library
-	X11;
+library(POSIX) X11;
 
 file
 	IScreen.h,

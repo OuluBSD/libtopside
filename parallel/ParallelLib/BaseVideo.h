@@ -18,7 +18,7 @@ public:
 	DebugVideoGenerator();
 	
 	
-	void Play(int frame_offset, const Packet& p);
+	void Play(int frame_offset, PacketValue& p);
 	void GenerateNoise(const VideoFormat& fmt);
 	void GenerateSine(const VideoFormat& fmt);
 	uint64 GetMaxOffset() const {return frame.GetCount();}

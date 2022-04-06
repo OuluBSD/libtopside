@@ -9,13 +9,13 @@ DebugVideoGenerator::DebugVideoGenerator() {
 	
 }
 
-void DebugVideoGenerator::Play(int frame_offset, const Packet& p) {
+void DebugVideoGenerator::Play(int frame_offset, PacketValue& p) {
 	int total_bytes = frame.GetCount() * sizeof(T);
 	frame_offset = frame_offset % total_bytes;
-	int copy_size = p->GetFormat().GetFrameSize();
-	p->Data().SetCount(copy_size, 0);
+	int copy_size = p.GetFormat().GetFrameSize();
+	p.Data().SetCount(copy_size, 0);
 	int frame_remaining = total_bytes - frame_offset;
-	byte* dst = p->Data().Begin();
+	byte* dst = p.Data().Begin();
 	byte* src = (byte*)(void*)frame.Begin() + frame_offset;
 	
 	// 2 parts
@@ -173,27 +173,18 @@ void VideoGenBase::Forward(FwdScope& fwd) {
 }*/
 
 bool VideoGenBase::ProcessPacket(PacketValue& in, PacketValue& out) {
-	TODO
-	
-	/*PacketIO::Sink& sink = io.sink[0];
-	PacketIO::Source& src = io.src[0];
-	Packet& out = src.p;
-	sink.may_remove = true;
-	src.from_sink_ch = 0;
-	out = ReplyPacket(0, sink.p);
-	
 	int frame = fmt.GetFrameSize();
-	dword off = out->GetOffset().value;
+	dword off = out.GetOffset().value;
 	int64 offset = (int64)off * (int64)frame;
 	int64 max_offset = gen.GetMaxOffset();
 	offset = offset % max_offset;
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
-	out->Set(fmt, time);
-	out->Data().SetCount(frame, 0);
+	out.Set(fmt, time);
+	out.Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	
-	RTLOG("VideoGenBase::StorePacket: " << out->ToStringWithHash());*/
+	RTLOG("VideoGenBase::ProcessPacket: " << out.ToStringWithHash());
 	return true;
 }
 

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.6 0:00:44
+// Last export: 2022.4.6 12:22:22
 
 static bool Image_Initialize(NativeImage& img, AtomBase&, const Script::WorldState&);
 static bool Image_PostInitialize(NativeImage& img, AtomBase&);
