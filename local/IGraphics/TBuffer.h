@@ -1,23 +1,27 @@
 #ifndef _IGraphics_TemplateBuffer_h_
 #define _IGraphics_TemplateBuffer_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
 struct BufferT : GfxBuffer {
 	using Base = BufferT<Gfx>;
 	//using BinderIface = typename Gfx::BinderIface;
-	using DataState = typename Gfx::DataState;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using ContextState = typename Gfx::ContextState;
-	using RuntimeState = typename Gfx::RuntimeState;
+	using DataState = DataStateT<Gfx>;
+	//using Framebuffer = typename Gfx::Framebuffer;
+	using Framebuffer = FramebufferT<Gfx>;
+	//using ContextState = typename Gfx::ContextState;
+	using RuntimeState = RuntimeStateT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
 	//using Shader = typename Gfx::Shader;
-	using ShaderState = typename Gfx::ShaderState;
+	//using ShaderState = typename Gfx::ShaderState;
+	using ShaderState = ShaderStateT<Gfx>;
+	//using InputState  = typename Gfx::InputState;
+	using InputState  = InputStateT<Gfx>;
+	using ContextState  = ContextStateT<Gfx>;
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
 	using DataObject = typename Gfx::DataObject;
-	using InputState = typename Gfx::InputState;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
@@ -53,7 +57,7 @@ struct BufferT : GfxBuffer {
 	BufferT() {}
 	
 	void MakeFrameQuad();
-	void Visit(RuntimeVisitor& vis) {vis & env;}
+	void Visit(RuntimeVisitor& vis) override {vis & env;}
 	void SetEnvState(EnvStateRef env) {this->env = env;}
 	void AddLink(String s) {if (!s.IsEmpty()) link_ids << s;}
 	bool IsInitialized() const {return initialized;}
@@ -110,6 +114,6 @@ struct BufferT : GfxBuffer {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

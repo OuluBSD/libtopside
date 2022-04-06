@@ -3,7 +3,7 @@
 #if 0
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 CpuMemFramebuffer::CpuMemFramebuffer() {
@@ -249,6 +249,6 @@ void CpuDrawFramebuffer::DrawShaderPipeline(CpuShaderPipeline& p) {
 	
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.6 12:22:22
+// Last export: 2022.4.7 0:44:33
 
 #ifndef _IScreen_TmplClasses_h_
 #define _IScreen_TmplClasses_h_
@@ -54,6 +54,10 @@ struct ScreenSinkDeviceT : ScrSinkDevice {
 
 #if (defined flagLINUX) || (defined flagFREEBSD)
 using X11SinkDevice = ScreenSinkDeviceT<ScrX11>;
+#endif
+
+#if defined flagOGL
+using X11GlxSinkDevice = ScreenSinkDeviceT<ScrX11Glx>;
 #endif
 
 

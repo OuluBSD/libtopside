@@ -54,12 +54,12 @@ struct ManagedStaticThreadLocal {
 	void Clear() {o.Clear();}
 };
 
-#define MAKE_STATIC(t, x) static UPP::ManagedStatic<t> __##x(__FILE__,__LINE__); t& x = __##x.o;
-#define MAKE_STATIC_(t, x, param) static UPP::ManagedStatic<t> __##x(__FILE__,__LINE__,param); t& x = __##x.o;
-#define MAKE_STATIC_LOCAL(t, x) thread_local static UPP::ManagedStaticThreadLocal<t> __##x(__FILE__,__LINE__); t& x = __##x.o;
+#define MAKE_STATIC(t, x) static ::UPP::ManagedStatic<t> __##x(__FILE__,__LINE__); t& x = __##x.o;
+#define MAKE_STATIC_(t, x, param) static ::UPP::ManagedStatic<t> __##x(__FILE__,__LINE__,param); t& x = __##x.o;
+#define MAKE_STATIC_LOCAL(t, x) thread_local static ::UPP::ManagedStaticThreadLocal<t> __##x(__FILE__,__LINE__); t& x = __##x.o;
 
 #undef RTTI_STRING_FN
-#define RTTI_STRING_FN(TypeString) MAKE_STATIC_LOCAL(UPP::String, s); s = TypeString; return s;
+#define RTTI_STRING_FN(TypeString) MAKE_STATIC_LOCAL(::UPP::String, s); s = TypeString; return s;
 
 
 END_UPP_NAMESPACE

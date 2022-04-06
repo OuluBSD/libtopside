@@ -1,5 +1,7 @@
 description "\377B64,161,0";
 
+noblitz;
+
 uses
 	Local,
 	SoftRend,
@@ -25,6 +27,8 @@ file
 	Shader.cpp,
 	GfxClasses.h,
 	IfaceOgl.h,
+	GfxAccelAtom.h,
+	GfxAccelAtom.cpp,
 	Templates readonly separator,
 	TState.h,
 	TState.cpp,

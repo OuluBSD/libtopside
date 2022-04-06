@@ -23,7 +23,7 @@ bool SDL2ScreenBase::Initialize(const Script::WorldState& ws) {
 	}
 	
 	close_machine = ws.Get(".close_machine") == "true";
-		
+	
 	
 	OBJ_CREATE
 	

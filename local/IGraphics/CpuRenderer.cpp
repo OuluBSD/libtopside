@@ -1,7 +1,7 @@
 #include "IGraphics.h"
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 bool CpuMemoryFramebuffer::Create(int w, int h, int channels) {
@@ -15,5 +15,5 @@ bool CpuMemoryFramebuffer::Create(int w, int h, int channels) {
 }
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 #endif

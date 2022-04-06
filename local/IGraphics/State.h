@@ -1,7 +1,7 @@
 #ifndef _IGraphics_State_h_
 #define _IGraphics_State_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 struct GfxShaderState : RTTIBase {
@@ -70,7 +70,7 @@ public:
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 
 #endif

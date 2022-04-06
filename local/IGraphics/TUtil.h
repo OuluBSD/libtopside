@@ -1,7 +1,7 @@
 #ifndef _IGraphics_TUtil_h_
 #define _IGraphics_TUtil_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 /*template <class Gfx>
@@ -30,8 +30,8 @@ struct StateDrawT : GfxStateDraw {
 	using Base = StateDrawT<Gfx>;
 	using ShaderPipeline = typename Gfx::ShaderPipeline;
 	using NativeRenderer = typename Gfx::NativeRenderer;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
+	using Framebuffer = FramebufferT<Gfx>;
 	
 	//NativeRenderer* rend = 0;
 	//Framebuffer* fb = 0;
@@ -67,12 +67,12 @@ struct BinderIfaceT : GfxBinderIface {
 	RTTI_DECL1(BinderIfaceT, GfxBinderIface);
 	using Base = BinderIfaceT<Gfx>;
 	using Buffer = typename Gfx::Buffer;
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
 	
 	
 };
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

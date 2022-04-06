@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.6 12:22:22
+// Last modified: 2022.4.7 0:44:33
 
 namespace TS {
 
@@ -184,24 +184,6 @@ public:
 	COPY_PANIC(EcsOglFbo)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.ecs")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class OglCustomer : public CustomerBase {
-
-public:
-	RTTI_DECL1(OglCustomer, CustomerBase)
-	COPY_PANIC(OglCustomer)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("loop.connected")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.customer")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -615,9 +597,13 @@ using SdlImageLoaderRef = Ref<SdlImageLoader, AtomParent>;
 
 using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
 
-#if defined flagPOSIX
 using X11VideoAtomPipeRef = Ref<X11VideoAtomPipe, AtomParent>;
+
+#if defined flagOGL
+using GlxVideoAtomPipeRef = Ref<GlxVideoAtomPipe, AtomParent>;
 #endif
+
+using GlxFboAtomSARef = Ref<GlxFboAtomSA, AtomParent>;
 
 using SdlFboAtomSARef = Ref<SdlFboAtomSA, AtomParent>;
 

@@ -3,6 +3,7 @@
 
 NAMESPACE_UPP_BEGIN
 
+#undef Complex
 
 struct Complex : public std::complex<double>, Moveable<Complex> {
 	typedef std::complex<double> cmx;

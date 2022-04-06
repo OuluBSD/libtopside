@@ -146,8 +146,8 @@ class Stream;  Stream& VppLog(); void Panic(); void Panic(const char* msg); void
 #undef ASSERT
 #undef ASSERT_
 #ifdef flagDEBUG
-#define ASSERT(x) {if (!(x)) {UPP::LogCString("Assertion failed: " #x); __BREAK__; UPP::Panic();}}
-#define ASSERT_(x, msg) {if (!(x)) {LOG(UPP::String("Assertion failed: ") + msg); __BREAK__; UPP::Panic();}}
+#define ASSERT(x) {if (!(x)) {::UPP::LogCString("Assertion failed: " #x); __BREAK__; ::UPP::Panic();}}
+#define ASSERT_(x, msg) {if (!(x)) {LOG(::UPP::String("Assertion failed: ") + msg); __BREAK__; ::UPP::Panic();}}
 #else
 #define ASSERT(x)
 #define ASSERT_(x, msg)

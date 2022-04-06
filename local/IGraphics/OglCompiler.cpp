@@ -1,7 +1,7 @@
 #include "IGraphics.h"
 
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #if 0
 
@@ -171,5 +171,5 @@ bool OglLinker::Link(OglRuntimeState& rt) {
 
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 

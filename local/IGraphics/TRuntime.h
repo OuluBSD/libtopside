@@ -1,18 +1,21 @@
 #ifndef _IGraphics_TRuntime_h_
 #define _IGraphics_TRuntime_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
+
+template <class Gfx> struct ContextStateT;
+template <class Gfx> struct RuntimeStateT;
 
 template <class Gfx>
 struct CompilerT : GfxCompiler {
 	RTTI_DECL1(CompilerT, GfxCompiler)
 	using Base = CompilerT<Gfx>;
 	using NativeShader = typename Gfx::NativeShader;
-	using ContextState = typename Gfx::ContextState;
-	using RuntimeState = typename Gfx::RuntimeState;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using ShaderState = typename Gfx::ShaderState;
+	using RuntimeState = RuntimeStateT<Gfx>;
+	using Framebuffer = FramebufferT<Gfx>;
+	using ShaderState = ShaderStateT<Gfx>;
+	using ContextState = ContextStateT<Gfx>;
 	
 	bool CompileShader(String code, GVar::ShaderType type, NativeShader& shader_out);
 	bool Compile(	const ContextState& ctx,
@@ -28,8 +31,8 @@ template <class Gfx>
 struct LinkerT : GfxLinker {
 	RTTI_DECL1(LinkerT, GfxLinker)
 	using Base = LinkerT<Gfx>;
-	using RuntimeState = typename Gfx::RuntimeState;
-	using ShaderState = typename Gfx::ShaderState;
+	using RuntimeState = RuntimeStateT<Gfx>;
+	using ShaderState = ShaderStateT<Gfx>;
 	
 	bool log = false;
 	
@@ -59,19 +62,18 @@ struct ShaderStateT : GfxShaderState {
 };
 
 
-#if 0
 template <class Gfx>
 struct ShaderT :
 	GfxShader,
 	ErrorReporter
 {
 	using Base = ShaderT<Gfx>;
-	using Framebuffer = typename Gfx::Framebuffer;
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
 	using DataObject = typename Gfx::DataObject;
 	using VertexShaderArgs = typename Gfx::VertexShaderArgs;
 	using FragmentShaderArgs = typename Gfx::FragmentShaderArgs;
 	using DataStateBase = DataStateT<Gfx>;
+	using Framebuffer = FramebufferT<Gfx>;
 	RTTI_DECL1(ShaderT, GfxShader)
 	
     DataStateBase* state = 0;
@@ -120,7 +122,7 @@ struct ShaderPipelineT :
 {
 	RTTI_DECL1(ShaderPipelineT, GfxShaderPipeline)
 	using Base = ShaderPipelineT<Gfx>;
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
 	
 	
 	
@@ -135,9 +137,8 @@ struct RuntimeStateT : GfxRuntimeState {
 	using Base = RuntimeStateT<Gfx>;
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
-	//using NatShader = typename Gfx::NativeShader;
-	using ShaderState = typename Gfx::ShaderState;
-	using InputState = typename Gfx::InputState;
+	using ShaderState = ShaderStateT<Gfx>;
+	using InputState  = InputStateT<Gfx>;
 	
 	
 	NatProgram	prog;
@@ -205,9 +206,8 @@ struct FramebufferStateExtT : ErrorReporter {
 	}*/
 
 };
-#endif
-
-
-NAMESPACE_TOPSIDE_END
 
 #endif
+
+NAMESPACE_PARALLEL_END
+

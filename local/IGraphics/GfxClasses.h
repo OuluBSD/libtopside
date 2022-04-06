@@ -1,7 +1,7 @@
 #ifndef _IGraphics_GfxClasses_h_
 #define _IGraphics_GfxClasses_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -308,6 +308,6 @@ struct GfxStateDraw : Draw {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 DrawProg::DrawProg() {
@@ -92,6 +92,6 @@ void DrawProg::DrawEnd(const DrawCommand& cmd) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

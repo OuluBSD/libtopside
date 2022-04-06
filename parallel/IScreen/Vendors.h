@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.6 12:22:22
+// Last export: 2022.4.7 0:44:33
 
 #ifndef _IScreen_Vendors_h_
 #define _IScreen_Vendors_h_
@@ -8,6 +8,12 @@
 #if (defined flagLINUX) || (defined flagFREEBSD)
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
+#endif
+
+#if defined flagOGL
+	#include <X11/Xlib.h>
+	#include <X11/Xutil.h>
+	#include <GL/glx.h>
 #endif
 
 NAMESPACE_PARALLEL_BEGIN
@@ -19,6 +25,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define SCR_VNDR_LIST \
 	SCR_VNDR(ScrX11) \
+	SCR_VNDR(ScrX11Glx) \
 
 
 
@@ -39,6 +46,28 @@ struct ScrX11 {
 		::XImage* fb;
 		::Visual* visual;
 		::GC gc;
+	};
+
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if defined flagOGL
+struct ScrX11Glx {
+	
+	struct NativeSinkDevice {
+		::Window win;
+		::Display* display;
+		::Visual* visual;
+		::GC gc;
+		GfxAccelAtom<X11OglGfx> ogl;
 	};
 
 	

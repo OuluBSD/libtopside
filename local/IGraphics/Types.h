@@ -3,6 +3,20 @@
 
 NAMESPACE_TOPSIDE_BEGIN
 
+namespace GVar {
+
+typedef enum : uint32 {
+	COLOR0_EXT		= 1 << 0
+} RenderTarget;
+
+}
+
+NAMESPACE_TOPSIDE_END
+
+
+
+NAMESPACE_PARALLEL_BEGIN
+
 /*namespace Serial {
 class Format;
 class FboFormat;
@@ -14,17 +28,17 @@ class VideoFormat;
 	GFX_CLS(FragmentShaderArgs, g) \
 	/*GFX_CLS(BinderIface, g)*/ \
 	GFX_CLS(DataObject, g) \
-	GFX_CLS(DataState, g) \
-	GFX_CLS(InputState, g) \
-	GFX_CLS(Framebuffer, g) \
+	/*GFX_CLS(DataState, g)*/ \
+	/*GFX_CLS(InputState, g)*/ \
+	/*GFX_CLS(Framebuffer, g)*/ \
 	GFX_CLS(Compiler, g) \
 	GFX_CLS(Linker, g) \
-	GFX_CLS(ShaderState, g) \
+	/*GFX_CLS(ShaderState, g)*/ \
 	/*GFX_CLS(Shader, g)*/ \
 	GFX_CLS(ShaderPipeline, g) \
-	GFX_CLS(RuntimeState, g) \
+	/*GFX_CLS(RuntimeState, g)*/ \
 	/*GFX_CLS(FramebufferStateExt, g)*/ \
-	GFX_CLS(ContextState, g) \
+	/*GFX_CLS(ContextState, g)*/ \
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
 	GFX_CLS(Buffer, g) \
@@ -33,6 +47,7 @@ class VideoFormat;
 #define GFX_RENDSYS_LIST \
 	GFX_RSYS(SdlCpu) \
 	GFX_RSYS(SdlOgl) \
+	GFX_RSYS(X11Ogl) \
 
 
 #define GFX_CLS(x, g) struct g##x;
@@ -43,13 +58,6 @@ GFX_RENDSYS_LIST
 
 
 
-namespace GVar {
-
-typedef enum : uint32 {
-	COLOR0_EXT		= 1 << 0
-} RenderTarget;
-
-}
 
 
 template <class Backend>
@@ -289,6 +297,30 @@ struct OglGfx {
 #endif
 
 
+#ifdef flagPOSIX
+struct X11Gfx {
+	using NativeWindow			= ::Window;
+	using NativeRenderer		= void*;
+	using NativeRendererInfo	= void*;
+	using NativeGLContext		= ::GLXContext;
+	
+	static Size GetWindowSize(NativeWindow& win);
+	
+};
+
+#ifdef flagOGL
+struct X11OglGfx : OglGfx, X11Gfx {
+	#define GFX_CLS(x, g) using x = g##x;
+	GFX_CLS_LIST(X11Ogl)
+	#undef GFX_CLS
+	
+	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	
+};
+#endif
+#endif
+
+
 #ifdef flagSDL2
 struct SdlGfx {
 	using NativeWindow			= SDL_Window;
@@ -367,15 +399,29 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #endif
 
+#ifdef flagPOSIX
+	#define POSIX_GFXTYPE \
+		GFXTYPE(X11OglGfx)
+	#define POSIX_EXCPLICIT_INITIALIZE_CLASS(x) \
+		template struct x <X11OglGfx>;
+#else
+	#define POSIX_GFXTYPE
+	#define POSIX_EXCPLICIT_INITIALIZE_CLASS(x)
+#endif
+
 
 #define GFXTYPE_LIST \
 	 \
-	SDL_GFXTYPE
+	SDL_GFXTYPE \
+	POSIX_GFXTYPE \
+
 
 #define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
 	 \
-	SDL_EXCPLICIT_INITIALIZE_CLASS(x)
+	SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
+	POSIX_EXCPLICIT_INITIALIZE_CLASS(x) \
 
-NAMESPACE_TOPSIDE_END
+
+NAMESPACE_PARALLEL_END
 
 #endif

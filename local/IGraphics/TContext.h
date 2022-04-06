@@ -1,7 +1,7 @@
 #ifndef _IGraphics_TContext_h_
 #define _IGraphics_TContext_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
@@ -15,12 +15,13 @@ template <class Gfx>
 struct RendererT : GfxRenderer {
 	using NatWin = typename Gfx::NativeWindow;
 	using NatRend = typename Gfx::NativeRenderer;
-	using FrameBuf = typename Gfx::Framebuffer;
+	//using FrameBuf = typename Gfx::Framebuffer;
+	using Framebuffer = FramebufferT<Gfx>;
 	
 	
 	NatWin* win = NULL;
     NatRend* rend = NULL;
-    FrameBuf output;
+    Framebuffer output;
 	
 public:
 	using Base = RendererT<Gfx>;
@@ -32,7 +33,7 @@ public:
 	void PreFrame() override {DefaultPreFrame();}
 	void PostFrame() override {DefaultPostFrame();}
 	GfxFramebuffer& GetOutputFramebuffer() override {return output;}
-	FrameBuf& GetFramebuffer() {return output;}
+	Framebuffer& GetFramebuffer() {return output;}
 	
 	
 	void DefaultPreFrame();
@@ -46,6 +47,6 @@ public:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

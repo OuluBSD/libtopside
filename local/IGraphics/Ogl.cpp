@@ -2,7 +2,7 @@
 
 #ifdef flagOGL
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
@@ -607,7 +607,16 @@ void OglGfx::DeleteTexture(NativeColorBuffer& b) {
 }
 
 
+#ifdef flagOGL
 
-NAMESPACE_TOPSIDE_END
+void X11OglGfx::ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+	TODO //SDL_GL_SwapWindow(&w);
+}
+
+#endif
+
+
+
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -4,7 +4,7 @@
 
 #ifdef HAVE_OPENGL
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void Mesh::RefreshOgl(GfxDataObject& o) {
@@ -14,7 +14,7 @@ void Mesh::RefreshOgl(GfxDataObject& o) {
 		RefreshOgl(*ogl);
 }
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif
 
@@ -23,7 +23,7 @@ NAMESPACE_TOPSIDE_END
 
 #ifdef flagSCREEN
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void OglDataObject::MakeTexture(int tex_id, int width, int height, int pitch, int stride, const Vector<byte>& data) {
@@ -422,7 +422,7 @@ int OglFramebuffer::GetGlSampleSize() const {
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

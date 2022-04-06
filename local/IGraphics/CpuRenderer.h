@@ -3,7 +3,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 class CpuFramebuffer : public Framebuffer {
 	
@@ -99,7 +99,7 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif
 #endif

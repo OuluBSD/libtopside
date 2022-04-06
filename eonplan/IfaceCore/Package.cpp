@@ -798,19 +798,19 @@ bool Package::Export() {
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "bool " << cls << "::" << c.name << "_PostInitialize(" << nat_this << "AtomBase& a) {\n";
+				fout << "bool " << cls << "::" << c.name << "_PostInitialize(" << nat_this_ << "AtomBase& a) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "bool " << cls << "::" << c.name << "_Start(" << nat_this << ", AtomBase& a) {\n";
+				fout << "bool " << cls << "::" << c.name << "_Start(" << nat_this_ << "AtomBase& a) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "void " << cls << "::" << c.name << "_Stop(" << nat_this << ", AtomBase& a) {\n";
+				fout << "void " << cls << "::" << c.name << "_Stop(" << nat_this_ << "AtomBase& a) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
-				fout << "void " << cls << "::" << c.name << "_Uninitialize(" << nat_this << ", AtomBase& a) {\n";
+				fout << "void " << cls << "::" << c.name << "_Uninitialize(" << nat_this_ << "AtomBase& a) {\n";
 				fout << "\tTODO\n";
 				fout << "}\n\n";
 				
@@ -819,11 +819,11 @@ bool Package::Export() {
 				fout << "}\n\n";
 				
 				if (c.have_context_fns) {
-					fout << "bool " << cls << "::" << c.name << "_AttachContext(" << nat_this << ", AtomBase& a, AtomBase& other) {\n";
+					fout << "bool " << cls << "::" << c.name << "_AttachContext(" << nat_this_ << "AtomBase& a, AtomBase& other) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 					
-					fout << "void " << cls << "::" << c.name << "_DetachContext(" << nat_this << ", AtomBase& a, AtomBase& other) {\n";
+					fout << "void " << cls << "::" << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 				}

@@ -1,6 +1,6 @@
 #include "IGraphics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 Callback2<String, BufferT<Gfx>*> BufferT<Gfx>::WhenLinkInit;
@@ -1095,4 +1095,4 @@ void BufferT<Gfx>::SetInputCubemap(int in_id) {
 GFX_EXCPLICIT_INITIALIZE_CLASS(BufferT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

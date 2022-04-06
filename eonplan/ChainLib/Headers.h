@@ -131,6 +131,8 @@ HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
 HEADER11(			OglCustomer,		CustomerBase,				customer,	OglOrder,		OglReceipt,		OglOrder)
 HEADER_ACTION(		OglCustomer,		ogl.customer)
 HEADER_ARG(			OglCustomer,		reqdef_flagSCREEN,		1)
+HEADER_LINK(		OglCustomer,		CUSTOMER, CUSTOMER)
+HEADER_ARG(			OglCustomer,		HINT_PKG,					"AtomDebug")
 
 HEADER11(			SdlContextAtom,		Sdl2ContextBase,			driver,		CenterReceipt,	CenterReceipt,	CenterReceipt)
 HEADER_ACTION(		SdlContextAtom,		sdl.context)
@@ -167,9 +169,22 @@ HEADER11(			X11VideoAtomPipe,	X11SinkDevice,				pipe,		CenterVideo,	CenterVideo,
 HEADER_ACTION(		X11VideoAtomPipe,	x11.video.pipe)
 HEADER_ACTION(		X11VideoAtomPipe,	any.video.pipe)
 HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagSCREEN,		1)
-HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagPOSIX,		1)
 HEADER_ARG(			X11VideoAtomPipe,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11VideoAtomPipe,	PIPE, PROCESS)
+
+HEADER11(			GlxVideoAtomPipe,	X11GlxSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER_ACTION(		GlxVideoAtomPipe,	glx.video.pipe)
+HEADER_ARG(			GlxVideoAtomPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			GlxVideoAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		GlxVideoAtomPipe,	PIPE, PROCESS)
+
+HEADER11(			GlxFboAtomSA,		X11GlxSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER_ACTION(		GlxFboAtomSA,		sdl.fbo.standalone)
+HEADER_ARG(			GlxFboAtomSA,		reqdef_flagOGL,			1)
+HEADER_ARG(			GlxFboAtomSA,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		GlxFboAtomSA,		PIPE, PROCESS)
+
+
 
 
 

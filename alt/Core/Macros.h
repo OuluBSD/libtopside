@@ -56,12 +56,12 @@ NAMESPACE_UPP_BEGIN
 #define MACROSTR(x) #x
 #define COUT(x) {::UPP::String ____s; ____s << x; Cout() << ____s << "\n";}
 #define COUTLOG(x) {::UPP::String ____s; ____s << x; LOG(____s); Cout() << ____s << "\n";}
-#define TODO {Panic("TODO " __FILE__ ":" + UPP::IntStr(__LINE__)); THROW(UPP::Exc("TODO"));}
+#define TODO {Panic("TODO " __FILE__ ":" + ::UPP::IntStr(__LINE__)); THROW(::UPP::Exc("TODO"));}
 #define TODO_ {Panic(); UNREACHABLE;}
 #define SYNON_UNION_2(type, name0, name1) union {type name0; type name1;};
 
 
-#define LOG(x) {UPP::VppLog() << x << EOL; UPP::VppLog().Flush();}
+#define LOG(x) {::UPP::VppLog() << x << EOL; ::UPP::VppLog().Flush();}
 #define LLOG(x)
 
 

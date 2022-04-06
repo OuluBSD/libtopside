@@ -116,24 +116,6 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 	);
 	ASSERT(fb);
 	
-	/*fb.width = width;
-	fb.height = height;
-	fb.xoffset = 0;
-	fb.format = ZPixmap; // XYBitmap, XYPixmap, or ZPixmap
-	fb.data = NULL;
-	fb.byte_order = LSBFirst;
-	fb.bitmap_unit = 8;
-	fb.bitmap_bit_order = LSBFirst;
-	fb.bitmap_pad = 8;
-	fb.depth = bpp;
-	fb.bytes_per_line = width * bpp;
-	fb.bits_per_pixel = bpp * 8;
-	fb.red_mask   = 0xFF0000;
-	fb.green_mask = 0x00FF00;
-	fb.blue_mask  = 0x0000FF;
-	XInitImage(&fb);*/
-	
-
 	XSync(display, False);
 	
 	return true;

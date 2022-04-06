@@ -1,6 +1,6 @@
 #include "IGraphics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class B>
@@ -452,4 +452,4 @@ void CpuGfxT<B>::EndRender() {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

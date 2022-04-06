@@ -5,22 +5,43 @@ NAMESPACE_TOPSIDE_BEGIN
 
 
 struct Frustum {
-	union {
-		struct {
-			Plane top;
-			Plane bottom;
-			Plane left;
-			Plane right;
-			Plane _near;
-			Plane _far;
-		};
-		Plane planes[6];
-	};
+	Plane top;
+	Plane bottom;
+	Plane left;
+	Plane right;
+	Plane _near;
+	Plane _far;
 
 	Frustum() {}
 	Frustum(const Frustum& m) {
 		for(int i = 0; i < 6; i++)
-			planes[i] = m.planes[i];
+			(*this)[i] = m[i];
+	}
+	
+	Plane& operator[](int i) {
+		switch (i) {
+			case 0: return top;
+			case 1: return bottom;
+			case 2: return left;
+			case 3: return right;
+			case 4: return _near;
+			case 5: return _far;
+		}
+		Panic("invalid [] pos");
+		NEVER();
+	}
+	
+	const Plane& operator[](int i) const {
+		switch (i) {
+			case 0: return top;
+			case 1: return bottom;
+			case 2: return left;
+			case 3: return right;
+			case 4: return _near;
+			case 5: return _far;
+		}
+		Panic("invalid [] pos");
+		NEVER();
 	}
 };
 

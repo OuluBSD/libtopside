@@ -1,13 +1,15 @@
 #include "IGraphics.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-
+#ifdef flagSDL2
 #ifdef flagOGL
 
 void SdlOglGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
 	SDL_GL_SwapWindow(&w);
 }
+
+#endif
 
 void SdlCpuGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
 	SDL_RenderCopy(&r, color_buf.GetTex(), NULL, NULL);
@@ -23,4 +25,4 @@ Size SdlGfx::GetWindowSize(NativeWindow& win) {
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

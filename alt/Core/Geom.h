@@ -154,7 +154,7 @@ struct Size_ : Moveable<Size_<T>> {
 	operator Size_<int>() const {return Size_<int>(cx,cy);}
 	operator Size_<double>() const {return Size_<double>(cx,cy);}
 	
-	bool	IsNull() const {return UPP::IsNull(cx) || UPP::IsNull(cy);}
+	bool	IsNull() const {return ::UPP::IsNull(cx) || ::UPP::IsNull(cy);}
 	void	SetNull() const {SetNull(cx); SetNull(cy);}
 	
 };
@@ -236,8 +236,8 @@ struct Rect_ : Moveable<Rect_<T>> {
 	operator Rect_<int>() const {return Rect_<int>(left,top,right,bottom);}
 	operator Rect_<double>() const {return Rect_<double>(left,top,right,bottom);}
 	
-	bool	IsNull() const {return UPP::IsNull(left) || UPP::IsNull(top) || UPP::IsNull(right) || UPP::IsNull(bottom);}
-	void	SetNull() const {UPP::SetNull(left); UPP::SetNull(top); UPP::SetNull(right); UPP::SetNull(bottom);}
+	bool	IsNull() const {return ::UPP::IsNull(left) || ::UPP::IsNull(top) || ::UPP::IsNull(right) || ::UPP::IsNull(bottom);}
+	void	SetNull() const {::UPP::SetNull(left); ::UPP::SetNull(top); ::UPP::SetNull(right); ::UPP::SetNull(bottom);}
 	
 };
 

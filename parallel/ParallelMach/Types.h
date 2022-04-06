@@ -343,8 +343,14 @@ typedef enum : byte {
 	flagSDL2_ATOM_TYPE_LIST
 	#endif
 	
+	#ifdef flagOGL
+	flagOGL_ATOM_TYPE_LIST
+	#endif
+	
 	#ifdef flagPOSIX
+	#ifdef flagPOSIX_ATOM_TYPE_LIST
 	flagPOSIX_ATOM_TYPE_LIST
+	#endif
 	#endif
 	
 	#undef ATOM_TYPE

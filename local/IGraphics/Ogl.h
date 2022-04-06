@@ -1,27 +1,33 @@
 #ifndef _IGraphics_Ogl_h_
 #define _IGraphics_Ogl_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-
-#define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
-
-#ifdef flagSDL2
-GFX_CLS_LIST(SdlOgl)
-#endif
-
-#undef GFX_CLS
 
 
 // default frame TODO should be conditional
-using OglStateDraw		= SdlOglStateDraw;
+/*using OglStateDraw		= SdlOglStateDraw;
 using OglDataState		= SdlOglDataState;
 using OglShaderPipeline	= SdlOglShaderPipeline;
 //using OglShader			= SdlOglShader;
 using OglFramebuffer	= SdlOglFramebuffer;
 using OglBuffer			= SdlOglBuffer;
 //using OglBinderIface	= SdlOglBinderIface;
-using OglDataObject		= SdlOglDataObject;
+using OglDataObject		= SdlOglDataObject;*/
+
+
+#define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {\
+	using Base = x##T<g##Gfx>; \
+	RTTI_DECL1(g##x, Base) \
+};
+
+#ifdef flagSDL2
+GFX_CLS_LIST(SdlOgl)
+#endif
+
+GFX_CLS_LIST(X11Ogl)
+
+#undef GFX_CLS
 
 
 #ifdef flagSDL2
@@ -31,10 +37,13 @@ using OglBufferT		= BufferT<SdlOglGfx>;
 int GetOglChCode(int channels, bool is_float=false);
 
 
-#if 0
+template <class Gfx>
 struct OglVertexShaderArgs {
-	OglFramebuffer& state;
-	OglDataObject& obj;
+	using Framebuffer = FramebufferT<Gfx>;
+	using DataObject = DataObjectT<Gfx>;
+	
+	Framebuffer& state;
+	DataObject& obj;
 	const vec3& pos;
 	const vec3& normal;
 	const vec2& tex_coords;
@@ -46,24 +55,20 @@ struct OglFragmentShaderArgs {
 	
 };
 
-using OglCpuVertexShaderArgs = OglVertexShaderArgs;
-using OglCpuFragmentShaderArgs = OglFragmentShaderArgs;
+//using OglCpuVertexShaderArgs = OglVertexShaderArgs;
+//using OglCpuFragmentShaderArgs = OglFragmentShaderArgs;
 
 
 
 
 
 
-struct OglFramebuffer;
-struct OglDataObject;
+//struct OglFramebuffer;
+//struct OglDataObject;
 
-struct OglStateDraw : StateDrawT<OglGfx> {RTTI_DECL1(OglStateDraw, Base)};
-struct OglFramebuffer : FramebufferT<OglGfx> {RTTI_DECL1(OglFramebuffer, Base)};
+//struct OglStateDraw : StateDrawT<OglGfx> {RTTI_DECL1(OglStateDraw, Base)};
+//struct OglFramebuffer : FramebufferT<OglGfx> {RTTI_DECL1(OglFramebuffer, Base)};
 
-
-struct SdlOglRenderer : public RendererT<SdlOglGfx> {
-	RTTI_DECL1(SdlOglRenderer, Base)
-};
 
 
 /*class SdlOglDrawFramebuffer : public DrawFramebufferT<SdlOglGfx> {
@@ -72,7 +77,9 @@ public:
 	
 };*/
 
-struct OglDataObject : DataObjectT<OglGfx> {
+template <class T>
+struct OglDataObject : DataObjectT<T> {
+	using Base = DataObjectT<T>;
 	RTTI_DECL1(OglDataObject, Base)
 	
     OglDataObject() {}
@@ -83,17 +90,60 @@ struct OglDataObject : DataObjectT<OglGfx> {
     void Refresh(Mesh& m) override;
 };
 
-struct OglDataState : DataStateT<OglGfx> {RTTI_DECL1(OglDataState, Base)};
+template <class T>
+struct OglDataState : DataStateT<T> {
+	using Base = DataStateT<T>;
+	RTTI_DECL1(OglDataState, Base)
+	
+};
 
-struct OglInputState : InputStateT<OglGfx> {
+template <class T>
+struct OglInputState : InputStateT<T> {
+	using Base = InputStateT<T>;
 	RTTI_DECL1(OglInputState, Base)
 	
 };
 
-struct OglShaderState : ShaderStateT<OglGfx> {
+template <class T>
+struct OglShaderState : ShaderStateT<T> {
+	using Base = ShaderStateT<T>;
 	RTTI_DECL1(OglShaderState, Base)
 	
 };
+
+
+/*#define GFX_CLS(x, g, y) struct y##g##x : g##x<y##g##Gfx> {\
+	using Base = g##x<y##g##Gfx>; \
+	RTTI_DECL1(y##g##x, Base) \
+};
+
+GFX_CLS(ShaderState, Ogl, X11)
+GFX_CLS(InputState, Ogl, X11)
+#undef GFX_CLS*/
+
+
+/*#define GFX_CLS(x, g, y) struct y##g##x : x##T<y##g##Gfx> {\
+	using Base = x##T<y##g##Gfx>; \
+	RTTI_DECL1(y##g##x, Base) \
+};
+
+GFX_CLS(Framebuffer, Ogl, X11)
+#undef GFX_CLS*/
+
+
+
+/*#ifdef flagSDL2
+struct SdlOglRenderer : public RendererT<SdlOglGfx> {
+	RTTI_DECL1(SdlOglRenderer, Base)
+};
+#endif
+
+struct X11OglRenderer : public RendererT<X11OglGfx> {
+	RTTI_DECL1(X11OglRenderer, Base)
+};*/
+
+
+
 
 /*struct OglFramebuffer : FramebufferT<OglGfx> {
 	RTTI_DECL1(OglFramebuffer, Base)
@@ -105,49 +155,76 @@ struct OglShaderState : ShaderStateT<OglGfx> {
 	
 };
 */
-struct OglShader : ShaderT<OglGfx>
+
+/*template <class T>
+struct OglShader : ShaderT<T>
 {
+	using Base = ShaderT<T>;
 	RTTI_DECL1(OglShader, Base)
 	
 	OglShader() {}
 	//OglShader(OglFramebuffer& s) {state = &s;}
 	
-};
+};*/
 
-struct OglShaderPipeline : ShaderPipelineT<OglGfx>
+/*template <class T>
+struct OglShaderPipeline : ShaderPipelineT<T>
 {
+	using Base = ShaderPipelineT<T>;
 	RTTI_DECL1(OglShaderPipeline, Base)
 	
 };
 
-struct OglCompiler : CompilerT<OglGfx> {
+template <class T>
+struct OglContextState : ContextStateT<T> {
+	using Base = ContextStateT<T>;
+	RTTI_DECL1(OglContextState, Base)
+	
+};
+
+template <class T>
+struct OglRuntimeState : RuntimeStateT<T> {
+	using Base = RuntimeStateT<T>;
+	RTTI_DECL1(OglRuntimeState, Base)
+	
+};*/
+
+template <class T>
+struct OglCompiler : CompilerT<T> {
+	using Base = CompilerT<T>;
+	using ContextState = ContextStateT<T>;
+	using RuntimeState = RuntimeStateT<T>;
+	using Framebuffer = FramebufferT<T>;
+	using ShaderState = ShaderStateT<T>;
+	
 	RTTI_DECL1(OglCompiler, Base)
 	
 	OglCompiler();
 	bool CompileShader(String code, GVar::ShaderType type, GLuint& shader_out);
-	bool Compile(const OglContextState& ctx, OglRuntimeState& rt_state, OglFramebuffer& fb_state, OglShaderState& shd_state, GVar::ShaderType type);
+	bool Compile(const ContextState& ctx, RuntimeState& rt_state, Framebuffer& fb_state, ShaderState& shd_state, GVar::ShaderType type);
 	
 	static void HotfixWebGLSL(String& s);
 };
 
-struct OglLinker : LinkerT<OglGfx> {
+template <class T>
+struct OglLinker : LinkerT<T> {
+	using Base = LinkerT<T>;
+	using RuntimeState = RuntimeStateT<T>;
 	RTTI_DECL1(OglLinker, Base)
 	
-	bool Link(OglRuntimeState& rt_state);
+	bool Link(RuntimeState& rt_state);
 	
 };
 
-struct OglRuntimeState : RuntimeStateT<OglGfx> {RTTI_DECL1(OglRuntimeState, Base)};
-struct OglContextState : ContextStateT<OglGfx> {RTTI_DECL1(OglContextState, Base)};
-
-struct OglBuffer : BufferT<OglGfx> {
+template <class T>
+struct OglBuffer : BufferT<T> {
+	using Base = BufferT<T>;
 	RTTI_DECL1(OglBuffer, Base)
 	
 	
 };
 
-#endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

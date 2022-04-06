@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #ifdef flagSCREEN
@@ -188,6 +188,6 @@ void SdlDrawFramebuffer::EndOp() {
 
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

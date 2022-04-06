@@ -179,6 +179,7 @@ struct OnlineFrequencyWindow {
 
 
 
+#undef CurrentTime
 
 int64 CurrentTime();
 uint64 GetNanoSeconds();

@@ -1,7 +1,7 @@
 #ifndef _IGraphics_TState_h_
 #define _IGraphics_TState_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx> struct DataStateT;
 
@@ -11,7 +11,7 @@ struct DataObjectT : GfxDataObject {
 	using Base = DataObjectT<Gfx>;
 	RTTI_DECL1(DataObjectT, GfxDataObject)
 	
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
 	using NatTex = typename Gfx::NativeTexture;
 	using NatVertexArray = typename Gfx::NativeVertexArray;
 	using NatVertexBuffer = typename Gfx::NativeVertexBuffer;
@@ -41,6 +41,10 @@ struct DataObjectT : GfxDataObject {
 	
 };
 
+template <class Gfx> struct ShaderStateT;
+template <class Gfx> struct InputStateT;
+template <class Gfx> struct FramebufferT;
+
 template <class Gfx>
 struct DataStateT : GfxDataState {
 	RTTI_DECL1(DataStateT, GfxDataState)
@@ -51,10 +55,12 @@ struct DataStateT : GfxDataState {
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
 	using NatShader   = typename Gfx::NativeShader;
-	using ShaderState = typename Gfx::ShaderState;
-	using InputState  = typename Gfx::InputState;
+	//using ShaderState = typename Gfx::ShaderState;
+	using ShaderState = ShaderStateT<Gfx>;
+	//using InputState  = typename Gfx::InputState;
+	using InputState  = InputStateT<Gfx>;
 	using DataObject  = typename Gfx::DataObject;
-	using Framebuffer = typename Gfx::Framebuffer;
+	using Framebuffer = FramebufferT<Gfx>;
 	
 	
 	Array<DataObject> objects;
@@ -91,6 +97,6 @@ protected:
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

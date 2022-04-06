@@ -27,6 +27,7 @@ INITBLOCK {
 	using namespace TS;
 	
 	Factory::RegisterAtom<CenterCustomer>();
+	Factory::RegisterAtom<OglCustomer>();
 	Factory::RegisterAtom<TestRealtimeSrc>();
 	Factory::RegisterAtom<TestRealtimeSink>();
 	Factory::RegisterAtom<TestPollerSink>();
@@ -50,6 +51,10 @@ INITBLOCK {
 	
 	#if defined flagPOSIX
 	Factory::RegisterAtom<X11VideoAtomPipe>();
+	#ifdef flagOGL
+	Factory::RegisterAtom<GlxVideoAtomPipe>();
+	Factory::RegisterAtom<GlxFboAtomSA>();
+	#endif
 	#endif
 	
 	#ifdef flagSDL2

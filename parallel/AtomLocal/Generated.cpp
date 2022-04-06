@@ -244,28 +244,6 @@ AtomTypeCls EcsOglFbo::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
-AtomTypeCls OglCustomer::GetAtomType()
-{
-	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);
-}
-
-LinkTypeCls OglCustomer::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void OglCustomer::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<CustomerBase>(this);
-}
-
-AtomTypeCls OglCustomer::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
 AtomTypeCls SdlEventAtomPipe::GetAtomType()
 {
 	return ATOM11(SDL_EVENT_ATOM_PIPE, PIPE, CENTER, EVENT, CENTER, ORDER, CENTER, EVENT);

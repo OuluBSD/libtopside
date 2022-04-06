@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.6 12:22:22
+// Last export: 2022.4.7 0:44:33
 
 static bool AVFile_Initialize(NativeAVFile& file, AtomBase&, const Script::WorldState&);
 static bool AVFile_PostInitialize(NativeAVFile& file, AtomBase&);

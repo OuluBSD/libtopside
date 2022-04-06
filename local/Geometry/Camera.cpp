@@ -271,9 +271,9 @@ Frustum Camera::GetFrustum() {
 
 	// Normalize all 6 planes
 	for (int i = 0; i < 6; ++i) {
-		float mag = 1.0f / result.planes[i].normal.GetMagnitude();
-		result.planes[i].normal.Normalize();
-		result.planes[i].distance *= mag;
+		float mag = 1.0f / result[i].normal.GetMagnitude();
+		result[i].normal.Normalize();
+		result[i].distance *= mag;
 	}
 
 	return result;

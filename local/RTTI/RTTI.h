@@ -12,7 +12,7 @@ typedef size_t TypeCls;
 class RTTI;
 
 
-#define RTTIBase virtual public UPP::RTTI
+#define RTTIBase virtual public ::UPP::RTTI
 
 class RTTI {
 	
@@ -102,20 +102,20 @@ public:
 #define RTTI_DECL_0(Type, TypeString) \
 	public: \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);} \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}\
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass(); \
 		} \
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override { \
+        ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
             RTTI_ELSE(RTTI, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
             RTTI_ELSE(RTTI, GetTypeInfo) \
         } \
-        void* GetBasePtr(UPP::TypeCls id) const override { \
+        void* GetBasePtr(::UPP::TypeCls id) const override { \
             RTTI_IF0((Type*)this) \
             RTTI_ELSE(RTTI, GetBasePtr) \
         } \
@@ -123,11 +123,11 @@ public:
             IF_NAME(Type) \
             RTTI_ELSE(RTTI, GetBasePtr) \
         } \
-        void* GetBasePtrUnder(UPP::TypeCls id, void* mem) const override { \
+        void* GetBasePtrUnder(::UPP::TypeCls id, void* mem) const override { \
 			IF_MEM_UNDER(Type) \
             RTTI_ELSE_MEM(RTTI, GetBasePtrUnder) \
         } \
-        bool GetBasePtrOver0(UPP::TypeCls id, void* mem, void*& ret) const override { \
+        bool GetBasePtrOver0(::UPP::TypeCls id, void* mem, void*& ret) const override { \
 			IF_MEM_OVER(Type) \
             RTTI_ELIF_OVER(Type, RTTI) \
             RTTI_ELSE_OVER \
@@ -138,20 +138,20 @@ public:
     public:                                                            \
 		static_assert(std::is_convertible<Type*, ParentType*>(), "Invalid parent type"); \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);}          \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}\
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass(); \
 		} \
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override { \
+        ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
             RTTI_ELSE(ParentType, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
             RTTI_ELSE(ParentType, GetTypeInfo) \
         } \
-        void* GetBasePtr(UPP::TypeCls id) const override { \
+        void* GetBasePtr(::UPP::TypeCls id) const override { \
             RTTI_IF0((Type*)this) \
             RTTI_ELSE(ParentType, GetBasePtr) \
         } \
@@ -159,11 +159,11 @@ public:
             IF_NAME(Type) \
             RTTI_ELSE(ParentType, GetBasePtr) \
         } \
-        void* GetBasePtrUnder(UPP::TypeCls id, void* mem) const override { \
+        void* GetBasePtrUnder(::UPP::TypeCls id, void* mem) const override { \
 			IF_MEM_UNDER(Type) \
             RTTI_ELSE_MEM(ParentType, GetBasePtrUnder) \
         } \
-        bool GetBasePtrOver0(UPP::TypeCls id, void* mem, void*& ret) const override { \
+        bool GetBasePtrOver0(::UPP::TypeCls id, void* mem, void*& ret) const override { \
 			IF_MEM_OVER(Type) \
             RTTI_ELIF_OVER(Type, ParentType) \
             RTTI_ELSE_OVER \
@@ -175,22 +175,22 @@ public:
 		static_assert(std::is_convertible<Type*, ParentType0*>(), "Invalid parent type"); \
 		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);}          \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}\
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass(); \
 		}\
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override { \
+        ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_ELSE(ParentType1, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(const UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_ELSE(ParentType1, GetTypeInfo) \
         } \
-        void* GetBasePtr(UPP::TypeCls id) const override { \
+        void* GetBasePtr(::UPP::TypeCls id) const override { \
             RTTI_IF0((Type*)this) \
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_ELSE(ParentType1, GetBasePtr) \
@@ -200,12 +200,12 @@ public:
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_ELSE(ParentType1, GetBasePtr) \
         } \
-        void* GetBasePtrUnder(UPP::TypeCls id, void* mem) const override { \
+        void* GetBasePtrUnder(::UPP::TypeCls id, void* mem) const override { \
 			IF_MEM_UNDER(Type) \
             RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
             RTTI_ELSE_MEM(ParentType1, GetBasePtrUnder) \
         } \
-        bool GetBasePtrOver0(UPP::TypeCls id, void* mem, void*& ret) const override { \
+        bool GetBasePtrOver0(::UPP::TypeCls id, void* mem, void*& ret) const override { \
 			IF_MEM_OVER(Type) \
             RTTI_ELIF_OVER(Type, ParentType0) \
             RTTI_ELIF_OVER(Type, ParentType1) \
@@ -220,24 +220,24 @@ public:
 		static_assert(std::is_convertible<Type*, ParentType1*>(), "Invalid parent type"); \
 		static_assert(std::is_convertible<Type*, ParentType2*>(), "Invalid parent type"); \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);}          \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}          \
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass();                                \
 		} \
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override {             \
+        ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override {             \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(UPP::RTTI, ParentType0, GetTypeInfo) \
-            RTTI_IF1(UPP::RTTI, ParentType1, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_ELSE(ParentType2, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(const UPP::RTTI, ParentType0, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType1, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
             RTTI_ELSE(ParentType2, GetTypeInfo) \
         } \
-        void* GetBasePtr(UPP::TypeCls id) const override { \
+        void* GetBasePtr(::UPP::TypeCls id) const override { \
             RTTI_IF0((Type*)this) \
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_IF1(void, ParentType1, GetBasePtr) \
@@ -249,13 +249,13 @@ public:
             RTTI_IF1(void, ParentType1, GetBasePtr) \
             RTTI_ELSE(ParentType2, GetBasePtr) \
         } \
-        void* GetBasePtrUnder(UPP::TypeCls id, void* mem) const override { \
+        void* GetBasePtrUnder(::UPP::TypeCls id, void* mem) const override { \
 			IF_MEM_UNDER(Type) \
             RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
             RTTI_IF1_MEM(void, ParentType1, GetBasePtrUnder) \
             RTTI_ELSE_MEM(ParentType2, GetBasePtrUnder) \
         } \
-        bool GetBasePtrOver0(UPP::TypeCls id, void* mem, void*& ret) const override { \
+        bool GetBasePtrOver0(::UPP::TypeCls id, void* mem, void*& ret) const override { \
 			IF_MEM_OVER(Type) \
             RTTI_ELIF_OVER(Type, ParentType0) \
             RTTI_ELIF_OVER(Type, ParentType1) \
@@ -270,26 +270,26 @@ public:
 		static_assert(std::is_convertible<Type*, ParentType2*>(), "Invalid parent type"); \
 		static_assert(std::is_convertible<Type*, ParentType3*>(), "Invalid parent type"); \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);}          \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}          \
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass();                                \
 		} \
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override {             \
+        ::UPP::RTTI* GetTypeInfo(::UPP::TypeCls id) override {             \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(UPP::RTTI, ParentType0, GetTypeInfo) \
-            RTTI_IF1(UPP::RTTI, ParentType1, GetTypeInfo) \
-            RTTI_IF1(UPP::RTTI, ParentType2, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType1, GetTypeInfo) \
+            RTTI_IF1(::UPP::RTTI, ParentType2, GetTypeInfo) \
             RTTI_ELSE(ParentType3, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(const UPP::RTTI, ParentType0, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType1, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType2, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType2, GetTypeInfo) \
             RTTI_ELSE(ParentType3, GetTypeInfo) \
         } \
-        void* GetBasePtr(UPP::TypeCls id) const override { \
+        void* GetBasePtr(::UPP::TypeCls id) const override { \
             RTTI_IF0((Type*)this) \
             RTTI_IF1(void, ParentType0, GetBasePtr) \
             RTTI_IF1(void, ParentType1, GetBasePtr) \
@@ -303,14 +303,14 @@ public:
             RTTI_IF1(void, ParentType2, GetBasePtr) \
             RTTI_ELSE(ParentType3, GetBasePtr) \
         } \
-        void* GetBasePtrUnder(UPP::TypeCls id, void* mem) const override { \
+        void* GetBasePtrUnder(::UPP::TypeCls id, void* mem) const override { \
 			IF_MEM_UNDER(Type) \
             RTTI_IF1_MEM(void, ParentType0, GetBasePtrUnder) \
             RTTI_IF1_MEM(void, ParentType1, GetBasePtrUnder) \
             RTTI_IF1_MEM(void, ParentType2, GetBasePtrUnder) \
             RTTI_ELSE_MEM(ParentType3, GetBasePtrUnder) \
         } \
-        bool GetBasePtrOver0(UPP::TypeCls id, void* mem, void*& ret) const override { \
+        bool GetBasePtrOver0(::UPP::TypeCls id, void* mem, void*& ret) const override { \
 			IF_MEM_OVER(Type) \
             RTTI_ELIF_OVER(Type, ParentType0) \
             RTTI_ELIF_OVER(Type, ParentType1) \
@@ -327,12 +327,12 @@ public:
 		static_assert(std::is_convertible<Type*, ParentType3*>(), "Invalid parent type"); \
 		static_assert(std::is_convertible<Type*, ParentType4*>(), "Invalid parent type"); \
         static const char* GetTypeName() {RTTI_STRING_FN(TypeString);}          \
-        static UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
+        static ::UPP::TypeCls TypeIdClass() {static int d = 0; return (size_t) &d;} \
         const char* GetDynamicName() const override {RTTI_STRING_FN(TypeString);}          \
-        UPP::TypeCls GetTypeId() const override { \
+        ::UPP::TypeCls GetTypeId() const override { \
 			return Type::TypeIdClass();                                \
 		} \
-        UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override {             \
+        ::UPP::RTTI* GetTypeInfo(UPP::TypeCls id) override {             \
             RTTI_IF0(&RTTI::GetRTTI()) \
             RTTI_IF1(UPP::RTTI, ParentType0, GetTypeInfo) \
             RTTI_IF1(UPP::RTTI, ParentType1, GetTypeInfo) \
@@ -340,12 +340,12 @@ public:
             RTTI_IF1(UPP::RTTI, ParentType3, GetTypeInfo) \
             RTTI_ELSE(ParentType4, GetTypeInfo) \
         } \
-        const UPP::RTTI* GetTypeInfo( UPP::TypeCls id ) const override { \
+        const ::UPP::RTTI* GetTypeInfo( ::UPP::TypeCls id ) const override { \
             RTTI_IF0(&RTTI::GetRTTI()) \
-            RTTI_IF1(const UPP::RTTI, ParentType0, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType1, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType2, GetTypeInfo) \
-            RTTI_IF1(const UPP::RTTI, ParentType3, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType0, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType1, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType2, GetTypeInfo) \
+            RTTI_IF1(const ::UPP::RTTI, ParentType3, GetTypeInfo) \
             RTTI_ELSE(ParentType4, GetTypeInfo) \
         } \
         void* GetBasePtr(UPP::TypeCls id) const override { \

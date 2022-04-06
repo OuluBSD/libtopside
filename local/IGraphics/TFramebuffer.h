@@ -1,7 +1,7 @@
 #ifndef _IGraphics_TFramebuffer_h_
 #define _IGraphics_TFramebuffer_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #if 0
@@ -52,10 +52,12 @@ struct FramebufferT : GfxFramebuffer {
 	using NatProgram  = typename Gfx::NativeProgram;
 	using NatPipeline = typename Gfx::NativePipeline;
 	using NatShader = typename Gfx::NativeShader;
-	using ShaderState = typename Gfx::ShaderState;
-	using InputState = typename Gfx::InputState;
+	//using ShaderState = typename Gfx::ShaderState;
+	using ShaderState = ShaderStateT<Gfx>;
+	//using InputState  = typename Gfx::InputState;
+	using InputState  = InputStateT<Gfx>;
 	using DataObject = typename Gfx::DataObject;
-	using DataState = typename Gfx::DataState;
+	using DataState = DataStateT<Gfx>;
 	RTTI_DECL1(FramebufferT, GfxFramebuffer)
 	
 	NatColorBuf	color_buf[2];
@@ -111,6 +113,6 @@ struct FramebufferT : GfxFramebuffer {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

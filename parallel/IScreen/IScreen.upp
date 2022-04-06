@@ -1,15 +1,21 @@
 description "\377B112,112,112";
 
 uses
-	ParallelLib;
+	ParallelLib,
+	IGraphics;
 
 library(POSIX) X11;
+
+library(POSIX & OGL) GLX;
+
+library(POSIX & OGL) "GL GLU GLEW glut";
 
 file
 	IScreen.h,
 	Enums.h,
 	Vendors.h,
 	X11.cpp,
+	X11Glx.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;

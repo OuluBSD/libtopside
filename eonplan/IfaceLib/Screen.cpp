@@ -9,6 +9,10 @@ PKG(Screen, Scr, S) {
 	
 	COLOR(112, 112, 112)
 	DEPENDENCY(ParallelLib)
+	DEPENDENCY(IGraphics)
+	LIBRARY("POSIX", X11)
+	LIBRARY("POSIX & OGL", GLX)
+	LIBRARY("POSIX & OGL", GL GLU GLEW glut)
 	
 	PKG_IFACE {
 		//NATIVE_CLASS(SinkDevice)
@@ -26,7 +30,6 @@ PKG(Screen, Scr, S) {
 	VENDOR(X11) {
 		VENDOR_ENABLED_FLAG(LINUX)
 		VENDOR_ENABLED_FLAG(FREEBSD)
-		LIBRARY("POSIX", X11)
 		VENDOR_INCLUDE("", X11/Xlib.h)
 		VENDOR_INCLUDE("", X11/Xutil.h)
 		VENDOR_HEADER_REQUIRES_INCLUDES
@@ -38,6 +41,25 @@ PKG(Screen, Scr, S) {
 			.Add("fb",			"::XImage*")
 			.Add("visual",		"::Visual*")
 			.Add("gc",			"::GC")
+			;
+		
+		
+	}
+	
+	VENDOR(X11Glx) {
+		VENDOR_ENABLED_FLAG(OGL)
+		VENDOR_INCLUDE("", X11/Xlib.h)
+		VENDOR_INCLUDE("", X11/Xutil.h)
+		VENDOR_INCLUDE("", GL/glx.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_CLASS(SinkDevice, void*)
+		
+		v->AddStruct("NativeSinkDevice")
+			.Add("win",			"::Window")
+			.Add("display",		"::Display*")
+			.Add("visual",		"::Visual*")
+			.Add("gc",			"::GC")
+			.Add("ogl",			"GfxAccelAtom<X11OglGfx>")
 			;
 		
 		

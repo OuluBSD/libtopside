@@ -2,7 +2,7 @@
 
 #ifdef flagSCREEN
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #if 0
@@ -105,6 +105,6 @@ void OglDataObject::Paint() {
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

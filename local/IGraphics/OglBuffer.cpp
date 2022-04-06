@@ -2,7 +2,7 @@
 
 #ifdef flagOGL
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 int GetOglChCode(int channels, bool is_float) {
@@ -28,7 +28,7 @@ int GetOglChCode(int channels, bool is_float) {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif
 

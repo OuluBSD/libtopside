@@ -61,7 +61,6 @@ struct GfxFragmentShaderArgs : RTTIBase {
 template <class Backend>
 struct VertexShaderArgsT : GfxVertexShaderArgs {
 	using Base = VertexShaderArgsT<Backend>;
-	using DataState = typename Backend::DataState;
 	using DataObject = typename Backend::DataObject;
 	RTTI_DECL1(VertexShaderArgsT, GfxVertexShaderArgs)
 	

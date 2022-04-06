@@ -31,6 +31,7 @@ BASE(OglAudioBase)
 BASE(EcsEventsBase)
 BASE(EcsVideoBase)
 BASE(X11SinkDevice)
+BASE(X11GlxSinkDevice)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

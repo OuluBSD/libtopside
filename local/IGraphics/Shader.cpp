@@ -2,7 +2,7 @@
 
 #if 0
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 void Shader::PushMultiplyMat4(String key, const mat4& mat) {
@@ -40,6 +40,6 @@ Shader* Shader::NewDefault() {
 }
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -114,7 +114,7 @@ public:
 	String ToString() const override {if (ptr) return ::UPP::AsString(*ptr); return "NULL";}
 	int64 ToInt() const override {if (ptr) return ::UPP::ToInt(*ptr); return 0;}
 	double ToDouble() const override {if (ptr) return ::UPP::ToDouble(*ptr); return 0;}
-	hash_t GetHashValue() const override {if (ptr) return UPP::GetHashValue(*ptr); return 0;}
+	hash_t GetHashValue() const override {if (ptr) return ::UPP::GetHashValue(*ptr); return 0;}
 	//void Visit(RuntimeVisitor& vis) override {if (ptr) ptr->Visit(vis);}
 };
 
@@ -251,8 +251,8 @@ class Id : Moveable<Id> {
 
 public:
 	const String&  ToString() const              { return id; }
-	hash_t         GetHashValue() const          { return UPP::GetHashValue(id); }
-	bool           IsNull() const                { return UPP::IsNull(id); }
+	hash_t         GetHashValue() const          { return ::UPP::GetHashValue(id); }
+	bool           IsNull() const                { return ::UPP::IsNull(id); }
 
 	operator const String&() const               { return ToString(); }
 	const String&  operator~() const             { return ToString(); }

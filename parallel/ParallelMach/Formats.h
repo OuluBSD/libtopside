@@ -104,6 +104,8 @@ struct FboFormat :
 	byte pad[STD_FMT_SIZE - base_size - 4];
 };
 
+typedef FboFormat OglFormat;
+
 struct MidiFormat :
 	public SampleBase<MidiSample>,
 	public DimBase<1>,
@@ -215,6 +217,7 @@ public:
 	bool IsEvent() const {return vd.val == ValCls::EVENT;}
 	bool IsFbo()   const {return vd.val == ValCls::FBO;}
 	bool IsProg()   const {return vd.val == ValCls::PROG;}
+	bool IsOgl()   const {return vd.dev == DevCls::OGL;}
 	bool IsValid() const;
 	bool IsSame(const Format& f) const; // {return FormatBase::IsSame(f);}
 	bool IsCopyCompatible(const Format& f) const; // {return FormatBase::IsCopyCompatible(f);}

@@ -1,16 +1,14 @@
 #ifndef _IGraphics_Cpu_h_
 #define _IGraphics_Cpu_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 #define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
 
 #ifdef flagSDL2
 GFX_CLS_LIST(SdlCpu)
-#endif
 
-#undef GFX_CLS
 
 
 // default frame TODO should be conditional
@@ -19,6 +17,11 @@ using CpuDataState		= SdlCpuDataState;
 using CpuFramebuffer	= SdlCpuFramebuffer;
 using CpuDataObject		= SdlCpuDataObject;
 
+#endif
+
+
+
+#undef GFX_CLS
 
 #if 0
 struct CpuVertexShaderArgs {
@@ -118,6 +121,6 @@ struct CpuBuffer : BufferT<CpuGfx> {
 
 #endif
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

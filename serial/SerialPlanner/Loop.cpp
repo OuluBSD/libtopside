@@ -373,8 +373,7 @@ void ScriptLoopLoader::InitSegments() {
 		consumer = AsAtomTypeCls<CenterCustomer>();
 	else if (dev == DevCls::OGL) {
 		#ifdef flagSCREEN
-		TODO
-		//consumer = AsAtomTypeCls<OglCustomer>();
+		consumer = AsAtomTypeCls<OglCustomer>();
 		#else
 		SetError("OGL device not supported without this program compiled with GUI compilation flag");
 		#endif

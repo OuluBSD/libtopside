@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.6 12:22:22
+// Last modified: 2022.4.7 0:44:33
 
 namespace TS {
 
@@ -61,6 +61,7 @@ namespace Parallel {
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
+	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
 	ATOM_TYPE(SDL_FBO_PIPE) \
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
@@ -91,6 +92,7 @@ namespace Parallel {
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \
+	ATOM_CLASS(X11VideoAtomPipe) \
 	ATOM_CLASS(SdlFboAtomSA) \
 	ATOM_CLASS(SdlFboPipe) \
 	ATOM_CLASS(SdlFboPipeSide) \
@@ -132,12 +134,14 @@ namespace Parallel {
 	ATOM_CLASS(SdlAudioAtom) \
 
 
-#define flagPOSIX_ATOM_TYPE_LIST \
-	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
+#define flagOGL_ATOM_TYPE_LIST \
+	ATOM_TYPE(GLX_VIDEO_ATOM_PIPE) \
+	ATOM_TYPE(GLX_FBO_ATOM_S_A) \
 
 
-#define flagPOSIX_ATOM_CLASS_LIST \
-	ATOM_CLASS(X11VideoAtomPipe) \
+#define flagOGL_ATOM_CLASS_LIST \
+	ATOM_CLASS(GlxVideoAtomPipe) \
+	ATOM_CLASS(GlxFboAtomSA) \
 
 
 }
