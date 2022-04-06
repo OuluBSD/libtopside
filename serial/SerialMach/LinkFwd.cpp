@@ -335,6 +335,14 @@ void LinkBase::ForwardExchange(FwdScope& fwd) {
 	}
 }
 
+String LinkBase::GetSecondaryName() {
+	return atom ? atom->GetDynamicName() : "";
+}
+
+void* LinkBase::GetSecondaryPtr() {
+	return atom ? &atom->GetRTTI() : 0;
+}
+
 bool LinkBase::IsPacketStuck() {
 	AtomTypeCls type = GetAtomType();
 	InterfaceSinkRef sink_iface = GetSink();

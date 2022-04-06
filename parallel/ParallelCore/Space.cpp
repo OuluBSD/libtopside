@@ -54,6 +54,10 @@ AtomBaseRef Space::GetTypeCls(AtomTypeCls atom_type) {
 	return AtomBaseRef();
 }
 
+AtomBaseRef Space::AddTypeCls(AtomTypeCls cls) {
+	return AddPtr(GetMachine().Get<AtomStore>()->CreateAtomTypeCls(cls));
+}
+
 AtomBaseRef Space::GetAddTypeCls(AtomTypeCls cls) {
 	AtomBaseRef cb = FindTypeCls(cls);
 	return cb ? cb : AddPtr(GetMachine().Get<AtomStore>()->CreateAtomTypeCls(cls));

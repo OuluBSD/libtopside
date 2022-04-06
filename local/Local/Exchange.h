@@ -471,6 +471,8 @@ public:
 	virtual void ForwardExchange(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName()));}
 	virtual bool IsPacketStuck() {Panic("not implemented " + String(GetDynamicName())); return true;}
 	virtual bool IsLoopComplete(FwdScope& fwd) {Panic("not implemented " + String(GetDynamicName())); return true;}
+	virtual String GetSecondaryName() {return "";}
+	virtual void* GetSecondaryPtr() {return 0;}
 	PacketForwarder& GetPacketForwarder() {return *this;}
 	
 };
@@ -587,8 +589,8 @@ public:
 	struct ExptData : Moveable<ExptData> {
 		NewExpt new_fn;
 	};
-	typedef VectorMap<TypeCls,ExptData> ExptMap;
-	static VectorMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
+	typedef ArrayMap<TypeCls,ExptData> ExptMap;
+	static ArrayMap<TypeCls,ExptData>& ExptDataMap() {MAKE_STATIC(ExptMap, m); return m;}
 	template <class T> static ExchangePoint* New() {return new T();}
 	template <class T> static void RegisterExchangePoint() {
 		ExptData& d = ExptDataMap().GetAdd(AsTypeCls<T>());

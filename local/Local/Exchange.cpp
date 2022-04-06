@@ -72,9 +72,9 @@ void ExchangeSourceProvider::Link(ExchangePointRef expt, SinkProv sink, Cookie& 
 		if (!cfg1.IsEmpty()) cfg1 = "<" + cfg1 + ">";
 		
 		s << GetRTTI().GetDynamicName() <<
-			cfg0 << "(" << HexStr(this) << ") linked to " <<
+			cfg0 << "(" << HexStr(&GetRTTI()) << ") linked to " <<
 			sink->GetRTTI().GetDynamicName() <<
-			cfg1 << "(" << HexStr(&*expt) << ")";
+			cfg1 << "(" << HexStr(&expt->GetRTTI()) << ")";
 		LOG(s);
 	}
 	base.SetLink(expt, sink);
@@ -177,12 +177,12 @@ void FwdScope::ForwardWeak() {
 	if (cur) {
 		int pos = read_i-1;
 		if (!cur->IsPacketStuck()) {
-			RTLOG("FwdScope::ForwardWeak: fwd " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
+			RTLOG("FwdScope::ForwardWeak: fwd " << pos << " (at " << cur->GetDynamicName() << ", " << cur->GetSecondaryName() << "; " << HexStr(&cur->GetRTTI()) << ", " << HexStr(cur->GetSecondaryPtr()) << ")");
 			cur->ForwardSetup(*this);
 			cur->ForwardAtom(*this);
 		}
 		else {
-			RTLOG("FwdScope::ForwardWeak: skip " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
+			RTLOG("FwdScope::ForwardWeak: skip " << pos << " (at " << cur->GetDynamicName() << ", " << cur->GetSecondaryName() << "; " << HexStr(&cur->GetRTTI()) << ", " << HexStr(cur->GetSecondaryPtr()) << ")");
 		}
 		cur->ForwardExchange(*this);
 		
@@ -194,7 +194,7 @@ void FwdScope::ForwardWeak() {
 void FwdScope::Forward() {
 	if (cur) {
 		int pos = read_i-1;
-		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << " " << HexStr(cur) << ")");
+		RTLOG("FwdScope::Forward: " << pos << " (at " << cur->GetDynamicName() << ", " << cur->GetSecondaryName() << "; " << HexStr(&cur->GetRTTI()) << ", " << HexStr(cur->GetSecondaryPtr()) << ")");
 		cur->ForwardSetup(*this);
 		cur->ForwardAtom(*this);
 		cur->ForwardExchange(*this);

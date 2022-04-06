@@ -80,6 +80,7 @@ public:
 	
 	//void				OnChange();
 	AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);
+	AtomBaseRef			AddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			GetAddTypeCls(AtomTypeCls cls);
 	AtomBaseRef			FindTypeCls(AtomTypeCls atom_type);
 	SpaceRef			FindSpaceByName(String name);

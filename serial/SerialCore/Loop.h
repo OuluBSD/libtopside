@@ -77,6 +77,7 @@ public:
 	
 	void				OnChange();
 	/*AtomBaseRef			GetTypeCls(AtomTypeCls atom_type);*/
+	LinkBaseRef			AddTypeCls(LinkTypeCls cls);
 	LinkBaseRef			GetAddTypeCls(LinkTypeCls cls);
 	LinkBaseRef			FindTypeCls(LinkTypeCls atom_type);
 	LoopRef				FindLoopByName(String name);

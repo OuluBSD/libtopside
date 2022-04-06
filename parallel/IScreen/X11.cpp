@@ -49,9 +49,9 @@ bool ScrX11::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Scr
 		// respectively. Place the new window's top-left corner at
 		// the given 'x,y' coordinates.
 		win = XCreateSimpleWindow(display, RootWindow(display, screen_num),
-		                        x, y, width, height, win_border_width,
-		                        BlackPixel(display, screen_num),
-		                        WhitePixel(display, screen_num));
+		                          x, y, width, height, win_border_width,
+		                          BlackPixel(display, screen_num),
+		                          WhitePixel(display, screen_num));
 		
 		// make the window actually appear on the screen.
 		XMapWindow(display, win);

@@ -641,6 +641,9 @@ bool ScriptLoopLoader::Load() {
 	int plan_i = 0;
 	const Script::WorldState* prev_ws0 = 0;
 	const Script::WorldState* prev_ws1 = 0;
+	LinkBaseRef first_lb;
+	AtomBaseRef first_ab;
+	bool is_first = true;
 	for (Script::ActionNode* n : seg.ep.plan) {
 		RTLOG("Loading plan node " << plan_i);
 		Script::WorldState& ws = n->GetWorldState();
@@ -652,12 +655,18 @@ bool ScriptLoopLoader::Load() {
 			AtomBaseRef ab;
 			
 			if (is_last) {
-				ab = l->GetSpace()->FindTypeCls(atom);
-				lb = l->FindTypeCls(link);
+				ab = first_ab;
+				lb = first_lb;
 			}
 			else {
-				ab = l->GetSpace()->GetAddTypeCls(atom);
-				lb = l->GetAddTypeCls(link);
+				ab = l->GetSpace()->AddTypeCls(atom);
+				lb = l->AddTypeCls(link);
+			}
+			
+			if (is_first) {
+				first_ab = ab;
+				first_lb = lb;
+				is_first = false;
 			}
 			
 			if (!ab) {

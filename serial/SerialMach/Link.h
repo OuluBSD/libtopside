@@ -109,6 +109,9 @@ public:
 	bool					IsLoopComplete(FwdScope& fwd) override {return false;}
 	void					ForwardAtom(FwdScope& fwd) override;
 	void					ForwardExchange(FwdScope& fwd) override;
+	String					GetSecondaryName() override;
+	void*					GetSecondaryPtr() override;
+	
 	//void					ForwardDriver(FwdScope& fwd);
 	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();

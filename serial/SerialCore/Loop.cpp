@@ -133,6 +133,10 @@ void Loop::Initialize(Loop& l, String prefab) {
 	
 }
 
+LinkBaseRef Loop::AddTypeCls(LinkTypeCls cls) {
+	return AddPtr(space->GetMachine().Get<LinkStore>()->CreateLinkTypeCls(cls));
+}
+
 LinkBaseRef Loop::GetAddTypeCls(LinkTypeCls cls) {
 	LinkBaseRef cb = FindTypeCls(cls);
 	return cb ? cb : AddPtr(space->GetMachine().Get<LinkStore>()->CreateLinkTypeCls(cls));
@@ -141,7 +145,7 @@ LinkBaseRef Loop::GetAddTypeCls(LinkTypeCls cls) {
 LinkBaseRef Loop::AddPtr(LinkBase* comp) {
 	comp->SetParent(this);
 	LinkTypeCls type = comp->GetLinkType();
-	ASSERT(!links.Find(type));
+	// not true anymore: ASSERT(!links.Find(type));
 	links.Add(type, comp);
 	InitializeLink(*comp);
 	return LinkBaseRef(this, comp);
@@ -203,6 +207,8 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface)
 	if (!src || !sink)
 		return false;
 	
+	ASSERT(src_atom != dst_atom);
+	ASSERT(src_atom->GetLink() != dst_atom->GetLink()); // "stupid" but important
 	ASSERT(src	->AsAtomBase()->GetSpace()->GetLoop()->HasLoopParent(AsRefT()));
 	ASSERT(sink	->AsAtomBase()->GetSpace()->GetLoop()->HasLoopParent(AsRefT()));
 	CookieRef src_cookie, sink_cookie;
@@ -226,6 +232,10 @@ bool Loop::MakeLink(AtomBaseRef src_atom, AtomBaseRef dst_atom, ValDevCls iface)
 		ASSERT(expt_type);
 		ExchangePointRef ep = space->MetaSpaceBase::Add(expt_type);
 		RTLOG("Loop::Link(...): created " << ep->GetDynamicName() << " at " << HexStr(&ep->GetRTTI()));
+		RTLOG("                 src-atom: " << HexStr(&src_atom->GetRTTI()));
+		RTLOG("                 src-link: " << HexStr(&src_atom->GetLink()->GetRTTI()));
+		RTLOG("                 dst-atom: " << HexStr(&dst_atom->GetRTTI()));
+		RTLOG("                 dst-link: " << HexStr(&dst_atom->GetLink()->GetRTTI()));
 		src->Link(ep, sink, src_cookie, sink_cookie);
 		ep->Init(this->GetSpace());
 		ep->Set(src, sink, src_cookie, sink_cookie);
