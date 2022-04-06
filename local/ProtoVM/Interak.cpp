@@ -15,12 +15,12 @@ void SetupInterak(Machine& mach) {
 		vcc.SetName("vcc");
 		
 		Z80& cpu = b.Add<Z80>();
-		IC74LS245& cpu = b.Add<IC74LS245>();
+		IC74LS245& u6 = b.Add<IC74LS245>();
 		IC74LS245& u2 = b.Add<IC74LS245>();
 		IC74LS245& u3 = b.Add<IC74LS245>();
 		IC74LS245& u4 = b.Add<IC74LS245>();
-		ResistorPack& rn1 = b.Add<ResitorPack>();
-		ResistorPack& rn3 = b.Add<ResitorPack>();
+		ResistorPack& rn1 = b.Add<ResistorPack>(8);
+		ResistorPack& rn3 = b.Add<ResistorPack>(8);
 		ENode& cpu_mreq = b.AddNode("cpu mreq");
 		ENode& cpu_iorq = b.AddNode("cpu iorq");
 		ENode& cpu_rd = b.AddNode("cpu rd");
@@ -57,12 +57,13 @@ void SetupInterak(Machine& mach) {
 		data_bus["0,8"] >> rn1["0,8"];
 		
 		// Interface
-		u4["B0,8"] >> iface["D0,8"] // data
+		u4["B0,8"] >> iface["D0,8"]; // data
 		u3["B0,8"] >> iface_addr_bus["7,-8"];
 		u2["B0,8"] >> iface_addr_bus["15,-8"];
 		iface_addr_bus >> iface["A0,16"];
 		
 		
+		TODO
 	}
 	/*PushButtonComp& reset = b.Add<PushButtonComp>();
 	Resistor4k7& r4k7 = b.Add<Resistor4k7>();

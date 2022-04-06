@@ -26,6 +26,15 @@ public:
 		return *o;
 	}
 	
+	template <class T>
+	T& Add(int i, String name="") {
+		T* o = new T(i);
+		o->pcb = this;
+		o->name = name;
+		nodes.Add(o);
+		return *o;
+	}
+	
 	ENode& AddNode(String name);
 	ElcBase& AddReferenceSingle(ElcBase& n, int pin_i);
 	ElcBase& AddReferenceRange(ElcBase& n, int pin_i, int pin_count);

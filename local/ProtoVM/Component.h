@@ -47,6 +47,24 @@ using Resistor4k7 = Resistor;//<4700>;
 
 
 
+class ResistorPack : public ElcBase {
+	RTTI_DECL1(ResistorPack, ElcBase);
+	
+	
+public:
+	ResistorPack(int c) {
+		AddSink("A");
+		for(int i = 0; i < c; i++)
+			AddSource("B" + IntStr(i));
+		
+	}
+	
+	
+	
+};
+
+
+
 class Crystal : public ElcBase {
 	RTTI_DECL1(Crystal, ElcBase);
 	int hz = 0;

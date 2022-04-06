@@ -102,6 +102,6 @@ public:
 	
 	
 	
-}
+};
 
 #endif
