@@ -35,6 +35,7 @@ INITBLOCK {
 	Serial::Factory::RegisterLink<DriverLink>();
 	Serial::Factory::RegisterLink<JoinerLink>();
 	Serial::Factory::RegisterLink<SplitterLink>();
+	Serial::Factory::RegisterLink<PollerLink>();
 	
 }
 

@@ -31,6 +31,7 @@
 #define LIBRARY(upp_if_str, lib) this->AddLibrary(upp_if_str, #lib);
 #define DEPENDENCY_(upp_if_str, lib) this->AddDependency(upp_if_str, #lib);
 #define DEPENDENCY(x) this->AddDependency(#x);
+#define HAVE_RECV_FINALIZE this->HaveRecvFinalize();
 #define MAINFLAG(x) this->AddMainFlag(#x);
 #define COLOR(r,g,b) this->SetColor(r,g,b);
 #define INHERIT(x) c->Inherit(#x);

@@ -12,7 +12,7 @@ class LinkSystem :
 		RealtimeSourceConfig*	cfg;
 	};
 	One<LinkedList<Once>> once_cbs;
-	LinkedList<LinkBaseRef> customers, drivers, pollers;
+	LinkedList<LinkBaseRef> updated, customers, drivers, pollers;
 	Mutex lock;
 	
 public:
@@ -46,9 +46,11 @@ protected:
     
     
 public:
+    void AddUpdated(LinkBaseRef p);
     void AddCustomer(LinkBaseRef p);
     void AddDriver(LinkBaseRef p);
     void AddPolling(LinkBaseRef p);
+    void RemoveUpdated(LinkBaseRef p);
     void RemoveCustomer(LinkBaseRef p);
     void RemoveDriver(LinkBaseRef p);
     void RemovePolling(LinkBaseRef p);

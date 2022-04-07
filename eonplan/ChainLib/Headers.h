@@ -170,19 +170,19 @@ HEADER_ACTION(		X11VideoAtomPipe,	x11.video.pipe)
 HEADER_ACTION(		X11VideoAtomPipe,	any.video.pipe)
 HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagSCREEN,		1)
 HEADER_ARG(			X11VideoAtomPipe,	HINT_PKG,					"AtomDebug")
-HEADER_LINK(		X11VideoAtomPipe,	PIPE, PROCESS)
+HEADER_LINK(		X11VideoAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER11(			GlxVideoAtomPipe,	X11GlxSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
 HEADER_ACTION(		GlxVideoAtomPipe,	glx.video.pipe)
 HEADER_ARG(			GlxVideoAtomPipe,	reqdef_flagOGL,			1)
 HEADER_ARG(			GlxVideoAtomPipe,	HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxVideoAtomPipe,	PIPE, PROCESS)
+HEADER_LINK(		GlxVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER11(			GlxFboAtomSA,		X11GlxSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		GlxFboAtomSA,		sdl.fbo.standalone)
 HEADER_ARG(			GlxFboAtomSA,		reqdef_flagOGL,			1)
 HEADER_ARG(			GlxFboAtomSA,		HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxFboAtomSA,		PIPE, PROCESS)
+HEADER_LINK(		GlxFboAtomSA,		POLLER_PIPE, PROCESS)
 
 
 

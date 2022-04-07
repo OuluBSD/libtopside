@@ -1,4 +1,5 @@
 #include "IGraphics.h"
+#include <SerialMach/SerialMach.h>
 
 NAMESPACE_PARALLEL_BEGIN
 
@@ -111,6 +112,93 @@ bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
 
 
 
+template <class Gfx>
+bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
+	this->ab = &a;
+	
+	Serial::Link* link = a.GetLink();
+	Serial::FramePollerBase* base = CastPtr<Serial::FramePollerBase>(link);
+	Serial::PollerLink* poller = CastPtr<Serial::PollerLink>(link);
+	if (base) {
+		base->SetFPS(60);
+	}
+	else {
+		LOG("GfxAccelAtom<Gfx>::Initialize: warning: unexpected link type");
+	}
+	
+	
+	String env_name = ws.Get(".env");
+	if (!env_name.IsEmpty()) {
+		SpaceRef l = a.GetSpace();
+		env = l->FindNearestState(env_name);
+		if (!env) {
+			LOG("GfxAccelAtom<Gfx>::Initialize: error: environment state with name '" << env_name << "' not found");
+			return false;
+		}
+	}
+	
+	close_machine = ws.Get(".close_machine") == "true";
+		
+	
+	Buffer& buf = GetBuffer();
+	buf.SetEnvState(env);
+	buf.AddLink(ws.Get(".link"));
+	
+	String loopback = ws.Get(".loopback");
+	if (loopback.GetCount() && !buf.SetLoopback(loopback)) {
+		LOG("GfxAccelAtom<Gfx>::Initialize: error: assigning loopback failed");
+		return false;
+	}
+	
+	String fragment_path = ws.Get(".fragment");
+	String vertex_path = ws.Get(".vertex");
+	String library_path = ws.Get(".library");
+	if (fragment_path.IsEmpty()) fragment_path = ws.Get(".filepath");
+	
+	SetShaderFile(fragment_path, vertex_path, library_path);
+	SetFragmentShader(ws.Get(".fragshader"));
+	SetVertexShader(ws.Get(".vtxshader"));
+	Sizeable(ws.Get(".sizeable") == "true");
+	Maximize(ws.Get(".maximize") == "true");
+	Fullscreen(ws.Get(".fullscreen") == "true");
+	
+	// ShaderBase duplicate
+	for(int i = 0; i < 4; i++) {
+		String key = ".buf" + IntStr(i);
+		String value = ws.Get(key);
+		if (value.IsEmpty())
+			;
+		else if (value == "volume")
+			buf.SetInputVolume(i);
+		else if (value == "cubemap")
+			buf.SetInputCubemap(i);
+		else
+			TODO
+	}
+	
+	a.AddAtomToUpdateList();
+	
+	//AtomBase::GetMachine().template Get<AtomSystem>()->AddPolling(AtomBase::AsRefT());
+	ISinkRef sink = a.GetSink();
+	sink->GetValue(0).SetMaxQueueSize(1);
+	
+	if (poller) {
+		int sink_count = sink->GetSinkCount();
+		for(int i = 0; i < sink_count; i++)
+			if (IsDefaultGfxVal<Gfx>(sink->GetValue(i).GetFormat().vd.val))
+				poller->SetFinalizeOnSide();
+	}
+	else {
+		TODO // check if ok
+	}
+	
+	return true;
+}
+
+template <class Gfx>
+void GfxAccelAtom<Gfx>::Uninitialize() {
+	ab->RemoveAtomFromUpdateList();
+}
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::Open() {
@@ -126,8 +214,10 @@ bool GfxAccelAtom<Gfx>::Open() {
 	
 	GfxFlags(flags);
 	
-	if (!Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend))
+	if (!Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend)) {
+		LOG("GfxAccelAtom<Gfx>::Open: error: could not create window and renderer");
         return false;
+	}
 	Gfx::SetTitle(display, win, title);
     
     GfxRenderer();
@@ -143,8 +233,10 @@ bool GfxAccelAtom<Gfx>::Open() {
 		is_user_shader = true;
 	
 	if (AcceptsOrder()) {
-		if (!this->ImageInitialize())
+		if (!this->ImageInitialize()) {
+			LOG("GfxAccelAtom<Gfx>::Open: error: could not initialize image");
 			return false;
+		}
 	}
 	
 	return true;
@@ -152,10 +244,6 @@ bool GfxAccelAtom<Gfx>::Open() {
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::ImageInitialize() {
-	ASSERT(this->buf)
-	if (!this->buf) return false;
-	
-	Buffer& buf = *this->buf;
 	auto& fb = buf.fb;
 	fb.is_win_fbo = true;
 	fb.size = screen_sz;
@@ -204,7 +292,7 @@ bool GfxAccelAtom<Gfx>::ImageInitialize() {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Close() {
-	fb_packet.Clear();
+	fb_packet = 0;
 	
 	if (glcontext) {
 		GetAppFlags().SetOpenGLContextOpen(false);
@@ -279,54 +367,44 @@ void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 		BeginDraw();
 		FrameCopy(vfmt, (const byte*)d.ptr, d.count);
 		CommitDraw();
-		fb_packet.Clear();
-	}
-	else if (buf) {
-		buf->Process(cfg);
+		fb_packet = 0;
 	}
 	else {
-		RTLOG("Screen::Render: error: no gfx buf");
+		buf.Process(cfg);
 	}
 	
 	CommitDraw();
 }
 
 template <class Gfx>
-bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
+bool GfxAccelAtom<Gfx>::Recv(int ch_i, PacketValue& p) {
 	auto& buf = this->buf;
 	bool succ = true;
-	Format fmt = p->GetFormat();
+	Format fmt = p.GetFormat();
 	if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
 		const auto& vfmt = Gfx::GetFormat(fmt);
 		
-		if (p->IsData<InternalPacketData>()) {
-			const InternalPacketData& d = p->GetData<InternalPacketData>();
+		if (p.IsData<InternalPacketData>()) {
+			const InternalPacketData& d = p.GetData<InternalPacketData>();
 			
 			if (!d.ptr) {
 				ASSERT_(0, "no pointer in InternalPacketData");
 			}
 			else if (d.IsText("gfxstate")) {
 				DataState& sd = *(DataState*)d.ptr;
-				
-				//ASSERT(!is_user_shader || buf);
-				if (/*is_user_shader &&*/ buf) {
-					buf->SetDataStateOverride(&sd);
-				}
-				else {
-					RTLOG("Screen::Render: error: no gfx buf");
-				}
+				buf.SetDataStateOverride(&sd);
 			}
 			else if (d.IsText("gfxvector")) {
-				fb_packet = p;
+				fb_packet = &p;
 			}
 			else if (d.IsText("gfxbuf")) {
 				Size3 sz = vfmt.GetSize();
 				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
-				if (p->IsData<InternalPacketData>()) {
-					succ = buf->LoadOutputLink(sz, ch_i - base, d);
+				if (p.IsData<InternalPacketData>()) {
+					succ = buf.LoadOutputLink(sz, ch_i - base, d);
 				}
 				else {
-					RTLOG("Screen::Recv: cannot handle packet: " << p->ToString());
+					RTLOG("Screen::Recv: cannot handle packet: " << p.ToString());
 				}
 			}
 			else {
@@ -352,6 +430,7 @@ template <class Gfx>
 SystemDraw& GfxAccelAtom<Gfx>::BeginDraw() {
 	AppFlags& flags = GetAppFlags();
 	if (is_opengl || is_sw) {
+	    rend.display = display;
 	    rend.win = win;
 	    rend.rend = nat_rend;
 		rend.SetSize(screen_sz);

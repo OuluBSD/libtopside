@@ -325,7 +325,7 @@ struct X11OglGfx : OglGfx, X11Gfx {
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
-	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
 #endif
@@ -384,7 +384,7 @@ struct SdlCpuGfx : CpuGfx, SdlGfx {
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
-	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
 
@@ -394,7 +394,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS
 	
-	static void ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
 #define SDLOGL_GFXTYPE GFXTYPE(SdlOglGfx)

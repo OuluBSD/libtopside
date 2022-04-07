@@ -40,7 +40,7 @@ class FramePollerBase :
 public:
 	RTTI_DECL1(FramePollerBase, Link)
 	
-	//void	Update(double dt) override;
+	void	Update(double dt) override;
 	bool	IsReady(PacketIO& io) override;
 	
 	void	Visit(RuntimeVisitor& vis) override {vis.VisitThis<Link>(this);}

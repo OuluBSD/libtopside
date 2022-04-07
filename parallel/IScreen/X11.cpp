@@ -143,6 +143,14 @@ void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
+bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int, PacketValue&) {
+	TODO
+}
+
+void ScrX11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig&) {
+	TODO
+}
+
 bool ScrX11::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
 	const Vector<byte>& pixmap = in.Data();
 	Format fmt = in.GetFormat();

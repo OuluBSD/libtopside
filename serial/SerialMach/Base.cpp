@@ -110,29 +110,27 @@ void PipeLink::Uninitialize() {
 	
 }
 
-bool PipeLink::ProcessPackets(PacketIO& io) {
-	//const auto& internal_fmt = atom->GetInternalFormat();
-	
+bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	const int sink_ch = 0;
 	const int src_ch = 0;
-	
-	/*Format internal_fmt = atom->GetSink()->GetValue(sink_ch).GetFormat();
-	ASSERT(internal_fmt.IsValid());
-	RTLOG("LinkBase::ProcessPackets: fmt=" << internal_fmt.ToString());*/
 	
 	PacketIO::Sink& sink = io.sink[sink_ch];
 	PacketIO::Source& src = io.src[src_ch];
 	ASSERT(sink.p);
 	sink.may_remove = true;
 	src.from_sink_ch = sink_ch;
-	src.p = ReplyPacket(sink_ch, sink.p);
+	src.p = link.ReplyPacket(sink_ch, sink.p);
 	src.p->AddRouteData(src.from_sink_ch);
 	
 	PacketValue& in = *sink.p;
 	PacketValue& out = *src.p;
-	bool b = atom->ProcessPacket(in, out);
+	bool b = atom.ProcessPacket(in, out);
 	
 	return b;
+}
+
+bool PipeLink::ProcessPackets(PacketIO& io) {
+	return DefaultProcessPackets(*this, *atom, io);
 }
 
 LinkTypeCls PipeLink::GetType() {
@@ -181,10 +179,12 @@ void IntervalPipeLink::IntervalSinkProcess() {
 	InterfaceSinkRef sink = GetSink();
 	Value& sink_value = sink->GetValue(sink_ch_i);
 	Format fmt = sink_value.GetFormat();
-	AudioFormat& afmt = fmt;
+	
+	bool raw_data = fmt.IsAudio();
 	
 	Vector<byte> data;
-	data.SetCount(fmt.GetFrameSize());
+	if (raw_data)
+		data.SetCount(fmt.GetFrameSize());
 	double step_s = fmt.GetFrameSeconds();
 	TimeStop ts;
 	
@@ -201,23 +201,97 @@ void IntervalPipeLink::IntervalSinkProcess() {
 		
 		RTLOG("IntervalPipeLink::IntervalSinkProcess: trying to consume " << data.GetCount());
 		
-		byte* mem = data.Begin();
-		int len = data.GetCount();
-		if (ForwardAsyncMem(mem, len)) {
-			if (atom->Consume(mem, len)) {
-				RTLOG("IntervalPipeLink::IntervalSinkProcess: consumed succesfully");
+		if (raw_data) {
+			byte* mem = data.Begin();
+			int len = data.GetCount();
+			if (ForwardAsyncMem(mem, len)) {
+				if (atom->Consume(mem, len)) {
+					RTLOG("IntervalPipeLink::IntervalSinkProcess: consumed succesfully");
+				}
+				else {
+					LOG("IntervalPipeLink::IntervalSinkProcess: warning: atom failed to consume date");
+				}
 			}
 			else {
-				LOG("IntervalPipeLink::IntervalSinkProcess: warning: atom failed to consume date");
+				LOG("IntervalPipeLink::IntervalSinkProcess: warning: could not get consumable data");
 			}
 		}
 		else {
-			LOG("IntervalPipeLink::IntervalSinkProcess: warning: could not get consumable data");
+			ForwardAsync();
 		}
 	}
 	
 	flag.DecreaseRunning();
 }
+
+
+
+
+
+
+
+
+
+PollerLink::PollerLink() {
+	
+}
+
+PollerLink::~PollerLink() {
+	
+}
+
+bool PollerLink::Initialize(const Script::WorldState& ws) {
+	SetFPS(60);
+	
+	AddLinkToUpdateList();
+	
+	return true;
+}
+
+void PollerLink::Uninitialize() {
+	RemoveLinkFromUpdateList();
+}
+
+LinkTypeCls PollerLink::GetType() {
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+bool PollerLink::ProcessPackets(PacketIO& io) {
+	bool do_finalize = false;
+	
+	for(int sink_ch = MAX_VDTUPLE_SIZE-1; sink_ch >= 0; sink_ch--) {
+		PacketIO::Sink& sink = io.sink[sink_ch];
+		Packet& in = sink.p;
+		if (!in)
+			continue;
+		sink.may_remove = true;
+		
+		RTLOG("PollerLink::ProcessPackets: sink #" << sink_ch << ": " << in->ToString());
+		
+		bool b = atom->Recv(sink_ch, *in);
+		
+		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
+			(!finalize_on_side && sink_ch == 0))
+			do_finalize = true;
+	}
+	
+	if (do_finalize)
+		atom->Finalize(*last_cfg);
+	
+	int src_ch = 0;
+	PacketIO::Sink& prim_sink = io.sink[0];
+	PacketIO::Source& src = io.src[src_ch];
+	Packet& out = src.p;
+	src.from_sink_ch = 0;
+	out = ReplyPacket(src_ch, prim_sink.p);
+	
+	PacketValue in_null(0);
+	bool b = atom->ProcessPacket(in_null, *out);
+	
+	return true;
+}
+
+
 
 
 

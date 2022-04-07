@@ -338,7 +338,7 @@ AtomTypeCls X11VideoAtomPipe::GetAtomType()
 
 LinkTypeCls X11VideoAtomPipe::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
 void X11VideoAtomPipe::Visit(RuntimeVisitor& vis)
@@ -360,7 +360,7 @@ AtomTypeCls GlxVideoAtomPipe::GetAtomType()
 
 LinkTypeCls GlxVideoAtomPipe::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
 void GlxVideoAtomPipe::Visit(RuntimeVisitor& vis)
@@ -382,7 +382,7 @@ AtomTypeCls GlxFboAtomSA::GetAtomType()
 
 LinkTypeCls GlxFboAtomSA::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
 void GlxFboAtomSA::Visit(RuntimeVisitor& vis)

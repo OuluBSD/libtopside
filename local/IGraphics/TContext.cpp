@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void RendererT<Gfx>::DefaultPreFrame() {
-	ASSERT(rend);
+	//ASSERT(rend);
 	Gfx::BindFramebufferDefault();
 	Gfx::ClearBuffers();
 	Gfx::SetSmoothShading();

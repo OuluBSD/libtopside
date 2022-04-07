@@ -41,6 +41,14 @@ ISinkRef LinkBase::GetSink() {
 	return atom->GetSink();
 }
 
+void LinkBase::AddLinkToUpdateList() {
+	LinkBase::GetMachine().template Get<LinkSystem>()->AddUpdated(LinkBase::AsRefT());
+}
+
+void LinkBase::RemoveLinkFromUpdateList() {
+	LinkBase::GetMachine().template Get<LinkSystem>()->RemoveUpdated(LinkBase::AsRefT());
+}
+
 int LinkBase::GetId() const {
 	return id;
 }

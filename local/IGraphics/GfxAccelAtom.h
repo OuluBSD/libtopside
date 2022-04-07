@@ -25,17 +25,17 @@ protected:
 	using DataState			= DataStateT<Gfx>;
 	using NativeDisplay		= typename Gfx::NativeDisplay;
 	using NativeWindow		= typename Gfx::NativeWindow;
-	using NatRend			= typename Gfx::NativeRenderer;
+	using NativeRenderer	= typename Gfx::NativeRenderer;
 	using NatFrameBuf		= typename Gfx::NativeFrameBuffer;
 	using ValFormat			= typename Gfx::ValFormat;
 	using RendererInfo		= typename Gfx::NativeRendererInfo;
 	using GLContext			= typename Gfx::NativeGLContext;
 	using Framebuffer = FramebufferT<Gfx>;
 	
-	Buffer*					buf = NULL;
+	Buffer					buf;
     NativeWindow			win;
     NativeDisplay			display;
-    NatRend					nat_rend;
+    NativeRenderer			nat_rend;
 	AtomBase*				ab = NULL;
 	int						fb_stride;
     RendererInfo			rend_info;
@@ -46,6 +46,7 @@ protected:
 	Renderer				rend;
 	StateDraw				draw;
 	SystemDraw				sysdraw;
+	EnvStateRef				env;
 	bool is_opengl = false;
 	bool is_sw = false;
 	bool is_dx11 = false;
@@ -54,13 +55,14 @@ protected:
 	bool is_sizeable = false;
 	bool mouse_captured = false;
 	bool is_user_shader = false;
+	bool close_machine = false;
 	String frag_shdr;
 	String vtx_shdr;
 	String frag_path;
 	String vtx_path;
 	String library_paths;
 	
-	Packet fb_packet;
+	PacketValue* fb_packet = 0;
 	
 	// requires template specialization
 	void GfxFlags(uint32& flags);
@@ -68,12 +70,17 @@ protected:
 	
 	
 	void SetWindowRect(Rect r);
+	Buffer& GetBuffer() {return buf;}
 	
 public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
 	void SetNative(NativeDisplay& display, NativeWindow& window) {win = window; this->display = display;}
+	
+	bool Initialize(AtomBase& a, const Script::WorldState& ws);
+	bool ProcessPacket(PacketValue& in, PacketValue& out);
+	void Uninitialize();
 	
 	bool Open();
 	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}
@@ -87,12 +94,10 @@ public:
 	void SetTitle(String title);
 	void SetRect(Rect r);
 	void Render(const RealtimeSourceConfig& cfg);
-	bool Recv(int ch_i, const Packet& p);
+	bool Recv(int ch_i, PacketValue& p);
 	SystemDraw& BeginDraw();
 	void CommitDraw();
 	void FrameCopy(const ValFormat& vfmt, const byte* data, int len) {}
-	
-	void SetBuffer(Buffer& buf) {this->buf = &buf;}
 	
 	Size GetSize() {return Gfx::GetWindowSize(win);}
 	bool IsCaptured() const {return mouse_captured;}

@@ -13,12 +13,14 @@ struct ContextStateT : GfxContextState {
 
 template <class Gfx>
 struct RendererT : GfxRenderer {
+	using NativeDisplay = typename Gfx::NativeDisplay;
 	using NativeWindow = typename Gfx::NativeWindow;
 	using NativeRenderer = typename Gfx::NativeRenderer;
 	//using FrameBuf = typename Gfx::Framebuffer;
 	using Framebuffer = FramebufferT<Gfx>;
 	
 	
+	NativeDisplay display;
 	NativeWindow win;
     NativeRenderer rend;
     Framebuffer output;
@@ -39,8 +41,8 @@ public:
 	void DefaultPreFrame();
 	
 	void DefaultPostFrame() {
-		ASSERT(win && rend);
-		Gfx::ActivateNextFrame(win, rend, output.GetActiveColorBuffer());
+		ASSERT(win);
+		Gfx::ActivateNextFrame(display, win, rend, output.GetActiveColorBuffer());
 	}
 };
 

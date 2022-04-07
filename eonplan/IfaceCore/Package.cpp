@@ -586,6 +586,25 @@ bool Package::Export() {
 				fout << "\t}\n\n";
 			}
 			
+			if (have_recv_finalize) {
+				fout << "\tbool Recv(int sink_ch, PacketValue& in) override {\n";
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String cls = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					fout << "\t\treturn " << abbr << "::" << prefix << "_Recv(" << name << ", *this, sink_ch, in);\n";
+				}
+				fout << "\t}\n\n";
+				
+				fout << "\tvoid Finalize(RealtimeSourceConfig& cfg) override {\n";
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String cls = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					fout << "\t\treturn " << abbr << "::" << prefix << "_Finalize(" << name << ", *this, cfg);\n";
+				}
+				fout << "\t}\n\n";
+				
+			}
+			
 			// Proxy functions
 			/*String nat_this;
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
@@ -657,6 +676,10 @@ bool Package::Export() {
 			if (c.have_context_fns) {
 				fout << "static bool " << c.name << "_AttachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
 				fout << "static void " << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
+			}
+			if (have_recv_finalize) {
+				fout << "static bool " << c.name << "_Recv(" << nat_this_ << "AtomBase&, int, PacketValue&);\n";
+				fout << "static void " << c.name << "_Finalize(" << nat_this_ << "AtomBase&, RealtimeSourceConfig&);\n";
 			}
 			fout << "\n";
 			
@@ -824,6 +847,16 @@ bool Package::Export() {
 					fout << "}\n\n";
 					
 					fout << "void " << cls << "::" << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other) {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+				}
+				
+				if (have_recv_finalize) {
+					fout << "bool " << cls << "::" << c.name << "_Recv(" << nat_this_ << "AtomBase& a, int sink_ch, PacketValue& in) {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+					
+					fout << "void " << cls << "::" << c.name << "_Finalize(" << nat_this_ << "AtomBase& a, RealtimeSourceConfig& cfg) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 				}

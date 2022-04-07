@@ -3,7 +3,7 @@
 NAMESPACE_SERIAL_BEGIN
 
 
-SYS_DEF_VISIT_I(LinkSystem, vis && customers && drivers && pollers)
+SYS_DEF_VISIT_I(LinkSystem, vis && updated && customers && drivers && pollers)
 
 
 void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>& atoms) {
@@ -85,6 +85,10 @@ void LinkSystem::Update(double dt) {
 		WhenLeaveOnceForward();
 	}
 	
+	for (LinkBaseRef& c : updated) {
+		c->Update(dt);
+	}
+	
 	for (LinkBaseRef& c : customers) {
 		c->atom->UpdateConfig(dt);
 	}
@@ -92,6 +96,7 @@ void LinkSystem::Update(double dt) {
 	ForwardLinks(dt, "customer", customers);
 	ForwardLinks(dt, "driver", drivers);
 	ForwardLinks(dt, "poller", pollers);
+	ForwardLinks(dt, "updated", updated);
 }
 
 
@@ -100,15 +105,22 @@ void LinkSystem::Stop() {
 }
 
 void LinkSystem::Uninitialize() {
+	ASSERT(updated.IsEmpty());
 	ASSERT(customers.IsEmpty());
 	ASSERT(drivers.IsEmpty());
 	ASSERT(pollers.IsEmpty());
 	once_cbs.Clear();
+	updated.Clear();
 	customers.Clear();
 	drivers.Clear();
 	pollers.Clear();
 	
 	WhenUninit()();
+}
+
+void LinkSystem::AddUpdated(LinkBaseRef p) {
+	if (p)
+		updated.FindAdd(p);
 }
 
 void LinkSystem::AddCustomer(LinkBaseRef p) {
@@ -124,6 +136,10 @@ void LinkSystem::AddDriver(LinkBaseRef p) {
 void LinkSystem::AddPolling(LinkBaseRef p) {
 	if (p)
 		pollers.FindAdd(p);
+}
+
+void LinkSystem::RemoveUpdated(LinkBaseRef p) {
+	updated.RemoveKey(p);
 }
 
 void LinkSystem::RemoveCustomer(LinkBaseRef p) {

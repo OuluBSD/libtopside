@@ -67,6 +67,26 @@ public:
 	
 };
 
+class PollerLink : public FramePollerBase {
+	bool finalize_on_side = false;
+	
+public:
+	RTTI_DECL1(PollerLink, FramePollerBase)
+	typedef PollerLink CLASSNAME;
+	PollerLink();
+	~PollerLink();
+	
+	bool			Initialize(const Script::WorldState& ws) override;
+	void			Uninitialize() override;
+	void			Visit(RuntimeVisitor& vis) override {vis.VisitThis<FramePollerBase>(this);}
+	bool			ProcessPackets(PacketIO& io) final;
+	void			SetFinalizeOnSide(bool b=true) {finalize_on_side = b;}
+	
+	static LinkTypeCls GetType();
+	LinkTypeCls GetLinkType() const override {return GetType();}
+	
+	
+};
 
 class ExternalPipeLink : public AsyncMemForwarderBase {
 	

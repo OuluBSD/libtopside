@@ -86,6 +86,8 @@ public:
 	virtual String			ToString() const;
 	virtual bool			IsReady(PacketIO& io) {return true;}
 	virtual void			UpdateConfig(double dt) {Panic("Unimplemented"); NEVER();}
+	virtual bool			Recv(int sink_ch, PacketValue& in) {Panic("Unimplemented"); NEVER();}
+	virtual void			Finalize(RealtimeSourceConfig& cfg) {Panic("Unimplemented"); NEVER();}
 	// internal format should be sink:0
 	//virtual const Format&	GetInternalFormat() const {ASSERT(user_internal_fmt.IsValid()) return user_internal_fmt;}
 	//virtual void			SetInternalFormat(const Format& f) {user_internal_fmt = f;}

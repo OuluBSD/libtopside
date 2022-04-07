@@ -224,6 +224,8 @@ uniform float     iBlockOffset;          // total consumed samples (mostly for a
 in vec3 vNormal;
 in vec2 vTexCoord;
 
+out vec4 out_Color;
+
 ${USER_LIBRARY}
 ${USER_CODE}
 
@@ -231,13 +233,13 @@ ${USER_CODE}
 void main() {
 	float t = iAudioSeconds + gl_FragCoord.x / iSampleRate;
 	vec2 value = mainSound (t);
-	gl_FragColor = vec4(value, 0.0, 1.0);
+	out_Color = vec4(value, 0.0, 1.0);
 }
 #else
 void main() {
 	vec4 color = vec4 (0.0, 0.0, 0.0, 1.0);
 	mainImage (color, gl_FragCoord.xy);
-	gl_FragColor = color;
+	out_Color = color;
 }
 #endif
 )SH4D3R";

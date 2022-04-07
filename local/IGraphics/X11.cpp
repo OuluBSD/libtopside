@@ -54,8 +54,9 @@ Size X11Gfx::GetWindowSize(NativeWindow& win) {
 
 #ifdef flagOGL
 
-void X11OglGfx::ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
-	TODO //SDL_GL_SwapWindow(&w);
+void X11OglGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+	ASSERT(d && w);
+	glXSwapBuffers(d, w);
 }
 
 #endif

@@ -40,6 +40,10 @@ bool X11Glx_IsExtensionSupported(const char *extList, const char *extension) {
 
 
 bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	
+	if (!dev.ogl.Initialize(a, ws))
+		return false;
+	
 	::Display*& display = dev.display;	// pointer to X Display structure.
 	::Window& win = dev.win;			// pointer to the newly created window.
 	::XVisualInfo*& visual = dev.visual;
@@ -268,6 +272,8 @@ void ScrX11Glx::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	dev.ogl.Uninitialize();
+	
 	glXDestroyContext(dev.display, dev.gl_ctx);
 	XFree(dev.visual);
 	XFreeColormap(dev.display, dev.attr.colormap);
@@ -278,6 +284,14 @@ void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	
 	// close the connection to the X server.
 	XCloseDisplay(dev.display);
+}
+
+bool ScrX11Glx::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, PacketValue& p) {
+	return dev.ogl.Recv(ch_i, p);
+}
+
+void ScrX11Glx::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg) {
+	dev.ogl.Render(cfg);
 }
 
 bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
@@ -312,8 +326,10 @@ bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pac
         return false;
     }*/
     
-    if (fmt.IsOrder()) {
+    /*if (fmt.IsOrder()) {
+        
         TODO
+        
     }
     else if (fmt.IsOgl()) {
         TODO
@@ -324,7 +340,7 @@ bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pac
         TODO
     }
     
-	XFlush(dev.display);
+	XFlush(dev.display);*/
 	//XSync(dev.display, False);
 	
 	return true;

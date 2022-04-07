@@ -75,6 +75,7 @@ public:
 	virtual void			Stop() {}
 	virtual void			Visit(RuntimeVisitor& vis) {vis | side_sink_conn | side_src_conn; vis & prim_link_sink & prim_link_src;}
 	virtual RTSrcConfig*	GetConfig() {return last_cfg;}
+	virtual void			Update(double dt) {Panic("Unimplemented");}
 	
 	Parallel::AtomBase*		GetAtom();
 	Parallel::Machine&		GetMachine();
@@ -101,6 +102,8 @@ public:
 	AtomTypeCls				GetAtomType() const;
 	ISourceRef				GetSource();
 	ISinkRef				GetSink();
+	void					AddLinkToUpdateList();
+	void					RemoveLinkFromUpdateList();
 	
 	
 	void					Clear();
