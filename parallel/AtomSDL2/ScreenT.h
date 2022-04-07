@@ -4,11 +4,11 @@
 NAMESPACE_SERIAL_BEGIN
 
 #ifdef flagSCREEN
-
+/*
 template <class Gfx> bool IsDefaultGfxVal(const ValCls& val);
 template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
 template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return val == ValCls::FBO;}
-
+*/
 template <class Gfx>
 struct SDL2ScreenBaseT :
 	SDL2BaseT<SDL2ScreenBaseT<Gfx>>,

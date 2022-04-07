@@ -22,6 +22,49 @@ Size SdlGfx::GetWindowSize(NativeWindow& win) {
 	return Size(w, h);
 }
 
+bool SdlGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow*& win, NativeRenderer*& rend) {
+	return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &nat_rend) >= 0;
+}
+
+void SdlGfx::SetTitle(NativeWindow* win, String title) {
+	SDL_SetWindowTitle(win, title);
+}
+
+void SdlGfx::DestroyRenderer(NativeRenderer* rend) {
+	SDL_DestroyRenderer(rend);
+}
+
+void SdlGfx::DestroyWindow(NativeWindow* win) {
+	SDL_DestroyWindow(win);
+}
+
+void SdlGfx::DeleteContext(NativeGLContext& ctx) {
+	SDL_GL_DeleteContext(ctx);
+}
+
+void SdlGfx::SetWindowFullscreen(NativeWindow* win, bool b) {
+	if (b)
+		SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
+	else
+		SDL_SetWindowFullscreen(win, 0);
+}
+
+void SdlGfx::MaximizeWindow(NativeWindow* win) {
+	SDL_MaximizeWindow(win);
+}
+
+void SdlGfx::RestoreWindow(NativeWindow* win) {
+	SDL_RestoreWindow(win);
+}
+
+void SdlGfx::SetWindowPosition(NativeWindow* win, Point pt) {
+	SDL_SetWindowPosition(win, pt.x, pt.y);
+}
+
+void SdlGfx::SetWindowSize(NativeWindow* win, Size sz) {
+	SDL_SetWindowSize(win, sz.cx, sz.cy);
+}
+
 #endif
 
 

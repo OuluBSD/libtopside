@@ -606,14 +606,10 @@ void OglGfx::DeleteTexture(NativeColorBuffer& b) {
 	glDeleteTextures(1, &b);
 }
 
-
-#ifdef flagOGL
-
-void X11OglGfx::ActivateNextFrame(NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
-	TODO //SDL_GL_SwapWindow(&w);
+Serial::FboFormat& OglGfx::GetFormat(Parallel::Format& fmt) {
+	return fmt;
 }
 
-#endif
 
 
 

@@ -72,6 +72,57 @@ void GfxAccelAtom<SdlCpuGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem
 
 #endif
 
+
+
+
+
+
+
+template <>
+void GfxAccelAtom<X11OglGfx>::GfxFlags(uint32& flags) {
+	is_opengl = true;
+	TODO
+	/*SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	flags |= SDL_WINDOW_OPENGL;*/
+}
+
+template <>
+bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
+	TODO
+	
+	// Renderer
+    /*SDL_GetRendererInfo(nat_rend, &rend_info);
+	if ((rend_info.flags & SDL_RENDERER_ACCELERATED) == 0 ||
+        (rend_info.flags & SDL_RENDERER_TARGETTEXTURE) == 0)
+        return false;
+	
+	// GL context
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
+	glcontext = SDL_GL_CreateContext(win);
+	GetAppFlags().SetOpenGLContextOpen();
+	
+	// Glew
+	GLenum err = glewInit();
+	if (err != GLEW_OK) {
+		LOG("Glew error: " << (const char*)glewGetErrorString(err));
+		return false;
+	}*/
+	
+	return true;
+}
+
+
+
+
+
+
+
+
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::Open() {
 	AppFlags& app_flags = GetAppFlags();
@@ -90,9 +141,9 @@ bool GfxAccelAtom<Gfx>::Open() {
 	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
 	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
 	
-	if (SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &nat_rend) == -1)
+	if (Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend))
         return false;
-	SDL_SetWindowTitle(win, title);
+	Gfx::SetTitle(win, title);
     
     GfxRenderer();
 	
@@ -101,7 +152,7 @@ bool GfxAccelAtom<Gfx>::Open() {
 	#endif
 	
 	if (full_screen)
-		SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
+		Gfx::SetWindowFullscreen(win);
 	
 	if (frag_path.GetCount())
 		is_user_shader = true;
@@ -172,15 +223,15 @@ void GfxAccelAtom<Gfx>::Close() {
 	
 	if (glcontext) {
 		GetAppFlags().SetOpenGLContextOpen(false);
-		SDL_GL_DeleteContext(glcontext);
+		Gfx::DeleteContext(glcontext);
 		glcontext = 0;
 	}
 	if (nat_rend) {
-		SDL_DestroyRenderer(nat_rend);
+		Gfx::DestroyRenderer(nat_rend);
 		nat_rend = 0;
 	}
 	if (win) {
-		SDL_DestroyWindow(win);
+		Gfx::DestroyWindow(win);
 		win = 0;
 	}
 }
@@ -197,9 +248,9 @@ void GfxAccelAtom<Gfx>::Maximize(bool b) {
 	is_maximized = b;
 	if (IsOpen() && win) {
 		if (b)
-			SDL_MaximizeWindow(win);
+			Gfx::MaximizeWindow(win);
 		else
-			SDL_RestoreWindow(win);
+			Gfx::RestoreWindow(win);
 	}
 }
 
@@ -209,10 +260,7 @@ void GfxAccelAtom<Gfx>::Fullscreen(bool b) {
 		return;
 	full_screen = b;
 	if (IsOpen() && win) {
-		if (b)
-			SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
-		else
-			SDL_SetWindowFullscreen(win, 0);
+		Gfx::SetWindowFullscreen(win, b);
 	}
 }
 
@@ -220,15 +268,15 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::SetTitle(String title) {
 	this->title = title;
 	if (IsOpen() && win)
-		SDL_SetWindowTitle(win, title);
+		Gfx::SetTitle(win, title);
 }
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::SetRect(Rect r) {
 	desired_rect = r;
 	if (IsOpen() && win && !full_screen) {
-		SDL_SetWindowPosition(win, r.left, r.top);
-		SDL_SetWindowSize(win, r.Width(), r.Height());
+		Gfx::SetWindowPosition(win, r.TopLeft());
+		Gfx::SetWindowSize(win, r.GetSize());
 	}
 }
 
@@ -257,9 +305,6 @@ void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 	
 	CommitDraw();
 }
-
-template <class Gfx>
-bool IsDefaultGfxVal(ValCls val);
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
@@ -356,6 +401,9 @@ void GfxAccelAtom<Gfx>::CommitDraw() {
 template class GfxAccelAtom<SdlOglGfx>;
 template class GfxAccelAtom<SdlCpuGfx>;
 #endif
+
+
+GFX_EXCPLICIT_INITIALIZE_CLASS(GfxAccelAtom)
 
 
 NAMESPACE_PARALLEL_END

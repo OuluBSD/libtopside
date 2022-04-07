@@ -4,6 +4,14 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+template <class Gfx> bool IsDefaultGfxVal(const ValCls& val);
+#ifdef flagSDL2
+template <> inline bool IsDefaultGfxVal<SdlCpuGfx>(const ValCls& val) {return val == ValCls::VIDEO;}
+template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return val == ValCls::FBO;}
+#endif
+template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return val == ValCls::FBO;}
+
+
 template <class Gfx>
 class GfxAccelAtom {
 	

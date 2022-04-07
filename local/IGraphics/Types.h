@@ -305,6 +305,16 @@ struct X11Gfx {
 	using NativeGLContext		= ::GLXContext;
 	
 	static Size GetWindowSize(NativeWindow& win);
+	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow*& win, NativeRenderer*& rend);
+	static void SetTitle(NativeWindow* win, String title);
+	static void SetWindowFullscreen(NativeWindow* win, bool b=true);
+	static void DestroyRenderer(NativeRenderer* rend);
+	static void DestroyWindow(NativeWindow* win);
+	static void DeleteContext(NativeGLContext& ctx);
+	static void MaximizeWindow(NativeWindow* win);
+	static void RestoreWindow(NativeWindow* win);
+	static void SetWindowPosition(NativeWindow* win, Point pt);
+	static void SetWindowSize(NativeWindow* win, Size sz);
 	
 };
 
@@ -329,6 +339,16 @@ struct SdlGfx {
 	using NativeGLContext		= SDL_GLContext;
 	
 	static Size GetWindowSize(NativeWindow& win);
+	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow*& win, NativeRenderer*& rend);
+	static void SetTitle(NativeWindow* win, String title);
+	static void SetWindowFullscreen(NativeWindow* win, bool b=true);
+	static void DestroyRenderer(NativeRenderer* rend);
+	static void DestroyWindow(NativeWindow* win);
+	static void DeleteContext(GLContext& ctx);
+	static void MaximizeWindow(NativeWindow* win);
+	static void RestoreWindow(NativeWindow* win);
+	static void SetWindowPosition(NativeWindow* win, Point pt);
+	static void SetWindowSize(NativeWindow* win, Size sz);
 	
 };
 

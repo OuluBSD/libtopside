@@ -137,6 +137,12 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	
 	XSync(display, False);
 	
+	
+	if (!dev.ogl.Open()) {
+		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
+		return false;
+	}
+	
 	return true;
 }
 
@@ -162,9 +168,6 @@ void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 
 bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
 	Format fmt = in.GetFormat();
-	ASSERT(fmt.IsOgl());
-	FboFormat& vfmt = fmt;
-	int frame_sz = vfmt.GetFrameSize();
 	
 	/*int width = vfmt.res[0];
 	int height = vfmt.res[1];
@@ -196,7 +199,12 @@ bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pac
     }*/
     
     if (fmt.IsOrder()) {
-        
+        TODO
+    }
+    else if (fmt.IsOgl()) {
+        TODO
+        FboFormat& vfmt = fmt;
+		int frame_sz = vfmt.GetFrameSize();
     }
     else {
         TODO
