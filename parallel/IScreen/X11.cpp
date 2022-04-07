@@ -131,6 +131,8 @@ bool ScrX11::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 
 void ScrX11::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 	
+	XDestroyWindow(dev.display, dev.win);
+	
 }
 
 void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {

@@ -7,13 +7,28 @@ NAMESPACE_PARALLEL_BEGIN
 template <>
 void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
+	
+	TODO // not here
+	
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	flags |= SDL_WINDOW_OPENGL;
+	
+	if (full_screen)	flags |= SDL_WINDOW_FULLSCREEN;
+	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
+	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
+	
 }
 
 template <>
 void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
 	is_sw = true;
+	
+	TODO // not here
+	
+	if (full_screen)	flags |= SDL_WINDOW_FULLSCREEN;
+	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
+	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
+	
 }
 
 template <>
@@ -76,43 +91,17 @@ void GfxAccelAtom<SdlCpuGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem
 
 
 
-
+#if 0
+/* TODO remove these */
+#endif
 
 template <>
 void GfxAccelAtom<X11OglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
-	TODO
-	/*SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	flags |= SDL_WINDOW_OPENGL;*/
 }
 
 template <>
 bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
-	TODO
-	
-	// Renderer
-    /*SDL_GetRendererInfo(nat_rend, &rend_info);
-	if ((rend_info.flags & SDL_RENDERER_ACCELERATED) == 0 ||
-        (rend_info.flags & SDL_RENDERER_TARGETTEXTURE) == 0)
-        return false;
-	
-	// GL context
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	glcontext = SDL_GL_CreateContext(win);
-	GetAppFlags().SetOpenGLContextOpen();
-	
-	// Glew
-	GLenum err = glewInit();
-	if (err != GLEW_OK) {
-		LOG("Glew error: " << (const char*)glewGetErrorString(err));
-		return false;
-	}*/
-	
 	return true;
 }
 
@@ -137,13 +126,9 @@ bool GfxAccelAtom<Gfx>::Open() {
 	
 	GfxFlags(flags);
 	
-	if (full_screen)	flags |= SDL_WINDOW_FULLSCREEN;
-	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
-	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
-	
-	if (Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend))
+	if (!Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend))
         return false;
-	Gfx::SetTitle(win, title);
+	Gfx::SetTitle(display, win, title);
     
     GfxRenderer();
 	
@@ -268,7 +253,7 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::SetTitle(String title) {
 	this->title = title;
 	if (IsOpen() && win)
-		Gfx::SetTitle(win, title);
+		Gfx::SetTitle(display, win, title);
 }
 
 template <class Gfx>

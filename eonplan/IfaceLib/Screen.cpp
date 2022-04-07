@@ -55,13 +55,14 @@ PKG(Screen, Scr, S) {
 		VENDOR_CLASS(SinkDevice, void*)
 		
 		v->AddStruct("NativeSinkDevice")
-			.Add("win",			"::Window")
-			.Add("display",		"::Display*")
-			.Add("visual",		"::Visual*")
-			.Add("gc",			"::GC")
-			.Add("ogl",			"GfxAccelAtom<X11OglGfx>")
+			.Add("win",					"::Window")
+			.Add("display",				"::Display*")
+			.Add("visual",				"::XVisualInfo*")
+			.Add("gl_ctx",				"::GLXContext")
+			.Add("ogl",					"GfxAccelAtom<X11OglGfx>")
+			.Add("atomWmDeleteWindow",	"::Atom ")
+			.Add("attr",				"::XSetWindowAttributes")
 			;
-		
 		
 	}
 	

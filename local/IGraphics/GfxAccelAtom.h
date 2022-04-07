@@ -23,7 +23,8 @@ protected:
 	using StateDraw			= StateDrawT<Gfx>;
 	using ShaderPipeline	= typename Gfx::ShaderPipeline;
 	using DataState			= DataStateT<Gfx>;
-	using NatWin			= typename Gfx::NativeWindow;
+	using NativeDisplay		= typename Gfx::NativeDisplay;
+	using NativeWindow		= typename Gfx::NativeWindow;
 	using NatRend			= typename Gfx::NativeRenderer;
 	using NatFrameBuf		= typename Gfx::NativeFrameBuffer;
 	using ValFormat			= typename Gfx::ValFormat;
@@ -32,8 +33,9 @@ protected:
 	using Framebuffer = FramebufferT<Gfx>;
 	
 	Buffer*					buf = NULL;
-    NatWin*					win = NULL;
-    NatRend*				nat_rend = NULL;
+    NativeWindow			win;
+    NativeDisplay			display;
+    NatRend					nat_rend;
 	AtomBase*				ab = NULL;
 	int						fb_stride;
     RendererInfo			rend_info;
@@ -71,6 +73,7 @@ public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
+	void SetNative(NativeDisplay& display, NativeWindow& window) {win = window; this->display = display;}
 	
 	bool Open();
 	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}
@@ -91,7 +94,7 @@ public:
 	
 	void SetBuffer(Buffer& buf) {this->buf = &buf;}
 	
-	Size GetSize() {return Gfx::GetWindowSize(*win);}
+	Size GetSize() {return Gfx::GetWindowSize(win);}
 	bool IsCaptured() const {return mouse_captured;}
 	
 	void SetShaderFile(String frag_path, String vtx_path, String library_paths) {this->frag_path = frag_path; this->vtx_path = vtx_path; this->library_paths = library_paths;}

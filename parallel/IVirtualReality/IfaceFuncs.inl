@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.7 0:44:33
+// Last export: 2022.4.7 11:11:00
 
 static bool MotionController_Initialize(NativeMotionController& ctrl, AtomBase&, const Script::WorldState&);
 static bool MotionController_PostInitialize(NativeMotionController& ctrl, AtomBase&);

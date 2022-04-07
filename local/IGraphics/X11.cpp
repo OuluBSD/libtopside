@@ -2,24 +2,28 @@
 
 NAMESPACE_PARALLEL_BEGIN
 
+#if 0
+// TODO REMOVE CreateWindowAndRenderer etc when SDL2 tests works
+#endif
 
-bool X11Gfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow*& win, NativeRenderer*& rend) {
+bool X11Gfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend) {
+	return true;
+}
+
+void X11Gfx::SetTitle(NativeDisplay& display, NativeWindow& win, String title) {
+	ASSERT(display && win);
+	XStoreName(display, win, title);
+}
+
+void X11Gfx::SetWindowFullscreen(NativeWindow& win, bool b) {
 	TODO
 }
 
-void X11Gfx::SetTitle(NativeWindow* win, String title) {
+void X11Gfx::DestroyRenderer(NativeRenderer& rend) {
 	TODO
 }
 
-void X11Gfx::SetWindowFullscreen(NativeWindow* win, bool b) {
-	TODO
-}
-
-void X11Gfx::DestroyRenderer(NativeRenderer* rend) {
-	TODO
-}
-
-void X11Gfx::DestroyWindow(NativeWindow* win) {
+void X11Gfx::DestroyWindow(NativeWindow& win) {
 	TODO
 }
 
@@ -27,19 +31,19 @@ void X11Gfx::DeleteContext(NativeGLContext& ctx) {
 	TODO
 }
 
-void X11Gfx::MaximizeWindow(NativeWindow* win) {
+void X11Gfx::MaximizeWindow(NativeWindow& win) {
 	TODO
 }
 
-void X11Gfx::RestoreWindow(NativeWindow* win) {
+void X11Gfx::RestoreWindow(NativeWindow& win) {
 	TODO
 }
 
-void X11Gfx::SetWindowPosition(NativeWindow* win, Point pt) {
+void X11Gfx::SetWindowPosition(NativeWindow& win, Point pt) {
 	TODO
 }
 
-void X11Gfx::SetWindowSize(NativeWindow* win, Size sz) {
+void X11Gfx::SetWindowSize(NativeWindow& win, Size sz) {
 	TODO
 }
 

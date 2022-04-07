@@ -3,17 +3,51 @@
 #if (defined flagLINUX) || (defined flagFREEBSD)
 NAMESPACE_PARALLEL_BEGIN
 
+
+bool X11Glx_IsExtensionSupported(const char *extList, const char *extension) {
+	const char *start;
+	const char *where, *terminator;
+	
+	/* Extension names should not have spaces. */
+	where = strchr(extension, ' ');
+	if (where || *extension == '\0')
+		return false;
+		
+	/* It takes a bit of care to be fool-proof about parsing the
+	 OpenGL extensions string. Don't be fooled by sub-strings,
+	 etc. */
+	for (start = extList;;) {
+		where = strstr(start, extension);
+		
+		if (!where) {
+			break;
+		}
+		
+		terminator = where + strlen(extension);
+		
+		if (where == start || *(where - 1) == ' ') {
+			if (*terminator == ' ' || *terminator == '\0') {
+				return true;
+			}
+		}
+		
+		start = terminator;
+	}
+	
+	return false;
+}
+
+
+
 bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	::Display*& display = dev.display;	// pointer to X Display structure.
-	int screen_num;						// number of screen to place the window on.
 	::Window& win = dev.win;			// pointer to the newly created window.
+	::XVisualInfo*& visual = dev.visual;
+	int screen_num;						// number of screen to place the window on.
 	unsigned int display_width,
 	             display_height;		// height and width of the X display.
 	unsigned int width, height;			// height and width for the new window.
 	char *display_name = getenv("DISPLAY"); // address of the X display.
-	::GC& gc = dev.gc;					// GC (graphics context) used for drawing
-										// in our window.
-	::Visual*& visual = dev.visual;
 	
 	int x = 0;
 	int y = 0;
@@ -27,12 +61,84 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		return false;
 	}
 	
+	GLint majorGLX, minorGLX = 0;
+	glXQueryVersion(display, &majorGLX, &minorGLX);
+	if (majorGLX <= 1 && minorGLX < 2) {
+	    LOG("ScrX11Glx::SinkDevice_Initialize: error: GLX 1.2 or greater is required.");
+	    XCloseDisplay(display);
+	    return false;
+	}
+	else {
+	    LOG("ScrX11Glx::SinkDevice_Initialize: GLX version: " << majorGLX << "." << minorGLX);
+	}
+	
+	
+	GLint glx_attribs[] = {
+		GLX_X_RENDERABLE    , True,
+		GLX_DRAWABLE_TYPE   , GLX_WINDOW_BIT,
+		GLX_RENDER_TYPE     , GLX_RGBA_BIT,
+		GLX_X_VISUAL_TYPE   , GLX_TRUE_COLOR,
+		GLX_RED_SIZE        , 8,
+		GLX_GREEN_SIZE      , 8,
+		GLX_BLUE_SIZE       , 8,
+		GLX_ALPHA_SIZE      , 8,
+		GLX_DEPTH_SIZE      , 24,
+		GLX_STENCIL_SIZE    , 8,
+		GLX_DOUBLEBUFFER    , True,
+		None
+	};
+
+	
+	// choose display
+	int fbcount;
+	GLXFBConfig* fbc = glXChooseFBConfig(display, screen_num, glx_attribs, &fbcount);
+	if (fbc == 0) {
+		LOG("ScrX11Glx::SinkDevice_Initialize: error: failed to retrieve framebuffer.");
+		XCloseDisplay(display);
+		return false;
+	}
+
+	// Pick the FB config/visual with the most samples per pixel
+	int best_fbc = -1, worst_fbc = -1, best_num_samp = -1, worst_num_samp = 999;
+	for (int i = 0; i < fbcount; ++i) {
+		XVisualInfo *vi = glXGetVisualFromFBConfig( display, fbc[i] );
+		if ( vi != 0) {
+			int samp_buf, samples;
+			glXGetFBConfigAttrib( display, fbc[i], GLX_SAMPLE_BUFFERS, &samp_buf );
+			glXGetFBConfigAttrib( display, fbc[i], GLX_SAMPLES       , &samples  );
+
+			if ( best_fbc < 0 || (samp_buf && samples > best_num_samp) ) {
+				best_fbc = i;
+				best_num_samp = samples;
+			}
+			if ( worst_fbc < 0 || !samp_buf || samples < worst_num_samp )
+				worst_fbc = i;
+			worst_num_samp = samples;
+		}
+		XFree(vi);
+	}
+	GLXFBConfig bestFbc = fbc[best_fbc];
+	XFree(fbc); // Make sure to free this!
+	
+	
 	// get the geometry of the default screen for our display.
-	screen_num = DefaultScreen(display);
-	display_width = DisplayWidth(display, screen_num);
-	display_height = DisplayHeight(display, screen_num);
-	visual = XDefaultVisual(display, screen_num);
-	int dplanes = DisplayPlanes(display, screen_num);
+	screen_num		= DefaultScreen(display);
+	display_width	= DisplayWidth(display, screen_num);
+	display_height	= DisplayHeight(display, screen_num);
+	int dplanes		= DisplayPlanes(display, screen_num);
+	
+	visual			= glXGetVisualFromFBConfig( display, bestFbc );
+	if (visual == 0) {
+		LOG("ScrX11Glx::SinkDevice_Initialize: error: Could not create correct visual window.");
+		XCloseDisplay(display);
+		return false;
+	}
+	
+	if (screen_num != visual->screen) {
+		LOG("ScrX11Glx::SinkDevice_Initialize: error: screen_num(" << screen_num << ") does not match visual->screen(" << visual->screen << ").");
+		XCloseDisplay(display);
+		return false;
+	}
 	
 	// default resolution is 1280x720 for now
 	width = 1280;
@@ -47,16 +153,87 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		int screen_num = DefaultScreen(display);
 		int win_border_width = 2;
 		
-		// create a simple window, as a direct child of the screen's
-		// root window. Use the screen's black and white colors as
-		// the foreground and background colors of the window,
-		// respectively. Place the new window's top-left corner at
-		// the given 'x,y' coordinates.
-		win = XCreateSimpleWindow(display, RootWindow(display, screen_num),
-		                          x, y, width, height, win_border_width,
-		                          BlackPixel(display, screen_num),
-		                          WhitePixel(display, screen_num));
+		// Set window attributes
+		XSetWindowAttributes& attr = dev.attr;
+		attr.border_pixel = BlackPixel(display, screen_num);
+		attr.background_pixel = WhitePixel(display, screen_num);
+		attr.override_redirect = True;
+		attr.colormap = XCreateColormap(display, RootWindow(display, screen_num), visual->visual, AllocNone);
+		attr.event_mask = ExposureMask;
 		
+		// Open window
+		win = XCreateWindow(
+			display, RootWindow(display, screen_num),
+			x, y, width, height,
+			win_border_width, visual->depth,
+			InputOutput, visual->visual,
+			CWBackPixel | CWColormap | CWBorderPixel | CWEventMask,
+			&attr);
+		
+		// Redirect Close
+		dev.atomWmDeleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", False);
+		XSetWMProtocols(display, win, &dev.atomWmDeleteWindow, 1);
+		
+		// Create GLX OpenGL context
+		typedef GLXContext (*glXCreateContextAttribsARBProc)(Display*, GLXFBConfig, GLXContext, Bool, const int*);
+		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
+		glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc) glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
+		if (glXCreateContextAttribsARB == 0) {
+			LOG("ScrX11Glx::SinkDevice_Initialize: warning: glXCreateContextAttribsARB() not found.");
+		}
+		
+		
+		// Create OpenGL context
+		/*dev.gl_ctx = glXCreateContext(display, visual, NULL, GL_TRUE);
+		glXMakeCurrent(display, win, context);*/
+		
+		int context_attribs[] = {
+			GLX_CONTEXT_MAJOR_VERSION_ARB, 4,
+			GLX_CONTEXT_MINOR_VERSION_ARB, 2,
+			GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+			None
+		};
+		
+		dev.gl_ctx = 0;
+		const char *glxExts = glXQueryExtensionsString( display,  screen_num );
+		LOG("ScrX11Glx::SinkDevice_Initialize: Late extensions:");
+		Vector<String> ext_list = Split(glxExts, " ");
+		for (const String& s : ext_list) {LOG("\t" << s);}
+		
+		if (!X11Glx_IsExtensionSupported( glxExts, "GLX_ARB_create_context")) {
+			LOG("ScrX11Glx::SinkDevice_Initialize: warning: GLX_ARB_create_context not supported");
+			dev.gl_ctx = glXCreateNewContext( display, bestFbc, GLX_RGBA_TYPE, 0, True );
+		}
+		else {
+			dev.gl_ctx = glXCreateContextAttribsARB( display, bestFbc, 0, true, context_attribs );
+		}
+		XSync( display, False );
+		
+		
+		// Verifying that context is a direct context
+		if (!glXIsDirect (display, dev.gl_ctx)) {
+			LOG("ScrX11Glx::SinkDevice_Initialize: warning: indirect GLX rendering context obtained");
+		}
+		else {
+			LOG("ScrX11Glx::SinkDevice_Initialize: direct GLX rendering context obtained");
+		}
+		glXMakeCurrent(display, win, dev.gl_ctx);
+
+		
+		LOG("GL Vendor: " << (const char*)glGetString(GL_VENDOR));
+		LOG("GL Renderer: " << (const char*)glGetString(GL_RENDERER));
+		LOG("GL Version: " << (const char*)glGetString(GL_VERSION));
+		LOG("GL Shading Language: " << (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION));
+		
+		
+		// Glew
+		GLenum err = glewInit();
+		if (err != GLEW_OK) {
+			LOG("Glew error: " << (const char*)glewGetErrorString(err));
+			return false;
+		}
+		
+	
 		// make the window actually appear on the screen.
 		XMapWindow(display, win);
 		
@@ -64,79 +241,11 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		XFlush(display);
 	}
 	
-	// allocate a new GC (graphics context) for drawing in the window.
-	{
-		unsigned long valuemask = 0;	// which values in 'values' to
-										// check when creating the GC.
-		XGCValues values;				// initial values for the GC.
-		unsigned int line_width = 2;	// line width for the GC.
-		int line_style = LineSolid;		// style for lines drawing and
-		int cap_style = CapButt;		// style of the line's edje and
-		int join_style = JoinBevel;		// joined lines.
-		int screen_num = DefaultScreen(display);
-		
-		gc = XCreateGC(display, win, valuemask, &values);
-		if (gc == 0) {
-			LOG("ScrX11Glx::SinkDevice_Initialize: error: XCreateGC failed");
-			return false;
-		}
-		
-		// allocate foreground and background colors for this GC.
-		if (reverse_video) {
-			XSetForeground(display, gc, WhitePixel(display, screen_num));
-			XSetBackground(display, gc, BlackPixel(display, screen_num));
-		}
-		else {
-			XSetForeground(display, gc, BlackPixel(display, screen_num));
-			XSetBackground(display, gc, WhitePixel(display, screen_num));
-		}
-		
-		// define the style of lines that will be drawn using this GC.
-		XSetLineAttributes(display, gc,
-		                 line_width, line_style, cap_style, join_style);
-		
-		// define the fill style for the GC. to be 'solid filling'.
-		XSetFillStyle(display, gc, FillSolid);
-	}
-	
-	int bpp = 3;
-	
-	
-	GLint majorGLX, minorGLX = 0;
-	glXQueryVersion(display, &majorGLX, &minorGLX);
-	if (majorGLX <= 1 && minorGLX < 2) {
-	    LOG("ScrX11Glx::SinkDevice_Initialize: error: GLX 1.2 or greater is required.");
-	    XCloseDisplay(display);
-	    return false;
-	}
-	else {
-	    LOG("ScrX11Glx::SinkDevice_Initialize: GLX version: " << majorGLX << "." << minorGLX);
-	}
-	
-	GLint glxAttribs[] = {
-		GLX_RGBA,
-		GLX_DOUBLEBUFFER,
-		GLX_DEPTH_SIZE,     24,
-		GLX_STENCIL_SIZE,   8,
-		GLX_RED_SIZE,       8,
-		GLX_GREEN_SIZE,     8,
-		GLX_BLUE_SIZE,      8,
-		GLX_SAMPLE_BUFFERS, 0,
-		GLX_SAMPLES,        0,
-		None
-	};
-	
-	XVisualInfo* glx_visual = glXChooseVisual(display, screen_num, glxAttribs);
-	
-	if (glx_visual == 0) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: Could not create correct visual window.");
-		XCloseDisplay(display);
-		return false;
-	}
-	
 	
 	XSync(display, False);
 	
+	
+	dev.ogl.SetNative(dev.display, dev.win);
 	
 	if (!dev.ogl.Open()) {
 		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
@@ -159,6 +268,11 @@ void ScrX11Glx::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	glXDestroyContext(dev.display, dev.gl_ctx);
+	XFree(dev.visual);
+	XFreeColormap(dev.display, dev.attr.colormap);
+	XDestroyWindow(dev.display, dev.win);
+
 	// flush all pending requests to the X server.
 	XFlush(dev.display);
 	
