@@ -354,32 +354,22 @@ bool EventStateBase::IsReady(PacketIO& io) {
 bool EventStateBase::ProcessPacket(PacketValue& in, PacketValue& out) {
 	RTLOG("EventStateBase::ProcessPacket");
 	
-	TODO
-	
-	/*if (io.sink_count == 1) {
-		Event(io.sink[0].p->GetData<CtrlEvent>());
-		
-		PacketIO::Sink& sink = io.sink[0];
-		PacketIO::Source& src = io.src[0];
-		
-		ASSERT(sink.p);
-		sink.may_remove = true;
-		src.from_sink_ch = 0;
-		src.p = ReplyPacket(0, sink.p);
+	Format fmt = in.GetFormat();
+	if (fmt.vd.val == ValCls::EVENT) {
+		const CtrlEvent& ev = in.GetData<CtrlEvent>();
+		Event(ev);
 	}
-	else {
-		TODO
-	}*/
+	else TODO
 	
 	return true;
 }
 
 void EventStateBase::Event(const CtrlEvent& e) {
-	/*if (e.type == EVENT_MOUSEMOVE) {
+	if (e.type == EVENT_MOUSEMOVE) {
 		MouseMove(e.pt, e.value);
 	}
 	else if (e.type == EVENT_MOUSEWHEEL) {
-		TODO
+		MouseWheel(e.pt, e.n, e.value);
 	}
 	else if (e.type == EVENT_KEYDOWN || e.type == EVENT_KEYUP) {
 		Key(e.value, e.n);
@@ -411,19 +401,32 @@ void EventStateBase::Event(const CtrlEvent& e) {
 		bool& close_window = GetState().Set<bool>(SCREEN0_CLOSE);
 		close_window = true;
 	}
-	else*/ TODO
+	else TODO
+}
+
+void EventStateBase::MouseWheel(Point pt, int zdelta, dword keyflags) {
+	EnvState& s = GetState();
+	
+	SetInt(MOUSE_MOUSEWHEEL, zdelta);
+	int& mouse_iter = s.GetInt(MOUSE_STATE_ITER);
+	mouse_iter++;
+	
+	Point& pos = s.Set<Point>(MOUSE_POSITION);
+	const Size& video_size = s.Set<Size>(SCREEN0_SIZE);
+	const Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
+	pos.x =                 video_offset.x + pt.x;
+	pos.y = video_size.cy - video_offset.y - pt.y;
 }
 
 void EventStateBase::LeftDown(Point pt, dword keyflags) {
 	EnvState& s = GetState();
 	
-	TODO
-	/*SetBool(MOUSE_LEFTDOWN, true);
+	SetBool(MOUSE_LEFTDOWN, true);
 	
 	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 	Point& click = s.Set<Point>(MOUSE_TOYCOMPAT_CLICK);
-	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
-	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
+	const Size& video_size = s.Set<Size>(SCREEN0_SIZE);
+	const Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
 	if (video_size.cx > 0 && video_size.cy > 0) {
 		drag.x =                 video_offset.x + pt.x;
 		drag.y = video_size.cy - video_offset.y - pt.y;
@@ -434,7 +437,7 @@ void EventStateBase::LeftDown(Point pt, dword keyflags) {
 		drag.y = video_size.cy;
 		click.x = 0;
 		click.y = -drag.y;
-	}*/
+	}
 }
 
 void EventStateBase::LeftUp(Point pt, dword keyflags) {
@@ -450,11 +453,10 @@ void EventStateBase::LeftUp(Point pt, dword keyflags) {
 void EventStateBase::MouseMove(Point pt, dword keyflags) {
 	EnvState& s = GetState();
 	
-	TODO
-	/*Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
+	Point& drag = s.Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 	Point& click = s.Set<Point>(MOUSE_TOYCOMPAT_CLICK);
-	Size& video_size = s.Set<Size>(SCREEN0_SIZE);
-	Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
+	const Size& video_size = s.Set<Size>(SCREEN0_SIZE);
+	const Point& video_offset = s.Set<Point>(SCREEN0_OFFSET);
 	if (s.GetBool(MOUSE_LEFTDOWN)) {
 		if (video_size.cx > 0 && video_size.cy > 0) {
 			drag.x =                 video_offset.x + pt.x;
@@ -464,14 +466,13 @@ void EventStateBase::MouseMove(Point pt, dword keyflags) {
 			drag.x = 0;
 			drag.y = video_size.cy;
 		}
-	}*/
+	}
 }
 
 bool EventStateBase::Key(dword key, int count) {
 	EnvState& s = GetState();
 	
-	TODO
-	/*FboKbd::KeyVec& data = s.Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
+	FboKbd::KeyVec& data = s.Set<FboKbd::KeyVec>(KEYBOARD_PRESSED);
 	int& keyboard_iter = s.GetInt(KEYBOARD_STATE_ITER);
 	
 	bool is_key_down = true;
@@ -505,7 +506,7 @@ bool EventStateBase::Key(dword key, int count) {
 		data[18] = is_lalt;
 		keyboard_iter++;
 	}
-	*/
+	
 	return true;
 }
 
@@ -530,6 +531,9 @@ bool TestEventSrcBase::Initialize(const Script::WorldState& ws) {
 void TestEventSrcBase::Uninitialize() {
 	RTLOG("TestEventSrcBase::Uninitialize");
 	
+	bool succ = sent_count >= 2;
+	if (succ) {LOG("TestEventSrcBase::Uninitialize: success! " << sent_count << " packets sent");}
+	else       {LOG("TestEventSrcBase::Uninitialize: fail :(");}
 }
 
 bool TestEventSrcBase::IsReady(PacketIO& io) {
@@ -537,28 +541,25 @@ bool TestEventSrcBase::IsReady(PacketIO& io) {
 }
 
 bool TestEventSrcBase::ProcessPacket(PacketValue& in, PacketValue& out) {
-	TODO
-	#if 0
 	RTLOG("TestEventSrcBase::ProcessPackets");
-	return true;
-	#endif
-}
-
-#if 0
-void TestEventSrcBase::StorePacket(int sink_ch,  int src_ch, const Packet& in, Packet& out) {
-	RTLOG("TestEventSrcBase::StorePacket");
+	Format in_fmt = in.GetFormat();
+	Format out_fmt = out.GetFormat();
 	
-	TODO
-	
-	Format fmt = in->GetFormat();
-	ASSERT(fmt.vd.val == ValCls::EVENT);
-	if (fmt.vd.val == ValCls::EVENT) {
-		CtrlEvent& ev = out->SetData<CtrlEvent>();
-		RandomizeEvent(ev);
+	if (in_fmt.vd.val == ValCls::ORDER) {
+		ASSERT(out_fmt.vd.val == ValCls::EVENT);
+		if (out_fmt.vd.val == ValCls::EVENT) {
+			CtrlEvent& ev = out.SetData<CtrlEvent>();
+			RandomizeEvent(ev);
+			sent_count++;
+			return true;
+		}
+	}
+	else {
+		TODO
 	}
 	
+	return false;
 }
-#endif
 
 
 

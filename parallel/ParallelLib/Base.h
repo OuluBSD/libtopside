@@ -144,10 +144,13 @@ public:
 	void LeftUp(Point pt, dword keyflags);
 	void MouseMove(Point pt, dword keyflags);
 	bool Key(dword key, int count);
+	void MouseWheel(Point p, int zdelta, dword keyflags);
 	
 	void			SetBool(dword key, bool b) {state->SetBool(key, b);}
+	void			SetInt(dword key, int i) {state->SetInt(key, i);}
 	
 	bool			GetBool(dword key) {return state->GetBool(key);}
+	int				GetInt(dword key) {return state->GetInt(key);}
 	EnvState&		GetState() const;
 	
 };
@@ -155,6 +158,7 @@ public:
 class TestEventSrcBase :
 	public Atom
 {
+	int sent_count = 0;
 	
 public:
 	RTTI_DECL1(TestEventSrcBase, Atom)

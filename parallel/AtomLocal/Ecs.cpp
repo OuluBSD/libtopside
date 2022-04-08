@@ -62,7 +62,8 @@ bool EcsEventsBase::ProcessPackets(PacketIO& io) {
 	
 	RTLOG("EcsEventsBase::ProcessPackets: TODO");
 	
-	prev_iter = state->GetInt(KEYBOARD_STATE_ITER);
+	prev_iter = state->GetInt(
+	KEYBOARD_STATE_ITER);
 	
 	if (io.sink_count == 1) {
 		PacketIO::Sink& sink = io.sink[0];
