@@ -143,55 +143,57 @@ void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
-bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int, PacketValue&) {
-	TODO
+bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, PacketValue& in) {
+	Format fmt = in.GetFormat();
+	if (fmt.IsVideo()) {
+		const Vector<byte>& pixmap = in.Data();
+		VideoFormat& vfmt = fmt;
+		int frame_sz = vfmt.GetFrameSize();
+		ASSERT(pixmap.GetCount() == frame_sz);
+		
+		int width = vfmt.res[0];
+		int height = vfmt.res[1];
+		
+		ASSERT(dev.fb);
+		ASSERT(!dev.fb->data);
+	    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
+	    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
+	    ASSERT(width == dev.fb->width);
+	    ASSERT(height == dev.fb->height);
+	    if (width != dev.fb->width || height != dev.fb->height) {
+	        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
+	        return false;
+	    }
+	    
+	    int rc = XPutImage(	dev.display,
+							dev.win,
+							dev.gc,
+							dev.fb,
+							0,0,
+							0,0,
+							width,
+							height);
+	    
+	    if (rc == BadMatch) {
+	        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
+	        dev.fb->data = 0;
+	        return false;
+	    }
+	    
+		XFlush(dev.display);
+		//XSync(dev.display, False);
+		
+		dev.fb->data = 0;
+	}
+	
+	return true;
 }
 
-void ScrX11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig&) {
-	TODO
+void ScrX11::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+	
 }
 
 bool ScrX11::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	const Vector<byte>& pixmap = in.Data();
-	Format fmt = in.GetFormat();
-	ASSERT(fmt.IsVideo());
-	VideoFormat& vfmt = fmt;
-	int frame_sz = vfmt.GetFrameSize();
-	ASSERT(pixmap.GetCount() == frame_sz);
-	
-	int width = vfmt.res[0];
-	int height = vfmt.res[1];
-	
-	ASSERT(dev.fb);
-	ASSERT(!dev.fb->data);
-    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
-    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
-    ASSERT(width == dev.fb->width);
-    ASSERT(height == dev.fb->height);
-    if (width != dev.fb->width || height != dev.fb->height) {
-        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
-        return false;
-    }
-    
-    int rc = XPutImage(	dev.display,
-						dev.win,
-						dev.gc,
-						dev.fb,
-						0,0,
-						0,0,
-						width,
-						height);
-    
-    if (rc == BadMatch) {
-        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
-        dev.fb->data = 0;
-        return false;
-    }
-    
-	XFlush(dev.display);
-	//XSync(dev.display, False);
-	
-	dev.fb->data = 0;
 	return true;
 }
 
