@@ -193,11 +193,14 @@ void LinkBase::ForwardPipe(FwdScope& fwd) {
 				RTLOG("LinkBase::ForwardPipe: packet from sink #" << iface.from_sink_ch << " to #" << src_ch << " src_val=" << HexStr(&src_val) << " sink_val=" << HexStr(iface.val));
 				ASSERT(!iface.val->IsQueueFull());
 				
+				#if 0
+				// This is incorrect now, because data is converted (if possible) in ExchangePoint
 				#ifdef flagDEBUG
 				Format src_fmt = src_val.GetFormat();
 				Format sent_fmt = sent->GetFormat();
 				if (!src_fmt.IsCopyCompatible(sent_fmt)) {DUMP(sent_fmt); DUMP(src_fmt); DUMP(atom->GetType());}
 				ASSERT(src_fmt.IsCopyCompatible(sent_fmt));
+				#endif
 				#endif
 				
 				PacketBuffer& src_buf = src_val.GetBuffer();

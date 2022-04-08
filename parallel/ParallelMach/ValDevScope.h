@@ -27,6 +27,7 @@ public:
 	virtual Format GetFormat() const = 0;
 	virtual bool IsQueueFull() const = 0;
 	virtual PacketBuffer& GetBuffer() = 0;
+	virtual void LockFormat() {}
 	
 	void Lock() {ASSERT(!locked); locked = true;}
 	void Unlock() {ASSERT(locked); locked = false;}
@@ -114,6 +115,7 @@ class SimpleValue :
 	PacketBuffer	buf;
 	int				min_packets = 1;
 	int				max_packets = 2;
+	bool			lock_format = false;
 	
 public:
 	RTTI_DECL1(SimpleValue, Value)
@@ -125,7 +127,8 @@ public:
 	Format			GetFormat() const override;
 	bool			IsQueueFull() const override;
 	PacketBuffer&	GetBuffer() override {return buf;}
-	void			SetFormat(Format fmt) override {this->fmt = fmt;}
+	void			SetFormat(Format fmt) override {ASSERT(!lock_format); this->fmt = fmt;}
+	void			LockFormat() override {lock_format = true;}
 	void			SetMinQueueSize(int i) override {min_packets = i; max_packets = max(i, max_packets);}
 	void			SetMaxQueueSize(int i) override {max_packets = i; min_packets = min(i, min_packets);}
 	int				GetMinPackets() const override {return min_packets;}

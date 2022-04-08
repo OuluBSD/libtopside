@@ -57,6 +57,7 @@ protected:
 	bool					IsAllSideSourcesFull(const Vector<int>& src_chs);
 	bool					IsAnySideSourceFull(const Vector<int>& src_chs);
 	bool					IsPrimarySourceFull();
+	void					UpdateLinkedExchangeFormats(int src_ch, const Format& fmt);
 	
 public:
 	virtual bool			Initialize(const Script::WorldState& ws) = 0;

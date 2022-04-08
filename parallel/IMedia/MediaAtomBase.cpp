@@ -131,14 +131,31 @@ bool MediaAtomBaseT<Backend>::LoadFileAny(String path) {
 
 	vi.Start(false);
 	
+	if (!RealizeAudioFormat())
+		return false;
+	
+	if (!RealizeVideoFormat())
+		return false;
+	
+	
+	return true;
+}
+
+template <class Backend>
+bool MediaAtomBaseT<Backend>::RealizeAudioFormat() {
 	if (audio_ch >= 0) {
 		Format fmt = file_in.GetAudio().GetFormat();
-		ASSERT(fmt.IsValid());
-		Value& audio_src = GetSource()->GetSourceValue(audio_ch);
-		if (fmt != audio_src.GetFormat() && !GetLink()->NegotiateSourceFormat(audio_ch, fmt))
-			return false;
+		if (fmt.IsValid()) {
+			Value& audio_src = GetSource()->GetSourceValue(audio_ch);
+			if (fmt != audio_src.GetFormat() && !GetLink()->NegotiateSourceFormat(audio_ch, fmt))
+				return false;
+		}
 	}
-	
+	return true;
+}
+
+template <class Backend>
+bool MediaAtomBaseT<Backend>::RealizeVideoFormat() {
 	if (video_ch >= 0) {
 		Format fmt = file_in.GetVideo().GetFormat();
 		ASSERT(fmt.IsValid());
@@ -146,8 +163,6 @@ bool MediaAtomBaseT<Backend>::LoadFileAny(String path) {
 		if (fmt != video_src.GetFormat() && !GetLink()->NegotiateSourceFormat(video_ch, fmt))
 			return false;
 	}
-	
-	
 	return true;
 }
 
@@ -162,24 +177,44 @@ bool MediaAtomBaseT<Backend>::IsReady(PacketIO& io) {
 	video_packet_ready = false;
 	audio_packet_ready = false;
 	
-	if (mode == AUDIO_ONLY || mode == AUDIOVIDEO)
+	if (mode == AUDIO_ONLY || mode == AUDIOVIDEO) {
+		bool invalid_fmt = file_in.GetAudio().GetFormat().IsValid();
+		
 		file_in.FillAudioBuffer();
+		
+		if (!invalid_fmt && file_in.GetAudio().GetFormat().IsValid()) {
+			// first packet fixed format. Now, negotiate connection format again...
+			RealizeAudioFormat();
+		}
+	}
 	
-	if (mode == VIDEO_ONLY || mode == AUDIOVIDEO)
+	if (mode == VIDEO_ONLY || mode == AUDIOVIDEO) {
+		bool invalid_fmt = file_in.GetVideo().GetFormat().IsValid();
+		
 		file_in.FillVideoBuffer();
+		
+		if (!invalid_fmt && file_in.GetVideo().GetFormat().IsValid()) {
+			// first packet fixed format. Now, negotiate connection format again...
+			RealizeVideoFormat();
+		}
+	}
 	
 	if (mode == AUDIO_ONLY && audio_ch >= 0)
-		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+		//audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+		audio_packet_ready = !file_in.GetAudio().IsQueueEmpty();
 	
 	if (mode == VIDEO_ONLY && video_ch >= 0)
-		video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+		//video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+		video_packet_ready = file_in.GetVideo().IsQueueEmpty();
 	
 	if (mode == AUDIOVIDEO) {
 		if (audio_ch >= 0)
-			audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+			//audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
+			audio_packet_ready = file_in.GetAudio().IsQueueEmpty();
 		
 		if (video_ch >= 0)
-			video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+			//video_packet_ready = file_in.GetVideo().HasPacketOverTime(time);
+			video_packet_ready = file_in.GetVideo().IsQueueEmpty();
 	}
 	
 	return audio_packet_ready || video_packet_ready;
@@ -191,12 +226,12 @@ bool MediaAtomBaseT<Backend>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	Format fmt = out.GetFormat();
 	
 	if (audio_packet_ready && fmt.IsAudio()) {
-		succ = file_in.GetAudio().StorePacket(out, time);
+		succ = file_in.GetAudio().StorePacket(out); //, time);
 		ASSERT(succ);
 	}
 	
 	if (video_packet_ready && fmt.IsVideo()) {
-		succ = file_in.GetVideo().StorePacket(out, time);
+		succ = file_in.GetVideo().StorePacket(out); //, time);
 		ASSERT(succ);
 	}
 	

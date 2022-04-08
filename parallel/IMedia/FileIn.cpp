@@ -636,9 +636,8 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 			auto& p = buf.Add();
 			off32 offset = gen.Create();
 			p = CreatePacket(offset);
-			RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
-			p->Set(fmt, offset);
-			p->SetTime(time_pos);
+			LOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString() << ", " << time_pos);
+			p->Set(fmt, time_pos);
 			Vector<byte>& data = p->Data();
 			data.SetCount(frame->linesize[0], 0);
 			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
@@ -651,9 +650,8 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 		auto& p = buf.Add();
 		off32 offset = gen.Create();
 		p = CreatePacket(offset);
-		RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
-		p->Set(fmt, offset);
-		p->SetTime(time_pos);
+		RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString());
+		p->Set(fmt, time_pos);
 		
 		if (0) {
 			LOG("time_pos:     " << time_pos);
@@ -661,7 +659,7 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 			LOG("fmt:          " << fmt.ToString());
 			LOG("f-nb-samples: " << frame->nb_samples);
 			LOG("f-channels:   " << frame->channels);
-			__BREAK__
+			if (0) __BREAK__
 		}
 		
 		Vector<byte>& data = p->Data();

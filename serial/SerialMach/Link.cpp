@@ -89,7 +89,26 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 	}
 	Value& src = GetSource()->GetSourceValue(src_ch);
 	src.SetFormat(fmt);
+	
+	//UpdateLinkedExchangeFormats(src_ch, fmt);
+	
 	return true;
+}
+
+void LinkBase::UpdateLinkedExchangeFormats(int src_ch, const Format& fmt) {
+	
+	for (Exchange& e : side_sink_conn) {
+		if (e.local_ch_i == src_ch) {
+			ISinkRef sink = e.other->GetSink();
+			Value& val = sink->GetValue(e.other_ch_i);
+			val.SetFormat(fmt);
+		}
+	}
+	
+	ISinkRef sink = prim_link_sink->GetSink();
+	Value& val = sink->GetValue(0);
+	val.SetFormat(fmt);
+	
 }
 
 bool LinkBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {

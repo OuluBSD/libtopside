@@ -36,6 +36,9 @@ class MediaAtomBaseT :
 	String filepath;
 	
 	
+	bool RealizeAudioFormat();
+	bool RealizeVideoFormat();
+	
 public:
 	RTTI_DECL1(MediaAtomBaseT, Atom);
 	

@@ -63,6 +63,7 @@ struct OffsetLoop {
 	OffsetLoop& operator++() {++value; return *this;}
 	OffsetLoop operator++(int) {return OffsetLoop(gen, value++);}
 	operator bool() const {return value;}
+	operator T() const {return value;}
 	
 	void SetMax() {value = limits::max();}
 	void SetMin() {value = limits::min();}

@@ -135,7 +135,6 @@ struct PortaudioCallbackData {
 			memset(args.output, 0, size);
 		}
 		
-		
 		#ifdef flagDEBUG
 		this->dbg_async_race = false;
 		#endif
@@ -239,6 +238,7 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	Format fmt = ConvertPortaudioFormat(pa_fmt);
 	ASSERT(fmt.IsValid());
 	sink_val.SetFormat(fmt);
+	sink_val.LockFormat();
 	
 	// Initalize static portaudio instance (if not initialized)
 	PaStatic();
@@ -266,6 +266,10 @@ bool AudPortaudio::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, con
 	CHECK_ERR;
 	if (err != paNoError) // Bail out on errors
 		return false;
+	
+	
+	a.GetSink()->GetValue(0).SetMinQueueSize(5);
+	
 	
 	return true;
 }
@@ -307,13 +311,18 @@ bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, Pa
 }
 
 bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	
+	// Accept any audio format! Data is converted automatically for raw audio data!
+	
+	/*
 	// accept all valid video formats for now
 	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
 		ISinkRef sink = a.GetSink();
 		Value& val = sink->GetValue(sink_ch);
 		val.SetFormat(new_fmt);
 		return true;
-	}
+	}*/
+	
 	return false;
 }
 

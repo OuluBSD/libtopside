@@ -202,6 +202,7 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool	IsQueueFull() const {return buf.GetCount() >= max_packets;}
+	bool	IsQueueEmpty() const {return buf.GetCount() == 0;}
 	bool	StorePacket(PacketValue& p);
 	bool	StorePacket(PacketValue& p, double min_time);
 	bool	HasPacketOverTime(double time) const;

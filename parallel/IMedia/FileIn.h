@@ -28,7 +28,7 @@ public:
 	void				Close() override;
 	void				FillBuffer() override;
 	
-	int64				GetCurrentOffset() const {return gen.GetCurrent();}
+	int64				GetCurrentOffset() const {return gen.GetCurrent().value;}
 	
 };
 
