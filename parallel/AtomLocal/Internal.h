@@ -11,16 +11,6 @@
 #endif
 
 
-#if HAVE_FFMPEG
-extern "C" {
-	#include <libavdevice/avdevice.h>
-	#include <libavcodec/avcodec.h>
-	#include <libavformat/avformat.h>
-	#include <libswscale/swscale.h>
-	#include <libavutil/imgutils.h>
-}
-#endif
-
 
 #if HAVE_V4L2_DEVMGR || HAVE_V4L2_CAP
 	#ifdef flagWIN32

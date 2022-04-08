@@ -92,6 +92,10 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 	return true;
 }
 
+bool LinkBase::NegotiateSinkFormat(int sink_ch, const Format& new_fmt) {
+	return atom->NegotiateSinkFormat(*this, sink_ch, new_fmt);
+}
+
 Packet LinkBase::InitialPacket(int src_ch, off32 off) {
 	Format src_fmt = GetSource()->GetSourceValue(src_ch).GetFormat();
 	Packet to = CreatePacket(off);

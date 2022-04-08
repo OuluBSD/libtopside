@@ -19,7 +19,6 @@ file
 	3D.cpp,
 	ImgProc.cpp,
 	ImgFile.cpp,
-	AvFile.cpp,
 	MidiFile.cpp,
 	Ideas... readonly separator,
 	Gui.cpp,

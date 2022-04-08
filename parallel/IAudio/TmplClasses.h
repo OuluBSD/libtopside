@@ -1,6 +1,6 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.7 20:44:33
+// Last export: 2022.4.8 19:22:44
 
 #ifndef _IAudio_TmplClasses_h_
 #define _IAudio_TmplClasses_h_
@@ -48,6 +48,10 @@ struct AudioSinkDeviceT : AudSinkDevice {
 		if (!Aud::SinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
+	}
+
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {
+		return Aud::SinkDevice_NegotiateSinkFormat(dev, *this, link, sink_ch, new_fmt);
 	}
 
 	int GetSinkDeviceCount() {
@@ -114,6 +118,10 @@ struct AudioSourceDeviceT : AudSourceDevice {
 		if (!Aud::SourceDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
+	}
+
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {
+		return Aud::SourceDevice_NegotiateSinkFormat(dev, *this, link, sink_ch, new_fmt);
 	}
 
 	int GetSourceDeviceCount() {

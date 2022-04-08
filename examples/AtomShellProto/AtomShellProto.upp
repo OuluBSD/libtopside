@@ -9,12 +9,12 @@ file
 mainconfig
 	"" = "",
 	"" = "SCREEN",
-	"" = "SCREEN OGL",
+	"" = "SCREEN OGL FFMPEG",
 	"" = "SCREEN SDL2",
 	"" = "BUILTIN_PORTAUDIO",
 	"" = "DEBUG_RT",
 	"" = "DEBUG_RT SCREEN",
-	"" = "DEBUG_RT SCREEN OGL",
+	"" = "DEBUG_RT SCREEN OGL FFMPEG",
 	"" = "DEBUG_RT SCREEN SDL2",
 	"" = "DEBUG_RT BUILTIN_PORTAUDIO",
 	"" = "SDL2";

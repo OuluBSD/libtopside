@@ -4,26 +4,6 @@ namespace TS {
 
 namespace Parallel {
 
-AtomTypeCls AudioDecoderSrc::GetAtomType()
-{
-	return ATOM11(AUDIO_DECODER_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
-}
-
-LinkTypeCls AudioDecoderSrc::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<FfmpegAtomBase>(this);
-}
-
-AtomTypeCls AudioDecoderSrc::GetType() const
-{
-	return GetAtomType();
-}
-
 #if defined HAVE_OPENCV
 AtomTypeCls WebcamPipe::GetAtomType()
 {
@@ -81,7 +61,7 @@ LinkTypeCls AudioLoaderAtom::GetLinkType()
 
 void AudioLoaderAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<FfmpegAtomBase>(this);
+	vis.VisitThis<FfmpegSourceDevice>(this);
 }
 
 AtomTypeCls AudioLoaderAtom::GetType() const
@@ -103,7 +83,7 @@ LinkTypeCls VideoLoaderAtom::GetLinkType()
 
 void VideoLoaderAtom::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<FfmpegAtomBase>(this);
+	vis.VisitThis<FfmpegSourceDevice>(this);
 }
 
 AtomTypeCls VideoLoaderAtom::GetType() const

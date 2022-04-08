@@ -30,8 +30,10 @@ HEADER_ACTION(		PortaudioSink,		center.audio.sink.hw)
 HEADER_LINK(		PortaudioSink,		EXTERNAL_PIPE, PROCESS)
 HEADER_ARG(			PortaudioSink,		HINT_PKG,					"AtomDebug")
 
-HEADER11(			AudioDecoderSrc,	FfmpegAtomBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio)
+HEADER11(			AudioDecoderSrc,	FfmpegSourceDevice,			pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDecoderSrc,	perma.audio.source.decoder)
+HEADER_LINK(		AudioDecoderSrc,	PIPE, PROCESS)
+HEADER_ARG(			AudioDecoderSrc,	HINT_PKG,					"AtomDebug")
 
 HEADER11(			AudioDbgSrc,		AudioGenBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
@@ -82,11 +84,11 @@ HEADER12_U01(		WebcamAtom,			OpenCVBase,					pipe,		CenterVideo,	CenterOrder,	Ce
 HEADER_ACTION(		WebcamAtom,			center.video.webcam)
 HEADER_ARG(			WebcamAtom,			reqdef_HAVE_OPENCV,	1)
 
-HEADER12_U01(		AudioLoaderAtom,	FfmpegAtomBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterReceipt)
+HEADER12_U01(		AudioLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioLoaderAtom,	center.audio.loader)
 HEADER_ARG(			AudioLoaderAtom,	reqdef_flagSCREEN,	1)
 
-HEADER13_U02(		VideoLoaderAtom,	FfmpegAtomBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
+HEADER13_U02(		VideoLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagSCREEN,	1)
 

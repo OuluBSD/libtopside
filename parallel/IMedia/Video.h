@@ -1,15 +1,17 @@
-#ifndef _AtomLocal_Video_h_
-#define _AtomLocal_Video_h_
+#ifndef _IMedia_Video_h_
+#define _IMedia_Video_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-struct VideoCodecFormat {
+template <class Backend>
+struct VideoCodecFormatT {
 	uint32			pix_fmt = 0;
 	
 };
 
-class VideoSourceFormatResolution {
+template <class Backend>
+class VideoSourceFormatResolutionT {
 	
 protected:
 	friend class V4L2_DeviceManager;
@@ -24,10 +26,14 @@ public:
 	
 };
 
-class VideoSourceFormat {
+template <class Backend>
+class VideoSourceFormatT {
 	
 protected:
 	friend class V4L2_DeviceManager;
+	
+	using VideoSourceFormatResolution	= VideoSourceFormatResolutionT<Backend>;
+	using VideoCodecFormat				= VideoCodecFormatT<Backend>;
 	
 	String								desc;
 	VideoCodecFormat					codec;
@@ -56,13 +62,11 @@ public:
 
 
 
-class VideoInputFrame : public PacketBufferBase {
-	
-protected:
-	friend class V4L2_DeviceManager;
+template <class Backend>
+class VideoInputFrameT : public PacketBufferBase {
 	
 public:
-	RTTI_DECL1(VideoInputFrame, PacketBufferBase)
+	RTTI_DECL1(VideoInputFrameT, PacketBufferBase)
 	
 	
 	Format fmt;
@@ -71,17 +75,11 @@ public:
 	
 };
 
-using VideoInputFrameRef = Ref<VideoInputFrame>;
-
-
-class VideoOutputFrame : public PacketBufferBase {
-	
-protected:
-	friend class V4L2_DeviceManager;
-	
+template <class Backend>
+class VideoOutputFrameT : public PacketBufferBase {
 	
 public:
-	RTTI_DECL1(VideoOutputFrame, PacketBufferBase)
+	RTTI_DECL1(VideoOutputFrameT, PacketBufferBase)
 	
 };
 
@@ -92,19 +90,20 @@ public:
 
 
 
-class VideoLoaderBase :
-	public virtual AtomBase
+template <class Backend>
+class VideoLoaderBaseT :
+	public AtomBase
 {
 	String	filepath;
 	bool	vflip = false;
 	
 public:
-	VideoLoaderBase();
+	VideoLoaderBaseT();
 	
 	bool Initialize(const Script::WorldState& ws) override;
 	void Uninitialize() override;
-	void Forward(FwdScope& fwd) override;
-	bool ProcessPackets(PacketIO& io) override;
+	//void Forward(FwdScope& fwd) override;
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override;
 	void Visit(RuntimeVisitor& vis) override {}
 	
 	bool LoadFile();
@@ -112,6 +111,6 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

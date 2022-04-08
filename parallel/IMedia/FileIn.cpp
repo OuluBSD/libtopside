@@ -1,25 +1,17 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 
-#if HAVE_FFMPEG
-
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
-void FfmpegAudioFrameQueue::Close() {
-	GetParent()->AsRef<FfmpegFileInput>()->Close();
+template <class Backend>
+void AudioFrameQueueT<Backend>::Close() {
+	this->GetParent()->template AsRef<FileInput>()->Close();
 }
 
-void FfmpegAudioFrameQueue::FillBuffer() {
-	GetParent()->AsRef<FfmpegFileInput>()->FillAudioBuffer();
-}
-
-void FfmpegVideoFrameQueue::Close() {
-	GetParent()->AsRef<FfmpegFileInput>()->Close();
-}
-
-void FfmpegVideoFrameQueue::FillBuffer() {
-	GetParent()->AsRef<FfmpegFileInput>()->FillVideoBuffer();
+template <class Backend>
+void AudioFrameQueueT<Backend>::FillBuffer() {
+	this->GetParent()->template AsRef<FileInput>()->FillAudioBuffer();
 }
 
 
@@ -27,14 +19,31 @@ void FfmpegVideoFrameQueue::FillBuffer() {
 
 
 
-FfmpegFileInput::FfmpegFileInput()
+template <class Backend>
+void VideoFrameQueueT<Backend>::Close() {
+	this->GetParent()->template AsRef<FileInput>()->Close();
+}
+
+template <class Backend>
+void VideoFrameQueueT<Backend>::FillBuffer() {
+	this->GetParent()->template AsRef<FileInput>()->FillVideoBuffer();
+}
+
+
+
+
+
+
+template <class Backend>
+FileInputT<Backend>::FileInputT()
 {
 	aframe.SetParent(this);
 	vframe.SetParent(this);
 	
 }
 
-void FfmpegFileInput::Clear() {
+template <class Backend>
+void FileInputT<Backend>::Clear() {
 	ClearDevice();
 	
 	if (file_fmt_ctx)
@@ -51,7 +60,8 @@ void FfmpegFileInput::Clear() {
 	v.Clear();
 }
 
-void FfmpegFileInput::ClearDevice() {
+template <class Backend>
+void FileInputT<Backend>::ClearDevice() {
 	is_eof = true;
 	is_dev_open = 0;
 	aframe.Clear();
@@ -60,14 +70,16 @@ void FfmpegFileInput::ClearDevice() {
 	ClearPacket();
 }
 
-void FfmpegFileInput::InitPacket() {
+template <class Backend>
+void FileInputT<Backend>::InitPacket() {
 	ClearPacket();
 	pkt = av_packet_alloc();
     pkt->data = NULL;
     pkt->size = 0;
 }
 
-void FfmpegFileInput::ClearPacketData() {
+template <class Backend>
+void FileInputT<Backend>::ClearPacketData() {
 	if (pkt_ref) {
 		av_packet_unref(pkt);
 		pkt_ref = false;
@@ -76,7 +88,8 @@ void FfmpegFileInput::ClearPacketData() {
     pkt->size = 0;
 }
 
-void FfmpegFileInput::ClearPacket() {
+template <class Backend>
+void FileInputT<Backend>::ClearPacket() {
 	if (pkt) {
 		ClearPacketData();
 		av_packet_free(&pkt);
@@ -88,7 +101,8 @@ void FfmpegFileInput::ClearPacket() {
 }
 
 #if 0
-void FfmpegFileInput::SetFormat(Format fmt) {
+template <class Backend>
+void FileInputT<Backend>::SetFormat(Format fmt) {
 	ASSERT(fmt.IsValid());
 	if (fmt.IsAudio()) {
 		aframe.fmt = fmt;
@@ -100,12 +114,14 @@ void FfmpegFileInput::SetFormat(Format fmt) {
 }
 #endif
 
-bool FfmpegFileInput::IsOpen() const {
+template <class Backend>
+bool FileInputT<Backend>::IsOpen() const {
 	return is_dev_open;
 }
 
-bool FfmpegFileInput::OpenFile(String path) {
-	LOG("FfmpegFileInput::OpenFile: opening file '" << path << "'");
+template <class Backend>
+bool FileInputT<Backend>::OpenFile(String path) {
+	LOG("FileInputT::OpenFile: opening file '" << path << "'");
 	Clear();
 	
 	this->path = path;
@@ -140,7 +156,8 @@ bool FfmpegFileInput::OpenFile(String path) {
 	return HasMediaOpen();
 }
 
-bool FfmpegFileInput::Open() {
+template <class Backend>
+bool FileInputT<Backend>::Open() {
 	ClearDevice();
 	
 	if (!HasMediaOpen())
@@ -165,11 +182,13 @@ bool FfmpegFileInput::Open() {
 	return is_dev_open;
 }
 
-void FfmpegFileInput::Close() {
+template <class Backend>
+void FileInputT<Backend>::Close() {
 	Clear();
 }
 
-void FfmpegFileInput::FillVideoBuffer() {
+template <class Backend>
+void FileInputT<Backend>::FillVideoBuffer() {
 	while (!vframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
@@ -181,7 +200,8 @@ void FfmpegFileInput::FillVideoBuffer() {
 	}
 }
 
-void FfmpegFileInput::FillAudioBuffer() {
+template <class Backend>
+void FileInputT<Backend>::FillAudioBuffer() {
 	while (!aframe.IsQueueFull() && !IsEof()) {
 		if (ReadFrame()) {
 			if (ProcessVideoFrame())
@@ -200,7 +220,8 @@ void FfmpegFileInput::FillAudioBuffer() {
 	ClearPacketData();
 }
 
-bool FfmpegFileInput::ReadFrame() {
+template <class Backend>
+bool FileInputT<Backend>::ReadFrame() {
 	ClearPacketData();
 	
 	ASSERT(!pkt->data && !pkt->size);
@@ -211,7 +232,7 @@ bool FfmpegFileInput::ReadFrame() {
 	}
 	
 	if (!is_eof) {
-		RTLOG("FfmpegFileInput::ReadFrame: end of file");
+		RTLOG("FileInputT::ReadFrame: end of file");
 		is_eof = true;
 		WhenStopped();
 	}
@@ -219,7 +240,8 @@ bool FfmpegFileInput::ReadFrame() {
 	return false;
 }
 
-bool FfmpegFileInput::ProcessVideoFrame() {
+template <class Backend>
+bool FileInputT<Backend>::ProcessVideoFrame() {
 	ASSERT(pkt && pkt_ref);
 	if (v.ReadFrame(*pkt)) {
 		vframe.Process(v.frame_pos_time, v.frame);
@@ -231,7 +253,8 @@ bool FfmpegFileInput::ProcessVideoFrame() {
 	return false;
 }
 
-bool FfmpegFileInput::ProcessAudioFrame() {
+template <class Backend>
+bool FileInputT<Backend>::ProcessAudioFrame() {
 	ASSERT(pkt && pkt_ref);
 	if (a.ReadFrame(*pkt)) {
 		aframe.FillAudioBuffer(a.frame_pos_time, a.frame);
@@ -243,14 +266,17 @@ bool FfmpegFileInput::ProcessAudioFrame() {
 	return false;
 }
 
-/*void FfmpegFileInput::FillBuffersNull() {
+/*
+template <class Backend>
+void FileInputT<Backend>::FillBuffersNull() {
 	if (has_audio)
 		aframe.FillBuffersNull();
 	if (has_video)
 		vframe.FillBuffersNull();
 }*/
 
-void FfmpegFileInput::DropVideoFrames(int frames) {
+template <class Backend>
+void FileInputT<Backend>::DropVideoFrames(int frames) {
 	TODO
 	/*frames = std::min(frames, vframe.GetQueueSize() / vframe.GetFormat(VidCtx).GetFrameBytes());
 	
@@ -260,15 +286,18 @@ void FfmpegFileInput::DropVideoFrames(int frames) {
 
 
 
-String FfmpegFileInput::GetLastError() const {
+template <class Backend>
+String FileInputT<Backend>::GetLastError() const {
 	return errstr;
 }
 
-String FfmpegFileInput::GetPath() const {
+template <class Backend>
+String FileInputT<Backend>::GetPath() const {
 	return path;
 }
 
-double FfmpegFileInput::GetSeconds() const {
+template <class Backend>
+double FileInputT<Backend>::GetSeconds() const {
 	if (a.IsOpen())
 		return a.GetSeconds();
 	if (v.IsOpen())
@@ -276,14 +305,16 @@ double FfmpegFileInput::GetSeconds() const {
 	return 0;
 }
 
-bool FfmpegFileInput::IsEof() const {
+template <class Backend>
+bool FileInputT<Backend>::IsEof() const {
 	return is_eof;
 }
 
 
 
 
-bool FfmpegFileInput::IsAudioOpen() const {
+template <class Backend>
+bool FileInputT<Backend>::IsAudioOpen() const {
 	return is_dev_open && has_audio;
 }
 
@@ -300,7 +331,8 @@ bool FfmpegFileInput::IsAudioOpen() const {
 
 
 
-int FfmpegFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
+template <class Backend>
+int FileChannelT<Backend>::DecodePacket(AVPacket& pkt, int *got_frame) {
     int ret = 0;
     int decoded = pkt.size;
     *got_frame = 0;
@@ -337,13 +369,13 @@ int FfmpegFileChannel::DecodePacket(AVPacket& pkt, int *got_frame) {
 		if (codec_ctx->time_base.num == 0)
 			frame_time = 1.0 / 1000.0;
 		frame_pos_time = frame->pts * frame_time;
-		//frame_pos_time = av_frame_get_best_effort_timestamp(frame); // deprecated
     }
     
     return decoded;
 }
 
-void FfmpegFileChannel::Clear() {
+template <class Backend>
+void FileChannelT<Backend>::Clear() {
 	if (frame)
 		av_frame_free(&frame);
 	frame = 0;
@@ -364,12 +396,14 @@ void FfmpegFileChannel::Clear() {
 	is_open = false;
 }
 
-void FfmpegFileChannel::ClearDevice() {
+template <class Backend>
+void FileChannelT<Backend>::ClearDevice() {
 	codec = NULL;
 	frame_pos_time = 0;
 }
 
-bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
+template <class Backend>
+bool FileChannelT<Backend>::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	Clear();
 	fmt.Clear();
 	fmt.vd = VD(CENTER,VIDEO);
@@ -429,7 +463,8 @@ bool FfmpegFileChannel::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	return true;
 }
 
-bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
+template <class Backend>
+bool FileChannelT<Backend>::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	Clear();
 	fmt.Clear();
 	fmt.vd = VD(CENTER,AUDIO);
@@ -489,7 +524,8 @@ bool FfmpegFileChannel::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt) {
 	return true;
 }
 
-bool FfmpegFileChannel::OpenDevice() {
+template <class Backend>
+bool FileChannelT<Backend>::OpenDevice() {
 	if (!is_open)
 		return false;
 	
@@ -533,7 +569,8 @@ bool FfmpegFileChannel::OpenDevice() {
 	return true;
 }
 
-bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
+template <class Backend>
+bool FileChannelT<Backend>::ReadFrame(AVPacket& pkt) {
     if (pkt.stream_index != stream_i)
         return false;
     
@@ -564,7 +601,10 @@ bool FfmpegFileChannel::ReadFrame(AVPacket& pkt) {
 
 
 
-void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
+template <class Backend>
+void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame) {
+	Format& fmt = this->fmt;
+	auto& buf = this->buf;
 	
 	// Sometimes you get the sample rate at this point
 	AudioFormat& afmt = fmt;
@@ -594,8 +634,9 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		if (frame->data[0]) {
 			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
 			auto& p = buf.Add();
+			off32 offset = gen.Create();
 			p = CreatePacket(offset);
-			RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
+			RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
 			p->Set(fmt, offset);
 			p->SetTime(time_pos);
 			Vector<byte>& data = p->Data();
@@ -608,12 +649,14 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 		byte* srcn[AV_NUM_DATA_POINTERS];
 		memset(srcn, 0, sizeof(srcn));
 		auto& p = buf.Add();
+		off32 offset = gen.Create();
 		p = CreatePacket(offset);
-		RTLOG("FfmpegAudioFrameQueue::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
+		RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << IntStr64(GetCurrentOffset()));
 		p->Set(fmt, offset);
 		p->SetTime(time_pos);
 		
 		if (0) {
+			LOG("time_pos:     " << time_pos);
 			LOG("frame-sz:     " << frame_sz);
 			LOG("fmt:          " << fmt.ToString());
 			LOG("f-nb-samples: " << frame->nb_samples);
@@ -645,7 +688,8 @@ void FfmpegAudioFrameQueue::FillAudioBuffer(double time_pos, AVFrame* frame) {
 #if HAVE_OPENGL
 
 #if 0
-bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
+template <class Backend>
+bool AudioFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
 	if (buf.IsEmpty())
 		return false;
 	TODO
@@ -694,8 +738,11 @@ bool FfmpegAudioFrameQueue::PaintOpenGLTexture(int texture) {
 
 
 
-void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Init(AVCodecContext& ctx) {
 	Clear();
+	
+	Format& fmt = this->fmt;
 	ASSERT(fmt.IsValid());
 	
 	VideoFormat& vfmt = fmt;
@@ -709,7 +756,8 @@ void FfmpegVideoFrameQueue::Init(AVCodecContext& ctx) {
 		
 }
 
-void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Frame::Init(const VideoFormat& vid_fmt) {
 	if (!video_dst_bufsize) {
 		Size sz = vid_fmt.GetSize();
 		
@@ -719,12 +767,15 @@ void FfmpegVideoFrameQueue::Frame::Init(const VideoFormat& vid_fmt) {
 	}
 }
 
-/*void FfmpegVideoFrameQueue::FillBuffersNull() {
+/*
+template <class Backend>
+void VideoFrameQueueT<Backend>::FillBuffersNull() {
 	TODO
 }*/
 
-void FfmpegVideoFrameQueue::Clear() {
-	VideoInputFrame::Clear();
+template <class Backend>
+void VideoFrameQueueT<Backend>::Clear() {
+	Base::Clear();
 	frames.Clear();
 	
 	if (img_convert_ctx) {
@@ -733,7 +784,8 @@ void FfmpegVideoFrameQueue::Clear() {
 	}
 }
 
-void FfmpegVideoFrameQueue::Frame::Clear() {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Frame::Clear() {
 	if (video_dst_bufsize) {
 		av_free(video_dst_data[0]);
 		video_dst_data[0] = 0;
@@ -741,20 +793,27 @@ void FfmpegVideoFrameQueue::Frame::Clear() {
 	}
 }
 
-/*void FfmpegVideoFrameQueue::Exchange(VideoEx& e) {
+/*
+template <class Backend>
+void VideoFrameQueueT<Backend>::Exchange(VideoEx& e) {
 	if (e.IsLoading()) {
 		TODO
 	}
 	else {
-		Panic("Invalid VideoEx in FfmpegVideoFrameQueue");
+		Panic("Invalid VideoEx in VideoFrameQueueT");
 	}
 }*/
 
-void FfmpegVideoFrameQueue::DropFrames(int i) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::DropFrames(int i) {
 	frames.RemoveFirst(i);
 }
 
-void FfmpegVideoFrameQueue::Process(double time_pos, AVFrame* frame, bool vflip) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Process(double time_pos, AVFrame* frame, bool vflip) {
+	Format& fmt = this->fmt;
+	auto& buf = this->buf;
+	
 	ASSERT(fmt.IsValid());
 	auto& f = frames.Add();
 	f.Create(pool);
@@ -768,7 +827,8 @@ void FfmpegVideoFrameQueue::Process(double time_pos, AVFrame* frame, bool vflip)
 	buf.Add(p);
 }
 
-void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
 	Size size = vid_fmt.GetSize();
 	
 	this->time_pos = time_pos;
@@ -797,7 +857,8 @@ void FfmpegVideoFrameQueue::Frame::Process(double time_pos, AVFrame* frame, bool
 	#endif
 }
 
-void FfmpegVideoFrameQueue::Frame::MakePacket(Packet& p) {
+template <class Backend>
+void VideoFrameQueueT<Backend>::Frame::MakePacket(Packet& p) {
 	PacketValue& v = *p;
 	v.SetTime(time_pos);
 	Vector<byte>& data = v.Data();
@@ -808,7 +869,8 @@ void FfmpegVideoFrameQueue::Frame::MakePacket(Packet& p) {
 #if HAVE_OPENGL
 
 #if 0
-bool FfmpegVideoFrameQueue::PaintOpenGLTexture(int texture) {
+template <class Backend>
+bool VideoFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
 	TODO
 	/*if (frames.IsEmpty())
 		return false;
@@ -819,7 +881,8 @@ bool FfmpegVideoFrameQueue::PaintOpenGLTexture(int texture) {
 	return b;*/
 }
 
-bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt) {
+template <class Backend>
+bool VideoFrameQueueT<Backend>::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt) {
 	if (!video_dst_bufsize)
 		return false;
 	
@@ -841,6 +904,9 @@ bool FfmpegVideoFrameQueue::Frame::PaintOpenGLTexture(int texture, const VideoFo
 #endif
 
 
-NAMESPACE_SERIAL_END
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(AudioFrameQueueT)
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(VideoFrameQueueT)
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(FileChannelT)
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(FileInputT)
 
-#endif
+NAMESPACE_PARALLEL_END

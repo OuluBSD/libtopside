@@ -1,10 +1,16 @@
-#ifndef _AtomLocal_Media_h_
-#define _AtomLocal_Media_h_
+#ifndef _IMedia_Media_h_
+#define _IMedia_Media_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-class MediaStreamThread : Moveable<MediaStreamThread> {
+template <class Backend>
+class MediaStreamThreadT : Moveable<MediaStreamThreadT<Backend>> {
+	using AudioInputFrame = typename Backend::AudioInputFrame;
+	using VideoInputFrame = typename Backend::VideoInputFrame;
+	using AudioInputFrameRef = typename Backend::AudioInputFrameRef;
+	using VideoInputFrameRef = typename Backend::VideoInputFrameRef;
+	
 	AudioInputFrameRef acap;
 	VideoInputFrameRef vcap;
 	
@@ -17,9 +23,9 @@ class MediaStreamThread : Moveable<MediaStreamThread> {
 	void Process();
 public:
 	
-	typedef MediaStreamThread CLASSNAME;
-	MediaStreamThread() {}
-	~MediaStreamThread() {Stop(); Clear();}
+	typedef MediaStreamThreadT CLASSNAME;
+	MediaStreamThreadT() {}
+	~MediaStreamThreadT() {Stop(); Clear();}
 	
 	void Clear();
 	void Start(bool separate_thrd);
@@ -34,6 +40,7 @@ public:
 	bool IsRunning() const {return flag.IsRunning();}
 	
 	String GetLastError() const {return last_error;}
+	bool IsSeparateThread() const {return separate_thrd;}
 	
 /*#if HAVE_OPENGL
 	void PaintOpenGL(GLuint active_tex);
@@ -45,6 +52,6 @@ public:
 };
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

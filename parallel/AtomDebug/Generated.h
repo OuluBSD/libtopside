@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.7 20:44:22
+// Last modified: 2022.4.8 19:22:44
 
 namespace TS {
 
@@ -79,6 +79,21 @@ public:
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink.hw")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+
+class AudioDecoderSrc : public FfmpegSourceDevice {
+
+public:
+	RTTI_DECL1(AudioDecoderSrc, FfmpegSourceDevice)
+	COPY_PANIC(AudioDecoderSrc)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

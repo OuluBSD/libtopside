@@ -9,6 +9,7 @@ PKG(Audio, Aud, A) {
 	
 	COLOR(226, 212, 0)
 	DEPENDENCY(ParallelLib)
+	HAVE_NEGOTIATE_FORMAT
 	
 	PKG_IFACE {
 		NATIVE_CLASS(SinkDevice)

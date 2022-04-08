@@ -306,6 +306,17 @@ bool AudPortaudio::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, Pa
 	NEVER();
 }
 
+bool AudPortaudio::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	// accept all valid video formats for now
+	if (new_fmt.IsValid() && new_fmt.IsAudio()) {
+		ISinkRef sink = a.GetSink();
+		Value& val = sink->GetValue(sink_ch);
+		val.SetFormat(new_fmt);
+		return true;
+	}
+	return false;
+}
+
 int AudPortaudio::SinkDevice_GetSinkDeviceCount() {
 	TODO
 }
@@ -330,6 +341,11 @@ bool AudPortaudio::SinkDevice_GetSinkFormat(NativeSinkDevice& o, int ch_i, int& 
 	TODO
 }
 
+
+
+
+
+
 bool AudPortaudio::SourceDevice_Initialize(NativeSourceDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	TODO
 }
@@ -347,6 +363,10 @@ void AudPortaudio::SourceDevice_Uninitialize(NativeSourceDevice& dev, AtomBase&)
 }
 
 bool AudPortaudio::SourceDevice_ProcessPacket(NativeSourceDevice& dev, AtomBase&, PacketValue& in, PacketValue& out) {
+	TODO
+}
+
+bool AudPortaudio::SourceDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	TODO
 }
 

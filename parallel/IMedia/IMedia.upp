@@ -1,0 +1,21 @@
+description "\377B0,0,128";
+
+uses
+	ParallelLib;
+
+library(FFMPEG) "swscale avcodec avformat avutil swresample avdevice avfilter";
+
+file
+	IMedia.h,
+	Types.h,
+	MediaAtomBase.h,
+	MediaAtomBase.cpp,
+	FileIn.h,
+	FileIn.cpp,
+	Audio.h,
+	Audio.cpp,
+	Video.h,
+	Video.cpp,
+	Media.h,
+	Media.cpp;
+

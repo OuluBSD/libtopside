@@ -104,6 +104,26 @@ AtomTypeCls PortaudioSink::GetType() const
 	return GetAtomType();
 }
 
+AtomTypeCls AudioDecoderSrc::GetAtomType()
+{
+	return ATOM11(AUDIO_DECODER_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
+}
+
+LinkTypeCls AudioDecoderSrc::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void AudioDecoderSrc::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<FfmpegSourceDevice>(this);
+}
+
+AtomTypeCls AudioDecoderSrc::GetType() const
+{
+	return GetAtomType();
+}
+
 AtomTypeCls AudioDbgSrc::GetAtomType()
 {
 	return ATOM11(AUDIO_DBG_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);

@@ -1,11 +1,11 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
+#include <SerialMach/SerialMach.h>
 
-#if HAVE_FFMPEG
-
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-FfmpegAtomBase::FfmpegAtomBase() {
+template <class Backend>
+MediaAtomBaseT<Backend>::MediaAtomBaseT() {
 	def_cap_sz = Size(1280,720);
 	def_cap_fps = 30;
 	
@@ -13,13 +13,15 @@ FfmpegAtomBase::FfmpegAtomBase() {
 	file_in.WhenStopped << THISBACK(OnStop);
 }
 
-void FfmpegAtomBase::SetError(String s) {
+template <class Backend>
+void MediaAtomBaseT<Backend>::SetError(String s) {
 	last_error = s;
-	LOG("FfmpegAtomBase: error: " << s);
+	LOG("MediaAtomBaseT: error: " << s);
 	OnError();
 }
 
-bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
+template <class Backend>
+bool MediaAtomBaseT<Backend>::Initialize(const Script::WorldState& ws) {
 	//TODO // DevComponent::Initialize
 	AtomTypeCls type = GetType();
 	
@@ -49,7 +51,7 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 	String arg_filepath = ws.Get(".filepath");
 	
 	filepath = RealizeFilepathArgument(arg_filepath);
-	RTLOG("FfmpegAtomBase: filepath=\"" << filepath << "\"");
+	RTLOG("MediaAtomBaseT: filepath=\"" << filepath << "\"");
 	
 	if (ws.Get(".vflip") == "true")
 		vflip = true;
@@ -66,7 +68,8 @@ bool FfmpegAtomBase::Initialize(const Script::WorldState& ws) {
 	return true;
 }
 
-bool FfmpegAtomBase::PostInitialize() {
+template <class Backend>
+bool MediaAtomBaseT<Backend>::PostInitialize() {
 	if (!LoadFileAny(filepath))
 		return false;
 	
@@ -74,7 +77,8 @@ bool FfmpegAtomBase::PostInitialize() {
 	return true;
 }
 
-void FfmpegAtomBase::Uninitialize() {
+template <class Backend>
+void MediaAtomBaseT<Backend>::Uninitialize() {
 	file_in.Clear();
 	
 	RemoveAtomFromUpdateList();
@@ -82,18 +86,21 @@ void FfmpegAtomBase::Uninitialize() {
 	//RemoveFromContext<CenterSpec>(AsRef<CenterSource>());
 }
 
-void FfmpegAtomBase::OnError() {
+template <class Backend>
+void MediaAtomBaseT<Backend>::OnError() {
 	if (stops_machine)
 		GetParent().GetMachine().SetNotRunning();
 }
 
-void FfmpegAtomBase::OnStop() {
+template <class Backend>
+void MediaAtomBaseT<Backend>::OnStop() {
 	if (stops_machine)
 		GetParent().GetMachine().SetNotRunning();
 	WhenStopped();
 }
 
-bool FfmpegAtomBase::LoadFileAny(String path) {
+template <class Backend>
+bool MediaAtomBaseT<Backend>::LoadFileAny(String path) {
 	vi.Stop();
 	mode = INVALID_MODE;
 	time = 0;
@@ -128,7 +135,7 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 		Format fmt = file_in.GetAudio().GetFormat();
 		ASSERT(fmt.IsValid());
 		Value& audio_src = GetSource()->GetSourceValue(audio_ch);
-		if (fmt != audio_src.GetFormat() && !NegotiateSourceFormat(audio_ch, fmt))
+		if (fmt != audio_src.GetFormat() && !GetLink()->NegotiateSourceFormat(audio_ch, fmt))
 			return false;
 	}
 	
@@ -136,7 +143,7 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 		Format fmt = file_in.GetVideo().GetFormat();
 		ASSERT(fmt.IsValid());
 		Value& video_src = GetSource()->GetSourceValue(video_ch);
-		if (fmt != video_src.GetFormat() && !NegotiateSourceFormat(video_ch, fmt))
+		if (fmt != video_src.GetFormat() && !GetLink()->NegotiateSourceFormat(video_ch, fmt))
 			return false;
 	}
 	
@@ -144,21 +151,22 @@ bool FfmpegAtomBase::LoadFileAny(String path) {
 	return true;
 }
 
-void FfmpegAtomBase::Forward(FwdScope& fwd) {
+template <class Backend>
+void MediaAtomBaseT<Backend>::Update(double dt) {
+	time += dt;
+	
+}
+
+template <class Backend>
+bool MediaAtomBaseT<Backend>::IsReady(PacketIO& io) {
+	video_packet_ready = false;
+	audio_packet_ready = false;
+	
 	if (mode == AUDIO_ONLY || mode == AUDIOVIDEO)
 		file_in.FillAudioBuffer();
 	
 	if (mode == VIDEO_ONLY || mode == AUDIOVIDEO)
 		file_in.FillVideoBuffer();
-}
-
-void FfmpegAtomBase::Update(double dt) {
-	time += dt;
-}
-
-bool FfmpegAtomBase::IsReady(PacketIO& io) {
-	video_packet_ready = false;
-	audio_packet_ready = false;
 	
 	if (mode == AUDIO_ONLY && audio_ch >= 0)
 		audio_packet_ready = file_in.GetAudio().HasPacketOverTime(time);
@@ -177,46 +185,26 @@ bool FfmpegAtomBase::IsReady(PacketIO& io) {
 	return audio_packet_ready || video_packet_ready;
 }
 
-bool FfmpegAtomBase::ProcessPackets(PacketIO& io) {
-	PacketIO::Sink& sink = io.sink[0];
-	
+template <class Backend>
+bool MediaAtomBaseT<Backend>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	bool succ = true;
+	Format fmt = out.GetFormat();
 	
-	if (audio_packet_ready) {
-		PacketIO::Source& src = io.src[audio_ch];
-		Packet& out = src.p;
-		sink.may_remove = true;
-		src.from_sink_ch = 0;
-		out = ReplyPacket(0, sink.p);
-		
+	if (audio_packet_ready && fmt.IsAudio()) {
 		succ = file_in.GetAudio().StorePacket(out, time);
 		ASSERT(succ);
 	}
 	
-	if (video_packet_ready) {
-		PacketIO::Source& src = io.src[video_ch];
-		Packet& out = src.p;
-		sink.may_remove = true;
-		src.from_sink_ch = 0;
-		out = ReplyPacket(0, sink.p);
-		
+	if (video_packet_ready && fmt.IsVideo()) {
 		succ = file_in.GetVideo().StorePacket(out, time);
 		ASSERT(succ);
-	}
-	
-	// Send primary output packet when audio & video are side interfaces
-	if (audio_ch != 0 && video_ch != 0) {
-		PacketIO::Source& src = io.src[0];
-		Packet& out = src.p;
-		sink.may_remove = true;
-		src.from_sink_ch = 0;
-		out = ReplyPacket(0, sink.p);
 	}
 	
 	return succ;
 }
 
 
-NAMESPACE_SERIAL_END
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(MediaAtomBaseT)
 
-#endif
+
+NAMESPACE_PARALLEL_END

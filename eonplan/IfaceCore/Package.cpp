@@ -605,6 +605,16 @@ bool Package::Export() {
 				
 			}
 			
+			if (have_negotiate_fmt) {
+				fout << "\tbool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {\n";
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String cls = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					fout << "\t\treturn " << abbr << "::" << prefix << "_NegotiateSinkFormat(" << name << ", *this, link, sink_ch, new_fmt);\n";
+				}
+				fout << "\t}\n\n";
+				
+			}
 			// Proxy functions
 			/*String nat_this;
 			for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
@@ -681,6 +691,11 @@ bool Package::Export() {
 				fout << "static bool " << c.name << "_Recv(" << nat_this_ << "AtomBase&, int, PacketValue&);\n";
 				fout << "static void " << c.name << "_Finalize(" << nat_this_ << "AtomBase&, RealtimeSourceConfig&);\n";
 			}
+			
+			if (have_negotiate_fmt) {
+				fout << "static bool " << c.name << "_NegotiateSinkFormat(" << nat_this_ << "AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);\n";
+			}
+			
 			fout << "\n";
 			
 			String prefix = c.name + "_";
@@ -857,6 +872,11 @@ bool Package::Export() {
 					fout << "}\n\n";
 					
 					fout << "void " << cls << "::" << c.name << "_Finalize(" << nat_this_ << "AtomBase& a, RealtimeSourceConfig& cfg) {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+				}
+				if (have_negotiate_fmt) {
+					fout << "bool " << cls << "::" << c.name << "_NegotiateSinkFormat(" << nat_this_ << "AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 				}

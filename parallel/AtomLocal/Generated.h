@@ -2,26 +2,11 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.7 20:44:22
+// Last modified: 2022.4.8 19:22:44
 
 namespace TS {
 
 namespace Parallel {
-
-class AudioDecoderSrc : public FfmpegAtomBase {
-
-public:
-	RTTI_DECL1(AudioDecoderSrc, FfmpegAtomBase)
-	COPY_PANIC(AudioDecoderSrc)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("perma.audio.source.decoder")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
 
 #if defined HAVE_OPENCV
 class WebcamPipe : public OpenCVBase {
@@ -58,10 +43,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class AudioLoaderAtom : public FfmpegAtomBase {
+class AudioLoaderAtom : public FfmpegSourceDevice {
 
 public:
-	RTTI_DECL1(AudioLoaderAtom, FfmpegAtomBase)
+	RTTI_DECL1(AudioLoaderAtom, FfmpegSourceDevice)
 	COPY_PANIC(AudioLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.loader")
@@ -75,10 +60,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class VideoLoaderAtom : public FfmpegAtomBase {
+class VideoLoaderAtom : public FfmpegSourceDevice {
 
 public:
-	RTTI_DECL1(VideoLoaderAtom, FfmpegAtomBase)
+	RTTI_DECL1(VideoLoaderAtom, FfmpegSourceDevice)
 	COPY_PANIC(VideoLoaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.video.loader")

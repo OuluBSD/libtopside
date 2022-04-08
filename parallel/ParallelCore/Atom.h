@@ -97,6 +97,7 @@ public:
 	virtual bool			AttachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual void			DetachContext(AtomBase& a) {Panic("Unimplemented"); NEVER();}
 	virtual RealtimeSourceConfig* GetConfig() {return 0;}
+	virtual bool			NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) {return false;}
 	
 	HiValue&				UserData() {return user_data;}
 	bool					IsRunning() const {return is_running;}

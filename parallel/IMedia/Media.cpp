@@ -1,9 +1,10 @@
-#include "AtomLocal.h"
+#include "IMedia.h"
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
-void MediaStreamThread::Start(bool separate_thrd) {
+template <class Backend>
+void MediaStreamThreadT<Backend>::Start(bool separate_thrd) {
 	Stop();
 	this->separate_thrd = separate_thrd;
 	if (separate_thrd) {
@@ -12,11 +13,13 @@ void MediaStreamThread::Start(bool separate_thrd) {
 	}
 }
 
-void MediaStreamThread::Stop() {
+template <class Backend>
+void MediaStreamThreadT<Backend>::Stop() {
 	flag.Stop();
 }
 
-void MediaStreamThread::Process() {
+template <class Backend>
+void MediaStreamThreadT<Backend>::Process() {
 	TODO
 	#if 0
 	ASSERT(cap);
@@ -46,18 +49,20 @@ void MediaStreamThread::Process() {
 	#endif
 }
 
-void MediaStreamThread::FillVideoBuffer() {
+template <class Backend>
+void MediaStreamThreadT<Backend>::FillVideoBuffer() {
 	if (vcap)
 		vcap->FillBuffer();
 }
 
-void MediaStreamThread::FillAudioBuffer() {
+template <class Backend>
+void MediaStreamThreadT<Backend>::FillAudioBuffer() {
 	if (acap)
 		acap->FillBuffer();
 }
 
-
-void MediaStreamThread::Clear() {
+template <class Backend>
+void MediaStreamThreadT<Backend>::Clear() {
 	if (acap) {
 		acap->Close();
 		acap.Clear();
@@ -71,7 +76,8 @@ void MediaStreamThread::Clear() {
 
 #if HAVE_OPENGL
 #if 0
-void MediaStreamThread::PaintOpenGL(GLuint active_tex) {
+template <class Backend>
+void MediaStreamThreadT<Backend>::PaintOpenGL(GLuint active_tex) {
 	if (cap)
 		cap->GetVideo().PaintOpenGLTexture(active_tex);
 }
@@ -79,4 +85,7 @@ void MediaStreamThread::PaintOpenGL(GLuint active_tex) {
 #endif
 
 
-NAMESPACE_SERIAL_END
+MEDIA_EXCPLICIT_INITIALIZE_CLASS(MediaStreamThreadT)
+
+
+NAMESPACE_PARALLEL_END

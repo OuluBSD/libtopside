@@ -11,6 +11,7 @@
 #endif
 
 #include <IScreen/IScreen.h>
+#include <IMedia/IMedia.h>
 
 
 

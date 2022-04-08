@@ -65,10 +65,6 @@ public:
 };
 
 
-ArrayMap<String,String>& ToyShaderHashToName();
-String RealizeFilepathArgument(String arg_filepath);
-
-
 NAMESPACE_SERIAL_END
 
 #endif

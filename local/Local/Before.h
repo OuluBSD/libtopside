@@ -64,7 +64,6 @@
 
 // http://dranger.com/ffmpeg/tutorial01.html
 #if defined flagPOSIX || defined HAVE_MINGW
-	#define HAVE_FFMPEG			1
 	#define HAVE_V4L2_DEVMGR	1
 	#define HAVE_OPENCV			1
 	//#define HAVE_V4L2_CAP		1
@@ -72,7 +71,6 @@
 		//#define V4L2_SLOW		1
 	#endif
 #elif defined flagWIN32 && defined flagMSC
-	#define HAVE_FFMPEG			1
 	#define HAVE_OPENCV			1
 	#define HAVE_WIN32_DEVMGR	1
 #endif

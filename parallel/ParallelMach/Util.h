@@ -6,6 +6,9 @@ using namespace Serial;
 
 
 String RealizeEonFile(String path);
+String RealizeFilepathArgument(String arg_filepath);
+ArrayMap<String,String>& ToyShaderHashToName();
+
 
 #if defined flagDEBUG && defined flagDEBUG_RT
 	#define HAVE_SCRIPTLOADER_MACHVER	1

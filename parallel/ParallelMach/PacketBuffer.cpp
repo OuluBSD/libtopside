@@ -71,35 +71,33 @@ bool PacketBufferBase::HasPacketOverTime(double time) const {
 	return false;
 }
 
-bool PacketBufferBase::StorePacket(Packet& p) {
+bool PacketBufferBase::StorePacket(PacketValue& p) {
 	if (buf.GetCount()) {
 		Packet n = buf.First();
 		buf.RemoveFirst();
-		
-		n->SetOffset(p->GetOffset());
-		p = n;
+		p.Pick(*n);
 		return true;
 	}
 	
 	return false;
 }
 
-bool PacketBufferBase::StorePacket(Packet& p, double min_time) {
+bool PacketBufferBase::StorePacket(PacketValue& p, double min_time) {
 	int rem_count = 0;
 	bool found = false;
 	for (Packet& n : buf) {
 		rem_count++;
-		if (n->GetTime() >= min_time) {
-			n->SetOffset(p->GetOffset());
-			p = n;
+		double t = n->GetTime();
+		if (t >= min_time) {
+			p.Pick(*n);
+			ASSERT(p.GetTime() == t);
 			found = true;
 			break;
 		}
 	}
 	if (!found && !buf.IsEmpty()) {
 		Packet& n = buf.Top();
-		n->SetOffset(p->GetOffset());
-		p = n;
+		p.Pick(*n);
 		found = true;
 	}
 	buf.RemoveFirst(rem_count);
@@ -120,6 +118,18 @@ int PacketValue::GetSizeChannelSamples() const {
 	ASSERT(div > 0);
 	return data.GetCount() / div;
 }
+
+void PacketValue::Pick(PacketValue& p) {
+	Swap(data, p.data);
+	p.data.Clear();
+	fmt = p.fmt;
+	// no offset: offset = p.offset;
+	id = p.id;
+	custom_data = p.custom_data;
+	route_descriptor = p.route_descriptor;
+	seq = p.seq;
+}
+
 
 
 

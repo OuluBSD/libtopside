@@ -41,6 +41,10 @@ INITBLOCK {
 	Factory::RegisterAtom<EventStatePipe>();
 	Factory::RegisterAtom<TestEventSrcPipe>();
 	
+	#ifdef flagFFMPEG
+	Factory::RegisterAtom<AudioDecoderSrc>();
+	#endif
+	
 	#ifdef flagSDL2
 	Factory::RegisterAtom<SdlAudioAtom>();
 	Factory::RegisterAtom<SdlContextAtom>();

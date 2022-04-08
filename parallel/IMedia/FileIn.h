@@ -1,30 +1,26 @@
-#ifndef _AtomLocal_FfmpegFileIn_h_
-#define _AtomLocal_FfmpegFileIn_h_
+#ifndef _IMedia_FileIn_h_
+#define _IMedia_FileIn_h_
 
-#if HAVE_FFMPEG
-
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 
-class FfmpegFileInput;
+template <class Backend> class FileInputT;
 
-class FfmpegAudioFrameQueue :
-	public AudioInputFrame
+
+
+template <class Backend>
+class AudioFrameQueueT :
+	public AudioInputFrameT<Backend>
 {
-	off32		offset;
 	off32_gen	gen;
 	
-protected:
-	friend class FfmpegFileInput;
-	
-	
-	
 public:
-	//using Parent = FfmpegFileInput;
-	RTTI_DECL1(FfmpegAudioFrameQueue, AudioInputFrame)
+	using FileInput = typename Backend::FileInput;
+	using Base = AudioInputFrameT<Backend>;
+	RTTI_DECL1(AudioFrameQueueT, Base)
 	
-	FfmpegAudioFrameQueue() : offset(gen) {}
+	AudioFrameQueueT() {}
 	
 	void				FillAudioBuffer(double time_pos, AVFrame* frame);
 	void				Visit(RuntimeVisitor& vis) {}
@@ -32,17 +28,16 @@ public:
 	void				Close() override;
 	void				FillBuffer() override;
 	
-	int64				GetCurrentOffset() const {return offset.value;}
+	int64				GetCurrentOffset() const {return gen.GetCurrent();}
 	
 };
 
-typedef Ref<FfmpegAudioFrameQueue> FfmpegAudioFrameQueueRef;
 
 
 
-#define FFMPEG_VIDEOFRAME_RGBA_CONVERSION 1
-class FfmpegVideoFrameQueue :
-	public VideoInputFrame
+template <class Backend>
+class VideoFrameQueueT :
+	public VideoInputFrameT<Backend>
 {
 	struct Frame : Moveable<Frame> {
 		uint8_t *video_dst_data[4] = {0,0,0,0};
@@ -68,14 +63,13 @@ class FfmpegVideoFrameQueue :
 	int						min_buf_samples = MIN_AUDIO_BUFFER_SAMPLES;
 	off32_gen				gen;
 	
-protected:
-	friend class FfmpegFileInput;
-	
 	
 public:
-	RTTI_DECL1(FfmpegVideoFrameQueue, VideoInputFrame)
-	//using Parent = FfmpegFileInput;
-	~FfmpegVideoFrameQueue() {Clear();}
+	using FileInput = typename Backend::FileInput;
+	using Base = VideoInputFrameT<Backend>;
+	RTTI_DECL1(VideoFrameQueueT, Base)
+	//using Parent = FileInputT;
+	~VideoFrameQueueT() {Clear();}
 	
 	void				Visit(RuntimeVisitor& vis) {}
 	void				Init(AVCodecContext& ctx);
@@ -90,15 +84,15 @@ public:
 	
 };
 
-typedef Ref<FfmpegVideoFrameQueue> FfmpegVideoFrameQueueRef;
 
 
-
-class FfmpegFileChannel
+template <class Backend>
+class FileChannelT
 {
 	
 protected:
-	friend class FfmpegFileInput;
+	using FileInput = class FileInputT<Backend>;
+	friend FileInput;
 	
 	AVFormatContext* file_fmt_ctx = NULL;
 	AVCodecContext* codec_ctx = NULL;
@@ -116,7 +110,7 @@ protected:
 	int DecodePacket(AVPacket& pkt, int *got_frame);
 	
 public:
-	~FfmpegFileChannel() {Clear();}
+	~FileChannelT() {Clear();}
 	bool IsOpen() const {return is_open;}
 	
 	void Clear();
@@ -133,19 +127,24 @@ public:
 
 
 
-class FfmpegFileInput :
+template <class Backend>
+class FileInputT :
 	public PacketBufferParent
 {
-	FfmpegAudioFrameQueue aframe;
-	FfmpegVideoFrameQueue vframe;
+	using AudioFrameQueue = typename Backend::AudioFrameQueue;
+	using VideoFrameQueue = typename Backend::VideoFrameQueue;
+	using FileChannel = typename Backend::FileChannel;
+	
+	AudioFrameQueue aframe;
+	VideoFrameQueue vframe;
 	
 	bool has_audio;
 	bool has_video;
 	bool is_dev_open;
 	String path;
 	String errstr;
-	FfmpegFileChannel v;
-	FfmpegFileChannel a;
+	FileChannel v;
+	FileChannel a;
 	AVFormatContext* file_fmt_ctx = NULL;
 	AVPacket* pkt = 0;
 	bool is_eof = false;
@@ -164,9 +163,9 @@ class FfmpegFileInput :
 	
 	
 public:
-	RTTI_DECL_R0(FfmpegFileInput)
-	FfmpegFileInput();
-	~FfmpegFileInput() {Clear();}
+	RTTI_DECL_R0(FileInputT)
+	FileInputT();
+	~FileInputT() {Clear();}
 	
 	bool						IsEof() const;
 	void						Visit(RuntimeVisitor& vis) {vis % aframe % vframe;}
@@ -176,8 +175,8 @@ public:
 	
 	void						FillVideoBuffer();
 	void						FillAudioBuffer();
-	FfmpegAudioFrameQueue&		GetAudio() {return aframe;}
-	FfmpegVideoFrameQueue&		GetVideo() {return vframe;}
+	AudioFrameQueue&			GetAudio() {return aframe;}
+	VideoFrameQueue&			GetVideo() {return vframe;}
 	
 	bool						IsOpenAudio() const {return has_audio;}
 	bool						IsOpenVideo() const {return has_video;}
@@ -199,7 +198,6 @@ public:
 
 
 
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
-#endif
 #endif

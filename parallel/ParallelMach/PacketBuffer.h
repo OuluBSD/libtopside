@@ -58,6 +58,7 @@ public:
 	PacketValue(off32 offset) : offset(offset) {custom_data = AsVoidTypeCls();}
 	~PacketValue() {data.Clear(); StopTracking(this);}
 	
+	void					Pick(PacketValue& p);
 	Vector<byte>&			Data() {return data;}
 	void					Set(Format fmt, double time) {this->fmt = fmt; this->time = time;}
 	void					SetFormat(Format fmt) {this->fmt = fmt;}
@@ -201,8 +202,8 @@ public:
 	virtual void Close() = 0;
 	virtual void Clear() {buf.Clear();}
 	bool	IsQueueFull() const {return buf.GetCount() >= max_packets;}
-	bool	StorePacket(Packet& p);
-	bool	StorePacket(Packet& p, double min_time);
+	bool	StorePacket(PacketValue& p);
+	bool	StorePacket(PacketValue& p, double min_time);
 	bool	HasPacketOverTime(double time) const;
 	void	SetMinQueueSize(int i) {max_packets = i;}
 	
