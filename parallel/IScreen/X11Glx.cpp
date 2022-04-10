@@ -1,6 +1,6 @@
 #include "IScreen.h"
 
-#if (defined flagLINUX) || (defined flagFREEBSD)
+#if defined flagOGL
 NAMESPACE_PARALLEL_BEGIN
 
 

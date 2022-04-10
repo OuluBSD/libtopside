@@ -64,8 +64,8 @@ void SoftRendT<B>::RenderScreenRect(bool elements) {
 	SoftPipeline& pipe = *tgt_pipe;
 	SoftFramebuffer& fb = *tgt_fb;
 	
-	Texture* tex = fb.tex;
-	Surface* surf = 0;
+	Texture& tex = fb.GetNativeTexture();
+	Surface surf = 0;
 	Rect r = RectC(0, 0, w, h);
 	if (!B::LockTextureToSurface(tex, r, surf) || !surf)
 		return;
@@ -129,9 +129,9 @@ void SoftRendT<B>::RenderScreenRect(bool elements) {
 					SoftShaderBase& fs = rs.frag->Get();
 					
 					SoftProgram& prog = *rs.prog;
-					GenericShaderArgs& g = prog.args;
+					GenericShaderArgs& g = prog.GetArgs();
 					frag_args.generic = &g;
-					frag_args.fa = &prog.fargs;
+					frag_args.fa = &prog.GetFragmentArgs();
 					if (g.iResolution[0] == 0 || g.iResolution[1] == 0)
 						g.iResolution = vec3(w, h, 0);
 					
@@ -186,7 +186,7 @@ void SoftRendT<B>::RenderScreenRect() {
 	using Stage = typename SoftPipelineT<B>::Stage;
 	for (Stage& stage : tgt_pipe->stages) {
 		SoftProgram& prog = *stage.prog;
-		for (SoftShader* shader : prog.shaders) {
+		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
 				RenderScreenRect(false);
@@ -206,9 +206,9 @@ void SoftRendT<B>::ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, u
 	SoftProgram& prog = *rs.prog;
 	
 	VertexShaderArgsT<B> vtx_args;
-	GenericShaderArgs& g = prog.args;
+	GenericShaderArgs& g = prog.GetArgs();
 	vtx_args.generic = &g;
-	vtx_args.va = &prog.vargs;
+	vtx_args.va = &prog.GetVertexArgs();
 	
 	int vtx_count = vbo.vertices.GetCount();
 	processed_vertices.vertices.SetCount(vtx_count);
@@ -344,7 +344,7 @@ void SoftRendT<B>::Render(SoftVertexArray& vao) {
 		
 		//ClearTemp();
 		
-		for (SoftShader* shader : prog.shaders) {
+		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::VERTEX_SHADER) {
 				ProcessVertexShader(*shader, vao, src_id);
@@ -367,7 +367,7 @@ void SoftRendT<B>::Begin() {
 	tmp_sources.SetCount(0);
 	
 	// query target dimension
-	Texture* tex = tgt_fb->tex;
+	Texture& tex = tgt_fb->GetNativeTexture();
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
@@ -394,6 +394,9 @@ void SoftRendT<B>::ClearTemp() {
 	vertices.SetCount(0);
 	indices.SetCount(0);
 }*/
+
+
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftRendT)
 
 
 NAMESPACE_TOPSIDE_END

@@ -104,6 +104,7 @@ AtomTypeCls PortaudioSink::GetType() const
 	return GetAtomType();
 }
 
+#if defined flagFFMPEG
 AtomTypeCls AudioDecoderSrc::GetAtomType()
 {
 	return ATOM11(AUDIO_DECODER_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);
@@ -124,6 +125,7 @@ AtomTypeCls AudioDecoderSrc::GetType() const
 	return GetAtomType();
 }
 
+#endif
 AtomTypeCls AudioDbgSrc::GetAtomType()
 {
 	return ATOM11(AUDIO_DBG_SRC, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, AUDIO);

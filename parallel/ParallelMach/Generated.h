@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.8 19:22:44
+// Last modified: 2022.4.10 18:22:55
 
 namespace TS {
 
@@ -14,7 +14,6 @@ namespace Parallel {
 	ATOM_TYPE(TEST_REALTIME_SINK) \
 	ATOM_TYPE(TEST_POLLER_SINK) \
 	ATOM_TYPE(PORTAUDIO_SINK) \
-	ATOM_TYPE(AUDIO_DECODER_SRC) \
 	ATOM_TYPE(AUDIO_DBG_SRC) \
 	ATOM_TYPE(AUDIO_SPLITTER) \
 	ATOM_TYPE(AUDIO_SPLITTER_USER) \
@@ -34,7 +33,6 @@ namespace Parallel {
 	ATOM_CLASS(TestRealtimeSink) \
 	ATOM_CLASS(TestPollerSink) \
 	ATOM_CLASS(PortaudioSink) \
-	ATOM_CLASS(AudioDecoderSrc) \
 	ATOM_CLASS(AudioDbgSrc) \
 	ATOM_CLASS(AudioSplitter) \
 	ATOM_CLASS(AudioSplitterUser) \
@@ -48,10 +46,20 @@ namespace Parallel {
 	ATOM_CLASS(TestEventSrcPipe) \
 
 
-#define flagSCREEN_ATOM_TYPE_LIST \
-	ATOM_TYPE(VIDEO_DBG_SRC) \
+#define flagFFMPEG_ATOM_TYPE_LIST \
+	ATOM_TYPE(AUDIO_DECODER_SRC) \
 	ATOM_TYPE(AUDIO_LOADER_ATOM) \
 	ATOM_TYPE(VIDEO_LOADER_ATOM) \
+
+
+#define flagFFMPEG_ATOM_CLASS_LIST \
+	ATOM_CLASS(AudioDecoderSrc) \
+	ATOM_CLASS(AudioLoaderAtom) \
+	ATOM_CLASS(VideoLoaderAtom) \
+
+
+#define flagSCREEN_ATOM_TYPE_LIST \
+	ATOM_TYPE(VIDEO_DBG_SRC) \
 	ATOM_TYPE(ECS_EVENTS_ATOM) \
 	ATOM_TYPE(ECS_CPU_VIDEO_PIPE) \
 	ATOM_TYPE(ECS_PROG_VIDEO) \
@@ -81,8 +89,6 @@ namespace Parallel {
 
 #define flagSCREEN_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
-	ATOM_CLASS(AudioLoaderAtom) \
-	ATOM_CLASS(VideoLoaderAtom) \
 	ATOM_CLASS(EcsEventsAtom) \
 	ATOM_CLASS(EcsCpuVideoPipe) \
 	ATOM_CLASS(EcsProgVideo) \

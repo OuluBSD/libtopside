@@ -12,10 +12,10 @@ GFX_CLS_LIST(SdlCpu)
 
 
 // default frame TODO should be conditional
-using CpuStateDraw		= SdlCpuStateDraw;
+/*using CpuStateDraw		= SdlCpuStateDraw;
 using CpuDataState		= SdlCpuDataState;
 using CpuFramebuffer	= SdlCpuFramebuffer;
-using CpuDataObject		= SdlCpuDataObject;
+using CpuDataObject		= SdlCpuDataObject;*/
 
 #endif
 

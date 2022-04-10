@@ -1,6 +1,5 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.8 19:22:44
 
 #ifndef _IFinance_TmplClasses_h_
 #define _IFinance_TmplClasses_h_

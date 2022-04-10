@@ -16,4 +16,7 @@ bool SoftCompilerT<B>::Compile(SoftShader& s) {
 }
 
 
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftCompilerT)
+
+
 NAMESPACE_TOPSIDE_END

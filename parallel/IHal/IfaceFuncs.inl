@@ -1,6 +1,5 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.8 19:22:44
 
 static bool AudioSinkDevice_Initialize(NativeAudioSinkDevice& dev, AtomBase&, const Script::WorldState&);
 static bool AudioSinkDevice_PostInitialize(NativeAudioSinkDevice& dev, AtomBase&);

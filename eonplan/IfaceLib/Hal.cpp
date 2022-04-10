@@ -8,7 +8,7 @@ PKG(Hal, Hal, H) {
 	IfaceLib::Add(this);
 	COLOR(198, 127, 200)
 	DEPENDENCY(ParallelLib)
-	DEPENDENCY(SoftRend)
+	DEPENDENCY(IGraphics)
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
@@ -73,7 +73,7 @@ PKG(Hal, Hal, H) {
 		v->AddStruct("NativeVideoSink")
 			.Add("win",		"SDL_Window*")
 			.Add("rend",	"SDL_Renderer*")
-			.Add("fb",		"SoftFramebuffer")
+			.Add("fb",		"FramebufferT<SdlCpuGfx>")
 			;
 		
 		// POSIX: GLEW GL GLU

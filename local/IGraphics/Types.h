@@ -103,7 +103,6 @@ struct CpuGfxT {
 	using NativeColorBuffer = SoftFramebuffer;
 	using NativeDepthBuffer = SoftFramebuffer;
 	using NativeFrameBuffer = SoftFramebuffer;
-	// using SystemFrameBuffer = SDL_Texture*;
 	using NativeVertexArray = SoftVertexArray;
 	using NativeVertexBuffer = SoftVertexBuffer;
 	using NativeElementBuffer = SoftElementBuffer;
@@ -191,7 +190,7 @@ struct CpuGfxT {
 	static void BeginRender();
 	static void EndRender();
 	
-	// static Serial::VideoFormat& GetFormat(Parallel::Format& fmt);
+	static Serial::VideoFormat& GetFormat(Parallel::Format& fmt);
 	
 };
 
@@ -303,7 +302,6 @@ struct X11Gfx {
 	using NativeWindow			= ::Window;
 	using NativeRenderer		= void*;
 	using NativeRendererInfo	= void*;
-	using NativeGLContext		= ::GLXContext;
 	
 	static Size GetWindowSize(NativeWindow& win);
 	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend);
@@ -311,7 +309,6 @@ struct X11Gfx {
 	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
 	static void DestroyRenderer(NativeRenderer& rend);
 	static void DestroyWindow(NativeWindow& win);
-	static void DeleteContext(NativeGLContext& ctx);
 	static void MaximizeWindow(NativeWindow& win);
 	static void RestoreWindow(NativeWindow& win);
 	static void SetWindowPosition(NativeWindow& win, Point pt);
@@ -325,6 +322,9 @@ struct X11OglGfx : OglGfx, X11Gfx {
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
+	using NativeGLContext		= ::GLXContext;
+	
+	static void DeleteContext(NativeGLContext& ctx);
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
@@ -334,10 +334,12 @@ struct X11OglGfx : OglGfx, X11Gfx {
 
 #ifdef flagSDL2
 struct SdlGfx {
-	using NativeWindow			= SDL_Window;
-	using NativeRenderer		= SDL_Renderer;
+	using NativeDisplay			= void*;
+	using NativeWindow			= SDL_Window*;
+	using NativeRenderer		= SDL_Renderer*;
 	using NativeRendererInfo	= SDL_RendererInfo;
 	using NativeGLContext		= SDL_GLContext;
+	using SystemFrameBuffer		= SDL_Texture*;
 	
 	static Size GetWindowSize(NativeWindow& win);
 	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend);
@@ -345,7 +347,7 @@ struct SdlGfx {
 	static void SetWindowFullscreen(NativeWindow& win, bool b=true);
 	static void DestroyRenderer(NativeRenderer& rend);
 	static void DestroyWindow(NativeWindow& win);
-	static void DeleteContext(GLContext& ctx);
+	static void DeleteContext(NativeGLContext& ctx);
 	static void MaximizeWindow(NativeWindow& win);
 	static void RestoreWindow(NativeWindow& win);
 	static void SetWindowPosition(NativeWindow& win, Point pt);
@@ -379,7 +381,7 @@ struct SdlGfx {
 	
 };*/
 
-struct SdlCpuGfx : CpuGfx, SdlGfx {
+struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
@@ -420,27 +422,27 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #endif
 
-#ifdef flagPOSIX
-	#define POSIX_GFXTYPE \
+#if defined flagPOSIX && defined flagOGL
+	#define X11OGL_GFXTYPE \
 		GFXTYPE(X11OglGfx)
-	#define POSIX_EXCPLICIT_INITIALIZE_CLASS(x) \
+	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 		template struct x <X11OglGfx>;
 #else
-	#define POSIX_GFXTYPE
-	#define POSIX_EXCPLICIT_INITIALIZE_CLASS(x)
+	#define X11OGL_GFXTYPE
+	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x)
 #endif
 
 
 #define GFXTYPE_LIST \
 	 \
 	SDL_GFXTYPE \
-	POSIX_GFXTYPE \
+	X11OGL_GFXTYPE \
 
 
 #define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
 	 \
 	SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
-	POSIX_EXCPLICIT_INITIALIZE_CLASS(x) \
+	X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
 NAMESPACE_PARALLEL_END

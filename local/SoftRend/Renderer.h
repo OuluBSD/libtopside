@@ -11,8 +11,9 @@ class SoftRendT {
 	using SoftShader			= SoftShaderT<Backend>;
 	using FragmentShaderArgs	= FragmentShaderArgsT<Backend>;
 	using SoftProgram			= SoftProgramT<Backend>;
-	using Texture				= typename Backend::Texture;
-	using Surface				= typename Backend::Surface;
+	using Texture				= typename Backend::NativeTexture;
+	using Surface				= typename Backend::NativeSurface;
+	using NativeColorBuffer		= typename Backend::NativeColorBuffer;
 	
 	bool verbose = false;
 	Vector<SoftFramebuffer*> buffers;

@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.8 19:22:44
+// Last modified: 2022.4.10 18:22:55
 
 namespace TS {
 
@@ -42,7 +42,7 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagFFMPEG
 class AudioLoaderAtom : public FfmpegSourceDevice {
 
 public:
@@ -59,7 +59,7 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagFFMPEG
 class VideoLoaderAtom : public FfmpegSourceDevice {
 
 public:
@@ -522,7 +522,9 @@ using TestPollerSinkRef = Ref<TestPollerSink, AtomParent>;
 
 using PortaudioSinkRef = Ref<PortaudioSink, AtomParent>;
 
+#if defined flagFFMPEG
 using AudioDecoderSrcRef = Ref<AudioDecoderSrc, AtomParent>;
+#endif
 
 using AudioDbgSrcRef = Ref<AudioDbgSrc, AtomParent>;
 

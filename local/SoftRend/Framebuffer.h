@@ -28,9 +28,9 @@ class SoftFramebufferT {
 	
 protected:
 	friend class SoftRend;
-	using NativeTexture = typename Backend::Texture;
+	using NativeTexture = typename Backend::NativeTexture;
 	
-	NativeTexture* tex = 0;
+	NativeTexture tex = 0;
 	Texture* gtex = 0;
 	
 	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
@@ -46,13 +46,15 @@ public:
 	
 	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	
-	NativeTexture* GetTex() const {ASSERT(tex); return tex;}
+	const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
 	Texture& GetGeomTex() const {ASSERT(gtex); return *gtex;}
 	
-	void operator=(NativeTexture* tex);
+	void operator=(NativeTexture& tex);
 	void operator=(Texture* t) {ASSERT(tex == 0); gtex = t;}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
+	
+	NativeTexture& GetNativeTexture() {return tex;}
 	
 };
 

@@ -451,5 +451,9 @@ void CpuGfxT<B>::EndRender() {
 }
 
 
+#if defined flagSDL2
+template struct CpuGfxT<Sdl>;
+#endif
+
 
 NAMESPACE_PARALLEL_END

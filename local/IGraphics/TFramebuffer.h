@@ -36,7 +36,7 @@ struct InputStateT : GfxInputState {
 	const Buffer* in_buf = 0;
 	
 	void Clear() {
-		GfxInputState::Clear();
+		this->GfxInputState::Clear();
 		in_buf = 0;
 	}
 	

@@ -1,6 +1,8 @@
 #ifndef _IGraphics_Ogl_h_
 #define _IGraphics_Ogl_h_
 
+#ifdef flagOGL
+
 NAMESPACE_PARALLEL_BEGIN
 
 
@@ -21,7 +23,7 @@ using OglDataObject		= SdlOglDataObject;*/
 	RTTI_DECL1(g##x, Base) \
 };
 
-#ifdef flagSDL2
+#if defined flagSDL2
 GFX_CLS_LIST(SdlOgl)
 #endif
 
@@ -227,4 +229,5 @@ struct OglBuffer : BufferT<T> {
 
 NAMESPACE_PARALLEL_END
 
+#endif
 #endif

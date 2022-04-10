@@ -34,6 +34,7 @@ HEADER11(			AudioDecoderSrc,	FfmpegSourceDevice,			pipe,		CenterAudio,	CenterOrd
 HEADER_ACTION(		AudioDecoderSrc,	perma.audio.source.decoder)
 HEADER_LINK(		AudioDecoderSrc,	PIPE, PROCESS)
 HEADER_ARG(			AudioDecoderSrc,	HINT_PKG,					"AtomDebug")
+HEADER_ARG(			AudioDecoderSrc,	reqdef_flagFFMPEG,			1)
 
 HEADER11(			AudioDbgSrc,		AudioGenBase,				pipe,		CenterAudio,	CenterOrder,	CenterAudio)
 HEADER_ACTION(		AudioDbgSrc,		center.audio.src.dbg_generator)
@@ -87,10 +88,12 @@ HEADER_ARG(			WebcamAtom,			reqdef_HAVE_OPENCV,	1)
 HEADER12_U01(		AudioLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterAudio,	CenterOrder,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		AudioLoaderAtom,	center.audio.loader)
 HEADER_ARG(			AudioLoaderAtom,	reqdef_flagSCREEN,	1)
+HEADER_ARG(			AudioLoaderAtom,	reqdef_flagFFMPEG,	1)
 
 HEADER13_U02(		VideoLoaderAtom,	FfmpegSourceDevice,			pipe,		CenterVideo,	CenterOrder,	CenterVideo,	CenterAudio,	CenterReceipt)
 HEADER_ACTION(		VideoLoaderAtom,	center.video.loader)
 HEADER_ARG(			VideoLoaderAtom,	reqdef_flagSCREEN,	1)
+HEADER_ARG(			VideoLoaderAtom,	reqdef_flagFFMPEG,	1)
 
 HEADER11(			EventStatePipe,		EventStateBase,			driver_pipe,	CenterEvent,	CenterEvent,	CenterReceipt)
 HEADER_ACTION(		EventStatePipe,		state.event.pipe)

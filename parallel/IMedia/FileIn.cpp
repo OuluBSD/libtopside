@@ -73,7 +73,7 @@ void FileInputT<Backend>::ClearDevice() {
 template <class Backend>
 void FileInputT<Backend>::InitPacket() {
 	ClearPacket();
-	pkt = av_packet_alloc();
+	pkt = Backend::NewPacket();
     pkt->data = NULL;
     pkt->size = 0;
 }
@@ -81,7 +81,7 @@ void FileInputT<Backend>::InitPacket() {
 template <class Backend>
 void FileInputT<Backend>::ClearPacketData() {
 	if (pkt_ref) {
-		av_packet_unref(pkt);
+		Backend::UnrefPacket(pkt);
 		pkt_ref = false;
 	}
     pkt->data = NULL;
@@ -92,7 +92,7 @@ template <class Backend>
 void FileInputT<Backend>::ClearPacket() {
 	if (pkt) {
 		ClearPacketData();
-		av_packet_free(&pkt);
+		Backend::DeletePacket(&pkt);
 		pkt = 0;
 	}
 	else {
@@ -338,27 +338,27 @@ int FileChannelT<Backend>::DecodePacket(AVPacket& pkt, int *got_frame) {
     *got_frame = 0;
         
     // Decode frame
-    ret = avcodec_send_packet(codec_ctx, &pkt);
-    if (ret == AVERROR_EOF) {
+    ret = Backend::SendPacket(codec_ctx, &pkt);
+    if (ret < 0) {
         is_open = false;
         errstr = "Eof in packet decoding";
         return -1;
     }
-    else if (ret != 0) {
+    else if (ret > 0) {
         errstr = "Failed to decode packet";
         return -1;
     }
     
     // Receive frame
     if (!frame)
-		frame = av_frame_alloc();
-    ret = avcodec_receive_frame(codec_ctx, frame);
-    if (ret == AVERROR_EOF) {
+		frame = Backend::NewFrame();
+    ret = Backend::ReceiveFrame(codec_ctx, *frame);
+    if (ret < 0) {
         is_open = false;
         errstr = "Eof in frame decoding";
         return -1;
     }
-    else if (ret != 0) {
+    else if (ret > 0) {
         errstr = "Error decoding frame";
         return -1;
     }
@@ -377,16 +377,11 @@ int FileChannelT<Backend>::DecodePacket(AVPacket& pkt, int *got_frame) {
 template <class Backend>
 void FileChannelT<Backend>::Clear() {
 	if (frame)
-		av_frame_free(&frame);
+		Backend::DeletePacket(frame);
 	frame = 0;
 	
-	if (parser)
-		av_parser_close(parser);
-	parser = NULL;
-	
-	if (codec_ctx)
-		avcodec_free_context(&codec_ctx);
-	codec_ctx = NULL;
+	Backend::CloseCodecParserContext(parser);
+	Backend::CloseCodecContext(codec_ctx);
 	
 	file_fmt_ctx = NULL;
 	
@@ -411,52 +406,22 @@ bool FileChannelT<Backend>::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
-	stream_i = -1;
-	for (int i = 0; i < (int)file_fmt_ctx->nb_streams; i++) {
-		if (file_fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO && stream_i < 0) {
-			stream_i = i;
-		}
-	}
+	stream_i = FindVideoStream(*file_fmt_ctx);
 	if (stream_i == -1) {
 		errstr = "did not find video stream";
 		return false;
 	}
 	
-	AVStream* vstream = file_fmt_ctx->streams[stream_i];
-	AVCodecParameters* vcodec = vstream->codecpar;
+	AVStream& vstream = Backend::GetStream(file_fmt_ctx, stream_i);
+	AVCodecParameters& vcodec = Backend::GetParams(vstream);
 	
-	double fps;
-	if (vstream->avg_frame_rate.den > 0)
-		fps = (double)vstream->avg_frame_rate.num / (double)vstream->avg_frame_rate.den;
-	else if (vstream->r_frame_rate.den > 0)
-		fps = (double)vstream->r_frame_rate.num / (double)vstream->r_frame_rate.den;
-	else
-		fps = 25;
-	
-	Size frame_sz(vcodec->width, vcodec->height);
+	double fps = Backend::GetVideoFPS(vstream);
+	Size frame_sz = Backend::GetFrameSize(vcodec);
+	LightSampleFD::Type sample = Backend::GetVideoSampleType(vcodec);
 	
 	vfmt.SetSize(frame_sz);
 	vfmt.SetFPS(fps);
-	
-	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
-	vfmt.SetType(LightSampleFD::RGBA_U8_LE);
-	#else
-	switch (vcodec->format) {
-	case AV_PIX_FMT_RGB24:
-		vfmt.SetType(LightSampleFD::RGB_U8_LE);
-		break;
-	case AV_PIX_FMT_RGBA:
-		vfmt.SetType(LightSampleFD::RGBA_U8_LE);
-		break;
-	case AV_PIX_FMT_VAAPI:
-		errstr = "VAAPI support unimplemented";
-		return false;
-	default:
-		errstr = "unsupported video pixel format";
-		return false;
-	}
-	#endif
-	
+	vfmt.SetType(sample);
 	vfmt.SetLinePadding(0); // unknown at this point. Only AVFrame can tell
 	
 	is_open = true;
@@ -472,53 +437,20 @@ bool FileChannelT<Backend>::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
-	stream_i = -1;
-	for (int i = 0; i < (int)file_fmt_ctx->nb_streams; i++) {
-		if (file_fmt_ctx->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO && stream_i < 0) {
-			stream_i = i;
-		}
-	}
+	stream_i = FindAudioStream(*file_fmt_ctx);
 	if (stream_i == -1) {
-		errstr = "did not find audio stream";
+		errstr = "did not find video stream";
 		return false;
 	}
 	
-	AVStream* astream = file_fmt_ctx->streams[stream_i];
-	AVCodecParameters* acodec = astream->codecpar;
+	AVStream& s = Backend::GetStream(file_fmt_ctx, stream_i);
+	AVCodecParameters& c = Backend::GetParams(s);
+	SoundSample::Type sample = Backend::GetAudioSampleType(c);
 	
-	afmt.res[0] = acodec->channels;
-	afmt.freq = acodec->sample_rate;
-	afmt.sample_rate = acodec->frame_size;
-	
-	switch (acodec->format) {
-		#define SET_FMT(f, t) \
-		case f: \
-			afmt.SetType(SoundSample::t); \
-			break;
-			
-		#if CPU_LITTLE_ENDIAN
-		SET_FMT(AV_SAMPLE_FMT_U8,		U8_LE);
-		SET_FMT(AV_SAMPLE_FMT_S16,		S16_LE);
-		SET_FMT(AV_SAMPLE_FMT_S32,		S32_LE);
-		SET_FMT(AV_SAMPLE_FMT_FLT,		FLT_LE);
-		SET_FMT(AV_SAMPLE_FMT_DBL,		DBL_LE);
-		
-		SET_FMT(AV_SAMPLE_FMT_U8P,		U8_LE);
-		SET_FMT(AV_SAMPLE_FMT_S16P,		S16_LE);
-		SET_FMT(AV_SAMPLE_FMT_S32P,		S32_LE);
-	    SET_FMT(AV_SAMPLE_FMT_FLTP,		FLT_LE);
-	    SET_FMT(AV_SAMPLE_FMT_DBLP,		DBL_LE);
-	    #else
-	    #error TODO
-	    #endif
-	    
-		//SET_FMT(AV_SAMPLE_FMT_S64, 8, 0, 1, 0);
-		//SET_FMT(AV_SAMPLE_FMT_S64P, 8, 0, 1, 0);
-		
-		default:
-		errstr = "unexpected audio format";
-		return false;
-	}
+	afmt.res[0] = Backend::GetChannels(c);
+	afmt.freq = Backend::GetFrequency(c);
+	afmt.sample_rate = Backend::GetSampleRate(c);
+	afmt.SetType(sample);
 	
 	is_open = true;
 	return true;
@@ -530,30 +462,21 @@ bool FileChannelT<Backend>::OpenDevice() {
 		return false;
 	
 	// Find the decoder for the stream
-	codec = avcodec_find_decoder(file_fmt_ctx->streams[stream_i]->codecpar->codec_id);
-	if (codec == NULL) {
+	if (!Backend::FindDecoder(file_fmt_ctx, codec, stream_i)) {
 		errstr = "unsupported codec";
 		is_open = false;
 		return false;
 	}
 	
-	parser = av_parser_init(codec->id);
-	if (!parser) {
-		// codecs like AV_CODEC_ID_PCM_F32LE doesn't require parser...
-		if (codec->id >= AV_CODEC_ID_PCM_S16LE &&
-			codec->id <  AV_CODEC_ID_ADPCM_IMA_QT) {
-			// pass
-		}
-		else {
-			errstr = "parser not found";
-			is_open = false;
-			return false;
-		}
+	if (!Backend::InitParser(codec, parser)) {
+		errstr = "parser not found";
+		is_open = false;
+		return false;
 	}
 
-    frame = av_frame_alloc();
+    frame = Backend::NewFrame();
     
-	codec_ctx = avcodec_alloc_context3(codec);
+	codec_ctx = Backend::CreateCodecContext(codec);
 	
 	// Copy context
 	avcodec_parameters_to_context(codec_ctx, file_fmt_ctx->streams[stream_i]->codecpar);
@@ -616,11 +539,11 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 	int var_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
 	
 	#ifdef flagDEBUG
-	bool is_var_float =
+	/*bool is_var_float =
 		frame->format == AV_SAMPLE_FMT_FLT ||
 		frame->format == AV_SAMPLE_FMT_DBL ||
 		frame->format == AV_SAMPLE_FMT_FLTP ||
-		frame->format == AV_SAMPLE_FMT_DBLP;
+		frame->format == AV_SAMPLE_FMT_DBLP;*/
 	ASSERT(fmt.IsValid());
 	ASSERT(frame->sample_rate == afmt.freq);
 	ASSERT(frame->channels == afmt.res[0]);
@@ -629,56 +552,13 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 	
 	int frame_sz = frame->nb_samples * frame->channels * var_size;
 	
-	// Non-planar data
-	if (frame->data[1] == 0) {
-		if (frame->data[0]) {
-			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
-			auto& p = buf.Add();
-			off32 offset = gen.Create();
-			p = CreatePacket(offset);
-			LOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString() << ", " << time_pos);
-			p->Set(fmt, time_pos);
-			Vector<byte>& data = p->Data();
-			data.SetCount(frame->linesize[0], 0);
-			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
-		}
-	}
-	// Planar data
-	else {
-		byte* srcn[AV_NUM_DATA_POINTERS];
-		memset(srcn, 0, sizeof(srcn));
-		auto& p = buf.Add();
-		off32 offset = gen.Create();
-		p = CreatePacket(offset);
-		RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString());
-		p->Set(fmt, time_pos);
-		
-		if (0) {
-			LOG("time_pos:     " << time_pos);
-			LOG("frame-sz:     " << frame_sz);
-			LOG("fmt:          " << fmt.ToString());
-			LOG("f-nb-samples: " << frame->nb_samples);
-			LOG("f-channels:   " << frame->channels);
-			if (0) __BREAK__
-		}
-		
-		Vector<byte>& data = p->Data();
-		data.SetCount(frame_sz, 0);
-		byte* dst = data.Begin();
-		
-		for(int i = 0; i < frame->channels; i++)
-			srcn[i] = frame->data[i];
-		
-		for (int i = 0; i < frame->nb_samples; i++) {
-			for(int j = 0; j < frame->channels; j++) {
-				byte*& src = srcn[j];
-				for(int k = 0; k < var_size; k++)
-					*dst++ = *src++;
-			}
-		}
-		ASSERT(dst == data.End());
-	}
+	auto& p = buf.Add();
+	off32 offset = gen.Create();
+	p = CreatePacket(offset);
+	RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString() << ", " << time_pos);
+	p->Set(fmt, time_pos);
 	
+	Backend::CopyFramePixels(*frame, p->Data());
 }
 
 
@@ -746,23 +626,7 @@ void VideoFrameQueueT<Backend>::Init(AVCodecContext& ctx) {
 	VideoFormat& vfmt = fmt;
 	Size sz = vfmt.GetSize();
 	
-	img_convert_ctx =
-		sws_getContext(
-		sz.cx, sz.cy, ctx.pix_fmt,
-		sz.cx, sz.cy, AV_PIX_FMT_RGBA,
-		SWS_FAST_BILINEAR, NULL, NULL, NULL);
-		
-}
-
-template <class Backend>
-void VideoFrameQueueT<Backend>::Frame::Init(const VideoFormat& vid_fmt) {
-	if (!video_dst_bufsize) {
-		Size sz = vid_fmt.GetSize();
-		
-	    video_dst_bufsize =
-			av_image_alloc(	video_dst_data, video_dst_linesize,
-							sz.cx, sz.cy, AV_PIX_FMT_RGBA, 1);
-	}
+	img_convert_ctx = Backend::GetImgConvContext(ctx);
 }
 
 /*
@@ -775,20 +639,7 @@ template <class Backend>
 void VideoFrameQueueT<Backend>::Clear() {
 	Base::Clear();
 	frames.Clear();
-	
-	if (img_convert_ctx) {
-		sws_freeContext(img_convert_ctx);
-		img_convert_ctx = 0;
-	}
-}
-
-template <class Backend>
-void VideoFrameQueueT<Backend>::Frame::Clear() {
-	if (video_dst_bufsize) {
-		av_free(video_dst_data[0]);
-		video_dst_data[0] = 0;
-		video_dst_bufsize = 0;
-	}
+	Backend::DeleteImgConvContext(img_convert_ctx);
 }
 
 /*
@@ -825,45 +676,6 @@ void VideoFrameQueueT<Backend>::Process(double time_pos, AVFrame* frame, bool vf
 	buf.Add(p);
 }
 
-template <class Backend>
-void VideoFrameQueueT<Backend>::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx) {
-	Size size = vid_fmt.GetSize();
-	
-	this->time_pos = time_pos;
-	
-	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
-	if (vflip) {
-		for(int i = 0; i < 4; i++) {
-			video_dst_linesize_vflip[i] = -video_dst_linesize[i];
-			video_dst_data_vflip[i] = video_dst_data[i] + (size.cy - 1) * video_dst_linesize[i];
-		}
-	    sws_scale(
-			img_convert_ctx,
-			frame->data, frame->linesize,
-			0, size.cy,
-			video_dst_data_vflip, video_dst_linesize_vflip);
-	}
-	else {
-	    sws_scale(
-			img_convert_ctx,
-			frame->data, frame->linesize,
-			0, size.cy,
-			video_dst_data, video_dst_linesize);
-	}
-	#else
-	#error Unimplemented
-	#endif
-}
-
-template <class Backend>
-void VideoFrameQueueT<Backend>::Frame::MakePacket(Packet& p) {
-	PacketValue& v = *p;
-	v.SetTime(time_pos);
-	Vector<byte>& data = v.Data();
-	data.SetCount(video_dst_bufsize);
-	memcpy(data.Begin(), video_dst_data[0], video_dst_bufsize); // TODO optimize memcpy away
-}
-
 #if HAVE_OPENGL
 
 #if 0
@@ -879,24 +691,6 @@ bool VideoFrameQueueT<Backend>::PaintOpenGLTexture(int texture) {
 	return b;*/
 }
 
-template <class Backend>
-bool VideoFrameQueueT<Backend>::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt) {
-	if (!video_dst_bufsize)
-		return false;
-	
-	glBindTexture (GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
-		vid_fmt.size.cx,
-		vid_fmt.size.cy,
-		0, GL_RGBA, GL_UNSIGNED_BYTE,
-		video_dst_data[0]);
-	
-	return true;
-}
 #endif
 
 #endif

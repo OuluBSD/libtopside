@@ -21,7 +21,7 @@ NAMESPACE_PARALLEL_END
 
 
 
-#ifdef flagSCREEN
+#if defined flagSCREEN && defined flagOGL
 
 NAMESPACE_PARALLEL_BEGIN
 

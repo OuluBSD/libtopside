@@ -1,6 +1,5 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.8 19:22:44
 
 static bool MidiSinkDevice_Initialize(NativeSinkDevice& dev, AtomBase&, const Script::WorldState&);
 static bool MidiSinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase&);

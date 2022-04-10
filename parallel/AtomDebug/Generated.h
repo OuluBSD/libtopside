@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.8 19:22:44
+// Last modified: 2022.4.10 18:22:55
 
 namespace TS {
 
@@ -87,6 +87,7 @@ public:
 
 };
 
+#if defined flagFFMPEG
 class AudioDecoderSrc : public FfmpegSourceDevice {
 
 public:
@@ -101,6 +102,7 @@ public:
 	AtomTypeCls GetType() const override;
 
 };
+#endif
 
 class AudioDbgSrc : public AudioGenBase {
 

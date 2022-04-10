@@ -78,8 +78,8 @@ String SoftProgramT<B>::GetVar(int idx) const {
 
 template <class B>
 void SoftProgramT<B>::Attach(SoftShader& s) {
-	ASSERT(s.prog == 0);
-	s.prog = this;
+	ASSERT(s.GetSoftProgram() == 0);
+	s.SetSoftProgram(this);
 	shaders.Add(&s);
 }
 
@@ -128,6 +128,9 @@ void SoftProgramT<B>::SetVar(int idx, const mat4& mat) {
 	}
 	ASSERT(0);
 }
+
+
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftProgramT)
 
 
 NAMESPACE_TOPSIDE_END

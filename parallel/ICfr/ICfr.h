@@ -1,6 +1,5 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.8 19:22:44
 
 #ifndef _ICfr_ICfr_h_
 #define _ICfr_ICfr_h_

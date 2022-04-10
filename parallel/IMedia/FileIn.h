@@ -18,6 +18,8 @@ class AudioFrameQueueT :
 public:
 	using FileInput = typename Backend::FileInput;
 	using Base = AudioInputFrameT<Backend>;
+	using AVFrame = typename Backend::AVFrame;
+	using AVSampleFormat = typename Backend::AVSampleFormat;
 	RTTI_DECL1(AudioFrameQueueT, Base)
 	
 	AudioFrameQueueT() {}
@@ -39,21 +41,10 @@ template <class Backend>
 class VideoFrameQueueT :
 	public VideoInputFrameT<Backend>
 {
-	struct Frame : Moveable<Frame> {
-		uint8_t *video_dst_data[4] = {0,0,0,0};
-		uint8_t *video_dst_data_vflip[4] = {0,0,0,0};
-		int      video_dst_linesize[4];
-		int      video_dst_linesize_vflip[4];
-		int      video_dst_bufsize = 0;
-		double	time_pos = 0;
-		
-		~Frame() {Clear();}
-		void	Init(const VideoFormat& vid_fmt);
-		void	Clear();
-		void	Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, SwsContext* img_convert_ctx);
-		bool	PaintOpenGLTexture(int texture, const VideoFormat& vid_fmt);
-		void	MakePacket(Packet& p);
-	};
+	using AVFrame = typename Backend::AVFrame;
+	using AVCodecContext = typename Backend::AVCodecContext;
+	using ImgConvContext = typename Backend::ImgConvContext;
+	using Frame = typename Backend::Frame;
 	using Recycler = TS::Recycler<Frame,true>;
 	using Pool = RecyclerPool<Frame,true>;
 	
@@ -92,6 +83,15 @@ class FileChannelT
 	
 protected:
 	using FileInput = class FileInputT<Backend>;
+	using AVFrame = typename Backend::AVFrame;
+	using AVCodecContext = typename Backend::AVCodecContext;
+	using AVFormatContext = typename Backend::AVFormatContext;
+	using AVCodecParserContext = typename Backend::AVCodecParserContext;
+	using AVCodec = typename Backend::AVCodec;
+	using AVPacket = typename Backend::AVPacket;
+	using AVStream = typename Backend::AVStream;
+	using AVCodecParameters = typename Backend::AVCodecParameters;
+	using AVDictionary = typename Backend::AVDictionary;
 	friend FileInput;
 	
 	AVFormatContext* file_fmt_ctx = NULL;
@@ -134,6 +134,9 @@ class FileInputT :
 	using AudioFrameQueue = typename Backend::AudioFrameQueue;
 	using VideoFrameQueue = typename Backend::VideoFrameQueue;
 	using FileChannel = typename Backend::FileChannel;
+	using AVFormatContext = typename Backend::AVFormatContext;
+	using AVPacket = typename Backend::AVPacket;
+	using AVCodecParameters = typename Backend::AVCodecParameters;
 	
 	AudioFrameQueue aframe;
 	VideoFrameQueue vframe;

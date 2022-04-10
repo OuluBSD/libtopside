@@ -23,7 +23,7 @@ bool SoftFramebufferT<B>::Create() {
 }
 
 template <class B>
-void SoftFramebufferT<B>::operator=(NativeTexture* tex) {
+void SoftFramebufferT<B>::operator=(NativeTexture& tex) {
 	ASSERT(!this->tex);
 	this->tex = tex;
 }
@@ -44,6 +44,9 @@ void SoftFramebufferT<B>::SetParam(GVar::TextureType type, GVar::Filter filter, 
 	this->filter[type] = filter;
 	this->wrap[type] = wrap;
 }
+
+
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftFramebufferT)
 
 
 NAMESPACE_TOPSIDE_END

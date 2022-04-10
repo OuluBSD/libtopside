@@ -48,7 +48,7 @@ AtomTypeCls WebcamAtom::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagFFMPEG
 AtomTypeCls AudioLoaderAtom::GetAtomType()
 {
 	return ATOM11_U01(AUDIO_LOADER_ATOM, PIPE, CENTER, AUDIO, CENTER, ORDER, CENTER, RECEIPT, CENTER, AUDIO);
@@ -70,7 +70,7 @@ AtomTypeCls AudioLoaderAtom::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
+#if defined flagSCREEN && defined flagFFMPEG
 AtomTypeCls VideoLoaderAtom::GetAtomType()
 {
 	return ATOM11_U02(VIDEO_LOADER_ATOM, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, RECEIPT, CENTER, VIDEO, CENTER, AUDIO);

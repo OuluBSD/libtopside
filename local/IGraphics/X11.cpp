@@ -27,10 +27,6 @@ void X11Gfx::DestroyWindow(NativeWindow& win) {
 	TODO
 }
 
-void X11Gfx::DeleteContext(NativeGLContext& ctx) {
-	TODO
-}
-
 void X11Gfx::MaximizeWindow(NativeWindow& win) {
 	TODO
 }
@@ -53,6 +49,10 @@ Size X11Gfx::GetWindowSize(NativeWindow& win) {
 
 
 #ifdef flagOGL
+
+void X11OglGfx::DeleteContext(NativeGLContext& ctx) {
+	TODO
+}
 
 void X11OglGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
 	ASSERT(d && w);

@@ -15,8 +15,7 @@ class SoftProgramT {
 	String err;
 	
 protected:
-	using SoftShader	= SoftShaderT<Backend>;
-	
+	using SoftShader = SoftShaderT<Backend>;
 	friend class SoftRend;
 	Vector<SoftShader*> shaders;
 	Vector<SoftUniform> uniforms;
@@ -48,6 +47,11 @@ public:
 	void SetVar(int idx, float f0, float f1, float f2);
 	void SetVar(int idx, float f0, float f1, float f2, float f3);
 	void SetVar(int idx, const mat4& mat);
+	
+	GenericShaderArgs& GetArgs() {return args;}
+	GenericVertexShaderArgs& GetVertexArgs() {return vargs;}
+	GenericFragmentShaderArgs& GetFragmentArgs() {return fargs;}
+	Vector<SoftShader*>& GetShaders() {return shaders;}
 	
 };
 

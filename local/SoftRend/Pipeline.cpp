@@ -29,5 +29,7 @@ void SoftPipelineT<B>::Use(SoftProgram& prog, uint32 bmask) {
 }
 
 
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftPipelineT)
+
 
 NAMESPACE_TOPSIDE_END

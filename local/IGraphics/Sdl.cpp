@@ -5,28 +5,28 @@ NAMESPACE_PARALLEL_BEGIN
 #ifdef flagSDL2
 #ifdef flagOGL
 
-void SdlOglGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
-	SDL_GL_SwapWindow(&w);
+void SdlOglGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+	SDL_GL_SwapWindow(w);
 }
 
 #endif
 
-void SdlCpuGfx::ActivateNextFrame(SDL_Window& w, SDL_Renderer& r, NativeFrameBuffer& color_buf) {
-	SDL_RenderCopy(&r, color_buf.GetTex(), NULL, NULL);
-	SDL_RenderPresent(&r);
+void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+	SDL_RenderCopy(r, color_buf.GetTex(), NULL, NULL);
+	SDL_RenderPresent(r);
 }
 
 Size SdlGfx::GetWindowSize(NativeWindow& win) {
 	int w, h;
-	SDL_GetWindowSize(&win, &w, &h);
+	SDL_GetWindowSize(win, &w, &h);
 	return Size(w, h);
 }
 
-bool SdlGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow*& win, NativeRenderer*& rend) {
-	return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &nat_rend) >= 0;
+bool SdlGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend) {
+	return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &rend) >= 0;
 }
 
-void SdlGfx::SetTitle(NativeWindow& win, String title) {
+void SdlGfx::SetTitle(NativeDisplay&, NativeWindow& win, String title) {
 	SDL_SetWindowTitle(win, title);
 }
 

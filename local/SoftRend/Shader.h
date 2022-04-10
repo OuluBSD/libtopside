@@ -51,6 +51,8 @@ public:
 	operator bool() const {return inited;}
 	String GetLastError() const {return err;}
 	
+	SoftProgram* GetSoftProgram() const {return prog;}
+	void SetSoftProgram(SoftProgram* p) {prog = p;}
 	
 };
 

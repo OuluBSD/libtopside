@@ -39,5 +39,7 @@ void SoftShaderT<B>::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
 	this->fs = fs;
 }*/
 
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftShaderT)
+
 
 NAMESPACE_TOPSIDE_END

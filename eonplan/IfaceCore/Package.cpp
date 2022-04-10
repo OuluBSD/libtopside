@@ -419,7 +419,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		fout << "#ifndef _" + pkgname + "_" + pkgname + "_h_\n";
 		fout << "#define _" + pkgname + "_" + pkgname + "_h_\n\n";
 
@@ -448,7 +449,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		fout << "#ifndef _" + pkgname + "_BaseClasses_h_\n";
 		fout << "#define _" + pkgname + "_BaseClasses_h_\n\n";
 		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
@@ -481,7 +483,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		fout << "#ifndef _" + pkgname + "_TmplClasses_h_\n";
 		fout << "#define _" + pkgname + "_TmplClasses_h_\n\n";
 		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";
@@ -665,7 +668,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		
 		for (Class& c : ns.classes.GetValues()) {
 			String nat_this;
@@ -717,7 +721,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		fout << "#ifndef _" + pkgname + "_Vendors_h_\n";
 		fout << "#define _" + pkgname + "_Vendors_h_\n\n";
 		
@@ -905,7 +910,8 @@ bool Package::Export() {
 		
 		fout << "// This file have been generated automatically.\n";
 		fout << "// DO NOT MODIFY THIS FILE!\n";
-		fout << "// Last export: " << GetSysTime().ToString() << "\n\n";
+		//fout << "// Last export: " << GetSysTime().ToString() << "\n";
+		fout << "\n";
 		fout << "#ifndef _" + pkgname + "_Enums_h_\n";
 		fout << "#define _" + pkgname + "_Enums_h_\n\n";
 		fout << "NAMESPACE_PARALLEL_BEGIN\n\n";

@@ -1,6 +1,5 @@
 // This file have been generated automatically.
 // DO NOT MODIFY THIS FILE!
-// Last export: 2022.4.8 19:22:44
 
 #ifndef _IHal_Vendors_h_
 #define _IHal_Vendors_h_
@@ -41,7 +40,7 @@ struct HalSdl2 {
 	struct NativeVideoSink {
 		SDL_Window* win;
 		SDL_Renderer* rend;
-		SoftFramebuffer fb;
+		FramebufferT<SdlCpuGfx> fb;
 	};
 
 	

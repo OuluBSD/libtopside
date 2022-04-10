@@ -8,8 +8,7 @@ template <class Backend>
 class SoftPipelineT {
 	bool inited = false;
 	
-protected:
-	friend class SoftRend;
+public:
 	using SoftProgram = SoftProgramT<Backend>;
 	
 	struct Stage : Moveable<Stage> {

@@ -5,6 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 #ifdef flagSDL2
 
+#ifdef flagOGL
 template <>
 void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
@@ -19,6 +20,7 @@ void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
 	
 }
+#endif
 
 template <>
 void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
@@ -32,6 +34,7 @@ void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
 	
 }
 
+#ifdef flagOGL
 template <>
 bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 	// Renderer
@@ -59,6 +62,7 @@ bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 	
 	return true;
 }
+#endif
 
 template <>
 bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
@@ -92,10 +96,7 @@ void GfxAccelAtom<SdlCpuGfx>::FrameCopy(const VideoFormat& vfmt, const byte* mem
 
 
 
-#if 0
-/* TODO remove these */
-#endif
-
+#if defined flagOGL
 template <>
 void GfxAccelAtom<X11OglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
@@ -105,7 +106,7 @@ template <>
 bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
 	return true;
 }
-
+#endif
 
 
 
@@ -461,10 +462,13 @@ void GfxAccelAtom<Gfx>::CommitDraw() {
 }
 
 
-#ifdef flagSDL2
+/*#if defined flagSDL2 && defined flagOGL
 template class GfxAccelAtom<SdlOglGfx>;
-template class GfxAccelAtom<SdlCpuGfx>;
 #endif
+
+#ifdef flagSDL2
+template class GfxAccelAtom<SdlCpuGfx>;
+#endif*/
 
 
 GFX_EXCPLICIT_INITIALIZE_CLASS(GfxAccelAtom)
