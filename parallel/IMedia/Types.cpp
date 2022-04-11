@@ -13,8 +13,8 @@ void FfmpegMedia::UnrefPacket(AVPacket* p) {
 	av_packet_unref(p);
 }
 
-void FfmpegMedia::av_packet_free(AVPacket* p) {
-	av_packet_unref(p);
+void FfmpegMedia::DeletePacket(AVPacket* p) {
+	av_packet_free(&p);
 }
 
 AVFrame* FfmpegMedia::NewFrame() {
@@ -22,7 +22,7 @@ AVFrame* FfmpegMedia::NewFrame() {
 }
 
 void FfmpegMedia::DeletePacket(AVFrame* f) {
-	av_frame_free(f);
+	av_frame_free(&f);
 }
 
 void FfmpegMedia::CloseCodecParserContext(AVCodecParserContext& parser) {
@@ -39,7 +39,7 @@ void FfmpegMedia::CloseCodecContext(AVCodecContext& ctx) {
 	}
 }
 
-int FfmpegMedia::SendPacket(AVFormatContext& ctx, const AVPacket& p) {
+int FfmpegMedia::SendPacket(AVCodecContext& ctx, const AVPacket& p) {
 	int ret = avcodec_send_packet(ctx, &p);
 	if (ret == AVERROR_EOF)
 		return -1;
@@ -49,8 +49,8 @@ int FfmpegMedia::SendPacket(AVFormatContext& ctx, const AVPacket& p) {
 		return 0;
 }
 
-int FfmpegMedia::ReceiveFrame(AVFormatContext& ctx, AVFrame& f) {
-	int ret = avcodec_receive_frame(codec_ctx, &frame);
+int FfmpegMedia::ReceiveFrame(AVCodecContext& ctx, AVFrame& frame) {
+	int ret = avcodec_receive_frame(ctx, &frame);
 	if (ret == AVERROR_EOF)
 		return -1;
 	else if (ret != 0)
@@ -86,7 +86,7 @@ AVStream& FfmpegMedia::GetStream(AVFormatContext& ctx, int i) {
 }
 
 AVCodecParameters& FfmpegMedia::GetParams(AVStream& s) {
-	return *vstream->codecpar;
+	return *s.codecpar;
 }
 
 double FfmpegMedia::GetVideoFPS(const AVStream& s) {
@@ -104,7 +104,7 @@ Size FfmpegMedia::GetFrameSize(const AVCodecParameters& c) {
 	return Size(c.width, c.height);
 }
 
-LightSampleFD FfmpegMedia::GetVideoSampleType(const AVCodecParameters& c) {
+LightSampleFD::Type FfmpegMedia::GetVideoSampleType(const AVCodecParameters& c) {
 	#if FFMPEG_VIDEOFRAME_RGBA_CONVERSION
 	return LightSampleFD::RGBA_U8_LE;
 	#else
@@ -133,7 +133,7 @@ int FfmpegMedia::GetFrequency(const AVCodecParameters& c) {
 	return c.sample_rate;
 }
 
-SoundSample FfmpegMedia::GetAudioSampleType(const AVCodecParameters& c) {
+SoundSample::Type FfmpegMedia::GetAudioSampleType(const AVCodecParameters& c) {
 	switch (c.format) {
 		#define SET_FMT(f, t) \
 		case f: \
@@ -181,22 +181,22 @@ bool FfmpegMedia::InitParser(AVCodec& c, AVCodecParserContext& parser) {
 }
 
 bool FfmpegMedia::FindDecoder(AVFormatContext& ctx, AVCodec& codec, int stream_i) {
-	codec = avcodec_find_decoder(ctx->streams[stream_i]->codecpar->codec_id);
+	codec = avcodec_find_decoder(ctx.streams[stream_i]->codecpar->codec_id);
 	return codec != NULL;
 }
 
-AVCodecContext* FfmpegMedia::CreateCodecContext(AVCodec& c) {
+FfmpegMedia::AVCodecContext FfmpegMedia::CreateCodecContext(AVCodec& c) {
 	return avcodec_alloc_context3(c);
 }
 
-void FfmpegMedia::CopyFramePixels(const AVFrame& f, Vector<byte>& data) {
+void FfmpegMedia::CopyFramePixels(const Format& fmt, const AVFrame& frame, Vector<byte>& data) {
 	
 	// Non-planar data
-	if (frame->data[1] == 0) {
-		if (frame->data[0]) {
-			ASSERT(fmt.GetFrameSize() >= frame->linesize[0]);
-			data.SetCount(frame->linesize[0], 0);
-			memcpy(data.begin(), frame->data[0], frame->linesize[0]);
+	if (frame.data[1] == 0) {
+		if (frame.data[0]) {
+			ASSERT(fmt.GetFrameSize() >= frame.linesize[0]);
+			data.SetCount(frame.linesize[0], 0);
+			memcpy(data.begin(), frame.data[0], frame.linesize[0]);
 		}
 	}
 	// Planar data
@@ -204,23 +204,29 @@ void FfmpegMedia::CopyFramePixels(const AVFrame& f, Vector<byte>& data) {
 		byte* srcn[AV_NUM_DATA_POINTERS];
 		memset(srcn, 0, sizeof(srcn));
 		
+		int var_size =
+			fmt.IsVideo() ?
+				fmt.vid.GetPackedSingleSize() :
+				fmt.aud.GetPackedSingleSize();
+		int frame_sz = fmt.GetFrameSize();
+		
 		if (0) {
-			LOG("time_pos:     " << time_pos);
+			//LOG("time_pos:     " << time_pos);
 			LOG("frame-sz:     " << frame_sz);
 			LOG("fmt:          " << fmt.ToString());
-			LOG("f-nb-samples: " << frame->nb_samples);
-			LOG("f-channels:   " << frame->channels);
+			LOG("f-nb-samples: " << frame.nb_samples);
+			LOG("f-channels:   " << frame.channels);
 			if (0) __BREAK__
 		}
 		
 		data.SetCount(frame_sz, 0);
 		byte* dst = data.Begin();
 		
-		for(int i = 0; i < frame->channels; i++)
-			srcn[i] = frame->data[i];
+		for(int i = 0; i < frame.channels; i++)
+			srcn[i] = frame.data[i];
 		
-		for (int i = 0; i < frame->nb_samples; i++) {
-			for(int j = 0; j < frame->channels; j++) {
+		for (int i = 0; i < frame.nb_samples; i++) {
+			for(int j = 0; j < frame.channels; j++) {
 				byte*& src = srcn[j];
 				for(int k = 0; k < var_size; k++)
 					*dst++ = *src++;
@@ -231,9 +237,9 @@ void FfmpegMedia::CopyFramePixels(const AVFrame& f, Vector<byte>& data) {
 	
 }
 
-ImgConvContext FfmpegMedia::GetImgConvContext(AVCodecContext& ctx) {
+FfmpegMedia::ImgConvContext FfmpegMedia::GetImgConvContext(AVCodecContext& ctx, Size sz) {
 	return sws_getContext(
-		sz.cx, sz.cy, ctx.pix_fmt,
+		sz.cx, sz.cy, ctx->pix_fmt,
 		sz.cx, sz.cy, AV_PIX_FMT_RGBA,
 		SWS_FAST_BILINEAR, NULL, NULL, NULL);
 }
@@ -250,7 +256,7 @@ void FfmpegMedia::DeleteImgConvContext(ImgConvContext ctx) {
 	}
 }
 
-void FfmpegMedia::FreeData(void*& data, int& len) {
+void FfmpegMedia::FreeData(uint8_t*& data, int& len) {
 	if (len) {
 		av_free(data);
 		data = 0;
@@ -261,13 +267,12 @@ void FfmpegMedia::FreeData(void*& data, int& len) {
 void FfmpegMedia::Frame::Init(const VideoFormat& vid_fmt) {
 	if (!video_dst_bufsize) {
 		Size sz = vid_fmt.GetSize();
-		
-	    video_dst_bufsize = Backend::CreateImage(video_dst_data, video_dst_linesize, sz);
+		video_dst_bufsize = FfmpegMedia::CreateImage(video_dst_data, video_dst_linesize, sz);
 	}
 }
 
 void FfmpegMedia::Frame::Clear() {
-	Backend::FreeData((void*)video_dst_data[0], video_dst_bufsize);
+	FfmpegMedia::FreeData(video_dst_data[0], video_dst_bufsize);
 }
 
 void FfmpegMedia::Frame::Process(double time_pos, AVFrame* frame, bool vflip, const VideoFormat& vid_fmt, ImgConvContext img_convert_ctx) {
@@ -303,6 +308,8 @@ bool FfmpegMedia::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_
 	if (!video_dst_bufsize)
 		return false;
 	
+	TODO
+	#if 0
 	glBindTexture (GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -313,6 +320,7 @@ bool FfmpegMedia::Frame::PaintOpenGLTexture(int texture, const VideoFormat& vid_
 		vid_fmt.size.cy,
 		0, GL_RGBA, GL_UNSIGNED_BYTE,
 		video_dst_data[0]);
+	#endif
 	
 	return true;
 }

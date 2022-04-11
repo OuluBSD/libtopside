@@ -49,6 +49,13 @@ GFX_EXCPLICIT_INITIALIZE_CLASS(FramebufferT)
 
 #endif
 
+#ifdef flagOGL
+template <>
+void FramebufferT<X11OglGfx>::DrawFill(const byte* mem, int sz) {
+	Panic("Not implemented");
+}
+#endif
+
 template <class Gfx>
 void FramebufferT<Gfx>::DrawFill(const byte* mem, int sz) {
 	Panic("Not implemented");

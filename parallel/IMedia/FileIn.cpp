@@ -92,7 +92,7 @@ template <class Backend>
 void FileInputT<Backend>::ClearPacket() {
 	if (pkt) {
 		ClearPacketData();
-		Backend::DeletePacket(&pkt);
+		Backend::DeletePacket(pkt);
 		pkt = 0;
 	}
 	else {
@@ -172,7 +172,7 @@ bool FileInputT<Backend>::Open() {
 	if (has_video) {
 		video_open = v.OpenDevice();
 		if (video_open)
-			vframe.Init(*v.codec_ctx);
+			vframe.Init(v.codec_ctx);
 	}
 	
 	InitPacket();
@@ -338,7 +338,7 @@ int FileChannelT<Backend>::DecodePacket(AVPacket& pkt, int *got_frame) {
     *got_frame = 0;
         
     // Decode frame
-    ret = Backend::SendPacket(codec_ctx, &pkt);
+    ret = Backend::SendPacket(codec_ctx, pkt);
     if (ret < 0) {
         is_open = false;
         errstr = "Eof in packet decoding";
@@ -406,13 +406,13 @@ bool FileChannelT<Backend>::OpenVideo(AVFormatContext* file_fmt_ctx, Format& fmt
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
-	stream_i = FindVideoStream(*file_fmt_ctx);
+	stream_i = Backend::FindVideoStream(*file_fmt_ctx);
 	if (stream_i == -1) {
 		errstr = "did not find video stream";
 		return false;
 	}
 	
-	AVStream& vstream = Backend::GetStream(file_fmt_ctx, stream_i);
+	AVStream& vstream = Backend::GetStream(*file_fmt_ctx, stream_i);
 	AVCodecParameters& vcodec = Backend::GetParams(vstream);
 	
 	double fps = Backend::GetVideoFPS(vstream);
@@ -437,13 +437,13 @@ bool FileChannelT<Backend>::OpenAudio(AVFormatContext* file_fmt_ctx, Format& fmt
 	
 	this->file_fmt_ctx = file_fmt_ctx;
 	
-	stream_i = FindAudioStream(*file_fmt_ctx);
+	stream_i = Backend::FindAudioStream(*file_fmt_ctx);
 	if (stream_i == -1) {
 		errstr = "did not find video stream";
 		return false;
 	}
 	
-	AVStream& s = Backend::GetStream(file_fmt_ctx, stream_i);
+	AVStream& s = Backend::GetStream(*file_fmt_ctx, stream_i);
 	AVCodecParameters& c = Backend::GetParams(s);
 	SoundSample::Type sample = Backend::GetAudioSampleType(c);
 	
@@ -462,7 +462,7 @@ bool FileChannelT<Backend>::OpenDevice() {
 		return false;
 	
 	// Find the decoder for the stream
-	if (!Backend::FindDecoder(file_fmt_ctx, codec, stream_i)) {
+	if (!Backend::FindDecoder(*file_fmt_ctx, codec, stream_i)) {
 		errstr = "unsupported codec";
 		is_open = false;
 		return false;
@@ -558,7 +558,7 @@ void AudioFrameQueueT<Backend>::FillAudioBuffer(double time_pos, AVFrame* frame)
 	RTLOG("AudioFrameQueueT::FillAudioBuffer: rendering packet " << offset.ToString() << ", " << time_pos);
 	p->Set(fmt, time_pos);
 	
-	Backend::CopyFramePixels(*frame, p->Data());
+	Backend::CopyFramePixels(fmt, *frame, p->Data());
 }
 
 
@@ -626,7 +626,7 @@ void VideoFrameQueueT<Backend>::Init(AVCodecContext& ctx) {
 	VideoFormat& vfmt = fmt;
 	Size sz = vfmt.GetSize();
 	
-	img_convert_ctx = Backend::GetImgConvContext(ctx);
+	img_convert_ctx = Backend::GetImgConvContext(ctx, sz);
 }
 
 /*

@@ -249,9 +249,9 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	XSync(display, False);
 	
 	
-	dev.ogl.SetNative(dev.display, dev.win);
+	dev.ogl.SetNative(dev.display, dev.win, 0, 0);
 	
-	if (!dev.ogl.Open()) {
+	if (!dev.ogl.Open(Size(width, height), 4)) {
 		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}
@@ -286,7 +286,7 @@ void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
-bool ScrX11Glx::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, PacketValue& p) {
+bool ScrX11Glx::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, const Packet& p) {
 	return dev.ogl.Recv(ch_i, p);
 }
 

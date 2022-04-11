@@ -353,6 +353,10 @@ typedef enum : byte {
 	#endif
 	#endif
 	
+	#ifdef flagFFMPEG
+	flagFFMPEG_ATOM_TYPE_LIST
+	#endif
+	
 	#undef ATOM_TYPE
 	
 	#define SERIAL_TYPE(x) x,

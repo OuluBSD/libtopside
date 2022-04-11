@@ -95,10 +95,10 @@ protected:
 	friend FileInput;
 	
 	AVFormatContext* file_fmt_ctx = NULL;
-	AVCodecContext* codec_ctx = NULL;
-	AVCodecParserContext *parser = NULL;
-	AVFrame *frame = NULL;
-	AVCodec* codec = NULL;
+	AVCodecContext codec_ctx = NULL;
+	AVCodecParserContext parser = NULL;
+	AVFrame* frame = NULL;
+	AVCodec codec = NULL;
 	double frame_pos_time = 0;
 	int stream_i = -1;
 	bool is_open = false;

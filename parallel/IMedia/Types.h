@@ -81,12 +81,12 @@ struct FfmpegT {
 	using AVFormatContext = ::AVFormatContext;
 	using AVCodecParserContext = ::AVCodecParserContext*;
 	using AVCodecParameters = ::AVCodecParameters;
-	using AVCodec = ::AVCodec;
+	using AVCodec = ::AVCodec*;
 	using AVPacket = ::AVPacket;
 	using AVStream = ::AVStream;
 	using AVDictionary = ::AVDictionary;
 	using AVSampleFormat = ::AVSampleFormat;
-	using ImgConvContext = struct ::SwsContex*;
+	using ImgConvContext = struct ::SwsContext*;
 	
 	struct Thread {
 		
@@ -117,30 +117,31 @@ struct FfmpegMedia : FfmpegT<FfmpegMedia> {
 	static AVPacket* NewPacket();
 	static void UnrefPacket(AVPacket* p);
 	static void DeletePacket(AVPacket* p);
-	static AVFrame* NewFrame();AVSampleFormat	static void DeletePacket(AVFrame* f);
+	static AVFrame* NewFrame();
+	static void DeletePacket(AVFrame* f);
 	static void CloseCodecParserContext(AVCodecParserContext& ctx);
 	static void CloseCodecContext(AVCodecContext& ctx);
-	static int SendPacket(AVFormatContext& ctx, const AVPacket& p);
-	static int ReceiveFrame(AVFormatContext& ctx, AVFrame& f);
+	static int SendPacket(AVCodecContext& ctx, const AVPacket& p);
+	static int ReceiveFrame(AVCodecContext& ctx, AVFrame& f);
 	static int FindVideoStream(AVFormatContext& ctx);
 	static int FindAudioStream(AVFormatContext& ctx);
 	static AVStream& GetStream(AVFormatContext& ctx, int i);
 	static AVCodecParameters& GetParams(AVStream& s);
 	static double GetVideoFPS(const AVStream& s);
 	static Size GetFrameSize(const AVCodecParameters& c);
-	static LightSampleFD GetVideoSampleType(const AVCodecParameters& c);
+	static LightSampleFD::Type GetVideoSampleType(const AVCodecParameters& c);
 	static int GetChannels(const AVCodecParameters& c);
 	static int GetSampleRate(const AVCodecParameters& c);
 	static int GetFrequency(const AVCodecParameters& c);
-	static SoundSample GetAudioSampleType(const AVCodecParameters& c);
-	static bool InitParser(AVCodec& c), AVCodecParserContext& ctx;
+	static SoundSample::Type GetAudioSampleType(const AVCodecParameters& c);
+	static bool InitParser(AVCodec& c, AVCodecParserContext& ctx);
 	static bool FindDecoder(AVFormatContext& ctx, AVCodec& c, int stream_i);
-	static AVCodecContext* CreateCodecContext(AVCodec& c);
-	static void CopyFramePixels(const AVFrame& f, Vector<byte>& data);
-	static ImgConvContext GetImgConvContext(AVCodecContext& ctx);
+	static AVCodecContext CreateCodecContext(AVCodec& c);
+	static void CopyFramePixels(const Format& fmt, const AVFrame& f, Vector<byte>& data);
+	static ImgConvContext GetImgConvContext(AVCodecContext& ctx, Size sz);
 	static int CreateImage(uint8_t *video_dst_data[4], int video_dst_linesize[4], Size sz);
 	static void DeleteImgConvContext(ImgConvContext ctx);
-	static void FreeData(void*& data, int& len);
+	static void FreeData(uint8_t*& data, int& len);
 	
 };
 #endif

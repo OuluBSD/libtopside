@@ -84,7 +84,7 @@ public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
-	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer& rend, SystemFrameBuffer& fb);
+	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBuffer* fb);
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool ProcessPacket(PacketValue& in, PacketValue& out);
