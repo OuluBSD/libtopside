@@ -128,6 +128,16 @@ bool HalSdl2::AudioSinkDevice_ProcessPacket(NativeAudioSinkDevice& dev, AtomBase
 	return true;
 }
 
+bool HalSdl2::AudioSinkDevice_Recv(NativeAudioSinkDevice& dev, AtomBase&, int, const Packet&) {
+	return true;
+}
+
+void HalSdl2::AudioSinkDevice_Finalize(NativeAudioSinkDevice& dev, AtomBase&, RealtimeSourceConfig&) {
+	
+}
+
+
+
 
 
 
@@ -198,12 +208,27 @@ void HalSdl2::ContextBase_DetachContext(NativeContextBase& ctx, AtomBase& a, Ato
 		other.SetDependency(AtomBaseRef());
 }
 
+bool HalSdl2::ContextBase_Recv(NativeContextBase& ctx, AtomBase&, int, const Packet&) {
+	return true;
+}
+
+void HalSdl2::ContextBase_Finalize(NativeContextBase& ctx, AtomBase&, RealtimeSourceConfig&) {
+	
+}
+
+
+	
+
 
 
 
 
 
 bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a, const Script::WorldState& ws) {
+	
+	if (!dev.accel.Initialize(a, ws))
+		return false;
+	
 	auto ev_ctx = a.GetSpace()->template FindNearestAtomCast<Sdl2ContextBase>(1);
 	ASSERT(ev_ctx);
 	if (!ev_ctx) {RTLOG("error: could not find SDL2 context"); return false;}
@@ -240,9 +265,9 @@ bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBas
 	
 	HiValue& data = a.UserData();
 	Size screen_sz(data["cx"], data["cy"]);
-	bool is_fullscreen = data["fullscreen"];
-	bool is_sizeable = data["sizeable"];
-	bool is_maximized = data["maximized"];
+	int is_fullscreen = data["fullscreen"];
+	int is_sizeable = data["sizeable"];
+	int is_maximized = data["maximized"];
 	String title = data["title"];
 	
 	// Window
@@ -261,17 +286,20 @@ bool HalSdl2::CenterVideoSinkDevice_PostInitialize(NativeVideoSink& dev, AtomBas
     // Renderer
     int fb_stride = 3;
 	
-	SDL_Texture* fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
-	if (!fb) {
+	dev.fb = SDL_CreateTexture(dev.rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
+	if (!dev.fb) {
 		LOG("error: couldn't create framebuffer texture");
 		return false;
 	}
 	
-	SDL_SetRenderTarget(dev.rend, fb);
+	SDL_SetRenderTarget(dev.rend, dev.fb);
 	
-	auto& rend_fb = dev.fb;
-	rend_fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
-	rend_fb.SetWindowFbo();
+	dev.accel.SetNative(dev.display, dev.win, dev.rend, dev.fb);
+	
+	if (!dev.accel.Open(screen_sz, fb_stride)) {
+		LOG("HalSdl2::CenterVideoSinkDevice_PostInitialize: error: could not open opengl atom");
+		return false;
+	}
 	
 	if (is_fullscreen)
 		SDL_SetWindowFullscreen(dev.win, SDL_WINDOW_FULLSCREEN);
@@ -289,6 +317,8 @@ void HalSdl2::CenterVideoSinkDevice_Stop(NativeVideoSink& dev, AtomBase& a) {
 }
 
 void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase& a) {
+	dev.accel.Uninitialize();
+	
 	if (dev.rend) {
 		SDL_DestroyRenderer(dev.rend);
 		dev.rend = 0;
@@ -299,8 +329,27 @@ void HalSdl2::CenterVideoSinkDevice_Uninitialize(NativeVideoSink& dev, AtomBase&
 	}
 }
 
+bool HalSdl2::CenterVideoSinkDevice_Recv(NativeVideoSink& dev, AtomBase&, int ch_i, const Packet& p) {
+	return dev.accel.Recv(ch_i, p);
+}
+
+void HalSdl2::CenterVideoSinkDevice_Finalize(NativeVideoSink& dev, AtomBase&, RealtimeSourceConfig& cfg) {
+	dev.accel.Render(cfg);
+}
+
 bool HalSdl2::CenterVideoSinkDevice_ProcessPacket(NativeVideoSink& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	TODO
+	Format fmt = in.GetFormat();
+	if (fmt.IsVideo()) {
+		const Vector<byte>& pixmap = in.Data();
+		VideoFormat& vfmt = fmt;
+		int frame_sz = vfmt.GetFrameSize();
+		ASSERT(pixmap.GetCount() == frame_sz);
+		
+		int width = vfmt.res[0];
+		int height = vfmt.res[1];
+		
+	}
+	return true;
 }
 
 

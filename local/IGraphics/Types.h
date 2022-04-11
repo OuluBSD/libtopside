@@ -57,11 +57,19 @@ GFX_RENDSYS_LIST
 #undef GFX_CLS
 
 
-
+struct CpuGfx {
+	static const bool is_vendor_agnostic = true;
+	
+	using Dev				= CpuGfx;
+	
+	
+};
 
 
 template <class Backend>
-struct CpuGfxT {
+struct CpuGfxT : CpuGfx {
+	static const bool is_vendor_agnostic = false;
+	
 	using SoftRend			= SoftRendT<Backend>;
 	using SoftCompiler		= SoftCompilerT<Backend>;
 	using SoftShader		= SoftShaderT<Backend>;
@@ -94,9 +102,6 @@ struct CpuGfxT {
 			return texture[active_texture];
 		}
 	};
-	
-	static Thread& Local();
-	static SoftRend& Rend();
 	
 	using NativeTexture = uint32;
 	using NativeShader = SoftShader;
@@ -190,12 +195,18 @@ struct CpuGfxT {
 	static void BeginRender();
 	static void EndRender();
 	
-	static Serial::VideoFormat& GetFormat(Parallel::Format& fmt);
+	static Serial::VideoFormat& GetFormat(Parallel::Format& fmt) {return fmt.vid;}
+	
+	
+	static Thread& Local();
+	static SoftRend& Rend();
 	
 };
 
 #ifdef flagOGL
 struct OglGfx {
+	static const bool is_vendor_agnostic = true;
+	
 	using NativeTexture = GLuint;
 	using NativeShader = GLuint;
 	using NativeColorBuffer = GLuint;
@@ -298,6 +309,8 @@ struct OglGfx {
 
 #ifdef flagPOSIX
 struct X11Gfx {
+	static const bool is_vendor_agnostic = false;
+	
 	using NativeDisplay			= ::Display*;
 	using NativeWindow			= ::Window;
 	using NativeRenderer		= void*;
@@ -322,6 +335,8 @@ struct X11OglGfx : OglGfx, X11Gfx {
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
+	static const bool is_vendor_agnostic = false;
+	
 	using NativeGLContext		= ::GLXContext;
 	
 	static void DeleteContext(NativeGLContext& ctx);
@@ -334,6 +349,8 @@ struct X11OglGfx : OglGfx, X11Gfx {
 
 #ifdef flagSDL2
 struct SdlGfx {
+	static const bool is_vendor_agnostic = false;
+	
 	using NativeDisplay			= void*;
 	using NativeWindow			= SDL_Window*;
 	using NativeRenderer		= SDL_Renderer*;
@@ -382,6 +399,8 @@ struct SdlGfx {
 };*/
 
 struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
+	static const bool is_vendor_agnostic = false;
+	
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
@@ -392,6 +411,8 @@ struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
 
 #ifdef flagOGL
 struct SdlOglGfx : OglGfx, SdlGfx {
+	static const bool is_vendor_agnostic = false;
+	
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS

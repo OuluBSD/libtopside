@@ -48,7 +48,7 @@ struct ScreenSinkDeviceT : ScrSinkDevice {
 		return true;
 	}
 
-	bool Recv(int sink_ch, PacketValue& in) override {
+	bool Recv(int sink_ch, const Packet& in) override {
 		return Scr::SinkDevice_Recv(dev, *this, sink_ch, in);
 	}
 

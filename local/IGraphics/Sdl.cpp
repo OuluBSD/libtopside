@@ -12,7 +12,35 @@ void SdlOglGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRendere
 #endif
 
 void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
-	SDL_RenderCopy(r, color_buf.GetTex(), NULL, NULL);
+	const auto& fb = color_buf.GetTex();
+	
+	
+	#if 0
+	{
+		ASSERT(fb);
+		uint32 fmt = 0;
+		int access, w = 0, h = 0;
+		if (SDL_QueryTexture(fb, &fmt, &access, &w, &h) < 0 || w == 0 || h == 0)
+			return;
+		SDL_Surface* surf = 0;
+		SDL_Rect r {0, 0, w, h};
+		if (SDL_LockTextureToSurface(fb, &r, &surf) < 0 || !surf)
+			return;
+		int stride = surf->format->BytesPerPixel;
+		int pitch = surf->pitch;
+		byte* pixels = (byte*)surf->pixels;
+		int sz = h * pitch;
+		memset(pixels, Random(0x100), sz);
+		SDL_UnlockTexture(fb);
+	}
+	#endif
+	
+	
+	int ret = SDL_RenderCopy(r, fb, NULL, NULL);
+	if (ret) {
+		LOG("SdlCpuGfx::ActivateNextFrame: error: " << SDL_GetError());
+		ASSERT(0);
+	}
 	SDL_RenderPresent(r);
 }
 
@@ -23,7 +51,9 @@ Size SdlGfx::GetWindowSize(NativeWindow& win) {
 }
 
 bool SdlGfx::CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend) {
-	return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &rend) >= 0;
+	Panic("deprecated");
+	NEVER();
+	//return SDL_CreateWindowAndRenderer(screen_sz.cx, screen_sz.cy, flags, &win, &rend) >= 0;
 }
 
 void SdlGfx::SetTitle(NativeDisplay&, NativeWindow& win, String title) {

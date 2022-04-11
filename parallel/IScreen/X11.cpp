@@ -143,10 +143,10 @@ void ScrX11::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
-bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, PacketValue& in) {
-	Format fmt = in.GetFormat();
+bool ScrX11::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {
+	Format fmt = in->GetFormat();
 	if (fmt.IsVideo()) {
-		const Vector<byte>& pixmap = in.Data();
+		const Vector<byte>& pixmap = in->Data();
 		VideoFormat& vfmt = fmt;
 		int frame_sz = vfmt.GetFrameSize();
 		ASSERT(pixmap.GetCount() == frame_sz);

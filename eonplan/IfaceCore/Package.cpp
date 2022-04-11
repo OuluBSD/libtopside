@@ -590,7 +590,7 @@ bool Package::Export() {
 			}
 			
 			if (have_recv_finalize) {
-				fout << "\tbool Recv(int sink_ch, PacketValue& in) override {\n";
+				fout << "\tbool Recv(int sink_ch, const Packet& in) override {\n";
 				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
 					String cls = c.nat_inherited.GetKey(i);
 					String name = c.nat_inherited[i];
@@ -692,7 +692,7 @@ bool Package::Export() {
 				fout << "static void " << c.name << "_DetachContext(" << nat_this_ << "AtomBase& a, AtomBase& other);\n";
 			}
 			if (have_recv_finalize) {
-				fout << "static bool " << c.name << "_Recv(" << nat_this_ << "AtomBase&, int, PacketValue&);\n";
+				fout << "static bool " << c.name << "_Recv(" << nat_this_ << "AtomBase&, int, const Packet&);\n";
 				fout << "static void " << c.name << "_Finalize(" << nat_this_ << "AtomBase&, RealtimeSourceConfig&);\n";
 			}
 			
@@ -872,7 +872,7 @@ bool Package::Export() {
 				}
 				
 				if (have_recv_finalize) {
-					fout << "bool " << cls << "::" << c.name << "_Recv(" << nat_this_ << "AtomBase& a, int sink_ch, PacketValue& in) {\n";
+					fout << "bool " << cls << "::" << c.name << "_Recv(" << nat_this_ << "AtomBase& a, int sink_ch, const Packet& in) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 					

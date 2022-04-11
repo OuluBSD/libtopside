@@ -27,20 +27,8 @@ struct FramebufferT : GfxFramebuffer {
 #endif
 
 
-template <class Gfx>
-struct InputStateT : GfxInputState {
-	RTTI_DECL1(InputStateT, GfxInputState)
-	using Base = InputStateT<Gfx>;
-	using Buffer = typename Gfx::Buffer;
-	
-	const Buffer* in_buf = 0;
-	
-	void Clear() {
-		this->GfxInputState::Clear();
-		in_buf = 0;
-	}
-	
-};
+template <class Gfx> struct InputStateT;
+
 
 template <class Gfx>
 struct FramebufferT : GfxFramebuffer {
@@ -96,7 +84,7 @@ struct FramebufferT : GfxFramebuffer {
 	void Enter() override {ASSERT(!locked); locked = true;}
 	void Leave() override {ASSERT(locked);  locked = false;}
 	byte* GetIterator(int x, int y) override {Panic("Not usable: OglFramebuffer::GetIterator"); return 0;}
-	void DrawFill(const byte* mem, int sz) override {}
+	void DrawFill(const byte* mem, int sz) override;
 	
 	void Bind();
 	void Clear();
@@ -111,6 +99,38 @@ struct FramebufferT : GfxFramebuffer {
 	
 };
 
+/*template <class Gfx>
+struct StandaloneFramebufferT : FramebufferT<Gfx> {
+	using SystemFrameBuffer = typename Gfx::SystemFrameBuffer;
+	using Base = FramebufferT<Gfx>;
+	
+	SystemFrameBuffer sys_buf;
+	
+	
+	RTTI_DECL1(StandaloneFramebufferT, Base);
+	
+	void Init(Size sz, int stride, BinarySample::Type t) {
+		ASSERT(t == BinarySample::U8_LE);
+		Base::Init(sys_buf, sz.cx, sz.cy, stride);
+	}
+	
+};*/
+
+template <class Gfx>
+struct InputStateT : GfxInputState {
+	RTTI_DECL1(InputStateT, GfxInputState)
+	using Base = InputStateT<Gfx>;
+	using Buffer = typename Gfx::Buffer;
+	
+	const Buffer* in_buf = 0;
+	//One<StandaloneFramebufferT<Gfx>> fb_for_rawdata;
+	
+	void Clear() {
+		this->GfxInputState::Clear();
+		in_buf = 0;
+	}
+	
+};
 
 
 NAMESPACE_PARALLEL_END

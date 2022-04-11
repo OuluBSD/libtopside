@@ -49,6 +49,10 @@ GFX_EXCPLICIT_INITIALIZE_CLASS(FramebufferT)
 
 #endif
 
+template <class Gfx>
+void FramebufferT<Gfx>::DrawFill(const byte* mem, int sz) {
+	Panic("Not implemented");
+}
 
 
 

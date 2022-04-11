@@ -122,6 +122,7 @@ bool BufferT<Gfx>::SetLoopback(String loopback_str) {
 template <class Gfx>
 bool BufferT<Gfx>::InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
 	RTLOG("InitializeTexture: " << sz.ToString() << ", " << HexStr((void*)data) << ", " << len);
+	TODO
 	#if 0
 	UpdateTexBuffers();
 	
@@ -133,6 +134,7 @@ bool BufferT<Gfx>::InitializeTexture(Size sz, int channels, Sample sample, const
 template <class Gfx>
 bool BufferT<Gfx>::InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
 	RTLOG("InitializeCubemap: " << sz.ToString());
+	TODO
 	#if 0
 	is_cubemap = true;
 	
@@ -155,6 +157,7 @@ bool BufferT<Gfx>::InitializeVolume(Size3 sz, int channels, Sample sample, const
 	return true;
 }
 
+#if 0
 template <class Gfx>
 void BufferT<Gfx>::ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len) {
 	TODO
@@ -188,9 +191,9 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 	#if 0
 	GLenum type		= GL_TEXTURE_3D;
 	
-	ASSERT(fb_size.cx == sz.cx && fb_size.cy == sz.cy);
-	GLuint& color_buf = this->color_buf[0];
-	ASSERT(color_buf > 0);
+	ASSERT(fb.size.cx == sz.cx && fb.size.cy == sz.cy);
+	auto& color_buf = fb.color_buf[0];
+	ASSERT(color_buf);
 	//int intl_fmt = GetGfxChannelFormat(channels);
 	
 	Gfx::BindTexture (type, color_buf);
@@ -202,14 +205,13 @@ void BufferT<Gfx>::ReadTexture(Size3 sz, int channels, Sample sample, const Vect
 		sz.cy,
 		sz.cz,
 		//0, intl_fmt, GL_UNSIGNED_BYTE,
-		0, fb_fmt, fb_type,
+		0, fb.fmt, fb.type,
 		data.Begin());
 	
-	TexFlags(type, fb_filter, fb_wrap);
+	TexFlags(type, fb.filter, fb.wrap);
 	#endif
 }
 
-#if 0
 
 template <class Gfx>
 void BufferT<Gfx>::ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5) {
@@ -1038,18 +1040,23 @@ void BufferT<Gfx>::StoreOutputLink(InternalPacketData& v) {
 	static_assert(sizeof(v.u32) == sizeof(uint32), "Unexpected GLuint size");
 	
 	v.SetText("gfxbuf");
-	v.ptr = this;
+	v.ptr = static_cast<GfxBuffer*>(this);
 }
 
 template <class Gfx>
 bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v) {
 	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
 		//LOG("LoadOutputLink: " << name << " #" << in_id);
-		
+		GfxBuffer* gbuf = (GfxBuffer*)v.ptr;
+		Buffer* buf = CastPtr<Buffer>(gbuf);
+		if (!buf) {
+			ASSERT_(0, "Buffer's Gfx type differs");
+			return false;
+		}
 		ASSERT(v.ptr);
 		InputState& in = rt.inputs[in_id];
 		in.id = in_id;
-		in.in_buf = (Buffer*)v.ptr;
+		in.in_buf = buf;
 		
 		ASSERT(sz.cx > 0 && sz.cy > 0);
 		
@@ -1062,6 +1069,66 @@ bool BufferT<Gfx>::LoadOutputLink(Size3 sz, int in_id, const InternalPacketData&
 		
 		return true;
 	}
+	
+	RTLOG("LoadOutputLink: error: unexpected data");
+	return false;
+}
+
+
+
+template <class Gfx>
+bool BufferT<Gfx>::LoadOutputLink(int in_id, const PacketValue& v) {
+	if (in_id == 0) {
+		const Vector<byte>& data = v.GetData();
+		Format fmt = v.GetFormat();
+		if (fmt.IsVideo()) {
+			VideoFormat& vfmt = fmt;
+			int frame_sz = vfmt.GetFrameSize();
+			ASSERT(data.GetCount() == frame_sz);
+			if (data.GetCount() == frame_sz)
+				fb.DrawFill(data.Begin(), frame_sz);
+		}
+	}
+	
+	
+	#if 0
+	if (in_id >= 0 && in_id < GVar::INPUT_COUNT) {
+		//LOG("LoadOutputLink: " << name << " #" << in_id);
+		
+		InputState& in = rt.inputs[in_id];
+		in.id = in_id;
+		if (in.fb_for_rawdata.IsEmpty()) {
+			in.fb_for_rawdata.Create();
+			in.fb_for_rawdata->Init(
+				vfmt.GetSize(),
+				vfmt.GetChannels(),
+				vfmt.GetType(),
+				v.Begin(), v.GetCount());
+		}
+		else {
+			in.fb_for_rawdata->ReadTexture(
+				vfmt.GetSize(),
+				vfmt.GetChannels(),
+				vfmt.GetType(),
+				v.Begin(), v.GetCount());
+		}
+		in.in_buf = &*in.fb_for_rawdata;
+		
+		
+		Size3 sz = vfmt.GetSize();
+		ASSERT(sz.cx > 0 && sz.cy > 0);
+		
+		if (fb.is_cubemap)
+			in.type = GVar::CUBEMAP_INPUT;
+		else if (sz.cz > 0)
+			in.type = GVar::VOLUME_INPUT;
+		else
+			in.type = GVar::TEXTURE_INPUT;
+		
+		return true;
+	}
+	#endif
+	
 	
 	RTLOG("LoadOutputLink: error: unexpected data");
 	return false;
@@ -1090,7 +1157,7 @@ void BufferT<Gfx>::SetInputCubemap(int in_id) {
 	in.type = BufferTInput::CUBEMAP;
 	#endif
 }
-	
+
 
 GFX_EXCPLICIT_INITIALIZE_CLASS(BufferT)
 

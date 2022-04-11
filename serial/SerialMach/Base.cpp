@@ -268,7 +268,7 @@ bool PollerLink::ProcessPackets(PacketIO& io) {
 		
 		RTLOG("PollerLink::ProcessPackets: sink #" << sink_ch << ": " << in->ToString());
 		
-		bool b = atom->Recv(sink_ch, *in);
+		bool b = atom->Recv(sink_ch, in);
 		
 		if  ((finalize_on_side && sink_ch > 0/*IsDefaultGfxVal<Gfx>(sink.val->GetFormat().vd.val)*/) ||
 			(!finalize_on_side && sink_ch == 0))

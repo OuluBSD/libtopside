@@ -426,7 +426,7 @@ AtomTypeCls SdlVideoAtomPipe::GetAtomType()
 
 LinkTypeCls SdlVideoAtomPipe::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
 void SdlVideoAtomPipe::Visit(RuntimeVisitor& vis)
@@ -448,7 +448,7 @@ AtomTypeCls SdlVideoAtom::GetAtomType()
 
 LinkTypeCls SdlVideoAtom::GetLinkType()
 {
-	return LINKTYPE(PIPE, PROCESS);
+	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
 void SdlVideoAtom::Visit(RuntimeVisitor& vis)

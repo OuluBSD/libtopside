@@ -9,6 +9,7 @@ PKG(Hal, Hal, H) {
 	COLOR(198, 127, 200)
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(IGraphics)
+	HAVE_RECV_FINALIZE
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
@@ -71,9 +72,11 @@ PKG(Hal, Hal, H) {
 		//VENDOR_CLASS(Renderer, SDL_Renderer*)
 		
 		v->AddStruct("NativeVideoSink")
+			.Add("display",	"void*")
 			.Add("win",		"SDL_Window*")
 			.Add("rend",	"SDL_Renderer*")
-			.Add("fb",		"FramebufferT<SdlCpuGfx>")
+			.Add("fb",		"SDL_Texture*")
+			.Add("accel",	"GfxAccelAtom<SdlCpuGfx>")
 			;
 		
 		// POSIX: GLEW GL GLU

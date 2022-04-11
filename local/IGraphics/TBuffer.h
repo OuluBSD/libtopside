@@ -6,6 +6,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 struct BufferT : GfxBuffer {
+	//static_assert(Gfx::is_vendor_agnostic == true, "For BufferT Gfx template argument should be vendor agnostic");
+	
 	using Base = BufferT<Gfx>;
 	//using BinderIface = typename Gfx::BinderIface;
 	using DataState = DataStateT<Gfx>;
@@ -26,7 +28,7 @@ struct BufferT : GfxBuffer {
 	using Linker = typename Gfx::Linker;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using Sample = GVar::Sample;
-	RTTI_DECL1(BufferT, Base)
+	RTTI_DECL1(BufferT, GfxBuffer)
 	
 	
 	Vector<String>				link_ids;
@@ -76,8 +78,8 @@ struct BufferT : GfxBuffer {
 	bool InitializeTexture(Size sz, int channels, Sample sample, const byte* data, int len);
 	bool InitializeCubemap(Size sz, int channels, Sample sample, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool InitializeVolume(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
-	void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
-	void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
+	//void ReadTexture(Size sz, int channels, Sample sample, const byte* data, int len);
+	//void ReadTexture(Size3 sz, int channels, Sample sample, const Vector<byte>& data);
 	void ReadCubemap(Size sz, int channels, const Vector<byte>& d0, const Vector<byte>& d1, const Vector<byte>& d2, const Vector<byte>& d3, const Vector<byte>& d4, const Vector<byte>& d5);
 	bool Initialize();
 	void RefreshPipeline();
@@ -107,9 +109,10 @@ struct BufferT : GfxBuffer {
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
 	bool LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v);
+	bool LoadOutputLink(int in_id, const PacketValue& v);
 	void SetInputVolume(int in_id);
 	void SetInputCubemap(int in_id);
-		
+	
 };
 
 

@@ -50,6 +50,14 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		return true;
 	}
 
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::AudioSinkDevice_Recv(dev, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::AudioSinkDevice_Finalize(dev, *this, cfg);
+	}
+
 	
 };
 
@@ -90,6 +98,14 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 		if (!Hal::CenterVideoSinkDevice_ProcessPacket(dev, *this, in, out))
 			return false;
 		return true;
+	}
+
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::CenterVideoSinkDevice_Recv(dev, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::CenterVideoSinkDevice_Finalize(dev, *this, cfg);
 	}
 
 	
@@ -140,6 +156,14 @@ struct HalContextBaseT : HalContextBase {
 
 	void DetachContext(AtomBase& a) override {
 		Hal::ContextBase_DetachContext(ctx, *this, a);
+	}
+
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::ContextBase_Recv(ctx, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::ContextBase_Finalize(ctx, *this, cfg);
 	}
 
 	

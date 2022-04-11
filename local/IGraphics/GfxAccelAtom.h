@@ -31,7 +31,8 @@ protected:
 	using NativeDisplay		= typename Gfx::NativeDisplay;
 	using NativeWindow		= typename Gfx::NativeWindow;
 	using NativeRenderer	= typename Gfx::NativeRenderer;
-	using NatFrameBuf		= typename Gfx::NativeFrameBuffer;
+	using NativeFrameBuffer	= typename Gfx::NativeFrameBuffer;
+	using SystemFrameBuffer	= typename Gfx::SystemFrameBuffer;
 	using ValFormat			= typename Gfx::ValFormat;
 	using RendererInfo		= typename Gfx::NativeRendererInfo;
 	using GLContext			= typename Gfx::NativeGLContext;
@@ -41,6 +42,7 @@ protected:
     NativeWindow			win;
     NativeDisplay			display;
     NativeRenderer			nat_rend;
+    SystemFrameBuffer		fb;
 	AtomBase*				ab = NULL;
 	int						fb_stride;
     RendererInfo			rend_info;
@@ -67,7 +69,8 @@ protected:
 	String vtx_path;
 	String library_paths;
 	
-	PacketValue* fb_packet = 0;
+	Packet fb_packet;
+	Packet raw_packet;
 	
 	// requires template specialization
 	void GfxFlags(uint32& flags);
@@ -81,13 +84,13 @@ public:
 	GfxAccelAtom() : ab(0) {desired_rect = RectC(0,0,1280,720);}
 	
 	void SetAtom(AtomBase* ab) {this->ab = ab;}
-	void SetNative(NativeDisplay& display, NativeWindow& window) {win = window; this->display = display;}
+	void SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer& rend, SystemFrameBuffer& fb);
 	
 	bool Initialize(AtomBase& a, const Script::WorldState& ws);
 	bool ProcessPacket(PacketValue& in, PacketValue& out);
 	void Uninitialize();
 	
-	bool Open();
+	bool Open(Size sz, int channels);
 	bool AcceptsOrder() const {return is_user_shader || frag_shdr.GetCount();}
 	bool ImageInitialize();
 	void Close();
@@ -99,7 +102,7 @@ public:
 	void SetTitle(String title);
 	void SetRect(Rect r);
 	void Render(const RealtimeSourceConfig& cfg);
-	bool Recv(int ch_i, PacketValue& p);
+	bool Recv(int ch_i, const Packet& p);
 	SystemDraw& BeginDraw();
 	void CommitDraw();
 	void FrameCopy(const ValFormat& vfmt, const byte* data, int len) {}

@@ -1,6 +1,33 @@
 #include "IGraphics.h"
 
+NAMESPACE_TOPSIDE_BEGIN
+namespace GVar {
+
+GVar::Sample GetSampleFromBinarySample(Parallel::BinarySample::Type t) {
+	int sz = Parallel::BinarySample::GetPackedSingleSize(t);
+	if (Parallel::BinarySample::IsFloating(t)) {
+		if (sz == 4)
+			return SAMPLE_FLOAT;
+	}
+	else {
+		switch (sz) {
+			case 1:	return SAMPLE_U8;
+			case 2:	return SAMPLE_U16;
+			case 4:	return Parallel::BinarySample::IsSigned(t) ? SAMPLE_S32 : SAMPLE_U32;
+			default: break;
+		}
+	}
+	Panic("GetGvarSampleFromBinarySample: conversion failed");
+	NEVER();
+}
+
+}
+NAMESPACE_TOPSIDE_END
+
 NAMESPACE_PARALLEL_BEGIN
+
+
+
 
 
 template <class B>

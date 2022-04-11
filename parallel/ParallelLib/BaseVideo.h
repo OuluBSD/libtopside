@@ -6,6 +6,11 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
+struct BufferWriterBase {
+	
+};
+
+
 class DebugVideoGenerator {
 	using T = byte;
 	
@@ -19,9 +24,11 @@ public:
 	
 	
 	void Play(int frame_offset, PacketValue& p);
+	void Play(int frame_offset, BufferWriterBase& buf);
 	void GenerateNoise(const VideoFormat& fmt);
 	void GenerateSine(const VideoFormat& fmt);
 	uint64 GetMaxOffset() const {return frame.GetCount();}
+	
 	
 };
 
@@ -33,6 +40,7 @@ class VideoGenBase :
 	String					last_error;
 	int						mode = 0;
 	int						preset_i = -1;
+	
 	
 	enum {
 		MODE_NONE,

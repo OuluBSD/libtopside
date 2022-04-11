@@ -216,7 +216,7 @@ HEADER_ACTION(		SdlVideoAtomPipe,	any.video.pipe)
 HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSCREEN,		1)
 HEADER_ARG(			SdlVideoAtomPipe,	reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlVideoAtomPipe,	HINT_PKG,					"AtomDebug")
-HEADER_LINK(		SdlVideoAtomPipe,	PIPE, PROCESS)
+HEADER_LINK(		SdlVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER11(			SdlVideoProgAtom,	Sdl2CenterVideoSinkDevice,		pipe,		CenterVideo,	CenterProg,		CenterReceipt)
 HEADER_ACTION(		SdlVideoProgAtom,	sdl.video.prog)
@@ -231,7 +231,7 @@ HEADER_ACTION(		SdlVideoAtom,		sdl.video)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSCREEN,		1)
 HEADER_ARG(			SdlVideoAtom,		reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlVideoAtom,		HINT_PKG,					"AtomDebug")
-HEADER_LINK(		SdlVideoAtom,		PIPE, PROCESS)
+HEADER_LINK(		SdlVideoAtom,		POLLER_PIPE, PROCESS)
 
 
 

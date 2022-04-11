@@ -38,9 +38,11 @@ struct HalSdl2 {
 	using NativeContextBase = void*;
 	
 	struct NativeVideoSink {
+		void* display;
 		SDL_Window* win;
 		SDL_Renderer* rend;
-		FramebufferT<SdlCpuGfx> fb;
+		SDL_Texture* fb;
+		GfxAccelAtom<SdlCpuGfx> accel;
 	};
 
 	

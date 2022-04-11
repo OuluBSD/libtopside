@@ -7,7 +7,7 @@ static bool SinkDevice_Start(NativeSinkDevice& dev, AtomBase&);
 static void SinkDevice_Stop(NativeSinkDevice& dev, AtomBase&);
 static void SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&);
 static bool SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& in, PacketValue& out);
-static bool SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int, PacketValue&);
+static bool SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int, const Packet&);
 static void SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig&);
 
 	

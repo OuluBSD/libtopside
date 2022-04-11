@@ -58,6 +58,9 @@ typedef enum {
 	SAMPLE_S32,
 } Sample;
 
+Sample GetSampleFromBinarySample(Parallel::BinarySample::Type t);
+
+
 inline int GetSampleSize(Sample s) {
 	switch (s) {
 		case SAMPLE_FLOAT:	return 4;

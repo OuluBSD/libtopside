@@ -34,6 +34,10 @@ void DebugVideoGenerator::Play(int frame_offset, PacketValue& p) {
 	}
 }
 
+void Play(int frame_offset, BufferWriterBase& buf) {
+	TODO
+}
+
 void DebugVideoGenerator::GenerateNoise(const VideoFormat& fmt) {
 	ASSERT(BinarySample::GetPackedSingleSize<T>() == sizeof(T));
 	double pan_loop_seconds = 0.5;
@@ -151,7 +155,6 @@ VideoGenBase::VideoGenBase() {
 
 bool VideoGenBase::Initialize(const Script::WorldState& ws) {
 	String mode = ws.Get(".mode");
-	
 	if (mode == "sine")
 		gen.GenerateSine(fmt);
 	else
@@ -181,6 +184,7 @@ bool VideoGenBase::ProcessPacket(PacketValue& in, PacketValue& out) {
 	ASSERT(offset < (int64)std::numeric_limits<int>::max());
 	double time = off * fmt.GetFrameSeconds();
 	out.Set(fmt, time);
+	out.ClearDataType(); // remove default InternalPacketData type
 	out.Data().SetCount(frame, 0);
 	gen.Play((int)offset, out);
 	

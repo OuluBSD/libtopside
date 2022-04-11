@@ -25,13 +25,6 @@ void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 template <>
 void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
 	is_sw = true;
-	
-	TODO // not here
-	
-	if (full_screen)	flags |= SDL_WINDOW_FULLSCREEN;
-	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
-	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
-	
 }
 
 #ifdef flagOGL
@@ -66,18 +59,12 @@ bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
 
 template <>
 bool GfxAccelAtom<SdlCpuGfx>::GfxRenderer() {
-	fb_stride = 3;
-	SDL_Texture* fb = SDL_CreateTexture(nat_rend, SDL_PIXELFORMAT_RGB24, SDL_TEXTUREACCESS_STREAMING, screen_sz.cx, screen_sz.cy);
-	if (!fb) {
-		LOG("error: couldn't create framebuffer texture");
-		return false;
-	}
+	ASSERT(fb);
 	
-	SDL_SetRenderTarget(nat_rend, fb);
+	rend.output.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
+	rend.output.SetWindowFbo();
 	
-	auto& rend_fb = rend.GetFramebuffer();
-	rend_fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
-	rend_fb.SetWindowFbo();
+	//buf.fb.Init(fb, screen_sz.cx, screen_sz.cy, fb_stride);
 	
 	return true;
 }
@@ -112,6 +99,13 @@ bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
 
 
 
+template <class Gfx>
+void GfxAccelAtom<Gfx>::SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer& rend, SystemFrameBuffer& fb) {
+	win = window;
+	this->display = display;
+	this->nat_rend = rend;
+	this->fb = fb;
+}
 
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
@@ -185,9 +179,11 @@ bool GfxAccelAtom<Gfx>::Initialize(AtomBase& a, const Script::WorldState& ws) {
 	
 	if (poller) {
 		int sink_count = sink->GetSinkCount();
-		for(int i = 0; i < sink_count; i++)
-			if (IsDefaultGfxVal<Gfx>(sink->GetValue(i).GetFormat().vd.val))
-				poller->SetFinalizeOnSide();
+		if (sink_count > 1) {
+			for(int i = 0; i < sink_count; i++)
+				if (IsDefaultGfxVal<Gfx>(sink->GetValue(i).GetFormat().vd.val))
+					poller->SetFinalizeOnSide();
+		}
 	}
 	else {
 		TODO // check if ok
@@ -202,7 +198,7 @@ void GfxAccelAtom<Gfx>::Uninitialize() {
 }
 
 template <class Gfx>
-bool GfxAccelAtom<Gfx>::Open() {
+bool GfxAccelAtom<Gfx>::Open(Size sz, int channels) {
 	AppFlags& app_flags = GetAppFlags();
 	is_sw = false;
 	is_opengl = false;
@@ -210,15 +206,15 @@ bool GfxAccelAtom<Gfx>::Open() {
 	
 	
 	// Window
-	screen_sz = desired_rect.GetSize();
+	screen_sz = sz;
+	fb_stride = channels;
 	uint32 flags = 0;
 	
 	GfxFlags(flags);
 	
-	if (!Gfx::CreateWindowAndRenderer(screen_sz, flags, win, nat_rend)) {
-		LOG("GfxAccelAtom<Gfx>::Open: error: could not create window and renderer");
-        return false;
-	}
+	ASSERT(win);
+	ASSERT(nat_rend);
+	
 	Gfx::SetTitle(display, win, title);
     
     GfxRenderer();
@@ -293,7 +289,8 @@ bool GfxAccelAtom<Gfx>::ImageInitialize() {
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::Close() {
-	fb_packet = 0;
+	fb_packet.Clear();
+	raw_packet.Clear();
 	
 	if (glcontext) {
 		GetAppFlags().SetOpenGLContextOpen(false);
@@ -358,9 +355,16 @@ template <class Gfx>
 void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 	auto& buf = this->buf;
 	
-	BeginDraw();
-	
-	if (fb_packet) {
+	if (raw_packet) {
+		Format fmt = raw_packet->GetFormat();
+		const auto& vfmt = Gfx::GetFormat(fmt);
+		const Vector<byte>& data = raw_packet->GetData();
+		BeginDraw();
+		FrameCopy(vfmt, (const byte*)data.Begin(), data.GetCount());
+		CommitDraw();
+		raw_packet.Clear();
+	}
+	else if (fb_packet) {
 		Format fmt = fb_packet->GetFormat();
 		const auto& vfmt = Gfx::GetFormat(fmt);
 		const InternalPacketData& d = fb_packet->GetData<InternalPacketData>();
@@ -368,25 +372,28 @@ void GfxAccelAtom<Gfx>::Render(const RealtimeSourceConfig& cfg) {
 		BeginDraw();
 		FrameCopy(vfmt, (const byte*)d.ptr, d.count);
 		CommitDraw();
-		fb_packet = 0;
+		fb_packet.Clear();
 	}
 	else {
+		BeginDraw();
 		buf.Process(cfg);
+		CommitDraw();
 	}
 	
-	CommitDraw();
+	
 }
 
 template <class Gfx>
-bool GfxAccelAtom<Gfx>::Recv(int ch_i, PacketValue& p) {
+bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
+	PacketValue& pv = *p;
 	auto& buf = this->buf;
 	bool succ = true;
-	Format fmt = p.GetFormat();
+	Format fmt = pv.GetFormat();
 	if (IsDefaultGfxVal<Gfx>(fmt.vd.val)) {
 		const auto& vfmt = Gfx::GetFormat(fmt);
 		
-		if (p.IsData<InternalPacketData>()) {
-			const InternalPacketData& d = p.GetData<InternalPacketData>();
+		if (pv.IsData<InternalPacketData>()) {
+			const InternalPacketData& d = pv.GetData<InternalPacketData>();
 			
 			if (!d.ptr) {
 				ASSERT_(0, "no pointer in InternalPacketData");
@@ -396,22 +403,25 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, PacketValue& p) {
 				buf.SetDataStateOverride(&sd);
 			}
 			else if (d.IsText("gfxvector")) {
-				fb_packet = &p;
+				fb_packet = p;
 			}
 			else if (d.IsText("gfxbuf")) {
 				Size3 sz = vfmt.GetSize();
 				int base = ab->GetSink()->GetSinkCount() > 1 ? 1 : 0;
-				if (p.IsData<InternalPacketData>()) {
+				if (pv.IsData<InternalPacketData>()) {
 					succ = buf.LoadOutputLink(sz, ch_i - base, d);
 				}
 				else {
-					RTLOG("Screen::Recv: cannot handle packet: " << p.ToString());
+					RTLOG("Screen::Recv: cannot handle packet: " << pv.ToString());
 				}
 			}
 			else {
 				DUMP(d.GetText());
 				TODO // some old class pushing ptr without txt?
 			}
+		}
+		else {
+			raw_packet = p;
 		}
 	}
 	else if (fmt.IsOrder() && AcceptsOrder()) {
