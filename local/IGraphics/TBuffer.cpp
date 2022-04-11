@@ -676,6 +676,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 	
 	else if (var == VAR_COMPAT_MOUSE) {
 		if (env) {
+			#ifdef flagSCREEN
 			Point& mouse_drag = env->Set<Point>(MOUSE_TOYCOMPAT_DRAG);
 			Point& mouse_click = env->Set<Point>(MOUSE_TOYCOMPAT_CLICK);
 			Gfx::Uniform4f(uindex,
@@ -683,6 +684,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 				(float)mouse_click.y,
 				(float)mouse_drag.x,
 				(float)mouse_drag.y);
+			#endif
 		}
 	}
 	

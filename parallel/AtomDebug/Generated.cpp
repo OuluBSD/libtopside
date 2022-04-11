@@ -268,6 +268,7 @@ AtomTypeCls VideoDbgSrc::GetType() const
 }
 
 #endif
+#if defined flagSCREEN
 AtomTypeCls EventStatePipe::GetAtomType()
 {
 	return ATOM11(EVENT_STATE_PIPE, DRIVER_PIPE, CENTER, EVENT, CENTER, EVENT, CENTER, RECEIPT);
@@ -288,6 +289,7 @@ AtomTypeCls EventStatePipe::GetType() const
 	return GetAtomType();
 }
 
+#endif
 #if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {

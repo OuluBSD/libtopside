@@ -99,6 +99,7 @@ HEADER11(			EventStatePipe,		EventStateBase,			driver_pipe,	CenterEvent,	CenterE
 HEADER_ACTION(		EventStatePipe,		state.event.pipe)
 HEADER_ARG(			EventStatePipe,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		EventStatePipe,		PIPE, PROCESS)
+HEADER_ARG(			EventStatePipe,		reqdef_flagSCREEN,		1)
 
 
 

@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.11 18:44:44
+// Last modified: 2022.4.11 21:11:44
 
 namespace TS {
 
@@ -20,7 +20,6 @@ namespace Parallel {
 	ATOM_TYPE(AUDIO_JOINER) \
 	ATOM_TYPE(AUDIO_JOINER_USER) \
 	ATOM_TYPE(AUDIO_JOINER2_USER) \
-	ATOM_TYPE(EVENT_STATE_PIPE) \
 	ATOM_TYPE(SDL_EVENT_ATOM_PIPE) \
 	ATOM_TYPE(SDL_EVENT_ATOM) \
 	ATOM_TYPE(EVENT_STATE) \
@@ -39,7 +38,6 @@ namespace Parallel {
 	ATOM_CLASS(AudioJoiner) \
 	ATOM_CLASS(AudioJoinerUser) \
 	ATOM_CLASS(AudioJoiner2User) \
-	ATOM_CLASS(EventStatePipe) \
 	ATOM_CLASS(SdlEventAtomPipe) \
 	ATOM_CLASS(SdlEventAtom) \
 	ATOM_CLASS(EventState) \
@@ -60,6 +58,7 @@ namespace Parallel {
 
 #define flagSCREEN_ATOM_TYPE_LIST \
 	ATOM_TYPE(VIDEO_DBG_SRC) \
+	ATOM_TYPE(EVENT_STATE_PIPE) \
 	ATOM_TYPE(ECS_EVENTS_ATOM) \
 	ATOM_TYPE(ECS_CPU_VIDEO_PIPE) \
 	ATOM_TYPE(ECS_PROG_VIDEO) \
@@ -89,6 +88,7 @@ namespace Parallel {
 
 #define flagSCREEN_ATOM_CLASS_LIST \
 	ATOM_CLASS(VideoDbgSrc) \
+	ATOM_CLASS(EventStatePipe) \
 	ATOM_CLASS(EcsEventsAtom) \
 	ATOM_CLASS(EcsCpuVideoPipe) \
 	ATOM_CLASS(EcsProgVideo) \

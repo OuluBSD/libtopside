@@ -27,7 +27,6 @@ INITBLOCK {
 	using namespace TS;
 	
 	Factory::RegisterAtom<CenterCustomer>();
-	Factory::RegisterAtom<OglCustomer>();
 	Factory::RegisterAtom<TestRealtimeSrc>();
 	Factory::RegisterAtom<TestRealtimeSink>();
 	Factory::RegisterAtom<TestPollerSink>();
@@ -38,7 +37,6 @@ INITBLOCK {
 	Factory::RegisterAtom<AudioJoiner>();
 	Factory::RegisterAtom<AudioJoinerUser>();
 	Factory::RegisterAtom<AudioJoiner2User>();
-	Factory::RegisterAtom<EventStatePipe>();
 	Factory::RegisterAtom<TestEventSrcPipe>();
 	
 	#ifdef flagFFMPEG
@@ -51,7 +49,13 @@ INITBLOCK {
 	#endif
 	
 	#if defined flagSCREEN
+	
+	#ifdef flagOGL
+	Factory::RegisterAtom<OglCustomer>();
+	#endif
+	
 	Factory::RegisterAtom<VideoDbgSrc>();
+	Factory::RegisterAtom<EventStatePipe>();
 	
 	#if defined flagPOSIX
 	Factory::RegisterAtom<X11VideoAtomPipe>();

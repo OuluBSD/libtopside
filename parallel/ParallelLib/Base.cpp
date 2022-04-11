@@ -300,6 +300,7 @@ bool VoidPollerSinkBase::ProcessPacket(PacketValue& in, PacketValue& out) {
 
 
 
+#ifdef flagSCREEN
 
 EventStateBase::EventStateBase() {
 	
@@ -509,6 +510,8 @@ bool EventStateBase::Key(dword key, int count) {
 	
 	return true;
 }
+
+#endif
 
 
 

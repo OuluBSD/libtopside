@@ -122,6 +122,7 @@ public:
 	
 };
 
+#ifdef flagSCREEN
 class EventStateBase :
 	public Atom
 {
@@ -154,6 +155,7 @@ public:
 	EnvState&		GetState() const;
 	
 };
+#endif
 
 class TestEventSrcBase :
 	public Atom
