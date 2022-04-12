@@ -32,6 +32,7 @@
 #define DEPENDENCY_(upp_if_str, lib) this->AddDependency(upp_if_str, #lib);
 #define DEPENDENCY(x) this->AddDependency(#x);
 #define HAVE_RECV_FINALIZE this->HaveRecvFinalize();
+#define HAVE_UPDATE this->HaveUpdate();
 #define HAVE_NEGOTIATE_FORMAT this->HaveNegotiateFormat();
 #define MAINFLAG(x) this->AddMainFlag(#x);
 #define COLOR(r,g,b) this->SetColor(r,g,b);

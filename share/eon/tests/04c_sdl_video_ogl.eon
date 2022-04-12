@@ -8,7 +8,7 @@ machine sdl.app: {
 		
 		loop ogl.fbo: {
 			ogl.customer: true;
-			sdl.fbo.standalone: true {testshader: true;};
+			sdl.fbo.standalone: true {fragment: "shaders/toys/simple/simple_single/stage0.glsl";};
 		};
 		
 		loop audio: {

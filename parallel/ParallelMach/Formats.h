@@ -257,6 +257,12 @@ public:
 	
 };
 
+
+
+
+GVar::Sample GetGVarSampleFromBinarySample(BinarySample::Type t);
+
+
 NAMESPACE_PARALLEL_END
 
 #endif

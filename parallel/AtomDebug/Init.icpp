@@ -49,26 +49,31 @@ INITBLOCK {
 	#endif
 	
 	#if defined flagSCREEN
-	
-	#ifdef flagOGL
-	Factory::RegisterAtom<OglCustomer>();
-	#endif
-	
-	Factory::RegisterAtom<VideoDbgSrc>();
-	Factory::RegisterAtom<EventStatePipe>();
-	
-	#if defined flagPOSIX
-	Factory::RegisterAtom<X11VideoAtomPipe>();
-	#ifdef flagOGL
-	Factory::RegisterAtom<GlxVideoAtomPipe>();
-	Factory::RegisterAtom<GlxFboAtomSA>();
-	#endif
-	#endif
-	
-	#ifdef flagSDL2
-	Factory::RegisterAtom<SdlVideoAtomPipe>();
-	Factory::RegisterAtom<SdlVideoAtom>();
-	#endif
+		
+		#ifdef flagOGL
+			Factory::RegisterAtom<OglCustomer>();
+		#endif
+		
+		Factory::RegisterAtom<VideoDbgSrc>();
+		Factory::RegisterAtom<EventStatePipe>();
+		
+		#if defined flagPOSIX
+			Factory::RegisterAtom<X11VideoAtomPipe>();
+			#ifdef flagOGL
+				Factory::RegisterAtom<GlxVideoAtomPipe>();
+				Factory::RegisterAtom<GlxFboAtomSA>();
+			#endif
+		#endif
+		
+		#ifdef flagSDL2
+			Factory::RegisterAtom<SdlVideoAtomPipe>();
+			Factory::RegisterAtom<SdlVideoAtom>();
+			#ifdef flagOGL
+				Factory::RegisterAtom<SdlFboPipe>();
+				Factory::RegisterAtom<SdlFboAtomSA>();
+				Factory::RegisterAtom<SdlOglShaderPipe>();
+			#endif
+		#endif
 	#endif
 }
 

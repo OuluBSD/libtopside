@@ -1,9 +1,28 @@
-#ifndef _AtomLocal_ScreenT_h_
-#define _AtomLocal_ScreenT_h_
+#ifndef _IGraphics_Base_h_
+#define _IGraphics_Base_h_
 
-NAMESPACE_SERIAL_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
-#ifdef flagSCREEN
+
+template <class Gfx>
+class BufferBaseT :
+	public Atom
+{
+	
+protected:
+	using Buffer = typename Gfx::Buffer;
+	Buffer buf;
+	
+public:
+	using BufferBase = BufferBaseT<Gfx>;
+	RTTI_DECL1(BufferBase, Atom);
+	
+	void Visit(RuntimeVisitor& vis) override {vis % buf; vis.VisitThis<Atom>(this);}
+	void Update(double dt) override {buf.Update(dt);}
+	
+	Buffer& GetBuffer() {return buf;}
+	
+};
 
 
 template <class Gfx>
@@ -13,8 +32,9 @@ class ShaderBaseT :
 	bool is_audio = false;
 	
 public:
+	using ShaderBase = ShaderBaseT<Gfx>;
 	using BufferBase = BufferBaseT<Gfx>;
-	RTTI_DECL1(ShaderBaseT, BufferBase);
+	RTTI_DECL1(ShaderBase, BufferBase);
 	
 	ShaderBaseT() {}
 	
@@ -116,6 +136,11 @@ public:
 		return b;
 	}
 	
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		TODO
+	}
+	
+	/*bool ProcessPacket(PacketValue& in, PacketValue& out) override
 	bool ProcessPackets(PacketIO& io) override {
 		auto& buf = this->buf;
 		int src_ch = 0;
@@ -189,7 +214,7 @@ public:
 		}
 		
 		return succ;
-	}
+	}*/
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
 	
@@ -261,7 +286,11 @@ public:
 		return b;
 	}
 	
-	bool ProcessPackets(PacketIO& io) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		TODO
+	}
+	
+	/*bool ProcessPackets(PacketIO& io) override {
 		auto& buf = this->buf;
 		ASSERT(io.src_count == 2 && io.sink_count == 2);
 		
@@ -382,7 +411,7 @@ public:
 		}
 		
 		return true;
-	}
+	}*/
 	
 	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<BufferBase>(this);}
 	
@@ -407,6 +436,7 @@ class FboReaderBaseT :
 {
 public:
 	using BufferBase = BufferBaseT<Gfx>;
+	using Buffer = BufferT<Gfx>;
 	RTTI_DECL1(FboReaderBaseT, BufferBase);
 	
 	FboReaderBaseT() {}
@@ -434,7 +464,11 @@ public:
 		return b;
 	}
 	
-	bool ProcessPackets(PacketIO& io) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		TODO
+	}
+	
+	/*bool ProcessPackets(PacketIO& io) override {
 		ASSERT(io.nonempty_sinks == 2);
 		
 		{
@@ -467,7 +501,7 @@ public:
 				//DUMP(fmt);
 				AudioFormat& afmt = fmt;
 				InternalPacketData& v = in->GetData<InternalPacketData>();
-				SdlOglBuffer* src_buf = (SdlOglBuffer*)v.ptr;
+				Buffer* src_buf = (Buffer*)v.ptr;
 				ASSERT(src_buf);
 				
 				auto& fb = src_buf->fb;
@@ -490,7 +524,7 @@ public:
 		}
 		
 		return true;
-	}
+	}*/
 	
 	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override {
 		
@@ -526,10 +560,10 @@ public:
 			return false;
 		}
 		
-		Loop& loop = this->GetParent();
-		state = loop.FindNearestState(target);
+		Space& space = this->GetParent();
+		state = space.FindNearestState(target);
 		if (!state) {
-			LOG("EventStateBase::Initialize: error: state '" << target << "' not found in parent loop: " << loop.GetDeepName());
+			LOG("EventStateBase::Initialize: error: state '" << target << "' not found in parent space: " << space.GetDeepName());
 			return false;
 		}
 		
@@ -559,7 +593,11 @@ public:
 		return b;
 	}
 	
-	bool ProcessPackets(PacketIO& io) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		TODO
+	}
+	
+	/*bool ProcessPackets(PacketIO& io) override {
 		RTLOG("OglKeyboardBase::ProcessPackets");
 		auto& buf = this->buf;
 		
@@ -624,7 +662,7 @@ public:
 		}
 		
 		return true;
-	}
+	}*/
 	
 	void Visit(RuntimeVisitor& vis) override {}
 	
@@ -660,7 +698,11 @@ public:
 		return b;
 	}
 	
-	bool ProcessPackets(PacketIO& io) override {
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		TODO
+	}
+	
+	/*bool ProcessPackets(PacketIO& io) override {
 		RTLOG("OglAudioBase::ProcessPackets");
 		ASSERT(io.src_count == 2 && io.sink_count == 2);
 		auto& buf = this->buf;
@@ -737,7 +779,7 @@ public:
 		}
 		
 		return true;
-	}
+	}*/
 	
 	bool NegotiateSinkFormat(int sink_ch, const Format& new_fmt) override {
 		// accept all valid video formats for now
@@ -754,19 +796,16 @@ public:
 	
 };
 
+#define GFXTYPE(x) \
+	using x##ShaderBase = ShaderBaseT<x##Gfx>; \
+	using x##TextureBase = TextureBaseT<x##Gfx>; \
+	using x##FboReaderBase = FboReaderBaseT<x##Gfx>; \
+	using x##KeyboardBase = KeyboardBaseT<x##Gfx>; \
+	using x##AudioBase = AudioBaseT<x##Gfx>;
+GFXTYPE_LIST
+#undef GFXTYPE
 
-#define LOCAL_SCREEN_ATOM_LIST(pre, gfx) \
-	using pre##ShaderBase = ShaderBaseT<gfx>; \
-	using pre##TextureBase = TextureBaseT<gfx>; \
-	using pre##FboReaderBase = FboReaderBaseT<gfx>; \
-	using pre##KeyboardBase = KeyboardBaseT<gfx>; \
-	using pre##AudioBase = AudioBaseT<gfx>;
 
-LOCAL_SCREEN_ATOM_LIST(Ogl, SdlOglGfx)
-LOCAL_SCREEN_ATOM_LIST(Cpu, SdlCpuGfx)
-
-#endif
-
-NAMESPACE_SERIAL_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -58,7 +58,6 @@ typedef unsigned int	Gxbf;
 
 
 
-#include "Enums.h"
 
 #if defined flagSWRENDER
 	#error todo
@@ -101,6 +100,8 @@ typedef unsigned int	Gxbf;
 
 #include "ProgDraw.h"
 #include "GfxAccelAtom.h"
+
+#include "Base.h"
 
 
 

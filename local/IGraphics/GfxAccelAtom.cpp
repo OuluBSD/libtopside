@@ -9,16 +9,6 @@ NAMESPACE_PARALLEL_BEGIN
 template <>
 void GfxAccelAtom<SdlOglGfx>::GfxFlags(uint32& flags) {
 	is_opengl = true;
-	
-	TODO // not here
-	
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	flags |= SDL_WINDOW_OPENGL;
-	
-	if (full_screen)	flags |= SDL_WINDOW_FULLSCREEN;
-	if (is_sizeable)	flags |= SDL_WINDOW_RESIZABLE;
-	if (is_maximized)	flags |= SDL_WINDOW_MAXIMIZED;
-	
 }
 #endif
 
@@ -30,29 +20,6 @@ void GfxAccelAtom<SdlCpuGfx>::GfxFlags(uint32& flags) {
 #ifdef flagOGL
 template <>
 bool GfxAccelAtom<SdlOglGfx>::GfxRenderer() {
-	// Renderer
-    SDL_GetRendererInfo(nat_rend, &rend_info);
-	if ((rend_info.flags & SDL_RENDERER_ACCELERATED) == 0 ||
-        (rend_info.flags & SDL_RENDERER_TARGETTEXTURE) == 0)
-        return false;
-	
-	// GL context
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	glcontext = SDL_GL_CreateContext(win);
-	GetAppFlags().SetOpenGLContextOpen();
-	
-	// Glew
-	GLenum err = glewInit();
-	if (err != GLEW_OK) {
-		LOG("Glew error: " << (const char*)glewGetErrorString(err));
-		return false;
-	}
-	
 	return true;
 }
 #endif
@@ -310,6 +277,28 @@ void GfxAccelAtom<Gfx>::Close() {
 template <class Gfx>
 bool GfxAccelAtom<Gfx>::IsOpen() const {
 	TODO
+}
+
+template <class Gfx>
+void GfxAccelAtom<Gfx>::Update(double dt) {
+	if (env) {
+		Size& video_size = env->Set<Size>(SCREEN0_SIZE);
+		const bool& close_window = env->Set<bool>(SCREEN0_CLOSE);
+		Buffer& buf = GetBuffer();
+		
+		if (close_window) {
+			if (close_machine)
+				ab->GetMachine().SetNotRunning();
+			else
+				ab->Destroy();
+		}
+		else if (video_size != buf.fb.size) {
+			if (video_size.IsEmpty())
+				video_size = buf.fb.size;
+			else
+				buf.SetFramebufferSize(video_size);
+		}
+	}
 }
 
 template <class Gfx>

@@ -128,6 +128,7 @@ protected:
 	VectorMap<String, Vector<String>> cond_deps;
 	RGBA clr;
 	bool have_recv_finalize = false;
+	bool have_update = false;
 	bool have_negotiate_fmt = false;
 	
 	void SetColor(int r, int g, int b) {clr.r = r; clr.b = b; clr.g = g;}
@@ -141,6 +142,7 @@ public:
 	Vendor& AddVendor(String name);
 	Package& AddLibrary(String upp_cond_str, String library_str) {libraries.GetAdd(upp_cond_str).Add(library_str); return *this;}
 	void HaveRecvFinalize() {have_recv_finalize = true;}
+	void HaveUpdate() {have_update = true;}
 	void HaveNegotiateFormat() {have_negotiate_fmt = true;}
 	
 	virtual const char* GetTitle() const = 0;

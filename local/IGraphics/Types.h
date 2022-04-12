@@ -356,7 +356,6 @@ struct SdlGfx {
 	using NativeRenderer		= SDL_Renderer*;
 	using NativeRendererInfo	= SDL_RendererInfo;
 	using NativeGLContext		= SDL_GLContext;
-	using SystemFrameBuffer		= SDL_Texture*;
 	
 	static Size GetWindowSize(NativeWindow& win);
 	static bool CreateWindowAndRenderer(Size screen_sz, dword flags, NativeWindow& win, NativeRenderer& rend);
@@ -401,6 +400,8 @@ struct SdlGfx {
 struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
 	static const bool is_vendor_agnostic = false;
 	
+	using SystemFrameBuffer		= SDL_Texture*;
+	
 	#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
@@ -420,7 +421,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
-#define SDLOGL_GFXTYPE GFXTYPE(SdlOglGfx)
+#define SDLOGL_GFXTYPE GFXTYPE(SdlOgl)
 #define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <SdlOglGfx>;
 
 #else
@@ -430,7 +431,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #define SDL_GFXTYPE \
 	SDLOGL_GFXTYPE \
-	GFXTYPE(SdlCpuGfx)
+	GFXTYPE(SdlCpu)
 
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) \
@@ -445,7 +446,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #if defined flagPOSIX && defined flagOGL
 	#define X11OGL_GFXTYPE \
-		GFXTYPE(X11OglGfx)
+		GFXTYPE(X11Ogl)
 	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
 		template struct x <X11OglGfx>;
 #else

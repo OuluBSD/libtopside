@@ -26,7 +26,6 @@ file
 	Debug.cpp,
 	Util.h,
 	Util.cpp,
-	ScreenT.h,
 	Volume.h,
 	Volume.cpp,
 	Capture_OpenCV.h,

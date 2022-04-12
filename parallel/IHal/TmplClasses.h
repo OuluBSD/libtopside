@@ -8,6 +8,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Hal> struct HalAudioSinkDeviceT;
 template <class Hal> struct HalCenterVideoSinkDeviceT;
+template <class Hal> struct HalOglVideoSinkDeviceT;
 template <class Hal> struct HalContextBaseT;
 
 
@@ -58,6 +59,10 @@ struct HalAudioSinkDeviceT : HalAudioSinkDevice {
 		return Hal::AudioSinkDevice_Finalize(dev, *this, cfg);
 	}
 
+	void Update(double dt) override {
+		return Hal::AudioSinkDevice_Update(dev, *this, dt);
+	}
+
 	
 };
 
@@ -106,6 +111,64 @@ struct HalCenterVideoSinkDeviceT : HalCenterVideoSinkDevice {
 
 	void Finalize(RealtimeSourceConfig& cfg) override {
 		return Hal::CenterVideoSinkDevice_Finalize(dev, *this, cfg);
+	}
+
+	void Update(double dt) override {
+		return Hal::CenterVideoSinkDevice_Update(dev, *this, dt);
+	}
+
+	
+};
+
+template <class Hal>
+struct HalOglVideoSinkDeviceT : HalOglVideoSinkDevice {
+	using CLASSNAME = HalOglVideoSinkDeviceT<Hal>;
+	RTTI_DECL1(CLASSNAME, HalOglVideoSinkDevice)
+	void Visit(RuntimeVisitor& vis) override {vis.VisitThis<HalOglVideoSinkDevice>(this);}
+	
+	typename Hal::NativeOglVideoSink dev;
+	
+	
+	bool Initialize(const Script::WorldState& ws) override {
+		if (!Hal::OglVideoSinkDevice_Initialize(dev, *this, ws))
+			return false;
+		return true;
+	}
+
+	bool PostInitialize() override {
+		if (!Hal::OglVideoSinkDevice_PostInitialize(dev, *this))
+			return false;
+		return true;
+	}
+
+	bool Start() override {
+		return Hal::OglVideoSinkDevice_Start(dev, *this);
+	}
+
+	void Stop() override {
+		Hal::OglVideoSinkDevice_Stop(dev, *this);
+	}
+
+	void Uninitialize() override {
+		Hal::OglVideoSinkDevice_Uninitialize(dev, *this);
+	}
+
+	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
+		if (!Hal::OglVideoSinkDevice_ProcessPacket(dev, *this, in, out))
+			return false;
+		return true;
+	}
+
+	bool Recv(int sink_ch, const Packet& in) override {
+		return Hal::OglVideoSinkDevice_Recv(dev, *this, sink_ch, in);
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		return Hal::OglVideoSinkDevice_Finalize(dev, *this, cfg);
+	}
+
+	void Update(double dt) override {
+		return Hal::OglVideoSinkDevice_Update(dev, *this, dt);
 	}
 
 	
@@ -166,12 +229,17 @@ struct HalContextBaseT : HalContextBase {
 		return Hal::ContextBase_Finalize(ctx, *this, cfg);
 	}
 
+	void Update(double dt) override {
+		return Hal::ContextBase_Update(ctx, *this, dt);
+	}
+
 	
 };
 
 #if defined flagSDL2
 using Sdl2AudioSinkDevice = HalAudioSinkDeviceT<HalSdl2>;
 using Sdl2CenterVideoSinkDevice = HalCenterVideoSinkDeviceT<HalSdl2>;
+using Sdl2OglVideoSinkDevice = HalOglVideoSinkDeviceT<HalSdl2>;
 using Sdl2ContextBase = HalContextBaseT<HalSdl2>;
 #endif
 

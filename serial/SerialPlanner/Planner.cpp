@@ -778,7 +778,13 @@ void GetAtomActions(const Script::WorldState& src, Array<Script::Action>& acts) 
 	auto& m = Parallel::Factory::AtomDataMap();
 	
 	AtomTypeCls atom = src.GetAtom();
-	Parallel::Factory::AtomData& d = m.Get(atom);
+	int i = m.Find(atom);
+	if (i < 0) {
+		LOG("GetAtomActions: error: atom not found: " << atom.ToString());
+		return;
+	}
+	
+	Parallel::Factory::AtomData& d = m[i];
 	Parallel::Factory::RefreshLinks(d);
 	
 	One<Script::Action> a;

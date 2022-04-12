@@ -608,6 +608,16 @@ bool Package::Export() {
 				
 			}
 			
+			if (have_update) {
+				fout << "\tvoid Update(double dt) override {\n";
+				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
+					String cls = c.nat_inherited.GetKey(i);
+					String name = c.nat_inherited[i];
+					fout << "\t\treturn " << abbr << "::" << prefix << "_Update(" << name << ", *this, dt);\n";
+				}
+				fout << "\t}\n\n";
+			}
+			
 			if (have_negotiate_fmt) {
 				fout << "\tbool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {\n";
 				for(int i = 0; i < c.nat_inherited.GetCount(); i++) {
@@ -694,6 +704,9 @@ bool Package::Export() {
 			if (have_recv_finalize) {
 				fout << "static bool " << c.name << "_Recv(" << nat_this_ << "AtomBase&, int, const Packet&);\n";
 				fout << "static void " << c.name << "_Finalize(" << nat_this_ << "AtomBase&, RealtimeSourceConfig&);\n";
+			}
+			if (have_update) {
+				fout << "static void " << c.name << "_Update(" << nat_this_ << "AtomBase&, double dt);\n";
 			}
 			
 			if (have_negotiate_fmt) {
@@ -877,6 +890,11 @@ bool Package::Export() {
 					fout << "}\n\n";
 					
 					fout << "void " << cls << "::" << c.name << "_Finalize(" << nat_this_ << "AtomBase& a, RealtimeSourceConfig& cfg) {\n";
+					fout << "\tTODO\n";
+					fout << "}\n\n";
+				}
+				if (have_update) {
+					fout << "void " << cls << "::" << c.name << "_Update(" << nat_this_ << "AtomBase& a, double dt) {\n";
 					fout << "\tTODO\n";
 					fout << "}\n\n";
 				}

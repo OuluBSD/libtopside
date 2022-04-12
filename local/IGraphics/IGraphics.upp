@@ -14,7 +14,6 @@ uses(MSC & NEVER) ports/glext;
 file
 	IGraphics.h,
 	main.cpp,
-	Enums.h,
 	Types.h,
 	Sdl.cpp,
 	X11.cpp,
@@ -28,6 +27,7 @@ file
 	Shader.cpp,
 	GfxClasses.h,
 	IfaceOgl.h,
+	Base.h,
 	Templates readonly separator,
 	TState.h,
 	TState.cpp,

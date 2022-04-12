@@ -10,6 +10,7 @@ PKG(Hal, Hal, H) {
 	DEPENDENCY(ParallelLib)
 	DEPENDENCY(IGraphics)
 	HAVE_RECV_FINALIZE
+	HAVE_UPDATE
 	
 	PKG_IFACE {
 		NATIVE_CLASS(AudioSinkDevice)
@@ -49,6 +50,14 @@ PKG(Hal, Hal, H) {
 			
 		}
 		
+		CLASS(OglVideoSinkDevice) {
+			NATIVE_INHERIT(OglVideoSink, dev)
+			
+			//NATIVE_FIELD(NativeWindow*, win)
+			//NATIVE_FIELD(NativeRenderer*, rend)
+			
+		}
+		
 		CLASS(ContextBase) {
 			NATIVE_INHERIT(ContextBase, ctx)
 			HAVE_VIRTUAL_CONTEXT
@@ -77,6 +86,16 @@ PKG(Hal, Hal, H) {
 			.Add("rend",	"SDL_Renderer*")
 			.Add("fb",		"SDL_Texture*")
 			.Add("accel",	"GfxAccelAtom<SdlCpuGfx>")
+			;
+		
+		v->AddStruct("NativeOglVideoSink")
+			.Add("display",		"void*")
+			.Add("win",			"::SDL_Window*")
+			.Add("rend",		"::SDL_Renderer*")
+			.Add("fb",			"uint32")
+			.Add("accel",		"GfxAccelAtom<SdlOglGfx>")
+			.Add("rend_info",	"::SDL_RendererInfo")
+			.Add("gl_ctx",		"::SDL_GLContext")
 			;
 		
 		// POSIX: GLEW GL GLU

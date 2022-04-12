@@ -207,7 +207,7 @@ public:
 	
 	
 	void		Forward();
-	void		InitSegments();
+	bool		InitSegments();
 	void		SearchNewSegment();
 	void		PruneSegmentGoals();
 	void		DumpLoop();

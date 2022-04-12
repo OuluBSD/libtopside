@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.11 21:11:44
+// Last modified: 2022.4.12 19:00:44
 
 namespace TS {
 
@@ -325,7 +325,41 @@ public:
 	RTTI_DECL1(GlxFboAtomSA, X11GlxSinkDevice)
 	COPY_PANIC(GlxFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOGL
+class SdlFboAtomSA : public Sdl2OglVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlFboAtomSA, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlFboAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class SdlFboPipe : public Sdl2OglVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlFboPipe, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlFboPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -379,6 +413,24 @@ public:
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("center.audio.sink")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.audio")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOGL
+class SdlOglShaderPipe : public SdlOglShaderBase {
+
+public:
+	RTTI_DECL1(SdlOglShaderPipe, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.source.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.source.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

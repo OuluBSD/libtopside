@@ -314,7 +314,8 @@ void ScriptLoopLoader::Forward() {
 	
 	
 	if (status == ScriptStatus::IN_BEGINNING) {
-		InitSegments();
+		if (!InitSegments())
+			return;
 		
 		SetStatus(WAITING_CHILDREN);
 	}
@@ -360,7 +361,7 @@ void ScriptLoopLoader::Forward() {
 	ASSERT(prev_status != status);
 }
 
-void ScriptLoopLoader::InitSegments() {
+bool ScriptLoopLoader::InitSegments() {
 	ASSERT(segments.IsEmpty());
 	
 	DevCls dev = DevCls::Get(def.id.parts.First());
@@ -376,11 +377,12 @@ void ScriptLoopLoader::InitSegments() {
 		consumer = AsAtomTypeCls<OglCustomer>();
 		#else
 		SetError("OGL device not supported without this program compiled with GUI compilation flag");
+		return false;
 		#endif
 	}
 	else {
-		TODO
-		return;
+		SetError("Unsupported device class: " + dev.GetName());
+		return false;
 	}
 	
 	// Prepare action planner and world states
@@ -406,16 +408,16 @@ void ScriptLoopLoader::InitSegments() {
 		Script::State* s = GetLoader().FindState(req);
 		if (!s) {
 			SetError("Could not find required state '" + req.ToString() + "'");
-			return;
+			return false;
 		}
 		for (Script::Statement& stmt : s->stmts)
 			if (!SetWorldState(goal, stmt))
-				return;
+				return false;
 	}
 	
 	for (Script::Statement& stmt : def.stmts)
 		if (stmt.IsRouting() && !SetWorldState(goal, stmt))
-			return;
+			return false;
 	
 	goal_node.SetWorldState(goal);
 	goal_node.SetGoal(goal_node);
@@ -427,6 +429,8 @@ void ScriptLoopLoader::InitSegments() {
 	
 	ScriptLoopSegment& seg = segments.Add();
 	seg.start_node = &start_node;
+	
+	return true;
 }
 
 void ScriptLoopLoader::SearchNewSegment() {

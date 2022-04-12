@@ -95,6 +95,7 @@ public:
 	bool ImageInitialize();
 	void Close();
 	bool IsOpen() const;
+	void Update(double dt);
 	
 	void Maximize(bool b=true);
 	void Fullscreen(bool b=true);

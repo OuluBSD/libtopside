@@ -389,4 +389,23 @@ void Format::operator=(const Format& f) {
 }
 
 
+
+GVar::Sample GetGVarSampleFromBinarySample(BinarySample::Type t) {
+	int sz = Parallel::BinarySample::GetPackedSingleSize(t);
+	if (Parallel::BinarySample::IsFloating(t)) {
+		if (sz == 4)
+			return GVar::SAMPLE_FLOAT;
+	}
+	else {
+		switch (sz) {
+			case 1:	return GVar::SAMPLE_U8;
+			case 2:	return GVar::SAMPLE_U16;
+			case 4:	return Parallel::BinarySample::IsSigned(t) ? GVar::SAMPLE_S32 : GVar::SAMPLE_U32;
+			default: break;
+		}
+	}
+	Panic("GetGvarSampleFromBinarySample: conversion failed");
+	NEVER();
+}
+
 NAMESPACE_PARALLEL_END

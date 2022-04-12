@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.11 21:11:44
+// Last modified: 2022.4.12 19:00:44
 
 namespace TS {
 
@@ -258,44 +258,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtomSA : public SDL2OglScreenBase {
+class SdlFboPipeSide : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboAtomSA, SDL2OglScreenBase)
-	COPY_PANIC(SdlFboAtomSA)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.standalone")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class SdlFboPipe : public SDL2OglScreenBase {
-
-public:
-	RTTI_DECL1(SdlFboPipe, SDL2OglScreenBase)
-	COPY_PANIC(SdlFboPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class SdlFboPipeSide : public SDL2OglScreenBase {
-
-public:
-	RTTI_DECL1(SdlFboPipeSide, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboPipeSide, Sdl2OglVideoSinkDevice)
 	COPY_PANIC(SdlFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
@@ -309,10 +275,10 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtom : public SDL2OglScreenBase {
+class SdlFboAtom : public Sdl2OglVideoSinkDevice {
 
 public:
-	RTTI_DECL1(SdlFboAtom, SDL2OglScreenBase)
+	RTTI_DECL1(SdlFboAtom, Sdl2OglVideoSinkDevice)
 	COPY_PANIC(SdlFboAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
@@ -360,28 +326,11 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglShaderPipe : public OglShaderBase {
+class SdlOglShaderAtom : public SdlOglShaderBase {
 
 public:
-	RTTI_DECL1(OglShaderPipe, OglShaderBase)
-	COPY_PANIC(OglShaderPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class OglShaderAtom : public OglShaderBase {
-
-public:
-	RTTI_DECL1(OglShaderAtom, OglShaderBase)
-	COPY_PANIC(OglShaderAtom)
+	RTTI_DECL1(SdlOglShaderAtom, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
 	ATOM_MAKE_ACTION_END
@@ -394,11 +343,11 @@ public:
 #endif
 
 #if defined flagSCREEN
-class OglShaderAtomSA : public OglShaderBase {
+class SdlOglShaderAtomSA : public SdlOglShaderBase {
 
 public:
-	RTTI_DECL1(OglShaderAtomSA, OglShaderBase)
-	COPY_PANIC(OglShaderAtomSA)
+	RTTI_DECL1(SdlOglShaderAtomSA, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
 	ATOM_MAKE_ACTION_END
@@ -610,11 +559,11 @@ using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
 
-using OglShaderPipeRef = Ref<OglShaderPipe, AtomParent>;
+using SdlOglShaderPipeRef = Ref<SdlOglShaderPipe, AtomParent>;
 
-using OglShaderAtomRef = Ref<OglShaderAtom, AtomParent>;
+using SdlOglShaderAtomRef = Ref<SdlOglShaderAtom, AtomParent>;
 
-using OglShaderAtomSARef = Ref<OglShaderAtomSA, AtomParent>;
+using SdlOglShaderAtomSARef = Ref<SdlOglShaderAtomSA, AtomParent>;
 
 using OglTextureSourceRef = Ref<OglTextureSource, AtomParent>;
 
