@@ -4,6 +4,13 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+struct X11Sw {
+	using NativeTexture = uint32;
+	using NativeSurface = void*;
+	
+	
+};
+
 #ifdef flagSDL2
 struct Sdl {
 	using NativeTexture = SDL_Texture*;

@@ -31,7 +31,7 @@ template <class Gfx> struct InputStateT;
 
 
 template <class Gfx>
-struct FramebufferT : GfxFramebuffer {
+struct FramebufferT : Gfx::FramebufferBase {
 	using Base = FramebufferT<Gfx>;
 	using NatColorBuf = typename Gfx::NativeColorBuffer;
 	using NatDepthBuf = typename Gfx::NativeDepthBuffer;
@@ -65,20 +65,10 @@ struct FramebufferT : GfxFramebuffer {
 		}
 	}
 	
-	const NatFrameBuf& GetReadFramebuffer() const {return frame_buf[buf_i];}
-	NatColorBuf& GetActiveColorBuffer() {return color_buf[buf_i];}
-	int GetGlType() const {TODO}
-	int GetGlFormat() const {TODO}
-	int GetGlSize() const {TODO}
-	int GetGlSampleSize() const {TODO}
+	const NatFrameBuf& GetReadFramebuffer() const;
+	NatColorBuf& GetActiveColorBuffer();
 	
-	void Init(SysFrameBuf& fb, int w, int h, int stride) {
-		Gfx::GenTexture(color_buf[0]);
-		color_buf[0] = fb;
-		size.cx = w;
-		size.cy = h;
-		channels = stride;
-	}
+	void Init(SysFrameBuf& fb, int w, int h, int stride);
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}
@@ -91,11 +81,7 @@ struct FramebufferT : GfxFramebuffer {
 	void Render();
 	
 	
-	void SetWindowFbo(bool b=true) {
-		is_win_fbo = b;
-		if (b)
-			Gfx::SetContextDefaultFramebuffer(color_buf[0]);
-	}
+	void SetWindowFbo(bool b=true);
 	
 };
 

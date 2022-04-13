@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.12 19:00:44
+// Last modified: 2022.4.13 19:00:44
 
 namespace TS {
 
@@ -275,23 +275,6 @@ public:
 #endif
 
 #if defined flagSCREEN
-class SdlFboAtom : public Sdl2OglVideoSinkDevice {
-
-public:
-	RTTI_DECL1(SdlFboAtom, Sdl2OglVideoSinkDevice)
-	COPY_PANIC(SdlFboAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
 class SdlVideoProgAtom : public Sdl2CenterVideoSinkDevice {
 
 public:
@@ -316,40 +299,6 @@ public:
 	COPY_PANIC(SdlVideoAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.video.standalone")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class SdlOglShaderAtom : public SdlOglShaderBase {
-
-public:
-	RTTI_DECL1(SdlOglShaderAtom, SdlOglShaderBase)
-	COPY_PANIC(SdlOglShaderAtom)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagSCREEN
-class SdlOglShaderAtomSA : public SdlOglShaderBase {
-
-public:
-	RTTI_DECL1(SdlOglShaderAtomSA, SdlOglShaderBase)
-	COPY_PANIC(SdlOglShaderAtomSA)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

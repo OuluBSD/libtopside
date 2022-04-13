@@ -48,6 +48,7 @@ class VideoFormat;
 	GFX_RSYS(SdlCpu) \
 	GFX_RSYS(SdlOgl) \
 	GFX_RSYS(X11Ogl) \
+	GFX_RSYS(X11Sw) \
 
 
 #define GFX_CLS(x, g) struct g##x;
@@ -57,6 +58,9 @@ GFX_RENDSYS_LIST
 #undef GFX_CLS
 
 
+struct GfxFramebuffer;
+struct GfxBuffer;
+
 struct CpuGfx {
 	static const bool is_vendor_agnostic = true;
 	
@@ -64,7 +68,6 @@ struct CpuGfx {
 	
 	
 };
-
 
 template <class Backend>
 struct CpuGfxT : CpuGfx {
@@ -77,6 +80,9 @@ struct CpuGfxT : CpuGfx {
 	using SoftFramebuffer	= SoftFramebufferT<Backend>;
 	using SoftPipeline		= SoftPipelineT<Backend>;
 	// using SoftVertexArray	= SoftVertexArrayT<Backend>;
+	
+	using FramebufferBase	= GfxFramebuffer;
+	using BufferBase		= GfxBuffer;
 	
 	struct Thread {
 		SoftRend rend;
@@ -117,86 +123,9 @@ struct CpuGfxT : CpuGfx {
 	
 	static const GVar::GfxType Type = GVar::SW;
 	
-	static void BindProgramPipeline(NativePipeline& pipeline);
-	static void UseProgram(NativeProgram& prog);
-	static void UnbindProgramPipeline();
-	static const char* GetShaderTemplate(GVar::ShaderType t);
-	static void HotfixShaderCode(String& s);
-	static void DrawBuffers(GVar::RenderTarget tgt);
-	static void ActiveTexture(int ch);
-	static bool CreateShader(GVar::ShaderType t, NativeShader& new_shdr);
-	static void ShaderSource(NativeShader& s, String code);
-	static bool CompileShader(NativeShader& s);
-	static String GetLastErrorS(NativeShader& s);
-	static String GetLastErrorP(NativeProgram& s);
-	static bool CreateProgram(NativeProgram& prog);
-	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
-	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
-	static void DeleteShader(NativeShader& shdr);
-	static bool LinkProgram(NativeProgram& prog);
-	static void GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out);
-	static String GetActiveUniform(NativeProgram& prog, int i, int* size_out=0, int* type_out=0);
-	static void Clear(GVar::BufferType type);
-	static void GenProgramPipeline(NativePipeline& pipe);
-	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
-	static void DeleteProgramPipeline(NativePipeline& pipe);
-	static void TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-	static bool GenTexture(NativeFrameBuffer& fb);
-	static void GenVertexArray(NativeVertexArray& vao);
-	static void GenVertexBuffer(NativeVertexBuffer& vbo);
-	static void GenElementBuffer(NativeElementBuffer& ebo);
-	static void BindVertexArray(NativeVertexArray& vao);
-	static void BindVertexBuffer(NativeVertexBuffer& vbo);
-	static void BindElementBuffer(NativeElementBuffer& ebo);
-	static void VertexBufferData(const Vector<Vertex>& vtx);
-	static void ElementBufferData(const Vector<uint32>& el);
-	static void SetupVertexStructure() {}
-	static void UnbindVertexArray();
-	static void UnbindVertexBuffer();
-	static void UnbindElementBuffer();
-	static void ActivateVertexStructure() {}
-	static void DeactivateVertexStructure() {}
-	static void DrawVertexElements(int element_limit);
-	static void TexImage2D(Texture& tex);
-	static void DeleteVertexArray(NativeVertexArray& vao);
-	static void DeleteVertexBuffer(NativeVertexBuffer& vbo);
-	static void DeleteElementBuffer(NativeElementBuffer& ebo);
-	static void DeleteTexture(NativeColorBuffer& b);
-	
-	static void Uniform1i(int idx, int f);
-	static void Uniform1f(int idx, float f);
-	static void Uniform2f(int idx, float f0, float f1);
-	static void Uniform3f(int idx, float f0, float f1, float f2);
-	static void Uniform4f(int idx, float f0, float f1, float f2, float f3);
-	static void UniformMatrix4fv(int idx, const mat4& mat);
-	
-	
-	static void ClearBuffers();
-	static void SetSmoothShading(bool b=true);
-	static void SetDepthTest(bool b=true);
-	static void SetDepthOrderLess(bool b=true);
-	static void SetClearValue(RGBA clr, byte depth);
-	static void SetFastPerspectiveCorrection(bool b=true);
-	static void SetTriangleBacksideCulling(bool b=true);
-	static void SetTriangleFrontsideCCW(bool b=true);
-	static void SetViewport(Size sz);
-	//static void ActivateNextFrame();
-	static void SetDebugOutput(bool b=true);
-	
-	
-	static void BindFramebufferEXT(NativeFrameBuffer& fb);
-	static void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
-	static void BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex);
-	static void UnbindTexture(GVar::TextureType type);
-	static void GenerateMipmap(GVar::TextureType type);
-	static void BindFramebufferDefault();
-	static void RenderScreenRect();
-	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb);
-	static void BeginRender();
-	static void EndRender();
+	#include "TypeFuncList.inl"
 	
 	static Serial::VideoFormat& GetFormat(Parallel::Format& fmt) {return fmt.vid;}
-	
 	
 	static Thread& Local();
 	static SoftRend& Rend();
@@ -204,6 +133,10 @@ struct CpuGfxT : CpuGfx {
 };
 
 #ifdef flagOGL
+
+struct OglFramebufferBase;
+struct OglBufferBase;
+	
 struct OglGfx {
 	static const bool is_vendor_agnostic = true;
 	
@@ -221,85 +154,12 @@ struct OglGfx {
 	using NativePipeline = GLuint;
 	using ValFormat = Serial::FboFormat;
 	
+	using FramebufferBase = OglFramebufferBase;
+	using BufferBase = OglBufferBase;
+	
 	static const GVar::GfxType Type = GVar::OGL;
 	
-	static void BindProgramPipeline(NativePipeline& pipeline);
-	static void UseProgram(NativeProgram& prog);
-	//static void EnterFramebuffer(NativeFrameBuffer& fb);
-	static void BindFramebufferEXT(NativeFrameBuffer& fb);
-	static void UnbindProgramPipeline();
-	static void BindFramebufferDefault();
-	static void DrawBuffers(GVar::RenderTarget tgt);
-	//static void SetRender_Color();
-	static void RenderScreenRect();
-	static const char* GetShaderTemplate(GVar::ShaderType t);
-	static void HotfixShaderCode(String& s);
-	static void ActiveTexture(int ch);
-	static void BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex);
-	static void BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex);
-	static void UnbindTexture(GVar::TextureType type);
-	static void GenerateMipmap(GVar::TextureType type);
-	static bool CreateShader(GVar::ShaderType t, NativeShader& new_shdr);
-	static void ShaderSource(NativeShader& s, String code);
-	static bool CompileShader(NativeShader& s);
-	static String GetLastErrorS(NativeShader& s);
-	static String GetLastErrorP(NativeProgram& s);
-	static bool CreateProgram(NativeProgram& prog);
-	static void ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i);
-	static void AttachShader(NativeProgram& prog, NativeShader& shdr);
-	static void DeleteShader(NativeShader& shdr);
-	static bool LinkProgram(NativeProgram& prog);
-	static void GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out);
-	static String GetActiveUniform(NativeProgram& prog, int i, int* size_out=0, int* type_out=0);
-	static void Clear(GVar::BufferType type);
-	static void GenProgramPipeline(NativePipeline& pipe);
-	static void UseProgramStages(NativePipeline& pipe, uint32 shader_type_bmask, NativeProgram& prog);
-	static void DeleteProgramPipeline(NativePipeline& pipe);
-	static void TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-	static bool GenTexture(NativeFrameBuffer& fb);
-	static void GenVertexArray(NativeVertexArray& vao);
-	static void GenVertexBuffer(NativeVertexBuffer& vbo);
-	static void GenElementBuffer(NativeElementBuffer& ebo);
-	static void BindVertexArray(NativeVertexArray& vao);
-	static void BindVertexBuffer(NativeVertexBuffer& vbo);
-	static void BindElementBuffer(NativeElementBuffer& ebo);
-	static void DeleteVertexArray(NativeVertexArray& vao);
-	static void DeleteVertexBuffer(NativeVertexBuffer& vbo);
-	static void DeleteElementBuffer(NativeElementBuffer& ebo);
-	static void VertexBufferData(const Vector<Vertex>& vtx);
-	static void ElementBufferData(const Vector<uint32>& el);
-	static void SetupVertexStructure();
-	static void UnbindVertexArray();
-	static void UnbindVertexBuffer();
-	static void UnbindElementBuffer();
-	static void ActivateVertexStructure();
-	static void DeactivateVertexStructure();
-	static void DrawVertexElements(int element_limit);
-	static void TexImage2D(Texture& tex);
-	static void DeleteTexture(NativeColorBuffer& b);
-	
-	static void Uniform1i(int idx, int i) {glUniform1i(idx, i);}
-	static void Uniform1f(int idx, float f) {glUniform1f(idx, f);}
-	static void Uniform2f(int idx, float f0, float f1) {glUniform2f(idx, f0, f1);}
-	static void Uniform3f(int idx, float f0, float f1, float f2) {glUniform3f(idx, f0, f1, f2);}
-	static void Uniform4f(int idx, float f0, float f1, float f2, float f3) {glUniform4f(idx, f0, f1, f2, f3);}
-	static void UniformMatrix4fv(int idx, const mat4& mat);
-	
-	
-	static void ClearBuffers();
-	static void SetSmoothShading(bool b=true);
-	static void SetDepthTest(bool b=true);
-	static void SetDepthOrderLess(bool b=true);
-	static void SetClearValue(RGBA clr, byte depth);
-	static void SetFastPerspectiveCorrection(bool b=true);
-	static void SetTriangleBacksideCulling(bool b=true);
-	static void SetTriangleFrontsideCCW(bool b=true);
-	static void SetViewport(Size sz);
-	//static void ActivateNextFrame();
-	static void SetDebugOutput(bool b=true);
-	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {/* done by opengl*/}
-	static void BeginRender() {}
-	static void EndRender() {}
+	#include "TypeFuncList.inl"
 	
 	static Serial::FboFormat& GetFormat(Parallel::Format& fmt);
 	
@@ -326,6 +186,20 @@ struct X11Gfx {
 	static void RestoreWindow(NativeWindow& win);
 	static void SetWindowPosition(NativeWindow& win, Point pt);
 	static void SetWindowSize(NativeWindow& win, Size sz);
+	
+};
+
+struct X11SwGfx : CpuGfxT<X11Sw>, X11Gfx {
+	static const bool is_vendor_agnostic = false;
+	
+	using SystemFrameBuffer = NativeFrameBuffer;
+	using NativeGLContext = void*;
+	
+	#define GFX_CLS(x, g) using x = g##x;
+	GFX_CLS_LIST(X11Sw)
+	#undef GFX_CLS
+	
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
 

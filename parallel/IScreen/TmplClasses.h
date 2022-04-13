@@ -63,6 +63,10 @@ struct ScreenSinkDeviceT : ScrSinkDevice {
 using X11SinkDevice = ScreenSinkDeviceT<ScrX11>;
 #endif
 
+#if (defined flagLINUX) || (defined flagFREEBSD)
+using X11SwSinkDevice = ScreenSinkDeviceT<ScrX11Sw>;
+#endif
+
 #if defined flagOGL
 using X11GlxSinkDevice = ScreenSinkDeviceT<ScrX11Glx>;
 #endif

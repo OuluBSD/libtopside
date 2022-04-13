@@ -122,6 +122,8 @@ bool DefaultProcessPackets(Link& link, AtomBase& atom, PacketIO& io) {
 	src.p = link.ReplyPacket(sink_ch, sink.p);
 	src.p->AddRouteData(src.from_sink_ch);
 	
+	atom.Finalize(*link.GetConfig());
+	
 	PacketValue& in = *sink.p;
 	PacketValue& out = *src.p;
 	bool b = atom.ProcessPacket(in, out);

@@ -8,6 +8,10 @@ RenderingVerifier::RenderingVerifier() {
 	
 }
 
+void RenderingVerifier::OnClearVars() {
+	vars.Clear();
+}
+
 void RenderingVerifier::OnRealizeVar(String key, bool state_var) {
 	if (vars.Find(key) >= 0)
 		Panic("RenderingVerifier: variable '" + key + "' already added");

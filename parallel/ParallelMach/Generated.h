@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.12 19:00:44
+// Last modified: 2022.4.13 19:00:44
 
 namespace TS {
 
@@ -69,13 +69,9 @@ namespace Parallel {
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
-	ATOM_TYPE(SDL_FBO_PIPE) \
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
-	ATOM_TYPE(SDL_FBO_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
-	ATOM_TYPE(SDL_OGL_SHADER_ATOM) \
-	ATOM_TYPE(SDL_OGL_SHADER_ATOM_S_A) \
 	ATOM_TYPE(OGL_TEXTURE_SOURCE) \
 	ATOM_TYPE(OGL_VOLUME_SOURCE) \
 	ATOM_TYPE(OGL_AUDIO_SINK) \
@@ -97,13 +93,9 @@ namespace Parallel {
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \
 	ATOM_CLASS(X11VideoAtomPipe) \
-	ATOM_CLASS(SdlFboPipe) \
 	ATOM_CLASS(SdlFboPipeSide) \
-	ATOM_CLASS(SdlFboAtom) \
 	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(SdlVideoAtomSA) \
-	ATOM_CLASS(SdlOglShaderAtom) \
-	ATOM_CLASS(SdlOglShaderAtomSA) \
 	ATOM_CLASS(OglTextureSource) \
 	ATOM_CLASS(OglVolumeSource) \
 	ATOM_CLASS(OglAudioSink) \
@@ -140,14 +132,22 @@ namespace Parallel {
 	ATOM_TYPE(GLX_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(GLX_FBO_ATOM_S_A) \
 	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
+	ATOM_TYPE(SDL_FBO_PIPE) \
+	ATOM_TYPE(SDL_FBO_ATOM) \
 	ATOM_TYPE(SDL_OGL_SHADER_PIPE) \
+	ATOM_TYPE(SDL_OGL_SHADER_ATOM) \
+	ATOM_TYPE(SDL_OGL_SHADER_ATOM_S_A) \
 
 
 #define flagOGL_ATOM_CLASS_LIST \
 	ATOM_CLASS(GlxVideoAtomPipe) \
 	ATOM_CLASS(GlxFboAtomSA) \
 	ATOM_CLASS(SdlFboAtomSA) \
+	ATOM_CLASS(SdlFboPipe) \
+	ATOM_CLASS(SdlFboAtom) \
 	ATOM_CLASS(SdlOglShaderPipe) \
+	ATOM_CLASS(SdlOglShaderAtom) \
+	ATOM_CLASS(SdlOglShaderAtomSA) \
 
 
 }

@@ -351,28 +351,6 @@ AtomTypeCls SdlFboPipeSide::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls SdlFboAtom::GetAtomType()
-{
-	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
-}
-
-LinkTypeCls SdlFboAtom::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlFboAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
-}
-
-AtomTypeCls SdlFboAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
 AtomTypeCls SdlVideoProgAtom::GetAtomType()
 {
 	return ATOM11(SDL_VIDEO_PROG_ATOM, PIPE, CENTER, VIDEO, CENTER, PROG, CENTER, RECEIPT);
@@ -411,50 +389,6 @@ void SdlVideoAtomSA::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlVideoAtomSA::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls SdlOglShaderAtom::GetAtomType()
-{
-	return ATOM11_U44(SDL_OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
-}
-
-LinkTypeCls SdlOglShaderAtom::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlOglShaderAtom::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlOglShaderBase>(this);
-}
-
-AtomTypeCls SdlOglShaderAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN
-AtomTypeCls SdlOglShaderAtomSA::GetAtomType()
-{
-	return ATOM11(SDL_OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
-}
-
-LinkTypeCls SdlOglShaderAtomSA::GetLinkType()
-{
-	return LINKTYPE(, );
-}
-
-void SdlOglShaderAtomSA::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlOglShaderBase>(this);
-}
-
-AtomTypeCls SdlOglShaderAtomSA::GetType() const
 {
 	return GetAtomType();
 }

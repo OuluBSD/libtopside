@@ -256,6 +256,7 @@ template <class Gfx>
 bool BufferT<Gfx>::Initialize() {
 	DLOG("BufferT::Initialize: load new program");
 	
+	ASSERT(!initialized);
 	ASSERT(fb.fps > 0);
 	ctx.frame_time = 1.0 / fb.fps;
 	ctx.time = GetSysTime();
@@ -314,20 +315,7 @@ void BufferT<Gfx>::UpdateTexBuffers() {
 		ASSERT(s.channels > 0);
 		ASSERT(s.size.cx > 0 && s.size.cy > 0);
 		
-		/*s.gl_sample_size		= s.sample == SAMPLE_BYTE ? 1 : 4;
-		s.gl_type				= s.sample == SAMPLE_BYTE ? GL_UNSIGNED_BYTE : GL_FLOAT;
-		fb_accel_type			= fb_accel_sampletype == SAMPLE_BYTE ? GL_UNSIGNED_BYTE : GL_FLOAT;
-		
-		fb_size_bytes			= fb_size.cx * fb_size.cy * fb_sample_size * fb_channels;
-		fb_accel_size_bytes		= fb_size.cx * fb_size.cy * fb_accel_sample_size* fb_accel_channels;
-		fb_fmt					= GetGfxChannelFormat(fb_channels, fb_type == GL_FLOAT);
-		fb_accel_fmt			= GetGfxChannelFormat(fb_accel_channels, fb_accel_type == GL_FLOAT);
-		*/
-		
-		TODO
-		/*ASSERT(s.GetGlSize() > 0);
-		ASSERT(s.GetGlFormat() >= 0);
-		ASSERT(s.GetGlType() >= 0);*/
+		this->BaseUpdateTexBuffers(s);
 		
 		ClearTex();
 		
@@ -388,7 +376,7 @@ void BufferT<Gfx>::Process(const RealtimeSourceConfig& cfg) {
 	
 	if (!fb.is_win_fbo) {
 		ASSERT(fb.frame_buf[bi]);
-	    Gfx::BindFramebufferEXT(fb.frame_buf[bi]);
+	    Gfx::BindFramebuffer(fb.frame_buf[bi]);
 	    Gfx::DrawBuffers(GVar::COLOR0_EXT);
 	}
 
@@ -527,6 +515,7 @@ void BufferT<Gfx>::FindVariables() {
 	
 	memset(rt.var_idx, -1, sizeof(rt.var_idx));
 	rt.user_vars.Clear();
+	RendVer(OnClearVars);
 	for (int i = 0; i < n_uniforms; i++) {
 		int size = 0;
 		int type = 0;
@@ -767,33 +756,28 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 
 template <class Gfx>
 void BufferT<Gfx>::ClearTex() {
-	TODO
-	#if 0
 	for(int bi = 0; bi < 2; bi++) {
-		GLuint& color_buf = fb.color_buf[bi];
-		GLuint& depth_buf = fb.depth_buf[bi];
-		GLuint& frame_buf = fb.frame_buf[bi];
+		auto& color_buf = fb.color_buf[bi];
+		auto& depth_buf = fb.depth_buf[bi];
+		auto& frame_buf = fb.frame_buf[bi];
 		
 		if (color_buf > 0) {
-			Gfx::DeleteTextures(1, &color_buf);
+			Gfx::DeleteTexture(color_buf);
 			color_buf = 0;
 		}
 		if (depth_buf > 0) {
-			Gfx::DeleteRenderbuffersEXT(1, &depth_buf);
+			Gfx::DeleteRenderbuffer(depth_buf);
 			depth_buf = 0;
 		}
 		if (frame_buf > 0) {
-			Gfx::DeleteFramebuffers(1, &frame_buf);
+			Gfx::DeleteFramebuffer(frame_buf);
 			frame_buf = 0;
 		}
 	}
-	#endif
 }
 
 template <class Gfx>
 void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
-	TODO
-	#if 0
 	auto& s = fb;
 	
 	int buf_count = 1;
@@ -805,47 +789,46 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 	EnableGfxAccelDebugMessages(1);
 	
 	for(int bi = 0; bi < buf_count; bi++) {
-		GLuint& color_buf = s.color_buf[bi];
-		GLuint& depth_buf = s.depth_buf[bi];
-		GLuint& frame_buf = s.frame_buf[bi];
+		auto& color_buf = s.color_buf[bi];
+		auto& depth_buf = s.depth_buf[bi];
+		auto& frame_buf = s.frame_buf[bi];
 		ASSERT(color_buf == 0);
 		
-		auto fmt = s.GetGlFormat();
+		//auto fmt = s.GetGlFormat();
 		
 		// color buffer
-		Gfx::GenTextures(1, s.color_buf);
-		Gfx::BindTexture(GL_TEXTURE_2D, color_buf);
-		Gfx::TexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		TexFlags(GL_TEXTURE_2D, s.filter, s.wrap);
-		Gfx::BindTexture(GL_TEXTURE_2D, 0);
+		Gfx::GenTexture(s.color_buf[0]);
+		Gfx::BindTextureRW(GVar::TEXTYPE_2D, color_buf);
+		//TODO Gfx::TexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		TexFlags(GVar::TEXTYPE_2D, s.filter, s.wrap);
+		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		
 		// depth buffer
 		if (create_depth) {
-			Gfx::GenRenderbuffersEXT(1, &depth_buf);
-			Gfx::BindRenderbufferEXT(GL_RENDERBUFFER_EXT, depth_buf);
-			Gfx::RenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, sz.cx, sz.cy);
-			Gfx::BindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+			Gfx::CreateRenderbuffer(depth_buf);
+			Gfx::BindRenderbuffer(depth_buf);
+			Gfx::RenderbufferStorage(sz);
+			Gfx::UnbindRenderbuffer();
 		}
 		
 		// FBO
 		if (create_fbo) {
-			Gfx::GenFramebuffersEXT(1, &frame_buf);
-			Gfx::BindFramebufferEXT(GL_FRAMEBUFFER_EXT, frame_buf);
+			Gfx::CreateFramebuffer(frame_buf);
+			Gfx::BindFramebuffer(frame_buf);
 			
 			// combine FBO to color buffer
-			Gfx::FramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, color_buf, 0);
+			Gfx::FramebufferTexture2D(color_buf);
 			
 			// combine FBO to depth buffer
 			if (create_depth)
-				Gfx::FramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_buf);
+				Gfx::FramebufferRenderbuffer(depth_buf);
 			
 			// reset FBO
-			Gfx::BindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+			Gfx::UnbindFramebuffer();
 		}
 	}
 	
 	EnableGfxAccelDebugMessages(0);
-	#endif
 }
 
 template <class Gfx>
@@ -998,36 +981,8 @@ const TNG NativeFrameBuffer& BufferT<Gfx>::GetOutputTexture(bool reading_self) c
 }
 
 template <class Gfx>
-void BufferT<Gfx>::TexFlags(int type, GVar::Filter filter, GVar::Wrap repeat) {
-	TODO
-	#if 0
-	if (filter == GVar::FILTER_NEAREST) {
-		Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	}
-	else if (filter == GVar::FILTER_LINEAR) {
-		Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	}
-	else if (filter == GVar::FILTER_MIPMAP) {
-		Gfx::TexParameteri(type, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		Gfx::TexParameteri(type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		Gfx::GenerateMipmap(type);
-	}
-	
-	if (repeat == GVar::WRAP_REPEAT) {
-		Gfx::TexParameteri(type, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		Gfx::TexParameteri(type, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		if (type == GL_TEXTURE_3D)
-			Gfx::TexParameteri(type, GL_TEXTURE_WRAP_R, GL_REPEAT);
-	}
-	else if (repeat == GVar::WRAP_CLAMP) {
-		Gfx::TexParameteri(type, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		Gfx::TexParameteri(type, GL_TEXTURE_WRAP_T, GL_CLAMP);
-		if (type == GL_TEXTURE_3D)
-			Gfx::TexParameteri(type, GL_TEXTURE_WRAP_R, GL_CLAMP);
-	}
-	#endif
+void BufferT<Gfx>::TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat) {
+	Gfx::TexParameteri(type, filter, repeat);
 }
 
 template <class Gfx>

@@ -44,6 +44,26 @@ PKG(Screen, Scr, S) {
 			.Add("gc",			"::GC")
 			;
 		
+	}
+	
+	VENDOR(X11Sw) {
+		VENDOR_ENABLED_FLAG(LINUX)
+		VENDOR_ENABLED_FLAG(FREEBSD)
+		VENDOR_INCLUDE("", X11/Xlib.h)
+		VENDOR_INCLUDE("", X11/Xutil.h)
+		VENDOR_HEADER_REQUIRES_INCLUDES
+		VENDOR_CLASS(SinkDevice, void*)
+		
+		v->AddStruct("NativeSinkDevice")
+			.Add("win",					"::Window")
+			.Add("display",				"::Display*")
+			.Add("fb",					"::XImage*")
+			.Add("visual",				"::Visual*")
+			.Add("gc",					"::GC")
+			.Add("ogl",					"GfxAccelAtom<X11SwGfx>")
+			.Add("atomWmDeleteWindow",	"::Atom ")
+			.Add("attr",				"::XSetWindowAttributes")
+			;
 		
 	}
 	

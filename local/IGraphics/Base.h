@@ -13,12 +13,15 @@ protected:
 	using Buffer = typename Gfx::Buffer;
 	Buffer buf;
 	
+	RealtimeSourceConfig* last_cfg = 0;
+	
 public:
 	using BufferBase = BufferBaseT<Gfx>;
 	RTTI_DECL1(BufferBase, Atom);
 	
 	void Visit(RuntimeVisitor& vis) override {vis % buf; vis.VisitThis<Atom>(this);}
 	void Update(double dt) override {buf.Update(dt);}
+	RealtimeSourceConfig* GetConfig() override {return last_cfg;}
 	
 	Buffer& GetBuffer() {return buf;}
 	
@@ -111,6 +114,7 @@ public:
 		fb.is_win_fbo = false;
 		if (!is_audio) {
 			fb.size = Size(1280,720);
+			fb.channels = 4;
 			fb.fps = 60;
 		}
 		else {
@@ -137,7 +141,40 @@ public:
 	}
 	
 	bool ProcessPacket(PacketValue& in, PacketValue& out) override {
-		TODO
+		//BeginDraw();
+		this->buf.Process(*this->last_cfg);
+		//CommitDraw();
+		ASSERT(in.GetFormat().IsValid());
+		
+		InternalPacketData& data = out.GetData<InternalPacketData>();
+		this->buf.StoreOutputLink(data);
+		RTLOG("ShaderBaseT::ProcessPacket: 0, " << out.ToString());
+		return true;
+	}
+	
+	bool Recv(int sink_ch, const Packet& in) override {
+		RTLOG("ShaderBaseT::Recv: " << sink_ch << ": " << in->ToString());
+		bool succ = true;
+		
+		Format in_fmt = in->GetFormat();
+		if (in_fmt.vd == VD(OGL,FBO)) {
+			Size3 sz = in_fmt.fbo.GetSize();
+			int channels = in_fmt.fbo.GetChannels();
+			
+			int base = this->GetSink()->GetSinkCount() > 1 ? 1 : 0;
+			if (in->IsData<InternalPacketData>()) {
+				succ = this->buf.LoadOutputLink(sz, sink_ch - base, in->GetData<InternalPacketData>()) && succ;
+			}
+			else {
+				RTLOG("OglShaderBase::ProcessPackets: cannot handle packet: " << in->ToString());
+			}
+		}
+		
+		return succ;
+	}
+
+	void Finalize(RealtimeSourceConfig& cfg) override {
+		this->last_cfg = &cfg;
 	}
 	
 	/*bool ProcessPacket(PacketValue& in, PacketValue& out) override

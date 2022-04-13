@@ -255,7 +255,7 @@ void CpuGfxT<B>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar
 }
 
 template <class B>
-void CpuGfxT<B>::BindFramebufferEXT(NativeFrameBuffer& fb) {
+void CpuGfxT<B>::BindFramebuffer(NativeFrameBuffer& fb) {
 	auto& l = Local();
 	ASSERT_(!l.fb || (l.ctx_default_fb && l.fb == l.ctx_default_fb), "previous frambuffer have not been unbound");
 	l.fb = &fb;
@@ -436,6 +436,21 @@ void CpuGfxT<B>::DeleteTexture(NativeColorBuffer& b) {
 }
 
 template <class B>
+void CpuGfxT<B>::DeleteRenderbuffer(NativeDepthBuffer& b) {
+	b.Clear();
+}
+
+template <class B>
+void CpuGfxT<B>::DeleteFramebuffer(NativeFrameBuffer& b) {
+	b.Clear();
+}
+
+template <class B>
+void CpuGfxT<B>::DeactivateVertexStructure() {
+	// pass
+}
+
+template <class B>
 void CpuGfxT<B>::BeginRender() {
 	auto& l = Local();
 	ASSERT_(l.fb, "framebuffer is not bound yet");
@@ -453,6 +468,41 @@ void CpuGfxT<B>::EndRender() {
 	l.rend.End();
 }
 
+template <class B> void CpuGfxT<B>::SetupVertexStructure() {}
+template <class B> void CpuGfxT<B>::ActivateVertexStructure() {}
+
+template <class B> void CpuGfxT<B>::CreateRenderbuffer(NativeDepthBuffer& b) {
+	TODO
+}
+
+template <class B> void CpuGfxT<B>::BindRenderbuffer(NativeDepthBuffer& rb) {
+	TODO
+}
+
+template <class B> void CpuGfxT<B>::RenderbufferStorage(Size sz) {
+	TODO
+}
+
+template <class B> void CpuGfxT<B>::UnbindRenderbuffer() {
+	TODO
+}
+
+template <class B> bool CpuGfxT<B>::CreateFramebuffer(NativeFrameBuffer& fb) {
+	TODO
+	return true;
+}
+
+template <class B> void CpuGfxT<B>::FramebufferTexture2D(NativeFrameBuffer& fb) {
+	TODO
+}
+
+template <class B> void CpuGfxT<B>::FramebufferRenderbuffer(NativeDepthBuffer& fb) {
+	TODO
+}
+
+template <class B> void CpuGfxT<B>::UnbindFramebuffer() {
+	TODO
+}
 
 #if defined flagSDL2
 template struct CpuGfxT<Sdl>;

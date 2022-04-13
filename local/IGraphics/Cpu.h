@@ -5,9 +5,11 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 #define GFX_CLS(x, g) struct g##x : x##T<g##Gfx> {RTTI_DECL1(g##x, Base)};
-
+GFX_CLS_LIST(X11Sw)
 #ifdef flagSDL2
 GFX_CLS_LIST(SdlCpu)
+#endif
+#undef GFX_CLS
 
 
 
@@ -17,11 +19,9 @@ using CpuDataState		= SdlCpuDataState;
 using CpuFramebuffer	= SdlCpuFramebuffer;
 using CpuDataObject		= SdlCpuDataObject;*/
 
-#endif
 
 
 
-#undef GFX_CLS
 
 #if 0
 struct CpuVertexShaderArgs {

@@ -5,7 +5,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-struct BufferT : GfxBuffer {
+struct BufferT : Gfx::BufferBase {
 	//static_assert(Gfx::is_vendor_agnostic == true, "For BufferT Gfx template argument should be vendor agnostic");
 	
 	using Base = BufferT<Gfx>;
@@ -51,7 +51,9 @@ struct BufferT : GfxBuffer {
 	DataState*					user_data = 0;
 	bool						use_user_data = false;
 	
-	static Callback2<String, BufferT<Gfx>*> WhenLinkInit;
+	
+	
+	static Callback2<String, Base*> WhenLinkInit;
 	
 	
 	
@@ -105,7 +107,7 @@ struct BufferT : GfxBuffer {
 	bool BuiltinShader();
 	bool CompilePrograms();
 	const NativeFrameBuffer& GetOutputTexture(bool reading_self) const;
-	void TexFlags(int type, GVar::Filter filter, GVar::Wrap repeat);
+	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);
 	bool LoadOutputLink(Size3 sz, int in_id, const InternalPacketData& v);

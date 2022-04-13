@@ -43,6 +43,86 @@ GLenum GetOglTextureType(GVar::TextureType type) {
 
 
 
+GLint OglFramebufferBase::GetGlType() const {
+	using namespace GVar;
+	switch (sample) {
+		case SAMPLE_FLOAT:	return GL_FLOAT;
+		case SAMPLE_U8:		return GL_UNSIGNED_BYTE;
+		case SAMPLE_U16:	return GL_UNSIGNED_SHORT;
+		case SAMPLE_U32:	return GL_UNSIGNED_INT;
+		case SAMPLE_S32:	return GL_INT;
+	}
+	return -1;
+}
+
+GLint OglFramebufferBase::GetGlFormat() const {
+	using namespace GVar;
+	ASSERT(channels >= 1 && channels <= 4);
+	if (sample != SAMPLE_FLOAT) {
+		switch (channels) {
+			case 1: return GL_RED;
+			case 2: return GL_RG;
+			case 3: return GL_RGB;
+			case 4: return GL_RGBA;
+			default: return -1;
+		}
+	}
+	else {
+		switch (channels) {
+			case 1: return GL_R32F;
+			case 2: return GL_RG32F;
+			case 3: return GL_RGB32F;
+			case 4: return GL_RGBA32F;
+			default: return -1;
+		}
+	}
+	return -1;
+}
+
+int OglFramebufferBase::GetGlSize() const {
+	return size.cx * size.cy * GetGlSampleSize() * channels;
+}
+
+int OglFramebufferBase::GetGlSampleSize() const {
+	using namespace GVar;
+	switch (sample) {
+		case SAMPLE_FLOAT:	return 4;
+		case SAMPLE_U8:		return 1;
+		case SAMPLE_U16:	return 2;
+		case SAMPLE_U32:	return 4;
+		case SAMPLE_S32:	return 4;
+	}
+	ASSERT(0);
+	return 0;
+}
+
+
+
+
+
+void OglBufferBase::BaseUpdateTexBuffers(OglFramebufferBase& fb) {
+	
+	//TODO improve this sample reading
+	ASSERT(fb.sample == GVar::SAMPLE_U8 || fb.sample == GVar::SAMPLE_FLOAT);
+	
+	fb.gl_sample_size		= fb.sample == GVar::SAMPLE_U8 ? 1 : 4;
+	fb.gl_type				= fb.sample == GVar::SAMPLE_U8 ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	fb_accel_type			= fb_accel_sampletype == GVar::SAMPLE_U8 ? GL_UNSIGNED_BYTE : GL_FLOAT;
+	
+	int sample_size = GVar::GetSampleSize(fb.sample);
+	fb_size_bytes			= fb.size.cx * fb.size.cy * sample_size * fb.channels;
+	fb_accel_size_bytes		= fb.size.cx * fb.size.cy * fb.gl_sample_size * fb_accel_channels;
+	fb_fmt					= GetOglChCode(fb.channels, fb.gl_type == GL_FLOAT);
+	fb_accel_fmt			= GetOglChCode(fb_accel_channels, fb_accel_type == GL_FLOAT);
+	
+	ASSERT(fb_size_bytes > 0);
+	ASSERT(fb.GetGlSize() > 0);
+	ASSERT(fb.GetGlFormat() >= 0);
+	ASSERT(fb.GetGlType() >= 0);
+}
+
+
+
 void OglGfx::SetDebugOutput(bool b) {
 	if (b) {
 		glEnable(GL_DEBUG_OUTPUT);
@@ -113,8 +193,24 @@ void OglGfx::BindProgramPipeline(NativePipeline& pipeline) {
 	glBindProgramPipeline(pipeline);
 }
 
-void OglGfx::BindFramebufferEXT(NativeFrameBuffer& fb) {
+void OglGfx::BindFramebuffer(NativeFrameBuffer& fb) {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
+}
+
+void OglGfx::UnbindFramebuffer() {
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+void OglGfx::BindRenderbuffer(NativeDepthBuffer& rb) {
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb);
+}
+
+void OglGfx::UnbindRenderbuffer() {
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+}
+
+void OglGfx::RenderbufferStorage(Size sz) {
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, sz.cx, sz.cy);
 }
 
 void OglGfx::UnbindProgramPipeline() {
@@ -469,14 +565,19 @@ void OglGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wr
 	glTexParameteri(gl_t, GL_TEXTURE_MIN_FILTER, gl_filter);
 	glTexParameteri(gl_t, GL_TEXTURE_MAG_FILTER, gl_filter);
 	
-	glTexParameteri(type, GL_TEXTURE_WRAP_S, gl_wrap);
-	glTexParameteri(type, GL_TEXTURE_WRAP_T, gl_wrap);
+	glTexParameteri(gl_t, GL_TEXTURE_WRAP_S, gl_wrap);
+	glTexParameteri(gl_t, GL_TEXTURE_WRAP_T, gl_wrap);
 	if (type == GVar::TEXTYPE_3D)
-		glTexParameteri(type, GL_TEXTURE_WRAP_R, gl_wrap);
+		glTexParameteri(gl_t, GL_TEXTURE_WRAP_R, gl_wrap);
 }
 
 bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
 	glGenTextures(1, &fb);
+	return true;
+}
+
+bool OglGfx::CreateFramebuffer(NativeFrameBuffer& fb) {
+	glGenFramebuffersEXT(1, &fb);
 	return true;
 }
 
@@ -608,11 +709,56 @@ void OglGfx::DeleteTexture(NativeColorBuffer& b) {
 	glDeleteTextures(1, &b);
 }
 
+void OglGfx::CreateRenderbuffer(NativeDepthBuffer& b) {
+	glGenRenderbuffersEXT(1, &b);
+}
+
+void OglGfx::DeleteRenderbuffer(NativeDepthBuffer& b) {
+	glDeleteRenderbuffersEXT(1, &b);
+}
+
+void OglGfx::DeleteFramebuffer(NativeFrameBuffer& b) {
+	glDeleteFramebuffers(1, &b);
+}
+
 Serial::FboFormat& OglGfx::GetFormat(Parallel::Format& fmt) {
 	return fmt;
 }
 
+void OglGfx::Uniform1i(int idx, int i) {
+	glUniform1i(idx, i);
+}
 
+void OglGfx::Uniform1f(int idx, float f) {
+	glUniform1f(idx, f);
+}
+
+void OglGfx::Uniform2f(int idx, float f0, float f1) {
+	glUniform2f(idx, f0, f1);
+}
+
+void OglGfx::Uniform3f(int idx, float f0, float f1, float f2) {
+	glUniform3f(idx, f0, f1, f2);
+}
+
+void OglGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
+	glUniform4f(idx, f0, f1, f2, f3);
+}
+
+void OglGfx::BeginRender() {}
+void OglGfx::EndRender() {}
+
+void OglGfx::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
+	// pass
+}
+
+void OglGfx::FramebufferTexture2D(NativeFrameBuffer& fb) {
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb, 0);
+}
+
+void OglGfx::FramebufferRenderbuffer(NativeDepthBuffer& fb) {
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb);
+}
 
 
 NAMESPACE_PARALLEL_END

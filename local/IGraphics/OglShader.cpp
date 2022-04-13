@@ -366,59 +366,6 @@ bool OglShader::CheckCompileErrors(GLuint shader, String type) {
 
 
 
-GLint OglFramebuffer::GetGlType() const {
-	using namespace GVar;
-	switch (sample) {
-		case SAMPLE_FLOAT:	return GL_FLOAT;
-		case SAMPLE_U8:		return GL_UNSIGNED_BYTE;
-		case SAMPLE_U16:	return GL_UNSIGNED_SHORT;
-		case SAMPLE_U32:	return GL_UNSIGNED_INT;
-		case SAMPLE_S32:	return GL_INT;
-	}
-	return -1;
-}
-
-GLint OglFramebuffer::GetGlFormat() const {
-	using namespace GVar;
-	ASSERT(channels >= 1 && channels <= 4);
-	if (sample != SAMPLE_FLOAT) {
-		switch (channels) {
-			case 1: return GL_RED;
-			case 2: return GL_RG;
-			case 3: return GL_RGB;
-			case 4: return GL_RGBA;
-			default: return -1;
-		}
-	}
-	else {
-		switch (channels) {
-			case 1: return GL_R32F;
-			case 2: return GL_RG32F;
-			case 3: return GL_RGB32F;
-			case 4: return GL_RGBA32F;
-			default: return -1;
-		}
-	}
-	return -1;
-}
-
-int OglFramebuffer::GetGlSize() const {
-	return size.cx * size.cy * GetGlSampleSize() * channels;
-}
-
-int OglFramebuffer::GetGlSampleSize() const {
-	using namespace GVar;
-	switch (sample) {
-		case SAMPLE_FLOAT:	return 4;
-		case SAMPLE_U8:		return 1;
-		case SAMPLE_U16:	return 2;
-		case SAMPLE_U32:	return 4;
-		case SAMPLE_S32:	return 4;
-	}
-	ASSERT(0);
-	return 0;
-}
-
 #endif
 
 

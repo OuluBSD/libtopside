@@ -95,6 +95,7 @@ void SdlGfx::SetWindowSize(NativeWindow& win, Size sz) {
 	SDL_SetWindowSize(win, sz.cx, sz.cy);
 }
 
+
 #endif
 
 

@@ -9,6 +9,11 @@
 	#include <X11/Xutil.h>
 #endif
 
+#if (defined flagLINUX) || (defined flagFREEBSD)
+	#include <X11/Xlib.h>
+	#include <X11/Xutil.h>
+#endif
+
 #if defined flagOGL
 	#include <X11/Xlib.h>
 	#include <X11/Xutil.h>
@@ -24,6 +29,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 #define SCR_VNDR_LIST \
 	SCR_VNDR(ScrX11) \
+	SCR_VNDR(ScrX11Sw) \
 	SCR_VNDR(ScrX11Glx) \
 
 
@@ -45,6 +51,31 @@ struct ScrX11 {
 		::XImage* fb;
 		::Visual* visual;
 		::GC gc;
+	};
+
+	
+	struct Thread {
+		
+	};
+	static Thread& Local() {thread_local static Thread t; return t;}
+	
+	#include "IfaceFuncs.inl"
+	
+};
+#endif
+
+#if (defined flagLINUX) || (defined flagFREEBSD)
+struct ScrX11Sw {
+	
+	struct NativeSinkDevice {
+		::Window win;
+		::Display* display;
+		::XImage* fb;
+		::Visual* visual;
+		::GC gc;
+		GfxAccelAtom<X11SwGfx> ogl;
+		::Atom  atomWmDeleteWindow;
+		::XSetWindowAttributes attr;
 	};
 
 	

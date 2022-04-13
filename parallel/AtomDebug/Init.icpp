@@ -70,8 +70,11 @@ INITBLOCK {
 			Factory::RegisterAtom<SdlVideoAtom>();
 			#ifdef flagOGL
 				Factory::RegisterAtom<SdlFboPipe>();
+				Factory::RegisterAtom<SdlFboAtom>();
 				Factory::RegisterAtom<SdlFboAtomSA>();
 				Factory::RegisterAtom<SdlOglShaderPipe>();
+				Factory::RegisterAtom<SdlOglShaderAtom>();
+				Factory::RegisterAtom<SdlOglShaderAtomSA>();
 			#endif
 		#endif
 	#endif

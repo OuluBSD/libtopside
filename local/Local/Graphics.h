@@ -29,6 +29,7 @@ public:
 	typedef RenderingVerifier CLASSNAME;
 	RenderingVerifier();
 	
+	void OnClearVars();
 	void OnRealizeVar(String key, bool state_var);
 	void OnUpdateVar(String key);
 	void OnRealizeObject(int id);
@@ -46,7 +47,7 @@ public:
 };
 
 
-#if 1
+#if 0
 	#define RendVer(x) RenderingVerifier::Local(). x ()
 	#define RendVer1(x, y) RenderingVerifier::Local(). x (y)
 	#define RendVer2(x, a0, a1) RenderingVerifier::Local(). x (a0, a1)

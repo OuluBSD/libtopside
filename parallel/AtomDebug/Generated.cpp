@@ -420,7 +420,7 @@ AtomTypeCls GlxFboAtomSA::GetType() const
 }
 
 #endif
-#if defined flagOGL
+#if defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlFboAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
@@ -442,7 +442,7 @@ AtomTypeCls SdlFboAtomSA::GetType() const
 }
 
 #endif
-#if defined flagSCREEN
+#if defined flagSDL2 && defined flagOGL
 AtomTypeCls SdlFboPipe::GetAtomType()
 {
 	return ATOM11(SDL_FBO_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
@@ -459,6 +459,28 @@ void SdlFboPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlFboPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSDL2 && defined flagOGL
+AtomTypeCls SdlFboAtom::GetAtomType()
+{
+	return ATOM11_U44(SDL_FBO_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+}
+
+LinkTypeCls SdlFboAtom::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlFboAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlFboAtom::GetType() const
 {
 	return GetAtomType();
 }
@@ -547,6 +569,50 @@ void SdlOglShaderPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlOglShaderPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagOGL
+AtomTypeCls SdlOglShaderAtom::GetAtomType()
+{
+	return ATOM11_U44(SDL_OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
+}
+
+LinkTypeCls SdlOglShaderAtom::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlOglShaderAtom::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglShaderBase>(this);
+}
+
+AtomTypeCls SdlOglShaderAtom::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagOGL
+AtomTypeCls SdlOglShaderAtomSA::GetAtomType()
+{
+	return ATOM11(SDL_OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+}
+
+LinkTypeCls SdlOglShaderAtomSA::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlOglShaderAtomSA::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglShaderBase>(this);
+}
+
+AtomTypeCls SdlOglShaderAtomSA::GetType() const
 {
 	return GetAtomType();
 }

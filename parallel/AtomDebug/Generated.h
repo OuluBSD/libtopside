@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.12 19:00:44
+// Last modified: 2022.4.13 19:00:44
 
 namespace TS {
 
@@ -335,7 +335,7 @@ public:
 };
 #endif
 
-#if defined flagOGL
+#if defined flagSDL2 && defined flagOGL
 class SdlFboAtomSA : public Sdl2OglVideoSinkDevice {
 
 public:
@@ -352,7 +352,7 @@ public:
 };
 #endif
 
-#if defined flagSCREEN
+#if defined flagSDL2 && defined flagOGL
 class SdlFboPipe : public Sdl2OglVideoSinkDevice {
 
 public:
@@ -360,6 +360,23 @@ public:
 	COPY_PANIC(SdlFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSDL2 && defined flagOGL
+class SdlFboAtom : public Sdl2OglVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlFboAtom, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlFboAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -431,6 +448,41 @@ public:
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.source.pipe")
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.source.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOGL
+class SdlOglShaderAtom : public SdlOglShaderBase {
+
+public:
+	RTTI_DECL1(SdlOglShaderAtom, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderAtom)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.source")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.source")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagOGL
+class SdlOglShaderAtomSA : public SdlOglShaderBase {
+
+public:
+	RTTI_DECL1(SdlOglShaderAtomSA, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("ogl.fbo.source.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
