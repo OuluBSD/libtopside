@@ -58,8 +58,9 @@ void SoftRendT<B>::SetViewport(Size sz) {
 	viewport_size = sz;
 }
 
-template <class B>
-void SoftRendT<B>::RenderScreenRect(bool elements) {
+#ifdef flagSDL2
+template <>
+void SoftRendT<Sdl>::RenderScreenRect(bool elements) {
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
 	SoftFramebuffer& fb = *tgt_fb;
@@ -178,6 +179,12 @@ void SoftRendT<B>::RenderScreenRect(bool elements) {
 	}
 	
 	SDL_UnlockTexture(tex);
+}
+#endif
+
+template <class B>
+void SoftRendT<B>::RenderScreenRect(bool elements) {
+	TODO
 }
 
 template <class B>

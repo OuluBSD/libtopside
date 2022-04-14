@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.13 19:00:44
+// Last modified: 2022.4.14 19:11:55
 
 namespace TS {
 
@@ -234,6 +234,23 @@ public:
 #endif
 
 #if defined flagSCREEN
+class X11SwFboPipe : public X11SwFboBase {
+
+public:
+	RTTI_DECL1(X11SwFboPipe, X11SwFboBase)
+	COPY_PANIC(X11SwFboPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
 class OglCustomer : public CustomerBase {
 
 public:
@@ -326,6 +343,40 @@ public:
 	COPY_PANIC(GlxFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.standalone")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class X11SwVideoAtomPipe : public X11SwSinkDevice {
+
+public:
+	RTTI_DECL1(X11SwVideoAtomPipe, X11SwSinkDevice)
+	COPY_PANIC(X11SwVideoAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.video.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class X11SwFboAtomSA : public X11SwSinkDevice {
+
+public:
+	RTTI_DECL1(X11SwFboAtomSA, X11SwSinkDevice)
+	COPY_PANIC(X11SwFboAtomSA)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.fbo.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

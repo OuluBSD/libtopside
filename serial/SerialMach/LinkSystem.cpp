@@ -9,14 +9,14 @@ SYS_DEF_VISIT_I(LinkSystem, vis && updated && customers && drivers && pollers)
 void LinkSystem::ForwardLinks(double dt, const char* id, LinkedList<LinkBaseRef>& atoms) {
 	int dbg_i = 0;
 	for (LinkBaseRef& c : atoms) {
+		RTLOG("LinkSystem::ForwardLinks: begin " << (String)id << " #" << dbg_i << " (" << c->ToString() << " " << HexStr(&*c) << ")");
+		
 		RealtimeSourceConfig* cfg = c->GetConfig();
 		if (!cfg) {
 			ASSERT(0);
 			RTLOG("LinkSystem::ForwardLinks: warning: GetConfig returns NULL");
 			continue;
 		}
-		
-		RTLOG("LinkSystem::ForwardLinks: begin " << (String)id << " #" << dbg_i << " (" << c->ToString() << " " << HexStr(&*c) << ")");
 		
 		WhenEnterLinkForward(&*c);
 		

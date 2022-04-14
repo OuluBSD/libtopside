@@ -1,0 +1,22 @@
+machine sdl.app: {
+	
+	chain program: {
+		state event.register;
+		
+		loop video: {
+			center.customer: true;
+			x11sw.fbo.pipe: true {
+				drawmem:		"false";
+			};
+			x11sw.video.pipe: true {
+				close_machine:	true;
+				sizeable:		true;
+				env:			event.register;
+				fragshader:		"sw_test0_fragment";
+				vtxshader:		"sw_test0_vertex";
+			};
+		};
+		
+	};
+
+};

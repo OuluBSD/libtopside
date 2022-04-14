@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.13 19:00:44
+// Last modified: 2022.4.14 19:11:55
 
 namespace TS {
 
@@ -65,10 +65,13 @@ namespace Parallel {
 	ATOM_TYPE(ECS_OGL_FBO_PIPE) \
 	ATOM_TYPE(ECS_CPU_VIDEO) \
 	ATOM_TYPE(ECS_OGL_FBO) \
+	ATOM_TYPE(X11_SW_FBO_PIPE) \
 	ATOM_TYPE(OGL_CUSTOMER) \
 	ATOM_TYPE(SDL_IMAGE_LOADER) \
 	ATOM_TYPE(VOLUME_LOADER_ATOM) \
 	ATOM_TYPE(X11_VIDEO_ATOM_PIPE) \
+	ATOM_TYPE(X11_SW_VIDEO_ATOM_PIPE) \
+	ATOM_TYPE(X11_SW_FBO_ATOM_S_A) \
 	ATOM_TYPE(SDL_FBO_PIPE_SIDE) \
 	ATOM_TYPE(SDL_VIDEO_PROG_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_S_A) \
@@ -89,10 +92,13 @@ namespace Parallel {
 	ATOM_CLASS(EcsOglFboPipe) \
 	ATOM_CLASS(EcsCpuVideo) \
 	ATOM_CLASS(EcsOglFbo) \
+	ATOM_CLASS(X11SwFboPipe) \
 	ATOM_CLASS(OglCustomer) \
 	ATOM_CLASS(SdlImageLoader) \
 	ATOM_CLASS(VolumeLoaderAtom) \
 	ATOM_CLASS(X11VideoAtomPipe) \
+	ATOM_CLASS(X11SwVideoAtomPipe) \
+	ATOM_CLASS(X11SwFboAtomSA) \
 	ATOM_CLASS(SdlFboPipeSide) \
 	ATOM_CLASS(SdlVideoProgAtom) \
 	ATOM_CLASS(SdlVideoAtomSA) \

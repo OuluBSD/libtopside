@@ -4,16 +4,18 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
-struct GfxVertexShaderArgs;
-struct GfxFragmentShaderArgs;
+template <class Backend> struct VertexShaderArgsT;
+template <class Backend> struct FragmentShaderArgsT;
 
-struct SoftShaderBase : RTTIBase {
-	RTTI_DECL0(SoftShaderBase)
+
+template <class Gfx>
+struct SoftShaderBaseT : RTTIBase {
+	RTTI_DECL0(SoftShaderBaseT)
 	
-	virtual ~SoftShaderBase() {}
+	virtual ~SoftShaderBaseT() {}
 	
-	virtual void Process(GfxVertexShaderArgs& args) {Panic("not implemented");}
-	virtual void Process(GfxFragmentShaderArgs& args) {Panic("not implemented");}
+	virtual void Process(VertexShaderArgsT<Gfx>& args) {Panic("not implemented");}
+	virtual void Process(FragmentShaderArgsT<Gfx>& args) {Panic("not implemented");}
 };
 
 

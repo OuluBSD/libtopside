@@ -113,6 +113,8 @@ HEADER_ARG(			EcsEventsAtom,		reqdef_flagSCREEN,	1)
 
 HEADER11(			EcsCpuVideoPipe,	EcsVideoBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
 HEADER_ACTION(		EcsCpuVideoPipe,	center.video.ecs.pipe)
+//HEADER_ARG(			EcsCpuVideoPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		EcsCpuVideoPipe,	PIPE, PROCESS)
 HEADER_ARG(			EcsCpuVideoPipe,	reqdef_flagSCREEN,	1)
 
 HEADER11(			EcsProgVideo,		EcsVideoBase,				pipe,		CenterProg,		CenterOrder,	CenterProg)
@@ -130,6 +132,17 @@ HEADER_ARG(			EcsCpuVideo,		reqdef_flagSCREEN,	1)
 HEADER55_U44(		EcsOglFbo,			EcsVideoBase,				pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
 HEADER_ACTION(		EcsOglFbo,			ogl.fbo.ecs)
 HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
+
+
+
+
+
+HEADER11(			X11SwFboPipe,		X11SwFboBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
+HEADER_ACTION(		X11SwFboPipe,		x11sw.fbo.pipe)
+HEADER_ARG(			X11SwFboPipe,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11SwFboPipe,		PIPE, PROCESS)
+HEADER_ARG(			X11SwFboPipe,		reqdef_flagSCREEN,			1)
+
 
 
 
@@ -189,6 +202,20 @@ HEADER_ACTION(		GlxFboAtomSA,		glx.fbo.standalone)
 HEADER_ARG(			GlxFboAtomSA,		reqdef_flagOGL,			1)
 HEADER_ARG(			GlxFboAtomSA,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		GlxFboAtomSA,		POLLER_PIPE, PROCESS)
+
+
+
+HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER_ACTION(		X11SwVideoAtomPipe,	x11sw.video.pipe)
+HEADER_ARG(			X11SwVideoAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11SwVideoAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11SwVideoAtomPipe,	POLLER_PIPE, PROCESS)
+
+HEADER11(			X11SwFboAtomSA,		X11SwSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER_ACTION(		X11SwFboAtomSA,		x11sw.fbo.standalone)
+HEADER_ARG(			X11SwFboAtomSA,		reqdef_flagSCREEN,			1)
+HEADER_ARG(			X11SwFboAtomSA,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11SwFboAtomSA,		POLLER_PIPE, PROCESS)
 
 
 

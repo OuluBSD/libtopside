@@ -25,6 +25,7 @@ using CpuDataObject		= SdlCpuDataObject;*/
 
 #if 0
 struct CpuVertexShaderArgs {
+	
 };
 
 struct CpuFragmentShaderArgs {

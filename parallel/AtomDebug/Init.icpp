@@ -56,6 +56,9 @@ INITBLOCK {
 		
 		Factory::RegisterAtom<VideoDbgSrc>();
 		Factory::RegisterAtom<EventStatePipe>();
+		Factory::RegisterAtom<X11SwFboAtomSA>();
+		Factory::RegisterAtom<X11SwFboPipe>();
+		Factory::RegisterAtom<X11SwVideoAtomPipe>();
 		
 		#if defined flagPOSIX
 			Factory::RegisterAtom<X11VideoAtomPipe>();

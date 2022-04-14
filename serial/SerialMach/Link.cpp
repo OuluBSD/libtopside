@@ -76,14 +76,14 @@ bool LinkBase::NegotiateSourceFormat(int src_ch, const Format& fmt) {
 		}
 		
 		if (!e->other->NegotiateSinkFormat(e->other_ch_i, fmt)) {
-			LOG("LinkBase::NegotiateSourceFormat: error: audio format negotiation failed");
+			LOG("LinkBase::NegotiateSourceFormat: error: format negotiation failed");
 			return false;
 		}
 	}
 	else {
 		DUMP(*prim_link_sink);
 		if (!prim_link_sink->NegotiateSinkFormat(0, fmt)) {
-			LOG("LinkBase::NegotiateSourceFormat: error: audio format negotiation failed");
+			LOG("LinkBase::NegotiateSourceFormat: error: format negotiation failed");
 			return false;
 		}
 	}

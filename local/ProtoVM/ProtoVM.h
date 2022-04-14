@@ -11,6 +11,7 @@ using namespace UPP;
 #include "Mechanical.h"
 #include "Component.h"
 #include "Bus.h"
+#include "Link.h"
 #include "Pcb.h"
 #include "Machine.h"
 #include "Generic.h"

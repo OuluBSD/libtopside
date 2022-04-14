@@ -9,5 +9,6 @@ static void SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase&);
 static bool SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase&, PacketValue& in, PacketValue& out);
 static bool SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int, const Packet&);
 static void SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig&);
+static bool SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt);
 
 	

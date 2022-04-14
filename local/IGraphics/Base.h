@@ -10,14 +10,14 @@ class BufferBaseT :
 {
 	
 protected:
-	using Buffer = typename Gfx::Buffer;
+	using Buffer = BufferT<Gfx>;
 	Buffer buf;
 	
 	RealtimeSourceConfig* last_cfg = 0;
 	
 public:
 	using BufferBase = BufferBaseT<Gfx>;
-	RTTI_DECL1(BufferBase, Atom);
+	RTTI_DECL1(BufferBaseT, Atom);
 	
 	void Visit(RuntimeVisitor& vis) override {vis % buf; vis.VisitThis<Atom>(this);}
 	void Update(double dt) override {buf.Update(dt);}

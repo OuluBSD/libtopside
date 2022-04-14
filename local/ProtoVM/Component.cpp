@@ -6,9 +6,9 @@ Pin::Pin() {
 	
 }
 
-Pin& Pin::SetReference(double voltage) {
+Pin& Pin::SetReference(bool is_high) {
 	is_ref_volt = true;
-	this->voltage = voltage;
+	this->is_high = is_high;
 	Clear();
 	AddBidirectional("0").SetMultiConn();
 	return *this;

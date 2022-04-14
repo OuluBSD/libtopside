@@ -291,6 +291,28 @@ AtomTypeCls EventStatePipe::GetType() const
 
 #endif
 #if defined flagSCREEN
+AtomTypeCls X11SwFboPipe::GetAtomType()
+{
+	return ATOM11(X11_SW_FBO_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+}
+
+LinkTypeCls X11SwFboPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void X11SwFboPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SwFboBase>(this);
+}
+
+AtomTypeCls X11SwFboPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
 	return ATOM11(OGL_CUSTOMER, CUSTOMER, OGL, ORDER, OGL, RECEIPT, OGL, ORDER);
@@ -415,6 +437,50 @@ void GlxFboAtomSA::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls GlxFboAtomSA::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls X11SwVideoAtomPipe::GetAtomType()
+{
+	return ATOM11(X11_SW_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+}
+
+LinkTypeCls X11SwVideoAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11SwVideoAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SwSinkDevice>(this);
+}
+
+AtomTypeCls X11SwVideoAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls X11SwFboAtomSA::GetAtomType()
+{
+	return ATOM11(X11_SW_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+}
+
+LinkTypeCls X11SwFboAtomSA::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11SwFboAtomSA::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SwSinkDevice>(this);
+}
+
+AtomTypeCls X11SwFboAtomSA::GetType() const
 {
 	return GetAtomType();
 }

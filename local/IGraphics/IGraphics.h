@@ -102,6 +102,9 @@ typedef unsigned int	Gxbf;
 #include "GfxAccelAtom.h"
 
 #include "Base.h"
+#include "FboBase.h"
+
+#include "ObjViewProg.h"
 
 
 

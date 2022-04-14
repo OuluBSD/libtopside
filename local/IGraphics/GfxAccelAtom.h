@@ -42,7 +42,7 @@ protected:
     NativeWindow			win;
     NativeDisplay			display;
     NativeRenderer			nat_rend;
-    SystemFrameBuffer		fb;
+    SystemFrameBuffer*		fb = 0;
 	AtomBase*				ab = NULL;
 	int						fb_stride;
     RendererInfo			rend_info;

@@ -346,6 +346,10 @@ bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pac
 	return true;
 }
 
+bool ScrX11Glx::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	return false;
+}
+
 
 
 

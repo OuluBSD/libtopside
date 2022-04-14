@@ -42,6 +42,7 @@ class VideoFormat;
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
 	GFX_CLS(Buffer, g) \
+	GFX_CLS(BufferBase, g) \
 
 
 #define GFX_RENDSYS_LIST \
@@ -82,7 +83,6 @@ struct CpuGfxT : CpuGfx {
 	// using SoftVertexArray	= SoftVertexArrayT<Backend>;
 	
 	using FramebufferBase	= GfxFramebuffer;
-	using BufferBase		= GfxBuffer;
 	
 	struct Thread {
 		SoftRend rend;
@@ -199,6 +199,8 @@ struct X11SwGfx : CpuGfxT<X11Sw>, X11Gfx {
 	GFX_CLS_LIST(X11Sw)
 	#undef GFX_CLS
 	
+	
+	static void DeleteContext(NativeGLContext& ctx);
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
@@ -318,11 +320,17 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #endif
 
+#if defined flagPOSIX
+	#define X11SW_GFXTYPE GFXTYPE(X11Sw)
+	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11SwGfx>;
+#else
+	#define X11SW_GFXTYPE
+	#define X11SW_EXCPLICIT_INITIALIZE_CLASS(x)
+#endif
+
 #if defined flagPOSIX && defined flagOGL
-	#define X11OGL_GFXTYPE \
-		GFXTYPE(X11Ogl)
-	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
-		template struct x <X11OglGfx>;
+	#define X11OGL_GFXTYPE GFXTYPE(X11Ogl)
+	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <X11OglGfx>;
 #else
 	#define X11OGL_GFXTYPE
 	#define X11OGL_EXCPLICIT_INITIALIZE_CLASS(x)
@@ -333,12 +341,14 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 	 \
 	SDL_GFXTYPE \
 	X11OGL_GFXTYPE \
+	X11SW_GFXTYPE \
 
 
 #define GFX_EXCPLICIT_INITIALIZE_CLASS(x) \
 	 \
 	SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	X11OGL_EXCPLICIT_INITIALIZE_CLASS(x) \
+	X11SW_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 
 NAMESPACE_PARALLEL_END

@@ -4,18 +4,24 @@
 
 
 class Pcb;
-
+struct Link;
 
 class ElectricNodeBase : RTTIBase {
 	
-protected:
-	friend class Pcb;
 	
+public:
 	typedef enum {
 		V_WHOLE,
 		V_PARTIAL,
 		V_PARTIAL_RANGE,
 	} Type;
+	
+	struct Connector;
+	
+	struct CLink : Moveable<CLink> {
+		Connector* conn = 0;
+		Link* link = 0;
+	};
 	
 	struct Connector : Moveable<Connector> {
 		String name;
@@ -24,7 +30,8 @@ protected:
 		bool accept_multiconn = false;
 		bool required = true;
 		 
-		Vector<Connector*> links;
+		Vector<CLink> links;
+		ElectricNodeBase* base = 0;
 		
 		bool IsConnected() const {return !links.IsEmpty();}
 		bool IsRequired() const {return required;}
@@ -33,7 +40,11 @@ protected:
 		void SetRequired(bool b=true) {required = b;}
 	};
 	
+	
+protected:
 	friend class Pcb;
+	friend class LinkMap;
+	
 	Pcb* pcb = 0;
 	ElectricNodeBase* ptr = 0;
 	int ptr_i = -1;

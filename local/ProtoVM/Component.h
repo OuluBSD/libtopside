@@ -7,10 +7,10 @@ struct Pin : public ElcBase {
 	RTTI_DECL1(Pin, ElcBase);
 	
 	bool is_ref_volt = false;
-	double voltage;
+	bool is_high = false;
 	
 	Pin();
-	Pin& SetReference(double voltage);
+	Pin& SetReference(bool is_high);
 	
 };
 

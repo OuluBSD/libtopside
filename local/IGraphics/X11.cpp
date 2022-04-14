@@ -61,5 +61,11 @@ void X11OglGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRende
 
 #endif
 
+void X11SwGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+	ASSERT(d && w);
+	XFlush(d);
+}
+
+
 
 NAMESPACE_PARALLEL_END

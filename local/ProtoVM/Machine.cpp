@@ -52,7 +52,16 @@ bool Machine::Init() {
 	}
 	LOG("Machine::Init: all pcbs fully connected!");
 	
+	LinkMap l;
+	for (Pcb& pcb : pcbs) {
+		pcb.GetLinks(l.links);
+	}
+	
+	l.UpdateLinkLayers();
+	
+	
 	TODO
+	
 	return true;
 }
 

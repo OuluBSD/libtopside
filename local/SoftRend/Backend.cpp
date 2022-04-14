@@ -3,6 +3,19 @@
 NAMESPACE_TOPSIDE_BEGIN
 
 
+bool X11Sw::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
+	
+	TODO
+	
+}
+
+void X11Sw::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h) {
+	
+	TODO
+	
+}
+
+
 #ifdef flagSDL2
 bool Sdl::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
 	SDL_Rect re {

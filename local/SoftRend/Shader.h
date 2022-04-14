@@ -8,8 +8,9 @@ template <class Backend>
 class SoftProgramT;
 
 
-struct SoftShaderLibrary {
-	typedef SoftShaderBase* (*ShaderFactory)();
+template <class Backend>
+struct SoftShaderLibraryT {
+	typedef SoftShaderBaseT<Backend>* (*ShaderFactory)();
 	
 	static VectorMap<String, ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
 	
@@ -19,7 +20,8 @@ struct SoftShaderLibrary {
 		shader_classes[type].Add(key, &CreateShader<T>);
 	}
 	template <class T>
-	static SoftShaderBase* CreateShader() {return new T();}
+	static SoftShaderBaseT<Backend>* CreateShader() {return new T();}
+	
 };
 
 template <class Backend>
@@ -28,7 +30,7 @@ class SoftShaderT {
 	GVar::ShaderType type;
 	String src;
 	String err;
-	SoftShaderBase* s = 0;
+	SoftShaderBaseT<Backend>* s = 0;
 	
 protected:
 	using SoftProgram = SoftProgramT<Backend>;
@@ -44,9 +46,9 @@ public:
 	
 	void SetSource(String s);
 	GVar::ShaderType GetType() const {return type;}
-	SoftShaderBase& Get() {ASSERT(s); return *s;}
+	SoftShaderBaseT<Backend>& Get() {ASSERT(s); return *s;}
 	
-	void operator=(SoftShaderBase& s) {this->s = &s;}
+	void operator=(SoftShaderBaseT<Backend>& s) {this->s = &s;}
 	void operator=(const Nuller&) {Clear();}
 	operator bool() const {return inited;}
 	String GetLastError() const {return err;}

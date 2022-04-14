@@ -122,7 +122,7 @@ AtomTypeCls EcsCpuVideoPipe::GetAtomType()
 
 LinkTypeCls EcsCpuVideoPipe::GetLinkType()
 {
-	return LINKTYPE(, );
+	return LINKTYPE(PIPE, PROCESS);
 }
 
 void EcsCpuVideoPipe::Visit(RuntimeVisitor& vis)

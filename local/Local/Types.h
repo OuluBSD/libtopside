@@ -15,6 +15,8 @@ typedef unsigned char	Byte;
 typedef void			Void;
 
 
+class RuntimeVisitor;
+class Draw;
 
 
 class BinderIfaceEvents : RTTIBase {
@@ -31,6 +33,9 @@ public:
 	RTTI_DECL0(BinderIfaceVideo);
 	
 	virtual void Render(Draw& draw) = 0;
+	
+	virtual void Initialize() {}
+	virtual void Visit(RuntimeVisitor& vis) {}
 	
 };
 

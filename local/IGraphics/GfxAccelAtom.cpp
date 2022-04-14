@@ -71,7 +71,7 @@ void GfxAccelAtom<Gfx>::SetNative(NativeDisplay& display, NativeWindow& window, 
 	win = window;
 	this->display = display;
 	this->nat_rend = rend ? *rend : 0;
-	this->fb = fb ? *fb : 0;
+	this->fb = fb ? fb : 0;
 }
 
 template <class Gfx>

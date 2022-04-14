@@ -56,6 +56,10 @@ struct ScreenSinkDeviceT : ScrSinkDevice {
 		return Scr::SinkDevice_Finalize(dev, *this, cfg);
 	}
 
+	bool NegotiateSinkFormat(Serial::Link& link, int sink_ch, const Format& new_fmt) override {
+		return Scr::SinkDevice_NegotiateSinkFormat(dev, *this, link, sink_ch, new_fmt);
+	}
+
 	
 };
 

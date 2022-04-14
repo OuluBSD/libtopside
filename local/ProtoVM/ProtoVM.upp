@@ -10,6 +10,8 @@ file
 	Generic.cpp,
 	Machine.h,
 	Machine.cpp,
+	Link.h,
+	Link.cpp,
 	Pcb.h,
 	Pcb.cpp,
 	Component.h,

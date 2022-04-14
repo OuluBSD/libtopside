@@ -508,5 +508,7 @@ template <class B> void CpuGfxT<B>::UnbindFramebuffer() {
 template struct CpuGfxT<Sdl>;
 #endif
 
+template struct CpuGfxT<X11Sw>;
+
 
 NAMESPACE_PARALLEL_END

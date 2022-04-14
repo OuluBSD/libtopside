@@ -82,6 +82,11 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 	bool atrivr = from.IsTrivialSourceDefaultRange();
 	bool btrivr = to.IsTrivialSinkDefaultRange();
 	
+	Pin* src_pin = CastPtr<Pin>(&from);
+	Pin* sink_pin = CastPtr<Pin>(&to);
+	ASSERT(!src_pin || !src_pin->is_ref_volt || !src_pin->is_high);
+	ASSERT(!sink_pin || !sink_pin->is_ref_volt || sink_pin->is_high);
+	
 	
 	if (atriv && btriv) {
 		ElectricNodeBase::Connector& src = from.GetTrivialSource();
@@ -93,8 +98,8 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 		if (!sink.IsConnectable())
 			throw Exc((String)"sink is not connectable, from " + a + " to " + b);
 		
-		src.links << &sink;
-		sink.links << &src;
+		src.links.Add().conn = &sink;
+		sink.links.Add().conn = &src;
 	}
 	else if (aw == bw && atrivr && btrivr) {
 		for(int i = 0; i < aw; i++) {
@@ -107,12 +112,74 @@ void Pcb::Attach(ElectricNodeBase& from, ElectricNodeBase& to) {
 			if (!sink.IsConnectable())
 				throw Exc((String)"sink is not connectable, from " + a + " to " + b);
 			
-			src.links << &sink;
-			sink.links << &src;
+			src.links.Add().conn = &sink;
+			sink.links.Add().conn = &src;
 		}
 	}
 	else {
 		TODO
 	}
+	
+}
+
+void Pcb::GetLinks(Array<Link>& links) {
+	
+	for (ElectricNodeBase& n : nodes) {
+		for (ElectricNodeBase::Connector& from : n.conns) {
+			for (ElectricNodeBase::CLink& from_clink : from.links) {
+				if (from_clink.link != 0)
+					continue;
+				
+				ElectricNodeBase::Connector& to = *from_clink.conn;
+				ElectricNodeBase::CLink* to_clink = 0;
+				for (ElectricNodeBase::CLink& clink : to.links) {
+					if (clink.conn == &from)
+						to_clink = &clink;
+				}
+				ASSERT(to_clink);
+				ASSERT(to.base != &n);
+				
+				Pin* src_pin = CastPtr<Pin>(&n);
+				Pin* sink_pin = CastPtr<Pin>(to.base);
+				bool src_is_sink = src_pin && src_pin->is_ref_volt && src_pin->is_high;
+				bool sink_is_src = sink_pin && sink_pin->is_ref_volt && !sink_pin->is_high;
+				bool src_is_src = src_pin && src_pin->is_ref_volt && !src_pin->is_high;
+				bool sink_is_sink = sink_pin && sink_pin->is_ref_volt && sink_pin->is_high;
+				
+				if (src_pin && src_pin->is_ref_volt && sink_pin && sink_pin->is_ref_volt && src_pin->is_high == sink_pin->is_high) {
+					Panic("internal error");
+				}
+					
+				Link& l = links.Add();
+				if (!src_is_src && !sink_is_sink && (src_is_sink || sink_is_src || from.is_sink || to.is_src)) {
+					l.sink = &from;
+					l.src = &to;
+				}
+				else {
+					l.sink = &to;
+					l.src = &from;
+				}
+				
+				Pin* test_src_pin = CastPtr<Pin>(l.src->base);
+				ASSERT(!test_src_pin || !test_src_pin->is_ref_volt || !test_src_pin->is_high);
+				
+				from_clink.link = &l;
+				to_clink->link = &l;
+			}
+		}
+	}
+	
+	/*
+	for (ElectricNodeBase& n : refs) {
+		for (ElectricNodeBase::Connector& from : n.conns) {
+			for (ElectricNodeBase::CLink& to : from.links) {
+				Link& l = links.Add();
+				l.node = &n;
+				l.from_conn = &from;
+				l.to_conn = to;
+				
+			}
+		}
+	}*/
 	
 }

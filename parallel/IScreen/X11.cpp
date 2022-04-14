@@ -197,6 +197,12 @@ bool ScrX11::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Packet
 	return true;
 }
 
+bool ScrX11::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+	TODO
+	return false;
+}
+
+
 
 
 

@@ -65,7 +65,7 @@ public:
 	virtual bool			ProcessPackets(PacketIO& io) = 0;
 	virtual bool			ForwardAsyncMem(byte* mem, int size) {Panic("ForwardAsyncMem unimplemented"); return false;}
 	virtual bool			IsConsumedPartialPacket() {return 0;}
-	virtual void			Forward(FwdScope& fwd) {}
+	virtual void			Forward(FwdScope& fwd);
 	virtual bool			PostInitialize() {return true;}
 	virtual bool			IsReady(PacketIO& io) {return atom->IsReady(io);}
 	virtual bool			PassLinkSideSink(LinkBaseRef sink) {return true;}
@@ -119,6 +119,8 @@ public:
 	//void					ForwardDriver(FwdScope& fwd);
 	void					ForwardPipe(FwdScope& fwd);
 	void					ForwardSideConnections();
+	LinkedList<Exchange>&	SideSinks() {return side_sink_conn;}
+	LinkedList<Exchange>&	SideSources() {return side_src_conn;}
 	
 public:
 	RTTI_DECL_R1(LinkBase, PacketForwarder)

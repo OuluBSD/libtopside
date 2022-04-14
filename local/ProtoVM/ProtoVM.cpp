@@ -7,7 +7,7 @@ CONSOLE_APP_MAIN {
 	Machine		mach;
 	int			max_ticks = 10;
 	
-	
+	SetupUK101(mach);
 	
 	if (mach.Init()) {
 		

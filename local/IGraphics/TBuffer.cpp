@@ -73,13 +73,13 @@ bool BufferT<Gfx>::LoadShaderFile(GVar::ShaderType shader_type, String shader_pa
 
 template <class Gfx>
 bool BufferT<Gfx>::LoadBuiltinShader(GVar::ShaderType shader_type, String id) {
-	int i = SoftShaderLibrary::shader_classes[shader_type].Find(id);
+	int i = SoftShaderLibraryT<Gfx>::shader_classes[shader_type].Find(id);
 	if (i < 0) {
 		last_error = "could not find shader";
 		return false;
 	}
 	
-	soft[shader_type] = SoftShaderLibrary::shader_classes[shader_type][i]();
+	soft[shader_type] = SoftShaderLibraryT<Gfx>::shader_classes[shader_type][i]();
 	
 	return true;
 }

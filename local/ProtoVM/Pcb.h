@@ -43,6 +43,7 @@ public:
 	String GetName() const {return name;}
 	
 	void Attach(ElectricNodeBase& from, ElectricNodeBase& to);
+	void GetLinks(Array<Link>& links);
 	
 };
 

@@ -5,7 +5,7 @@ NAMESPACE_SERIAL_BEGIN
 
 
 void LinkBase::ForwardAtom(FwdScope& fwd) {
-	RTLOG("LinkBase::ForwardAtom");
+	RTLOG("LinkBase::ForwardAtom: " << GetDynamicName());
 	
 	atom->fwd_lock.Enter();
 	last_cfg = &fwd.Cfg();
@@ -62,6 +62,9 @@ void LinkBase::ForwardAtom(FwdScope& fwd) {
 	Forward(fwd);
 }*/
 
+void LinkBase::Forward(FwdScope& fwd) {
+	last_cfg = &fwd.Cfg();
+}
 
 void LinkBase::ForwardPipe(FwdScope& fwd) {
 	POPO(Pol::Serial::Atom::ConsumerFirst);
