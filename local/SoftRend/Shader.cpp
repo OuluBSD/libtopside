@@ -1,10 +1,19 @@
 #include "SoftRend.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 //VectorMap<String, SoftShaderLibrary::FragmentShader> SoftShaderLibrary::frag_shaders;
-VectorMap<String, SoftShaderLibrary::ShaderFactory> SoftShaderLibrary::shader_classes[GVar::SHADERTYPE_COUNT];
+template <class Backend>
+	VectorMap<String, typename SoftShaderLibraryT<Backend>::ShaderFactory>
+		SoftShaderLibraryT<Backend>::shader_classes[GVar::SHADERTYPE_COUNT];
+
+template <class Backend>
+	VectorMap<String, typename SoftShaderLibraryT<Backend>::ShaderFactory>&
+		SoftShaderLibraryT<Backend>::GetMap(int i) {
+	ASSERT(i >= 0 && i < GVar::SHADERTYPE_COUNT);
+	return shader_classes[i];
+}
 
 
 
@@ -39,7 +48,8 @@ void SoftShaderT<B>::SetTestShader(SoftShaderLibrary::FragmentShader fs) {
 	this->fs = fs;
 }*/
 
+SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftShaderT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Backend_h_
 #define _SoftRend_Backend_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 #ifdef flagPOSIX
 
@@ -66,6 +66,6 @@ struct Sdl {
 
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Library_h_
 #define _SoftRend_Library_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 namespace Shaders {
 
 enum {
@@ -40,6 +40,6 @@ struct FS_Sdl2CpuSimpleSingle : SoftShaderBase {
 
 
 }
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

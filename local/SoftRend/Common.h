@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Common_h_
 #define _SoftRend_Common_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Backend> struct VertexShaderArgsT;
@@ -102,6 +102,6 @@ struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	
 };
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

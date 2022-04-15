@@ -14,7 +14,7 @@ void InitObjView() {
 INITBLOCK_(Shaders) {
 	using namespace TS;
 	
-	InitObjView<X11Sw>();
+	InitObjView<X11SwGfx>();
 	
 }
 

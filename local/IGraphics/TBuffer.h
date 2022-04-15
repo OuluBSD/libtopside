@@ -5,30 +5,32 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-struct BufferT : Gfx::BufferBase {
+struct BufferT : GfxBuffer {
+	static_assert(Gfx::is_vendor_agnostic == false, "");
 	//static_assert(Gfx::is_vendor_agnostic == true, "For BufferT Gfx template argument should be vendor agnostic");
 	
 	using Base = BufferT<Gfx>;
+	using Buffer = BufferT<Gfx>;
 	//using BinderIface = typename Gfx::BinderIface;
 	using DataState = DataStateT<Gfx>;
 	//using Framebuffer = typename Gfx::Framebuffer;
 	using Framebuffer = FramebufferT<Gfx>;
 	//using ContextState = typename Gfx::ContextState;
 	using RuntimeState = RuntimeStateT<Gfx>;
-	using Buffer = typename Gfx::Buffer;
 	//using Shader = typename Gfx::Shader;
 	//using ShaderState = typename Gfx::ShaderState;
 	using ShaderState = ShaderStateT<Gfx>;
 	//using InputState  = typename Gfx::InputState;
 	using InputState  = InputStateT<Gfx>;
 	using ContextState  = ContextStateT<Gfx>;
-	using ShaderPipeline = typename Gfx::ShaderPipeline;
-	using DataObject = typename Gfx::DataObject;
+	using ShaderPipeline = ShaderPipelineT<Gfx>;
+	using DataObject = DataObjectT<Gfx>;
 	using Compiler = typename Gfx::Compiler;
 	using Linker = typename Gfx::Linker;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using Sample = GVar::Sample;
 	using SoftShaderBase = SoftShaderBaseT<typename Gfx::Dev>;
+	using SoftShaderLibrary = SoftShaderLibraryT<typename Gfx::Dev>;
 	
 	RTTI_DECL1(BufferT, GfxBuffer)
 	

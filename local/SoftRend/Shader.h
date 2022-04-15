@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Shader_h_
 #define _SoftRend_Shader_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Backend>
@@ -14,11 +14,14 @@ struct SoftShaderLibraryT {
 	
 	static VectorMap<String, ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
 	
+	static VectorMap<String, ShaderFactory>& GetMap(int i);
+	
 	template <class T>
 	static void AddShaderClass(GVar::ShaderType type, String key) {
-		ASSERT(shader_classes[type].Find(key) < 0);
-		shader_classes[type].Add(key, &CreateShader<T>);
+		ASSERT(GetMap(type).Find(key) < 0);
+		GetMap(type).Add(key, &CreateShader<T>);
 	}
+	
 	template <class T>
 	static SoftShaderBaseT<Backend>* CreateShader() {return new T();}
 	
@@ -59,6 +62,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

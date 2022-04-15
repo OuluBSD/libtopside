@@ -19,6 +19,7 @@ template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return va
 
 template <class Gfx>
 class GfxAccelAtom {
+	static_assert(Gfx::is_vendor_agnostic == false, "");
 	
 protected:
 	friend class Events;

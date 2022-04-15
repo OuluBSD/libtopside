@@ -1,6 +1,6 @@
 #include <IGraphics/IGraphics.h>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 namespace Shaders {
 
 
@@ -30,4 +30,4 @@ void FS_Sdl2CpuSimpleSingle::Process(GfxFragmentShaderArgs& a)
 
 
 }
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

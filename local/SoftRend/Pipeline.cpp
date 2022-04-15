@@ -1,6 +1,6 @@
 #include "SoftRend.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class B>
@@ -32,4 +32,4 @@ void SoftPipelineT<B>::Use(SoftProgram& prog, uint32 bmask) {
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftPipelineT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

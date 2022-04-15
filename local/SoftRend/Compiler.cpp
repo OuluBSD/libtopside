@@ -1,6 +1,6 @@
 #include "SoftRend.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class B>
@@ -19,4 +19,4 @@ bool SoftCompilerT<B>::Compile(SoftShader& s) {
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftCompilerT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

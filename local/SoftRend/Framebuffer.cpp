@@ -1,6 +1,6 @@
 #include "SoftRend.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class B>
@@ -49,4 +49,4 @@ void SoftFramebufferT<B>::SetParam(GVar::TextureType type, GVar::Filter filter, 
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftFramebufferT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

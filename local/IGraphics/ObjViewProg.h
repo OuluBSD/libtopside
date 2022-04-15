@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Gfx>
-class ObjViewVertexT : public ShaderBaseT<Gfx> {
+class ObjViewVertexT : public SoftShaderBaseT<Gfx> {
 	
 public:
 	void Process(VertexShaderArgsT<Gfx>& args) override;
@@ -14,7 +14,7 @@ public:
 };
 
 template <class Gfx>
-class ObjViewFragmentT : public ShaderBaseT<Gfx> {
+class ObjViewFragmentT : public SoftShaderBaseT<Gfx> {
 	
 public:
 	void Process(FragmentShaderArgsT<Gfx>& args) override;

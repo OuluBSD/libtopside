@@ -42,7 +42,6 @@ class VideoFormat;
 	GFX_CLS(Renderer, g) \
 	GFX_CLS(StateDraw, g) \
 	GFX_CLS(Buffer, g) \
-	GFX_CLS(BufferBase, g) \
 
 
 #define GFX_RENDSYS_LIST \
@@ -52,11 +51,19 @@ class VideoFormat;
 	GFX_RSYS(X11Sw) \
 
 
-#define GFX_CLS(x, g) struct g##x;
+#define GFX_CLS(x, g) template <class Gfx> struct x##T;
+GFX_CLS_LIST(_)
+#undef GFX_CLS
+
+#define GFX_RSYS(x) struct x##Gfx;
+GFX_RENDSYS_LIST
+#undef GFX_RSYS
+
+/*#define GFX_CLS(x, g) struct g##x;
 #define GFX_RSYS(x) GFX_CLS_LIST(x)
 GFX_RENDSYS_LIST
 #undef GFX_RSYS
-#undef GFX_CLS
+#undef GFX_CLS*/
 
 
 struct GfxFramebuffer;
@@ -194,8 +201,10 @@ struct X11SwGfx : CpuGfxT<X11Sw>, X11Gfx {
 	
 	using SystemFrameBuffer = NativeFrameBuffer;
 	using NativeGLContext = void*;
+	using BufferBase = GfxBuffer;
 	
-	#define GFX_CLS(x, g) using x = g##x;
+	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
+	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(X11Sw)
 	#undef GFX_CLS
 	
@@ -207,7 +216,8 @@ struct X11SwGfx : CpuGfxT<X11Sw>, X11Gfx {
 
 #ifdef flagOGL
 struct X11OglGfx : OglGfx, X11Gfx {
-	#define GFX_CLS(x, g) using x = g##x;
+	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
+	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(X11Ogl)
 	#undef GFX_CLS
 	
@@ -278,7 +288,8 @@ struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
 	
 	using SystemFrameBuffer		= SDL_Texture*;
 	
-	#define GFX_CLS(x, g) using x = g##x;
+	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
+	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
@@ -290,7 +301,8 @@ struct SdlCpuGfx : CpuGfxT<Sdl>, SdlGfx {
 struct SdlOglGfx : OglGfx, SdlGfx {
 	static const bool is_vendor_agnostic = false;
 	
-	#define GFX_CLS(x, g) using x = g##x;
+	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
+	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS
 	

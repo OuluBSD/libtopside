@@ -1,7 +1,7 @@
 #include "SoftRend.h"
 //#include <Graphics/Graphics.h>
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class B>
@@ -133,4 +133,4 @@ void SoftProgramT<B>::SetVar(int idx, const mat4& mat) {
 SOFTREND_EXCPLICIT_INITIALIZE_CLASS(SoftProgramT)
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

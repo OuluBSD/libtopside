@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Renderer_h_
 #define _SoftRend_Renderer_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 template <class Backend>
@@ -11,6 +11,7 @@ class SoftRendT {
 	using SoftShader			= SoftShaderT<Backend>;
 	using FragmentShaderArgs	= FragmentShaderArgsT<Backend>;
 	using SoftProgram			= SoftProgramT<Backend>;
+	using SoftShaderBase		= SoftShaderBaseT<Backend>;
 	using Texture				= typename Backend::NativeTexture;
 	using Surface				= typename Backend::NativeSurface;
 	using NativeColorBuffer		= typename Backend::NativeColorBuffer;
@@ -101,6 +102,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

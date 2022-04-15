@@ -4,11 +4,6 @@
 #include <Local/Local.h>
 #include <High/High.h>
 
-#define NAMESPACE_PARALLEL_NAME		Parallel
-#define PARALLEL					Parallel
-#define NAMESPACE_PARALLEL_BEGIN	namespace TS { namespace NAMESPACE_PARALLEL_NAME {
-#define NAMESPACE_PARALLEL_END		}}
-
 
 
 #include "Fwd.h"

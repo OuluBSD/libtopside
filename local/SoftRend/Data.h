@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Data_h_
 #define _SoftRend_Data_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 struct SoftInited {
 	bool inited = false;
@@ -34,6 +34,6 @@ struct SoftVertexArray : SoftInited {
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

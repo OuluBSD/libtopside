@@ -1,6 +1,6 @@
 #include "SoftRend.h"
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 bool X11Sw::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
@@ -33,4 +33,4 @@ void Sdl::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int
 #endif
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END

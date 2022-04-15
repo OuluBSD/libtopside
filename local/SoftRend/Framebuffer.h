@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Framebuffer_h_
 #define _SoftRend_Framebuffer_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 /*class SoftBuffer : Moveable<SoftBuffer> {
@@ -59,6 +59,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif

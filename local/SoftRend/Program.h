@@ -1,7 +1,7 @@
 #ifndef _SoftRend_Program_h_
 #define _SoftRend_Program_h_
 
-NAMESPACE_TOPSIDE_BEGIN
+NAMESPACE_PARALLEL_BEGIN
 
 
 struct SoftUniform : Moveable<SoftUniform> {
@@ -56,6 +56,6 @@ public:
 };
 
 
-NAMESPACE_TOPSIDE_END
+NAMESPACE_PARALLEL_END
 
 #endif
