@@ -17,6 +17,10 @@ template <> inline bool IsDefaultGfxVal<SdlOglGfx>(const ValCls& val) {return va
 template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #endif
 
+#ifdef flagSCREEN
+template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val == ValCls::FBO;}
+#endif
+
 template <class Gfx>
 class GfxAccelAtom {
 	static_assert(Gfx::is_vendor_agnostic == false, "");

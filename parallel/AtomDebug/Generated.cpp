@@ -293,7 +293,7 @@ AtomTypeCls EventStatePipe::GetType() const
 #if defined flagSCREEN
 AtomTypeCls X11SwFboPipe::GetAtomType()
 {
-	return ATOM11(X11_SW_FBO_PIPE, PIPE, CENTER, VIDEO, CENTER, ORDER, CENTER, VIDEO);
+	return ATOM11(X11_SW_FBO_PIPE, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
 }
 
 LinkTypeCls X11SwFboPipe::GetLinkType()
@@ -445,7 +445,7 @@ AtomTypeCls GlxFboAtomSA::GetType() const
 #if defined flagSCREEN
 AtomTypeCls X11SwVideoAtomPipe::GetAtomType()
 {
-	return ATOM11(X11_SW_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+	return ATOM11(X11_SW_VIDEO_ATOM_PIPE, PIPE, CENTER, FBO, CENTER, FBO, CENTER, RECEIPT);
 }
 
 LinkTypeCls X11SwVideoAtomPipe::GetLinkType()

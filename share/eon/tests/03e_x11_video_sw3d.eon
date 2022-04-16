@@ -7,13 +7,12 @@ machine sdl.app: {
 			center.customer: true;
 			x11sw.fbo.pipe: true {
 				drawmem:		"false";
+				program:		"obj_view";
 			};
 			x11sw.video.pipe: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				fragshader:		"sw_test0_fragment";
-				vtxshader:		"sw_test0_vertex";
 			};
 		};
 		

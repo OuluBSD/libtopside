@@ -23,6 +23,8 @@ class BinderIfaceEvents : RTTIBase {
 	
 public:
 	RTTI_DECL0(BinderIfaceEvents);
+	virtual ~BinderIfaceEvents() {}
+	
 	
 };
 
@@ -31,6 +33,7 @@ class BinderIfaceVideo : RTTIBase {
 	
 public:
 	RTTI_DECL0(BinderIfaceVideo);
+	virtual ~BinderIfaceVideo() {}
 	
 	virtual void Render(Draw& draw) = 0;
 	

@@ -1,24 +1,8 @@
 #include "IGraphics.h"
 
 
+
 NAMESPACE_PARALLEL_BEGIN
-
-
-template <class Gfx>
-void InitObjView() {
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewVertexT<Gfx>>(GVar::VERTEX_SHADER, "obj_view_vertex");
-	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "obj_view_fragment");
-	
-}
-
-INITBLOCK_(Shaders) {
-	using namespace TS;
-	
-	InitObjView<X11SwGfx>();
-	
-}
-
-
 
 template <class Gfx>
 ObjViewProgT<Gfx>::ObjViewProgT() {
@@ -179,6 +163,11 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 		used_clr[2] = intensity;
 	}
 }
+
+
+X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewProgT)
+X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewVertexT)
+X11SW_EXCPLICIT_INITIALIZE_CLASS(ObjViewFragmentT)
 
 
 NAMESPACE_PARALLEL_END

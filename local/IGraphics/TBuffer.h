@@ -29,8 +29,8 @@ struct BufferT : GfxBuffer {
 	using Linker = typename Gfx::Linker;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using Sample = GVar::Sample;
-	using SoftShaderBase = SoftShaderBaseT<typename Gfx::Dev>;
-	using SoftShaderLibrary = SoftShaderLibraryT<typename Gfx::Dev>;
+	using SoftShaderBase = SoftShaderBaseT<Gfx>;
+	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	
 	RTTI_DECL1(BufferT, GfxBuffer)
 	

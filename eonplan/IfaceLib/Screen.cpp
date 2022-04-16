@@ -61,7 +61,7 @@ PKG(Screen, Scr, S) {
 			.Add("fb",					"::XImage*")
 			.Add("visual",				"::Visual*")
 			.Add("gc",					"::GC")
-			.Add("ogl",					"GfxAccelAtom<X11SwGfx>")
+			.Add("accel",				"GfxAccelAtom<X11SwGfx>")
 			.Add("atomWmDeleteWindow",	"::Atom ")
 			.Add("attr",				"::XSetWindowAttributes")
 			;

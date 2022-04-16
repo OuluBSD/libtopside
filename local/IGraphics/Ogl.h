@@ -218,13 +218,13 @@ struct OglLinker : LinkerT<T> {
 	
 };
 
-template <class T>
+/*template <class T>
 struct OglBuffer : BufferT<T> {
 	using Base = BufferT<T>;
 	RTTI_DECL1(OglBuffer, Base)
 	
 	
-};
+};*/
 
 
 NAMESPACE_PARALLEL_END

@@ -73,7 +73,7 @@ struct ScrX11Sw {
 		::XImage* fb;
 		::Visual* visual;
 		::GC gc;
-		GfxAccelAtom<X11SwGfx> ogl;
+		GfxAccelAtom<X11SwGfx> accel;
 		::Atom  atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
 	};

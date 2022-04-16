@@ -11,9 +11,9 @@ class SoftProgramT;
 template <class Backend>
 struct SoftShaderLibraryT {
 	typedef SoftShaderBaseT<Backend>* (*ShaderFactory)();
+	typedef BinderIfaceVideo* (*VideoBinderFactory)();
 	
-	static VectorMap<String, ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
-	
+	static VectorMap<String, VideoBinderFactory>& GetBinders();
 	static VectorMap<String, ShaderFactory>& GetMap(int i);
 	
 	template <class T>
@@ -22,8 +22,14 @@ struct SoftShaderLibraryT {
 		GetMap(type).Add(key, &CreateShader<T>);
 	}
 	
+	template <class T> static SoftShaderBaseT<Backend>* CreateShader() {return new T();}
+	template <class T> static BinderIfaceVideo* CreateBinder() {return new T();}
+	
 	template <class T>
-	static SoftShaderBaseT<Backend>* CreateShader() {return new T();}
+	static void AddProgramClass(String key) {
+		ASSERT(GetBinders().Find(key) < 0);
+		GetBinders().Add(key, &CreateBinder<T>);
+	}
 	
 };
 

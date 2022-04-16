@@ -1,0 +1,25 @@
+#include "IGraphics.h"
+
+
+NAMESPACE_PARALLEL_BEGIN
+
+
+template <class Gfx>
+void InitObjView() {
+	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewVertexT<Gfx>>(GVar::VERTEX_SHADER, "obj_view_vertex");
+	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "obj_view_fragment");
+	SoftShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
+	
+}
+
+NAMESPACE_PARALLEL_END
+
+
+
+INITBLOCK_(Shaders) {
+	using namespace TS;
+	using namespace TS::Parallel;
+	
+	InitObjView<X11SwGfx>();
+}
+

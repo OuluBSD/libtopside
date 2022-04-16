@@ -4,6 +4,10 @@
 NAMESPACE_PARALLEL_BEGIN
 
 bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+	
+	if (!dev.accel.Initialize(a, ws))
+		return false;
+	
 	::Display*& display = dev.display;	// pointer to X Display structure.
 	int screen_num;						// number of screen to place the window on.
 	::Window& win = dev.win;			// pointer to the newly created window.
@@ -118,6 +122,13 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	
 	XSync(display, False);
 	
+	dev.accel.SetNative(dev.display, dev.win, 0, 0);
+	
+	if (!dev.accel.Open(Size(width, height), 4)) {
+		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
+		return false;
+	}
+	
 	return true;
 }
 
@@ -136,6 +147,12 @@ void ScrX11Sw::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 }
 
 void ScrX11Sw::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+	dev.accel.Uninitialize();
+	
+	XFree(dev.visual);
+	XFreeColormap(dev.display, dev.attr.colormap);
+	XDestroyWindow(dev.display, dev.win);
+
 	// flush all pending requests to the X server.
 	XFlush(dev.display);
 	
@@ -143,14 +160,18 @@ void ScrX11Sw::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
-bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	return true;
+bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {
+	return dev.accel.Recv(sink_ch, in);
 }
 
-bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {
-	Format fmt = in->GetFormat();
-	if (fmt.IsVideo()) {
-		const Vector<byte>& pixmap = in->Data();
+void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
+	dev.accel.Render(cfg);
+}
+
+bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+	Format fmt = in.GetFormat();
+	if (fmt.IsFbo()) {
+		const Vector<byte>& pixmap = in.Data();
 		VideoFormat& vfmt = fmt;
 		int frame_sz = vfmt.GetFrameSize();
 		ASSERT(pixmap.GetCount() == frame_sz);
@@ -193,12 +214,8 @@ bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, 
 	return true;
 }
 
-void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
-	
-}
-
 bool ScrX11Sw::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase& a, Serial::Link& link, int sink_ch, const Format& new_fmt) {
-		// accept all valid video formats for now
+	// accept all valid video formats for now
 	if (new_fmt.IsValid() && new_fmt.IsVideo()) {
 		ISinkRef sink = a.GetSink();
 		Value& val = sink->GetValue(sink_ch);

@@ -11,6 +11,7 @@ struct FboAtomT :
 	using StateDraw = StateDrawT<Gfx>;
 	using DataState = DataStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
+	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	
 	Vector<BinderIfaceVideo*> binders;
 	String					target;
@@ -19,11 +20,16 @@ struct FboAtomT :
 	ValDevCls				src_type;
 	One<ImageDraw>			id;
 	ProgDraw				pd;
-	StateDraw				cpu_sd;
-	DataState				cpu_state;
+	StateDraw				accel_sd;
+	DataState				accel_state;
 	Framebuffer				cpu_fb;
 	bool					draw_mem = false;
 	RealtimeSourceConfig*	last_cfg = 0;
+	String					program;
+	
+	One<SoftShaderBaseT<Gfx>>	frag_prog;
+	One<SoftShaderBaseT<Gfx>>	vtx_prog;
+	One<BinderIfaceVideo>		prog;
 	
 	static FboAtomT*	latest;
 	

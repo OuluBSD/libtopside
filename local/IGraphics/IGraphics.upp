@@ -14,6 +14,7 @@ uses(MSC & NEVER) ports/glext;
 file
 	IGraphics.h,
 	main.cpp,
+	IGraphics.icpp,
 	Types.h,
 	TypeFuncList.inl highlight cpp,
 	Sdl.cpp,

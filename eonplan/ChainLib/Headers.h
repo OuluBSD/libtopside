@@ -137,7 +137,7 @@ HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
 
 
 
-HEADER11(			X11SwFboPipe,		X11SwFboBase,				pipe,		CenterVideo,	CenterOrder,	CenterVideo)
+HEADER11(			X11SwFboPipe,		X11SwFboBase,				pipe,		CenterFbo,		CenterOrder,	CenterFbo)
 HEADER_ACTION(		X11SwFboPipe,		x11sw.fbo.pipe)
 HEADER_ARG(			X11SwFboPipe,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11SwFboPipe,		PIPE, PROCESS)
@@ -205,7 +205,7 @@ HEADER_LINK(		GlxFboAtomSA,		POLLER_PIPE, PROCESS)
 
 
 
-HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterFbo,		CenterFbo,	CenterReceipt)
 HEADER_ACTION(		X11SwVideoAtomPipe,	x11sw.video.pipe)
 HEADER_ARG(			X11SwVideoAtomPipe,	reqdef_flagSCREEN,		1)
 HEADER_ARG(			X11SwVideoAtomPipe,	HINT_PKG,					"AtomDebug")

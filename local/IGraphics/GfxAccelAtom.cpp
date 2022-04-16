@@ -65,6 +65,20 @@ bool GfxAccelAtom<X11OglGfx>::GfxRenderer() {
 
 
 
+#if defined flagSCREEN
+template <>
+void GfxAccelAtom<X11SwGfx>::GfxFlags(uint32& flags) {
+	is_sw = true;
+}
+
+template <>
+bool GfxAccelAtom<X11SwGfx>::GfxRenderer() {
+	return true;
+}
+#endif
+
+
+
 
 template <class Gfx>
 void GfxAccelAtom<Gfx>::SetNative(NativeDisplay& display, NativeWindow& window, NativeRenderer* rend, SystemFrameBuffer* fb) {
@@ -218,36 +232,36 @@ bool GfxAccelAtom<Gfx>::ImageInitialize() {
 	
 	if (frag_shdr.GetCount()) {
 		if (!buf.LoadBuiltinShader(GVar::FRAGMENT_SHADER, frag_shdr)) {
-			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_shdr + "'");
+			LOG("GfxAccelAtom::ImageInitialize: error: fragment shader loading failed from '" + frag_shdr + "'");
 			return false;
 		}
 	}
 	else if (frag_path.GetCount()) {
 		if (!buf.LoadShaderFile(GVar::FRAGMENT_SHADER, frag_path, library_paths)) {
-			LOG("Screen::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
+			LOG("GfxAccelAtom::ImageInitialize: error: fragment shader loading failed from '" + frag_path + "'");
 			return false;
 		}
 	}
 	else {
-		LOG("Screen::ImageInitialize: error: no fragment shade given");
+		LOG("GfxAccelAtom::ImageInitialize: error: no fragment shade given");
 		return false;
 	}
 	
 	if (vtx_shdr.GetCount()) {
 		if (!buf.LoadBuiltinShader(GVar::VERTEX_SHADER, vtx_shdr)) {
-			LOG("Screen::ImageInitialize: error: vertex shader loading failed from '" + vtx_shdr + "'");
+			LOG("GfxAccelAtom::ImageInitialize: error: vertex shader loading failed from '" + vtx_shdr + "'");
 			return false;
 		}
 	}
 	else if (vtx_path.GetCount()) {
 		if (!buf.LoadShaderFile(GVar::VERTEX_SHADER, vtx_path, library_paths)) {
-			LOG("Screen::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
+			LOG("GfxAccelAtom::ImageInitialize: error: fragment vertex loading failed from '" + frag_path + "'");
 			return false;
 		}
 	}
 	
 	if (!buf.Initialize()) {
-		LOG("Screen::ImageInitialize: error: " << buf.GetError());
+		LOG("GfxAccelAtom::ImageInitialize: error: " << buf.GetError());
 		return false;
 	}
 	
@@ -401,7 +415,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 					succ = buf.LoadOutputLink(sz, ch_i - base, d);
 				}
 				else {
-					RTLOG("Screen::Recv: cannot handle packet: " << pv.ToString());
+					RTLOG("GfxAccelAtom::Recv: cannot handle packet: " << pv.ToString());
 				}
 			}
 			else {
@@ -418,7 +432,7 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 	}
 	else {
 		DUMP(fmt);
-		//RTLOG("Screen::Render: error: unexpected packet: " << last_packet->ToString());
+		//RTLOG("GfxAccelAtom::Render: error: unexpected packet: " << last_packet->ToString());
 		ASSERT(0);
 		succ = false;
 	}

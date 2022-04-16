@@ -5,32 +5,69 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 
-template <class Backend>
-FboAtomT<Backend>* FboAtomT<Backend>::latest;
+template <class Gfx>
+FboAtomT<Gfx>* FboAtomT<Gfx>::latest;
 
-template <class Backend>
-FboAtomT<Backend>& FboAtomT<Backend>::Latest() {ASSERT(latest); return *latest;}
+template <class Gfx>
+FboAtomT<Gfx>& FboAtomT<Gfx>::Latest() {ASSERT(latest); return *latest;}
 
 
-template <class Backend>
-FboAtomT<Backend>::FboAtomT() {
+template <class Gfx>
+FboAtomT<Gfx>::FboAtomT() {
 	latest = this;
 }
 
-template <class Backend>
-bool FboAtomT<Backend>::Initialize(const Script::WorldState& ws) {
+template <class Gfx>
+bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	ISourceRef src = this->GetSource();
 	int src_count = src->GetSourceCount();
 	Value& val = src->GetSourceValue(src_count-1);
 	src_type = val.GetFormat().vd;
 	
 	draw_mem = ws.Get(".drawmem") == "true";
+	program = ws.Get(".program");
+	
+	if (program.IsEmpty()) {
+		LOG("FboAtomT<Gfx>::Initialize: error: no 'program' attribute was given");
+		return false;
+	}
+	
+	String frag = program + "_fragment";
+	String vtx  = program + "_vertex";
+	String bin  = program + "_program";
+	auto& frag_map = SoftShaderLibrary::GetMap(GVar::FRAGMENT_SHADER);
+	auto& vtx_map  = SoftShaderLibrary::GetMap(GVar::VERTEX_SHADER);
+	auto& bin_map  = SoftShaderLibrary::GetBinders();
+	int frag_i = frag_map.Find(frag);
+	int vtx_i  = vtx_map.Find(vtx);
+	int bin_i  = bin_map.Find(bin);
+	
+	if (frag_i < 0) {
+		LOG("FboAtomT<Gfx>::Initialize: error: fragment program '" << frag << "' not found");
+		return false;
+	}
+	
+	if (vtx_i < 0) {
+		LOG("FboAtomT<Gfx>::Initialize: error: vertex program '" << vtx << "' not found");
+		return false;
+	}
+	
+	if (bin_i < 0) {
+		LOG("FboAtomT<Gfx>::Initialize: error: program '" << bin << "' not found");
+		return false;
+	}
+	
+	frag_prog = frag_map[frag_i]();
+	vtx_prog = vtx_map[vtx_i]();
+	prog = bin_map[bin_i]();
+	
+	binders.Add(&*prog);
 	
 	return true;
 }
 
-template <class Backend>
-bool FboAtomT<Backend>::PostInitialize() {
+template <class Gfx>
+bool FboAtomT<Gfx>::PostInitialize() {
 	// Remove alpha channel
 	if (src_type == VD(CENTER, VIDEO)) {
 		ISourceRef src = this->GetSource();
@@ -48,13 +85,13 @@ bool FboAtomT<Backend>::PostInitialize() {
 	return true;
 }
 
-template <class Backend>
-void FboAtomT<Backend>::Uninitialize() {
+template <class Gfx>
+void FboAtomT<Gfx>::Uninitialize() {
 	
 }
 
-template <class Backend>
-bool FboAtomT<Backend>::IsReady(PacketIO& io) {
+template <class Gfx>
+bool FboAtomT<Gfx>::IsReady(PacketIO& io) {
 	dword iface_sink_mask = iface.GetSinkMask();
 	bool b =
 		io.active_sink_mask == iface_sink_mask &&
@@ -64,14 +101,11 @@ bool FboAtomT<Backend>::IsReady(PacketIO& io) {
 	return b;
 }
 
-template <class Backend>
-bool FboAtomT<Backend>::ProcessPacket(PacketValue& in, PacketValue& out) {
+template <class Gfx>
+bool FboAtomT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	RTLOG("FboAtomT::ProcessPackets:");
 	
-	TODO
-	
 	#if 0
-	
 	int src_ch = io.src_count > 1 ? 1 : 0;
 	int sink_ch = 0; //io.sink_count > 1 ? 1 : 0;
 	
@@ -159,75 +193,99 @@ bool FboAtomT<Backend>::ProcessPacket(PacketValue& in, PacketValue& out) {
 			data.SetText("gfxstate");
 		}
 	}
-	/*#if HAVE_OPENGL
-	else if (src_type == VD(OGL,FBO)) {
-		Format fmt = io.src[src_ch].val->GetFormat();
+	else
+	#endif
+	if (src_type == VD(CENTER,FBO)) {
+		/*Format fmt = io.src[src_ch].val->GetFormat();
 		ASSERT(fmt.IsFbo());
 		
 		Size sz = fmt.vid.GetSize();
 		int stride = fmt.vid.GetPackedCount();
-		
-		ogl_sd.SetTarget(ogl_state);
+		*/
+		accel_sd.SetTarget(accel_state);
 		for (BinderIfaceVideo* b : binders)
-			b->Render(ogl_sd);
+			b->Render(accel_sd);
 		
+		/*
 		PacketIO::Sink& sink = io.sink[sink_ch];
 		PacketIO::Source& src = io.src[src_ch];
 		
 		ASSERT(sink.p);
 		sink.may_remove = true;
 		src.from_sink_ch = 0;
-		src.p = ReplyPacket(src_ch, sink.p);
+		src.p = ReplyPacket(src_ch, sink.p);*/
 		
-		InternalPacketData& data = src.p->SetData<InternalPacketData>();
+		InternalPacketData& data = in.SetData<InternalPacketData>();
 		if (1) {
-			data.ptr = &ogl_state;
+			data.ptr = &accel_state;
 			data.SetText("gfxstate");
 		}
 		#if 0
 		// deprecated
 		else {
-			data.ptr = &ogl_pipe;
+			data.ptr = &accel_pipe;
 			data.SetText("gfxpipe");
 		}
 		#endif
 	}
-	#endif*/
 	else {
 		ASSERT_(0, "TODO");
 		return false;
 	}
 	
+	#if 0
 	if (src_ch > 0 && io.src[src_ch].p) {
 		PacketIO::Sink& prim_sink = io.sink[0];
 		PacketIO::Source& prim_src = io.src[0];
 		prim_src.from_sink_ch = 0;
 		prim_src.p = ReplyPacket(0, prim_sink.p);
 	}
-	
 	#endif
 	
 	return true;
 }
 
-template <class Backend>
-void FboAtomT<Backend>::AddBinder(BinderIfaceVideo* iface) {
+template <class Gfx>
+void FboAtomT<Gfx>::AddBinder(BinderIfaceVideo* iface) {
 	VectorFindAdd(binders, iface);
 }
 
-template <class Backend>
-void FboAtomT<Backend>::RemoveBinder(BinderIfaceVideo* iface) {
+template <class Gfx>
+void FboAtomT<Gfx>::RemoveBinder(BinderIfaceVideo* iface) {
 	VectorRemoveKey(binders, iface);
 }
 
-template <class Backend>
-void FboAtomT<Backend>::Finalize(RealtimeSourceConfig& cfg) {
+template <class Gfx>
+void FboAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 	last_cfg = &cfg;
 }
 
 
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
+
+
+
+
+
+
+template <class Backend>
+	VectorMap<String, typename SoftShaderLibraryT<Backend>::ShaderFactory>&
+		SoftShaderLibraryT<Backend>::GetMap(int i) {
+	static VectorMap<String, typename SoftShaderLibraryT<Backend>::ShaderFactory> shader_classes[GVar::SHADERTYPE_COUNT];
+	ASSERT(i >= 0 && i < GVar::SHADERTYPE_COUNT);
+	return shader_classes[i];
+}
+
+template <class Backend>
+	VectorMap<String, typename SoftShaderLibraryT<Backend>::VideoBinderFactory>&
+		SoftShaderLibraryT<Backend>::GetBinders() {
+	static VectorMap<String, SoftShaderLibraryT<Backend>::VideoBinderFactory> m;
+	return m;
+}
+
+
+X11SW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 
 
 NAMESPACE_PARALLEL_END
