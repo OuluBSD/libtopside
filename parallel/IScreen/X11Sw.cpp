@@ -122,7 +122,11 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	
 	XSync(display, False);
 	
-	dev.accel.SetNative(dev.display, dev.win, 0, 0);
+	dev.accel_fb_data.SetCount(width * height * bpp, 0);
+	dev.accel_fb.Set(width, height, bpp, width * bpp, dev.accel_fb_data.Begin());
+	dev.accel_fb_ptr = &dev.accel_fb;
+	
+	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fb_ptr);
 	
 	if (!dev.accel.Open(Size(width, height), 4)) {
 		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
@@ -149,15 +153,17 @@ void ScrX11Sw::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 void ScrX11Sw::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	dev.accel.Uninitialize();
 	
-	XFree(dev.visual);
-	XFreeColormap(dev.display, dev.attr.colormap);
-	XDestroyWindow(dev.display, dev.win);
-
+	// Causes crash:
+		//XFree(dev.visual);
+		//XFreeColormap(dev.display, dev.attr.colormap);
+		
 	// flush all pending requests to the X server.
 	XFlush(dev.display);
 	
 	// close the connection to the X server.
 	XCloseDisplay(dev.display);
+	dev.display = 0;
+	
 }
 
 bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, const Packet& in) {

@@ -13,6 +13,7 @@ machine sdl.app: {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
+				program:		"pass";
 			};
 		};
 		

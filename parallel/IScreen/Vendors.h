@@ -74,6 +74,9 @@ struct ScrX11Sw {
 		::Visual* visual;
 		::GC gc;
 		GfxAccelAtom<X11SwGfx> accel;
+		Vector<byte> accel_fb_data;
+		ByteImage accel_fb;
+		ByteImage* accel_fb_ptr;
 		::Atom  atomWmDeleteWindow;
 		::XSetWindowAttributes attr;
 	};
