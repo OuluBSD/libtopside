@@ -424,9 +424,16 @@ bool GfxAccelAtom<Gfx>::Recv(int ch_i, const Packet& p) {
 			if (!d.ptr) {
 				ASSERT_(0, "no pointer in InternalPacketData");
 			}
+			else if (d.IsText("gfxpack")) {
+				ShaderDataPackT<Gfx>* gsd = (ShaderDataPackT<Gfx>*)d.ptr;
+				TODO
+			}
 			else if (d.IsText("gfxstate")) {
-				DataState& sd = *(DataState*)d.ptr;
-				buf.SetDataStateOverride(&sd);
+				GfxDataState* gsd = (GfxDataState*)d.ptr;
+				DataState* sd = CastPtr<DataState>(gsd);
+				ASSERT(sd);
+				if (sd)
+					buf.SetDataStateOverride(sd);
 			}
 			else if (d.IsText("gfxvector")) {
 				fb_packet = p;

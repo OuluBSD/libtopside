@@ -2,7 +2,7 @@
 #define _ParallelMach_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.17 15:22:44
+// Last modified: 2022.4.18 20:44:33
 
 namespace TS {
 
@@ -120,11 +120,34 @@ namespace Parallel {
 	ATOM_CLASS(WebcamAtom) \
 
 
+#define flagOGL_ATOM_TYPE_LIST \
+	ATOM_TYPE(GLX_FBO_PIPE) \
+	ATOM_TYPE(GLX_VIDEO_ATOM_PIPE) \
+	ATOM_TYPE(GLX_FBO_ATOM_PIPE) \
+	ATOM_TYPE(GLX_FBO_ATOM_S_A) \
+	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
+	ATOM_TYPE(SDL_FBO_PIPE) \
+	ATOM_TYPE(SDL_FBO_ATOM) \
+
+
+#define flagOGL_ATOM_CLASS_LIST \
+	ATOM_CLASS(GlxFboPipe) \
+	ATOM_CLASS(GlxVideoAtomPipe) \
+	ATOM_CLASS(GlxFboAtomPipe) \
+	ATOM_CLASS(GlxFboAtomSA) \
+	ATOM_CLASS(SdlFboAtomSA) \
+	ATOM_CLASS(SdlFboPipe) \
+	ATOM_CLASS(SdlFboAtom) \
+
+
 #define flagSDL2_ATOM_TYPE_LIST \
 	ATOM_TYPE(SDL_CONTEXT_ATOM) \
 	ATOM_TYPE(SDL_VIDEO_ATOM_PIPE) \
 	ATOM_TYPE(SDL_VIDEO_ATOM) \
 	ATOM_TYPE(SDL_AUDIO_ATOM) \
+	ATOM_TYPE(SDL_OGL_SHADER_PIPE) \
+	ATOM_TYPE(SDL_OGL_SHADER_ATOM) \
+	ATOM_TYPE(SDL_OGL_SHADER_ATOM_S_A) \
 
 
 #define flagSDL2_ATOM_CLASS_LIST \
@@ -132,25 +155,6 @@ namespace Parallel {
 	ATOM_CLASS(SdlVideoAtomPipe) \
 	ATOM_CLASS(SdlVideoAtom) \
 	ATOM_CLASS(SdlAudioAtom) \
-
-
-#define flagOGL_ATOM_TYPE_LIST \
-	ATOM_TYPE(GLX_VIDEO_ATOM_PIPE) \
-	ATOM_TYPE(GLX_FBO_ATOM_S_A) \
-	ATOM_TYPE(SDL_FBO_ATOM_S_A) \
-	ATOM_TYPE(SDL_FBO_PIPE) \
-	ATOM_TYPE(SDL_FBO_ATOM) \
-	ATOM_TYPE(SDL_OGL_SHADER_PIPE) \
-	ATOM_TYPE(SDL_OGL_SHADER_ATOM) \
-	ATOM_TYPE(SDL_OGL_SHADER_ATOM_S_A) \
-
-
-#define flagOGL_ATOM_CLASS_LIST \
-	ATOM_CLASS(GlxVideoAtomPipe) \
-	ATOM_CLASS(GlxFboAtomSA) \
-	ATOM_CLASS(SdlFboAtomSA) \
-	ATOM_CLASS(SdlFboPipe) \
-	ATOM_CLASS(SdlFboAtom) \
 	ATOM_CLASS(SdlOglShaderPipe) \
 	ATOM_CLASS(SdlOglShaderAtom) \
 	ATOM_CLASS(SdlOglShaderAtomSA) \

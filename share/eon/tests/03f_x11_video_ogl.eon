@@ -3,17 +3,18 @@ machine sdl.app: {
 	chain program: {
 		state event.register;
 		
-		loop video: {
-			center.customer: true;
-			x11sw.fbo.pipe: true {
+		loop ogl.video: {
+			ogl.customer: true;
+			glx.fbo.pipe: true {
 				drawmem:		"false";
 				program:		"obj_view";
 			};
-			x11sw.video.pipe: true {
+			glx.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;
-				program:		"obj_view";
+				fragment:		"shaders/tests/03f_fragment.glsl";
+				vertex:			"shaders/tests/03f_vertex.glsl";
 			};
 		};
 		

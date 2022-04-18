@@ -24,44 +24,52 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	Value& val = src->GetSourceValue(src_count-1);
 	src_type = val.GetFormat().vd;
 	
-	draw_mem = ws.Get(".drawmem") == "true";
+	draw_mem = ws.Get(".drawmem") == "true"; // Dumb "local render" (forward raw data)
+	//gfxbuf = ws.Get(".gfxbuf") == "true"; // SoftRender rending locally (not just data-forwarding)
 	program = ws.Get(".program");
+	gfxpack = ws.Get(".gfxpack") == "true";
 	
 	if (program.IsEmpty()) {
 		LOG("FboAtomT<Gfx>::Initialize: error: no 'program' attribute was given");
 		return false;
 	}
 	
-	String frag = program + "_fragment";
-	String vtx  = program + "_vertex";
+	
 	String bin  = program + "_program";
-	auto& frag_map = SoftShaderLibrary::GetMap(GVar::FRAGMENT_SHADER);
-	auto& vtx_map  = SoftShaderLibrary::GetMap(GVar::VERTEX_SHADER);
 	auto& bin_map  = SoftShaderLibrary::GetBinders();
-	int frag_i = frag_map.Find(frag);
-	int vtx_i  = vtx_map.Find(vtx);
 	int bin_i  = bin_map.Find(bin);
-	
-	if (frag_i < 0) {
-		LOG("FboAtomT<Gfx>::Initialize: error: fragment program '" << frag << "' not found");
-		return false;
-	}
-	
-	if (vtx_i < 0) {
-		LOG("FboAtomT<Gfx>::Initialize: error: vertex program '" << vtx << "' not found");
-		return false;
-	}
 	
 	if (bin_i < 0) {
 		LOG("FboAtomT<Gfx>::Initialize: error: program '" << bin << "' not found");
 		return false;
 	}
 	
-	frag_prog = frag_map[frag_i]();
-	vtx_prog = vtx_map[vtx_i]();
-	prog = bin_map[bin_i]();
+	data.prog = bin_map[bin_i]();
+	binders.Add(&*data.prog);
 	
-	binders.Add(&*prog);
+	
+	if (gfxpack) {
+		String frag = program + "_fragment";
+		String vtx  = program + "_vertex";
+		auto& frag_map = SoftShaderLibrary::GetMap(GVar::FRAGMENT_SHADER);
+		auto& vtx_map  = SoftShaderLibrary::GetMap(GVar::VERTEX_SHADER);
+		int frag_i = frag_map.Find(frag);
+		int vtx_i  = vtx_map.Find(vtx);
+		
+		if (frag_i < 0) {
+			LOG("FboAtomT<Gfx>::Initialize: error: fragment program '" << frag << "' not found");
+			return false;
+		}
+		
+		if (vtx_i < 0) {
+			LOG("FboAtomT<Gfx>::Initialize: error: vertex program '" << vtx << "' not found");
+			return false;
+		}
+		
+		data.frag_prog = frag_map[frag_i]();
+		data.vtx_prog = vtx_map[vtx_i]();
+	}
+	
 	
 	return true;
 }
@@ -195,14 +203,15 @@ bool FboAtomT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 	}
 	else
 	#endif
-	if (src_type == VD(CENTER,FBO)) {
+	if (src_type == VD(CENTER,FBO) ||
+		src_type == VD(OGL,FBO)) {
 		/*Format fmt = io.src[src_ch].val->GetFormat();
 		ASSERT(fmt.IsFbo());
 		
 		Size sz = fmt.vid.GetSize();
 		int stride = fmt.vid.GetPackedCount();
 		*/
-		accel_sd.SetTarget(accel_state);
+		accel_sd.SetTarget(data.accel_state);
 		for (BinderIfaceVideo* b : binders)
 			b->Render(accel_sd);
 		
@@ -216,17 +225,14 @@ bool FboAtomT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 		src.p = ReplyPacket(src_ch, sink.p);*/
 		
 		InternalPacketData& data = out.SetData<InternalPacketData>();
-		if (1) {
-			data.ptr = &accel_state;
+		if (gfxpack) {
+			data.ptr = &this->data;
+			data.SetText("gfxpack");
+		}
+		else {
+			data.ptr = &(GfxDataState&)this->data.accel_state;
 			data.SetText("gfxstate");
 		}
-		#if 0
-		// deprecated
-		else {
-			data.ptr = &accel_pipe;
-			data.SetText("gfxpipe");
-		}
-		#endif
 	}
 	else {
 		ASSERT_(0, "TODO");
@@ -263,6 +269,7 @@ void FboAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
+X11OGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 
 
 
@@ -286,6 +293,7 @@ template <class Gfx>
 
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
+X11OGL_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)
 
 
 NAMESPACE_PARALLEL_END

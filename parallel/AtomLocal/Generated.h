@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.17 15:22:44
+// Last modified: 2022.4.18 20:44:33
 
 namespace TS {
 
@@ -466,6 +466,10 @@ using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 
 using X11SwFboPipeRef = Ref<X11SwFboPipe, AtomParent>;
 
+#if defined flagOGL
+using GlxFboPipeRef = Ref<GlxFboPipe, AtomParent>;
+#endif
+
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
 #if defined flagSDL2
@@ -486,9 +490,9 @@ using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
 
 using X11VideoAtomPipeRef = Ref<X11VideoAtomPipe, AtomParent>;
 
-#if defined flagOGL
 using GlxVideoAtomPipeRef = Ref<GlxVideoAtomPipe, AtomParent>;
-#endif
+
+using GlxFboAtomPipeRef = Ref<GlxFboAtomPipe, AtomParent>;
 
 using GlxFboAtomSARef = Ref<GlxFboAtomSA, AtomParent>;
 

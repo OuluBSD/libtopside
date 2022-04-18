@@ -4,6 +4,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 
 bool X11SwGfx::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
+	surf = tex;
 	return true;
 }
 

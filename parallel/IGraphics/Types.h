@@ -200,7 +200,7 @@ struct X11SwGfx : CpuGfxT<X11SwGfx>, X11Gfx {
 	using BufferBase = GfxBuffer;
 	
 	using NativeTexture = SystemFrameBuffer;
-	using NativeSurface = void*;
+	using NativeSurface = ByteImage*;
 	//using NativeColorBuffer = void*;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
@@ -329,9 +329,9 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
 	
 };
-#define SDLOGL_GFXTYPE GFXTYPE(SdlOgl)
-#define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <SdlOglGfx>;
 
+	#define SDLOGL_GFXTYPE GFXTYPE(SdlOgl)
+	#define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) template struct x <SdlOglGfx>;
 #else
 	#define SDLOGL_GFXTYPE
 	#define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x)
@@ -348,6 +348,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 #else
 
 #define SDL_GFXTYPE
+#define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x)
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x)
 
 #endif

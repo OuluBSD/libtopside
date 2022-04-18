@@ -312,6 +312,28 @@ AtomTypeCls X11SwFboPipe::GetType() const
 }
 
 #endif
+#if defined flagSCREEN && defined flagOGL
+AtomTypeCls GlxFboPipe::GetAtomType()
+{
+	return ATOM11(GLX_FBO_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+}
+
+LinkTypeCls GlxFboPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void GlxFboPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11GlxFboBase>(this);
+}
+
+AtomTypeCls GlxFboPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
 #if defined flagSCREEN
 AtomTypeCls OglCustomer::GetAtomType()
 {
@@ -415,6 +437,28 @@ void GlxVideoAtomPipe::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls GlxVideoAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL
+AtomTypeCls GlxFboAtomPipe::GetAtomType()
+{
+	return ATOM11(GLX_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+}
+
+LinkTypeCls GlxFboAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void GlxFboAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11GlxSinkDevice>(this);
+}
+
+AtomTypeCls GlxFboAtomPipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -618,7 +662,7 @@ AtomTypeCls SdlAudioAtom::GetType() const
 }
 
 #endif
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 AtomTypeCls SdlOglShaderPipe::GetAtomType()
 {
 	return ATOM11(SDL_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
@@ -640,7 +684,7 @@ AtomTypeCls SdlOglShaderPipe::GetType() const
 }
 
 #endif
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 AtomTypeCls SdlOglShaderAtom::GetAtomType()
 {
 	return ATOM11_U44(SDL_OGL_SHADER_ATOM, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO, OGL, RECEIPT, OGL, FBO, OGL, FBO, OGL, FBO, OGL, FBO);
@@ -662,7 +706,7 @@ AtomTypeCls SdlOglShaderAtom::GetType() const
 }
 
 #endif
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 AtomTypeCls SdlOglShaderAtomSA::GetAtomType()
 {
 	return ATOM11(SDL_OGL_SHADER_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);

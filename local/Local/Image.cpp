@@ -108,24 +108,26 @@ void ByteImage::Set(int w, int h, int stride, int src_pitch, const byte* src_dat
 	
 	data = (byte*)malloc(sizeof(byte) * size);
 	
-	byte* b = data;
-	const byte* it = src_data;
-	const byte* end = src_data + size;
-	
-	if (src_pitch == pitch) {
-		#if 1
-		memcpy(b, it, size);
-		#else
-		while (it != end)
-			*b++ = *it++;
-		#endif
-	}
-	else {
-		for(int y = 0; y < sz.cy; y++) {
-			const byte* it0 = it + y * src_pitch;
-			const byte* end0 = it0 + pitch;
-			while (it0 != end0)
-				*b++ = *it0++;
+	if (src_data) {
+		byte* b = data;
+		const byte* it = src_data;
+		const byte* end = src_data + size;
+		
+		if (src_pitch == pitch) {
+			#if 1
+			memcpy(b, it, size);
+			#else
+			while (it != end)
+				*b++ = *it++;
+			#endif
+		}
+		else {
+			for(int y = 0; y < sz.cy; y++) {
+				const byte* it0 = it + y * src_pitch;
+				const byte* end0 = it0 + pitch;
+				while (it0 != end0)
+					*b++ = *it0++;
+			}
 		}
 	}
 }

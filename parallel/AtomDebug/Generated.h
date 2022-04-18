@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.17 15:22:44
+// Last modified: 2022.4.18 20:44:33
 
 namespace TS {
 
@@ -250,6 +250,23 @@ public:
 };
 #endif
 
+#if defined flagSCREEN && defined flagOGL
+class GlxFboPipe : public X11GlxFboBase {
+
+public:
+	RTTI_DECL1(GlxFboPipe, X11GlxFboBase)
+	COPY_PANIC(GlxFboPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
 #if defined flagSCREEN
 class OglCustomer : public CustomerBase {
 
@@ -326,6 +343,23 @@ public:
 	COPY_PANIC(GlxVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.video.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+class GlxFboAtomPipe : public X11GlxSinkDevice {
+
+public:
+	RTTI_DECL1(GlxFboAtomPipe, X11GlxSinkDevice)
+	COPY_PANIC(GlxFboAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.sink")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -490,7 +524,7 @@ public:
 };
 #endif
 
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 class SdlOglShaderPipe : public SdlOglShaderBase {
 
 public:
@@ -508,7 +542,7 @@ public:
 };
 #endif
 
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 class SdlOglShaderAtom : public SdlOglShaderBase {
 
 public:
@@ -526,7 +560,7 @@ public:
 };
 #endif
 
-#if defined flagOGL
+#if defined flagOGL && defined flagSDL2
 class SdlOglShaderAtomSA : public SdlOglShaderBase {
 
 public:

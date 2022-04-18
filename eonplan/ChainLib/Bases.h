@@ -34,6 +34,7 @@ BASE(X11SinkDevice)
 BASE(X11GlxSinkDevice)
 BASE(X11SwSinkDevice)
 BASE(X11SwFboBase)
+BASE(X11GlxFboBase)
 //BASE(EcsOglBase)
 
 //BASE_FLAG(SDL2ContextBase,			forward)

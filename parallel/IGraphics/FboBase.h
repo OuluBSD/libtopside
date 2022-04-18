@@ -9,9 +9,9 @@ struct FboAtomT :
 	Atom
 {
 	using StateDraw = StateDrawT<Gfx>;
-	using DataState = DataStateT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
 	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
+	using ShaderDataPack = ShaderDataPackT<Gfx>;
 	
 	Vector<BinderIfaceVideo*> binders;
 	String					target;
@@ -21,15 +21,13 @@ struct FboAtomT :
 	One<ImageDraw>			id;
 	ProgDraw				pd;
 	StateDraw				accel_sd;
-	DataState				accel_state;
 	Framebuffer				cpu_fb;
 	bool					draw_mem = false;
+	bool					gfxpack = false;
 	RealtimeSourceConfig*	last_cfg = 0;
 	String					program;
+	ShaderDataPack			data;
 	
-	One<SoftShaderBaseT<Gfx>>	frag_prog;
-	One<SoftShaderBaseT<Gfx>>	vtx_prog;
-	One<BinderIfaceVideo>		prog;
 	
 	static FboAtomT*	latest;
 	
@@ -56,6 +54,10 @@ public:
 
 
 using X11SwFboBase = FboAtomT<X11SwGfx>;
+
+#ifdef flagOGL
+using X11GlxFboBase = FboAtomT<X11OglGfx>;
+#endif
 
 
 NAMESPACE_PARALLEL_END

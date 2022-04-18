@@ -65,6 +65,8 @@ INITBLOCK {
 			#ifdef flagOGL
 				Factory::RegisterAtom<GlxVideoAtomPipe>();
 				Factory::RegisterAtom<GlxFboAtomSA>();
+				Factory::RegisterAtom<GlxFboPipe>();
+				Factory::RegisterAtom<GlxFboAtomPipe>();
 			#endif
 		#endif
 		

@@ -71,19 +71,19 @@ void X11SwGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRender
 }
 
 int X11SwGfx::GetBytesPerPixel(NativeSurface& surf) {
-	TODO
+	return surf->GetChannels();
 }
 
 int X11SwGfx::GetPitch(NativeSurface& surf) {
-	TODO
+	return surf->GetPitch();
 }
 
 byte* X11SwGfx::GetData(NativeSurface& surf) {
-	TODO
+	return surf->Begin();
 }
 
 void X11SwGfx::UnlockTextureToSurface(NativeTexture& tex) {
-	TODO
+	// pass
 }
 
 

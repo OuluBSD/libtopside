@@ -21,6 +21,19 @@ template <> inline bool IsDefaultGfxVal<X11OglGfx>(const ValCls& val) {return va
 template <> inline bool IsDefaultGfxVal<X11SwGfx>(const ValCls& val) {return val == ValCls::FBO;}
 #endif
 
+
+template <class Gfx>
+struct ShaderDataPackT {
+	using DataState = DataStateT<Gfx>;
+	
+	One<SoftShaderBaseT<Gfx>>	frag_prog;
+	One<SoftShaderBaseT<Gfx>>	vtx_prog;
+	One<BinderIfaceVideo>		prog;
+	DataState					accel_state;
+	
+};
+
+
 template <class Gfx>
 class GfxAccelAtom {
 	static_assert(Gfx::is_vendor_agnostic == false, "");
@@ -33,6 +46,7 @@ protected:
 	using StateDraw			= StateDrawT<Gfx>;
 	using ShaderPipeline	= typename Gfx::ShaderPipeline;
 	using DataState			= DataStateT<Gfx>;
+	using ShaderDataPack	= ShaderDataPackT<Gfx>;
 	using NativeDisplay		= typename Gfx::NativeDisplay;
 	using NativeWindow		= typename Gfx::NativeWindow;
 	using NativeRenderer	= typename Gfx::NativeRenderer;

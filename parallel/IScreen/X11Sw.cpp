@@ -122,8 +122,8 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	
 	XSync(display, False);
 	
-	dev.accel_fb_data.SetCount(width * height * bpp, 0);
-	dev.accel_fb.Set(width, height, bpp, width * bpp, dev.accel_fb_data.Begin());
+	dev.accel_fb.Set(width, height, bpp, width * bpp, 0);
+	dev.accel_fb.Randomize();
 	dev.accel_fb_ptr = &dev.accel_fb;
 	
 	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fb_ptr);
@@ -172,28 +172,27 @@ bool ScrX11Sw::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase& a, int sink_ch, 
 
 void ScrX11Sw::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase& a, RealtimeSourceConfig& cfg) {
 	dev.accel.Render(cfg);
-}
-
-bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
-	Format fmt = in.GetFormat();
-	if (fmt.IsFbo()) {
-		const Vector<byte>& pixmap = in.Data();
-		VideoFormat& vfmt = fmt;
-		int frame_sz = vfmt.GetFrameSize();
-		ASSERT(pixmap.GetCount() == frame_sz);
+	
+	{
+		XWindowAttributes attr;
+		XGetWindowAttributes(dev.display, dev.win, &attr);
 		
-		int width = vfmt.res[0];
-		int height = vfmt.res[1];
+		int width = attr.width;
+		int height = attr.height;
+		int bpp = attr.depth / 8;
+		int len = width * height * bpp;
+		ASSERT(dev.accel_fb.GetSize() == len);
 		
 		ASSERT(dev.fb);
 		ASSERT(!dev.fb->data);
-	    dev.fb->data = (char*)(const unsigned char*)pixmap.Begin();
-	    dev.fb->bytes_per_line = vfmt.res[0] * vfmt.GetPackedCount();
+	    dev.fb->data = (char*)(const unsigned char*)dev.accel_fb.Begin();
+	    dev.fb->bytes_per_line = width * bpp;
 	    ASSERT(width == dev.fb->width);
 	    ASSERT(height == dev.fb->height);
 	    if (width != dev.fb->width || height != dev.fb->height) {
 	        LOG("ScrX11::SinkDevice_ProcessPacket: error: invalid resolution");
-	        return false;
+	        dev.fb->data = 0;
+	        return;
 	    }
 	    
 	    int rc = XPutImage(	dev.display,
@@ -208,7 +207,7 @@ bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pack
 	    if (rc == BadMatch) {
 	        LOG("ScrX11::SinkDevice_ProcessPacket: error: XPutImage returned BadMatch");
 	        dev.fb->data = 0;
-	        return false;
+	        return;
 	    }
 	    
 		XFlush(dev.display);
@@ -216,7 +215,9 @@ bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pack
 		
 		dev.fb->data = 0;
 	}
-	
+}
+
+bool ScrX11Sw::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
 	return true;
 }
 

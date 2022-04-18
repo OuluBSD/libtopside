@@ -143,6 +143,13 @@ HEADER_ARG(			X11SwFboPipe,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11SwFboPipe,		PIPE, PROCESS)
 HEADER_ARG(			X11SwFboPipe,		reqdef_flagSCREEN,			1)
 
+HEADER11(			GlxFboPipe,			X11GlxFboBase,					pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		GlxFboPipe,			glx.fbo.pipe)
+HEADER_ARG(			GlxFboPipe,			HINT_PKG,					"AtomDebug")
+HEADER_LINK(		GlxFboPipe,			PIPE, PROCESS)
+HEADER_ARG(			GlxFboPipe,			reqdef_flagSCREEN,			1)
+HEADER_ARG(			GlxFboPipe,			reqdef_flagOGL,				1)
+
 
 
 
@@ -196,6 +203,13 @@ HEADER_ACTION(		GlxVideoAtomPipe,	glx.video.pipe)
 HEADER_ARG(			GlxVideoAtomPipe,	reqdef_flagOGL,			1)
 HEADER_ARG(			GlxVideoAtomPipe,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		GlxVideoAtomPipe,	POLLER_PIPE, PROCESS)
+
+HEADER11(			GlxFboAtomPipe,		X11GlxSinkDevice,			pipe,		OglFbo,			OglFbo,			OglReceipt)
+HEADER_ACTION(		GlxFboAtomPipe,		glx.fbo.sink)
+HEADER_ARG(			GlxFboAtomPipe,		reqdef_flagSCREEN,		1)
+HEADER_ARG(			GlxFboAtomPipe,		reqdef_flagOGL,			1)
+HEADER_ARG(			GlxFboAtomPipe,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		GlxFboAtomPipe,		POLLER_PIPE, PROCESS)
 
 HEADER11(			GlxFboAtomSA,		X11GlxSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		GlxFboAtomSA,		glx.fbo.standalone)
@@ -284,6 +298,7 @@ HEADER11(			SdlOglShaderPipe,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		Ogl
 HEADER_ACTION(		SdlOglShaderPipe,	any.ogl.fbo.source.pipe)
 HEADER_ACTION(		SdlOglShaderPipe,	sdl.ogl.fbo.source.pipe)
 HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlOglShaderPipe,	HINT_PKG,				"AtomDebug")
 HEADER_LINK(		SdlOglShaderPipe,	PIPE, PROCESS)
 
@@ -291,12 +306,14 @@ HEADER55_U44(		SdlOglShaderAtom,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		
 HEADER_ACTION(		SdlOglShaderAtom,	sdl.ogl.fbo.source)
 HEADER_ACTION(		SdlOglShaderAtom,	any.ogl.fbo.source)
 HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlOglShaderAtom,	HINT_PKG,				"AtomDebug")
 HEADER_LINK(		SdlOglShaderAtom,	PIPE, PROCESS)
 
 HEADER11(			SdlOglShaderAtomSA,	SdlOglShaderBase,			pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlOglShaderAtomSA,	ogl.fbo.source.standalone)
 HEADER_ARG(			SdlOglShaderAtomSA,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglShaderAtomSA,	reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlOglShaderAtomSA,	HINT_PKG,				"AtomDebug")
 HEADER_LINK(		SdlOglShaderAtomSA,	PIPE, PROCESS)
 

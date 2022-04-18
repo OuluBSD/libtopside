@@ -6,18 +6,21 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void InitObjView() {
+	SoftShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
+}
+
+template <class Gfx>
+void InitObjViewSoft() {
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewVertexT<Gfx>>(GVar::VERTEX_SHADER, "obj_view_vertex");
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<ObjViewFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "obj_view_fragment");
-	SoftShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
-	
 }
 
 template <class Gfx>
 void InitUtils() {
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassVertexT<Gfx>>(GVar::VERTEX_SHADER, "pass_vertex");
 	SoftShaderLibraryT<Gfx>::template AddShaderClass<PassFragmentT<Gfx>>(GVar::FRAGMENT_SHADER, "pass_fragment");
-	
 }
+
 
 NAMESPACE_PARALLEL_END
 
@@ -27,7 +30,11 @@ INITBLOCK_(Shaders) {
 	using namespace TS;
 	using namespace TS::Parallel;
 	
+	InitObjView<X11OglGfx>();
+	
 	InitObjView<X11SwGfx>();
+	InitObjViewSoft<X11SwGfx>();
 	InitUtils<X11SwGfx>();
+	
 }
 
