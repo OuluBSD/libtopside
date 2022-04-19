@@ -579,11 +579,12 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 	else if (var >= VAR_NONE && var <= VAR_UNKNOWN) {
 		int tex_ch = var - VAR_NONE;
 		int tex_i = o.tex_id[tex_ch];
-		ASSERT(tex_i >= 0);
-		auto& tex = data.textures[tex_i];
-		Gfx::ActiveTexture(tex_ch);
-		Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
-		Gfx::Uniform1i(uindex, tex_ch);
+		if (tex_i >= 0) {
+			auto& tex = data.textures[tex_i];
+			Gfx::ActiveTexture(tex_ch);
+			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
+			Gfx::Uniform1i(uindex, tex_ch);
+		}
 	}
 	else TODO
 	#if 0

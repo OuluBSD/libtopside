@@ -1,0 +1,17 @@
+#include "StaticInterface.h"
+
+
+
+INITBLOCK_(StaticInterface) {
+	using namespace TS;
+	
+	#ifdef flagSDL2
+	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("jpg", true, false);
+	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("png", true, false);
+	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("tiff", true, false);
+	StaticIfaceFactory::AddFileFormat<Sdl2FileBackend>("tga", true, false);
+	#endif
+	
+	StaticIfaceFactory::AddFileFormat<TgaReaderBackend>("tga", true, false);
+	
+}

@@ -15,7 +15,7 @@ void ObjViewProgT<Gfx>::Initialize() {
 }
 
 template <class Gfx>
-void ObjViewProgT<Gfx>::Render(Draw& fb) {
+bool ObjViewProgT<Gfx>::Render(Draw& fb) {
 	using DataState = DataStateT<Gfx>;
 	using StateDraw = StateDrawT<Gfx>;
 	
@@ -28,11 +28,21 @@ void ObjViewProgT<Gfx>::Render(Draw& fb) {
 		String obj_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head.obj");
 		String tex_path = AppendFileName(data_dir, "african_head" DIR_SEPS "african_head_diffuse.tga");
 		auto& o = state.AddObject();
-		if (!state.LoadModel(loader, o, obj_path))
-			Panic("Couldn't load model: " + obj_path);
-		loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path);
-		if (!state.LoadModelTextures(loader, o))
-			Panic("Couldn't load model textures: " + obj_path);
+		
+		if (!state.LoadModel(loader, o, obj_path)) {
+			RTLOG("ObjViewProg::Render: error: could not load model: '" << obj_path << "'");
+			return false;
+		}
+		
+		if (!loader.GetModel()->AddTextureFile(0, TEXTYPE_DIFFUSE, tex_path)) {
+			RTLOG("ObjViewProg::Render: error: could not load texture '" << tex_path << "'");
+			return false;
+		}
+		
+		if (!state.LoadModelTextures(loader, o)) {
+			RTLOG("ObjViewProg::Render: error: could not load model textures: '" << obj_path << "'");
+			return false;
+		}
 	}
 	
 	Size sz = fb.GetPageSize();
@@ -51,6 +61,8 @@ void ObjViewProgT<Gfx>::Render(Draw& fb) {
 		ts.Reset();
 		phase = (phase + 1) % phases;
 	}
+	
+	return true;
 }
 
 template <class Gfx>

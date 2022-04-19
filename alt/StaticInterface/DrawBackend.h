@@ -31,6 +31,7 @@ typedef stbtt_fontinfo		RawSysFont;
 
 struct RawSysImage {
 	const char* data;
+	TypeCls backend;
 	int w, h, ch, pitch;
 };
 
@@ -58,11 +59,11 @@ struct SysImage {
 	SysImage(RawSysImage* raw) : raw(raw) {}
 	~SysImage() {Clear();}
 	void Clear();
-	int GetWidth() const {return raw ? raw->w : 0;}
-	int GetHeight() const {return raw ? raw->h : 0;}
-	int GetStride() const {return raw ? raw->ch : 0;}
-	int GetPitch() const {return raw ? raw->pitch : 0;}
-	const unsigned char* GetData() const {return raw ? (const unsigned char*)raw->data : 0;}
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetStride() const;
+	int GetPitch() const;
+	const unsigned char* GetData() const;
 	
 };
 

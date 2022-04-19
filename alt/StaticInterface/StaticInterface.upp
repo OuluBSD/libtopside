@@ -1,8 +1,24 @@
 description "\3770,128,128";
 
+uses
+	Local;
+
 file
-	NonScreen.h,
-	NonScreen.cpp,
+	StaticInterface.h,
+	StaticInterface.icpp,
+	Factory.h,
+	Factory.cpp,
+	Screen.h,
+	Screen.cpp,
 	DrawBackend.h,
-	DrawBackend.cpp;
+	DrawBackend.cpp,
+	Backends readonly separator,
+	Sdl2.h,
+	Sdl2.cpp,
+	Various.h,
+	Various.cpp,
+	Lib readonly separator,
+	tga_reader.h,
+	tga_reader.c,
+	_ readonly separator;
 

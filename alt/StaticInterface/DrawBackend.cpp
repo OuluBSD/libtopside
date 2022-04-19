@@ -1,22 +1,34 @@
-#include <Local/Local.h>
+#include "StaticInterface.h"
 
 
-NAMESPACE_UPP_BEGIN
+NAMESPACE_UPP
 
+
+int SysImage::GetWidth() const {return raw ? raw->w : 0;}
+int SysImage::GetHeight() const {return raw ? raw->h : 0;}
+int SysImage::GetStride() const {return raw ? raw->ch : 0;}
+int SysImage::GetPitch() const {return raw ? raw->pitch : 0;}
+const unsigned char* SysImage::GetData() const {return raw ? (const unsigned char*)raw->data : 0;}
 
 Image StreamRaster::LoadStringAny(String content) {
-	return Image();
+	TODO // try all readers
 }
 
 Image StreamRaster::LoadFileAny(String path) {
+	String ext = GetFileExt(path).Mid(1);
+	TS::StaticIfaceBackend* e = TS::StaticIfaceFactory::GetReader(ext);
+	if (e)
+		return e->LoadFileAny(path);
 	return Image();
 }
 
 RawSysFont* LoadSysFont(String path, int size) {
+	TODO
 	return 0;
 }
 
 Size GetSysFontTextSize(RawSysFont* fnt, String s) {
+	TODO
 	return Size(0, 0);
 }
 
@@ -41,4 +53,4 @@ Image ImageBuffer::GetImage() {
 }
 
 
-NAMESPACE_UPP_END
+END_UPP_NAMESPACE

@@ -1,5 +1,5 @@
-#ifndef _StaticInterface_StaticInterface_h_
-#define _StaticInterface_StaticInterface_h_
+#ifndef _StaticInterface_Screen_h_
+#define _StaticInterface_Screen_h_
 
 #include <Draw/Draw.h>
 

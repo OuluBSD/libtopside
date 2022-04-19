@@ -41,7 +41,7 @@ struct ObjViewProgT :
 	void operator=(const ObjViewProgT& t) {Panic("Can't copy ObjViewProgT");}
 	void Visit(RuntimeVisitor& vis) override {vis % loader;}
 	void Initialize() override;
-	void Render(Draw& draw) override;
+	bool Render(Draw& draw) override;
 	
 	void DrawObj(StateDrawT<Gfx>& fb, bool use_texture);
 	

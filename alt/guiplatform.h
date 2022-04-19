@@ -19,4 +19,4 @@
 #endif
 */
 #define NONCTRLPLATFORM_BACKEND_INCLUDE         <StaticInterface/DrawBackend.h>
-#define NONCTRLPLATFORM_INCLUDE                 <StaticInterface/NonScreen.h>
+#define NONCTRLPLATFORM_INCLUDE                 <StaticInterface/Screen.h>

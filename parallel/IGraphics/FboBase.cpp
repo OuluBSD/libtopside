@@ -213,7 +213,8 @@ bool FboAtomT<Gfx>::ProcessPacket(PacketValue& in, PacketValue& out) {
 		*/
 		accel_sd.SetTarget(data.accel_state);
 		for (BinderIfaceVideo* b : binders)
-			b->Render(accel_sd);
+			if (!b->Render(accel_sd))
+				return false;
 		
 		/*
 		PacketIO::Sink& sink = io.sink[sink_ch];
