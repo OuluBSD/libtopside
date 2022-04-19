@@ -13,7 +13,6 @@ class SoftRendT {
 	using SoftProgram			= SoftProgramT<Gfx>;
 	using SoftShaderBase		= SoftShaderBaseT<Gfx>;
 	using NativeTexture			= typename Gfx::NativeTexture;
-	using NativeSurface			= typename Gfx::NativeSurface;
 	using NativeColorBuffer		= typename Gfx::NativeColorBuffer;
 	
 	bool verbose = false;

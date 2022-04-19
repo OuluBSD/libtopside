@@ -14,13 +14,18 @@ Image TgaReaderBackend::LoadFileAny(String path) {
 	int h = 0;
 	int depth = 0;
 	int bpp = 4; // always, see tgaRead impl
+	void* src = (void*)tgaRead((const unsigned char*)content.Begin(), TGA_READER_ARGB, &w, &h, &depth);
+	int len = w * h * bpp;
 	RawSysImage* img = new RawSysImage();
-	img->data = (const char*)tgaRead((const unsigned char*)content.Begin(), TGA_READER_ARGB, &w, &h, &depth);
+	img->data.SetCount(len);
+	memcpy(img->data.Begin(), src, len);
 	img->backend = TypeIdClass();
 	img->w = w;
 	img->h = h;
 	img->ch = bpp;
 	img->pitch = w * bpp;
+	
+	tgaFree(src);
 	
 	/*Image i(img);
 	auto* data = i.GetData();

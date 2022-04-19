@@ -17,6 +17,7 @@ mainconfig
 	"" = "DEBUG_RT SCREEN",
 	"" = "DEBUG_RT SCREEN OGL FFMPEG",
 	"" = "DEBUG_RT SCREEN SDL2",
+	"" = "DEBUG_RT SCREEN SDL2 OGL",
 	"" = "DEBUG_RT BUILTIN_PORTAUDIO",
 	"" = "SDL2";
 

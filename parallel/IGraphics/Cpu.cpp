@@ -506,7 +506,7 @@ template <class Gfx> void CpuGfxT<Gfx>::UnbindFramebuffer() {
 }
 
 #if defined flagSDL2
-template struct CpuGfxT<Sdl>;
+template struct CpuGfxT<SdlCpuGfx>;
 #endif
 
 template struct CpuGfxT<X11SwGfx>;

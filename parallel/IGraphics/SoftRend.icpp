@@ -4,8 +4,8 @@
 INITBLOCK_(InitSoftRend) {
 	using namespace TS;
 	
-	#ifdef flagSDL2
+	/*#ifdef flagSDL2
 	SoftShaderLibrary::AddShaderClass<Shaders::FS_Sdl2CpuSimpleSingle>(GVar::FRAGMENT_SHADER, "simple_single");
-	#endif
+	#endif*/
 	
 }

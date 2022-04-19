@@ -16,7 +16,7 @@ int SdlCpuGfx::GetPitch(NativeSurface& surf) {
 }
 
 byte* SdlCpuGfx::GetData(NativeSurface& surf) {
-	return surf->pixels;
+	return (byte*)surf->pixels;
 }
 
 

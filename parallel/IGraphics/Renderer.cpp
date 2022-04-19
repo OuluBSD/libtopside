@@ -60,6 +60,8 @@ void SoftRendT<Gfx>::SetViewport(Size sz) {
 
 template <class Gfx>
 void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
+	using NativeSurface = typename Gfx::NativeSurface;
+	
 	ASSERT(tgt_pipe && tgt_fb);
 	SoftPipeline& pipe = *tgt_pipe;
 	SoftFramebuffer& fb = *tgt_fb;

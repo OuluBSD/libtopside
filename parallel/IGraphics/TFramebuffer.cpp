@@ -7,6 +7,7 @@ NAMESPACE_PARALLEL_BEGIN
 template <>
 void FramebufferT<SdlCpuGfx>::DrawFill(const byte* mem, int sz) {
 	SDL_Texture* tex = color_buf[0].GetTex();
+	//SDL_Texture* tex = color_buf[0];
 	ASSERT(tex);
 	
 	uint32 fmt = 0;

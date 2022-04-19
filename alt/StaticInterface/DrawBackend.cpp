@@ -8,7 +8,7 @@ int SysImage::GetWidth() const {return raw ? raw->w : 0;}
 int SysImage::GetHeight() const {return raw ? raw->h : 0;}
 int SysImage::GetStride() const {return raw ? raw->ch : 0;}
 int SysImage::GetPitch() const {return raw ? raw->pitch : 0;}
-const unsigned char* SysImage::GetData() const {return raw ? (const unsigned char*)raw->data : 0;}
+const unsigned char* SysImage::GetData() const {return raw ? (byte*)raw->data.Begin() : 0;}
 
 Image StreamRaster::LoadStringAny(String content) {
 	TODO // try all readers

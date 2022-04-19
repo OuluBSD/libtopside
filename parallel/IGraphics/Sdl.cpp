@@ -9,11 +9,19 @@ void SdlOglGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRendere
 	SDL_GL_SwapWindow(w);
 }
 
+bool SdlOglGfx::LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf) {
+	TODO
+}
+
+void SdlOglGfx::QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h) {
+	TODO
+}
+
 #endif
 
-void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+void SdlCpuGfx::ActivateNextFrame(NativeDisplay&, NativeWindow& w, NativeRenderer& r, NativeColorBuffer& color_buf) {
 	const auto& fb = color_buf.GetTex();
-	
+	//NativeColorBuffer& fb = color_buf;
 	
 	#if 0
 	{

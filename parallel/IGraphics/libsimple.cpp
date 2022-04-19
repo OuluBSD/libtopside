@@ -5,6 +5,7 @@ namespace Shaders {
 
 
 
+/*
 #ifdef flagSDL2
 void FS_Sdl2CpuSimpleSingle::Process(GfxFragmentShaderArgs& a)
 {
@@ -27,6 +28,8 @@ void FS_Sdl2CpuSimpleSingle::Process(GfxFragmentShaderArgs& a)
 	else TODO
 }
 #endif
+*/
+
 
 
 }

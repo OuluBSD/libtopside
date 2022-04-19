@@ -111,7 +111,7 @@ struct CpuGfxT {
 		}
 	};
 	
-	using NativeTexture = uint32;
+	// not here: using NativeTexture = uint32;
 	using NativeShader = SoftShader;
 	using NativeColorBuffer = SoftFramebuffer;
 	using NativeDepthBuffer = SoftFramebuffer;
@@ -202,6 +202,7 @@ struct X11SwGfx : CpuGfxT<X11SwGfx>, X11Gfx {
 	using NativeTexture = SystemFrameBuffer;
 	using NativeSurface = ByteImage*;
 	//using NativeColorBuffer = void*;
+	using SoftShaderLibrary = SoftShaderLibraryT<X11SwGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;
@@ -231,7 +232,8 @@ struct X11OglGfx : OglGfx, X11Gfx {
 	
 	static const bool is_vendor_agnostic = false;
 	
-	using NativeGLContext		= ::GLXContext;
+	using NativeGLContext = ::GLXContext;
+	using SoftShaderLibrary = DummySoftShaderLibraryT<X11OglGfx>;
 	
 	static void DeleteContext(NativeGLContext& ctx);
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
@@ -263,13 +265,12 @@ struct SdlGfx {
 	static void SetWindowPosition(NativeWindow& win, Point pt);
 	static void SetWindowSize(NativeWindow& win, Size sz);
 	
-	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);
-	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
 	
 	
 };
 
-/*struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
+/*
+struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 	using NativeFrameBuffer = SDL_Texture*;
 	using NativeColorBuffer = SDL_Texture*;
 	using NativeDepthBuffer = SDL_Texture*;
@@ -293,7 +294,8 @@ struct SdlGfx {
 	static void RenderScreenRect();
 	static void SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {Local().ctx_default_fb = fb;}
 	
-};*/
+};
+*/
 
 struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 	static const bool is_vendor_agnostic = false;
@@ -302,18 +304,23 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 	
 	using NativeTexture = SDL_Texture*;
 	using NativeSurface = SDL_Surface*;
-	using NativeColorBuffer = SDL_Texture*;
+	//using NativeColorBuffer = SDL_Texture*;
+	using SoftShaderLibrary = SoftShaderLibraryT<SdlCpuGfx>;
 	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlCpu)
 	#undef GFX_CLS
 	
-	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBuffer& color_buf);
 	
-	int GetBytesPerPixel(NativeSurface& surf);
-	int GetPitch(NativeSurface& surf);
+	static int GetBytesPerPixel(NativeSurface& surf);
+	static int GetPitch(NativeSurface& surf);
 	static byte* GetData(NativeSurface& surf);
+	
+	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);
+	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
+	static void UnlockTextureToSurface(NativeTexture& tex);
 	
 };
 
@@ -321,12 +328,18 @@ struct SdlCpuGfx : CpuGfxT<SdlCpuGfx>, SdlGfx {
 struct SdlOglGfx : OglGfx, SdlGfx {
 	static const bool is_vendor_agnostic = false;
 	
+	using NativeSurface = void*;
+	using SoftShaderLibrary = DummySoftShaderLibraryT<SdlOglGfx>;
+	
 	#define GFX_CLS(x, g) using x = x##T<g##Gfx>;
 	//#define GFX_CLS(x, g) using x = g##x;
 	GFX_CLS_LIST(SdlOgl)
 	#undef GFX_CLS
 	
 	static void ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf);
+	
+	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);
+	static void QueryTexture(NativeTexture& tex, uint32& fmt, int& access, int& w, int& h);
 	
 };
 
@@ -341,9 +354,13 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 	SDLOGL_GFXTYPE \
 	GFXTYPE(SdlCpu)
 
+#define SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
+	template struct x <SdlCpuGfx>;
+
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
 	SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x) \
-	template struct x <SdlCpuGfx>;
+	SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
+	
 
 #else
 
@@ -386,7 +403,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 
 #define SOFTREND_EXCPLICIT_INITIALIZE_CLASS(x) \
 	 \
-	SDL_EXCPLICIT_INITIALIZE_CLASS(x) \
+	SDLSW_EXCPLICIT_INITIALIZE_CLASS(x) \
 	X11SW_EXCPLICIT_INITIALIZE_CLASS(x) \
 
 

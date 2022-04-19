@@ -30,7 +30,7 @@ NAMESPACE_UPP
 typedef stbtt_fontinfo		RawSysFont;
 
 struct RawSysImage {
-	const char* data;
+	Vector<byte> data;
 	TypeCls backend;
 	int w, h, ch, pitch;
 };
