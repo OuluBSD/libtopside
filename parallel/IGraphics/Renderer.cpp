@@ -18,6 +18,16 @@ void SoftRendT<Gfx>::ClearBuffers() {
 }
 
 template <class Gfx>
+void SoftRendT<Gfx>::ClearTargets() {
+	buffers.Clear();
+}
+
+template <class Gfx>
+void SoftRendT<Gfx>::AddTarget(SoftFramebuffer& fb) {
+	buffers.Add(&fb);
+}
+
+template <class Gfx>
 void SoftRendT<Gfx>::SetSmoothShading(bool b) {
 	shading = b ? GVar::SMOOTH : GVar::FLAT;
 }
@@ -59,12 +69,13 @@ void SoftRendT<Gfx>::SetViewport(Size sz) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
+void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& fb, bool elements) {
 	using NativeSurface = typename Gfx::NativeSurface;
 	
-	ASSERT(tgt_pipe && tgt_fb);
+	Vector<float> zbuf; TODO
+	
+	ASSERT(tgt_pipe && fb);
 	SoftPipeline& pipe = *tgt_pipe;
-	SoftFramebuffer& fb = *tgt_fb;
 	
 	NativeTexture& tex = fb.GetNativeTexture();
 	NativeSurface surf = 0;
@@ -104,9 +115,9 @@ void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
 	}
 	else {
 		ASSERT(zinfo.GetCount() == h*w);
-		ASSERT(zbuffer.GetCount() == h*w);
+		ASSERT(zbuf.GetCount() == h*w);
 		DepthInfo* zinfo = (DepthInfo*)this->zinfo.Begin();
-		float* zbuffer = (float*)this->zbuffer.Begin();
+		float* zbuffer = (float*)zbuf.Begin();
 		float reset_f = GetDepthResetValue();
 		//const Vertex* vertices = GetVertices().vertices.Begin();
 		//const uint32* indices = GetIndices().indices.Begin();
@@ -183,7 +194,7 @@ void SoftRendT<Gfx>::RenderScreenRect(bool elements) {
 }
 
 template <class Gfx>
-void SoftRendT<Gfx>::RenderScreenRect() {
+void SoftRendT<Gfx>::RenderScreenRect(SoftFramebuffer& tgt_fb) {
 	ASSERT(tgt_pipe && tgt_fb);
 	using Stage = typename SoftPipelineT<Gfx>::Stage;
 	for (Stage& stage : tgt_pipe->stages) {
@@ -191,7 +202,7 @@ void SoftRendT<Gfx>::RenderScreenRect() {
 		for (SoftShader* shader : prog.GetShaders()) {
 			GVar::ShaderType type = shader->GetType();
 			if (type == GVar::FRAGMENT_SHADER) {
-				RenderScreenRect(false);
+				RenderScreenRect(tgt_fb, false);
 			}
 		}
 	}
@@ -257,8 +268,10 @@ void SoftRendT<Gfx>::TriangleDepthTest(DepthInfo& info, const Vertex& a, const V
 		}
 	}
 	
-	int pos_limit = zbuffer.GetCount();
-	float* zbuffer = (float*)this->zbuffer.Begin();
+	Vector<float> zbuffer__; TODO
+	
+	int pos_limit = zbuffer__.GetCount();
+	float* zbuffer = (float*)zbuffer__.Begin();
 	DepthInfo* zinfo = (DepthInfo*)this->zinfo.Begin();
 	
 	bool greater = is_depth_order_greater;
@@ -320,10 +333,14 @@ void SoftRendT<Gfx>::DepthTest(SoftVertexArray& vao, uint16 src_id) {
 
 template <class Gfx>
 void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
+	TODO
+}
+
+template <class Gfx>
+void SoftRendT<Gfx>::Render(SoftFramebuffer& fb, SoftVertexArray& vao) {
 	ASSERT(vao.vbo && vao.ebo);
-	ASSERT(tgt_pipe && tgt_fb);
+	ASSERT(tgt_pipe && fb);
 	SoftPipeline& pipe = *tgt_pipe;
-	SoftFramebuffer& fb = *tgt_fb;
 	
 	//SoftShader* shdrs[GVar::SHADERTYPE_COUNT] = {0,0,0,0,0};
 	
@@ -363,13 +380,28 @@ void SoftRendT<Gfx>::Render(SoftVertexArray& vao) {
 }
 
 template <class Gfx>
+void SoftRendT<Gfx>::RenderScreenRect() {
+	TODO // loop buffers
+	/*Begin();
+	RenderScreenRect();
+	End();*/
+}
+
+template <class Gfx>
 void SoftRendT<Gfx>::Begin() {
+	TODO
+}
+
+template <class Gfx>
+void SoftRendT<Gfx>::Begin(SoftFramebuffer& tgt_fb) {
 	ASSERT(tgt_fb && tgt_pipe);
+	
+	Vector<float> zbuffer; TODO
 	
 	tmp_sources.SetCount(0);
 	
 	// query target dimension
-	NativeTexture& tex = tgt_fb->GetNativeTexture();
+	NativeTexture& tex = tgt_fb.GetNativeTexture();
 	uint32 fmt = 0;
 	int access;
 	w = 0, h = 0;
@@ -387,7 +419,7 @@ void SoftRendT<Gfx>::Begin() {
 
 template <class Gfx>
 void SoftRendT<Gfx>::End() {
-	RenderScreenRect(true);
+	TODO //RenderScreenRect(true);
 }
 
 /*

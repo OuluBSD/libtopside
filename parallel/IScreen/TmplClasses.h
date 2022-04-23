@@ -72,7 +72,7 @@ using X11SwSinkDevice = ScreenSinkDeviceT<ScrX11Sw>;
 #endif
 
 #if defined flagOGL
-using X11GlxSinkDevice = ScreenSinkDeviceT<ScrX11Glx>;
+using X11OglSinkDevice = ScreenSinkDeviceT<ScrX11Ogl>;
 #endif
 
 

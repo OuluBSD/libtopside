@@ -4,7 +4,7 @@
 NAMESPACE_PARALLEL_BEGIN
 
 
-bool X11Glx_IsExtensionSupported(const char *extList, const char *extension) {
+bool X11Ogl_IsExtensionSupported(const char *extList, const char *extension) {
 	const char *start;
 	const char *where, *terminator;
 	
@@ -39,7 +39,7 @@ bool X11Glx_IsExtensionSupported(const char *extList, const char *extension) {
 
 
 
-bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
+bool ScrX11Ogl::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const Script::WorldState& ws) {
 	
 	if (!dev.ogl.Initialize(a, ws))
 		return false;
@@ -61,19 +61,19 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	// open connection with the X server.
 	display = XOpenDisplay(display_name);
 	if (display == NULL) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: cannot connect to X server '" << display_name << "'");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: cannot connect to X server '" << display_name << "'");
 		return false;
 	}
 	
 	GLint majorGLX, minorGLX = 0;
 	glXQueryVersion(display, &majorGLX, &minorGLX);
 	if (majorGLX <= 1 && minorGLX < 2) {
-	    LOG("ScrX11Glx::SinkDevice_Initialize: error: GLX 1.2 or greater is required.");
+	    LOG("ScrX11Ogl::SinkDevice_Initialize: error: GLX 1.2 or greater is required.");
 	    XCloseDisplay(display);
 	    return false;
 	}
 	else {
-	    LOG("ScrX11Glx::SinkDevice_Initialize: GLX version: " << majorGLX << "." << minorGLX);
+	    LOG("ScrX11Ogl::SinkDevice_Initialize: GLX version: " << majorGLX << "." << minorGLX);
 	}
 	
 	
@@ -97,7 +97,7 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	int fbcount;
 	GLXFBConfig* fbc = glXChooseFBConfig(display, screen_num, glx_attribs, &fbcount);
 	if (fbc == 0) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: failed to retrieve framebuffer.");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: failed to retrieve framebuffer.");
 		XCloseDisplay(display);
 		return false;
 	}
@@ -133,13 +133,13 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	
 	visual			= glXGetVisualFromFBConfig( display, bestFbc );
 	if (visual == 0) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: Could not create correct visual window.");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: Could not create correct visual window.");
 		XCloseDisplay(display);
 		return false;
 	}
 	
 	if (screen_num != visual->screen) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: screen_num(" << screen_num << ") does not match visual->screen(" << visual->screen << ").");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: screen_num(" << screen_num << ") does not match visual->screen(" << visual->screen << ").");
 		XCloseDisplay(display);
 		return false;
 	}
@@ -147,7 +147,7 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	// default resolution is 1280x720 for now
 	width = 1280;
 	height = 720;
-	RTLOG("ScrX11Glx::SinkDevice_Initialize: window width - '" << width << "'; height - '" << height << "'");
+	RTLOG("ScrX11Ogl::SinkDevice_Initialize: window width - '" << width << "'; height - '" << height << "'");
 	
 	// create a simple window, as a direct child of the screen's
 	// root window. Use the screen's white color as the background
@@ -183,7 +183,7 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		glXCreateContextAttribsARBProc glXCreateContextAttribsARB = 0;
 		glXCreateContextAttribsARB = (glXCreateContextAttribsARBProc) glXGetProcAddressARB( (const GLubyte *) "glXCreateContextAttribsARB" );
 		if (glXCreateContextAttribsARB == 0) {
-			LOG("ScrX11Glx::SinkDevice_Initialize: warning: glXCreateContextAttribsARB() not found.");
+			LOG("ScrX11Ogl::SinkDevice_Initialize: warning: glXCreateContextAttribsARB() not found.");
 		}
 		
 		
@@ -200,12 +200,12 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		
 		dev.gl_ctx = 0;
 		const char *glxExts = glXQueryExtensionsString( display,  screen_num );
-		LOG("ScrX11Glx::SinkDevice_Initialize: Late extensions:");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: Late extensions:");
 		Vector<String> ext_list = Split(glxExts, " ");
 		for (const String& s : ext_list) {LOG("\t" << s);}
 		
-		if (!X11Glx_IsExtensionSupported( glxExts, "GLX_ARB_create_context")) {
-			LOG("ScrX11Glx::SinkDevice_Initialize: warning: GLX_ARB_create_context not supported");
+		if (!X11Ogl_IsExtensionSupported( glxExts, "GLX_ARB_create_context")) {
+			LOG("ScrX11Ogl::SinkDevice_Initialize: warning: GLX_ARB_create_context not supported");
 			dev.gl_ctx = glXCreateNewContext( display, bestFbc, GLX_RGBA_TYPE, 0, True );
 		}
 		else {
@@ -216,10 +216,10 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 		
 		// Verifying that context is a direct context
 		if (!glXIsDirect (display, dev.gl_ctx)) {
-			LOG("ScrX11Glx::SinkDevice_Initialize: warning: indirect GLX rendering context obtained");
+			LOG("ScrX11Ogl::SinkDevice_Initialize: warning: indirect GLX rendering context obtained");
 		}
 		else {
-			LOG("ScrX11Glx::SinkDevice_Initialize: direct GLX rendering context obtained");
+			LOG("ScrX11Ogl::SinkDevice_Initialize: direct GLX rendering context obtained");
 		}
 		glXMakeCurrent(display, win, dev.gl_ctx);
 
@@ -252,26 +252,26 @@ bool ScrX11Glx::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const 
 	dev.ogl.SetNative(dev.display, dev.win, 0, 0);
 	
 	if (!dev.ogl.Open(Size(width, height), 4)) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}
 	
 	return true;
 }
 
-bool ScrX11Glx::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
+bool ScrX11Ogl::SinkDevice_PostInitialize(NativeSinkDevice& dev, AtomBase& a) {
 	return true;
 }
 
-bool ScrX11Glx::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
+bool ScrX11Ogl::SinkDevice_Start(NativeSinkDevice& dev, AtomBase& a) {
 	return true;
 }
 
-void ScrX11Glx::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
+void ScrX11Ogl::SinkDevice_Stop(NativeSinkDevice& dev, AtomBase& a) {
 	
 }
 
-void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
+void ScrX11Ogl::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	dev.ogl.Uninitialize();
 	
 	glXDestroyContext(dev.display, dev.gl_ctx);
@@ -286,15 +286,15 @@ void ScrX11Glx::SinkDevice_Uninitialize(NativeSinkDevice& dev, AtomBase& a) {
 	XCloseDisplay(dev.display);
 }
 
-bool ScrX11Glx::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, const Packet& p) {
+bool ScrX11Ogl::SinkDevice_Recv(NativeSinkDevice& dev, AtomBase&, int ch_i, const Packet& p) {
 	return dev.ogl.Recv(ch_i, p);
 }
 
-void ScrX11Glx::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg) {
+void ScrX11Ogl::SinkDevice_Finalize(NativeSinkDevice& dev, AtomBase&, RealtimeSourceConfig& cfg) {
 	dev.ogl.Render(cfg);
 }
 
-bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
+bool ScrX11Ogl::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, PacketValue& in, PacketValue& out) {
 	Format fmt = in.GetFormat();
 	
 	/*int width = vfmt.res[0];
@@ -346,7 +346,7 @@ bool ScrX11Glx::SinkDevice_ProcessPacket(NativeSinkDevice& dev, AtomBase& a, Pac
 	return true;
 }
 
-bool ScrX11Glx::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
+bool ScrX11Ogl::SinkDevice_NegotiateSinkFormat(NativeSinkDevice& dev, AtomBase&, Serial::Link& link, int sink_ch, const Format& new_fmt) {
 	return false;
 }
 

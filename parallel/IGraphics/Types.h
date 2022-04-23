@@ -93,6 +93,7 @@ struct CpuGfxT {
 		SoftProgram* prog = 0;
 		SoftFramebuffer* fb = 0;
 		SoftFramebuffer* ctx_default_fb = 0;
+		SoftFramebuffer* depth = 0;
 		SoftPipeline* pipe = 0;
 		SoftVertexArray* vao = 0;
 		
@@ -367,6 +368,7 @@ struct SdlOglGfx : OglGfx, SdlGfx {
 #define SDL_GFXTYPE
 #define SDLOGL_EXCPLICIT_INITIALIZE_CLASS(x)
 #define SDL_EXCPLICIT_INITIALIZE_CLASS(x)
+#define SDLSW_EXCPLICIT_INITIALIZE_CLASS(x)
 
 #endif
 

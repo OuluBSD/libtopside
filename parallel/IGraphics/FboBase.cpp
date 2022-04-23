@@ -36,7 +36,7 @@ bool FboAtomT<Gfx>::Initialize(const Script::WorldState& ws) {
 	
 	
 	String bin  = program + "_program";
-	auto& bin_map  = SoftShaderLibrary::GetBinders();
+	auto& bin_map  = ShaderLibrary::GetBinders();
 	int bin_i  = bin_map.Find(bin);
 	
 	if (bin_i < 0) {
@@ -271,6 +271,7 @@ void FboAtomT<Gfx>::Finalize(RealtimeSourceConfig& cfg) {
 
 X11SW_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 X11OGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
+SDLOGL_EXCPLICIT_INITIALIZE_CLASS(FboAtomT)
 
 
 
@@ -285,12 +286,12 @@ template <class Gfx>
 	return shader_classes[i];
 }
 
-template <class Gfx>
-	VectorMap<String, typename SoftShaderLibraryT<Gfx>::VideoBinderFactory>&
+/*template <class Gfx>
+	VectorMap<String, typename ShaderLibraryT<Gfx>::VideoBinderFactory>&
 		SoftShaderLibraryT<Gfx>::GetBinders() {
 	static VectorMap<String, SoftShaderLibraryT<Gfx>::VideoBinderFactory> m;
 	return m;
-}
+}*/
 
 
 SDLSW_EXCPLICIT_INITIALIZE_CLASS(SoftShaderLibraryT)

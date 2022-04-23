@@ -6,7 +6,7 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 void InitObjView() {
-	SoftShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
+	ShaderLibraryT<Gfx>::template AddProgramClass<ObjViewProgT<Gfx>>("obj_view_program");
 }
 
 template <class Gfx>
@@ -31,8 +31,11 @@ INITBLOCK_(Shaders) {
 	using namespace TS::Parallel;
 	
 	InitObjView<X11OglGfx>();
-	
 	InitObjView<X11SwGfx>();
+	#ifdef flagSDL2
+	InitObjView<SdlOglGfx>();
+	#endif
+	
 	InitObjViewSoft<X11SwGfx>();
 	InitUtils<X11SwGfx>();
 	

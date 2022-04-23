@@ -137,18 +137,86 @@ HEADER_ARG(			EcsOglFbo,			reqdef_flagSCREEN,	1)
 
 
 
-HEADER11(			X11SwFboPipe,		X11SwFboBase,				pipe,		CenterFbo,		CenterOrder,	CenterFbo)
-HEADER_ACTION(		X11SwFboPipe,		x11sw.fbo.pipe)
-HEADER_ARG(			X11SwFboPipe,		HINT_PKG,					"AtomDebug")
-HEADER_LINK(		X11SwFboPipe,		PIPE, PROCESS)
-HEADER_ARG(			X11SwFboPipe,		reqdef_flagSCREEN,			1)
+HEADER11(			X11SwFboProg,		X11SwFboBase,				pipe,		CenterFbo,		CenterOrder,	CenterFbo)
+HEADER_ACTION(		X11SwFboProg,		x11.sw.fbo.program)
+HEADER_ARG(			X11SwFboProg,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11SwFboProg,		PIPE, PROCESS)
+HEADER_ARG(			X11SwFboProg,		reqdef_flagSCREEN,			1)
 
-HEADER11(			GlxFboPipe,			X11GlxFboBase,					pipe,		OglFbo,			OglOrder,		OglFbo)
-HEADER_ACTION(		GlxFboPipe,			glx.fbo.pipe)
-HEADER_ARG(			GlxFboPipe,			HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxFboPipe,			PIPE, PROCESS)
-HEADER_ARG(			GlxFboPipe,			reqdef_flagSCREEN,			1)
-HEADER_ARG(			GlxFboPipe,			reqdef_flagOGL,				1)
+HEADER11(			X11OglFboProg,		X11OglFboBase,				pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		X11OglFboProg,		x11.ogl.fbo.program)
+HEADER_ARG(			X11OglFboProg,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11OglFboProg,		PIPE, PROCESS)
+HEADER_ARG(			X11OglFboProg,		reqdef_flagSCREEN,			1)
+HEADER_ARG(			X11OglFboProg,		reqdef_flagOGL,				1)
+
+HEADER11(			SdlOglShaderProg,	SdlOglFboBase,			pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		SdlOglShaderProg,	any.ogl.fbo.program)
+HEADER_ACTION(		SdlOglShaderProg,	sdl.ogl.fbo.program)
+HEADER_ARG(			SdlOglShaderProg,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlOglShaderProg,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglShaderProg,	reqdef_flagSDL2,		1)
+HEADER_ARG(			SdlOglShaderProg,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		SdlOglShaderProg,	PIPE, PROCESS)
+
+
+
+
+
+
+
+HEADER11(			X11SwShaderPipe,	X11SwShaderBase,		pipe,		CenterFbo,		CenterOrder,	CenterFbo)
+HEADER_ACTION(		X11SwShaderPipe,	any.sw.fbo.pipe)
+HEADER_ACTION(		X11SwShaderPipe,	x11.sw.fbo.pipe)
+HEADER_ARG(			X11SwShaderPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11SwShaderPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		X11SwShaderPipe,	PIPE, PROCESS)
+
+HEADER11(			X11OglShaderPipe,	X11OglShaderBase,		pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		X11OglShaderPipe,	any.ogl.fbo.pipe)
+HEADER_ACTION(		X11OglShaderPipe,	x11.ogl.fbo.pipe)
+HEADER_ARG(			X11OglShaderPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11OglShaderPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			X11OglShaderPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		X11OglShaderPipe,	PIPE, PROCESS)
+
+HEADER11(			SdlOglShaderPipe,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		OglFbo)
+HEADER_ACTION(		SdlOglShaderPipe,	any.ogl.fbo.pipe)
+HEADER_ACTION(		SdlOglShaderPipe,	sdl.ogl.fbo.pipe)
+HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagSDL2,		1)
+HEADER_ARG(			SdlOglShaderPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		SdlOglShaderPipe,	PIPE, PROCESS)
+
+
+
+
+
+
+HEADER11(			X11SwFboAtomPipe,	X11SwSinkDevice,		pipe,		CenterFbo,		CenterFbo,		CenterReceipt)
+HEADER_ACTION(		X11SwFboAtomPipe,	x11.sw.fbo.sink)
+HEADER_ARG(			X11SwFboAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11SwFboAtomPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		X11SwFboAtomPipe,	POLLER_PIPE, PROCESS)
+
+HEADER11(			X11OglFboAtomPipe,	X11OglSinkDevice,		pipe,		OglFbo,			OglFbo,			OglReceipt)
+HEADER_ACTION(		X11OglFboAtomPipe,	x11.ogl.fbo.sink)
+HEADER_ARG(			X11OglFboAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			X11OglFboAtomPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			X11OglFboAtomPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		X11OglFboAtomPipe,	POLLER_PIPE, PROCESS)
+
+HEADER11(			SdlOglFboAtomPipe,	Sdl2OglVideoSinkDevice,	pipe,		OglFbo,			OglFbo,			OglReceipt)
+HEADER_ACTION(		SdlOglFboAtomPipe,	sdl.ogl.fbo.sink)
+HEADER_ARG(			SdlOglFboAtomPipe,	reqdef_flagSCREEN,		1)
+HEADER_ARG(			SdlOglFboAtomPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			SdlOglFboAtomPipe,	reqdef_flagSDL2,		1)
+HEADER_ARG(			SdlOglFboAtomPipe,	HINT_PKG,				"AtomDebug")
+HEADER_LINK(		SdlOglFboAtomPipe,	POLLER_PIPE, PROCESS)
+
+
+
 
 
 
@@ -198,35 +266,28 @@ HEADER_ARG(			X11VideoAtomPipe,	reqdef_flagSCREEN,		1)
 HEADER_ARG(			X11VideoAtomPipe,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11VideoAtomPipe,	POLLER_PIPE, PROCESS)
 
-HEADER11(			GlxVideoAtomPipe,	X11GlxSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
-HEADER_ACTION(		GlxVideoAtomPipe,	glx.video.pipe)
-HEADER_ARG(			GlxVideoAtomPipe,	reqdef_flagOGL,			1)
-HEADER_ARG(			GlxVideoAtomPipe,	HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxVideoAtomPipe,	POLLER_PIPE, PROCESS)
+HEADER11(			X11OglVideoAtomPipe,	X11OglSinkDevice,			pipe,		CenterVideo,	CenterVideo,	CenterReceipt)
+HEADER_ACTION(		X11OglVideoAtomPipe,	glx.video.pipe)
+HEADER_ARG(			X11OglVideoAtomPipe,	reqdef_flagOGL,			1)
+HEADER_ARG(			X11OglVideoAtomPipe,	HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11OglVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
-HEADER11(			GlxFboAtomPipe,		X11GlxSinkDevice,			pipe,		OglFbo,			OglFbo,			OglReceipt)
-HEADER_ACTION(		GlxFboAtomPipe,		glx.fbo.sink)
-HEADER_ARG(			GlxFboAtomPipe,		reqdef_flagSCREEN,		1)
-HEADER_ARG(			GlxFboAtomPipe,		reqdef_flagOGL,			1)
-HEADER_ARG(			GlxFboAtomPipe,		HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxFboAtomPipe,		POLLER_PIPE, PROCESS)
-
-HEADER11(			GlxFboAtomSA,		X11GlxSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
-HEADER_ACTION(		GlxFboAtomSA,		glx.fbo.standalone)
-HEADER_ARG(			GlxFboAtomSA,		reqdef_flagOGL,			1)
-HEADER_ARG(			GlxFboAtomSA,		HINT_PKG,					"AtomDebug")
-HEADER_LINK(		GlxFboAtomSA,		POLLER_PIPE, PROCESS)
+HEADER11(			X11OglFboAtomSA,		X11OglSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER_ACTION(		X11OglFboAtomSA,		.standalone)
+HEADER_ARG(			X11OglFboAtomSA,		reqdef_flagOGL,			1)
+HEADER_ARG(			X11OglFboAtomSA,		HINT_PKG,					"AtomDebug")
+HEADER_LINK(		X11OglFboAtomSA,		POLLER_PIPE, PROCESS)
 
 
 
 HEADER11(			X11SwVideoAtomPipe,	X11SwSinkDevice,			pipe,		CenterFbo,		CenterFbo,	CenterReceipt)
-HEADER_ACTION(		X11SwVideoAtomPipe,	x11sw.video.pipe)
+HEADER_ACTION(		X11SwVideoAtomPipe,	x11.sw.video.pipe)
 HEADER_ARG(			X11SwVideoAtomPipe,	reqdef_flagSCREEN,		1)
 HEADER_ARG(			X11SwVideoAtomPipe,	HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11SwVideoAtomPipe,	POLLER_PIPE, PROCESS)
 
 HEADER11(			X11SwFboAtomSA,		X11SwSinkDevice,			pipe,		OglFbo,			OglOrder,		OglReceipt)
-HEADER_ACTION(		X11SwFboAtomSA,		x11sw.fbo.standalone)
+HEADER_ACTION(		X11SwFboAtomSA,		x11.sw.fbo.standalone)
 HEADER_ARG(			X11SwFboAtomSA,		reqdef_flagSCREEN,			1)
 HEADER_ARG(			X11SwFboAtomSA,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		X11SwFboAtomSA,		POLLER_PIPE, PROCESS)
@@ -244,14 +305,14 @@ HEADER_ARG(			SdlFboAtomSA,		HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlFboAtomSA,		POLLER_PIPE, PROCESS)
 
 HEADER11(			SdlFboPipe,			Sdl2OglVideoSinkDevice,			pipe,		OglFbo,			OglFbo,			OglReceipt)
-HEADER_ACTION(		SdlFboPipe,			sdl.fbo.pipe)
+HEADER_ACTION(		SdlFboPipe,			sdl.fbo.sink)
 HEADER_ARG(			SdlFboPipe,			reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlFboPipe,			reqdef_flagOGL,			1)
 HEADER_ARG(			SdlFboPipe,			HINT_PKG,					"AtomDebug")
 HEADER_LINK(		SdlFboPipe,			POLLER_PIPE, PROCESS)
 
 HEADER21(			SdlFboPipeSide,		Sdl2OglVideoSinkDevice,			pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
-HEADER_ACTION(		SdlFboPipeSide,		sdl.fbo.pipe.side)
+HEADER_ACTION(		SdlFboPipeSide,		sdl.fbo.sink.side)
 HEADER_ARG(			SdlFboPipeSide,		reqdef_flagSCREEN,		1)
 
 HEADER55_U44(		SdlFboAtom,			Sdl2OglVideoSinkDevice,			pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
@@ -294,23 +355,19 @@ HEADER_ARG(			SdlAudioAtom,		reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlAudioAtom,		HINT_PKG,				"AtomDebug")
 HEADER_LINK(		SdlAudioAtom,		EXTERNAL_PIPE, PROCESS)
 
-HEADER11(			SdlOglShaderPipe,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		OglFbo)
-HEADER_ACTION(		SdlOglShaderPipe,	any.ogl.fbo.source.pipe)
-HEADER_ACTION(		SdlOglShaderPipe,	sdl.ogl.fbo.source.pipe)
-HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagOGL,			1)
-HEADER_ARG(			SdlOglShaderPipe,	reqdef_flagSDL2,		1)
-HEADER_ARG(			SdlOglShaderPipe,	HINT_PKG,				"AtomDebug")
-HEADER_LINK(		SdlOglShaderPipe,	PIPE, PROCESS)
+
+
+
 
 HEADER55_U44(		SdlOglShaderAtom,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		OglFbo,		OglReceipt)
-HEADER_ACTION(		SdlOglShaderAtom,	sdl.ogl.fbo.source)
-HEADER_ACTION(		SdlOglShaderAtom,	any.ogl.fbo.source)
+HEADER_ACTION(		SdlOglShaderAtom,	sdl.ogl.fbo.side)
+HEADER_ACTION(		SdlOglShaderAtom,	any.ogl.fbo.side)
 HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagOGL,			1)
 HEADER_ARG(			SdlOglShaderAtom,	reqdef_flagSDL2,		1)
 HEADER_ARG(			SdlOglShaderAtom,	HINT_PKG,				"AtomDebug")
 HEADER_LINK(		SdlOglShaderAtom,	PIPE, PROCESS)
 
-HEADER11(			SdlOglShaderAtomSA,	SdlOglShaderBase,			pipe,		OglFbo,			OglOrder,		OglReceipt)
+HEADER11(			SdlOglShaderAtomSA,	SdlOglShaderBase,		pipe,		OglFbo,			OglOrder,		OglReceipt)
 HEADER_ACTION(		SdlOglShaderAtomSA,	ogl.fbo.source.standalone)
 HEADER_ARG(			SdlOglShaderAtomSA,	reqdef_flagOGL,			1)
 HEADER_ARG(			SdlOglShaderAtomSA,	reqdef_flagSDL2,		1)

@@ -244,7 +244,7 @@ bool HalSdl2::CenterVideoSinkDevice_Initialize(NativeVideoSink& dev, AtomBase& a
 		return false;
 	
 	String title = ws.GetString(".title", "SDL2 Window");
-	Size sz = ws.GetSize(".cx", ".cy", Size(800,600));
+	Size sz = ws.GetSize(".cx", ".cy", Size(1280,720));
 	bool fullscreen = ws.GetBool(".fullscreen", false);
 	bool sizeable = ws.GetBool(".sizeable", false);
 	bool maximized = ws.GetBool(".maximized", false);
@@ -387,7 +387,7 @@ bool HalSdl2::OglVideoSinkDevice_Initialize(NativeOglVideoSink& dev, AtomBase& a
 		return false;
 	
 	String title = ws.GetString(".title", "SDL2 Window");
-	Size sz = ws.GetSize(".cx", ".cy", Size(800,600));
+	Size sz = ws.GetSize(".cx", ".cy", Size(1280,720));
 	bool fullscreen = ws.GetBool(".fullscreen", false);
 	bool sizeable = ws.GetBool(".sizeable", false);
 	bool maximized = ws.GetBool(".maximized", false);

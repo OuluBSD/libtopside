@@ -57,27 +57,31 @@ INITBLOCK {
 		Factory::RegisterAtom<VideoDbgSrc>();
 		Factory::RegisterAtom<EventStatePipe>();
 		Factory::RegisterAtom<X11SwFboAtomSA>();
-		Factory::RegisterAtom<X11SwFboPipe>();
+		Factory::RegisterAtom<X11SwFboProg>();
 		Factory::RegisterAtom<X11SwVideoAtomPipe>();
 		
 		#if defined flagPOSIX
 			Factory::RegisterAtom<X11VideoAtomPipe>();
+			Factory::RegisterAtom<X11SwShaderPipe>();
+			Factory::RegisterAtom<X11SwFboAtomPipe>();
 			#ifdef flagOGL
-				Factory::RegisterAtom<GlxVideoAtomPipe>();
-				Factory::RegisterAtom<GlxFboAtomSA>();
-				Factory::RegisterAtom<GlxFboPipe>();
-				Factory::RegisterAtom<GlxFboAtomPipe>();
+				Factory::RegisterAtom<X11OglVideoAtomPipe>();
+				Factory::RegisterAtom<X11OglFboAtomSA>();
+				Factory::RegisterAtom<X11OglFboProg>();
+				Factory::RegisterAtom<X11OglFboAtomPipe>();
+				Factory::RegisterAtom<X11OglShaderPipe>();
 			#endif
 		#endif
 		
 		#ifdef flagSDL2
 			Factory::RegisterAtom<SdlVideoAtomPipe>();
 			Factory::RegisterAtom<SdlVideoAtom>();
+			Factory::RegisterAtom<SdlOglShaderPipe>();
 			#ifdef flagOGL
 				Factory::RegisterAtom<SdlFboPipe>();
 				Factory::RegisterAtom<SdlFboAtom>();
 				Factory::RegisterAtom<SdlFboAtomSA>();
-				Factory::RegisterAtom<SdlOglShaderPipe>();
+				Factory::RegisterAtom<SdlOglShaderProg>();
 				Factory::RegisterAtom<SdlOglShaderAtom>();
 				Factory::RegisterAtom<SdlOglShaderAtomSA>();
 			#endif

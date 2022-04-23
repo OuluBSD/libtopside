@@ -32,7 +32,12 @@ bool SoftProgramT<Gfx>::LinkProgram() {
 
 template <class Gfx>
 void SoftProgramT<Gfx>::SetParameter(GVar::ParamType type, int i) {
-	TODO
+	if (type == GVar::PROGRAM_SEPARABLE) {
+		// pass
+	}
+	else {
+		TODO
+	}
 }
 
 template <class Gfx>

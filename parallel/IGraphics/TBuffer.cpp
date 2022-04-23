@@ -584,6 +584,7 @@ void BufferT<Gfx>::SetVar(DataState& data, int var, int gl_prog, const DataObjec
 			Gfx::ActiveTexture(tex_ch);
 			Gfx::BindTextureRO(GVar::TEXTYPE_2D, tex);
 			Gfx::Uniform1i(uindex, tex_ch);
+			Gfx::DeactivateTexture();
 		}
 	}
 	else TODO
@@ -707,6 +708,7 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 		Gfx::ActiveTexture(tex_ch);
 		Gfx::BindTextureRO(GetTexType(ch), *tex);
 		Gfx::Uniform1i(uindex, tex_ch);
+		Gfx::DeactivateTexture();
 	}
 	
 	else if (var == VAR_COMPAT_FRAMERATE) {
@@ -799,11 +801,13 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 		//auto fmt = s.GetGlFormat();
 		
 		// color buffer
+		Gfx::ActiveTexture(CHANNEL_NONE);
 		Gfx::GenTexture(s.color_buf[0]);
 		Gfx::BindTextureRW(GVar::TEXTYPE_2D, color_buf);
 		//TODO Gfx::TexImage2D(GL_TEXTURE_2D, 0, fmt, sz.cx, sz.cy, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 		TexFlags(GVar::TEXTYPE_2D, s.filter, s.wrap);
 		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
+		Gfx::DeactivateTexture();
 		
 		// depth buffer
 		if (create_depth) {

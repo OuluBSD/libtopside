@@ -82,7 +82,17 @@ void CpuGfxT<Gfx>::UnbindProgramPipeline() {
 
 template <class Gfx>
 void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
-	TODO
+	auto& l = Local();
+	l.rend.ClearTargets();
+	for(int i = 0; i < CHANNEL_COUNT; i++) {
+		uint32 j = 1 << i;
+		if ((uint32)tgt & j) {
+			auto rw = l.texture[i].rw;
+			ASSERT(rw);
+			if (rw)
+				l.rend.AddTarget(*rw);
+		}
+	}
 }
 
 /*void CpuGfxT<Gfx>::Clear_Color() {
@@ -93,6 +103,11 @@ template <class Gfx>
 void CpuGfxT<Gfx>::ActiveTexture(int ch) {
 	ASSERT(ch >= 0 && ch < CHANNEL_COUNT);
 	Local().active_texture = ch;
+}
+
+template <class Gfx>
+void CpuGfxT<Gfx>::DeactivateTexture() {
+	Local().active_texture = -1;
 }
 
 /*void CpuRendererBase::ActivateNextFrame() {
@@ -252,6 +267,11 @@ void CpuGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GV
 	ASSERT(fb);
 	if (fb)
 		fb->SetParam(type, filter, repeat);
+	if (Local().active_texture >= 0) {
+		auto& t = Local().T();
+		if (t.rw)
+			t.rw->SetParam(type, filter, repeat);
+	}
 }
 
 template <class Gfx>
@@ -302,10 +322,10 @@ void CpuGfxT<Gfx>::RenderScreenRect() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	l.rend.SetTarget(*l.pipe, *l.fb);
-	l.rend.Begin();
+	//l.rend.SetTarget(*l.pipe, *l.fb);
+	TODO // set buffers
+	l.rend.SetPipeline(*l.pipe);
 	l.rend.RenderScreenRect();
-	l.rend.End();
 }
 
 template <class Gfx>
@@ -459,7 +479,8 @@ void CpuGfxT<Gfx>::BeginRender() {
 	ASSERT_(*l.fb, "framebuffer is not inited");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
-	l.rend.SetTarget(*l.pipe, *l.fb);
+	//l.rend.SetTarget(*l.pipe, *l.fb);
+	l.rend.SetPipeline(*l.pipe);
 	l.rend.Begin();
 }
 
@@ -472,37 +493,47 @@ void CpuGfxT<Gfx>::EndRender() {
 template <class Gfx> void CpuGfxT<Gfx>::SetupVertexStructure() {}
 template <class Gfx> void CpuGfxT<Gfx>::ActivateVertexStructure() {}
 
-template <class Gfx> void CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBuffer& b) {
-	TODO
+template <class Gfx> bool CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBuffer& b) {
+	return b.Create();
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::BindRenderbuffer(NativeDepthBuffer& rb) {
-	TODO
+	Local().depth = &rb;
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::RenderbufferStorage(Size sz) {
-	TODO
+	auto& depth = Local().depth;
+	ASSERT(depth);
+	if (depth)
+		depth->SetLocalData(sz, 1);
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::UnbindRenderbuffer() {
-	TODO
+	Local().depth = 0;
 }
 
 template <class Gfx> bool CpuGfxT<Gfx>::CreateFramebuffer(NativeFrameBuffer& fb) {
-	TODO
-	return true;
+	return fb.Create();
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(NativeFrameBuffer& fb) {
-	TODO
+template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(NativeFrameBuffer& tex) {
+	auto& fb = Local().fb;
+	ASSERT(fb);
+	ASSERT(tex);
+	if (fb && tex)
+		fb->SetColor(tex);
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffer& fb) {
-	TODO
+template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffer& depth) {
+	auto& fb = Local().fb;
+	ASSERT(fb);
+	ASSERT(depth);
+	if (fb && depth)
+		fb->SetDepth(depth);
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::UnbindFramebuffer() {
-	TODO
+	Local().fb = 0;
 }
 
 #if defined flagSDL2

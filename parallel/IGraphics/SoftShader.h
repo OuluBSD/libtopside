@@ -11,9 +11,7 @@ class SoftProgramT;
 template <class Gfx>
 struct DummySoftShaderLibraryT {
 	typedef SoftShaderBaseT<Gfx>* (*ShaderFactory)();
-	typedef BinderIfaceVideo* (*VideoBinderFactory)();
 	
-	static VectorMap<String, VideoBinderFactory>& GetBinders() {static VectorMap<String, VideoBinderFactory> m; return m;}
 	static VectorMap<String, ShaderFactory>& GetMap(int i) {ASSERT(i>=0&&i<GL::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GL::SHADERTYPE_COUNT]; return m[i];}
 	
 };
@@ -21,9 +19,7 @@ struct DummySoftShaderLibraryT {
 template <class Gfx>
 struct SoftShaderLibraryT {
 	typedef SoftShaderBaseT<Gfx>* (*ShaderFactory)();
-	typedef BinderIfaceVideo* (*VideoBinderFactory)();
 	
-	static VectorMap<String, VideoBinderFactory>& GetBinders();// {static VectorMap<String, VideoBinderFactory> m; return m;}
 	static VectorMap<String, ShaderFactory>& GetMap(int i);// {ASSERT(i>=0&&i<GL::SHADERTYPE_COUNT); static VectorMap<String, ShaderFactory> m[GL::SHADERTYPE_COUNT]; return m[i];}
 	
 	template <class T>
@@ -33,6 +29,14 @@ struct SoftShaderLibraryT {
 	}
 	
 	template <class T> static SoftShaderBaseT<Gfx>* CreateShader() {return new T();}
+	
+	
+};
+
+template <class Gfx>
+struct ShaderLibraryT {
+	typedef BinderIfaceVideo* (*VideoBinderFactory)();
+	static VectorMap<String, VideoBinderFactory>& GetBinders() {static VectorMap<String, VideoBinderFactory> m; return m;}
 	template <class T> static BinderIfaceVideo* CreateBinder() {return new T();}
 	
 	template <class T>

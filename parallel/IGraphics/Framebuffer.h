@@ -32,6 +32,9 @@ protected:
 	
 	NativeTexture tex = 0;
 	Texture* gtex = 0;
+	One<Texture> owned;
+	SoftFramebufferT* depth = 0;
+	SoftFramebufferT* color = 0;
 	
 	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
 	GVar::Filter filter[GVar::TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
@@ -44,7 +47,10 @@ public:
 	void ClearData(GVar::BufferType type);
 	void ClearDataAll();
 	
+	void SetLocalData(Size sz, byte channels);
 	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
+	void SetColor(SoftFramebufferT& fb) {color = &fb;}
+	void SetDepth(SoftFramebufferT& fb) {depth = &fb;}
 	
 	const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
 	Texture& GetGeomTex() const {ASSERT(gtex); return *gtex;}

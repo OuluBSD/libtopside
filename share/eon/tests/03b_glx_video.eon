@@ -4,7 +4,7 @@ machine glx.app: {
 		
 		loop ogl.fbo: {
 			ogl.customer: true;
-			sdl.fbo.standalone: true {filepath: "shaders/toys/simple/simple_single/stage0.glsl";};
+			.standalone: true {filepath: "shaders/toys/simple/simple_single/stage0.glsl";};
 		};
 		
 	};

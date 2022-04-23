@@ -244,6 +244,10 @@ void OglGfx::RenderScreenRect() {
 	glRectf(-1.0, -1.0, 1.0, 1.0);
 }
 
+void OglGfx::DeactivateTexture() {
+	// not supported
+}
+
 void OglGfx::ActiveTexture(int ch) {
 	glActiveTexture(GL_TEXTURE0 + ch);
 }
@@ -709,8 +713,9 @@ void OglGfx::DeleteTexture(NativeColorBuffer& b) {
 	glDeleteTextures(1, &b);
 }
 
-void OglGfx::CreateRenderbuffer(NativeDepthBuffer& b) {
+bool OglGfx::CreateRenderbuffer(NativeDepthBuffer& b) {
 	glGenRenderbuffersEXT(1, &b);
+	return true;
 }
 
 void OglGfx::DeleteRenderbuffer(NativeDepthBuffer& b) {

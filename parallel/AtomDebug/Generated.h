@@ -2,7 +2,7 @@
 #define _AtomDebug_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.18 20:44:33
+// Last modified: 2022.4.22 12:33:44
 
 namespace TS {
 
@@ -234,13 +234,13 @@ public:
 #endif
 
 #if defined flagSCREEN
-class X11SwFboPipe : public X11SwFboBase {
+class X11SwFboProg : public X11SwFboBase {
 
 public:
-	RTTI_DECL1(X11SwFboPipe, X11SwFboBase)
-	COPY_PANIC(X11SwFboPipe)
+	RTTI_DECL1(X11SwFboProg, X11SwFboBase)
+	COPY_PANIC(X11SwFboProg)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.sw.fbo.program")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -251,13 +251,136 @@ public:
 #endif
 
 #if defined flagSCREEN && defined flagOGL
-class GlxFboPipe : public X11GlxFboBase {
+class X11OglFboProg : public X11OglFboBase {
 
 public:
-	RTTI_DECL1(GlxFboPipe, X11GlxFboBase)
-	COPY_PANIC(GlxFboPipe)
+	RTTI_DECL1(X11OglFboProg, X11OglFboBase)
+	COPY_PANIC(X11OglFboProg)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.fbo.program")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+class SdlOglShaderProg : public SdlOglFboBase {
+
+public:
+	RTTI_DECL1(SdlOglShaderProg, SdlOglFboBase)
+	COPY_PANIC(SdlOglShaderProg)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.program")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.program")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class X11SwShaderPipe : public X11SwShaderBase {
+
+public:
+	RTTI_DECL1(X11SwShaderPipe, X11SwShaderBase)
+	COPY_PANIC(X11SwShaderPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.sw.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.sw.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+class X11OglShaderPipe : public X11OglShaderBase {
+
+public:
+	RTTI_DECL1(X11OglShaderPipe, X11OglShaderBase)
+	COPY_PANIC(X11OglShaderPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+class SdlOglShaderPipe : public SdlOglShaderBase {
+
+public:
+	RTTI_DECL1(SdlOglShaderPipe, SdlOglShaderBase)
+	COPY_PANIC(SdlOglShaderPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.pipe")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN
+class X11SwFboAtomPipe : public X11SwSinkDevice {
+
+public:
+	RTTI_DECL1(X11SwFboAtomPipe, X11SwSinkDevice)
+	COPY_PANIC(X11SwFboAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.sw.fbo.sink")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL
+class X11OglFboAtomPipe : public X11OglSinkDevice {
+
+public:
+	RTTI_DECL1(X11OglFboAtomPipe, X11OglSinkDevice)
+	COPY_PANIC(X11OglFboAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.ogl.fbo.sink")
+	ATOM_MAKE_ACTION_END
+	static AtomTypeCls GetAtomType();
+	static LinkTypeCls GetLinkType();
+	void Visit(RuntimeVisitor& vis) override;
+	AtomTypeCls GetType() const override;
+
+};
+#endif
+
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+class SdlOglFboAtomPipe : public Sdl2OglVideoSinkDevice {
+
+public:
+	RTTI_DECL1(SdlOglFboAtomPipe, Sdl2OglVideoSinkDevice)
+	COPY_PANIC(SdlOglFboAtomPipe)
+	ATOM_MAKE_ACTION_BEGIN
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.sink")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -336,11 +459,11 @@ public:
 #endif
 
 #if defined flagOGL
-class GlxVideoAtomPipe : public X11GlxSinkDevice {
+class X11OglVideoAtomPipe : public X11OglSinkDevice {
 
 public:
-	RTTI_DECL1(GlxVideoAtomPipe, X11GlxSinkDevice)
-	COPY_PANIC(GlxVideoAtomPipe)
+	RTTI_DECL1(X11OglVideoAtomPipe, X11OglSinkDevice)
+	COPY_PANIC(X11OglVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
 	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.video.pipe")
 	ATOM_MAKE_ACTION_END
@@ -352,31 +475,14 @@ public:
 };
 #endif
 
-#if defined flagSCREEN && defined flagOGL
-class GlxFboAtomPipe : public X11GlxSinkDevice {
-
-public:
-	RTTI_DECL1(GlxFboAtomPipe, X11GlxSinkDevice)
-	COPY_PANIC(GlxFboAtomPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.sink")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
 #if defined flagOGL
-class GlxFboAtomSA : public X11GlxSinkDevice {
+class X11OglFboAtomSA : public X11OglSinkDevice {
 
 public:
-	RTTI_DECL1(GlxFboAtomSA, X11GlxSinkDevice)
-	COPY_PANIC(GlxFboAtomSA)
+	RTTI_DECL1(X11OglFboAtomSA, X11OglSinkDevice)
+	COPY_PANIC(X11OglFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("glx.fbo.standalone")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE(".standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -393,7 +499,7 @@ public:
 	RTTI_DECL1(X11SwVideoAtomPipe, X11SwSinkDevice)
 	COPY_PANIC(X11SwVideoAtomPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.video.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.sw.video.pipe")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -410,7 +516,7 @@ public:
 	RTTI_DECL1(X11SwFboAtomSA, X11SwSinkDevice)
 	COPY_PANIC(X11SwFboAtomSA)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11sw.fbo.standalone")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("x11.sw.fbo.standalone")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -444,7 +550,7 @@ public:
 	RTTI_DECL1(SdlFboPipe, Sdl2OglVideoSinkDevice)
 	COPY_PANIC(SdlFboPipe)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -525,32 +631,14 @@ public:
 #endif
 
 #if defined flagOGL && defined flagSDL2
-class SdlOglShaderPipe : public SdlOglShaderBase {
-
-public:
-	RTTI_DECL1(SdlOglShaderPipe, SdlOglShaderBase)
-	COPY_PANIC(SdlOglShaderPipe)
-	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.source.pipe")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.source.pipe")
-	ATOM_MAKE_ACTION_END
-	static AtomTypeCls GetAtomType();
-	static LinkTypeCls GetLinkType();
-	void Visit(RuntimeVisitor& vis) override;
-	AtomTypeCls GetType() const override;
-
-};
-#endif
-
-#if defined flagOGL && defined flagSDL2
 class SdlOglShaderAtom : public SdlOglShaderBase {
 
 public:
 	RTTI_DECL1(SdlOglShaderAtom, SdlOglShaderBase)
 	COPY_PANIC(SdlOglShaderAtom)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.source")
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.source")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.ogl.fbo.side")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("any.ogl.fbo.side")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();

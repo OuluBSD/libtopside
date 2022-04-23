@@ -16,7 +16,7 @@ file
 	Vendors.h,
 	X11.cpp,
 	X11Sw.cpp,
-	X11Glx.cpp,
+	X11Ogl.cpp,
 	IfaceFuncs.inl highlight cpp,
 	BaseClasses.h,
 	TmplClasses.h;

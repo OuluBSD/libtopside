@@ -1,18 +1,14 @@
-machine sdl.app: {
-		
-	driver context: {
-		sdl.context: true;
-	};
+machine glx.app: {
 		
 	chain program: {
 		state event.register;
 
 		loop ogl.fbo: {
 			ogl.customer: true;
-			sdl.ogl.fbo.pipe: true {
+			x11.ogl.fbo.pipe: true {
 				filepath:		"shaders/toys/simple/simple_double/stage1.glsl";
 			};
-			sdl.fbo.sink: true {
+			x11.ogl.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

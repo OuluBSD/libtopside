@@ -16,7 +16,7 @@ machine sdl.app: {
 		loop ogl.video: {
 			ogl.customer: true;
 			ogl.fbo.ecs.pipe: true;
-			sdl.fbo.pipe: true {
+			sdl.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

@@ -39,6 +39,13 @@ void SoftFramebufferT<Gfx>::ClearDataAll() {
 }
 
 template <class Gfx>
+void SoftFramebufferT<Gfx>::SetLocalData(Size sz, byte channels) {
+	owned.Create();
+	owned->Create(sz, channels);
+	gtex = &*owned;
+}
+
+template <class Gfx>
 void SoftFramebufferT<Gfx>::SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
 	ASSERT(type >= 0 && type < GVar::TEXTYPE_COUNT);
 	this->filter[type] = filter;

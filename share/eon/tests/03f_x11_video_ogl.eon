@@ -3,13 +3,13 @@ machine sdl.app: {
 	chain program: {
 		state event.register;
 		
-		loop ogl.video: {
+		loop ogl.fbo: {
 			ogl.customer: true;
-			glx.fbo.pipe: true {
+			x11.ogl.fbo.program: true {
 				drawmem:		"false";
 				program:		"obj_view";
 			};
-			glx.fbo.sink: true {
+			x11.ogl.fbo.sink: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

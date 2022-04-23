@@ -83,6 +83,7 @@ void DataObjectT<Gfx>::Paint(DataState& state) {
 		else {
 			Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		}
+		Gfx::DeactivateTexture();
 	}
 	
 	
@@ -213,6 +214,7 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, GfxDataObject& o) {
 		Gfx::TexImage2D(tex);
 		Gfx::UnbindTexture(GVar::TEXTYPE_2D);
 		Gfx::GenerateMipmap(GVar::TEXTYPE_2D);
+		Gfx::DeactivateTexture();
 	}
 	
     RefreshTexture(o, *l.model);

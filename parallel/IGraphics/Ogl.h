@@ -10,7 +10,7 @@ NAMESPACE_PARALLEL_BEGIN
 // default frame TODO should be conditional
 /*using OglStateDraw		= SdlOglStateDraw;
 using OglDataState		= SdlOglDataState;
-using OglShaderPipeline	= SdlOglShaderPipeline;
+using OglShaderPipeline	= SdlOglShaderProgline;
 //using OglShader			= SdlOglShader;
 using OglFramebuffer	= SdlOglFramebuffer;
 using OglBuffer			= SdlOglBuffer;

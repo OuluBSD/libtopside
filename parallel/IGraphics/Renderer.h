@@ -34,7 +34,7 @@ class SoftRendT {
 	const SoftFramebuffer* input_texture[TEXTYPE_COUNT];
 	
 	SoftPipeline* tgt_pipe = 0;
-	SoftFramebuffer* tgt_fb = 0;
+	//SoftFramebuffer* tgt_fb = 0;
 	
 	//Vector<Vertex> vertices;
 	//Vector<uint32> indices;
@@ -61,12 +61,13 @@ class SoftRendT {
 		uint16 src_id;
 	};
 	Vector<DepthInfo> zinfo;
-	Vector<float> zbuffer;
+	//Vector<float> zbuffer;
 	
 	//void ClearTemp();
 	void ProcessVertexShader(SoftShader& shdr, SoftVertexArray& vao, uint16 src_id);
 	void DepthTest(SoftVertexArray& vao, uint16 src_id);
 	void TriangleDepthTest(DepthInfo& info, const Vertex& a, const Vertex& b, const Vertex& c, uint16 src_id);
+	void Begin(SoftFramebuffer& tgt_fb);
 	
 	//SoftVertexBuffer& GetVertices() {return use_processed_vertices ? processed_vertices : *input_vertices;}
 	//SoftElementBuffer& GetIndices() {return *input_indices;}
@@ -77,6 +78,8 @@ public:
 	
 	void Begin();
 	void End();
+	void ClearTargets();
+	void AddTarget(SoftFramebuffer& fb);
 	
 	void SetDebugOutput(bool b) {verbose = b;}
 	void ClearBuffers();
@@ -89,10 +92,13 @@ public:
 	void SetTriangleFrontsideCCW(bool b=true);
 	void SetViewport(Size sz);
 	
-	void RenderScreenRect(bool elements);
-	void RenderScreenRect();
-	void SetTarget(SoftPipeline& pipe, SoftFramebuffer& fb) {tgt_pipe = &pipe; tgt_fb = &fb;}
+	void RenderScreenRect(SoftFramebuffer& fb, bool elements);
+	void RenderScreenRect(SoftFramebuffer& fb);
+	//void SetTarget(SoftPipeline& pipe, SoftFramebuffer& fb) {tgt_pipe = &pipe; tgt_fb = &fb;}
+	void SetPipeline(SoftPipeline& pipe) {tgt_pipe = &pipe;}
 	void Render(SoftVertexArray& vao);
+	void Render(SoftFramebuffer& tgt_fb, SoftVertexArray& vao);
+	void RenderScreenRect();
 	
 	float GetDepthResetValue() const {return is_depth_order_greater ? -1e10f : +1e10f;}
 	

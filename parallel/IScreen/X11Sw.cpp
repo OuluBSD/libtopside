@@ -129,7 +129,7 @@ bool ScrX11Sw::SinkDevice_Initialize(NativeSinkDevice& dev, AtomBase& a, const S
 	dev.accel.SetNative(dev.display, dev.win, 0, &dev.accel_fb_ptr);
 	
 	if (!dev.accel.Open(Size(width, height), 4)) {
-		LOG("ScrX11Glx::SinkDevice_Initialize: error: could not open opengl atom");
+		LOG("ScrX11Ogl::SinkDevice_Initialize: error: could not open opengl atom");
 		return false;
 	}
 	

@@ -2,7 +2,7 @@
 #define _AtomLocal_Generated_h_
 
 // This file is generated. Do not modify this file.
-// Last modified: 2022.4.18 20:44:33
+// Last modified: 2022.4.22 12:33:44
 
 namespace TS {
 
@@ -264,7 +264,7 @@ public:
 	RTTI_DECL1(SdlFboPipeSide, Sdl2OglVideoSinkDevice)
 	COPY_PANIC(SdlFboPipeSide)
 	ATOM_MAKE_ACTION_BEGIN
-	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.pipe.side")
+	ATOM_MAKE_ACTION_UNDEF_TO_TRUE("sdl.fbo.sink.side")
 	ATOM_MAKE_ACTION_END
 	static AtomTypeCls GetAtomType();
 	static LinkTypeCls GetLinkType();
@@ -464,17 +464,31 @@ using EcsCpuVideoRef = Ref<EcsCpuVideo, AtomParent>;
 
 using EcsOglFboRef = Ref<EcsOglFbo, AtomParent>;
 
-using X11SwFboPipeRef = Ref<X11SwFboPipe, AtomParent>;
+using X11SwFboProgRef = Ref<X11SwFboProg, AtomParent>;
 
 #if defined flagOGL
-using GlxFboPipeRef = Ref<GlxFboPipe, AtomParent>;
+using X11OglFboProgRef = Ref<X11OglFboProg, AtomParent>;
 #endif
+
+#if defined flagSDL2
+using SdlOglShaderProgRef = Ref<SdlOglShaderProg, AtomParent>;
+#endif
+
+using X11SwShaderPipeRef = Ref<X11SwShaderPipe, AtomParent>;
+
+using X11OglShaderPipeRef = Ref<X11OglShaderPipe, AtomParent>;
+
+using SdlOglShaderPipeRef = Ref<SdlOglShaderPipe, AtomParent>;
+
+using X11SwFboAtomPipeRef = Ref<X11SwFboAtomPipe, AtomParent>;
+
+using X11OglFboAtomPipeRef = Ref<X11OglFboAtomPipe, AtomParent>;
+
+using SdlOglFboAtomPipeRef = Ref<SdlOglFboAtomPipe, AtomParent>;
 
 using OglCustomerRef = Ref<OglCustomer, AtomParent>;
 
-#if defined flagSDL2
 using SdlContextAtomRef = Ref<SdlContextAtom, AtomParent>;
-#endif
 
 using SdlEventAtomPipeRef = Ref<SdlEventAtomPipe, AtomParent>;
 
@@ -490,11 +504,9 @@ using VolumeLoaderAtomRef = Ref<VolumeLoaderAtom, AtomParent>;
 
 using X11VideoAtomPipeRef = Ref<X11VideoAtomPipe, AtomParent>;
 
-using GlxVideoAtomPipeRef = Ref<GlxVideoAtomPipe, AtomParent>;
+using X11OglVideoAtomPipeRef = Ref<X11OglVideoAtomPipe, AtomParent>;
 
-using GlxFboAtomPipeRef = Ref<GlxFboAtomPipe, AtomParent>;
-
-using GlxFboAtomSARef = Ref<GlxFboAtomSA, AtomParent>;
+using X11OglFboAtomSARef = Ref<X11OglFboAtomSA, AtomParent>;
 
 using X11SwVideoAtomPipeRef = Ref<X11SwVideoAtomPipe, AtomParent>;
 
@@ -517,8 +529,6 @@ using SdlVideoAtomSARef = Ref<SdlVideoAtomSA, AtomParent>;
 using SdlVideoAtomRef = Ref<SdlVideoAtom, AtomParent>;
 
 using SdlAudioAtomRef = Ref<SdlAudioAtom, AtomParent>;
-
-using SdlOglShaderPipeRef = Ref<SdlOglShaderPipe, AtomParent>;
 
 using SdlOglShaderAtomRef = Ref<SdlOglShaderAtom, AtomParent>;
 

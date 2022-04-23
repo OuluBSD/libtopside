@@ -10,6 +10,7 @@ struct FboAtomT :
 {
 	using StateDraw = StateDrawT<Gfx>;
 	using Framebuffer = FramebufferT<Gfx>;
+	using ShaderLibrary = ShaderLibraryT<Gfx>;
 	using SoftShaderLibrary = SoftShaderLibraryT<Gfx>;
 	using ShaderDataPack = ShaderDataPackT<Gfx>;
 	
@@ -56,7 +57,11 @@ public:
 using X11SwFboBase = FboAtomT<X11SwGfx>;
 
 #ifdef flagOGL
-using X11GlxFboBase = FboAtomT<X11OglGfx>;
+using X11OglFboBase = FboAtomT<X11OglGfx>;
+#endif
+
+#if defined flagOGL && defined flagSDL2
+using SdlOglFboBase = FboAtomT<SdlOglGfx>;
 #endif
 
 

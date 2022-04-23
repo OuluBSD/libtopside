@@ -5,11 +5,11 @@ machine sdl.app: {
 		
 		loop video: {
 			center.customer: true;
-			x11sw.fbo.pipe: true {
+			x11.sw.fbo.program: true {
 				drawmem:		"false";
 				program:		"obj_view";
 			};
-			x11sw.video.pipe: true {
+			x11.sw.video.pipe: true {
 				close_machine:	true;
 				sizeable:		true;
 				env:			event.register;

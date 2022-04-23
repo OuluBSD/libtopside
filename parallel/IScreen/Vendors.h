@@ -30,7 +30,7 @@ NAMESPACE_PARALLEL_BEGIN
 #define SCR_VNDR_LIST \
 	SCR_VNDR(ScrX11) \
 	SCR_VNDR(ScrX11Sw) \
-	SCR_VNDR(ScrX11Glx) \
+	SCR_VNDR(ScrX11Ogl) \
 
 
 
@@ -92,7 +92,7 @@ struct ScrX11Sw {
 #endif
 
 #if defined flagOGL
-struct ScrX11Glx {
+struct ScrX11Ogl {
 	
 	struct NativeSinkDevice {
 		::Window win;

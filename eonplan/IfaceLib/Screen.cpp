@@ -70,7 +70,7 @@ PKG(Screen, Scr, S) {
 		
 	}
 	
-	VENDOR(X11Glx) {
+	VENDOR(X11Ogl) {
 		VENDOR_ENABLED_FLAG(OGL)
 		VENDOR_INCLUDE("", X11/Xlib.h)
 		VENDOR_INCLUDE("", X11/Xutil.h)

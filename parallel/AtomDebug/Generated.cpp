@@ -291,44 +291,198 @@ AtomTypeCls EventStatePipe::GetType() const
 
 #endif
 #if defined flagSCREEN
-AtomTypeCls X11SwFboPipe::GetAtomType()
+AtomTypeCls X11SwFboProg::GetAtomType()
 {
-	return ATOM11(X11_SW_FBO_PIPE, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
+	return ATOM11(X11_SW_FBO_PROG, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
 }
 
-LinkTypeCls X11SwFboPipe::GetLinkType()
+LinkTypeCls X11SwFboProg::GetLinkType()
 {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void X11SwFboPipe::Visit(RuntimeVisitor& vis)
+void X11SwFboProg::Visit(RuntimeVisitor& vis)
 {
 	vis.VisitThis<X11SwFboBase>(this);
 }
 
-AtomTypeCls X11SwFboPipe::GetType() const
+AtomTypeCls X11SwFboProg::GetType() const
 {
 	return GetAtomType();
 }
 
 #endif
 #if defined flagSCREEN && defined flagOGL
-AtomTypeCls GlxFboPipe::GetAtomType()
+AtomTypeCls X11OglFboProg::GetAtomType()
 {
-	return ATOM11(GLX_FBO_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+	return ATOM11(X11_OGL_FBO_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
 }
 
-LinkTypeCls GlxFboPipe::GetLinkType()
+LinkTypeCls X11OglFboProg::GetLinkType()
 {
 	return LINKTYPE(PIPE, PROCESS);
 }
 
-void GlxFboPipe::Visit(RuntimeVisitor& vis)
+void X11OglFboProg::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<X11GlxFboBase>(this);
+	vis.VisitThis<X11OglFboBase>(this);
 }
 
-AtomTypeCls GlxFboPipe::GetType() const
+AtomTypeCls X11OglFboProg::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+AtomTypeCls SdlOglShaderProg::GetAtomType()
+{
+	return ATOM11(SDL_OGL_SHADER_PROG, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+}
+
+LinkTypeCls SdlOglShaderProg::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlOglShaderProg::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglFboBase>(this);
+}
+
+AtomTypeCls SdlOglShaderProg::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls X11SwShaderPipe::GetAtomType()
+{
+	return ATOM11(X11_SW_SHADER_PIPE, PIPE, CENTER, FBO, CENTER, ORDER, CENTER, FBO);
+}
+
+LinkTypeCls X11SwShaderPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void X11SwShaderPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SwShaderBase>(this);
+}
+
+AtomTypeCls X11SwShaderPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL
+AtomTypeCls X11OglShaderPipe::GetAtomType()
+{
+	return ATOM11(X11_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+}
+
+LinkTypeCls X11OglShaderPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void X11OglShaderPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11OglShaderBase>(this);
+}
+
+AtomTypeCls X11OglShaderPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+AtomTypeCls SdlOglShaderPipe::GetAtomType()
+{
+	return ATOM11(SDL_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
+}
+
+LinkTypeCls SdlOglShaderPipe::GetLinkType()
+{
+	return LINKTYPE(PIPE, PROCESS);
+}
+
+void SdlOglShaderPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<SdlOglShaderBase>(this);
+}
+
+AtomTypeCls SdlOglShaderPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN
+AtomTypeCls X11SwFboAtomPipe::GetAtomType()
+{
+	return ATOM11(X11_SW_FBO_ATOM_PIPE, PIPE, CENTER, FBO, CENTER, FBO, CENTER, RECEIPT);
+}
+
+LinkTypeCls X11SwFboAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11SwFboAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11SwSinkDevice>(this);
+}
+
+AtomTypeCls X11SwFboAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL
+AtomTypeCls X11OglFboAtomPipe::GetAtomType()
+{
+	return ATOM11(X11_OGL_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+}
+
+LinkTypeCls X11OglFboAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void X11OglFboAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<X11OglSinkDevice>(this);
+}
+
+AtomTypeCls X11OglFboAtomPipe::GetType() const
+{
+	return GetAtomType();
+}
+
+#endif
+#if defined flagSCREEN && defined flagOGL && defined flagSDL2
+AtomTypeCls SdlOglFboAtomPipe::GetAtomType()
+{
+	return ATOM11(SDL_OGL_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
+}
+
+LinkTypeCls SdlOglFboAtomPipe::GetLinkType()
+{
+	return LINKTYPE(POLLER_PIPE, PROCESS);
+}
+
+void SdlOglFboAtomPipe::Visit(RuntimeVisitor& vis)
+{
+	vis.VisitThis<Sdl2OglVideoSinkDevice>(this);
+}
+
+AtomTypeCls SdlOglFboAtomPipe::GetType() const
 {
 	return GetAtomType();
 }
@@ -421,66 +575,44 @@ AtomTypeCls X11VideoAtomPipe::GetType() const
 
 #endif
 #if defined flagOGL
-AtomTypeCls GlxVideoAtomPipe::GetAtomType()
+AtomTypeCls X11OglVideoAtomPipe::GetAtomType()
 {
-	return ATOM11(GLX_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
+	return ATOM11(X11_OGL_VIDEO_ATOM_PIPE, PIPE, CENTER, VIDEO, CENTER, VIDEO, CENTER, RECEIPT);
 }
 
-LinkTypeCls GlxVideoAtomPipe::GetLinkType()
-{
-	return LINKTYPE(POLLER_PIPE, PROCESS);
-}
-
-void GlxVideoAtomPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<X11GlxSinkDevice>(this);
-}
-
-AtomTypeCls GlxVideoAtomPipe::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagSCREEN && defined flagOGL
-AtomTypeCls GlxFboAtomPipe::GetAtomType()
-{
-	return ATOM11(GLX_FBO_ATOM_PIPE, PIPE, OGL, FBO, OGL, FBO, OGL, RECEIPT);
-}
-
-LinkTypeCls GlxFboAtomPipe::GetLinkType()
+LinkTypeCls X11OglVideoAtomPipe::GetLinkType()
 {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void GlxFboAtomPipe::Visit(RuntimeVisitor& vis)
+void X11OglVideoAtomPipe::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<X11GlxSinkDevice>(this);
+	vis.VisitThis<X11OglSinkDevice>(this);
 }
 
-AtomTypeCls GlxFboAtomPipe::GetType() const
+AtomTypeCls X11OglVideoAtomPipe::GetType() const
 {
 	return GetAtomType();
 }
 
 #endif
 #if defined flagOGL
-AtomTypeCls GlxFboAtomSA::GetAtomType()
+AtomTypeCls X11OglFboAtomSA::GetAtomType()
 {
-	return ATOM11(GLX_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
+	return ATOM11(X11_OGL_FBO_ATOM_S_A, PIPE, OGL, FBO, OGL, ORDER, OGL, RECEIPT);
 }
 
-LinkTypeCls GlxFboAtomSA::GetLinkType()
+LinkTypeCls X11OglFboAtomSA::GetLinkType()
 {
 	return LINKTYPE(POLLER_PIPE, PROCESS);
 }
 
-void GlxFboAtomSA::Visit(RuntimeVisitor& vis)
+void X11OglFboAtomSA::Visit(RuntimeVisitor& vis)
 {
-	vis.VisitThis<X11GlxSinkDevice>(this);
+	vis.VisitThis<X11OglSinkDevice>(this);
 }
 
-AtomTypeCls GlxFboAtomSA::GetType() const
+AtomTypeCls X11OglFboAtomSA::GetType() const
 {
 	return GetAtomType();
 }
@@ -657,28 +789,6 @@ void SdlAudioAtom::Visit(RuntimeVisitor& vis)
 }
 
 AtomTypeCls SdlAudioAtom::GetType() const
-{
-	return GetAtomType();
-}
-
-#endif
-#if defined flagOGL && defined flagSDL2
-AtomTypeCls SdlOglShaderPipe::GetAtomType()
-{
-	return ATOM11(SDL_OGL_SHADER_PIPE, PIPE, OGL, FBO, OGL, ORDER, OGL, FBO);
-}
-
-LinkTypeCls SdlOglShaderPipe::GetLinkType()
-{
-	return LINKTYPE(PIPE, PROCESS);
-}
-
-void SdlOglShaderPipe::Visit(RuntimeVisitor& vis)
-{
-	vis.VisitThis<SdlOglShaderBase>(this);
-}
-
-AtomTypeCls SdlOglShaderPipe::GetType() const
 {
 	return GetAtomType();
 }
