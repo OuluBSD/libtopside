@@ -45,7 +45,7 @@ void Vertex::Set(float x, float y, float z, float tex_x, float tex_y) {
 
 
 
-void Texture::Clear() {
+/*void Texture::Clear() {
 	data.SetCount(0);
 	stride = 0;
 	pitch = 0;
@@ -100,7 +100,7 @@ void Texture::Set(Image i) {
 		memcpy(dst, src, this->data.GetCount());
 	}
 	#endif
-}
+}*/
 
 /*void Texture::MakeAccel() {
 	if (tex_id < 0 && width > 0 && height > 0 && pitch > 0 && stride > 0 && data.GetCount()) {

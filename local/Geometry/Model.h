@@ -103,8 +103,8 @@ class ModelMesh :
 {
 	
 public:
-	Vector<Mesh> meshes;
-	Vector<Texture> textures;
+	Array<Mesh> meshes;
+	Array<ByteImage> textures;
     String path;
     String directory;
     
@@ -126,7 +126,7 @@ public:
         meshes <<= src.meshes;
 	}
 	
-	const Vector<Mesh>& GetMeshes() const {return meshes;}
+	const Array<Mesh>& GetMeshes() const {return meshes;}
 	bool AddTextureFile(int mesh_i, TexType type, String path);
 	bool AddTextureFile(Mesh& mesh, TexType type, String path);
 	bool SetTexture(Mesh& mesh, TexType type, Image img);

@@ -12,8 +12,9 @@ class SoftRendT {
 	using FragmentShaderArgs	= FragmentShaderArgsT<Gfx>;
 	using SoftProgram			= SoftProgramT<Gfx>;
 	using SoftShaderBase		= SoftShaderBaseT<Gfx>;
-	using NativeTexture			= typename Gfx::NativeTexture;
-	using NativeColorBuffer		= typename Gfx::NativeColorBuffer;
+	using NativeTexture				= typename Gfx::NativeTexture;
+	using NativeColorBufferRef		= typename Gfx::NativeColorBufferRef;
+	using NativeColorBufferConstRef	= typename Gfx::NativeColorBufferConstRef;
 	
 	bool verbose = false;
 	Vector<SoftFramebuffer*> buffers;
@@ -31,7 +32,7 @@ class SoftRendT {
 	//SoftVertexBuffer processed_vertices;
 	//SoftVertexBuffer* input_vertices = 0;
 	//SoftElementBuffer* input_indices = 0;
-	const SoftFramebuffer* input_texture[TEXTYPE_COUNT];
+	NativeColorBufferConstRef input_texture[TEXTYPE_COUNT];
 	
 	SoftPipeline* tgt_pipe = 0;
 	//SoftFramebuffer* tgt_fb = 0;
@@ -102,7 +103,7 @@ public:
 	
 	float GetDepthResetValue() const {return is_depth_order_greater ? -1e10f : +1e10f;}
 	
-	void BindTexture(int type, const SoftFramebuffer* tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
+	void BindTexture(int type, NativeColorBufferConstRef tex) {ASSERT(type >= 0 && type < TEXTYPE_COUNT); input_texture[type] = tex;}
 	
 };
 

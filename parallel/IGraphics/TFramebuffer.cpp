@@ -64,12 +64,14 @@ template <class Gfx>
 const typename Gfx::NativeFrameBuffer& FramebufferT<Gfx>::GetReadFramebuffer() const {return frame_buf[this->buf_i];}
 
 template <class Gfx>
-typename Gfx::NativeColorBuffer& FramebufferT<Gfx>::GetActiveColorBuffer() {return color_buf[this->buf_i];}
+typename Gfx::NativeColorBufferRef FramebufferT<Gfx>::GetActiveColorBuffer() {return color_buf[this->buf_i];}
 
 template <class Gfx>
-void FramebufferT<Gfx>::Init(SystemFrameBuffer& fb, int w, int h, int stride) {
-	Gfx::GenTexture(color_buf[0]);
-	color_buf[0] = fb;
+void FramebufferT<Gfx>::Init(NativeColorBufferRef b, int w, int h, int stride) {
+	//Gfx::GenTexture(color_buf[0]);
+	ASSERT(!color_buf[0]);
+	ASSERT(b);
+	color_buf[0] = b;
 	this->size.cx = w;
 	this->size.cy = h;
 	this->channels = stride;
@@ -79,7 +81,7 @@ template <class Gfx>
 void FramebufferT<Gfx>::SetWindowFbo(bool b) {
 	this->is_win_fbo = b;
 	if (b)
-		Gfx::SetContextDefaultFramebuffer(color_buf[0]);
+		Gfx::SetContextDefaultFramebuffer(frame_buf[0]);
 }
 
 

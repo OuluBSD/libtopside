@@ -123,7 +123,8 @@ void OglBufferBase::BaseUpdateTexBuffers(OglFramebufferBase& fb) {
 
 
 
-void OglGfx::SetDebugOutput(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetDebugOutput(bool b) {
 	if (b) {
 		glEnable(GL_DEBUG_OUTPUT);
 		glDebugMessageCallback( OpenGLMessageCallback, 0 );
@@ -133,25 +134,30 @@ void OglGfx::SetDebugOutput(bool b) {
 	}
 }
 
-void OglGfx::ClearBuffers() {
+template <class Gfx>
+void OglGfxT<Gfx>::ClearBuffers() {
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 }
 
-void OglGfx::SetSmoothShading(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetSmoothShading(bool b) {
 	glShadeModel(b ? GL_SMOOTH : GL_FLAT);
 }
 
-void OglGfx::SetDepthTest(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetDepthTest(bool b) {
 	if (b) glEnable(GL_DEPTH_TEST);
 	else   glDisable(GL_DEPTH_TEST);
 }
 
-void OglGfx::SetDepthOrderLess(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetDepthOrderLess(bool b) {
 	if (b) glDepthFunc( GL_LEQUAL );
 	else   glDepthFunc( GL_GEQUAL );
 }
 
-void OglGfx::SetClearValue(RGBA clr, byte depth) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetClearValue(RGBA clr, byte depth) {
 	// Set the background black
 	glClearColor( clr.r/255.0f, clr.g/255.0f, clr.b/255.0f, clr.a/255.0f );
 	
@@ -160,14 +166,16 @@ void OglGfx::SetClearValue(RGBA clr, byte depth) {
 	
 }
 
-void OglGfx::SetFastPerspectiveCorrection(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetFastPerspectiveCorrection(bool b) {
 	if (b)
 		glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST );
 	else
 		glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
 }
 
-void OglGfx::SetTriangleBacksideCulling(bool b) {
+template <class Gfx>
+void OglGfxT<Gfx>::SetTriangleBacksideCulling(bool b) {
 	if (b) {
 		glEnable( GL_CULL_FACE );
 		glCullFace( GL_BACK );
@@ -176,58 +184,61 @@ void OglGfx::SetTriangleBacksideCulling(bool b) {
 		glDisable( GL_CULL_FACE );
 }
 
-void OglGfx::SetTriangleFrontsideCCW(bool b) {
+template <class Gfx> void OglGfxT<Gfx>::SetTriangleFrontsideCCW(bool b) {
 	glFrontFace( b ? GL_CCW : GL_CW );
 }
 
-void OglGfx::SetViewport(Size sz) {
+template <class Gfx> void OglGfxT<Gfx>::SetViewport(Size sz) {
 	ASSERT(sz.cx > 0 && sz.cy > 0);
 	glViewport(0, 0, sz.cx, sz.cy);
 }
 
-void OglGfx::UseProgram(NativeProgram& prog) {
+template <class Gfx> void OglGfxT<Gfx>::UseProgram(NativeProgram& prog) {
 	glUseProgram(prog);
 }
 
-void OglGfx::BindProgramPipeline(NativePipeline& pipeline) {
+template <class Gfx> void OglGfxT<Gfx>::BindProgramPipeline(NativePipeline& pipeline) {
 	glBindProgramPipeline(pipeline);
 }
 
-void OglGfx::BindFramebuffer(NativeFrameBuffer& fb) {
+template <class Gfx> void OglGfxT<Gfx>::BindFramebuffer(NativeFrameBuffer& fb) {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fb);
 }
 
-void OglGfx::UnbindFramebuffer() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindFramebuffer() {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-void OglGfx::BindRenderbuffer(NativeDepthBuffer& rb) {
+template <class Gfx> void OglGfxT<Gfx>::BindRenderbuffer(NativeDepthBufferRef rb) {
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rb);
 }
 
-void OglGfx::UnbindRenderbuffer() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindRenderbuffer() {
 	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 }
 
-void OglGfx::RenderbufferStorage(Size sz) {
+template <class Gfx> void OglGfxT<Gfx>::RenderbufferStorage(Size sz) {
 	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, sz.cx, sz.cy);
 }
 
-void OglGfx::UnbindProgramPipeline() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindProgramPipeline() {
 	glBindProgramPipeline(0);
 }
 
-void OglGfx::BindFramebufferDefault() {
+template <class Gfx> void OglGfxT<Gfx>::BindFramebufferDefault() {
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
-void OglGfx::DrawBuffers(GVar::RenderTarget tgt) {
+template <class Gfx> void OglGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	Vector<GLenum> bufs;
 	for(uint32 i = 0; i < 32; i++) {
 		uint32 j = 1 << i;
 		if ((uint32)tgt & j) {
 			switch (j) {
 				case GVar::COLOR0_EXT: bufs << GL_COLOR_ATTACHMENT0_EXT; break;
+				case GVar::COLOR1_EXT: bufs << GL_COLOR_ATTACHMENT1_EXT; break;
+				case GVar::COLOR2_EXT: bufs << GL_COLOR_ATTACHMENT2_EXT; break;
+				case GVar::COLOR3_EXT: bufs << GL_COLOR_ATTACHMENT3_EXT; break;
 				default: TODO; break;
 			}
 		}
@@ -236,31 +247,31 @@ void OglGfx::DrawBuffers(GVar::RenderTarget tgt) {
 		glDrawBuffers(bufs.GetCount(), (GLenum*)bufs.Begin());
 }
 
-/*void OglGfx::Clear_Color() {
+/*template <class Gfx> void OglGfxT<Gfx>::Clear_Color() {
 	glClear(GL_COLOR_BUFFER_BIT);
 }*/
 
-void OglGfx::RenderScreenRect() {
+template <class Gfx> void OglGfxT<Gfx>::RenderScreenRect() {
 	glRectf(-1.0, -1.0, 1.0, 1.0);
 }
 
-void OglGfx::DeactivateTexture() {
+template <class Gfx> void OglGfxT<Gfx>::DeactivateTexture() {
 	// not supported
 }
 
-void OglGfx::ActiveTexture(int ch) {
+template <class Gfx> void OglGfxT<Gfx>::ActiveTexture(int ch) {
 	glActiveTexture(GL_TEXTURE0 + ch);
 }
 
-void OglGfx::BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex) {
+template <class Gfx> void OglGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
 	glBindTexture(GetOglTextureType(type), tex);
 }
 
-void OglGfx::BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex) {
+template <class Gfx> void OglGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
 	glBindTexture(GetOglTextureType(type), tex);
 }
 
-void OglGfx::UnbindTexture(GVar::TextureType type) {
+template <class Gfx> void OglGfxT<Gfx>::UnbindTexture(GVar::TextureType type) {
 	glBindTexture(GetOglTextureType(type), 0);
 }
 
@@ -268,7 +279,7 @@ void OglGfx::UnbindTexture(GVar::TextureType type) {
 	// pass
 }*/
 
-const char* OglGfx::GetShaderTemplate(GVar::ShaderType t) {
+template <class Gfx> const char* OglGfxT<Gfx>::GetShaderTemplate(GVar::ShaderType t) {
 	static const char* common_tmpl = R"SH4D3R(
 #if ${IS_FRAGMENT_SHADER}
 
@@ -406,13 +417,15 @@ void main() {
 	return "";
 }
 
-void OglGfx::HotfixShaderCode(String& s) {
+template <class Gfx>
+void OglGfxT<Gfx>::HotfixShaderCode(String& s) {
 	s.Replace("precision float;", "");
 	if (s.Find("vec4 char(") >= 0)
 		s.Replace("char(", "_char(");
 }
 
-bool OglGfx::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
+template <class Gfx>
+bool OglGfxT<Gfx>::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
 	GLenum shader_type;
 	if (type == GVar::FRAGMENT_SHADER) {
 		shader_type = GL_FRAGMENT_SHADER;
@@ -427,20 +440,22 @@ bool OglGfx::CreateShader(GVar::ShaderType type, NativeShader& new_shdr) {
 	return new_shdr;
 }
 
-void OglGfx::ShaderSource(NativeShader& s, String code) {
+template <class Gfx> void OglGfxT<Gfx>::ShaderSource(NativeShader& s, String code) {
 	const GLchar* src = code.Begin();
 	int len = code.GetCount();
 	glShaderSource(s, 1, &src, &len);
 }
 
-bool OglGfx::CompileShader(NativeShader& s) {
+template <class Gfx>
+bool OglGfxT<Gfx>::CompileShader(NativeShader& s) {
 	glCompileShader(s);
 	GLint status = GL_FALSE;
 	glGetShaderiv(s, GL_COMPILE_STATUS, &status);
 	return status == GL_TRUE;
 }
 
-String OglGfx::GetLastErrorS(NativeShader& s) {
+template <class Gfx>
+String OglGfxT<Gfx>::GetLastErrorS(NativeShader& s) {
 	GLint loglen = 0;
 	glGetShaderiv(s, GL_INFO_LOG_LENGTH, &loglen);
 	Vector<GLchar> msg;
@@ -449,7 +464,8 @@ String OglGfx::GetLastErrorS(NativeShader& s) {
 	return String(msg.Begin());
 }
 
-String OglGfx::GetLastErrorP(NativeProgram& p) {
+template <class Gfx>
+String OglGfxT<Gfx>::GetLastErrorP(NativeProgram& p) {
 	GLint loglen = 0;
 	glGetProgramiv(p, GL_INFO_LOG_LENGTH, &loglen);
 	Vector<GLchar> msg;
@@ -458,23 +474,25 @@ String OglGfx::GetLastErrorP(NativeProgram& p) {
 	return String(msg.Begin());
 }
 
-bool OglGfx::CreateProgram(NativeProgram& prog) {
+template <class Gfx>
+bool OglGfxT<Gfx>::CreateProgram(NativeProgram& prog) {
 	prog = glCreateProgram();
 	return prog != 0;
 }
 
-void OglGfx::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
+template <class Gfx> void OglGfxT<Gfx>::ProgramParameteri(NativeProgram& prog, GVar::ParamType type, int i) {
 	glProgramParameteri(prog, type, i);
 }
 
-bool OglGfx::LinkProgram(NativeProgram& prog) {
+template <class Gfx>
+bool OglGfxT<Gfx>::LinkProgram(NativeProgram& prog) {
 	glLinkProgram(prog);
 	GLint status = GL_FALSE;
 	glGetProgramiv(prog, GL_LINK_STATUS, &status);
 	return status == GL_TRUE;
 }
 
-void OglGfx::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
+template <class Gfx> void OglGfxT<Gfx>::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& out) {
 	GLenum gl_type = 0;
 	switch (type) {
 		#define PARAM_TYPE(x) case GVar::x: gl_type = GL_##x; break;
@@ -486,7 +504,8 @@ void OglGfx::GetProgramiv(NativeProgram& prog, GVar::ProgParamType type, int& ou
 	glGetProgramiv(prog, gl_type, &out);
 }
 
-String OglGfx::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
+template <class Gfx>
+String OglGfxT<Gfx>::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* type_out) {
 	GLchar name[80];
 	GLsizei namelen;
 	GLint size;
@@ -499,7 +518,7 @@ String OglGfx::GetActiveUniform(NativeProgram& prog, int i, int* size_out, int* 
 	return name;
 }
 
-void OglGfx::Clear(GVar::BufferType type) {
+template <class Gfx> void OglGfxT<Gfx>::Clear(GVar::BufferType type) {
 	GLenum gl_type = 0;
 	switch (type) {
 		#define BUFFER_TYPE(x) case GVar::x: gl_type = GL_##x##_BIT; break;
@@ -511,19 +530,19 @@ void OglGfx::Clear(GVar::BufferType type) {
 	glClear(gl_type);
 }
 
-void OglGfx::AttachShader(NativeProgram& prog, NativeShader& shdr) {
+template <class Gfx> void OglGfxT<Gfx>::AttachShader(NativeProgram& prog, NativeShader& shdr) {
 	glAttachShader(prog, shdr);
 }
 
-void OglGfx::DeleteShader(NativeShader& shdr) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteShader(NativeShader& shdr) {
 	glDeleteShader(shdr);
 }
 
-void OglGfx::GenProgramPipeline(NativePipeline& pipe) {
+template <class Gfx> void OglGfxT<Gfx>::GenProgramPipeline(NativePipeline& pipe) {
 	glGenProgramPipelines(1, &pipe);
 }
 
-void OglGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
+template <class Gfx> void OglGfxT<Gfx>::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram& prog) {
 	GLenum gl_bmask = 0;
 	for(int i = 0; i < GVar::SHADERTYPE_COUNT; i++) {
 		uint32 j = 1UL << i;
@@ -540,12 +559,12 @@ void OglGfx::UseProgramStages(NativePipeline& pipe, uint32 bmask, NativeProgram&
 	glUseProgramStages(pipe, gl_bmask, prog);
 }
 
-void OglGfx::DeleteProgramPipeline(NativePipeline& pipe) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteProgramPipeline(NativePipeline& pipe) {
 	glDeleteProgramPipelines(1, &pipe);
 	pipe = 0;
 }
 
-void OglGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
+template <class Gfx> void OglGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {
 	GLenum gl_t = GetOglTextureType(type);
 	
 	GLenum gl_filter = 0;
@@ -575,51 +594,53 @@ void OglGfx::TexParameteri(GVar::TextureType type, GVar::Filter filter, GVar::Wr
 		glTexParameteri(gl_t, GL_TEXTURE_WRAP_R, gl_wrap);
 }
 
-bool OglGfx::GenTexture(NativeFrameBuffer& fb) {
+template <class Gfx>
+bool OglGfxT<Gfx>::GenTexture(NativeFrameBuffer& fb) {
 	glGenTextures(1, &fb);
 	return true;
 }
 
-bool OglGfx::CreateFramebuffer(NativeFrameBuffer& fb) {
+template <class Gfx>
+bool OglGfxT<Gfx>::CreateFramebuffer(NativeFrameBuffer& fb) {
 	glGenFramebuffersEXT(1, &fb);
 	return true;
 }
 
-void OglGfx::GenVertexArray(NativeVertexArray& vao) {
+template <class Gfx> void OglGfxT<Gfx>::GenVertexArray(NativeVertexArray& vao) {
 	glGenVertexArrays(1, &vao);
 }
 
-void OglGfx::GenVertexBuffer(NativeVertexBuffer& vbo) {
+template <class Gfx> void OglGfxT<Gfx>::GenVertexBuffer(NativeVertexBuffer& vbo) {
 	glGenBuffers(1, &vbo);
 }
 
-void OglGfx::GenElementBuffer(NativeElementBuffer& ebo) {
+template <class Gfx> void OglGfxT<Gfx>::GenElementBuffer(NativeElementBuffer& ebo) {
 	glGenBuffers(1, &ebo);
 }
 
-void OglGfx::BindVertexArray(NativeVertexArray& vao) {
+template <class Gfx> void OglGfxT<Gfx>::BindVertexArray(NativeVertexArray& vao) {
 	glBindVertexArray(vao);
 }
 
-void OglGfx::BindVertexBuffer(NativeVertexBuffer& vbo) {
+template <class Gfx> void OglGfxT<Gfx>::BindVertexBuffer(NativeVertexBuffer& vbo) {
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 }
 
-void OglGfx::VertexBufferData(const Vector<Vertex>& vtx) {
+template <class Gfx> void OglGfxT<Gfx>::VertexBufferData(const Vector<Vertex>& vtx) {
 	glBufferData(GL_ARRAY_BUFFER, vtx.GetCount() * sizeof(Vertex), &vtx[0], GL_STATIC_DRAW);
 }
 
-void OglGfx::BindElementBuffer(NativeElementBuffer& ebo) {
+template <class Gfx> void OglGfxT<Gfx>::BindElementBuffer(NativeElementBuffer& ebo) {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 }
 
-void OglGfx::ElementBufferData(const Vector<uint32>& indices) {
+template <class Gfx> void OglGfxT<Gfx>::ElementBufferData(const Vector<uint32>& indices) {
 	glBufferData(	GL_ELEMENT_ARRAY_BUFFER,
 					indices.GetCount() * sizeof(unsigned int),
 					&indices[0], GL_STATIC_DRAW);
 }
 
-void OglGfx::SetupVertexStructure() {
+template <class Gfx> void OglGfxT<Gfx>::SetupVertexStructure() {
 	// vertex positions
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, position));
@@ -633,19 +654,19 @@ void OglGfx::SetupVertexStructure() {
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, tex_coord));
 }
 
-void OglGfx::UnbindVertexArray() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindVertexArray() {
 	glBindVertexArray(0);
 }
 
-void OglGfx::UnbindVertexBuffer() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindVertexBuffer() {
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void OglGfx::UnbindElementBuffer() {
+template <class Gfx> void OglGfxT<Gfx>::UnbindElementBuffer() {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void OglGfx::ActivateVertexStructure() {
+template <class Gfx> void OglGfxT<Gfx>::ActivateVertexStructure() {
 	const int vtx = 0;
 	const int nm = 1;
 	const int tex = 2;
@@ -664,7 +685,7 @@ void OglGfx::ActivateVertexStructure() {
 	
 }
 
-void OglGfx::DeactivateVertexStructure() {
+template <class Gfx> void OglGfxT<Gfx>::DeactivateVertexStructure() {
 	const int vtx = 0;
 	const int nm = 1;
 	const int tex = 2;
@@ -673,97 +694,108 @@ void OglGfx::DeactivateVertexStructure() {
 	glDisableVertexAttribArray(tex);         // deactivate texture coords
 }
 
-void OglGfx::DrawVertexElements(int element_limit) {
+template <class Gfx> void OglGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	glDrawElements(GL_TRIANGLES, element_limit, GL_UNSIGNED_INT, 0);
 }
 
-void OglGfx::UniformMatrix4fv(int idx, const mat4& mat) {
+template <class Gfx> void OglGfxT<Gfx>::UniformMatrix4fv(int idx, const mat4& mat) {
 	glUniformMatrix4fv(idx, 1, GL_FALSE, &mat[0][0]);
 }
 
-void OglGfx::TexImage2D(Texture& tex) {
-	ASSERT(tex.stride == 4 || tex.stride == 3);
+template <class Gfx> void OglGfxT<Gfx>::TexImage2D(ByteImage& tex) {
+	ASSERT(tex.channels == 4 || tex.channels == 3);
 	glTexImage2D(
 		GL_TEXTURE_2D,
 		0,
 		GL_RGBA,
 		tex.GetWidth(), tex.GetHeight(),
 		0,
-		tex.stride == 4 ? GL_BGRA : GL_BGR,
-		GL_UNSIGNED_BYTE, tex.data.Begin());
+		tex.channels == 4 ? GL_BGRA : GL_BGR,
+		GL_UNSIGNED_BYTE, tex.data);
 }
 
-void OglGfx::GenerateMipmap(GVar::TextureType type) {
+template <class Gfx> void OglGfxT<Gfx>::GenerateMipmap(GVar::TextureType type) {
 	glGenerateMipmap(GetOglTextureType(type));
 }
 
-void OglGfx::DeleteVertexArray(NativeVertexArray& vao) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteVertexArray(NativeVertexArray& vao) {
 	glDeleteVertexArrays(1, &vao);
 }
 
-void OglGfx::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteVertexBuffer(NativeVertexBuffer& vbo) {
 	glDeleteBuffers(1, &vbo);
 }
 
-void OglGfx::DeleteElementBuffer(NativeElementBuffer& ebo) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteElementBuffer(NativeElementBuffer& ebo) {
 	glDeleteBuffers(1, &ebo);
 }
 
-void OglGfx::DeleteTexture(NativeColorBuffer& b) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {
 	glDeleteTextures(1, &b);
 }
 
-bool OglGfx::CreateRenderbuffer(NativeDepthBuffer& b) {
+template <class Gfx>
+bool OglGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
 	glGenRenderbuffersEXT(1, &b);
 	return true;
 }
 
-void OglGfx::DeleteRenderbuffer(NativeDepthBuffer& b) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
 	glDeleteRenderbuffersEXT(1, &b);
 }
 
-void OglGfx::DeleteFramebuffer(NativeFrameBuffer& b) {
+template <class Gfx> void OglGfxT<Gfx>::DeleteFramebuffer(NativeFrameBuffer& b) {
 	glDeleteFramebuffers(1, &b);
 }
 
-Serial::FboFormat& OglGfx::GetFormat(Parallel::Format& fmt) {
+template <class Gfx>
+Serial::FboFormat& OglGfxT<Gfx>::GetFormat(Parallel::Format& fmt) {
 	return fmt;
 }
 
-void OglGfx::Uniform1i(int idx, int i) {
+template <class Gfx> void OglGfxT<Gfx>::Uniform1i(int idx, int i) {
 	glUniform1i(idx, i);
 }
 
-void OglGfx::Uniform1f(int idx, float f) {
+template <class Gfx> void OglGfxT<Gfx>::Uniform1f(int idx, float f) {
 	glUniform1f(idx, f);
 }
 
-void OglGfx::Uniform2f(int idx, float f0, float f1) {
+template <class Gfx> void OglGfxT<Gfx>::Uniform2f(int idx, float f0, float f1) {
 	glUniform2f(idx, f0, f1);
 }
 
-void OglGfx::Uniform3f(int idx, float f0, float f1, float f2) {
+template <class Gfx> void OglGfxT<Gfx>::Uniform3f(int idx, float f0, float f1, float f2) {
 	glUniform3f(idx, f0, f1, f2);
 }
 
-void OglGfx::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
+template <class Gfx> void OglGfxT<Gfx>::Uniform4f(int idx, float f0, float f1, float f2, float f3) {
 	glUniform4f(idx, f0, f1, f2, f3);
 }
 
-void OglGfx::BeginRender() {}
-void OglGfx::EndRender() {}
+template <class Gfx> void OglGfxT<Gfx>::BeginRender() {}
+template <class Gfx> void OglGfxT<Gfx>::EndRender() {}
 
-void OglGfx::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
+template <class Gfx> void OglGfxT<Gfx>::SetContextDefaultFramebuffer(NativeFrameBuffer& fb) {
 	// pass
 }
 
-void OglGfx::FramebufferTexture2D(NativeFrameBuffer& fb) {
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb, 0);
+template <class Gfx> void OglGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef b) {
+	TODO // decode: tgt -> GL_COLOR_ATTACH...
+	//glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, fb, 0);
 }
 
-void OglGfx::FramebufferRenderbuffer(NativeDepthBuffer& fb) {
+template <class Gfx> void OglGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef fb) {
 	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, fb);
 }
+
+
+#if defined flagOGL && defined flagSCREEN
+template struct OglGfxT<X11OglGfx>;
+#ifdef flagSDL2
+template struct OglGfxT<SdlOglGfx>;
+#endif
+#endif
 
 
 NAMESPACE_PARALLEL_END

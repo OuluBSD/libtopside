@@ -84,6 +84,8 @@ template <class Gfx>
 void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 	auto& l = Local();
 	l.rend.ClearTargets();
+	TODO
+	/*l.rend.SetTarget(tgt);
 	for(int i = 0; i < CHANNEL_COUNT; i++) {
 		uint32 j = 1 << i;
 		if ((uint32)tgt & j) {
@@ -92,7 +94,7 @@ void CpuGfxT<Gfx>::DrawBuffers(GVar::RenderTarget tgt) {
 			if (rw)
 				l.rend.AddTarget(*rw);
 		}
-	}
+	}*/
 }
 
 /*void CpuGfxT<Gfx>::Clear_Color() {
@@ -267,11 +269,11 @@ void CpuGfxT<Gfx>::TexParameteri(GVar::TextureType type, GVar::Filter filter, GV
 	ASSERT(fb);
 	if (fb)
 		fb->SetParam(type, filter, repeat);
-	if (Local().active_texture >= 0) {
+	/*if (Local().active_texture >= 0) {
 		auto& t = Local().T();
 		if (t.rw)
 			t.rw->SetParam(type, filter, repeat);
-	}
+	}*/
 }
 
 template <class Gfx>
@@ -282,17 +284,17 @@ void CpuGfxT<Gfx>::BindFramebuffer(NativeFrameBuffer& fb) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindTextureRO(GVar::TextureType type, const NativeFrameBuffer& tex) {
+void CpuGfxT<Gfx>::BindTextureRO(GVar::TextureType type, NativeColorBufferConstRef tex) {
 	auto& t = Local().T();
-	t.r = &tex;
+	t.r = tex;
 	t.rw = 0;
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeFrameBuffer& tex) {
+void CpuGfxT<Gfx>::BindTextureRW(GVar::TextureType type, NativeColorBufferRef tex) {
 	auto& t = Local().T();
 	t.r = 0;
-	t.rw = &tex;
+	t.rw = tex;
 }
 
 template <class Gfx>
@@ -329,8 +331,10 @@ void CpuGfxT<Gfx>::RenderScreenRect() {
 }
 
 template <class Gfx>
-bool CpuGfxT<Gfx>::GenTexture(SoftFramebuffer& fb) {
-	return fb.Create();
+bool CpuGfxT<Gfx>::GenTexture(NativeColorBufferRef& b) {
+	ASSERT(!b);
+	b = new ByteImage();
+	return true;
 }
 
 template <class Gfx>
@@ -418,7 +422,7 @@ void CpuGfxT<Gfx>::DrawVertexElements(int element_limit) {
 	ASSERT(l.vao->ebo);
 	ASSERT_(l.fb, "framebuffer is not bound yet");
 	ASSERT_(l.pipe, "pipe is not bound yet");
-	ASSERT_(*l.fb, "framebuffer is not inited");
+	ASSERT_(*l.fb, "framebuffer is not f");
 	ASSERT_(*l.pipe, "pipeline is not inited");
 	
 	for(int i = 0; i < TEXTYPE_COUNT; i++)
@@ -428,12 +432,11 @@ void CpuGfxT<Gfx>::DrawVertexElements(int element_limit) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::TexImage2D(Texture& tex) {
+void CpuGfxT<Gfx>::TexImage2D(ByteImage& tex) {
 	auto& t = Local().T();
 	ASSERT(!t.r);
 	ASSERT(t.rw);
-	//*t.rw = &tex;
-	t.rw->SetTexture(&tex);
+	*t.rw = tex;
 }
 
 template <class Gfx>
@@ -452,13 +455,23 @@ void CpuGfxT<Gfx>::DeleteElementBuffer(NativeElementBuffer& ebo) {
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteTexture(NativeColorBuffer& b) {
-	b.Clear();
+void CpuGfxT<Gfx>::DeleteTexture(NativeColorBufferRef& b) {
+	ASSERT(b);
+	if (b) {
+		delete b;
+		b = 0;
+	}
+	//b.Clear();
 }
 
 template <class Gfx>
-void CpuGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBuffer& b) {
-	b.Clear();
+void CpuGfxT<Gfx>::DeleteRenderbuffer(NativeDepthBufferRef& b) {
+	ASSERT(b);
+	if (b) {
+		delete b;
+		b = 0;
+	}
+	//b.Clear();
 }
 
 template <class Gfx>
@@ -493,19 +506,21 @@ void CpuGfxT<Gfx>::EndRender() {
 template <class Gfx> void CpuGfxT<Gfx>::SetupVertexStructure() {}
 template <class Gfx> void CpuGfxT<Gfx>::ActivateVertexStructure() {}
 
-template <class Gfx> bool CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBuffer& b) {
-	return b.Create();
+template <class Gfx> bool CpuGfxT<Gfx>::CreateRenderbuffer(NativeDepthBufferRef& b) {
+	ASSERT(!b);
+	b = new FloatImage();
+	return true;
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::BindRenderbuffer(NativeDepthBuffer& rb) {
-	Local().depth = &rb;
+template <class Gfx> void CpuGfxT<Gfx>::BindRenderbuffer(NativeDepthBufferRef rb) {
+	Local().depth = rb;
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::RenderbufferStorage(Size sz) {
 	auto& depth = Local().depth;
 	ASSERT(depth);
 	if (depth)
-		depth->SetLocalData(sz, 1);
+		depth->Set(sz, 1);
 }
 
 template <class Gfx> void CpuGfxT<Gfx>::UnbindRenderbuffer() {
@@ -516,15 +531,15 @@ template <class Gfx> bool CpuGfxT<Gfx>::CreateFramebuffer(NativeFrameBuffer& fb)
 	return fb.Create();
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(NativeFrameBuffer& tex) {
+template <class Gfx> void CpuGfxT<Gfx>::FramebufferTexture2D(TexType tgt, NativeColorBufferRef tex) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	ASSERT(tex);
 	if (fb && tex)
-		fb->SetColor(tex);
+		fb->SetColor(tgt, tex);
 }
 
-template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBuffer& depth) {
+template <class Gfx> void CpuGfxT<Gfx>::FramebufferRenderbuffer(NativeDepthBufferRef depth) {
 	auto& fb = Local().fb;
 	ASSERT(fb);
 	ASSERT(depth);

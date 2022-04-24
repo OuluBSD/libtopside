@@ -29,12 +29,14 @@ class SoftFramebufferT {
 protected:
 	friend class SoftRend;
 	using NativeTexture = typename Gfx::NativeTexture;
+	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
 	
 	NativeTexture tex = 0;
-	Texture* gtex = 0;
-	One<Texture> owned;
-	SoftFramebufferT* depth = 0;
-	SoftFramebufferT* color = 0;
+	ByteImage* gtex = 0;
+	One<ByteImage> owned;
+	NativeDepthBufferRef depth = 0;
+	NativeColorBufferRef color[TEXTYPE_COUNT];
 	
 	GVar::Wrap wrap[GVar::TEXTYPE_COUNT] {GVar::WRAP_REPEAT, GVar::WRAP_REPEAT};
 	GVar::Filter filter[GVar::TEXTYPE_COUNT] {GVar::FILTER_NEAREST, GVar::FILTER_NEAREST, GVar::FILTER_NEAREST};
@@ -47,16 +49,16 @@ public:
 	void ClearData(GVar::BufferType type);
 	void ClearDataAll();
 	
-	void SetLocalData(Size sz, byte channels);
+	//void SetLocalData(Size sz, byte channels);
 	void SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
-	void SetColor(SoftFramebufferT& fb) {color = &fb;}
-	void SetDepth(SoftFramebufferT& fb) {depth = &fb;}
+	void SetColor(TexType tgt, NativeColorBufferRef fb) {ASSERT(tgt >= TEXTYPE_NONE && tgt < TEXTYPE_COUNT); color[tgt] = fb;}
+	void SetDepth(NativeDepthBufferRef fb) {depth = fb;}
 	
 	const NativeTexture& GetTex() const {ASSERT(tex); return tex;}
-	Texture& GetGeomTex() const {ASSERT(gtex); return *gtex;}
+	ByteImage& GetGeomTex() const {ASSERT(gtex); return *gtex;}
 	
 	void operator=(NativeTexture& tex);
-	void SetTexture(Texture* t) {ASSERT(tex == 0); gtex = t;}
+	void SetTexture(ByteImage* t) {ASSERT(tex == 0); gtex = t;}
 	void operator=(const Nuller&) {Clear();}
 	void operator=(const SoftFramebufferT&) = delete;
 	operator bool() const {return inited;}

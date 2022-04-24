@@ -82,7 +82,7 @@ typedef unsigned int	Gxbf;
 #include "Backend.h"
 #include "Data.h"
 #include "Framebuffer.h"
-#include "SoftShader.h"
+#include "ShaderSoft.h"
 #include "Program.h"
 #include "Pipeline.h"
 #include "Renderer.h"

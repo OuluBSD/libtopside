@@ -703,12 +703,15 @@ void BufferT<Gfx>::SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg)
 	else if (var >= VAR_COMPAT_CHANNEL0 && var <= VAR_COMPAT_CHANNEL3) {
 		int ch = var - VAR_COMPAT_CHANNEL0;
 		int tex_ch = COMPAT_OFFSET + ch;
-		const NativeFrameBuffer* tex = GetInputTex(ch);
+		NativeColorBufferConstRef tex = GetInputTex(ch);
 		ASSERT(tex);
-		Gfx::ActiveTexture(tex_ch);
-		Gfx::BindTextureRO(GetTexType(ch), *tex);
-		Gfx::Uniform1i(uindex, tex_ch);
-		Gfx::DeactivateTexture();
+		if (tex) {
+			//typename Gfx::NativeColorBufferConstRef clr = Gfx::GetFrameBufferColor(*tex, TEXTYPE_NONE);
+			Gfx::ActiveTexture(tex_ch);
+			Gfx::BindTextureRO(GetTexType(ch), tex);
+			Gfx::Uniform1i(uindex, tex_ch);
+			Gfx::DeactivateTexture();
+		}
 	}
 	
 	else if (var == VAR_COMPAT_FRAMERATE) {
@@ -765,15 +768,15 @@ void BufferT<Gfx>::ClearTex() {
 		auto& depth_buf = fb.depth_buf[bi];
 		auto& frame_buf = fb.frame_buf[bi];
 		
-		if (color_buf > 0) {
+		if (color_buf != 0) {
 			Gfx::DeleteTexture(color_buf);
 			color_buf = Null;
 		}
-		if (depth_buf > 0) {
+		if (depth_buf != 0) {
 			Gfx::DeleteRenderbuffer(depth_buf);
 			depth_buf = Null;
 		}
-		if (frame_buf > 0) {
+		if (frame_buf != 0) {
 			Gfx::DeleteFramebuffer(frame_buf);
 			frame_buf = Null;
 		}
@@ -823,7 +826,7 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 			Gfx::BindFramebuffer(frame_buf);
 			
 			// combine FBO to color buffer
-			Gfx::FramebufferTexture2D(color_buf);
+			Gfx::FramebufferTexture2D(TEXTYPE_NONE, color_buf); // TEXTYPE_NONE == color attachment 0
 			
 			// combine FBO to depth buffer
 			if (create_depth)
@@ -838,7 +841,7 @@ void BufferT<Gfx>::CreateTex(bool create_depth, bool create_fbo) {
 }
 
 template <class Gfx>
-const TNG NativeFrameBuffer* BufferT<Gfx>::GetInputTex(int input_i) const {
+TNG NativeColorBufferConstRef BufferT<Gfx>::GetInputTex(int input_i) const {
 	const char* fn_name = "GetInputTex";
 	//DLOG("BufferT::GetInputTex");
 	if (input_i < 0 || input_i >= GVar::INPUT_COUNT)
@@ -854,10 +857,10 @@ const TNG NativeFrameBuffer* BufferT<Gfx>::GetInputTex(int input_i) const {
 	if (!in_comp)
 		return 0;
 	
-	const NativeFrameBuffer& tex = in_comp->GetOutputTexture(in_comp == this);
+	NativeColorBufferConstRef tex = in_comp->GetOutputTexture(in_comp == this);
 	ASSERT(tex);
 	
-	return &tex;
+	return tex;
 }
 
 template <class Gfx>
@@ -986,7 +989,7 @@ bool BufferT<Gfx>::CompilePrograms() {
 }
 
 template <class Gfx>
-const TNG NativeFrameBuffer& BufferT<Gfx>::GetOutputTexture(bool reading_self) const {
+TNG NativeColorBufferConstRef BufferT<Gfx>::GetOutputTexture(bool reading_self) const {
 	auto& s = fb;
 	ASSERT(!reading_self || s.is_doublebuf);
 	int buf_i = s.buf_i;

@@ -147,7 +147,7 @@ void ObjViewFragmentT<Gfx>::Process(FragmentShaderArgsT<Gfx>& args) {
 	
 	auto& diffuse = args.tex_img[TEXTYPE_DIFFUSE];
 	if (diffuse) {
-		Texture& tex = diffuse->GetGeomTex();
+		const ByteImage& tex = *diffuse;
 		float tex_x = args.tex_coord[0];
 		float tex_y = args.tex_coord[1];
 		ASSERT(tex_x >= 0.0f && tex_x <= 1.0f);

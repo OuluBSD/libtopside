@@ -20,6 +20,15 @@ Image RealizeImage(Image& img, String path) {
 
 
 
+void FloatImage::Clear() {
+	if (data) {
+		free(data);
+		sz = Size(0, 0);
+		pitch = 0;
+		channels = 0;
+		size = 0;
+	}
+}
 
 void FloatImage::FlipVert() {
 	int half = sz.cy / 2;
@@ -43,12 +52,13 @@ void FloatImage::Set(const Image& img) {
 
 void FloatImage::Set(int w, int h, int stride, int src_pitch, const byte* src_data) {
 	Clear();
+	
 	sz = Size(w,h);
 	channels = stride;
 	pitch = sz.cx * channels;
 	size = pitch * sz.cy;
-	ASSERT(channels >= 1 && channels <= 4);
 	
+	ASSERT(channels >= 1 && channels <= 4);
 	data = (float*)malloc(sizeof(float) * size);
 	
 	float* f = data;
@@ -72,6 +82,18 @@ void FloatImage::Set(int w, int h, int stride, int src_pitch, const byte* src_da
 				*f++ = (float)(*it0++ / 255.0);
 		}
 	}
+}
+
+void FloatImage::Set(Size sz, int channels) {
+	Clear();
+	
+	this->sz = sz;
+	this->channels = channels;
+	pitch = sz.cx * channels;
+	size = pitch * sz.cy;
+	
+	ASSERT(channels >= 1 && channels <= 4);
+	data = (float*)malloc(sizeof(float) * size);
 }
 
 
@@ -139,6 +161,37 @@ void ByteImage::Randomize() {
 		*it++ = (byte)Random(256);
 }
 
+int ByteImage::GetPitch() const {
+	return pitch;
+}
+
+int ByteImage::GetWidth() const {
+	return sz.cx;
+}
+
+int ByteImage::GetHeight() const {
+	return sz.cy;
+}
+
+int ByteImage::GetChannels() const {
+	return channels;
+}
+
+int ByteImage::GetSize() const {
+	return size;
+}
+
+byte* ByteImage::GetIter(int x, int y) {
+	ASSERT(x >= 0 && y >= 0 && x < sz.cx && y < sz.cy);
+	ASSERT(sz.cx && sz.cy && data && pitch && channels);
+	return data + y * pitch + x * channels;
+}
+
+const byte* ByteImage::GetIter(int x, int y) const {
+	ASSERT(x >= 0 && y >= 0 && x < sz.cx && y < sz.cy);
+	ASSERT(sz.cx && sz.cy && data && pitch && channels);
+	return data + y * pitch + x * channels;
+}
 
 
 

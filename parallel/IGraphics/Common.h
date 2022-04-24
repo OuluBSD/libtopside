@@ -74,19 +74,16 @@ struct VertexShaderArgsT : GfxVertexShaderArgs {
 };
 
 template <class Gfx>
-class SoftFramebufferT;
-
-template <class Gfx>
 struct FragmentShaderArgsT : GfxFragmentShaderArgs {
 	using Base = FragmentShaderArgsT<Gfx>;
-	using SoftFramebuffer = SoftFramebufferT<Gfx>;
-	using NativeColorBuffer = typename Gfx::NativeColorBuffer;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	RTTI_DECL1(FragmentShaderArgsT, GfxFragmentShaderArgs)
 	
 	
 	GenericShaderArgs* generic = 0;
 	GenericFragmentShaderArgs* fa = 0;
-	const SoftFramebuffer* tex_img[TEXTYPE_COUNT];
+	NativeColorBufferConstRef tex_img[TEXTYPE_COUNT];
 	
 	vec3 normal;
 	vec2 tex_coord;

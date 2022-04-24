@@ -178,7 +178,7 @@ void ModelMesh::Dump() {
 	}
 	LOG("Textures:");
 	for(int i = 0; i < textures.GetCount(); i++) {
-		LOG("\t" << i << ": " << (int)textures[i].width << "x" << (int)textures[i].height);
+		LOG("\t" << i << ": " << (int)textures[i].sz.cx << "x" << (int)textures[i].sz.cy);
 	}
 }
 

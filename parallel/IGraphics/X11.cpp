@@ -54,7 +54,7 @@ void X11OglGfx::DeleteContext(NativeGLContext& ctx) {
 	TODO
 }
 
-void X11OglGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+void X11OglGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
 	ASSERT(d && w);
 	glXSwapBuffers(d, w);
 }
@@ -65,7 +65,7 @@ void X11SwGfx::DeleteContext(NativeGLContext& ctx) {
 	TODO
 }
 
-void X11SwGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeFrameBuffer& color_buf) {
+void X11SwGfx::ActivateNextFrame(NativeDisplay& d, NativeWindow& w, NativeRenderer& r, NativeColorBufferRef color_buf) {
 	ASSERT(d && w);
 	XFlush(d);
 }

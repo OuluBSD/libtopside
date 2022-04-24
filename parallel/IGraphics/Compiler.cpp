@@ -10,7 +10,7 @@ SoftCompilerT<Gfx>::SoftCompilerT() {
 
 template <class Gfx>
 bool SoftCompilerT<Gfx>::Compile(SoftShader& s) {
-	LOG("SoftCompiler::Compile: warning: TODO");
+	LOG("SoftCompiler::Compile: warning: software shaders are not currently compiled");
 	
 	return true;
 }

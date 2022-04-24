@@ -16,7 +16,7 @@ struct Vertex : Moveable<Vertex> {
     void Set(float x, float y, float z, float tex_x, float tex_y);
 };
 
-
+/*
 struct Texture : Moveable<Texture> {
 	Vector<byte>	data;
 	uint8			stride;
@@ -62,7 +62,7 @@ struct Texture : Moveable<Texture> {
 	}
 };
 
-typedef Texture FrameBuffer;
+typedef Texture FrameBuffer;*/
 
 
 struct DepthValue : Moveable<DepthValue> {
@@ -126,7 +126,7 @@ protected:
 };
 
 
-enum TexType {
+typedef enum {
     TEXTYPE_NONE = 0x0,
     TEXTYPE_DIFFUSE = 0x1,
     TEXTYPE_SPECULAR = 0x2,
@@ -142,7 +142,18 @@ enum TexType {
     TEXTYPE_UNKNOWN = 0xC,
     
     TEXTYPE_COUNT
-};
+} TexType;
+
+namespace GVar {
+
+typedef enum : uint32 {
+	COLOR0_EXT		= 1 << TEXTYPE_DIFFUSE,
+	COLOR1_EXT		= 1 << TEXTYPE_SPECULAR,
+	COLOR2_EXT		= 1 << TEXTYPE_AMBIENT,
+	COLOR3_EXT		= 1 << TEXTYPE_EMISSIVE,
+} RenderTarget;
+
+}
 
 /*
 Texture channel ranges:

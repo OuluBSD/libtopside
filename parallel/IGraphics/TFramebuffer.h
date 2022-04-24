@@ -33,8 +33,8 @@ template <class Gfx> struct InputStateT;
 template <class Gfx>
 struct FramebufferT : Gfx::FramebufferBase {
 	using Base = FramebufferT<Gfx>;
-	using NativeColorBuffer = typename Gfx::NativeColorBuffer;
-	using NativeDepthBuffer = typename Gfx::NativeDepthBuffer;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using SystemFrameBuffer = typename Gfx::SystemFrameBuffer;
 	using NativeProgram  = typename Gfx::NativeProgram;
@@ -48,9 +48,9 @@ struct FramebufferT : Gfx::FramebufferBase {
 	using DataState = DataStateT<Gfx>;
 	RTTI_DECL1(FramebufferT, GfxFramebuffer)
 	
-	NativeColorBuffer	color_buf[2];
-	NativeDepthBuffer	depth_buf[2];
-	NativeFrameBuffer	frame_buf[2];
+	NativeColorBufferRef	color_buf[2];
+	NativeDepthBufferRef	depth_buf[2];
+	NativeFrameBuffer		frame_buf[2];
 	bool locked = false;
 	
 	
@@ -66,9 +66,9 @@ struct FramebufferT : Gfx::FramebufferBase {
 	}
 	
 	const NativeFrameBuffer& GetReadFramebuffer() const;
-	NativeColorBuffer& GetActiveColorBuffer();
+	NativeColorBufferRef GetActiveColorBuffer();
 	
-	void Init(SystemFrameBuffer& fb, int w, int h, int stride);
+	void Init(NativeColorBufferRef b, int w, int h, int stride);
 	
 	bool Create(int w, int h, int channels=3) override {TODO}
 	void Enter() override {ASSERT(!locked); locked = true;}

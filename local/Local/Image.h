@@ -28,10 +28,13 @@ public:
 	FloatImage(Image& img) {*this = img;}
 	
 	void operator=(const Image& img) {Set(img);}
+	void operator=(const Nuller&) {Clear();}
 	
+	bool Create() {return true;} // for IGraphics compatibility
 	void Set(const Image& img);
 	void Set(int w, int h, int stride, int src_pitch, const byte* data);
-	void Clear() {if (data) {free(data); sz = Size(0,0); pitch = 0; channels = 0; size = 0;}}
+	void Set(Size sz, int channels);
+	void Clear();
 	void FlipVert();
 	
 	int GetPitch() const {return pitch;}
@@ -45,7 +48,12 @@ public:
 	float* End() {if (!data) return 0; return data + sz.cy * pitch;}
 	float* Detach() {float* f = data; data = 0; sz = Size(0,0); pitch = 0; channels = 0; size = 0; return f;}
 	
+	bool IsEmpty() {return data == 0;}
+	operator bool() const {return data != 0;}
+	
 };
+
+typedef const FloatImage ConstFloatImage;
 
 
 struct ByteImage {
@@ -62,25 +70,33 @@ public:
 	ByteImage(Image& img) {*this = img;}
 	
 	void operator=(const Image& img) {Set(img);}
+	void operator=(const Nuller&) {Clear();}
 	
+	bool Create() {return true;} // for IGraphics compatibility
 	void Set(const Image& img);
 	void Set(int w, int h, int stride, int src_pitch, const byte* data);
 	void Clear() {if (data) {free(data); sz = Size(0,0); pitch = 0; channels = 0; size = 0;}}
 	void FlipVert();
 	void Randomize();
 	
-	int GetPitch() const {return pitch;}
-	int GetWidth() const {return sz.cx;}
-	int GetHeight() const {return sz.cy;}
-	int GetChannels() const {return channels;}
-	int GetSize() const {return size;}
+	int GetPitch() const;
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetChannels() const;
+	int GetSize() const;
+	byte* GetIter(int x, int y);
+	const byte* GetIter(int x, int y) const;
 	
 	byte* Begin() {return data;}
 	byte* End() {if (!data) return 0; return data + sz.cy * pitch;}
 	byte* Detach() {byte* f = data; data = 0; sz = Size(0,0); pitch = 0; channels = 0; size = 0; return f;}
 	
+	bool IsEmpty() {return data == 0;}
+	operator bool() const {return data != 0;}
+	
 };
 
+typedef const ByteImage ConstByteImage;
 
 void	DataFromImage(const Image& img, Vector<byte>& data);
 Image	MirrorVertical(const Image& img);

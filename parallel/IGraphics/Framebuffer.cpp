@@ -5,7 +5,8 @@ NAMESPACE_PARALLEL_BEGIN
 
 template <class Gfx>
 SoftFramebufferT<Gfx>::SoftFramebufferT() {
-	
+	for(int i = 0; i < TEXTYPE_COUNT; i++)
+		color[i] = 0;
 }
 
 template <class Gfx>
@@ -38,12 +39,12 @@ void SoftFramebufferT<Gfx>::ClearDataAll() {
 	
 }
 
-template <class Gfx>
+/*template <class Gfx>
 void SoftFramebufferT<Gfx>::SetLocalData(Size sz, byte channels) {
 	owned.Create();
 	owned->Create(sz, channels);
 	gtex = &*owned;
-}
+}*/
 
 template <class Gfx>
 void SoftFramebufferT<Gfx>::SetParam(GVar::TextureType type, GVar::Filter filter, GVar::Wrap wrap) {

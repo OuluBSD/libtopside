@@ -15,10 +15,10 @@ template <class Gfx> class DataObjectT;
 struct X11Sw {
 	using NativeTexture = uint32;
 	using NativeSurface = void*;
-	using NativeColorBuffer = void*;
+	using NativeColorBufferRef = void*;
 	/*using ShaderPipeline = SoftPipelineT<X11Sw>;
 	using NativeRenderer = SoftRendT<X11Sw>;
-	using NativeDepthBuffer = SoftFramebufferT<X11Sw>;
+	using NativeDepthBufferRef = SoftFramebufferT<X11Sw>;
 	using NativeFrameBuffer = SoftFramebufferT<X11Sw>;
 	using NativeProgram = SoftProgramT<X11Sw>;
 	using NativePipeline = SoftPipelineT<X11Sw>;
@@ -40,7 +40,7 @@ struct X11Sw {
 struct Sdl {
 	using NativeTexture = SDL_Texture*;
 	using NativeSurface = SDL_Surface*;
-	using NativeColorBuffer = SDL_Texture*;
+	using NativeColorBufferRef = SDL_Texture*;
 	
 	
 	static bool LockTextureToSurface(NativeTexture& tex, Rect r, NativeSurface& surf);

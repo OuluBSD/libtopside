@@ -121,7 +121,7 @@ DataStateT<Gfx>::~DataStateT() {
 
 template <class Gfx>
 void DataStateT<Gfx>::Free() {
-	for (NativeColorBuffer& t : textures)
+	for (NativeColorBufferRef& t : textures)
 		Gfx::DeleteTexture(t);
 	textures.Clear();
 }
@@ -198,8 +198,8 @@ bool DataStateT<Gfx>::LoadModelTextures(ModelLoader& l, GfxDataObject& o) {
 	for(int i = prev_count; i < count; i++) textures[i] = Null;
 	
 	for(int i = 0; i < m.textures.GetCount(); i++) {
-		NativeColorBuffer& buf = textures[i];
-		Texture& tex = m.textures[i];
+		NativeColorBufferRef& buf = textures[i];
+		ByteImage& tex = m.textures[i];
 		
 		if (buf || tex.IsEmpty())
 			continue;

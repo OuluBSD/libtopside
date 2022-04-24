@@ -31,6 +31,8 @@ struct BufferT : GfxBuffer {
 	using Sample = GVar::Sample;
 	using SoftShaderBase = SoftShaderBaseT<Gfx>;
 	using SoftShaderLibrary = typename Gfx::SoftShaderLibrary;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	using NativeColorBufferConstRef = typename Gfx::NativeColorBufferConstRef;
 	
 	RTTI_DECL1(BufferT, GfxBuffer)
 	
@@ -105,13 +107,13 @@ struct BufferT : GfxBuffer {
 	void SetVar(int var, int gl_prog, const RealtimeSourceConfig& cfg);
 	void ClearTex();
 	void CreateTex(bool create_depth, bool create_fbo);
-	const NativeFrameBuffer* GetInputTex(int input_i) const;
+	NativeColorBufferConstRef GetInputTex(int input_i) const;
 	GVar::TextureType GetTexType(int input_i) const;
 	bool SetupLoopback();
 	bool BuiltinShader();
 	template <int> bool BuiltinShaderT();
 	bool CompilePrograms();
-	const NativeFrameBuffer& GetOutputTexture(bool reading_self) const;
+	NativeColorBufferConstRef GetOutputTexture(bool reading_self) const;
 	void TexFlags(GVar::TextureType type, GVar::Filter filter, GVar::Wrap repeat);
 	void OnError(const char* fn, String s);
 	void StoreOutputLink(InternalPacketData& v);

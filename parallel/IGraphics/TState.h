@@ -49,8 +49,8 @@ template <class Gfx>
 struct DataStateT : GfxDataState {
 	RTTI_DECL1(DataStateT, GfxDataState)
 	using Base = DataStateT<Gfx>;
-	using NativeColorBuffer = typename Gfx::NativeColorBuffer;
-	using NativeDepthBuffer = typename Gfx::NativeDepthBuffer;
+	using NativeColorBufferRef = typename Gfx::NativeColorBufferRef;
+	using NativeDepthBufferRef = typename Gfx::NativeDepthBufferRef;
 	using NativeFrameBuffer = typename Gfx::NativeFrameBuffer;
 	using NativeProgram  = typename Gfx::NativeProgram;
 	using NativePipeline = typename Gfx::NativePipeline;
@@ -64,7 +64,7 @@ struct DataStateT : GfxDataState {
 	
 	
 	Array<DataObject> objects;
-	Array<NativeColorBuffer> textures;
+	Array<NativeColorBufferRef> textures;
 	
 	DataStateT();
 	~DataStateT();
